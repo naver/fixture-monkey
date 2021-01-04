@@ -39,8 +39,8 @@ spotbugs {
 
 tasks.withType(SpotBugsTask) {
     reports {
-        text.enabled = true
-        xml.enabled = false
+        text.enabled = false
+        xml.enabled = true
         html.enabled = false
     }
 }
