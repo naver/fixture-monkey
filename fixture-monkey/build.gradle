@@ -5,4 +5,8 @@ plugins {
 dependencies {
     api("net.jqwik:jqwik:${JQWIK_VERSION}")
     compileOnly("net.jqwik:jqwik-engine:${JQWIK_VERSION}")
+
+    testImplementation("org.assertj:assertj-core:3.18.1")
+    testImplementation("org.projectlombok:lombok:1.18.16")
+    testAnnotationProcessor("org.projectlombok:lombok:1.18.16")
 }
