@@ -1,1 +1,3 @@
-rootProject.name = "fixture-monkey"
+rootProject.name = "fixture-monkey-parent"
+
+include "fixture-monkey"
