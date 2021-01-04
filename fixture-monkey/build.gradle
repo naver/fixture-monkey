@@ -5,10 +5,11 @@ plugins {
     id "com.github.spotbugs" version "4.6.0"
     id "jacoco"
     id "checkstyle"
+    id "java-library"
 }
 
 dependencies {
-    implementation("net.jqwik:jqwik:${JQWIK_VERSION}")
+    api("net.jqwik:jqwik:${JQWIK_VERSION}")
     compileOnly("net.jqwik:jqwik-engine:${JQWIK_VERSION}")
 
     testImplementation("org.assertj:assertj-core:3.18.1")
@@ -18,6 +19,12 @@ dependencies {
 
 editorconfig {
     excludes = ["build"]
+}
+
+test {
+    useJUnitPlatform {
+        includeEngines "jqwik"
+    }
 }
 
 check.dependsOn editorconfigCheck
@@ -39,8 +46,8 @@ spotbugs {
 
 tasks.withType(SpotBugsTask) {
     reports {
-        text.enabled = true
-        xml.enabled = false
+        text.enabled = false
+        xml.enabled = true
         html.enabled = false
     }
 }
@@ -64,7 +71,7 @@ jacoco {
 
 jacocoTestReport {
     afterEvaluate {
-        classDirectories.setFrom(file("${buildDir}/classes/main"))
+        classDirectories.setFrom(file("${buildDir}/classes/java/main"))
     }
 
     reports {
