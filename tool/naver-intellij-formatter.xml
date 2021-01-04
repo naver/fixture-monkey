@@ -1,0 +1,62 @@
+<code_scheme name="Naver-coding-convention-v1.2">
+    <option name="CLASS_COUNT_TO_USE_IMPORT_ON_DEMAND" value="99" />
+    <option name="NAMES_COUNT_TO_USE_IMPORT_ON_DEMAND" value="1" />
+    <option name="IMPORT_LAYOUT_TABLE">
+        <value>
+            <emptyLine />
+            <package name="" withSubpackages="true" static="true" />
+            <emptyLine />
+            <package name="java" withSubpackages="true" static="false" />
+            <emptyLine />
+            <package name="javax" withSubpackages="true" static="false" />
+            <emptyLine />
+            <package name="org" withSubpackages="true" static="false" />
+            <emptyLine />
+            <package name="net" withSubpackages="true" static="false" />
+            <emptyLine />
+            <package name="com" withSubpackages="true" static="false" />
+            <emptyLine />
+            <package name="" withSubpackages="true" static="false" />
+            <emptyLine />
+            <package name="com.nhncorp" withSubpackages="true" static="false" />
+            <emptyLine />
+            <package name="com.navercorp" withSubpackages="true" static="false" />
+            <emptyLine />
+            <package name="com.naver" withSubpackages="true" static="false" />
+            <emptyLine />
+        </value>
+    </option>
+    <option name="RIGHT_MARGIN" value="120" />
+    <option name="ENABLE_JAVADOC_FORMATTING" value="false" />
+    <option name="JD_KEEP_EMPTY_LINES" value="false" />
+    <option name="FORMATTER_TAGS_ENABLED" value="true" />
+    <XML>
+        <option name="XML_LEGACY_SETTINGS_IMPORTED" value="true" />
+    </XML>
+    <codeStyleSettings language="JAVA">
+        <option name="LINE_COMMENT_AT_FIRST_COLUMN" value="false" />
+        <option name="LINE_COMMENT_ADD_SPACE" value="true" />
+        <option name="KEEP_FIRST_COLUMN_COMMENT" value="false" />
+        <option name="KEEP_CONTROL_STATEMENT_IN_ONE_LINE" value="false" />
+        <option name="KEEP_BLANK_LINES_IN_DECLARATIONS" value="1" />
+        <option name="KEEP_BLANK_LINES_IN_CODE" value="1" />
+        <option name="KEEP_BLANK_LINES_BEFORE_RBRACE" value="1" />
+        <option name="ALIGN_MULTILINE_PARAMETERS" value="false" />
+        <option name="SPACE_AFTER_TYPE_CAST" value="false" />
+        <option name="SPACE_BEFORE_ARRAY_INITIALIZER_LBRACE" value="true" />
+        <option name="CALL_PARAMETERS_WRAP" value="1" />
+        <option name="METHOD_PARAMETERS_WRAP" value="1" />
+        <option name="EXTENDS_LIST_WRAP" value="1" />
+        <option name="METHOD_CALL_CHAIN_WRAP" value="5" />
+        <option name="THROWS_LIST_WRAP" value="5" />
+        <option name="EXTENDS_KEYWORD_WRAP" value="1" />
+        <option name="BINARY_OPERATION_WRAP" value="1" />
+        <option name="BINARY_OPERATION_SIGN_ON_NEXT_LINE" value="true" />
+        <option name="TERNARY_OPERATION_WRAP" value="1" />
+        <option name="ARRAY_INITIALIZER_WRAP" value="1" />
+        <indentOptions>
+            <option name="CONTINUATION_INDENT_SIZE" value="4" />
+            <option name="USE_TAB_CHARACTER" value="true" />
+        </indentOptions>
+    </codeStyleSettings>
+</code_scheme>
