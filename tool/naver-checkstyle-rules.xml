@@ -1,0 +1,427 @@
+<?xml version="1.0"?>
+<!DOCTYPE module PUBLIC
+        "-//Puppy Crawl//DTD Check Configuration 1.3//EN"
+        "http://www.puppycrawl.com/dtds/configuration_1_3.dtd">
+
+<!-- Naver coding convention for Java (version 1.2)  -->
+<!-- This rule file requires Checkstyle version 8.24 or above. -->
+
+<!--
+The following rules in the Naver coding convention cannot be checked by this configuration file.
+- [avoid-korean-pronounce]
+- [class-noun]
+- [interface-noun-adj]
+- [method-verb-preposition]
+- [space-after-bracket]
+- [space-around-comment]
+-->
+
+<module name = "Checker">
+    <property name="severity" value="warning"/>
+    <property name="fileExtensions" value="java"/>
+
+    <!-- [encoding-utf8] -->
+    <property name="charset" value="UTF-8"/>
+
+    <!-- [newline-lf] -->
+    <module name="RegexpMultiline">
+        <property name="format" value="\r\n"/>
+        <property name="message" value="[newline-lf] Line must end with LF, not CRLF"/>
+    </module>
+
+
+    <!-- [newline-eof] -->
+    <module name="NewlineAtEndOfFile">
+        <property name="lineSeparator" value="lf"/>
+    </module>
+
+    <!-- [no-trailing-spaces] -->
+    <module name="RegexpSingleline">
+        <property name="format" value="^(?!\s+\* $).*?\s+$"/>
+        <property name="message" value="[no-trailing-spaces] Line has trailing spaces."/>
+    </module>
+
+    <!-- [line-length-120] -->
+    <property name="tabWidth" value="4"/>
+    <module name="LineLength">
+        <property name="max" value="120"/>
+        <property name="ignorePattern" value="^package.*|^import.*|a href|href|http://|https://|ftp://"/>
+        <message key="maxLineLen"
+                 value="[line-length-120] Line is longer than {0,number,integer} characters (found {1,number,integer})"/>
+    </module>
+
+    <module name="TreeWalker">
+        <!-- Start of Naming chapter -->
+
+        <!-- [list-uppercase-abbr] -->
+        <module name="AbbreviationAsWordInName">
+            <property name="ignoreFinal" value="false"/>
+            <property name="allowedAbbreviationLength" value="1"/>
+            <message key="abbreviation.as.word"
+                     value="[list-uppercase-abbr] Abbreviation in name ''{0}'' must contain no more than {1}"/>
+            <property name="allowedAbbreviations" value="DAO,BO"/>
+        </module>
+
+        <!-- [package-lowercase] -->
+        <module name="PackageName">
+            <property name="format" value="^[a-z]+(\.[a-z][a-z0-9]*)*$"/>
+            <message key="name.invalidPattern"
+                     value="[package-lowercase] Package name ''{0}'' must match pattern ''{1}''."/>
+        </module>
+
+
+        <!-- [class-interface-lower-camelcase] -->
+        <module name="TypeName">
+            <message key="name.invalidPattern"
+                     value="[class-interface-lower-camelcase] Type name ''{0}'' must match pattern ''{1}''."/>
+        </module>
+
+        <!-- [method-lower-camelcase] -->
+        <module name="MethodName">
+            <property name="format" value="^[a-z][a-z0-9][a-zA-Z0-9_]*$"/>
+            <message key="name.invalidPattern"
+                     value="[method-lower-camelcase] Method name ''{0}'' must match pattern ''{1}''."/>
+        </module>
+
+        <!-- [var-lower-camelcase] -->
+        <module name="MemberName">
+            <property name="format" value="^[a-z][a-zA-Z0-9][a-zA-Z0-9]*$"/>
+            <message key="name.invalidPattern"
+                     value="[var-lower-camelcase] Member name ''{0}'' must match pattern ''{1}''."/>
+        </module>
+        <module name="ParameterName">
+            <property name="format" value="^[a-z][a-zA-Z0-9][a-zA-Z0-9]*$"/>
+            <message key="name.invalidPattern"
+                     value="[var-lower-camelcase] Parameter name ''{0}'' must match pattern ''{1}''."/>
+        </module>
+
+        <!-- [var-lower-camelcase], [avoid-1-char-var] -->
+        <module name="LocalVariableName">
+            <property name="tokens" value="VARIABLE_DEF"/>
+            <property name="format" value="^[a-z][a-zA-Z0-9][a-zA-Z0-9]*$"/>
+            <property name="allowOneCharVarInForLoop" value="true"/>
+            <message key="name.invalidPattern"
+                     value="[var-lower-camelcase][avoid-1-char-var] Local variable name ''{0}'' must match pattern ''{1}''."/>
+        </module>
+
+        <!-- End of Naming chapter -->
+
+        <!-- Start of Declarations chapter -->
+
+        <!-- [1-top-level-class] -->
+        <module name="OneTopLevelClass"/>
+        <message key="name.invalidPattern"
+                 value="[1-top-level-class] one.top.level.class=Top-level class {0} has to reside in its own source file."/>
+
+        <!-- [avoid-star-import] -->
+        <module name="AvoidStarImport">
+            <property name="allowStaticMemberImports" value="true"/>
+            <message key="import.avoidStar"
+                     value="[avoid-star-import] Using the ''.*'' form of import should be avoided - {0}."/>
+        </module>
+
+        <!-- [modifier-order] -->
+        <module name="ModifierOrder">
+            <message key="mod.order"
+                     value="[modifier-order] ''{0}'' modifier out of order with the JLS suggestions."/>
+            <message key="annotation.order"
+                     value="[modifier-order] ''{0}'' annotation modifier does not precede non-annotation modifiers."/>
+        </module>
+
+        <!-- [newline-after-annotation] -->
+        <module name="AnnotationLocation">
+            <property name="tokens" value="CLASS_DEF, INTERFACE_DEF, ENUM_DEF, METHOD_DEF, CTOR_DEF"/>
+            <property name="allowSamelineSingleParameterlessAnnotation" value="true"/>
+            <message key="annotation.location.alone"
+                     value="[newline-after-annotation] Annotation ''{0}'' should be alone on line."/>
+        </module>
+
+        <!-- [1-state-per-line] -->
+        <module name="OneStatementPerLine">
+            <message key="needBraces"
+                     value="[1-state-per-line] Only one statement per line allowed."/>
+        </module>
+
+        <!-- [1-var-per-declaration] -->
+        <module name="MultipleVariableDeclarations">
+            <message key="multiple.variable.declarations"
+                     value="[1-var-per-declaration] Only one variable definition per line allowed."/>
+            <message key="multiple.variable.declarations.comma"
+                     value="[1-var-per-declaration] Each variable declaration must be in its own statement."/>
+        </module>
+
+        <!-- [array-square-after-type] -->
+        <module name="ArrayTypeStyle">
+            <message key="array.type.style"
+                     value="[array-square-after-type] Array brackets at illegal position."/>
+        </module>
+
+        <!-- [long-value-suffix] -->
+        <module name="UpperEll">
+            <message key="upperEll" value="[long-value-suffix] Should use uppercase ''L''."/>
+        </module>
+
+        <!-- [special-escape] -->
+        <module name="IllegalTokenText">
+            <property name="tokens" value="STRING_LITERAL, CHAR_LITERAL"/>
+            <property name="format" value="\\u00(08|09|0(a|A)|0(c|C)|0(d|D)|22|27|5(C|c))|\\(0(10|11|12|14|15|42|47)|134)"/>
+            <property name="message" value="[array-square-after-type]  Avoid using corresponding octal or Unicode escape."/>
+        </module>
+
+        <!-- End of Declarations chapter -->
+
+        <!-- Start of Indentation chapter -->
+
+        <!-- [4-spaces-tab] -->
+        <property name="tabWidth" value="4"/>
+
+        <!-- [indentation-tab] -->
+        <module name="RegexpSinglelineJava">
+            <property name="format" value="^\t* "/>
+            <property name="message" value="[indentation-tab] Indent must use tab characters"/>
+            <property name="ignoreComments" value="true"/>
+        </module>
+
+        <!-- End of Indentation chapter -->
+
+        <!-- Start of Braces chapter -->
+
+        <!-- [braces-knr-style]-->
+        <module name="LeftCurly">
+            <message key="line.break.after"
+                     value="[braces-knr-style] ''{0}'' at column {1} should have line break after."/>
+            <message key="line.new"
+                     value="[braces-knr-style] ''{0}'' at column {1} should be on a new line."/>
+            <message key="line.previous"
+                     value="[braces-knr-style] ''{0}'' at column {1} should be on the previous line."/>
+        </module>
+        <module name="RightCurly">
+            <property name="option" value="alone"/>
+            <property name="tokens" value="CLASS_DEF, METHOD_DEF, CTOR_DEF, LITERAL_FOR, LITERAL_WHILE, STATIC_INIT, INSTANCE_INIT"/>
+            <message key="line.alone"
+                     value="[braces-knr-style] ''{0}'' at column {1} should be alone on a line."/>
+            <message key="line.break.before"
+                     value="[braces-knr-style] =''{0}'' at column {1} should have line break before."/>
+            <message key="line.new"
+                     value="[braces-knr-style] ''{0}'' at column {1} should be on a new line."/>
+        </module>
+
+        <!-- [sub-flow-after-brace] -->
+        <module name="RightCurly">
+            <property name="option" value="same"/>
+            <property name="tokens" value="LITERAL_TRY, LITERAL_CATCH, LITERAL_FINALLY, LITERAL_IF, LITERAL_ELSE, LITERAL_DO"/>
+            <message key="line.same"
+                     value="[sub-flow-after-brace] ''{0}'' at column {1} should be on the same line as the next part of a multi-block statement (one that directly contains multiple blocks: if/else-if/else or try/catch/finally)."/>
+            <message key="line.break.before"
+                     value="[sub-flow-after-brace] ''{0}'' at column {1} should have line break before."/>
+        </module>
+
+        <!-- [need-braces] -->
+        <module name="NeedBraces">
+            <message key="needBraces"
+                     value="[need-braces] ''{0}'' statement must use '''{}'''s."/>
+        </module>
+
+        <!-- End of Braces chapter -->
+
+        <!-- Start of Line-wrapping chapter -->
+
+        <!-- [1-line-package-import]-->
+        <module name="NoLineWrap">
+            <property name="tokens" value="PACKAGE_DEF, IMPORT"/>
+            <message key="no.line.wrap"
+                     value="[1-line-package-import] {0} statement should not be line-wrapped."/>
+        </module>
+
+        <!-- [block-indentation][indentation-after-line-wrapping] -->
+        <!-- checkstyle 6.16 이상을 써야지 탭을 쓸때의 인덴트 체크가 제대로 동작함 -->
+        <module name="Indentation">
+            <property name="basicOffset" value="4"/>
+            <property name="braceAdjustment" value="0"/>
+            <property name="caseIndent" value="4"/>
+            <property name="throwsIndent" value="4"/>
+            <property name="lineWrappingIndentation" value="4"/>
+            <property name="arrayInitIndent" value="4"/>
+        </module>
+
+        <!-- [line-wrapping-position] -->
+        <module name="SeparatorWrap">
+            <property name="tokens" value="COMMA"/>
+            <property name="option" value="EOL"/>
+            <message key="line.previous"
+                     value="[line-wrapping-position] ''{0}'' should be on the previous line."/>
+        </module>
+        <module name="SeparatorWrap">
+            <property name="tokens" value="DOT"/>
+            <property name="option" value="NL"/>
+            <message key="line.new"
+                     value="[line-wrapping-position] ''{0}'' should be on a new line."/>
+        </module>
+        <module name="OperatorWrap">
+            <property name="option" value="NL"/>
+            <property name="tokens" value="BAND, BOR, BSR, BXOR, DIV, EQUAL, GE, GT, LAND, LE, LITERAL_INSTANCEOF, LOR, LT, MINUS, MOD, NOT_EQUAL, PLUS, QUESTION, SL, SR, STAR "/>
+            <message key="line.new"
+                     value="[line-wrapping-position] ''{0}'' should be on a new line."/>
+        </module>
+
+        <!-- End of Line-wrapping chapter -->
+
+        <!-- Start of Blank lines chapter -->
+
+        <!-- [blankline-after-package] -->
+        <!--
+        This module always requires an empty line between header and package.
+        But it is not forced in the Naver guide.
+        See https://github.com/checkstyle/checkstyle/issues/1035
+        <module name="EmptyLineSeparator">
+            <property name="tokens" value="PACKAGE_DEF"/>
+            <message key="empty.line.separator"
+                value="[blankline-after-package] ''{0}'' should be separated from previous statement."/>
+        </module>
+        -->
+
+        <!-- [import-grouping] -->
+        <module name="ImportOrder">
+            <property name="groups" value="java., javax., org., net., /com\.(?!nhncorp|navercorp|naver)/, /(?!java\.|javax\.|com\.|org\.|net\.)/, com.nhncorp., com.navercorp., com.naver."/>
+            <property name="ordered" value="true"/>
+            <property name="separated" value="true"/>
+            <property name="option" value="top"/>
+            <property name="sortStaticImportsAlphabetically" value="true"/>
+            <message key="import.groups.separated.internally"
+                     value="[import-grouping] Extra separation in import group before ''{0}''"/>
+            <message key="import.ordering"
+                     value="[import-grouping] Wrong order for ''{0}'' import."/>
+            <message key="import.separation"
+                     value="[import-grouping] ''{0}'' should be separated from previous imports."/>
+        </module>
+
+        <!-- [blankline-between-methods] -->
+        <module name="EmptyLineSeparator">
+            <property name="tokens" value="METHOD_DEF"/>
+            <message key="empty.line.separator"
+                     value="[blankline-between-methods] ''{0}'' should be separated from previous statement."/>
+        </module>
+
+        <!-- End of Blank lines chapter -->
+
+        <!-- Start of Whitespace chapter -->
+
+        <!-- [space-around-brace] -->
+        <module name="WhitespaceAround">
+            <property name="allowEmptyConstructors" value="true"/> <!-- [permit-concise-empty-block] -->
+            <property name="allowEmptyMethods" value="true"/>  <!-- [permit-concise-empty-block] -->
+            <property name="allowEmptyLoops" value="true"/>  <!-- [permit-concise-empty-block] -->
+            <property name="tokens" value="LCURLY, RCURLY, SLIST"/>
+            <message key="ws.notFollowed"
+                     value="[space-around-brace] ''{0}'' is not followed by whitespace."/>
+            <message key="ws.notPreceded"
+                     value="[space-around-brace] ''{0}'' is not preceded with whitespace."/>
+        </module>
+
+        <!-- [space-between-keyword-parentheses] -->
+        <module name="WhitespaceAround">
+            <property name="tokens" value="
+				DO_WHILE, LITERAL_ASSERT, LITERAL_CATCH, LITERAL_DO, LITERAL_ELSE, LITERAL_FINALLY, LITERAL_FOR, LITERAL_IF, LITERAL_RETURN,
+			 	LITERAL_SWITCH, LITERAL_SYNCHRONIZED, LITERAL_TRY, LITERAL_WHILE,"
+            />
+            <message key="ws.notFollowed"
+                     value="[space-between-keyword-parentheses] ''{0}'' is not followed by whitespace."/>
+            <message key="ws.notPreceded"
+                     value="[space-between-keyword-parentheses] ''{0}'' is not preceded with whitespace."/>
+        </module>
+
+        <!-- [no-space-between-identifier-parentheses] -->
+        <module name="MethodParamPad">
+            <message key="line.previous"
+                     value="[no-space-between-identifier-parentheses] ''{0}'' should be on the previous line."/>
+            <message key="ws.preceded"
+                     value="[no-space-between-identifier-parentheses] ''{0}'' is preceded with whitespace."/>
+        </module>
+
+        <!-- [no-space-typecasting] -->
+        <module name="TypecastParenPad">
+            <property name="tokens" value="RPAREN,TYPECAST"/>
+            <message key="ws.followed"
+                     value="[no-space-typecasting] ''{0}'' is followed by whitespace."/>
+            <message key="ws.preceded"
+                     value="[no-space-typecasting] ''{0}'' is preceded with whitespace."/>
+        </module>
+
+        <!-- [generic-whitespace] -->
+        <module name="GenericWhitespace">
+            <message key="ws.followed"
+                     value="[generic-whitespace] ''{0}'' is followed by whitespace."/>
+            <message key="ws.preceded"
+                     value="[generic-whitespace] ''{0}'' is preceded with whitespace."/>
+            <message key="ws.illegalFollow"
+                     value="[generic-whitespace] ''{0}'' should followed by whitespace."/>
+            <message key="ws.notPreceded"
+                     value="[generic-whitespace] ''{0}'' is not preceded with whitespace."/>
+        </module>
+
+        <!-- [space-after-comma-semicolon] -->
+        <module name="WhitespaceAfter">
+            <property name="tokens" value="COMMA,SEMI"/>
+            <message key="ws.notFollowed"
+                     value="[space-after-comma-semicolon]: ''{0}'' is not followed by whitespace."/>
+        </module>
+        <module name="NoWhitespaceBefore">
+            <property name="tokens" value="COMMA,SEMI"/>
+            <message key="ws.preceded"
+                     value="[space-after-comma-semicolon] ''{0}'' is preceded with whitespace."/>
+        </module>
+
+        <!-- [space-around-colon] -->
+        <module name="WhitespaceAround">
+            <property name="tokens" value="COLON"/>
+            <property name="ignoreEnhancedForColon" value="false"/>
+            <message key="ws.notFollowed"
+                     value="[space-around-colon] ''{0}'' is not followed by whitespace."/>
+            <message key="ws.notPreceded"
+                     value="[space-around-colon] ''{0}'' is not preceded with whitespace."/>
+        </module>
+
+        <!-- [no-space-unary-operator] -->
+        <module name="NoWhitespaceBefore">
+            <property name="tokens" value="POST_INC, POST_DEC"/>
+            <message key="ws.preceded"
+                     value="[no-space-unary-operator] ''{0}'' is preceded with whitespace."/>
+        </module>
+        <module name="NoWhitespaceAfter">
+            <property name="tokens" value="INC, DEC, UNARY_MINUS, UNARY_PLUS, BNOT, LNOT"/>
+            <message key="ws.followed"
+                     value="[no-space-unary-operator] whitespace ''{0}'' is followed by whitespace."/>
+        </module>
+
+        <!-- [space-around-binary-ternary-operator] -->
+        <module name="WhitespaceAround">
+            <property name="tokens" value="ASSIGN, BAND, BAND_ASSIGN, BOR, BOR_ASSIGN, BSR, BSR_ASSIGN, BXOR, BXOR_ASSIGN, DIV,
+				 DIV_ASSIGN, EQUAL, GE, GT, LAND, LE, LOR, LT, MINUS, MINUS_ASSIGN, MOD, MOD_ASSIGN, NOT_EQUAL,
+				 PLUS, PLUS_ASSIGN, QUESTION, SL, SL_ASSIGN, SR, SR_ASSIGN, STAR, STAR_ASSIGN, TYPE_EXTENSION_AND"/>
+            <message key="ws.notFollowed"
+                     value="[space-around-binary-ternary-operator] ''{0}'' is not followed by whitespace."/>
+            <message key="ws.notPreceded"
+                     value="[space-around-binary-ternary-operator] ''{0}'' is not preceded with whitespace."/>
+        </module>
+
+        <!-- End of Whitespace chapter -->
+
+        <!--- Suppression -->
+        <module name="SuppressionCommentFilter">
+            <property name="offCommentFormat" value="@checkstyle:off"/>
+            <property name="onCommentFormat" value="@checkstyle:on"/>
+        </module>
+        <module name="SuppressWithNearbyCommentFilter">
+            <property name="commentFormat" value="@checkstyle:ignore"/>
+            <property name="checkFormat" value=".*"/>
+            <property name="influenceFormat" value="0"/>
+        </module>
+    </module>
+
+    <!--- Suppression -->
+    <module name="SuppressionFilter">
+        <property name="file" value="${suppressionFile}"/>
+        <property name="optional" value="true"/>
+    </module>
+
+</module>
