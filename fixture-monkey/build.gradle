@@ -1,0 +1,8 @@
+plugins {
+    id "java-library"
+}
+
+dependencies {
+    api("net.jqwik:jqwik:${JQWIK_VERSION}")
+    compileOnly("net.jqwik:jqwik-engine:${JQWIK_VERSION}")
+}
