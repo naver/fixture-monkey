@@ -5,10 +5,11 @@ plugins {
     id "com.github.spotbugs" version "4.6.0"
     id "jacoco"
     id "checkstyle"
+    id "java-library"
 }
 
 dependencies {
-    implementation("net.jqwik:jqwik:${JQWIK_VERSION}")
+    api("net.jqwik:jqwik:${JQWIK_VERSION}")
     compileOnly("net.jqwik:jqwik-engine:${JQWIK_VERSION}")
 
     testImplementation("org.assertj:assertj-core:3.18.1")

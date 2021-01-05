@@ -36,7 +36,7 @@ subprojects {
     }
 
     dependencies {
-        implementation("com.google.code.findbugs:jsr305:3.0.2")
-        implementation("org.slf4j:slf4j-api:1.7.30")
+        compile("com.google.code.findbugs:jsr305:3.0.2")
+        compile("org.slf4j:slf4j-api:1.7.30")
     }
 }
