@@ -18,6 +18,8 @@ import net.jqwik.api.constraints.IntRange;
 import lombok.Builder;
 import lombok.Value;
 
+import com.navercorp.fixturemonkey.arbitrary.ArbitraryUtils;
+
 class FixtureMonkeyTest {
 	private final FixtureMonkey monkey = new FixtureMonkey();
 
@@ -45,6 +47,7 @@ class FixtureMonkeyTest {
 
 		// then
 		actual.limit(size).forEach(it -> {
+			then(it.id).isNotNull();
 			then(it.color).isIn("GREEN", "YELLOW", "BROWN", "BLACK");
 			then(it.length).isBetween(3, 50);
 			then(it.rotten).isNotNull();
@@ -61,6 +64,7 @@ class FixtureMonkeyTest {
 
 		// then
 		actual.forEach(it -> {
+			then(it.id).isNotNull();
 			then(it.color).isIn("GREEN", "YELLOW", "BROWN", "BLACK");
 			then(it.length).isBetween(3, 50);
 			then(it.rotten).isNotNull();
@@ -98,12 +102,14 @@ class FixtureMonkeyTest {
 	@Value
 	@Builder
 	public static class Banana {
+		UUID id;
 		String color;
 		int length;
 		Boolean rotten;
 	}
 
 	public static class BananaArbitrary {
+		private final Arbitrary<UUID> id = ArbitraryUtils.uuid();
 		private final Arbitrary<String> color = Arbitraries.of(
 			"GREEN", "YELLOW", "BROWN", "BLACK"
 		);
@@ -112,6 +118,7 @@ class FixtureMonkeyTest {
 
 		public Arbitrary<Banana> arbitrary() {
 			return Combinators.withBuilder(Banana::builder)
+				.use(this.id).in(Banana.BananaBuilder::id)
 				.use(this.color).in(Banana.BananaBuilder::color)
 				.use(this.length).in(Banana.BananaBuilder::length)
 				.use(this.rotten).in(Banana.BananaBuilder::rotten)
