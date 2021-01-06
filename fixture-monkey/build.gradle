@@ -21,6 +21,12 @@ editorconfig {
     excludes = ["build"]
 }
 
+test {
+    useJUnitPlatform {
+        includeEngines "jqwik"
+    }
+}
+
 check.dependsOn editorconfigCheck
 
 checkstyle {
@@ -65,7 +71,7 @@ jacoco {
 
 jacocoTestReport {
     afterEvaluate {
-        classDirectories.setFrom(file("${buildDir}/classes/main"))
+        classDirectories.setFrom(file("${buildDir}/classes/java/main"))
     }
 
     reports {
