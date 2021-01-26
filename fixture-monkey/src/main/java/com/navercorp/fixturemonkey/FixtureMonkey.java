@@ -18,23 +18,61 @@
 
 package com.navercorp.fixturemonkey;
 
-import static java.util.stream.Collectors.*;
+import static java.util.stream.Collectors.toList;
 
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Stream;
 
 import net.jqwik.api.Arbitrary;
+import net.jqwik.api.Shrinkable;
 import net.jqwik.api.TooManyFilterMissesException;
+import net.jqwik.engine.JqwikProperties;
+import net.jqwik.engine.SourceOfRandomness;
+
+import com.navercorp.fixturemonkey.arbitrary.ArbitraryBuilder;
+import com.navercorp.fixturemonkey.arbitrary.ArbitraryGenerator;
+import com.navercorp.fixturemonkey.arbitrary.ArbitraryGeneratorContext;
+import com.navercorp.fixturemonkey.arbitrary.ComplexArbitraryGeneratorContext;
+import com.navercorp.fixturemonkey.arbitrary.CompositeArbitraryGeneratorContext;
+import com.navercorp.fixturemonkey.arbitrary.PrimitiveArbitraryGeneratorContext;
+import com.navercorp.fixturemonkey.arbitrary.PrimitiveWrappedArbitraryGeneratorContext;
 
 public class FixtureMonkey {
+	private static final Random seedGenerator = new Random();
+	private final ArbitraryGeneratorContext generatorContext = createArbitraryGeneratorContext();
+
+	public FixtureMonkey() {
+		this(seedGenerator.nextLong());
+	}
+
+	public FixtureMonkey(long seed) {
+		setUpCurrentRandom(seed);
+	}
+
+	private static ArbitraryGeneratorContext createArbitraryGeneratorContext() {
+		PrimitiveWrappedArbitraryGeneratorContext primitiveWrappedArbitraryGeneratorContext =
+			new PrimitiveWrappedArbitraryGeneratorContext();
+
+		return new CompositeArbitraryGeneratorContext(
+			primitiveWrappedArbitraryGeneratorContext,
+			new PrimitiveArbitraryGeneratorContext(
+				primitiveWrappedArbitraryGeneratorContext
+			),
+			new ComplexArbitraryGeneratorContext()
+		);
+	}
+
+	private void setUpCurrentRandom(long seed) {
+		SourceOfRandomness.create(String.valueOf(seed));
+	}
+
 	public <T> Stream<T> giveMe(Class<T> type) {
 		return this.giveMe(type, true);
 	}
 
-	// TODO: implementation
 	public <T> Stream<T> giveMe(Class<T> type, boolean validOnly) {
-		// TODO: type to Arbitrary with generator
-		return Stream.empty();
+		return this.giveMe(new ArbitraryBuilder<>(type), validOnly);
 	}
 
 	public <T> Stream<T> giveMe(Arbitrary<T> arbitrary) {
@@ -42,7 +80,17 @@ public class FixtureMonkey {
 	}
 
 	public <T> Stream<T> giveMe(Arbitrary<T> arbitrary, boolean validOnly) {
-		return this.fixtures(arbitrary, validOnly);
+		return this.doGiveMe(arbitrary, validOnly);
+	}
+
+	public <T> Stream<T> giveMe(ArbitraryBuilder<T> builder) {
+		return this.giveMe(builder, true);
+	}
+
+	public <T> Stream<T> giveMe(ArbitraryBuilder<T> builder, boolean validOnly) {
+		ArbitraryGenerator<T> generator = generatorContext.get(builder.getTargetClass());
+		Arbitrary<T> arbitrary = generator.generate(this.generatorContext, builder);
+		return this.giveMe(arbitrary, validOnly);
 	}
 
 	public <T> List<T> giveMe(Class<T> type, int size) {
@@ -81,9 +129,13 @@ public class FixtureMonkey {
 		return this.giveMe(arbitrary, 1, validOnly).get(0);
 	}
 
-	private <T> Stream<T> fixtures(Arbitrary<T> arbitrary, boolean validOnly) {
+	private <T> Stream<T> doGiveMe(Arbitrary<T> arbitrary, boolean validOnly) {
 		try {
-			return arbitrary.sampleStream();	// TODO: filter with validator
+			// TODO: filter with validator
+			return arbitrary
+				.generator(JqwikProperties.DEFAULT_TRIES)
+				.stream(SourceOfRandomness.current())
+				.map(Shrinkable::value);
 		} catch (TooManyFilterMissesException ex) {
 			// TODO: log error message with constraint violation messages.
 			throw ex;

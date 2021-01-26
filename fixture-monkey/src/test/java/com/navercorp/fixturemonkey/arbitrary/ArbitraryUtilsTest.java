@@ -17,8 +17,9 @@ package com.navercorp.fixturemonkey.arbitrary;
  * limitations under the License.
  */
 
-import static java.util.stream.Collectors.*;
-import static org.assertj.core.api.BDDAssertions.*;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
+import static org.assertj.core.api.BDDAssertions.then;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;

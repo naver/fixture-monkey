@@ -18,27 +18,26 @@
 
 package com.navercorp.fixturemonkey.arbitrary;
 
-import static java.util.stream.Collectors.toList;
-
-import java.time.Instant;
+import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
 
-import net.jqwik.api.Arbitraries;
-import net.jqwik.api.Arbitrary;
+public class CompositeArbitraryGeneratorContext implements ArbitraryGeneratorContext {
+	private final List<ArbitraryGeneratorContext> contexts;
 
-public class ArbitraryUtils {
-	public static Arbitrary<UUID> uuid() {
-		return Arbitraries.create(UUID::randomUUID);
+	public CompositeArbitraryGeneratorContext(ArbitraryGeneratorContext... contexts) {
+		this(Arrays.asList(contexts));
 	}
 
-	public static Arbitrary<Instant> currentTime() {
-		return Arbitraries.create(Instant::now);
+	public CompositeArbitraryGeneratorContext(List<ArbitraryGeneratorContext> contexts) {
+		this.contexts = contexts;
 	}
 
-	public static <T> List<T> list(Arbitrary<T> arbitrary, int size) {
-		return arbitrary.sampleStream()
-			.limit(size)
-			.collect(toList());
+	@Override
+	public <T> ArbitraryGenerator<T> get(Class<T> clazz) {
+		return this.contexts.stream()
+			.map(it -> it.get(clazz))
+			.filter(it -> !it.equals(EmptyArbitraryGenerator.getInstance()))
+			.findFirst()
+			.orElse(EmptyArbitraryGenerator.getInstance());
 	}
 }

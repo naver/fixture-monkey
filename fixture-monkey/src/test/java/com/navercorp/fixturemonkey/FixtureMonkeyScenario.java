@@ -16,29 +16,31 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.arbitrary;
+package com.navercorp.fixturemonkey;
 
-import static java.util.stream.Collectors.toList;
-
-import java.time.Instant;
 import java.util.List;
-import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import net.jqwik.api.Arbitraries;
-import net.jqwik.api.Arbitrary;
+import net.jqwik.api.Disabled;
+import net.jqwik.api.Example;
 
-public class ArbitraryUtils {
-	public static Arbitrary<UUID> uuid() {
-		return Arbitraries.create(UUID::randomUUID);
+import lombok.Value;
+
+class FixtureMonkeyScenario {
+	@Example
+	@Disabled("타입에 따른 ArbitraryGeneratorContext 구현 필요")
+	void specimen() {
+		FixtureMonkey sut = new FixtureMonkey();
+
+		Stream<Person> actual = sut.giveMe(Person.class);
+
+		List<Person> persons = actual.limit(3).collect(Collectors.toList());
 	}
 
-	public static Arbitrary<Instant> currentTime() {
-		return Arbitraries.create(Instant::now);
-	}
-
-	public static <T> List<T> list(Arbitrary<T> arbitrary, int size) {
-		return arbitrary.sampleStream()
-			.limit(size)
-			.collect(toList());
+	@Value
+	static class Person {
+		String name;
+		int age;
 	}
 }
