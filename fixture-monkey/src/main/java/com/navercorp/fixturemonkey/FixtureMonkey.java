@@ -2,21 +2,32 @@ package com.navercorp.fixturemonkey;
 
 import static java.util.stream.Collectors.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
+import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
 import net.jqwik.api.TooManyFilterMissesException;
 
 public class FixtureMonkey {
+	private final Map<Class<?>, Arbitrary<?>> specimenContext;
+
+	public FixtureMonkey() {
+		specimenContext = new HashMap<>();
+		specimenContext.put(byte.class, Arbitraries.bytes());
+		specimenContext.put(short.class, Arbitraries.shorts());
+		specimenContext.put(int.class, Arbitraries.integers());
+	}
+
 	public <T> Stream<T> giveMe(Class<T> type) {
 		return this.giveMe(type, true);
 	}
 
-	// TODO: implementation
+	@SuppressWarnings("unchecked")
 	public <T> Stream<T> giveMe(Class<T> type, boolean validOnly) {
-		// TODO: type to Arbitrary with generator
-		return Stream.empty();
+		return (Stream<T>)specimenContext.get(type).sampleStream();
 	}
 
 	public <T> Stream<T> giveMe(Arbitrary<T> arbitrary) {
@@ -65,7 +76,7 @@ public class FixtureMonkey {
 
 	private <T> Stream<T> fixtures(Arbitrary<T> arbitrary, boolean validOnly) {
 		try {
-			return arbitrary.sampleStream();	// TODO: filter with validator
+			return arbitrary.sampleStream();    // TODO: filter with validator
 		} catch (TooManyFilterMissesException ex) {
 			// TODO: log error message with constraint violation messages.
 			throw ex;
