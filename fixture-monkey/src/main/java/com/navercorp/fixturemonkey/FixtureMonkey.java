@@ -2,32 +2,29 @@ package com.navercorp.fixturemonkey;
 
 import static java.util.stream.Collectors.*;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Stream;
 
-import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
 import net.jqwik.api.TooManyFilterMissesException;
 
-public class FixtureMonkey {
-	private final Map<Class<?>, Arbitrary<?>> specimenContext;
+import com.navercorp.fixturemonkey.arbitrary.ArbitraryGenerator;
+import com.navercorp.fixturemonkey.arbitrary.ArbitraryGeneratorContext;
+import com.navercorp.fixturemonkey.arbitrary.CompositeArbitraryGeneratorContext;
+import com.navercorp.fixturemonkey.arbitrary.PrimitiveArbitraryGeneratorContext;
+import com.navercorp.fixturemonkey.specimen.SpecimenBuilder;
 
-	public FixtureMonkey() {
-		specimenContext = new HashMap<>();
-		specimenContext.put(byte.class, Arbitraries.bytes());
-		specimenContext.put(short.class, Arbitraries.shorts());
-		specimenContext.put(int.class, Arbitraries.integers());
-	}
+public class FixtureMonkey {
+	private final ArbitraryGeneratorContext generatorContext = new CompositeArbitraryGeneratorContext(
+		new PrimitiveArbitraryGeneratorContext()
+	);
 
 	public <T> Stream<T> giveMe(Class<T> type) {
 		return this.giveMe(type, true);
 	}
 
-	@SuppressWarnings("unchecked")
 	public <T> Stream<T> giveMe(Class<T> type, boolean validOnly) {
-		return (Stream<T>)specimenContext.get(type).sampleStream();
+		return this.giveMe(new SpecimenBuilder<>(type), validOnly);
 	}
 
 	public <T> Stream<T> giveMe(Arbitrary<T> arbitrary) {
@@ -35,7 +32,17 @@ public class FixtureMonkey {
 	}
 
 	public <T> Stream<T> giveMe(Arbitrary<T> arbitrary, boolean validOnly) {
-		return this.fixtures(arbitrary, validOnly);
+		return this.doGiveMe(arbitrary, validOnly);
+	}
+
+	public <T> Stream<T> giveMe(SpecimenBuilder<T> builder) {
+		return this.giveMe(builder, true);
+	}
+
+	public <T> Stream<T> giveMe(SpecimenBuilder<T> builder, boolean validOnly) {
+		ArbitraryGenerator<T> generator = generatorContext.get(builder.getSpecimenClass());
+		Arbitrary<T> arbitrary = generator.generate(this.generatorContext, builder);
+		return this.giveMe(arbitrary, validOnly);
 	}
 
 	public <T> List<T> giveMe(Class<T> type, int size) {
@@ -74,7 +81,7 @@ public class FixtureMonkey {
 		return this.giveMe(arbitrary, 1, validOnly).get(0);
 	}
 
-	private <T> Stream<T> fixtures(Arbitrary<T> arbitrary, boolean validOnly) {
+	private <T> Stream<T> doGiveMe(Arbitrary<T> arbitrary, boolean validOnly) {
 		try {
 			return arbitrary.sampleStream();    // TODO: filter with validator
 		} catch (TooManyFilterMissesException ex) {
