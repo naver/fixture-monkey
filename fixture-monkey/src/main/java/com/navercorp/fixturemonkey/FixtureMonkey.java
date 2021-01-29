@@ -12,12 +12,23 @@ import com.navercorp.fixturemonkey.arbitrary.ArbitraryGenerator;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.arbitrary.CompositeArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.arbitrary.PrimitiveArbitraryGeneratorContext;
+import com.navercorp.fixturemonkey.arbitrary.PrimitiveWrappedArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.specimen.SpecimenBuilder;
 
 public class FixtureMonkey {
-	private final ArbitraryGeneratorContext generatorContext = new CompositeArbitraryGeneratorContext(
-		new PrimitiveArbitraryGeneratorContext()
-	);
+	private final ArbitraryGeneratorContext generatorContext = createArbitraryGeneratorContext();
+
+	private ArbitraryGeneratorContext createArbitraryGeneratorContext() {
+		PrimitiveWrappedArbitraryGeneratorContext primitiveWrappedArbitraryGeneratorContext =
+			new PrimitiveWrappedArbitraryGeneratorContext();
+
+		return new CompositeArbitraryGeneratorContext(
+			primitiveWrappedArbitraryGeneratorContext,
+			new PrimitiveArbitraryGeneratorContext(
+				primitiveWrappedArbitraryGeneratorContext
+			)
+		);
+	}
 
 	public <T> Stream<T> giveMe(Class<T> type) {
 		return this.giveMe(type, true);
@@ -41,6 +52,8 @@ public class FixtureMonkey {
 
 	public <T> Stream<T> giveMe(SpecimenBuilder<T> builder, boolean validOnly) {
 		ArbitraryGenerator<T> generator = generatorContext.get(builder.getSpecimenClass());
+
+		// TODO: address NPE
 		Arbitrary<T> arbitrary = generator.generate(this.generatorContext, builder);
 		return this.giveMe(arbitrary, validOnly);
 	}

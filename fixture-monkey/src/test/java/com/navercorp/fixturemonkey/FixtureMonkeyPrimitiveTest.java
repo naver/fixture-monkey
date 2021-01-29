@@ -75,7 +75,7 @@ class FixtureMonkeyPrimitiveTest {
 	}
 
 	@Property
-	<T> void giveMeOneGeneratesSeveralDistinctValues(
+	<T> void giveMeOneGeneratesSeveralPrimitiveValues(
 		@ForAll("primitiveTypes") Class<T> type
 	) {
 		FixtureMonkey sut = new FixtureMonkey();
@@ -100,6 +100,35 @@ class FixtureMonkeyPrimitiveTest {
 			float.class,
 			double.class,
 			char.class
+		);
+	}
+
+	@Property
+	<T> void giveMeOneGeneratesSeveralPrimitiveWrappedValues(
+		@ForAll("primitiveWrappedTypes") Class<T> type
+	) {
+		FixtureMonkey sut = new FixtureMonkey();
+
+		Stream<T> actual = IntStream
+			.range(0, 100)
+			.boxed()
+			.map(x -> sut.giveMeOne(type))
+			.distinct();
+
+		then(actual.count()).isGreaterThan(10);
+	}
+
+	@Provide
+	@SuppressWarnings("unused")
+	Arbitrary<Class<?>> primitiveWrappedTypes() {
+		return Arbitraries.of(
+			Byte.class,
+			Short.class,
+			Integer.class,
+			Long.class,
+			Float.class,
+			Double.class,
+			Character.class
 		);
 	}
 }
