@@ -12,47 +12,78 @@ import net.jqwik.api.Property;
 import net.jqwik.api.Provide;
 
 class FixtureMonkeyPrimitiveTest {
-
 	@Property
 	void giveMeOneReturnsCorrectByteValue() {
 		FixtureMonkey sut = new FixtureMonkey();
-
 		byte actual = sut.giveMeOne(byte.class);
-
-		then(actual)
-			.isGreaterThanOrEqualTo(Byte.MIN_VALUE)
-			.isLessThanOrEqualTo(Byte.MAX_VALUE);
+		then(actual).isBetween(Byte.MIN_VALUE, Byte.MAX_VALUE);
 	}
 
 	@Property
 	void giveMeOneReturnsCorrectShortValue() {
 		FixtureMonkey sut = new FixtureMonkey();
-
 		short actual = sut.giveMeOne(short.class);
-
-		then(actual)
-			.isGreaterThanOrEqualTo(Short.MIN_VALUE)
-			.isLessThanOrEqualTo(Short.MAX_VALUE);
+		then(actual).isBetween(Short.MIN_VALUE, Short.MAX_VALUE);
 	}
 
 	@Property
 	void giveMeOneReturnsCorrectIntegerValue() {
 		FixtureMonkey sut = new FixtureMonkey();
-
 		int actual = sut.giveMeOne(int.class);
-
-		then(actual)
-			.isGreaterThanOrEqualTo(Integer.MIN_VALUE)
-			.isLessThanOrEqualTo(Integer.MAX_VALUE);
+		then(actual).isBetween(Integer.MIN_VALUE, Integer.MAX_VALUE);
 	}
 
 	@Property
-	<T> void giveMeOneReturnsSeveralDistinctValues(@ForAll("primitiveTypes") Class<T> type) {
+	void giveMeOneReturnsCorrectLongValue() {
+		FixtureMonkey sut = new FixtureMonkey();
+		long actual = sut.giveMeOne(long.class);
+		then(actual).isBetween(Long.MIN_VALUE, Long.MAX_VALUE);
+	}
+
+	@Property
+	void giveMeOneReturnsCorrectFloatValue() {
+		FixtureMonkey sut = new FixtureMonkey();
+		float actual = sut.giveMeOne(float.class);
+		then(actual).isBetween(-Float.MAX_VALUE, Float.MAX_VALUE);
+	}
+
+	@Property
+	void giveMeOneReturnsCorrectDoubleValue() {
+		FixtureMonkey sut = new FixtureMonkey();
+		double actual = sut.giveMeOne(double.class);
+		then(actual).isBetween(-Double.MAX_VALUE, Double.MAX_VALUE);
+	}
+
+	@Property
+	void giveMeOneReturnsCorrectCharValue() {
+		FixtureMonkey sut = new FixtureMonkey();
+		char actual = sut.giveMeOne(char.class);
+		then(actual).isBetween(Character.MIN_VALUE, Character.MAX_VALUE);
+	}
+
+	@Property
+	void giveMeOneGeneratesDistinctBooleanValues() {
+		FixtureMonkey sut = new FixtureMonkey();
+
+		Stream<Boolean> actual = IntStream
+			.range(0, 20)
+			.boxed()
+			.map(x -> sut.giveMeOne(boolean.class))
+			.distinct();
+
+		then(actual.count()).isEqualTo(2);
+	}
+
+	@Property
+	<T> void giveMeOneGeneratesSeveralDistinctValues(
+		@ForAll("primitiveTypes") Class<T> type
+	) {
 		FixtureMonkey sut = new FixtureMonkey();
 
 		Stream<T> actual = IntStream
 			.range(0, 100)
-			.mapToObj(x -> sut.giveMeOne(type))
+			.boxed()
+			.map(x -> sut.giveMeOne(type))
 			.distinct();
 
 		then(actual.count()).isGreaterThan(10);
@@ -64,7 +95,11 @@ class FixtureMonkeyPrimitiveTest {
 		return Arbitraries.of(
 			byte.class,
 			short.class,
-			int.class
+			int.class,
+			long.class,
+			float.class,
+			double.class,
+			char.class
 		);
 	}
 }

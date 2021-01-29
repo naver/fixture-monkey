@@ -15,6 +15,11 @@ public class PrimitiveArbitraryGeneratorContext implements ArbitraryGeneratorCon
 		map.put(byte.class, Arbitraries.bytes());
 		map.put(short.class, Arbitraries.shorts());
 		map.put(int.class, Arbitraries.integers());
+		map.put(long.class, Arbitraries.longs());
+		map.put(float.class, Arbitraries.floats());
+		map.put(double.class, Arbitraries.doubles());
+		map.put(char.class, Arbitraries.chars());
+		map.put(boolean.class, Arbitraries.of(true, false));
 	}
 
 	@SuppressWarnings("unchecked")
