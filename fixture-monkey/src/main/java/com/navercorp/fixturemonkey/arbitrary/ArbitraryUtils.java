@@ -1,6 +1,6 @@
 package com.navercorp.fixturemonkey.arbitrary;
 
-import static java.util.stream.Collectors.*;
+import static java.util.stream.Collectors.toList;
 
 import java.time.Instant;
 import java.util.List;

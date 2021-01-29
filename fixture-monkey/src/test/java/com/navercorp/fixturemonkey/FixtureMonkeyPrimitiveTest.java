@@ -1,6 +1,6 @@
 package com.navercorp.fixturemonkey;
 
-import static org.assertj.core.api.BDDAssertions.*;
+import static org.assertj.core.api.BDDAssertions.then;
 
 import java.util.stream.IntStream;
 import java.util.stream.Stream;

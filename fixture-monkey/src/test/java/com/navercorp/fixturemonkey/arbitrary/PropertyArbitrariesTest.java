@@ -1,6 +1,6 @@
 package com.navercorp.fixturemonkey.arbitrary;
 
-import static org.assertj.core.api.BDDAssertions.*;
+import static org.assertj.core.api.BDDAssertions.then;
 
 import java.util.HashMap;
 import java.util.Map;
