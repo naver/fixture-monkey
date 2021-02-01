@@ -20,7 +20,7 @@ public class PrimitiveArbitraryGeneratorContext implements ArbitraryGeneratorCon
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <T> Class<T> wrap(Class<T> clazz) {
+	private static <T> Class<T> wrap(Class<T> clazz) {
 		return (Class<T>) MethodType.methodType(clazz).wrap().returnType();
 	}
 }

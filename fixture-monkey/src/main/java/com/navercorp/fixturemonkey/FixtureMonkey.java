@@ -12,12 +12,12 @@ import net.jqwik.api.TooManyFilterMissesException;
 import net.jqwik.engine.JqwikProperties;
 import net.jqwik.engine.SourceOfRandomness;
 
+import com.navercorp.fixturemonkey.arbitrary.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryGenerator;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.arbitrary.CompositeArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.arbitrary.PrimitiveArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.arbitrary.PrimitiveWrappedArbitraryGeneratorContext;
-import com.navercorp.fixturemonkey.specimen.SpecimenBuilder;
 
 public class FixtureMonkey {
 	private static final Random seedGenerator = new Random();
@@ -52,7 +52,7 @@ public class FixtureMonkey {
 	}
 
 	public <T> Stream<T> giveMe(Class<T> type, boolean validOnly) {
-		return this.giveMe(new SpecimenBuilder<>(type), validOnly);
+		return this.giveMe(new ArbitraryBuilder<>(type), validOnly);
 	}
 
 	public <T> Stream<T> giveMe(Arbitrary<T> arbitrary) {
@@ -63,12 +63,12 @@ public class FixtureMonkey {
 		return this.doGiveMe(arbitrary, validOnly);
 	}
 
-	public <T> Stream<T> giveMe(SpecimenBuilder<T> builder) {
+	public <T> Stream<T> giveMe(ArbitraryBuilder<T> builder) {
 		return this.giveMe(builder, true);
 	}
 
-	public <T> Stream<T> giveMe(SpecimenBuilder<T> builder, boolean validOnly) {
-		ArbitraryGenerator<T> generator = generatorContext.get(builder.getSpecimenClass());
+	public <T> Stream<T> giveMe(ArbitraryBuilder<T> builder, boolean validOnly) {
+		ArbitraryGenerator<T> generator = generatorContext.get(builder.getTargetClass());
 
 		// TODO: address NPE
 		Arbitrary<T> arbitrary = generator.generate(this.generatorContext, builder);
