@@ -3,10 +3,14 @@ package com.navercorp.fixturemonkey;
 import static java.util.stream.Collectors.toList;
 
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Stream;
 
 import net.jqwik.api.Arbitrary;
+import net.jqwik.api.Shrinkable;
 import net.jqwik.api.TooManyFilterMissesException;
+import net.jqwik.engine.JqwikProperties;
+import net.jqwik.engine.SourceOfRandomness;
 
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryGenerator;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryGeneratorContext;
@@ -16,9 +20,18 @@ import com.navercorp.fixturemonkey.arbitrary.PrimitiveWrappedArbitraryGeneratorC
 import com.navercorp.fixturemonkey.specimen.SpecimenBuilder;
 
 public class FixtureMonkey {
+	private static final Random seedGenerator = new Random();
 	private final ArbitraryGeneratorContext generatorContext = createArbitraryGeneratorContext();
 
-	private ArbitraryGeneratorContext createArbitraryGeneratorContext() {
+	public FixtureMonkey() {
+		this(seedGenerator.nextLong());
+	}
+
+	public FixtureMonkey(long seed) {
+		setUpCurrentRandom(seed);
+	}
+
+	private static ArbitraryGeneratorContext createArbitraryGeneratorContext() {
 		PrimitiveWrappedArbitraryGeneratorContext primitiveWrappedArbitraryGeneratorContext =
 			new PrimitiveWrappedArbitraryGeneratorContext();
 
@@ -28,6 +41,10 @@ public class FixtureMonkey {
 				primitiveWrappedArbitraryGeneratorContext
 			)
 		);
+	}
+
+	private void setUpCurrentRandom(long seed) {
+		SourceOfRandomness.create(String.valueOf(seed));
 	}
 
 	public <T> Stream<T> giveMe(Class<T> type) {
@@ -96,7 +113,11 @@ public class FixtureMonkey {
 
 	private <T> Stream<T> doGiveMe(Arbitrary<T> arbitrary, boolean validOnly) {
 		try {
-			return arbitrary.sampleStream();    // TODO: filter with validator
+			// TODO: filter with validator
+			return arbitrary
+				.generator(JqwikProperties.DEFAULT_TRIES)
+				.stream(SourceOfRandomness.current())
+				.map(Shrinkable::value);
 		} catch (TooManyFilterMissesException ex) {
 			// TODO: log error message with constraint violation messages.
 			throw ex;
