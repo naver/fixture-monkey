@@ -11,7 +11,7 @@ import net.jqwik.api.ForAll;
 import net.jqwik.api.Property;
 import net.jqwik.api.Provide;
 
-class FixtureMonkeyPrimitiveTest {
+class FixtureMonkeyPrimitiveTypeTest {
 	@Property
 	void giveMeOneReturnsCorrectByteValue() {
 		FixtureMonkey sut = new FixtureMonkey();

@@ -15,6 +15,7 @@ import net.jqwik.engine.SourceOfRandomness;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryGenerator;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryGeneratorContext;
+import com.navercorp.fixturemonkey.arbitrary.ComplexArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.arbitrary.CompositeArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.arbitrary.PrimitiveArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.arbitrary.PrimitiveWrappedArbitraryGeneratorContext;
@@ -39,7 +40,8 @@ public class FixtureMonkey {
 			primitiveWrappedArbitraryGeneratorContext,
 			new PrimitiveArbitraryGeneratorContext(
 				primitiveWrappedArbitraryGeneratorContext
-			)
+			),
+			new ComplexArbitraryGeneratorContext()
 		);
 	}
 
