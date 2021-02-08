@@ -3,8 +3,6 @@ package com.navercorp.fixturemonkey.arbitrary;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.annotation.Nullable;
-
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
 
@@ -23,13 +21,12 @@ public class PrimitiveWrappedArbitraryGeneratorContext implements ArbitraryGener
 	}
 
 	@SuppressWarnings("unchecked")
-	@Nullable
 	@Override
 	public <T> ArbitraryGenerator<T> get(Class<T> clazz) {
 		Arbitrary<T> result = (Arbitrary<T>)map.get(clazz);
 
 		return result == null
-			? null
+			? EmptyArbitraryGenerator.getInstance()
 			: ((context, builder) -> result);
 	}
 }

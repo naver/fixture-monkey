@@ -13,7 +13,6 @@ public class PrimitiveArbitraryGeneratorContext implements ArbitraryGeneratorCon
 		this.innerWrappedGeneratorContext = innerWrappedGeneratorContext;
 	}
 
-	@Nullable
 	@Override
 	public <T> ArbitraryGenerator<T> get(Class<T> clazz) {
 		return this.innerWrappedGeneratorContext.get(wrap(clazz));

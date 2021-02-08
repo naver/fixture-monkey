@@ -2,9 +2,6 @@ package com.navercorp.fixturemonkey.arbitrary;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
-
-import javax.annotation.Nullable;
 
 public class CompositeArbitraryGeneratorContext implements ArbitraryGeneratorContext {
 	private final List<ArbitraryGeneratorContext> contexts;
@@ -17,13 +14,12 @@ public class CompositeArbitraryGeneratorContext implements ArbitraryGeneratorCon
 		this.contexts = contexts;
 	}
 
-	@Nullable
 	@Override
 	public <T> ArbitraryGenerator<T> get(Class<T> clazz) {
 		return this.contexts.stream()
 			.map(it -> it.get(clazz))
-			.filter(Objects::nonNull)
+			.filter(it -> !it.equals(EmptyArbitraryGenerator.getInstance()))
 			.findFirst()
-			.orElse(null);
+			.orElse(EmptyArbitraryGenerator.getInstance());
 	}
 }

@@ -71,8 +71,6 @@ public class FixtureMonkey {
 
 	public <T> Stream<T> giveMe(ArbitraryBuilder<T> builder, boolean validOnly) {
 		ArbitraryGenerator<T> generator = generatorContext.get(builder.getTargetClass());
-
-		// TODO: address NPE
 		Arbitrary<T> arbitrary = generator.generate(this.generatorContext, builder);
 		return this.giveMe(arbitrary, validOnly);
 	}
