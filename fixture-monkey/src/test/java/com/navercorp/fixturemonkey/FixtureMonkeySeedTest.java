@@ -1,9 +1,11 @@
 package com.navercorp.fixturemonkey;
 
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 import static org.assertj.core.api.BDDAssertions.then;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.IntStream;
 
 import net.jqwik.api.Arbitraries;
@@ -32,10 +34,9 @@ public class FixtureMonkeySeedTest {
 	void giveMeOneGeneratesSeveralDistinctValues(@ForAll("seedValues") long seed) {
 		FixtureMonkey sut = new FixtureMonkey(seed);
 
-		List<Long> actual = IntStream.range(0, 100).boxed()
+		Set<Long> actual = IntStream.range(0, 100).boxed()
 			.map(it -> sut.giveMeOne(Long.class))
-			.distinct()
-			.collect(toList());
+			.collect(toSet());
 
 		then(actual.size()).isGreaterThan(10);
 	}

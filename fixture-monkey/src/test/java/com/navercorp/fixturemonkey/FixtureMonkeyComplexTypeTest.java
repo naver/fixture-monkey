@@ -1,9 +1,10 @@
 package com.navercorp.fixturemonkey;
 
-import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 import static org.assertj.core.api.BDDAssertions.then;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.IntStream;
 
 import net.jqwik.api.Property;
@@ -24,11 +25,10 @@ public class FixtureMonkeyComplexTypeTest {
 	public void giveMeOneGeneratesSeveralDistinctNoArgsConstructorValues() {
 		FixtureMonkey sut = new FixtureMonkey();
 
-		List<NoArgsConstructor> actual = IntStream.range(0, 10)
+		Set<NoArgsConstructor> actual = IntStream.range(0, 10)
 			.boxed()
 			.map(it -> sut.giveMeOne(NoArgsConstructor.class))
-			.distinct()
-			.collect(toList());
+			.collect(toSet());
 
 		then(actual.size()).isEqualTo(10);
 	}
@@ -65,11 +65,10 @@ public class FixtureMonkeyComplexTypeTest {
 	public void giveMeOneGeneratesSeveralDistinctParameterizedConstructorValues() {
 		FixtureMonkey sut = new FixtureMonkey();
 
-		List<ThreeArgsConstructor> actual = IntStream.range(0, 20)
+		Set<ThreeArgsConstructor> actual = IntStream.range(0, 20)
 			.boxed()
 			.map(it -> sut.giveMeOne(ThreeArgsConstructor.class))
-			.distinct()
-			.collect(toList());
+			.collect(toSet());
 
 		then(actual.size()).isGreaterThan(10);
 	}

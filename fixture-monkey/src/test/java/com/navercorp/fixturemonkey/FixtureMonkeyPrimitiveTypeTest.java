@@ -1,7 +1,10 @@
 package com.navercorp.fixturemonkey;
 
+import static java.util.stream.Collectors.toSet;
 import static org.assertj.core.api.BDDAssertions.then;
 
+import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -65,13 +68,13 @@ class FixtureMonkeyPrimitiveTypeTest {
 	void giveMeOneGeneratesDistinctBooleanValues() {
 		FixtureMonkey sut = new FixtureMonkey();
 
-		Stream<Boolean> actual = IntStream
+		Set<Boolean> actual = IntStream
 			.range(0, 20)
 			.boxed()
 			.map(x -> sut.giveMeOne(boolean.class))
-			.distinct();
+			.collect(toSet());
 
-		then(actual.count()).isEqualTo(2);
+		then(actual.size()).isEqualTo(2);
 	}
 
 	@Property
@@ -80,13 +83,13 @@ class FixtureMonkeyPrimitiveTypeTest {
 	) {
 		FixtureMonkey sut = new FixtureMonkey();
 
-		Stream<T> actual = IntStream
+		Set<T> actual = IntStream
 			.range(0, 100)
 			.boxed()
 			.map(x -> sut.giveMeOne(type))
-			.distinct();
+			.collect(toSet());
 
-		then(actual.count()).isGreaterThan(10);
+		then(actual.size()).isGreaterThan(10);
 	}
 
 	@Provide
@@ -109,13 +112,13 @@ class FixtureMonkeyPrimitiveTypeTest {
 	) {
 		FixtureMonkey sut = new FixtureMonkey();
 
-		Stream<T> actual = IntStream
+		Set<T> actual = IntStream
 			.range(0, 100)
 			.boxed()
 			.map(x -> sut.giveMeOne(type))
-			.distinct();
+			.collect(toSet());
 
-		then(actual.count()).isGreaterThan(10);
+		then(actual.size()).isGreaterThan(10);
 	}
 
 	@Provide
