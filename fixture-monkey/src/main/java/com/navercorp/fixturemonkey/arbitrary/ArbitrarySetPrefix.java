@@ -21,7 +21,8 @@ public final class ArbitrarySetPrefix extends AbstractArbitrarySet<String> {
 	@Override
 	public Arbitrary<String> apply(Arbitrary<?> from) {
 		return Combinators.combine(value, from)
-			.as((prefix, fromValue) -> {
+			.as(
+				(prefix, fromValue) -> {
 					String arbitraryString = (String)fromValue;
 					String concatString = prefix + arbitraryString;
 					int remainLength = concatString.length() - prefix.length();
@@ -51,7 +52,7 @@ public final class ArbitrarySetPrefix extends AbstractArbitrarySet<String> {
 	}
 
 	@Override
-	public ArbitrarySetPrefix copy(){
+	public ArbitrarySetPrefix copy() {
 		return new ArbitrarySetPrefix(this.getArbitraryExpression(), this.value);
 	}
 }

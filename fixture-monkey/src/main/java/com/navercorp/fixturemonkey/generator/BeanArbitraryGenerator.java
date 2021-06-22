@@ -20,7 +20,7 @@ import com.navercorp.fixturemonkey.customizer.WithFixtureCustomizer;
 
 public class BeanArbitraryGenerator extends AbstractArbitraryGenerator
 	implements WithFixtureCustomizer {
-	public final static BeanArbitraryGenerator INSTANCE = new BeanArbitraryGenerator();
+	public static final BeanArbitraryGenerator INSTANCE = new BeanArbitraryGenerator();
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 	private final ArbitraryCustomizers arbitraryCustomizers;
 
@@ -56,7 +56,9 @@ public class BeanArbitraryGenerator extends AbstractArbitraryGenerator
 						BeanUtils.setProperty(b, fieldName, v);
 					}
 				} catch (IllegalAccessException | InvocationTargetException e) {
-					log.warn(e, () -> "set bean property is failed. field: " + fieldName + " value: " + v);
+					log.warn(e,
+						() -> "set bean property is failed. field: " + fieldName + " value: " + v
+					);
 				}
 				return b;
 			});

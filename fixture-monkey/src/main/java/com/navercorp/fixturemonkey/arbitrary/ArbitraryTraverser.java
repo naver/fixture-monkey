@@ -199,7 +199,8 @@ public final class ArbitraryTraverser {
 
 		AnnotationSource annotationSource = new AnnotationSource(argsType);
 
-		Map<Class<?>, AnnotatedArbitraryGenerator<?>> annotatedArbitraryMap = arbitraryOption.getAnnotatedArbitraryMap();
+		Map<Class<?>, AnnotatedArbitraryGenerator<?>> annotatedArbitraryMap =
+			arbitraryOption.getAnnotatedArbitraryMap();
 
 		return (Arbitrary<T>)Optional.ofNullable(annotatedArbitraryMap.get(clazz))
 			.map(arbitraryGenerator -> arbitraryGenerator.generate(annotationSource))
@@ -295,8 +296,8 @@ public final class ArbitraryTraverser {
 		}
 	}
 
-	private boolean availableField(Field f) {
-		return !Modifier.isStatic(f.getModifiers());
+	private boolean availableField(Field field) {
+		return !Modifier.isStatic(field.getModifiers());
 	}
 
 	private boolean isTraversable(ArbitraryType<?> type) {
@@ -312,10 +313,10 @@ public final class ArbitraryTraverser {
 			&& !type.isEnum();
 	}
 
-	private String resolveFieldName(Field f) {
-		JsonProperty jsonProperty = f.getAnnotation(JsonProperty.class);
+	private String resolveFieldName(Field field) {
+		JsonProperty jsonProperty = field.getAnnotation(JsonProperty.class);
 		if (jsonProperty == null) {
-			return f.getName();
+			return field.getName();
 		} else {
 			return jsonProperty.value();
 		}

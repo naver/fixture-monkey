@@ -31,6 +31,6 @@ public interface IterableSpec {
 	<T> IterableSpec all(Predicate<T> filter);
 
 	IterableSpec any(Object object);
-	
+
 	IterableSpec all(Object object);
 }

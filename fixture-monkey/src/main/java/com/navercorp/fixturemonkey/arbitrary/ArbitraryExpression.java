@@ -1,8 +1,8 @@
 package com.navercorp.fixturemonkey.arbitrary;
 
 import static com.navercorp.fixturemonkey.Constants.ALL_INDEX_EXP_INDEX;
-import static com.navercorp.fixturemonkey.Constants.NO_OR_ALL_INDEX_INTEGER_VALUE;
 import static com.navercorp.fixturemonkey.Constants.ALL_INDEX_STRING;
+import static com.navercorp.fixturemonkey.Constants.NO_OR_ALL_INDEX_INTEGER_VALUE;
 import static java.util.stream.Collectors.toList;
 
 import java.util.ArrayList;
@@ -100,9 +100,9 @@ public class ArbitraryExpression implements Comparable<ArbitraryExpression> {
 	}
 
 	@Override
-	public int compareTo(ArbitraryExpression o) {
+	public int compareTo(ArbitraryExpression arbitraryExpression) {
 		List<Exp> expList = this.getExpList();
-		List<Exp> oExpList = o.getExpList();
+		List<Exp> oExpList = arbitraryExpression.getExpList();
 
 		int expLength = Math.min(oExpList.size(), expList.size());
 
@@ -156,8 +156,8 @@ public class ArbitraryExpression implements Comparable<ArbitraryExpression> {
 		}
 
 		@Override
-		public int compareTo(ExpIndex o) {
-			return Integer.compare(this.index, o.index);
+		public int compareTo(ExpIndex expIndex) {
+			return Integer.compare(this.index, expIndex.index);
 		}
 	}
 
@@ -245,11 +245,11 @@ public class ArbitraryExpression implements Comparable<ArbitraryExpression> {
 		}
 
 		@Override
-		public int compareTo(Exp o) {
+		public int compareTo(Exp exp) {
 			List<ExpIndex> indices = this.getIndex();
-			List<ExpIndex> oIndices = o.getIndex();
+			List<ExpIndex> oIndices = exp.getIndex();
 
-			if (o.name.equals(this.name)) {
+			if (exp.name.equals(this.name)) {
 				int indexLength = Math.min(oIndices.size(), indices.size());
 				for (int i = 0; i < indexLength; i++) {
 					ExpIndex index = indices.get(i);

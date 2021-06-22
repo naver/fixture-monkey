@@ -52,8 +52,6 @@ import com.navercorp.fixturemonkey.generator.ShortAnnotatedArbitraryGenerator;
 import com.navercorp.fixturemonkey.generator.StringAnnotatedArbitraryGenerator;
 import com.navercorp.fixturemonkey.generator.UuidAnnotatedArbitraryGenerator;
 import com.navercorp.fixturemonkey.generator.ZonedDateTimeAnnotatedArbitraryGenerator;
-import com.navercorp.fixturemonkey.validator.CompositeArbitraryValidator;
-import com.navercorp.fixturemonkey.validator.ArbitraryValidator;
 
 public class ArbitraryOption {
 	public static final ArbitraryOption DEFAULT_FIXTURE_OPTIONS = ArbitraryOption.builder().build();

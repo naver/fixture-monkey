@@ -14,8 +14,8 @@ import com.navercorp.fixturemonkey.customizer.ArbitraryCustomizers;
 import com.navercorp.fixturemonkey.generator.AnnotatedArbitraryGenerator;
 import com.navercorp.fixturemonkey.generator.ArbitraryGenerator;
 import com.navercorp.fixturemonkey.generator.JacksonArbitraryGenerator;
-import com.navercorp.fixturemonkey.validator.CompositeArbitraryValidator;
 import com.navercorp.fixturemonkey.validator.ArbitraryValidator;
+import com.navercorp.fixturemonkey.validator.CompositeArbitraryValidator;
 
 public final class FixtureMonkeyBuilder {
 	private ArbitraryGenerator defaultGenerator = new JacksonArbitraryGenerator();

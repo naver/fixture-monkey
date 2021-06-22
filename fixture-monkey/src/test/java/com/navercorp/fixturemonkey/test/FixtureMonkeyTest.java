@@ -333,10 +333,8 @@ class FixtureMonkeyTest {
 
 	@Property
 	void giveMeSpecSetPrefix() {
-		ExpressionSpec ExpressionSpec = new ExpressionSpec().setPrefix("value", "prefix");
-
 		StringWrapperClass actual = this.sut.giveMeBuilder(StringWrapperClass.class)
-			.spec(ExpressionSpec)
+			.spec(new ExpressionSpec().setPrefix("value", "prefix"))
 			.sample();
 
 		then(actual.value).startsWith("prefix");
@@ -344,10 +342,8 @@ class FixtureMonkeyTest {
 
 	@Property
 	void giveMeSpecSetSuffix() {
-		ExpressionSpec ExpressionSpec = new ExpressionSpec().setSuffix("value", "suffix");
-
 		StringWrapperClass actual = this.sut.giveMeBuilder(StringWrapperClass.class)
-			.spec(ExpressionSpec)
+			.spec(new ExpressionSpec().setSuffix("value", "suffix"))
 			.sample();
 
 		then(actual.value).endsWith("suffix");
@@ -355,13 +351,11 @@ class FixtureMonkeyTest {
 
 	@Property
 	void giveMeSpecFilter() {
-		ExpressionSpec ExpressionSpec = new ExpressionSpec().<Integer>filter(
-			"value",
-			value -> value >= 0 && value <= 100
-		);
-
 		IntegerWrapperClass actual = this.sut.giveMeBuilder(IntegerWrapperClass.class)
-			.spec(ExpressionSpec)
+			.spec(new ExpressionSpec().<Integer>filter(
+				"value",
+				value -> value >= 0 && value <= 100
+			))
 			.sample();
 
 		then(actual.value).isBetween(0, 100);
@@ -369,13 +363,11 @@ class FixtureMonkeyTest {
 
 	@Property
 	void giveMeSpecFilterType() {
-		ExpressionSpec ExpressionSpec = new ExpressionSpec().filterInteger(
-			"value",
-			value -> value >= 0 && value <= 100
-		);
-
 		IntegerWrapperClass actual = this.sut.giveMeBuilder(IntegerWrapperClass.class)
-			.spec(ExpressionSpec)
+			.spec(new ExpressionSpec().filterInteger(
+				"value",
+				value -> value >= 0 && value <= 100
+			))
 			.sample();
 
 		then(actual.value).isBetween(0, 100);
@@ -383,12 +375,10 @@ class FixtureMonkeyTest {
 
 	@Property
 	void giveMeFilterIndex() {
-		ExpressionSpec ExpressionSpec = new ExpressionSpec()
-			.filterInteger("values[0]", value -> value >= 0 && value <= 100)
-			.size("values", 1, 1);
-
 		IntegerListClass actual = this.sut.giveMeBuilder(IntegerListClass.class)
-			.spec(ExpressionSpec)
+			.spec(new ExpressionSpec()
+				.filterInteger("values[0]", value -> value >= 0 && value <= 100)
+				.size("values", 1, 1))
 			.sample();
 
 		then(actual.values).hasSize(1);
@@ -563,11 +553,9 @@ class FixtureMonkeyTest {
 
 	@Property
 	void giveMeSpecSetWithLimitReturnsNotSet() {
-		ExpressionSpec ExpressionSpec = new ExpressionSpec()
-			.set("value", 1, 0);
-
 		IntegerWrapperClass actual = this.sut.giveMeBuilder(IntegerWrapperClass.class)
-			.spec(ExpressionSpec)
+			.spec(new ExpressionSpec()
+				.set("value", 1, 0))
 			.sample();
 
 		then(actual.value).isBetween(Integer.MIN_VALUE, Integer.MAX_VALUE);
@@ -575,12 +563,10 @@ class FixtureMonkeyTest {
 
 	@Property
 	void giveMeSpecSetIndexWithLimitReturns() {
-		ExpressionSpec ExpressionSpec = new ExpressionSpec()
-			.size("values", 2, 2)
-			.set("values[*]", "set", 1);
-
 		StringListClass actual = this.sut.giveMeBuilder(StringListClass.class)
-			.spec(ExpressionSpec)
+			.spec(new ExpressionSpec()
+				.size("values", 2, 2)
+				.set("values[*]", "set", 1))
 			.sample();
 
 		then(actual.values).anyMatch(it -> !it.equals("set"));

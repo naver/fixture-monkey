@@ -9,7 +9,7 @@ public interface PostArbitraryManipulator<T> extends ArbitraryExpressionManipula
 
 	boolean isMappableTo(ArbitraryNode<T> node);
 
-	default void accept(ArbitraryBuilder<T> arbitraryBuilder){
+	default void accept(ArbitraryBuilder<T> arbitraryBuilder) {
 		arbitraryBuilder.addPostArbitraryManipulator(this);
 	}
 

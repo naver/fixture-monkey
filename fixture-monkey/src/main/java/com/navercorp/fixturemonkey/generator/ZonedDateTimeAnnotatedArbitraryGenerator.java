@@ -9,7 +9,8 @@ import java.time.ZonedDateTime;
 import net.jqwik.api.Arbitrary;
 
 public class ZonedDateTimeAnnotatedArbitraryGenerator implements AnnotatedArbitraryGenerator<ZonedDateTime> {
-	public static final ZonedDateTimeAnnotatedArbitraryGenerator INSTANCE = new ZonedDateTimeAnnotatedArbitraryGenerator();
+	public static final ZonedDateTimeAnnotatedArbitraryGenerator INSTANCE =
+		new ZonedDateTimeAnnotatedArbitraryGenerator();
 
 	@Override
 	public Arbitrary<ZonedDateTime> generate(AnnotationSource annotationSource) {

@@ -14,7 +14,9 @@ abstract class Cursor {
 	}
 
 	public boolean indexEquals(int index) {
-		return this.index == index || index == NO_OR_ALL_INDEX_INTEGER_VALUE || this.index == NO_OR_ALL_INDEX_INTEGER_VALUE;
+		return this.index == index
+			|| index == NO_OR_ALL_INDEX_INTEGER_VALUE
+			|| this.index == NO_OR_ALL_INDEX_INTEGER_VALUE;
 	}
 
 	public String getName() {

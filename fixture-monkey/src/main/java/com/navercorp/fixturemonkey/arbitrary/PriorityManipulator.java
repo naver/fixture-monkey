@@ -8,11 +8,12 @@ interface PriorityManipulator extends ArbitraryExpressionManipulator, Comparable
 	Priority getPriority();
 
 	@Override
-	default int compareTo(PriorityManipulator o) {
+	default int compareTo(PriorityManipulator priorityManipulator) {
 		List<Exp> expList = getArbitraryExpression().getExpList();
-		List<Exp> oExpList = o.getArbitraryExpression().getExpList();
+		List<Exp> oExpList = priorityManipulator.getArbitraryExpression().getExpList();
 
-		int priorityCompare = Integer.compare(this.getPriority().ordinal(), o.getPriority().ordinal());
+		int priorityCompare =
+			Integer.compare(this.getPriority().ordinal(), priorityManipulator.getPriority().ordinal());
 		if (priorityCompare != 0) {
 			return priorityCompare;
 		}

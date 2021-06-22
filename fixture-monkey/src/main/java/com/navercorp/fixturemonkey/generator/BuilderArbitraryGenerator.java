@@ -11,9 +11,9 @@ import org.junit.platform.commons.util.ReflectionUtils;
 import net.jqwik.api.Arbitrary;
 import net.jqwik.api.Combinators;
 
-import com.navercorp.fixturemonkey.customizer.ArbitraryCustomizers;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryNode;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryType;
+import com.navercorp.fixturemonkey.customizer.ArbitraryCustomizers;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
 public final class BuilderArbitraryGenerator extends AbstractArbitraryGenerator {
@@ -65,8 +65,8 @@ public final class BuilderArbitraryGenerator extends AbstractArbitraryGenerator 
 			String methodName = entry.getKey();
 			String buildFieldMethodName = builderType.getName() + "#" + methodName;
 			Method method = BUILD_FIELD_METHOD_CACHE.computeIfAbsent(buildFieldMethodName, f -> {
-				Method buildFieldMethod = ReflectionUtils.findMethods(
-					builderType, m -> m.getName().equals(methodName)).stream()
+				Method buildFieldMethod = ReflectionUtils.findMethods(builderType, m -> m.getName().equals(methodName))
+					.stream()
 					.filter(Objects::nonNull)
 					.filter(m -> m.getParameterCount() == 1)
 					.findFirst()

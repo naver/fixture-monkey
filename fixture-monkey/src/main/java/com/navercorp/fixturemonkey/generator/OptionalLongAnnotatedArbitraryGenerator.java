@@ -6,7 +6,8 @@ import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
 
 public class OptionalLongAnnotatedArbitraryGenerator implements AnnotatedArbitraryGenerator<OptionalLong> {
-	public static final OptionalLongAnnotatedArbitraryGenerator INSTANCE = new OptionalLongAnnotatedArbitraryGenerator();
+	public static final OptionalLongAnnotatedArbitraryGenerator INSTANCE =
+		new OptionalLongAnnotatedArbitraryGenerator();
 
 	@Override
 	public Arbitrary<OptionalLong> generate(AnnotationSource annotationSource) {

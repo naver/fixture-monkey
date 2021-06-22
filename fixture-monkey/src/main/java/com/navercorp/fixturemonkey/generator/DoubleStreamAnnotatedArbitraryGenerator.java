@@ -5,7 +5,8 @@ import java.util.stream.DoubleStream;
 import net.jqwik.api.Arbitrary;
 
 public class DoubleStreamAnnotatedArbitraryGenerator implements AnnotatedArbitraryGenerator<DoubleStream> {
-	public static final DoubleStreamAnnotatedArbitraryGenerator INSTANCE = new DoubleStreamAnnotatedArbitraryGenerator();
+	public static final DoubleStreamAnnotatedArbitraryGenerator INSTANCE =
+		new DoubleStreamAnnotatedArbitraryGenerator();
 
 	@Override
 	public Arbitrary<DoubleStream> generate(AnnotationSource annotationSource) {

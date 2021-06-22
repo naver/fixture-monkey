@@ -9,7 +9,8 @@ import java.time.ZoneId;
 import net.jqwik.api.Arbitrary;
 
 public class LocalDateTimeAnnotatedArbitraryGenerator implements AnnotatedArbitraryGenerator<LocalDateTime> {
-	public static final LocalDateTimeAnnotatedArbitraryGenerator INSTANCE = new LocalDateTimeAnnotatedArbitraryGenerator();
+	public static final LocalDateTimeAnnotatedArbitraryGenerator INSTANCE =
+		new LocalDateTimeAnnotatedArbitraryGenerator();
 
 	@Override
 	public Arbitrary<LocalDateTime> generate(AnnotationSource annotationSource) {

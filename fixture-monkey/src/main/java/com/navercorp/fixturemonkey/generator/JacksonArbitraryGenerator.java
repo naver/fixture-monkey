@@ -17,10 +17,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import com.navercorp.fixturemonkey.JacksonObjectMapper;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryNode;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryType;
 import com.navercorp.fixturemonkey.customizer.ArbitraryCustomizers;
-import com.navercorp.fixturemonkey.JacksonObjectMapper;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class JacksonArbitraryGenerator extends AbstractArbitraryGenerator {

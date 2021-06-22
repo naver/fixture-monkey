@@ -15,10 +15,10 @@ import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
 import net.jqwik.api.Combinators;
 
-import com.navercorp.fixturemonkey.customizer.ArbitraryCustomizers;
-import com.navercorp.fixturemonkey.customizer.WithFixtureCustomizer;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryNode;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryType;
+import com.navercorp.fixturemonkey.customizer.ArbitraryCustomizers;
+import com.navercorp.fixturemonkey.customizer.WithFixtureCustomizer;
 
 public final class FieldReflectionArbitraryGenerator extends AbstractArbitraryGenerator
 	implements WithFixtureCustomizer {
@@ -76,7 +76,9 @@ public final class FieldReflectionArbitraryGenerator extends AbstractArbitraryGe
 						field.set(object, value);
 					}
 				} catch (IllegalAccessException e) {
-					log.warn(e, () -> "set field by reflection is failed. field: " + fieldName + " value: " + value);
+					log.warn(e,
+						() -> "set field by reflection is failed. field: " + fieldName + " value: " + value
+					);
 				}
 				return object;
 			});
