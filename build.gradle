@@ -7,6 +7,7 @@ buildscript {
     }
     dependencies {
         classpath "org.jlleitschuh.gradle:ktlint-gradle:9.4.1"
+        classpath("org.hibernate.build.gradle:gradle-maven-publish-auth:2.0.1")
     }
 }
 
@@ -16,6 +17,9 @@ plugins {
 
 allprojects {
     apply plugin: "idea"
+    apply plugin: "maven"
+    apply plugin: "maven-publish"
+    apply plugin: "maven-publish-auth"
 
     repositories {
         mavenCentral()
@@ -38,5 +42,35 @@ subprojects {
     dependencies {
         compile("com.google.code.findbugs:jsr305:3.0.2")
         compile("org.slf4j:slf4j-api:1.7.30")
+    }
+
+    task sourcesJar(type: Jar) {
+        from sourceSets.main.allJava
+        archiveClassifier = 'sources'
+    }
+
+    task javadocJar(type: Jar) {
+        from javadoc
+        archiveClassifier = 'javadoc'
+    }
+
+    publishing {
+        publications {
+            mavenJava(MavenPublication) {
+                from components.java
+                artifact sourcesJar
+                artifact javadocJar
+            }
+        }
+        repositories {
+            maven {
+                name "navercorp.release"
+                url "http://repo.navercorp.com/content/repositories/maven2"
+            }
+            maven {
+                name "navercorp.snapshot"
+                url "http://repo.navercorp.com/content/repositories/m2-snapshot-repository"
+            }
+        }
     }
 }
