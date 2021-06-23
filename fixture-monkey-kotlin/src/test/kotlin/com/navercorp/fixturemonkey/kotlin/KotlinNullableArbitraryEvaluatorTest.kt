@@ -36,4 +36,8 @@ class KotlinNullableArbitraryEvaluatorTest {
     }
 }
 
-data class KotlinDataObject(val name: String, val description: String?, @field:NotNull val address: String?)
+class KotlinDataObject {
+    @field:NotNull var name: String? = null
+    var description: String? = null
+    @field:NotNull var address: String? = null
+}

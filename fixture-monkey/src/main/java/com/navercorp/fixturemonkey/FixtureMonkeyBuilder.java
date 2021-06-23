@@ -31,12 +31,12 @@ import com.navercorp.fixturemonkey.customizer.ArbitraryCustomizer;
 import com.navercorp.fixturemonkey.customizer.ArbitraryCustomizers;
 import com.navercorp.fixturemonkey.generator.AnnotatedArbitraryGenerator;
 import com.navercorp.fixturemonkey.generator.ArbitraryGenerator;
-import com.navercorp.fixturemonkey.generator.JacksonArbitraryGenerator;
+import com.navercorp.fixturemonkey.generator.BeanArbitraryGenerator;
 import com.navercorp.fixturemonkey.validator.ArbitraryValidator;
 import com.navercorp.fixturemonkey.validator.CompositeArbitraryValidator;
 
 public class FixtureMonkeyBuilder {
-	private ArbitraryGenerator defaultGenerator = new JacksonArbitraryGenerator();
+	private ArbitraryGenerator defaultGenerator = new BeanArbitraryGenerator();
 	private Map<Class<?>, ArbitraryGenerator> generatorMap = new HashMap<>();
 	private Map<Class<?>, ArbitraryCustomizer<?>> customizerMap = new HashMap<>();
 	@SuppressWarnings("rawtypes")

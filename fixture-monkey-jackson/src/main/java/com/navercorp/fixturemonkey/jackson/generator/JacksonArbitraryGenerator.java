@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.generator;
+package com.navercorp.fixturemonkey.jackson.generator;
 
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -35,20 +35,23 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import com.navercorp.fixturemonkey.JacksonObjectMapper;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryNode;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryType;
 import com.navercorp.fixturemonkey.customizer.ArbitraryCustomizers;
+import com.navercorp.fixturemonkey.generator.AbstractArbitraryGenerator;
+import com.navercorp.fixturemonkey.generator.ArbitraryGenerator;
+import com.navercorp.fixturemonkey.generator.FieldArbitraries;
+import com.navercorp.fixturemonkey.jackson.FixtureMonkeyJackson;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
-public class JacksonArbitraryGenerator extends AbstractArbitraryGenerator {
+public final class JacksonArbitraryGenerator extends AbstractArbitraryGenerator {
 	public static final JacksonArbitraryGenerator INSTANCE = new JacksonArbitraryGenerator();
 
 	private final ObjectMapper objectMapper;
 	private final ArbitraryCustomizers arbitraryCustomizers;
 
 	public JacksonArbitraryGenerator() {
-		this(JacksonObjectMapper.defaultObjectMapper(), new ArbitraryCustomizers());
+		this(FixtureMonkeyJackson.defaultObjectMapper(), new ArbitraryCustomizers());
 	}
 
 	public JacksonArbitraryGenerator(ObjectMapper objectMapper) {
@@ -138,3 +141,4 @@ public class JacksonArbitraryGenerator extends AbstractArbitraryGenerator {
 		return new JacksonArbitraryGenerator(objectMapper, arbitraryCustomizers);
 	}
 }
+

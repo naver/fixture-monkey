@@ -9,20 +9,13 @@ plugins {
 }
 
 dependencies {
-    api("net.jqwik:jqwik:${JQWIK_VERSION}")
-    compileOnly("net.jqwik:jqwik-engine:${JQWIK_VERSION}")
-    compile("javax.validation:validation-api:2.0.1.Final")
-    compile("com.github.mifmif:generex:1.0.2")
-    compile("commons-beanutils:commons-beanutils:1.9.4")
-
-    // TODO: ArbitraryTraverser 처리 후 제거
-    implementation("com.fasterxml.jackson.core:jackson-databind:2.11.1")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.11.1")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.11.1")
+    api(project(":fixture-monkey"))
+    api("com.fasterxml.jackson.core:jackson-databind:2.11.1")
+    api("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.11.1")
+    api("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.11.1")
 
     testImplementation("org.assertj:assertj-core:3.18.1")
     testImplementation("org.projectlombok:lombok:1.18.16")
-    testImplementation("org.hibernate.validator:hibernate-validator:6.1.7.Final")
     testAnnotationProcessor("org.projectlombok:lombok:1.18.16")
 }
 

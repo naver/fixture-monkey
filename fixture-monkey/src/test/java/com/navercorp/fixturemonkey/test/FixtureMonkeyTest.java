@@ -40,7 +40,10 @@ import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
 import net.jqwik.api.Property;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.Value;
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
@@ -52,12 +55,11 @@ import com.navercorp.fixturemonkey.generator.BeanArbitraryGenerator;
 import com.navercorp.fixturemonkey.generator.BuilderArbitraryGenerator;
 import com.navercorp.fixturemonkey.generator.FieldArbitraries;
 import com.navercorp.fixturemonkey.generator.FieldReflectionArbitraryGenerator;
-import com.navercorp.fixturemonkey.generator.JacksonArbitraryGenerator;
 import com.navercorp.fixturemonkey.generator.NullArbitraryGenerator;
 
 class FixtureMonkeyTest {
 	private final FixtureMonkey sut = FixtureMonkey.builder()
-		.defaultGenerator(JacksonArbitraryGenerator.INSTANCE)
+		.defaultGenerator(BeanArbitraryGenerator.INSTANCE)
 		.addCustomizer(CustomizerIntegerClass.class, new ArbitraryCustomizer<CustomizerIntegerClass>() {
 			@Override
 			public void customizeFields(Class<CustomizerIntegerClass> type, FieldArbitraries fieldArbitraries) {
@@ -100,14 +102,17 @@ class FixtureMonkeyTest {
 
 	@Property
 	void giveMeWithCustomAnnotatedArbitraryGenerator() {
+		IntegerWrapperClass value = new IntegerWrapperClass();
+		value.setValue(1);
+
 		ArbitraryOption customOption = ArbitraryOption.builder()
 			.addAnnotatedArbitraryGenerator(
 				IntegerWrapperClass.class,
-				annotationSource -> Arbitraries.just(new IntegerWrapperClass(1))
+				annotationSource -> Arbitraries.just(value)
 			)
 			.build();
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.defaultGenerator(JacksonArbitraryGenerator.INSTANCE)
+			.defaultGenerator(BeanArbitraryGenerator.INSTANCE)
 			.options(customOption)
 			.build();
 
@@ -915,118 +920,144 @@ class FixtureMonkeyTest {
 		then(actual.values.size()).isBetween(1, 3);
 	}
 
-	@Value
-	private static class IntegerWrapperClass {
+	@Data
+	public static class IntegerWrapperClass {
 		int value;
 	}
 
-	@Value
-	private static class IntegerWrapperClassWithAnnotation {
+	@Data
+	public static class IntegerWrapperClassWithAnnotation {
 		@Positive
 		int value;
 	}
 
-	@Value
-	private static class IntegerListClass {
+	@Data
+	public static class IntegerListClass {
 		List<Integer> values;
 	}
 
-	@Value
-	private static class CustomizerIntegerClass {
+	@Data
+	public static class CustomizerIntegerClass {
 		Integer value;
 	}
 
 	@Builder
-	private static class BuilderIntegerClass {
+	public static class BuilderIntegerClass {
 		int value;
 	}
 
-	private static class FieldReflectionIntegerClass {
+	public static class FieldReflectionIntegerClass {
 		private int value;
 	}
 
-	private static class NullIntegerClass {
+	public static class NullIntegerClass {
 		int value;
 	}
 
+	@Data
 	public static class BeanIntegerClass {
 		private int value;
 	}
 
-	@Value
-	private static class StringWrapperClass {
-		String value;
+	@Data
+	@NoArgsConstructor
+	@AllArgsConstructor
+	public static class StringWrapperClass {
+		private String value;
 	}
 
-	@Value
-	private static class IntegerArrayClass {
-		Integer[] value;
+	@Data
+	@NoArgsConstructor
+	@AllArgsConstructor
+	public static class IntegerArrayClass {
+		private Integer[] value;
 	}
 
-	@Value
-	private static class IntArrayClass {
-		int[] value;
+	@Data
+	@NoArgsConstructor
+	@AllArgsConstructor
+	public static class IntArrayClass {
+		private int[] value;
 	}
 
-	@Value
-	private static class MapKeyIntegerValueIntegerClass {
-		Map<Integer, Integer> values;
+	@Data
+	@NoArgsConstructor
+	@AllArgsConstructor
+	public static class MapKeyIntegerValueIntegerClass {
+		private Map<Integer, Integer> values;
 	}
 
-	@Value
-	private static class MapKeyIntegerValueStringClass {
-		Map<Integer, String> values;
+	@Data
+	@NoArgsConstructor
+	@AllArgsConstructor
+	public static class MapKeyIntegerValueStringClass {
+		private Map<Integer, String> values;
 	}
 
-	@Value
-	private static class MapEntryKeyIntegerValueStringClass {
-		Map.Entry<Integer, String> value;
+	@Data
+	@NoArgsConstructor
+	@AllArgsConstructor
+	public static class MapEntryKeyIntegerValueStringClass {
+		private Map.Entry<Integer, String> value;
 	}
 
-	@Value
-	private static class IntegerSetClass {
-		Set<Integer> values;
+	@Data
+	@NoArgsConstructor
+	@AllArgsConstructor
+	public static class IntegerSetClass {
+		private Set<Integer> values;
 	}
 
+	@Data
+	@NoArgsConstructor
+	@AllArgsConstructor
+	public static class IntegerIterableClass {
+		private Iterable<Integer> values;
+	}
+
+	@Data
 	@Builder
-	private static class IntegerIterableClass {
-		Iterable<Integer> values;
+	@NoArgsConstructor
+	@AllArgsConstructor
+	public static class IntegerIteratorClass {
+		private Iterator<Integer> values;
 	}
 
+	@Data
 	@Builder
-	private static class IntegerIteratorClass {
-		Iterator<Integer> values;
+	@NoArgsConstructor
+	@AllArgsConstructor
+	public static class IntegerStreamClass {
+		private Stream<Integer> values;
 	}
 
+	@Data
 	@Builder
-	private static class IntegerStreamClass {
-		Stream<Integer> values;
-	}
-
-	@Builder
-	private static class IntegerOptionalClass {
+	@NoArgsConstructor
+	@AllArgsConstructor
+	public static class IntegerOptionalClass {
 		@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-		Optional<Integer> value;
+		private Optional<Integer> value;
 	}
 
-	@Value
-	private static class StringListClass {
-		List<String> values;
+	@Data
+	public static class StringListClass {
+		private List<String> values;
 	}
 
-	@Value
-	private static class NestedStringList {
-		List<StringWrapperClass> values;
+	@Data
+	public static class NestedStringList {
+		private List<StringWrapperClass> values;
 	}
 
-	@Value
-	private static class ListListString {
-		List<List<String>> values;
+	@Data
+	public static class ListListString {
+		private List<List<String>> values;
 	}
 
-	@Value
-	private static class OptionalClass {
+	@Data
+	public static class OptionalClass {
 		@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-		Optional<Integer> value;
+		private Optional<Integer> value;
 	}
 }

@@ -10,10 +10,9 @@ repositories {
 java.sourceCompatibility = JavaVersion.VERSION_1_8
 
 dependencies {
-    api("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.5.10")
-    api("com.fasterxml.jackson.module:jackson-module-kotlin:2.11.1")
+    api(project(":fixture-monkey"))
 
-    implementation(project(":fixture-monkey"))
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.5.10")
     implementation("org.jetbrains.kotlin:kotlin-reflect:1.5.10")
 
     testImplementation("org.assertj:assertj-core:3.18.1")

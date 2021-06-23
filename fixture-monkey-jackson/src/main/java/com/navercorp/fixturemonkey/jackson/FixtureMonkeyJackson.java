@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey;
+package com.navercorp.fixturemonkey.jackson;
 
 import static java.util.stream.Collectors.toList;
 
@@ -25,7 +25,7 @@ import java.util.List;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class JacksonObjectMapper {
+public class FixtureMonkeyJackson {
 	private static final List<Module> REGISTERED_MODULES = ObjectMapper.findModules().stream()
 		.filter(module -> !module.getModuleName().equalsIgnoreCase("AfterburnerModule"))
 		.collect(toList()); // afterburner only support "public setter" for deserializing
