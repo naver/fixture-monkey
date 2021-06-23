@@ -35,7 +35,7 @@ import com.navercorp.fixturemonkey.generator.JacksonArbitraryGenerator;
 import com.navercorp.fixturemonkey.validator.ArbitraryValidator;
 import com.navercorp.fixturemonkey.validator.CompositeArbitraryValidator;
 
-public final class FixtureMonkeyBuilder {
+public class FixtureMonkeyBuilder {
 	private ArbitraryGenerator defaultGenerator = new JacksonArbitraryGenerator();
 	private Map<Class<?>, ArbitraryGenerator> generatorMap = new HashMap<>();
 	private Map<Class<?>, ArbitraryCustomizer<?>> customizerMap = new HashMap<>();
