@@ -22,16 +22,17 @@ import java.util.Objects;
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 
-public abstract class AbstractArbitrarySet<T> implements PreArbitraryManipulator<T> {
+public final class ContainerMinSizeManipulator implements MetadataManipulator {
 	private ArbitraryExpression arbitraryExpression;
+	private final int size;
 
-	public AbstractArbitrarySet(ArbitraryExpression arbitraryExpression) {
+	public ContainerMinSizeManipulator(ArbitraryExpression arbitraryExpression, int size) {
 		this.arbitraryExpression = arbitraryExpression;
+		this.size = size;
 	}
 
-	@Override
-	public void addPrefix(String expression) {
-		arbitraryExpression = arbitraryExpression.appendLeft(expression);
+	public int getSize() {
+		return size;
 	}
 
 	@Override
@@ -40,11 +41,24 @@ public abstract class AbstractArbitrarySet<T> implements PreArbitraryManipulator
 	}
 
 	@Override
-	public final void accept(ArbitraryBuilder<T> arbitraryBuilder) {
+	public void addPrefix(String expression) {
+		arbitraryExpression = arbitraryExpression.appendLeft(expression);
+	}
+
+	@Override
+	public void accept(ArbitraryBuilder<?> arbitraryBuilder) {
 		arbitraryBuilder.apply(this);
 	}
 
-	public abstract Object getValue();
+	@Override
+	public Priority getPriority() {
+		return Priority.HIGH;
+	}
+
+	@Override
+	public ContainerMinSizeManipulator copy() {
+		return new ContainerMinSizeManipulator(this.arbitraryExpression, this.size);
+	}
 
 	@Override
 	public boolean equals(Object obj) {
@@ -54,12 +68,13 @@ public abstract class AbstractArbitrarySet<T> implements PreArbitraryManipulator
 		if (obj == null || getClass() != obj.getClass()) {
 			return false;
 		}
-		AbstractArbitrarySet<?> that = (AbstractArbitrarySet<?>)obj;
-		return arbitraryExpression.equals(that.arbitraryExpression);
+		ContainerMinSizeManipulator that = (ContainerMinSizeManipulator)obj;
+		return size == that.size
+			&& Objects.equals(arbitraryExpression, that.arbitraryExpression);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(arbitraryExpression);
+		return Objects.hash(arbitraryExpression, size);
 	}
 }

@@ -48,6 +48,11 @@ public final class ArbitrarySetSuffix extends AbstractArbitrarySet<String> {
 	}
 
 	@Override
+	public ArbitrarySetSuffix copy() {
+		return new ArbitrarySetSuffix(this.getArbitraryExpression(), this.value);
+	}
+
+	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
@@ -65,10 +70,5 @@ public final class ArbitrarySetSuffix extends AbstractArbitrarySet<String> {
 	@Override
 	public int hashCode() {
 		return Objects.hash(super.hashCode(), value);
-	}
-
-	@Override
-	public ArbitrarySetSuffix copy() {
-		return new ArbitrarySetSuffix(this.getArbitraryExpression(), this.value);
 	}
 }

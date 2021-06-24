@@ -26,7 +26,7 @@ import net.jqwik.api.Arbitrary;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryNode;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryType;
 
-public final class NullArbitraryGenerator implements ArbitraryGenerator {
+public class NullArbitraryGenerator implements ArbitraryGenerator {
 	public static final NullArbitraryGenerator INSTANCE = new NullArbitraryGenerator();
 
 	@SuppressWarnings("rawtypes")

@@ -24,10 +24,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 import javax.annotation.Nullable;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
@@ -43,9 +47,11 @@ public final class ArbitraryNode<T> {
 	private final String fieldName;
 	private final String metadata;
 	private final int indexOfIterable;
+	private final Supplier<T> valueSupplier;
 	private final FixtureNodeStatus<T> status;
 	private final boolean keyOfMapStructure;
 	private final double nullInject;
+	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
 	@SuppressWarnings("rawtypes")
 	public ArbitraryNode(
@@ -54,6 +60,7 @@ public final class ArbitraryNode<T> {
 		String fieldName,
 		String metadata,
 		int indexOfIterable,
+		Supplier<T> valueSupplier,
 		FixtureNodeStatus<T> status,
 		boolean keyOfMapStructure,
 		double nullInject
@@ -65,6 +72,7 @@ public final class ArbitraryNode<T> {
 		this.metadata = metadata;
 		this.indexOfIterable = indexOfIterable;
 		this.status = status.copy();
+		this.valueSupplier = valueSupplier;
 		this.keyOfMapStructure = keyOfMapStructure;
 		this.nullInject = nullInject;
 	}
@@ -111,7 +119,7 @@ public final class ArbitraryNode<T> {
 		return Optional.empty();
 	}
 
-	public <U> void initializeElementSize() {
+	public void initializeElementSize() {
 		if (!type.isContainer()) {
 			throw new IllegalStateException("Can not initialize element size because node is not container.");
 		}
@@ -149,6 +157,14 @@ public final class ArbitraryNode<T> {
 	@SuppressWarnings("rawtypes")
 	public void apply(PreArbitraryManipulator<T> preArbitraryManipulator) {
 		if (preArbitraryManipulator instanceof AbstractArbitrarySet) {
+			Object toValue = ((AbstractArbitrarySet<T>)preArbitraryManipulator).getValue();
+			Class<?> clazz = this.getType().getType();
+			if (toValue.getClass() != clazz) {
+				log.warn("node type is \"{}\", given set value is \"{}\".",
+					toValue.getClass().getSimpleName(),
+					clazz.getSimpleName()
+				);
+			}
 			Arbitrary<T> appliedArbitrary = preArbitraryManipulator.apply(status.arbitrary);
 			this.setFixed(true);
 			this.setArbitrary(appliedArbitrary);
@@ -171,6 +187,16 @@ public final class ArbitraryNode<T> {
 
 	public void setActive(boolean active) {
 		this.getStatus().setActive(active);
+	}
+
+	public void setContainerMinSize(@Nullable Integer minSize) {
+		FixtureNodeStatus<T> status = this.getStatus();
+		status.setContainerSizeConstraint(status.getContainerSizeConstraint().withMinSize(minSize));
+	}
+
+	public void setContainerMaxSize(@Nullable Integer minSize) {
+		FixtureNodeStatus<T> status = this.getStatus();
+		status.setContainerSizeConstraint(status.getContainerSizeConstraint().withMaxSize(minSize));
 	}
 
 	public void setContainerSizeConstraint(ContainerSizeConstraint containerSizeConstraint) {
@@ -211,7 +237,11 @@ public final class ArbitraryNode<T> {
 		return children;
 	}
 
+	@SuppressWarnings("unchecked")
 	public ArbitraryType<T> getType() {
+		if (type.isNoneType()) {
+			return new ArbitraryType<>((Class<T>)this.getValueSupplier().get().getClass());
+		}
 		return type;
 	}
 
@@ -251,6 +281,10 @@ public final class ArbitraryNode<T> {
 		return getStatus().isFixed();
 	}
 
+	public Supplier<T> getValueSupplier() {
+		return valueSupplier;
+	}
+
 	@SuppressWarnings("rawtypes")
 	public ArbitraryNode<T> copy() {
 		List<ArbitraryNode> copyChildren = new ArrayList<>();
@@ -265,33 +299,12 @@ public final class ArbitraryNode<T> {
 			.fieldName(this.getFieldName())
 			.metadata(this.getMetadata())
 			.indexOfIterable(this.getIndexOfIterable())
+			.valueSupplier(this.valueSupplier)
 			.status(this.getStatus().copy())
 			.keyOfMapStructure(this.isKeyOfMapStructure())
 			.nullInject(this.getNullInject())
 			.nullable(this.isNullable())
 			.build();
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null || getClass() != obj.getClass()) {
-			return false;
-		}
-		ArbitraryNode<?> that = (ArbitraryNode<?>)obj;
-		return indexOfIterable == that.indexOfIterable
-			&& keyOfMapStructure == that.keyOfMapStructure && Double.compare(that.nullInject, nullInject) == 0
-			&& children.equals(that.children) && type.equals(that.type) && fieldName.equals(that.fieldName)
-			&& metadata.equals(that.metadata) && status.equals(that.status);
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(
-			children, type, fieldName, metadata, indexOfIterable, status, keyOfMapStructure, nullInject
-		);
 	}
 
 	<U> void update(ArbitraryNode<U> entryNode, ArbitraryGenerator generator) {
@@ -316,7 +329,7 @@ public final class ArbitraryNode<T> {
 	}
 
 	private boolean matchExpression(Cursor cursor) {
-		boolean sameName = cursor.getName().equals(this.getFieldName());
+		boolean sameName = cursor.nameEquals(this.getFieldName());
 		boolean sameIndex = cursor.indexEquals(indexOfIterable);
 		return sameName && sameIndex;
 	}
@@ -329,23 +342,44 @@ public final class ArbitraryNode<T> {
 		return status;
 	}
 
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null || getClass() != obj.getClass()) {
+			return false;
+		}
+		ArbitraryNode<?> that = (ArbitraryNode<?>)obj;
+		return indexOfIterable == that.indexOfIterable
+			&& keyOfMapStructure == that.keyOfMapStructure && Double.compare(that.nullInject, nullInject) == 0
+			&& children.equals(that.children) && type.equals(that.type) && fieldName.equals(that.fieldName)
+			&& metadata.equals(that.metadata) && status.equals(that.status);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(
+			children, type, fieldName, metadata, indexOfIterable, status, keyOfMapStructure, nullInject
+		);
+	}
+
 	private static final class FixtureNodeStatus<T> {
 		@Nullable
 		private Arbitrary<T> arbitrary = null; // immutable
-		@Nullable
-		private ContainerSizeConstraint containerSizeConstraint = null; // immutable
+		private ContainerSizeConstraint containerSizeConstraint = new ContainerSizeConstraint(null, null); // immutable
 		private List<PostArbitraryManipulator<T>> postArbitraryManipulators = new ArrayList<>();
 		private boolean nullable = false;
 		private boolean manipulated = false;
 		private boolean active = true;
 		private boolean fixed = false;
 
-		public FixtureNodeStatus() {
+		private FixtureNodeStatus() {
 		}
 
 		private FixtureNodeStatus(
 			@Nullable Arbitrary<T> arbitrary,
-			@Nullable ContainerSizeConstraint containerSizeConstraint,
+			ContainerSizeConstraint containerSizeConstraint,
 			boolean nullable,
 			boolean manipulated,
 			boolean active
@@ -362,7 +396,6 @@ public final class ArbitraryNode<T> {
 			return arbitrary;
 		}
 
-		@Nullable
 		public ContainerSizeConstraint getContainerSizeConstraint() {
 			return containerSizeConstraint;
 		}
@@ -419,6 +452,16 @@ public final class ArbitraryNode<T> {
 			this.fixed = fixed;
 		}
 
+		public FixtureNodeStatus<T> copy() {
+			return new FixtureNodeStatus<>(
+				this.getArbitrary(),
+				this.getContainerSizeConstraint(),
+				this.isNullable(),
+				this.isManipulated(),
+				this.isActive()
+			);
+		}
+
 		@Override
 		public boolean equals(Object obj) {
 			if (this == obj) {
@@ -435,16 +478,6 @@ public final class ArbitraryNode<T> {
 		public int hashCode() {
 			return Objects.hash(nullable, manipulated, active);
 		}
-
-		public FixtureNodeStatus<T> copy() {
-			return new FixtureNodeStatus<>(
-				this.getArbitrary(),
-				this.getContainerSizeConstraint(),
-				this.isNullable(),
-				this.isManipulated(),
-				this.isActive()
-			);
-		}
 	}
 
 	public static final class FixtureNodeBuilder<T> {
@@ -455,6 +488,8 @@ public final class ArbitraryNode<T> {
 		private String fieldName = HEAD_NAME;
 		private String metadata = "";
 		private int indexOfIterable = NO_OR_ALL_INDEX_INTEGER_VALUE;
+		@Nullable
+		private Supplier<T> valueSupplier = () -> null;
 		private FixtureNodeStatus<T> status = new FixtureNodeStatus<>();
 		private boolean keyOfMapStructure = false;
 		private double nullInject = 0.3f;
@@ -516,6 +551,11 @@ public final class ArbitraryNode<T> {
 			return this;
 		}
 
+		public FixtureNodeBuilder<T> valueSupplier(Supplier<T> valueSupplier) {
+			this.valueSupplier = valueSupplier;
+			return this;
+		}
+
 		public ArbitraryNode<T> build() {
 			return new ArbitraryNode<>(
 				children,
@@ -523,6 +563,7 @@ public final class ArbitraryNode<T> {
 				fieldName,
 				metadata,
 				indexOfIterable,
+				valueSupplier,
 				status,
 				keyOfMapStructure,
 				nullInject

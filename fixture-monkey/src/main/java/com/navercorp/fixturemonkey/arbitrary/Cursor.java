@@ -18,6 +18,7 @@
 
 package com.navercorp.fixturemonkey.arbitrary;
 
+import static com.navercorp.fixturemonkey.Constants.ALL_INDEX_STRING;
 import static com.navercorp.fixturemonkey.Constants.NO_OR_ALL_INDEX_INTEGER_VALUE;
 
 import java.util.Objects;
@@ -35,6 +36,12 @@ abstract class Cursor {
 		return this.index == index
 			|| index == NO_OR_ALL_INDEX_INTEGER_VALUE
 			|| this.index == NO_OR_ALL_INDEX_INTEGER_VALUE;
+	}
+
+	public boolean nameEquals(String name) {
+		return this.name.equals(name)
+			|| name.equals(ALL_INDEX_STRING)
+			|| this.name.equals(ALL_INDEX_STRING);
 	}
 
 	public String getName() {
@@ -55,8 +62,9 @@ abstract class Cursor {
 		}
 		Cursor cursor = (Cursor)obj;
 
-		boolean isIndexEqual = indexEquals(cursor.getIndex());
-		return isIndexEqual && name.equals(cursor.name);
+		boolean indexEqual = indexEquals(cursor.getIndex());
+		boolean nameEqual = nameEquals(cursor.getName());
+		return nameEqual && indexEqual;
 	}
 
 	@Override

@@ -44,9 +44,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Value;
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
+import com.navercorp.fixturemonkey.ArbitraryBuilders;
 import com.navercorp.fixturemonkey.ArbitraryOption;
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.customizer.ArbitraryCustomizer;
@@ -794,8 +794,7 @@ class FixtureMonkeyTest {
 			.build()
 			.sample();
 
-		then(actual.getValue()).isNotNull();
-		then(actual.getValue()).isInstanceOf(String.class);
+		then(actual).isNotNull();
 	}
 
 	@Property
@@ -918,6 +917,94 @@ class FixtureMonkeyTest {
 			.sample();
 
 		then(actual.values.size()).isBetween(1, 3);
+	}
+
+	@Property
+	void giveMeSetAllName() {
+		TwoStringClass actual = this.sut.giveMeBuilder(TwoStringClass.class)
+			.set("*", "set")
+			.sample();
+
+		then(actual.value1).isEqualTo("set");
+		then(actual.value2).isEqualTo("set");
+	}
+
+	@Property
+	void giveMeListExactSize() {
+		StringListClass actual = this.sut.giveMeBuilder(StringListClass.class)
+			.size("values", 3)
+			.sample();
+
+		then(actual.values.size()).isEqualTo(3);
+	}
+
+	@Property
+	void giveMeZipWith() {
+		ArbitraryBuilder<String> stringArbitraryBuilder = this.sut.giveMeBuilder(String.class);
+		String actual = this.sut.giveMeBuilder(Integer.class)
+			.zipWith(stringArbitraryBuilder, (integer, string) -> integer + "" + string)
+			.sample();
+
+		then(actual).isNotNull();
+	}
+
+	@Property
+	void giveMeZipTwoElement() {
+		ArbitraryBuilder<String> stringArbitraryBuilder = this.sut.giveMeBuilder(String.class);
+		ArbitraryBuilder<Integer> integerArbitraryBuilder = this.sut.giveMeBuilder(Integer.class);
+		String actual = ArbitraryBuilders.zip(
+			stringArbitraryBuilder,
+			integerArbitraryBuilder,
+			(integer, string) -> integer + "" + string
+		).sample();
+
+		then(actual).isNotNull();
+	}
+
+	@Property
+	void setAfterBuildNotAffected() {
+		ArbitraryBuilder<StringWrapperClass> builder = this.sut.giveMeBuilder(StringWrapperClass.class);
+		Arbitrary<StringWrapperClass> build = builder.build();
+		ArbitraryBuilder<StringWrapperClass> actual = builder.set("value", "set");
+
+		StringWrapperClass actualSample = actual.sample();
+		StringWrapperClass buildSample = build.sample();
+		then(actualSample).isNotEqualTo(buildSample);
+		then(actualSample.value).isEqualTo("set");
+	}
+
+	@Property
+	void giveMeZipReturnsNew() {
+		ArbitraryBuilder<String> stringArbitraryBuilder = this.sut.giveMeBuilder(String.class);
+		ArbitraryBuilder<Integer> integerArbitraryBuilder = this.sut.giveMeBuilder(Integer.class);
+
+		Arbitrary<String> zippedArbitraryBuilder = ArbitraryBuilders.zip(
+			stringArbitraryBuilder,
+			integerArbitraryBuilder,
+			(integer, string) -> integer + "" + string
+		).build();
+
+		String result1 = zippedArbitraryBuilder.sample();
+		String result2 = zippedArbitraryBuilder.sample();
+		then(result1).isNotEqualTo(result2);
+	}
+
+	@Property
+	void giveMeMinSize() {
+		IntegerListClass actual = this.sut.giveMeBuilder(IntegerListClass.class)
+			.minSize("values", 2)
+			.sample();
+
+		then(actual.values.size()).isGreaterThanOrEqualTo(2);
+	}
+
+	@Property
+	void giveMeMaxSize() {
+		IntegerListClass actual = this.sut.giveMeBuilder(IntegerListClass.class)
+			.maxSize("values", 10)
+			.sample();
+
+		then(actual.values.size()).isLessThanOrEqualTo(10);
 	}
 
 	@Data
@@ -1059,5 +1146,11 @@ class FixtureMonkeyTest {
 	public static class OptionalClass {
 		@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 		private Optional<Integer> value;
+	}
+
+	@Data
+	public static class TwoStringClass {
+		private String value1;
+		private String value2;
 	}
 }

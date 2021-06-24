@@ -27,6 +27,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import javax.validation.ConstraintViolation;
@@ -55,7 +56,8 @@ import net.jqwik.api.arbitraries.StreamableArbitrary;
 import com.navercorp.fixturemonkey.validator.ArbitraryValidator;
 
 final class ArbitraryValue<T> implements Arbitrary<T> {
-	private final Arbitrary<T> arbitrary;
+	private final Supplier<Arbitrary<T>> generateArbitrary;
+	private Arbitrary<T> arbitrary;
 	private final boolean validOnly;
 	private final ArbitraryValidator<T> validator;
 	@SuppressWarnings("rawtypes")
@@ -64,123 +66,123 @@ final class ArbitraryValue<T> implements Arbitrary<T> {
 	private Exception lastException;
 
 	public ArbitraryValue(
-		Arbitrary<T> arbitrary,
+		Supplier<Arbitrary<T>> generateArbitrary,
 		ArbitraryValidator<T> validator,
 		boolean validOnly
 	) {
-		this.arbitrary = arbitrary;
+		this.generateArbitrary = generateArbitrary;
 		this.validator = validator;
 		this.validOnly = validOnly;
 	}
 
 	@Override
 	public RandomGenerator<T> generator(int genSize) {
-		return arbitrary.generator(genSize);
+		return getArbitrary().generator(genSize);
 	}
 
 	@Override
 	public Arbitrary<Object> asGeneric() {
-		return arbitrary.asGeneric();
+		return getArbitrary().asGeneric();
 	}
 
 	@Override
 	public boolean isUnique() {
-		return arbitrary.isUnique();
+		return getArbitrary().isUnique();
 	}
 
 	@Override
 	public Optional<ExhaustiveGenerator<T>> exhaustive() {
-		return arbitrary.exhaustive();
+		return getArbitrary().exhaustive();
 	}
 
 	@Override
 	public Optional<ExhaustiveGenerator<T>> exhaustive(long maxNumberOfSamples) {
-		return arbitrary.exhaustive(maxNumberOfSamples);
+		return getArbitrary().exhaustive(maxNumberOfSamples);
 	}
 
 	@Override
 	public EdgeCases<T> edgeCases() {
-		return arbitrary.edgeCases();
+		return getArbitrary().edgeCases();
 	}
 
 	@Override
 	public Optional<Stream<T>> allValues() {
-		return arbitrary.allValues();
+		return getArbitrary().allValues();
 	}
 
 	@Override
 	public void forEachValue(Consumer<? super T> action) {
-		arbitrary.forEachValue(action);
+		getArbitrary().forEachValue(action);
 	}
 
 	@Override
 	public Arbitrary<T> filter(Predicate<T> filterPredicate) {
-		return arbitrary.filter(filterPredicate);
+		return getArbitrary().filter(filterPredicate);
 	}
 
 	@Override
 	public <U> Arbitrary<U> map(Function<T, U> mapper) {
-		return arbitrary.map(mapper);
+		return getArbitrary().map(mapper);
 	}
 
 	@Override
 	public <U> Arbitrary<U> flatMap(Function<T, Arbitrary<U>> mapper) {
-		return arbitrary.flatMap(mapper);
+		return getArbitrary().flatMap(mapper);
 	}
 
 	@Override
 	public Arbitrary<T> injectNull(double nullProbability) {
-		return arbitrary.injectNull(nullProbability);
+		return getArbitrary().injectNull(nullProbability);
 	}
 
 	@Override
 	public Arbitrary<T> unique() {
-		return arbitrary.unique();
+		return getArbitrary().unique();
 	}
 
 	@Override
 	public Arbitrary<T> fixGenSize(int genSize) {
-		return arbitrary.fixGenSize(genSize);
+		return getArbitrary().fixGenSize(genSize);
 	}
 
 	@Override
 	public ListArbitrary<T> list() {
-		return arbitrary.list();
+		return getArbitrary().list();
 	}
 
 	@Override
 	public SetArbitrary<T> set() {
-		return arbitrary.set();
+		return getArbitrary().set();
 	}
 
 	@Override
 	public StreamArbitrary<T> stream() {
-		return arbitrary.stream();
+		return getArbitrary().stream();
 	}
 
 	@Override
 	public IteratorArbitrary<T> iterator() {
-		return arbitrary.iterator();
+		return getArbitrary().iterator();
 	}
 
 	@Override
 	public <A> StreamableArbitrary<T, A> array(Class<A> arrayClass) {
-		return arbitrary.array(arrayClass);
+		return getArbitrary().array(arrayClass);
 	}
 
 	@Override
 	public Arbitrary<Optional<T>> optional() {
-		return arbitrary.optional();
+		return getArbitrary().optional();
 	}
 
 	@Override
 	public Arbitrary<List<T>> collect(Predicate<List<T>> until) {
-		return arbitrary.collect(until);
+		return getArbitrary().collect(until);
 	}
 
 	@Override
 	public Stream<T> sampleStream() {
-		return arbitrary.sampleStream();
+		return getArbitrary().sampleStream();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -189,7 +191,7 @@ final class ArbitraryValue<T> implements Arbitrary<T> {
 		return uniqueAndGet(
 			() -> {
 				try {
-					return arbitrary
+					return getArbitrary()
 						.filter((Predicate<T>)this.validateFilter(validOnly))
 						.sample();
 				} catch (TooManyFilterMissesException ex) {
@@ -205,6 +207,8 @@ final class ArbitraryValue<T> implements Arbitrary<T> {
 						+ "\n\nFixture factory Constraint Violation messages. \n\n" + builder, lastException);
 
 					throw ex;
+				} finally {
+					this.arbitrary = null; // in order to getting new value whenever sampling, set arbitrary as null
 				}
 			}
 		);
@@ -253,6 +257,13 @@ final class ArbitraryValue<T> implements Arbitrary<T> {
 	@Override
 	public Arbitrary<T> edgeCases(Consumer<Config<T>> configurator) {
 		return arbitrary.edgeCases(configurator);
+	}
+
+	private synchronized Arbitrary<T> getArbitrary() {
+		if (this.arbitrary == null) {
+			this.arbitrary = generateArbitrary.get();
+		}
+		return this.arbitrary;
 	}
 
 	@SuppressWarnings({"unchecked", "rawtypes"})

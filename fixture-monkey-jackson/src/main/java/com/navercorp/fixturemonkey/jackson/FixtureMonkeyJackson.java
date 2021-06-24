@@ -25,7 +25,7 @@ import java.util.List;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class FixtureMonkeyJackson {
+public final class FixtureMonkeyJackson {
 	private static final List<Module> REGISTERED_MODULES = ObjectMapper.findModules().stream()
 		.filter(module -> !module.getModuleName().equalsIgnoreCase("AfterburnerModule"))
 		.collect(toList()); // afterburner only support "public setter" for deserializing

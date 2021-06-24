@@ -20,7 +20,7 @@ package com.navercorp.fixturemonkey.arbitrary;
 
 import java.util.List;
 
-class CursorHolder {
+final class CursorHolder {
 	private final List<Cursor> cursors;
 	private int index = 0;
 	private final int size;

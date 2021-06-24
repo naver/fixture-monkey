@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @SuppressWarnings("rawtypes")
-public class CompositeArbitraryValidator implements ArbitraryValidator<Object> {
+public final class CompositeArbitraryValidator implements ArbitraryValidator<Object> {
 	private final Map<Class<?>, ArbitraryValidator> validators;
 	private final ArbitraryValidator defaultValidator;
 

@@ -47,7 +47,7 @@ final class ArrayBuilder {
 		return (Arbitrary<T>)builder.build(ArrayBuilderFrame::build);
 	}
 
-	private static class ArrayBuilderFrame {
+	private static final class ArrayBuilderFrame {
 		private final List<Object> array;
 		private final Class<?> componentType;
 		private final int size;

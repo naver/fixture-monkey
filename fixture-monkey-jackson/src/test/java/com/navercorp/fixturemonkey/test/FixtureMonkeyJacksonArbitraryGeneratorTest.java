@@ -30,12 +30,15 @@ import net.jqwik.api.Arbitrary;
 import net.jqwik.api.Property;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonAppend.Prop;
 
+import lombok.Data;
 import lombok.Value;
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.customizer.ExpressionSpec;
+import com.navercorp.fixturemonkey.generator.BeanArbitraryGenerator;
 import com.navercorp.fixturemonkey.jackson.generator.JacksonArbitraryGenerator;
 
 class FixtureMonkeyJacksonArbitraryGeneratorTest {
@@ -545,6 +548,75 @@ class FixtureMonkeyJacksonArbitraryGeneratorTest {
 		then(actual.getStringList().size()).isBetween(1, 3);
 	}
 
+	@Property
+	void giveMeJsonPropertySet() {
+		JsonPropertyClass actual = this.sut.giveMeBuilder(JsonPropertyClass.class)
+			.set("jsonValue", "set")
+			.sample();
+
+		then(actual.value).isEqualTo("set");
+	}
+
+	@Property
+	void giveMeJsonPropertyWithBeanArbitraryGenerator() {
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.defaultGenerator(BeanArbitraryGenerator.INSTANCE)
+			.build();
+
+		JsonPropertyClass actual = sut.giveMeBuilder(JsonPropertyClass.class)
+			.set("jsonValue", "set")
+			.sample();
+
+		then(actual.value).isNotEqualTo("set");
+	}
+
+	@Property
+	void giveMeJsonPropertySetGenerator() {
+		JsonPropertyClass actual = sut.giveMeBuilder(JsonPropertyClass.class)
+			.generator(BeanArbitraryGenerator.INSTANCE)
+			.set("jsonValue", "set")
+			.sample();
+
+		then(actual.value).isNotEqualTo("set");
+	}
+
+	@Property
+	void giveMeJsonPropertySetGeneratorToJackson() {
+		JsonPropertyClass actual = this.sut.giveMeBuilder(JsonPropertyClass.class)
+			.generator(BeanArbitraryGenerator.INSTANCE)
+			.generator(JacksonArbitraryGenerator.INSTANCE)
+			.set("jsonValue", "set")
+			.sample();
+
+		then(actual.value).isEqualTo("set");
+	}
+
+	@Property
+	void giveMeJsonPropertySetFailedAfterDecompose() {
+		JsonPropertyClass jsonPropertyClass = new JsonPropertyClass();
+		jsonPropertyClass.setValue("jsonValue");
+
+		JsonPropertyClass actual = this.sut.giveMeBuilder(jsonPropertyClass)
+			.generator(BeanArbitraryGenerator.INSTANCE)
+			.set("jsonValue", "set")
+			.sample();
+
+		then(actual.value).isEqualTo("jsonValue");
+	}
+
+	@Property
+	void giveMeJsonPropertySetAfterDecompose() {
+		JsonPropertyClass jsonPropertyClass = new JsonPropertyClass();
+		jsonPropertyClass.setValue("jsonValue");
+
+		JsonPropertyClass actual = this.sut.giveMeBuilder(jsonPropertyClass)
+			.generator(BeanArbitraryGenerator.INSTANCE)
+			.set("value", "set")
+			.sample();
+
+		then(actual.value).isEqualTo("set");
+	}
+
 	@Value
 	private static class IntegerWrapperClass {
 		@JsonProperty("value")
@@ -597,5 +669,11 @@ class FixtureMonkeyJacksonArbitraryGeneratorTest {
 	private static class ListListString {
 		@JsonProperty("values")
 		List<List<String>> stringListList;
+	}
+
+	@Data
+	public static class JsonPropertyClass {
+		@JsonProperty("jsonValue")
+		private String value;
 	}
 }

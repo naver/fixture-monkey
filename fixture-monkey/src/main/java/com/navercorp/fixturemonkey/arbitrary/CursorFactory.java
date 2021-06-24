@@ -26,7 +26,7 @@ import java.util.List;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryExpression.Exp;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryExpression.ExpIndex;
 
-class CursorFactory {
+final class CursorFactory {
 
 	public static List<Cursor> create(Exp exp) {
 		List<Cursor> steps = new ArrayList<>();

@@ -18,6 +18,7 @@
 
 package com.navercorp.fixturemonkey.jackson.generator;
 
+import java.lang.reflect.Field;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAccessor;
@@ -70,7 +71,7 @@ public final class JacksonArbitraryGenerator extends AbstractArbitraryGenerator 
 	@Override
 	protected <T> Arbitrary<T> generateObject(ArbitraryType type, List<ArbitraryNode> nodes) {
 		FieldArbitraries fieldArbitraries = new FieldArbitraries(
-			toArbitrariesByFieldName(nodes, this::resolveFieldName, this::formatValue)
+			toArbitrariesByFieldName(nodes, ArbitraryNode::getFieldName, this::formatValue)
 		);
 
 		this.arbitraryCustomizers.customizeFields(type.getType(), fieldArbitraries);
@@ -122,16 +123,6 @@ public final class JacksonArbitraryGenerator extends AbstractArbitraryGenerator 
 		}
 	}
 
-	private <T> String resolveFieldName(ArbitraryNode<T> node) {
-		ArbitraryType<T> nodeType = node.getType();
-		JsonProperty jsonProperty = nodeType.getAnnotation(JsonProperty.class);
-		if (jsonProperty == null) {
-			return node.getFieldName();
-		} else {
-			return jsonProperty.value();
-		}
-	}
-
 	@Override
 	public ArbitraryGenerator withFixtureCustomizers(ArbitraryCustomizers arbitraryCustomizers) {
 		if (this.arbitraryCustomizers == arbitraryCustomizers) {
@@ -139,6 +130,16 @@ public final class JacksonArbitraryGenerator extends AbstractArbitraryGenerator 
 		}
 
 		return new JacksonArbitraryGenerator(objectMapper, arbitraryCustomizers);
+	}
+
+	@Override
+	public String resolveFieldName(Field field) {
+		JsonProperty jsonProperty = field.getAnnotation(JsonProperty.class);
+		if (jsonProperty == null) {
+			return field.getName();
+		} else {
+			return jsonProperty.value();
+		}
 	}
 }
 

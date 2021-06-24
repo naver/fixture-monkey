@@ -36,7 +36,7 @@ import com.navercorp.fixturemonkey.arbitrary.ArbitraryType;
 import com.navercorp.fixturemonkey.customizer.ArbitraryCustomizers;
 import com.navercorp.fixturemonkey.customizer.WithFixtureCustomizer;
 
-public class BeanArbitraryGenerator extends AbstractArbitraryGenerator
+public final class BeanArbitraryGenerator extends AbstractArbitraryGenerator
 	implements WithFixtureCustomizer {
 	public static final BeanArbitraryGenerator INSTANCE = new BeanArbitraryGenerator();
 	private final Logger log = LoggerFactory.getLogger(this.getClass());

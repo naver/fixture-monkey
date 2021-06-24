@@ -54,6 +54,11 @@ public final class ArbitrarySet<T> extends AbstractArbitrarySet<T> {
 	}
 
 	@Override
+	public ArbitrarySet<T> copy() {
+		return new ArbitrarySet<>(this.getArbitraryExpression(), this.value, this.limit);
+	}
+
+	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
@@ -71,10 +76,5 @@ public final class ArbitrarySet<T> extends AbstractArbitrarySet<T> {
 	@Override
 	public int hashCode() {
 		return Objects.hash(super.hashCode(), value);
-	}
-
-	@Override
-	public ArbitrarySet<T> copy() {
-		return new ArbitrarySet<>(this.getArbitraryExpression(), this.value, this.limit);
 	}
 }

@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class ArbitraryExpression implements Comparable<ArbitraryExpression> {
+public final class ArbitraryExpression implements Comparable<ArbitraryExpression> {
 	private final List<Exp> expList;
 
 	private ArbitraryExpression(String expression) {
@@ -80,6 +80,25 @@ public class ArbitraryExpression implements Comparable<ArbitraryExpression> {
 	}
 
 	@Override
+	public int compareTo(ArbitraryExpression arbitraryExpression) {
+		List<Exp> expList = this.getExpList();
+		List<Exp> oExpList = arbitraryExpression.getExpList();
+
+		int expLength = Math.min(oExpList.size(), expList.size());
+
+		for (int i = 0; i < expLength; i++) {
+			Exp exp = expList.get(i);
+			Exp oExp = oExpList.get(i);
+			int expCompare = exp.compareTo(oExp);
+			if (expCompare != 0) {
+				return expCompare;
+			}
+		}
+
+		return Integer.compare(oExpList.size(), expList.size());
+	}
+
+	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
@@ -102,41 +121,7 @@ public class ArbitraryExpression implements Comparable<ArbitraryExpression> {
 			.collect(Collectors.joining("."));
 	}
 
-	public String toString(int size) {
-		if (size >= this.expList.size()) {
-			return toString();
-		}
-
-		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < size; i++) {
-			sb.append(expList.get(i).toString());
-			if (i != size - 1) {
-				sb.append(".");
-			}
-		}
-		return sb.toString();
-	}
-
-	@Override
-	public int compareTo(ArbitraryExpression arbitraryExpression) {
-		List<Exp> expList = this.getExpList();
-		List<Exp> oExpList = arbitraryExpression.getExpList();
-
-		int expLength = Math.min(oExpList.size(), expList.size());
-
-		for (int i = 0; i < expLength; i++) {
-			Exp exp = expList.get(i);
-			Exp oExp = oExpList.get(i);
-			int expCompare = exp.compareTo(oExp);
-			if (expCompare != 0) {
-				return expCompare;
-			}
-		}
-
-		return Integer.compare(oExpList.size(), expList.size());
-	}
-
-	public static class ExpIndex implements Comparable<ExpIndex> {
+	public static final class ExpIndex implements Comparable<ExpIndex> {
 		private final int index;
 
 		public ExpIndex(int index) {
@@ -149,6 +134,11 @@ public class ArbitraryExpression implements Comparable<ArbitraryExpression> {
 
 		public boolean equalsIgnoreAllIndex(ExpIndex expIndex) {
 			return this.index == expIndex.index;
+		}
+
+		@Override
+		public int compareTo(ExpIndex expIndex) {
+			return Integer.compare(this.index, expIndex.index);
 		}
 
 		@Override
@@ -171,11 +161,6 @@ public class ArbitraryExpression implements Comparable<ArbitraryExpression> {
 
 		public String toString() {
 			return index == NO_OR_ALL_INDEX_INTEGER_VALUE ? ALL_INDEX_STRING : String.valueOf(index);
-		}
-
-		@Override
-		public int compareTo(ExpIndex expIndex) {
-			return Integer.compare(this.index, expIndex.index);
 		}
 	}
 

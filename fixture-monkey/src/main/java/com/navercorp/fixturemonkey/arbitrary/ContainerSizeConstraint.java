@@ -18,12 +18,8 @@
 
 package com.navercorp.fixturemonkey.arbitrary;
 
-import static com.navercorp.fixturemonkey.Constants.DEFAULT_ELEMENT_MAX_LIMIT;
 import static com.navercorp.fixturemonkey.Constants.DEFAULT_ELEMENT_MAX_SIZE;
-import static com.navercorp.fixturemonkey.Constants.DEFAULT_ELEMENT_MIN_LIMIT;
 import static com.navercorp.fixturemonkey.Constants.DEFAULT_ELEMENT_MIN_SIZE;
-
-import java.util.function.Function;
 
 import javax.annotation.Nullable;
 
@@ -37,8 +33,8 @@ public final class ContainerSizeConstraint {
 	private final Integer maxSize;
 
 	public ContainerSizeConstraint(@Nullable Integer minSize, @Nullable Integer maxSize) {
-		this.minSize = ifNotNullApply(minSize, it -> Math.max(DEFAULT_ELEMENT_MIN_LIMIT, it));
-		this.maxSize = ifNotNullApply(maxSize, it -> Math.min(DEFAULT_ELEMENT_MAX_LIMIT, it));
+		this.minSize = minSize;
+		this.maxSize = maxSize;
 	}
 
 	public int getMinSize() {
@@ -57,10 +53,11 @@ public final class ContainerSizeConstraint {
 		return Arbitraries.integers().between(getMinSize(), getMaxSize()).sample();
 	}
 
-	private <T, U> U ifNotNullApply(T object, Function<T, U> function) {
-		if (object == null) {
-			return null;
-		}
-		return function.apply(object);
+	public ContainerSizeConstraint withMinSize(@Nullable Integer minSize) {
+		return new ContainerSizeConstraint(minSize, this.maxSize);
+	}
+
+	public ContainerSizeConstraint withMaxSize(@Nullable Integer maxSize) {
+		return new ContainerSizeConstraint(this.minSize, maxSize);
 	}
 }

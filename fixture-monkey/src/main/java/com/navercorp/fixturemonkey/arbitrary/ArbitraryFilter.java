@@ -26,7 +26,7 @@ import net.jqwik.api.Arbitrary;
 import com.navercorp.fixturemonkey.TypeSupports;
 
 @SuppressWarnings("unchecked")
-public class ArbitraryFilter<T> implements PostArbitraryManipulator<T> {
+public final class ArbitraryFilter<T> implements PostArbitraryManipulator<T> {
 	private ArbitraryExpression arbitraryExpression;
 	private final Class<T> clazz;
 	private final Predicate<T> filter;
@@ -58,25 +58,6 @@ public class ArbitraryFilter<T> implements PostArbitraryManipulator<T> {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null || getClass() != obj.getClass()) {
-			return false;
-		}
-		ArbitraryFilter<?> that = (ArbitraryFilter<?>)obj;
-		return clazz.equals(that.clazz)
-			&& getArbitraryExpression().equals(that.getArbitraryExpression())
-			&& filter.equals(that.filter);
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(clazz, getArbitraryExpression(), filter);
-	}
-
-	@Override
 	public boolean isMappableTo(ArbitraryNode<T> arbitraryNode) {
 		return TypeSupports.isSameType(this.clazz, arbitraryNode.getType().getType());
 	}
@@ -94,5 +75,24 @@ public class ArbitraryFilter<T> implements PostArbitraryManipulator<T> {
 	@Override
 	public ArbitraryFilter<T> copy() {
 		return new ArbitraryFilter<>(this.clazz, this.arbitraryExpression, this.filter, this.limit);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null || getClass() != obj.getClass()) {
+			return false;
+		}
+		ArbitraryFilter<?> that = (ArbitraryFilter<?>)obj;
+		return clazz.equals(that.clazz)
+			&& getArbitraryExpression().equals(that.getArbitraryExpression())
+			&& filter.equals(that.filter);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(clazz, getArbitraryExpression(), filter);
 	}
 }

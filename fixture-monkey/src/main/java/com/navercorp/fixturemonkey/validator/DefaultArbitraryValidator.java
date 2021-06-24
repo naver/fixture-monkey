@@ -25,7 +25,7 @@ import javax.validation.ConstraintViolationException;
 import javax.validation.Validation;
 import javax.validation.Validator;
 
-public class DefaultArbitraryValidator<T> implements ArbitraryValidator<T> {
+public final class DefaultArbitraryValidator<T> implements ArbitraryValidator<T> {
 	private Validator validator;
 
 	public DefaultArbitraryValidator() {

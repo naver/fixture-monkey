@@ -29,7 +29,7 @@ import net.jqwik.api.Arbitrary;
 
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryNode;
 
-class CollectionBuilders {
+final class CollectionBuilders {
 	@SuppressWarnings("rawtypes")
 	public static <T> Arbitrary<T> build(Class<T> clazz, List<ArbitraryNode> nodes) {
 		if (isList(clazz)) {

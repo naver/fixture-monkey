@@ -71,7 +71,7 @@ import com.navercorp.fixturemonkey.generator.StringAnnotatedArbitraryGenerator;
 import com.navercorp.fixturemonkey.generator.UuidAnnotatedArbitraryGenerator;
 import com.navercorp.fixturemonkey.generator.ZonedDateTimeAnnotatedArbitraryGenerator;
 
-public class ArbitraryOption {
+public final class ArbitraryOption {
 	public static final ArbitraryOption DEFAULT_FIXTURE_OPTIONS = ArbitraryOption.builder().build();
 
 	private final Map<Class<?>, AnnotatedArbitraryGenerator<?>> annotatedArbitraryMap;
@@ -135,7 +135,7 @@ public class ArbitraryOption {
 		return new FixtureOptionsBuilder();
 	}
 
-	public static class FixtureOptionsBuilder {
+	public static final class FixtureOptionsBuilder {
 		private static final Map<Class<?>, AnnotatedArbitraryGenerator<?>> DEFAULT_TYPE_ARBITRARY_SPECS;
 		private static final Set<String> DEFAULT_EXCEPT_GENERATE_PACKAGE;
 		private static final Set<String> DEFAULT_NONNULL_ANNOTATIONS;

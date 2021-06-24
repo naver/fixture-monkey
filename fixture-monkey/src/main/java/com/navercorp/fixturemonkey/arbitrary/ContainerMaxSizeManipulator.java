@@ -22,23 +22,17 @@ import java.util.Objects;
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 
-public class ContainerSizeManipulator implements MetadataManipulator {
+public final class ContainerMaxSizeManipulator implements MetadataManipulator {
 	private ArbitraryExpression arbitraryExpression;
-	private final int min;
-	private final int max;
+	private final int size;
 
-	public ContainerSizeManipulator(ArbitraryExpression arbitraryExpression, int min, int max) {
+	public ContainerMaxSizeManipulator(ArbitraryExpression arbitraryExpression, int size) {
 		this.arbitraryExpression = arbitraryExpression;
-		this.min = min;
-		this.max = max;
+		this.size = size;
 	}
 
-	public int getMin() {
-		return min;
-	}
-
-	public int getMax() {
-		return max;
+	public int getSize() {
+		return size;
 	}
 
 	@Override
@@ -57,6 +51,16 @@ public class ContainerSizeManipulator implements MetadataManipulator {
 	}
 
 	@Override
+	public Priority getPriority() {
+		return Priority.HIGH;
+	}
+
+	@Override
+	public ContainerMaxSizeManipulator copy() {
+		return new ContainerMaxSizeManipulator(this.arbitraryExpression, this.size);
+	}
+
+	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
@@ -64,24 +68,13 @@ public class ContainerSizeManipulator implements MetadataManipulator {
 		if (obj == null || getClass() != obj.getClass()) {
 			return false;
 		}
-		ContainerSizeManipulator that = (ContainerSizeManipulator)obj;
-		return min == that.min
-			&& max == that.max
+		ContainerMaxSizeManipulator that = (ContainerMaxSizeManipulator)obj;
+		return size == that.size
 			&& Objects.equals(arbitraryExpression, that.arbitraryExpression);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(arbitraryExpression, min, max);
-	}
-
-	@Override
-	public Priority getPriority() {
-		return Priority.HIGH;
-	}
-
-	@Override
-	public ContainerSizeManipulator copy() {
-		return new ContainerSizeManipulator(this.arbitraryExpression, this.min, this.max);
+		return Objects.hash(arbitraryExpression, size);
 	}
 }

@@ -41,7 +41,8 @@ import com.navercorp.fixturemonkey.arbitrary.ArbitrarySetArbitrary;
 import com.navercorp.fixturemonkey.arbitrary.ArbitrarySetNullity;
 import com.navercorp.fixturemonkey.arbitrary.ArbitrarySetPrefix;
 import com.navercorp.fixturemonkey.arbitrary.ArbitrarySetSuffix;
-import com.navercorp.fixturemonkey.arbitrary.ContainerSizeManipulator;
+import com.navercorp.fixturemonkey.arbitrary.ContainerMaxSizeManipulator;
+import com.navercorp.fixturemonkey.arbitrary.ContainerMinSizeManipulator;
 import com.navercorp.fixturemonkey.arbitrary.MetadataManipulator;
 import com.navercorp.fixturemonkey.arbitrary.PostArbitraryManipulator;
 import com.navercorp.fixturemonkey.arbitrary.PreArbitraryManipulator;
@@ -134,7 +135,8 @@ public final class ExpressionSpec {
 
 	public ExpressionSpec size(String expression, int min, int max) {
 		ArbitraryExpression fixtureExpression = ArbitraryExpression.from(expression);
-		metadataManipulators.add(new ContainerSizeManipulator(fixtureExpression, min, max));
+		metadataManipulators.add(new ContainerMinSizeManipulator(fixtureExpression, min));
+		metadataManipulators.add(new ContainerMaxSizeManipulator(fixtureExpression, max));
 		return this;
 	}
 
