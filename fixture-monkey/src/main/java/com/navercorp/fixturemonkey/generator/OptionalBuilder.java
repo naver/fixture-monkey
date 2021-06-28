@@ -39,6 +39,6 @@ final class OptionalBuilder {
 			throw new IllegalArgumentException("Optional can not have more than one value.");
 		}
 
-		return (Arbitrary<T>)nodes.get(0).getArbitrary().optional();
+		return (Arbitrary<T>)nodes.get(0).getArbitrary().map(Optional::of);
 	}
 }

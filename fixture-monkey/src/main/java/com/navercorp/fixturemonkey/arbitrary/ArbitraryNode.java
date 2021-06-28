@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
 
-import com.navercorp.fixturemonkey.generator.ArbitraryGenerator;
+import com.navercorp.fixturemonkey.TypeSupports;
 
 public final class ArbitraryNode<T> {
 	private static final String HEAD_NAME = "HEAD";
@@ -154,23 +154,30 @@ public final class ArbitraryNode<T> {
 		setContainerSizeConstraint(new ContainerSizeConstraint(min, max));
 	}
 
-	@SuppressWarnings("rawtypes")
 	public void apply(PreArbitraryManipulator<T> preArbitraryManipulator) {
 		if (preArbitraryManipulator instanceof AbstractArbitrarySet) {
 			Object toValue = ((AbstractArbitrarySet<T>)preArbitraryManipulator).getValue();
 			Class<?> clazz = this.getType().getType();
-			if (toValue.getClass() != clazz) {
-				log.warn("node type is \"{}\", given set value is \"{}\".",
-					toValue.getClass().getSimpleName(),
-					clazz.getSimpleName()
+			Class<?> toValueClazz = toValue.getClass();
+			if (
+				!TypeSupports.isCompatibleType(clazz, toValueClazz)
+					&& !clazz.isAssignableFrom(toValueClazz)
+					&& !Arbitrary.class.isAssignableFrom(toValueClazz)
+			) {
+				log.warn("field \"{}\" type is \"{}\", but given set value is \"{}\".",
+					fieldName,
+					clazz.getSimpleName(),
+					toValueClazz.getSimpleName()
 				);
 			}
 			Arbitrary<T> appliedArbitrary = preArbitraryManipulator.apply(status.arbitrary);
 			this.setFixed(true);
 			this.setArbitrary(appliedArbitrary);
-		} else if (preArbitraryManipulator instanceof ArbitrarySetNullity) {
-			this.setActive(!((ArbitrarySetNullity)preArbitraryManipulator).toNull());
 		}
+	}
+
+	public void apply(ArbitraryNullity manipulator) {
+		this.setActive(!manipulator.toNull());
 	}
 
 	public void setNullable(boolean nullable) {
@@ -191,12 +198,20 @@ public final class ArbitraryNode<T> {
 
 	public void setContainerMinSize(@Nullable Integer minSize) {
 		FixtureNodeStatus<T> status = this.getStatus();
+		if (status.getContainerSizeConstraint() == null) {
+			status.setContainerSizeConstraint(new ContainerSizeConstraint(minSize, null));
+			return;
+		}
 		status.setContainerSizeConstraint(status.getContainerSizeConstraint().withMinSize(minSize));
 	}
 
-	public void setContainerMaxSize(@Nullable Integer minSize) {
+	public void setContainerMaxSize(@Nullable Integer maxSize) {
 		FixtureNodeStatus<T> status = this.getStatus();
-		status.setContainerSizeConstraint(status.getContainerSizeConstraint().withMaxSize(minSize));
+		if (status.getContainerSizeConstraint() == null) {
+			status.setContainerSizeConstraint(new ContainerSizeConstraint(null, maxSize));
+			return;
+		}
+		status.setContainerSizeConstraint(status.getContainerSizeConstraint().withMaxSize(maxSize));
 	}
 
 	public void setContainerSizeConstraint(ContainerSizeConstraint containerSizeConstraint) {
@@ -239,8 +254,12 @@ public final class ArbitraryNode<T> {
 
 	@SuppressWarnings("unchecked")
 	public ArbitraryType<T> getType() {
-		if (type.isNoneType()) {
-			return new ArbitraryType<>((Class<T>)this.getValueSupplier().get().getClass());
+		if (type instanceof NullArbitraryType) {
+			T value = this.getValueSupplier().get();
+			if (value == null) {
+				return type;
+			}
+			return new ArbitraryType<>((Class<T>)value.getClass());
 		}
 		return type;
 	}
@@ -281,6 +300,10 @@ public final class ArbitraryNode<T> {
 		return getStatus().isFixed();
 	}
 
+	public boolean isLeafNode() {
+		return this.getChildren().isEmpty() && this.getArbitrary() != null;
+	}
+
 	public Supplier<T> getValueSupplier() {
 		return valueSupplier;
 	}
@@ -307,35 +330,10 @@ public final class ArbitraryNode<T> {
 			.build();
 	}
 
-	<U> void update(ArbitraryNode<U> entryNode, ArbitraryGenerator generator) {
-		if (!entryNode.isLeafNode() && !entryNode.isFixed()) {
-			for (ArbitraryNode<?> nextChild : entryNode.getChildren()) {
-				update(nextChild, generator);
-			}
-
-			entryNode.setArbitrary(
-				generator.generate(entryNode.type, entryNode.children)
-			);
-
-		}
-
-		entryNode.getPostArbitraryManipulators().forEach(
-			operation -> entryNode.setArbitrary(operation.apply(entryNode.getArbitrary()))
-		);
-
-		if (entryNode.isNullable() && !entryNode.isManipulated()) {
-			entryNode.setArbitrary(entryNode.getArbitrary().injectNull(entryNode.getNullInject()));
-		}
-	}
-
 	private boolean matchExpression(Cursor cursor) {
 		boolean sameName = cursor.nameEquals(this.getFieldName());
 		boolean sameIndex = cursor.indexEquals(indexOfIterable);
 		return sameName && sameIndex;
-	}
-
-	private boolean isLeafNode() {
-		return this.getChildren().isEmpty() && this.getArbitrary() != null;
 	}
 
 	private FixtureNodeStatus<T> getStatus() {
@@ -367,7 +365,7 @@ public final class ArbitraryNode<T> {
 	private static final class FixtureNodeStatus<T> {
 		@Nullable
 		private Arbitrary<T> arbitrary = null; // immutable
-		private ContainerSizeConstraint containerSizeConstraint = new ContainerSizeConstraint(null, null); // immutable
+		private ContainerSizeConstraint containerSizeConstraint; // immutable
 		private List<PostArbitraryManipulator<T>> postArbitraryManipulators = new ArrayList<>();
 		private boolean nullable = false;
 		private boolean manipulated = false;
@@ -483,8 +481,8 @@ public final class ArbitraryNode<T> {
 	public static final class FixtureNodeBuilder<T> {
 		@SuppressWarnings("rawtypes")
 		private List<ArbitraryNode> children = new ArrayList<>();
-		@SuppressWarnings({"rawtypes", "unchecked"})
-		private ArbitraryType<T> type = new ArbitraryType(Object.class);
+		@SuppressWarnings("unchecked")
+		private ArbitraryType<T> type = NullArbitraryType.INSTANCE;
 		private String fieldName = HEAD_NAME;
 		private String metadata = "";
 		private int indexOfIterable = NO_OR_ALL_INDEX_INTEGER_VALUE;

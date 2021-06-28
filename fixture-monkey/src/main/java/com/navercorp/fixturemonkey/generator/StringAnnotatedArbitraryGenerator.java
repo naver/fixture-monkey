@@ -64,6 +64,7 @@ public class StringAnnotatedArbitraryGenerator implements AnnotatedArbitraryGene
 		Optional<NotBlank> notBlankAnnotations = annotationSource.findAnnotation(NotBlank.class);
 		if (notBlankAnnotations.isPresent()) {
 			notBlank = true;
+			min = BigDecimal.ONE;
 		}
 
 		Optional<Pattern> pattern = annotationSource.findAnnotation(Pattern.class);

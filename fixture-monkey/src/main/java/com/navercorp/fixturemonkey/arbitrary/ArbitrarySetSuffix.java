@@ -37,11 +37,10 @@ public final class ArbitrarySetSuffix extends AbstractArbitrarySet<String> {
 	}
 
 	@Override
-	public Arbitrary<String> apply(Arbitrary<?> from) {
+	public Arbitrary<String> apply(Arbitrary<String> from) {
 		return Combinators.combine(value, from)
 			.as((suffix, fromValue) -> {
-				String arbitraryString = (String)fromValue;
-				String concatString = arbitraryString + suffix;
+				String concatString = fromValue + suffix;
 				int remainLength = concatString.length() - suffix.length();
 				return concatString.substring(Math.min(remainLength, suffix.length()));
 			});

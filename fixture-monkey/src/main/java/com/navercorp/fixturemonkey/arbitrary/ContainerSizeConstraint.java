@@ -42,6 +42,11 @@ public final class ContainerSizeConstraint {
 	}
 
 	public int getMaxSize() {
+		if (maxSize == null
+			&& minSize != null && minSize > DEFAULT_ELEMENT_MAX_SIZE
+		) {
+			return minSize + DEFAULT_ELEMENT_MAX_SIZE;
+		}
 		return maxSize == null ? DEFAULT_ELEMENT_MAX_SIZE : maxSize;
 	}
 
@@ -54,10 +59,17 @@ public final class ContainerSizeConstraint {
 	}
 
 	public ContainerSizeConstraint withMinSize(@Nullable Integer minSize) {
+		if (minSize == null && this.minSize != null) {
+			return new ContainerSizeConstraint(this.minSize, this.maxSize);
+		}
 		return new ContainerSizeConstraint(minSize, this.maxSize);
 	}
 
 	public ContainerSizeConstraint withMaxSize(@Nullable Integer maxSize) {
+		if (maxSize == null && this.maxSize != null) {
+			return new ContainerSizeConstraint(this.minSize, this.maxSize);
+		}
 		return new ContainerSizeConstraint(this.minSize, maxSize);
+
 	}
 }

@@ -26,7 +26,6 @@ import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
 import net.jqwik.api.Property;
 
-import com.navercorp.fixturemonkey.arbitrary.ArbitraryExpression;
 import com.navercorp.fixturemonkey.customizer.ExpressionSpec;
 
 public class ExpressionSpecTest {
@@ -59,7 +58,7 @@ public class ExpressionSpecTest {
 
 		ExpressionSpec actual = merger.merge(merged);
 
-		then(actual.getPreArbitraryManipulators()).hasSize(2);
+		then(actual.getBuilderManipulators()).hasSize(2);
 	}
 
 	@Property
@@ -71,33 +70,57 @@ public class ExpressionSpecTest {
 
 		ExpressionSpec actual = merger.merge(merged, false);
 
-		then(actual.getPreArbitraryManipulators()).hasSize(1);
+		then(actual.getBuilderManipulators()).hasSize(1);
 	}
 
 	@Property
-	void mergeFilter() {
+	void mergePostCondition() {
 		ExpressionSpec merger = new ExpressionSpec()
-			.filter("test", Objects::nonNull);
+			.setPostCondition("test", String.class, Objects::nonNull);
 		ExpressionSpec merged = new ExpressionSpec()
-			.filter("test", Objects::nonNull)
-			.filter("test", Objects::nonNull);
+			.setPostCondition("test", String.class, Objects::nonNull)
+			.setPostCondition("test", String.class, Objects::nonNull);
 
 		ExpressionSpec actual = merger.merge(merged);
 
-		then(actual.getPostArbitraryManipulators()).hasSize(2);
+		then(actual.getBuilderManipulators()).hasSize(2);
 	}
 
 	@Property
-	void mergeFilterNotOverwrite() {
+	void mergePostConditionNotOverwrite() {
 		ExpressionSpec merger = new ExpressionSpec()
-			.filter("test", Objects::nonNull)
-			.filter("test", Objects::nonNull);
+			.setPostCondition("test", String.class, Objects::nonNull)
+			.setPostCondition("test", String.class, Objects::nonNull);
 		ExpressionSpec merged = new ExpressionSpec()
-			.filter("test", Objects::nonNull);
+			.setPostCondition("test", String.class, Objects::nonNull);
 
 		ExpressionSpec actual = merger.merge(merged, false);
 
-		then(actual.getPostArbitraryManipulators()).hasSize(2);
+		then(actual.getBuilderManipulators()).hasSize(2);
+	}
+
+	@Property
+	void mergeNull() {
+		ExpressionSpec merger = new ExpressionSpec()
+			.setNull("test");
+		ExpressionSpec merged = new ExpressionSpec()
+			.setNull("test");
+
+		ExpressionSpec actual = merger.merge(merged);
+
+		then(actual.getBuilderManipulators()).hasSize(2);
+	}
+
+	@Property
+	void mergeNullNotOverwrite() {
+		ExpressionSpec merger = new ExpressionSpec()
+			.setNull("test");
+		ExpressionSpec merged = new ExpressionSpec()
+			.setNull("test");
+
+		ExpressionSpec actual = merger.merge(merged, false);
+
+		then(actual.getBuilderManipulators()).hasSize(1);
 	}
 
 	@Property
@@ -108,18 +131,16 @@ public class ExpressionSpecTest {
 
 		actual.exclude("test");
 
-		then(actual.getPreArbitraryManipulators()).hasSize(1);
-		then(actual.getPreArbitraryManipulators().get(0).getArbitraryExpression())
-			.isEqualTo(ArbitraryExpression.from("test2"));
+		then(actual.getBuilderManipulators()).hasSize(1);
 	}
 
 	@Property
-	void hasFilter() {
+	void hasPostCondition() {
 		ExpressionSpec actual = new ExpressionSpec()
-			.filter("test", Objects::nonNull);
+			.setPostCondition("test", String.class, Objects::nonNull);
 
 		then(actual.hasSet("test")).isFalse();
-		then(actual.hasFilter("test")).isTrue();
+		then(actual.hasPostCondition("test")).isTrue();
 	}
 
 	@Property
@@ -127,7 +148,7 @@ public class ExpressionSpecTest {
 		ExpressionSpec actual = new ExpressionSpec()
 			.set("test", "test");
 
-		then(actual.hasFilter("test")).isFalse();
+		then(actual.hasPostCondition("test")).isFalse();
 		then(actual.hasSet("test")).isTrue();
 	}
 

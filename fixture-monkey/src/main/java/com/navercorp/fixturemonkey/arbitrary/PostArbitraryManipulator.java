@@ -22,14 +22,14 @@ import net.jqwik.api.Arbitrary;
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 
-public interface PostArbitraryManipulator<T> extends ArbitraryExpressionManipulator {
-	Arbitrary<T> apply(Arbitrary<?> from);
+public interface PostArbitraryManipulator<T> extends BuilderManipulator, ArbitraryExpressionManipulator {
+	Arbitrary<T> apply(Arbitrary<T> from);
 
 	boolean isMappableTo(ArbitraryNode<T> node);
 
-	default void accept(ArbitraryBuilder<T> arbitraryBuilder) {
-		arbitraryBuilder.addPostArbitraryManipulator(this);
+	@SuppressWarnings({"rawtypes", "unchecked"})
+	@Override
+	default void accept(ArbitraryBuilder arbitraryBuilder) {
+		arbitraryBuilder.apply(this);
 	}
-
-	PostArbitraryManipulator<T> copy();
 }

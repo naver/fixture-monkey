@@ -18,43 +18,38 @@
 
 package com.navercorp.fixturemonkey.arbitrary;
 
+import static java.util.stream.Collectors.toList;
+
+import java.util.List;
 import java.util.Objects;
 
 import net.jqwik.api.Arbitraries;
-import net.jqwik.api.Arbitrary;
 
-public final class ArbitrarySet<T> extends AbstractArbitrarySet<T> {
-	private final T value;
-	private long limit;
+import com.navercorp.fixturemonkey.ArbitraryBuilder;
+import com.navercorp.fixturemonkey.customizer.ExpressionSpec;
 
-	public ArbitrarySet(ArbitraryExpression arbitraryExpression, T value, long limit) {
-		super(arbitraryExpression);
-		this.value = value;
-		this.limit = limit;
+public final class ArbitrarySpecAny implements BuilderManipulator {
+	private final List<ExpressionSpec> specs;
+
+	public ArbitrarySpecAny(List<ExpressionSpec> specs) {
+		this.specs = specs;
 	}
 
-	public ArbitrarySet(ArbitraryExpression arbitraryExpression, T value) {
-		this(arbitraryExpression, value, Long.MAX_VALUE);
+	@SuppressWarnings({"rawtypes", "unchecked"})
+	@Override
+	public void accept(ArbitraryBuilder arbitraryBuilder) {
+		ExpressionSpec spec = Arbitraries.of(specs).sample();
+		List<BuilderManipulator> specArbitraryManipulators = spec.getBuilderManipulators();
+		arbitraryBuilder.apply(specArbitraryManipulators);
 	}
 
 	@Override
-	public T getValue() {
-		return value;
-	}
+	public BuilderManipulator copy() {
+		List<ExpressionSpec> copiedSpecs = specs.stream()
+			.map(ExpressionSpec::copy)
+			.collect(toList());
 
-	@Override
-	public Arbitrary<T> apply(Arbitrary<T> from) {
-		if (this.limit > 0) {
-			limit--;
-			return Arbitraries.just(value);
-		} else {
-			return from;
-		}
-	}
-
-	@Override
-	public ArbitrarySet<T> copy() {
-		return new ArbitrarySet<>(this.getArbitraryExpression(), this.value, this.limit);
+		return new ArbitrarySpecAny(copiedSpecs);
 	}
 
 	@Override
@@ -65,15 +60,12 @@ public final class ArbitrarySet<T> extends AbstractArbitrarySet<T> {
 		if (obj == null || getClass() != obj.getClass()) {
 			return false;
 		}
-		if (!super.equals(obj)) {
-			return false;
-		}
-		ArbitrarySet<?> that = (ArbitrarySet<?>)obj;
-		return value.equals(that.value);
+		ArbitrarySpecAny that = (ArbitrarySpecAny)obj;
+		return specs.equals(that.specs);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(super.hashCode(), value);
+		return Objects.hash(specs);
 	}
 }

@@ -39,11 +39,12 @@ final class SetBuilder {
 		}
 
 		for (ArbitraryNode<?> node : nodes) {
-			setBuilderCombinator = setBuilderCombinator.use(node.getArbitrary().unique())
+			setBuilderCombinator = setBuilderCombinator.use(node.getArbitrary())
 				.in(CollectionBuilderFrame::add);
 		}
 
-		return (Arbitrary<T>)setBuilderCombinator.build(CollectionBuilderFrame::build);
+		return (Arbitrary<T>)setBuilderCombinator.build(CollectionBuilderFrame::build)
+			.filter(it -> it.size() == nodes.size());
 	}
 
 	private static class SetBuilderFrame extends CollectionBuilderFrame {

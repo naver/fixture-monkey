@@ -63,7 +63,7 @@ public final class TypeSupports {
 			|| Temporal.class.isAssignableFrom(clazz);
 	}
 
-	public static <T, U> boolean isSameType(Class<T> clazz1, Class<U> clazz2) {
+	public static <T, U> boolean isCompatibleType(Class<T> clazz1, Class<U> clazz2) {
 		if (clazz1 == Object.class || clazz2 == Object.class) {
 			return true;
 		}

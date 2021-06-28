@@ -41,17 +41,17 @@ public final class ArbitrarySetArbitrary<T> extends AbstractArbitrarySet<T> {
 		return value;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public Arbitrary<T> apply(Arbitrary<?> from) {
+	public Arbitrary<T> apply(Arbitrary<T> from) {
 		if (this.limit > 0) {
 			limit--;
 			return value;
 		} else {
-			return (Arbitrary<T>)from;
+			return from;
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
@@ -63,7 +63,7 @@ public final class ArbitrarySetArbitrary<T> extends AbstractArbitrarySet<T> {
 		if (!super.equals(obj)) {
 			return false;
 		}
-		ArbitrarySetArbitrary<?> that = (ArbitrarySetArbitrary<?>)obj;
+		ArbitrarySetArbitrary<T> that = (ArbitrarySetArbitrary<T>)obj;
 		// can not equal, can not apply caching
 		return value.equals(that.value);
 	}

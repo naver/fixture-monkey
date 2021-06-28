@@ -22,6 +22,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedArrayType;
 import java.lang.reflect.AnnotatedParameterizedType;
 import java.lang.reflect.AnnotatedType;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.util.Arrays;
 import java.util.Collection;
@@ -35,7 +36,7 @@ import java.util.stream.BaseStream;
 
 import javax.annotation.Nullable;
 
-public final class ArbitraryType<T> {
+public class ArbitraryType<T> {
 	private final Class<T> type;
 	private final AnnotatedType annotatedType;
 	private final List<Annotation> annotations;
@@ -156,16 +157,20 @@ public final class ArbitraryType<T> {
 		return type.isEnum();
 	}
 
+	public boolean isInterface() {
+		return type.isInterface();
+	}
+
+	public boolean isAbstract() {
+		return Modifier.isAbstract(type.getModifiers());
+	}
+
 	public Class<?> getType() {
 		return type;
 	}
 
 	public AnnotatedType getAnnotatedType() {
 		return annotatedType;
-	}
-
-	public boolean isNoneType() {
-		return type == Object.class;
 	}
 
 	private Optional<AnnotatedType> findGenericAnnotatedType(int index) {

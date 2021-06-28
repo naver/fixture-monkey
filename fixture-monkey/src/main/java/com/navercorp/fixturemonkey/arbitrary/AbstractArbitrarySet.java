@@ -22,25 +22,16 @@ import java.util.Objects;
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 
-public abstract class AbstractArbitrarySet<T> implements PreArbitraryManipulator<T> {
-	private ArbitraryExpression arbitraryExpression;
+public abstract class AbstractArbitrarySet<T> extends AbstractArbitraryExpressionManipulator
+	implements PreArbitraryManipulator<T> {
 
 	public AbstractArbitrarySet(ArbitraryExpression arbitraryExpression) {
-		this.arbitraryExpression = arbitraryExpression;
+		super(arbitraryExpression);
 	}
 
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	@Override
-	public void addPrefix(String expression) {
-		arbitraryExpression = arbitraryExpression.appendLeft(expression);
-	}
-
-	@Override
-	public ArbitraryExpression getArbitraryExpression() {
-		return arbitraryExpression;
-	}
-
-	@Override
-	public final void accept(ArbitraryBuilder<T> arbitraryBuilder) {
+	public final void accept(ArbitraryBuilder arbitraryBuilder) {
 		arbitraryBuilder.apply(this);
 	}
 
@@ -55,11 +46,11 @@ public abstract class AbstractArbitrarySet<T> implements PreArbitraryManipulator
 			return false;
 		}
 		AbstractArbitrarySet<?> that = (AbstractArbitrarySet<?>)obj;
-		return arbitraryExpression.equals(that.arbitraryExpression);
+		return getArbitraryExpression().equals(that.getArbitraryExpression());
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(arbitraryExpression);
+		return Objects.hash(getArbitraryExpression());
 	}
 }

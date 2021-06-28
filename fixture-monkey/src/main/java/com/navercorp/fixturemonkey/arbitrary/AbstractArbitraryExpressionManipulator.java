@@ -18,8 +18,20 @@
 
 package com.navercorp.fixturemonkey.arbitrary;
 
-public interface ArbitraryExpressionManipulator {
-	ArbitraryExpression getArbitraryExpression();
+public abstract class AbstractArbitraryExpressionManipulator implements ArbitraryExpressionManipulator {
+	private ArbitraryExpression arbitraryExpression;
 
-	void addPrefix(String expression);
+	public AbstractArbitraryExpressionManipulator(ArbitraryExpression arbitraryExpression) {
+		this.arbitraryExpression = arbitraryExpression;
+	}
+
+	@Override
+	public final ArbitraryExpression getArbitraryExpression() {
+		return arbitraryExpression;
+	}
+
+	@Override
+	public final void addPrefix(String expression) {
+		arbitraryExpression = arbitraryExpression.appendLeft(expression);
+	}
 }

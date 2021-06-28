@@ -20,39 +20,20 @@ package com.navercorp.fixturemonkey;
 
 import static java.util.stream.Collectors.toList;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
 import net.jqwik.api.Arbitrary;
-import net.jqwik.api.RandomGenerator;
 
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryTraverser;
 import com.navercorp.fixturemonkey.customizer.ArbitraryCustomizer;
 import com.navercorp.fixturemonkey.customizer.ArbitraryCustomizers;
-import com.navercorp.fixturemonkey.customizer.WithFixtureCustomizer;
 import com.navercorp.fixturemonkey.generator.ArbitraryGenerator;
 import com.navercorp.fixturemonkey.validator.ArbitraryValidator;
 
 public class FixtureMonkey {
-	static {
-		try {
-			Field field = RandomGenerator.RandomGeneratorFacade.class.getDeclaredField("implementation");
-			field.setAccessible(true);
-			Field modifiersField = Field.class.getDeclaredField("modifiers");
-			modifiersField.setAccessible(true);
-			modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
-
-			RandomGenerator.RandomGeneratorFacade delegate = (RandomGenerator.RandomGeneratorFacade)field.get(null);
-			field.set(null, new ArbitraryRandomGeneratorFacade(delegate));
-		} catch (Exception ignored) {
-			// ignored
-		}
-	}
-
 	private final ArbitraryOption options;
 	private final ArbitraryGenerator defaultGenerator;
 	@SuppressWarnings("rawtypes")
@@ -112,16 +93,24 @@ public class FixtureMonkey {
 	}
 
 	public <T> ArbitraryBuilder<T> giveMeBuilder(Class<T> clazz, ArbitraryOption options) {
-		return new ArbitraryBuilder<>(clazz, options, getGenerator(clazz), validator, new ArbitraryCustomizers());
+		return new ArbitraryBuilder<>(
+			clazz,
+			options,
+			defaultGenerator,
+			validator,
+			arbitraryCustomizers,
+			this.generatorMap
+		);
 	}
 
 	public <T> ArbitraryBuilder<T> giveMeBuilder(T value) {
 		return new ArbitraryBuilder<>(
 			value,
 			new ArbitraryTraverser(options),
-			getGenerator(value.getClass()),
+			defaultGenerator,
 			validator,
-			this.arbitraryCustomizers
+			this.arbitraryCustomizers,
+			this.generatorMap
 		);
 	}
 
@@ -135,21 +124,10 @@ public class FixtureMonkey {
 		return new ArbitraryBuilder<>(
 			clazz,
 			options,
-			this.getGenerator(clazz, newArbitraryCustomizers),
+			defaultGenerator,
 			this.validator,
-			newArbitraryCustomizers
+			newArbitraryCustomizers,
+			this.generatorMap
 		);
-	}
-
-	private <T> ArbitraryGenerator getGenerator(Class<T> type) {
-		return this.getGenerator(type, this.arbitraryCustomizers);
-	}
-
-	private <T> ArbitraryGenerator getGenerator(Class<T> type, ArbitraryCustomizers arbitraryCustomizers) {
-		ArbitraryGenerator generator = this.generatorMap.getOrDefault(type, this.defaultGenerator);
-		if (generator instanceof WithFixtureCustomizer) {
-			generator = ((WithFixtureCustomizer)generator).withFixtureCustomizers(arbitraryCustomizers);
-		}
-		return generator;
 	}
 }

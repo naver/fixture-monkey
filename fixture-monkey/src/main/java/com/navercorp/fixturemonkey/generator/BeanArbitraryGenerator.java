@@ -18,11 +18,15 @@
 
 package com.navercorp.fixturemonkey.generator;
 
+import java.beans.IntrospectionException;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.junit.platform.commons.logging.Logger;
 import org.junit.platform.commons.logging.LoggerFactory;
 import org.junit.platform.commons.util.ReflectionUtils;
@@ -64,22 +68,27 @@ public final class BeanArbitraryGenerator extends AbstractArbitraryGenerator
 
 		this.arbitraryCustomizers.customizeFields(clazz, fieldArbitraries);
 
+		Map<String, PropertyDescriptor> propertyDescriptorMap = this.getPropertyDescriptorsByName(clazz);
 		Combinators.BuilderCombinator builderCombinator = Combinators.withBuilder(
 			() -> ReflectionUtils.newInstance(clazz));
 		for (Map.Entry<String, Arbitrary> entry : fieldArbitraries.entrySet()) {
 			String fieldName = entry.getKey();
-			builderCombinator = builderCombinator.use(entry.getValue()).in((b, v) -> {
-				try {
-					if (v != null) {
-						BeanUtils.setProperty(b, fieldName, v);
+			PropertyDescriptor propertyDescriptor = propertyDescriptorMap.get(fieldName);
+			if (propertyDescriptor != null && propertyDescriptor.getWriteMethod() != null) {
+				Method writeMethod = propertyDescriptor.getWriteMethod();
+				builderCombinator = builderCombinator.use(entry.getValue()).in((b, v) -> {
+					try {
+						if (v != null) {
+							writeMethod.invoke(b, v);
+						}
+					} catch (IllegalAccessException | InvocationTargetException e) {
+						log.warn(e,
+							() -> "set bean property is failed. field: " + fieldName + " value: " + v
+						);
 					}
-				} catch (IllegalAccessException | InvocationTargetException e) {
-					log.warn(e,
-						() -> "set bean property is failed. field: " + fieldName + " value: " + v
-					);
-				}
-				return b;
-			});
+					return b;
+				});
+			}
 		}
 
 		return builderCombinator.build(b -> this.arbitraryCustomizers.customizeFixture(clazz, (T)b));
@@ -91,5 +100,20 @@ public final class BeanArbitraryGenerator extends AbstractArbitraryGenerator
 			return this;
 		}
 		return new BeanArbitraryGenerator(arbitraryCustomizers);
+	}
+
+	private Map<String, PropertyDescriptor> getPropertyDescriptorsByName(Class<?> clazz) {
+		Map<String, PropertyDescriptor> result = new HashMap<>();
+		try {
+			PropertyDescriptor[] descriptors = Introspector.getBeanInfo(clazz)
+				.getPropertyDescriptors();
+			for (PropertyDescriptor descriptor : descriptors) {
+				result.put(descriptor.getName(), descriptor);
+			}
+		} catch (IntrospectionException e) {
+			log.warn(e, () -> "Introspect bean property is failed. type: " + clazz);
+		}
+
+		return result;
 	}
 }

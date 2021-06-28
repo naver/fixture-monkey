@@ -20,16 +20,14 @@ package com.navercorp.fixturemonkey.arbitrary;
 
 import java.util.Objects;
 
-import net.jqwik.api.Arbitrary;
-
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 
-public final class ArbitrarySetNullity<T> implements PreArbitraryManipulator<T> {
-	private ArbitraryExpression fixtureExpression;
+public final class ArbitraryNullity extends AbstractArbitraryExpressionManipulator
+	implements BuilderManipulator {
 	private final boolean toNull;
 
-	public ArbitrarySetNullity(ArbitraryExpression fixtureExpression, boolean toNull) {
-		this.fixtureExpression = fixtureExpression;
+	public ArbitraryNullity(ArbitraryExpression fixtureExpression, boolean toNull) {
+		super(fixtureExpression);
 		this.toNull = toNull;
 	}
 
@@ -37,30 +35,15 @@ public final class ArbitrarySetNullity<T> implements PreArbitraryManipulator<T> 
 		return toNull;
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	@Override
-	public Arbitrary<T> apply(Arbitrary<?> from) {
-		return (Arbitrary<T>)from;
-	}
-
-	@Override
-	public ArbitraryExpression getArbitraryExpression() {
-		return fixtureExpression;
-	}
-
-	@Override
-	public void addPrefix(String expression) {
-		fixtureExpression = fixtureExpression.appendLeft(expression);
-	}
-
-	@Override
-	public void accept(ArbitraryBuilder<T> fixtureBuilder) {
+	public void accept(ArbitraryBuilder fixtureBuilder) {
 		fixtureBuilder.setNullity(this);
 	}
 
 	@Override
-	public ArbitrarySetNullity<T> copy() {
-		return new ArbitrarySetNullity<>(this.fixtureExpression, this.toNull);
+	public ArbitraryNullity copy() {
+		return new ArbitraryNullity(this.getArbitraryExpression(), this.toNull);
 	}
 
 	@Override
@@ -71,12 +54,12 @@ public final class ArbitrarySetNullity<T> implements PreArbitraryManipulator<T> 
 		if (obj == null || getClass() != obj.getClass()) {
 			return false;
 		}
-		ArbitrarySetNullity<?> that = (ArbitrarySetNullity<?>)obj;
-		return toNull == that.toNull && fixtureExpression.equals(that.fixtureExpression);
+		ArbitraryNullity that = (ArbitraryNullity)obj;
+		return toNull == that.toNull && getArbitraryExpression().equals(that.getArbitraryExpression());
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(fixtureExpression, toNull);
+		return Objects.hash(getArbitraryExpression(), toNull);
 	}
 }

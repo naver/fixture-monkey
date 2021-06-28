@@ -22,12 +22,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 import java.util.function.Supplier;
 
-import javax.annotation.Nullable;
-
-import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
 
 import com.navercorp.fixturemonkey.generator.ArbitraryGenerator;
@@ -61,25 +59,36 @@ public final class ArbitraryTree<T> {
 		return selectNodes;
 	}
 
-	@SuppressWarnings("unchecked")
-	@Nullable
-	public <U> ArbitraryNode<U> findFirst(ArbitraryExpression arbitraryExpression) {
-		ArbitraryNode<?> selectNode = getHead();
-
-		CursorHolder cursorHolder = new CursorHolder(arbitraryExpression);
-		List<Cursor> cursors = cursorHolder.getCursors();
-		for (Cursor cursor : cursors) {
-			selectNode = (ArbitraryNode<?>)selectNode.findChild(cursor).orElse(null);
-			if (selectNode == null) { // 상위 필드가 생성 안됐을 경우
-				break;
-			}
-		}
-
-		return (ArbitraryNode<U>)selectNode;
+	public void update(ArbitraryGenerator defaultGenerator, Map<Class<?>, ArbitraryGenerator> generatorMap) {
+		update(getHead(), defaultGenerator, generatorMap);
 	}
 
-	public void update(ArbitraryGenerator generator) {
-		getHead().update(getHead(), generator);
+	<U> void update(
+		ArbitraryNode<U> entryNode,
+		ArbitraryGenerator defaultGenerator,
+		Map<Class<?>, ArbitraryGenerator> generatorMap
+	) {
+
+		if (!entryNode.isLeafNode() && !entryNode.isFixed()) {
+			for (ArbitraryNode<?> nextChild : entryNode.getChildren()) {
+				update(nextChild, defaultGenerator, generatorMap);
+			}
+
+			Class<?> clazz = entryNode.getType().getType();
+			ArbitraryGenerator generator = getGenerator(clazz, defaultGenerator, generatorMap);
+			entryNode.setArbitrary(
+				generator.generate(entryNode.getType(), entryNode.getChildren())
+			);
+
+		}
+
+		entryNode.getPostArbitraryManipulators().forEach(
+			operation -> entryNode.setArbitrary(operation.apply(entryNode.getArbitrary()))
+		);
+
+		if (entryNode.isNullable() && !entryNode.isManipulated()) {
+			entryNode.setArbitrary(entryNode.getArbitrary().injectNull(entryNode.getNullInject()));
+		}
 	}
 
 	public ArbitraryNode<T> getHead() {
@@ -87,6 +96,14 @@ public final class ArbitraryTree<T> {
 			head = headSupplier.get();
 		}
 		return head;
+	}
+
+	public ArbitraryGenerator getGenerator(
+		Class<?> clazz,
+		ArbitraryGenerator defaultGenerator,
+		Map<Class<?>, ArbitraryGenerator> generatorMap
+	) {
+		return generatorMap.getOrDefault(clazz, defaultGenerator);
 	}
 
 	@SuppressWarnings({"rawtypes", "unchecked"})

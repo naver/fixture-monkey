@@ -21,11 +21,9 @@ package com.navercorp.fixturemonkey;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-
-import net.jqwik.api.Arbitrary;
 
 import com.navercorp.fixturemonkey.ArbitraryOption.FixtureOptionsBuilder;
+import com.navercorp.fixturemonkey.arbitrary.InterfaceSupplier;
 import com.navercorp.fixturemonkey.arbitrary.NullableArbitraryEvaluator;
 import com.navercorp.fixturemonkey.customizer.ArbitraryCustomizer;
 import com.navercorp.fixturemonkey.customizer.ArbitraryCustomizers;
@@ -43,7 +41,6 @@ public class FixtureMonkeyBuilder {
 	private ArbitraryValidator validator = new CompositeArbitraryValidator();
 	private ArbitraryCustomizers arbitraryCustomizers = new ArbitraryCustomizers();
 	private ArbitraryOption options;
-	private Map<ArbitraryBuilder<?>, Arbitrary<?>> cacheMap = new ConcurrentHashMap<>();
 	private final FixtureOptionsBuilder optionsBuilder = ArbitraryOption.builder();
 
 	public FixtureMonkeyBuilder defaultGenerator(ArbitraryGenerator defaultCombiner) {
@@ -61,12 +58,12 @@ public class FixtureMonkeyBuilder {
 		return this;
 	}
 
-	public FixtureMonkeyBuilder fixtureCustomizers(Map<Class<?>, ArbitraryCustomizer<?>> customizer) {
+	public FixtureMonkeyBuilder customizers(Map<Class<?>, ArbitraryCustomizer<?>> customizer) {
 		this.customizerMap = customizer;
 		return this;
 	}
 
-	public FixtureMonkeyBuilder fixtureCustomizers(ArbitraryCustomizers arbitraryCustomizers) {
+	public FixtureMonkeyBuilder customizers(ArbitraryCustomizers arbitraryCustomizers) {
 		this.arbitraryCustomizers = arbitraryCustomizers;
 		return this;
 	}
@@ -88,6 +85,11 @@ public class FixtureMonkeyBuilder {
 		return this;
 	}
 
+	public FixtureMonkeyBuilder addExceptGeneratePackage(String exceptGeneratePackage) {
+		this.optionsBuilder.addExceptGeneratePackage(exceptGeneratePackage);
+		return this;
+	}
+
 	public FixtureMonkeyBuilder exceptGeneratePackages(Set<String> exceptGeneratePackages) {
 		this.optionsBuilder.exceptGeneratePackages(exceptGeneratePackages);
 		return this;
@@ -95,6 +97,16 @@ public class FixtureMonkeyBuilder {
 
 	public FixtureMonkeyBuilder nullableContainer(boolean nullableContainer) {
 		this.optionsBuilder.nullableContainer(nullableContainer);
+		return this;
+	}
+
+	public <T> FixtureMonkeyBuilder defaultInterfaceSupplier(InterfaceSupplier<T> interfaceSupplier) {
+		this.optionsBuilder.defaultInterfaceSupplier(interfaceSupplier);
+		return this;
+	}
+
+	public <T> FixtureMonkeyBuilder addInterfaceSupplier(Class<T> clazz, InterfaceSupplier<T> interfaceSupplier) {
+		this.optionsBuilder.addInterfaceSupplier(clazz, interfaceSupplier);
 		return this;
 	}
 
@@ -111,14 +123,14 @@ public class FixtureMonkeyBuilder {
 		return this;
 	}
 
-	public FixtureMonkeyBuilder cacheMap(Map<ArbitraryBuilder<?>, Arbitrary<?>> cacheMap) {
-		this.cacheMap = cacheMap;
-		return this;
-	}
-
 	@SuppressWarnings("rawtypes")
 	public FixtureMonkeyBuilder validator(ArbitraryValidator validator) {
 		this.validator = validator;
+		return this;
+	}
+
+	public FixtureMonkeyBuilder defaultNotNull(boolean defaultNotNull) {
+		this.optionsBuilder.defaultNotNull(defaultNotNull);
 		return this;
 	}
 

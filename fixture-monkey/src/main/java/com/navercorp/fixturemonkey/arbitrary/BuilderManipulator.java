@@ -18,8 +18,11 @@
 
 package com.navercorp.fixturemonkey.arbitrary;
 
-public interface ArbitraryExpressionManipulator {
-	ArbitraryExpression getArbitraryExpression();
+import com.navercorp.fixturemonkey.ArbitraryBuilder;
 
-	void addPrefix(String expression);
+public interface BuilderManipulator {
+	@SuppressWarnings("rawtypes")
+	void accept(ArbitraryBuilder arbitraryBuilder);
+
+	BuilderManipulator copy();
 }

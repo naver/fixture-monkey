@@ -34,7 +34,9 @@ public interface IterableSpec {
 
 	IterableSpec setElement(long fieldIndex, Object object);
 
-	<T> IterableSpec filterElement(long fieldIndex, Predicate<T> filter);
+	<T> IterableSpec setElementPostCondition(long fieldIndex, Class<T> clazz, Predicate<T> postCondition);
+
+	<T> IterableSpec setElementPostCondition(long fieldIndex, Class<T> clazz, Predicate<T> postCondition, long limit);
 
 	IterableSpec listElement(long fieldIndex, Consumer<IterableSpec> spec);
 
@@ -42,11 +44,20 @@ public interface IterableSpec {
 
 	IterableSpec setElementField(long fieldIndex, String fieldName, Object object);
 
-	<T> IterableSpec filterElementField(long fieldIndex, String fieldName, Predicate<T> filter);
+	<T> IterableSpec setElementFieldPostCondition(
+		long fieldIndex,
+		String fieldName,
+		Class<T> clazz,
+		Predicate<T> postCondition
+	);
 
-	<T> IterableSpec any(Predicate<T> filter);
-
-	<T> IterableSpec all(Predicate<T> filter);
+	<T> IterableSpec setElementFieldPostCondition(
+		long fieldIndex,
+		String fieldName,
+		Class<T> clazz,
+		Predicate<T> postCondition,
+		long limit
+	);
 
 	IterableSpec any(Object object);
 

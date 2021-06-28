@@ -23,61 +23,52 @@ import static java.util.stream.Collectors.toList;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+
+import javax.annotation.Nullable;
 
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
 
+import com.navercorp.fixturemonkey.arbitrary.AbstractArbitraryExpressionManipulator;
 import com.navercorp.fixturemonkey.arbitrary.AbstractArbitrarySet;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryExpression;
-import com.navercorp.fixturemonkey.arbitrary.ArbitraryFilter;
+import com.navercorp.fixturemonkey.arbitrary.ArbitraryExpressionManipulator;
+import com.navercorp.fixturemonkey.arbitrary.ArbitraryNullity;
 import com.navercorp.fixturemonkey.arbitrary.ArbitrarySet;
 import com.navercorp.fixturemonkey.arbitrary.ArbitrarySetArbitrary;
-import com.navercorp.fixturemonkey.arbitrary.ArbitrarySetNullity;
+import com.navercorp.fixturemonkey.arbitrary.ArbitrarySetPostCondition;
 import com.navercorp.fixturemonkey.arbitrary.ArbitrarySetPrefix;
 import com.navercorp.fixturemonkey.arbitrary.ArbitrarySetSuffix;
-import com.navercorp.fixturemonkey.arbitrary.ContainerMaxSizeManipulator;
-import com.navercorp.fixturemonkey.arbitrary.ContainerMinSizeManipulator;
+import com.navercorp.fixturemonkey.arbitrary.BuilderManipulator;
+import com.navercorp.fixturemonkey.arbitrary.ContainerSizeManipulator;
 import com.navercorp.fixturemonkey.arbitrary.MetadataManipulator;
 import com.navercorp.fixturemonkey.arbitrary.PostArbitraryManipulator;
-import com.navercorp.fixturemonkey.arbitrary.PreArbitraryManipulator;
 
 public final class ExpressionSpec {
-	@SuppressWarnings("rawtypes")
-	private final List<PreArbitraryManipulator> preArbitraryManipulators;
-	@SuppressWarnings("rawtypes")
-	private final List<PostArbitraryManipulator> postArbitraryManipulators;
-	private final List<MetadataManipulator> metadataManipulators;
+	private final List<BuilderManipulator> builderManipulators;
 
 	public ExpressionSpec() {
-		this.preArbitraryManipulators = new ArrayList<>();
-		this.postArbitraryManipulators = new ArrayList<>();
-		this.metadataManipulators = new ArrayList<>();
+		this(new ArrayList<>());
 	}
 
-	@SuppressWarnings("rawtypes")
-	private ExpressionSpec(
-		List<PreArbitraryManipulator> preArbitraryManipulators,
-		List<PostArbitraryManipulator> postArbitraryManipulators,
-		List<MetadataManipulator> metadataManipulators
-	) {
-		this.preArbitraryManipulators = preArbitraryManipulators;
-		this.postArbitraryManipulators = postArbitraryManipulators;
-		this.metadataManipulators = metadataManipulators;
+	public ExpressionSpec(List<BuilderManipulator> builderManipulators) {
+		this.builderManipulators = builderManipulators;
 	}
 
 	@SuppressWarnings({"rawtypes", "unchecked"})
-	public ExpressionSpec set(String expression, Object value) {
+	public ExpressionSpec set(String expression, @Nullable Object value) {
 		if (value == null) {
 			return this.setNull(expression);
 		}
+		if (value instanceof Arbitrary) {
+			return this.set(expression, (Arbitrary<?>)value);
+		}
 		ArbitraryExpression fixtureExpression = ArbitraryExpression.from(expression);
-		preArbitraryManipulators.add(new ArbitrarySet(fixtureExpression, value));
+		builderManipulators.add(new ArbitrarySet(fixtureExpression, value));
 		return this;
 	}
 
@@ -86,117 +77,96 @@ public final class ExpressionSpec {
 		if (value == null) {
 			return this.setNull(expression);
 		}
+		if (value instanceof Arbitrary) {
+			return this.set(expression, (Arbitrary<?>)value);
+		}
 		ArbitraryExpression fixtureExpression = ArbitraryExpression.from(expression);
-		preArbitraryManipulators.add(new ArbitrarySet(fixtureExpression, value, limit));
+		builderManipulators.add(new ArbitrarySet(fixtureExpression, value, limit));
 		return this;
 	}
 
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	public <T> ExpressionSpec set(String expression, Arbitrary<T> arbitrary) {
+		if (arbitrary == null) {
+			return this.setNull(null);
+		}
 		ArbitraryExpression fixtureExpression = ArbitraryExpression.from(expression);
-		preArbitraryManipulators.add(new ArbitrarySetArbitrary(fixtureExpression, arbitrary));
+		builderManipulators.add(new ArbitrarySetArbitrary(fixtureExpression, arbitrary));
 		return this;
 	}
 
 	public ExpressionSpec set(String expression, ExpressionSpec spec) {
+		if (spec == null) {
+			return this.setNull(expression);
+		}
+
 		ExpressionSpec copied = spec.copy();
-		copied.preArbitraryManipulators.forEach(it -> it.addPrefix(expression));
-		copied.postArbitraryManipulators.forEach(it -> it.addPrefix(expression));
-		copied.metadataManipulators.forEach(it -> it.addPrefix(expression));
+		for (BuilderManipulator arbitraryManipulator : copied.builderManipulators) {
+			if (arbitraryManipulator instanceof AbstractArbitraryExpressionManipulator) {
+				((AbstractArbitraryExpressionManipulator)arbitraryManipulator).addPrefix(expression);
+			}
+		}
 		this.merge(copied);
 		return this;
 	}
 
 	public ExpressionSpec setPrefix(String expression, String value) {
 		ArbitraryExpression fixtureExpression = ArbitraryExpression.from(expression);
-		preArbitraryManipulators.add(new ArbitrarySetPrefix(fixtureExpression, Arbitraries.just(value)));
+		builderManipulators.add(new ArbitrarySetPrefix(fixtureExpression, Arbitraries.just(value)));
 		return this;
 	}
 
 	public ExpressionSpec setSuffix(String expression, String value) {
 		ArbitraryExpression fixtureExpression = ArbitraryExpression.from(expression);
-		preArbitraryManipulators.add(new ArbitrarySetSuffix(fixtureExpression, Arbitraries.just(value)));
+		builderManipulators.add(new ArbitrarySetSuffix(fixtureExpression, Arbitraries.just(value)));
 		return this;
 	}
 
-	@SuppressWarnings("rawtypes")
 	public ExpressionSpec setNull(String expression) {
 		ArbitraryExpression fixtureExpression = ArbitraryExpression.from(expression);
-		preArbitraryManipulators.add(new ArbitrarySetNullity(fixtureExpression, true));
+		builderManipulators.add(new ArbitraryNullity(fixtureExpression, true));
 		return this;
 	}
 
-	@SuppressWarnings("rawtypes")
 	public ExpressionSpec setNotNull(String expression) {
 		ArbitraryExpression fixtureExpression = ArbitraryExpression.from(expression);
-		preArbitraryManipulators.add(new ArbitrarySetNullity(fixtureExpression, false));
+		builderManipulators.add(new ArbitraryNullity(fixtureExpression, false));
+		return this;
+	}
+
+	public ExpressionSpec size(String expression, int size) {
+		ArbitraryExpression fixtureExpression = ArbitraryExpression.from(expression);
+		builderManipulators.add(new ContainerSizeManipulator(fixtureExpression, size, size));
 		return this;
 	}
 
 	public ExpressionSpec size(String expression, int min, int max) {
 		ArbitraryExpression fixtureExpression = ArbitraryExpression.from(expression);
-		metadataManipulators.add(new ContainerMinSizeManipulator(fixtureExpression, min));
-		metadataManipulators.add(new ContainerMaxSizeManipulator(fixtureExpression, max));
+		builderManipulators.add(new ContainerSizeManipulator(fixtureExpression, min, max));
 		return this;
 	}
 
-	public <T> ExpressionSpec filter(String name, Predicate<T> predicate, long count) {
-		filterSpec(Object.class, name, predicate, count);
+	public ExpressionSpec minSize(String expression, int min) {
+		ArbitraryExpression fixtureExpression = ArbitraryExpression.from(expression);
+		builderManipulators.add(new ContainerSizeManipulator(fixtureExpression, min, null));
 		return this;
 	}
 
-	public <T> ExpressionSpec filter(String name, Predicate<T> predicate) {
-		filterSpec(Object.class, name, predicate);
+	public ExpressionSpec maxSize(String expression, int max) {
+		ArbitraryExpression fixtureExpression = ArbitraryExpression.from(expression);
+		builderManipulators.add(new ContainerSizeManipulator(fixtureExpression, null, max));
 		return this;
 	}
 
-	public ExpressionSpec filterByte(String name, Predicate<Byte> bytePredicate) {
-		filterSpec(Byte.class, name, bytePredicate);
+	public <T> ExpressionSpec setPostCondition(String expression, Class<T> clazz, Predicate<T> predicate, long count) {
+		ArbitraryExpression fixtureExpression = ArbitraryExpression.from(expression);
+		builderManipulators.add(new ArbitrarySetPostCondition<>(clazz, fixtureExpression, predicate, count));
 		return this;
 	}
 
-	public ExpressionSpec filterInteger(String name, Predicate<Integer> integerPredicate) {
-		filterSpec(Integer.class, name, integerPredicate);
-		return this;
-	}
-
-	public ExpressionSpec filterLong(String name, Predicate<Long> longPredicate) {
-		filterSpec(Long.class, name, longPredicate);
-		return this;
-	}
-
-	public ExpressionSpec filterFloat(String name, Predicate<Float> floatPredicate) {
-		filterSpec(Float.class, name, floatPredicate);
-		return this;
-	}
-
-	public ExpressionSpec filterDouble(String name, Predicate<Double> doublePredicate) {
-		filterSpec(Double.class, name, doublePredicate);
-		return this;
-	}
-
-	public ExpressionSpec filterCharacter(String name, Predicate<Character> characterPredicate) {
-		filterSpec(Character.class, name, characterPredicate);
-		return this;
-	}
-
-	public ExpressionSpec filterString(String name, Predicate<String> stringPredicate) {
-		filterSpec(String.class, name, stringPredicate);
-		return this;
-	}
-
-	public <T> ExpressionSpec filterList(String name, Predicate<List<T>> predicate) {
-		filterSpec(List.class, name, predicate);
-		return this;
-	}
-
-	public <T> ExpressionSpec filterSet(String name, Predicate<Set<T>> predicate) {
-		filterSpec(Set.class, name, predicate);
-		return this;
-	}
-
-	public <K, V> ExpressionSpec filterMap(String name, Predicate<Map<K, V>> predicate) {
-		filterSpec(Map.class, name, predicate);
+	public <T> ExpressionSpec setPostCondition(String expression, Class<T> clazz, Predicate<T> predicate) {
+		ArbitraryExpression fixtureExpression = ArbitraryExpression.from(expression);
+		builderManipulators.add(new ArbitrarySetPostCondition<>(clazz, fixtureExpression, predicate));
 		return this;
 	}
 
@@ -207,64 +177,52 @@ public final class ExpressionSpec {
 		return this;
 	}
 
-	@SuppressWarnings("rawtypes")
 	public ExpressionSpec copy() {
-		List<PreArbitraryManipulator> copiedPreArbitraryManipulators = this.preArbitraryManipulators.stream()
-			.map(PreArbitraryManipulator::copy)
+		List<BuilderManipulator> copiedArbitraryManipulators = this.builderManipulators.stream()
+			.map(BuilderManipulator::copy)
 			.collect(toList());
 
-		List<PostArbitraryManipulator> copiedPostArbitraryManipulators = this.postArbitraryManipulators.stream()
-			.map(PostArbitraryManipulator::copy)
-			.collect(toList());
-
-		List<MetadataManipulator> copiedMetadataManipulators = this.metadataManipulators.stream()
-			.map(MetadataManipulator::copy)
-			.collect(toList());
-
-		return new ExpressionSpec(
-			copiedPreArbitraryManipulators,
-			copiedPostArbitraryManipulators,
-			copiedMetadataManipulators
-		);
+		return new ExpressionSpec(copiedArbitraryManipulators);
 	}
 
 	@SuppressWarnings("rawtypes")
 	public ExpressionSpec merge(ExpressionSpec fixtureSpec, boolean overwrite) {
-		List<PreArbitraryManipulator> filteredPreArbitraryManipulators = fixtureSpec.preArbitraryManipulators.stream()
-			.filter(
-				it -> overwrite
-					|| this.preArbitraryManipulators.stream()
-					.noneMatch(manipulator -> manipulator.getArbitraryExpression().equals(it.getArbitraryExpression()))
-			)
+		List<BuilderManipulator> filteredOrderedArbitraryManipulators = fixtureSpec.builderManipulators.stream()
+			.filter(it -> !(it instanceof PostArbitraryManipulator) && !(it instanceof MetadataManipulator))
+			.map(ArbitraryExpressionManipulator.class::cast)
+			.filter(it -> overwrite || !hasOrderedManipulators(it.getArbitraryExpression().toString()))
+			.map(BuilderManipulator.class::cast)
 			.collect(toList());
-		this.preArbitraryManipulators.addAll(filteredPreArbitraryManipulators);
+
+		this.builderManipulators.addAll(filteredOrderedArbitraryManipulators);
+
+		List<PostArbitraryManipulator> postArbitraryManipulators = fixtureSpec.builderManipulators.stream()
+			.filter(PostArbitraryManipulator.class::isInstance)
+			.map(PostArbitraryManipulator.class::cast)
+			.collect(toList());
 
 		if (overwrite) {
-			this.postArbitraryManipulators.removeIf(
-				it -> fixtureSpec.postArbitraryManipulators.stream()
-					.anyMatch(manipulator -> manipulator.getArbitraryExpression().equals(it.getArbitraryExpression()))
+			this.builderManipulators.removeIf(
+				it -> it instanceof PostArbitraryManipulator
+					&& fixtureSpec.hasPostArbitraryManipulators(
+					((PostArbitraryManipulator<?>)it).getArbitraryExpression().toString()
+				)
 			); // remove redundant fixtureExpression
-			this.postArbitraryManipulators.addAll(fixtureSpec.postArbitraryManipulators);
+			this.builderManipulators.addAll(postArbitraryManipulators);
 		} else {
-			List<PostArbitraryManipulator> filteredPostArbitraryManipulators =
-				fixtureSpec.postArbitraryManipulators.stream()
-					.filter(
-						it -> this.postArbitraryManipulators.stream()
-							.noneMatch(
-								manipulator -> manipulator.getArbitraryExpression().equals(it.getArbitraryExpression()))
-					)
-					.collect(toList());
-			this.postArbitraryManipulators.addAll(filteredPostArbitraryManipulators);
+			List<PostArbitraryManipulator> filteredPostArbitraryManipulators = postArbitraryManipulators.stream()
+				.filter(it -> !this.hasPostArbitraryManipulators(it.getArbitraryExpression().toString()))
+				.collect(toList());
+			this.builderManipulators.addAll(filteredPostArbitraryManipulators);
 		}
 
-		List<MetadataManipulator> filteredMetadataManipulators = fixtureSpec.metadataManipulators.stream()
-			.filter(
-				it -> overwrite
-					|| this.metadataManipulators.stream()
-					.noneMatch(manipulator -> manipulator.getArbitraryExpression().equals(it.getArbitraryExpression()))
-			)
+		List<MetadataManipulator> filteredMetadataManipulators = fixtureSpec.builderManipulators.stream()
+			.filter(MetadataManipulator.class::isInstance)
+			.map(MetadataManipulator.class::cast)
+			.filter(it -> overwrite || this.hasMetadata(it.getArbitraryExpression().toString()))
 			.collect(toList());
-		this.metadataManipulators.addAll(filteredMetadataManipulators);
+
+		this.builderManipulators.addAll(filteredMetadataManipulators);
 
 		return this;
 	}
@@ -278,58 +236,61 @@ public final class ExpressionSpec {
 			.map(ArbitraryExpression::from)
 			.collect(toList());
 
-		this.preArbitraryManipulators.removeIf(it -> excludeArbitraryExpression.contains(it.getArbitraryExpression()));
-		this.postArbitraryManipulators.removeIf(it -> excludeArbitraryExpression.contains(it.getArbitraryExpression()));
-		this.metadataManipulators.removeIf(it -> excludeArbitraryExpression.contains(it.getArbitraryExpression()));
-
+		this.builderManipulators.removeIf(
+			it -> it instanceof AbstractArbitraryExpressionManipulator
+				&& excludeArbitraryExpression.contains(
+				((AbstractArbitraryExpressionManipulator)it).getArbitraryExpression()
+			)
+		);
 		return this;
 	}
 
+	public boolean hasOrderedManipulators(String expression) {
+		return this.builderManipulators.stream()
+			.filter(it -> !(it instanceof PostArbitraryManipulator) && !(it instanceof MetadataManipulator))
+			.map(ArbitraryExpressionManipulator.class::cast)
+			.anyMatch(it -> it.getArbitraryExpression().equals(ArbitraryExpression.from(expression)));
+	}
+
+	public boolean hasPostArbitraryManipulators(String expression) {
+		return this.builderManipulators.stream()
+			.filter(PostArbitraryManipulator.class::isInstance)
+			.map(PostArbitraryManipulator.class::cast)
+			.anyMatch(it -> it.getArbitraryExpression().equals(ArbitraryExpression.from(expression)));
+	}
+
 	public boolean hasSet(String expression) {
-		return this.preArbitraryManipulators.stream()
+		return this.builderManipulators.stream()
+			.filter(AbstractArbitrarySet.class::isInstance)
+			.map(AbstractArbitrarySet.class::cast)
 			.anyMatch(it -> it.getArbitraryExpression().equals(ArbitraryExpression.from(expression)));
 	}
 
-	public boolean hasFilter(String expression) {
-		return this.postArbitraryManipulators.stream()
+	public boolean hasPostCondition(String expression) {
+		return this.builderManipulators.stream()
+			.filter(ArbitrarySetPostCondition.class::isInstance)
+			.map(ArbitrarySetPostCondition.class::cast)
 			.anyMatch(it -> it.getArbitraryExpression().equals(ArbitraryExpression.from(expression)));
 	}
 
-	@SuppressWarnings("rawtypes")
+	public boolean hasMetadata(String expression) {
+		return this.builderManipulators.stream()
+			.filter(MetadataManipulator.class::isInstance)
+			.map(MetadataManipulator.class::cast)
+			.anyMatch(it -> it.getArbitraryExpression().equals(ArbitraryExpression.from(expression)));
+	}
+
 	public Optional<Object> findSetValue(String expression) {
-		return this.preArbitraryManipulators.stream()
-			.filter(it ->
-				it.getArbitraryExpression().equals(ArbitraryExpression.from(expression))
-					&& AbstractArbitrarySet.class.isAssignableFrom(it.getClass())
-			)
-			.map(it -> ((AbstractArbitrarySet)it).getValue())
+		return this.builderManipulators.stream()
+			.filter(AbstractArbitrarySet.class::isInstance)
+			.map(AbstractArbitrarySet.class::cast)
+			.filter(it -> it.getArbitraryExpression().equals(ArbitraryExpression.from(expression)))
+			.map(AbstractArbitrarySet::getValue)
 			.findAny();
 	}
 
-	@SuppressWarnings({"unchecked", "rawtypes"})
-	private <T> void filterSpec(Class<T> clazz, String expression, Predicate predicate, long count) {
-		ArbitraryExpression fixtureExpression = ArbitraryExpression.from(expression);
-		postArbitraryManipulators.add(new ArbitraryFilter<T>(clazz, fixtureExpression, predicate, count));
-	}
-
-	@SuppressWarnings({"rawtypes", "unchecked"})
-	private <T> void filterSpec(Class<T> clazz, String expression, Predicate predicate) {
-		ArbitraryExpression fixtureExpression = ArbitraryExpression.from(expression);
-		postArbitraryManipulators.add(new ArbitraryFilter<T>(clazz, fixtureExpression, predicate));
-	}
-
-	@SuppressWarnings("rawtypes")
-	public List<PreArbitraryManipulator> getPreArbitraryManipulators() {
-		return preArbitraryManipulators;
-	}
-
-	@SuppressWarnings("rawtypes")
-	public List<PostArbitraryManipulator> getPostArbitraryManipulators() {
-		return postArbitraryManipulators;
-	}
-
-	public List<MetadataManipulator> getMetadataManipulators() {
-		return metadataManipulators;
+	public List<BuilderManipulator> getBuilderManipulators() {
+		return builderManipulators;
 	}
 
 	@Override
@@ -341,13 +302,11 @@ public final class ExpressionSpec {
 			return false;
 		}
 		ExpressionSpec that = (ExpressionSpec)obj;
-		return preArbitraryManipulators.equals(that.preArbitraryManipulators)
-			&& postArbitraryManipulators.equals(that.postArbitraryManipulators)
-			&& metadataManipulators.equals(that.metadataManipulators);
+		return builderManipulators.equals(that.builderManipulators);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(preArbitraryManipulators, postArbitraryManipulators, metadataManipulators);
+		return Objects.hash(builderManipulators);
 	}
 }

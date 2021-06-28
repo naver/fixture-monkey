@@ -136,7 +136,7 @@ public final class BuilderArbitraryGenerator extends AbstractArbitraryGenerator 
 		});
 
 		if (builderMethod == null) {
-			throw new IllegalArgumentException("Class has no builder class" + objectType.getName());
+			throw new IllegalArgumentException("Class has no builder class. " + objectType.getName());
 		}
 
 		return BUILDER_TYPE_CACHE.computeIfAbsent(objectType, t -> {

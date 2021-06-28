@@ -13,7 +13,6 @@ dependencies {
     compileOnly("net.jqwik:jqwik-engine:${JQWIK_VERSION}")
     compile("javax.validation:validation-api:2.0.1.Final")
     compile("com.github.mifmif:generex:1.0.2")
-    compile("commons-beanutils:commons-beanutils:1.9.4")
 
     testImplementation("org.assertj:assertj-core:3.18.1")
     testImplementation("org.projectlombok:lombok:1.18.16")

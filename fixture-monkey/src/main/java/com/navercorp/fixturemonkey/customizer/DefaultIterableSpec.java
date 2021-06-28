@@ -35,7 +35,8 @@ final class DefaultIterableSpec implements IterableSpec, ExpressionSpecVisitor {
 	private final List<ExpressionSpecVisitor> next;
 	@SuppressWarnings("rawtypes")
 	private final List<IterableSpecSet> setList;
-	private final List<IterableSpecFilter> filterList;
+	@SuppressWarnings("rawtypes")
+	private final List<IterableSpecPostCondition> postConditionList;
 
 	private Integer minSize = null;
 	private Integer maxSize = null;
@@ -45,7 +46,7 @@ final class DefaultIterableSpec implements IterableSpec, ExpressionSpecVisitor {
 		this.iterableName = iterableName;
 		this.next = new ArrayList<>();
 		this.setList = new ArrayList<>();
-		this.filterList = new ArrayList<>();
+		this.postConditionList = new ArrayList<>();
 	}
 
 	@Override
@@ -86,9 +87,19 @@ final class DefaultIterableSpec implements IterableSpec, ExpressionSpecVisitor {
 	}
 
 	@Override
-	public <T> IterableSpec filterElement(long fieldIndex, Predicate<T> filter) {
+	public <T> IterableSpec setElementPostCondition(long fieldIndex, Class<T> clazz, Predicate<T> postCondition) {
+		return this.setElementPostCondition(fieldIndex, clazz, postCondition, Long.MAX_VALUE);
+	}
+
+	@Override
+	public <T> IterableSpec setElementPostCondition(
+		long fieldIndex,
+		Class<T> clazz,
+		Predicate<T> postCondition,
+		long limit
+	) {
 		String expression = getFieldExpression(this.iterableName, fieldIndex, EMPTY_FIELD);
-		addFilter(expression, filter);
+		addPostCondition(expression, clazz, postCondition, limit);
 		return this;
 	}
 
@@ -114,9 +125,25 @@ final class DefaultIterableSpec implements IterableSpec, ExpressionSpecVisitor {
 	}
 
 	@Override
-	public <T> IterableSpec filterElementField(long fieldIndex, String fieldName, Predicate<T> filter) {
+	public <T> IterableSpec setElementFieldPostCondition(
+		long fieldIndex,
+		String fieldName,
+		Class<T> clazz,
+		Predicate<T> postCondition
+	) {
+		return this.setElementFieldPostCondition(fieldIndex, fieldName, clazz, postCondition, Long.MAX_VALUE);
+	}
+
+	@Override
+	public <T> IterableSpec setElementFieldPostCondition(
+		long fieldIndex,
+		String fieldName,
+		Class<T> clazz,
+		Predicate<T> postCondition,
+		long limit
+	) {
 		String expression = getFieldExpression(this.iterableName, fieldIndex, fieldName);
-		addFilter(expression, filter);
+		addPostCondition(expression, clazz, postCondition, limit);
 		return this;
 	}
 
@@ -124,7 +151,8 @@ final class DefaultIterableSpec implements IterableSpec, ExpressionSpecVisitor {
 	@Override
 	public void visit(ExpressionSpec expressionSpec) {
 		this.setList.forEach(it -> expressionSpec.set(it.expression, it.value, it.limit));
-		this.filterList.forEach(it -> expressionSpec.filter(it.expression, it.filter, it.limit));
+		this.postConditionList.forEach(
+			it -> expressionSpec.setPostCondition(it.expression, it.clazz, it.postCondition, it.limit));
 
 		for (ExpressionSpecVisitor nextIterableSpec : this.next) {
 			nextIterableSpec.visit(expressionSpec);
@@ -139,21 +167,6 @@ final class DefaultIterableSpec implements IterableSpec, ExpressionSpecVisitor {
 			this.maxSize = this.maxSize == null ? DEFAULT_ELEMENT_MAX_SIZE : this.maxSize;
 			expressionSpec.size(this.iterableName, this.minSize, this.maxSize);
 		}
-	}
-
-	@Override
-	public <T> IterableSpec any(Predicate<T> filter) {
-		String allExpression = getFieldExpression(this.iterableName, "*", EMPTY_FIELD);
-		long limit = getRandomLimit();
-		this.addFilter(allExpression, filter, limit);
-		return this;
-	}
-
-	@Override
-	public <T> IterableSpec all(Predicate<T> filter) {
-		String allExpression = getFieldExpression(this.iterableName, "*", EMPTY_FIELD);
-		this.addFilter(allExpression, filter);
-		return this;
 	}
 
 	@Override
@@ -195,14 +208,12 @@ final class DefaultIterableSpec implements IterableSpec, ExpressionSpecVisitor {
 		this.setList.add(new IterableSpecSet<>(expression, object, limit));
 	}
 
-	@SuppressWarnings("rawtypes")
-	private <T> void addFilter(String expression, Predicate filter) {
-		this.filterList.add(new IterableSpecFilter(expression, filter));
+	private <T> void addPostCondition(String expression, Class<T> clazz, Predicate<T> postCondition) {
+		this.postConditionList.add(new IterableSpecPostCondition<>(expression, clazz, postCondition));
 	}
 
-	@SuppressWarnings("rawtypes")
-	private <T> void addFilter(String expression, Predicate filter, long limit) {
-		this.filterList.add(new IterableSpecFilter(expression, filter, limit));
+	private <T> void addPostCondition(String expression, Class<T> clazz, Predicate<T> postCondition, long limit) {
+		this.postConditionList.add(new IterableSpecPostCondition<>(expression, clazz, postCondition, limit));
 	}
 
 	private long getRandomLimit() {
@@ -227,23 +238,23 @@ final class DefaultIterableSpec implements IterableSpec, ExpressionSpecVisitor {
 		}
 	}
 
-	private static class IterableSpecFilter {
+	private static class IterableSpecPostCondition<T> {
 		private final String expression;
-		@SuppressWarnings("rawtypes")
-		private final Predicate filter;
+		private final Class<T> clazz;
+		private final Predicate<T> postCondition;
 		private final long limit;
 
-		@SuppressWarnings("rawtypes")
-		public IterableSpecFilter(String expression, Predicate filter) {
+		public IterableSpecPostCondition(String expression, Class<T> clazz, Predicate<T> postCondition) {
 			this.expression = expression;
-			this.filter = filter;
+			this.clazz = clazz;
+			this.postCondition = postCondition;
 			this.limit = Long.MAX_VALUE;
 		}
 
-		@SuppressWarnings("rawtypes")
-		public IterableSpecFilter(String expression, Predicate filter, long limit) {
+		public IterableSpecPostCondition(String expression, Class<T> clazz, Predicate<T> postCondition, long limit) {
 			this.expression = expression;
-			this.filter = filter;
+			this.clazz = clazz;
+			this.postCondition = postCondition;
 			this.limit = limit;
 		}
 	}

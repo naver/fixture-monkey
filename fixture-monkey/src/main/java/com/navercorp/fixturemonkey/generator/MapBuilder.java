@@ -46,14 +46,15 @@ final class MapBuilder {
 
 		for (int i = 0; i < nodes.size() / 2; i++) {
 			int nodeIndex = i * 2;
-			Arbitrary<?> keyArbitrary = (Arbitrary<?>)nodes.get(nodeIndex).getArbitrary().unique();
+			Arbitrary<?> keyArbitrary = (Arbitrary<?>)nodes.get(nodeIndex).getArbitrary();
 			Arbitrary<?> valueArbitrary = (Arbitrary<?>)nodes.get(nodeIndex + 1).getArbitrary();
 			mapBuilder = mapBuilder
 				.use(keyArbitrary).in(MapBuilderFrame::key)
 				.use(valueArbitrary).in(MapBuilderFrame::value);
 		}
 
-		return (Arbitrary<T>)mapBuilder.build(MapBuilderFrame::build);
+		return (Arbitrary<T>)mapBuilder.build(MapBuilderFrame::build)
+			.filter(it -> it.size() == nodes.size() / 2);
 	}
 
 	private static class MapBuilderFrame<K, V> {
@@ -65,9 +66,6 @@ final class MapBuilder {
 		}
 
 		MapBuilderFrame<K, V> key(K key) {
-			if (map.containsKey(key)) {
-				throw new IllegalArgumentException("Map has duplicated Key : " + key);
-			}
 			this.key = key;
 			return this;
 		}
