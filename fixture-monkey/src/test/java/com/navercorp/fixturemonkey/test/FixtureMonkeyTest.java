@@ -19,6 +19,7 @@
 package com.navercorp.fixturemonkey.test;
 
 import static org.assertj.core.api.BDDAssertions.then;
+import static org.assertj.core.api.BDDAssertions.thenThrownBy;
 
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
@@ -1596,6 +1597,171 @@ class FixtureMonkeyTest {
 		StringWrapperWithNullableClass actual = sut.giveMeOne(StringWrapperWithNullableClass.class);
 
 		then(actual.value).isNull();
+	}
+
+	@Property
+	void giveMeSetArbitraryBuilder() {
+		StringIntegerClass actual = this.sut.giveMeBuilder(StringIntegerClass.class)
+			.setBuilder("value2", this.sut.giveMeBuilder(IntegerWrapperClass.class).set("value", 1))
+			.sample();
+
+		then(actual.value2.value).isEqualTo(1);
+	}
+
+	@Property
+	void giveMeSpecSetArbitraryBuilder() {
+		StringIntegerClass actual = this.sut.giveMeBuilder(StringIntegerClass.class)
+			.spec(new ExpressionSpec().setBuilder("value2",
+				this.sut.giveMeBuilder(IntegerWrapperClass.class).set("value", 1))
+			)
+			.sample();
+
+		then(actual.value2.value).isEqualTo(1);
+	}
+
+	@Property
+	void giveMeZipList() {
+		List<ArbitraryBuilder<?>> list = new ArrayList<>();
+		list.add(this.sut.giveMeBuilder(StringWrapperClass.class));
+		list.add(this.sut.giveMeBuilder(IntegerWrapperClass.class));
+
+		StringIntegerClass actual = ArbitraryBuilders.zip(
+			list,
+			(l) -> {
+				StringIntegerClass result = new StringIntegerClass();
+				result.setValue1((StringWrapperClass)l.get(0));
+				result.setValue2((IntegerWrapperClass)l.get(1));
+				return result;
+			}
+		).sample();
+
+		then(actual.value1).isNotNull();
+		then(actual.value2).isNotNull();
+	}
+
+	@Property
+	void giveMeZipEmptyListThrows() {
+		List<ArbitraryBuilder<?>> list = new ArrayList<>();
+
+		thenThrownBy(
+			() -> ArbitraryBuilders.zip(
+				list,
+				(l) -> new StringIntegerClass()
+			).sample()
+		).isExactlyInstanceOf(IllegalArgumentException.class)
+			.hasMessageContaining("zip should be used in more than two ArbitraryBuilders, given size");
+	}
+
+	@Property
+	void zipThree() {
+		ArbitraryBuilder<StringWrapperClass> s1 = this.sut.giveMeBuilder(StringWrapperClass.class)
+			.set("value", "s1");
+		ArbitraryBuilder<StringWrapperClass> s2 = this.sut.giveMeBuilder(StringWrapperClass.class)
+			.set("value", "s2");
+		ArbitraryBuilder<StringWrapperClass> s3 = this.sut.giveMeBuilder(StringWrapperClass.class)
+			.set("value", "s3");
+
+		NestedStringList actual = ArbitraryBuilders.zip(s1, s2, s3, (a1, a2, a3) -> {
+			List<StringWrapperClass> list = new ArrayList<>();
+			list.add(a1);
+			list.add(a2);
+			list.add(a3);
+
+			NestedStringList result = new NestedStringList();
+			result.setValues(list);
+			return result;
+		}).sample();
+
+		then(actual.values).hasSize(3);
+		then(actual.values.get(0).value).isEqualTo("s1");
+		then(actual.values.get(1).value).isEqualTo("s2");
+		then(actual.values.get(2).value).isEqualTo("s3");
+	}
+
+	@Property
+	void giveMeZipWithThree() {
+		ArbitraryBuilder<StringWrapperClass> s1 = this.sut.giveMeBuilder(StringWrapperClass.class)
+			.set("value", "s1");
+		ArbitraryBuilder<StringWrapperClass> s2 = this.sut.giveMeBuilder(StringWrapperClass.class)
+			.set("value", "s2");
+		ArbitraryBuilder<StringWrapperClass> s3 = this.sut.giveMeBuilder(StringWrapperClass.class)
+			.set("value", "s3");
+
+		NestedStringList actual = s1.zipWith(s2, s3, (a1, a2, a3) -> {
+			List<StringWrapperClass> list = new ArrayList<>();
+			list.add(a1);
+			list.add(a2);
+			list.add(a3);
+
+			NestedStringList result = new NestedStringList();
+			result.setValues(list);
+			return result;
+		}).sample();
+
+		then(actual.values).hasSize(3);
+		then(actual.values.get(0).value).isEqualTo("s1");
+		then(actual.values.get(1).value).isEqualTo("s2");
+		then(actual.values.get(2).value).isEqualTo("s3");
+	}
+
+	@Property
+	void zipFour() {
+		ArbitraryBuilder<StringWrapperClass> s1 = this.sut.giveMeBuilder(StringWrapperClass.class)
+			.set("value", "s1");
+		ArbitraryBuilder<StringWrapperClass> s2 = this.sut.giveMeBuilder(StringWrapperClass.class)
+			.set("value", "s2");
+		ArbitraryBuilder<StringWrapperClass> s3 = this.sut.giveMeBuilder(StringWrapperClass.class)
+			.set("value", "s3");
+		ArbitraryBuilder<StringWrapperClass> s4 = this.sut.giveMeBuilder(StringWrapperClass.class)
+			.set("value", "s4");
+
+		NestedStringList actual = ArbitraryBuilders.zip(s1, s2, s3, s4, (a1, a2, a3, a4) -> {
+			List<StringWrapperClass> list = new ArrayList<>();
+			list.add(a1);
+			list.add(a2);
+			list.add(a3);
+			list.add(a4);
+
+			NestedStringList result = new NestedStringList();
+			result.setValues(list);
+			return result;
+		}).sample();
+
+		then(actual.values).hasSize(4);
+		then(actual.values.get(0).value).isEqualTo("s1");
+		then(actual.values.get(1).value).isEqualTo("s2");
+		then(actual.values.get(2).value).isEqualTo("s3");
+		then(actual.values.get(3).value).isEqualTo("s4");
+	}
+
+	@Property
+	void giveMeZipWithFour() {
+		ArbitraryBuilder<StringWrapperClass> s1 = this.sut.giveMeBuilder(StringWrapperClass.class)
+			.set("value", "s1");
+		ArbitraryBuilder<StringWrapperClass> s2 = this.sut.giveMeBuilder(StringWrapperClass.class)
+			.set("value", "s2");
+		ArbitraryBuilder<StringWrapperClass> s3 = this.sut.giveMeBuilder(StringWrapperClass.class)
+			.set("value", "s3");
+		ArbitraryBuilder<StringWrapperClass> s4 = this.sut.giveMeBuilder(StringWrapperClass.class)
+			.set("value", "s4");
+
+		NestedStringList actual = s1.zipWith(s2, s3, s4, (a1, a2, a3, a4) -> {
+			List<StringWrapperClass> list = new ArrayList<>();
+			list.add(a1);
+			list.add(a2);
+			list.add(a3);
+			list.add(a4);
+
+			NestedStringList result = new NestedStringList();
+			result.setValues(list);
+			return result;
+		}).sample();
+
+		then(actual.values).hasSize(4);
+		then(actual.values.get(0).value).isEqualTo("s1");
+		then(actual.values.get(1).value).isEqualTo("s2");
+		then(actual.values.get(2).value).isEqualTo("s3");
+		then(actual.values.get(3).value).isEqualTo("s4");
 	}
 
 	@Data

@@ -33,6 +33,7 @@ import javax.annotation.Nullable;
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
 
+import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.arbitrary.AbstractArbitraryExpressionManipulator;
 import com.navercorp.fixturemonkey.arbitrary.AbstractArbitrarySet;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryExpression;
@@ -92,6 +93,24 @@ public final class ExpressionSpec {
 		}
 		ArbitraryExpression fixtureExpression = ArbitraryExpression.from(expression);
 		builderManipulators.add(new ArbitrarySetArbitrary(fixtureExpression, arbitrary));
+		return this;
+	}
+
+	public <T> ExpressionSpec setBuilder(String expression, @Nullable ArbitraryBuilder<T> builder, long limit) {
+		if (builder == null) {
+			return this.setNull(null);
+		}
+		ArbitraryExpression fixtureExpression = ArbitraryExpression.from(expression);
+		builderManipulators.add(new ArbitrarySetArbitrary<>(fixtureExpression, builder.build(), limit));
+		return this;
+	}
+
+	public <T> ExpressionSpec setBuilder(String expression, @Nullable ArbitraryBuilder<T> builder) {
+		if (builder == null) {
+			return this.setNull(null);
+		}
+		ArbitraryExpression fixtureExpression = ArbitraryExpression.from(expression);
+		builderManipulators.add(new ArbitrarySetArbitrary<>(fixtureExpression, builder.build()));
 		return this;
 	}
 
