@@ -25,6 +25,7 @@ import com.navercorp.fixturemonkey.customizer.WithFixtureCustomizer
 import com.navercorp.fixturemonkey.generator.AbstractArbitraryGenerator
 import com.navercorp.fixturemonkey.generator.ArbitraryGenerator
 import com.navercorp.fixturemonkey.generator.FieldArbitraries
+import com.navercorp.fixturemonkey.kotlin.customizer.customizeFields
 import net.jqwik.api.Arbitrary
 import net.jqwik.api.Combinators
 import kotlin.jvm.internal.Reflection
@@ -51,7 +52,7 @@ class PrimaryConstructorArbitraryGenerator(
             toArbitrariesByFieldName(nodes, { it.fieldName }) { _, arbitrary -> arbitrary }
         )
 
-        arbitraryCustomizers.customizeFields(clazz.java, fieldArbitraries)
+        arbitraryCustomizers.customizeFields(clazz, fieldArbitraries)
 
         val constructor = requireNotNull(clazz.primaryConstructor) { "No primary constructor provided for $clazz" }
 
