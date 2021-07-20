@@ -47,7 +47,6 @@ public final class ArbitraryNode<T> {
 	private final String fieldName;
 	private final String metadata;
 	private final int indexOfIterable;
-	private final Supplier<T> valueSupplier;
 	private final FixtureNodeStatus<T> status;
 	private final boolean keyOfMapStructure;
 	private final double nullInject;
@@ -60,7 +59,6 @@ public final class ArbitraryNode<T> {
 		String fieldName,
 		String metadata,
 		int indexOfIterable,
-		Supplier<T> valueSupplier,
 		FixtureNodeStatus<T> status,
 		boolean keyOfMapStructure,
 		double nullInject
@@ -72,7 +70,6 @@ public final class ArbitraryNode<T> {
 		this.metadata = metadata;
 		this.indexOfIterable = indexOfIterable;
 		this.status = status.copy();
-		this.valueSupplier = valueSupplier;
 		this.keyOfMapStructure = keyOfMapStructure;
 		this.nullInject = nullInject;
 	}
@@ -222,6 +219,10 @@ public final class ArbitraryNode<T> {
 		this.getStatus().setFixed(fixed);
 	}
 
+	public void setValue(Supplier<T> value) {
+		this.getStatus().setValue(new LazyValue<>(value));
+	}
+
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	public void addArbitraryOperation(PostArbitraryManipulator postArbitraryManipulator) {
 		this.status.addPostArbitraryManipulator(postArbitraryManipulator);
@@ -252,14 +253,13 @@ public final class ArbitraryNode<T> {
 		return children;
 	}
 
-	@SuppressWarnings("unchecked")
 	public ArbitraryType<T> getType() {
 		if (type instanceof NullArbitraryType) {
-			T value = this.getValueSupplier().get();
+			LazyValue<T> value = getValue();
 			if (value == null) {
 				return type;
 			}
-			return new ArbitraryType<>((Class<T>)value.getClass());
+			return value.getArbitraryType();
 		}
 		return type;
 	}
@@ -304,8 +304,8 @@ public final class ArbitraryNode<T> {
 		return this.getChildren().isEmpty() && this.getArbitrary() != null;
 	}
 
-	public Supplier<T> getValueSupplier() {
-		return valueSupplier;
+	public LazyValue<T> getValue() {
+		return this.getStatus().getValue();
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -322,7 +322,6 @@ public final class ArbitraryNode<T> {
 			.fieldName(this.getFieldName())
 			.metadata(this.getMetadata())
 			.indexOfIterable(this.getIndexOfIterable())
-			.valueSupplier(this.valueSupplier)
 			.status(this.getStatus().copy())
 			.keyOfMapStructure(this.isKeyOfMapStructure())
 			.nullInject(this.getNullInject())
@@ -367,6 +366,7 @@ public final class ArbitraryNode<T> {
 		private Arbitrary<T> arbitrary = null; // immutable
 		private ContainerSizeConstraint containerSizeConstraint; // immutable
 		private List<PostArbitraryManipulator<T>> postArbitraryManipulators = new ArrayList<>();
+		private LazyValue<T> value = null;
 		private boolean nullable = false;
 		private boolean manipulated = false;
 		private boolean active = true;
@@ -375,18 +375,24 @@ public final class ArbitraryNode<T> {
 		private FixtureNodeStatus() {
 		}
 
-		private FixtureNodeStatus(
+		public FixtureNodeStatus(
 			@Nullable Arbitrary<T> arbitrary,
 			ContainerSizeConstraint containerSizeConstraint,
+			List<PostArbitraryManipulator<T>> postArbitraryManipulators,
+			LazyValue<T> value,
 			boolean nullable,
 			boolean manipulated,
-			boolean active
+			boolean active,
+			boolean fixed
 		) {
 			this.arbitrary = arbitrary;
 			this.containerSizeConstraint = containerSizeConstraint;
+			this.postArbitraryManipulators = postArbitraryManipulators;
+			this.value = value;
 			this.nullable = nullable;
 			this.manipulated = manipulated;
 			this.active = active;
+			this.fixed = fixed;
 		}
 
 		@Nullable
@@ -416,6 +422,10 @@ public final class ArbitraryNode<T> {
 
 		public boolean isFixed() {
 			return fixed;
+		}
+
+		public LazyValue<T> getValue() {
+			return value;
 		}
 
 		public void setArbitrary(@Nullable Arbitrary<T> arbitrary) {
@@ -450,13 +460,20 @@ public final class ArbitraryNode<T> {
 			this.fixed = fixed;
 		}
 
+		public void setValue(LazyValue<T> value) {
+			this.value = value;
+		}
+
 		public FixtureNodeStatus<T> copy() {
 			return new FixtureNodeStatus<>(
 				this.getArbitrary(),
 				this.getContainerSizeConstraint(),
+				this.getPostArbitraryManipulators(),
+				this.getValue(),
 				this.isNullable(),
 				this.isManipulated(),
-				this.isActive()
+				this.isActive(),
+				this.isFixed()
 			);
 		}
 
@@ -486,8 +503,6 @@ public final class ArbitraryNode<T> {
 		private String fieldName = HEAD_NAME;
 		private String metadata = "";
 		private int indexOfIterable = NO_OR_ALL_INDEX_INTEGER_VALUE;
-		@Nullable
-		private Supplier<T> valueSupplier = () -> null;
 		private FixtureNodeStatus<T> status = new FixtureNodeStatus<>();
 		private boolean keyOfMapStructure = false;
 		private double nullInject = 0.3f;
@@ -549,8 +564,18 @@ public final class ArbitraryNode<T> {
 			return this;
 		}
 
-		public FixtureNodeBuilder<T> valueSupplier(Supplier<T> valueSupplier) {
-			this.valueSupplier = valueSupplier;
+		public FixtureNodeBuilder<T> value(LazyValue<T> value) {
+			this.status.value = value;
+			return this;
+		}
+
+		public FixtureNodeBuilder<T> value(Supplier<T> valueSupplier) {
+			this.status.value = new LazyValue<>(valueSupplier);
+			return this;
+		}
+
+		public FixtureNodeBuilder<T> value(T value) {
+			this.status.value = new LazyValue<>(value);
 			return this;
 		}
 
@@ -561,7 +586,6 @@ public final class ArbitraryNode<T> {
 				fieldName,
 				metadata,
 				indexOfIterable,
-				valueSupplier,
 				status,
 				keyOfMapStructure,
 				nullInject
