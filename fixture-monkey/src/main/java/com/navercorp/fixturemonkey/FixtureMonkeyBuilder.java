@@ -21,6 +21,7 @@ package com.navercorp.fixturemonkey;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 
 import com.navercorp.fixturemonkey.ArbitraryOption.FixtureOptionsBuilder;
 import com.navercorp.fixturemonkey.arbitrary.InterfaceSupplier;
@@ -131,6 +132,21 @@ public class FixtureMonkeyBuilder {
 
 	public FixtureMonkeyBuilder defaultNotNull(boolean defaultNotNull) {
 		this.optionsBuilder.defaultNotNull(defaultNotNull);
+		return this;
+	}
+
+	public FixtureMonkeyBuilder register(
+		Class<?> clazz,
+		Function<FixtureMonkey, ArbitraryBuilder<?>> arbitraryBuildingSupplier
+	) {
+		this.optionsBuilder.register(clazz, arbitraryBuildingSupplier);
+		return this;
+	}
+
+	public FixtureMonkeyBuilder registerGroup(Class<?>... arbitraryBuilderGroups) {
+		for (Class<?> arbitraryBuilderGroup : arbitraryBuilderGroups) {
+			this.optionsBuilder.registerGroup(arbitraryBuilderGroup);
+		}
 		return this;
 	}
 

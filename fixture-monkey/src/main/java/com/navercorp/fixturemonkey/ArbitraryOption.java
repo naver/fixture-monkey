@@ -18,7 +18,14 @@
 
 package com.navercorp.fixturemonkey;
 
+import static java.util.stream.Collectors.toMap;
+
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedParameterizedType;
+import java.lang.reflect.AnnotatedType;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.Instant;
@@ -34,11 +41,13 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.OptionalDouble;
 import java.util.OptionalInt;
 import java.util.OptionalLong;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Function;
 import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
@@ -77,6 +86,8 @@ public final class ArbitraryOption {
 
 	private final Map<Class<?>, AnnotatedArbitraryGenerator<?>> annotatedArbitraryMap;
 	private final Map<Class<?>, InterfaceSupplier<?>> interfaceSupplierMap;
+	private final Map<Class<?>, Function<FixtureMonkey, ArbitraryBuilder<?>>> arbitraryBuildingSupplierMap;
+	private final Map<Class<?>, ArbitraryBuilder<?>> defaultArbitraryBuilderMap;
 	private final Set<String> exceptGeneratePackages;
 	private final Set<String> nonNullAnnotationNames;
 	private final NullableArbitraryEvaluator nullableArbitraryEvaluator;
@@ -88,6 +99,7 @@ public final class ArbitraryOption {
 	public ArbitraryOption(
 		Map<Class<?>, AnnotatedArbitraryGenerator<?>> annotatedArbitraryMap,
 		Map<Class<?>, InterfaceSupplier<?>> interfaceSupplierMap,
+		Map<Class<?>, Function<FixtureMonkey, ArbitraryBuilder<?>>> arbitraryBuildingSupplierMap,
 		Set<String> exceptGeneratePackages,
 		Set<String> nonNullAnnotationNames,
 		InterfaceSupplier<?> defaultInterfaceSupplier,
@@ -98,6 +110,8 @@ public final class ArbitraryOption {
 	) {
 		this.annotatedArbitraryMap = annotatedArbitraryMap;
 		this.interfaceSupplierMap = interfaceSupplierMap;
+		this.arbitraryBuildingSupplierMap = arbitraryBuildingSupplierMap;
+		this.defaultArbitraryBuilderMap = new HashMap<>();
 		this.exceptGeneratePackages = exceptGeneratePackages;
 		this.nonNullAnnotationNames = nonNullAnnotationNames;
 		this.defaultInterfaceSupplier = defaultInterfaceSupplier;
@@ -147,6 +161,20 @@ public final class ArbitraryOption {
 	@SuppressWarnings("unchecked")
 	public <T> InterfaceSupplier<T> getInterfaceSupplierOrDefault(Class<T> clazz) {
 		return (InterfaceSupplier<T>)interfaceSupplierMap.getOrDefault(clazz, defaultInterfaceSupplier);
+	}
+
+	public <T> Function<FixtureMonkey, ArbitraryBuilder<?>> getArbitraryBuildingSupplier(Class<T> clazz) {
+		return arbitraryBuildingSupplierMap.get(clazz);
+	}
+
+	@SuppressWarnings("unchecked")
+	public <T> ArbitraryBuilder<T> getDefaultArbitraryBuilder(Class<T> clazz) {
+		return (ArbitraryBuilder<T>)defaultArbitraryBuilderMap.get(clazz);
+	}
+
+	public void applyArbitraryBuilders(FixtureMonkey fixtureMonkey) {
+		defaultArbitraryBuilderMap.putAll(arbitraryBuildingSupplierMap.entrySet().stream()
+			.collect(toMap(Entry::getKey, it -> it.getValue().apply(fixtureMonkey))));
 	}
 
 	public boolean isNonNullAnnotation(Annotation annotation) {
@@ -235,11 +263,13 @@ public final class ArbitraryOption {
 		private final Map<Class<?>, AnnotatedArbitraryGenerator<?>> annotatedArbitraryMap = new HashMap<>(
 			DEFAULT_TYPE_ARBITRARY_SPECS);
 		private final Map<Class<?>, InterfaceSupplier<?>> interfaceSupplierMap = new HashMap<>();
+		private final Map<Class<?>, Function<FixtureMonkey, ArbitraryBuilder<?>>> arbitraryBuildingSupplierMap
+			= new HashMap<>();
 		private Set<String> exceptGeneratePackages = new HashSet<>(DEFAULT_EXCEPT_GENERATE_PACKAGE);
 		private final Set<String> nonNullAnnotationNames = new HashSet<>(DEFAULT_NONNULL_ANNOTATIONS);
 		private NullableArbitraryEvaluator nullableArbitraryEvaluator = new NullableArbitraryEvaluator() {
 		};
-		private InterfaceSupplier<?> defaultInterfaceSupplier = () -> null;
+		private InterfaceSupplier<?> defaultInterfaceSupplier = (type) -> null;
 		private double nullInject = 0.2;
 		private boolean nullableContainer = false;
 		private boolean defaultNotNull = false;
@@ -296,10 +326,65 @@ public final class ArbitraryOption {
 			return this;
 		}
 
+		public FixtureOptionsBuilder register(
+			Class<?> clazz,
+			Function<FixtureMonkey, ArbitraryBuilder<?>> arbitraryBuildingSupplier
+		) {
+			if (this.arbitraryBuildingSupplierMap.containsKey(clazz)) {
+				throw new IllegalArgumentException("can not register same class twice. " + clazz.getName());
+			}
+			this.arbitraryBuildingSupplierMap.put(clazz, arbitraryBuildingSupplier);
+			return this;
+		}
+
+		public FixtureOptionsBuilder registerGroup(Class<?> arbitraryBuilderGroup) {
+			Method[] methods = arbitraryBuilderGroup.getMethods();
+			for (Method method : methods) {
+				int paramCount = method.getParameterCount();
+				Class<?> returnType = method.getReturnType();
+				if (paramCount != 1 || returnType != ArbitraryBuilder.class) {
+					continue;
+				}
+				try {
+					Class<?> actualType = getReturnGenericType(method);
+					Object noArgsInstance = arbitraryBuilderGroup.getDeclaredConstructor().newInstance();
+					Function<FixtureMonkey, ArbitraryBuilder<?>> registerArbitraryBuilder = (fixtureMonkey) -> {
+						try {
+							return (ArbitraryBuilder<?>)method.invoke(noArgsInstance, fixtureMonkey);
+						} catch (IllegalAccessException | InvocationTargetException e) {
+							e.printStackTrace();
+							throw new RuntimeException(e);
+						}
+					};
+					this.register(actualType, registerArbitraryBuilder);
+				} catch (InvocationTargetException
+					| InstantiationException
+					| IllegalAccessException
+					| NoSuchMethodException
+					| RuntimeException e) {
+					// ignored
+				}
+			}
+			return this;
+		}
+
+		private Class<?> getReturnGenericType(Method method) {
+			AnnotatedType annotatedReturnType = method.getAnnotatedReturnType();
+			AnnotatedParameterizedType parameterizedType = (AnnotatedParameterizedType)annotatedReturnType;
+			AnnotatedType annotatedActualTypeArgument = parameterizedType.getAnnotatedActualTypeArguments()[0];
+
+			if (annotatedActualTypeArgument instanceof AnnotatedParameterizedType) {
+				ParameterizedType parameterType = (ParameterizedType)annotatedActualTypeArgument.getType();
+				return (Class<?>)parameterType.getRawType();
+			}
+			return (Class<?>)annotatedActualTypeArgument.getType();
+		}
+
 		public ArbitraryOption build() {
 			return new ArbitraryOption(
 				Collections.unmodifiableMap(annotatedArbitraryMap),
 				Collections.unmodifiableMap(interfaceSupplierMap),
+				Collections.unmodifiableMap(arbitraryBuildingSupplierMap),
 				Collections.unmodifiableSet(exceptGeneratePackages),
 				Collections.unmodifiableSet(nonNullAnnotationNames),
 				defaultInterfaceSupplier,

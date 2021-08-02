@@ -54,6 +54,7 @@ public class FixtureMonkey {
 		this.validator = validator;
 		this.generatorMap = generatorMap;
 		this.arbitraryCustomizers = arbitraryCustomizers;
+		options.applyArbitraryBuilders(this);
 	}
 
 	public static FixtureMonkeyBuilder builder() {
@@ -93,14 +94,7 @@ public class FixtureMonkey {
 	}
 
 	public <T> ArbitraryBuilder<T> giveMeBuilder(Class<T> clazz, ArbitraryOption options) {
-		return new ArbitraryBuilder<>(
-			clazz,
-			options,
-			defaultGenerator,
-			validator,
-			arbitraryCustomizers,
-			this.generatorMap
-		);
+		return this.giveMeBuilder(clazz, options, this.arbitraryCustomizers);
 	}
 
 	public <T> ArbitraryBuilder<T> giveMeBuilder(T value) {
@@ -121,12 +115,26 @@ public class FixtureMonkey {
 	) {
 		ArbitraryCustomizers newArbitraryCustomizers =
 			this.arbitraryCustomizers.mergeWith(Collections.singletonMap(clazz, customizer));
+
+		return this.giveMeBuilder(clazz, options, newArbitraryCustomizers);
+	}
+
+	private <T> ArbitraryBuilder<T> giveMeBuilder(
+		Class<T> clazz,
+		ArbitraryOption option,
+		ArbitraryCustomizers customizers
+	) {
+		ArbitraryBuilder<T> defaultArbitraryBuilder = option.getDefaultArbitraryBuilder(clazz);
+		if (defaultArbitraryBuilder != null) {
+			return defaultArbitraryBuilder;
+		}
+
 		return new ArbitraryBuilder<>(
 			clazz,
-			options,
+			option,
 			defaultGenerator,
 			this.validator,
-			newArbitraryCustomizers,
+			customizers,
 			this.generatorMap
 		);
 	}

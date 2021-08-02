@@ -79,7 +79,7 @@ class FixtureMonkeyTest {
 		.putGenerator(FieldReflectionIntegerClass.class, FieldReflectionArbitraryGenerator.INSTANCE)
 		.putGenerator(NullIntegerClass.class, NullArbitraryGenerator.INSTANCE)
 		.putGenerator(BeanIntegerClass.class, BeanArbitraryGenerator.INSTANCE)
-		.addInterfaceSupplier(MockInterface.class, () -> () -> "test")
+		.addInterfaceSupplier(MockInterface.class, (type) -> () -> "test")
 		.build();
 
 	@Property
@@ -1790,6 +1790,141 @@ class FixtureMonkeyTest {
 		then(actual.values.get(1)).isNotNull();
 	}
 
+	@Property
+	void decomposeNullIsNotGenerated() {
+		StringIntegerClass decomposed = new StringIntegerClass();
+		IntegerWrapperClass value2 = new IntegerWrapperClass();
+		value2.value = 1;
+		decomposed.setValue2(value2);
+
+		StringIntegerClass actual = this.sut.giveMeBuilder(decomposed)
+			.sample();
+
+		then(actual.value1).isNull();
+		then(actual.value2.value).isEqualTo(1);
+	}
+
+	@Property
+	void decomposeNullSetThenGenerate() {
+		StringIntegerClass decomposed = new StringIntegerClass();
+		IntegerWrapperClass value2 = new IntegerWrapperClass();
+		value2.value = 1;
+		decomposed.setValue2(value2);
+
+		StringIntegerClass actual = this.sut.giveMeBuilder(decomposed)
+			.set("value1.value", "abc")
+			.sample();
+
+		then(actual.value1.value).isEqualTo("abc");
+		then(actual.value2.value).isEqualTo(1);
+	}
+
+	@Property
+	void registerGroup() {
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.registerGroup(DefaultArbitraryHolder.class)
+			.build();
+
+		StringWrapperClass actual = sut.giveMeOne(StringWrapperClass.class);
+
+		then(actual.value).isEqualTo("definition");
+	}
+
+	@Property
+	void registerGroupInField() {
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.registerGroup(DefaultArbitraryHolder.class)
+			.build();
+
+		StringIntegerClass actual = sut.giveMeOne(StringIntegerClass.class);
+
+		then(actual.value1.value).isEqualTo("definition");
+	}
+
+	@Property
+	void registerGroupInFieldSet() {
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.registerGroup(DefaultArbitraryHolder.class)
+			.build();
+
+		StringIntegerClass actual = sut.giveMeBuilder(StringIntegerClass.class)
+			.set("value1.value", "set")
+			.sample();
+
+		then(actual.value1.value).isEqualTo("set");
+	}
+
+	@Property
+	void registerGroupList() {
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.registerGroup(DefaultArbitraryHolder.class)
+			.build();
+
+		NestedStringList actual = sut.giveMeBuilder(NestedStringList.class)
+			.sample();
+
+		then(actual.values).allMatch(it -> it.value.equals("definition"));
+	}
+
+	@Property
+	void register() {
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.register(
+				StringWrapperClass.class,
+				it -> it.giveMeBuilder(StringWrapperClass.class).set("value", "definition")
+			)
+			.build();
+
+		StringWrapperClass actual = sut.giveMeOne(StringWrapperClass.class);
+
+		then(actual.value).isEqualTo("definition");
+	}
+
+	@Property
+	void registerInField() {
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.register(
+				StringWrapperClass.class,
+				it -> it.giveMeBuilder(StringWrapperClass.class).set("value", "definition")
+			)
+			.build();
+
+		StringIntegerClass actual = sut.giveMeOne(StringIntegerClass.class);
+
+		then(actual.value1.value).isEqualTo("definition");
+	}
+
+	@Property
+	void registerInFieldSet() {
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.register(
+				StringWrapperClass.class,
+				it -> it.giveMeBuilder(StringWrapperClass.class).set("value", "definition")
+			)
+			.build();
+
+		StringIntegerClass actual = sut.giveMeBuilder(StringIntegerClass.class)
+			.set("value1.value", "set")
+			.sample();
+
+		then(actual.value1.value).isEqualTo("set");
+	}
+
+	@Property
+	void registerList() {
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.register(
+				StringWrapperClass.class,
+				it -> it.giveMeBuilder(StringWrapperClass.class).set("value", "definition")
+			)
+			.build();
+
+		NestedStringList actual = sut.giveMeBuilder(NestedStringList.class)
+			.sample();
+
+		then(actual.values).allMatch(it -> it.value.equals("definition"));
+	}
+
 	@Data
 	public static class IntegerWrapperClass {
 		int value;
@@ -1997,5 +2132,15 @@ class FixtureMonkeyTest {
 	public static class StringWrapperWithNotBlankClass {
 		@NotBlank
 		String value;
+	}
+
+	public static class DefaultArbitraryHolder {
+		public DefaultArbitraryHolder() {
+		}
+
+		public ArbitraryBuilder<StringWrapperClass> string(FixtureMonkey fixture) {
+			return fixture.giveMeBuilder(StringWrapperClass.class)
+				.set("value", "definition");
+		}
 	}
 }
