@@ -20,7 +20,6 @@ package com.navercorp.fixturemonkey.arbitrary;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedType;
-import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
@@ -72,6 +71,8 @@ public final class ArbitraryTraverser {
 		LazyValue<T> nowValue = node.getValue();
 		ArbitraryType<T> nowNodeType = node.getType();
 		Class<?> clazz = nowNodeType.getType();
+		ContainerArbitraryNodeGenerator containerArbitraryNodeGenerator =
+			arbitraryOption.getContainerArbitraryNodeGenerator(nowNodeType.getType());
 
 		if (isTraversable(nowNodeType)) {
 			List<Field> fields = getFields(clazz);
@@ -100,11 +101,13 @@ public final class ArbitraryTraverser {
 				node.addChildNode(nextNode);
 				doTraverse(nextNode, false, active, fieldNameResolver);
 			}
-		} else if (nowNodeType.isContainer()) {
-			if (nowNodeType.isMap() || nowNodeType.isMapEntry()) {
-				mapArbitrary(node, fieldNameResolver);
+		} else if (nowNodeType.isContainer() || containerArbitraryNodeGenerator != null) {
+			if (containerArbitraryNodeGenerator != null) {
+				traverseContainer(node, active, fieldNameResolver, containerArbitraryNodeGenerator);
+			} else if (nowNodeType.isMap() || nowNodeType.isMapEntry()) {
+				traverseContainer(node, active, fieldNameResolver, MapArbitraryNodeGenerator.INSTANCE);
 			} else if (nowNodeType.isArray()) {
-				arrayArbitrary(node, fieldNameResolver);
+				traverseContainer(node, active, fieldNameResolver, ArrayArbitraryNodeGenerator.INSTANCE);
 			} else if (nowNodeType.isOptional()) {
 				traverseContainer(node, active, fieldNameResolver, OptionalArbitraryNodeGenerator.INSTANCE);
 			} else {
@@ -135,7 +138,9 @@ public final class ArbitraryTraverser {
 		if (currentValue == null) {
 			return null;
 		}
-		return currentValue.isEmpty() ? null : new LazyValue<>(extractValue(currentValue.get(), field));
+		return currentValue.isEmpty()
+			? new LazyValue<>((Object)null)
+			: new LazyValue<>(extractValue(currentValue.get(), field));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -229,124 +234,16 @@ public final class ArbitraryTraverser {
 			.orElseThrow(() -> new IllegalArgumentException("Class is not registered " + clazz.getName()));
 	}
 
-	@SuppressWarnings("unchecked")
-	private <T, U> void arrayArbitrary(ArbitraryNode<T> currentNode, FieldNameResolver fieldNameResolver) {
-		ArbitraryType<T> clazz = currentNode.getType();
-		String fieldName = currentNode.getFieldName();
-
-		ArbitraryType<U> childType = clazz.getArrayFixtureType();
-
-		LazyValue<T> lazyValue = currentNode.getValue();
-		ContainerSizeConstraint containerSizeConstraint = currentNode.getContainerSizeConstraint();
-		int elementSize = Integer.MAX_VALUE;
-		int currentIndex = 0;
-
-		if (lazyValue != null) {
-			T value = lazyValue.get();
-			if (value == null) {
-				currentNode.setArbitrary(Arbitraries.just(null));
-				return;
-			}
-			int length = Array.getLength(value);
-
-			if (containerSizeConstraint != null) {
-				elementSize = containerSizeConstraint.getArbitraryElementSize();
-			}
-
-			for (currentIndex = 0; currentIndex < length && currentIndex < elementSize; currentIndex++) {
-				U nextValue = (U)Array.get(value, currentIndex);
-				ArbitraryNode<U> nextNode = ArbitraryNode.<U>builder()
-					.type(childType)
-					.fieldName(fieldName)
-					.indexOfIterable(currentIndex)
-					.value(nextValue)
-					.build();
-				currentNode.addChildNode(nextNode);
-				doTraverse(nextNode, false, true, fieldNameResolver);
-			}
-
-			if (containerSizeConstraint == null) {
-				currentNode.setContainerSizeConstraint(new ContainerSizeConstraint(length, length));
-				return;
-			}
-		}
-
-		currentNode.initializeElementSize();
-		if (elementSize == Integer.MAX_VALUE) {
-			elementSize = containerSizeConstraint.getArbitraryElementSize();
-		}
-
-		for (int i = currentIndex; i < elementSize; i++) {
-			ArbitraryNode<U> genericFrame = ArbitraryNode.<U>builder()
-				.type(childType)
-				.fieldName(fieldName)
-				.indexOfIterable(i)
-				.nullable(false)
-				.nullInject(0.f)
-				.build();
-
-			currentNode.addChildNode(genericFrame);
-			doTraverse(genericFrame, false, true, fieldNameResolver);
-		}
-	}
-
-	private <T, K, V> void mapArbitrary(ArbitraryNode<T> currentNode, FieldNameResolver fieldNameResolver) {
-		LazyValue<T> lazyValue = currentNode.getValue();
-		if (lazyValue != null) {
-			currentNode.setArbitrary(Arbitraries.just(lazyValue.get()));
-			return;
-		}
-		ArbitraryType<T> clazz = currentNode.getType();
-		String fieldName = currentNode.getFieldName();
-
-		ArbitraryType<K> keyType = clazz.getGenericFixtureType(0);
-		ArbitraryType<V> valueType = clazz.getGenericFixtureType(1);
-
-		currentNode.initializeElementSize();
-
-		int elementSize = currentNode.getContainerSizeConstraint().getArbitraryElementSize();
-
-		if (clazz.isMapEntry()) {
-			elementSize = 1;
-		}
-
-		for (int i = 0; i < elementSize; i++) {
-			ArbitraryNode<K> keyFrame = ArbitraryNode.<K>builder()
-				.type(keyType)
-				.fieldName(fieldName)
-				.indexOfIterable(i)
-				.keyOfMapStructure(true)
-				.nullable(false)
-				.nullInject(0.f)
-				.build();
-
-			currentNode.addChildNode(keyFrame);
-			doTraverse(keyFrame, true, true, fieldNameResolver);
-
-			ArbitraryNode<V> valueFrame = ArbitraryNode.<V>builder()
-				.type(valueType)
-				.fieldName(fieldName)
-				.indexOfIterable(i)
-				.nullable(false)
-				.nullInject(0.f)
-				.build();
-
-			currentNode.addChildNode(valueFrame);
-			doTraverse(valueFrame, false, true, fieldNameResolver);
-		}
-	}
-
-	private <T, U> void traverseContainer(
+	private <T> void traverseContainer(
 		ArbitraryNode<T> currentNode,
 		boolean active,
 		FieldNameResolver fieldNameResolver,
 		ContainerArbitraryNodeGenerator containerArbitraryNodeGenerator
 	) {
-		List<ArbitraryNode<U>> nodes = containerArbitraryNodeGenerator.generate(currentNode, fieldNameResolver);
-		for (ArbitraryNode<U> node : nodes) {
+		List<ArbitraryNode<?>> nodes = containerArbitraryNodeGenerator.generate(currentNode, fieldNameResolver);
+		for (ArbitraryNode<?> node : nodes) {
 			currentNode.addChildNode(node);
-			// TODO: map일 때 key 처리
-			doTraverse(node, false, active, fieldNameResolver);
+			doTraverse(node, node.isKeyOfMapStructure(), active, fieldNameResolver);
 		}
 	}
 
@@ -362,6 +259,7 @@ public final class ArbitraryTraverser {
 
 		return arbitraryOption.isExceptGeneratePackage(clazz)
 			&& !arbitraryOption.isDefaultArbitraryType(clazz)
+			&& arbitraryOption.getContainerArbitraryNodeGenerator(clazz) == null
 			&& !type.isContainer()
 			&& !type.isOptional()
 			&& !type.isEnum()

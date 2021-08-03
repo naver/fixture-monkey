@@ -126,7 +126,7 @@ public class FixtureMonkey {
 	) {
 		ArbitraryBuilder<T> defaultArbitraryBuilder = option.getDefaultArbitraryBuilder(clazz);
 		if (defaultArbitraryBuilder != null) {
-			return defaultArbitraryBuilder;
+			return defaultArbitraryBuilder.copy();
 		}
 
 		return new ArbitraryBuilder<>(

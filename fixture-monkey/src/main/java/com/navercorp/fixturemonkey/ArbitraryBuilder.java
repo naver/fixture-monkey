@@ -120,7 +120,7 @@ public final class ArbitraryBuilder<T> {
 		);
 	}
 
-	@SuppressWarnings({"rawtypes"})
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	private ArbitraryBuilder(
 		Supplier<T> valueSupplier,
 		ArbitraryTraverser traverser,
@@ -130,7 +130,7 @@ public final class ArbitraryBuilder<T> {
 		Map<Class<?>, ArbitraryGenerator> generatorMap
 	) {
 		this(
-			ArbitraryNode.<T>builder()
+			ArbitraryNode.builder()
 				.value(valueSupplier)
 				.fieldName("HEAD_NAME")
 				.build(),
@@ -223,28 +223,17 @@ public final class ArbitraryBuilder<T> {
 	}
 
 	public ArbitraryBuilder<T> acceptIf(Predicate<T> predicate, Consumer<ArbitraryBuilder<T>> self) {
-		return new ArbitraryBuilder<>(() -> {
-			T sample = this.sample();
+		applyToRootValue(builder -> {
+			T sample = builder.sample();
+			builder.tree.getHead().setValue(() -> sample); // fix builder value
 			if (predicate.test(sample)) {
-				ArbitraryBuilder<T> newArbitraryBuilder = new ArbitraryBuilder<>(
-					sample,
-					this.traverser,
-					this.generator,
-					this.validator,
-					this.arbitraryCustomizers,
-					this.generatorMap
-				);
-				self.accept(newArbitraryBuilder);
-				return newArbitraryBuilder.sample();
+				self.accept(builder);
+				return builder.sample();
 			}
 			return sample;
-		},
-			this.traverser,
-			this.generator,
-			this.validator,
-			this.arbitraryCustomizers,
-			this.generatorMap
-		);
+		});
+
+		return this;
 	}
 
 	public ArbitraryBuilder<T> spec(ExpressionSpec expressionSpec) {
@@ -379,13 +368,11 @@ public final class ArbitraryBuilder<T> {
 	}
 
 	public ArbitraryBuilder<T> apply(BiConsumer<T, ArbitraryBuilder<T>> mapper) {
-		ArbitraryBuilder<T> copied = this.copy();
-
-		this.tree.getHead().setValue(() -> {
-			T sample = copied.sample();
-			copied.tree.getHead().setValue(() -> sample);
-			mapper.accept(sample, copied);
-			return copied.sample();
+		applyToRootValue(builder -> {
+			T sample = builder.sample();
+			builder.tree.getHead().setValue(() -> sample); // fix builder value
+			mapper.accept(sample, builder);
+			return builder.sample();
 		});
 
 		return this;
@@ -451,13 +438,7 @@ public final class ArbitraryBuilder<T> {
 	}
 
 	public <U> ArbitraryBuilder<U> map(Function<T, U> mapper) {
-		ArbitraryBuilder<T> copiedBuilder = this.copy();
-		Supplier<U> mappedResult = () -> {
-			T sample = copiedBuilder.sample();
-			return mapper.apply(sample);
-		};
-		return new ArbitraryBuilder<>(
-			mappedResult,
+		return new ArbitraryBuilder<>(() -> mapper.apply(this.sample()),
 			this.traverser,
 			this.generator,
 			this.validator,
@@ -470,11 +451,7 @@ public final class ArbitraryBuilder<T> {
 		ArbitraryBuilder<U> other,
 		BiFunction<T, U, R> combinator
 	) {
-		return new ArbitraryBuilder<>(() -> {
-			Arbitrary<T> sample = this.build();
-			Arbitrary<U> otherSample = other.build();
-			return combinator.apply(sample.sample(), otherSample.sample());
-		},
+		return new ArbitraryBuilder<>(() -> combinator.apply(this.sample(), other.sample()),
 			this.traverser,
 			this.generator,
 			this.validator,
@@ -538,6 +515,12 @@ public final class ArbitraryBuilder<T> {
 			this.arbitraryCustomizers,
 			this.generatorMap
 		);
+	}
+
+	private void applyToRootValue(Function<ArbitraryBuilder<T>, T> valueSupplier) {
+		ArbitraryBuilder<T> copied = this.copy();
+		this.tree.getHead().setValue(() -> valueSupplier.apply(copied));
+		this.builderManipulators.clear();
 	}
 
 	public ArbitraryBuilder<T> copy() {

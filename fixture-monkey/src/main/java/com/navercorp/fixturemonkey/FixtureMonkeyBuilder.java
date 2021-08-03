@@ -24,6 +24,7 @@ import java.util.Set;
 import java.util.function.Function;
 
 import com.navercorp.fixturemonkey.ArbitraryOption.FixtureOptionsBuilder;
+import com.navercorp.fixturemonkey.arbitrary.ContainerArbitraryNodeGenerator;
 import com.navercorp.fixturemonkey.arbitrary.InterfaceSupplier;
 import com.navercorp.fixturemonkey.arbitrary.NullableArbitraryEvaluator;
 import com.navercorp.fixturemonkey.customizer.ArbitraryCustomizer;
@@ -147,6 +148,14 @@ public class FixtureMonkeyBuilder {
 		for (Class<?> arbitraryBuilderGroup : arbitraryBuilderGroups) {
 			this.optionsBuilder.registerGroup(arbitraryBuilderGroup);
 		}
+		return this;
+	}
+
+	public FixtureMonkeyBuilder putContainerArbitraryNodeGenerator(
+		Class<?> clazz,
+		ContainerArbitraryNodeGenerator containerArbitraryNodeGenerator
+	) {
+		this.optionsBuilder.putContainerArbitraryNodeGenerator(clazz, containerArbitraryNodeGenerator);
 		return this;
 	}
 

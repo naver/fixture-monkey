@@ -18,18 +18,16 @@
 
 package com.navercorp.fixturemonkey.arbitrary;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
-import java.util.stream.Stream;
 
 import net.jqwik.api.Arbitraries;
 
 import com.navercorp.fixturemonkey.generator.FieldNameResolver;
 
-public class DefaultContainerArbitraryNodeGenerator implements ContainerArbitraryNodeGenerator {
-	public static final DefaultContainerArbitraryNodeGenerator INSTANCE = new DefaultContainerArbitraryNodeGenerator();
+public class ArrayArbitraryNodeGenerator implements ContainerArbitraryNodeGenerator {
+	public static final ArrayArbitraryNodeGenerator INSTANCE = new ArrayArbitraryNodeGenerator();
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -37,50 +35,45 @@ public class DefaultContainerArbitraryNodeGenerator implements ContainerArbitrar
 		ArbitraryNode<T> nowNode,
 		FieldNameResolver fieldNameResolver
 	) {
-		int currentIndex = 0;
 		int elementSize = Integer.MAX_VALUE;
+		int currentIndex = 0;
 
 		ArbitraryType<T> clazz = nowNode.getType();
-		LazyValue<T> lazyValue = nowNode.getValue();
+		ArbitraryType<?> childType = clazz.getArrayFixtureType();
 		String fieldName = nowNode.getFieldName();
-		ArbitraryType<?> elementType = clazz.getGenericFixtureType(0);
+		LazyValue<T> lazyValue = nowNode.getValue();
 
 		List<ArbitraryNode<?>> generatedNodeList = new ArrayList<>();
 
 		if (lazyValue != null) {
-			if (lazyValue.isEmpty()) {
+			T value = lazyValue.get();
+			ContainerSizeConstraint containerSizeConstraint = nowNode.getContainerSizeConstraint();
+
+			if (value == null) {
 				nowNode.setArbitrary(Arbitraries.just(null));
 				return generatedNodeList;
 			}
-			T value = lazyValue.get();
+			int length = Array.getLength(value);
 
-			if (!(value instanceof Collection || value instanceof Iterator || value instanceof Stream)) {
-				throw new IllegalArgumentException(
-					"Unsupported container type is given. " + value.getClass().getName());
-			}
-			Iterator<?> iterator = getIterator(value);
-
-			ContainerSizeConstraint containerSizeConstraint = nowNode.getContainerSizeConstraint();
 			if (containerSizeConstraint != null) {
 				// container size is set.
 				elementSize = containerSizeConstraint.getArbitraryElementSize();
 			}
 
-			while (currentIndex < elementSize && iterator.hasNext()) {
-				Object nextObject = iterator.next();
+			for (currentIndex = 0; currentIndex < length && currentIndex < elementSize; currentIndex++) {
+				Object nextValue = Array.get(value, currentIndex);
 				ArbitraryNode<?> nextNode = ArbitraryNode.builder()
-					.type(elementType)
-					.value(nextObject)
+					.type(childType)
 					.fieldName(fieldName)
 					.indexOfIterable(currentIndex)
+					.value(nextValue)
 					.build();
 				generatedNodeList.add(nextNode);
-				currentIndex++;
 			}
 
 			if (containerSizeConstraint == null) {
 				// value exists, container size size is same as value size.
-				nowNode.setContainerSizeConstraint(new ContainerSizeConstraint(currentIndex, currentIndex));
+				nowNode.setContainerSizeConstraint(new ContainerSizeConstraint(length, length));
 				return generatedNodeList;
 			}
 		}
@@ -92,28 +85,17 @@ public class DefaultContainerArbitraryNodeGenerator implements ContainerArbitrar
 		}
 
 		for (int i = currentIndex; i < elementSize; i++) {
-			ArbitraryNode<?> nextNode = ArbitraryNode.builder()
-				.type(elementType)
+			ArbitraryNode<?> genericFrame = ArbitraryNode.builder()
+				.type(childType)
 				.fieldName(fieldName)
 				.indexOfIterable(i)
 				.nullable(false)
 				.nullInject(0.f)
 				.build();
-			generatedNodeList.add(nextNode);
-		}
 
+			generatedNodeList.add(genericFrame);
+		}
 		return generatedNodeList;
-	}
-
-	@SuppressWarnings("unchecked")
-	private <T, U> Iterator<U> getIterator(T value) {
-		if (value instanceof Collection) {
-			return ((Collection<U>)value).iterator();
-		} else if (value instanceof Stream) {
-			return ((Stream<U>)value).iterator();
-		} else {
-			return (Iterator<U>)value;
-		}
 	}
 
 	private boolean isNotInitialized(int elementSize) {

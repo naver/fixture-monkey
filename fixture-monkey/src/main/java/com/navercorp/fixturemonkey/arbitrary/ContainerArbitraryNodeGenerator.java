@@ -23,5 +23,5 @@ import java.util.List;
 import com.navercorp.fixturemonkey.generator.FieldNameResolver;
 
 public interface ContainerArbitraryNodeGenerator {
-	<T, U> List<ArbitraryNode<U>> generate(ArbitraryNode<T> nowNode, FieldNameResolver fieldNameResolver);
+	<T> List<ArbitraryNode<?>> generate(ArbitraryNode<T> nowNode, FieldNameResolver fieldNameResolver);
 }

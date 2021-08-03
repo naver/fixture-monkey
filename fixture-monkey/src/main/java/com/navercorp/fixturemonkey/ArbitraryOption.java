@@ -52,6 +52,7 @@ import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 
+import com.navercorp.fixturemonkey.arbitrary.ContainerArbitraryNodeGenerator;
 import com.navercorp.fixturemonkey.arbitrary.InterfaceSupplier;
 import com.navercorp.fixturemonkey.arbitrary.NullableArbitraryEvaluator;
 import com.navercorp.fixturemonkey.generator.AnnotatedArbitraryGenerator;
@@ -88,6 +89,7 @@ public final class ArbitraryOption {
 	private final Map<Class<?>, InterfaceSupplier<?>> interfaceSupplierMap;
 	private final Map<Class<?>, Function<FixtureMonkey, ArbitraryBuilder<?>>> arbitraryBuildingSupplierMap;
 	private final Map<Class<?>, ArbitraryBuilder<?>> defaultArbitraryBuilderMap;
+	private final Map<Class<?>, ContainerArbitraryNodeGenerator> containerArbitraryNodeGeneratorMap;
 	private final Set<String> exceptGeneratePackages;
 	private final Set<String> nonNullAnnotationNames;
 	private final NullableArbitraryEvaluator nullableArbitraryEvaluator;
@@ -100,6 +102,7 @@ public final class ArbitraryOption {
 		Map<Class<?>, AnnotatedArbitraryGenerator<?>> annotatedArbitraryMap,
 		Map<Class<?>, InterfaceSupplier<?>> interfaceSupplierMap,
 		Map<Class<?>, Function<FixtureMonkey, ArbitraryBuilder<?>>> arbitraryBuildingSupplierMap,
+		Map<Class<?>, ContainerArbitraryNodeGenerator> containerArbitraryNodeGeneratorMap,
 		Set<String> exceptGeneratePackages,
 		Set<String> nonNullAnnotationNames,
 		InterfaceSupplier<?> defaultInterfaceSupplier,
@@ -111,6 +114,7 @@ public final class ArbitraryOption {
 		this.annotatedArbitraryMap = annotatedArbitraryMap;
 		this.interfaceSupplierMap = interfaceSupplierMap;
 		this.arbitraryBuildingSupplierMap = arbitraryBuildingSupplierMap;
+		this.containerArbitraryNodeGeneratorMap = containerArbitraryNodeGeneratorMap;
 		this.defaultArbitraryBuilderMap = new HashMap<>();
 		this.exceptGeneratePackages = exceptGeneratePackages;
 		this.nonNullAnnotationNames = nonNullAnnotationNames;
@@ -183,6 +187,10 @@ public final class ArbitraryOption {
 
 	public boolean isDefaultNotNull() {
 		return defaultNotNull;
+	}
+
+	public <T> ContainerArbitraryNodeGenerator getContainerArbitraryNodeGenerator(Class<T> clazz) {
+		return containerArbitraryNodeGeneratorMap.get(clazz);
 	}
 
 	public static FixtureOptionsBuilder builder() {
@@ -263,8 +271,10 @@ public final class ArbitraryOption {
 		private final Map<Class<?>, AnnotatedArbitraryGenerator<?>> annotatedArbitraryMap = new HashMap<>(
 			DEFAULT_TYPE_ARBITRARY_SPECS);
 		private final Map<Class<?>, InterfaceSupplier<?>> interfaceSupplierMap = new HashMap<>();
-		private final Map<Class<?>, Function<FixtureMonkey, ArbitraryBuilder<?>>> arbitraryBuildingSupplierMap
-			= new HashMap<>();
+		private final Map<Class<?>, Function<FixtureMonkey, ArbitraryBuilder<?>>> arbitraryBuildingSupplierMap =
+			new HashMap<>();
+		private final Map<Class<?>, ContainerArbitraryNodeGenerator> containerArbitraryNodeGeneratorMap =
+			new HashMap<>();
 		private Set<String> exceptGeneratePackages = new HashSet<>(DEFAULT_EXCEPT_GENERATE_PACKAGE);
 		private final Set<String> nonNullAnnotationNames = new HashSet<>(DEFAULT_NONNULL_ANNOTATIONS);
 		private NullableArbitraryEvaluator nullableArbitraryEvaluator = new NullableArbitraryEvaluator() {
@@ -368,6 +378,14 @@ public final class ArbitraryOption {
 			return this;
 		}
 
+		public FixtureOptionsBuilder putContainerArbitraryNodeGenerator(
+			Class<?> clazz,
+			ContainerArbitraryNodeGenerator containerArbitraryNodeGenerator
+		) {
+			containerArbitraryNodeGeneratorMap.put(clazz, containerArbitraryNodeGenerator);
+			return this;
+		}
+
 		private Class<?> getReturnGenericType(Method method) {
 			AnnotatedType annotatedReturnType = method.getAnnotatedReturnType();
 			AnnotatedParameterizedType parameterizedType = (AnnotatedParameterizedType)annotatedReturnType;
@@ -385,6 +403,7 @@ public final class ArbitraryOption {
 				Collections.unmodifiableMap(annotatedArbitraryMap),
 				Collections.unmodifiableMap(interfaceSupplierMap),
 				Collections.unmodifiableMap(arbitraryBuildingSupplierMap),
+				Collections.unmodifiableMap(containerArbitraryNodeGeneratorMap),
 				Collections.unmodifiableSet(exceptGeneratePackages),
 				Collections.unmodifiableSet(nonNullAnnotationNames),
 				defaultInterfaceSupplier,

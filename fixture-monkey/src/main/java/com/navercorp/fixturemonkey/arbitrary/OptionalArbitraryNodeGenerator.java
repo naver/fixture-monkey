@@ -27,22 +27,23 @@ import com.navercorp.fixturemonkey.generator.FieldNameResolver;
 public class OptionalArbitraryNodeGenerator implements ContainerArbitraryNodeGenerator {
 	public static final OptionalArbitraryNodeGenerator INSTANCE = new OptionalArbitraryNodeGenerator();
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public <T, U> List<ArbitraryNode<U>> generate(ArbitraryNode<T> nowNode, FieldNameResolver fieldNameResolver) {
-		List<ArbitraryNode<U>> generatedNodeList = new ArrayList<>();
+	public <T> List<ArbitraryNode<?>> generate(ArbitraryNode<T> nowNode, FieldNameResolver fieldNameResolver) {
+		List<ArbitraryNode<?>> generatedNodeList = new ArrayList<>();
 
 		ArbitraryType<T> arbitraryType = nowNode.getType();
-		ArbitraryType<U> elementType = arbitraryType.getGenericFixtureType(0);
+		ArbitraryType<?> elementType = arbitraryType.getGenericFixtureType(0);
 		String fieldName = nowNode.getFieldName();
 
-		LazyValue<U> nextLazyValue = getNextLazyValue(nowNode.getValue());
+		LazyValue<?> nextLazyValue = getNextLazyValue(nowNode.getValue());
 
 		if (nextLazyValue != null && nextLazyValue.isEmpty()) {
 			// can not generate Optional empty by ArbitraryGenerator
 			return generatedNodeList;
 		}
 
-		ArbitraryNode<U> nextNode = ArbitraryNode.<U>builder()
+		ArbitraryNode<?> nextNode = ArbitraryNode.builder()
 			.type(elementType)
 			.value(nextLazyValue)
 			.fieldName(fieldName)

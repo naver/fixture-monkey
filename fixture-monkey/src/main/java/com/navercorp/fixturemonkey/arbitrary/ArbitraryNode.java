@@ -74,8 +74,9 @@ public final class ArbitraryNode<T> {
 		this.nullInject = nullInject;
 	}
 
-	public static <T> FixtureNodeBuilder<T> builder() {
-		return new FixtureNodeBuilder<>();
+	@SuppressWarnings("rawtypes")
+	public static FixtureNodeBuilder builder() {
+		return new FixtureNodeBuilder();
 	}
 
 	public void addChildNode(ArbitraryNode<?> child) {
@@ -312,7 +313,7 @@ public final class ArbitraryNode<T> {
 		return this.getStatus().getValue();
 	}
 
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	public ArbitraryNode<T> copy() {
 		List<ArbitraryNode> copyChildren = new ArrayList<>();
 		List<ArbitraryNode> children = this.getChildren();
@@ -320,7 +321,7 @@ public final class ArbitraryNode<T> {
 			copyChildren.add(child.copy());
 		}
 
-		return ArbitraryNode.<T>builder()
+		return ArbitraryNode.builder()
 			.children(copyChildren)
 			.type(this.getType())
 			.fieldName(this.getFieldName())
