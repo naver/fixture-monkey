@@ -271,22 +271,39 @@ public class ArbitraryGeneratorTest {
 			.build();
 
 		// when
-		ConstructorPropertiesWithNoMatchingFieldClass actual = sut.giveMeOne(
-			ConstructorPropertiesWithNoMatchingFieldClass.class);
-
-		then(actual.value).isNotNull();
-		then(actual.value2).isNotNull();
+		thenThrownBy(() -> sut.giveMeOne(ConstructorPropertiesWithNoMatchingFieldClass.class))
+			.hasMessageContaining("No field for the corresponding constructor argument");
 	}
 
 	@Property
-	void giveMeWhenDefaultGeneratorIsConstructorPropertiesArbitraryGeneratorWithNoMatchingFieldWithNestedClass() {
+	void giveMeWhenDefaultGeneratorIsConstructorPropertiesArbitraryGeneratorWithNoMatchingFieldsUsingCustomizer() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.defaultGenerator(ConstructorPropertiesArbitraryGenerator.INSTANCE)
 			.build();
 
-		thenThrownBy(() -> sut.giveMe(ConstructorPropertiesWithNoMatchingFieldWithNestedClass.class))
-			.hasMessageContaining("Cannot find an Arbitrary");
+		// when
+		ConstructorPropertiesWithNoMatchingFieldClass actual = sut.giveMeBuilder(
+			ConstructorPropertiesWithNoMatchingFieldClass.class)
+			.customize(ConstructorPropertiesWithNoMatchingFieldClass.class,
+				new ArbitraryCustomizer<ConstructorPropertiesWithNoMatchingFieldClass>() {
+					@Override
+					public void customizeFields(Class<ConstructorPropertiesWithNoMatchingFieldClass> type,
+						FieldArbitraries fieldArbitraries) {
+						fieldArbitraries.putArbitrary("stringValue", Arbitraries.just("test"));
+					}
+
+					@Nullable
+					@Override
+					public ConstructorPropertiesWithNoMatchingFieldClass customizeFixture(
+						@Nullable ConstructorPropertiesWithNoMatchingFieldClass fixture) {
+						return fixture;
+					}
+				})
+			.sample();
+
+		then(actual.value).isBetween(Integer.MIN_VALUE, Integer.MAX_VALUE);
+		then(actual.value2).isEqualTo("test");
 	}
 
 	@Property
@@ -474,23 +491,6 @@ public class ArbitraryGeneratorTest {
 		public ConstructorPropertiesWithNoMatchingFieldClass(int value, String stringValue) {
 			this.value = value;
 			this.value2 = stringValue;
-		}
-	}
-
-	public static class ConstructorPropertiesWithNoMatchingFieldWithNestedClass {
-		private int value;
-		private DummyClass value2;
-
-		@ConstructorProperties({"value", "dummyClass"})
-		public ConstructorPropertiesWithNoMatchingFieldWithNestedClass(int value, DummyClass dummyClass) {
-			this.value = value;
-			this.value2 = dummyClass;
-		}
-
-		public static class DummyClass {
-			@ConstructorProperties({})
-			public DummyClass() {
-			}
 		}
 	}
 

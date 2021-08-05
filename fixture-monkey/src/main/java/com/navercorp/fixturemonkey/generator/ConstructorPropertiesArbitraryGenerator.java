@@ -31,7 +31,6 @@ import org.junit.platform.commons.logging.Logger;
 import org.junit.platform.commons.logging.LoggerFactory;
 import org.junit.platform.commons.util.ReflectionUtils;
 
-import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
 import net.jqwik.api.Combinators;
 
@@ -92,9 +91,8 @@ public final class ConstructorPropertiesArbitraryGenerator extends AbstractArbit
 			String fieldName = providedParameterNames[i];
 			Arbitrary<?> arbitrary = fieldArbitraries.getArbitrary(fieldName);
 			if (arbitrary == null) {
-				Parameter actualParameter = actualParameters[i];
-				Class<?> actualParameterType = actualParameter.getType();
-				arbitrary = Arbitraries.defaultFor(actualParameterType);
+				throw new IllegalArgumentException("No field for the corresponding constructor argument '" + fieldName
+					+ "'. Use 'ArbitraryCustomizer#customizeFields' for it.");
 			}
 
 			builderCombinator = builderCombinator.use(arbitrary).in((list, value) -> {
