@@ -224,6 +224,10 @@ public final class ArbitraryNode<T> {
 		this.getStatus().setValue(new LazyValue<>(value));
 	}
 
+	public void clearValue() {
+		this.getStatus().setValue(null);
+	}
+
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	public void addArbitraryOperation(PostArbitraryManipulator postArbitraryManipulator) {
 		this.status.addPostArbitraryManipulator(postArbitraryManipulator);

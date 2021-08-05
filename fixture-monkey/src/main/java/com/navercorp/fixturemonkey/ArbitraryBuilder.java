@@ -55,6 +55,7 @@ import com.navercorp.fixturemonkey.arbitrary.ArbitraryTree;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryType;
 import com.navercorp.fixturemonkey.arbitrary.BuilderManipulator;
 import com.navercorp.fixturemonkey.arbitrary.ContainerSizeManipulator;
+import com.navercorp.fixturemonkey.arbitrary.LazyValue;
 import com.navercorp.fixturemonkey.arbitrary.MetadataManipulator;
 import com.navercorp.fixturemonkey.arbitrary.PostArbitraryManipulator;
 import com.navercorp.fixturemonkey.customizer.ArbitraryCustomizer;
@@ -280,12 +281,18 @@ public final class ArbitraryBuilder<T> {
 		return this;
 	}
 
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	public ArbitraryBuilder<T> setNullity(ArbitraryNullity arbitraryNullity) {
 		ArbitraryExpression arbitraryExpression = arbitraryNullity.getArbitraryExpression();
 		Collection<ArbitraryNode> foundNodes = tree.findAll(arbitraryExpression);
 		for (ArbitraryNode foundNode : foundNodes) {
-			foundNode.apply(arbitraryNullity);
+			LazyValue<T> value = foundNode.getValue();
+			if (!arbitraryNullity.toNull() && value != null && value.isEmpty()) { // decompose null value
+				foundNode.clearValue();
+				traverser.traverse(foundNode, foundNode.isKeyOfMapStructure(), generator);
+			} else {
+				foundNode.apply(arbitraryNullity);
+			}
 		}
 		return this;
 	}
