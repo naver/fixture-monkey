@@ -67,8 +67,7 @@ class PrimaryConstructorArbitraryGenerator(
         }
 
         return builderCombinator.build { map ->
-            val parameters = map.values.toTypedArray()
-            constructor.call(*parameters).let {
+            constructor.callBy(map).let {
                 arbitraryCustomizers.customizeFixture(clazz.java, it)
             }
         }
