@@ -19,7 +19,9 @@
 package com.navercorp.fixturemonkey.test;
 
 import static org.assertj.core.api.BDDAssertions.then;
+import static org.assertj.core.api.BDDAssertions.thenThrownBy;
 
+import java.beans.ConstructorProperties;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,6 +41,7 @@ import com.navercorp.fixturemonkey.arbitrary.ContainerArbitraryNodeGenerator;
 import com.navercorp.fixturemonkey.customizer.ArbitraryCustomizer;
 import com.navercorp.fixturemonkey.generator.BeanArbitraryGenerator;
 import com.navercorp.fixturemonkey.generator.BuilderArbitraryGenerator;
+import com.navercorp.fixturemonkey.generator.ConstructorPropertiesArbitraryGenerator;
 import com.navercorp.fixturemonkey.generator.FieldArbitraries;
 import com.navercorp.fixturemonkey.generator.FieldNameResolver;
 import com.navercorp.fixturemonkey.generator.FieldReflectionArbitraryGenerator;
@@ -50,6 +53,7 @@ public class ArbitraryGeneratorTest {
 		.putGenerator(FieldReflectionIntegerClass.class, FieldReflectionArbitraryGenerator.INSTANCE)
 		.putGenerator(NullIntegerClass.class, NullArbitraryGenerator.INSTANCE)
 		.putGenerator(BeanIntegerClass.class, BeanArbitraryGenerator.INSTANCE)
+		.putGenerator(ConstructorPropertiesIntegerClass.class, ConstructorPropertiesArbitraryGenerator.INSTANCE)
 		.build();
 
 	@Property
@@ -137,6 +141,27 @@ public class ArbitraryGeneratorTest {
 	}
 
 	@Property
+	void giveMeWhenDefaultGeneratorIsConstructorPropertiesArbitraryGenerator() {
+		// given
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.defaultGenerator(ConstructorPropertiesArbitraryGenerator.INSTANCE)
+			.build();
+
+		// when
+		ConstructorPropertiesIntegerClass actual = sut.giveMeOne(ConstructorPropertiesIntegerClass.class);
+
+		then(actual.value).isBetween(Integer.MIN_VALUE, Integer.MAX_VALUE);
+	}
+
+	@Property
+	void giveMeWhenPutConstructorPropertiesArbitraryGenerator() {
+		// when
+		ConstructorPropertiesIntegerClass actual = this.sut.giveMeOne(ConstructorPropertiesIntegerClass.class);
+
+		then(actual.value).isBetween(Integer.MIN_VALUE, Integer.MAX_VALUE);
+	}
+
+	@Property
 	void giveMeWhenDefaultGeneratorIsBuilderArbitraryGeneratorWithCustomizer() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
@@ -214,6 +239,57 @@ public class ArbitraryGeneratorTest {
 			.sample();
 
 		then(actual.value.value).isEqualTo(-1);
+	}
+
+	@Property
+	void giveMeWhenDefaultGeneratorIsConstructorPropertiesArbitraryGeneratorWithZeroConstructorProperties() {
+		// given
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.defaultGenerator(ConstructorPropertiesArbitraryGenerator.INSTANCE)
+			.build();
+
+		thenThrownBy(() -> sut.giveMe(ConstructorPropertiesZeroClass.class))
+			.hasMessageContaining("doesn't have constructor");
+	}
+
+	@Property
+	void giveMeWhenDefaultGeneratorIsConstructorPropertiesArbitraryGeneratorWithTwoConstructorProperties() {
+		// given
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.defaultGenerator(ConstructorPropertiesArbitraryGenerator.INSTANCE)
+			.build();
+
+		thenThrownBy(() -> sut.giveMe(ConstructorPropertiesTwiceClass.class))
+			.hasMessageContaining("has more then one constructor");
+	}
+
+	@Property
+	void giveMeWhenDefaultGeneratorIsConstructorPropertiesArbitraryGeneratorWithCustomizer() {
+		// given
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.defaultGenerator(ConstructorPropertiesArbitraryGenerator.INSTANCE)
+			.build();
+
+		// when
+		ConstructorPropertiesIntegerClass actual = sut.giveMeBuilder(ConstructorPropertiesIntegerClass.class)
+			.customize(ConstructorPropertiesIntegerClass.class,
+				new ArbitraryCustomizer<ConstructorPropertiesIntegerClass>() {
+					@Override
+					public void customizeFields(Class<ConstructorPropertiesIntegerClass> type,
+						FieldArbitraries fieldArbitraries) {
+						fieldArbitraries.putArbitrary("value", Arbitraries.just(1));
+					}
+
+					@Nullable
+					@Override
+					public ConstructorPropertiesIntegerClass customizeFixture(
+						@Nullable ConstructorPropertiesIntegerClass fixture) {
+						return fixture;
+					}
+				})
+			.sample();
+
+		then(actual.value).isEqualTo(1);
 	}
 
 	@Property
@@ -321,6 +397,15 @@ public class ArbitraryGeneratorTest {
 		private int value;
 	}
 
+	public static class ConstructorPropertiesIntegerClass {
+		private int value;
+
+		@ConstructorProperties("value")
+		public ConstructorPropertiesIntegerClass(int value) {
+			this.value = value;
+		}
+	}
+
 	@Data
 	public static class BeanInnerBuilderClass {
 		BuilderIntegerClass value;
@@ -333,6 +418,26 @@ public class ArbitraryGeneratorTest {
 	@Data
 	public static class IntegerWrapperClass {
 		int value;
+	}
+
+	public static class ConstructorPropertiesZeroClass {
+		private int value;
+	}
+
+	public static class ConstructorPropertiesTwiceClass {
+		private int value;
+		private String stringValue;
+
+		@ConstructorProperties("value")
+		public ConstructorPropertiesTwiceClass(int value) {
+			this.value = value;
+		}
+
+		@ConstructorProperties({"value", "stringValue"})
+		public ConstructorPropertiesTwiceClass(int value, String stringValue) {
+			this.value = value;
+			this.stringValue = stringValue;
+		}
 	}
 
 	public static class CustomTripleArbitraryNodeGenerator implements ContainerArbitraryNodeGenerator {
