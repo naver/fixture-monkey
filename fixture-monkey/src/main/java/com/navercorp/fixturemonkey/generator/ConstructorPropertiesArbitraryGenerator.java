@@ -22,6 +22,7 @@ import static java.util.stream.Collectors.toList;
 
 import java.beans.ConstructorProperties;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -30,6 +31,7 @@ import org.junit.platform.commons.logging.Logger;
 import org.junit.platform.commons.logging.LoggerFactory;
 import org.junit.platform.commons.util.ReflectionUtils;
 
+import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
 import net.jqwik.api.Combinators;
 
@@ -81,12 +83,20 @@ public final class ConstructorPropertiesArbitraryGenerator extends AbstractArbit
 		Constructor<T> constructor = (Constructor<T>)constructors.get(0);
 
 		ConstructorProperties constructorProperties = constructor.getAnnotation(ConstructorProperties.class);
-		String[] constructorParameters = constructorProperties.value();
+		String[] providedParameterNames = constructorProperties.value();
+		Parameter[] actualParameters = constructor.getParameters();
 
 		Combinators.BuilderCombinator<List<Object>> builderCombinator = Combinators.withBuilder(
-			() -> new ArrayList(constructorParameters.length));
-		for (String fieldName : constructorParameters) {
+			() -> new ArrayList(providedParameterNames.length));
+		for (int i = 0; i < providedParameterNames.length; ++i) {
+			String fieldName = providedParameterNames[i];
 			Arbitrary<?> arbitrary = fieldArbitraries.getArbitrary(fieldName);
+			if (arbitrary == null) {
+				Parameter actualParameter = actualParameters[i];
+				Class<?> actualParameterType = actualParameter.getType();
+				arbitrary = Arbitraries.defaultFor(actualParameterType);
+			}
+
 			builderCombinator = builderCombinator.use(arbitrary).in((list, value) -> {
 				list.add(value);
 				return list;
