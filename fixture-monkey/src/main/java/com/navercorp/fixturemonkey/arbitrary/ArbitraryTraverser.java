@@ -148,9 +148,9 @@ public final class ArbitraryTraverser {
 		Class<?> clazz = node.getType().getType();
 		ArbitraryBuilder<?> defaultArbitraryBuilder = arbitraryOption.getDefaultArbitraryBuilder(clazz);
 
-		if (defaultArbitraryBuilder != null && !node.isHead()) {
+		if (defaultArbitraryBuilder != null && !node.isHead() && node.getValue() == null) {
 			node.setValue(() -> (T)defaultArbitraryBuilder.sample());
-			node.setManipulated(true); // TODO: decompose 정책 수정 후 제거
+			node.setManipulated(true);
 		}
 	}
 

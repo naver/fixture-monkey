@@ -32,6 +32,12 @@ abstract class Cursor {
 		this.index = index;
 	}
 
+	public boolean isMatch(ArbitraryNode<?> node) {
+		boolean sameName = nameEquals(node.getFieldName());
+		boolean sameIndex = indexEquals(node.getIndexOfIterable());
+		return sameName && sameIndex;
+	}
+
 	public boolean indexEquals(int index) {
 		return this.index == index
 			|| index == NO_OR_ALL_INDEX_INTEGER_VALUE

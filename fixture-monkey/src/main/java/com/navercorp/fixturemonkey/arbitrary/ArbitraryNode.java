@@ -23,7 +23,6 @@ import static com.navercorp.fixturemonkey.Constants.NO_OR_ALL_INDEX_INTEGER_VALU
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.function.Supplier;
 
 import javax.annotation.Nullable;
@@ -94,27 +93,13 @@ public final class ArbitraryNode<T> {
 			if (child.isKeyOfMapStructure()) {
 				continue;
 			}
-			if (child.matchExpression(cursor)) {
+			if (cursor.isMatch(child)) {
 				child.setActive(true);
 				child.setManipulated(true);
 				foundChildren.add(child);
 			}
 		}
 		return foundChildren;
-	}
-
-	@SuppressWarnings("rawtypes")
-	public Optional<ArbitraryNode> findChild(Cursor cursor) {
-		for (ArbitraryNode child : children) {
-			if (child.isKeyOfMapStructure()) {
-				continue;
-			}
-
-			if (child.matchExpression(cursor)) {
-				return Optional.of(child);
-			}
-		}
-		return Optional.empty();
 	}
 
 	public void initializeElementSize() {
@@ -336,12 +321,6 @@ public final class ArbitraryNode<T> {
 			.nullInject(this.getNullInject())
 			.nullable(this.isNullable())
 			.build();
-	}
-
-	private boolean matchExpression(Cursor cursor) {
-		boolean sameName = cursor.nameEquals(this.getFieldName());
-		boolean sameIndex = cursor.indexEquals(indexOfIterable);
-		return sameName && sameIndex;
 	}
 
 	private FixtureNodeStatus<T> getStatus() {

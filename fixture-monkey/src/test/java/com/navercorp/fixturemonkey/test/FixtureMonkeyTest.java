@@ -19,6 +19,7 @@
 package com.navercorp.fixturemonkey.test;
 
 import static org.assertj.core.api.BDDAssertions.then;
+import static org.assertj.core.api.BDDAssertions.thenThrownBy;
 
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
@@ -623,6 +624,44 @@ class FixtureMonkeyTest {
 		then(actual.values).allMatch(it -> it.value.equals("definition"));
 	}
 
+	@Property
+	void registerSameTypeThrows() {
+		thenThrownBy(() ->
+			FixtureMonkey.builder()
+				.register(
+					StringWrapperClass.class,
+					it -> it.giveMeBuilder(StringWrapperClass.class).set("value", "definition")
+				)
+				.register(
+					StringWrapperClass.class,
+					it -> it.giveMeBuilder(StringWrapperClass.class).set("value", "error")
+				)
+				.build())
+			.isExactlyInstanceOf(IllegalArgumentException.class)
+			.hasMessageContaining("can not register same classes twice.");
+	}
+
+	@Property
+	void registerGroupSameTypeThrows() {
+		thenThrownBy(() ->
+			FixtureMonkey.builder()
+				.registerGroup(DuplicateArbitraryHolder.class)
+				.build())
+			.isExactlyInstanceOf(IllegalArgumentException.class)
+			.hasMessageContaining("can not register same classes twice.");
+	}
+
+	@Property
+	void registerDiffGroupSameTypeThrows() {
+		thenThrownBy(() ->
+			FixtureMonkey.builder()
+				.registerGroup(DefaultArbitraryHolder.class)
+				.registerGroup(DefaultArbitraryHolder2.class)
+				.build())
+			.isExactlyInstanceOf(IllegalArgumentException.class)
+			.hasMessageContaining("can not register same classes twice.");
+	}
+
 	@Data
 	public static class IntegerWrapperClass {
 		int value;
@@ -776,6 +815,31 @@ class FixtureMonkeyTest {
 		public ArbitraryBuilder<StringWrapperClass> string(FixtureMonkey fixture) {
 			return fixture.giveMeBuilder(StringWrapperClass.class)
 				.set("value", "definition");
+		}
+	}
+
+	public static class DefaultArbitraryHolder2 {
+		public DefaultArbitraryHolder2() {
+		}
+
+		public ArbitraryBuilder<StringWrapperClass> string(FixtureMonkey fixture) {
+			return fixture.giveMeBuilder(StringWrapperClass.class)
+				.set("value", "definition");
+		}
+	}
+
+	public static class DuplicateArbitraryHolder {
+		public DuplicateArbitraryHolder() {
+		}
+
+		public ArbitraryBuilder<StringWrapperClass> string(FixtureMonkey fixture) {
+			return fixture.giveMeBuilder(StringWrapperClass.class)
+				.set("value", "definition");
+		}
+
+		public ArbitraryBuilder<StringWrapperClass> string2(FixtureMonkey fixture) {
+			return fixture.giveMeBuilder(StringWrapperClass.class)
+				.set("value", "error");
 		}
 	}
 
