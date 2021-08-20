@@ -91,7 +91,7 @@ public final class NullArbitraryType extends ArbitraryType {
 	}
 
 	@Override
-	public boolean isNoGenericContainer() {
+	public boolean isGenericType() {
 		return false;
 	}
 

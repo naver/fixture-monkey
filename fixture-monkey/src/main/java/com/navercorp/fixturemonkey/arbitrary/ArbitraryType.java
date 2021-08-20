@@ -100,14 +100,15 @@ public class ArbitraryType<T> {
 	}
 
 	public boolean isContainer() {
-		return isCollection()
+		return isGenericType()
+			&& (isCollection()
 			|| isMap()
 			|| isMapEntry()
 			|| isArray()
 			|| isStream()
 			|| isOptional()
 			|| isIterator()
-			|| isIterable();
+			|| isIterable());
 	}
 
 	private boolean isCollection() {
@@ -135,10 +136,9 @@ public class ArbitraryType<T> {
 		return Map.class.isAssignableFrom(type);
 	}
 
-	public boolean isNoGenericContainer() {
-		return this.isContainer()
-			&& !this.isArray()
-			&& !(annotatedType instanceof AnnotatedParameterizedType);
+	public boolean isGenericType() {
+		return annotatedType instanceof AnnotatedArrayType
+			|| annotatedType instanceof AnnotatedParameterizedType;
 	}
 
 	public boolean isOptional() {

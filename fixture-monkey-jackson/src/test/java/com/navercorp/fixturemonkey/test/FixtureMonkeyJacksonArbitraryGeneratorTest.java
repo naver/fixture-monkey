@@ -31,6 +31,7 @@ import net.jqwik.api.Property;
 import net.jqwik.api.Provide;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.JsonNode;
 
 import lombok.Data;
 import lombok.Value;
@@ -743,6 +744,13 @@ class FixtureMonkeyJacksonArbitraryGeneratorTest {
 		then(actual.value).isEqualTo("set");
 	}
 
+	@Property
+	void giveMeJsonNodeReturnsNull() {
+		JsonNodeWrapperClass actual = this.sut.giveMeOne(JsonNodeWrapperClass.class);
+
+		then(actual.getValue().isNull()).isTrue();
+	}
+
 	@Value
 	private static class IntegerWrapperClass {
 		@JsonProperty("value")
@@ -801,5 +809,10 @@ class FixtureMonkeyJacksonArbitraryGeneratorTest {
 	public static class JsonPropertyClass {
 		@JsonProperty("jsonValue")
 		private String value;
+	}
+
+	@Value
+	public static class JsonNodeWrapperClass {
+		JsonNode value;
 	}
 }
