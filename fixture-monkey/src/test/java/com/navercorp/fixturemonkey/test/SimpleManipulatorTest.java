@@ -647,36 +647,6 @@ public class SimpleManipulatorTest {
 	}
 
 	@Property
-	void toExpressionSpecSet() {
-		// when
-		ExpressionSpec actual = this.sut.giveMeBuilder(IntegerWrapperClass.class)
-			.set("value", "test")
-			.toExpressionSpec();
-
-		then(actual.hasSet("value")).isTrue();
-	}
-
-	@Property
-	void toExpressionSpecPostCondition() {
-		// when
-		ExpressionSpec actual = this.sut.giveMeBuilder(IntegerWrapperClass.class)
-			.setPostCondition("value", Integer.class, it -> true)
-			.toExpressionSpec();
-
-		then(actual.hasPostCondition("value")).isTrue();
-	}
-
-	@Property
-	void toExpressionSpecMeta() {
-		// when
-		ExpressionSpec actual = this.sut.giveMeBuilder(IntegerWrapperClass.class)
-			.size("value", 1)
-			.toExpressionSpec();
-
-		then(actual.hasMetadata("value")).isTrue();
-	}
-
-	@Property
 	void giveMeSetArbitraryBuilder() {
 		// when
 		StringIntegerClass actual = this.sut.giveMeBuilder(StringIntegerClass.class)

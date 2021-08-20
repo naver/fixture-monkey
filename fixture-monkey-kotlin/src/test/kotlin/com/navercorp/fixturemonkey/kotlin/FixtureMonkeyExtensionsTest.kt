@@ -67,18 +67,6 @@ class FixtureMonkeyExtensionsTest {
     }
 
     @Property
-    fun giveMeList_deprecated() {
-        val actual = sut.giveMe(TestClass::class, 10)
-
-        then(actual).hasSize(10).allSatisfy {
-            with(it) {
-                then(intValue).isBetween(Int.MIN_VALUE, Int.MAX_VALUE)
-                then(stringValue).isNotNull()
-            }
-        }
-    }
-
-    @Property
     fun giveMeList() {
         val actual = sut.giveMe<TestClass>(10)
 
@@ -86,32 +74,6 @@ class FixtureMonkeyExtensionsTest {
             with(it) {
                 then(intValue).isBetween(Int.MIN_VALUE, Int.MAX_VALUE)
                 then(stringValue).isNotNull()
-            }
-        }
-    }
-
-    @Property
-    fun giveMeListWithCustomizer_deprecated() {
-        val actual = sut.giveMe(
-            TestClass::class,
-            10,
-            object : KArbitraryCustomizer<TestClass> {
-                override fun customizeFields(type: KClass<TestClass>, fieldArbitraries: FieldArbitraries) {
-                    fieldArbitraries.apply {
-                        replaceArbitrary("intValue", Arbitraries.just(-1))
-                    }
-                }
-
-                override fun customizeFixture(target: TestClass?): TestClass? {
-                    return target?.copy(stringValue = "test_value")
-                }
-            }
-        )
-
-        then(actual).hasSize(10).allSatisfy {
-            with(it) {
-                then(intValue).isEqualTo(-1)
-                then(stringValue).isEqualTo("test_value")
             }
         }
     }
@@ -142,45 +104,12 @@ class FixtureMonkeyExtensionsTest {
     }
 
     @Property
-    fun giveMeOne_deprecated() {
-        val actual = sut.giveMeOne(TestClass::class)
-
-        with(actual) {
-            then(intValue).isBetween(Int.MIN_VALUE, Int.MAX_VALUE)
-            then(stringValue).isNotNull
-        }
-    }
-
-    @Property
     fun giveMeOne() {
         val actual = sut.giveMeOne<TestClass>()
 
         with(actual) {
             then(intValue).isBetween(Int.MIN_VALUE, Int.MAX_VALUE)
             then(stringValue).isNotNull
-        }
-    }
-
-    @Property
-    fun giveMeOneWithCustomizer_deprecated() {
-        val actual = sut.giveMeOne(
-            TestClass::class,
-            object : KArbitraryCustomizer<TestClass> {
-                override fun customizeFields(type: KClass<TestClass>, fieldArbitraries: FieldArbitraries) {
-                    fieldArbitraries.apply {
-                        replaceArbitrary("intValue", Arbitraries.just(-1))
-                    }
-                }
-
-                override fun customizeFixture(target: TestClass?): TestClass? {
-                    return target?.copy(stringValue = "test_value")
-                }
-            }
-        )
-
-        with(actual) {
-            then(intValue).isEqualTo(-1)
-            then(stringValue).isEqualTo("test_value")
         }
     }
 
@@ -207,22 +136,8 @@ class FixtureMonkeyExtensionsTest {
     }
 
     @Property
-    fun giveMeArbitary_deprecated() {
-        val actual = sut.giveMeArbitrary(TestClass::class)
-
-        then(actual).isNotNull
-    }
-
-    @Property
     fun giveMeArbitary() {
         val actual = sut.giveMeArbitrary<TestClass>()
-
-        then(actual).isNotNull
-    }
-
-    @Property
-    fun giveMeArbitraryBuilder() {
-        val actual = sut.giveMeArbitraryBuilder(TestClass::class)
 
         then(actual).isNotNull
     }
@@ -235,23 +150,8 @@ class FixtureMonkeyExtensionsTest {
     }
 
     @Property
-    fun giveMeArbitraryBuilderWithOptions() {
-        val actual = sut.giveMeArbitraryBuilder(TestClass::class, ArbitraryOption.builder().build())
-
-        then(actual).isNotNull
-    }
-
-    @Property
     fun giveMeBuilderWithOptions() {
         val actual = sut.giveMeBuilder<TestClass>(ArbitraryOption.builder().build())
-
-        then(actual).isNotNull
-    }
-
-    @Property
-    fun giveMeArbitraryBuilderWithValue() {
-        val value = TestClass(1, "test")
-        val actual = sut.giveMeArbitraryBuilder(value)
 
         then(actual).isNotNull
     }
