@@ -662,6 +662,19 @@ class FixtureMonkeyTest {
 			.hasMessageContaining("can not register same classes twice.");
 	}
 
+	@Property
+	void exceptGenerateClass() {
+		// given
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.addExceptGenerateClass(String.class)
+			.build();
+
+		// when
+		StringWrapperClass actual = sut.giveMeOne(StringWrapperClass.class);
+
+		then(actual.value).isNull();
+	}
+
 	@Data
 	public static class IntegerWrapperClass {
 		int value;

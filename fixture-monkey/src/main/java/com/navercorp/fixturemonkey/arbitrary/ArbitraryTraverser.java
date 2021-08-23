@@ -117,7 +117,9 @@ public final class ArbitraryTraverser {
 		} else {
 			if (nowValue != null) {
 				node.setArbitrary(Arbitraries.just(nowValue.get()));
-			} else if (arbitraryOption.isDefaultArbitraryType(nowNodeType.getType())) {
+			} else if (arbitraryOption.isDefaultArbitraryType(nowNodeType.getType())
+				&& arbitraryOption.isGeneratableClass(clazz)
+			) {
 				Arbitrary<T> registeredArbitrary = registeredArbitrary(node);
 				node.setArbitrary(registeredArbitrary);
 			} else if (nowNodeType.isEnum()) {
@@ -257,7 +259,8 @@ public final class ArbitraryTraverser {
 			return false;
 		}
 
-		return arbitraryOption.isExceptGeneratePackage(clazz)
+		return arbitraryOption.isExceptGeneratablePackage(clazz)
+			&& arbitraryOption.isGeneratableClass(clazz)
 			&& !arbitraryOption.isDefaultArbitraryType(clazz)
 			&& arbitraryOption.getContainerArbitraryNodeGenerator(clazz) == null
 			&& !type.isContainer()

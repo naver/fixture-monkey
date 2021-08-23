@@ -92,8 +92,18 @@ public class FixtureMonkeyBuilder {
 		return this;
 	}
 
+	public <T> FixtureMonkeyBuilder addExceptGenerateClass(Class<T> clazz) {
+		this.optionsBuilder.addExceptGenerateClass(clazz);
+		return this;
+	}
+
 	public FixtureMonkeyBuilder exceptGeneratePackages(Set<String> exceptGeneratePackages) {
 		this.optionsBuilder.exceptGeneratePackages(exceptGeneratePackages);
+		return this;
+	}
+
+	public FixtureMonkeyBuilder addExceptGenerateClasses(Set<Class<?>> classes) {
+		this.optionsBuilder.exceptGenerateClasses(classes);
 		return this;
 	}
 
