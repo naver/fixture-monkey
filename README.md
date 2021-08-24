@@ -2,11 +2,9 @@
 
 ### "Write once, Test anywhere"
 
-Enjoy your test with Fixture Monkey.
+Fixture-Monkey is designed to generate controllable arbitrary objects easily. It allows you to reuse same configurations of the objects in several tests.
 
-You can write countless tests including edge cases by `only one fixture`.
-
-See the [wiki](../../wiki) for further details and documentation.
+You can write countless tests including edge cases by only one instance of the FixtureMonkey type. You can generate objects of complex types automatically and set fields with values from builders of the ArbitraryBuilder<T> type. The well-defined builders could be reused in any tests. Writing integration tests is easier with Fixture-Monkey.
 
 ## Example
 
@@ -43,7 +41,7 @@ public class Order {
 @Test
 void test() {
     // given
-    FixtureMonkey sut = FixtureMonkey.builder().build();
+    FixtureMonkey sut = FixtureMonkey.create();
 
     // when
     Order actual = sut.giveMeOne(Order.class);
@@ -62,7 +60,7 @@ void test() {
 ### Gradle
 
 ```groovy
-testImplementation("com.navercorp.fixturemonkey:fixture-monkey:1.0.0-SNAPSHOT")
+testImplementation("com.navercorp.fixturemonkey:fixture-monkey:0.3.0")
 ```
 
 ### Maven
@@ -72,7 +70,7 @@ testImplementation("com.navercorp.fixturemonkey:fixture-monkey:1.0.0-SNAPSHOT")
 <dependency>
     <groupId>com.navercorp.fixturemonkey</groupId>
     <artifactId>fixture-monkey</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>0.3.0</version>
 </dependency>
 ```
 
