@@ -184,7 +184,11 @@ public final class ArbitraryOption {
 
 	@SuppressWarnings("unchecked")
 	public <T> ArbitraryBuilder<T> getDefaultArbitraryBuilder(Class<T> clazz) {
-		return (ArbitraryBuilder<T>)defaultArbitraryBuilderMap.get(clazz);
+		ArbitraryBuilder<T> arbitraryBuilder = (ArbitraryBuilder<T>)defaultArbitraryBuilderMap.get(clazz);
+		if (arbitraryBuilder != null) {
+			return arbitraryBuilder.copy();
+		}
+		return null;
 	}
 
 	public void applyArbitraryBuilders(FixtureMonkey fixtureMonkey) {

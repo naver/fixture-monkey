@@ -229,18 +229,11 @@ public final class ArbitraryBuilder<T> {
 	}
 
 	public ArbitraryBuilder<T> acceptIf(Predicate<T> predicate, Consumer<ArbitraryBuilder<T>> self) {
-		applyToRootValue(builder -> {
-			T sample = builder.sample();
-			builder.builderManipulators.clear();
-			builder.tree.getHead().setValue(() -> sample); // fix builder value
-			if (predicate.test(sample)) {
+		return this.apply((obj, builder) -> {
+			if (predicate.test(obj)) {
 				self.accept(builder);
-				return builder.sample();
 			}
-			return sample;
 		});
-
-		return this;
 	}
 
 	public ArbitraryBuilder<T> spec(ExpressionSpec expressionSpec) {
@@ -380,12 +373,12 @@ public final class ArbitraryBuilder<T> {
 		return this;
 	}
 
-	public ArbitraryBuilder<T> apply(BiConsumer<T, ArbitraryBuilder<T>> mapper) {
+	public ArbitraryBuilder<T> apply(BiConsumer<T, ArbitraryBuilder<T>> consumer) {
 		applyToRootValue(builder -> {
 			T sample = builder.sample();
 			builder.builderManipulators.clear();
 			builder.tree.getHead().setValue(() -> sample); // fix builder value
-			mapper.accept(sample, builder);
+			consumer.accept(sample, builder);
 			return builder.sample();
 		});
 

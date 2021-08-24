@@ -23,6 +23,7 @@ import static org.assertj.core.api.BDDAssertions.thenThrownBy;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
@@ -436,6 +437,44 @@ public class ComplexManipulatorTest {
 		then(actual.value.value).contains("ACCEPTIF");
 	}
 
+	@Property
+	void registerAcceptIfReturnsDiff() {
+		// given
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.registerGroup(AcceptIfArbitraryHolder.class)
+			.build();
+
+		// when
+		NestedStringList actual = sut.giveMeBuilder(NestedStringList.class)
+			.size("values", 10)
+			.setNotNull("values[*].value")
+			.sample();
+
+		// then
+		List<StringWrapperClass> uniqueList = actual.values.stream().distinct()
+			.collect(Collectors.toList());
+		then(uniqueList).hasSizeGreaterThan(1);
+	}
+
+	@Property
+	void registerApplyReturnsDiff() {
+		// given
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.registerGroup(ApplyArbitraryHolder.class)
+			.build();
+
+		// when
+		NestedStringList actual = sut.giveMeBuilder(NestedStringList.class)
+			.size("values", 10)
+			.setNotNull("values[*].value")
+			.sample();
+
+		// then
+		List<StringWrapperClass> uniqueList = actual.values.stream().distinct()
+			.collect(Collectors.toList());
+		then(uniqueList).hasSizeGreaterThan(1);
+	}
+
 	@Data
 	public static class IntegerListClass {
 		List<Integer> values;
@@ -488,6 +527,28 @@ public class ComplexManipulatorTest {
 		public ArbitraryBuilder<NestedStringWrapper> nestedStringWrapper(FixtureMonkey fixtureMonkey) {
 			return fixtureMonkey.giveMeBuilder(NestedStringWrapper.class)
 				.set("value.value", "group");
+		}
+	}
+
+	public static class AcceptIfArbitraryHolder {
+		public AcceptIfArbitraryHolder() {
+		}
+
+		public ArbitraryBuilder<FixtureMonkeyTest.StringWrapperClass> string(FixtureMonkey fixture) {
+			return fixture.giveMeBuilder(FixtureMonkeyTest.StringWrapperClass.class)
+				.acceptIf(it -> true, it -> {
+				});
+		}
+	}
+
+	public static class ApplyArbitraryHolder {
+		public ApplyArbitraryHolder() {
+		}
+
+		public ArbitraryBuilder<FixtureMonkeyTest.StringWrapperClass> string(FixtureMonkey fixture) {
+			return fixture.giveMeBuilder(FixtureMonkeyTest.StringWrapperClass.class)
+				.apply((it, builder) -> {
+				});
 		}
 	}
 }
