@@ -1,0 +1,16 @@
+
+---
+title: "FAQ"
+linkTitle: "FAQ"
+weight: 4
+---
+
+## Generated String value is weired. Help!
+Generated String is ASCII code consists of unprintable `control block`, printable characters.
+If you want to generate only printable characters as default, You should override `AnnotatedArbitraryGenerator`.
+check [Example]({{< relref "/docs/examples/annotatedarbitrarygenerator#override-string-to-generate-printable-characters" >}})
+
+## Generate object fails. Help!
+
+Input class is not suitable for given `ArbitraryGenerator`, check out [ArbitraryGenerator]({{< relref "/docs/features/arbitrarygenerator">}}).
+If Error occurs again, please create an issue.
