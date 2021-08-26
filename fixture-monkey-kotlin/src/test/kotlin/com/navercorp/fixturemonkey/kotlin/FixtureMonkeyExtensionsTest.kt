@@ -32,6 +32,7 @@ class FixtureMonkeyExtensionsTest {
 
     @Property
     fun giveMe() {
+        // when
         val actual = sut.giveMe<TestClass>().take(10).toList()
 
         then(actual).hasSize(10).allSatisfy {
@@ -44,7 +45,8 @@ class FixtureMonkeyExtensionsTest {
 
     @Property
     fun giveMeWithCustomizer() {
-        val actual = sut.giveMe<TestClass>(
+        // when
+        val actual = sut.giveMe(
             object : KArbitraryCustomizer<TestClass> {
                 override fun customizeFields(type: KClass<TestClass>, fieldArbitraries: FieldArbitraries) {
                     fieldArbitraries.apply {
@@ -68,6 +70,7 @@ class FixtureMonkeyExtensionsTest {
 
     @Property
     fun giveMeList() {
+        // when
         val actual = sut.giveMe<TestClass>(10)
 
         then(actual).hasSize(10).allSatisfy {
@@ -80,6 +83,7 @@ class FixtureMonkeyExtensionsTest {
 
     @Property
     fun giveMeListWithCustomizer() {
+        // when
         val actual = sut.giveMe(
             10,
             object : KArbitraryCustomizer<TestClass> {
@@ -105,6 +109,7 @@ class FixtureMonkeyExtensionsTest {
 
     @Property
     fun giveMeOne() {
+        // when
         val actual = sut.giveMeOne<TestClass>()
 
         with(actual) {
@@ -115,6 +120,7 @@ class FixtureMonkeyExtensionsTest {
 
     @Property
     fun giveMeOneWithCustomizer() {
+        // when
         val actual = sut.giveMeOne(
             object : KArbitraryCustomizer<TestClass> {
                 override fun customizeFields(type: KClass<TestClass>, fieldArbitraries: FieldArbitraries) {
@@ -136,7 +142,8 @@ class FixtureMonkeyExtensionsTest {
     }
 
     @Property
-    fun giveMeArbitary() {
+    fun giveMeArbitrary() {
+        // when
         val actual = sut.giveMeArbitrary<TestClass>()
 
         then(actual).isNotNull
@@ -144,6 +151,7 @@ class FixtureMonkeyExtensionsTest {
 
     @Property
     fun giveMeBuilder() {
+        // when
         val actual = sut.giveMeBuilder<TestClass>()
 
         then(actual).isNotNull
@@ -151,6 +159,7 @@ class FixtureMonkeyExtensionsTest {
 
     @Property
     fun giveMeBuilderWithOptions() {
+        // when
         val actual = sut.giveMeBuilder<TestClass>(ArbitraryOption.builder().build())
 
         then(actual).isNotNull
@@ -158,6 +167,7 @@ class FixtureMonkeyExtensionsTest {
 
     @Property
     fun giveMeBuilderWithValue() {
+        // when
         val value = TestClass(1, "test")
         val actual = sut.giveMeBuilder(value)
 

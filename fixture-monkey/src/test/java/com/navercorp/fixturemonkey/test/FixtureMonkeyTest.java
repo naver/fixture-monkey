@@ -66,8 +66,10 @@ class FixtureMonkeyTest {
 
 	@Property
 	void giveMeRegisteredPrimitive() {
+		// given
 		ArbitraryBuilder<Integer> builder = this.sut.giveMeBuilder(Integer.class);
 
+		// when
 		int actual = builder.sample();
 
 		then(actual).isBetween(Integer.MIN_VALUE, Integer.MAX_VALUE);
@@ -80,108 +82,99 @@ class FixtureMonkeyTest {
 		then(actual.getValue()).isPositive();
 	}
 
-	@Provide
-	Arbitrary<IntegerArrayClass> arrayToBuilder() {
+	@Property
+	void giveMeArrayToBuilder() {
+		// given
 		IntegerArrayClass expected = new IntegerArrayClass(new Integer[] {1, 2, 3});
 
-		return this.sut.giveMeBuilder(expected).build();
-	}
+		// when
+		IntegerArrayClass actual = this.sut.giveMeBuilder(expected).sample();
 
-	@Property
-	void giveMeArrayToBuilder(@ForAll("arrayToBuilder") IntegerArrayClass actual) {
 		then(actual.value[0]).isEqualTo(1);
 		then(actual.value[1]).isEqualTo(2);
 		then(actual.value[2]).isEqualTo(3);
 	}
 
-	@Provide
-	Arbitrary<IntArrayClass> primitiveArrayToBuilder() {
+	@Property
+	void giveMePrimitiveArrayToBuilder() {
+		// given
 		IntArrayClass expected = new IntArrayClass(new int[] {1, 2, 3});
 
-		return this.sut.giveMeBuilder(expected).build();
-	}
+		// when
+		IntArrayClass actual = this.sut.giveMeBuilder(expected).sample();
 
-	@Property
-	void giveMePrimitiveArrayToBuilder(@ForAll("primitiveArrayToBuilder") IntArrayClass actual) {
 		then(actual.value[0]).isEqualTo(1);
 		then(actual.value[1]).isEqualTo(2);
 		then(actual.value[2]).isEqualTo(3);
 	}
 
-	@Provide
-	Arbitrary<MapKeyIntegerValueIntegerClass> sameKeyValueMapToBuilder() {
+	@Property
+	void giveMeSameKeyValueMapToBuilder() {
+		// given
 		Map<Integer, Integer> values = new HashMap<>();
 		values.put(1, 1);
 		MapKeyIntegerValueIntegerClass expected = new MapKeyIntegerValueIntegerClass(values);
 
-		return this.sut.giveMeBuilder(expected).build();
-	}
+		// when
+		MapKeyIntegerValueIntegerClass actual = this.sut.giveMeBuilder(expected).sample();
 
-	@Property
-	void giveMeSameKeyValueMapToBuilder(
-		@ForAll("sameKeyValueMapToBuilder") MapKeyIntegerValueIntegerClass actual
-	) {
 		then(actual.values.get(1)).isEqualTo(1);
 	}
 
-	@Provide
-	Arbitrary<MapKeyIntegerValueStringClass> diffKeyValueMapToBuilder() {
+	@Property
+	void giveMeDiffKeyValueMapToBuilder() {
+		// given
 		Map<Integer, String> values = new HashMap<>();
 		values.put(1, "1");
 		MapKeyIntegerValueStringClass expected = new MapKeyIntegerValueStringClass(values);
 
-		return this.sut.giveMeBuilder(expected).build();
-	}
+		// when
+		MapKeyIntegerValueStringClass actual = this.sut.giveMeBuilder(expected).sample();
 
-	@Property
-	void giveMeDiffKeyValueMapToBuilder(@ForAll("diffKeyValueMapToBuilder") MapKeyIntegerValueStringClass actual) {
 		then(actual.values.get(1)).isEqualTo("1");
 	}
 
-	@Provide
-	Arbitrary<MapEntryKeyIntegerValueStringClass> mapEntryToBuilder() {
+	@Property
+	void giveMeMapEntryToBuilder() {
+		// given
 		Map.Entry<Integer, String> value = new SimpleEntry<>(1, "1");
 		MapEntryKeyIntegerValueStringClass expected = new MapEntryKeyIntegerValueStringClass(value);
 
-		return this.sut.giveMeBuilder(expected).build();
-	}
+		// when
+		MapEntryKeyIntegerValueStringClass actual = this.sut.giveMeBuilder(expected).sample();
 
-	@Property
-	void giveMeMapEntryToBuilder(@ForAll("mapEntryToBuilder") MapEntryKeyIntegerValueStringClass actual) {
 		then(actual.value.getValue()).isEqualTo("1");
 	}
 
-	@Provide
-	Arbitrary<IntegerSetClass> setToBuilder() {
+	@Property
+	void giveMeSetToBuilder() {
+		// given
 		Set<Integer> values = new HashSet<>();
 		values.add(1);
 		IntegerSetClass expected = new IntegerSetClass(values);
 
-		return this.sut.giveMeBuilder(expected).build();
-	}
+		// when
+		IntegerSetClass actual = this.sut.giveMeBuilder(expected).sample();
 
-	@Property
-	void giveMeSetToBuilder(@ForAll("setToBuilder") IntegerSetClass actual) {
 		then(actual.values).allMatch(it -> it == 1);
 	}
 
-	@Provide
-	Arbitrary<IntegerIterableClass> iterableToBuilder() {
+	@Property
+	void giveMeIterableToBuilder() {
+		// given
 		List<Integer> values = new ArrayList<>();
 		values.add(1);
 		IntegerIterableClass expected = new IntegerIterableClass(values);
 
-		return sut.giveMeBuilder(expected)
-			.build();
-	}
+		// when
+		IntegerIterableClass actual = sut.giveMeBuilder(expected).sample();
 
-	@Property
-	void giveMeIterableToBuilder(@ForAll("iterableToBuilder") IntegerIterableClass actual) {
 		then(actual.values).allMatch(it -> it == 1);
 	}
 
-	@Provide
-	Arbitrary<IntegerIteratorClass> iteratorToBuilder() {
+	@Property
+	void giveMeIteratorToBuilder() {
+		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.defaultGenerator(BuilderArbitraryGenerator.INSTANCE)
 			.build();
@@ -189,16 +182,15 @@ class FixtureMonkeyTest {
 		values.add(1);
 		IntegerIteratorClass expected = new IntegerIteratorClass(values.iterator());
 
-		return sut.giveMeBuilder(expected).build();
-	}
+		// when
+		IntegerIteratorClass actual = sut.giveMeBuilder(expected).sample();
 
-	@Property
-	void giveMeIteratorToBuilder(@ForAll("iteratorToBuilder") IntegerIteratorClass actual) {
 		then(actual.values.next()).isEqualTo(1);
 	}
 
-	@Provide
-	Arbitrary<IntegerStreamClass> streamToBuilder() {
+	@Property
+	void giveMeStreamToBuilder() {
+		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.defaultGenerator(BuilderArbitraryGenerator.INSTANCE)
 			.build();
@@ -206,75 +198,68 @@ class FixtureMonkeyTest {
 		values.add(1);
 		IntegerStreamClass expected = new IntegerStreamClass(values.stream());
 
-		return sut.giveMeBuilder(expected).build();
-	}
+		// when
+		IntegerStreamClass actual = sut.giveMeBuilder(expected).sample();
 
-	@Property
-	void giveMeStreamToBuilder(@ForAll("streamToBuilder") IntegerStreamClass actual) {
 		then(actual.values).allMatch(it -> it == 1);
 	}
 
-	@Provide
-	Arbitrary<IntegerOptionalClass> optionalToBuilder() {
+	@Property
+	void giveMeOptionalToBuilder() {
+		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.defaultGenerator(BuilderArbitraryGenerator.INSTANCE)
 			.build();
 
-		return sut.giveMeBuilder(new IntegerOptionalClass(Optional.of(1))).build();
-	}
+		// when
+		IntegerOptionalClass actual = sut.giveMeBuilder(new IntegerOptionalClass(Optional.of(1))).sample();
 
-	@Property
-	void giveMeOptionalToBuilder(@ForAll("optionalToBuilder") IntegerOptionalClass actual) {
 		//noinspection OptionalGetWithoutIsPresent
 		then(actual.value.get()).isEqualTo(1);
 	}
 
-	@Provide
-	Arbitrary<IntegerOptionalClass> optionalEmptyToBuilder() {
+	@Property
+	void giveMeOptionalEmptyToBuilder() {
+		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.defaultGenerator(BuilderArbitraryGenerator.INSTANCE)
 			.build();
 		Optional<Integer> value = Optional.empty();
 		IntegerOptionalClass expected = new IntegerOptionalClass(value);
 
-		return sut.giveMeBuilder(expected).build();
-	}
+		// when
+		IntegerOptionalClass actual = sut.giveMeBuilder(expected).sample();
 
-	@Property
-	void giveMeOptionalEmptyToBuilder(@ForAll("optionalEmptyToBuilder") IntegerOptionalClass actual) {
 		then(actual.value).isEqualTo(Optional.empty());
 	}
 
-	@Provide
-	Arbitrary<IntegerArrayClass> copyArbitrary() {
+	@Property
+	void copy() {
+		// given
 		IntegerArrayClass expected = new IntegerArrayClass(new Integer[] {1, 2, 3});
-
 		ArbitraryBuilder<IntegerArrayClass> builder = this.sut.giveMeBuilder(expected);
 		ArbitraryBuilder<IntegerArrayClass> copiedBuilder = builder.copy()
 			.set("value[1]", 3);
 
-		return copiedBuilder.build();
-	}
+		// when
+		IntegerArrayClass actual = copiedBuilder.sample();
 
-	@Property
-	void copy(@ForAll("copyArbitrary") IntegerArrayClass actual) {
 		then(actual.value[0]).isEqualTo(1);
 		then(actual.value[1]).isNotEqualTo(2);
 		then(actual.value[1]).isEqualTo(3);
 		then(actual.value[2]).isEqualTo(3);
 	}
 
-	@Provide
-	Arbitrary<IntegerArrayClass> copyArbitraryWithManipulator() {
+	@Property
+	void copyWithManipulator() {
+		// given
 		IntegerArrayClass expected = new IntegerArrayClass(new Integer[] {1, 2, 3});
 		ArbitraryBuilder<IntegerArrayClass> builder = this.sut.giveMeBuilder(expected)
 			.set("value[0]", -1);
 
-		return builder.copy().build();
-	}
+		// when
+		IntegerArrayClass actual = builder.copy().sample();
 
-	@Property
-	void copyWithManipulator(@ForAll("copyArbitraryWithManipulator") IntegerArrayClass actual) {
 		then(actual.value[0]).isEqualTo(-1);
 		then(actual.value[1]).isEqualTo(2);
 		then(actual.value[2]).isEqualTo(3);
@@ -282,6 +267,7 @@ class FixtureMonkeyTest {
 
 	@Property
 	void giveMeList() {
+		// when
 		List<IntegerWrapperClass> actual = this.sut.giveMe(IntegerWrapperClass.class, 5);
 
 		then(actual).hasSize(5);
@@ -290,6 +276,7 @@ class FixtureMonkeyTest {
 
 	@Property
 	void giveMeOptional() {
+		// when
 		OptionalClass actual = this.sut.giveMeOne(OptionalClass.class);
 
 		then(actual).isNotNull();
@@ -297,8 +284,11 @@ class FixtureMonkeyTest {
 
 	@Property
 	void setAfterBuildNotAffected() {
+		// given
 		ArbitraryBuilder<StringWrapperClass> builder = this.sut.giveMeBuilder(StringWrapperClass.class);
 		Arbitrary<StringWrapperClass> build = builder.build();
+
+		// when
 		ArbitraryBuilder<StringWrapperClass> actual = builder.set("value", "set");
 
 		StringWrapperClass actualSample = actual.sample();
@@ -307,104 +297,96 @@ class FixtureMonkeyTest {
 		then(actualSample.value).isEqualTo("set");
 	}
 
-	@Provide
-	Arbitrary<IntegerListClassNotEmpty> notEmpty() {
-		return this.sut.giveMeBuilder(IntegerListClassNotEmpty.class)
-			.build();
-	}
-
 	@Property
-	void giveMeNotEmpty(@ForAll("notEmpty") IntegerListClassNotEmpty actual) {
+	void giveMeNotEmpty() {
+		// when
+		IntegerListClassNotEmpty actual = this.sut.giveMeBuilder(IntegerListClassNotEmpty.class)
+			.sample();
+
 		then(actual.values).isNotEmpty();
 	}
 
 	@Property
 	void addExceptGenerate() {
+		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.addExceptGeneratePackage("com.navercorp.fixturemonkey.test")
 			.build();
 
+		// when
 		ExceptGenerateClass actual = sut.giveMeOne(ExceptGenerateClass.class);
 
 		then(actual).isNull();
 	}
 
-	@Provide
-	Arbitrary<IntegerListClass> sizeListSmallerThanValueWhenDecomposed() {
+	@Property
+	void giveMeSizeListSmallerThanValueWhenDecomposed() {
+		// given
 		List<Integer> values = new ArrayList<>();
 		values.add(1);
 		values.add(2);
 		values.add(3);
 		IntegerListClass value = new IntegerListClass();
 		value.setValues(values);
-		return this.sut.giveMeBuilder(value)
-			.size("values", 1)
-			.build();
-	}
 
-	@Property
-	void giveMeSizeListSmallerThanValueWhenDecomposed(
-		@ForAll("sizeListSmallerThanValueWhenDecomposed") IntegerListClass actual
-	) {
+		// when
+		IntegerListClass actual = this.sut.giveMeBuilder(value)
+			.size("values", 1)
+			.sample();
+
 		then(actual.values).hasSize(1);
 		then(actual.values.get(0)).isEqualTo(1);
 	}
 
-	@Provide
-	Arbitrary<IntegerListClass> sizeListBiggerThanValueWhenDecomposed() {
+	@Property
+	void giveMeSizeListBiggerThanValueWhenDecomposed() {
+		// given
 		List<Integer> values = new ArrayList<>();
 		values.add(1);
 		values.add(2);
 		values.add(3);
 		IntegerListClass value = new IntegerListClass();
 		value.setValues(values);
-		return this.sut.giveMeBuilder(value)
-			.size("values", 5)
-			.build();
-	}
 
-	@Property
-	void giveMeSizeListBiggerThanValueWhenDecomposed(
-		@ForAll("sizeListBiggerThanValueWhenDecomposed") IntegerListClass actual
-	) {
+		// when
+		IntegerListClass actual = this.sut.giveMeBuilder(value)
+			.size("values", 5)
+			.sample();
+
 		then(actual.values).hasSize(5);
 		then(actual.values.get(0)).isEqualTo(1);
 		then(actual.values.get(1)).isEqualTo(2);
 		then(actual.values.get(2)).isEqualTo(3);
 	}
 
-	@Provide
-	Arbitrary<IntegerArrayClass> sizeArraySmallerThanValueWhenDecomposed() {
+	@Property
+	void giveMeSizeArraySmallerThanValueWhenDecomposed() {
+		// given
 		Integer[] values = new Integer[] {1, 2, 3};
 		IntegerArrayClass value = new IntegerArrayClass();
 		value.setValue(values);
-		return this.sut.giveMeBuilder(value)
-			.size("value", 1)
-			.build();
-	}
 
-	@Property
-	void giveMeSizeArraySmallerThanValueWhenDecomposed(
-		@ForAll("sizeArraySmallerThanValueWhenDecomposed") IntegerArrayClass actual
-	) {
+		// when
+		IntegerArrayClass actual = this.sut.giveMeBuilder(value)
+			.size("value", 1)
+			.sample();
+
 		then(actual.value).hasSize(1);
 		then(actual.value[0]).isEqualTo(1);
 	}
 
-	@Provide
-	Arbitrary<IntegerArrayClass> sizeArrayBiggerThanValueWhenDecomposed() {
+	@Property
+	void giveMeSizeArrayBiggerThanValueWhenDecomposed() {
+		// given
 		Integer[] values = new Integer[] {1, 2, 3};
 		IntegerArrayClass value = new IntegerArrayClass();
 		value.setValue(values);
-		return this.sut.giveMeBuilder(value)
-			.size("value", 5)
-			.build();
-	}
 
-	@Property
-	void giveMeSizeArrayBiggerThanValueWhenDecomposed(
-		@ForAll("sizeArrayBiggerThanValueWhenDecomposed") IntegerArrayClass actual
-	) {
+		// when
+		IntegerArrayClass actual = this.sut.giveMeBuilder(value)
+			.size("value", 5)
+			.sample();
+
 		then(actual.value).hasSize(5);
 		then(actual.value[0]).isEqualTo(1);
 		then(actual.value[1]).isEqualTo(2);
@@ -413,6 +395,7 @@ class FixtureMonkeyTest {
 
 	@Property
 	void giveMeInterface() {
+		// when
 		InterfaceWrapper actual = this.sut.giveMeBuilder(InterfaceWrapper.class)
 			.setNotNull("value")
 			.sample();
@@ -422,8 +405,10 @@ class FixtureMonkeyTest {
 
 	@Property
 	void giveMeInterfaceWithDefaultInterfaceSupplier() {
+		// given
 		FixtureMonkey sut = FixtureMonkey.builder().build();
 
+		// when
 		InterfaceWrapper actual = sut.giveMeOne(InterfaceWrapper.class);
 
 		then(actual.value).isNull();
@@ -431,10 +416,12 @@ class FixtureMonkeyTest {
 
 	@Property
 	void defaultNullInject() {
+		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.nullInject(1.0d)
 			.build();
 
+		// when
 		StringWrapperClass actual = sut.giveMeOne(StringWrapperClass.class);
 
 		then(actual.value).isNull();
@@ -442,11 +429,13 @@ class FixtureMonkeyTest {
 
 	@Property
 	void defaultNullInjectWithDefaultNotNull() {
+		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.nullInject(1.0d)
 			.defaultNotNull(true)
 			.build();
 
+		// when
 		StringWrapperClass actual = sut.giveMeOne(StringWrapperClass.class);
 
 		then(actual.value).isNotNull();
@@ -454,11 +443,13 @@ class FixtureMonkeyTest {
 
 	@Property
 	void giveMeNullableDefaultNullInjectWithDefaultNotNull() {
+		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.nullInject(1.0d)
 			.defaultNotNull(true)
 			.build();
 
+		// when
 		StringWrapperWithNullableClass actual = sut.giveMeOne(StringWrapperWithNullableClass.class);
 
 		then(actual.value).isNull();
@@ -466,10 +457,12 @@ class FixtureMonkeyTest {
 
 	@Property
 	void giveMeNotBlankString() {
+		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.nullInject(1.0)
 			.build();
 
+		// when
 		StringWrapperWithNotBlankClass actual = sut.giveMeOne(StringWrapperWithNotBlankClass.class);
 
 		then(actual.value).isNotNull();
@@ -477,10 +470,12 @@ class FixtureMonkeyTest {
 
 	@Property
 	void mapIntegerListClassBiggerThanMapped() {
+		// given
 		IntegerListClass mapped = sut.giveMeBuilder(IntegerListClass.class)
 			.size("values", 1)
 			.sample();
 
+		// when
 		IntegerListClass actual = sut.giveMeBuilder(mapped)
 			.size("values", 2)
 			.sample();
@@ -491,11 +486,13 @@ class FixtureMonkeyTest {
 
 	@Property
 	void decomposeNullIsNotGenerated() {
+		// given
 		StringIntegerClass decomposed = new StringIntegerClass();
 		IntegerWrapperClass value2 = new IntegerWrapperClass();
 		value2.value = 1;
 		decomposed.setValue2(value2);
 
+		// when
 		StringIntegerClass actual = this.sut.giveMeBuilder(decomposed)
 			.sample();
 
@@ -505,11 +502,13 @@ class FixtureMonkeyTest {
 
 	@Property
 	void decomposeNullSetThenGenerate() {
+		// given
 		StringIntegerClass decomposed = new StringIntegerClass();
 		IntegerWrapperClass value2 = new IntegerWrapperClass();
 		value2.value = 1;
 		decomposed.setValue2(value2);
 
+		// when
 		StringIntegerClass actual = this.sut.giveMeBuilder(decomposed)
 			.set("value1.value", "abc")
 			.sample();
@@ -520,10 +519,12 @@ class FixtureMonkeyTest {
 
 	@Property
 	void registerGroup() {
+		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.registerGroup(DefaultArbitraryHolder.class)
 			.build();
 
+		// when
 		StringWrapperClass actual = sut.giveMeOne(StringWrapperClass.class);
 
 		then(actual.value).isEqualTo("definition");
@@ -531,10 +532,12 @@ class FixtureMonkeyTest {
 
 	@Property
 	void registerGroupInField() {
+		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.registerGroup(DefaultArbitraryHolder.class)
 			.build();
 
+		// when
 		StringIntegerClass actual = sut.giveMeOne(StringIntegerClass.class);
 
 		then(actual.value1.value).isEqualTo("definition");
@@ -542,10 +545,12 @@ class FixtureMonkeyTest {
 
 	@Property
 	void registerGroupInFieldSet() {
+		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.registerGroup(DefaultArbitraryHolder.class)
 			.build();
 
+		// when
 		StringIntegerClass actual = sut.giveMeBuilder(StringIntegerClass.class)
 			.set("value1.value", "set")
 			.sample();
@@ -555,10 +560,12 @@ class FixtureMonkeyTest {
 
 	@Property
 	void registerGroupList() {
+		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.registerGroup(DefaultArbitraryHolder.class)
 			.build();
 
+		// when
 		NestedStringList actual = sut.giveMeBuilder(NestedStringList.class)
 			.sample();
 
@@ -567,6 +574,7 @@ class FixtureMonkeyTest {
 
 	@Property
 	void register() {
+		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.register(
 				StringWrapperClass.class,
@@ -574,6 +582,7 @@ class FixtureMonkeyTest {
 			)
 			.build();
 
+		// when
 		StringWrapperClass actual = sut.giveMeOne(StringWrapperClass.class);
 
 		then(actual.value).isEqualTo("definition");
@@ -581,6 +590,7 @@ class FixtureMonkeyTest {
 
 	@Property
 	void registerInField() {
+		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.register(
 				StringWrapperClass.class,
@@ -588,6 +598,7 @@ class FixtureMonkeyTest {
 			)
 			.build();
 
+		// when
 		StringIntegerClass actual = sut.giveMeOne(StringIntegerClass.class);
 
 		then(actual.value1.value).isEqualTo("definition");
@@ -595,6 +606,7 @@ class FixtureMonkeyTest {
 
 	@Property
 	void registerInFieldSet() {
+		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.register(
 				StringWrapperClass.class,
@@ -602,6 +614,7 @@ class FixtureMonkeyTest {
 			)
 			.build();
 
+		// when
 		StringIntegerClass actual = sut.giveMeBuilder(StringIntegerClass.class)
 			.set("value1.value", "set")
 			.sample();
@@ -611,6 +624,7 @@ class FixtureMonkeyTest {
 
 	@Property
 	void registerList() {
+		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.register(
 				StringWrapperClass.class,
@@ -618,6 +632,7 @@ class FixtureMonkeyTest {
 			)
 			.build();
 
+		// when
 		NestedStringList actual = sut.giveMeBuilder(NestedStringList.class)
 			.sample();
 

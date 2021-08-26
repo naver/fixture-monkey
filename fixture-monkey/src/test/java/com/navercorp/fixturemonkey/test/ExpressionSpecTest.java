@@ -31,9 +31,11 @@ import com.navercorp.fixturemonkey.customizer.ExpressionSpec;
 public class ExpressionSpecTest {
 	@Property
 	void copy() {
+		// given
 		ExpressionSpec actual = new ExpressionSpec()
 			.set("test", "test");
 
+		// when
 		ExpressionSpec expected = actual.copy();
 
 		then(actual).isEqualTo(expected);
@@ -41,9 +43,11 @@ public class ExpressionSpecTest {
 
 	@Property
 	void setAfterCopy() {
+		// given
 		ExpressionSpec actual = new ExpressionSpec()
 			.set("test", "test");
 
+		// when
 		ExpressionSpec expected = actual.copy().set("test2", "test");
 
 		then(actual).isNotEqualTo(expected);
@@ -51,11 +55,13 @@ public class ExpressionSpecTest {
 
 	@Property
 	void merge() {
+		// given
 		ExpressionSpec merger = new ExpressionSpec()
 			.set("test", "test");
 		ExpressionSpec merged = new ExpressionSpec()
 			.set("test", "test2");
 
+		// when
 		ExpressionSpec actual = merger.merge(merged);
 
 		then(actual.getBuilderManipulators()).hasSize(2);
@@ -63,11 +69,13 @@ public class ExpressionSpecTest {
 
 	@Property
 	void mergeNotOverwrite() {
+		// given
 		ExpressionSpec merger = new ExpressionSpec()
 			.set("test", "test");
 		ExpressionSpec merged = new ExpressionSpec()
 			.set("test", "test2");
 
+		// when
 		ExpressionSpec actual = merger.merge(merged, false);
 
 		then(actual.getBuilderManipulators()).hasSize(1);
@@ -75,12 +83,14 @@ public class ExpressionSpecTest {
 
 	@Property
 	void mergePostCondition() {
+		// given
 		ExpressionSpec merger = new ExpressionSpec()
 			.setPostCondition("test", String.class, Objects::nonNull);
 		ExpressionSpec merged = new ExpressionSpec()
 			.setPostCondition("test", String.class, Objects::nonNull)
 			.setPostCondition("test", String.class, Objects::nonNull);
 
+		// when
 		ExpressionSpec actual = merger.merge(merged);
 
 		then(actual.getBuilderManipulators()).hasSize(2);
@@ -88,12 +98,14 @@ public class ExpressionSpecTest {
 
 	@Property
 	void mergePostConditionNotOverwrite() {
+		// given
 		ExpressionSpec merger = new ExpressionSpec()
 			.setPostCondition("test", String.class, Objects::nonNull)
 			.setPostCondition("test", String.class, Objects::nonNull);
 		ExpressionSpec merged = new ExpressionSpec()
 			.setPostCondition("test", String.class, Objects::nonNull);
 
+		// when
 		ExpressionSpec actual = merger.merge(merged, false);
 
 		then(actual.getBuilderManipulators()).hasSize(2);
@@ -101,11 +113,13 @@ public class ExpressionSpecTest {
 
 	@Property
 	void mergeNull() {
+		// given
 		ExpressionSpec merger = new ExpressionSpec()
 			.setNull("test");
 		ExpressionSpec merged = new ExpressionSpec()
 			.setNull("test");
 
+		// when
 		ExpressionSpec actual = merger.merge(merged);
 
 		then(actual.getBuilderManipulators()).hasSize(2);
@@ -113,11 +127,13 @@ public class ExpressionSpecTest {
 
 	@Property
 	void mergeNullNotOverwrite() {
+		// given
 		ExpressionSpec merger = new ExpressionSpec()
 			.setNull("test");
 		ExpressionSpec merged = new ExpressionSpec()
 			.setNull("test");
 
+		// when
 		ExpressionSpec actual = merger.merge(merged, false);
 
 		then(actual.getBuilderManipulators()).hasSize(1);
@@ -125,10 +141,12 @@ public class ExpressionSpecTest {
 
 	@Property
 	void exclude() {
+		// given
 		ExpressionSpec actual = new ExpressionSpec()
 			.set("test", "test")
 			.set("test2", "test");
 
+		// when
 		actual.exclude("test");
 
 		then(actual.getBuilderManipulators()).hasSize(1);
@@ -136,6 +154,7 @@ public class ExpressionSpecTest {
 
 	@Property
 	void hasPostCondition() {
+		// when
 		ExpressionSpec actual = new ExpressionSpec()
 			.setPostCondition("test", String.class, Objects::nonNull);
 
@@ -145,6 +164,7 @@ public class ExpressionSpecTest {
 
 	@Property
 	void hasSet() {
+		// when
 		ExpressionSpec actual = new ExpressionSpec()
 			.set("test", "test");
 
@@ -154,6 +174,7 @@ public class ExpressionSpecTest {
 
 	@Property
 	void findSetValue() {
+		// when
 		ExpressionSpec actual = new ExpressionSpec()
 			.set("test", "test");
 
@@ -163,7 +184,10 @@ public class ExpressionSpecTest {
 
 	@Property
 	void findSetArbitraryValue() {
+		// given
 		Arbitrary<String> arbitrary = Arbitraries.of("test");
+
+		// when
 		ExpressionSpec actual = new ExpressionSpec()
 			.set("test", arbitrary);
 
@@ -173,6 +197,7 @@ public class ExpressionSpecTest {
 
 	@Property
 	void findSetArbitraryEmpty() {
+		// when
 		ExpressionSpec actual = new ExpressionSpec();
 
 		then(actual.findSetValue("test")).isEmpty();

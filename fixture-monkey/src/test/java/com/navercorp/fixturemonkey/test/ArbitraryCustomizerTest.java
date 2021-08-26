@@ -23,10 +23,7 @@ import static org.assertj.core.api.BDDAssertions.then;
 import javax.annotation.Nullable;
 
 import net.jqwik.api.Arbitraries;
-import net.jqwik.api.Arbitrary;
-import net.jqwik.api.ForAll;
 import net.jqwik.api.Property;
-import net.jqwik.api.Provide;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -51,19 +48,18 @@ public class ArbitraryCustomizerTest {
 		})
 		.build();
 
-	@Provide
-	Arbitrary<CustomizerIntegerClass> withCustomizer() {
-		return this.sut.giveMeBuilder(CustomizerIntegerClass.class).build();
-	}
-
 	@Property
-	void giveMeWithCustomizer(@ForAll("withCustomizer") CustomizerIntegerClass actual) {
+	void giveMeWithCustomizer() {
+		// when
+		CustomizerIntegerClass actual = this.sut.giveMeBuilder(CustomizerIntegerClass.class).sample();
+
 		then(actual.value).isEqualTo(1);
 	}
 
-	@Provide
-	Arbitrary<IntegerWrapperClass> customize() {
-		return this.sut.giveMeBuilder(IntegerWrapperClass.class)
+	@Property
+	void giveMeCustomize() {
+		// when
+		IntegerWrapperClass actual = this.sut.giveMeBuilder(IntegerWrapperClass.class)
 			.customize(IntegerWrapperClass.class, new ArbitraryCustomizer<IntegerWrapperClass>() {
 				@Override
 				public void customizeFields(Class<IntegerWrapperClass> type, FieldArbitraries fieldArbitraries) {
@@ -75,16 +71,14 @@ public class ArbitraryCustomizerTest {
 				public IntegerWrapperClass customizeFixture(@Nullable IntegerWrapperClass object) {
 					return object;
 				}
-			}).build();
-	}
+			}).sample();
 
-	@Property
-	void giveMeCustomize(@ForAll("customize") IntegerWrapperClass actual) {
 		then(actual.value).isEqualTo(1);
 	}
 
 	@Property
 	void nestedCustomize() {
+		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.addCustomizer(StringWrapperClass.class, it -> new StringWrapperClass("test"))
 			.addCustomizer(IntegerWrapperClass.class, it -> {
@@ -94,6 +88,7 @@ public class ArbitraryCustomizerTest {
 			})
 			.build();
 
+		// when
 		StringIntegerClass actual = sut.giveMeBuilder(StringIntegerClass.class)
 			.setNotNull("value1")
 			.setNotNull("value2")

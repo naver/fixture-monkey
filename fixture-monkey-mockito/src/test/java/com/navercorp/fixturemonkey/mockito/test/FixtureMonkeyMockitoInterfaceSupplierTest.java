@@ -38,7 +38,10 @@ class FixtureMonkeyMockitoInterfaceSupplierTest {
 
 	@Example
 	void interfaceTypeIsMock() {
+		// when
 		HasInterfaceType value = fixtureMonkey.giveMeOne(HasInterfaceType.class);
+
+		// then
 		assertThat(value.getInterfaceType()).isNotNull();
 
 		when(value.getInterfaceType().getName()).thenReturn("test-value");
@@ -47,7 +50,10 @@ class FixtureMonkeyMockitoInterfaceSupplierTest {
 
 	@Example
 	void abstractTypeIsMock() {
+		// when
 		HasAbstractType value = fixtureMonkey.giveMeOne(HasAbstractType.class);
+
+		// then
 		assertThat(value.getAbstractType()).isNotNull();
 
 		when(value.getAbstractType().getName()).thenReturn("test-value");

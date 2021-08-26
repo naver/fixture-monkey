@@ -43,17 +43,14 @@ public class ComplexManipulatorTest {
 
 	@Property
 	void giveMeAcceptIf() {
-		StringWrapperClassWithPredicate actual1 = this.sut.giveMeBuilder(StringWrapperClassWithPredicate.class)
+		// when
+		StringWrapperClassWithPredicate actual = this.sut.giveMeBuilder(StringWrapperClassWithPredicate.class)
 			.acceptIf(StringWrapperClassWithPredicate::isEmpty, it -> it.set("value", "test"))
 			.sample();
 
-		StringWrapperClassWithPredicate actual2 = this.sut.giveMeBuilder(StringWrapperClassWithPredicate.class)
-			.acceptIf(StringWrapperClassWithPredicate::isEmpty, it -> it.set("value", "test"))
-			.sample();
-
-		then(actual1.value).satisfiesAnyOf(
-			it -> then(it).isNotEqualTo(actual2),
-			it -> then(it).isEqualTo("test")
+		then(actual).satisfiesAnyOf(
+			it -> then(it.value).isNotNull(),
+			it -> then(it.value).isEqualTo("test")
 		);
 	}
 

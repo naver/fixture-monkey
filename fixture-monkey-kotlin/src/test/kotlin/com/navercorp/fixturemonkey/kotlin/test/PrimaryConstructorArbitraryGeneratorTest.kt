@@ -23,43 +23,56 @@ import com.navercorp.fixturemonkey.kotlin.KFixtureMonkeyBuilder
 import net.jqwik.api.Property
 import org.assertj.core.api.BDDAssertions.then
 
-class PrimaryConstructorArbitaryGeneratorTest {
+class PrimaryConstructorArbitraryGeneratorTest {
     private val sut: FixtureMonkey = KFixtureMonkeyBuilder()
         .build()
 
     @Property
     fun giveMeClassWithPrimaryConstructor() {
+        // when
         val actual = this.sut.giveMe(ClassWithPrimaryConstructor::class.java, 10)
+
         then(actual).hasSize(10)
     }
 
     @Property
     fun giveMeClassWithNestedOne() {
+        // when
         val actual = this.sut.giveMe(ClassWithNestedOne::class.java, 10)
+
         then(actual).hasSize(10)
     }
 
     @Property
     fun giveMeDataClass() {
+        // when
         val actual = this.sut.giveMe(DataClass::class.java, 10)
+
         then(actual).hasSize(10)
     }
 
     @Property
     fun giveMeClassWithVarValue() {
+        // when
         val actual = this.sut.giveMe(ClassWithVarValue::class.java, 10)
+
         then(actual).hasSize(10)
     }
 
     @Property
     fun giveMeClassWithNullable() {
+        // when
         val actual = this.sut.giveMe(ClassWithNullable::class.java, 10)
+
         then(actual).hasSize(10)
     }
 
     @Property
     fun giveMeClassWithDefaultValue() {
+        // when
         val actual = this.sut.giveMe(ClassWithDefaultValue::class.java, 10)
+
+        // then
         then(actual).hasSize(10).allSatisfy {
             with(it) {
                 then(stringValue).isNotEqualTo("default_value")
@@ -69,7 +82,9 @@ class PrimaryConstructorArbitaryGeneratorTest {
 
     @Property
     fun giveMeClassWithSecondaryConstructor() {
+        // when
         val actual = this.sut.giveMe(ClassWithSecondaryConstructor::class.java, 10)
+
         then(actual).hasSize(10).allSatisfy {
             with(it) {
                 then(stringValue).isNotEqualTo("default_value")
@@ -79,7 +94,9 @@ class PrimaryConstructorArbitaryGeneratorTest {
 
     @Property
     fun giveMeInterfaceClass() {
+        // when
         val actual = this.sut.giveMeOne(InterfaceClass::class.java)
+
         then(actual).isNull()
     }
 

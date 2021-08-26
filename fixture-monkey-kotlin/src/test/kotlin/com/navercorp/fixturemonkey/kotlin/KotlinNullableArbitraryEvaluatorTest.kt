@@ -28,7 +28,10 @@ class KotlinNullableArbitraryEvaluatorTest {
 
     @Property
     fun generate() {
+        // when
         val actual = this.fixture.giveMe(KotlinDataObject::class.java, 10)
+
+        // then
         actual.forEach {
             then(it.name).isNotNull
             then(it.address).isNotNull
