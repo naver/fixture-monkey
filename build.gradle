@@ -15,11 +15,13 @@ allprojects {
     }
 
     group = "com.navercorp.fixturemonkey"
-    version = "0.3.0"
+    version = "0.3.0-SNAPSHOT"
 }
 
 subprojects {
     apply plugin: "java"
+    apply plugin: "maven-publish"
+    apply plugin: "signing"
 
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
@@ -32,5 +34,81 @@ subprojects {
         compile("com.google.code.findbugs:jsr305:3.0.2")
         compile("org.slf4j:slf4j-api:1.7.30")
         testCompile("ch.qos.logback:logback-classic:1.2.3")
+    }
+
+    task javadocJar(type: Jar) {
+        archiveClassifier.set("javadoc")
+        from javadoc
+    }
+
+    task sourcesJar(type: Jar) {
+        archiveClassifier.set("sources")
+        from sourceSets.main.allSource
+    }
+
+    artifacts {
+        archives javadocJar, sourcesJar
+    }
+
+    publishing {
+        publications {
+            mavenJava(MavenPublication) {
+                from components.java
+
+                artifact sourcesJar
+                artifact javadocJar
+
+                repositories {
+                    maven {
+                        name "sonarType.release"
+                        url "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+                        credentials {
+                            username project.hasProperty("ossrhUsername") ? ossrhUsername : ""
+                            password project.hasProperty("ossrhPassword") ? ossrhPassword : ""
+                        }
+                    }
+                    maven {
+                        name "sonarType.snapshot"
+                        url "https://oss.sonatype.org/content/repositories/snapshots/"
+                        credentials {
+                            username project.hasProperty("ossrhUsername") ? ossrhUsername : ""
+                            password project.hasProperty("ossrhPassword") ? ossrhPassword : ""
+                        }
+                    }
+                }
+
+                pom {
+                    name = "fixture-monkey"
+                    description = "fixture-monkey"
+                    url = "http://github.com/naver/fixture-monkey"
+                    licenses {
+                        license {
+                            name = 'The Apache License, Version 2.0'
+                            url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        }
+                    }
+                    developers {
+                        developer {
+                            id = "ah.jo"
+                            name = "SeongAh Jo"
+                            email = "ah.jo@navercorp.com"
+                        }
+                    }
+                    scm {
+                        connection = 'scm:git:git://github.com/naver/fixture-monkey.git'
+                        developerConnection = 'scm:git:ssh://github.com/naver/fixture-monkey.git'
+                        url = 'http://github.com/naver/fixture-monkey'
+                    }
+                }
+            }
+        }
+    }
+
+    signing {
+        sign publishing.publications.mavenJava
+    }
+
+    tasks.withType(Sign) {
+        onlyIf { !version.endsWith("SNAPSHOT") }
     }
 }
