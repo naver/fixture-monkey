@@ -567,8 +567,8 @@ public class ComplexManipulatorTest {
 		public AcceptIfArbitraryHolder() {
 		}
 
-		public ArbitraryBuilder<FixtureMonkeyTest.StringWrapperClass> string(FixtureMonkey fixture) {
-			return fixture.giveMeBuilder(FixtureMonkeyTest.StringWrapperClass.class)
+		public ArbitraryBuilder<StringWrapperClass> string(FixtureMonkey fixture) {
+			return fixture.giveMeBuilder(StringWrapperClass.class)
 				.acceptIf(it -> true, it -> {
 				});
 		}
@@ -578,8 +578,8 @@ public class ComplexManipulatorTest {
 		public ApplyArbitraryHolder() {
 		}
 
-		public ArbitraryBuilder<FixtureMonkeyTest.StringWrapperClass> string(FixtureMonkey fixture) {
-			return fixture.giveMeBuilder(FixtureMonkeyTest.StringWrapperClass.class)
+		public ArbitraryBuilder<StringWrapperClass> string(FixtureMonkey fixture) {
+			return fixture.giveMeBuilder(StringWrapperClass.class)
 				.apply((it, builder) -> {
 				});
 		}
