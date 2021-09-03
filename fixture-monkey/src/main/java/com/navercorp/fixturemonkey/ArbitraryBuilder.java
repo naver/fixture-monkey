@@ -201,7 +201,6 @@ public final class ArbitraryBuilder<T> {
 	@SuppressWarnings("unchecked")
 	public Arbitrary<T> build() {
 		ArbitraryBuilder<T> buildArbitraryBuilder = this.copy();
-
 		return buildArbitraryBuilder.tree.result(() -> {
 			ArbitraryTree<T> buildTree = buildArbitraryBuilder.tree;
 
@@ -210,7 +209,12 @@ public final class ArbitraryBuilder<T> {
 				false,
 				buildArbitraryBuilder.generator
 			);
-			buildArbitraryBuilder.apply(buildArbitraryBuilder.builderManipulators);
+
+			List<BuilderManipulator> actualManipulators = buildArbitraryBuilder.builderManipulators.stream()
+				.filter(this.builderManipulators::contains)
+				.collect(toList()); // post-decompose - build manipulators except for build - sample manipulators
+
+			buildArbitraryBuilder.apply(actualManipulators);
 			buildTree.update(buildArbitraryBuilder.generator, generatorMap);
 			return buildTree.getHead().getArbitrary();
 		}, this.validator, this.validOnly);
@@ -218,6 +222,23 @@ public final class ArbitraryBuilder<T> {
 
 	public T sample() {
 		return this.build().sample();
+	}
+
+	@SuppressWarnings("unchecked")
+	private T sampleInternal() {
+		return (T)this.tree.result(() -> {
+			ArbitraryTree<T> buildTree = this.tree;
+
+			this.traverser.traverse(
+				buildTree.getHead(),
+				false,
+				this.generator
+			);
+			this.apply(this.builderManipulators);
+			this.builderManipulators.clear();
+			buildTree.update(this.generator, generatorMap);
+			return buildTree.getHead().getArbitrary();
+		}, this.validator, this.validOnly).sample();
 	}
 
 	public List<T> sampleList(int size) {
@@ -374,12 +395,16 @@ public final class ArbitraryBuilder<T> {
 	}
 
 	public ArbitraryBuilder<T> apply(BiConsumer<T, ArbitraryBuilder<T>> consumer) {
-		applyToRootValue(builder -> {
-			T sample = builder.sample();
-			builder.builderManipulators.clear();
-			builder.tree.getHead().setValue(() -> sample); // fix builder value
-			consumer.accept(sample, builder);
-			return builder.sample();
+		ArbitraryBuilder<T> appliedBuilder = this.copy();
+
+		this.tree.getHead().setValue(() -> {
+			ArbitraryBuilder<T> copied = appliedBuilder.copy();
+			copied.tree.getHead().clearValue();
+			T sample = copied.sampleInternal();
+			copied.tree.getHead().setValue(() -> sample); // fix builder value
+			consumer.accept(sample, copied);
+			this.builderManipulators.removeAll(appliedBuilder.builderManipulators); // remove pre-decompose manipulators
+			return copied.sampleInternal();
 		});
 
 		return this;
@@ -522,12 +547,6 @@ public final class ArbitraryBuilder<T> {
 			this.arbitraryCustomizers,
 			this.generatorMap
 		);
-	}
-
-	private void applyToRootValue(Function<ArbitraryBuilder<T>, T> valueSupplier) {
-		ArbitraryBuilder<T> copied = this.copy();
-		this.tree.getHead().setValue(() -> valueSupplier.apply(copied));
-		this.builderManipulators.clear();
 	}
 
 	public ArbitraryBuilder<T> copy() {

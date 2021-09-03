@@ -472,6 +472,34 @@ public class ComplexManipulatorTest {
 		then(uniqueList).hasSizeGreaterThan(1);
 	}
 
+	@Property
+	void applyReturnsDiff() {
+		// given
+		ArbitraryBuilder<ComplexClass> decomposedArbitraryBuilder =
+			this.sut.giveMeBuilder(ComplexClass.class)
+				.apply((it, builder) -> builder.set("value1", "FIXED"));
+
+		// when
+		ComplexClass actual1 = decomposedArbitraryBuilder.sample();
+		ComplexClass actual2 = decomposedArbitraryBuilder.sample();
+
+		then(actual1).isNotEqualTo(actual2);
+	}
+
+	@Property
+	void acceptIfReturnsDiff() {
+		// given
+		ArbitraryBuilder<ComplexClass> decomposedArbitraryBuilder =
+			this.sut.giveMeBuilder(ComplexClass.class)
+				.acceptIf(it -> true, builder -> builder.set("value2", 2));
+
+		// when
+		ComplexClass actual1 = decomposedArbitraryBuilder.sample();
+		ComplexClass actual2 = decomposedArbitraryBuilder.sample();
+
+		then(actual1).isNotEqualTo(actual2);
+	}
+
 	@Data
 	public static class IntegerListClass {
 		List<Integer> values;
@@ -520,6 +548,14 @@ public class ComplexManipulatorTest {
 		}
 	}
 
+	@Data
+	public static class ComplexClass {
+		private String value1;
+		private int value2;
+		private float value3;
+		private String value4;
+	}
+
 	public class TestGroup {
 		public ArbitraryBuilder<NestedStringWrapper> nestedStringWrapper(FixtureMonkey fixtureMonkey) {
 			return fixtureMonkey.giveMeBuilder(NestedStringWrapper.class)
@@ -531,8 +567,8 @@ public class ComplexManipulatorTest {
 		public AcceptIfArbitraryHolder() {
 		}
 
-		public ArbitraryBuilder<FixtureMonkeyTest.StringWrapperClass> string(FixtureMonkey fixture) {
-			return fixture.giveMeBuilder(FixtureMonkeyTest.StringWrapperClass.class)
+		public ArbitraryBuilder<StringWrapperClass> string(FixtureMonkey fixture) {
+			return fixture.giveMeBuilder(StringWrapperClass.class)
 				.acceptIf(it -> true, it -> {
 				});
 		}
@@ -542,8 +578,8 @@ public class ComplexManipulatorTest {
 		public ApplyArbitraryHolder() {
 		}
 
-		public ArbitraryBuilder<FixtureMonkeyTest.StringWrapperClass> string(FixtureMonkey fixture) {
-			return fixture.giveMeBuilder(FixtureMonkeyTest.StringWrapperClass.class)
+		public ArbitraryBuilder<StringWrapperClass> string(FixtureMonkey fixture) {
+			return fixture.giveMeBuilder(StringWrapperClass.class)
 				.apply((it, builder) -> {
 				});
 		}
