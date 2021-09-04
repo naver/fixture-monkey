@@ -44,11 +44,15 @@ import com.navercorp.fixturemonkey.generator.AnnotationSource;
 import com.navercorp.fixturemonkey.generator.FieldNameResolver;
 
 public final class ArbitraryTraverser {
-	public static final ArbitraryTraverser INSTANCE = new ArbitraryTraverser(ArbitraryOption.DEFAULT_FIXTURE_OPTIONS);
+	public static final ArbitraryTraverser INSTANCE = new ArbitraryTraverser(ArbitraryOption.DEFAULT_ARBITRARY_OPTIONS);
 	private final ArbitraryOption arbitraryOption;
 
 	public ArbitraryTraverser(ArbitraryOption arbitraryOption) {
 		this.arbitraryOption = arbitraryOption;
+	}
+
+	public <T> void traverse(ArbitraryTree<T> tree, boolean keyOfMapStructure, FieldNameResolver fieldNameResolver) {
+		this.traverse(tree.getHead(), keyOfMapStructure, fieldNameResolver);
 	}
 
 	public <T> void traverse(ArbitraryNode<T> node, boolean keyOfMapStructure, FieldNameResolver fieldNameResolver) {
@@ -113,7 +117,6 @@ public final class ArbitraryTraverser {
 			} else {
 				traverseContainer(node, active, fieldNameResolver, DefaultContainerArbitraryNodeGenerator.INSTANCE);
 			}
-			// TODO: noGeneric
 		} else {
 			if (nowValue != null) {
 				node.setArbitrary(Arbitraries.just(nowValue.get()));
@@ -133,6 +136,41 @@ public final class ArbitraryTraverser {
 				node.setArbitrary(Arbitraries.just(null));
 			}
 		}
+	}
+
+	private <T> void traverseContainer(
+		ArbitraryNode<T> currentNode,
+		boolean active,
+		FieldNameResolver fieldNameResolver,
+		ContainerArbitraryNodeGenerator containerArbitraryNodeGenerator
+	) {
+		List<ArbitraryNode<?>> nodes = containerArbitraryNodeGenerator.generate(currentNode, fieldNameResolver);
+		for (ArbitraryNode<?> node : nodes) {
+			currentNode.addChildNode(node);
+			doTraverse(node, node.isKeyOfMapStructure(), active, fieldNameResolver);
+		}
+	}
+
+	@SuppressWarnings({"rawtypes", "unchecked"})
+	private <T> Arbitrary<T> registeredArbitrary(ArbitraryNode<T> currentNode) {
+		ArbitraryType type = currentNode.getType();
+		AnnotatedType argsType = type.getAnnotatedType();
+
+		Class<T> clazz;
+		if (argsType != null) {
+			clazz = (Class<T>)argsType.getType();
+		} else {
+			clazz = type.getType();
+		}
+
+		AnnotationSource annotationSource = new AnnotationSource(argsType);
+
+		Map<Class<?>, AnnotatedArbitraryGenerator<?>> annotatedArbitraryMap =
+			arbitraryOption.getAnnotatedArbitraryMap();
+
+		return (Arbitrary<T>)Optional.ofNullable(annotatedArbitraryMap.get(clazz))
+			.map(arbitraryGenerator -> arbitraryGenerator.generate(annotationSource))
+			.orElseThrow(() -> new IllegalArgumentException("Class is not registered " + clazz.getName()));
 	}
 
 	@Nullable
@@ -177,6 +215,12 @@ public final class ArbitraryTraverser {
 		}
 	}
 
+	@SuppressWarnings({"unchecked", "rawtypes"})
+	private ArbitraryType getArbitraryType(Field field) {
+		List<Annotation> annotations = Arrays.asList(field.getAnnotations());
+		return new ArbitraryType(field.getType(), field.getAnnotatedType(), annotations);
+	}
+
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	private boolean isNullableField(Field field, boolean defaultNotNull) {
 		ArbitraryType arbitraryType = getArbitraryType(field);
@@ -205,47 +249,6 @@ public final class ArbitraryTraverser {
 			}
 
 			return !defaultNotNull;
-		}
-	}
-
-	@SuppressWarnings({"unchecked", "rawtypes"})
-	private ArbitraryType getArbitraryType(Field field) {
-		List<Annotation> annotations = Arrays.asList(field.getAnnotations());
-		return new ArbitraryType(field.getType(), field.getAnnotatedType(), annotations);
-	}
-
-	@SuppressWarnings({"rawtypes", "unchecked"})
-	private <T> Arbitrary<T> registeredArbitrary(ArbitraryNode<T> currentNode) {
-		ArbitraryType type = currentNode.getType();
-		AnnotatedType argsType = type.getAnnotatedType();
-
-		Class<T> clazz;
-		if (argsType != null) {
-			clazz = (Class<T>)argsType.getType();
-		} else {
-			clazz = type.getType();
-		}
-
-		AnnotationSource annotationSource = new AnnotationSource(argsType);
-
-		Map<Class<?>, AnnotatedArbitraryGenerator<?>> annotatedArbitraryMap =
-			arbitraryOption.getAnnotatedArbitraryMap();
-
-		return (Arbitrary<T>)Optional.ofNullable(annotatedArbitraryMap.get(clazz))
-			.map(arbitraryGenerator -> arbitraryGenerator.generate(annotationSource))
-			.orElseThrow(() -> new IllegalArgumentException("Class is not registered " + clazz.getName()));
-	}
-
-	private <T> void traverseContainer(
-		ArbitraryNode<T> currentNode,
-		boolean active,
-		FieldNameResolver fieldNameResolver,
-		ContainerArbitraryNodeGenerator containerArbitraryNodeGenerator
-	) {
-		List<ArbitraryNode<?>> nodes = containerArbitraryNodeGenerator.generate(currentNode, fieldNameResolver);
-		for (ArbitraryNode<?> node : nodes) {
-			currentNode.addChildNode(node);
-			doTraverse(node, node.isKeyOfMapStructure(), active, fieldNameResolver);
 		}
 	}
 

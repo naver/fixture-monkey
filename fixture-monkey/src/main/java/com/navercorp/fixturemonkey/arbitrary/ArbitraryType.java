@@ -71,7 +71,7 @@ public class ArbitraryType<T> {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <U> ArbitraryType<U> getGenericFixtureType(int index) {
+	public <U> ArbitraryType<U> getGenericArbitraryType(int index) {
 		Class<U> childClazz = (Class<U>)this.findGenericType(index)
 			.orElseThrow(() -> new IllegalArgumentException(index + "th childClazz not exists"));
 		AnnotatedType childAnnotatedType = this.findGenericAnnotatedType(index)
@@ -84,7 +84,7 @@ public class ArbitraryType<T> {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <U> ArbitraryType<U> getArrayFixtureType() {
+	public <U> ArbitraryType<U> getArrayArbitraryType() {
 		if (!this.isArray()) {
 			throw new IllegalStateException("FixtureType is not array but getArrayFixtureType is called.");
 		}

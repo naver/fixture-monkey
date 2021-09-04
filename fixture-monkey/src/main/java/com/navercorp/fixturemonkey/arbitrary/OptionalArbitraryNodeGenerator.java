@@ -33,7 +33,7 @@ public class OptionalArbitraryNodeGenerator implements ContainerArbitraryNodeGen
 		List<ArbitraryNode<?>> generatedNodeList = new ArrayList<>();
 
 		ArbitraryType<T> arbitraryType = nowNode.getType();
-		ArbitraryType<?> elementType = arbitraryType.getGenericFixtureType(0);
+		ArbitraryType<?> elementType = arbitraryType.getGenericArbitraryType(0);
 		String fieldName = nowNode.getFieldName();
 
 		LazyValue<?> nextLazyValue = getNextLazyValue(nowNode.getValue());

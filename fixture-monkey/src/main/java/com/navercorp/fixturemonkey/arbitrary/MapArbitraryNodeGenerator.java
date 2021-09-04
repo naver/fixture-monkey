@@ -42,8 +42,8 @@ public class MapArbitraryNodeGenerator implements ContainerArbitraryNodeGenerato
 		ArbitraryType<T> clazz = nowNode.getType();
 		String fieldName = nowNode.getFieldName();
 
-		ArbitraryType<?> keyType = clazz.getGenericFixtureType(0);
-		ArbitraryType<?> valueType = clazz.getGenericFixtureType(1);
+		ArbitraryType<?> keyType = clazz.getGenericArbitraryType(0);
+		ArbitraryType<?> valueType = clazz.getGenericArbitraryType(1);
 
 		nowNode.initializeElementSize();
 

@@ -57,7 +57,7 @@ public class ComplexManipulatorTest {
 	@Property
 	void giveMeAcceptIfWithNull() {
 		// when
-		StringIntegerListClass actual = this.sut.giveMeBuilder(StringIntegerListClass.class)
+		StringIntegerListWrapperClass actual = this.sut.giveMeBuilder(StringIntegerListWrapperClass.class)
 			.set("value", "test")
 			.acceptIf(it -> it.value.equals("test"), builder -> builder.setNull("values"))
 			.sample();
@@ -68,7 +68,7 @@ public class ComplexManipulatorTest {
 	@Property
 	void decomposedNullCollectionReturnsNull() {
 		// when
-		List<Integer> values = this.sut.giveMeBuilder(IntegerListClass.class)
+		List<Integer> values = this.sut.giveMeBuilder(IntegerListWrapperClass.class)
 			.setNull("values")
 			.map(it -> it.values)
 			.sample();
@@ -79,7 +79,7 @@ public class ComplexManipulatorTest {
 	@Property
 	void giveMeComplexApply() {
 		// when
-		StringIntegerClass actual = this.sut.giveMeBuilder(StringIntegerClass.class)
+		StringWrapperIntegerWrapperClass actual = this.sut.giveMeBuilder(StringWrapperIntegerWrapperClass.class)
 			.setNotNull("value2")
 			.apply((it, builder) -> builder.set("value1.value", String.valueOf(it.value2.value)))
 			.sample();
@@ -90,7 +90,7 @@ public class ComplexManipulatorTest {
 	@Property
 	void acceptIfSetNull() {
 		// given
-		ArbitraryBuilder<NestedStringWrapper> decomposedBuilder = this.sut.giveMeBuilder(NestedStringWrapper.class)
+		ArbitraryBuilder<NestedStringClass> decomposedBuilder = this.sut.giveMeBuilder(NestedStringClass.class)
 			.set("value.value", Arbitraries.strings())
 			.acceptIf(
 				s -> true,
@@ -98,7 +98,7 @@ public class ComplexManipulatorTest {
 			);
 
 		// when
-		NestedStringWrapper actual = decomposedBuilder.sample();
+		NestedStringClass actual = decomposedBuilder.sample();
 
 		then(actual.value.value).isNull();
 	}
@@ -106,12 +106,12 @@ public class ComplexManipulatorTest {
 	@Property
 	void applySetNull() {
 		// given
-		ArbitraryBuilder<NestedStringWrapper> decomposedBuilder = this.sut.giveMeBuilder(NestedStringWrapper.class)
+		ArbitraryBuilder<NestedStringClass> decomposedBuilder = this.sut.giveMeBuilder(NestedStringClass.class)
 			.set("value.value", Arbitraries.strings())
 			.apply((value, it) -> it.setNull("value.value"));
 
 		// when
-		NestedStringWrapper actual = decomposedBuilder.sample();
+		NestedStringClass actual = decomposedBuilder.sample();
 
 		then(actual.value.value).isNull();
 	}
@@ -119,13 +119,13 @@ public class ComplexManipulatorTest {
 	@Property
 	void applySetAfterSetNull() {
 		// given
-		ArbitraryBuilder<NestedStringWrapper> decomposedBuilder = this.sut.giveMeBuilder(NestedStringWrapper.class)
+		ArbitraryBuilder<NestedStringClass> decomposedBuilder = this.sut.giveMeBuilder(NestedStringClass.class)
 			.set("value.value", Arbitraries.strings())
 			.apply((value, it) -> it.setNull("value.value"))
 			.set("value.value", "test");
 
 		// when
-		NestedStringWrapper actual = decomposedBuilder.sample();
+		NestedStringClass actual = decomposedBuilder.sample();
 
 		then(actual.value.value).isEqualTo("test");
 	}
@@ -133,7 +133,7 @@ public class ComplexManipulatorTest {
 	@Property
 	void acceptIfSetAfterSetNull() {
 		// given
-		ArbitraryBuilder<NestedStringWrapper> decomposedBuilder = this.sut.giveMeBuilder(NestedStringWrapper.class)
+		ArbitraryBuilder<NestedStringClass> decomposedBuilder = this.sut.giveMeBuilder(NestedStringClass.class)
 			.set("value.value", Arbitraries.strings())
 			.acceptIf(
 				s -> true,
@@ -142,7 +142,7 @@ public class ComplexManipulatorTest {
 			.set("value.value", "test");
 
 		// when
-		NestedStringWrapper actual = decomposedBuilder.sample();
+		NestedStringClass actual = decomposedBuilder.sample();
 
 		then(actual.value.value).isEqualTo("test");
 	}
@@ -155,10 +155,10 @@ public class ComplexManipulatorTest {
 		list.add(this.sut.giveMeBuilder(IntegerWrapperClass.class));
 
 		// when
-		StringIntegerClass actual = ArbitraryBuilders.zip(
+		StringWrapperIntegerWrapperClass actual = ArbitraryBuilders.zip(
 			list,
 			(l) -> {
-				StringIntegerClass result = new StringIntegerClass();
+				StringWrapperIntegerWrapperClass result = new StringWrapperIntegerWrapperClass();
 				result.setValue1((StringWrapperClass)l.get(0));
 				result.setValue2((IntegerWrapperClass)l.get(1));
 				return result;
@@ -177,7 +177,7 @@ public class ComplexManipulatorTest {
 		thenThrownBy(
 			() -> ArbitraryBuilders.zip(
 				list,
-				(l) -> new StringIntegerClass()
+				(l) -> new StringWrapperIntegerWrapperClass()
 			).sample()
 		).isExactlyInstanceOf(IllegalArgumentException.class)
 			.hasMessageContaining("zip should be used in more than two ArbitraryBuilders, given size");
@@ -194,13 +194,13 @@ public class ComplexManipulatorTest {
 			.set("value", "s3");
 
 		// when
-		NestedStringList actual = ArbitraryBuilders.zip(s1, s2, s3, (a1, a2, a3) -> {
+		NestedStringListClass actual = ArbitraryBuilders.zip(s1, s2, s3, (a1, a2, a3) -> {
 			List<StringWrapperClass> list = new ArrayList<>();
 			list.add(a1);
 			list.add(a2);
 			list.add(a3);
 
-			NestedStringList result = new NestedStringList();
+			NestedStringListClass result = new NestedStringListClass();
 			result.setValues(list);
 			return result;
 		}).sample();
@@ -222,13 +222,13 @@ public class ComplexManipulatorTest {
 			.set("value", "s3");
 
 		// when
-		NestedStringList actual = s1.zipWith(s2, s3, (a1, a2, a3) -> {
+		NestedStringListClass actual = s1.zipWith(s2, s3, (a1, a2, a3) -> {
 			List<StringWrapperClass> list = new ArrayList<>();
 			list.add(a1);
 			list.add(a2);
 			list.add(a3);
 
-			NestedStringList result = new NestedStringList();
+			NestedStringListClass result = new NestedStringListClass();
 			result.setValues(list);
 			return result;
 		}).sample();
@@ -252,14 +252,14 @@ public class ComplexManipulatorTest {
 			.set("value", "s4");
 
 		// when
-		NestedStringList actual = ArbitraryBuilders.zip(s1, s2, s3, s4, (a1, a2, a3, a4) -> {
+		NestedStringListClass actual = ArbitraryBuilders.zip(s1, s2, s3, s4, (a1, a2, a3, a4) -> {
 			List<StringWrapperClass> list = new ArrayList<>();
 			list.add(a1);
 			list.add(a2);
 			list.add(a3);
 			list.add(a4);
 
-			NestedStringList result = new NestedStringList();
+			NestedStringListClass result = new NestedStringListClass();
 			result.setValues(list);
 			return result;
 		}).sample();
@@ -284,14 +284,14 @@ public class ComplexManipulatorTest {
 			.set("value", "s4");
 
 		// when
-		NestedStringList actual = s1.zipWith(s2, s3, s4, (a1, a2, a3, a4) -> {
+		NestedStringListClass actual = s1.zipWith(s2, s3, s4, (a1, a2, a3, a4) -> {
 			List<StringWrapperClass> list = new ArrayList<>();
 			list.add(a1);
 			list.add(a2);
 			list.add(a3);
 			list.add(a4);
 
-			NestedStringList result = new NestedStringList();
+			NestedStringListClass result = new NestedStringListClass();
 			result.setValues(list);
 			return result;
 		}).sample();
@@ -387,12 +387,13 @@ public class ComplexManipulatorTest {
 	@Property
 	void applySetWithDefault() {
 		// given
-		ArbitraryBuilder<StringIntegerListClass> defaultBuilder = this.sut.giveMeBuilder(StringIntegerListClass.class)
+		ArbitraryBuilder<StringIntegerListWrapperClass> defaultBuilder = this.sut.giveMeBuilder(
+			StringIntegerListWrapperClass.class)
 			.set("value", Arbitraries.integers().map(String::valueOf))
 			.minSize("values", 1);
 
 		// when
-		StringIntegerListClass actual = defaultBuilder.apply(
+		StringIntegerListWrapperClass actual = defaultBuilder.apply(
 			(value, builder) -> builder.set("values[" + (value.values.size() - 1) + "]", Integer.parseInt(value.value))
 		).sample();
 
@@ -403,11 +404,11 @@ public class ComplexManipulatorTest {
 	void applyWithGroupNotSetAsRegisteredArbitrary() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.registerGroup(TestGroup.class)
+			.registerGroup(ArbitraryGroup.class)
 			.build();
 
 		// when
-		NestedStringWrapper actual = sut.giveMeBuilder(NestedStringWrapper.class)
+		NestedStringClass actual = sut.giveMeBuilder(NestedStringClass.class)
 			.setNotNull("value.value")
 			.apply((value, builder) -> builder.set("value.value", "APPLY" + value.getValue().getValue()))
 			.sample();
@@ -419,11 +420,11 @@ public class ComplexManipulatorTest {
 	void acceptIfWithGroupNotSetAsRegisteredArbitrary() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.registerGroup(TestGroup.class)
+			.registerGroup(ArbitraryGroup.class)
 			.build();
 
 		// when
-		NestedStringWrapper actual = sut.giveMeBuilder(NestedStringWrapper.class)
+		NestedStringClass actual = sut.giveMeBuilder(NestedStringClass.class)
 			.setNotNull("value.value")
 			.acceptIf(
 				it -> it.getValue() != null,
@@ -438,11 +439,11 @@ public class ComplexManipulatorTest {
 	void registerAcceptIfReturnsDiff() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.registerGroup(AcceptIfArbitraryHolder.class)
+			.registerGroup(AcceptIfArbitraryGroup.class)
 			.build();
 
 		// when
-		NestedStringList actual = sut.giveMeBuilder(NestedStringList.class)
+		NestedStringListClass actual = sut.giveMeBuilder(NestedStringListClass.class)
 			.size("values", 10)
 			.setNotNull("values[*].value")
 			.sample();
@@ -457,11 +458,11 @@ public class ComplexManipulatorTest {
 	void registerApplyReturnsDiff() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.registerGroup(ApplyArbitraryHolder.class)
+			.registerGroup(ApplyArbitraryGroup.class)
 			.build();
 
 		// when
-		NestedStringList actual = sut.giveMeBuilder(NestedStringList.class)
+		NestedStringListClass actual = sut.giveMeBuilder(NestedStringListClass.class)
 			.size("values", 10)
 			.setNotNull("values[*].value")
 			.sample();
@@ -501,17 +502,6 @@ public class ComplexManipulatorTest {
 	}
 
 	@Data
-	public static class IntegerListClass {
-		List<Integer> values;
-	}
-
-	@Data
-	public static class StringIntegerClass {
-		StringWrapperClass value1;
-		IntegerWrapperClass value2;
-	}
-
-	@Data
 	@NoArgsConstructor
 	@AllArgsConstructor
 	public static class StringWrapperClass {
@@ -524,18 +514,29 @@ public class ComplexManipulatorTest {
 	}
 
 	@Data
-	public static class NestedStringWrapper {
+	public static class NestedStringClass {
 		StringWrapperClass value;
 	}
 
 	@Data
-	public static class StringIntegerListClass {
+	public static class StringIntegerListWrapperClass {
 		String value;
 		List<Integer> values;
 	}
 
 	@Data
-	public static class NestedStringList {
+	public static class IntegerListWrapperClass {
+		List<Integer> values;
+	}
+
+	@Data
+	public static class StringWrapperIntegerWrapperClass {
+		StringWrapperClass value1;
+		IntegerWrapperClass value2;
+	}
+
+	@Data
+	public static class NestedStringListClass {
 		private List<StringWrapperClass> values;
 	}
 
@@ -556,15 +557,15 @@ public class ComplexManipulatorTest {
 		private String value4;
 	}
 
-	public class TestGroup {
-		public ArbitraryBuilder<NestedStringWrapper> nestedStringWrapper(FixtureMonkey fixtureMonkey) {
-			return fixtureMonkey.giveMeBuilder(NestedStringWrapper.class)
+	public static class ArbitraryGroup {
+		public ArbitraryBuilder<NestedStringClass> nestedStringWrapper(FixtureMonkey fixtureMonkey) {
+			return fixtureMonkey.giveMeBuilder(NestedStringClass.class)
 				.set("value.value", "group");
 		}
 	}
 
-	public static class AcceptIfArbitraryHolder {
-		public AcceptIfArbitraryHolder() {
+	public static class AcceptIfArbitraryGroup {
+		public AcceptIfArbitraryGroup() {
 		}
 
 		public ArbitraryBuilder<StringWrapperClass> string(FixtureMonkey fixture) {
@@ -574,8 +575,8 @@ public class ComplexManipulatorTest {
 		}
 	}
 
-	public static class ApplyArbitraryHolder {
-		public ApplyArbitraryHolder() {
+	public static class ApplyArbitraryGroup {
+		public ApplyArbitraryGroup() {
 		}
 
 		public ArbitraryBuilder<StringWrapperClass> string(FixtureMonkey fixture) {

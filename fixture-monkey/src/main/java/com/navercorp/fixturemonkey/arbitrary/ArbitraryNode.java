@@ -82,10 +82,6 @@ public final class ArbitraryNode<T> {
 		children.add(child);
 	}
 
-	public boolean isEmpty() {
-		return children.isEmpty();
-	}
-
 	@SuppressWarnings("rawtypes")
 	public List<ArbitraryNode> findChildrenByCursor(Cursor cursor) {
 		List<ArbitraryNode> foundChildren = new ArrayList<>();
@@ -105,9 +101,7 @@ public final class ArbitraryNode<T> {
 	public void initializeElementSize() {
 		if (!type.isContainer()) {
 			throw new IllegalStateException("Can not initialize element size because node is not container.");
-		}
-
-		if (type.isOptional()) {
+		} else if (type.isOptional()) {
 			setContainerSizeConstraint(new ContainerSizeConstraint(0, 1));
 			return;
 		}
@@ -156,6 +150,8 @@ public final class ArbitraryNode<T> {
 			Arbitrary<T> appliedArbitrary = preArbitraryManipulator.apply(status.arbitrary);
 			this.setFixed(true);
 			this.setArbitrary(appliedArbitrary);
+		} else {
+			throw new IllegalArgumentException("Not Implemented PreArbitraryManipulator");
 		}
 	}
 
@@ -214,13 +210,13 @@ public final class ArbitraryNode<T> {
 	}
 
 	@SuppressWarnings({"rawtypes", "unchecked"})
-	public void addArbitraryOperation(PostArbitraryManipulator postArbitraryManipulator) {
+	public void addPostArbitraryOperation(PostArbitraryManipulator postArbitraryManipulator) {
 		this.status.addPostArbitraryManipulator(postArbitraryManipulator);
 	}
 
 	public Arbitrary<T> getArbitrary() {
 		FixtureNodeStatus<T> status = getStatus();
-		if (!status.isActive() && status.isManipulated()) {
+		if (!status.isActive() && status.isManipulated()) { // setNull
 			return Arbitraries.just(null);
 		}
 		return status.getArbitrary();
@@ -268,10 +264,6 @@ public final class ArbitraryNode<T> {
 
 	public double getNullInject() {
 		return nullInject;
-	}
-
-	public String getExpression() {
-		return fieldName + metadata;
 	}
 
 	public boolean isKeyOfMapStructure() {
@@ -323,10 +315,6 @@ public final class ArbitraryNode<T> {
 			.build();
 	}
 
-	private FixtureNodeStatus<T> getStatus() {
-		return status;
-	}
-
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
@@ -349,6 +337,10 @@ public final class ArbitraryNode<T> {
 		);
 	}
 
+	private FixtureNodeStatus<T> getStatus() {
+		return status;
+	}
+
 	private static final class FixtureNodeStatus<T> {
 		@Nullable
 		private Arbitrary<T> arbitrary = null; // immutable
@@ -357,8 +349,8 @@ public final class ArbitraryNode<T> {
 		private LazyValue<T> value = null;
 		private boolean nullable = false;
 		private boolean manipulated = false;
-		private boolean active = true;
-		private boolean fixed = false;
+		private boolean active = true; // isNull
+		private boolean fixed = false; // isSet
 
 		private FixtureNodeStatus() {
 		}

@@ -39,9 +39,7 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Positive;
 
 import net.jqwik.api.Arbitrary;
-import net.jqwik.api.ForAll;
 import net.jqwik.api.Property;
-import net.jqwik.api.Provide;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -77,7 +75,7 @@ class FixtureMonkeyTest {
 
 	@Property
 	void giveMeWithAnnotation() {
-		IntegerWrapperClassWithAnnotation actual = this.sut.giveMeOne(IntegerWrapperClassWithAnnotation.class);
+		IntegerWithAnnotationWrapperClass actual = this.sut.giveMeOne(IntegerWithAnnotationWrapperClass.class);
 
 		then(actual.getValue()).isPositive();
 	}
@@ -85,27 +83,27 @@ class FixtureMonkeyTest {
 	@Property
 	void giveMeArrayToBuilder() {
 		// given
-		IntegerArrayClass expected = new IntegerArrayClass(new Integer[] {1, 2, 3});
+		IntegerArrayWrapperClass expected = new IntegerArrayWrapperClass(new Integer[] {1, 2, 3});
 
 		// when
-		IntegerArrayClass actual = this.sut.giveMeBuilder(expected).sample();
+		IntegerArrayWrapperClass actual = this.sut.giveMeBuilder(expected).sample();
 
-		then(actual.value[0]).isEqualTo(1);
-		then(actual.value[1]).isEqualTo(2);
-		then(actual.value[2]).isEqualTo(3);
+		then(actual.values[0]).isEqualTo(1);
+		then(actual.values[1]).isEqualTo(2);
+		then(actual.values[2]).isEqualTo(3);
 	}
 
 	@Property
 	void giveMePrimitiveArrayToBuilder() {
 		// given
-		IntArrayClass expected = new IntArrayClass(new int[] {1, 2, 3});
+		IntArrayWrapperClass expected = new IntArrayWrapperClass(new int[] {1, 2, 3});
 
 		// when
-		IntArrayClass actual = this.sut.giveMeBuilder(expected).sample();
+		IntArrayWrapperClass actual = this.sut.giveMeBuilder(expected).sample();
 
-		then(actual.value[0]).isEqualTo(1);
-		then(actual.value[1]).isEqualTo(2);
-		then(actual.value[2]).isEqualTo(3);
+		then(actual.values[0]).isEqualTo(1);
+		then(actual.values[1]).isEqualTo(2);
+		then(actual.values[2]).isEqualTo(3);
 	}
 
 	@Property
@@ -113,10 +111,10 @@ class FixtureMonkeyTest {
 		// given
 		Map<Integer, Integer> values = new HashMap<>();
 		values.put(1, 1);
-		MapKeyIntegerValueIntegerClass expected = new MapKeyIntegerValueIntegerClass(values);
+		MapKeyIntegerValueIntegerWrapperClass expected = new MapKeyIntegerValueIntegerWrapperClass(values);
 
 		// when
-		MapKeyIntegerValueIntegerClass actual = this.sut.giveMeBuilder(expected).sample();
+		MapKeyIntegerValueIntegerWrapperClass actual = this.sut.giveMeBuilder(expected).sample();
 
 		then(actual.values.get(1)).isEqualTo(1);
 	}
@@ -126,10 +124,10 @@ class FixtureMonkeyTest {
 		// given
 		Map<Integer, String> values = new HashMap<>();
 		values.put(1, "1");
-		MapKeyIntegerValueStringClass expected = new MapKeyIntegerValueStringClass(values);
+		MapKeyIntegerValueStringWrapperClass expected = new MapKeyIntegerValueStringWrapperClass(values);
 
 		// when
-		MapKeyIntegerValueStringClass actual = this.sut.giveMeBuilder(expected).sample();
+		MapKeyIntegerValueStringWrapperClass actual = this.sut.giveMeBuilder(expected).sample();
 
 		then(actual.values.get(1)).isEqualTo("1");
 	}
@@ -138,10 +136,10 @@ class FixtureMonkeyTest {
 	void giveMeMapEntryToBuilder() {
 		// given
 		Map.Entry<Integer, String> value = new SimpleEntry<>(1, "1");
-		MapEntryKeyIntegerValueStringClass expected = new MapEntryKeyIntegerValueStringClass(value);
+		MapEntryKeyIntegerValueStringWrapperClass expected = new MapEntryKeyIntegerValueStringWrapperClass(value);
 
 		// when
-		MapEntryKeyIntegerValueStringClass actual = this.sut.giveMeBuilder(expected).sample();
+		MapEntryKeyIntegerValueStringWrapperClass actual = this.sut.giveMeBuilder(expected).sample();
 
 		then(actual.value.getValue()).isEqualTo("1");
 	}
@@ -151,10 +149,10 @@ class FixtureMonkeyTest {
 		// given
 		Set<Integer> values = new HashSet<>();
 		values.add(1);
-		IntegerSetClass expected = new IntegerSetClass(values);
+		IntegerSetWrapperClass expected = new IntegerSetWrapperClass(values);
 
 		// when
-		IntegerSetClass actual = this.sut.giveMeBuilder(expected).sample();
+		IntegerSetWrapperClass actual = this.sut.giveMeBuilder(expected).sample();
 
 		then(actual.values).allMatch(it -> it == 1);
 	}
@@ -164,10 +162,10 @@ class FixtureMonkeyTest {
 		// given
 		List<Integer> values = new ArrayList<>();
 		values.add(1);
-		IntegerIterableClass expected = new IntegerIterableClass(values);
+		IntegerIterableWrapperClass expected = new IntegerIterableWrapperClass(values);
 
 		// when
-		IntegerIterableClass actual = sut.giveMeBuilder(expected).sample();
+		IntegerIterableWrapperClass actual = sut.giveMeBuilder(expected).sample();
 
 		then(actual.values).allMatch(it -> it == 1);
 	}
@@ -180,10 +178,10 @@ class FixtureMonkeyTest {
 			.build();
 		List<Integer> values = new ArrayList<>();
 		values.add(1);
-		IntegerIteratorClass expected = new IntegerIteratorClass(values.iterator());
+		IntegerIteratorWrapperClass expected = new IntegerIteratorWrapperClass(values.iterator());
 
 		// when
-		IntegerIteratorClass actual = sut.giveMeBuilder(expected).sample();
+		IntegerIteratorWrapperClass actual = sut.giveMeBuilder(expected).sample();
 
 		then(actual.values.next()).isEqualTo(1);
 	}
@@ -196,10 +194,10 @@ class FixtureMonkeyTest {
 			.build();
 		List<Integer> values = new ArrayList<>();
 		values.add(1);
-		IntegerStreamClass expected = new IntegerStreamClass(values.stream());
+		IntegerStreamWrapperClass expected = new IntegerStreamWrapperClass(values.stream());
 
 		// when
-		IntegerStreamClass actual = sut.giveMeBuilder(expected).sample();
+		IntegerStreamWrapperClass actual = sut.giveMeBuilder(expected).sample();
 
 		then(actual.values).allMatch(it -> it == 1);
 	}
@@ -212,7 +210,8 @@ class FixtureMonkeyTest {
 			.build();
 
 		// when
-		IntegerOptionalClass actual = sut.giveMeBuilder(new IntegerOptionalClass(Optional.of(1))).sample();
+		IntegerOptionalWrapperClass actual = sut.giveMeBuilder(new IntegerOptionalWrapperClass(Optional.of(1)))
+			.sample();
 
 		//noinspection OptionalGetWithoutIsPresent
 		then(actual.value.get()).isEqualTo(1);
@@ -225,10 +224,10 @@ class FixtureMonkeyTest {
 			.defaultGenerator(BuilderArbitraryGenerator.INSTANCE)
 			.build();
 		Optional<Integer> value = Optional.empty();
-		IntegerOptionalClass expected = new IntegerOptionalClass(value);
+		IntegerOptionalWrapperClass expected = new IntegerOptionalWrapperClass(value);
 
 		// when
-		IntegerOptionalClass actual = sut.giveMeBuilder(expected).sample();
+		IntegerOptionalWrapperClass actual = sut.giveMeBuilder(expected).sample();
 
 		then(actual.value).isEqualTo(Optional.empty());
 	}
@@ -236,33 +235,33 @@ class FixtureMonkeyTest {
 	@Property
 	void copy() {
 		// given
-		IntegerArrayClass expected = new IntegerArrayClass(new Integer[] {1, 2, 3});
-		ArbitraryBuilder<IntegerArrayClass> builder = this.sut.giveMeBuilder(expected);
-		ArbitraryBuilder<IntegerArrayClass> copiedBuilder = builder.copy()
-			.set("value[1]", 3);
+		IntegerArrayWrapperClass expected = new IntegerArrayWrapperClass(new Integer[] {1, 2, 3});
+		ArbitraryBuilder<IntegerArrayWrapperClass> builder = this.sut.giveMeBuilder(expected);
+		ArbitraryBuilder<IntegerArrayWrapperClass> copiedBuilder = builder.copy()
+			.set("values[1]", 3);
 
 		// when
-		IntegerArrayClass actual = copiedBuilder.sample();
+		IntegerArrayWrapperClass actual = copiedBuilder.sample();
 
-		then(actual.value[0]).isEqualTo(1);
-		then(actual.value[1]).isNotEqualTo(2);
-		then(actual.value[1]).isEqualTo(3);
-		then(actual.value[2]).isEqualTo(3);
+		then(actual.values[0]).isEqualTo(1);
+		then(actual.values[1]).isNotEqualTo(2);
+		then(actual.values[1]).isEqualTo(3);
+		then(actual.values[2]).isEqualTo(3);
 	}
 
 	@Property
 	void copyWithManipulator() {
 		// given
-		IntegerArrayClass expected = new IntegerArrayClass(new Integer[] {1, 2, 3});
-		ArbitraryBuilder<IntegerArrayClass> builder = this.sut.giveMeBuilder(expected)
-			.set("value[0]", -1);
+		IntegerArrayWrapperClass expected = new IntegerArrayWrapperClass(new Integer[] {1, 2, 3});
+		ArbitraryBuilder<IntegerArrayWrapperClass> builder = this.sut.giveMeBuilder(expected)
+			.set("values[0]", -1);
 
 		// when
-		IntegerArrayClass actual = builder.copy().sample();
+		IntegerArrayWrapperClass actual = builder.copy().sample();
 
-		then(actual.value[0]).isEqualTo(-1);
-		then(actual.value[1]).isEqualTo(2);
-		then(actual.value[2]).isEqualTo(3);
+		then(actual.values[0]).isEqualTo(-1);
+		then(actual.values[1]).isEqualTo(2);
+		then(actual.values[2]).isEqualTo(3);
 	}
 
 	@Property
@@ -300,7 +299,7 @@ class FixtureMonkeyTest {
 	@Property
 	void giveMeNotEmpty() {
 		// when
-		IntegerListClassNotEmpty actual = this.sut.giveMeBuilder(IntegerListClassNotEmpty.class)
+		IntegerListWithNotEmptyWrapperClass actual = this.sut.giveMeBuilder(IntegerListWithNotEmptyWrapperClass.class)
 			.sample();
 
 		then(actual.values).isNotEmpty();
@@ -326,11 +325,11 @@ class FixtureMonkeyTest {
 		values.add(1);
 		values.add(2);
 		values.add(3);
-		IntegerListClass value = new IntegerListClass();
+		IntegerListWrapperClass value = new IntegerListWrapperClass();
 		value.setValues(values);
 
 		// when
-		IntegerListClass actual = this.sut.giveMeBuilder(value)
+		IntegerListWrapperClass actual = this.sut.giveMeBuilder(value)
 			.size("values", 1)
 			.sample();
 
@@ -345,11 +344,11 @@ class FixtureMonkeyTest {
 		values.add(1);
 		values.add(2);
 		values.add(3);
-		IntegerListClass value = new IntegerListClass();
+		IntegerListWrapperClass value = new IntegerListWrapperClass();
 		value.setValues(values);
 
 		// when
-		IntegerListClass actual = this.sut.giveMeBuilder(value)
+		IntegerListWrapperClass actual = this.sut.giveMeBuilder(value)
 			.size("values", 5)
 			.sample();
 
@@ -363,34 +362,34 @@ class FixtureMonkeyTest {
 	void giveMeSizeArraySmallerThanValueWhenDecomposed() {
 		// given
 		Integer[] values = new Integer[] {1, 2, 3};
-		IntegerArrayClass value = new IntegerArrayClass();
-		value.setValue(values);
+		IntegerArrayWrapperClass value = new IntegerArrayWrapperClass();
+		value.setValues(values);
 
 		// when
-		IntegerArrayClass actual = this.sut.giveMeBuilder(value)
-			.size("value", 1)
+		IntegerArrayWrapperClass actual = this.sut.giveMeBuilder(value)
+			.size("values", 1)
 			.sample();
 
-		then(actual.value).hasSize(1);
-		then(actual.value[0]).isEqualTo(1);
+		then(actual.values).hasSize(1);
+		then(actual.values[0]).isEqualTo(1);
 	}
 
 	@Property
 	void giveMeSizeArrayBiggerThanValueWhenDecomposed() {
 		// given
 		Integer[] values = new Integer[] {1, 2, 3};
-		IntegerArrayClass value = new IntegerArrayClass();
-		value.setValue(values);
+		IntegerArrayWrapperClass value = new IntegerArrayWrapperClass();
+		value.setValues(values);
 
 		// when
-		IntegerArrayClass actual = this.sut.giveMeBuilder(value)
-			.size("value", 5)
+		IntegerArrayWrapperClass actual = this.sut.giveMeBuilder(value)
+			.size("values", 5)
 			.sample();
 
-		then(actual.value).hasSize(5);
-		then(actual.value[0]).isEqualTo(1);
-		then(actual.value[1]).isEqualTo(2);
-		then(actual.value[2]).isEqualTo(3);
+		then(actual.values).hasSize(5);
+		then(actual.values[0]).isEqualTo(1);
+		then(actual.values[1]).isEqualTo(2);
+		then(actual.values[2]).isEqualTo(3);
 	}
 
 	@Property
@@ -450,7 +449,7 @@ class FixtureMonkeyTest {
 			.build();
 
 		// when
-		StringWrapperWithNullableClass actual = sut.giveMeOne(StringWrapperWithNullableClass.class);
+		StringWithNullableWrapperClass actual = sut.giveMeOne(StringWithNullableWrapperClass.class);
 
 		then(actual.value).isNull();
 	}
@@ -463,7 +462,7 @@ class FixtureMonkeyTest {
 			.build();
 
 		// when
-		StringWrapperWithNotBlankClass actual = sut.giveMeOne(StringWrapperWithNotBlankClass.class);
+		StringWithNotBlankWrapperClass actual = sut.giveMeOne(StringWithNotBlankWrapperClass.class);
 
 		then(actual.value).isNotNull();
 	}
@@ -471,12 +470,12 @@ class FixtureMonkeyTest {
 	@Property
 	void mapIntegerListClassBiggerThanMapped() {
 		// given
-		IntegerListClass mapped = sut.giveMeBuilder(IntegerListClass.class)
+		IntegerListWrapperClass mapped = sut.giveMeBuilder(IntegerListWrapperClass.class)
 			.size("values", 1)
 			.sample();
 
 		// when
-		IntegerListClass actual = sut.giveMeBuilder(mapped)
+		IntegerListWrapperClass actual = sut.giveMeBuilder(mapped)
 			.size("values", 2)
 			.sample();
 
@@ -487,13 +486,13 @@ class FixtureMonkeyTest {
 	@Property
 	void decomposeNullIsNotGenerated() {
 		// given
-		StringIntegerClass decomposed = new StringIntegerClass();
+		StringWrapperIntegerWrapperClass decomposed = new StringWrapperIntegerWrapperClass();
 		IntegerWrapperClass value2 = new IntegerWrapperClass();
 		value2.value = 1;
 		decomposed.setValue2(value2);
 
 		// when
-		StringIntegerClass actual = this.sut.giveMeBuilder(decomposed)
+		StringWrapperIntegerWrapperClass actual = this.sut.giveMeBuilder(decomposed)
 			.sample();
 
 		then(actual.value1).isNull();
@@ -503,13 +502,13 @@ class FixtureMonkeyTest {
 	@Property
 	void decomposeNullSetThenGenerate() {
 		// given
-		StringIntegerClass decomposed = new StringIntegerClass();
+		StringWrapperIntegerWrapperClass decomposed = new StringWrapperIntegerWrapperClass();
 		IntegerWrapperClass value2 = new IntegerWrapperClass();
 		value2.value = 1;
 		decomposed.setValue2(value2);
 
 		// when
-		StringIntegerClass actual = this.sut.giveMeBuilder(decomposed)
+		StringWrapperIntegerWrapperClass actual = this.sut.giveMeBuilder(decomposed)
 			.set("value1.value", "abc")
 			.sample();
 
@@ -521,7 +520,7 @@ class FixtureMonkeyTest {
 	void registerGroup() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.registerGroup(DefaultArbitraryHolder.class)
+			.registerGroup(DefaultArbitraryGroup.class)
 			.build();
 
 		// when
@@ -534,11 +533,11 @@ class FixtureMonkeyTest {
 	void registerGroupInField() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.registerGroup(DefaultArbitraryHolder.class)
+			.registerGroup(DefaultArbitraryGroup.class)
 			.build();
 
 		// when
-		StringIntegerClass actual = sut.giveMeOne(StringIntegerClass.class);
+		StringWrapperIntegerWrapperClass actual = sut.giveMeOne(StringWrapperIntegerWrapperClass.class);
 
 		then(actual.value1.value).isEqualTo("definition");
 	}
@@ -547,11 +546,11 @@ class FixtureMonkeyTest {
 	void registerGroupInFieldSet() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.registerGroup(DefaultArbitraryHolder.class)
+			.registerGroup(DefaultArbitraryGroup.class)
 			.build();
 
 		// when
-		StringIntegerClass actual = sut.giveMeBuilder(StringIntegerClass.class)
+		StringWrapperIntegerWrapperClass actual = sut.giveMeBuilder(StringWrapperIntegerWrapperClass.class)
 			.set("value1.value", "set")
 			.sample();
 
@@ -562,11 +561,11 @@ class FixtureMonkeyTest {
 	void registerGroupList() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.registerGroup(DefaultArbitraryHolder.class)
+			.registerGroup(DefaultArbitraryGroup.class)
 			.build();
 
 		// when
-		NestedStringList actual = sut.giveMeBuilder(NestedStringList.class)
+		NestedStringWrapperListClass actual = sut.giveMeBuilder(NestedStringWrapperListClass.class)
 			.sample();
 
 		then(actual.values).allMatch(it -> it.value.equals("definition"));
@@ -599,7 +598,7 @@ class FixtureMonkeyTest {
 			.build();
 
 		// when
-		StringIntegerClass actual = sut.giveMeOne(StringIntegerClass.class);
+		StringWrapperIntegerWrapperClass actual = sut.giveMeOne(StringWrapperIntegerWrapperClass.class);
 
 		then(actual.value1.value).isEqualTo("definition");
 	}
@@ -615,7 +614,7 @@ class FixtureMonkeyTest {
 			.build();
 
 		// when
-		StringIntegerClass actual = sut.giveMeBuilder(StringIntegerClass.class)
+		StringWrapperIntegerWrapperClass actual = sut.giveMeBuilder(StringWrapperIntegerWrapperClass.class)
 			.set("value1.value", "set")
 			.sample();
 
@@ -633,7 +632,7 @@ class FixtureMonkeyTest {
 			.build();
 
 		// when
-		NestedStringList actual = sut.giveMeBuilder(NestedStringList.class)
+		NestedStringWrapperListClass actual = sut.giveMeBuilder(NestedStringWrapperListClass.class)
 			.sample();
 
 		then(actual.values).allMatch(it -> it.value.equals("definition"));
@@ -660,7 +659,7 @@ class FixtureMonkeyTest {
 	void registerGroupSameTypeThrows() {
 		thenThrownBy(() ->
 			FixtureMonkey.builder()
-				.registerGroup(DuplicateArbitraryHolder.class)
+				.registerGroup(DuplicateArbitraryGroup.class)
 				.build())
 			.isExactlyInstanceOf(IllegalArgumentException.class)
 			.hasMessageContaining("can not register same classes twice.");
@@ -670,8 +669,8 @@ class FixtureMonkeyTest {
 	void registerDiffGroupSameTypeThrows() {
 		thenThrownBy(() ->
 			FixtureMonkey.builder()
-				.registerGroup(DefaultArbitraryHolder.class)
-				.registerGroup(DefaultArbitraryHolder2.class)
+				.registerGroup(DefaultArbitraryGroup.class)
+				.registerGroup(DefaultArbitraryGroup2.class)
 				.build())
 			.isExactlyInstanceOf(IllegalArgumentException.class)
 			.hasMessageContaining("can not register same classes twice.");
@@ -696,13 +695,13 @@ class FixtureMonkeyTest {
 	}
 
 	@Data
-	public static class IntegerWrapperClassWithAnnotation {
+	public static class IntegerWithAnnotationWrapperClass {
 		@Positive
 		int value;
 	}
 
 	@Data
-	public static class IntegerListClass {
+	public static class IntegerListWrapperClass {
 		List<Integer> values;
 	}
 
@@ -716,49 +715,49 @@ class FixtureMonkeyTest {
 	@Data
 	@NoArgsConstructor
 	@AllArgsConstructor
-	public static class IntegerArrayClass {
-		private Integer[] value;
+	public static class IntegerArrayWrapperClass {
+		private Integer[] values;
 	}
 
 	@Data
 	@NoArgsConstructor
 	@AllArgsConstructor
-	public static class IntArrayClass {
-		private int[] value;
+	public static class IntArrayWrapperClass {
+		private int[] values;
 	}
 
 	@Data
 	@NoArgsConstructor
 	@AllArgsConstructor
-	public static class MapKeyIntegerValueIntegerClass {
+	public static class MapKeyIntegerValueIntegerWrapperClass {
 		private Map<Integer, Integer> values;
 	}
 
 	@Data
 	@NoArgsConstructor
 	@AllArgsConstructor
-	public static class MapKeyIntegerValueStringClass {
+	public static class MapKeyIntegerValueStringWrapperClass {
 		private Map<Integer, String> values;
 	}
 
 	@Data
 	@NoArgsConstructor
 	@AllArgsConstructor
-	public static class MapEntryKeyIntegerValueStringClass {
+	public static class MapEntryKeyIntegerValueStringWrapperClass {
 		private Map.Entry<Integer, String> value;
 	}
 
 	@Data
 	@NoArgsConstructor
 	@AllArgsConstructor
-	public static class IntegerSetClass {
+	public static class IntegerSetWrapperClass {
 		private Set<Integer> values;
 	}
 
 	@Data
 	@NoArgsConstructor
 	@AllArgsConstructor
-	public static class IntegerIterableClass {
+	public static class IntegerIterableWrapperClass {
 		private Iterable<Integer> values;
 	}
 
@@ -766,7 +765,7 @@ class FixtureMonkeyTest {
 	@Builder
 	@NoArgsConstructor
 	@AllArgsConstructor
-	public static class IntegerIteratorClass {
+	public static class IntegerIteratorWrapperClass {
 		private Iterator<Integer> values;
 	}
 
@@ -774,7 +773,7 @@ class FixtureMonkeyTest {
 	@Builder
 	@NoArgsConstructor
 	@AllArgsConstructor
-	public static class IntegerStreamClass {
+	public static class IntegerStreamWrapperClass {
 		private Stream<Integer> values;
 	}
 
@@ -782,13 +781,13 @@ class FixtureMonkeyTest {
 	@Builder
 	@NoArgsConstructor
 	@AllArgsConstructor
-	public static class IntegerOptionalClass {
+	public static class IntegerOptionalWrapperClass {
 		@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 		private Optional<Integer> value;
 	}
 
 	@Data
-	public static class NestedStringList {
+	public static class NestedStringWrapperListClass {
 		private List<StringWrapperClass> values;
 	}
 
@@ -799,7 +798,7 @@ class FixtureMonkeyTest {
 	}
 
 	@Data
-	public static class IntegerListClassNotEmpty {
+	public static class IntegerListWithNotEmptyWrapperClass {
 		@NotEmpty
 		private List<Integer> values;
 	}
@@ -810,7 +809,7 @@ class FixtureMonkeyTest {
 	}
 
 	@Data
-	public static class StringIntegerClass {
+	public static class StringWrapperIntegerWrapperClass {
 		StringWrapperClass value1;
 		IntegerWrapperClass value2;
 	}
@@ -825,19 +824,19 @@ class FixtureMonkeyTest {
 	}
 
 	@Data
-	public static class StringWrapperWithNullableClass {
+	public static class StringWithNullableWrapperClass {
 		@Nullable
 		String value;
 	}
 
 	@Data
-	public static class StringWrapperWithNotBlankClass {
+	public static class StringWithNotBlankWrapperClass {
 		@NotBlank
 		String value;
 	}
 
-	public static class DefaultArbitraryHolder {
-		public DefaultArbitraryHolder() {
+	public static class DefaultArbitraryGroup {
+		public DefaultArbitraryGroup() {
 		}
 
 		public ArbitraryBuilder<StringWrapperClass> string(FixtureMonkey fixture) {
@@ -846,8 +845,8 @@ class FixtureMonkeyTest {
 		}
 	}
 
-	public static class DefaultArbitraryHolder2 {
-		public DefaultArbitraryHolder2() {
+	public static class DefaultArbitraryGroup2 {
+		public DefaultArbitraryGroup2() {
 		}
 
 		public ArbitraryBuilder<StringWrapperClass> string(FixtureMonkey fixture) {
@@ -856,8 +855,8 @@ class FixtureMonkeyTest {
 		}
 	}
 
-	public static class DuplicateArbitraryHolder {
-		public DuplicateArbitraryHolder() {
+	public static class DuplicateArbitraryGroup {
+		public DuplicateArbitraryGroup() {
 		}
 
 		public ArbitraryBuilder<StringWrapperClass> string(FixtureMonkey fixture) {
@@ -872,7 +871,7 @@ class FixtureMonkeyTest {
 	}
 
 	@Data
-	public static class NestedStringWrapper {
+	public static class NestedStringWrapperClass {
 		StringWrapperClass value;
 	}
 }
