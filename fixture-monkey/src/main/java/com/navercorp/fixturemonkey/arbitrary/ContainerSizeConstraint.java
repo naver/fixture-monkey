@@ -28,13 +28,16 @@ import net.jqwik.api.Arbitraries;
 public final class ContainerSizeConstraint {
 	@Nullable
 	private final Integer minSize;
-
 	@Nullable
 	private final Integer maxSize;
+	private boolean minManipulated;
+	private boolean maxManipulated;
 
 	public ContainerSizeConstraint(@Nullable Integer minSize, @Nullable Integer maxSize) {
 		this.minSize = minSize;
 		this.maxSize = maxSize;
+		this.minManipulated = false;
+		this.maxManipulated = false;
 	}
 
 	public int getMinSize() {
@@ -59,17 +62,21 @@ public final class ContainerSizeConstraint {
 	}
 
 	public ContainerSizeConstraint withMinSize(@Nullable Integer minSize) {
+		minManipulated = true;
+		Integer maxSize = maxManipulated ? this.maxSize : null;
 		if (minSize == null && this.minSize != null) {
-			return new ContainerSizeConstraint(this.minSize, this.maxSize);
+			return new ContainerSizeConstraint(this.minSize, maxSize);
 		}
-		return new ContainerSizeConstraint(minSize, this.maxSize);
+		return new ContainerSizeConstraint(minSize, maxSize);
 	}
 
 	public ContainerSizeConstraint withMaxSize(@Nullable Integer maxSize) {
+		maxManipulated = true;
+		Integer minSize = minManipulated ? this.minSize : null;
 		if (maxSize == null && this.maxSize != null) {
-			return new ContainerSizeConstraint(this.minSize, this.maxSize);
+			return new ContainerSizeConstraint(minSize, this.maxSize);
 		}
-		return new ContainerSizeConstraint(this.minSize, maxSize);
+		return new ContainerSizeConstraint(minSize, maxSize);
 
 	}
 }
