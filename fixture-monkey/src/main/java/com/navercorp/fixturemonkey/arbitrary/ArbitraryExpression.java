@@ -20,6 +20,7 @@ package com.navercorp.fixturemonkey.arbitrary;
 
 import static com.navercorp.fixturemonkey.Constants.ALL_INDEX_EXP_INDEX;
 import static com.navercorp.fixturemonkey.Constants.ALL_INDEX_STRING;
+import static com.navercorp.fixturemonkey.Constants.HEAD_NAME;
 import static com.navercorp.fixturemonkey.Constants.NO_OR_ALL_INDEX_INTEGER_VALUE;
 import static java.util.stream.Collectors.toList;
 
@@ -154,6 +155,10 @@ public final class ArbitraryExpression implements Comparable<ArbitraryExpression
 		private final List<ExpIndex> index = new ArrayList<>();
 
 		public Exp(String expression) {
+			if (expression.startsWith("$")) {
+				expression = expression.replace("$", HEAD_NAME);
+			}
+
 			int li = expression.indexOf('[');
 			int ri = expression.indexOf(']');
 
