@@ -18,6 +18,7 @@
 
 package com.navercorp.fixturemonkey.arbitrary;
 
+import static com.navercorp.fixturemonkey.Constants.HEAD_NAME;
 import static com.navercorp.fixturemonkey.Constants.NO_OR_ALL_INDEX_INTEGER_VALUE;
 
 import java.util.ArrayList;
@@ -38,8 +39,6 @@ import net.jqwik.api.Arbitrary;
 import com.navercorp.fixturemonkey.TypeSupports;
 
 public final class ArbitraryNode<T> {
-	private static final String HEAD_NAME = "HEAD_NAME";
-
 	@SuppressWarnings("rawtypes")
 	private final List<ArbitraryNode> children;
 	private final ArbitraryType<T> type;

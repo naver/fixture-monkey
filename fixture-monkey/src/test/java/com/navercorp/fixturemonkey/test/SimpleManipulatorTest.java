@@ -695,6 +695,26 @@ public class SimpleManipulatorTest {
 		then(actual.value).isNull();
 	}
 
+	@Property
+	void giveMeSetPostConditionForRoot() {
+		// when
+		String actual = this.sut.giveMeBuilder(String.class)
+			.setPostCondition(it -> it.length() > 5)
+			.sample();
+
+		then(actual).hasSizeGreaterThan(5);
+	}
+
+	@Property
+	void giveMeSetPostConditionForRootWithJsonPathRootExpression() {
+		// when
+		String actual = this.sut.giveMeBuilder(String.class)
+			.setPostCondition("$", String.class, it -> it.length() > 5)
+			.sample();
+
+		then(actual).hasSizeGreaterThan(5);
+	}
+
 	@Data
 	public static class IntegerWrapperClass {
 		int value;

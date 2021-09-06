@@ -18,6 +18,7 @@
 
 package com.navercorp.fixturemonkey.arbitrary;
 
+import static com.navercorp.fixturemonkey.Constants.HEAD_NAME;
 import static java.util.stream.Collectors.toList;
 
 import java.util.ArrayList;
@@ -44,6 +45,7 @@ final class CursorFactory {
 
 	public static List<Cursor> create(ArbitraryExpression arbitraryExpression) {
 		return arbitraryExpression.getExpList().stream()
+			.filter(it -> !HEAD_NAME.equals(it.getName()))
 			.map(CursorFactory::create)
 			.reduce(new ArrayList<>(), (list1, list2) -> {
 				list1.addAll(list2);

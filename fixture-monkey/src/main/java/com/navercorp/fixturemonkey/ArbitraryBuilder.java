@@ -18,6 +18,7 @@
 
 package com.navercorp.fixturemonkey;
 
+import static com.navercorp.fixturemonkey.Constants.HEAD_NAME;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 
@@ -273,6 +274,12 @@ public final class ArbitraryBuilder<T> {
 	public ArbitraryBuilder<T> setNotNull(String expression) {
 		ArbitraryExpression arbitraryExpression = ArbitraryExpression.from(expression);
 		this.builderManipulators.add(new ArbitraryNullity(arbitraryExpression, false));
+		return this;
+	}
+
+	public ArbitraryBuilder<T> setPostCondition(Predicate<T> filter) {
+		ArbitraryExpression arbitraryExpression = ArbitraryExpression.from(HEAD_NAME);
+		this.builderManipulators.add(new ArbitrarySetPostCondition<>(tree.getClazz(), arbitraryExpression, filter));
 		return this;
 	}
 
