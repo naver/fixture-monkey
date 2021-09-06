@@ -89,7 +89,7 @@ public class ArbitraryCustomizerTest {
 			.build();
 
 		// when
-		StringIntegerClass actual = sut.giveMeBuilder(StringIntegerClass.class)
+		StringIntegerWrapperClass actual = sut.giveMeBuilder(StringIntegerWrapperClass.class)
 			.setNotNull("value1")
 			.setNotNull("value2")
 			.sample();
@@ -104,7 +104,7 @@ public class ArbitraryCustomizerTest {
 	}
 
 	@Data
-	public static class StringIntegerClass {
+	public static class StringIntegerWrapperClass {
 		StringWrapperClass value1;
 		IntegerWrapperClass value2;
 	}

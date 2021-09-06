@@ -41,7 +41,7 @@ public final class ArbitraryTree<T> {
 	@SuppressWarnings("rawtypes")
 	public Collection<ArbitraryNode> findAll(ArbitraryExpression arbitraryExpression) {
 		Queue<ArbitraryNode> selectNodes = new LinkedList<>();
-		selectNodes.add(getHead());
+		selectNodes.add(head);
 
 		List<ArbitraryNode> nextNodes = new ArrayList<>();
 
@@ -59,7 +59,7 @@ public final class ArbitraryTree<T> {
 	}
 
 	public void update(ArbitraryGenerator defaultGenerator, Map<Class<?>, ArbitraryGenerator> generatorMap) {
-		update(getHead(), defaultGenerator, generatorMap);
+		update(head, defaultGenerator, generatorMap);
 	}
 
 	<U> void update(
@@ -90,10 +90,6 @@ public final class ArbitraryTree<T> {
 		}
 	}
 
-	public ArbitraryNode<T> getHead() {
-		return head;
-	}
-
 	public ArbitraryGenerator getGenerator(
 		Class<?> clazz,
 		ArbitraryGenerator defaultGenerator,
@@ -111,7 +107,28 @@ public final class ArbitraryTree<T> {
 		return new ArbitraryValue(generateArbitrary, validator, validOnly);
 	}
 
+	@SuppressWarnings("unchecked")
+	public Class<T> getClazz() {
+		return (Class<T>)head.getType().getType();
+	}
+
+	public Arbitrary<T> getArbitrary() {
+		return head.getArbitrary();
+	}
+
+	public void clearDecomposedValue() {
+		head.clearValue();
+	}
+
+	public void setDecomposedValue(Supplier<T> supplier) {
+		this.head.setValue(supplier);
+	}
+
 	public ArbitraryTree<T> copy() {
-		return new ArbitraryTree<>(this.getHead().copy());
+		return new ArbitraryTree<>(this.head.copy());
+	}
+
+	ArbitraryNode<T> getHead() {
+		return head;
 	}
 }

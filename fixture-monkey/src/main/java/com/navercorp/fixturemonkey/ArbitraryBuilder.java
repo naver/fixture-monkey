@@ -79,7 +79,7 @@ public final class ArbitraryBuilder<T> {
 	private boolean validOnly = true;
 
 	@SuppressWarnings({"unchecked", "rawtypes"})
-	public ArbitraryBuilder(
+	ArbitraryBuilder(
 		Class<T> clazz,
 		ArbitraryOption options,
 		ArbitraryGenerator generator,
@@ -87,43 +87,24 @@ public final class ArbitraryBuilder<T> {
 		ArbitraryCustomizers arbitraryCustomizers,
 		Map<Class<?>, ArbitraryGenerator> generatorMap
 	) {
-		this(ArbitraryNode.builder()
-				.type(new ArbitraryType(clazz))
-				.fieldName("HEAD_NAME")
-				.build(),
+		this(
+			new ArbitraryTree<>(
+				ArbitraryNode.builder()
+					.type(new ArbitraryType(clazz))
+					.fieldName("HEAD_NAME")
+					.build()
+			),
 			new ArbitraryTraverser(options),
 			generator,
 			validator,
 			arbitraryCustomizers,
+			new ArrayList<>(),
 			generatorMap
 		);
 	}
 
 	@SuppressWarnings({"unchecked", "rawtypes"})
-	public ArbitraryBuilder(
-		T value,
-		ArbitraryTraverser traverser,
-		ArbitraryGenerator generator,
-		ArbitraryValidator validator,
-		ArbitraryCustomizers arbitraryCustomizers,
-		Map<Class<?>, ArbitraryGenerator> generatorMap
-	) {
-		this(
-			ArbitraryNode.builder()
-				.type(new ArbitraryType(value.getClass()))
-				.value(() -> value)
-				.fieldName("HEAD_NAME")
-				.build(),
-			traverser,
-			generator,
-			validator,
-			arbitraryCustomizers,
-			generatorMap
-		);
-	}
-
-	@SuppressWarnings({"unchecked", "rawtypes"})
-	private ArbitraryBuilder(
+	ArbitraryBuilder(
 		Supplier<T> valueSupplier,
 		ArbitraryTraverser traverser,
 		ArbitraryGenerator generator,
@@ -132,29 +113,12 @@ public final class ArbitraryBuilder<T> {
 		Map<Class<?>, ArbitraryGenerator> generatorMap
 	) {
 		this(
-			ArbitraryNode.builder()
-				.value(valueSupplier)
-				.fieldName("HEAD_NAME")
-				.build(),
-			traverser,
-			generator,
-			validator,
-			arbitraryCustomizers,
-			generatorMap
-		);
-	}
-
-	@SuppressWarnings("rawtypes")
-	private ArbitraryBuilder(
-		ArbitraryNode<T> node,
-		ArbitraryTraverser traverser,
-		ArbitraryGenerator generator,
-		ArbitraryValidator validator,
-		ArbitraryCustomizers arbitraryCustomizers,
-		Map<Class<?>, ArbitraryGenerator> generatorMap
-	) {
-		this(
-			new ArbitraryTree<>(node),
+			new ArbitraryTree<>(
+				ArbitraryNode.builder()
+					.value(valueSupplier)
+					.fieldName("HEAD_NAME")
+					.build()
+			),
 			traverser,
 			generator,
 			validator,
@@ -205,7 +169,7 @@ public final class ArbitraryBuilder<T> {
 			ArbitraryTree<T> buildTree = buildArbitraryBuilder.tree;
 
 			buildArbitraryBuilder.traverser.traverse(
-				buildTree.getHead(),
+				buildTree,
 				false,
 				buildArbitraryBuilder.generator
 			);
@@ -216,7 +180,7 @@ public final class ArbitraryBuilder<T> {
 
 			buildArbitraryBuilder.apply(actualManipulators);
 			buildTree.update(buildArbitraryBuilder.generator, generatorMap);
-			return buildTree.getHead().getArbitrary();
+			return buildTree.getArbitrary();
 		}, this.validator, this.validOnly);
 	}
 
@@ -230,14 +194,14 @@ public final class ArbitraryBuilder<T> {
 			ArbitraryTree<T> buildTree = this.tree;
 
 			this.traverser.traverse(
-				buildTree.getHead(),
+				buildTree,
 				false,
 				this.generator
 			);
 			this.apply(this.builderManipulators);
 			this.builderManipulators.clear();
 			buildTree.update(this.generator, generatorMap);
-			return buildTree.getHead().getArbitrary();
+			return buildTree.getArbitrary();
 		}, this.validator, this.validOnly).sample();
 	}
 
@@ -247,14 +211,6 @@ public final class ArbitraryBuilder<T> {
 
 	public Stream<T> sampleStream() {
 		return this.build().sampleStream();
-	}
-
-	public ArbitraryBuilder<T> acceptIf(Predicate<T> predicate, Consumer<ArbitraryBuilder<T>> self) {
-		return this.apply((obj, builder) -> {
-			if (predicate.test(obj)) {
-				self.accept(builder);
-			}
-		});
 	}
 
 	public ArbitraryBuilder<T> spec(ExpressionSpec expressionSpec) {
@@ -271,21 +227,40 @@ public final class ArbitraryBuilder<T> {
 	public ArbitraryBuilder<T> set(String expression, @Nullable Object value) {
 		if (value == null) {
 			return this.setNull(expression);
-		}
-		if (value instanceof Arbitrary) {
+		} else if (value instanceof Arbitrary) {
 			return this.set(expression, (Arbitrary<T>)value);
+		} else if (value instanceof ArbitraryBuilder) {
+			return this.setBuilder(expression, (ArbitraryBuilder<?>)value);
 		}
 		ArbitraryExpression arbitraryExpression = ArbitraryExpression.from(expression);
 		this.builderManipulators.add(new ArbitrarySet<>(arbitraryExpression, value));
 		return this;
 	}
 
-	public ArbitraryBuilder<T> set(String expression, @Nullable Object value, long limit) {
+	public ArbitraryBuilder<T> set(String expression, Object value, long limit) {
+		ArbitraryExpression arbitraryExpression = ArbitraryExpression.from(expression);
+		this.builderManipulators.add(new ArbitrarySet<>(arbitraryExpression, value, limit));
+		return this;
+	}
+
+	public ArbitraryBuilder<T> set(String expression, @Nullable Arbitrary<?> value) {
 		if (value == null) {
 			return this.setNull(expression);
 		}
 		ArbitraryExpression arbitraryExpression = ArbitraryExpression.from(expression);
-		this.builderManipulators.add(new ArbitrarySet<>(arbitraryExpression, value, limit));
+		this.builderManipulators.add(new ArbitrarySetArbitrary<>(arbitraryExpression, value));
+		return this;
+	}
+
+	public ArbitraryBuilder<T> setBuilder(String expression, ArbitraryBuilder<?> builder) {
+		ArbitraryExpression arbitraryExpression = ArbitraryExpression.from(expression);
+		this.builderManipulators.add(new ArbitrarySetArbitrary<>(arbitraryExpression, builder.build()));
+		return this;
+	}
+
+	public ArbitraryBuilder<T> setBuilder(String expression, ArbitraryBuilder<?> builder, long limit) {
+		ArbitraryExpression arbitraryExpression = ArbitraryExpression.from(expression);
+		this.builderManipulators.add(new ArbitrarySetArbitrary<>(arbitraryExpression, builder.build(), limit));
 		return this;
 	}
 
@@ -301,59 +276,20 @@ public final class ArbitraryBuilder<T> {
 		return this;
 	}
 
-	@SuppressWarnings({"rawtypes", "unchecked"})
-	public ArbitraryBuilder<T> setNullity(ArbitraryNullity arbitraryNullity) {
-		ArbitraryExpression arbitraryExpression = arbitraryNullity.getArbitraryExpression();
-		Collection<ArbitraryNode> foundNodes = tree.findAll(arbitraryExpression);
-		for (ArbitraryNode foundNode : foundNodes) {
-			LazyValue<T> value = foundNode.getValue();
-			if (!arbitraryNullity.toNull() && value != null && value.isEmpty()) { // decompose null value
-				foundNode.clearValue();
-				traverser.traverse(foundNode, foundNode.isKeyOfMapStructure(), generator);
-			} else {
-				foundNode.apply(arbitraryNullity);
-			}
-		}
-		return this;
-	}
-
-	public ArbitraryBuilder<T> set(String expression, @Nullable Arbitrary<?> value) {
-		if (value == null) {
-			return this.setNull(expression);
-		}
-		ArbitraryExpression arbitraryExpression = ArbitraryExpression.from(expression);
-		this.builderManipulators.add(new ArbitrarySetArbitrary<>(arbitraryExpression, value));
-		return this;
-	}
-
-	public ArbitraryBuilder<T> setBuilder(String expression, @Nullable ArbitraryBuilder<?> builder, long limit) {
-		if (builder == null) {
-			return this.setNull(expression);
-		}
-		ArbitraryExpression arbitraryExpression = ArbitraryExpression.from(expression);
-		this.builderManipulators.add(new ArbitrarySetArbitrary<>(arbitraryExpression, builder.build(), limit));
-		return this;
-	}
-
-	public ArbitraryBuilder<T> setBuilder(String expression, @Nullable ArbitraryBuilder<?> builder) {
-		if (builder == null) {
-			return this.setNull(expression);
-		}
-		ArbitraryExpression arbitraryExpression = ArbitraryExpression.from(expression);
-		this.builderManipulators.add(new ArbitrarySetArbitrary<>(arbitraryExpression, builder.build()));
-		return this;
-	}
-
-	public <U> ArbitraryBuilder<T> setPostCondition(String expression, Class<U> clazz, Predicate<U> filter,
-		long limit) {
-		ArbitraryExpression arbitraryExpression = ArbitraryExpression.from(expression);
-		this.builderManipulators.add(new ArbitrarySetPostCondition<>(clazz, arbitraryExpression, filter, limit));
-		return this;
-	}
-
 	public <U> ArbitraryBuilder<T> setPostCondition(String expression, Class<U> clazz, Predicate<U> filter) {
 		ArbitraryExpression arbitraryExpression = ArbitraryExpression.from(expression);
 		this.builderManipulators.add(new ArbitrarySetPostCondition<>(clazz, arbitraryExpression, filter));
+		return this;
+	}
+
+	public <U> ArbitraryBuilder<T> setPostCondition(
+		String expression,
+		Class<U> clazz,
+		Predicate<U> filter,
+		long limit
+	) {
+		ArbitraryExpression arbitraryExpression = ArbitraryExpression.from(expression);
+		this.builderManipulators.add(new ArbitrarySetPostCondition<>(clazz, arbitraryExpression, filter, limit));
 		return this;
 	}
 
@@ -392,81 +328,6 @@ public final class ArbitraryBuilder<T> {
 			this.generator = ((WithFixtureCustomizer)this.generator).withFixtureCustomizers(arbitraryCustomizers);
 		}
 		return this;
-	}
-
-	public ArbitraryBuilder<T> apply(BiConsumer<T, ArbitraryBuilder<T>> consumer) {
-		ArbitraryBuilder<T> appliedBuilder = this.copy();
-
-		this.tree.getHead().setValue(() -> {
-			ArbitraryBuilder<T> copied = appliedBuilder.copy();
-			copied.tree.getHead().clearValue();
-			T sample = copied.sampleInternal();
-			copied.tree.getHead().setValue(() -> sample); // fix builder value
-			consumer.accept(sample, copied);
-			this.builderManipulators.removeAll(appliedBuilder.builderManipulators); // remove pre-decompose manipulators
-			return copied.sampleInternal();
-		});
-
-		return this;
-	}
-
-	@SuppressWarnings({"rawtypes", "unchecked"})
-	public ArbitraryBuilder<T> apply(MetadataManipulator manipulator) {
-		ArbitraryExpression arbitraryExpression = manipulator.getArbitraryExpression();
-
-		if (manipulator instanceof ContainerSizeManipulator) {
-			ContainerSizeManipulator containerSizeManipulator = ((ContainerSizeManipulator)manipulator);
-			Integer min = containerSizeManipulator.getMin();
-			Integer max = containerSizeManipulator.getMax();
-
-			Collection<ArbitraryNode> foundNodes = tree.findAll(arbitraryExpression);
-			for (ArbitraryNode foundNode : foundNodes) {
-				if (!foundNode.getType().isContainer()) {
-					throw new IllegalArgumentException("Only Container can set size");
-				}
-				foundNode.setContainerMinSize(min);
-				foundNode.setContainerMaxSize(max);
-				traverser.traverse(foundNode, false, generator); // regenerate subtree
-			}
-		}
-		return this;
-	}
-
-	@SuppressWarnings({"unchecked", "rawtypes"})
-	public void apply(AbstractArbitrarySet<T> fixtureSet) {
-		Collection<ArbitraryNode> foundNodes = tree.findAll(fixtureSet.getArbitraryExpression());
-
-		if (!foundNodes.isEmpty()) {
-			for (ArbitraryNode<T> foundNode : foundNodes) {
-				foundNode.apply(fixtureSet);
-			}
-		}
-	}
-
-	@SuppressWarnings({"unchecked", "rawtypes"})
-	public ArbitraryBuilder<T> apply(PostArbitraryManipulator<T> postArbitraryManipulator) {
-		Collection<ArbitraryNode> foundNodes = tree.findAll(postArbitraryManipulator.getArbitraryExpression());
-		if (!foundNodes.isEmpty()) {
-			for (ArbitraryNode<T> foundNode : foundNodes) {
-				if (postArbitraryManipulator.isMappableTo(foundNode)) {
-					foundNode.addArbitraryOperation(postArbitraryManipulator);
-				}
-			}
-		}
-		return this;
-	}
-
-	@SuppressWarnings("rawtypes")
-	public void apply(List<BuilderManipulator> arbitraryManipulators) {
-		List<MetadataManipulator> metadataManipulators = this.extractMetadataManipulatorsFrom(arbitraryManipulators);
-		List<BuilderManipulator> orderedArbitraryManipulators =
-			this.extractOrderedManipulatorsFrom(arbitraryManipulators);
-		List<PostArbitraryManipulator> postArbitraryManipulators =
-			this.extractPostArbitraryManipulatorsFrom(arbitraryManipulators);
-
-		metadataManipulators.stream().sorted().forEachOrdered(it -> it.accept(this));
-		orderedArbitraryManipulators.forEach(it -> it.accept(this));
-		postArbitraryManipulators.forEach(it -> it.accept(this));
 	}
 
 	public <U> ArbitraryBuilder<U> map(Function<T, U> mapper) {
@@ -549,6 +410,107 @@ public final class ArbitraryBuilder<T> {
 		);
 	}
 
+	public ArbitraryBuilder<T> apply(BiConsumer<T, ArbitraryBuilder<T>> biConsumer) {
+		ArbitraryBuilder<T> appliedBuilder = this.copy();
+
+		ArbitraryBuilder<T> copied = appliedBuilder.copy();
+		this.tree.setDecomposedValue(() -> {
+			copied.tree.clearDecomposedValue();
+			T sample = copied.sampleInternal();
+			copied.tree.setDecomposedValue(() -> sample); // fix builder value
+			biConsumer.accept(sample, copied);
+			this.builderManipulators.removeAll(appliedBuilder.builderManipulators); // remove pre-decompose manipulators
+			return copied.sampleInternal();
+		});
+
+		return this;
+	}
+
+	public ArbitraryBuilder<T> acceptIf(Predicate<T> predicate, Consumer<ArbitraryBuilder<T>> consumer) {
+		return this.apply((obj, builder) -> {
+			if (predicate.test(obj)) {
+				consumer.accept(builder);
+			}
+		});
+	}
+
+	@SuppressWarnings({"rawtypes", "unchecked"})
+	public ArbitraryBuilder<T> apply(MetadataManipulator manipulator) {
+		ArbitraryExpression arbitraryExpression = manipulator.getArbitraryExpression();
+
+		if (manipulator instanceof ContainerSizeManipulator) {
+			ContainerSizeManipulator containerSizeManipulator = ((ContainerSizeManipulator)manipulator);
+			Integer min = containerSizeManipulator.getMin();
+			Integer max = containerSizeManipulator.getMax();
+
+			Collection<ArbitraryNode> foundNodes = tree.findAll(arbitraryExpression);
+			for (ArbitraryNode foundNode : foundNodes) {
+				if (!foundNode.getType().isContainer()) {
+					throw new IllegalArgumentException("Only Container can set size");
+				}
+				foundNode.setContainerMinSize(min);
+				foundNode.setContainerMaxSize(max);
+				traverser.traverse(foundNode, false, generator); // regenerate subtree
+			}
+		} else {
+			throw new IllegalArgumentException("Not Implemented MetadataManipulator");
+		}
+		return this;
+	}
+
+	@SuppressWarnings({"unchecked", "rawtypes"})
+	public void apply(AbstractArbitrarySet<T> fixtureSet) {
+		Collection<ArbitraryNode> foundNodes = tree.findAll(fixtureSet.getArbitraryExpression());
+
+		if (!foundNodes.isEmpty()) {
+			for (ArbitraryNode<T> foundNode : foundNodes) {
+				foundNode.apply(fixtureSet);
+			}
+		}
+	}
+
+	@SuppressWarnings({"rawtypes", "unchecked"})
+	public ArbitraryBuilder<T> setNullity(ArbitraryNullity arbitraryNullity) {
+		ArbitraryExpression arbitraryExpression = arbitraryNullity.getArbitraryExpression();
+		Collection<ArbitraryNode> foundNodes = tree.findAll(arbitraryExpression);
+		for (ArbitraryNode foundNode : foundNodes) {
+			LazyValue<T> value = foundNode.getValue();
+			if (!arbitraryNullity.toNull() && value != null && value.isEmpty()) { // decompose null value
+				foundNode.clearValue();
+				traverser.traverse(foundNode, foundNode.isKeyOfMapStructure(), generator);
+			} else {
+				foundNode.apply(arbitraryNullity);
+			}
+		}
+		return this;
+	}
+
+	@SuppressWarnings({"unchecked", "rawtypes"})
+	public ArbitraryBuilder<T> apply(PostArbitraryManipulator<T> postArbitraryManipulator) {
+		Collection<ArbitraryNode> foundNodes = tree.findAll(postArbitraryManipulator.getArbitraryExpression());
+		if (!foundNodes.isEmpty()) {
+			for (ArbitraryNode<T> foundNode : foundNodes) {
+				if (postArbitraryManipulator.isMappableTo(foundNode)) {
+					foundNode.addPostArbitraryOperation(postArbitraryManipulator);
+				}
+			}
+		}
+		return this;
+	}
+
+	@SuppressWarnings("rawtypes")
+	public void apply(List<BuilderManipulator> arbitraryManipulators) {
+		List<MetadataManipulator> metadataManipulators = this.extractMetadataManipulatorsFrom(arbitraryManipulators);
+		List<BuilderManipulator> orderedArbitraryManipulators =
+			this.extractOrderedManipulatorsFrom(arbitraryManipulators);
+		List<PostArbitraryManipulator> postArbitraryManipulators =
+			this.extractPostArbitraryManipulatorsFrom(arbitraryManipulators);
+
+		metadataManipulators.stream().sorted().forEachOrdered(it -> it.accept(this));
+		orderedArbitraryManipulators.forEach(it -> it.accept(this));
+		postArbitraryManipulators.forEach(it -> it.accept(this));
+	}
+
 	public ArbitraryBuilder<T> copy() {
 		return new ArbitraryBuilder<>(
 			this.tree.copy(),
@@ -595,8 +557,8 @@ public final class ArbitraryBuilder<T> {
 			return false;
 		}
 		ArbitraryBuilder<?> that = (ArbitraryBuilder<?>)obj;
-		Class<?> generateClazz = tree.getHead().getType().getType();
-		Class<?> thatGenerateClazz = that.tree.getHead().getType().getType();
+		Class<?> generateClazz = tree.getClazz();
+		Class<?> thatGenerateClazz = that.tree.getClazz();
 
 		return generateClazz.equals(thatGenerateClazz)
 			&& builderManipulators.equals(that.builderManipulators);
@@ -604,7 +566,7 @@ public final class ArbitraryBuilder<T> {
 
 	@Override
 	public int hashCode() {
-		Class<?> generateClazz = tree.getHead().getType().getType();
+		Class<?> generateClazz = tree.getClazz();
 		return Objects.hash(generateClazz, builderManipulators);
 	}
 

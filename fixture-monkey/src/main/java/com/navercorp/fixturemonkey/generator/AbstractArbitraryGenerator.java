@@ -43,7 +43,7 @@ public abstract class AbstractArbitraryGenerator implements ArbitraryGenerator, 
 		}
 
 		if (type.isArray()) {
-			ArbitraryType<?> arrayType = type.getArrayFixtureType();
+			ArbitraryType<?> arrayType = type.getArrayArbitraryType();
 			Class<?> arrayClazz = arrayType.getType();
 			return (Arbitrary<T>)ArrayBuilder.INSTANCE.build(arrayClazz, nodes);
 		}

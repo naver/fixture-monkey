@@ -61,7 +61,7 @@ public class SimpleManipulatorTest {
 	@Property
 	void giveMeListSize() {
 		// when
-		IntegerListClass actual = this.sut.giveMeBuilder(IntegerListClass.class)
+		IntegerListWrapperClass actual = this.sut.giveMeBuilder(IntegerListWrapperClass.class)
 			.spec(new ExpressionSpec().size("values", 1, 1))
 			.sample();
 
@@ -71,7 +71,7 @@ public class SimpleManipulatorTest {
 	@Property
 	void giveMeSetNull() {
 		// when
-		IntegerListClass actual = this.sut.giveMeBuilder(IntegerListClass.class)
+		IntegerListWrapperClass actual = this.sut.giveMeBuilder(IntegerListWrapperClass.class)
 			.spec(new ExpressionSpec().setNull("values"))
 			.sample();
 
@@ -81,7 +81,7 @@ public class SimpleManipulatorTest {
 	@Property
 	void giveMeSizeAfterSetNullReturnsNull() {
 		// when
-		IntegerListClass actual = this.sut.giveMeBuilder(IntegerListClass.class)
+		IntegerListWrapperClass actual = this.sut.giveMeBuilder(IntegerListWrapperClass.class)
 			.spec(new ExpressionSpec()
 				.setNull("values")
 				.size("values", 1, 1)
@@ -94,7 +94,7 @@ public class SimpleManipulatorTest {
 	@Property
 	void giveMeSetAfterSetNullReturnsNotNull() {
 		// when
-		IntegerListClass actual = this.sut.giveMeBuilder(IntegerListClass.class)
+		IntegerListWrapperClass actual = this.sut.giveMeBuilder(IntegerListWrapperClass.class)
 			.spec(new ExpressionSpec()
 				.setNull("values")
 				.size("values", 1, 1)
@@ -110,7 +110,7 @@ public class SimpleManipulatorTest {
 	@Property
 	void giveMeSetNotNullAfterSetNullReturnsNotNull() {
 		// when
-		IntegerListClass actual = this.sut.giveMeBuilder(IntegerListClass.class)
+		IntegerListWrapperClass actual = this.sut.giveMeBuilder(IntegerListWrapperClass.class)
 			.spec(new ExpressionSpec()
 				.setNull("values")
 				.setNotNull("values")
@@ -123,7 +123,7 @@ public class SimpleManipulatorTest {
 	@Property
 	void giveMeSetNullAfterSetNotNullReturnsNull() {
 		// when
-		IntegerListClass actual = this.sut.giveMeBuilder(IntegerListClass.class)
+		IntegerListWrapperClass actual = this.sut.giveMeBuilder(IntegerListWrapperClass.class)
 			.spec(new ExpressionSpec()
 				.setNotNull("values")
 				.setNull("values")
@@ -136,7 +136,7 @@ public class SimpleManipulatorTest {
 	@Property
 	void giveMeSetNullAfterSetReturnsNull() {
 		// when
-		IntegerListClass actual = this.sut.giveMeBuilder(IntegerListClass.class)
+		IntegerListWrapperClass actual = this.sut.giveMeBuilder(IntegerListWrapperClass.class)
 			.spec(new ExpressionSpec()
 				.size("values", 1, 1)
 				.set("values[0]", 0)
@@ -198,7 +198,7 @@ public class SimpleManipulatorTest {
 	@Property
 	void giveMePostConditionIndex() {
 		// when
-		IntegerListClass actual = this.sut.giveMeBuilder(IntegerListClass.class)
+		IntegerListWrapperClass actual = this.sut.giveMeBuilder(IntegerListWrapperClass.class)
 			.spec(new ExpressionSpec()
 				.setPostCondition("values[0]", Integer.class, value -> value >= 0 && value <= 100)
 				.size("values", 1, 1))
@@ -224,12 +224,12 @@ public class SimpleManipulatorTest {
 	@Property
 	void giveMeObjectToBuilderSetIndex() {
 		// given
-		IntegerListClass expected = this.sut.giveMeBuilder(IntegerListClass.class)
+		IntegerListWrapperClass expected = this.sut.giveMeBuilder(IntegerListWrapperClass.class)
 			.spec(new ExpressionSpec().size("values", 2, 2))
 			.sample();
 
 		// when
-		IntegerListClass actual = this.sut.giveMeBuilder(expected)
+		IntegerListWrapperClass actual = this.sut.giveMeBuilder(expected)
 			.set("values[1]", 1)
 			.sample();
 
@@ -239,7 +239,7 @@ public class SimpleManipulatorTest {
 	@Property
 	void giveMeListSpecMaxSize() {
 		// when
-		StringListClass actual = this.sut.giveMeBuilder(StringListClass.class)
+		StringListWrapperClass actual = this.sut.giveMeBuilder(StringListWrapperClass.class)
 			.spec(new ExpressionSpec()
 				.list("values",
 					it -> it.ofMaxSize(2)
@@ -253,7 +253,7 @@ public class SimpleManipulatorTest {
 	@Property
 	void giveMeListSpecSizeBetween() {
 		// when
-		StringListClass actual = this.sut.giveMeBuilder(StringListClass.class)
+		StringListWrapperClass actual = this.sut.giveMeBuilder(StringListWrapperClass.class)
 			.spec(new ExpressionSpec()
 				.list("values",
 					it -> it.ofSizeBetween(1, 3)
@@ -267,7 +267,7 @@ public class SimpleManipulatorTest {
 	@Property
 	void giveMeSetAllName() {
 		// when
-		TwoStringClass actual = this.sut.giveMeBuilder(TwoStringClass.class)
+		TwoStringWrapperClass actual = this.sut.giveMeBuilder(TwoStringWrapperClass.class)
 			.set("*", "set")
 			.sample();
 
@@ -278,7 +278,7 @@ public class SimpleManipulatorTest {
 	@Property
 	void giveMeListExactSize() {
 		// when
-		StringListClass actual = this.sut.giveMeBuilder(StringListClass.class)
+		StringListWrapperClass actual = this.sut.giveMeBuilder(StringListWrapperClass.class)
 			.size("values", 3)
 			.sample();
 
@@ -288,9 +288,10 @@ public class SimpleManipulatorTest {
 	@Property
 	void giveMeSizeMap() {
 		// when
-		MapKeyIntegerValueIntegerClass actual = this.sut.giveMeBuilder(MapKeyIntegerValueIntegerClass.class)
-			.size("values", 2, 2)
-			.sample();
+		MapKeyIntegerValueIntegerWrapperClass actual =
+			this.sut.giveMeBuilder(MapKeyIntegerValueIntegerWrapperClass.class)
+				.size("values", 2, 2)
+				.sample();
 
 		then(actual.values).hasSize(2);
 	}
@@ -298,7 +299,7 @@ public class SimpleManipulatorTest {
 	@Property
 	void giveMeSetRightOrder() {
 		// when
-		StringListClass actual = this.sut.giveMeBuilder(StringListClass.class)
+		StringListWrapperClass actual = this.sut.giveMeBuilder(StringListWrapperClass.class)
 			.spec(new ExpressionSpec()
 				.list("values",
 					it -> it.ofSize(3)
@@ -320,7 +321,7 @@ public class SimpleManipulatorTest {
 	@Property
 	void giveMePostConditionRightOrder() {
 		// when
-		StringListClass actual = this.sut.giveMeBuilder(StringListClass.class)
+		StringListWrapperClass actual = this.sut.giveMeBuilder(StringListWrapperClass.class)
 			.spec(new ExpressionSpec()
 				.list("values",
 					(it) -> it.ofSize(2)
@@ -339,7 +340,7 @@ public class SimpleManipulatorTest {
 	@Property
 	void giveMeListSpecMinSize() {
 		// when
-		StringListClass actual = this.sut.giveMeBuilder(StringListClass.class)
+		StringListWrapperClass actual = this.sut.giveMeBuilder(StringListWrapperClass.class)
 			.spec(new ExpressionSpec()
 				.list("values",
 					it -> it.ofMinSize(1)
@@ -366,16 +367,16 @@ public class SimpleManipulatorTest {
 			);
 
 		// when
-		IntegerListClass actual = this.sut.giveMeBuilder(IntegerListClass.class)
+		IntegerListWrapperClass actual = this.sut.giveMeBuilder(IntegerListWrapperClass.class)
 			.specAny(specOne, specTwo)
 			.sample();
 
 		// then
-		IntegerListClass expectedOne = new IntegerListClass();
+		IntegerListWrapperClass expectedOne = new IntegerListWrapperClass();
 		expectedOne.values = new ArrayList<>();
 		expectedOne.values.add(1);
 
-		IntegerListClass expectedTwo = new IntegerListClass();
+		IntegerListWrapperClass expectedTwo = new IntegerListWrapperClass();
 		expectedTwo.values = new ArrayList<>();
 		expectedTwo.values.add(1);
 		expectedTwo.values.add(2);
@@ -396,7 +397,7 @@ public class SimpleManipulatorTest {
 	@Property
 	void giveMeMinSize() {
 		// when
-		IntegerListClass actual = this.sut.giveMeBuilder(IntegerListClass.class)
+		IntegerListWrapperClass actual = this.sut.giveMeBuilder(IntegerListWrapperClass.class)
 			.minSize("values", 2)
 			.sample();
 
@@ -406,7 +407,7 @@ public class SimpleManipulatorTest {
 	@Property
 	void giveMeMaxSize() {
 		// when
-		IntegerListClass actual = this.sut.giveMeBuilder(IntegerListClass.class)
+		IntegerListWrapperClass actual = this.sut.giveMeBuilder(IntegerListWrapperClass.class)
 			.maxSize("values", 10)
 			.sample();
 
@@ -416,7 +417,7 @@ public class SimpleManipulatorTest {
 	@Property(tries = 10)
 	void giveMeSizeMinMaxBiggerThanDefault() {
 		// when
-		IntegerListClass actual = this.sut.giveMeBuilder(IntegerListClass.class)
+		IntegerListWrapperClass actual = this.sut.giveMeBuilder(IntegerListWrapperClass.class)
 			.size("values", 100, 150)
 			.sample();
 
@@ -426,7 +427,7 @@ public class SimpleManipulatorTest {
 	@Property(tries = 10)
 	void giveMeSizeMinBiggerThanDefaultMax() {
 		// when
-		IntegerListClass actual = this.sut.giveMeBuilder(IntegerListClass.class)
+		IntegerListWrapperClass actual = this.sut.giveMeBuilder(IntegerListWrapperClass.class)
 			.minSize("values", 100)
 			.sample();
 
@@ -436,7 +437,7 @@ public class SimpleManipulatorTest {
 	@Property
 	void giveMeSizeMaxSizeIsZero() {
 		// when
-		IntegerListClass actual = this.sut.giveMeBuilder(IntegerListClass.class)
+		IntegerListWrapperClass actual = this.sut.giveMeBuilder(IntegerListWrapperClass.class)
 			.maxSize("values", 0)
 			.sample();
 
@@ -446,7 +447,7 @@ public class SimpleManipulatorTest {
 	@Property
 	void giveMeSizeMaxSizeBeforeMinSizeIsZero() {
 		// when
-		IntegerListClass actual = this.sut.giveMeBuilder(IntegerListClass.class)
+		IntegerListWrapperClass actual = this.sut.giveMeBuilder(IntegerListWrapperClass.class)
 			.maxSize("values", 15)
 			.minSize("values", 14)
 			.sample();
@@ -457,7 +458,7 @@ public class SimpleManipulatorTest {
 	@Property
 	void giveMeSizeMinSizeBeforeMaxSizeIsZero() {
 		// when
-		IntegerListClass actual = this.sut.giveMeBuilder(IntegerListClass.class)
+		IntegerListWrapperClass actual = this.sut.giveMeBuilder(IntegerListWrapperClass.class)
 			.minSize("values", 14)
 			.maxSize("values", 15)
 			.sample();
@@ -468,7 +469,7 @@ public class SimpleManipulatorTest {
 	@Property
 	void giveMePostConditionLimitIndex() {
 		// when
-		StringListClass actual = this.sut.giveMeBuilder(StringListClass.class)
+		StringListWrapperClass actual = this.sut.giveMeBuilder(StringListWrapperClass.class)
 			.size("values", 2, 2)
 			.setPostCondition("values[*]", String.class, it -> it.length() > 0)
 			.setPostCondition("values[*]", String.class, it -> it.length() > 5, 1)
@@ -480,7 +481,7 @@ public class SimpleManipulatorTest {
 	@Property
 	void giveMePostConditionLimitIndexNotOverwriteIfLimitIsZeroReturnsNotPostCondition() {
 		// when
-		StringListClass actual = this.sut.giveMeBuilder(StringListClass.class)
+		StringListWrapperClass actual = this.sut.giveMeBuilder(StringListWrapperClass.class)
 			.setPostCondition("values[*]", String.class, it -> it.length() > 5)
 			.setPostCondition("values[*]", String.class, it -> it.length() == 0, 0)
 			.sample();
@@ -491,7 +492,7 @@ public class SimpleManipulatorTest {
 	@Property
 	void giveMeSpecListSetSize() {
 		// when
-		IntegerListClass actual = this.sut.giveMeBuilder(IntegerListClass.class)
+		IntegerListWrapperClass actual = this.sut.giveMeBuilder(IntegerListWrapperClass.class)
 			.spec(new ExpressionSpec().list("values", it -> it.ofSize(1)))
 			.sample();
 
@@ -501,7 +502,7 @@ public class SimpleManipulatorTest {
 	@Property
 	void giveMeSpecListSetElement() {
 		// when
-		IntegerListClass actual = this.sut.giveMeBuilder(IntegerListClass.class)
+		IntegerListWrapperClass actual = this.sut.giveMeBuilder(IntegerListWrapperClass.class)
 			.spec(new ExpressionSpec().list("values", it -> {
 				it.ofSize(1);
 				it.setElement(0, 1);
@@ -515,7 +516,7 @@ public class SimpleManipulatorTest {
 	@Property
 	void giveMeSpecListAnySet() {
 		// when
-		IntegerListClass actual = this.sut.giveMeBuilder(IntegerListClass.class)
+		IntegerListWrapperClass actual = this.sut.giveMeBuilder(IntegerListWrapperClass.class)
 			.spec(new ExpressionSpec().list("values", it -> {
 				it.ofSize(3);
 				it.any(1);
@@ -528,7 +529,7 @@ public class SimpleManipulatorTest {
 	@Property
 	void giveMeSpecListAllSet() {
 		// when
-		IntegerListClass actual = this.sut.giveMeBuilder(IntegerListClass.class)
+		IntegerListWrapperClass actual = this.sut.giveMeBuilder(IntegerListWrapperClass.class)
 			.spec(new ExpressionSpec().list("values", it -> {
 				it.ofSize(3);
 				it.all(1);
@@ -541,7 +542,7 @@ public class SimpleManipulatorTest {
 	@Property
 	void giveMeSpecListPostConditionElement() {
 		// when
-		IntegerListClass actual = this.sut.giveMeBuilder(IntegerListClass.class)
+		IntegerListWrapperClass actual = this.sut.giveMeBuilder(IntegerListWrapperClass.class)
 			.spec(new ExpressionSpec().list("values", it -> {
 				it.ofSize(1);
 				it.setElementPostCondition(0, Integer.class, postConditioned -> postConditioned > 1);
@@ -555,7 +556,7 @@ public class SimpleManipulatorTest {
 	@Property
 	void giveMeSpecListPostConditionElementField() {
 		// when
-		NestedStringList actual = this.sut.giveMeBuilder(NestedStringList.class)
+		NestedStringWrapperListClass actual = this.sut.giveMeBuilder(NestedStringWrapperListClass.class)
 			.spec(new ExpressionSpec().list("values", it -> {
 				it.ofSize(1);
 				it.setElementFieldPostCondition(0, "value", String.class,
@@ -626,7 +627,7 @@ public class SimpleManipulatorTest {
 	@Property
 	void giveMeSpecSetIndexWithLimitReturns() {
 		// when
-		StringListClass actual = this.sut.giveMeBuilder(StringListClass.class)
+		StringListWrapperClass actual = this.sut.giveMeBuilder(StringListWrapperClass.class)
 			.spec(new ExpressionSpec()
 				.size("values", 2, 2)
 				.set("values[*]", "set", 1))
@@ -638,7 +639,7 @@ public class SimpleManipulatorTest {
 	@Property
 	void giveMeSetIndexWithLimitReturns() {
 		// when
-		StringListClass actual = this.sut.giveMeBuilder(StringListClass.class)
+		StringListWrapperClass actual = this.sut.giveMeBuilder(StringListWrapperClass.class)
 			.size("values", 2, 2)
 			.set("values[*]", "set", 1)
 			.sample();
@@ -649,7 +650,7 @@ public class SimpleManipulatorTest {
 	@Property
 	void giveMeSetArbitraryBuilder() {
 		// when
-		StringIntegerClass actual = this.sut.giveMeBuilder(StringIntegerClass.class)
+		StringWrapperIntegerWrapperClass actual = this.sut.giveMeBuilder(StringWrapperIntegerWrapperClass.class)
 			.setBuilder("value2", this.sut.giveMeBuilder(IntegerWrapperClass.class).set("value", 1))
 			.sample();
 
@@ -659,7 +660,7 @@ public class SimpleManipulatorTest {
 	@Property
 	void giveMeSpecSetArbitraryBuilder() {
 		// when
-		StringIntegerClass actual = this.sut.giveMeBuilder(StringIntegerClass.class)
+		StringWrapperIntegerWrapperClass actual = this.sut.giveMeBuilder(StringWrapperIntegerWrapperClass.class)
 			.spec(new ExpressionSpec().setBuilder("value2",
 				this.sut.giveMeBuilder(IntegerWrapperClass.class).set("value", 1))
 			)
@@ -700,7 +701,7 @@ public class SimpleManipulatorTest {
 	}
 
 	@Data
-	public static class IntegerListClass {
+	public static class IntegerListWrapperClass {
 		List<Integer> values;
 	}
 
@@ -710,12 +711,12 @@ public class SimpleManipulatorTest {
 	}
 
 	@Data
-	public static class StringListClass {
+	public static class StringListWrapperClass {
 		private List<String> values;
 	}
 
 	@Data
-	public static class TwoStringClass {
+	public static class TwoStringWrapperClass {
 		private String value1;
 		private String value2;
 	}
@@ -723,7 +724,7 @@ public class SimpleManipulatorTest {
 	@Data
 	@NoArgsConstructor
 	@AllArgsConstructor
-	public static class MapKeyIntegerValueIntegerClass {
+	public static class MapKeyIntegerValueIntegerWrapperClass {
 		private Map<Integer, Integer> values;
 	}
 
@@ -733,12 +734,12 @@ public class SimpleManipulatorTest {
 	}
 
 	@Data
-	public static class NestedStringList {
+	public static class NestedStringWrapperListClass {
 		private List<StringWrapperClass> values;
 	}
 
 	@Data
-	public static class StringIntegerClass {
+	public static class StringWrapperIntegerWrapperClass {
 		StringWrapperClass value1;
 		IntegerWrapperClass value2;
 	}

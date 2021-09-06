@@ -36,7 +36,7 @@ final class RegexGenerator {
 	private static final Map<String, String> PREDEFINED_CHARACTER_CLASSES;
 
 	static {
-		Map<String, String> characterClasses = new HashMap<String, String>();
+		Map<String, String> characterClasses = new HashMap<>();
 		characterClasses.put("\\\\d", "[0-9]");
 		characterClasses.put("\\\\D", "[^0-9]");
 		characterClasses.put("\\\\s", "[ \t\n\f\r]");
@@ -56,7 +56,7 @@ final class RegexGenerator {
 			regex = regex.replaceAll(charClass.getKey(), charClass.getValue());
 		}
 
-		RegExp regExp = null;
+		RegExp regExp;
 		Pattern.Flag[] flags = pattern.flags();
 		if (flags.length == 0) {
 			regExp = new RegExp(regex);
@@ -69,8 +69,7 @@ final class RegexGenerator {
 		}
 
 		Generex generex = new Generex(regExp.toAutomaton());
-		List<String> result = this.generateAll(generex, min, max);
-		return result;
+		return this.generateAll(generex, min, max);
 	}
 
 	public List<String> generateAll(String regex) {

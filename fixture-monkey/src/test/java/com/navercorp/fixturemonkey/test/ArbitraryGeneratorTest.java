@@ -49,17 +49,17 @@ import com.navercorp.fixturemonkey.generator.NullArbitraryGenerator;
 
 public class ArbitraryGeneratorTest {
 	private final FixtureMonkey sut = FixtureMonkey.builder()
-		.putGenerator(BuilderIntegerClass.class, BuilderArbitraryGenerator.INSTANCE)
-		.putGenerator(FieldReflectionIntegerClass.class, FieldReflectionArbitraryGenerator.INSTANCE)
-		.putGenerator(NullIntegerClass.class, NullArbitraryGenerator.INSTANCE)
-		.putGenerator(BeanIntegerClass.class, BeanArbitraryGenerator.INSTANCE)
-		.putGenerator(ConstructorPropertiesIntegerClass.class, ConstructorPropertiesArbitraryGenerator.INSTANCE)
+		.putGenerator(BuilderIntegerWrapperClass.class, BuilderArbitraryGenerator.INSTANCE)
+		.putGenerator(FieldReflectionIntegerWrapperClass.class, FieldReflectionArbitraryGenerator.INSTANCE)
+		.putGenerator(NullIntegerWrapperClass.class, NullArbitraryGenerator.INSTANCE)
+		.putGenerator(BeanIntegerWrapperClass.class, BeanArbitraryGenerator.INSTANCE)
+		.putGenerator(ConstructorPropertiesIntegerWrapperClass.class, ConstructorPropertiesArbitraryGenerator.INSTANCE)
 		.build();
 
 	@Property
 	void giveMeWhenPutBuilderArbitraryGenerator() {
 		// when
-		BuilderIntegerClass actual = this.sut.giveMeOne(BuilderIntegerClass.class);
+		BuilderIntegerWrapperClass actual = this.sut.giveMeOne(BuilderIntegerWrapperClass.class);
 
 		then(actual.value).isBetween(Integer.MIN_VALUE, Integer.MAX_VALUE);
 	}
@@ -72,7 +72,7 @@ public class ArbitraryGeneratorTest {
 			.build();
 
 		// when
-		BuilderIntegerClass actual = sut.giveMeBuilder(BuilderIntegerClass.class).sample();
+		BuilderIntegerWrapperClass actual = sut.giveMeBuilder(BuilderIntegerWrapperClass.class).sample();
 
 		then(actual.value).isBetween(Integer.MIN_VALUE, Integer.MAX_VALUE);
 	}
@@ -85,7 +85,8 @@ public class ArbitraryGeneratorTest {
 			.build();
 
 		// when
-		FieldReflectionIntegerClass actual = sut.giveMeBuilder(FieldReflectionIntegerClass.class).sample();
+		FieldReflectionIntegerWrapperClass actual =
+			sut.giveMeBuilder(FieldReflectionIntegerWrapperClass.class).sample();
 
 		then(actual.value).isBetween(Integer.MIN_VALUE, Integer.MAX_VALUE);
 	}
@@ -93,7 +94,7 @@ public class ArbitraryGeneratorTest {
 	@Property
 	void giveMeWhenPutFieldReflectionArbitraryGenerator() {
 		// when
-		FieldReflectionIntegerClass actual = this.sut.giveMeOne(FieldReflectionIntegerClass.class);
+		FieldReflectionIntegerWrapperClass actual = this.sut.giveMeOne(FieldReflectionIntegerWrapperClass.class);
 
 		then(actual.value).isBetween(Integer.MIN_VALUE, Integer.MAX_VALUE);
 	}
@@ -114,7 +115,7 @@ public class ArbitraryGeneratorTest {
 	@Property
 	void giveMeWhenPutNullArbitraryGenerator() {
 		// when
-		NullIntegerClass actual = this.sut.giveMeOne(NullIntegerClass.class);
+		NullIntegerWrapperClass actual = this.sut.giveMeOne(NullIntegerWrapperClass.class);
 
 		then(actual).isNull();
 	}
@@ -127,7 +128,7 @@ public class ArbitraryGeneratorTest {
 			.build();
 
 		// when
-		BeanIntegerClass actual = sut.giveMeOne(BeanIntegerClass.class);
+		BeanIntegerWrapperClass actual = sut.giveMeOne(BeanIntegerWrapperClass.class);
 
 		then(actual.value).isBetween(Integer.MIN_VALUE, Integer.MAX_VALUE);
 	}
@@ -135,7 +136,7 @@ public class ArbitraryGeneratorTest {
 	@Property
 	void giveMeWhenPutBeanArbitraryGenerator() {
 		// when
-		BeanIntegerClass actual = this.sut.giveMeOne(BeanIntegerClass.class);
+		BeanIntegerWrapperClass actual = this.sut.giveMeOne(BeanIntegerWrapperClass.class);
 
 		then(actual.value).isBetween(Integer.MIN_VALUE, Integer.MAX_VALUE);
 	}
@@ -148,7 +149,7 @@ public class ArbitraryGeneratorTest {
 			.build();
 
 		// when
-		ConstructorPropertiesIntegerClass actual = sut.giveMeOne(ConstructorPropertiesIntegerClass.class);
+		ConstructorPropertiesIntegerWrapperClass actual = sut.giveMeOne(ConstructorPropertiesIntegerWrapperClass.class);
 
 		then(actual.value).isBetween(Integer.MIN_VALUE, Integer.MAX_VALUE);
 	}
@@ -156,7 +157,8 @@ public class ArbitraryGeneratorTest {
 	@Property
 	void giveMeWhenPutConstructorPropertiesArbitraryGenerator() {
 		// when
-		ConstructorPropertiesIntegerClass actual = this.sut.giveMeOne(ConstructorPropertiesIntegerClass.class);
+		ConstructorPropertiesIntegerWrapperClass actual =
+			this.sut.giveMeOne(ConstructorPropertiesIntegerWrapperClass.class);
 
 		then(actual.value).isBetween(Integer.MIN_VALUE, Integer.MAX_VALUE);
 	}
@@ -169,16 +171,16 @@ public class ArbitraryGeneratorTest {
 			.build();
 
 		// when
-		BuilderIntegerClass actual = sut.giveMeBuilder(BuilderIntegerClass.class)
-			.customize(BuilderIntegerClass.class, new ArbitraryCustomizer<BuilderIntegerClass>() {
+		BuilderIntegerWrapperClass actual = sut.giveMeBuilder(BuilderIntegerWrapperClass.class)
+			.customize(BuilderIntegerWrapperClass.class, new ArbitraryCustomizer<BuilderIntegerWrapperClass>() {
 				@Override
-				public void customizeFields(Class<BuilderIntegerClass> type, FieldArbitraries fieldArbitraries) {
+				public void customizeFields(Class<BuilderIntegerWrapperClass> type, FieldArbitraries fieldArbitraries) {
 					fieldArbitraries.putArbitrary("value", Arbitraries.just(1));
 				}
 
 				@Nullable
 				@Override
-				public BuilderIntegerClass customizeFixture(@Nullable BuilderIntegerClass fixture) {
+				public BuilderIntegerWrapperClass customizeFixture(@Nullable BuilderIntegerWrapperClass fixture) {
 					return fixture;
 				}
 			})
@@ -191,7 +193,7 @@ public class ArbitraryGeneratorTest {
 	void generatorMapBeanGeneratorWithBuilderGenerator() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.putGenerator(BuilderIntegerClass.class, BuilderArbitraryGenerator.INSTANCE)
+			.putGenerator(BuilderIntegerWrapperClass.class, BuilderArbitraryGenerator.INSTANCE)
 			.build();
 
 		// when
@@ -205,7 +207,7 @@ public class ArbitraryGeneratorTest {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.defaultGenerator(FieldReflectionArbitraryGenerator.INSTANCE)
-			.putGenerator(BuilderIntegerClass.class, BuilderArbitraryGenerator.INSTANCE)
+			.putGenerator(BuilderIntegerWrapperClass.class, BuilderArbitraryGenerator.INSTANCE)
 			.build();
 
 		// when
@@ -219,15 +221,15 @@ public class ArbitraryGeneratorTest {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.defaultGenerator(FieldReflectionArbitraryGenerator.INSTANCE)
-			.putGenerator(BuilderIntegerClass.class, BuilderArbitraryGenerator.INSTANCE)
-			.addCustomizer(BuilderIntegerClass.class, new ArbitraryCustomizer<BuilderIntegerClass>() {
+			.putGenerator(BuilderIntegerWrapperClass.class, BuilderArbitraryGenerator.INSTANCE)
+			.addCustomizer(BuilderIntegerWrapperClass.class, new ArbitraryCustomizer<BuilderIntegerWrapperClass>() {
 				@Override
-				public void customizeFields(Class<BuilderIntegerClass> type, FieldArbitraries fieldArbitraries) {
+				public void customizeFields(Class<BuilderIntegerWrapperClass> type, FieldArbitraries fieldArbitraries) {
 					fieldArbitraries.replaceArbitrary("value", Arbitraries.just(-1));
 				}
 
 				@Override
-				public BuilderIntegerClass customizeFixture(BuilderIntegerClass object) {
+				public BuilderIntegerWrapperClass customizeFixture(BuilderIntegerWrapperClass object) {
 					return object;
 				}
 			})
@@ -314,23 +316,24 @@ public class ArbitraryGeneratorTest {
 			.build();
 
 		// when
-		ConstructorPropertiesIntegerClass actual = sut.giveMeBuilder(ConstructorPropertiesIntegerClass.class)
-			.customize(ConstructorPropertiesIntegerClass.class,
-				new ArbitraryCustomizer<ConstructorPropertiesIntegerClass>() {
-					@Override
-					public void customizeFields(Class<ConstructorPropertiesIntegerClass> type,
-						FieldArbitraries fieldArbitraries) {
-						fieldArbitraries.putArbitrary("value", Arbitraries.just(1));
-					}
+		ConstructorPropertiesIntegerWrapperClass actual =
+			sut.giveMeBuilder(ConstructorPropertiesIntegerWrapperClass.class)
+				.customize(ConstructorPropertiesIntegerWrapperClass.class,
+					new ArbitraryCustomizer<ConstructorPropertiesIntegerWrapperClass>() {
+						@Override
+						public void customizeFields(Class<ConstructorPropertiesIntegerWrapperClass> type,
+							FieldArbitraries fieldArbitraries) {
+							fieldArbitraries.putArbitrary("value", Arbitraries.just(1));
+						}
 
-					@Nullable
-					@Override
-					public ConstructorPropertiesIntegerClass customizeFixture(
-						@Nullable ConstructorPropertiesIntegerClass fixture) {
-						return fixture;
-					}
-				})
-			.sample();
+						@Nullable
+						@Override
+						public ConstructorPropertiesIntegerWrapperClass customizeFixture(
+							@Nullable ConstructorPropertiesIntegerWrapperClass fixture) {
+							return fixture;
+						}
+					})
+				.sample();
 
 		then(actual.value).isEqualTo(1);
 	}
@@ -339,32 +342,32 @@ public class ArbitraryGeneratorTest {
 	void overwriteCustomize() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.addCustomizer(BuilderIntegerClass.class, new ArbitraryCustomizer<BuilderIntegerClass>() {
+			.addCustomizer(BuilderIntegerWrapperClass.class, new ArbitraryCustomizer<BuilderIntegerWrapperClass>() {
 				@Override
-				public void customizeFields(Class<BuilderIntegerClass> type, FieldArbitraries fieldArbitraries) {
+				public void customizeFields(Class<BuilderIntegerWrapperClass> type, FieldArbitraries fieldArbitraries) {
 					fieldArbitraries.replaceArbitrary("value", Arbitraries.just(-1));
 				}
 
 				@Override
-				public BuilderIntegerClass customizeFixture(BuilderIntegerClass object) {
+				public BuilderIntegerWrapperClass customizeFixture(BuilderIntegerWrapperClass object) {
 					return object;
 				}
 			})
-			.addCustomizer(BuilderIntegerClass.class, new ArbitraryCustomizer<BuilderIntegerClass>() {
+			.addCustomizer(BuilderIntegerWrapperClass.class, new ArbitraryCustomizer<BuilderIntegerWrapperClass>() {
 				@Override
-				public void customizeFields(Class<BuilderIntegerClass> type, FieldArbitraries fieldArbitraries) {
+				public void customizeFields(Class<BuilderIntegerWrapperClass> type, FieldArbitraries fieldArbitraries) {
 					fieldArbitraries.replaceArbitrary("value", Arbitraries.just(-2));
 				}
 
 				@Override
-				public BuilderIntegerClass customizeFixture(BuilderIntegerClass object) {
+				public BuilderIntegerWrapperClass customizeFixture(BuilderIntegerWrapperClass object) {
 					return object;
 				}
 			})
 			.build();
 
 		// when
-		BuilderIntegerClass actual = sut.giveMeBuilder(BuilderIntegerClass.class)
+		BuilderIntegerWrapperClass actual = sut.giveMeBuilder(BuilderIntegerWrapperClass.class)
 			.generator(BuilderArbitraryGenerator.INSTANCE)
 			.sample();
 
@@ -398,12 +401,15 @@ public class ArbitraryGeneratorTest {
 	void customContainerArbitraryNode() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.putContainerArbitraryNodeGenerator(CustomTriple.class, CustomTripleArbitraryNodeGenerator.INSTANCE)
+			.putContainerArbitraryNodeGenerator(
+				CustomTripleGenericClass.class,
+				CustomTripleArbitraryNodeGenerator.INSTANCE
+			)
 			.defaultNotNull(true)
 			.build();
 
 		// when
-		CustomTripleWrapper actual = sut.giveMeOne(CustomTripleWrapper.class);
+		CustomTripleGenericWrapperClass actual = sut.giveMeOne(CustomTripleGenericWrapperClass.class);
 
 		then(actual.value.value1).isNotNull();
 		then(actual.value.value2).isNotNull();
@@ -411,51 +417,52 @@ public class ArbitraryGeneratorTest {
 	}
 
 	@Data
-	public static class CustomTripleWrapper {
-		CustomTriple<String, Integer, Float> value;
+	public static class CustomTripleGenericWrapperClass {
+		CustomTripleGenericClass<String, Integer, Float> value;
 	}
 
 	@Data
-	public static class CustomTriple<T, U, V> {
+	public static class CustomTripleGenericClass<T, U, V> {
 		T value1;
 		U value2;
 		V value3;
 	}
 
 	@Builder
-	public static class BuilderIntegerClass {
+	public static class BuilderIntegerWrapperClass {
 		int value;
 	}
 
-	public static class FieldReflectionIntegerClass {
+	public static class FieldReflectionIntegerWrapperClass {
 		private int value;
 	}
 
-	public static class NullIntegerClass {
+	public static class NullIntegerWrapperClass {
 		int value;
 	}
 
 	@Data
-	public static class BeanIntegerClass {
+	public static class BeanIntegerWrapperClass {
 		private int value;
 	}
 
-	public static class ConstructorPropertiesIntegerClass {
+	@SuppressWarnings("FieldMayBeFinal")
+	public static class ConstructorPropertiesIntegerWrapperClass {
 		private int value;
 
 		@ConstructorProperties("value")
-		public ConstructorPropertiesIntegerClass(int value) {
+		public ConstructorPropertiesIntegerWrapperClass(int value) {
 			this.value = value;
 		}
 	}
 
 	@Data
 	public static class BeanInnerBuilderClass {
-		BuilderIntegerClass value;
+		BuilderIntegerWrapperClass value;
 	}
 
 	public static class FieldReflectionInnerBuilderClass {
-		BuilderIntegerClass value;
+		BuilderIntegerWrapperClass value;
 	}
 
 	@Data
@@ -467,8 +474,10 @@ public class ArbitraryGeneratorTest {
 		private int value;
 	}
 
+	@SuppressWarnings("FieldMayBeFinal")
 	public static class ConstructorPropertiesTwiceClass {
 		private int value;
+		@SuppressWarnings("FieldCanBeLocal")
 		private String stringValue;
 
 		@ConstructorProperties("value")
@@ -483,6 +492,7 @@ public class ArbitraryGeneratorTest {
 		}
 	}
 
+	@SuppressWarnings("FieldMayBeFinal")
 	public static class ConstructorPropertiesWithNoMatchingFieldClass {
 		private int value;
 		private String value2;
@@ -502,9 +512,9 @@ public class ArbitraryGeneratorTest {
 		public <T> List<ArbitraryNode<?>> generate(ArbitraryNode<T> nowNode, FieldNameResolver fieldNameResolver) {
 			List<ArbitraryNode<?>> generatedArbitraryNodes = new ArrayList<>();
 			ArbitraryType<T> type = nowNode.getType();
-			ArbitraryType<?> firstChildType = type.getGenericFixtureType(0);
-			ArbitraryType<?> secondChildType = type.getGenericFixtureType(1);
-			ArbitraryType<?> thirdChildType = type.getGenericFixtureType(2);
+			ArbitraryType<?> firstChildType = type.getGenericArbitraryType(0);
+			ArbitraryType<?> secondChildType = type.getGenericArbitraryType(1);
+			ArbitraryType<?> thirdChildType = type.getGenericArbitraryType(2);
 			generatedArbitraryNodes.add(
 				ArbitraryNode.builder()
 					.type(firstChildType)

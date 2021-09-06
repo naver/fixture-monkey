@@ -39,7 +39,7 @@ public class ArrayArbitraryNodeGenerator implements ContainerArbitraryNodeGenera
 		int currentIndex = 0;
 
 		ArbitraryType<T> clazz = nowNode.getType();
-		ArbitraryType<?> childType = clazz.getArrayFixtureType();
+		ArbitraryType<?> childType = clazz.getArrayArbitraryType();
 		String fieldName = nowNode.getFieldName();
 		LazyValue<T> lazyValue = nowNode.getValue();
 

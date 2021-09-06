@@ -43,7 +43,7 @@ public class DefaultContainerArbitraryNodeGenerator implements ContainerArbitrar
 		ArbitraryType<T> clazz = nowNode.getType();
 		LazyValue<T> lazyValue = nowNode.getValue();
 		String fieldName = nowNode.getFieldName();
-		ArbitraryType<?> elementType = clazz.getGenericFixtureType(0);
+		ArbitraryType<?> elementType = clazz.getGenericArbitraryType(0);
 
 		List<ArbitraryNode<?>> generatedNodeList = new ArrayList<>();
 

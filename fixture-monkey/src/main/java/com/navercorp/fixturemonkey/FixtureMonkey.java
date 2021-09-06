@@ -105,8 +105,8 @@ public class FixtureMonkey {
 	}
 
 	public <T> ArbitraryBuilder<T> giveMeBuilder(T value) {
-		return new ArbitraryBuilder<>(
-			value,
+		return new ArbitraryBuilder<T>(
+			() -> value,
 			new ArbitraryTraverser(options),
 			defaultGenerator,
 			validator,

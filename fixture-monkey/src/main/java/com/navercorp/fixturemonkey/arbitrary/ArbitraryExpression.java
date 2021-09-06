@@ -60,21 +60,6 @@ public final class ArbitraryExpression implements Comparable<ArbitraryExpression
 		return expList.size();
 	}
 
-	public Exp getFieldExp() {
-		return expList.get(expList.size() - 1);
-	}
-
-	// expression(fieldName + index)이 아닌 fieldName의 일치만 확인합니다
-	public boolean hasField(String fieldName) {
-		return expList.stream()
-			.map(Exp::getName)
-			.anyMatch(fieldName::equals);
-	}
-
-	public boolean isFieldName(String fieldName) {
-		return getFieldExp().equals(new Exp(fieldName));
-	}
-
 	public Exp get(int index) {
 		return expList.get(index);
 	}
@@ -156,7 +141,7 @@ public final class ArbitraryExpression implements Comparable<ArbitraryExpression
 
 		@Override
 		public int hashCode() {
-			return 0; // allIndex 처리를 위해 hash 값을 0으로 초기화, equals로 판별
+			return 0; // for allIndex, hash always return 0.
 		}
 
 		public String toString() {
@@ -183,9 +168,9 @@ public final class ArbitraryExpression implements Comparable<ArbitraryExpression
 				while (li != -1 && ri != -1) {
 					if (ri - li > 1) {
 						String indexString = expression.substring(li + 1, ri);
-						final int indexValue =
-							indexString.equals(ALL_INDEX_STRING)
-								? NO_OR_ALL_INDEX_INTEGER_VALUE : Integer.parseInt(indexString);
+						final int indexValue = indexString.equals(ALL_INDEX_STRING)
+							? NO_OR_ALL_INDEX_INTEGER_VALUE
+							: Integer.parseInt(indexString);
 						this.index.add(new ExpIndex(indexValue));
 					}
 					expression = expression.substring(ri + 1);
@@ -257,7 +242,6 @@ public final class ArbitraryExpression implements Comparable<ArbitraryExpression
 				for (int i = 0; i < indexLength; i++) {
 					ExpIndex index = indices.get(i);
 					ExpIndex oIndex = oIndices.get(i);
-					// name이 같을 때는 index가 작은 순서
 					int indexCompare = oIndex.compareTo(index);
 					if (indexCompare != 0) {
 						return indexCompare;

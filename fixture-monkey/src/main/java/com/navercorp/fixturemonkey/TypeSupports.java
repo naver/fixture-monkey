@@ -20,17 +20,16 @@ package com.navercorp.fixturemonkey;
 
 import java.math.BigDecimal;
 import java.time.temporal.Temporal;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 public final class TypeSupports {
+	private static final Map<Class<?>, Class<?>> WRAPPER_PRIMITIVE_CLASS_MAPPER;
+
 	private TypeSupports() {
 	}
-
-	private static Map<Class<?>, Class<?>> WRAPPER_PRIMITIVE_CLASS_MAPPER;
 
 	static {
 		Map<Class<?>, Class<?>> map = new HashMap<>();

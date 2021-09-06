@@ -19,7 +19,7 @@ allprojects {
 }
 
 subprojects {
-    apply plugin: "java"
+    apply plugin: "java-library"
     apply plugin: "maven-publish"
     apply plugin: "signing"
 
@@ -31,8 +31,8 @@ subprojects {
     }
 
     dependencies {
-        compile("com.google.code.findbugs:jsr305:3.0.2")
-        compile("org.slf4j:slf4j-api:1.7.30")
+        api("com.google.code.findbugs:jsr305:3.0.2")
+        compileOnly("org.slf4j:slf4j-api:1.7.30")
         testCompile("ch.qos.logback:logback-classic:1.2.3")
     }
 

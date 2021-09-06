@@ -33,7 +33,7 @@ class FixtureMonkeyExtensionsTest {
     @Property
     fun giveMe() {
         // when
-        val actual = sut.giveMe<TestClass>().take(10).toList()
+        val actual = sut.giveMe<IntegerStringWrapperClass>().take(10).toList()
 
         then(actual).hasSize(10).allSatisfy {
             with(it) {
@@ -47,14 +47,14 @@ class FixtureMonkeyExtensionsTest {
     fun giveMeWithCustomizer() {
         // when
         val actual = sut.giveMe(
-            object : KArbitraryCustomizer<TestClass> {
-                override fun customizeFields(type: KClass<TestClass>, fieldArbitraries: FieldArbitraries) {
+            object : KArbitraryCustomizer<IntegerStringWrapperClass> {
+                override fun customizeFields(type: KClass<IntegerStringWrapperClass>, fieldArbitraries: FieldArbitraries) {
                     fieldArbitraries.apply {
                         replaceArbitrary("intValue", Arbitraries.just(-1))
                     }
                 }
 
-                override fun customizeFixture(target: TestClass?): TestClass? {
+                override fun customizeFixture(target: IntegerStringWrapperClass?): IntegerStringWrapperClass? {
                     return target?.copy(stringValue = "test_value")
                 }
             }
@@ -71,7 +71,7 @@ class FixtureMonkeyExtensionsTest {
     @Property
     fun giveMeList() {
         // when
-        val actual = sut.giveMe<TestClass>(10)
+        val actual = sut.giveMe<IntegerStringWrapperClass>(10)
 
         then(actual).hasSize(10).allSatisfy {
             with(it) {
@@ -86,14 +86,14 @@ class FixtureMonkeyExtensionsTest {
         // when
         val actual = sut.giveMe(
             10,
-            object : KArbitraryCustomizer<TestClass> {
-                override fun customizeFields(type: KClass<TestClass>, fieldArbitraries: FieldArbitraries) {
+            object : KArbitraryCustomizer<IntegerStringWrapperClass> {
+                override fun customizeFields(type: KClass<IntegerStringWrapperClass>, fieldArbitraries: FieldArbitraries) {
                     fieldArbitraries.apply {
                         replaceArbitrary("intValue", Arbitraries.just(-1))
                     }
                 }
 
-                override fun customizeFixture(target: TestClass?): TestClass? {
+                override fun customizeFixture(target: IntegerStringWrapperClass?): IntegerStringWrapperClass? {
                     return target?.copy(stringValue = "test_value")
                 }
             }
@@ -110,7 +110,7 @@ class FixtureMonkeyExtensionsTest {
     @Property
     fun giveMeOne() {
         // when
-        val actual = sut.giveMeOne<TestClass>()
+        val actual = sut.giveMeOne<IntegerStringWrapperClass>()
 
         with(actual) {
             then(intValue).isBetween(Int.MIN_VALUE, Int.MAX_VALUE)
@@ -122,14 +122,14 @@ class FixtureMonkeyExtensionsTest {
     fun giveMeOneWithCustomizer() {
         // when
         val actual = sut.giveMeOne(
-            object : KArbitraryCustomizer<TestClass> {
-                override fun customizeFields(type: KClass<TestClass>, fieldArbitraries: FieldArbitraries) {
+            object : KArbitraryCustomizer<IntegerStringWrapperClass> {
+                override fun customizeFields(type: KClass<IntegerStringWrapperClass>, fieldArbitraries: FieldArbitraries) {
                     fieldArbitraries.apply {
                         replaceArbitrary("intValue", Arbitraries.just(-1))
                     }
                 }
 
-                override fun customizeFixture(target: TestClass?): TestClass? {
+                override fun customizeFixture(target: IntegerStringWrapperClass?): IntegerStringWrapperClass? {
                     return target?.copy(stringValue = "test_value")
                 }
             }
@@ -144,7 +144,7 @@ class FixtureMonkeyExtensionsTest {
     @Property
     fun giveMeArbitrary() {
         // when
-        val actual = sut.giveMeArbitrary<TestClass>()
+        val actual = sut.giveMeArbitrary<IntegerStringWrapperClass>()
 
         then(actual).isNotNull
     }
@@ -152,7 +152,7 @@ class FixtureMonkeyExtensionsTest {
     @Property
     fun giveMeBuilder() {
         // when
-        val actual = sut.giveMeBuilder<TestClass>()
+        val actual = sut.giveMeBuilder<IntegerStringWrapperClass>()
 
         then(actual).isNotNull
     }
@@ -160,7 +160,7 @@ class FixtureMonkeyExtensionsTest {
     @Property
     fun giveMeBuilderWithOptions() {
         // when
-        val actual = sut.giveMeBuilder<TestClass>(ArbitraryOption.builder().build())
+        val actual = sut.giveMeBuilder<IntegerStringWrapperClass>(ArbitraryOption.builder().build())
 
         then(actual).isNotNull
     }
@@ -168,13 +168,13 @@ class FixtureMonkeyExtensionsTest {
     @Property
     fun giveMeBuilderWithValue() {
         // when
-        val value = TestClass(1, "test")
+        val value = IntegerStringWrapperClass(1, "test")
         val actual = sut.giveMeBuilder(value)
 
         then(actual).isNotNull
     }
 
-    data class TestClass(
+    data class IntegerStringWrapperClass(
         val intValue: Int,
         val stringValue: String,
     )

@@ -83,7 +83,7 @@ import com.navercorp.fixturemonkey.generator.UuidAnnotatedArbitraryGenerator;
 import com.navercorp.fixturemonkey.generator.ZonedDateTimeAnnotatedArbitraryGenerator;
 
 public final class ArbitraryOption {
-	public static final ArbitraryOption DEFAULT_FIXTURE_OPTIONS = ArbitraryOption.builder().build();
+	public static final ArbitraryOption DEFAULT_ARBITRARY_OPTIONS = ArbitraryOption.builder().build();
 
 	private final Map<Class<?>, AnnotatedArbitraryGenerator<?>> annotatedArbitraryMap;
 	private final Map<Class<?>, InterfaceSupplier<?>> interfaceSupplierMap;
