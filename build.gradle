@@ -36,18 +36,11 @@ subprojects {
         testCompile("ch.qos.logback:logback-classic:1.2.3")
     }
 
-    task javadocJar(type: Jar) {
-        archiveClassifier.set("javadoc")
-        from javadoc
-    }
-
-    task sourcesJar(type: Jar) {
-        archiveClassifier.set("sources")
-        from sourceSets.main.allSource
-    }
-
-    artifacts {
-        archives javadocJar, sourcesJar
+    java {
+        withJavadocJar()
+        withSourcesJar()
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
     }
 
     publishing {
@@ -55,31 +48,25 @@ subprojects {
             mavenJava(MavenPublication) {
                 from components.java
 
-                artifact sourcesJar
-                artifact javadocJar
-
                 repositories {
                     maven {
-                        name "sonarType.release"
-                        url "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+                        def ossrhUsername = project.hasProperty("ossrhUsername") ? ossrhUsername : ""
+                        def ossrhPassword = project.hasProperty("ossrhPassword") ? ossrhPassword : ""
+
                         credentials {
-                            username project.hasProperty("ossrhUsername") ? ossrhUsername : ""
-                            password project.hasProperty("ossrhPassword") ? ossrhPassword : ""
+                            username ossrhUsername
+                            password ossrhPassword
                         }
-                    }
-                    maven {
-                        name "sonarType.snapshot"
-                        url "https://oss.sonatype.org/content/repositories/snapshots/"
-                        credentials {
-                            username project.hasProperty("ossrhUsername") ? ossrhUsername : ""
-                            password project.hasProperty("ossrhPassword") ? ossrhPassword : ""
-                        }
+
+                        def releasesRepoUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+                        def snapshotsRepoUrl = "https://oss.sonatype.org/content/repositories/snapshots/"
+                        url = version.endsWith("SNAPSHOT") ? snapshotsRepoUrl : releasesRepoUrl
                     }
                 }
 
                 pom {
                     name = "fixture-monkey"
-                    description = "fixture-monkey"
+                    description = project.description
                     url = "http://github.com/naver/fixture-monkey"
                     licenses {
                         license {
