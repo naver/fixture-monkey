@@ -715,6 +715,26 @@ public class SimpleManipulatorTest {
 		then(actual).hasSizeGreaterThan(5);
 	}
 
+	@Property
+	void giveMeSetForRoot() {
+		// when
+		String actual = this.sut.giveMeBuilder(String.class)
+			.set("test")
+			.sample();
+
+		then(actual).isEqualTo("test");
+	}
+
+	@Property
+	void giveMeSetForRootWithJsonPathRootExpression() {
+		// when
+		String actual = this.sut.giveMeBuilder(String.class)
+			.set("$", "test")
+			.sample();
+
+		then(actual).isEqualTo("test");
+	}
+
 	@Data
 	public static class IntegerWrapperClass {
 		int value;
