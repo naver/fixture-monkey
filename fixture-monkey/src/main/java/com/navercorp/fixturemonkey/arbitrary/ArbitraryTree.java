@@ -42,7 +42,7 @@ public final class ArbitraryTree<T> {
 	public Collection<ArbitraryNode> findAll(ArbitraryExpression arbitraryExpression) {
 		Queue<ArbitraryNode> selectNodes = new LinkedList<>();
 		selectNodes.add(head);
-
+		head.setManipulated(true);
 		List<ArbitraryNode> nextNodes = new ArrayList<>();
 
 		List<Cursor> cursors = CursorFactory.create(arbitraryExpression);
