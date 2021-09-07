@@ -204,7 +204,7 @@ public final class ArbitraryBuilder<T> {
 				this.generator
 			);
 			this.apply(this.builderManipulators);
-			// this.builderManipulators.clear();
+			this.builderManipulators.clear();
 			buildTree.update(this.generator, generatorMap);
 			return buildTree.getArbitrary();
 		}, this.validator, this.validOnly).sample();
@@ -432,7 +432,6 @@ public final class ArbitraryBuilder<T> {
 		this.tree.setDecomposedValue(() -> {
 			ArbitraryBuilder<T> copied = appliedBuilder.copy();
 			T sample = copied.sampleInternal();
-			copied.builderManipulators.clear();
 			copied.tree.setDecomposedValue(() -> sample); // fix builder value
 			this.decomposedManipulators.forEach(it -> it.accept(sample, copied));
 			this.builderManipulators.removeAll(appliedBuilder.builderManipulators); // remove pre-decompose manipulators
