@@ -253,10 +253,8 @@ public final class ArbitraryBuilder<T> {
 		return this;
 	}
 
-	public ArbitraryBuilder<T> set(Object value) {
-		ArbitraryExpression arbitraryExpression = ArbitraryExpression.from(HEAD_NAME);
-		this.builderManipulators.add(new ArbitrarySet<>(arbitraryExpression, value));
-		return this;
+	public ArbitraryBuilder<T> set(@Nullable Object value) {
+		return this.set(HEAD_NAME, value);
 	}
 
 	public ArbitraryBuilder<T> setBuilder(String expression, ArbitraryBuilder<?> builder) {

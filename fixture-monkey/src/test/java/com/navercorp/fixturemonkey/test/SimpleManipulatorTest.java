@@ -735,6 +735,26 @@ public class SimpleManipulatorTest {
 		then(actual).isEqualTo("test");
 	}
 
+	@Property
+	void giveMeSetNullForRoot() {
+		// when
+		String actual = this.sut.giveMeBuilder(String.class)
+			.set(null)
+			.sample();
+
+		then(actual).isNull();
+	}
+
+	@Property
+	void giveMeSetArbitraryForRoot() {
+		// when
+		String actual = this.sut.giveMeBuilder(String.class)
+			.set(Arbitraries.strings().ofLength(2))
+			.sample();
+
+		then(actual).hasSize(2);
+	}
+
 	@Data
 	public static class IntegerWrapperClass {
 		int value;
