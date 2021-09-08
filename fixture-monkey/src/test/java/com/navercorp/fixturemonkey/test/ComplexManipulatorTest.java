@@ -501,6 +501,17 @@ public class ComplexManipulatorTest {
 		then(actual1).isNotEqualTo(actual2);
 	}
 
+	@Property
+	void applyTwice() {
+		// when
+		NestedStringClass actual = this.sut.giveMeBuilder(NestedStringClass.class)
+			.apply((value, builder) -> builder.set("value.value", "APPLY" + value.getValue().getValue()))
+			.apply((value, builder) -> {})
+			.sample();
+
+		then(actual.value.value).contains("APPLY");
+	}
+
 	@Data
 	@NoArgsConstructor
 	@AllArgsConstructor

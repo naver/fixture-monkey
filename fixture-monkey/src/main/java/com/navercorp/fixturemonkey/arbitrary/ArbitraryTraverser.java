@@ -119,6 +119,7 @@ public final class ArbitraryTraverser {
 			}
 		} else {
 			if (nowValue != null) {
+				node.setManipulated(true);
 				node.setArbitrary(Arbitraries.just(nowValue.get()));
 			} else if (arbitraryOption.isDefaultArbitraryType(nowNodeType.getType())
 				&& arbitraryOption.isGeneratableClass(clazz)
@@ -190,7 +191,7 @@ public final class ArbitraryTraverser {
 
 		if (defaultArbitraryBuilder != null && !node.isHead() && node.getValue() == null) {
 			node.setValue(() -> (T)defaultArbitraryBuilder.sample());
-			node.setManipulated(true);
+			node.setManipulated(true); // fixed value would not inject as null
 		}
 	}
 
