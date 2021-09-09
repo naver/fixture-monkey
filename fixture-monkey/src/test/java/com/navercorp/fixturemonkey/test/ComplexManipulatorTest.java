@@ -506,10 +506,38 @@ public class ComplexManipulatorTest {
 		// when
 		NestedStringClass actual = this.sut.giveMeBuilder(NestedStringClass.class)
 			.apply((value, builder) -> builder.set("value.value", "APPLY" + value.getValue().getValue()))
-			.apply((value, builder) -> {})
+			.apply((value, builder) -> {
+			})
 			.sample();
 
 		then(actual.value.value).contains("APPLY");
+	}
+
+	@Property
+	void fixed() {
+		// given
+		ArbitraryBuilder<StringWrapperClass> arbitraryBuilder = this.sut.giveMeBuilder(StringWrapperClass.class)
+			.fixed();
+
+		// when
+		StringWrapperClass sampled1 = arbitraryBuilder.sample();
+		StringWrapperClass sampled2 = arbitraryBuilder.sample();
+
+		then(sampled1).isEqualTo(sampled2);
+	}
+
+	@Property
+	void fixedSet() {
+		// given
+		ArbitraryBuilder<StringWrapperClass> arbitraryBuilder = this.sut.giveMeBuilder(StringWrapperClass.class)
+			.fixed();
+
+		// when
+		StringWrapperClass actual = arbitraryBuilder
+			.set("value", "set")
+			.sample();
+
+		then(actual.value).isEqualTo("set");
 	}
 
 	@Data
