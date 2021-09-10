@@ -449,6 +449,12 @@ public final class ArbitraryBuilder<T> {
 		});
 	}
 
+	public ArbitraryBuilder<T> fixed() {
+		T sampled = this.copy().sample();
+		this.tree.setDecomposedValue(() -> sampled);
+		return this;
+	}
+
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	public ArbitraryBuilder<T> apply(MetadataManipulator manipulator) {
 		ArbitraryExpression arbitraryExpression = manipulator.getArbitraryExpression();
