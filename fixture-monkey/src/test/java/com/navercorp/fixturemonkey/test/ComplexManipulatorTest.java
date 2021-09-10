@@ -540,6 +540,37 @@ public class ComplexManipulatorTest {
 		then(actual.value).isEqualTo("set");
 	}
 
+	@Property
+	void fixedRegister() {
+		// given
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.registerGroup(FixedArbitraryGroup.class)
+			.build();
+
+		// when
+		StringWrapperClass actual1 = sut.giveMeOne(StringWrapperClass.class);
+		StringWrapperClass actual2 = sut.giveMeOne(StringWrapperClass.class);
+
+		then(actual1).isEqualTo(actual2);
+	}
+
+	@Property
+	void fixedRegisterList() {
+		// given
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.registerGroup(FixedArbitraryGroup.class)
+			.build();
+
+		// when
+		NestedStringListClass actual = sut.giveMeOne(NestedStringListClass.class);
+
+		// then
+		List<StringWrapperClass> distinct = actual.values.stream()
+			.distinct()
+			.collect(Collectors.toList());
+		then(distinct).hasSizeBetween(0, 1);
+	}
+
 	@Data
 	@NoArgsConstructor
 	@AllArgsConstructor
@@ -622,6 +653,16 @@ public class ComplexManipulatorTest {
 			return fixture.giveMeBuilder(StringWrapperClass.class)
 				.apply((it, builder) -> {
 				});
+		}
+	}
+
+	public static class FixedArbitraryGroup {
+		public FixedArbitraryGroup() {
+		}
+
+		public ArbitraryBuilder<StringWrapperClass> string(FixtureMonkey fixture) {
+			return fixture.giveMeBuilder(StringWrapperClass.class)
+				.fixed();
 		}
 	}
 }

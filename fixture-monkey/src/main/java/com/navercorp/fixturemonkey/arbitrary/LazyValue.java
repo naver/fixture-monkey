@@ -23,14 +23,22 @@ import java.util.function.Supplier;
 public class LazyValue<T> {
 	private T value;
 	private final Supplier<T> supplier;
+	private final boolean fixed;
 
 	public LazyValue(T value) {
 		this.value = value;
 		this.supplier = () -> value;
+		this.fixed = true;
+	}
+
+	public LazyValue(Supplier<T> supplier, boolean fixed) {
+		this.supplier = supplier;
+		this.fixed = fixed;
 	}
 
 	public LazyValue(Supplier<T> supplier) {
 		this.supplier = supplier;
+		this.fixed = false;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -53,6 +61,8 @@ public class LazyValue<T> {
 	}
 
 	public void clear() {
-		this.value = null;
+		if (!fixed) {
+			this.value = null;
+		}
 	}
 }
