@@ -571,6 +571,20 @@ public class ComplexManipulatorTest {
 		then(distinct).hasSizeBetween(0, 1);
 	}
 
+	@Property
+	void fixedWithSetArbitrary(){
+		// given
+		ArbitraryBuilder<StringWrapperClass> arbitraryBuilder = this.sut.giveMeBuilder(StringWrapperClass.class)
+			.set("value",Arbitraries.strings().numeric())
+			.fixed();
+
+		// when
+		StringWrapperClass actual1 = arbitraryBuilder.sample();
+		StringWrapperClass actual2 = arbitraryBuilder.sample();
+
+		then(actual1).isEqualTo(actual2);
+	}
+
 	@Data
 	@NoArgsConstructor
 	@AllArgsConstructor
