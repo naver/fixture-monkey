@@ -204,6 +204,10 @@ public final class ArbitraryNode<T> {
 		this.getStatus().setValue(new LazyValue<>(value));
 	}
 
+	public void setFixedValue(Supplier<T> value) {
+		this.getStatus().setValue(new LazyValue<>(value, true));
+	}
+
 	public void clearValue() {
 		this.getStatus().setValue(null);
 	}

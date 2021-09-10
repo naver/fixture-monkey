@@ -124,6 +124,10 @@ public final class ArbitraryTree<T> {
 		this.head.setValue(supplier);
 	}
 
+	public void setFixedDecomposedValue(Supplier<T> supplier) {
+		this.head.setFixedValue(supplier);
+	}
+
 	public ArbitraryTree<T> copy() {
 		return new ArbitraryTree<>(this.head.copy());
 	}
