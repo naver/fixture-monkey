@@ -453,10 +453,10 @@ public final class ArbitraryBuilder<T> {
 		ArbitraryBuilder<T> copied = this.copy();
 
 		this.tree.setFixedDecomposedValue(() -> {
+			this.builderManipulators.removeAll(copied.builderManipulators); // remove pre-decompose manipulators
 			T sample = copied.sampleInternal();
 			copied.tree.setFixedDecomposedValue(() -> sample); // fix builder value
 			this.decomposedManipulators.forEach(it -> it.accept(sample, copied));
-			this.builderManipulators.removeAll(copied.builderManipulators); // remove pre-decompose manipulators
 			return copied.sampleInternal();
 		});
 		return this;
