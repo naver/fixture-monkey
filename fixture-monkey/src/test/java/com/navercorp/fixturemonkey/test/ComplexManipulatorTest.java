@@ -505,6 +505,7 @@ public class ComplexManipulatorTest {
 	void applyTwice() {
 		// when
 		NestedStringClass actual = this.sut.giveMeBuilder(NestedStringClass.class)
+			.setNotNull("value")
 			.apply((value, builder) -> builder.set("value.value", "APPLY" + value.getValue().getValue()))
 			.apply((value, builder) -> {
 			})
