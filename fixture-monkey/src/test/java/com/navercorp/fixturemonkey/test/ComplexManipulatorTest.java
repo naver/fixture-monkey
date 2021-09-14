@@ -573,10 +573,43 @@ public class ComplexManipulatorTest {
 	}
 
 	@Property
-	void fixedWithSetArbitrary(){
+	void acceptIfWithSetWithRegister() {
+		// given
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.registerGroup(FixedSetArbitraryArbitraryGroup.class)
+			.build();
+
+		// when
+		StringWrapperClass actual = sut.giveMeBuilder(StringWrapperClass.class)
+			.set("value", "test")
+			.acceptIf(it -> it.value.equals("test"), it -> it.set("value", "value"))
+			.sample();
+
+		then(actual.value).isEqualTo("value");
+	}
+
+	@Property
+	void fixedRegisterAcceptIf() {
+		// given
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.registerGroup(ApplyArbitraryGroup.class)
+			.build();
+
+		// when
+		StringWrapperClass actual = sut.giveMeBuilder(StringWrapperClass.class)
+			.set("value", "test")
+			.acceptIf(it -> it.value.equals("test"), it -> it.set("value", "value"))
+			.fixed()
+			.sample();
+
+		then(actual.value).isEqualTo("value");
+	}
+
+	@Property
+	void fixedWithSetArbitrary() {
 		// given
 		ArbitraryBuilder<StringWrapperClass> arbitraryBuilder = this.sut.giveMeBuilder(StringWrapperClass.class)
-			.set("value",Arbitraries.strings().numeric())
+			.set("value", Arbitraries.strings().numeric())
 			.fixed();
 
 		// when
@@ -584,6 +617,42 @@ public class ComplexManipulatorTest {
 		StringWrapperClass actual2 = arbitraryBuilder.sample();
 
 		then(actual1).isEqualTo(actual2);
+	}
+
+	@Property
+	void acceptIfWithSetWithFixedOverride() {
+		// when
+		StringWrapperClass actual = this.sut.giveMeBuilder(StringWrapperClass.class)
+			.acceptIf(it -> true, it -> it.set("value", "value"))
+			.set("value", "fixed")
+			.fixed()
+			.sample();
+
+		then(actual.value).isEqualTo("fixed");
+	}
+
+	@Property
+	void acceptIfWithFixed() {
+		// when
+		StringWrapperIntegerWrapperClass actual = this.sut.giveMeBuilder(StringWrapperIntegerWrapperClass.class)
+			.acceptIf(it -> true, it -> it.set("value1.value", "value"))
+			.fixed()
+			.sample();
+
+		then(actual.value1.value).isEqualTo("value");
+	}
+
+	@Property
+	void acceptIfWithSetWithFixed() {
+		// when
+		StringWrapperIntegerWrapperClass actual = this.sut.giveMeBuilder(StringWrapperIntegerWrapperClass.class)
+			.acceptIf(it -> true, it -> it.set("value1.value", "value"))
+			.set("value2.value", 5)
+			.fixed()
+			.sample();
+
+		then(actual.value1.value).isEqualTo("value");
+		then(actual.value2.value).isEqualTo(5);
 	}
 
 	@Data
@@ -677,6 +746,17 @@ public class ComplexManipulatorTest {
 
 		public ArbitraryBuilder<StringWrapperClass> string(FixtureMonkey fixture) {
 			return fixture.giveMeBuilder(StringWrapperClass.class)
+				.fixed();
+		}
+	}
+
+	public static class FixedSetArbitraryArbitraryGroup {
+		public FixedSetArbitraryArbitraryGroup() {
+		}
+
+		public ArbitraryBuilder<StringWrapperClass> string(FixtureMonkey fixture) {
+			return fixture.giveMeBuilder(StringWrapperClass.class)
+				.set("value", Arbitraries.strings())
 				.fixed();
 		}
 	}
