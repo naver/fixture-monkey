@@ -210,6 +210,22 @@ public final class ArbitraryBuilder<T> {
 		}, this.validator, this.validOnly).sample();
 	}
 
+	@SuppressWarnings("unchecked")
+	private T sampleInternal(List<BuilderManipulator> manipulators) {
+		return (T)this.tree.result(() -> {
+			ArbitraryTree<T> buildTree = this.tree;
+
+			this.traverser.traverse(
+				buildTree,
+				false,
+				this.generator
+			);
+			this.apply(manipulators);
+			buildTree.update(this.generator, generatorMap);
+			return buildTree.getArbitrary();
+		}, this.validator, this.validOnly).sample();
+	}
+
 	public List<T> sampleList(int size) {
 		return this.sampleStream().limit(size).collect(toList());
 	}
@@ -453,11 +469,9 @@ public final class ArbitraryBuilder<T> {
 		ArbitraryBuilder<T> copied = this.copy();
 
 		this.tree.setFixedDecomposedValue(() -> {
-			T sample = copied.sampleInternal();
-			copied.tree.setFixedDecomposedValue(() -> sample); // fix builder value
-			this.decomposedManipulators.forEach(it -> it.accept(sample, copied));
-			this.builderManipulators.removeAll(copied.builderManipulators); // remove pre-decompose manipulators
-			return copied.sampleInternal();
+			T sampled = copied.sampleInternal(this.builderManipulators); // sample with pre-fixed manipulators
+			this.builderManipulators.removeAll(copied.builderManipulators); // remove pre-fixed manipulators
+			return sampled;
 		});
 		return this;
 	}
