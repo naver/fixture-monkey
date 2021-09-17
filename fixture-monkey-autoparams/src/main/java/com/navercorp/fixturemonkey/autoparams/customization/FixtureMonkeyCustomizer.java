@@ -23,8 +23,14 @@ import org.javaunit.autoparams.customization.CompositeCustomizer;
 import com.navercorp.fixturemonkey.FixtureMonkey;
 
 public class FixtureMonkeyCustomizer extends CompositeCustomizer {
+	private static FixtureMonkey FIXTURE_MONKEY = FixtureMonkey.create();
+
+	public static void setUp(FixtureMonkey fixtureMonkey) {
+		FIXTURE_MONKEY = fixtureMonkey;
+	}
+
 	public FixtureMonkeyCustomizer() {
-		this(FixtureMonkey.builder().build());
+		this(FIXTURE_MONKEY);
 	}
 
 	public FixtureMonkeyCustomizer(FixtureMonkey fixtureMonkey) {
