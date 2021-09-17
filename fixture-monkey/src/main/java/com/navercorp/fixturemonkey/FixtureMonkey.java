@@ -59,6 +59,7 @@ public class FixtureMonkey {
 
 	/**
 	 * Equivalent to {@code FixtureMonkey.builder().build()}
+	 * @return FixtureMonkey
 	 */
 	public static FixtureMonkey create() {
 		return FixtureMonkey.builder().build();
