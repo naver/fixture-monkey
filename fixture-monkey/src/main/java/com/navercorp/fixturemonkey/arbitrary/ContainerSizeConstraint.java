@@ -33,7 +33,7 @@ public final class ContainerSizeConstraint {
 	private final boolean minManipulated;
 	private final boolean maxManipulated;
 
-	public ContainerSizeConstraint(@Nullable Integer minSize, @Nullable Integer maxSize){
+	public ContainerSizeConstraint(@Nullable Integer minSize, @Nullable Integer maxSize) {
 		this.minSize = minSize;
 		this.maxSize = maxSize;
 		this.minManipulated = false;
