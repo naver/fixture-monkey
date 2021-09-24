@@ -90,9 +90,13 @@ https://naver.github.io/fixture-monkey/
 ## Submodule
 
 * fixture-monkey-jackson
+  - Supports [jackson](https://github.com/FasterXML/jackson) Serialize/Deserialize object generation.
 * fixture-monkey-kotlin
-* fixture-monkey-autoparams
-* fixture-monkey-mockito
+  - Supports Kotlin.
+* fixture-monkey-autoparams (Experimental)
+  - Extends [AutoParams](https://github.com/JavaUnit/AutoParams) to support parameterized tests.
+* fixture-monkey-mockito (Experimental)
+  - Supports for generating interfaces and abstract classes as [mockito](https://github.com/mockito/mockito) objects.
 
 ## License
 

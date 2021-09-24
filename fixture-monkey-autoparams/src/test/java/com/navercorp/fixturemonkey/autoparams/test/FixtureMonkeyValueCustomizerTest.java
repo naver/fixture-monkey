@@ -27,8 +27,6 @@ import java.util.stream.Stream;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 
-import org.javaunit.autoparams.AutoSource;
-import org.javaunit.autoparams.customization.Customization;
 import org.junit.jupiter.params.ParameterizedTest;
 
 import net.jqwik.api.Arbitrary;
@@ -39,50 +37,44 @@ import lombok.NoArgsConstructor;
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.FixtureMonkey;
-import com.navercorp.fixturemonkey.autoparams.customization.FixtureMonkeyCustomizer;
+import com.navercorp.fixturemonkey.autoparams.FixtureMonkeyAutoSource;
 
 class FixtureMonkeyValueCustomizerTest {
 	@ParameterizedTest
-	@AutoSource
-	@Customization(FixtureMonkeyCustomizer.class)
+	@FixtureMonkeyAutoSource
 	void integerWrapper(IntegerWrapperClass value) {
 		then(value).isNotNull();
 		then(value.getValue()).isGreaterThan(0);
 	}
 
 	@ParameterizedTest
-	@AutoSource
-	@Customization(FixtureMonkeyCustomizer.class)
+	@FixtureMonkeyAutoSource
 	void integerListWrapper(IntegerListClass value) {
 		then(value).isNotNull();
 		then(value.getValues()).isNotNull();
 	}
 
 	@ParameterizedTest
-	@AutoSource
-	@Customization(FixtureMonkeyCustomizer.class)
+	@FixtureMonkeyAutoSource
 	void stringWrapper(StringWrapperClass value) {
 		then(value).isNotNull();
 		then(value.getValue()).isNotNull();
 	}
 
 	@ParameterizedTest
-	@AutoSource
-	@Customization(FixtureMonkeyCustomizer.class)
+	@FixtureMonkeyAutoSource
 	void integerWrapperList(List<IntegerWrapperClass> values) {
 		values.forEach(it -> then(it.getValue()).isGreaterThan(0));
 	}
 
 	@ParameterizedTest
-	@AutoSource
-	@Customization(FixtureMonkeyCustomizer.class)
+	@FixtureMonkeyAutoSource
 	void integerListWrapperStream(Stream<IntegerListClass> values) {
 		values.limit(5).forEach(it -> then(it.getValues()).isNotNull());
 	}
 
 	@ParameterizedTest
-	@AutoSource
-	@Customization(FixtureMonkeyCustomizer.class)
+	@FixtureMonkeyAutoSource
 	void stringWrapperMap(Map<String, StringWrapperClass> map) {
 		map.forEach((key, value) -> {
 			then(key).isNotNull();
@@ -91,65 +83,51 @@ class FixtureMonkeyValueCustomizerTest {
 	}
 
 	@ParameterizedTest
-	@AutoSource
-	@Customization(FixtureMonkeyCustomizer.class)
+	@FixtureMonkeyAutoSource
 	void integerWrapperArbitraryBuilder(ArbitraryBuilder<IntegerWrapperClass> builder) {
 		then(builder).isNotNull();
 		then(builder.sample().getValue()).isGreaterThan(0);
 	}
 
 	@ParameterizedTest
-	@AutoSource
-	@Customization(FixtureMonkeyCustomizer.class)
+	@FixtureMonkeyAutoSource
 	void integerListWrapperArbitraryBuilder(ArbitraryBuilder<IntegerListClass> builder) {
 		then(builder).isNotNull();
 		then(builder.sample().getValues()).isNotNull();
 	}
 
 	@ParameterizedTest
-	@AutoSource
-	@Customization(FixtureMonkeyCustomizer.class)
+	@FixtureMonkeyAutoSource
 	void stringWrapperArbitraryBuilder(ArbitraryBuilder<StringWrapperClass> builder) {
 		then(builder).isNotNull();
 		then(builder.sample().getValue()).isNotNull();
 	}
 
 	@ParameterizedTest
-	@AutoSource
-	@Customization(FixtureMonkeyCustomizer.class)
+	@FixtureMonkeyAutoSource
 	void integerWrapperArbitrary(Arbitrary<IntegerWrapperClass> arbitrary) {
 		then(arbitrary).isNotNull();
 		then(arbitrary.sample().getValue()).isGreaterThan(0);
 	}
 
 	@ParameterizedTest
-	@AutoSource
-	@Customization(FixtureMonkeyCustomizer.class)
+	@FixtureMonkeyAutoSource
 	void integerListWrapperArbitrary(Arbitrary<IntegerListClass> arbitrary) {
 		then(arbitrary).isNotNull();
 		then(arbitrary.sample().getValues()).isNotNull();
 	}
 
 	@ParameterizedTest
-	@AutoSource
-	@Customization(FixtureMonkeyCustomizer.class)
+	@FixtureMonkeyAutoSource
 	void stringWrapperArbitrary(Arbitrary<StringWrapperClass> arbitrary) {
 		then(arbitrary).isNotNull();
 		then(arbitrary.sample().getValue()).isNotNull();
 	}
 
 	@ParameterizedTest
-	@AutoSource
-	@Customization(FixtureMonkeyCustomizer.class)
+	@FixtureMonkeyAutoSource
 	void sutAlwaysGeneratesSameFixtureMonkeyInstances(FixtureMonkey fixture1, FixtureMonkey fixture2) {
 		then(fixture1).isSameAs(fixture2);
-	}
-
-	@ParameterizedTest
-	@AutoSource
-	@Customization(FixtureMonkeyTestableCustomizer.class)
-	void sutGeneratesFixtureMonkeySameAsThatInFixtureMonkeyCustomizer(FixtureMonkey fixture) {
-		then(fixture).isSameAs(FixtureMonkeyTestableCustomizer.getFixtureMonkey());
 	}
 
 	@Data
@@ -169,17 +147,5 @@ class FixtureMonkeyValueCustomizerTest {
 	public static class StringWrapperClass {
 		@NotNull
 		private String value;
-	}
-
-	public static class FixtureMonkeyTestableCustomizer extends FixtureMonkeyCustomizer {
-		private static final FixtureMonkey fixtureMonkey = FixtureMonkey.builder().build();
-
-		public FixtureMonkeyTestableCustomizer() {
-			super(fixtureMonkey);
-		}
-
-		public static FixtureMonkey getFixtureMonkey() {
-			return fixtureMonkey;
-		}
 	}
 }
