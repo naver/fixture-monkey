@@ -71,7 +71,7 @@ public final class ArbitraryBuilder<T> {
 	private final ArbitraryTree<T> tree;
 	private final ArbitraryTraverser traverser;
 	private final List<BuilderManipulator> builderManipulators = new ArrayList<>();
-	private final List<BuilderManipulator> usedManipulators = new ArrayList<>();
+	private final List<BuilderManipulator> usedManipulators;
 	@SuppressWarnings("rawtypes")
 	private final ArbitraryValidator validator;
 	private final Map<Class<?>, ArbitraryGenerator> generatorMap;
@@ -142,7 +142,7 @@ public final class ArbitraryBuilder<T> {
 		ArbitraryValidator validator,
 		ArbitraryCustomizers arbitraryCustomizers,
 		List<BuilderManipulator> builderManipulators,
-		List<BuilderManipulator> appliedManipulators,
+		List<BuilderManipulator> usedManipulators,
 		List<BiConsumer<T, ArbitraryBuilder<T>>> decomposedManipulators,
 		Map<Class<?>, ArbitraryGenerator> generatorMap
 	) {
@@ -152,7 +152,7 @@ public final class ArbitraryBuilder<T> {
 		this.validator = validator;
 		this.arbitraryCustomizers = arbitraryCustomizers;
 		this.builderManipulators.addAll(builderManipulators);
-		this.usedManipulators.addAll(appliedManipulators);
+		this.usedManipulators = usedManipulators;
 		this.decomposedManipulators = decomposedManipulators;
 		this.generatorMap = generatorMap.entrySet().stream()
 			.map(it -> new SimpleEntry<Class<?>, ArbitraryGenerator>(
