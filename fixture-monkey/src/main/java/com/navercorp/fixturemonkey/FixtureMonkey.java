@@ -106,7 +106,7 @@ public class FixtureMonkey {
 	}
 
 	public <T> ArbitraryBuilder<T> giveMeBuilder(T value) {
-		return new ArbitraryBuilder<T>(
+		return new ArbitraryBuilder<>(
 			() -> value,
 			new ArbitraryTraverser(options),
 			defaultGenerator,
@@ -134,7 +134,7 @@ public class FixtureMonkey {
 	) {
 		ArbitraryBuilder<T> defaultArbitraryBuilder = option.getDefaultArbitraryBuilder(clazz);
 		if (defaultArbitraryBuilder != null) {
-			return defaultArbitraryBuilder.copy();
+			return defaultArbitraryBuilder;
 		}
 
 		return new ArbitraryBuilder<>(
