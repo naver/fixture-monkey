@@ -70,7 +70,7 @@ import com.navercorp.fixturemonkey.validator.ArbitraryValidator;
 public final class ArbitraryBuilder<T> {
 	private final ArbitraryTree<T> tree;
 	private final ArbitraryTraverser traverser;
-	private final List<BuilderManipulator> builderManipulators = new ArrayList<>();
+	private final List<BuilderManipulator> builderManipulators;
 	private final List<BuilderManipulator> usedManipulators;
 	@SuppressWarnings("rawtypes")
 	private final ArbitraryValidator validator;
@@ -151,8 +151,8 @@ public final class ArbitraryBuilder<T> {
 		this.generator = getGenerator(generator, arbitraryCustomizers);
 		this.validator = validator;
 		this.arbitraryCustomizers = arbitraryCustomizers;
-		this.builderManipulators.addAll(builderManipulators);
-		this.usedManipulators = usedManipulators;
+		this.builderManipulators = new ArrayList<>(builderManipulators);
+		this.usedManipulators = new ArrayList<>(usedManipulators);
 		this.decomposedManipulators = decomposedManipulators;
 		this.generatorMap = generatorMap.entrySet().stream()
 			.map(it -> new SimpleEntry<Class<?>, ArbitraryGenerator>(
