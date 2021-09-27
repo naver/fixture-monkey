@@ -536,6 +536,10 @@ public final class ArbitraryBuilder<T> {
 		postArbitraryManipulators.forEach(it -> it.accept(this));
 	}
 
+	public boolean isDirty() {
+		return usedManipulators.size() != builderManipulators.size();
+	}
+
 	public ArbitraryBuilder<T> copy() {
 		return new ArbitraryBuilder<>(
 			this.tree.copy(),
