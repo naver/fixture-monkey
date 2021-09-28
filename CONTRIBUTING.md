@@ -7,6 +7,8 @@ this code. Please report unacceptable behavior to [issue](https://github.com/nav
 
 ## How to submit Pull Requests
 
+> Either an issue title or a PR title should be written in English, content could be written in Korean or English
+
 1. Fork `fixture-monkey` on your repository.
 2. Create a new branch from your fixture-monkey main branch (and be sure to be always up-to-date).
 3. Do your work.
