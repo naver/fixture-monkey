@@ -57,7 +57,6 @@ import com.navercorp.fixturemonkey.arbitrary.ArbitraryTree;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryType;
 import com.navercorp.fixturemonkey.arbitrary.BuilderManipulator;
 import com.navercorp.fixturemonkey.arbitrary.ContainerSizeManipulator;
-import com.navercorp.fixturemonkey.arbitrary.LazyValue;
 import com.navercorp.fixturemonkey.arbitrary.MetadataManipulator;
 import com.navercorp.fixturemonkey.arbitrary.PostArbitraryManipulator;
 import com.navercorp.fixturemonkey.customizer.ArbitraryCustomizer;
@@ -468,7 +467,7 @@ public final class ArbitraryBuilder<T> {
 			Integer min = containerSizeManipulator.getMin();
 			Integer max = containerSizeManipulator.getMax();
 
-			Collection<ArbitraryNode> foundNodes = tree.findAll(arbitraryExpression);
+			Collection<ArbitraryNode> foundNodes = this.findNodesByExpression(arbitraryExpression);
 			for (ArbitraryNode foundNode : foundNodes) {
 				if (!foundNode.getType().isContainer()) {
 					throw new IllegalArgumentException("Only Container can set size");
@@ -486,7 +485,7 @@ public final class ArbitraryBuilder<T> {
 
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	public void apply(AbstractArbitrarySet<T> fixtureSet) {
-		Collection<ArbitraryNode> foundNodes = tree.findAll(fixtureSet.getArbitraryExpression());
+		Collection<ArbitraryNode> foundNodes = this.findNodesByExpression(fixtureSet.getArbitraryExpression());
 
 		if (!foundNodes.isEmpty()) {
 			for (ArbitraryNode<T> foundNode : foundNodes) {
@@ -495,25 +494,21 @@ public final class ArbitraryBuilder<T> {
 		}
 	}
 
-	@SuppressWarnings({"rawtypes", "unchecked"})
+	@SuppressWarnings("rawtypes")
 	public ArbitraryBuilder<T> setNullity(ArbitraryNullity arbitraryNullity) {
 		ArbitraryExpression arbitraryExpression = arbitraryNullity.getArbitraryExpression();
-		Collection<ArbitraryNode> foundNodes = tree.findAll(arbitraryExpression);
+		Collection<ArbitraryNode> foundNodes = this.findNodesByExpression(arbitraryExpression);
 		for (ArbitraryNode foundNode : foundNodes) {
-			LazyValue<T> value = foundNode.getValue();
-			if (!arbitraryNullity.toNull() && value != null && value.isEmpty()) { // decompose null value
-				foundNode.clearValue();
-				traverser.traverse(foundNode, foundNode.isKeyOfMapStructure(), generator);
-			} else {
-				foundNode.apply(arbitraryNullity);
-			}
+			foundNode.apply(arbitraryNullity);
 		}
 		return this;
 	}
 
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	public ArbitraryBuilder<T> apply(PostArbitraryManipulator<T> postArbitraryManipulator) {
-		Collection<ArbitraryNode> foundNodes = tree.findAll(postArbitraryManipulator.getArbitraryExpression());
+		Collection<ArbitraryNode> foundNodes = this.findNodesByExpression(
+			postArbitraryManipulator.getArbitraryExpression()
+		);
 		if (!foundNodes.isEmpty()) {
 			for (ArbitraryNode<T> foundNode : foundNodes) {
 				if (postArbitraryManipulator.isMappableTo(foundNode)) {
@@ -599,6 +594,19 @@ public final class ArbitraryBuilder<T> {
 			.filter(PostArbitraryManipulator.class::isInstance)
 			.map(PostArbitraryManipulator.class::cast)
 			.collect(toList());
+	}
+
+	@SuppressWarnings({"rawtypes", "unchecked"})
+	private Collection<ArbitraryNode> findNodesByExpression(ArbitraryExpression arbitraryExpression) {
+		Collection<ArbitraryNode> foundNodes = tree.findAll(arbitraryExpression);
+		ArbitraryNode resetNode = tree.findFirstResetNode();
+
+		if (resetNode != null) {
+			traverser.traverse(resetNode, resetNode.isKeyOfMapStructure(), generator);
+			foundNodes = tree.findAll(arbitraryExpression);
+		}
+
+		return foundNodes;
 	}
 
 	@Override

@@ -88,7 +88,7 @@ public final class ArbitraryTraverser {
 				LazyValue<?> nextValue = getNextValue(nowValue, field);
 				nullable = nextValue == null && nullable;
 				boolean nextActive = (nextValue == null || !nextValue.isEmpty()) && active;
-				if (nowValue != null && nowValue.isEmpty()) {
+				if (node.isDecomposedAsNull()) {
 					node.setArbitrary(Arbitraries.just(null));
 				}
 
