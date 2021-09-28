@@ -598,7 +598,7 @@ public final class ArbitraryBuilder<T> {
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	private Collection<ArbitraryNode> findNodesByExpression(ArbitraryExpression arbitraryExpression) {
 		Collection<ArbitraryNode> foundNodes = tree.findAll(arbitraryExpression);
-		ArbitraryNode resetNode = tree.getFirstResetNode();
+		ArbitraryNode resetNode = tree.findFirstResetNode();
 
 		if (resetNode != null) {
 			traverser.traverse(resetNode, resetNode.isKeyOfMapStructure(), generator);

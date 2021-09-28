@@ -61,8 +61,8 @@ public final class ArbitraryTree<T> {
 	}
 
 	@Nullable
-	public ArbitraryNode<?> getFirstResetNode() {
-		return doGetFirstResetNode(this.head);
+	public ArbitraryNode<?> findFirstResetNode() {
+		return doFindFirstResetNode(this.head);
 	}
 
 	public void update(ArbitraryGenerator defaultGenerator, Map<Class<?>, ArbitraryGenerator> generatorMap) {
@@ -145,14 +145,14 @@ public final class ArbitraryTree<T> {
 
 	@Nullable
 	@SuppressWarnings("rawtypes")
-	private ArbitraryNode<?> doGetFirstResetNode(ArbitraryNode<?> node) {
+	private ArbitraryNode<?> doFindFirstResetNode(ArbitraryNode<?> node) {
 		if (node.isReset()) {
 			return node;
 		}
 		List<ArbitraryNode> children = node.getChildren();
 
 		for (ArbitraryNode child : children) {
-			ArbitraryNode result = doGetFirstResetNode(child);
+			ArbitraryNode result = doFindFirstResetNode(child);
 			if (result != null) {
 				return result;
 			}
