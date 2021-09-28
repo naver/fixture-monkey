@@ -89,8 +89,7 @@ public final class ArbitraryNode<T> {
 				continue;
 			}
 			if (cursor.isMatch(child)) {
-				child.setActive(true);
-				child.setManipulated(true);
+				child.mark();
 				foundChildren.add(child);
 			}
 		}
@@ -212,6 +211,10 @@ public final class ArbitraryNode<T> {
 		this.getStatus().setValue(null);
 	}
 
+	public void setReset(boolean reset) {
+		this.getStatus().setReset(reset);
+	}
+
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	public void addPostArbitraryOperation(PostArbitraryManipulator postArbitraryManipulator) {
 		this.status.addPostArbitraryManipulator(postArbitraryManipulator);
@@ -297,6 +300,15 @@ public final class ArbitraryNode<T> {
 		return this.getStatus().getValue();
 	}
 
+	public boolean isReset() {
+		return this.getStatus().isReset();
+	}
+
+	public boolean isDecomposedAsNull() {
+		LazyValue<T> value = this.getValue();
+		return value != null && value.isEmpty();
+	}
+
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	public ArbitraryNode<T> copy() {
 		List<ArbitraryNode> copyChildren = new ArrayList<>();
@@ -344,6 +356,15 @@ public final class ArbitraryNode<T> {
 		return status;
 	}
 
+	private void mark() {
+		this.setActive(true);
+		this.setManipulated(true);
+		if (this.isDecomposedAsNull()) {
+			this.setReset(true);
+			this.clearValue();
+		}
+	}
+
 	private static final class FixtureNodeStatus<T> {
 		@Nullable
 		private Arbitrary<T> arbitrary = null; // immutable
@@ -354,6 +375,7 @@ public final class ArbitraryNode<T> {
 		private boolean manipulated = false;
 		private boolean active = true; // isNull
 		private boolean fixed = false; // isSet
+		private boolean reset = false;
 
 		private FixtureNodeStatus() {
 		}
@@ -366,7 +388,8 @@ public final class ArbitraryNode<T> {
 			boolean nullable,
 			boolean manipulated,
 			boolean active,
-			boolean fixed
+			boolean fixed,
+			boolean reset
 		) {
 			this.arbitrary = arbitrary;
 			this.containerSizeConstraint = containerSizeConstraint;
@@ -376,6 +399,7 @@ public final class ArbitraryNode<T> {
 			this.manipulated = manipulated;
 			this.active = active;
 			this.fixed = fixed;
+			this.reset = reset;
 		}
 
 		@Nullable
@@ -411,6 +435,10 @@ public final class ArbitraryNode<T> {
 			return value;
 		}
 
+		public boolean isReset() {
+			return reset;
+		}
+
 		public void setArbitrary(@Nullable Arbitrary<T> arbitrary) {
 			this.arbitrary = arbitrary;
 		}
@@ -425,6 +453,10 @@ public final class ArbitraryNode<T> {
 
 		public void setActive(boolean active) {
 			this.active = active;
+		}
+
+		public void setReset(boolean reset) {
+			this.reset = reset;
 		}
 
 		public void setContainerSizeConstraint(@Nullable ContainerSizeConstraint containerSizeConstraint) {
@@ -456,7 +488,8 @@ public final class ArbitraryNode<T> {
 				this.isNullable(),
 				this.isManipulated(),
 				this.isActive(),
-				this.isFixed()
+				this.isFixed(),
+				this.isReset()
 			);
 		}
 
