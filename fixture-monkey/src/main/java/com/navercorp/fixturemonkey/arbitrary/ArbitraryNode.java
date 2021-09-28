@@ -361,6 +361,7 @@ public final class ArbitraryNode<T> {
 		this.setManipulated(true);
 		if (this.isDecomposedAsNull()) {
 			this.setReset(true);
+			this.setArbitrary(null);
 			this.clearValue();
 		}
 	}

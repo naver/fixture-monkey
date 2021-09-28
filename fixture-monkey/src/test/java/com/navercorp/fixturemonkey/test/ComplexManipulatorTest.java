@@ -707,6 +707,18 @@ public class ComplexManipulatorTest {
 		then(actual.value.value).isEqualTo("set");
 	}
 
+	@Property
+	void nullFixedSizeZeroReturnsEmpty(){
+		// when
+		IntegerListWrapperClass actual = this.sut.giveMeBuilder(IntegerListWrapperClass.class)
+			.setNull("values")
+			.fixed()
+			.size("values", 0)
+			.sample();
+
+		then(actual.values).isEmpty();
+	}
+
 	@Data
 	@NoArgsConstructor
 	@AllArgsConstructor

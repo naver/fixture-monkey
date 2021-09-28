@@ -755,6 +755,16 @@ public class SimpleManipulatorTest {
 		then(actual).hasSize(2);
 	}
 
+	@Property
+	void giveMeSizeZeroReturnsEmpty(){
+		// when
+		IntegerListWrapperClass actual = this.sut.giveMeBuilder(IntegerListWrapperClass.class)
+			.size("values", 0)
+			.sample();
+
+		then(actual.values).isEmpty();
+	}
+
 	@Data
 	public static class IntegerWrapperClass {
 		int value;
