@@ -26,6 +26,8 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.function.Supplier;
 
+import javax.annotation.Nullable;
+
 import net.jqwik.api.Arbitrary;
 
 import com.navercorp.fixturemonkey.generator.ArbitraryGenerator;
@@ -56,6 +58,11 @@ public final class ArbitraryTree<T> {
 			nextNodes.clear();
 		}
 		return selectNodes;
+	}
+
+	@Nullable
+	public ArbitraryNode<?> findFirstResetNode() {
+		return doFindFirstResetNode(this.head);
 	}
 
 	public void update(ArbitraryGenerator defaultGenerator, Map<Class<?>, ArbitraryGenerator> generatorMap) {
@@ -134,5 +141,24 @@ public final class ArbitraryTree<T> {
 
 	ArbitraryNode<T> getHead() {
 		return head;
+	}
+
+	@Nullable
+	@SuppressWarnings("rawtypes")
+	private ArbitraryNode<?> doFindFirstResetNode(ArbitraryNode<?> node) {
+		boolean reset = node.isReset();
+		node.setReset(false);
+		if (reset) {
+			return node;
+		}
+		List<ArbitraryNode> children = node.getChildren();
+
+		for (ArbitraryNode child : children) {
+			ArbitraryNode result = doFindFirstResetNode(child);
+			if (result != null) {
+				return result;
+			}
+		}
+		return null;
 	}
 }

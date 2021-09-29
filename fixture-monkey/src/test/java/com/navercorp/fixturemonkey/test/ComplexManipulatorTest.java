@@ -683,6 +683,42 @@ public class ComplexManipulatorTest {
 		then(actual1).isEqualTo(actual2);
 	}
 
+	@Property
+	void nullFixedSize() {
+		// when
+		IntegerListWrapperClass actual = this.sut.giveMeBuilder(IntegerListWrapperClass.class)
+			.setNull("values")
+			.fixed()
+			.size("values", 1)
+			.sample();
+
+		then(actual.values).hasSize(1);
+	}
+
+	@Property
+	void nullFixedSet() {
+		// when
+		NestedStringClass actual = this.sut.giveMeBuilder(NestedStringClass.class)
+			.setNull("value")
+			.fixed()
+			.set("value.value", "set")
+			.sample();
+
+		then(actual.value.value).isEqualTo("set");
+	}
+
+	@Property
+	void nullFixedSizeZeroReturnsEmpty(){
+		// when
+		IntegerListWrapperClass actual = this.sut.giveMeBuilder(IntegerListWrapperClass.class)
+			.setNull("values")
+			.fixed()
+			.size("values", 0)
+			.sample();
+
+		then(actual.values).isEmpty();
+	}
+
 	@Data
 	@NoArgsConstructor
 	@AllArgsConstructor
