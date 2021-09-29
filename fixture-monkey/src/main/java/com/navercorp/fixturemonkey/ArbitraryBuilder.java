@@ -474,7 +474,6 @@ public final class ArbitraryBuilder<T> {
 				}
 				foundNode.setContainerMinSize(min);
 				foundNode.setContainerMaxSize(max);
-				foundNode.clearValue();
 				traverser.traverse(foundNode, false, generator); // regenerate subtree
 			}
 		} else {

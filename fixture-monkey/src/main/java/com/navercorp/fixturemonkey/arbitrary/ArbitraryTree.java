@@ -146,7 +146,9 @@ public final class ArbitraryTree<T> {
 	@Nullable
 	@SuppressWarnings("rawtypes")
 	private ArbitraryNode<?> doFindFirstResetNode(ArbitraryNode<?> node) {
-		if (node.isReset()) {
+		boolean reset = node.isReset();
+		node.setReset(false);
+		if (reset) {
 			return node;
 		}
 		List<ArbitraryNode> children = node.getChildren();
