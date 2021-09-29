@@ -9,7 +9,7 @@ plugins {
 
 dependencies {
     api(project(":fixture-monkey"))
-    api("io.github.javaunit:autoparams:0.2.9")
+    api("io.github.javaunit:autoparams:0.3.0")
 
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.7.0")
     testImplementation("org.assertj:assertj-core:3.18.1")
@@ -98,3 +98,17 @@ jacocoTestCoverageVerification {
     }
 }
 check.dependsOn jacocoTestCoverageVerification
+
+
+jar {
+    manifest {
+        attributes(
+                "Specification-Title": artifactName,
+                "Specification-Version": artifactVersion,
+                "Specification-Vendor": "com.navercorp",
+                "Implementation-Title": artifactName,
+                "Implementation-Version": artifactVersion,
+                "Implementation-Vendor": "com.navercorp"
+        )
+    }
+}

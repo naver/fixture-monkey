@@ -70,8 +70,8 @@ subprojects {
                     url = "http://github.com/naver/fixture-monkey"
                     licenses {
                         license {
-                            name = 'The Apache License, Version 2.0'
-                            url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                            name = "The Apache License, Version 2.0"
+                            url = "http://www.apache.org/licenses/LICENSE-2.0.txt"
                         }
                     }
                     developers {
@@ -80,11 +80,16 @@ subprojects {
                             name = "SeongAh Jo"
                             email = "ah.jo@navercorp.com"
                         }
+                        developer {
+                            id = "mhyeon-lee"
+                            name = "Myeonghyeon Lee"
+                            email = "mheyon.lee@navercorp.com"
+                        }
                     }
                     scm {
-                        connection = 'scm:git:git://github.com/naver/fixture-monkey.git'
-                        developerConnection = 'scm:git:ssh://github.com/naver/fixture-monkey.git'
-                        url = 'http://github.com/naver/fixture-monkey'
+                        connection = "scm:git:git://github.com/naver/fixture-monkey.git"
+                        developerConnection = "scm:git:ssh://github.com/naver/fixture-monkey.git"
+                        url = "http://github.com/naver/fixture-monkey"
                     }
                 }
             }

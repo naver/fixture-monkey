@@ -98,3 +98,17 @@ jacocoTestCoverageVerification {
     }
 }
 check.dependsOn jacocoTestCoverageVerification
+
+
+jar {
+    manifest {
+        attributes(
+                "Specification-Title": artifactName,
+                "Specification-Version": artifactVersion,
+                "Specification-Vendor": "com.navercorp",
+                "Implementation-Title": artifactName,
+                "Implementation-Version": artifactVersion,
+                "Implementation-Vendor": "com.navercorp"
+        )
+    }
+}

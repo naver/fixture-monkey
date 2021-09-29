@@ -689,6 +689,343 @@ class FixtureMonkeyTest {
 		then(actual.value).isNull();
 	}
 
+	@Property
+	void isDirtyReturnsFalse() {
+		// given
+		ArbitraryBuilder<StringWrapperClass> arbitraryBuilder = this.sut.giveMeBuilder(StringWrapperClass.class);
+
+		// when
+		boolean changed = arbitraryBuilder.isDirty();
+
+		then(changed).isFalse();
+	}
+
+	@Property
+	void isDirtyReturnsTrue() {
+		// given
+		ArbitraryBuilder<StringWrapperClass> arbitraryBuilder = this.sut.giveMeBuilder(StringWrapperClass.class)
+			.set("value", "test");
+
+		// when
+		boolean changed = arbitraryBuilder.isDirty();
+
+		then(changed).isTrue();
+	}
+
+	@Property
+	void isDirtyWhenManipulatedAndSampledReturnsTrue() {
+		// given
+		ArbitraryBuilder<StringWrapperClass> arbitraryBuilder = this.sut.giveMeBuilder(StringWrapperClass.class)
+			.set("value", "test");
+		arbitraryBuilder.sample();
+
+		// when
+		boolean changed = arbitraryBuilder.isDirty();
+
+		then(changed).isTrue();
+	}
+
+	@Property
+	void isDirtyWhenManipulatedAndFixedReturnsFalse() {
+		// given
+		ArbitraryBuilder<StringWrapperClass> arbitraryBuilder = this.sut.giveMeBuilder(StringWrapperClass.class)
+			.set("value", "test")
+			.fixed();
+
+		// when
+		boolean changed = arbitraryBuilder.isDirty();
+
+		then(changed).isFalse();
+	}
+
+	@Property
+	void isDirtyWhenManipulatedAndFixedAndManipulatedReturnsFalse() {
+		// given
+		ArbitraryBuilder<StringWrapperClass> arbitraryBuilder = this.sut.giveMeBuilder(StringWrapperClass.class)
+			.set("value", "test")
+			.fixed()
+			.set("value", "fixed");
+
+		// when
+		boolean changed = arbitraryBuilder.isDirty();
+
+		then(changed).isTrue();
+	}
+
+	@Property
+	void isDirtyWhenManipulatedAndApplyReturnsFalse() {
+		// given
+		ArbitraryBuilder<StringWrapperClass> arbitraryBuilder = this.sut.giveMeBuilder(StringWrapperClass.class)
+			.set("value", "test")
+			.apply((builder, it) -> {
+			});
+
+		// when
+		boolean changed = arbitraryBuilder.isDirty();
+
+		then(changed).isFalse();
+	}
+
+	@Property
+	void isDirtyWhenManipulatedAndAcceptIfReturnsFalse() {
+		// given
+		ArbitraryBuilder<StringWrapperClass> arbitraryBuilder = this.sut.giveMeBuilder(StringWrapperClass.class)
+			.set("value", "test")
+			.acceptIf(it -> true, it -> {
+			});
+
+		// when
+		boolean changed = arbitraryBuilder.isDirty();
+
+		then(changed).isFalse();
+	}
+
+	@Property
+	void isDirtyWhenManipulatedAndApplyAndManipulatedReturnsTrue() {
+		// given
+		ArbitraryBuilder<StringWrapperClass> arbitraryBuilder = this.sut.giveMeBuilder(StringWrapperClass.class)
+			.set("value", "test")
+			.apply((builder, it) -> {
+			})
+			.set("value", "test");
+
+		// when
+		boolean changed = arbitraryBuilder.isDirty();
+
+		then(changed).isTrue();
+	}
+
+	@Property
+	void isDirtyWhenManipulatedAndAcceptIfAndManipulatedReturnsTrue() {
+		// given
+		ArbitraryBuilder<StringWrapperClass> arbitraryBuilder = this.sut.giveMeBuilder(StringWrapperClass.class)
+			.set("value", "test")
+			.acceptIf(it -> true, it -> {
+			})
+			.set("value", "test");
+
+		// when
+		boolean changed = arbitraryBuilder.isDirty();
+
+		then(changed).isTrue();
+	}
+
+	@Property
+	void isDirtyWhenApplyAndFixedAndManipulatedReturnsTrue() {
+		// given
+		ArbitraryBuilder<StringWrapperClass> arbitraryBuilder = this.sut.giveMeBuilder(StringWrapperClass.class)
+			.apply((builder, it) -> {
+			})
+			.fixed()
+			.set("value", "test");
+
+		// when
+		boolean changed = arbitraryBuilder.isDirty();
+
+		then(changed).isTrue();
+	}
+
+	@Property
+	void isDirtyWhenApplyAndFixedReturnsFalse() {
+		// given
+		ArbitraryBuilder<StringWrapperClass> arbitraryBuilder = this.sut.giveMeBuilder(StringWrapperClass.class)
+			.apply((builder, it) -> {
+			})
+			.fixed();
+
+		// when
+		boolean changed = arbitraryBuilder.isDirty();
+
+		then(changed).isFalse();
+	}
+
+	@Property
+	void isDirtyWhenAcceptIfAndFixedReturnsFalse() {
+		// given
+		ArbitraryBuilder<StringWrapperClass> arbitraryBuilder = this.sut.giveMeBuilder(StringWrapperClass.class)
+			.acceptIf(it -> true, it -> {
+			})
+			.fixed();
+
+		// when
+		boolean changed = arbitraryBuilder.isDirty();
+
+		then(changed).isFalse();
+	}
+
+	@Property
+	void isDirtyWhenFixedAndApplyReturnsFalse() {
+		// given
+		ArbitraryBuilder<StringWrapperClass> arbitraryBuilder = this.sut.giveMeBuilder(StringWrapperClass.class)
+			.fixed()
+			.apply((builder, it) -> {
+			});
+
+		// when
+		boolean changed = arbitraryBuilder.isDirty();
+
+		then(changed).isFalse();
+	}
+
+	@Property
+	void isDirtyWhenFixedAndAcceptIfReturnsFalse() {
+		// given
+		ArbitraryBuilder<StringWrapperClass> arbitraryBuilder = this.sut.giveMeBuilder(StringWrapperClass.class)
+			.fixed()
+			.acceptIf(it -> true, it -> {
+			});
+
+		// when
+		boolean changed = arbitraryBuilder.isDirty();
+
+		then(changed).isFalse();
+	}
+
+	@Property
+	void isDirtyWhenDecomposeReturnsFalse() {
+		// given
+		StringWrapperClass stringWrapperClass = new StringWrapperClass("value");
+		ArbitraryBuilder<StringWrapperClass> arbitraryBuilder = this.sut.giveMeBuilder(stringWrapperClass);
+
+		// when
+		boolean changed = arbitraryBuilder.isDirty();
+
+		then(changed).isFalse();
+	}
+
+	@Property
+	void isDirtyWhenDecomposeAndManipulatedReturnsTrue() {
+		// given
+		StringWrapperClass stringWrapperClass = new StringWrapperClass("value");
+		ArbitraryBuilder<StringWrapperClass> arbitraryBuilder = this.sut.giveMeBuilder(stringWrapperClass)
+			.set("value", "test");
+
+		// when
+		boolean changed = arbitraryBuilder.isDirty();
+
+		then(changed).isTrue();
+	}
+
+	@Property
+	void isDirtyWhenRegisterReturnsFalse() {
+		// given
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.register(StringWrapperClass.class, fixture -> fixture.giveMeBuilder(StringWrapperClass.class))
+			.build();
+		ArbitraryBuilder<StringWrapperClass> arbitraryBuilder = sut.giveMeBuilder(StringWrapperClass.class);
+
+		// when
+		boolean changed = arbitraryBuilder.isDirty();
+
+		then(changed).isFalse();
+	}
+
+	@Property
+	void isDirtyWhenRegisterWithManipulatedReturnsTrue() {
+		// given
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.register(StringWrapperClass.class, fixture ->
+				fixture.giveMeBuilder(StringWrapperClass.class)
+					.set("value", "test")
+			)
+			.build();
+		ArbitraryBuilder<StringWrapperClass> arbitraryBuilder = sut.giveMeBuilder(StringWrapperClass.class);
+
+		// when
+		boolean changed = arbitraryBuilder.isDirty();
+
+		then(changed).isTrue();
+	}
+
+	@Property
+	void isDirtyWhenRegisterWithManipulatedAndFixedReturnsFalse() {
+		// given
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.register(StringWrapperClass.class, fixture ->
+				fixture.giveMeBuilder(StringWrapperClass.class)
+					.set("value", "test")
+					.fixed()
+			)
+			.build();
+		ArbitraryBuilder<StringWrapperClass> arbitraryBuilder = sut.giveMeBuilder(StringWrapperClass.class);
+
+		// when
+		boolean changed = arbitraryBuilder.isDirty();
+
+		then(changed).isFalse();
+	}
+
+	@Property
+	void isDirtyWhenRegisterWithManipulatedAndApplyReturnsFalse() {
+		// given
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.register(StringWrapperClass.class, fixture ->
+				fixture.giveMeBuilder(StringWrapperClass.class)
+					.set("value", "test")
+					.apply((it, builder) -> {
+					})
+			)
+			.build();
+		ArbitraryBuilder<StringWrapperClass> arbitraryBuilder = sut.giveMeBuilder(StringWrapperClass.class);
+
+		// when
+		boolean changed = arbitraryBuilder.isDirty();
+
+		then(changed).isFalse();
+	}
+
+	@Property
+	void isDirtyWhenRegisterWithManipulatedAndAcceptIfReturnsFalse() {
+		// given
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.register(StringWrapperClass.class, fixture ->
+				fixture.giveMeBuilder(StringWrapperClass.class)
+					.set("value", "test")
+					.acceptIf(it -> true, it -> {
+					})
+			)
+			.build();
+		ArbitraryBuilder<StringWrapperClass> arbitraryBuilder = sut.giveMeBuilder(StringWrapperClass.class);
+
+		// when
+		boolean changed = arbitraryBuilder.isDirty();
+
+		then(changed).isFalse();
+	}
+
+	@Property
+	void isDirtyWhenRegisterWithDecomposedReturnsFalse() {
+		// given
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.register(StringWrapperClass.class, fixture ->
+				fixture.giveMeBuilder(new StringWrapperClass("value"))
+			)
+			.build();
+		ArbitraryBuilder<StringWrapperClass> arbitraryBuilder = sut.giveMeBuilder(StringWrapperClass.class);
+
+		// when
+		boolean changed = arbitraryBuilder.isDirty();
+
+		then(changed).isFalse();
+	}
+
+	@Property
+	void isDirtyWhenRegisterWithDecomposedAndManipulatedReturnsTrue() {
+		// given
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.register(StringWrapperClass.class, fixture ->
+				fixture.giveMeBuilder(new StringWrapperClass("value"))
+					.set("value", "test")
+			)
+			.build();
+		ArbitraryBuilder<StringWrapperClass> arbitraryBuilder = sut.giveMeBuilder(StringWrapperClass.class);
+
+		// when
+		boolean changed = arbitraryBuilder.isDirty();
+
+		then(changed).isTrue();
+	}
+
 	@Data
 	public static class IntegerWrapperClass {
 		int value;

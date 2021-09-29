@@ -655,6 +655,70 @@ public class ComplexManipulatorTest {
 		then(actual.value2.value).isEqualTo(5);
 	}
 
+	@Property
+	void registerSetArbitraryApply() {
+		// given
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.registerGroup(SetArbitraryArbitraryAcceptGroup.class)
+			.build();
+
+		// when
+		StringWrapperClass actual1 = sut.giveMeOne(StringWrapperClass.class);
+		StringWrapperClass actual2 = sut.giveMeOne(StringWrapperClass.class);
+
+		then(actual1).isEqualTo(actual2);
+	}
+
+	@Property
+	void registerSetApply() {
+		// given
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.registerGroup(SetArbitraryAcceptGroup.class)
+			.build();
+
+		// when
+		StringWrapperClass actual1 = sut.giveMeOne(StringWrapperClass.class);
+		StringWrapperClass actual2 = sut.giveMeOne(StringWrapperClass.class);
+
+		then(actual1).isEqualTo(actual2);
+	}
+
+	@Property
+	void nullFixedSize() {
+		// when
+		IntegerListWrapperClass actual = this.sut.giveMeBuilder(IntegerListWrapperClass.class)
+			.setNull("values")
+			.fixed()
+			.size("values", 1)
+			.sample();
+
+		then(actual.values).hasSize(1);
+	}
+
+	@Property
+	void nullFixedSet() {
+		// when
+		NestedStringClass actual = this.sut.giveMeBuilder(NestedStringClass.class)
+			.setNull("value")
+			.fixed()
+			.set("value.value", "set")
+			.sample();
+
+		then(actual.value.value).isEqualTo("set");
+	}
+
+	@Property
+	void nullFixedSizeZeroReturnsEmpty(){
+		// when
+		IntegerListWrapperClass actual = this.sut.giveMeBuilder(IntegerListWrapperClass.class)
+			.setNull("values")
+			.fixed()
+			.size("values", 0)
+			.sample();
+
+		then(actual.values).isEmpty();
+	}
+
 	@Data
 	@NoArgsConstructor
 	@AllArgsConstructor
@@ -758,6 +822,28 @@ public class ComplexManipulatorTest {
 			return fixture.giveMeBuilder(StringWrapperClass.class)
 				.set("value", Arbitraries.strings())
 				.fixed();
+		}
+	}
+
+	public static class SetArbitraryArbitraryAcceptGroup {
+		public SetArbitraryArbitraryAcceptGroup() {
+		}
+
+		public ArbitraryBuilder<StringWrapperClass> string(FixtureMonkey fixture) {
+			return fixture.giveMeBuilder(StringWrapperClass.class)
+				.set("value", Arbitraries.strings())
+				.apply((it, builder) -> builder.set("value", "set"));
+		}
+	}
+
+	public static class SetArbitraryAcceptGroup {
+		public SetArbitraryAcceptGroup() {
+		}
+
+		public ArbitraryBuilder<StringWrapperClass> string(FixtureMonkey fixture) {
+			return fixture.giveMeBuilder(StringWrapperClass.class)
+				.set("value", Arbitraries.strings().sample())
+				.apply((it, builder) -> builder.set("value", "set"));
 		}
 	}
 }

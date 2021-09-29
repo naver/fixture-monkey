@@ -57,7 +57,6 @@ import com.navercorp.fixturemonkey.arbitrary.ArbitraryTree;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryType;
 import com.navercorp.fixturemonkey.arbitrary.BuilderManipulator;
 import com.navercorp.fixturemonkey.arbitrary.ContainerSizeManipulator;
-import com.navercorp.fixturemonkey.arbitrary.LazyValue;
 import com.navercorp.fixturemonkey.arbitrary.MetadataManipulator;
 import com.navercorp.fixturemonkey.arbitrary.PostArbitraryManipulator;
 import com.navercorp.fixturemonkey.customizer.ArbitraryCustomizer;
@@ -70,7 +69,8 @@ import com.navercorp.fixturemonkey.validator.ArbitraryValidator;
 public final class ArbitraryBuilder<T> {
 	private final ArbitraryTree<T> tree;
 	private final ArbitraryTraverser traverser;
-	private final List<BuilderManipulator> builderManipulators = new ArrayList<>();
+	private final List<BuilderManipulator> builderManipulators;
+	private final List<BuilderManipulator> usedManipulators;
 	@SuppressWarnings("rawtypes")
 	private final ArbitraryValidator validator;
 	private final Map<Class<?>, ArbitraryGenerator> generatorMap;
@@ -101,6 +101,7 @@ public final class ArbitraryBuilder<T> {
 			arbitraryCustomizers,
 			new ArrayList<>(),
 			new ArrayList<>(),
+			new ArrayList<>(),
 			generatorMap
 		);
 	}
@@ -127,6 +128,7 @@ public final class ArbitraryBuilder<T> {
 			arbitraryCustomizers,
 			new ArrayList<>(),
 			new ArrayList<>(),
+			new ArrayList<>(),
 			generatorMap
 		);
 	}
@@ -139,6 +141,7 @@ public final class ArbitraryBuilder<T> {
 		ArbitraryValidator validator,
 		ArbitraryCustomizers arbitraryCustomizers,
 		List<BuilderManipulator> builderManipulators,
+		List<BuilderManipulator> usedManipulators,
 		List<BiConsumer<T, ArbitraryBuilder<T>>> decomposedManipulators,
 		Map<Class<?>, ArbitraryGenerator> generatorMap
 	) {
@@ -147,7 +150,8 @@ public final class ArbitraryBuilder<T> {
 		this.generator = getGenerator(generator, arbitraryCustomizers);
 		this.validator = validator;
 		this.arbitraryCustomizers = arbitraryCustomizers;
-		this.builderManipulators.addAll(builderManipulators);
+		this.builderManipulators = new ArrayList<>(builderManipulators);
+		this.usedManipulators = new ArrayList<>(usedManipulators);
 		this.decomposedManipulators = decomposedManipulators;
 		this.generatorMap = generatorMap.entrySet().stream()
 			.map(it -> new SimpleEntry<Class<?>, ArbitraryGenerator>(
@@ -179,9 +183,7 @@ public final class ArbitraryBuilder<T> {
 				buildArbitraryBuilder.generator
 			);
 
-			List<BuilderManipulator> actualManipulators = buildArbitraryBuilder.builderManipulators.stream()
-				.filter(this.builderManipulators::contains)
-				.collect(toList()); // post-decompose - build manipulators except for build - sample manipulators
+			List<BuilderManipulator> actualManipulators = buildArbitraryBuilder.getActiveManipulators();
 
 			buildArbitraryBuilder.apply(actualManipulators);
 			buildTree.update(buildArbitraryBuilder.generator, generatorMap);
@@ -203,24 +205,8 @@ public final class ArbitraryBuilder<T> {
 				false,
 				this.generator
 			);
-			this.apply(this.builderManipulators);
+			this.apply(this.getActiveManipulators());
 			this.builderManipulators.clear();
-			buildTree.update(this.generator, generatorMap);
-			return buildTree.getArbitrary();
-		}, this.validator, this.validOnly).sample();
-	}
-
-	@SuppressWarnings("unchecked")
-	private T sampleInternal(List<BuilderManipulator> manipulators) {
-		return (T)this.tree.result(() -> {
-			ArbitraryTree<T> buildTree = this.tree;
-
-			this.traverser.traverse(
-				buildTree,
-				false,
-				this.generator
-			);
-			this.apply(manipulators);
 			buildTree.update(this.generator, generatorMap);
 			return buildTree.getArbitrary();
 		}, this.validator, this.validOnly).sample();
@@ -445,12 +431,12 @@ public final class ArbitraryBuilder<T> {
 		ArbitraryBuilder<T> appliedBuilder = this.copy();
 
 		this.decomposedManipulators.add(biConsumer);
+		setCurrentBuilderManipulatorsAsUsed();
 		this.tree.setDecomposedValue(() -> {
 			ArbitraryBuilder<T> copied = appliedBuilder.copy();
 			T sample = copied.sampleInternal();
 			copied.tree.setDecomposedValue(() -> sample); // fix builder value
 			this.decomposedManipulators.forEach(it -> it.accept(sample, copied));
-			this.builderManipulators.removeAll(appliedBuilder.builderManipulators); // remove pre-decompose manipulators
 			return copied.sampleInternal();
 		});
 
@@ -467,12 +453,8 @@ public final class ArbitraryBuilder<T> {
 
 	public ArbitraryBuilder<T> fixed() {
 		ArbitraryBuilder<T> copied = this.copy();
-
-		this.tree.setFixedDecomposedValue(() -> {
-			T sampled = copied.sampleInternal(this.builderManipulators); // sample with pre-fixed manipulators
-			this.builderManipulators.removeAll(copied.builderManipulators); // remove pre-fixed manipulators
-			return sampled;
-		});
+		setCurrentBuilderManipulatorsAsUsed();
+		this.tree.setFixedDecomposedValue(copied::sampleInternal);
 		return this;
 	}
 
@@ -485,7 +467,7 @@ public final class ArbitraryBuilder<T> {
 			Integer min = containerSizeManipulator.getMin();
 			Integer max = containerSizeManipulator.getMax();
 
-			Collection<ArbitraryNode> foundNodes = tree.findAll(arbitraryExpression);
+			Collection<ArbitraryNode> foundNodes = this.findNodesByExpression(arbitraryExpression);
 			for (ArbitraryNode foundNode : foundNodes) {
 				if (!foundNode.getType().isContainer()) {
 					throw new IllegalArgumentException("Only Container can set size");
@@ -502,7 +484,7 @@ public final class ArbitraryBuilder<T> {
 
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	public void apply(AbstractArbitrarySet<T> fixtureSet) {
-		Collection<ArbitraryNode> foundNodes = tree.findAll(fixtureSet.getArbitraryExpression());
+		Collection<ArbitraryNode> foundNodes = this.findNodesByExpression(fixtureSet.getArbitraryExpression());
 
 		if (!foundNodes.isEmpty()) {
 			for (ArbitraryNode<T> foundNode : foundNodes) {
@@ -511,25 +493,21 @@ public final class ArbitraryBuilder<T> {
 		}
 	}
 
-	@SuppressWarnings({"rawtypes", "unchecked"})
+	@SuppressWarnings("rawtypes")
 	public ArbitraryBuilder<T> setNullity(ArbitraryNullity arbitraryNullity) {
 		ArbitraryExpression arbitraryExpression = arbitraryNullity.getArbitraryExpression();
-		Collection<ArbitraryNode> foundNodes = tree.findAll(arbitraryExpression);
+		Collection<ArbitraryNode> foundNodes = this.findNodesByExpression(arbitraryExpression);
 		for (ArbitraryNode foundNode : foundNodes) {
-			LazyValue<T> value = foundNode.getValue();
-			if (!arbitraryNullity.toNull() && value != null && value.isEmpty()) { // decompose null value
-				foundNode.clearValue();
-				traverser.traverse(foundNode, foundNode.isKeyOfMapStructure(), generator);
-			} else {
-				foundNode.apply(arbitraryNullity);
-			}
+			foundNode.apply(arbitraryNullity);
 		}
 		return this;
 	}
 
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	public ArbitraryBuilder<T> apply(PostArbitraryManipulator<T> postArbitraryManipulator) {
-		Collection<ArbitraryNode> foundNodes = tree.findAll(postArbitraryManipulator.getArbitraryExpression());
+		Collection<ArbitraryNode> foundNodes = this.findNodesByExpression(
+			postArbitraryManipulator.getArbitraryExpression()
+		);
 		if (!foundNodes.isEmpty()) {
 			for (ArbitraryNode<T> foundNode : foundNodes) {
 				if (postArbitraryManipulator.isMappableTo(foundNode)) {
@@ -553,6 +531,10 @@ public final class ArbitraryBuilder<T> {
 		postArbitraryManipulators.forEach(it -> it.accept(this));
 	}
 
+	public boolean isDirty() {
+		return usedManipulators.size() != builderManipulators.size();
+	}
+
 	public ArbitraryBuilder<T> copy() {
 		return new ArbitraryBuilder<>(
 			this.tree.copy(),
@@ -561,9 +543,31 @@ public final class ArbitraryBuilder<T> {
 			this.validator,
 			this.arbitraryCustomizers,
 			this.builderManipulators.stream().map(BuilderManipulator::copy).collect(toList()),
+			this.usedManipulators.stream().map(BuilderManipulator::copy).collect(toList()),
 			new ArrayList<>(this.decomposedManipulators),
 			this.generatorMap
 		);
+	}
+
+	private void setCurrentBuilderManipulatorsAsUsed() {
+		this.usedManipulators.clear();
+		this.usedManipulators.addAll(this.builderManipulators);
+	}
+
+	private List<BuilderManipulator> getActiveManipulators() {
+		List<BuilderManipulator> activeManipulators = new ArrayList<>();
+		for (int i = 0; i < builderManipulators.size(); i++) {
+			BuilderManipulator builderManipulator = builderManipulators.get(i);
+			if (i < usedManipulators.size()) {
+				BuilderManipulator appliedManipulator = usedManipulators.get(i);
+				if (builderManipulator.equals(appliedManipulator)) {
+					continue;
+				}
+			}
+
+			activeManipulators.add(builderManipulator);
+		}
+		return activeManipulators;
 	}
 
 	private List<BuilderManipulator> extractOrderedManipulatorsFrom(List<BuilderManipulator> manipulators) {
@@ -589,6 +593,19 @@ public final class ArbitraryBuilder<T> {
 			.filter(PostArbitraryManipulator.class::isInstance)
 			.map(PostArbitraryManipulator.class::cast)
 			.collect(toList());
+	}
+
+	@SuppressWarnings({"rawtypes", "unchecked"})
+	private Collection<ArbitraryNode> findNodesByExpression(ArbitraryExpression arbitraryExpression) {
+		Collection<ArbitraryNode> foundNodes = tree.findAll(arbitraryExpression);
+		ArbitraryNode resetNode = tree.findFirstResetNode();
+
+		if (resetNode != null && !resetNode.isLeafNode()) {
+			traverser.traverse(resetNode, resetNode.isKeyOfMapStructure(), generator);
+			foundNodes = tree.findAll(arbitraryExpression);
+		}
+
+		return foundNodes;
 	}
 
 	@Override
