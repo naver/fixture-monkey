@@ -74,19 +74,19 @@ public final class ContainerSizeConstraint {
 	}
 
 	public ContainerSizeConstraint withMinSize(@Nullable Integer minSize) {
-		Integer maxSize = this.maxManipulated ? this.maxSize : null;
+		Integer manipulatedMaxSize = this.maxManipulated ? this.maxSize : null;
 		if (minSize == null && this.minSize != null) {
-			return new ContainerSizeConstraint(this.minSize, maxSize, true, this.maxManipulated);
+			return new ContainerSizeConstraint(this.minSize, manipulatedMaxSize, true, this.maxManipulated);
 		}
-		return new ContainerSizeConstraint(minSize, maxSize, true, this.maxManipulated);
+		return new ContainerSizeConstraint(minSize, manipulatedMaxSize, true, this.maxManipulated);
 	}
 
 	public ContainerSizeConstraint withMaxSize(@Nullable Integer maxSize) {
-		Integer minSize = this.minManipulated ? this.minSize : null;
+		Integer manipulatedMinSize = this.minManipulated ? this.minSize : null;
 		if (maxSize == null && this.maxSize != null) {
-			return new ContainerSizeConstraint(minSize, this.maxSize, this.minManipulated, true);
+			return new ContainerSizeConstraint(manipulatedMinSize, this.maxSize, this.minManipulated, true);
 		}
-		return new ContainerSizeConstraint(minSize, maxSize, this.minManipulated, true);
+		return new ContainerSizeConstraint(manipulatedMinSize, maxSize, this.minManipulated, true);
 
 	}
 }
