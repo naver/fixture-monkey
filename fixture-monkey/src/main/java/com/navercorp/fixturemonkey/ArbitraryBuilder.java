@@ -600,7 +600,7 @@ public final class ArbitraryBuilder<T> {
 		Collection<ArbitraryNode> foundNodes = tree.findAll(arbitraryExpression);
 		ArbitraryNode resetNode = tree.findFirstResetNode();
 
-		if (resetNode != null) {
+		if (resetNode != null && !resetNode.isLeafNode()) {
 			traverser.traverse(resetNode, resetNode.isKeyOfMapStructure(), generator);
 			foundNodes = tree.findAll(arbitraryExpression);
 		}
