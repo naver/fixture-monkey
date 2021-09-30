@@ -173,24 +173,6 @@ public final class ArbitraryNode<T> {
 		this.getStatus().setActive(active);
 	}
 
-	public void setContainerMinSize(@Nullable Integer minSize) {
-		FixtureNodeStatus<T> status = this.getStatus();
-		if (status.getContainerSizeConstraint() == null) {
-			status.setContainerSizeConstraint(new ContainerSizeConstraint(minSize, null));
-			return;
-		}
-		status.setContainerSizeConstraint(status.getContainerSizeConstraint().withMinSize(minSize));
-	}
-
-	public void setContainerMaxSize(@Nullable Integer maxSize) {
-		FixtureNodeStatus<T> status = this.getStatus();
-		if (status.getContainerSizeConstraint() == null) {
-			status.setContainerSizeConstraint(new ContainerSizeConstraint(null, maxSize));
-			return;
-		}
-		status.setContainerSizeConstraint(status.getContainerSizeConstraint().withMaxSize(maxSize));
-	}
-
 	public void setContainerSizeConstraint(ContainerSizeConstraint containerSizeConstraint) {
 		this.getStatus().setContainerSizeConstraint(containerSizeConstraint);
 	}
@@ -288,6 +270,7 @@ public final class ArbitraryNode<T> {
 		return getStatus().isFixed();
 	}
 
+	@SuppressWarnings("BooleanMethodIsAlwaysInverted")
 	public boolean isLeafNode() {
 		return this.getChildren().isEmpty() && this.getArbitrary() != null;
 	}

@@ -18,6 +18,7 @@
 
 package com.navercorp.fixturemonkey.test;
 
+import static com.navercorp.fixturemonkey.Constants.DEFAULT_ELEMENT_MAX_SIZE;
 import static org.assertj.core.api.BDDAssertions.then;
 
 import java.util.ArrayList;
@@ -445,25 +446,25 @@ public class SimpleManipulatorTest {
 	}
 
 	@Property
-	void giveMeSizeMaxSizeBeforeMinSizeIsZero() {
+	void giveMeSizeMaxSizeBeforeMinSizeThenMinSizeWorks() {
 		// when
 		IntegerListWrapperClass actual = this.sut.giveMeBuilder(IntegerListWrapperClass.class)
 			.maxSize("values", 15)
 			.minSize("values", 14)
 			.sample();
 
-		then(actual.values.size()).isBetween(14, 15);
+		then(actual.values).hasSizeGreaterThanOrEqualTo(14);
 	}
 
 	@Property
-	void giveMeSizeMinSizeBeforeMaxSizeIsZero() {
+	void giveMeSizeMinSizeBeforeMaxSizeThenMaxSizeWorks() {
 		// when
 		IntegerListWrapperClass actual = this.sut.giveMeBuilder(IntegerListWrapperClass.class)
 			.minSize("values", 14)
 			.maxSize("values", 15)
 			.sample();
 
-		then(actual.values.size()).isBetween(14, 15);
+		then(actual.values).hasSizeLessThanOrEqualTo(15);
 	}
 
 	@Property
@@ -756,13 +757,105 @@ public class SimpleManipulatorTest {
 	}
 
 	@Property
-	void giveMeSizeZeroReturnsEmpty(){
+	void giveMeSizeZeroReturnsEmpty() {
 		// when
 		IntegerListWrapperClass actual = this.sut.giveMeBuilder(IntegerListWrapperClass.class)
 			.size("values", 0)
 			.sample();
 
 		then(actual.values).isEmpty();
+	}
+
+	@Property
+	void giveMeSizeMinSizeBiggerThanDefaultMaxSize() {
+		// given
+		int minSize = DEFAULT_ELEMENT_MAX_SIZE + 1;
+
+		// when
+		IntegerListWrapperClass actual = this.sut.giveMeBuilder(IntegerListWrapperClass.class)
+			.minSize("values", minSize)
+			.sample();
+
+		then(actual.values).hasSizeGreaterThanOrEqualTo(minSize);
+	}
+
+	@Property
+	void giveMeMaxSizeLessThanFixedMinSize() {
+		// when
+		IntegerListWrapperClass actual = this.sut.giveMeBuilder(IntegerListWrapperClass.class)
+			.minSize("values", 2)
+			.maxSize("values", 3)
+			.fixed()
+			.maxSize("values", 1)
+			.sample();
+
+		then(actual.values).hasSizeLessThanOrEqualTo(1);
+	}
+
+	@Property
+	void giveMeMaxSizeLessThanFixedMaxSize() {
+		// when
+		IntegerListWrapperClass actual = this.sut.giveMeBuilder(IntegerListWrapperClass.class)
+			.minSize("values", 1)
+			.maxSize("values", 3)
+			.fixed()
+			.maxSize("values", 2)
+			.sample();
+
+		then(actual.values).hasSizeLessThanOrEqualTo(2);
+	}
+
+	@Property
+	void giveMeSizeInFixedArbitrarySize() {
+		// when
+		IntegerListWrapperClass actual = this.sut.giveMeBuilder(IntegerListWrapperClass.class)
+			.minSize("values", 1)
+			.maxSize("values", 3)
+			.fixed()
+			.size("values", 2)
+			.sample();
+
+		then(actual.values).hasSize(2);
+	}
+
+	@Property
+	void giveMeMinSizeLessThenFixedMaxSize() {
+		// when
+		IntegerListWrapperClass actual = this.sut.giveMeBuilder(IntegerListWrapperClass.class)
+			.minSize("values", 1)
+			.maxSize("values", 3)
+			.fixed()
+			.minSize("values", 2)
+			.sample();
+
+		then(actual.values).hasSizeGreaterThanOrEqualTo(2);
+	}
+
+	@Property
+	void giveMeMinSizeGreaterThanFixedMaxSize() {
+		// when
+		IntegerListWrapperClass actual = this.sut.giveMeBuilder(IntegerListWrapperClass.class)
+			.minSize("values", 1)
+			.maxSize("values", 3)
+			.fixed()
+			.minSize("values", 4)
+			.sample();
+
+		then(actual.values).hasSizeGreaterThanOrEqualTo(4);
+	}
+
+	@Property
+	void giveMeIncludeFixedArbitrarySize() {
+		// when
+		IntegerListWrapperClass actual = this.sut.giveMeBuilder(IntegerListWrapperClass.class)
+			.minSize("values", 1)
+			.maxSize("values", 3)
+			.fixed()
+			.minSize("values", 0)
+			.maxSize("values", 4)
+			.sample();
+
+		then(actual.values).hasSizeBetween(0, 4);
 	}
 
 	@Data
