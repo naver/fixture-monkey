@@ -19,13 +19,12 @@
 package com.navercorp.fixturemonkey.kotlin.test
 
 import com.navercorp.fixturemonkey.FixtureMonkey
-import com.navercorp.fixturemonkey.kotlin.KFixtureMonkeyBuilder
+import com.navercorp.fixturemonkey.kotlin.KFixtureMonkey
 import net.jqwik.api.Property
 import org.assertj.core.api.BDDAssertions.then
 
 class PrimaryConstructorArbitraryGeneratorTest {
-    private val sut: FixtureMonkey = KFixtureMonkeyBuilder()
-        .build()
+    private val sut: FixtureMonkey = KFixtureMonkey.create()
 
     @Property
     fun giveMeClassWithPrimaryConstructor() {

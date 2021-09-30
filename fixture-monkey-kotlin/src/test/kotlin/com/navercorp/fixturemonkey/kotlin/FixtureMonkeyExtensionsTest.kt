@@ -28,7 +28,7 @@ import org.assertj.core.api.BDDAssertions.then
 import kotlin.reflect.KClass
 
 class FixtureMonkeyExtensionsTest {
-    private val sut: FixtureMonkey = KFixtureMonkeyBuilder().build()
+    private val sut: FixtureMonkey = KFixtureMonkey.create()
 
     @Property
     fun giveMe() {
