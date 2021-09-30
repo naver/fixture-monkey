@@ -56,6 +56,7 @@ import com.navercorp.fixturemonkey.arbitrary.ArbitraryTraverser;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryTree;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryType;
 import com.navercorp.fixturemonkey.arbitrary.BuilderManipulator;
+import com.navercorp.fixturemonkey.arbitrary.ContainerSizeConstraint;
 import com.navercorp.fixturemonkey.arbitrary.ContainerSizeManipulator;
 import com.navercorp.fixturemonkey.arbitrary.MetadataManipulator;
 import com.navercorp.fixturemonkey.arbitrary.PostArbitraryManipulator;
@@ -464,16 +465,15 @@ public final class ArbitraryBuilder<T> {
 
 		if (manipulator instanceof ContainerSizeManipulator) {
 			ContainerSizeManipulator containerSizeManipulator = ((ContainerSizeManipulator)manipulator);
-			Integer min = containerSizeManipulator.getMin();
-			Integer max = containerSizeManipulator.getMax();
 
 			Collection<ArbitraryNode> foundNodes = this.findNodesByExpression(arbitraryExpression);
 			for (ArbitraryNode foundNode : foundNodes) {
 				if (!foundNode.getType().isContainer()) {
 					throw new IllegalArgumentException("Only Container can set size");
 				}
-				foundNode.setContainerMinSize(min);
-				foundNode.setContainerMaxSize(max);
+				foundNode.setContainerSizeConstraint(
+					new ContainerSizeConstraint(containerSizeManipulator.getMin(), containerSizeManipulator.getMax())
+				);
 				traverser.traverse(foundNode, false, generator); // regenerate subtree
 			}
 		} else {
