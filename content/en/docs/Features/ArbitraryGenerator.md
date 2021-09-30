@@ -82,26 +82,7 @@ public class Person {
 ```
 
 ## JacksonArbitraryGenerator
-
-- Instantiating by [Jackson](https://github.com/FasterXML/jackson) Map Deserializer
-- Does not generate `@JsonIgnore` field
-- `@JsonProperty` would change field name, when apply manipulator `Expression` is same as `@JsonProperty` value
-  - Example [here]({{< relref "/docs/examples/arbitrarygenerator#set-field-in-jacksonarbitrarygenerator-with-jsonproperty" >}})
-- Could inject `ObjectMapper` in `JacksonArbitraryGenerator`
-- Could not generate `interface`, you should set default implementation by [InterfaceSupplier]({{< relref "/docs/features/interfacesupplier" >}})
-
-```java
-
-@Data
-public class Product {
-	private Long id;
-	private String name;
-}
-
-	ObjectMapper objectMapper = ...;
-	JacksonArbitraryGenerator jacksonArbitraryGenerator=new JacksonArbitraryGenerator(objectMapper);
-
-```
+- [Fixture Monkey Jackson module]({{< relref "/docs/third-party modules/fixturemonkeyjackson" >}})
 
 ## NullArbitraryGenerator
 - Always generate `null`

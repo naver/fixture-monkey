@@ -2,7 +2,7 @@
 ---
 title: "FAQ"
 linkTitle: "FAQ"
-weight: 4
+weight: 6
 ---
 
 ## Generated String value is weired. Help!
