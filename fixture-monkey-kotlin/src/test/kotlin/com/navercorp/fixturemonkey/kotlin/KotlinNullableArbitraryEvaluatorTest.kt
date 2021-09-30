@@ -24,7 +24,7 @@ import org.assertj.core.api.BDDAssertions.then
 import javax.validation.constraints.NotNull
 
 class KotlinNullableArbitraryEvaluatorTest {
-    private val fixture: FixtureMonkey = KFixtureMonkeyBuilder().build()
+    private val fixture: FixtureMonkey = KFixtureMonkey.create()
 
     @Property
     fun generate() {
