@@ -708,7 +708,7 @@ public class ComplexManipulatorTest {
 	}
 
 	@Property
-	void nullFixedSizeZeroReturnsEmpty(){
+	void nullFixedSizeZeroReturnsEmpty() {
 		// when
 		IntegerListWrapperClass actual = this.sut.giveMeBuilder(IntegerListWrapperClass.class)
 			.setNull("values")

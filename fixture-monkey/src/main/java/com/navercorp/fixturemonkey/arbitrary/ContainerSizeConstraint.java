@@ -30,26 +30,10 @@ public final class ContainerSizeConstraint {
 	private final Integer minSize;
 	@Nullable
 	private final Integer maxSize;
-	private final boolean minManipulated;
-	private final boolean maxManipulated;
 
 	public ContainerSizeConstraint(@Nullable Integer minSize, @Nullable Integer maxSize) {
 		this.minSize = minSize;
 		this.maxSize = maxSize;
-		this.minManipulated = false;
-		this.maxManipulated = false;
-	}
-
-	public ContainerSizeConstraint(
-		@Nullable Integer minSize,
-		@Nullable Integer maxSize,
-		boolean minManipulated,
-		boolean maxManipulated
-	) {
-		this.minSize = minSize;
-		this.maxSize = maxSize;
-		this.minManipulated = minManipulated;
-		this.maxManipulated = maxManipulated;
 	}
 
 	public int getMinSize() {
@@ -71,22 +55,5 @@ public final class ContainerSizeConstraint {
 
 	public int getArbitraryElementSize() {
 		return Arbitraries.integers().between(getMinSize(), getMaxSize()).sample();
-	}
-
-	public ContainerSizeConstraint withMinSize(@Nullable Integer minSize) {
-		Integer maxSize = this.maxManipulated ? this.maxSize : null;
-		if (minSize == null && this.minSize != null) {
-			return new ContainerSizeConstraint(this.minSize, maxSize, true, this.maxManipulated);
-		}
-		return new ContainerSizeConstraint(minSize, this.maxSize, true, this.maxManipulated);
-	}
-
-	public ContainerSizeConstraint withMaxSize(@Nullable Integer maxSize) {
-		Integer minSize = this.minManipulated ? this.minSize : null;
-		if (maxSize == null && this.maxSize != null) {
-			return new ContainerSizeConstraint(minSize, this.maxSize, this.minManipulated, true);
-		}
-		return new ContainerSizeConstraint(this.minSize, maxSize, this.minManipulated, true);
-
 	}
 }
