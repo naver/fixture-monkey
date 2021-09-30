@@ -164,7 +164,7 @@ public final class ArbitraryTraverser {
 			clazz = type.getType();
 		}
 
-		AnnotationSource annotationSource = new AnnotationSource(argsType);
+		AnnotationSource annotationSource = new AnnotationSource(type.getAnnotations());
 
 		Map<Class<?>, AnnotatedArbitraryGenerator<?>> annotatedArbitraryMap =
 			arbitraryOption.getAnnotatedArbitraryMap();

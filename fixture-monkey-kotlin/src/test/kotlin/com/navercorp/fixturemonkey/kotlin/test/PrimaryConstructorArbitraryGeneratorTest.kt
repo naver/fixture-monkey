@@ -22,6 +22,8 @@ import com.navercorp.fixturemonkey.FixtureMonkey
 import com.navercorp.fixturemonkey.kotlin.KFixtureMonkeyBuilder
 import net.jqwik.api.Property
 import org.assertj.core.api.BDDAssertions.then
+import javax.validation.constraints.NotBlank
+import javax.validation.constraints.Positive
 
 class PrimaryConstructorArbitraryGeneratorTest {
     private val sut: FixtureMonkey = KFixtureMonkeyBuilder()
@@ -33,6 +35,17 @@ class PrimaryConstructorArbitraryGeneratorTest {
         val actual = this.sut.giveMe(ClassWithPrimaryConstructor::class.java, 10)
 
         then(actual).hasSize(10)
+        actual.forEach {
+            then(it.stringValue).isNotBlank
+        }
+    }
+
+    @Property
+    fun giveMeClassWithPrimaryConstructorWithAnnotation() {
+        // when
+        val actual = this.sut.giveMe(ClassWithPrimaryConstructor::class.java, 10)
+
+        actual.forEach { then(it.stringValue).isNotBlank }
     }
 
     @Property
@@ -41,6 +54,16 @@ class PrimaryConstructorArbitraryGeneratorTest {
         val actual = this.sut.giveMe(ClassWithNestedOne::class.java, 10)
 
         then(actual).hasSize(10)
+    }
+
+    @Property
+    fun giveMeClassWithNestedOneWithAnnotation() {
+        // when
+        val actual = this.sut.giveMe(ClassWithNestedOne::class.java, 10)
+
+        actual
+            .map { it.nestedClass }
+            .forEach { then(it.intValue).isPositive }
     }
 
     @Property
@@ -102,10 +125,12 @@ class PrimaryConstructorArbitraryGeneratorTest {
 
     class ClassWithPrimaryConstructor(
         val intValue: Int,
+        @field:NotBlank
         val stringValue: String
     )
 
     class NestedClass(
+        @field:Positive
         val intValue: Int
     )
 
