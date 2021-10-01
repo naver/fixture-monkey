@@ -1,4 +1,7 @@
 # Fixture Monkey
+![Maven version](https://maven-badges.herokuapp.com/maven-central/com.navercorp.fixturemonkey/fixture-monkey/badge.svg)
+[![Build](https://github.com/naver/fixture-monkey/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/naver/fixture-monkey/actions/workflows/build.yml)
+[![GitHub license](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/naver/fixture-monkey/blob/main/LICENSE)
 
 <figure align="center">
     <img src= "https://user-images.githubusercontent.com/10272119/132285552-3af3ef55-e211-4dff-bb47-83d563ad6046.png" width="85%"/>
