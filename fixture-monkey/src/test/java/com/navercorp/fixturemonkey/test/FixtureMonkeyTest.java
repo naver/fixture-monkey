@@ -36,7 +36,10 @@ import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
+
+import org.junit.platform.commons.util.StringUtils;
 
 import net.jqwik.api.Arbitrary;
 import net.jqwik.api.Property;
@@ -1026,6 +1029,24 @@ class FixtureMonkeyTest {
 		then(changed).isTrue();
 	}
 
+	@Property
+	void giveMeListWithAnnotation() {
+		// when
+		ListWithAnnotationWrapperClass actual = this.sut.giveMeOne(ListWithAnnotationWrapperClass.class);
+
+		then(actual.values).isNotEmpty();
+		then(actual.values).allMatch(StringUtils::isNotBlank);
+	}
+
+	@Property
+	void giveMeListWithSameAnnotation() {
+		// when
+		ListWithSameAnnotationWrapperClass actual = this.sut.giveMeOne(ListWithSameAnnotationWrapperClass.class);
+
+		then(actual.values).isNotNull();
+		then(actual.values).allMatch(Objects::nonNull);
+	}
+
 	@Data
 	public static class IntegerWrapperClass {
 		int value;
@@ -1210,5 +1231,17 @@ class FixtureMonkeyTest {
 	@Data
 	public static class NestedStringWrapperClass {
 		StringWrapperClass value;
+	}
+
+	@Data
+	public static class ListWithAnnotationWrapperClass {
+		@NotEmpty
+		List<@NotBlank String> values;
+	}
+
+	@Data
+	public static class ListWithSameAnnotationWrapperClass {
+		@NotNull
+		List<@NotNull String> values;
 	}
 }

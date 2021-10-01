@@ -19,23 +19,20 @@
 package com.navercorp.fixturemonkey.generator;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedType;
+import java.util.List;
 import java.util.Optional;
 
-import javax.annotation.Nullable;
-
 public final class AnnotationSource {
-	@Nullable
-	private final AnnotatedType annotatedType;
+	private final List<Annotation> annotations;
 
-	public AnnotationSource(@Nullable AnnotatedType annotatedType) {
-		this.annotatedType = annotatedType;
+	public AnnotationSource(List<Annotation> annotations) {
+		this.annotations = annotations;
 	}
 
+	@SuppressWarnings("unchecked")
 	public <T extends Annotation> Optional<T> findAnnotation(Class<T> annotationClass) {
-		if (annotatedType == null) {
-			return Optional.empty();
-		}
-		return Optional.ofNullable(annotatedType.getAnnotation(annotationClass));
+		return (Optional<T>)annotations.stream()
+			.filter(it -> it.annotationType() == annotationClass)
+			.findAny();
 	}
 }
