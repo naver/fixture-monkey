@@ -90,7 +90,7 @@ testImplementation("com.navercorp.fixturemonkey:fixture-monkey:0.3.0")
 ## Documentation
 https://naver.github.io/fixture-monkey/
 
-## Submodule
+## Third-party Modules
 
 * fixture-monkey-jackson
   - Supports [jackson](https://github.com/FasterXML/jackson) Serialize/Deserialize object generation.
