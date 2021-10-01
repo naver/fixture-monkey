@@ -1,8 +1,8 @@
 baseURL = "https://naver.github.io/fixture-monkey/"
-title = "fixture-monkey"
+title = "Fixture Monkey"
 
 enableRobotsTXT = true
-publishDir = "docs"
+publishDir = "public"
 # Hugo allows theme composition (and inheritance). The precedence is from left to right.
 theme = ["docsy"]
 
@@ -49,7 +49,7 @@ id = "UA-00000000-0"
 
 [languages]
 [languages.en]
-title = "fixture-monkey"
+title = "Fixture Monkey"
 languageName ="English"
 # Weight used for sorting.
 weight = "1"
