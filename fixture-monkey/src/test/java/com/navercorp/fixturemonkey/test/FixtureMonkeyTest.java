@@ -50,8 +50,6 @@ import net.jqwik.api.Property;
 import net.jqwik.api.TooManyFilterMissesException;
 import net.jqwik.api.Tuple.Tuple1;
 import net.jqwik.api.Tuple.Tuple2;
-import net.jqwik.api.Tuple.Tuple3;
-import net.jqwik.api.arbitraries.SetArbitrary;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -404,8 +402,7 @@ class FixtureMonkeyTest {
 		Arbitrary<List<StringWithNotBlankWrapperClass>> sut =
 			this.sut.giveMeBuilder(StringWithNotBlankWrapperClass.class)
 				.set("value", "")
-				.build()
-				.collect(it -> !it.isEmpty());
+				.build().collect(it -> !it.isEmpty());
 
 		thenThrownBy(sut::sample)
 			.isExactlyInstanceOf(TooManyFilterMissesException.class);
