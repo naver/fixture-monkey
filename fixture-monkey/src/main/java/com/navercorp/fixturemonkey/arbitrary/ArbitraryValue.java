@@ -18,7 +18,6 @@
 
 package com.navercorp.fixturemonkey.arbitrary;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -57,20 +56,24 @@ final class ArbitraryValue<T> implements Arbitrary<T> {
 	private final Supplier<Arbitrary<T>> generateArbitrary;
 	private Arbitrary<T> arbitrary;
 	private final boolean validOnly;
-	private final ArbitraryValidator<T> validator;
 	@SuppressWarnings("rawtypes")
-	private final Map<String, ConstraintViolation> violations = new HashMap<>();
+	private final ArbitraryValidator validator;
+	@SuppressWarnings("rawtypes")
+	private final Map<String, ConstraintViolation> violations;
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 	private Exception lastException;
 
+	@SuppressWarnings("rawtypes")
 	public ArbitraryValue(
 		Supplier<Arbitrary<T>> generateArbitrary,
-		ArbitraryValidator<T> validator,
-		boolean validOnly
+		ArbitraryValidator validator,
+		boolean validOnly,
+		Map<String, ConstraintViolation> violations
 	) {
 		this.generateArbitrary = generateArbitrary;
 		this.validator = validator;
 		this.validOnly = validOnly;
+		this.violations = violations;
 	}
 
 	@Override
@@ -83,12 +86,13 @@ final class ArbitraryValue<T> implements Arbitrary<T> {
 	}
 
 	@Override
-	public synchronized Arbitrary<Object> asGeneric() {
-		try {
-			return getArbitrary().asGeneric();
-		} finally {
-			this.arbitrary = null; // in order to getting new value whenever sampling, set arbitrary as null
-		}
+	public Arbitrary<Object> asGeneric() {
+		return new ArbitraryValue<>(
+			() -> getArbitrary().asGeneric(),
+			this.validator,
+			this.validOnly,
+			this.violations
+		);
 	}
 
 	@Override
@@ -142,57 +146,63 @@ final class ArbitraryValue<T> implements Arbitrary<T> {
 	}
 
 	@Override
-	public synchronized Arbitrary<T> filter(Predicate<T> filterPredicate) {
-		try {
-			return getArbitrary().filter(filterPredicate);
-		} finally {
-			this.arbitrary = null; // in order to getting new value whenever sampling, set arbitrary as null
-		}
+	public Arbitrary<T> filter(Predicate<T> filterPredicate) {
+		return new ArbitraryValue<>(
+			() -> getArbitrary().filter(filterPredicate),
+			this.validator,
+			this.validOnly,
+			this.violations
+		);
 	}
 
 	@Override
-	public synchronized <U> Arbitrary<U> map(Function<T, U> mapper) {
-		try {
-			return getArbitrary().map(mapper);
-		} finally {
-			this.arbitrary = null; // in order to getting new value whenever sampling, set arbitrary as null
-		}
+	public <U> Arbitrary<U> map(Function<T, U> mapper) {
+		return new ArbitraryValue<>(
+			() -> getArbitrary().map(mapper),
+			this.validator,
+			this.validOnly,
+			this.violations
+		);
 	}
 
 	@Override
-	public synchronized <U> Arbitrary<U> flatMap(Function<T, Arbitrary<U>> mapper) {
-		try {
-			return getArbitrary().flatMap(mapper);
-		} finally {
-			this.arbitrary = null; // in order to getting new value whenever sampling, set arbitrary as null
-		}
+	public <U> Arbitrary<U> flatMap(Function<T, Arbitrary<U>> mapper) {
+		return new ArbitraryValue<>(
+			() -> convert(getArbitrary(), it -> it.flatMap(mapper)),
+			this.validator,
+			this.validOnly,
+			this.violations
+		);
 	}
 
 	@Override
-	public synchronized Arbitrary<T> injectNull(double nullProbability) {
-		try {
-			return getArbitrary().injectNull(nullProbability);
-		} finally {
-			this.arbitrary = null; // in order to getting new value whenever sampling, set arbitrary as null
-		}
+	public Arbitrary<T> injectNull(double nullProbability) {
+		return new ArbitraryValue<>(
+			() -> getArbitrary().injectNull(nullProbability),
+			this.validator,
+			this.validOnly,
+			this.violations
+		);
 	}
 
 	@Override
-	public synchronized Arbitrary<T> unique() {
-		try {
-			return getArbitrary().unique();
-		} finally {
-			this.arbitrary = null; // in order to getting new value whenever sampling, set arbitrary as null
-		}
+	public Arbitrary<T> unique() {
+		return new ArbitraryValue<>(
+			() -> getArbitrary().unique(),
+			this.validator,
+			this.validOnly,
+			this.violations
+		);
 	}
 
 	@Override
-	public synchronized Arbitrary<T> fixGenSize(int genSize) {
-		try {
-			return getArbitrary().fixGenSize(genSize);
-		} finally {
-			this.arbitrary = null; // in order to getting new value whenever sampling, set arbitrary as null
-		}
+	public Arbitrary<T> fixGenSize(int genSize) {
+		return new ArbitraryValue<>(
+			() -> getArbitrary().fixGenSize(genSize),
+			this.validator,
+			this.validOnly,
+			this.violations
+		);
 	}
 
 	@Override
@@ -241,36 +251,44 @@ final class ArbitraryValue<T> implements Arbitrary<T> {
 	}
 
 	@Override
-	public synchronized Arbitrary<Optional<T>> optional() {
-		try {
-			return getArbitrary().optional();
-		} finally {
-			this.arbitrary = null; // in order to getting new value whenever sampling, set arbitrary as null
-		}
+	public Arbitrary<Optional<T>> optional() {
+		return new ArbitraryValue<>(
+			() -> convert(getArbitrary(), Arbitrary::optional),
+			this.validator,
+			this.validOnly,
+			this.violations
+		);
 	}
 
 	@Override
-	public synchronized Arbitrary<List<T>> collect(Predicate<List<T>> until) {
-		try {
-			return getArbitrary().collect(until);
-		} finally {
-			this.arbitrary = null; // in order to getting new value whenever sampling, set arbitrary as null
-		}
+	public Arbitrary<List<T>> collect(Predicate<List<T>> until) {
+		return new ArbitraryValue<>(
+			() -> convert(getArbitrary(), it -> it.collect(until)),
+			this.validator,
+			this.validOnly,
+			this.violations
+		);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public synchronized Stream<T> sampleStream() {
 		try {
-			return getArbitrary().sampleStream();
+			return getArbitrary()
+				.filter((Predicate<T>)this.validateFilter(validOnly))
+				.sampleStream();
 		} finally {
 			this.arbitrary = null; // in order to getting new value whenever sampling, set arbitrary as null
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public synchronized T sample() {
 		try {
-			return getArbitrary().sample();
+			return (T)getArbitrary()
+				.filter(this.validateFilter(validOnly))
+				.sample();
 		} catch (TooManyFilterMissesException ex) {
 			StringBuilder builder = new StringBuilder();
 			this.violations.values().forEach(violation -> builder
@@ -290,91 +308,98 @@ final class ArbitraryValue<T> implements Arbitrary<T> {
 	}
 
 	@Override
-	public synchronized Arbitrary<T> injectDuplicates(double duplicateProbability) {
-		try {
-			return getArbitrary().injectDuplicates(duplicateProbability);
-		} finally {
-			this.arbitrary = null; // in order to getting new value whenever sampling, set arbitrary as null
-		}
+	public Arbitrary<T> injectDuplicates(double duplicateProbability) {
+		return new ArbitraryValue<>(
+			() -> getArbitrary().injectDuplicates(duplicateProbability),
+			this.validator,
+			this.validOnly,
+			this.violations
+		);
 	}
 
 	@Override
-	public synchronized Arbitrary<Tuple1<T>> tuple1() {
-		try {
-			return getArbitrary().tuple1();
-		} finally {
-			this.arbitrary = null; // in order to getting new value whenever sampling, set arbitrary as null
-		}
+	public Arbitrary<Tuple1<T>> tuple1() {
+		return new ArbitraryValue<>(
+			() -> convert(getArbitrary(), Arbitrary::tuple1),
+			this.validator,
+			this.validOnly,
+			this.violations
+		);
 	}
 
 	@Override
-	public synchronized Arbitrary<Tuple2<T, T>> tuple2() {
-		try {
-			return getArbitrary().tuple2();
-		} finally {
-			this.arbitrary = null; // in order to getting new value whenever sampling, set arbitrary as null
-		}
+	public Arbitrary<Tuple2<T, T>> tuple2() {
+		return new ArbitraryValue<>(
+			() -> convert(getArbitrary(), Arbitrary::tuple2),
+			this.validator,
+			this.validOnly,
+			this.violations
+		);
 	}
 
 	@Override
-	public synchronized Arbitrary<Tuple3<T, T, T>> tuple3() {
-		try {
-			return getArbitrary().tuple3();
-		} finally {
-			this.arbitrary = null; // in order to getting new value whenever sampling, set arbitrary as null
-		}
+	public Arbitrary<Tuple3<T, T, T>> tuple3() {
+		return new ArbitraryValue<>(
+			() -> convert(getArbitrary(), Arbitrary::tuple3),
+			this.validator,
+			this.validOnly,
+			this.violations
+		);
 	}
 
 	@Override
-	public synchronized Arbitrary<Tuple4<T, T, T, T>> tuple4() {
-		try {
-			return getArbitrary().tuple4();
-		} finally {
-			this.arbitrary = null; // in order to getting new value whenever sampling, set arbitrary as null
-		}
+	public Arbitrary<Tuple4<T, T, T, T>> tuple4() {
+		return new ArbitraryValue<>(
+			() -> convert(getArbitrary(), Arbitrary::tuple4),
+			this.validator,
+			this.validOnly,
+			this.violations
+		);
 	}
 
 	@Override
-	public synchronized Arbitrary<Tuple5<T, T, T, T, T>> tuple5() {
-		try {
-			return getArbitrary().tuple5();
-		} finally {
-			this.arbitrary = null; // in order to getting new value whenever sampling, set arbitrary as null
-		}
+	public Arbitrary<Tuple5<T, T, T, T, T>> tuple5() {
+		return new ArbitraryValue<>(
+			() -> convert(getArbitrary(), Arbitrary::tuple5),
+			this.validator,
+			this.validOnly,
+			this.violations
+		);
 	}
 
 	@Override
-	public synchronized Arbitrary<T> ignoreException(Class<? extends Throwable> exceptionType) {
-		try {
-			return getArbitrary().ignoreException(exceptionType);
-		} finally {
-			this.arbitrary = null; // in order to getting new value whenever sampling, set arbitrary as null
-		}
+	public Arbitrary<T> ignoreException(Class<? extends Throwable> exceptionType) {
+		return new ArbitraryValue<>(
+			() -> getArbitrary().ignoreException(exceptionType),
+			this.validator,
+			this.validOnly,
+			this.violations
+		);
 	}
 
 	@Override
-	public synchronized Arbitrary<T> dontShrink() {
-		try {
-			return getArbitrary().dontShrink();
-		} finally {
-			this.arbitrary = null; // in order to getting new value whenever sampling, set arbitrary as null
-		}
+	public Arbitrary<T> dontShrink() {
+		return new ArbitraryValue<>(
+			() -> getArbitrary().dontShrink(),
+			this.validator,
+			this.validOnly,
+			this.violations
+		);
 	}
 
 	@Override
-	public synchronized Arbitrary<T> edgeCases(Consumer<Config<T>> configurator) {
-		try {
-			return getArbitrary().edgeCases(configurator);
-		} finally {
-			this.arbitrary = null; // in order to getting new value whenever sampling, set arbitrary as null
-		}
+	public Arbitrary<T> edgeCases(Consumer<Config<T>> configurator) {
+		return new ArbitraryValue<>(
+			() -> getArbitrary().edgeCases(configurator),
+			this.validator,
+			this.validOnly,
+			this.violations
+		);
 	}
 
-	@SuppressWarnings("unchecked")
 	private synchronized Arbitrary<T> getArbitrary() {
 		if (this.arbitrary == null) {
-			this.arbitrary = generateArbitrary.get()
-				.filter((Predicate<T>)this.validateFilter(validOnly));
+			this.arbitrary = generateArbitrary.get();
 		}
 		return this.arbitrary;
 	}
@@ -391,7 +416,7 @@ final class ArbitraryValue<T> implements Arbitrary<T> {
 			}
 
 			try {
-				validator.validate((T)fixture);
+				validator.validate(fixture);
 				return true;
 			} catch (ConstraintViolationException ex) {
 				ex.getConstraintViolations().forEach(violation ->
@@ -401,5 +426,10 @@ final class ArbitraryValue<T> implements Arbitrary<T> {
 			}
 			return false;
 		};
+	}
+
+	@SuppressWarnings("unchecked")
+	private <U> Arbitrary<U> convert(Arbitrary<T> arbitrary, Function<Arbitrary<T>, Arbitrary<U>> mapper) {
+		return mapper.apply(arbitrary.filter(validateFilter(validOnly)));
 	}
 }

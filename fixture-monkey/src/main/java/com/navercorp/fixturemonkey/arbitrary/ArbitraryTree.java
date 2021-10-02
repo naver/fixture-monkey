@@ -24,6 +24,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
 import javax.annotation.Nullable;
@@ -127,10 +128,10 @@ public final class ArbitraryTree<T> {
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	public Arbitrary<T> result(
 		Supplier<Arbitrary<T>> generateArbitrary,
-		ArbitraryValidator<T> validator,
+		ArbitraryValidator validator,
 		boolean validOnly
 	) {
-		return new ArbitraryValue(generateArbitrary, validator, validOnly);
+		return new ArbitraryValue(generateArbitrary, validator, validOnly, new ConcurrentHashMap<>());
 	}
 
 	@SuppressWarnings("unchecked")
