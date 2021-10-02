@@ -19,7 +19,7 @@ You could write countless tests including edge cases by only one instance of the
 
 ## Why do I want it?
 {{< alert color="warning" title="Warning">}}
-Fixture Monkey is design for test environment, not recommended for production use
+Fixture Monkey is designed for test environment, not recommended for production use
 {{< /alert >}}
 
 You should definitely check Fixture Monkey out If you want to
