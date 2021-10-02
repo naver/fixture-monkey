@@ -405,7 +405,7 @@ class FixtureMonkeyTest {
 			this.sut.giveMeBuilder(StringWithNotBlankWrapperClass.class)
 				.set("value", "")
 				.build()
-				.collect(List::isEmpty);
+				.collect(it -> !it.isEmpty());
 
 		thenThrownBy(sut::sample)
 			.isExactlyInstanceOf(TooManyFilterMissesException.class);
