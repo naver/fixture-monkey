@@ -25,7 +25,7 @@ import javax.annotation.Nullable;
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 
 public final class ContainerSizeManipulator extends AbstractArbitraryExpressionManipulator
-	implements MetadataManipulator, BuilderManipulator {
+	implements MetadataManipulator {
 	private final Integer min;
 	private final Integer max;
 
