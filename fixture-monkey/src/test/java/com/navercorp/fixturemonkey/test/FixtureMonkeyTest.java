@@ -20,6 +20,7 @@ package com.navercorp.fixturemonkey.test;
 
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.BDDAssertions.then;
+import static org.assertj.core.api.BDDAssertions.thenNoException;
 import static org.assertj.core.api.BDDAssertions.thenThrownBy;
 
 import java.util.AbstractMap.SimpleEntry;
@@ -42,10 +43,15 @@ import javax.validation.constraints.Positive;
 
 import org.junit.platform.commons.util.StringUtils;
 
+import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
 import net.jqwik.api.Example;
 import net.jqwik.api.Property;
 import net.jqwik.api.TooManyFilterMissesException;
+import net.jqwik.api.Tuple.Tuple1;
+import net.jqwik.api.Tuple.Tuple2;
+import net.jqwik.api.Tuple.Tuple3;
+import net.jqwik.api.arbitraries.SetArbitrary;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -310,7 +316,8 @@ class FixtureMonkeyTest {
 	}
 
 	@Example
-	void giveMeBuilderInvalidThenSampleTooManyFilterMissesException() {
+	void giveMeBuilderBuildInvalidThenSampleThrowsTooManyFilterMissesException() {
+		// when
 		Arbitrary<StringWithNotBlankWrapperClass> sut = this.sut.giveMeBuilder(StringWithNotBlankWrapperClass.class)
 			.set("value", "")
 			.build();
@@ -320,13 +327,362 @@ class FixtureMonkeyTest {
 	}
 
 	@Example
-	void giveMeBuilderInvalidThenSampleStreamTooManyFilterMissesException() {
+	void giveMeBuilderBuildInvalidThenSampleStreamThrowsTooManyFilterMissesException() {
+		// when
 		Arbitrary<StringWithNotBlankWrapperClass> sut = this.sut.giveMeBuilder(StringWithNotBlankWrapperClass.class)
 			.set("value", "")
 			.build();
 
+		//noinspection ResultOfMethodCallIgnored
 		thenThrownBy(() -> sut.sampleStream().limit(5).collect(toList()))
 			.isExactlyInstanceOf(TooManyFilterMissesException.class);
+	}
+
+	@Example
+	void giveMeBuilderBuildUniqueInvalidThenSampleThrowsTooManyFilterMissesException() {
+		// when
+		Arbitrary<StringWithNotBlankWrapperClass> sut = this.sut.giveMeBuilder(StringWithNotBlankWrapperClass.class)
+			.set("value", "")
+			.build()
+			.unique();
+
+		thenThrownBy(sut::sample)
+			.isExactlyInstanceOf(TooManyFilterMissesException.class);
+	}
+
+	@Example
+	void giveMeArbitraryUnique() {
+		// when
+		Arbitrary<StringWithNotBlankWrapperClass> sut = this.sut.giveMeArbitrary(StringWithNotBlankWrapperClass.class)
+			.unique();
+
+		thenNoException()
+			.isThrownBy(sut::sample);
+	}
+
+	@Example
+	void giveMeBuilderBuildFixGenSizeInvalidThenSampleThrowsTooManyFilterMissesException() {
+		// when
+		Arbitrary<StringWithNotBlankWrapperClass> sut = this.sut.giveMeBuilder(StringWithNotBlankWrapperClass.class)
+			.set("value", "")
+			.build()
+			.fixGenSize(5);
+
+		thenThrownBy(sut::sample)
+			.isExactlyInstanceOf(TooManyFilterMissesException.class);
+	}
+
+	@Example
+	void giveMeBuilderBuildOptionalInvalidThenSampleThrowsTooManyFilterMissesException() {
+		// when
+		Arbitrary<Optional<StringWithNotBlankWrapperClass>> sut =
+			this.sut.giveMeBuilder(StringWithNotBlankWrapperClass.class)
+				.set("value", "")
+				.build()
+				.optional();
+
+		thenThrownBy(sut::sample)
+			.isExactlyInstanceOf(TooManyFilterMissesException.class);
+	}
+
+	@Property
+	void giveMeArbitraryOptional() {
+		// given
+		Arbitrary<Optional<StringWithNotBlankWrapperClass>> sut =
+			this.sut.giveMeArbitrary(StringWithNotBlankWrapperClass.class)
+				.optional();
+
+		// when
+		Optional<StringWithNotBlankWrapperClass> actual = sut.sample();
+
+		then(actual).isNotNull();
+	}
+
+	@Example
+	void giveMeBuilderBuildCollectInvalidThenSampleThrowsTooManyFilterMissesException() {
+		// when
+		Arbitrary<List<StringWithNotBlankWrapperClass>> sut =
+			this.sut.giveMeBuilder(StringWithNotBlankWrapperClass.class)
+				.set("value", "")
+				.build()
+				.collect(List::isEmpty);
+
+		thenThrownBy(sut::sample)
+			.isExactlyInstanceOf(TooManyFilterMissesException.class);
+	}
+
+	@Property
+	void giveMeArbitraryCollect() {
+		// given
+		Arbitrary<List<StringWithNotBlankWrapperClass>> sut =
+			this.sut.giveMeArbitrary(StringWithNotBlankWrapperClass.class)
+				.collect(List::isEmpty);
+
+		// when
+		List<StringWithNotBlankWrapperClass> actual = sut.sample();
+
+		then(actual).isEmpty();
+	}
+
+	@Example
+	void giveMeBuilderBuildInjectDuplicatesInvalidThenSampleThrowsTooManyFilterMissesException() {
+		// when
+		Arbitrary<StringWithNotBlankWrapperClass> sut =
+			this.sut.giveMeBuilder(StringWithNotBlankWrapperClass.class)
+				.set("value", "")
+				.build()
+				.injectDuplicates(1);
+
+		thenThrownBy(sut::sample)
+			.isExactlyInstanceOf(TooManyFilterMissesException.class);
+	}
+
+	@Example
+	void giveMeArbitraryInjectDuplicates() {
+		// given
+		Arbitrary<StringWithNotBlankWrapperClass> sut = this.sut.giveMeArbitrary(StringWithNotBlankWrapperClass.class)
+			.injectDuplicates(1);
+
+		thenNoException()
+			.isThrownBy(sut::sample);
+	}
+
+	@Example
+	void giveMeBuilderBuildTuple1InvalidThenSampleThrowsTooManyFilterMissesException() {
+		// when
+		Arbitrary<Tuple1<StringWithNotBlankWrapperClass>> sut =
+			this.sut.giveMeBuilder(StringWithNotBlankWrapperClass.class)
+				.set("value", "")
+				.build()
+				.tuple1();
+
+		thenThrownBy(sut::sample)
+			.isExactlyInstanceOf(TooManyFilterMissesException.class);
+	}
+
+	@Property
+	void giveMeArbitraryTuple1() {
+		// given
+		Arbitrary<Tuple1<StringWithNotBlankWrapperClass>> sut =
+			this.sut.giveMeArbitrary(StringWithNotBlankWrapperClass.class)
+				.tuple1();
+
+		// when
+		Tuple1<StringWithNotBlankWrapperClass> sample = sut.sample();
+
+		then(sample).isNotNull();
+	}
+
+	@Example
+	void giveMeBuilderBuildTuple2InvalidThenSampleThrowsTooManyFilterMissesException() {
+		// when
+		Arbitrary<Tuple2<StringWithNotBlankWrapperClass, StringWithNotBlankWrapperClass>> sut =
+			this.sut.giveMeBuilder(StringWithNotBlankWrapperClass.class)
+				.set("value", "")
+				.build()
+				.tuple2();
+
+		thenThrownBy(sut::sample)
+			.isExactlyInstanceOf(TooManyFilterMissesException.class);
+	}
+
+	@Property
+	void giveMeArbitraryTuple2() {
+		// given
+		Arbitrary<Tuple2<StringWithNotBlankWrapperClass, StringWithNotBlankWrapperClass>> sut =
+			this.sut.giveMeArbitrary(StringWithNotBlankWrapperClass.class)
+				.tuple2();
+
+		// when
+		Tuple2<StringWithNotBlankWrapperClass, StringWithNotBlankWrapperClass> sample = sut.sample();
+
+		then(sample).isNotNull();
+	}
+
+	@Example
+	void giveMeBuilderBuildIgnoreExceptionInvalidThenSampleThrowsTooManyFilterMissesException() {
+		// when
+		Arbitrary<StringWithNotBlankWrapperClass> sut = this.sut.giveMeBuilder(StringWithNotBlankWrapperClass.class)
+			.set("value", "")
+			.build()
+			.ignoreException(NullPointerException.class);
+
+		thenThrownBy(sut::sample)
+			.isExactlyInstanceOf(TooManyFilterMissesException.class);
+	}
+
+	@Property
+	void giveMeArbitraryIgnoreException() {
+		// given
+		Arbitrary<StringWithNotBlankWrapperClass> sut = this.sut.giveMeArbitrary(StringWithNotBlankWrapperClass.class)
+			.ignoreException(NullPointerException.class);
+
+		thenNoException()
+			.isThrownBy(sut::sample);
+	}
+
+	@Example
+	void giveMeBuilderBuildDontShrinkInvalidThenSampleThrowsTooManyFilterMissesException() {
+		// when
+		Arbitrary<StringWithNotBlankWrapperClass> sut = this.sut.giveMeBuilder(StringWithNotBlankWrapperClass.class)
+			.set("value", "")
+			.build()
+			.dontShrink();
+
+		thenThrownBy(sut::sample)
+			.isExactlyInstanceOf(TooManyFilterMissesException.class);
+	}
+
+	@Property
+	void giveMeArbitraryDontShrink() {
+		// given
+		Arbitrary<StringWithNotBlankWrapperClass> sut = this.sut.giveMeArbitrary(StringWithNotBlankWrapperClass.class)
+			.dontShrink();
+
+		thenNoException()
+			.isThrownBy(sut::sample);
+	}
+
+	@Example
+	void giveMeBuilderBuildEdgeCasesInvalidThenSampleThrowsTooManyFilterMissesException() {
+		// when
+		Arbitrary<StringWithNotBlankWrapperClass> sut = this.sut.giveMeBuilder(StringWithNotBlankWrapperClass.class)
+			.set("value", "")
+			.build()
+			.edgeCases(it -> {
+			});
+
+		thenThrownBy(sut::sample)
+			.isExactlyInstanceOf(TooManyFilterMissesException.class);
+	}
+
+	@Property
+	void giveMeArbitraryEdgeCases() {
+		// given
+		Arbitrary<StringWithNotBlankWrapperClass> sut = this.sut.giveMeArbitrary(StringWithNotBlankWrapperClass.class)
+			.edgeCases(it -> {
+			});
+
+		thenNoException()
+			.isThrownBy(sut::sample);
+	}
+
+	@Example
+	void giveMeBuilderBuildInjectNullInvalidThenSampleThrowsTooManyFilterMissesException() {
+		// when
+		Arbitrary<StringWithNotBlankWrapperClass> sut = this.sut.giveMeBuilder(StringWithNotBlankWrapperClass.class)
+			.set("value", "")
+			.build()
+			.injectNull(0);
+
+		thenThrownBy(sut::sample)
+			.isExactlyInstanceOf(TooManyFilterMissesException.class);
+	}
+
+	@Example
+	void giveMeArbitraryInjectNull() {
+		// given
+		Arbitrary<StringWithNotBlankWrapperClass> sut = this.sut.giveMeArbitrary(StringWithNotBlankWrapperClass.class)
+			.injectNull(1);
+
+		StringWithNotBlankWrapperClass actual = sut.sample();
+
+		then(actual).isNull();
+	}
+
+	@Example
+	void giveMeBuilderBuildFlatMapInvalidThenSampleThrowsTooManyFilterMissesException() {
+		// when
+		Arbitrary<String> sut = this.sut.giveMeBuilder(StringWithNotBlankWrapperClass.class)
+			.set("value", "")
+			.build()
+			.flatMap(it -> Arbitraries.just("String"));
+
+		thenThrownBy(sut::sample)
+			.isExactlyInstanceOf(TooManyFilterMissesException.class);
+	}
+
+	@Example
+	void giveMeArbitraryFlatMap() {
+		// given
+		Arbitrary<String> sut = this.sut.giveMeArbitrary(StringWithNotBlankWrapperClass.class)
+			.flatMap(it -> Arbitraries.just("String"));
+
+		String actual = sut.sample();
+
+		then(actual).isEqualTo("String");
+	}
+
+	@Example
+	void giveMeBuilderBuildMapInvalidThenSampleThrowsTooManyFilterMissesException() {
+		// when
+		Arbitrary<StringWithNotBlankWrapperClass> sut = this.sut.giveMeBuilder(StringWithNotBlankWrapperClass.class)
+			.set("value", "")
+			.build()
+			.map(it -> it);
+
+		thenThrownBy(sut::sample)
+			.isExactlyInstanceOf(TooManyFilterMissesException.class);
+	}
+
+	@Property
+	void giveMeArbitraryMap() {
+		// given
+		Arbitrary<StringWithNotBlankWrapperClass> sut = this.sut.giveMeArbitrary(StringWithNotBlankWrapperClass.class)
+			.map(it -> it);
+
+		// when
+		StringWithNotBlankWrapperClass actual = sut.sample();
+
+		then(actual).isNotNull();
+	}
+
+	@Example
+	void giveMeBuilderBuildFilterInvalidThenSampleThrowsTooManyFilterMissesException() {
+		// when
+		Arbitrary<StringWithNotBlankWrapperClass> sut = this.sut.giveMeBuilder(StringWithNotBlankWrapperClass.class)
+			.set("value", "")
+			.build()
+			.filter(it -> true);
+
+		thenThrownBy(sut::sample)
+			.isExactlyInstanceOf(TooManyFilterMissesException.class);
+	}
+
+	@Property
+	void giveMeArbitraryFilter() {
+		// given
+		Arbitrary<StringWithNotBlankWrapperClass> sut = this.sut.giveMeArbitrary(StringWithNotBlankWrapperClass.class)
+			.filter(it -> true);
+
+		// when
+		StringWithNotBlankWrapperClass actual = sut.sample();
+
+		then(actual).isNotNull();
+	}
+
+	@Example
+	void giveMeBuilderBuildAsGenericInvalidThenSampleThrowsTooManyFilterMissesException() {
+		// when
+		Arbitrary<Object> sut = this.sut.giveMeBuilder(StringWithNotBlankWrapperClass.class)
+			.set("value", "")
+			.build()
+			.asGeneric();
+
+		thenThrownBy(sut::sample)
+			.isExactlyInstanceOf(TooManyFilterMissesException.class);
+	}
+
+	@Property
+	void giveMeArbitraryAsGeneric() {
+		// given
+		Arbitrary<Object> sut = this.sut.giveMeArbitrary(StringWithNotBlankWrapperClass.class)
+			.asGeneric();
+
+		// when
+		Object actual = sut.sample();
+
+		then(actual).isNotNull();
 	}
 
 	@Property
