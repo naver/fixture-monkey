@@ -84,6 +84,7 @@ testImplementation("com.navercorp.fixturemonkey:fixture-monkey:0.3.0")
     <groupId>com.navercorp.fixturemonkey</groupId>
     <artifactId>fixture-monkey</artifactId>
     <version>0.3.0</version>
+    <scope>test</scope>
 </dependency>
 ```
 
