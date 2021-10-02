@@ -18,6 +18,7 @@
 
 package com.navercorp.fixturemonkey.test;
 
+import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.assertj.core.api.BDDAssertions.thenThrownBy;
 
@@ -42,7 +43,9 @@ import javax.validation.constraints.Positive;
 import org.junit.platform.commons.util.StringUtils;
 
 import net.jqwik.api.Arbitrary;
+import net.jqwik.api.Example;
 import net.jqwik.api.Property;
+import net.jqwik.api.TooManyFilterMissesException;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -282,6 +285,48 @@ class FixtureMonkeyTest {
 		OptionalClass actual = this.sut.giveMeOne(OptionalClass.class);
 
 		then(actual).isNotNull();
+	}
+
+	@Property
+	void giveMeArbitraryThenSample() {
+		// given
+		Arbitrary<StringWithNotBlankWrapperClass> sut = this.sut.giveMeArbitrary(StringWithNotBlankWrapperClass.class);
+
+		// when
+		StringWithNotBlankWrapperClass actual = sut.sample();
+
+		then(actual.getValue()).isNotBlank();
+	}
+
+	@Property
+	void giveMeArbitraryThenSampleStream() {
+		// given
+		Arbitrary<StringWithNotBlankWrapperClass> sut = this.sut.giveMeArbitrary(StringWithNotBlankWrapperClass.class);
+
+		// when
+		List<StringWithNotBlankWrapperClass> actual = sut.sampleStream().limit(5).collect(toList());
+
+		actual.forEach(it -> then(it.getValue()).isNotBlank());
+	}
+
+	@Example
+	void giveMeBuilderInvalidThenSampleTooManyFilterMissesException() {
+		Arbitrary<StringWithNotBlankWrapperClass> sut = this.sut.giveMeBuilder(StringWithNotBlankWrapperClass.class)
+			.set("value", "")
+			.build();
+
+		thenThrownBy(sut::sample)
+			.isExactlyInstanceOf(TooManyFilterMissesException.class);
+	}
+
+	@Example
+	void giveMeBuilderInvalidThenSampleStreamTooManyFilterMissesException() {
+		Arbitrary<StringWithNotBlankWrapperClass> sut = this.sut.giveMeBuilder(StringWithNotBlankWrapperClass.class)
+			.set("value", "")
+			.build();
+
+		thenThrownBy(() -> sut.sampleStream().limit(5).collect(toList()))
+			.isExactlyInstanceOf(TooManyFilterMissesException.class);
 	}
 
 	@Property
