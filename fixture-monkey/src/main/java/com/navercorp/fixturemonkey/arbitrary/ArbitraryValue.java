@@ -168,7 +168,7 @@ final class ArbitraryValue<T> implements Arbitrary<T> {
 	@Override
 	public <U> Arbitrary<U> flatMap(Function<T, Arbitrary<U>> mapper) {
 		return new ArbitraryValue<>(
-			() -> getArbitrary().flatMap(mapper),
+			() -> convert(getArbitrary(), it -> it.flatMap(mapper)),
 			this.validator,
 			this.validOnly,
 			this.violations
@@ -253,7 +253,7 @@ final class ArbitraryValue<T> implements Arbitrary<T> {
 	@Override
 	public Arbitrary<Optional<T>> optional() {
 		return new ArbitraryValue<>(
-			() -> getArbitrary().optional(),
+			() -> convert(getArbitrary(), Arbitrary::optional),
 			this.validator,
 			this.validOnly,
 			this.violations
@@ -263,17 +263,20 @@ final class ArbitraryValue<T> implements Arbitrary<T> {
 	@Override
 	public Arbitrary<List<T>> collect(Predicate<List<T>> until) {
 		return new ArbitraryValue<>(
-			() -> getArbitrary().collect(until),
+			() -> convert(getArbitrary(), it -> it.collect(until)),
 			this.validator,
 			this.validOnly,
 			this.violations
 		);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public synchronized Stream<T> sampleStream() {
 		try {
-			return getArbitrary().sampleStream();
+			return getArbitrary()
+				.filter((Predicate<T>)this.validateFilter(validOnly))
+				.sampleStream();
 		} finally {
 			this.arbitrary = null; // in order to getting new value whenever sampling, set arbitrary as null
 		}
@@ -317,7 +320,7 @@ final class ArbitraryValue<T> implements Arbitrary<T> {
 	@Override
 	public Arbitrary<Tuple1<T>> tuple1() {
 		return new ArbitraryValue<>(
-			() -> getArbitrary().tuple1(),
+			() -> convert(getArbitrary(), Arbitrary::tuple1),
 			this.validator,
 			this.validOnly,
 			this.violations
@@ -327,7 +330,7 @@ final class ArbitraryValue<T> implements Arbitrary<T> {
 	@Override
 	public Arbitrary<Tuple2<T, T>> tuple2() {
 		return new ArbitraryValue<>(
-			() -> getArbitrary().tuple2(),
+			() -> convert(getArbitrary(), Arbitrary::tuple2),
 			this.validator,
 			this.validOnly,
 			this.violations
@@ -337,7 +340,7 @@ final class ArbitraryValue<T> implements Arbitrary<T> {
 	@Override
 	public Arbitrary<Tuple3<T, T, T>> tuple3() {
 		return new ArbitraryValue<>(
-			() -> getArbitrary().tuple3(),
+			() -> convert(getArbitrary(), Arbitrary::tuple3),
 			this.validator,
 			this.validOnly,
 			this.violations
@@ -347,7 +350,7 @@ final class ArbitraryValue<T> implements Arbitrary<T> {
 	@Override
 	public Arbitrary<Tuple4<T, T, T, T>> tuple4() {
 		return new ArbitraryValue<>(
-			() -> getArbitrary().tuple4(),
+			() -> convert(getArbitrary(), Arbitrary::tuple4),
 			this.validator,
 			this.validOnly,
 			this.violations
@@ -357,7 +360,7 @@ final class ArbitraryValue<T> implements Arbitrary<T> {
 	@Override
 	public Arbitrary<Tuple5<T, T, T, T, T>> tuple5() {
 		return new ArbitraryValue<>(
-			() -> getArbitrary().tuple5(),
+			() -> convert(getArbitrary(), Arbitrary::tuple5),
 			this.validator,
 			this.validOnly,
 			this.violations
@@ -423,5 +426,10 @@ final class ArbitraryValue<T> implements Arbitrary<T> {
 			}
 			return false;
 		};
+	}
+
+	@SuppressWarnings("unchecked")
+	private <U> Arbitrary<U> convert(Arbitrary<T> arbitrary, Function<Arbitrary<T>, Arbitrary<U>> mapper) {
+		return mapper.apply(arbitrary.filter(validateFilter(validOnly)));
 	}
 }
