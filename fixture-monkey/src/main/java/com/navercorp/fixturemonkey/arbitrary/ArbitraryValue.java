@@ -279,10 +279,13 @@ final class ArbitraryValue<T> implements Arbitrary<T> {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public synchronized T sample() {
 		try {
-			return getArbitrary().sample();
+			return (T)getArbitrary()
+				.filter(this.validateFilter(validOnly))
+				.sample();
 		} catch (TooManyFilterMissesException ex) {
 			StringBuilder builder = new StringBuilder();
 			this.violations.values().forEach(violation -> builder
@@ -391,11 +394,9 @@ final class ArbitraryValue<T> implements Arbitrary<T> {
 		);
 	}
 
-	@SuppressWarnings("unchecked")
 	private synchronized Arbitrary<T> getArbitrary() {
 		if (this.arbitrary == null) {
-			this.arbitrary = generateArbitrary.get()
-				.filter((Predicate<T>)this.validateFilter(validOnly));
+			this.arbitrary = generateArbitrary.get();
 		}
 		return this.arbitrary;
 	}
