@@ -1,10 +1,17 @@
 package com.navercorp.fixturemonkey.extree;
 
+import java.beans.IntrospectionException;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.danekja.java.util.function.serializable.SerializableFunction;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import co.streamx.fluent.extree.expression.BinaryExpression;
 import co.streamx.fluent.extree.expression.BlockExpression;
@@ -21,11 +28,12 @@ import co.streamx.fluent.extree.expression.NewArrayInitExpression;
 import co.streamx.fluent.extree.expression.ParameterExpression;
 import co.streamx.fluent.extree.expression.UnaryExpression;
 
-public class ExpressionConverter {
-	private ExpressionConverter() {
-	}
-
+public class Ex {
 	private static final ArbitraryExpressionVisitor ARBITRARY_EXPRESSION_VISITOR = new ArbitraryExpressionVisitor();
+	private static final Logger log = LoggerFactory.getLogger(Ex.class);
+
+	private Ex() {
+	}
 
 	public static <T> String to(SerializableFunction<T, ?> function) {
 		LambdaExpression<SerializableFunction<T, ?>> parsed = LambdaExpression.parse(function);
@@ -69,6 +77,8 @@ public class ExpressionConverter {
 				MemberExpression member = (MemberExpression)target;
 				Method method = (Method)member.getMember();
 				String methodName = method.getName();
+				Class<?> instanceType = member.getInstance().getResultType();
+				Map<Method, String> fieldNamesByGetter = getFieldNamesByGetter(instanceType);
 
 				Expression instanceExpression = member.getInstance();
 				if (instanceExpression.getExpressionType() == ExpressionType.Invoke
@@ -80,8 +90,8 @@ public class ExpressionConverter {
 				if (methodName.equals("get")) {
 					int index = Integer.parseInt(argumentString);
 					return returnedString + "[" + index + "]";
-				} else if (methodName.startsWith("get")) {
-					return returnedString + delimiter + getterToFieldName(methodName);
+				} else {
+					return returnedString + delimiter + fieldNamesByGetter.get(method);
 				}
 			}
 
@@ -131,9 +141,19 @@ public class ExpressionConverter {
 			return null;
 		}
 
-		private String getterToFieldName(String getter) {
-			String name = getter.substring(getter.indexOf("get") + 3);
-			return Character.toLowerCase(name.charAt(0)) + name.substring(1);
+		private Map<Method, String> getFieldNamesByGetter(Class<?> clazz) {
+			Map<Method, String> result = new HashMap<>();
+			try {
+				PropertyDescriptor[] descriptors = Introspector.getBeanInfo(clazz)
+					.getPropertyDescriptors();
+				for (PropertyDescriptor descriptor : descriptors) {
+					result.put(descriptor.getReadMethod(), descriptor.getName());
+				}
+			} catch (IntrospectionException e) {
+				log.warn("Introspect bean property is failed. type: " + clazz, e);
+			}
+
+			return result;
 		}
 	}
 }
