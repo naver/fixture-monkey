@@ -12,8 +12,8 @@ dependencies {
     api("org.mockito:mockito-core:3.9.0")
 
     testImplementation("org.assertj:assertj-core:3.18.1")
-    testImplementation("org.projectlombok:lombok:1.18.16")
-    testAnnotationProcessor("org.projectlombok:lombok:1.18.16")
+    testImplementation("org.projectlombok:lombok:1.18.20")
+    testAnnotationProcessor("org.projectlombok:lombok:1.18.20")
 }
 
 editorconfig {
