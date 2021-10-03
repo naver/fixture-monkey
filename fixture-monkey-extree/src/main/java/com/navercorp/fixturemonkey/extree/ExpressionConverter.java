@@ -35,21 +35,21 @@ public class ExpressionConverter {
 
 	private static class ArbitraryExpressionVisitor implements ExpressionVisitor<String> {
 		@Override
-		public String visit(BinaryExpression e) {
-			String prefix = e.getFirst().accept(this);
-			int index = Integer.parseInt(e.getSecond().accept(this));
+		public String visit(BinaryExpression expression) {
+			String prefix = expression.getFirst().accept(this);
+			int index = Integer.parseInt(expression.getSecond().accept(this));
 			return prefix + "[" + index + "]";
 		}
 
 		@Override
-		public String visit(ConstantExpression e) {
-			return String.valueOf(e.getValue());
+		public String visit(ConstantExpression expression) {
+			return String.valueOf(expression.getValue());
 		}
 
 		@Override
-		public String visit(InvocationExpression e) {
-			InvocableExpression target = e.getTarget();
-			List<Expression> arguments = e.getArguments();
+		public String visit(InvocationExpression expression) {
+			InvocableExpression target = expression.getTarget();
+			List<Expression> arguments = expression.getArguments();
 
 			String argumentString = "";
 			String delimiter = "";
@@ -71,8 +71,8 @@ public class ExpressionConverter {
 				String methodName = method.getName();
 
 				Expression instanceExpression = member.getInstance();
-				if (instanceExpression.getExpressionType() == ExpressionType.Invoke ||
-					instanceExpression.getExpressionType() == ExpressionType.Convert) {
+				if (instanceExpression.getExpressionType() == ExpressionType.Invoke
+					|| instanceExpression.getExpressionType() == ExpressionType.Convert) {
 					returnedString = instanceExpression.accept(this);
 					delimiter = ".";
 				}
@@ -89,10 +89,10 @@ public class ExpressionConverter {
 		}
 
 		@Override
-		public String visit(LambdaExpression<?> e) {
-			Expression expression = e.getBody();
-			if (expression.getExpressionType() == ExpressionType.FieldAccess) {
-				MemberExpression memberExpression = ((MemberExpression)e.getBody());
+		public String visit(LambdaExpression<?> expression) {
+			Expression body = expression.getBody();
+			if (body.getExpressionType() == ExpressionType.FieldAccess) {
+				MemberExpression memberExpression = ((MemberExpression)body);
 
 				Field field = (Field)(memberExpression).getMember();
 				return field.getName();
@@ -102,32 +102,32 @@ public class ExpressionConverter {
 		}
 
 		@Override
-		public String visit(DelegateExpression e) {
+		public String visit(DelegateExpression expression) {
 			return null;
 		}
 
 		@Override
-		public String visit(MemberExpression e) {
+		public String visit(MemberExpression expression) {
 			return null;
 		}
 
 		@Override
-		public String visit(ParameterExpression e) {
+		public String visit(ParameterExpression expression) {
 			return null;
 		}
 
 		@Override
-		public String visit(UnaryExpression e) {
-			return e.getFirst().accept(this);
+		public String visit(UnaryExpression expression) {
+			return expression.getFirst().accept(this);
 		}
 
 		@Override
-		public String visit(BlockExpression e) {
+		public String visit(BlockExpression expression) {
 			return null;
 		}
 
 		@Override
-		public String visit(NewArrayInitExpression e) {
+		public String visit(NewArrayInitExpression expression) {
 			return null;
 		}
 
