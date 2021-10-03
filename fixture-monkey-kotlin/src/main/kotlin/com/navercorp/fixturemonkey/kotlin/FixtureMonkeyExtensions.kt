@@ -19,7 +19,6 @@
 package com.navercorp.fixturemonkey.kotlin
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder
-import com.navercorp.fixturemonkey.ArbitraryOption
 import com.navercorp.fixturemonkey.FixtureMonkey
 import com.navercorp.fixturemonkey.customizer.ArbitraryCustomizer
 import com.navercorp.fixturemonkey.generator.FieldArbitraries
@@ -50,10 +49,6 @@ inline fun <reified T : Any> FixtureMonkey.giveMeOne(
 inline fun <reified T : Any> FixtureMonkey.giveMeArbitrary(): Arbitrary<T> = this.giveMeArbitrary(T::class.java)
 
 inline fun <reified T : Any> FixtureMonkey.giveMeBuilder(): ArbitraryBuilder<T> = this.giveMeBuilder(T::class.java)
-
-inline fun <reified T : Any> FixtureMonkey.giveMeBuilder(
-    options: ArbitraryOption
-): ArbitraryBuilder<T> = this.giveMeBuilder(T::class.java, options)
 
 inline fun <reified T : Any> KArbitraryCustomizer<T>.toArbitraryCustomizer(): ArbitraryCustomizer<T> {
     return object : ArbitraryCustomizer<T> {
