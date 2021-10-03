@@ -102,6 +102,14 @@ public class ExpressionConverterTest {
 	}
 
 	@Test
+	void parseNestedListElementFieldDiffIndex() {
+		// when
+		String actual = ExpressionConverter.to((Company c) -> c.names.get(3).get(4));
+
+		then(actual).isEqualTo("names[3][4]");
+	}
+
+	@Test
 	void parseNestedListElementGetter() {
 		// when
 		String actual = ExpressionConverter.to((Company c) -> c.getNames().get(0).get(0));
