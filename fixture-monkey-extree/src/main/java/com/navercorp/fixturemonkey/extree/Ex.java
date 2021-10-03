@@ -5,6 +5,7 @@ import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,9 +29,9 @@ import co.streamx.fluent.extree.expression.NewArrayInitExpression;
 import co.streamx.fluent.extree.expression.ParameterExpression;
 import co.streamx.fluent.extree.expression.UnaryExpression;
 
-public class Ex {
+class Ex {
 	private static final ArbitraryExpressionVisitor ARBITRARY_EXPRESSION_VISITOR = new ArbitraryExpressionVisitor();
-	private static final Logger log = LoggerFactory.getLogger(Ex.class);
+	private static final Logger LOG = LoggerFactory.getLogger(Ex.class);
 
 	private Ex() {
 	}
@@ -61,7 +62,7 @@ public class Ex {
 
 			String argumentString = "";
 			String delimiter = "";
-			String returnedString = "";
+			String concatedString = "";
 
 			if (arguments.size() == 1) {
 				Expression argument = arguments.get(0);
@@ -83,15 +84,19 @@ public class Ex {
 				Expression instanceExpression = member.getInstance();
 				if (instanceExpression.getExpressionType() == ExpressionType.Invoke
 					|| instanceExpression.getExpressionType() == ExpressionType.Convert) {
-					returnedString = instanceExpression.accept(this);
+					concatedString = instanceExpression.accept(this);
 					delimiter = ".";
 				}
 
-				if (methodName.equals("get")) {
+				if (Collection.class.isAssignableFrom(instanceType) && methodName.equals("get")) {
 					int index = Integer.parseInt(argumentString);
-					return returnedString + "[" + index + "]";
+					return concatedString + "[" + index + "]";
 				} else {
-					return returnedString + delimiter + fieldNamesByGetter.get(method);
+					String fieldName = fieldNamesByGetter.get(method);
+					if (fieldName == null) {
+						throw new IllegalArgumentException("Given method is not getter. " + methodName);
+					}
+					return concatedString + delimiter + fieldName;
 				}
 			}
 
@@ -118,6 +123,18 @@ public class Ex {
 
 		@Override
 		public String visit(MemberExpression expression) {
+			if (expression.getExpressionType() == ExpressionType.FieldAccess) {
+				Expression instanceExpression = expression.getInstance();
+				String concatedString = "";
+				String delimiter = "";
+				if (instanceExpression.getExpressionType() == ExpressionType.Invoke
+					|| instanceExpression.getExpressionType() == ExpressionType.Convert) {
+					concatedString = instanceExpression.accept(this);
+					delimiter = ".";
+				}
+				Field field = (Field)expression.getMember();
+				return concatedString + delimiter + field.getName();
+			}
 			return null;
 		}
 
@@ -147,10 +164,11 @@ public class Ex {
 				PropertyDescriptor[] descriptors = Introspector.getBeanInfo(clazz)
 					.getPropertyDescriptors();
 				for (PropertyDescriptor descriptor : descriptors) {
-					result.put(descriptor.getReadMethod(), descriptor.getName());
+					Method readMethod = descriptor.getReadMethod(); // can not be null
+					result.put(readMethod, descriptor.getName());
 				}
 			} catch (IntrospectionException e) {
-				log.warn("Introspect bean property is failed. type: " + clazz, e);
+				LOG.warn("Introspect bean property is failed. type: " + clazz, e);
 			}
 
 			return result;

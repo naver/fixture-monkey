@@ -1,6 +1,7 @@
-package com.navercorp.fixturemonkey.extree.test;
+package com.navercorp.fixturemonkey.extree;
 
 import static org.assertj.core.api.BDDAssertions.then;
+import static org.assertj.core.api.BDDAssertions.thenThrownBy;
 
 import java.util.List;
 
@@ -9,8 +10,7 @@ import org.junit.jupiter.api.Test;
 import lombok.Builder;
 import lombok.Value;
 
-import com.navercorp.fixturemonkey.extree.Ex;
-import com.navercorp.fixturemonkey.extree.test.ExTest.Person.Company;
+import com.navercorp.fixturemonkey.extree.ExTest.Person.Company;
 
 public class ExTest {
 	@Test
@@ -197,6 +197,93 @@ public class ExTest {
 		then(actual).isEqualTo("company.check");
 	}
 
+	@Test
+	void toNoneGetterPublicFieldClass() {
+		// when
+		String actual = Ex.to((NoneGetterPublicClass c) -> c.value);
+
+		then(actual).isEqualTo("value");
+	}
+
+	@Test
+	void toOnlyGetterClass() {
+		// when
+		String actual = Ex.to(OnlyGetterClass::getValue);
+
+		then(actual).isEqualTo("value");
+	}
+
+	@Test
+	void toFieldNoneGetterClass() {
+		// when
+		String actual = Ex.to((NestedExceptCase c) -> c.noneGetterPublicClass.value);
+
+		then(actual).isEqualTo("noneGetterPublicClass.value");
+	}
+
+	@Test
+	void toGetterNoneGetterClass() {
+		// when
+		String actual = Ex.to((NestedExceptCase c) -> c.getNoneGetterPublicClass().value);
+
+		then(actual).isEqualTo("noneGetterPublicClass.value");
+	}
+
+	@Test
+	void toGetterOnlyGetterClass() {
+		// when
+		String actual = Ex.to((NestedExceptCase c) -> c.getOnlyGetterClass().getValue());
+
+		then(actual).isEqualTo("onlyGetterClass.value");
+	}
+
+	@Test
+	void toFieldOnlyGetterClass() {
+		// when
+		String actual = Ex.to((NestedExceptCase c) -> c.onlyGetterClass.getValue());
+
+		then(actual).isEqualTo("onlyGetterClass.value");
+	}
+
+	@Test
+	void toFieldOnlyGetterClasses() {
+		// when
+		String actual = Ex.to((NestedExceptCase c) -> c.onlyGetterClasses.get(1).getValue());
+
+		then(actual).isEqualTo("onlyGetterClasses[1].value");
+	}
+
+	@Test
+	void toGetterOnlyGetterClasses() {
+		// when
+		String actual = Ex.to((NestedExceptCase c) -> c.getOnlyGetterClasses().get(1).getValue());
+
+		then(actual).isEqualTo("onlyGetterClasses[1].value");
+	}
+
+	@Test
+	void toFieldNoneGetterClasses() {
+		// when
+		String actual = Ex.to((NestedExceptCase c) -> c.noneGetterPublicClasses.get(1).value);
+
+		then(actual).isEqualTo("noneGetterPublicClasses[1].value");
+	}
+
+	@Test
+	void toGetterNoneGetterClasses() {
+		// when
+		String actual = Ex.to((NestedExceptCase c) -> c.noneGetterPublicClasses.get(1).value);
+
+		then(actual).isEqualTo("noneGetterPublicClasses[1].value");
+	}
+
+	@Test
+	void toGetterFakeList() {
+		thenThrownBy(() -> Ex.to(FakeList::get))
+			.isExactlyInstanceOf(IllegalArgumentException.class)
+			.satisfies(it -> then(it.getMessage()).contains("Given method is not getter."));
+	}
+
 	@Value
 	@Builder
 	public static class Person {
@@ -217,6 +304,34 @@ public class ExTest {
 			String[][] nameNestedArray;
 
 			boolean check;
+		}
+	}
+
+	public static class NoneGetterPublicClass {
+		public String value;
+	}
+
+	public static class OnlyGetterClass {
+		public String getValue() {
+			return "value";
+		}
+	}
+
+	@Value
+	public static class NestedExceptCase {
+		NoneGetterPublicClass noneGetterPublicClass;
+
+		OnlyGetterClass onlyGetterClass;
+
+		List<NoneGetterPublicClass> noneGetterPublicClasses;
+
+		List<OnlyGetterClass> onlyGetterClasses;
+	}
+
+	@Value
+	public static class FakeList {
+		public String get() {
+			return "value";
 		}
 	}
 }
