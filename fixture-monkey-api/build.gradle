@@ -8,28 +8,11 @@ plugins {
 }
 
 dependencies {
-    runtimeOnly(project(":fixture-monkey-engine"))
-    api(project(":fixture-monkey-api"))
-
-    api("net.jqwik:jqwik:${JQWIK_VERSION}")
-    api("javax.validation:validation-api:2.0.1.Final")
-    api("com.github.mifmif:generex:1.0.2")
-
-    testImplementation("org.assertj:assertj-core:3.18.1")
-    testImplementation("org.projectlombok:lombok:1.18.16")
-    testImplementation("org.hibernate.validator:hibernate-validator:6.2.0.Final")
-    testImplementation("org.glassfish:jakarta.el:3.0.3")
-    testAnnotationProcessor("org.projectlombok:lombok:1.18.16")
+    api("org.apiguardian:apiguardian-api:1.1.0")
 }
 
 editorconfig {
     excludes = ["build"]
-}
-
-test {
-    useJUnitPlatform {
-        includeEngines "jqwik"
-    }
 }
 
 check.dependsOn editorconfigCheck
@@ -103,6 +86,7 @@ jacocoTestCoverageVerification {
     }
 }
 check.dependsOn jacocoTestCoverageVerification
+
 
 jar {
     manifest {
