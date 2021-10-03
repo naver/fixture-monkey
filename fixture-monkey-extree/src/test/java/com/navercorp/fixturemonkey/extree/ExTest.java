@@ -12,7 +12,7 @@ import lombok.Value;
 
 import com.navercorp.fixturemonkey.extree.ExTest.Person.Company;
 
-public class ExTest {
+class ExTest {
 	@Test
 	void toField() {
 		// when
