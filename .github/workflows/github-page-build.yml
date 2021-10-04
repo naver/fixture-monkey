@@ -1,7 +1,7 @@
-name: github page
+name: github page build
 
 on:
-  push:
+  pull_request:
     branches: [ doc ]
 jobs:
   deploy:
@@ -17,7 +17,7 @@ jobs:
           ref: doc
 
       - name: install
-        run: npm install postcss-cli autoprefixer
+        run: npm install postcss postcss-cli autoprefixer
 
       - name: Setup Hugo
         uses: peaceiris/actions-hugo@v2
@@ -27,10 +27,3 @@ jobs:
 
       - name: Build
         run: hugo --minify
-
-      - name: Deploy
-        uses: peaceiris/actions-gh-pages@v3
-        if: github.ref == 'refs/heads/doc'
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./public
