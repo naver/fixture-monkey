@@ -28,6 +28,7 @@ subprojects {
 
     ext {
         JUNIT_ENGINE_VERSION = "1.7.0"
+        JUNIT_JUPITER_VERSION = "5.7.0"
         JQWIK_VERSION = "1.3.9"
     }
 
