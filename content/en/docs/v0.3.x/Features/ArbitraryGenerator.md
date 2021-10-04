@@ -24,9 +24,9 @@ public class Person {
 - Only one constructor and `@ConstructorProperties` is required
 - All parameters in constructor should be in `@ConstructorProperties`, and should have same name
 - Field name should be aligned with constructor parameter or `@ConstructorProperties` value name unless using `ArbitraryCustomizer`
-  - Example [here]({{< relref "/docs/examples/arbitrarygenerator#add-constructorproperties-value-when-field-name-is-different" >}})
+  - Example [here]({{< relref "/docs/v0.3.x/examples/arbitrarygenerator#add-constructorproperties-value-when-field-name-is-different" >}})
 - `ArbitraryCustomizer` could add extra parameter in `@ConstructorProperties` which is not in constructor
-  - Example [here]({{< relref "/docs/examples/arbitrarygenerator#add-constructorproperties-value-without-corresponding-field" >}})
+  - Example [here]({{< relref "/docs/v0.3.x/examples/arbitrarygenerator#add-constructorproperties-value-without-corresponding-field" >}})
 
 ```java
 public class Product{ 
@@ -82,11 +82,11 @@ public class Person {
 ```
 
 ## JacksonArbitraryGenerator
-- [Fixture Monkey Jackson module]({{< relref "/docs/third-party modules/fixturemonkeyjackson" >}})
+- [Fixture Monkey Jackson module]({{< relref "/docs/v0.3.x/third-party modules/fixturemonkeyjackson" >}})
 
 ## NullArbitraryGenerator
 - Always generate `null`
 
 ## How to Add New ArbitraryGenerator
 
-[Example]({{< relref "/docs/examples/arbitrarygenerator" >}})
+[Example]({{< relref "/docs/v0.3.x/examples/arbitrarygenerator" >}})

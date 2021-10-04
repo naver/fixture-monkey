@@ -1,7 +1,7 @@
 
 ---
-title: "Documentation"
-linkTitle: "Documentation"
+title: "Hello, Fixture Monkey"
+linkTitle: "Hello, Fixture Monkey"
 weight: 1
 menu:
   main:
@@ -9,7 +9,7 @@ menu:
 ---
 ## What is it?
 
-<img src="../images/fixture-monkey.png" width="15%"/>
+<img src="../../images/fixture-monkey.png" width="15%"/>
 
 Fixture Monkey is designed to generate controllable arbitrary instances easily. It allows you to reuse same configurations of the instances in several tests.
 

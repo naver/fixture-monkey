@@ -167,3 +167,7 @@ enable = false
 	url = "https://github.com/naver/fixture-monkey"
 	icon = "fab fa-github"
         desc = "Development takes place here!"
+
+[[params.versions]]
+  version = "latest"
+  url = "/fixture-monkey/docs"

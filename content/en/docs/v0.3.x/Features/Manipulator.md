@@ -39,14 +39,14 @@ fixtureMonkey.giveMeBuilder("Value")
 
 * Apply `setNotNull` to decomposed instance null field, it would be set as a new arbitrary value.
   
-More examples in [here]({{< relref "/docs/examples/manipulator/complexmanipulator" >}})
+More examples in [here]({{< relref "/docs/v0.3.x/examples/manipulator/complexmanipulator" >}})
 
-## [SimpleManipulator]({{< relref "/docs/examples/manipulator/simplemanipulator" >}})
+## [SimpleManipulator]({{< relref "/docs/v0.3.x/examples/manipulator/simplemanipulator" >}})
 - Applies in given order, `set` → `setPostCondition` → `customize`
 - `Manipulators` with same `Experssion` overwrite previous `Manipulator` except for `setPostcondition`
 - Customize can be used multiple times
 - Customize applies in declared order
 
-## [ComplexManipulator]({{< relref "/docs/examples/manipulator/complexmanipulator" >}})
+## [ComplexManipulator]({{< relref "/docs/v0.3.x/examples/manipulator/complexmanipulator" >}})
 - `ArbitraryBuilder` applied `ComplexManipulator` sampling always returns same value
 - `fixed` makes ArbitraryBuilder returns same value

@@ -7,9 +7,9 @@ weight: 1
 - Instantiating by [Jackson](https://github.com/FasterXML/jackson) Map Deserializer
 - Does not generate `@JsonIgnore` field
 - `@JsonProperty` would change field name, when apply manipulator `Expression` is same as `@JsonProperty` value
-    - Example [here]({{< relref "/docs/examples/arbitrarygenerator#set-field-in-jacksonarbitrarygenerator-with-jsonproperty" >}})
+    - Example [here]({{< relref "/docs/v0.3.x/examples/arbitrarygenerator#set-field-in-jacksonarbitrarygenerator-with-jsonproperty" >}})
 - Could inject `ObjectMapper` in `JacksonArbitraryGenerator`
-- Could not generate `interface`, you should set default implementation by [InterfaceSupplier]({{< relref "/docs/features/interfacesupplier" >}})
+- Could not generate `interface`, you should set default implementation by [InterfaceSupplier]({{< relref "/docs/v0.3.x/features/interfacesupplier" >}})
 
 ## Installation
 ### Gradle

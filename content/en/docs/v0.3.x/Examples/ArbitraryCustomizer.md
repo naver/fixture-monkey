@@ -4,7 +4,7 @@ linkTitle: "ArbitraryCustomizer"
 weight: 3
 ---
 {{< alert color="secondary" title="Note">}}
-For detail information check out [here]({{< relref "/docs/features/arbitrarycustomizer" >}})
+For detail information check out [here]({{< relref "/docs/v0.3.x/features/arbitrarycustomizer" >}})
 {{< /alert >}}
 
 ```java
