@@ -1,5 +1,6 @@
 rootProject.name = "fixture-monkey-parent"
 
+include "fixture-monkey-api"
 include "fixture-monkey-engine"
 include "fixture-monkey"
 include "fixture-monkey-kotlin"
