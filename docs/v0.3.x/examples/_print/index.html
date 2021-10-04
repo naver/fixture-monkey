@@ -2,7 +2,7 @@
 <head>
 <meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no">
-<meta name=generator content="Hugo 0.88.1"><link rel=canonical type=text/html href=https://naver.github.io/fixture-monkey/docs/>
+<meta name=generator content="Hugo 0.88.1"><link rel=canonical type=text/html href=https://naver.github.io/fixture-monkey/docs/v0.3.x/examples/>
 <meta name=ROBOTS content="NOINDEX, NOFOLLOW">
 <link rel="shortcut icon" href=/fixture-monkey/favicons/favicon.png>
 <link rel=apple-touch-icon href=/fixture-monkey/favicons/favicon.png sizes=180x180>
@@ -14,19 +14,24 @@
 <link rel=icon type=image/png href=/fixture-monkey/favicons/favicon.png sizes=96x96>
 <link rel=icon type=image/png href=/fixture-monkey/favicons/favicon.png sizes=144x144>
 <link rel=icon type=image/png href=/fixture-monkey/favicons/favicon.png sizes=192x192>
-<title>Docs | Fixture Monkey</title>
-<meta name=description content="
+<title>Examples | Fixture Monkey</title>
+<meta name=description content="@Data
+public class Order {
+    @NotNull
+    private Long id;
 
+    @NotBlank
+    private String orderNo;
 
-
-">
-<meta property="og:title" content="Docs">
+    @Size(min = 2, max = 10)
+    private …">
+<meta property="og:title" content="Examples">
 <meta property="og:description" content>
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://naver.github.io/fixture-monkey/docs/"><meta property="og:site_name" content="Fixture Monkey">
-<meta itemprop=name content="Docs">
+<meta property="og:url" content="https://naver.github.io/fixture-monkey/docs/v0.3.x/examples/"><meta property="og:site_name" content="Fixture Monkey">
+<meta itemprop=name content="Examples">
 <meta itemprop=description content><meta name=twitter:card content="summary">
-<meta name=twitter:title content="Docs">
+<meta name=twitter:title content="Examples">
 <meta name=twitter:description content>
 <link rel=preload href=/fixture-monkey/scss/main.min.861794578d20e3e3c9c7ca904b2cd3e0e34552ae164462c4f4af0efdcf16ec40.css as=style>
 <link href=/fixture-monkey/scss/main.min.861794578d20e3e3c9c7ca904b2cd3e0e34552ae164462c4f4af0efdcf16ec40.css rel=stylesheet integrity>
@@ -44,7 +49,7 @@
 <div class="td-navbar-nav-scroll ml-md-auto" id=main_navbar>
 <ul class="navbar-nav mt-2 mt-lg-0">
 <li class="nav-item mr-4 mb-2 mb-lg-0">
-<a class=nav-link href=/fixture-monkey/docs/v0.3.x/><span>Hello, Fixture Monkey</span></a>
+<a class="nav-link active" href=/fixture-monkey/docs/v0.3.x/><span class=active>Hello, Fixture Monkey</span></a>
 </li>
 <li class="nav-item mr-4 mb-2 mb-lg-0">
 <a class=nav-link href=/fixture-monkey/docs/release-notes><i class="fas fa-book-open"></i> <span>Release Notes</span></a>
@@ -80,169 +85,23 @@ Version
 This the multi-page printable view of this section.
 <a href=# onclick="return print(),!1">Click here to print</a>.
 </p><p>
-<a href=/fixture-monkey/docs/>Return to the regular view of this page</a>.
+<a href=/fixture-monkey/docs/v0.3.x/examples/>Return to the regular view of this page</a>.
 </p>
 </div>
-<h1 class=title>Docs</h1>
+<h1 class=title>Examples</h1>
 <ul>
-<li>1: <a href=#pg-5a63ad2bdc398b66f9f80f7d96372295>Hello, Fixture Monkey</a></li>
+<li>1: <a href=#pg-e7bd3137a18455437d2a940ee0b6dad0>Manipulator</a></li>
 <ul>
-<li>1.1: <a href=#pg-b826e620618d1826c0c57f52d5d23375>Getting Started</a></li>
-<ul>
+<li>1.1: <a href=#pg-d70b5e5f3ae27224ff92ce851e3cd29b>Simple Manipulator</a></li>
+<li>1.2: <a href=#pg-ab93a63af9fec0435430fc56f0ac8dca>Complex Manipulator</a></li>
+<li>1.3: <a href=#pg-72efddefe281142aa45573d3ca3b3e4f>ExpressionSpec</a></li>
 </ul>
-<li>1.2: <a href=#pg-ece02679bffe30021d2a2b3bae21ceb1>Examples</a></li>
-<ul>
-<li>1.2.1: <a href=#pg-e7bd3137a18455437d2a940ee0b6dad0>Manipulator</a></li>
-<ul>
-<li>1.2.1.1: <a href=#pg-d70b5e5f3ae27224ff92ce851e3cd29b>Simple Manipulator</a></li>
-<li>1.2.1.2: <a href=#pg-ab93a63af9fec0435430fc56f0ac8dca>Complex Manipulator</a></li>
-<li>1.2.1.3: <a href=#pg-72efddefe281142aa45573d3ca3b3e4f>ExpressionSpec</a></li>
-</ul>
-<li>1.2.2: <a href=#pg-4269c97b5d71dfdf828069a7dd123f07>ArbitraryGenerator</a></li>
-<li>1.2.3: <a href=#pg-6f61c83f80332f13bb2fc2f7066dc91b>ArbitraryCustomizer</a></li>
-<li>1.2.4: <a href=#pg-689ba94e622473294d873d5e903e64a9>AnnotatedArbitraryGenerator</a></li>
-<li>1.2.5: <a href=#pg-cca8de30c7cb9ccdd3f20fe05380ee9e>Register ArbitraryBuilder</a></li>
-</ul>
-<li>1.3: <a href=#pg-1a9feece75eb5cfff622f1d20df2927a>Features</a></li>
-<ul>
-<li>1.3.1: <a href=#pg-8ba336c6de488092b6621eada2744e71>FixtureMonkeyBuilder</a></li>
-<li>1.3.2: <a href=#pg-03b1aab98dc2da9f280a1fe3a71a1b1c>Default Supported Types</a></li>
-<li>1.3.3: <a href=#pg-d2fde4b833cd93f786c1d1ad005d08ba>ArbitraryBuilder</a></li>
-<li>1.3.4: <a href=#pg-c935f6f84a5f687c8c593283647c6c70>Manipulator</a></li>
-<li>1.3.5: <a href=#pg-91c74f0ac834cde66c938a0cf4d705e4>Register ArbitraryBuilder</a></li>
-<li>1.3.6: <a href=#pg-83bcff1628753d4d6333dd0affdba1ed>ArbitraryGenerator</a></li>
-<li>1.3.7: <a href=#pg-02016a2d4e99b6a6eef4d851e7ebf042>ArbitraryCustomizer</a></li>
-<li>1.3.8: <a href=#pg-39c8bea5724b08548916049a7f1f3bfa>ArbitraryValidator</a></li>
-<li>1.3.9: <a href=#pg-4d1e21a96b37777490e60d9f974a0156>Supported Validation Annotations</a></li>
-<li>1.3.10: <a href=#pg-13affe8ac68faa821ee69621ad8d3b2a>InterfaceSupplier</a></li>
-<li>1.3.11: <a href=#pg-828694bb99e9366c656eb9970fdc5bd0>Arbitrary</a></li>
-</ul>
-<li>1.4: <a href=#pg-abb8968dc51236644b5b7eb2b0c55e5b>Third-party Modules</a></li>
-<ul>
-<li>1.4.1: <a href=#pg-f4cdf75618e243a3fb0b60c668edc2b3>Fixture Monkey Jackson</a></li>
-<li>1.4.2: <a href=#pg-e556e61777fc3108dd377118871d436a>Fixture Monkey Kotlin</a></li>
-<li>1.4.3: <a href=#pg-de6577ee116c498e0a28fd483619a75b>Fixture Monkey AutoParams</a></li>
-<li>1.4.4: <a href=#pg-6278bb5ed580ce4d7c8128356e5e6fe6>Fixture Monkey Mockito</a></li>
-</ul>
-<li>1.5: <a href=#pg-f77601425046848a3ab4466865122027>FAQ</a></li>
-<ul>
-</ul>
-<li>1.6: <a href=#pg-454342dc75587df96139a0db6d8c5bf9>What's New</a></li>
-<ul>
-</ul>
-<li>1.7: <a href=#pg-31ee74bcd7d060d22077c4e1740e3537>Release Notes</a></li>
-<ul>
-</ul>
-</ul>
+<li>2: <a href=#pg-4269c97b5d71dfdf828069a7dd123f07>ArbitraryGenerator</a></li>
+<li>3: <a href=#pg-6f61c83f80332f13bb2fc2f7066dc91b>ArbitraryCustomizer</a></li>
+<li>4: <a href=#pg-689ba94e622473294d873d5e903e64a9>AnnotatedArbitraryGenerator</a></li>
+<li>5: <a href=#pg-cca8de30c7cb9ccdd3f20fe05380ee9e>Register ArbitraryBuilder</a></li>
 </ul>
 <div class=content>
-<meta name=robots content="noindex">
-<meta charset=utf-8>
-<meta http-equiv=refresh content="0; url=/fixture-monkey/docs/v0.3.x">
-</div>
-</div>
-<div class=td-content>
-<h1 id=pg-5a63ad2bdc398b66f9f80f7d96372295>1 - Hello, Fixture Monkey</h1>
-<h2 id=what-is-it>What is it?</h2>
-<img src=../../images/fixture-monkey.png width=15%>
-<p>Fixture Monkey is designed to generate controllable arbitrary instances easily. It allows you to reuse same configurations of the instances in several tests.</p>
-<p>You could write countless tests including edge cases by only one instance of the FixtureMonkey type. You could generate instances of complex types automatically and set fields with values from builders of the ArbitraryBuilder type. The well-defined builders could be reused in any tests. Writing integration tests is easier with fixture-monkey.</p>
-<h3 id=write-once-test-anywhere>&ldquo;Write once, Test anywhere&rdquo;</h3>
-<h2 id=why-do-i-want-it>Why do I want it?</h2>
-<div class="alert alert-warning" role=alert>
-<h4 class=alert-heading>Warning</h4>
-Fixture Monkey is designed for test environment, not recommended for production use
-</div>
-<p>You should definitely check Fixture Monkey out If you want to</p>
-<ul>
-<li>reduce boilerplate and improve readability when you set up test scenario</li>
-<li>write integration tests easily</li>
-<li>recognize your concern within test easily</li>
-<li>manage complex dependencies effectively</li>
-<li>enjoy writing tests</li>
-</ul>
-</div>
-<div class=td-content style=page-break-before:always>
-<h1 id=pg-b826e620618d1826c0c57f52d5d23375>1.1 - Getting Started</h1>
-<h2 id=prerequisites>Prerequisites</h2>
-<ul>
-<li>JDK 8+</li>
-<li>JUnit 5 platform</li>
-<li>jqwik 1.3.9</li>
-</ul>
-<h2 id=installation>Installation</h2>
-<h3 id=gradle>Gradle</h3>
-<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-groovy data-lang=groovy><span style=color:#000>testImplementation</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#4e9a06>&#34;com.navercorp.fixturemonkey:fixture-monkey:0.3.0&#34;</span><span style=color:#ce5c00;font-weight:700>)</span>
-</code></pre></div><h3 id=maven>Maven</h3>
-<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-xml data-lang=xml><span style=color:#204a87;font-weight:700>&lt;dependency&gt;</span>
-  <span style=color:#204a87;font-weight:700>&lt;groupId&gt;</span>com.navercorp.fixturemonkey<span style=color:#204a87;font-weight:700>&lt;/groupId&gt;</span>
-  <span style=color:#204a87;font-weight:700>&lt;artifactId&gt;</span>fixture-monkey<span style=color:#204a87;font-weight:700>&lt;/artifactId&gt;</span>
-  <span style=color:#204a87;font-weight:700>&lt;version&gt;</span>0.3.0<span style=color:#204a87;font-weight:700>&lt;/version&gt;</span>
-  <span style=color:#204a87;font-weight:700>&lt;scope&gt;</span>test<span style=color:#204a87;font-weight:700>&lt;/scope&gt;</span>
-<span style=color:#204a87;font-weight:700>&lt;/dependency&gt;</span>
-</code></pre></div><h2 id=try-it-out>Try it out!</h2>
-<div class="alert alert-primary" role=alert>
-<h4 class=alert-heading>Tip</h4>
-<p>Getter and Setter is not mandatory.
-You could generate immutable instances by Fixture Monkey with <a href=/fixture-monkey/docs/v0.3.x/features/arbitrarygenerator/#builderarbitrarygenerator>BuilderArbitraryGenerator</a> or <a href=/fixture-monkey/docs/v0.3.x/features/arbitrarygenerator/#jacksonarbitrarygenerator>JacksonArbitraryGenerator</a>.</p>
-<p>You would not need to change anything for using Fixture Monkey.
-Choose the way of instantiating.
-Check out details <a href=/fixture-monkey/docs/v0.3.x/features/arbitrarygenerator/>here</a>.</p>
-</div>
-<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#5c35cc;font-weight:700>@Data</span>   <span style=color:#8f5902;font-style:italic>// lombok getter, setter
-</span><span style=color:#8f5902;font-style:italic></span><span style=color:#204a87;font-weight:700>public</span> <span style=color:#204a87;font-weight:700>class</span> <span style=color:#000>Order</span> <span style=color:#ce5c00;font-weight:700>{</span>
-    <span style=color:#5c35cc;font-weight:700>@NotNull</span>
-    <span style=color:#204a87;font-weight:700>private</span> <span style=color:#000>Long</span> <span style=color:#000>id</span><span style=color:#ce5c00;font-weight:700>;</span>
-
-    <span style=color:#5c35cc;font-weight:700>@NotBlank</span>
-    <span style=color:#204a87;font-weight:700>private</span> <span style=color:#000>String</span> <span style=color:#000>orderNo</span><span style=color:#ce5c00;font-weight:700>;</span>
-
-    <span style=color:#5c35cc;font-weight:700>@Size</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>min</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#000>2</span><span style=color:#ce5c00;font-weight:700>,</span> <span style=color:#000>max</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#000>10</span><span style=color:#ce5c00;font-weight:700>)</span>
-    <span style=color:#204a87;font-weight:700>private</span> <span style=color:#000>String</span> <span style=color:#000>productName</span><span style=color:#ce5c00;font-weight:700>;</span>
-
-    <span style=color:#5c35cc;font-weight:700>@Min</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>1</span><span style=color:#ce5c00;font-weight:700>)</span>
-    <span style=color:#5c35cc;font-weight:700>@Max</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>100</span><span style=color:#ce5c00;font-weight:700>)</span>
-    <span style=color:#204a87;font-weight:700>private</span> <span style=color:#204a87;font-weight:700>int</span> <span style=color:#000>quantity</span><span style=color:#ce5c00;font-weight:700>;</span>
-
-    <span style=color:#5c35cc;font-weight:700>@Min</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>0</span><span style=color:#ce5c00;font-weight:700>)</span>
-    <span style=color:#204a87;font-weight:700>private</span> <span style=color:#204a87;font-weight:700>long</span> <span style=color:#000>price</span><span style=color:#ce5c00;font-weight:700>;</span>
-
-    <span style=color:#5c35cc;font-weight:700>@Size</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>max</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#000>3</span><span style=color:#ce5c00;font-weight:700>)</span>
-    <span style=color:#204a87;font-weight:700>private</span> <span style=color:#000>List</span><span style=color:#ce5c00;font-weight:700>&lt;</span><span style=color:#5c35cc;font-weight:700>@NotBlank</span> <span style=color:#5c35cc;font-weight:700>@Size</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>max</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#000>10</span><span style=color:#ce5c00;font-weight:700>)</span> <span style=color:#000>String</span><span style=color:#ce5c00;font-weight:700>&gt;</span> <span style=color:#000>items</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#204a87;font-weight:700>new</span> <span style=color:#000>ArrayList</span><span style=color:#ce5c00;font-weight:700>&lt;&gt;();</span>
-
-    <span style=color:#5c35cc;font-weight:700>@PastOrPresent</span>
-    <span style=color:#204a87;font-weight:700>private</span> <span style=color:#000>Instant</span> <span style=color:#000>orderedAt</span><span style=color:#ce5c00;font-weight:700>;</span>
-<span style=color:#ce5c00;font-weight:700>}</span>
-
-<span style=color:#5c35cc;font-weight:700>@Test</span>
-<span style=color:#204a87;font-weight:700>void</span> <span style=color:#000>test</span><span style=color:#ce5c00;font-weight:700>()</span> <span style=color:#ce5c00;font-weight:700>{</span>
-    <span style=color:#8f5902;font-style:italic>// given
-</span><span style=color:#8f5902;font-style:italic></span>    <span style=color:#000>FixtureMonkey</span> <span style=color:#000>sut</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#000>FixtureMonkey</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>create</span><span style=color:#ce5c00;font-weight:700>();</span>
-
-    <span style=color:#8f5902;font-style:italic>// when
-</span><span style=color:#8f5902;font-style:italic></span>    <span style=color:#000>Order</span> <span style=color:#000>actual</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#000>sut</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>giveMeOne</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>Order</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>class</span><span style=color:#ce5c00;font-weight:700>);</span>
-
-    <span style=color:#8f5902;font-style:italic>// then
-</span><span style=color:#8f5902;font-style:italic></span>    <span style=color:#000>then</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>actual</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>getId</span><span style=color:#ce5c00;font-weight:700>()).</span><span style=color:#c4a000>isNotNull</span><span style=color:#ce5c00;font-weight:700>();</span> <span style=color:#8f5902;font-style:italic>// @NotNull
-</span><span style=color:#8f5902;font-style:italic></span>	<span style=color:#000>then</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>actual</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>getOrderNo</span><span style=color:#ce5c00;font-weight:700>()).</span><span style=color:#c4a000>isNotBlank</span><span style=color:#ce5c00;font-weight:700>();</span> <span style=color:#8f5902;font-style:italic>// @NotBlank
-</span><span style=color:#8f5902;font-style:italic></span>	<span style=color:#000>then</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>actual</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>getProductName</span><span style=color:#ce5c00;font-weight:700>().</span><span style=color:#c4a000>length</span><span style=color:#ce5c00;font-weight:700>()).</span><span style=color:#c4a000>isBetween</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>2</span><span style=color:#ce5c00;font-weight:700>,</span> <span style=color:#000>10</span><span style=color:#ce5c00;font-weight:700>);</span> <span style=color:#8f5902;font-style:italic>// @Size(min = 2, max = 10)
-</span><span style=color:#8f5902;font-style:italic></span>	<span style=color:#000>then</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>actual</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>getQuantity</span><span style=color:#ce5c00;font-weight:700>()).</span><span style=color:#c4a000>isBetween</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>1</span><span style=color:#ce5c00;font-weight:700>,</span> <span style=color:#000>100</span><span style=color:#ce5c00;font-weight:700>);</span> <span style=color:#8f5902;font-style:italic>// @Min(1) @Max(100)
-</span><span style=color:#8f5902;font-style:italic></span>	<span style=color:#000>then</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>actual</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>getPrice</span><span style=color:#ce5c00;font-weight:700>()).</span><span style=color:#c4a000>isGreaterThanOrEqualTo</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>0</span><span style=color:#ce5c00;font-weight:700>);</span> <span style=color:#8f5902;font-style:italic>// @Min(0)
-</span><span style=color:#8f5902;font-style:italic></span>	<span style=color:#000>then</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>actual</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>getItems</span><span style=color:#ce5c00;font-weight:700>()).</span><span style=color:#c4a000>hasSizeLessThan</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>3</span><span style=color:#ce5c00;font-weight:700>);</span> <span style=color:#8f5902;font-style:italic>// @Size(max = 3)
-</span><span style=color:#8f5902;font-style:italic></span>	<span style=color:#000>then</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>actual</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>getItems</span><span style=color:#ce5c00;font-weight:700>()).</span><span style=color:#c4a000>allMatch</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>it</span> <span style=color:#ce5c00;font-weight:700>-&gt;</span> <span style=color:#000>it</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>length</span><span style=color:#ce5c00;font-weight:700>()</span> <span style=color:#ce5c00;font-weight:700>&lt;=</span> <span style=color:#000>10</span><span style=color:#ce5c00;font-weight:700>);</span> <span style=color:#8f5902;font-style:italic>// @NotBlank @Size(max = 10)
-</span><span style=color:#8f5902;font-style:italic></span>    <span style=color:#000>then</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>actual</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>getOrderedAt</span><span style=color:#ce5c00;font-weight:700>()).</span><span style=color:#c4a000>isBeforeOrEqualTo</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>Instant</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>now</span><span style=color:#ce5c00;font-weight:700>());</span> <span style=color:#8f5902;font-style:italic>// @PastOrPresent
-</span><span style=color:#8f5902;font-style:italic></span><span style=color:#ce5c00;font-weight:700>}</span>
-</code></pre></div><h2 id=where-should-i-go-next>Where should I go next?</h2>
-<ul>
-<li><a href=/fixture-monkey/docs/v0.3.x/examples/>Examples</a></li>
-<li><a href=/fixture-monkey/docs/v0.3.x/features/defaultsupportedtypes/>DefaultSupportedTypes</a></li>
-<li><a href=/fixture-monkey/docs/v0.3.x/features/arbitrarybuilder/>ArbitraryBuilder</a></li>
-<li><a href=/fixture-monkey/docs/v0.3.x/features/manipulator/>Manipulator</a></li>
-<li><a href=/fixture-monkey/docs/v0.3.x/faq/>FAQ</a></li>
-</ul>
-</div>
-<div class=td-content style=page-break-before:always>
-<h1 id=pg-ece02679bffe30021d2a2b3bae21ceb1>1.2 - Examples</h1>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#5c35cc;font-weight:700>@Data</span>
 <span style=color:#204a87;font-weight:700>public</span> <span style=color:#204a87;font-weight:700>class</span> <span style=color:#000>Order</span> <span style=color:#ce5c00;font-weight:700>{</span>
     <span style=color:#5c35cc;font-weight:700>@NotNull</span>
@@ -279,12 +138,13 @@ Check out details <a href=/fixture-monkey/docs/v0.3.x/features/arbitrarygenerato
 <span style=color:#ce5c00;font-weight:700>}</span>
 </code></pre></div>
 </div>
+</div>
 <div class=td-content style=page-break-before:always>
-<h1 id=pg-e7bd3137a18455437d2a940ee0b6dad0>1.2.1 - Manipulator</h1>
+<h1 id=pg-e7bd3137a18455437d2a940ee0b6dad0>1 - Manipulator</h1>
 <p>If you would like to know details about <code>Manipulator</code>, check out <a href=/fixture-monkey/docs/v0.3.x/features/manipulator/>Features</a></p>
 </div>
 <div class=td-content>
-<h1 id=pg-d70b5e5f3ae27224ff92ce851e3cd29b>1.2.1.1 - Simple Manipulator</h1>
+<h1 id=pg-d70b5e5f3ae27224ff92ce851e3cd29b>1.1 - Simple Manipulator</h1>
 <h2 id=set>Set</h2>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#5c35cc;font-weight:700>@Test</span>
 <span style=color:#204a87;font-weight:700>void</span> <span style=color:#000>set</span><span style=color:#ce5c00;font-weight:700>(){</span>
@@ -489,7 +349,7 @@ Check out details <a href=/fixture-monkey/docs/v0.3.x/features/arbitrarygenerato
 </code></pre></div>
 </div>
 <div class=td-content style=page-break-before:always>
-<h1 id=pg-ab93a63af9fec0435430fc56f0ac8dca>1.2.1.2 - Complex Manipulator</h1>
+<h1 id=pg-ab93a63af9fec0435430fc56f0ac8dca>1.2 - Complex Manipulator</h1>
 <h2 id=manipulate-existing-instance>Manipulate Existing Instance</h2>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#5c35cc;font-weight:700>@Test</span>
 <span style=color:#204a87;font-weight:700>void</span> <span style=color:#000>manipulateExistingInstance</span><span style=color:#ce5c00;font-weight:700>()</span> <span style=color:#ce5c00;font-weight:700>{</span>
@@ -573,7 +433,7 @@ Check out details <a href=/fixture-monkey/docs/v0.3.x/features/arbitrarygenerato
 </code></pre></div>
 </div>
 <div class=td-content style=page-break-before:always>
-<h1 id=pg-72efddefe281142aa45573d3ca3b3e4f>1.2.1.3 - ExpressionSpec</h1>
+<h1 id=pg-72efddefe281142aa45573d3ca3b3e4f>1.3 - ExpressionSpec</h1>
 <div class="alert alert-secondary" role=alert>
 <h4 class=alert-heading>Note</h4>
 For detail information check out <a href=/fixture-monkey/docs/v0.3.x/features/manipulator/#expression>here</a>
@@ -721,7 +581,7 @@ For detail information check out <a href=/fixture-monkey/docs/v0.3.x/features/ma
 </code></pre></div>
 </div>
 <div class=td-content style=page-break-before:always>
-<h1 id=pg-4269c97b5d71dfdf828069a7dd123f07>1.2.2 - ArbitraryGenerator</h1>
+<h1 id=pg-4269c97b5d71dfdf828069a7dd123f07>2 - ArbitraryGenerator</h1>
 <div class="alert alert-secondary" role=alert>
 <h4 class=alert-heading>Note</h4>
 Predefined ArbitraryGenerator can be found <a href=/fixture-monkey/docs/v0.3.x/features/arbitrarygenerator/>here</a>
@@ -878,7 +738,7 @@ Predefined ArbitraryGenerator can be found <a href=/fixture-monkey/docs/v0.3.x/f
 </code></pre></div>
 </div>
 <div class=td-content style=page-break-before:always>
-<h1 id=pg-6f61c83f80332f13bb2fc2f7066dc91b>1.2.3 - ArbitraryCustomizer</h1>
+<h1 id=pg-6f61c83f80332f13bb2fc2f7066dc91b>3 - ArbitraryCustomizer</h1>
 <div class="alert alert-secondary" role=alert>
 <h4 class=alert-heading>Note</h4>
 For detail information check out <a href=/fixture-monkey/docs/v0.3.x/features/arbitrarycustomizer/>here</a>
@@ -949,7 +809,7 @@ For detail information check out <a href=/fixture-monkey/docs/v0.3.x/features/ar
 </code></pre></div>
 </div>
 <div class=td-content style=page-break-before:always>
-<h1 id=pg-689ba94e622473294d873d5e903e64a9>1.2.4 - AnnotatedArbitraryGenerator</h1>
+<h1 id=pg-689ba94e622473294d873d5e903e64a9>4 - AnnotatedArbitraryGenerator</h1>
 <div class="alert alert-secondary" role=alert>
 <h4 class=alert-heading>Note</h4>
 Predefined AnnotatedArbitraryGenerator can be found <a href=/fixture-monkey/docs/v0.3.x/features/defaultsupportedtypes/>here</a>
@@ -987,7 +847,7 @@ Predefined AnnotatedArbitraryGenerator can be found <a href=/fixture-monkey/docs
 </code></pre></div>
 </div>
 <div class=td-content style=page-break-before:always>
-<h1 id=pg-cca8de30c7cb9ccdd3f20fe05380ee9e>1.2.5 - Register ArbitraryBuilder</h1>
+<h1 id=pg-cca8de30c7cb9ccdd3f20fe05380ee9e>5 - Register ArbitraryBuilder</h1>
 <div class="alert alert-secondary" role=alert>
 <h4 class=alert-heading>Note</h4>
 For detail information check out <a href=/fixture-monkey/docs/v0.3.x/features/registerarbitrarybuilder/>here</a>
@@ -1039,667 +899,6 @@ For detail information check out <a href=/fixture-monkey/docs/v0.3.x/features/re
     <span style=color:#000>then</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>customObjectWrapper</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>getCustomObject</span><span style=color:#ce5c00;font-weight:700>().</span><span style=color:#c4a000>getValue</span><span style=color:#ce5c00;font-weight:700>()).</span><span style=color:#c4a000>isEqualTo</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#4e9a06>&#34;innerSet&#34;</span><span style=color:#ce5c00;font-weight:700>);</span>
 <span style=color:#ce5c00;font-weight:700>}</span>
 </code></pre></div>
-</div>
-<div class=td-content style=page-break-before:always>
-<h1 id=pg-1a9feece75eb5cfff622f1d20df2927a>1.3 - Features</h1>
-</div>
-<div class=td-content>
-<h1 id=pg-8ba336c6de488092b6621eada2744e71>1.3.1 - FixtureMonkeyBuilder</h1>
-<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#000>FixtureMonkey</span> <span style=color:#000>fixture</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#000>FixtureMonkey</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>builder</span><span style=color:#ce5c00;font-weight:700>()</span>
-        <span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>defaultGenerator</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>BuilderArbitraryGenerator</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>INSTANCE</span><span style=color:#ce5c00;font-weight:700>)</span>    <span style=color:#8f5902;font-style:italic>// default: BeanArbitraryGenerator.INSTANCE
-</span><span style=color:#8f5902;font-style:italic></span>        <span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>putGenerator</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>CustomObject</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>class</span><span style=color:#ce5c00;font-weight:700>,</span> <span style=color:#000>FieldReflectionArbitraryGenerator</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>INSTANCE</span><span style=color:#ce5c00;font-weight:700>)</span>
-        <span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>defaultContainerMaxSize</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>5</span><span style=color:#ce5c00;font-weight:700>)</span>    <span style=color:#8f5902;font-style:italic>// default: 3
-</span><span style=color:#8f5902;font-style:italic></span>        <span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>nullInject</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>0</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>5</span><span style=color:#ce5c00;font-weight:700>)</span>    <span style=color:#8f5902;font-style:italic>// default: 0.2
-</span><span style=color:#8f5902;font-style:italic></span>        <span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>nullableContainer</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#204a87;font-weight:700>true</span><span style=color:#ce5c00;font-weight:700>)</span>    <span style=color:#8f5902;font-style:italic>// default: false
-</span><span style=color:#8f5902;font-style:italic></span>        <span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>nullableContainerElement</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#204a87;font-weight:700>true</span><span style=color:#ce5c00;font-weight:700>)</span>    <span style=color:#8f5902;font-style:italic>// default: false
-</span><span style=color:#8f5902;font-style:italic></span>        <span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>nullGenerateTypes</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>Set</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>of</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>UnsupportedType</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>class</span><span style=color:#ce5c00;font-weight:700>,</span> <span style=color:#000>XXX</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>class</span><span style=color:#ce5c00;font-weight:700>))</span>
-        <span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>exceptGeneratePackages</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>Set</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>of</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#4e9a06>&#34;com.naver.xxx&#34;</span><span style=color:#ce5c00;font-weight:700>,</span> <span style=color:#4e9a06>&#34;com.naver.yyy&#34;</span><span style=color:#ce5c00;font-weight:700>))</span>    <span style=color:#8f5902;font-style:italic>// default: &#34;java.lang.reflect&#34;, &#34;jdk.internal.reflect&#34;, &#34;sun.reflect&#34;
-</span><span style=color:#8f5902;font-style:italic></span>        <span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>addCustomizer</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>CustomObject</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>class</span><span style=color:#ce5c00;font-weight:700>,</span> <span style=color:#204a87;font-weight:700>new</span> <span style=color:#000>CustomObjectFixtureCustomizer</span><span style=color:#ce5c00;font-weight:700>())</span>
-        <span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>fixtureValidator</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#204a87;font-weight:700>new</span> <span style=color:#000>CustomFixtureValidator</span><span style=color:#ce5c00;font-weight:700>())</span>    <span style=color:#8f5902;font-style:italic>// default: CompositeFixtureValidator
-</span><span style=color:#8f5902;font-style:italic></span>        <span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>addAnnotatedArbitraryGenerator</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>Tuple</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>class</span><span style=color:#ce5c00;font-weight:700>,</span> <span style=color:#000>TupleAnnotatedArbitraryGenerator</span><span style=color:#ce5c00;font-weight:700>())</span>
-        <span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>defaultInterfaceSupplier</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>type</span> <span style=color:#ce5c00;font-weight:700>-&gt;</span> <span style=color:#204a87;font-weight:700>null</span><span style=color:#ce5c00;font-weight:700>)</span>
-        <span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>addInterfaceSupplier</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>SomeInterface</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>class</span><span style=color:#ce5c00;font-weight:700>,</span> <span style=color:#000>type</span> <span style=color:#ce5c00;font-weight:700>-&gt;</span> <span style=color:#000>ConcreateClass</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>INSTANCE</span><span style=color:#ce5c00;font-weight:700>)</span>
-        <span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>defaultNotNull</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#204a87;font-weight:700>true</span><span style=color:#ce5c00;font-weight:700>)</span> <span style=color:#8f5902;font-style:italic>// default: true
-</span><span style=color:#8f5902;font-style:italic></span>        <span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>register</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>Order</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>class</span><span style=color:#ce5c00;font-weight:700>,</span> <span style=color:#000>defaultOrderBuilder</span><span style=color:#ce5c00;font-weight:700>())</span>
-        <span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>registerGroup</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>FixtureMonkeyGroup</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>class</span><span style=color:#ce5c00;font-weight:700>)</span>
-        <span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>build</span><span style=color:#ce5c00;font-weight:700>();</span>
-
-</code></pre></div><h2 id=options>Options</h2>
-<ul>
-<li>defaultGenerator (default: BeanArbitraryGenerator.INSTANCE)
-<ul>
-<li><a href=/fixture-monkey/docs/v0.3.x/features/arbitrarygenerator/>ArbitraryGenerator</a></li>
-</ul>
-</li>
-<li>putGenerator
-<ul>
-<li>Use given generator if type is matched instead of defaultGenerator</li>
-<li><a href=/fixture-monkey/docs/v0.3.x/examples/arbitrarygenerator/>Example</a></li>
-</ul>
-</li>
-<li>nullInject (default: 0.2)
-<ul>
-<li>Set probabilities to inject <code>null</code>.</li>
-<li>If field has <code>@NotNull</code>, it would not inject <code>null</code></li>
-</ul>
-</li>
-<li>nullableContainer (default: false)
-<ul>
-<li>It decides whether containers like <code>Map</code>, <code>List</code>, <code>Set</code>, <code>Stream</code>, <code>Optional</code> allows to be <code>null</code></li>
-<li>If <code>false</code>, set default Container (<code>new ArrayList()</code>) ,not <code>null</code> ;</li>
-<li>If <code>true</code>, set <code>null</code>, <code>null</code> probabilities depend on <strong>nullInject</strong></li>
-<li>Field with <code>@NotNull</code>, would not be <code>null</code></li>
-</ul>
-</li>
-<li>exceptGeneratePackages
-<ul>
-<li>Set packages always be <code>null</code></li>
-<li>Default packages are below, it always does not override
-<blockquote>
-<p>&ldquo;java.lang.reflect&rdquo;
-&ldquo;jdk.internal.reflect&rdquo;
-&ldquo;sun.reflect&rdquo;
-&ldquo;com.naver.denma.domain.entity.AggregateMetaModel&rdquo;</p>
-</blockquote>
-</li>
-</ul>
-</li>
-<li>addExceptGeneratePackage
-<ul>
-<li>Add package which class in given package always returns <code>null</code></li>
-<li>Appends to default exceptGeneratePackages</li>
-</ul>
-</li>
-<li>customizers
-<ul>
-<li>Set ArbitraryCustomizers which is a collection of <a href=/fixture-monkey/docs/v0.3.x/features/arbitrarycustomizer/>ArbitraryCustomizer</a></li>
-</ul>
-</li>
-<li>addCustomizer
-<ul>
-<li>Add specific type of <a href=/fixture-monkey/docs/v0.3.x/features/arbitrarycustomizer/>ArbitraryCustomizer</a></li>
-<li>Appends to default ArbitraryCustomizers</li>
-</ul>
-</li>
-<li><a href=/fixture-monkey/docs/v0.3.x/features/arbitraryvalidator/>arbitraryValidator</a> (default: CompositeArbitraryValidator)</li>
-<li>addAnnotatedArbitraryGenerator
-<ul>
-<li>Add specified <a href=/fixture-monkey/docs/v0.3.x/features/defaultsupportedtypes/>type</a></li>
-<li>Appends to default annotatedArbitraryGenerators. It overrides if given type already exists</li>
-<li><a href=/fixture-monkey/docs/v0.3.x/examples/annotatedarbitrarygenerator/>Example</a></li>
-</ul>
-</li>
-<li>defaultInterfaceSupplier
-<ul>
-<li>Set default <a href=/fixture-monkey/docs/v0.3.x/features/interfacesupplier/>InterfaceSupplier</a> (default : <code>type -> null</code>)</li>
-</ul>
-</li>
-<li>addInterfaceSupplier
-<ul>
-<li>Determine returning implementation for <code>interface</code> or <code>abstract class</code></li>
-<li>Check out detail <a href=/fixture-monkey/docs/v0.3.x/features/interfacesupplier/>here</a></li>
-</ul>
-</li>
-<li>defaultNotNull
-<ul>
-<li>If <code>true</code>, fields without <code>@Nullable</code> would not be null.</li>
-<li>If <code>false</code>, fields without <code>@NotNull</code> would be null with <code>nullInject</code> probabilities.</li>
-</ul>
-</li>
-<li>register
-<ul>
-<li>Register default ArbitraryBuilder for specific type</li>
-<li>Check out detail <a href=/fixture-monkey/docs/v0.3.x/features/registerarbitrarybuilder/>here</a></li>
-</ul>
-</li>
-<li>registerGroup
-<ul>
-<li>Register default ArbitraryBuilders by declaring methods which signatures are <code>ArbitraryBuilder&lt;TYPE> NAME(FixtureMonkey fixture)</code></li>
-<li>Check out detail <a href=/fixture-monkey/docs/v0.3.x/features/registerarbitrarybuilder/>here</a></li>
-</ul>
-</li>
-</ul>
-</div>
-<div class=td-content style=page-break-before:always>
-<h1 id=pg-03b1aab98dc2da9f280a1fe3a71a1b1c>1.3.2 - Default Supported Types</h1>
-<ul>
-<li>String</li>
-<li>Character</li>
-<li>Boolean</li>
-<li>Integer</li>
-<li>OptionalInt</li>
-<li>IntStream</li>
-<li>Long</li>
-<li>OptionalLong</li>
-<li>LongStream</li>
-<li>Short</li>
-<li>Double</li>
-<li>OptionalDouble</li>
-<li>DoubleStream</li>
-<li>Float</li>
-<li>Byte</li>
-<li>BigInteger</li>
-<li>BigDecimal</li>
-<li>Date</li>
-<li>Calendar</li>
-<li>Instant</li>
-<li>LocalDateTime</li>
-<li>LocalDate</li>
-<li>LocalTime</li>
-<li>ZonedDateTime</li>
-<li>Uuid</li>
-</ul>
-<h2 id=how-to-add-new-custom-type>How to Add New Custom Type</h2>
-<p><a href=/fixture-monkey/docs/v0.3.x/examples/annotatedarbitrarygenerator/>Example</a></p>
-</div>
-<div class=td-content style=page-break-before:always>
-<h1 id=pg-d2fde4b833cd93f786c1d1ad005d08ba>1.3.3 - ArbitraryBuilder</h1>
-<p><code>ArbitraryBuilder</code> is a <a href=https://junit.org/junit4/cookbook.html#Fixture>fixture</a> in Fixture Monkey. You could make <code>ArbitraryBuilder</code> by calling <code>giveMeBuilder</code>. For example, You can make a class <code>Person</code> fixture as below.</p>
-<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#000>fixtureMonkey</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>giveMeBuilder</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>Person</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>class</span><span style=color:#ce5c00;font-weight:700>)</span>
-</code></pre></div><p>Or You could make <code>ArbitraryBuilder</code> from existing an instance of <code>Person</code> class as below.</p>
-<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#000>fixtureMonkey</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>giveMeBuilder</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#204a87;font-weight:700>new</span> <span style=color:#000>Person</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#4e9a06>&#34;SALLY&#34;</span><span style=color:#ce5c00;font-weight:700>));</span>
-</code></pre></div><p>It offers a generic implementation of <a href=http://www.natpryce.com/articles/000714.html>Test Data Builder Pattern</a>. If you want a fixture for certain test case, you could manipulate it by <a href=/fixture-monkey/docs/v0.3.x/features/manipulator/>manipulators</a>. For example, you could get a fixture returns <code>Person</code> instance which city is &ldquo;SEOUL&rdquo;.</p>
-<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#000>fixtureMonkey</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>giveMeBuilder</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>Person</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>class</span><span style=color:#ce5c00;font-weight:700>)</span>
-    <span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>set</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#4e9a06>&#34;city&#34;</span><span style=color:#ce5c00;font-weight:700>,</span> <span style=color:#4e9a06>&#34;SEOUL&#34;</span><span style=color:#ce5c00;font-weight:700>)</span>
-</code></pre></div><h2 id=feature>Feature</h2>
-<ul>
-<li>Reusable in all tests since sampling always returns a different instance if <code>ComplexManipulator</code> is not applied.</li>
-<li>Could make existing instance into <code>ArbitraryBuilder</code>, but it always returns same instance. Check
-out <a href=/fixture-monkey/docs/v0.3.x/examples/manipulator/complexmanipulator/#manipulate-existing-instance>Example</a></li>
-</ul>
-<h2 id=validonly>ValidOnly</h2>
-<div class="alert alert-secondary" role=alert>
-<h4 class=alert-heading>Note</h4>
-If you want more information, check out <a href=/fixture-monkey/docs/v0.3.x/features/arbitraryvalidator/>here</a>
-</div>
-<ul>
-<li>If <code>true</code>, generates valid instance validated by registered <code>ArbitraryValidator</code>.
-Default is <code>true</code></li>
-<li>If <code>false</code>, generates not valid instance.</li>
-</ul>
-<h2 id=generator>Generator</h2>
-<p>Change <a href=/fixture-monkey/docs/v0.3.x/features/arbitrarygenerator/>ArbitraryGenerator</a> to generate given <code>ArbitraryBuilder</code></p>
-<h2 id=build>Build</h2>
-<p><code>build</code> would return <a href=/fixture-monkey/docs/v0.3.x/features/arbitrary/>Arbitrary</a></p>
-<h2 id=sample>Sample</h2>
-<p><code>sample</code> would return instance in fixture</p>
-<ul>
-<li>Always return different instance</li>
-</ul>
-<h2 id=where-should-i-go-next>Where should I go next?</h2>
-<ul>
-<li><a href=/fixture-monkey/docs/v0.3.x/features/manipulator/>Manipulator</a></li>
-</ul>
-</div>
-<div class=td-content style=page-break-before:always>
-<h1 id=pg-c935f6f84a5f687c8c593283647c6c70>1.3.4 - Manipulator</h1>
-<h2 id=component>Component</h2>
-<ul>
-<li>Expression</li>
-<li>Value or Filter</li>
-<li>Limit</li>
-<li>Decomposition</li>
-</ul>
-<h2 id=expression>Expression</h2>
-<p>Expression refers to fields would like to manipulate.</p>
-<ul>
-<li>Expression for field would be <code>fieldName</code></li>
-<li>Expression for nested field would be <code>outerField.innerField</code></li>
-<li>All fields in object would be <code>*</code></li>
-<li><code>$</code> means root, same as <a href=https://github.com/json-path/JsonPath>JsonPath</a></li>
-<li>Single list or array element would be <code>[index]</code></li>
-<li>All list or array elements would be <code>[*]</code></li>
-</ul>
-<h2 id=value-or-filter>Value or Filter</h2>
-<p>Fields match <code>Expression</code> would be set as <code>Value</code> or applied by <code>Filter</code>.</p>
-<h2 id=limit>Limit</h2>
-<p>How many fields that match <code>Expression</code> would like to manipulate.</p>
-<h2 id=decomposition>Decomposition</h2>
-<p>Turning instance into <code>ArbitraryBuilder</code> for manipulating.</p>
-<p>For example, you could make a String fixture which always returns &ldquo;Value&rdquo;</p>
-<pre tabindex=0><code>fixtureMonkey.giveMeBuilder(&quot;Value&quot;)
-</code></pre><ul>
-<li>Apply <code>setNotNull</code> to decomposed instance null field, it would be set as a new arbitrary value.</li>
-</ul>
-<p>More examples in <a href=/fixture-monkey/docs/v0.3.x/examples/manipulator/complexmanipulator/>here</a></p>
-<h2 id=simplemanipulatorhahahugoshortcode-s1-hbhb><a href=/fixture-monkey/docs/v0.3.x/examples/manipulator/simplemanipulator/>SimpleManipulator</a></h2>
-<ul>
-<li>Applies in given order, <code>set</code> → <code>setPostCondition</code> → <code>customize</code></li>
-<li><code>Manipulators</code> with same <code>Experssion</code> overwrite previous <code>Manipulator</code> except for <code>setPostcondition</code></li>
-<li>Customize can be used multiple times</li>
-<li>Customize applies in declared order</li>
-</ul>
-<h2 id=complexmanipulatorhahahugoshortcode-s2-hbhb><a href=/fixture-monkey/docs/v0.3.x/examples/manipulator/complexmanipulator/>ComplexManipulator</a></h2>
-<ul>
-<li><code>ArbitraryBuilder</code> applied <code>ComplexManipulator</code> sampling always returns same value</li>
-<li><code>fixed</code> makes ArbitraryBuilder returns same value</li>
-</ul>
-</div>
-<div class=td-content style=page-break-before:always>
-<h1 id=pg-91c74f0ac834cde66c938a0cf4d705e4>1.3.5 - Register ArbitraryBuilder</h1>
-<h2 id=features>Features</h2>
-<ul>
-<li>Set default <code>ArbitraryBuilder</code> for specific type, call <code>giveMe</code> then returns registered <code>ArbitraryBuilder</code> sampled instance.</li>
-<li>Even fields with given type would be registered <code>ArbitraryBuilder</code> sampled instance too.</li>
-<li>All manipulators apply to registered <code>ArbitraryBuilder</code> too</li>
-</ul>
-<h2 id=exampleshahahugoshortcode-s0-hbhb><a href=/fixture-monkey/docs/v0.3.x/examples/registerarbitrarybuilder/>Examples</a></h2>
-</div>
-<div class=td-content style=page-break-before:always>
-<h1 id=pg-83bcff1628753d4d6333dd0affdba1ed>1.3.6 - ArbitraryGenerator</h1>
-<p><code>ArbitraryGenerator</code> would determine the way of instantiating of given types.</p>
-<h2 id=beanarbitrarygenerator-default>BeanArbitraryGenerator (default)</h2>
-<ul>
-<li>Generate Java Bean object</li>
-<li><code>NoArgsConstructor</code> and <code>Setter</code> is required</li>
-</ul>
-<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java>
-<span style=color:#5c35cc;font-weight:700>@Setter</span>
-<span style=color:#5c35cc;font-weight:700>@NoArgsConstructor</span>
-<span style=color:#204a87;font-weight:700>public</span> <span style=color:#204a87;font-weight:700>class</span> <span style=color:#000>Person</span> <span style=color:#ce5c00;font-weight:700>{</span>
-	<span style=color:#204a87;font-weight:700>private</span> <span style=color:#000>Long</span> <span style=color:#000>id</span><span style=color:#ce5c00;font-weight:700>;</span>
-	<span style=color:#204a87;font-weight:700>private</span> <span style=color:#000>String</span> <span style=color:#000>name</span><span style=color:#ce5c00;font-weight:700>;</span>
-<span style=color:#ce5c00;font-weight:700>}</span>
-</code></pre></div><h2 id=constructorpropertiesarbitrarygenerator>ConstructorPropertiesArbitraryGenerator</h2>
-<ul>
-<li>Only one constructor and <code>@ConstructorProperties</code> is required</li>
-<li>All parameters in constructor should be in <code>@ConstructorProperties</code>, and should have same name</li>
-<li>Field name should be aligned with constructor parameter or <code>@ConstructorProperties</code> value name unless using <code>ArbitraryCustomizer</code>
-<ul>
-<li>Example <a href=/fixture-monkey/docs/v0.3.x/examples/arbitrarygenerator/#add-constructorproperties-value-when-field-name-is-different>here</a></li>
-</ul>
-</li>
-<li><code>ArbitraryCustomizer</code> could add extra parameter in <code>@ConstructorProperties</code> which is not in constructor
-<ul>
-<li>Example <a href=/fixture-monkey/docs/v0.3.x/examples/arbitrarygenerator/#add-constructorproperties-value-without-corresponding-field>here</a></li>
-</ul>
-</li>
-</ul>
-<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#204a87;font-weight:700>public</span> <span style=color:#204a87;font-weight:700>class</span> <span style=color:#000>Product</span><span style=color:#ce5c00;font-weight:700>{</span> 
-    <span style=color:#204a87;font-weight:700>private</span> <span style=color:#000>Long</span> <span style=color:#000>id</span><span style=color:#ce5c00;font-weight:700>;</span>
-    <span style=color:#204a87;font-weight:700>private</span> <span style=color:#000>String</span> <span style=color:#000>name</span><span style=color:#ce5c00;font-weight:700>;</span>
-    
-    <span style=color:#5c35cc;font-weight:700>@ConstructorProperties</span><span style=color:#ce5c00;font-weight:700>({</span><span style=color:#4e9a06>&#34;id&#34;</span><span style=color:#ce5c00;font-weight:700>,</span> <span style=color:#4e9a06>&#34;name&#34;</span><span style=color:#ce5c00;font-weight:700>})</span> 
-    <span style=color:#204a87;font-weight:700>public</span> <span style=color:#000>Person</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>Long</span> <span style=color:#000>id</span><span style=color:#ce5c00;font-weight:700>,</span> <span style=color:#000>String</span> <span style=color:#000>name</span><span style=color:#ce5c00;font-weight:700>)</span> <span style=color:#ce5c00;font-weight:700>{</span> 
-        <span style=color:#204a87;font-weight:700>this</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>id</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#000>id</span><span style=color:#ce5c00;font-weight:700>;</span>
-        <span style=color:#204a87;font-weight:700>this</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>name</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#000>name</span><span style=color:#ce5c00;font-weight:700>;</span> 
-    <span style=color:#ce5c00;font-weight:700>}</span>
-<span style=color:#ce5c00;font-weight:700>}</span>
-</code></pre></div><h2 id=builderarbitrarygenerator>BuilderArbitraryGenerator</h2>
-<ul>
-<li>Instantiating by <a href=https://projectlombok.org/>Lombok</a> &rsquo;s <a href=https://projectlombok.org/features/Builder>@Builder</a></li>
-<li>If you redefined <code>@Builder</code>&rsquo;s <code>builderMethodName</code>, <code>buildMethodName</code>, you should redefine <code>builderMethodName</code>
-, <code>buildMethodName</code> in <code>BuilderArbitraryGenerator</code></li>
-<li>Could generate immutable instance</li>
-</ul>
-<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java>
-<span style=color:#5c35cc;font-weight:700>@Builder</span>
-<span style=color:#204a87;font-weight:700>public</span> <span style=color:#204a87;font-weight:700>class</span> <span style=color:#000>Person</span> <span style=color:#ce5c00;font-weight:700>{</span>
-	<span style=color:#204a87;font-weight:700>private</span> <span style=color:#000>Long</span> <span style=color:#000>id</span><span style=color:#ce5c00;font-weight:700>;</span>
-	<span style=color:#204a87;font-weight:700>private</span> <span style=color:#000>String</span> <span style=color:#000>name</span><span style=color:#ce5c00;font-weight:700>;</span>
-<span style=color:#ce5c00;font-weight:700>}</span>
-
-<span style=color:#5c35cc;font-weight:700>@Builder</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>builderMethodName</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#4e9a06>&#34;builder2&#34;</span><span style=color:#ce5c00;font-weight:700>,</span> <span style=color:#000>buildMethodName</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#4e9a06>&#34;build2&#34;</span><span style=color:#ce5c00;font-weight:700>)</span>
-<span style=color:#204a87;font-weight:700>public</span> <span style=color:#204a87;font-weight:700>class</span> <span style=color:#000>Order</span> <span style=color:#ce5c00;font-weight:700>{</span>
-	<span style=color:#204a87;font-weight:700>private</span> <span style=color:#000>Long</span> <span style=color:#000>id</span><span style=color:#ce5c00;font-weight:700>;</span>
-	<span style=color:#204a87;font-weight:700>private</span> <span style=color:#000>String</span> <span style=color:#000>name</span><span style=color:#ce5c00;font-weight:700>;</span>
-<span style=color:#ce5c00;font-weight:700>}</span>
-</code></pre></div><h2 id=fieldreflectionarbitrarygenerator>FieldReflectionArbitraryGenerator</h2>
-<ul>
-<li>Instantiating by <code>Field Reflection</code></li>
-<li><code>package-public</code> <code>NoArgsConstructor</code> is required, can not generate <code>final</code>, <code>transient</code> fields. (like <code>JPA</code> '
-s <code>@Entity</code>)</li>
-</ul>
-<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java>
-<span style=color:#5c35cc;font-weight:700>@Entity</span>
-<span style=color:#5c35cc;font-weight:700>@NoArgsConstructor</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>access</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#000>AccessLevel</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>PACKAGE</span><span style=color:#ce5c00;font-weight:700>)</span>
-<span style=color:#5c35cc;font-weight:700>@AllArgsConstructor</span>
-<span style=color:#204a87;font-weight:700>public</span> <span style=color:#204a87;font-weight:700>class</span> <span style=color:#000>Person</span> <span style=color:#ce5c00;font-weight:700>{</span>
-	<span style=color:#5c35cc;font-weight:700>@Id</span>
-	<span style=color:#204a87;font-weight:700>private</span> <span style=color:#000>Long</span> <span style=color:#000>id</span><span style=color:#ce5c00;font-weight:700>;</span>
-	<span style=color:#204a87;font-weight:700>private</span> <span style=color:#000>String</span> <span style=color:#000>name</span><span style=color:#ce5c00;font-weight:700>;</span>
-<span style=color:#ce5c00;font-weight:700>}</span>
-</code></pre></div><h2 id=jacksonarbitrarygenerator>JacksonArbitraryGenerator</h2>
-<ul>
-<li><a href=/fixture-monkey/docs/v0.3.x/third-party-modules/fixturemonkeyjackson/>Fixture Monkey Jackson module</a></li>
-</ul>
-<h2 id=nullarbitrarygenerator>NullArbitraryGenerator</h2>
-<ul>
-<li>Always generate <code>null</code></li>
-</ul>
-<h2 id=how-to-add-new-arbitrarygenerator>How to Add New ArbitraryGenerator</h2>
-<p><a href=/fixture-monkey/docs/v0.3.x/examples/arbitrarygenerator/>Example</a></p>
-</div>
-<div class=td-content style=page-break-before:always>
-<h1 id=pg-02016a2d4e99b6a6eef4d851e7ebf042>1.3.7 - ArbitraryCustomizer</h1>
-<h2 id=customizerfields>customizerFields</h2>
-<p>Runs before <code>ArbitraryGenerator</code> instantiating, could modify <code>Arbitrary</code> in <code>FieldArbitraies</code></p>
-<h2 id=customizefixture>customizeFixture</h2>
-<p>Runs after <code>ArbitraryGenerator</code> instantiating, could determine return instance</p>
-<h3 id=lifecycle>Lifecycle</h3>
-<ol>
-<li>customizerFields</li>
-<li>customizeFixture</li>
-</ol>
-<h2 id=builderarbitrarycustomizer>BuilderArbitraryCustomizer</h2>
-<p>Use Builder to customize for preventing typo or mistakes</p>
-<h3 id=lifecycle-1>Lifecycle</h3>
-<ol>
-<li>customizeFields</li>
-<li>customizeBuilderFields</li>
-<li>customizeBuilder</li>
-<li>customizeFixture</li>
-</ol>
-<h2 id=example>Example</h2>
-<p>You could find examples <a href=/fixture-monkey/docs/v0.3.x/examples/arbitrarycustomizer/>here</a></p>
-</div>
-<div class=td-content style=page-break-before:always>
-<h1 id=pg-39c8bea5724b08548916049a7f1f3bfa>1.3.8 - ArbitraryValidator</h1>
-<ul>
-<li>Object generated by Fixture Monkey would validate by <code>ArbitraryValidator</code></li>
-<li>Invalid instance could not be generated.</li>
-<li>If object is invalid which sampled over <code>10000</code> times from <code>Arbitrary</code>, <code>TooManyFileterMissesException</code> would be thrown. (<a href=https://github.com/jlink/jqwik/blob/master/engine/src/main/java/net/jqwik/engine/properties/MaxTriesLoop.java>MaxTriesLoop</a>)</li>
-</ul>
-<div class="alert alert-secondary" role=alert>
-<h4 class=alert-heading>Note</h4>
-<p>If you have a JSR 380 Validator implementation, register it as <code>ArbitraryValidator</code> automatically.</p>
-<p>For example, If you add <code>testImplementation("org.hibernate.validator:hibernate-validator:6.1.7.Final")</code>
-Then, Hibernate Validator would validate objects automatically.</p>
-</div>
-<h2 id=defaultarbitraryvalidator>DefaultArbitraryValidator</h2>
-<ul>
-<li><code>javax.validation.Validator</code> would validate instance</li>
-<li>Should keep <code>javax.validation.constraints</code></li>
-</ul>
-<h2 id=compositefixturevalidator-default>CompositeFixtureValidator (default)</h2>
-<ul>
-<li>Combined <code>ArbitraryValidator</code>which consists of <code>DefaultArbitraryValidator</code> and user-defined <code>ArbitraryValidator</code></li>
-</ul>
-</div>
-<div class=td-content style=page-break-before:always>
-<h1 id=pg-4d1e21a96b37777490e60d9f974a0156>1.3.9 - Supported Validation Annotations</h1>
-<p>Generate valid instance by <a href=https://beanvalidation.org/1.0/spec/>JSR 303 Bean Validation</a> Annotations</p>
-<ul>
-<li><a href=https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/NotNull.html>@NotNull</a></li>
-<li><a href=https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/Null.html>@Null</a></li>
-<li><a href=https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/NotEmpty.html>@NotEmpty</a></li>
-<li><a href=https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/NotBlank.html>@NotBlank</a></li>
-<li><a href=https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/Size.html>@Size</a></li>
-<li><a href=https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/Max.html>@Max</a></li>
-<li><a href=https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/Min.html>@Min</a></li>
-<li><a href=https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/Positive.html>@Positive</a></li>
-<li><a href=https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/PositiveOrZero.html>@PositiveOrZero</a></li>
-<li><a href=https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/Negative.html>@Negative</a></li>
-<li><a href=https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/NegativeOrZero.html>@NegativeOrZero</a></li>
-<li><a href=https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/AssertFalse.html>@AssertFalse</a></li>
-<li><a href=https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/AssertTrue.html>@AssertTrue</a></li>
-<li><a href=https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/DecimalMax.html>@DecimalMax</a></li>
-<li><a href=https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/DecimalMin.html>@DecimalMin</a></li>
-<li><a href=https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/Digits.html>@Digits</a></li>
-<li><a href=https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/Email.html>@Email</a></li>
-<li><a href=https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/Future.html>@Future</a></li>
-<li><a href=https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/FutureOrPresent.html>@FutureOrPresent</a></li>
-<li><a href=https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/Past.html>@Past</a></li>
-<li><a href=https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/PastOrPresent.html>@PastOrPersent</a></li>
-<li><a href=https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/Pattern.html>@Pattern</a></li>
-</ul>
-</div>
-<div class=td-content style=page-break-before:always>
-<h1 id=pg-13affe8ac68faa821ee69621ad8d3b2a>1.3.10 - InterfaceSupplier</h1>
-<p>Determine returning instance for specific type, which is interface or abstract class</p>
-<p>Default <code>InterfaceSupplier</code> is <code>(type) -> null</code></p>
-</div>
-<div class=td-content style=page-break-before:always>
-<h1 id=pg-828694bb99e9366c656eb9970fdc5bd0>1.3.11 - Arbitrary</h1>
-<p><code>Arbitrary</code> is a <a href=https://junit.org/junit4/cookbook.html#Fixture>fixture</a> in <code>Jqwik</code>. You can generate <code>Arbitrary</code>, simply by calling static methods in <code>Arbitraries</code></p>
-<p>Details about <code>Arbitrary</code>, check out <a href=https://jqwik.net/docs/current/user-guide.html>jqwik User Guide</a></p>
-<ul>
-<li><a href=https://jqwik.net/docs/current/user-guide.html#static-arbitraries-methods>Static <code>Arbitraries</code> methods</a></li>
-<li><a href=https://jqwik.net/docs/current/user-guide.html#collections-streams-arrays-and-optional>Collections, Streams, Arrays and Optional</a></li>
-<li><a href=https://jqwik.net/docs/current/user-guide.html#collecting-values-in-a-list>Collecting Values in List</a></li>
-<li><a href=https://jqwik.net/docs/current/user-guide.html#maps>Maps</a></li>
-<li><a href=https://jqwik.net/docs/current/user-guide.html#functional-types>Functional Types</a></li>
-<li><a href=https://jqwik.net/docs/current/user-guide.html#fluent-configuration-interfaces>Fluent Configuration Interfaces</a></li>
-<li><a href=https://jqwik.net/docs/current/user-guide.html#generate-null-values>Generate <code>null</code> values</a></li>
-<li><a href=https://jqwik.net/docs/current/user-guide.html#filtering>Filtering</a></li>
-<li><a href=https://jqwik.net/docs/current/user-guide.html#creating-unique-values>Creating unique values</a></li>
-<li><a href=https://jqwik.net/docs/current/user-guide.html#mapping>Mapping</a></li>
-<li><a href=https://jqwik.net/docs/current/user-guide.html#flat-mapping>Flat Mapping</a></li>
-<li><a href=https://jqwik.net/docs/current/user-guide.html#flat-mapping-with-tuple-types>Flat Mapping with Tuple Types</a></li>
-<li><a href=https://jqwik.net/docs/current/user-guide.html#randomly-choosing-among-arbitraries>Randomly Choosing among Arbitraries</a></li>
-<li><a href=https://jqwik.net/docs/current/user-guide.html#combining-arbitraries>Combining Arbitraries</a></li>
-<li><a href=https://jqwik.net/docs/current/user-guide.html#combining-arbitraries-with-builder>Combining Arbitraries with Builder</a></li>
-<li><a href=https://jqwik.net/docs/current/user-guide.html#iterating-through-all-possible-values>Iterating through all possible values</a></li>
-</ul>
-</div>
-<div class=td-content style=page-break-before:always>
-<h1 id=pg-abb8968dc51236644b5b7eb2b0c55e5b>1.4 - Third-party Modules</h1>
-</div>
-<div class=td-content>
-<h1 id=pg-f4cdf75618e243a3fb0b60c668edc2b3>1.4.1 - Fixture Monkey Jackson</h1>
-<ul>
-<li>Instantiating by <a href=https://github.com/FasterXML/jackson>Jackson</a> Map Deserializer</li>
-<li>Does not generate <code>@JsonIgnore</code> field</li>
-<li><code>@JsonProperty</code> would change field name, when apply manipulator <code>Expression</code> is same as <code>@JsonProperty</code> value
-<ul>
-<li>Example <a href=/fixture-monkey/docs/v0.3.x/examples/arbitrarygenerator/#set-field-in-jacksonarbitrarygenerator-with-jsonproperty>here</a></li>
-</ul>
-</li>
-<li>Could inject <code>ObjectMapper</code> in <code>JacksonArbitraryGenerator</code></li>
-<li>Could not generate <code>interface</code>, you should set default implementation by <a href=/fixture-monkey/docs/v0.3.x/features/interfacesupplier/>InterfaceSupplier</a></li>
-</ul>
-<h2 id=installation>Installation</h2>
-<h3 id=gradle>Gradle</h3>
-<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-groovy data-lang=groovy><span style=color:#000>testImplementation</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#4e9a06>&#34;com.navercorp.fixturemonkey:fixture-monkey-jackson:0.3.0&#34;</span><span style=color:#ce5c00;font-weight:700>)</span>
-</code></pre></div><h3 id=maven>Maven</h3>
-<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-xml data-lang=xml><span style=color:#204a87;font-weight:700>&lt;dependency&gt;</span>
-  <span style=color:#204a87;font-weight:700>&lt;groupId&gt;</span>com.navercorp.fixturemonkey<span style=color:#204a87;font-weight:700>&lt;/groupId&gt;</span>
-  <span style=color:#204a87;font-weight:700>&lt;artifactId&gt;</span>fixture-monkey-jackson<span style=color:#204a87;font-weight:700>&lt;/artifactId&gt;</span>
-  <span style=color:#204a87;font-weight:700>&lt;version&gt;</span>0.3.0<span style=color:#204a87;font-weight:700>&lt;/version&gt;</span>
-  <span style=color:#204a87;font-weight:700>&lt;scope&gt;</span>test<span style=color:#204a87;font-weight:700>&lt;/scope&gt;</span>
-<span style=color:#204a87;font-weight:700>&lt;/dependency&gt;</span>
-</code></pre></div><h3 id=try-it-out>Try it out!</h3>
-<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#5c35cc;font-weight:700>@Data</span>   <span style=color:#8f5902;font-style:italic>// lombok getter, setter
-</span><span style=color:#8f5902;font-style:italic></span><span style=color:#204a87;font-weight:700>public</span> <span style=color:#204a87;font-weight:700>class</span> <span style=color:#000>Order</span> <span style=color:#ce5c00;font-weight:700>{</span>
-	<span style=color:#5c35cc;font-weight:700>@NotNull</span>
-    <span style=color:#204a87;font-weight:700>private</span> <span style=color:#000>Long</span> <span style=color:#000>id</span><span style=color:#ce5c00;font-weight:700>;</span>
-
-	<span style=color:#5c35cc;font-weight:700>@JsonProperty</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#4e9a06>&#34;name&#34;</span><span style=color:#ce5c00;font-weight:700>)</span>
-    <span style=color:#204a87;font-weight:700>private</span> <span style=color:#000>String</span> <span style=color:#000>productName</span><span style=color:#ce5c00;font-weight:700>;</span>
-
-	<span style=color:#204a87;font-weight:700>private</span> <span style=color:#204a87;font-weight:700>int</span> <span style=color:#000>quantity</span><span style=color:#ce5c00;font-weight:700>;</span>
-	
-	<span style=color:#5c35cc;font-weight:700>@JsonIgnore</span>
-	<span style=color:#204a87;font-weight:700>private</span> <span style=color:#000>String</span> <span style=color:#000>sample</span><span style=color:#ce5c00;font-weight:700>;</span>
-<span style=color:#ce5c00;font-weight:700>}</span>
-
-<span style=color:#5c35cc;font-weight:700>@Test</span>
-<span style=color:#204a87;font-weight:700>void</span> <span style=color:#000>test</span><span style=color:#ce5c00;font-weight:700>()</span> <span style=color:#ce5c00;font-weight:700>{</span>
-	<span style=color:#8f5902;font-style:italic>// given
-</span><span style=color:#8f5902;font-style:italic></span>    <span style=color:#000>FixtureMonkey</span> <span style=color:#000>sut</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#000>FixtureMonkey</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>create</span><span style=color:#ce5c00;font-weight:700>();</span>
-
-    <span style=color:#8f5902;font-style:italic>// when
-</span><span style=color:#8f5902;font-style:italic></span>    <span style=color:#000>Order</span> <span style=color:#000>actual</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#000>sut</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>giveMeBuilder</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>Order</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>class</span><span style=color:#ce5c00;font-weight:700>)</span>
-		<span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>generator</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>JacksonArbitraryGenerator</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>INSTANCE</span><span style=color:#ce5c00;font-weight:700>)</span>
-        <span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>set</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#4e9a06>&#34;name&#34;</span><span style=color:#ce5c00;font-weight:700>,</span> <span style=color:#4e9a06>&#34;factory&#34;</span><span style=color:#ce5c00;font-weight:700>)</span>
-        <span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>set</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#4e9a06>&#34;quantity&#34;</span><span style=color:#ce5c00;font-weight:700>,</span> <span style=color:#000>Arbitraries</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>integers</span><span style=color:#ce5c00;font-weight:700>().</span><span style=color:#c4a000>between</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>5</span><span style=color:#ce5c00;font-weight:700>,</span> <span style=color:#000>10</span><span style=color:#ce5c00;font-weight:700>))</span>
-        <span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>sample</span><span style=color:#ce5c00;font-weight:700>();</span>
-
-    <span style=color:#8f5902;font-style:italic>// then
-</span><span style=color:#8f5902;font-style:italic></span>    <span style=color:#000>then</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>actual</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>getId</span><span style=color:#ce5c00;font-weight:700>()).</span><span style=color:#c4a000>isNotNull</span><span style=color:#ce5c00;font-weight:700>();</span>    <span style=color:#8f5902;font-style:italic>// @NotNull
-</span><span style=color:#8f5902;font-style:italic></span>    <span style=color:#000>then</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>actual</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>getProductName</span><span style=color:#ce5c00;font-weight:700>()).</span><span style=color:#c4a000>isEqualTo</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#4e9a06>&#34;factory&#34;</span><span style=color:#ce5c00;font-weight:700>);</span>
-    <span style=color:#000>then</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>actual</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>getQuantity</span><span style=color:#ce5c00;font-weight:700>()).</span><span style=color:#c4a000>isBetween</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>5</span><span style=color:#ce5c00;font-weight:700>,</span> <span style=color:#000>10</span><span style=color:#ce5c00;font-weight:700>);</span>
-    <span style=color:#000>then</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>actual</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>getSample</span><span style=color:#ce5c00;font-weight:700>()).</span><span style=color:#c4a000>isNull</span><span style=color:#ce5c00;font-weight:700>();</span>  <span style=color:#8f5902;font-style:italic>// @JsonIgnore
-</span><span style=color:#8f5902;font-style:italic></span><span style=color:#ce5c00;font-weight:700>}</span>
-</code></pre></div>
-</div>
-<div class=td-content style=page-break-before:always>
-<h1 id=pg-e556e61777fc3108dd377118871d436a>1.4.2 - Fixture Monkey Kotlin</h1>
-<ul>
-<li>Supports Kotlin.</li>
-<li><code>KFixtureMonkey.create()</code> / <code>KFixtureMonkeyBuilder().build()</code> for kotlin module.</li>
-<li><code>PrimaryConstructorArbitraryGenerator</code> for kotlin primary constructor. (default generator)</li>
-<li>Extension methods for kotlin. <a href=https://github.com/naver/fixture-monkey/blob/main/fixture-monkey-kotlin/src/main/kotlin/com/navercorp/fixturemonkey/kotlin/FixtureMonkeyExtensions.kt>see</a></li>
-</ul>
-<h2 id=installation>Installation</h2>
-<h3 id=gradle>Gradle</h3>
-<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-groovy data-lang=groovy><span style=color:#000>testImplementation</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#4e9a06>&#34;com.navercorp.fixturemonkey:fixture-monkey-kotlin:0.3.0&#34;</span><span style=color:#ce5c00;font-weight:700>)</span>
-</code></pre></div><h3 id=maven>Maven</h3>
-<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-xml data-lang=xml><span style=color:#204a87;font-weight:700>&lt;dependency&gt;</span>
-  <span style=color:#204a87;font-weight:700>&lt;groupId&gt;</span>com.navercorp.fixturemonkey<span style=color:#204a87;font-weight:700>&lt;/groupId&gt;</span>
-  <span style=color:#204a87;font-weight:700>&lt;artifactId&gt;</span>fixture-monkey-kotlin<span style=color:#204a87;font-weight:700>&lt;/artifactId&gt;</span>
-  <span style=color:#204a87;font-weight:700>&lt;version&gt;</span>0.3.0<span style=color:#204a87;font-weight:700>&lt;/version&gt;</span>
-  <span style=color:#204a87;font-weight:700>&lt;scope&gt;</span>test<span style=color:#204a87;font-weight:700>&lt;/scope&gt;</span>
-<span style=color:#204a87;font-weight:700>&lt;/dependency&gt;</span>
-</code></pre></div><h3 id=try-it-out>Try it out!</h3>
-<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-kotlin data-lang=kotlin><span style=color:#204a87;font-weight:700>data</span> <span style=color:#204a87;font-weight:700>class</span> <span style=color:#000>Order</span><span style=color:#000;font-weight:700>(</span>
-	<span style=color:#204a87;font-weight:700>val</span> <span style=color:#000>id</span><span style=color:#000;font-weight:700>:</span> <span style=color:#000>Long</span><span style=color:#000;font-weight:700>,</span>
-	<span style=color:#204a87;font-weight:700>val</span> <span style=color:#000>productName</span><span style=color:#000;font-weight:700>:</span> <span style=color:#000>String</span><span style=color:#000;font-weight:700>,</span>
-	<span style=color:#204a87;font-weight:700>val</span> <span style=color:#000>quantity</span><span style=color:#000;font-weight:700>:</span> <span style=color:#000>Int</span><span style=color:#000;font-weight:700>,</span>
-	<span style=color:#204a87;font-weight:700>var</span> <span style=color:#000>sample</span><span style=color:#000;font-weight:700>:</span> <span style=color:#000>String</span><span style=color:#000;font-weight:700>?</span>
-<span style=color:#000;font-weight:700>)</span>
-
-<span style=color:#5c35cc;font-weight:700>@Test</span>
-<span style=color:#204a87;font-weight:700>fun</span> <span style=color:#000>test</span><span style=color:#000;font-weight:700>()</span> <span style=color:#000;font-weight:700>{</span>
-	<span style=color:#8f5902;font-style:italic>// given
-</span><span style=color:#8f5902;font-style:italic></span>    <span style=color:#204a87;font-weight:700>val</span> <span style=color:#000>sut</span> <span style=color:#000;font-weight:700>=</span> <span style=color:#000>KFixtureMonkey</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>create</span><span style=color:#000;font-weight:700>()</span>
-
-    <span style=color:#8f5902;font-style:italic>// when
-</span><span style=color:#8f5902;font-style:italic></span>    <span style=color:#204a87;font-weight:700>val</span> <span style=color:#000>actual</span> <span style=color:#000;font-weight:700>=</span> <span style=color:#000>sut</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>giveMeOne</span><span style=color:#000;font-weight:700>&lt;</span><span style=color:#000>Order</span><span style=color:#000;font-weight:700>&gt;()</span>
-    
-    <span style=color:#8f5902;font-style:italic>// then
-</span><span style=color:#8f5902;font-style:italic></span>    <span style=color:#8f5902;font-style:italic>// ...
-</span><span style=color:#8f5902;font-style:italic></span><span style=color:#000;font-weight:700>}</span>
-</code></pre></div>
-</div>
-<div class=td-content style=page-break-before:always>
-<h1 id=pg-de6577ee116c498e0a28fd483619a75b>1.4.3 - Fixture Monkey AutoParams</h1>
-<div class="alert alert-warning" role=alert>
-<h4 class=alert-heading>Warning</h4>
-This module is experimental
-</div>
-<ul>
-<li>Extends <a href=https://github.com/JavaUnit/AutoParams>AutoParams</a> to support parameterized tests.</li>
-<li><code>@FixtureMonkeyAutoSource</code> for AutoParams parameterized tests.</li>
-</ul>
-<h2 id=installation>Installation</h2>
-<h3 id=gradle>Gradle</h3>
-<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-groovy data-lang=groovy><span style=color:#000>testImplementation</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#4e9a06>&#34;com.navercorp.fixturemonkey:fixture-monkey-autoparams:0.3.0&#34;</span><span style=color:#ce5c00;font-weight:700>)</span>
-</code></pre></div><h3 id=maven>Maven</h3>
-<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-xml data-lang=xml><span style=color:#204a87;font-weight:700>&lt;dependency&gt;</span>
-  <span style=color:#204a87;font-weight:700>&lt;groupId&gt;</span>com.navercorp.fixturemonkey<span style=color:#204a87;font-weight:700>&lt;/groupId&gt;</span>
-  <span style=color:#204a87;font-weight:700>&lt;artifactId&gt;</span>fixture-monkey-autoparams<span style=color:#204a87;font-weight:700>&lt;/artifactId&gt;</span>
-  <span style=color:#204a87;font-weight:700>&lt;version&gt;</span>0.3.0<span style=color:#204a87;font-weight:700>&lt;/version&gt;</span>
-  <span style=color:#204a87;font-weight:700>&lt;scope&gt;</span>test<span style=color:#204a87;font-weight:700>&lt;/scope&gt;</span>
-<span style=color:#204a87;font-weight:700>&lt;/dependency&gt;</span>
-</code></pre></div><h3 id=try-it-out>Try it out!</h3>
-<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#5c35cc;font-weight:700>@Data</span>   <span style=color:#8f5902;font-style:italic>// lombok getter, setter
-</span><span style=color:#8f5902;font-style:italic></span><span style=color:#204a87;font-weight:700>public</span> <span style=color:#204a87;font-weight:700>class</span> <span style=color:#000>Order</span> <span style=color:#ce5c00;font-weight:700>{</span>
-	<span style=color:#5c35cc;font-weight:700>@NotNull</span>
-    <span style=color:#204a87;font-weight:700>private</span> <span style=color:#000>Long</span> <span style=color:#000>id</span><span style=color:#ce5c00;font-weight:700>;</span>
-
-    <span style=color:#204a87;font-weight:700>private</span> <span style=color:#000>String</span> <span style=color:#000>productName</span><span style=color:#ce5c00;font-weight:700>;</span>
-
-	<span style=color:#204a87;font-weight:700>private</span> <span style=color:#204a87;font-weight:700>int</span> <span style=color:#000>quantity</span><span style=color:#ce5c00;font-weight:700>;</span>
-
-	<span style=color:#5c35cc;font-weight:700>@Nullable</span>
-	<span style=color:#204a87;font-weight:700>private</span> <span style=color:#000>String</span> <span style=color:#000>sample</span><span style=color:#ce5c00;font-weight:700>;</span>
-<span style=color:#ce5c00;font-weight:700>}</span>
-
-<span style=color:#5c35cc;font-weight:700>@ParameterizedTest</span>
-<span style=color:#5c35cc;font-weight:700>@FixtureMonkeyAutoSource</span>
-<span style=color:#204a87;font-weight:700>void</span> <span style=color:#000>test</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>Order</span> <span style=color:#000>order</span><span style=color:#ce5c00;font-weight:700>,</span> <span style=color:#000>ArbitraryBuilder</span><span style=color:#ce5c00;font-weight:700>&lt;</span><span style=color:#000>Order</span><span style=color:#ce5c00;font-weight:700>&gt;</span> <span style=color:#000>orderBuilder</span><span style=color:#ce5c00;font-weight:700>)</span> <span style=color:#ce5c00;font-weight:700>{</span>
-    <span style=color:#000>then</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>order</span><span style=color:#ce5c00;font-weight:700>).</span><span style=color:#c4a000>isNotNull</span><span style=color:#ce5c00;font-weight:700>();</span>
-
-    <span style=color:#000>Order</span> <span style=color:#000>actual</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#000>orderBuilder</span>
-		<span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>generator</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>JacksonArbitraryGenerator</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>INSTANCE</span><span style=color:#ce5c00;font-weight:700>)</span>
-        <span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>set</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#4e9a06>&#34;name&#34;</span><span style=color:#ce5c00;font-weight:700>,</span> <span style=color:#4e9a06>&#34;factory&#34;</span><span style=color:#ce5c00;font-weight:700>)</span>
-        <span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>set</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#4e9a06>&#34;quantity&#34;</span><span style=color:#ce5c00;font-weight:700>,</span> <span style=color:#000>Arbitraries</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>integers</span><span style=color:#ce5c00;font-weight:700>().</span><span style=color:#c4a000>between</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>5</span><span style=color:#ce5c00;font-weight:700>,</span> <span style=color:#000>10</span><span style=color:#ce5c00;font-weight:700>))</span>
-        <span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>sample</span><span style=color:#ce5c00;font-weight:700>();</span>
-
-    <span style=color:#8f5902;font-style:italic>// then
-</span><span style=color:#8f5902;font-style:italic></span>    <span style=color:#000>then</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>actual</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>getId</span><span style=color:#ce5c00;font-weight:700>()).</span><span style=color:#c4a000>isNotNull</span><span style=color:#ce5c00;font-weight:700>();</span>    <span style=color:#8f5902;font-style:italic>// @NotNull
-</span><span style=color:#8f5902;font-style:italic></span>    <span style=color:#000>then</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>actual</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>getProductName</span><span style=color:#ce5c00;font-weight:700>()).</span><span style=color:#c4a000>isEqualTo</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#4e9a06>&#34;factory&#34;</span><span style=color:#ce5c00;font-weight:700>);</span>
-    <span style=color:#000>then</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>actual</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>getQuantity</span><span style=color:#ce5c00;font-weight:700>()).</span><span style=color:#c4a000>isBetween</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>5</span><span style=color:#ce5c00;font-weight:700>,</span> <span style=color:#000>10</span><span style=color:#ce5c00;font-weight:700>);</span>
-<span style=color:#ce5c00;font-weight:700>}</span>
-</code></pre></div>
-</div>
-<div class=td-content style=page-break-before:always>
-<h1 id=pg-6278bb5ed580ce4d7c8128356e5e6fe6>1.4.4 - Fixture Monkey Mockito</h1>
-<div class="alert alert-warning" role=alert>
-<h4 class=alert-heading>Warning</h4>
-This module is experimental
-</div>
-<ul>
-<li>Supports for generating interfaces and abstract classes as <a href=https://github.com/mockito/mockito>mockito</a> objects.`</li>
-</ul>
-<h2 id=installation>Installation</h2>
-<h3 id=gradle>Gradle</h3>
-<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-groovy data-lang=groovy><span style=color:#000>testImplementation</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#4e9a06>&#34;com.navercorp.fixturemonkey:fixture-monkey-mockito:0.3.0&#34;</span><span style=color:#ce5c00;font-weight:700>)</span>
-</code></pre></div><h3 id=maven>Maven</h3>
-<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-xml data-lang=xml><span style=color:#204a87;font-weight:700>&lt;dependency&gt;</span>
-  <span style=color:#204a87;font-weight:700>&lt;groupId&gt;</span>com.navercorp.fixturemonkey<span style=color:#204a87;font-weight:700>&lt;/groupId&gt;</span>
-  <span style=color:#204a87;font-weight:700>&lt;artifactId&gt;</span>fixture-monkey-mockito<span style=color:#204a87;font-weight:700>&lt;/artifactId&gt;</span>
-  <span style=color:#204a87;font-weight:700>&lt;version&gt;</span>0.3.0<span style=color:#204a87;font-weight:700>&lt;/version&gt;</span>
-  <span style=color:#204a87;font-weight:700>&lt;scope&gt;</span>test<span style=color:#204a87;font-weight:700>&lt;/scope&gt;</span>
-<span style=color:#204a87;font-weight:700>&lt;/dependency&gt;</span>
-</code></pre></div><h3 id=try-it-out>Try it out!</h3>
-<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#5c35cc;font-weight:700>@Data</span>   <span style=color:#8f5902;font-style:italic>// lombok getter, setter
-</span><span style=color:#8f5902;font-style:italic></span><span style=color:#204a87;font-weight:700>public</span> <span style=color:#204a87;font-weight:700>class</span> <span style=color:#000>Order</span> <span style=color:#ce5c00;font-weight:700>{</span>
-	<span style=color:#5c35cc;font-weight:700>@NotNull</span>
-    <span style=color:#204a87;font-weight:700>private</span> <span style=color:#000>Long</span> <span style=color:#000>id</span><span style=color:#ce5c00;font-weight:700>;</span>
-	
-    <span style=color:#204a87;font-weight:700>private</span> <span style=color:#000>String</span> <span style=color:#000>productName</span><span style=color:#ce5c00;font-weight:700>;</span>
-
-	<span style=color:#204a87;font-weight:700>private</span> <span style=color:#204a87;font-weight:700>int</span> <span style=color:#000>quantity</span><span style=color:#ce5c00;font-weight:700>;</span>
-	
-	<span style=color:#5c35cc;font-weight:700>@NotNull</span>
-	<span style=color:#204a87;font-weight:700>private</span> <span style=color:#000>Item</span> <span style=color:#000>item</span><span style=color:#ce5c00;font-weight:700>;</span>
-<span style=color:#ce5c00;font-weight:700>}</span>
-
-<span style=color:#204a87;font-weight:700>public</span> <span style=color:#204a87;font-weight:700>interface</span> <span style=color:#000>Item</span> <span style=color:#ce5c00;font-weight:700>{</span>
-	<span style=color:#000>String</span> <span style=color:#000>getName</span><span style=color:#ce5c00;font-weight:700>();</span>
-<span style=color:#ce5c00;font-weight:700>}</span>
-
-<span style=color:#5c35cc;font-weight:700>@Test</span>
-<span style=color:#204a87;font-weight:700>void</span> <span style=color:#000>test</span><span style=color:#ce5c00;font-weight:700>()</span> <span style=color:#ce5c00;font-weight:700>{</span>
-	<span style=color:#8f5902;font-style:italic>// given
-</span><span style=color:#8f5902;font-style:italic></span>	<span style=color:#000>FixtureMonkey</span> <span style=color:#000>sut</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#000>FixtureMonkey</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>builder</span><span style=color:#ce5c00;font-weight:700>()</span>
-		<span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>defaultInterfaceSupplier</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>MockitoInterfaceSupplier</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>INSTANCE</span><span style=color:#ce5c00;font-weight:700>)</span>
-		<span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>build</span><span style=color:#ce5c00;font-weight:700>();</span>
-
-    <span style=color:#8f5902;font-style:italic>// when
-</span><span style=color:#8f5902;font-style:italic></span>    <span style=color:#000>Order</span> <span style=color:#000>actual</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#000>sut</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>giveMeOne</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>Order</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>class</span><span style=color:#ce5c00;font-weight:700>);</span>
-
-    <span style=color:#8f5902;font-style:italic>// then
-</span><span style=color:#8f5902;font-style:italic></span>    <span style=color:#000>then</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>actual</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>getItem</span><span style=color:#ce5c00;font-weight:700>()).</span><span style=color:#c4a000>isNotNull</span><span style=color:#ce5c00;font-weight:700>();</span>
-    
-    <span style=color:#000>when</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>actual</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>getItem</span><span style=color:#ce5c00;font-weight:700>().</span><span style=color:#c4a000>getName</span><span style=color:#ce5c00;font-weight:700>()).</span><span style=color:#c4a000>thenReturn</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#4e9a06>&#34;ring&#34;</span><span style=color:#ce5c00;font-weight:700>);</span>
-    <span style=color:#000>then</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>actual</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>getItem</span><span style=color:#ce5c00;font-weight:700>().</span><span style=color:#c4a000>getName</span><span style=color:#ce5c00;font-weight:700>()).</span><span style=color:#c4a000>isEqualTo</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#4e9a06>&#34;ring&#34;</span><span style=color:#ce5c00;font-weight:700>);</span>
-<span style=color:#ce5c00;font-weight:700>}</span>
-</code></pre></div>
-</div>
-<div class=td-content style=page-break-before:always>
-<h1 id=pg-f77601425046848a3ab4466865122027>1.5 - FAQ</h1>
-<h2 id=generated-string-value-is-weired-help>Generated String value is weired. Help!</h2>
-<p>Generated String is ASCII code consists of unprintable <code>control block</code>, printable characters.
-If you want to generate only printable characters as default, You should override <code>AnnotatedArbitraryGenerator</code>.
-check <a href=/fixture-monkey/docs/v0.3.x/examples/annotatedarbitrarygenerator/#override-string-to-generate-printable-characters>Example</a></p>
-<h2 id=generate-object-fails-help>Generate object fails. Help!</h2>
-<p>Input class is not suitable for given <code>ArbitraryGenerator</code>, check out <a href=/fixture-monkey/docs/v0.3.x/features/arbitrarygenerator/>ArbitraryGenerator</a>.
-If Error occurs again, please create an issue.</p>
-</div>
-<div class=td-content style=page-break-before:always>
-<h1 id=pg-454342dc75587df96139a0db6d8c5bf9>1.6 - What's New</h1>
-<h2 id=whats-new-in-030>What&rsquo;s New in 0.3.0</h2>
-<ul>
-<li>release Fixture Monkey as an open source library</li>
-</ul>
-</div>
-<div class=td-content style=page-break-before:always>
-<h1 id=pg-31ee74bcd7d060d22077c4e1740e3537>1.7 - Release Notes</h1>
-<h3 id=030>0.3.0</h3>
-<p>The first release published on maven central.</p>
 </div>
 </main>
 </div>
