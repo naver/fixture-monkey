@@ -30,10 +30,14 @@ import java.util.function.Predicate;
 
 import javax.annotation.Nullable;
 
+import org.apiguardian.api.API;
+import org.apiguardian.api.API.Status;
+
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
+import com.navercorp.fixturemonkey.api.expression.ExpressionGenerator;
 import com.navercorp.fixturemonkey.arbitrary.AbstractArbitraryExpressionManipulator;
 import com.navercorp.fixturemonkey.arbitrary.AbstractArbitrarySet;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryExpression;
@@ -73,6 +77,11 @@ public final class ExpressionSpec {
 		return this;
 	}
 
+	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+	public ExpressionSpec set(ExpressionGenerator expressionGenerator, @Nullable Object value) {
+		return this.set(expressionGenerator.generate(), value);
+	}
+
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	public ExpressionSpec set(String expression, Object value, long limit) {
 		if (value == null) {
@@ -86,32 +95,59 @@ public final class ExpressionSpec {
 		return this;
 	}
 
+	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+	public ExpressionSpec set(ExpressionGenerator expressionGenerator, Object value, long limit) {
+		return this.set(expressionGenerator.generate(), value, limit);
+	}
+
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	public <T> ExpressionSpec set(String expression, Arbitrary<T> arbitrary) {
 		if (arbitrary == null) {
-			return this.setNull(null);
+			return this.setNull((String)null);
 		}
 		ArbitraryExpression fixtureExpression = ArbitraryExpression.from(expression);
 		builderManipulators.add(new ArbitrarySetArbitrary(fixtureExpression, arbitrary));
 		return this;
 	}
 
+	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+	public <T> ExpressionSpec set(ExpressionGenerator expressionGenerator, Arbitrary<T> arbitrary) {
+		return this.set(expressionGenerator.generate(), arbitrary);
+	}
+
 	public <T> ExpressionSpec setBuilder(String expression, @Nullable ArbitraryBuilder<T> builder, long limit) {
 		if (builder == null) {
-			return this.setNull(null);
+			return this.setNull((String)null);
 		}
 		ArbitraryExpression fixtureExpression = ArbitraryExpression.from(expression);
 		builderManipulators.add(new ArbitrarySetArbitrary<>(fixtureExpression, builder.build(), limit));
 		return this;
 	}
 
+	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+	public <T> ExpressionSpec setBuilder(
+		ExpressionGenerator expressionGenerator,
+		@Nullable ArbitraryBuilder<T> builder,
+		long limit
+	) {
+		return this.setBuilder(expressionGenerator.generate(), builder, limit);
+	}
+
 	public <T> ExpressionSpec setBuilder(String expression, @Nullable ArbitraryBuilder<T> builder) {
 		if (builder == null) {
-			return this.setNull(null);
+			return this.setNull((String)null);
 		}
 		ArbitraryExpression fixtureExpression = ArbitraryExpression.from(expression);
 		builderManipulators.add(new ArbitrarySetArbitrary<>(fixtureExpression, builder.build()));
 		return this;
+	}
+
+	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+	public <T> ExpressionSpec setBuilder(
+		ExpressionGenerator expressionGenerator,
+		@Nullable ArbitraryBuilder<T> builder
+	) {
+		return this.setBuilder(expressionGenerator.generate(), builder);
 	}
 
 	public ExpressionSpec set(String expression, ExpressionSpec spec) {
@@ -129,10 +165,20 @@ public final class ExpressionSpec {
 		return this;
 	}
 
+	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+	public ExpressionSpec set(ExpressionGenerator expressionGenerator, ExpressionSpec spec) {
+		return this.set(expressionGenerator.generate(), spec);
+	}
+
 	public ExpressionSpec setPrefix(String expression, String value) {
 		ArbitraryExpression fixtureExpression = ArbitraryExpression.from(expression);
 		builderManipulators.add(new ArbitrarySetPrefix(fixtureExpression, Arbitraries.just(value)));
 		return this;
+	}
+
+	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+	public ExpressionSpec setPrefix(ExpressionGenerator expressionGenerator, String value) {
+		return this.setPrefix(expressionGenerator.generate(), value);
 	}
 
 	public ExpressionSpec setSuffix(String expression, String value) {
@@ -141,10 +187,20 @@ public final class ExpressionSpec {
 		return this;
 	}
 
+	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+	public ExpressionSpec setSuffix(ExpressionGenerator expressionGenerator, String value) {
+		return this.setSuffix(expressionGenerator.generate(), value);
+	}
+
 	public ExpressionSpec setNull(String expression) {
 		ArbitraryExpression fixtureExpression = ArbitraryExpression.from(expression);
 		builderManipulators.add(new ArbitraryNullity(fixtureExpression, true));
 		return this;
+	}
+
+	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+	public ExpressionSpec setNull(ExpressionGenerator expressionGenerator) {
+		return this.setNull(expressionGenerator.generate());
 	}
 
 	public ExpressionSpec setNotNull(String expression) {
@@ -153,10 +209,20 @@ public final class ExpressionSpec {
 		return this;
 	}
 
+	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+	public ExpressionSpec setNotNull(ExpressionGenerator expressionGenerator) {
+		return this.setNotNull(expressionGenerator.generate());
+	}
+
 	public ExpressionSpec size(String expression, int size) {
 		ArbitraryExpression fixtureExpression = ArbitraryExpression.from(expression);
 		builderManipulators.add(new ContainerSizeManipulator(fixtureExpression, size, size));
 		return this;
+	}
+
+	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+	public ExpressionSpec size(ExpressionGenerator expressionGenerator, int size) {
+		return this.size(expressionGenerator.generate(), size);
 	}
 
 	public ExpressionSpec size(String expression, int min, int max) {
@@ -165,10 +231,20 @@ public final class ExpressionSpec {
 		return this;
 	}
 
+	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+	public ExpressionSpec size(ExpressionGenerator expressionGenerator, int min, int max) {
+		return this.size(expressionGenerator.generate(), min, max);
+	}
+
 	public ExpressionSpec minSize(String expression, int min) {
 		ArbitraryExpression fixtureExpression = ArbitraryExpression.from(expression);
 		builderManipulators.add(new ContainerSizeManipulator(fixtureExpression, min, null));
 		return this;
+	}
+
+	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+	public ExpressionSpec minSize(ExpressionGenerator expressionGenerator, int min) {
+		return this.minSize(expressionGenerator.generate(), min);
 	}
 
 	public ExpressionSpec maxSize(String expression, int max) {
@@ -177,10 +253,25 @@ public final class ExpressionSpec {
 		return this;
 	}
 
+	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+	public ExpressionSpec maxSize(ExpressionGenerator expressionGenerator, int max) {
+		return this.maxSize(expressionGenerator.generate(), max);
+	}
+
 	public <T> ExpressionSpec setPostCondition(String expression, Class<T> clazz, Predicate<T> predicate, long count) {
 		ArbitraryExpression fixtureExpression = ArbitraryExpression.from(expression);
 		builderManipulators.add(new ArbitrarySetPostCondition<>(clazz, fixtureExpression, predicate, count));
 		return this;
+	}
+
+	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+	public <T> ExpressionSpec setPostCondition(
+		ExpressionGenerator expressionGenerator,
+		Class<T> clazz,
+		Predicate<T> predicate,
+		long count
+	) {
+		return this.setPostCondition(expressionGenerator.generate(), clazz, predicate, count);
 	}
 
 	public <T> ExpressionSpec setPostCondition(String expression, Class<T> clazz, Predicate<T> predicate) {
@@ -189,11 +280,28 @@ public final class ExpressionSpec {
 		return this;
 	}
 
+	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+	public <T> ExpressionSpec setPostCondition(
+		ExpressionGenerator expressionGenerator,
+		Class<T> clazz,
+		Predicate<T> predicate
+	) {
+		return this.setPostCondition(expressionGenerator.generate(), clazz, predicate);
+	}
+
 	public ExpressionSpec list(String iterableName, Consumer<IterableSpec> iterableSpecSupplier) {
 		DefaultIterableSpec iterableSpec = new DefaultIterableSpec(iterableName);
 		iterableSpecSupplier.accept(iterableSpec);
 		iterableSpec.visit(this);
 		return this;
+	}
+
+	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+	public <T> ExpressionSpec list(
+		ExpressionGenerator expressionGenerator,
+		Consumer<IterableSpec> iterableSpecSupplier
+	) {
+		return this.list(expressionGenerator.generate(), iterableSpecSupplier);
 	}
 
 	public ExpressionSpec copy() {
@@ -251,7 +359,12 @@ public final class ExpressionSpec {
 	}
 
 	public ExpressionSpec exclude(String... excludeExpressions) {
-		List<ArbitraryExpression> excludeArbitraryExpression = Arrays.stream(excludeExpressions)
+		return this.exclude(Arrays.stream(excludeExpressions).collect(toList()));
+	}
+
+	@API(since = "0.4.0", status = Status.MAINTAINED)
+	public ExpressionSpec exclude(List<String> excludeExpressions) {
+		List<ArbitraryExpression> excludeArbitraryExpression = excludeExpressions.stream()
 			.map(ArbitraryExpression::from)
 			.collect(toList());
 
@@ -264,11 +377,25 @@ public final class ExpressionSpec {
 		return this;
 	}
 
+	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+	public ExpressionSpec exclude(ExpressionGenerator... excludeExpressionGenerators) {
+		return this.exclude(
+			Arrays.stream(excludeExpressionGenerators)
+				.map(ExpressionGenerator::generate)
+				.collect(toList())
+		);
+	}
+
 	public boolean hasOrderedManipulators(String expression) {
 		return this.builderManipulators.stream()
 			.filter(it -> !(it instanceof PostArbitraryManipulator) && !(it instanceof MetadataManipulator))
 			.map(ArbitraryExpressionManipulator.class::cast)
 			.anyMatch(it -> it.getArbitraryExpression().equals(ArbitraryExpression.from(expression)));
+	}
+
+	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+	public boolean hasOrderedManipulators(ExpressionGenerator expressionGenerator) {
+		return this.hasOrderedManipulators(expressionGenerator.generate());
 	}
 
 	public boolean hasPostArbitraryManipulators(String expression) {
@@ -278,11 +405,21 @@ public final class ExpressionSpec {
 			.anyMatch(it -> it.getArbitraryExpression().equals(ArbitraryExpression.from(expression)));
 	}
 
+	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+	public boolean hasPostArbitraryManipulators(ExpressionGenerator expressionGenerator) {
+		return this.hasPostArbitraryManipulators(expressionGenerator.generate());
+	}
+
 	public boolean hasSet(String expression) {
 		return this.builderManipulators.stream()
 			.filter(AbstractArbitrarySet.class::isInstance)
 			.map(AbstractArbitrarySet.class::cast)
 			.anyMatch(it -> it.getArbitraryExpression().equals(ArbitraryExpression.from(expression)));
+	}
+
+	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+	public boolean hasSet(ExpressionGenerator expressionGenerator) {
+		return this.hasSet(expressionGenerator.generate());
 	}
 
 	public boolean hasPostCondition(String expression) {
@@ -292,11 +429,21 @@ public final class ExpressionSpec {
 			.anyMatch(it -> it.getArbitraryExpression().equals(ArbitraryExpression.from(expression)));
 	}
 
+	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+	public boolean hasPostCondition(ExpressionGenerator expressionGenerator) {
+		return this.hasPostCondition(expressionGenerator.generate());
+	}
+
 	public boolean hasMetadata(String expression) {
 		return this.builderManipulators.stream()
 			.filter(MetadataManipulator.class::isInstance)
 			.map(MetadataManipulator.class::cast)
 			.anyMatch(it -> it.getArbitraryExpression().equals(ArbitraryExpression.from(expression)));
+	}
+
+	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+	public boolean hasMetadata(ExpressionGenerator expressionGenerator) {
+		return this.hasMetadata(expressionGenerator.generate());
 	}
 
 	public Optional<Object> findSetValue(String expression) {
@@ -306,6 +453,11 @@ public final class ExpressionSpec {
 			.filter(it -> it.getArbitraryExpression().equals(ArbitraryExpression.from(expression)))
 			.map(AbstractArbitrarySet::getValue)
 			.findAny();
+	}
+
+	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+	public Optional<Object> findSetValue(ExpressionGenerator expressionGenerator) {
+		return this.findSetValue(expressionGenerator.generate());
 	}
 
 	public List<BuilderManipulator> getBuilderManipulators() {
