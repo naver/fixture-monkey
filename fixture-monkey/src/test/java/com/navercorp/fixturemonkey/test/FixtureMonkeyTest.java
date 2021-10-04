@@ -337,28 +337,6 @@ class FixtureMonkeyTest {
 	}
 
 	@Example
-	void giveMeBuilderBuildUniqueInvalidThenSampleThrowsTooManyFilterMissesException() {
-		// when
-		Arbitrary<StringWithNotBlankWrapperClass> sut = this.sut.giveMeBuilder(StringWithNotBlankWrapperClass.class)
-			.set("value", "")
-			.build()
-			.unique();
-
-		thenThrownBy(sut::sample)
-			.isExactlyInstanceOf(TooManyFilterMissesException.class);
-	}
-
-	@Example
-	void giveMeArbitraryUnique() {
-		// when
-		Arbitrary<StringWithNotBlankWrapperClass> sut = this.sut.giveMeArbitrary(StringWithNotBlankWrapperClass.class)
-			.unique();
-
-		thenNoException()
-			.isThrownBy(sut::sample);
-	}
-
-	@Example
 	void giveMeBuilderBuildFixGenSizeInvalidThenSampleThrowsTooManyFilterMissesException() {
 		// when
 		Arbitrary<StringWithNotBlankWrapperClass> sut = this.sut.giveMeBuilder(StringWithNotBlankWrapperClass.class)
@@ -377,8 +355,7 @@ class FixtureMonkeyTest {
 			this.sut.giveMeBuilder(StringWithNotBlankWrapperClass.class)
 				.set("value", "")
 				.build()
-				.optional()
-				.filter(Optional::isPresent);
+				.optional(1.0);
 
 		thenThrownBy(sut::sample)
 			.isExactlyInstanceOf(TooManyFilterMissesException.class);

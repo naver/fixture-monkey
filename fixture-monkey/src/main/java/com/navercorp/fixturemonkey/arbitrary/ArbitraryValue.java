@@ -45,11 +45,11 @@ import net.jqwik.api.Tuple.Tuple2;
 import net.jqwik.api.Tuple.Tuple3;
 import net.jqwik.api.Tuple.Tuple4;
 import net.jqwik.api.Tuple.Tuple5;
+import net.jqwik.api.arbitraries.ArrayArbitrary;
 import net.jqwik.api.arbitraries.IteratorArbitrary;
 import net.jqwik.api.arbitraries.ListArbitrary;
 import net.jqwik.api.arbitraries.SetArbitrary;
 import net.jqwik.api.arbitraries.StreamArbitrary;
-import net.jqwik.api.arbitraries.StreamableArbitrary;
 
 import com.navercorp.fixturemonkey.validator.ArbitraryValidator;
 
@@ -87,6 +87,24 @@ final class ArbitraryValue<T> implements Arbitrary<T> {
 	}
 
 	@Override
+	public RandomGenerator<T> generator(int genSize, boolean withEdgeCases) {
+		try {
+			return getArbitrary().generator(genSize, withEdgeCases);
+		} finally {
+			this.arbitrary = null; // in order to getting new value whenever sampling, set arbitrary as null
+		}
+	}
+
+	@Override
+	public RandomGenerator<T> generatorWithEmbeddedEdgeCases(int genSize) {
+		try {
+			return getArbitrary().generatorWithEmbeddedEdgeCases(genSize);
+		} finally {
+			this.arbitrary = null; // in order to getting new value whenever sampling, set arbitrary as null
+		}
+	}
+
+	@Override
 	public Arbitrary<Object> asGeneric() {
 		return new ArbitraryValue<>(
 			() -> getArbitrary().asGeneric(),
@@ -94,11 +112,6 @@ final class ArbitraryValue<T> implements Arbitrary<T> {
 			this.validOnly,
 			this.violations
 		);
-	}
-
-	@Override
-	public boolean isUnique() {
-		return getArbitrary().isUnique();
 	}
 
 	@Override
@@ -114,6 +127,15 @@ final class ArbitraryValue<T> implements Arbitrary<T> {
 	public synchronized Optional<ExhaustiveGenerator<T>> exhaustive(long maxNumberOfSamples) {
 		try {
 			return getArbitrary().exhaustive(maxNumberOfSamples);
+		} finally {
+			this.arbitrary = null; // in order to getting new value whenever sampling, set arbitrary as null
+		}
+	}
+
+	@Override
+	public EdgeCases<T> edgeCases(int maxEdgeCases) {
+		try {
+			return getArbitrary().edgeCases(maxEdgeCases);
 		} finally {
 			this.arbitrary = null; // in order to getting new value whenever sampling, set arbitrary as null
 		}
@@ -187,16 +209,6 @@ final class ArbitraryValue<T> implements Arbitrary<T> {
 	}
 
 	@Override
-	public Arbitrary<T> unique() {
-		return new ArbitraryValue<>(
-			() -> getArbitrary().unique(),
-			this.validator,
-			this.validOnly,
-			this.violations
-		);
-	}
-
-	@Override
 	public Arbitrary<T> fixGenSize(int genSize) {
 		return new ArbitraryValue<>(
 			() -> getArbitrary().fixGenSize(genSize),
@@ -243,7 +255,7 @@ final class ArbitraryValue<T> implements Arbitrary<T> {
 	}
 
 	@Override
-	public synchronized <A> StreamableArbitrary<T, A> array(Class<A> arrayClass) {
+	public synchronized <A> ArrayArbitrary<T, A> array(Class<A> arrayClass) {
 		try {
 			return getArbitrary().array(arrayClass);
 		} finally {
@@ -255,6 +267,16 @@ final class ArbitraryValue<T> implements Arbitrary<T> {
 	public Arbitrary<Optional<T>> optional() {
 		return new ArbitraryValue<>(
 			() -> convert(getArbitrary(), Arbitrary::optional),
+			this.validator,
+			this.validOnly,
+			this.violations
+		);
+	}
+
+	@Override
+	public Arbitrary<Optional<T>> optional(double presenceProbability) {
+		return new ArbitraryValue<>(
+			() -> convert(getArbitrary(), it -> it.optional(presenceProbability)),
 			this.validator,
 			this.validOnly,
 			this.violations
@@ -394,6 +416,16 @@ final class ArbitraryValue<T> implements Arbitrary<T> {
 	public Arbitrary<T> edgeCases(Consumer<Config<T>> configurator) {
 		return new ArbitraryValue<>(
 			() -> getArbitrary().edgeCases(configurator),
+			this.validator,
+			this.validOnly,
+			this.violations
+		);
+	}
+
+	@Override
+	public Arbitrary<T> withoutEdgeCases() {
+		return new ArbitraryValue<>(
+			() -> getArbitrary().withoutEdgeCases(),
 			this.validator,
 			this.validOnly,
 			this.violations
