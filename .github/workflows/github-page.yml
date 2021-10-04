@@ -17,7 +17,7 @@ jobs:
           ref: doc
 
       - name: install
-        run: npm install postcss
+        run: npm install postcss postcss-cli autoprefixer
 
       - name: Setup Hugo
         uses: peaceiris/actions-hugo@v2
