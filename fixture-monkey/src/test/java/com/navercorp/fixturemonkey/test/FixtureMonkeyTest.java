@@ -377,7 +377,8 @@ class FixtureMonkeyTest {
 			this.sut.giveMeBuilder(StringWithNotBlankWrapperClass.class)
 				.set("value", "")
 				.build()
-				.optional();
+				.optional()
+				.filter(Optional::isPresent);
 
 		thenThrownBy(sut::sample)
 			.isExactlyInstanceOf(TooManyFilterMissesException.class);
