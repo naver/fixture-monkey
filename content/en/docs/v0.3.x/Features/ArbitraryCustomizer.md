@@ -29,4 +29,4 @@ Use Builder to customize for preventing typo or mistakes
 
 ## Example
 
-You could find examples [here]({{< relref "/docs/v0.3.0/examples/arbitrarycustomizer" >}})
+You could find examples [here]({{< relref "/docs/v0.3.x/examples/arbitrarycustomizer" >}})
