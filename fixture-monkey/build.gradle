@@ -2,7 +2,7 @@ import com.github.spotbugs.snom.SpotBugsTask
 
 plugins {
     id "org.ec4j.editorconfig" version "0.0.3"
-    id "com.github.spotbugs" version "4.6.0"
+    id "com.github.spotbugs" version "4.7.6"
     id "jacoco"
     id "checkstyle"
 }
@@ -14,10 +14,10 @@ dependencies {
     api("com.github.mifmif:generex:1.0.2")
 
     testImplementation("org.assertj:assertj-core:3.18.1")
-    testImplementation("org.projectlombok:lombok:1.18.16")
+    testImplementation("org.projectlombok:lombok:1.18.20")
     testImplementation("org.hibernate.validator:hibernate-validator:6.2.0.Final")
     testImplementation("org.glassfish:jakarta.el:3.0.3")
-    testAnnotationProcessor("org.projectlombok:lombok:1.18.16")
+    testAnnotationProcessor("org.projectlombok:lombok:1.18.20")
 }
 
 editorconfig {
@@ -35,7 +35,7 @@ check.dependsOn editorconfigCheck
 checkstyle {
     configFile = file("${project.rootDir}/tool/naver-checkstyle-rules.xml")
     configProperties = ["suppressionFile": "${project.rootDir}/tool/naver-checkstyle-suppressions.xml"]
-    toolVersion = "8.24"
+    toolVersion = "8.45.1"
     ignoreFailures = false
     maxErrors = 0
     maxWarnings = 0
@@ -68,7 +68,7 @@ tasks.register("printSpotbugsMain") {
 tasks.getByPath("spotbugsMain").finalizedBy("printSpotbugsMain")
 
 jacoco {
-    toolVersion = "0.8.5"
+    toolVersion = "0.8.7"
     reportsDir = file("${buildDir}/reports/jacoco")
 }
 
