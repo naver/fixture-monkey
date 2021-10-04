@@ -4,7 +4,7 @@ linkTitle: "ArbitraryGenerator"
 weight: 2
 ---
 {{< alert color="secondary" title="Note">}}
-Predefined ArbitraryGenerator can be found [here]({{< relref "/docs/features/arbitrarygenerator" >}})
+Predefined ArbitraryGenerator can be found [here]({{< relref "/docs/v0.3.0/features/arbitrarygenerator" >}})
 {{< /alert >}}
 
 ## Put ArbitraryGenerator

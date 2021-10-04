@@ -30,4 +30,4 @@ weight: 2
 - Uuid
   
 ## How to Add New Custom Type 
-[Example]({{< relref "/docs/examples/annotatedarbitrarygenerator" >}})
+[Example]({{< relref "/docs/v0.3.0/examples/annotatedarbitrarygenerator" >}})

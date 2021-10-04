@@ -30,11 +30,11 @@ testImplementation("com.navercorp.fixturemonkey:fixture-monkey:0.3.0")
 
 {{< alert color="primary" title="Tip">}}
 Getter and Setter is not mandatory.
-You could generate immutable instances by Fixture Monkey with [BuilderArbitraryGenerator]({{< relref "/docs/features/arbitrarygenerator#builderarbitrarygenerator" >}}) or [JacksonArbitraryGenerator]({{< relref "/docs/features/arbitrarygenerator#jacksonarbitrarygenerator" >}}).
+You could generate immutable instances by Fixture Monkey with [BuilderArbitraryGenerator]({{< relref "/docs/v0.3.0/features/arbitrarygenerator#builderarbitrarygenerator" >}}) or [JacksonArbitraryGenerator]({{< relref "/docs/v0.3.0/features/arbitrarygenerator#jacksonarbitrarygenerator" >}}).
 
 You would not need to change anything for using Fixture Monkey.
 Choose the way of instantiating.
-Check out details [here]({{< relref "/docs/features/arbitrarygenerator" >}}).
+Check out details [here]({{< relref "/docs/v0.3.0/features/arbitrarygenerator" >}}).
 {{< /alert >}}
 ```java
 @Data   // lombok getter, setter
@@ -83,8 +83,8 @@ void test() {
 ```
 
 ## Where should I go next?
-* [Examples]({{< relref "/docs/examples" >}})
-* [DefaultSupportedTypes]({{< relref "/docs/features/defaultsupportedtypes" >}})
-* [ArbitraryBuilder]({{< relref "/docs/features/arbitrarybuilder" >}})
-* [Manipulator]({{< relref "/docs/features/manipulator" >}})
-* [FAQ]({{< relref "/docs/faq" >}})
+* [Examples]({{< relref "/docs/v0.3.0/examples" >}})
+* [DefaultSupportedTypes]({{< relref "/docs/v0.3.0/features/defaultsupportedtypes" >}})
+* [ArbitraryBuilder]({{< relref "/docs/v0.3.0/features/arbitrarybuilder" >}})
+* [Manipulator]({{< relref "/docs/v0.3.0/features/manipulator" >}})
+* [FAQ]({{< relref "/docs/v0.3.0/faq" >}})

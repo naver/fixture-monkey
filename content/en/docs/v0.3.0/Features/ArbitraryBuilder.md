@@ -13,7 +13,7 @@ Or You could make `ArbitraryBuilder` from existing an instance of `Person` class
 fixtureMonkey.giveMeBuilder(new Person("SALLY"));
 ```
 
-It offers a generic implementation of [Test Data Builder Pattern](http://www.natpryce.com/articles/000714.html). If you want a fixture for certain test case, you could manipulate it by [manipulators]({{< relref "/docs/features/manipulator" >}}). For example, you could get a fixture returns `Person` instance which city is "SEOUL".
+It offers a generic implementation of [Test Data Builder Pattern](http://www.natpryce.com/articles/000714.html). If you want a fixture for certain test case, you could manipulate it by [manipulators]({{< relref "/docs/v0.3.0/features/manipulator" >}}). For example, you could get a fixture returns `Person` instance which city is "SEOUL".
 
 ```java
 fixtureMonkey.giveMeBuilder(Person.class)
@@ -23,11 +23,11 @@ fixtureMonkey.giveMeBuilder(Person.class)
 
 * Reusable in all tests since sampling always returns a different instance if `ComplexManipulator` is not applied.
 * Could make existing instance into `ArbitraryBuilder`, but it always returns same instance. Check
-  out [Example]({{< relref "/docs/examples/manipulator/complexmanipulator#manipulate-existing-instance" >}})
+  out [Example]({{< relref "/docs/v0.3.0/examples/manipulator/complexmanipulator#manipulate-existing-instance" >}})
 
 ## ValidOnly
 {{< alert color="secondary" title="Note">}}
-If you want more information, check out [here]({{< relref "/docs/features/arbitraryvalidator" >}})
+If you want more information, check out [here]({{< relref "/docs/v0.3.0/features/arbitraryvalidator" >}})
 {{< /alert >}}
 
 * If `true`, generates valid instance validated by registered `ArbitraryValidator`. 
@@ -36,11 +36,11 @@ If you want more information, check out [here]({{< relref "/docs/features/arbitr
 
 ## Generator
 
-Change [ArbitraryGenerator]({{< relref "/docs/features/arbitrarygenerator" >}}) to generate given `ArbitraryBuilder`
+Change [ArbitraryGenerator]({{< relref "/docs/v0.3.0/features/arbitrarygenerator" >}}) to generate given `ArbitraryBuilder`
 
 ## Build
 
-`build` would return [Arbitrary]({{< relref "/docs/features/arbitrary" >}})
+`build` would return [Arbitrary]({{< relref "/docs/v0.3.0/features/arbitrary" >}})
 
 ## Sample
 
@@ -49,4 +49,4 @@ Change [ArbitraryGenerator]({{< relref "/docs/features/arbitrarygenerator" >}}) 
 * Always return different instance
 
 ## Where should I go next?
-* [Manipulator]({{< relref "/docs/features/manipulator" >}})
+* [Manipulator]({{< relref "/docs/v0.3.0/features/manipulator" >}})

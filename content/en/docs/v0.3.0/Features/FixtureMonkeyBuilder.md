@@ -29,10 +29,10 @@ FixtureMonkey fixture = FixtureMonkey.builder()
 
 ## Options
 - defaultGenerator (default: BeanArbitraryGenerator.INSTANCE)
-    - [ArbitraryGenerator]({{< relref "/docs/features/arbitrarygenerator" >}})
+    - [ArbitraryGenerator]({{< relref "/docs/v0.3.0/features/arbitrarygenerator" >}})
 - putGenerator
     - Use given generator if type is matched instead of defaultGenerator
-    - [Example]({{< relref "/docs/examples/arbitrarygenerator" >}})
+    - [Example]({{< relref "/docs/v0.3.0/examples/arbitrarygenerator" >}})
 - nullInject (default: 0.2)
     - Set probabilities to inject `null`.
     - If field has `@NotNull`, it would not inject `null`
@@ -52,26 +52,26 @@ FixtureMonkey fixture = FixtureMonkey.builder()
     - Add package which class in given package always returns `null`
     - Appends to default exceptGeneratePackages
 - customizers
-    - Set ArbitraryCustomizers which is a collection of [ArbitraryCustomizer]({{< relref "/docs/features/arbitrarycustomizer" >}})
+    - Set ArbitraryCustomizers which is a collection of [ArbitraryCustomizer]({{< relref "/docs/v0.3.0/features/arbitrarycustomizer" >}})
 - addCustomizer
-    - Add specific type of [ArbitraryCustomizer]({{< relref "/docs/features/arbitrarycustomizer" >}})
+    - Add specific type of [ArbitraryCustomizer]({{< relref "/docs/v0.3.0/features/arbitrarycustomizer" >}})
     - Appends to default ArbitraryCustomizers
-- [arbitraryValidator]({{< relref "/docs/features/arbitraryvalidator" >}}) (default: CompositeArbitraryValidator)
+- [arbitraryValidator]({{< relref "/docs/v0.3.0/features/arbitraryvalidator" >}}) (default: CompositeArbitraryValidator)
 - addAnnotatedArbitraryGenerator
-    - Add specified [type]({{< relref "/docs/features/defaultsupportedtypes" >}})
+    - Add specified [type]({{< relref "/docs/v0.3.0/features/defaultsupportedtypes" >}})
     - Appends to default annotatedArbitraryGenerators. It overrides if given type already exists
-    - [Example]({{< relref "/docs/examples/annotatedarbitrarygenerator" >}})
+    - [Example]({{< relref "/docs/v0.3.0/examples/annotatedarbitrarygenerator" >}})
 - defaultInterfaceSupplier
-  - Set default [InterfaceSupplier]({{< relref "/docs/features/interfacesupplier" >}}) (default : `type -> null`) 
+  - Set default [InterfaceSupplier]({{< relref "/docs/v0.3.0/features/interfacesupplier" >}}) (default : `type -> null`) 
 - addInterfaceSupplier
   - Determine returning implementation for `interface` or `abstract class`
-  - Check out detail [here]({{< relref "/docs/features/interfacesupplier" >}})
+  - Check out detail [here]({{< relref "/docs/v0.3.0/features/interfacesupplier" >}})
 - defaultNotNull
   - If `true`, fields without `@Nullable` would not be null.
   - If `false`, fields without `@NotNull` would be null with `nullInject` probabilities.
 - register
   - Register default ArbitraryBuilder for specific type
-  - Check out detail [here]({{< relref "/docs/features/registerarbitrarybuilder" >}})
+  - Check out detail [here]({{< relref "/docs/v0.3.0/features/registerarbitrarybuilder" >}})
 - registerGroup
   - Register default ArbitraryBuilders by declaring methods which signatures are `ArbitraryBuilder<TYPE> NAME(FixtureMonkey fixture)`
-  - Check out detail [here]({{< relref "/docs/features/registerarbitrarybuilder" >}})
+  - Check out detail [here]({{< relref "/docs/v0.3.0/features/registerarbitrarybuilder" >}})

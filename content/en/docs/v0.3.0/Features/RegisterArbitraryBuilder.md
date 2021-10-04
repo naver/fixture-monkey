@@ -9,4 +9,4 @@ weight: 5
 - Even fields with given type would be registered `ArbitraryBuilder` sampled instance too.
 - All manipulators apply to registered `ArbitraryBuilder` too
 
-## [Examples]({{< relref "/docs/examples/registerarbitrarybuilder" >}})
+## [Examples]({{< relref "/docs/v0.3.0/examples/registerarbitrarybuilder" >}})

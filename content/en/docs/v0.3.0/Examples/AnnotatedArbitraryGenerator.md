@@ -4,7 +4,7 @@ linkTitle: "AnnotatedArbitraryGenerator"
 weight: 4
 ---
 {{< alert color="secondary" title="Note">}}
-Predefined AnnotatedArbitraryGenerator can be found [here]({{< relref "/docs/features/defaultsupportedtypes" >}})
+Predefined AnnotatedArbitraryGenerator can be found [here]({{< relref "/docs/v0.3.0/features/defaultsupportedtypes" >}})
 {{< /alert >}}
 
 ## Put AnnotatedArbitraryGenerator

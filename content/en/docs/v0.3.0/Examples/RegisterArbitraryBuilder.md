@@ -4,7 +4,7 @@ linkTitle: "Register ArbitraryBuilder"
 weight: 5
 ---
 {{< alert color="secondary" title="Note">}}
-For detail information check out [here]({{< relref "/docs/features/registerarbitrarybuilder" >}})
+For detail information check out [here]({{< relref "/docs/v0.3.0/features/registerarbitrarybuilder" >}})
 {{< /alert >}}
 
 ```java
