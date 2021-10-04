@@ -9,7 +9,6 @@ plugins {
 
 dependencies {
     runtimeOnly(project(":fixture-monkey-engine"))
-    api(project(":fixture-monkey-api"))
 
     api("net.jqwik:jqwik:${JQWIK_VERSION}")
     api("javax.validation:validation-api:2.0.1.Final")
