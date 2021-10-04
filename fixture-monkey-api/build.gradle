@@ -92,10 +92,10 @@ jar {
     manifest {
         attributes(
                 "Specification-Title": artifactName,
-                "Specification-Version": artifactVersion,
+                "Specification-Version": project.version,
                 "Specification-Vendor": "com.navercorp",
                 "Implementation-Title": artifactName,
-                "Implementation-Version": artifactVersion,
+                "Implementation-Version": project.version,
                 "Implementation-Vendor": "com.navercorp"
         )
     }
