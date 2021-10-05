@@ -536,7 +536,7 @@ public final class ArbitraryBuilder<T> {
 	}
 
 	public ArbitraryBuilder<T> copy() {
-		return new ArbitraryBuilder<>(
+		ArbitraryBuilder<T> copied = new ArbitraryBuilder<>(
 			this.tree.copy(),
 			this.traverser,
 			this.generator,
@@ -547,6 +547,8 @@ public final class ArbitraryBuilder<T> {
 			new ArrayList<>(this.decomposedManipulators),
 			this.generatorMap
 		);
+		copied.validOnly(this.validOnly);
+		return copied;
 	}
 
 	private void setCurrentBuilderManipulatorsAsUsed() {
