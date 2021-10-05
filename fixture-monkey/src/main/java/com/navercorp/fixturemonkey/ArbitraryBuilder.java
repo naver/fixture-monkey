@@ -172,7 +172,6 @@ public final class ArbitraryBuilder<T> {
 		return this;
 	}
 
-	@SuppressWarnings("unchecked")
 	public Arbitrary<T> build() {
 		ArbitraryBuilder<T> buildArbitraryBuilder = this.copy();
 		return buildArbitraryBuilder.tree.result(() -> {
@@ -196,9 +195,8 @@ public final class ArbitraryBuilder<T> {
 		return this.build().sample();
 	}
 
-	@SuppressWarnings("unchecked")
 	private T sampleInternal() {
-		return (T)this.tree.result(() -> {
+		return this.tree.result(() -> {
 			ArbitraryTree<T> buildTree = this.tree;
 
 			this.traverser.traverse(
