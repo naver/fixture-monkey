@@ -1446,6 +1446,16 @@ class FixtureMonkeyTest {
 		then(actual.values).allMatch(Objects::nonNull);
 	}
 
+	@Property
+	void copyValidOnly() {
+		thenNoException()
+			.isThrownBy(() -> this.sut.giveMeBuilder(ListWithAnnotationWrapperClass.class)
+				.size("values", 0)
+				.validOnly(false)
+				.copy()
+				.sample());
+	}
+
 	@Data
 	public static class IntegerWrapperClass {
 		int value;
