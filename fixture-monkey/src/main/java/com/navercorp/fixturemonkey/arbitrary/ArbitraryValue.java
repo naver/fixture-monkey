@@ -37,6 +37,7 @@ import net.jqwik.api.Arbitrary;
 import net.jqwik.api.EdgeCases;
 import net.jqwik.api.EdgeCases.Config;
 import net.jqwik.api.ExhaustiveGenerator;
+import net.jqwik.api.JqwikException;
 import net.jqwik.api.RandomGenerator;
 import net.jqwik.api.TooManyFilterMissesException;
 import net.jqwik.api.Tuple.Tuple1;
@@ -276,7 +277,9 @@ final class ArbitraryValue<T> implements Arbitrary<T> {
 		try {
 			return getArbitrary()
 				.filter((Predicate<T>)this.validateFilter(validOnly))
-				.sampleStream();
+				.sampleStream()
+				.map(Optional::ofNullable)
+				.map(it -> it.orElse(null));
 		} finally {
 			this.arbitrary = null; // in order to getting new value whenever sampling, set arbitrary as null
 		}
