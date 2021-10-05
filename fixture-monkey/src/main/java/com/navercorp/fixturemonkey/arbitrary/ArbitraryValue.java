@@ -279,7 +279,7 @@ final class ArbitraryValue<T> implements Arbitrary<T> {
 				.filter((Predicate<T>)this.validateFilter(validOnly))
 				.sampleStream()
 				.map(Optional::ofNullable)
-				.map(it -> it.orElse(null));
+				.map(it -> it.orElse(null)); // due to Jqwik generation with shrinking
 		} finally {
 			this.arbitrary = null; // in order to getting new value whenever sampling, set arbitrary as null
 		}
