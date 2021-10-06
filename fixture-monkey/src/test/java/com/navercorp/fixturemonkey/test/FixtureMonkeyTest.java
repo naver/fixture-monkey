@@ -59,6 +59,7 @@ import lombok.NoArgsConstructor;
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.generator.BuilderArbitraryGenerator;
+import com.navercorp.fixturemonkey.test.ComplexManipulatorTest.ComplexClass;
 
 class FixtureMonkeyTest {
 	private final FixtureMonkey sut = FixtureMonkey.builder()
@@ -1454,6 +1455,34 @@ class FixtureMonkeyTest {
 				.validOnly(false)
 				.copy()
 				.sample());
+	}
+
+	@Property
+	void giveMeBuilderCachedReturnsDiff() {
+		// given
+		Arbitrary<ComplexClass> sut = this.sut.giveMeBuilder(ComplexClass.class)
+			.build();
+
+		// when
+		ComplexClass actual1 = sut.sample();
+		ComplexClass actual2 = sut.sample();
+
+		then(actual1).isNotEqualTo(actual2);
+	}
+
+	@Property
+	void giveMeBuilderFixedCachedReturnsDiff() {
+		// given
+		Arbitrary<ComplexClass> sut = this.sut.giveMeBuilder(ComplexClass.class)
+			.apply((it, builder) -> {
+			})
+			.build();
+
+		// when
+		ComplexClass actual1 = sut.sample();
+		ComplexClass actual2 = sut.sample();
+
+		then(actual1).isNotEqualTo(actual2);
 	}
 
 	@Data
