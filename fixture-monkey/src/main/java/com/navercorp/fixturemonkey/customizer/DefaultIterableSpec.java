@@ -217,7 +217,7 @@ final class DefaultIterableSpec implements IterableSpec, ExpressionSpecVisitor {
 	}
 
 	private long getRandomLimit() {
-		return Arbitraries.longs().between(this.minSize, this.maxSize).sample();
+		return Arbitraries.longs().between(this.minSize, this.maxSize).withoutEdgeCases().sample();
 	}
 
 	private static class IterableSpecSet<T> {

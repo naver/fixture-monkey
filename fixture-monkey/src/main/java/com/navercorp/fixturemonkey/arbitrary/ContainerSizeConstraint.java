@@ -54,6 +54,6 @@ public final class ContainerSizeConstraint {
 	}
 
 	public int getArbitraryElementSize() {
-		return Arbitraries.integers().between(getMinSize(), getMaxSize()).sample();
+		return Arbitraries.integers().between(getMinSize(), getMaxSize()).withoutEdgeCases().sample();
 	}
 }

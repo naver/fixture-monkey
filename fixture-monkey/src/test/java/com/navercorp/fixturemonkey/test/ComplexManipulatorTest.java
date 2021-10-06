@@ -846,7 +846,7 @@ public class ComplexManipulatorTest {
 
 		public ArbitraryBuilder<StringWrapperClass> string(FixtureMonkey fixture) {
 			return fixture.giveMeBuilder(StringWrapperClass.class)
-				.set("value", Arbitraries.strings().sample())
+				.set("value", Arbitraries.strings())
 				.apply((it, builder) -> builder.set("value", "set"));
 		}
 	}

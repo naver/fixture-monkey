@@ -38,7 +38,7 @@ public final class ArbitrarySpecAny implements BuilderManipulator {
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	@Override
 	public void accept(ArbitraryBuilder arbitraryBuilder) {
-		ExpressionSpec spec = Arbitraries.of(specs).sample();
+		ExpressionSpec spec = Arbitraries.of(specs).withoutEdgeCases().sample();
 		List<BuilderManipulator> specArbitraryManipulators = spec.getBuilderManipulators();
 		arbitraryBuilder.apply(specArbitraryManipulators);
 	}
