@@ -131,7 +131,15 @@ public final class ArbitraryTree<T> {
 		ArbitraryValidator validator,
 		boolean validOnly
 	) {
-		return new ArbitraryValue(generateArbitrary, validator, validOnly, new ConcurrentHashMap<>());
+		ArbitraryValue result = new ArbitraryValue(
+			generateArbitrary,
+			validator,
+			validOnly,
+			new ConcurrentHashMap<>()
+		);
+		head.setArbitrary(result);
+
+		return result;
 	}
 
 	@SuppressWarnings("unchecked")
