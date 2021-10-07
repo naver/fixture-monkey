@@ -28,11 +28,8 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 import net.jqwik.api.Arbitraries;
-import net.jqwik.api.Arbitrary;
 import net.jqwik.api.Example;
 import net.jqwik.api.Property;
-import net.jqwik.api.Shrinkable;
-import net.jqwik.engine.SourceOfRandomness;
 
 import lombok.Builder;
 import lombok.Data;
