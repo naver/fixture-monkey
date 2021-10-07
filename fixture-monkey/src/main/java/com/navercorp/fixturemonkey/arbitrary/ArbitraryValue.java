@@ -298,8 +298,8 @@ final class ArbitraryValue<T> implements Arbitrary<T> {
 	public synchronized Stream<T> sampleStream() {
 		try {
 			return getArbitrary()
-				.withoutEdgeCases()
 				.filter((Predicate<T>)this.validateFilter(validOnly))
+				.withoutEdgeCases()
 				.sampleStream()
 				.map(Optional::ofNullable)
 				.map(it -> it.orElse(null)); // due to Jqwik generation with shrinking
@@ -308,11 +308,10 @@ final class ArbitraryValue<T> implements Arbitrary<T> {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public synchronized T sample() {
 		try {
-			return (T)this.sampleStream()
+			return this.sampleStream()
 				.map(Optional::ofNullable)
 				.findFirst()
 				.orElseThrow(() -> new JqwikException("Cannot generate a value"))

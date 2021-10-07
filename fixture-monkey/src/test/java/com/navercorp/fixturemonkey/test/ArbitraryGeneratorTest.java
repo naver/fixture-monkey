@@ -28,7 +28,11 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 import net.jqwik.api.Arbitraries;
+import net.jqwik.api.Arbitrary;
+import net.jqwik.api.Example;
 import net.jqwik.api.Property;
+import net.jqwik.api.Shrinkable;
+import net.jqwik.engine.SourceOfRandomness;
 
 import lombok.Builder;
 import lombok.Data;
@@ -372,6 +376,15 @@ public class ArbitraryGeneratorTest {
 			.sample();
 
 		then(actual.value).isEqualTo(-2);
+	}
+
+	@Example
+	void test22() {
+		Arbitraries.strings().ascii()
+			.map(it -> it + "abc")
+			.withoutEdgeCases()
+			.map(it -> it + "abc")
+			.sample();
 	}
 
 	@Property
