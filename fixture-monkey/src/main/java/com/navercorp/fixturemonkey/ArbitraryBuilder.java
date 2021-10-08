@@ -173,10 +173,6 @@ public final class ArbitraryBuilder<T> {
 	}
 
 	public Arbitrary<T> build() {
-		if (!this.isDirty() && this.tree.getArbitrary() != null) { // not build if not changed
-			return this.tree.getArbitrary();
-		}
-
 		ArbitraryBuilder<T> buildArbitraryBuilder = this.copy();
 		return buildArbitraryBuilder.tree.result(() -> {
 			ArbitraryTree<T> buildTree = buildArbitraryBuilder.tree;
