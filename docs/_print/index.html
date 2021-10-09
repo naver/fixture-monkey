@@ -47,7 +47,7 @@
 <a class=nav-link href=/fixture-monkey/docs/v0.3.x/><span>Hello, Fixture Monkey</span></a>
 </li>
 <li class="nav-item mr-4 mb-2 mb-lg-0">
-<a class=nav-link href=/fixture-monkey/docs/release-notes><i class="fas fa-book-open"></i> <span>Release Notes</span></a>
+<a class=nav-link href=/fixture-monkey/docs/v0.3.x/release-notes><i class="fas fa-book-open"></i> <span>Release Notes</span></a>
 </li>
 <li class="nav-item mr-4 mb-2 mb-lg-0">
 <a class=nav-link href=https://github.com/naver/fixture-monkey target=_blank><i class="fab fa-github"></i> <span>Github</span></a>
@@ -172,12 +172,12 @@ Fixture Monkey is designed for test environment, not recommended for production 
 </ul>
 <h2 id=installation>Installation</h2>
 <h3 id=gradle>Gradle</h3>
-<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-groovy data-lang=groovy><span style=color:#000>testImplementation</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#4e9a06>&#34;com.navercorp.fixturemonkey:fixture-monkey:0.3.0&#34;</span><span style=color:#ce5c00;font-weight:700>)</span>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-groovy data-lang=groovy><span style=color:#000>testImplementation</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#4e9a06>&#34;com.navercorp.fixturemonkey:fixture-monkey-starter:0.3.1&#34;</span><span style=color:#ce5c00;font-weight:700>)</span>
 </code></pre></div><h3 id=maven>Maven</h3>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-xml data-lang=xml><span style=color:#204a87;font-weight:700>&lt;dependency&gt;</span>
   <span style=color:#204a87;font-weight:700>&lt;groupId&gt;</span>com.navercorp.fixturemonkey<span style=color:#204a87;font-weight:700>&lt;/groupId&gt;</span>
-  <span style=color:#204a87;font-weight:700>&lt;artifactId&gt;</span>fixture-monkey<span style=color:#204a87;font-weight:700>&lt;/artifactId&gt;</span>
-  <span style=color:#204a87;font-weight:700>&lt;version&gt;</span>0.3.0<span style=color:#204a87;font-weight:700>&lt;/version&gt;</span>
+  <span style=color:#204a87;font-weight:700>&lt;artifactId&gt;</span>fixture-monkey-starter<span style=color:#204a87;font-weight:700>&lt;/artifactId&gt;</span>
+  <span style=color:#204a87;font-weight:700>&lt;version&gt;</span>0.3.1<span style=color:#204a87;font-weight:700>&lt;/version&gt;</span>
   <span style=color:#204a87;font-weight:700>&lt;scope&gt;</span>test<span style=color:#204a87;font-weight:700>&lt;/scope&gt;</span>
 <span style=color:#204a87;font-weight:700>&lt;/dependency&gt;</span>
 </code></pre></div><h2 id=try-it-out>Try it out!</h2>
@@ -1691,13 +1691,19 @@ If Error occurs again, please create an issue.</p>
 </div>
 <div class=td-content style=page-break-before:always>
 <h1 id=pg-454342dc75587df96139a0db6d8c5bf9>1.6 - What's New</h1>
-<h2 id=whats-new-in-030>What&rsquo;s New in 0.3.0</h2>
-<ul>
-<li>release Fixture Monkey as an open source library</li>
-</ul>
+<h2 id=whats-new-in-031>What&rsquo;s New in 0.3.1</h2>
+<p>Add Fixture Monkey Starter module</p>
 </div>
 <div class=td-content style=page-break-before:always>
 <h1 id=pg-31ee74bcd7d060d22077c4e1740e3537>1.7 - Release Notes</h1>
+<h3 id=031>0.3.1</h3>
+<ul>
+<li>Add Fixture Monkey Starter module</li>
+<li>Fix ArbitraryBuilder generated Arbitrary not validated by validator</li>
+<li>Fix not copy valid only</li>
+<li>Remove useless testing validator debug log</li>
+</ul>
+<p>check out details here in <a href="https://github.com/naver/fixture-monkey/pulls?q=is%3Apr+is%3Aclosed+milestone%3A0.3.1">Milestone</a></p>
 <h3 id=030>0.3.0</h3>
 <p>The first release published on maven central.</p>
 </div>
