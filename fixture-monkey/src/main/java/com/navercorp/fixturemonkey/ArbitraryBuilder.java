@@ -40,10 +40,14 @@ import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
 
+import org.apiguardian.api.API;
+import org.apiguardian.api.API.Status;
+
 import net.jqwik.api.Arbitrary;
 import net.jqwik.api.Combinators.F3;
 import net.jqwik.api.Combinators.F4;
 
+import com.navercorp.fixturemonkey.api.expression.ExpressionGenerator;
 import com.navercorp.fixturemonkey.arbitrary.AbstractArbitrarySet;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryExpression;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryNode;
@@ -243,10 +247,20 @@ public final class ArbitraryBuilder<T> {
 		return this;
 	}
 
+	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+	public ArbitraryBuilder<T> set(ExpressionGenerator expressionGenerator, @Nullable Object value) {
+		return this.set(expressionGenerator.generate(), value);
+	}
+
 	public ArbitraryBuilder<T> set(String expression, Object value, long limit) {
 		ArbitraryExpression arbitraryExpression = ArbitraryExpression.from(expression);
 		this.builderManipulators.add(new ArbitrarySet<>(arbitraryExpression, value, limit));
 		return this;
+	}
+
+	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+	public ArbitraryBuilder<T> set(ExpressionGenerator expressionGenerator, Object value, long limit) {
+		return this.set(expressionGenerator.generate(), value, limit);
 	}
 
 	public ArbitraryBuilder<T> set(String expression, @Nullable Arbitrary<?> value) {
@@ -256,6 +270,11 @@ public final class ArbitraryBuilder<T> {
 		ArbitraryExpression arbitraryExpression = ArbitraryExpression.from(expression);
 		this.builderManipulators.add(new ArbitrarySetArbitrary<>(arbitraryExpression, value));
 		return this;
+	}
+
+	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+	public ArbitraryBuilder<T> set(ExpressionGenerator expressionGenerator, @Nullable Arbitrary<?> value) {
+		return this.set(expressionGenerator.generate(), value);
 	}
 
 	public ArbitraryBuilder<T> set(@Nullable Object value) {
@@ -268,10 +287,24 @@ public final class ArbitraryBuilder<T> {
 		return this;
 	}
 
+	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+	public ArbitraryBuilder<T> setBuilder(ExpressionGenerator expressionGenerator, ArbitraryBuilder<?> builder) {
+		return this.setBuilder(expressionGenerator.generate(), builder);
+	}
+
 	public ArbitraryBuilder<T> setBuilder(String expression, ArbitraryBuilder<?> builder, long limit) {
 		ArbitraryExpression arbitraryExpression = ArbitraryExpression.from(expression);
 		this.builderManipulators.add(new ArbitrarySetArbitrary<>(arbitraryExpression, builder.build(), limit));
 		return this;
+	}
+
+	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+	public ArbitraryBuilder<T> setBuilder(
+		ExpressionGenerator expressionGenerator,
+		ArbitraryBuilder<?> builder,
+		long limit
+	) {
+		return this.setBuilder(expressionGenerator.generate(), builder, limit);
 	}
 
 	public ArbitraryBuilder<T> setNull(String expression) {
@@ -280,10 +313,20 @@ public final class ArbitraryBuilder<T> {
 		return this;
 	}
 
+	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+	public ArbitraryBuilder<T> setNull(ExpressionGenerator expressionGenerator) {
+		return this.setNull(expressionGenerator.generate());
+	}
+
 	public ArbitraryBuilder<T> setNotNull(String expression) {
 		ArbitraryExpression arbitraryExpression = ArbitraryExpression.from(expression);
 		this.builderManipulators.add(new ArbitraryNullity(arbitraryExpression, false));
 		return this;
+	}
+
+	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+	public ArbitraryBuilder<T> setNotNull(ExpressionGenerator expressionGenerator) {
+		return this.setNotNull(expressionGenerator.generate());
 	}
 
 	public ArbitraryBuilder<T> setPostCondition(Predicate<T> filter) {
@@ -298,6 +341,15 @@ public final class ArbitraryBuilder<T> {
 		return this;
 	}
 
+	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+	public <U> ArbitraryBuilder<T> setPostCondition(
+		ExpressionGenerator expressionGenerator,
+		Class<U> clazz,
+		Predicate<U> filter
+	) {
+		return this.setPostCondition(expressionGenerator.generate(), clazz, filter);
+	}
+
 	public <U> ArbitraryBuilder<T> setPostCondition(
 		String expression,
 		Class<U> clazz,
@@ -309,16 +361,36 @@ public final class ArbitraryBuilder<T> {
 		return this;
 	}
 
+	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+	public <U> ArbitraryBuilder<T> setPostCondition(
+		ExpressionGenerator expressionGenerator,
+		Class<U> clazz,
+		Predicate<U> filter,
+		long limit
+	) {
+		return this.setPostCondition(expressionGenerator.generate(), clazz, filter, limit);
+	}
+
 	public ArbitraryBuilder<T> size(String expression, int size) {
 		ArbitraryExpression arbitraryExpression = ArbitraryExpression.from(expression);
 		builderManipulators.add(new ContainerSizeManipulator(arbitraryExpression, size, size));
 		return this;
 	}
 
+	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+	public <U> ArbitraryBuilder<T> size(ExpressionGenerator expressionGenerator, int size) {
+		return this.size(expressionGenerator.generate(), size);
+	}
+
 	public ArbitraryBuilder<T> size(String expression, int min, int max) {
 		ArbitraryExpression arbitraryExpression = ArbitraryExpression.from(expression);
 		builderManipulators.add(new ContainerSizeManipulator(arbitraryExpression, min, max));
 		return this;
+	}
+
+	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+	public <U> ArbitraryBuilder<T> size(ExpressionGenerator expressionGenerator, int min, int max) {
+		return this.size(expressionGenerator.generate(), min, max);
 	}
 
 	public ArbitraryBuilder<T> minSize(String expression, int min) {
@@ -329,10 +401,20 @@ public final class ArbitraryBuilder<T> {
 		return this;
 	}
 
+	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+	public <U> ArbitraryBuilder<T> minSize(ExpressionGenerator expressionGenerator, int min) {
+		return this.minSize(expressionGenerator.generate(), min);
+	}
+
 	public ArbitraryBuilder<T> maxSize(String expression, int max) {
 		ArbitraryExpression arbitraryExpression = ArbitraryExpression.from(expression);
 		builderManipulators.add(new ContainerSizeManipulator(arbitraryExpression, null, max));
 		return this;
+	}
+
+	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+	public <U> ArbitraryBuilder<T> maxSize(ExpressionGenerator expressionGenerator, int max) {
+		return this.maxSize(expressionGenerator.generate(), max);
 	}
 
 	public ArbitraryBuilder<T> customize(Class<T> type, ArbitraryCustomizer<T> customizer) {

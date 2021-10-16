@@ -223,6 +223,19 @@ public class SimpleManipulatorTest {
 	}
 
 	@Property
+	void giveMeObjectToBuilderSetWithExpressionGenerator() {
+		// given
+		IntegerWrapperClass expected = this.sut.giveMeOne(IntegerWrapperClass.class);
+
+		// when
+		IntegerWrapperClass actual = this.sut.giveMeBuilder(expected)
+			.set(() -> "value", 1)
+			.sample();
+
+		then(actual.value).isEqualTo(1);
+	}
+
+	@Property
 	void giveMeObjectToBuilderSetIndex() {
 		// given
 		IntegerListWrapperClass expected = this.sut.giveMeBuilder(IntegerListWrapperClass.class)
@@ -287,11 +300,32 @@ public class SimpleManipulatorTest {
 	}
 
 	@Property
+	void giveMeListExactSizeWithExpressionGenerator() {
+		// when
+		StringListWrapperClass actual = this.sut.giveMeBuilder(StringListWrapperClass.class)
+			.size(() -> "values", 3)
+			.sample();
+
+		then(actual.values.size()).isEqualTo(3);
+	}
+
+	@Property
 	void giveMeSizeMap() {
 		// when
 		MapKeyIntegerValueIntegerWrapperClass actual =
 			this.sut.giveMeBuilder(MapKeyIntegerValueIntegerWrapperClass.class)
 				.size("values", 2, 2)
+				.sample();
+
+		then(actual.values).hasSize(2);
+	}
+
+	@Property
+	void giveMeSizeMapWithExpressionGenerator() {
+		// when
+		MapKeyIntegerValueIntegerWrapperClass actual =
+			this.sut.giveMeBuilder(MapKeyIntegerValueIntegerWrapperClass.class)
+				.size(() -> "values", 2, 2)
 				.sample();
 
 		then(actual.values).hasSize(2);
@@ -406,10 +440,30 @@ public class SimpleManipulatorTest {
 	}
 
 	@Property
+	void giveMeMinSizeWithExpressionGenerator() {
+		// when
+		IntegerListWrapperClass actual = this.sut.giveMeBuilder(IntegerListWrapperClass.class)
+			.minSize(() -> "values", 2)
+			.sample();
+
+		then(actual.values.size()).isGreaterThanOrEqualTo(2);
+	}
+
+	@Property
 	void giveMeMaxSize() {
 		// when
 		IntegerListWrapperClass actual = this.sut.giveMeBuilder(IntegerListWrapperClass.class)
 			.maxSize("values", 10)
+			.sample();
+
+		then(actual.values.size()).isLessThanOrEqualTo(10);
+	}
+
+	@Property
+	void giveMeMaxSizeWithExpressionGenerator() {
+		// when
+		IntegerListWrapperClass actual = this.sut.giveMeBuilder(IntegerListWrapperClass.class)
+			.maxSize(() -> "values", 10)
 			.sample();
 
 		then(actual.values.size()).isLessThanOrEqualTo(10);
@@ -474,6 +528,18 @@ public class SimpleManipulatorTest {
 			.size("values", 2, 2)
 			.setPostCondition("values[*]", String.class, it -> it.length() > 0)
 			.setPostCondition("values[*]", String.class, it -> it.length() > 5, 1)
+			.sample();
+
+		then(actual.values).anyMatch(it -> it.length() > 5);
+	}
+
+	@Property
+	void giveMePostConditionLimitIndexWithExpressionGenerator() {
+		// when
+		StringListWrapperClass actual = this.sut.giveMeBuilder(StringListWrapperClass.class)
+			.size("values", 2, 2)
+			.setPostCondition(() -> "values[*]", String.class, it -> it.length() > 0)
+			.setPostCondition(() -> "values[*]", String.class, it -> it.length() > 5, 1)
 			.sample();
 
 		then(actual.values).anyMatch(it -> it.length() > 5);
@@ -659,6 +725,16 @@ public class SimpleManipulatorTest {
 	}
 
 	@Property
+	void giveMeSetArbitraryBuilderWithExpressionGenerator() {
+		// when
+		StringWrapperIntegerWrapperClass actual = this.sut.giveMeBuilder(StringWrapperIntegerWrapperClass.class)
+			.setBuilder(() -> "value2", this.sut.giveMeBuilder(IntegerWrapperClass.class).set("value", 1))
+			.sample();
+
+		then(actual.value2.value).isEqualTo(1);
+	}
+
+	@Property
 	void giveMeSpecSetArbitraryBuilder() {
 		// when
 		StringWrapperIntegerWrapperClass actual = this.sut.giveMeBuilder(StringWrapperIntegerWrapperClass.class)
@@ -684,6 +760,19 @@ public class SimpleManipulatorTest {
 	}
 
 	@Property
+	void giveMeDecomposeNullSetNotNullReturnsNewValueWithExpressionGenerator() {
+		// given
+		StringWrapperClass decomposed = new StringWrapperClass();
+
+		// when
+		StringWrapperClass actual = this.sut.giveMeBuilder(decomposed)
+			.setNotNull(() -> "value")
+			.sample();
+
+		then(actual.value).isNotNull();
+	}
+
+	@Property
 	void giveMeDecomposeNullSetNullReturnsNull() {
 		// given
 		StringWrapperClass decomposed = new StringWrapperClass();
@@ -691,6 +780,19 @@ public class SimpleManipulatorTest {
 		// when
 		StringWrapperClass actual = this.sut.giveMeBuilder(decomposed)
 			.setNull("value")
+			.sample();
+
+		then(actual.value).isNull();
+	}
+
+	@Property
+	void giveMeDecomposeNullSetNullReturnsNullWithExpressionGenerator() {
+		// given
+		StringWrapperClass decomposed = new StringWrapperClass();
+
+		// when
+		StringWrapperClass actual = this.sut.giveMeBuilder(decomposed)
+			.setNull(() -> "value")
 			.sample();
 
 		then(actual.value).isNull();
