@@ -16,13 +16,13 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.api.expression;
+package com.navercorp.fixturemonkey.api.property;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 @FunctionalInterface
-public interface ExpressionGenerator {
-	String generate();
+public interface PropertyNameResolver {
+	String resolve(Property property);
 }

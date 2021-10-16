@@ -8,7 +8,11 @@ plugins {
 }
 
 dependencies {
-    api("org.apiguardian:apiguardian-api:1.1.0")
+    api("org.apiguardian:apiguardian-api:1.1.2")
+
+    testImplementation("org.junit.jupiter:junit-jupiter-engine:${JUNIT_JUPITER_VERSION}")
+    testImplementation("org.junit.platform:junit-platform-engine:${JUNIT_ENGINE_VERSION}")
+    testImplementation("org.assertj:assertj-core:3.18.1")
 }
 
 editorconfig {
