@@ -22,6 +22,7 @@ import static java.util.stream.Collectors.toList;
 
 import java.beans.ConstructorProperties;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,10 +35,13 @@ import org.junit.platform.commons.util.ReflectionUtils;
 import net.jqwik.api.Arbitrary;
 import net.jqwik.api.Combinators;
 
+import com.navercorp.fixturemonkey.api.property.FieldProperty;
+import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryNode;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryType;
 import com.navercorp.fixturemonkey.customizer.ArbitraryCustomizers;
 import com.navercorp.fixturemonkey.customizer.WithFixtureCustomizer;
+import com.navercorp.fixturemonkey.property.DefaultPropertyNameResolver;
 
 public final class ConstructorPropertiesArbitraryGenerator extends AbstractArbitraryGenerator
 	implements WithFixtureCustomizer {
@@ -45,6 +49,8 @@ public final class ConstructorPropertiesArbitraryGenerator extends AbstractArbit
 		new ConstructorPropertiesArbitraryGenerator();
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 	private final ArbitraryCustomizers arbitraryCustomizers;
+
+	private final PropertyNameResolver propertyNameResolver = new DefaultPropertyNameResolver();
 
 	public ConstructorPropertiesArbitraryGenerator() {
 		this(new ArbitraryCustomizers());
@@ -105,6 +111,11 @@ public final class ConstructorPropertiesArbitraryGenerator extends AbstractArbit
 			T fixture = ReflectionUtils.newInstance(constructor, list.toArray());
 			return this.arbitraryCustomizers.customizeFixture(clazz, fixture);
 		});
+	}
+
+	@Override
+	public String resolveFieldName(Field field) {
+		return this.propertyNameResolver.resolve(new FieldProperty(field));
 	}
 
 	@Override

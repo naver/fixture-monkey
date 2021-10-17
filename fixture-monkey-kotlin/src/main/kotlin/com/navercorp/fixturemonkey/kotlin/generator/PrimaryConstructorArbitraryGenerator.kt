@@ -18,6 +18,8 @@
 
 package com.navercorp.fixturemonkey.kotlin.generator
 
+import com.navercorp.fixturemonkey.api.property.FieldProperty
+import com.navercorp.fixturemonkey.api.property.PropertyNameResolver
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryNode
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryType
 import com.navercorp.fixturemonkey.customizer.ArbitraryCustomizers
@@ -26,8 +28,10 @@ import com.navercorp.fixturemonkey.generator.AbstractArbitraryGenerator
 import com.navercorp.fixturemonkey.generator.ArbitraryGenerator
 import com.navercorp.fixturemonkey.generator.FieldArbitraries
 import com.navercorp.fixturemonkey.kotlin.customizer.customizeFields
+import com.navercorp.fixturemonkey.property.DefaultPropertyNameResolver
 import net.jqwik.api.Arbitrary
 import net.jqwik.api.Combinators
+import java.lang.reflect.Field
 import kotlin.jvm.internal.Reflection
 import kotlin.reflect.KClass
 import kotlin.reflect.KParameter
@@ -40,6 +44,8 @@ class PrimaryConstructorArbitraryGenerator(
     companion object {
         val INSTANCE = PrimaryConstructorArbitraryGenerator()
     }
+
+    private val propertyNameResolver: PropertyNameResolver = DefaultPropertyNameResolver()
 
     override fun <T : Any> generateObject(
         arbitraryType: ArbitraryType<*>,
@@ -71,6 +77,10 @@ class PrimaryConstructorArbitraryGenerator(
                 arbitraryCustomizers.customizeFixture(clazz.java, it)
             }
         }
+    }
+
+    override fun resolveFieldName(field: Field?): String? {
+        return this.propertyNameResolver.resolve(FieldProperty(field))
     }
 
     override fun withFixtureCustomizers(arbitraryCustomizers: ArbitraryCustomizers): ArbitraryGenerator {

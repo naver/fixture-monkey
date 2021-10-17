@@ -16,15 +16,22 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.generator;
+package com.navercorp.fixturemonkey.jackson.property;
 
-import java.lang.reflect.Field;
+import org.apiguardian.api.API;
+import org.apiguardian.api.API.Status;
 
-/**
- * Deprecated Use PropertyNameResolver instead.
- */
-@Deprecated
-@FunctionalInterface
-public interface FieldNameResolver {
-	String resolveFieldName(Field field);
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import com.navercorp.fixturemonkey.api.property.Property;
+import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
+
+@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+public final class JacksonPropertyNameResolver implements PropertyNameResolver {
+	@Override
+	public String resolve(Property property) {
+		return property.getAnnotation(JsonProperty.class)
+			.map(JsonProperty::value)
+			.orElseGet(property::getName);
+	}
 }

@@ -33,10 +33,13 @@ import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
 import net.jqwik.api.Combinators;
 
+import com.navercorp.fixturemonkey.api.property.FieldProperty;
+import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryNode;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryType;
 import com.navercorp.fixturemonkey.customizer.ArbitraryCustomizers;
 import com.navercorp.fixturemonkey.customizer.WithFixtureCustomizer;
+import com.navercorp.fixturemonkey.property.DefaultPropertyNameResolver;
 
 public final class FieldReflectionArbitraryGenerator extends AbstractArbitraryGenerator
 	implements WithFixtureCustomizer {
@@ -44,6 +47,8 @@ public final class FieldReflectionArbitraryGenerator extends AbstractArbitraryGe
 	private static final Map<String, Field> TYPE_FIELD_CACHE = new ConcurrentHashMap<>();
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 	private final ArbitraryCustomizers arbitraryCustomizers;
+
+	private final PropertyNameResolver propertyNameResolver = new DefaultPropertyNameResolver();
 
 	public FieldReflectionArbitraryGenerator() {
 		this(new ArbitraryCustomizers());
@@ -103,6 +108,11 @@ public final class FieldReflectionArbitraryGenerator extends AbstractArbitraryGe
 		}
 
 		return builderCombinator.build(b -> this.arbitraryCustomizers.customizeFixture(clazz, (T)b));
+	}
+
+	@Override
+	public String resolveFieldName(Field field) {
+		return this.propertyNameResolver.resolve(new FieldProperty(field));
 	}
 
 	@Override

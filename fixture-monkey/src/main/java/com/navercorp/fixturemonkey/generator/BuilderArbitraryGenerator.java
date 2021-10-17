@@ -18,6 +18,7 @@
 
 package com.navercorp.fixturemonkey.generator;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
@@ -29,9 +30,12 @@ import org.junit.platform.commons.util.ReflectionUtils;
 import net.jqwik.api.Arbitrary;
 import net.jqwik.api.Combinators;
 
+import com.navercorp.fixturemonkey.api.property.FieldProperty;
+import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryNode;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryType;
 import com.navercorp.fixturemonkey.customizer.ArbitraryCustomizers;
+import com.navercorp.fixturemonkey.property.DefaultPropertyNameResolver;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
 public final class BuilderArbitraryGenerator extends AbstractArbitraryGenerator {
@@ -46,6 +50,8 @@ public final class BuilderArbitraryGenerator extends AbstractArbitraryGenerator 
 	private String defaultBuilderMethodName = "builder";
 	private final Map<Class<?>, String> typedBuilderMethodName = new ConcurrentHashMap<>();
 	private final Map<Class<?>, String> typedBuildMethodName = new ConcurrentHashMap<>();
+
+	private final PropertyNameResolver propertyNameResolver = new DefaultPropertyNameResolver();
 
 	public BuilderArbitraryGenerator() {
 		this(new ArbitraryCustomizers());
@@ -171,6 +177,11 @@ public final class BuilderArbitraryGenerator extends AbstractArbitraryGenerator 
 	public void setBuildMethodName(Class<?> type, String buildMethodName) {
 		this.typedBuildMethodName.put(type, buildMethodName);
 		clearMethodCache();
+	}
+
+	@Override
+	public String resolveFieldName(Field field) {
+		return this.propertyNameResolver.resolve(new FieldProperty(field));
 	}
 
 	@Override

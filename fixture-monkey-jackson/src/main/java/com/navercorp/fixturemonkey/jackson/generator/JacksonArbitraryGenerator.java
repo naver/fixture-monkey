@@ -36,6 +36,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import com.navercorp.fixturemonkey.api.property.FieldProperty;
+import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryNode;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryType;
 import com.navercorp.fixturemonkey.customizer.ArbitraryCustomizers;
@@ -43,6 +45,7 @@ import com.navercorp.fixturemonkey.generator.AbstractArbitraryGenerator;
 import com.navercorp.fixturemonkey.generator.ArbitraryGenerator;
 import com.navercorp.fixturemonkey.generator.FieldArbitraries;
 import com.navercorp.fixturemonkey.jackson.FixtureMonkeyJackson;
+import com.navercorp.fixturemonkey.jackson.property.JacksonPropertyNameResolver;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
 public final class JacksonArbitraryGenerator extends AbstractArbitraryGenerator {
@@ -50,6 +53,8 @@ public final class JacksonArbitraryGenerator extends AbstractArbitraryGenerator 
 
 	private final ObjectMapper objectMapper;
 	private final ArbitraryCustomizers arbitraryCustomizers;
+
+	private final PropertyNameResolver propertyNameResolver = new JacksonPropertyNameResolver();
 
 	public JacksonArbitraryGenerator() {
 		this(FixtureMonkeyJackson.defaultObjectMapper(), new ArbitraryCustomizers());
@@ -134,12 +139,7 @@ public final class JacksonArbitraryGenerator extends AbstractArbitraryGenerator 
 
 	@Override
 	public String resolveFieldName(Field field) {
-		JsonProperty jsonProperty = field.getAnnotation(JsonProperty.class);
-		if (jsonProperty == null) {
-			return field.getName();
-		} else {
-			return jsonProperty.value();
-		}
+		return this.propertyNameResolver.resolve(new FieldProperty(field));
 	}
 }
 
