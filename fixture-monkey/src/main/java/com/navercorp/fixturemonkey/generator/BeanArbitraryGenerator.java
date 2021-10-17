@@ -21,6 +21,7 @@ package com.navercorp.fixturemonkey.generator;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -35,16 +36,21 @@ import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
 import net.jqwik.api.Combinators;
 
+import com.navercorp.fixturemonkey.api.property.FieldProperty;
+import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryNode;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryType;
 import com.navercorp.fixturemonkey.customizer.ArbitraryCustomizers;
 import com.navercorp.fixturemonkey.customizer.WithFixtureCustomizer;
+import com.navercorp.fixturemonkey.property.DefaultPropertyNameResolver;
 
 public final class BeanArbitraryGenerator extends AbstractArbitraryGenerator
 	implements WithFixtureCustomizer {
 	public static final BeanArbitraryGenerator INSTANCE = new BeanArbitraryGenerator();
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 	private final ArbitraryCustomizers arbitraryCustomizers;
+
+	private final PropertyNameResolver propertyNameResolver = new DefaultPropertyNameResolver();
 
 	public BeanArbitraryGenerator() {
 		this(new ArbitraryCustomizers());
@@ -92,6 +98,11 @@ public final class BeanArbitraryGenerator extends AbstractArbitraryGenerator
 		}
 
 		return builderCombinator.build(b -> this.arbitraryCustomizers.customizeFixture(clazz, (T)b));
+	}
+
+	@Override
+	public String resolveFieldName(Field field) {
+		return this.propertyNameResolver.resolve(new FieldProperty(field));
 	}
 
 	@Override
