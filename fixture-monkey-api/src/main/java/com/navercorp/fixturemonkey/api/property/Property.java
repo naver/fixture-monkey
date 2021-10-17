@@ -16,13 +16,33 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.api.expression;
+package com.navercorp.fixturemonkey.api.property;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedType;
+import java.util.List;
+import java.util.Optional;
+
+import javax.annotation.Nullable;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-@FunctionalInterface
-public interface ExpressionGenerator {
-	String generate();
+public interface Property {
+	AnnotatedType getAnnotatedType();
+
+	String getName();
+
+	List<Annotation> getAnnotations();
+
+	default <T extends Annotation> Optional<T> getAnnotation(Class<T> annotationClass) {
+		return this.getAnnotations().stream()
+			.filter(it -> it.annotationType() == annotationClass)
+			.map(annotationClass::cast)
+			.findFirst();
+	}
+
+	@Nullable
+	Object getValue(Object obj);
 }
