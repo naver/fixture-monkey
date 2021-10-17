@@ -40,7 +40,7 @@ class FixtureMonkeyJacksonArbitraryGeneratorTest {
 	@Property
 	void giveMeJsonPropertySet() {
 		// when
-		JsonPropertyClass actual = this.sut.giveMeBuilder(JsonPropertyClass.class)
+		JsonPropertyClass actual = sut.giveMeBuilder(JsonPropertyClass.class)
 			.set("jsonValue", "set")
 			.sample();
 
@@ -65,7 +65,7 @@ class FixtureMonkeyJacksonArbitraryGeneratorTest {
 	@Property
 	void giveMeJsonPropertySetGenerator() {
 		// when
-		JsonPropertyClass actual = this.sut.giveMeBuilder(JsonPropertyClass.class)
+		JsonPropertyClass actual = sut.giveMeBuilder(JsonPropertyClass.class)
 			.generator(BeanArbitraryGenerator.INSTANCE)
 			.set("jsonValue", "set")
 			.sample();
@@ -76,7 +76,7 @@ class FixtureMonkeyJacksonArbitraryGeneratorTest {
 	@Property
 	void giveMeJsonPropertySetGeneratorToJackson() {
 		// when
-		JsonPropertyClass actual = this.sut.giveMeBuilder(JsonPropertyClass.class)
+		JsonPropertyClass actual = sut.giveMeBuilder(JsonPropertyClass.class)
 			.generator(BeanArbitraryGenerator.INSTANCE)
 			.generator(JacksonArbitraryGenerator.INSTANCE)
 			.set("jsonValue", "set")
@@ -92,7 +92,7 @@ class FixtureMonkeyJacksonArbitraryGeneratorTest {
 		jsonPropertyClass.setValue("jsonValue");
 
 		// when
-		JsonPropertyClass actual = this.sut.giveMeBuilder(jsonPropertyClass)
+		JsonPropertyClass actual = sut.giveMeBuilder(jsonPropertyClass)
 			.generator(BeanArbitraryGenerator.INSTANCE)
 			.set("jsonValue", "set")
 			.sample();
@@ -107,7 +107,7 @@ class FixtureMonkeyJacksonArbitraryGeneratorTest {
 		jsonPropertyClass.setValue("jsonValue");
 
 		// when
-		JsonPropertyClass actual = this.sut.giveMeBuilder(jsonPropertyClass)
+		JsonPropertyClass actual = sut.giveMeBuilder(jsonPropertyClass)
 			.generator(BeanArbitraryGenerator.INSTANCE)
 			.set("value", "set")
 			.sample();
@@ -118,7 +118,7 @@ class FixtureMonkeyJacksonArbitraryGeneratorTest {
 	@Property
 	void giveMeJsonNodeReturnsNull() {
 		// when
-		JsonNodeWrapperClass actual = this.sut.giveMeOne(JsonNodeWrapperClass.class);
+		JsonNodeWrapperClass actual = sut.giveMeOne(JsonNodeWrapperClass.class);
 
 		then(actual.getValue().isNull()).isTrue();
 	}
