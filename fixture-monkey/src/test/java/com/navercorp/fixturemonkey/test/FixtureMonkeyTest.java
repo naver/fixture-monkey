@@ -196,6 +196,56 @@ class FixtureMonkeyTest {
 		then(actual.values.next()).isEqualTo(1);
 	}
 
+	@Example
+	void giveMeIteratorToBuilderCursorNotChanged() {
+		// given
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.defaultGenerator(BuilderArbitraryGenerator.INSTANCE)
+			.build();
+		IntegerIteratorWrapperClass expected = sut.giveMeBuilder(IntegerIteratorWrapperClass.class)
+			.size("values", 3)
+			.set("values[0]", 1)
+			.set("values[1]", 2)
+			.set("values[2]", 3)
+			.sample();
+
+		// when
+		IntegerIteratorWrapperClass actual = sut.giveMeBuilder(expected).sample();
+
+		then(actual.values.next()).isEqualTo(1);
+		then(actual.values.next()).isEqualTo(2);
+		then(actual.values.next()).isEqualTo(3);
+
+		then(expected.values.next()).isEqualTo(1);
+		then(expected.values.next()).isEqualTo(2);
+		then(expected.values.next()).isEqualTo(3);
+	}
+
+	@Example
+	void giveMeListIteratorToBuilderCursorMovedNotChanged() {
+		// given
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.defaultGenerator(BuilderArbitraryGenerator.INSTANCE)
+			.build();
+		IntegerIteratorWrapperClass expected = sut.giveMeBuilder(IntegerIteratorWrapperClass.class)
+			.size("values", 3)
+			.set("values[0]", 1)
+			.set("values[1]", 2)
+			.set("values[2]", 3)
+			.sample();
+		expected.values.next();
+
+		// when
+		IntegerIteratorWrapperClass actual = sut.giveMeBuilder(expected).sample();
+
+		then(actual.values.next()).isEqualTo(1);
+		then(actual.values.next()).isEqualTo(2);
+		then(actual.values.next()).isEqualTo(3);
+
+		then(expected.values.next()).isEqualTo(2);
+		then(expected.values.next()).isEqualTo(3);
+	}
+
 	@Property
 	void giveMeStreamToBuilder() {
 		// given
