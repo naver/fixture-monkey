@@ -76,7 +76,7 @@ public final class JacksonArbitraryGenerator extends AbstractArbitraryGenerator 
 	@Override
 	protected <T> Arbitrary<T> generateObject(ArbitraryType type, List<ArbitraryNode> nodes) {
 		FieldArbitraries fieldArbitraries = new FieldArbitraries(
-			toArbitrariesByFieldName(nodes, ArbitraryNode::getFieldName, this::formatValue)
+			toArbitrariesByFieldName(nodes, ArbitraryNode::getPropertyName, this::formatValue)
 		);
 
 		this.arbitraryCustomizers.customizeFields(type.getType(), fieldArbitraries);

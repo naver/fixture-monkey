@@ -70,7 +70,7 @@ public final class BuilderArbitraryGenerator extends AbstractArbitraryGenerator 
 	@Override
 	public <T> Arbitrary<T> generateObject(ArbitraryType type, List<ArbitraryNode> nodes) {
 		Map<String, Arbitrary> arbitraryMap =
-			toArbitrariesByFieldName(nodes, ArbitraryNode::getFieldName, (node, arbitrary) -> arbitrary);
+			toArbitrariesByFieldName(nodes, ArbitraryNode::getPropertyName, (node, arbitrary) -> arbitrary);
 
 		Class<T> clazz = type.getType();
 

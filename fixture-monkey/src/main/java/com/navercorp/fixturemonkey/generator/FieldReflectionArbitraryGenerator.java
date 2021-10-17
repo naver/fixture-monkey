@@ -67,7 +67,7 @@ public final class FieldReflectionArbitraryGenerator extends AbstractArbitraryGe
 		}
 
 		FieldArbitraries fieldArbitraries = new FieldArbitraries(
-			toArbitrariesByFieldName(nodes, ArbitraryNode::getFieldName, (node, arbitrary) -> arbitrary)
+			toArbitrariesByFieldName(nodes, ArbitraryNode::getPropertyName, (node, arbitrary) -> arbitrary)
 		);
 
 		this.arbitraryCustomizers.customizeFields(clazz, fieldArbitraries);

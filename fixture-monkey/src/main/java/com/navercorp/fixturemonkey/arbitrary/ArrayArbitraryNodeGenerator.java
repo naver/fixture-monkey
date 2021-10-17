@@ -40,7 +40,7 @@ public class ArrayArbitraryNodeGenerator implements ContainerArbitraryNodeGenera
 
 		ArbitraryType<T> clazz = nowNode.getType();
 		ArbitraryType<?> childType = clazz.getArrayArbitraryType();
-		String fieldName = nowNode.getFieldName();
+		String propertyName = nowNode.getPropertyName();
 		LazyValue<T> lazyValue = nowNode.getValue();
 
 		List<ArbitraryNode<?>> generatedNodeList = new ArrayList<>();
@@ -64,7 +64,7 @@ public class ArrayArbitraryNodeGenerator implements ContainerArbitraryNodeGenera
 				Object nextValue = Array.get(value, currentIndex);
 				ArbitraryNode<?> nextNode = ArbitraryNode.builder()
 					.type(childType)
-					.fieldName(fieldName)
+					.propertyName(propertyName)
 					.indexOfIterable(currentIndex)
 					.value(nextValue)
 					.build();
@@ -87,7 +87,7 @@ public class ArrayArbitraryNodeGenerator implements ContainerArbitraryNodeGenera
 		for (int i = currentIndex; i < elementSize; i++) {
 			ArbitraryNode<?> genericFrame = ArbitraryNode.builder()
 				.type(childType)
-				.fieldName(fieldName)
+				.propertyName(propertyName)
 				.indexOfIterable(i)
 				.nullable(false)
 				.nullInject(0.f)

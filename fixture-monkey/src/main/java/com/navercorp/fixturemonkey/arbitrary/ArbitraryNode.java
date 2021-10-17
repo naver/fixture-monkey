@@ -42,7 +42,7 @@ public final class ArbitraryNode<T> {
 	@SuppressWarnings("rawtypes")
 	private final List<ArbitraryNode> children;
 	private final ArbitraryType<T> type;
-	private final String fieldName;
+	private final String propertyName;
 	private final String metadata;
 	private final int indexOfIterable;
 	private final FixtureNodeStatus<T> status;
@@ -54,7 +54,7 @@ public final class ArbitraryNode<T> {
 	public ArbitraryNode(
 		List<ArbitraryNode> children,
 		ArbitraryType<T> type,
-		String fieldName,
+		String propertyName,
 		String metadata,
 		int indexOfIterable,
 		FixtureNodeStatus<T> status,
@@ -64,7 +64,7 @@ public final class ArbitraryNode<T> {
 		this.children = new ArrayList<>();
 		children.forEach(this::addChildNode);
 		this.type = type;
-		this.fieldName = fieldName;
+		this.propertyName = propertyName;
 		this.metadata = metadata;
 		this.indexOfIterable = indexOfIterable;
 		this.status = status.copy();
@@ -139,8 +139,8 @@ public final class ArbitraryNode<T> {
 					&& !clazz.isAssignableFrom(toValueClazz)
 					&& !Arbitrary.class.isAssignableFrom(toValueClazz)
 			) {
-				log.warn("field \"{}\" type is \"{}\", but given set value is \"{}\".",
-					fieldName,
+				log.warn("property \"{}\" type is \"{}\", but given set value is \"{}\".",
+					propertyName,
 					clazz.getSimpleName(),
 					toValueClazz.getSimpleName()
 				);
@@ -242,8 +242,17 @@ public final class ArbitraryNode<T> {
 		return indexOfIterable;
 	}
 
+	/**
+	 * Deprecated Use getPropertyName instead.
+	 * @return String
+	 */
+	@Deprecated
 	public String getFieldName() {
-		return fieldName;
+		return this.getPropertyName();
+	}
+
+	public String getPropertyName() {
+		return this.propertyName;
 	}
 
 	public String getMetadata() {
@@ -276,7 +285,7 @@ public final class ArbitraryNode<T> {
 	}
 
 	public boolean isHead() {
-		return this.getFieldName().equals(HEAD_NAME);
+		return this.getPropertyName().equals(HEAD_NAME);
 	}
 
 	public LazyValue<T> getValue() {
@@ -303,7 +312,7 @@ public final class ArbitraryNode<T> {
 		return ArbitraryNode.builder()
 			.children(copyChildren)
 			.type(this.getType())
-			.fieldName(this.getFieldName())
+			.propertyName(this.getPropertyName())
 			.metadata(this.getMetadata())
 			.indexOfIterable(this.getIndexOfIterable())
 			.status(this.getStatus().copy())
@@ -324,14 +333,14 @@ public final class ArbitraryNode<T> {
 		ArbitraryNode<?> that = (ArbitraryNode<?>)obj;
 		return indexOfIterable == that.indexOfIterable
 			&& keyOfMapStructure == that.keyOfMapStructure && Double.compare(that.nullInject, nullInject) == 0
-			&& children.equals(that.children) && type.equals(that.type) && fieldName.equals(that.fieldName)
+			&& children.equals(that.children) && type.equals(that.type) && propertyName.equals(that.propertyName)
 			&& metadata.equals(that.metadata) && status.equals(that.status);
 	}
 
 	@Override
 	public int hashCode() {
 		return Objects.hash(
-			children, type, fieldName, metadata, indexOfIterable, status, keyOfMapStructure, nullInject
+			children, type, propertyName, metadata, indexOfIterable, status, keyOfMapStructure, nullInject
 		);
 	}
 
@@ -500,7 +509,7 @@ public final class ArbitraryNode<T> {
 		private List<ArbitraryNode> children = new ArrayList<>();
 		@SuppressWarnings("unchecked")
 		private ArbitraryType<T> type = NullArbitraryType.INSTANCE;
-		private String fieldName = HEAD_NAME;
+		private String propertyName = HEAD_NAME;
 		private String metadata = "";
 		private int indexOfIterable = NO_OR_ALL_INDEX_INTEGER_VALUE;
 		private FixtureNodeStatus<T> status = new FixtureNodeStatus<>();
@@ -523,8 +532,18 @@ public final class ArbitraryNode<T> {
 			return this;
 		}
 
+		/**
+		 * Deprecated Use getPropertyName instead.
+		 * @param fieldName fieldName
+		 * @return String
+		 */
+		@Deprecated
 		public FixtureNodeBuilder<T> fieldName(String fieldName) {
-			this.fieldName = fieldName;
+			return this.propertyName(fieldName);
+		}
+
+		public FixtureNodeBuilder<T> propertyName(String propertyName) {
+			this.propertyName = propertyName;
 			return this;
 		}
 
@@ -588,7 +607,7 @@ public final class ArbitraryNode<T> {
 			return new ArbitraryNode<>(
 				children,
 				type,
-				fieldName,
+				propertyName,
 				metadata,
 				indexOfIterable,
 				status,

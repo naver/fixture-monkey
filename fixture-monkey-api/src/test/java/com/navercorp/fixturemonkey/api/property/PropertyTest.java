@@ -46,6 +46,11 @@ class PropertyTest {
 	private Property anonymousProperty() {
 		return new Property() {
 			@Override
+			public Class<?> getType() {
+				return null;
+			}
+
+			@Override
 			public AnnotatedType getAnnotatedType() {
 				return null;
 			}

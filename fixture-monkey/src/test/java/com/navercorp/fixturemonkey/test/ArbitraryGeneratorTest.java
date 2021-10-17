@@ -518,19 +518,19 @@ public class ArbitraryGeneratorTest {
 			generatedArbitraryNodes.add(
 				ArbitraryNode.builder()
 					.type(firstChildType)
-					.fieldName("value1")
+					.propertyName("value1")
 					.build()
 			);
 			generatedArbitraryNodes.add(
 				ArbitraryNode.builder()
 					.type(secondChildType)
-					.fieldName("value2")
+					.propertyName("value2")
 					.build()
 			);
 			generatedArbitraryNodes.add(
 				ArbitraryNode.builder()
 					.type(thirdChildType)
-					.fieldName("value3")
+					.propertyName("value3")
 					.build()
 			);
 			return generatedArbitraryNodes;
