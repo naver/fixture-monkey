@@ -29,6 +29,6 @@ final class IteratorBuilder {
 
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	<T> Arbitrary<T> build(List<ArbitraryNode> nodes) {
-		return (Arbitrary<T>)ListBuilder.INSTANCE.build(nodes).map(it -> ((List)it).iterator());
+		return (Arbitrary<T>)ListBuilder.INSTANCE.build(nodes).map(it -> ((List)it).listIterator());
 	}
 }

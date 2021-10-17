@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.stream.Stream;
 
 import net.jqwik.api.Arbitraries;
@@ -58,7 +59,8 @@ public class DefaultContainerArbitraryNodeGenerator implements ContainerArbitrar
 				throw new IllegalArgumentException(
 					"Unsupported container type is given. " + value.getClass().getName());
 			}
-			Iterator<?> iterator = getIterator(value);
+
+			Iterator<?> iterator = toIterator(value);
 
 			ContainerSizeConstraint containerSizeConstraint = nowNode.getContainerSizeConstraint();
 			if (containerSizeConstraint != null) {
@@ -106,12 +108,39 @@ public class DefaultContainerArbitraryNodeGenerator implements ContainerArbitrar
 	}
 
 	@SuppressWarnings("unchecked")
-	private <T, U> Iterator<U> getIterator(T value) {
+	private <T, U> Iterator<U> toIterator(T value) {
 		if (value instanceof Collection) {
 			return ((Collection<U>)value).iterator();
 		} else if (value instanceof Stream) {
 			return ((Stream<U>)value).iterator();
+		} else if (value instanceof Iterable) {
+			return ((Iterable<U>)value).iterator();
+		} else if (value instanceof ListIterator) {
+			ListIterator<U> listIter = (ListIterator<U>)value;
+			int listIteratorCursor = 0;
+			while (listIter.hasPrevious()) {
+				listIter.previous();
+				listIteratorCursor++;
+			}
+
+			List<U> copied = new ArrayList<>();
+			while (listIter.hasNext()) {
+				copied.add(listIter.next());
+			}
+
+			if (listIter.previousIndex() + 1 == listIteratorCursor) {
+				return copied.iterator();
+			}
+
+			int prevSize = listIter.previousIndex() + 1 - listIteratorCursor;
+			for (int i = 0; i < prevSize; i++) {
+				listIter.previous();
+			}
+
+			return copied.iterator();
 		} else {
+			// ListIterator 가 아니면 element 를 복사할 수 없다.
+			// 기존 Iterator 의 커서가 이동하는 문제가 있다.
 			return (Iterator<U>)value;
 		}
 	}
