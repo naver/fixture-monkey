@@ -229,7 +229,7 @@ public class SimpleManipulatorTest {
 
 		// when
 		IntegerWrapperClass actual = this.sut.giveMeBuilder(expected)
-			.set(() -> "value", 1)
+			.set((resolver) -> "value", 1)
 			.sample();
 
 		then(actual.value).isEqualTo(1);
@@ -303,7 +303,7 @@ public class SimpleManipulatorTest {
 	void giveMeListExactSizeWithExpressionGenerator() {
 		// when
 		StringListWrapperClass actual = this.sut.giveMeBuilder(StringListWrapperClass.class)
-			.size(() -> "values", 3)
+			.size((resolver) -> "values", 3)
 			.sample();
 
 		then(actual.values.size()).isEqualTo(3);
@@ -325,7 +325,7 @@ public class SimpleManipulatorTest {
 		// when
 		MapKeyIntegerValueIntegerWrapperClass actual =
 			this.sut.giveMeBuilder(MapKeyIntegerValueIntegerWrapperClass.class)
-				.size(() -> "values", 2, 2)
+				.size((resolver) -> "values", 2, 2)
 				.sample();
 
 		then(actual.values).hasSize(2);
@@ -443,7 +443,7 @@ public class SimpleManipulatorTest {
 	void giveMeMinSizeWithExpressionGenerator() {
 		// when
 		IntegerListWrapperClass actual = this.sut.giveMeBuilder(IntegerListWrapperClass.class)
-			.minSize(() -> "values", 2)
+			.minSize((resolver) -> "values", 2)
 			.sample();
 
 		then(actual.values.size()).isGreaterThanOrEqualTo(2);
@@ -463,7 +463,7 @@ public class SimpleManipulatorTest {
 	void giveMeMaxSizeWithExpressionGenerator() {
 		// when
 		IntegerListWrapperClass actual = this.sut.giveMeBuilder(IntegerListWrapperClass.class)
-			.maxSize(() -> "values", 10)
+			.maxSize((resolver) -> "values", 10)
 			.sample();
 
 		then(actual.values.size()).isLessThanOrEqualTo(10);
@@ -538,8 +538,8 @@ public class SimpleManipulatorTest {
 		// when
 		StringListWrapperClass actual = this.sut.giveMeBuilder(StringListWrapperClass.class)
 			.size("values", 2, 2)
-			.setPostCondition(() -> "values[*]", String.class, it -> it.length() > 0)
-			.setPostCondition(() -> "values[*]", String.class, it -> it.length() > 5, 1)
+			.setPostCondition((resolver) -> "values[*]", String.class, it -> it.length() > 0)
+			.setPostCondition((resolver) -> "values[*]", String.class, it -> it.length() > 5, 1)
 			.sample();
 
 		then(actual.values).anyMatch(it -> it.length() > 5);
@@ -728,7 +728,7 @@ public class SimpleManipulatorTest {
 	void giveMeSetArbitraryBuilderWithExpressionGenerator() {
 		// when
 		StringWrapperIntegerWrapperClass actual = this.sut.giveMeBuilder(StringWrapperIntegerWrapperClass.class)
-			.setBuilder(() -> "value2", this.sut.giveMeBuilder(IntegerWrapperClass.class).set("value", 1))
+			.setBuilder((resolver) -> "value2", this.sut.giveMeBuilder(IntegerWrapperClass.class).set("value", 1))
 			.sample();
 
 		then(actual.value2.value).isEqualTo(1);
@@ -766,7 +766,7 @@ public class SimpleManipulatorTest {
 
 		// when
 		StringWrapperClass actual = this.sut.giveMeBuilder(decomposed)
-			.setNotNull(() -> "value")
+			.setNotNull((resolver) -> "value")
 			.sample();
 
 		then(actual.value).isNotNull();
@@ -792,7 +792,7 @@ public class SimpleManipulatorTest {
 
 		// when
 		StringWrapperClass actual = this.sut.giveMeBuilder(decomposed)
-			.setNull(() -> "value")
+			.setNull((resolver) -> "value")
 			.sample();
 
 		then(actual.value).isNull();

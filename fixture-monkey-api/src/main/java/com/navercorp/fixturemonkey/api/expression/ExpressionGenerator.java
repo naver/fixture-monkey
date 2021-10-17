@@ -21,8 +21,15 @@ package com.navercorp.fixturemonkey.api.expression;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import com.navercorp.fixturemonkey.api.property.Property;
+import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
+
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 @FunctionalInterface
 public interface ExpressionGenerator {
-	String generate();
+	default String generate() {
+		return this.generate(Property::getName);
+	}
+
+	String generate(PropertyNameResolver propertyNameResolver);
 }
