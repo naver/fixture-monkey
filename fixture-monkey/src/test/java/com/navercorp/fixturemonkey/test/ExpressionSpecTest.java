@@ -71,9 +71,9 @@ public class ExpressionSpecTest {
 	void mergeWithExpressionGenerator() {
 		// given
 		ExpressionSpec merger = new ExpressionSpec()
-			.set(() -> "test", "test");
+			.set((resolver) -> "test", "test");
 		ExpressionSpec merged = new ExpressionSpec()
-			.set(() -> "test", "test2");
+			.set((resolver) -> "test", "test2");
 
 		// when
 		ExpressionSpec actual = merger.merge(merged);
@@ -174,7 +174,7 @@ public class ExpressionSpecTest {
 			.set("test2", "test");
 
 		// when
-		actual.exclude(() -> "test");
+		actual.exclude((resolver) -> "test");
 
 		then(actual.getBuilderManipulators()).hasSize(1);
 	}
@@ -193,10 +193,10 @@ public class ExpressionSpecTest {
 	void hasPostConditionWithExpressionGenerator() {
 		// when
 		ExpressionSpec actual = new ExpressionSpec()
-			.setPostCondition(() -> "test", String.class, Objects::nonNull);
+			.setPostCondition((resolver) -> "test", String.class, Objects::nonNull);
 
-		then(actual.hasSet(() -> "test")).isFalse();
-		then(actual.hasPostCondition(() -> "test")).isTrue();
+		then(actual.hasSet((resolver) -> "test")).isFalse();
+		then(actual.hasPostCondition((resolver) -> "test")).isTrue();
 	}
 
 	@Property
@@ -226,7 +226,7 @@ public class ExpressionSpecTest {
 			.set("test", "test");
 
 		//noinspection OptionalGetWithoutIsPresent
-		then(actual.findSetValue(() -> "test").get()).isEqualTo("test");
+		then(actual.findSetValue((resolver) -> "test").get()).isEqualTo("test");
 	}
 
 	@Property
