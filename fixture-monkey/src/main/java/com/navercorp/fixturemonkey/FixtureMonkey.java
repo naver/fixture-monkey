@@ -104,7 +104,10 @@ public class FixtureMonkey {
 		return this.giveMeBuilder(clazz, options);
 	}
 
-	public <T> ArbitraryBuilder<T> giveMeBuilder(Class<T> clazz, Consumer<ArbitraryExpressionManipulator> onManipulated) {
+	public <T> ArbitraryBuilder<T> giveMeBuilder(
+		Class<T> clazz,
+		Consumer<ArbitraryExpressionManipulator> onManipulated
+	) {
 		return this.giveMeBuilder(
 			clazz,
 			options,
