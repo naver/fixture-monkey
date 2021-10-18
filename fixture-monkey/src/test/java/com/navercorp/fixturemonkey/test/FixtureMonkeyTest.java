@@ -186,7 +186,9 @@ class FixtureMonkeyTest {
 	@Property
 	@Domain(FixtureMonkeyTestSpecs.class)
 	void giveMeListIteratorToBuilderCursorMovedNotChanged(@ForAll IntegerIterator integerIterator) {
-		given(integerIterator.getValues().hasNext()).isTrue();
+		if (!integerIterator.getValues().hasNext()) {
+			return;
+		}
 
 		integerIterator.getValues().next();
 
