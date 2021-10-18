@@ -19,23 +19,23 @@ public class CallbackList<T> implements List<T> {
 	}
 
 	@Override
-	public boolean add(T t) {
-		boolean added = list.add(t);
-		callback.accept(t);
+	public boolean add(T value) {
+		boolean added = list.add(value);
+		callback.accept(value);
 		return added;
 	}
 
 	@Override
-	public boolean addAll(@NotNull Collection<? extends T> c) {
-		boolean addAll = list.addAll(c);
-		c.forEach(callback);
+	public boolean addAll(@NotNull Collection<? extends T> collection) {
+		boolean addAll = list.addAll(collection);
+		collection.forEach(callback);
 		return addAll;
 	}
 
 	@Override
-	public boolean addAll(int index, @NotNull Collection<? extends T> c) {
-		boolean addAll = list.addAll(index, c);
-		c.forEach(callback);
+	public boolean addAll(int index, @NotNull Collection<? extends T> collection) {
+		boolean addAll = list.addAll(index, collection);
+		collection.forEach(callback);
 		return addAll;
 	}
 
@@ -63,8 +63,8 @@ public class CallbackList<T> implements List<T> {
 	}
 
 	@Override
-	public boolean contains(Object o) {
-		return list.contains(o);
+	public boolean contains(Object obj) {
+		return list.contains(obj);
 	}
 
 	@Override
@@ -79,28 +79,28 @@ public class CallbackList<T> implements List<T> {
 
 	@SuppressWarnings("SuspiciousToArrayCall")
 	@Override
-	public <T1> T1[] toArray(@NotNull T1[] a) {
-		return list.toArray(a);
+	public <T1> T1[] toArray(@NotNull T1[] array) {
+		return list.toArray(array);
 	}
 
 	@Override
-	public boolean remove(Object o) {
-		return list.remove(o);
+	public boolean remove(Object obj) {
+		return list.remove(obj);
 	}
 
 	@Override
-	public boolean containsAll(@NotNull Collection<?> c) {
-		return list.containsAll(c);
+	public boolean containsAll(@NotNull Collection<?> collection) {
+		return list.containsAll(collection);
 	}
 
 	@Override
-	public boolean removeAll(@NotNull Collection<?> c) {
-		return list.removeAll(c);
+	public boolean removeAll(@NotNull Collection<?> collection) {
+		return list.removeAll(collection);
 	}
 
 	@Override
-	public boolean retainAll(@NotNull Collection<?> c) {
-		return list.retainAll(c);
+	public boolean retainAll(@NotNull Collection<?> collection) {
+		return list.retainAll(collection);
 	}
 
 	@Override
@@ -119,13 +119,13 @@ public class CallbackList<T> implements List<T> {
 	}
 
 	@Override
-	public int indexOf(Object o) {
-		return list.indexOf(o);
+	public int indexOf(Object obj) {
+		return list.indexOf(obj);
 	}
 
 	@Override
-	public int lastIndexOf(Object o) {
-		return list.lastIndexOf(o);
+	public int lastIndexOf(Object obj) {
+		return list.lastIndexOf(obj);
 	}
 
 	@Override
