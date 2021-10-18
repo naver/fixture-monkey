@@ -28,7 +28,7 @@ import net.jqwik.api.Property;
 
 import com.navercorp.fixturemonkey.customizer.ExpressionSpec;
 
-public class ExpressionSpecTest {
+class ExpressionSpecTest {
 	@Property
 	void copy() {
 		// given

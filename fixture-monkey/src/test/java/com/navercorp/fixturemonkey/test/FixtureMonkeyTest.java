@@ -18,355 +18,259 @@
 
 package com.navercorp.fixturemonkey.test;
 
+import static com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.SUT;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.assertj.core.api.BDDAssertions.thenNoException;
 import static org.assertj.core.api.BDDAssertions.thenThrownBy;
+import static org.assertj.core.api.BDDAssumptions.given;
 
-import java.util.AbstractMap.SimpleEntry;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Stream;
-
-import javax.annotation.Nullable;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Positive;
 
 import org.junit.platform.commons.util.StringUtils;
 
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
 import net.jqwik.api.Example;
+import net.jqwik.api.ForAll;
 import net.jqwik.api.Property;
 import net.jqwik.api.TooManyFilterMissesException;
 import net.jqwik.api.Tuple.Tuple1;
 import net.jqwik.api.Tuple.Tuple2;
-
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import net.jqwik.api.constraints.Size;
+import net.jqwik.api.domains.Domain;
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.FixtureMonkey;
-import com.navercorp.fixturemonkey.generator.BuilderArbitraryGenerator;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.DefaultArbitraryGroup;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.DefaultArbitraryGroup2;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.DuplicateArbitraryGroup;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.IntArray;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.IntWithAnnotation;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.IntegerArray;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.IntegerIterable;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.IntegerIterator;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.IntegerListWithNotEmpty;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.IntegerOptional;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.IntegerSet;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.IntegerStream;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.InterfaceWrapper;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.ListWithAnnotation;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.MapEntryKeyIntegerValueString;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.MapKeyIntegerValueInteger;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.MapKeyIntegerValueString;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.MockInterface;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.NestedStringWithNotBlankList;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.StringAndInt;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.StringWithNotBlank;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.StringWithNullable;
 
 class FixtureMonkeyTest {
-	private final FixtureMonkey sut = FixtureMonkey.builder()
-		.addInterfaceSupplier(MockInterface.class, (type) -> () -> "test")
-		.build();
-
 	@Property
-	void giveMeRegisteredReference() {
-		Integer actual = this.sut.giveMeOne(Integer.class);
-
+	@Domain(FixtureMonkeyTestSpecs.class)
+	void giveMeRegisteredWrapper(@ForAll Integer actual) {
 		then(actual).isBetween(Integer.MIN_VALUE, Integer.MAX_VALUE);
 	}
 
 	@Property
-	void giveMeRegisteredPrimitive() {
-		// given
-		ArbitraryBuilder<Integer> builder = this.sut.giveMeBuilder(Integer.class);
-
-		// when
-		int actual = builder.sample();
-
+	@Domain(FixtureMonkeyTestSpecs.class)
+	void giveMeRegisteredPrimitive(@ForAll int actual) {
 		then(actual).isBetween(Integer.MIN_VALUE, Integer.MAX_VALUE);
 	}
 
 	@Property
-	void giveMeWithAnnotation() {
-		IntegerWithAnnotationWrapperClass actual = this.sut.giveMeOne(IntegerWithAnnotationWrapperClass.class);
-
+	@Domain(FixtureMonkeyTestSpecs.class)
+	void giveMeWithAnnotation(@ForAll IntWithAnnotation actual) {
 		then(actual.getValue()).isPositive();
 	}
 
 	@Property
-	void giveMeArrayToBuilder() {
-		// given
-		IntegerArrayWrapperClass expected = new IntegerArrayWrapperClass(new Integer[] {1, 2, 3});
+	@Domain(FixtureMonkeyTestSpecs.class)
+	void giveMeArrayToBuilder(@ForAll IntegerArray integerArray) {
+		IntegerArray actual = SUT.giveMeBuilder(integerArray).sample();
 
-		// when
-		IntegerArrayWrapperClass actual = this.sut.giveMeBuilder(expected).sample();
-
-		then(actual.values[0]).isEqualTo(1);
-		then(actual.values[1]).isEqualTo(2);
-		then(actual.values[2]).isEqualTo(3);
+		then(actual.getValues().length).isEqualTo(integerArray.getValues().length);
+		for (int i = 0; i < actual.getValues().length; i++) {
+			then(actual.getValues()[i]).isEqualTo(integerArray.getValues()[i]);
+		}
 	}
 
 	@Property
-	void giveMePrimitiveArrayToBuilder() {
-		// given
-		IntArrayWrapperClass expected = new IntArrayWrapperClass(new int[] {1, 2, 3});
+	@Domain(FixtureMonkeyTestSpecs.class)
+	void giveMePrimitiveArrayToBuilder(@ForAll IntArray intArray) {
+		IntArray actual = SUT.giveMeBuilder(intArray).sample();
 
-		// when
-		IntArrayWrapperClass actual = this.sut.giveMeBuilder(expected).sample();
-
-		then(actual.values[0]).isEqualTo(1);
-		then(actual.values[1]).isEqualTo(2);
-		then(actual.values[2]).isEqualTo(3);
+		then(actual.getValues().length).isEqualTo(intArray.getValues().length);
+		for (int i = 0; i < actual.getValues().length; i++) {
+			then(actual.getValues()[i]).isEqualTo(intArray.getValues()[i]);
+		}
 	}
 
 	@Property
-	void giveMeSameKeyValueMapToBuilder() {
-		// given
-		Map<Integer, Integer> values = new HashMap<>();
-		values.put(1, 1);
-		MapKeyIntegerValueIntegerWrapperClass expected = new MapKeyIntegerValueIntegerWrapperClass(values);
+	@Domain(FixtureMonkeyTestSpecs.class)
+	void giveMeSameKeyValueMapToBuilder(@ForAll MapKeyIntegerValueInteger mapKeyIntegerValueInteger) {
+		MapKeyIntegerValueInteger actual = SUT.giveMeBuilder(mapKeyIntegerValueInteger).sample();
 
-		// when
-		MapKeyIntegerValueIntegerWrapperClass actual = this.sut.giveMeBuilder(expected).sample();
+		then(actual.getValues().size()).isEqualTo(mapKeyIntegerValueInteger.getValues().size());
 
-		then(actual.values.get(1)).isEqualTo(1);
+		Map<Integer, Integer> target = mapKeyIntegerValueInteger.getValues();
+		for (Entry<Integer, Integer> entry : actual.getValues().entrySet()) {
+			then(entry.getValue()).isEqualTo(target.get(entry.getKey()));
+		}
 	}
 
 	@Property
-	void giveMeDiffKeyValueMapToBuilder() {
-		// given
-		Map<Integer, String> values = new HashMap<>();
-		values.put(1, "1");
-		MapKeyIntegerValueStringWrapperClass expected = new MapKeyIntegerValueStringWrapperClass(values);
+	@Domain(FixtureMonkeyTestSpecs.class)
+	void giveMeDiffKeyValueMapToBuilder(@ForAll MapKeyIntegerValueString mapKeyIntegerValueString) {
+		MapKeyIntegerValueString actual = SUT.giveMeBuilder(mapKeyIntegerValueString).sample();
 
-		// when
-		MapKeyIntegerValueStringWrapperClass actual = this.sut.giveMeBuilder(expected).sample();
+		then(actual.getValues().size()).isEqualTo(mapKeyIntegerValueString.getValues().size());
 
-		then(actual.values.get(1)).isEqualTo("1");
+		Map<Integer, String> target = mapKeyIntegerValueString.getValues();
+		for (Entry<Integer, String> entry : actual.getValues().entrySet()) {
+			then(entry.getValue()).isEqualTo(target.get(entry.getKey()));
+		}
 	}
 
 	@Property
-	void giveMeMapEntryToBuilder() {
-		// given
-		Map.Entry<Integer, String> value = new SimpleEntry<>(1, "1");
-		MapEntryKeyIntegerValueStringWrapperClass expected = new MapEntryKeyIntegerValueStringWrapperClass(value);
-
-		// when
-		MapEntryKeyIntegerValueStringWrapperClass actual = this.sut.giveMeBuilder(expected).sample();
-
-		then(actual.value.getValue()).isEqualTo("1");
+	@Domain(FixtureMonkeyTestSpecs.class)
+	void giveMeMapEntryToBuilder(@ForAll MapEntryKeyIntegerValueString mapEntryKeyIntegerValueString) {
+		MapEntryKeyIntegerValueString actual = SUT.giveMeBuilder(mapEntryKeyIntegerValueString).sample();
+		then(actual.getValue().getKey()).isEqualTo(mapEntryKeyIntegerValueString.getValue().getKey());
+		then(actual.getValue().getValue()).isEqualTo(mapEntryKeyIntegerValueString.getValue().getValue());
 	}
 
 	@Property
-	void giveMeSetToBuilder() {
-		// given
-		Set<Integer> values = new HashSet<>();
-		values.add(1);
-		IntegerSetWrapperClass expected = new IntegerSetWrapperClass(values);
-
-		// when
-		IntegerSetWrapperClass actual = this.sut.giveMeBuilder(expected).sample();
-
-		then(actual.values).allMatch(it -> it == 1);
+	@Domain(FixtureMonkeyTestSpecs.class)
+	void giveMeSetToBuilder(@ForAll IntegerSet integerSet) {
+		IntegerSet actual = SUT.giveMeBuilder(integerSet).sample();
+		then(actual.getValues().size()).isEqualTo(integerSet.getValues().size());
+		then(actual.getValues()).containsAll(integerSet.getValues());
 	}
 
 	@Property
-	void giveMeIterableToBuilder() {
-		// given
-		List<Integer> values = new ArrayList<>();
-		values.add(1);
-		IntegerIterableWrapperClass expected = new IntegerIterableWrapperClass(values);
+	@Domain(FixtureMonkeyTestSpecs.class)
+	void giveMeIterableToBuilder(@ForAll IntegerIterable integerIterable) {
+		IntegerIterable actual = SUT.giveMeBuilder(integerIterable).sample();
+		Iterator<Integer> actualValues = actual.getValues().iterator();
+		Iterator<Integer> targetValues = integerIterable.getValues().iterator();
 
-		// when
-		IntegerIterableWrapperClass actual = sut.giveMeBuilder(expected).sample();
+		while (actualValues.hasNext()) {
+			then(targetValues.hasNext()).isTrue();
+			then(actualValues.next()).isEqualTo(targetValues.next());
+		}
 
-		then(actual.values).allMatch(it -> it == 1);
+		then(targetValues.hasNext()).isFalse();
 	}
 
 	@Property
-	void giveMeIteratorToBuilder() {
-		// given
-		FixtureMonkey sut = FixtureMonkey.builder()
-			.defaultGenerator(BuilderArbitraryGenerator.INSTANCE)
-			.build();
-		List<Integer> values = new ArrayList<>();
-		values.add(1);
-		IntegerIteratorWrapperClass expected = new IntegerIteratorWrapperClass(values.iterator());
+	@Domain(FixtureMonkeyTestSpecs.class)
+	void giveMeIteratorToBuilder(@ForAll IntegerIterator integerIterator) {
+		IntegerIterator actual = SUT.giveMeBuilder(integerIterator).sample();
+		Iterator<Integer> actualValues = actual.getValues();
+		Iterator<Integer> targetValues = integerIterator.getValues();
 
-		// when
-		IntegerIteratorWrapperClass actual = sut.giveMeBuilder(expected).sample();
+		while (actualValues.hasNext()) {
+			then(targetValues.hasNext()).isTrue();
+			then(actualValues.next()).isEqualTo(targetValues.next());
+		}
 
-		then(actual.values.next()).isEqualTo(1);
-	}
-
-	@Example
-	void giveMeIteratorToBuilderCursorNotChanged() {
-		// given
-		FixtureMonkey sut = FixtureMonkey.builder()
-			.defaultGenerator(BuilderArbitraryGenerator.INSTANCE)
-			.build();
-		IntegerIteratorWrapperClass expected = sut.giveMeBuilder(IntegerIteratorWrapperClass.class)
-			.size("values", 3)
-			.set("values[0]", 1)
-			.set("values[1]", 2)
-			.set("values[2]", 3)
-			.sample();
-
-		// when
-		IntegerIteratorWrapperClass actual = sut.giveMeBuilder(expected).sample();
-
-		then(actual.values.next()).isEqualTo(1);
-		then(actual.values.next()).isEqualTo(2);
-		then(actual.values.next()).isEqualTo(3);
-
-		then(expected.values.next()).isEqualTo(1);
-		then(expected.values.next()).isEqualTo(2);
-		then(expected.values.next()).isEqualTo(3);
-	}
-
-	@Example
-	void giveMeListIteratorToBuilderCursorMovedNotChanged() {
-		// given
-		FixtureMonkey sut = FixtureMonkey.builder()
-			.defaultGenerator(BuilderArbitraryGenerator.INSTANCE)
-			.build();
-		IntegerIteratorWrapperClass expected = sut.giveMeBuilder(IntegerIteratorWrapperClass.class)
-			.size("values", 3)
-			.set("values[0]", 1)
-			.set("values[1]", 2)
-			.set("values[2]", 3)
-			.sample();
-		expected.values.next();
-
-		// when
-		IntegerIteratorWrapperClass actual = sut.giveMeBuilder(expected).sample();
-
-		then(actual.values.next()).isEqualTo(1);
-		then(actual.values.next()).isEqualTo(2);
-		then(actual.values.next()).isEqualTo(3);
-
-		then(expected.values.next()).isEqualTo(2);
-		then(expected.values.next()).isEqualTo(3);
+		then(targetValues.hasNext()).isFalse();
 	}
 
 	@Property
-	void giveMeStreamToBuilder() {
-		// given
-		FixtureMonkey sut = FixtureMonkey.builder()
-			.defaultGenerator(BuilderArbitraryGenerator.INSTANCE)
-			.build();
-		List<Integer> values = new ArrayList<>();
-		values.add(1);
-		IntegerStreamWrapperClass expected = new IntegerStreamWrapperClass(values.stream());
+	@Domain(FixtureMonkeyTestSpecs.class)
+	void giveMeListIteratorToBuilderCursorMovedNotChanged(@ForAll IntegerIterator integerIterator) {
+		given(integerIterator.getValues().hasNext()).isTrue();
 
-		// when
-		IntegerStreamWrapperClass actual = sut.giveMeBuilder(expected).sample();
+		integerIterator.getValues().next();
 
-		then(actual.values).allMatch(it -> it == 1);
+		IntegerIterator actual = SUT.giveMeBuilder(integerIterator).sample();
+		Iterator<Integer> actualValues = actual.getValues();
+		actualValues.next();
+		Iterator<Integer> targetValues = integerIterator.getValues();
+
+		while (actualValues.hasNext()) {
+			then(targetValues.hasNext()).isTrue();
+			then(actualValues.next()).isEqualTo(targetValues.next());
+		}
+
+		then(targetValues.hasNext()).isFalse();
 	}
 
 	@Property
-	void giveMeOptionalToBuilder() {
-		// given
-		FixtureMonkey sut = FixtureMonkey.builder()
-			.defaultGenerator(BuilderArbitraryGenerator.INSTANCE)
-			.build();
+	@Domain(FixtureMonkeyTestSpecs.class)
+	void giveMeStreamToBuilderButStreamOperateCanOnlyOnce(@ForAll IntegerStream integerStream) {
+		IntegerStream actual = SUT.giveMeBuilder(integerStream).sample();
+		actual.getValues().limit(10).forEach(System.out::println);
 
-		// when
-		IntegerOptionalWrapperClass actual = sut.giveMeBuilder(new IntegerOptionalWrapperClass(Optional.of(1)))
-			.sample();
-
-		//noinspection OptionalGetWithoutIsPresent
-		then(actual.value.get()).isEqualTo(1);
+		thenThrownBy(() -> integerStream.getValues().limit(10).forEach(System.out::println))
+			.isExactlyInstanceOf(IllegalStateException.class)
+			.hasMessageContaining("stream has already been operated upon or closed");
 	}
 
 	@Property
-	void giveMeOptionalEmptyToBuilder() {
-		// given
-		FixtureMonkey sut = FixtureMonkey.builder()
-			.defaultGenerator(BuilderArbitraryGenerator.INSTANCE)
-			.build();
-		Optional<Integer> value = Optional.empty();
-		IntegerOptionalWrapperClass expected = new IntegerOptionalWrapperClass(value);
-
-		// when
-		IntegerOptionalWrapperClass actual = sut.giveMeBuilder(expected).sample();
-
-		then(actual.value).isEqualTo(Optional.empty());
+	@Domain(FixtureMonkeyTestSpecs.class)
+	void giveMeOptionalToBuilder(@ForAll IntegerOptional integerOptional) {
+		IntegerOptional actual = SUT.giveMeBuilder(integerOptional).sample();
+		then(actual.getValue()).isEqualTo(integerOptional.getValue());
 	}
 
 	@Property
-	void copy() {
-		// given
-		IntegerArrayWrapperClass expected = new IntegerArrayWrapperClass(new Integer[] {1, 2, 3});
-		ArbitraryBuilder<IntegerArrayWrapperClass> builder = this.sut.giveMeBuilder(expected);
-		ArbitraryBuilder<IntegerArrayWrapperClass> copiedBuilder = builder.copy()
+	@Domain(FixtureMonkeyTestSpecs.class)
+	void copy(@ForAll IntegerArray integerArray) {
+		ArbitraryBuilder<IntegerArray> builder = SUT.giveMeBuilder(integerArray)
+			.size("values", 5)
+			.set("values[1]", 5);
+
+		ArbitraryBuilder<IntegerArray> copiedBuilder = builder.copy()
 			.set("values[1]", 3);
 
-		// when
-		IntegerArrayWrapperClass actual = copiedBuilder.sample();
+		IntegerArray targetSample = builder.sample();
+		IntegerArray copiedSample = copiedBuilder.sample();
 
-		then(actual.values[0]).isEqualTo(1);
-		then(actual.values[1]).isNotEqualTo(2);
-		then(actual.values[1]).isEqualTo(3);
-		then(actual.values[2]).isEqualTo(3);
-	}
-
-	@Property
-	void copyWithManipulator() {
-		// given
-		IntegerArrayWrapperClass expected = new IntegerArrayWrapperClass(new Integer[] {1, 2, 3});
-		ArbitraryBuilder<IntegerArrayWrapperClass> builder = this.sut.giveMeBuilder(expected)
-			.set("values[0]", -1);
-
-		// when
-		IntegerArrayWrapperClass actual = builder.copy().sample();
-
-		then(actual.values[0]).isEqualTo(-1);
-		then(actual.values[1]).isEqualTo(2);
-		then(actual.values[2]).isEqualTo(3);
+		then(targetSample.getValues().length).isEqualTo(5);
+		then(copiedSample.getValues().length).isEqualTo(5);
+		then(targetSample.getValues()[1]).isEqualTo(5);
+		then(copiedSample.getValues()[1]).isEqualTo(3);
 	}
 
 	@Property
 	void giveMeList() {
-		// when
-		List<IntegerWrapperClass> actual = this.sut.giveMe(IntegerWrapperClass.class, 5);
+		List<IntWithAnnotation> actual = SUT.giveMe(IntWithAnnotation.class, 5);
 
 		then(actual).hasSize(5);
 		then(actual).allMatch(Objects::nonNull);
 	}
 
 	@Property
-	void giveMeOptional() {
-		// when
-		OptionalClass actual = this.sut.giveMeOne(OptionalClass.class);
-
-		then(actual).isNotNull();
+	@Domain(FixtureMonkeyTestSpecs.class)
+	void giveMeOptional(@ForAll IntegerOptional integerOptional) {
+		then(integerOptional.getValue()).isNotNull();
 	}
 
 	@Property
-	void giveMeArbitraryThenSample() {
-		// given
-		Arbitrary<StringWithNotBlankWrapperClass> sut = this.sut.giveMeArbitrary(StringWithNotBlankWrapperClass.class);
-
-		// when
-		StringWithNotBlankWrapperClass actual = sut.sample();
-
+	@Domain(FixtureMonkeyTestSpecs.class)
+	void giveMeArbitraryThenSample(@ForAll StringWithNotBlank actual) {
 		then(actual.getValue()).isNotBlank();
 	}
 
 	@Property
 	void giveMeArbitraryThenSampleStream() {
-		// given
-		Arbitrary<StringWithNotBlankWrapperClass> sut = this.sut.giveMeArbitrary(StringWithNotBlankWrapperClass.class);
-
-		// when
-		List<StringWithNotBlankWrapperClass> actual = sut.sampleStream().limit(5).collect(toList());
-
+		Arbitrary<StringWithNotBlank> sut = SUT.giveMeArbitrary(StringWithNotBlank.class);
+		List<StringWithNotBlank> actual = sut.sampleStream().limit(5).collect(toList());
 		actual.forEach(it -> then(it.getValue()).isNotBlank());
 	}
 
 	@Example
 	void giveMeBuilderBuildInvalidThenSampleThrowsTooManyFilterMissesException() {
 		// when
-		Arbitrary<StringWithNotBlankWrapperClass> sut = this.sut.giveMeBuilder(StringWithNotBlankWrapperClass.class)
+		Arbitrary<StringWithNotBlank> sut = SUT.giveMeBuilder(StringWithNotBlank.class)
 			.set("value", "")
 			.build();
 
@@ -376,8 +280,7 @@ class FixtureMonkeyTest {
 
 	@Example
 	void giveMeBuilderBuildInvalidThenSampleStreamThrowsTooManyFilterMissesException() {
-		// when
-		Arbitrary<StringWithNotBlankWrapperClass> sut = this.sut.giveMeBuilder(StringWithNotBlankWrapperClass.class)
+		Arbitrary<StringWithNotBlank> sut = SUT.giveMeBuilder(StringWithNotBlank.class)
 			.set("value", "")
 			.build();
 
@@ -388,8 +291,7 @@ class FixtureMonkeyTest {
 
 	@Example
 	void giveMeBuilderBuildUniqueInvalidThenSampleThrowsTooManyFilterMissesException() {
-		// when
-		Arbitrary<StringWithNotBlankWrapperClass> sut = this.sut.giveMeBuilder(StringWithNotBlankWrapperClass.class)
+		Arbitrary<StringWithNotBlank> sut = SUT.giveMeBuilder(StringWithNotBlank.class)
 			.set("value", "")
 			.build()
 			.unique();
@@ -401,7 +303,7 @@ class FixtureMonkeyTest {
 	@Example
 	void giveMeArbitraryUnique() {
 		// when
-		Arbitrary<StringWithNotBlankWrapperClass> sut = this.sut.giveMeArbitrary(StringWithNotBlankWrapperClass.class)
+		Arbitrary<StringWithNotBlank> sut = SUT.giveMeArbitrary(StringWithNotBlank.class)
 			.unique();
 
 		thenNoException()
@@ -411,7 +313,7 @@ class FixtureMonkeyTest {
 	@Example
 	void giveMeBuilderBuildFixGenSizeInvalidThenSampleThrowsTooManyFilterMissesException() {
 		// when
-		Arbitrary<StringWithNotBlankWrapperClass> sut = this.sut.giveMeBuilder(StringWithNotBlankWrapperClass.class)
+		Arbitrary<StringWithNotBlank> sut = SUT.giveMeBuilder(StringWithNotBlank.class)
 			.set("value", "")
 			.build()
 			.fixGenSize(5);
@@ -423,8 +325,8 @@ class FixtureMonkeyTest {
 	@Example
 	void giveMeBuilderBuildOptionalInvalidThenSampleThrowsTooManyFilterMissesException() {
 		// when
-		Arbitrary<Optional<StringWithNotBlankWrapperClass>> sut =
-			this.sut.giveMeBuilder(StringWithNotBlankWrapperClass.class)
+		Arbitrary<Optional<StringWithNotBlank>> sut =
+			SUT.giveMeBuilder(StringWithNotBlank.class)
 				.set("value", "")
 				.build()
 				.optional()
@@ -437,12 +339,12 @@ class FixtureMonkeyTest {
 	@Property
 	void giveMeArbitraryOptional() {
 		// given
-		Arbitrary<Optional<StringWithNotBlankWrapperClass>> sut =
-			this.sut.giveMeArbitrary(StringWithNotBlankWrapperClass.class)
+		Arbitrary<Optional<StringWithNotBlank>> sut =
+			SUT.giveMeArbitrary(StringWithNotBlank.class)
 				.optional();
 
 		// when
-		Optional<StringWithNotBlankWrapperClass> actual = sut.sample();
+		Optional<StringWithNotBlank> actual = sut.sample();
 
 		then(actual).isNotNull();
 	}
@@ -450,8 +352,8 @@ class FixtureMonkeyTest {
 	@Example
 	void giveMeBuilderBuildCollectInvalidThenSampleThrowsTooManyFilterMissesException() {
 		// when
-		Arbitrary<List<StringWithNotBlankWrapperClass>> sut =
-			this.sut.giveMeBuilder(StringWithNotBlankWrapperClass.class)
+		Arbitrary<List<StringWithNotBlank>> sut =
+			SUT.giveMeBuilder(StringWithNotBlank.class)
 				.set("value", "")
 				.build().collect(it -> !it.isEmpty());
 
@@ -462,12 +364,12 @@ class FixtureMonkeyTest {
 	@Property
 	void giveMeArbitraryCollect() {
 		// given
-		Arbitrary<List<StringWithNotBlankWrapperClass>> sut =
-			this.sut.giveMeArbitrary(StringWithNotBlankWrapperClass.class)
+		Arbitrary<List<StringWithNotBlank>> sut =
+			SUT.giveMeArbitrary(StringWithNotBlank.class)
 				.collect(List::isEmpty);
 
 		// when
-		List<StringWithNotBlankWrapperClass> actual = sut.sample();
+		List<StringWithNotBlank> actual = sut.sample();
 
 		then(actual).isEmpty();
 	}
@@ -475,8 +377,8 @@ class FixtureMonkeyTest {
 	@Example
 	void giveMeBuilderBuildInjectDuplicatesInvalidThenSampleThrowsTooManyFilterMissesException() {
 		// when
-		Arbitrary<StringWithNotBlankWrapperClass> sut =
-			this.sut.giveMeBuilder(StringWithNotBlankWrapperClass.class)
+		Arbitrary<StringWithNotBlank> sut =
+			SUT.giveMeBuilder(StringWithNotBlank.class)
 				.set("value", "")
 				.build()
 				.injectDuplicates(1);
@@ -488,7 +390,7 @@ class FixtureMonkeyTest {
 	@Example
 	void giveMeArbitraryInjectDuplicates() {
 		// given
-		Arbitrary<StringWithNotBlankWrapperClass> sut = this.sut.giveMeArbitrary(StringWithNotBlankWrapperClass.class)
+		Arbitrary<StringWithNotBlank> sut = SUT.giveMeArbitrary(StringWithNotBlank.class)
 			.injectDuplicates(1);
 
 		thenNoException()
@@ -498,11 +400,10 @@ class FixtureMonkeyTest {
 	@Example
 	void giveMeBuilderBuildTuple1InvalidThenSampleThrowsTooManyFilterMissesException() {
 		// when
-		Arbitrary<Tuple1<StringWithNotBlankWrapperClass>> sut =
-			this.sut.giveMeBuilder(StringWithNotBlankWrapperClass.class)
-				.set("value", "")
-				.build()
-				.tuple1();
+		Arbitrary<Tuple1<StringWithNotBlank>> sut = SUT.giveMeBuilder(StringWithNotBlank.class)
+			.set("value", "")
+			.build()
+			.tuple1();
 
 		thenThrownBy(sut::sample)
 			.isExactlyInstanceOf(TooManyFilterMissesException.class);
@@ -511,12 +412,10 @@ class FixtureMonkeyTest {
 	@Property
 	void giveMeArbitraryTuple1() {
 		// given
-		Arbitrary<Tuple1<StringWithNotBlankWrapperClass>> sut =
-			this.sut.giveMeArbitrary(StringWithNotBlankWrapperClass.class)
-				.tuple1();
+		Arbitrary<Tuple1<StringWithNotBlank>> sut = SUT.giveMeArbitrary(StringWithNotBlank.class).tuple1();
 
 		// when
-		Tuple1<StringWithNotBlankWrapperClass> sample = sut.sample();
+		Tuple1<StringWithNotBlank> sample = sut.sample();
 
 		then(sample).isNotNull();
 	}
@@ -524,11 +423,10 @@ class FixtureMonkeyTest {
 	@Example
 	void giveMeBuilderBuildTuple2InvalidThenSampleThrowsTooManyFilterMissesException() {
 		// when
-		Arbitrary<Tuple2<StringWithNotBlankWrapperClass, StringWithNotBlankWrapperClass>> sut =
-			this.sut.giveMeBuilder(StringWithNotBlankWrapperClass.class)
-				.set("value", "")
-				.build()
-				.tuple2();
+		Arbitrary<Tuple2<StringWithNotBlank, StringWithNotBlank>> sut = SUT.giveMeBuilder(StringWithNotBlank.class)
+			.set("value", "")
+			.build()
+			.tuple2();
 
 		thenThrownBy(sut::sample)
 			.isExactlyInstanceOf(TooManyFilterMissesException.class);
@@ -537,12 +435,11 @@ class FixtureMonkeyTest {
 	@Property
 	void giveMeArbitraryTuple2() {
 		// given
-		Arbitrary<Tuple2<StringWithNotBlankWrapperClass, StringWithNotBlankWrapperClass>> sut =
-			this.sut.giveMeArbitrary(StringWithNotBlankWrapperClass.class)
-				.tuple2();
+		Arbitrary<Tuple2<StringWithNotBlank, StringWithNotBlank>> sut = SUT.giveMeArbitrary(StringWithNotBlank.class)
+			.tuple2();
 
 		// when
-		Tuple2<StringWithNotBlankWrapperClass, StringWithNotBlankWrapperClass> sample = sut.sample();
+		Tuple2<StringWithNotBlank, StringWithNotBlank> sample = sut.sample();
 
 		then(sample).isNotNull();
 	}
@@ -550,7 +447,7 @@ class FixtureMonkeyTest {
 	@Example
 	void giveMeBuilderBuildIgnoreExceptionInvalidThenSampleThrowsTooManyFilterMissesException() {
 		// when
-		Arbitrary<StringWithNotBlankWrapperClass> sut = this.sut.giveMeBuilder(StringWithNotBlankWrapperClass.class)
+		Arbitrary<StringWithNotBlank> sut = SUT.giveMeBuilder(StringWithNotBlank.class)
 			.set("value", "")
 			.build()
 			.ignoreException(NullPointerException.class);
@@ -562,7 +459,7 @@ class FixtureMonkeyTest {
 	@Property
 	void giveMeArbitraryIgnoreException() {
 		// given
-		Arbitrary<StringWithNotBlankWrapperClass> sut = this.sut.giveMeArbitrary(StringWithNotBlankWrapperClass.class)
+		Arbitrary<StringWithNotBlank> sut = SUT.giveMeArbitrary(StringWithNotBlank.class)
 			.ignoreException(NullPointerException.class);
 
 		thenNoException()
@@ -572,7 +469,7 @@ class FixtureMonkeyTest {
 	@Example
 	void giveMeBuilderBuildDontShrinkInvalidThenSampleThrowsTooManyFilterMissesException() {
 		// when
-		Arbitrary<StringWithNotBlankWrapperClass> sut = this.sut.giveMeBuilder(StringWithNotBlankWrapperClass.class)
+		Arbitrary<StringWithNotBlank> sut = SUT.giveMeBuilder(StringWithNotBlank.class)
 			.set("value", "")
 			.build()
 			.dontShrink();
@@ -584,7 +481,7 @@ class FixtureMonkeyTest {
 	@Property
 	void giveMeArbitraryDontShrink() {
 		// given
-		Arbitrary<StringWithNotBlankWrapperClass> sut = this.sut.giveMeArbitrary(StringWithNotBlankWrapperClass.class)
+		Arbitrary<StringWithNotBlank> sut = SUT.giveMeArbitrary(StringWithNotBlank.class)
 			.dontShrink();
 
 		thenNoException()
@@ -594,7 +491,7 @@ class FixtureMonkeyTest {
 	@Example
 	void giveMeBuilderBuildEdgeCasesInvalidThenSampleThrowsTooManyFilterMissesException() {
 		// when
-		Arbitrary<StringWithNotBlankWrapperClass> sut = this.sut.giveMeBuilder(StringWithNotBlankWrapperClass.class)
+		Arbitrary<StringWithNotBlank> sut = SUT.giveMeBuilder(StringWithNotBlank.class)
 			.set("value", "")
 			.build()
 			.edgeCases(it -> {
@@ -607,7 +504,7 @@ class FixtureMonkeyTest {
 	@Property
 	void giveMeArbitraryEdgeCases() {
 		// given
-		Arbitrary<StringWithNotBlankWrapperClass> sut = this.sut.giveMeArbitrary(StringWithNotBlankWrapperClass.class)
+		Arbitrary<StringWithNotBlank> sut = SUT.giveMeArbitrary(StringWithNotBlank.class)
 			.edgeCases(it -> {
 			});
 
@@ -618,7 +515,7 @@ class FixtureMonkeyTest {
 	@Example
 	void giveMeBuilderBuildInjectNullInvalidThenSampleThrowsTooManyFilterMissesException() {
 		// when
-		Arbitrary<StringWithNotBlankWrapperClass> sut = this.sut.giveMeBuilder(StringWithNotBlankWrapperClass.class)
+		Arbitrary<StringWithNotBlank> sut = SUT.giveMeBuilder(StringWithNotBlank.class)
 			.set("value", "")
 			.build()
 			.injectNull(0);
@@ -630,10 +527,10 @@ class FixtureMonkeyTest {
 	@Example
 	void giveMeArbitraryInjectNull() {
 		// given
-		Arbitrary<StringWithNotBlankWrapperClass> sut = this.sut.giveMeArbitrary(StringWithNotBlankWrapperClass.class)
+		Arbitrary<StringWithNotBlank> sut = SUT.giveMeArbitrary(StringWithNotBlank.class)
 			.injectNull(1);
 
-		StringWithNotBlankWrapperClass actual = sut.sample();
+		StringWithNotBlank actual = sut.sample();
 
 		then(actual).isNull();
 	}
@@ -641,7 +538,7 @@ class FixtureMonkeyTest {
 	@Example
 	void giveMeBuilderBuildFlatMapInvalidThenSampleThrowsTooManyFilterMissesException() {
 		// when
-		Arbitrary<String> sut = this.sut.giveMeBuilder(StringWithNotBlankWrapperClass.class)
+		Arbitrary<String> sut = SUT.giveMeBuilder(StringWithNotBlank.class)
 			.set("value", "")
 			.build()
 			.flatMap(it -> Arbitraries.just("String"));
@@ -653,7 +550,7 @@ class FixtureMonkeyTest {
 	@Example
 	void giveMeArbitraryFlatMap() {
 		// given
-		Arbitrary<String> sut = this.sut.giveMeArbitrary(StringWithNotBlankWrapperClass.class)
+		Arbitrary<String> sut = SUT.giveMeArbitrary(StringWithNotBlank.class)
 			.flatMap(it -> Arbitraries.just("String"));
 
 		String actual = sut.sample();
@@ -664,7 +561,7 @@ class FixtureMonkeyTest {
 	@Example
 	void giveMeBuilderBuildMapInvalidThenSampleThrowsTooManyFilterMissesException() {
 		// when
-		Arbitrary<StringWithNotBlankWrapperClass> sut = this.sut.giveMeBuilder(StringWithNotBlankWrapperClass.class)
+		Arbitrary<StringWithNotBlank> sut = SUT.giveMeBuilder(StringWithNotBlank.class)
 			.set("value", "")
 			.build()
 			.map(it -> it);
@@ -676,11 +573,11 @@ class FixtureMonkeyTest {
 	@Property
 	void giveMeArbitraryMap() {
 		// given
-		Arbitrary<StringWithNotBlankWrapperClass> sut = this.sut.giveMeArbitrary(StringWithNotBlankWrapperClass.class)
+		Arbitrary<StringWithNotBlank> sut = SUT.giveMeArbitrary(StringWithNotBlank.class)
 			.map(it -> it);
 
 		// when
-		StringWithNotBlankWrapperClass actual = sut.sample();
+		StringWithNotBlank actual = sut.sample();
 
 		then(actual).isNotNull();
 	}
@@ -688,7 +585,7 @@ class FixtureMonkeyTest {
 	@Example
 	void giveMeBuilderBuildFilterInvalidThenSampleThrowsTooManyFilterMissesException() {
 		// when
-		Arbitrary<StringWithNotBlankWrapperClass> sut = this.sut.giveMeBuilder(StringWithNotBlankWrapperClass.class)
+		Arbitrary<StringWithNotBlank> sut = SUT.giveMeBuilder(StringWithNotBlank.class)
 			.set("value", "")
 			.build()
 			.filter(it -> true);
@@ -700,11 +597,11 @@ class FixtureMonkeyTest {
 	@Property
 	void giveMeArbitraryFilter() {
 		// given
-		Arbitrary<StringWithNotBlankWrapperClass> sut = this.sut.giveMeArbitrary(StringWithNotBlankWrapperClass.class)
+		Arbitrary<StringWithNotBlank> sut = SUT.giveMeArbitrary(StringWithNotBlank.class)
 			.filter(it -> true);
 
 		// when
-		StringWithNotBlankWrapperClass actual = sut.sample();
+		StringWithNotBlank actual = sut.sample();
 
 		then(actual).isNotNull();
 	}
@@ -712,7 +609,7 @@ class FixtureMonkeyTest {
 	@Example
 	void giveMeBuilderBuildAsGenericInvalidThenSampleThrowsTooManyFilterMissesException() {
 		// when
-		Arbitrary<Object> sut = this.sut.giveMeBuilder(StringWithNotBlankWrapperClass.class)
+		Arbitrary<Object> sut = SUT.giveMeBuilder(StringWithNotBlank.class)
 			.set("value", "")
 			.build()
 			.asGeneric();
@@ -724,7 +621,7 @@ class FixtureMonkeyTest {
 	@Property
 	void giveMeArbitraryAsGeneric() {
 		// given
-		Arbitrary<Object> sut = this.sut.giveMeArbitrary(StringWithNotBlankWrapperClass.class)
+		Arbitrary<Object> sut = SUT.giveMeArbitrary(StringWithNotBlank.class)
 			.asGeneric();
 
 		// when
@@ -736,28 +633,25 @@ class FixtureMonkeyTest {
 	@Property
 	void setAfterBuildNotAffected() {
 		// given
-		ArbitraryBuilder<StringWrapperClass> builder = this.sut.giveMeBuilder(StringWrapperClass.class);
-		Arbitrary<StringWrapperClass> build = builder.build();
+		ArbitraryBuilder<StringWithNotBlank> builder = SUT.giveMeBuilder(StringWithNotBlank.class);
+		Arbitrary<StringWithNotBlank> build = builder.build();
 
 		// when
-		ArbitraryBuilder<StringWrapperClass> actual = builder.set("value", "set");
+		ArbitraryBuilder<StringWithNotBlank> actual = builder.set("value", "set");
 
-		StringWrapperClass actualSample = actual.sample();
-		StringWrapperClass buildSample = build.sample();
+		StringWithNotBlank actualSample = actual.sample();
+		StringWithNotBlank buildSample = build.sample();
 		then(actualSample).isNotEqualTo(buildSample);
-		then(actualSample.value).isEqualTo("set");
+		then(actualSample.getValue()).isEqualTo("set");
 	}
 
 	@Property
-	void giveMeNotEmpty() {
-		// when
-		IntegerListWithNotEmptyWrapperClass actual = this.sut.giveMeBuilder(IntegerListWithNotEmptyWrapperClass.class)
-			.sample();
-
-		then(actual.values).isNotEmpty();
+	@Domain(FixtureMonkeyTestSpecs.class)
+	void giveMeNotEmpty(@ForAll IntegerListWithNotEmpty actual) {
+		then(actual.getValues()).isNotEmpty();
 	}
 
-	@Property
+	@Example
 	void addExceptGenerate() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
@@ -765,104 +659,90 @@ class FixtureMonkeyTest {
 			.build();
 
 		// when
-		ExceptGenerateClass actual = sut.giveMeOne(ExceptGenerateClass.class);
+		IntWithAnnotation actual = sut.giveMeOne(IntWithAnnotation.class);
 
 		then(actual).isNull();
 	}
 
 	@Property
-	void giveMeSizeListSmallerThanValueWhenDecomposed() {
+	void giveMeSizeListSmallerThanValueWhenDecomposed(@ForAll @Size(3) List<Integer> values) {
 		// given
-		List<Integer> values = new ArrayList<>();
-		values.add(1);
-		values.add(2);
-		values.add(3);
-		IntegerListWrapperClass value = new IntegerListWrapperClass();
+		IntegerListWithNotEmpty value = new IntegerListWithNotEmpty();
 		value.setValues(values);
 
 		// when
-		IntegerListWrapperClass actual = this.sut.giveMeBuilder(value)
+		IntegerListWithNotEmpty actual = SUT.giveMeBuilder(value)
 			.size("values", 1)
 			.sample();
 
-		then(actual.values).hasSize(1);
-		then(actual.values.get(0)).isEqualTo(1);
+		then(actual.getValues()).hasSize(1);
+		then(actual.getValues().get(0)).isEqualTo(values.get(0));
 	}
 
 	@Property
-	void giveMeSizeListBiggerThanValueWhenDecomposed() {
+	void giveMeSizeListBiggerThanValueWhenDecomposed(@ForAll @Size(3) List<Integer> values) {
 		// given
-		List<Integer> values = new ArrayList<>();
-		values.add(1);
-		values.add(2);
-		values.add(3);
-		IntegerListWrapperClass value = new IntegerListWrapperClass();
+		IntegerListWithNotEmpty value = new IntegerListWithNotEmpty();
 		value.setValues(values);
 
 		// when
-		IntegerListWrapperClass actual = this.sut.giveMeBuilder(value)
+		IntegerListWithNotEmpty actual = SUT.giveMeBuilder(value)
 			.size("values", 5)
 			.sample();
 
-		then(actual.values).hasSize(5);
-		then(actual.values.get(0)).isEqualTo(1);
-		then(actual.values.get(1)).isEqualTo(2);
-		then(actual.values.get(2)).isEqualTo(3);
+		then(actual.getValues()).hasSize(5);
+		then(actual.getValues().get(0)).isEqualTo(values.get(0));
+		then(actual.getValues().get(1)).isEqualTo(values.get(1));
+		then(actual.getValues().get(2)).isEqualTo(values.get(2));
 	}
 
 	@Property
-	void giveMeSizeArraySmallerThanValueWhenDecomposed() {
+	void giveMeSizeArraySmallerThanValueWhenDecomposed(@ForAll @Size(3) Integer[] values) {
 		// given
-		Integer[] values = new Integer[] {1, 2, 3};
-		IntegerArrayWrapperClass value = new IntegerArrayWrapperClass();
+		IntegerArray value = new IntegerArray();
 		value.setValues(values);
 
 		// when
-		IntegerArrayWrapperClass actual = this.sut.giveMeBuilder(value)
+		IntegerArray actual = SUT.giveMeBuilder(value)
 			.size("values", 1)
 			.sample();
 
-		then(actual.values).hasSize(1);
-		then(actual.values[0]).isEqualTo(1);
+		then(actual.getValues()).hasSize(1);
+		then(actual.getValues()[0]).isEqualTo(values[0]);
 	}
 
 	@Property
-	void giveMeSizeArrayBiggerThanValueWhenDecomposed() {
+	void giveMeSizeArrayBiggerThanValueWhenDecomposed(@ForAll @Size(3) Integer[] values) {
 		// given
-		Integer[] values = new Integer[] {1, 2, 3};
-		IntegerArrayWrapperClass value = new IntegerArrayWrapperClass();
+		IntegerArray value = new IntegerArray();
 		value.setValues(values);
 
 		// when
-		IntegerArrayWrapperClass actual = this.sut.giveMeBuilder(value)
+		IntegerArray actual = SUT.giveMeBuilder(value)
 			.size("values", 5)
 			.sample();
 
-		then(actual.values).hasSize(5);
-		then(actual.values[0]).isEqualTo(1);
-		then(actual.values[1]).isEqualTo(2);
-		then(actual.values[2]).isEqualTo(3);
+		then(actual.getValues()).hasSize(5);
+		then(actual.getValues()[0]).isEqualTo(values[0]);
+		then(actual.getValues()[1]).isEqualTo(values[1]);
+		then(actual.getValues()[2]).isEqualTo(values[2]);
 	}
 
 	@Property
-	void giveMeInterface() {
-		// when
-		InterfaceWrapper actual = this.sut.giveMeBuilder(InterfaceWrapper.class)
-			.setNotNull("value")
-			.sample();
-
-		then(actual.value.get()).isEqualTo("test");
+	@Domain(FixtureMonkeyTestSpecs.class)
+	void giveMeInterfaceIsNull(@ForAll InterfaceWrapper actual) {
+		then(actual.getValue()).isNull();
 	}
 
 	@Property
 	void giveMeInterfaceWithDefaultInterfaceSupplier() {
-		// given
-		FixtureMonkey sut = FixtureMonkey.builder().build();
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.addInterfaceSupplier(MockInterface.class, (type) -> () -> "test")
+			.build();
 
-		// when
 		InterfaceWrapper actual = sut.giveMeOne(InterfaceWrapper.class);
 
-		then(actual.value).isNull();
+		then(actual.getValue().get()).isEqualTo("test");
 	}
 
 	@Property
@@ -873,9 +753,9 @@ class FixtureMonkeyTest {
 			.build();
 
 		// when
-		StringWrapperClass actual = sut.giveMeOne(StringWrapperClass.class);
+		StringWithNullable actual = sut.giveMeOne(StringWithNullable.class);
 
-		then(actual.value).isNull();
+		then(actual.getValue()).isNull();
 	}
 
 	@Property
@@ -887,9 +767,9 @@ class FixtureMonkeyTest {
 			.build();
 
 		// when
-		StringWrapperClass actual = sut.giveMeOne(StringWrapperClass.class);
+		StringWithNullable actual = sut.giveMeOne(StringWithNullable.class);
 
-		then(actual.value).isNotNull();
+		then(actual.getValue()).isNull();
 	}
 
 	@Property
@@ -901,71 +781,72 @@ class FixtureMonkeyTest {
 			.build();
 
 		// when
-		StringWithNullableWrapperClass actual = sut.giveMeOne(StringWithNullableWrapperClass.class);
+		StringWithNullable actual = sut.giveMeOne(StringWithNullable.class);
 
-		then(actual.value).isNull();
+		then(actual.getValue()).isNull();
 	}
 
 	@Property
 	void giveMeNotBlankString() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.nullInject(1.0)
+			.nullInject(1.0d)
 			.build();
 
 		// when
-		StringWithNotBlankWrapperClass actual = sut.giveMeOne(StringWithNotBlankWrapperClass.class);
+		StringWithNotBlank actual = sut.giveMeOne(StringWithNotBlank.class);
 
-		then(actual.value).isNotNull();
+		then(actual.getValue()).isNotNull();
 	}
 
 	@Property
-	void mapIntegerListClassBiggerThanMapped() {
+	@Domain(FixtureMonkeyTestSpecs.class)
+	void mapIntegerListClassBiggerThanMapped(@ForAll @Size(1) List<Integer> values) {
 		// given
-		IntegerListWrapperClass mapped = sut.giveMeBuilder(IntegerListWrapperClass.class)
-			.size("values", 1)
-			.sample();
+		IntegerListWithNotEmpty mapped = new IntegerListWithNotEmpty();
+		mapped.setValues(values);
 
 		// when
-		IntegerListWrapperClass actual = sut.giveMeBuilder(mapped)
+		IntegerListWithNotEmpty actual = SUT.giveMeBuilder(mapped)
 			.size("values", 2)
 			.sample();
 
-		then(actual.values).hasSize(2);
-		then(actual.values.get(1)).isNotNull();
+		then(actual.getValues()).hasSize(2);
+		then(actual.getValues().get(1)).isNotNull();
 	}
 
 	@Property
 	void decomposeNullIsNotGenerated() {
 		// given
-		StringWrapperIntegerWrapperClass decomposed = new StringWrapperIntegerWrapperClass();
-		IntegerWrapperClass value2 = new IntegerWrapperClass();
-		value2.value = 1;
+		StringAndInt decomposed = new StringAndInt();
+		decomposed.setValue1(null);
+		IntWithAnnotation value2 = new IntWithAnnotation();
+		value2.setValue(1);
 		decomposed.setValue2(value2);
 
 		// when
-		StringWrapperIntegerWrapperClass actual = this.sut.giveMeBuilder(decomposed)
-			.sample();
+		StringAndInt actual = SUT.giveMeBuilder(decomposed).sample();
 
-		then(actual.value1).isNull();
-		then(actual.value2.value).isEqualTo(1);
+		then(actual.getValue1()).isNull();
+		then(actual.getValue2().getValue()).isEqualTo(1);
 	}
 
 	@Property
 	void decomposeNullSetThenGenerate() {
 		// given
-		StringWrapperIntegerWrapperClass decomposed = new StringWrapperIntegerWrapperClass();
-		IntegerWrapperClass value2 = new IntegerWrapperClass();
-		value2.value = 1;
+		StringAndInt decomposed = new StringAndInt();
+		decomposed.setValue1(null);
+		IntWithAnnotation value2 = new IntWithAnnotation();
+		value2.setValue(1);
 		decomposed.setValue2(value2);
 
 		// when
-		StringWrapperIntegerWrapperClass actual = this.sut.giveMeBuilder(decomposed)
+		StringAndInt actual = SUT.giveMeBuilder(decomposed)
 			.set("value1.value", "abc")
 			.sample();
 
-		then(actual.value1.value).isEqualTo("abc");
-		then(actual.value2.value).isEqualTo(1);
+		then(actual.getValue1().getValue()).isEqualTo("abc");
+		then(actual.getValue2().getValue()).isEqualTo(1);
 	}
 
 	@Property
@@ -976,9 +857,9 @@ class FixtureMonkeyTest {
 			.build();
 
 		// when
-		StringWrapperClass actual = sut.giveMeOne(StringWrapperClass.class);
+		StringWithNotBlank actual = sut.giveMeOne(StringWithNotBlank.class);
 
-		then(actual.value).isEqualTo("definition");
+		then(actual.getValue()).isEqualTo("definition");
 	}
 
 	@Property
@@ -989,9 +870,9 @@ class FixtureMonkeyTest {
 			.build();
 
 		// when
-		StringWrapperIntegerWrapperClass actual = sut.giveMeOne(StringWrapperIntegerWrapperClass.class);
+		StringAndInt actual = sut.giveMeOne(StringAndInt.class);
 
-		then(actual.value1.value).isEqualTo("definition");
+		then(actual.getValue1().getValue()).isEqualTo("definition");
 	}
 
 	@Property
@@ -1002,11 +883,11 @@ class FixtureMonkeyTest {
 			.build();
 
 		// when
-		StringWrapperIntegerWrapperClass actual = sut.giveMeBuilder(StringWrapperIntegerWrapperClass.class)
+		StringAndInt actual = sut.giveMeBuilder(StringAndInt.class)
 			.set("value1.value", "set")
 			.sample();
 
-		then(actual.value1.value).isEqualTo("set");
+		then(actual.getValue1().getValue()).isEqualTo("set");
 	}
 
 	@Property
@@ -1017,10 +898,10 @@ class FixtureMonkeyTest {
 			.build();
 
 		// when
-		NestedStringWrapperListClass actual = sut.giveMeBuilder(NestedStringWrapperListClass.class)
+		NestedStringWithNotBlankList actual = sut.giveMeBuilder(NestedStringWithNotBlankList.class)
 			.sample();
 
-		then(actual.values).allMatch(it -> it.value.equals("definition"));
+		then(actual.getValues()).allMatch(it -> it.getValue().equals("definition"));
 	}
 
 	@Property
@@ -1028,15 +909,15 @@ class FixtureMonkeyTest {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.register(
-				StringWrapperClass.class,
-				it -> it.giveMeBuilder(StringWrapperClass.class).set("value", "definition")
+				StringWithNotBlank.class,
+				it -> it.giveMeBuilder(StringWithNotBlank.class).set("value", "definition")
 			)
 			.build();
 
 		// when
-		StringWrapperClass actual = sut.giveMeOne(StringWrapperClass.class);
+		StringWithNotBlank actual = sut.giveMeOne(StringWithNotBlank.class);
 
-		then(actual.value).isEqualTo("definition");
+		then(actual.getValue()).isEqualTo("definition");
 	}
 
 	@Property
@@ -1044,15 +925,15 @@ class FixtureMonkeyTest {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.register(
-				StringWrapperClass.class,
-				it -> it.giveMeBuilder(StringWrapperClass.class).set("value", "definition")
+				StringWithNotBlank.class,
+				it -> it.giveMeBuilder(StringWithNotBlank.class).set("value", "definition")
 			)
 			.build();
 
 		// when
-		StringWrapperIntegerWrapperClass actual = sut.giveMeOne(StringWrapperIntegerWrapperClass.class);
+		StringAndInt actual = sut.giveMeOne(StringAndInt.class);
 
-		then(actual.value1.value).isEqualTo("definition");
+		then(actual.getValue1().getValue()).isEqualTo("definition");
 	}
 
 	@Property
@@ -1060,17 +941,17 @@ class FixtureMonkeyTest {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.register(
-				StringWrapperClass.class,
-				it -> it.giveMeBuilder(StringWrapperClass.class).set("value", "definition")
+				StringWithNotBlank.class,
+				it -> it.giveMeBuilder(StringWithNotBlank.class).set("value", "definition")
 			)
 			.build();
 
 		// when
-		StringWrapperIntegerWrapperClass actual = sut.giveMeBuilder(StringWrapperIntegerWrapperClass.class)
+		StringAndInt actual = sut.giveMeBuilder(StringAndInt.class)
 			.set("value1.value", "set")
 			.sample();
 
-		then(actual.value1.value).isEqualTo("set");
+		then(actual.getValue1().getValue()).isEqualTo("set");
 	}
 
 	@Property
@@ -1078,16 +959,16 @@ class FixtureMonkeyTest {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.register(
-				StringWrapperClass.class,
-				it -> it.giveMeBuilder(StringWrapperClass.class).set("value", "definition")
+				StringWithNotBlank.class,
+				it -> it.giveMeBuilder(StringWithNotBlank.class).set("value", "definition")
 			)
 			.build();
 
 		// when
-		NestedStringWrapperListClass actual = sut.giveMeBuilder(NestedStringWrapperListClass.class)
+		NestedStringWithNotBlankList actual = sut.giveMeBuilder(NestedStringWithNotBlankList.class)
 			.sample();
 
-		then(actual.values).allMatch(it -> it.value.equals("definition"));
+		then(actual.getValues()).allMatch(it -> it.getValue().equals("definition"));
 	}
 
 	@Property
@@ -1095,12 +976,12 @@ class FixtureMonkeyTest {
 		thenThrownBy(() ->
 			FixtureMonkey.builder()
 				.register(
-					StringWrapperClass.class,
-					it -> it.giveMeBuilder(StringWrapperClass.class).set("value", "definition")
+					StringWithNotBlank.class,
+					it -> it.giveMeBuilder(StringWithNotBlank.class).set("value", "definition")
 				)
 				.register(
-					StringWrapperClass.class,
-					it -> it.giveMeBuilder(StringWrapperClass.class).set("value", "error")
+					StringWithNotBlank.class,
+					it -> it.giveMeBuilder(StringWithNotBlank.class).set("value", "error")
 				)
 				.build())
 			.isExactlyInstanceOf(IllegalArgumentException.class)
@@ -1136,15 +1017,15 @@ class FixtureMonkeyTest {
 			.build();
 
 		// when
-		StringWrapperClass actual = sut.giveMeOne(StringWrapperClass.class);
+		StringWithNullable actual = sut.giveMeOne(StringWithNullable.class);
 
-		then(actual.value).isNull();
+		then(actual.getValue()).isNull();
 	}
 
 	@Property
 	void isDirtyReturnsFalse() {
 		// given
-		ArbitraryBuilder<StringWrapperClass> arbitraryBuilder = this.sut.giveMeBuilder(StringWrapperClass.class);
+		ArbitraryBuilder<StringWithNotBlank> arbitraryBuilder = SUT.giveMeBuilder(StringWithNotBlank.class);
 
 		// when
 		boolean changed = arbitraryBuilder.isDirty();
@@ -1155,7 +1036,7 @@ class FixtureMonkeyTest {
 	@Property
 	void isDirtyReturnsTrue() {
 		// given
-		ArbitraryBuilder<StringWrapperClass> arbitraryBuilder = this.sut.giveMeBuilder(StringWrapperClass.class)
+		ArbitraryBuilder<StringWithNotBlank> arbitraryBuilder = SUT.giveMeBuilder(StringWithNotBlank.class)
 			.set("value", "test");
 
 		// when
@@ -1167,7 +1048,7 @@ class FixtureMonkeyTest {
 	@Property
 	void isDirtyWhenManipulatedAndSampledReturnsTrue() {
 		// given
-		ArbitraryBuilder<StringWrapperClass> arbitraryBuilder = this.sut.giveMeBuilder(StringWrapperClass.class)
+		ArbitraryBuilder<StringWithNotBlank> arbitraryBuilder = SUT.giveMeBuilder(StringWithNotBlank.class)
 			.set("value", "test");
 		arbitraryBuilder.sample();
 
@@ -1180,7 +1061,7 @@ class FixtureMonkeyTest {
 	@Property
 	void isDirtyWhenManipulatedAndFixedReturnsFalse() {
 		// given
-		ArbitraryBuilder<StringWrapperClass> arbitraryBuilder = this.sut.giveMeBuilder(StringWrapperClass.class)
+		ArbitraryBuilder<StringWithNotBlank> arbitraryBuilder = SUT.giveMeBuilder(StringWithNotBlank.class)
 			.set("value", "test")
 			.fixed();
 
@@ -1193,7 +1074,7 @@ class FixtureMonkeyTest {
 	@Property
 	void isDirtyWhenManipulatedAndFixedAndManipulatedReturnsFalse() {
 		// given
-		ArbitraryBuilder<StringWrapperClass> arbitraryBuilder = this.sut.giveMeBuilder(StringWrapperClass.class)
+		ArbitraryBuilder<StringWithNotBlank> arbitraryBuilder = SUT.giveMeBuilder(StringWithNotBlank.class)
 			.set("value", "test")
 			.fixed()
 			.set("value", "fixed");
@@ -1207,7 +1088,7 @@ class FixtureMonkeyTest {
 	@Property
 	void isDirtyWhenManipulatedAndApplyReturnsFalse() {
 		// given
-		ArbitraryBuilder<StringWrapperClass> arbitraryBuilder = this.sut.giveMeBuilder(StringWrapperClass.class)
+		ArbitraryBuilder<StringWithNotBlank> arbitraryBuilder = SUT.giveMeBuilder(StringWithNotBlank.class)
 			.set("value", "test")
 			.apply((builder, it) -> {
 			});
@@ -1221,7 +1102,7 @@ class FixtureMonkeyTest {
 	@Property
 	void isDirtyWhenManipulatedAndAcceptIfReturnsFalse() {
 		// given
-		ArbitraryBuilder<StringWrapperClass> arbitraryBuilder = this.sut.giveMeBuilder(StringWrapperClass.class)
+		ArbitraryBuilder<StringWithNotBlank> arbitraryBuilder = SUT.giveMeBuilder(StringWithNotBlank.class)
 			.set("value", "test")
 			.acceptIf(it -> true, it -> {
 			});
@@ -1235,7 +1116,7 @@ class FixtureMonkeyTest {
 	@Property
 	void isDirtyWhenManipulatedAndApplyAndManipulatedReturnsTrue() {
 		// given
-		ArbitraryBuilder<StringWrapperClass> arbitraryBuilder = this.sut.giveMeBuilder(StringWrapperClass.class)
+		ArbitraryBuilder<StringWithNotBlank> arbitraryBuilder = SUT.giveMeBuilder(StringWithNotBlank.class)
 			.set("value", "test")
 			.apply((builder, it) -> {
 			})
@@ -1250,7 +1131,7 @@ class FixtureMonkeyTest {
 	@Property
 	void isDirtyWhenManipulatedAndAcceptIfAndManipulatedReturnsTrue() {
 		// given
-		ArbitraryBuilder<StringWrapperClass> arbitraryBuilder = this.sut.giveMeBuilder(StringWrapperClass.class)
+		ArbitraryBuilder<StringWithNotBlank> arbitraryBuilder = SUT.giveMeBuilder(StringWithNotBlank.class)
 			.set("value", "test")
 			.acceptIf(it -> true, it -> {
 			})
@@ -1265,7 +1146,7 @@ class FixtureMonkeyTest {
 	@Property
 	void isDirtyWhenApplyAndFixedAndManipulatedReturnsTrue() {
 		// given
-		ArbitraryBuilder<StringWrapperClass> arbitraryBuilder = this.sut.giveMeBuilder(StringWrapperClass.class)
+		ArbitraryBuilder<StringWithNotBlank> arbitraryBuilder = SUT.giveMeBuilder(StringWithNotBlank.class)
 			.apply((builder, it) -> {
 			})
 			.fixed()
@@ -1280,7 +1161,7 @@ class FixtureMonkeyTest {
 	@Property
 	void isDirtyWhenApplyAndFixedReturnsFalse() {
 		// given
-		ArbitraryBuilder<StringWrapperClass> arbitraryBuilder = this.sut.giveMeBuilder(StringWrapperClass.class)
+		ArbitraryBuilder<StringWithNotBlank> arbitraryBuilder = SUT.giveMeBuilder(StringWithNotBlank.class)
 			.apply((builder, it) -> {
 			})
 			.fixed();
@@ -1294,7 +1175,7 @@ class FixtureMonkeyTest {
 	@Property
 	void isDirtyWhenAcceptIfAndFixedReturnsFalse() {
 		// given
-		ArbitraryBuilder<StringWrapperClass> arbitraryBuilder = this.sut.giveMeBuilder(StringWrapperClass.class)
+		ArbitraryBuilder<StringWithNotBlank> arbitraryBuilder = SUT.giveMeBuilder(StringWithNotBlank.class)
 			.acceptIf(it -> true, it -> {
 			})
 			.fixed();
@@ -1308,7 +1189,7 @@ class FixtureMonkeyTest {
 	@Property
 	void isDirtyWhenFixedAndApplyReturnsFalse() {
 		// given
-		ArbitraryBuilder<StringWrapperClass> arbitraryBuilder = this.sut.giveMeBuilder(StringWrapperClass.class)
+		ArbitraryBuilder<StringWithNotBlank> arbitraryBuilder = SUT.giveMeBuilder(StringWithNotBlank.class)
 			.fixed()
 			.apply((builder, it) -> {
 			});
@@ -1322,7 +1203,7 @@ class FixtureMonkeyTest {
 	@Property
 	void isDirtyWhenFixedAndAcceptIfReturnsFalse() {
 		// given
-		ArbitraryBuilder<StringWrapperClass> arbitraryBuilder = this.sut.giveMeBuilder(StringWrapperClass.class)
+		ArbitraryBuilder<StringWithNotBlank> arbitraryBuilder = SUT.giveMeBuilder(StringWithNotBlank.class)
 			.fixed()
 			.acceptIf(it -> true, it -> {
 			});
@@ -1334,10 +1215,10 @@ class FixtureMonkeyTest {
 	}
 
 	@Property
-	void isDirtyWhenDecomposeReturnsFalse() {
+	@Domain(FixtureMonkeyTestSpecs.class)
+	void isDirtyWhenDecomposeReturnsFalse(@ForAll StringWithNotBlank stringWithNotBlank) {
 		// given
-		StringWrapperClass stringWrapperClass = new StringWrapperClass("value");
-		ArbitraryBuilder<StringWrapperClass> arbitraryBuilder = this.sut.giveMeBuilder(stringWrapperClass);
+		ArbitraryBuilder<StringWithNotBlank> arbitraryBuilder = SUT.giveMeBuilder(stringWithNotBlank);
 
 		// when
 		boolean changed = arbitraryBuilder.isDirty();
@@ -1348,8 +1229,7 @@ class FixtureMonkeyTest {
 	@Property
 	void isDirtyWhenDecomposeAndManipulatedReturnsTrue() {
 		// given
-		StringWrapperClass stringWrapperClass = new StringWrapperClass("value");
-		ArbitraryBuilder<StringWrapperClass> arbitraryBuilder = this.sut.giveMeBuilder(stringWrapperClass)
+		ArbitraryBuilder<StringWithNotBlank> arbitraryBuilder = SUT.giveMeBuilder(StringWithNotBlank.class)
 			.set("value", "test");
 
 		// when
@@ -1362,9 +1242,9 @@ class FixtureMonkeyTest {
 	void isDirtyWhenRegisterReturnsFalse() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.register(StringWrapperClass.class, fixture -> fixture.giveMeBuilder(StringWrapperClass.class))
+			.register(StringWithNotBlank.class, fixture -> fixture.giveMeBuilder(StringWithNotBlank.class))
 			.build();
-		ArbitraryBuilder<StringWrapperClass> arbitraryBuilder = sut.giveMeBuilder(StringWrapperClass.class);
+		ArbitraryBuilder<StringWithNotBlank> arbitraryBuilder = sut.giveMeBuilder(StringWithNotBlank.class);
 
 		// when
 		boolean changed = arbitraryBuilder.isDirty();
@@ -1376,12 +1256,12 @@ class FixtureMonkeyTest {
 	void isDirtyWhenRegisterWithManipulatedReturnsTrue() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.register(StringWrapperClass.class, fixture ->
-				fixture.giveMeBuilder(StringWrapperClass.class)
+			.register(StringWithNotBlank.class, fixture ->
+				fixture.giveMeBuilder(StringWithNotBlank.class)
 					.set("value", "test")
 			)
 			.build();
-		ArbitraryBuilder<StringWrapperClass> arbitraryBuilder = sut.giveMeBuilder(StringWrapperClass.class);
+		ArbitraryBuilder<StringWithNotBlank> arbitraryBuilder = sut.giveMeBuilder(StringWithNotBlank.class);
 
 		// when
 		boolean changed = arbitraryBuilder.isDirty();
@@ -1393,13 +1273,13 @@ class FixtureMonkeyTest {
 	void isDirtyWhenRegisterWithManipulatedAndFixedReturnsFalse() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.register(StringWrapperClass.class, fixture ->
-				fixture.giveMeBuilder(StringWrapperClass.class)
+			.register(StringWithNotBlank.class, fixture ->
+				fixture.giveMeBuilder(StringWithNotBlank.class)
 					.set("value", "test")
 					.fixed()
 			)
 			.build();
-		ArbitraryBuilder<StringWrapperClass> arbitraryBuilder = sut.giveMeBuilder(StringWrapperClass.class);
+		ArbitraryBuilder<StringWithNotBlank> arbitraryBuilder = sut.giveMeBuilder(StringWithNotBlank.class);
 
 		// when
 		boolean changed = arbitraryBuilder.isDirty();
@@ -1411,14 +1291,14 @@ class FixtureMonkeyTest {
 	void isDirtyWhenRegisterWithManipulatedAndApplyReturnsFalse() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.register(StringWrapperClass.class, fixture ->
-				fixture.giveMeBuilder(StringWrapperClass.class)
+			.register(StringWithNotBlank.class, fixture ->
+				fixture.giveMeBuilder(StringWithNotBlank.class)
 					.set("value", "test")
 					.apply((it, builder) -> {
 					})
 			)
 			.build();
-		ArbitraryBuilder<StringWrapperClass> arbitraryBuilder = sut.giveMeBuilder(StringWrapperClass.class);
+		ArbitraryBuilder<StringWithNotBlank> arbitraryBuilder = sut.giveMeBuilder(StringWithNotBlank.class);
 
 		// when
 		boolean changed = arbitraryBuilder.isDirty();
@@ -1430,14 +1310,14 @@ class FixtureMonkeyTest {
 	void isDirtyWhenRegisterWithManipulatedAndAcceptIfReturnsFalse() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.register(StringWrapperClass.class, fixture ->
-				fixture.giveMeBuilder(StringWrapperClass.class)
+			.register(StringWithNotBlank.class, fixture ->
+				fixture.giveMeBuilder(StringWithNotBlank.class)
 					.set("value", "test")
 					.acceptIf(it -> true, it -> {
 					})
 			)
 			.build();
-		ArbitraryBuilder<StringWrapperClass> arbitraryBuilder = sut.giveMeBuilder(StringWrapperClass.class);
+		ArbitraryBuilder<StringWithNotBlank> arbitraryBuilder = sut.giveMeBuilder(StringWithNotBlank.class);
 
 		// when
 		boolean changed = arbitraryBuilder.isDirty();
@@ -1446,14 +1326,15 @@ class FixtureMonkeyTest {
 	}
 
 	@Property
-	void isDirtyWhenRegisterWithDecomposedReturnsFalse() {
+	@Domain(FixtureMonkeyTestSpecs.class)
+	void isDirtyWhenRegisterWithDecomposedReturnsFalse(@ForAll StringWithNotBlank stringWithNotBlank) {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.register(StringWrapperClass.class, fixture ->
-				fixture.giveMeBuilder(new StringWrapperClass("value"))
+			.register(StringWithNotBlank.class, fixture ->
+				fixture.giveMeBuilder(stringWithNotBlank)
 			)
 			.build();
-		ArbitraryBuilder<StringWrapperClass> arbitraryBuilder = sut.giveMeBuilder(StringWrapperClass.class);
+		ArbitraryBuilder<StringWithNotBlank> arbitraryBuilder = sut.giveMeBuilder(StringWithNotBlank.class);
 
 		// when
 		boolean changed = arbitraryBuilder.isDirty();
@@ -1462,15 +1343,16 @@ class FixtureMonkeyTest {
 	}
 
 	@Property
-	void isDirtyWhenRegisterWithDecomposedAndManipulatedReturnsTrue() {
+	@Domain(FixtureMonkeyTestSpecs.class)
+	void isDirtyWhenRegisterWithDecomposedAndManipulatedReturnsTrue(@ForAll StringWithNotBlank stringWithNotBlank) {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.register(StringWrapperClass.class, fixture ->
-				fixture.giveMeBuilder(new StringWrapperClass("value"))
+			.register(StringWithNotBlank.class, fixture ->
+				fixture.giveMeBuilder(stringWithNotBlank)
 					.set("value", "test")
 			)
 			.build();
-		ArbitraryBuilder<StringWrapperClass> arbitraryBuilder = sut.giveMeBuilder(StringWrapperClass.class);
+		ArbitraryBuilder<StringWithNotBlank> arbitraryBuilder = sut.giveMeBuilder(StringWithNotBlank.class);
 
 		// when
 		boolean changed = arbitraryBuilder.isDirty();
@@ -1479,228 +1361,19 @@ class FixtureMonkeyTest {
 	}
 
 	@Property
-	void giveMeListWithAnnotation() {
-		// when
-		ListWithAnnotationWrapperClass actual = this.sut.giveMeOne(ListWithAnnotationWrapperClass.class);
-
-		then(actual.values).isNotEmpty();
-		then(actual.values).allMatch(StringUtils::isNotBlank);
-	}
-
-	@Property
-	void giveMeListWithSameAnnotation() {
-		// when
-		ListWithSameAnnotationWrapperClass actual = this.sut.giveMeOne(ListWithSameAnnotationWrapperClass.class);
-
-		then(actual.values).isNotNull();
-		then(actual.values).allMatch(Objects::nonNull);
+	@Domain(FixtureMonkeyTestSpecs.class)
+	void giveMeListWithAnnotation(@ForAll ListWithAnnotation actual) {
+		then(actual.getValues()).isNotEmpty();
+		then(actual.getValues()).allMatch(StringUtils::isNotBlank);
 	}
 
 	@Property
 	void copyValidOnly() {
 		thenNoException()
-			.isThrownBy(() -> this.sut.giveMeBuilder(ListWithAnnotationWrapperClass.class)
+			.isThrownBy(() -> SUT.giveMeBuilder(ListWithAnnotation.class)
 				.size("values", 0)
 				.validOnly(false)
 				.copy()
 				.sample());
-	}
-
-	@Data
-	public static class IntegerWrapperClass {
-		int value;
-	}
-
-	@Data
-	public static class IntegerWithAnnotationWrapperClass {
-		@Positive
-		int value;
-	}
-
-	@Data
-	public static class IntegerListWrapperClass {
-		List<Integer> values;
-	}
-
-	@Data
-	@NoArgsConstructor
-	@AllArgsConstructor
-	public static class StringWrapperClass {
-		private String value;
-	}
-
-	@Data
-	@NoArgsConstructor
-	@AllArgsConstructor
-	public static class IntegerArrayWrapperClass {
-		private Integer[] values;
-	}
-
-	@Data
-	@NoArgsConstructor
-	@AllArgsConstructor
-	public static class IntArrayWrapperClass {
-		private int[] values;
-	}
-
-	@Data
-	@NoArgsConstructor
-	@AllArgsConstructor
-	public static class MapKeyIntegerValueIntegerWrapperClass {
-		private Map<Integer, Integer> values;
-	}
-
-	@Data
-	@NoArgsConstructor
-	@AllArgsConstructor
-	public static class MapKeyIntegerValueStringWrapperClass {
-		private Map<Integer, String> values;
-	}
-
-	@Data
-	@NoArgsConstructor
-	@AllArgsConstructor
-	public static class MapEntryKeyIntegerValueStringWrapperClass {
-		private Map.Entry<Integer, String> value;
-	}
-
-	@Data
-	@NoArgsConstructor
-	@AllArgsConstructor
-	public static class IntegerSetWrapperClass {
-		private Set<Integer> values;
-	}
-
-	@Data
-	@NoArgsConstructor
-	@AllArgsConstructor
-	public static class IntegerIterableWrapperClass {
-		private Iterable<Integer> values;
-	}
-
-	@Data
-	@Builder
-	@NoArgsConstructor
-	@AllArgsConstructor
-	public static class IntegerIteratorWrapperClass {
-		private Iterator<Integer> values;
-	}
-
-	@Data
-	@Builder
-	@NoArgsConstructor
-	@AllArgsConstructor
-	public static class IntegerStreamWrapperClass {
-		private Stream<Integer> values;
-	}
-
-	@Data
-	@Builder
-	@NoArgsConstructor
-	@AllArgsConstructor
-	public static class IntegerOptionalWrapperClass {
-		@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-		private Optional<Integer> value;
-	}
-
-	@Data
-	public static class NestedStringWrapperListClass {
-		private List<StringWrapperClass> values;
-	}
-
-	@Data
-	public static class OptionalClass {
-		@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-		private Optional<Integer> value;
-	}
-
-	@Data
-	public static class IntegerListWithNotEmptyWrapperClass {
-		@NotEmpty
-		private List<Integer> values;
-	}
-
-	@Data
-	public static class ExceptGenerateClass {
-		String value;
-	}
-
-	@Data
-	public static class StringWrapperIntegerWrapperClass {
-		StringWrapperClass value1;
-		IntegerWrapperClass value2;
-	}
-
-	public interface MockInterface {
-		String get();
-	}
-
-	@Data
-	public static class InterfaceWrapper {
-		MockInterface value;
-	}
-
-	@Data
-	public static class StringWithNullableWrapperClass {
-		@Nullable
-		String value;
-	}
-
-	@Data
-	public static class StringWithNotBlankWrapperClass {
-		@NotBlank
-		String value;
-	}
-
-	public static class DefaultArbitraryGroup {
-		public DefaultArbitraryGroup() {
-		}
-
-		public ArbitraryBuilder<StringWrapperClass> string(FixtureMonkey fixture) {
-			return fixture.giveMeBuilder(StringWrapperClass.class)
-				.set("value", "definition");
-		}
-	}
-
-	public static class DefaultArbitraryGroup2 {
-		public DefaultArbitraryGroup2() {
-		}
-
-		public ArbitraryBuilder<StringWrapperClass> string(FixtureMonkey fixture) {
-			return fixture.giveMeBuilder(StringWrapperClass.class)
-				.set("value", "definition");
-		}
-	}
-
-	public static class DuplicateArbitraryGroup {
-		public DuplicateArbitraryGroup() {
-		}
-
-		public ArbitraryBuilder<StringWrapperClass> string(FixtureMonkey fixture) {
-			return fixture.giveMeBuilder(StringWrapperClass.class)
-				.set("value", "definition");
-		}
-
-		public ArbitraryBuilder<StringWrapperClass> string2(FixtureMonkey fixture) {
-			return fixture.giveMeBuilder(StringWrapperClass.class)
-				.set("value", "error");
-		}
-	}
-
-	@Data
-	public static class NestedStringWrapperClass {
-		StringWrapperClass value;
-	}
-
-	@Data
-	public static class ListWithAnnotationWrapperClass {
-		@NotEmpty
-		List<@NotBlank String> values;
-	}
-
-	@Data
-	public static class ListWithSameAnnotationWrapperClass {
-		@NotNull
-		List<@NotNull String> values;
 	}
 }

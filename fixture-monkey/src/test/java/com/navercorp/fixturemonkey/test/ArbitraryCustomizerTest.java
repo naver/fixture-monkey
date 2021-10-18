@@ -18,106 +18,70 @@
 
 package com.navercorp.fixturemonkey.test;
 
+import static com.navercorp.fixturemonkey.test.ArbitraryCustomizeTestSpecs.SUT;
 import static org.assertj.core.api.BDDAssertions.then;
 
 import javax.annotation.Nullable;
 
 import net.jqwik.api.Arbitraries;
+import net.jqwik.api.ForAll;
 import net.jqwik.api.Property;
-
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import net.jqwik.api.domains.Domain;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.customizer.ArbitraryCustomizer;
 import com.navercorp.fixturemonkey.generator.FieldArbitraries;
+import com.navercorp.fixturemonkey.test.ArbitraryCustomizeTestSpecs.CustomizerInteger;
+import com.navercorp.fixturemonkey.test.ArbitraryCustomizeTestSpecs.IntValue;
+import com.navercorp.fixturemonkey.test.ArbitraryCustomizeTestSpecs.StringAndInt;
+import com.navercorp.fixturemonkey.test.ArbitraryCustomizeTestSpecs.StringValue;
 
-public class ArbitraryCustomizerTest {
-	private final FixtureMonkey sut = FixtureMonkey.builder()
-		.addCustomizer(CustomizerIntegerClass.class, new ArbitraryCustomizer<CustomizerIntegerClass>() {
-			@Override
-			public void customizeFields(Class<CustomizerIntegerClass> type, FieldArbitraries fieldArbitraries) {
-				fieldArbitraries.replaceArbitrary("value", Arbitraries.just(1));
-			}
-
-			@Override
-			public CustomizerIntegerClass customizeFixture(CustomizerIntegerClass object) {
-				return object;
-			}
-		})
-		.build();
-
+class ArbitraryCustomizerTest {
 	@Property
-	void giveMeWithCustomizer() {
-		// when
-		CustomizerIntegerClass actual = this.sut.giveMeBuilder(CustomizerIntegerClass.class).sample();
-
-		then(actual.value).isEqualTo(1);
+	@Domain(ArbitraryCustomizeTestSpecs.class)
+	void giveMeWithCustomizer(@ForAll CustomizerInteger actual) {
+		then(actual.getValue()).isEqualTo(1);
 	}
 
 	@Property
 	void giveMeCustomize() {
 		// when
-		IntegerWrapperClass actual = this.sut.giveMeBuilder(IntegerWrapperClass.class)
-			.customize(IntegerWrapperClass.class, new ArbitraryCustomizer<IntegerWrapperClass>() {
+		IntValue actual = SUT.giveMeBuilder(IntValue.class)
+			.customize(IntValue.class, new ArbitraryCustomizer<IntValue>() {
 				@Override
-				public void customizeFields(Class<IntegerWrapperClass> type, FieldArbitraries fieldArbitraries) {
+				public void customizeFields(Class<IntValue> type, FieldArbitraries fieldArbitraries) {
 					fieldArbitraries.replaceArbitrary("value", Arbitraries.just(1));
 				}
 
 				@Nullable
 				@Override
-				public IntegerWrapperClass customizeFixture(@Nullable IntegerWrapperClass object) {
+				public IntValue customizeFixture(@Nullable IntValue object) {
 					return object;
 				}
 			}).sample();
 
-		then(actual.value).isEqualTo(1);
+		then(actual.getValue()).isEqualTo(1);
 	}
 
 	@Property
 	void nestedCustomize() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.addCustomizer(StringWrapperClass.class, it -> new StringWrapperClass("test"))
-			.addCustomizer(IntegerWrapperClass.class, it -> {
-				IntegerWrapperClass integerWrapperClass = new IntegerWrapperClass();
-				integerWrapperClass.value = -1;
+			.addCustomizer(StringValue.class, it -> new StringValue("test"))
+			.addCustomizer(IntValue.class, it -> {
+				IntValue integerWrapperClass = new IntValue();
+				integerWrapperClass.setValue(-1);
 				return integerWrapperClass;
 			})
 			.build();
 
 		// when
-		StringIntegerWrapperClass actual = sut.giveMeBuilder(StringIntegerWrapperClass.class)
+		StringAndInt actual = sut.giveMeBuilder(StringAndInt.class)
 			.setNotNull("value1")
 			.setNotNull("value2")
 			.sample();
 
-		then(actual.value1.value).isEqualTo("test");
-		then(actual.value2.value).isEqualTo(-1);
-	}
-
-	@Data
-	public static class CustomizerIntegerClass {
-		Integer value;
-	}
-
-	@Data
-	public static class StringIntegerWrapperClass {
-		StringWrapperClass value1;
-		IntegerWrapperClass value2;
-	}
-
-	@Data
-	@NoArgsConstructor
-	@AllArgsConstructor
-	public static class StringWrapperClass {
-		private String value;
-	}
-
-	@Data
-	public static class IntegerWrapperClass {
-		int value;
+		then(actual.getValue1().getValue()).isEqualTo("test");
+		then(actual.getValue2().getValue()).isEqualTo(-1);
 	}
 }
