@@ -18,59 +18,68 @@
 
 package com.navercorp.fixturemonkey.test;
 
+import static com.navercorp.fixturemonkey.test.ComplexManipulatorTestSpecs.IntValue;
+import static com.navercorp.fixturemonkey.test.ComplexManipulatorTestSpecs.IntegerList;
+import static com.navercorp.fixturemonkey.test.ComplexManipulatorTestSpecs.NestedString;
+import static com.navercorp.fixturemonkey.test.ComplexManipulatorTestSpecs.SUT;
+import static com.navercorp.fixturemonkey.test.ComplexManipulatorTestSpecs.StringAndInt;
+import static com.navercorp.fixturemonkey.test.ComplexManipulatorTestSpecs.StringIntegerList;
+import static com.navercorp.fixturemonkey.test.ComplexManipulatorTestSpecs.StringValue;
+import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.assertj.core.api.BDDAssertions.thenThrownBy;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
 import net.jqwik.api.Property;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.ArbitraryBuilders;
 import com.navercorp.fixturemonkey.FixtureMonkey;
+import com.navercorp.fixturemonkey.test.ComplexManipulatorTestSpecs.AcceptIfArbitraryGroup;
+import com.navercorp.fixturemonkey.test.ComplexManipulatorTestSpecs.ApplyArbitraryGroup;
+import com.navercorp.fixturemonkey.test.ComplexManipulatorTestSpecs.ArbitraryGroup;
+import com.navercorp.fixturemonkey.test.ComplexManipulatorTestSpecs.Complex;
+import com.navercorp.fixturemonkey.test.ComplexManipulatorTestSpecs.FixedArbitraryGroup;
+import com.navercorp.fixturemonkey.test.ComplexManipulatorTestSpecs.FixedSetArbitraryArbitraryGroup;
+import com.navercorp.fixturemonkey.test.ComplexManipulatorTestSpecs.NestedStringList;
+import com.navercorp.fixturemonkey.test.ComplexManipulatorTestSpecs.SetArbitraryAcceptGroup;
+import com.navercorp.fixturemonkey.test.ComplexManipulatorTestSpecs.SetArbitraryArbitraryAcceptGroup;
 
-public class ComplexManipulatorTest {
-	private final FixtureMonkey sut = FixtureMonkey.builder()
-		.build();
-
+class ComplexManipulatorTest {
 	@Property
 	void giveMeAcceptIf() {
 		// when
-		StringWrapperClassWithPredicate actual = this.sut.giveMeBuilder(StringWrapperClassWithPredicate.class)
-			.acceptIf(StringWrapperClassWithPredicate::isEmpty, it -> it.set("value", "test"))
+		StringValue actual = SUT.giveMeBuilder(StringValue.class)
+			.acceptIf(StringValue::isEmpty, it -> it.set("value", "test"))
 			.sample();
 
 		then(actual).satisfiesAnyOf(
-			it -> then(it.value).isNotNull(),
-			it -> then(it.value).isEqualTo("test")
+			it -> then(it.getValue()).isNotNull(),
+			it -> then(it.getValue()).isEqualTo("test")
 		);
 	}
 
 	@Property
 	void giveMeAcceptIfWithNull() {
 		// when
-		StringIntegerListWrapperClass actual = this.sut.giveMeBuilder(StringIntegerListWrapperClass.class)
+		StringIntegerList actual = SUT.giveMeBuilder(StringIntegerList.class)
 			.set("value", "test")
-			.acceptIf(it -> it.value.equals("test"), builder -> builder.setNull("values"))
+			.acceptIf(it -> it.getValue().equals("test"), builder -> builder.setNull("values"))
 			.sample();
 
-		then(actual.values).isNull();
+		then(actual.getValues()).isNull();
 	}
 
 	@Property
 	void decomposedNullCollectionReturnsNull() {
 		// when
-		List<Integer> values = this.sut.giveMeBuilder(IntegerListWrapperClass.class)
+		List<Integer> values = SUT.giveMeBuilder(IntegerList.class)
 			.setNull("values")
-			.map(it -> it.values)
+			.map(IntegerList::getValues)
 			.sample();
 
 		then(values).isNull();
@@ -79,18 +88,18 @@ public class ComplexManipulatorTest {
 	@Property
 	void giveMeComplexApply() {
 		// when
-		StringWrapperIntegerWrapperClass actual = this.sut.giveMeBuilder(StringWrapperIntegerWrapperClass.class)
+		StringAndInt actual = SUT.giveMeBuilder(StringAndInt.class)
 			.setNotNull("value2")
-			.apply((it, builder) -> builder.set("value1.value", String.valueOf(it.value2.value)))
+			.apply((it, builder) -> builder.set("value1.value", String.valueOf(it.getValue2().getValue())))
 			.sample();
 
-		then(actual.value1.value).isEqualTo(String.valueOf(actual.value2.value));
+		then(actual.getValue1().getValue()).isEqualTo(String.valueOf(actual.getValue1().getValue()));
 	}
 
 	@Property
 	void acceptIfSetNull() {
 		// given
-		ArbitraryBuilder<NestedStringClass> decomposedBuilder = this.sut.giveMeBuilder(NestedStringClass.class)
+		ArbitraryBuilder<NestedString> decomposedBuilder = SUT.giveMeBuilder(NestedString.class)
 			.set("value.value", Arbitraries.strings())
 			.acceptIf(
 				s -> true,
@@ -98,42 +107,42 @@ public class ComplexManipulatorTest {
 			);
 
 		// when
-		NestedStringClass actual = decomposedBuilder.sample();
+		NestedString actual = decomposedBuilder.sample();
 
-		then(actual.value.value).isNull();
+		then(actual.getValue().getValue()).isNull();
 	}
 
 	@Property
 	void applySetNull() {
 		// given
-		ArbitraryBuilder<NestedStringClass> decomposedBuilder = this.sut.giveMeBuilder(NestedStringClass.class)
+		ArbitraryBuilder<NestedString> decomposedBuilder = SUT.giveMeBuilder(NestedString.class)
 			.set("value.value", Arbitraries.strings())
 			.apply((value, it) -> it.setNull("value.value"));
 
 		// when
-		NestedStringClass actual = decomposedBuilder.sample();
+		NestedString actual = decomposedBuilder.sample();
 
-		then(actual.value.value).isNull();
+		then(actual.getValue().getValue()).isNull();
 	}
 
 	@Property
 	void applySetAfterSetNull() {
 		// given
-		ArbitraryBuilder<NestedStringClass> decomposedBuilder = this.sut.giveMeBuilder(NestedStringClass.class)
+		ArbitraryBuilder<NestedString> decomposedBuilder = SUT.giveMeBuilder(NestedString.class)
 			.set("value.value", Arbitraries.strings())
 			.apply((value, it) -> it.setNull("value.value"))
 			.set("value.value", "test");
 
 		// when
-		NestedStringClass actual = decomposedBuilder.sample();
+		NestedString actual = decomposedBuilder.sample();
 
-		then(actual.value.value).isEqualTo("test");
+		then(actual.getValue().getValue()).isEqualTo("test");
 	}
 
 	@Property
 	void acceptIfSetAfterSetNull() {
 		// given
-		ArbitraryBuilder<NestedStringClass> decomposedBuilder = this.sut.giveMeBuilder(NestedStringClass.class)
+		ArbitraryBuilder<NestedString> decomposedBuilder = SUT.giveMeBuilder(NestedString.class)
 			.set("value.value", Arbitraries.strings())
 			.acceptIf(
 				s -> true,
@@ -142,31 +151,31 @@ public class ComplexManipulatorTest {
 			.set("value.value", "test");
 
 		// when
-		NestedStringClass actual = decomposedBuilder.sample();
+		NestedString actual = decomposedBuilder.sample();
 
-		then(actual.value.value).isEqualTo("test");
+		then(actual.getValue().getValue()).isEqualTo("test");
 	}
 
 	@Property
 	void giveMeZipList() {
 		// given
 		List<ArbitraryBuilder<?>> list = new ArrayList<>();
-		list.add(this.sut.giveMeBuilder(StringWrapperClass.class));
-		list.add(this.sut.giveMeBuilder(IntegerWrapperClass.class));
+		list.add(SUT.giveMeBuilder(StringValue.class));
+		list.add(SUT.giveMeBuilder(IntValue.class));
 
 		// when
-		StringWrapperIntegerWrapperClass actual = ArbitraryBuilders.zip(
+		StringAndInt actual = ArbitraryBuilders.zip(
 			list,
 			(l) -> {
-				StringWrapperIntegerWrapperClass result = new StringWrapperIntegerWrapperClass();
-				result.setValue1((StringWrapperClass)l.get(0));
-				result.setValue2((IntegerWrapperClass)l.get(1));
+				StringAndInt result = new StringAndInt();
+				result.setValue1((StringValue)l.get(0));
+				result.setValue2((IntValue)l.get(1));
 				return result;
 			}
 		).sample();
 
-		then(actual.value1).isNotNull();
-		then(actual.value2).isNotNull();
+		then(actual.getValue1()).isNotNull();
+		then(actual.getValue2()).isNotNull();
 	}
 
 	@Property
@@ -177,7 +186,7 @@ public class ComplexManipulatorTest {
 		thenThrownBy(
 			() -> ArbitraryBuilders.zip(
 				list,
-				(l) -> new StringWrapperIntegerWrapperClass()
+				(l) -> new StringAndInt()
 			).sample()
 		).isExactlyInstanceOf(IllegalArgumentException.class)
 			.hasMessageContaining("zip should be used in more than two ArbitraryBuilders, given size");
@@ -186,130 +195,130 @@ public class ComplexManipulatorTest {
 	@Property
 	void zipThree() {
 		// given
-		ArbitraryBuilder<StringWrapperClass> s1 = this.sut.giveMeBuilder(StringWrapperClass.class)
+		ArbitraryBuilder<StringValue> s1 = SUT.giveMeBuilder(StringValue.class)
 			.set("value", "s1");
-		ArbitraryBuilder<StringWrapperClass> s2 = this.sut.giveMeBuilder(StringWrapperClass.class)
+		ArbitraryBuilder<StringValue> s2 = SUT.giveMeBuilder(StringValue.class)
 			.set("value", "s2");
-		ArbitraryBuilder<StringWrapperClass> s3 = this.sut.giveMeBuilder(StringWrapperClass.class)
+		ArbitraryBuilder<StringValue> s3 = SUT.giveMeBuilder(StringValue.class)
 			.set("value", "s3");
 
 		// when
-		NestedStringListClass actual = ArbitraryBuilders.zip(s1, s2, s3, (a1, a2, a3) -> {
-			List<StringWrapperClass> list = new ArrayList<>();
+		NestedStringList actual = ArbitraryBuilders.zip(s1, s2, s3, (a1, a2, a3) -> {
+			List<StringValue> list = new ArrayList<>();
 			list.add(a1);
 			list.add(a2);
 			list.add(a3);
 
-			NestedStringListClass result = new NestedStringListClass();
+			NestedStringList result = new NestedStringList();
 			result.setValues(list);
 			return result;
 		}).sample();
 
-		then(actual.values).hasSize(3);
-		then(actual.values.get(0).value).isEqualTo("s1");
-		then(actual.values.get(1).value).isEqualTo("s2");
-		then(actual.values.get(2).value).isEqualTo("s3");
+		then(actual.getValues()).hasSize(3);
+		then(actual.getValues().get(0).getValue()).isEqualTo("s1");
+		then(actual.getValues().get(1).getValue()).isEqualTo("s2");
+		then(actual.getValues().get(2).getValue()).isEqualTo("s3");
 	}
 
 	@Property
 	void giveMeZipWithThree() {
 		// given
-		ArbitraryBuilder<StringWrapperClass> s1 = this.sut.giveMeBuilder(StringWrapperClass.class)
+		ArbitraryBuilder<StringValue> s1 = SUT.giveMeBuilder(StringValue.class)
 			.set("value", "s1");
-		ArbitraryBuilder<StringWrapperClass> s2 = this.sut.giveMeBuilder(StringWrapperClass.class)
+		ArbitraryBuilder<StringValue> s2 = SUT.giveMeBuilder(StringValue.class)
 			.set("value", "s2");
-		ArbitraryBuilder<StringWrapperClass> s3 = this.sut.giveMeBuilder(StringWrapperClass.class)
+		ArbitraryBuilder<StringValue> s3 = SUT.giveMeBuilder(StringValue.class)
 			.set("value", "s3");
 
 		// when
-		NestedStringListClass actual = s1.zipWith(s2, s3, (a1, a2, a3) -> {
-			List<StringWrapperClass> list = new ArrayList<>();
+		NestedStringList actual = s1.zipWith(s2, s3, (a1, a2, a3) -> {
+			List<StringValue> list = new ArrayList<>();
 			list.add(a1);
 			list.add(a2);
 			list.add(a3);
 
-			NestedStringListClass result = new NestedStringListClass();
+			NestedStringList result = new NestedStringList();
 			result.setValues(list);
 			return result;
 		}).sample();
 
-		then(actual.values).hasSize(3);
-		then(actual.values.get(0).value).isEqualTo("s1");
-		then(actual.values.get(1).value).isEqualTo("s2");
-		then(actual.values.get(2).value).isEqualTo("s3");
+		then(actual.getValues()).hasSize(3);
+		then(actual.getValues().get(0).getValue()).isEqualTo("s1");
+		then(actual.getValues().get(1).getValue()).isEqualTo("s2");
+		then(actual.getValues().get(2).getValue()).isEqualTo("s3");
 	}
 
 	@Property
 	void zipFour() {
 		// given
-		ArbitraryBuilder<StringWrapperClass> s1 = this.sut.giveMeBuilder(StringWrapperClass.class)
+		ArbitraryBuilder<StringValue> s1 = SUT.giveMeBuilder(StringValue.class)
 			.set("value", "s1");
-		ArbitraryBuilder<StringWrapperClass> s2 = this.sut.giveMeBuilder(StringWrapperClass.class)
+		ArbitraryBuilder<StringValue> s2 = SUT.giveMeBuilder(StringValue.class)
 			.set("value", "s2");
-		ArbitraryBuilder<StringWrapperClass> s3 = this.sut.giveMeBuilder(StringWrapperClass.class)
+		ArbitraryBuilder<StringValue> s3 = SUT.giveMeBuilder(StringValue.class)
 			.set("value", "s3");
-		ArbitraryBuilder<StringWrapperClass> s4 = this.sut.giveMeBuilder(StringWrapperClass.class)
+		ArbitraryBuilder<StringValue> s4 = SUT.giveMeBuilder(StringValue.class)
 			.set("value", "s4");
 
 		// when
-		NestedStringListClass actual = ArbitraryBuilders.zip(s1, s2, s3, s4, (a1, a2, a3, a4) -> {
-			List<StringWrapperClass> list = new ArrayList<>();
+		NestedStringList actual = ArbitraryBuilders.zip(s1, s2, s3, s4, (a1, a2, a3, a4) -> {
+			List<StringValue> list = new ArrayList<>();
 			list.add(a1);
 			list.add(a2);
 			list.add(a3);
 			list.add(a4);
 
-			NestedStringListClass result = new NestedStringListClass();
+			NestedStringList result = new NestedStringList();
 			result.setValues(list);
 			return result;
 		}).sample();
 
-		then(actual.values).hasSize(4);
-		then(actual.values.get(0).value).isEqualTo("s1");
-		then(actual.values.get(1).value).isEqualTo("s2");
-		then(actual.values.get(2).value).isEqualTo("s3");
-		then(actual.values.get(3).value).isEqualTo("s4");
+		then(actual.getValues()).hasSize(4);
+		then(actual.getValues().get(0).getValue()).isEqualTo("s1");
+		then(actual.getValues().get(1).getValue()).isEqualTo("s2");
+		then(actual.getValues().get(2).getValue()).isEqualTo("s3");
+		then(actual.getValues().get(3).getValue()).isEqualTo("s4");
 	}
 
 	@Property
 	void giveMeZipWithFour() {
 		// given
-		ArbitraryBuilder<StringWrapperClass> s1 = this.sut.giveMeBuilder(StringWrapperClass.class)
+		ArbitraryBuilder<StringValue> s1 = SUT.giveMeBuilder(StringValue.class)
 			.set("value", "s1");
-		ArbitraryBuilder<StringWrapperClass> s2 = this.sut.giveMeBuilder(StringWrapperClass.class)
+		ArbitraryBuilder<StringValue> s2 = SUT.giveMeBuilder(StringValue.class)
 			.set("value", "s2");
-		ArbitraryBuilder<StringWrapperClass> s3 = this.sut.giveMeBuilder(StringWrapperClass.class)
+		ArbitraryBuilder<StringValue> s3 = SUT.giveMeBuilder(StringValue.class)
 			.set("value", "s3");
-		ArbitraryBuilder<StringWrapperClass> s4 = this.sut.giveMeBuilder(StringWrapperClass.class)
+		ArbitraryBuilder<StringValue> s4 = SUT.giveMeBuilder(StringValue.class)
 			.set("value", "s4");
 
 		// when
-		NestedStringListClass actual = s1.zipWith(s2, s3, s4, (a1, a2, a3, a4) -> {
-			List<StringWrapperClass> list = new ArrayList<>();
+		NestedStringList actual = s1.zipWith(s2, s3, s4, (a1, a2, a3, a4) -> {
+			List<StringValue> list = new ArrayList<>();
 			list.add(a1);
 			list.add(a2);
 			list.add(a3);
 			list.add(a4);
 
-			NestedStringListClass result = new NestedStringListClass();
+			NestedStringList result = new NestedStringList();
 			result.setValues(list);
 			return result;
 		}).sample();
 
-		then(actual.values).hasSize(4);
-		then(actual.values.get(0).value).isEqualTo("s1");
-		then(actual.values.get(1).value).isEqualTo("s2");
-		then(actual.values.get(2).value).isEqualTo("s3");
-		then(actual.values.get(3).value).isEqualTo("s4");
+		then(actual.getValues()).hasSize(4);
+		then(actual.getValues().get(0).getValue()).isEqualTo("s1");
+		then(actual.getValues().get(1).getValue()).isEqualTo("s2");
+		then(actual.getValues().get(2).getValue()).isEqualTo("s3");
+		then(actual.getValues().get(3).getValue()).isEqualTo("s4");
 	}
 
 	@Property
 	void giveMeZipWith() {
 		// given
-		ArbitraryBuilder<String> stringArbitraryBuilder = this.sut.giveMeBuilder(String.class);
+		ArbitraryBuilder<String> stringArbitraryBuilder = SUT.giveMeBuilder(String.class);
 
 		// when
-		String actual = this.sut.giveMeBuilder(Integer.class)
+		String actual = SUT.giveMeBuilder(Integer.class)
 			.zipWith(stringArbitraryBuilder, (integer, string) -> integer + "" + string)
 			.sample();
 
@@ -319,8 +328,8 @@ public class ComplexManipulatorTest {
 	@Property
 	void giveMeZipTwoElement() {
 		// given
-		ArbitraryBuilder<String> stringArbitraryBuilder = this.sut.giveMeBuilder(String.class);
-		ArbitraryBuilder<Integer> integerArbitraryBuilder = this.sut.giveMeBuilder(Integer.class);
+		ArbitraryBuilder<String> stringArbitraryBuilder = SUT.giveMeBuilder(String.class);
+		ArbitraryBuilder<Integer> integerArbitraryBuilder = SUT.giveMeBuilder(Integer.class);
 
 		// when
 		String actual = ArbitraryBuilders.zip(
@@ -335,8 +344,8 @@ public class ComplexManipulatorTest {
 	@Property
 	void giveMeZipReturnsNew() {
 		// given
-		ArbitraryBuilder<String> stringArbitraryBuilder = this.sut.giveMeBuilder(String.class);
-		ArbitraryBuilder<Integer> integerArbitraryBuilder = this.sut.giveMeBuilder(Integer.class);
+		ArbitraryBuilder<String> stringArbitraryBuilder = SUT.giveMeBuilder(String.class);
+		ArbitraryBuilder<Integer> integerArbitraryBuilder = SUT.giveMeBuilder(Integer.class);
 
 		// when
 		Arbitrary<String> zippedArbitraryBuilder = ArbitraryBuilders.zip(
@@ -354,8 +363,8 @@ public class ComplexManipulatorTest {
 	@Property
 	void giveMeMap() {
 		// when
-		StringWrapperClass actual = this.sut.giveMeBuilder(IntegerWrapperClass.class)
-			.map(wrapper -> new StringWrapperClass("" + wrapper.value))
+		StringValue actual = SUT.giveMeBuilder(StringValue.class)
+			.map(wrapper -> new StringValue("" + wrapper.getValue()))
 			.sample();
 
 		then(actual).isNotNull();
@@ -364,8 +373,8 @@ public class ComplexManipulatorTest {
 	@Property
 	void giveMeMapAndSet() {
 		// when
-		StringWrapperClass actual = this.sut.giveMeBuilder(IntegerWrapperClass.class)
-			.map(wrapper -> new StringWrapperClass("" + wrapper.value))
+		StringValue actual = SUT.giveMeBuilder(StringValue.class)
+			.map(wrapper -> new StringValue("" + wrapper.getValue()))
 			.set("value", "test")
 			.sample();
 
@@ -375,10 +384,10 @@ public class ComplexManipulatorTest {
 	@Property
 	void giveMeMapAndSetAndMap() {
 		// when
-		String actual = this.sut.giveMeBuilder(IntegerWrapperClass.class)
-			.map(wrapper -> new StringWrapperClass("" + wrapper.value))
+		String actual = SUT.giveMeBuilder(IntValue.class)
+			.map(wrapper -> new StringValue("" + wrapper.getValue()))
 			.set("value", "test")
-			.map(StringWrapperClass::getValue)
+			.map(StringValue::getValue)
 			.sample();
 
 		then(actual).isEqualTo("test");
@@ -387,17 +396,17 @@ public class ComplexManipulatorTest {
 	@Property
 	void applySetWithDefault() {
 		// given
-		ArbitraryBuilder<StringIntegerListWrapperClass> defaultBuilder = this.sut.giveMeBuilder(
-			StringIntegerListWrapperClass.class)
+		ArbitraryBuilder<StringIntegerList> defaultBuilder = SUT.giveMeBuilder(StringIntegerList.class)
 			.set("value", Arbitraries.integers().map(String::valueOf))
 			.minSize("values", 1);
 
 		// when
-		StringIntegerListWrapperClass actual = defaultBuilder.apply(
-			(value, builder) -> builder.set("values[" + (value.values.size() - 1) + "]", Integer.parseInt(value.value))
+		StringIntegerList actual = defaultBuilder.apply(
+			(value, builder) -> builder
+				.set("values[" + (value.getValues().size() - 1) + "]", Integer.parseInt(value.getValue()))
 		).sample();
 
-		then(actual.values.get(actual.values.size() - 1)).isEqualTo(Integer.parseInt(actual.value));
+		then(actual.getValues().get(actual.getValues().size() - 1)).isEqualTo(Integer.parseInt(actual.getValue()));
 	}
 
 	@Property
@@ -408,12 +417,12 @@ public class ComplexManipulatorTest {
 			.build();
 
 		// when
-		NestedStringClass actual = sut.giveMeBuilder(NestedStringClass.class)
+		NestedString actual = sut.giveMeBuilder(NestedString.class)
 			.setNotNull("value.value")
 			.apply((value, builder) -> builder.set("value.value", "APPLY" + value.getValue().getValue()))
 			.sample();
 
-		then(actual.value.value).contains("APPLY");
+		then(actual.getValue().getValue()).contains("APPLY");
 	}
 
 	@Property
@@ -424,7 +433,7 @@ public class ComplexManipulatorTest {
 			.build();
 
 		// when
-		NestedStringClass actual = sut.giveMeBuilder(NestedStringClass.class)
+		NestedString actual = sut.giveMeBuilder(NestedString.class)
 			.setNotNull("value.value")
 			.acceptIf(
 				it -> it.getValue() != null,
@@ -432,7 +441,7 @@ public class ComplexManipulatorTest {
 			)
 			.sample();
 
-		then(actual.value.value).contains("ACCEPTIF");
+		then(actual.getValue().getValue()).contains("ACCEPTIF");
 	}
 
 	@Property
@@ -443,14 +452,15 @@ public class ComplexManipulatorTest {
 			.build();
 
 		// when
-		NestedStringListClass actual = sut.giveMeBuilder(NestedStringListClass.class)
+		NestedStringList actual = sut.giveMeBuilder(NestedStringList.class)
 			.size("values", 10)
 			.setNotNull("values[*].value")
 			.sample();
 
 		// then
-		List<StringWrapperClass> uniqueList = actual.values.stream().distinct()
-			.collect(Collectors.toList());
+		List<StringValue> uniqueList = actual.getValues().stream()
+			.distinct()
+			.collect(toList());
 		then(uniqueList).hasSizeGreaterThan(1);
 	}
 
@@ -462,27 +472,27 @@ public class ComplexManipulatorTest {
 			.build();
 
 		// when
-		NestedStringListClass actual = sut.giveMeBuilder(NestedStringListClass.class)
+		NestedStringList actual = sut.giveMeBuilder(NestedStringList.class)
 			.size("values", 10)
 			.setNotNull("values[*].value")
 			.sample();
 
 		// then
-		List<StringWrapperClass> uniqueList = actual.values.stream().distinct()
-			.collect(Collectors.toList());
+		List<StringValue> uniqueList = actual.getValues().stream()
+			.distinct()
+			.collect(toList());
 		then(uniqueList).hasSizeGreaterThan(1);
 	}
 
 	@Property
 	void applyReturnsDiff() {
 		// given
-		ArbitraryBuilder<ComplexClass> decomposedArbitraryBuilder =
-			this.sut.giveMeBuilder(ComplexClass.class)
-				.apply((it, builder) -> builder.set("value1", "FIXED"));
+		ArbitraryBuilder<Complex> decomposedArbitraryBuilder = SUT.giveMeBuilder(Complex.class)
+			.apply((it, builder) -> builder.set("value1", "FIXED"));
 
 		// when
-		ComplexClass actual1 = decomposedArbitraryBuilder.sample();
-		ComplexClass actual2 = decomposedArbitraryBuilder.sample();
+		Complex actual1 = decomposedArbitraryBuilder.sample();
+		Complex actual2 = decomposedArbitraryBuilder.sample();
 
 		then(actual1).isNotEqualTo(actual2);
 	}
@@ -490,13 +500,12 @@ public class ComplexManipulatorTest {
 	@Property
 	void acceptIfReturnsDiff() {
 		// given
-		ArbitraryBuilder<ComplexClass> decomposedArbitraryBuilder =
-			this.sut.giveMeBuilder(ComplexClass.class)
-				.acceptIf(it -> true, builder -> builder.set("value2", 2));
+		ArbitraryBuilder<Complex> decomposedArbitraryBuilder = SUT.giveMeBuilder(Complex.class)
+			.acceptIf(it -> true, builder -> builder.set("value2", 2));
 
 		// when
-		ComplexClass actual1 = decomposedArbitraryBuilder.sample();
-		ComplexClass actual2 = decomposedArbitraryBuilder.sample();
+		Complex actual1 = decomposedArbitraryBuilder.sample();
+		Complex actual2 = decomposedArbitraryBuilder.sample();
 
 		then(actual1).isNotEqualTo(actual2);
 	}
@@ -504,25 +513,25 @@ public class ComplexManipulatorTest {
 	@Property
 	void applyTwice() {
 		// when
-		NestedStringClass actual = this.sut.giveMeBuilder(NestedStringClass.class)
+		NestedString actual = SUT.giveMeBuilder(NestedString.class)
 			.setNotNull("value")
 			.apply((value, builder) -> builder.set("value.value", "APPLY" + value.getValue().getValue()))
 			.apply((value, builder) -> {
 			})
 			.sample();
 
-		then(actual.value.value).contains("APPLY");
+		then(actual.getValue().getValue()).contains("APPLY");
 	}
 
 	@Property
 	void fixed() {
 		// given
-		ArbitraryBuilder<StringWrapperClass> arbitraryBuilder = this.sut.giveMeBuilder(StringWrapperClass.class)
+		ArbitraryBuilder<StringValue> arbitraryBuilder = SUT.giveMeBuilder(StringValue.class)
 			.fixed();
 
 		// when
-		StringWrapperClass sampled1 = arbitraryBuilder.sample();
-		StringWrapperClass sampled2 = arbitraryBuilder.sample();
+		StringValue sampled1 = arbitraryBuilder.sample();
+		StringValue sampled2 = arbitraryBuilder.sample();
 
 		then(sampled1).isEqualTo(sampled2);
 	}
@@ -530,15 +539,15 @@ public class ComplexManipulatorTest {
 	@Property
 	void fixedSet() {
 		// given
-		ArbitraryBuilder<StringWrapperClass> arbitraryBuilder = this.sut.giveMeBuilder(StringWrapperClass.class)
+		ArbitraryBuilder<StringValue> arbitraryBuilder = SUT.giveMeBuilder(StringValue.class)
 			.fixed();
 
 		// when
-		StringWrapperClass actual = arbitraryBuilder
+		StringValue actual = arbitraryBuilder
 			.set("value", "set")
 			.sample();
 
-		then(actual.value).isEqualTo("set");
+		then(actual.getValue()).isEqualTo("set");
 	}
 
 	@Property
@@ -549,8 +558,8 @@ public class ComplexManipulatorTest {
 			.build();
 
 		// when
-		StringWrapperClass actual1 = sut.giveMeOne(StringWrapperClass.class);
-		StringWrapperClass actual2 = sut.giveMeOne(StringWrapperClass.class);
+		StringValue actual1 = sut.giveMeOne(StringValue.class);
+		StringValue actual2 = sut.giveMeOne(StringValue.class);
 
 		then(actual1).isEqualTo(actual2);
 	}
@@ -563,12 +572,12 @@ public class ComplexManipulatorTest {
 			.build();
 
 		// when
-		NestedStringListClass actual = sut.giveMeOne(NestedStringListClass.class);
+		NestedStringList actual = sut.giveMeOne(NestedStringList.class);
 
 		// then
-		List<StringWrapperClass> distinct = actual.values.stream()
+		List<StringValue> distinct = actual.getValues().stream()
 			.distinct()
-			.collect(Collectors.toList());
+			.collect(toList());
 		then(distinct).hasSizeBetween(0, 1);
 	}
 
@@ -580,12 +589,12 @@ public class ComplexManipulatorTest {
 			.build();
 
 		// when
-		StringWrapperClass actual = sut.giveMeBuilder(StringWrapperClass.class)
+		StringValue actual = sut.giveMeBuilder(StringValue.class)
 			.set("value", "test")
-			.acceptIf(it -> it.value.equals("test"), it -> it.set("value", "value"))
+			.acceptIf(it -> it.getValue().equals("test"), it -> it.set("value", "value"))
 			.sample();
 
-		then(actual.value).isEqualTo("value");
+		then(actual.getValue()).isEqualTo("value");
 	}
 
 	@Property
@@ -596,25 +605,25 @@ public class ComplexManipulatorTest {
 			.build();
 
 		// when
-		StringWrapperClass actual = sut.giveMeBuilder(StringWrapperClass.class)
+		StringValue actual = sut.giveMeBuilder(StringValue.class)
 			.set("value", "test")
-			.acceptIf(it -> it.value.equals("test"), it -> it.set("value", "value"))
+			.acceptIf(it -> it.getValue().equals("test"), it -> it.set("value", "value"))
 			.fixed()
 			.sample();
 
-		then(actual.value).isEqualTo("value");
+		then(actual.getValue()).isEqualTo("value");
 	}
 
 	@Property
 	void fixedWithSetArbitrary() {
 		// given
-		ArbitraryBuilder<StringWrapperClass> arbitraryBuilder = this.sut.giveMeBuilder(StringWrapperClass.class)
+		ArbitraryBuilder<StringValue> arbitraryBuilder = SUT.giveMeBuilder(StringValue.class)
 			.set("value", Arbitraries.strings().numeric())
 			.fixed();
 
 		// when
-		StringWrapperClass actual1 = arbitraryBuilder.sample();
-		StringWrapperClass actual2 = arbitraryBuilder.sample();
+		StringValue actual1 = arbitraryBuilder.sample();
+		StringValue actual2 = arbitraryBuilder.sample();
 
 		then(actual1).isEqualTo(actual2);
 	}
@@ -622,37 +631,37 @@ public class ComplexManipulatorTest {
 	@Property
 	void acceptIfWithSetWithFixedOverride() {
 		// when
-		StringWrapperClass actual = this.sut.giveMeBuilder(StringWrapperClass.class)
+		StringValue actual = SUT.giveMeBuilder(StringValue.class)
 			.acceptIf(it -> true, it -> it.set("value", "value"))
 			.set("value", "fixed")
 			.fixed()
 			.sample();
 
-		then(actual.value).isEqualTo("fixed");
+		then(actual.getValue()).isEqualTo("fixed");
 	}
 
 	@Property
 	void acceptIfWithFixed() {
 		// when
-		StringWrapperIntegerWrapperClass actual = this.sut.giveMeBuilder(StringWrapperIntegerWrapperClass.class)
+		StringAndInt actual = SUT.giveMeBuilder(StringAndInt.class)
 			.acceptIf(it -> true, it -> it.set("value1.value", "value"))
 			.fixed()
 			.sample();
 
-		then(actual.value1.value).isEqualTo("value");
+		then(actual.getValue1().getValue()).isEqualTo("value");
 	}
 
 	@Property
 	void acceptIfWithSetWithFixed() {
 		// when
-		StringWrapperIntegerWrapperClass actual = this.sut.giveMeBuilder(StringWrapperIntegerWrapperClass.class)
+		StringAndInt actual = SUT.giveMeBuilder(StringAndInt.class)
 			.acceptIf(it -> true, it -> it.set("value1.value", "value"))
 			.set("value2.value", 5)
 			.fixed()
 			.sample();
 
-		then(actual.value1.value).isEqualTo("value");
-		then(actual.value2.value).isEqualTo(5);
+		then(actual.getValue1().getValue()).isEqualTo("value");
+		then(actual.getValue2().getValue()).isEqualTo(5);
 	}
 
 	@Property
@@ -663,8 +672,8 @@ public class ComplexManipulatorTest {
 			.build();
 
 		// when
-		StringWrapperClass actual1 = sut.giveMeOne(StringWrapperClass.class);
-		StringWrapperClass actual2 = sut.giveMeOne(StringWrapperClass.class);
+		StringValue actual1 = sut.giveMeOne(StringValue.class);
+		StringValue actual2 = sut.giveMeOne(StringValue.class);
 
 		then(actual1).isEqualTo(actual2);
 	}
@@ -677,8 +686,8 @@ public class ComplexManipulatorTest {
 			.build();
 
 		// when
-		StringWrapperClass actual1 = sut.giveMeOne(StringWrapperClass.class);
-		StringWrapperClass actual2 = sut.giveMeOne(StringWrapperClass.class);
+		StringValue actual1 = sut.giveMeOne(StringValue.class);
+		StringValue actual2 = sut.giveMeOne(StringValue.class);
 
 		then(actual1).isEqualTo(actual2);
 	}
@@ -686,164 +695,36 @@ public class ComplexManipulatorTest {
 	@Property
 	void nullFixedSize() {
 		// when
-		IntegerListWrapperClass actual = this.sut.giveMeBuilder(IntegerListWrapperClass.class)
+		IntegerList actual = SUT.giveMeBuilder(IntegerList.class)
 			.setNull("values")
 			.fixed()
 			.size("values", 1)
 			.sample();
 
-		then(actual.values).hasSize(1);
+		then(actual.getValues()).hasSize(1);
 	}
 
 	@Property
 	void nullFixedSet() {
 		// when
-		NestedStringClass actual = this.sut.giveMeBuilder(NestedStringClass.class)
+		NestedString actual = SUT.giveMeBuilder(NestedString.class)
 			.setNull("value")
 			.fixed()
 			.set("value.value", "set")
 			.sample();
 
-		then(actual.value.value).isEqualTo("set");
+		then(actual.getValue().getValue()).isEqualTo("set");
 	}
 
 	@Property
 	void nullFixedSizeZeroReturnsEmpty() {
 		// when
-		IntegerListWrapperClass actual = this.sut.giveMeBuilder(IntegerListWrapperClass.class)
+		IntegerList actual = SUT.giveMeBuilder(IntegerList.class)
 			.setNull("values")
 			.fixed()
 			.size("values", 0)
 			.sample();
 
-		then(actual.values).isEmpty();
-	}
-
-	@Data
-	@NoArgsConstructor
-	@AllArgsConstructor
-	public static class StringWrapperClass {
-		private String value;
-	}
-
-	@Data
-	public static class IntegerWrapperClass {
-		int value;
-	}
-
-	@Data
-	public static class NestedStringClass {
-		StringWrapperClass value;
-	}
-
-	@Data
-	public static class StringIntegerListWrapperClass {
-		String value;
-		List<Integer> values;
-	}
-
-	@Data
-	public static class IntegerListWrapperClass {
-		List<Integer> values;
-	}
-
-	@Data
-	public static class StringWrapperIntegerWrapperClass {
-		StringWrapperClass value1;
-		IntegerWrapperClass value2;
-	}
-
-	@Data
-	public static class NestedStringListClass {
-		private List<StringWrapperClass> values;
-	}
-
-	@Data
-	public static class StringWrapperClassWithPredicate {
-		private String value;
-
-		public boolean isEmpty() {
-			return value == null;
-		}
-	}
-
-	@Data
-	public static class ComplexClass {
-		private String value1;
-		private int value2;
-		private float value3;
-		private String value4;
-	}
-
-	public static class ArbitraryGroup {
-		public ArbitraryBuilder<NestedStringClass> nestedStringWrapper(FixtureMonkey fixtureMonkey) {
-			return fixtureMonkey.giveMeBuilder(NestedStringClass.class)
-				.set("value.value", "group");
-		}
-	}
-
-	public static class AcceptIfArbitraryGroup {
-		public AcceptIfArbitraryGroup() {
-		}
-
-		public ArbitraryBuilder<StringWrapperClass> string(FixtureMonkey fixture) {
-			return fixture.giveMeBuilder(StringWrapperClass.class)
-				.acceptIf(it -> true, it -> {
-				});
-		}
-	}
-
-	public static class ApplyArbitraryGroup {
-		public ApplyArbitraryGroup() {
-		}
-
-		public ArbitraryBuilder<StringWrapperClass> string(FixtureMonkey fixture) {
-			return fixture.giveMeBuilder(StringWrapperClass.class)
-				.apply((it, builder) -> {
-				});
-		}
-	}
-
-	public static class FixedArbitraryGroup {
-		public FixedArbitraryGroup() {
-		}
-
-		public ArbitraryBuilder<StringWrapperClass> string(FixtureMonkey fixture) {
-			return fixture.giveMeBuilder(StringWrapperClass.class)
-				.fixed();
-		}
-	}
-
-	public static class FixedSetArbitraryArbitraryGroup {
-		public FixedSetArbitraryArbitraryGroup() {
-		}
-
-		public ArbitraryBuilder<StringWrapperClass> string(FixtureMonkey fixture) {
-			return fixture.giveMeBuilder(StringWrapperClass.class)
-				.set("value", Arbitraries.strings())
-				.fixed();
-		}
-	}
-
-	public static class SetArbitraryArbitraryAcceptGroup {
-		public SetArbitraryArbitraryAcceptGroup() {
-		}
-
-		public ArbitraryBuilder<StringWrapperClass> string(FixtureMonkey fixture) {
-			return fixture.giveMeBuilder(StringWrapperClass.class)
-				.set("value", Arbitraries.strings())
-				.apply((it, builder) -> builder.set("value", "set"));
-		}
-	}
-
-	public static class SetArbitraryAcceptGroup {
-		public SetArbitraryAcceptGroup() {
-		}
-
-		public ArbitraryBuilder<StringWrapperClass> string(FixtureMonkey fixture) {
-			return fixture.giveMeBuilder(StringWrapperClass.class)
-				.set("value", Arbitraries.strings().sample())
-				.apply((it, builder) -> builder.set("value", "set"));
-		}
+		then(actual.getValues()).isEmpty();
 	}
 }
