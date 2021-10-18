@@ -50,6 +50,7 @@ import net.jqwik.api.Combinators.F4;
 import com.navercorp.fixturemonkey.api.expression.ExpressionGenerator;
 import com.navercorp.fixturemonkey.arbitrary.AbstractArbitrarySet;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryExpression;
+import com.navercorp.fixturemonkey.arbitrary.ArbitraryExpressionManipulator;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryNode;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryNullity;
 import com.navercorp.fixturemonkey.arbitrary.ArbitrarySet;
@@ -80,6 +81,7 @@ public final class ArbitraryBuilder<T> {
 	private final ArbitraryValidator validator;
 	private final Map<Class<?>, ArbitraryGenerator> generatorMap;
 	private final List<BiConsumer<T, ArbitraryBuilder<T>>> decomposedManipulators;
+	private final Consumer<ArbitraryExpressionManipulator> onManipulated;
 	private ArbitraryGenerator generator;
 	private ArbitraryCustomizers arbitraryCustomizers;
 	private boolean validOnly = true;
@@ -91,7 +93,8 @@ public final class ArbitraryBuilder<T> {
 		ArbitraryGenerator generator,
 		ArbitraryValidator validator,
 		ArbitraryCustomizers arbitraryCustomizers,
-		Map<Class<?>, ArbitraryGenerator> generatorMap
+		Map<Class<?>, ArbitraryGenerator> generatorMap,
+		Consumer<ArbitraryExpressionManipulator> onManipulated
 	) {
 		this(
 			new ArbitraryTree<>(
@@ -107,7 +110,8 @@ public final class ArbitraryBuilder<T> {
 			new ArrayList<>(),
 			new ArrayList<>(),
 			new ArrayList<>(),
-			generatorMap
+			generatorMap,
+			onManipulated
 		);
 	}
 
@@ -118,7 +122,8 @@ public final class ArbitraryBuilder<T> {
 		ArbitraryGenerator generator,
 		ArbitraryValidator validator,
 		ArbitraryCustomizers arbitraryCustomizers,
-		Map<Class<?>, ArbitraryGenerator> generatorMap
+		Map<Class<?>, ArbitraryGenerator> generatorMap,
+		Consumer<ArbitraryExpressionManipulator> onManipulated
 	) {
 		this(
 			new ArbitraryTree<>(
@@ -134,7 +139,8 @@ public final class ArbitraryBuilder<T> {
 			new ArrayList<>(),
 			new ArrayList<>(),
 			new ArrayList<>(),
-			generatorMap
+			generatorMap,
+			onManipulated
 		);
 	}
 
@@ -148,7 +154,8 @@ public final class ArbitraryBuilder<T> {
 		List<BuilderManipulator> builderManipulators,
 		List<BuilderManipulator> usedManipulators,
 		List<BiConsumer<T, ArbitraryBuilder<T>>> decomposedManipulators,
-		Map<Class<?>, ArbitraryGenerator> generatorMap
+		Map<Class<?>, ArbitraryGenerator> generatorMap,
+		Consumer<ArbitraryExpressionManipulator> onManipulated
 	) {
 		this.tree = tree;
 		this.traverser = traverser;
@@ -164,6 +171,7 @@ public final class ArbitraryBuilder<T> {
 				getGenerator(it.getValue(), arbitraryCustomizers))
 			)
 			.collect(toMap(SimpleEntry::getKey, SimpleEntry::getValue));
+		this.onManipulated = onManipulated;
 	}
 
 	public ArbitraryBuilder<T> validOnly(boolean validOnly) {
@@ -229,7 +237,7 @@ public final class ArbitraryBuilder<T> {
 	}
 
 	public ArbitraryBuilder<T> specAny(ExpressionSpec... expressionSpecs) {
-		this.builderManipulators.add(new ArbitrarySpecAny(Arrays.asList(expressionSpecs)));
+		addBuilderManipulator(new ArbitrarySpecAny(Arrays.asList(expressionSpecs)));
 		return this;
 	}
 
@@ -243,7 +251,7 @@ public final class ArbitraryBuilder<T> {
 			return this.setBuilder(expression, (ArbitraryBuilder<?>)value);
 		}
 		ArbitraryExpression arbitraryExpression = ArbitraryExpression.from(expression);
-		this.builderManipulators.add(new ArbitrarySet<>(arbitraryExpression, value));
+		addBuilderManipulator(new ArbitrarySet<>(arbitraryExpression, value));
 		return this;
 	}
 
@@ -254,7 +262,7 @@ public final class ArbitraryBuilder<T> {
 
 	public ArbitraryBuilder<T> set(String expression, Object value, long limit) {
 		ArbitraryExpression arbitraryExpression = ArbitraryExpression.from(expression);
-		this.builderManipulators.add(new ArbitrarySet<>(arbitraryExpression, value, limit));
+		addBuilderManipulator(new ArbitrarySet<>(arbitraryExpression, value, limit));
 		return this;
 	}
 
@@ -268,7 +276,7 @@ public final class ArbitraryBuilder<T> {
 			return this.setNull(expression);
 		}
 		ArbitraryExpression arbitraryExpression = ArbitraryExpression.from(expression);
-		this.builderManipulators.add(new ArbitrarySetArbitrary<>(arbitraryExpression, value));
+		addBuilderManipulator(new ArbitrarySetArbitrary<>(arbitraryExpression, value));
 		return this;
 	}
 
@@ -283,7 +291,7 @@ public final class ArbitraryBuilder<T> {
 
 	public ArbitraryBuilder<T> setBuilder(String expression, ArbitraryBuilder<?> builder) {
 		ArbitraryExpression arbitraryExpression = ArbitraryExpression.from(expression);
-		this.builderManipulators.add(new ArbitrarySetArbitrary<>(arbitraryExpression, builder.build()));
+		addBuilderManipulator(new ArbitrarySetArbitrary<>(arbitraryExpression, builder.build()));
 		return this;
 	}
 
@@ -294,7 +302,7 @@ public final class ArbitraryBuilder<T> {
 
 	public ArbitraryBuilder<T> setBuilder(String expression, ArbitraryBuilder<?> builder, long limit) {
 		ArbitraryExpression arbitraryExpression = ArbitraryExpression.from(expression);
-		this.builderManipulators.add(new ArbitrarySetArbitrary<>(arbitraryExpression, builder.build(), limit));
+		addBuilderManipulator(new ArbitrarySetArbitrary<>(arbitraryExpression, builder.build(), limit));
 		return this;
 	}
 
@@ -309,7 +317,7 @@ public final class ArbitraryBuilder<T> {
 
 	public ArbitraryBuilder<T> setNull(String expression) {
 		ArbitraryExpression arbitraryExpression = ArbitraryExpression.from(expression);
-		this.builderManipulators.add(new ArbitraryNullity(arbitraryExpression, true));
+		addBuilderManipulator(new ArbitraryNullity(arbitraryExpression, true));
 		return this;
 	}
 
@@ -320,7 +328,7 @@ public final class ArbitraryBuilder<T> {
 
 	public ArbitraryBuilder<T> setNotNull(String expression) {
 		ArbitraryExpression arbitraryExpression = ArbitraryExpression.from(expression);
-		this.builderManipulators.add(new ArbitraryNullity(arbitraryExpression, false));
+		addBuilderManipulator(new ArbitraryNullity(arbitraryExpression, false));
 		return this;
 	}
 
@@ -331,13 +339,13 @@ public final class ArbitraryBuilder<T> {
 
 	public ArbitraryBuilder<T> setPostCondition(Predicate<T> filter) {
 		ArbitraryExpression arbitraryExpression = ArbitraryExpression.from(HEAD_NAME);
-		this.builderManipulators.add(new ArbitrarySetPostCondition<>(tree.getClazz(), arbitraryExpression, filter));
+		addBuilderManipulator(new ArbitrarySetPostCondition<>(tree.getClazz(), arbitraryExpression, filter));
 		return this;
 	}
 
 	public <U> ArbitraryBuilder<T> setPostCondition(String expression, Class<U> clazz, Predicate<U> filter) {
 		ArbitraryExpression arbitraryExpression = ArbitraryExpression.from(expression);
-		this.builderManipulators.add(new ArbitrarySetPostCondition<>(clazz, arbitraryExpression, filter));
+		addBuilderManipulator(new ArbitrarySetPostCondition<>(clazz, arbitraryExpression, filter));
 		return this;
 	}
 
@@ -357,7 +365,7 @@ public final class ArbitraryBuilder<T> {
 		long limit
 	) {
 		ArbitraryExpression arbitraryExpression = ArbitraryExpression.from(expression);
-		this.builderManipulators.add(new ArbitrarySetPostCondition<>(clazz, arbitraryExpression, filter, limit));
+		addBuilderManipulator(new ArbitrarySetPostCondition<>(clazz, arbitraryExpression, filter, limit));
 		return this;
 	}
 
@@ -434,7 +442,8 @@ public final class ArbitraryBuilder<T> {
 			this.generator,
 			this.validator,
 			this.arbitraryCustomizers,
-			this.generatorMap
+			this.generatorMap,
+			this.onManipulated
 		);
 	}
 
@@ -447,7 +456,8 @@ public final class ArbitraryBuilder<T> {
 			this.generator,
 			this.validator,
 			this.arbitraryCustomizers,
-			this.generatorMap
+			this.generatorMap,
+			this.onManipulated
 		);
 	}
 
@@ -465,7 +475,9 @@ public final class ArbitraryBuilder<T> {
 			this.generator,
 			this.validator,
 			this.arbitraryCustomizers,
-			this.generatorMap);
+			this.generatorMap,
+			this.onManipulated
+		);
 	}
 
 	public <U, V, W, R> ArbitraryBuilder<R> zipWith(
@@ -484,7 +496,9 @@ public final class ArbitraryBuilder<T> {
 			this.generator,
 			this.validator,
 			this.arbitraryCustomizers,
-			this.generatorMap);
+			this.generatorMap,
+			this.onManipulated
+		);
 	}
 
 	@SuppressWarnings({"unchecked", "rawtypes"})
@@ -504,7 +518,8 @@ public final class ArbitraryBuilder<T> {
 			this.generator,
 			this.validator,
 			this.arbitraryCustomizers,
-			this.generatorMap
+			this.generatorMap,
+			this.onManipulated
 		);
 	}
 
@@ -625,7 +640,8 @@ public final class ArbitraryBuilder<T> {
 			this.builderManipulators.stream().map(BuilderManipulator::copy).collect(toList()),
 			this.usedManipulators.stream().map(BuilderManipulator::copy).collect(toList()),
 			new ArrayList<>(this.decomposedManipulators),
-			this.generatorMap
+			this.generatorMap,
+			this.onManipulated
 		);
 		copied.validOnly(this.validOnly);
 		return copied;
@@ -634,6 +650,13 @@ public final class ArbitraryBuilder<T> {
 	private void setCurrentBuilderManipulatorsAsUsed() {
 		this.usedManipulators.clear();
 		this.usedManipulators.addAll(this.builderManipulators);
+	}
+
+	private void addBuilderManipulator(BuilderManipulator builderManipulator) {
+		if (builderManipulator instanceof ArbitraryExpressionManipulator) {
+			this.onManipulated.accept(((ArbitraryExpressionManipulator)builderManipulator));
+		}
+		this.builderManipulators.add(builderManipulator);
 	}
 
 	private List<BuilderManipulator> getActiveManipulators() {
