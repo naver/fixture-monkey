@@ -33,7 +33,7 @@ abstract class Cursor {
 	}
 
 	public boolean isMatch(ArbitraryNode<?> node) {
-		boolean sameName = nameEquals(node.getFieldName());
+		boolean sameName = nameEquals(node.getPropertyName());
 		boolean sameIndex = indexEquals(node.getIndexOfIterable());
 		return sameName && sameIndex;
 	}

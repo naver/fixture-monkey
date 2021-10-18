@@ -80,7 +80,7 @@ public final class ConstructorPropertiesArbitraryGenerator extends AbstractArbit
 		}
 
 		FieldArbitraries fieldArbitraries = new FieldArbitraries(
-			toArbitrariesByFieldName(nodes, ArbitraryNode::getFieldName, (node, arbitrary) -> arbitrary)
+			toArbitrariesByFieldName(nodes, ArbitraryNode::getPropertyName, (node, arbitrary) -> arbitrary)
 		);
 
 		this.arbitraryCustomizers.customizeFields(clazz, fieldArbitraries);

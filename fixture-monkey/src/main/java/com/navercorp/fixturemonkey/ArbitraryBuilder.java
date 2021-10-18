@@ -97,7 +97,7 @@ public final class ArbitraryBuilder<T> {
 			new ArbitraryTree<>(
 				ArbitraryNode.builder()
 					.type(new ArbitraryType(clazz))
-					.fieldName("HEAD_NAME")
+					.propertyName("HEAD_NAME")
 					.build()
 			),
 			new ArbitraryTraverser(options),
@@ -124,7 +124,7 @@ public final class ArbitraryBuilder<T> {
 			new ArbitraryTree<>(
 				ArbitraryNode.builder()
 					.value(valueSupplier)
-					.fieldName("HEAD_NAME")
+					.propertyName("HEAD_NAME")
 					.build()
 			),
 			traverser,

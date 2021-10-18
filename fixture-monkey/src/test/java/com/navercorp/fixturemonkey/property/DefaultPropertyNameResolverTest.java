@@ -23,6 +23,11 @@ class DefaultPropertyNameResolverTest {
 	private Property getNameProperty(String name) {
 		return new Property() {
 			@Override
+			public Class<?> getType() {
+				return null;
+			}
+
+			@Override
 			public AnnotatedType getAnnotatedType() {
 				return null;
 			}

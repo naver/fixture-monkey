@@ -55,7 +55,7 @@ class PrimaryConstructorArbitraryGenerator(
         val clazz = Reflection.createKotlinClass(arbitraryType.type) as KClass<T>
 
         val fieldArbitraries = FieldArbitraries(
-            toArbitrariesByFieldName(nodes, { it.fieldName }) { _, arbitrary -> arbitrary }
+            toArbitrariesByFieldName(nodes, { it.propertyName }) { _, arbitrary -> arbitrary }
         )
 
         arbitraryCustomizers.customizeFields(clazz, fieldArbitraries)

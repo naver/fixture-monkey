@@ -22,7 +22,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -39,6 +38,9 @@ import net.jqwik.api.Arbitrary;
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.ArbitraryOption;
+import com.navercorp.fixturemonkey.api.property.FieldProperty;
+import com.navercorp.fixturemonkey.api.property.Property;
+import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.generator.AnnotatedArbitraryGenerator;
 import com.navercorp.fixturemonkey.generator.AnnotationSource;
 import com.navercorp.fixturemonkey.generator.FieldNameResolver;
@@ -60,7 +62,7 @@ public final class ArbitraryTraverser {
 		if (value != null) {
 			value.clear();
 		}
-		doTraverse(node, keyOfMapStructure, true, fieldNameResolver);
+		doTraverse(node, keyOfMapStructure, true, new PropertyNameResolverAdapter(fieldNameResolver));
 	}
 
 	@SuppressWarnings({"rawtypes", "unchecked"})
@@ -68,7 +70,7 @@ public final class ArbitraryTraverser {
 		ArbitraryNode<T> node,
 		boolean keyOfMapStructure,
 		boolean active,
-		FieldNameResolver fieldNameResolver
+		PropertyNameResolverAdapter propertyNameResolverAdapter
 	) {
 		node.getChildren().clear();
 		initializeDefaultArbitrary(node);
@@ -81,11 +83,16 @@ public final class ArbitraryTraverser {
 		if (isTraversable(nowNodeType)) {
 			List<Field> fields = getFields(clazz);
 			for (Field field : fields) {
-				ArbitraryType arbitraryType = getArbitraryType(field);
+				Property property = new FieldProperty(field);
+				ArbitraryType arbitraryType = new ArbitraryType(
+					property.getType(),
+					property.getAnnotatedType(),
+					property.getAnnotations()
+				);
 				double nullInject = arbitraryOption.getNullInject();
 				boolean defaultNotNull = arbitraryOption.isDefaultNotNull();
-				boolean nullable = isNullableField(field, defaultNotNull);
-				LazyValue<?> nextValue = getNextValue(nowValue, field);
+				boolean nullable = isNullableField(arbitraryType, field, defaultNotNull);
+				LazyValue<?> nextValue = getNextValue(nowValue, property);
 				nullable = nextValue == null && nullable;
 				boolean nextActive = (nextValue == null || !nextValue.isEmpty()) && active;
 				if (node.isDecomposedAsNull()) {
@@ -94,7 +101,7 @@ public final class ArbitraryTraverser {
 
 				ArbitraryNode<?> nextNode = ArbitraryNode.builder()
 					.type(arbitraryType)
-					.fieldName(fieldNameResolver.resolveFieldName(field))
+					.propertyName(propertyNameResolverAdapter.resolve(property))
 					.nullable(nullable)
 					.nullInject(nullInject)
 					.keyOfMapStructure(keyOfMapStructure)
@@ -103,19 +110,21 @@ public final class ArbitraryTraverser {
 					.build();
 
 				node.addChildNode(nextNode);
-				doTraverse(nextNode, false, active, fieldNameResolver);
+				doTraverse(nextNode, false, active, propertyNameResolverAdapter);
 			}
 		} else if (nowNodeType.isContainer() || containerArbitraryNodeGenerator != null) {
 			if (containerArbitraryNodeGenerator != null) {
-				traverseContainer(node, active, fieldNameResolver, containerArbitraryNodeGenerator);
+				traverseContainer(node, active, propertyNameResolverAdapter, containerArbitraryNodeGenerator);
 			} else if (nowNodeType.isMap() || nowNodeType.isMapEntry()) {
-				traverseContainer(node, active, fieldNameResolver, MapArbitraryNodeGenerator.INSTANCE);
+				traverseContainer(node, active, propertyNameResolverAdapter, MapArbitraryNodeGenerator.INSTANCE);
 			} else if (nowNodeType.isArray()) {
-				traverseContainer(node, active, fieldNameResolver, ArrayArbitraryNodeGenerator.INSTANCE);
+				traverseContainer(node, active, propertyNameResolverAdapter, ArrayArbitraryNodeGenerator.INSTANCE);
 			} else if (nowNodeType.isOptional()) {
-				traverseContainer(node, active, fieldNameResolver, OptionalArbitraryNodeGenerator.INSTANCE);
+				traverseContainer(node, active, propertyNameResolverAdapter, OptionalArbitraryNodeGenerator.INSTANCE);
 			} else {
-				traverseContainer(node, active, fieldNameResolver, DefaultContainerArbitraryNodeGenerator.INSTANCE);
+				traverseContainer(
+					node, active, propertyNameResolverAdapter, DefaultContainerArbitraryNodeGenerator.INSTANCE
+				);
 			}
 		} else {
 			if (nowValue != null) {
@@ -142,13 +151,14 @@ public final class ArbitraryTraverser {
 	private <T> void traverseContainer(
 		ArbitraryNode<T> currentNode,
 		boolean active,
-		FieldNameResolver fieldNameResolver,
+		PropertyNameResolverAdapter propertyNameResolverAdapter,
 		ContainerArbitraryNodeGenerator containerArbitraryNodeGenerator
 	) {
-		List<ArbitraryNode<?>> nodes = containerArbitraryNodeGenerator.generate(currentNode, fieldNameResolver);
+		List<ArbitraryNode<?>> nodes = containerArbitraryNodeGenerator.generate(
+			currentNode, propertyNameResolverAdapter);
 		for (ArbitraryNode<?> node : nodes) {
 			currentNode.addChildNode(node);
-			doTraverse(node, node.isKeyOfMapStructure(), active, fieldNameResolver);
+			doTraverse(node, node.isKeyOfMapStructure(), active, propertyNameResolverAdapter);
 		}
 	}
 
@@ -175,13 +185,13 @@ public final class ArbitraryTraverser {
 	}
 
 	@Nullable
-	private <T> LazyValue<?> getNextValue(LazyValue<T> currentValue, Field field) {
+	private <T> LazyValue<?> getNextValue(LazyValue<T> currentValue, Property property) {
 		if (currentValue == null) {
 			return null;
 		}
 		return currentValue.isEmpty()
 			? new LazyValue<>((Object)null)
-			: new LazyValue<>(extractValue(currentValue.get(), field));
+			: new LazyValue<>(property.getValue(currentValue.get()));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -207,24 +217,7 @@ public final class ArbitraryTraverser {
 		);
 	}
 
-	private <T> Object extractValue(T value, Field field) {
-		try {
-			field.setAccessible(true);
-			return field.get(value);
-		} catch (IllegalAccessException e) {
-			throw new IllegalArgumentException("Can not extract value");
-		}
-	}
-
-	@SuppressWarnings({"unchecked", "rawtypes"})
-	private ArbitraryType getArbitraryType(Field field) {
-		List<Annotation> annotations = Arrays.asList(field.getAnnotations());
-		return new ArbitraryType(field.getType(), field.getAnnotatedType(), annotations);
-	}
-
-	@SuppressWarnings({"rawtypes", "unchecked"})
-	private boolean isNullableField(Field field, boolean defaultNotNull) {
-		ArbitraryType arbitraryType = getArbitraryType(field);
+	private boolean isNullableField(ArbitraryType<?> arbitraryType, Field field, boolean defaultNotNull) {
 		boolean nullable = arbitraryOption.getNullableArbitraryEvaluator().isNullable(field);
 		if (arbitraryType.isContainer()) {
 			return nullable && arbitraryOption.isNullableContainer();
@@ -272,5 +265,25 @@ public final class ArbitraryTraverser {
 			&& !type.isEnum()
 			&& !type.isInterface()
 			&& !type.isAbstract();
+	}
+
+	private static class PropertyNameResolverAdapter implements FieldNameResolver, PropertyNameResolver {
+		private final FieldNameResolver fieldNameResolver;
+
+		PropertyNameResolverAdapter(FieldNameResolver fieldNameResolver) {
+			this.fieldNameResolver = fieldNameResolver;
+		}
+
+		@Override
+		public String resolveFieldName(Field field) {
+			return this.fieldNameResolver.resolveFieldName(field);
+		}
+
+		@Override
+		public String resolve(Property property) {
+			// 아직까지는 FieldProperty 만 존재한다.
+			FieldProperty fieldProperty = (FieldProperty)property;
+			return this.fieldNameResolver.resolveFieldName(fieldProperty.getField());
+		}
 	}
 }

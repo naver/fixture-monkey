@@ -52,6 +52,11 @@ public final class FieldProperty implements Property {
 	}
 
 	@Override
+	public Class<?> getType() {
+		return this.field.getType();
+	}
+
+	@Override
 	public AnnotatedType getAnnotatedType() {
 		return this.field.getAnnotatedType();
 	}

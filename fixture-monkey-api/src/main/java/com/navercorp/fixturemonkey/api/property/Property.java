@@ -30,6 +30,8 @@ import org.apiguardian.api.API.Status;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public interface Property {
+	Class<?> getType();
+
 	AnnotatedType getAnnotatedType();
 
 	String getName();

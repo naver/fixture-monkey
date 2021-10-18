@@ -40,7 +40,7 @@ public class MapArbitraryNodeGenerator implements ContainerArbitraryNodeGenerato
 		}
 
 		ArbitraryType<T> clazz = nowNode.getType();
-		String fieldName = nowNode.getFieldName();
+		String propertyName = nowNode.getPropertyName();
 
 		ArbitraryType<?> keyType = clazz.getGenericArbitraryType(0);
 		ArbitraryType<?> valueType = clazz.getGenericArbitraryType(1);
@@ -56,7 +56,7 @@ public class MapArbitraryNodeGenerator implements ContainerArbitraryNodeGenerato
 		for (int i = 0; i < elementSize; i++) {
 			ArbitraryNode<?> keyNode = ArbitraryNode.builder()
 				.type(keyType)
-				.fieldName(fieldName)
+				.propertyName(propertyName)
 				.indexOfIterable(i)
 				.keyOfMapStructure(true)
 				.nullInject(0.f)
@@ -66,7 +66,7 @@ public class MapArbitraryNodeGenerator implements ContainerArbitraryNodeGenerato
 
 			ArbitraryNode<?> valueNode = ArbitraryNode.builder()
 				.type(valueType)
-				.fieldName(fieldName)
+				.propertyName(propertyName)
 				.indexOfIterable(i)
 				.nullInject(0.f)
 				.build();

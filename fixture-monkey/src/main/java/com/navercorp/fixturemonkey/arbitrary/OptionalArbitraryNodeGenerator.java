@@ -34,7 +34,7 @@ public class OptionalArbitraryNodeGenerator implements ContainerArbitraryNodeGen
 
 		ArbitraryType<T> arbitraryType = nowNode.getType();
 		ArbitraryType<?> elementType = arbitraryType.getGenericArbitraryType(0);
-		String fieldName = nowNode.getFieldName();
+		String propertyName = nowNode.getPropertyName();
 
 		LazyValue<?> nextLazyValue = getNextLazyValue(nowNode.getValue());
 
@@ -46,7 +46,7 @@ public class OptionalArbitraryNodeGenerator implements ContainerArbitraryNodeGen
 		ArbitraryNode<?> nextNode = ArbitraryNode.builder()
 			.type(elementType)
 			.value(nextLazyValue)
-			.fieldName(fieldName)
+			.propertyName(propertyName)
 			.indexOfIterable(0)
 			.build();
 		generatedNodeList.add(nextNode);

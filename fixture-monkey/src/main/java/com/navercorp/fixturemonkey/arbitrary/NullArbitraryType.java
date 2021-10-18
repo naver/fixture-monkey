@@ -30,7 +30,7 @@ public final class NullArbitraryType extends ArbitraryType {
 	public static final NullArbitraryType INSTANCE = new NullArbitraryType();
 
 	private NullArbitraryType() {
-		super(null);
+		super((Class<?>)null);
 	}
 
 	@Override
