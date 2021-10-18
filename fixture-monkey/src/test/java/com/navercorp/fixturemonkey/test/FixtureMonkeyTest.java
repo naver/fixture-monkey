@@ -47,6 +47,8 @@ import net.jqwik.api.domains.Domain;
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.FixtureMonkey;
+import com.navercorp.fixturemonkey.arbitrary.AbstractArbitrarySet;
+import com.navercorp.fixturemonkey.arbitrary.ArbitraryExpression;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.DefaultArbitraryGroup;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.DefaultArbitraryGroup2;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.DuplicateArbitraryGroup;
@@ -69,6 +71,7 @@ import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.NestedStringWithN
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.StringAndInt;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.StringWithNotBlank;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.StringWithNullable;
+import com.navercorp.fixturemonkey.test.SimpleManipulatorTestSpecs.IntValue;
 
 class FixtureMonkeyTest {
 	@Property
@@ -1377,5 +1380,28 @@ class FixtureMonkeyTest {
 				.validOnly(false)
 				.copy()
 				.sample());
+	}
+
+	@SuppressWarnings("unchecked")
+	@Property
+	@Domain(FixtureMonkeyTestSpecs.class)
+	void onManipulated() {
+		// given
+		ArbitraryBuilder<IntValue> arbitraryBuilder = SUT.giveMeBuilder(IntValue.class);
+		SUT.giveMeBuilder(IntValue.class,
+			arbitraryExpressionManipulator -> {
+				if (arbitraryExpressionManipulator instanceof AbstractArbitrarySet) {
+					AbstractArbitrarySet<IntValue> set =
+						(AbstractArbitrarySet<IntValue>)arbitraryExpressionManipulator;
+					ArbitraryExpression expression = set.getArbitraryExpression();
+					arbitraryBuilder.set(expression.toString(), set.getValue());
+				}
+			}
+		).set("value", 1);
+
+		// when
+		IntValue actual = arbitraryBuilder.sample();
+
+		then(actual.getValue()).isEqualTo(1);
 	}
 }

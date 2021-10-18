@@ -106,7 +106,7 @@ public class FixtureMonkey {
 
 	public <T> ArbitraryBuilder<T> giveMeBuilder(
 		Class<T> clazz,
-		Consumer<ArbitraryExpressionManipulator> onManipulated
+		Consumer<BuilderManipulator> onManipulated
 	) {
 		return this.giveMeBuilder(
 			clazz,
@@ -162,7 +162,7 @@ public class FixtureMonkey {
 		Class<T> clazz,
 		ArbitraryOption option,
 		ArbitraryCustomizers customizers,
-		Consumer<ArbitraryExpressionManipulator> onManipulated
+		Consumer<BuilderManipulator> onManipulated
 	) {
 		ArbitraryBuilder<T> defaultArbitraryBuilder = option.getDefaultArbitraryBuilder(clazz);
 		if (defaultArbitraryBuilder != null) {
