@@ -27,17 +27,15 @@ import java.util.stream.Stream;
 
 import net.jqwik.api.Arbitraries;
 
+import com.navercorp.fixturemonkey.api.property.FieldProperty;
+import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.generator.FieldNameResolver;
 
 public class DefaultContainerArbitraryNodeGenerator implements ContainerArbitraryNodeGenerator {
 	public static final DefaultContainerArbitraryNodeGenerator INSTANCE = new DefaultContainerArbitraryNodeGenerator();
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public <T> List<ArbitraryNode<?>> generate(
-		ArbitraryNode<T> nowNode,
-		FieldNameResolver fieldNameResolver
-	) {
+	public <T> List<ArbitraryNode<?>> generate(ArbitraryNode<T> nowNode, PropertyNameResolver propertyNameResolver) {
 		int currentIndex = 0;
 		int elementSize = Integer.MAX_VALUE;
 
@@ -70,6 +68,7 @@ public class DefaultContainerArbitraryNodeGenerator implements ContainerArbitrar
 
 			while (currentIndex < elementSize && iterator.hasNext()) {
 				Object nextObject = iterator.next();
+				@SuppressWarnings("unchecked")
 				ArbitraryNode<?> nextNode = ArbitraryNode.builder()
 					.type(elementType)
 					.value(nextObject)
@@ -94,6 +93,7 @@ public class DefaultContainerArbitraryNodeGenerator implements ContainerArbitrar
 		}
 
 		for (int i = currentIndex; i < elementSize; i++) {
+			@SuppressWarnings("unchecked")
 			ArbitraryNode<?> nextNode = ArbitraryNode.builder()
 				.type(elementType)
 				.propertyName(propertyName)
@@ -105,6 +105,21 @@ public class DefaultContainerArbitraryNodeGenerator implements ContainerArbitrar
 		}
 
 		return generatedNodeList;
+	}
+
+	/**
+	 * Deprecated Use generate instead.
+	 */
+	@Deprecated
+	@Override
+	public <T> List<ArbitraryNode<?>> generate(
+		ArbitraryNode<T> nowNode,
+		FieldNameResolver fieldNameResolver
+	) {
+		return this.generate(
+			nowNode,
+			(PropertyNameResolver)property -> fieldNameResolver.resolveFieldName(((FieldProperty)property).getField())
+		);
 	}
 
 	@SuppressWarnings("unchecked")

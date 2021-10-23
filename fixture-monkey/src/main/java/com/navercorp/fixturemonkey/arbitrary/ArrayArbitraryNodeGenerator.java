@@ -24,17 +24,15 @@ import java.util.List;
 
 import net.jqwik.api.Arbitraries;
 
+import com.navercorp.fixturemonkey.api.property.FieldProperty;
+import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.generator.FieldNameResolver;
 
 public class ArrayArbitraryNodeGenerator implements ContainerArbitraryNodeGenerator {
 	public static final ArrayArbitraryNodeGenerator INSTANCE = new ArrayArbitraryNodeGenerator();
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public <T> List<ArbitraryNode<?>> generate(
-		ArbitraryNode<T> nowNode,
-		FieldNameResolver fieldNameResolver
-	) {
+	public <T> List<ArbitraryNode<?>> generate(ArbitraryNode<T> nowNode, PropertyNameResolver propertyNameResolver) {
 		int elementSize = Integer.MAX_VALUE;
 		int currentIndex = 0;
 
@@ -62,6 +60,7 @@ public class ArrayArbitraryNodeGenerator implements ContainerArbitraryNodeGenera
 
 			for (currentIndex = 0; currentIndex < length && currentIndex < elementSize; currentIndex++) {
 				Object nextValue = Array.get(value, currentIndex);
+				@SuppressWarnings("unchecked")
 				ArbitraryNode<?> nextNode = ArbitraryNode.builder()
 					.type(childType)
 					.propertyName(propertyName)
@@ -85,6 +84,7 @@ public class ArrayArbitraryNodeGenerator implements ContainerArbitraryNodeGenera
 		}
 
 		for (int i = currentIndex; i < elementSize; i++) {
+			@SuppressWarnings("unchecked")
 			ArbitraryNode<?> genericFrame = ArbitraryNode.builder()
 				.type(childType)
 				.propertyName(propertyName)
@@ -96,6 +96,21 @@ public class ArrayArbitraryNodeGenerator implements ContainerArbitraryNodeGenera
 			generatedNodeList.add(genericFrame);
 		}
 		return generatedNodeList;
+	}
+
+	/**
+	 * Deprecated Use generate instead.
+	 */
+	@Deprecated
+	@Override
+	public <T> List<ArbitraryNode<?>> generate(
+		ArbitraryNode<T> nowNode,
+		FieldNameResolver fieldNameResolver
+	) {
+		return this.generate(
+			nowNode,
+			(PropertyNameResolver)property -> fieldNameResolver.resolveFieldName(((FieldProperty)property).getField())
+		);
 	}
 
 	private boolean isNotInitialized(int elementSize) {

@@ -48,6 +48,8 @@ import net.jqwik.api.Combinators.F3;
 import net.jqwik.api.Combinators.F4;
 
 import com.navercorp.fixturemonkey.api.expression.ExpressionGenerator;
+import com.navercorp.fixturemonkey.api.property.FieldProperty;
+import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.arbitrary.AbstractArbitrarySet;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryExpression;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryNode;
@@ -184,7 +186,8 @@ public final class ArbitraryBuilder<T> {
 			buildArbitraryBuilder.traverser.traverse(
 				buildTree,
 				false,
-				buildArbitraryBuilder.generator
+				(PropertyNameResolver)property -> buildArbitraryBuilder.generator.resolveFieldName(
+					((FieldProperty)property).getField())
 			);
 
 			List<BuilderManipulator> actualManipulators = buildArbitraryBuilder.getActiveManipulators();
@@ -206,7 +209,8 @@ public final class ArbitraryBuilder<T> {
 			this.traverser.traverse(
 				buildTree,
 				false,
-				this.generator
+				(PropertyNameResolver)property -> this.generator.resolveFieldName(
+					((FieldProperty)property).getField())
 			);
 			this.apply(this.getActiveManipulators());
 			this.builderManipulators.clear();
@@ -554,7 +558,12 @@ public final class ArbitraryBuilder<T> {
 				foundNode.setContainerSizeConstraint(
 					new ContainerSizeConstraint(containerSizeManipulator.getMin(), containerSizeManipulator.getMax())
 				);
-				traverser.traverse(foundNode, false, generator); // regenerate subtree
+				traverser.traverse(
+					foundNode,
+					false,
+					(PropertyNameResolver)property -> this.generator.resolveFieldName(
+						((FieldProperty)property).getField())
+				); // regenerate subtree
 			}
 		} else {
 			throw new IllegalArgumentException("Not Implemented MetadataManipulator");
@@ -683,7 +692,11 @@ public final class ArbitraryBuilder<T> {
 		ArbitraryNode resetNode = tree.findFirstResetNode();
 
 		if (resetNode != null && !resetNode.isLeafNode()) {
-			traverser.traverse(resetNode, resetNode.isKeyOfMapStructure(), generator);
+			traverser.traverse(
+				resetNode,
+				resetNode.isKeyOfMapStructure(),
+				(PropertyNameResolver)property -> generator.resolveFieldName(((FieldProperty)property).getField())
+			);
 			foundNodes = tree.findAll(arbitraryExpression);
 		}
 

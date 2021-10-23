@@ -53,10 +53,38 @@ public final class ArbitraryTraverser {
 		this.arbitraryOption = arbitraryOption;
 	}
 
+	public <T> void traverse(
+		ArbitraryTree<T> tree,
+		boolean keyOfMapStructure,
+		PropertyNameResolver propertyNameResolver
+	) {
+		this.traverse(tree.getHead(), keyOfMapStructure, propertyNameResolver);
+	}
+
+	public <T> void traverse(
+		ArbitraryNode<T> node,
+		boolean keyOfMapStructure,
+		PropertyNameResolver propertyNameResolver
+	) {
+		LazyValue<T> value = node.getValue();
+		if (value != null) {
+			value.clear();
+		}
+		doTraverse(node, keyOfMapStructure, true, propertyNameResolver);
+	}
+
+	/**
+	 * Deprecated Use traverse(ArbitraryTree, boolean, FieldNameResolver) instead.
+	 */
+	@Deprecated
 	public <T> void traverse(ArbitraryTree<T> tree, boolean keyOfMapStructure, FieldNameResolver fieldNameResolver) {
 		this.traverse(tree.getHead(), keyOfMapStructure, fieldNameResolver);
 	}
 
+	/**
+	 * Deprecated Use traverse(ArbitraryNode, boolean, FieldNameResolver) instead.
+	 */
+	@Deprecated
 	public <T> void traverse(ArbitraryNode<T> node, boolean keyOfMapStructure, FieldNameResolver fieldNameResolver) {
 		LazyValue<T> value = node.getValue();
 		if (value != null) {
@@ -70,7 +98,7 @@ public final class ArbitraryTraverser {
 		ArbitraryNode<T> node,
 		boolean keyOfMapStructure,
 		boolean active,
-		PropertyNameResolverAdapter propertyNameResolverAdapter
+		PropertyNameResolver propertyNameResolver
 	) {
 		node.getChildren().clear();
 		initializeDefaultArbitrary(node);
@@ -101,7 +129,7 @@ public final class ArbitraryTraverser {
 
 				ArbitraryNode<?> nextNode = ArbitraryNode.builder()
 					.type(arbitraryType)
-					.propertyName(propertyNameResolverAdapter.resolve(property))
+					.propertyName(propertyNameResolver.resolve(property))
 					.nullable(nullable)
 					.nullInject(nullInject)
 					.keyOfMapStructure(keyOfMapStructure)
@@ -110,20 +138,20 @@ public final class ArbitraryTraverser {
 					.build();
 
 				node.addChildNode(nextNode);
-				doTraverse(nextNode, false, active, propertyNameResolverAdapter);
+				doTraverse(nextNode, false, active, propertyNameResolver);
 			}
 		} else if (nowNodeType.isContainer() || containerArbitraryNodeGenerator != null) {
 			if (containerArbitraryNodeGenerator != null) {
-				traverseContainer(node, active, propertyNameResolverAdapter, containerArbitraryNodeGenerator);
+				traverseContainer(node, active, propertyNameResolver, containerArbitraryNodeGenerator);
 			} else if (nowNodeType.isMap() || nowNodeType.isMapEntry()) {
-				traverseContainer(node, active, propertyNameResolverAdapter, MapArbitraryNodeGenerator.INSTANCE);
+				traverseContainer(node, active, propertyNameResolver, MapArbitraryNodeGenerator.INSTANCE);
 			} else if (nowNodeType.isArray()) {
-				traverseContainer(node, active, propertyNameResolverAdapter, ArrayArbitraryNodeGenerator.INSTANCE);
+				traverseContainer(node, active, propertyNameResolver, ArrayArbitraryNodeGenerator.INSTANCE);
 			} else if (nowNodeType.isOptional()) {
-				traverseContainer(node, active, propertyNameResolverAdapter, OptionalArbitraryNodeGenerator.INSTANCE);
+				traverseContainer(node, active, propertyNameResolver, OptionalArbitraryNodeGenerator.INSTANCE);
 			} else {
 				traverseContainer(
-					node, active, propertyNameResolverAdapter, DefaultContainerArbitraryNodeGenerator.INSTANCE
+					node, active, propertyNameResolver, DefaultContainerArbitraryNodeGenerator.INSTANCE
 				);
 			}
 		} else {
@@ -151,14 +179,14 @@ public final class ArbitraryTraverser {
 	private <T> void traverseContainer(
 		ArbitraryNode<T> currentNode,
 		boolean active,
-		PropertyNameResolverAdapter propertyNameResolverAdapter,
+		PropertyNameResolver propertyNameResolver,
 		ContainerArbitraryNodeGenerator containerArbitraryNodeGenerator
 	) {
 		List<ArbitraryNode<?>> nodes = containerArbitraryNodeGenerator.generate(
-			currentNode, propertyNameResolverAdapter);
+			currentNode, propertyNameResolver);
 		for (ArbitraryNode<?> node : nodes) {
 			currentNode.addChildNode(node);
-			doTraverse(node, node.isKeyOfMapStructure(), active, propertyNameResolverAdapter);
+			doTraverse(node, node.isKeyOfMapStructure(), active, propertyNameResolver);
 		}
 	}
 

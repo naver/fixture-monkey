@@ -23,6 +23,8 @@ import java.util.List;
 
 import net.jqwik.api.Arbitraries;
 
+import com.navercorp.fixturemonkey.api.property.FieldProperty;
+import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.generator.FieldNameResolver;
 
 @SuppressWarnings("unchecked")
@@ -30,7 +32,7 @@ public class MapArbitraryNodeGenerator implements ContainerArbitraryNodeGenerato
 	public static final MapArbitraryNodeGenerator INSTANCE = new MapArbitraryNodeGenerator();
 
 	@Override
-	public <T> List<ArbitraryNode<?>> generate(ArbitraryNode<T> nowNode, FieldNameResolver fieldNameResolver) {
+	public <T> List<ArbitraryNode<?>> generate(ArbitraryNode<T> nowNode, PropertyNameResolver propertyNameResolver) {
 		List<ArbitraryNode<?>> generatedNodeList = new ArrayList<>();
 
 		LazyValue<T> lazyValue = nowNode.getValue();
@@ -74,5 +76,17 @@ public class MapArbitraryNodeGenerator implements ContainerArbitraryNodeGenerato
 			generatedNodeList.add(valueNode);
 		}
 		return generatedNodeList;
+	}
+
+	/**
+	 * Deprecated Use generate instead.
+	 */
+	@Deprecated
+	@Override
+	public <T> List<ArbitraryNode<?>> generate(ArbitraryNode<T> nowNode, FieldNameResolver fieldNameResolver) {
+		return this.generate(
+			nowNode,
+			(PropertyNameResolver)property -> fieldNameResolver.resolveFieldName(((FieldProperty)property).getField())
+		);
 	}
 }
