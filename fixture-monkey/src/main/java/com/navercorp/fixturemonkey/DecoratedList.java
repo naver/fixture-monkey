@@ -19,11 +19,90 @@
 package com.navercorp.fixturemonkey;
 
 import java.util.Collection;
+import java.util.Iterator;
 
-interface DecoratedList<T> extends Collection<T> {
-	T get(int index);
+import com.navercorp.fixturemonkey.arbitrary.BuilderManipulator;
 
-	T remove(int index);
+abstract class DecoratedList<T extends BuilderManipulator> implements Collection<T> {
+	protected final DecoratedList<T> decoratedList;
 
-	DecoratedList<T> copy();
+	public DecoratedList(DecoratedList<T> decoratedList) {
+		this.decoratedList = decoratedList;
+	}
+
+	@Override
+	public abstract boolean add(T value);
+
+	@SuppressWarnings("NullableProblems")
+	@Override
+	public abstract boolean addAll(Collection<? extends T> collection);
+
+	abstract DecoratedList<T> copy();
+
+	public T get(int index) {
+		return decoratedList.get(index);
+	}
+
+	public T remove(int index) {
+		return decoratedList.remove(index);
+	}
+
+	@Override
+	public int size() {
+		return decoratedList.size();
+	}
+
+	@Override
+	public boolean isEmpty() {
+		return decoratedList.isEmpty();
+	}
+
+	@Override
+	public boolean contains(Object obj) {
+		return decoratedList.contains(obj);
+	}
+
+	@Override
+	public Iterator<T> iterator() {
+		return decoratedList.iterator();
+	}
+
+	@Override
+	public Object[] toArray() {
+		return decoratedList.toArray();
+	}
+
+	@Override
+	public boolean remove(Object obj) {
+		return decoratedList.remove(obj);
+	}
+
+	@Override
+	public void clear() {
+		decoratedList.clear();
+	}
+
+	@SuppressWarnings("NullableProblems")
+	@Override
+	public boolean retainAll(Collection collection) {
+		return decoratedList.retainAll(collection);
+	}
+
+	@SuppressWarnings("NullableProblems")
+	@Override
+	public boolean removeAll(Collection collection) {
+		return decoratedList.removeAll(collection);
+	}
+
+	@SuppressWarnings("NullableProblems")
+	@Override
+	public boolean containsAll(Collection collection) {
+		return decoratedList.containsAll(collection);
+	}
+
+	@SuppressWarnings({"unchecked", "NullableProblems"})
+	@Override
+	public T[] toArray(Object[] array) {
+		return decoratedList.toArray(array);
+	}
 }

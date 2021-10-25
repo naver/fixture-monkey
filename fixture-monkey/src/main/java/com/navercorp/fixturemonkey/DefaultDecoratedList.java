@@ -27,10 +27,11 @@ import java.util.List;
 import com.navercorp.fixturemonkey.arbitrary.BuilderManipulator;
 
 @SuppressWarnings({"SuspiciousMethodCalls", "NullableProblems", "unchecked"})
-final class DefaultDecoratedList<T extends BuilderManipulator> implements DecoratedList<T> {
+final class DefaultDecoratedList<T extends BuilderManipulator> extends DecoratedList<T> {
 	private final List<T> list;
 
 	public DefaultDecoratedList(List<T> list) {
+		super(null); // for DecoratedList type
 		this.list = list;
 	}
 
