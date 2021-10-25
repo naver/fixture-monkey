@@ -105,7 +105,7 @@ public final class ArbitraryBuilder<T> {
 			generator,
 			validator,
 			arbitraryCustomizers,
-			new CallbackList<>(new BaseDecoratedList<>(new ArrayList<>()), onManipulated),
+			new CallbackList<>(new DefaultDecoratedList<>(new ArrayList<>()), onManipulated),
 			new ArrayList<>(),
 			new ArrayList<>(),
 			generatorMap
@@ -133,7 +133,7 @@ public final class ArbitraryBuilder<T> {
 			generator,
 			validator,
 			arbitraryCustomizers,
-			new CallbackList<>(new BaseDecoratedList<>(new ArrayList<>()), onManipulated),
+			new CallbackList<>(new DefaultDecoratedList<>(new ArrayList<>()), onManipulated),
 			new ArrayList<>(),
 			new ArrayList<>(),
 			generatorMap

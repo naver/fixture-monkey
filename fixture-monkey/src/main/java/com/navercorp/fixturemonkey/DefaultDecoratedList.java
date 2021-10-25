@@ -1,3 +1,21 @@
+/*
+ * Fixture Monkey
+ *
+ * Copyright (c) 2021-present NAVER Corp.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.navercorp.fixturemonkey;
 
 import static java.util.stream.Collectors.toList;
@@ -9,10 +27,10 @@ import java.util.List;
 import com.navercorp.fixturemonkey.arbitrary.BuilderManipulator;
 
 @SuppressWarnings({"SuspiciousMethodCalls", "NullableProblems", "unchecked"})
-public class BaseDecoratedList<T extends BuilderManipulator> implements DecoratedList<T> {
+final class DefaultDecoratedList<T extends BuilderManipulator> implements DecoratedList<T> {
 	private final List<T> list;
 
-	public BaseDecoratedList(List<T> list) {
+	public DefaultDecoratedList(List<T> list) {
 		this.list = list;
 	}
 
@@ -29,7 +47,7 @@ public class BaseDecoratedList<T extends BuilderManipulator> implements Decorate
 	@Override
 	public DecoratedList<T> copy() {
 		List<T> copied = (List<T>)this.list.stream().map(BuilderManipulator::copy).collect(toList());
-		return new BaseDecoratedList<>(copied);
+		return new DefaultDecoratedList<>(copied);
 	}
 
 	@Override
