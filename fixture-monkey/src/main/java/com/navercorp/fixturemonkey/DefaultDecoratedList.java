@@ -20,6 +20,7 @@ package com.navercorp.fixturemonkey;
 
 import static java.util.stream.Collectors.toList;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -28,11 +29,10 @@ import com.navercorp.fixturemonkey.arbitrary.BuilderManipulator;
 
 @SuppressWarnings({"SuspiciousMethodCalls", "NullableProblems", "unchecked"})
 final class DefaultDecoratedList<T extends BuilderManipulator> extends DecoratedList<T> {
-	private final List<T> list;
+	private final List<T> list = new ArrayList<>();
 
-	public DefaultDecoratedList(List<T> list) {
+	public DefaultDecoratedList() {
 		super(null); // for DecoratedList type
-		this.list = list;
 	}
 
 	@Override
@@ -47,8 +47,10 @@ final class DefaultDecoratedList<T extends BuilderManipulator> extends Decorated
 
 	@Override
 	public DecoratedList<T> copy() {
-		List<T> copied = (List<T>)this.list.stream().map(BuilderManipulator::copy).collect(toList());
-		return new DefaultDecoratedList<>(copied);
+		List<T> manipulators = (List<T>)this.list.stream().map(BuilderManipulator::copy).collect(toList());
+		DefaultDecoratedList<T> copied = new DefaultDecoratedList<>();
+		copied.addAll(manipulators);
+		return copied;
 	}
 
 	@Override
