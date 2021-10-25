@@ -24,31 +24,29 @@ import java.util.List;
 
 import net.jqwik.api.Arbitraries;
 
-import com.navercorp.fixturemonkey.api.property.FieldProperty;
-import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.generator.FieldNameResolver;
 
 public class ArrayArbitraryNodeGenerator implements ContainerArbitraryNodeGenerator {
 	public static final ArrayArbitraryNodeGenerator INSTANCE = new ArrayArbitraryNodeGenerator();
 
 	@Override
-	public <T> List<ArbitraryNode<?>> generate(ArbitraryNode<T> nowNode, PropertyNameResolver propertyNameResolver) {
+	public <T> List<ArbitraryNode<?>> generate(ArbitraryNode<T> containerNode) {
 		int elementSize = Integer.MAX_VALUE;
 		int currentIndex = 0;
 
-		ArbitraryType<T> clazz = nowNode.getType();
+		ArbitraryType<T> clazz = containerNode.getType();
 		ArbitraryType<?> childType = clazz.getArrayArbitraryType();
-		String propertyName = nowNode.getPropertyName();
-		LazyValue<T> lazyValue = nowNode.getValue();
+		String propertyName = containerNode.getPropertyName();
+		LazyValue<T> lazyValue = containerNode.getValue();
 
 		List<ArbitraryNode<?>> generatedNodeList = new ArrayList<>();
 
 		if (lazyValue != null) {
 			T value = lazyValue.get();
-			ContainerSizeConstraint containerSizeConstraint = nowNode.getContainerSizeConstraint();
+			ContainerSizeConstraint containerSizeConstraint = containerNode.getContainerSizeConstraint();
 
 			if (value == null) {
-				nowNode.setArbitrary(Arbitraries.just(null));
+				containerNode.setArbitrary(Arbitraries.just(null));
 				return generatedNodeList;
 			}
 			int length = Array.getLength(value);
@@ -72,15 +70,15 @@ public class ArrayArbitraryNodeGenerator implements ContainerArbitraryNodeGenera
 
 			if (containerSizeConstraint == null) {
 				// value exists, container size size is same as value size.
-				nowNode.setContainerSizeConstraint(new ContainerSizeConstraint(length, length));
+				containerNode.setContainerSizeConstraint(new ContainerSizeConstraint(length, length));
 				return generatedNodeList;
 			}
 		}
 
-		nowNode.initializeElementSize();
+		containerNode.initializeElementSize();
 		if (isNotInitialized(elementSize)) {
 			// value does not exist.
-			elementSize = nowNode.getContainerSizeConstraint().getArbitraryElementSize();
+			elementSize = containerNode.getContainerSizeConstraint().getArbitraryElementSize();
 		}
 
 		for (int i = currentIndex; i < elementSize; i++) {
@@ -107,10 +105,7 @@ public class ArrayArbitraryNodeGenerator implements ContainerArbitraryNodeGenera
 		ArbitraryNode<T> nowNode,
 		FieldNameResolver fieldNameResolver
 	) {
-		return this.generate(
-			nowNode,
-			(PropertyNameResolver)property -> fieldNameResolver.resolveFieldName(((FieldProperty)property).getField())
-		);
+		return this.generate(nowNode);
 	}
 
 	private boolean isNotInitialized(int elementSize) {

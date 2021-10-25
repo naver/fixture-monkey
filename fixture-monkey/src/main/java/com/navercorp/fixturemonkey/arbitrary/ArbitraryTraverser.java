@@ -182,8 +182,7 @@ public final class ArbitraryTraverser {
 		PropertyNameResolver propertyNameResolver,
 		ContainerArbitraryNodeGenerator containerArbitraryNodeGenerator
 	) {
-		List<ArbitraryNode<?>> nodes = containerArbitraryNodeGenerator.generate(
-			currentNode, propertyNameResolver);
+		List<ArbitraryNode<?>> nodes = containerArbitraryNodeGenerator.generate(currentNode);
 		for (ArbitraryNode<?> node : nodes) {
 			currentNode.addChildNode(node);
 			doTraverse(node, node.isKeyOfMapStructure(), active, propertyNameResolver);

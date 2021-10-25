@@ -20,17 +20,10 @@ package com.navercorp.fixturemonkey.arbitrary;
 
 import java.util.List;
 
-import com.navercorp.fixturemonkey.api.property.FieldProperty;
-import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.generator.FieldNameResolver;
 
 public interface ContainerArbitraryNodeGenerator {
-	default <T> List<ArbitraryNode<?>> generate(ArbitraryNode<T> nowNode, PropertyNameResolver propertyNameResolver) {
-		return this.generate(
-			nowNode,
-			(FieldNameResolver)field -> propertyNameResolver.resolve(new FieldProperty(field))
-		);
-	}
+	<T> List<ArbitraryNode<?>> generate(ArbitraryNode<T> containerNode);
 
 	/**
 	 * Deprecated Use generate instead.

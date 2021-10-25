@@ -23,8 +23,6 @@ import java.util.List;
 
 import net.jqwik.api.Arbitraries;
 
-import com.navercorp.fixturemonkey.api.property.FieldProperty;
-import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.generator.FieldNameResolver;
 
 @SuppressWarnings("unchecked")
@@ -32,24 +30,24 @@ public class MapArbitraryNodeGenerator implements ContainerArbitraryNodeGenerato
 	public static final MapArbitraryNodeGenerator INSTANCE = new MapArbitraryNodeGenerator();
 
 	@Override
-	public <T> List<ArbitraryNode<?>> generate(ArbitraryNode<T> nowNode, PropertyNameResolver propertyNameResolver) {
+	public <T> List<ArbitraryNode<?>> generate(ArbitraryNode<T> containerNode) {
 		List<ArbitraryNode<?>> generatedNodeList = new ArrayList<>();
 
-		LazyValue<T> lazyValue = nowNode.getValue();
+		LazyValue<T> lazyValue = containerNode.getValue();
 		if (lazyValue != null) {
-			nowNode.setArbitrary(Arbitraries.just(lazyValue.get()));
+			containerNode.setArbitrary(Arbitraries.just(lazyValue.get()));
 			return generatedNodeList;
 		}
 
-		ArbitraryType<T> clazz = nowNode.getType();
-		String propertyName = nowNode.getPropertyName();
+		ArbitraryType<T> clazz = containerNode.getType();
+		String propertyName = containerNode.getPropertyName();
 
 		ArbitraryType<?> keyType = clazz.getGenericArbitraryType(0);
 		ArbitraryType<?> valueType = clazz.getGenericArbitraryType(1);
 
-		nowNode.initializeElementSize();
+		containerNode.initializeElementSize();
 
-		int elementSize = nowNode.getContainerSizeConstraint().getArbitraryElementSize();
+		int elementSize = containerNode.getContainerSizeConstraint().getArbitraryElementSize();
 
 		if (clazz.isMapEntry()) {
 			elementSize = 1;
@@ -84,9 +82,6 @@ public class MapArbitraryNodeGenerator implements ContainerArbitraryNodeGenerato
 	@Deprecated
 	@Override
 	public <T> List<ArbitraryNode<?>> generate(ArbitraryNode<T> nowNode, FieldNameResolver fieldNameResolver) {
-		return this.generate(
-			nowNode,
-			(PropertyNameResolver)property -> fieldNameResolver.resolveFieldName(((FieldProperty)property).getField())
-		);
+		return this.generate(nowNode);
 	}
 }
