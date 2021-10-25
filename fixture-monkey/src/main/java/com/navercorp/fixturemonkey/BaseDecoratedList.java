@@ -1,35 +1,19 @@
 package com.navercorp.fixturemonkey;
 
+import static java.util.stream.Collectors.toList;
+
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.function.Consumer;
-
-import javax.validation.constraints.NotNull;
+import java.util.List;
 
 import com.navercorp.fixturemonkey.arbitrary.BuilderManipulator;
 
-@SuppressWarnings({"NullableProblems", "SuspiciousMethodCalls"})
-final class CallbackList<T extends BuilderManipulator> implements DecoratedList<T> {
-	private final DecoratedList<T> list;
-	private final Consumer<T> callback;
+@SuppressWarnings({"SuspiciousMethodCalls", "NullableProblems", "unchecked"})
+public class BaseDecoratedList<T extends BuilderManipulator> implements DecoratedList<T> {
+	private final List<T> list;
 
-	public CallbackList(DecoratedList<T> list, Consumer<T> callback) {
+	public BaseDecoratedList(List<T> list) {
 		this.list = list;
-		this.callback = callback;
-	}
-
-	@Override
-	public boolean add(T value) {
-		boolean added = list.add(value);
-		callback.accept(value);
-		return added;
-	}
-
-	@Override
-	public boolean addAll(@NotNull Collection<? extends T> collection) {
-		boolean addAll = list.addAll(collection);
-		collection.forEach(callback);
-		return addAll;
 	}
 
 	@Override
@@ -43,6 +27,12 @@ final class CallbackList<T extends BuilderManipulator> implements DecoratedList<
 	}
 
 	@Override
+	public DecoratedList<T> copy() {
+		List<T> copied = (List<T>)this.list.stream().map(BuilderManipulator::copy).collect(toList());
+		return new BaseDecoratedList<>(copied);
+	}
+
+	@Override
 	public int size() {
 		return list.size();
 	}
@@ -53,8 +43,8 @@ final class CallbackList<T extends BuilderManipulator> implements DecoratedList<
 	}
 
 	@Override
-	public boolean contains(Object o) {
-		return list.contains(o);
+	public boolean contains(Object obj) {
+		return list.contains(obj);
 	}
 
 	@Override
@@ -68,8 +58,18 @@ final class CallbackList<T extends BuilderManipulator> implements DecoratedList<
 	}
 
 	@Override
+	public boolean add(T obj) {
+		return list.add(obj);
+	}
+
+	@Override
 	public boolean remove(Object obj) {
 		return list.remove(obj);
+	}
+
+	@Override
+	public boolean addAll(Collection<? extends T> collection) {
+		return list.addAll(collection);
 	}
 
 	@Override
@@ -96,10 +96,5 @@ final class CallbackList<T extends BuilderManipulator> implements DecoratedList<
 	@Override
 	public T[] toArray(Object[] array) {
 		return (T[])list.toArray(array);
-	}
-
-	@Override
-	public DecoratedList<T> copy() {
-		return new CallbackList<>(this.list.copy(), callback);
 	}
 }

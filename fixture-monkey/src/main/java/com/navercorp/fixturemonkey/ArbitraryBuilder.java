@@ -74,7 +74,7 @@ import com.navercorp.fixturemonkey.validator.ArbitraryValidator;
 public final class ArbitraryBuilder<T> {
 	private final ArbitraryTree<T> tree;
 	private final ArbitraryTraverser traverser;
-	private final List<BuilderManipulator> builderManipulators;
+	private final DecoratedList<BuilderManipulator> builderManipulators;
 	private final List<BuilderManipulator> usedManipulators;
 	@SuppressWarnings("rawtypes")
 	private final ArbitraryValidator validator;
@@ -105,7 +105,7 @@ public final class ArbitraryBuilder<T> {
 			generator,
 			validator,
 			arbitraryCustomizers,
-			new CallbackList<>(new ArrayList<>(), onManipulated),
+			new CallbackList<>(new BaseDecoratedList<>(new ArrayList<>()), onManipulated),
 			new ArrayList<>(),
 			new ArrayList<>(),
 			generatorMap
@@ -133,7 +133,7 @@ public final class ArbitraryBuilder<T> {
 			generator,
 			validator,
 			arbitraryCustomizers,
-			new CallbackList<>(new ArrayList<>(), onManipulated),
+			new CallbackList<>(new BaseDecoratedList<>(new ArrayList<>()), onManipulated),
 			new ArrayList<>(),
 			new ArrayList<>(),
 			generatorMap
@@ -147,7 +147,7 @@ public final class ArbitraryBuilder<T> {
 		ArbitraryGenerator generator,
 		ArbitraryValidator validator,
 		ArbitraryCustomizers arbitraryCustomizers,
-		List<BuilderManipulator> builderManipulators,
+		DecoratedList<BuilderManipulator> builderManipulators,
 		List<BuilderManipulator> usedManipulators,
 		List<BiConsumer<T, ArbitraryBuilder<T>>> decomposedManipulators,
 		Map<Class<?>, ArbitraryGenerator> generatorMap
@@ -636,7 +636,7 @@ public final class ArbitraryBuilder<T> {
 			this.generator,
 			this.validator,
 			this.arbitraryCustomizers,
-			this.builderManipulators.stream().map(BuilderManipulator::copy).collect(toList()),
+			this.builderManipulators.copy(),
 			this.usedManipulators.stream().map(BuilderManipulator::copy).collect(toList()),
 			new ArrayList<>(this.decomposedManipulators),
 			this.generatorMap
