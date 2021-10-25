@@ -31,6 +31,10 @@ public interface ArbitraryGenerator extends FieldNameResolver {
 	@SuppressWarnings("rawtypes")
 	<T> Arbitrary<T> generate(ArbitraryType type, List<ArbitraryNode> nodes);
 
+	/**
+	 * Deprecated Use PropertyNameResolver resolve instead.
+	 */
+	@Deprecated
 	default String resolveFieldName(Field field) {
 		return field.getName();
 	}

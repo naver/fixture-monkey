@@ -27,22 +27,22 @@ import com.navercorp.fixturemonkey.generator.FieldNameResolver;
 public class OptionalArbitraryNodeGenerator implements ContainerArbitraryNodeGenerator {
 	public static final OptionalArbitraryNodeGenerator INSTANCE = new OptionalArbitraryNodeGenerator();
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public <T> List<ArbitraryNode<?>> generate(ArbitraryNode<T> nowNode, FieldNameResolver fieldNameResolver) {
+	public <T> List<ArbitraryNode<?>> generate(ArbitraryNode<T> containerNode) {
 		List<ArbitraryNode<?>> generatedNodeList = new ArrayList<>();
 
-		ArbitraryType<T> arbitraryType = nowNode.getType();
+		ArbitraryType<T> arbitraryType = containerNode.getType();
 		ArbitraryType<?> elementType = arbitraryType.getGenericArbitraryType(0);
-		String propertyName = nowNode.getPropertyName();
+		String propertyName = containerNode.getPropertyName();
 
-		LazyValue<?> nextLazyValue = getNextLazyValue(nowNode.getValue());
+		LazyValue<?> nextLazyValue = getNextLazyValue(containerNode.getValue());
 
 		if (nextLazyValue != null && nextLazyValue.isEmpty()) {
 			// can not generate Optional empty by ArbitraryGenerator
 			return generatedNodeList;
 		}
 
+		@SuppressWarnings("unchecked")
 		ArbitraryNode<?> nextNode = ArbitraryNode.builder()
 			.type(elementType)
 			.value(nextLazyValue)
@@ -51,6 +51,15 @@ public class OptionalArbitraryNodeGenerator implements ContainerArbitraryNodeGen
 			.build();
 		generatedNodeList.add(nextNode);
 		return generatedNodeList;
+	}
+
+	/**
+	 * Deprecated Use generate instead.
+	 */
+	@Deprecated
+	@Override
+	public <T> List<ArbitraryNode<?>> generate(ArbitraryNode<T> nowNode, FieldNameResolver fieldNameResolver) {
+		return this.generate(nowNode);
 	}
 
 	@SuppressWarnings("unchecked")

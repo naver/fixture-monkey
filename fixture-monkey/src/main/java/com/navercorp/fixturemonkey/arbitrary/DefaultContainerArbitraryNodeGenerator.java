@@ -32,25 +32,21 @@ import com.navercorp.fixturemonkey.generator.FieldNameResolver;
 public class DefaultContainerArbitraryNodeGenerator implements ContainerArbitraryNodeGenerator {
 	public static final DefaultContainerArbitraryNodeGenerator INSTANCE = new DefaultContainerArbitraryNodeGenerator();
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public <T> List<ArbitraryNode<?>> generate(
-		ArbitraryNode<T> nowNode,
-		FieldNameResolver fieldNameResolver
-	) {
+	public <T> List<ArbitraryNode<?>> generate(ArbitraryNode<T> containerNode) {
 		int currentIndex = 0;
 		int elementSize = Integer.MAX_VALUE;
 
-		ArbitraryType<T> clazz = nowNode.getType();
-		LazyValue<T> lazyValue = nowNode.getValue();
-		String propertyName = nowNode.getPropertyName();
+		ArbitraryType<T> clazz = containerNode.getType();
+		LazyValue<T> lazyValue = containerNode.getValue();
+		String propertyName = containerNode.getPropertyName();
 		ArbitraryType<?> elementType = clazz.getGenericArbitraryType(0);
 
 		List<ArbitraryNode<?>> generatedNodeList = new ArrayList<>();
 
 		if (lazyValue != null) {
 			if (lazyValue.isEmpty()) {
-				nowNode.setArbitrary(Arbitraries.just(null));
+				containerNode.setArbitrary(Arbitraries.just(null));
 				return generatedNodeList;
 			}
 			T value = lazyValue.get();
@@ -62,7 +58,7 @@ public class DefaultContainerArbitraryNodeGenerator implements ContainerArbitrar
 
 			Iterator<?> iterator = toIterator(value);
 
-			ContainerSizeConstraint containerSizeConstraint = nowNode.getContainerSizeConstraint();
+			ContainerSizeConstraint containerSizeConstraint = containerNode.getContainerSizeConstraint();
 			if (containerSizeConstraint != null) {
 				// container size is set.
 				elementSize = containerSizeConstraint.getArbitraryElementSize();
@@ -70,6 +66,7 @@ public class DefaultContainerArbitraryNodeGenerator implements ContainerArbitrar
 
 			while (currentIndex < elementSize && iterator.hasNext()) {
 				Object nextObject = iterator.next();
+				@SuppressWarnings("unchecked")
 				ArbitraryNode<?> nextNode = ArbitraryNode.builder()
 					.type(elementType)
 					.value(nextObject)
@@ -82,18 +79,19 @@ public class DefaultContainerArbitraryNodeGenerator implements ContainerArbitrar
 
 			if (containerSizeConstraint == null) {
 				// value exists, container size size is same as value size.
-				nowNode.setContainerSizeConstraint(new ContainerSizeConstraint(currentIndex, currentIndex));
+				containerNode.setContainerSizeConstraint(new ContainerSizeConstraint(currentIndex, currentIndex));
 				return generatedNodeList;
 			}
 		}
 
-		nowNode.initializeElementSize();
+		containerNode.initializeElementSize();
 		if (isNotInitialized(elementSize)) {
 			// value does not exist.
-			elementSize = nowNode.getContainerSizeConstraint().getArbitraryElementSize();
+			elementSize = containerNode.getContainerSizeConstraint().getArbitraryElementSize();
 		}
 
 		for (int i = currentIndex; i < elementSize; i++) {
+			@SuppressWarnings("unchecked")
 			ArbitraryNode<?> nextNode = ArbitraryNode.builder()
 				.type(elementType)
 				.propertyName(propertyName)
@@ -105,6 +103,18 @@ public class DefaultContainerArbitraryNodeGenerator implements ContainerArbitrar
 		}
 
 		return generatedNodeList;
+	}
+
+	/**
+	 * Deprecated Use generate instead.
+	 */
+	@Deprecated
+	@Override
+	public <T> List<ArbitraryNode<?>> generate(
+		ArbitraryNode<T> nowNode,
+		FieldNameResolver fieldNameResolver
+	) {
+		return this.generate(nowNode);
 	}
 
 	@SuppressWarnings("unchecked")

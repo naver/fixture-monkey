@@ -30,24 +30,24 @@ public class MapArbitraryNodeGenerator implements ContainerArbitraryNodeGenerato
 	public static final MapArbitraryNodeGenerator INSTANCE = new MapArbitraryNodeGenerator();
 
 	@Override
-	public <T> List<ArbitraryNode<?>> generate(ArbitraryNode<T> nowNode, FieldNameResolver fieldNameResolver) {
+	public <T> List<ArbitraryNode<?>> generate(ArbitraryNode<T> containerNode) {
 		List<ArbitraryNode<?>> generatedNodeList = new ArrayList<>();
 
-		LazyValue<T> lazyValue = nowNode.getValue();
+		LazyValue<T> lazyValue = containerNode.getValue();
 		if (lazyValue != null) {
-			nowNode.setArbitrary(Arbitraries.just(lazyValue.get()));
+			containerNode.setArbitrary(Arbitraries.just(lazyValue.get()));
 			return generatedNodeList;
 		}
 
-		ArbitraryType<T> clazz = nowNode.getType();
-		String propertyName = nowNode.getPropertyName();
+		ArbitraryType<T> clazz = containerNode.getType();
+		String propertyName = containerNode.getPropertyName();
 
 		ArbitraryType<?> keyType = clazz.getGenericArbitraryType(0);
 		ArbitraryType<?> valueType = clazz.getGenericArbitraryType(1);
 
-		nowNode.initializeElementSize();
+		containerNode.initializeElementSize();
 
-		int elementSize = nowNode.getContainerSizeConstraint().getArbitraryElementSize();
+		int elementSize = containerNode.getContainerSizeConstraint().getArbitraryElementSize();
 
 		if (clazz.isMapEntry()) {
 			elementSize = 1;
@@ -74,5 +74,14 @@ public class MapArbitraryNodeGenerator implements ContainerArbitraryNodeGenerato
 			generatedNodeList.add(valueNode);
 		}
 		return generatedNodeList;
+	}
+
+	/**
+	 * Deprecated Use generate instead.
+	 */
+	@Deprecated
+	@Override
+	public <T> List<ArbitraryNode<?>> generate(ArbitraryNode<T> nowNode, FieldNameResolver fieldNameResolver) {
+		return this.generate(nowNode);
 	}
 }

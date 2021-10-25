@@ -414,9 +414,9 @@ class ArbitraryGeneratorTest {
 
 		@SuppressWarnings("unchecked")
 		@Override
-		public <T> List<ArbitraryNode<?>> generate(ArbitraryNode<T> nowNode, FieldNameResolver fieldNameResolver) {
+		public <T> List<ArbitraryNode<?>> generate(ArbitraryNode<T> containerNode) {
 			List<ArbitraryNode<?>> generatedArbitraryNodes = new ArrayList<>();
-			ArbitraryType<T> type = nowNode.getType();
+			ArbitraryType<T> type = containerNode.getType();
 			ArbitraryType<?> firstChildType = type.getGenericArbitraryType(0);
 			ArbitraryType<?> secondChildType = type.getGenericArbitraryType(1);
 			ArbitraryType<?> thirdChildType = type.getGenericArbitraryType(2);
@@ -439,6 +439,12 @@ class ArbitraryGeneratorTest {
 					.build()
 			);
 			return generatedArbitraryNodes;
+		}
+
+		@Deprecated
+		@Override
+		public <T> List<ArbitraryNode<?>> generate(ArbitraryNode<T> nowNode, FieldNameResolver fieldNameResolver) {
+			return this.generate(nowNode);
 		}
 	}
 }
