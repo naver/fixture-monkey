@@ -53,8 +53,8 @@ final class CallbackList<T extends BuilderManipulator> implements DecoratedList<
 	}
 
 	@Override
-	public boolean contains(Object o) {
-		return list.contains(o);
+	public boolean contains(Object obj) {
+		return list.contains(obj);
 	}
 
 	@Override
