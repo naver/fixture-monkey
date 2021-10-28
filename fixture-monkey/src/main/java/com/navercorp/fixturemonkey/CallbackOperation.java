@@ -30,7 +30,7 @@ public final class CallbackOperation<T extends BuilderManipulator> {
 	}
 
 	@SuppressWarnings({"unchecked", "rawtypes"})
-	public final static class CallbackOperationBuilder<T extends BuilderManipulator> {
+	public static final class CallbackOperationBuilder<T extends BuilderManipulator> {
 		private Consumer<T> callback = t -> {
 		};
 		private Consumer<AbstractArbitrarySet> callbackIfSet = null;
