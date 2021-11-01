@@ -17,11 +17,11 @@ public final class CallbackOperation<T extends BuilderManipulator> {
 		this.transformer = transformer;
 	}
 
-	public void accept(T value) {
+	void accept(T value) {
 		consumer.accept(value);
 	}
 
-	public List<T> apply(T value) {
+	List<T> apply(T value) {
 		return transformer.apply(value);
 	}
 
@@ -60,7 +60,6 @@ public final class CallbackOperation<T extends BuilderManipulator> {
 			Function<AbstractArbitrarySet, List<AbstractArbitrarySet>> transformer
 		) {
 			this.transformerIfSet = transformer;
-
 			return this;
 		}
 
