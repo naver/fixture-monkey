@@ -1509,30 +1509,32 @@ class FixtureMonkeyTest {
 					.transformerIfSet(set -> {
 						List<AbstractArbitrarySet> list = new ArrayList<>();
 						ArbitraryExpression expression = set.getArbitraryExpression();
-						if (expression.equals(ArbitraryExpression.from("value1.value"))
-							&& set.getValue().equals("test")) {
+						if (expression.equals(ArbitraryExpression.from("value1.value"))) {
 							list.add(set);
 						}
 						return list;
 					})
 					.transformer(manipulator -> {
 						List<BuilderManipulator> manipulators = new ArrayList<>();
-						if (manipulator instanceof ContainerSizeManipulator) {
-							ContainerSizeManipulator containerSizeManipulator = (ContainerSizeManipulator)manipulator;
+						if (manipulator instanceof ContainerSizeManipulator
+							&& ((ContainerSizeManipulator)manipulator).getArbitraryExpression()
+							.equals(ArbitraryExpression.from("value2.value"))) {
 							manipulators.add(
-								new ContainerSizeManipulator(containerSizeManipulator.getArbitraryExpression(), 1, 1)
+								new ArbitrarySet<>(((ContainerSizeManipulator)manipulator).getArbitraryExpression(), 1)
 							);
 						}
 						return manipulators;
 					})
 					.build()
 			)
-			.set("value1.value", "value");
+			.set("value1.value", "value")
+			.size("value2.value", 100);
 
 		// when
 		StringAndInt actual = sut.sample();
 
 		then(actual.getValue1().getValue()).isEqualTo("value");
+		then(actual.getValue2().getValue()).isEqualTo(1);
 	}
 
 	@Property
