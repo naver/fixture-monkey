@@ -23,14 +23,11 @@ import static java.util.stream.Collectors.toList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import net.jqwik.api.Arbitrary;
 
-import com.navercorp.fixturemonkey.arbitrary.ArbitraryExpressionManipulator;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryTraverser;
-import com.navercorp.fixturemonkey.arbitrary.BuilderManipulator;
 import com.navercorp.fixturemonkey.customizer.ArbitraryCustomizer;
 import com.navercorp.fixturemonkey.customizer.ArbitraryCustomizers;
 import com.navercorp.fixturemonkey.generator.ArbitraryGenerator;
@@ -104,18 +101,6 @@ public class FixtureMonkey {
 		return this.giveMeBuilder(clazz, options);
 	}
 
-	public <T> ArbitraryBuilder<T> giveMeBuilder(
-		Class<T> clazz,
-		Consumer<BuilderManipulator> onManipulated
-	) {
-		return this.giveMeBuilder(
-			clazz,
-			options,
-			this.arbitraryCustomizers,
-			onManipulated
-		);
-	}
-
 	public <T> ArbitraryBuilder<T> giveMeBuilder(Class<T> clazz, ArbitraryOption options) {
 		return this.giveMeBuilder(clazz, options, this.arbitraryCustomizers);
 	}
@@ -127,9 +112,7 @@ public class FixtureMonkey {
 			defaultGenerator,
 			validator,
 			this.arbitraryCustomizers,
-			this.generatorMap,
-			(it) -> {
-			}
+			this.generatorMap
 		);
 	}
 
@@ -149,21 +132,6 @@ public class FixtureMonkey {
 		ArbitraryOption option,
 		ArbitraryCustomizers customizers
 	) {
-		return this.giveMeBuilder(
-			clazz,
-			option,
-			customizers,
-			(it) -> {
-			}
-		);
-	}
-
-	private <T> ArbitraryBuilder<T> giveMeBuilder(
-		Class<T> clazz,
-		ArbitraryOption option,
-		ArbitraryCustomizers customizers,
-		Consumer<BuilderManipulator> onManipulated
-	) {
 		ArbitraryBuilder<T> defaultArbitraryBuilder = option.getDefaultArbitraryBuilder(clazz);
 		if (defaultArbitraryBuilder != null) {
 			return defaultArbitraryBuilder;
@@ -175,8 +143,7 @@ public class FixtureMonkey {
 			defaultGenerator,
 			this.validator,
 			customizers,
-			this.generatorMap,
-			onManipulated
+			this.generatorMap
 		);
 	}
 }
