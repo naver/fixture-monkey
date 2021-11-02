@@ -94,7 +94,7 @@ public final class ArbitraryBuilder<T> {
 		ArbitraryValidator validator,
 		ArbitraryCustomizers arbitraryCustomizers,
 		Map<Class<?>, ArbitraryGenerator> generatorMap,
-		CallbackOperation<BuilderManipulator> onManipulated
+		Consumer<BuilderManipulator> onManipulated
 	) {
 		this(
 			new ArbitraryTree<>(
@@ -122,7 +122,7 @@ public final class ArbitraryBuilder<T> {
 		ArbitraryValidator validator,
 		ArbitraryCustomizers arbitraryCustomizers,
 		Map<Class<?>, ArbitraryGenerator> generatorMap,
-		CallbackOperation<BuilderManipulator> onManipulated
+		Consumer<BuilderManipulator> onManipulated
 	) {
 		this(
 			new ArbitraryTree<>(
@@ -441,7 +441,8 @@ public final class ArbitraryBuilder<T> {
 			this.validator,
 			this.arbitraryCustomizers,
 			this.generatorMap,
-			CallbackOperation.builder().build()
+			(manipulator) -> {
+			}
 		);
 	}
 
@@ -455,7 +456,8 @@ public final class ArbitraryBuilder<T> {
 			this.validator,
 			this.arbitraryCustomizers,
 			this.generatorMap,
-			CallbackOperation.builder().build()
+			(manipulator) -> {
+			}
 		);
 	}
 
@@ -474,7 +476,8 @@ public final class ArbitraryBuilder<T> {
 			this.validator,
 			this.arbitraryCustomizers,
 			this.generatorMap,
-			CallbackOperation.builder().build()
+			(manipulator) -> {
+			}
 		);
 	}
 
@@ -495,7 +498,8 @@ public final class ArbitraryBuilder<T> {
 			this.validator,
 			this.arbitraryCustomizers,
 			this.generatorMap,
-			CallbackOperation.builder().build()
+			(manipulator) -> {
+			}
 		);
 	}
 
@@ -517,7 +521,8 @@ public final class ArbitraryBuilder<T> {
 			this.validator,
 			this.arbitraryCustomizers,
 			this.generatorMap,
-			CallbackOperation.builder().build()
+			(manipulator) -> {
+			}
 		);
 	}
 

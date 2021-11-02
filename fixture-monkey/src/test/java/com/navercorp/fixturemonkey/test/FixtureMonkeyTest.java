@@ -23,8 +23,8 @@ import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.assertj.core.api.BDDAssertions.thenNoException;
 import static org.assertj.core.api.BDDAssertions.thenThrownBy;
+import static org.assertj.core.api.BDDAssumptions.given;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -46,14 +46,9 @@ import net.jqwik.api.constraints.Size;
 import net.jqwik.api.domains.Domain;
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
-import com.navercorp.fixturemonkey.CallbackOperation;
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.arbitrary.AbstractArbitrarySet;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryExpression;
-import com.navercorp.fixturemonkey.arbitrary.ArbitraryExpressionManipulator;
-import com.navercorp.fixturemonkey.arbitrary.ArbitrarySet;
-import com.navercorp.fixturemonkey.arbitrary.BuilderManipulator;
-import com.navercorp.fixturemonkey.arbitrary.ContainerSizeManipulator;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.DefaultArbitraryGroup;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.DefaultArbitraryGroup2;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.DuplicateArbitraryGroup;
@@ -1387,190 +1382,26 @@ class FixtureMonkeyTest {
 				.sample());
 	}
 
+	@SuppressWarnings("unchecked")
 	@Property
 	@Domain(FixtureMonkeyTestSpecs.class)
-	void callbackIfSet() {
-		// given
-		ArbitraryBuilder<StringAndInt> arbitraryBuilder = SUT.giveMeBuilder(StringAndInt.class);
-		SUT.giveMeBuilder(IntValue.class,
-				CallbackOperation.builder()
-					.callbackIfSet(set -> {
-						ArbitraryExpression expression = set.getArbitraryExpression();
-						arbitraryBuilder.set(expression.toString(), set.getValue());
-					})
-					.build()
-			)
-			.set("value1.value", "test")
-			.set("value2.value", 1);
-
-		// when
-		StringAndInt actual = arbitraryBuilder.sample();
-
-		then(actual.getValue2().getValue()).isEqualTo(1);
-		then(actual.getValue1().getValue()).isEqualTo("test");
-	}
-
-	@Property
-	@Domain(FixtureMonkeyTestSpecs.class)
-	void callbackWithCallbackIf() {
-		// given
-		ArbitraryBuilder<ListWithAnnotation> arbitraryBuilder = SUT.giveMeBuilder(ListWithAnnotation.class);
-		SUT.giveMeBuilder(IntValue.class,
-				CallbackOperation.builder()
-					.callbackIfSet(set -> {
-						ArbitraryExpression expression = set.getArbitraryExpression();
-						arbitraryBuilder.set(expression.toString(), set.getValue());
-					})
-					.callback(cb -> {
-						if (cb instanceof ContainerSizeManipulator) {
-							ContainerSizeManipulator containerSizeManipulator = (ContainerSizeManipulator)cb;
-							ArbitraryExpression expression = containerSizeManipulator.getArbitraryExpression();
-							//noinspection ConstantConditions
-							arbitraryBuilder.size(
-								expression.toString(),
-								containerSizeManipulator.getMin(),
-								containerSizeManipulator.getMax()
-							);
-						}
-					})
-					.build()
-			)
-			.set("values[0]", "test")
-			.size("values", 3);
-
-		// when
-		ListWithAnnotation actual = arbitraryBuilder.sample();
-
-		then(actual.getValues()).hasSize(3);
-		then(actual.getValues().get(0)).isEqualTo("test");
-	}
-
-	@Property
-	@Domain(FixtureMonkeyTestSpecs.class)
-	void callbackWithCallbackIfWhenConflicted() {
+	void onManipulated() {
 		// given
 		ArbitraryBuilder<IntValue> arbitraryBuilder = SUT.giveMeBuilder(IntValue.class);
 		SUT.giveMeBuilder(IntValue.class,
-				CallbackOperation.builder()
-					.callbackIfSet(set -> {
-						ArbitraryExpression expression = set.getArbitraryExpression();
-						arbitraryBuilder.set(expression.toString(), set.getValue());
-					})
-					.callback(cb -> {
-						if (cb instanceof ArbitraryExpressionManipulator) {
-							ArbitraryExpressionManipulator arbitraryExpressionManipulator =
-								(ArbitraryExpressionManipulator)cb;
-							ArbitraryExpression expression = arbitraryExpressionManipulator.getArbitraryExpression();
-							arbitraryBuilder.set(expression.toString(), -1);
-						}
-					})
-					.build()
-			)
-			.set("value", 1);
+			arbitraryExpressionManipulator -> {
+				if (arbitraryExpressionManipulator instanceof AbstractArbitrarySet) {
+					AbstractArbitrarySet<IntValue> set =
+						(AbstractArbitrarySet<IntValue>)arbitraryExpressionManipulator;
+					ArbitraryExpression expression = set.getArbitraryExpression();
+					arbitraryBuilder.set(expression.toString(), set.getValue());
+				}
+			}
+		).set("value", 1);
 
 		// when
 		IntValue actual = arbitraryBuilder.sample();
 
 		then(actual.getValue()).isEqualTo(1);
-	}
-
-	@Property
-	@Domain(FixtureMonkeyTestSpecs.class)
-	@SuppressWarnings("rawtypes")
-	void transformerIfSet() {
-		// given
-		ArbitraryBuilder<StringAndInt> sut = SUT.giveMeBuilder(StringAndInt.class,
-				CallbackOperation.builder()
-					.transformerIfSet(set -> {
-						List<AbstractArbitrarySet> list = new ArrayList<>();
-						ArbitraryExpression expression = set.getArbitraryExpression();
-						if (expression.equals(ArbitraryExpression.from("value1.value"))) {
-							list.add(new ArbitrarySet<>(expression, "test"));
-						}
-						return list;
-					})
-					.build()
-			)
-			.set("value1.value", "value");
-
-		// when
-		StringAndInt actual = sut.sample();
-
-		then(actual.getValue1().getValue()).isEqualTo("test");
-	}
-
-	@Property
-	@Domain(FixtureMonkeyTestSpecs.class)
-	@SuppressWarnings("rawtypes")
-	void transformerWithTransformerIfSet() {
-		// given
-		ArbitraryBuilder<StringAndInt> sut = SUT.giveMeBuilder(StringAndInt.class,
-				CallbackOperation.builder()
-					.transformerIfSet(set -> {
-						List<AbstractArbitrarySet> list = new ArrayList<>();
-						ArbitraryExpression expression = set.getArbitraryExpression();
-						if (expression.equals(ArbitraryExpression.from("value1.value"))) {
-							list.add(set);
-						}
-						return list;
-					})
-					.transformer(manipulator -> {
-						List<BuilderManipulator> manipulators = new ArrayList<>();
-						if (manipulator instanceof ContainerSizeManipulator
-							&& ((ContainerSizeManipulator)manipulator).getArbitraryExpression()
-							.equals(ArbitraryExpression.from("value2.value"))) {
-							manipulators.add(
-								new ArbitrarySet<>(((ContainerSizeManipulator)manipulator).getArbitraryExpression(), 1)
-							);
-						}
-						return manipulators;
-					})
-					.build()
-			)
-			.set("value1.value", "value")
-			.size("value2.value", 100);
-
-		// when
-		StringAndInt actual = sut.sample();
-
-		then(actual.getValue1().getValue()).isEqualTo("value");
-		then(actual.getValue2().getValue()).isEqualTo(1);
-	}
-
-	@Property
-	@Domain(FixtureMonkeyTestSpecs.class)
-	@SuppressWarnings("rawtypes")
-	void transformerWithTransformerIfSetWhenConflicted() {
-		// given
-		ArbitraryBuilder<StringAndInt> sut = SUT.giveMeBuilder(StringAndInt.class,
-				CallbackOperation.builder()
-					.transformerIfSet(set -> {
-						List<AbstractArbitrarySet> list = new ArrayList<>();
-						ArbitraryExpression expression = set.getArbitraryExpression();
-						if (expression.equals(ArbitraryExpression.from("value1.value"))) {
-							list.add(new ArbitrarySet<>(expression, "test"));
-						}
-						return list;
-					})
-					.transformer(manipulator -> {
-						List<BuilderManipulator> manipulators = new ArrayList<>();
-						if (manipulator instanceof ArbitraryExpressionManipulator) {
-							ArbitraryExpressionManipulator arbitraryExpressionManipulator =
-								(ArbitraryExpressionManipulator)manipulator;
-							if (arbitraryExpressionManipulator.getArbitraryExpression()
-								.equals(ArbitraryExpression.from("value1.value"))) {
-								manipulators.add(manipulator);
-							}
-						}
-						return manipulators;
-					})
-					.build()
-			)
-			.set("value1.value", "value");
-
-		// when
-		StringAndInt actual = sut.sample();
-
-		then(actual.getValue1().getValue()).isEqualTo("test");
 	}
 }
