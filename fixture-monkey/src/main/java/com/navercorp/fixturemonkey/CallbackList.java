@@ -18,45 +18,37 @@
 
 package com.navercorp.fixturemonkey;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotNull;
 
 import com.navercorp.fixturemonkey.arbitrary.BuilderManipulator;
 
 final class CallbackList<T extends BuilderManipulator> extends DecoratedList<T> {
-	private final CallbackOperation<T> callbackOperation;
+	private final Consumer<T> callback;
 
-	public CallbackList(DecoratedList<T> decoratedList, CallbackOperation<T> callback) {
+	public CallbackList(DecoratedList<T> decoratedList, Consumer<T> callback) {
 		super(decoratedList);
-		this.callbackOperation = callback;
+		this.callback = callback;
 	}
 
 	@Override
 	public boolean add(T value) {
-		List<T> transformed = callbackOperation.apply(value);
-		boolean added = decoratedList.addAll(transformed);
-		callbackOperation.accept(value);
+		boolean added = decoratedList.add(value);
+		callback.accept(value);
 		return added;
 	}
 
 	@Override
 	public boolean addAll(@NotNull Collection<? extends T> collection) {
-		List<T> transformed = collection.stream()
-			.flatMap(it -> callbackOperation.apply(it).stream())
-			.collect(Collectors.toList());
-		boolean addAll = decoratedList.addAll(transformed);
-		collection.forEach(callbackOperation::accept);
+		boolean addAll = decoratedList.addAll(collection);
+		collection.forEach(callback);
 		return addAll;
 	}
 
 	@Override
 	public DecoratedList<T> copy() {
-		return new CallbackList<>(this.decoratedList.copy(), callbackOperation);
+		return new CallbackList<>(this.decoratedList.copy(), callback);
 	}
 }

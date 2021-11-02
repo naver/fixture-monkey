@@ -23,10 +23,12 @@ import static java.util.stream.Collectors.toList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import net.jqwik.api.Arbitrary;
 
+import com.navercorp.fixturemonkey.arbitrary.ArbitraryExpressionManipulator;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryTraverser;
 import com.navercorp.fixturemonkey.arbitrary.BuilderManipulator;
 import com.navercorp.fixturemonkey.customizer.ArbitraryCustomizer;
@@ -104,7 +106,7 @@ public class FixtureMonkey {
 
 	public <T> ArbitraryBuilder<T> giveMeBuilder(
 		Class<T> clazz,
-		CallbackOperation<BuilderManipulator> onManipulated
+		Consumer<BuilderManipulator> onManipulated
 	) {
 		return this.giveMeBuilder(
 			clazz,
@@ -126,7 +128,8 @@ public class FixtureMonkey {
 			validator,
 			this.arbitraryCustomizers,
 			this.generatorMap,
-			CallbackOperation.builder().build()
+			(it) -> {
+			}
 		);
 	}
 
@@ -150,7 +153,8 @@ public class FixtureMonkey {
 			clazz,
 			option,
 			customizers,
-			CallbackOperation.builder().build()
+			(it) -> {
+			}
 		);
 	}
 
@@ -158,7 +162,7 @@ public class FixtureMonkey {
 		Class<T> clazz,
 		ArbitraryOption option,
 		ArbitraryCustomizers customizers,
-		CallbackOperation<BuilderManipulator> onManipulated
+		Consumer<BuilderManipulator> onManipulated
 	) {
 		ArbitraryBuilder<T> defaultArbitraryBuilder = option.getDefaultArbitraryBuilder(clazz);
 		if (defaultArbitraryBuilder != null) {
