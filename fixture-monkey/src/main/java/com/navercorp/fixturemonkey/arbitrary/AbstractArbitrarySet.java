@@ -20,6 +20,8 @@ package com.navercorp.fixturemonkey.arbitrary;
 
 import java.util.Objects;
 
+import javax.annotation.Nullable;
+
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 
 public abstract class AbstractArbitrarySet<T> extends AbstractArbitraryExpressionManipulator
@@ -34,8 +36,6 @@ public abstract class AbstractArbitrarySet<T> extends AbstractArbitraryExpressio
 	public final void accept(ArbitraryBuilder arbitraryBuilder) {
 		arbitraryBuilder.apply(this);
 	}
-
-	public abstract Object getValue();
 
 	@Override
 	public boolean equals(Object obj) {

@@ -18,12 +18,17 @@
 
 package com.navercorp.fixturemonkey;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
 import java.time.temporal.Temporal;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import org.junit.platform.commons.util.ReflectionUtils;
 
 public final class TypeSupports {
 	private static final Map<Class<?>, Class<?>> WRAPPER_PRIMITIVE_CLASS_MAPPER;
@@ -74,5 +79,21 @@ public final class TypeSupports {
 		Class<?> toPrimitiveClazz1 = WRAPPER_PRIMITIVE_CLASS_MAPPER.getOrDefault(clazz1, clazz1);
 		Class<?> toPrimitiveClazz2 = WRAPPER_PRIMITIVE_CLASS_MAPPER.getOrDefault(clazz2, clazz2);
 		return toPrimitiveClazz1 == toPrimitiveClazz2;
+	}
+
+	public static List<Field> extractFields(Class<?> clazz) {
+		if (clazz == null) {
+			return Collections.emptyList();
+		}
+
+		return ReflectionUtils.findFields(
+			clazz,
+			TypeSupports::availableField,
+			ReflectionUtils.HierarchyTraversalMode.TOP_DOWN
+		);
+	}
+
+	private static boolean availableField(Field field) {
+		return !Modifier.isStatic(field.getModifiers());
 	}
 }

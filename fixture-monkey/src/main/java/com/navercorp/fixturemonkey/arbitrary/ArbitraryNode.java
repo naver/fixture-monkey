@@ -20,7 +20,9 @@ package com.navercorp.fixturemonkey.arbitrary;
 
 import static com.navercorp.fixturemonkey.Constants.HEAD_NAME;
 import static com.navercorp.fixturemonkey.Constants.NO_OR_ALL_INDEX_INTEGER_VALUE;
+import static com.navercorp.fixturemonkey.TypeSupports.extractFields;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -37,6 +39,8 @@ import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
 
 import com.navercorp.fixturemonkey.TypeSupports;
+import com.navercorp.fixturemonkey.api.property.FieldProperty;
+import com.navercorp.fixturemonkey.api.property.Property;
 
 public final class ArbitraryNode<T> {
 	@SuppressWarnings("rawtypes")
@@ -131,7 +135,10 @@ public final class ArbitraryNode<T> {
 
 	public void apply(PreArbitraryManipulator<T> preArbitraryManipulator) {
 		if (preArbitraryManipulator instanceof AbstractArbitrarySet) {
-			Object toValue = ((AbstractArbitrarySet<T>)preArbitraryManipulator).getValue();
+			Object toValue = preArbitraryManipulator.getValue();
+			if (toValue == null) {
+				return;
+			}
 			Class<?> clazz = this.getType().getType();
 			Class<?> toValueClazz = toValue.getClass();
 			if (
@@ -145,11 +152,32 @@ public final class ArbitraryNode<T> {
 					toValueClazz.getSimpleName()
 				);
 			}
-			Arbitrary<T> appliedArbitrary = preArbitraryManipulator.apply(status.arbitrary);
-			this.setFixed(true);
-			this.setArbitrary(appliedArbitrary);
+			setValueRecursively(toValue);
 		} else {
 			throw new IllegalArgumentException("Not Implemented PreArbitraryManipulator");
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private void setValueRecursively(Object value) {
+		this.setManipulated(true);
+		Class<?> type = this.getType().getType();
+		List<Field> fields = extractFields(type);
+
+		if (this.children.isEmpty() || value == null) {
+			if (value == null) {
+				this.setFixedAsNull(true);
+			}
+			this.setArbitrary((Arbitrary<T>)Arbitraries.just(value));
+			return;
+		}
+
+		for (int i = 0; i < fields.size(); i++) {
+			Field field = fields.get(i);
+			ArbitraryNode<?> childNode = this.children.get(i);
+			Property property = new FieldProperty(field);
+			Object childValue = property.getValue(value);
+			childNode.setValueRecursively(childValue);
 		}
 	}
 
@@ -177,8 +205,8 @@ public final class ArbitraryNode<T> {
 		this.getStatus().setContainerSizeConstraint(containerSizeConstraint);
 	}
 
-	public void setFixed(boolean fixed) {
-		this.getStatus().setFixed(fixed);
+	public void setFixedAsNull(boolean fixedAsNull) {
+		this.getStatus().setFixedAsNull(fixedAsNull);
 	}
 
 	public void setValue(Supplier<T> value) {
@@ -275,13 +303,13 @@ public final class ArbitraryNode<T> {
 		return this.status.postArbitraryManipulators;
 	}
 
-	public boolean isFixed() {
-		return getStatus().isFixed();
+	public boolean isFixedAsNull() {
+		return getStatus().isFixedAsNull();
 	}
 
 	@SuppressWarnings("BooleanMethodIsAlwaysInverted")
 	public boolean isLeafNode() {
-		return this.getChildren().isEmpty() && this.getArbitrary() != null;
+		return this.isFixedAsNull() || (this.getChildren().isEmpty() && this.getArbitrary() != null);
 	}
 
 	public boolean isHead() {
@@ -351,6 +379,7 @@ public final class ArbitraryNode<T> {
 	private void mark() {
 		this.setActive(true);
 		this.setManipulated(true);
+		this.setFixedAsNull(false);
 		if (this.isDecomposedAsNull()) {
 			this.setReset(true);
 			this.setArbitrary(null);
@@ -367,7 +396,7 @@ public final class ArbitraryNode<T> {
 		private boolean nullable = false;
 		private boolean manipulated = false;
 		private boolean active = true; // isNull
-		private boolean fixed = false; // isSet
+		private boolean fixedAsNull = false; // isFixedAsNull
 		private boolean reset = false;
 
 		private FixtureNodeStatus() {
@@ -381,7 +410,7 @@ public final class ArbitraryNode<T> {
 			boolean nullable,
 			boolean manipulated,
 			boolean active,
-			boolean fixed,
+			boolean fixedAsNull,
 			boolean reset
 		) {
 			this.arbitrary = arbitrary;
@@ -391,7 +420,7 @@ public final class ArbitraryNode<T> {
 			this.nullable = nullable;
 			this.manipulated = manipulated;
 			this.active = active;
-			this.fixed = fixed;
+			this.fixedAsNull = fixedAsNull;
 			this.reset = reset;
 		}
 
@@ -420,8 +449,8 @@ public final class ArbitraryNode<T> {
 			return postArbitraryManipulators;
 		}
 
-		public boolean isFixed() {
-			return fixed;
+		public boolean isFixedAsNull() {
+			return fixedAsNull;
 		}
 
 		public LazyValue<T> getValue() {
@@ -464,8 +493,8 @@ public final class ArbitraryNode<T> {
 			this.postArbitraryManipulators = postArbitraryManipulators;
 		}
 
-		public void setFixed(boolean fixed) {
-			this.fixed = fixed;
+		public void setFixedAsNull(boolean setAsNull) {
+			this.fixedAsNull = setAsNull;
 		}
 
 		public void setValue(LazyValue<T> value) {
@@ -481,7 +510,7 @@ public final class ArbitraryNode<T> {
 				this.isNullable(),
 				this.isManipulated(),
 				this.isActive(),
-				this.isFixed(),
+				this.isFixedAsNull(),
 				this.isReset()
 			);
 		}

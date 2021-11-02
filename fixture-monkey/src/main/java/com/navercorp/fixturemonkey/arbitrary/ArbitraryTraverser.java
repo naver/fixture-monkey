@@ -18,11 +18,11 @@
 
 package com.navercorp.fixturemonkey.arbitrary;
 
+import static com.navercorp.fixturemonkey.TypeSupports.extractFields;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -30,8 +30,6 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
-
-import org.junit.platform.commons.util.ReflectionUtils;
 
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
@@ -109,7 +107,7 @@ public final class ArbitraryTraverser {
 			arbitraryOption.getContainerArbitraryNodeGenerator(nowNodeType.getType());
 
 		if (isTraversable(nowNodeType)) {
-			List<Field> fields = getFields(clazz);
+			List<Field> fields = extractFields(clazz);
 			for (Field field : fields) {
 				Property property = new FieldProperty(field);
 				ArbitraryType arbitraryType = new ArbitraryType(
@@ -232,18 +230,6 @@ public final class ArbitraryTraverser {
 		}
 	}
 
-	private List<Field> getFields(Class<?> clazz) {
-		if (clazz == null) {
-			return Collections.emptyList();
-		}
-
-		return ReflectionUtils.findFields(
-			clazz,
-			this::availableField,
-			ReflectionUtils.HierarchyTraversalMode.TOP_DOWN
-		);
-	}
-
 	private boolean isNullableField(ArbitraryType<?> arbitraryType, Field field, boolean defaultNotNull) {
 		boolean nullable = arbitraryOption.getNullableArbitraryEvaluator().isNullable(field);
 		if (arbitraryType.isContainer()) {
@@ -271,10 +257,6 @@ public final class ArbitraryTraverser {
 
 			return !defaultNotNull;
 		}
-	}
-
-	private boolean availableField(Field field) {
-		return !Modifier.isStatic(field.getModifiers());
 	}
 
 	private boolean isTraversable(ArbitraryType<?> type) {

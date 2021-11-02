@@ -33,7 +33,6 @@ import javax.annotation.Nullable;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
@@ -46,8 +45,6 @@ import com.navercorp.fixturemonkey.arbitrary.ArbitraryNullity;
 import com.navercorp.fixturemonkey.arbitrary.ArbitrarySet;
 import com.navercorp.fixturemonkey.arbitrary.ArbitrarySetArbitrary;
 import com.navercorp.fixturemonkey.arbitrary.ArbitrarySetPostCondition;
-import com.navercorp.fixturemonkey.arbitrary.ArbitrarySetPrefix;
-import com.navercorp.fixturemonkey.arbitrary.ArbitrarySetSuffix;
 import com.navercorp.fixturemonkey.arbitrary.BuilderManipulator;
 import com.navercorp.fixturemonkey.arbitrary.ContainerSizeManipulator;
 import com.navercorp.fixturemonkey.arbitrary.MetadataManipulator;
@@ -168,28 +165,6 @@ public final class ExpressionSpec {
 	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
 	public ExpressionSpec set(ExpressionGenerator expressionGenerator, ExpressionSpec spec) {
 		return this.set(expressionGenerator.generate(), spec);
-	}
-
-	public ExpressionSpec setPrefix(String expression, String value) {
-		ArbitraryExpression fixtureExpression = ArbitraryExpression.from(expression);
-		builderManipulators.add(new ArbitrarySetPrefix(fixtureExpression, Arbitraries.just(value)));
-		return this;
-	}
-
-	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
-	public ExpressionSpec setPrefix(ExpressionGenerator expressionGenerator, String value) {
-		return this.setPrefix(expressionGenerator.generate(), value);
-	}
-
-	public ExpressionSpec setSuffix(String expression, String value) {
-		ArbitraryExpression fixtureExpression = ArbitraryExpression.from(expression);
-		builderManipulators.add(new ArbitrarySetSuffix(fixtureExpression, Arbitraries.just(value)));
-		return this;
-	}
-
-	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
-	public ExpressionSpec setSuffix(ExpressionGenerator expressionGenerator, String value) {
-		return this.setSuffix(expressionGenerator.generate(), value);
 	}
 
 	public ExpressionSpec setNull(String expression) {
@@ -451,7 +426,7 @@ public final class ExpressionSpec {
 			.filter(AbstractArbitrarySet.class::isInstance)
 			.map(AbstractArbitrarySet.class::cast)
 			.filter(it -> it.getArbitraryExpression().equals(ArbitraryExpression.from(expression)))
-			.map(AbstractArbitrarySet::getValue)
+			.map(AbstractArbitrarySet::getRawValue)
 			.findAny();
 	}
 

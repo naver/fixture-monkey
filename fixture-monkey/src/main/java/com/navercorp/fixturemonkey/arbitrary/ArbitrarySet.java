@@ -20,6 +20,8 @@ package com.navercorp.fixturemonkey.arbitrary;
 
 import java.util.Objects;
 
+import javax.annotation.Nullable;
+
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
 
@@ -37,19 +39,20 @@ public final class ArbitrarySet<T> extends AbstractArbitrarySet<T> {
 		this(arbitraryExpression, value, Long.MAX_VALUE);
 	}
 
+	@Nullable
 	@Override
 	public T getValue() {
-		return value;
+		if (this.limit > 0) {
+			limit--;
+			return value;
+		} else {
+			return null;
+		}
 	}
 
 	@Override
-	public Arbitrary<T> apply(Arbitrary<T> from) {
-		if (this.limit > 0) {
-			limit--;
-			return Arbitraries.just(value);
-		} else {
-			return from;
-		}
+	public Object getRawValue() {
+		return value;
 	}
 
 	@Override

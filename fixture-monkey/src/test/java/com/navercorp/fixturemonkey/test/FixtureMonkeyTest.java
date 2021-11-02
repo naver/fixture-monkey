@@ -23,7 +23,6 @@ import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.assertj.core.api.BDDAssertions.thenNoException;
 import static org.assertj.core.api.BDDAssertions.thenThrownBy;
-import static org.assertj.core.api.BDDAssumptions.given;
 
 import java.util.Iterator;
 import java.util.List;
@@ -1368,5 +1367,29 @@ class FixtureMonkeyTest {
 			.sample();
 
 		then(actual.getValue1().getValue()).isEqualTo("test");
+	}
+
+	@Property
+	@Domain(FixtureMonkeyTestSpecs.class)
+	void giveMeSetMySelf(@ForAll StringAndInt expected) {
+		StringAndInt actual = SUT.giveMeBuilder(StringAndInt.class)
+			.set(expected)
+			.set("value2.value", 1)
+			.sample();
+
+		then(actual.getValue1()).isEqualTo(expected.getValue1());
+		then(actual.getValue2().getValue()).isEqualTo(1);
+	}
+
+	@Property
+	@Domain(FixtureMonkeyTestSpecs.class)
+	void giveMeSetMySelfAsArbitrary(@ForAll StringAndInt expected) {
+		StringAndInt actual = SUT.giveMeBuilder(StringAndInt.class)
+			.set(Arbitraries.just(expected))
+			.set("value2.value", 1)
+			.sample();
+
+		then(actual.getValue1()).isEqualTo(expected.getValue1());
+		then(actual.getValue2().getValue()).isEqualTo(1);
 	}
 }

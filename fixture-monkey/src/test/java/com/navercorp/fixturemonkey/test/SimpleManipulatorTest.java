@@ -152,26 +152,6 @@ class SimpleManipulatorTest {
 	}
 
 	@Property
-	void giveMeSpecSetPrefix() {
-		// when
-		StringValue actual = SUT.giveMeBuilder(StringValue.class)
-			.spec(new ExpressionSpec().setPrefix("value", "prefix"))
-			.sample();
-
-		then(actual.getValue()).startsWith("prefix");
-	}
-
-	@Property
-	void giveMeSpecSetSuffix() {
-		// when
-		StringValue actual = SUT.giveMeBuilder(StringValue.class)
-			.spec(new ExpressionSpec().setSuffix("value", "suffix"))
-			.sample();
-
-		then(actual.getValue()).endsWith("suffix");
-	}
-
-	@Property
 	void giveMeSpecPostCondition() {
 		// when
 		IntValue actual = SUT.giveMeBuilder(IntValue.class)
