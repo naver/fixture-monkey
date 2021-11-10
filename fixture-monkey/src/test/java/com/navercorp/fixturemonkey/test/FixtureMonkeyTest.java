@@ -47,6 +47,7 @@ import net.jqwik.api.domains.Domain;
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.FixtureMonkey;
+import com.navercorp.fixturemonkey.customizer.ExpressionSpec;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.DefaultArbitraryGroup;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.DefaultArbitraryGroup2;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.DuplicateArbitraryGroup;
@@ -1377,5 +1378,17 @@ class FixtureMonkeyTest {
 				.validOnly(false)
 				.copy()
 				.sample());
+	}
+
+	@Property
+	void setSpec() {
+		ExpressionSpec expressionSpec = new ExpressionSpec()
+			.set("value", "test");
+
+		StringAndInt actual = SUT.giveMeBuilder(StringAndInt.class)
+			.set("value1", expressionSpec)
+			.sample();
+
+		then(actual.getValue1().getValue()).isEqualTo("test");
 	}
 }
