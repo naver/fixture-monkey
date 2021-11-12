@@ -46,6 +46,7 @@ import net.jqwik.api.Combinators.F4;
 
 import com.navercorp.fixturemonkey.arbitrary.AbstractArbitrarySet;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryExpression;
+import com.navercorp.fixturemonkey.arbitrary.ArbitraryExpressionManipulator;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryNode;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryNullity;
 import com.navercorp.fixturemonkey.arbitrary.ArbitrarySet;
@@ -237,6 +238,8 @@ public final class ArbitraryBuilder<T> {
 			return this.set(expression, (Arbitrary<T>)value);
 		} else if (value instanceof ArbitraryBuilder) {
 			return this.setBuilder(expression, (ArbitraryBuilder<?>)value);
+		} else if (value instanceof ExpressionSpec) {
+			return this.setSpec(expression, (ExpressionSpec)value);
 		}
 		ArbitraryExpression arbitraryExpression = ArbitraryExpression.from(expression);
 		this.builderManipulators.add(new ArbitrarySet<>(arbitraryExpression, value));
@@ -568,6 +571,18 @@ public final class ArbitraryBuilder<T> {
 			activeManipulators.add(builderManipulator);
 		}
 		return activeManipulators;
+	}
+
+	private ArbitraryBuilder<T> setSpec(String expression, ExpressionSpec expressionSpec) {
+		for (BuilderManipulator builderManipulator : expressionSpec.getBuilderManipulators()) {
+			if (builderManipulator instanceof ArbitraryExpressionManipulator) {
+				ArbitraryExpressionManipulator arbitraryExpressionManipulator =
+					(ArbitraryExpressionManipulator)builderManipulator;
+				arbitraryExpressionManipulator.addPrefix(expression);
+			}
+		}
+		spec(expressionSpec);
+		return this;
 	}
 
 	private List<BuilderManipulator> extractOrderedManipulatorsFrom(List<BuilderManipulator> manipulators) {
