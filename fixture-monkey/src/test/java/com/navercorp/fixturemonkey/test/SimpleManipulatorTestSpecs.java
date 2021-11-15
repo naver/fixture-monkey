@@ -23,26 +23,14 @@ import java.util.Map;
 
 import net.jqwik.api.Arbitrary;
 import net.jqwik.api.Provide;
-import net.jqwik.api.domains.AbstractDomainContextBase;
+import net.jqwik.api.domains.DomainContextBase;
 
 import lombok.Data;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
 
-class SimpleManipulatorTestSpecs extends AbstractDomainContextBase {
+class SimpleManipulatorTestSpecs extends DomainContextBase {
 	public static final FixtureMonkey SUT = FixtureMonkey.create();
-
-	SimpleManipulatorTestSpecs() {
-		registerArbitrary(IntValue.class, intValue());
-		registerArbitrary(IntegerList.class, integerList());
-		registerArbitrary(StringValue.class, stringValue());
-		registerArbitrary(StringList.class, stringList());
-		registerArbitrary(TwoString.class, twoString());
-		registerArbitrary(MapKeyIntegerValueInteger.class, mapKeyIntegerValueInteger());
-		registerArbitrary(NestedStringValueList.class, nestedStringValueList());
-		registerArbitrary(ListListString.class, listListString());
-		registerArbitrary(StringAndInt.class, stringAndInt());
-	}
 
 	@Data
 	public static class IntValue {

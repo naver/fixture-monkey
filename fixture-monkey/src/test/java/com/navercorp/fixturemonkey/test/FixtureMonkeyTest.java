@@ -293,27 +293,6 @@ class FixtureMonkeyTest {
 	}
 
 	@Example
-	void giveMeBuilderBuildUniqueInvalidThenSampleThrowsTooManyFilterMissesException() {
-		Arbitrary<StringWithNotBlank> sut = SUT.giveMeBuilder(StringWithNotBlank.class)
-			.set("value", "")
-			.build()
-			.unique();
-
-		thenThrownBy(sut::sample)
-			.isExactlyInstanceOf(TooManyFilterMissesException.class);
-	}
-
-	@Example
-	void giveMeArbitraryUnique() {
-		// when
-		Arbitrary<StringWithNotBlank> sut = SUT.giveMeArbitrary(StringWithNotBlank.class)
-			.unique();
-
-		thenNoException()
-			.isThrownBy(sut::sample);
-	}
-
-	@Example
 	void giveMeBuilderBuildFixGenSizeInvalidThenSampleThrowsTooManyFilterMissesException() {
 		// when
 		Arbitrary<StringWithNotBlank> sut = SUT.giveMeBuilder(StringWithNotBlank.class)
@@ -332,8 +311,7 @@ class FixtureMonkeyTest {
 			SUT.giveMeBuilder(StringWithNotBlank.class)
 				.set("value", "")
 				.build()
-				.optional()
-				.filter(Optional::isPresent);
+				.optional(1.0);
 
 		thenThrownBy(sut::sample)
 			.isExactlyInstanceOf(TooManyFilterMissesException.class);

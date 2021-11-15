@@ -32,6 +32,7 @@ import javax.validation.constraints.Pattern;
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
 import net.jqwik.api.arbitraries.StringArbitrary;
+import net.jqwik.web.api.Web;
 
 public class StringAnnotatedArbitraryGenerator implements AnnotatedArbitraryGenerator<String> {
 	public static final StringAnnotatedArbitraryGenerator INSTANCE = new StringAnnotatedArbitraryGenerator();
@@ -82,7 +83,7 @@ public class StringAnnotatedArbitraryGenerator implements AnnotatedArbitraryGene
 
 		Arbitrary<String> arbitrary;
 		if (annotationSource.findAnnotation(Email.class).isPresent()) {
-			arbitrary = Arbitraries.emails();
+			arbitrary = Web.emails();
 			if (min != null) {
 				int emailMinLength = min.intValue();
 				arbitrary = arbitrary.filter(it -> it != null && it.length() >= emailMinLength);

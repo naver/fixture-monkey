@@ -66,7 +66,7 @@ void test() {
 ## Requirements
 
 * JDK 1.8 or higher
-* Jqwik 1.3.9
+* Jqwik 1.6.0
 
 ## Install
 

@@ -22,7 +22,7 @@ import java.beans.ConstructorProperties;
 
 import net.jqwik.api.Arbitrary;
 import net.jqwik.api.Provide;
-import net.jqwik.api.domains.AbstractDomainContextBase;
+import net.jqwik.api.domains.DomainContextBase;
 
 import lombok.Builder;
 import lombok.Data;
@@ -35,7 +35,7 @@ import com.navercorp.fixturemonkey.generator.ConstructorPropertiesArbitraryGener
 import com.navercorp.fixturemonkey.generator.FieldReflectionArbitraryGenerator;
 import com.navercorp.fixturemonkey.generator.NullArbitraryGenerator;
 
-class ArbitraryGeneratorTestSpecs extends AbstractDomainContextBase {
+class ArbitraryGeneratorTestSpecs extends DomainContextBase {
 	public static final FixtureMonkey SUT = FixtureMonkey.builder()
 		.putGenerator(BuilderInteger.class, BuilderArbitraryGenerator.INSTANCE)
 		.putGenerator(FieldReflectionInteger.class, FieldReflectionArbitraryGenerator.INSTANCE)
@@ -43,20 +43,6 @@ class ArbitraryGeneratorTestSpecs extends AbstractDomainContextBase {
 		.putGenerator(BeanInteger.class, BeanArbitraryGenerator.INSTANCE)
 		.putGenerator(ConstructorPropertiesInteger.class, ConstructorPropertiesArbitraryGenerator.INSTANCE)
 		.build();
-
-	ArbitraryGeneratorTestSpecs() {
-		registerArbitrary(BuilderInteger.class, builderInteger());
-		registerArbitrary(FieldReflectionInteger.class, fieldReflectionInteger());
-		registerArbitrary(BeanInteger.class, beanInteger());
-		registerArbitrary(BeanInnerBuilder.class, beanInnerBuilder());
-		registerArbitrary(NullInt.class, nullInt());
-		registerArbitrary(ConstructorPropertiesInteger.class, constructorPropertiesInteger());
-		registerArbitrary(FieldReflectionBuilder.class, fieldReflectionBuilder());
-		registerArbitrary(ConstructorPropertiesZero.class, constructorPropertiesZero());
-		registerArbitrary(ConstructorPropertiesTwice.class, constructorPropertiesTwice());
-		registerArbitrary(ConstructorPropertiesWithNoMatchingField.class, constructorPropertiesWithNoMatchingField());
-		registerArbitrary(CustomTripleGenericsWrapper.class, customTripleGenericsWrapper());
-	}
 
 	@Getter
 	@Builder

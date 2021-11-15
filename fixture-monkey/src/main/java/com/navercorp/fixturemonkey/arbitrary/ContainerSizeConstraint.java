@@ -21,9 +21,9 @@ package com.navercorp.fixturemonkey.arbitrary;
 import static com.navercorp.fixturemonkey.Constants.DEFAULT_ELEMENT_MAX_SIZE;
 import static com.navercorp.fixturemonkey.Constants.DEFAULT_ELEMENT_MIN_SIZE;
 
-import javax.annotation.Nullable;
+import java.util.concurrent.ThreadLocalRandom;
 
-import net.jqwik.api.Arbitraries;
+import javax.annotation.Nullable;
 
 public final class ContainerSizeConstraint {
 	@Nullable
@@ -54,6 +54,13 @@ public final class ContainerSizeConstraint {
 	}
 
 	public int getArbitraryElementSize() {
-		return Arbitraries.integers().between(getMinSize(), getMaxSize()).sample();
+		int minSize = getMinSize();
+		int maxSize = getMaxSize();
+		if (maxSize == minSize) {
+			return minSize;
+		}
+
+		int size = ThreadLocalRandom.current().nextInt(maxSize - minSize);
+		return minSize + size;
 	}
 }
