@@ -52,6 +52,9 @@ import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 
+import net.jqwik.api.Arbitraries;
+import net.jqwik.api.Arbitrary;
+
 import com.navercorp.fixturemonkey.arbitrary.ContainerArbitraryNodeGenerator;
 import com.navercorp.fixturemonkey.arbitrary.InterfaceSupplier;
 import com.navercorp.fixturemonkey.arbitrary.NullableArbitraryEvaluator;
@@ -74,6 +77,7 @@ import com.navercorp.fixturemonkey.generator.LocalDateTimeAnnotatedArbitraryGene
 import com.navercorp.fixturemonkey.generator.LocalTimeAnnotatedArbitraryGenerator;
 import com.navercorp.fixturemonkey.generator.LongAnnotatedArbitraryGenerator;
 import com.navercorp.fixturemonkey.generator.LongStreamAnnotatedArbitraryGenerator;
+import com.navercorp.fixturemonkey.generator.NewStringAnnotatedArbitraryGenerator;
 import com.navercorp.fixturemonkey.generator.OptionalDoubleAnnotatedArbitraryGenerator;
 import com.navercorp.fixturemonkey.generator.OptionalIntAnnotatedArbitraryGenerator;
 import com.navercorp.fixturemonkey.generator.OptionalLongAnnotatedArbitraryGenerator;
@@ -90,6 +94,7 @@ public final class ArbitraryOption {
 	private final Map<Class<?>, Function<FixtureMonkey, ArbitraryBuilder<?>>> arbitraryBuildingSupplierMap;
 	private final Map<Class<?>, ArbitraryBuilder<?>> defaultArbitraryBuilderMap;
 	private final Map<Class<?>, ContainerArbitraryNodeGenerator> containerArbitraryNodeGeneratorMap;
+	private final Map<Class<?>, Arbitrary<?>> defaultArbitraryMap;
 	private final Set<String> exceptGeneratePackages;
 	private final Set<Class<?>> exceptGenerateClasses;
 	private final Set<String> nonNullAnnotationNames;
@@ -104,6 +109,7 @@ public final class ArbitraryOption {
 		Map<Class<?>, InterfaceSupplier<?>> interfaceSupplierMap,
 		Map<Class<?>, Function<FixtureMonkey, ArbitraryBuilder<?>>> arbitraryBuildingSupplierMap,
 		Map<Class<?>, ContainerArbitraryNodeGenerator> containerArbitraryNodeGeneratorMap,
+		Map<Class<?>, Arbitrary<?>> defaultArbitraryMap,
 		Set<String> exceptGeneratePackages,
 		Set<Class<?>> exceptGenerateClasses,
 		Set<String> nonNullAnnotationNames,
@@ -117,6 +123,7 @@ public final class ArbitraryOption {
 		this.interfaceSupplierMap = interfaceSupplierMap;
 		this.arbitraryBuildingSupplierMap = arbitraryBuildingSupplierMap;
 		this.containerArbitraryNodeGeneratorMap = containerArbitraryNodeGeneratorMap;
+		this.defaultArbitraryMap = defaultArbitraryMap;
 		this.defaultArbitraryBuilderMap = new HashMap<>();
 		this.exceptGeneratePackages = exceptGeneratePackages;
 		this.exceptGenerateClasses = exceptGenerateClasses;
@@ -208,18 +215,24 @@ public final class ArbitraryOption {
 		return containerArbitraryNodeGeneratorMap.get(clazz);
 	}
 
+	@SuppressWarnings("unchecked")
+	public <T> Arbitrary<T> getDefaultArbitrary(Class<T> clazz) {
+		return (Arbitrary<T>)this.defaultArbitraryMap.get(clazz);
+	}
+
 	public static FixtureOptionsBuilder builder() {
 		return new FixtureOptionsBuilder();
 	}
 
 	public static final class FixtureOptionsBuilder {
 		private static final Map<Class<?>, AnnotatedArbitraryGenerator<?>> DEFAULT_TYPE_ARBITRARY_SPECS;
+		private static final Map<Class<?>, Arbitrary<?>> DEFAULT_TYPE_ARBITRARY;
 		private static final Set<String> DEFAULT_EXCEPT_GENERATE_PACKAGE;
 		private static final Set<String> DEFAULT_NONNULL_ANNOTATIONS;
 
 		static {
 			Map<Class<?>, AnnotatedArbitraryGenerator<?>> map = new HashMap<>();
-			map.put(String.class, StringAnnotatedArbitraryGenerator.INSTANCE);
+			map.put(String.class, NewStringAnnotatedArbitraryGenerator.INSTANCE);
 			map.put(Integer.class, IntegerAnnotatedArbitraryGenerator.INSTANCE);
 			map.put(int.class, IntegerAnnotatedArbitraryGenerator.INSTANCE);
 			map.put(Float.class, FloatAnnotatedArbitraryGenerator.INSTANCE);
@@ -254,6 +267,16 @@ public final class ArbitraryOption {
 			map.put(Calendar.class, CalendarAnnotatedArbitraryGenerator.INSTANCE);
 
 			DEFAULT_TYPE_ARBITRARY_SPECS = Collections.unmodifiableMap(map);
+
+			Map<Class<?>, Arbitrary<?>> arbitraryMap = new HashMap<>();
+			arbitraryMap.put(BigInteger.class, Arbitraries.bigIntegers());
+			arbitraryMap.put(Boolean.class, Arbitraries.of(Boolean.TRUE, Boolean.FALSE));
+			arbitraryMap.put(BigDecimal.class, Arbitraries.bigDecimals());
+			arbitraryMap.put(Byte.class, Arbitraries.bytes());
+			arbitraryMap.put(Double.class, Arbitraries.doubles());
+			arbitraryMap.put(String.class, Arbitraries.strings());
+
+			DEFAULT_TYPE_ARBITRARY = Collections.unmodifiableMap(arbitraryMap);
 
 			Set<String> defaultExceptGeneratePackages = new HashSet<>();
 			defaultExceptGeneratePackages.add("java.lang");
@@ -290,6 +313,7 @@ public final class ArbitraryOption {
 			new HashMap<>();
 		private final Map<Class<?>, ContainerArbitraryNodeGenerator> containerArbitraryNodeGeneratorMap =
 			new HashMap<>();
+		private final Map<Class<?>, Arbitrary<?>> defaultArbitraryMap = new HashMap<>(DEFAULT_TYPE_ARBITRARY);
 		private Set<String> exceptGeneratePackages = new HashSet<>(DEFAULT_EXCEPT_GENERATE_PACKAGE);
 		private Set<Class<?>> exceptGenerateClasses = new HashSet<>();
 		private final Set<String> nonNullAnnotationNames = new HashSet<>(DEFAULT_NONNULL_ANNOTATIONS);
@@ -362,6 +386,11 @@ public final class ArbitraryOption {
 			return this;
 		}
 
+		public FixtureOptionsBuilder putDefaultArbitrary(Class<?> clazz, Arbitrary<?> arbitrary) {
+			this.defaultArbitraryMap.put(clazz, arbitrary);
+			return this;
+		}
+
 		public FixtureOptionsBuilder register(
 			Class<?> clazz,
 			Function<FixtureMonkey, ArbitraryBuilder<?>> arbitraryBuildingSupplier
@@ -429,6 +458,7 @@ public final class ArbitraryOption {
 				Collections.unmodifiableMap(interfaceSupplierMap),
 				Collections.unmodifiableMap(arbitraryBuildingSupplierMap),
 				Collections.unmodifiableMap(containerArbitraryNodeGeneratorMap),
+				Collections.unmodifiableMap(defaultArbitraryMap),
 				Collections.unmodifiableSet(exceptGeneratePackages),
 				Collections.unmodifiableSet(exceptGenerateClasses),
 				Collections.unmodifiableSet(nonNullAnnotationNames),

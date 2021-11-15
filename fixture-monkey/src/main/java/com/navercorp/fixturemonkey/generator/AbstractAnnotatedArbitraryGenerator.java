@@ -18,39 +18,25 @@
 
 package com.navercorp.fixturemonkey.generator;
 
-import java.lang.annotation.Annotation;
-import java.util.List;
-import java.util.Optional;
-
 import net.jqwik.api.Arbitrary;
 
-public final class AnnotationSource<T> {
-	private final Class<T> clazz;
-	private final Arbitrary<T> arbitrary;
-	private final List<Annotation> annotations;
-
-	public AnnotationSource(
-		Class<T> clazz,
-		Arbitrary<T> arbitrary,
-		List<Annotation> annotations
-	) {
-		this.clazz = clazz;
-		this.arbitrary = arbitrary;
-		this.annotations = annotations;
+public abstract class AbstractAnnotatedArbitraryGenerator<T> implements AnnotatedArbitraryGenerator<T> {
+	protected Arbitrary<T> generateDefaultArbitrary(AnnotationSource<T> annotationSource) {
+		return annotationSource.getArbitrary();
 	}
 
-	public Arbitrary<T> getArbitrary() {
-		return arbitrary;
-	}
+	abstract Arbitrary<T> applyConstraint(Arbitrary<T> arbitrary, AnnotatedGeneratorConstraint constraint);
 
-	public Class<T> getClazz() {
-		return clazz;
-	}
+	abstract AnnotatedGeneratorConstraint getConstraint(AnnotationSource<T> annotationSource);
 
 	@SuppressWarnings("unchecked")
-	public <U extends Annotation> Optional<U> findAnnotation(Class<U> annotationClass) {
-		return (Optional<U>)annotations.stream()
-			.filter(it -> it.annotationType() == annotationClass)
-			.findAny();
+	protected <U extends Arbitrary<T>> U map(Arbitrary<T> arbitrary){
+		return (U)arbitrary;
+	}
+
+	@Override
+	public Arbitrary<T> generate(AnnotationSource<T> annotationSource) {
+		Arbitrary<T> arbitrary = generateDefaultArbitrary(annotationSource);
+		return map(applyConstraint(arbitrary, getConstraint(annotationSource)));
 	}
 }

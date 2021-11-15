@@ -23,6 +23,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 
+import net.jqwik.api.Arbitrary;
+
 import com.navercorp.fixturemonkey.ArbitraryOption.FixtureOptionsBuilder;
 import com.navercorp.fixturemonkey.arbitrary.ContainerArbitraryNodeGenerator;
 import com.navercorp.fixturemonkey.arbitrary.InterfaceSupplier;
@@ -39,6 +41,7 @@ public class FixtureMonkeyBuilder {
 	private ArbitraryGenerator defaultGenerator = new BeanArbitraryGenerator();
 	private Map<Class<?>, ArbitraryGenerator> generatorMap = new HashMap<>();
 	private Map<Class<?>, ArbitraryCustomizer<?>> customizerMap = new HashMap<>();
+	private Map<Class<?>, Arbitrary<?>> defaultArbitraryMap = new HashMap<>();
 	@SuppressWarnings("rawtypes")
 	private ArbitraryValidator validator = new CompositeArbitraryValidator();
 	private ArbitraryCustomizers arbitraryCustomizers = new ArbitraryCustomizers();
@@ -166,6 +169,11 @@ public class FixtureMonkeyBuilder {
 		ContainerArbitraryNodeGenerator containerArbitraryNodeGenerator
 	) {
 		this.optionsBuilder.putContainerArbitraryNodeGenerator(clazz, containerArbitraryNodeGenerator);
+		return this;
+	}
+
+	public FixtureMonkeyBuilder putDefaultArbitrary(Class<?> clazz, Arbitrary<?> arbitrary) {
+		this.optionsBuilder.putDefaultArbitrary(clazz, arbitrary);
 		return this;
 	}
 

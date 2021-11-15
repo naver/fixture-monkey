@@ -22,5 +22,5 @@ import net.jqwik.api.Arbitrary;
 
 @FunctionalInterface
 public interface AnnotatedArbitraryGenerator<T> {
-	Arbitrary<T> generate(AnnotationSource annotationSource);
+	Arbitrary<T> generate(AnnotationSource<T> annotationSource);
 }

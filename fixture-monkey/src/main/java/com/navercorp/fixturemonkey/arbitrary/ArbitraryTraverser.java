@@ -201,13 +201,17 @@ public final class ArbitraryTraverser {
 			clazz = type.getType();
 		}
 
-		AnnotationSource annotationSource = new AnnotationSource(type.getAnnotations());
+		AnnotationSource<T> annotationSource = new AnnotationSource<>(
+			clazz,
+			arbitraryOption.getDefaultArbitrary(clazz),
+			type.getAnnotations()
+		);
 
 		Map<Class<?>, AnnotatedArbitraryGenerator<?>> annotatedArbitraryMap =
 			arbitraryOption.getAnnotatedArbitraryMap();
 
-		return (Arbitrary<T>)Optional.ofNullable(annotatedArbitraryMap.get(clazz))
-			.map(arbitraryGenerator -> arbitraryGenerator.generate(annotationSource))
+		return Optional.ofNullable(annotatedArbitraryMap.get(clazz))
+			.map(arbitraryGenerator -> ((AnnotatedArbitraryGenerator<T>)arbitraryGenerator).generate(annotationSource))
 			.orElseThrow(() -> new IllegalArgumentException("Class is not registered " + clazz.getName()));
 	}
 
@@ -263,7 +267,7 @@ public final class ArbitraryTraverser {
 			}
 
 			boolean hasNotNullAnnotations = arbitraryType.getAnnotations().stream()
-				.noneMatch(it -> arbitraryOption.isNonNullAnnotation((Annotation)it));
+				.noneMatch(arbitraryOption::isNonNullAnnotation);
 
 			if (!hasNotNullAnnotations) {
 				return false;

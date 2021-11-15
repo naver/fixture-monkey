@@ -23,7 +23,6 @@ import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.assertj.core.api.BDDAssertions.thenNoException;
 import static org.assertj.core.api.BDDAssertions.thenThrownBy;
-import static org.assertj.core.api.BDDAssumptions.given;
 
 import java.util.Iterator;
 import java.util.List;

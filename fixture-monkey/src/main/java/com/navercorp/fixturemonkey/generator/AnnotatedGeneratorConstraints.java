@@ -48,7 +48,7 @@ import com.navercorp.fixturemonkey.TypeSupports;
 final class AnnotatedGeneratorConstraints {
 	public static AnnotatedGeneratorConstraint findConstraintByClass(
 		Class<?> clazz,
-		AnnotationSource annotationSource
+		AnnotationSource<?> annotationSource
 	) {
 		if (TypeSupports.isNumberType(clazz)) {
 			return findNumberConstraint(clazz, annotationSource);
@@ -88,7 +88,7 @@ final class AnnotatedGeneratorConstraints {
 
 	private static AnnotatedGeneratorConstraint findNumberConstraint(
 		Class<?> clazz,
-		AnnotationSource annotationSource
+		AnnotationSource<?> annotationSource
 	) {
 		BigDecimal min = null;
 		BigDecimal max = null;
@@ -195,7 +195,7 @@ final class AnnotatedGeneratorConstraints {
 
 	private static AnnotatedGeneratorConstraint findStringConstraint(
 		Class<?> clazz,
-		AnnotationSource annotationSource
+		AnnotationSource<?> annotationSource
 	) {
 		BigDecimal min = null;
 		BigDecimal max = null;
@@ -223,7 +223,7 @@ final class AnnotatedGeneratorConstraints {
 
 	private static AnnotatedGeneratorConstraint findDateConstraint(
 		Class<?> clazz,
-		AnnotationSource annotationSource
+		AnnotationSource<?> annotationSource
 	) {
 		BigDecimal now = BigDecimal.valueOf(Instant.now().toEpochMilli());
 		BigDecimal min = null;

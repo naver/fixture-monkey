@@ -20,23 +20,34 @@ package com.navercorp.fixturemonkey.generator;
 
 import java.math.BigDecimal;
 
+import javax.annotation.Nullable;
+
 final class AnnotatedGeneratorConstraint {
+	@Nullable
 	private final BigDecimal min;
+	@Nullable
 	private final BigDecimal max;
 	private final boolean minInclusive;
 	private final boolean maxInclusive;
 
-	public AnnotatedGeneratorConstraint(BigDecimal min, BigDecimal max, boolean minInclusive, boolean maxInclusive) {
+	public AnnotatedGeneratorConstraint(
+		@Nullable BigDecimal min,
+		@Nullable BigDecimal max,
+		boolean minInclusive,
+		boolean maxInclusive
+	) {
 		this.min = min;
 		this.max = max;
 		this.minInclusive = minInclusive;
 		this.maxInclusive = maxInclusive;
 	}
 
+	@Nullable
 	public BigDecimal getMin() {
 		return min;
 	}
 
+	@Nullable
 	public BigDecimal getMax() {
 		return max;
 	}
