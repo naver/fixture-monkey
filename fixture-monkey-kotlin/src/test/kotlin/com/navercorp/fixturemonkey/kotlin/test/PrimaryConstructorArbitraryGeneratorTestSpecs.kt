@@ -4,24 +4,13 @@ import com.navercorp.fixturemonkey.FixtureMonkey
 import com.navercorp.fixturemonkey.kotlin.KFixtureMonkey
 import net.jqwik.api.Arbitrary
 import net.jqwik.api.Provide
-import net.jqwik.api.domains.AbstractDomainContextBase
+import net.jqwik.api.domains.DomainContextBase
 import javax.validation.constraints.NotBlank
 import javax.validation.constraints.Positive
 
 val SUT: FixtureMonkey = KFixtureMonkey.create()
 
-class PrimaryConstructorArbitraryGeneratorTestSpecs() : AbstractDomainContextBase() {
-    init {
-        registerArbitrary(PrimaryConstructor::class.java, primaryConstructor())
-        registerArbitrary(IntValue::class.java, intValue())
-        registerArbitrary(Nested::class.java, nested())
-        registerArbitrary(DataValue::class.java, dataValue())
-        registerArbitrary(VarValue::class.java, varValue())
-        registerArbitrary(NullableValue::class.java, nullableValue())
-        registerArbitrary(DefaultValue::class.java, defaultValue())
-        registerArbitrary(SecondaryConstructor::class.java, secondaryConstructor())
-    }
-
+class PrimaryConstructorArbitraryGeneratorTestSpecs() : DomainContextBase() {
     @Provide
     fun primaryConstructor(): Arbitrary<PrimaryConstructor> = SUT.giveMeArbitrary(PrimaryConstructor::class.java)
 

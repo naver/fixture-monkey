@@ -33,37 +33,15 @@ import javax.validation.constraints.Positive;
 
 import net.jqwik.api.Arbitrary;
 import net.jqwik.api.Provide;
-import net.jqwik.api.domains.AbstractDomainContextBase;
+import net.jqwik.api.domains.DomainContextBase;
 
 import lombok.Data;
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.FixtureMonkey;
 
-class FixtureMonkeyTestSpecs extends AbstractDomainContextBase {
+class FixtureMonkeyTestSpecs extends DomainContextBase {
 	public static final FixtureMonkey SUT = FixtureMonkey.create();
-
-	FixtureMonkeyTestSpecs() {
-		registerArbitrary(Integer.class, integer());
-		registerArbitrary(IntWithAnnotation.class, integerWithAnnotation());
-		registerArbitrary(IntegerArray.class, integerArray());
-		registerArbitrary(IntArray.class, intArray());
-		registerArbitrary(MapKeyIntegerValueInteger.class, mapKeyIntegerValueInteger());
-		registerArbitrary(MapKeyIntegerValueString.class, mapKeyIntegerValueString());
-		registerArbitrary(MapEntryKeyIntegerValueString.class, mapEntryKeyIntegerValueString());
-		registerArbitrary(IntegerSet.class, integerSet());
-		registerArbitrary(IntegerIterable.class, integerIterable());
-		registerArbitrary(IntegerIterator.class, integerIterator());
-		registerArbitrary(IntegerStream.class, integerStream());
-		registerArbitrary(IntegerOptional.class, integerOptional());
-		registerArbitrary(StringWithNotBlank.class, stringWithNotBlank());
-		registerArbitrary(IntegerListWithNotEmpty.class, integerListWithNotEmpty());
-		registerArbitrary(InterfaceWrapper.class, interfaceWrapper());
-		registerArbitrary(StringWithNullable.class, stringWithNullable());
-		registerArbitrary(StringAndInt.class, stringAndInt());
-		registerArbitrary(NestedStringWithNotBlankList.class, nestedStringWithNotBlankList());
-		registerArbitrary(ListWithAnnotation.class, listWithAnnotation());
-	}
 
 	@Provide
 	Arbitrary<Integer> integer() {

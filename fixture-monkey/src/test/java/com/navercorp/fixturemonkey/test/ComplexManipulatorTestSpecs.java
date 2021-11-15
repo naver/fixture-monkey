@@ -23,7 +23,7 @@ import java.util.List;
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
 import net.jqwik.api.Provide;
-import net.jqwik.api.domains.AbstractDomainContextBase;
+import net.jqwik.api.domains.DomainContextBase;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -32,19 +32,8 @@ import lombok.NoArgsConstructor;
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.FixtureMonkey;
 
-class ComplexManipulatorTestSpecs extends AbstractDomainContextBase {
+class ComplexManipulatorTestSpecs extends DomainContextBase {
 	public static final FixtureMonkey SUT = FixtureMonkey.create();
-
-	ComplexManipulatorTestSpecs() {
-		registerArbitrary(StringValue.class, stringValue());
-		registerArbitrary(StringIntegerList.class, stringIntegerList());
-		registerArbitrary(IntegerList.class, integerList());
-		registerArbitrary(IntValue.class, intValue());
-		registerArbitrary(StringAndInt.class, stringAndInt());
-		registerArbitrary(NestedString.class, nestedString());
-		registerArbitrary(NestedStringList.class, nestedStringList());
-		registerArbitrary(Complex.class, complex());
-	}
 
 	@Data
 	@NoArgsConstructor
@@ -204,7 +193,7 @@ class ComplexManipulatorTestSpecs extends AbstractDomainContextBase {
 
 		public ArbitraryBuilder<StringValue> string(FixtureMonkey fixture) {
 			return fixture.giveMeBuilder(StringValue.class)
-				.set("value", Arbitraries.strings().sample())
+				.set("value", Arbitraries.strings())
 				.apply((it, builder) -> builder.set("value", "set"));
 		}
 	}

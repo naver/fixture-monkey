@@ -22,8 +22,8 @@ import static java.util.stream.Collectors.toList;
 
 import java.util.List;
 import java.util.Objects;
-
-import net.jqwik.api.Arbitraries;
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.customizer.ExpressionSpec;
@@ -38,7 +38,11 @@ public final class ArbitrarySpecAny implements BuilderManipulator {
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	@Override
 	public void accept(ArbitraryBuilder arbitraryBuilder) {
-		ExpressionSpec spec = Arbitraries.of(specs).sample();
+		if (specs.isEmpty()) {
+			return;
+		}
+
+		ExpressionSpec spec = specs.get(ThreadLocalRandom.current().nextInt(specs.size()));
 		List<BuilderManipulator> specArbitraryManipulators = spec.getBuilderManipulators();
 		arbitraryBuilder.apply(specArbitraryManipulators);
 	}

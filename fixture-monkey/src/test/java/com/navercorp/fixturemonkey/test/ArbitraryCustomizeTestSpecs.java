@@ -21,7 +21,7 @@ package com.navercorp.fixturemonkey.test;
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
 import net.jqwik.api.Provide;
-import net.jqwik.api.domains.AbstractDomainContextBase;
+import net.jqwik.api.domains.DomainContextBase;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -31,7 +31,7 @@ import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.customizer.ArbitraryCustomizer;
 import com.navercorp.fixturemonkey.generator.FieldArbitraries;
 
-class ArbitraryCustomizeTestSpecs extends AbstractDomainContextBase {
+class ArbitraryCustomizeTestSpecs extends DomainContextBase {
 	public static final FixtureMonkey SUT = FixtureMonkey.builder()
 		.addCustomizer(CustomizerInteger.class, new ArbitraryCustomizer<CustomizerInteger>() {
 			@Override
@@ -45,13 +45,6 @@ class ArbitraryCustomizeTestSpecs extends AbstractDomainContextBase {
 			}
 		})
 		.build();
-
-	ArbitraryCustomizeTestSpecs() {
-		registerArbitrary(CustomizerInteger.class, customizerInteger());
-		registerArbitrary(StringAndInt.class, stringAndInt());
-		registerArbitrary(StringValue.class, stringValue());
-		registerArbitrary(IntValue.class, intValue());
-	}
 
 	@Data
 	public static class CustomizerInteger {
