@@ -2,7 +2,7 @@
 <head>
 <meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no">
-<meta name=generator content="Hugo 0.88.1"><meta name=ROBOTS content="INDEX, FOLLOW">
+<meta name=generator content="Hugo 0.89.3"><meta name=ROBOTS content="INDEX, FOLLOW">
 <link rel="shortcut icon" href=/fixture-monkey/favicons/favicon.png>
 <link rel=apple-touch-icon href=/fixture-monkey/favicons/favicon.png sizes=180x180>
 <link rel=icon type=image/png href=/fixture-monkey/favicons/favicon.png sizes=16x16>
@@ -24,10 +24,10 @@ void manipulateExistingInstance() {
 <meta property="og:description" content="Manipulate Existing Instance @Test void manipulateExistingInstance() { // given  FixtureMonkey fixture = FixtureMonkey.create(); Order givenOrder = fixture.giveMeBuilder(Order.class) .sample(); // when  Order actual = fixture.giveMeBuilder(givenOrder) .set(&#34;quantity&#34;, 1) .sample(); then(actual.quantity).isEqualTo(1); } Map @Test void map() { // given 	FixtureMonkey fixture = FixtureMonkey.create(); // when 	Order actual = fixture.giveMeBuilder(RegisterOrder.class) .map(it -> { Order tempOrder = new Order(); tempOrder.setOrderNo(it.getOrderNo()); return tempOrder; }) .sample(); } Zip @Test void zip(){ // given 	FixtureMonkey fixture = FixtureMonkey.">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://naver.github.io/fixture-monkey/docs/v0.3.x/examples/manipulator/complexmanipulator/"><meta property="article:section" content="docs">
-<meta property="article:modified_time" content="2021-10-04T23:03:32+09:00"><meta property="og:site_name" content="Fixture Monkey">
+<meta property="article:modified_time" content="2021-11-16T16:59:29+09:00"><meta property="og:site_name" content="Fixture Monkey">
 <meta itemprop=name content="Complex Manipulator">
 <meta itemprop=description content="Manipulate Existing Instance @Test void manipulateExistingInstance() { // given  FixtureMonkey fixture = FixtureMonkey.create(); Order givenOrder = fixture.giveMeBuilder(Order.class) .sample(); // when  Order actual = fixture.giveMeBuilder(givenOrder) .set(&#34;quantity&#34;, 1) .sample(); then(actual.quantity).isEqualTo(1); } Map @Test void map() { // given 	FixtureMonkey fixture = FixtureMonkey.create(); // when 	Order actual = fixture.giveMeBuilder(RegisterOrder.class) .map(it -> { Order tempOrder = new Order(); tempOrder.setOrderNo(it.getOrderNo()); return tempOrder; }) .sample(); } Zip @Test void zip(){ // given 	FixtureMonkey fixture = FixtureMonkey.">
-<meta itemprop=dateModified content="2021-10-04T23:03:32+09:00">
+<meta itemprop=dateModified content="2021-11-16T16:59:29+09:00">
 <meta itemprop=wordCount content="157">
 <meta itemprop=keywords content><meta name=twitter:card content="summary">
 <meta name=twitter:title content="Complex Manipulator">
@@ -249,8 +249,8 @@ Version
 <span style=color:#204a87;font-weight:700>void</span> <span style=color:#000>zip</span><span style=color:#ce5c00;font-weight:700>(){</span>
 	<span style=color:#8f5902;font-style:italic>// given
 </span><span style=color:#8f5902;font-style:italic></span>	<span style=color:#000>FixtureMonkey</span> <span style=color:#000>fixture</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#000>FixtureMonkey</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>create</span><span style=color:#ce5c00;font-weight:700>();</span>
-	<span style=color:#000>ArbitraryBuilder</span><span style=color:#ce5c00;font-weight:700>&lt;</span><span style=color:#000>String</span><span style=color:#ce5c00;font-weight:700>&gt;</span> <span style=color:#000>stringArbitraryBuilder</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#204a87;font-weight:700>this</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>sut</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>giveMeBuilder</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>String</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>class</span><span style=color:#ce5c00;font-weight:700>);</span>
-	<span style=color:#000>ArbitraryBuilder</span><span style=color:#ce5c00;font-weight:700>&lt;</span><span style=color:#000>Integer</span><span style=color:#ce5c00;font-weight:700>&gt;</span> <span style=color:#000>integerArbitraryBuilder</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#204a87;font-weight:700>this</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>sut</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>giveMeBuilder</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>Integer</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>class</span><span style=color:#ce5c00;font-weight:700>);</span>
+	<span style=color:#000>ArbitraryBuilder</span><span style=color:#ce5c00;font-weight:700>&lt;</span><span style=color:#000>String</span><span style=color:#ce5c00;font-weight:700>&gt;</span> <span style=color:#000>stringArbitraryBuilder</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#000>fixture</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>giveMeBuilder</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>String</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>class</span><span style=color:#ce5c00;font-weight:700>);</span>
+	<span style=color:#000>ArbitraryBuilder</span><span style=color:#ce5c00;font-weight:700>&lt;</span><span style=color:#000>Integer</span><span style=color:#ce5c00;font-weight:700>&gt;</span> <span style=color:#000>integerArbitraryBuilder</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#000>fixture</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>giveMeBuilder</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>Integer</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>class</span><span style=color:#ce5c00;font-weight:700>);</span>
 	
 	<span style=color:#8f5902;font-style:italic>// when
 </span><span style=color:#8f5902;font-style:italic></span>	<span style=color:#000>ArbitraryBuilder</span><span style=color:#ce5c00;font-weight:700>&lt;</span><span style=color:#000>String</span><span style=color:#ce5c00;font-weight:700>&gt;</span> <span style=color:#000>actual</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#000>ArbitraryBuilders</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>zip</span><span style=color:#ce5c00;font-weight:700>(</span>
@@ -296,8 +296,8 @@ Version
 </code></pre></div>
 <div class="text-muted mt-5 pt-3 border-top">
 Last modified
-October 4, 2021
-: <a href=https://github.com/naver/fixture-monkey/commit/cd6278640755dabd7b1180a4e7e1b8667da927bc>Add documentation versioning (cd62786)</a>
+November 16, 2021
+: <a href=https://github.com/naver/fixture-monkey/commit/4aff48265a5356f2e53537ba524c1901e927fa73>Fix docs Complex manipulator Zip example (4aff482)</a>
 </div>
 </div>
 </main>
