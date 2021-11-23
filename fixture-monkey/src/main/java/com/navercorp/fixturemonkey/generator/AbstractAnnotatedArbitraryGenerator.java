@@ -25,18 +25,16 @@ public abstract class AbstractAnnotatedArbitraryGenerator<T> implements Annotate
 		return annotationSource.getArbitrary();
 	}
 
-	abstract Arbitrary<T> applyConstraint(Arbitrary<T> arbitrary, AnnotatedGeneratorConstraint constraint);
-
-	abstract AnnotatedGeneratorConstraint getConstraint(AnnotationSource<T> annotationSource);
-
 	@SuppressWarnings("unchecked")
-	protected <U extends Arbitrary<T>> U map(Arbitrary<T> arbitrary){
+	protected <U extends Arbitrary<T>> U map(Arbitrary<T> arbitrary) {
 		return (U)arbitrary;
 	}
+
+	protected abstract Arbitrary<T> applyArbitrary(Arbitrary<T> arbitrary, AnnotationSource<T> annotationSource);
 
 	@Override
 	public Arbitrary<T> generate(AnnotationSource<T> annotationSource) {
 		Arbitrary<T> arbitrary = generateDefaultArbitrary(annotationSource);
-		return map(applyConstraint(arbitrary, getConstraint(annotationSource)));
+		return map(applyArbitrary(arbitrary, annotationSource));
 	}
 }
