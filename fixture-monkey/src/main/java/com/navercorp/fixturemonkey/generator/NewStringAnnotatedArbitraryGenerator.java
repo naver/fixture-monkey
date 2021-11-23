@@ -48,9 +48,7 @@ public class NewStringAnnotatedArbitraryGenerator implements AnnotatedArbitraryG
 	private static final RegexGenerator REGEX_GENERATOR = new RegexGenerator();
 
 	@Override
-	public Arbitrary<String> generate(
-		AnnotationSource<String> annotationSource
-	) {
+	public Arbitrary<String> generate(AnnotationSource<String> annotationSource) {
 		Arbitrary<String> defaultArbitrary = generateDefaultArbitrary(annotationSource);
 		return stringAnnotationIntrospector.getArbitrary(defaultArbitrary, annotationSource);
 	}
