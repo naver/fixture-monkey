@@ -23,7 +23,7 @@ void registerGroup() {
         .build();
 	
     // when
-    CustomObject customObject = this.fixture.giveMeOne(CustomObject.class);
+    CustomObject customObject = fixture.giveMeOne(CustomObject.class);
     CustomObjectWrapper customObjectWrapper = this.fixture.giveMeOne(CustomObjectWrapper.class);
     
     then(customObject.getValue()).isEqualTo("test");
@@ -47,7 +47,7 @@ void applyManipulatorToRegisteredArbitraryBuilder() {
         .build();
 	
     // when
-    CustomObject customObject = this.fixture.giveMeBuilder(CustomObject.class)
+    CustomObject customObject = fixture.giveMeBuilder(CustomObject.class)
         .set("value", "set")
         .sample();
     CustomObjectWrapper customObjectWrapper = this.fixture.giveMeBuilder(CustomObjectWrapper.class)
