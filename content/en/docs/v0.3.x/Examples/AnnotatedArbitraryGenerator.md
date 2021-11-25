@@ -15,7 +15,7 @@ void putArbitraryGenerator() {
         .addAnnotatedArbitraryGenerator(Tuple.class, new TupleAnnotatedArbitraryGenerator())
         .build();
 
-	Tuple customObject = this.fixture.giveMeOne(Tuple.class);
+	Tuple customObject = fixture.giveMeOne(Tuple.class);
 }
 ```
 

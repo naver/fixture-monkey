@@ -80,11 +80,12 @@ void specAny() {
 @Test
 void size() {
 	// given
+	FixtureMonkey fixture = FixtureMonkey.create();
 	ExpressionSpec spec = new ExpressionSpec()
 	    .list("items", it -> it.ofSize(2));
 	
 	// when
-    Order actual = this.fixture.giveMeBuilder(Order.class)
+    Order actual = fixture.giveMeBuilder(Order.class)
 	    .spec(spec)
 	    .sample();
     
@@ -98,6 +99,7 @@ void size() {
 @Test
 void setElement() {
 	// given
+ 	FixtureMonkey fixture = FixtureMonkey.create();
 	ExpressionSpec spec = new ExpressionSpec()
 	    .list("items", it -> {
 	        it.ofSize(2);
@@ -106,7 +108,7 @@ void setElement() {
 	);
 	
 	// when
-    Order actual = this.fixture.giveMeBuilder(Order.class)
+    Order actual = fixture.giveMeBuilder(Order.class)
 	    .spec(spec)
 	    .sample();
     
@@ -119,6 +121,7 @@ void setElement() {
 @Test
 void setElementField() {
 	// given
+ 	FixtureMonkey fixture = FixtureMonkey.create();
 	ExpressionSpec spec = new ExpressionSpec()
         .list("orders", it -> {
             it.ofSize(1);
@@ -127,7 +130,7 @@ void setElementField() {
 	);
 	
 	// when
-    StackedOrder actual = this.fixture.giveMeBuilder(StackedOrder.class)
+    StackedOrder actual = fixture.giveMeBuilder(StackedOrder.class)
 	    .spec(spec)
 	    .sample();
     
@@ -141,6 +144,7 @@ void setElementField() {
 @Test
 void any() {
 	// given
+ 	FixtureMonkey fixture = FixtureMonkey.create();
 	ExpressionSpec spec = new ExpressionSpec()
         .list("items", it -> {
             it.any("set");
@@ -148,7 +152,7 @@ void any() {
 	);
 	
 	// when
-    Order actual = this.fixture.giveMeBuilder(Order.class)
+    Order actual = fixture.giveMeBuilder(Order.class)
 	    .spec(spec)
 	    .sample();
     
@@ -162,6 +166,7 @@ void any() {
 @Test
 void all() {
 	// given
+  	FixtureMonkey fixture = FixtureMonkey.create();
 	ExpressionSpec spec = new ExpressionSpec()
         .list("items", it -> {
             it.all("set");
@@ -169,7 +174,7 @@ void all() {
 	);
 	
 	// when
-    Order actual = this.fixture.giveMeBuilder(Order.class)
+    Order actual = fixture.giveMeBuilder(Order.class)
 	    .spec(spec)
 	    .sample();
     
