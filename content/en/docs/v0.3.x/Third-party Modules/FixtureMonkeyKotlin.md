@@ -12,7 +12,7 @@ weight: 2
 ## Installation
 ### Gradle
 ```groovy
-testImplementation("com.navercorp.fixturemonkey:fixture-monkey-kotlin:0.3.0")
+testImplementation("com.navercorp.fixturemonkey:fixture-monkey-kotlin:0.3.1")
 ```
 
 ### Maven
@@ -20,7 +20,7 @@ testImplementation("com.navercorp.fixturemonkey:fixture-monkey-kotlin:0.3.0")
 <dependency>
   <groupId>com.navercorp.fixturemonkey</groupId>
   <artifactId>fixture-monkey-kotlin</artifactId>
-  <version>0.3.0</version>
+  <version>0.3.1</version>
   <scope>test</scope>
 </dependency>
 ```
