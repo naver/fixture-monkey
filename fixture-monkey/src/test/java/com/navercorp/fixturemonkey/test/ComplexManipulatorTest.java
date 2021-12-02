@@ -754,7 +754,7 @@ class ComplexManipulatorTest {
 		Map<String, Integer> map = new HashMap<>();
 		map.put("test", -1);
 		MapValue mapValue = SUT.giveMeBuilder(MapValue.class)
-			.set("map", map)
+			.set("value", map)
 			.sample();
 
 		// when
