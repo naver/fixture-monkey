@@ -54,6 +54,11 @@ languageName ="English"
 # Weight used for sorting.
 weight = "1"
 
+[languages.kr]
+title = "픽스처 몽키"
+languageName ="Korean"
+contentDir = "content/kr"
+
 [markup]
   [markup.goldmark]
     [markup.goldmark.renderer]
