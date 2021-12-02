@@ -19,6 +19,7 @@
 package com.navercorp.fixturemonkey.test;
 
 import java.util.List;
+import java.util.Map;
 
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
@@ -30,6 +31,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
+import com.navercorp.fixturemonkey.ArbitraryBuilders;
 import com.navercorp.fixturemonkey.FixtureMonkey;
 
 class ComplexManipulatorTestSpecs extends DomainContextBase {
@@ -126,6 +128,16 @@ class ComplexManipulatorTestSpecs extends DomainContextBase {
 		return SUT.giveMeArbitrary(Complex.class);
 	}
 
+	@Data
+	public static class MapValue {
+		Map<String, Integer> value;
+	}
+
+	@Provide
+	Arbitrary<MapValue> mapValue() {
+		return SUT.giveMeArbitrary(MapValue.class);
+	}
+
 	public static class ArbitraryGroup {
 		public ArbitraryBuilder<NestedString> nestedString(FixtureMonkey fixtureMonkey) {
 			return fixtureMonkey.giveMeBuilder(NestedString.class)
@@ -195,6 +207,30 @@ class ComplexManipulatorTestSpecs extends DomainContextBase {
 			return fixture.giveMeBuilder(StringValue.class)
 				.set("value", Arbitraries.strings())
 				.apply((it, builder) -> builder.set("value", "set"));
+		}
+	}
+
+	public static class StringAndIntGroup {
+		public StringAndIntGroup() {
+		}
+
+		public ArbitraryBuilder<StringValue> string(FixtureMonkey fixture) {
+			return fixture.giveMeBuilder(StringValue.class)
+				.set("value", Arbitraries.just(null));
+		}
+
+		public ArbitraryBuilder<IntValue> intValue(FixtureMonkey fixture) {
+			return fixture.giveMeBuilder(IntValue.class)
+				.set("value", -1);
+		}
+
+		public ArbitraryBuilder<StringAndInt> stringAndInt(FixtureMonkey fixture) {
+			return ArbitraryBuilders.zip(string(fixture), intValue(fixture), (value1, value2) -> {
+				StringAndInt stringAndInt = new StringAndInt();
+				stringAndInt.setValue1(value1);
+				stringAndInt.setValue2(value2);
+				return stringAndInt;
+			});
 		}
 	}
 }

@@ -25,6 +25,7 @@ import static com.navercorp.fixturemonkey.TypeSupports.extractFields;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.function.Supplier;
 
@@ -136,21 +137,21 @@ public final class ArbitraryNode<T> {
 	public void apply(PreArbitraryManipulator<T> preArbitraryManipulator) {
 		if (preArbitraryManipulator instanceof AbstractArbitrarySet) {
 			Object toValue = preArbitraryManipulator.getValue();
-			if (toValue == null) {
-				return;
-			}
-			Class<?> clazz = this.getType().getType();
-			Class<?> toValueClazz = toValue.getClass();
-			if (
-				!TypeSupports.isCompatibleType(clazz, toValueClazz)
-					&& !clazz.isAssignableFrom(toValueClazz)
-					&& !Arbitrary.class.isAssignableFrom(toValueClazz)
-			) {
-				log.warn("property \"{}\" type is \"{}\", but given set value is \"{}\".",
-					propertyName,
-					clazz.getSimpleName(),
-					toValueClazz.getSimpleName()
-				);
+
+			if (toValue != null) {
+				Class<?> clazz = this.getType().getType();
+				Class<?> toValueClazz = toValue.getClass();
+				if (
+					!TypeSupports.isCompatibleType(clazz, toValueClazz)
+						&& !clazz.isAssignableFrom(toValueClazz)
+						&& !Arbitrary.class.isAssignableFrom(toValueClazz)
+				) {
+					log.warn("property \"{}\" type is \"{}\", but given set value is \"{}\".",
+						propertyName,
+						clazz.getSimpleName(),
+						toValueClazz.getSimpleName()
+					);
+				}
 			}
 			setValueRecursively(toValue);
 		} else {
@@ -168,6 +169,11 @@ public final class ArbitraryNode<T> {
 			if (value == null) {
 				this.setFixedAsNull(true);
 			}
+			this.setArbitrary((Arbitrary<T>)Arbitraries.just(value));
+			return;
+		}
+
+		if (value instanceof Map) {
 			this.setArbitrary((Arbitrary<T>)Arbitraries.just(value));
 			return;
 		}
@@ -309,7 +315,12 @@ public final class ArbitraryNode<T> {
 
 	@SuppressWarnings("BooleanMethodIsAlwaysInverted")
 	public boolean isLeafNode() {
-		return this.isFixedAsNull() || (this.getChildren().isEmpty() && this.getArbitrary() != null);
+		return this.isFixedAsNull()
+			|| ((this.getChildren().isEmpty() || isMap()) && this.getArbitrary() != null);
+	}
+
+	public boolean isMap() {
+		return this.type.isMap();
 	}
 
 	public boolean isHead() {

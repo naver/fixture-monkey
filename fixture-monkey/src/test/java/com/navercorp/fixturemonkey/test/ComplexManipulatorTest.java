@@ -30,7 +30,9 @@ import static org.assertj.core.api.BDDAssertions.then;
 import static org.assertj.core.api.BDDAssertions.thenThrownBy;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
@@ -45,9 +47,11 @@ import com.navercorp.fixturemonkey.test.ComplexManipulatorTestSpecs.ArbitraryGro
 import com.navercorp.fixturemonkey.test.ComplexManipulatorTestSpecs.Complex;
 import com.navercorp.fixturemonkey.test.ComplexManipulatorTestSpecs.FixedArbitraryGroup;
 import com.navercorp.fixturemonkey.test.ComplexManipulatorTestSpecs.FixedSetArbitraryArbitraryGroup;
+import com.navercorp.fixturemonkey.test.ComplexManipulatorTestSpecs.MapValue;
 import com.navercorp.fixturemonkey.test.ComplexManipulatorTestSpecs.NestedStringList;
 import com.navercorp.fixturemonkey.test.ComplexManipulatorTestSpecs.SetArbitraryAcceptGroup;
 import com.navercorp.fixturemonkey.test.ComplexManipulatorTestSpecs.SetArbitraryArbitraryAcceptGroup;
+import com.navercorp.fixturemonkey.test.ComplexManipulatorTestSpecs.StringAndIntGroup;
 
 class ComplexManipulatorTest {
 	@Property
@@ -726,5 +730,38 @@ class ComplexManipulatorTest {
 			.sample();
 
 		then(actual.getValues()).isEmpty();
+	}
+
+	@Property
+	void zipWithinRegister() {
+		// given
+		FixtureMonkey fixture = FixtureMonkey.builder()
+			.registerGroup(StringAndIntGroup.class)
+			.build();
+		StringAndInt value = fixture.giveMeOne(StringAndInt.class);
+
+		// when
+		StringAndInt actual = fixture.giveMeBuilder(value)
+			.sample();
+
+		then(actual.getValue1().getValue()).isNull();
+		then(actual.getValue2().getValue()).isEqualTo(-1);
+	}
+
+	@Property
+	void decomposeMap() {
+		// given
+		Map<String, Integer> map = new HashMap<>();
+		map.put("test", -1);
+		MapValue mapValue = SUT.giveMeBuilder(MapValue.class)
+			.set("map", map)
+			.sample();
+
+		// when
+		MapValue actual = SUT.giveMeBuilder(mapValue)
+			.sample();
+
+		then(actual.getValue().containsValue(-1)).isTrue();
+		then(actual.getValue().containsKey("test")).isTrue();
 	}
 }
