@@ -221,12 +221,14 @@ public final class ArbitraryTraverser {
 
 	@SuppressWarnings("unchecked")
 	private <T> void initializeDefaultArbitrary(ArbitraryNode<T> node) {
-		Class<?> clazz = node.getType().getType();
-		ArbitraryBuilder<?> defaultArbitraryBuilder = arbitraryOption.getDefaultArbitraryBuilder(clazz);
+		if (!node.isHead() && node.getValue() == null) {
+			Class<?> clazz = node.getType().getType();
+			ArbitraryBuilder<?> defaultArbitraryBuilder = arbitraryOption.getDefaultArbitraryBuilder(clazz);
 
-		if (defaultArbitraryBuilder != null && !node.isHead() && node.getValue() == null) {
-			node.setValue(() -> (T)defaultArbitraryBuilder.sample());
-			node.setManipulated(true); // fixed value would not inject as null
+			if (defaultArbitraryBuilder != null) {
+				node.setValue(() -> (T)defaultArbitraryBuilder.sample());
+				node.setManipulated(true); // fixed value would not inject as null
+			}
 		}
 	}
 
@@ -249,7 +251,7 @@ public final class ArbitraryTraverser {
 			}
 
 			boolean hasNotNullAnnotations = arbitraryType.getAnnotations().stream()
-				.noneMatch(it -> arbitraryOption.isNonNullAnnotation((Annotation)it));
+				.noneMatch(arbitraryOption::isNonNullAnnotation);
 
 			if (!hasNotNullAnnotations) {
 				return false;
