@@ -102,6 +102,10 @@ https://naver.github.io/fixture-monkey/
 * fixture-monkey-mockito (Experimental)
   - Supports for generating interfaces and abstract classes as [mockito](https://github.com/mockito/mockito) objects.
 
+## Contributor
+* @[KoEonYack](https://github.com/KoEonYack)
+* @[G-ONL](https://github.com/G-ONL)
+
 ## License
 
 ```
