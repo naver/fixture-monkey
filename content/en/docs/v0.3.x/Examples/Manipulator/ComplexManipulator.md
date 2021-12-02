@@ -46,8 +46,8 @@ void map() {
 void zip(){
 	// given
 	FixtureMonkey fixture = FixtureMonkey.create();
-	ArbitraryBuilder<String> stringArbitraryBuilder = this.sut.giveMeBuilder(String.class);
-	ArbitraryBuilder<Integer> integerArbitraryBuilder = this.sut.giveMeBuilder(Integer.class);
+	ArbitraryBuilder<String> stringArbitraryBuilder = fixture.giveMeBuilder(String.class);
+	ArbitraryBuilder<Integer> integerArbitraryBuilder = fixture.giveMeBuilder(Integer.class);
 	
 	// when
 	ArbitraryBuilder<String> actual = ArbitraryBuilders.zip(
