@@ -18,8 +18,12 @@
 
 package com.navercorp.fixturemonkey.arbitrary;
 
-public interface PreArbitraryManipulator<T> extends ArbitraryExpressionManipulator, BuilderManipulator {
+public interface PreArbitraryManipulator extends ArbitraryExpressionManipulator, BuilderManipulator {
 	Object getValue();
 
 	Object getRawValue();
+
+	default boolean isApplicable() {
+		return true;
+	}
 }

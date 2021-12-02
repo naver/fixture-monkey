@@ -20,12 +20,10 @@ package com.navercorp.fixturemonkey.arbitrary;
 
 import java.util.Objects;
 
-import javax.annotation.Nullable;
-
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 
 public abstract class AbstractArbitrarySet<T> extends AbstractArbitraryExpressionManipulator
-	implements PreArbitraryManipulator<T> {
+	implements PreArbitraryManipulator {
 
 	public AbstractArbitrarySet(ArbitraryExpression arbitraryExpression) {
 		super(arbitraryExpression);

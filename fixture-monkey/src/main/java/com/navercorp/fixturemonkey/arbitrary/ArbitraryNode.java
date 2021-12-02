@@ -134,8 +134,11 @@ public final class ArbitraryNode<T> {
 		setContainerSizeConstraint(new ContainerSizeConstraint(min, max));
 	}
 
-	public void apply(PreArbitraryManipulator<T> preArbitraryManipulator) {
+	public void apply(PreArbitraryManipulator preArbitraryManipulator) {
 		if (preArbitraryManipulator instanceof AbstractArbitrarySet) {
+			if (!preArbitraryManipulator.isApplicable()) {
+				return;
+			}
 			Object toValue = preArbitraryManipulator.getValue();
 
 			if (toValue != null) {

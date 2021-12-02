@@ -53,6 +53,11 @@ public final class ArbitrarySetArbitrary<T> extends AbstractArbitrarySet<T> {
 		return value;
 	}
 
+	@Override
+	public boolean isApplicable() {
+		return limit > 0;
+	}
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean equals(Object obj) {
