@@ -215,6 +215,10 @@ public final class ArbitraryNode<T> {
 		this.getStatus().setContainerSizeConstraint(containerSizeConstraint);
 	}
 
+	@Deprecated
+	public void setFixed(boolean fixed) {
+	}
+
 	public void setFixedAsNull(boolean fixedAsNull) {
 		this.getStatus().setFixedAsNull(fixedAsNull);
 	}
@@ -311,6 +315,11 @@ public final class ArbitraryNode<T> {
 
 	public List<PostArbitraryManipulator<T>> getPostArbitraryManipulators() {
 		return this.status.postArbitraryManipulators;
+	}
+
+	@Deprecated
+	public boolean isFixed() {
+		return false;
 	}
 
 	public boolean isFixedAsNull() {

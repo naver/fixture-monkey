@@ -28,6 +28,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apiguardian.api.API;
+import org.apiguardian.api.API.Status;
 import org.junit.platform.commons.util.ReflectionUtils;
 
 public final class TypeSupports {
@@ -81,6 +83,7 @@ public final class TypeSupports {
 		return toPrimitiveClazz1 == toPrimitiveClazz2;
 	}
 
+	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
 	public static List<Field> extractFields(Class<?> clazz) {
 		if (clazz == null) {
 			return Collections.emptyList();
