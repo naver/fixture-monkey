@@ -27,6 +27,7 @@ import java.util.stream.Stream;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 
 import net.jqwik.api.Arbitrary;
@@ -38,7 +39,9 @@ import lombok.NoArgsConstructor;
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.autoparams.FixtureMonkeyAutoSource;
+import com.navercorp.fixturemonkey.engine.jupiter.extension.FixtureMonkeySessionExtension;
 
+@ExtendWith(FixtureMonkeySessionExtension.class)
 class FixtureMonkeyValueCustomizerTest {
 	@ParameterizedTest
 	@FixtureMonkeyAutoSource
