@@ -47,7 +47,7 @@ import net.jqwik.time.api.arbitraries.YearMonthArbitrary;
 import net.jqwik.time.api.arbitraries.ZoneOffsetArbitrary;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public interface TimeArbitraryIntropector {
+public interface TimeArbitraryIntrospector {
 	Arbitrary<Calendar> calendars(CalendarArbitrary calendarArbitrary, ArbitraryIntrospectorContext context);
 
 	Arbitrary<Date> dates(DateArbitrary dateArbitrary, ArbitraryIntrospectorContext context);
