@@ -33,6 +33,8 @@ import javax.annotation.Nullable;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
+import org.apiguardian.api.API;
+import org.apiguardian.api.API.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -322,6 +324,7 @@ public final class ArbitraryNode<T> {
 		return false;
 	}
 
+	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
 	public boolean isFixedAsNull() {
 		return getStatus().isFixedAsNull();
 	}
@@ -332,6 +335,7 @@ public final class ArbitraryNode<T> {
 			|| ((this.getChildren().isEmpty() || isMap()) && this.getArbitrary() != null);
 	}
 
+	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
 	public boolean isMap() {
 		return this.type.isMap();
 	}
@@ -517,6 +521,7 @@ public final class ArbitraryNode<T> {
 			this.postArbitraryManipulators = postArbitraryManipulators;
 		}
 
+		@API(since = "0.4.0", status = Status.EXPERIMENTAL)
 		public void setFixedAsNull(boolean setAsNull) {
 			this.fixedAsNull = setAsNull;
 		}
