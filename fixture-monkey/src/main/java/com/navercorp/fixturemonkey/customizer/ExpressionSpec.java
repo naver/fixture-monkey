@@ -29,11 +29,14 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import javax.annotation.Nullable;
+import javax.annotation.PreDestroy;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
+import net.jqwik.api.Combinators;
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.api.expression.ExpressionGenerator;
@@ -165,6 +168,34 @@ public final class ExpressionSpec {
 	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
 	public ExpressionSpec set(ExpressionGenerator expressionGenerator, ExpressionSpec spec) {
 		return this.set(expressionGenerator.generate(), spec);
+	}
+
+	/**
+	 * Deprecated Use Set instead.
+	 */
+	@Deprecated
+	public ExpressionSpec setPrefix(String expression, String value) {
+		Arbitrary<String> combinedArbitrary = Combinators.combine(Arbitraries.just(value), Arbitraries.strings())
+			.as((prefix, fromValue) -> {
+				String concatString = prefix + fromValue;
+				int remainLength = concatString.length() - prefix.length();
+				return concatString.substring(0, Math.max(prefix.length(), remainLength));
+			});
+		return this.set(expression, combinedArbitrary);
+	}
+
+	/**
+	 * Deprecated Use Set instead.
+	 */
+	@Deprecated
+	public ExpressionSpec setSuffix(String expression, String value) {
+		Arbitrary<String> combinedArbitrary = Combinators.combine(Arbitraries.just(value), Arbitraries.strings())
+			.as((suffix, fromValue) -> {
+				String concatString = fromValue + suffix;
+				int remainLength = concatString.length() - suffix.length();
+				return concatString.substring(Math.min(remainLength, suffix.length()));
+			});
+		return this.set(expression, combinedArbitrary);
 	}
 
 	public ExpressionSpec setNull(String expression) {
