@@ -168,6 +168,7 @@ public final class ArbitraryNode<T> {
 	@SuppressWarnings("unchecked")
 	private void setValueRecursively(Object value) {
 		this.setManipulated(true);
+		this.setFixed(true);
 		Class<?> type = this.getType().getType();
 		List<Field> fields = extractFields(type);
 
@@ -217,8 +218,8 @@ public final class ArbitraryNode<T> {
 		this.getStatus().setContainerSizeConstraint(containerSizeConstraint);
 	}
 
-	@Deprecated
 	public void setFixed(boolean fixed) {
+		this.getStatus().setFixed(fixed);
 	}
 
 	public void setFixedAsNull(boolean fixedAsNull) {
@@ -319,9 +320,8 @@ public final class ArbitraryNode<T> {
 		return this.status.postArbitraryManipulators;
 	}
 
-	@Deprecated
 	public boolean isFixed() {
-		return false;
+		return this.getStatus().isFixed();
 	}
 
 	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
@@ -424,6 +424,7 @@ public final class ArbitraryNode<T> {
 		private boolean nullable = false;
 		private boolean manipulated = false;
 		private boolean active = true; // isNull
+		private boolean fixed = false;
 		private boolean fixedAsNull = false; // isFixedAsNull
 		private boolean reset = false;
 
@@ -438,6 +439,7 @@ public final class ArbitraryNode<T> {
 			boolean nullable,
 			boolean manipulated,
 			boolean active,
+			boolean fixed,
 			boolean fixedAsNull,
 			boolean reset
 		) {
@@ -448,6 +450,7 @@ public final class ArbitraryNode<T> {
 			this.nullable = nullable;
 			this.manipulated = manipulated;
 			this.active = active;
+			this.fixed = fixed;
 			this.fixedAsNull = fixedAsNull;
 			this.reset = reset;
 		}
@@ -475,6 +478,10 @@ public final class ArbitraryNode<T> {
 
 		public List<PostArbitraryManipulator<T>> getPostArbitraryManipulators() {
 			return postArbitraryManipulators;
+		}
+
+		public boolean isFixed() {
+			return fixed;
 		}
 
 		public boolean isFixedAsNull() {
@@ -526,6 +533,10 @@ public final class ArbitraryNode<T> {
 			this.fixedAsNull = setAsNull;
 		}
 
+		public void setFixed(boolean fixed) {
+			this.fixed = fixed;
+		}
+
 		public void setValue(LazyValue<T> value) {
 			this.value = value;
 		}
@@ -539,6 +550,7 @@ public final class ArbitraryNode<T> {
 				this.isNullable(),
 				this.isManipulated(),
 				this.isActive(),
+				this.isFixed(),
 				this.isFixedAsNull(),
 				this.isReset()
 			);
