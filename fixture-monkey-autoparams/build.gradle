@@ -10,7 +10,9 @@ plugins {
 dependencies {
     api(project(":fixture-monkey"))
     api("io.github.javaunit:autoparams:0.3.0")
+    compileOnly(project(":fixture-monkey-engine"))
 
+    testImplementation(project(":fixture-monkey-engine"))
     testImplementation("org.junit.jupiter:junit-jupiter-engine:${JUNIT_JUPITER_VERSION}")
     testImplementation("org.junit.platform:junit-platform-engine:${JUNIT_ENGINE_VERSION}")
     testImplementation("org.assertj:assertj-core:3.18.1")

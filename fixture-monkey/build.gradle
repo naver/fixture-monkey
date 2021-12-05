@@ -15,6 +15,7 @@ dependencies {
     api("javax.validation:validation-api:2.0.1.Final")
     api("com.github.mifmif:generex:1.0.2")
 
+    testRuntimeOnly(project(":fixture-monkey-engine"))
     testImplementation("org.junit.jupiter:junit-jupiter-engine:${JUNIT_JUPITER_VERSION}")
     testImplementation("org.junit.platform:junit-platform-engine:${JUNIT_ENGINE_VERSION}")
     testImplementation("org.assertj:assertj-core:3.18.1")
