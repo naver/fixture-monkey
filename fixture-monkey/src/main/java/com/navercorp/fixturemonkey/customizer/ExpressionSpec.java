@@ -29,7 +29,6 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import javax.annotation.Nullable;
-import javax.annotation.PreDestroy;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
