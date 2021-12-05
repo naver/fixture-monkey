@@ -21,6 +21,9 @@ package com.navercorp.fixturemonkey.api.introspector;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import net.jqwik.time.api.DateTimes;
+import net.jqwik.time.api.Dates;
+import net.jqwik.time.api.Times;
 import net.jqwik.time.api.arbitraries.CalendarArbitrary;
 import net.jqwik.time.api.arbitraries.DateArbitrary;
 import net.jqwik.time.api.arbitraries.InstantArbitrary;
@@ -37,29 +40,56 @@ import net.jqwik.time.api.arbitraries.ZoneOffsetArbitrary;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public interface IntrospectorTimeArbitraryGenerator {
-	CalendarArbitrary calendars();
 
-	DateArbitrary dates();
+	default CalendarArbitrary calendars() {
+		return Dates.datesAsCalendar();
+	}
 
-	InstantArbitrary instants();
+	default DateArbitrary dates() {
+		return Dates.datesAsDate();
+	}
 
-	LocalDateArbitrary localDates();
+	default InstantArbitrary instants() {
+		return DateTimes.instants();
+	}
 
-	LocalDateTimeArbitrary localDateTimes();
+	default LocalDateArbitrary localDates() {
+		return Dates.dates();
+	}
 
-	LocalTimeArbitrary localTimes();
+	default LocalDateTimeArbitrary localDateTimes() {
+		return DateTimes.dateTimes();
+	}
 
-	MonthDayArbitrary monthDays();
+	default LocalTimeArbitrary localTimes() {
+		return Times.times();
+	}
 
-	OffsetDateTimeArbitrary offsetDateTimes();
+	default MonthDayArbitrary monthDays() {
+		return Dates.monthDays();
+	}
 
-	OffsetTimeArbitrary offsetTimes();
+	default OffsetDateTimeArbitrary offsetDateTimes() {
+		return DateTimes.offsetDateTimes();
+	}
 
-	PeriodArbitrary periods();
+	default OffsetTimeArbitrary offsetTimes() {
+		return Times.offsetTimes();
+	}
 
-	YearArbitrary years();
+	default PeriodArbitrary periods() {
+		return Dates.periods();
+	}
 
-	YearMonthArbitrary yearMonths();
+	default YearArbitrary years() {
+		return Dates.years();
+	}
 
-	ZoneOffsetArbitrary zonOffsets();
+	default YearMonthArbitrary yearMonths() {
+		return Dates.yearMonths();
+	}
+
+	default ZoneOffsetArbitrary zonOffsets() {
+		return Times.zoneOffsets();
+	}
 }

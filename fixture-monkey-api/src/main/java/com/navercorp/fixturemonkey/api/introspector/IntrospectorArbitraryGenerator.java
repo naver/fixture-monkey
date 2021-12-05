@@ -21,6 +21,7 @@ package com.navercorp.fixturemonkey.api.introspector;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import net.jqwik.api.Arbitraries;
 import net.jqwik.api.arbitraries.BigDecimalArbitrary;
 import net.jqwik.api.arbitraries.BigIntegerArbitrary;
 import net.jqwik.api.arbitraries.ByteArbitrary;
@@ -34,23 +35,44 @@ import net.jqwik.api.arbitraries.StringArbitrary;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public interface IntrospectorArbitraryGenerator {
-	StringArbitrary strings();
 
-	CharacterArbitrary characters();
+	default StringArbitrary strings() {
+		return Arbitraries.strings();
+	}
 
-	ShortArbitrary shorts();
+	default CharacterArbitrary characters() {
+		return Arbitraries.chars();
+	}
 
-	ByteArbitrary bytes();
+	default ShortArbitrary shorts() {
+		return Arbitraries.shorts();
+	}
 
-	DoubleArbitrary doubles();
+	default ByteArbitrary bytes() {
+		return Arbitraries.bytes();
+	}
 
-	FloatArbitrary floats();
+	default DoubleArbitrary doubles() {
+		return Arbitraries.doubles();
+	}
 
-	IntegerArbitrary integers();
+	default FloatArbitrary floats() {
+		return Arbitraries.floats();
+	}
 
-	LongArbitrary longs();
+	default IntegerArbitrary integers() {
+		return Arbitraries.integers();
+	}
 
-	BigIntegerArbitrary bigIntegers();
+	default LongArbitrary longs() {
+		return Arbitraries.longs();
+	}
 
-	BigDecimalArbitrary bigDecimals();
+	default BigIntegerArbitrary bigIntegers() {
+		return Arbitraries.bigIntegers();
+	}
+
+	default BigDecimalArbitrary bigDecimals() {
+		return Arbitraries.bigDecimals();
+	}
 }
