@@ -112,6 +112,9 @@ testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter:0.3.1")
 * @[KoEonYack](https://github.com/KoEonYack)
 * @[G-ONL](https://github.com/G-ONL)
 
+## More about Fixture Monkey
+* [Deview 2021](https://tv.naver.com/v/23650158)
+
 ## License
 
 ```
