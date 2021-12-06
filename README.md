@@ -89,7 +89,8 @@ testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter:0.3.1")
 ```
 
 ## Documentation
-https://naver.github.io/fixture-monkey/
+* [English](https://naver.github.io/fixture-monkey)
+* [한국어](https://naver.github.io/fixture-monkey/kr)
 
 ## Third-party Modules
 
@@ -103,6 +104,11 @@ https://naver.github.io/fixture-monkey/
   - Supports for generating interfaces and abstract classes as [mockito](https://github.com/mockito/mockito) objects.
 
 ## Contributor
+* 🐒 [ah.jo](https://github.com/seongside)
+* 🐒 [mhyeon-lee](https://github.com/mhyeon-lee)
+* 🐒 [acktsap](https://github.com/acktsap)
+* 🐒 [benelog](https://github.com/benelog)
+* 🐒 [jwChung](https://github.com/jwChung)
 * @[KoEonYack](https://github.com/KoEonYack)
 * @[G-ONL](https://github.com/G-ONL)
 
