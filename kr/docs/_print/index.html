@@ -1689,13 +1689,15 @@ This module is experimental
 </div>
 <div class=td-content style=page-break-before:always>
 <h1 id=pg-f77601425046848a3ab4466865122027>1.5 - FAQ</h1>
-<h2 id=generated-string-value-is-weired-help>Generated String value is weired. Help!</h2>
-<p>Generated String is ASCII code consists of unprintable <code>control block</code>, printable characters.
-If you want to generate only printable characters as default, You should override <code>AnnotatedArbitraryGenerator</code>.
-check <a href=/fixture-monkey/kr/docs/v0.3.x/examples/annotatedarbitrarygenerator/#override-string-to-generate-printable-characters>Example</a></p>
-<h2 id=generate-object-fails-help>Generate object fails. Help!</h2>
-<p>Input class is not suitable for given <code>ArbitraryGenerator</code>, check out <a href=/fixture-monkey/kr/docs/v0.3.x/features/arbitrarygenerator/>ArbitraryGenerator</a>.
-If Error occurs again, please create an issue.</p>
+<h2 id=생성한-문자열이-이상합니다>생성한 문자열이 이상합니다</h2>
+<p>기본으로 생성하는 문자열은 아스키 코드에 해당하는 문자입니다. 아스키 코드에는 <code>control block</code>이라는 출력할 수 없는 문자를 포함하고 있습니다.</p>
+<p>유효한 문자만 생성하고 싶다면 <code>AnnotatedArbitraryGenerator</code>를 재정의해야 합니다.
+자세한 방법은 <a href=/fixture-monkey/kr/docs/v0.3.x/examples/annotatedarbitrarygenerator/#override-string-to-generate-printable-characters>예제</a>를 참고해주세요.</p>
+<h2 id=객체-생성을-실패합니다>객체 생성을 실패합니다</h2>
+<p>객체 생성은 <code>ArbitraryGenerator</code>에서 하고 있습니다. 초기 설정으로 <code>BeanArbitraryGenerator</code>가 설정돼있습니다.
+생성하고자 하는 객체가 지정한 <code>ArbitraryGenerator</code>에 적합하지 않습니다.
+<a href=/fixture-monkey/kr/docs/v0.3.x/features/arbitrarygenerator/>ArbitraryGenerator</a>를 한 번 확인해주세요.
+만약 원인을 모르겠다면 이슈에 실행 환경과 실행 결과를 올려주세요.</p>
 </div>
 <div class=td-content style=page-break-before:always>
 <h1 id=pg-454342dc75587df96139a0db6d8c5bf9>1.6 - What's New</h1>
