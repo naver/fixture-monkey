@@ -137,10 +137,6 @@ public final class ArbitraryNode<T> {
 	}
 
 	public void apply(PreArbitraryManipulator preArbitraryManipulator) {
-		if (!preArbitraryManipulator.isApplicable()) {
-			return;
-		}
-
 		if (preArbitraryManipulator instanceof AbstractArbitrarySet) {
 			Object toValue = preArbitraryManipulator.getValue();
 
@@ -222,6 +218,7 @@ public final class ArbitraryNode<T> {
 		this.getStatus().setFixed(fixed);
 	}
 
+	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
 	public void setFixedAsNull(boolean fixedAsNull) {
 		this.getStatus().setFixedAsNull(fixedAsNull);
 	}
