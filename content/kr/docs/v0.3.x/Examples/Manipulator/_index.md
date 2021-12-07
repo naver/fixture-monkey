@@ -1,6 +1,6 @@
 ---
-title: "Manipulator"
-linkTitle: "Manipulator"
+title: "생성할 객체를 제어하는 연산"
+linkTitle: "생성할 객체를 제어하는 연산"
 weight: 1
 ---
 
