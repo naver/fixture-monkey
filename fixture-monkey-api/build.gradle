@@ -9,6 +9,7 @@ plugins {
 
 dependencies {
     api("org.apiguardian:apiguardian-api:1.1.2")
+    compileOnly("net.jqwik:jqwik-engine:${JQWIK_VERSION}")
 
     testImplementation("org.junit.jupiter:junit-jupiter-engine:${JUNIT_JUPITER_VERSION}")
     testImplementation("org.junit.platform:junit-platform-engine:${JUNIT_ENGINE_VERSION}")

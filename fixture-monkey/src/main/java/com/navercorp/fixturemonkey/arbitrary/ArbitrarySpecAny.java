@@ -22,10 +22,9 @@ import static java.util.stream.Collectors.toList;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
+import com.navercorp.fixturemonkey.api.seed.Randoms;
 import com.navercorp.fixturemonkey.customizer.ExpressionSpec;
 
 public final class ArbitrarySpecAny implements BuilderManipulator {
@@ -42,7 +41,7 @@ public final class ArbitrarySpecAny implements BuilderManipulator {
 			return;
 		}
 
-		ExpressionSpec spec = specs.get(ThreadLocalRandom.current().nextInt(specs.size()));
+		ExpressionSpec spec = specs.get(Randoms.current().nextInt(specs.size()));
 		List<BuilderManipulator> specArbitraryManipulators = spec.getBuilderManipulators();
 		arbitraryBuilder.apply(specArbitraryManipulators);
 	}

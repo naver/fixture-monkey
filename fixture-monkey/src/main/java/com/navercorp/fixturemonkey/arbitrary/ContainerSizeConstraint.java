@@ -21,9 +21,9 @@ package com.navercorp.fixturemonkey.arbitrary;
 import static com.navercorp.fixturemonkey.Constants.DEFAULT_ELEMENT_MAX_SIZE;
 import static com.navercorp.fixturemonkey.Constants.DEFAULT_ELEMENT_MIN_SIZE;
 
-import java.util.concurrent.ThreadLocalRandom;
-
 import javax.annotation.Nullable;
+
+import com.navercorp.fixturemonkey.api.seed.Randoms;
 
 public final class ContainerSizeConstraint {
 	@Nullable
@@ -60,7 +60,7 @@ public final class ContainerSizeConstraint {
 			return minSize;
 		}
 
-		int size = ThreadLocalRandom.current().nextInt(maxSize - minSize);
+		int size = Randoms.current().nextInt(maxSize - minSize);
 		return minSize + size;
 	}
 }

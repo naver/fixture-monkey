@@ -23,9 +23,10 @@ import static com.navercorp.fixturemonkey.Constants.DEFAULT_ELEMENT_MIN_SIZE;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+
+import com.navercorp.fixturemonkey.api.seed.Randoms;
 
 final class DefaultIterableSpec implements IterableSpec, ExpressionSpecVisitor {
 	private static final String EMPTY_FIELD = "";
@@ -222,7 +223,7 @@ final class DefaultIterableSpec implements IterableSpec, ExpressionSpecVisitor {
 			return minSize;
 		}
 
-		return ThreadLocalRandom.current().nextInt(maxSize - minSize);
+		return Randoms.current().nextInt(maxSize - minSize);
 	}
 
 	private static class IterableSpecSet<T> {
