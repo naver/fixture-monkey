@@ -1,15 +1,15 @@
 ---
-title: "Getting Started"
-linkTitle: "Getting Started"
+title: "시작해보기"
+linkTitle: "시작해보기"
 weight: 2
 ---
 
-## Prerequisites
+## 환경
 * JDK 8+
 * JUnit 5 platform
 * jqwik 1.3.9
 
-## Installation
+## 설치
 ### Gradle 
 ```groovy
 testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter:0.3.1")
@@ -26,15 +26,14 @@ testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter:0.3.1")
 </dependency>
 ```
 
-## Try it out!
+## 간단한 예제
 
 {{< alert color="primary" title="Tip">}}
-Getter and Setter is not mandatory.
-You could generate immutable instances by Fixture Monkey with [BuilderArbitraryGenerator]({{< relref "/docs/v0.3.x/features/arbitrarygenerator#builderarbitrarygenerator" >}}) or [JacksonArbitraryGenerator]({{< relref "/docs/v0.3.x/features/arbitrarygenerator#jacksonarbitrarygenerator" >}}).
+게터와 세터는 필수가 아닙니다.
+Fixture Monkey를 사용할 때 프로덕션 코드를 변경하지 않아도 됩니다. 객체마다 다른 생성 방식을 사용할 수 있습니다.
+예를 들어, 불변한 객체라면 정의 방법에 따라 [BuilderArbitraryGenerator]({{< relref "/docs/v0.3.x/features/arbitrarygenerator#builderarbitrarygenerator" >}}) 나 [JacksonArbitraryGenerator]({{< relref "/docs/v0.3.x/features/arbitrarygenerator#jacksonarbitrarygenerator" >}})를 사용하시면 됩니다. 
 
-You would not need to change anything for using Fixture Monkey.
-Choose the way of instantiating.
-Check out details [here]({{< relref "/docs/v0.3.x/features/arbitrarygenerator" >}}).
+자세한 사항은 [여기]({{< relref "/docs/v0.3.x/features/arbitrarygenerator" >}})를 참조해주세요.
 {{< /alert >}}
 ```java
 @Data   // lombok getter, setter
@@ -82,9 +81,9 @@ void test() {
 }
 ```
 
-## Where should I go next?
-* [Examples]({{< relref "/docs/v0.3.x/examples" >}})
-* [DefaultSupportedTypes]({{< relref "/docs/v0.3.x/features/defaultsupportedtypes" >}})
+## 더 알아두면 좋은 정보들
+* [예제]({{< relref "/docs/v0.3.x/examples" >}})
+* [기본적으로 생성해주는 객체 타입]({{< relref "/docs/v0.3.x/features/defaultsupportedtypes" >}})
 * [ArbitraryBuilder]({{< relref "/docs/v0.3.x/features/arbitrarybuilder" >}})
 * [Manipulator]({{< relref "/docs/v0.3.x/features/manipulator" >}})
 * [FAQ]({{< relref "/docs/v0.3.x/faq" >}})
