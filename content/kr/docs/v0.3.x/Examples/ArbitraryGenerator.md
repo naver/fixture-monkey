@@ -4,10 +4,10 @@ linkTitle: "ArbitraryGenerator"
 weight: 2
 ---
 {{< alert color="secondary" title="Note">}}
-Predefined ArbitraryGenerator can be found [here]({{< relref "/docs/v0.3.x/features/arbitrarygenerator" >}})
+기본적으로 제공하는 ArbitraryGenerator는 [여기]({{< relref "/docs/v0.3.x/features/arbitrarygenerator" >}})에서 확인할 수 있습니다.
 {{< /alert >}}
 
-## Put ArbitraryGenerator
+## ArbitraryGenerator 추가하기
 ```java
 @Test
 void putArbitraryGenerator() {
@@ -20,7 +20,7 @@ void putArbitraryGenerator() {
 }
 ```
 
-## Set Default ArbitraryGenerator
+## 기본 ArbitraryGenerator 설정하기
 ```java
 @Test
 void putArbitraryGenerator() {
@@ -33,7 +33,7 @@ void putArbitraryGenerator() {
 }
 ```
 
-## Set ArbitraryGenerator In ArbitraryBuilder
+## ArbitraryBuilder에서 사용할 ArbitraryGenerator 설정하기
 ```java
 @Test
 void setArbitraryGenerator() {
@@ -46,7 +46,7 @@ void setArbitraryGenerator() {
 }
 ```
 
-## Custom ArbitraryGenerator
+## 나만의 ArbitraryGenerator 정의하기
 ```java
 public class CustomArbitraryGenerator implements ArbitraryGenerator {
 		public CustomArbitraryGenerator() {
@@ -92,8 +92,8 @@ public class CustomArbitraryGenerator implements ArbitraryGenerator, WithFixture
 }
 ```
 
-## Complex ArbitraryGenerator Features
-### Set Field In JacksonArbitraryGenerator With @JsonProperty
+## 복잡한 ArbitraryGenerator 기능들
+### JacksonArbitraryGenerator에서 @JsonProperty로 선언한 필드 사용 예시
 ```java
 @Value
 class Person {
@@ -115,7 +115,7 @@ void setFieldInJacksonArbitraryGeneratorWithJsonProperty() {
 }
 ```
 
-### Add @ConstructorProperties Value When Field Name is Different
+### @ConstructorProperties로 설정한 이름과 실제 필드명이 다른 경우 사용 예시
 ```java
 class Person {
     String id;
@@ -149,7 +149,7 @@ void addConstructorPropertiesValueWhenFieldNameIsDifferent() {
 }
 ```
 
-### Add @ConstructorProperties Value Without Corresponding Field
+### 실제 필드로 존재하지 않지만 @ConstructorProperties에서 선언한 값 제어하는 예시 
 ```java
 class Person {
     String id;

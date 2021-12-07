@@ -4,10 +4,10 @@ linkTitle: "AnnotatedArbitraryGenerator"
 weight: 4
 ---
 {{< alert color="secondary" title="Note">}}
-Predefined AnnotatedArbitraryGenerator can be found [here]({{< relref "/docs/v0.3.x/features/defaultsupportedtypes" >}})
+기본적으로 제공하는 AnnotatedArbitraryGenerator는 [여기]({{< relref "/docs/v0.3.x/features/defaultsupportedtypes" >}})에서 확인할 수 있습니다.
 {{< /alert >}}
 
-## Put AnnotatedArbitraryGenerator
+## AnnotatedArbitraryGenerator 추가하기
 ```java
 @Test
 void putArbitraryGenerator() {
@@ -19,8 +19,8 @@ void putArbitraryGenerator() {
 }
 ```
 
-## Custom AnnotatedArbitraryGenerator
-### New AnnotatedArbitraryGenerator
+## 나만의 AnnotatedArbitraryGenerator
+### 새로운 AnnotatedArbitraryGenerator 추가하기
 ```java
 FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
     .addAnnotatedArbitraryGenerator(Tuple.class, new TupleAnnotatedArbitraryGenerator() {
@@ -33,7 +33,7 @@ FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
     .build();
 ```
 
-### Override Predefined AnnotatedArbitraryGenerator
+### 기본 제공하는 AnnotatedArbitraryGenerator 재정의 하기
 ```java
 FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
     .addAnnotatedArbitraryGenerator(BigDecimal.class, new BigDecimalAnnotatedArbitraryGenerator() {

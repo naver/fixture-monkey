@@ -1,9 +1,9 @@
 ---
-title: "Simple Manipulator"
+title: "간단한 연산"
 weight: 1
 ---
 
-## Set
+## 필드 값을 고정하는 연산
 ```java
 @Test
 void set(){
@@ -20,7 +20,7 @@ void set(){
 }   
 ```
 
-## SetRoot
+## 객체를 고정하는 연산
 ```java
 @Test
 void setRoot(){
@@ -51,7 +51,7 @@ void setRoot(){
 }   
 ```
 
-## SetNull
+## 필드 값을 null로 고정하는 연산
 ```java
 @Test
 void setNull() {
@@ -67,7 +67,7 @@ void setNull() {
 }
 ```
 
-## SetNotNull
+## 필드 값을 null이 아니도록 고정하는 연산
 ```java
 @Test
 void setNotNull() {
@@ -84,7 +84,7 @@ void setNotNull() {
 ```
 
 
-## SetArbitrary
+## 필드 값을 랜덤하게 설정하는 연산
 ```java
 @Test
 void setArbitrary() {
@@ -100,7 +100,7 @@ void setArbitrary() {
 }
 ```
 
-## SetBuilder
+## 필드 값을 ArbitraryBuilder에서 생성할 객체로 고정하는 연산
 ```java
 @Test
 void setBuilder() {
@@ -117,7 +117,7 @@ void setBuilder() {
 }
 ```
 
-## SetPostCondition
+## 필드 값의 후행조건을 선언하는 연산
 ```java
 @Test
 void setPostCondition() {
@@ -134,9 +134,9 @@ void setPostCondition() {
     then(actual.id).isEqualTo(10);
 }
 ```
-`setPostCondition` set post-condition to field, so it applies to last set value
+`setPostCondition`는 필드의 후행조건을 선언합니다. 여러 번의 고정 연산을 적용한 경우 마지막으로 고정한 연산에 후행조건을 적용합니다.
 
-## SetPostConditionRoot
+## 객체에 후행조건을 적용하는 연산
 ```java
 @Test
 void setPostConditionRoot() {
@@ -167,7 +167,7 @@ void setPostConditionRoot() {
 }
 ```
 
-## Customize
+## Customize 연산
 ```java
 @Test
 void customize() {
@@ -187,7 +187,7 @@ void customize() {
 }
 ```
 
-## Size
+## 필드의 컬렉션 크기를 제어하는 연산
 ```java
 @Test
 void size() {	
@@ -218,7 +218,7 @@ void size() {
 }
 ```
 
-## MaxSize
+## 필드의 컬렉션 최대 크기를 제어하는 연산
 ```java
 @Test
 void size() {	
@@ -234,7 +234,7 @@ void size() {
 }
 ```
 
-## MinSize
+## 필드의 컬렉션 최소 크기를 제어하는 연산
 ```java
 @Test
 void size() {	

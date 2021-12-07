@@ -1,10 +1,10 @@
 ---
-title: "Register ArbitraryBuilder"
-linkTitle: "Register ArbitraryBuilder"
+title: "ArbitraryBuilder 등록하기"
+linkTitle: "ArbitraryBuilder 등록하기"
 weight: 5
 ---
 {{< alert color="secondary" title="Note">}}
-For detail information check out [here]({{< relref "/docs/v0.3.x/features/registerarbitrarybuilder" >}})
+자세한 내용은 [여기]({{< relref "/docs/v0.3.x/features/registerarbitrarybuilder" >}})를 확인해주세요.
 {{< /alert >}}
 
 ```java
@@ -31,7 +31,7 @@ void registerGroup() {
 }
 ```
 
-## Apply Manipulator To Registered ArbitraryBuilder
+## 등록한 ArbitraryBuilder에 연산 적용하기
 ```java
 class CustomObjectGroup{
 	public ArbitraryBuilder<CustomObject> customObject(FixtureMonkey fixture){
