@@ -41,7 +41,7 @@ public final class ArbitrarySpecAny implements BuilderManipulator {
 			return;
 		}
 
-		ExpressionSpec spec = specs.get(Randoms.current().nextInt(specs.size()));
+		ExpressionSpec spec = specs.get(Randoms.nextInt(specs.size()));
 		List<BuilderManipulator> specArbitraryManipulators = spec.getBuilderManipulators();
 		arbitraryBuilder.apply(specArbitraryManipulators);
 	}

@@ -89,6 +89,10 @@ public class Randoms {
 			: CURRENT.get();
 	}
 
+	public static int nextInt(int bound) {
+		return current().nextInt(bound);
+	}
+
 	/**
 	 * A faster but not thread safe implementation of {@linkplain java.util.Random}.
 	 * It also has a period of 2^n - 1 and better statistical randomness.

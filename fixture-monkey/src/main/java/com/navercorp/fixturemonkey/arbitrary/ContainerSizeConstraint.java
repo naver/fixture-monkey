@@ -60,7 +60,7 @@ public final class ContainerSizeConstraint {
 			return minSize;
 		}
 
-		int size = Randoms.current().nextInt(maxSize - minSize);
+		int size = Randoms.nextInt(maxSize - minSize);
 		return minSize + size;
 	}
 }

@@ -223,7 +223,7 @@ final class DefaultIterableSpec implements IterableSpec, ExpressionSpecVisitor {
 			return minSize;
 		}
 
-		return Randoms.current().nextInt(maxSize - minSize);
+		return Randoms.nextInt(maxSize - minSize);
 	}
 
 	private static class IterableSpecSet<T> {
