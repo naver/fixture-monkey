@@ -98,18 +98,18 @@ This the multi-page printable view of this section.
 <li>1.1: <a href=#pg-b826e620618d1826c0c57f52d5d23375>시작해보기</a></li>
 <ul>
 </ul>
-<li>1.2: <a href=#pg-ece02679bffe30021d2a2b3bae21ceb1>Examples</a></li>
+<li>1.2: <a href=#pg-ece02679bffe30021d2a2b3bae21ceb1>예제</a></li>
 <ul>
-<li>1.2.1: <a href=#pg-e7bd3137a18455437d2a940ee0b6dad0>Manipulator</a></li>
+<li>1.2.1: <a href=#pg-e7bd3137a18455437d2a940ee0b6dad0>생성할 객체를 제어하는 연산</a></li>
 <ul>
-<li>1.2.1.1: <a href=#pg-d70b5e5f3ae27224ff92ce851e3cd29b>Simple Manipulator</a></li>
-<li>1.2.1.2: <a href=#pg-ab93a63af9fec0435430fc56f0ac8dca>Complex Manipulator</a></li>
+<li>1.2.1.1: <a href=#pg-d70b5e5f3ae27224ff92ce851e3cd29b>간단한 연산</a></li>
+<li>1.2.1.2: <a href=#pg-ab93a63af9fec0435430fc56f0ac8dca>복잡한 연산</a></li>
 <li>1.2.1.3: <a href=#pg-72efddefe281142aa45573d3ca3b3e4f>ExpressionSpec</a></li>
 </ul>
 <li>1.2.2: <a href=#pg-4269c97b5d71dfdf828069a7dd123f07>ArbitraryGenerator</a></li>
 <li>1.2.3: <a href=#pg-6f61c83f80332f13bb2fc2f7066dc91b>ArbitraryCustomizer</a></li>
 <li>1.2.4: <a href=#pg-689ba94e622473294d873d5e903e64a9>AnnotatedArbitraryGenerator</a></li>
-<li>1.2.5: <a href=#pg-cca8de30c7cb9ccdd3f20fe05380ee9e>Register ArbitraryBuilder</a></li>
+<li>1.2.5: <a href=#pg-cca8de30c7cb9ccdd3f20fe05380ee9e>ArbitraryBuilder 등록하기</a></li>
 </ul>
 <li>1.3: <a href=#pg-1a9feece75eb5cfff622f1d20df2927a>Features</a></li>
 <ul>
@@ -249,7 +249,7 @@ Fixture Monkey를 사용할 때 프로덕션 코드를 변경하지 않아도 �
 </ul>
 </div>
 <div class=td-content style=page-break-before:always>
-<h1 id=pg-ece02679bffe30021d2a2b3bae21ceb1>1.2 - Examples</h1>
+<h1 id=pg-ece02679bffe30021d2a2b3bae21ceb1>1.2 - 예제</h1>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#5c35cc;font-weight:700>@Data</span>
 <span style=color:#204a87;font-weight:700>public</span> <span style=color:#204a87;font-weight:700>class</span> <span style=color:#000>Order</span> <span style=color:#ce5c00;font-weight:700>{</span>
     <span style=color:#5c35cc;font-weight:700>@NotNull</span>
@@ -287,12 +287,12 @@ Fixture Monkey를 사용할 때 프로덕션 코드를 변경하지 않아도 �
 </code></pre></div>
 </div>
 <div class=td-content style=page-break-before:always>
-<h1 id=pg-e7bd3137a18455437d2a940ee0b6dad0>1.2.1 - Manipulator</h1>
-<p>If you would like to know details about <code>Manipulator</code>, check out <a href=/fixture-monkey/kr/docs/v0.3.x/features/manipulator/>Features</a></p>
+<h1 id=pg-e7bd3137a18455437d2a940ee0b6dad0>1.2.1 - 생성할 객체를 제어하는 연산</h1>
+<p><code>연산</code>에 대해 자세히 알고 싶다면 <a href=/fixture-monkey/kr/docs/v0.3.x/features/manipulator/>Features</a>를 확인해주세요.</p>
 </div>
 <div class=td-content>
-<h1 id=pg-d70b5e5f3ae27224ff92ce851e3cd29b>1.2.1.1 - Simple Manipulator</h1>
-<h2 id=set>Set</h2>
+<h1 id=pg-d70b5e5f3ae27224ff92ce851e3cd29b>1.2.1.1 - 간단한 연산</h1>
+<h2 id=필드-값을-고정하는-연산>필드 값을 고정하는 연산</h2>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#5c35cc;font-weight:700>@Test</span>
 <span style=color:#204a87;font-weight:700>void</span> <span style=color:#000>set</span><span style=color:#ce5c00;font-weight:700>(){</span>
     <span style=color:#8f5902;font-style:italic>// given
@@ -306,7 +306,7 @@ Fixture Monkey를 사용할 때 프로덕션 코드를 변경하지 않아도 �
 
     <span style=color:#000>then</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>actual</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>orderedAt</span><span style=color:#ce5c00;font-weight:700>).</span><span style=color:#c4a000>isEqualTo</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>orderedAt</span><span style=color:#ce5c00;font-weight:700>);</span>
 <span style=color:#ce5c00;font-weight:700>}</span>   
-</code></pre></div><h2 id=setroot>SetRoot</h2>
+</code></pre></div><h2 id=객체를-고정하는-연산>객체를 고정하는 연산</h2>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#5c35cc;font-weight:700>@Test</span>
 <span style=color:#204a87;font-weight:700>void</span> <span style=color:#000>setRoot</span><span style=color:#ce5c00;font-weight:700>(){</span>
     <span style=color:#8f5902;font-style:italic>// given
@@ -331,7 +331,7 @@ Fixture Monkey를 사용할 때 프로덕션 코드를 변경하지 않아도 �
 
     <span style=color:#000>then</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>actual</span><span style=color:#ce5c00;font-weight:700>).</span><span style=color:#c4a000>isEqualTo</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#4e9a06>&#34;setRoot&#34;</span><span style=color:#ce5c00;font-weight:700>);</span>
 <span style=color:#ce5c00;font-weight:700>}</span>   
-</code></pre></div><h2 id=setnull>SetNull</h2>
+</code></pre></div><h2 id=필드-값을-null로-고정하는-연산>필드 값을 null로 고정하는 연산</h2>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#5c35cc;font-weight:700>@Test</span>
 <span style=color:#204a87;font-weight:700>void</span> <span style=color:#000>setNull</span><span style=color:#ce5c00;font-weight:700>()</span> <span style=color:#ce5c00;font-weight:700>{</span>
     <span style=color:#8f5902;font-style:italic>// given
@@ -344,7 +344,7 @@ Fixture Monkey를 사용할 때 프로덕션 코드를 변경하지 않아도 �
 
     <span style=color:#000>then</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>actual</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>sellerEmail</span><span style=color:#ce5c00;font-weight:700>).</span><span style=color:#c4a000>isNull</span><span style=color:#ce5c00;font-weight:700>();</span>
 <span style=color:#ce5c00;font-weight:700>}</span>
-</code></pre></div><h2 id=setnotnull>SetNotNull</h2>
+</code></pre></div><h2 id=필드-값을-null이-아니도록-고정하는-연산>필드 값을 null이 아니도록 고정하는 연산</h2>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#5c35cc;font-weight:700>@Test</span>
 <span style=color:#204a87;font-weight:700>void</span> <span style=color:#000>setNotNull</span><span style=color:#ce5c00;font-weight:700>()</span> <span style=color:#ce5c00;font-weight:700>{</span>
     <span style=color:#8f5902;font-style:italic>// given
@@ -357,7 +357,7 @@ Fixture Monkey를 사용할 때 프로덕션 코드를 변경하지 않아도 �
 
     <span style=color:#000>then</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>actual</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>sellerEmail</span><span style=color:#ce5c00;font-weight:700>).</span><span style=color:#c4a000>isNotNull</span><span style=color:#ce5c00;font-weight:700>();</span>
 <span style=color:#ce5c00;font-weight:700>}</span>
-</code></pre></div><h2 id=setarbitrary>SetArbitrary</h2>
+</code></pre></div><h2 id=필드-값을-랜덤하게-설정하는-연산>필드 값을 랜덤하게 설정하는 연산</h2>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#5c35cc;font-weight:700>@Test</span>
 <span style=color:#204a87;font-weight:700>void</span> <span style=color:#000>setArbitrary</span><span style=color:#ce5c00;font-weight:700>()</span> <span style=color:#ce5c00;font-weight:700>{</span>
     <span style=color:#8f5902;font-style:italic>// given
@@ -370,7 +370,7 @@ Fixture Monkey를 사용할 때 프로덕션 코드를 변경하지 않아도 �
 	
     <span style=color:#000>then</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>actual</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>id</span><span style=color:#ce5c00;font-weight:700>).</span><span style=color:#c4a000>isBetween</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>1</span><span style=color:#ce5c00;font-weight:700>,</span> <span style=color:#000>50</span><span style=color:#ce5c00;font-weight:700>);</span>
 <span style=color:#ce5c00;font-weight:700>}</span>
-</code></pre></div><h2 id=setbuilder>SetBuilder</h2>
+</code></pre></div><h2 id=필드-값을-arbitrarybuilder에서-생성할-객체로-고정하는-연산>필드 값을 ArbitraryBuilder에서 생성할 객체로 고정하는 연산</h2>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#5c35cc;font-weight:700>@Test</span>
 <span style=color:#204a87;font-weight:700>void</span> <span style=color:#000>setBuilder</span><span style=color:#ce5c00;font-weight:700>()</span> <span style=color:#ce5c00;font-weight:700>{</span>
     <span style=color:#8f5902;font-style:italic>// given
@@ -384,7 +384,7 @@ Fixture Monkey를 사용할 때 프로덕션 코드를 변경하지 않아도 �
 	
     <span style=color:#000>then</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>actual</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>id</span><span style=color:#ce5c00;font-weight:700>).</span><span style=color:#c4a000>isNotNull</span><span style=color:#ce5c00;font-weight:700>();</span>
 <span style=color:#ce5c00;font-weight:700>}</span>
-</code></pre></div><h2 id=setpostcondition>SetPostCondition</h2>
+</code></pre></div><h2 id=필드-값의-후행조건을-선언하는-연산>필드 값의 후행조건을 선언하는 연산</h2>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#5c35cc;font-weight:700>@Test</span>
 <span style=color:#204a87;font-weight:700>void</span> <span style=color:#000>setPostCondition</span><span style=color:#ce5c00;font-weight:700>()</span> <span style=color:#ce5c00;font-weight:700>{</span>
     <span style=color:#8f5902;font-style:italic>// given
@@ -399,8 +399,8 @@ Fixture Monkey를 사용할 때 프로덕션 코드를 변경하지 않아도 �
 
     <span style=color:#000>then</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>actual</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>id</span><span style=color:#ce5c00;font-weight:700>).</span><span style=color:#c4a000>isEqualTo</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>10</span><span style=color:#ce5c00;font-weight:700>);</span>
 <span style=color:#ce5c00;font-weight:700>}</span>
-</code></pre></div><p><code>setPostCondition</code> set post-condition to field, so it applies to last set value</p>
-<h2 id=setpostconditionroot>SetPostConditionRoot</h2>
+</code></pre></div><p><code>setPostCondition</code>는 필드의 후행조건을 선언합니다. 여러 번의 고정 연산을 적용한 경우 마지막으로 고정한 연산에 후행조건을 적용합니다.</p>
+<h2 id=객체에-후행조건을-적용하는-연산>객체에 후행조건을 적용하는 연산</h2>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#5c35cc;font-weight:700>@Test</span>
 <span style=color:#204a87;font-weight:700>void</span> <span style=color:#000>setPostConditionRoot</span><span style=color:#ce5c00;font-weight:700>()</span> <span style=color:#ce5c00;font-weight:700>{</span>
     <span style=color:#8f5902;font-style:italic>// given
@@ -425,7 +425,7 @@ Fixture Monkey를 사용할 때 프로덕션 코드를 변경하지 않아도 �
 
 	<span style=color:#000>then</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>actual</span><span style=color:#ce5c00;font-weight:700>).</span><span style=color:#c4a000>hasSizeGreaterThan</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>5</span><span style=color:#ce5c00;font-weight:700>);</span>
 <span style=color:#ce5c00;font-weight:700>}</span>
-</code></pre></div><h2 id=customize>Customize</h2>
+</code></pre></div><h2 id=customize-연산>Customize 연산</h2>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#5c35cc;font-weight:700>@Test</span>
 <span style=color:#204a87;font-weight:700>void</span> <span style=color:#000>customize</span><span style=color:#ce5c00;font-weight:700>()</span> <span style=color:#ce5c00;font-weight:700>{</span>
     <span style=color:#8f5902;font-style:italic>// given
@@ -442,7 +442,7 @@ Fixture Monkey를 사용할 때 프로덕션 코드를 변경하지 않아도 �
 
     <span style=color:#000>then</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>actual</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>orderedAt</span><span style=color:#ce5c00;font-weight:700>).</span><span style=color:#c4a000>isEqualTo</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>orderedAt</span><span style=color:#ce5c00;font-weight:700>);</span>
 <span style=color:#ce5c00;font-weight:700>}</span>
-</code></pre></div><h2 id=size>Size</h2>
+</code></pre></div><h2 id=필드의-컬렉션-크기를-제어하는-연산>필드의 컬렉션 크기를 제어하는 연산</h2>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#5c35cc;font-weight:700>@Test</span>
 <span style=color:#204a87;font-weight:700>void</span> <span style=color:#000>size</span><span style=color:#ce5c00;font-weight:700>()</span> <span style=color:#ce5c00;font-weight:700>{</span>	
 	<span style=color:#8f5902;font-style:italic>// given
@@ -467,7 +467,7 @@ Fixture Monkey를 사용할 때 프로덕션 코드를 변경하지 않아도 �
 	
 	<span style=color:#000>then</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>actual</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>items</span><span style=color:#ce5c00;font-weight:700>).</span><span style=color:#c4a000>hasSizeBetween</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>1</span><span style=color:#ce5c00;font-weight:700>,</span> <span style=color:#000>5</span><span style=color:#ce5c00;font-weight:700>);</span>
 <span style=color:#ce5c00;font-weight:700>}</span>
-</code></pre></div><h2 id=maxsize>MaxSize</h2>
+</code></pre></div><h2 id=필드의-컬렉션-최대-크기를-제어하는-연산>필드의 컬렉션 최대 크기를 제어하는 연산</h2>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#5c35cc;font-weight:700>@Test</span>
 <span style=color:#204a87;font-weight:700>void</span> <span style=color:#000>size</span><span style=color:#ce5c00;font-weight:700>()</span> <span style=color:#ce5c00;font-weight:700>{</span>	
 	<span style=color:#8f5902;font-style:italic>// given
@@ -480,7 +480,7 @@ Fixture Monkey를 사용할 때 프로덕션 코드를 변경하지 않아도 �
 	
 	<span style=color:#000>then</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>actual</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>items</span><span style=color:#ce5c00;font-weight:700>).</span><span style=color:#c4a000>hasSizeLessThanOrEqualTo</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>5</span><span style=color:#ce5c00;font-weight:700>);</span>
 <span style=color:#ce5c00;font-weight:700>}</span>
-</code></pre></div><h2 id=minsize>MinSize</h2>
+</code></pre></div><h2 id=필드의-컬렉션-최소-크기를-제어하는-연산>필드의 컬렉션 최소 크기를 제어하는 연산</h2>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#5c35cc;font-weight:700>@Test</span>
 <span style=color:#204a87;font-weight:700>void</span> <span style=color:#000>size</span><span style=color:#ce5c00;font-weight:700>()</span> <span style=color:#ce5c00;font-weight:700>{</span>	
 	<span style=color:#8f5902;font-style:italic>// given
@@ -496,8 +496,8 @@ Fixture Monkey를 사용할 때 프로덕션 코드를 변경하지 않아도 �
 </code></pre></div>
 </div>
 <div class=td-content style=page-break-before:always>
-<h1 id=pg-ab93a63af9fec0435430fc56f0ac8dca>1.2.1.2 - Complex Manipulator</h1>
-<h2 id=manipulate-existing-instance>Manipulate Existing Instance</h2>
+<h1 id=pg-ab93a63af9fec0435430fc56f0ac8dca>1.2.1.2 - 복잡한 연산</h1>
+<h2 id=이미-선언한-객체-제어>이미 선언한 객체 제어</h2>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#5c35cc;font-weight:700>@Test</span>
 <span style=color:#204a87;font-weight:700>void</span> <span style=color:#000>manipulateExistingInstance</span><span style=color:#ce5c00;font-weight:700>()</span> <span style=color:#ce5c00;font-weight:700>{</span>
     <span style=color:#8f5902;font-style:italic>// given    
@@ -513,7 +513,7 @@ Fixture Monkey를 사용할 때 프로덕션 코드를 변경하지 않아도 �
     
     <span style=color:#000>then</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>actual</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>quantity</span><span style=color:#ce5c00;font-weight:700>).</span><span style=color:#c4a000>isEqualTo</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>1</span><span style=color:#ce5c00;font-weight:700>);</span>
 <span style=color:#ce5c00;font-weight:700>}</span>
-</code></pre></div><h2 id=map>Map</h2>
+</code></pre></div><h2 id=map-연산>Map 연산</h2>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#5c35cc;font-weight:700>@Test</span>
 <span style=color:#204a87;font-weight:700>void</span> <span style=color:#000>map</span><span style=color:#ce5c00;font-weight:700>()</span> <span style=color:#ce5c00;font-weight:700>{</span>
 	<span style=color:#8f5902;font-style:italic>// given
@@ -528,7 +528,7 @@ Fixture Monkey를 사용할 때 프로덕션 코드를 변경하지 않아도 �
 		<span style=color:#ce5c00;font-weight:700>})</span>
 		<span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>sample</span><span style=color:#ce5c00;font-weight:700>();</span>
 <span style=color:#ce5c00;font-weight:700>}</span>
-</code></pre></div><h2 id=zip>Zip</h2>
+</code></pre></div><h2 id=zip-연산>Zip 연산</h2>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#5c35cc;font-weight:700>@Test</span>
 <span style=color:#204a87;font-weight:700>void</span> <span style=color:#000>zip</span><span style=color:#ce5c00;font-weight:700>(){</span>
 	<span style=color:#8f5902;font-style:italic>// given
@@ -545,7 +545,7 @@ Fixture Monkey를 사용할 때 프로덕션 코드를 변경하지 않아도 �
 	
 	<span style=color:#000>then</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>actual</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>sample</span><span style=color:#ce5c00;font-weight:700>()).</span><span style=color:#c4a000>contains</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#4e9a06>&#34;.&#34;</span><span style=color:#ce5c00;font-weight:700>);</span>
 <span style=color:#ce5c00;font-weight:700>}</span>
-</code></pre></div><h2 id=acceptif>AcceptIf</h2>
+</code></pre></div><h2 id=생성할-객체가-특정-조건을-만족할경우-실행할-연산>생성할 객체가 특정 조건을 만족할경우 실행할 연산</h2>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#5c35cc;font-weight:700>@Test</span>
 <span style=color:#204a87;font-weight:700>void</span> <span style=color:#000>acceptIf</span><span style=color:#ce5c00;font-weight:700>()</span> <span style=color:#ce5c00;font-weight:700>{</span>
 	<span style=color:#8f5902;font-style:italic>// given
@@ -563,7 +563,7 @@ Fixture Monkey를 사용할 때 프로덕션 코드를 변경하지 않아도 �
 	<span style=color:#000>then</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>actual</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>memberNo</span><span style=color:#ce5c00;font-weight:700>).</span><span style=color:#c4a000>isEqualTo</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>20</span><span style=color:#ce5c00;font-weight:700>);</span>
 <span style=color:#ce5c00;font-weight:700>}</span>
 
-</code></pre></div><h2 id=fixed>Fixed</h2>
+</code></pre></div><h2 id=객체의-모든-필드가-항상-같은-값을-반환하도록-고정하는-연산>객체의 모든 필드가 항상 같은 값을 반환하도록 고정하는 연산</h2>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#5c35cc;font-weight:700>@Test</span>
 <span style=color:#204a87;font-weight:700>void</span> <span style=color:#000>fixed</span><span style=color:#ce5c00;font-weight:700>()</span> <span style=color:#ce5c00;font-weight:700>{</span>	
 	<span style=color:#8f5902;font-style:italic>// given
@@ -583,9 +583,9 @@ Fixture Monkey를 사용할 때 프로덕션 코드를 변경하지 않아도 �
 <h1 id=pg-72efddefe281142aa45573d3ca3b3e4f>1.2.1.3 - ExpressionSpec</h1>
 <div class="alert alert-secondary" role=alert>
 <h4 class=alert-heading>Note</h4>
-For detail information check out <a href=/fixture-monkey/kr/docs/v0.3.x/features/manipulator/#expression>here</a>
+자세한 내용은 <a href=/fixture-monkey/kr/docs/v0.3.x/features/manipulator/#expression>여기</a>를 참조해주세요.
 </div>
-<h2 id=expressionspec>ExpressionSpec</h2>
+<h2 id=expressionspec을-적용하는-예시>ExpressionSpec을 적용하는 예시</h2>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#5c35cc;font-weight:700>@Test</span>
 <span style=color:#204a87;font-weight:700>void</span> <span style=color:#000>expressionSpec</span><span style=color:#ce5c00;font-weight:700>()</span> <span style=color:#ce5c00;font-weight:700>{</span>
 	<span style=color:#8f5902;font-style:italic>// given
@@ -600,7 +600,7 @@ For detail information check out <a href=/fixture-monkey/kr/docs/v0.3.x/features
     
     <span style=color:#000>then</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>actual</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>getPrice</span><span style=color:#ce5c00;font-weight:700>()).</span><span style=color:#c4a000>isEqaulTo</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>10L</span><span style=color:#ce5c00;font-weight:700>);</span>
 <span style=color:#ce5c00;font-weight:700>}</span>
-</code></pre></div><h3 id=apply-multiple-expressionspecs>Apply Multiple ExpressionSpecs</h3>
+</code></pre></div><h3 id=여러-개의-expressionspec을-적용하는-예시>여러 개의 ExpressionSpec을 적용하는 예시</h3>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#5c35cc;font-weight:700>@Test</span>
 <span style=color:#204a87;font-weight:700>void</span> <span style=color:#000>exprssionSpecs</span><span style=color:#ce5c00;font-weight:700>()</span> <span style=color:#ce5c00;font-weight:700>{</span>
 	<span style=color:#8f5902;font-style:italic>// given
@@ -619,7 +619,7 @@ For detail information check out <a href=/fixture-monkey/kr/docs/v0.3.x/features
     <span style=color:#000>then</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>actual</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>getPrice</span><span style=color:#ce5c00;font-weight:700>()).</span><span style=color:#c4a000>isEqualTo</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>10L</span><span style=color:#ce5c00;font-weight:700>);</span>
     <span style=color:#000>then</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>actual</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>getOrderNo</span><span style=color:#ce5c00;font-weight:700>()).</span><span style=color:#c4a000>isEqualTo</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#4e9a06>&#34;1&#34;</span><span style=color:#ce5c00;font-weight:700>);</span>
 <span style=color:#ce5c00;font-weight:700>}</span>
-</code></pre></div><h3 id=apply-random-expressionspec>Apply Random ExpressionSpec</h3>
+</code></pre></div><h3 id=여러-개의-expressionspec-중-임의의-하나를-적용하는-예시>여러 개의 ExpressionSpec 중 임의의 하나를 적용하는 예시</h3>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#5c35cc;font-weight:700>@Test</span>
 <span style=color:#204a87;font-weight:700>void</span> <span style=color:#000>specAny</span><span style=color:#ce5c00;font-weight:700>()</span> <span style=color:#ce5c00;font-weight:700>{</span>
 	<span style=color:#8f5902;font-style:italic>// given
@@ -640,7 +640,7 @@ For detail information check out <a href=/fixture-monkey/kr/docs/v0.3.x/features
 	<span style=color:#ce5c00;font-weight:700>);</span>
 <span style=color:#ce5c00;font-weight:700>}</span>
 </code></pre></div><h2 id=iterablespec>IterableSpec</h2>
-<h3 id=manipulate-iterable-size>Manipulate Iterable Size</h3>
+<h3 id=내부-컬렉션의-크기를-제어하는-연산>내부 컬렉션의 크기를 제어하는 연산</h3>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#5c35cc;font-weight:700>@Test</span>
 <span style=color:#204a87;font-weight:700>void</span> <span style=color:#000>size</span><span style=color:#ce5c00;font-weight:700>()</span> <span style=color:#ce5c00;font-weight:700>{</span>
 	<span style=color:#8f5902;font-style:italic>// given
@@ -654,7 +654,7 @@ For detail information check out <a href=/fixture-monkey/kr/docs/v0.3.x/features
     
     <span style=color:#000>then</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>actual</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>items</span><span style=color:#ce5c00;font-weight:700>).</span><span style=color:#c4a000>hasSize</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>2</span><span style=color:#ce5c00;font-weight:700>);</span>
 <span style=color:#ce5c00;font-weight:700>}</span>
-</code></pre></div><h3 id=manipulate-specific-index-element>Manipulate Specific Index Element</h3>
+</code></pre></div><h3 id=특정-인덱스-요소를-제어하는-연산>특정 인덱스 요소를 제어하는 연산</h3>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#5c35cc;font-weight:700>@Test</span>
 <span style=color:#204a87;font-weight:700>void</span> <span style=color:#000>setElement</span><span style=color:#ce5c00;font-weight:700>()</span> <span style=color:#ce5c00;font-weight:700>{</span>
 	<span style=color:#8f5902;font-style:italic>// given
@@ -672,7 +672,7 @@ For detail information check out <a href=/fixture-monkey/kr/docs/v0.3.x/features
     
     <span style=color:#000>then</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>actual</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>items</span><span style=color:#ce5c00;font-weight:700>[</span><span style=color:#000>0</span><span style=color:#ce5c00;font-weight:700>]).</span><span style=color:#c4a000>isEqualTo</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#4e9a06>&#34;set&#34;</span><span style=color:#ce5c00;font-weight:700>);</span>
 <span style=color:#ce5c00;font-weight:700>}</span>
-</code></pre></div><h3 id=manipulate-specific-index-element-field>Manipulate Specific Index Element Field</h3>
+</code></pre></div><h3 id=특정-인덱스-요소의-필드를-제어하는-연산>특정 인덱스 요소의 필드를 제어하는 연산</h3>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#5c35cc;font-weight:700>@Test</span>
 <span style=color:#204a87;font-weight:700>void</span> <span style=color:#000>setElementField</span><span style=color:#ce5c00;font-weight:700>()</span> <span style=color:#ce5c00;font-weight:700>{</span>
 	<span style=color:#8f5902;font-style:italic>// given
@@ -691,7 +691,7 @@ For detail information check out <a href=/fixture-monkey/kr/docs/v0.3.x/features
     <span style=color:#000>then</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>actual</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>orders</span><span style=color:#ce5c00;font-weight:700>).</span><span style=color:#c4a000>hasSize</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>1</span><span style=color:#ce5c00;font-weight:700>);</span>
     <span style=color:#000>then</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>actual</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>orders</span><span style=color:#ce5c00;font-weight:700>[</span><span style=color:#000>0</span><span style=color:#ce5c00;font-weight:700>].</span><span style=color:#c4a000>id</span><span style=color:#ce5c00;font-weight:700>).</span><span style=color:#c4a000>isEqualTo</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#4e9a06>&#34;1&#34;</span><span style=color:#ce5c00;font-weight:700>);</span>
 <span style=color:#ce5c00;font-weight:700>}</span>
-</code></pre></div><h3 id=manipulate-any-index-element>Manipulate Any Index Element</h3>
+</code></pre></div><h3 id=임의의-요소를-제어하는-연산>임의의 요소를 제어하는 연산</h3>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#5c35cc;font-weight:700>@Test</span>
 <span style=color:#204a87;font-weight:700>void</span> <span style=color:#000>any</span><span style=color:#ce5c00;font-weight:700>()</span> <span style=color:#ce5c00;font-weight:700>{</span>
 	<span style=color:#8f5902;font-style:italic>// given
@@ -708,7 +708,7 @@ For detail information check out <a href=/fixture-monkey/kr/docs/v0.3.x/features
     
     <span style=color:#000>then</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>actual</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>getItems</span><span style=color:#ce5c00;font-weight:700>()).</span><span style=color:#c4a000>anyMatch</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>it</span> <span style=color:#ce5c00;font-weight:700>-&gt;</span> <span style=color:#000>it</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>equals</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#4e9a06>&#34;set&#34;</span><span style=color:#ce5c00;font-weight:700>));</span>
 <span style=color:#ce5c00;font-weight:700>}</span>
-</code></pre></div><h3 id=manipulate-all-index-element>Manipulate All Index Element</h3>
+</code></pre></div><h3 id=모든-요소를-제어하는-연산>모든 요소를 제어하는 연산</h3>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#5c35cc;font-weight:700>@Test</span>
 <span style=color:#204a87;font-weight:700>void</span> <span style=color:#000>all</span><span style=color:#ce5c00;font-weight:700>()</span> <span style=color:#ce5c00;font-weight:700>{</span>
 	<span style=color:#8f5902;font-style:italic>// given
@@ -731,9 +731,9 @@ For detail information check out <a href=/fixture-monkey/kr/docs/v0.3.x/features
 <h1 id=pg-4269c97b5d71dfdf828069a7dd123f07>1.2.2 - ArbitraryGenerator</h1>
 <div class="alert alert-secondary" role=alert>
 <h4 class=alert-heading>Note</h4>
-Predefined ArbitraryGenerator can be found <a href=/fixture-monkey/kr/docs/v0.3.x/features/arbitrarygenerator/>here</a>
+기본적으로 제공하는 ArbitraryGenerator는 <a href=/fixture-monkey/kr/docs/v0.3.x/features/arbitrarygenerator/>여기</a>에서 확인할 수 있습니다.
 </div>
-<h2 id=put-arbitrarygenerator>Put ArbitraryGenerator</h2>
+<h2 id=arbitrarygenerator-추가하기>ArbitraryGenerator 추가하기</h2>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#5c35cc;font-weight:700>@Test</span>
 <span style=color:#204a87;font-weight:700>void</span> <span style=color:#000>putArbitraryGenerator</span><span style=color:#ce5c00;font-weight:700>()</span> <span style=color:#ce5c00;font-weight:700>{</span>
     <span style=color:#000>FixtureMonkey</span> <span style=color:#000>fixture</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#000>FixtureMonkey</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>builder</span><span style=color:#ce5c00;font-weight:700>()</span>
@@ -743,7 +743,7 @@ Predefined ArbitraryGenerator can be found <a href=/fixture-monkey/kr/docs/v0.3.
     <span style=color:#000>CustomObject</span> <span style=color:#000>customObject</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#204a87;font-weight:700>this</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>fixture</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>giveMeOne</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>CustomObject</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>class</span><span style=color:#ce5c00;font-weight:700>);</span>
     <span style=color:#8f5902;font-style:italic>// generated by FieldReflectionArbitraryGenerator
 </span><span style=color:#8f5902;font-style:italic></span><span style=color:#ce5c00;font-weight:700>}</span>
-</code></pre></div><h2 id=set-default-arbitrarygenerator>Set Default ArbitraryGenerator</h2>
+</code></pre></div><h2 id=기본-arbitrarygenerator-설정하기>기본 ArbitraryGenerator 설정하기</h2>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#5c35cc;font-weight:700>@Test</span>
 <span style=color:#204a87;font-weight:700>void</span> <span style=color:#000>putArbitraryGenerator</span><span style=color:#ce5c00;font-weight:700>()</span> <span style=color:#ce5c00;font-weight:700>{</span>
     <span style=color:#000>FixtureMonkey</span> <span style=color:#000>fixture</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#000>FixtureMonkey</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>builder</span><span style=color:#ce5c00;font-weight:700>()</span>
@@ -753,7 +753,7 @@ Predefined ArbitraryGenerator can be found <a href=/fixture-monkey/kr/docs/v0.3.
     <span style=color:#000>CustomObject</span> <span style=color:#000>customObject</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#204a87;font-weight:700>this</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>fixture</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>giveMeOne</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>CustomObject</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>class</span><span style=color:#ce5c00;font-weight:700>);</span>
     <span style=color:#8f5902;font-style:italic>// generated by FieldReflectionArbitraryGenerator
 </span><span style=color:#8f5902;font-style:italic></span><span style=color:#ce5c00;font-weight:700>}</span>
-</code></pre></div><h2 id=set-arbitrarygenerator-in-arbitrarybuilder>Set ArbitraryGenerator In ArbitraryBuilder</h2>
+</code></pre></div><h2 id=arbitrarybuilder에서-사용할-arbitrarygenerator-설정하기>ArbitraryBuilder에서 사용할 ArbitraryGenerator 설정하기</h2>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#5c35cc;font-weight:700>@Test</span>
 <span style=color:#204a87;font-weight:700>void</span> <span style=color:#000>setArbitraryGenerator</span><span style=color:#ce5c00;font-weight:700>()</span> <span style=color:#ce5c00;font-weight:700>{</span>
     <span style=color:#000>FixtureMonkey</span> <span style=color:#000>fixture</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#000>FixtureMonkey</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>builder</span><span style=color:#ce5c00;font-weight:700>().</span><span style=color:#c4a000>build</span><span style=color:#ce5c00;font-weight:700>();</span>
@@ -763,7 +763,7 @@ Predefined ArbitraryGenerator can be found <a href=/fixture-monkey/kr/docs/v0.3.
 	    <span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>sample</span><span style=color:#ce5c00;font-weight:700>();</span> 
     <span style=color:#8f5902;font-style:italic>// generated by ConstructorPropertiesArbitraryGenerator
 </span><span style=color:#8f5902;font-style:italic></span><span style=color:#ce5c00;font-weight:700>}</span>
-</code></pre></div><h2 id=custom-arbitrarygenerator>Custom ArbitraryGenerator</h2>
+</code></pre></div><h2 id=나만의-arbitrarygenerator-정의하기>나만의 ArbitraryGenerator 정의하기</h2>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#204a87;font-weight:700>public</span> <span style=color:#204a87;font-weight:700>class</span> <span style=color:#000>CustomArbitraryGenerator</span> <span style=color:#204a87;font-weight:700>implements</span> <span style=color:#000>ArbitraryGenerator</span> <span style=color:#ce5c00;font-weight:700>{</span>
 		<span style=color:#204a87;font-weight:700>public</span> <span style=color:#000>CustomArbitraryGenerator</span><span style=color:#ce5c00;font-weight:700>()</span> <span style=color:#ce5c00;font-weight:700>{</span>
 		<span style=color:#ce5c00;font-weight:700>}</span>
@@ -803,8 +803,8 @@ Predefined ArbitraryGenerator can be found <a href=/fixture-monkey/kr/docs/v0.3.
 		<span style=color:#ce5c00;font-weight:700>}</span>
 	<span style=color:#ce5c00;font-weight:700>}</span>
 <span style=color:#ce5c00;font-weight:700>}</span>
-</code></pre></div><h2 id=complex-arbitrarygenerator-features>Complex ArbitraryGenerator Features</h2>
-<h3 id=set-field-in-jacksonarbitrarygenerator-with-jsonproperty>Set Field In JacksonArbitraryGenerator With @JsonProperty</h3>
+</code></pre></div><h2 id=복잡한-arbitrarygenerator-기능들>복잡한 ArbitraryGenerator 기능들</h2>
+<h3 id=jacksonarbitrarygenerator에서-jsonproperty로-선언한-필드-사용-예시>JacksonArbitraryGenerator에서 @JsonProperty로 선언한 필드 사용 예시</h3>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#5c35cc;font-weight:700>@Value</span>
 <span style=color:#204a87;font-weight:700>class</span> <span style=color:#000>Person</span> <span style=color:#ce5c00;font-weight:700>{</span>
     <span style=color:#5c35cc;font-weight:700>@JsonPropert</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#4e9a06>&#34;id&#34;</span><span style=color:#ce5c00;font-weight:700>)</span>
@@ -823,7 +823,7 @@ Predefined ArbitraryGenerator can be found <a href=/fixture-monkey/kr/docs/v0.3.
     
     <span style=color:#000>then</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>actual</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>personId</span><span style=color:#ce5c00;font-weight:700>).</span><span style=color:#c4a000>isEqualTo</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#4e9a06>&#34;12345&#34;</span><span style=color:#ce5c00;font-weight:700>);</span>
 <span style=color:#ce5c00;font-weight:700>}</span>
-</code></pre></div><h3 id=add-constructorproperties-value-when-field-name-is-different>Add @ConstructorProperties Value When Field Name is Different</h3>
+</code></pre></div><h3 id=constructorproperties로-설정한-이름과-실제-필드명이-다른-경우-사용-예시>@ConstructorProperties로 설정한 이름과 실제 필드명이 다른 경우 사용 예시</h3>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#204a87;font-weight:700>class</span> <span style=color:#000>Person</span> <span style=color:#ce5c00;font-weight:700>{</span>
     <span style=color:#000>String</span> <span style=color:#000>id</span><span style=color:#ce5c00;font-weight:700>;</span>
     <span style=color:#000>String</span> <span style=color:#000>name</span><span style=color:#ce5c00;font-weight:700>;</span>
@@ -854,7 +854,7 @@ Predefined ArbitraryGenerator can be found <a href=/fixture-monkey/kr/docs/v0.3.
 	<span style=color:#000>then</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>actual</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>id</span><span style=color:#ce5c00;font-weight:700>).</span><span style=color:#c4a000>isNotNull</span><span style=color:#ce5c00;font-weight:700>();</span>
 	<span style=color:#000>then</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>actual</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>name</span><span style=color:#ce5c00;font-weight:700>).</span><span style=color:#c4a000>isEqualTo</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#4e9a06>&#34;BROWN&#34;</span><span style=color:#ce5c00;font-weight:700>);</span>
 <span style=color:#ce5c00;font-weight:700>}</span>
-</code></pre></div><h3 id=add-constructorproperties-value-without-corresponding-field>Add @ConstructorProperties Value Without Corresponding Field</h3>
+</code></pre></div><h3 id=실제-필드로-존재하지-않지만-constructorproperties에서-선언한-값-제어하는-예시>실제 필드로 존재하지 않지만 @ConstructorProperties에서 선언한 값 제어하는 예시</h3>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#204a87;font-weight:700>class</span> <span style=color:#000>Person</span> <span style=color:#ce5c00;font-weight:700>{</span>
     <span style=color:#000>String</span> <span style=color:#000>id</span><span style=color:#ce5c00;font-weight:700>;</span>
     
@@ -888,7 +888,7 @@ Predefined ArbitraryGenerator can be found <a href=/fixture-monkey/kr/docs/v0.3.
 <h1 id=pg-6f61c83f80332f13bb2fc2f7066dc91b>1.2.3 - ArbitraryCustomizer</h1>
 <div class="alert alert-secondary" role=alert>
 <h4 class=alert-heading>Note</h4>
-For detail information check out <a href=/fixture-monkey/kr/docs/v0.3.x/features/arbitrarycustomizer/>here</a>
+자세한 내용은 <a href=/fixture-monkey/kr/docs/v0.3.x/features/arbitrarycustomizer/>여기</a>를 확인해주세요.
 </div>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#204a87;font-weight:700>class</span> <span style=color:#000>PersonArbitraryCustomizer</span> <span style=color:#204a87;font-weight:700>implements</span> <span style=color:#000>ArbitraryCustomizer</span><span style=color:#ce5c00;font-weight:700>&lt;</span><span style=color:#000>Person</span><span style=color:#ce5c00;font-weight:700>&gt;</span> <span style=color:#ce5c00;font-weight:700>{</span>
     <span style=color:#5c35cc;font-weight:700>@Override</span>
@@ -906,34 +906,34 @@ For detail information check out <a href=/fixture-monkey/kr/docs/v0.3.x/features
     <span style=color:#ce5c00;font-weight:700>}</span>
 <span style=color:#ce5c00;font-weight:700>}</span>
 
-</code></pre></div><h2 id=lambda>Lambda</h2>
+</code></pre></div><h2 id=람다로-정의하기>람다로 정의하기</h2>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#000>FixtureCustomizer</span><span style=color:#ce5c00;font-weight:700>&lt;</span><span style=color:#000>Person</span><span style=color:#ce5c00;font-weight:700>&gt;</span> <span style=color:#000>personAgeFixedCustomizer</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#000>person</span> <span style=color:#ce5c00;font-weight:700>-&gt;</span> <span style=color:#ce5c00;font-weight:700>{</span>
     <span style=color:#000>person</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>setAge</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>20</span><span style=color:#ce5c00;font-weight:700>);</span>
     <span style=color:#204a87;font-weight:700>return</span> <span style=color:#000>person</span><span style=color:#ce5c00;font-weight:700>;</span>
 <span style=color:#ce5c00;font-weight:700>};</span>
 
-</code></pre></div><h2 id=apply-customizer-to-fixturemonkey>Apply Customizer to FixtureMonkey</h2>
+</code></pre></div><h2 id=전역적으로-fixturecustomizer-적용하기>전역적으로 FixtureCustomizer 적용하기</h2>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#000>FixtureMonkey</span> <span style=color:#000>fixture</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#000>FixtureMonkey</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>builder</span><span style=color:#ce5c00;font-weight:700>()</span>
         <span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>addFixtureCustomizer</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>Person</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>class</span><span style=color:#ce5c00;font-weight:700>,</span> <span style=color:#204a87;font-weight:700>new</span> <span style=color:#000>PersonFixtureCustomizer</span><span style=color:#ce5c00;font-weight:700>())</span>
         <span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>build</span><span style=color:#ce5c00;font-weight:700>();</span>
 
-</code></pre></div><h2 id=apply-customizer-to-arbitrarybuilder>Apply Customizer to ArbitraryBuilder</h2>
+</code></pre></div><h2 id=arbitrarybuilder에-fixturecustomizer-적용하기>ArbitraryBuilder에 FixtureCustomizer 적용하기</h2>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#000>FixtureMonkey</span> <span style=color:#000>fixture</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#000>FixtureMonkey</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>builder</span><span style=color:#ce5c00;font-weight:700>().</span><span style=color:#c4a000>build</span><span style=color:#ce5c00;font-weight:700>();</span>
 
-		<span style=color:#000>Person</span> <span style=color:#000>person</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#000>fixture</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>giveMeBuilder</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>Person</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>class</span><span style=color:#ce5c00;font-weight:700>)</span>
-			<span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>customize</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#204a87;font-weight:700>new</span> <span style=color:#000>PersonFixtureCustomizer</span><span style=color:#ce5c00;font-weight:700>())</span>
-			<span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>sample</span><span style=color:#ce5c00;font-weight:700>();</span>
+<span style=color:#000>Person</span> <span style=color:#000>person</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#000>fixture</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>giveMeBuilder</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>Person</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>class</span><span style=color:#ce5c00;font-weight:700>)</span>
+    <span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>customize</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#204a87;font-weight:700>new</span> <span style=color:#000>PersonFixtureCustomizer</span><span style=color:#ce5c00;font-weight:700>())</span>
+    <span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>sample</span><span style=color:#ce5c00;font-weight:700>();</span>
 
-		<span style=color:#000>List</span><span style=color:#ce5c00;font-weight:700>&lt;</span><span style=color:#000>Person</span><span style=color:#ce5c00;font-weight:700>&gt;</span> <span style=color:#000>persons</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#000>fixture</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>giveMeBuilder</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>Person</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>class</span><span style=color:#ce5c00;font-weight:700>)</span>
-			<span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>customize</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#204a87;font-weight:700>new</span> <span style=color:#000>PersonFixtureCustomizer</span><span style=color:#ce5c00;font-weight:700>())</span>
-			<span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>sampleList</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>3</span><span style=color:#ce5c00;font-weight:700>);</span>
+<span style=color:#000>List</span><span style=color:#ce5c00;font-weight:700>&lt;</span><span style=color:#000>Person</span><span style=color:#ce5c00;font-weight:700>&gt;</span> <span style=color:#000>persons</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#000>fixture</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>giveMeBuilder</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>Person</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>class</span><span style=color:#ce5c00;font-weight:700>)</span>
+    <span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>customize</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#204a87;font-weight:700>new</span> <span style=color:#000>PersonFixtureCustomizer</span><span style=color:#ce5c00;font-weight:700>())</span>
+    <span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>sampleList</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>3</span><span style=color:#ce5c00;font-weight:700>);</span>
 
-		<span style=color:#000>Person</span> <span style=color:#000>person20Age</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#000>fixture</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>giveMeBuilder</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>Person</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>class</span><span style=color:#ce5c00;font-weight:700>)</span>
-			<span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>customize</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>p</span> <span style=color:#ce5c00;font-weight:700>-&gt;</span> <span style=color:#ce5c00;font-weight:700>{</span>
-				<span style=color:#000>p</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>setAge</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>20</span><span style=color:#ce5c00;font-weight:700>);</span>
-				<span style=color:#204a87;font-weight:700>return</span> <span style=color:#000>p</span><span style=color:#ce5c00;font-weight:700>;</span>
-			<span style=color:#ce5c00;font-weight:700>})</span>
-			<span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>sample</span><span style=color:#ce5c00;font-weight:700>();</span>
+<span style=color:#000>Person</span> <span style=color:#000>person20Age</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#000>fixture</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>giveMeBuilder</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>Person</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>class</span><span style=color:#ce5c00;font-weight:700>)</span>
+    <span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>customize</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>p</span> <span style=color:#ce5c00;font-weight:700>-&gt;</span> <span style=color:#ce5c00;font-weight:700>{</span>
+        <span style=color:#000>p</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>setAge</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>20</span><span style=color:#ce5c00;font-weight:700>);</span>
+        <span style=color:#204a87;font-weight:700>return</span> <span style=color:#000>p</span><span style=color:#ce5c00;font-weight:700>;</span>
+    <span style=color:#ce5c00;font-weight:700>})</span>
+    <span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>sample</span><span style=color:#ce5c00;font-weight:700>();</span>
 </code></pre></div><h2 id=builderarbitrarycustomizer>BuilderArbitraryCustomizer</h2>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#204a87;font-weight:700>public</span> <span style=color:#204a87;font-weight:700>static</span> <span style=color:#204a87;font-weight:700>class</span> <span style=color:#000>PersonCustomizer</span> <span style=color:#204a87;font-weight:700>implements</span> <span style=color:#000>BuilderArbitraryCustomizer</span><span style=color:#ce5c00;font-weight:700>&lt;</span><span style=color:#000>Person</span><span style=color:#ce5c00;font-weight:700>,</span> <span style=color:#000>Person</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>PersonBuilder</span><span style=color:#ce5c00;font-weight:700>&gt;</span> <span style=color:#ce5c00;font-weight:700>{</span>
        <span style=color:#8f5902;font-style:italic>// modify attribute Arbitrary by Builder
@@ -959,9 +959,9 @@ For detail information check out <a href=/fixture-monkey/kr/docs/v0.3.x/features
 <h1 id=pg-689ba94e622473294d873d5e903e64a9>1.2.4 - AnnotatedArbitraryGenerator</h1>
 <div class="alert alert-secondary" role=alert>
 <h4 class=alert-heading>Note</h4>
-Predefined AnnotatedArbitraryGenerator can be found <a href=/fixture-monkey/kr/docs/v0.3.x/features/defaultsupportedtypes/>here</a>
+기본적으로 제공하는 AnnotatedArbitraryGenerator는 <a href=/fixture-monkey/kr/docs/v0.3.x/features/defaultsupportedtypes/>여기</a>에서 확인할 수 있습니다.
 </div>
-<h2 id=put-annotatedarbitrarygenerator>Put AnnotatedArbitraryGenerator</h2>
+<h2 id=annotatedarbitrarygenerator-추가하기>AnnotatedArbitraryGenerator 추가하기</h2>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#5c35cc;font-weight:700>@Test</span>
 <span style=color:#204a87;font-weight:700>void</span> <span style=color:#000>putArbitraryGenerator</span><span style=color:#ce5c00;font-weight:700>()</span> <span style=color:#ce5c00;font-weight:700>{</span>
     <span style=color:#000>FixtureMonkey</span> <span style=color:#000>fixture</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#000>FixtureMonkey</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>builder</span><span style=color:#ce5c00;font-weight:700>()</span>
@@ -970,8 +970,8 @@ Predefined AnnotatedArbitraryGenerator can be found <a href=/fixture-monkey/kr/d
 
 	<span style=color:#000>Tuple</span> <span style=color:#000>customObject</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#204a87;font-weight:700>this</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>fixture</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>giveMeOne</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>Tuple</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>class</span><span style=color:#ce5c00;font-weight:700>);</span>
 <span style=color:#ce5c00;font-weight:700>}</span>
-</code></pre></div><h2 id=custom-annotatedarbitrarygenerator>Custom AnnotatedArbitraryGenerator</h2>
-<h3 id=new-annotatedarbitrarygenerator>New AnnotatedArbitraryGenerator</h3>
+</code></pre></div><h2 id=나만의-annotatedarbitrarygenerator>나만의 AnnotatedArbitraryGenerator</h2>
+<h3 id=새로운-annotatedarbitrarygenerator-추가하기>새로운 AnnotatedArbitraryGenerator 추가하기</h3>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#000>FixtureMonkey</span> <span style=color:#000>fixtureMonkey</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#000>FixtureMonkey</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>builder</span><span style=color:#ce5c00;font-weight:700>()</span>
     <span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>addAnnotatedArbitraryGenerator</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>Tuple</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>class</span><span style=color:#ce5c00;font-weight:700>,</span> <span style=color:#204a87;font-weight:700>new</span> <span style=color:#000>TupleAnnotatedArbitraryGenerator</span><span style=color:#ce5c00;font-weight:700>()</span> <span style=color:#ce5c00;font-weight:700>{</span>
         <span style=color:#5c35cc;font-weight:700>@Override</span>
@@ -981,7 +981,7 @@ Predefined AnnotatedArbitraryGenerator can be found <a href=/fixture-monkey/kr/d
         <span style=color:#ce5c00;font-weight:700>}</span>
     <span style=color:#ce5c00;font-weight:700>})</span>
     <span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>build</span><span style=color:#ce5c00;font-weight:700>();</span>
-</code></pre></div><h3 id=override-predefined-annotatedarbitrarygenerator>Override Predefined AnnotatedArbitraryGenerator</h3>
+</code></pre></div><h3 id=기본-제공하는-annotatedarbitrarygenerator-재정의-하기>기본 제공하는 AnnotatedArbitraryGenerator 재정의 하기</h3>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#000>FixtureMonkey</span> <span style=color:#000>fixtureMonkey</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#000>FixtureMonkey</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>builder</span><span style=color:#ce5c00;font-weight:700>()</span>
     <span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>addAnnotatedArbitraryGenerator</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>BigDecimal</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>class</span><span style=color:#ce5c00;font-weight:700>,</span> <span style=color:#204a87;font-weight:700>new</span> <span style=color:#000>BigDecimalAnnotatedArbitraryGenerator</span><span style=color:#ce5c00;font-weight:700>()</span> <span style=color:#ce5c00;font-weight:700>{</span>
         <span style=color:#5c35cc;font-weight:700>@Override</span>
@@ -994,10 +994,10 @@ Predefined AnnotatedArbitraryGenerator can be found <a href=/fixture-monkey/kr/d
 </code></pre></div>
 </div>
 <div class=td-content style=page-break-before:always>
-<h1 id=pg-cca8de30c7cb9ccdd3f20fe05380ee9e>1.2.5 - Register ArbitraryBuilder</h1>
+<h1 id=pg-cca8de30c7cb9ccdd3f20fe05380ee9e>1.2.5 - ArbitraryBuilder 등록하기</h1>
 <div class="alert alert-secondary" role=alert>
 <h4 class=alert-heading>Note</h4>
-For detail information check out <a href=/fixture-monkey/kr/docs/v0.3.x/features/registerarbitrarybuilder/>here</a>
+자세한 내용은 <a href=/fixture-monkey/kr/docs/v0.3.x/features/registerarbitrarybuilder/>여기</a>를 확인해주세요.
 </div>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#204a87;font-weight:700>class</span> <span style=color:#000>CustomObjectGroup</span><span style=color:#ce5c00;font-weight:700>{</span>
 	<span style=color:#204a87;font-weight:700>public</span> <span style=color:#000>ArbitraryBuilder</span><span style=color:#ce5c00;font-weight:700>&lt;</span><span style=color:#000>CustomObject</span><span style=color:#ce5c00;font-weight:700>&gt;</span> <span style=color:#000>customObject</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>FixtureMonkey</span> <span style=color:#000>fixture</span><span style=color:#ce5c00;font-weight:700>){</span>
@@ -1020,7 +1020,7 @@ For detail information check out <a href=/fixture-monkey/kr/docs/v0.3.x/features
     <span style=color:#000>then</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>customObject</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>getValue</span><span style=color:#ce5c00;font-weight:700>()).</span><span style=color:#c4a000>isEqualTo</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#4e9a06>&#34;test&#34;</span><span style=color:#ce5c00;font-weight:700>);</span>
     <span style=color:#000>then</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>customObjectWrapper</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>getCustomObject</span><span style=color:#ce5c00;font-weight:700>().</span><span style=color:#c4a000>getValue</span><span style=color:#ce5c00;font-weight:700>()).</span><span style=color:#c4a000>isEqualTo</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#4e9a06>&#34;test&#34;</span><span style=color:#ce5c00;font-weight:700>);</span>
 <span style=color:#ce5c00;font-weight:700>}</span>
-</code></pre></div><h2 id=apply-manipulator-to-registered-arbitrarybuilder>Apply Manipulator To Registered ArbitraryBuilder</h2>
+</code></pre></div><h2 id=등록한-arbitrarybuilder에-연산-적용하기>등록한 ArbitraryBuilder에 연산 적용하기</h2>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#204a87;font-weight:700>class</span> <span style=color:#000>CustomObjectGroup</span><span style=color:#ce5c00;font-weight:700>{</span>
 	<span style=color:#204a87;font-weight:700>public</span> <span style=color:#000>ArbitraryBuilder</span><span style=color:#ce5c00;font-weight:700>&lt;</span><span style=color:#000>CustomObject</span><span style=color:#ce5c00;font-weight:700>&gt;</span> <span style=color:#000>customObject</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>FixtureMonkey</span> <span style=color:#000>fixture</span><span style=color:#ce5c00;font-weight:700>){</span>
 		<span style=color:#204a87;font-weight:700>return</span> <span style=color:#000>fixture</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>giveMeBuilder</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>CustomObject</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>class</span><span style=color:#ce5c00;font-weight:700>)</span>

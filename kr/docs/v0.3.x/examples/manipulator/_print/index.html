@@ -14,16 +14,16 @@
 <link rel=icon type=image/png href=/fixture-monkey/favicons/favicon.png sizes=96x96>
 <link rel=icon type=image/png href=/fixture-monkey/favicons/favicon.png sizes=144x144>
 <link rel=icon type=image/png href=/fixture-monkey/favicons/favicon.png sizes=192x192>
-<title>Manipulator | 픽스처 몽키</title>
-<meta name=description content="If you would like to know details about Manipulator, check out Features
+<title>생성할 객체를 제어하는 연산 | 픽스처 몽키</title>
+<meta name=description content="연산에 대해 자세히 알고 싶다면 Features를 확인해주세요.
 ">
-<meta property="og:title" content="Manipulator">
+<meta property="og:title" content="생성할 객체를 제어하는 연산">
 <meta property="og:description" content>
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://naver.github.io/fixture-monkey/kr/docs/v0.3.x/examples/manipulator/"><meta property="og:site_name" content="픽스처 몽키">
-<meta itemprop=name content="Manipulator">
+<meta itemprop=name content="생성할 객체를 제어하는 연산">
 <meta itemprop=description content><meta name=twitter:card content="summary">
-<meta name=twitter:title content="Manipulator">
+<meta name=twitter:title content="생성할 객체를 제어하는 연산">
 <meta name=twitter:description content>
 <link rel=preload href=/fixture-monkey/scss/main.min.861794578d20e3e3c9c7ca904b2cd3e0e34552ae164462c4f4af0efdcf16ec40.css as=style>
 <link href=/fixture-monkey/scss/main.min.861794578d20e3e3c9c7ca904b2cd3e0e34552ae164462c4f4af0efdcf16ec40.css rel=stylesheet integrity>
@@ -88,19 +88,19 @@ This the multi-page printable view of this section.
 <a href=/fixture-monkey/kr/docs/v0.3.x/examples/manipulator/>Return to the regular view of this page</a>.
 </p>
 </div>
-<h1 class=title>Manipulator</h1>
+<h1 class=title>생성할 객체를 제어하는 연산</h1>
 <ul>
-<li>1: <a href=#pg-d70b5e5f3ae27224ff92ce851e3cd29b>Simple Manipulator</a></li>
-<li>2: <a href=#pg-ab93a63af9fec0435430fc56f0ac8dca>Complex Manipulator</a></li>
+<li>1: <a href=#pg-d70b5e5f3ae27224ff92ce851e3cd29b>간단한 연산</a></li>
+<li>2: <a href=#pg-ab93a63af9fec0435430fc56f0ac8dca>복잡한 연산</a></li>
 <li>3: <a href=#pg-72efddefe281142aa45573d3ca3b3e4f>ExpressionSpec</a></li>
 </ul>
 <div class=content>
-<p>If you would like to know details about <code>Manipulator</code>, check out <a href=/fixture-monkey/kr/docs/v0.3.x/features/manipulator/>Features</a></p>
+<p><code>연산</code>에 대해 자세히 알고 싶다면 <a href=/fixture-monkey/kr/docs/v0.3.x/features/manipulator/>Features</a>를 확인해주세요.</p>
 </div>
 </div>
 <div class=td-content>
-<h1 id=pg-d70b5e5f3ae27224ff92ce851e3cd29b>1 - Simple Manipulator</h1>
-<h2 id=set>Set</h2>
+<h1 id=pg-d70b5e5f3ae27224ff92ce851e3cd29b>1 - 간단한 연산</h1>
+<h2 id=필드-값을-고정하는-연산>필드 값을 고정하는 연산</h2>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#5c35cc;font-weight:700>@Test</span>
 <span style=color:#204a87;font-weight:700>void</span> <span style=color:#000>set</span><span style=color:#ce5c00;font-weight:700>(){</span>
     <span style=color:#8f5902;font-style:italic>// given
@@ -114,7 +114,7 @@ This the multi-page printable view of this section.
 
     <span style=color:#000>then</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>actual</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>orderedAt</span><span style=color:#ce5c00;font-weight:700>).</span><span style=color:#c4a000>isEqualTo</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>orderedAt</span><span style=color:#ce5c00;font-weight:700>);</span>
 <span style=color:#ce5c00;font-weight:700>}</span>   
-</code></pre></div><h2 id=setroot>SetRoot</h2>
+</code></pre></div><h2 id=객체를-고정하는-연산>객체를 고정하는 연산</h2>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#5c35cc;font-weight:700>@Test</span>
 <span style=color:#204a87;font-weight:700>void</span> <span style=color:#000>setRoot</span><span style=color:#ce5c00;font-weight:700>(){</span>
     <span style=color:#8f5902;font-style:italic>// given
@@ -139,7 +139,7 @@ This the multi-page printable view of this section.
 
     <span style=color:#000>then</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>actual</span><span style=color:#ce5c00;font-weight:700>).</span><span style=color:#c4a000>isEqualTo</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#4e9a06>&#34;setRoot&#34;</span><span style=color:#ce5c00;font-weight:700>);</span>
 <span style=color:#ce5c00;font-weight:700>}</span>   
-</code></pre></div><h2 id=setnull>SetNull</h2>
+</code></pre></div><h2 id=필드-값을-null로-고정하는-연산>필드 값을 null로 고정하는 연산</h2>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#5c35cc;font-weight:700>@Test</span>
 <span style=color:#204a87;font-weight:700>void</span> <span style=color:#000>setNull</span><span style=color:#ce5c00;font-weight:700>()</span> <span style=color:#ce5c00;font-weight:700>{</span>
     <span style=color:#8f5902;font-style:italic>// given
@@ -152,7 +152,7 @@ This the multi-page printable view of this section.
 
     <span style=color:#000>then</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>actual</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>sellerEmail</span><span style=color:#ce5c00;font-weight:700>).</span><span style=color:#c4a000>isNull</span><span style=color:#ce5c00;font-weight:700>();</span>
 <span style=color:#ce5c00;font-weight:700>}</span>
-</code></pre></div><h2 id=setnotnull>SetNotNull</h2>
+</code></pre></div><h2 id=필드-값을-null이-아니도록-고정하는-연산>필드 값을 null이 아니도록 고정하는 연산</h2>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#5c35cc;font-weight:700>@Test</span>
 <span style=color:#204a87;font-weight:700>void</span> <span style=color:#000>setNotNull</span><span style=color:#ce5c00;font-weight:700>()</span> <span style=color:#ce5c00;font-weight:700>{</span>
     <span style=color:#8f5902;font-style:italic>// given
@@ -165,7 +165,7 @@ This the multi-page printable view of this section.
 
     <span style=color:#000>then</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>actual</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>sellerEmail</span><span style=color:#ce5c00;font-weight:700>).</span><span style=color:#c4a000>isNotNull</span><span style=color:#ce5c00;font-weight:700>();</span>
 <span style=color:#ce5c00;font-weight:700>}</span>
-</code></pre></div><h2 id=setarbitrary>SetArbitrary</h2>
+</code></pre></div><h2 id=필드-값을-랜덤하게-설정하는-연산>필드 값을 랜덤하게 설정하는 연산</h2>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#5c35cc;font-weight:700>@Test</span>
 <span style=color:#204a87;font-weight:700>void</span> <span style=color:#000>setArbitrary</span><span style=color:#ce5c00;font-weight:700>()</span> <span style=color:#ce5c00;font-weight:700>{</span>
     <span style=color:#8f5902;font-style:italic>// given
@@ -178,7 +178,7 @@ This the multi-page printable view of this section.
 	
     <span style=color:#000>then</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>actual</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>id</span><span style=color:#ce5c00;font-weight:700>).</span><span style=color:#c4a000>isBetween</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>1</span><span style=color:#ce5c00;font-weight:700>,</span> <span style=color:#000>50</span><span style=color:#ce5c00;font-weight:700>);</span>
 <span style=color:#ce5c00;font-weight:700>}</span>
-</code></pre></div><h2 id=setbuilder>SetBuilder</h2>
+</code></pre></div><h2 id=필드-값을-arbitrarybuilder에서-생성할-객체로-고정하는-연산>필드 값을 ArbitraryBuilder에서 생성할 객체로 고정하는 연산</h2>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#5c35cc;font-weight:700>@Test</span>
 <span style=color:#204a87;font-weight:700>void</span> <span style=color:#000>setBuilder</span><span style=color:#ce5c00;font-weight:700>()</span> <span style=color:#ce5c00;font-weight:700>{</span>
     <span style=color:#8f5902;font-style:italic>// given
@@ -192,7 +192,7 @@ This the multi-page printable view of this section.
 	
     <span style=color:#000>then</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>actual</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>id</span><span style=color:#ce5c00;font-weight:700>).</span><span style=color:#c4a000>isNotNull</span><span style=color:#ce5c00;font-weight:700>();</span>
 <span style=color:#ce5c00;font-weight:700>}</span>
-</code></pre></div><h2 id=setpostcondition>SetPostCondition</h2>
+</code></pre></div><h2 id=필드-값의-후행조건을-선언하는-연산>필드 값의 후행조건을 선언하는 연산</h2>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#5c35cc;font-weight:700>@Test</span>
 <span style=color:#204a87;font-weight:700>void</span> <span style=color:#000>setPostCondition</span><span style=color:#ce5c00;font-weight:700>()</span> <span style=color:#ce5c00;font-weight:700>{</span>
     <span style=color:#8f5902;font-style:italic>// given
@@ -207,8 +207,8 @@ This the multi-page printable view of this section.
 
     <span style=color:#000>then</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>actual</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>id</span><span style=color:#ce5c00;font-weight:700>).</span><span style=color:#c4a000>isEqualTo</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>10</span><span style=color:#ce5c00;font-weight:700>);</span>
 <span style=color:#ce5c00;font-weight:700>}</span>
-</code></pre></div><p><code>setPostCondition</code> set post-condition to field, so it applies to last set value</p>
-<h2 id=setpostconditionroot>SetPostConditionRoot</h2>
+</code></pre></div><p><code>setPostCondition</code>는 필드의 후행조건을 선언합니다. 여러 번의 고정 연산을 적용한 경우 마지막으로 고정한 연산에 후행조건을 적용합니다.</p>
+<h2 id=객체에-후행조건을-적용하는-연산>객체에 후행조건을 적용하는 연산</h2>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#5c35cc;font-weight:700>@Test</span>
 <span style=color:#204a87;font-weight:700>void</span> <span style=color:#000>setPostConditionRoot</span><span style=color:#ce5c00;font-weight:700>()</span> <span style=color:#ce5c00;font-weight:700>{</span>
     <span style=color:#8f5902;font-style:italic>// given
@@ -233,7 +233,7 @@ This the multi-page printable view of this section.
 
 	<span style=color:#000>then</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>actual</span><span style=color:#ce5c00;font-weight:700>).</span><span style=color:#c4a000>hasSizeGreaterThan</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>5</span><span style=color:#ce5c00;font-weight:700>);</span>
 <span style=color:#ce5c00;font-weight:700>}</span>
-</code></pre></div><h2 id=customize>Customize</h2>
+</code></pre></div><h2 id=customize-연산>Customize 연산</h2>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#5c35cc;font-weight:700>@Test</span>
 <span style=color:#204a87;font-weight:700>void</span> <span style=color:#000>customize</span><span style=color:#ce5c00;font-weight:700>()</span> <span style=color:#ce5c00;font-weight:700>{</span>
     <span style=color:#8f5902;font-style:italic>// given
@@ -250,7 +250,7 @@ This the multi-page printable view of this section.
 
     <span style=color:#000>then</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>actual</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>orderedAt</span><span style=color:#ce5c00;font-weight:700>).</span><span style=color:#c4a000>isEqualTo</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>orderedAt</span><span style=color:#ce5c00;font-weight:700>);</span>
 <span style=color:#ce5c00;font-weight:700>}</span>
-</code></pre></div><h2 id=size>Size</h2>
+</code></pre></div><h2 id=필드의-컬렉션-크기를-제어하는-연산>필드의 컬렉션 크기를 제어하는 연산</h2>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#5c35cc;font-weight:700>@Test</span>
 <span style=color:#204a87;font-weight:700>void</span> <span style=color:#000>size</span><span style=color:#ce5c00;font-weight:700>()</span> <span style=color:#ce5c00;font-weight:700>{</span>	
 	<span style=color:#8f5902;font-style:italic>// given
@@ -275,7 +275,7 @@ This the multi-page printable view of this section.
 	
 	<span style=color:#000>then</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>actual</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>items</span><span style=color:#ce5c00;font-weight:700>).</span><span style=color:#c4a000>hasSizeBetween</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>1</span><span style=color:#ce5c00;font-weight:700>,</span> <span style=color:#000>5</span><span style=color:#ce5c00;font-weight:700>);</span>
 <span style=color:#ce5c00;font-weight:700>}</span>
-</code></pre></div><h2 id=maxsize>MaxSize</h2>
+</code></pre></div><h2 id=필드의-컬렉션-최대-크기를-제어하는-연산>필드의 컬렉션 최대 크기를 제어하는 연산</h2>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#5c35cc;font-weight:700>@Test</span>
 <span style=color:#204a87;font-weight:700>void</span> <span style=color:#000>size</span><span style=color:#ce5c00;font-weight:700>()</span> <span style=color:#ce5c00;font-weight:700>{</span>	
 	<span style=color:#8f5902;font-style:italic>// given
@@ -288,7 +288,7 @@ This the multi-page printable view of this section.
 	
 	<span style=color:#000>then</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>actual</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>items</span><span style=color:#ce5c00;font-weight:700>).</span><span style=color:#c4a000>hasSizeLessThanOrEqualTo</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>5</span><span style=color:#ce5c00;font-weight:700>);</span>
 <span style=color:#ce5c00;font-weight:700>}</span>
-</code></pre></div><h2 id=minsize>MinSize</h2>
+</code></pre></div><h2 id=필드의-컬렉션-최소-크기를-제어하는-연산>필드의 컬렉션 최소 크기를 제어하는 연산</h2>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#5c35cc;font-weight:700>@Test</span>
 <span style=color:#204a87;font-weight:700>void</span> <span style=color:#000>size</span><span style=color:#ce5c00;font-weight:700>()</span> <span style=color:#ce5c00;font-weight:700>{</span>	
 	<span style=color:#8f5902;font-style:italic>// given
@@ -304,8 +304,8 @@ This the multi-page printable view of this section.
 </code></pre></div>
 </div>
 <div class=td-content style=page-break-before:always>
-<h1 id=pg-ab93a63af9fec0435430fc56f0ac8dca>2 - Complex Manipulator</h1>
-<h2 id=manipulate-existing-instance>Manipulate Existing Instance</h2>
+<h1 id=pg-ab93a63af9fec0435430fc56f0ac8dca>2 - 복잡한 연산</h1>
+<h2 id=이미-선언한-객체-제어>이미 선언한 객체 제어</h2>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#5c35cc;font-weight:700>@Test</span>
 <span style=color:#204a87;font-weight:700>void</span> <span style=color:#000>manipulateExistingInstance</span><span style=color:#ce5c00;font-weight:700>()</span> <span style=color:#ce5c00;font-weight:700>{</span>
     <span style=color:#8f5902;font-style:italic>// given    
@@ -321,7 +321,7 @@ This the multi-page printable view of this section.
     
     <span style=color:#000>then</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>actual</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>quantity</span><span style=color:#ce5c00;font-weight:700>).</span><span style=color:#c4a000>isEqualTo</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>1</span><span style=color:#ce5c00;font-weight:700>);</span>
 <span style=color:#ce5c00;font-weight:700>}</span>
-</code></pre></div><h2 id=map>Map</h2>
+</code></pre></div><h2 id=map-연산>Map 연산</h2>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#5c35cc;font-weight:700>@Test</span>
 <span style=color:#204a87;font-weight:700>void</span> <span style=color:#000>map</span><span style=color:#ce5c00;font-weight:700>()</span> <span style=color:#ce5c00;font-weight:700>{</span>
 	<span style=color:#8f5902;font-style:italic>// given
@@ -336,7 +336,7 @@ This the multi-page printable view of this section.
 		<span style=color:#ce5c00;font-weight:700>})</span>
 		<span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>sample</span><span style=color:#ce5c00;font-weight:700>();</span>
 <span style=color:#ce5c00;font-weight:700>}</span>
-</code></pre></div><h2 id=zip>Zip</h2>
+</code></pre></div><h2 id=zip-연산>Zip 연산</h2>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#5c35cc;font-weight:700>@Test</span>
 <span style=color:#204a87;font-weight:700>void</span> <span style=color:#000>zip</span><span style=color:#ce5c00;font-weight:700>(){</span>
 	<span style=color:#8f5902;font-style:italic>// given
@@ -353,7 +353,7 @@ This the multi-page printable view of this section.
 	
 	<span style=color:#000>then</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>actual</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>sample</span><span style=color:#ce5c00;font-weight:700>()).</span><span style=color:#c4a000>contains</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#4e9a06>&#34;.&#34;</span><span style=color:#ce5c00;font-weight:700>);</span>
 <span style=color:#ce5c00;font-weight:700>}</span>
-</code></pre></div><h2 id=acceptif>AcceptIf</h2>
+</code></pre></div><h2 id=생성할-객체가-특정-조건을-만족할경우-실행할-연산>생성할 객체가 특정 조건을 만족할경우 실행할 연산</h2>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#5c35cc;font-weight:700>@Test</span>
 <span style=color:#204a87;font-weight:700>void</span> <span style=color:#000>acceptIf</span><span style=color:#ce5c00;font-weight:700>()</span> <span style=color:#ce5c00;font-weight:700>{</span>
 	<span style=color:#8f5902;font-style:italic>// given
@@ -371,7 +371,7 @@ This the multi-page printable view of this section.
 	<span style=color:#000>then</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>actual</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>memberNo</span><span style=color:#ce5c00;font-weight:700>).</span><span style=color:#c4a000>isEqualTo</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>20</span><span style=color:#ce5c00;font-weight:700>);</span>
 <span style=color:#ce5c00;font-weight:700>}</span>
 
-</code></pre></div><h2 id=fixed>Fixed</h2>
+</code></pre></div><h2 id=객체의-모든-필드가-항상-같은-값을-반환하도록-고정하는-연산>객체의 모든 필드가 항상 같은 값을 반환하도록 고정하는 연산</h2>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#5c35cc;font-weight:700>@Test</span>
 <span style=color:#204a87;font-weight:700>void</span> <span style=color:#000>fixed</span><span style=color:#ce5c00;font-weight:700>()</span> <span style=color:#ce5c00;font-weight:700>{</span>	
 	<span style=color:#8f5902;font-style:italic>// given
@@ -391,9 +391,9 @@ This the multi-page printable view of this section.
 <h1 id=pg-72efddefe281142aa45573d3ca3b3e4f>3 - ExpressionSpec</h1>
 <div class="alert alert-secondary" role=alert>
 <h4 class=alert-heading>Note</h4>
-For detail information check out <a href=/fixture-monkey/kr/docs/v0.3.x/features/manipulator/#expression>here</a>
+자세한 내용은 <a href=/fixture-monkey/kr/docs/v0.3.x/features/manipulator/#expression>여기</a>를 참조해주세요.
 </div>
-<h2 id=expressionspec>ExpressionSpec</h2>
+<h2 id=expressionspec을-적용하는-예시>ExpressionSpec을 적용하는 예시</h2>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#5c35cc;font-weight:700>@Test</span>
 <span style=color:#204a87;font-weight:700>void</span> <span style=color:#000>expressionSpec</span><span style=color:#ce5c00;font-weight:700>()</span> <span style=color:#ce5c00;font-weight:700>{</span>
 	<span style=color:#8f5902;font-style:italic>// given
@@ -408,7 +408,7 @@ For detail information check out <a href=/fixture-monkey/kr/docs/v0.3.x/features
     
     <span style=color:#000>then</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>actual</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>getPrice</span><span style=color:#ce5c00;font-weight:700>()).</span><span style=color:#c4a000>isEqaulTo</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>10L</span><span style=color:#ce5c00;font-weight:700>);</span>
 <span style=color:#ce5c00;font-weight:700>}</span>
-</code></pre></div><h3 id=apply-multiple-expressionspecs>Apply Multiple ExpressionSpecs</h3>
+</code></pre></div><h3 id=여러-개의-expressionspec을-적용하는-예시>여러 개의 ExpressionSpec을 적용하는 예시</h3>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#5c35cc;font-weight:700>@Test</span>
 <span style=color:#204a87;font-weight:700>void</span> <span style=color:#000>exprssionSpecs</span><span style=color:#ce5c00;font-weight:700>()</span> <span style=color:#ce5c00;font-weight:700>{</span>
 	<span style=color:#8f5902;font-style:italic>// given
@@ -427,7 +427,7 @@ For detail information check out <a href=/fixture-monkey/kr/docs/v0.3.x/features
     <span style=color:#000>then</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>actual</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>getPrice</span><span style=color:#ce5c00;font-weight:700>()).</span><span style=color:#c4a000>isEqualTo</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>10L</span><span style=color:#ce5c00;font-weight:700>);</span>
     <span style=color:#000>then</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>actual</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>getOrderNo</span><span style=color:#ce5c00;font-weight:700>()).</span><span style=color:#c4a000>isEqualTo</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#4e9a06>&#34;1&#34;</span><span style=color:#ce5c00;font-weight:700>);</span>
 <span style=color:#ce5c00;font-weight:700>}</span>
-</code></pre></div><h3 id=apply-random-expressionspec>Apply Random ExpressionSpec</h3>
+</code></pre></div><h3 id=여러-개의-expressionspec-중-임의의-하나를-적용하는-예시>여러 개의 ExpressionSpec 중 임의의 하나를 적용하는 예시</h3>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#5c35cc;font-weight:700>@Test</span>
 <span style=color:#204a87;font-weight:700>void</span> <span style=color:#000>specAny</span><span style=color:#ce5c00;font-weight:700>()</span> <span style=color:#ce5c00;font-weight:700>{</span>
 	<span style=color:#8f5902;font-style:italic>// given
@@ -448,7 +448,7 @@ For detail information check out <a href=/fixture-monkey/kr/docs/v0.3.x/features
 	<span style=color:#ce5c00;font-weight:700>);</span>
 <span style=color:#ce5c00;font-weight:700>}</span>
 </code></pre></div><h2 id=iterablespec>IterableSpec</h2>
-<h3 id=manipulate-iterable-size>Manipulate Iterable Size</h3>
+<h3 id=내부-컬렉션의-크기를-제어하는-연산>내부 컬렉션의 크기를 제어하는 연산</h3>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#5c35cc;font-weight:700>@Test</span>
 <span style=color:#204a87;font-weight:700>void</span> <span style=color:#000>size</span><span style=color:#ce5c00;font-weight:700>()</span> <span style=color:#ce5c00;font-weight:700>{</span>
 	<span style=color:#8f5902;font-style:italic>// given
@@ -462,7 +462,7 @@ For detail information check out <a href=/fixture-monkey/kr/docs/v0.3.x/features
     
     <span style=color:#000>then</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>actual</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>items</span><span style=color:#ce5c00;font-weight:700>).</span><span style=color:#c4a000>hasSize</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>2</span><span style=color:#ce5c00;font-weight:700>);</span>
 <span style=color:#ce5c00;font-weight:700>}</span>
-</code></pre></div><h3 id=manipulate-specific-index-element>Manipulate Specific Index Element</h3>
+</code></pre></div><h3 id=특정-인덱스-요소를-제어하는-연산>특정 인덱스 요소를 제어하는 연산</h3>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#5c35cc;font-weight:700>@Test</span>
 <span style=color:#204a87;font-weight:700>void</span> <span style=color:#000>setElement</span><span style=color:#ce5c00;font-weight:700>()</span> <span style=color:#ce5c00;font-weight:700>{</span>
 	<span style=color:#8f5902;font-style:italic>// given
@@ -480,7 +480,7 @@ For detail information check out <a href=/fixture-monkey/kr/docs/v0.3.x/features
     
     <span style=color:#000>then</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>actual</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>items</span><span style=color:#ce5c00;font-weight:700>[</span><span style=color:#000>0</span><span style=color:#ce5c00;font-weight:700>]).</span><span style=color:#c4a000>isEqualTo</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#4e9a06>&#34;set&#34;</span><span style=color:#ce5c00;font-weight:700>);</span>
 <span style=color:#ce5c00;font-weight:700>}</span>
-</code></pre></div><h3 id=manipulate-specific-index-element-field>Manipulate Specific Index Element Field</h3>
+</code></pre></div><h3 id=특정-인덱스-요소의-필드를-제어하는-연산>특정 인덱스 요소의 필드를 제어하는 연산</h3>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#5c35cc;font-weight:700>@Test</span>
 <span style=color:#204a87;font-weight:700>void</span> <span style=color:#000>setElementField</span><span style=color:#ce5c00;font-weight:700>()</span> <span style=color:#ce5c00;font-weight:700>{</span>
 	<span style=color:#8f5902;font-style:italic>// given
@@ -499,7 +499,7 @@ For detail information check out <a href=/fixture-monkey/kr/docs/v0.3.x/features
     <span style=color:#000>then</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>actual</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>orders</span><span style=color:#ce5c00;font-weight:700>).</span><span style=color:#c4a000>hasSize</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>1</span><span style=color:#ce5c00;font-weight:700>);</span>
     <span style=color:#000>then</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>actual</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>orders</span><span style=color:#ce5c00;font-weight:700>[</span><span style=color:#000>0</span><span style=color:#ce5c00;font-weight:700>].</span><span style=color:#c4a000>id</span><span style=color:#ce5c00;font-weight:700>).</span><span style=color:#c4a000>isEqualTo</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#4e9a06>&#34;1&#34;</span><span style=color:#ce5c00;font-weight:700>);</span>
 <span style=color:#ce5c00;font-weight:700>}</span>
-</code></pre></div><h3 id=manipulate-any-index-element>Manipulate Any Index Element</h3>
+</code></pre></div><h3 id=임의의-요소를-제어하는-연산>임의의 요소를 제어하는 연산</h3>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#5c35cc;font-weight:700>@Test</span>
 <span style=color:#204a87;font-weight:700>void</span> <span style=color:#000>any</span><span style=color:#ce5c00;font-weight:700>()</span> <span style=color:#ce5c00;font-weight:700>{</span>
 	<span style=color:#8f5902;font-style:italic>// given
@@ -516,7 +516,7 @@ For detail information check out <a href=/fixture-monkey/kr/docs/v0.3.x/features
     
     <span style=color:#000>then</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>actual</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>getItems</span><span style=color:#ce5c00;font-weight:700>()).</span><span style=color:#c4a000>anyMatch</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>it</span> <span style=color:#ce5c00;font-weight:700>-&gt;</span> <span style=color:#000>it</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>equals</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#4e9a06>&#34;set&#34;</span><span style=color:#ce5c00;font-weight:700>));</span>
 <span style=color:#ce5c00;font-weight:700>}</span>
-</code></pre></div><h3 id=manipulate-all-index-element>Manipulate All Index Element</h3>
+</code></pre></div><h3 id=모든-요소를-제어하는-연산>모든 요소를 제어하는 연산</h3>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#5c35cc;font-weight:700>@Test</span>
 <span style=color:#204a87;font-weight:700>void</span> <span style=color:#000>all</span><span style=color:#ce5c00;font-weight:700>()</span> <span style=color:#ce5c00;font-weight:700>{</span>
 	<span style=color:#8f5902;font-style:italic>// given
