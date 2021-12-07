@@ -23,7 +23,7 @@ import static com.navercorp.fixturemonkey.Constants.DEFAULT_ELEMENT_MIN_SIZE;
 
 import javax.annotation.Nullable;
 
-import com.navercorp.fixturemonkey.api.seed.Randoms;
+import com.navercorp.fixturemonkey.api.random.Randoms;
 
 public final class ContainerSizeConstraint {
 	@Nullable

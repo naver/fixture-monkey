@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Objects;
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
-import com.navercorp.fixturemonkey.api.seed.Randoms;
+import com.navercorp.fixturemonkey.api.random.Randoms;
 import com.navercorp.fixturemonkey.customizer.ExpressionSpec;
 
 public final class ArbitrarySpecAny implements BuilderManipulator {

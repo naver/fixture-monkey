@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-import com.navercorp.fixturemonkey.api.seed.Randoms;
+import com.navercorp.fixturemonkey.api.random.Randoms;
 
 final class DefaultIterableSpec implements IterableSpec, ExpressionSpecVisitor {
 	private static final String EMPTY_FIELD = "";
