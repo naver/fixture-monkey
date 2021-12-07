@@ -25,6 +25,10 @@ import org.apiguardian.api.API.Status;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public interface PreArbitraryManipulator extends ArbitraryExpressionManipulator, BuilderManipulator {
+	/**
+	 * Returns value actually used by manipulator.
+	 * It may differ from input value.
+	 */
 	@Nullable
 	Object getApplicableValue();
 
