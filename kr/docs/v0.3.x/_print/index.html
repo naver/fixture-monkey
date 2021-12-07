@@ -92,7 +92,7 @@ This the multi-page printable view of this section.
 </div>
 <h1 class=title>Hello, Fixture Monkey</h1>
 <ul>
-<li>1: <a href=#pg-b826e620618d1826c0c57f52d5d23375>Getting Started</a></li>
+<li>1: <a href=#pg-b826e620618d1826c0c57f52d5d23375>시작해보기</a></li>
 <ul>
 </ul>
 <li>2: <a href=#pg-ece02679bffe30021d2a2b3bae21ceb1>Examples</a></li>
@@ -161,14 +161,14 @@ Fixture Monkey는 테스트 환경에서 사용만을 권장합니다.
 </div>
 </div>
 <div class=td-content style=page-break-before:always>
-<h1 id=pg-b826e620618d1826c0c57f52d5d23375>1 - Getting Started</h1>
-<h2 id=prerequisites>Prerequisites</h2>
+<h1 id=pg-b826e620618d1826c0c57f52d5d23375>1 - 시작해보기</h1>
+<h2 id=환경>환경</h2>
 <ul>
 <li>JDK 8+</li>
 <li>JUnit 5 platform</li>
 <li>jqwik 1.3.9</li>
 </ul>
-<h2 id=installation>Installation</h2>
+<h2 id=설치>설치</h2>
 <h3 id=gradle>Gradle</h3>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-groovy data-lang=groovy><span style=color:#000>testImplementation</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#4e9a06>&#34;com.navercorp.fixturemonkey:fixture-monkey-starter:0.3.1&#34;</span><span style=color:#ce5c00;font-weight:700>)</span>
 </code></pre></div><h3 id=maven>Maven</h3>
@@ -178,14 +178,13 @@ Fixture Monkey는 테스트 환경에서 사용만을 권장합니다.
   <span style=color:#204a87;font-weight:700>&lt;version&gt;</span>0.3.1<span style=color:#204a87;font-weight:700>&lt;/version&gt;</span>
   <span style=color:#204a87;font-weight:700>&lt;scope&gt;</span>test<span style=color:#204a87;font-weight:700>&lt;/scope&gt;</span>
 <span style=color:#204a87;font-weight:700>&lt;/dependency&gt;</span>
-</code></pre></div><h2 id=try-it-out>Try it out!</h2>
+</code></pre></div><h2 id=간단한-예제>간단한 예제</h2>
 <div class="alert alert-primary" role=alert>
 <h4 class=alert-heading>Tip</h4>
-<p>Getter and Setter is not mandatory.
-You could generate immutable instances by Fixture Monkey with <a href=/fixture-monkey/kr/docs/v0.3.x/features/arbitrarygenerator/#builderarbitrarygenerator>BuilderArbitraryGenerator</a> or <a href=/fixture-monkey/kr/docs/v0.3.x/features/arbitrarygenerator/#jacksonarbitrarygenerator>JacksonArbitraryGenerator</a>.</p>
-<p>You would not need to change anything for using Fixture Monkey.
-Choose the way of instantiating.
-Check out details <a href=/fixture-monkey/kr/docs/v0.3.x/features/arbitrarygenerator/>here</a>.</p>
+<p>게터와 세터는 필수가 아닙니다.
+Fixture Monkey를 사용할 때 프로덕션 코드를 변경하지 않아도 됩니다. 객체마다 다른 생성 방식을 사용할 수 있습니다.
+예를 들어, 불변한 객체라면 정의 방법에 따라 <a href=/fixture-monkey/kr/docs/v0.3.x/features/arbitrarygenerator/#builderarbitrarygenerator>BuilderArbitraryGenerator</a> 나 <a href=/fixture-monkey/kr/docs/v0.3.x/features/arbitrarygenerator/#jacksonarbitrarygenerator>JacksonArbitraryGenerator</a>를 사용하시면 됩니다.</p>
+<p>자세한 사항은 <a href=/fixture-monkey/kr/docs/v0.3.x/features/arbitrarygenerator/>여기</a>를 참조해주세요.</p>
 </div>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#5c35cc;font-weight:700>@Data</span>   <span style=color:#8f5902;font-style:italic>// lombok getter, setter
 </span><span style=color:#8f5902;font-style:italic></span><span style=color:#204a87;font-weight:700>public</span> <span style=color:#204a87;font-weight:700>class</span> <span style=color:#000>Order</span> <span style=color:#ce5c00;font-weight:700>{</span>
@@ -230,10 +229,10 @@ Check out details <a href=/fixture-monkey/kr/docs/v0.3.x/features/arbitrarygener
 </span><span style=color:#8f5902;font-style:italic></span>	<span style=color:#000>then</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>actual</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>getItems</span><span style=color:#ce5c00;font-weight:700>()).</span><span style=color:#c4a000>allMatch</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>it</span> <span style=color:#ce5c00;font-weight:700>-&gt;</span> <span style=color:#000>it</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>length</span><span style=color:#ce5c00;font-weight:700>()</span> <span style=color:#ce5c00;font-weight:700>&lt;=</span> <span style=color:#000>10</span><span style=color:#ce5c00;font-weight:700>);</span> <span style=color:#8f5902;font-style:italic>// @NotBlank @Size(max = 10)
 </span><span style=color:#8f5902;font-style:italic></span>    <span style=color:#000>then</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>actual</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>getOrderedAt</span><span style=color:#ce5c00;font-weight:700>()).</span><span style=color:#c4a000>isBeforeOrEqualTo</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>Instant</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>now</span><span style=color:#ce5c00;font-weight:700>());</span> <span style=color:#8f5902;font-style:italic>// @PastOrPresent
 </span><span style=color:#8f5902;font-style:italic></span><span style=color:#ce5c00;font-weight:700>}</span>
-</code></pre></div><h2 id=where-should-i-go-next>Where should I go next?</h2>
+</code></pre></div><h2 id=더-알아두면-좋은-정보들>더 알아두면 좋은 정보들</h2>
 <ul>
-<li><a href=/fixture-monkey/kr/docs/v0.3.x/examples/>Examples</a></li>
-<li><a href=/fixture-monkey/kr/docs/v0.3.x/features/defaultsupportedtypes/>DefaultSupportedTypes</a></li>
+<li><a href=/fixture-monkey/kr/docs/v0.3.x/examples/>예제</a></li>
+<li><a href=/fixture-monkey/kr/docs/v0.3.x/features/defaultsupportedtypes/>기본적으로 생성해주는 객체 타입</a></li>
 <li><a href=/fixture-monkey/kr/docs/v0.3.x/features/arbitrarybuilder/>ArbitraryBuilder</a></li>
 <li><a href=/fixture-monkey/kr/docs/v0.3.x/features/manipulator/>Manipulator</a></li>
 <li><a href=/fixture-monkey/kr/docs/v0.3.x/faq/>FAQ</a></li>
