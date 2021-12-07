@@ -4,7 +4,7 @@ linkTitle: "ArbitraryCustomizer"
 weight: 3
 ---
 {{< alert color="secondary" title="Note">}}
-For detail information check out [here]({{< relref "/docs/v0.3.x/features/arbitrarycustomizer" >}})
+자세한 내용은 [여기]({{< relref "/docs/v0.3.x/features/arbitrarycustomizer" >}})를 확인해주세요.
 {{< /alert >}}
 
 ```java
@@ -26,7 +26,7 @@ class PersonArbitraryCustomizer implements ArbitraryCustomizer<Person> {
 
 ```
 
-## Lambda
+## 람다로 정의하기
 
 ```java
 FixtureCustomizer<Person> personAgeFixedCustomizer = person -> {
@@ -36,7 +36,7 @@ FixtureCustomizer<Person> personAgeFixedCustomizer = person -> {
 
 ```
 
-## Apply Customizer to FixtureMonkey
+## 전역적으로 FixtureCustomizer 적용하기
 
 ```java
 FixtureMonkey fixture = FixtureMonkey.builder()
@@ -46,25 +46,25 @@ FixtureMonkey fixture = FixtureMonkey.builder()
 ```
 
 
-## Apply Customizer to ArbitraryBuilder
+## ArbitraryBuilder에 FixtureCustomizer 적용하기
 
 ```java
 FixtureMonkey fixture = FixtureMonkey.builder().build();
 
-		Person person = fixture.giveMeBuilder(Person.class)
-			.customize(new PersonFixtureCustomizer())
-			.sample();
+Person person = fixture.giveMeBuilder(Person.class)
+    .customize(new PersonFixtureCustomizer())
+    .sample();
 
-		List<Person> persons = fixture.giveMeBuilder(Person.class)
-			.customize(new PersonFixtureCustomizer())
-			.sampleList(3);
+List<Person> persons = fixture.giveMeBuilder(Person.class)
+    .customize(new PersonFixtureCustomizer())
+    .sampleList(3);
 
-		Person person20Age = fixture.giveMeBuilder(Person.class)
-			.customize(p -> {
-				p.setAge(20);
-				return p;
-			})
-			.sample();
+Person person20Age = fixture.giveMeBuilder(Person.class)
+    .customize(p -> {
+        p.setAge(20);
+        return p;
+    })
+    .sample();
 ```
 
 ## BuilderArbitraryCustomizer

@@ -4,11 +4,11 @@ weight: 3
 ---
 
 {{< alert color="secondary" title="Note">}}
-For detail information check out [here]({{< relref "/docs/v0.3.x/features/manipulator#expression" >}})
+자세한 내용은 [여기]({{< relref "/docs/v0.3.x/features/manipulator#expression" >}})를 참조해주세요.
 {{< /alert >}}
 
 
-## ExpressionSpec
+## ExpressionSpec을 적용하는 예시
 ```java
 @Test
 void expressionSpec() {
@@ -26,7 +26,7 @@ void expressionSpec() {
 }
 ```
 
-### Apply Multiple ExpressionSpecs
+### 여러 개의 ExpressionSpec을 적용하는 예시
 ```java
 @Test
 void exprssionSpecs() {
@@ -48,7 +48,7 @@ void exprssionSpecs() {
 }
 ```
 
-### Apply Random ExpressionSpec
+### 여러 개의 ExpressionSpec 중 임의의 하나를 적용하는 예시
 ```java
 @Test
 void specAny() {
@@ -75,7 +75,7 @@ void specAny() {
 
 ## IterableSpec
 
-### Manipulate Iterable Size
+### 내부 컬렉션의 크기를 제어하는 연산
 ```java
 @Test
 void size() {
@@ -93,7 +93,7 @@ void size() {
 ```
 
 
-### Manipulate Specific Index Element
+### 특정 인덱스 요소를 제어하는 연산
 ```java
 @Test
 void setElement() {
@@ -114,7 +114,7 @@ void setElement() {
 }
 ```
 
-### Manipulate Specific Index Element Field
+### 특정 인덱스 요소의 필드를 제어하는 연산
 ```java
 @Test
 void setElementField() {
@@ -136,7 +136,7 @@ void setElementField() {
 }
 ```
 
-### Manipulate Any Index Element
+### 임의의 요소를 제어하는 연산
 ```java
 @Test
 void any() {
@@ -156,7 +156,7 @@ void any() {
 }
 ```
 
-### Manipulate All Index Element
+### 모든 요소를 제어하는 연산
 
 ```java
 @Test

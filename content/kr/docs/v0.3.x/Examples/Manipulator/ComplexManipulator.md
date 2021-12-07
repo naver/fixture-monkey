@@ -1,9 +1,9 @@
 ---
-title: "Complex Manipulator"
+title: "복잡한 연산"
 weight: 2
 ---
 
-## Manipulate Existing Instance
+## 이미 선언한 객체 제어
 ```java
 @Test
 void manipulateExistingInstance() {
@@ -22,7 +22,7 @@ void manipulateExistingInstance() {
 }
 ```
 
-## Map
+## Map 연산
 ```java
 @Test
 void map() {
@@ -40,7 +40,7 @@ void map() {
 }
 ```
 
-## Zip
+## Zip 연산
 ```java
 @Test
 void zip(){
@@ -60,7 +60,7 @@ void zip(){
 }
 ```
 
-## AcceptIf
+## 생성할 객체가 특정 조건을 만족할경우 실행할 연산
 ```java
 @Test
 void acceptIf() {
@@ -81,7 +81,7 @@ void acceptIf() {
 
 ```
 
-## Fixed
+## 객체의 모든 필드가 항상 같은 값을 반환하도록 고정하는 연산
 ```java
 @Test
 void fixed() {	
