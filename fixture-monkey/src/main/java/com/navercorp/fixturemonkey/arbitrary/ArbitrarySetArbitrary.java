@@ -40,7 +40,7 @@ public final class ArbitrarySetArbitrary<T> extends AbstractArbitrarySet<T> {
 
 	@Nullable
 	@Override
-	public T getValue() {
+	public T getApplicableValue() {
 		if (this.limit > 0) {
 			limit--;
 			return value.sample();
@@ -49,7 +49,7 @@ public final class ArbitrarySetArbitrary<T> extends AbstractArbitrarySet<T> {
 	}
 
 	@Override
-	public Object getRawValue() {
+	public Object getInputValue() {
 		return value;
 	}
 

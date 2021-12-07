@@ -138,7 +138,7 @@ public final class ArbitraryNode<T> {
 
 	public void apply(PreArbitraryManipulator preArbitraryManipulator) {
 		if (preArbitraryManipulator instanceof AbstractArbitrarySet) {
-			Object toValue = preArbitraryManipulator.getValue();
+			Object toValue = preArbitraryManipulator.getApplicableValue();
 
 			if (toValue != null) {
 				Class<?> clazz = this.getType().getType();

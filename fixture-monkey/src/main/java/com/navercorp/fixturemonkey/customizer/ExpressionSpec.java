@@ -456,7 +456,7 @@ public final class ExpressionSpec {
 			.filter(AbstractArbitrarySet.class::isInstance)
 			.map(AbstractArbitrarySet.class::cast)
 			.filter(it -> it.getArbitraryExpression().equals(ArbitraryExpression.from(expression)))
-			.map(AbstractArbitrarySet::getRawValue)
+			.map(AbstractArbitrarySet::getInputValue)
 			.findAny();
 	}
 
