@@ -103,7 +103,7 @@ testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter:0.3.1")
 * fixture-monkey-mockito (Experimental)
   - Supports for generating interfaces and abstract classes as [mockito](https://github.com/mockito/mockito) objects.
 
-## Contributor
+## Contributors
 * 🐒 [ah.jo](https://github.com/seongside)
 * 🐒 [mhyeon-lee](https://github.com/mhyeon-lee)
 * 🐒 [acktsap](https://github.com/acktsap)
