@@ -74,13 +74,13 @@ public class Randoms {
 	public static Random newRandom() {
 		return USE_JQWIK_ENGINE
 			? SourceOfRandomness.newRandom()
-			: new XORShiftRandom();
+			: new XorShiftRandom();
 	}
 
 	public static Random newRandom(final long seed) {
 		return USE_JQWIK_ENGINE
 			? SourceOfRandomness.newRandom(seed)
-			: new XORShiftRandom(seed);
+			: new XorShiftRandom(seed);
 	}
 
 	public static Random current() {
@@ -106,15 +106,15 @@ public class Randoms {
 	 *     <li>nextBytes(int)</li>
 	 * </ul>
 	 */
-	private static class XORShiftRandom extends Random {
+	private static class XorShiftRandom extends Random {
 		private long seed;
 
-		private XORShiftRandom() {
+		private XorShiftRandom() {
 			this(System.nanoTime());
 		}
 
-		private XORShiftRandom(long seed) {
-			if (seed == 0l) {
+		private XorShiftRandom(long seed) {
+			if (seed == 0L) {
 				throw new IllegalArgumentException("0L is not an allowed seed value");
 			}
 			this.seed = seed;
@@ -122,9 +122,9 @@ public class Randoms {
 
 		@Override
 		protected int next(int nbits) {
-			long x = nextLong();
-			x &= ((1L << nbits) - 1);
-			return (int) x;
+			long value = nextLong();
+			value &= ((1L << nbits) - 1);
+			return (int)value;
 		}
 
 		/**
@@ -132,12 +132,12 @@ public class Randoms {
 		 */
 		@Override
 		public long nextLong() {
-			long x = this.seed;
-			x ^= (x << 21);
-			x ^= (x >>> 35);
-			x ^= (x << 4);
-			this.seed = x;
-			return x;
+			long value = this.seed;
+			value ^= (value << 21);
+			value ^= (value >>> 35);
+			value ^= (value << 4);
+			this.seed = value;
+			return value;
 		}
 	}
 }
