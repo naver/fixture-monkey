@@ -35,6 +35,8 @@ import com.navercorp.fixturemonkey.generator.BeanArbitraryGenerator;
 import com.navercorp.fixturemonkey.validator.ArbitraryValidator;
 import com.navercorp.fixturemonkey.validator.CompositeArbitraryValidator;
 
+import javax.annotation.Nonnull;
+
 public class FixtureMonkeyBuilder {
 	private ArbitraryGenerator defaultGenerator = new BeanArbitraryGenerator();
 	private Map<Class<?>, ArbitraryGenerator> generatorMap = new HashMap<>();
@@ -169,6 +171,7 @@ public class FixtureMonkeyBuilder {
 		return this;
 	}
 
+	@Nonnull
 	public FixtureMonkey build() {
 		if (options == null) {
 			this.options = optionsBuilder.build();
