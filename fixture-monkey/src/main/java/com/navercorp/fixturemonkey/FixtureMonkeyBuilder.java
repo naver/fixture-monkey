@@ -23,6 +23,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 
+import javax.annotation.Nonnull;
+
 import com.navercorp.fixturemonkey.ArbitraryOption.FixtureOptionsBuilder;
 import com.navercorp.fixturemonkey.arbitrary.ContainerArbitraryNodeGenerator;
 import com.navercorp.fixturemonkey.arbitrary.InterfaceSupplier;
@@ -34,8 +36,6 @@ import com.navercorp.fixturemonkey.generator.ArbitraryGenerator;
 import com.navercorp.fixturemonkey.generator.BeanArbitraryGenerator;
 import com.navercorp.fixturemonkey.validator.ArbitraryValidator;
 import com.navercorp.fixturemonkey.validator.CompositeArbitraryValidator;
-
-import javax.annotation.Nonnull;
 
 public class FixtureMonkeyBuilder {
 	private ArbitraryGenerator defaultGenerator = new BeanArbitraryGenerator();
