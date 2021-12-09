@@ -23,6 +23,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 
+import javax.annotation.Nonnull;
+
 import com.navercorp.fixturemonkey.ArbitraryOption.FixtureOptionsBuilder;
 import com.navercorp.fixturemonkey.arbitrary.ContainerArbitraryNodeGenerator;
 import com.navercorp.fixturemonkey.arbitrary.InterfaceSupplier;
@@ -169,6 +171,7 @@ public class FixtureMonkeyBuilder {
 		return this;
 	}
 
+	@Nonnull
 	public FixtureMonkey build() {
 		if (options == null) {
 			this.options = optionsBuilder.build();
