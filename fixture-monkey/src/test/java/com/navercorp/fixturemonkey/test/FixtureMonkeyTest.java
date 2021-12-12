@@ -23,7 +23,6 @@ import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.assertj.core.api.BDDAssertions.thenNoException;
 import static org.assertj.core.api.BDDAssertions.thenThrownBy;
-import static org.assertj.core.api.BDDAssumptions.given;
 
 import java.util.Iterator;
 import java.util.List;
@@ -31,8 +30,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
-
-import org.junit.platform.commons.util.StringUtils;
 
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
@@ -70,6 +67,7 @@ import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.NestedStringWithN
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.StringAndInt;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.StringWithNotBlank;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.StringWithNullable;
+import com.navercorp.fixturemonkey.util.StringUtils;
 
 class FixtureMonkeyTest {
 	@Property
