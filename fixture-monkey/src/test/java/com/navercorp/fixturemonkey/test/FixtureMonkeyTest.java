@@ -1383,13 +1383,13 @@ class FixtureMonkeyTest {
 
 	@Property
 	@Domain(FixtureMonkeyTestSpecs.class)
-	void giveMeSetMySelfAsArbitrary(@ForAll StringAndInt expected) {
+	void giveMeSetMySelfAsArbitraryIsNotDecomposed(@ForAll StringAndInt expected) {
 		StringAndInt actual = SUT.giveMeBuilder(StringAndInt.class)
 			.set(Arbitraries.just(expected))
 			.set("value2.value", 1)
 			.sample();
 
 		then(actual.getValue1()).isEqualTo(expected.getValue1());
-		then(actual.getValue2().getValue()).isEqualTo(1);
+		then(actual.getValue2()).isEqualTo(expected.getValue2());
 	}
 }

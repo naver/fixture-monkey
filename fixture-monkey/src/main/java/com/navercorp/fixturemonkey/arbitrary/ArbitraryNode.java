@@ -137,8 +137,12 @@ public final class ArbitraryNode<T> {
 		setContainerSizeConstraint(new ContainerSizeConstraint(min, max));
 	}
 
+	@SuppressWarnings("unchecked")
 	public void apply(PreArbitraryManipulator preArbitraryManipulator) {
-		if (preArbitraryManipulator instanceof AbstractArbitrarySet) {
+		if (preArbitraryManipulator instanceof ArbitrarySetArbitrary) {
+			this.setFixed(true);
+			this.setArbitrary((Arbitrary<T>)preArbitraryManipulator.getApplicableValue());
+		} else if (preArbitraryManipulator instanceof AbstractArbitrarySet) {
 			Object toValue = preArbitraryManipulator.getApplicableValue();
 
 			if (toValue != null) {
@@ -165,7 +169,6 @@ public final class ArbitraryNode<T> {
 	@SuppressWarnings("unchecked")
 	private void setValueRecursively(Object value) {
 		this.setManipulated(true);
-		this.setFixed(true);
 		Class<?> type = this.getType().getType();
 		List<Field> fields = extractFields(type);
 

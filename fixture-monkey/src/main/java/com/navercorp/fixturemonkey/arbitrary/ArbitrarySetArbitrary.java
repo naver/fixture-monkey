@@ -40,10 +40,10 @@ public final class ArbitrarySetArbitrary<T> extends AbstractArbitrarySet<T> {
 
 	@Nullable
 	@Override
-	public T getApplicableValue() {
+	public Arbitrary<T> getApplicableValue() {
 		if (this.limit > 0) {
 			limit--;
-			return value.sample();
+			return value;
 		}
 		return null;
 	}
