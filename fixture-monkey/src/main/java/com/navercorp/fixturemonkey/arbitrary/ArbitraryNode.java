@@ -24,6 +24,7 @@ import static com.navercorp.fixturemonkey.TypeSupports.extractFields;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -168,7 +169,7 @@ public final class ArbitraryNode<T> {
 		Class<?> type = this.getType().getType();
 		List<Field> fields = extractFields(type);
 
-		if (this.children.isEmpty() || value == null) {
+		if (!getType().isContainer() && (this.children.isEmpty() || value == null)) {
 			if (value == null) {
 				this.setFixedAsNull(true);
 			}
@@ -179,6 +180,21 @@ public final class ArbitraryNode<T> {
 		if (value instanceof Map) {
 			this.setArbitrary((Arbitrary<T>)Arbitraries.just(value));
 			return;
+		} else if (value instanceof Collection) {
+			children.clear();
+			ArbitraryType<Object> childType = this.type.getGenericArbitraryType(0);
+			int index = 0;
+			for (Object element : (Collection<Object>)value) {
+				ArbitraryNode<?> nextNode = ArbitraryNode.builder()
+					.type(childType)
+					.value(element)
+					.propertyName(propertyName)
+					.indexOfIterable(index)
+					.build();
+				index++;
+				this.children.add(nextNode);
+				nextNode.setValueRecursively(element);
+			}
 		}
 
 		for (int i = 0; i < fields.size(); i++) {

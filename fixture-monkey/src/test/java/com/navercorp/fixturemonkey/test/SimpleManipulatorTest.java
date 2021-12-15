@@ -934,4 +934,18 @@ class SimpleManipulatorTest {
 
 		then(actual.getValues()).hasSizeBetween(0, 4);
 	}
+
+	@Property
+	void giveMeSetList() {
+		List<Integer> integerList = new ArrayList<>();
+		integerList.add(1);
+		integerList.add(2);
+		integerList.add(3);
+		// when
+		IntegerList actual = SUT.giveMeBuilder(IntegerList.class)
+			.set("values", integerList)
+			.sample();
+
+		then(actual.getValues()).isEqualTo(integerList);
+	}
 }
