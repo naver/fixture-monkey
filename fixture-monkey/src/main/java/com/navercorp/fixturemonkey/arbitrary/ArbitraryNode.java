@@ -169,6 +169,7 @@ public final class ArbitraryNode<T> {
 	@SuppressWarnings("unchecked")
 	private void setValueRecursively(Object value) {
 		this.setManipulated(true);
+		this.setActive(true);
 		Class<?> type = this.getType().getType();
 		List<Field> fields = extractFields(type);
 
@@ -198,6 +199,7 @@ public final class ArbitraryNode<T> {
 				this.children.add(nextNode);
 				nextNode.setValueRecursively(element);
 			}
+			return;
 		}
 
 		for (int i = 0; i < fields.size(); i++) {
