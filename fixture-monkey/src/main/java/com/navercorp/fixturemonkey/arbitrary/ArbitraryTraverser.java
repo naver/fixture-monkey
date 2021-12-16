@@ -74,7 +74,7 @@ public final class ArbitraryTraverser {
 	}
 
 	/**
-	 * Deprecated Use traverse(ArbitraryTree, boolean, FieldNameResolver) instead.
+	 * Deprecated Use traverse(ArbitraryTree, boolean, PropertyNameResolver) instead.
 	 */
 	@Deprecated
 	public <T> void traverse(ArbitraryTree<T> tree, boolean keyOfMapStructure, FieldNameResolver fieldNameResolver) {
@@ -82,7 +82,7 @@ public final class ArbitraryTraverser {
 	}
 
 	/**
-	 * Deprecated Use traverse(ArbitraryNode, boolean, FieldNameResolver) instead.
+	 * Deprecated Use traverse(ArbitraryNode, boolean, PropertyNameResolver) instead.
 	 */
 	@Deprecated
 	public <T> void traverse(ArbitraryNode<T> node, boolean keyOfMapStructure, FieldNameResolver fieldNameResolver) {
