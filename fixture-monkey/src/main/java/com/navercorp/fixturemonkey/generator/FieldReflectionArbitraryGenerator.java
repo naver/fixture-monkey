@@ -31,7 +31,7 @@ import org.junit.platform.commons.util.ReflectionUtils.HierarchyTraversalMode;
 
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
-import net.jqwik.api.Combinators;
+import net.jqwik.api.Builders;
 
 import com.navercorp.fixturemonkey.api.property.FieldProperty;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
@@ -72,8 +72,8 @@ public final class FieldReflectionArbitraryGenerator extends AbstractArbitraryGe
 
 		this.arbitraryCustomizers.customizeFields(clazz, fieldArbitraries);
 
-		Combinators.BuilderCombinator builderCombinator = Combinators.withBuilder(
-			() -> ReflectionUtils.newInstance(clazz));
+		Builders.BuilderCombinator builderCombinator =
+			Builders.withBuilder(() -> ReflectionUtils.newInstance(clazz));
 		for (Map.Entry<String, Arbitrary> entry : fieldArbitraries.entrySet()) {
 			String fieldName = entry.getKey();
 			String fieldKey = clazz.getName() + "#" + fieldName;

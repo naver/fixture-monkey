@@ -34,7 +34,7 @@ import org.junit.platform.commons.util.ReflectionUtils;
 
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
-import net.jqwik.api.Combinators;
+import net.jqwik.api.Builders;
 
 import com.navercorp.fixturemonkey.api.property.FieldProperty;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
@@ -75,8 +75,7 @@ public final class BeanArbitraryGenerator extends AbstractArbitraryGenerator
 		this.arbitraryCustomizers.customizeFields(clazz, fieldArbitraries);
 
 		Map<String, PropertyDescriptor> propertyDescriptorMap = this.getPropertyDescriptorsByName(clazz);
-		Combinators.BuilderCombinator builderCombinator = Combinators.withBuilder(
-			() -> ReflectionUtils.newInstance(clazz));
+		Builders.BuilderCombinator builderCombinator = Builders.withBuilder(() -> ReflectionUtils.newInstance(clazz));
 		for (Map.Entry<String, Arbitrary> entry : fieldArbitraries.entrySet()) {
 			String fieldName = entry.getKey();
 			PropertyDescriptor propertyDescriptor = propertyDescriptorMap.get(fieldName);

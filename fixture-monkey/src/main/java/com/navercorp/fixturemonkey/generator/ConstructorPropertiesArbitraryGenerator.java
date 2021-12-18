@@ -33,7 +33,7 @@ import org.junit.platform.commons.logging.LoggerFactory;
 import org.junit.platform.commons.util.ReflectionUtils;
 
 import net.jqwik.api.Arbitrary;
-import net.jqwik.api.Combinators;
+import net.jqwik.api.Builders;
 
 import com.navercorp.fixturemonkey.api.property.FieldProperty;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
@@ -91,8 +91,8 @@ public final class ConstructorPropertiesArbitraryGenerator extends AbstractArbit
 		String[] providedParameterNames = constructorProperties.value();
 		Parameter[] actualParameters = constructor.getParameters();
 
-		Combinators.BuilderCombinator<List<Object>> builderCombinator = Combinators.withBuilder(
-			() -> new ArrayList(providedParameterNames.length));
+		Builders.BuilderCombinator<List<Object>> builderCombinator =
+			Builders.withBuilder(() -> new ArrayList(providedParameterNames.length));
 		for (int i = 0; i < providedParameterNames.length; ++i) {
 			String fieldName = providedParameterNames[i];
 			Arbitrary<?> arbitrary = fieldArbitraries.getArbitrary(fieldName);

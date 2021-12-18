@@ -22,8 +22,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import net.jqwik.api.Arbitrary;
-import net.jqwik.api.Combinators;
-import net.jqwik.api.Combinators.BuilderCombinator;
+import net.jqwik.api.Builders;
 
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryNode;
 
@@ -32,7 +31,7 @@ final class StreamBuilder {
 	public static final StreamBuilder INSTANCE = new StreamBuilder();
 
 	<T> Arbitrary<T> build(List<ArbitraryNode> nodes) {
-		BuilderCombinator<Stream.Builder> streamBuilderCombinator = Combinators.withBuilder(Stream::builder);
+		Builders.BuilderCombinator<Stream.Builder> streamBuilderCombinator = Builders.withBuilder(Stream::builder);
 		if (nodes.isEmpty()) {
 			return (Arbitrary<T>)streamBuilderCombinator.build(Stream.Builder::build);
 		}

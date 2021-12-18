@@ -28,6 +28,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.junit.platform.commons.util.ReflectionUtils;
 
 import net.jqwik.api.Arbitrary;
+import net.jqwik.api.Builders;
 import net.jqwik.api.Combinators;
 
 import com.navercorp.fixturemonkey.api.property.FieldProperty;
@@ -82,8 +83,8 @@ public final class BuilderArbitraryGenerator extends AbstractArbitraryGenerator 
 
 		Method builderMethod = BUILDER_CACHE.get(clazz);
 		Class<?> builderType = this.getBuilderType(clazz);
-		Combinators.BuilderCombinator builderCombinator = Combinators.withBuilder(() ->
-			ReflectionUtils.invokeMethod(builderMethod, null));
+		Builders.BuilderCombinator builderCombinator =
+			Builders.withBuilder(() -> ReflectionUtils.invokeMethod(builderMethod, null));
 
 		for (Map.Entry<String, Arbitrary> entry : fieldArbitraries.entrySet()) {
 			String methodName = entry.getKey();
@@ -110,7 +111,7 @@ public final class BuilderArbitraryGenerator extends AbstractArbitraryGenerator 
 		List<Map.Entry<Arbitrary, Combinators.F2<?, ?, ?>>> chains = fieldArbitraries.getCombinationChains();
 
 		for (Map.Entry<Arbitrary, Combinators.F2<?, ?, ?>> entry : chains) {
-			builderCombinator = builderCombinator.use(entry.getKey()).in(entry.getValue());
+			builderCombinator = builderCombinator.use(entry.getKey()).in((builder, value) -> entry.getValue());
 		}
 
 		Method buildMethod = BUILD_METHOD_CACHE.computeIfAbsent(builderType, t -> {

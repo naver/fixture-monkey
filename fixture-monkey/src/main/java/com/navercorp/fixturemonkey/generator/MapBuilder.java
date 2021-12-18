@@ -23,8 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 import net.jqwik.api.Arbitrary;
-import net.jqwik.api.Combinators;
-import net.jqwik.api.Combinators.BuilderCombinator;
+import net.jqwik.api.Builders;
 
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryNode;
 
@@ -33,8 +32,8 @@ final class MapBuilder {
 
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	<T> Arbitrary<T> build(List<ArbitraryNode> nodes) {
-		BuilderCombinator<MapBuilderFrame> mapBuilder =
-			Combinators.withBuilder(MapBuilderFrame::new);
+		Builders.BuilderCombinator<MapBuilderFrame> mapBuilder =
+			Builders.withBuilder(MapBuilderFrame::new);
 
 		if (nodes.isEmpty()) {
 			return (Arbitrary<T>)mapBuilder.build(MapBuilderFrame::build);
