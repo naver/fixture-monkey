@@ -18,8 +18,19 @@
 
 package com.navercorp.fixturemonkey.arbitrary;
 
-import net.jqwik.api.Arbitrary;
+import javax.annotation.Nullable;
 
-public interface PreArbitraryManipulator<T> extends ArbitraryExpressionManipulator, BuilderManipulator {
-	Arbitrary<T> apply(Arbitrary<T> from);
+import org.apiguardian.api.API;
+import org.apiguardian.api.API.Status;
+
+@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+public interface PreArbitraryManipulator extends ArbitraryExpressionManipulator, BuilderManipulator {
+	/**
+	 * Returns value actually used by manipulator.
+	 * It may differ from input value.
+	 */
+	@Nullable
+	Object getApplicableValue();
+
+	Object getInputValue();
 }

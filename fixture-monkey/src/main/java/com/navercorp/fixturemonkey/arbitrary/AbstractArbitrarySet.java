@@ -23,7 +23,7 @@ import java.util.Objects;
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 
 public abstract class AbstractArbitrarySet<T> extends AbstractArbitraryExpressionManipulator
-	implements PreArbitraryManipulator<T> {
+	implements PreArbitraryManipulator {
 
 	public AbstractArbitrarySet(ArbitraryExpression arbitraryExpression) {
 		super(arbitraryExpression);
@@ -34,8 +34,6 @@ public abstract class AbstractArbitrarySet<T> extends AbstractArbitraryExpressio
 	public final void accept(ArbitraryBuilder arbitraryBuilder) {
 		arbitraryBuilder.apply(this);
 	}
-
-	public abstract Object getValue();
 
 	@Override
 	public boolean equals(Object obj) {

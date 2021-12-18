@@ -578,8 +578,8 @@ public final class ArbitraryBuilder<T> {
 	public void apply(AbstractArbitrarySet<T> fixtureSet) {
 		Collection<ArbitraryNode> foundNodes = this.findNodesByExpression(fixtureSet.getArbitraryExpression());
 
-		if (!foundNodes.isEmpty()) {
-			for (ArbitraryNode<T> foundNode : foundNodes) {
+		for (ArbitraryNode<T> foundNode : foundNodes) {
+			if (fixtureSet.isApplicable()) {
 				foundNode.apply(fixtureSet);
 			}
 		}

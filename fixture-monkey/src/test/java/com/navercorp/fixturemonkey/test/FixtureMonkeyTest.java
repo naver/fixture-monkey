@@ -1367,4 +1367,28 @@ class FixtureMonkeyTest {
 
 		then(actual.getValue1().getValue()).isEqualTo("test");
 	}
+
+	@Property
+	@Domain(FixtureMonkeyTestSpecs.class)
+	void giveMeSetMySelf(@ForAll StringAndInt expected) {
+		StringAndInt actual = SUT.giveMeBuilder(StringAndInt.class)
+			.set(expected)
+			.set("value2.value", 1)
+			.sample();
+
+		then(actual.getValue1()).isEqualTo(expected.getValue1());
+		then(actual.getValue2().getValue()).isEqualTo(1);
+	}
+
+	@Property
+	@Domain(FixtureMonkeyTestSpecs.class)
+	void giveMeSetMySelfAsArbitraryIsNotDecomposed(@ForAll StringAndInt expected) {
+		StringAndInt actual = SUT.giveMeBuilder(StringAndInt.class)
+			.set(Arbitraries.just(expected))
+			.set("value2.value", 1)
+			.sample();
+
+		then(actual.getValue1()).isEqualTo(expected.getValue1());
+		then(actual.getValue2()).isEqualTo(expected.getValue2());
+	}
 }

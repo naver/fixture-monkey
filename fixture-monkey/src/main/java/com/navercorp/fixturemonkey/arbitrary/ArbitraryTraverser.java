@@ -18,11 +18,11 @@
 
 package com.navercorp.fixturemonkey.arbitrary;
 
+import static com.navercorp.fixturemonkey.TypeSupports.extractFields;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -30,8 +30,6 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
-
-import org.junit.platform.commons.util.ReflectionUtils;
 
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
@@ -109,7 +107,7 @@ public final class ArbitraryTraverser {
 			arbitraryOption.getContainerArbitraryNodeGenerator(nowNodeType.getType());
 
 		if (isTraversable(nowNodeType)) {
-			List<Field> fields = getFields(clazz);
+			List<Field> fields = extractFields(clazz);
 			for (Field field : fields) {
 				Property property = new FieldProperty(field);
 				ArbitraryType arbitraryType = new ArbitraryType(
@@ -223,25 +221,15 @@ public final class ArbitraryTraverser {
 
 	@SuppressWarnings("unchecked")
 	private <T> void initializeDefaultArbitrary(ArbitraryNode<T> node) {
-		Class<?> clazz = node.getType().getType();
-		ArbitraryBuilder<?> defaultArbitraryBuilder = arbitraryOption.getDefaultArbitraryBuilder(clazz);
+		if (!node.isHead() && node.getValue() == null) {
+			Class<?> clazz = node.getType().getType();
+			ArbitraryBuilder<?> defaultArbitraryBuilder = arbitraryOption.getDefaultArbitraryBuilder(clazz);
 
-		if (defaultArbitraryBuilder != null && !node.isHead() && node.getValue() == null) {
-			node.setValue(() -> (T)defaultArbitraryBuilder.sample());
-			node.setManipulated(true); // fixed value would not inject as null
+			if (defaultArbitraryBuilder != null) {
+				node.setValue(() -> (T)defaultArbitraryBuilder.sample());
+				node.setManipulated(true); // fixed value would not inject as null
+			}
 		}
-	}
-
-	private List<Field> getFields(Class<?> clazz) {
-		if (clazz == null) {
-			return Collections.emptyList();
-		}
-
-		return ReflectionUtils.findFields(
-			clazz,
-			this::availableField,
-			ReflectionUtils.HierarchyTraversalMode.TOP_DOWN
-		);
 	}
 
 	private boolean isNullableField(ArbitraryType<?> arbitraryType, Field field, boolean defaultNotNull) {
@@ -263,7 +251,7 @@ public final class ArbitraryTraverser {
 			}
 
 			boolean hasNotNullAnnotations = arbitraryType.getAnnotations().stream()
-				.noneMatch(it -> arbitraryOption.isNonNullAnnotation((Annotation)it));
+				.noneMatch(arbitraryOption::isNonNullAnnotation);
 
 			if (!hasNotNullAnnotations) {
 				return false;
@@ -271,10 +259,6 @@ public final class ArbitraryTraverser {
 
 			return !defaultNotNull;
 		}
-	}
-
-	private boolean availableField(Field field) {
-		return !Modifier.isStatic(field.getModifiers());
 	}
 
 	private boolean isTraversable(ArbitraryType<?> type) {
