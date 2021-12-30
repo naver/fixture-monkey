@@ -22,6 +22,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Queue;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -63,6 +64,8 @@ class FixtureMonkeyTestSpecs extends AbstractDomainContextBase {
 		registerArbitrary(StringAndInt.class, stringAndInt());
 		registerArbitrary(NestedStringWithNotBlankList.class, nestedStringWithNotBlankList());
 		registerArbitrary(ListWithAnnotation.class, listWithAnnotation());
+		registerArbitrary(StringQueue.class, stringQueue());
+		registerArbitrary(NestedStringQueue.class, nestedStringQueue());
 	}
 
 	@Provide
@@ -260,6 +263,26 @@ class FixtureMonkeyTestSpecs extends AbstractDomainContextBase {
 	@Provide
 	Arbitrary<ListWithAnnotation> listWithAnnotation() {
 		return SUT.giveMeArbitrary(ListWithAnnotation.class);
+	}
+
+	@Data
+	public static class StringQueue {
+		private Queue<String> values;
+	}
+
+	@Provide
+	Arbitrary<StringQueue> stringQueue() {
+		return SUT.giveMeArbitrary(StringQueue.class);
+	}
+
+	@Data
+	public static class NestedStringQueue {
+		private Queue<StringQueue> values;
+	}
+
+	@Provide
+	Arbitrary<NestedStringQueue> nestedStringQueue() {
+		return SUT.giveMeArbitrary(NestedStringQueue.class);
 	}
 
 	public static class DefaultArbitraryGroup {

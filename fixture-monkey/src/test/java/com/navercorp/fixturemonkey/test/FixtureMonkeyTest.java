@@ -61,8 +61,10 @@ import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.MapEntryKeyIntege
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.MapKeyIntegerValueInteger;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.MapKeyIntegerValueString;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.MockInterface;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.NestedStringQueue;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.NestedStringWithNotBlankList;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.StringAndInt;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.StringQueue;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.StringWithNotBlank;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.StringWithNullable;
 
@@ -1322,5 +1324,17 @@ class FixtureMonkeyTest {
 			.sample();
 
 		then(actual.getValue1().getValue()).isEqualTo("test");
+	}
+
+	@Property
+	@Domain(FixtureMonkeyTestSpecs.class)
+	void giveMeQueue(@ForAll StringQueue expected) {
+		then(expected.getValues()).isNotNull();
+	}
+
+	@Property
+	@Domain(FixtureMonkeyTestSpecs.class)
+	void giveMeNestedQueue(@ForAll NestedStringQueue expected) {
+		then(expected.getValues()).isNotNull();
 	}
 }
