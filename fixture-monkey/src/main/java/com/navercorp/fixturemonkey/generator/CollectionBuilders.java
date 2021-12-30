@@ -22,6 +22,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Queue;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -46,6 +47,8 @@ final class CollectionBuilders {
 			return MapEntryBuilder.INSTANCE.build(nodes);
 		} else if (isOptional(clazz)) {
 			return OptionalBuilder.INSTANCE.build(nodes);
+		} else if (isQueue(clazz)) {
+			return QueueBuilder.INSTANCE.build(nodes);
 		} else {
 			throw new IllegalArgumentException("Not implemented collection.");
 		}
@@ -78,5 +81,9 @@ final class CollectionBuilders {
 
 	private static <T> boolean isOptional(Class<T> clazz) {
 		return clazz.isAssignableFrom(Optional.class);
+	}
+
+	private static <T> boolean isQueue(Class<T> clazz) {
+		return clazz.isAssignableFrom(Queue.class);
 	}
 }
