@@ -46,6 +46,7 @@ import com.navercorp.fixturemonkey.arbitrary.ArbitraryExpressionManipulator;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryNullity;
 import com.navercorp.fixturemonkey.arbitrary.ArbitrarySet;
 import com.navercorp.fixturemonkey.arbitrary.ArbitrarySetArbitrary;
+import com.navercorp.fixturemonkey.arbitrary.ArbitrarySetBuilder;
 import com.navercorp.fixturemonkey.arbitrary.ArbitrarySetPostCondition;
 import com.navercorp.fixturemonkey.arbitrary.BuilderManipulator;
 import com.navercorp.fixturemonkey.arbitrary.ContainerSizeManipulator;
@@ -119,7 +120,7 @@ public final class ExpressionSpec {
 			return this.setNull((String)null);
 		}
 		ArbitraryExpression fixtureExpression = ArbitraryExpression.from(expression);
-		builderManipulators.add(new ArbitrarySetArbitrary<>(fixtureExpression, builder.build(), limit));
+		builderManipulators.add(new ArbitrarySetBuilder<>(fixtureExpression, builder, limit));
 		return this;
 	}
 
@@ -137,7 +138,7 @@ public final class ExpressionSpec {
 			return this.setNull((String)null);
 		}
 		ArbitraryExpression fixtureExpression = ArbitraryExpression.from(expression);
-		builderManipulators.add(new ArbitrarySetArbitrary<>(fixtureExpression, builder.build()));
+		builderManipulators.add(new ArbitrarySetBuilder<>(fixtureExpression, builder));
 		return this;
 	}
 

@@ -346,25 +346,6 @@ class ComplexManipulatorTest {
 	}
 
 	@Property
-	void giveMeZipReturnsNew() {
-		// given
-		ArbitraryBuilder<String> stringArbitraryBuilder = SUT.giveMeBuilder(String.class);
-		ArbitraryBuilder<Integer> integerArbitraryBuilder = SUT.giveMeBuilder(Integer.class);
-
-		// when
-		Arbitrary<String> zippedArbitraryBuilder = ArbitraryBuilders.zip(
-			stringArbitraryBuilder,
-			integerArbitraryBuilder,
-			(integer, string) -> integer + "" + string
-		).build();
-
-		// then
-		String result1 = zippedArbitraryBuilder.sample();
-		String result2 = zippedArbitraryBuilder.sample();
-		then(result1).isNotEqualTo(result2);
-	}
-
-	@Property
 	void giveMeMap() {
 		// when
 		StringValue actual = SUT.giveMeBuilder(StringValue.class)
@@ -763,5 +744,19 @@ class ComplexManipulatorTest {
 
 		then(actual.getValue().containsValue(-1)).isTrue();
 		then(actual.getValue().containsKey("test")).isTrue();
+	}
+
+	@Property
+	void setBuilderReturnsDiff() {
+		// given
+		ArbitraryBuilder<StringValue> sut = SUT.giveMeBuilder(StringValue.class)
+			.set("value", SUT.giveMeBuilder(String.class));
+
+		// when
+		StringValue actual = sut.sample();
+
+		// then
+		StringValue other = sut.sample();
+		then(actual).isNotEqualTo(other);
 	}
 }

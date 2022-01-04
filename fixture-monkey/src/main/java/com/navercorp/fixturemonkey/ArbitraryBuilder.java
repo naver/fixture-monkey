@@ -57,6 +57,7 @@ import com.navercorp.fixturemonkey.arbitrary.ArbitraryNode;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryNullity;
 import com.navercorp.fixturemonkey.arbitrary.ArbitrarySet;
 import com.navercorp.fixturemonkey.arbitrary.ArbitrarySetArbitrary;
+import com.navercorp.fixturemonkey.arbitrary.ArbitrarySetBuilder;
 import com.navercorp.fixturemonkey.arbitrary.ArbitrarySetPostCondition;
 import com.navercorp.fixturemonkey.arbitrary.ArbitrarySpecAny;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryTraverser;
@@ -179,7 +180,8 @@ public final class ArbitraryBuilder<T> {
 		return this;
 	}
 
-	public Arbitrary<T> build() {
+	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+	Arbitrary<T> build() {
 		ArbitraryBuilder<T> buildArbitraryBuilder = this.copy();
 		return buildArbitraryBuilder.tree.result(() -> {
 			ArbitraryTree<T> buildTree = buildArbitraryBuilder.tree;
@@ -290,7 +292,7 @@ public final class ArbitraryBuilder<T> {
 
 	public ArbitraryBuilder<T> setBuilder(String expression, ArbitraryBuilder<?> builder) {
 		ArbitraryExpression arbitraryExpression = ArbitraryExpression.from(expression);
-		this.builderManipulators.add(new ArbitrarySetArbitrary<>(arbitraryExpression, builder.build()));
+		this.builderManipulators.add(new ArbitrarySetBuilder<>(arbitraryExpression, builder));
 		return this;
 	}
 

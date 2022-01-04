@@ -36,7 +36,6 @@ import net.jqwik.api.Arbitrary;
 import net.jqwik.api.Example;
 import net.jqwik.api.ForAll;
 import net.jqwik.api.Property;
-import net.jqwik.api.TooManyFilterMissesException;
 import net.jqwik.api.Tuple.Tuple1;
 import net.jqwik.api.Tuple.Tuple2;
 import net.jqwik.api.constraints.Size;
@@ -270,53 +269,6 @@ class FixtureMonkeyTest {
 		actual.forEach(it -> then(it.getValue()).isNotBlank());
 	}
 
-	@Example
-	void giveMeBuilderBuildInvalidThenSampleThrowsTooManyFilterMissesException() {
-		// when
-		Arbitrary<StringWithNotBlank> sut = SUT.giveMeBuilder(StringWithNotBlank.class)
-			.set("value", "")
-			.build();
-
-		thenThrownBy(sut::sample)
-			.isExactlyInstanceOf(TooManyFilterMissesException.class);
-	}
-
-	@Example
-	void giveMeBuilderBuildInvalidThenSampleStreamThrowsTooManyFilterMissesException() {
-		Arbitrary<StringWithNotBlank> sut = SUT.giveMeBuilder(StringWithNotBlank.class)
-			.set("value", "")
-			.build();
-
-		//noinspection ResultOfMethodCallIgnored
-		thenThrownBy(() -> sut.sampleStream().limit(5).collect(toList()))
-			.isExactlyInstanceOf(TooManyFilterMissesException.class);
-	}
-
-	@Example
-	void giveMeBuilderBuildFixGenSizeInvalidThenSampleThrowsTooManyFilterMissesException() {
-		// when
-		Arbitrary<StringWithNotBlank> sut = SUT.giveMeBuilder(StringWithNotBlank.class)
-			.set("value", "")
-			.build()
-			.fixGenSize(5);
-
-		thenThrownBy(sut::sample)
-			.isExactlyInstanceOf(TooManyFilterMissesException.class);
-	}
-
-	@Example
-	void giveMeBuilderBuildOptionalInvalidThenSampleThrowsTooManyFilterMissesException() {
-		// when
-		Arbitrary<Optional<StringWithNotBlank>> sut =
-			SUT.giveMeBuilder(StringWithNotBlank.class)
-				.set("value", "")
-				.build()
-				.optional(1.0);
-
-		thenThrownBy(sut::sample)
-			.isExactlyInstanceOf(TooManyFilterMissesException.class);
-	}
-
 	@Property
 	void giveMeArbitraryOptional() {
 		// given
@@ -328,18 +280,6 @@ class FixtureMonkeyTest {
 		Optional<StringWithNotBlank> actual = sut.sample();
 
 		then(actual).isNotNull();
-	}
-
-	@Example
-	void giveMeBuilderBuildCollectInvalidThenSampleThrowsTooManyFilterMissesException() {
-		// when
-		Arbitrary<List<StringWithNotBlank>> sut =
-			SUT.giveMeBuilder(StringWithNotBlank.class)
-				.set("value", "")
-				.build().collect(it -> !it.isEmpty());
-
-		thenThrownBy(sut::sample)
-			.isExactlyInstanceOf(TooManyFilterMissesException.class);
 	}
 
 	@Property
@@ -356,19 +296,6 @@ class FixtureMonkeyTest {
 	}
 
 	@Example
-	void giveMeBuilderBuildInjectDuplicatesInvalidThenSampleThrowsTooManyFilterMissesException() {
-		// when
-		Arbitrary<StringWithNotBlank> sut =
-			SUT.giveMeBuilder(StringWithNotBlank.class)
-				.set("value", "")
-				.build()
-				.injectDuplicates(1);
-
-		thenThrownBy(sut::sample)
-			.isExactlyInstanceOf(TooManyFilterMissesException.class);
-	}
-
-	@Example
 	void giveMeArbitraryInjectDuplicates() {
 		// given
 		Arbitrary<StringWithNotBlank> sut = SUT.giveMeArbitrary(StringWithNotBlank.class)
@@ -376,18 +303,6 @@ class FixtureMonkeyTest {
 
 		thenNoException()
 			.isThrownBy(sut::sample);
-	}
-
-	@Example
-	void giveMeBuilderBuildTuple1InvalidThenSampleThrowsTooManyFilterMissesException() {
-		// when
-		Arbitrary<Tuple1<StringWithNotBlank>> sut = SUT.giveMeBuilder(StringWithNotBlank.class)
-			.set("value", "")
-			.build()
-			.tuple1();
-
-		thenThrownBy(sut::sample)
-			.isExactlyInstanceOf(TooManyFilterMissesException.class);
 	}
 
 	@Property
@@ -399,18 +314,6 @@ class FixtureMonkeyTest {
 		Tuple1<StringWithNotBlank> sample = sut.sample();
 
 		then(sample).isNotNull();
-	}
-
-	@Example
-	void giveMeBuilderBuildTuple2InvalidThenSampleThrowsTooManyFilterMissesException() {
-		// when
-		Arbitrary<Tuple2<StringWithNotBlank, StringWithNotBlank>> sut = SUT.giveMeBuilder(StringWithNotBlank.class)
-			.set("value", "")
-			.build()
-			.tuple2();
-
-		thenThrownBy(sut::sample)
-			.isExactlyInstanceOf(TooManyFilterMissesException.class);
 	}
 
 	@Property
@@ -425,18 +328,6 @@ class FixtureMonkeyTest {
 		then(sample).isNotNull();
 	}
 
-	@Example
-	void giveMeBuilderBuildIgnoreExceptionInvalidThenSampleThrowsTooManyFilterMissesException() {
-		// when
-		Arbitrary<StringWithNotBlank> sut = SUT.giveMeBuilder(StringWithNotBlank.class)
-			.set("value", "")
-			.build()
-			.ignoreException(NullPointerException.class);
-
-		thenThrownBy(sut::sample)
-			.isExactlyInstanceOf(TooManyFilterMissesException.class);
-	}
-
 	@Property
 	void giveMeArbitraryIgnoreException() {
 		// given
@@ -447,18 +338,6 @@ class FixtureMonkeyTest {
 			.isThrownBy(sut::sample);
 	}
 
-	@Example
-	void giveMeBuilderBuildDontShrinkInvalidThenSampleThrowsTooManyFilterMissesException() {
-		// when
-		Arbitrary<StringWithNotBlank> sut = SUT.giveMeBuilder(StringWithNotBlank.class)
-			.set("value", "")
-			.build()
-			.dontShrink();
-
-		thenThrownBy(sut::sample)
-			.isExactlyInstanceOf(TooManyFilterMissesException.class);
-	}
-
 	@Property
 	void giveMeArbitraryDontShrink() {
 		// given
@@ -467,19 +346,6 @@ class FixtureMonkeyTest {
 
 		thenNoException()
 			.isThrownBy(sut::sample);
-	}
-
-	@Example
-	void giveMeBuilderBuildEdgeCasesInvalidThenSampleThrowsTooManyFilterMissesException() {
-		// when
-		Arbitrary<StringWithNotBlank> sut = SUT.giveMeBuilder(StringWithNotBlank.class)
-			.set("value", "")
-			.build()
-			.edgeCases(it -> {
-			});
-
-		thenThrownBy(sut::sample)
-			.isExactlyInstanceOf(TooManyFilterMissesException.class);
 	}
 
 	@Property
@@ -494,18 +360,6 @@ class FixtureMonkeyTest {
 	}
 
 	@Example
-	void giveMeBuilderBuildInjectNullInvalidThenSampleThrowsTooManyFilterMissesException() {
-		// when
-		Arbitrary<StringWithNotBlank> sut = SUT.giveMeBuilder(StringWithNotBlank.class)
-			.set("value", "")
-			.build()
-			.injectNull(0);
-
-		thenThrownBy(sut::sample)
-			.isExactlyInstanceOf(TooManyFilterMissesException.class);
-	}
-
-	@Example
 	void giveMeArbitraryInjectNull() {
 		// given
 		Arbitrary<StringWithNotBlank> sut = SUT.giveMeArbitrary(StringWithNotBlank.class)
@@ -517,18 +371,6 @@ class FixtureMonkeyTest {
 	}
 
 	@Example
-	void giveMeBuilderBuildFlatMapInvalidThenSampleThrowsTooManyFilterMissesException() {
-		// when
-		Arbitrary<String> sut = SUT.giveMeBuilder(StringWithNotBlank.class)
-			.set("value", "")
-			.build()
-			.flatMap(it -> Arbitraries.just("String"));
-
-		thenThrownBy(sut::sample)
-			.isExactlyInstanceOf(TooManyFilterMissesException.class);
-	}
-
-	@Example
 	void giveMeArbitraryFlatMap() {
 		// given
 		Arbitrary<String> sut = SUT.giveMeArbitrary(StringWithNotBlank.class)
@@ -537,18 +379,6 @@ class FixtureMonkeyTest {
 		String actual = sut.sample();
 
 		then(actual).isEqualTo("String");
-	}
-
-	@Example
-	void giveMeBuilderBuildMapInvalidThenSampleThrowsTooManyFilterMissesException() {
-		// when
-		Arbitrary<StringWithNotBlank> sut = SUT.giveMeBuilder(StringWithNotBlank.class)
-			.set("value", "")
-			.build()
-			.map(it -> it);
-
-		thenThrownBy(sut::sample)
-			.isExactlyInstanceOf(TooManyFilterMissesException.class);
 	}
 
 	@Property
@@ -563,18 +393,6 @@ class FixtureMonkeyTest {
 		then(actual).isNotNull();
 	}
 
-	@Example
-	void giveMeBuilderBuildFilterInvalidThenSampleThrowsTooManyFilterMissesException() {
-		// when
-		Arbitrary<StringWithNotBlank> sut = SUT.giveMeBuilder(StringWithNotBlank.class)
-			.set("value", "")
-			.build()
-			.filter(it -> true);
-
-		thenThrownBy(sut::sample)
-			.isExactlyInstanceOf(TooManyFilterMissesException.class);
-	}
-
 	@Property
 	void giveMeArbitraryFilter() {
 		// given
@@ -587,18 +405,6 @@ class FixtureMonkeyTest {
 		then(actual).isNotNull();
 	}
 
-	@Example
-	void giveMeBuilderBuildAsGenericInvalidThenSampleThrowsTooManyFilterMissesException() {
-		// when
-		Arbitrary<Object> sut = SUT.giveMeBuilder(StringWithNotBlank.class)
-			.set("value", "")
-			.build()
-			.asGeneric();
-
-		thenThrownBy(sut::sample)
-			.isExactlyInstanceOf(TooManyFilterMissesException.class);
-	}
-
 	@Property
 	void giveMeArbitraryAsGeneric() {
 		// given
@@ -609,21 +415,6 @@ class FixtureMonkeyTest {
 		Object actual = sut.sample();
 
 		then(actual).isNotNull();
-	}
-
-	@Property
-	void setAfterBuildNotAffected() {
-		// given
-		ArbitraryBuilder<StringWithNotBlank> builder = SUT.giveMeBuilder(StringWithNotBlank.class);
-		Arbitrary<StringWithNotBlank> build = builder.build();
-
-		// when
-		ArbitraryBuilder<StringWithNotBlank> actual = builder.set("value", "set");
-
-		StringWithNotBlank actualSample = actual.sample();
-		StringWithNotBlank buildSample = build.sample();
-		then(actualSample).isNotEqualTo(buildSample);
-		then(actualSample.getValue()).isEqualTo("set");
 	}
 
 	@Property
