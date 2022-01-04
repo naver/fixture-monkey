@@ -34,6 +34,7 @@ import org.apiguardian.api.API.Status;
 import net.jqwik.api.Arbitrary;
 import net.jqwik.time.api.arbitraries.CalendarArbitrary;
 import net.jqwik.time.api.arbitraries.DateArbitrary;
+import net.jqwik.time.api.arbitraries.DurationArbitrary;
 import net.jqwik.time.api.arbitraries.InstantArbitrary;
 import net.jqwik.time.api.arbitraries.LocalDateArbitrary;
 import net.jqwik.time.api.arbitraries.LocalDateTimeArbitrary;
@@ -82,6 +83,8 @@ public interface TimeArbitraryIntrospector {
 	);
 
 	Arbitrary<PeriodArbitrary> periods(PeriodArbitrary periodArbitrary, ArbitraryIntrospectorContext context);
+
+	Arbitrary<DurationArbitrary> durations(DurationArbitrary durationArbitrary, ArbitraryIntrospectorContext context);
 
 	Arbitrary<Year> years(YearArbitrary yearArbitrary, ArbitraryIntrospectorContext context);
 
