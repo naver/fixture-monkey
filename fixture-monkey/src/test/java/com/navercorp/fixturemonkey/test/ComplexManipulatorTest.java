@@ -811,4 +811,20 @@ class ComplexManipulatorTest {
 
 		then(actual.getValues()).isEmpty();
 	}
+
+	@Property
+	void applyNested() {
+		// when
+		StringValue actual = SUT.giveMeBuilder(StringValue.class)
+			.set("value", "test")
+			.apply((outerValue, outerBuilder) ->
+				outerBuilder.set("value", "0" + outerValue.getValue())
+					.apply((innerValue, innerBuilder) ->
+						innerBuilder.set("value", "1" + innerValue.getValue())
+					)
+			)
+			.sample();
+
+		then(actual.getValue()).isEqualTo("10test");
+	}
 }
