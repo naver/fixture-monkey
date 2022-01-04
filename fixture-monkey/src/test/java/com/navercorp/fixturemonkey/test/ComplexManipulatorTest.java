@@ -749,14 +749,17 @@ class ComplexManipulatorTest {
 	@Property
 	void setBuilderReturnsDiff() {
 		// given
-		ArbitraryBuilder<StringValue> sut = SUT.giveMeBuilder(StringValue.class)
-			.set("value", SUT.giveMeBuilder(String.class));
+		ArbitraryBuilder<Complex> sut = SUT.giveMeBuilder(Complex.class)
+			.set("value1", SUT.giveMeBuilder(String.class))
+			.set("value2", SUT.giveMeBuilder(Integer.class))
+			.set("value3", SUT.giveMeBuilder(Float.class))
+			.set("value4", SUT.giveMeBuilder(String.class));
 
 		// when
-		StringValue actual = sut.sample();
+		Complex actual = sut.sample();
 
 		// then
-		StringValue other = sut.sample();
+		Complex other = sut.sample();
 		then(actual).isNotEqualTo(other);
 	}
 }
