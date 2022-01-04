@@ -180,7 +180,11 @@ public final class ArbitraryBuilder<T> {
 		return this;
 	}
 
-	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+	/**
+	 * Build is now package-private method since 0.4.0
+	 * To remove dependency between ArbitraryBuilder interface and Jqwik Arbitrary
+	 * @return Arbitrary of target class
+	 */
 	Arbitrary<T> build() {
 		ArbitraryBuilder<T> buildArbitraryBuilder = this.copy();
 		return buildArbitraryBuilder.tree.result(() -> {

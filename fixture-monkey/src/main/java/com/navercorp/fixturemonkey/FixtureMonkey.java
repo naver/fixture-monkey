@@ -70,11 +70,11 @@ public class FixtureMonkey {
 	}
 
 	public <T> Stream<T> giveMe(Class<T> type) {
-		return this.giveMeBuilder(type, options).build().sampleStream();
+		return this.giveMeBuilder(type).sampleStream();
 	}
 
 	public <T> Stream<T> giveMe(Class<T> type, ArbitraryCustomizer<T> customizer) {
-		return this.giveMeBuilder(type, options, customizer).build().sampleStream();
+		return this.giveMeBuilder(type, options, customizer).sampleStream();
 	}
 
 	public <T> List<T> giveMe(Class<T> type, int size) {
