@@ -26,6 +26,7 @@ import net.jqwik.time.api.Dates;
 import net.jqwik.time.api.Times;
 import net.jqwik.time.api.arbitraries.CalendarArbitrary;
 import net.jqwik.time.api.arbitraries.DateArbitrary;
+import net.jqwik.time.api.arbitraries.DurationArbitrary;
 import net.jqwik.time.api.arbitraries.InstantArbitrary;
 import net.jqwik.time.api.arbitraries.LocalDateArbitrary;
 import net.jqwik.time.api.arbitraries.LocalDateTimeArbitrary;
@@ -79,6 +80,10 @@ public interface IntrospectorTimeArbitraryGenerator {
 
 	default PeriodArbitrary periods() {
 		return Dates.periods();
+	}
+
+	default DurationArbitrary durations() {
+		return Times.durations();
 	}
 
 	default YearArbitrary years() {
