@@ -196,7 +196,6 @@ class FixtureMonkeyTestSpecs extends DomainContextBase {
 
 	@Data
 	public static class InterfaceWrapper {
-		@NotNull
 		private MockInterface value;
 	}
 

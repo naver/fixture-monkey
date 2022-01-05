@@ -37,10 +37,12 @@ import java.util.Map;
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
 import net.jqwik.api.Property;
+import net.jqwik.api.RandomGenerator;
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.ArbitraryBuilders;
 import com.navercorp.fixturemonkey.FixtureMonkey;
+import com.navercorp.fixturemonkey.api.random.Randoms;
 import com.navercorp.fixturemonkey.test.ComplexManipulatorTestSpecs.AcceptIfArbitraryGroup;
 import com.navercorp.fixturemonkey.test.ComplexManipulatorTestSpecs.ApplyArbitraryGroup;
 import com.navercorp.fixturemonkey.test.ComplexManipulatorTestSpecs.ArbitraryGroup;
@@ -763,5 +765,25 @@ class ComplexManipulatorTest {
 
 		then(actual.getValue().containsValue(-1)).isTrue();
 		then(actual.getValue().containsKey("test")).isTrue();
+	}
+
+	@Property
+	void buildWithGeneratorReturnsDiff() {
+		// given
+		Arbitrary<Complex> complex = SUT.giveMeBuilder(Complex.class)
+			.apply((it, builder) ->
+				builder.set("value2", 1234)
+					.set("value1", "test")
+			)
+			.build();
+
+		RandomGenerator<Complex> generator = complex.generator(1000);
+
+		// when
+		Complex actual = generator.next(Randoms.current()).value();
+
+		// then
+		Complex notExpected = generator.next(Randoms.current()).value();
+		then(actual).isNotEqualTo(notExpected);
 	}
 }
