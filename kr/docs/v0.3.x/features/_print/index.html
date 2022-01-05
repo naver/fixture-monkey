@@ -2,7 +2,7 @@
 <head>
 <meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no">
-<meta name=generator content="Hugo 0.89.4"><link rel=canonical type=text/html href=https://naver.github.io/fixture-monkey/kr/docs/v0.3.x/features/>
+<meta name=generator content="Hugo 0.91.2"><link rel=canonical type=text/html href=https://naver.github.io/fixture-monkey/kr/docs/v0.3.x/features/>
 <meta name=ROBOTS content="NOINDEX, NOFOLLOW">
 <link rel="shortcut icon" href=/fixture-monkey/favicons/favicon.png>
 <link rel=apple-touch-icon href=/fixture-monkey/favicons/favicon.png sizes=180x180>
@@ -14,15 +14,15 @@
 <link rel=icon type=image/png href=/fixture-monkey/favicons/favicon.png sizes=96x96>
 <link rel=icon type=image/png href=/fixture-monkey/favicons/favicon.png sizes=144x144>
 <link rel=icon type=image/png href=/fixture-monkey/favicons/favicon.png sizes=192x192>
-<title>Features | 픽스처 몽키</title>
+<title>특징 | 픽스처 몽키</title>
 <meta name=description content>
-<meta property="og:title" content="Features">
+<meta property="og:title" content="특징">
 <meta property="og:description" content>
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://naver.github.io/fixture-monkey/kr/docs/v0.3.x/features/"><meta property="og:site_name" content="픽스처 몽키">
-<meta itemprop=name content="Features">
+<meta itemprop=name content="특징">
 <meta itemprop=description content><meta name=twitter:card content="summary">
-<meta name=twitter:title content="Features">
+<meta name=twitter:title content="특징">
 <meta name=twitter:description content>
 <link rel=preload href=/fixture-monkey/scss/main.min.861794578d20e3e3c9c7ca904b2cd3e0e34552ae164462c4f4af0efdcf16ec40.css as=style>
 <link href=/fixture-monkey/scss/main.min.861794578d20e3e3c9c7ca904b2cd3e0e34552ae164462c4f4af0efdcf16ec40.css rel=stylesheet integrity>
@@ -87,17 +87,17 @@ This the multi-page printable view of this section.
 <a href=/fixture-monkey/kr/docs/v0.3.x/features/>Return to the regular view of this page</a>.
 </p>
 </div>
-<h1 class=title>Features</h1>
+<h1 class=title>특징</h1>
 <ul>
 <li>1: <a href=#pg-8ba336c6de488092b6621eada2744e71>FixtureMonkeyBuilder</a></li>
-<li>2: <a href=#pg-03b1aab98dc2da9f280a1fe3a71a1b1c>Default Supported Types</a></li>
+<li>2: <a href=#pg-03b1aab98dc2da9f280a1fe3a71a1b1c>기본 생성 타입</a></li>
 <li>3: <a href=#pg-d2fde4b833cd93f786c1d1ad005d08ba>ArbitraryBuilder</a></li>
-<li>4: <a href=#pg-c935f6f84a5f687c8c593283647c6c70>Manipulator</a></li>
-<li>5: <a href=#pg-91c74f0ac834cde66c938a0cf4d705e4>Register ArbitraryBuilder</a></li>
+<li>4: <a href=#pg-c935f6f84a5f687c8c593283647c6c70>연산</a></li>
+<li>5: <a href=#pg-91c74f0ac834cde66c938a0cf4d705e4>ArbitraryBuilder 등록</a></li>
 <li>6: <a href=#pg-83bcff1628753d4d6333dd0affdba1ed>ArbitraryGenerator</a></li>
 <li>7: <a href=#pg-02016a2d4e99b6a6eef4d851e7ebf042>ArbitraryCustomizer</a></li>
 <li>8: <a href=#pg-39c8bea5724b08548916049a7f1f3bfa>ArbitraryValidator</a></li>
-<li>9: <a href=#pg-4d1e21a96b37777490e60d9f974a0156>Supported Validation Annotations</a></li>
+<li>9: <a href=#pg-4d1e21a96b37777490e60d9f974a0156>유효성 검사에 사용하는 어노테이션</a></li>
 <li>10: <a href=#pg-13affe8ac68faa821ee69621ad8d3b2a>InterfaceSupplier</a></li>
 <li>11: <a href=#pg-828694bb99e9366c656eb9970fdc5bd0>Arbitrary</a></li>
 </ul>
@@ -134,28 +134,28 @@ This the multi-page printable view of this section.
 </li>
 <li>putGenerator
 <ul>
-<li>Use given generator if type is matched instead of defaultGenerator</li>
-<li><a href=/fixture-monkey/kr/docs/v0.3.x/examples/arbitrarygenerator/>Example</a></li>
+<li>주어진 타입은 <code>defaultGenerator</code>가 아닌 입력한 generator로 생성합니다.</li>
+<li><a href=/fixture-monkey/kr/docs/v0.3.x/examples/arbitrarygenerator/>예제</a></li>
 </ul>
 </li>
 <li>nullInject (default: 0.2)
 <ul>
-<li>Set probabilities to inject <code>null</code>.</li>
-<li>If field has <code>@NotNull</code>, it would not inject <code>null</code></li>
+<li>생성한 값이 <code>null</code>이 될 수 있는 확률을 설정합니다.</li>
+<li>필드에 <code>@NotNull</code>을 정의한 경우 <code>null</code>을 생성하지 않습니다.</li>
 </ul>
 </li>
 <li>nullableContainer (default: false)
 <ul>
-<li>It decides whether containers like <code>Map</code>, <code>List</code>, <code>Set</code>, <code>Stream</code>, <code>Optional</code> allows to be <code>null</code></li>
-<li>If <code>false</code>, set default Container (<code>new ArrayList()</code>) ,not <code>null</code> ;</li>
-<li>If <code>true</code>, set <code>null</code>, <code>null</code> probabilities depend on <strong>nullInject</strong></li>
-<li>Field with <code>@NotNull</code>, would not be <code>null</code></li>
+<li><code>Map</code>, <code>List</code>, <code>Set</code>, <code>Stream</code>, <code>Optional</code>와 같은 컨테이너를 생성할 때 빈 컨테이너가 아닌 <code>null</code>을 생성할지 여부를 결정합니다.</li>
+<li>만약 <code>false</code>라면 null은 생성하지 않고 빈 컨테이너가 생성됩니다. (<code>new ArrayList()</code>)</li>
+<li>만약 <code>true</code>라면 null이 생성될 수 있다. <code>null</code>이 될 확률은 <strong>nullInject</strong>가 결정한다.</li>
+<li>필드에 <code>@NotNull</code>을 정의한 경우 <code>null</code>이 되지 않는다.</li>
 </ul>
 </li>
 <li>exceptGeneratePackages
 <ul>
-<li>Set packages always be <code>null</code></li>
-<li>Default packages are below, it always does not override
+<li>항상 <code>null</code>을 생성할 패키지를 설정한다.</li>
+<li>기본적으로 지정돼있는 패키지는 아래와 같다. 설정하더라도 아래 기본 패키지는 유지한 상태에서 추가한다.
 <blockquote>
 <p>&ldquo;java.lang.reflect&rdquo;
 &ldquo;jdk.internal.reflect&rdquo;
@@ -167,62 +167,63 @@ This the multi-page printable view of this section.
 </li>
 <li>addExceptGeneratePackage
 <ul>
-<li>Add package which class in given package always returns <code>null</code></li>
-<li>Appends to default exceptGeneratePackages</li>
+<li>항상 <code>null</code>을 생성할 패키지를 추가한다.</li>
+<li>exceptGeneratePackages에서 설정한 패키지에 추가한다. 설정하지 않은 경우 기본 패키지에 추가한다.</li>
 </ul>
 </li>
 <li>customizers
 <ul>
-<li>Set ArbitraryCustomizers which is a collection of <a href=/fixture-monkey/kr/docs/v0.3.x/features/arbitrarycustomizer/>ArbitraryCustomizer</a></li>
+<li>하나 이상의 <a href=/fixture-monkey/kr/docs/v0.3.x/features/arbitrarycustomizer/>ArbitraryCustomizer</a>를 가지는 ArbitraryCustomizers를 설정합니다.</li>
 </ul>
 </li>
 <li>addCustomizer
 <ul>
-<li>Add specific type of <a href=/fixture-monkey/kr/docs/v0.3.x/features/arbitrarycustomizer/>ArbitraryCustomizer</a></li>
-<li>Appends to default ArbitraryCustomizers</li>
+<li>특정 타입에 <a href=/fixture-monkey/kr/docs/v0.3.x/features/arbitrarycustomizer/>ArbitraryCustomizer</a>를 설정합니다.</li>
+<li>customizers에 설정한 ArbitraryCustomizers에 추가합니다.</li>
 </ul>
 </li>
 <li><a href=/fixture-monkey/kr/docs/v0.3.x/features/arbitraryvalidator/>arbitraryValidator</a> (default: CompositeArbitraryValidator)</li>
 <li>addAnnotatedArbitraryGenerator
 <ul>
-<li>Add specified <a href=/fixture-monkey/kr/docs/v0.3.x/features/defaultsupportedtypes/>type</a></li>
-<li>Appends to default annotatedArbitraryGenerators. It overrides if given type already exists</li>
+<li>특정 <a href=/fixture-monkey/kr/docs/v0.3.x/features/defaultsupportedtypes/>타입</a>을 생성하는 방법을 설정합니다.</li>
+<li>기본으로 정의돼있는 AnnotatedArbitraryGenerator에 추가 됩니다. 타입에 이미 정의한 AnnotatedArbitraryGenerator가 존재하는 경우 덮어 씌웁니다.</li>
 <li><a href=/fixture-monkey/kr/docs/v0.3.x/examples/annotatedarbitrarygenerator/>Example</a></li>
 </ul>
 </li>
 <li>defaultInterfaceSupplier
 <ul>
-<li>Set default <a href=/fixture-monkey/kr/docs/v0.3.x/features/interfacesupplier/>InterfaceSupplier</a> (default : <code>type -> null</code>)</li>
+<li>기본 <a href=/fixture-monkey/kr/docs/v0.3.x/features/interfacesupplier/>InterfaceSupplier</a>를 설정합니다. (default : <code>type -> null</code>)</li>
 </ul>
 </li>
 <li>addInterfaceSupplier
 <ul>
-<li>Determine returning implementation for <code>interface</code> or <code>abstract class</code></li>
-<li>Check out detail <a href=/fixture-monkey/kr/docs/v0.3.x/features/interfacesupplier/>here</a></li>
+<li>특정 <code>인터페이스</code>와 <code>추상 클래스</code>의 구현체를 설정합니다.</li>
+<li>자세한 내용은 <a href=/fixture-monkey/kr/docs/v0.3.x/features/interfacesupplier/>here</a>를 확인해주세요.</li>
 </ul>
 </li>
 <li>defaultNotNull
 <ul>
-<li>If <code>true</code>, fields without <code>@Nullable</code> would not be null.</li>
-<li>If <code>false</code>, fields without <code>@NotNull</code> would be null with <code>nullInject</code> probabilities.</li>
+<li>만약 <code>true</code>인 경우 <code>@Nullable</code>이 없는 필드는 항상 notNull이다.</li>
+<li>만약 <code>false</code>인 경우 <code>@NotNull</code>이 없는 필드는 항상 <code>nullInject</code>에서 설정한 확률에 따라 null이 된다.</li>
 </ul>
 </li>
 <li>register
 <ul>
-<li>Register default ArbitraryBuilder for specific type</li>
-<li>Check out detail <a href=/fixture-monkey/kr/docs/v0.3.x/features/registerarbitrarybuilder/>here</a></li>
+<li>타입에 기본으로 사용할 ArbitraryBuilder를 등록한다.</li>
+<li>자세한 내용은 <a href=/fixture-monkey/kr/docs/v0.3.x/features/registerarbitrarybuilder/>여기</a>를 확인해주세요.</li>
 </ul>
 </li>
 <li>registerGroup
 <ul>
-<li>Register default ArbitraryBuilders by declaring methods which signatures are <code>ArbitraryBuilder&lt;TYPE> NAME(FixtureMonkey fixture)</code></li>
-<li>Check out detail <a href=/fixture-monkey/kr/docs/v0.3.x/features/registerarbitrarybuilder/>here</a></li>
+<li>ArbitraryBuilder를 여러 개 등록할 때 사용한다.</li>
+<li>메소드 시그니처가 <code>ArbitraryBuilder&lt;TYPE> NAME(FixtureMonkey fixture)</code></li>
+<li>자세한 내용은 <a href=/fixture-monkey/kr/docs/v0.3.x/features/registerarbitrarybuilder/>여기</a>를 확인해주세요.</li>
 </ul>
 </li>
 </ul>
 </div>
 <div class=td-content style=page-break-before:always>
-<h1 id=pg-03b1aab98dc2da9f280a1fe3a71a1b1c>2 - Default Supported Types</h1>
+<h1 id=pg-03b1aab98dc2da9f280a1fe3a71a1b1c>2 - 기본 생성 타입</h1>
 <ul>
 <li>String</li>
 <li>Character</li>
@@ -250,109 +251,102 @@ This the multi-page printable view of this section.
 <li>ZonedDateTime</li>
 <li>Uuid</li>
 </ul>
-<h2 id=how-to-add-new-custom-type>How to Add New Custom Type</h2>
-<p><a href=/fixture-monkey/kr/docs/v0.3.x/examples/annotatedarbitrarygenerator/>Example</a></p>
+<h2 id=생성-타입-추가>생성 타입 추가</h2>
+<p><a href=/fixture-monkey/kr/docs/v0.3.x/examples/annotatedarbitrarygenerator/>예제</a>를 참조하세요</p>
 </div>
 <div class=td-content style=page-break-before:always>
 <h1 id=pg-d2fde4b833cd93f786c1d1ad005d08ba>3 - ArbitraryBuilder</h1>
-<p><code>ArbitraryBuilder</code> is a <a href=https://junit.org/junit4/cookbook.html#Fixture>fixture</a> in Fixture Monkey. You could make <code>ArbitraryBuilder</code> by calling <code>giveMeBuilder</code>. For example, You can make a class <code>Person</code> fixture as below.</p>
+<p><code>ArbitraryBuilder</code> 는 Fixture Monkey에서 제공하고 있는 <a href=https://junit.org/junit4/cookbook.html#Fixture>fixture</a> 입니다. Fixture Monkey 인스턴스에서 <code>giveMeBuilder</code>를 호출해서 <code>ArbitraryBuilder</code>를 생성할 수 있습니다. 예를 들면, <code>Person</code> fixture를 아래와 같이 생성할 수 있습니다.</p>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#000>fixtureMonkey</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>giveMeBuilder</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>Person</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>class</span><span style=color:#ce5c00;font-weight:700>)</span>
-</code></pre></div><p>Or You could make <code>ArbitraryBuilder</code> from existing an instance of <code>Person</code> class as below.</p>
+</code></pre></div><p>이미 정의한 <code>Person</code> 인스턴스를 <code>ArbitraryBuilder</code>로 변환할 수도 있습니다.</p>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#000>fixtureMonkey</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>giveMeBuilder</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#204a87;font-weight:700>new</span> <span style=color:#000>Person</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#4e9a06>&#34;SALLY&#34;</span><span style=color:#ce5c00;font-weight:700>));</span>
-</code></pre></div><p>It offers a generic implementation of <a href=http://www.natpryce.com/articles/000714.html>Test Data Builder Pattern</a>. If you want a fixture for certain test case, you could manipulate it by <a href=/fixture-monkey/kr/docs/v0.3.x/features/manipulator/>manipulators</a>. For example, you could get a fixture returns <code>Person</code> instance which city is &ldquo;SEOUL&rdquo;.</p>
+</code></pre></div><p><a href=http://www.natpryce.com/articles/000714.html>Test Data Builder Pattern</a> 에 따라 빌더 패턴을 통한 테스트 객체 생성 방법을 제공하고 있습니다. 특정 테스트 케이스에서 fixture의 제어가 필요하다면 테스트 케이스 내에서 <code>ArbitraryBuilder</code>에 <a href=/fixture-monkey/kr/docs/v0.3.x/features/manipulator/>연산</a>을 호출하면 됩니다. 예를 들면, 다음과 같이 <code>Person</code>의 city 필드가 항상 &ldquo;SEOUL"인 fixture를 정의할 수 있습니다.</p>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#000>fixtureMonkey</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>giveMeBuilder</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>Person</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>class</span><span style=color:#ce5c00;font-weight:700>)</span>
     <span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>set</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#4e9a06>&#34;city&#34;</span><span style=color:#ce5c00;font-weight:700>,</span> <span style=color:#4e9a06>&#34;SEOUL&#34;</span><span style=color:#ce5c00;font-weight:700>)</span>
-</code></pre></div><h2 id=feature>Feature</h2>
+</code></pre></div><h2 id=특징>특징</h2>
 <ul>
-<li>Reusable in all tests since sampling always returns a different instance if <code>ComplexManipulator</code> is not applied.</li>
-<li>Could make existing instance into <code>ArbitraryBuilder</code>, but it always returns same instance. Check
-out <a href=/fixture-monkey/kr/docs/v0.3.x/examples/manipulator/complexmanipulator/#manipulate-existing-instance>Example</a></li>
+<li>매번 새로운 객체를 생성하기 때문에 모든 테스트에서 재사용이 가능하다.</li>
+<li><code>fixed</code> 연산을 실행하면 <code>ArbitraryBuilder</code>에서 동일한 객체를 반환한다.</li>
+<li>정의해놓은 인스턴스를 <code>ArbitraryBuilder</code>로 전환 가능하다. 전환한 <code>ArbitraryBuilder</code>는 연산이 적용 가능하다. 연산을 적용하지 않으면 입력한 객체 인스턴스를 항상 반환한다. <a href=/fixture-monkey/kr/docs/v0.3.x/examples/manipulator/complexmanipulator/#manipulate-existing-instance>예제</a></li>
 </ul>
 <h2 id=validonly>ValidOnly</h2>
 <div class="alert alert-secondary" role=alert>
 <h4 class=alert-heading>Note</h4>
-If you want more information, check out <a href=/fixture-monkey/kr/docs/v0.3.x/features/arbitraryvalidator/>here</a>
+자세한 정보는 <a href=/fixture-monkey/kr/docs/v0.3.x/features/arbitraryvalidator/>여기</a>를 확인해주세요
 </div>
 <ul>
-<li>If <code>true</code>, generates valid instance validated by registered <code>ArbitraryValidator</code>.
-Default is <code>true</code></li>
-<li>If <code>false</code>, generates not valid instance.</li>
+<li>validOnly를 설정하지 않으면 기본 값은 <code>true</code> 입니다.</li>
+<li>만약 <code>true</code>로 설정하면 등록한 <code>ArbitraryValidator</code>에 유효한 인스턴스만 생성 합니다.</li>
+<li>만약 <code>false</code>로 설정하면 유효하지 않아도 생성합니다.</li>
 </ul>
 <h2 id=generator>Generator</h2>
-<p>Change <a href=/fixture-monkey/kr/docs/v0.3.x/features/arbitrarygenerator/>ArbitraryGenerator</a> to generate given <code>ArbitraryBuilder</code></p>
+<p><code>ArbitraryBuilder</code> 에서 <a href=/fixture-monkey/kr/docs/v0.3.x/features/arbitrarygenerator/>ArbitraryGenerator</a>를 변경할 수 있습니다.</p>
 <h2 id=build>Build</h2>
-<p><code>build</code> would return <a href=/fixture-monkey/kr/docs/v0.3.x/features/arbitrary/>Arbitrary</a></p>
+<p><code>build</code> 는 <a href=/fixture-monkey/kr/docs/v0.3.x/features/arbitrary/>Arbitrary</a>를 반환합니다.</p>
 <h2 id=sample>Sample</h2>
-<p><code>sample</code> would return instance in fixture</p>
+<p><code>sample</code> 은 fixture에서 인스턴스를 생성하여 반환합니다.
+항상 새로운 값을 반환합니다.</p>
+<h2 id=더-알아두면-좋은-정보들>더 알아두면 좋은 정보들</h2>
 <ul>
-<li>Always return different instance</li>
-</ul>
-<h2 id=where-should-i-go-next>Where should I go next?</h2>
-<ul>
-<li><a href=/fixture-monkey/kr/docs/v0.3.x/features/manipulator/>Manipulator</a></li>
+<li><a href=/fixture-monkey/kr/docs/v0.3.x/features/manipulator/>연산</a></li>
 </ul>
 </div>
 <div class=td-content style=page-break-before:always>
-<h1 id=pg-c935f6f84a5f687c8c593283647c6c70>4 - Manipulator</h1>
-<h2 id=component>Component</h2>
+<h1 id=pg-c935f6f84a5f687c8c593283647c6c70>4 - 연산</h1>
+<h2 id=구성요소>구성요소</h2>
 <ul>
-<li>Expression</li>
-<li>Value or Filter</li>
-<li>Limit</li>
-<li>Decomposition</li>
+<li>표현식</li>
+<li>값 혹은 필터</li>
+<li>제한 횟수</li>
+<li>분해</li>
 </ul>
-<h2 id=expression>Expression</h2>
-<p>Expression refers to fields would like to manipulate.</p>
+<h2 id=표현식>표현식</h2>
+<p>표현식으로 연산을 적용할 필드를 나타냅니다.</p>
 <ul>
-<li>Expression for field would be <code>fieldName</code></li>
-<li>Expression for nested field would be <code>outerField.innerField</code></li>
-<li>All fields in object would be <code>*</code></li>
-<li><code>$</code> means root, same as <a href=https://github.com/json-path/JsonPath>JsonPath</a></li>
-<li>Single list or array element would be <code>[index]</code></li>
-<li>All list or array elements would be <code>[*]</code></li>
+<li>필드를 가르키는 표현식은 <code>필드이름</code>입니다.</li>
+<li>필드에 존재하는 객체 내부의 필드를 가르키는 표현식은 <code>외부필드이름.내부필드이름</code>입니다.</li>
+<li>객체 내부 모든 필드를 가르키는 표현식은 <code>*</code>입니다</li>
+<li><code>$</code>는 생성하는 최상위 객체를 가르킵니다. <a href=https://github.com/json-path/JsonPath>JsonPath</a> 에서 제공하는 표현식과 동일합니다.</li>
+<li>리스트 혹은 배열의 특정 요소를 가르키는 표현식은 <code>[index]</code>입니다.</li>
+<li>리스트 혹은 배열의 모든 요소를 가르키는 표현식은 <code>[*]</code>입니다.</li>
 </ul>
-<h2 id=value-or-filter>Value or Filter</h2>
-<p>Fields match <code>Expression</code> would be set as <code>Value</code> or applied by <code>Filter</code>.</p>
-<h2 id=limit>Limit</h2>
-<p>How many fields that match <code>Expression</code> would like to manipulate.</p>
-<h2 id=decomposition>Decomposition</h2>
-<p>Turning instance into <code>ArbitraryBuilder</code> for manipulating.</p>
-<p>For example, you could make a String fixture which always returns &ldquo;Value&rdquo;</p>
+<h2 id=값-혹은-필터>값 혹은 필터</h2>
+<p><code>표현식</code>에 해당하는 필드는 입력한 <code>값</code>이 설정되거나 혹은 <code>필터</code>가 적용됩니다.</p>
+<h2 id=제한-횟수>제한 횟수</h2>
+<p><code>표현식</code>에 해당하는 여러 개의 필드 중 몇 개의 필드에 연산을 적용할 것인지 설정합니다.</p>
+<h2 id=분해>분해</h2>
+<p>정의한 인스턴스를 <code>ArbitraryBuilder</code>로 변환할 수 있습니다. 불변한 객체라고 해도 연산을 적용할 수 있습니다.</p>
+<p>예를 들어, 다음과 같이 &ldquo;Value"만을 반환하는 <code>ArbitraryBuilder</code>를 만들 수 있습니다.</p>
 <pre tabindex=0><code>fixtureMonkey.giveMeBuilder(&quot;Value&quot;)
-</code></pre><ul>
-<li>Apply <code>setNotNull</code> to decomposed instance null field, it would be set as a new arbitrary value.</li>
-</ul>
-<p>More examples in <a href=/fixture-monkey/kr/docs/v0.3.x/examples/manipulator/complexmanipulator/>here</a></p>
-<h2 id=simplemanipulatorhahahugoshortcode-s1-hbhb><a href=/fixture-monkey/kr/docs/v0.3.x/examples/manipulator/simplemanipulator/>SimpleManipulator</a></h2>
+</code></pre><p>분해한 객체의 null 필드에 <code>setNotNull</code>을 적용하면 새로 랜덤한 값을 생성합니다.</p>
+<p>더 많은 예제는 <a href=/fixture-monkey/kr/docs/v0.3.x/examples/manipulator/complexmanipulator/>여기</a>를 참조해주세요.</p>
+<h2 id=간단한-연산hahahugoshortcode-s1-hbhb><a href=/fixture-monkey/kr/docs/v0.3.x/examples/manipulator/simplemanipulator/>간단한 연산</a></h2>
 <ul>
-<li>Applies in given order, <code>set</code> → <code>setPostCondition</code> → <code>customize</code></li>
-<li><code>Manipulators</code> with same <code>Experssion</code> overwrite previous <code>Manipulator</code> except for <code>setPostcondition</code></li>
-<li>Customize can be used multiple times</li>
-<li>Customize applies in declared order</li>
+<li>연산을 다음과 같은 순서로 적용합니다. <code>set</code> → <code>setPostCondition</code> → <code>customize</code></li>
+<li>같은 <code>표현식</code>을 가지는 <code>동일한 연산</code>은 덮어 씌워집니다. 따라서 가장 마지막에 선언한 <code>연산</code>을 적용합니다.</li>
+<li>예외적으로 <code>setPostcondition</code>, <code>customize</code>은 연산을 여러 번 적용할 수 있습니다.</li>
 </ul>
-<h2 id=complexmanipulatorhahahugoshortcode-s2-hbhb><a href=/fixture-monkey/kr/docs/v0.3.x/examples/manipulator/complexmanipulator/>ComplexManipulator</a></h2>
+<h2 id=복잡한-연산hahahugoshortcode-s2-hbhb><a href=/fixture-monkey/kr/docs/v0.3.x/examples/manipulator/complexmanipulator/>복잡한 연산</a></h2>
 <ul>
-<li><code>ArbitraryBuilder</code> applied <code>ComplexManipulator</code> sampling always returns same value</li>
-<li><code>fixed</code> makes ArbitraryBuilder returns same value</li>
+<li><code>fixed</code>는 <code>ArbitraryBuilder</code>에서 항상 같은 인스턴스를 반환하게 만듭니다.</li>
 </ul>
 </div>
 <div class=td-content style=page-break-before:always>
-<h1 id=pg-91c74f0ac834cde66c938a0cf4d705e4>5 - Register ArbitraryBuilder</h1>
-<h2 id=features>Features</h2>
+<h1 id=pg-91c74f0ac834cde66c938a0cf4d705e4>5 - ArbitraryBuilder 등록</h1>
+<h2 id=특징>특징</h2>
 <ul>
-<li>Set default <code>ArbitraryBuilder</code> for specific type, call <code>giveMe</code> then returns registered <code>ArbitraryBuilder</code> sampled instance.</li>
-<li>Even fields with given type would be registered <code>ArbitraryBuilder</code> sampled instance too.</li>
-<li>All manipulators apply to registered <code>ArbitraryBuilder</code> too</li>
+<li>특정 타입의 <code>ArbitraryBuilder</code>를 등록하면 Fixture Monkey에서 해당 타입을 생성할 때 기본 값으로 사용한다.</li>
+<li>필드에 존재하는 객체에도 적용이 된다.</li>
 </ul>
-<h2 id=exampleshahahugoshortcode-s0-hbhb><a href=/fixture-monkey/kr/docs/v0.3.x/examples/registerarbitrarybuilder/>Examples</a></h2>
+<h2 id=예제hahahugoshortcode-s0-hbhb><a href=/fixture-monkey/kr/docs/v0.3.x/examples/registerarbitrarybuilder/>예제</a></h2>
 </div>
 <div class=td-content style=page-break-before:always>
 <h1 id=pg-83bcff1628753d4d6333dd0affdba1ed>6 - ArbitraryGenerator</h1>
-<p><code>ArbitraryGenerator</code> would determine the way of instantiating of given types.</p>
+<p><code>ArbitraryGenerator</code>는 객체를 생성하는 역할을 가지고 있습니다. 객체 생성 조건을 만족해야 생성할 수 있습니다.</p>
 <h2 id=beanarbitrarygenerator-default>BeanArbitraryGenerator (default)</h2>
 <ul>
-<li>Generate Java Bean object</li>
-<li><code>NoArgsConstructor</code> and <code>Setter</code> is required</li>
+<li>JavaBeans 스펙에 따라 객체를 생성합니다.</li>
+<li><code>NoArgsConstructor</code> 와 <code>Setter</code>가 있어야 합니다.</li>
 </ul>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java>
 <span style=color:#5c35cc;font-weight:700>@Setter</span>
@@ -363,18 +357,11 @@ Default is <code>true</code></li>
 <span style=color:#ce5c00;font-weight:700>}</span>
 </code></pre></div><h2 id=constructorpropertiesarbitrarygenerator>ConstructorPropertiesArbitraryGenerator</h2>
 <ul>
-<li>Only one constructor and <code>@ConstructorProperties</code> is required</li>
-<li>All parameters in constructor should be in <code>@ConstructorProperties</code>, and should have same name</li>
-<li>Field name should be aligned with constructor parameter or <code>@ConstructorProperties</code> value name unless using <code>ArbitraryCustomizer</code>
-<ul>
-<li>Example <a href=/fixture-monkey/kr/docs/v0.3.x/examples/arbitrarygenerator/#add-constructorproperties-value-when-field-name-is-different>here</a></li>
-</ul>
-</li>
-<li><code>ArbitraryCustomizer</code> could add extra parameter in <code>@ConstructorProperties</code> which is not in constructor
-<ul>
-<li>Example <a href=/fixture-monkey/kr/docs/v0.3.x/examples/arbitrarygenerator/#add-constructorproperties-value-without-corresponding-field>here</a></li>
-</ul>
-</li>
+<li>하나의 생성자와 <code>@ConstructorProperties</code> 가 필요합니다.</li>
+<li>생성자에 존재하는 모든 파라미터는 <code>@ConstructorProperties</code>에 있어야 합니다. 같은 이름을 가지고 있어야 합니다.</li>
+<li>필드 이름은 생성자 이름과 일치해야 합니다.</li>
+<li>필드 이름과 생성자 이름이 다르지만 코드 베이스에서 수정할 수 없는 경우 <code>ArbitraryCustomizer</code>에서 수정할 수 있습니다. <a href=/fixture-monkey/kr/docs/v0.3.x/examples/arbitrarygenerator/#add-constructorproperties-value-when-field-name-is-different>예제</a></li>
+<li>생성자에 존재하지 않고 <code>@ConstructorProperties</code> 에서 새로 정의한 파라미터는 <code>ArbitraryCustomizer</code>에서 활용할 수 있습니다. <a href=/fixture-monkey/kr/docs/v0.3.x/examples/arbitrarygenerator/#add-constructorproperties-value-without-corresponding-field>예제</a></li>
 </ul>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#204a87;font-weight:700>public</span> <span style=color:#204a87;font-weight:700>class</span> <span style=color:#000>Product</span><span style=color:#ce5c00;font-weight:700>{</span> 
     <span style=color:#204a87;font-weight:700>private</span> <span style=color:#000>Long</span> <span style=color:#000>id</span><span style=color:#ce5c00;font-weight:700>;</span>
@@ -388,10 +375,9 @@ Default is <code>true</code></li>
 <span style=color:#ce5c00;font-weight:700>}</span>
 </code></pre></div><h2 id=builderarbitrarygenerator>BuilderArbitraryGenerator</h2>
 <ul>
-<li>Instantiating by <a href=https://projectlombok.org/>Lombok</a> &rsquo;s <a href=https://projectlombok.org/features/Builder>@Builder</a></li>
-<li>If you redefined <code>@Builder</code>&rsquo;s <code>builderMethodName</code>, <code>buildMethodName</code>, you should redefine <code>builderMethodName</code>
-, <code>buildMethodName</code> in <code>BuilderArbitraryGenerator</code></li>
-<li>Could generate immutable instance</li>
+<li><a href=https://projectlombok.org/>Lombok</a> &rsquo;s <a href=https://projectlombok.org/features/Builder>@Builder</a> 가 선언된 경우 생성할 수 있습니다.</li>
+<li><code>@Builder</code>의 <code>builderMethodName</code>를 재정의한 경우 <code>BuilderArbitraryGenerator</code> 안에 있는 <code>builderMethodName</code>를 일치시켜 주어야 합니다.</li>
+<li>불변 객체를 생성할 수 있습니다.</li>
 </ul>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java>
 <span style=color:#5c35cc;font-weight:700>@Builder</span>
@@ -407,9 +393,8 @@ Default is <code>true</code></li>
 <span style=color:#ce5c00;font-weight:700>}</span>
 </code></pre></div><h2 id=fieldreflectionarbitrarygenerator>FieldReflectionArbitraryGenerator</h2>
 <ul>
-<li>Instantiating by <code>Field Reflection</code></li>
-<li><code>package-public</code> <code>NoArgsConstructor</code> is required, can not generate <code>final</code>, <code>transient</code> fields. (like <code>JPA</code> '
-s <code>@Entity</code>)</li>
+<li><code>Field Reflection</code>을 통해 객체를 생성합니다.</li>
+<li><code>package-public</code> <code>NoArgsConstructor</code> 이 필요합니다. <code>final</code>, <code>transient</code>는 생성할 수 없습니다. (<code>JPA의 @Entity</code>와 유사합니다)</li>
 </ul>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java>
 <span style=color:#5c35cc;font-weight:700>@Entity</span>
@@ -426,60 +411,60 @@ s <code>@Entity</code>)</li>
 </ul>
 <h2 id=nullarbitrarygenerator>NullArbitraryGenerator</h2>
 <ul>
-<li>Always generate <code>null</code></li>
+<li>항상 <code>null</code>을 반환합니다.</li>
 </ul>
-<h2 id=how-to-add-new-arbitrarygenerator>How to Add New ArbitraryGenerator</h2>
-<p><a href=/fixture-monkey/kr/docs/v0.3.x/examples/arbitrarygenerator/>Example</a></p>
+<h2 id=새로운-arbitrarygenerator-추가하기>새로운 ArbitraryGenerator 추가하기</h2>
+<p><a href=/fixture-monkey/kr/docs/v0.3.x/examples/arbitrarygenerator/>예제</a></p>
 </div>
 <div class=td-content style=page-break-before:always>
 <h1 id=pg-02016a2d4e99b6a6eef4d851e7ebf042>7 - ArbitraryCustomizer</h1>
 <h2 id=customizerfields>customizerFields</h2>
-<p>Runs before <code>ArbitraryGenerator</code> instantiating, could modify <code>Arbitrary</code> in <code>FieldArbitraies</code></p>
+<p><code>ArbitraryGenerator</code> 에서 객체를 생성하기 전에 객체를 구성하는 <code>FieldArbitraies</code> 안에 존재하는 <code>Arbitrary</code>를 제어합니다.</p>
 <h2 id=customizefixture>customizeFixture</h2>
-<p>Runs after <code>ArbitraryGenerator</code> instantiating, could determine return instance</p>
-<h3 id=lifecycle>Lifecycle</h3>
+<p><code>ArbitraryGenerator</code>에서 객체를 생성한 후 반환할 객체를 제어합니다.</p>
+<h3 id=생명주기>생명주기</h3>
 <ol>
 <li>customizerFields</li>
 <li>customizeFixture</li>
 </ol>
 <h2 id=builderarbitrarycustomizer>BuilderArbitraryCustomizer</h2>
-<p>Use Builder to customize for preventing typo or mistakes</p>
-<h3 id=lifecycle-1>Lifecycle</h3>
+<p>오타 같은 휴먼 에러를 막기 위해 Builder 형태로 customizer를 사용할 수 있습니다.</p>
+<h3 id=생명주기-1>생명주기</h3>
 <ol>
 <li>customizeFields</li>
 <li>customizeBuilderFields</li>
 <li>customizeBuilder</li>
 <li>customizeFixture</li>
 </ol>
-<h2 id=example>Example</h2>
-<p>You could find examples <a href=/fixture-monkey/kr/docs/v0.3.x/examples/arbitrarycustomizer/>here</a></p>
+<h2 id=예제>예제</h2>
+<p>자세한 내용은 <a href=/fixture-monkey/kr/docs/v0.3.x/examples/arbitrarycustomizer/>여기</a>에서 확인하세요.</p>
 </div>
 <div class=td-content style=page-break-before:always>
 <h1 id=pg-39c8bea5724b08548916049a7f1f3bfa>8 - ArbitraryValidator</h1>
 <ul>
-<li>Object generated by Fixture Monkey would validate by <code>ArbitraryValidator</code></li>
-<li>Invalid instance could not be generated.</li>
-<li>If object is invalid which sampled over <code>10000</code> times from <code>Arbitrary</code>, <code>TooManyFilterMissesException</code> would be thrown. (<a href=https://github.com/jlink/jqwik/blob/master/engine/src/main/java/net/jqwik/engine/properties/MaxTriesLoop.java>MaxTriesLoop</a>)</li>
+<li>Fixture Monkey가 생성한 객체는 <code>ArbitraryValidator</code>가 유효성 검사를 진행합니다.</li>
+<li>유효성 검사를 통과하지 못한 객체는 생성하지 않습니다.</li>
+<li><code>10000</code> 번을 시도했음에도 유효성 검사를 통과하지 못하면 <code>TooManyFilterMissesException</code>가 발생합니다. (<a href=https://github.com/jlink/jqwik/blob/master/engine/src/main/java/net/jqwik/engine/properties/MaxTriesLoop.java>MaxTriesLoop</a>)</li>
 </ul>
 <div class="alert alert-secondary" role=alert>
 <h4 class=alert-heading>Note</h4>
-<p>If you have a JSR 380 Validator implementation, register it as <code>ArbitraryValidator</code> automatically.</p>
-<p>For example, If you add <code>testImplementation("org.hibernate.validator:hibernate-validator:6.1.7.Final")</code>
-Then, Hibernate Validator would validate objects automatically.</p>
+<p>JSR 380 Validator 구현체를 의존성에 추가하면 <code>ArbitraryValidator</code>에서 자동으로 등록합니다.</p>
+<p>예를 들면 다음과 같은 의존성을 추가하면 Hibernate Validator가 유효성 검사를 진행합니다.
+<code>testImplementation("org.hibernate.validator:hibernate-validator:6.1.7.Final")</code></p>
 </div>
 <h2 id=defaultarbitraryvalidator>DefaultArbitraryValidator</h2>
 <ul>
-<li><code>javax.validation.Validator</code> would validate instance</li>
-<li>Should keep <code>javax.validation.constraints</code></li>
+<li><code>javax.validation.Validator</code>가 객체의 유효성 검사를 진행합니다.</li>
+<li><code>javax.validation.constraints</code>를 준수해야 합니다.</li>
 </ul>
 <h2 id=compositefixturevalidator-default>CompositeFixtureValidator (default)</h2>
 <ul>
-<li>Combined <code>ArbitraryValidator</code>which consists of <code>DefaultArbitraryValidator</code> and user-defined <code>ArbitraryValidator</code></li>
+<li><code>ArbitraryValidator</code>는 <code>DefaultArbitraryValidator</code>와 유저가 정의한 <code>ArbitraryValidator</code>를 조합해서 만들어집니다.</li>
 </ul>
 </div>
 <div class=td-content style=page-break-before:always>
-<h1 id=pg-4d1e21a96b37777490e60d9f974a0156>9 - Supported Validation Annotations</h1>
-<p>Generate valid instance by <a href=https://beanvalidation.org/1.0/spec/>JSR 303 Bean Validation</a> Annotations</p>
+<h1 id=pg-4d1e21a96b37777490e60d9f974a0156>9 - 유효성 검사에 사용하는 어노테이션</h1>
+<p>fixture에 의해 생성한 객체는 <a href=https://beanvalidation.org/1.0/spec/>JSR 303 Bean Validation</a> 어노테이션에 따라 유효성 검사를 진행합니다.</p>
 <ul>
 <li><a href=https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/NotNull.html>@NotNull</a></li>
 <li><a href=https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/Null.html>@Null</a></li>
@@ -507,13 +492,13 @@ Then, Hibernate Validator would validate objects automatically.</p>
 </div>
 <div class=td-content style=page-break-before:always>
 <h1 id=pg-13affe8ac68faa821ee69621ad8d3b2a>10 - InterfaceSupplier</h1>
-<p>Determine returning instance for specific type, which is interface or abstract class</p>
-<p>Default <code>InterfaceSupplier</code> is <code>(type) -> null</code></p>
+<p>인터페이스 혹은 추상 클래스를 생성할 때 반환할 결과를 정의합니다.</p>
+<p>기본 <code>InterfaceSupplier</code> 는 <code>(type) -> null</code> 입니다.</p>
 </div>
 <div class=td-content style=page-break-before:always>
 <h1 id=pg-828694bb99e9366c656eb9970fdc5bd0>11 - Arbitrary</h1>
-<p><code>Arbitrary</code> is a <a href=https://junit.org/junit4/cookbook.html#Fixture>fixture</a> in <code>Jqwik</code>. You can generate <code>Arbitrary</code>, simply by calling static methods in <code>Arbitraries</code></p>
-<p>Details about <code>Arbitrary</code>, check out <a href=https://jqwik.net/docs/current/user-guide.html>jqwik User Guide</a></p>
+<p><code>Arbitrary</code> 는 <code>Jqwik</code>에서 정의한 <a href=https://junit.org/junit4/cookbook.html#Fixture>fixture</a> 객체입니다. <code>Arbitrary</code>는 <code>Arbitraries</code>의 정적 메소드를 호출해서 생성할 수 있습니다.</p>
+<p><code>Arbitrary</code>을 자세히 알고 싶으시다면 <a href=https://jqwik.net/docs/current/user-guide.html>jqwik User Guide</a> 를 참조하세요.</p>
 <ul>
 <li><a href=https://jqwik.net/docs/current/user-guide.html#static-arbitraries-methods>Static <code>Arbitraries</code> methods</a></li>
 <li><a href=https://jqwik.net/docs/current/user-guide.html#collections-streams-arrays-and-optional>Collections, Streams, Arrays and Optional</a></li>
@@ -551,7 +536,7 @@ Then, Hibernate Validator would validate objects automatically.</p>
 </ul>
 </div>
 <div class="col-12 col-sm-4 text-center py-2 order-sm-2">
-<small class=text-white>&copy; 2021 Naver All Rights Reserved</small>
+<small class=text-white>&copy; 2022 Naver All Rights Reserved</small>
 </div>
 </div>
 </div>

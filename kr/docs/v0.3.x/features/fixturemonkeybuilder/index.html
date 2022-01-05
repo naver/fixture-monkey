@@ -2,7 +2,7 @@
 <head>
 <meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no">
-<meta name=generator content="Hugo 0.89.4"><meta name=ROBOTS content="INDEX, FOLLOW">
+<meta name=generator content="Hugo 0.91.2"><meta name=ROBOTS content="INDEX, FOLLOW">
 <link rel="shortcut icon" href=/fixture-monkey/favicons/favicon.png>
 <link rel=apple-touch-icon href=/fixture-monkey/favicons/favicon.png sizes=180x180>
 <link rel=icon type=image/png href=/fixture-monkey/favicons/favicon.png sizes=16x16>
@@ -20,11 +20,11 @@
 <meta property="og:description" content="FixtureMonkey fixture = FixtureMonkey.builder() .defaultGenerator(BuilderArbitraryGenerator.INSTANCE) // default: BeanArbitraryGenerator.INSTANCE  .putGenerator(CustomObject.class, FieldReflectionArbitraryGenerator.INSTANCE) .defaultContainerMaxSize(5) // default: 3  .nullInject(0.5) // default: 0.2  .nullableContainer(true) // default: false  .nullableContainerElement(true) // default: false  .nullGenerateTypes(Set.of(UnsupportedType.class, XXX.class)) .exceptGeneratePackages(Set.of(&#34;com.naver.xxx&#34;, &#34;com.naver.yyy&#34;)) // default: &#34;java.lang.reflect&#34;, &#34;jdk.internal.reflect&#34;, &#34;sun.reflect&#34;  .addCustomizer(CustomObject.class, new CustomObjectFixtureCustomizer()) .fixtureValidator(new CustomFixtureValidator()) // default: CompositeFixtureValidator  .addAnnotatedArbitraryGenerator(Tuple.class, TupleAnnotatedArbitraryGenerator()) .defaultInterfaceSupplier(type -> null) .addInterfaceSupplier(SomeInterface.class, type -> ConcreateClass.INSTANCE) .defaultNotNull(true) // default: true  .register(Order.class, defaultOrderBuilder()) .registerGroup(FixtureMonkeyGroup.class) .build(); Options  defaultGenerator (default: BeanArbitraryGenerator.">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://naver.github.io/fixture-monkey/kr/docs/v0.3.x/features/fixturemonkeybuilder/"><meta property="article:section" content="docs">
-<meta property="article:modified_time" content="2021-12-02T15:58:55+09:00"><meta property="og:site_name" content="픽스처 몽키">
+<meta property="article:modified_time" content="2022-01-05T19:25:53+09:00"><meta property="og:site_name" content="픽스처 몽키">
 <meta itemprop=name content="FixtureMonkeyBuilder">
 <meta itemprop=description content="FixtureMonkey fixture = FixtureMonkey.builder() .defaultGenerator(BuilderArbitraryGenerator.INSTANCE) // default: BeanArbitraryGenerator.INSTANCE  .putGenerator(CustomObject.class, FieldReflectionArbitraryGenerator.INSTANCE) .defaultContainerMaxSize(5) // default: 3  .nullInject(0.5) // default: 0.2  .nullableContainer(true) // default: false  .nullableContainerElement(true) // default: false  .nullGenerateTypes(Set.of(UnsupportedType.class, XXX.class)) .exceptGeneratePackages(Set.of(&#34;com.naver.xxx&#34;, &#34;com.naver.yyy&#34;)) // default: &#34;java.lang.reflect&#34;, &#34;jdk.internal.reflect&#34;, &#34;sun.reflect&#34;  .addCustomizer(CustomObject.class, new CustomObjectFixtureCustomizer()) .fixtureValidator(new CustomFixtureValidator()) // default: CompositeFixtureValidator  .addAnnotatedArbitraryGenerator(Tuple.class, TupleAnnotatedArbitraryGenerator()) .defaultInterfaceSupplier(type -> null) .addInterfaceSupplier(SomeInterface.class, type -> ConcreateClass.INSTANCE) .defaultNotNull(true) // default: true  .register(Order.class, defaultOrderBuilder()) .registerGroup(FixtureMonkeyGroup.class) .build(); Options  defaultGenerator (default: BeanArbitraryGenerator.">
-<meta itemprop=dateModified content="2021-12-02T15:58:55+09:00">
-<meta itemprop=wordCount content="280">
+<meta itemprop=dateModified content="2022-01-05T19:25:53+09:00">
+<meta itemprop=wordCount content="284">
 <meta itemprop=keywords content><meta name=twitter:card content="summary">
 <meta name=twitter:title content="FixtureMonkeyBuilder">
 <meta name=twitter:description content="FixtureMonkey fixture = FixtureMonkey.builder() .defaultGenerator(BuilderArbitraryGenerator.INSTANCE) // default: BeanArbitraryGenerator.INSTANCE  .putGenerator(CustomObject.class, FieldReflectionArbitraryGenerator.INSTANCE) .defaultContainerMaxSize(5) // default: 3  .nullInject(0.5) // default: 0.2  .nullableContainer(true) // default: false  .nullableContainerElement(true) // default: false  .nullGenerateTypes(Set.of(UnsupportedType.class, XXX.class)) .exceptGeneratePackages(Set.of(&#34;com.naver.xxx&#34;, &#34;com.naver.yyy&#34;)) // default: &#34;java.lang.reflect&#34;, &#34;jdk.internal.reflect&#34;, &#34;sun.reflect&#34;  .addCustomizer(CustomObject.class, new CustomObjectFixtureCustomizer()) .fixtureValidator(new CustomFixtureValidator()) // default: CompositeFixtureValidator  .addAnnotatedArbitraryGenerator(Tuple.class, TupleAnnotatedArbitraryGenerator()) .defaultInterfaceSupplier(type -> null) .addInterfaceSupplier(SomeInterface.class, type -> ConcreateClass.INSTANCE) .defaultNotNull(true) // default: true  .register(Order.class, defaultOrderBuilder()) .registerGroup(FixtureMonkeyGroup.class) .build(); Options  defaultGenerator (default: BeanArbitraryGenerator.">
@@ -129,18 +129,18 @@ Korean
 </li>
 </ul>
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child active-path" id=m-fixture-monkeykrdocsv03xfeatures-li>
-<a href=/fixture-monkey/kr/docs/v0.3.x/features/ class="align-left pl-0 td-sidebar-link td-sidebar-link__section" id=m-fixture-monkeykrdocsv03xfeatures><span>Features</span></a>
+<a href=/fixture-monkey/kr/docs/v0.3.x/features/ class="align-left pl-0 td-sidebar-link td-sidebar-link__section" id=m-fixture-monkeykrdocsv03xfeatures><span>특징</span></a>
 <ul class="ul-3 foldable">
 <li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child active-path" id=m-fixture-monkeykrdocsv03xfeaturesfixturemonkeybuilder-li>
 <a href=/fixture-monkey/kr/docs/v0.3.x/features/fixturemonkeybuilder/ class="align-left pl-0 active td-sidebar-link td-sidebar-link__page" id=m-fixture-monkeykrdocsv03xfeaturesfixturemonkeybuilder><span class=td-sidebar-nav-active-item>FixtureMonkeyBuilder</span></a>
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-fixture-monkeykrdocsv03xfeaturesdefaultsupportedtypes-li>
-<a href=/fixture-monkey/kr/docs/v0.3.x/features/defaultsupportedtypes/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-fixture-monkeykrdocsv03xfeaturesdefaultsupportedtypes><span>Default Supported Types</span></a>
+<a href=/fixture-monkey/kr/docs/v0.3.x/features/defaultsupportedtypes/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-fixture-monkeykrdocsv03xfeaturesdefaultsupportedtypes><span>기본 생성 타입</span></a>
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-fixture-monkeykrdocsv03xfeaturesarbitrarybuilder-li>
 <a href=/fixture-monkey/kr/docs/v0.3.x/features/arbitrarybuilder/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-fixture-monkeykrdocsv03xfeaturesarbitrarybuilder><span>ArbitraryBuilder</span></a>
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-fixture-monkeykrdocsv03xfeaturesmanipulator-li>
-<a href=/fixture-monkey/kr/docs/v0.3.x/features/manipulator/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-fixture-monkeykrdocsv03xfeaturesmanipulator><span>Manipulator</span></a>
+<a href=/fixture-monkey/kr/docs/v0.3.x/features/manipulator/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-fixture-monkeykrdocsv03xfeaturesmanipulator><span>연산</span></a>
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-fixture-monkeykrdocsv03xfeaturesregisterarbitrarybuilder-li>
-<a href=/fixture-monkey/kr/docs/v0.3.x/features/registerarbitrarybuilder/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-fixture-monkeykrdocsv03xfeaturesregisterarbitrarybuilder><span>Register ArbitraryBuilder</span></a>
+<a href=/fixture-monkey/kr/docs/v0.3.x/features/registerarbitrarybuilder/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-fixture-monkeykrdocsv03xfeaturesregisterarbitrarybuilder><span>ArbitraryBuilder 등록</span></a>
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-fixture-monkeykrdocsv03xfeaturesarbitrarygenerator-li>
 <a href=/fixture-monkey/kr/docs/v0.3.x/features/arbitrarygenerator/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-fixture-monkeykrdocsv03xfeaturesarbitrarygenerator><span>ArbitraryGenerator</span></a>
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-fixture-monkeykrdocsv03xfeaturesarbitrarycustomizer-li>
@@ -148,7 +148,7 @@ Korean
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-fixture-monkeykrdocsv03xfeaturesarbitraryvalidator-li>
 <a href=/fixture-monkey/kr/docs/v0.3.x/features/arbitraryvalidator/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-fixture-monkeykrdocsv03xfeaturesarbitraryvalidator><span>ArbitraryValidator</span></a>
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-fixture-monkeykrdocsv03xfeaturessupportedvalidationannotation-li>
-<a href=/fixture-monkey/kr/docs/v0.3.x/features/supportedvalidationannotation/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-fixture-monkeykrdocsv03xfeaturessupportedvalidationannotation><span>Supported Validation Annotations</span></a>
+<a href=/fixture-monkey/kr/docs/v0.3.x/features/supportedvalidationannotation/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-fixture-monkeykrdocsv03xfeaturessupportedvalidationannotation><span>유효성 검사에 사용하는 어노테이션</span></a>
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-fixture-monkeykrdocsv03xfeaturesinterfacesupplier-li>
 <a href=/fixture-monkey/kr/docs/v0.3.x/features/interfacesupplier/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-fixture-monkeykrdocsv03xfeaturesinterfacesupplier><span>InterfaceSupplier</span></a>
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-fixture-monkeykrdocsv03xfeaturesarbitrary-li>
@@ -202,7 +202,7 @@ Korean
 <a href=https://naver.github.io/fixture-monkey/kr/docs/v0.3.x/>Hello, Fixture Monkey</a>
 </li>
 <li class=breadcrumb-item>
-<a href=https://naver.github.io/fixture-monkey/kr/docs/v0.3.x/features/>Features</a>
+<a href=https://naver.github.io/fixture-monkey/kr/docs/v0.3.x/features/>특징</a>
 </li>
 <li class="breadcrumb-item active" aria-current=page>
 <a href=https://naver.github.io/fixture-monkey/kr/docs/v0.3.x/features/fixturemonkeybuilder/>FixtureMonkeyBuilder</a>
@@ -241,28 +241,28 @@ Korean
 </li>
 <li>putGenerator
 <ul>
-<li>Use given generator if type is matched instead of defaultGenerator</li>
-<li><a href=/fixture-monkey/kr/docs/v0.3.x/examples/arbitrarygenerator/>Example</a></li>
+<li>주어진 타입은 <code>defaultGenerator</code>가 아닌 입력한 generator로 생성합니다.</li>
+<li><a href=/fixture-monkey/kr/docs/v0.3.x/examples/arbitrarygenerator/>예제</a></li>
 </ul>
 </li>
 <li>nullInject (default: 0.2)
 <ul>
-<li>Set probabilities to inject <code>null</code>.</li>
-<li>If field has <code>@NotNull</code>, it would not inject <code>null</code></li>
+<li>생성한 값이 <code>null</code>이 될 수 있는 확률을 설정합니다.</li>
+<li>필드에 <code>@NotNull</code>을 정의한 경우 <code>null</code>을 생성하지 않습니다.</li>
 </ul>
 </li>
 <li>nullableContainer (default: false)
 <ul>
-<li>It decides whether containers like <code>Map</code>, <code>List</code>, <code>Set</code>, <code>Stream</code>, <code>Optional</code> allows to be <code>null</code></li>
-<li>If <code>false</code>, set default Container (<code>new ArrayList()</code>) ,not <code>null</code> ;</li>
-<li>If <code>true</code>, set <code>null</code>, <code>null</code> probabilities depend on <strong>nullInject</strong></li>
-<li>Field with <code>@NotNull</code>, would not be <code>null</code></li>
+<li><code>Map</code>, <code>List</code>, <code>Set</code>, <code>Stream</code>, <code>Optional</code>와 같은 컨테이너를 생성할 때 빈 컨테이너가 아닌 <code>null</code>을 생성할지 여부를 결정합니다.</li>
+<li>만약 <code>false</code>라면 null은 생성하지 않고 빈 컨테이너가 생성됩니다. (<code>new ArrayList()</code>)</li>
+<li>만약 <code>true</code>라면 null이 생성될 수 있다. <code>null</code>이 될 확률은 <strong>nullInject</strong>가 결정한다.</li>
+<li>필드에 <code>@NotNull</code>을 정의한 경우 <code>null</code>이 되지 않는다.</li>
 </ul>
 </li>
 <li>exceptGeneratePackages
 <ul>
-<li>Set packages always be <code>null</code></li>
-<li>Default packages are below, it always does not override
+<li>항상 <code>null</code>을 생성할 패키지를 설정한다.</li>
+<li>기본적으로 지정돼있는 패키지는 아래와 같다. 설정하더라도 아래 기본 패키지는 유지한 상태에서 추가한다.
 <blockquote>
 <p>&ldquo;java.lang.reflect&rdquo;
 &ldquo;jdk.internal.reflect&rdquo;
@@ -274,63 +274,64 @@ Korean
 </li>
 <li>addExceptGeneratePackage
 <ul>
-<li>Add package which class in given package always returns <code>null</code></li>
-<li>Appends to default exceptGeneratePackages</li>
+<li>항상 <code>null</code>을 생성할 패키지를 추가한다.</li>
+<li>exceptGeneratePackages에서 설정한 패키지에 추가한다. 설정하지 않은 경우 기본 패키지에 추가한다.</li>
 </ul>
 </li>
 <li>customizers
 <ul>
-<li>Set ArbitraryCustomizers which is a collection of <a href=/fixture-monkey/kr/docs/v0.3.x/features/arbitrarycustomizer/>ArbitraryCustomizer</a></li>
+<li>하나 이상의 <a href=/fixture-monkey/kr/docs/v0.3.x/features/arbitrarycustomizer/>ArbitraryCustomizer</a>를 가지는 ArbitraryCustomizers를 설정합니다.</li>
 </ul>
 </li>
 <li>addCustomizer
 <ul>
-<li>Add specific type of <a href=/fixture-monkey/kr/docs/v0.3.x/features/arbitrarycustomizer/>ArbitraryCustomizer</a></li>
-<li>Appends to default ArbitraryCustomizers</li>
+<li>특정 타입에 <a href=/fixture-monkey/kr/docs/v0.3.x/features/arbitrarycustomizer/>ArbitraryCustomizer</a>를 설정합니다.</li>
+<li>customizers에 설정한 ArbitraryCustomizers에 추가합니다.</li>
 </ul>
 </li>
 <li><a href=/fixture-monkey/kr/docs/v0.3.x/features/arbitraryvalidator/>arbitraryValidator</a> (default: CompositeArbitraryValidator)</li>
 <li>addAnnotatedArbitraryGenerator
 <ul>
-<li>Add specified <a href=/fixture-monkey/kr/docs/v0.3.x/features/defaultsupportedtypes/>type</a></li>
-<li>Appends to default annotatedArbitraryGenerators. It overrides if given type already exists</li>
+<li>특정 <a href=/fixture-monkey/kr/docs/v0.3.x/features/defaultsupportedtypes/>타입</a>을 생성하는 방법을 설정합니다.</li>
+<li>기본으로 정의돼있는 AnnotatedArbitraryGenerator에 추가 됩니다. 타입에 이미 정의한 AnnotatedArbitraryGenerator가 존재하는 경우 덮어 씌웁니다.</li>
 <li><a href=/fixture-monkey/kr/docs/v0.3.x/examples/annotatedarbitrarygenerator/>Example</a></li>
 </ul>
 </li>
 <li>defaultInterfaceSupplier
 <ul>
-<li>Set default <a href=/fixture-monkey/kr/docs/v0.3.x/features/interfacesupplier/>InterfaceSupplier</a> (default : <code>type -> null</code>)</li>
+<li>기본 <a href=/fixture-monkey/kr/docs/v0.3.x/features/interfacesupplier/>InterfaceSupplier</a>를 설정합니다. (default : <code>type -> null</code>)</li>
 </ul>
 </li>
 <li>addInterfaceSupplier
 <ul>
-<li>Determine returning implementation for <code>interface</code> or <code>abstract class</code></li>
-<li>Check out detail <a href=/fixture-monkey/kr/docs/v0.3.x/features/interfacesupplier/>here</a></li>
+<li>특정 <code>인터페이스</code>와 <code>추상 클래스</code>의 구현체를 설정합니다.</li>
+<li>자세한 내용은 <a href=/fixture-monkey/kr/docs/v0.3.x/features/interfacesupplier/>here</a>를 확인해주세요.</li>
 </ul>
 </li>
 <li>defaultNotNull
 <ul>
-<li>If <code>true</code>, fields without <code>@Nullable</code> would not be null.</li>
-<li>If <code>false</code>, fields without <code>@NotNull</code> would be null with <code>nullInject</code> probabilities.</li>
+<li>만약 <code>true</code>인 경우 <code>@Nullable</code>이 없는 필드는 항상 notNull이다.</li>
+<li>만약 <code>false</code>인 경우 <code>@NotNull</code>이 없는 필드는 항상 <code>nullInject</code>에서 설정한 확률에 따라 null이 된다.</li>
 </ul>
 </li>
 <li>register
 <ul>
-<li>Register default ArbitraryBuilder for specific type</li>
-<li>Check out detail <a href=/fixture-monkey/kr/docs/v0.3.x/features/registerarbitrarybuilder/>here</a></li>
+<li>타입에 기본으로 사용할 ArbitraryBuilder를 등록한다.</li>
+<li>자세한 내용은 <a href=/fixture-monkey/kr/docs/v0.3.x/features/registerarbitrarybuilder/>여기</a>를 확인해주세요.</li>
 </ul>
 </li>
 <li>registerGroup
 <ul>
-<li>Register default ArbitraryBuilders by declaring methods which signatures are <code>ArbitraryBuilder&lt;TYPE> NAME(FixtureMonkey fixture)</code></li>
-<li>Check out detail <a href=/fixture-monkey/kr/docs/v0.3.x/features/registerarbitrarybuilder/>here</a></li>
+<li>ArbitraryBuilder를 여러 개 등록할 때 사용한다.</li>
+<li>메소드 시그니처가 <code>ArbitraryBuilder&lt;TYPE> NAME(FixtureMonkey fixture)</code></li>
+<li>자세한 내용은 <a href=/fixture-monkey/kr/docs/v0.3.x/features/registerarbitrarybuilder/>여기</a>를 확인해주세요.</li>
 </ul>
 </li>
 </ul>
 <div class="text-muted mt-5 pt-3 border-top">
 Last modified
-December 2, 2021
-: <a href=https://github.com/naver/fixture-monkey/commit/63403f83f264b20789909c24679174758dff17fc>Add Korean documentation (63403f8)</a>
+January 5, 2022
+: <a href=https://github.com/naver/fixture-monkey/commit/13577f35bb2f5875fd225f716644567a18b79388>Add translate Feature into Korean (13577f3)</a>
 </div>
 </div>
 </main>
@@ -351,7 +352,7 @@ December 2, 2021
 </ul>
 </div>
 <div class="col-12 col-sm-4 text-center py-2 order-sm-2">
-<small class=text-white>&copy; 2021 Naver All Rights Reserved</small>
+<small class=text-white>&copy; 2022 Naver All Rights Reserved</small>
 </div>
 </div>
 </div>

@@ -2,7 +2,7 @@
 <head>
 <meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no">
-<meta name=generator content="Hugo 0.89.4"><meta name=ROBOTS content="INDEX, FOLLOW">
+<meta name=generator content="Hugo 0.91.2"><meta name=ROBOTS content="INDEX, FOLLOW">
 <link rel="shortcut icon" href=/fixture-monkey/favicons/favicon.png>
 <link rel=apple-touch-icon href=/fixture-monkey/favicons/favicon.png sizes=180x180>
 <link rel=icon type=image/png href=/fixture-monkey/favicons/favicon.png sizes=16x16>
@@ -14,24 +14,24 @@
 <link rel=icon type=image/png href=/fixture-monkey/favicons/favicon.png sizes=144x144>
 <link rel=icon type=image/png href=/fixture-monkey/favicons/favicon.png sizes=192x192>
 <title>InterfaceSupplier | 픽스처 몽키</title>
-<meta name=description content="Determine returning instance for specific type, which is interface or abstract class
-Default InterfaceSupplier is (type) -> null
+<meta name=description content="인터페이스 혹은 추상 클래스를 생성할 때 반환할 결과를 정의합니다.
+기본 InterfaceSupplier 는 (type) -> null 입니다.
 ">
 <meta property="og:title" content="InterfaceSupplier">
-<meta property="og:description" content="Determine returning instance for specific type, which is interface or abstract class
-Default InterfaceSupplier is (type) -> null">
+<meta property="og:description" content="인터페이스 혹은 추상 클래스를 생성할 때 반환할 결과를 정의합니다.
+기본 InterfaceSupplier 는 (type) -> null 입니다.">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://naver.github.io/fixture-monkey/kr/docs/v0.3.x/features/interfacesupplier/"><meta property="article:section" content="docs">
-<meta property="article:modified_time" content="2021-12-02T15:58:55+09:00"><meta property="og:site_name" content="픽스처 몽키">
+<meta property="article:modified_time" content="2022-01-05T19:25:53+09:00"><meta property="og:site_name" content="픽스처 몽키">
 <meta itemprop=name content="InterfaceSupplier">
-<meta itemprop=description content="Determine returning instance for specific type, which is interface or abstract class
-Default InterfaceSupplier is (type) -> null">
-<meta itemprop=dateModified content="2021-12-02T15:58:55+09:00">
-<meta itemprop=wordCount content="18">
+<meta itemprop=description content="인터페이스 혹은 추상 클래스를 생성할 때 반환할 결과를 정의합니다.
+기본 InterfaceSupplier 는 (type) -> null 입니다.">
+<meta itemprop=dateModified content="2022-01-05T19:25:53+09:00">
+<meta itemprop=wordCount content="16">
 <meta itemprop=keywords content><meta name=twitter:card content="summary">
 <meta name=twitter:title content="InterfaceSupplier">
-<meta name=twitter:description content="Determine returning instance for specific type, which is interface or abstract class
-Default InterfaceSupplier is (type) -> null">
+<meta name=twitter:description content="인터페이스 혹은 추상 클래스를 생성할 때 반환할 결과를 정의합니다.
+기본 InterfaceSupplier 는 (type) -> null 입니다.">
 <link rel=preload href=/fixture-monkey/scss/main.min.861794578d20e3e3c9c7ca904b2cd3e0e34552ae164462c4f4af0efdcf16ec40.css as=style>
 <link href=/fixture-monkey/scss/main.min.861794578d20e3e3c9c7ca904b2cd3e0e34552ae164462c4f4af0efdcf16ec40.css rel=stylesheet integrity>
 <script src=https://code.jquery.com/jquery-3.5.1.min.js integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin=anonymous></script>
@@ -133,18 +133,18 @@ Korean
 </li>
 </ul>
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child active-path" id=m-fixture-monkeykrdocsv03xfeatures-li>
-<a href=/fixture-monkey/kr/docs/v0.3.x/features/ class="align-left pl-0 td-sidebar-link td-sidebar-link__section" id=m-fixture-monkeykrdocsv03xfeatures><span>Features</span></a>
+<a href=/fixture-monkey/kr/docs/v0.3.x/features/ class="align-left pl-0 td-sidebar-link td-sidebar-link__section" id=m-fixture-monkeykrdocsv03xfeatures><span>특징</span></a>
 <ul class="ul-3 foldable">
 <li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-fixture-monkeykrdocsv03xfeaturesfixturemonkeybuilder-li>
 <a href=/fixture-monkey/kr/docs/v0.3.x/features/fixturemonkeybuilder/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-fixture-monkeykrdocsv03xfeaturesfixturemonkeybuilder><span>FixtureMonkeyBuilder</span></a>
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-fixture-monkeykrdocsv03xfeaturesdefaultsupportedtypes-li>
-<a href=/fixture-monkey/kr/docs/v0.3.x/features/defaultsupportedtypes/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-fixture-monkeykrdocsv03xfeaturesdefaultsupportedtypes><span>Default Supported Types</span></a>
+<a href=/fixture-monkey/kr/docs/v0.3.x/features/defaultsupportedtypes/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-fixture-monkeykrdocsv03xfeaturesdefaultsupportedtypes><span>기본 생성 타입</span></a>
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-fixture-monkeykrdocsv03xfeaturesarbitrarybuilder-li>
 <a href=/fixture-monkey/kr/docs/v0.3.x/features/arbitrarybuilder/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-fixture-monkeykrdocsv03xfeaturesarbitrarybuilder><span>ArbitraryBuilder</span></a>
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-fixture-monkeykrdocsv03xfeaturesmanipulator-li>
-<a href=/fixture-monkey/kr/docs/v0.3.x/features/manipulator/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-fixture-monkeykrdocsv03xfeaturesmanipulator><span>Manipulator</span></a>
+<a href=/fixture-monkey/kr/docs/v0.3.x/features/manipulator/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-fixture-monkeykrdocsv03xfeaturesmanipulator><span>연산</span></a>
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-fixture-monkeykrdocsv03xfeaturesregisterarbitrarybuilder-li>
-<a href=/fixture-monkey/kr/docs/v0.3.x/features/registerarbitrarybuilder/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-fixture-monkeykrdocsv03xfeaturesregisterarbitrarybuilder><span>Register ArbitraryBuilder</span></a>
+<a href=/fixture-monkey/kr/docs/v0.3.x/features/registerarbitrarybuilder/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-fixture-monkeykrdocsv03xfeaturesregisterarbitrarybuilder><span>ArbitraryBuilder 등록</span></a>
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-fixture-monkeykrdocsv03xfeaturesarbitrarygenerator-li>
 <a href=/fixture-monkey/kr/docs/v0.3.x/features/arbitrarygenerator/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-fixture-monkeykrdocsv03xfeaturesarbitrarygenerator><span>ArbitraryGenerator</span></a>
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-fixture-monkeykrdocsv03xfeaturesarbitrarycustomizer-li>
@@ -152,7 +152,7 @@ Korean
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-fixture-monkeykrdocsv03xfeaturesarbitraryvalidator-li>
 <a href=/fixture-monkey/kr/docs/v0.3.x/features/arbitraryvalidator/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-fixture-monkeykrdocsv03xfeaturesarbitraryvalidator><span>ArbitraryValidator</span></a>
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-fixture-monkeykrdocsv03xfeaturessupportedvalidationannotation-li>
-<a href=/fixture-monkey/kr/docs/v0.3.x/features/supportedvalidationannotation/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-fixture-monkeykrdocsv03xfeaturessupportedvalidationannotation><span>Supported Validation Annotations</span></a>
+<a href=/fixture-monkey/kr/docs/v0.3.x/features/supportedvalidationannotation/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-fixture-monkeykrdocsv03xfeaturessupportedvalidationannotation><span>유효성 검사에 사용하는 어노테이션</span></a>
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child active-path" id=m-fixture-monkeykrdocsv03xfeaturesinterfacesupplier-li>
 <a href=/fixture-monkey/kr/docs/v0.3.x/features/interfacesupplier/ class="align-left pl-0 active td-sidebar-link td-sidebar-link__page" id=m-fixture-monkeykrdocsv03xfeaturesinterfacesupplier><span class=td-sidebar-nav-active-item>InterfaceSupplier</span></a>
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-fixture-monkeykrdocsv03xfeaturesarbitrary-li>
@@ -206,7 +206,7 @@ Korean
 <a href=https://naver.github.io/fixture-monkey/kr/docs/v0.3.x/>Hello, Fixture Monkey</a>
 </li>
 <li class=breadcrumb-item>
-<a href=https://naver.github.io/fixture-monkey/kr/docs/v0.3.x/features/>Features</a>
+<a href=https://naver.github.io/fixture-monkey/kr/docs/v0.3.x/features/>특징</a>
 </li>
 <li class="breadcrumb-item active" aria-current=page>
 <a href=https://naver.github.io/fixture-monkey/kr/docs/v0.3.x/features/interfacesupplier/>InterfaceSupplier</a>
@@ -217,12 +217,12 @@ Korean
 <h1>InterfaceSupplier</h1>
 <header class=article-meta>
 </header>
-<p>Determine returning instance for specific type, which is interface or abstract class</p>
-<p>Default <code>InterfaceSupplier</code> is <code>(type) -> null</code></p>
+<p>인터페이스 혹은 추상 클래스를 생성할 때 반환할 결과를 정의합니다.</p>
+<p>기본 <code>InterfaceSupplier</code> 는 <code>(type) -> null</code> 입니다.</p>
 <div class="text-muted mt-5 pt-3 border-top">
 Last modified
-December 2, 2021
-: <a href=https://github.com/naver/fixture-monkey/commit/63403f83f264b20789909c24679174758dff17fc>Add Korean documentation (63403f8)</a>
+January 5, 2022
+: <a href=https://github.com/naver/fixture-monkey/commit/13577f35bb2f5875fd225f716644567a18b79388>Add translate Feature into Korean (13577f3)</a>
 </div>
 </div>
 </main>
@@ -243,7 +243,7 @@ December 2, 2021
 </ul>
 </div>
 <div class="col-12 col-sm-4 text-center py-2 order-sm-2">
-<small class=text-white>&copy; 2021 Naver All Rights Reserved</small>
+<small class=text-white>&copy; 2022 Naver All Rights Reserved</small>
 </div>
 </div>
 </div>
