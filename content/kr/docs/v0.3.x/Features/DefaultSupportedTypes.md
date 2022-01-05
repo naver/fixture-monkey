@@ -1,6 +1,6 @@
 ---
-title: "Default Supported Types"
-linkTitle: "Default Supported Types"
+title: "기본 생성 타입"
+linkTitle: "기본 생성 타입"
 weight: 2
 ---
 - String
@@ -29,5 +29,5 @@ weight: 2
 - ZonedDateTime
 - Uuid
   
-## How to Add New Custom Type 
-[Example]({{< relref "/docs/v0.3.x/examples/annotatedarbitrarygenerator" >}})
+## 생성 타입 추가
+[예제]({{< relref "/docs/v0.3.x/examples/annotatedarbitrarygenerator" >}})를 참조하세요

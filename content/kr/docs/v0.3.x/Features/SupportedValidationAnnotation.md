@@ -1,9 +1,9 @@
 ---
-title: "Supported Validation Annotations"
-linkTitle: "Supported Validation Annotations"
+title: "유효성 검사에 사용하는 어노테이션"
+linkTitle: "유효성 검사에 사용하는 어노테이션"
 weight: 9
 ---
-Generate valid instance by [JSR 303 Bean Validation](https://beanvalidation.org/1.0/spec/) Annotations
+fixture에 의해 생성한 객체는 [JSR 303 Bean Validation](https://beanvalidation.org/1.0/spec/) 어노테이션에 따라 유효성 검사를 진행합니다.
 
 - [@NotNull](https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/NotNull.html)
 - [@Null](https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/Null.html)
