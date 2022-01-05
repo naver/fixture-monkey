@@ -1,52 +1,50 @@
 ---
-title: "Manipulator"
-linkTitle: "Manipulator"
+title: "연산"
+linkTitle: "연산"
 weight: 4
 ---
 
 
-## Component
+## 구성요소
 
-- Expression
-- Value or Filter
-- Limit
-- Decomposition
+- 표현식
+- 값 혹은 필터
+- 제한 횟수
+- 분해
 
-## Expression
-Expression refers to fields would like to manipulate.
+## 표현식
+표현식으로 연산을 적용할 필드를 나타냅니다. 
 
-- Expression for field would be `fieldName`
-- Expression for nested field would be `outerField.innerField`
-- All fields in object would be `*`
-- `$` means root, same as [JsonPath](https://github.com/json-path/JsonPath)
-- Single list or array element would be `[index]`
-- All list or array elements would be `[*]`
+- 필드를 가르키는 표현식은 `필드이름`입니다.
+- 필드에 존재하는 객체 내부의 필드를 가르키는 표현식은 `외부필드이름.내부필드이름`입니다.
+- 객체 내부 모든 필드를 가르키는 표현식은 `*`입니다
+- `$`는 생성하는 최상위 객체를 가르킵니다. [JsonPath](https://github.com/json-path/JsonPath) 에서 제공하는 표현식과 동일합니다.
+- 리스트 혹은 배열의 특정 요소를 가르키는 표현식은 `[index]`입니다.
+- 리스트 혹은 배열의 모든 요소를 가르키는 표현식은 `[*]`입니다.
 
-## Value or Filter
-Fields match `Expression` would be set as `Value` or applied by `Filter`.
+## 값 혹은 필터
+`표현식`에 해당하는 필드는 입력한 `값`이 설정되거나 혹은 `필터`가 적용됩니다.
 
-## Limit
-How many fields that match `Expression` would like to manipulate.
+## 제한 횟수
+`표현식`에 해당하는 여러 개의 필드 중 몇 개의 필드에 연산을 적용할 것인지 설정합니다.
 
-## Decomposition
-Turning instance into `ArbitraryBuilder` for manipulating. 
+## 분해
+정의한 인스턴스를 `ArbitraryBuilder`로 변환할 수 있습니다. 불변한 객체라고 해도 연산을 적용할 수 있습니다. 
 
-For example, you could make a String fixture which always returns "Value"
+예를 들어, 다음과 같이 "Value"만을 반환하는 `ArbitraryBuilder`를 만들 수 있습니다.
 
 ```
 fixtureMonkey.giveMeBuilder("Value")
 ``` 
 
-* Apply `setNotNull` to decomposed instance null field, it would be set as a new arbitrary value.
+분해한 객체의 null 필드에 `setNotNull`을 적용하면 새로 랜덤한 값을 생성합니다.
   
-More examples in [here]({{< relref "/docs/v0.3.x/examples/manipulator/complexmanipulator" >}})
+더 많은 예제는 [여기]({{< relref "/docs/v0.3.x/examples/manipulator/complexmanipulator" >}})를 참조해주세요.
 
-## [SimpleManipulator]({{< relref "/docs/v0.3.x/examples/manipulator/simplemanipulator" >}})
-- Applies in given order, `set` → `setPostCondition` → `customize`
-- `Manipulators` with same `Experssion` overwrite previous `Manipulator` except for `setPostcondition`
-- Customize can be used multiple times
-- Customize applies in declared order
+## [간단한 연산]({{< relref "/docs/v0.3.x/examples/manipulator/simplemanipulator" >}})
+- 연산을 다음과 같은 순서로 적용합니다. `set` → `setPostCondition` → `customize`
+- 같은 `표현식`을 가지는 `동일한 연산`은 덮어 씌워집니다. 따라서 가장 마지막에 선언한 `연산`을 적용합니다. 
+- 예외적으로 `setPostcondition`, `customize`은 연산을 여러 번 적용할 수 있습니다.
 
-## [ComplexManipulator]({{< relref "/docs/v0.3.x/examples/manipulator/complexmanipulator" >}})
-- `ArbitraryBuilder` applied `ComplexManipulator` sampling always returns same value
-- `fixed` makes ArbitraryBuilder returns same value
+## [복잡한 연산]({{< relref "/docs/v0.3.x/examples/manipulator/complexmanipulator" >}})
+- `fixed`는 `ArbitraryBuilder`에서 항상 같은 인스턴스를 반환하게 만듭니다.
