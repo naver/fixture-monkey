@@ -30,6 +30,8 @@ import java.util.function.Supplier;
 import javax.annotation.Nullable;
 
 import net.jqwik.api.Arbitrary;
+import net.jqwik.api.EdgeCases;
+import net.jqwik.api.RandomGenerator;
 
 import com.navercorp.fixturemonkey.generator.ArbitraryGenerator;
 import com.navercorp.fixturemonkey.validator.ArbitraryValidator;
@@ -125,13 +127,13 @@ public final class ArbitraryTree<T> {
 		return generatorMap.getOrDefault(clazz, defaultGenerator);
 	}
 
-	@SuppressWarnings({"rawtypes", "unchecked"})
+	@SuppressWarnings("rawtypes")
 	public Arbitrary<T> result(
 		Supplier<Arbitrary<T>> generateArbitrary,
 		ArbitraryValidator validator,
 		boolean validOnly
 	) {
-		return new ArbitraryValue(generateArbitrary, validator, validOnly, new ConcurrentHashMap<>());
+		return new ArbitraryValue<>(generateArbitrary, validator, validOnly, new ConcurrentHashMap<>());
 	}
 
 	@SuppressWarnings("unchecked")

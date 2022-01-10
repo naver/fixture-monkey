@@ -240,7 +240,7 @@ class ArbitraryGeneratorTest {
 			.defaultGenerator(ConstructorPropertiesArbitraryGenerator.INSTANCE)
 			.build();
 
-		thenThrownBy(() -> sut.giveMe(ConstructorPropertiesZero.class))
+		thenThrownBy(() -> sut.giveMeOne(ConstructorPropertiesZero.class))
 			.hasMessageContaining("doesn't have constructor");
 	}
 
@@ -251,7 +251,7 @@ class ArbitraryGeneratorTest {
 			.defaultGenerator(ConstructorPropertiesArbitraryGenerator.INSTANCE)
 			.build();
 
-		thenThrownBy(() -> sut.giveMe(ConstructorPropertiesTwice.class))
+		thenThrownBy(() -> sut.giveMeOne(ConstructorPropertiesTwice.class))
 			.hasMessageContaining("has more then one constructor");
 	}
 

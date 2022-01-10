@@ -721,7 +721,9 @@ class FixtureMonkeyTest {
 			.addInterfaceSupplier(MockInterface.class, (type) -> () -> "test")
 			.build();
 
-		InterfaceWrapper actual = sut.giveMeOne(InterfaceWrapper.class);
+		InterfaceWrapper actual = sut.giveMeBuilder(InterfaceWrapper.class)
+			.setNotNull("value")
+			.sample();
 
 		then(actual.getValue().get()).isEqualTo("test");
 	}
