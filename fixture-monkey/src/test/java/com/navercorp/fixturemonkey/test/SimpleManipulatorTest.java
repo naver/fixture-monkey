@@ -33,7 +33,6 @@ import net.jqwik.api.ForAll;
 import net.jqwik.api.Property;
 import net.jqwik.api.domains.Domain;
 
-import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.customizer.ExpressionSpec;
 import com.navercorp.fixturemonkey.test.SimpleManipulatorTestSpecs.IntValue;
 import com.navercorp.fixturemonkey.test.SimpleManipulatorTestSpecs.IntegerList;
@@ -407,12 +406,11 @@ class SimpleManipulatorTest {
 		);
 	}
 
-	@SuppressWarnings("ConfusingArgumentToVarargsMethod")
 	@Property
 	void giveMeSpecAnyWithNull() {
 		thenNoException().isThrownBy(
 			() -> SUT.giveMeBuilder(StringList.class)
-				.specAny(null)
+				.specAny((ExpressionSpec[])null)
 				.sample()
 		);
 	}
