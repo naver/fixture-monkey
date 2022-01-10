@@ -169,8 +169,8 @@ class JavaxValidationArbitraryIntrospectorTest {
 		Pattern pattern = Pattern.compile("[e-o]");
 		then(pattern.asPredicate().test(value)).isTrue();
 		for (int i = 0; i < value.length(); i++) {
-			char c = value.charAt(i);
-			then(c).isBetween('e', 'o');
+			char ch = value.charAt(i);
+			then(ch).isBetween('e', 'o');
 		}
 	}
 
