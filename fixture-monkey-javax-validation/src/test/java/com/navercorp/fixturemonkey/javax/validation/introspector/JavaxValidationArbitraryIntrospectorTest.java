@@ -45,8 +45,7 @@ class JavaxValidationArbitraryIntrospectorTest {
 			String.class,
 			propertyName,
 			field.getAnnotatedType(),
-			Arrays.asList(field.getAnnotations()),
-			0.0
+			Arrays.asList(field.getAnnotations())
 		);
 
 		// when
@@ -67,8 +66,7 @@ class JavaxValidationArbitraryIntrospectorTest {
 			String.class,
 			propertyName,
 			field.getAnnotatedType(),
-			Arrays.asList(field.getAnnotations()),
-			0.0
+			Arrays.asList(field.getAnnotations())
 		);
 
 		// when
@@ -89,8 +87,7 @@ class JavaxValidationArbitraryIntrospectorTest {
 			String.class,
 			propertyName,
 			field.getAnnotatedType(),
-			Arrays.asList(field.getAnnotations()),
-			0.0
+			Arrays.asList(field.getAnnotations())
 		);
 
 		// when
@@ -111,8 +108,7 @@ class JavaxValidationArbitraryIntrospectorTest {
 			String.class,
 			propertyName,
 			field.getAnnotatedType(),
-			Arrays.asList(field.getAnnotations()),
-			0.0
+			Arrays.asList(field.getAnnotations())
 		);
 
 		// when
@@ -134,8 +130,7 @@ class JavaxValidationArbitraryIntrospectorTest {
 			String.class,
 			propertyName,
 			field.getAnnotatedType(),
-			Arrays.asList(field.getAnnotations()),
-			0.0
+			Arrays.asList(field.getAnnotations())
 		);
 
 		// when
@@ -157,8 +152,7 @@ class JavaxValidationArbitraryIntrospectorTest {
 			String.class,
 			propertyName,
 			field.getAnnotatedType(),
-			Arrays.asList(field.getAnnotations()),
-			0.0
+			Arrays.asList(field.getAnnotations())
 		);
 
 		// when
@@ -184,8 +178,7 @@ class JavaxValidationArbitraryIntrospectorTest {
 			String.class,
 			propertyName,
 			field.getAnnotatedType(),
-			Arrays.asList(field.getAnnotations()),
-			0.0
+			Arrays.asList(field.getAnnotations())
 		);
 
 		// when
