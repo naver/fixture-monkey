@@ -32,20 +32,17 @@ public final class ArbitraryIntrospectorContext {
 	private final String propertyName;
 	private final AnnotatedType annotatedType;
 	private final List<Annotation> annotations;
-	private double nullInject;
 
 	public ArbitraryIntrospectorContext(
 		Class<?> type,
 		String propertyName,
 		AnnotatedType annotatedType,
-		List<Annotation> annotations,
-		double nullInject
+		List<Annotation> annotations
 	) {
 		this.type = type;
 		this.propertyName = propertyName;
 		this.annotatedType = annotatedType;
 		this.annotations = annotations;
-		this.nullInject = nullInject;
 	}
 
 	public Class<?> getType() {
@@ -62,10 +59,6 @@ public final class ArbitraryIntrospectorContext {
 
 	public List<Annotation> getAnnotations() {
 		return this.annotations;
-	}
-
-	public double getNullInject() {
-		return this.nullInject;
 	}
 
 	@SuppressWarnings("unchecked")
