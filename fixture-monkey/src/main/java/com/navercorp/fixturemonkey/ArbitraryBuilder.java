@@ -614,8 +614,9 @@ public final class ArbitraryBuilder<T> {
 		return this;
 	}
 
+	@API(since = "0.4.0", status = Status.INTERNAL)
 	@SuppressWarnings("rawtypes")
-	public void apply(List<BuilderManipulator> arbitraryManipulators) {
+	private void apply(List<BuilderManipulator> arbitraryManipulators) {
 		List<MetadataManipulator> metadataManipulators = this.extractMetadataManipulatorsFrom(arbitraryManipulators);
 		List<BuilderManipulator> orderedArbitraryManipulators =
 			this.extractOrderedManipulatorsFrom(arbitraryManipulators);
