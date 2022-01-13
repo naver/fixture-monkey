@@ -38,6 +38,7 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 	@Property
 	void instant() throws NoSuchFieldException {
 		// given
+		Instant now = Instant.now();
 		InstantArbitrary instantArbitrary = DateTimes.instants();
 		String propertyName = "instant";
 		Field field = TimeIntrospectorSpec.class.getDeclaredField(propertyName);
@@ -54,8 +55,6 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 		// then
 		Instant instant = actual.sample();
 		then(instant).isNotNull();
-
-		Instant now = Instant.now();
 		then(instant).isAfter(now.minus(366, ChronoUnit.DAYS));
 		then(instant).isBefore(now.plus(366, ChronoUnit.DAYS));
 	}
@@ -63,6 +62,7 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 	@Property
 	void instantPast() throws NoSuchFieldException {
 		// given
+		Instant now = Instant.now();
 		InstantArbitrary instantArbitrary = DateTimes.instants();
 		String propertyName = "instantPast";
 		Field field = TimeIntrospectorSpec.class.getDeclaredField(propertyName);
@@ -79,8 +79,6 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 		// then
 		Instant instant = actual.sample();
 		then(instant).isNotNull();
-
-		Instant now = Instant.now();
 		then(instant).isAfter(now.minus(366, ChronoUnit.DAYS));
 		then(instant).isBefore(now);
 	}
@@ -88,6 +86,7 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 	@Property
 	void instantPastOrPresent() throws NoSuchFieldException {
 		// given
+		Instant now = Instant.now();
 		InstantArbitrary instantArbitrary = DateTimes.instants();
 		String propertyName = "instantPastOrPresent";
 		Field field = TimeIntrospectorSpec.class.getDeclaredField(propertyName);
@@ -104,8 +103,6 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 		// then
 		Instant instant = actual.sample();
 		then(instant).isNotNull();
-
-		Instant now = Instant.now();
 		then(instant).isAfter(now.minus(366, ChronoUnit.DAYS));
 		then(instant).isBeforeOrEqualTo(now);
 	}
@@ -113,6 +110,7 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 	@Property
 	void instantFuture() throws NoSuchFieldException {
 		// given
+		Instant now = Instant.now();
 		InstantArbitrary instantArbitrary = DateTimes.instants();
 		String propertyName = "instantFuture";
 		Field field = TimeIntrospectorSpec.class.getDeclaredField(propertyName);
@@ -129,8 +127,6 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 		// then
 		Instant instant = actual.sample();
 		then(instant).isNotNull();
-
-		Instant now = Instant.now();
 		then(instant).isAfter(now);
 		then(instant).isBefore(now.plus(366, ChronoUnit.DAYS));
 	}
@@ -138,6 +134,7 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 	@Property
 	void instantFutureOrPresent() throws NoSuchFieldException {
 		// given
+		Instant now = Instant.now();
 		InstantArbitrary instantArbitrary = DateTimes.instants();
 		String propertyName = "instantFutureOrPresent";
 		Field field = TimeIntrospectorSpec.class.getDeclaredField(propertyName);
@@ -154,8 +151,6 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 		// then
 		Instant instant = actual.sample();
 		then(instant).isNotNull();
-
-		Instant now = Instant.now();
 		then(instant).isAfterOrEqualTo(now);
 		then(instant).isBefore(now.plus(366, ChronoUnit.DAYS));
 	}

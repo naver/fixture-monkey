@@ -92,7 +92,7 @@ public class JavaxValidationTimeArbitraryIntrospector implements TimeArbitraryIn
 		if (context.findAnnotation(Future.class).isPresent()) {
 			min = now.plus(3, ChronoUnit.SECONDS);	// 3000 is buffer for future time
 		} else if (context.findAnnotation(FutureOrPresent.class).isPresent()) {
-			min = now.plus(2, ChronoUnit.SECONDS);	// 1000 is buffer for future time
+			min = now.plus(2, ChronoUnit.SECONDS);	// 2000 is buffer for future time
 		}
 
 		return instantArbitrary
