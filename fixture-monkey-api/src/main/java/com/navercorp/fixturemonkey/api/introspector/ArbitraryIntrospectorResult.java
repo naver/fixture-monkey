@@ -44,14 +44,14 @@ public final class ArbitraryIntrospectorResult {
 	}
 
 	@Override
-	public boolean equals(Object o) {
-		if (this == o) {
+	public boolean equals(Object obj) {
+		if (this == obj) {
 			return true;
 		}
-		if (o == null || getClass() != o.getClass()) {
+		if (obj == null || getClass() != obj.getClass()) {
 			return false;
 		}
-		ArbitraryIntrospectorResult that = (ArbitraryIntrospectorResult)o;
+		ArbitraryIntrospectorResult that = (ArbitraryIntrospectorResult)obj;
 		return Objects.equals(value, that.value);
 	}
 
@@ -62,8 +62,7 @@ public final class ArbitraryIntrospectorResult {
 
 	@Override
 	public String toString() {
-		return "ArbitraryIntrospectorResult{" +
-			"value=" + value +
-			'}';
+		return "ArbitraryIntrospectorResult{"
+			+ "value=" + value + '}';
 	}
 }
