@@ -45,9 +45,7 @@ public class MapArbitraryNodeGenerator implements ContainerArbitraryNodeGenerato
 		ArbitraryType<?> keyType = clazz.getGenericArbitraryType(0);
 		ArbitraryType<?> valueType = clazz.getGenericArbitraryType(1);
 
-		containerNode.initializeElementSize();
-
-		int elementSize = containerNode.getContainerSizeConstraint().getArbitraryElementSize();
+		int elementSize = containerNode.getElementSize();
 
 		if (clazz.isMapEntry()) {
 			elementSize = 1;
@@ -73,6 +71,8 @@ public class MapArbitraryNodeGenerator implements ContainerArbitraryNodeGenerato
 
 			generatedNodeList.add(valueNode);
 		}
+
+		containerNode.setContainerSizeConstraint(null); // clear
 		return generatedNodeList;
 	}
 

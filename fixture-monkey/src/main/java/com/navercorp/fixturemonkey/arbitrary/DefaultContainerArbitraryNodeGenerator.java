@@ -35,7 +35,6 @@ public class DefaultContainerArbitraryNodeGenerator implements ContainerArbitrar
 	@Override
 	public <T> List<ArbitraryNode<?>> generate(ArbitraryNode<T> containerNode) {
 		int currentIndex = 0;
-		int elementSize = Integer.MAX_VALUE;
 
 		ArbitraryType<T> clazz = containerNode.getType();
 		LazyValue<T> lazyValue = containerNode.getValue();
@@ -43,6 +42,8 @@ public class DefaultContainerArbitraryNodeGenerator implements ContainerArbitrar
 		ArbitraryType<?> elementType = clazz.getGenericArbitraryType(0);
 
 		List<ArbitraryNode<?>> generatedNodeList = new ArrayList<>();
+
+		int elementSize = containerNode.getElementSize();
 
 		if (lazyValue != null) {
 			if (lazyValue.isEmpty()) {
@@ -53,18 +54,13 @@ public class DefaultContainerArbitraryNodeGenerator implements ContainerArbitrar
 
 			if (!(value instanceof Collection || value instanceof Iterator || value instanceof Stream)) {
 				throw new IllegalArgumentException(
-					"Unsupported container type is given. " + value.getClass().getName());
+					"Unsupported container type is given. " + value.getClass().getName()
+				);
 			}
 
 			Iterator<?> iterator = toIterator(value);
 
-			ContainerSizeConstraint containerSizeConstraint = containerNode.getContainerSizeConstraint();
-			if (containerSizeConstraint != null) {
-				// container size is set.
-				elementSize = containerSizeConstraint.getArbitraryElementSize();
-			}
-
-			while (currentIndex < elementSize && iterator.hasNext()) {
+			while ((containerNode.isNotSetContainerSize() || (currentIndex < elementSize)) && iterator.hasNext()) {
 				Object nextObject = iterator.next();
 				@SuppressWarnings("unchecked")
 				ArbitraryNode<?> nextNode = ArbitraryNode.builder()
@@ -76,32 +72,23 @@ public class DefaultContainerArbitraryNodeGenerator implements ContainerArbitrar
 				generatedNodeList.add(nextNode);
 				currentIndex++;
 			}
+		}
 
-			if (containerSizeConstraint == null) {
-				// value exists, container size size is same as value size.
-				containerNode.setContainerSizeConstraint(new ContainerSizeConstraint(currentIndex, currentIndex));
-				return generatedNodeList;
+		if (lazyValue == null || !containerNode.isNotSetContainerSize()) {
+			for (int i = currentIndex; i < elementSize; i++) {
+				@SuppressWarnings("unchecked")
+				ArbitraryNode<?> nextNode = ArbitraryNode.builder()
+					.type(elementType)
+					.propertyName(propertyName)
+					.indexOfIterable(i)
+					.nullable(false)
+					.nullInject(0.f)
+					.build();
+				generatedNodeList.add(nextNode);
 			}
 		}
 
-		containerNode.initializeElementSize();
-		if (isNotInitialized(elementSize)) {
-			// value does not exist.
-			elementSize = containerNode.getContainerSizeConstraint().getArbitraryElementSize();
-		}
-
-		for (int i = currentIndex; i < elementSize; i++) {
-			@SuppressWarnings("unchecked")
-			ArbitraryNode<?> nextNode = ArbitraryNode.builder()
-				.type(elementType)
-				.propertyName(propertyName)
-				.indexOfIterable(i)
-				.nullable(false)
-				.nullInject(0.f)
-				.build();
-			generatedNodeList.add(nextNode);
-		}
-
+		containerNode.setContainerSizeConstraint(null); // clear
 		return generatedNodeList;
 	}
 
@@ -153,9 +140,5 @@ public class DefaultContainerArbitraryNodeGenerator implements ContainerArbitrar
 			// 기존 Iterator 의 커서가 이동하는 문제가 있다.
 			return (Iterator<U>)value;
 		}
-	}
-
-	private boolean isNotInitialized(int elementSize) {
-		return elementSize == Integer.MAX_VALUE;
 	}
 }

@@ -54,6 +54,7 @@ import com.navercorp.fixturemonkey.test.ComplexManipulatorTestSpecs.NestedString
 import com.navercorp.fixturemonkey.test.ComplexManipulatorTestSpecs.SetArbitraryAcceptGroup;
 import com.navercorp.fixturemonkey.test.ComplexManipulatorTestSpecs.SetArbitraryArbitraryAcceptGroup;
 import com.navercorp.fixturemonkey.test.ComplexManipulatorTestSpecs.StringAndIntGroup;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.IntegerArray;
 
 class ComplexManipulatorTest {
 	@Property
@@ -785,5 +786,29 @@ class ComplexManipulatorTest {
 		// then
 		Complex notExpected = generator.next(Randoms.current()).value();
 		then(actual).isNotEqualTo(notExpected);
+	}
+
+	@Property
+	void setSizeAndSetEmptyListFixed() {
+		// when
+		IntegerList actual = SUT.giveMeBuilder(IntegerList.class)
+			.size("values", 2)
+			.set("values", new ArrayList<>())
+			.fixed()
+			.sample();
+
+		then(actual.getValues()).isEmpty();
+	}
+
+	@Property
+	void setSizeAndSetEmptyArrayFixed() {
+		// when
+		IntegerArray actual = SUT.giveMeBuilder(IntegerArray.class)
+			.size("values", 2)
+			.set("values", new Integer[] {})
+			.fixed()
+			.sample();
+
+		then(actual.getValues()).isEmpty();
 	}
 }
