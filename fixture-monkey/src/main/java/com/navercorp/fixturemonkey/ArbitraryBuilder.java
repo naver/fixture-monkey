@@ -50,6 +50,7 @@ import net.jqwik.api.Combinators.F4;
 import com.navercorp.fixturemonkey.api.expression.ExpressionGenerator;
 import com.navercorp.fixturemonkey.api.property.FieldProperty;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
+import com.navercorp.fixturemonkey.api.random.Randoms;
 import com.navercorp.fixturemonkey.arbitrary.AbstractArbitrarySet;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryExpression;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryExpressionManipulator;
@@ -58,7 +59,6 @@ import com.navercorp.fixturemonkey.arbitrary.ArbitraryNullity;
 import com.navercorp.fixturemonkey.arbitrary.ArbitrarySet;
 import com.navercorp.fixturemonkey.arbitrary.ArbitrarySetArbitrary;
 import com.navercorp.fixturemonkey.arbitrary.ArbitrarySetPostCondition;
-import com.navercorp.fixturemonkey.arbitrary.ArbitrarySpecAny;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryTraverser;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryTree;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryType;
@@ -233,9 +233,13 @@ public final class ArbitraryBuilder<T> {
 		return this;
 	}
 
-	public ArbitraryBuilder<T> specAny(ExpressionSpec... expressionSpecs) {
-		this.builderManipulators.add(new ArbitrarySpecAny(Arrays.asList(expressionSpecs)));
-		return this;
+	public ArbitraryBuilder<T> specAny(ExpressionSpec... specs) {
+		if (specs == null || specs.length == 0) {
+			return this;
+		}
+
+		ExpressionSpec spec = Arrays.asList(specs).get(Randoms.nextInt(specs.length));
+		return this.spec(spec);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -610,8 +614,9 @@ public final class ArbitraryBuilder<T> {
 		return this;
 	}
 
+	@API(since = "0.4.0", status = Status.INTERNAL)
 	@SuppressWarnings("rawtypes")
-	public void apply(List<BuilderManipulator> arbitraryManipulators) {
+	private void apply(List<BuilderManipulator> arbitraryManipulators) {
 		List<MetadataManipulator> metadataManipulators = this.extractMetadataManipulatorsFrom(arbitraryManipulators);
 		List<BuilderManipulator> orderedArbitraryManipulators =
 			this.extractOrderedManipulatorsFrom(arbitraryManipulators);

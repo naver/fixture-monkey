@@ -23,10 +23,14 @@ import static java.util.stream.Collectors.toList;
 import java.util.List;
 import java.util.Objects;
 
+import org.apiguardian.api.API;
+import org.apiguardian.api.API.Status;
+
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
-import com.navercorp.fixturemonkey.api.random.Randoms;
 import com.navercorp.fixturemonkey.customizer.ExpressionSpec;
 
+@API(since = "0.4.0", status = Status.DEPRECATED)
+@Deprecated
 public final class ArbitrarySpecAny implements BuilderManipulator {
 	private final List<ExpressionSpec> specs;
 
@@ -34,16 +38,10 @@ public final class ArbitrarySpecAny implements BuilderManipulator {
 		this.specs = specs;
 	}
 
-	@SuppressWarnings({"rawtypes", "unchecked"})
+	@SuppressWarnings("rawtypes")
 	@Override
 	public void accept(ArbitraryBuilder arbitraryBuilder) {
-		if (specs.isEmpty()) {
-			return;
-		}
-
-		ExpressionSpec spec = specs.get(Randoms.nextInt(specs.size()));
-		List<BuilderManipulator> specArbitraryManipulators = spec.getBuilderManipulators();
-		arbitraryBuilder.apply(specArbitraryManipulators);
+		arbitraryBuilder.specAny(specs.toArray(new ExpressionSpec[0]));
 	}
 
 	@Override

@@ -20,12 +20,15 @@ package com.navercorp.fixturemonkey.test;
 
 import static com.navercorp.fixturemonkey.Constants.DEFAULT_ELEMENT_MAX_SIZE;
 import static com.navercorp.fixturemonkey.test.SimpleManipulatorTestSpecs.SUT;
+import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.BDDAssertions.then;
+import static org.assertj.core.api.BDDAssertions.thenNoException;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import net.jqwik.api.Arbitraries;
+import net.jqwik.api.Arbitrary;
 import net.jqwik.api.ForAll;
 import net.jqwik.api.Property;
 import net.jqwik.api.domains.Domain;
@@ -392,6 +395,73 @@ class SimpleManipulatorTest {
 		expectedTwo.getValues().add(2);
 
 		then(actual).isIn(expectedOne, expectedTwo);
+	}
+
+	@Property
+	void giveMeSpecAnyWithEmpty() {
+		thenNoException().isThrownBy(
+			() -> SUT.giveMeBuilder(StringList.class)
+				.specAny()
+				.sample()
+		);
+	}
+
+	@Property
+	void giveMeSpecAnyWithNull() {
+		thenNoException().isThrownBy(
+			() -> SUT.giveMeBuilder(StringList.class)
+				.specAny((ExpressionSpec[])null)
+				.sample()
+		);
+	}
+
+	@Property(tries = 2)
+	void giveMeSpecAnyReturnsDiff() {
+		// given
+		Arbitrary<ComplexManipulatorTestSpecs.StringValue> complex = ComplexManipulatorTestSpecs.SUT.giveMeBuilder(
+				ComplexManipulatorTestSpecs.StringValue.class)
+			.specAny(
+				new ExpressionSpec().set("value", "test1"),
+				new ExpressionSpec().set("value", "test2"),
+				new ExpressionSpec().set("value", "test3"),
+				new ExpressionSpec().set("value", "test4"),
+				new ExpressionSpec().set("value", "test5"),
+				new ExpressionSpec().set("value", "test6"),
+				new ExpressionSpec().set("value", "test7"),
+				new ExpressionSpec().set("value", "test8"),
+				new ExpressionSpec().set("value", "test9"),
+				new ExpressionSpec().set("value", "test10")
+			)
+			.build();
+
+		// when
+		List<ComplexManipulatorTestSpecs.StringValue> sampled = complex.list().ofSize(100).sample();
+
+		// then
+		List<ComplexManipulatorTestSpecs.StringValue> distinct = sampled.stream().distinct().collect(toList());
+		then(distinct.size()).isNotEqualTo(sampled.size());
+	}
+
+	@Property
+	void giveMeSpecAnyFirstWithMetadataManipulatorReturnsGivenOrder() {
+		// when
+		StringList actual = SUT.giveMeBuilder(StringList.class)
+			.specAny(new ExpressionSpec().size("values", 2))
+			.size("values", 1)
+			.sample();
+
+		then(actual.getValues()).hasSize(1);
+	}
+
+	@Property
+	void giveMeSpecAnyLastWithMetadataManipulatorReturnsGivenOrder() {
+		// when
+		StringList actual = SUT.giveMeBuilder(StringList.class)
+			.size("values", 1)
+			.specAny(new ExpressionSpec().size("values", 2))
+			.sample();
+
+		then(actual.getValues()).hasSize(2);
 	}
 
 	@Property
