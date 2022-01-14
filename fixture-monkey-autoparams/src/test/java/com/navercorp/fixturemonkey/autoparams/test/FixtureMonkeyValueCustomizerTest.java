@@ -27,6 +27,7 @@ import java.util.stream.Stream;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 
@@ -37,12 +38,27 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
+import com.navercorp.fixturemonkey.ArbitraryOption;
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.autoparams.FixtureMonkeyAutoSource;
+import com.navercorp.fixturemonkey.autoparams.customization.FixtureMonkeyCustomizer;
 import com.navercorp.fixturemonkey.engine.jupiter.extension.FixtureMonkeySessionExtension;
 
 @ExtendWith(FixtureMonkeySessionExtension.class)
 class FixtureMonkeyValueCustomizerTest {
+	@BeforeAll
+	public static void beforeAll() {
+		FixtureMonkeyCustomizer.setUp(
+			FixtureMonkey.builder()
+				.options(
+					ArbitraryOption.builder()
+						.defaultNotNull(false)
+						.build()
+				)
+				.build()
+		);
+	}
+
 	@ParameterizedTest
 	@FixtureMonkeyAutoSource
 	void integerWrapper(IntegerWrapperClass value) {

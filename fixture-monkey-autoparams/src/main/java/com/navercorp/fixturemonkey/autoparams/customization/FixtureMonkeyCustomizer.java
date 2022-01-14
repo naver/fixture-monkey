@@ -25,6 +25,7 @@ import com.navercorp.fixturemonkey.FixtureMonkey;
 public class FixtureMonkeyCustomizer extends CompositeCustomizer {
 	private static FixtureMonkey FIXTURE_MONKEY = FixtureMonkey.create();
 
+	// call setUp @BeforeAll Lifecycle for customized FixtureMonkey object.
 	public static void setUp(FixtureMonkey fixtureMonkey) {
 		FIXTURE_MONKEY = fixtureMonkey;
 	}
