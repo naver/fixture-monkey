@@ -282,8 +282,12 @@ public final class ArbitraryNode<T> {
 		return keyOfMapStructure;
 	}
 
+	/**
+	 * Deprecated Use getElementSize instead
+	 */
 	@API(since = "0.4.0", status = Status.INTERNAL)
-	private ContainerSizeConstraint getContainerSizeConstraint() {
+	@Deprecated
+	public ContainerSizeConstraint getContainerSizeConstraint() {
 		return this.status.containerSizeConstraint;
 	}
 
