@@ -51,9 +51,11 @@ public class ArrayArbitraryNodeGenerator implements ContainerArbitraryNodeGenera
 			}
 			int length = Array.getLength(value);
 
-			for (currentIndex = 0;
-				 currentIndex < length && (containerNode.isNotSetContainerSize() || currentIndex < elementSize);
-				 currentIndex++) {
+			for (
+				currentIndex = 0;
+				currentIndex < length && (containerNode.isNotSetContainerSize() || currentIndex < elementSize);
+				currentIndex++
+			) {
 				Object nextValue = Array.get(value, currentIndex);
 				@SuppressWarnings("unchecked")
 				ArbitraryNode<?> nextNode = ArbitraryNode.builder()
