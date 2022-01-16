@@ -105,7 +105,7 @@ public final class ArbitraryNode<T> {
 			return new ContainerSizeConstraint(0, 1).getArbitraryElementSize();
 		}
 
-		if(getContainerSizeConstraint() != null){
+		if (getContainerSizeConstraint() != null) {
 			return getContainerSizeConstraint().getArbitraryElementSize();
 		}
 
@@ -130,7 +130,7 @@ public final class ArbitraryNode<T> {
 		return new ContainerSizeConstraint(min, max).getArbitraryElementSize();
 	}
 
-	public boolean isNotSetContainerSize(){
+	public boolean isNotSetContainerSize() {
 		return getContainerSizeConstraint() == null;
 	}
 
@@ -281,6 +281,7 @@ public final class ArbitraryNode<T> {
 	public boolean isKeyOfMapStructure() {
 		return keyOfMapStructure;
 	}
+
 	@API(since = "0.4.0", status = Status.INTERNAL)
 	private ContainerSizeConstraint getContainerSizeConstraint() {
 		return this.status.containerSizeConstraint;
