@@ -9,7 +9,7 @@ plugins {
 
 dependencies {
     api(project(":fixture-monkey"))
-    api("io.github.javaunit:autoparams:0.3.0")
+    api("io.github.javaunit:autoparams:0.3.1")
     compileOnly(project(":fixture-monkey-engine"))
 
     testImplementation(project(":fixture-monkey-engine"))
