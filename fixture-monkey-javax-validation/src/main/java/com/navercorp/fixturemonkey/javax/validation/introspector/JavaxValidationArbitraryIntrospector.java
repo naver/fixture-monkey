@@ -113,7 +113,7 @@ public class JavaxValidationArbitraryIntrospector implements ArbitraryIntrospect
 
 		Arbitrary<String> arbitrary;
 		if (context.findAnnotation(Email.class).isPresent()) {
-			arbitrary = Web.emails();
+			arbitrary = Web.emails().allowIpv4Host();
 			if (min != null) {
 				int emailMinLength = min.intValue();
 				arbitrary = arbitrary.filter(it -> it != null && it.length() >= emailMinLength);
