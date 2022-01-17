@@ -18,13 +18,28 @@
 
 package com.navercorp.fixturemonkey.api.introspector;
 
+import java.util.List;
+
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import net.jqwik.api.Arbitrary;
-
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-@FunctionalInterface
-public interface ArbitraryTypeIntrospector {
-	ArbitraryIntrospectorResult introspect(ArbitraryIntrospectorContext context);
+public class CompositeArbitraryTypeIntrospector implements ArbitraryTypeIntrospector {
+	private final List<ArbitraryTypeIntrospector> introspectors;
+
+	public CompositeArbitraryTypeIntrospector(List<ArbitraryTypeIntrospector> introspectors) {
+		this.introspectors = introspectors;
+	}
+
+	@Override
+	public ArbitraryIntrospectorResult introspect(ArbitraryIntrospectorContext context) {
+		for (ArbitraryTypeIntrospector introspector : this.introspectors) {
+			ArbitraryIntrospectorResult result = introspector.introspect(context);
+			if (!ArbitraryIntrospectorResult.EMPTY.equals(result)) {
+				return result;
+			}
+		}
+
+		return ArbitraryIntrospectorResult.EMPTY;
+	}
 }
