@@ -21,8 +21,6 @@ package com.navercorp.fixturemonkey.api.introspector;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import net.jqwik.api.Arbitrary;
-
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 @FunctionalInterface
 public interface ArbitraryTypeIntrospector {

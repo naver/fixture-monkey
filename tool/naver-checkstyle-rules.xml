@@ -295,6 +295,8 @@ The following rules in the Naver coding convention cannot be checked by this con
                      value="[import-grouping] ''{0}'' should be separated from previous imports."/>
         </module>
 
+        <module name="UnusedImports"/>
+
         <!-- [blankline-between-methods] -->
         <module name="EmptyLineSeparator">
             <property name="tokens" value="METHOD_DEF"/>
