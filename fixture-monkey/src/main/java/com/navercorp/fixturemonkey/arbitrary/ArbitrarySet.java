@@ -22,9 +22,6 @@ import java.util.Objects;
 
 import javax.annotation.Nullable;
 
-import net.jqwik.api.Arbitraries;
-import net.jqwik.api.Arbitrary;
-
 public final class ArbitrarySet<T> extends AbstractArbitrarySet<T> {
 	private final T value;
 	private long limit;
