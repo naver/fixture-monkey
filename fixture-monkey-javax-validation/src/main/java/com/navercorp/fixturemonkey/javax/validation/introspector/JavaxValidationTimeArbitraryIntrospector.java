@@ -172,7 +172,7 @@ public class JavaxValidationTimeArbitraryIntrospector implements TimeArbitraryIn
 	}
 
 	@Override
-	public Arbitrary<net.jqwik.time.api.arbitraries.YearMonthArbitrary> yearMonths(
+	public Arbitrary<YearMonthArbitrary> yearMonths(
 		YearMonthArbitrary yearMonthArbitrary,
 		ArbitraryIntrospectorContext context
 	) {
@@ -180,7 +180,7 @@ public class JavaxValidationTimeArbitraryIntrospector implements TimeArbitraryIn
 	}
 
 	@Override
-	public Arbitrary<net.jqwik.time.api.arbitraries.ZoneOffsetArbitrary> zoneOffsets(
+	public Arbitrary<ZoneOffsetArbitrary> zoneOffsets(
 		ZoneOffsetArbitrary zoneOffsetArbitrary,
 		ArbitraryIntrospectorContext context
 	) {
