@@ -140,7 +140,7 @@ public class JavaxValidationTimeArbitraryIntrospector implements TimeArbitraryIn
 	}
 
 	@Override
-	public Arbitrary<net.jqwik.time.api.arbitraries.OffsetTimeArbitrary> offsetTimes(
+	public Arbitrary<OffsetTimeArbitrary> offsetTimes(
 		OffsetTimeArbitrary offsetTimeArbitrary,
 		ArbitraryIntrospectorContext context
 	) {
@@ -148,7 +148,7 @@ public class JavaxValidationTimeArbitraryIntrospector implements TimeArbitraryIn
 	}
 
 	@Override
-	public Arbitrary<net.jqwik.time.api.arbitraries.PeriodArbitrary> periods(
+	public Arbitrary<PeriodArbitrary> periods(
 		PeriodArbitrary periodArbitrary,
 		ArbitraryIntrospectorContext context
 	) {
@@ -156,7 +156,7 @@ public class JavaxValidationTimeArbitraryIntrospector implements TimeArbitraryIn
 	}
 
 	@Override
-	public Arbitrary<net.jqwik.time.api.arbitraries.DurationArbitrary> durations(
+	public Arbitrary<DurationArbitrary> durations(
 		DurationArbitrary durationArbitrary,
 		ArbitraryIntrospectorContext context
 	) {
