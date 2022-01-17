@@ -24,6 +24,10 @@ editorconfig {
     excludes = ["build"]
 }
 
+test {
+    useJUnitPlatform()
+}
+
 check.dependsOn editorconfigCheck
 
 checkstyle {
