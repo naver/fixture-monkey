@@ -20,10 +20,11 @@ package com.navercorp.fixturemonkey.generator;
 
 import java.util.List;
 import java.util.stream.Stream;
+import java.util.stream.Stream.Builder;
 
 import net.jqwik.api.Arbitrary;
-import net.jqwik.api.Combinators;
-import net.jqwik.api.Combinators.BuilderCombinator;
+import net.jqwik.api.Builders;
+import net.jqwik.api.Builders.BuilderCombinator;
 
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryNode;
 
@@ -32,7 +33,7 @@ final class StreamBuilder {
 	public static final StreamBuilder INSTANCE = new StreamBuilder();
 
 	<T> Arbitrary<T> build(List<ArbitraryNode> nodes) {
-		BuilderCombinator<Stream.Builder> streamBuilderCombinator = Combinators.withBuilder(Stream::builder);
+		BuilderCombinator<Builder> streamBuilderCombinator = Builders.withBuilder(Stream::builder);
 		if (nodes.isEmpty()) {
 			return (Arbitrary<T>)streamBuilderCombinator.build(Stream.Builder::build);
 		}

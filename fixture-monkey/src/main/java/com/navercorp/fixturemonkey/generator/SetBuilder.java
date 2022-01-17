@@ -23,8 +23,8 @@ import java.util.HashSet;
 import java.util.List;
 
 import net.jqwik.api.Arbitrary;
-import net.jqwik.api.Combinators;
-import net.jqwik.api.Combinators.BuilderCombinator;
+import net.jqwik.api.Builders;
+import net.jqwik.api.Builders.BuilderCombinator;
 
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryNode;
 
@@ -33,7 +33,7 @@ final class SetBuilder {
 
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	<T> Arbitrary<T> build(List<ArbitraryNode> nodes) {
-		BuilderCombinator<CollectionBuilderFrame> setBuilderCombinator = Combinators.withBuilder(SetBuilderFrame::new);
+		BuilderCombinator<CollectionBuilderFrame> setBuilderCombinator = Builders.withBuilder(SetBuilderFrame::new);
 		if (nodes.isEmpty()) {
 			return (Arbitrary<T>)setBuilderCombinator.build(CollectionBuilderFrame::build);
 		}

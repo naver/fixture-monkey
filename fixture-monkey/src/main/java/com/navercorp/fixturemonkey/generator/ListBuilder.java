@@ -23,8 +23,8 @@ import java.util.Collection;
 import java.util.List;
 
 import net.jqwik.api.Arbitrary;
-import net.jqwik.api.Combinators;
-import net.jqwik.api.Combinators.BuilderCombinator;
+import net.jqwik.api.Builders;
+import net.jqwik.api.Builders.BuilderCombinator;
 
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryNode;
 
@@ -33,8 +33,7 @@ final class ListBuilder {
 
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	<T> Arbitrary<T> build(List<ArbitraryNode> nodes) {
-		BuilderCombinator<CollectionBuilderFrame> listBuilderCombinator =
-			Combinators.withBuilder(ListBuilderFrame::new);
+		BuilderCombinator<CollectionBuilderFrame> listBuilderCombinator = Builders.withBuilder(ListBuilderFrame::new);
 
 		if (nodes.isEmpty()) {
 			return (Arbitrary<T>)listBuilderCombinator.build(CollectionBuilderFrame::build);

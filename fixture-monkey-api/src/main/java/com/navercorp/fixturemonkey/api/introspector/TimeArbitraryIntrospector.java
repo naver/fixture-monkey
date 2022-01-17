@@ -25,6 +25,7 @@ import java.time.LocalTime;
 import java.time.MonthDay;
 import java.time.OffsetDateTime;
 import java.time.Year;
+import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -46,6 +47,7 @@ import net.jqwik.time.api.arbitraries.PeriodArbitrary;
 import net.jqwik.time.api.arbitraries.YearArbitrary;
 import net.jqwik.time.api.arbitraries.YearMonthArbitrary;
 import net.jqwik.time.api.arbitraries.ZoneOffsetArbitrary;
+import net.jqwik.time.api.arbitraries.ZonedDateTimeArbitrary;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public interface TimeArbitraryIntrospector {
@@ -64,6 +66,11 @@ public interface TimeArbitraryIntrospector {
 
 	Arbitrary<LocalTime> localTimes(
 		LocalTimeArbitrary localTimeArbitrary,
+		ArbitraryIntrospectorContext context
+	);
+
+	Arbitrary<ZonedDateTime> zonedDateTimes(
+		ZonedDateTimeArbitrary zonedDateTimeArbitrary,
 		ArbitraryIntrospectorContext context
 	);
 

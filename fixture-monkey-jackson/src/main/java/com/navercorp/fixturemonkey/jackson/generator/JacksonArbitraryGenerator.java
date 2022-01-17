@@ -28,11 +28,10 @@ import java.util.List;
 import java.util.Map;
 
 import net.jqwik.api.Arbitrary;
-import net.jqwik.api.Combinators;
-import net.jqwik.api.Combinators.BuilderCombinator;
+import net.jqwik.api.Builders;
+import net.jqwik.api.Builders.BuilderCombinator;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -81,7 +80,7 @@ public final class JacksonArbitraryGenerator extends AbstractArbitraryGenerator 
 
 		this.arbitraryCustomizers.customizeFields(type.getType(), fieldArbitraries);
 
-		BuilderCombinator<Map<String, Object>> builderCombinator = Combinators.withBuilder(HashMap::new);
+		BuilderCombinator<Map<String, Object>> builderCombinator = Builders.withBuilder(HashMap::new);
 		for (Map.Entry<String, Arbitrary> entry : fieldArbitraries.entrySet()) {
 			String fieldName = entry.getKey();
 			Arbitrary<?> parameterArbitrary = entry.getValue();
