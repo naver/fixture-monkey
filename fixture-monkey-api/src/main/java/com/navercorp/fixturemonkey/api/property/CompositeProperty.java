@@ -92,16 +92,16 @@ public final class CompositeProperty implements Property {
 	}
 
 	@Override
-	public boolean equals(Object o) {
-		if (this == o) {
+	public boolean equals(Object obj) {
+		if (this == obj) {
 			return true;
 		}
-		if (o == null || getClass() != o.getClass()) {
+		if (obj == null || getClass() != obj.getClass()) {
 			return false;
 		}
-		CompositeProperty that = (CompositeProperty)o;
-		return Objects.equals(primaryProperty, that.primaryProperty) && Objects.equals(
-			secondaryProperty, that.secondaryProperty);
+		CompositeProperty that = (CompositeProperty)obj;
+		return Objects.equals(primaryProperty, that.primaryProperty)
+			&& Objects.equals(secondaryProperty, that.secondaryProperty);
 	}
 
 	@Override
@@ -111,9 +111,9 @@ public final class CompositeProperty implements Property {
 
 	@Override
 	public String toString() {
-		return "CompositeProperty{" +
-			"primaryProperty=" + primaryProperty +
-			", secondaryProperty=" + secondaryProperty +
-			'}';
+		return "CompositeProperty{"
+			+ "primaryProperty=" + primaryProperty
+			+ ", secondaryProperty=" + secondaryProperty
+			+ '}';
 	}
 }
