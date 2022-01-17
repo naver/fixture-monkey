@@ -25,6 +25,7 @@ import java.time.LocalTime;
 import java.time.MonthDay;
 import java.time.OffsetDateTime;
 import java.time.Year;
+import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
 import java.util.Date;
@@ -52,6 +53,7 @@ import net.jqwik.time.api.arbitraries.PeriodArbitrary;
 import net.jqwik.time.api.arbitraries.YearArbitrary;
 import net.jqwik.time.api.arbitraries.YearMonthArbitrary;
 import net.jqwik.time.api.arbitraries.ZoneOffsetArbitrary;
+import net.jqwik.time.api.arbitraries.ZonedDateTimeArbitrary;
 
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorContext;
 import com.navercorp.fixturemonkey.api.introspector.TimeArbitraryIntrospector;
@@ -118,6 +120,14 @@ public class JavaxValidationTimeArbitraryIntrospector implements TimeArbitraryIn
 	@Override
 	public Arbitrary<LocalTime> localTimes(
 		LocalTimeArbitrary localTimeArbitrary,
+		ArbitraryIntrospectorContext context
+	) {
+		throw new UnsupportedOperationException("Not implement yet.");
+	}
+
+	@Override
+	public Arbitrary<ZonedDateTime> zonedDateTimes(
+		ZonedDateTimeArbitrary zonedDateTimeArbitrary,
 		ArbitraryIntrospectorContext context
 	) {
 		throw new UnsupportedOperationException("Not implement yet.");
