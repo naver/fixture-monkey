@@ -20,7 +20,6 @@ package com.navercorp.fixturemonkey.arbitrary;
 
 import static com.navercorp.fixturemonkey.TypeSupports.extractFields;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Field;
 import java.util.List;
