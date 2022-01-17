@@ -27,6 +27,7 @@ import java.util.stream.Stream;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 
+import org.javaunit.autoparams.Repeat;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -60,6 +61,7 @@ class FixtureMonkeyValueCustomizerTest {
 	}
 
 	@ParameterizedTest
+	@Repeat(100)
 	@FixtureMonkeyAutoSource
 	void integerWrapper(IntegerWrapperClass value) {
 		then(value).isNotNull();
@@ -67,6 +69,7 @@ class FixtureMonkeyValueCustomizerTest {
 	}
 
 	@ParameterizedTest
+	@Repeat(100)
 	@FixtureMonkeyAutoSource
 	void integerListWrapper(IntegerListClass value) {
 		then(value).isNotNull();
@@ -74,6 +77,7 @@ class FixtureMonkeyValueCustomizerTest {
 	}
 
 	@ParameterizedTest
+	@Repeat(100)
 	@FixtureMonkeyAutoSource
 	void stringWrapper(StringWrapperClass value) {
 		then(value).isNotNull();
@@ -81,18 +85,21 @@ class FixtureMonkeyValueCustomizerTest {
 	}
 
 	@ParameterizedTest
+	@Repeat(100)
 	@FixtureMonkeyAutoSource
 	void integerWrapperList(List<IntegerWrapperClass> values) {
 		values.forEach(it -> then(it.getValue()).isGreaterThan(0));
 	}
 
 	@ParameterizedTest
+	@Repeat(100)
 	@FixtureMonkeyAutoSource
 	void integerListWrapperStream(Stream<IntegerListClass> values) {
 		values.limit(5).forEach(it -> then(it.getValues()).isNotNull());
 	}
 
 	@ParameterizedTest
+	@Repeat(100)
 	@FixtureMonkeyAutoSource
 	void stringWrapperMap(Map<String, StringWrapperClass> map) {
 		map.forEach((key, value) -> {
@@ -102,6 +109,7 @@ class FixtureMonkeyValueCustomizerTest {
 	}
 
 	@ParameterizedTest
+	@Repeat(100)
 	@FixtureMonkeyAutoSource
 	void integerWrapperArbitraryBuilder(ArbitraryBuilder<IntegerWrapperClass> builder) {
 		then(builder).isNotNull();
@@ -109,6 +117,7 @@ class FixtureMonkeyValueCustomizerTest {
 	}
 
 	@ParameterizedTest
+	@Repeat(100)
 	@FixtureMonkeyAutoSource
 	void integerListWrapperArbitraryBuilder(ArbitraryBuilder<IntegerListClass> builder) {
 		then(builder).isNotNull();
@@ -116,6 +125,7 @@ class FixtureMonkeyValueCustomizerTest {
 	}
 
 	@ParameterizedTest
+	@Repeat(100)
 	@FixtureMonkeyAutoSource
 	void stringWrapperArbitraryBuilder(ArbitraryBuilder<StringWrapperClass> builder) {
 		then(builder).isNotNull();
@@ -123,6 +133,7 @@ class FixtureMonkeyValueCustomizerTest {
 	}
 
 	@ParameterizedTest
+	@Repeat(100)
 	@FixtureMonkeyAutoSource
 	void integerWrapperArbitrary(Arbitrary<IntegerWrapperClass> arbitrary) {
 		then(arbitrary).isNotNull();
@@ -130,6 +141,7 @@ class FixtureMonkeyValueCustomizerTest {
 	}
 
 	@ParameterizedTest
+	@Repeat(100)
 	@FixtureMonkeyAutoSource
 	void integerListWrapperArbitrary(Arbitrary<IntegerListClass> arbitrary) {
 		then(arbitrary).isNotNull();
@@ -137,6 +149,7 @@ class FixtureMonkeyValueCustomizerTest {
 	}
 
 	@ParameterizedTest
+	@Repeat(100)
 	@FixtureMonkeyAutoSource
 	void stringWrapperArbitrary(Arbitrary<StringWrapperClass> arbitrary) {
 		then(arbitrary).isNotNull();
@@ -144,6 +157,7 @@ class FixtureMonkeyValueCustomizerTest {
 	}
 
 	@ParameterizedTest
+	@Repeat(100)
 	@FixtureMonkeyAutoSource
 	void sutAlwaysGeneratesSameFixtureMonkeyInstances(FixtureMonkey fixture1, FixtureMonkey fixture2) {
 		then(fixture1).isSameAs(fixture2);
