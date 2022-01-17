@@ -23,7 +23,6 @@ import static java.util.stream.Collectors.toList;
 import java.beans.ConstructorProperties;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -33,7 +32,7 @@ import org.junit.platform.commons.logging.LoggerFactory;
 import org.junit.platform.commons.util.ReflectionUtils;
 
 import net.jqwik.api.Arbitrary;
-import net.jqwik.api.Combinators;
+import net.jqwik.api.Builders;
 
 import com.navercorp.fixturemonkey.api.property.FieldProperty;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
@@ -89,12 +88,10 @@ public final class ConstructorPropertiesArbitraryGenerator extends AbstractArbit
 
 		ConstructorProperties constructorProperties = constructor.getAnnotation(ConstructorProperties.class);
 		String[] providedParameterNames = constructorProperties.value();
-		Parameter[] actualParameters = constructor.getParameters();
 
-		Combinators.BuilderCombinator<List<Object>> builderCombinator = Combinators.withBuilder(
+		Builders.BuilderCombinator<List<Object>> builderCombinator = Builders.withBuilder(
 			() -> new ArrayList(providedParameterNames.length));
-		for (int i = 0; i < providedParameterNames.length; ++i) {
-			String fieldName = providedParameterNames[i];
+		for (String fieldName : providedParameterNames) {
 			Arbitrary<?> arbitrary = fieldArbitraries.getArbitrary(fieldName);
 			if (arbitrary == null) {
 				throw new IllegalArgumentException("No field for the corresponding constructor argument '" + fieldName

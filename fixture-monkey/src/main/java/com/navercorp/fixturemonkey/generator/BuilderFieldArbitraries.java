@@ -19,11 +19,16 @@
 package com.navercorp.fixturemonkey.generator;
 
 import java.util.AbstractMap;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiFunction;
+
+import org.apiguardian.api.API;
+import org.apiguardian.api.API.Status;
 
 import net.jqwik.api.Arbitrary;
 import net.jqwik.api.Combinators;
@@ -31,7 +36,7 @@ import net.jqwik.api.Combinators;
 public class BuilderFieldArbitraries<B> extends FieldArbitraries {
 	private final Class<B> builderType;
 	@SuppressWarnings("rawtypes")
-	private final List<Map.Entry<Arbitrary, Combinators.F2<B, ?, B>>> combinationChains;
+	private final List<Map.Entry<Arbitrary, BiFunction<B, ?, B>>> combinationChains;
 
 	@SuppressWarnings("rawtypes")
 	private BuilderFieldArbitraries(Class<B> builderType, Map<String, Arbitrary> arbitraryMap) {
@@ -70,8 +75,35 @@ public class BuilderFieldArbitraries<B> extends FieldArbitraries {
 		return this;
 	}
 
+	// use getCombinationChainMapList
+	@Deprecated
 	@SuppressWarnings("rawtypes")
 	public List<Map.Entry<Arbitrary, Combinators.F2<B, ?, B>>> getCombinationChains() {
+		List<Map.Entry<Arbitrary, Combinators.F2<B, ?, B>>> result = new ArrayList<>();
+		for (Map.Entry<Arbitrary, BiFunction<B, ?, B>> entry : this.combinationChains) {
+			Map.Entry<Arbitrary, Combinators.F2<B, ?, B>> simpleEntry = new SimpleEntry<>(
+				entry.getKey(),
+				convert(entry.getValue())
+			);
+			result.add(simpleEntry);
+		}
+
+		return result;
+	}
+
+	@Deprecated
+	private static <B, T> Combinators.F2<B, T, B> convert(BiFunction<B, T, B> biFunction) {
+		return new Combinators.F2<B, T, B>() {
+			@Override
+			public B apply(B obj1, T obj2) {
+				return biFunction.apply(obj1, obj2);
+			}
+		};
+	}
+
+	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+	@SuppressWarnings("rawtypes")
+	public List<Map.Entry<Arbitrary, BiFunction<B, ?, B>>> getCombinationChainMapList() {
 		return Collections.unmodifiableList(this.combinationChains);
 	}
 
@@ -100,7 +132,19 @@ public class BuilderFieldArbitraries<B> extends FieldArbitraries {
 			this.arbitrary = arbitrary;
 		}
 
+		// use in with BiFunction
+		@Deprecated
 		public BuilderCombinator<B> in(Combinators.F2<B, T, B> toFunction) {
+			return this.in(new BiFunction<B, T, B>() {
+				@Override
+				public B apply(B obj1, T obj2) {
+					return toFunction.apply(obj1, obj2);
+				}
+			});
+		}
+
+		@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+		public BuilderCombinator<B> in(BiFunction<B, T, B> toFunction) {
 			this.builderFieldArbitraries.combinationChains.add(
 				new AbstractMap.SimpleEntry<>(this.arbitrary, toFunction));
 			return new BuilderCombinator<>(this.builderFieldArbitraries);

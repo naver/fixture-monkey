@@ -23,7 +23,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import net.jqwik.api.Arbitrary;
-import net.jqwik.api.Combinators;
+import net.jqwik.api.Builders;
+import net.jqwik.api.Builders.BuilderCombinator;
 
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryNode;
 
@@ -32,8 +33,7 @@ final class QueueBuilder {
 
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	<T> Arbitrary<T> build(List<ArbitraryNode> nodes) {
-		Combinators.BuilderCombinator<CollectionBuilderFrame> queueBuilderCombinator =
-			Combinators.withBuilder(QueueBuilderFrame::new);
+		BuilderCombinator<CollectionBuilderFrame> queueBuilderCombinator = Builders.withBuilder(QueueBuilderFrame::new);
 
 		if (nodes.isEmpty()) {
 			return (Arbitrary<T>)queueBuilderCombinator.build(CollectionBuilderFrame::build);

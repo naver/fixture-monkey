@@ -24,11 +24,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.BiFunction;
 
 import org.junit.platform.commons.util.ReflectionUtils;
 
 import net.jqwik.api.Arbitrary;
-import net.jqwik.api.Combinators;
+import net.jqwik.api.Builders;
+import net.jqwik.api.Builders.BuilderCombinator;
 
 import com.navercorp.fixturemonkey.api.property.FieldProperty;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
@@ -82,7 +84,7 @@ public final class BuilderArbitraryGenerator extends AbstractArbitraryGenerator 
 
 		Method builderMethod = BUILDER_CACHE.get(clazz);
 		Class<?> builderType = this.getBuilderType(clazz);
-		Combinators.BuilderCombinator builderCombinator = Combinators.withBuilder(() ->
+		BuilderCombinator builderCombinator = Builders.withBuilder(() ->
 			ReflectionUtils.invokeMethod(builderMethod, null));
 
 		for (Map.Entry<String, Arbitrary> entry : fieldArbitraries.entrySet()) {
@@ -107,9 +109,9 @@ public final class BuilderArbitraryGenerator extends AbstractArbitraryGenerator 
 			}
 		}
 
-		List<Map.Entry<Arbitrary, Combinators.F2<?, ?, ?>>> chains = fieldArbitraries.getCombinationChains();
+		List<Map.Entry<Arbitrary, BiFunction<?, ?, ?>>> chains = fieldArbitraries.getCombinationChainMapList();
 
-		for (Map.Entry<Arbitrary, Combinators.F2<?, ?, ?>> entry : chains) {
+		for (Map.Entry<Arbitrary, BiFunction<?, ?, ?>> entry : chains) {
 			builderCombinator = builderCombinator.use(entry.getKey()).in(entry.getValue());
 		}
 

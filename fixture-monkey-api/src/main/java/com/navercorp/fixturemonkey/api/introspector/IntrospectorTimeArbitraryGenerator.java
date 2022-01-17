@@ -38,6 +38,7 @@ import net.jqwik.time.api.arbitraries.PeriodArbitrary;
 import net.jqwik.time.api.arbitraries.YearArbitrary;
 import net.jqwik.time.api.arbitraries.YearMonthArbitrary;
 import net.jqwik.time.api.arbitraries.ZoneOffsetArbitrary;
+import net.jqwik.time.api.arbitraries.ZonedDateTimeArbitrary;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public interface IntrospectorTimeArbitraryGenerator {
@@ -64,6 +65,10 @@ public interface IntrospectorTimeArbitraryGenerator {
 
 	default LocalTimeArbitrary localTimes() {
 		return Times.times();
+	}
+
+	default ZonedDateTimeArbitrary zonedDateTimes() {
+		return DateTimes.zonedDateTimes();
 	}
 
 	default MonthDayArbitrary monthDays() {

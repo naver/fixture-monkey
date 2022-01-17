@@ -30,7 +30,7 @@ import com.navercorp.fixturemonkey.generator.FieldArbitraries
 import com.navercorp.fixturemonkey.kotlin.customizer.customizeFields
 import com.navercorp.fixturemonkey.property.DefaultPropertyNameResolver
 import net.jqwik.api.Arbitrary
-import net.jqwik.api.Combinators
+import net.jqwik.api.Builders
 import java.lang.reflect.Field
 import kotlin.jvm.internal.Reflection
 import kotlin.reflect.KClass
@@ -62,7 +62,7 @@ class PrimaryConstructorArbitraryGenerator(
 
         val constructor = requireNotNull(clazz.primaryConstructor) { "No primary constructor provided for $clazz" }
 
-        var builderCombinator = Combinators.withBuilder { mutableMapOf<KParameter, Any?>() }
+        var builderCombinator = Builders.withBuilder { mutableMapOf<KParameter, Any?>() }
         for (parameter in constructor.parameters) {
             val parameterArbitrary = fieldArbitraries.getArbitrary(parameter.name)
             builderCombinator = builderCombinator.use(parameterArbitrary).`in` { map, value ->

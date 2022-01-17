@@ -23,8 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.jqwik.api.Arbitrary;
-import net.jqwik.api.Combinators;
-import net.jqwik.api.Combinators.BuilderCombinator;
+import net.jqwik.api.Builders;
+import net.jqwik.api.Builders.BuilderCombinator;
 
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryNode;
 
@@ -34,7 +34,7 @@ final class ArrayBuilder {
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	public <T> Arbitrary<T> build(Class<T> clazz, List<ArbitraryNode> nodes) {
 		BuilderCombinator<ArrayBuilderFrame> builder =
-			Combinators.withBuilder(() -> new ArrayBuilderFrame(clazz, nodes.size()));
+			Builders.withBuilder(() -> new ArrayBuilderFrame(clazz, nodes.size()));
 
 		if (nodes.isEmpty()) {
 			return (Arbitrary<T>)builder.build(ArrayBuilderFrame::build);
