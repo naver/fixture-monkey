@@ -83,9 +83,10 @@ public final class FieldProperty implements Property {
 		try {
 			this.field.setAccessible(true);
 			return this.field.get(obj);
-		} catch (IllegalAccessException e) {
+		} catch (IllegalAccessException ex) {
 			throw new IllegalArgumentException(
-				"Can not extract value. obj: " + obj.toString() + ", fieldName: " + this.field.getName()
+				"Can not extract value. obj: " + obj.toString() + ", fieldName: " + this.field.getName(),
+				ex
 			);
 		}
 	}
