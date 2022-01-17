@@ -20,13 +20,9 @@ package com.navercorp.fixturemonkey.arbitrary;
 
 import static com.navercorp.fixturemonkey.Constants.HEAD_NAME;
 import static com.navercorp.fixturemonkey.Constants.NO_OR_ALL_INDEX_INTEGER_VALUE;
-import static com.navercorp.fixturemonkey.TypeSupports.extractFields;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.function.Supplier;
 
@@ -43,8 +39,6 @@ import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
 
 import com.navercorp.fixturemonkey.TypeSupports;
-import com.navercorp.fixturemonkey.api.property.FieldProperty;
-import com.navercorp.fixturemonkey.api.property.Property;
 
 public final class ArbitraryNode<T> {
 	@SuppressWarnings("rawtypes")
@@ -104,16 +98,15 @@ public final class ArbitraryNode<T> {
 		return foundChildren;
 	}
 
-	public void initializeElementSize() {
+	public int getElementSize() {
 		if (!type.isContainer()) {
 			throw new IllegalStateException("Can not initialize element size because node is not container.");
 		} else if (type.isOptional()) {
-			setContainerSizeConstraint(new ContainerSizeConstraint(0, 1));
-			return;
+			return new ContainerSizeConstraint(0, 1).getArbitraryElementSize();
 		}
 
 		if (getContainerSizeConstraint() != null) {
-			return;
+			return getContainerSizeConstraint().getArbitraryElementSize();
 		}
 
 		Integer min = null;
@@ -134,10 +127,14 @@ public final class ArbitraryNode<T> {
 			}
 		}
 
-		setContainerSizeConstraint(new ContainerSizeConstraint(min, max));
+		return new ContainerSizeConstraint(min, max).getArbitraryElementSize();
 	}
 
-	@SuppressWarnings("unchecked")
+	public boolean isNotSetContainerSize() {
+		return getContainerSizeConstraint() == null;
+	}
+
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	public void apply(PreArbitraryManipulator preArbitraryManipulator) {
 		if (preArbitraryManipulator instanceof ArbitrarySetArbitrary) {
 			this.setFixed(true);
@@ -160,54 +157,9 @@ public final class ArbitraryNode<T> {
 					);
 				}
 			}
-			setValueRecursively(toValue);
+			this.status.setValue(new LazyValue(toValue));
 		} else {
 			throw new IllegalArgumentException("Not Implemented PreArbitraryManipulator");
-		}
-	}
-
-	@SuppressWarnings("unchecked")
-	private void setValueRecursively(Object value) {
-		this.setManipulated(true);
-		this.setActive(true);
-		Class<?> type = this.getType().getType();
-		List<Field> fields = extractFields(type);
-
-		if (!getType().isContainer() && (this.children.isEmpty() || value == null)) {
-			if (value == null) {
-				this.setFixedAsNull(true);
-			}
-			this.setArbitrary((Arbitrary<T>)Arbitraries.just(value));
-			return;
-		}
-
-		if (value instanceof Map) {
-			this.setArbitrary((Arbitrary<T>)Arbitraries.just(value));
-			return;
-		} else if (value instanceof Collection) {
-			children.clear();
-			ArbitraryType<Object> childType = this.type.getGenericArbitraryType(0);
-			int index = 0;
-			for (Object element : (Collection<Object>)value) {
-				ArbitraryNode<?> nextNode = ArbitraryNode.builder()
-					.type(childType)
-					.value(element)
-					.propertyName(propertyName)
-					.indexOfIterable(index)
-					.build();
-				index++;
-				this.children.add(nextNode);
-				nextNode.setValueRecursively(element);
-			}
-			return;
-		}
-
-		for (int i = 0; i < fields.size(); i++) {
-			Field field = fields.get(i);
-			ArbitraryNode<?> childNode = this.children.get(i);
-			Property property = new FieldProperty(field);
-			Object childValue = property.getValue(value);
-			childNode.setValueRecursively(childValue);
 		}
 	}
 
@@ -330,6 +282,10 @@ public final class ArbitraryNode<T> {
 		return keyOfMapStructure;
 	}
 
+	/**
+	 * Deprecated Use getElementSize instead
+	 */
+	@Deprecated
 	public ContainerSizeConstraint getContainerSizeConstraint() {
 		return this.status.containerSizeConstraint;
 	}

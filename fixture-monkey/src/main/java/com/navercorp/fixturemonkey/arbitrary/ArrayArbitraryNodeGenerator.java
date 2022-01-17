@@ -31,7 +31,6 @@ public class ArrayArbitraryNodeGenerator implements ContainerArbitraryNodeGenera
 
 	@Override
 	public <T> List<ArbitraryNode<?>> generate(ArbitraryNode<T> containerNode) {
-		int elementSize = Integer.MAX_VALUE;
 		int currentIndex = 0;
 
 		ArbitraryType<T> clazz = containerNode.getType();
@@ -41,9 +40,10 @@ public class ArrayArbitraryNodeGenerator implements ContainerArbitraryNodeGenera
 
 		List<ArbitraryNode<?>> generatedNodeList = new ArrayList<>();
 
+		int elementSize = containerNode.getElementSize();
+
 		if (lazyValue != null) {
 			T value = lazyValue.get();
-			ContainerSizeConstraint containerSizeConstraint = containerNode.getContainerSizeConstraint();
 
 			if (value == null) {
 				containerNode.setArbitrary(Arbitraries.just(null));
@@ -51,12 +51,11 @@ public class ArrayArbitraryNodeGenerator implements ContainerArbitraryNodeGenera
 			}
 			int length = Array.getLength(value);
 
-			if (containerSizeConstraint != null) {
-				// container size is set.
-				elementSize = containerSizeConstraint.getArbitraryElementSize();
-			}
-
-			for (currentIndex = 0; currentIndex < length && currentIndex < elementSize; currentIndex++) {
+			for (
+				currentIndex = 0;
+				currentIndex < length && (containerNode.isNotSetContainerSize() || currentIndex < elementSize);
+				currentIndex++
+			) {
 				Object nextValue = Array.get(value, currentIndex);
 				@SuppressWarnings("unchecked")
 				ArbitraryNode<?> nextNode = ArbitraryNode.builder()
@@ -67,32 +66,24 @@ public class ArrayArbitraryNodeGenerator implements ContainerArbitraryNodeGenera
 					.build();
 				generatedNodeList.add(nextNode);
 			}
+		}
 
-			if (containerSizeConstraint == null) {
-				// value exists, container size size is same as value size.
-				containerNode.setContainerSizeConstraint(new ContainerSizeConstraint(length, length));
-				return generatedNodeList;
+		if (lazyValue == null || !containerNode.isNotSetContainerSize()) {
+			for (int i = currentIndex; i < elementSize; i++) {
+				@SuppressWarnings("unchecked")
+				ArbitraryNode<?> genericFrame = ArbitraryNode.builder()
+					.type(childType)
+					.propertyName(propertyName)
+					.indexOfIterable(i)
+					.nullable(false)
+					.nullInject(0.f)
+					.build();
+
+				generatedNodeList.add(genericFrame);
 			}
 		}
 
-		containerNode.initializeElementSize();
-		if (isNotInitialized(elementSize)) {
-			// value does not exist.
-			elementSize = containerNode.getContainerSizeConstraint().getArbitraryElementSize();
-		}
-
-		for (int i = currentIndex; i < elementSize; i++) {
-			@SuppressWarnings("unchecked")
-			ArbitraryNode<?> genericFrame = ArbitraryNode.builder()
-				.type(childType)
-				.propertyName(propertyName)
-				.indexOfIterable(i)
-				.nullable(false)
-				.nullInject(0.f)
-				.build();
-
-			generatedNodeList.add(genericFrame);
-		}
+		containerNode.setContainerSizeConstraint(null); // clear
 		return generatedNodeList;
 	}
 
@@ -106,9 +97,5 @@ public class ArrayArbitraryNodeGenerator implements ContainerArbitraryNodeGenera
 		FieldNameResolver fieldNameResolver
 	) {
 		return this.generate(nowNode);
-	}
-
-	private boolean isNotInitialized(int elementSize) {
-		return elementSize == Integer.MAX_VALUE;
 	}
 }

@@ -585,6 +585,9 @@ public final class ArbitraryBuilder<T> {
 		for (ArbitraryNode<T> foundNode : foundNodes) {
 			if (fixtureSet.isApplicable()) {
 				foundNode.apply(fixtureSet);
+				if (fixtureSet instanceof ArbitrarySet) {
+					traverser.traverse(foundNode, foundNode.isKeyOfMapStructure(), generator);
+				}
 			}
 		}
 	}
