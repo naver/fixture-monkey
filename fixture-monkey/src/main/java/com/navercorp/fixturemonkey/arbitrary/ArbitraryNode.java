@@ -285,7 +285,6 @@ public final class ArbitraryNode<T> {
 	/**
 	 * Deprecated Use getElementSize instead
 	 */
-	@API(since = "0.4.0", status = Status.INTERNAL)
 	@Deprecated
 	public ContainerSizeConstraint getContainerSizeConstraint() {
 		return this.status.containerSizeConstraint;
