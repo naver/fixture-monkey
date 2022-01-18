@@ -52,6 +52,7 @@ import com.navercorp.fixturemonkey.api.property.FieldProperty;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.api.random.Randoms;
 import com.navercorp.fixturemonkey.arbitrary.AbstractArbitrarySet;
+import com.navercorp.fixturemonkey.arbitrary.ArbitraryApply;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryExpression;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryExpressionManipulator;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryNode;
@@ -520,18 +521,7 @@ public final class ArbitraryBuilder<T> {
 	}
 
 	public ArbitraryBuilder<T> apply(BiConsumer<T, ArbitraryBuilder<T>> biConsumer) {
-		ArbitraryBuilder<T> appliedBuilder = this.copy();
-
-		this.decomposedManipulators.add(biConsumer);
-		setCurrentBuilderManipulatorsAsUsed();
-		this.tree.setDecomposedValue(() -> {
-			ArbitraryBuilder<T> copied = appliedBuilder.copy();
-			T sample = copied.sampleInternal();
-			copied.tree.setDecomposedValue(() -> sample); // fix builder value
-			this.decomposedManipulators.forEach(it -> it.accept(sample, copied));
-			return copied.sampleInternal();
-		});
-
+		this.builderManipulators.add(new ArbitraryApply<>(this, biConsumer));
 		return this;
 	}
 
@@ -548,6 +538,27 @@ public final class ArbitraryBuilder<T> {
 		setCurrentBuilderManipulatorsAsUsed();
 		this.tree.setFixedDecomposedValue(copied::sampleInternal);
 		return this;
+	}
+
+	private void setCurrentBuilderManipulatorsAsUsed() {
+		this.usedManipulators.clear();
+		this.usedManipulators.addAll(this.builderManipulators);
+	}
+
+	private List<BuilderManipulator> getActiveManipulators() {
+		List<BuilderManipulator> activeManipulators = new ArrayList<>();
+		for (int i = 0; i < builderManipulators.size(); i++) {
+			BuilderManipulator builderManipulator = builderManipulators.get(i);
+			if (i < usedManipulators.size()) {
+				BuilderManipulator appliedManipulator = usedManipulators.get(i);
+				if (builderManipulator.equals(appliedManipulator)) {
+					continue;
+				}
+			}
+
+			activeManipulators.add(builderManipulator);
+		}
+		return activeManipulators;
 	}
 
 	@SuppressWarnings({"rawtypes", "unchecked"})
@@ -617,6 +628,34 @@ public final class ArbitraryBuilder<T> {
 		return this;
 	}
 
+	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+	public ArbitraryBuilder<T> apply(ArbitraryApply<T> arbitraryApply) {
+		ArbitraryBuilder<T> toSampleArbitraryBuilder = arbitraryApply.getToSampleArbitraryBuilder();
+		BiConsumer<T, ArbitraryBuilder<T>> builderBiConsumer = arbitraryApply.getBuilderBiConsumer();
+
+		T sample = toSampleArbitraryBuilder.sample();
+		int preApplyManipulatorSize = toSampleArbitraryBuilder.builderManipulators.size();
+		builderBiConsumer.accept(sample, toSampleArbitraryBuilder);
+
+		this.apply(new ArbitrarySet<>(ArbitraryExpression.from(HEAD_NAME), sample));
+		this.apply(getDeltaManipulators(toSampleArbitraryBuilder, preApplyManipulatorSize));
+		return this;
+	}
+
+	private List<BuilderManipulator> getDeltaManipulators(
+		ArbitraryBuilder<T> toSampleArbitraryBuilder,
+		int preApplyManipulatorSize
+	) {
+		List<BuilderManipulator> deltaManipulators = new ArrayList<>();
+		int postApplyManipulatorSize = toSampleArbitraryBuilder.builderManipulators.size();
+
+		for (int i = preApplyManipulatorSize; i < postApplyManipulatorSize; i++) {
+			deltaManipulators.add(toSampleArbitraryBuilder.builderManipulators.get(i));
+		}
+
+		return deltaManipulators;
+	}
+
 	@API(since = "0.4.0", status = Status.INTERNAL)
 	@SuppressWarnings("rawtypes")
 	private void apply(List<BuilderManipulator> arbitraryManipulators) {
@@ -631,6 +670,7 @@ public final class ArbitraryBuilder<T> {
 		postArbitraryManipulators.forEach(it -> it.accept(this));
 	}
 
+	@Deprecated
 	public boolean isDirty() {
 		return usedManipulators.size() != builderManipulators.size();
 	}
@@ -649,27 +689,6 @@ public final class ArbitraryBuilder<T> {
 		);
 		copied.validOnly(this.validOnly);
 		return copied;
-	}
-
-	private void setCurrentBuilderManipulatorsAsUsed() {
-		this.usedManipulators.clear();
-		this.usedManipulators.addAll(this.builderManipulators);
-	}
-
-	private List<BuilderManipulator> getActiveManipulators() {
-		List<BuilderManipulator> activeManipulators = new ArrayList<>();
-		for (int i = 0; i < builderManipulators.size(); i++) {
-			BuilderManipulator builderManipulator = builderManipulators.get(i);
-			if (i < usedManipulators.size()) {
-				BuilderManipulator appliedManipulator = usedManipulators.get(i);
-				if (builderManipulator.equals(appliedManipulator)) {
-					continue;
-				}
-			}
-
-			activeManipulators.add(builderManipulator);
-		}
-		return activeManipulators;
 	}
 
 	private ArbitraryBuilder<T> setSpec(String expression, ExpressionSpec expressionSpec) {

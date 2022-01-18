@@ -1069,34 +1069,6 @@ class FixtureMonkeyTest {
 	}
 
 	@Property
-	void isDirtyWhenManipulatedAndApplyReturnsFalse() {
-		// given
-		ArbitraryBuilder<StringWithNotBlank> arbitraryBuilder = SUT.giveMeBuilder(StringWithNotBlank.class)
-			.set("value", "test")
-			.apply((builder, it) -> {
-			});
-
-		// when
-		boolean changed = arbitraryBuilder.isDirty();
-
-		then(changed).isFalse();
-	}
-
-	@Property
-	void isDirtyWhenManipulatedAndAcceptIfReturnsFalse() {
-		// given
-		ArbitraryBuilder<StringWithNotBlank> arbitraryBuilder = SUT.giveMeBuilder(StringWithNotBlank.class)
-			.set("value", "test")
-			.acceptIf(it -> true, it -> {
-			});
-
-		// when
-		boolean changed = arbitraryBuilder.isDirty();
-
-		then(changed).isFalse();
-	}
-
-	@Property
 	void isDirtyWhenManipulatedAndApplyAndManipulatedReturnsTrue() {
 		// given
 		ArbitraryBuilder<StringWithNotBlank> arbitraryBuilder = SUT.giveMeBuilder(StringWithNotBlank.class)
@@ -1170,34 +1142,6 @@ class FixtureMonkeyTest {
 	}
 
 	@Property
-	void isDirtyWhenFixedAndApplyReturnsFalse() {
-		// given
-		ArbitraryBuilder<StringWithNotBlank> arbitraryBuilder = SUT.giveMeBuilder(StringWithNotBlank.class)
-			.fixed()
-			.apply((builder, it) -> {
-			});
-
-		// when
-		boolean changed = arbitraryBuilder.isDirty();
-
-		then(changed).isFalse();
-	}
-
-	@Property
-	void isDirtyWhenFixedAndAcceptIfReturnsFalse() {
-		// given
-		ArbitraryBuilder<StringWithNotBlank> arbitraryBuilder = SUT.giveMeBuilder(StringWithNotBlank.class)
-			.fixed()
-			.acceptIf(it -> true, it -> {
-			});
-
-		// when
-		boolean changed = arbitraryBuilder.isDirty();
-
-		then(changed).isFalse();
-	}
-
-	@Property
 	@Domain(FixtureMonkeyTestSpecs.class)
 	void isDirtyWhenDecomposeReturnsFalse(@ForAll StringWithNotBlank stringWithNotBlank) {
 		// given
@@ -1260,44 +1204,6 @@ class FixtureMonkeyTest {
 				fixture.giveMeBuilder(StringWithNotBlank.class)
 					.set("value", "test")
 					.fixed()
-			)
-			.build();
-		ArbitraryBuilder<StringWithNotBlank> arbitraryBuilder = sut.giveMeBuilder(StringWithNotBlank.class);
-
-		// when
-		boolean changed = arbitraryBuilder.isDirty();
-
-		then(changed).isFalse();
-	}
-
-	@Property
-	void isDirtyWhenRegisterWithManipulatedAndApplyReturnsFalse() {
-		// given
-		FixtureMonkey sut = FixtureMonkey.builder()
-			.register(StringWithNotBlank.class, fixture ->
-				fixture.giveMeBuilder(StringWithNotBlank.class)
-					.set("value", "test")
-					.apply((it, builder) -> {
-					})
-			)
-			.build();
-		ArbitraryBuilder<StringWithNotBlank> arbitraryBuilder = sut.giveMeBuilder(StringWithNotBlank.class);
-
-		// when
-		boolean changed = arbitraryBuilder.isDirty();
-
-		then(changed).isFalse();
-	}
-
-	@Property
-	void isDirtyWhenRegisterWithManipulatedAndAcceptIfReturnsFalse() {
-		// given
-		FixtureMonkey sut = FixtureMonkey.builder()
-			.register(StringWithNotBlank.class, fixture ->
-				fixture.giveMeBuilder(StringWithNotBlank.class)
-					.set("value", "test")
-					.acceptIf(it -> true, it -> {
-					})
 			)
 			.build();
 		ArbitraryBuilder<StringWithNotBlank> arbitraryBuilder = sut.giveMeBuilder(StringWithNotBlank.class);
