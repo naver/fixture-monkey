@@ -628,6 +628,7 @@ public final class ArbitraryBuilder<T> {
 		return this;
 	}
 
+	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
 	public ArbitraryBuilder<T> apply(ArbitraryApply<T> arbitraryApply) {
 		ArbitraryBuilder<T> toSampleArbitraryBuilder = arbitraryApply.getToSampleArbitraryBuilder();
 		BiConsumer<T, ArbitraryBuilder<T>> builderBiConsumer = arbitraryApply.getBuilderBiConsumer();
