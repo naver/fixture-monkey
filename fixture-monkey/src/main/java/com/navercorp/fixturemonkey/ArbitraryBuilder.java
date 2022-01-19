@@ -204,23 +204,6 @@ public final class ArbitraryBuilder<T> {
 		return this.build().sample();
 	}
 
-	private T sampleInternal() {
-		return this.tree.result(() -> {
-			ArbitraryTree<T> buildTree = this.tree;
-
-			this.traverser.traverse(
-				buildTree,
-				false,
-				(PropertyNameResolver)property -> this.generator.resolveFieldName(
-					((FieldProperty)property).getField())
-			);
-			this.apply(this.getActiveManipulators());
-			this.builderManipulators.clear();
-			buildTree.update(this.generator, generatorMap);
-			return buildTree.getArbitrary();
-		}, this.validator, this.validOnly).sample();
-	}
-
 	public List<T> sampleList(int size) {
 		return this.sampleStream().limit(size).collect(toList());
 	}
@@ -534,9 +517,9 @@ public final class ArbitraryBuilder<T> {
 	}
 
 	public ArbitraryBuilder<T> fixed() {
-		ArbitraryBuilder<T> copied = this.copy();
+		T sample = this.sample();
 		setCurrentBuilderManipulatorsAsUsed();
-		this.tree.setFixedDecomposedValue(copied::sampleInternal);
+		this.apply(new ArbitrarySet<>(ArbitraryExpression.from(HEAD_NAME), sample));
 		return this;
 	}
 

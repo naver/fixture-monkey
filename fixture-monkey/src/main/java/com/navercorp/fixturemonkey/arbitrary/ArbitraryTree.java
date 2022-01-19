@@ -35,7 +35,7 @@ import com.navercorp.fixturemonkey.generator.ArbitraryGenerator;
 import com.navercorp.fixturemonkey.validator.ArbitraryValidator;
 
 public final class ArbitraryTree<T> {
-	private ArbitraryNode<T> head;
+	private final ArbitraryNode<T> head;
 
 	public ArbitraryTree(ArbitraryNode<T> head) {
 		this.head = head;
@@ -141,18 +141,6 @@ public final class ArbitraryTree<T> {
 
 	public Arbitrary<T> getArbitrary() {
 		return head.getArbitrary();
-	}
-
-	public void clearDecomposedValue() {
-		head.clearValue();
-	}
-
-	public void setDecomposedValue(Supplier<T> supplier) {
-		this.head.setValue(supplier);
-	}
-
-	public void setFixedDecomposedValue(Supplier<T> supplier) {
-		this.head.setFixedValue(supplier);
 	}
 
 	public ArbitraryTree<T> copy() {
