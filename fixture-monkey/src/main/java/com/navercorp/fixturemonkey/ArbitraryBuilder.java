@@ -578,7 +578,7 @@ public final class ArbitraryBuilder<T> {
 
 		for (ArbitraryNode<T> foundNode : foundNodes) {
 			if (fixtureSet.isApplicable()) {
-				foundNode.apply(fixtureSet);
+				foundNode.apply(foundNode, fixtureSet);
 				if (fixtureSet instanceof ArbitrarySet) {
 					traverser.traverse(foundNode, foundNode.isKeyOfMapStructure(), generator);
 				}
@@ -590,8 +590,8 @@ public final class ArbitraryBuilder<T> {
 	public ArbitraryBuilder<T> setNullity(ArbitraryNullity arbitraryNullity) {
 		ArbitraryExpression arbitraryExpression = arbitraryNullity.getArbitraryExpression();
 		Collection<ArbitraryNode> foundNodes = this.findNodesByExpression(arbitraryExpression);
-		for (ArbitraryNode foundNode : foundNodes) {
-			foundNode.apply(arbitraryNullity);
+		for (ArbitraryNode<?> foundNode : foundNodes) {
+			foundNode.apply(foundNode, arbitraryNullity);
 		}
 		return this;
 	}

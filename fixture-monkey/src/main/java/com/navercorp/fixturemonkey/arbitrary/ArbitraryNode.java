@@ -134,8 +134,19 @@ public final class ArbitraryNode<T> {
 		return getContainerSizeConstraint() == null;
 	}
 
+	public void apply(ArbitraryNode<?> sourceApplyNode, BuilderManipulator builderManipulator) {
+		if (builderManipulator instanceof PreArbitraryManipulator) {
+			apply((PreArbitraryManipulator)builderManipulator);
+		} else if (builderManipulator instanceof ArbitraryNullity) {
+			apply((ArbitraryNullity)builderManipulator);
+		} else {
+			throw new IllegalArgumentException("Given Manipulator is not supported : " + builderManipulator.getClass());
+		}
+		// TODO: apply callback
+	}
+
 	@SuppressWarnings({"unchecked", "rawtypes"})
-	public void apply(PreArbitraryManipulator preArbitraryManipulator) {
+	private void apply(PreArbitraryManipulator preArbitraryManipulator) {
 		if (preArbitraryManipulator instanceof ArbitrarySetArbitrary) {
 			this.setFixed(true);
 			this.setArbitrary((Arbitrary<T>)preArbitraryManipulator.getApplicableValue());
@@ -163,7 +174,7 @@ public final class ArbitraryNode<T> {
 		}
 	}
 
-	public void apply(ArbitraryNullity manipulator) {
+	private void apply(ArbitraryNullity manipulator) {
 		this.setActive(!manipulator.toNull());
 	}
 
