@@ -31,7 +31,7 @@ public final class ArbitraryApply<T> implements BuilderManipulator {
 		ArbitraryBuilder<T> toSampleArbitraryBuilder,
 		BiConsumer<T, ArbitraryBuilder<T>> builderBiConsumer
 	) {
-		this.toSampleArbitraryBuilder = toSampleArbitraryBuilder.copy();
+		this.toSampleArbitraryBuilder = toSampleArbitraryBuilder;
 		this.builderBiConsumer = builderBiConsumer;
 	}
 
@@ -47,7 +47,7 @@ public final class ArbitraryApply<T> implements BuilderManipulator {
 	}
 
 	public ArbitraryBuilder<T> getToSampleArbitraryBuilder() {
-		return toSampleArbitraryBuilder;
+		return toSampleArbitraryBuilder.copy();
 	}
 
 	public BiConsumer<T, ArbitraryBuilder<T>> getBuilderBiConsumer() {
