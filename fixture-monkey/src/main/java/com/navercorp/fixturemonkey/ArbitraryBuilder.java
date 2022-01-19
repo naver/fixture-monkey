@@ -83,7 +83,7 @@ public final class ArbitraryBuilder<T> {
 	@SuppressWarnings("rawtypes")
 	private final ArbitraryValidator validator;
 	private final Map<Class<?>, ArbitraryGenerator> generatorMap;
-	private final List<BiConsumer<T, ArbitraryBuilder<T>>> decomposedManipulators;
+
 	private ArbitraryGenerator generator;
 	private ArbitraryCustomizers arbitraryCustomizers;
 	private boolean validOnly = true;
@@ -108,7 +108,6 @@ public final class ArbitraryBuilder<T> {
 			generator,
 			validator,
 			arbitraryCustomizers,
-			new ArrayList<>(),
 			new ArrayList<>(),
 			new ArrayList<>(),
 			generatorMap
@@ -137,7 +136,6 @@ public final class ArbitraryBuilder<T> {
 			arbitraryCustomizers,
 			new ArrayList<>(),
 			new ArrayList<>(),
-			new ArrayList<>(),
 			generatorMap
 		);
 	}
@@ -151,7 +149,6 @@ public final class ArbitraryBuilder<T> {
 		ArbitraryCustomizers arbitraryCustomizers,
 		List<BuilderManipulator> builderManipulators,
 		List<BuilderManipulator> usedManipulators,
-		List<BiConsumer<T, ArbitraryBuilder<T>>> decomposedManipulators,
 		Map<Class<?>, ArbitraryGenerator> generatorMap
 	) {
 		this.tree = tree;
@@ -161,7 +158,6 @@ public final class ArbitraryBuilder<T> {
 		this.arbitraryCustomizers = arbitraryCustomizers;
 		this.builderManipulators = new ArrayList<>(builderManipulators);
 		this.usedManipulators = new ArrayList<>(usedManipulators);
-		this.decomposedManipulators = decomposedManipulators;
 		this.generatorMap = generatorMap.entrySet().stream()
 			.map(it -> new SimpleEntry<Class<?>, ArbitraryGenerator>(
 				it.getKey(),
@@ -523,11 +519,13 @@ public final class ArbitraryBuilder<T> {
 		return this;
 	}
 
+	@Deprecated // would be removed when isDirty is removed
 	private void setCurrentBuilderManipulatorsAsUsed() {
 		this.usedManipulators.clear();
 		this.usedManipulators.addAll(this.builderManipulators);
 	}
 
+	@Deprecated // would be removed when isDirty is removed
 	private List<BuilderManipulator> getActiveManipulators() {
 		List<BuilderManipulator> activeManipulators = new ArrayList<>();
 		for (int i = 0; i < builderManipulators.size(); i++) {
@@ -667,7 +665,6 @@ public final class ArbitraryBuilder<T> {
 			this.arbitraryCustomizers,
 			this.builderManipulators.stream().map(BuilderManipulator::copy).collect(toList()),
 			this.usedManipulators.stream().map(BuilderManipulator::copy).collect(toList()),
-			new ArrayList<>(this.decomposedManipulators),
 			this.generatorMap
 		);
 		copied.validOnly(this.validOnly);
@@ -728,6 +725,13 @@ public final class ArbitraryBuilder<T> {
 		return foundNodes;
 	}
 
+	private ArbitraryGenerator getGenerator(ArbitraryGenerator generator, ArbitraryCustomizers customizers) {
+		if (generator instanceof WithFixtureCustomizer) {
+			generator = ((WithFixtureCustomizer)generator).withFixtureCustomizers(customizers);
+		}
+		return generator;
+	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
@@ -748,12 +752,5 @@ public final class ArbitraryBuilder<T> {
 	public int hashCode() {
 		Class<?> generateClazz = tree.getClazz();
 		return Objects.hash(generateClazz, builderManipulators);
-	}
-
-	private ArbitraryGenerator getGenerator(ArbitraryGenerator generator, ArbitraryCustomizers customizers) {
-		if (generator instanceof WithFixtureCustomizer) {
-			generator = ((WithFixtureCustomizer)generator).withFixtureCustomizers(customizers);
-		}
-		return generator;
 	}
 }
