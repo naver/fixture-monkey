@@ -39,7 +39,8 @@ import org.slf4j.LoggerFactory;
 public final class PropertyCache {
 	private static final Logger LOGGER = LoggerFactory.getLogger(PropertyCache.class);
 
-	private static final Map<Class<?>, Map<Method, PropertyDescriptor>> PROPERTY_DESCRIPTORS = new ConcurrentHashMap<>();
+	private static final Map<Class<?>, Map<Method, PropertyDescriptor>> PROPERTY_DESCRIPTORS =
+		new ConcurrentHashMap<>();
 	private static final Map<Class<?>, Map<String, Field>> FIELDS = new ConcurrentHashMap<>();
 	private static final Map<Class<?>, Map<String, Optional<Property>>> PROPERTIES = new ConcurrentHashMap<>();
 
