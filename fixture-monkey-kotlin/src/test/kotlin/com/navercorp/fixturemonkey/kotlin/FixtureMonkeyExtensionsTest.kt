@@ -69,6 +69,20 @@ class FixtureMonkeyExtensionsTest {
     }
 
     @Property
+    fun giveMeWithCustomizerUsingTrailingLambda() {
+        // when
+        val actual = sut.giveMe<IntegerStringWrapperClass> {
+            it?.copy(stringValue = "test_value")
+        }.take(10).toList()
+
+        then(actual).hasSize(10).allSatisfy {
+            with(it) {
+                then(stringValue).isEqualTo("test_value")
+            }
+        }
+    }
+
+    @Property
     fun giveMeList() {
         // when
         val actual = sut.giveMe<IntegerStringWrapperClass>(10)
@@ -108,6 +122,20 @@ class FixtureMonkeyExtensionsTest {
     }
 
     @Property
+    fun giveMeListWithCustomizerUsingTrailingLambda() {
+        // when
+        val actual = sut.giveMe<IntegerStringWrapperClass>(10) {
+            it?.copy(stringValue = "test_value")
+        }
+
+        then(actual).hasSize(10).allSatisfy {
+            with(it) {
+                then(stringValue).isEqualTo("test_value")
+            }
+        }
+    }
+
+    @Property
     fun giveMeOne() {
         // when
         val actual = sut.giveMeOne<IntegerStringWrapperClass>()
@@ -137,6 +165,18 @@ class FixtureMonkeyExtensionsTest {
 
         with(actual) {
             then(intValue).isEqualTo(-1)
+            then(stringValue).isEqualTo("test_value")
+        }
+    }
+
+    @Property
+    fun giveMeOneWithCustomizerUsingTrailingLambda() {
+        // when
+        val actual = sut.giveMeOne<IntegerStringWrapperClass> {
+            it?.copy(stringValue = "test_value")
+        }
+
+        with(actual) {
             then(stringValue).isEqualTo("test_value")
         }
     }
