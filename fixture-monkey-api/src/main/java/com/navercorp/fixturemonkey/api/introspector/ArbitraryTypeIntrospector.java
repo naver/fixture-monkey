@@ -18,11 +18,17 @@
 
 package com.navercorp.fixturemonkey.api.introspector;
 
+import java.util.Collections;
+
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 @FunctionalInterface
 public interface ArbitraryTypeIntrospector {
+	ArbitraryTypeIntrospector INTROSPECTORS = new CompositeArbitraryTypeIntrospector(
+		Collections.emptyList()	// TODO: Add default introspectors
+	);
+
 	ArbitraryIntrospectorResult introspect(ArbitraryIntrospectorContext context);
 }
