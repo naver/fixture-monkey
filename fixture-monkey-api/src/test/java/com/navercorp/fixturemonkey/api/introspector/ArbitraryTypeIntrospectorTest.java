@@ -37,7 +37,7 @@ class ArbitraryTypeIntrospectorTest {
 
 		// when
 		ArbitraryIntrospectorResult actual = ArbitraryTypeIntrospector.INTROSPECTORS.introspect(context);
-		
+
 		then(actual.getValue().sample()).isExactlyInstanceOf(Season.class);
 	}
 
