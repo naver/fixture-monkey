@@ -5,31 +5,9 @@ import org.junit.jupiter.api.Test
 
 class ExpressionGeneratorTest {
     @Test
-    fun getExpressionEmpty() {
+    fun getExpressionField() {
         // given
-        val generator = from(Person::class.java) { this }
-
-        // when
-        val actual = generator.generate()
-
-        then(actual).isEqualTo("")
-    }
-
-    @Test
-    fun getExpressionFieldWithImplicitRangeTo() {
-        // given
-        val generator = from(Person::class.java) { this..Person::dog }
-
-        // when
-        val actual = generator.generate()
-
-        then(actual).isEqualTo("dog")
-    }
-
-    @Test
-    fun getExpressionFieldWithExplicitProperty() {
-        // given
-        val generator = from(Person::class.java) { this.property(Person::dogs) }
+        val generator = Exp<Person>() on Person::dogs
 
         // when
         val actual = generator.generate()
@@ -40,7 +18,7 @@ class ExpressionGeneratorTest {
     @Test
     fun getExpressionNestedField() {
         // given
-        val generator = from(Person::class.java) { this..Person::dog..Dog::name }
+        val generator = Exp<Person>() on Person::dog on Dog::name
 
         // when
         val actual = generator.generate()
@@ -49,9 +27,20 @@ class ExpressionGeneratorTest {
     }
 
     @Test
-    fun getExpressionListWithImplicitRangeTo() {
+    fun getExpressionNestedFieldWithIndex() {
         // given
-        val generator = from(Person::class.java) { this..Person::dogs..Index(List<Dog>::get, 1) }
+        val generator = Exp<Person>() on Person::dog on Dog::loves[0]
+
+        // when
+        val actual = generator.generate()
+
+        then(actual).isEqualTo("dog.loves[0]")
+    }
+
+    @Test
+    fun getExpressionFieldWithIndex() {
+        // given
+        val generator = Exp<Person>() on Person::dogs[1]
 
         // when
         val actual = generator.generate()
@@ -60,78 +49,44 @@ class ExpressionGeneratorTest {
     }
 
     @Test
-    fun getExpressionListWithImplicitIndex() {
+    fun getExpressionNFieldWithAllIndexWithField() {
         // given
-        val generator = from(Person::class.java) { this.property(Person::dogs).method(Index(List<Dog>::get, 1)) }
+        val generator = Exp<Person>() on Person::nestedDogs["*"]["*"] on Dog::name
 
         // when
         val actual = generator.generate()
 
-        then(actual).isEqualTo("dogs[1]")
+        then(actual).isEqualTo("nestedDogs[*][*].name")
     }
 
     @Test
-    fun getExpressionListWithImplicitAllIndex() {
+    fun getExpressionFieldWithIndexWithFieldExpression1() {
         // given
-        val generator = from(Person::class.java) { this.property(Person::dogs).method(AllIndex(List<Dog>::get)) }
+        val generator = Exp<Person>() on Person::nestedDogs[1][2] on Dog::name
 
         // when
         val actual = generator.generate()
 
-        then(actual).isEqualTo("dogs[*]")
+        then(actual).isEqualTo("nestedDogs[*][*].name")
     }
 
     @Test
-    fun getExpressionListAllIndex() {
+    fun getExpressionFieldWithIndexWithFieldExpression2() {
         // given
-        val generator = from(Person::class.java) { this..Person::dogs..AllIndex(List<Dog>::get) }
+        val generator = Exp<Person>() on Person::nestedDogs get 1 get 2 on Dog::name
 
         // when
         val actual = generator.generate()
 
-        then(actual).isEqualTo("dogs[*]")
+        then(actual).isEqualTo("nestedDogs[*][*].name")
     }
 
     @Test
-    fun getExpressionNestedListAllIndex() {
+    fun getExpressionFieldWithIndexWithFieldExpression3() {
         // given
-        val generator = from(Person::class.java) {
-            this..Person::nestedDogs..AllIndex(List<List<Dog>>::get)..AllIndex(List<Dog>::get)
-        }
-
-        // when
-        val actual = generator.generate()
-
-        then(actual).isEqualTo("nestedDogs[*][*]")
-    }
-
-    @Test
-    fun getExpressionNestedListIndex() {
-        // given
-        val generator =
-            from(Person::class.java) {
-                this..Person::nestedDogs..Index(List<List<Dog>>::get, 1)..Index(
-                    List<Dog>::get,
-                    2
-                )
-            }
-
-        // when
-        val actual = generator.generate()
-
-        then(actual).isEqualTo("nestedDogs[1][2]")
-    }
-
-    @Test
-    fun getExpressionNestedListField() {
-        // given
-        val generator =
-            from(Person::class.java) {
-                this..Person::nestedDogs..Index(List<List<Dog>>::get, 1)..Index(
-                    List<Dog>::get,
-                    2
-                )..Dog::name
-            }
+        val generator = Exp<Person>()
+            .on(Person::nestedDogs)[1][2]
+            .on(Dog::name)
 
         // when
         val actual = generator.generate()
@@ -140,20 +95,16 @@ class ExpressionGeneratorTest {
     }
 
     @Test
-    fun getExpressionNestedListIndexFieldListIndex() {
+    fun getExpressionFieldWithIndexWithFieldExpression4() {
         // given
-        val generator =
-            from(Person::class.java) {
-                this..Person::nestedDogs..Index(List<List<Dog>>::get, 1)..Index(
-                    List<Dog>::get,
-                    2
-                )..Dog::loves..Index(List<Int>::get, 1)
-            }
+        val generator = Exp<Person>()
+            .on(Person::nestedDogs[1][2])
+            .on(Dog::name)
 
         // when
         val actual = generator.generate()
 
-        then(actual).isEqualTo("nestedDogs[1][2].loves[1]")
+        then(actual).isEqualTo("nestedDogs[1][2].name")
     }
 
     data class Person(

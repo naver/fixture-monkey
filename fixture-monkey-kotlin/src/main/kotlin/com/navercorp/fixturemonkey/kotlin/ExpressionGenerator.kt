@@ -4,57 +4,72 @@ import com.navercorp.fixturemonkey.api.expression.ExpressionGenerator
 import com.navercorp.fixturemonkey.api.property.Property
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver
 import java.lang.reflect.AnnotatedType
-import kotlin.reflect.KFunction2
 import kotlin.reflect.KProperty1
 import kotlin.reflect.jvm.javaField
 
-class DslBuilder<T>(private val expressionGenerator: ExpressionGenerator) {
-    fun build() = expressionGenerator
+class Exp<T> internal constructor(val delegate: ExpressionGenerator) : ExpressionGenerator by delegate {
+    constructor() : this(EmptyExpressionGenerator())
 
-    private fun <T, R> toProperty(property: KProperty1<T, R>): Property = KotlinProperty(property)
+    infix fun <R> on(property: KProperty1<T, R>): Exp<R> =
+        Exp(ParsedExpressionGenerator(listOf(delegate, PropertyExpressionGenerator(KotlinProperty(property)))))
 
-    infix fun <R> property(property: KProperty1<T, R>): DslBuilder<R> = DslBuilder(
+    @JvmName("onList")
+    infix fun <R : Collection<E>, E : Any> on(property: KProperty1<T, R>): ExpList<E> = ExpList(
         ParsedExpressionGenerator(
             listOf(
-                this.expressionGenerator,
-                PropertyExpressionGenerator(toProperty(property))
+                delegate,
+                PropertyExpressionGenerator(KotlinProperty(property))
             )
         )
     )
 
-    infix fun <R> method(indexWrapper: Index<T, R>): DslBuilder<R> = DslBuilder(
-        ParsedExpressionGenerator(
-            listOf(
-                this.expressionGenerator,
-                IndexExpressionGenerator(indexWrapper.index)
+    @JvmName("onNestedList")
+    infix fun <R : Collection<N>, N : Collection<E>, E : Any> on(property: KProperty1<T, R>): ExpNestedList<E> =
+        ExpNestedList(
+            ParsedExpressionGenerator(
+                listOf(
+                    delegate,
+                    PropertyExpressionGenerator(KotlinProperty(property))
+                )
             )
         )
-    )
 
-    @Suppress("UNUSED_PARAMETER")
-    infix fun <R> method(allIndexWrapper: AllIndex<T, R>): DslBuilder<R> = DslBuilder(
-        ParsedExpressionGenerator(
-            listOf(
-                this.expressionGenerator,
-                AllIndexExpressionGenerator()
-            )
-        )
-    )
-
-    operator fun <R> rangeTo(property: KProperty1<T, R>): DslBuilder<R> = property(property)
-
-    operator fun <R> rangeTo(indexWrapper: Index<T, R>): DslBuilder<R> = method(indexWrapper)
-
-    operator fun <R> rangeTo(allIndexWrapper: AllIndex<T, R>): DslBuilder<R> = method(allIndexWrapper)
+    infix fun <R> on(expList: ExpList<R>): Exp<R> = Exp(ParsedExpressionGenerator(listOf(delegate, expList.delegate)))
 }
 
-data class Index<L, R>(private val getter: KFunction2<L, Int, R>, val index: Long)
+operator fun <T, R : Collection<E>, E : Any> KProperty1<T, R>.get(index: Int): ExpList<E> =
+    ExpList(ArrayExpressionGenerator(KotlinProperty(this), index))
 
-data class AllIndex<L, R>(private val getter: KFunction2<L, Int, R>)
+@JvmName("getNestedList")
+operator fun <T, R : Collection<N>, N : Collection<E>, E : Any> KProperty1<T, R>.get(index: Int): ExpNestedList<E> {
+    return ExpNestedList(ArrayExpressionGenerator(KotlinProperty(this), index))
+}
 
-@Suppress("UNUSED_PARAMETER")
-fun <T, R> from(clazz: Class<T>, setup: DslBuilder<T>.() -> DslBuilder<R>): ExpressionGenerator =
-    DslBuilder<T>(expressionGenerator = EmptyExpressionGenerator()).setup().build()
+@JvmName("getNestedList")
+operator fun <T, R : Collection<N>, N : Collection<E>, E : Any> KProperty1<T, R>.get(key: String): ExpNestedList<E> {
+    return ExpNestedList(ArrayWithKeyExpressionGenerator(KotlinProperty(this), key))
+}
+
+class ExpList<T> internal constructor(val delegate: ExpressionGenerator) : ExpressionGenerator by delegate {
+    infix operator fun get(index: Int): Exp<T> {
+        return Exp(ParsedExpressionGenerator(listOf(delegate, IndexExpressionGenerator(index))))
+    }
+
+    infix operator fun get(key: String): Exp<T> {
+        return Exp(ParsedExpressionGenerator(listOf(delegate, KeyExpressionGenerator(key))))
+    }
+}
+
+class ExpNestedList<T> internal constructor(private val delegate: ExpressionGenerator) :
+    ExpressionGenerator by delegate {
+    infix operator fun get(index: Int): ExpList<T> {
+        return ExpList(ParsedExpressionGenerator(listOf(delegate, IndexExpressionGenerator(index))))
+    }
+
+    infix operator fun get(key: String): ExpList<T> {
+        return ExpList(ParsedExpressionGenerator(listOf(delegate, KeyExpressionGenerator(key))))
+    }
+}
 
 private class ParsedExpressionGenerator(private val expressionGenerators: List<ExpressionGenerator>) :
     ExpressionGenerator {
@@ -71,12 +86,22 @@ private class PropertyExpressionGenerator(private val property: Property) : Expr
         ".${propertyNameResolver.resolve(property)}"
 }
 
-private class IndexExpressionGenerator(val index: Long) : ExpressionGenerator {
+private class IndexExpressionGenerator(val index: Int) : ExpressionGenerator {
     override fun generate(propertyNameResolver: PropertyNameResolver): String = "[$index]"
 }
 
-private class AllIndexExpressionGenerator : ExpressionGenerator {
-    override fun generate(propertyNameResolver: PropertyNameResolver): String = "[*]"
+private class ArrayExpressionGenerator(private val property: Property, val index: Int) : ExpressionGenerator {
+    override fun generate(propertyNameResolver: PropertyNameResolver): String =
+        ".${propertyNameResolver.resolve(property)}[$index]"
+}
+
+private class ArrayWithKeyExpressionGenerator(private val property: Property, val key: String) : ExpressionGenerator {
+    override fun generate(propertyNameResolver: PropertyNameResolver): String =
+        ".${propertyNameResolver.resolve(property)}[$key]"
+}
+
+private class KeyExpressionGenerator(private val key: String) : ExpressionGenerator {
+    override fun generate(propertyNameResolver: PropertyNameResolver): String = "[$key]"
 }
 
 private class EmptyExpressionGenerator : ExpressionGenerator {
