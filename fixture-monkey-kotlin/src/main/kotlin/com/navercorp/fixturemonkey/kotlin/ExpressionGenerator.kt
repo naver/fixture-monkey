@@ -13,7 +13,7 @@ class Exp<T> internal constructor(val delegate: ExpressionGenerator) : Expressio
     infix fun <R> dot(property: KProperty1<T, R>): Exp<R> =
         Exp(ParsedExpressionGenerator(listOf(delegate, PropertyExpressionGenerator(KotlinProperty(property)))))
 
-    @JvmName("onList")
+    @JvmName("dotList")
     infix fun <R : Collection<E>, E : Any> dot(property: KProperty1<T, R>): ExpList<E> = ExpList(
         ParsedExpressionGenerator(
             listOf(
@@ -23,7 +23,7 @@ class Exp<T> internal constructor(val delegate: ExpressionGenerator) : Expressio
         )
     )
 
-    @JvmName("onNestedList")
+    @JvmName("dotNestedList")
     infix fun <R : Collection<N>, N : Collection<E>, E : Any> dot(property: KProperty1<T, R>): ExpNestedList<E> =
         ExpNestedList(
             ParsedExpressionGenerator(
