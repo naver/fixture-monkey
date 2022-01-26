@@ -49,11 +49,11 @@ operator fun <T, R : Collection<E>, E : Any> KProperty1<T, R>.get(index: Int): E
     ExpList(ArrayExpressionGenerator(KotlinProperty(this), index))
 
 @JvmName("getNestedList")
-operator fun <T, R : Collection<N>, N : Collection<E>, E : Any> KProperty1<T, R>.get(index: Int): ExpNestedList<E> =
+infix operator fun <T, R : Collection<N>, N : Collection<E>, E : Any> KProperty1<T, R>.get(index: Int): ExpNestedList<E> =
     ExpNestedList(ArrayExpressionGenerator(KotlinProperty(this), index))
 
 @JvmName("getNestedList")
-operator fun <T, R : Collection<N>, N : Collection<E>, E : Any> KProperty1<T, R>.get(key: String): ExpNestedList<E> =
+infix operator fun <T, R : Collection<N>, N : Collection<E>, E : Any> KProperty1<T, R>.get(key: String): ExpNestedList<E> =
     ExpNestedList(ArrayWithKeyExpressionGenerator(KotlinProperty(this), key))
 
 class ExpList<T> internal constructor(val delegate: ExpressionGenerator) : ExpressionGenerator by delegate {
