@@ -7,14 +7,16 @@ import java.lang.reflect.AnnotatedType
 import kotlin.reflect.KProperty1
 import kotlin.reflect.jvm.javaField
 
-class Exp<T> internal constructor(val delegate: ExpressionGenerator) : ExpressionGenerator by delegate {
+class Exp<T> internal constructor(private val delegate: ExpressionGenerator) : ExpressionGenerator by delegate {
     constructor() : this(EmptyExpressionGenerator())
 
-    infix fun <R> dot(property: KProperty1<T, R>): Exp<R> =
+    infix fun <R> into(property: KProperty1<T, R>): Exp<R> =
         Exp(ParsedExpressionGenerator(listOf(delegate, PropertyExpressionGenerator(KotlinProperty(property)))))
 
-    @JvmName("dotList")
-    infix fun <R : Collection<E>, E : Any> dot(property: KProperty1<T, R>): ExpList<E> = ExpList(
+    infix fun <R> into(exp: Exp<R>): Exp<R> = Exp(ParsedExpressionGenerator(listOf(delegate, exp.delegate)))
+
+    @JvmName("intoList")
+    infix fun <R : Collection<E>, E : Any> into(property: KProperty1<T, R>): ExpList<E> = ExpList(
         ParsedExpressionGenerator(
             listOf(
                 delegate,
@@ -23,9 +25,11 @@ class Exp<T> internal constructor(val delegate: ExpressionGenerator) : Expressio
         )
     )
 
-    @JvmName("dotNestedList")
-    infix fun <R : Collection<N>, N : Collection<E>, E : Any> dot(property: KProperty1<T, R>): ExpNestedList<E> =
-        ExpNestedList(
+    infix fun <R> into(exp: ExpList<R>): Exp<R> = Exp(ParsedExpressionGenerator(listOf(delegate, exp.delegate)))
+
+    @JvmName("intoNestedList")
+    infix fun <R : Collection<N>, N : Collection<E>, E : Any> into(property: KProperty1<T, R>): ExpList<R> =
+        ExpList(
             ParsedExpressionGenerator(
                 listOf(
                     delegate,
@@ -33,49 +37,38 @@ class Exp<T> internal constructor(val delegate: ExpressionGenerator) : Expressio
                 )
             )
         )
-
-    infix fun <R> dot(expList: ExpList<R>): Exp<R> = Exp(ParsedExpressionGenerator(listOf(delegate, expList.delegate)))
-
-    infix operator fun <R> div(property: KProperty1<T, R>): Exp<R> = dot(property)
-
-    infix operator fun <R : Collection<E>, E : Any> div(property: KProperty1<T, R>) = dot(property)
-
-    infix operator fun <R : Collection<N>, N : Collection<E>, E : Any> div(property: KProperty1<T, R>) = dot(property)
-
-    infix operator fun <R> div(expList: ExpList<R>): Exp<R> = dot(expList)
 }
 
-operator fun <T, R : Collection<E>, E : Any> KProperty1<T, R>.get(index: Int): ExpList<E> =
+infix operator fun <T, R : Collection<E>, E : Any> KProperty1<T, R>.get(index: Int): ExpList<E> =
     ExpList(ArrayExpressionGenerator(KotlinProperty(this), index))
 
-@JvmName("getNestedList")
-infix operator fun <T, R : Collection<N>, N : Collection<E>, E : Any> KProperty1<T, R>.get(index: Int): ExpNestedList<E> =
-    ExpNestedList(ArrayExpressionGenerator(KotlinProperty(this), index))
+infix operator fun <T, R : Collection<E>, E : Any> KProperty1<T, R>.get(key: String): ExpList<E> =
+    ExpList(MapExpressionGenerator(KotlinProperty(this), key))
 
 @JvmName("getNestedList")
-infix operator fun <T, R : Collection<N>, N : Collection<E>, E : Any> KProperty1<T, R>.get(key: String): ExpNestedList<E> =
-    ExpNestedList(ArrayWithKeyExpressionGenerator(KotlinProperty(this), key))
+infix operator fun <T, R : Collection<N>, N : Collection<E>, E : Any> KProperty1<T, R>.get(index: Int): ExpList<N> =
+    ExpList(ArrayExpressionGenerator(KotlinProperty(this), index))
 
-class ExpList<T> internal constructor(val delegate: ExpressionGenerator) : ExpressionGenerator by delegate {
-    infix operator fun get(index: Int): Exp<T> {
-        return Exp(ParsedExpressionGenerator(listOf(delegate, IndexExpressionGenerator(index))))
-    }
+@JvmName("getNestedMap")
+infix operator fun <T, R : Collection<N>, N : Collection<E>, E : Any> KProperty1<T, R>.get(key: String): ExpList<N> =
+    ExpList(MapExpressionGenerator(KotlinProperty(this), key))
 
-    infix operator fun get(key: String): Exp<T> {
-        return Exp(ParsedExpressionGenerator(listOf(delegate, KeyExpressionGenerator(key))))
-    }
-}
+@Suppress("unused")
+class ExpList<E> internal constructor(val delegate: ExpressionGenerator) : ExpressionGenerator by delegate
 
-class ExpNestedList<T> internal constructor(private val delegate: ExpressionGenerator) :
-    ExpressionGenerator by delegate {
-    infix operator fun get(index: Int): ExpList<T> {
-        return ExpList(ParsedExpressionGenerator(listOf(delegate, IndexExpressionGenerator(index))))
-    }
+infix operator fun <R : Collection<E>, E : Any> ExpList<R>.get(index: Int): Exp<E> =
+    Exp(ParsedExpressionGenerator(listOf(delegate, IndexExpressionGenerator(index))))
 
-    infix operator fun get(key: String): ExpList<T> {
-        return ExpList(ParsedExpressionGenerator(listOf(delegate, KeyExpressionGenerator(key))))
-    }
-}
+infix operator fun <R : Collection<E>, E : Any> ExpList<R>.get(key: String): Exp<E> =
+    Exp(ParsedExpressionGenerator(listOf(delegate, KeyExpressionGenerator(key))))
+
+@JvmName("getNestedList")
+infix operator fun <R : Collection<N>, N : Collection<E>, E : Any> ExpList<R>.get(index: Int): ExpList<N> =
+    ExpList(ParsedExpressionGenerator(listOf(delegate, IndexExpressionGenerator(index))))
+
+@JvmName("getNestedMap")
+infix operator fun <R : Collection<N>, N : Collection<E>, E : Any> ExpList<R>.get(key: String): ExpList<N> =
+    ExpList(ParsedExpressionGenerator(listOf(delegate, KeyExpressionGenerator(key))))
 
 private class ParsedExpressionGenerator(private val expressionGenerators: List<ExpressionGenerator>) :
     ExpressionGenerator {
@@ -101,7 +94,7 @@ private class ArrayExpressionGenerator(private val property: Property, val index
         ".${propertyNameResolver.resolve(property)}[$index]"
 }
 
-private class ArrayWithKeyExpressionGenerator(private val property: Property, val key: String) : ExpressionGenerator {
+private class MapExpressionGenerator(private val property: Property, val key: String) : ExpressionGenerator {
     override fun generate(propertyNameResolver: PropertyNameResolver): String =
         ".${propertyNameResolver.resolve(property)}[$key]"
 }
