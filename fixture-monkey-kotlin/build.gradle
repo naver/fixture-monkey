@@ -28,6 +28,8 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.6.10")
     implementation("org.jetbrains.kotlin:kotlin-reflect:1.6.10")
 
+    testImplementation("org.junit.jupiter:junit-jupiter-engine:${JUNIT_JUPITER_VERSION}")
+    testImplementation("org.junit.platform:junit-platform-engine:${JUNIT_ENGINE_VERSION}")
     testImplementation("org.assertj:assertj-core:3.18.1")
 }
 
