@@ -18,19 +18,30 @@
 
 package com.navercorp.fixturemonkey.api.introspector;
 
-import java.util.Arrays;
+import static org.assertj.core.api.BDDAssertions.then;
 
-import org.apiguardian.api.API;
-import org.apiguardian.api.API.Status;
+import java.util.Collections;
 
-@API(since = "0.4.0", status = Status.EXPERIMENTAL)
-@FunctionalInterface
-public interface ArbitraryTypeIntrospector {
-	ArbitraryTypeIntrospector INTROSPECTORS = new CompositeArbitraryTypeIntrospector(
-		Arrays.asList(
-			EnumTypeIntrospector.INSTANCE // TODO: default introspectors
-		)
-	);
+import org.junit.jupiter.api.Test;
 
-	ArbitraryIntrospectorResult introspect(ArbitraryIntrospectorContext context);
+class ArbitraryTypeIntrospectorTest {
+	@Test
+	void introspectEnumType() {
+		// given
+		ArbitraryIntrospectorContext context = new ArbitraryIntrospectorContext(
+			Season.class,
+			"season",
+			null,
+			Collections.emptyList()
+		);
+
+		// when
+		ArbitraryIntrospectorResult actual = ArbitraryTypeIntrospector.INTROSPECTORS.introspect(context);
+
+		then(actual.getValue().sample()).isExactlyInstanceOf(Season.class);
+	}
+
+	enum Season {
+		SPRING, SUMMER, FALL, WINTER
+	}
 }

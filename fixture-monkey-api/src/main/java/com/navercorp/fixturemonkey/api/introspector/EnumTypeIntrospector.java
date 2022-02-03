@@ -18,19 +18,23 @@
 
 package com.navercorp.fixturemonkey.api.introspector;
 
-import java.util.Arrays;
-
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-@API(since = "0.4.0", status = Status.EXPERIMENTAL)
-@FunctionalInterface
-public interface ArbitraryTypeIntrospector {
-	ArbitraryTypeIntrospector INTROSPECTORS = new CompositeArbitraryTypeIntrospector(
-		Arrays.asList(
-			EnumTypeIntrospector.INSTANCE // TODO: default introspectors
-		)
-	);
+import net.jqwik.api.Arbitraries;
 
-	ArbitraryIntrospectorResult introspect(ArbitraryIntrospectorContext context);
+@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+final class EnumTypeIntrospector implements ArbitraryTypeIntrospector {
+	static final EnumTypeIntrospector INSTANCE = new EnumTypeIntrospector();
+
+	@SuppressWarnings({"unchecked", "rawtypes"})
+	@Override
+	public ArbitraryIntrospectorResult introspect(ArbitraryIntrospectorContext context) {
+		Class<?> type = context.getType();
+		if (!type.isEnum()) {
+			return ArbitraryIntrospectorResult.EMPTY;
+		}
+
+		return new ArbitraryIntrospectorResult(Arbitraries.of((Class<Enum>)type));
+	}
 }
