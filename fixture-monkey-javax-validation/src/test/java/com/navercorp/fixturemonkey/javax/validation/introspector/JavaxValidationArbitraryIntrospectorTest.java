@@ -27,6 +27,7 @@ import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
 import net.jqwik.api.Property;
 import net.jqwik.api.arbitraries.CharacterArbitrary;
+import net.jqwik.api.arbitraries.ShortArbitrary;
 import net.jqwik.api.arbitraries.StringArbitrary;
 
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorContext;
@@ -200,5 +201,244 @@ class JavaxValidationArbitraryIntrospectorTest {
 
 		// then
 		then(actual).isEqualTo(characterArbitrary);
+	}
+
+	@Property
+	void shorts() {
+		// given
+		ShortArbitrary shortArbitrary = Arbitraries.shorts();
+		String propertyName = "shortValue";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getReadProperty(ShortIntrospectorSpec.class, propertyName).get();
+		ArbitraryIntrospectorContext context = new ArbitraryIntrospectorContext(
+			property,
+			ArbitraryTypeIntrospector.INTROSPECTORS
+		);
+
+		// when
+		Arbitrary<Short> actual = this.sut.shorts(shortArbitrary, context);
+
+		// then
+		short value = actual.sample();
+		then(value).isNotNull();
+	}
+
+	@Property
+	void shortDigitsValue() {
+		// given
+		ShortArbitrary shortArbitrary = Arbitraries.shorts();
+		String propertyName = "digitsValue";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getReadProperty(ShortIntrospectorSpec.class, propertyName).get();
+		ArbitraryIntrospectorContext context = new ArbitraryIntrospectorContext(
+			property,
+			ArbitraryTypeIntrospector.INTROSPECTORS
+		);
+
+		// when
+		Arbitrary<Short> actual = this.sut.shorts(shortArbitrary, context);
+
+		// then
+		short value = actual.sample();
+		then(value).isBetween((short)-10000, (short)10000);
+	}
+
+	@Property
+	void minValue() {
+		// given
+		ShortArbitrary shortArbitrary = Arbitraries.shorts();
+		String propertyName = "minValue";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getReadProperty(ShortIntrospectorSpec.class, propertyName).get();
+		ArbitraryIntrospectorContext context = new ArbitraryIntrospectorContext(
+			property,
+			ArbitraryTypeIntrospector.INTROSPECTORS
+		);
+
+		// when
+		Arbitrary<Short> actual = this.sut.shorts(shortArbitrary, context);
+
+		// then
+		short value = actual.sample();
+		then(value).isGreaterThanOrEqualTo((short)100);
+	}
+
+	@Property
+	void maxValue() {
+		// given
+		ShortArbitrary shortArbitrary = Arbitraries.shorts();
+		String propertyName = "maxValue";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getReadProperty(ShortIntrospectorSpec.class, propertyName).get();
+		ArbitraryIntrospectorContext context = new ArbitraryIntrospectorContext(
+			property,
+			ArbitraryTypeIntrospector.INTROSPECTORS
+		);
+
+		// when
+		Arbitrary<Short> actual = this.sut.shorts(shortArbitrary, context);
+
+		// then
+		short value = actual.sample();
+		then(value).isLessThanOrEqualTo((short)100);
+	}
+
+	@Property
+	void decimalMin() {
+		// given
+		ShortArbitrary shortArbitrary = Arbitraries.shorts();
+		String propertyName = "decimalMin";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getReadProperty(ShortIntrospectorSpec.class, propertyName).get();
+		ArbitraryIntrospectorContext context = new ArbitraryIntrospectorContext(
+			property,
+			ArbitraryTypeIntrospector.INTROSPECTORS
+		);
+
+		// when
+		Arbitrary<Short> actual = this.sut.shorts(shortArbitrary, context);
+
+		// then
+		short value = actual.sample();
+		then(value).isGreaterThanOrEqualTo((short)100);
+	}
+
+	@Property
+	void decimalMinExclusive() {
+		// given
+		ShortArbitrary shortArbitrary = Arbitraries.shorts();
+		String propertyName = "decimalMinExclusive";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getReadProperty(ShortIntrospectorSpec.class, propertyName).get();
+		ArbitraryIntrospectorContext context = new ArbitraryIntrospectorContext(
+			property,
+			ArbitraryTypeIntrospector.INTROSPECTORS
+		);
+		// when
+		Arbitrary<Short> actual = this.sut.shorts(shortArbitrary, context);
+
+		// then
+		short value = actual.sample();
+		then(value).isGreaterThanOrEqualTo((short)101);
+	}
+
+	@Property
+	void decimalMax() {
+		// given
+		ShortArbitrary shortArbitrary = Arbitraries.shorts();
+		String propertyName = "decimalMax";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getReadProperty(ShortIntrospectorSpec.class, propertyName).get();
+		ArbitraryIntrospectorContext context = new ArbitraryIntrospectorContext(
+			property,
+			ArbitraryTypeIntrospector.INTROSPECTORS
+		);
+
+		// when
+		Arbitrary<Short> actual = this.sut.shorts(shortArbitrary, context);
+
+		// then
+		short value = actual.sample();
+		then(value).isLessThanOrEqualTo((short)100);
+	}
+
+	@Property
+	void decimalMaxExclusive() {
+		// given
+		ShortArbitrary shortArbitrary = Arbitraries.shorts();
+		String propertyName = "decimalMaxExclusive";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getReadProperty(ShortIntrospectorSpec.class, propertyName).get();
+		ArbitraryIntrospectorContext context = new ArbitraryIntrospectorContext(
+			property,
+			ArbitraryTypeIntrospector.INTROSPECTORS
+		);
+
+		// when
+		Arbitrary<Short> actual = this.sut.shorts(shortArbitrary, context);
+
+		// then
+		short value = actual.sample();
+		then(value).isLessThanOrEqualTo((short)99);
+	}
+
+	@Property
+	void negative() {
+		// given
+		ShortArbitrary shortArbitrary = Arbitraries.shorts();
+		String propertyName = "negative";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getReadProperty(ShortIntrospectorSpec.class, propertyName).get();
+		ArbitraryIntrospectorContext context = new ArbitraryIntrospectorContext(
+			property,
+			ArbitraryTypeIntrospector.INTROSPECTORS
+		);
+
+		// when
+		Arbitrary<Short> actual = this.sut.shorts(shortArbitrary, context);
+
+		// then
+		short value = actual.sample();
+		then(value).isLessThan((short)0);
+	}
+
+	@Property
+	void negativeOrZero() {
+		// given
+		ShortArbitrary shortArbitrary = Arbitraries.shorts();
+		String propertyName = "negativeOrZero";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getReadProperty(ShortIntrospectorSpec.class, propertyName).get();
+		ArbitraryIntrospectorContext context = new ArbitraryIntrospectorContext(
+			property,
+			ArbitraryTypeIntrospector.INTROSPECTORS
+		);
+
+		// when
+		Arbitrary<Short> actual = this.sut.shorts(shortArbitrary, context);
+
+		// then
+		short value = actual.sample();
+		then(value).isLessThanOrEqualTo((short)0);
+	}
+
+	@Property
+	void positive() {
+		// given
+		ShortArbitrary shortArbitrary = Arbitraries.shorts();
+		String propertyName = "positive";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getReadProperty(ShortIntrospectorSpec.class, propertyName).get();
+		ArbitraryIntrospectorContext context = new ArbitraryIntrospectorContext(
+			property,
+			ArbitraryTypeIntrospector.INTROSPECTORS
+		);
+
+		// when
+		Arbitrary<Short> actual = this.sut.shorts(shortArbitrary, context);
+
+		// then
+		short value = actual.sample();
+		then(value).isGreaterThan((short)0);
+	}
+
+	@Property
+	void positiveOrZero() {
+		// given
+		ShortArbitrary shortArbitrary = Arbitraries.shorts();
+		String propertyName = "positiveOrZero";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getReadProperty(ShortIntrospectorSpec.class, propertyName).get();
+		ArbitraryIntrospectorContext context = new ArbitraryIntrospectorContext(
+			property,
+			ArbitraryTypeIntrospector.INTROSPECTORS
+		);
+
+		// when
+		Arbitrary<Short> actual = this.sut.shorts(shortArbitrary, context);
+
+		// then
+		short value = actual.sample();
+		then(value).isGreaterThanOrEqualTo((short)0);
 	}
 }
