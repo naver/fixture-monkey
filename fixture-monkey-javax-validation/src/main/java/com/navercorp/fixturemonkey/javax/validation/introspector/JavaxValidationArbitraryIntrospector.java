@@ -137,8 +137,6 @@ public class JavaxValidationArbitraryIntrospector implements ArbitraryIntrospect
 			arbitrary = stringArbitrary;
 		}
 
-		// TODO: Nullable 처리
-
 		boolean shouldNotBlank = notBlank;
 		return arbitrary
 			.filter(it -> {
@@ -159,7 +157,7 @@ public class JavaxValidationArbitraryIntrospector implements ArbitraryIntrospect
 		CharacterArbitrary characterArbitrary,
 		ArbitraryIntrospectorContext context
 	) {
-		throw new UnsupportedOperationException("Not implement yet.");
+		return characterArbitrary;
 	}
 
 	@Override
