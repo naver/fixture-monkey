@@ -44,6 +44,36 @@ class ArbitraryTypeIntrospectorTest {
 	}
 
 	@Test
+	void introspectBooleanType() {
+		// given
+		Property property = PropertyCache.getReadProperty(Sample.class, "bool").get();
+		ArbitraryIntrospectorContext context = new ArbitraryIntrospectorContext(
+			property,
+			ArbitraryTypeIntrospector.INTROSPECTORS
+		);
+
+		// when
+		ArbitraryIntrospectorResult actual = ArbitraryTypeIntrospector.INTROSPECTORS.introspect(context);
+
+		then(actual.getValue().sample()).isIn(true, false);
+	}
+
+	@Test
+	void introspectBooleanWrapperType() {
+		// given
+		Property property = PropertyCache.getReadProperty(Sample.class, "bool").get();
+		ArbitraryIntrospectorContext context = new ArbitraryIntrospectorContext(
+			property,
+			ArbitraryTypeIntrospector.INTROSPECTORS
+		);
+
+		// when
+		ArbitraryIntrospectorResult actual = ArbitraryTypeIntrospector.INTROSPECTORS.introspect(context);
+
+		then(actual.getValue().sample()).isIn(true, false);
+	}
+
+	@Test
 	void introspectUuidType() {
 		// given
 		Property property = PropertyCache.getReadProperty(Sample.class, "uuid").get();
@@ -62,6 +92,7 @@ class ArbitraryTypeIntrospectorTest {
 
 	static class Sample {
 		private Season season;
+		private boolean bool;
 		private UUID uuid;
 	}
 

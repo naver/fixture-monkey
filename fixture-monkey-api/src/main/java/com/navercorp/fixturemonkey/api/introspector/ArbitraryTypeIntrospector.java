@@ -29,6 +29,7 @@ public interface ArbitraryTypeIntrospector {
 	ArbitraryTypeIntrospector INTROSPECTORS = new CompositeArbitraryTypeIntrospector(
 		Arrays.asList(
 			EnumTypeIntrospector.INSTANCE,
+			BooleanTypeIntrospector.INSTANCE,
 			UuidTypeIntrospector.INSTANCE
 		)
 	);
