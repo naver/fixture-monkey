@@ -22,10 +22,13 @@ import static org.assertj.core.api.BDDAssertions.then;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.Calendar;
 
 import net.jqwik.api.Arbitrary;
 import net.jqwik.api.Property;
 import net.jqwik.time.api.DateTimes;
+import net.jqwik.time.api.Dates;
+import net.jqwik.time.api.arbitraries.CalendarArbitrary;
 import net.jqwik.time.api.arbitraries.InstantArbitrary;
 
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorContext;
@@ -34,6 +37,111 @@ import com.navercorp.fixturemonkey.api.property.PropertyCache;
 
 class JavaxValidationTimeArbitraryIntrospectorTest {
 	private final JavaxValidationTimeArbitraryIntrospector sut = new JavaxValidationTimeArbitraryIntrospector();
+
+	@Property
+	void calendar() {
+		// given
+		Instant now = Instant.now();
+		CalendarArbitrary calendarArbitrary = Dates.datesAsCalendar();
+		String propertyName = "calendar";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getReadProperty(TimeIntrospectorSpec.class, propertyName).get();
+		ArbitraryIntrospectorContext context = new ArbitraryIntrospectorContext(
+			property,
+			ArbitraryTypeIntrospector.INTROSPECTORS
+		);
+
+		// when
+		Arbitrary<Calendar> actual = this.sut.calendars(calendarArbitrary, context);
+
+		// then
+		Calendar calendar = actual.sample();
+		then(calendar).isNotNull();
+	}
+
+	@Property
+	void calendarPast() {
+		// given
+		CalendarArbitrary calendarArbitrary = Dates.datesAsCalendar();
+		String propertyName = "calendarPast";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getReadProperty(TimeIntrospectorSpec.class, propertyName).get();
+		ArbitraryIntrospectorContext context = new ArbitraryIntrospectorContext(
+			property,
+			ArbitraryTypeIntrospector.INTROSPECTORS
+		);
+
+		// when
+		Arbitrary<Calendar> actual = this.sut.calendars(calendarArbitrary, context);
+
+		// then
+		Calendar calendar = actual.sample();
+		Instant now = Instant.now();
+		then(calendar.getTimeInMillis()).isLessThan(now.toEpochMilli());
+	}
+
+	@Property
+	void calendarPastOrPresent() {
+		// given
+		CalendarArbitrary calendarArbitrary = Dates.datesAsCalendar();
+		String propertyName = "calendarPastOrPresent";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getReadProperty(TimeIntrospectorSpec.class, propertyName).get();
+		ArbitraryIntrospectorContext context = new ArbitraryIntrospectorContext(
+			property,
+			ArbitraryTypeIntrospector.INTROSPECTORS
+		);
+
+		// when
+		Arbitrary<Calendar> actual = this.sut.calendars(calendarArbitrary, context);
+
+		// then
+		Calendar calendar = actual.sample();
+		Instant now = Instant.now();
+		then(calendar.getTimeInMillis()).isLessThanOrEqualTo(now.toEpochMilli());
+	}
+
+	@Property
+	void calendarFuture() {
+		// given
+		CalendarArbitrary calendarArbitrary = Dates.datesAsCalendar();
+		String propertyName = "calendarFuture";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getReadProperty(TimeIntrospectorSpec.class, propertyName).get();
+		ArbitraryIntrospectorContext context = new ArbitraryIntrospectorContext(
+			property,
+			ArbitraryTypeIntrospector.INTROSPECTORS
+		);
+
+		// when
+		Arbitrary<Calendar> actual = this.sut.calendars(calendarArbitrary, context);
+
+		// then
+		Calendar calendar = actual.sample();
+		Instant now = Instant.now();
+		then(calendar.getTimeInMillis()).isGreaterThan(now.toEpochMilli());
+	}
+
+	@Property
+	void calendarFutureOrPresent() {
+		// given
+		CalendarArbitrary calendarArbitrary = Dates.datesAsCalendar();
+		String propertyName = "calendarFutureOrPresent";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getReadProperty(TimeIntrospectorSpec.class, propertyName).get();
+		ArbitraryIntrospectorContext context = new ArbitraryIntrospectorContext(
+			property,
+			ArbitraryTypeIntrospector.INTROSPECTORS
+		);
+
+		// when
+		Arbitrary<Calendar> actual = this.sut.calendars(calendarArbitrary, context);
+
+		// then
+		Calendar calendar = actual.sample();
+		Instant now = Instant.now();
+		then(calendar.getTimeInMillis()).isGreaterThanOrEqualTo(now.toEpochMilli());
+	}
 
 	@Property
 	void instant() {
