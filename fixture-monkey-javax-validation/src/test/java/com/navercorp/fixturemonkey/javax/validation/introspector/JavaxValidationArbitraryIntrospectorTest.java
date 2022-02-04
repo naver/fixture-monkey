@@ -26,6 +26,7 @@ import java.util.regex.Pattern;
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
 import net.jqwik.api.Property;
+import net.jqwik.api.arbitraries.CharacterArbitrary;
 import net.jqwik.api.arbitraries.StringArbitrary;
 
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorContext;
@@ -180,5 +181,25 @@ class JavaxValidationArbitraryIntrospectorTest {
 		// then
 		String value = actual.sample();
 		then(value).containsOnlyOnce("@");
+	}
+
+	@Property
+	void characters() throws NoSuchFieldException {
+		// given
+		CharacterArbitrary characterArbitrary = Arbitraries.chars();
+		String propertyName = "character";
+		Field field = CharacterIntrospectorSpec.class.getDeclaredField(propertyName);
+		ArbitraryIntrospectorContext context = new ArbitraryIntrospectorContext(
+			Character.class,
+			propertyName,
+			field.getAnnotatedType(),
+			Arrays.asList(field.getAnnotations())
+		);
+
+		// when
+		Arbitrary<Character> actual = this.sut.characters(characterArbitrary, context);
+
+		// then
+		then(actual).isEqualTo(characterArbitrary);
 	}
 }
