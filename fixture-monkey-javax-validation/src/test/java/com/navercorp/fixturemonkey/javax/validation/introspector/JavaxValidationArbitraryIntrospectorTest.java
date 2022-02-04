@@ -184,16 +184,15 @@ class JavaxValidationArbitraryIntrospectorTest {
 	}
 
 	@Property
-	void characters() throws NoSuchFieldException {
+	void characters() {
 		// given
 		CharacterArbitrary characterArbitrary = Arbitraries.chars();
 		String propertyName = "character";
-		Field field = CharacterIntrospectorSpec.class.getDeclaredField(propertyName);
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getReadProperty(CharacterIntrospectorSpec.class, propertyName).get();
 		ArbitraryIntrospectorContext context = new ArbitraryIntrospectorContext(
-			Character.class,
-			propertyName,
-			field.getAnnotatedType(),
-			Arrays.asList(field.getAnnotations())
+			property,
+			ArbitraryTypeIntrospector.INTROSPECTORS
 		);
 
 		// when

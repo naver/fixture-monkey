@@ -18,20 +18,20 @@
 
 package com.navercorp.fixturemonkey.api.introspector;
 
-import java.util.Arrays;
+import java.util.UUID;
 
-import org.apiguardian.api.API;
-import org.apiguardian.api.API.Status;
+import net.jqwik.api.Arbitraries;
 
-@API(since = "0.4.0", status = Status.EXPERIMENTAL)
-@FunctionalInterface
-public interface ArbitraryTypeIntrospector {
-	ArbitraryTypeIntrospector INTROSPECTORS = new CompositeArbitraryTypeIntrospector(
-		Arrays.asList(
-			EnumTypeIntrospector.INSTANCE,
-			UuidTypeIntrospector.INSTANCE
-		)
-	);
+final class UuidTypeIntrospector implements ArbitraryTypeIntrospector {
+	static final UuidTypeIntrospector INSTANCE = new UuidTypeIntrospector();
 
-	ArbitraryIntrospectorResult introspect(ArbitraryIntrospectorContext context);
+	@Override
+	public ArbitraryIntrospectorResult introspect(ArbitraryIntrospectorContext context) {
+		Class<?> type = context.getType();
+		if (type != UUID.class) {
+			return ArbitraryIntrospectorResult.EMPTY;
+		}
+
+		return new ArbitraryIntrospectorResult(Arbitraries.create(UUID::randomUUID));
+	}
 }

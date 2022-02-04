@@ -20,6 +20,8 @@ package com.navercorp.fixturemonkey.api.introspector;
 
 import static org.assertj.core.api.BDDAssertions.then;
 
+import java.util.UUID;
+
 import org.junit.jupiter.api.Test;
 
 import com.navercorp.fixturemonkey.api.property.Property;
@@ -29,7 +31,7 @@ class ArbitraryTypeIntrospectorTest {
 	@Test
 	void introspectEnumType() {
 		// given
-		Property property = PropertyCache.getReadProperty(SampleEnum.class, "season").get();
+		Property property = PropertyCache.getReadProperty(Sample.class, "season").get();
 		ArbitraryIntrospectorContext context = new ArbitraryIntrospectorContext(
 			property,
 			ArbitraryTypeIntrospector.INTROSPECTORS
@@ -41,8 +43,26 @@ class ArbitraryTypeIntrospectorTest {
 		then(actual.getValue().sample()).isExactlyInstanceOf(Season.class);
 	}
 
-	static class SampleEnum {
+	@Test
+	void introspectUuidType() {
+		// given
+		Property property = PropertyCache.getReadProperty(Sample.class, "uuid").get();
+		ArbitraryIntrospectorContext context = new ArbitraryIntrospectorContext(
+			property,
+			ArbitraryTypeIntrospector.INTROSPECTORS
+		);
+
+		// when
+		ArbitraryIntrospectorResult actual = ArbitraryTypeIntrospector.INTROSPECTORS.introspect(context);
+
+		String uuid = actual.getValue().sample().toString();
+		then(uuid).hasSize(36);
+		then(uuid.replaceAll("-", "")).hasSize(32);
+	}
+
+	static class Sample {
 		private Season season;
+		private UUID uuid;
 	}
 
 	enum Season {
