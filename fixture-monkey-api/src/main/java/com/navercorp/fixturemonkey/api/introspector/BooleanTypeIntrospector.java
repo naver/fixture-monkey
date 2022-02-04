@@ -18,21 +18,22 @@
 
 package com.navercorp.fixturemonkey.api.introspector;
 
-import java.util.Arrays;
-
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-@API(since = "0.4.0", status = Status.EXPERIMENTAL)
-@FunctionalInterface
-public interface ArbitraryTypeIntrospector {
-	ArbitraryTypeIntrospector INTROSPECTORS = new CompositeArbitraryTypeIntrospector(
-		Arrays.asList(
-			EnumTypeIntrospector.INSTANCE,
-			BooleanTypeIntrospector.INSTANCE,
-			UuidTypeIntrospector.INSTANCE
-		)
-	);
+import net.jqwik.api.Arbitraries;
 
-	ArbitraryIntrospectorResult introspect(ArbitraryIntrospectorContext context);
+@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+final class BooleanTypeIntrospector implements ArbitraryTypeIntrospector {
+	static final BooleanTypeIntrospector INSTANCE = new BooleanTypeIntrospector();
+
+	@Override
+	public ArbitraryIntrospectorResult introspect(ArbitraryIntrospectorContext context) {
+		Class<?> type = context.getType();
+		if (type != boolean.class && type != Boolean.class) {
+			return ArbitraryIntrospectorResult.EMPTY;
+		}
+
+		return new ArbitraryIntrospectorResult(Arbitraries.of(true, false));
+	}
 }
