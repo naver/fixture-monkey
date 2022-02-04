@@ -21,7 +21,6 @@ package com.navercorp.fixturemonkey.javax.validation.introspector;
 import static org.assertj.core.api.BDDAssertions.then;
 
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
 
 import net.jqwik.api.Arbitrary;
@@ -146,7 +145,6 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 	@Property
 	void instant() {
 		// given
-		Instant now = Instant.now();
 		InstantArbitrary instantArbitrary = DateTimes.instants();
 		String propertyName = "instant";
 		com.navercorp.fixturemonkey.api.property.Property property =
@@ -162,8 +160,6 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 		// then
 		Instant instant = actual.sample();
 		then(instant).isNotNull();
-		then(instant).isAfter(now.minus(366, ChronoUnit.DAYS));
-		then(instant).isBefore(now.plus(366, ChronoUnit.DAYS));
 	}
 
 	@Property
@@ -186,7 +182,6 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 		then(instant).isNotNull();
 
 		Instant now = Instant.now();
-		then(instant).isAfter(now.minus(366, ChronoUnit.DAYS));
 		then(instant).isBefore(now);
 	}
 
@@ -210,7 +205,6 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 		then(instant).isNotNull();
 
 		Instant now = Instant.now();
-		then(instant).isAfter(now.minus(366, ChronoUnit.DAYS));
 		then(instant).isBeforeOrEqualTo(now);
 	}
 
@@ -234,7 +228,6 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 		Instant instant = actual.sample();
 		then(instant).isNotNull();
 		then(instant).isAfter(now);
-		then(instant).isBefore(now.plus(366, ChronoUnit.DAYS));
 	}
 
 	@Property
@@ -257,6 +250,5 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 		Instant instant = actual.sample();
 		then(instant).isNotNull();
 		then(instant).isAfterOrEqualTo(now);
-		then(instant).isBefore(now.plus(366, ChronoUnit.DAYS));
 	}
 }

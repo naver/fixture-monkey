@@ -113,8 +113,8 @@ public class JavaxValidationTimeArbitraryIntrospector implements TimeArbitraryIn
 		ArbitraryIntrospectorContext context
 	) {
 		Instant now = Instant.now();
-		Instant min = now.minus(365, ChronoUnit.DAYS);
-		Instant max = now.plus(365, ChronoUnit.DAYS);
+		Instant min = null;
+		Instant max = null;
 
 		if (context.findAnnotation(Past.class).isPresent()) {
 			max = now.minus(1, ChronoUnit.SECONDS);
@@ -128,8 +128,14 @@ public class JavaxValidationTimeArbitraryIntrospector implements TimeArbitraryIn
 			min = now.plus(2, ChronoUnit.SECONDS);	// 2000 is buffer for future time
 		}
 
-		return instantArbitrary
-			.between(min, max);
+		if (min != null) {
+			instantArbitrary = instantArbitrary.atTheEarliest(min);
+		}
+		if (max != null) {
+			instantArbitrary = instantArbitrary.atTheLatest(max);
+		}
+
+		return instantArbitrary;
 	}
 
 	@Override

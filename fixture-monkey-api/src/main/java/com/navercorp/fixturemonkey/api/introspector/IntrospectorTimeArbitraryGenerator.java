@@ -18,6 +18,16 @@
 
 package com.navercorp.fixturemonkey.api.introspector;
 
+import java.time.Duration;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.Period;
+import java.time.Year;
+import java.time.temporal.ChronoUnit;
+import java.util.Calendar;
+import java.util.Date;
+
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
@@ -44,23 +54,48 @@ import net.jqwik.time.api.arbitraries.ZonedDateTimeArbitrary;
 public interface IntrospectorTimeArbitraryGenerator {
 
 	default CalendarArbitrary calendars() {
-		return Dates.datesAsCalendar();
+		Instant now = Instant.now();
+		Calendar min = Calendar.getInstance();
+		min.setTimeInMillis(now.minus(365, ChronoUnit.DAYS).toEpochMilli());
+		Calendar max = Calendar.getInstance();
+		max.setTimeInMillis(now.plus(365, ChronoUnit.DAYS).toEpochMilli());
+		return Dates.datesAsCalendar()
+			.between(min, max);
 	}
 
 	default DateArbitrary dates() {
-		return Dates.datesAsDate();
+		Instant now = Instant.now();
+		Date min = new Date(now.minus(365, ChronoUnit.DAYS).toEpochMilli());
+		Date max = new Date(now.plus(365, ChronoUnit.DAYS).toEpochMilli());
+		return Dates.datesAsDate()
+			.between(min, max);
 	}
 
 	default InstantArbitrary instants() {
-		return DateTimes.instants();
+		Instant now = Instant.now();
+		return DateTimes.instants()
+			.between(
+				now.minus(365, ChronoUnit.DAYS),
+				now.plus(365, ChronoUnit.DAYS)
+			);
 	}
 
 	default LocalDateArbitrary localDates() {
-		return Dates.dates();
+		LocalDate now = LocalDate.now();
+		return Dates.dates()
+			.between(
+				now.minusDays(365),
+				now.plusDays(365)
+			);
 	}
 
 	default LocalDateTimeArbitrary localDateTimes() {
-		return DateTimes.dateTimes();
+		LocalDateTime now = LocalDateTime.now();
+		return DateTimes.dateTimes()
+			.between(
+				now.minusDays(365),
+				now.plusDays(365)
+			);
 	}
 
 	default LocalTimeArbitrary localTimes() {
@@ -68,7 +103,12 @@ public interface IntrospectorTimeArbitraryGenerator {
 	}
 
 	default ZonedDateTimeArbitrary zonedDateTimes() {
-		return DateTimes.zonedDateTimes();
+		LocalDateTime now = LocalDateTime.now();
+		return DateTimes.zonedDateTimes()
+			.between(
+				now.minusDays(365),
+				now.plusDays(365)
+			);
 	}
 
 	default MonthDayArbitrary monthDays() {
@@ -76,7 +116,12 @@ public interface IntrospectorTimeArbitraryGenerator {
 	}
 
 	default OffsetDateTimeArbitrary offsetDateTimes() {
-		return DateTimes.offsetDateTimes();
+		LocalDateTime now = LocalDateTime.now();
+		return DateTimes.offsetDateTimes()
+			.between(
+				now.minusDays(365),
+				now.plusDays(365)
+			);
 	}
 
 	default OffsetTimeArbitrary offsetTimes() {
@@ -84,22 +129,38 @@ public interface IntrospectorTimeArbitraryGenerator {
 	}
 
 	default PeriodArbitrary periods() {
-		return Dates.periods();
+		return Dates.periods()
+			.between(
+				Period.ofDays(-365),
+				Period.ofDays(365)
+			);
 	}
 
 	default DurationArbitrary durations() {
-		return Times.durations();
+		return Times.durations()
+			.between(
+				Duration.ofDays(-365),
+				Duration.ofDays(365)
+			);
 	}
 
 	default YearArbitrary years() {
-		return Dates.years();
+		return Dates.years()
+			.between(
+				Year.now().minusYears(10),
+				Year.now().plusYears(10)
+			);
 	}
 
 	default YearMonthArbitrary yearMonths() {
-		return Dates.yearMonths();
+		return Dates.yearMonths()
+			.yearBetween(
+				Year.now().minusYears(10),
+				Year.now().plusYears(10)
+			);
 	}
 
-	default ZoneOffsetArbitrary zonOffsets() {
+	default ZoneOffsetArbitrary zoneOffsets() {
 		return Times.zoneOffsets();
 	}
 }
