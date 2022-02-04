@@ -73,7 +73,7 @@ void test() {
 ### Gradle
 
 ```groovy
-testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter:0.3.1")
+testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter:0.3.2")
 ```
 
 ### Maven
@@ -83,7 +83,7 @@ testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter:0.3.1")
 <dependency>
     <groupId>com.navercorp.fixturemonkey</groupId>
     <artifactId>fixture-monkey-starter</artifactId>
-    <version>0.3.1</version>
+    <version>0.3.2</version>
     <scope>test</scope>
 </dependency>
 ```
@@ -111,9 +111,17 @@ testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter:0.3.1")
 * 🐒 [jwChung](https://github.com/jwChung)
 * @[KoEonYack](https://github.com/KoEonYack)
 * @[G-ONL](https://github.com/G-ONL)
+* @[imbyungjun](https://github.com/imbyungjun)
 
 ## More about Fixture Monkey
 * [Deview 2021](https://tv.naver.com/v/23650158)
+
+## Articles
+* [fixure monkey로 예외 발생 테스트](https://yangbongsoo.tistory.com/68?category=982054)
+* [테스트 객체를 더쉽게 만들어보자, Fixture-monkey](https://taes-k.github.io/2021/12/12/fixture-monkey/)
+* [Junit Test with Fixture Monkey](https://kevin-park.medium.com/junit-test-with-fixture-monkey-ca50f6533385)
+
+Welcome to write articles about Fixture Monkey!
 
 ## License
 
