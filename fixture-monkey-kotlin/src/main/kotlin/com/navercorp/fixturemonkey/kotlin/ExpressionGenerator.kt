@@ -33,16 +33,16 @@ import kotlin.reflect.jvm.kotlinProperty
 class Exp<T> internal constructor(private val delegate: ExpressionGenerator) : ExpressionGenerator by delegate {
     constructor() : this(EmptyExpressionGenerator())
 
-    infix fun <R> into(property: KProperty1<T, R>): Exp<R> =
+    infix fun <R> into(property: KProperty1<T, R?>): Exp<R> =
         Exp(ParsedExpressionGenerator(listOf(delegate, PropertyExpressionGenerator(KotlinProperty(property)))))
 
-    infix fun <R> into(function: KFunction1<T, R>): Exp<R> =
+    infix fun <R> into(function: KFunction1<T, R?>): Exp<R> =
         Exp(ParsedExpressionGenerator(listOf(delegate, PropertyExpressionGenerator(KotlinGetterProperty(function)))))
 
     infix fun <R> into(exp: ExpList<T, R>): Exp<R> = Exp(ParsedExpressionGenerator(listOf(delegate, exp.delegate)))
 
     @JvmName("intoList")
-    infix fun <R : Collection<E>, E : Any> into(property: KProperty1<T, R>): ExpList<T, E> = ExpList(
+    infix fun <R : Collection<E>, E : Any> into(property: KProperty1<T, R?>): ExpList<T, E> = ExpList(
         ParsedExpressionGenerator(
             listOf(
                 delegate,
@@ -52,7 +52,7 @@ class Exp<T> internal constructor(private val delegate: ExpressionGenerator) : E
     )
 
     @JvmName("getterIntoList")
-    infix fun <R : Collection<E>, E : Any> into(getter: KFunction1<T, R>): ExpList<T, E> = ExpList(
+    infix fun <R : Collection<E>, E : Any> into(getter: KFunction1<T, R?>): ExpList<T, E> = ExpList(
         ParsedExpressionGenerator(
             listOf(
                 delegate,
@@ -62,49 +62,49 @@ class Exp<T> internal constructor(private val delegate: ExpressionGenerator) : E
     )
 }
 
-infix operator fun <T, R : Collection<E>, E : Any> KProperty1<T, R>.get(index: Int): ExpList<T, E> =
+infix operator fun <T, R : Collection<E>, E : Any> KProperty1<T, R?>.get(index: Int): ExpList<T, E> =
     ExpList(ArrayExpressionGenerator(KotlinProperty(this), index))
 
-infix operator fun <T, R : Collection<E>, E : Any> KProperty1<T, R>.get(key: String): ExpList<T, E> =
+infix operator fun <T, R : Collection<E>, E : Any> KProperty1<T, R?>.get(key: String): ExpList<T, E> =
     ExpList(MapExpressionGenerator(KotlinProperty(this), key))
 
 @JvmName("getNestedList")
-infix operator fun <T, R : Collection<N>, N : Collection<E>, E : Any> KProperty1<T, R>.get(index: Int): ExpList<T, N> =
+infix operator fun <T, R : Collection<N>, N : Collection<E>, E : Any> KProperty1<T, R?>.get(index: Int): ExpList<T, N?> =
     ExpList(ArrayExpressionGenerator(KotlinProperty(this), index))
 
 @JvmName("getNestedMap")
-infix operator fun <T, R : Collection<N>, N : Collection<E>, E : Any> KProperty1<T, R>.get(key: String): ExpList<T, N> =
+infix operator fun <T, R : Collection<N>, N : Collection<E>, E : Any> KProperty1<T, R?>.get(key: String): ExpList<T, N?> =
     ExpList(MapExpressionGenerator(KotlinProperty(this), key))
 
-infix operator fun <T, R : Collection<E>, E : Any> KFunction1<T, R>.get(index: Int): ExpList<T, E> =
+infix operator fun <T, R : Collection<E>, E : Any> KFunction1<T, R?>.get(index: Int): ExpList<T, E> =
     ExpList(ArrayExpressionGenerator(KotlinGetterProperty(this), index))
 
-infix operator fun <T, R : Collection<E>, E : Any> KFunction1<T, R>.get(key: String): ExpList<T, E> =
+infix operator fun <T, R : Collection<E>, E : Any> KFunction1<T, R?>.get(key: String): ExpList<T, E> =
     ExpList(MapExpressionGenerator(KotlinGetterProperty(this), key))
 
 @JvmName("getNestedList")
-infix operator fun <T, R : Collection<N>, N : Collection<E>, E : Any> KFunction1<T, R>.get(index: Int): ExpList<T, N> =
+infix operator fun <T, R : Collection<N>, N : Collection<E>, E : Any> KFunction1<T, R?>.get(index: Int): ExpList<T, N?> =
     ExpList(ArrayExpressionGenerator(KotlinGetterProperty(this), index))
 
 @JvmName("getNestedMap")
-infix operator fun <T, R : Collection<N>, N : Collection<E>, E : Any> KFunction1<T, R>.get(key: String): ExpList<T, N> =
+infix operator fun <T, R : Collection<N>, N : Collection<E>, E : Any> KFunction1<T, R?>.get(key: String): ExpList<T, N?> =
     ExpList(MapExpressionGenerator(KotlinGetterProperty(this), key))
 
 @Suppress("unused")
 class ExpList<E, L> internal constructor(val delegate: ExpressionGenerator) : ExpressionGenerator by delegate
 
-infix operator fun <T, R : Collection<E>, E : Any> ExpList<T, R>.get(index: Int): ExpList<T, E> =
+infix operator fun <T, R : Collection<E>, E : Any> ExpList<T, R?>.get(index: Int): ExpList<T, E> =
     ExpList(ParsedExpressionGenerator(listOf(delegate, IndexExpressionGenerator(index))))
 
-infix operator fun <T, R : Collection<E>, E : Any> ExpList<T, R>.get(key: String): ExpList<T, E> =
+infix operator fun <T, R : Collection<E>, E : Any> ExpList<T, R?>.get(key: String): ExpList<T, E> =
     ExpList(ParsedExpressionGenerator(listOf(delegate, KeyExpressionGenerator(key))))
 
 @JvmName("getNestedList")
-infix operator fun <T, R : Collection<N>, N : Collection<E>, E : Any> ExpList<T, R>.get(index: Int): ExpList<T, N> =
+infix operator fun <T, R : Collection<N>, N : Collection<E>, E : Any> ExpList<T, R?>.get(index: Int): ExpList<T, N?> =
     ExpList(ParsedExpressionGenerator(listOf(delegate, IndexExpressionGenerator(index))))
 
 @JvmName("getNestedMap")
-infix operator fun <T, R : Collection<N>, N : Collection<E>, E : Any> ExpList<T, R>.get(key: String): ExpList<T, N> =
+infix operator fun <T, R : Collection<N>, N : Collection<E>, E : Any> ExpList<T, R?>.get(key: String): ExpList<T, N?> =
     ExpList(ParsedExpressionGenerator(listOf(delegate, KeyExpressionGenerator(key))))
 
 private class ParsedExpressionGenerator(private val expressionGenerators: List<ExpressionGenerator>) :

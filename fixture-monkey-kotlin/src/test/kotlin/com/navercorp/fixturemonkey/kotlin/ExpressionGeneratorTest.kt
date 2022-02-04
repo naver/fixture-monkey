@@ -423,4 +423,70 @@ class ExpressionGeneratorTest {
 
         then(actual).isEqualTo("notGetter")
     }
+
+    @Test
+    fun getterNullableField() {
+        // given
+        val generator = Exp<PersonJava>() into PersonJava::getNullableDog into DogJava::getName
+
+        // when
+        val actual = generator.generate()
+
+        then(actual).isEqualTo("nullableDog.name")
+    }
+
+    @Test
+    fun getterNullableNestedField() {
+        // given
+        val generator = Exp<PersonJava>() into PersonJava::getNullableDog into DogJava::getNullableName
+
+        // when
+        val actual = generator.generate()
+
+        then(actual).isEqualTo("nullableDog.nullableName")
+    }
+
+    @Test
+    fun getterNullableList() {
+        // given
+        val generator = Exp<PersonJava>() into PersonJava::getNullableDogs[0]
+
+        // when
+        val actual = generator.generate()
+
+        then(actual).isEqualTo("nullableDogs[0]")
+    }
+
+    @Test
+    fun propertyNullableField() {
+        // given
+        val generator = Exp<Person>() into Person::nullableDog into Dog::name
+
+        // when
+        val actual = generator.generate()
+
+        then(actual).isEqualTo("nullableDog.name")
+    }
+
+    @Test
+    fun propertyNullableNestedField() {
+        // given
+        val generator = Exp<Person>() into Person::nullableDog into Dog::nullableName
+
+        // when
+        val actual = generator.generate()
+
+        then(actual).isEqualTo("nullableDog.nullableName")
+    }
+
+    @Test
+    fun propertyNullableList() {
+        // given
+        val generator = Exp<Person>() into Person::nullableDogs[0]
+
+        // when
+        val actual = generator.generate()
+
+        then(actual).isEqualTo("nullableDogs[0]")
+    }
 }

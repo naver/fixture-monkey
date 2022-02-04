@@ -1,7 +1,26 @@
+/*
+ * Fixture Monkey
+ *
+ * Copyright (c) 2021-present NAVER Corp.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.navercorp.fixturemonkey.kotlin;
 
 import java.util.List;
 
+import javax.annotation.Nullable;
 import javax.validation.constraints.Negative;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Positive;
@@ -14,19 +33,27 @@ public class ExpressionGeneratorJavaTestSpecs {
 		private final List<DogJava> dogs;
 		private final List<List<DogJava>> nestedDogs;
 		private final List<List<List<DogJava>>> nestedThriceDogs;
+		@Nullable
+		private final DogJava nullableDog;
+		@Nullable
+		private final List<DogJava> nullableDogs;
 
 		public PersonJava(
 			String name,
 			DogJava dog,
 			List<DogJava> dogs,
 			List<List<DogJava>> nestedDogs,
-			List<List<List<DogJava>>> nestedThriceDogs
+			List<List<List<DogJava>>> nestedThriceDogs,
+			@Nullable DogJava nullableDog,
+			@Nullable List<DogJava> nullableDogs
 		) {
 			this.name = name;
 			this.dog = dog;
 			this.dogs = dogs;
 			this.nestedDogs = nestedDogs;
 			this.nestedThriceDogs = nestedThriceDogs;
+			this.nullableDog = nullableDog;
+			this.nullableDogs = nullableDogs;
 		}
 
 		public String getName() {
@@ -50,17 +77,31 @@ public class ExpressionGeneratorJavaTestSpecs {
 			return nestedThriceDogs;
 		}
 
-		public void notGetter(){}
+		public void notGetter() {
+		}
+
+		@Nullable
+		public DogJava getNullableDog() {
+			return nullableDog;
+		}
+
+		@Nullable
+		public List<DogJava> getNullableDogs() {
+			return nullableDogs;
+		}
 	}
 
 	@Positive
 	public static class DogJava {
 		private final String name;
 		private final List<Integer> loves;
+		@Nullable
+		private final String nullableName;
 
-		public DogJava(String name, List<Integer> loves) {
+		public DogJava(String name, List<Integer> loves, @Nullable String nullableName) {
 			this.name = name;
 			this.loves = loves;
+			this.nullableName = nullableName;
 		}
 
 		public String getName() {
@@ -69,6 +110,11 @@ public class ExpressionGeneratorJavaTestSpecs {
 
 		public List<Integer> getLoves() {
 			return loves;
+		}
+
+		@Nullable
+		public String getNullableName() {
+			return nullableName;
 		}
 	}
 }
