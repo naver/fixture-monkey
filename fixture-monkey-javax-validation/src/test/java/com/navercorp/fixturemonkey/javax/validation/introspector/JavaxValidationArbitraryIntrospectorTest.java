@@ -21,8 +21,6 @@ package com.navercorp.fixturemonkey.javax.validation.introspector;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.assertj.core.api.BDDAssertions.thenNoException;
 
-import java.lang.reflect.Field;
-import java.util.Arrays;
 import java.util.regex.Pattern;
 
 import net.jqwik.api.Arbitraries;
@@ -31,21 +29,22 @@ import net.jqwik.api.Property;
 import net.jqwik.api.arbitraries.StringArbitrary;
 
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorContext;
+import com.navercorp.fixturemonkey.api.introspector.ArbitraryTypeIntrospector;
+import com.navercorp.fixturemonkey.api.property.PropertyCache;
 
 class JavaxValidationArbitraryIntrospectorTest {
 	private final JavaxValidationArbitraryIntrospector sut = new JavaxValidationArbitraryIntrospector();
 
 	@Property
-	void strings() throws NoSuchFieldException {
+	void strings() {
 		// given
 		StringArbitrary stringArbitrary = Arbitraries.strings();
 		String propertyName = "str";
-		Field field = StringIntrospectorSpec.class.getDeclaredField(propertyName);
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getReadProperty(StringIntrospectorSpec.class, propertyName).get();
 		ArbitraryIntrospectorContext context = new ArbitraryIntrospectorContext(
-			String.class,
-			propertyName,
-			field.getAnnotatedType(),
-			Arrays.asList(field.getAnnotations())
+			property,
+			ArbitraryTypeIntrospector.INTROSPECTORS
 		);
 
 		// when
@@ -57,16 +56,15 @@ class JavaxValidationArbitraryIntrospectorTest {
 	}
 
 	@Property
-	void stringsNotBlank() throws NoSuchFieldException {
+	void stringsNotBlank() {
 		// given
 		StringArbitrary stringArbitrary = Arbitraries.strings();
 		String propertyName = "notBlank";
-		Field field = StringIntrospectorSpec.class.getDeclaredField(propertyName);
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getReadProperty(StringIntrospectorSpec.class, propertyName).get();
 		ArbitraryIntrospectorContext context = new ArbitraryIntrospectorContext(
-			String.class,
-			propertyName,
-			field.getAnnotatedType(),
-			Arrays.asList(field.getAnnotations())
+			property,
+			ArbitraryTypeIntrospector.INTROSPECTORS
 		);
 
 		// when
@@ -78,16 +76,15 @@ class JavaxValidationArbitraryIntrospectorTest {
 	}
 
 	@Property
-	void stringsNotEmpty() throws NoSuchFieldException {
+	void stringsNotEmpty() {
 		// given
 		StringArbitrary stringArbitrary = Arbitraries.strings();
 		String propertyName = "notEmpty";
-		Field field = StringIntrospectorSpec.class.getDeclaredField(propertyName);
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getReadProperty(StringIntrospectorSpec.class, propertyName).get();
 		ArbitraryIntrospectorContext context = new ArbitraryIntrospectorContext(
-			String.class,
-			propertyName,
-			field.getAnnotatedType(),
-			Arrays.asList(field.getAnnotations())
+			property,
+			ArbitraryTypeIntrospector.INTROSPECTORS
 		);
 
 		// when
@@ -99,16 +96,15 @@ class JavaxValidationArbitraryIntrospectorTest {
 	}
 
 	@Property
-	void stringsSize() throws NoSuchFieldException {
+	void stringsSize() {
 		// given
 		StringArbitrary stringArbitrary = Arbitraries.strings();
 		String propertyName = "size";
-		Field field = StringIntrospectorSpec.class.getDeclaredField(propertyName);
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getReadProperty(StringIntrospectorSpec.class, propertyName).get();
 		ArbitraryIntrospectorContext context = new ArbitraryIntrospectorContext(
-			String.class,
-			propertyName,
-			field.getAnnotatedType(),
-			Arrays.asList(field.getAnnotations())
+			property,
+			ArbitraryTypeIntrospector.INTROSPECTORS
 		);
 
 		// when
@@ -121,16 +117,15 @@ class JavaxValidationArbitraryIntrospectorTest {
 	}
 
 	@Property
-	void digits() throws NoSuchFieldException {
+	void digits() {
 		// given
 		StringArbitrary stringArbitrary = Arbitraries.strings();
 		String propertyName = "digits";
-		Field field = StringIntrospectorSpec.class.getDeclaredField(propertyName);
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getReadProperty(StringIntrospectorSpec.class, propertyName).get();
 		ArbitraryIntrospectorContext context = new ArbitraryIntrospectorContext(
-			String.class,
-			propertyName,
-			field.getAnnotatedType(),
-			Arrays.asList(field.getAnnotations())
+			property,
+			ArbitraryTypeIntrospector.INTROSPECTORS
 		);
 
 		// when
@@ -143,16 +138,15 @@ class JavaxValidationArbitraryIntrospectorTest {
 	}
 
 	@Property
-	void pattern() throws NoSuchFieldException {
+	void pattern() {
 		// given
 		StringArbitrary stringArbitrary = Arbitraries.strings();
 		String propertyName = "pattern";
-		Field field = StringIntrospectorSpec.class.getDeclaredField(propertyName);
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getReadProperty(StringIntrospectorSpec.class, propertyName).get();
 		ArbitraryIntrospectorContext context = new ArbitraryIntrospectorContext(
-			String.class,
-			propertyName,
-			field.getAnnotatedType(),
-			Arrays.asList(field.getAnnotations())
+			property,
+			ArbitraryTypeIntrospector.INTROSPECTORS
 		);
 
 		// when
@@ -169,16 +163,15 @@ class JavaxValidationArbitraryIntrospectorTest {
 	}
 
 	@Property
-	void email() throws NoSuchFieldException {
+	void email() {
 		// given
 		StringArbitrary stringArbitrary = Arbitraries.strings();
 		String propertyName = "email";
-		Field field = StringIntrospectorSpec.class.getDeclaredField(propertyName);
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getReadProperty(StringIntrospectorSpec.class, propertyName).get();
 		ArbitraryIntrospectorContext context = new ArbitraryIntrospectorContext(
-			String.class,
-			propertyName,
-			field.getAnnotatedType(),
-			Arrays.asList(field.getAnnotations())
+			property,
+			ArbitraryTypeIntrospector.INTROSPECTORS
 		);
 
 		// when

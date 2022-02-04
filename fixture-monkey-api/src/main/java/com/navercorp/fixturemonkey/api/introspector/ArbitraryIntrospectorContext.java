@@ -21,50 +21,78 @@ package com.navercorp.fixturemonkey.api.introspector;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedType;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import com.navercorp.fixturemonkey.api.property.Property;
+
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class ArbitraryIntrospectorContext {
-	private final Class<?> type;
-	private final String propertyName;
-	private final AnnotatedType annotatedType;
-	private final List<Annotation> annotations;
+	private final Property property;
+	private final ArbitraryTypeIntrospector introspector;
 
 	public ArbitraryIntrospectorContext(
-		Class<?> type,
-		String propertyName,
-		AnnotatedType annotatedType,
-		List<Annotation> annotations
+		Property property,
+		ArbitraryTypeIntrospector introspector
 	) {
-		this.type = type;
-		this.propertyName = propertyName;
-		this.annotatedType = annotatedType;
-		this.annotations = annotations;
+		this.property = property;
+		this.introspector = introspector;
+	}
+
+	public Property getProperty() {
+		return this.property;
 	}
 
 	public Class<?> getType() {
-		return this.type;
+		return this.property.getType();
 	}
 
 	public String getPropertyName() {
-		return this.propertyName;
+		return this.property.getName();
 	}
 
 	public AnnotatedType getAnnotatedType() {
-		return this.annotatedType;
+		return this.property.getAnnotatedType();
 	}
 
 	public List<Annotation> getAnnotations() {
-		return this.annotations;
+		return this.property.getAnnotations();
 	}
 
-	@SuppressWarnings("unchecked")
 	public <T extends Annotation> Optional<T> findAnnotation(Class<T> annotationClass) {
-		return (Optional<T>)annotations.stream()
-			.filter(it -> it.annotationType() == annotationClass)
-			.findAny();
+		return this.property.getAnnotation(annotationClass);
+	}
+
+	public ArbitraryTypeIntrospector getIntrospector() {
+		return this.introspector;
+	}
+
+	// TODO: introspect with introspector
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null || getClass() != obj.getClass()) {
+			return false;
+		}
+		ArbitraryIntrospectorContext that = (ArbitraryIntrospectorContext)obj;
+		return property.equals(that.property) && introspector.equals(that.introspector);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(property, introspector);
+	}
+
+	@Override
+	public String toString() {
+		return "ArbitraryIntrospectorContext{"
+			+ "property=" + property
+			+ ", introspector=" + introspector + '}';
 	}
 }
