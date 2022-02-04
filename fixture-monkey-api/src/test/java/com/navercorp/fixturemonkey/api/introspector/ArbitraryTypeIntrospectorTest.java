@@ -20,25 +20,29 @@ package com.navercorp.fixturemonkey.api.introspector;
 
 import static org.assertj.core.api.BDDAssertions.then;
 
-import java.util.Collections;
-
 import org.junit.jupiter.api.Test;
+
+import com.navercorp.fixturemonkey.api.property.Property;
+import com.navercorp.fixturemonkey.api.property.PropertyCache;
 
 class ArbitraryTypeIntrospectorTest {
 	@Test
 	void introspectEnumType() {
 		// given
+		Property property = PropertyCache.getReadProperty(SampleEnum.class, "season").get();
 		ArbitraryIntrospectorContext context = new ArbitraryIntrospectorContext(
-			Season.class,
-			"season",
-			null,
-			Collections.emptyList()
+			property,
+			ArbitraryTypeIntrospector.INTROSPECTORS
 		);
 
 		// when
 		ArbitraryIntrospectorResult actual = ArbitraryTypeIntrospector.INTROSPECTORS.introspect(context);
 
 		then(actual.getValue().sample()).isExactlyInstanceOf(Season.class);
+	}
+
+	static class SampleEnum {
+		private Season season;
 	}
 
 	enum Season {

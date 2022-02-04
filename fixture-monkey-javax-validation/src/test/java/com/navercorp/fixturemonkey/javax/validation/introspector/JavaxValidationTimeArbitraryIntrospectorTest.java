@@ -20,10 +20,8 @@ package com.navercorp.fixturemonkey.javax.validation.introspector;
 
 import static org.assertj.core.api.BDDAssertions.then;
 
-import java.lang.reflect.Field;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.Arrays;
 
 import net.jqwik.api.Arbitrary;
 import net.jqwik.api.Property;
@@ -31,22 +29,23 @@ import net.jqwik.time.api.DateTimes;
 import net.jqwik.time.api.arbitraries.InstantArbitrary;
 
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorContext;
+import com.navercorp.fixturemonkey.api.introspector.ArbitraryTypeIntrospector;
+import com.navercorp.fixturemonkey.api.property.PropertyCache;
 
 class JavaxValidationTimeArbitraryIntrospectorTest {
 	private final JavaxValidationTimeArbitraryIntrospector sut = new JavaxValidationTimeArbitraryIntrospector();
 
 	@Property
-	void instant() throws NoSuchFieldException {
+	void instant() {
 		// given
 		Instant now = Instant.now();
 		InstantArbitrary instantArbitrary = DateTimes.instants();
 		String propertyName = "instant";
-		Field field = TimeIntrospectorSpec.class.getDeclaredField(propertyName);
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getReadProperty(TimeIntrospectorSpec.class, propertyName).get();
 		ArbitraryIntrospectorContext context = new ArbitraryIntrospectorContext(
-			Instant.class,
-			propertyName,
-			field.getAnnotatedType(),
-			Arrays.asList(field.getAnnotations())
+			property,
+			ArbitraryTypeIntrospector.INTROSPECTORS
 		);
 
 		// when
@@ -60,16 +59,15 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 	}
 
 	@Property
-	void instantPast() throws NoSuchFieldException {
+	void instantPast() {
 		// given
 		InstantArbitrary instantArbitrary = DateTimes.instants();
 		String propertyName = "instantPast";
-		Field field = TimeIntrospectorSpec.class.getDeclaredField(propertyName);
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getReadProperty(TimeIntrospectorSpec.class, propertyName).get();
 		ArbitraryIntrospectorContext context = new ArbitraryIntrospectorContext(
-			Instant.class,
-			propertyName,
-			field.getAnnotatedType(),
-			Arrays.asList(field.getAnnotations())
+			property,
+			ArbitraryTypeIntrospector.INTROSPECTORS
 		);
 
 		// when
@@ -85,16 +83,15 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 	}
 
 	@Property
-	void instantPastOrPresent() throws NoSuchFieldException {
+	void instantPastOrPresent() {
 		// given
 		InstantArbitrary instantArbitrary = DateTimes.instants();
 		String propertyName = "instantPastOrPresent";
-		Field field = TimeIntrospectorSpec.class.getDeclaredField(propertyName);
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getReadProperty(TimeIntrospectorSpec.class, propertyName).get();
 		ArbitraryIntrospectorContext context = new ArbitraryIntrospectorContext(
-			Instant.class,
-			propertyName,
-			field.getAnnotatedType(),
-			Arrays.asList(field.getAnnotations())
+			property,
+			ArbitraryTypeIntrospector.INTROSPECTORS
 		);
 
 		// when
@@ -110,17 +107,16 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 	}
 
 	@Property
-	void instantFuture() throws NoSuchFieldException {
+	void instantFuture() {
 		// given
 		Instant now = Instant.now();
 		InstantArbitrary instantArbitrary = DateTimes.instants();
 		String propertyName = "instantFuture";
-		Field field = TimeIntrospectorSpec.class.getDeclaredField(propertyName);
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getReadProperty(TimeIntrospectorSpec.class, propertyName).get();
 		ArbitraryIntrospectorContext context = new ArbitraryIntrospectorContext(
-			Instant.class,
-			propertyName,
-			field.getAnnotatedType(),
-			Arrays.asList(field.getAnnotations())
+			property,
+			ArbitraryTypeIntrospector.INTROSPECTORS
 		);
 
 		// when
@@ -134,17 +130,16 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 	}
 
 	@Property
-	void instantFutureOrPresent() throws NoSuchFieldException {
+	void instantFutureOrPresent() {
 		// given
 		Instant now = Instant.now();
 		InstantArbitrary instantArbitrary = DateTimes.instants();
 		String propertyName = "instantFutureOrPresent";
-		Field field = TimeIntrospectorSpec.class.getDeclaredField(propertyName);
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getReadProperty(TimeIntrospectorSpec.class, propertyName).get();
 		ArbitraryIntrospectorContext context = new ArbitraryIntrospectorContext(
-			Instant.class,
-			propertyName,
-			field.getAnnotatedType(),
-			Arrays.asList(field.getAnnotations())
+			property,
+			ArbitraryTypeIntrospector.INTROSPECTORS
 		);
 
 		// when
