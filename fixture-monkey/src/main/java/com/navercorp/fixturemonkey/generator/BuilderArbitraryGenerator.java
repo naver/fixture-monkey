@@ -37,7 +37,6 @@ import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryNode;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryType;
 import com.navercorp.fixturemonkey.customizer.ArbitraryCustomizers;
-import com.navercorp.fixturemonkey.property.DefaultPropertyNameResolver;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
 public final class BuilderArbitraryGenerator extends AbstractArbitraryGenerator {
@@ -53,7 +52,7 @@ public final class BuilderArbitraryGenerator extends AbstractArbitraryGenerator 
 	private final Map<Class<?>, String> typedBuilderMethodName = new ConcurrentHashMap<>();
 	private final Map<Class<?>, String> typedBuildMethodName = new ConcurrentHashMap<>();
 
-	private final PropertyNameResolver propertyNameResolver = new DefaultPropertyNameResolver();
+	private final PropertyNameResolver propertyNameResolver = PropertyNameResolver.IDENTITY;
 
 	public BuilderArbitraryGenerator() {
 		this(new ArbitraryCustomizers());

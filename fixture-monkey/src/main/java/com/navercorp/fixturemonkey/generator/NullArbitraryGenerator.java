@@ -28,12 +28,11 @@ import com.navercorp.fixturemonkey.api.property.FieldProperty;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryNode;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryType;
-import com.navercorp.fixturemonkey.property.DefaultPropertyNameResolver;
 
 public class NullArbitraryGenerator implements ArbitraryGenerator {
 	public static final NullArbitraryGenerator INSTANCE = new NullArbitraryGenerator();
 
-	private final PropertyNameResolver propertyNameResolver = new DefaultPropertyNameResolver();
+	private final PropertyNameResolver propertyNameResolver = PropertyNameResolver.IDENTITY;
 
 	@SuppressWarnings("rawtypes")
 	@Override

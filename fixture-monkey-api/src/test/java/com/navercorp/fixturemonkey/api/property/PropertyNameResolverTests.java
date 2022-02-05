@@ -15,19 +15,55 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.navercorp.fixturemonkey.api.property;
 
 import static org.assertj.core.api.BDDAssertions.then;
 
-import org.junit.jupiter.api.Test;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedType;
+import java.util.List;
+
+import javax.annotation.Nullable;
+
+import net.jqwik.api.ForAll;
+import net.jqwik.api.Property;
 
 class PropertyNameResolverTests {
-	@Test
-	void identityPropertyNameResolver() {
+	@Property
+	void identityPropertyNameResolver(@ForAll String name) {
 		PropertyNameResolver sut = PropertyNameResolver.IDENTITY;
-		Property property = PropertyCache.getReadProperty(PropertyValue.class, "name").get();
+		com.navercorp.fixturemonkey.api.property.Property property = getNameProperty(name);
 		String actual = sut.resolve(property);
 		then(actual).isEqualTo(property.getName());
+	}
+
+	private com.navercorp.fixturemonkey.api.property.Property getNameProperty(String name) {
+		return new com.navercorp.fixturemonkey.api.property.Property() {
+			@Override
+			public Class<?> getType() {
+				return null;
+			}
+
+			@Override
+			public AnnotatedType getAnnotatedType() {
+				return null;
+			}
+
+			@Override
+			public String getName() {
+				return name;
+			}
+
+			@Override
+			public List<Annotation> getAnnotations() {
+				return null;
+			}
+
+			@Nullable
+			@Override
+			public Object getValue(Object obj) {
+				return null;
+			}
+		};
 	}
 }
