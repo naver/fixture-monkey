@@ -18,13 +18,16 @@
 
 package com.navercorp.fixturemonkey.api.property;
 
-import org.apiguardian.api.API;
-import org.apiguardian.api.API.Status;
+import static org.assertj.core.api.BDDAssertions.then;
 
-@API(since = "0.4.0", status = Status.EXPERIMENTAL)
-@FunctionalInterface
-public interface PropertyNameResolver {
-	PropertyNameResolver IDENTITY = new IdentityPropertyNameResolver();
+import org.junit.jupiter.api.Test;
 
-	String resolve(Property property);
+class PropertyNameResolverTests {
+	@Test
+	void identityPropertyNameResolver() {
+		PropertyNameResolver sut = PropertyNameResolver.IDENTITY;
+		Property property = PropertyCache.getReadProperty(PropertyValue.class, "name").get();
+		String actual = sut.resolve(property);
+		then(actual).isEqualTo(property.getName());
+	}
 }

@@ -22,9 +22,12 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-@FunctionalInterface
-public interface PropertyNameResolver {
-	PropertyNameResolver IDENTITY = new IdentityPropertyNameResolver();
+final class IdentityPropertyNameResolver implements PropertyNameResolver {
+	IdentityPropertyNameResolver() {
+	}
 
-	String resolve(Property property);
+	@Override
+	public String resolve(Property property) {
+		return property.getName();
+	}
 }
