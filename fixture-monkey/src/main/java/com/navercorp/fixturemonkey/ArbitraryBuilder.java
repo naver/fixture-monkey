@@ -22,6 +22,7 @@ import static com.navercorp.fixturemonkey.Constants.HEAD_NAME;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 
+import java.lang.reflect.Field;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -49,6 +50,7 @@ import net.jqwik.api.Combinators.F4;
 
 import com.navercorp.fixturemonkey.api.expression.ExpressionGenerator;
 import com.navercorp.fixturemonkey.api.property.FieldProperty;
+import com.navercorp.fixturemonkey.api.property.PropertyCache;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.api.random.Randoms;
 import com.navercorp.fixturemonkey.arbitrary.AbstractArbitrarySet;
@@ -240,7 +242,7 @@ public final class ArbitraryBuilder<T> {
 
 	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
 	public ArbitraryBuilder<T> set(ExpressionGenerator expressionGenerator, @Nullable Object value) {
-		return this.set(expressionGenerator.generate(), value);
+		return this.set(resolveExpression(expressionGenerator), value);
 	}
 
 	public ArbitraryBuilder<T> set(String expression, Object value, long limit) {
@@ -251,7 +253,7 @@ public final class ArbitraryBuilder<T> {
 
 	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
 	public ArbitraryBuilder<T> set(ExpressionGenerator expressionGenerator, Object value, long limit) {
-		return this.set(expressionGenerator.generate(), value, limit);
+		return this.set(resolveExpression(expressionGenerator), value, limit);
 	}
 
 	public ArbitraryBuilder<T> set(String expression, @Nullable Arbitrary<?> value) {
@@ -265,7 +267,7 @@ public final class ArbitraryBuilder<T> {
 
 	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
 	public ArbitraryBuilder<T> set(ExpressionGenerator expressionGenerator, @Nullable Arbitrary<?> value) {
-		return this.set(expressionGenerator.generate(), value);
+		return this.set(resolveExpression(expressionGenerator), value);
 	}
 
 	public ArbitraryBuilder<T> set(@Nullable Object value) {
@@ -280,7 +282,7 @@ public final class ArbitraryBuilder<T> {
 
 	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
 	public ArbitraryBuilder<T> setBuilder(ExpressionGenerator expressionGenerator, ArbitraryBuilder<?> builder) {
-		return this.setBuilder(expressionGenerator.generate(), builder);
+		return this.setBuilder(resolveExpression(expressionGenerator), builder);
 	}
 
 	public ArbitraryBuilder<T> setBuilder(String expression, ArbitraryBuilder<?> builder, long limit) {
@@ -295,7 +297,7 @@ public final class ArbitraryBuilder<T> {
 		ArbitraryBuilder<?> builder,
 		long limit
 	) {
-		return this.setBuilder(expressionGenerator.generate(), builder, limit);
+		return this.setBuilder(resolveExpression(expressionGenerator), builder, limit);
 	}
 
 	public ArbitraryBuilder<T> setNull(String expression) {
@@ -306,7 +308,7 @@ public final class ArbitraryBuilder<T> {
 
 	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
 	public ArbitraryBuilder<T> setNull(ExpressionGenerator expressionGenerator) {
-		return this.setNull(expressionGenerator.generate());
+		return this.setNull(resolveExpression(expressionGenerator));
 	}
 
 	public ArbitraryBuilder<T> setNotNull(String expression) {
@@ -317,7 +319,7 @@ public final class ArbitraryBuilder<T> {
 
 	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
 	public ArbitraryBuilder<T> setNotNull(ExpressionGenerator expressionGenerator) {
-		return this.setNotNull(expressionGenerator.generate());
+		return this.setNotNull(resolveExpression(expressionGenerator));
 	}
 
 	public ArbitraryBuilder<T> setPostCondition(Predicate<T> filter) {
@@ -338,7 +340,7 @@ public final class ArbitraryBuilder<T> {
 		Class<U> clazz,
 		Predicate<U> filter
 	) {
-		return this.setPostCondition(expressionGenerator.generate(), clazz, filter);
+		return this.setPostCondition(resolveExpression(expressionGenerator), clazz, filter);
 	}
 
 	public <U> ArbitraryBuilder<T> setPostCondition(
@@ -359,7 +361,7 @@ public final class ArbitraryBuilder<T> {
 		Predicate<U> filter,
 		long limit
 	) {
-		return this.setPostCondition(expressionGenerator.generate(), clazz, filter, limit);
+		return this.setPostCondition(resolveExpression(expressionGenerator), clazz, filter, limit);
 	}
 
 	public ArbitraryBuilder<T> size(String expression, int size) {
@@ -370,7 +372,7 @@ public final class ArbitraryBuilder<T> {
 
 	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
 	public <U> ArbitraryBuilder<T> size(ExpressionGenerator expressionGenerator, int size) {
-		return this.size(expressionGenerator.generate(), size);
+		return this.size(resolveExpression(expressionGenerator), size);
 	}
 
 	public ArbitraryBuilder<T> size(String expression, int min, int max) {
@@ -381,7 +383,7 @@ public final class ArbitraryBuilder<T> {
 
 	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
 	public <U> ArbitraryBuilder<T> size(ExpressionGenerator expressionGenerator, int min, int max) {
-		return this.size(expressionGenerator.generate(), min, max);
+		return this.size(resolveExpression(expressionGenerator), min, max);
 	}
 
 	public ArbitraryBuilder<T> minSize(String expression, int min) {
@@ -394,7 +396,7 @@ public final class ArbitraryBuilder<T> {
 
 	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
 	public <U> ArbitraryBuilder<T> minSize(ExpressionGenerator expressionGenerator, int min) {
-		return this.minSize(expressionGenerator.generate(), min);
+		return this.minSize(resolveExpression(expressionGenerator), min);
 	}
 
 	public ArbitraryBuilder<T> maxSize(String expression, int max) {
@@ -405,7 +407,7 @@ public final class ArbitraryBuilder<T> {
 
 	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
 	public <U> ArbitraryBuilder<T> maxSize(ExpressionGenerator expressionGenerator, int max) {
-		return this.maxSize(expressionGenerator.generate(), max);
+		return this.maxSize(resolveExpression(expressionGenerator), max);
 	}
 
 	public ArbitraryBuilder<T> customize(Class<T> type, ArbitraryCustomizer<T> customizer) {
@@ -730,6 +732,22 @@ public final class ArbitraryBuilder<T> {
 			generator = ((WithFixtureCustomizer)generator).withFixtureCustomizers(customizers);
 		}
 		return generator;
+	}
+
+	// Temporary adapter for legacy FieldNameResolver
+	@Deprecated
+	private String resolveExpression(ExpressionGenerator expressionGenerator) {
+		return expressionGenerator.generate(property -> {
+			Class<?> type = property.getType();
+			ArbitraryGenerator generator = this.generatorMap.getOrDefault(type, this.generator);
+			Map<String, Field> fields = PropertyCache.getFields(this.tree.getClazz());
+			Field field = fields.get(property.getName());
+			if (field == null) {
+				return property.getName();
+			}
+
+			return generator.resolveFieldName(field);
+		});
 	}
 
 	@Override
