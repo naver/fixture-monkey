@@ -27,15 +27,8 @@ import java.time.OffsetDateTime;
 import java.time.Year;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
 import java.util.Date;
-
-import javax.annotation.Nullable;
-import javax.validation.constraints.Future;
-import javax.validation.constraints.FutureOrPresent;
-import javax.validation.constraints.Past;
-import javax.validation.constraints.PastOrPresent;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -62,14 +55,26 @@ import com.navercorp.fixturemonkey.api.introspector.TimeArbitraryIntrospector;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public class JavaxValidationTimeArbitraryIntrospector implements TimeArbitraryIntrospector {
+	private final JavaxValidationTimeConstraintGenerator constraintGenerator;
+
+	public JavaxValidationTimeArbitraryIntrospector() {
+		this(new JavaxValidationTimeConstraintGenerator());
+	}
+
+	public JavaxValidationTimeArbitraryIntrospector(JavaxValidationTimeConstraintGenerator constraintGenerator) {
+		this.constraintGenerator = constraintGenerator;
+	}
+
 	@Override
 	public Arbitrary<Calendar> calendars(
 		CalendarArbitrary calendarArbitrary,
 		ArbitraryIntrospectorContext context
 	) {
 		LocalDateTime now = LocalDateTime.now();
-		LocalDateTime min = this.getMinDateTime(now, context);
-		LocalDateTime max = this.getMaxDateTime(now, context);
+		JavaxValidationDateTimeConstraint constraint =
+			this.getConstraintGenerator().generateDateTimeConstraint(now, context);
+		LocalDateTime min = constraint.getMin();
+		LocalDateTime max = constraint.getMax();
 
 		if (min != null) {
 			Calendar calendar = Calendar.getInstance();
@@ -99,8 +104,10 @@ public class JavaxValidationTimeArbitraryIntrospector implements TimeArbitraryIn
 		ArbitraryIntrospectorContext context
 	) {
 		LocalDateTime now = LocalDateTime.now();
-		LocalDateTime min = this.getMinDateTime(now, context);
-		LocalDateTime max = this.getMaxDateTime(now, context);
+		JavaxValidationDateTimeConstraint constraint =
+			this.getConstraintGenerator().generateDateTimeConstraint(now, context);
+		LocalDateTime min = constraint.getMin();
+		LocalDateTime max = constraint.getMax();
 
 		if (min != null) {
 			instantArbitrary = instantArbitrary.atTheEarliest(min.atZone(ZoneOffset.systemDefault()).toInstant());
@@ -208,47 +215,7 @@ public class JavaxValidationTimeArbitraryIntrospector implements TimeArbitraryIn
 		throw new UnsupportedOperationException("Not implement yet.");
 	}
 
-	@Nullable
-	protected LocalDateTime getMinDateTime(LocalDateTime now, ArbitraryIntrospectorContext context) {
-		LocalDateTime min = null;
-		if (context.findAnnotation(Future.class).isPresent()) {
-			min = now.plus(3, ChronoUnit.SECONDS);	// 3000 is buffer for future time
-		} else if (context.findAnnotation(FutureOrPresent.class).isPresent()) {
-			min = now.plus(2, ChronoUnit.SECONDS);	// 2000 is buffer for future time
-		}
-		return min;
-	}
-
-	@Nullable
-	protected LocalDateTime getMaxDateTime(LocalDateTime now, ArbitraryIntrospectorContext context) {
-		LocalDateTime max = null;
-		if (context.findAnnotation(Past.class).isPresent()) {
-			max = now.minus(1, ChronoUnit.SECONDS);
-		} else if (context.findAnnotation(PastOrPresent.class).isPresent()) {
-			max = now;
-		}
-		return max;
-	}
-
-	@Nullable
-	protected LocalDate getMinDate(LocalDate now, ArbitraryIntrospectorContext context) {
-		LocalDate min = null;
-		if (context.findAnnotation(Future.class).isPresent()) {
-			min = now.plusDays(1);
-		} else if (context.findAnnotation(FutureOrPresent.class).isPresent()) {
-			min = now;
-		}
-		return min;
-	}
-
-	@Nullable
-	protected LocalDate getMaxDate(LocalDate now, ArbitraryIntrospectorContext context) {
-		LocalDate max = null;
-		if (context.findAnnotation(Past.class).isPresent()) {
-			max = now.minusDays(1);
-		} else if (context.findAnnotation(PastOrPresent.class).isPresent()) {
-			max = now;
-		}
-		return max;
+	protected final JavaxValidationTimeConstraintGenerator getConstraintGenerator() {
+		return this.constraintGenerator;
 	}
 }
