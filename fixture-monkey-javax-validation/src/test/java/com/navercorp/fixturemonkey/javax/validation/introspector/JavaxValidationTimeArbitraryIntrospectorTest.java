@@ -40,7 +40,6 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 	@Property
 	void calendar() {
 		// given
-		Instant now = Instant.now();
 		CalendarArbitrary calendarArbitrary = Dates.datesAsCalendar();
 		String propertyName = "calendar";
 		com.navercorp.fixturemonkey.api.property.Property property =
