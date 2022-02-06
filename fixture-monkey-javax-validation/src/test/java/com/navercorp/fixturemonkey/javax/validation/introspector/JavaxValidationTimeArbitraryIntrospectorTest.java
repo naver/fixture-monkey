@@ -75,8 +75,9 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 
 		// then
 		Calendar calendar = actual.sample();
-		Instant now = Instant.now();
-		then(calendar.getTimeInMillis()).isLessThan(now.toEpochMilli());
+
+		Calendar now = Calendar.getInstance();
+		then(calendar.toInstant().toEpochMilli()).isLessThan(now.toInstant().toEpochMilli());
 	}
 
 	@Property
@@ -96,8 +97,9 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 
 		// then
 		Calendar calendar = actual.sample();
-		Instant now = Instant.now();
-		then(calendar.getTimeInMillis()).isLessThanOrEqualTo(now.toEpochMilli());
+
+		Calendar now = Calendar.getInstance();
+		then(calendar.getTimeInMillis()).isLessThanOrEqualTo(now.toInstant().toEpochMilli());
 	}
 
 	@Property
@@ -117,8 +119,9 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 
 		// then
 		Calendar calendar = actual.sample();
-		Instant now = Instant.now();
-		then(calendar.getTimeInMillis()).isGreaterThan(now.toEpochMilli());
+
+		Calendar now = Calendar.getInstance();
+		then(calendar.getTimeInMillis()).isGreaterThan(now.toInstant().toEpochMilli());
 	}
 
 	@Property
@@ -138,8 +141,9 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 
 		// then
 		Calendar calendar = actual.sample();
-		Instant now = Instant.now();
-		then(calendar.getTimeInMillis()).isGreaterThanOrEqualTo(now.toEpochMilli());
+
+		Calendar now = Calendar.getInstance();
+		then(calendar.getTimeInMillis()).isGreaterThanOrEqualTo(now.toInstant().toEpochMilli());
 	}
 
 	@Property

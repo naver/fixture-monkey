@@ -25,11 +25,13 @@ import java.time.LocalTime;
 import java.time.MonthDay;
 import java.time.OffsetDateTime;
 import java.time.Year;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
 import java.util.Date;
 
+import javax.annotation.Nullable;
 import javax.validation.constraints.Future;
 import javax.validation.constraints.FutureOrPresent;
 import javax.validation.constraints.Past;
@@ -65,35 +67,19 @@ public class JavaxValidationTimeArbitraryIntrospector implements TimeArbitraryIn
 		CalendarArbitrary calendarArbitrary,
 		ArbitraryIntrospectorContext context
 	) {
-		Calendar min = null;
-		Calendar max = null;
-
-		Instant now = Instant.now();
-		if (context.findAnnotation(Past.class).isPresent()) {
-			Calendar calendar = Calendar.getInstance();
-			calendar.setTimeInMillis(now.toEpochMilli() - 1000);
-			max = calendar;
-		} else if (context.findAnnotation(PastOrPresent.class).isPresent()) {
-			Calendar calendar = Calendar.getInstance();
-			calendar.setTimeInMillis(now.toEpochMilli());
-			max = calendar;
-		}
-
-		if (context.findAnnotation(Future.class).isPresent()) {
-			Calendar calendar = Calendar.getInstance();
-			calendar.setTimeInMillis(now.plus(1, ChronoUnit.DAYS).toEpochMilli());
-			min = calendar;
-		} else if (context.findAnnotation(FutureOrPresent.class).isPresent()) {
-			Calendar calendar = Calendar.getInstance();
-			calendar.setTimeInMillis(now.plus(1, ChronoUnit.DAYS).toEpochMilli());
-			min = calendar;
-		}
+		LocalDateTime now = LocalDateTime.now();
+		LocalDateTime min = this.getMinDateTime(now, context);
+		LocalDateTime max = this.getMaxDateTime(now, context);
 
 		if (min != null) {
-			calendarArbitrary = calendarArbitrary.atTheEarliest(min);
+			Calendar calendar = Calendar.getInstance();
+			calendar.set(min.getYear(), min.getMonth().ordinal(), min.getDayOfMonth() + 1);
+			calendarArbitrary = calendarArbitrary.atTheEarliest(calendar);
 		}
 		if (max != null) {
-			calendarArbitrary = calendarArbitrary.atTheLatest(max);
+			Calendar calendar = Calendar.getInstance();
+			calendar.set(max.getYear(), max.getMonth().ordinal(), max.getDayOfMonth());
+			calendarArbitrary = calendarArbitrary.atTheLatest(calendar);
 		}
 
 		return calendarArbitrary;
@@ -112,27 +98,15 @@ public class JavaxValidationTimeArbitraryIntrospector implements TimeArbitraryIn
 		InstantArbitrary instantArbitrary,
 		ArbitraryIntrospectorContext context
 	) {
-		Instant now = Instant.now();
-		Instant min = null;
-		Instant max = null;
-
-		if (context.findAnnotation(Past.class).isPresent()) {
-			max = now.minus(1, ChronoUnit.SECONDS);
-		} else if (context.findAnnotation(PastOrPresent.class).isPresent()) {
-			max = now;
-		}
-
-		if (context.findAnnotation(Future.class).isPresent()) {
-			min = now.plus(3, ChronoUnit.SECONDS);	// 3000 is buffer for future time
-		} else if (context.findAnnotation(FutureOrPresent.class).isPresent()) {
-			min = now.plus(2, ChronoUnit.SECONDS);	// 2000 is buffer for future time
-		}
+		LocalDateTime now = LocalDateTime.now();
+		LocalDateTime min = this.getMinDateTime(now, context);
+		LocalDateTime max = this.getMaxDateTime(now, context);
 
 		if (min != null) {
-			instantArbitrary = instantArbitrary.atTheEarliest(min);
+			instantArbitrary = instantArbitrary.atTheEarliest(min.atZone(ZoneOffset.systemDefault()).toInstant());
 		}
 		if (max != null) {
-			instantArbitrary = instantArbitrary.atTheLatest(max);
+			instantArbitrary = instantArbitrary.atTheLatest(max.atZone(ZoneOffset.systemDefault()).toInstant());
 		}
 
 		return instantArbitrary;
@@ -232,5 +206,49 @@ public class JavaxValidationTimeArbitraryIntrospector implements TimeArbitraryIn
 		ArbitraryIntrospectorContext context
 	) {
 		throw new UnsupportedOperationException("Not implement yet.");
+	}
+
+	@Nullable
+	protected LocalDateTime getMinDateTime(LocalDateTime now, ArbitraryIntrospectorContext context) {
+		LocalDateTime min = null;
+		if (context.findAnnotation(Future.class).isPresent()) {
+			min = now.plus(3, ChronoUnit.SECONDS);	// 3000 is buffer for future time
+		} else if (context.findAnnotation(FutureOrPresent.class).isPresent()) {
+			min = now.plus(2, ChronoUnit.SECONDS);	// 2000 is buffer for future time
+		}
+		return min;
+	}
+
+	@Nullable
+	protected LocalDateTime getMaxDateTime(LocalDateTime now, ArbitraryIntrospectorContext context) {
+		LocalDateTime max = null;
+		if (context.findAnnotation(Past.class).isPresent()) {
+			max = now.minus(1, ChronoUnit.SECONDS);
+		} else if (context.findAnnotation(PastOrPresent.class).isPresent()) {
+			max = now;
+		}
+		return max;
+	}
+
+	@Nullable
+	protected LocalDate getMinDate(LocalDate now, ArbitraryIntrospectorContext context) {
+		LocalDate min = null;
+		if (context.findAnnotation(Future.class).isPresent()) {
+			min = now.plusDays(1);
+		} else if (context.findAnnotation(FutureOrPresent.class).isPresent()) {
+			min = now;
+		}
+		return min;
+	}
+
+	@Nullable
+	protected LocalDate getMaxDate(LocalDate now, ArbitraryIntrospectorContext context) {
+		LocalDate max = null;
+		if (context.findAnnotation(Past.class).isPresent()) {
+			max = now.minusDays(1);
+		} else if (context.findAnnotation(PastOrPresent.class).isPresent()) {
+			max = now;
+		}
+		return max;
 	}
 }
