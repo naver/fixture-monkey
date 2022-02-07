@@ -49,59 +49,61 @@ import net.jqwik.time.api.arbitraries.YearMonthArbitrary;
 import net.jqwik.time.api.arbitraries.ZoneOffsetArbitrary;
 import net.jqwik.time.api.arbitraries.ZonedDateTimeArbitrary;
 
+import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
+
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public interface TimeArbitraryIntrospector {
-	Arbitrary<Calendar> calendars(CalendarArbitrary calendarArbitrary, ArbitraryIntrospectorContext context);
+	Arbitrary<Calendar> calendars(CalendarArbitrary calendarArbitrary, ArbitraryGeneratorContext context);
 
-	Arbitrary<Date> dates(DateArbitrary dateArbitrary, ArbitraryIntrospectorContext context);
+	Arbitrary<Date> dates(DateArbitrary dateArbitrary, ArbitraryGeneratorContext context);
 
-	Arbitrary<Instant> instants(InstantArbitrary instantArbitrary, ArbitraryIntrospectorContext context);
+	Arbitrary<Instant> instants(InstantArbitrary instantArbitrary, ArbitraryGeneratorContext context);
 
-	Arbitrary<LocalDate> localDates(LocalDateArbitrary localDateArbitrary, ArbitraryIntrospectorContext context);
+	Arbitrary<LocalDate> localDates(LocalDateArbitrary localDateArbitrary, ArbitraryGeneratorContext context);
 
 	Arbitrary<LocalDateTime> localDateTimes(
 		LocalDateTimeArbitrary localDateTimeArbitrary,
-		ArbitraryIntrospectorContext context
+		ArbitraryGeneratorContext context
 	);
 
 	Arbitrary<LocalTime> localTimes(
 		LocalTimeArbitrary localTimeArbitrary,
-		ArbitraryIntrospectorContext context
+		ArbitraryGeneratorContext context
 	);
 
 	Arbitrary<ZonedDateTime> zonedDateTimes(
 		ZonedDateTimeArbitrary zonedDateTimeArbitrary,
-		ArbitraryIntrospectorContext context
+		ArbitraryGeneratorContext context
 	);
 
 	Arbitrary<MonthDay> monthDays(
 		MonthDayArbitrary monthDayArbitrary,
-		ArbitraryIntrospectorContext context
+		ArbitraryGeneratorContext context
 	);
 
 	Arbitrary<OffsetDateTime> offsetDateTimes(
 		OffsetDateTimeArbitrary offsetDateTimeArbitrary,
-		ArbitraryIntrospectorContext context
+		ArbitraryGeneratorContext context
 	);
 
 	Arbitrary<OffsetTimeArbitrary> offsetTimes(
 		OffsetTimeArbitrary offsetTimeArbitrary,
-		ArbitraryIntrospectorContext context
+		ArbitraryGeneratorContext context
 	);
 
-	Arbitrary<PeriodArbitrary> periods(PeriodArbitrary periodArbitrary, ArbitraryIntrospectorContext context);
+	Arbitrary<PeriodArbitrary> periods(PeriodArbitrary periodArbitrary, ArbitraryGeneratorContext context);
 
-	Arbitrary<DurationArbitrary> durations(DurationArbitrary durationArbitrary, ArbitraryIntrospectorContext context);
+	Arbitrary<DurationArbitrary> durations(DurationArbitrary durationArbitrary, ArbitraryGeneratorContext context);
 
-	Arbitrary<Year> years(YearArbitrary yearArbitrary, ArbitraryIntrospectorContext context);
+	Arbitrary<Year> years(YearArbitrary yearArbitrary, ArbitraryGeneratorContext context);
 
 	Arbitrary<YearMonthArbitrary> yearMonths(
 		YearMonthArbitrary yearMonthArbitrary,
-		ArbitraryIntrospectorContext context
+		ArbitraryGeneratorContext context
 	);
 
 	Arbitrary<ZoneOffsetArbitrary> zoneOffsets(
 		ZoneOffsetArbitrary zoneOffsetArbitrary,
-		ArbitraryIntrospectorContext context
+		ArbitraryGeneratorContext context
 	);
 }

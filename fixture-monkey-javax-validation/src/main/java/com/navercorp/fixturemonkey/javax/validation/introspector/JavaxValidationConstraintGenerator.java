@@ -37,12 +37,12 @@ import javax.validation.constraints.Size;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorContext;
+import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public class JavaxValidationConstraintGenerator {
 
-	public JavaxValidationStringConstraint generateStringConstraint(ArbitraryIntrospectorContext context) {
+	public JavaxValidationStringConstraint generateStringConstraint(ArbitraryGeneratorContext context) {
 		BigInteger min = null;
 		BigInteger max = null;
 		boolean digits = false;
@@ -81,7 +81,7 @@ public class JavaxValidationConstraintGenerator {
 		return new JavaxValidationStringConstraint(min, max, digits, notBlank);
 	}
 
-	public JavaxValidationIntegerConstraint generateIntegerConstraint(ArbitraryIntrospectorContext context) {
+	public JavaxValidationIntegerConstraint generateIntegerConstraint(ArbitraryGeneratorContext context) {
 		BigInteger min = null;
 		BigInteger max = null;
 

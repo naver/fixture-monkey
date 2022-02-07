@@ -23,6 +23,8 @@ import java.util.Arrays;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
+
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 @FunctionalInterface
 public interface ArbitraryTypeIntrospector {
@@ -34,5 +36,5 @@ public interface ArbitraryTypeIntrospector {
 		)
 	);
 
-	ArbitraryIntrospectorResult introspect(ArbitraryIntrospectorContext context);
+	ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context);
 }

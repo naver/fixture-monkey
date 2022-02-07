@@ -18,9 +18,11 @@
 
 package com.navercorp.fixturemonkey.api.generator;
 
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -49,6 +51,14 @@ public final class ArbitraryGeneratorContext {
 
 	public Property getProperty() {
 		return this.getArbitraryProperty().getProperty();
+	}
+
+	public Class<?> getType() {
+		return this.getProperty().getType();
+	}
+
+	public <T extends Annotation> Optional<T> findAnnotation(Class<T> annotationClass) {
+		return this.getProperty().getAnnotation(annotationClass);
 	}
 
 	public List<ArbitraryProperty> getChildren() {
