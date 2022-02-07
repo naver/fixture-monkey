@@ -25,7 +25,7 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public abstract class TypeReference<T> implements Comparable<TypeReference<T>> {
+public abstract class TypeReference<T> {
 	private final Type type;
 
 	protected TypeReference() {
@@ -45,10 +45,5 @@ public abstract class TypeReference<T> implements Comparable<TypeReference<T>> {
 
 	public Type getType() {
 		return this.type;
-	}
-
-	@Override
-	public int compareTo(TypeReference<T> obj) {
-		return 0;
 	}
 }
