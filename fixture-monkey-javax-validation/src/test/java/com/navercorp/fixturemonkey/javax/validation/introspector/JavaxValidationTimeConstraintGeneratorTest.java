@@ -29,7 +29,7 @@ import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorContext
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryTypeIntrospector;
 import com.navercorp.fixturemonkey.api.property.PropertyCache;
 
-class JavaxValidationTimeConstraintGeneratorTests {
+class JavaxValidationTimeConstraintGeneratorTest {
 	private final JavaxValidationTimeConstraintGenerator sut = new JavaxValidationTimeConstraintGenerator();
 
 	@Property
