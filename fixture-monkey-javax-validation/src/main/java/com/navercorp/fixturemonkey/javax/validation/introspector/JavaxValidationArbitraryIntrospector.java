@@ -25,20 +25,8 @@ import java.math.BigInteger;
 import java.util.List;
 import java.util.Optional;
 
-import javax.validation.constraints.DecimalMax;
-import javax.validation.constraints.DecimalMin;
-import javax.validation.constraints.Digits;
 import javax.validation.constraints.Email;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.Negative;
-import javax.validation.constraints.NegativeOrZero;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Positive;
-import javax.validation.constraints.PositiveOrZero;
-import javax.validation.constraints.Size;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -65,45 +53,26 @@ public class JavaxValidationArbitraryIntrospector implements ArbitraryIntrospect
 	private static final String CONTROL_BLOCK = "\u0000-\u001f\u007f";
 	private static final RegexGenerator REGEX_GENERATOR = new RegexGenerator();
 
+	private final JavaxValidationConstraintGenerator constraintGenerator;
+
+	public JavaxValidationArbitraryIntrospector() {
+		this(new JavaxValidationConstraintGenerator());
+	}
+
+	public JavaxValidationArbitraryIntrospector(JavaxValidationConstraintGenerator constraintGenerator) {
+		this.constraintGenerator = constraintGenerator;
+	}
+
 	@Override
 	public Arbitrary<String> strings(
 		StringArbitrary stringArbitrary,
 		ArbitraryIntrospectorContext context
 	) {
-		BigDecimal min = null;
-		BigDecimal max = null;
-		boolean digits = false;
-		boolean notBlank = context.findAnnotation(NotBlank.class).isPresent();
-
-		if (notBlank || context.findAnnotation(NotEmpty.class).isPresent()) {
-			min = BigDecimal.ONE;
-		}
-
-		Optional<Size> size = context.findAnnotation(Size.class);
-		if (size.isPresent()) {
-			int minValue = size.map(Size::min).get();
-			if (min == null) {
-				min = BigDecimal.valueOf(minValue);
-			} else if (minValue > 1) {
-				min = BigDecimal.valueOf(minValue);
-			}
-
-			max = BigDecimal.valueOf(size.map(Size::max).get());
-		}
-
-		// TODO: support fraction
-		Optional<Digits> digitsAnnotation = context.findAnnotation(Digits.class);
-		if (digitsAnnotation.isPresent()) {
-			digits = true;
-			notBlank = true;
-
-			BigDecimal maxValue = digitsAnnotation.map(Digits::integer).map(BigDecimal::valueOf).get();
-			if (max == null) {
-				max = maxValue;
-			} else if (max.compareTo(maxValue) > 0) {
-				max = maxValue;
-			}
-		}
+		JavaxValidationStringConstraint constraint = this.getConstraintGenerator().generateStringConstraint(context);
+		BigInteger min = constraint.getMinSize();
+		BigInteger max = constraint.getMaxSize();
+		boolean digits = constraint.isDigits();
+		boolean notBlank = constraint.isNotBlank();
 
 		Optional<Pattern> pattern = context.findAnnotation(Pattern.class);
 		if (pattern.isPresent()) {
@@ -145,10 +114,9 @@ public class JavaxValidationArbitraryIntrospector implements ArbitraryIntrospect
 			arbitrary = stringArbitrary;
 		}
 
-		boolean shouldNotBlank = notBlank;
 		return arbitrary
 			.filter(it -> {
-				if (!shouldNotBlank) {
+				if (!notBlank) {
 					return true;
 				}
 
@@ -173,98 +141,9 @@ public class JavaxValidationArbitraryIntrospector implements ArbitraryIntrospect
 		ShortArbitrary shortArbitrary,
 		ArbitraryIntrospectorContext context
 	) {
-		BigInteger min = null;
-		BigInteger max = null;
-
-		Optional<Digits> digits = context.findAnnotation(Digits.class);
-		if (digits.isPresent()) {
-			BigInteger value = BigInteger.ONE;
-			int integer = digits.get().integer();
-			if (integer > 1) {
-				value = BigInteger.TEN.pow(integer - 1);
-			}
-			max = value.multiply(BigInteger.TEN).subtract(BigInteger.ONE);
-			min = max.negate();
-		}
-
-		Optional<Min> minAnnotation = context.findAnnotation(Min.class);
-		if (minAnnotation.isPresent()) {
-			BigInteger minValue = minAnnotation.map(Min::value).map(BigInteger::valueOf).get();
-			if (min == null) {
-				min = minValue;
-			} else if (min.compareTo(minValue) > 0) {
-				min = minValue;
-			}
-		}
-
-		Optional<DecimalMin> decimalMinAnnotation = context.findAnnotation(DecimalMin.class);
-		if (decimalMinAnnotation.isPresent()) {
-			BigInteger decimalMin = decimalMinAnnotation
-				.map(DecimalMin::value)
-				.map(BigInteger::new)
-				.get();
-
-			if (!decimalMinAnnotation.map(DecimalMin::inclusive).get()) {
-				decimalMin = decimalMin.add(BigInteger.ONE);
-			}
-
-			if (min == null) {
-				min = decimalMin;
-			} else if (min.compareTo(decimalMin) < 0) {
-				min = decimalMin;
-			}
-		}
-
-		Optional<Max> maxAnnotation = context.findAnnotation(Max.class);
-		if (maxAnnotation.isPresent()) {
-			BigInteger maxValue = maxAnnotation.map(Max::value).map(BigInteger::valueOf).get();
-			if (max == null) {
-				max = maxValue;
-			} else if (max.compareTo(maxValue) > 0) {
-				max = maxValue;
-			}
-		}
-
-		Optional<DecimalMax> decimalMaxAnnotation = context.findAnnotation(DecimalMax.class);
-		if (decimalMaxAnnotation.isPresent()) {
-			BigInteger decimalMax = decimalMaxAnnotation
-				.map(DecimalMax::value)
-				.map(BigInteger::new)
-				.get();
-			if (!decimalMaxAnnotation.map(DecimalMax::inclusive).get()) {
-				decimalMax = decimalMax.subtract(BigInteger.ONE);
-			}
-
-			if (max == null) {
-				max = decimalMax;
-			} else if (max.compareTo(decimalMax) > 0) {
-				max = decimalMax;
-			}
-		}
-
-		if (context.findAnnotation(Negative.class).isPresent()) {
-			if (max == null || max.compareTo(BigInteger.ZERO) > 0) {
-				max = BigInteger.valueOf(-1);
-			}
-		}
-
-		if (context.findAnnotation(NegativeOrZero.class).isPresent()) {
-			if (max == null || max.compareTo(BigInteger.ZERO) > 0) {
-				max = BigInteger.ZERO;
-			}
-		}
-
-		if (context.findAnnotation(Positive.class).isPresent()) {
-			if (min == null || min.compareTo(BigInteger.ZERO) < 0) {
-				min = BigInteger.ONE;
-			}
-		}
-
-		if (context.findAnnotation(PositiveOrZero.class).isPresent()) {
-			if (min == null || min.compareTo(BigInteger.ZERO) < 0) {
-				min = BigInteger.ZERO;
-			}
-		}
+		JavaxValidationIntegerConstraint constraint = this.getConstraintGenerator().generateIntegerConstraint(context);
+		BigInteger min = constraint.getMin();
+		BigInteger max = constraint.getMax();
 
 		if (min != null) {
 			shortArbitrary = shortArbitrary.greaterOrEqual(min.shortValueExact());
@@ -330,5 +209,9 @@ public class JavaxValidationArbitraryIntrospector implements ArbitraryIntrospect
 		ArbitraryIntrospectorContext context
 	) {
 		throw new UnsupportedOperationException("Not implement yet.");
+	}
+
+	protected final JavaxValidationConstraintGenerator getConstraintGenerator() {
+		return this.constraintGenerator;
 	}
 }

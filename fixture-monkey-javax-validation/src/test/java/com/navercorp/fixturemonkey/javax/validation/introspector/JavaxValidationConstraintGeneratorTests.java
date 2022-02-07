@@ -19,28 +19,21 @@
 package com.navercorp.fixturemonkey.javax.validation.introspector;
 
 import static org.assertj.core.api.BDDAssertions.then;
-import static org.assertj.core.api.BDDAssertions.thenNoException;
 
-import java.util.regex.Pattern;
+import java.math.BigInteger;
 
-import net.jqwik.api.Arbitraries;
-import net.jqwik.api.Arbitrary;
 import net.jqwik.api.Property;
-import net.jqwik.api.arbitraries.CharacterArbitrary;
-import net.jqwik.api.arbitraries.ShortArbitrary;
-import net.jqwik.api.arbitraries.StringArbitrary;
 
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorContext;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryTypeIntrospector;
 import com.navercorp.fixturemonkey.api.property.PropertyCache;
 
-class JavaxValidationArbitraryIntrospectorTest {
-	private final JavaxValidationArbitraryIntrospector sut = new JavaxValidationArbitraryIntrospector();
+class JavaxValidationConstraintGeneratorTests {
+	private final JavaxValidationConstraintGenerator sut = new JavaxValidationConstraintGenerator();
 
 	@Property
-	void strings() {
+	void generateStringConstraint() {
 		// given
-		StringArbitrary stringArbitrary = Arbitraries.strings();
 		String propertyName = "str";
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getReadProperty(StringIntrospectorSpec.class, propertyName).get();
@@ -50,17 +43,18 @@ class JavaxValidationArbitraryIntrospectorTest {
 		);
 
 		// when
-		Arbitrary<String> actual = this.sut.strings(stringArbitrary, context);
+		JavaxValidationStringConstraint actual = this.sut.generateStringConstraint(context);
 
 		// then
-		String value = actual.sample();
-		then(value).isNotNull();
+		then(actual.getMinSize()).isNull();
+		then(actual.getMaxSize()).isNull();
+		then(actual.isDigits()).isFalse();
+		then(actual.isNotBlank()).isFalse();
 	}
 
 	@Property
-	void stringsNotBlank() {
+	void generateStringConstraintNotBlank() {
 		// given
-		StringArbitrary stringArbitrary = Arbitraries.strings();
 		String propertyName = "notBlank";
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getReadProperty(StringIntrospectorSpec.class, propertyName).get();
@@ -70,17 +64,18 @@ class JavaxValidationArbitraryIntrospectorTest {
 		);
 
 		// when
-		Arbitrary<String> actual = this.sut.strings(stringArbitrary, context);
+		JavaxValidationStringConstraint actual = this.sut.generateStringConstraint(context);
 
 		// then
-		String value = actual.sample();
-		then(value).isNotBlank();
+		then(actual.getMinSize()).isEqualTo(BigInteger.ONE);
+		then(actual.getMaxSize()).isNull();
+		then(actual.isDigits()).isFalse();
+		then(actual.isNotBlank()).isTrue();
 	}
 
 	@Property
-	void stringsNotEmpty() {
+	void generateStringConstraintNotEmpty() {
 		// given
-		StringArbitrary stringArbitrary = Arbitraries.strings();
 		String propertyName = "notEmpty";
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getReadProperty(StringIntrospectorSpec.class, propertyName).get();
@@ -90,17 +85,18 @@ class JavaxValidationArbitraryIntrospectorTest {
 		);
 
 		// when
-		Arbitrary<String> actual = this.sut.strings(stringArbitrary, context);
+		JavaxValidationStringConstraint actual = this.sut.generateStringConstraint(context);
 
 		// then
-		String value = actual.sample();
-		then(value).isNotEmpty();
+		then(actual.getMinSize()).isEqualTo(BigInteger.ONE);
+		then(actual.getMaxSize()).isNull();
+		then(actual.isDigits()).isFalse();
+		then(actual.isNotBlank()).isFalse();
 	}
 
 	@Property
-	void stringsSize() {
+	void generateStringConstraintSize() {
 		// given
-		StringArbitrary stringArbitrary = Arbitraries.strings();
 		String propertyName = "size";
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getReadProperty(StringIntrospectorSpec.class, propertyName).get();
@@ -110,18 +106,18 @@ class JavaxValidationArbitraryIntrospectorTest {
 		);
 
 		// when
-		Arbitrary<String> actual = this.sut.strings(stringArbitrary, context);
+		JavaxValidationStringConstraint actual = this.sut.generateStringConstraint(context);
 
 		// then
-		String value = actual.sample();
-		then(value.length()).isGreaterThanOrEqualTo(5);
-		then(value.length()).isLessThanOrEqualTo(10);
+		then(actual.getMinSize()).isEqualTo(BigInteger.valueOf(5));
+		then(actual.getMaxSize()).isEqualTo(BigInteger.valueOf(10));
+		then(actual.isDigits()).isFalse();
+		then(actual.isNotBlank()).isFalse();
 	}
 
 	@Property
-	void stringDigits() {
+	void generateStringConstraintDigits() {
 		// given
-		StringArbitrary stringArbitrary = Arbitraries.strings();
 		String propertyName = "digits";
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getReadProperty(StringIntrospectorSpec.class, propertyName).get();
@@ -131,82 +127,18 @@ class JavaxValidationArbitraryIntrospectorTest {
 		);
 
 		// when
-		Arbitrary<String> actual = this.sut.strings(stringArbitrary, context);
+		JavaxValidationStringConstraint actual = this.sut.generateStringConstraint(context);
 
 		// then
-		String value = actual.sample();
-		then(value.length()).isLessThanOrEqualTo(10);
-		thenNoException().isThrownBy(() -> Long.parseLong(value));
+		then(actual.getMinSize()).isNull();
+		then(actual.getMaxSize()).isEqualTo(10);
+		then(actual.isDigits()).isTrue();
+		then(actual.isNotBlank()).isTrue();
 	}
 
 	@Property
-	void stringPattern() {
+	void generateIntegerConstraint() {
 		// given
-		StringArbitrary stringArbitrary = Arbitraries.strings();
-		String propertyName = "pattern";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getReadProperty(StringIntrospectorSpec.class, propertyName).get();
-		ArbitraryIntrospectorContext context = new ArbitraryIntrospectorContext(
-			property,
-			ArbitraryTypeIntrospector.INTROSPECTORS
-		);
-
-		// when
-		Arbitrary<String> actual = this.sut.strings(stringArbitrary, context);
-
-		// then
-		String value = actual.sample();
-		Pattern pattern = Pattern.compile("[e-o]");
-		then(pattern.asPredicate().test(value)).isTrue();
-		for (int i = 0; i < value.length(); i++) {
-			char ch = value.charAt(i);
-			then(ch).isBetween('e', 'o');
-		}
-	}
-
-	@Property
-	void stringEmail() {
-		// given
-		StringArbitrary stringArbitrary = Arbitraries.strings();
-		String propertyName = "email";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getReadProperty(StringIntrospectorSpec.class, propertyName).get();
-		ArbitraryIntrospectorContext context = new ArbitraryIntrospectorContext(
-			property,
-			ArbitraryTypeIntrospector.INTROSPECTORS
-		);
-
-		// when
-		Arbitrary<String> actual = this.sut.strings(stringArbitrary, context);
-
-		// then
-		String value = actual.sample();
-		then(value).containsOnlyOnce("@");
-	}
-
-	@Property
-	void characters() {
-		// given
-		CharacterArbitrary characterArbitrary = Arbitraries.chars();
-		String propertyName = "character";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getReadProperty(CharacterIntrospectorSpec.class, propertyName).get();
-		ArbitraryIntrospectorContext context = new ArbitraryIntrospectorContext(
-			property,
-			ArbitraryTypeIntrospector.INTROSPECTORS
-		);
-
-		// when
-		Arbitrary<Character> actual = this.sut.characters(characterArbitrary, context);
-
-		// then
-		then(actual).isEqualTo(characterArbitrary);
-	}
-
-	@Property
-	void shorts() {
-		// given
-		ShortArbitrary shortArbitrary = Arbitraries.shorts();
 		String propertyName = "shortValue";
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getReadProperty(ShortIntrospectorSpec.class, propertyName).get();
@@ -216,17 +148,16 @@ class JavaxValidationArbitraryIntrospectorTest {
 		);
 
 		// when
-		Arbitrary<Short> actual = this.sut.shorts(shortArbitrary, context);
+		JavaxValidationIntegerConstraint actual = this.sut.generateIntegerConstraint(context);
 
 		// then
-		short value = actual.sample();
-		then(value).isNotNull();
+		then(actual.getMin()).isNull();
+		then(actual.getMax()).isNull();
 	}
 
 	@Property
-	void shortDigitsValue() {
+	void generateIntegerConstraintDigits() {
 		// given
-		ShortArbitrary shortArbitrary = Arbitraries.shorts();
 		String propertyName = "digitsValue";
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getReadProperty(ShortIntrospectorSpec.class, propertyName).get();
@@ -236,17 +167,16 @@ class JavaxValidationArbitraryIntrospectorTest {
 		);
 
 		// when
-		Arbitrary<Short> actual = this.sut.shorts(shortArbitrary, context);
+		JavaxValidationIntegerConstraint actual = this.sut.generateIntegerConstraint(context);
 
 		// then
-		short value = actual.sample();
-		then(value).isBetween((short)-10000, (short)10000);
+		then(actual.getMin()).isEqualTo(BigInteger.valueOf(-999));
+		then(actual.getMax()).isEqualTo(BigInteger.valueOf(999));
 	}
 
 	@Property
-	void minValue() {
+	void generateIntegerConstraintMin() {
 		// given
-		ShortArbitrary shortArbitrary = Arbitraries.shorts();
 		String propertyName = "minValue";
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getReadProperty(ShortIntrospectorSpec.class, propertyName).get();
@@ -256,17 +186,16 @@ class JavaxValidationArbitraryIntrospectorTest {
 		);
 
 		// when
-		Arbitrary<Short> actual = this.sut.shorts(shortArbitrary, context);
+		JavaxValidationIntegerConstraint actual = this.sut.generateIntegerConstraint(context);
 
 		// then
-		short value = actual.sample();
-		then(value).isGreaterThanOrEqualTo((short)100);
+		then(actual.getMin()).isEqualTo(BigInteger.valueOf(100));
+		then(actual.getMax()).isNull();
 	}
 
 	@Property
-	void maxValue() {
+	void generateIntegerConstraintMax() {
 		// given
-		ShortArbitrary shortArbitrary = Arbitraries.shorts();
 		String propertyName = "maxValue";
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getReadProperty(ShortIntrospectorSpec.class, propertyName).get();
@@ -276,17 +205,16 @@ class JavaxValidationArbitraryIntrospectorTest {
 		);
 
 		// when
-		Arbitrary<Short> actual = this.sut.shorts(shortArbitrary, context);
+		JavaxValidationIntegerConstraint actual = this.sut.generateIntegerConstraint(context);
 
 		// then
-		short value = actual.sample();
-		then(value).isLessThanOrEqualTo((short)100);
+		then(actual.getMin()).isNull();
+		then(actual.getMax()).isEqualTo(BigInteger.valueOf(100));
 	}
 
 	@Property
-	void decimalMin() {
+	void generateIntegerConstraintDecimalMin() {
 		// given
-		ShortArbitrary shortArbitrary = Arbitraries.shorts();
 		String propertyName = "decimalMin";
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getReadProperty(ShortIntrospectorSpec.class, propertyName).get();
@@ -296,17 +224,16 @@ class JavaxValidationArbitraryIntrospectorTest {
 		);
 
 		// when
-		Arbitrary<Short> actual = this.sut.shorts(shortArbitrary, context);
+		JavaxValidationIntegerConstraint actual = this.sut.generateIntegerConstraint(context);
 
 		// then
-		short value = actual.sample();
-		then(value).isGreaterThanOrEqualTo((short)100);
+		then(actual.getMin()).isEqualTo(BigInteger.valueOf(100));
+		then(actual.getMax()).isNull();
 	}
 
 	@Property
-	void decimalMinExclusive() {
+	void generateIntegerConstraintDecimalMinExclusive() {
 		// given
-		ShortArbitrary shortArbitrary = Arbitraries.shorts();
 		String propertyName = "decimalMinExclusive";
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getReadProperty(ShortIntrospectorSpec.class, propertyName).get();
@@ -314,18 +241,18 @@ class JavaxValidationArbitraryIntrospectorTest {
 			property,
 			ArbitraryTypeIntrospector.INTROSPECTORS
 		);
+
 		// when
-		Arbitrary<Short> actual = this.sut.shorts(shortArbitrary, context);
+		JavaxValidationIntegerConstraint actual = this.sut.generateIntegerConstraint(context);
 
 		// then
-		short value = actual.sample();
-		then(value).isGreaterThanOrEqualTo((short)101);
+		then(actual.getMin()).isEqualTo(BigInteger.valueOf(101));
+		then(actual.getMax()).isNull();
 	}
 
 	@Property
-	void decimalMax() {
+	void generateIntegerConstraintDecimalMax() {
 		// given
-		ShortArbitrary shortArbitrary = Arbitraries.shorts();
 		String propertyName = "decimalMax";
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getReadProperty(ShortIntrospectorSpec.class, propertyName).get();
@@ -335,17 +262,16 @@ class JavaxValidationArbitraryIntrospectorTest {
 		);
 
 		// when
-		Arbitrary<Short> actual = this.sut.shorts(shortArbitrary, context);
+		JavaxValidationIntegerConstraint actual = this.sut.generateIntegerConstraint(context);
 
 		// then
-		short value = actual.sample();
-		then(value).isLessThanOrEqualTo((short)100);
+		then(actual.getMin()).isNull();
+		then(actual.getMax()).isEqualTo(BigInteger.valueOf(100));
 	}
 
 	@Property
-	void decimalMaxExclusive() {
+	void generateIntegerConstraintDecimalMaxExclusive() {
 		// given
-		ShortArbitrary shortArbitrary = Arbitraries.shorts();
 		String propertyName = "decimalMaxExclusive";
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getReadProperty(ShortIntrospectorSpec.class, propertyName).get();
@@ -355,17 +281,16 @@ class JavaxValidationArbitraryIntrospectorTest {
 		);
 
 		// when
-		Arbitrary<Short> actual = this.sut.shorts(shortArbitrary, context);
+		JavaxValidationIntegerConstraint actual = this.sut.generateIntegerConstraint(context);
 
 		// then
-		short value = actual.sample();
-		then(value).isLessThanOrEqualTo((short)99);
+		then(actual.getMin()).isNull();
+		then(actual.getMax()).isEqualTo(BigInteger.valueOf(99));
 	}
 
 	@Property
-	void negative() {
+	void generateIntegerConstraintNegative() {
 		// given
-		ShortArbitrary shortArbitrary = Arbitraries.shorts();
 		String propertyName = "negative";
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getReadProperty(ShortIntrospectorSpec.class, propertyName).get();
@@ -375,17 +300,16 @@ class JavaxValidationArbitraryIntrospectorTest {
 		);
 
 		// when
-		Arbitrary<Short> actual = this.sut.shorts(shortArbitrary, context);
+		JavaxValidationIntegerConstraint actual = this.sut.generateIntegerConstraint(context);
 
 		// then
-		short value = actual.sample();
-		then(value).isLessThan((short)0);
+		then(actual.getMin()).isNull();
+		then(actual.getMax()).isEqualTo(BigInteger.valueOf(-1));
 	}
 
 	@Property
-	void negativeOrZero() {
+	void generateIntegerConstraintNegativeOrZero() {
 		// given
-		ShortArbitrary shortArbitrary = Arbitraries.shorts();
 		String propertyName = "negativeOrZero";
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getReadProperty(ShortIntrospectorSpec.class, propertyName).get();
@@ -395,17 +319,16 @@ class JavaxValidationArbitraryIntrospectorTest {
 		);
 
 		// when
-		Arbitrary<Short> actual = this.sut.shorts(shortArbitrary, context);
+		JavaxValidationIntegerConstraint actual = this.sut.generateIntegerConstraint(context);
 
 		// then
-		short value = actual.sample();
-		then(value).isLessThanOrEqualTo((short)0);
+		then(actual.getMin()).isNull();
+		then(actual.getMax()).isEqualTo(BigInteger.ZERO);
 	}
 
 	@Property
-	void positive() {
+	void generateIntegerConstraintPositive() {
 		// given
-		ShortArbitrary shortArbitrary = Arbitraries.shorts();
 		String propertyName = "positive";
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getReadProperty(ShortIntrospectorSpec.class, propertyName).get();
@@ -415,17 +338,16 @@ class JavaxValidationArbitraryIntrospectorTest {
 		);
 
 		// when
-		Arbitrary<Short> actual = this.sut.shorts(shortArbitrary, context);
+		JavaxValidationIntegerConstraint actual = this.sut.generateIntegerConstraint(context);
 
 		// then
-		short value = actual.sample();
-		then(value).isGreaterThan((short)0);
+		then(actual.getMin()).isEqualTo(BigInteger.ONE);
+		then(actual.getMax()).isNull();
 	}
 
 	@Property
-	void positiveOrZero() {
+	void generateIntegerConstraintPositiveOrZero() {
 		// given
-		ShortArbitrary shortArbitrary = Arbitraries.shorts();
 		String propertyName = "positiveOrZero";
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getReadProperty(ShortIntrospectorSpec.class, propertyName).get();
@@ -435,10 +357,10 @@ class JavaxValidationArbitraryIntrospectorTest {
 		);
 
 		// when
-		Arbitrary<Short> actual = this.sut.shorts(shortArbitrary, context);
+		JavaxValidationIntegerConstraint actual = this.sut.generateIntegerConstraint(context);
 
 		// then
-		short value = actual.sample();
-		then(value).isGreaterThanOrEqualTo((short)0);
+		then(actual.getMin()).isEqualTo(BigInteger.ZERO);
+		then(actual.getMax()).isNull();
 	}
 }
