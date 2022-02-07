@@ -16,16 +16,16 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.property;
+package com.navercorp.fixturemonkey.api.property;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.api.property.Property;
-import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
-
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public final class DefaultPropertyNameResolver implements PropertyNameResolver {
+final class IdentityPropertyNameResolver implements PropertyNameResolver {
+	IdentityPropertyNameResolver() {
+	}
+
 	@Override
 	public String resolve(Property property) {
 		return property.getName();

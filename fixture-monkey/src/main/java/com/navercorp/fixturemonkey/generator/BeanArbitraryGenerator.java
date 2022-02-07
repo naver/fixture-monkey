@@ -43,7 +43,6 @@ import com.navercorp.fixturemonkey.arbitrary.ArbitraryNode;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryType;
 import com.navercorp.fixturemonkey.customizer.ArbitraryCustomizers;
 import com.navercorp.fixturemonkey.customizer.WithFixtureCustomizer;
-import com.navercorp.fixturemonkey.property.DefaultPropertyNameResolver;
 
 public final class BeanArbitraryGenerator extends AbstractArbitraryGenerator
 	implements WithFixtureCustomizer {
@@ -51,7 +50,7 @@ public final class BeanArbitraryGenerator extends AbstractArbitraryGenerator
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 	private final ArbitraryCustomizers arbitraryCustomizers;
 
-	private final PropertyNameResolver propertyNameResolver = new DefaultPropertyNameResolver();
+	private final PropertyNameResolver propertyNameResolver = PropertyNameResolver.IDENTITY;
 
 	public BeanArbitraryGenerator() {
 		this(new ArbitraryCustomizers());

@@ -28,7 +28,6 @@ import com.navercorp.fixturemonkey.generator.AbstractArbitraryGenerator
 import com.navercorp.fixturemonkey.generator.ArbitraryGenerator
 import com.navercorp.fixturemonkey.generator.FieldArbitraries
 import com.navercorp.fixturemonkey.kotlin.customizer.customizeFields
-import com.navercorp.fixturemonkey.property.DefaultPropertyNameResolver
 import net.jqwik.api.Arbitrary
 import net.jqwik.api.Builders
 import java.lang.reflect.Field
@@ -45,7 +44,7 @@ class PrimaryConstructorArbitraryGenerator(
         val INSTANCE = PrimaryConstructorArbitraryGenerator()
     }
 
-    private val propertyNameResolver: PropertyNameResolver = DefaultPropertyNameResolver()
+    private val propertyNameResolver: PropertyNameResolver = PropertyNameResolver.IDENTITY
 
     override fun <T : Any> generateObject(
         arbitraryType: ArbitraryType<*>,

@@ -27,8 +27,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.platform.commons.logging.Logger;
-import org.junit.platform.commons.logging.LoggerFactory;
 import org.junit.platform.commons.util.ReflectionUtils;
 
 import net.jqwik.api.Arbitrary;
@@ -40,16 +38,14 @@ import com.navercorp.fixturemonkey.arbitrary.ArbitraryNode;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryType;
 import com.navercorp.fixturemonkey.customizer.ArbitraryCustomizers;
 import com.navercorp.fixturemonkey.customizer.WithFixtureCustomizer;
-import com.navercorp.fixturemonkey.property.DefaultPropertyNameResolver;
 
 public final class ConstructorPropertiesArbitraryGenerator extends AbstractArbitraryGenerator
 	implements WithFixtureCustomizer {
 	public static final ConstructorPropertiesArbitraryGenerator INSTANCE =
 		new ConstructorPropertiesArbitraryGenerator();
-	private final Logger log = LoggerFactory.getLogger(this.getClass());
 	private final ArbitraryCustomizers arbitraryCustomizers;
 
-	private final PropertyNameResolver propertyNameResolver = new DefaultPropertyNameResolver();
+	private final PropertyNameResolver propertyNameResolver = PropertyNameResolver.IDENTITY;
 
 	public ConstructorPropertiesArbitraryGenerator() {
 		this(new ArbitraryCustomizers());
