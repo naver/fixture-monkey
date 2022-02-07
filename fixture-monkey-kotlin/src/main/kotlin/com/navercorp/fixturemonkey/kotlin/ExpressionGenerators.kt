@@ -36,6 +36,10 @@ class Exp<T> internal constructor(private val delegate: ExpressionGenerator) : E
     infix fun <R> into(property: KProperty1<T, R?>): Exp<R> =
         Exp(ParsedExpressionGenerator(listOf(delegate, PropertyExpressionGenerator(KotlinProperty(property)))))
 
+    @JvmName("getterBoolean")
+    infix fun into(function: KFunction1<T, Boolean>): Exp<Boolean> =
+        Exp(ParsedExpressionGenerator(listOf(delegate, PropertyExpressionGenerator(KotlinGetterProperty(function)))))
+
     infix fun <R> into(function: KFunction1<T, R?>): Exp<R> =
         Exp(ParsedExpressionGenerator(listOf(delegate, PropertyExpressionGenerator(KotlinGetterProperty(function)))))
 
@@ -163,7 +167,8 @@ private class KotlinGetterProperty<V, R>(private val getter: KFunction1<V, R>) :
     } catch (ex: Exception) {
         null
     }
-    private val propertyName: String = getter.name.substringAfter("get").replaceFirstChar { it.lowercaseChar() }
+    private val propertyName: String =
+        getter.name.substringAfter("get", getter.name.substringAfter("is")).replaceFirstChar { it.lowercaseChar() }
 
     override fun getType(): Class<*> = type
 

@@ -23,7 +23,7 @@ import com.navercorp.fixturemonkey.kotlin.ExpressionGeneratorJavaTestSpecs.Perso
 import org.assertj.core.api.BDDAssertions.then
 import org.junit.jupiter.api.Test
 
-class ExpressionGeneratorTest {
+class ExpressionGeneratorsTest {
     @Test
     fun getPropertyExpressionField() {
         // given
@@ -488,5 +488,49 @@ class ExpressionGeneratorTest {
         val actual = generator.generate()
 
         then(actual).isEqualTo("nullableDogs[0]")
+    }
+
+    @Test
+    fun propertyBoolean() {
+        // given
+        val generator = Exp<Person>() into Person::married
+
+        // when
+        val actual = generator.generate()
+
+        then(actual).isEqualTo("married")
+    }
+
+    @Test
+    fun propertyNullableBoolean() {
+        // given
+        val generator = Exp<Person>() into Person::happy
+
+        // when
+        val actual = generator.generate()
+
+        then(actual).isEqualTo("happy")
+    }
+
+    @Test
+    fun getterBoolean() {
+        // given
+        val generator = Exp<PersonJava>() into PersonJava::isMarried
+
+        // when
+        val actual = generator.generate()
+
+        then(actual).isEqualTo("married")
+    }
+
+    @Test
+    fun getterNullableBoolean() {
+        // given
+        val generator = Exp<PersonJava>() into PersonJava::getHappy
+
+        // when
+        val actual = generator.generate()
+
+        then(actual).isEqualTo("happy")
     }
 }

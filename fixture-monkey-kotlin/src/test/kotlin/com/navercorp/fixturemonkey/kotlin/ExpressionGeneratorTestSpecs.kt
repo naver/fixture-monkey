@@ -26,6 +26,8 @@ data class Person(
     val nestedThriceDogs: List<List<List<Dog>>>,
     val nullableDog: Dog?,
     val nullableDogs: List<Dog>?,
+    val married: Boolean,
+    val happy: Boolean?,
 )
 
 data class Dog(val name: String, val loves: List<Int>, val nullableName: String?)
