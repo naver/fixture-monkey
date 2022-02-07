@@ -41,8 +41,7 @@ class JavaxValidationTimeConstraintGeneratorTest {
 			PropertyCache.getReadProperty(TimeIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(property, "", null, false, 0.0D),
-			Collections.emptyList(),
-			ctxt -> null
+			Collections.emptyList()
 		);
 
 		// when
@@ -61,8 +60,7 @@ class JavaxValidationTimeConstraintGeneratorTest {
 			PropertyCache.getReadProperty(TimeIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(property, "", null, false, 0.0D),
-			Collections.emptyList(),
-			ctxt -> null
+			Collections.emptyList()
 		);
 
 		// when
@@ -82,8 +80,7 @@ class JavaxValidationTimeConstraintGeneratorTest {
 			PropertyCache.getReadProperty(TimeIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(property, "", null, false, 0.0D),
-			Collections.emptyList(),
-			ctxt -> null
+			Collections.emptyList()
 		);
 
 		// when
@@ -104,8 +101,7 @@ class JavaxValidationTimeConstraintGeneratorTest {
 			PropertyCache.getReadProperty(TimeIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(property, "", null, false, 0.0D),
-			Collections.emptyList(),
-			ctxt -> null
+			Collections.emptyList()
 		);
 
 		// when
@@ -125,8 +121,7 @@ class JavaxValidationTimeConstraintGeneratorTest {
 			PropertyCache.getReadProperty(TimeIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(property, "", null, false, 0.0D),
-			Collections.emptyList(),
-			ctxt -> null
+			Collections.emptyList()
 		);
 
 		// when
@@ -146,8 +141,7 @@ class JavaxValidationTimeConstraintGeneratorTest {
 			PropertyCache.getReadProperty(TimeIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(property, "", null, false, 0.0D),
-			Collections.emptyList(),
-			ctxt -> null
+			Collections.emptyList()
 		);
 
 		// when
@@ -166,8 +160,7 @@ class JavaxValidationTimeConstraintGeneratorTest {
 			PropertyCache.getReadProperty(TimeIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(property, "", null, false, 0.0D),
-			Collections.emptyList(),
-			ctxt -> null
+			Collections.emptyList()
 		);
 
 		// when
@@ -187,8 +180,7 @@ class JavaxValidationTimeConstraintGeneratorTest {
 			PropertyCache.getReadProperty(TimeIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(property, "", null, false, 0.0D),
-			Collections.emptyList(),
-			ctxt -> null
+			Collections.emptyList()
 		);
 
 		// when
@@ -209,8 +201,7 @@ class JavaxValidationTimeConstraintGeneratorTest {
 			PropertyCache.getReadProperty(TimeIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(property, "", null, false, 0.0D),
-			Collections.emptyList(),
-			ctxt -> null
+			Collections.emptyList()
 		);
 
 		// when
@@ -230,8 +221,7 @@ class JavaxValidationTimeConstraintGeneratorTest {
 			PropertyCache.getReadProperty(TimeIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(property, "", null, false, 0.0D),
-			Collections.emptyList(),
-			ctxt -> null
+			Collections.emptyList()
 		);
 
 		// when

@@ -23,12 +23,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
-
-import net.jqwik.api.Arbitrary;
 
 import com.navercorp.fixturemonkey.api.property.Property;
 
@@ -36,16 +33,13 @@ import com.navercorp.fixturemonkey.api.property.Property;
 public final class ArbitraryGeneratorContext {
 	private final ArbitraryProperty property;
 	private final List<ArbitraryProperty> children;
-	private final Function<ArbitraryGeneratorContext, Arbitrary<Object>> generator;
 
 	public ArbitraryGeneratorContext(
 		ArbitraryProperty property,
-		List<ArbitraryProperty> children,
-		Function<ArbitraryGeneratorContext, Arbitrary<Object>> generator
+		List<ArbitraryProperty> children
 	) {
 		this.property = property;
 		this.children = new ArrayList<>(children);
-		this.generator = generator;
 	}
 
 	public ArbitraryProperty getArbitraryProperty() {
@@ -66,9 +60,5 @@ public final class ArbitraryGeneratorContext {
 
 	public List<ArbitraryProperty> getChildren() {
 		return Collections.unmodifiableList(this.children);
-	}
-
-	public Function<ArbitraryGeneratorContext, Arbitrary<Object>> getGenerator() {
-		return this.generator;
 	}
 }
