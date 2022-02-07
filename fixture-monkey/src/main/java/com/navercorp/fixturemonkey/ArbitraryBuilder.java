@@ -740,8 +740,8 @@ public final class ArbitraryBuilder<T> {
 		return expressionGenerator.generate(property -> {
 			Class<?> type = property.getType();
 			ArbitraryGenerator generator = this.generatorMap.getOrDefault(type, this.generator);
-			Map<String, Field> fields = PropertyCache.getFields(this.tree.getClazz());
-			Field field = fields.get(property.getName());
+			Map<String, Field> fieldsByPropertyName = PropertyCache.getFields(this.tree.getClazz());
+			Field field = fieldsByPropertyName.get(property.getName());
 			if (field == null) {
 				return property.getName();
 			}
