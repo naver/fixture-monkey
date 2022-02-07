@@ -42,10 +42,9 @@ class JavaxValidationTimeConstraintGeneratorTests {
 			property,
 			ArbitraryTypeIntrospector.INTROSPECTORS
 		);
-		LocalDateTime baseDateTime = LocalDateTime.now();
 
 		// when
-		JavaxValidationDateTimeConstraint actual = this.sut.generateDateTimeConstraint(baseDateTime, context);
+		JavaxValidationDateTimeConstraint actual = this.sut.generateDateTimeConstraint(context);
 
 		// then
 		then(actual.getMin()).isNull();
@@ -62,10 +61,9 @@ class JavaxValidationTimeConstraintGeneratorTests {
 			property,
 			ArbitraryTypeIntrospector.INTROSPECTORS
 		);
-		LocalDateTime baseDateTime = LocalDateTime.now();
 
 		// when
-		JavaxValidationDateTimeConstraint actual = this.sut.generateDateTimeConstraint(baseDateTime, context);
+		JavaxValidationDateTimeConstraint actual = this.sut.generateDateTimeConstraint(context);
 
 		// then
 		LocalDateTime now = LocalDateTime.now();
@@ -83,10 +81,9 @@ class JavaxValidationTimeConstraintGeneratorTests {
 			property,
 			ArbitraryTypeIntrospector.INTROSPECTORS
 		);
-		LocalDateTime baseDateTime = LocalDateTime.now();
 
 		// when
-		JavaxValidationDateTimeConstraint actual = this.sut.generateDateTimeConstraint(baseDateTime, context);
+		JavaxValidationDateTimeConstraint actual = this.sut.generateDateTimeConstraint(context);
 
 		// then
 		LocalDateTime now = LocalDateTime.now();
@@ -105,10 +102,9 @@ class JavaxValidationTimeConstraintGeneratorTests {
 			property,
 			ArbitraryTypeIntrospector.INTROSPECTORS
 		);
-		LocalDateTime baseDateTime = LocalDateTime.now();
 
 		// when
-		JavaxValidationDateTimeConstraint actual = this.sut.generateDateTimeConstraint(baseDateTime, context);
+		JavaxValidationDateTimeConstraint actual = this.sut.generateDateTimeConstraint(context);
 
 		// then
 		LocalDateTime now = LocalDateTime.now();
@@ -126,10 +122,9 @@ class JavaxValidationTimeConstraintGeneratorTests {
 			property,
 			ArbitraryTypeIntrospector.INTROSPECTORS
 		);
-		LocalDateTime baseDateTime = LocalDateTime.now();
 
 		// when
-		JavaxValidationDateTimeConstraint actual = this.sut.generateDateTimeConstraint(baseDateTime, context);
+		JavaxValidationDateTimeConstraint actual = this.sut.generateDateTimeConstraint(context);
 
 		// then
 		LocalDateTime now = LocalDateTime.now();
@@ -147,10 +142,9 @@ class JavaxValidationTimeConstraintGeneratorTests {
 			property,
 			ArbitraryTypeIntrospector.INTROSPECTORS
 		);
-		LocalDate baseDate = LocalDate.now();
 
 		// when
-		JavaxValidationDateConstraint actual = this.sut.generateDateConstraint(baseDate, context);
+		JavaxValidationDateConstraint actual = this.sut.generateDateConstraint(context);
 
 		// then
 		then(actual.getMin()).isNull();
@@ -167,10 +161,9 @@ class JavaxValidationTimeConstraintGeneratorTests {
 			property,
 			ArbitraryTypeIntrospector.INTROSPECTORS
 		);
-		LocalDate baseDate = LocalDate.now();
 
 		// when
-		JavaxValidationDateConstraint actual = this.sut.generateDateConstraint(baseDate, context);
+		JavaxValidationDateConstraint actual = this.sut.generateDateConstraint(context);
 
 		// then
 		LocalDate now = LocalDate.now();
@@ -188,10 +181,9 @@ class JavaxValidationTimeConstraintGeneratorTests {
 			property,
 			ArbitraryTypeIntrospector.INTROSPECTORS
 		);
-		LocalDate baseDate = LocalDate.now();
 
 		// when
-		JavaxValidationDateConstraint actual = this.sut.generateDateConstraint(baseDate, context);
+		JavaxValidationDateConstraint actual = this.sut.generateDateConstraint(context);
 
 		// then
 		LocalDate now = LocalDate.now();
@@ -210,10 +202,9 @@ class JavaxValidationTimeConstraintGeneratorTests {
 			property,
 			ArbitraryTypeIntrospector.INTROSPECTORS
 		);
-		LocalDate baseDate = LocalDate.now();
 
 		// when
-		JavaxValidationDateConstraint actual = this.sut.generateDateConstraint(baseDate, context);
+		JavaxValidationDateConstraint actual = this.sut.generateDateConstraint(context);
 
 		// then
 		LocalDate now = LocalDate.now();
@@ -231,10 +222,9 @@ class JavaxValidationTimeConstraintGeneratorTests {
 			property,
 			ArbitraryTypeIntrospector.INTROSPECTORS
 		);
-		LocalDate baseDate = LocalDate.now();
 
 		// when
-		JavaxValidationDateConstraint actual = this.sut.generateDateConstraint(baseDate, context);
+		JavaxValidationDateConstraint actual = this.sut.generateDateConstraint(context);
 
 		// then
 		LocalDate now = LocalDate.now();

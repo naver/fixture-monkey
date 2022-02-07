@@ -35,10 +35,8 @@ import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorContext
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public class JavaxValidationTimeConstraintGenerator {
 
-	public JavaxValidationDateTimeConstraint generateDateTimeConstraint(
-		LocalDateTime now,
-		ArbitraryIntrospectorContext context
-	) {
+	public JavaxValidationDateTimeConstraint generateDateTimeConstraint(ArbitraryIntrospectorContext context) {
+		LocalDateTime now = LocalDateTime.now();
 		LocalDateTime min = null;
 		if (context.findAnnotation(Future.class).isPresent()) {
 			min = now.plus(3, ChronoUnit.SECONDS);	// 3000 is buffer for future time
@@ -56,10 +54,8 @@ public class JavaxValidationTimeConstraintGenerator {
 		return new JavaxValidationDateTimeConstraint(min, max);
 	}
 
-	public JavaxValidationDateConstraint generateDateConstraint(
-		LocalDate now,
-		ArbitraryIntrospectorContext context
-	) {
+	public JavaxValidationDateConstraint generateDateConstraint(ArbitraryIntrospectorContext context) {
+		LocalDate now = LocalDate.now();
 		LocalDate min = null;
 		if (context.findAnnotation(Future.class).isPresent()) {
 			min = now.plusDays(1);
