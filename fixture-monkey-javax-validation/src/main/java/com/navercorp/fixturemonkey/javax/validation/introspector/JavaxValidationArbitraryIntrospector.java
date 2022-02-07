@@ -49,7 +49,7 @@ import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorContext;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public class JavaxValidationArbitraryIntrospector implements ArbitraryIntrospector {
+public final class JavaxValidationArbitraryIntrospector implements ArbitraryIntrospector {
 	private static final String CONTROL_BLOCK = "\u0000-\u001f\u007f";
 	private static final RegexGenerator REGEX_GENERATOR = new RegexGenerator();
 

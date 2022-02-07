@@ -54,7 +54,7 @@ import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorContext
 import com.navercorp.fixturemonkey.api.introspector.TimeArbitraryIntrospector;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public class JavaxValidationTimeArbitraryIntrospector implements TimeArbitraryIntrospector {
+public final class JavaxValidationTimeArbitraryIntrospector implements TimeArbitraryIntrospector {
 	private final JavaxValidationTimeConstraintGenerator constraintGenerator;
 
 	public JavaxValidationTimeArbitraryIntrospector() {
@@ -71,7 +71,7 @@ public class JavaxValidationTimeArbitraryIntrospector implements TimeArbitraryIn
 		ArbitraryIntrospectorContext context
 	) {
 		JavaxValidationDateTimeConstraint constraint =
-			this.getConstraintGenerator().generateDateTimeConstraint(context);
+			this.constraintGenerator.generateDateTimeConstraint(context);
 		LocalDateTime min = constraint.getMin();
 		LocalDateTime max = constraint.getMax();
 
@@ -103,7 +103,7 @@ public class JavaxValidationTimeArbitraryIntrospector implements TimeArbitraryIn
 		ArbitraryIntrospectorContext context
 	) {
 		JavaxValidationDateTimeConstraint constraint =
-			this.getConstraintGenerator().generateDateTimeConstraint(context);
+			this.constraintGenerator.generateDateTimeConstraint(context);
 		LocalDateTime min = constraint.getMin();
 		LocalDateTime max = constraint.getMax();
 
@@ -211,9 +211,5 @@ public class JavaxValidationTimeArbitraryIntrospector implements TimeArbitraryIn
 		ArbitraryIntrospectorContext context
 	) {
 		throw new UnsupportedOperationException("Not implement yet.");
-	}
-
-	protected final JavaxValidationTimeConstraintGenerator getConstraintGenerator() {
-		return this.constraintGenerator;
 	}
 }
