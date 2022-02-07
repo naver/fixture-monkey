@@ -68,7 +68,7 @@ public final class JavaxValidationArbitraryIntrospector implements ArbitraryIntr
 		StringArbitrary stringArbitrary,
 		ArbitraryIntrospectorContext context
 	) {
-		JavaxValidationStringConstraint constraint = this.getConstraintGenerator().generateStringConstraint(context);
+		JavaxValidationStringConstraint constraint = this.constraintGenerator.generateStringConstraint(context);
 		BigInteger min = constraint.getMinSize();
 		BigInteger max = constraint.getMaxSize();
 		boolean digits = constraint.isDigits();
@@ -141,7 +141,7 @@ public final class JavaxValidationArbitraryIntrospector implements ArbitraryIntr
 		ShortArbitrary shortArbitrary,
 		ArbitraryIntrospectorContext context
 	) {
-		JavaxValidationIntegerConstraint constraint = this.getConstraintGenerator().generateIntegerConstraint(context);
+		JavaxValidationIntegerConstraint constraint = this.constraintGenerator.generateIntegerConstraint(context);
 		BigInteger min = constraint.getMin();
 		BigInteger max = constraint.getMax();
 
@@ -209,9 +209,5 @@ public final class JavaxValidationArbitraryIntrospector implements ArbitraryIntr
 		ArbitraryIntrospectorContext context
 	) {
 		throw new UnsupportedOperationException("Not implement yet.");
-	}
-
-	protected final JavaxValidationConstraintGenerator getConstraintGenerator() {
-		return this.constraintGenerator;
 	}
 }
