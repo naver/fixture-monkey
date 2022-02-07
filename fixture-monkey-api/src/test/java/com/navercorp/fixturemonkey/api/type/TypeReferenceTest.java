@@ -24,11 +24,8 @@ import java.lang.reflect.ParameterizedType;
 import java.util.List;
 import java.util.Map;
 
-import org.apiguardian.api.API;
-import org.apiguardian.api.API.Status;
 import org.junit.jupiter.api.Test;
 
-@API(since = "0.4.0", status = Status.EXPERIMENTAL)
 class TypeReferenceTest {
 
 	@Test
