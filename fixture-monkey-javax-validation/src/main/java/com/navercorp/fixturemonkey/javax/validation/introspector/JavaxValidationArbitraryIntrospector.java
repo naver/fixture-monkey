@@ -45,8 +45,8 @@ import net.jqwik.api.arbitraries.ShortArbitrary;
 import net.jqwik.api.arbitraries.StringArbitrary;
 import net.jqwik.web.api.Web;
 
+import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
-import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorContext;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class JavaxValidationArbitraryIntrospector implements ArbitraryIntrospector {
@@ -66,7 +66,7 @@ public final class JavaxValidationArbitraryIntrospector implements ArbitraryIntr
 	@Override
 	public Arbitrary<String> strings(
 		StringArbitrary stringArbitrary,
-		ArbitraryIntrospectorContext context
+		ArbitraryGeneratorContext context
 	) {
 		JavaxValidationStringConstraint constraint = this.constraintGenerator.generateStringConstraint(context);
 		BigInteger min = constraint.getMinSize();
@@ -131,7 +131,7 @@ public final class JavaxValidationArbitraryIntrospector implements ArbitraryIntr
 	@Override
 	public Arbitrary<Character> characters(
 		CharacterArbitrary characterArbitrary,
-		ArbitraryIntrospectorContext context
+		ArbitraryGeneratorContext context
 	) {
 		return characterArbitrary;
 	}
@@ -139,7 +139,7 @@ public final class JavaxValidationArbitraryIntrospector implements ArbitraryIntr
 	@Override
 	public Arbitrary<Short> shorts(
 		ShortArbitrary shortArbitrary,
-		ArbitraryIntrospectorContext context
+		ArbitraryGeneratorContext context
 	) {
 		JavaxValidationIntegerConstraint constraint = this.constraintGenerator.generateIntegerConstraint(context);
 		BigInteger min = constraint.getMin();
@@ -158,7 +158,7 @@ public final class JavaxValidationArbitraryIntrospector implements ArbitraryIntr
 	@Override
 	public Arbitrary<Byte> bytes(
 		ByteArbitrary byteArbitrary,
-		ArbitraryIntrospectorContext context
+		ArbitraryGeneratorContext context
 	) {
 		throw new UnsupportedOperationException("Not implement yet.");
 	}
@@ -166,7 +166,7 @@ public final class JavaxValidationArbitraryIntrospector implements ArbitraryIntr
 	@Override
 	public Arbitrary<Double> doubles(
 		DoubleArbitrary doubleArbitrary,
-		ArbitraryIntrospectorContext context
+		ArbitraryGeneratorContext context
 	) {
 		throw new UnsupportedOperationException("Not implement yet.");
 	}
@@ -174,7 +174,7 @@ public final class JavaxValidationArbitraryIntrospector implements ArbitraryIntr
 	@Override
 	public Arbitrary<Float> floats(
 		FloatArbitrary floatArbitrary,
-		ArbitraryIntrospectorContext context
+		ArbitraryGeneratorContext context
 	) {
 		throw new UnsupportedOperationException("Not implement yet.");
 	}
@@ -182,7 +182,7 @@ public final class JavaxValidationArbitraryIntrospector implements ArbitraryIntr
 	@Override
 	public Arbitrary<Integer> integers(
 		IntegerArbitrary integerArbitrary,
-		ArbitraryIntrospectorContext context
+		ArbitraryGeneratorContext context
 	) {
 		throw new UnsupportedOperationException("Not implement yet.");
 	}
@@ -190,7 +190,7 @@ public final class JavaxValidationArbitraryIntrospector implements ArbitraryIntr
 	@Override
 	public Arbitrary<Long> longs(
 		LongArbitrary longArbitrary,
-		ArbitraryIntrospectorContext context
+		ArbitraryGeneratorContext context
 	) {
 		throw new UnsupportedOperationException("Not implement yet.");
 	}
@@ -198,7 +198,7 @@ public final class JavaxValidationArbitraryIntrospector implements ArbitraryIntr
 	@Override
 	public Arbitrary<BigInteger> bigIntegers(
 		BigIntegerArbitrary bigIntegerArbitrary,
-		ArbitraryIntrospectorContext context
+		ArbitraryGeneratorContext context
 	) {
 		throw new UnsupportedOperationException("Not implement yet.");
 	}
@@ -206,7 +206,7 @@ public final class JavaxValidationArbitraryIntrospector implements ArbitraryIntr
 	@Override
 	public Arbitrary<BigDecimal> bigDecimals(
 		BigDecimalArbitrary bigDecimalArbitrary,
-		ArbitraryIntrospectorContext context
+		ArbitraryGeneratorContext context
 	) {
 		throw new UnsupportedOperationException("Not implement yet.");
 	}

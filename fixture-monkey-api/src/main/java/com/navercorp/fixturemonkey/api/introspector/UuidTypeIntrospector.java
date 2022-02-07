@@ -22,11 +22,13 @@ import java.util.UUID;
 
 import net.jqwik.api.Arbitraries;
 
+import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
+
 final class UuidTypeIntrospector implements ArbitraryTypeIntrospector {
 	static final UuidTypeIntrospector INSTANCE = new UuidTypeIntrospector();
 
 	@Override
-	public ArbitraryIntrospectorResult introspect(ArbitraryIntrospectorContext context) {
+	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
 		Class<?> type = context.getType();
 		if (type != UUID.class) {
 			return ArbitraryIntrospectorResult.EMPTY;

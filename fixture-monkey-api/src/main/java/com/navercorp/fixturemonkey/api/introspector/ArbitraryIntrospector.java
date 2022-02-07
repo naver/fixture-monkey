@@ -36,25 +36,27 @@ import net.jqwik.api.arbitraries.LongArbitrary;
 import net.jqwik.api.arbitraries.ShortArbitrary;
 import net.jqwik.api.arbitraries.StringArbitrary;
 
+import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
+
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public interface ArbitraryIntrospector {
-	Arbitrary<String> strings(StringArbitrary stringArbitrary, ArbitraryIntrospectorContext context);
+	Arbitrary<String> strings(StringArbitrary stringArbitrary, ArbitraryGeneratorContext context);
 
-	Arbitrary<Character> characters(CharacterArbitrary characterArbitrary, ArbitraryIntrospectorContext context);
+	Arbitrary<Character> characters(CharacterArbitrary characterArbitrary, ArbitraryGeneratorContext context);
 
-	Arbitrary<Short> shorts(ShortArbitrary shortArbitrary, ArbitraryIntrospectorContext context);
+	Arbitrary<Short> shorts(ShortArbitrary shortArbitrary, ArbitraryGeneratorContext context);
 
-	Arbitrary<Byte> bytes(ByteArbitrary byteArbitrary, ArbitraryIntrospectorContext context);
+	Arbitrary<Byte> bytes(ByteArbitrary byteArbitrary, ArbitraryGeneratorContext context);
 
-	Arbitrary<Double> doubles(DoubleArbitrary doubleArbitrary, ArbitraryIntrospectorContext context);
+	Arbitrary<Double> doubles(DoubleArbitrary doubleArbitrary, ArbitraryGeneratorContext context);
 
-	Arbitrary<Float> floats(FloatArbitrary floatArbitrary, ArbitraryIntrospectorContext context);
+	Arbitrary<Float> floats(FloatArbitrary floatArbitrary, ArbitraryGeneratorContext context);
 
-	Arbitrary<Integer> integers(IntegerArbitrary integerArbitrary, ArbitraryIntrospectorContext context);
+	Arbitrary<Integer> integers(IntegerArbitrary integerArbitrary, ArbitraryGeneratorContext context);
 
-	Arbitrary<Long> longs(LongArbitrary longArbitrary, ArbitraryIntrospectorContext context);
+	Arbitrary<Long> longs(LongArbitrary longArbitrary, ArbitraryGeneratorContext context);
 
-	Arbitrary<BigInteger> bigIntegers(BigIntegerArbitrary bigIntegerArbitrary, ArbitraryIntrospectorContext context);
+	Arbitrary<BigInteger> bigIntegers(BigIntegerArbitrary bigIntegerArbitrary, ArbitraryGeneratorContext context);
 
-	Arbitrary<BigDecimal> bigDecimals(BigDecimalArbitrary bigDecimalArbitrary, ArbitraryIntrospectorContext context);
+	Arbitrary<BigDecimal> bigDecimals(BigDecimalArbitrary bigDecimalArbitrary, ArbitraryGeneratorContext context);
 }

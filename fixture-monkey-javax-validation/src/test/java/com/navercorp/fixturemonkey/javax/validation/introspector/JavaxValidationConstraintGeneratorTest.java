@@ -21,14 +21,15 @@ package com.navercorp.fixturemonkey.javax.validation.introspector;
 import static org.assertj.core.api.BDDAssertions.then;
 
 import java.math.BigInteger;
+import java.util.Collections;
 
 import net.jqwik.api.Property;
 
-import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorContext;
-import com.navercorp.fixturemonkey.api.introspector.ArbitraryTypeIntrospector;
+import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
+import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.property.PropertyCache;
 
-class JavaxValidationConstraintGeneratorTests {
+class JavaxValidationConstraintGeneratorTest {
 	private final JavaxValidationConstraintGenerator sut = new JavaxValidationConstraintGenerator();
 
 	@Property
@@ -37,9 +38,10 @@ class JavaxValidationConstraintGeneratorTests {
 		String propertyName = "str";
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getReadProperty(StringIntrospectorSpec.class, propertyName).get();
-		ArbitraryIntrospectorContext context = new ArbitraryIntrospectorContext(
-			property,
-			ArbitraryTypeIntrospector.INTROSPECTORS
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(property, "", null, false, 0.0D),
+			Collections.emptyList(),
+			ctxt -> null
 		);
 
 		// when
@@ -58,9 +60,10 @@ class JavaxValidationConstraintGeneratorTests {
 		String propertyName = "notBlank";
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getReadProperty(StringIntrospectorSpec.class, propertyName).get();
-		ArbitraryIntrospectorContext context = new ArbitraryIntrospectorContext(
-			property,
-			ArbitraryTypeIntrospector.INTROSPECTORS
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(property, "", null, false, 0.0D),
+			Collections.emptyList(),
+			ctxt -> null
 		);
 
 		// when
@@ -79,9 +82,10 @@ class JavaxValidationConstraintGeneratorTests {
 		String propertyName = "notEmpty";
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getReadProperty(StringIntrospectorSpec.class, propertyName).get();
-		ArbitraryIntrospectorContext context = new ArbitraryIntrospectorContext(
-			property,
-			ArbitraryTypeIntrospector.INTROSPECTORS
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(property, "", null, false, 0.0D),
+			Collections.emptyList(),
+			ctxt -> null
 		);
 
 		// when
@@ -100,9 +104,10 @@ class JavaxValidationConstraintGeneratorTests {
 		String propertyName = "size";
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getReadProperty(StringIntrospectorSpec.class, propertyName).get();
-		ArbitraryIntrospectorContext context = new ArbitraryIntrospectorContext(
-			property,
-			ArbitraryTypeIntrospector.INTROSPECTORS
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(property, "", null, false, 0.0D),
+			Collections.emptyList(),
+			ctxt -> null
 		);
 
 		// when
@@ -121,9 +126,10 @@ class JavaxValidationConstraintGeneratorTests {
 		String propertyName = "digits";
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getReadProperty(StringIntrospectorSpec.class, propertyName).get();
-		ArbitraryIntrospectorContext context = new ArbitraryIntrospectorContext(
-			property,
-			ArbitraryTypeIntrospector.INTROSPECTORS
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(property, "", null, false, 0.0D),
+			Collections.emptyList(),
+			ctxt -> null
 		);
 
 		// when
@@ -142,9 +148,10 @@ class JavaxValidationConstraintGeneratorTests {
 		String propertyName = "shortValue";
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getReadProperty(ShortIntrospectorSpec.class, propertyName).get();
-		ArbitraryIntrospectorContext context = new ArbitraryIntrospectorContext(
-			property,
-			ArbitraryTypeIntrospector.INTROSPECTORS
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(property, "", null, false, 0.0D),
+			Collections.emptyList(),
+			ctxt -> null
 		);
 
 		// when
@@ -161,9 +168,10 @@ class JavaxValidationConstraintGeneratorTests {
 		String propertyName = "digitsValue";
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getReadProperty(ShortIntrospectorSpec.class, propertyName).get();
-		ArbitraryIntrospectorContext context = new ArbitraryIntrospectorContext(
-			property,
-			ArbitraryTypeIntrospector.INTROSPECTORS
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(property, "", null, false, 0.0D),
+			Collections.emptyList(),
+			ctxt -> null
 		);
 
 		// when
@@ -180,9 +188,10 @@ class JavaxValidationConstraintGeneratorTests {
 		String propertyName = "minValue";
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getReadProperty(ShortIntrospectorSpec.class, propertyName).get();
-		ArbitraryIntrospectorContext context = new ArbitraryIntrospectorContext(
-			property,
-			ArbitraryTypeIntrospector.INTROSPECTORS
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(property, "", null, false, 0.0D),
+			Collections.emptyList(),
+			ctxt -> null
 		);
 
 		// when
@@ -199,9 +208,10 @@ class JavaxValidationConstraintGeneratorTests {
 		String propertyName = "maxValue";
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getReadProperty(ShortIntrospectorSpec.class, propertyName).get();
-		ArbitraryIntrospectorContext context = new ArbitraryIntrospectorContext(
-			property,
-			ArbitraryTypeIntrospector.INTROSPECTORS
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(property, "", null, false, 0.0D),
+			Collections.emptyList(),
+			ctxt -> null
 		);
 
 		// when
@@ -218,9 +228,10 @@ class JavaxValidationConstraintGeneratorTests {
 		String propertyName = "decimalMin";
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getReadProperty(ShortIntrospectorSpec.class, propertyName).get();
-		ArbitraryIntrospectorContext context = new ArbitraryIntrospectorContext(
-			property,
-			ArbitraryTypeIntrospector.INTROSPECTORS
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(property, "", null, false, 0.0D),
+			Collections.emptyList(),
+			ctxt -> null
 		);
 
 		// when
@@ -237,9 +248,10 @@ class JavaxValidationConstraintGeneratorTests {
 		String propertyName = "decimalMinExclusive";
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getReadProperty(ShortIntrospectorSpec.class, propertyName).get();
-		ArbitraryIntrospectorContext context = new ArbitraryIntrospectorContext(
-			property,
-			ArbitraryTypeIntrospector.INTROSPECTORS
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(property, "", null, false, 0.0D),
+			Collections.emptyList(),
+			ctxt -> null
 		);
 
 		// when
@@ -256,9 +268,10 @@ class JavaxValidationConstraintGeneratorTests {
 		String propertyName = "decimalMax";
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getReadProperty(ShortIntrospectorSpec.class, propertyName).get();
-		ArbitraryIntrospectorContext context = new ArbitraryIntrospectorContext(
-			property,
-			ArbitraryTypeIntrospector.INTROSPECTORS
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(property, "", null, false, 0.0D),
+			Collections.emptyList(),
+			ctxt -> null
 		);
 
 		// when
@@ -275,9 +288,10 @@ class JavaxValidationConstraintGeneratorTests {
 		String propertyName = "decimalMaxExclusive";
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getReadProperty(ShortIntrospectorSpec.class, propertyName).get();
-		ArbitraryIntrospectorContext context = new ArbitraryIntrospectorContext(
-			property,
-			ArbitraryTypeIntrospector.INTROSPECTORS
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(property, "", null, false, 0.0D),
+			Collections.emptyList(),
+			ctxt -> null
 		);
 
 		// when
@@ -294,9 +308,10 @@ class JavaxValidationConstraintGeneratorTests {
 		String propertyName = "negative";
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getReadProperty(ShortIntrospectorSpec.class, propertyName).get();
-		ArbitraryIntrospectorContext context = new ArbitraryIntrospectorContext(
-			property,
-			ArbitraryTypeIntrospector.INTROSPECTORS
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(property, "", null, false, 0.0D),
+			Collections.emptyList(),
+			ctxt -> null
 		);
 
 		// when
@@ -313,9 +328,10 @@ class JavaxValidationConstraintGeneratorTests {
 		String propertyName = "negativeOrZero";
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getReadProperty(ShortIntrospectorSpec.class, propertyName).get();
-		ArbitraryIntrospectorContext context = new ArbitraryIntrospectorContext(
-			property,
-			ArbitraryTypeIntrospector.INTROSPECTORS
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(property, "", null, false, 0.0D),
+			Collections.emptyList(),
+			ctxt -> null
 		);
 
 		// when
@@ -332,9 +348,10 @@ class JavaxValidationConstraintGeneratorTests {
 		String propertyName = "positive";
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getReadProperty(ShortIntrospectorSpec.class, propertyName).get();
-		ArbitraryIntrospectorContext context = new ArbitraryIntrospectorContext(
-			property,
-			ArbitraryTypeIntrospector.INTROSPECTORS
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(property, "", null, false, 0.0D),
+			Collections.emptyList(),
+			ctxt -> null
 		);
 
 		// when
@@ -351,9 +368,10 @@ class JavaxValidationConstraintGeneratorTests {
 		String propertyName = "positiveOrZero";
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getReadProperty(ShortIntrospectorSpec.class, propertyName).get();
-		ArbitraryIntrospectorContext context = new ArbitraryIntrospectorContext(
-			property,
-			ArbitraryTypeIntrospector.INTROSPECTORS
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(property, "", null, false, 0.0D),
+			Collections.emptyList(),
+			ctxt -> null
 		);
 
 		// when

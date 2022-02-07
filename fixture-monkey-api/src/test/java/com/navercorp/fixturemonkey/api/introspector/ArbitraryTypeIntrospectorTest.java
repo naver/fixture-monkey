@@ -20,10 +20,13 @@ package com.navercorp.fixturemonkey.api.introspector;
 
 import static org.assertj.core.api.BDDAssertions.then;
 
+import java.util.Collections;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 
+import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
+import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.PropertyCache;
 
@@ -32,9 +35,10 @@ class ArbitraryTypeIntrospectorTest {
 	void introspectEnumType() {
 		// given
 		Property property = PropertyCache.getReadProperty(Sample.class, "season").get();
-		ArbitraryIntrospectorContext context = new ArbitraryIntrospectorContext(
-			property,
-			ArbitraryTypeIntrospector.INTROSPECTORS
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(property, "", null, false, 0.0D),
+			Collections.emptyList(),
+			ctxt -> null
 		);
 
 		// when
@@ -47,9 +51,10 @@ class ArbitraryTypeIntrospectorTest {
 	void introspectBooleanType() {
 		// given
 		Property property = PropertyCache.getReadProperty(Sample.class, "bool").get();
-		ArbitraryIntrospectorContext context = new ArbitraryIntrospectorContext(
-			property,
-			ArbitraryTypeIntrospector.INTROSPECTORS
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(property, "", null, false, 0.0D),
+			Collections.emptyList(),
+			ctxt -> null
 		);
 
 		// when
@@ -62,9 +67,10 @@ class ArbitraryTypeIntrospectorTest {
 	void introspectBooleanWrapperType() {
 		// given
 		Property property = PropertyCache.getReadProperty(Sample.class, "bool").get();
-		ArbitraryIntrospectorContext context = new ArbitraryIntrospectorContext(
-			property,
-			ArbitraryTypeIntrospector.INTROSPECTORS
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(property, "", null, false, 0.0D),
+			Collections.emptyList(),
+			ctxt -> null
 		);
 
 		// when
@@ -77,9 +83,10 @@ class ArbitraryTypeIntrospectorTest {
 	void introspectUuidType() {
 		// given
 		Property property = PropertyCache.getReadProperty(Sample.class, "uuid").get();
-		ArbitraryIntrospectorContext context = new ArbitraryIntrospectorContext(
-			property,
-			ArbitraryTypeIntrospector.INTROSPECTORS
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(property, "", null, false, 0.0D),
+			Collections.emptyList(),
+			ctxt -> null
 		);
 
 		// when

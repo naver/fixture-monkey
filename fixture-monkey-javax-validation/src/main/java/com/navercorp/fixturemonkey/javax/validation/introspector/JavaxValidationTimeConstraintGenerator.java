@@ -30,12 +30,12 @@ import javax.validation.constraints.PastOrPresent;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorContext;
+import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public class JavaxValidationTimeConstraintGenerator {
 
-	public JavaxValidationDateTimeConstraint generateDateTimeConstraint(ArbitraryIntrospectorContext context) {
+	public JavaxValidationDateTimeConstraint generateDateTimeConstraint(ArbitraryGeneratorContext context) {
 		LocalDateTime now = LocalDateTime.now();
 		LocalDateTime min = null;
 		if (context.findAnnotation(Future.class).isPresent()) {
@@ -54,7 +54,7 @@ public class JavaxValidationTimeConstraintGenerator {
 		return new JavaxValidationDateTimeConstraint(min, max);
 	}
 
-	public JavaxValidationDateConstraint generateDateConstraint(ArbitraryIntrospectorContext context) {
+	public JavaxValidationDateConstraint generateDateConstraint(ArbitraryGeneratorContext context) {
 		LocalDate now = LocalDate.now();
 		LocalDate min = null;
 		if (context.findAnnotation(Future.class).isPresent()) {
