@@ -48,7 +48,7 @@ public abstract class TypeReference<T> implements Comparable<TypeReference<T>> {
 	}
 
 	@Override
-	public int compareTo(TypeReference<T> o) {
+	public int compareTo(TypeReference<T> obj) {
 		return 0;
 	}
 }
