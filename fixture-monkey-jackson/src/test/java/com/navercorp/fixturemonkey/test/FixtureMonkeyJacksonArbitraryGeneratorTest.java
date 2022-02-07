@@ -29,6 +29,8 @@ import lombok.Data;
 import lombok.Value;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
+import com.navercorp.fixturemonkey.api.expression.ExpressionGenerator;
+import com.navercorp.fixturemonkey.api.property.PropertyCache;
 import com.navercorp.fixturemonkey.generator.BeanArbitraryGenerator;
 import com.navercorp.fixturemonkey.jackson.generator.JacksonArbitraryGenerator;
 
@@ -42,6 +44,23 @@ class FixtureMonkeyJacksonArbitraryGeneratorTest {
 		// when
 		JsonPropertyClass actual = sut.giveMeBuilder(JsonPropertyClass.class)
 			.set("jsonValue", "set")
+			.sample();
+
+		then(actual.value).isEqualTo("set");
+	}
+
+	@Property
+	void giveMeJsonPropertySetWithExpressionGenerator() {
+		// given
+		ExpressionGenerator expressionGenerator = resolver -> {
+			com.navercorp.fixturemonkey.api.property.Property property =
+				PropertyCache.getReadProperty(JsonPropertyClass.class, "value").get();
+			return resolver.resolve(property);
+		};
+
+		// when
+		JsonPropertyClass actual = sut.giveMeBuilder(JsonPropertyClass.class)
+			.set(expressionGenerator, "set")
 			.sample();
 
 		then(actual.value).isEqualTo("set");
@@ -80,6 +99,25 @@ class FixtureMonkeyJacksonArbitraryGeneratorTest {
 			.generator(BeanArbitraryGenerator.INSTANCE)
 			.generator(JacksonArbitraryGenerator.INSTANCE)
 			.set("jsonValue", "set")
+			.sample();
+
+		then(actual.value).isEqualTo("set");
+	}
+
+	@Property
+	void giveMeJsonPropertySetGeneratorToJacksonWithExpressionGenerator() {
+		// given
+		ExpressionGenerator expressionGenerator = resolver -> {
+			com.navercorp.fixturemonkey.api.property.Property property =
+				PropertyCache.getReadProperty(JsonPropertyClass.class, "value").get();
+			return resolver.resolve(property);
+		};
+
+		// when
+		JsonPropertyClass actual = sut.giveMeBuilder(JsonPropertyClass.class)
+			.generator(BeanArbitraryGenerator.INSTANCE)
+			.generator(JacksonArbitraryGenerator.INSTANCE)
+			.set(expressionGenerator, "set")
 			.sample();
 
 		then(actual.value).isEqualTo("set");
