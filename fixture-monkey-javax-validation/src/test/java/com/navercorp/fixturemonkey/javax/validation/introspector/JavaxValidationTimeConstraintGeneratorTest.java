@@ -20,135 +20,21 @@ package com.navercorp.fixturemonkey.javax.validation.introspector;
 
 import static org.assertj.core.api.BDDAssertions.then;
 
-import java.time.Instant;
-import java.util.Calendar;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
-import net.jqwik.api.Arbitrary;
 import net.jqwik.api.Property;
-import net.jqwik.time.api.DateTimes;
-import net.jqwik.time.api.Dates;
-import net.jqwik.time.api.arbitraries.CalendarArbitrary;
-import net.jqwik.time.api.arbitraries.InstantArbitrary;
 
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorContext;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryTypeIntrospector;
 import com.navercorp.fixturemonkey.api.property.PropertyCache;
 
-class JavaxValidationTimeArbitraryIntrospectorTest {
-	private final JavaxValidationTimeArbitraryIntrospector sut = new JavaxValidationTimeArbitraryIntrospector();
+class JavaxValidationTimeConstraintGeneratorTest {
+	private final JavaxValidationTimeConstraintGenerator sut = new JavaxValidationTimeConstraintGenerator();
 
 	@Property
-	void calendar() {
+	void generateDateTimeConstraint() {
 		// given
-		CalendarArbitrary calendarArbitrary = Dates.datesAsCalendar();
-		String propertyName = "calendar";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getReadProperty(TimeIntrospectorSpec.class, propertyName).get();
-		ArbitraryIntrospectorContext context = new ArbitraryIntrospectorContext(
-			property,
-			ArbitraryTypeIntrospector.INTROSPECTORS
-		);
-
-		// when
-		Arbitrary<Calendar> actual = this.sut.calendars(calendarArbitrary, context);
-
-		// then
-		Calendar calendar = actual.sample();
-		then(calendar).isNotNull();
-	}
-
-	@Property
-	void calendarPast() {
-		// given
-		CalendarArbitrary calendarArbitrary = Dates.datesAsCalendar();
-		String propertyName = "calendarPast";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getReadProperty(TimeIntrospectorSpec.class, propertyName).get();
-		ArbitraryIntrospectorContext context = new ArbitraryIntrospectorContext(
-			property,
-			ArbitraryTypeIntrospector.INTROSPECTORS
-		);
-
-		// when
-		Arbitrary<Calendar> actual = this.sut.calendars(calendarArbitrary, context);
-
-		// then
-		Calendar calendar = actual.sample();
-
-		Calendar now = Calendar.getInstance();
-		then(calendar.toInstant().toEpochMilli()).isLessThan(now.toInstant().toEpochMilli());
-	}
-
-	@Property
-	void calendarPastOrPresent() {
-		// given
-		CalendarArbitrary calendarArbitrary = Dates.datesAsCalendar();
-		String propertyName = "calendarPastOrPresent";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getReadProperty(TimeIntrospectorSpec.class, propertyName).get();
-		ArbitraryIntrospectorContext context = new ArbitraryIntrospectorContext(
-			property,
-			ArbitraryTypeIntrospector.INTROSPECTORS
-		);
-
-		// when
-		Arbitrary<Calendar> actual = this.sut.calendars(calendarArbitrary, context);
-
-		// then
-		Calendar calendar = actual.sample();
-
-		Calendar now = Calendar.getInstance();
-		then(calendar.getTimeInMillis()).isLessThanOrEqualTo(now.toInstant().toEpochMilli());
-	}
-
-	@Property
-	void calendarFuture() {
-		// given
-		CalendarArbitrary calendarArbitrary = Dates.datesAsCalendar();
-		String propertyName = "calendarFuture";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getReadProperty(TimeIntrospectorSpec.class, propertyName).get();
-		ArbitraryIntrospectorContext context = new ArbitraryIntrospectorContext(
-			property,
-			ArbitraryTypeIntrospector.INTROSPECTORS
-		);
-
-		// when
-		Arbitrary<Calendar> actual = this.sut.calendars(calendarArbitrary, context);
-
-		// then
-		Calendar calendar = actual.sample();
-
-		Calendar now = Calendar.getInstance();
-		then(calendar.getTimeInMillis()).isGreaterThan(now.toInstant().toEpochMilli());
-	}
-
-	@Property
-	void calendarFutureOrPresent() {
-		// given
-		CalendarArbitrary calendarArbitrary = Dates.datesAsCalendar();
-		String propertyName = "calendarFutureOrPresent";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getReadProperty(TimeIntrospectorSpec.class, propertyName).get();
-		ArbitraryIntrospectorContext context = new ArbitraryIntrospectorContext(
-			property,
-			ArbitraryTypeIntrospector.INTROSPECTORS
-		);
-
-		// when
-		Arbitrary<Calendar> actual = this.sut.calendars(calendarArbitrary, context);
-
-		// then
-		Calendar calendar = actual.sample();
-
-		Calendar now = Calendar.getInstance();
-		then(calendar.getTimeInMillis()).isGreaterThanOrEqualTo(now.toInstant().toEpochMilli());
-	}
-
-	@Property
-	void instant() {
-		// given
-		InstantArbitrary instantArbitrary = DateTimes.instants();
 		String propertyName = "instant";
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getReadProperty(TimeIntrospectorSpec.class, propertyName).get();
@@ -158,17 +44,16 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 		);
 
 		// when
-		Arbitrary<Instant> actual = this.sut.instants(instantArbitrary, context);
+		JavaxValidationDateTimeConstraint actual = this.sut.generateDateTimeConstraint(context);
 
 		// then
-		Instant instant = actual.sample();
-		then(instant).isNotNull();
+		then(actual.getMin()).isNull();
+		then(actual.getMax()).isNull();
 	}
 
 	@Property
-	void instantPast() {
+	void generateDateTimeConstraintPast() {
 		// given
-		InstantArbitrary instantArbitrary = DateTimes.instants();
 		String propertyName = "instantPast";
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getReadProperty(TimeIntrospectorSpec.class, propertyName).get();
@@ -178,20 +63,17 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 		);
 
 		// when
-		Arbitrary<Instant> actual = this.sut.instants(instantArbitrary, context);
+		JavaxValidationDateTimeConstraint actual = this.sut.generateDateTimeConstraint(context);
 
 		// then
-		Instant instant = actual.sample();
-		then(instant).isNotNull();
-
-		Instant now = Instant.now();
-		then(instant).isBefore(now);
+		LocalDateTime now = LocalDateTime.now();
+		then(actual.getMax()).isBefore(now);
+		then(actual.getMin()).isNull();
 	}
 
 	@Property
-	void instantPastOrPresent() {
+	void generateDateTimeConstraintPastOrPresent() {
 		// given
-		InstantArbitrary instantArbitrary = DateTimes.instants();
 		String propertyName = "instantPastOrPresent";
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getReadProperty(TimeIntrospectorSpec.class, propertyName).get();
@@ -201,21 +83,18 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 		);
 
 		// when
-		Arbitrary<Instant> actual = this.sut.instants(instantArbitrary, context);
+		JavaxValidationDateTimeConstraint actual = this.sut.generateDateTimeConstraint(context);
 
 		// then
-		Instant instant = actual.sample();
-		then(instant).isNotNull();
+		LocalDateTime now = LocalDateTime.now();
+		then(actual.getMax()).isBeforeOrEqualTo(now);
+		then(actual.getMin()).isNull();
 
-		Instant now = Instant.now();
-		then(instant).isBeforeOrEqualTo(now);
 	}
 
 	@Property
-	void instantFuture() {
+	void generateDateTimeConstraintFuture() {
 		// given
-		Instant now = Instant.now();
-		InstantArbitrary instantArbitrary = DateTimes.instants();
 		String propertyName = "instantFuture";
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getReadProperty(TimeIntrospectorSpec.class, propertyName).get();
@@ -225,19 +104,17 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 		);
 
 		// when
-		Arbitrary<Instant> actual = this.sut.instants(instantArbitrary, context);
+		JavaxValidationDateTimeConstraint actual = this.sut.generateDateTimeConstraint(context);
 
 		// then
-		Instant instant = actual.sample();
-		then(instant).isNotNull();
-		then(instant).isAfter(now);
+		LocalDateTime now = LocalDateTime.now();
+		then(actual.getMin()).isAfter(now);
+		then(actual.getMax()).isNull();
 	}
 
 	@Property
-	void instantFutureOrPresent() {
+	void generateDateTimeConstraintFutureOrPresent() {
 		// given
-		Instant now = Instant.now();
-		InstantArbitrary instantArbitrary = DateTimes.instants();
 		String propertyName = "instantFutureOrPresent";
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getReadProperty(TimeIntrospectorSpec.class, propertyName).get();
@@ -247,11 +124,111 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 		);
 
 		// when
-		Arbitrary<Instant> actual = this.sut.instants(instantArbitrary, context);
+		JavaxValidationDateTimeConstraint actual = this.sut.generateDateTimeConstraint(context);
 
 		// then
-		Instant instant = actual.sample();
-		then(instant).isNotNull();
-		then(instant).isAfterOrEqualTo(now);
+		LocalDateTime now = LocalDateTime.now();
+		then(actual.getMin()).isAfterOrEqualTo(now);
+		then(actual.getMax()).isNull();
+	}
+
+	@Property
+	void generateDateConstraint() {
+		// given
+		String propertyName = "localDate";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getReadProperty(TimeIntrospectorSpec.class, propertyName).get();
+		ArbitraryIntrospectorContext context = new ArbitraryIntrospectorContext(
+			property,
+			ArbitraryTypeIntrospector.INTROSPECTORS
+		);
+
+		// when
+		JavaxValidationDateConstraint actual = this.sut.generateDateConstraint(context);
+
+		// then
+		then(actual.getMin()).isNull();
+		then(actual.getMax()).isNull();
+	}
+
+	@Property
+	void generateDateConstraintPast() {
+		// given
+		String propertyName = "localDatePast";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getReadProperty(TimeIntrospectorSpec.class, propertyName).get();
+		ArbitraryIntrospectorContext context = new ArbitraryIntrospectorContext(
+			property,
+			ArbitraryTypeIntrospector.INTROSPECTORS
+		);
+
+		// when
+		JavaxValidationDateConstraint actual = this.sut.generateDateConstraint(context);
+
+		// then
+		LocalDate now = LocalDate.now();
+		then(actual.getMax()).isBefore(now);
+		then(actual.getMin()).isNull();
+	}
+
+	@Property
+	void generateDateConstraintPastOrPresent() {
+		// given
+		String propertyName = "localDatePastOrPresent";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getReadProperty(TimeIntrospectorSpec.class, propertyName).get();
+		ArbitraryIntrospectorContext context = new ArbitraryIntrospectorContext(
+			property,
+			ArbitraryTypeIntrospector.INTROSPECTORS
+		);
+
+		// when
+		JavaxValidationDateConstraint actual = this.sut.generateDateConstraint(context);
+
+		// then
+		LocalDate now = LocalDate.now();
+		then(actual.getMax()).isBeforeOrEqualTo(now);
+		then(actual.getMin()).isNull();
+
+	}
+
+	@Property
+	void generateDateConstraintFuture() {
+		// given
+		String propertyName = "localDateFuture";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getReadProperty(TimeIntrospectorSpec.class, propertyName).get();
+		ArbitraryIntrospectorContext context = new ArbitraryIntrospectorContext(
+			property,
+			ArbitraryTypeIntrospector.INTROSPECTORS
+		);
+
+		// when
+		JavaxValidationDateConstraint actual = this.sut.generateDateConstraint(context);
+
+		// then
+		LocalDate now = LocalDate.now();
+		then(actual.getMin()).isAfter(now);
+		then(actual.getMax()).isNull();
+	}
+
+	@Property
+	void generateDateConstraintFutureOrPresent() {
+		// given
+		String propertyName = "localDateFutureOrPresent";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getReadProperty(TimeIntrospectorSpec.class, propertyName).get();
+		ArbitraryIntrospectorContext context = new ArbitraryIntrospectorContext(
+			property,
+			ArbitraryTypeIntrospector.INTROSPECTORS
+		);
+
+		// when
+		JavaxValidationDateConstraint actual = this.sut.generateDateConstraint(context);
+
+		// then
+		LocalDate now = LocalDate.now();
+		then(actual.getMin()).isAfterOrEqualTo(now);
+		then(actual.getMax()).isNull();
 	}
 }

@@ -1,6 +1,7 @@
 package com.navercorp.fixturemonkey.javax.validation.introspector;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.Calendar;
 
 import javax.validation.constraints.Future;
@@ -36,4 +37,18 @@ class TimeIntrospectorSpec {
 
 	@FutureOrPresent
 	private Calendar calendarFutureOrPresent;
+
+	private LocalDate localDate;
+
+	@Past
+	private LocalDate localDatePast;
+
+	@PastOrPresent
+	private LocalDate localDatePastOrPresent;
+
+	@Future
+	private LocalDate localDateFuture;
+
+	@FutureOrPresent
+	private LocalDate localDateFutureOrPresent;
 }

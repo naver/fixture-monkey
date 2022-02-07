@@ -25,15 +25,10 @@ import java.time.LocalTime;
 import java.time.MonthDay;
 import java.time.OffsetDateTime;
 import java.time.Year;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
 import java.util.Date;
-
-import javax.validation.constraints.Future;
-import javax.validation.constraints.FutureOrPresent;
-import javax.validation.constraints.Past;
-import javax.validation.constraints.PastOrPresent;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -59,41 +54,36 @@ import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorContext
 import com.navercorp.fixturemonkey.api.introspector.TimeArbitraryIntrospector;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public class JavaxValidationTimeArbitraryIntrospector implements TimeArbitraryIntrospector {
+public final class JavaxValidationTimeArbitraryIntrospector implements TimeArbitraryIntrospector {
+	private final JavaxValidationTimeConstraintGenerator constraintGenerator;
+
+	public JavaxValidationTimeArbitraryIntrospector() {
+		this(new JavaxValidationTimeConstraintGenerator());
+	}
+
+	public JavaxValidationTimeArbitraryIntrospector(JavaxValidationTimeConstraintGenerator constraintGenerator) {
+		this.constraintGenerator = constraintGenerator;
+	}
+
 	@Override
 	public Arbitrary<Calendar> calendars(
 		CalendarArbitrary calendarArbitrary,
 		ArbitraryIntrospectorContext context
 	) {
-		Calendar min = null;
-		Calendar max = null;
-
-		Instant now = Instant.now();
-		if (context.findAnnotation(Past.class).isPresent()) {
-			Calendar calendar = Calendar.getInstance();
-			calendar.setTimeInMillis(now.toEpochMilli() - 1000);
-			max = calendar;
-		} else if (context.findAnnotation(PastOrPresent.class).isPresent()) {
-			Calendar calendar = Calendar.getInstance();
-			calendar.setTimeInMillis(now.toEpochMilli());
-			max = calendar;
-		}
-
-		if (context.findAnnotation(Future.class).isPresent()) {
-			Calendar calendar = Calendar.getInstance();
-			calendar.setTimeInMillis(now.plus(1, ChronoUnit.DAYS).toEpochMilli());
-			min = calendar;
-		} else if (context.findAnnotation(FutureOrPresent.class).isPresent()) {
-			Calendar calendar = Calendar.getInstance();
-			calendar.setTimeInMillis(now.plus(1, ChronoUnit.DAYS).toEpochMilli());
-			min = calendar;
-		}
+		JavaxValidationDateTimeConstraint constraint =
+			this.constraintGenerator.generateDateTimeConstraint(context);
+		LocalDateTime min = constraint.getMin();
+		LocalDateTime max = constraint.getMax();
 
 		if (min != null) {
-			calendarArbitrary = calendarArbitrary.atTheEarliest(min);
+			Calendar calendar = Calendar.getInstance();
+			calendar.set(min.getYear(), min.getMonth().ordinal(), min.getDayOfMonth() + 1);
+			calendarArbitrary = calendarArbitrary.atTheEarliest(calendar);
 		}
 		if (max != null) {
-			calendarArbitrary = calendarArbitrary.atTheLatest(max);
+			Calendar calendar = Calendar.getInstance();
+			calendar.set(max.getYear(), max.getMonth().ordinal(), max.getDayOfMonth());
+			calendarArbitrary = calendarArbitrary.atTheLatest(calendar);
 		}
 
 		return calendarArbitrary;
@@ -112,27 +102,16 @@ public class JavaxValidationTimeArbitraryIntrospector implements TimeArbitraryIn
 		InstantArbitrary instantArbitrary,
 		ArbitraryIntrospectorContext context
 	) {
-		Instant now = Instant.now();
-		Instant min = null;
-		Instant max = null;
-
-		if (context.findAnnotation(Past.class).isPresent()) {
-			max = now.minus(1, ChronoUnit.SECONDS);
-		} else if (context.findAnnotation(PastOrPresent.class).isPresent()) {
-			max = now;
-		}
-
-		if (context.findAnnotation(Future.class).isPresent()) {
-			min = now.plus(3, ChronoUnit.SECONDS);	// 3000 is buffer for future time
-		} else if (context.findAnnotation(FutureOrPresent.class).isPresent()) {
-			min = now.plus(2, ChronoUnit.SECONDS);	// 2000 is buffer for future time
-		}
+		JavaxValidationDateTimeConstraint constraint =
+			this.constraintGenerator.generateDateTimeConstraint(context);
+		LocalDateTime min = constraint.getMin();
+		LocalDateTime max = constraint.getMax();
 
 		if (min != null) {
-			instantArbitrary = instantArbitrary.atTheEarliest(min);
+			instantArbitrary = instantArbitrary.atTheEarliest(min.atZone(ZoneOffset.systemDefault()).toInstant());
 		}
 		if (max != null) {
-			instantArbitrary = instantArbitrary.atTheLatest(max);
+			instantArbitrary = instantArbitrary.atTheLatest(max.atZone(ZoneOffset.systemDefault()).toInstant());
 		}
 
 		return instantArbitrary;

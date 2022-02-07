@@ -49,7 +49,7 @@ import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorContext;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public class JavaxValidationArbitraryIntrospector implements ArbitraryIntrospector {
+public final class JavaxValidationArbitraryIntrospector implements ArbitraryIntrospector {
 	private static final String CONTROL_BLOCK = "\u0000-\u001f\u007f";
 	private static final RegexGenerator REGEX_GENERATOR = new RegexGenerator();
 
@@ -68,7 +68,7 @@ public class JavaxValidationArbitraryIntrospector implements ArbitraryIntrospect
 		StringArbitrary stringArbitrary,
 		ArbitraryIntrospectorContext context
 	) {
-		JavaxValidationStringConstraint constraint = this.getConstraintGenerator().generateStringConstraint(context);
+		JavaxValidationStringConstraint constraint = this.constraintGenerator.generateStringConstraint(context);
 		BigInteger min = constraint.getMinSize();
 		BigInteger max = constraint.getMaxSize();
 		boolean digits = constraint.isDigits();
@@ -141,7 +141,7 @@ public class JavaxValidationArbitraryIntrospector implements ArbitraryIntrospect
 		ShortArbitrary shortArbitrary,
 		ArbitraryIntrospectorContext context
 	) {
-		JavaxValidationIntegerConstraint constraint = this.getConstraintGenerator().generateIntegerConstraint(context);
+		JavaxValidationIntegerConstraint constraint = this.constraintGenerator.generateIntegerConstraint(context);
 		BigInteger min = constraint.getMin();
 		BigInteger max = constraint.getMax();
 
@@ -209,9 +209,5 @@ public class JavaxValidationArbitraryIntrospector implements ArbitraryIntrospect
 		ArbitraryIntrospectorContext context
 	) {
 		throw new UnsupportedOperationException("Not implement yet.");
-	}
-
-	protected final JavaxValidationConstraintGenerator getConstraintGenerator() {
-		return this.constraintGenerator;
 	}
 }
