@@ -24,19 +24,19 @@ import org.apiguardian.api.API.Status;
 import net.jqwik.api.Arbitraries;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
+import com.navercorp.fixturemonkey.api.matcher.TypeMatcher;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-final class EnumTypeIntrospector implements ArbitraryTypeIntrospector {
-	static final EnumTypeIntrospector INSTANCE = new EnumTypeIntrospector();
+public final class EnumTypeIntrospector implements ArbitraryTypeIntrospector, TypeMatcher {
+	@Override
+	public boolean match(ArbitraryGeneratorContext context) {
+		return context.getType().isEnum();
+	}
 
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Override
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
 		Class<?> type = context.getType();
-		if (!type.isEnum()) {
-			return ArbitraryIntrospectorResult.EMPTY;
-		}
-
 		return new ArbitraryIntrospectorResult(Arbitraries.of((Class<Enum>)type));
 	}
 }
