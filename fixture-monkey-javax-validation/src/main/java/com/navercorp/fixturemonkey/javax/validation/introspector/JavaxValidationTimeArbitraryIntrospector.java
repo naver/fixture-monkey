@@ -18,13 +18,17 @@
 
 package com.navercorp.fixturemonkey.javax.validation.introspector;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.MonthDay;
 import java.time.OffsetDateTime;
+import java.time.OffsetTime;
+import java.time.Period;
 import java.time.Year;
+import java.time.YearMonth;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Calendar;
@@ -177,7 +181,7 @@ public final class JavaxValidationTimeArbitraryIntrospector implements TimeArbit
 	}
 
 	@Override
-	public Arbitrary<OffsetTimeArbitrary> offsetTimes(
+	public Arbitrary<OffsetTime> offsetTimes(
 		OffsetTimeArbitrary offsetTimeArbitrary,
 		ArbitraryGeneratorContext context
 	) {
@@ -185,19 +189,19 @@ public final class JavaxValidationTimeArbitraryIntrospector implements TimeArbit
 	}
 
 	@Override
-	public Arbitrary<PeriodArbitrary> periods(
+	public Arbitrary<Period> periods(
 		PeriodArbitrary periodArbitrary,
 		ArbitraryGeneratorContext context
 	) {
-		throw new UnsupportedOperationException("Not implement yet.");
+		return periodArbitrary;
 	}
 
 	@Override
-	public Arbitrary<DurationArbitrary> durations(
+	public Arbitrary<Duration> durations(
 		DurationArbitrary durationArbitrary,
 		ArbitraryGeneratorContext context
 	) {
-		throw new UnsupportedOperationException("Not implement yet.");
+		return durationArbitrary;
 	}
 
 	@Override
@@ -209,7 +213,7 @@ public final class JavaxValidationTimeArbitraryIntrospector implements TimeArbit
 	}
 
 	@Override
-	public Arbitrary<YearMonthArbitrary> yearMonths(
+	public Arbitrary<YearMonth> yearMonths(
 		YearMonthArbitrary yearMonthArbitrary,
 		ArbitraryGeneratorContext context
 	) {
@@ -217,10 +221,10 @@ public final class JavaxValidationTimeArbitraryIntrospector implements TimeArbit
 	}
 
 	@Override
-	public Arbitrary<ZoneOffsetArbitrary> zoneOffsets(
+	public Arbitrary<ZoneOffset> zoneOffsets(
 		ZoneOffsetArbitrary zoneOffsetArbitrary,
 		ArbitraryGeneratorContext context
 	) {
-		throw new UnsupportedOperationException("Not implement yet.");
+		return zoneOffsetArbitrary;
 	}
 }

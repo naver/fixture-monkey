@@ -18,13 +18,18 @@
 
 package com.navercorp.fixturemonkey.api.introspector;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.MonthDay;
 import java.time.OffsetDateTime;
+import java.time.OffsetTime;
+import java.time.Period;
 import java.time.Year;
+import java.time.YearMonth;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.Date;
@@ -86,23 +91,23 @@ public interface TimeArbitraryIntrospector {
 		ArbitraryGeneratorContext context
 	);
 
-	Arbitrary<OffsetTimeArbitrary> offsetTimes(
+	Arbitrary<OffsetTime> offsetTimes(
 		OffsetTimeArbitrary offsetTimeArbitrary,
 		ArbitraryGeneratorContext context
 	);
 
-	Arbitrary<PeriodArbitrary> periods(PeriodArbitrary periodArbitrary, ArbitraryGeneratorContext context);
+	Arbitrary<Period> periods(PeriodArbitrary periodArbitrary, ArbitraryGeneratorContext context);
 
-	Arbitrary<DurationArbitrary> durations(DurationArbitrary durationArbitrary, ArbitraryGeneratorContext context);
+	Arbitrary<Duration> durations(DurationArbitrary durationArbitrary, ArbitraryGeneratorContext context);
 
 	Arbitrary<Year> years(YearArbitrary yearArbitrary, ArbitraryGeneratorContext context);
 
-	Arbitrary<YearMonthArbitrary> yearMonths(
+	Arbitrary<YearMonth> yearMonths(
 		YearMonthArbitrary yearMonthArbitrary,
 		ArbitraryGeneratorContext context
 	);
 
-	Arbitrary<ZoneOffsetArbitrary> zoneOffsets(
+	Arbitrary<ZoneOffset> zoneOffsets(
 		ZoneOffsetArbitrary zoneOffsetArbitrary,
 		ArbitraryGeneratorContext context
 	);

@@ -1,8 +1,11 @@
 package com.navercorp.fixturemonkey.javax.validation.introspector;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.Period;
+import java.time.ZoneOffset;
 import java.util.Calendar;
 
 import javax.validation.constraints.Future;
@@ -66,4 +69,10 @@ class TimeIntrospectorSpec {
 
 	@FutureOrPresent
 	private LocalTime localTimeFutureOrPresent;
+
+	private Duration duration;
+
+	private Period period;
+
+	private ZoneOffset zoneOffset;
 }

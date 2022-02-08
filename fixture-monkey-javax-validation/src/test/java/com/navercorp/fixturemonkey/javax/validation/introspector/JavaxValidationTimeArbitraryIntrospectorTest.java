@@ -20,8 +20,11 @@ package com.navercorp.fixturemonkey.javax.validation.introspector;
 
 import static org.assertj.core.api.BDDAssertions.then;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalTime;
+import java.time.Period;
+import java.time.ZoneOffset;
 import java.util.Calendar;
 import java.util.Collections;
 
@@ -31,8 +34,11 @@ import net.jqwik.time.api.DateTimes;
 import net.jqwik.time.api.Dates;
 import net.jqwik.time.api.Times;
 import net.jqwik.time.api.arbitraries.CalendarArbitrary;
+import net.jqwik.time.api.arbitraries.DurationArbitrary;
 import net.jqwik.time.api.arbitraries.InstantArbitrary;
 import net.jqwik.time.api.arbitraries.LocalTimeArbitrary;
+import net.jqwik.time.api.arbitraries.PeriodArbitrary;
+import net.jqwik.time.api.arbitraries.ZoneOffsetArbitrary;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
@@ -259,7 +265,6 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 		then(instant).isAfterOrEqualTo(now);
 	}
 
-
 	@Property
 	void localTimes() {
 		// given
@@ -368,5 +373,62 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 		LocalTime localTime = actual.sample();
 		then(localTime).isNotNull();
 		then(localTime).isAfterOrEqualTo(now);
+	}
+
+	@Property
+	void durations() {
+		// given
+		DurationArbitrary durationArbitrary = Times.durations();
+		String propertyName = "duration";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getReadProperty(TimeIntrospectorSpec.class, propertyName).get();
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(property, "", null, false, 0.0D),
+			Collections.emptyList()
+		);
+
+		// when
+		Arbitrary<Duration> actual = this.sut.durations(durationArbitrary, context);
+
+		// then
+		then(actual).isNotNull();
+	}
+
+	@Property
+	void periods() {
+		// given
+		PeriodArbitrary periodArbitrary = Dates.periods();
+		String propertyName = "period";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getReadProperty(TimeIntrospectorSpec.class, propertyName).get();
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(property, "", null, false, 0.0D),
+			Collections.emptyList()
+		);
+
+		// when
+		Arbitrary<Period> actual = this.sut.periods(periodArbitrary, context);
+
+		// then
+		then(actual).isNotNull();
+	}
+
+	@Property
+	void zoneOffsets() {
+		// given
+		ZoneOffsetArbitrary zoneOffsetArbitrary = Times.zoneOffsets();
+		String propertyName = "zoneOffset";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getReadProperty(TimeIntrospectorSpec.class, propertyName).get();
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(property, "", null, false, 0.0D),
+			Collections.emptyList()
+		);
+
+		// when
+		Arbitrary<ZoneOffset> actual = this.sut.zoneOffsets(zoneOffsetArbitrary, context);
+
+		// then
+		then(actual).isNotNull();
 	}
 }
