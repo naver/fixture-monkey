@@ -21,6 +21,7 @@ package com.navercorp.fixturemonkey.javax.validation.introspector;
 import static org.assertj.core.api.BDDAssertions.then;
 
 import java.time.Instant;
+import java.time.LocalTime;
 import java.util.Calendar;
 import java.util.Collections;
 
@@ -28,8 +29,10 @@ import net.jqwik.api.Arbitrary;
 import net.jqwik.api.Property;
 import net.jqwik.time.api.DateTimes;
 import net.jqwik.time.api.Dates;
+import net.jqwik.time.api.Times;
 import net.jqwik.time.api.arbitraries.CalendarArbitrary;
 import net.jqwik.time.api.arbitraries.InstantArbitrary;
+import net.jqwik.time.api.arbitraries.LocalTimeArbitrary;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
@@ -254,5 +257,116 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 		Instant instant = actual.sample();
 		then(instant).isNotNull();
 		then(instant).isAfterOrEqualTo(now);
+	}
+
+
+	@Property
+	void localTimes() {
+		// given
+		LocalTimeArbitrary localTimeArbitrary = Times.times();
+		String propertyName = "localTime";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getReadProperty(TimeIntrospectorSpec.class, propertyName).get();
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(property, "", null, false, 0.0D),
+			Collections.emptyList()
+		);
+
+		// when
+		Arbitrary<LocalTime> actual = this.sut.localTimes(localTimeArbitrary, context);
+
+		// then
+		LocalTime localTime = actual.sample();
+		then(localTime).isNotNull();
+	}
+
+	@Property
+	void localTimesPast() {
+		// given
+		LocalTimeArbitrary localTimeArbitrary = Times.times();
+		String propertyName = "localTimePast";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getReadProperty(TimeIntrospectorSpec.class, propertyName).get();
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(property, "", null, false, 0.0D),
+			Collections.emptyList()
+		);
+
+		// when
+		Arbitrary<LocalTime> actual = this.sut.localTimes(localTimeArbitrary, context);
+
+		// then
+		LocalTime instant = actual.sample();
+		then(instant).isNotNull();
+
+		LocalTime now = LocalTime.now();
+		then(instant).isBefore(now);
+	}
+
+	@Property
+	void localTimesPastOrPresent() {
+		// given
+		LocalTimeArbitrary localTimeArbitrary = Times.times();
+		String propertyName = "localTimePastOrPresent";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getReadProperty(TimeIntrospectorSpec.class, propertyName).get();
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(property, "", null, false, 0.0D),
+			Collections.emptyList()
+		);
+
+		// when
+		Arbitrary<LocalTime> actual = this.sut.localTimes(localTimeArbitrary, context);
+
+		// then
+		LocalTime localTime = actual.sample();
+		then(localTime).isNotNull();
+
+		LocalTime now = LocalTime.now();
+		then(localTime).isBeforeOrEqualTo(now);
+	}
+
+	@Property
+	void localTimesFuture() {
+		// given
+		LocalTime now = LocalTime.now();
+		LocalTimeArbitrary localTimeArbitrary = Times.times();
+		String propertyName = "localTimeFuture";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getReadProperty(TimeIntrospectorSpec.class, propertyName).get();
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(property, "", null, false, 0.0D),
+			Collections.emptyList()
+		);
+
+		// when
+		Arbitrary<LocalTime> actual = this.sut.localTimes(localTimeArbitrary, context);
+
+		// then
+		LocalTime localTime = actual.sample();
+		then(localTime).isNotNull();
+		then(localTime).isAfter(now);
+	}
+
+	@Property
+	void localTimesFutureOrPresent() {
+		// given
+		LocalTime now = LocalTime.now();
+		LocalTimeArbitrary localTimeArbitrary = Times.times();
+		String propertyName = "localTimeFutureOrPresent";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getReadProperty(TimeIntrospectorSpec.class, propertyName).get();
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(property, "", null, false, 0.0D),
+			Collections.emptyList()
+		);
+
+		// when
+		Arbitrary<LocalTime> actual = this.sut.localTimes(localTimeArbitrary, context);
+
+		// then
+		LocalTime localTime = actual.sample();
+		then(localTime).isNotNull();
+		then(localTime).isAfterOrEqualTo(now);
 	}
 }
