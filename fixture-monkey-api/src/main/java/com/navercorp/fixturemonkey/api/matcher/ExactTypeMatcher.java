@@ -24,7 +24,7 @@ import org.apiguardian.api.API.Status;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public final class ExactTypeMatcher implements TypeMatcher {
+public final class ExactTypeMatcher implements Matcher {
 	private final Class<?> type;
 
 	public ExactTypeMatcher(Class<?> type) {

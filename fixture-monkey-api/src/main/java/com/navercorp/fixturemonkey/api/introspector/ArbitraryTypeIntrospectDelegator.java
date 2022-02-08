@@ -16,15 +16,31 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.api.matcher;
+package com.navercorp.fixturemonkey.api.introspector;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
+import com.navercorp.fixturemonkey.api.matcher.Matcher;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-@FunctionalInterface
-public interface TypeMatcher {
-	boolean match(ArbitraryGeneratorContext context);
+public class ArbitraryTypeIntrospectDelegator implements ArbitraryTypeIntrospector, Matcher {
+	private final Matcher matcher;
+	private final ArbitraryTypeIntrospector delegate;
+
+	public ArbitraryTypeIntrospectDelegator(Matcher matcher, ArbitraryTypeIntrospector delegate) {
+		this.matcher = matcher;
+		this.delegate = delegate;
+	}
+
+	@Override
+	public boolean match(ArbitraryGeneratorContext context) {
+		return this.matcher.match(context);
+	}
+
+	@Override
+	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
+		return this.delegate.introspect(context);
+	}
 }
