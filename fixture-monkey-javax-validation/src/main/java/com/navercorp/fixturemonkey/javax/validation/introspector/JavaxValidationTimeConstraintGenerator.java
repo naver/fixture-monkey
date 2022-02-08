@@ -20,6 +20,7 @@ package com.navercorp.fixturemonkey.javax.validation.introspector;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 
 import javax.validation.constraints.Future;
@@ -39,9 +40,9 @@ public class JavaxValidationTimeConstraintGenerator {
 		LocalDateTime now = LocalDateTime.now();
 		LocalDateTime min = null;
 		if (context.findAnnotation(Future.class).isPresent()) {
-			min = now.plus(3, ChronoUnit.SECONDS);	// 3000 is buffer for future time
+			min = now.plus(3, ChronoUnit.SECONDS);    // 3000 is buffer for future time
 		} else if (context.findAnnotation(FutureOrPresent.class).isPresent()) {
-			min = now.plus(2, ChronoUnit.SECONDS);	// 2000 is buffer for future time
+			min = now.plus(2, ChronoUnit.SECONDS);    // 2000 is buffer for future time
 		}
 
 		LocalDateTime max = null;
@@ -71,5 +72,24 @@ public class JavaxValidationTimeConstraintGenerator {
 		}
 
 		return new JavaxValidationDateConstraint(min, max);
+	}
+
+	public JavaxValidationTimeConstraint generateTimeConstraint(ArbitraryGeneratorContext context) {
+		LocalTime now = LocalTime.now();
+		LocalTime min = null;
+		if (context.findAnnotation(Future.class).isPresent()) {
+			min = now.plusSeconds(3);    // 3000 is buffer for future time
+		} else if (context.findAnnotation(FutureOrPresent.class).isPresent()) {
+			min = now.plusSeconds(2);    // 2000 is buffer for future time
+		}
+
+		LocalTime max = null;
+		if (context.findAnnotation(Past.class).isPresent()) {
+			max = now.minusNanos(1L);
+		} else if (context.findAnnotation(PastOrPresent.class).isPresent()) {
+			max = now;
+		}
+
+		return new JavaxValidationTimeConstraint(min, max);
 	}
 }

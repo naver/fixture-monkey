@@ -22,6 +22,7 @@ import static org.assertj.core.api.BDDAssertions.then;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Collections;
 
 import net.jqwik.api.Property;
@@ -229,6 +230,108 @@ class JavaxValidationTimeConstraintGeneratorTest {
 
 		// then
 		LocalDate now = LocalDate.now();
+		then(actual.getMin()).isAfterOrEqualTo(now);
+		then(actual.getMax()).isNull();
+	}
+
+	@Property
+	void generateTimeConstraint() {
+		// given
+		String propertyName = "localTime";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getReadProperty(TimeIntrospectorSpec.class, propertyName).get();
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(property, "", null, false, 0.0D),
+			Collections.emptyList()
+		);
+
+		// when
+		JavaxValidationTimeConstraint actual = this.sut.generateTimeConstraint(context);
+
+		// then
+		then(actual.getMin()).isNull();
+		then(actual.getMax()).isNull();
+	}
+
+
+
+	@Property
+	void generateTimeConstraintPast() {
+		// given
+		String propertyName = "localTimePast";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getReadProperty(TimeIntrospectorSpec.class, propertyName).get();
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(property, "", null, false, 0.0D),
+			Collections.emptyList()
+		);
+
+		// when
+		JavaxValidationTimeConstraint actual = this.sut.generateTimeConstraint(context);
+
+		// then
+		LocalTime now = LocalTime.now();
+		then(actual.getMax()).isBefore(now);
+		then(actual.getMin()).isNull();
+	}
+
+	@Property
+	void generateTimeConstraintPastOrPresent() {
+		// given
+		String propertyName = "localTimePastOrPresent";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getReadProperty(TimeIntrospectorSpec.class, propertyName).get();
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(property, "", null, false, 0.0D),
+			Collections.emptyList()
+		);
+
+		// when
+		JavaxValidationTimeConstraint actual = this.sut.generateTimeConstraint(context);
+
+		// then
+		LocalTime now = LocalTime.now();
+		then(actual.getMax()).isBeforeOrEqualTo(now);
+		then(actual.getMin()).isNull();
+
+	}
+
+	@Property
+	void generateTimeConstraintFuture() {
+		// given
+		String propertyName = "localTimeFuture";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getReadProperty(TimeIntrospectorSpec.class, propertyName).get();
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(property, "", null, false, 0.0D),
+			Collections.emptyList()
+		);
+
+		// when
+		JavaxValidationTimeConstraint actual = this.sut.generateTimeConstraint(context);
+
+		// then
+		LocalTime now = LocalTime.now();
+		then(actual.getMin()).isAfter(now);
+		then(actual.getMax()).isNull();
+	}
+
+	@Property
+	void generateTimeConstraintFutureOrPresent() {
+		// given
+		String propertyName = "localTimeFutureOrPresent";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getReadProperty(TimeIntrospectorSpec.class, propertyName).get();
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(property, "", null, false, 0.0D),
+			Collections.emptyList()
+		);
+
+		// when
+		JavaxValidationTimeConstraint actual = this.sut.generateTimeConstraint(context);
+
+		// then
+		LocalTime now = LocalTime.now();
 		then(actual.getMin()).isAfterOrEqualTo(now);
 		then(actual.getMax()).isNull();
 	}
