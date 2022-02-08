@@ -24,18 +24,20 @@ import org.apiguardian.api.API.Status;
 import net.jqwik.api.Arbitraries;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
+import com.navercorp.fixturemonkey.api.matcher.TypeMatcher;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-final class BooleanTypeIntrospector implements ArbitraryTypeIntrospector {
-	static final BooleanTypeIntrospector INSTANCE = new BooleanTypeIntrospector();
+public final class BooleanTypeIntrospector implements ArbitraryTypeIntrospector, TypeMatcher {
+	public static final BooleanTypeIntrospector INSTANCE = new BooleanTypeIntrospector();
+
+	@Override
+	public boolean match(ArbitraryGeneratorContext context) {
+		Class<?> type = context.getType();
+		return type == boolean.class || type == Boolean.class;
+	}
 
 	@Override
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
-		Class<?> type = context.getType();
-		if (type != boolean.class && type != Boolean.class) {
-			return ArbitraryIntrospectorResult.EMPTY;
-		}
-
 		return new ArbitraryIntrospectorResult(Arbitraries.of(true, false));
 	}
 }

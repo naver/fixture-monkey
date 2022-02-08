@@ -26,18 +26,21 @@ import org.apiguardian.api.API.Status;
 import net.jqwik.api.Arbitraries;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
+import com.navercorp.fixturemonkey.api.matcher.ExactTypeMatcher;
+import com.navercorp.fixturemonkey.api.matcher.TypeMatcher;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-final class UuidTypeIntrospector implements ArbitraryTypeIntrospector {
-	static final UuidTypeIntrospector INSTANCE = new UuidTypeIntrospector();
+final class UuidTypeIntrospector implements ArbitraryTypeIntrospector, TypeMatcher {
+	public static final UuidTypeIntrospector INSTANCE = new UuidTypeIntrospector();
+	private static final TypeMatcher TYPE_MATCHER = new ExactTypeMatcher(UUID.class);
+
+	@Override
+	public boolean match(ArbitraryGeneratorContext context) {
+		return TYPE_MATCHER.match(context);
+	}
 
 	@Override
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
-		Class<?> type = context.getType();
-		if (type != UUID.class) {
-			return ArbitraryIntrospectorResult.EMPTY;
-		}
-
 		return new ArbitraryIntrospectorResult(Arbitraries.create(UUID::randomUUID));
 	}
 }

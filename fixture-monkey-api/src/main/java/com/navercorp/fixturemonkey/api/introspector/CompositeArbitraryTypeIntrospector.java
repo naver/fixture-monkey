@@ -24,9 +24,10 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
+import com.navercorp.fixturemonkey.api.matcher.TypeMatcher;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public class CompositeArbitraryTypeIntrospector implements ArbitraryTypeIntrospector {
+public class CompositeArbitraryTypeIntrospector implements ArbitraryTypeIntrospector, TypeMatcher {
 	private final List<ArbitraryTypeIntrospector> introspectors;
 
 	public CompositeArbitraryTypeIntrospector(List<ArbitraryTypeIntrospector> introspectors) {
@@ -34,11 +35,25 @@ public class CompositeArbitraryTypeIntrospector implements ArbitraryTypeIntrospe
 	}
 
 	@Override
+	public boolean match(ArbitraryGeneratorContext context) {
+		return true;
+	}
+
+	@Override
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
 		for (ArbitraryTypeIntrospector introspector : this.introspectors) {
-			ArbitraryIntrospectorResult result = introspector.introspect(context);
-			if (!ArbitraryIntrospectorResult.EMPTY.equals(result)) {
-				return result;
+			if (introspector instanceof TypeMatcher) {
+				if (((TypeMatcher)introspector).match(context)) {
+					ArbitraryIntrospectorResult result = introspector.introspect(context);
+					if (!ArbitraryIntrospectorResult.EMPTY.equals(result)) {
+						return result;
+					}
+				}
+			} else {
+				ArbitraryIntrospectorResult result = introspector.introspect(context);
+				if (!ArbitraryIntrospectorResult.EMPTY.equals(result)) {
+					return result;
+				}
 			}
 		}
 
