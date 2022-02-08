@@ -18,12 +18,15 @@
 
 package com.navercorp.fixturemonkey.arbitrary;
 
+import static com.navercorp.fixturemonkey.Constants.HEAD_NAME;
+
 import java.util.Objects;
 import java.util.function.BiConsumer;
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 
-public final class ArbitraryApply<T> implements BuilderManipulator {
+public final class ArbitraryApply<T> extends AbstractArbitraryExpressionManipulator
+	implements MetadataManipulator {
 	private final ArbitraryBuilder<T> toSampleArbitraryBuilder;
 	private final BiConsumer<T, ArbitraryBuilder<T>> builderBiConsumer;
 
@@ -31,6 +34,7 @@ public final class ArbitraryApply<T> implements BuilderManipulator {
 		ArbitraryBuilder<T> toSampleArbitraryBuilder,
 		BiConsumer<T, ArbitraryBuilder<T>> builderBiConsumer
 	) {
+		super(ArbitraryExpression.from(HEAD_NAME));
 		this.toSampleArbitraryBuilder = toSampleArbitraryBuilder.copy();
 		this.builderBiConsumer = builderBiConsumer;
 	}
@@ -70,5 +74,10 @@ public final class ArbitraryApply<T> implements BuilderManipulator {
 	@Override
 	public int hashCode() {
 		return Objects.hash(toSampleArbitraryBuilder, builderBiConsumer);
+	}
+
+	@Override
+	public Priority getPriority() {
+		return Priority.HIGH;
 	}
 }

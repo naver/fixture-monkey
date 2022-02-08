@@ -827,4 +827,17 @@ class ComplexManipulatorTest {
 
 		then(actual.getValue()).isEqualTo("10test");
 	}
+
+	@Property
+	void sizeApplySize() {
+		// when
+		IntegerList actual = SUT.giveMeBuilder(IntegerList.class)
+			.size("values", 2)
+			.apply((it, builder) -> {
+			})
+			.size("values", 1)
+			.sample();
+
+		then(actual.getValues()).hasSize(1);
+	}
 }

@@ -502,7 +502,9 @@ public final class ArbitraryBuilder<T> {
 	}
 
 	public ArbitraryBuilder<T> apply(BiConsumer<T, ArbitraryBuilder<T>> biConsumer) {
-		this.builderManipulators.add(new ArbitraryApply<>(this, biConsumer));
+		ArbitraryApply<T> arbitraryApply = new ArbitraryApply<>(this, biConsumer);
+		this.builderManipulators.clear(); // toSampleArbitraryBuilder have all manipulators before apply
+		this.builderManipulators.add(arbitraryApply);
 		return this;
 	}
 
@@ -546,10 +548,9 @@ public final class ArbitraryBuilder<T> {
 
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	public ArbitraryBuilder<T> apply(MetadataManipulator manipulator) {
-		ArbitraryExpression arbitraryExpression = manipulator.getArbitraryExpression();
-
 		if (manipulator instanceof ContainerSizeManipulator) {
 			ContainerSizeManipulator containerSizeManipulator = ((ContainerSizeManipulator)manipulator);
+			ArbitraryExpression arbitraryExpression = containerSizeManipulator.getArbitraryExpression();
 
 			Collection<ArbitraryNode> foundNodes = this.findNodesByExpression(arbitraryExpression);
 			for (ArbitraryNode foundNode : foundNodes) {
@@ -617,23 +618,32 @@ public final class ArbitraryBuilder<T> {
 		BiConsumer<T, ArbitraryBuilder<T>> builderBiConsumer = arbitraryApply.getBuilderBiConsumer();
 
 		T sample = toSampleArbitraryBuilder.sample();
-		int preApplyManipulatorSize = toSampleArbitraryBuilder.builderManipulators.size();
+		List<BuilderManipulator> preApplyManipulator = new ArrayList<>(toSampleArbitraryBuilder.builderManipulators);
 		builderBiConsumer.accept(sample, toSampleArbitraryBuilder);
 
 		this.apply(new ArbitrarySet<>(ArbitraryExpression.from(HEAD_NAME), sample));
-		this.apply(getDeltaManipulators(toSampleArbitraryBuilder, preApplyManipulatorSize));
+		this.apply(getDeltaManipulators(preApplyManipulator, toSampleArbitraryBuilder.builderManipulators));
 		return this;
 	}
 
 	private List<BuilderManipulator> getDeltaManipulators(
-		ArbitraryBuilder<T> toSampleArbitraryBuilder,
-		int preApplyManipulatorSize
+		List<BuilderManipulator> preApplyManipulators,
+		List<BuilderManipulator> postApplyManipulators
 	) {
 		List<BuilderManipulator> deltaManipulators = new ArrayList<>();
-		int postApplyManipulatorSize = toSampleArbitraryBuilder.builderManipulators.size();
+		int preApplyManipulatorSize = preApplyManipulators.size();
+		int postApplyManipulatorSize = postApplyManipulators.size();
 
-		for (int i = preApplyManipulatorSize; i < postApplyManipulatorSize; i++) {
-			deltaManipulators.add(toSampleArbitraryBuilder.builderManipulators.get(i));
+		for (int i = 0; i < postApplyManipulatorSize; i++) {
+			BuilderManipulator postApplyManipulator = postApplyManipulators.get(i);
+			if (preApplyManipulatorSize <= i) {
+				deltaManipulators.add(postApplyManipulator);
+			} else {
+				BuilderManipulator preApplyManipulator = preApplyManipulators.get(i);
+				if (!preApplyManipulator.equals(postApplyManipulator)) {
+					deltaManipulators.add(postApplyManipulator);
+				}
+			}
 		}
 
 		return deltaManipulators;
