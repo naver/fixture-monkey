@@ -23,6 +23,8 @@ import java.util.List;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
+
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public class CompositeArbitraryTypeIntrospector implements ArbitraryTypeIntrospector {
 	private final List<ArbitraryTypeIntrospector> introspectors;
@@ -32,7 +34,7 @@ public class CompositeArbitraryTypeIntrospector implements ArbitraryTypeIntrospe
 	}
 
 	@Override
-	public ArbitraryIntrospectorResult introspect(ArbitraryIntrospectorContext context) {
+	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
 		for (ArbitraryTypeIntrospector introspector : this.introspectors) {
 			ArbitraryIntrospectorResult result = introspector.introspect(context);
 			if (!ArbitraryIntrospectorResult.EMPTY.equals(result)) {

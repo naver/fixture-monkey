@@ -18,9 +18,11 @@
 
 package com.navercorp.fixturemonkey.api.generator;
 
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -31,16 +33,13 @@ import com.navercorp.fixturemonkey.api.property.Property;
 public final class ArbitraryGeneratorContext {
 	private final ArbitraryProperty property;
 	private final List<ArbitraryProperty> children;
-	private final ArbitraryGenerator generator;
 
 	public ArbitraryGeneratorContext(
 		ArbitraryProperty property,
-		List<ArbitraryProperty> children,
-		ArbitraryGenerator generator
+		List<ArbitraryProperty> children
 	) {
 		this.property = property;
 		this.children = new ArrayList<>(children);
-		this.generator = generator;
 	}
 
 	public ArbitraryProperty getArbitraryProperty() {
@@ -51,11 +50,15 @@ public final class ArbitraryGeneratorContext {
 		return this.getArbitraryProperty().getProperty();
 	}
 
-	public List<ArbitraryProperty> getChildren() {
-		return Collections.unmodifiableList(this.children);
+	public Class<?> getType() {
+		return this.getProperty().getType();
 	}
 
-	public ArbitraryGenerator getGenerator() {
-		return this.generator;
+	public <T extends Annotation> Optional<T> findAnnotation(Class<T> annotationClass) {
+		return this.getProperty().getAnnotation(annotationClass);
+	}
+
+	public List<ArbitraryProperty> getChildren() {
+		return Collections.unmodifiableList(this.children);
 	}
 }

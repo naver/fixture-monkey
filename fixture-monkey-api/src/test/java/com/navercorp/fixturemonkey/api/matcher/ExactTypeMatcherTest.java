@@ -39,8 +39,7 @@ class ExactTypeMatcherTest {
 		Property property = PropertyCache.getReadProperty(TypeMatcherSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(property, "", null, false, 0.0D),
-			Collections.emptyList(),
-			ctxt -> null
+			Collections.emptyList()
 		);
 
 		// when
@@ -58,8 +57,7 @@ class ExactTypeMatcherTest {
 		Property property = PropertyCache.getReadProperty(TypeMatcherSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(property, "", null, false, 0.0D),
-			Collections.emptyList(),
-			ctxt -> null
+			Collections.emptyList()
 		);
 
 		// when

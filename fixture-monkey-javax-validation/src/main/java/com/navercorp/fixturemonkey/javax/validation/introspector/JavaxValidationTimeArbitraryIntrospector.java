@@ -50,7 +50,7 @@ import net.jqwik.time.api.arbitraries.YearMonthArbitrary;
 import net.jqwik.time.api.arbitraries.ZoneOffsetArbitrary;
 import net.jqwik.time.api.arbitraries.ZonedDateTimeArbitrary;
 
-import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorContext;
+import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.introspector.TimeArbitraryIntrospector;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
@@ -68,7 +68,7 @@ public final class JavaxValidationTimeArbitraryIntrospector implements TimeArbit
 	@Override
 	public Arbitrary<Calendar> calendars(
 		CalendarArbitrary calendarArbitrary,
-		ArbitraryIntrospectorContext context
+		ArbitraryGeneratorContext context
 	) {
 		JavaxValidationDateTimeConstraint constraint =
 			this.constraintGenerator.generateDateTimeConstraint(context);
@@ -92,7 +92,7 @@ public final class JavaxValidationTimeArbitraryIntrospector implements TimeArbit
 	@Override
 	public Arbitrary<Date> dates(
 		DateArbitrary dateArbitrary,
-		ArbitraryIntrospectorContext context
+		ArbitraryGeneratorContext context
 	) {
 		throw new UnsupportedOperationException("Not implement yet.");
 	}
@@ -100,7 +100,7 @@ public final class JavaxValidationTimeArbitraryIntrospector implements TimeArbit
 	@Override
 	public Arbitrary<Instant> instants(
 		InstantArbitrary instantArbitrary,
-		ArbitraryIntrospectorContext context
+		ArbitraryGeneratorContext context
 	) {
 		JavaxValidationDateTimeConstraint constraint =
 			this.constraintGenerator.generateDateTimeConstraint(context);
@@ -120,7 +120,7 @@ public final class JavaxValidationTimeArbitraryIntrospector implements TimeArbit
 	@Override
 	public Arbitrary<LocalDate> localDates(
 		LocalDateArbitrary localDateArbitrary,
-		ArbitraryIntrospectorContext context
+		ArbitraryGeneratorContext context
 	) {
 		throw new UnsupportedOperationException("Not implement yet.");
 	}
@@ -128,7 +128,7 @@ public final class JavaxValidationTimeArbitraryIntrospector implements TimeArbit
 	@Override
 	public Arbitrary<LocalDateTime> localDateTimes(
 		LocalDateTimeArbitrary localDateTimeArbitrary,
-		ArbitraryIntrospectorContext context
+		ArbitraryGeneratorContext context
 	) {
 		throw new UnsupportedOperationException("Not implement yet.");
 	}
@@ -136,7 +136,7 @@ public final class JavaxValidationTimeArbitraryIntrospector implements TimeArbit
 	@Override
 	public Arbitrary<LocalTime> localTimes(
 		LocalTimeArbitrary localTimeArbitrary,
-		ArbitraryIntrospectorContext context
+		ArbitraryGeneratorContext context
 	) {
 		throw new UnsupportedOperationException("Not implement yet.");
 	}
@@ -144,7 +144,7 @@ public final class JavaxValidationTimeArbitraryIntrospector implements TimeArbit
 	@Override
 	public Arbitrary<ZonedDateTime> zonedDateTimes(
 		ZonedDateTimeArbitrary zonedDateTimeArbitrary,
-		ArbitraryIntrospectorContext context
+		ArbitraryGeneratorContext context
 	) {
 		throw new UnsupportedOperationException("Not implement yet.");
 	}
@@ -152,7 +152,7 @@ public final class JavaxValidationTimeArbitraryIntrospector implements TimeArbit
 	@Override
 	public Arbitrary<MonthDay> monthDays(
 		MonthDayArbitrary monthDayArbitrary,
-		ArbitraryIntrospectorContext context
+		ArbitraryGeneratorContext context
 	) {
 		throw new UnsupportedOperationException("Not implement yet.");
 	}
@@ -160,7 +160,7 @@ public final class JavaxValidationTimeArbitraryIntrospector implements TimeArbit
 	@Override
 	public Arbitrary<OffsetDateTime> offsetDateTimes(
 		OffsetDateTimeArbitrary offsetDateTimeArbitrary,
-		ArbitraryIntrospectorContext context
+		ArbitraryGeneratorContext context
 	) {
 		throw new UnsupportedOperationException("Not implement yet.");
 	}
@@ -168,7 +168,7 @@ public final class JavaxValidationTimeArbitraryIntrospector implements TimeArbit
 	@Override
 	public Arbitrary<OffsetTimeArbitrary> offsetTimes(
 		OffsetTimeArbitrary offsetTimeArbitrary,
-		ArbitraryIntrospectorContext context
+		ArbitraryGeneratorContext context
 	) {
 		throw new UnsupportedOperationException("Not implement yet.");
 	}
@@ -176,7 +176,7 @@ public final class JavaxValidationTimeArbitraryIntrospector implements TimeArbit
 	@Override
 	public Arbitrary<PeriodArbitrary> periods(
 		PeriodArbitrary periodArbitrary,
-		ArbitraryIntrospectorContext context
+		ArbitraryGeneratorContext context
 	) {
 		throw new UnsupportedOperationException("Not implement yet.");
 	}
@@ -184,7 +184,7 @@ public final class JavaxValidationTimeArbitraryIntrospector implements TimeArbit
 	@Override
 	public Arbitrary<DurationArbitrary> durations(
 		DurationArbitrary durationArbitrary,
-		ArbitraryIntrospectorContext context
+		ArbitraryGeneratorContext context
 	) {
 		throw new UnsupportedOperationException("Not implement yet.");
 	}
@@ -192,7 +192,7 @@ public final class JavaxValidationTimeArbitraryIntrospector implements TimeArbit
 	@Override
 	public Arbitrary<Year> years(
 		YearArbitrary yearArbitrary,
-		ArbitraryIntrospectorContext context
+		ArbitraryGeneratorContext context
 	) {
 		throw new UnsupportedOperationException("Not implement yet.");
 	}
@@ -200,7 +200,7 @@ public final class JavaxValidationTimeArbitraryIntrospector implements TimeArbit
 	@Override
 	public Arbitrary<YearMonthArbitrary> yearMonths(
 		YearMonthArbitrary yearMonthArbitrary,
-		ArbitraryIntrospectorContext context
+		ArbitraryGeneratorContext context
 	) {
 		throw new UnsupportedOperationException("Not implement yet.");
 	}
@@ -208,7 +208,7 @@ public final class JavaxValidationTimeArbitraryIntrospector implements TimeArbit
 	@Override
 	public Arbitrary<ZoneOffsetArbitrary> zoneOffsets(
 		ZoneOffsetArbitrary zoneOffsetArbitrary,
-		ArbitraryIntrospectorContext context
+		ArbitraryGeneratorContext context
 	) {
 		throw new UnsupportedOperationException("Not implement yet.");
 	}
