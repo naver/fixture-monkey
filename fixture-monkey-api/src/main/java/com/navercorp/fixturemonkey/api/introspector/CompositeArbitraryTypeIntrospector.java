@@ -27,16 +27,11 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.matcher.TypeMatcher;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public class CompositeArbitraryTypeIntrospector implements ArbitraryTypeIntrospector, TypeMatcher {
+public class CompositeArbitraryTypeIntrospector implements ArbitraryTypeIntrospector {
 	private final List<ArbitraryTypeIntrospector> introspectors;
 
 	public CompositeArbitraryTypeIntrospector(List<ArbitraryTypeIntrospector> introspectors) {
 		this.introspectors = introspectors;
-	}
-
-	@Override
-	public boolean match(ArbitraryGeneratorContext context) {
-		return true;
 	}
 
 	@Override
