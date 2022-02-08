@@ -30,8 +30,7 @@ import com.navercorp.fixturemonkey.api.matcher.ExactTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.TypeMatcher;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-final class UuidTypeIntrospector implements ArbitraryTypeIntrospector, TypeMatcher {
-	public static final UuidTypeIntrospector INSTANCE = new UuidTypeIntrospector();
+public final class UuidTypeIntrospector implements ArbitraryTypeIntrospector, TypeMatcher {
 	private static final TypeMatcher TYPE_MATCHER = new ExactTypeMatcher(UUID.class);
 
 	@Override

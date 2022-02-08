@@ -28,7 +28,7 @@ import com.navercorp.fixturemonkey.api.matcher.TypeMatcher;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class BooleanTypeIntrospector implements ArbitraryTypeIntrospector, TypeMatcher {
-	public static final BooleanTypeIntrospector INSTANCE = new BooleanTypeIntrospector();
+	static final BooleanTypeIntrospector INSTANCE = new BooleanTypeIntrospector();
 
 	@Override
 	public boolean match(ArbitraryGeneratorContext context) {

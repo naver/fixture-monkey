@@ -28,8 +28,6 @@ import com.navercorp.fixturemonkey.api.matcher.TypeMatcher;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class EnumTypeIntrospector implements ArbitraryTypeIntrospector, TypeMatcher {
-	public static final EnumTypeIntrospector INSTANCE = new EnumTypeIntrospector();
-
 	@Override
 	public boolean match(ArbitraryGeneratorContext context) {
 		return context.getType().isEnum();

@@ -30,9 +30,9 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 public interface ArbitraryTypeIntrospector {
 	ArbitraryTypeIntrospector INTROSPECTORS = new CompositeArbitraryTypeIntrospector(
 		Arrays.asList(
-			EnumTypeIntrospector.INSTANCE,
-			BooleanTypeIntrospector.INSTANCE,
-			UuidTypeIntrospector.INSTANCE
+			new EnumTypeIntrospector(),
+			new BooleanTypeIntrospector(),
+			new UuidTypeIntrospector()
 		)
 	);
 
