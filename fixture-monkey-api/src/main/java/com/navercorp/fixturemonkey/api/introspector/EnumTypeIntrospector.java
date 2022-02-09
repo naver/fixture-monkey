@@ -27,13 +27,13 @@ import net.jqwik.api.Arbitraries;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
-import com.navercorp.fixturemonkey.api.type.Types;
+import com.navercorp.fixturemonkey.api.matcher.Matchers;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class EnumTypeIntrospector implements ArbitraryTypeIntrospector, Matcher {
 	@Override
 	public boolean match(ArbitraryGeneratorContext context) {
-		return Types.getActualType(context.getType()).isEnum();
+		return Matchers.ENUM_TYPE_MATCHER.match(context);
 	}
 
 	@SuppressWarnings({"unchecked", "rawtypes"})

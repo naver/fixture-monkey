@@ -18,8 +18,6 @@
 
 package com.navercorp.fixturemonkey.api.introspector;
 
-import java.lang.reflect.Type;
-
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
@@ -27,14 +25,14 @@ import net.jqwik.api.Arbitraries;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
+import com.navercorp.fixturemonkey.api.matcher.Matchers;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class BooleanTypeIntrospector implements ArbitraryTypeIntrospector, Matcher {
 
 	@Override
 	public boolean match(ArbitraryGeneratorContext context) {
-		Type type = context.getType();
-		return type == boolean.class || type == Boolean.class;
+		return Matchers.BOOLEAN_TYPE_MATCHER.match(context);
 	}
 
 	@Override
