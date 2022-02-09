@@ -18,6 +18,7 @@
 
 package com.navercorp.fixturemonkey.javax.validation.introspector;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Optional;
 
@@ -176,5 +177,115 @@ public class JavaxValidationConstraintGenerator {
 		}
 
 		return new JavaxValidationIntegerConstraint(min, max);
+	}
+
+	public JavaxValidationDecimalConstraint generateDecimalConstraint(ArbitraryGeneratorContext context) {
+		BigDecimal min = null;
+		Boolean minInclusive = null;
+		BigDecimal max = null;
+		Boolean maxInclusive = null;
+
+		Optional<Digits> digits = context.findAnnotation(Digits.class);
+		if (digits.isPresent()) {
+			BigDecimal value = BigDecimal.ONE;
+			int integer = digits.get().integer();
+			if (integer > 1) {
+				value = BigDecimal.TEN.pow(integer - 1);
+			}
+			max = value.multiply(BigDecimal.TEN).subtract(BigDecimal.ONE);
+			min = max.negate();
+		}
+
+		Optional<Min> minAnnotation = context.findAnnotation(Min.class);
+		if (minAnnotation.isPresent()) {
+			BigDecimal minValue = minAnnotation.map(Min::value).map(BigDecimal::valueOf).get();
+			if (min == null) {
+				min = minValue;
+			} else if (min.compareTo(minValue) > 0) {
+				min = minValue;
+			}
+		}
+
+		Optional<DecimalMin> decimalMinAnnotation = context.findAnnotation(DecimalMin.class);
+		if (decimalMinAnnotation.isPresent()) {
+			BigDecimal decimalMin = decimalMinAnnotation
+				.map(DecimalMin::value)
+				.map(BigDecimal::new)
+				.get();
+
+			if (!decimalMinAnnotation.map(DecimalMin::inclusive).get()) {
+				minInclusive = false;
+			}
+
+			if (min == null) {
+				min = decimalMin;
+			} else if (min.compareTo(decimalMin) < 0) {
+				min = decimalMin;
+			}
+		}
+
+		Optional<Max> maxAnnotation = context.findAnnotation(Max.class);
+		if (maxAnnotation.isPresent()) {
+			BigDecimal maxValue = maxAnnotation.map(Max::value).map(BigDecimal::valueOf).get();
+			if (max == null) {
+				max = maxValue;
+			} else if (max.compareTo(maxValue) > 0) {
+				max = maxValue;
+			}
+		}
+
+		Optional<DecimalMax> decimalMaxAnnotation = context.findAnnotation(DecimalMax.class);
+		if (decimalMaxAnnotation.isPresent()) {
+			BigDecimal decimalMax = decimalMaxAnnotation
+				.map(DecimalMax::value)
+				.map(BigDecimal::new)
+				.get();
+
+			if (!decimalMaxAnnotation.map(DecimalMax::inclusive).get()) {
+				maxInclusive = false;
+			}
+
+			if (max == null) {
+				max = decimalMax;
+			} else if (max.compareTo(decimalMax) > 0) {
+				max = decimalMax;
+			}
+		}
+
+		if (context.findAnnotation(Negative.class).isPresent()) {
+			if (max == null || max.compareTo(BigDecimal.ZERO) > 0) {
+				max = BigDecimal.ZERO;
+				maxInclusive = false;
+			}
+		}
+
+		if (context.findAnnotation(NegativeOrZero.class).isPresent()) {
+			if (max == null || max.compareTo(BigDecimal.ZERO) > 0) {
+				max = BigDecimal.ZERO;
+			}
+		}
+
+		if (context.findAnnotation(Positive.class).isPresent()) {
+			if (min == null || min.compareTo(BigDecimal.ZERO) < 0) {
+				min = BigDecimal.ZERO;
+				minInclusive = false;
+			}
+		}
+
+		if (context.findAnnotation(PositiveOrZero.class).isPresent()) {
+			if (min == null || min.compareTo(BigDecimal.ZERO) < 0) {
+				min = BigDecimal.ZERO;
+			}
+		}
+
+		if (min != null && minInclusive == null) {
+			minInclusive = true;
+		}
+
+		if (max != null && maxInclusive == null) {
+			maxInclusive = true;
+		}
+
+		return new JavaxValidationDecimalConstraint(min, minInclusive, max, maxInclusive);
 	}
 }
