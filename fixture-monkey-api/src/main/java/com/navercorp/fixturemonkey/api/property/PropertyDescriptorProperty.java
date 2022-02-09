@@ -39,11 +39,17 @@ import org.apiguardian.api.API.Status;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class PropertyDescriptorProperty implements Property {
+	private final Type type;
 	private final PropertyDescriptor propertyDescriptor;
 	private final List<Annotation> annotations;
 	private final Map<Class<? extends Annotation>, Annotation> annotationsMap;
 
 	public PropertyDescriptorProperty(PropertyDescriptor propertyDescriptor) {
+		this(propertyDescriptor.getPropertyType(), propertyDescriptor);
+	}
+
+	public PropertyDescriptorProperty(Type type, PropertyDescriptor propertyDescriptor) {
+		this.type = type;
 		this.propertyDescriptor = propertyDescriptor;
 		this.annotations = Arrays.asList(propertyDescriptor.getReadMethod().getAnnotations());
 		this.annotationsMap = this.annotations.stream()
@@ -56,7 +62,7 @@ public final class PropertyDescriptorProperty implements Property {
 
 	@Override
 	public Type getType() {
-		return this.propertyDescriptor.getPropertyType();
+		return this.type;
 	}
 
 	@Override
@@ -102,16 +108,19 @@ public final class PropertyDescriptorProperty implements Property {
 			return false;
 		}
 		PropertyDescriptorProperty that = (PropertyDescriptorProperty)obj;
-		return Objects.equals(this.propertyDescriptor, that.propertyDescriptor);
+		return Objects.equals(type, that.type)
+			&& Objects.equals(propertyDescriptor, that.propertyDescriptor);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(this.propertyDescriptor);
+		return Objects.hash(type, propertyDescriptor);
 	}
 
 	@Override
 	public String toString() {
-		return "PropertyDescriptorProperty{propertyDescriptor='" + this.propertyDescriptor + '}';
+		return "PropertyDescriptorProperty{"
+			+ "type=" + type
+			+ ", propertyDescriptor=" + propertyDescriptor + '}';
 	}
 }
