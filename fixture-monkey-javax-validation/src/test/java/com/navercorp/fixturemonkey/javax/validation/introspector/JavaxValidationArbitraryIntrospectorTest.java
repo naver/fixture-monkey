@@ -27,6 +27,7 @@ import java.util.regex.Pattern;
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
 import net.jqwik.api.Property;
+import net.jqwik.api.arbitraries.ByteArbitrary;
 import net.jqwik.api.arbitraries.CharacterArbitrary;
 import net.jqwik.api.arbitraries.ShortArbitrary;
 import net.jqwik.api.arbitraries.StringArbitrary;
@@ -245,7 +246,7 @@ class JavaxValidationArbitraryIntrospectorTest {
 	}
 
 	@Property
-	void minValue() {
+	void shortMinValue() {
 		// given
 		ShortArbitrary shortArbitrary = Arbitraries.shorts();
 		String propertyName = "minValue";
@@ -265,7 +266,7 @@ class JavaxValidationArbitraryIntrospectorTest {
 	}
 
 	@Property
-	void maxValue() {
+	void shortMaxValue() {
 		// given
 		ShortArbitrary shortArbitrary = Arbitraries.shorts();
 		String propertyName = "maxValue";
@@ -285,7 +286,7 @@ class JavaxValidationArbitraryIntrospectorTest {
 	}
 
 	@Property
-	void decimalMin() {
+	void shortDecimalMin() {
 		// given
 		ShortArbitrary shortArbitrary = Arbitraries.shorts();
 		String propertyName = "decimalMin";
@@ -305,7 +306,7 @@ class JavaxValidationArbitraryIntrospectorTest {
 	}
 
 	@Property
-	void decimalMinExclusive() {
+	void shortDecimalMinExclusive() {
 		// given
 		ShortArbitrary shortArbitrary = Arbitraries.shorts();
 		String propertyName = "decimalMinExclusive";
@@ -325,7 +326,7 @@ class JavaxValidationArbitraryIntrospectorTest {
 	}
 
 	@Property
-	void decimalMax() {
+	void shortDecimalMax() {
 		// given
 		ShortArbitrary shortArbitrary = Arbitraries.shorts();
 		String propertyName = "decimalMax";
@@ -345,7 +346,7 @@ class JavaxValidationArbitraryIntrospectorTest {
 	}
 
 	@Property
-	void decimalMaxExclusive() {
+	void shortDecimalMaxExclusive() {
 		// given
 		ShortArbitrary shortArbitrary = Arbitraries.shorts();
 		String propertyName = "decimalMaxExclusive";
@@ -365,7 +366,7 @@ class JavaxValidationArbitraryIntrospectorTest {
 	}
 
 	@Property
-	void negative() {
+	void shortNegative() {
 		// given
 		ShortArbitrary shortArbitrary = Arbitraries.shorts();
 		String propertyName = "negative";
@@ -385,7 +386,7 @@ class JavaxValidationArbitraryIntrospectorTest {
 	}
 
 	@Property
-	void negativeOrZero() {
+	void shortNegativeOrZero() {
 		// given
 		ShortArbitrary shortArbitrary = Arbitraries.shorts();
 		String propertyName = "negativeOrZero";
@@ -405,7 +406,7 @@ class JavaxValidationArbitraryIntrospectorTest {
 	}
 
 	@Property
-	void positive() {
+	void shortPositive() {
 		// given
 		ShortArbitrary shortArbitrary = Arbitraries.shorts();
 		String propertyName = "positive";
@@ -425,7 +426,7 @@ class JavaxValidationArbitraryIntrospectorTest {
 	}
 
 	@Property
-	void positiveOrZero() {
+	void shortPositiveOrZero() {
 		// given
 		ShortArbitrary shortArbitrary = Arbitraries.shorts();
 		String propertyName = "positiveOrZero";
@@ -442,5 +443,245 @@ class JavaxValidationArbitraryIntrospectorTest {
 		// then
 		short value = actual.sample();
 		then(value).isGreaterThanOrEqualTo((short)0);
+	}
+
+	@Property
+	void bytes() {
+		// given
+		ByteArbitrary byteArbitrary = Arbitraries.bytes();
+		String propertyName = "byteValue";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getReadProperty(ByteIntrospectorSpec.class, propertyName).get();
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(property, "", null, false, 0.0D),
+			Collections.emptyList()
+		);
+
+		// when
+		Arbitrary<Byte> actual = this.sut.bytes(byteArbitrary, context);
+
+		// then
+		byte value = actual.sample();
+		then(value).isNotNull();
+	}
+
+	@Property
+	void byteDigitsValue() {
+		// given
+		ByteArbitrary byteArbitrary = Arbitraries.bytes();
+		String propertyName = "digitsValue";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getReadProperty(ByteIntrospectorSpec.class, propertyName).get();
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(property, "", null, false, 0.0D),
+			Collections.emptyList()
+		);
+
+		// when
+		Arbitrary<Byte> actual = this.sut.bytes(byteArbitrary, context);
+
+		// then
+		byte value = actual.sample();
+		then(value).isBetween((byte)-100, (byte)100);
+	}
+
+	@Property
+	void byteMinValue() {
+		// given
+		ByteArbitrary byteArbitrary = Arbitraries.bytes();
+		String propertyName = "minValue";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getReadProperty(ByteIntrospectorSpec.class, propertyName).get();
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(property, "", null, false, 0.0D),
+			Collections.emptyList()
+		);
+
+		// when
+		Arbitrary<Byte> actual = this.sut.bytes(byteArbitrary, context);
+
+		// then
+		byte value = actual.sample();
+		then(value).isGreaterThanOrEqualTo((byte)100);
+	}
+
+	@Property
+	void byteMaxValue() {
+		// given
+		ByteArbitrary byteArbitrary = Arbitraries.bytes();
+		String propertyName = "maxValue";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getReadProperty(ByteIntrospectorSpec.class, propertyName).get();
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(property, "", null, false, 0.0D),
+			Collections.emptyList()
+		);
+
+		// when
+		Arbitrary<Byte> actual = this.sut.bytes(byteArbitrary, context);
+
+		// then
+		byte value = actual.sample();
+		then(value).isLessThanOrEqualTo((byte)100);
+	}
+
+	@Property
+	void byteDecimalMin() {
+		// given
+		ByteArbitrary byteArbitrary = Arbitraries.bytes();
+		String propertyName = "decimalMin";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getReadProperty(ByteIntrospectorSpec.class, propertyName).get();
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(property, "", null, false, 0.0D),
+			Collections.emptyList()
+		);
+
+		// when
+		Arbitrary<Byte> actual = this.sut.bytes(byteArbitrary, context);
+
+		// then
+		byte value = actual.sample();
+		then(value).isGreaterThanOrEqualTo((byte)100);
+	}
+
+	@Property
+	void byteDecimalMinExclusive() {
+		// given
+		ByteArbitrary byteArbitrary = Arbitraries.bytes();
+		String propertyName = "decimalMinExclusive";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getReadProperty(ByteIntrospectorSpec.class, propertyName).get();
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(property, "", null, false, 0.0D),
+			Collections.emptyList()
+		);
+
+		// when
+		Arbitrary<Byte> actual = this.sut.bytes(byteArbitrary, context);
+
+		// then
+		byte value = actual.sample();
+		then(value).isGreaterThanOrEqualTo((byte)101);
+	}
+
+	@Property
+	void byteDecimalMax() {
+		// given
+		ByteArbitrary byteArbitrary = Arbitraries.bytes();
+		String propertyName = "decimalMax";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getReadProperty(ByteIntrospectorSpec.class, propertyName).get();
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(property, "", null, false, 0.0D),
+			Collections.emptyList()
+		);
+
+		// when
+		Arbitrary<Byte> actual = this.sut.bytes(byteArbitrary, context);
+
+		// then
+		byte value = actual.sample();
+		then(value).isLessThanOrEqualTo((byte)100);
+	}
+
+	@Property
+	void byteDecimalMaxExclusive() {
+		// given
+		ByteArbitrary byteArbitrary = Arbitraries.bytes();
+		String propertyName = "decimalMaxExclusive";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getReadProperty(ByteIntrospectorSpec.class, propertyName).get();
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(property, "", null, false, 0.0D),
+			Collections.emptyList()
+		);
+
+		// when
+		Arbitrary<Byte> actual = this.sut.bytes(byteArbitrary, context);
+
+		// then
+		byte value = actual.sample();
+		then(value).isLessThanOrEqualTo((byte)99);
+	}
+
+	@Property
+	void byteNegative() {
+		// given
+		ByteArbitrary byteArbitrary = Arbitraries.bytes();
+		String propertyName = "negative";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getReadProperty(ByteIntrospectorSpec.class, propertyName).get();
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(property, "", null, false, 0.0D),
+			Collections.emptyList()
+		);
+
+		// when
+		Arbitrary<Byte> actual = this.sut.bytes(byteArbitrary, context);
+
+		// then
+		byte value = actual.sample();
+		then(value).isLessThan((byte)0);
+	}
+
+	@Property
+	void byteNegativeOrZero() {
+		// given
+		ByteArbitrary byteArbitrary = Arbitraries.bytes();
+		String propertyName = "negativeOrZero";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getReadProperty(ByteIntrospectorSpec.class, propertyName).get();
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(property, "", null, false, 0.0D),
+			Collections.emptyList()
+		);
+
+		// when
+		Arbitrary<Byte> actual = this.sut.bytes(byteArbitrary, context);
+
+		// then
+		byte value = actual.sample();
+		then(value).isLessThanOrEqualTo((byte)0);
+	}
+
+	@Property
+	void bytePositive() {
+		// given
+		ByteArbitrary byteArbitrary = Arbitraries.bytes();
+		String propertyName = "positive";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getReadProperty(ByteIntrospectorSpec.class, propertyName).get();
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(property, "", null, false, 0.0D),
+			Collections.emptyList()
+		);
+
+		// when
+		Arbitrary<Byte> actual = this.sut.bytes(byteArbitrary, context);
+
+		// then
+		byte value = actual.sample();
+		then(value).isGreaterThan((byte)0);
+	}
+
+	@Property
+	void bytePositiveOrZero() {
+		// given
+		ByteArbitrary byteArbitrary = Arbitraries.bytes();
+		String propertyName = "positiveOrZero";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getReadProperty(ByteIntrospectorSpec.class, propertyName).get();
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(property, "", null, false, 0.0D),
+			Collections.emptyList()
+		);
+
+		// when
+		Arbitrary<Byte> actual = this.sut.bytes(byteArbitrary, context);
+
+		// then
+		byte value = actual.sample();
+		then(value).isGreaterThanOrEqualTo((byte)0);
 	}
 }
