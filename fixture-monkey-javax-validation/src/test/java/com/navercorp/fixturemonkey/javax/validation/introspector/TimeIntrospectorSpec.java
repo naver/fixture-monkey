@@ -7,6 +7,7 @@ import java.time.LocalTime;
 import java.time.Period;
 import java.time.ZoneOffset;
 import java.util.Calendar;
+import java.util.Date;
 
 import javax.validation.constraints.Future;
 import javax.validation.constraints.FutureOrPresent;
@@ -41,6 +42,20 @@ class TimeIntrospectorSpec {
 
 	@FutureOrPresent
 	private Calendar calendarFutureOrPresent;
+
+	private Date date;
+
+	@Past
+	private Date datePast;
+
+	@PastOrPresent
+	private Date datePastOrPresent;
+
+	@Future
+	private Date dateFuture;
+
+	@FutureOrPresent
+	private Date dateFutureOrPresent;
 
 	private LocalDate localDate;
 

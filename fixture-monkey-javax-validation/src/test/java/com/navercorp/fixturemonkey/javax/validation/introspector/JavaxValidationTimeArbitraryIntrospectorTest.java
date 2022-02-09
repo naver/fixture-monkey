@@ -27,6 +27,7 @@ import java.time.Period;
 import java.time.ZoneOffset;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 
 import net.jqwik.api.Arbitrary;
 import net.jqwik.api.Property;
@@ -34,6 +35,7 @@ import net.jqwik.time.api.DateTimes;
 import net.jqwik.time.api.Dates;
 import net.jqwik.time.api.Times;
 import net.jqwik.time.api.arbitraries.CalendarArbitrary;
+import net.jqwik.time.api.arbitraries.DateArbitrary;
 import net.jqwik.time.api.arbitraries.DurationArbitrary;
 import net.jqwik.time.api.arbitraries.InstantArbitrary;
 import net.jqwik.time.api.arbitraries.LocalTimeArbitrary;
@@ -153,6 +155,114 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 
 		Calendar now = Calendar.getInstance();
 		then(calendar.getTimeInMillis()).isGreaterThanOrEqualTo(now.toInstant().toEpochMilli());
+	}
+
+	@Property
+	void dates() {
+		// given
+		DateArbitrary dateArbitrary = Dates.datesAsDate();
+		String propertyName = "date";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getReadProperty(TimeIntrospectorSpec.class, propertyName).get();
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(property, "", null, false, 0.0D),
+			Collections.emptyList()
+		);
+
+		// when
+		Arbitrary<Date> actual = this.sut.dates(dateArbitrary, context);
+
+		// then
+		Date date = actual.sample();
+		then(date).isNotNull();
+	}
+
+	@Property
+	void datesPast() {
+		// given
+		DateArbitrary dateArbitrary = Dates.datesAsDate();
+		String propertyName = "datePast";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getReadProperty(TimeIntrospectorSpec.class, propertyName).get();
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(property, "", null, false, 0.0D),
+			Collections.emptyList()
+		);
+
+		// when
+		Arbitrary<Date> actual = this.sut.dates(dateArbitrary, context);
+
+		// then
+		Date date = actual.sample();
+
+		Date now = new Date();
+		then(date.getTime()).isLessThan(now.getTime());
+	}
+
+	@Property
+	void datesPastOrPresent() {
+		// given
+		DateArbitrary dateArbitrary = Dates.datesAsDate();
+		String propertyName = "datePastOrPresent";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getReadProperty(TimeIntrospectorSpec.class, propertyName).get();
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(property, "", null, false, 0.0D),
+			Collections.emptyList()
+		);
+
+		// when
+		Arbitrary<Date> actual = this.sut.dates(dateArbitrary, context);
+
+		// then
+		Date date = actual.sample();
+
+		Date now = new Date();
+		then(date.getTime()).isLessThanOrEqualTo(now.getTime());
+	}
+
+	@Property
+	void datesFuture() {
+		// given
+		DateArbitrary dateArbitrary = Dates.datesAsDate();
+		String propertyName = "dateFuture";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getReadProperty(TimeIntrospectorSpec.class, propertyName).get();
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(property, "", null, false, 0.0D),
+			Collections.emptyList()
+		);
+
+		// when
+		Arbitrary<Date> actual = this.sut.dates(dateArbitrary, context);
+
+		// then
+		Date date = actual.sample();
+
+		Date now = new Date();
+		then(date.getTime()).isGreaterThan(now.getTime());
+	}
+
+	@Property
+	void datesFutureOrPresent() {
+		// given
+		DateArbitrary dateArbitrary = Dates.datesAsDate();
+		String propertyName = "dateFutureOrPresent";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getReadProperty(TimeIntrospectorSpec.class, propertyName).get();
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(property, "", null, false, 0.0D),
+			Collections.emptyList()
+		);
+
+		// when
+		Arbitrary<Date> actual = this.sut.dates(dateArbitrary, context);
+
+		// then
+		Date date = actual.sample();
+
+		Date now = new Date();
+		then(date.getTime()).isGreaterThanOrEqualTo(now.getTime());
 	}
 
 	@Property

@@ -98,7 +98,23 @@ public final class JavaxValidationTimeArbitraryIntrospector implements TimeArbit
 		DateArbitrary dateArbitrary,
 		ArbitraryGeneratorContext context
 	) {
-		throw new UnsupportedOperationException("Not implement yet.");
+		JavaxValidationDateTimeConstraint constraint =
+			this.constraintGenerator.generateDateTimeConstraint(context);
+		LocalDateTime min = constraint.getMin();
+		LocalDateTime max = constraint.getMax();
+
+		if (min != null) {
+			Calendar calendar = Calendar.getInstance();
+			calendar.set(min.getYear(), min.getMonth().ordinal(), min.getDayOfMonth() + 1);
+			dateArbitrary = dateArbitrary.atTheEarliest(calendar.getTime());
+		}
+		if (max != null) {
+			Calendar calendar = Calendar.getInstance();
+			calendar.set(max.getYear(), max.getMonth().ordinal(), max.getDayOfMonth());
+			dateArbitrary = dateArbitrary.atTheLatest(calendar.getTime());
+		}
+
+		return dateArbitrary;
 	}
 
 	@Override
