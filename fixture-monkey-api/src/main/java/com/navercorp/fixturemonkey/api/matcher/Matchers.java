@@ -16,28 +16,23 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.api.introspector;
+package com.navercorp.fixturemonkey.api.matcher;
 
+import java.lang.reflect.Type;
 import java.util.UUID;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import net.jqwik.api.Arbitraries;
-
-import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
-import com.navercorp.fixturemonkey.api.matcher.Matcher;
-import com.navercorp.fixturemonkey.api.matcher.Matchers;
+import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public final class UuidTypeIntrospector implements ArbitraryTypeIntrospector, Matcher {
-	@Override
-	public boolean match(ArbitraryGeneratorContext context) {
-		return Matchers.UUID_TYPE_MATCHER.match(context);
-	}
+public final class Matchers {
 
-	@Override
-	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
-		return new ArbitraryIntrospectorResult(Arbitraries.create(UUID::randomUUID));
-	}
+	public static final Matcher ENUM_TYPE_MATCHER = ctx -> Types.getActualType(ctx.getType()).isEnum();
+	public static final Matcher BOOLEAN_TYPE_MATCHER = ctx -> {
+		Type type = ctx.getType();
+		return type == boolean.class || type == Boolean.class;
+	};
+	public static final Matcher UUID_TYPE_MATCHER = new ExactTypeMatcher(UUID.class);
 }
