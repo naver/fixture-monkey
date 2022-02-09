@@ -29,6 +29,7 @@ import net.jqwik.api.Arbitrary;
 import net.jqwik.api.Property;
 import net.jqwik.api.arbitraries.ByteArbitrary;
 import net.jqwik.api.arbitraries.CharacterArbitrary;
+import net.jqwik.api.arbitraries.IntegerArbitrary;
 import net.jqwik.api.arbitraries.ShortArbitrary;
 import net.jqwik.api.arbitraries.StringArbitrary;
 
@@ -683,5 +684,245 @@ class JavaxValidationArbitraryIntrospectorTest {
 		// then
 		byte value = actual.sample();
 		then(value).isGreaterThanOrEqualTo((byte)0);
+	}
+
+	@Property
+	void integers() {
+		// given
+		IntegerArbitrary integerArbitrary = Arbitraries.integers();
+		String propertyName = "intValue";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getReadProperty(IntIntrospectorSpec.class, propertyName).get();
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(property, "", null, false, 0.0D),
+			Collections.emptyList()
+		);
+
+		// when
+		Arbitrary<Integer> actual = this.sut.integers(integerArbitrary, context);
+
+		// then
+		Integer value = actual.sample();
+		then(value).isNotNull();
+	}
+
+	@Property
+	void integersDigitsValue() {
+		// given
+		IntegerArbitrary integerArbitrary = Arbitraries.integers();
+		String propertyName = "digitsValue";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getReadProperty(IntIntrospectorSpec.class, propertyName).get();
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(property, "", null, false, 0.0D),
+			Collections.emptyList()
+		);
+
+		// when
+		Arbitrary<Integer> actual = this.sut.integers(integerArbitrary, context);
+
+		// then
+		Integer value = actual.sample();
+		then(value).isBetween(-10000, 10000);
+	}
+
+	@Property
+	void integersMinValue() {
+		// given
+		IntegerArbitrary integerArbitrary = Arbitraries.integers();
+		String propertyName = "minValue";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getReadProperty(IntIntrospectorSpec.class, propertyName).get();
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(property, "", null, false, 0.0D),
+			Collections.emptyList()
+		);
+
+		// when
+		Arbitrary<Integer> actual = this.sut.integers(integerArbitrary, context);
+
+		// then
+		Integer value = actual.sample();
+		then(value).isGreaterThanOrEqualTo(100);
+	}
+
+	@Property
+	void integersMaxValue() {
+		// given
+		IntegerArbitrary integerArbitrary = Arbitraries.integers();
+		String propertyName = "maxValue";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getReadProperty(IntIntrospectorSpec.class, propertyName).get();
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(property, "", null, false, 0.0D),
+			Collections.emptyList()
+		);
+
+		// when
+		Arbitrary<Integer> actual = this.sut.integers(integerArbitrary, context);
+
+		// then
+		Integer value = actual.sample();
+		then(value).isLessThanOrEqualTo(100);
+	}
+
+	@Property
+	void integersDecimalMin() {
+		// given
+		IntegerArbitrary integerArbitrary = Arbitraries.integers();
+		String propertyName = "decimalMin";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getReadProperty(IntIntrospectorSpec.class, propertyName).get();
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(property, "", null, false, 0.0D),
+			Collections.emptyList()
+		);
+
+		// when
+		Arbitrary<Integer> actual = this.sut.integers(integerArbitrary, context);
+
+		// then
+		Integer value = actual.sample();
+		then(value).isGreaterThanOrEqualTo(100);
+	}
+
+	@Property
+	void integersDecimalMinExclusive() {
+		// given
+		IntegerArbitrary integerArbitrary = Arbitraries.integers();
+		String propertyName = "decimalMinExclusive";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getReadProperty(IntIntrospectorSpec.class, propertyName).get();
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(property, "", null, false, 0.0D),
+			Collections.emptyList()
+		);
+
+		// when
+		Arbitrary<Integer> actual = this.sut.integers(integerArbitrary, context);
+
+		// then
+		Integer value = actual.sample();
+		then(value).isGreaterThanOrEqualTo(101);
+	}
+
+	@Property
+	void integersDecimalMax() {
+		// given
+		IntegerArbitrary integerArbitrary = Arbitraries.integers();
+		String propertyName = "decimalMax";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getReadProperty(IntIntrospectorSpec.class, propertyName).get();
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(property, "", null, false, 0.0D),
+			Collections.emptyList()
+		);
+
+		// when
+		Arbitrary<Integer> actual = this.sut.integers(integerArbitrary, context);
+
+		// then
+		Integer value = actual.sample();
+		then(value).isLessThanOrEqualTo(100);
+	}
+
+	@Property
+	void integersDecimalMaxExclusive() {
+		// given
+		IntegerArbitrary integerArbitrary = Arbitraries.integers();
+		String propertyName = "decimalMaxExclusive";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getReadProperty(IntIntrospectorSpec.class, propertyName).get();
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(property, "", null, false, 0.0D),
+			Collections.emptyList()
+		);
+
+		// when
+		Arbitrary<Integer> actual = this.sut.integers(integerArbitrary, context);
+
+		// then
+		Integer value = actual.sample();
+		then(value).isLessThanOrEqualTo(99);
+	}
+
+	@Property
+	void integersNegative() {
+		// given
+		IntegerArbitrary integerArbitrary = Arbitraries.integers();
+		String propertyName = "negative";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getReadProperty(IntIntrospectorSpec.class, propertyName).get();
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(property, "", null, false, 0.0D),
+			Collections.emptyList()
+		);
+
+		// when
+		Arbitrary<Integer> actual = this.sut.integers(integerArbitrary, context);
+
+		// then
+		Integer value = actual.sample();
+		then(value).isLessThan(0);
+	}
+
+	@Property
+	void integersNegativeOrZero() {
+		// given
+		IntegerArbitrary integerArbitrary = Arbitraries.integers();
+		String propertyName = "negativeOrZero";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getReadProperty(IntIntrospectorSpec.class, propertyName).get();
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(property, "", null, false, 0.0D),
+			Collections.emptyList()
+		);
+
+		// when
+		Arbitrary<Integer> actual = this.sut.integers(integerArbitrary, context);
+
+		// then
+		Integer value = actual.sample();
+		then(value).isLessThanOrEqualTo(0);
+	}
+
+	@Property
+	void integersPositive() {
+		// given
+		IntegerArbitrary integerArbitrary = Arbitraries.integers();
+		String propertyName = "positive";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getReadProperty(IntIntrospectorSpec.class, propertyName).get();
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(property, "", null, false, 0.0D),
+			Collections.emptyList()
+		);
+
+		// when
+		Arbitrary<Integer> actual = this.sut.integers(integerArbitrary, context);
+
+		// then
+		Integer value = actual.sample();
+		then(value).isGreaterThan(0);
+	}
+
+	@Property
+	void integersPositiveOrZero() {
+		// given
+		IntegerArbitrary integerArbitrary = Arbitraries.integers();
+		String propertyName = "positiveOrZero";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getReadProperty(IntIntrospectorSpec.class, propertyName).get();
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(property, "", null, false, 0.0D),
+			Collections.emptyList()
+		);
+
+		// when
+		Arbitrary<Integer> actual = this.sut.integers(integerArbitrary, context);
+
+		// then
+		Integer value = actual.sample();
+		then(value).isGreaterThanOrEqualTo(0);
 	}
 }
