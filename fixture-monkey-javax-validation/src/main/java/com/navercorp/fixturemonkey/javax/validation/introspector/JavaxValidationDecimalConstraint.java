@@ -19,7 +19,6 @@
 package com.navercorp.fixturemonkey.javax.validation.introspector;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 
 import javax.annotation.Nullable;
 
