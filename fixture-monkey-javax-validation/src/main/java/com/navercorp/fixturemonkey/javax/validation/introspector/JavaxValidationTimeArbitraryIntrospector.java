@@ -142,7 +142,18 @@ public final class JavaxValidationTimeArbitraryIntrospector implements TimeArbit
 		LocalDateArbitrary localDateArbitrary,
 		ArbitraryGeneratorContext context
 	) {
-		throw new UnsupportedOperationException("Not implement yet.");
+		JavaxValidationDateConstraint constraint = this.constraintGenerator.generateDateConstraint(context);
+		LocalDate min = constraint.getMin();
+		LocalDate max = constraint.getMax();
+
+		if (min != null) {
+			localDateArbitrary = localDateArbitrary.atTheEarliest(min);
+		}
+		if (max != null) {
+			localDateArbitrary = localDateArbitrary.atTheLatest(max);
+		}
+
+		return localDateArbitrary;
 	}
 
 	@Override
