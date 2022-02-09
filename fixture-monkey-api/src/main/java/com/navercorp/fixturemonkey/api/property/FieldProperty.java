@@ -21,6 +21,7 @@ package com.navercorp.fixturemonkey.api.property;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Field;
+import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -52,7 +53,7 @@ public final class FieldProperty implements Property {
 	}
 
 	@Override
-	public Class<?> getType() {
+	public Type getType() {
 		return this.field.getType();
 	}
 

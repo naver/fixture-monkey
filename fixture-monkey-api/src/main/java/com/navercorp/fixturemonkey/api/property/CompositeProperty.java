@@ -20,6 +20,7 @@ package com.navercorp.fixturemonkey.api.property;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -49,7 +50,7 @@ public final class CompositeProperty implements Property {
 	}
 
 	@Override
-	public Class<?> getType() {
+	public Type getType() {
 		return this.primaryProperty.getType();
 	}
 

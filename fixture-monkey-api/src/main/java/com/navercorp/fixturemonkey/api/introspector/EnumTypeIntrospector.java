@@ -18,6 +18,8 @@
 
 package com.navercorp.fixturemonkey.api.introspector;
 
+import java.lang.reflect.Type;
+
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
@@ -25,18 +27,19 @@ import net.jqwik.api.Arbitraries;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
+import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class EnumTypeIntrospector implements ArbitraryTypeIntrospector, Matcher {
 	@Override
 	public boolean match(ArbitraryGeneratorContext context) {
-		return context.getType().isEnum();
+		return Types.getActualType(context.getType()).isEnum();
 	}
 
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Override
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
-		Class<?> type = context.getType();
+		Type type = context.getType();
 		return new ArbitraryIntrospectorResult(Arbitraries.of((Class<Enum>)type));
 	}
 }

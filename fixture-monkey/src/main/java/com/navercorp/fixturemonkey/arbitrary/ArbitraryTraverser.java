@@ -38,6 +38,7 @@ import com.navercorp.fixturemonkey.ArbitraryOption;
 import com.navercorp.fixturemonkey.api.property.FieldProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
+import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.generator.AnnotatedArbitraryGenerator;
 import com.navercorp.fixturemonkey.generator.AnnotationSource;
 import com.navercorp.fixturemonkey.generator.FieldNameResolver;
@@ -110,7 +111,7 @@ public final class ArbitraryTraverser {
 			for (Field field : fields) {
 				Property property = new FieldProperty(field);
 				ArbitraryType arbitraryType = new ArbitraryType(
-					property.getType(),
+					Types.getActualType(property.getType()),
 					property.getAnnotatedType(),
 					property.getAnnotations()
 				);
