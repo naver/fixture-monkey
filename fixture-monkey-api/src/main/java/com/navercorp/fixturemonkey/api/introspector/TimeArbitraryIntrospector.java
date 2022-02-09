@@ -58,57 +58,87 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public interface TimeArbitraryIntrospector {
-	Arbitrary<Calendar> calendars(CalendarArbitrary calendarArbitrary, ArbitraryGeneratorContext context);
+	default Arbitrary<Calendar> calendars(CalendarArbitrary calendarArbitrary, ArbitraryGeneratorContext context) {
+		return calendarArbitrary;
+	}
 
-	Arbitrary<Date> dates(DateArbitrary dateArbitrary, ArbitraryGeneratorContext context);
+	default Arbitrary<Date> dates(DateArbitrary dateArbitrary, ArbitraryGeneratorContext context) {
+		return dateArbitrary;
+	}
 
-	Arbitrary<Instant> instants(InstantArbitrary instantArbitrary, ArbitraryGeneratorContext context);
+	default Arbitrary<Instant> instants(InstantArbitrary instantArbitrary, ArbitraryGeneratorContext context) {
+		return instantArbitrary;
+	}
 
-	Arbitrary<LocalDate> localDates(LocalDateArbitrary localDateArbitrary, ArbitraryGeneratorContext context);
+	default Arbitrary<LocalDate> localDates(LocalDateArbitrary localDateArbitrary, ArbitraryGeneratorContext context) {
+		return localDateArbitrary;
+	}
 
-	Arbitrary<LocalDateTime> localDateTimes(
+	default Arbitrary<LocalDateTime> localDateTimes(
 		LocalDateTimeArbitrary localDateTimeArbitrary,
 		ArbitraryGeneratorContext context
-	);
+	) {
+		return localDateTimeArbitrary;
+	}
 
-	Arbitrary<LocalTime> localTimes(
+	default Arbitrary<LocalTime> localTimes(
 		LocalTimeArbitrary localTimeArbitrary,
 		ArbitraryGeneratorContext context
-	);
+	) {
+		return localTimeArbitrary;
+	}
 
-	Arbitrary<ZonedDateTime> zonedDateTimes(
+	default Arbitrary<ZonedDateTime> zonedDateTimes(
 		ZonedDateTimeArbitrary zonedDateTimeArbitrary,
 		ArbitraryGeneratorContext context
-	);
+	) {
+		return zonedDateTimeArbitrary;
+	}
 
-	Arbitrary<MonthDay> monthDays(
+	default Arbitrary<MonthDay> monthDays(
 		MonthDayArbitrary monthDayArbitrary,
 		ArbitraryGeneratorContext context
-	);
+	) {
+		return monthDayArbitrary;
+	}
 
-	Arbitrary<OffsetDateTime> offsetDateTimes(
+	default Arbitrary<OffsetDateTime> offsetDateTimes(
 		OffsetDateTimeArbitrary offsetDateTimeArbitrary,
 		ArbitraryGeneratorContext context
-	);
+	) {
+		return offsetDateTimeArbitrary;
+	}
 
-	Arbitrary<OffsetTime> offsetTimes(
+	default Arbitrary<OffsetTime> offsetTimes(
 		OffsetTimeArbitrary offsetTimeArbitrary,
 		ArbitraryGeneratorContext context
-	);
+	) {
+		return offsetTimeArbitrary;
+	}
 
-	Arbitrary<Period> periods(PeriodArbitrary periodArbitrary, ArbitraryGeneratorContext context);
+	default Arbitrary<Period> periods(PeriodArbitrary periodArbitrary, ArbitraryGeneratorContext context) {
+		return periodArbitrary;
+	}
 
-	Arbitrary<Duration> durations(DurationArbitrary durationArbitrary, ArbitraryGeneratorContext context);
+	default Arbitrary<Duration> durations(DurationArbitrary durationArbitrary, ArbitraryGeneratorContext context) {
+		return durationArbitrary;
+	}
 
-	Arbitrary<Year> years(YearArbitrary yearArbitrary, ArbitraryGeneratorContext context);
+	default Arbitrary<Year> years(YearArbitrary yearArbitrary, ArbitraryGeneratorContext context) {
+		return yearArbitrary;
+	}
 
-	Arbitrary<YearMonth> yearMonths(
+	default Arbitrary<YearMonth> yearMonths(
 		YearMonthArbitrary yearMonthArbitrary,
 		ArbitraryGeneratorContext context
-	);
+	) {
+		return yearMonthArbitrary;
+	}
 
-	Arbitrary<ZoneOffset> zoneOffsets(
+	default Arbitrary<ZoneOffset> zoneOffsets(
 		ZoneOffsetArbitrary zoneOffsetArbitrary,
 		ArbitraryGeneratorContext context
-	);
+	) {
+		return zoneOffsetArbitrary;
+	}
 }
