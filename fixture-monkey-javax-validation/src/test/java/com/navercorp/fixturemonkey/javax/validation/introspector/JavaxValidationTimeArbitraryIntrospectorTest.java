@@ -351,7 +351,6 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 
 		// then
 		Instant instant = actual.sample();
-		then(instant).isNotNull();
 		then(instant).isAfter(now);
 	}
 
@@ -373,7 +372,6 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 
 		// then
 		Instant instant = actual.sample();
-		then(instant).isNotNull();
 		then(instant).isAfterOrEqualTo(now);
 	}
 
@@ -414,8 +412,6 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 
 		// then
 		LocalDate localDate = actual.sample();
-		then(localDate).isNotNull();
-
 		LocalDate now = LocalDate.now();
 		then(localDate).isBefore(now);
 	}
@@ -437,8 +433,6 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 
 		// then
 		LocalDate localDate = actual.sample();
-		then(localDate).isNotNull();
-
 		LocalDate now = LocalDate.now();
 		then(localDate).isBeforeOrEqualTo(now);
 	}
@@ -461,7 +455,6 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 
 		// then
 		LocalDate localDate = actual.sample();
-		then(localDate).isNotNull();
 		then(localDate).isAfter(now);
 	}
 
@@ -483,7 +476,6 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 
 		// then
 		LocalDate localDate = actual.sample();
-		then(localDate).isNotNull();
 		then(localDate).isAfterOrEqualTo(now);
 	}
 
@@ -523,11 +515,9 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 		Arbitrary<LocalTime> actual = this.sut.localTimes(localTimeArbitrary, context);
 
 		// then
-		LocalTime instant = actual.sample();
-		then(instant).isNotNull();
-
+		LocalTime localTime = actual.sample();
 		LocalTime now = LocalTime.now();
-		then(instant).isBefore(now);
+		then(localTime).isBefore(now);
 	}
 
 	@Property
@@ -547,8 +537,6 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 
 		// then
 		LocalTime localTime = actual.sample();
-		then(localTime).isNotNull();
-
 		LocalTime now = LocalTime.now();
 		then(localTime).isBeforeOrEqualTo(now);
 	}
@@ -571,7 +559,6 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 
 		// then
 		LocalTime localTime = actual.sample();
-		then(localTime).isNotNull();
 		then(localTime).isAfter(now);
 	}
 
@@ -593,7 +580,6 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 
 		// then
 		LocalTime localTime = actual.sample();
-		then(localTime).isNotNull();
 		then(localTime).isAfterOrEqualTo(now);
 	}
 
