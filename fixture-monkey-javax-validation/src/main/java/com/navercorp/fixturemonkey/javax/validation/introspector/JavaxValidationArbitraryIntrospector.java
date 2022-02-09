@@ -160,7 +160,18 @@ public final class JavaxValidationArbitraryIntrospector implements ArbitraryIntr
 		ByteArbitrary byteArbitrary,
 		ArbitraryGeneratorContext context
 	) {
-		throw new UnsupportedOperationException("Not implement yet.");
+		JavaxValidationIntegerConstraint constraint = this.constraintGenerator.generateIntegerConstraint(context);
+		BigInteger min = constraint.getMin();
+		BigInteger max = constraint.getMax();
+
+		if (min != null) {
+			byteArbitrary = byteArbitrary.greaterOrEqual(min.byteValueExact());
+		}
+		if (max != null) {
+			byteArbitrary = byteArbitrary.lessOrEqual(max.byteValueExact());
+		}
+
+		return byteArbitrary;
 	}
 
 	@Override
