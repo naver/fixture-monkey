@@ -27,15 +27,15 @@ import net.jqwik.api.Arbitraries;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.matcher.ExactTypeMatcher;
-import com.navercorp.fixturemonkey.api.matcher.TypeMatcher;
+import com.navercorp.fixturemonkey.api.matcher.Matcher;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public final class UuidTypeIntrospector implements ArbitraryTypeIntrospector, TypeMatcher {
-	private static final TypeMatcher TYPE_MATCHER = new ExactTypeMatcher(UUID.class);
+public final class UuidTypeIntrospector implements ArbitraryTypeIntrospector, Matcher {
+	private static final Matcher MATCHER = new ExactTypeMatcher(UUID.class);
 
 	@Override
 	public boolean match(ArbitraryGeneratorContext context) {
-		return TYPE_MATCHER.match(context);
+		return MATCHER.match(context);
 	}
 
 	@Override

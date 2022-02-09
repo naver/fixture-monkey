@@ -16,27 +16,15 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.api.introspector;
+package com.navercorp.fixturemonkey.api.matcher;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import net.jqwik.api.Arbitraries;
-
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
-import com.navercorp.fixturemonkey.api.matcher.Matcher;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public final class BooleanTypeIntrospector implements ArbitraryTypeIntrospector, Matcher {
-
-	@Override
-	public boolean match(ArbitraryGeneratorContext context) {
-		Class<?> type = context.getType();
-		return type == boolean.class || type == Boolean.class;
-	}
-
-	@Override
-	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
-		return new ArbitraryIntrospectorResult(Arbitraries.of(true, false));
-	}
+@FunctionalInterface
+public interface Matcher {
+	boolean match(ArbitraryGeneratorContext context);
 }

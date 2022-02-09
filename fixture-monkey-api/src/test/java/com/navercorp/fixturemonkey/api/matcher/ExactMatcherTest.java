@@ -29,11 +29,11 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.PropertyCache;
 
-class ExactTypeMatcherTest {
+class ExactMatcherTest {
 	@Test
 	void match() {
 		// given
-		TypeMatcher sut = new ExactTypeMatcher(String.class);
+		Matcher sut = new ExactTypeMatcher(String.class);
 
 		String propertyName = "str";
 		Property property = PropertyCache.getReadProperty(TypeMatcherSpec.class, propertyName).get();
@@ -51,7 +51,7 @@ class ExactTypeMatcherTest {
 	@Test
 	void matchInheritedFalse() {
 		// given
-		TypeMatcher sut = new ExactTypeMatcher(TypeMatcherSpec.class);
+		Matcher sut = new ExactTypeMatcher(TypeMatcherSpec.class);
 
 		String propertyName = "inherited";
 		Property property = PropertyCache.getReadProperty(TypeMatcherSpec.class, propertyName).get();
