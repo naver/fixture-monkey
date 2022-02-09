@@ -24,6 +24,7 @@ import java.beans.PropertyDescriptor;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -54,7 +55,7 @@ public final class PropertyDescriptorProperty implements Property {
 	}
 
 	@Override
-	public Class<?> getType() {
+	public Type getType() {
 		return this.propertyDescriptor.getPropertyType();
 	}
 

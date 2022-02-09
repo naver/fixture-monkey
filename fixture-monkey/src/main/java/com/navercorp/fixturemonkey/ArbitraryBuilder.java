@@ -53,6 +53,7 @@ import com.navercorp.fixturemonkey.api.property.FieldProperty;
 import com.navercorp.fixturemonkey.api.property.PropertyCache;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.api.random.Randoms;
+import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.arbitrary.AbstractArbitrarySet;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryApply;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryExpression;
@@ -748,7 +749,7 @@ public final class ArbitraryBuilder<T> {
 	@Deprecated
 	private String resolveExpression(ExpressionGenerator expressionGenerator) {
 		return expressionGenerator.generate(property -> {
-			Class<?> type = property.getType();
+			Class<?> type = Types.getActualType(property.getType());
 			ArbitraryGenerator generator = this.generatorMap.getOrDefault(type, this.generator);
 			Map<String, Field> fieldsByPropertyName = PropertyCache.getFields(this.tree.getClazz());
 			Field field = fieldsByPropertyName.get(property.getName());

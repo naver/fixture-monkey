@@ -18,6 +18,8 @@
 
 package com.navercorp.fixturemonkey.api.introspector;
 
+import java.lang.reflect.Type;
+
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
@@ -31,7 +33,7 @@ public final class BooleanTypeIntrospector implements ArbitraryTypeIntrospector,
 
 	@Override
 	public boolean match(ArbitraryGeneratorContext context) {
-		Class<?> type = context.getType();
+		Type type = context.getType();
 		return type == boolean.class || type == Boolean.class;
 	}
 

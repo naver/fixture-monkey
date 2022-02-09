@@ -19,6 +19,7 @@
 package com.navercorp.fixturemonkey.api.generator;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -50,7 +51,7 @@ public final class ArbitraryGeneratorContext {
 		return this.getArbitraryProperty().getProperty();
 	}
 
-	public Class<?> getType() {
+	public Type getType() {
 		return this.getProperty().getType();
 	}
 
