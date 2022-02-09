@@ -27,7 +27,7 @@ import org.apiguardian.api.API.Status;
 import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public class Matchers {
+public final class Matchers {
 
 	public static final Matcher ENUM_TYPE_MATCHER = ctx -> Types.getActualType(ctx.getType()).isEnum();
 	public static final Matcher BOOLEAN_TYPE_MATCHER = ctx -> {
