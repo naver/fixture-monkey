@@ -36,6 +36,7 @@ import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.navercorp.fixturemonkey.api.property.FieldProperty;
+import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryNode;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryType;
@@ -139,6 +140,11 @@ public final class JacksonArbitraryGenerator extends AbstractArbitraryGenerator 
 	@Override
 	public String resolveFieldName(Field field) {
 		return this.propertyNameResolver.resolve(new FieldProperty(field));
+	}
+
+	@Override
+	public String resolvePropertyName(Property property) {
+		return propertyNameResolver.resolve(property);
 	}
 }
 

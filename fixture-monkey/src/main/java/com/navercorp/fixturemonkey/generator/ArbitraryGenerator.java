@@ -23,6 +23,8 @@ import java.util.List;
 
 import net.jqwik.api.Arbitrary;
 
+import com.navercorp.fixturemonkey.api.property.Property;
+import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryNode;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryType;
 
@@ -37,5 +39,9 @@ public interface ArbitraryGenerator extends FieldNameResolver {
 	@Deprecated
 	default String resolveFieldName(Field field) {
 		return field.getName();
+	}
+
+	default String resolvePropertyName(Property property) {
+		return property.getName();
 	}
 }

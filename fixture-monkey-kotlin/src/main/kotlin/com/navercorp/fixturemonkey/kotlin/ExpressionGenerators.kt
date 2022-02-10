@@ -22,8 +22,8 @@ import com.navercorp.fixturemonkey.api.expression.ExpressionGenerator
 import com.navercorp.fixturemonkey.api.property.Property
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver
 import java.lang.reflect.AnnotatedType
+import java.lang.reflect.Field
 import kotlin.reflect.KFunction1
-import kotlin.reflect.KParameter
 import kotlin.reflect.KProperty
 import kotlin.reflect.KProperty1
 import kotlin.reflect.jvm.javaField
@@ -160,23 +160,33 @@ private class KotlinProperty<V, R>(private val property: KProperty1<V, R>) : Pro
 }
 
 private class KotlinGetterProperty<V, R>(private val getter: KFunction1<V, R>) : Property {
-    private val parameter: KParameter = getter.parameters[0]
-    private val type: Class<*> = parameter.type.javaType as Class<*>
-    private val property: KProperty<*>? = try {
-        type.getDeclaredField(name).kotlinProperty
-    } catch (ex: Exception) {
-        null
-    }
+    private val callerType = getter.parameters[0].type.javaType as Class<*>
+    private val type: Class<*> = getter.returnType.javaType as Class<*>
     private val propertyName: String =
         getter.name.substringAfter("get", getter.name.substringAfter("is")).replaceFirstChar { it.lowercaseChar() }
 
+    private val property: KProperty<*>? = try {
+        callerType.getDeclaredField(name).kotlinProperty
+    } catch (ex: Exception) {
+        null
+    }
+    private val javaField: Field? = try {
+        callerType.getDeclaredField(name)
+    } catch (ex: Exception) {
+        null
+    }
+    private val propertyAnnotation: List<Annotation> = property?.annotations ?: listOf()
+    private val getterAnnotation: List<Annotation> = getter.annotations
+    private val javaFieldAnnotations: List<Annotation> = javaField?.annotations?.toList() ?: listOf()
+
     override fun getType(): Class<*> = type
 
-    override fun getAnnotatedType(): AnnotatedType = property?.javaField!!.annotatedType
+    override fun getAnnotatedType(): AnnotatedType = property?.javaField?.annotatedType ?: javaField?.annotatedType!!
 
     override fun getName(): String = propertyName
 
-    override fun getAnnotations(): List<Annotation> = property?.annotations ?: getter.annotations
+    override fun getAnnotations(): List<Annotation> =
+        (propertyAnnotation + getterAnnotation + javaFieldAnnotations).distinct()
 
     @Suppress("UNCHECKED_CAST")
     override fun getValue(obj: Any?): Any? = getter.invoke(obj as V)
