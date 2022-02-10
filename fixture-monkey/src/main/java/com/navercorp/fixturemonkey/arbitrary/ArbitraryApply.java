@@ -51,7 +51,7 @@ public final class ArbitraryApply<T> extends AbstractArbitraryExpressionManipula
 	}
 
 	public ArbitraryBuilder<T> getToSampleArbitraryBuilder() {
-		return toSampleArbitraryBuilder;
+		return toSampleArbitraryBuilder.copy();
 	}
 
 	public BiConsumer<T, ArbitraryBuilder<T>> getBuilderBiConsumer() {
