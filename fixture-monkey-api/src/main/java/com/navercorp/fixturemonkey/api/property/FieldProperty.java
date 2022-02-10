@@ -37,11 +37,26 @@ import org.apiguardian.api.API.Status;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class FieldProperty implements Property {
+	private final Type type;
 	private final Field field;
 	private final List<Annotation> annotations;
 	private final Map<Class<? extends Annotation>, Annotation> annotationsMap;
 
 	public FieldProperty(Field field) {
+		this(field.getType(), field);
+	}
+
+	/**
+	 * In general, type uses the Type of Field.
+	 * When the Type of Field is defined as generics, the refied type is not known.
+	 * Use this constructor when specifying a Type that provides a refied Generics type.
+	 *
+	 * @see com.navercorp.fixturemonkey.api.type.Types
+	 * @param type
+	 * @param field
+	 */
+	public FieldProperty(Type type, Field field) {
+		this.type = type;
 		this.field = field;
 		this.annotations = Arrays.asList(field.getAnnotations());
 		this.annotationsMap = this.annotations.stream()
@@ -54,7 +69,7 @@ public final class FieldProperty implements Property {
 
 	@Override
 	public Type getType() {
-		return this.field.getType();
+		return this.type;
 	}
 
 	@Override
@@ -101,16 +116,18 @@ public final class FieldProperty implements Property {
 			return false;
 		}
 		FieldProperty that = (FieldProperty)obj;
-		return Objects.equals(this.field, that.field);
+		return Objects.equals(type, that.type) && Objects.equals(field, that.field);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(this.field);
+		return Objects.hash(type, field);
 	}
 
 	@Override
 	public String toString() {
-		return "FieldProperty{field='" + this.field + '}';
+		return "FieldProperty{"
+			+ "type=" + type
+			+ ", field=" + field + '}';
 	}
 }
