@@ -181,7 +181,7 @@ private class KotlinGetterProperty<V, R>(private val getter: KFunction1<V, R>) :
 
     override fun getType(): Class<*> = type
 
-    override fun getAnnotatedType(): AnnotatedType = property?.javaField?.annotatedType ?: javaField?.annotatedType!!
+    override fun getAnnotatedType(): AnnotatedType? = property?.javaField?.annotatedType ?: javaField?.annotatedType
 
     override fun getName(): String = propertyName
 
