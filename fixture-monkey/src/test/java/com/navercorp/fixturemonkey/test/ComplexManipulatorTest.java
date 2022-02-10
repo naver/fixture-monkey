@@ -47,6 +47,8 @@ import com.navercorp.fixturemonkey.test.ComplexManipulatorTestSpecs.AcceptIfArbi
 import com.navercorp.fixturemonkey.test.ComplexManipulatorTestSpecs.ApplyArbitraryGroup;
 import com.navercorp.fixturemonkey.test.ComplexManipulatorTestSpecs.ArbitraryGroup;
 import com.navercorp.fixturemonkey.test.ComplexManipulatorTestSpecs.Complex;
+import com.navercorp.fixturemonkey.test.ComplexManipulatorTestSpecs.ComplexFlagGroup;
+import com.navercorp.fixturemonkey.test.ComplexManipulatorTestSpecs.ComplexFlagValue;
 import com.navercorp.fixturemonkey.test.ComplexManipulatorTestSpecs.FixedArbitraryGroup;
 import com.navercorp.fixturemonkey.test.ComplexManipulatorTestSpecs.FixedSetArbitraryArbitraryGroup;
 import com.navercorp.fixturemonkey.test.ComplexManipulatorTestSpecs.MapValue;
@@ -839,5 +841,29 @@ class ComplexManipulatorTest {
 			.sample();
 
 		then(actual.getValues()).hasSize(1);
+	}
+
+	@Property
+	void registerComplexFlag() {
+		// given
+		FixtureMonkey fixture = FixtureMonkey.builder()
+			.registerGroup(ComplexFlagGroup.class)
+			.defaultNotNull(true)
+			.build();
+
+		// when
+		ComplexFlagValue actual = fixture.giveMeOne(ComplexFlagValue.class);
+
+		then(actual).satisfiesAnyOf(it -> {
+				then(it.flag).isTrue();
+				then(it.flagTrueValue).isNotNull();
+				then(it.flagFalseValue).isNull();
+			},
+			it -> {
+				then(it.flag).isFalse();
+				then(it.flagTrueValue).isNull();
+				then(it.flagFalseValue).isNotNull();
+			}
+		);
 	}
 }

@@ -233,4 +233,32 @@ class ComplexManipulatorTestSpecs extends DomainContextBase {
 			});
 		}
 	}
+
+	@Data
+	public static class ComplexFlagValue {
+		boolean flag;
+		String flagTrueValue;
+		String flagFalseValue;
+	}
+
+	public static class ComplexFlagGroup {
+		public ComplexFlagGroup() {
+		}
+
+		public ArbitraryBuilder<ComplexFlagValue> complexFlagValue(FixtureMonkey fixture) {
+			return fixture.giveMeBuilder(ComplexFlagValue.class)
+				.set("flag", Arbitraries.of(true, false))
+				.apply((it, builder) -> {
+					if (it.flag) {
+						builder.setNull("flagFalseValue");
+					} else {
+						builder.apply((it2, builder2) -> {
+							if (!it2.flag) {
+								builder2.setNull("flagTrueValue");
+							}
+						});
+					}
+				});
+		}
+	}
 }
