@@ -38,7 +38,7 @@ class ArbitraryTypeIntrospectDelegatorTest {
 			ctx -> ArbitraryIntrospectorResult.EMPTY
 		);
 
-		Property property = PropertyCache.getReadProperty(Sample.class, "season").get();
+		Property property = PropertyCache.getProperty(Sample.class, "season").get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(property, "", null, false, 0.0D),
 			Collections.emptyList()
