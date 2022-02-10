@@ -40,23 +40,49 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public interface ArbitraryIntrospector {
-	Arbitrary<String> strings(StringArbitrary stringArbitrary, ArbitraryGeneratorContext context);
+	default Arbitrary<String> strings(StringArbitrary stringArbitrary, ArbitraryGeneratorContext context) {
+		return stringArbitrary;
+	}
 
-	Arbitrary<Character> characters(CharacterArbitrary characterArbitrary, ArbitraryGeneratorContext context);
+	default Arbitrary<Character> characters(CharacterArbitrary characterArbitrary, ArbitraryGeneratorContext context) {
+		return characterArbitrary;
+	}
 
-	Arbitrary<Short> shorts(ShortArbitrary shortArbitrary, ArbitraryGeneratorContext context);
+	default Arbitrary<Short> shorts(ShortArbitrary shortArbitrary, ArbitraryGeneratorContext context) {
+		return shortArbitrary;
+	}
 
-	Arbitrary<Byte> bytes(ByteArbitrary byteArbitrary, ArbitraryGeneratorContext context);
+	default Arbitrary<Byte> bytes(ByteArbitrary byteArbitrary, ArbitraryGeneratorContext context) {
+		return byteArbitrary;
+	}
 
-	Arbitrary<Double> doubles(DoubleArbitrary doubleArbitrary, ArbitraryGeneratorContext context);
+	default Arbitrary<Double> doubles(DoubleArbitrary doubleArbitrary, ArbitraryGeneratorContext context) {
+		return doubleArbitrary;
+	}
 
-	Arbitrary<Float> floats(FloatArbitrary floatArbitrary, ArbitraryGeneratorContext context);
+	default Arbitrary<Float> floats(FloatArbitrary floatArbitrary, ArbitraryGeneratorContext context) {
+		return floatArbitrary;
+	}
 
-	Arbitrary<Integer> integers(IntegerArbitrary integerArbitrary, ArbitraryGeneratorContext context);
+	default Arbitrary<Integer> integers(IntegerArbitrary integerArbitrary, ArbitraryGeneratorContext context) {
+		return integerArbitrary;
+	}
 
-	Arbitrary<Long> longs(LongArbitrary longArbitrary, ArbitraryGeneratorContext context);
+	default Arbitrary<Long> longs(LongArbitrary longArbitrary, ArbitraryGeneratorContext context) {
+		return longArbitrary;
+	}
 
-	Arbitrary<BigInteger> bigIntegers(BigIntegerArbitrary bigIntegerArbitrary, ArbitraryGeneratorContext context);
+	default Arbitrary<BigInteger> bigIntegers(
+		BigIntegerArbitrary bigIntegerArbitrary,
+		ArbitraryGeneratorContext context
+	) {
+		return bigIntegerArbitrary;
+	}
 
-	Arbitrary<BigDecimal> bigDecimals(BigDecimalArbitrary bigDecimalArbitrary, ArbitraryGeneratorContext context);
+	default Arbitrary<BigDecimal> bigDecimals(
+		BigDecimalArbitrary bigDecimalArbitrary,
+		ArbitraryGeneratorContext context
+	) {
+		return bigDecimalArbitrary;
+	}
 }
