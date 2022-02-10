@@ -18,7 +18,7 @@
 
 package com.navercorp.fixturemonkey.api.property;
 
-import static org.assertj.core.api.BDDAssertions.*;
+import static org.assertj.core.api.BDDAssertions.then;
 
 import java.lang.reflect.AnnotatedType;
 
