@@ -854,7 +854,8 @@ class ComplexManipulatorTest {
 		// when
 		ComplexFlagValue actual = fixture.giveMeOne(ComplexFlagValue.class);
 
-		then(actual).satisfiesAnyOf(it -> {
+		then(actual).satisfiesAnyOf(
+			it -> {
 				then(it.flag).isTrue();
 				then(it.flagTrueValue).isNotNull();
 				then(it.flagFalseValue).isNull();
