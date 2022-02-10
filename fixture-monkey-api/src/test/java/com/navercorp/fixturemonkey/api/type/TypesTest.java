@@ -2,7 +2,9 @@ package com.navercorp.fixturemonkey.api.type;
 
 import static org.assertj.core.api.BDDAssertions.then;
 
+import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.WildcardType;
@@ -412,8 +414,253 @@ class TypesTest {
 		then(((ParameterizedType)secondGenerics).getActualTypeArguments()[1]).isEqualTo(String.class);
 	}
 
+	@Test
+	void resolveWithTypeReferenceGenericsPropertyDescriptor() throws NoSuchMethodException {
+		// given
+		TypeReference<GenericSample<String>> typeReference = new TypeReference<GenericSample<String>>() {
+		};
+
+		Map<Method, PropertyDescriptor> propertyDescriptors =
+			PropertyCache.getReadPropertyDescriptors(GenericSample.class);
+		PropertyDescriptor propertyDescriptor = propertyDescriptors.get(
+			GenericSample.class.getDeclaredMethod("getName")
+		);
+
+		// when
+		Type actual = Types.resolveWithTypeReferenceGenerics(typeReference, propertyDescriptor);
+
+		then(actual).isEqualTo(String.class);
+	}
+
+	@Test
+	void resolveWithTypeReferenceNestedGenericsPropertyDescriptor() throws NoSuchMethodException {
+		// given
+		TypeReference<GenericSample<String>> typeReference = new TypeReference<GenericSample<String>>() {
+		};
+
+		Map<Method, PropertyDescriptor> propertyDescriptors =
+			PropertyCache.getReadPropertyDescriptors(GenericSample.class);
+		PropertyDescriptor propertyDescriptor = propertyDescriptors.get(
+			GenericSample.class.getDeclaredMethod("getSample2")
+		);
+
+		// when
+		Type actual = Types.resolveWithTypeReferenceGenerics(typeReference, propertyDescriptor);
+
+		then(actual).isInstanceOf(ParameterizedType.class);
+
+		ParameterizedType parameterizedType = (ParameterizedType)actual;
+		then(parameterizedType.getRawType()).isEqualTo(GenericSample2.class);
+		then(parameterizedType.getActualTypeArguments()).hasSize(1);
+		then(parameterizedType.getActualTypeArguments()[0]).isEqualTo(String.class);
+	}
+
+	@Test
+	void resolveWithTypeReferenceListGenericsPropertyDescriptor() throws NoSuchMethodException {
+		// given
+		TypeReference<GenericSample<String>> typeReference = new TypeReference<GenericSample<String>>() {
+		};
+
+		Map<Method, PropertyDescriptor> propertyDescriptors =
+			PropertyCache.getReadPropertyDescriptors(GenericSample.class);
+		PropertyDescriptor propertyDescriptor = propertyDescriptors.get(
+			GenericSample.class.getDeclaredMethod("getList")
+		);
+
+		// when
+		Type actual = Types.resolveWithTypeReferenceGenerics(typeReference, propertyDescriptor);
+
+		then(actual).isInstanceOf(ParameterizedType.class);
+
+		ParameterizedType parameterizedType = (ParameterizedType)actual;
+		then(parameterizedType.getRawType()).isEqualTo(List.class);
+		then(parameterizedType.getActualTypeArguments()).hasSize(1);
+		then(parameterizedType.getActualTypeArguments()[0]).isEqualTo(String.class);
+	}
+
+	@Test
+	void resolveWithTypeReferenceGenericsRefiedPropertyDescriptor() throws NoSuchMethodException {
+		// given
+		TypeReference<GenericSample<String>> typeReference = new TypeReference<GenericSample<String>>() {
+		};
+
+		Map<Method, PropertyDescriptor> propertyDescriptors =
+			PropertyCache.getReadPropertyDescriptors(GenericSample.class);
+		PropertyDescriptor propertyDescriptor = propertyDescriptors.get(
+			GenericSample.class.getDeclaredMethod("getSamples")
+		);
+
+		// when
+		Type actual = Types.resolveWithTypeReferenceGenerics(typeReference, propertyDescriptor);
+
+		then(actual).isInstanceOf(ParameterizedType.class);
+
+		ParameterizedType parameterizedType = (ParameterizedType)actual;
+		then(parameterizedType.getRawType()).isEqualTo(List.class);
+		then(parameterizedType.getActualTypeArguments()).hasSize(1);
+		then(parameterizedType.getActualTypeArguments()[0]).isEqualTo(Sample.class);
+	}
+
+	@Test
+	void resolveWithTypeReferenceGenericsSimplePropertyDescriptor() throws NoSuchMethodException {
+		// given
+		TypeReference<Sample> typeReference = new TypeReference<Sample>() {
+		};
+
+		Map<Method, PropertyDescriptor> propertyDescriptors =
+			PropertyCache.getReadPropertyDescriptors(Sample.class);
+		PropertyDescriptor propertyDescriptor = propertyDescriptors.get(
+			Sample.class.getDeclaredMethod("getName")
+		);
+
+		// when
+		Type actual = Types.resolveWithTypeReferenceGenerics(typeReference, propertyDescriptor);
+
+		then(actual).isEqualTo(String.class);
+	}
+
+	@Test
+	void resolveWithTypeReferenceGenericsWildCardPropertyDescriptor() throws NoSuchMethodException {
+		// given
+		TypeReference<GenericSample<?>> typeReference = new TypeReference<GenericSample<?>>() {
+		};
+
+		Map<Method, PropertyDescriptor> propertyDescriptors =
+			PropertyCache.getReadPropertyDescriptors(GenericSample.class);
+		PropertyDescriptor propertyDescriptor = propertyDescriptors.get(
+			GenericSample.class.getDeclaredMethod("getName")
+		);
+
+		// when
+		Type actual = Types.resolveWithTypeReferenceGenerics(typeReference, propertyDescriptor);
+
+		then(actual).isInstanceOf(WildcardType.class);
+		then(((WildcardType)actual).getUpperBounds()[0]).isEqualTo(Object.class);
+	}
+
+	@Test
+	void resolveWithTypeReferenceGenericsNoGenericsPropertyDescriptor() throws NoSuchMethodException {
+		// given
+		TypeReference<GenericSample> typeReference = new TypeReference<GenericSample>() {
+		};
+
+		Map<Method, PropertyDescriptor> propertyDescriptors =
+			PropertyCache.getReadPropertyDescriptors(GenericSample.class);
+		PropertyDescriptor propertyDescriptor = propertyDescriptors.get(
+			GenericSample.class.getDeclaredMethod("getName")
+		);
+
+		// when
+		Type actual = Types.resolveWithTypeReferenceGenerics(typeReference, propertyDescriptor);
+
+		then(actual).isEqualTo(Object.class);
+	}
+
+	@Test
+	void resolveWithTypeReferenceGenericsBiGenericsFirstPropertyDescriptor() throws NoSuchMethodException {
+		// given
+		TypeReference<BiGenericSample<Integer, String>> typeReference =
+			new TypeReference<BiGenericSample<Integer, String>>() {
+			};
+
+		Map<Method, PropertyDescriptor> propertyDescriptors =
+			PropertyCache.getReadPropertyDescriptors(BiGenericSample.class);
+		PropertyDescriptor propertyDescriptor = propertyDescriptors.get(
+			BiGenericSample.class.getDeclaredMethod("getName")
+		);
+
+		// when
+		Type actual = Types.resolveWithTypeReferenceGenerics(typeReference, propertyDescriptor);
+
+		then(actual).isEqualTo(Integer.class);
+	}
+
+	@Test
+	void resolveWithTypeReferenceGenericsBiGenericsSecondPropertyDescriptor() throws NoSuchMethodException {
+		// given
+		TypeReference<BiGenericSample<Integer, String>> typeReference =
+			new TypeReference<BiGenericSample<Integer, String>>() {
+			};
+
+		Map<Method, PropertyDescriptor> propertyDescriptors =
+			PropertyCache.getReadPropertyDescriptors(BiGenericSample.class);
+		PropertyDescriptor propertyDescriptor = propertyDescriptors.get(
+			BiGenericSample.class.getDeclaredMethod("getAddress")
+		);
+
+		// when
+		Type actual = Types.resolveWithTypeReferenceGenerics(typeReference, propertyDescriptor);
+
+		then(actual).isEqualTo(String.class);
+	}
+
+	@Test
+	void resolveWithTypeReferenceGenericsBiGenericsNestedPropertyDescriptor() throws NoSuchMethodException {
+		// given
+		TypeReference<BiGenericSample<Integer, String>> typeReference =
+			new TypeReference<BiGenericSample<Integer, String>>() {
+			};
+
+		Map<Method, PropertyDescriptor> propertyDescriptors =
+			PropertyCache.getReadPropertyDescriptors(BiGenericSample.class);
+		PropertyDescriptor propertyDescriptor = propertyDescriptors.get(
+			BiGenericSample.class.getDeclaredMethod("getSample2")
+		);
+
+		// when
+		Type actual = Types.resolveWithTypeReferenceGenerics(typeReference, propertyDescriptor);
+
+		then(actual).isInstanceOf(ParameterizedType.class);
+
+		ParameterizedType parameterizedType = (ParameterizedType)actual;
+		then(parameterizedType.getRawType()).isEqualTo(BiGenericSample2.class);
+		then(parameterizedType.getActualTypeArguments()).hasSize(2);
+		then(parameterizedType.getActualTypeArguments()[0]).isEqualTo(Integer.class);
+		then(parameterizedType.getActualTypeArguments()[1]).isEqualTo(String.class);
+	}
+
+	@Test
+	void resolveWithTypeReferenceGenericsBiGenericsComplexPropertyDescriptor() throws NoSuchMethodException {
+		// given
+		TypeReference<BiGenericSample<GenericSample<Integer>, BiGenericSample<Integer, String>>> typeReference =
+			new TypeReference<BiGenericSample<GenericSample<Integer>, BiGenericSample<Integer, String>>>() {
+			};
+
+		Map<Method, PropertyDescriptor> propertyDescriptors =
+			PropertyCache.getReadPropertyDescriptors(BiGenericSample.class);
+		PropertyDescriptor propertyDescriptor = propertyDescriptors.get(
+			BiGenericSample.class.getDeclaredMethod("getSample2")
+		);
+
+		// when
+		Type actual = Types.resolveWithTypeReferenceGenerics(typeReference, propertyDescriptor);
+
+		then(actual).isInstanceOf(ParameterizedType.class);
+
+		ParameterizedType parameterizedType = (ParameterizedType)actual;
+		then(parameterizedType.getRawType()).isEqualTo(BiGenericSample2.class);
+		then(parameterizedType.getActualTypeArguments()).hasSize(2);
+
+		Type firstGenerics = parameterizedType.getActualTypeArguments()[0];
+		then(firstGenerics).isInstanceOf(ParameterizedType.class);
+		then(((ParameterizedType)firstGenerics).getRawType()).isEqualTo(GenericSample.class);
+		then(((ParameterizedType)firstGenerics).getActualTypeArguments()).hasSize(1);
+		then(((ParameterizedType)firstGenerics).getActualTypeArguments()[0]).isEqualTo(Integer.class);
+
+		Type secondGenerics = parameterizedType.getActualTypeArguments()[1];
+		then(secondGenerics).isInstanceOf(ParameterizedType.class);
+		then(((ParameterizedType)secondGenerics).getRawType()).isEqualTo(BiGenericSample.class);
+		then(((ParameterizedType)secondGenerics).getActualTypeArguments()).hasSize(2);
+		then(((ParameterizedType)secondGenerics).getActualTypeArguments()[0]).isEqualTo(Integer.class);
+		then(((ParameterizedType)secondGenerics).getActualTypeArguments()[1]).isEqualTo(String.class);
+	}
+
 	static class Sample {
 		private String name;
+
+		public String getName() {
+			return this.name;
+		}
 	}
 
 	static class GenericSample<T> {
@@ -422,10 +669,34 @@ class TypesTest {
 		private Sample test;
 		private List<T> list;
 		private List<Sample> samples;
+
+		public GenericSample2<T> getSample2() {
+			return this.sample2;
+		}
+
+		public T getName() {
+			return this.name;
+		}
+
+		public Sample getTest() {
+			return this.test;
+		}
+
+		public List<T> getList() {
+			return this.list;
+		}
+
+		public List<Sample> getSamples() {
+			return this.samples;
+		}
 	}
 
 	static class GenericSample2<T> {
 		private T name;
+
+		public T getName() {
+			return this.name;
+		}
 	}
 
 	static class BiGenericSample<T, R> {
@@ -433,10 +704,34 @@ class TypesTest {
 		private T name;
 		private R address;
 		private Sample test;
+
+		public BiGenericSample2<T, R> getSample2() {
+			return this.sample2;
+		}
+
+		public T getName() {
+			return this.name;
+		}
+
+		public R getAddress() {
+			return this.address;
+		}
+
+		public Sample getTest() {
+			return this.test;
+		}
 	}
 
 	static class BiGenericSample2<T, R> {
 		private T name;
 		private R address;
+
+		public T getName() {
+			return this.name;
+		}
+
+		public R getAddress() {
+			return this.address;
+		}
 	}
 }

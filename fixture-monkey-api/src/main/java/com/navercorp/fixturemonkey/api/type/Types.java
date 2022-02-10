@@ -18,8 +18,10 @@
 
 package com.navercorp.fixturemonkey.api.type;
 
+import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.lang.reflect.GenericDeclaration;
+import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
@@ -133,6 +135,76 @@ public class Types {
 		Type[] fieldGenericsTypes = fieldParameterizedType.getActualTypeArguments();
 		if (fieldGenericsTypes == null || fieldGenericsTypes.length == 0) {
 			return field.getType();
+		}
+
+		Type[] resolvedGenericsTypes = new Type[fieldGenericsTypes.length];
+		for (int i = 0; i < fieldGenericsTypes.length; i++) {
+			Type generics = fieldGenericsTypes[i];
+			if (generics instanceof ParameterizedType || generics.getClass() == Class.class) {
+				resolvedGenericsTypes[i] = generics;
+				continue;
+			}
+
+			if (TypeVariable.class.isAssignableFrom(generics.getClass())) {
+				TypeVariable<?> typeVariable = (TypeVariable<?>)generics;
+				int index = ownerTypeVariableParameters.indexOf(typeVariable);
+				resolvedGenericsTypes[i] = ownerGenericsTypes[index];
+			}
+		}
+
+		Type resultRawType = fieldParameterizedType.getRawType();
+		Type resultOwnerType = fieldParameterizedType.getOwnerType();
+		return new ParameterizedType() {
+			@Override
+			public Type[] getActualTypeArguments() {
+				return resolvedGenericsTypes;
+			}
+
+			@Override
+			public Type getRawType() {
+				return resultRawType;
+			}
+
+			@Override
+			public Type getOwnerType() {
+				return resultOwnerType;
+			}
+		};
+	}
+
+	public static Type resolveWithTypeReferenceGenerics(
+		TypeReference<?> ownerTypeReference,
+		PropertyDescriptor propertyDescriptor
+	) {
+		Type ownerType = ownerTypeReference.getType();
+		if (!(ownerType instanceof ParameterizedType)) {
+			return propertyDescriptor.getPropertyType();
+		}
+
+		ParameterizedType ownerParameterizedType = (ParameterizedType)ownerType;
+		Type[] ownerGenericsTypes = ownerParameterizedType.getActualTypeArguments();
+		if (ownerGenericsTypes == null || ownerGenericsTypes.length == 0) {
+			return propertyDescriptor.getPropertyType();
+		}
+
+		Class<?> ownerActualType = Types.getActualType(ownerParameterizedType.getRawType());
+		List<Type> ownerTypeVariableParameters = Arrays.asList(ownerActualType.getTypeParameters());
+
+		Method readMethod = propertyDescriptor.getReadMethod();
+		Type fieldGenericsType = readMethod.getGenericReturnType();
+		if (TypeVariable.class.isAssignableFrom(fieldGenericsType.getClass())) {
+			int index = ownerTypeVariableParameters.indexOf(fieldGenericsType);
+			return ownerGenericsTypes[index];
+		}
+
+		if (!(fieldGenericsType instanceof ParameterizedType)) {
+			return propertyDescriptor.getPropertyType();
+		}
+
+		ParameterizedType fieldParameterizedType = (ParameterizedType)fieldGenericsType;
+		Type[] fieldGenericsTypes = fieldParameterizedType.getActualTypeArguments();
+		if (fieldGenericsTypes == null || fieldGenericsTypes.length == 0) {
+			return propertyDescriptor.getPropertyType();
 		}
 
 		Type[] resolvedGenericsTypes = new Type[fieldGenericsTypes.length];
