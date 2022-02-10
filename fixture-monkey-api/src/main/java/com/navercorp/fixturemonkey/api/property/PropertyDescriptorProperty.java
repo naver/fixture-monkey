@@ -48,6 +48,15 @@ public final class PropertyDescriptorProperty implements Property {
 		this(propertyDescriptor.getPropertyType(), propertyDescriptor);
 	}
 
+	/**
+	 * In general, type uses the PropertyType of PropertyDescriptor.
+	 * When the Type of PropertyDescriptor is defined as generics, the refied type is not known.
+	 * Use this constructor when specifying a Type that provides a refied Generics type.
+	 *
+	 * @see com.navercorp.fixturemonkey.api.type.Types
+	 * @param type
+	 * @param propertyDescriptor
+	 */
 	public PropertyDescriptorProperty(Type type, PropertyDescriptor propertyDescriptor) {
 		this.type = type;
 		this.propertyDescriptor = propertyDescriptor;

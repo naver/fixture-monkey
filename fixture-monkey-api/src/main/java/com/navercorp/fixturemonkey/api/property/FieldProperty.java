@@ -46,6 +46,15 @@ public final class FieldProperty implements Property {
 		this(field.getType(), field);
 	}
 
+	/**
+	 * In general, type uses the Type of Field.
+	 * When the Type of Field is defined as generics, the refied type is not known.
+	 * Use this constructor when specifying a Type that provides a refied Generics type.
+	 *
+	 * @see com.navercorp.fixturemonkey.api.type.Types
+	 * @param type
+	 * @param field
+	 */
 	public FieldProperty(Type type, Field field) {
 		this.type = type;
 		this.field = field;
