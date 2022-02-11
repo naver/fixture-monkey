@@ -18,11 +18,13 @@
 
 package com.navercorp.fixturemonkey.kotlin
 
+import com.navercorp.fixturemonkey.ArbitraryBuilder
 import com.navercorp.fixturemonkey.api.expression.ExpressionGenerator
 import com.navercorp.fixturemonkey.api.property.Property
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver
 import java.lang.reflect.AnnotatedType
 import java.lang.reflect.Field
+import java.lang.reflect.ParameterizedType
 import kotlin.reflect.KFunction1
 import kotlin.reflect.KProperty
 import kotlin.reflect.KProperty1
@@ -66,10 +68,93 @@ class Exp<T> internal constructor(private val delegate: ExpressionGenerator) : E
     )
 }
 
-infix operator fun <T, R : Collection<E>, E : Any> KProperty1<T, R?>.get(index: Int): ExpList<T, E> =
+fun <T> Exp(exp: Exp<T>) = Exp<T>(ParsedExpressionGenerator(listOf(exp)))
+
+fun <T, R> Exp(expList: ExpList<T, R>) = Exp<R>(ParsedExpressionGenerator(listOf(expList)))
+
+fun <T, R> Exp(property: KProperty1<T, R?>) = Exp<R>(
+    ParsedExpressionGenerator(
+        listOf(
+            PropertyExpressionGenerator(
+                KotlinProperty(property)
+            )
+        )
+    )
+)
+
+fun <T, R> Exp(property: KFunction1<T, R?>) = Exp<R>(
+    ParsedExpressionGenerator(
+        listOf(
+            PropertyExpressionGenerator(
+                KotlinGetterProperty(property)
+            )
+        )
+    )
+)
+
+@JvmName("getterBoolean")
+fun Exp(property: KFunction1<*, Boolean>) = Exp<Boolean>(
+    ParsedExpressionGenerator(
+        listOf(
+            PropertyExpressionGenerator(
+                KotlinGetterProperty(property)
+            )
+        )
+    )
+)
+
+fun <T> ArbitraryBuilder<T>.set(property: KProperty1<T, *>, value: Any): ArbitraryBuilder<T> =
+    this.set(ParsedExpressionGenerator(listOf(PropertyExpressionGenerator(KotlinProperty(property)))), value)
+
+fun <T> ArbitraryBuilder<T>.set(property: KFunction1<T, *>, value: Any): ArbitraryBuilder<T> =
+    this.set(ParsedExpressionGenerator(listOf(PropertyExpressionGenerator(KotlinGetterProperty(property)))), value)
+
+infix fun <T, R, E> KProperty1<T, R?>.into(property: KProperty1<R, E?>): Exp<E> =
+    Exp(
+        ParsedExpressionGenerator(
+            listOf(
+                PropertyExpressionGenerator(KotlinProperty(this)),
+                PropertyExpressionGenerator(KotlinProperty(property))
+            )
+        )
+    )
+
+infix fun <T, R, E> KProperty1<T, R?>.into(expList: ExpList<R, E>): Exp<E> =
+    Exp(
+        ParsedExpressionGenerator(
+            listOf(
+                PropertyExpressionGenerator(KotlinProperty(this)),
+                expList
+            )
+        )
+    )
+
+infix fun <T, R, E> KFunction1<T, R?>.into(property: KFunction1<R, E?>): Exp<E> =
+    Exp(
+        ParsedExpressionGenerator(
+            listOf(
+                PropertyExpressionGenerator(KotlinGetterProperty(this)),
+                PropertyExpressionGenerator(KotlinGetterProperty(property))
+            )
+        )
+    )
+
+infix fun <T, R, E> KFunction1<T, R?>.into(expList: ExpList<R, E>): Exp<E> =
+    Exp(
+        ParsedExpressionGenerator(
+            listOf(
+                PropertyExpressionGenerator(KotlinGetterProperty(this)),
+                expList
+            )
+        )
+    )
+
+infix operator
+fun <T, R : Collection<E>, E : Any> KProperty1<T, R?>.get(index: Int): ExpList<T, E> =
     ExpList(ArrayExpressionGenerator(KotlinProperty(this), index))
 
-infix operator fun <T, R : Collection<E>, E : Any> KProperty1<T, R?>.get(key: String): ExpList<T, E> =
+infix operator
+fun <T, R : Collection<E>, E : Any> KProperty1<T, R?>.get(key: String): ExpList<T, E> =
     ExpList(MapExpressionGenerator(KotlinProperty(this), key))
 
 @JvmName("getNestedList")
@@ -80,10 +165,12 @@ infix operator fun <T, R : Collection<N>, N : Collection<E>, E : Any> KProperty1
 infix operator fun <T, R : Collection<N>, N : Collection<E>, E : Any> KProperty1<T, R?>.get(key: String): ExpList<T, N?> =
     ExpList(MapExpressionGenerator(KotlinProperty(this), key))
 
-infix operator fun <T, R : Collection<E>, E : Any> KFunction1<T, R?>.get(index: Int): ExpList<T, E> =
+infix operator
+fun <T, R : Collection<E>, E : Any> KFunction1<T, R?>.get(index: Int): ExpList<T, E> =
     ExpList(ArrayExpressionGenerator(KotlinGetterProperty(this), index))
 
-infix operator fun <T, R : Collection<E>, E : Any> KFunction1<T, R?>.get(key: String): ExpList<T, E> =
+infix operator
+fun <T, R : Collection<E>, E : Any> KFunction1<T, R?>.get(key: String): ExpList<T, E> =
     ExpList(MapExpressionGenerator(KotlinGetterProperty(this), key))
 
 @JvmName("getNestedList")
@@ -95,7 +182,27 @@ infix operator fun <T, R : Collection<N>, N : Collection<E>, E : Any> KFunction1
     ExpList(MapExpressionGenerator(KotlinGetterProperty(this), key))
 
 @Suppress("unused")
-class ExpList<E, L> internal constructor(val delegate: ExpressionGenerator) : ExpressionGenerator by delegate
+class ExpList<E, L> internal constructor(val delegate: ExpressionGenerator) : ExpressionGenerator by delegate {
+    infix fun <R> into(property: KProperty1<L, R?>): Exp<R> =
+        Exp(
+            ParsedExpressionGenerator(
+                listOf(
+                    this,
+                    PropertyExpressionGenerator(KotlinProperty(property))
+                )
+            )
+        )
+
+    infix fun <R> into(property: KFunction1<L, R?>): Exp<R> =
+        Exp(
+            ParsedExpressionGenerator(
+                listOf(
+                    this,
+                    PropertyExpressionGenerator(KotlinGetterProperty(property))
+                )
+            )
+        )
+}
 
 infix operator fun <T, R : Collection<E>, E : Any> ExpList<T, R?>.get(index: Int): ExpList<T, E> =
     ExpList(ParsedExpressionGenerator(listOf(delegate, IndexExpressionGenerator(index))))
@@ -128,12 +235,14 @@ private class IndexExpressionGenerator(val index: Int) : ExpressionGenerator {
     override fun generate(propertyNameResolver: PropertyNameResolver): String = "[$index]"
 }
 
-private class ArrayExpressionGenerator(private val property: Property, val index: Int) : ExpressionGenerator {
+private class ArrayExpressionGenerator(private val property: Property, val index: Int) :
+    ExpressionGenerator {
     override fun generate(propertyNameResolver: PropertyNameResolver): String =
         ".${propertyNameResolver.resolve(property)}[$index]"
 }
 
-private class MapExpressionGenerator(private val property: Property, val key: String) : ExpressionGenerator {
+private class MapExpressionGenerator(private val property: Property, val key: String) :
+    ExpressionGenerator {
     override fun generate(propertyNameResolver: PropertyNameResolver): String =
         ".${propertyNameResolver.resolve(property)}[$key]"
 }
@@ -161,9 +270,15 @@ private class KotlinProperty<V, R>(private val property: KProperty1<V, R>) : Pro
 
 private class KotlinGetterProperty<V, R>(private val getter: KFunction1<V, R>) : Property {
     private val callerType = getter.parameters[0].type.javaType as Class<*>
-    private val type: Class<*> = getter.returnType.javaType as Class<*>
+    private val returnJavaType = getter.returnType.javaType
+    private val type: Class<*> = if (returnJavaType is ParameterizedType) {
+        returnJavaType.rawType as Class<*>
+    } else {
+        returnJavaType as Class<*>
+    }
     private val propertyName: String =
-        getter.name.substringAfter("get", getter.name.substringAfter("is")).replaceFirstChar { it.lowercaseChar() }
+        getter.name.substringAfter("get", getter.name.substringAfter("is"))
+            .replaceFirstChar { it.lowercaseChar() }
 
     private val property: KProperty<*>? = try {
         callerType.getDeclaredField(name).kotlinProperty
@@ -181,7 +296,8 @@ private class KotlinGetterProperty<V, R>(private val getter: KFunction1<V, R>) :
 
     override fun getType(): Class<*> = type
 
-    override fun getAnnotatedType(): AnnotatedType? = property?.javaField?.annotatedType ?: javaField?.annotatedType
+    override fun getAnnotatedType(): AnnotatedType? =
+        property?.javaField?.annotatedType ?: javaField?.annotatedType
 
     override fun getName(): String = propertyName
 

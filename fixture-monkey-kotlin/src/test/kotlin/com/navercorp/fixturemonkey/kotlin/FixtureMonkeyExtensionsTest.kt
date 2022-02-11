@@ -48,7 +48,10 @@ class FixtureMonkeyExtensionsTest {
         // when
         val actual = sut.giveMe(
             object : KArbitraryCustomizer<IntegerStringWrapperClass> {
-                override fun customizeFields(type: KClass<IntegerStringWrapperClass>, fieldArbitraries: FieldArbitraries) {
+                override fun customizeFields(
+                    type: KClass<IntegerStringWrapperClass>,
+                    fieldArbitraries: FieldArbitraries,
+                ) {
                     fieldArbitraries.apply {
                         replaceArbitrary("intValue", Arbitraries.just(-1))
                     }
@@ -101,7 +104,10 @@ class FixtureMonkeyExtensionsTest {
         val actual = sut.giveMe(
             10,
             object : KArbitraryCustomizer<IntegerStringWrapperClass> {
-                override fun customizeFields(type: KClass<IntegerStringWrapperClass>, fieldArbitraries: FieldArbitraries) {
+                override fun customizeFields(
+                    type: KClass<IntegerStringWrapperClass>,
+                    fieldArbitraries: FieldArbitraries,
+                ) {
                     fieldArbitraries.apply {
                         replaceArbitrary("intValue", Arbitraries.just(-1))
                     }
@@ -151,7 +157,10 @@ class FixtureMonkeyExtensionsTest {
         // when
         val actual = sut.giveMeOne(
             object : KArbitraryCustomizer<IntegerStringWrapperClass> {
-                override fun customizeFields(type: KClass<IntegerStringWrapperClass>, fieldArbitraries: FieldArbitraries) {
+                override fun customizeFields(
+                    type: KClass<IntegerStringWrapperClass>,
+                    fieldArbitraries: FieldArbitraries,
+                ) {
                     fieldArbitraries.apply {
                         replaceArbitrary("intValue", Arbitraries.just(-1))
                     }
@@ -212,6 +221,15 @@ class FixtureMonkeyExtensionsTest {
         val actual = sut.giveMeBuilder(value)
 
         then(actual).isNotNull
+    }
+
+    @Property
+    fun giveMeBuilderSetWithProperty() {
+        val actual = sut.giveMeBuilder<IntegerStringWrapperClass>()
+            .set(IntegerStringWrapperClass::intValue, 1)
+            .sample()
+
+        then(actual.intValue).isEqualTo(1)
     }
 
     data class IntegerStringWrapperClass(
