@@ -70,9 +70,9 @@ class Exp<T> internal constructor(private val delegate: ExpressionGenerator) : E
 
 fun <T> Exp(exp: Exp<T>) = Exp<T>(ParsedExpressionGenerator(listOf(exp)))
 
-fun <T, R> Exp(expList: ExpList<T, R>) = Exp<T>(ParsedExpressionGenerator(listOf(expList)))
+fun <T, R> Exp(expList: ExpList<T, R>) = Exp<R>(ParsedExpressionGenerator(listOf(expList)))
 
-fun <T, R> Exp(property: KProperty1<T, R?>) = Exp<T>(
+fun <T, R> Exp(property: KProperty1<T, R?>) = Exp<R>(
     ParsedExpressionGenerator(
         listOf(
             PropertyExpressionGenerator(
@@ -82,7 +82,7 @@ fun <T, R> Exp(property: KProperty1<T, R?>) = Exp<T>(
     )
 )
 
-fun <T, R> Exp(property: KFunction1<T, R?>) = Exp<T>(
+fun <T, R> Exp(property: KFunction1<T, R?>) = Exp<R>(
     ParsedExpressionGenerator(
         listOf(
             PropertyExpressionGenerator(
