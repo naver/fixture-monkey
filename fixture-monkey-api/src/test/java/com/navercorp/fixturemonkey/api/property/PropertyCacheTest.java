@@ -36,6 +36,18 @@ import com.navercorp.fixturemonkey.api.type.TypeReference;
 
 class PropertyCacheTest {
 	@Test
+	void getRootProperty() {
+		// given
+		TypeReference<GenericSample<String>> typeReference = new TypeReference<GenericSample<String>>() {
+		};
+
+		// when
+		RootProperty actual = PropertyCache.getRootProperty(typeReference.getType());
+
+		then(actual.getType()).isEqualTo(typeReference.getType());
+	}
+
+	@Test
 	void getProperties() {
 		// given
 		TypeReference<PropertyValue> typeReference = new TypeReference<PropertyValue>() {

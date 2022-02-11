@@ -24,11 +24,11 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.property.Property;
+import com.navercorp.fixturemonkey.api.property.RootProperty;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class ArbitraryProperty {
 	private final Property property;
-	private final String metadata;
 	@Nullable
 	private final Integer indexOfIterable;
 	private final boolean keyOfMapStructure;
@@ -36,24 +36,27 @@ public final class ArbitraryProperty {
 
 	public ArbitraryProperty(
 		Property property,
-		String metadata,
 		@Nullable Integer indexOfIterable,
 		boolean keyOfMapStructure,
 		double nullInject
 	) {
 		this.property = property;
-		this.metadata = metadata;
 		this.indexOfIterable = indexOfIterable;
 		this.keyOfMapStructure = keyOfMapStructure;
 		this.nullInject = nullInject;
 	}
 
-	public Property getProperty() {
-		return this.property;
+	public static ArbitraryProperty root(RootProperty rootProperty) {
+		return new ArbitraryProperty(
+			rootProperty,
+			null,
+			false,
+			0.0D
+		);
 	}
 
-	public String getMetadata() {
-		return this.metadata;
+	public Property getProperty() {
+		return this.property;
 	}
 
 	@Nullable
@@ -67,6 +70,10 @@ public final class ArbitraryProperty {
 
 	public double getNullInject() {
 		return this.nullInject;
+	}
+
+	public boolean isRoot() {
+		return this.property instanceof RootProperty;
 	}
 
 	// TODO: equals and hashCode and toString

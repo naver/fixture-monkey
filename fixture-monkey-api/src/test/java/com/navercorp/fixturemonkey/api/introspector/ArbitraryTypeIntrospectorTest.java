@@ -36,8 +36,10 @@ class ArbitraryTypeIntrospectorTest {
 		// given
 		Property property = PropertyCache.getProperty(Sample.class, "season").get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property, "", null, false, 0.0D),
-			Collections.emptyList()
+			new ArbitraryProperty(property, null, false, 0.0D),
+			Collections.emptyList(),
+			null,
+			ctx -> null
 		);
 
 		// when
@@ -51,8 +53,10 @@ class ArbitraryTypeIntrospectorTest {
 		// given
 		Property property = PropertyCache.getProperty(Sample.class, "bool").get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property, "", null, false, 0.0D),
-			Collections.emptyList()
+			new ArbitraryProperty(property, null, false, 0.0D),
+			Collections.emptyList(),
+			null,
+			ctx -> null
 		);
 
 		// when
@@ -66,8 +70,10 @@ class ArbitraryTypeIntrospectorTest {
 		// given
 		Property property = PropertyCache.getProperty(Sample.class, "bool").get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property, "", null, false, 0.0D),
-			Collections.emptyList()
+			new ArbitraryProperty(property,  null, false, 0.0D),
+			Collections.emptyList(),
+			null,
+			ctx -> null
 		);
 
 		// when
@@ -81,8 +87,10 @@ class ArbitraryTypeIntrospectorTest {
 		// given
 		Property property = PropertyCache.getProperty(Sample.class, "uuid").get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property, "", null, false, 0.0D),
-			Collections.emptyList()
+			new ArbitraryProperty(property,  null, false, 0.0D),
+			Collections.emptyList(),
+			null,
+			ctx -> null
 		);
 
 		// when
