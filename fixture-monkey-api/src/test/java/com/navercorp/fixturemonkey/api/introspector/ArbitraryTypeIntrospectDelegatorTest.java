@@ -40,8 +40,10 @@ class ArbitraryTypeIntrospectDelegatorTest {
 
 		Property property = PropertyCache.getProperty(Sample.class, "season").get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property, "", null, false, 0.0D),
-			Collections.emptyList()
+			new ArbitraryProperty(property,  null, false, 0.0D),
+			Collections.emptyList(),
+			null,
+			ctx -> null
 		);
 
 		then(sut.match(context)).isTrue();

@@ -26,5 +26,5 @@ public final class Constants {
 	public static final int NO_OR_ALL_INDEX_INTEGER_VALUE = Integer.MAX_VALUE;
 	public static final String ALL_INDEX_STRING = "*";
 	public static final ExpIndex ALL_INDEX_EXP_INDEX = new ExpIndex(NO_OR_ALL_INDEX_INTEGER_VALUE);
-	public static final String HEAD_NAME = "HEAD_NAME";
+	public static final String HEAD_NAME = "$";
 }

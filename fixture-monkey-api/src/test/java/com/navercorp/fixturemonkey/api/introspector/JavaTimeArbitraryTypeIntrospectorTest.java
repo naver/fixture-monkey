@@ -53,8 +53,10 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(JavaTimeArbitraryTypeSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property, "", null, false, 0.0D),
-			Collections.emptyList()
+			new ArbitraryProperty(property,  null, false, 0.0D),
+			Collections.emptyList(),
+			null,
+			ctx -> null
 		);
 
 		// when
@@ -70,8 +72,10 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(JavaTimeArbitraryTypeSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property, "", null, false, 0.0D),
-			Collections.emptyList()
+			new ArbitraryProperty(property,  null, false, 0.0D),
+			Collections.emptyList(),
+			null,
+			ctx -> null
 		);
 
 		// when
@@ -87,8 +91,10 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(JavaTimeArbitraryTypeSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property, "", null, false, 0.0D),
-			Collections.emptyList()
+			new ArbitraryProperty(property,  null, false, 0.0D),
+			Collections.emptyList(),
+			null,
+			ctx -> null
 		);
 
 		// when
@@ -104,8 +110,10 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(JavaTimeArbitraryTypeSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property, "", null, false, 0.0D),
-			Collections.emptyList()
+			new ArbitraryProperty(property,  null, false, 0.0D),
+			Collections.emptyList(),
+			null,
+			ctx -> null
 		);
 
 		// when
@@ -121,8 +129,10 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(JavaTimeArbitraryTypeSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property, "", null, false, 0.0D),
-			Collections.emptyList()
+			new ArbitraryProperty(property,  null, false, 0.0D),
+			Collections.emptyList(),
+			null,
+			ctx -> null
 		);
 
 		// when
@@ -138,8 +148,10 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(JavaTimeArbitraryTypeSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property, "", null, false, 0.0D),
-			Collections.emptyList()
+			new ArbitraryProperty(property,  null, false, 0.0D),
+			Collections.emptyList(),
+			null,
+			ctx -> null
 		);
 
 		// when
@@ -155,8 +167,10 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(JavaTimeArbitraryTypeSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property, "", null, false, 0.0D),
-			Collections.emptyList()
+			new ArbitraryProperty(property,  null, false, 0.0D),
+			Collections.emptyList(),
+			null,
+			ctx -> null
 		);
 
 		// when
@@ -172,8 +186,10 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(JavaTimeArbitraryTypeSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property, "", null, false, 0.0D),
-			Collections.emptyList()
+			new ArbitraryProperty(property,  null, false, 0.0D),
+			Collections.emptyList(),
+			null,
+			ctx -> null
 		);
 
 		// when
@@ -189,8 +205,10 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(JavaTimeArbitraryTypeSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property, "", null, false, 0.0D),
-			Collections.emptyList()
+			new ArbitraryProperty(property,  null, false, 0.0D),
+			Collections.emptyList(),
+			null,
+			ctx -> null
 		);
 
 		// when
@@ -206,8 +224,10 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(JavaTimeArbitraryTypeSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property, "", null, false, 0.0D),
-			Collections.emptyList()
+			new ArbitraryProperty(property,  null, false, 0.0D),
+			Collections.emptyList(),
+			null,
+			ctx -> null
 		);
 
 		// when
@@ -223,8 +243,10 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(JavaTimeArbitraryTypeSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property, "", null, false, 0.0D),
-			Collections.emptyList()
+			new ArbitraryProperty(property,  null, false, 0.0D),
+			Collections.emptyList(),
+			null,
+			ctx -> null
 		);
 
 		// when
@@ -240,8 +262,10 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(JavaTimeArbitraryTypeSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property, "", null, false, 0.0D),
-			Collections.emptyList()
+			new ArbitraryProperty(property,  null, false, 0.0D),
+			Collections.emptyList(),
+			null,
+			ctx -> null
 		);
 
 		// when
@@ -257,8 +281,10 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(JavaTimeArbitraryTypeSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property, "", null, false, 0.0D),
-			Collections.emptyList()
+			new ArbitraryProperty(property,  null, false, 0.0D),
+			Collections.emptyList(),
+			null,
+			ctx -> null
 		);
 
 		// when
@@ -274,8 +300,10 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(JavaTimeArbitraryTypeSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property, "", null, false, 0.0D),
-			Collections.emptyList()
+			new ArbitraryProperty(property,  null, false, 0.0D),
+			Collections.emptyList(),
+			null,
+			ctx -> null
 		);
 
 		// when
@@ -291,8 +319,10 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(JavaTimeArbitraryTypeSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property, "", null, false, 0.0D),
-			Collections.emptyList()
+			new ArbitraryProperty(property,  null, false, 0.0D),
+			Collections.emptyList(),
+			null,
+			ctx -> null
 		);
 
 		// when
@@ -308,8 +338,10 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(JavaTimeArbitraryTypeSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property, "", null, false, 0.0D),
-			Collections.emptyList()
+			new ArbitraryProperty(property,  null, false, 0.0D),
+			Collections.emptyList(),
+			null,
+			ctx -> null
 		);
 
 		// when
@@ -325,8 +357,10 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(JavaTimeArbitraryTypeSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property, "", null, false, 0.0D),
-			Collections.emptyList()
+			new ArbitraryProperty(property,  null, false, 0.0D),
+			Collections.emptyList(),
+			null,
+			ctx -> null
 		);
 
 		// when
@@ -342,8 +376,10 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(JavaTimeArbitraryTypeSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property, "", null, false, 0.0D),
-			Collections.emptyList()
+			new ArbitraryProperty(property,  null, false, 0.0D),
+			Collections.emptyList(),
+			null,
+			ctx -> null
 		);
 
 		// when
@@ -359,8 +395,10 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(JavaTimeArbitraryTypeSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property, "", null, false, 0.0D),
-			Collections.emptyList()
+			new ArbitraryProperty(property,  null, false, 0.0D),
+			Collections.emptyList(),
+			null,
+			ctx -> null
 		);
 
 		// when
@@ -376,8 +414,10 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(JavaTimeArbitraryTypeSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property, "", null, false, 0.0D),
-			Collections.emptyList()
+			new ArbitraryProperty(property,  null, false, 0.0D),
+			Collections.emptyList(),
+			null,
+			ctx -> null
 		);
 
 		// when
@@ -393,8 +433,10 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(JavaTimeArbitraryTypeSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property, "", null, false, 0.0D),
-			Collections.emptyList()
+			new ArbitraryProperty(property,  null, false, 0.0D),
+			Collections.emptyList(),
+			null,
+			ctx -> null
 		);
 
 		// when
@@ -410,8 +452,10 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(JavaTimeArbitraryTypeSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property, "", null, false, 0.0D),
-			Collections.emptyList()
+			new ArbitraryProperty(property,  null, false, 0.0D),
+			Collections.emptyList(),
+			null,
+			ctx -> null
 		);
 
 		// when
@@ -427,8 +471,10 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(JavaTimeArbitraryTypeSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property, "", null, false, 0.0D),
-			Collections.emptyList()
+			new ArbitraryProperty(property,  null, false, 0.0D),
+			Collections.emptyList(),
+			null,
+			ctx -> null
 		);
 
 		// when
@@ -444,8 +490,10 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(JavaTimeArbitraryTypeSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property, "", null, false, 0.0D),
-			Collections.emptyList()
+			new ArbitraryProperty(property,  null, false, 0.0D),
+			Collections.emptyList(),
+			null,
+			ctx -> null
 		);
 
 		// when
@@ -461,8 +509,10 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(JavaTimeArbitraryTypeSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property, "", null, false, 0.0D),
-			Collections.emptyList()
+			new ArbitraryProperty(property,  null, false, 0.0D),
+			Collections.emptyList(),
+			null,
+			ctx -> null
 		);
 
 		// when
@@ -478,8 +528,10 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(JavaTimeArbitraryTypeSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property, "", null, false, 0.0D),
-			Collections.emptyList()
+			new ArbitraryProperty(property,  null, false, 0.0D),
+			Collections.emptyList(),
+			null,
+			ctx -> null
 		);
 
 		// when
@@ -495,8 +547,10 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(JavaTimeArbitraryTypeSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property, "", null, false, 0.0D),
-			Collections.emptyList()
+			new ArbitraryProperty(property,  null, false, 0.0D),
+			Collections.emptyList(),
+			null,
+			ctx -> null
 		);
 
 		// when
@@ -512,8 +566,10 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(JavaTimeArbitraryTypeSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property, "", null, false, 0.0D),
-			Collections.emptyList()
+			new ArbitraryProperty(property,  null, false, 0.0D),
+			Collections.emptyList(),
+			null,
+			ctx -> null
 		);
 
 		// when
@@ -529,8 +585,10 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(JavaTimeArbitraryTypeSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property, "", null, false, 0.0D),
-			Collections.emptyList()
+			new ArbitraryProperty(property,  null, false, 0.0D),
+			Collections.emptyList(),
+			null,
+			ctx -> null
 		);
 
 		// when
@@ -546,8 +604,10 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(JavaTimeArbitraryTypeSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property, "", null, false, 0.0D),
-			Collections.emptyList()
+			new ArbitraryProperty(property,  null, false, 0.0D),
+			Collections.emptyList(),
+			null,
+			ctx -> null
 		);
 
 		// when

@@ -50,8 +50,14 @@ public final class PropertyCache {
 	private static final Map<Class<?>, Map<Method, PropertyDescriptor>> PROPERTY_DESCRIPTORS =
 		new ConcurrentHashMap<>();
 	private static final Map<Class<?>, Map<String, Field>> FIELDS = new ConcurrentHashMap<>();
+	private static final Map<Type, RootProperty> ROOT_PROPERTIES =
+		Collections.synchronizedMap(new LruCache<>(1000));
 	private static final Map<Type, List<Property>> TYPE_PROPERTIES =
-		Collections.synchronizedMap(new PropertiesLruCache(1000));
+		Collections.synchronizedMap(new LruCache<>(1000));
+
+	public static RootProperty getRootProperty(Type type) {
+		return ROOT_PROPERTIES.computeIfAbsent(type, RootProperty::new);
+	}
 
 	public static List<Property> getProperties(Type type) {
 		List<Property> cached = TYPE_PROPERTIES.get(type);
@@ -141,16 +147,16 @@ public final class PropertyCache {
 		});
 	}
 
-	private static class PropertiesLruCache extends LinkedHashMap<Type, List<Property>> {
+	private static class LruCache<T, R> extends LinkedHashMap<T, R> {
 		private final int maxSize;
 
-		PropertiesLruCache(int maxSize) {
+		LruCache(int maxSize) {
 			super(maxSize + 1, 1, true);
 			this.maxSize = maxSize;
 		}
 
 		@Override
-		protected  boolean removeEldestEntry(Map.Entry<Type, List<Property>> eldest) {
+		protected  boolean removeEldestEntry(Map.Entry<T, R> eldest) {
 			return size() > maxSize;
 		}
 	}

@@ -41,8 +41,10 @@ class JavaxValidationTimeConstraintGeneratorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property, "", null, false, 0.0D),
-			Collections.emptyList()
+			new ArbitraryProperty(property,  null, false, 0.0D),
+			Collections.emptyList(),
+			null,
+			ctx -> null
 		);
 
 		// when
@@ -60,8 +62,10 @@ class JavaxValidationTimeConstraintGeneratorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property, "", null, false, 0.0D),
-			Collections.emptyList()
+			new ArbitraryProperty(property,  null, false, 0.0D),
+			Collections.emptyList(),
+			null,
+			ctx -> null
 		);
 
 		// when
@@ -80,8 +84,10 @@ class JavaxValidationTimeConstraintGeneratorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property, "", null, false, 0.0D),
-			Collections.emptyList()
+			new ArbitraryProperty(property,  null, false, 0.0D),
+			Collections.emptyList(),
+			null,
+			ctx -> null
 		);
 
 		// when
@@ -101,8 +107,10 @@ class JavaxValidationTimeConstraintGeneratorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property, "", null, false, 0.0D),
-			Collections.emptyList()
+			new ArbitraryProperty(property,  null, false, 0.0D),
+			Collections.emptyList(),
+			null,
+			ctx -> null
 		);
 
 		// when
@@ -121,8 +129,10 @@ class JavaxValidationTimeConstraintGeneratorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property, "", null, false, 0.0D),
-			Collections.emptyList()
+			new ArbitraryProperty(property,  null, false, 0.0D),
+			Collections.emptyList(),
+			null,
+			ctx -> null
 		);
 
 		// when
@@ -141,8 +151,10 @@ class JavaxValidationTimeConstraintGeneratorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property, "", null, false, 0.0D),
-			Collections.emptyList()
+			new ArbitraryProperty(property,  null, false, 0.0D),
+			Collections.emptyList(),
+			null,
+			ctx -> null
 		);
 
 		// when
@@ -160,8 +172,10 @@ class JavaxValidationTimeConstraintGeneratorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property, "", null, false, 0.0D),
-			Collections.emptyList()
+			new ArbitraryProperty(property,  null, false, 0.0D),
+			Collections.emptyList(),
+			null,
+			ctx -> null
 		);
 
 		// when
@@ -180,8 +194,10 @@ class JavaxValidationTimeConstraintGeneratorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property, "", null, false, 0.0D),
-			Collections.emptyList()
+			new ArbitraryProperty(property,  null, false, 0.0D),
+			Collections.emptyList(),
+			null,
+			ctx -> null
 		);
 
 		// when
@@ -201,8 +217,10 @@ class JavaxValidationTimeConstraintGeneratorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property, "", null, false, 0.0D),
-			Collections.emptyList()
+			new ArbitraryProperty(property,  null, false, 0.0D),
+			Collections.emptyList(),
+			null,
+			ctx -> null
 		);
 
 		// when
@@ -221,8 +239,10 @@ class JavaxValidationTimeConstraintGeneratorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property, "", null, false, 0.0D),
-			Collections.emptyList()
+			new ArbitraryProperty(property,  null, false, 0.0D),
+			Collections.emptyList(),
+			null,
+			ctx -> null
 		);
 
 		// when
@@ -241,8 +261,10 @@ class JavaxValidationTimeConstraintGeneratorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property, "", null, false, 0.0D),
-			Collections.emptyList()
+			new ArbitraryProperty(property,  null, false, 0.0D),
+			Collections.emptyList(),
+			null,
+			ctx -> null
 		);
 
 		// when
@@ -253,8 +275,6 @@ class JavaxValidationTimeConstraintGeneratorTest {
 		then(actual.getMax()).isNull();
 	}
 
-
-
 	@Property
 	void generateTimeConstraintPast() {
 		// given
@@ -262,8 +282,10 @@ class JavaxValidationTimeConstraintGeneratorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property, "", null, false, 0.0D),
-			Collections.emptyList()
+			new ArbitraryProperty(property,  null, false, 0.0D),
+			Collections.emptyList(),
+			null,
+			ctx -> null
 		);
 
 		// when
@@ -282,8 +304,10 @@ class JavaxValidationTimeConstraintGeneratorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property, "", null, false, 0.0D),
-			Collections.emptyList()
+			new ArbitraryProperty(property,  null, false, 0.0D),
+			Collections.emptyList(),
+			null,
+			ctx -> null
 		);
 
 		// when
@@ -303,8 +327,10 @@ class JavaxValidationTimeConstraintGeneratorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property, "", null, false, 0.0D),
-			Collections.emptyList()
+			new ArbitraryProperty(property,  null, false, 0.0D),
+			Collections.emptyList(),
+			null,
+			ctx -> null
 		);
 
 		// when
@@ -323,8 +349,10 @@ class JavaxValidationTimeConstraintGeneratorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property, "", null, false, 0.0D),
-			Collections.emptyList()
+			new ArbitraryProperty(property,  null, false, 0.0D),
+			Collections.emptyList(),
+			null,
+			ctx -> null
 		);
 
 		// when

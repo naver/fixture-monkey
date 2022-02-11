@@ -24,23 +24,38 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
+
+import javax.annotation.Nullable;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
+
+import net.jqwik.api.Arbitrary;
 
 import com.navercorp.fixturemonkey.api.property.Property;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class ArbitraryGeneratorContext {
 	private final ArbitraryProperty property;
+
 	private final List<ArbitraryProperty> children;
+
+	@Nullable
+	private final ArbitraryGeneratorContext ownerContext;
+
+	private final Function<ArbitraryGeneratorContext, Arbitrary<Object>> resolveArbitrary;
 
 	public ArbitraryGeneratorContext(
 		ArbitraryProperty property,
-		List<ArbitraryProperty> children
+		List<ArbitraryProperty> children,
+		@Nullable ArbitraryGeneratorContext ownerContext,
+		Function<ArbitraryGeneratorContext, Arbitrary<Object>> resolveArbitrary
 	) {
 		this.property = property;
 		this.children = new ArrayList<>(children);
+		this.ownerContext = ownerContext;
+		this.resolveArbitrary = resolveArbitrary;
 	}
 
 	public ArbitraryProperty getArbitraryProperty() {
@@ -61,5 +76,18 @@ public final class ArbitraryGeneratorContext {
 
 	public List<ArbitraryProperty> getChildren() {
 		return Collections.unmodifiableList(this.children);
+	}
+
+	@Nullable
+	public ArbitraryGeneratorContext getOwnerContext() {
+		return this.ownerContext;
+	}
+
+	public Function<ArbitraryGeneratorContext, Arbitrary<Object>> getResolveArbitrary() {
+		return this.resolveArbitrary;
+	}
+
+	public boolean isRootContext() {
+		return this.property.isRoot();
 	}
 }
