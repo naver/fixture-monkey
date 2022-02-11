@@ -22,7 +22,6 @@ import static com.navercorp.fixturemonkey.Constants.HEAD_NAME;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 
-import java.lang.reflect.Field;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -50,7 +49,6 @@ import net.jqwik.api.Combinators.F4;
 
 import com.navercorp.fixturemonkey.api.expression.ExpressionGenerator;
 import com.navercorp.fixturemonkey.api.property.FieldProperty;
-import com.navercorp.fixturemonkey.api.property.PropertyCache;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.api.random.Randoms;
 import com.navercorp.fixturemonkey.api.type.Types;
@@ -727,13 +725,7 @@ public final class ArbitraryBuilder<T> {
 		return expressionGenerator.generate(property -> {
 			Class<?> type = Types.getActualType(property.getType());
 			ArbitraryGenerator generator = this.generatorMap.getOrDefault(type, this.generator);
-			Map<String, Field> fieldsByPropertyName = PropertyCache.getFields(this.tree.getClazz());
-			Field field = fieldsByPropertyName.get(property.getName());
-			if (field == null) {
-				return property.getName();
-			}
-
-			return generator.resolveFieldName(field);
+			return generator.resolvePropertyName(property);
 		});
 	}
 
