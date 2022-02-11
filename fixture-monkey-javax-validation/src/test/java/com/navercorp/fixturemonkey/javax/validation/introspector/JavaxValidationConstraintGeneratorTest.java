@@ -40,7 +40,7 @@ class JavaxValidationConstraintGeneratorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(StringIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property,  null, false, 0.0D),
+			new ArbitraryProperty(property, null, false, 0.0D),
 			Collections.emptyList(),
 			null,
 			ctx -> null
@@ -63,7 +63,7 @@ class JavaxValidationConstraintGeneratorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(StringIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property,  null, false, 0.0D),
+			new ArbitraryProperty(property, null, false, 0.0D),
 			Collections.emptyList(),
 			null,
 			ctx -> null
@@ -86,7 +86,7 @@ class JavaxValidationConstraintGeneratorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(StringIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property,  null, false, 0.0D),
+			new ArbitraryProperty(property, null, false, 0.0D),
 			Collections.emptyList(),
 			null,
 			ctx -> null
@@ -109,7 +109,7 @@ class JavaxValidationConstraintGeneratorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(StringIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property,  null, false, 0.0D),
+			new ArbitraryProperty(property, null, false, 0.0D),
 			Collections.emptyList(),
 			null,
 			ctx -> null
@@ -132,7 +132,7 @@ class JavaxValidationConstraintGeneratorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(StringIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property,  null, false, 0.0D),
+			new ArbitraryProperty(property, null, false, 0.0D),
 			Collections.emptyList(),
 			null,
 			ctx -> null
@@ -155,7 +155,7 @@ class JavaxValidationConstraintGeneratorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(ShortIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property,  null, false, 0.0D),
+			new ArbitraryProperty(property, null, false, 0.0D),
 			Collections.emptyList(),
 			null,
 			ctx -> null
@@ -176,7 +176,7 @@ class JavaxValidationConstraintGeneratorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(ShortIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property,  null, false, 0.0D),
+			new ArbitraryProperty(property, null, false, 0.0D),
 			Collections.emptyList(),
 			null,
 			ctx -> null
@@ -197,7 +197,7 @@ class JavaxValidationConstraintGeneratorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(ShortIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property,  null, false, 0.0D),
+			new ArbitraryProperty(property, null, false, 0.0D),
 			Collections.emptyList(),
 			null,
 			ctx -> null
@@ -218,7 +218,7 @@ class JavaxValidationConstraintGeneratorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(ShortIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property,  null, false, 0.0D),
+			new ArbitraryProperty(property, null, false, 0.0D),
 			Collections.emptyList(),
 			null,
 			ctx -> null
@@ -239,7 +239,7 @@ class JavaxValidationConstraintGeneratorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(ShortIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property,  null, false, 0.0D),
+			new ArbitraryProperty(property, null, false, 0.0D),
 			Collections.emptyList(),
 			null,
 			ctx -> null
@@ -260,7 +260,7 @@ class JavaxValidationConstraintGeneratorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(ShortIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property,  null, false, 0.0D),
+			new ArbitraryProperty(property, null, false, 0.0D),
 			Collections.emptyList(),
 			null,
 			ctx -> null
@@ -281,7 +281,7 @@ class JavaxValidationConstraintGeneratorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(ShortIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property,  null, false, 0.0D),
+			new ArbitraryProperty(property, null, false, 0.0D),
 			Collections.emptyList(),
 			null,
 			ctx -> null
@@ -302,7 +302,7 @@ class JavaxValidationConstraintGeneratorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(ShortIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property,  null, false, 0.0D),
+			new ArbitraryProperty(property, null, false, 0.0D),
 			Collections.emptyList(),
 			null,
 			ctx -> null
@@ -323,7 +323,7 @@ class JavaxValidationConstraintGeneratorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(ShortIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property,  null, false, 0.0D),
+			new ArbitraryProperty(property, null, false, 0.0D),
 			Collections.emptyList(),
 			null,
 			ctx -> null
@@ -344,7 +344,7 @@ class JavaxValidationConstraintGeneratorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(ShortIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property,  null, false, 0.0D),
+			new ArbitraryProperty(property, null, false, 0.0D),
 			Collections.emptyList(),
 			null,
 			ctx -> null
@@ -365,7 +365,7 @@ class JavaxValidationConstraintGeneratorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(ShortIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property,  null, false, 0.0D),
+			new ArbitraryProperty(property, null, false, 0.0D),
 			Collections.emptyList(),
 			null,
 			ctx -> null
@@ -386,7 +386,7 @@ class JavaxValidationConstraintGeneratorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(ShortIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property,  null, false, 0.0D),
+			new ArbitraryProperty(property, null, false, 0.0D),
 			Collections.emptyList(),
 			null,
 			ctx -> null
@@ -405,10 +405,12 @@ class JavaxValidationConstraintGeneratorTest {
 		// given
 		String propertyName = "doubleValue";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getReadProperty(DoubleIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(DoubleIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property, "", null, false, 0.0D),
-			Collections.emptyList()
+			new ArbitraryProperty(property, null, false, 0.0D),
+			Collections.emptyList(),
+			null,
+			ctx -> null
 		);
 
 		// when
@@ -426,10 +428,12 @@ class JavaxValidationConstraintGeneratorTest {
 		// given
 		String propertyName = "digitsValue";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getReadProperty(DoubleIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(DoubleIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property, "", null, false, 0.0D),
-			Collections.emptyList()
+			new ArbitraryProperty(property, null, false, 0.0D),
+			Collections.emptyList(),
+			null,
+			ctx -> null
 		);
 
 		// when
@@ -447,10 +451,12 @@ class JavaxValidationConstraintGeneratorTest {
 		// given
 		String propertyName = "minValue";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getReadProperty(DoubleIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(DoubleIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property, "", null, false, 0.0D),
-			Collections.emptyList()
+			new ArbitraryProperty(property, null, false, 0.0D),
+			Collections.emptyList(),
+			null,
+			ctx -> null
 		);
 
 		// when
@@ -468,10 +474,12 @@ class JavaxValidationConstraintGeneratorTest {
 		// given
 		String propertyName = "maxValue";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getReadProperty(DoubleIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(DoubleIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property, "", null, false, 0.0D),
-			Collections.emptyList()
+			new ArbitraryProperty(property, null, false, 0.0D),
+			Collections.emptyList(),
+			null,
+			ctx -> null
 		);
 
 		// when
@@ -489,10 +497,12 @@ class JavaxValidationConstraintGeneratorTest {
 		// given
 		String propertyName = "decimalMin";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getReadProperty(DoubleIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(DoubleIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property, "", null, false, 0.0D),
-			Collections.emptyList()
+			new ArbitraryProperty(property, null, false, 0.0D),
+			Collections.emptyList(),
+			null,
+			ctx -> null
 		);
 
 		// when
@@ -510,10 +520,12 @@ class JavaxValidationConstraintGeneratorTest {
 		// given
 		String propertyName = "decimalMinExclusive";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getReadProperty(DoubleIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(DoubleIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property, "", null, false, 0.0D),
-			Collections.emptyList()
+			new ArbitraryProperty(property, null, false, 0.0D),
+			Collections.emptyList(),
+			null,
+			ctx -> null
 		);
 
 		// when
@@ -531,10 +543,12 @@ class JavaxValidationConstraintGeneratorTest {
 		// given
 		String propertyName = "decimalMax";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getReadProperty(DoubleIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(DoubleIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property, "", null, false, 0.0D),
-			Collections.emptyList()
+			new ArbitraryProperty(property, null, false, 0.0D),
+			Collections.emptyList(),
+			null,
+			ctx -> null
 		);
 
 		// when
@@ -552,10 +566,12 @@ class JavaxValidationConstraintGeneratorTest {
 		// given
 		String propertyName = "decimalMaxExclusive";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getReadProperty(DoubleIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(DoubleIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property, "", null, false, 0.0D),
-			Collections.emptyList()
+			new ArbitraryProperty(property, null, false, 0.0D),
+			Collections.emptyList(),
+			null,
+			ctx -> null
 		);
 
 		// when
@@ -573,10 +589,12 @@ class JavaxValidationConstraintGeneratorTest {
 		// given
 		String propertyName = "negative";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getReadProperty(DoubleIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(DoubleIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property, "", null, false, 0.0D),
-			Collections.emptyList()
+			new ArbitraryProperty(property, null, false, 0.0D),
+			Collections.emptyList(),
+			null,
+			ctx -> null
 		);
 
 		// when
@@ -594,10 +612,12 @@ class JavaxValidationConstraintGeneratorTest {
 		// given
 		String propertyName = "negativeOrZero";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getReadProperty(DoubleIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(DoubleIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property, "", null, false, 0.0D),
-			Collections.emptyList()
+			new ArbitraryProperty(property, null, false, 0.0D),
+			Collections.emptyList(),
+			null,
+			ctx -> null
 		);
 
 		// when
@@ -615,10 +635,12 @@ class JavaxValidationConstraintGeneratorTest {
 		// given
 		String propertyName = "positive";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getReadProperty(DoubleIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(DoubleIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property, "", null, false, 0.0D),
-			Collections.emptyList()
+			new ArbitraryProperty(property, null, false, 0.0D),
+			Collections.emptyList(),
+			null,
+			ctx -> null
 		);
 
 		// when
@@ -636,10 +658,12 @@ class JavaxValidationConstraintGeneratorTest {
 		// given
 		String propertyName = "positiveOrZero";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getReadProperty(DoubleIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(DoubleIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property, "", null, false, 0.0D),
-			Collections.emptyList()
+			new ArbitraryProperty(property, null, false, 0.0D),
+			Collections.emptyList(),
+			null,
+			ctx -> null
 		);
 
 		// when
