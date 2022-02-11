@@ -37,7 +37,7 @@ class JavaxValidationBooleanIntrospectorTest {
 		// given
 		String propertyName = "boolValue";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getReadProperty(BooleanIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(BooleanIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(property, "", null, false, 0.0D),
 			Collections.emptyList()
@@ -56,7 +56,7 @@ class JavaxValidationBooleanIntrospectorTest {
 		// given
 		String propertyName = "assertTrue";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getReadProperty(BooleanIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(BooleanIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(property, "", null, false, 0.0D),
 			Collections.emptyList()
@@ -74,7 +74,7 @@ class JavaxValidationBooleanIntrospectorTest {
 		// given
 		String propertyName = "assertFalse";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getReadProperty(BooleanIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(BooleanIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(property, "", null, false, 0.0D),
 			Collections.emptyList()

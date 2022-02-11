@@ -216,7 +216,7 @@ class TypesTest {
 		Field field = fields.get("name");
 
 		// when
-		Type actual = Types.resolveWithTypeReferenceGenerics(typeReference, field);
+		Type actual = Types.resolveWithTypeReferenceGenerics(typeReference.getType(), field);
 
 		then(actual).isEqualTo(String.class);
 	}
@@ -231,7 +231,7 @@ class TypesTest {
 		Field field = fields.get("sample2");
 
 		// when
-		Type actual = Types.resolveWithTypeReferenceGenerics(typeReference, field);
+		Type actual = Types.resolveWithTypeReferenceGenerics(typeReference.getType(), field);
 
 		then(actual).isInstanceOf(ParameterizedType.class);
 
@@ -251,7 +251,7 @@ class TypesTest {
 		Field field = fields.get("list");
 
 		// when
-		Type actual = Types.resolveWithTypeReferenceGenerics(typeReference, field);
+		Type actual = Types.resolveWithTypeReferenceGenerics(typeReference.getType(), field);
 
 		then(actual).isInstanceOf(ParameterizedType.class);
 
@@ -271,7 +271,7 @@ class TypesTest {
 		Field field = fields.get("samples");
 
 		// when
-		Type actual = Types.resolveWithTypeReferenceGenerics(typeReference, field);
+		Type actual = Types.resolveWithTypeReferenceGenerics(typeReference.getType(), field);
 
 		then(actual).isInstanceOf(ParameterizedType.class);
 
@@ -291,7 +291,7 @@ class TypesTest {
 		Field field = fields.get("name");
 
 		// when
-		Type actual = Types.resolveWithTypeReferenceGenerics(typeReference, field);
+		Type actual = Types.resolveWithTypeReferenceGenerics(typeReference.getType(), field);
 
 		then(actual).isEqualTo(String.class);
 	}
@@ -306,7 +306,7 @@ class TypesTest {
 		Field field = fields.get("name");
 
 		// when
-		Type actual = Types.resolveWithTypeReferenceGenerics(typeReference, field);
+		Type actual = Types.resolveWithTypeReferenceGenerics(typeReference.getType(), field);
 
 		then(actual).isInstanceOf(WildcardType.class);
 		then(((WildcardType)actual).getUpperBounds()[0]).isEqualTo(Object.class);
@@ -322,7 +322,7 @@ class TypesTest {
 		Field field = fields.get("name");
 
 		// when
-		Type actual = Types.resolveWithTypeReferenceGenerics(typeReference, field);
+		Type actual = Types.resolveWithTypeReferenceGenerics(typeReference.getType(), field);
 
 		then(actual).isEqualTo(Object.class);
 	}
@@ -338,7 +338,7 @@ class TypesTest {
 		Field field = fields.get("name");
 
 		// when
-		Type actual = Types.resolveWithTypeReferenceGenerics(typeReference, field);
+		Type actual = Types.resolveWithTypeReferenceGenerics(typeReference.getType(), field);
 
 		then(actual).isEqualTo(Integer.class);
 	}
@@ -354,7 +354,7 @@ class TypesTest {
 		Field field = fields.get("address");
 
 		// when
-		Type actual = Types.resolveWithTypeReferenceGenerics(typeReference, field);
+		Type actual = Types.resolveWithTypeReferenceGenerics(typeReference.getType(), field);
 
 		then(actual).isEqualTo(String.class);
 	}
@@ -370,7 +370,7 @@ class TypesTest {
 		Field field = fields.get("sample2");
 
 		// when
-		Type actual = Types.resolveWithTypeReferenceGenerics(typeReference, field);
+		Type actual = Types.resolveWithTypeReferenceGenerics(typeReference.getType(), field);
 
 		then(actual).isInstanceOf(ParameterizedType.class);
 
@@ -392,7 +392,7 @@ class TypesTest {
 		Field field = fields.get("sample2");
 
 		// when
-		Type actual = Types.resolveWithTypeReferenceGenerics(typeReference, field);
+		Type actual = Types.resolveWithTypeReferenceGenerics(typeReference.getType(), field);
 
 		then(actual).isInstanceOf(ParameterizedType.class);
 
@@ -421,13 +421,13 @@ class TypesTest {
 		};
 
 		Map<Method, PropertyDescriptor> propertyDescriptors =
-			PropertyCache.getReadPropertyDescriptors(GenericSample.class);
+			PropertyCache.getPropertyDescriptors(GenericSample.class);
 		PropertyDescriptor propertyDescriptor = propertyDescriptors.get(
 			GenericSample.class.getDeclaredMethod("getName")
 		);
 
 		// when
-		Type actual = Types.resolveWithTypeReferenceGenerics(typeReference, propertyDescriptor);
+		Type actual = Types.resolveWithTypeReferenceGenerics(typeReference.getType(), propertyDescriptor);
 
 		then(actual).isEqualTo(String.class);
 	}
@@ -439,13 +439,13 @@ class TypesTest {
 		};
 
 		Map<Method, PropertyDescriptor> propertyDescriptors =
-			PropertyCache.getReadPropertyDescriptors(GenericSample.class);
+			PropertyCache.getPropertyDescriptors(GenericSample.class);
 		PropertyDescriptor propertyDescriptor = propertyDescriptors.get(
 			GenericSample.class.getDeclaredMethod("getSample2")
 		);
 
 		// when
-		Type actual = Types.resolveWithTypeReferenceGenerics(typeReference, propertyDescriptor);
+		Type actual = Types.resolveWithTypeReferenceGenerics(typeReference.getType(), propertyDescriptor);
 
 		then(actual).isInstanceOf(ParameterizedType.class);
 
@@ -462,13 +462,13 @@ class TypesTest {
 		};
 
 		Map<Method, PropertyDescriptor> propertyDescriptors =
-			PropertyCache.getReadPropertyDescriptors(GenericSample.class);
+			PropertyCache.getPropertyDescriptors(GenericSample.class);
 		PropertyDescriptor propertyDescriptor = propertyDescriptors.get(
 			GenericSample.class.getDeclaredMethod("getList")
 		);
 
 		// when
-		Type actual = Types.resolveWithTypeReferenceGenerics(typeReference, propertyDescriptor);
+		Type actual = Types.resolveWithTypeReferenceGenerics(typeReference.getType(), propertyDescriptor);
 
 		then(actual).isInstanceOf(ParameterizedType.class);
 
@@ -485,13 +485,13 @@ class TypesTest {
 		};
 
 		Map<Method, PropertyDescriptor> propertyDescriptors =
-			PropertyCache.getReadPropertyDescriptors(GenericSample.class);
+			PropertyCache.getPropertyDescriptors(GenericSample.class);
 		PropertyDescriptor propertyDescriptor = propertyDescriptors.get(
 			GenericSample.class.getDeclaredMethod("getSamples")
 		);
 
 		// when
-		Type actual = Types.resolveWithTypeReferenceGenerics(typeReference, propertyDescriptor);
+		Type actual = Types.resolveWithTypeReferenceGenerics(typeReference.getType(), propertyDescriptor);
 
 		then(actual).isInstanceOf(ParameterizedType.class);
 
@@ -508,13 +508,13 @@ class TypesTest {
 		};
 
 		Map<Method, PropertyDescriptor> propertyDescriptors =
-			PropertyCache.getReadPropertyDescriptors(Sample.class);
+			PropertyCache.getPropertyDescriptors(Sample.class);
 		PropertyDescriptor propertyDescriptor = propertyDescriptors.get(
 			Sample.class.getDeclaredMethod("getName")
 		);
 
 		// when
-		Type actual = Types.resolveWithTypeReferenceGenerics(typeReference, propertyDescriptor);
+		Type actual = Types.resolveWithTypeReferenceGenerics(typeReference.getType(), propertyDescriptor);
 
 		then(actual).isEqualTo(String.class);
 	}
@@ -526,13 +526,13 @@ class TypesTest {
 		};
 
 		Map<Method, PropertyDescriptor> propertyDescriptors =
-			PropertyCache.getReadPropertyDescriptors(GenericSample.class);
+			PropertyCache.getPropertyDescriptors(GenericSample.class);
 		PropertyDescriptor propertyDescriptor = propertyDescriptors.get(
 			GenericSample.class.getDeclaredMethod("getName")
 		);
 
 		// when
-		Type actual = Types.resolveWithTypeReferenceGenerics(typeReference, propertyDescriptor);
+		Type actual = Types.resolveWithTypeReferenceGenerics(typeReference.getType(), propertyDescriptor);
 
 		then(actual).isInstanceOf(WildcardType.class);
 		then(((WildcardType)actual).getUpperBounds()[0]).isEqualTo(Object.class);
@@ -545,13 +545,13 @@ class TypesTest {
 		};
 
 		Map<Method, PropertyDescriptor> propertyDescriptors =
-			PropertyCache.getReadPropertyDescriptors(GenericSample.class);
+			PropertyCache.getPropertyDescriptors(GenericSample.class);
 		PropertyDescriptor propertyDescriptor = propertyDescriptors.get(
 			GenericSample.class.getDeclaredMethod("getName")
 		);
 
 		// when
-		Type actual = Types.resolveWithTypeReferenceGenerics(typeReference, propertyDescriptor);
+		Type actual = Types.resolveWithTypeReferenceGenerics(typeReference.getType(), propertyDescriptor);
 
 		then(actual).isEqualTo(Object.class);
 	}
@@ -564,13 +564,13 @@ class TypesTest {
 			};
 
 		Map<Method, PropertyDescriptor> propertyDescriptors =
-			PropertyCache.getReadPropertyDescriptors(BiGenericSample.class);
+			PropertyCache.getPropertyDescriptors(BiGenericSample.class);
 		PropertyDescriptor propertyDescriptor = propertyDescriptors.get(
 			BiGenericSample.class.getDeclaredMethod("getName")
 		);
 
 		// when
-		Type actual = Types.resolveWithTypeReferenceGenerics(typeReference, propertyDescriptor);
+		Type actual = Types.resolveWithTypeReferenceGenerics(typeReference.getType(), propertyDescriptor);
 
 		then(actual).isEqualTo(Integer.class);
 	}
@@ -583,13 +583,13 @@ class TypesTest {
 			};
 
 		Map<Method, PropertyDescriptor> propertyDescriptors =
-			PropertyCache.getReadPropertyDescriptors(BiGenericSample.class);
+			PropertyCache.getPropertyDescriptors(BiGenericSample.class);
 		PropertyDescriptor propertyDescriptor = propertyDescriptors.get(
 			BiGenericSample.class.getDeclaredMethod("getAddress")
 		);
 
 		// when
-		Type actual = Types.resolveWithTypeReferenceGenerics(typeReference, propertyDescriptor);
+		Type actual = Types.resolveWithTypeReferenceGenerics(typeReference.getType(), propertyDescriptor);
 
 		then(actual).isEqualTo(String.class);
 	}
@@ -602,13 +602,13 @@ class TypesTest {
 			};
 
 		Map<Method, PropertyDescriptor> propertyDescriptors =
-			PropertyCache.getReadPropertyDescriptors(BiGenericSample.class);
+			PropertyCache.getPropertyDescriptors(BiGenericSample.class);
 		PropertyDescriptor propertyDescriptor = propertyDescriptors.get(
 			BiGenericSample.class.getDeclaredMethod("getSample2")
 		);
 
 		// when
-		Type actual = Types.resolveWithTypeReferenceGenerics(typeReference, propertyDescriptor);
+		Type actual = Types.resolveWithTypeReferenceGenerics(typeReference.getType(), propertyDescriptor);
 
 		then(actual).isInstanceOf(ParameterizedType.class);
 
@@ -627,13 +627,13 @@ class TypesTest {
 			};
 
 		Map<Method, PropertyDescriptor> propertyDescriptors =
-			PropertyCache.getReadPropertyDescriptors(BiGenericSample.class);
+			PropertyCache.getPropertyDescriptors(BiGenericSample.class);
 		PropertyDescriptor propertyDescriptor = propertyDescriptors.get(
 			BiGenericSample.class.getDeclaredMethod("getSample2")
 		);
 
 		// when
-		Type actual = Types.resolveWithTypeReferenceGenerics(typeReference, propertyDescriptor);
+		Type actual = Types.resolveWithTypeReferenceGenerics(typeReference.getType(), propertyDescriptor);
 
 		then(actual).isInstanceOf(ParameterizedType.class);
 

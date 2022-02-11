@@ -23,8 +23,14 @@ import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -35,6 +41,8 @@ import org.junit.platform.commons.util.ReflectionUtils.HierarchyTraversalMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.navercorp.fixturemonkey.api.type.Types;
+
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class PropertyCache {
 	private static final Logger LOGGER = LoggerFactory.getLogger(PropertyCache.class);
@@ -42,84 +50,63 @@ public final class PropertyCache {
 	private static final Map<Class<?>, Map<Method, PropertyDescriptor>> PROPERTY_DESCRIPTORS =
 		new ConcurrentHashMap<>();
 	private static final Map<Class<?>, Map<String, Field>> FIELDS = new ConcurrentHashMap<>();
-	private static final Map<Class<?>, Map<String, Optional<Property>>> PROPERTIES = new ConcurrentHashMap<>();
+	private static final Map<Type, List<Property>> TYPE_PROPERTIES =
+		Collections.synchronizedMap(new PropertiesLruCache(1000));
 
-	public static Optional<Property> getReadProperty(Class<?> clazz, String name) {
-		Map<String, Optional<Property>> propertyMap = PROPERTIES.computeIfAbsent(
-			clazz, type -> new ConcurrentHashMap<>());
-
-		Optional<Property> property = propertyMap.get(name);
-		if (property != null) {
-			return property;
+	public static List<Property> getProperties(Type type) {
+		List<Property> cached = TYPE_PROPERTIES.get(type);
+		if (cached != null) {
+			return cached;
 		}
 
-		PropertyDescriptor propertyDescriptor = getReadPropertyDescriptors(clazz).values().stream()
-			.filter(it -> it.getName().equals(name))
-			.findFirst()
-			.orElse(null);
-		Field field = getFields(clazz).get(name);
+		Map<String, List<Property>> propertiesMap = new HashMap<>();
 
-		if (propertyDescriptor == null && field == null) {
-			property = Optional.empty();
-			propertyMap.put(name, property);
-			return property;
+		Class<?> actualType = Types.getActualType(type);
+		Map<Method, PropertyDescriptor> propertyDescriptorMap = getPropertyDescriptors(actualType);
+
+		for (Entry<Method, PropertyDescriptor> entry : propertyDescriptorMap.entrySet()) {
+			List<Property> properties = propertiesMap.computeIfAbsent(
+				entry.getValue().getName(), name -> new ArrayList<>()
+			);
+			properties.add(
+				new PropertyDescriptorProperty(
+					Types.resolveWithTypeReferenceGenerics(type, entry.getValue()),
+					entry.getValue()
+				)
+			);
 		}
 
-		if (propertyDescriptor == null) {
-			property = Optional.of(new FieldProperty(field));
-			propertyMap.put(name, property);
-			return property;
+		Map<String, Field> fieldMap = getFields(actualType);
+		for (Entry<String, Field> entry : fieldMap.entrySet()) {
+			List<Property> properties = propertiesMap.computeIfAbsent(
+				entry.getKey(), name -> new ArrayList<>()
+			);
+			properties.add(
+				new FieldProperty(
+					Types.resolveWithTypeReferenceGenerics(type, entry.getValue()),
+					entry.getValue()
+				)
+			);
 		}
 
-		if (field == null) {
-			property = Optional.of(new PropertyDescriptorProperty(propertyDescriptor));
-			propertyMap.put(name, property);
-			return property;
+		List<Property> result = new ArrayList<>();
+		for (List<Property> properties : propertiesMap.values()) {
+			if (properties.size() == 1) {
+				result.add(properties.get(0));
+			} else {
+				result.add(new CompositeProperty(properties.get(0), properties.get(1)));
+			}
 		}
 
-		property = Optional.of(
-			new CompositeProperty(
-				new PropertyDescriptorProperty(propertyDescriptor),
-				new FieldProperty(field)
-			)
-		);
-		propertyMap.put(name, property);
-		return property;
+		result = Collections.unmodifiableList(result);
+		TYPE_PROPERTIES.put(type, result);
+		return result;
 	}
 
-	public static Optional<Property> getReadProperty(Class<?> clazz, Method method) {
-		Map<Method, PropertyDescriptor> propertyDescriptorMap = getReadPropertyDescriptors(clazz);
-		PropertyDescriptor propertyDescriptor = propertyDescriptorMap.get(method);
-		if (propertyDescriptor == null) {
-			return Optional.empty();
-		}
-
-		String propertyName = propertyDescriptor.getName();
-
-		Map<String, Optional<Property>> propertyMap = PROPERTIES.computeIfAbsent(
-			clazz, type -> new ConcurrentHashMap<>());
-
-		Optional<Property> property = propertyMap.get(propertyName);
-		if (property != null) {
-			return property;
-		}
-
-		Field field = getFields(clazz).get(propertyName);
-
-		if (field == null) {
-			property = Optional.of(new PropertyDescriptorProperty(propertyDescriptor));
-			propertyMap.put(propertyName, property);
-			return property;
-		}
-
-		property = Optional.of(
-			new CompositeProperty(
-				new PropertyDescriptorProperty(propertyDescriptor),
-				new FieldProperty(field)
-			)
-		);
-		propertyMap.put(propertyName, property);
-		return property;
+	public static Optional<Property> getProperty(Type type, String name) {
+		return getProperties(type).stream()
+			.filter(it -> it.getName().equals(name))
+			.findFirst();
 	}
 
 	public static Map<String, Field> getFields(Class<?> clazz) {
@@ -134,13 +121,16 @@ public final class PropertyCache {
 		});
 	}
 
-	public static Map<Method, PropertyDescriptor> getReadPropertyDescriptors(Class<?> clazz) {
+	public static Map<Method, PropertyDescriptor> getPropertyDescriptors(Class<?> clazz) {
 		return PROPERTY_DESCRIPTORS.computeIfAbsent(clazz, type -> {
 			Map<Method, PropertyDescriptor> result = new ConcurrentHashMap<>();
 			try {
 				PropertyDescriptor[] descriptors = Introspector.getBeanInfo(type)
 					.getPropertyDescriptors();
 				for (PropertyDescriptor descriptor : descriptors) {
+					if (descriptor.getName().equals("class")) {
+						continue;
+					}
 					Method readMethod = descriptor.getReadMethod(); // can not be null
 					result.put(readMethod, descriptor);
 				}
@@ -149,5 +139,19 @@ public final class PropertyCache {
 			}
 			return result;
 		});
+	}
+
+	private static class PropertiesLruCache extends LinkedHashMap<Type, List<Property>> {
+		private final int maxSize;
+
+		PropertiesLruCache(int maxSize) {
+			super(maxSize + 1, 1, true);
+			this.maxSize = maxSize;
+		}
+
+		@Override
+		protected  boolean removeEldestEntry(Map.Entry<Type, List<Property>> eldest) {
+			return size() > maxSize;
+		}
 	}
 }

@@ -54,7 +54,7 @@ class FixtureMonkeyJacksonArbitraryGeneratorTest {
 		// given
 		ExpressionGenerator expressionGenerator = resolver -> {
 			com.navercorp.fixturemonkey.api.property.Property property =
-				PropertyCache.getReadProperty(JsonPropertyClass.class, "value").get();
+				PropertyCache.getProperty(JsonPropertyClass.class, "value").get();
 			return resolver.resolve(property);
 		};
 
@@ -109,7 +109,7 @@ class FixtureMonkeyJacksonArbitraryGeneratorTest {
 		// given
 		ExpressionGenerator expressionGenerator = resolver -> {
 			com.navercorp.fixturemonkey.api.property.Property property =
-				PropertyCache.getReadProperty(JsonPropertyClass.class, "value").get();
+				PropertyCache.getProperty(JsonPropertyClass.class, "value").get();
 			return resolver.resolve(property);
 		};
 

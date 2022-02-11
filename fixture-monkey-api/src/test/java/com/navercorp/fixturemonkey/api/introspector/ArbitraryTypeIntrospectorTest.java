@@ -34,7 +34,7 @@ class ArbitraryTypeIntrospectorTest {
 	@Test
 	void introspectEnumType() {
 		// given
-		Property property = PropertyCache.getReadProperty(Sample.class, "season").get();
+		Property property = PropertyCache.getProperty(Sample.class, "season").get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(property, "", null, false, 0.0D),
 			Collections.emptyList()
@@ -49,7 +49,7 @@ class ArbitraryTypeIntrospectorTest {
 	@Test
 	void introspectBooleanType() {
 		// given
-		Property property = PropertyCache.getReadProperty(Sample.class, "bool").get();
+		Property property = PropertyCache.getProperty(Sample.class, "bool").get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(property, "", null, false, 0.0D),
 			Collections.emptyList()
@@ -64,7 +64,7 @@ class ArbitraryTypeIntrospectorTest {
 	@Test
 	void introspectBooleanWrapperType() {
 		// given
-		Property property = PropertyCache.getReadProperty(Sample.class, "bool").get();
+		Property property = PropertyCache.getProperty(Sample.class, "bool").get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(property, "", null, false, 0.0D),
 			Collections.emptyList()
@@ -79,7 +79,7 @@ class ArbitraryTypeIntrospectorTest {
 	@Test
 	void introspectUuidType() {
 		// given
-		Property property = PropertyCache.getReadProperty(Sample.class, "uuid").get();
+		Property property = PropertyCache.getProperty(Sample.class, "uuid").get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(property, "", null, false, 0.0D),
 			Collections.emptyList()

@@ -106,8 +106,7 @@ public class Types {
 		);
 	}
 
-	public static Type resolveWithTypeReferenceGenerics(TypeReference<?> ownerTypeReference, Field field) {
-		Type ownerType = ownerTypeReference.getType();
+	public static Type resolveWithTypeReferenceGenerics(Type ownerType, Field field) {
 		if (!(ownerType instanceof ParameterizedType)) {
 			return field.getType();
 		}
@@ -173,10 +172,9 @@ public class Types {
 	}
 
 	public static Type resolveWithTypeReferenceGenerics(
-		TypeReference<?> ownerTypeReference,
+		Type ownerType,
 		PropertyDescriptor propertyDescriptor
 	) {
-		Type ownerType = ownerTypeReference.getType();
 		if (!(ownerType instanceof ParameterizedType)) {
 			return propertyDescriptor.getPropertyType();
 		}

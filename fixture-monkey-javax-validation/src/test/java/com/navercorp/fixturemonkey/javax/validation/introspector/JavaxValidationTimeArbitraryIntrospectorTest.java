@@ -59,7 +59,7 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 		CalendarArbitrary calendarArbitrary = Dates.datesAsCalendar();
 		String propertyName = "calendar";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getReadProperty(TimeIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(property, "", null, false, 0.0D),
 			Collections.emptyList()
@@ -79,7 +79,7 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 		CalendarArbitrary calendarArbitrary = Dates.datesAsCalendar();
 		String propertyName = "calendarPast";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getReadProperty(TimeIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(property, "", null, false, 0.0D),
 			Collections.emptyList()
@@ -101,7 +101,7 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 		CalendarArbitrary calendarArbitrary = Dates.datesAsCalendar();
 		String propertyName = "calendarPastOrPresent";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getReadProperty(TimeIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(property, "", null, false, 0.0D),
 			Collections.emptyList()
@@ -123,7 +123,7 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 		CalendarArbitrary calendarArbitrary = Dates.datesAsCalendar();
 		String propertyName = "calendarFuture";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getReadProperty(TimeIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(property, "", null, false, 0.0D),
 			Collections.emptyList()
@@ -145,7 +145,7 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 		CalendarArbitrary calendarArbitrary = Dates.datesAsCalendar();
 		String propertyName = "calendarFutureOrPresent";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getReadProperty(TimeIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(property, "", null, false, 0.0D),
 			Collections.emptyList()
@@ -167,7 +167,7 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 		DateArbitrary dateArbitrary = Dates.datesAsDate();
 		String propertyName = "date";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getReadProperty(TimeIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(property, "", null, false, 0.0D),
 			Collections.emptyList()
@@ -187,7 +187,7 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 		DateArbitrary dateArbitrary = Dates.datesAsDate();
 		String propertyName = "datePast";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getReadProperty(TimeIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(property, "", null, false, 0.0D),
 			Collections.emptyList()
@@ -209,7 +209,7 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 		DateArbitrary dateArbitrary = Dates.datesAsDate();
 		String propertyName = "datePastOrPresent";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getReadProperty(TimeIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(property, "", null, false, 0.0D),
 			Collections.emptyList()
@@ -231,7 +231,7 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 		DateArbitrary dateArbitrary = Dates.datesAsDate();
 		String propertyName = "dateFuture";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getReadProperty(TimeIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(property, "", null, false, 0.0D),
 			Collections.emptyList()
@@ -253,7 +253,7 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 		DateArbitrary dateArbitrary = Dates.datesAsDate();
 		String propertyName = "dateFutureOrPresent";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getReadProperty(TimeIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(property, "", null, false, 0.0D),
 			Collections.emptyList()
@@ -275,7 +275,7 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 		InstantArbitrary instantArbitrary = DateTimes.instants();
 		String propertyName = "instant";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getReadProperty(TimeIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(property, "", null, false, 0.0D),
 			Collections.emptyList()
@@ -295,7 +295,7 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 		InstantArbitrary instantArbitrary = DateTimes.instants();
 		String propertyName = "instantPast";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getReadProperty(TimeIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(property, "", null, false, 0.0D),
 			Collections.emptyList()
@@ -318,7 +318,7 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 		InstantArbitrary instantArbitrary = DateTimes.instants();
 		String propertyName = "instantPastOrPresent";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getReadProperty(TimeIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(property, "", null, false, 0.0D),
 			Collections.emptyList()
@@ -342,7 +342,7 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 		InstantArbitrary instantArbitrary = DateTimes.instants();
 		String propertyName = "instantFuture";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getReadProperty(TimeIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(property, "", null, false, 0.0D),
 			Collections.emptyList()
@@ -363,7 +363,7 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 		InstantArbitrary instantArbitrary = DateTimes.instants();
 		String propertyName = "instantFutureOrPresent";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getReadProperty(TimeIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(property, "", null, false, 0.0D),
 			Collections.emptyList()
@@ -383,7 +383,7 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 		LocalDateArbitrary localDateArbitrary = Dates.dates();
 		String propertyName = "localDate";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getReadProperty(TimeIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(property, "", null, false, 0.0D),
 			Collections.emptyList()
@@ -403,7 +403,7 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 		LocalDateArbitrary localDateArbitrary = Dates.dates();
 		String propertyName = "localDatePast";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getReadProperty(TimeIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(property, "", null, false, 0.0D),
 			Collections.emptyList()
@@ -424,7 +424,7 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 		LocalDateArbitrary localDateArbitrary = Dates.dates();
 		String propertyName = "localDatePastOrPresent";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getReadProperty(TimeIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(property, "", null, false, 0.0D),
 			Collections.emptyList()
@@ -446,7 +446,7 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 		LocalDateArbitrary localDateArbitrary = Dates.dates();
 		String propertyName = "localDateFuture";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getReadProperty(TimeIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(property, "", null, false, 0.0D),
 			Collections.emptyList()
@@ -467,7 +467,7 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 		LocalDateArbitrary localDateArbitrary = Dates.dates();
 		String propertyName = "localDateFutureOrPresent";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getReadProperty(TimeIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(property, "", null, false, 0.0D),
 			Collections.emptyList()
@@ -487,7 +487,7 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 		LocalDateTimeArbitrary localDateTimeArbitrary = DateTimes.dateTimes();
 		String propertyName = "localDateTime";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getReadProperty(TimeIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(property, "", null, false, 0.0D),
 			Collections.emptyList()
@@ -507,7 +507,7 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 		LocalDateTimeArbitrary localDateTimeArbitrary = DateTimes.dateTimes();
 		String propertyName = "localDateTimePast";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getReadProperty(TimeIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(property, "", null, false, 0.0D),
 			Collections.emptyList()
@@ -528,7 +528,7 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 		LocalDateTimeArbitrary localDateTimeArbitrary = DateTimes.dateTimes();
 		String propertyName = "localDateTimePastOrPresent";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getReadProperty(TimeIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(property, "", null, false, 0.0D),
 			Collections.emptyList()
@@ -550,7 +550,7 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 		LocalDateTimeArbitrary localDateTimeArbitrary = DateTimes.dateTimes();
 		String propertyName = "localDateTimeFuture";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getReadProperty(TimeIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(property, "", null, false, 0.0D),
 			Collections.emptyList()
@@ -571,7 +571,7 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 		LocalDateTimeArbitrary localDateTimeArbitrary = DateTimes.dateTimes();
 		String propertyName = "localDateTimeFutureOrPresent";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getReadProperty(TimeIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(property, "", null, false, 0.0D),
 			Collections.emptyList()
@@ -591,7 +591,7 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 		LocalTimeArbitrary localTimeArbitrary = Times.times();
 		String propertyName = "localTime";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getReadProperty(TimeIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(property, "", null, false, 0.0D),
 			Collections.emptyList()
@@ -611,7 +611,7 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 		LocalTimeArbitrary localTimeArbitrary = Times.times();
 		String propertyName = "localTimePast";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getReadProperty(TimeIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(property, "", null, false, 0.0D),
 			Collections.emptyList()
@@ -632,7 +632,7 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 		LocalTimeArbitrary localTimeArbitrary = Times.times();
 		String propertyName = "localTimePastOrPresent";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getReadProperty(TimeIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(property, "", null, false, 0.0D),
 			Collections.emptyList()
@@ -654,7 +654,7 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 		LocalTimeArbitrary localTimeArbitrary = Times.times();
 		String propertyName = "localTimeFuture";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getReadProperty(TimeIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(property, "", null, false, 0.0D),
 			Collections.emptyList()
@@ -675,7 +675,7 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 		LocalTimeArbitrary localTimeArbitrary = Times.times();
 		String propertyName = "localTimeFutureOrPresent";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getReadProperty(TimeIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(property, "", null, false, 0.0D),
 			Collections.emptyList()
@@ -695,7 +695,7 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 		DurationArbitrary durationArbitrary = Times.durations();
 		String propertyName = "duration";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getReadProperty(TimeIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(property, "", null, false, 0.0D),
 			Collections.emptyList()
@@ -714,7 +714,7 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 		PeriodArbitrary periodArbitrary = Dates.periods();
 		String propertyName = "period";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getReadProperty(TimeIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(property, "", null, false, 0.0D),
 			Collections.emptyList()
@@ -733,7 +733,7 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 		ZoneOffsetArbitrary zoneOffsetArbitrary = Times.zoneOffsets();
 		String propertyName = "zoneOffset";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getReadProperty(TimeIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(property, "", null, false, 0.0D),
 			Collections.emptyList()

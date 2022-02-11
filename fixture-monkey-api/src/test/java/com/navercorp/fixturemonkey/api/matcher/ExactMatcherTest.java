@@ -36,7 +36,7 @@ class ExactMatcherTest {
 		Matcher sut = new ExactTypeMatcher(String.class);
 
 		String propertyName = "str";
-		Property property = PropertyCache.getReadProperty(TypeMatcherSpec.class, propertyName).get();
+		Property property = PropertyCache.getProperty(TypeMatcherSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(property, "", null, false, 0.0D),
 			Collections.emptyList()
@@ -54,7 +54,7 @@ class ExactMatcherTest {
 		Matcher sut = new ExactTypeMatcher(TypeMatcherSpec.class);
 
 		String propertyName = "inherited";
-		Property property = PropertyCache.getReadProperty(TypeMatcherSpec.class, propertyName).get();
+		Property property = PropertyCache.getProperty(TypeMatcherSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(property, "", null, false, 0.0D),
 			Collections.emptyList()
