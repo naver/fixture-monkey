@@ -29,6 +29,7 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryTypeIntrospectorTest.Sample;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.PropertyCache;
+import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 
 class ArbitraryTypeIntrospectDelegatorTest {
 	@Test
@@ -40,7 +41,13 @@ class ArbitraryTypeIntrospectDelegatorTest {
 
 		Property property = PropertyCache.getProperty(Sample.class, "season").get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property,  null, false, 0.0D),
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				null,
+				0.0D
+			),
 			Collections.emptyList(),
 			null,
 			ctx -> null

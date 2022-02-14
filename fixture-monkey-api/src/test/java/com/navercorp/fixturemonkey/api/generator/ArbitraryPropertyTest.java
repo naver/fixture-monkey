@@ -23,6 +23,7 @@ import static org.assertj.core.api.BDDAssertions.then;
 import org.junit.jupiter.api.Test;
 
 import com.navercorp.fixturemonkey.api.property.PropertyCache;
+import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 
@@ -35,12 +36,17 @@ class ArbitraryPropertyTest {
 		RootProperty rootProperty = PropertyCache.getRootProperty(typeReference.getType());
 
 		// when
-		ArbitraryProperty actual = ArbitraryProperty.root(rootProperty);
+		ArbitraryProperty actual = new ArbitraryProperty(
+			rootProperty,
+			PropertyNameResolver.IDENTITY,
+			null,
+			null,
+			0.0D
+		);
 
 		then(actual.isRoot()).isTrue();
 		then(actual.getProperty()).isEqualTo(rootProperty);
-		then(actual.getIndexOfIterable()).isNull();
-		then(actual.isKeyOfMapStructure()).isFalse();
+		then(actual.getElementIndex()).isNull();
 		then(actual.getNullInject()).isEqualTo(0.0D);
 	}
 
