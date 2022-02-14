@@ -18,13 +18,13 @@
 
 package com.navercorp.fixturemonkey.api.matcher;
 
+import java.lang.reflect.Type;
+
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
-
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public final class ExactTypeMatcher implements Matcher {
+public final class ExactTypeMatcher implements TypeMatcher {
 	private final Class<?> type;
 
 	public ExactTypeMatcher(Class<?> type) {
@@ -32,7 +32,7 @@ public final class ExactTypeMatcher implements Matcher {
 	}
 
 	@Override
-	public boolean match(ArbitraryGeneratorContext context) {
-		return this.type == context.getProperty().getType();
+	public boolean match(Type type) {
+		return this.type == type;
 	}
 }

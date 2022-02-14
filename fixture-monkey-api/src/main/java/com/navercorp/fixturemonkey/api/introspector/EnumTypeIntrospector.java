@@ -26,14 +26,14 @@ import org.apiguardian.api.API.Status;
 import net.jqwik.api.Arbitraries;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
-import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.matcher.Matchers;
+import com.navercorp.fixturemonkey.api.matcher.TypeMatcher;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public final class EnumTypeIntrospector implements ArbitraryTypeIntrospector, Matcher {
+public final class EnumTypeIntrospector implements ArbitraryTypeIntrospector, TypeMatcher {
 	@Override
-	public boolean match(ArbitraryGeneratorContext context) {
-		return Matchers.ENUM_TYPE_MATCHER.match(context);
+	public boolean match(Type type) {
+		return Matchers.ENUM_TYPE_MATCHER.match(type);
 	}
 
 	@SuppressWarnings({"unchecked", "rawtypes"})

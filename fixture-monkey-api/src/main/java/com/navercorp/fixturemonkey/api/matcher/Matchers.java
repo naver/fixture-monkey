@@ -18,7 +18,6 @@
 
 package com.navercorp.fixturemonkey.api.matcher;
 
-import java.lang.reflect.Type;
 import java.util.UUID;
 
 import org.apiguardian.api.API;
@@ -29,10 +28,8 @@ import com.navercorp.fixturemonkey.api.type.Types;
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class Matchers {
 
-	public static final Matcher ENUM_TYPE_MATCHER = ctx -> Types.getActualType(ctx.getType()).isEnum();
-	public static final Matcher BOOLEAN_TYPE_MATCHER = ctx -> {
-		Type type = ctx.getType();
-		return type == boolean.class || type == Boolean.class;
-	};
-	public static final Matcher UUID_TYPE_MATCHER = new ExactTypeMatcher(UUID.class);
+	public static final TypeMatcher ENUM_TYPE_MATCHER = type -> Types.getActualType(type).isEnum();
+	public static final TypeMatcher BOOLEAN_TYPE_MATCHER = type ->
+		type == boolean.class || type == Boolean.class;
+	public static final TypeMatcher UUID_TYPE_MATCHER = new ExactTypeMatcher(UUID.class);
 }

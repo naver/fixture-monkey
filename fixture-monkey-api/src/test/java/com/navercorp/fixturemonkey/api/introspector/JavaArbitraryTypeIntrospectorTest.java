@@ -47,7 +47,7 @@ class JavaArbitraryTypeIntrospectorTest {
 		);
 
 		// when
-		boolean actual = this.sut.match(context);
+		boolean actual = this.sut.match(context.getType());
 
 		then(actual).isTrue();
 	}
@@ -85,7 +85,7 @@ class JavaArbitraryTypeIntrospectorTest {
 		);
 
 		// when
-		boolean actual = this.sut.match(context);
+		boolean actual = this.sut.match(context.getType());
 
 		then(actual).isTrue();
 	}
@@ -123,7 +123,7 @@ class JavaArbitraryTypeIntrospectorTest {
 		);
 
 		// when
-		boolean actual = this.sut.match(context);
+		boolean actual = this.sut.match(context.getType());
 
 		then(actual).isTrue();
 	}
@@ -161,7 +161,7 @@ class JavaArbitraryTypeIntrospectorTest {
 		);
 
 		// when
-		boolean actual = this.sut.match(context);
+		boolean actual = this.sut.match(context.getType());
 
 		then(actual).isTrue();
 	}
@@ -199,7 +199,7 @@ class JavaArbitraryTypeIntrospectorTest {
 		);
 
 		// when
-		boolean actual = this.sut.match(context);
+		boolean actual = this.sut.match(context.getType());
 
 		then(actual).isTrue();
 	}
@@ -237,7 +237,7 @@ class JavaArbitraryTypeIntrospectorTest {
 		);
 
 		// when
-		boolean actual = this.sut.match(context);
+		boolean actual = this.sut.match(context.getType());
 
 		then(actual).isTrue();
 	}
@@ -275,7 +275,7 @@ class JavaArbitraryTypeIntrospectorTest {
 		);
 
 		// when
-		boolean actual = this.sut.match(context);
+		boolean actual = this.sut.match(context.getType());
 
 		then(actual).isTrue();
 	}
@@ -313,7 +313,7 @@ class JavaArbitraryTypeIntrospectorTest {
 		);
 
 		// when
-		boolean actual = this.sut.match(context);
+		boolean actual = this.sut.match(context.getType());
 
 		then(actual).isTrue();
 	}
@@ -351,7 +351,7 @@ class JavaArbitraryTypeIntrospectorTest {
 		);
 
 		// when
-		boolean actual = this.sut.match(context);
+		boolean actual = this.sut.match(context.getType());
 
 		then(actual).isTrue();
 	}
@@ -389,7 +389,7 @@ class JavaArbitraryTypeIntrospectorTest {
 		);
 
 		// when
-		boolean actual = this.sut.match(context);
+		boolean actual = this.sut.match(context.getType());
 
 		then(actual).isTrue();
 	}
@@ -427,7 +427,7 @@ class JavaArbitraryTypeIntrospectorTest {
 		);
 
 		// when
-		boolean actual = this.sut.match(context);
+		boolean actual = this.sut.match(context.getType());
 
 		then(actual).isTrue();
 	}
@@ -465,7 +465,7 @@ class JavaArbitraryTypeIntrospectorTest {
 		);
 
 		// when
-		boolean actual = this.sut.match(context);
+		boolean actual = this.sut.match(context.getType());
 
 		then(actual).isTrue();
 	}
@@ -503,7 +503,7 @@ class JavaArbitraryTypeIntrospectorTest {
 		);
 
 		// when
-		boolean actual = this.sut.match(context);
+		boolean actual = this.sut.match(context.getType());
 
 		then(actual).isTrue();
 	}
@@ -541,7 +541,7 @@ class JavaArbitraryTypeIntrospectorTest {
 		);
 
 		// when
-		boolean actual = this.sut.match(context);
+		boolean actual = this.sut.match(context.getType());
 
 		then(actual).isTrue();
 	}
@@ -579,7 +579,7 @@ class JavaArbitraryTypeIntrospectorTest {
 		);
 
 		// when
-		boolean actual = this.sut.match(context);
+		boolean actual = this.sut.match(context.getType());
 
 		then(actual).isTrue();
 	}
@@ -617,7 +617,7 @@ class JavaArbitraryTypeIntrospectorTest {
 		);
 
 		// when
-		boolean actual = this.sut.match(context);
+		boolean actual = this.sut.match(context.getType());
 
 		then(actual).isTrue();
 	}
@@ -655,7 +655,7 @@ class JavaArbitraryTypeIntrospectorTest {
 		);
 
 		// when
-		boolean actual = this.sut.match(context);
+		boolean actual = this.sut.match(context.getType());
 
 		then(actual).isTrue();
 	}
@@ -693,7 +693,7 @@ class JavaArbitraryTypeIntrospectorTest {
 		);
 
 		// when
-		boolean actual = this.sut.match(context);
+		boolean actual = this.sut.match(context.getType());
 
 		then(actual).isFalse();
 	}
