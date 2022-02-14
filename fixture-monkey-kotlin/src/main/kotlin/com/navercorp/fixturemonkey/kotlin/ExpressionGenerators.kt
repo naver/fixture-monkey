@@ -167,6 +167,12 @@ fun <T> ArbitraryBuilder<T>.setNull(property: KProperty1<T, *>): ArbitraryBuilde
 fun <T> ArbitraryBuilder<T>.setNull(property: KFunction1<T, *>): ArbitraryBuilder<T> =
     this.setNull(ParsedExpressionGenerator(listOf(PropertyExpressionGenerator(KotlinGetterProperty(property)))))
 
+fun <T> ArbitraryBuilder<T>.setNotNull(property: KProperty1<T, *>): ArbitraryBuilder<T> =
+    this.setNotNull(ParsedExpressionGenerator(listOf(PropertyExpressionGenerator(KotlinProperty(property)))))
+
+fun <T> ArbitraryBuilder<T>.setNotNull(property: KFunction1<T, *>): ArbitraryBuilder<T> =
+    this.setNotNull(ParsedExpressionGenerator(listOf(PropertyExpressionGenerator(KotlinGetterProperty(property)))))
+
 fun <T, U> ArbitraryBuilder<T>.setPostCondition(
     property: KProperty1<T, *>,
     clazz: Class<U>,
