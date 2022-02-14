@@ -370,7 +370,7 @@ public final class ArbitraryBuilder<T> {
 	}
 
 	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
-	public <U> ArbitraryBuilder<T> size(ExpressionGenerator expressionGenerator, int size) {
+	public ArbitraryBuilder<T> size(ExpressionGenerator expressionGenerator, int size) {
 		return this.size(resolveExpression(expressionGenerator), size);
 	}
 
@@ -381,7 +381,7 @@ public final class ArbitraryBuilder<T> {
 	}
 
 	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
-	public <U> ArbitraryBuilder<T> size(ExpressionGenerator expressionGenerator, int min, int max) {
+	public ArbitraryBuilder<T> size(ExpressionGenerator expressionGenerator, int min, int max) {
 		return this.size(resolveExpression(expressionGenerator), min, max);
 	}
 
@@ -394,7 +394,7 @@ public final class ArbitraryBuilder<T> {
 	}
 
 	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
-	public <U> ArbitraryBuilder<T> minSize(ExpressionGenerator expressionGenerator, int min) {
+	public ArbitraryBuilder<T> minSize(ExpressionGenerator expressionGenerator, int min) {
 		return this.minSize(resolveExpression(expressionGenerator), min);
 	}
 
@@ -405,7 +405,7 @@ public final class ArbitraryBuilder<T> {
 	}
 
 	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
-	public <U> ArbitraryBuilder<T> maxSize(ExpressionGenerator expressionGenerator, int max) {
+	public ArbitraryBuilder<T> maxSize(ExpressionGenerator expressionGenerator, int max) {
 		return this.maxSize(resolveExpression(expressionGenerator), max);
 	}
 
