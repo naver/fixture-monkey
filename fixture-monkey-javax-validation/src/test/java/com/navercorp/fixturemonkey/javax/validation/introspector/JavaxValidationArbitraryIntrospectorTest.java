@@ -36,6 +36,7 @@ import net.jqwik.api.arbitraries.StringArbitrary;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.property.PropertyCache;
+import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 
 class JavaxValidationArbitraryIntrospectorTest {
 	private final JavaxValidationArbitraryIntrospector sut = new JavaxValidationArbitraryIntrospector();
@@ -48,7 +49,13 @@ class JavaxValidationArbitraryIntrospectorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(StringIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property,  null, false, 0.0D),
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				null,
+				0.0D
+			),
 			Collections.emptyList(),
 			null,
 			ctx -> null
@@ -70,7 +77,13 @@ class JavaxValidationArbitraryIntrospectorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(StringIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property,  null, false, 0.0D),
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				null,
+				0.0D
+			),
 			Collections.emptyList(),
 			null,
 			ctx -> null
@@ -92,7 +105,13 @@ class JavaxValidationArbitraryIntrospectorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(StringIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property,  null, false, 0.0D),
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				null,
+				0.0D
+			),
 			Collections.emptyList(),
 			null,
 			ctx -> null
@@ -114,7 +133,13 @@ class JavaxValidationArbitraryIntrospectorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(StringIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property,  null, false, 0.0D),
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				null,
+				0.0D
+			),
 			Collections.emptyList(),
 			null,
 			ctx -> null
@@ -137,7 +162,13 @@ class JavaxValidationArbitraryIntrospectorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(StringIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property,  null, false, 0.0D),
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				null,
+				0.0D
+			),
 			Collections.emptyList(),
 			null,
 			ctx -> null
@@ -160,7 +191,13 @@ class JavaxValidationArbitraryIntrospectorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(StringIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property,  null, false, 0.0D),
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				null,
+				0.0D
+			),
 			Collections.emptyList(),
 			null,
 			ctx -> null
@@ -187,7 +224,13 @@ class JavaxValidationArbitraryIntrospectorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(StringIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property,  null, false, 0.0D),
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				null,
+				0.0D
+			),
 			Collections.emptyList(),
 			null,
 			ctx -> null
@@ -209,7 +252,13 @@ class JavaxValidationArbitraryIntrospectorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(CharacterIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property,  null, false, 0.0D),
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				null,
+				0.0D
+			),
 			Collections.emptyList(),
 			null,
 			ctx -> null
@@ -230,7 +279,13 @@ class JavaxValidationArbitraryIntrospectorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(ShortIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property,  null, false, 0.0D),
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				null,
+				0.0D
+			),
 			Collections.emptyList(),
 			null,
 			ctx -> null
@@ -252,7 +307,13 @@ class JavaxValidationArbitraryIntrospectorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(ShortIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property,  null, false, 0.0D),
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				null,
+				0.0D
+			),
 			Collections.emptyList(),
 			null,
 			ctx -> null
@@ -274,7 +335,13 @@ class JavaxValidationArbitraryIntrospectorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(ShortIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property,  null, false, 0.0D),
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				null,
+				0.0D
+			),
 			Collections.emptyList(),
 			null,
 			ctx -> null
@@ -296,7 +363,13 @@ class JavaxValidationArbitraryIntrospectorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(ShortIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property,  null, false, 0.0D),
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				null,
+				0.0D
+			),
 			Collections.emptyList(),
 			null,
 			ctx -> null
@@ -318,7 +391,13 @@ class JavaxValidationArbitraryIntrospectorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(ShortIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property,  null, false, 0.0D),
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				null,
+				0.0D
+			),
 			Collections.emptyList(),
 			null,
 			ctx -> null
@@ -340,7 +419,13 @@ class JavaxValidationArbitraryIntrospectorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(ShortIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property,  null, false, 0.0D),
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				null,
+				0.0D
+			),
 			Collections.emptyList(),
 			null,
 			ctx -> null
@@ -362,7 +447,13 @@ class JavaxValidationArbitraryIntrospectorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(ShortIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property,  null, false, 0.0D),
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				null,
+				0.0D
+			),
 			Collections.emptyList(),
 			null,
 			ctx -> null
@@ -384,7 +475,13 @@ class JavaxValidationArbitraryIntrospectorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(ShortIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property,  null, false, 0.0D),
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				null,
+				0.0D
+			),
 			Collections.emptyList(),
 			null,
 			ctx -> null
@@ -406,7 +503,13 @@ class JavaxValidationArbitraryIntrospectorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(ShortIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property,  null, false, 0.0D),
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				null,
+				0.0D
+			),
 			Collections.emptyList(),
 			null,
 			ctx -> null
@@ -428,7 +531,13 @@ class JavaxValidationArbitraryIntrospectorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(ShortIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property,  null, false, 0.0D),
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				null,
+				0.0D
+			),
 			Collections.emptyList(),
 			null,
 			ctx -> null
@@ -450,7 +559,13 @@ class JavaxValidationArbitraryIntrospectorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(ShortIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property,  null, false, 0.0D),
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				null,
+				0.0D
+			),
 			Collections.emptyList(),
 			null,
 			ctx -> null
@@ -472,7 +587,13 @@ class JavaxValidationArbitraryIntrospectorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(ShortIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property,  null, false, 0.0D),
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				null,
+				0.0D
+			),
 			Collections.emptyList(),
 			null,
 			ctx -> null
@@ -494,7 +615,13 @@ class JavaxValidationArbitraryIntrospectorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(ByteIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property,  null, false, 0.0D),
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				null,
+				0.0D
+			),
 			Collections.emptyList(),
 			null,
 			ctx -> null
@@ -516,7 +643,13 @@ class JavaxValidationArbitraryIntrospectorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(ByteIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property,  null, false, 0.0D),
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				null,
+				0.0D
+			),
 			Collections.emptyList(),
 			null,
 			ctx -> null
@@ -538,7 +671,13 @@ class JavaxValidationArbitraryIntrospectorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(ByteIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property,  null, false, 0.0D),
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				null,
+				0.0D
+			),
 			Collections.emptyList(),
 			null,
 			ctx -> null
@@ -560,7 +699,13 @@ class JavaxValidationArbitraryIntrospectorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(ByteIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property,  null, false, 0.0D),
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				null,
+				0.0D
+			),
 			Collections.emptyList(),
 			null,
 			ctx -> null
@@ -582,7 +727,13 @@ class JavaxValidationArbitraryIntrospectorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(ByteIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property,  null, false, 0.0D),
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				null,
+				0.0D
+			),
 			Collections.emptyList(),
 			null,
 			ctx -> null
@@ -604,7 +755,13 @@ class JavaxValidationArbitraryIntrospectorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(ByteIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property,  null, false, 0.0D),
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				null,
+				0.0D
+			),
 			Collections.emptyList(),
 			null,
 			ctx -> null
@@ -626,7 +783,13 @@ class JavaxValidationArbitraryIntrospectorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(ByteIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property,  null, false, 0.0D),
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				null,
+				0.0D
+			),
 			Collections.emptyList(),
 			null,
 			ctx -> null
@@ -648,7 +811,13 @@ class JavaxValidationArbitraryIntrospectorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(ByteIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property,  null, false, 0.0D),
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				null,
+				0.0D
+			),
 			Collections.emptyList(),
 			null,
 			ctx -> null
@@ -670,7 +839,13 @@ class JavaxValidationArbitraryIntrospectorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(ByteIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property,  null, false, 0.0D),
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				null,
+				0.0D
+			),
 			Collections.emptyList(),
 			null,
 			ctx -> null
@@ -692,7 +867,13 @@ class JavaxValidationArbitraryIntrospectorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(ByteIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property,  null, false, 0.0D),
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				null,
+				0.0D
+			),
 			Collections.emptyList(),
 			null,
 			ctx -> null
@@ -714,7 +895,13 @@ class JavaxValidationArbitraryIntrospectorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(ByteIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property,  null, false, 0.0D),
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				null,
+				0.0D
+			),
 			Collections.emptyList(),
 			null,
 			ctx -> null
@@ -736,7 +923,13 @@ class JavaxValidationArbitraryIntrospectorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(ByteIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property,  null, false, 0.0D),
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				null,
+				0.0D
+			),
 			Collections.emptyList(),
 			null,
 			ctx -> null
@@ -758,7 +951,13 @@ class JavaxValidationArbitraryIntrospectorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(IntIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property,  null, false, 0.0D),
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				null,
+				0.0D
+			),
 			Collections.emptyList(),
 			null,
 			ctx -> null
@@ -780,7 +979,13 @@ class JavaxValidationArbitraryIntrospectorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(IntIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property,  null, false, 0.0D),
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				null,
+				0.0D
+			),
 			Collections.emptyList(),
 			null,
 			ctx -> null
@@ -802,7 +1007,13 @@ class JavaxValidationArbitraryIntrospectorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(IntIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property,  null, false, 0.0D),
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				null,
+				0.0D
+			),
 			Collections.emptyList(),
 			null,
 			ctx -> null
@@ -824,7 +1035,13 @@ class JavaxValidationArbitraryIntrospectorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(IntIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property,  null, false, 0.0D),
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				null,
+				0.0D
+			),
 			Collections.emptyList(),
 			null,
 			ctx -> null
@@ -846,7 +1063,13 @@ class JavaxValidationArbitraryIntrospectorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(IntIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property,  null, false, 0.0D),
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				null,
+				0.0D
+			),
 			Collections.emptyList(),
 			null,
 			ctx -> null
@@ -868,7 +1091,13 @@ class JavaxValidationArbitraryIntrospectorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(IntIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property,  null, false, 0.0D),
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				null,
+				0.0D
+			),
 			Collections.emptyList(),
 			null,
 			ctx -> null
@@ -890,7 +1119,13 @@ class JavaxValidationArbitraryIntrospectorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(IntIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property,  null, false, 0.0D),
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				null,
+				0.0D
+			),
 			Collections.emptyList(),
 			null,
 			ctx -> null
@@ -912,7 +1147,13 @@ class JavaxValidationArbitraryIntrospectorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(IntIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property,  null, false, 0.0D),
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				null,
+				0.0D
+			),
 			Collections.emptyList(),
 			null,
 			ctx -> null
@@ -934,7 +1175,13 @@ class JavaxValidationArbitraryIntrospectorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(IntIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property,  null, false, 0.0D),
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				null,
+				0.0D
+			),
 			Collections.emptyList(),
 			null,
 			ctx -> null
@@ -956,7 +1203,13 @@ class JavaxValidationArbitraryIntrospectorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(IntIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property,  null, false, 0.0D),
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				null,
+				0.0D
+			),
 			Collections.emptyList(),
 			null,
 			ctx -> null
@@ -978,7 +1231,13 @@ class JavaxValidationArbitraryIntrospectorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(IntIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property,  null, false, 0.0D),
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				null,
+				0.0D
+			),
 			Collections.emptyList(),
 			null,
 			ctx -> null
@@ -1000,7 +1259,13 @@ class JavaxValidationArbitraryIntrospectorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(IntIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property,  null, false, 0.0D),
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				null,
+				0.0D
+			),
 			Collections.emptyList(),
 			null,
 			ctx -> null

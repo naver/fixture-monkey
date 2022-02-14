@@ -30,6 +30,7 @@ import net.jqwik.api.Property;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.property.PropertyCache;
+import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 
 class JavaxValidationTimeConstraintGeneratorTest {
 	private final JavaxValidationTimeConstraintGenerator sut = new JavaxValidationTimeConstraintGenerator();
@@ -41,7 +42,13 @@ class JavaxValidationTimeConstraintGeneratorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property,  null, false, 0.0D),
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				null,
+				0.0D
+			),
 			Collections.emptyList(),
 			null,
 			ctx -> null
@@ -62,7 +69,13 @@ class JavaxValidationTimeConstraintGeneratorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property,  null, false, 0.0D),
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				null,
+				0.0D
+			),
 			Collections.emptyList(),
 			null,
 			ctx -> null
@@ -84,7 +97,13 @@ class JavaxValidationTimeConstraintGeneratorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property,  null, false, 0.0D),
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				null,
+				0.0D
+			),
 			Collections.emptyList(),
 			null,
 			ctx -> null
@@ -107,7 +126,13 @@ class JavaxValidationTimeConstraintGeneratorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property,  null, false, 0.0D),
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				null,
+				0.0D
+			),
 			Collections.emptyList(),
 			null,
 			ctx -> null
@@ -129,7 +154,13 @@ class JavaxValidationTimeConstraintGeneratorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property,  null, false, 0.0D),
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				null,
+				0.0D
+			),
 			Collections.emptyList(),
 			null,
 			ctx -> null
@@ -151,7 +182,13 @@ class JavaxValidationTimeConstraintGeneratorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property,  null, false, 0.0D),
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				null,
+				0.0D
+			),
 			Collections.emptyList(),
 			null,
 			ctx -> null
@@ -172,7 +209,13 @@ class JavaxValidationTimeConstraintGeneratorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property,  null, false, 0.0D),
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				null,
+				0.0D
+			),
 			Collections.emptyList(),
 			null,
 			ctx -> null
@@ -194,7 +237,13 @@ class JavaxValidationTimeConstraintGeneratorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property,  null, false, 0.0D),
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				null,
+				0.0D
+			),
 			Collections.emptyList(),
 			null,
 			ctx -> null
@@ -217,7 +266,13 @@ class JavaxValidationTimeConstraintGeneratorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property,  null, false, 0.0D),
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				null,
+				0.0D
+			),
 			Collections.emptyList(),
 			null,
 			ctx -> null
@@ -239,7 +294,13 @@ class JavaxValidationTimeConstraintGeneratorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property,  null, false, 0.0D),
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				null,
+				0.0D
+			),
 			Collections.emptyList(),
 			null,
 			ctx -> null
@@ -261,7 +322,13 @@ class JavaxValidationTimeConstraintGeneratorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property,  null, false, 0.0D),
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				null,
+				0.0D
+			),
 			Collections.emptyList(),
 			null,
 			ctx -> null
@@ -282,7 +349,13 @@ class JavaxValidationTimeConstraintGeneratorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property,  null, false, 0.0D),
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				null,
+				0.0D
+			),
 			Collections.emptyList(),
 			null,
 			ctx -> null
@@ -304,7 +377,13 @@ class JavaxValidationTimeConstraintGeneratorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property,  null, false, 0.0D),
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				null,
+				0.0D
+			),
 			Collections.emptyList(),
 			null,
 			ctx -> null
@@ -327,7 +406,13 @@ class JavaxValidationTimeConstraintGeneratorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property,  null, false, 0.0D),
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				null,
+				0.0D
+			),
 			Collections.emptyList(),
 			null,
 			ctx -> null
@@ -349,7 +434,13 @@ class JavaxValidationTimeConstraintGeneratorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property,  null, false, 0.0D),
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				null,
+				0.0D
+			),
 			Collections.emptyList(),
 			null,
 			ctx -> null

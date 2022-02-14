@@ -28,6 +28,7 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult;
 import com.navercorp.fixturemonkey.api.property.PropertyCache;
+import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 
 class JavaxValidationBooleanIntrospectorTest {
 	private final JavaxValidationBooleanIntrospector sut = new JavaxValidationBooleanIntrospector();
@@ -39,7 +40,13 @@ class JavaxValidationBooleanIntrospectorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(BooleanIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property,  null, false, 0.0D),
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				null,
+				0.0D
+			),
 			Collections.emptyList(),
 			null,
 			ctx -> null
@@ -60,7 +67,13 @@ class JavaxValidationBooleanIntrospectorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(BooleanIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property,  null, false, 0.0D),
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				null,
+				0.0D
+			),
 			Collections.emptyList(),
 			null,
 			ctx -> null
@@ -80,7 +93,13 @@ class JavaxValidationBooleanIntrospectorTest {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(BooleanIntrospectorSpec.class, propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(property,  null, false, 0.0D),
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				null,
+				0.0D
+			),
 			Collections.emptyList(),
 			null,
 			ctx -> null
