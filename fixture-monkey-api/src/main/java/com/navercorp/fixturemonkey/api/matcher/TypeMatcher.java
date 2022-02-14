@@ -18,13 +18,13 @@
 
 package com.navercorp.fixturemonkey.api.matcher;
 
+import java.lang.reflect.Type;
+
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
-
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 @FunctionalInterface
-public interface Matcher {
-	boolean match(ArbitraryGeneratorContext context);
+public interface TypeMatcher {
+	boolean match(Type type);
 }

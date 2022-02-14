@@ -18,6 +18,7 @@
 
 package com.navercorp.fixturemonkey.api.introspector;
 
+import java.lang.reflect.Type;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -42,11 +43,11 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
-import com.navercorp.fixturemonkey.api.matcher.Matcher;
+import com.navercorp.fixturemonkey.api.matcher.TypeMatcher;
 import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public final class JavaTimeArbitraryTypeIntrospector implements ArbitraryTypeIntrospector, Matcher {
+public final class JavaTimeArbitraryTypeIntrospector implements ArbitraryTypeIntrospector, TypeMatcher {
 	private final Map<Class<?>, Function<ArbitraryGeneratorContext, ArbitraryIntrospectorResult>> introspector;
 
 	public JavaTimeArbitraryTypeIntrospector() {
@@ -66,9 +67,9 @@ public final class JavaTimeArbitraryTypeIntrospector implements ArbitraryTypeInt
 	}
 
 	@Override
-	public boolean match(ArbitraryGeneratorContext context) {
-		Class<?> type = Types.getActualType(context.getType());
-		return this.introspector.containsKey(type);
+	public boolean match(Type type) {
+		Class<?> actualType = Types.getActualType(type);
+		return this.introspector.containsKey(actualType);
 	}
 
 	@Override

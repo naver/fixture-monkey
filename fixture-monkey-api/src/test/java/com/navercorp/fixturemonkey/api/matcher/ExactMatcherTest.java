@@ -33,7 +33,7 @@ class ExactMatcherTest {
 	@Test
 	void match() {
 		// given
-		Matcher sut = new ExactTypeMatcher(String.class);
+		TypeMatcher sut = new ExactTypeMatcher(String.class);
 
 		String propertyName = "str";
 		Property property = PropertyCache.getProperty(TypeMatcherSpec.class, propertyName).get();
@@ -45,7 +45,7 @@ class ExactMatcherTest {
 		);
 
 		// when
-		boolean actual = sut.match(context);
+		boolean actual = sut.match(context.getType());
 
 		then(actual).isTrue();
 	}
@@ -53,7 +53,7 @@ class ExactMatcherTest {
 	@Test
 	void matchInheritedFalse() {
 		// given
-		Matcher sut = new ExactTypeMatcher(TypeMatcherSpec.class);
+		TypeMatcher sut = new ExactTypeMatcher(TypeMatcherSpec.class);
 
 		String propertyName = "inherited";
 		Property property = PropertyCache.getProperty(TypeMatcherSpec.class, propertyName).get();
@@ -65,7 +65,7 @@ class ExactMatcherTest {
 		);
 
 		// when
-		boolean actual = sut.match(context);
+		boolean actual = sut.match(context.getType());
 
 		then(actual).isFalse();
 	}
