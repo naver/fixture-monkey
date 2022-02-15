@@ -23,23 +23,26 @@ import javax.annotation.Nullable;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import com.navercorp.fixturemonkey.api.option.ArbitraryOptions;
 import com.navercorp.fixturemonkey.api.property.Property;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class ArbitraryPropertyGeneratorContext {
 	private final Property property;
 
-	// TODO: options
-
 	@Nullable
 	private final Integer elementIndex;
 
+	private final ArbitraryOptions options;
+
 	public ArbitraryPropertyGeneratorContext(
 		Property property,
-		@Nullable Integer elementIndex
+		@Nullable Integer elementIndex,
+		ArbitraryOptions options
 	) {
 		this.property = property;
 		this.elementIndex = elementIndex;
+		this.options = options;
 	}
 
 	public Property getProperty() {
@@ -49,5 +52,9 @@ public final class ArbitraryPropertyGeneratorContext {
 	@Nullable
 	public Integer getElementIndex() {
 		return this.elementIndex;
+	}
+
+	public ArbitraryOptions getOptions() {
+		return this.options;
 	}
 }

@@ -16,13 +16,28 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.api.generator;
+package com.navercorp.fixturemonkey.api.option;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import com.navercorp.fixturemonkey.api.matcher.TypeMatcher;
+
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-@FunctionalInterface
-public interface ArbitraryPropertyGenerator {
-	ArbitraryProperty generate(ArbitraryPropertyGeneratorContext context);
+public final class TypeMatcherOperator<T> {
+	private final TypeMatcher typeMatcher;
+	private final T operator;
+
+	public TypeMatcherOperator(TypeMatcher typeMatcher, T operator) {
+		this.typeMatcher = typeMatcher;
+		this.operator = operator;
+	}
+
+	public TypeMatcher getTypeMatcher() {
+		return this.typeMatcher;
+	}
+
+	public T getOperator() {
+		return this.operator;
+	}
 }
