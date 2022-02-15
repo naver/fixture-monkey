@@ -25,11 +25,11 @@ import org.apiguardian.api.API.Status;
 public final class DefaultArbitraryPropertyGenerator implements ArbitraryPropertyGenerator {
 	@Override
 	public ArbitraryProperty generate(ArbitraryPropertyGeneratorContext context) {
-		// TODO: propertyValue and nullInject
+		// TODO: nullInject
 		return new ArbitraryProperty(
 			context.getProperty(),
 			context.getPropertyNameResolver(),
-			null,
+			context.getPropertyValue(),
 			null,
 			null,
 			null,
