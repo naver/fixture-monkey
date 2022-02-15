@@ -5,6 +5,10 @@ linkTitle: "Release Notes"
 weight: 8
 ---
 
+### 0.3.2
+* Add set ExpressionSpec
+* Add QueueBuilder for generating `Queue`
+
 ### 0.3.1
 * Add Fixture Monkey Starter module
 * Fix ArbitraryBuilder generated Arbitrary not validated by validator

@@ -20,6 +20,26 @@ void set(){
 }   
 ```
 
+## Set ExpressionSpec
+```java
+@Test
+void setExpressionSpec(){
+    // given
+    FixtureMonkey fixture = FixtureMonkey.create();
+    Instant orderedAt = Instant.now().minus(30L, ChronoUnit.DAYS);
+
+    // when
+    Order actual = fixture.giveMeBuilder(Order.class)
+        .set(new ExpressionSpec()
+                .set("productName", "SALLY BOTTLE")
+                .set("price", 5000L)
+        )
+        .sample();
+
+    then(actual.orderedAt).isEqualTo(orderedAt);
+}   
+```
+
 ## SetRoot
 ```java
 @Test

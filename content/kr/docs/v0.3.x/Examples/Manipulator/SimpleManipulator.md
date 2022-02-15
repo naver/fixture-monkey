@@ -20,6 +20,26 @@ void set(){
 }   
 ```
 
+## 연산 집합인 ExpressionSpec를 사용하여 필드 값들을 고정하는 연산
+```java
+@Test
+void setExpressionSpec(){
+    // given
+    FixtureMonkey fixture = FixtureMonkey.create();
+    Instant orderedAt = Instant.now().minus(30L, ChronoUnit.DAYS);
+
+    // when
+    Order actual = fixture.giveMeBuilder(Order.class)
+        .set(new ExpressionSpec()
+                .set("productName", "SALLY BOTTLE")
+                .set("price", 5000L)
+        )
+        .sample();
+
+    then(actual.orderedAt).isEqualTo(orderedAt);
+}   
+```
+
 ## 객체를 고정하는 연산
 ```java
 @Test
