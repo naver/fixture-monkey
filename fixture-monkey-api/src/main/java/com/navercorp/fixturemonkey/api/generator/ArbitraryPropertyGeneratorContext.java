@@ -18,28 +18,46 @@
 
 package com.navercorp.fixturemonkey.api.generator;
 
+import java.util.List;
+
 import javax.annotation.Nullable;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import com.navercorp.fixturemonkey.api.matcher.TypeMatcherOperator;
 import com.navercorp.fixturemonkey.api.property.Property;
+import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class ArbitraryPropertyGeneratorContext {
 	private final Property property;
 
-	// TODO: options
-
 	@Nullable
 	private final Integer elementIndex;
 
+	private final List<TypeMatcherOperator<PropertyNameResolver>> propertyNameResolvers;
+
+	private final double nullInject;
+
+	private final boolean nullableContainer;
+
+	private final boolean defaultNotNull;
+
 	public ArbitraryPropertyGeneratorContext(
 		Property property,
-		@Nullable Integer elementIndex
+		@Nullable Integer elementIndex,
+		List<TypeMatcherOperator<PropertyNameResolver>> propertyNameResolvers,
+		double nullInject,
+		boolean nullableContainer,
+		boolean defaultNotNull
 	) {
 		this.property = property;
 		this.elementIndex = elementIndex;
+		this.propertyNameResolvers = propertyNameResolvers;
+		this.nullInject = nullInject;
+		this.nullableContainer = nullableContainer;
+		this.defaultNotNull = defaultNotNull;
 	}
 
 	public Property getProperty() {
@@ -49,5 +67,21 @@ public final class ArbitraryPropertyGeneratorContext {
 	@Nullable
 	public Integer getElementIndex() {
 		return this.elementIndex;
+	}
+
+	public List<TypeMatcherOperator<PropertyNameResolver>> getPropertyNameResolvers() {
+		return this.propertyNameResolvers;
+	}
+
+	public double getNullInject() {
+		return this.nullInject;
+	}
+
+	public boolean isNullableContainer() {
+		return this.nullableContainer;
+	}
+
+	public boolean isDefaultNotNull() {
+		return this.defaultNotNull;
 	}
 }
