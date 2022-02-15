@@ -46,6 +46,8 @@ class JavaArbitraryTypeIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				null,
+				null,
+				null,
 				0.0D
 			),
 			Collections.emptyList(),
@@ -69,6 +71,8 @@ class JavaArbitraryTypeIntrospectorTest {
 			new ArbitraryProperty(
 				property,
 				PropertyNameResolver.IDENTITY,
+				null,
+				null,
 				null,
 				null,
 				0.0D
@@ -96,6 +100,8 @@ class JavaArbitraryTypeIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				null,
+				null,
+				null,
 				0.0D
 			),
 			Collections.emptyList(),
@@ -119,6 +125,8 @@ class JavaArbitraryTypeIntrospectorTest {
 			new ArbitraryProperty(
 				property,
 				PropertyNameResolver.IDENTITY,
+				null,
+				null,
 				null,
 				null,
 				0.0D
@@ -146,6 +154,8 @@ class JavaArbitraryTypeIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				null,
+				null,
+				null,
 				0.0D
 			),
 			Collections.emptyList(),
@@ -169,6 +179,8 @@ class JavaArbitraryTypeIntrospectorTest {
 			new ArbitraryProperty(
 				property,
 				PropertyNameResolver.IDENTITY,
+				null,
+				null,
 				null,
 				null,
 				0.0D
@@ -196,6 +208,8 @@ class JavaArbitraryTypeIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				null,
+				null,
+				null,
 				0.0D
 			),
 			Collections.emptyList(),
@@ -219,6 +233,8 @@ class JavaArbitraryTypeIntrospectorTest {
 			new ArbitraryProperty(
 				property,
 				PropertyNameResolver.IDENTITY,
+				null,
+				null,
 				null,
 				null,
 				0.0D
@@ -246,6 +262,8 @@ class JavaArbitraryTypeIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				null,
+				null,
+				null,
 				0.0D
 			),
 			Collections.emptyList(),
@@ -269,6 +287,8 @@ class JavaArbitraryTypeIntrospectorTest {
 			new ArbitraryProperty(
 				property,
 				PropertyNameResolver.IDENTITY,
+				null,
+				null,
 				null,
 				null,
 				0.0D
@@ -296,6 +316,8 @@ class JavaArbitraryTypeIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				null,
+				null,
+				null,
 				0.0D
 			),
 			Collections.emptyList(),
@@ -319,6 +341,8 @@ class JavaArbitraryTypeIntrospectorTest {
 			new ArbitraryProperty(
 				property,
 				PropertyNameResolver.IDENTITY,
+				null,
+				null,
 				null,
 				null,
 				0.0D
@@ -346,6 +370,8 @@ class JavaArbitraryTypeIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				null,
+				null,
+				null,
 				0.0D
 			),
 			Collections.emptyList(),
@@ -369,6 +395,8 @@ class JavaArbitraryTypeIntrospectorTest {
 			new ArbitraryProperty(
 				property,
 				PropertyNameResolver.IDENTITY,
+				null,
+				null,
 				null,
 				null,
 				0.0D
@@ -396,6 +424,8 @@ class JavaArbitraryTypeIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				null,
+				null,
+				null,
 				0.0D
 			),
 			Collections.emptyList(),
@@ -419,6 +449,8 @@ class JavaArbitraryTypeIntrospectorTest {
 			new ArbitraryProperty(
 				property,
 				PropertyNameResolver.IDENTITY,
+				null,
+				null,
 				null,
 				null,
 				0.0D
@@ -446,6 +478,8 @@ class JavaArbitraryTypeIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				null,
+				null,
+				null,
 				0.0D
 			),
 			Collections.emptyList(),
@@ -469,6 +503,8 @@ class JavaArbitraryTypeIntrospectorTest {
 			new ArbitraryProperty(
 				property,
 				PropertyNameResolver.IDENTITY,
+				null,
+				null,
 				null,
 				null,
 				0.0D
@@ -496,6 +532,8 @@ class JavaArbitraryTypeIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				null,
+				null,
+				null,
 				0.0D
 			),
 			Collections.emptyList(),
@@ -519,6 +557,8 @@ class JavaArbitraryTypeIntrospectorTest {
 			new ArbitraryProperty(
 				property,
 				PropertyNameResolver.IDENTITY,
+				null,
+				null,
 				null,
 				null,
 				0.0D
@@ -546,6 +586,8 @@ class JavaArbitraryTypeIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				null,
+				null,
+				null,
 				0.0D
 			),
 			Collections.emptyList(),
@@ -569,6 +611,8 @@ class JavaArbitraryTypeIntrospectorTest {
 			new ArbitraryProperty(
 				property,
 				PropertyNameResolver.IDENTITY,
+				null,
+				null,
 				null,
 				null,
 				0.0D
@@ -596,6 +640,8 @@ class JavaArbitraryTypeIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				null,
+				null,
+				null,
 				0.0D
 			),
 			Collections.emptyList(),
@@ -619,6 +665,8 @@ class JavaArbitraryTypeIntrospectorTest {
 			new ArbitraryProperty(
 				property,
 				PropertyNameResolver.IDENTITY,
+				null,
+				null,
 				null,
 				null,
 				0.0D
@@ -646,6 +694,8 @@ class JavaArbitraryTypeIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				null,
+				null,
+				null,
 				0.0D
 			),
 			Collections.emptyList(),
@@ -669,6 +719,8 @@ class JavaArbitraryTypeIntrospectorTest {
 			new ArbitraryProperty(
 				property,
 				PropertyNameResolver.IDENTITY,
+				null,
+				null,
 				null,
 				null,
 				0.0D
@@ -696,6 +748,8 @@ class JavaArbitraryTypeIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				null,
+				null,
+				null,
 				0.0D
 			),
 			Collections.emptyList(),
@@ -719,6 +773,8 @@ class JavaArbitraryTypeIntrospectorTest {
 			new ArbitraryProperty(
 				property,
 				PropertyNameResolver.IDENTITY,
+				null,
+				null,
 				null,
 				null,
 				0.0D
@@ -746,6 +802,8 @@ class JavaArbitraryTypeIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				null,
+				null,
+				null,
 				0.0D
 			),
 			Collections.emptyList(),
@@ -769,6 +827,8 @@ class JavaArbitraryTypeIntrospectorTest {
 			new ArbitraryProperty(
 				property,
 				PropertyNameResolver.IDENTITY,
+				null,
+				null,
 				null,
 				null,
 				0.0D
@@ -796,6 +856,8 @@ class JavaArbitraryTypeIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				null,
+				null,
+				null,
 				0.0D
 			),
 			Collections.emptyList(),
@@ -819,6 +881,8 @@ class JavaArbitraryTypeIntrospectorTest {
 			new ArbitraryProperty(
 				property,
 				PropertyNameResolver.IDENTITY,
+				null,
+				null,
 				null,
 				null,
 				0.0D
@@ -846,6 +910,8 @@ class JavaArbitraryTypeIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				null,
+				null,
+				null,
 				0.0D
 			),
 			Collections.emptyList(),
@@ -869,6 +935,8 @@ class JavaArbitraryTypeIntrospectorTest {
 			new ArbitraryProperty(
 				property,
 				PropertyNameResolver.IDENTITY,
+				null,
+				null,
 				null,
 				null,
 				0.0D
@@ -896,6 +964,8 @@ class JavaArbitraryTypeIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				null,
+				null,
+				null,
 				0.0D
 			),
 			Collections.emptyList(),
@@ -919,6 +989,8 @@ class JavaArbitraryTypeIntrospectorTest {
 			new ArbitraryProperty(
 				property,
 				PropertyNameResolver.IDENTITY,
+				null,
+				null,
 				null,
 				null,
 				0.0D

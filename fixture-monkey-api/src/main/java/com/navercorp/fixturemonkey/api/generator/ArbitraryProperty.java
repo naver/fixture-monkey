@@ -37,6 +37,12 @@ public final class ArbitraryProperty {
 	private final PropertyValue propertyValue;
 
 	@Nullable
+	private final Integer containerMinSize;
+
+	@Nullable
+	private final Integer containerMaxSize;
+
+	@Nullable
 	private final Integer elementIndex;
 
 	private final double nullInject;
@@ -45,12 +51,16 @@ public final class ArbitraryProperty {
 		Property property,
 		PropertyNameResolver propertyNameResolver,
 		@Nullable PropertyValue propertyValue,
+		@Nullable Integer containerMinSize,
+		@Nullable Integer containerMaxSize,
 		@Nullable Integer elementIndex,
 		double nullInject
 	) {
 		this.property = property;
 		this.propertyNameResolver = propertyNameResolver;
 		this.propertyValue = propertyValue;
+		this.containerMinSize = containerMinSize;
+		this.containerMaxSize = containerMaxSize;
 		this.elementIndex = elementIndex;
 		this.nullInject = nullInject;
 	}
@@ -66,6 +76,16 @@ public final class ArbitraryProperty {
 	@Nullable
 	public PropertyValue getPropertyValue() {
 		return this.propertyValue;
+	}
+
+	@Nullable
+	public Integer getContainerMinSize() {
+		return this.containerMinSize;
+	}
+
+	@Nullable
+	public Integer getContainerMaxSize() {
+		return this.containerMaxSize;
 	}
 
 	@Nullable

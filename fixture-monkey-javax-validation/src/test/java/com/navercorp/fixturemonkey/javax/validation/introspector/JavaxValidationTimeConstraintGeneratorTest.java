@@ -47,6 +47,8 @@ class JavaxValidationTimeConstraintGeneratorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				null,
+				null,
+				null,
 				0.0D
 			),
 			Collections.emptyList(),
@@ -72,6 +74,8 @@ class JavaxValidationTimeConstraintGeneratorTest {
 			new ArbitraryProperty(
 				property,
 				PropertyNameResolver.IDENTITY,
+				null,
+				null,
 				null,
 				null,
 				0.0D
@@ -100,6 +104,8 @@ class JavaxValidationTimeConstraintGeneratorTest {
 			new ArbitraryProperty(
 				property,
 				PropertyNameResolver.IDENTITY,
+				null,
+				null,
 				null,
 				null,
 				0.0D
@@ -131,6 +137,8 @@ class JavaxValidationTimeConstraintGeneratorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				null,
+				null,
+				null,
 				0.0D
 			),
 			Collections.emptyList(),
@@ -157,6 +165,8 @@ class JavaxValidationTimeConstraintGeneratorTest {
 			new ArbitraryProperty(
 				property,
 				PropertyNameResolver.IDENTITY,
+				null,
+				null,
 				null,
 				null,
 				0.0D
@@ -187,6 +197,8 @@ class JavaxValidationTimeConstraintGeneratorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				null,
+				null,
+				null,
 				0.0D
 			),
 			Collections.emptyList(),
@@ -212,6 +224,8 @@ class JavaxValidationTimeConstraintGeneratorTest {
 			new ArbitraryProperty(
 				property,
 				PropertyNameResolver.IDENTITY,
+				null,
+				null,
 				null,
 				null,
 				0.0D
@@ -240,6 +254,8 @@ class JavaxValidationTimeConstraintGeneratorTest {
 			new ArbitraryProperty(
 				property,
 				PropertyNameResolver.IDENTITY,
+				null,
+				null,
 				null,
 				null,
 				0.0D
@@ -271,6 +287,8 @@ class JavaxValidationTimeConstraintGeneratorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				null,
+				null,
+				null,
 				0.0D
 			),
 			Collections.emptyList(),
@@ -297,6 +315,8 @@ class JavaxValidationTimeConstraintGeneratorTest {
 			new ArbitraryProperty(
 				property,
 				PropertyNameResolver.IDENTITY,
+				null,
+				null,
 				null,
 				null,
 				0.0D
@@ -327,6 +347,8 @@ class JavaxValidationTimeConstraintGeneratorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				null,
+				null,
+				null,
 				0.0D
 			),
 			Collections.emptyList(),
@@ -352,6 +374,8 @@ class JavaxValidationTimeConstraintGeneratorTest {
 			new ArbitraryProperty(
 				property,
 				PropertyNameResolver.IDENTITY,
+				null,
+				null,
 				null,
 				null,
 				0.0D
@@ -380,6 +404,8 @@ class JavaxValidationTimeConstraintGeneratorTest {
 			new ArbitraryProperty(
 				property,
 				PropertyNameResolver.IDENTITY,
+				null,
+				null,
 				null,
 				null,
 				0.0D
@@ -411,6 +437,8 @@ class JavaxValidationTimeConstraintGeneratorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				null,
+				null,
+				null,
 				0.0D
 			),
 			Collections.emptyList(),
@@ -437,6 +465,8 @@ class JavaxValidationTimeConstraintGeneratorTest {
 			new ArbitraryProperty(
 				property,
 				PropertyNameResolver.IDENTITY,
+				null,
+				null,
 				null,
 				null,
 				0.0D

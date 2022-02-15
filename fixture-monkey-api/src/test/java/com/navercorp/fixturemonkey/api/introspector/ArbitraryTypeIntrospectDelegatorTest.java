@@ -46,6 +46,8 @@ class ArbitraryTypeIntrospectDelegatorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				null,
+				null,
+				null,
 				0.0D
 			),
 			Collections.emptyList(),
