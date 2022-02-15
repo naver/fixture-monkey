@@ -18,6 +18,7 @@
 
 package com.navercorp.fixturemonkey.api.generator;
 
+import java.lang.reflect.Type;
 import java.util.List;
 
 import javax.annotation.Nullable;
@@ -34,6 +35,9 @@ public final class ArbitraryPropertyGeneratorContext {
 	private final Property property;
 
 	@Nullable
+	private final PropertyValue propertyValue;
+
+	@Nullable
 	private final Integer elementIndex;
 
 	private final List<TypeMatcherOperator<PropertyNameResolver>> propertyNameResolvers;
@@ -46,6 +50,7 @@ public final class ArbitraryPropertyGeneratorContext {
 
 	public ArbitraryPropertyGeneratorContext(
 		Property property,
+		@Nullable PropertyValue propertyValue,
 		@Nullable Integer elementIndex,
 		List<TypeMatcherOperator<PropertyNameResolver>> propertyNameResolvers,
 		double nullInject,
@@ -53,6 +58,7 @@ public final class ArbitraryPropertyGeneratorContext {
 		boolean defaultNotNull
 	) {
 		this.property = property;
+		this.propertyValue = propertyValue;
 		this.elementIndex = elementIndex;
 		this.propertyNameResolvers = propertyNameResolvers;
 		this.nullInject = nullInject;
@@ -64,6 +70,10 @@ public final class ArbitraryPropertyGeneratorContext {
 		return this.property;
 	}
 
+	public PropertyValue getPropertyValue() {
+		return this.propertyValue;
+	}
+
 	@Nullable
 	public Integer getElementIndex() {
 		return this.elementIndex;
@@ -71,6 +81,15 @@ public final class ArbitraryPropertyGeneratorContext {
 
 	public List<TypeMatcherOperator<PropertyNameResolver>> getPropertyNameResolvers() {
 		return this.propertyNameResolvers;
+	}
+
+	public PropertyNameResolver getPropertyNameResolver() {
+		Type type = this.property.getType();
+		return this.propertyNameResolvers.stream()
+			.filter(it -> it.match(type))
+			.map(TypeMatcherOperator::getOperator)
+			.findFirst()
+			.orElse(PropertyNameResolver.IDENTITY);
 	}
 
 	public double getNullInject() {
