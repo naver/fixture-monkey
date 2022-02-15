@@ -2,7 +2,7 @@
 <head>
 <meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no">
-<meta name=generator content="Hugo 0.91.2"><link rel=canonical type=text/html href=https://naver.github.io/fixture-monkey/kr/docs/v0.3.x/>
+<meta name=generator content="Hugo 0.92.2"><link rel=canonical type=text/html href=https://naver.github.io/fixture-monkey/kr/docs/v0.3.x/>
 <meta name=ROBOTS content="NOINDEX, NOFOLLOW">
 <link rel="shortcut icon" href=/fixture-monkey/favicons/favicon.png>
 <link rel=apple-touch-icon href=/fixture-monkey/favicons/favicon.png sizes=180x180>
@@ -292,6 +292,23 @@ Fixture Monkey를 사용할 때 프로덕션 코드를 변경하지 않아도 �
     <span style=color:#8f5902;font-style:italic>// when
 </span><span style=color:#8f5902;font-style:italic></span>    <span style=color:#000>Order</span> <span style=color:#000>actual</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#000>fixture</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>giveMeBuilder</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>Order</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>class</span><span style=color:#ce5c00;font-weight:700>)</span>
         <span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>set</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#4e9a06>&#34;orderedAt&#34;</span><span style=color:#ce5c00;font-weight:700>,</span> <span style=color:#000>orderedAt</span><span style=color:#ce5c00;font-weight:700>)</span>
+        <span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>sample</span><span style=color:#ce5c00;font-weight:700>();</span>
+
+    <span style=color:#000>then</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>actual</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>orderedAt</span><span style=color:#ce5c00;font-weight:700>).</span><span style=color:#c4a000>isEqualTo</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>orderedAt</span><span style=color:#ce5c00;font-weight:700>);</span>
+<span style=color:#ce5c00;font-weight:700>}</span>   
+</code></pre></div><h2 id=연산-집합인-expressionspec를-사용하여-필드-값들을-고정하는-연산>연산 집합인 ExpressionSpec를 사용하여 필드 값들을 고정하는 연산</h2>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#5c35cc;font-weight:700>@Test</span>
+<span style=color:#204a87;font-weight:700>void</span> <span style=color:#000>setExpressionSpec</span><span style=color:#ce5c00;font-weight:700>(){</span>
+    <span style=color:#8f5902;font-style:italic>// given
+</span><span style=color:#8f5902;font-style:italic></span>    <span style=color:#000>FixtureMonkey</span> <span style=color:#000>fixture</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#000>FixtureMonkey</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>create</span><span style=color:#ce5c00;font-weight:700>();</span>
+    <span style=color:#000>Instant</span> <span style=color:#000>orderedAt</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#000>Instant</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>now</span><span style=color:#ce5c00;font-weight:700>().</span><span style=color:#c4a000>minus</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>30L</span><span style=color:#ce5c00;font-weight:700>,</span> <span style=color:#000>ChronoUnit</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>DAYS</span><span style=color:#ce5c00;font-weight:700>);</span>
+
+    <span style=color:#8f5902;font-style:italic>// when
+</span><span style=color:#8f5902;font-style:italic></span>    <span style=color:#000>Order</span> <span style=color:#000>actual</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#000>fixture</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>giveMeBuilder</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>Order</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>class</span><span style=color:#ce5c00;font-weight:700>)</span>
+        <span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>set</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#204a87;font-weight:700>new</span> <span style=color:#000>ExpressionSpec</span><span style=color:#ce5c00;font-weight:700>()</span>
+                <span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>set</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#4e9a06>&#34;productName&#34;</span><span style=color:#ce5c00;font-weight:700>,</span> <span style=color:#4e9a06>&#34;SALLY BOTTLE&#34;</span><span style=color:#ce5c00;font-weight:700>)</span>
+                <span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>set</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#4e9a06>&#34;price&#34;</span><span style=color:#ce5c00;font-weight:700>,</span> <span style=color:#000>5000L</span><span style=color:#ce5c00;font-weight:700>)</span>
+        <span style=color:#ce5c00;font-weight:700>)</span>
         <span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>sample</span><span style=color:#ce5c00;font-weight:700>();</span>
 
     <span style=color:#000>then</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>actual</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>orderedAt</span><span style=color:#ce5c00;font-weight:700>).</span><span style=color:#c4a000>isEqualTo</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>orderedAt</span><span style=color:#ce5c00;font-weight:700>);</span>
@@ -1675,11 +1692,19 @@ This module is experimental
 </div>
 <div class=td-content style=page-break-before:always>
 <h1 id=pg-454342dc75587df96139a0db6d8c5bf9>6 - What's New</h1>
-<h2 id=whats-new-in-031>What&rsquo;s New in 0.3.1</h2>
-<p>Add Fixture Monkey Starter module</p>
+<h2 id=whats-new-in-032>What&rsquo;s New in 0.3.2</h2>
+<ul>
+<li>이제 ExpressionSpec이 spec뿐만 아니라 set에도 사용할 수 있습니다.</li>
+<li>Queue를 생성할 수 있게 됐습니다.</li>
+</ul>
 </div>
 <div class=td-content style=page-break-before:always>
 <h1 id=pg-31ee74bcd7d060d22077c4e1740e3537>7 - Release Notes</h1>
+<h3 id=032>0.3.2</h3>
+<ul>
+<li>연산 set에 파라미터로 ExpressionSpec을 지원합니다.</li>
+<li>QueueBuilder를 추가하여 큐 구현체를 생성할 수 있습니다.</li>
+</ul>
 <h3 id=031>0.3.1</h3>
 <ul>
 <li>Add Fixture Monkey Starter module</li>

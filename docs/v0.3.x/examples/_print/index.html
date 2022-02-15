@@ -2,7 +2,7 @@
 <head>
 <meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no">
-<meta name=generator content="Hugo 0.91.2"><link rel=canonical type=text/html href=https://naver.github.io/fixture-monkey/docs/v0.3.x/examples/>
+<meta name=generator content="Hugo 0.92.2"><link rel=canonical type=text/html href=https://naver.github.io/fixture-monkey/docs/v0.3.x/examples/>
 <meta name=ROBOTS content="NOINDEX, NOFOLLOW">
 <link rel="shortcut icon" href=/fixture-monkey/favicons/favicon.png>
 <link rel=apple-touch-icon href=/fixture-monkey/favicons/favicon.png sizes=180x180>
@@ -163,6 +163,23 @@ This the multi-page printable view of this section.
     <span style=color:#8f5902;font-style:italic>// when
 </span><span style=color:#8f5902;font-style:italic></span>    <span style=color:#000>Order</span> <span style=color:#000>actual</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#000>fixture</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>giveMeBuilder</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>Order</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>class</span><span style=color:#ce5c00;font-weight:700>)</span>
         <span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>set</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#4e9a06>&#34;orderedAt&#34;</span><span style=color:#ce5c00;font-weight:700>,</span> <span style=color:#000>orderedAt</span><span style=color:#ce5c00;font-weight:700>)</span>
+        <span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>sample</span><span style=color:#ce5c00;font-weight:700>();</span>
+
+    <span style=color:#000>then</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>actual</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>orderedAt</span><span style=color:#ce5c00;font-weight:700>).</span><span style=color:#c4a000>isEqualTo</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>orderedAt</span><span style=color:#ce5c00;font-weight:700>);</span>
+<span style=color:#ce5c00;font-weight:700>}</span>   
+</code></pre></div><h2 id=set-expressionspec>Set ExpressionSpec</h2>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=color:#5c35cc;font-weight:700>@Test</span>
+<span style=color:#204a87;font-weight:700>void</span> <span style=color:#000>setExpressionSpec</span><span style=color:#ce5c00;font-weight:700>(){</span>
+    <span style=color:#8f5902;font-style:italic>// given
+</span><span style=color:#8f5902;font-style:italic></span>    <span style=color:#000>FixtureMonkey</span> <span style=color:#000>fixture</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#000>FixtureMonkey</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>create</span><span style=color:#ce5c00;font-weight:700>();</span>
+    <span style=color:#000>Instant</span> <span style=color:#000>orderedAt</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#000>Instant</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>now</span><span style=color:#ce5c00;font-weight:700>().</span><span style=color:#c4a000>minus</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>30L</span><span style=color:#ce5c00;font-weight:700>,</span> <span style=color:#000>ChronoUnit</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>DAYS</span><span style=color:#ce5c00;font-weight:700>);</span>
+
+    <span style=color:#8f5902;font-style:italic>// when
+</span><span style=color:#8f5902;font-style:italic></span>    <span style=color:#000>Order</span> <span style=color:#000>actual</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#000>fixture</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>giveMeBuilder</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>Order</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>class</span><span style=color:#ce5c00;font-weight:700>)</span>
+        <span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>set</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#204a87;font-weight:700>new</span> <span style=color:#000>ExpressionSpec</span><span style=color:#ce5c00;font-weight:700>()</span>
+                <span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>set</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#4e9a06>&#34;productName&#34;</span><span style=color:#ce5c00;font-weight:700>,</span> <span style=color:#4e9a06>&#34;SALLY BOTTLE&#34;</span><span style=color:#ce5c00;font-weight:700>)</span>
+                <span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>set</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#4e9a06>&#34;price&#34;</span><span style=color:#ce5c00;font-weight:700>,</span> <span style=color:#000>5000L</span><span style=color:#ce5c00;font-weight:700>)</span>
+        <span style=color:#ce5c00;font-weight:700>)</span>
         <span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>sample</span><span style=color:#ce5c00;font-weight:700>();</span>
 
     <span style=color:#000>then</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>actual</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#c4a000>orderedAt</span><span style=color:#ce5c00;font-weight:700>).</span><span style=color:#c4a000>isEqualTo</span><span style=color:#ce5c00;font-weight:700>(</span><span style=color:#000>orderedAt</span><span style=color:#ce5c00;font-weight:700>);</span>
