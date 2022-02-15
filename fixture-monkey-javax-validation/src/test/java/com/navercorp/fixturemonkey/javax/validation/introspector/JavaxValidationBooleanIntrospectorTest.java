@@ -45,6 +45,8 @@ class JavaxValidationBooleanIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				null,
+				null,
+				null,
 				0.0D
 			),
 			Collections.emptyList(),
@@ -72,6 +74,8 @@ class JavaxValidationBooleanIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				null,
+				null,
+				null,
 				0.0D
 			),
 			Collections.emptyList(),
@@ -96,6 +100,8 @@ class JavaxValidationBooleanIntrospectorTest {
 			new ArbitraryProperty(
 				property,
 				PropertyNameResolver.IDENTITY,
+				null,
+				null,
 				null,
 				null,
 				0.0D

@@ -44,6 +44,8 @@ class ExactMatcherTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				null,
+				null,
+				null,
 				0.0D
 			),
 			Collections.emptyList(),
@@ -68,6 +70,8 @@ class ExactMatcherTest {
 			new ArbitraryProperty(
 				property,
 				PropertyNameResolver.IDENTITY,
+				null,
+				null,
 				null,
 				null,
 				0.0D

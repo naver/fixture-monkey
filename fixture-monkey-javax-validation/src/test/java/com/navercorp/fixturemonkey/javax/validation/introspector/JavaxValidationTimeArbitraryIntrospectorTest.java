@@ -67,6 +67,8 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				null,
+				null,
+				null,
 				0.0D
 			),
 			Collections.emptyList(),
@@ -93,6 +95,8 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 			new ArbitraryProperty(
 				property,
 				PropertyNameResolver.IDENTITY,
+				null,
+				null,
 				null,
 				null,
 				0.0D
@@ -125,6 +129,8 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				null,
+				null,
+				null,
 				0.0D
 			),
 			Collections.emptyList(),
@@ -153,6 +159,8 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 			new ArbitraryProperty(
 				property,
 				PropertyNameResolver.IDENTITY,
+				null,
+				null,
 				null,
 				null,
 				0.0D
@@ -185,6 +193,8 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				null,
+				null,
+				null,
 				0.0D
 			),
 			Collections.emptyList(),
@@ -215,6 +225,8 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				null,
+				null,
+				null,
 				0.0D
 			),
 			Collections.emptyList(),
@@ -241,6 +253,8 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 			new ArbitraryProperty(
 				property,
 				PropertyNameResolver.IDENTITY,
+				null,
+				null,
 				null,
 				null,
 				0.0D
@@ -273,6 +287,8 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				null,
+				null,
+				null,
 				0.0D
 			),
 			Collections.emptyList(),
@@ -301,6 +317,8 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 			new ArbitraryProperty(
 				property,
 				PropertyNameResolver.IDENTITY,
+				null,
+				null,
 				null,
 				null,
 				0.0D
@@ -333,6 +351,8 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				null,
+				null,
+				null,
 				0.0D
 			),
 			Collections.emptyList(),
@@ -363,6 +383,8 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				null,
+				null,
+				null,
 				0.0D
 			),
 			Collections.emptyList(),
@@ -389,6 +411,8 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 			new ArbitraryProperty(
 				property,
 				PropertyNameResolver.IDENTITY,
+				null,
+				null,
 				null,
 				null,
 				0.0D
@@ -420,6 +444,8 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 			new ArbitraryProperty(
 				property,
 				PropertyNameResolver.IDENTITY,
+				null,
+				null,
 				null,
 				null,
 				0.0D
@@ -454,6 +480,8 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				null,
+				null,
+				null,
 				0.0D
 			),
 			Collections.emptyList(),
@@ -481,6 +509,8 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 			new ArbitraryProperty(
 				property,
 				PropertyNameResolver.IDENTITY,
+				null,
+				null,
 				null,
 				null,
 				0.0D
@@ -511,6 +541,8 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				null,
+				null,
+				null,
 				0.0D
 			),
 			Collections.emptyList(),
@@ -537,6 +569,8 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 			new ArbitraryProperty(
 				property,
 				PropertyNameResolver.IDENTITY,
+				null,
+				null,
 				null,
 				null,
 				0.0D
@@ -566,6 +600,8 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 			new ArbitraryProperty(
 				property,
 				PropertyNameResolver.IDENTITY,
+				null,
+				null,
 				null,
 				null,
 				0.0D
@@ -598,6 +634,8 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				null,
+				null,
+				null,
 				0.0D
 			),
 			Collections.emptyList(),
@@ -625,6 +663,8 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 			new ArbitraryProperty(
 				property,
 				PropertyNameResolver.IDENTITY,
+				null,
+				null,
 				null,
 				null,
 				0.0D
@@ -655,6 +695,8 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				null,
+				null,
+				null,
 				0.0D
 			),
 			Collections.emptyList(),
@@ -681,6 +723,8 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 			new ArbitraryProperty(
 				property,
 				PropertyNameResolver.IDENTITY,
+				null,
+				null,
 				null,
 				null,
 				0.0D
@@ -710,6 +754,8 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 			new ArbitraryProperty(
 				property,
 				PropertyNameResolver.IDENTITY,
+				null,
+				null,
 				null,
 				null,
 				0.0D
@@ -742,6 +788,8 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				null,
+				null,
+				null,
 				0.0D
 			),
 			Collections.emptyList(),
@@ -769,6 +817,8 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 			new ArbitraryProperty(
 				property,
 				PropertyNameResolver.IDENTITY,
+				null,
+				null,
 				null,
 				null,
 				0.0D
@@ -799,6 +849,8 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				null,
+				null,
+				null,
 				0.0D
 			),
 			Collections.emptyList(),
@@ -825,6 +877,8 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 			new ArbitraryProperty(
 				property,
 				PropertyNameResolver.IDENTITY,
+				null,
+				null,
 				null,
 				null,
 				0.0D
@@ -854,6 +908,8 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 			new ArbitraryProperty(
 				property,
 				PropertyNameResolver.IDENTITY,
+				null,
+				null,
 				null,
 				null,
 				0.0D
@@ -886,6 +942,8 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				null,
+				null,
+				null,
 				0.0D
 			),
 			Collections.emptyList(),
@@ -913,6 +971,8 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 			new ArbitraryProperty(
 				property,
 				PropertyNameResolver.IDENTITY,
+				null,
+				null,
 				null,
 				null,
 				0.0D
@@ -943,6 +1003,8 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				null,
+				null,
+				null,
 				0.0D
 			),
 			Collections.emptyList(),
@@ -970,6 +1032,8 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				null,
+				null,
+				null,
 				0.0D
 			),
 			Collections.emptyList(),
@@ -995,6 +1059,8 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 			new ArbitraryProperty(
 				property,
 				PropertyNameResolver.IDENTITY,
+				null,
+				null,
 				null,
 				null,
 				0.0D
