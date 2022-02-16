@@ -285,12 +285,10 @@ infix fun <T, R, E> KFunction1<T, R?>.into(expList: ExpList<R, E>): Exp<E> =
         )
     )
 
-infix operator
-fun <T, R : Collection<E>, E : Any> KProperty1<T, R?>.get(index: Int): ExpList<T, E> =
+infix operator fun <T, R : Collection<E>, E : Any> KProperty1<T, R?>.get(index: Int): ExpList<T, E> =
     ExpList(ArrayExpressionGenerator(KotlinProperty(this), index))
 
-infix operator
-fun <T, R : Collection<E>, E : Any> KProperty1<T, R?>.get(key: String): ExpList<T, E> =
+infix operator fun <T, R : Collection<E>, E : Any> KProperty1<T, R?>.get(key: String): ExpList<T, E> =
     ExpList(MapExpressionGenerator(KotlinProperty(this), key))
 
 @JvmName("getNestedList")
@@ -301,12 +299,10 @@ infix operator fun <T, R : Collection<N>, N : Collection<E>, E : Any> KProperty1
 infix operator fun <T, R : Collection<N>, N : Collection<E>, E : Any> KProperty1<T, R?>.get(key: String): ExpList<T, N?> =
     ExpList(MapExpressionGenerator(KotlinProperty(this), key))
 
-infix operator
-fun <T, R : Collection<E>, E : Any> KFunction1<T, R?>.get(index: Int): ExpList<T, E> =
+infix operator fun <T, R : Collection<E>, E : Any> KFunction1<T, R?>.get(index: Int): ExpList<T, E> =
     ExpList(ArrayExpressionGenerator(KotlinGetterProperty(this), index))
 
-infix operator
-fun <T, R : Collection<E>, E : Any> KFunction1<T, R?>.get(key: String): ExpList<T, E> =
+infix operator fun <T, R : Collection<E>, E : Any> KFunction1<T, R?>.get(key: String): ExpList<T, E> =
     ExpList(MapExpressionGenerator(KotlinGetterProperty(this), key))
 
 @JvmName("getNestedList")
@@ -319,6 +315,9 @@ infix operator fun <T, R : Collection<N>, N : Collection<E>, E : Any> KFunction1
 
 @Suppress("unused")
 class ExpList<E, L> internal constructor(val delegate: ExpressionGenerator) : ExpressionGenerator by delegate {
+    infix fun <R> into(expList: ExpList<L, R>) =
+        Exp<R>(ParsedExpressionGenerator(listOf(this.delegate, expList.delegate)))
+
     infix fun <R> into(property: KProperty1<L, R?>): Exp<R> =
         Exp(
             ParsedExpressionGenerator(

@@ -810,6 +810,28 @@ class ExpressionGeneratorsTest {
     }
 
     @Test
+    fun propertyListCombinesListWithConstructor() {
+        // given
+        val generator = Exp(Person::dogs[0] into Dog::loves[0])
+
+        // when
+        val actual = generator.generate()
+
+        then(actual).isEqualTo("dogs[0].loves[0]")
+    }
+
+    @Test
+    fun propertyListCombinesListWithoutExp() {
+        // given
+        val generator = Person::dogs[0] into Dog::loves[0]
+
+        // when
+        val actual = generator.generate()
+
+        then(actual).isEqualTo("dogs[0].loves[0]")
+    }
+
+    @Test
     fun propertyBoolean() {
         // given
         val generator = Exp<Person>() into Person::married
@@ -895,5 +917,27 @@ class ExpressionGeneratorsTest {
         val actual = generator.generate()
 
         then(actual).isEqualTo("happy")
+    }
+
+    @Test
+    fun getterListCombinesListWithConstructor() {
+        // given
+        val generator = Exp(PersonJava::getDogs[0] into DogJava::getLoves[0])
+
+        // when
+        val actual = generator.generate()
+
+        then(actual).isEqualTo("dogs[0].loves[0]")
+    }
+
+    @Test
+    fun getterListCombinesListWithoutExp() {
+        // given
+        val generator = PersonJava::getDogs[0] into DogJava::getLoves[0]
+
+        // when
+        val actual = generator.generate()
+
+        then(actual).isEqualTo("dogs[0].loves[0]")
     }
 }
