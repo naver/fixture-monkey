@@ -18,36 +18,89 @@
 
 package com.navercorp.fixturemonkey.api.generator;
 
+import java.lang.reflect.Type;
+import java.util.List;
+
 import javax.annotation.Nullable;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import com.navercorp.fixturemonkey.api.matcher.TypeMatcherOperator;
 import com.navercorp.fixturemonkey.api.property.Property;
+import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class ArbitraryPropertyGeneratorContext {
 	private final Property property;
 
-	// TODO: options
+	@Nullable
+	private final PropertyValue propertyValue;
 
 	@Nullable
 	private final Integer elementIndex;
 
+	private final List<TypeMatcherOperator<PropertyNameResolver>> propertyNameResolvers;
+
+	private final double nullInject;
+
+	private final boolean nullableContainer;
+
+	private final boolean defaultNotNull;
+
 	public ArbitraryPropertyGeneratorContext(
 		Property property,
-		@Nullable Integer elementIndex
+		@Nullable PropertyValue propertyValue,
+		@Nullable Integer elementIndex,
+		List<TypeMatcherOperator<PropertyNameResolver>> propertyNameResolvers,
+		double nullInject,
+		boolean nullableContainer,
+		boolean defaultNotNull
 	) {
 		this.property = property;
+		this.propertyValue = propertyValue;
 		this.elementIndex = elementIndex;
+		this.propertyNameResolvers = propertyNameResolvers;
+		this.nullInject = nullInject;
+		this.nullableContainer = nullableContainer;
+		this.defaultNotNull = defaultNotNull;
 	}
 
 	public Property getProperty() {
 		return this.property;
 	}
 
+	public PropertyValue getPropertyValue() {
+		return this.propertyValue;
+	}
+
 	@Nullable
 	public Integer getElementIndex() {
 		return this.elementIndex;
+	}
+
+	public List<TypeMatcherOperator<PropertyNameResolver>> getPropertyNameResolvers() {
+		return this.propertyNameResolvers;
+	}
+
+	public PropertyNameResolver getPropertyNameResolver() {
+		Type type = this.property.getType();
+		return this.propertyNameResolvers.stream()
+			.filter(it -> it.match(type))
+			.map(TypeMatcherOperator::getOperator)
+			.findFirst()
+			.orElse(PropertyNameResolver.IDENTITY);
+	}
+
+	public double getNullInject() {
+		return this.nullInject;
+	}
+
+	public boolean isNullableContainer() {
+		return this.nullableContainer;
+	}
+
+	public boolean isDefaultNotNull() {
+		return this.defaultNotNull;
 	}
 }

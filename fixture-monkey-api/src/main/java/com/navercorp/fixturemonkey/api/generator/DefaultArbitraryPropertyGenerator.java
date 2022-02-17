@@ -22,7 +22,18 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-@FunctionalInterface
-public interface ArbitraryPropertyGenerator {
-	ArbitraryProperty generate(ArbitraryPropertyGeneratorContext context);
+public final class DefaultArbitraryPropertyGenerator implements ArbitraryPropertyGenerator {
+	@Override
+	public ArbitraryProperty generate(ArbitraryPropertyGeneratorContext context) {
+		// TODO: nullInject
+		return new ArbitraryProperty(
+			context.getProperty(),
+			context.getPropertyNameResolver(),
+			context.getPropertyValue(),
+			null,
+			null,
+			null,
+			context.getNullInject()
+		);
+	}
 }
