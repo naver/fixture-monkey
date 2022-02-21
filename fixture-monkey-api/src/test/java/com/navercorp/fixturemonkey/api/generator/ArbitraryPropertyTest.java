@@ -40,16 +40,15 @@ class ArbitraryPropertyTest {
 			rootProperty,
 			PropertyNameResolver.IDENTITY,
 			null,
+			0.0D,
 			null,
-			null,
-			null,
-			0.0D
+			null
 		);
 
 		then(actual.isRoot()).isTrue();
 		then(actual.getProperty()).isEqualTo(rootProperty);
-		then(actual.getElementIndex()).isNull();
 		then(actual.getNullInject()).isEqualTo(0.0D);
+		then(actual.getContainerInfo()).isNull();
 	}
 
 	static class GenericSample<T> {
