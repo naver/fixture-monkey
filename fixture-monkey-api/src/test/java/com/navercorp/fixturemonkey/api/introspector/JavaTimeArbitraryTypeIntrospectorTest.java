@@ -59,6 +59,7 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
@@ -84,6 +85,7 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
@@ -109,6 +111,7 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
@@ -134,6 +137,7 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
@@ -159,6 +163,7 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
@@ -184,6 +189,7 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
@@ -209,6 +215,7 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
@@ -234,6 +241,7 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
@@ -259,6 +267,7 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
@@ -284,6 +293,7 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
@@ -309,6 +319,7 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
@@ -334,6 +345,7 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
@@ -359,6 +371,7 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
@@ -384,6 +397,7 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
@@ -409,6 +423,7 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
@@ -434,6 +449,7 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
@@ -459,6 +475,7 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
@@ -484,6 +501,7 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
@@ -509,6 +527,7 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
@@ -534,6 +553,7 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
@@ -559,6 +579,7 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
@@ -584,6 +605,7 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
@@ -609,6 +631,7 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
@@ -634,6 +657,7 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
@@ -659,6 +683,7 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
@@ -684,6 +709,7 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
@@ -709,6 +735,7 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
@@ -734,6 +761,7 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
@@ -759,6 +787,7 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
@@ -784,6 +813,7 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),

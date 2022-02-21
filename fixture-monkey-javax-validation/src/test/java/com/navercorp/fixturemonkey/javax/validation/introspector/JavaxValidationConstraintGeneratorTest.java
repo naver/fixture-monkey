@@ -46,6 +46,7 @@ class JavaxValidationConstraintGeneratorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
@@ -75,6 +76,7 @@ class JavaxValidationConstraintGeneratorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
@@ -104,6 +106,7 @@ class JavaxValidationConstraintGeneratorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
@@ -133,6 +136,7 @@ class JavaxValidationConstraintGeneratorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
@@ -162,6 +166,7 @@ class JavaxValidationConstraintGeneratorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
@@ -191,6 +196,7 @@ class JavaxValidationConstraintGeneratorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
@@ -218,6 +224,7 @@ class JavaxValidationConstraintGeneratorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
@@ -245,6 +252,7 @@ class JavaxValidationConstraintGeneratorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
@@ -272,6 +280,7 @@ class JavaxValidationConstraintGeneratorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
@@ -299,6 +308,7 @@ class JavaxValidationConstraintGeneratorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
@@ -326,6 +336,7 @@ class JavaxValidationConstraintGeneratorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
@@ -353,6 +364,7 @@ class JavaxValidationConstraintGeneratorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
@@ -380,6 +392,7 @@ class JavaxValidationConstraintGeneratorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
@@ -407,6 +420,7 @@ class JavaxValidationConstraintGeneratorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
@@ -434,6 +448,7 @@ class JavaxValidationConstraintGeneratorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
@@ -461,6 +476,7 @@ class JavaxValidationConstraintGeneratorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
@@ -488,6 +504,7 @@ class JavaxValidationConstraintGeneratorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
@@ -515,6 +532,7 @@ class JavaxValidationConstraintGeneratorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
@@ -544,6 +562,7 @@ class JavaxValidationConstraintGeneratorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
@@ -573,6 +592,7 @@ class JavaxValidationConstraintGeneratorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
@@ -602,6 +622,7 @@ class JavaxValidationConstraintGeneratorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
@@ -631,6 +652,7 @@ class JavaxValidationConstraintGeneratorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
@@ -660,6 +682,7 @@ class JavaxValidationConstraintGeneratorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
@@ -689,6 +712,7 @@ class JavaxValidationConstraintGeneratorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
@@ -718,6 +742,7 @@ class JavaxValidationConstraintGeneratorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
@@ -747,6 +772,7 @@ class JavaxValidationConstraintGeneratorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
@@ -776,6 +802,7 @@ class JavaxValidationConstraintGeneratorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
@@ -805,6 +832,7 @@ class JavaxValidationConstraintGeneratorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
@@ -834,6 +862,7 @@ class JavaxValidationConstraintGeneratorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),

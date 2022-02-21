@@ -42,6 +42,7 @@ class ArbitraryTypeIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
@@ -65,6 +66,7 @@ class ArbitraryTypeIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
@@ -88,6 +90,7 @@ class ArbitraryTypeIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
@@ -111,6 +114,7 @@ class ArbitraryTypeIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),

@@ -31,18 +31,15 @@ import org.apiguardian.api.API.Status;
 public final class ArbitraryPropertyContainerInfo {
 	private final Integer elementMinSize;
 	private final Integer elementMaxSize;
-	private final Integer elementIndex;
 	private final List<Type> elementTypes;
 
 	public ArbitraryPropertyContainerInfo(
 		Integer elementMinSize,
 		Integer elementMaxSize,
-		Integer elementIndex,
 		List<Type> elementTypes
 	) {
 		this.elementMinSize = elementMinSize;
 		this.elementMaxSize = elementMaxSize;
-		this.elementIndex = elementIndex;
 		this.elementTypes = new ArrayList<>(elementTypes);
 	}
 
@@ -52,10 +49,6 @@ public final class ArbitraryPropertyContainerInfo {
 
 	public Integer getElementMaxSize() {
 		return this.elementMaxSize;
-	}
-
-	public Integer getElementIndex() {
-		return this.elementIndex;
 	}
 
 	public List<Type> getElementTypes() {
@@ -74,13 +67,12 @@ public final class ArbitraryPropertyContainerInfo {
 		ArbitraryPropertyContainerInfo that = (ArbitraryPropertyContainerInfo)obj;
 		return Objects.equals(elementMinSize, that.elementMinSize)
 			&& Objects.equals(elementMaxSize, that.elementMaxSize)
-			&& Objects.equals(elementIndex, that.elementIndex)
 			&& Objects.equals(elementTypes, that.elementTypes);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(elementMinSize, elementMaxSize, elementIndex, elementTypes);
+		return Objects.hash(elementMinSize, elementMaxSize, elementTypes);
 	}
 
 	@Override
@@ -88,7 +80,6 @@ public final class ArbitraryPropertyContainerInfo {
 		return "ArbitraryPropertyContainerInfo{"
 			+ "elementMinSize=" + elementMinSize
 			+ ", elementMaxSize=" + elementMaxSize
-			+ ", elementIndex=" + elementIndex
 			+ ", elementTypes=" + elementTypes
 			+ '}';
 	}

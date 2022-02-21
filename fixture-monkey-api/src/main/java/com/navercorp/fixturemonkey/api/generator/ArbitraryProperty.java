@@ -39,6 +39,9 @@ public final class ArbitraryProperty {
 	private final double nullInject;
 
 	@Nullable
+	private final Integer elementIndex;
+
+	@Nullable
 	private final ArbitraryPropertyContainerInfo containerInfo;
 
 	public ArbitraryProperty(
@@ -46,12 +49,14 @@ public final class ArbitraryProperty {
 		PropertyNameResolver propertyNameResolver,
 		@Nullable PropertyValue propertyValue,
 		double nullInject,
+		@Nullable Integer elementIndex,
 		@Nullable ArbitraryPropertyContainerInfo containerInfo
 	) {
 		this.property = property;
 		this.propertyNameResolver = propertyNameResolver;
 		this.propertyValue = propertyValue;
 		this.nullInject = nullInject;
+		this.elementIndex = elementIndex;
 		this.containerInfo = containerInfo;
 	}
 
@@ -70,6 +75,11 @@ public final class ArbitraryProperty {
 
 	public double getNullInject() {
 		return this.nullInject;
+	}
+
+	@Nullable
+	public Integer getElementIndex() {
+		return this.elementIndex;
 	}
 
 	@Nullable

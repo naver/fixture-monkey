@@ -42,6 +42,7 @@ class ArbitraryGeneratorContextTest {
 			PropertyNameResolver.IDENTITY,
 			null,
 			0.0D,
+			null,
 			null
 		);
 		ArbitraryGeneratorContext sut = new ArbitraryGeneratorContext(

@@ -41,6 +41,7 @@ class ArbitraryPropertyTest {
 			PropertyNameResolver.IDENTITY,
 			null,
 			0.0D,
+			null,
 			null
 		);
 

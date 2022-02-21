@@ -67,6 +67,7 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
@@ -95,6 +96,7 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
@@ -125,6 +127,7 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
@@ -155,6 +158,7 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
@@ -185,6 +189,7 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
@@ -215,6 +220,7 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
@@ -243,6 +249,7 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
@@ -273,6 +280,7 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
@@ -303,6 +311,7 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
@@ -333,6 +342,7 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
@@ -363,6 +373,7 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
@@ -391,6 +402,7 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
@@ -422,6 +434,7 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
@@ -454,6 +467,7 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
@@ -483,6 +497,7 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
@@ -511,6 +526,7 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
@@ -539,6 +555,7 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
@@ -568,6 +585,7 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
@@ -598,6 +616,7 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
@@ -627,6 +646,7 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
@@ -655,6 +675,7 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
@@ -683,6 +704,7 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
@@ -712,6 +734,7 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
@@ -742,6 +765,7 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
@@ -771,6 +795,7 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
@@ -799,6 +824,7 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
@@ -827,6 +853,7 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
@@ -856,6 +883,7 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
@@ -886,6 +914,7 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
@@ -915,6 +944,7 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
@@ -943,6 +973,7 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
@@ -970,6 +1001,7 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
@@ -997,6 +1029,7 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 				PropertyNameResolver.IDENTITY,
 				null,
 				0.0D,
+				null,
 				null
 			),
 			Collections.emptyList(),
