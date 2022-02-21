@@ -30,10 +30,8 @@ public final class DefaultArbitraryPropertyGenerator implements ArbitraryPropert
 			context.getProperty(),
 			context.getPropertyNameResolver(),
 			context.getPropertyValue(),
-			null,
-			null,
-			null,
-			context.getNullInject()
+			context.getNullInject(),
+			null
 		);
 	}
 }

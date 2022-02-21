@@ -42,6 +42,9 @@ public final class ArbitraryPropertyGeneratorContext {
 
 	private final List<TypeMatcherOperator<PropertyNameResolver>> propertyNameResolvers;
 
+	@Nullable
+	private final ArbitraryProperty ownerProperty;
+
 	private final double nullInject;
 
 	private final boolean nullableContainer;
@@ -53,6 +56,7 @@ public final class ArbitraryPropertyGeneratorContext {
 		@Nullable PropertyValue propertyValue,
 		@Nullable Integer elementIndex,
 		List<TypeMatcherOperator<PropertyNameResolver>> propertyNameResolvers,
+		@Nullable ArbitraryProperty ownerProperty,
 		double nullInject,
 		boolean nullableContainer,
 		boolean defaultNotNull
@@ -61,6 +65,7 @@ public final class ArbitraryPropertyGeneratorContext {
 		this.propertyValue = propertyValue;
 		this.elementIndex = elementIndex;
 		this.propertyNameResolvers = propertyNameResolvers;
+		this.ownerProperty = ownerProperty;
 		this.nullInject = nullInject;
 		this.nullableContainer = nullableContainer;
 		this.defaultNotNull = defaultNotNull;
@@ -90,6 +95,11 @@ public final class ArbitraryPropertyGeneratorContext {
 			.map(TypeMatcherOperator::getOperator)
 			.findFirst()
 			.orElse(PropertyNameResolver.IDENTITY);
+	}
+
+	@Nullable
+	public ArbitraryProperty getOwnerProperty() {
+		return this.ownerProperty;
 	}
 
 	public double getNullInject() {
