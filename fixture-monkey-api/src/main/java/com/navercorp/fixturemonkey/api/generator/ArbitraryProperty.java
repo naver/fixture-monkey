@@ -36,33 +36,23 @@ public final class ArbitraryProperty {
 	@Nullable
 	private final PropertyValue propertyValue;
 
-	@Nullable
-	private final Integer containerMinSize;
-
-	@Nullable
-	private final Integer containerMaxSize;
-
-	@Nullable
-	private final Integer elementIndex;
-
 	private final double nullInject;
+
+	@Nullable
+	private final ArbitraryPropertyContainerInfo containerInfo;
 
 	public ArbitraryProperty(
 		Property property,
 		PropertyNameResolver propertyNameResolver,
 		@Nullable PropertyValue propertyValue,
-		@Nullable Integer containerMinSize,
-		@Nullable Integer containerMaxSize,
-		@Nullable Integer elementIndex,
-		double nullInject
+		double nullInject,
+		@Nullable ArbitraryPropertyContainerInfo containerInfo
 	) {
 		this.property = property;
 		this.propertyNameResolver = propertyNameResolver;
 		this.propertyValue = propertyValue;
-		this.containerMinSize = containerMinSize;
-		this.containerMaxSize = containerMaxSize;
-		this.elementIndex = elementIndex;
 		this.nullInject = nullInject;
+		this.containerInfo = containerInfo;
 	}
 
 	public Property getProperty() {
@@ -78,26 +68,20 @@ public final class ArbitraryProperty {
 		return this.propertyValue;
 	}
 
-	@Nullable
-	public Integer getContainerMinSize() {
-		return this.containerMinSize;
-	}
-
-	@Nullable
-	public Integer getContainerMaxSize() {
-		return this.containerMaxSize;
-	}
-
-	@Nullable
-	public Integer getElementIndex() {
-		return this.elementIndex;
-	}
-
 	public double getNullInject() {
 		return this.nullInject;
 	}
 
+	@Nullable
+	public ArbitraryPropertyContainerInfo getContainerInfo() {
+		return this.containerInfo;
+	}
+
 	public boolean isRoot() {
 		return this.property instanceof RootProperty;
+	}
+
+	public boolean isContainer() {
+		return this.containerInfo != null;
 	}
 }
