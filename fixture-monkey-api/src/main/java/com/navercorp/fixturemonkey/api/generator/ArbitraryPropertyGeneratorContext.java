@@ -27,6 +27,7 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.matcher.TypeMatcherOperator;
+import com.navercorp.fixturemonkey.api.option.GenerateOptions;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 
@@ -40,35 +41,23 @@ public final class ArbitraryPropertyGeneratorContext {
 	@Nullable
 	private final Integer elementIndex;
 
-	private final List<TypeMatcherOperator<PropertyNameResolver>> propertyNameResolvers;
-
 	@Nullable
 	private final ArbitraryProperty ownerProperty;
 
-	private final double nullInject;
-
-	private final boolean nullableContainer;
-
-	private final boolean defaultNotNull;
+	private final GenerateOptions generateOptions;
 
 	public ArbitraryPropertyGeneratorContext(
 		Property property,
 		@Nullable PropertyValue propertyValue,
 		@Nullable Integer elementIndex,
-		List<TypeMatcherOperator<PropertyNameResolver>> propertyNameResolvers,
 		@Nullable ArbitraryProperty ownerProperty,
-		double nullInject,
-		boolean nullableContainer,
-		boolean defaultNotNull
+		GenerateOptions generateOptions
 	) {
 		this.property = property;
 		this.propertyValue = propertyValue;
 		this.elementIndex = elementIndex;
-		this.propertyNameResolvers = propertyNameResolvers;
 		this.ownerProperty = ownerProperty;
-		this.nullInject = nullInject;
-		this.nullableContainer = nullableContainer;
-		this.defaultNotNull = defaultNotNull;
+		this.generateOptions = generateOptions;
 	}
 
 	public Property getProperty() {
@@ -84,33 +73,25 @@ public final class ArbitraryPropertyGeneratorContext {
 		return this.elementIndex;
 	}
 
-	public List<TypeMatcherOperator<PropertyNameResolver>> getPropertyNameResolvers() {
-		return this.propertyNameResolvers;
-	}
-
-	public PropertyNameResolver getPropertyNameResolver() {
-		Type type = this.property.getType();
-		return this.propertyNameResolvers.stream()
-			.filter(it -> it.match(type))
-			.map(TypeMatcherOperator::getOperator)
-			.findFirst()
-			.orElse(PropertyNameResolver.IDENTITY);
-	}
-
 	@Nullable
 	public ArbitraryProperty getOwnerProperty() {
 		return this.ownerProperty;
 	}
 
-	public double getNullInject() {
-		return this.nullInject;
+	public List<TypeMatcherOperator<PropertyNameResolver>> getPropertyNameResolvers() {
+		return this.generateOptions.getPropertyNameResolvers();
 	}
 
-	public boolean isNullableContainer() {
-		return this.nullableContainer;
+	public GenerateOptions getGenerateOptions() {
+		return this.generateOptions;
 	}
 
-	public boolean isDefaultNotNull() {
-		return this.defaultNotNull;
+	public PropertyNameResolver getPropertyNameResolver() {
+		Type type = this.property.getType();
+		return this.getPropertyNameResolvers().stream()
+			.filter(it -> it.match(type))
+			.map(TypeMatcherOperator::getOperator)
+			.findFirst()
+			.orElse(PropertyNameResolver.IDENTITY);
 	}
 }
