@@ -31,6 +31,7 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.property.PropertyCache;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
+import com.navercorp.fixturemonkey.api.type.TypeReference;
 
 class JavaxValidationTimeConstraintGeneratorTest {
 	private final JavaxValidationTimeConstraintGenerator sut = new JavaxValidationTimeConstraintGenerator();
@@ -38,9 +39,11 @@ class JavaxValidationTimeConstraintGeneratorTest {
 	@Property
 	void generateDateTimeConstraint() {
 		// given
+		TypeReference<TimeIntrospectorSpec> typeReference = new TypeReference<TimeIntrospectorSpec>() {
+		};
 		String propertyName = "instant";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,
@@ -66,9 +69,11 @@ class JavaxValidationTimeConstraintGeneratorTest {
 	@Property
 	void generateDateTimeConstraintPast() {
 		// given
+		TypeReference<TimeIntrospectorSpec> typeReference = new TypeReference<TimeIntrospectorSpec>() {
+		};
 		String propertyName = "instantPast";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,
@@ -95,9 +100,11 @@ class JavaxValidationTimeConstraintGeneratorTest {
 	@Property
 	void generateDateTimeConstraintPastOrPresent() {
 		// given
+		TypeReference<TimeIntrospectorSpec> typeReference = new TypeReference<TimeIntrospectorSpec>() {
+		};
 		String propertyName = "instantPastOrPresent";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,
@@ -125,9 +132,11 @@ class JavaxValidationTimeConstraintGeneratorTest {
 	@Property
 	void generateDateTimeConstraintFuture() {
 		// given
+		TypeReference<TimeIntrospectorSpec> typeReference = new TypeReference<TimeIntrospectorSpec>() {
+		};
 		String propertyName = "instantFuture";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,
@@ -154,9 +163,11 @@ class JavaxValidationTimeConstraintGeneratorTest {
 	@Property
 	void generateDateTimeConstraintFutureOrPresent() {
 		// given
+		TypeReference<TimeIntrospectorSpec> typeReference = new TypeReference<TimeIntrospectorSpec>() {
+		};
 		String propertyName = "instantFutureOrPresent";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,
@@ -183,9 +194,11 @@ class JavaxValidationTimeConstraintGeneratorTest {
 	@Property
 	void generateDateConstraint() {
 		// given
+		TypeReference<TimeIntrospectorSpec> typeReference = new TypeReference<TimeIntrospectorSpec>() {
+		};
 		String propertyName = "localDate";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,
@@ -211,9 +224,11 @@ class JavaxValidationTimeConstraintGeneratorTest {
 	@Property
 	void generateDateConstraintPast() {
 		// given
+		TypeReference<TimeIntrospectorSpec> typeReference = new TypeReference<TimeIntrospectorSpec>() {
+		};
 		String propertyName = "localDatePast";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,
@@ -240,9 +255,11 @@ class JavaxValidationTimeConstraintGeneratorTest {
 	@Property
 	void generateDateConstraintPastOrPresent() {
 		// given
+		TypeReference<TimeIntrospectorSpec> typeReference = new TypeReference<TimeIntrospectorSpec>() {
+		};
 		String propertyName = "localDatePastOrPresent";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,
@@ -270,9 +287,11 @@ class JavaxValidationTimeConstraintGeneratorTest {
 	@Property
 	void generateDateConstraintFuture() {
 		// given
+		TypeReference<TimeIntrospectorSpec> typeReference = new TypeReference<TimeIntrospectorSpec>() {
+		};
 		String propertyName = "localDateFuture";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,
@@ -299,9 +318,11 @@ class JavaxValidationTimeConstraintGeneratorTest {
 	@Property
 	void generateDateConstraintFutureOrPresent() {
 		// given
+		TypeReference<TimeIntrospectorSpec> typeReference = new TypeReference<TimeIntrospectorSpec>() {
+		};
 		String propertyName = "localDateFutureOrPresent";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,
@@ -328,9 +349,11 @@ class JavaxValidationTimeConstraintGeneratorTest {
 	@Property
 	void generateTimeConstraint() {
 		// given
+		TypeReference<TimeIntrospectorSpec> typeReference = new TypeReference<TimeIntrospectorSpec>() {
+		};
 		String propertyName = "localTime";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,
@@ -356,9 +379,11 @@ class JavaxValidationTimeConstraintGeneratorTest {
 	@Property
 	void generateTimeConstraintPast() {
 		// given
+		TypeReference<TimeIntrospectorSpec> typeReference = new TypeReference<TimeIntrospectorSpec>() {
+		};
 		String propertyName = "localTimePast";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,
@@ -385,9 +410,11 @@ class JavaxValidationTimeConstraintGeneratorTest {
 	@Property
 	void generateTimeConstraintPastOrPresent() {
 		// given
+		TypeReference<TimeIntrospectorSpec> typeReference = new TypeReference<TimeIntrospectorSpec>() {
+		};
 		String propertyName = "localTimePastOrPresent";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,
@@ -415,9 +442,11 @@ class JavaxValidationTimeConstraintGeneratorTest {
 	@Property
 	void generateTimeConstraintFuture() {
 		// given
+		TypeReference<TimeIntrospectorSpec> typeReference = new TypeReference<TimeIntrospectorSpec>() {
+		};
 		String propertyName = "localTimeFuture";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,
@@ -444,9 +473,11 @@ class JavaxValidationTimeConstraintGeneratorTest {
 	@Property
 	void generateTimeConstraintFutureOrPresent() {
 		// given
+		TypeReference<TimeIntrospectorSpec> typeReference = new TypeReference<TimeIntrospectorSpec>() {
+		};
 		String propertyName = "localTimeFutureOrPresent";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,

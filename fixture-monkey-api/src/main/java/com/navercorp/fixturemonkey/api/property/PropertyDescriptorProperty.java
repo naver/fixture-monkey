@@ -39,26 +39,26 @@ import org.apiguardian.api.API.Status;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class PropertyDescriptorProperty implements Property {
-	private final Type type;
+	private final AnnotatedType annotatedType;
 	private final PropertyDescriptor propertyDescriptor;
 	private final List<Annotation> annotations;
 	private final Map<Class<? extends Annotation>, Annotation> annotationsMap;
 
 	public PropertyDescriptorProperty(PropertyDescriptor propertyDescriptor) {
-		this(propertyDescriptor.getPropertyType(), propertyDescriptor);
+		this(propertyDescriptor.getReadMethod().getAnnotatedReturnType(), propertyDescriptor);
 	}
 
 	/**
-	 * In general, type uses the PropertyType of PropertyDescriptor.
+	 * In general, annotatedType uses the PropertyType of PropertyDescriptor.
 	 * When the Type of PropertyDescriptor is defined as generics, the refied type is not known.
 	 * Use this constructor when specifying a Type that provides a refied Generics type.
 	 *
 	 * @see com.navercorp.fixturemonkey.api.type.Types
-	 * @param type
+	 * @param annotatedType
 	 * @param propertyDescriptor
 	 */
-	public PropertyDescriptorProperty(Type type, PropertyDescriptor propertyDescriptor) {
-		this.type = type;
+	public PropertyDescriptorProperty(AnnotatedType annotatedType, PropertyDescriptor propertyDescriptor) {
+		this.annotatedType = annotatedType;
 		this.propertyDescriptor = propertyDescriptor;
 		this.annotations = Arrays.asList(propertyDescriptor.getReadMethod().getAnnotations());
 		this.annotationsMap = this.annotations.stream()
@@ -71,12 +71,12 @@ public final class PropertyDescriptorProperty implements Property {
 
 	@Override
 	public Type getType() {
-		return this.type;
+		return this.getAnnotatedType().getType();
 	}
 
 	@Override
 	public AnnotatedType getAnnotatedType() {
-		return this.propertyDescriptor.getReadMethod().getAnnotatedReturnType();
+		return this.annotatedType;
 	}
 
 	@Override
@@ -117,19 +117,19 @@ public final class PropertyDescriptorProperty implements Property {
 			return false;
 		}
 		PropertyDescriptorProperty that = (PropertyDescriptorProperty)obj;
-		return Objects.equals(type, that.type)
+		return Objects.equals(annotatedType, that.annotatedType)
 			&& Objects.equals(propertyDescriptor, that.propertyDescriptor);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(type, propertyDescriptor);
+		return Objects.hash(annotatedType, propertyDescriptor);
 	}
 
 	@Override
 	public String toString() {
 		return "PropertyDescriptorProperty{"
-			+ "type=" + type
+			+ "annotatedType=" + annotatedType
 			+ ", propertyDescriptor=" + propertyDescriptor + '}';
 	}
 }

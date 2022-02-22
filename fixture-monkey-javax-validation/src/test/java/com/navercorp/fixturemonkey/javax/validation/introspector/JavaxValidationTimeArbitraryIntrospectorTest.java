@@ -50,6 +50,7 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.property.PropertyCache;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
+import com.navercorp.fixturemonkey.api.type.TypeReference;
 
 class JavaxValidationTimeArbitraryIntrospectorTest {
 	private final JavaxValidationTimeArbitraryIntrospector sut = new JavaxValidationTimeArbitraryIntrospector();
@@ -58,9 +59,11 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 	void calendar() {
 		// given
 		CalendarArbitrary calendarArbitrary = Dates.datesAsCalendar();
+		TypeReference<TimeIntrospectorSpec> typeReference = new TypeReference<TimeIntrospectorSpec>() {
+		};
 		String propertyName = "calendar";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,
@@ -87,9 +90,11 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 	void calendarPast() {
 		// given
 		CalendarArbitrary calendarArbitrary = Dates.datesAsCalendar();
+		TypeReference<TimeIntrospectorSpec> typeReference = new TypeReference<TimeIntrospectorSpec>() {
+		};
 		String propertyName = "calendarPast";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,
@@ -118,9 +123,11 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 	void calendarPastOrPresent() {
 		// given
 		CalendarArbitrary calendarArbitrary = Dates.datesAsCalendar();
+		TypeReference<TimeIntrospectorSpec> typeReference = new TypeReference<TimeIntrospectorSpec>() {
+		};
 		String propertyName = "calendarPastOrPresent";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,
@@ -149,9 +156,11 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 	void calendarFuture() {
 		// given
 		CalendarArbitrary calendarArbitrary = Dates.datesAsCalendar();
+		TypeReference<TimeIntrospectorSpec> typeReference = new TypeReference<TimeIntrospectorSpec>() {
+		};
 		String propertyName = "calendarFuture";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,
@@ -180,9 +189,11 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 	void calendarFutureOrPresent() {
 		// given
 		CalendarArbitrary calendarArbitrary = Dates.datesAsCalendar();
+		TypeReference<TimeIntrospectorSpec> typeReference = new TypeReference<TimeIntrospectorSpec>() {
+		};
 		String propertyName = "calendarFutureOrPresent";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,
@@ -211,9 +222,11 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 	void dates() {
 		// given
 		DateArbitrary dateArbitrary = Dates.datesAsDate();
+		TypeReference<TimeIntrospectorSpec> typeReference = new TypeReference<TimeIntrospectorSpec>() {
+		};
 		String propertyName = "date";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,
@@ -240,9 +253,11 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 	void datesPast() {
 		// given
 		DateArbitrary dateArbitrary = Dates.datesAsDate();
+		TypeReference<TimeIntrospectorSpec> typeReference = new TypeReference<TimeIntrospectorSpec>() {
+		};
 		String propertyName = "datePast";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,
@@ -271,9 +286,11 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 	void datesPastOrPresent() {
 		// given
 		DateArbitrary dateArbitrary = Dates.datesAsDate();
+		TypeReference<TimeIntrospectorSpec> typeReference = new TypeReference<TimeIntrospectorSpec>() {
+		};
 		String propertyName = "datePastOrPresent";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,
@@ -302,9 +319,11 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 	void datesFuture() {
 		// given
 		DateArbitrary dateArbitrary = Dates.datesAsDate();
+		TypeReference<TimeIntrospectorSpec> typeReference = new TypeReference<TimeIntrospectorSpec>() {
+		};
 		String propertyName = "dateFuture";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,
@@ -333,9 +352,11 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 	void datesFutureOrPresent() {
 		// given
 		DateArbitrary dateArbitrary = Dates.datesAsDate();
+		TypeReference<TimeIntrospectorSpec> typeReference = new TypeReference<TimeIntrospectorSpec>() {
+		};
 		String propertyName = "dateFutureOrPresent";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,
@@ -364,9 +385,11 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 	void instant() {
 		// given
 		InstantArbitrary instantArbitrary = DateTimes.instants();
+		TypeReference<TimeIntrospectorSpec> typeReference = new TypeReference<TimeIntrospectorSpec>() {
+		};
 		String propertyName = "instant";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,
@@ -393,9 +416,11 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 	void instantPast() {
 		// given
 		InstantArbitrary instantArbitrary = DateTimes.instants();
+		TypeReference<TimeIntrospectorSpec> typeReference = new TypeReference<TimeIntrospectorSpec>() {
+		};
 		String propertyName = "instantPast";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,
@@ -425,9 +450,11 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 	void instantPastOrPresent() {
 		// given
 		InstantArbitrary instantArbitrary = DateTimes.instants();
+		TypeReference<TimeIntrospectorSpec> typeReference = new TypeReference<TimeIntrospectorSpec>() {
+		};
 		String propertyName = "instantPastOrPresent";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,
@@ -458,9 +485,11 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 		// given
 		Instant now = Instant.now();
 		InstantArbitrary instantArbitrary = DateTimes.instants();
+		TypeReference<TimeIntrospectorSpec> typeReference = new TypeReference<TimeIntrospectorSpec>() {
+		};
 		String propertyName = "instantFuture";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,
@@ -488,9 +517,11 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 		// given
 		Instant now = Instant.now();
 		InstantArbitrary instantArbitrary = DateTimes.instants();
+		TypeReference<TimeIntrospectorSpec> typeReference = new TypeReference<TimeIntrospectorSpec>() {
+		};
 		String propertyName = "instantFutureOrPresent";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,
@@ -517,9 +548,11 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 	void localDates() {
 		// given
 		LocalDateArbitrary localDateArbitrary = Dates.dates();
+		TypeReference<TimeIntrospectorSpec> typeReference = new TypeReference<TimeIntrospectorSpec>() {
+		};
 		String propertyName = "localDate";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,
@@ -546,9 +579,11 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 	void localDatesPast() {
 		// given
 		LocalDateArbitrary localDateArbitrary = Dates.dates();
+		TypeReference<TimeIntrospectorSpec> typeReference = new TypeReference<TimeIntrospectorSpec>() {
+		};
 		String propertyName = "localDatePast";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,
@@ -576,9 +611,11 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 	void localDatesPastOrPresent() {
 		// given
 		LocalDateArbitrary localDateArbitrary = Dates.dates();
+		TypeReference<TimeIntrospectorSpec> typeReference = new TypeReference<TimeIntrospectorSpec>() {
+		};
 		String propertyName = "localDatePastOrPresent";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,
@@ -607,9 +644,11 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 		// given
 		LocalDate now = LocalDate.now();
 		LocalDateArbitrary localDateArbitrary = Dates.dates();
+		TypeReference<TimeIntrospectorSpec> typeReference = new TypeReference<TimeIntrospectorSpec>() {
+		};
 		String propertyName = "localDateFuture";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,
@@ -637,9 +676,11 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 		// given
 		LocalDate now = LocalDate.now();
 		LocalDateArbitrary localDateArbitrary = Dates.dates();
+		TypeReference<TimeIntrospectorSpec> typeReference = new TypeReference<TimeIntrospectorSpec>() {
+		};
 		String propertyName = "localDateFutureOrPresent";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,
@@ -666,9 +707,11 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 	void localDateTimes() {
 		// given
 		LocalDateTimeArbitrary localDateTimeArbitrary = DateTimes.dateTimes();
+		TypeReference<TimeIntrospectorSpec> typeReference = new TypeReference<TimeIntrospectorSpec>() {
+		};
 		String propertyName = "localDateTime";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,
@@ -695,9 +738,11 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 	void localDateTimesPast() {
 		// given
 		LocalDateTimeArbitrary localDateTimeArbitrary = DateTimes.dateTimes();
+		TypeReference<TimeIntrospectorSpec> typeReference = new TypeReference<TimeIntrospectorSpec>() {
+		};
 		String propertyName = "localDateTimePast";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,
@@ -725,9 +770,11 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 	void localDateTimesPastOrPresent() {
 		// given
 		LocalDateTimeArbitrary localDateTimeArbitrary = DateTimes.dateTimes();
+		TypeReference<TimeIntrospectorSpec> typeReference = new TypeReference<TimeIntrospectorSpec>() {
+		};
 		String propertyName = "localDateTimePastOrPresent";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,
@@ -756,9 +803,11 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 		// given
 		LocalDateTime now = LocalDateTime.now();
 		LocalDateTimeArbitrary localDateTimeArbitrary = DateTimes.dateTimes();
+		TypeReference<TimeIntrospectorSpec> typeReference = new TypeReference<TimeIntrospectorSpec>() {
+		};
 		String propertyName = "localDateTimeFuture";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,
@@ -786,9 +835,11 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 		// given
 		LocalDateTime now = LocalDateTime.now();
 		LocalDateTimeArbitrary localDateTimeArbitrary = DateTimes.dateTimes();
+		TypeReference<TimeIntrospectorSpec> typeReference = new TypeReference<TimeIntrospectorSpec>() {
+		};
 		String propertyName = "localDateTimeFutureOrPresent";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,
@@ -815,9 +866,11 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 	void localTimes() {
 		// given
 		LocalTimeArbitrary localTimeArbitrary = Times.times();
+		TypeReference<TimeIntrospectorSpec> typeReference = new TypeReference<TimeIntrospectorSpec>() {
+		};
 		String propertyName = "localTime";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,
@@ -844,9 +897,11 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 	void localTimesPast() {
 		// given
 		LocalTimeArbitrary localTimeArbitrary = Times.times();
+		TypeReference<TimeIntrospectorSpec> typeReference = new TypeReference<TimeIntrospectorSpec>() {
+		};
 		String propertyName = "localTimePast";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,
@@ -874,9 +929,11 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 	void localTimesPastOrPresent() {
 		// given
 		LocalTimeArbitrary localTimeArbitrary = Times.times();
+		TypeReference<TimeIntrospectorSpec> typeReference = new TypeReference<TimeIntrospectorSpec>() {
+		};
 		String propertyName = "localTimePastOrPresent";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,
@@ -905,9 +962,11 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 		// given
 		LocalTime now = LocalTime.now();
 		LocalTimeArbitrary localTimeArbitrary = Times.times();
+		TypeReference<TimeIntrospectorSpec> typeReference = new TypeReference<TimeIntrospectorSpec>() {
+		};
 		String propertyName = "localTimeFuture";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,
@@ -935,9 +994,11 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 		// given
 		LocalTime now = LocalTime.now();
 		LocalTimeArbitrary localTimeArbitrary = Times.times();
+		TypeReference<TimeIntrospectorSpec> typeReference = new TypeReference<TimeIntrospectorSpec>() {
+		};
 		String propertyName = "localTimeFutureOrPresent";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,
@@ -964,9 +1025,11 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 	void durations() {
 		// given
 		DurationArbitrary durationArbitrary = Times.durations();
+		TypeReference<TimeIntrospectorSpec> typeReference = new TypeReference<TimeIntrospectorSpec>() {
+		};
 		String propertyName = "duration";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,
@@ -992,9 +1055,11 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 	void periods() {
 		// given
 		PeriodArbitrary periodArbitrary = Dates.periods();
+		TypeReference<TimeIntrospectorSpec> typeReference = new TypeReference<TimeIntrospectorSpec>() {
+		};
 		String propertyName = "period";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,
@@ -1020,9 +1085,11 @@ class JavaxValidationTimeArbitraryIntrospectorTest {
 	void zoneOffsets() {
 		// given
 		ZoneOffsetArbitrary zoneOffsetArbitrary = Times.zoneOffsets();
+		TypeReference<TimeIntrospectorSpec> typeReference = new TypeReference<TimeIntrospectorSpec>() {
+		};
 		String propertyName = "zoneOffset";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(TimeIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,

@@ -30,12 +30,15 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.PropertyCache;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
+import com.navercorp.fixturemonkey.api.type.TypeReference;
 
 class ArbitraryTypeIntrospectorTest {
 	@Test
 	void introspectEnumType() {
 		// given
-		Property property = PropertyCache.getProperty(Sample.class, "season").get();
+		TypeReference<Sample> typeReference = new TypeReference<Sample>() {
+		};
+		Property property = PropertyCache.getProperty(typeReference.getAnnotatedType(), "season").get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,
@@ -59,7 +62,9 @@ class ArbitraryTypeIntrospectorTest {
 	@Test
 	void introspectBooleanType() {
 		// given
-		Property property = PropertyCache.getProperty(Sample.class, "bool").get();
+		TypeReference<Sample> typeReference = new TypeReference<Sample>() {
+		};
+		Property property = PropertyCache.getProperty(typeReference.getAnnotatedType(), "bool").get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,
@@ -83,7 +88,9 @@ class ArbitraryTypeIntrospectorTest {
 	@Test
 	void introspectBooleanWrapperType() {
 		// given
-		Property property = PropertyCache.getProperty(Sample.class, "bool").get();
+		TypeReference<Sample> typeReference = new TypeReference<Sample>() {
+		};
+		Property property = PropertyCache.getProperty(typeReference.getAnnotatedType(), "bool").get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,
@@ -107,7 +114,9 @@ class ArbitraryTypeIntrospectorTest {
 	@Test
 	void introspectUuidType() {
 		// given
-		Property property = PropertyCache.getProperty(Sample.class, "uuid").get();
+		TypeReference<Sample> typeReference = new TypeReference<Sample>() {
+		};
+		Property property = PropertyCache.getProperty(typeReference.getAnnotatedType(), "uuid").get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,

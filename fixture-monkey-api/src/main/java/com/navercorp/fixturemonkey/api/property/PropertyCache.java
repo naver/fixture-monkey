@@ -21,9 +21,9 @@ package com.navercorp.fixturemonkey.api.property;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
+import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -50,24 +50,24 @@ public final class PropertyCache {
 	private static final Map<Class<?>, Map<Method, PropertyDescriptor>> PROPERTY_DESCRIPTORS =
 		new ConcurrentHashMap<>();
 	private static final Map<Class<?>, Map<String, Field>> FIELDS = new ConcurrentHashMap<>();
-	private static final Map<Type, RootProperty> ROOT_PROPERTIES =
+	private static final Map<AnnotatedType, RootProperty> ROOT_PROPERTIES =
 		Collections.synchronizedMap(new LruCache<>(1000));
-	private static final Map<Type, List<Property>> TYPE_PROPERTIES =
+	private static final Map<AnnotatedType, List<Property>> TYPE_PROPERTIES =
 		Collections.synchronizedMap(new LruCache<>(1000));
 
-	public static RootProperty getRootProperty(Type type) {
-		return ROOT_PROPERTIES.computeIfAbsent(type, RootProperty::new);
+	public static RootProperty getRootProperty(AnnotatedType annotatedType) {
+		return ROOT_PROPERTIES.computeIfAbsent(annotatedType, RootProperty::new);
 	}
 
-	public static List<Property> getProperties(Type type) {
-		List<Property> cached = TYPE_PROPERTIES.get(type);
+	public static List<Property> getProperties(AnnotatedType annotatedType) {
+		List<Property> cached = TYPE_PROPERTIES.get(annotatedType);
 		if (cached != null) {
 			return cached;
 		}
 
 		Map<String, List<Property>> propertiesMap = new HashMap<>();
 
-		Class<?> actualType = Types.getActualType(type);
+		Class<?> actualType = Types.getActualType(annotatedType.getType());
 		Map<Method, PropertyDescriptor> propertyDescriptorMap = getPropertyDescriptors(actualType);
 
 		for (Entry<Method, PropertyDescriptor> entry : propertyDescriptorMap.entrySet()) {
@@ -76,7 +76,7 @@ public final class PropertyCache {
 			);
 			properties.add(
 				new PropertyDescriptorProperty(
-					Types.resolveWithTypeReferenceGenerics(type, entry.getValue()),
+					Types.resolveWithTypeReferenceGenerics(annotatedType, entry.getValue()),
 					entry.getValue()
 				)
 			);
@@ -89,7 +89,7 @@ public final class PropertyCache {
 			);
 			properties.add(
 				new FieldProperty(
-					Types.resolveWithTypeReferenceGenerics(type, entry.getValue()),
+					Types.resolveWithTypeReferenceGenerics(annotatedType, entry.getValue()),
 					entry.getValue()
 				)
 			);
@@ -105,12 +105,12 @@ public final class PropertyCache {
 		}
 
 		result = Collections.unmodifiableList(result);
-		TYPE_PROPERTIES.put(type, result);
+		TYPE_PROPERTIES.put(annotatedType, result);
 		return result;
 	}
 
-	public static Optional<Property> getProperty(Type type, String name) {
-		return getProperties(type).stream()
+	public static Optional<Property> getProperty(AnnotatedType annotatedType, String name) {
+		return getProperties(annotatedType).stream()
 			.filter(it -> it.getName().equals(name))
 			.findFirst();
 	}
@@ -156,7 +156,7 @@ public final class PropertyCache {
 		}
 
 		@Override
-		protected  boolean removeEldestEntry(Map.Entry<T, R> eldest) {
+		protected boolean removeEldestEntry(Map.Entry<T, R> eldest) {
 			return size() > maxSize;
 		}
 	}

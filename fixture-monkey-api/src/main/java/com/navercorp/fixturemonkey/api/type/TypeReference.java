@@ -18,7 +18,9 @@
 
 package com.navercorp.fixturemonkey.api.type;
 
-import java.lang.reflect.ParameterizedType;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedParameterizedType;
+import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Type;
 
 import org.apiguardian.api.API;
@@ -26,24 +28,42 @@ import org.apiguardian.api.API.Status;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public abstract class TypeReference<T> {
-	private final Type type;
+	private final AnnotatedType annotatedType;
 
 	protected TypeReference() {
-		Type superClass = getClass().getGenericSuperclass();
-		if (superClass instanceof Class<?>) {
-			throw new IllegalArgumentException(
-				"Internal error: TypeReference constructed without actual type information"
-			);
-		}
-
-		this.type = ((ParameterizedType)superClass).getActualTypeArguments()[0];
+		AnnotatedType annotatedType = getClass().getAnnotatedSuperclass();
+		this.annotatedType = ((AnnotatedParameterizedType)annotatedType).getAnnotatedActualTypeArguments()[0];
 	}
 
 	protected TypeReference(Class<T> type) {
-		this.type = type;
+		this.annotatedType = new AnnotatedType() {
+			@Override
+			public Type getType() {
+				return type;
+			}
+
+			@Override
+			public <A extends Annotation> A getAnnotation(Class<A> annotationClass) {
+				return null;
+			}
+
+			@Override
+			public Annotation[] getAnnotations() {
+				return new Annotation[0];
+			}
+
+			@Override
+			public Annotation[] getDeclaredAnnotations() {
+				return new Annotation[0];
+			}
+		};
 	}
 
 	public Type getType() {
-		return this.type;
+		return this.annotatedType.getType();
+	}
+
+	public AnnotatedType getAnnotatedType() {
+		return this.annotatedType;
 	}
 }

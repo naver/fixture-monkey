@@ -31,7 +31,7 @@ class RootPropertyTest {
 	void construct() {
 		TypeReference<PropertyValue> typeReference = new TypeReference<PropertyValue>() {
 		};
-		RootProperty sut = new RootProperty(typeReference.getType());
+		RootProperty sut = new RootProperty(typeReference.getAnnotatedType());
 
 		then(sut.getType()).isEqualTo(typeReference.getType());
 

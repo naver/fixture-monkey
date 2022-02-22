@@ -29,6 +29,7 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.PropertyCache;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
+import com.navercorp.fixturemonkey.api.type.TypeReference;
 
 class ExactMatcherTest {
 	@Test
@@ -37,7 +38,9 @@ class ExactMatcherTest {
 		TypeMatcher sut = new ExactTypeMatcher(String.class);
 
 		String propertyName = "str";
-		Property property = PropertyCache.getProperty(TypeMatcherSpec.class, propertyName).get();
+		TypeReference<TypeMatcherSpec> typeReference = new TypeReference<TypeMatcherSpec>() {
+		};
+		Property property = PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,
@@ -64,7 +67,9 @@ class ExactMatcherTest {
 		TypeMatcher sut = new ExactTypeMatcher(TypeMatcherSpec.class);
 
 		String propertyName = "inherited";
-		Property property = PropertyCache.getProperty(TypeMatcherSpec.class, propertyName).get();
+		TypeReference<TypeMatcherSpec> typeReference = new TypeReference<TypeMatcherSpec>() {
+		};
+		Property property = PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,
