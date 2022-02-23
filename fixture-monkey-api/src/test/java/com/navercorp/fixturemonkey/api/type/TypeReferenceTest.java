@@ -27,17 +27,14 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
-import net.jqwik.api.constraints.Size;
-
 class TypeReferenceTest {
 
 	@Test
 	void construct() {
-		TypeReference<String> actual = new TypeReference<@Size String>() {
+		TypeReference<String> actual = new TypeReference<String>() {
 		};
 		then(actual.getType()).isEqualTo(String.class);
 		then(actual.getAnnotatedType().getType()).isEqualTo(String.class);
-		then(actual.getAnnotatedType().getAnnotations()[0].annotationType()).isEqualTo(Size.class);
 	}
 
 	@Test
@@ -51,7 +48,7 @@ class TypeReferenceTest {
 
 	@Test
 	void constructListGenerics() {
-		TypeReference<List<String>> actual = new TypeReference<List<@Size String>>() {
+		TypeReference<List<String>> actual = new TypeReference<List<String>>() {
 		};
 
 		then(actual.getType()).isInstanceOf(ParameterizedType.class);
@@ -63,13 +60,11 @@ class TypeReferenceTest {
 		AnnotatedParameterizedType annotatedParameterizedType = (AnnotatedParameterizedType)actual.getAnnotatedType();
 		then(annotatedParameterizedType.getType()).isEqualTo(actual.getType());
 		then(annotatedParameterizedType.getAnnotatedActualTypeArguments()[0].getType()).isEqualTo(String.class);
-		then(annotatedParameterizedType.getAnnotatedActualTypeArguments()[0].getAnnotations()[0].annotationType())
-			.isEqualTo(Size.class);
 	}
 
 	@Test
 	void constructMap() {
-		TypeReference<Map<Integer, String>> actual = new TypeReference<Map<Integer, @Size String>>() {
+		TypeReference<Map<Integer, String>> actual = new TypeReference<Map<Integer, String>>() {
 		};
 
 		then(actual.getType()).isInstanceOf(ParameterizedType.class);
@@ -83,7 +78,5 @@ class TypeReferenceTest {
 		then(annotatedParameterizedType.getType()).isEqualTo(actual.getType());
 		then(annotatedParameterizedType.getAnnotatedActualTypeArguments()[0].getType()).isEqualTo(Integer.class);
 		then(annotatedParameterizedType.getAnnotatedActualTypeArguments()[1].getType()).isEqualTo(String.class);
-		then(annotatedParameterizedType.getAnnotatedActualTypeArguments()[1].getAnnotations()[0].annotationType())
-			.isEqualTo(Size.class);
 	}
 }
