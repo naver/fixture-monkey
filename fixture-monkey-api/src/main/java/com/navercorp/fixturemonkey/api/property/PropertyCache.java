@@ -27,7 +27,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -50,21 +49,12 @@ public final class PropertyCache {
 	private static final Map<Class<?>, Map<Method, PropertyDescriptor>> PROPERTY_DESCRIPTORS =
 		new ConcurrentHashMap<>();
 	private static final Map<Class<?>, Map<String, Field>> FIELDS = new ConcurrentHashMap<>();
-	private static final Map<AnnotatedType, RootProperty> ROOT_PROPERTIES =
-		Collections.synchronizedMap(new LruCache<>(1000));
-	private static final Map<AnnotatedType, List<Property>> TYPE_PROPERTIES =
-		Collections.synchronizedMap(new LruCache<>(1000));
 
 	public static RootProperty getRootProperty(AnnotatedType annotatedType) {
-		return ROOT_PROPERTIES.computeIfAbsent(annotatedType, RootProperty::new);
+		return new RootProperty(annotatedType);
 	}
 
 	public static List<Property> getProperties(AnnotatedType annotatedType) {
-		List<Property> cached = TYPE_PROPERTIES.get(annotatedType);
-		if (cached != null) {
-			return cached;
-		}
-
 		Map<String, List<Property>> propertiesMap = new HashMap<>();
 
 		Class<?> actualType = Types.getActualType(annotatedType.getType());
@@ -104,9 +94,7 @@ public final class PropertyCache {
 			}
 		}
 
-		result = Collections.unmodifiableList(result);
-		TYPE_PROPERTIES.put(annotatedType, result);
-		return result;
+		return Collections.unmodifiableList(result);
 	}
 
 	public static Optional<Property> getProperty(AnnotatedType annotatedType, String name) {
@@ -145,19 +133,5 @@ public final class PropertyCache {
 			}
 			return result;
 		});
-	}
-
-	private static class LruCache<T, R> extends LinkedHashMap<T, R> {
-		private final int maxSize;
-
-		LruCache(int maxSize) {
-			super(maxSize + 1, 1, true);
-			this.maxSize = maxSize;
-		}
-
-		@Override
-		protected boolean removeEldestEntry(Map.Entry<T, R> eldest) {
-			return size() > maxSize;
-		}
 	}
 }

@@ -25,7 +25,6 @@ import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -105,23 +104,6 @@ public final class FieldProperty implements Property {
 				ex
 			);
 		}
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null || getClass() != obj.getClass()) {
-			return false;
-		}
-		FieldProperty that = (FieldProperty)obj;
-		return Objects.equals(annotatedType, that.annotatedType) && Objects.equals(field, that.field);
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(annotatedType, field);
 	}
 
 	@Override
