@@ -18,9 +18,24 @@
 
 package com.navercorp.fixturemonkey.kotlin.customizer
 
+import com.navercorp.fixturemonkey.customizer.ArbitraryCustomizer
 import com.navercorp.fixturemonkey.customizer.ArbitraryCustomizers
 import com.navercorp.fixturemonkey.generator.FieldArbitraries
 import kotlin.reflect.KClass
+
+fun <T : Any> KArbitraryCustomizer<T>.toArbitraryCustomizer(): ArbitraryCustomizer<T> {
+    return object : ArbitraryCustomizer<T> {
+        private val delegate = this@toArbitraryCustomizer
+
+        override fun customizeFields(type: Class<T>, fieldArbitraries: FieldArbitraries) {
+            delegate.customizeFields(type.kotlin, fieldArbitraries)
+        }
+
+        override fun customizeFixture(target: T?): T? {
+            return delegate.customizeFixture(target)
+        }
+    }
+}
 
 internal fun <T : Any> ArbitraryCustomizers.customizeFields(
     type: KClass<T>,
