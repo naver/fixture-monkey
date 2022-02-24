@@ -33,7 +33,7 @@ class ArbitraryPropertyTest {
 		// given
 		TypeReference<GenericSample<String>> typeReference = new TypeReference<GenericSample<String>>() {
 		};
-		RootProperty rootProperty = PropertyCache.getRootProperty(typeReference.getType());
+		RootProperty rootProperty = PropertyCache.getRootProperty(typeReference.getAnnotatedType());
 
 		// when
 		ArbitraryProperty actual = new ArbitraryProperty(

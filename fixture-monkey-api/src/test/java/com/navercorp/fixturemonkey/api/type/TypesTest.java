@@ -3,6 +3,9 @@ package com.navercorp.fixturemonkey.api.type;
 import static org.assertj.core.api.BDDAssertions.then;
 
 import java.beans.PropertyDescriptor;
+import java.lang.reflect.AnnotatedParameterizedType;
+import java.lang.reflect.AnnotatedType;
+import java.lang.reflect.AnnotatedWildcardType;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
@@ -61,11 +64,11 @@ class TypesTest {
 		// given
 		TypeReference<GenericSample<?>> typeReference = new TypeReference<GenericSample<?>>() {
 		};
-		Type type = typeReference.getType();
-		Type generics = Types.getGenericsTypes(type).get(0);
+		AnnotatedType type = typeReference.getAnnotatedType();
+		AnnotatedType generics = Types.getGenericsTypes(type).get(0);
 
 		// when
-		Class<?> actual = Types.getActualType(generics);
+		Class<?> actual = Types.getActualType(generics.getType());
 
 		then(actual).isEqualTo(Object.class);
 	}
@@ -88,10 +91,10 @@ class TypesTest {
 		// given
 		TypeReference<Sample> typeReference = new TypeReference<Sample>() {
 		};
-		Type type = typeReference.getType();
+		AnnotatedType type = typeReference.getAnnotatedType();
 
 		// when
-		List<Type> actual = Types.getGenericsTypes(type);
+		List<AnnotatedType> actual = Types.getGenericsTypes(type);
 
 		then(actual).isEmpty();
 	}
@@ -101,15 +104,15 @@ class TypesTest {
 		// given
 		TypeReference<GenericSample<String>> typeReference = new TypeReference<GenericSample<String>>() {
 		};
-		Type type = typeReference.getType();
+		AnnotatedType type = typeReference.getAnnotatedType();
 
 		// when
-		List<Type> actual = Types.getGenericsTypes(type);
+		List<AnnotatedType> actual = Types.getGenericsTypes(type);
 
 		then(actual).hasSize(1);
 
-		Type genericsType = actual.get(0);
-		then(genericsType).isEqualTo(String.class);
+		AnnotatedType genericsType = actual.get(0);
+		then(genericsType.getType()).isEqualTo(String.class);
 	}
 
 	@Test
@@ -118,22 +121,23 @@ class TypesTest {
 		TypeReference<GenericSample<GenericSample2<String>>> typeReference =
 			new TypeReference<GenericSample<GenericSample2<String>>>() {
 			};
-		Type type = typeReference.getType();
+		AnnotatedType type = typeReference.getAnnotatedType();
 
 		// when
-		List<Type> actual = Types.getGenericsTypes(type);
+		List<AnnotatedType> actual = Types.getGenericsTypes(type);
 
 		then(actual).hasSize(1);
 
-		Type genericsType = actual.get(0);
-		then(genericsType).isInstanceOf(ParameterizedType.class);
+		AnnotatedType genericsType = actual.get(0);
+		then(genericsType).isInstanceOf(AnnotatedParameterizedType.class);
+		then(genericsType.getType()).isInstanceOf(ParameterizedType.class);
 
-		ParameterizedType parameterizedType = (ParameterizedType)genericsType;
-		then(Types.getActualType(parameterizedType)).isEqualTo(GenericSample2.class);
+		AnnotatedParameterizedType parameterizedType = (AnnotatedParameterizedType)genericsType;
+		then(Types.getActualType(parameterizedType.getType())).isEqualTo(GenericSample2.class);
 
-		List<Type> nestedGenericsTypes = Types.getGenericsTypes(genericsType);
+		List<AnnotatedType> nestedGenericsTypes = Types.getGenericsTypes(genericsType);
 		then(nestedGenericsTypes).hasSize(1);
-		then(nestedGenericsTypes.get(0)).isEqualTo(String.class);
+		then(nestedGenericsTypes.get(0).getType()).isEqualTo(String.class);
 	}
 
 	@Test
@@ -142,14 +146,14 @@ class TypesTest {
 		TypeReference<BiGenericSample<Integer, String>> typeReference =
 			new TypeReference<BiGenericSample<Integer, String>>() {
 			};
-		Type type = typeReference.getType();
+		AnnotatedType type = typeReference.getAnnotatedType();
 
 		// when
-		List<Type> actual = Types.getGenericsTypes(type);
+		List<AnnotatedType> actual = Types.getGenericsTypes(type);
 
 		then(actual).hasSize(2);
-		then(actual.get(0)).isEqualTo(Integer.class);
-		then(actual.get(1)).isEqualTo(String.class);
+		then(actual.get(0).getType()).isEqualTo(Integer.class);
+		then(actual.get(1).getType()).isEqualTo(String.class);
 	}
 
 	@Test
@@ -158,17 +162,18 @@ class TypesTest {
 		TypeReference<BiGenericSample<Integer, ?>> typeReference =
 			new TypeReference<BiGenericSample<Integer, ?>>() {
 			};
-		Type type = typeReference.getType();
+		AnnotatedType type = typeReference.getAnnotatedType();
 
 		// when
-		List<Type> actual = Types.getGenericsTypes(type);
+		List<AnnotatedType> actual = Types.getGenericsTypes(type);
 
 		then(actual).hasSize(2);
-		then(actual.get(0)).isEqualTo(Integer.class);
+		then(actual.get(0).getType()).isEqualTo(Integer.class);
 
-		Type secondType = actual.get(1);
-		then(secondType).isInstanceOf(WildcardType.class);
-		then(Types.getActualType(secondType)).isEqualTo(Object.class);
+		AnnotatedType secondType = actual.get(1);
+		then(secondType).isInstanceOf(AnnotatedWildcardType.class);
+		then(secondType.getType()).isInstanceOf(WildcardType.class);
+		then(Types.getActualType(secondType.getType())).isEqualTo(Object.class);
 	}
 
 	@Test
@@ -177,33 +182,35 @@ class TypesTest {
 		TypeReference<BiGenericSample<GenericSample<Integer>, BiGenericSample<Integer, String>>> typeReference =
 			new TypeReference<BiGenericSample<GenericSample<Integer>, BiGenericSample<Integer, String>>>() {
 			};
-		Type type = typeReference.getType();
+		AnnotatedType type = typeReference.getAnnotatedType();
 
 		// when
-		List<Type> actual = Types.getGenericsTypes(type);
+		List<AnnotatedType> actual = Types.getGenericsTypes(type);
 
 		then(actual).hasSize(2);
 
-		Type firstGenericsType = actual.get(0);
-		then(firstGenericsType).isInstanceOf(ParameterizedType.class);
+		AnnotatedType firstGenericsType = actual.get(0);
+		then(firstGenericsType).isInstanceOf(AnnotatedParameterizedType.class);
+		then(firstGenericsType.getType()).isInstanceOf(ParameterizedType.class);
 
-		ParameterizedType firstParameterizedType = (ParameterizedType)firstGenericsType;
-		then(Types.getActualType(firstParameterizedType)).isEqualTo(GenericSample.class);
+		AnnotatedParameterizedType firstParameterizedType = (AnnotatedParameterizedType)firstGenericsType;
+		then(Types.getActualType(firstParameterizedType.getType())).isEqualTo(GenericSample.class);
 
-		List<Type> firstNestedGenericsTypes = Types.getGenericsTypes(firstParameterizedType);
+		List<AnnotatedType> firstNestedGenericsTypes = Types.getGenericsTypes(firstParameterizedType);
 		then(firstNestedGenericsTypes).hasSize(1);
-		then(firstNestedGenericsTypes.get(0)).isEqualTo(Integer.class);
+		then(firstNestedGenericsTypes.get(0).getType()).isEqualTo(Integer.class);
 
-		Type secondGenericsType = actual.get(1);
-		then(secondGenericsType).isInstanceOf(ParameterizedType.class);
+		AnnotatedType secondGenericsType = actual.get(1);
+		then(secondGenericsType).isInstanceOf(AnnotatedParameterizedType.class);
+		then(secondGenericsType.getType()).isInstanceOf(ParameterizedType.class);
 
-		ParameterizedType secondParameterizedType = (ParameterizedType)secondGenericsType;
-		then(Types.getActualType(secondParameterizedType)).isEqualTo(BiGenericSample.class);
+		AnnotatedParameterizedType secondParameterizedType = (AnnotatedParameterizedType)secondGenericsType;
+		then(Types.getActualType(secondParameterizedType.getType())).isEqualTo(BiGenericSample.class);
 
-		List<Type> secondNestedGenericsTypes = Types.getGenericsTypes(secondParameterizedType);
+		List<AnnotatedType> secondNestedGenericsTypes = Types.getGenericsTypes(secondParameterizedType);
 		then(secondNestedGenericsTypes).hasSize(2);
-		then(secondNestedGenericsTypes.get(0)).isEqualTo(Integer.class);
-		then(secondNestedGenericsTypes.get(1)).isEqualTo(String.class);
+		then(secondNestedGenericsTypes.get(0).getType()).isEqualTo(Integer.class);
+		then(secondNestedGenericsTypes.get(1).getType()).isEqualTo(String.class);
 	}
 
 	@Test
@@ -216,9 +223,9 @@ class TypesTest {
 		Field field = fields.get("name");
 
 		// when
-		Type actual = Types.resolveWithTypeReferenceGenerics(typeReference.getType(), field);
+		AnnotatedType actual = Types.resolveWithTypeReferenceGenerics(typeReference.getAnnotatedType(), field);
 
-		then(actual).isEqualTo(String.class);
+		then(actual.getType()).isEqualTo(String.class);
 	}
 
 	@Test
@@ -231,14 +238,15 @@ class TypesTest {
 		Field field = fields.get("sample2");
 
 		// when
-		Type actual = Types.resolveWithTypeReferenceGenerics(typeReference.getType(), field);
+		AnnotatedType actual = Types.resolveWithTypeReferenceGenerics(typeReference.getAnnotatedType(), field);
 
-		then(actual).isInstanceOf(ParameterizedType.class);
+		then(actual).isInstanceOf(AnnotatedParameterizedType.class);
+		then(actual.getType()).isInstanceOf(ParameterizedType.class);
 
-		ParameterizedType parameterizedType = (ParameterizedType)actual;
-		then(parameterizedType.getRawType()).isEqualTo(GenericSample2.class);
-		then(parameterizedType.getActualTypeArguments()).hasSize(1);
-		then(parameterizedType.getActualTypeArguments()[0]).isEqualTo(String.class);
+		AnnotatedParameterizedType parameterizedType = (AnnotatedParameterizedType)actual;
+		then(((ParameterizedType)parameterizedType.getType()).getRawType()).isEqualTo(GenericSample2.class);
+		then(parameterizedType.getAnnotatedActualTypeArguments()).hasSize(1);
+		then(parameterizedType.getAnnotatedActualTypeArguments()[0].getType()).isEqualTo(String.class);
 	}
 
 	@Test
@@ -251,14 +259,15 @@ class TypesTest {
 		Field field = fields.get("list");
 
 		// when
-		Type actual = Types.resolveWithTypeReferenceGenerics(typeReference.getType(), field);
+		AnnotatedType actual = Types.resolveWithTypeReferenceGenerics(typeReference.getAnnotatedType(), field);
 
-		then(actual).isInstanceOf(ParameterizedType.class);
+		then(actual).isInstanceOf(AnnotatedParameterizedType.class);
+		then(actual.getType()).isInstanceOf(ParameterizedType.class);
 
-		ParameterizedType parameterizedType = (ParameterizedType)actual;
-		then(parameterizedType.getRawType()).isEqualTo(List.class);
-		then(parameterizedType.getActualTypeArguments()).hasSize(1);
-		then(parameterizedType.getActualTypeArguments()[0]).isEqualTo(String.class);
+		AnnotatedParameterizedType parameterizedType = (AnnotatedParameterizedType)actual;
+		then(((ParameterizedType)parameterizedType.getType()).getRawType()).isEqualTo(List.class);
+		then(parameterizedType.getAnnotatedActualTypeArguments()).hasSize(1);
+		then(parameterizedType.getAnnotatedActualTypeArguments()[0].getType()).isEqualTo(String.class);
 	}
 
 	@Test
@@ -271,14 +280,15 @@ class TypesTest {
 		Field field = fields.get("samples");
 
 		// when
-		Type actual = Types.resolveWithTypeReferenceGenerics(typeReference.getType(), field);
+		AnnotatedType actual = Types.resolveWithTypeReferenceGenerics(typeReference.getAnnotatedType(), field);
 
-		then(actual).isInstanceOf(ParameterizedType.class);
+		then(actual).isInstanceOf(AnnotatedParameterizedType.class);
+		then(actual.getType()).isInstanceOf(ParameterizedType.class);
 
-		ParameterizedType parameterizedType = (ParameterizedType)actual;
-		then(parameterizedType.getRawType()).isEqualTo(List.class);
-		then(parameterizedType.getActualTypeArguments()).hasSize(1);
-		then(parameterizedType.getActualTypeArguments()[0]).isEqualTo(Sample.class);
+		AnnotatedParameterizedType parameterizedType = (AnnotatedParameterizedType)actual;
+		then(((ParameterizedType)parameterizedType.getType()).getRawType()).isEqualTo(List.class);
+		then(parameterizedType.getAnnotatedActualTypeArguments()).hasSize(1);
+		then(parameterizedType.getAnnotatedActualTypeArguments()[0].getType()).isEqualTo(Sample.class);
 	}
 
 	@Test
@@ -291,9 +301,9 @@ class TypesTest {
 		Field field = fields.get("name");
 
 		// when
-		Type actual = Types.resolveWithTypeReferenceGenerics(typeReference.getType(), field);
+		AnnotatedType actual = Types.resolveWithTypeReferenceGenerics(typeReference.getAnnotatedType(), field);
 
-		then(actual).isEqualTo(String.class);
+		then(actual.getType()).isEqualTo(String.class);
 	}
 
 	@Test
@@ -306,10 +316,11 @@ class TypesTest {
 		Field field = fields.get("name");
 
 		// when
-		Type actual = Types.resolveWithTypeReferenceGenerics(typeReference.getType(), field);
+		AnnotatedType actual = Types.resolveWithTypeReferenceGenerics(typeReference.getAnnotatedType(), field);
 
-		then(actual).isInstanceOf(WildcardType.class);
-		then(((WildcardType)actual).getUpperBounds()[0]).isEqualTo(Object.class);
+		then(actual).isInstanceOf(AnnotatedWildcardType.class);
+		then(actual.getType()).isInstanceOf(WildcardType.class);
+		then(((AnnotatedWildcardType)actual).getAnnotatedUpperBounds()[0].getType()).isEqualTo(Object.class);
 	}
 
 	@Test
@@ -322,9 +333,9 @@ class TypesTest {
 		Field field = fields.get("name");
 
 		// when
-		Type actual = Types.resolveWithTypeReferenceGenerics(typeReference.getType(), field);
+		AnnotatedType actual = Types.resolveWithTypeReferenceGenerics(typeReference.getAnnotatedType(), field);
 
-		then(actual).isEqualTo(Object.class);
+		then(actual.getType()).isInstanceOf(Object.class);
 	}
 
 	@Test
@@ -338,9 +349,9 @@ class TypesTest {
 		Field field = fields.get("name");
 
 		// when
-		Type actual = Types.resolveWithTypeReferenceGenerics(typeReference.getType(), field);
+		AnnotatedType actual = Types.resolveWithTypeReferenceGenerics(typeReference.getAnnotatedType(), field);
 
-		then(actual).isEqualTo(Integer.class);
+		then(actual.getType()).isEqualTo(Integer.class);
 	}
 
 	@Test
@@ -354,9 +365,9 @@ class TypesTest {
 		Field field = fields.get("address");
 
 		// when
-		Type actual = Types.resolveWithTypeReferenceGenerics(typeReference.getType(), field);
+		AnnotatedType actual = Types.resolveWithTypeReferenceGenerics(typeReference.getAnnotatedType(), field);
 
-		then(actual).isEqualTo(String.class);
+		then(actual.getType()).isEqualTo(String.class);
 	}
 
 	@Test
@@ -370,15 +381,16 @@ class TypesTest {
 		Field field = fields.get("sample2");
 
 		// when
-		Type actual = Types.resolveWithTypeReferenceGenerics(typeReference.getType(), field);
+		AnnotatedType actual = Types.resolveWithTypeReferenceGenerics(typeReference.getAnnotatedType(), field);
 
-		then(actual).isInstanceOf(ParameterizedType.class);
+		then(actual).isInstanceOf(AnnotatedParameterizedType.class);
+		then(actual.getType()).isInstanceOf(ParameterizedType.class);
 
-		ParameterizedType parameterizedType = (ParameterizedType)actual;
-		then(parameterizedType.getRawType()).isEqualTo(BiGenericSample2.class);
-		then(parameterizedType.getActualTypeArguments()).hasSize(2);
-		then(parameterizedType.getActualTypeArguments()[0]).isEqualTo(Integer.class);
-		then(parameterizedType.getActualTypeArguments()[1]).isEqualTo(String.class);
+		AnnotatedParameterizedType parameterizedType = (AnnotatedParameterizedType)actual;
+		then(((ParameterizedType)parameterizedType.getType()).getRawType()).isEqualTo(BiGenericSample2.class);
+		then(parameterizedType.getAnnotatedActualTypeArguments()).hasSize(2);
+		then(parameterizedType.getAnnotatedActualTypeArguments()[0].getType()).isEqualTo(Integer.class);
+		then(parameterizedType.getAnnotatedActualTypeArguments()[1].getType()).isEqualTo(String.class);
 	}
 
 	@Test
@@ -392,26 +404,30 @@ class TypesTest {
 		Field field = fields.get("sample2");
 
 		// when
-		Type actual = Types.resolveWithTypeReferenceGenerics(typeReference.getType(), field);
+		AnnotatedType actual = Types.resolveWithTypeReferenceGenerics(typeReference.getAnnotatedType(), field);
 
-		then(actual).isInstanceOf(ParameterizedType.class);
+		then(actual).isInstanceOf(AnnotatedParameterizedType.class);
+		then(actual.getType()).isInstanceOf(ParameterizedType.class);
 
-		ParameterizedType parameterizedType = (ParameterizedType)actual;
-		then(parameterizedType.getRawType()).isEqualTo(BiGenericSample2.class);
-		then(parameterizedType.getActualTypeArguments()).hasSize(2);
+		AnnotatedParameterizedType parameterizedType = (AnnotatedParameterizedType)actual;
+		then(((ParameterizedType)parameterizedType.getType()).getRawType()).isEqualTo(BiGenericSample2.class);
+		then(parameterizedType.getAnnotatedActualTypeArguments()).hasSize(2);
 
-		Type firstGenerics = parameterizedType.getActualTypeArguments()[0];
-		then(firstGenerics).isInstanceOf(ParameterizedType.class);
-		then(((ParameterizedType)firstGenerics).getRawType()).isEqualTo(GenericSample.class);
-		then(((ParameterizedType)firstGenerics).getActualTypeArguments()).hasSize(1);
-		then(((ParameterizedType)firstGenerics).getActualTypeArguments()[0]).isEqualTo(Integer.class);
+		AnnotatedType firstGenerics = parameterizedType.getAnnotatedActualTypeArguments()[0];
+		then(firstGenerics).isInstanceOf(AnnotatedParameterizedType.class);
+		then(((ParameterizedType)firstGenerics.getType()).getRawType()).isEqualTo(GenericSample.class);
+		then(((AnnotatedParameterizedType)firstGenerics).getAnnotatedActualTypeArguments()).hasSize(1);
+		then(((AnnotatedParameterizedType)firstGenerics).getAnnotatedActualTypeArguments()[0].getType())
+			.isEqualTo(Integer.class);
 
-		Type secondGenerics = parameterizedType.getActualTypeArguments()[1];
-		then(secondGenerics).isInstanceOf(ParameterizedType.class);
-		then(((ParameterizedType)secondGenerics).getRawType()).isEqualTo(BiGenericSample.class);
-		then(((ParameterizedType)secondGenerics).getActualTypeArguments()).hasSize(2);
-		then(((ParameterizedType)secondGenerics).getActualTypeArguments()[0]).isEqualTo(Integer.class);
-		then(((ParameterizedType)secondGenerics).getActualTypeArguments()[1]).isEqualTo(String.class);
+		AnnotatedType secondGenerics = parameterizedType.getAnnotatedActualTypeArguments()[1];
+		then(secondGenerics).isInstanceOf(AnnotatedParameterizedType.class);
+		then(((ParameterizedType)secondGenerics.getType()).getRawType()).isEqualTo(BiGenericSample.class);
+		then(((AnnotatedParameterizedType)secondGenerics).getAnnotatedActualTypeArguments()).hasSize(2);
+		then(((AnnotatedParameterizedType)secondGenerics).getAnnotatedActualTypeArguments()[0].getType())
+			.isEqualTo(Integer.class);
+		then(((AnnotatedParameterizedType)secondGenerics).getAnnotatedActualTypeArguments()[1].getType())
+			.isEqualTo(String.class);
 	}
 
 	@Test
@@ -427,9 +443,10 @@ class TypesTest {
 		);
 
 		// when
-		Type actual = Types.resolveWithTypeReferenceGenerics(typeReference.getType(), propertyDescriptor);
+		AnnotatedType actual = Types.resolveWithTypeReferenceGenerics(
+			typeReference.getAnnotatedType(), propertyDescriptor);
 
-		then(actual).isEqualTo(String.class);
+		then(actual.getType()).isEqualTo(String.class);
 	}
 
 	@Test
@@ -445,14 +462,16 @@ class TypesTest {
 		);
 
 		// when
-		Type actual = Types.resolveWithTypeReferenceGenerics(typeReference.getType(), propertyDescriptor);
+		AnnotatedType actual = Types.resolveWithTypeReferenceGenerics(
+			typeReference.getAnnotatedType(), propertyDescriptor);
 
-		then(actual).isInstanceOf(ParameterizedType.class);
+		then(actual).isInstanceOf(AnnotatedParameterizedType.class);
+		then(actual.getType()).isInstanceOf(ParameterizedType.class);
 
-		ParameterizedType parameterizedType = (ParameterizedType)actual;
-		then(parameterizedType.getRawType()).isEqualTo(GenericSample2.class);
-		then(parameterizedType.getActualTypeArguments()).hasSize(1);
-		then(parameterizedType.getActualTypeArguments()[0]).isEqualTo(String.class);
+		AnnotatedParameterizedType parameterizedType = (AnnotatedParameterizedType)actual;
+		then(((ParameterizedType)parameterizedType.getType()).getRawType()).isEqualTo(GenericSample2.class);
+		then(parameterizedType.getAnnotatedActualTypeArguments()).hasSize(1);
+		then(parameterizedType.getAnnotatedActualTypeArguments()[0].getType()).isEqualTo(String.class);
 	}
 
 	@Test
@@ -468,14 +487,16 @@ class TypesTest {
 		);
 
 		// when
-		Type actual = Types.resolveWithTypeReferenceGenerics(typeReference.getType(), propertyDescriptor);
+		AnnotatedType actual = Types.resolveWithTypeReferenceGenerics(
+			typeReference.getAnnotatedType(), propertyDescriptor);
 
-		then(actual).isInstanceOf(ParameterizedType.class);
+		then(actual).isInstanceOf(AnnotatedParameterizedType.class);
+		then(actual.getType()).isInstanceOf(ParameterizedType.class);
 
-		ParameterizedType parameterizedType = (ParameterizedType)actual;
-		then(parameterizedType.getRawType()).isEqualTo(List.class);
-		then(parameterizedType.getActualTypeArguments()).hasSize(1);
-		then(parameterizedType.getActualTypeArguments()[0]).isEqualTo(String.class);
+		AnnotatedParameterizedType parameterizedType = (AnnotatedParameterizedType)actual;
+		then(((ParameterizedType)parameterizedType.getType()).getRawType()).isEqualTo(List.class);
+		then(parameterizedType.getAnnotatedActualTypeArguments()).hasSize(1);
+		then(parameterizedType.getAnnotatedActualTypeArguments()[0].getType()).isEqualTo(String.class);
 	}
 
 	@Test
@@ -491,14 +512,16 @@ class TypesTest {
 		);
 
 		// when
-		Type actual = Types.resolveWithTypeReferenceGenerics(typeReference.getType(), propertyDescriptor);
+		AnnotatedType actual = Types.resolveWithTypeReferenceGenerics(
+			typeReference.getAnnotatedType(), propertyDescriptor);
 
-		then(actual).isInstanceOf(ParameterizedType.class);
+		then(actual).isInstanceOf(AnnotatedParameterizedType.class);
+		then(actual.getType()).isInstanceOf(ParameterizedType.class);
 
-		ParameterizedType parameterizedType = (ParameterizedType)actual;
-		then(parameterizedType.getRawType()).isEqualTo(List.class);
-		then(parameterizedType.getActualTypeArguments()).hasSize(1);
-		then(parameterizedType.getActualTypeArguments()[0]).isEqualTo(Sample.class);
+		AnnotatedParameterizedType parameterizedType = (AnnotatedParameterizedType)actual;
+		then(((ParameterizedType)parameterizedType.getType()).getRawType()).isEqualTo(List.class);
+		then(parameterizedType.getAnnotatedActualTypeArguments()).hasSize(1);
+		then(parameterizedType.getAnnotatedActualTypeArguments()[0].getType()).isEqualTo(Sample.class);
 	}
 
 	@Test
@@ -514,9 +537,10 @@ class TypesTest {
 		);
 
 		// when
-		Type actual = Types.resolveWithTypeReferenceGenerics(typeReference.getType(), propertyDescriptor);
+		AnnotatedType actual = Types.resolveWithTypeReferenceGenerics(
+			typeReference.getAnnotatedType(), propertyDescriptor);
 
-		then(actual).isEqualTo(String.class);
+		then(actual.getType()).isEqualTo(String.class);
 	}
 
 	@Test
@@ -532,10 +556,12 @@ class TypesTest {
 		);
 
 		// when
-		Type actual = Types.resolveWithTypeReferenceGenerics(typeReference.getType(), propertyDescriptor);
+		AnnotatedType actual = Types.resolveWithTypeReferenceGenerics(
+			typeReference.getAnnotatedType(), propertyDescriptor);
 
-		then(actual).isInstanceOf(WildcardType.class);
-		then(((WildcardType)actual).getUpperBounds()[0]).isEqualTo(Object.class);
+		then(actual).isInstanceOf(AnnotatedWildcardType.class);
+		then(actual.getType()).isInstanceOf(WildcardType.class);
+		then(((AnnotatedWildcardType)actual).getAnnotatedUpperBounds()[0].getType()).isEqualTo(Object.class);
 	}
 
 	@Test
@@ -551,9 +577,10 @@ class TypesTest {
 		);
 
 		// when
-		Type actual = Types.resolveWithTypeReferenceGenerics(typeReference.getType(), propertyDescriptor);
+		AnnotatedType actual = Types.resolveWithTypeReferenceGenerics(
+			typeReference.getAnnotatedType(), propertyDescriptor);
 
-		then(actual).isEqualTo(Object.class);
+		then(actual.getType()).isEqualTo(Object.class);
 	}
 
 	@Test
@@ -570,9 +597,10 @@ class TypesTest {
 		);
 
 		// when
-		Type actual = Types.resolveWithTypeReferenceGenerics(typeReference.getType(), propertyDescriptor);
+		AnnotatedType actual = Types.resolveWithTypeReferenceGenerics(
+			typeReference.getAnnotatedType(), propertyDescriptor);
 
-		then(actual).isEqualTo(Integer.class);
+		then(actual.getType()).isEqualTo(Integer.class);
 	}
 
 	@Test
@@ -589,9 +617,10 @@ class TypesTest {
 		);
 
 		// when
-		Type actual = Types.resolveWithTypeReferenceGenerics(typeReference.getType(), propertyDescriptor);
+		AnnotatedType actual = Types.resolveWithTypeReferenceGenerics(
+			typeReference.getAnnotatedType(), propertyDescriptor);
 
-		then(actual).isEqualTo(String.class);
+		then(actual.getType()).isEqualTo(String.class);
 	}
 
 	@Test
@@ -608,15 +637,17 @@ class TypesTest {
 		);
 
 		// when
-		Type actual = Types.resolveWithTypeReferenceGenerics(typeReference.getType(), propertyDescriptor);
+		AnnotatedType actual = Types.resolveWithTypeReferenceGenerics(
+			typeReference.getAnnotatedType(), propertyDescriptor);
 
-		then(actual).isInstanceOf(ParameterizedType.class);
+		then(actual).isInstanceOf(AnnotatedParameterizedType.class);
+		then(actual.getType()).isInstanceOf(ParameterizedType.class);
 
-		ParameterizedType parameterizedType = (ParameterizedType)actual;
-		then(parameterizedType.getRawType()).isEqualTo(BiGenericSample2.class);
-		then(parameterizedType.getActualTypeArguments()).hasSize(2);
-		then(parameterizedType.getActualTypeArguments()[0]).isEqualTo(Integer.class);
-		then(parameterizedType.getActualTypeArguments()[1]).isEqualTo(String.class);
+		AnnotatedParameterizedType parameterizedType = (AnnotatedParameterizedType)actual;
+		then(((ParameterizedType)parameterizedType.getType()).getRawType()).isEqualTo(BiGenericSample2.class);
+		then(parameterizedType.getAnnotatedActualTypeArguments()).hasSize(2);
+		then(parameterizedType.getAnnotatedActualTypeArguments()[0].getType()).isEqualTo(Integer.class);
+		then(parameterizedType.getAnnotatedActualTypeArguments()[1].getType()).isEqualTo(String.class);
 	}
 
 	@Test
@@ -633,26 +664,31 @@ class TypesTest {
 		);
 
 		// when
-		Type actual = Types.resolveWithTypeReferenceGenerics(typeReference.getType(), propertyDescriptor);
+		AnnotatedType actual = Types.resolveWithTypeReferenceGenerics(
+			typeReference.getAnnotatedType(), propertyDescriptor);
 
-		then(actual).isInstanceOf(ParameterizedType.class);
+		then(actual).isInstanceOf(AnnotatedParameterizedType.class);
+		then(actual.getType()).isInstanceOf(ParameterizedType.class);
 
-		ParameterizedType parameterizedType = (ParameterizedType)actual;
-		then(parameterizedType.getRawType()).isEqualTo(BiGenericSample2.class);
-		then(parameterizedType.getActualTypeArguments()).hasSize(2);
+		AnnotatedParameterizedType parameterizedType = (AnnotatedParameterizedType)actual;
+		then(((ParameterizedType)parameterizedType.getType()).getRawType()).isEqualTo(BiGenericSample2.class);
+		then(parameterizedType.getAnnotatedActualTypeArguments()).hasSize(2);
 
-		Type firstGenerics = parameterizedType.getActualTypeArguments()[0];
-		then(firstGenerics).isInstanceOf(ParameterizedType.class);
-		then(((ParameterizedType)firstGenerics).getRawType()).isEqualTo(GenericSample.class);
-		then(((ParameterizedType)firstGenerics).getActualTypeArguments()).hasSize(1);
-		then(((ParameterizedType)firstGenerics).getActualTypeArguments()[0]).isEqualTo(Integer.class);
+		AnnotatedType firstGenerics = parameterizedType.getAnnotatedActualTypeArguments()[0];
+		then(firstGenerics).isInstanceOf(AnnotatedParameterizedType.class);
+		then(((ParameterizedType)firstGenerics.getType()).getRawType()).isEqualTo(GenericSample.class);
+		then(((AnnotatedParameterizedType)firstGenerics).getAnnotatedActualTypeArguments()).hasSize(1);
+		then(((AnnotatedParameterizedType)firstGenerics).getAnnotatedActualTypeArguments()[0].getType())
+			.isEqualTo(Integer.class);
 
-		Type secondGenerics = parameterizedType.getActualTypeArguments()[1];
-		then(secondGenerics).isInstanceOf(ParameterizedType.class);
-		then(((ParameterizedType)secondGenerics).getRawType()).isEqualTo(BiGenericSample.class);
-		then(((ParameterizedType)secondGenerics).getActualTypeArguments()).hasSize(2);
-		then(((ParameterizedType)secondGenerics).getActualTypeArguments()[0]).isEqualTo(Integer.class);
-		then(((ParameterizedType)secondGenerics).getActualTypeArguments()[1]).isEqualTo(String.class);
+		AnnotatedType secondGenerics = parameterizedType.getAnnotatedActualTypeArguments()[1];
+		then(secondGenerics).isInstanceOf(AnnotatedParameterizedType.class);
+		then(((ParameterizedType)secondGenerics.getType()).getRawType()).isEqualTo(BiGenericSample.class);
+		then(((AnnotatedParameterizedType)secondGenerics).getAnnotatedActualTypeArguments()).hasSize(2);
+		then(((AnnotatedParameterizedType)secondGenerics).getAnnotatedActualTypeArguments()[0].getType())
+			.isEqualTo(Integer.class);
+		then(((AnnotatedParameterizedType)secondGenerics).getAnnotatedActualTypeArguments()[1].getType())
+			.isEqualTo(String.class);
 	}
 
 	static class Sample {

@@ -30,6 +30,7 @@ import com.navercorp.fixturemonkey.api.introspector.ArbitraryTypeIntrospectorTes
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.PropertyCache;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
+import com.navercorp.fixturemonkey.api.type.TypeReference;
 
 class ArbitraryTypeIntrospectDelegatorTest {
 	@Test
@@ -39,7 +40,9 @@ class ArbitraryTypeIntrospectDelegatorTest {
 			ctx -> ArbitraryIntrospectorResult.EMPTY
 		);
 
-		Property property = PropertyCache.getProperty(Sample.class, "season").get();
+		TypeReference<Sample> typeReference = new TypeReference<Sample>() {
+		};
+		Property property = PropertyCache.getProperty(typeReference.getAnnotatedType(), "season").get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,

@@ -79,14 +79,4 @@ class FieldPropertyTest {
 		PropertyValue propertyValue = new PropertyValue("hello world");
 		then(sut.getValue(propertyValue)).isEqualTo("hello world");
 	}
-
-	@Test
-	void equalsAndHashCode() throws NoSuchFieldException {
-		Field field = PropertyValue.class.getDeclaredField("name");
-		FieldProperty property1 = new FieldProperty(field);
-		FieldProperty property2 = new FieldProperty(field);
-
-		then(property1.equals(property2)).isTrue();
-		then(property1.hashCode() == property2.hashCode()).isTrue();
-	}
 }

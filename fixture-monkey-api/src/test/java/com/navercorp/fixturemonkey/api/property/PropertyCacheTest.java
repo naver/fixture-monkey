@@ -42,7 +42,7 @@ class PropertyCacheTest {
 		};
 
 		// when
-		RootProperty actual = PropertyCache.getRootProperty(typeReference.getType());
+		RootProperty actual = PropertyCache.getRootProperty(typeReference.getAnnotatedType());
 
 		then(actual.getType()).isEqualTo(typeReference.getType());
 	}
@@ -54,7 +54,7 @@ class PropertyCacheTest {
 		};
 
 		// when
-		List<Property> actual = PropertyCache.getProperties(typeReference.getType());
+		List<Property> actual = PropertyCache.getProperties(typeReference.getAnnotatedType());
 
 		then(actual).hasSize(1);
 		then(actual.get(0)).isExactlyInstanceOf(CompositeProperty.class);
@@ -69,7 +69,7 @@ class PropertyCacheTest {
 		};
 
 		// when
-		List<Property> actual = PropertyCache.getProperties(typeReference.getType());
+		List<Property> actual = PropertyCache.getProperties(typeReference.getAnnotatedType());
 
 		then(actual).hasSize(5);
 
@@ -109,7 +109,7 @@ class PropertyCacheTest {
 			};
 
 		// when
-		List<Property> actual = PropertyCache.getProperties(typeReference.getType());
+		List<Property> actual = PropertyCache.getProperties(typeReference.getAnnotatedType());
 
 		then(actual).hasSize(4);
 
@@ -135,7 +135,9 @@ class PropertyCacheTest {
 
 	@Test
 	void getProperty() {
-		Optional<Property> actual = PropertyCache.getProperty(PropertyValue.class, "name");
+		TypeReference<PropertyValue> typeReference = new TypeReference<PropertyValue>() {
+		};
+		Optional<Property> actual = PropertyCache.getProperty(typeReference.getAnnotatedType(), "name");
 		then(actual).isPresent();
 		then(actual.get()).isExactlyInstanceOf(CompositeProperty.class);
 
@@ -146,7 +148,9 @@ class PropertyCacheTest {
 
 	@Test
 	void getPropertyEmpty() {
-		Optional<Property> actual = PropertyCache.getProperty(PropertyValue.class, "test");
+		TypeReference<PropertyValue> typeReference = new TypeReference<PropertyValue>() {
+		};
+		Optional<Property> actual = PropertyCache.getProperty(typeReference.getAnnotatedType(), "test");
 		then(actual).isNotPresent();
 	}
 

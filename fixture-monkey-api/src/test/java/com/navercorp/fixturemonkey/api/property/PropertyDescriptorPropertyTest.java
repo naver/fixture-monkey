@@ -80,15 +80,6 @@ class PropertyDescriptorPropertyTest {
 		then(sut.getValue(propertyValue)).isEqualTo("hello world");
 	}
 
-	@Test
-	void equalsAndHashCode() {
-		PropertyDescriptor propertyDescriptor = getNamePropertyDescriptor();
-		PropertyDescriptorProperty property1 = new PropertyDescriptorProperty(propertyDescriptor);
-		PropertyDescriptorProperty property2 = new PropertyDescriptorProperty(propertyDescriptor);
-		then(property1.equals(property2)).isTrue();
-		then(property1.hashCode() == property2.hashCode()).isTrue();
-	}
-
 	private PropertyDescriptor getNamePropertyDescriptor() {
 		try {
 			PropertyDescriptor[] descriptors = Introspector.getBeanInfo(PropertyValue.class).getPropertyDescriptors();

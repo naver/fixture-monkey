@@ -30,6 +30,7 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.property.PropertyCache;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
+import com.navercorp.fixturemonkey.api.type.TypeReference;
 
 class JavaArbitraryTypeIntrospectorTest {
 	private final JavaArbitraryTypeIntrospector sut = new JavaArbitraryTypeIntrospector();
@@ -37,9 +38,11 @@ class JavaArbitraryTypeIntrospectorTest {
 	@Property
 	void stringMatch() {
 		// given
+		TypeReference<JavaArbitraryTypeSpec> typeReference = new TypeReference<JavaArbitraryTypeSpec>() {
+		};
 		String propertyName = "str";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(JavaArbitraryTypeSpec.class, propertyName).get();
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,
@@ -63,9 +66,11 @@ class JavaArbitraryTypeIntrospectorTest {
 	@Property
 	void stringIntrospect() {
 		// given
+		TypeReference<JavaArbitraryTypeSpec> typeReference = new TypeReference<JavaArbitraryTypeSpec>() {
+		};
 		String propertyName = "str";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(JavaArbitraryTypeSpec.class, propertyName).get();
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,
@@ -89,9 +94,11 @@ class JavaArbitraryTypeIntrospectorTest {
 	@Property
 	void charMatch() {
 		// given
+		TypeReference<JavaArbitraryTypeSpec> typeReference = new TypeReference<JavaArbitraryTypeSpec>() {
+		};
 		String propertyName = "chars";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(JavaArbitraryTypeSpec.class, propertyName).get();
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,
@@ -115,9 +122,11 @@ class JavaArbitraryTypeIntrospectorTest {
 	@Property
 	void charIntrospect() {
 		// given
+		TypeReference<JavaArbitraryTypeSpec> typeReference = new TypeReference<JavaArbitraryTypeSpec>() {
+		};
 		String propertyName = "chars";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(JavaArbitraryTypeSpec.class, propertyName).get();
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,
@@ -141,9 +150,11 @@ class JavaArbitraryTypeIntrospectorTest {
 	@Property
 	void charWrapperMatch() {
 		// given
+		TypeReference<JavaArbitraryTypeSpec> typeReference = new TypeReference<JavaArbitraryTypeSpec>() {
+		};
 		String propertyName = "charWrapper";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(JavaArbitraryTypeSpec.class, propertyName).get();
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,
@@ -167,9 +178,11 @@ class JavaArbitraryTypeIntrospectorTest {
 	@Property
 	void charWrapperIntrospect() {
 		// given
+		TypeReference<JavaArbitraryTypeSpec> typeReference = new TypeReference<JavaArbitraryTypeSpec>() {
+		};
 		String propertyName = "charWrapper";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(JavaArbitraryTypeSpec.class, propertyName).get();
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,
@@ -193,9 +206,11 @@ class JavaArbitraryTypeIntrospectorTest {
 	@Property
 	void shortMatch() {
 		// given
+		TypeReference<JavaArbitraryTypeSpec> typeReference = new TypeReference<JavaArbitraryTypeSpec>() {
+		};
 		String propertyName = "shorts";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(JavaArbitraryTypeSpec.class, propertyName).get();
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,
@@ -219,9 +234,11 @@ class JavaArbitraryTypeIntrospectorTest {
 	@Property
 	void shortIntrospect() {
 		// given
+		TypeReference<JavaArbitraryTypeSpec> typeReference = new TypeReference<JavaArbitraryTypeSpec>() {
+		};
 		String propertyName = "shorts";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(JavaArbitraryTypeSpec.class, propertyName).get();
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,
@@ -245,9 +262,11 @@ class JavaArbitraryTypeIntrospectorTest {
 	@Property
 	void shortWrapperMatch() {
 		// given
+		TypeReference<JavaArbitraryTypeSpec> typeReference = new TypeReference<JavaArbitraryTypeSpec>() {
+		};
 		String propertyName = "shortWrapper";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(JavaArbitraryTypeSpec.class, propertyName).get();
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,
@@ -271,9 +290,11 @@ class JavaArbitraryTypeIntrospectorTest {
 	@Property
 	void shortWrapperIntrospect() {
 		// given
+		TypeReference<JavaArbitraryTypeSpec> typeReference = new TypeReference<JavaArbitraryTypeSpec>() {
+		};
 		String propertyName = "shortWrapper";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(JavaArbitraryTypeSpec.class, propertyName).get();
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,
@@ -297,9 +318,11 @@ class JavaArbitraryTypeIntrospectorTest {
 	@Property
 	void byteMatch() {
 		// given
+		TypeReference<JavaArbitraryTypeSpec> typeReference = new TypeReference<JavaArbitraryTypeSpec>() {
+		};
 		String propertyName = "bytes";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(JavaArbitraryTypeSpec.class, propertyName).get();
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,
@@ -323,9 +346,11 @@ class JavaArbitraryTypeIntrospectorTest {
 	@Property
 	void byteIntrospect() {
 		// given
+		TypeReference<JavaArbitraryTypeSpec> typeReference = new TypeReference<JavaArbitraryTypeSpec>() {
+		};
 		String propertyName = "bytes";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(JavaArbitraryTypeSpec.class, propertyName).get();
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,
@@ -349,9 +374,11 @@ class JavaArbitraryTypeIntrospectorTest {
 	@Property
 	void byteWrapperMatch() {
 		// given
+		TypeReference<JavaArbitraryTypeSpec> typeReference = new TypeReference<JavaArbitraryTypeSpec>() {
+		};
 		String propertyName = "byteWrapper";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(JavaArbitraryTypeSpec.class, propertyName).get();
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,
@@ -375,9 +402,11 @@ class JavaArbitraryTypeIntrospectorTest {
 	@Property
 	void byteWrapperIntrospect() {
 		// given
+		TypeReference<JavaArbitraryTypeSpec> typeReference = new TypeReference<JavaArbitraryTypeSpec>() {
+		};
 		String propertyName = "byteWrapper";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(JavaArbitraryTypeSpec.class, propertyName).get();
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,
@@ -401,9 +430,11 @@ class JavaArbitraryTypeIntrospectorTest {
 	@Property
 	void doubleMatch() {
 		// given
+		TypeReference<JavaArbitraryTypeSpec> typeReference = new TypeReference<JavaArbitraryTypeSpec>() {
+		};
 		String propertyName = "doubles";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(JavaArbitraryTypeSpec.class, propertyName).get();
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,
@@ -427,9 +458,11 @@ class JavaArbitraryTypeIntrospectorTest {
 	@Property
 	void doubleIntrospect() {
 		// given
+		TypeReference<JavaArbitraryTypeSpec> typeReference = new TypeReference<JavaArbitraryTypeSpec>() {
+		};
 		String propertyName = "doubles";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(JavaArbitraryTypeSpec.class, propertyName).get();
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,
@@ -453,9 +486,11 @@ class JavaArbitraryTypeIntrospectorTest {
 	@Property
 	void doubleWrapperMatch() {
 		// given
+		TypeReference<JavaArbitraryTypeSpec> typeReference = new TypeReference<JavaArbitraryTypeSpec>() {
+		};
 		String propertyName = "doubleWrapper";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(JavaArbitraryTypeSpec.class, propertyName).get();
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,
@@ -479,9 +514,11 @@ class JavaArbitraryTypeIntrospectorTest {
 	@Property
 	void doubleWrapperIntrospect() {
 		// given
+		TypeReference<JavaArbitraryTypeSpec> typeReference = new TypeReference<JavaArbitraryTypeSpec>() {
+		};
 		String propertyName = "doubleWrapper";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(JavaArbitraryTypeSpec.class, propertyName).get();
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,
@@ -505,9 +542,11 @@ class JavaArbitraryTypeIntrospectorTest {
 	@Property
 	void floatMatch() {
 		// given
+		TypeReference<JavaArbitraryTypeSpec> typeReference = new TypeReference<JavaArbitraryTypeSpec>() {
+		};
 		String propertyName = "floats";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(JavaArbitraryTypeSpec.class, propertyName).get();
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,
@@ -531,9 +570,11 @@ class JavaArbitraryTypeIntrospectorTest {
 	@Property
 	void floatIntrospect() {
 		// given
+		TypeReference<JavaArbitraryTypeSpec> typeReference = new TypeReference<JavaArbitraryTypeSpec>() {
+		};
 		String propertyName = "floats";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(JavaArbitraryTypeSpec.class, propertyName).get();
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,
@@ -557,9 +598,11 @@ class JavaArbitraryTypeIntrospectorTest {
 	@Property
 	void floatWrapperMatch() {
 		// given
+		TypeReference<JavaArbitraryTypeSpec> typeReference = new TypeReference<JavaArbitraryTypeSpec>() {
+		};
 		String propertyName = "floatWrapper";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(JavaArbitraryTypeSpec.class, propertyName).get();
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,
@@ -583,9 +626,11 @@ class JavaArbitraryTypeIntrospectorTest {
 	@Property
 	void floatWrapperIntrospect() {
 		// given
+		TypeReference<JavaArbitraryTypeSpec> typeReference = new TypeReference<JavaArbitraryTypeSpec>() {
+		};
 		String propertyName = "floatWrapper";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(JavaArbitraryTypeSpec.class, propertyName).get();
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,
@@ -609,9 +654,11 @@ class JavaArbitraryTypeIntrospectorTest {
 	@Property
 	void intMatch() {
 		// given
+		TypeReference<JavaArbitraryTypeSpec> typeReference = new TypeReference<JavaArbitraryTypeSpec>() {
+		};
 		String propertyName = "ints";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(JavaArbitraryTypeSpec.class, propertyName).get();
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,
@@ -635,9 +682,11 @@ class JavaArbitraryTypeIntrospectorTest {
 	@Property
 	void intIntrospect() {
 		// given
+		TypeReference<JavaArbitraryTypeSpec> typeReference = new TypeReference<JavaArbitraryTypeSpec>() {
+		};
 		String propertyName = "ints";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(JavaArbitraryTypeSpec.class, propertyName).get();
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,
@@ -661,9 +710,11 @@ class JavaArbitraryTypeIntrospectorTest {
 	@Property
 	void intWrapperMatch() {
 		// given
+		TypeReference<JavaArbitraryTypeSpec> typeReference = new TypeReference<JavaArbitraryTypeSpec>() {
+		};
 		String propertyName = "intWrapper";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(JavaArbitraryTypeSpec.class, propertyName).get();
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,
@@ -687,9 +738,11 @@ class JavaArbitraryTypeIntrospectorTest {
 	@Property
 	void intWrapperIntrospect() {
 		// given
+		TypeReference<JavaArbitraryTypeSpec> typeReference = new TypeReference<JavaArbitraryTypeSpec>() {
+		};
 		String propertyName = "intWrapper";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(JavaArbitraryTypeSpec.class, propertyName).get();
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,
@@ -713,9 +766,11 @@ class JavaArbitraryTypeIntrospectorTest {
 	@Property
 	void longMatch() {
 		// given
+		TypeReference<JavaArbitraryTypeSpec> typeReference = new TypeReference<JavaArbitraryTypeSpec>() {
+		};
 		String propertyName = "longs";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(JavaArbitraryTypeSpec.class, propertyName).get();
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,
@@ -739,9 +794,11 @@ class JavaArbitraryTypeIntrospectorTest {
 	@Property
 	void longIntrospect() {
 		// given
+		TypeReference<JavaArbitraryTypeSpec> typeReference = new TypeReference<JavaArbitraryTypeSpec>() {
+		};
 		String propertyName = "longs";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(JavaArbitraryTypeSpec.class, propertyName).get();
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,
@@ -765,9 +822,11 @@ class JavaArbitraryTypeIntrospectorTest {
 	@Property
 	void longWrapperMatch() {
 		// given
+		TypeReference<JavaArbitraryTypeSpec> typeReference = new TypeReference<JavaArbitraryTypeSpec>() {
+		};
 		String propertyName = "longWrapper";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(JavaArbitraryTypeSpec.class, propertyName).get();
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,
@@ -791,9 +850,11 @@ class JavaArbitraryTypeIntrospectorTest {
 	@Property
 	void longWrapperIntrospect() {
 		// given
+		TypeReference<JavaArbitraryTypeSpec> typeReference = new TypeReference<JavaArbitraryTypeSpec>() {
+		};
 		String propertyName = "longWrapper";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(JavaArbitraryTypeSpec.class, propertyName).get();
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,
@@ -817,9 +878,11 @@ class JavaArbitraryTypeIntrospectorTest {
 	@Property
 	void bigIntegerMatch() {
 		// given
+		TypeReference<JavaArbitraryTypeSpec> typeReference = new TypeReference<JavaArbitraryTypeSpec>() {
+		};
 		String propertyName = "bigIntegers";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(JavaArbitraryTypeSpec.class, propertyName).get();
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,
@@ -843,9 +906,11 @@ class JavaArbitraryTypeIntrospectorTest {
 	@Property
 	void bigIntegerIntrospect() {
 		// given
+		TypeReference<JavaArbitraryTypeSpec> typeReference = new TypeReference<JavaArbitraryTypeSpec>() {
+		};
 		String propertyName = "bigIntegers";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(JavaArbitraryTypeSpec.class, propertyName).get();
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,
@@ -869,9 +934,11 @@ class JavaArbitraryTypeIntrospectorTest {
 	@Property
 	void bigDecimalMatch() {
 		// given
+		TypeReference<JavaArbitraryTypeSpec> typeReference = new TypeReference<JavaArbitraryTypeSpec>() {
+		};
 		String propertyName = "bigDecimals";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(JavaArbitraryTypeSpec.class, propertyName).get();
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,
@@ -895,9 +962,11 @@ class JavaArbitraryTypeIntrospectorTest {
 	@Property
 	void bigDecimalIntrospect() {
 		// given
+		TypeReference<JavaArbitraryTypeSpec> typeReference = new TypeReference<JavaArbitraryTypeSpec>() {
+		};
 		String propertyName = "bigDecimals";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(JavaArbitraryTypeSpec.class, propertyName).get();
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,
@@ -921,9 +990,11 @@ class JavaArbitraryTypeIntrospectorTest {
 	@Property
 	void matchFail() {
 		// given
+		TypeReference<JavaTimeArbitraryTypeSpec> typeReference = new TypeReference<JavaTimeArbitraryTypeSpec>() {
+		};
 		String propertyName = "instant";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(JavaTimeArbitraryTypeSpec.class, propertyName).get();
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,
@@ -947,9 +1018,11 @@ class JavaArbitraryTypeIntrospectorTest {
 	@Property
 	void introspectEmpty() {
 		// given
+		TypeReference<JavaTimeArbitraryTypeSpec> typeReference = new TypeReference<JavaTimeArbitraryTypeSpec>() {
+		};
 		String propertyName = "instant";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(JavaTimeArbitraryTypeSpec.class, propertyName).get();
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,

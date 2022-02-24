@@ -25,7 +25,6 @@ import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -37,26 +36,26 @@ import org.apiguardian.api.API.Status;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class FieldProperty implements Property {
-	private final Type type;
+	private final AnnotatedType annotatedType;
 	private final Field field;
 	private final List<Annotation> annotations;
 	private final Map<Class<? extends Annotation>, Annotation> annotationsMap;
 
 	public FieldProperty(Field field) {
-		this(field.getType(), field);
+		this(field.getAnnotatedType(), field);
 	}
 
 	/**
-	 * In general, type uses the Type of Field.
+	 * In general, annotatedType uses the AnnotatedType of Field.
 	 * When the Type of Field is defined as generics, the refied type is not known.
 	 * Use this constructor when specifying a Type that provides a refied Generics type.
 	 *
 	 * @see com.navercorp.fixturemonkey.api.type.Types
-	 * @param type
+	 * @param annotatedType
 	 * @param field
 	 */
-	public FieldProperty(Type type, Field field) {
-		this.type = type;
+	public FieldProperty(AnnotatedType annotatedType, Field field) {
+		this.annotatedType = annotatedType;
 		this.field = field;
 		this.annotations = Arrays.asList(field.getAnnotations());
 		this.annotationsMap = this.annotations.stream()
@@ -69,12 +68,12 @@ public final class FieldProperty implements Property {
 
 	@Override
 	public Type getType() {
-		return this.type;
+		return this.getAnnotatedType().getType();
 	}
 
 	@Override
 	public AnnotatedType getAnnotatedType() {
-		return this.field.getAnnotatedType();
+		return this.annotatedType;
 	}
 
 	@Override
@@ -108,26 +107,9 @@ public final class FieldProperty implements Property {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null || getClass() != obj.getClass()) {
-			return false;
-		}
-		FieldProperty that = (FieldProperty)obj;
-		return Objects.equals(type, that.type) && Objects.equals(field, that.field);
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(type, field);
-	}
-
-	@Override
 	public String toString() {
 		return "FieldProperty{"
-			+ "type=" + type
+			+ "annotatedType=" + annotatedType
 			+ ", field=" + field + '}';
 	}
 }

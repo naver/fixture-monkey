@@ -29,6 +29,7 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult;
 import com.navercorp.fixturemonkey.api.property.PropertyCache;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
+import com.navercorp.fixturemonkey.api.type.TypeReference;
 
 class JavaxValidationBooleanIntrospectorTest {
 	private final JavaxValidationBooleanIntrospector sut = new JavaxValidationBooleanIntrospector();
@@ -36,9 +37,11 @@ class JavaxValidationBooleanIntrospectorTest {
 	@Property
 	void booleanValue() {
 		// given
+		TypeReference<BooleanIntrospectorSpec> typeReference = new TypeReference<BooleanIntrospectorSpec>() {
+		};
 		String propertyName = "boolValue";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(BooleanIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,
@@ -64,9 +67,11 @@ class JavaxValidationBooleanIntrospectorTest {
 	@Property
 	void assertTrue() {
 		// given
+		TypeReference<BooleanIntrospectorSpec> typeReference = new TypeReference<BooleanIntrospectorSpec>() {
+		};
 		String propertyName = "assertTrue";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(BooleanIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,
@@ -91,9 +96,11 @@ class JavaxValidationBooleanIntrospectorTest {
 	@Property
 	void assertFalse() {
 		// given
+		TypeReference<BooleanIntrospectorSpec> typeReference = new TypeReference<BooleanIntrospectorSpec>() {
+		};
 		String propertyName = "assertFalse";
 		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(BooleanIntrospectorSpec.class, propertyName).get();
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,

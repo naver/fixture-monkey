@@ -20,6 +20,7 @@ package com.navercorp.fixturemonkey.api.type;
 
 import static org.assertj.core.api.BDDAssertions.then;
 
+import java.lang.reflect.AnnotatedParameterizedType;
 import java.lang.reflect.ParameterizedType;
 import java.util.List;
 import java.util.Map;
@@ -33,13 +34,16 @@ class TypeReferenceTest {
 		TypeReference<String> actual = new TypeReference<String>() {
 		};
 		then(actual.getType()).isEqualTo(String.class);
+		then(actual.getAnnotatedType().getType()).isEqualTo(String.class);
 	}
 
 	@Test
 	void constructClassType() {
-		TypeReference<String> actual = new TypeReference<String>(String.class) {
+		Class<?> type = String.class;
+		TypeReference<?> actual = new TypeReference(type) {
 		};
 		then(actual.getType()).isEqualTo(String.class);
+		then(actual.getAnnotatedType().getType()).isEqualTo(String.class);
 	}
 
 	@Test
@@ -52,6 +56,10 @@ class TypeReferenceTest {
 		ParameterizedType parameterizedType = (ParameterizedType)actual.getType();
 		then(parameterizedType.getRawType()).isEqualTo(List.class);
 		then(parameterizedType.getActualTypeArguments()[0]).isEqualTo(String.class);
+
+		AnnotatedParameterizedType annotatedParameterizedType = (AnnotatedParameterizedType)actual.getAnnotatedType();
+		then(annotatedParameterizedType.getType()).isEqualTo(actual.getType());
+		then(annotatedParameterizedType.getAnnotatedActualTypeArguments()[0].getType()).isEqualTo(String.class);
 	}
 
 	@Test
@@ -65,5 +73,10 @@ class TypeReferenceTest {
 		then(parameterizedType.getRawType()).isEqualTo(Map.class);
 		then(parameterizedType.getActualTypeArguments()[0]).isEqualTo(Integer.class);
 		then(parameterizedType.getActualTypeArguments()[1]).isEqualTo(String.class);
+
+		AnnotatedParameterizedType annotatedParameterizedType = (AnnotatedParameterizedType)actual.getAnnotatedType();
+		then(annotatedParameterizedType.getType()).isEqualTo(actual.getType());
+		then(annotatedParameterizedType.getAnnotatedActualTypeArguments()[0].getType()).isEqualTo(Integer.class);
+		then(annotatedParameterizedType.getAnnotatedActualTypeArguments()[1].getType()).isEqualTo(String.class);
 	}
 }

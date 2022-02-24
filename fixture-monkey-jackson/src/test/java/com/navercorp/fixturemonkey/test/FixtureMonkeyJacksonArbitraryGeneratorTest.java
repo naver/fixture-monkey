@@ -31,6 +31,7 @@ import lombok.Value;
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.expression.ExpressionGenerator;
 import com.navercorp.fixturemonkey.api.property.PropertyCache;
+import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.generator.BeanArbitraryGenerator;
 import com.navercorp.fixturemonkey.jackson.generator.JacksonArbitraryGenerator;
 
@@ -52,9 +53,11 @@ class FixtureMonkeyJacksonArbitraryGeneratorTest {
 	@Property
 	void giveMeJsonPropertySetWithExpressionGenerator() {
 		// given
+		TypeReference<JsonPropertyClass> typeReference = new TypeReference<JsonPropertyClass>() {
+		};
 		ExpressionGenerator expressionGenerator = resolver -> {
 			com.navercorp.fixturemonkey.api.property.Property property =
-				PropertyCache.getProperty(JsonPropertyClass.class, "value").get();
+				PropertyCache.getProperty(typeReference.getAnnotatedType(), "value").get();
 			return resolver.resolve(property);
 		};
 
@@ -107,9 +110,11 @@ class FixtureMonkeyJacksonArbitraryGeneratorTest {
 	@Property
 	void giveMeJsonPropertySetGeneratorToJacksonWithExpressionGenerator() {
 		// given
+		TypeReference<JsonPropertyClass> typeReference = new TypeReference<JsonPropertyClass>() {
+		};
 		ExpressionGenerator expressionGenerator = resolver -> {
 			com.navercorp.fixturemonkey.api.property.Property property =
-				PropertyCache.getProperty(JsonPropertyClass.class, "value").get();
+				PropertyCache.getProperty(typeReference.getAnnotatedType(), "value").get();
 			return resolver.resolve(property);
 		};
 
