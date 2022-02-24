@@ -18,7 +18,7 @@
 
 package com.navercorp.fixturemonkey.api.matcher;
 
-import java.lang.reflect.Type;
+import java.lang.reflect.AnnotatedType;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -34,7 +34,7 @@ public final class TypeMatcherOperator<T> implements TypeMatcher {
 	}
 
 	@Override
-	public boolean match(Type type) {
+	public boolean match(AnnotatedType type) {
 		return this.typeMatcher.match(type);
 	}
 

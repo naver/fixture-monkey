@@ -18,7 +18,7 @@
 
 package com.navercorp.fixturemonkey.api.introspector;
 
-import java.lang.reflect.Type;
+import java.lang.reflect.AnnotatedType;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Collections;
@@ -54,7 +54,7 @@ public final class JavaArbitraryTypeIntrospector implements ArbitraryTypeIntrosp
 	}
 
 	@Override
-	public boolean match(Type type) {
+	public boolean match(AnnotatedType type) {
 		Class<?> actualType = Types.getActualType(type);
 		return this.introspector.containsKey(actualType);
 	}
@@ -63,9 +63,9 @@ public final class JavaArbitraryTypeIntrospector implements ArbitraryTypeIntrosp
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
 		Class<?> type = Types.getActualType(context.getType());
 		return this.introspector.getOrDefault(
-				type,
-				ctx -> ArbitraryIntrospectorResult.EMPTY
-			)
+			type,
+			ctx -> ArbitraryIntrospectorResult.EMPTY
+		)
 			.apply(context);
 	}
 

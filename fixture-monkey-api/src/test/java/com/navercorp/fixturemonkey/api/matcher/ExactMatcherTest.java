@@ -56,7 +56,7 @@ class ExactMatcherTest {
 		);
 
 		// when
-		boolean actual = sut.match(context.getType());
+		boolean actual = sut.match(context.getAnnotatedType());
 
 		then(actual).isTrue();
 	}
@@ -85,7 +85,7 @@ class ExactMatcherTest {
 		);
 
 		// when
-		boolean actual = sut.match(context.getType());
+		boolean actual = sut.match(context.getAnnotatedType());
 
 		then(actual).isFalse();
 	}

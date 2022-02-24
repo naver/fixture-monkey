@@ -18,7 +18,7 @@
 
 package com.navercorp.fixturemonkey.api.introspector;
 
-import java.lang.reflect.Type;
+import java.lang.reflect.AnnotatedType;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -67,7 +67,7 @@ public final class JavaTimeArbitraryTypeIntrospector implements ArbitraryTypeInt
 	}
 
 	@Override
-	public boolean match(Type type) {
+	public boolean match(AnnotatedType type) {
 		Class<?> actualType = Types.getActualType(type);
 		return this.introspector.containsKey(actualType);
 	}
@@ -76,9 +76,9 @@ public final class JavaTimeArbitraryTypeIntrospector implements ArbitraryTypeInt
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
 		Class<?> type = Types.getActualType(context.getType());
 		return this.introspector.getOrDefault(
-				type,
-				ctx -> ArbitraryIntrospectorResult.EMPTY
-			)
+			type,
+			ctx -> ArbitraryIntrospectorResult.EMPTY
+		)
 			.apply(context);
 	}
 

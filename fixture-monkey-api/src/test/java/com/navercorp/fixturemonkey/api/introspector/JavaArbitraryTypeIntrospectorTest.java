@@ -58,7 +58,7 @@ class JavaArbitraryTypeIntrospectorTest {
 		);
 
 		// when
-		boolean actual = this.sut.match(context.getType());
+		boolean actual = this.sut.match(context.getAnnotatedType());
 
 		then(actual).isTrue();
 	}
@@ -114,7 +114,7 @@ class JavaArbitraryTypeIntrospectorTest {
 		);
 
 		// when
-		boolean actual = this.sut.match(context.getType());
+		boolean actual = this.sut.match(context.getAnnotatedType());
 
 		then(actual).isTrue();
 	}
@@ -170,7 +170,7 @@ class JavaArbitraryTypeIntrospectorTest {
 		);
 
 		// when
-		boolean actual = this.sut.match(context.getType());
+		boolean actual = this.sut.match(context.getAnnotatedType());
 
 		then(actual).isTrue();
 	}
@@ -226,7 +226,7 @@ class JavaArbitraryTypeIntrospectorTest {
 		);
 
 		// when
-		boolean actual = this.sut.match(context.getType());
+		boolean actual = this.sut.match(context.getAnnotatedType());
 
 		then(actual).isTrue();
 	}
@@ -282,7 +282,7 @@ class JavaArbitraryTypeIntrospectorTest {
 		);
 
 		// when
-		boolean actual = this.sut.match(context.getType());
+		boolean actual = this.sut.match(context.getAnnotatedType());
 
 		then(actual).isTrue();
 	}
@@ -338,7 +338,7 @@ class JavaArbitraryTypeIntrospectorTest {
 		);
 
 		// when
-		boolean actual = this.sut.match(context.getType());
+		boolean actual = this.sut.match(context.getAnnotatedType());
 
 		then(actual).isTrue();
 	}
@@ -394,7 +394,7 @@ class JavaArbitraryTypeIntrospectorTest {
 		);
 
 		// when
-		boolean actual = this.sut.match(context.getType());
+		boolean actual = this.sut.match(context.getAnnotatedType());
 
 		then(actual).isTrue();
 	}
@@ -450,7 +450,7 @@ class JavaArbitraryTypeIntrospectorTest {
 		);
 
 		// when
-		boolean actual = this.sut.match(context.getType());
+		boolean actual = this.sut.match(context.getAnnotatedType());
 
 		then(actual).isTrue();
 	}
@@ -506,7 +506,7 @@ class JavaArbitraryTypeIntrospectorTest {
 		);
 
 		// when
-		boolean actual = this.sut.match(context.getType());
+		boolean actual = this.sut.match(context.getAnnotatedType());
 
 		then(actual).isTrue();
 	}
@@ -562,7 +562,7 @@ class JavaArbitraryTypeIntrospectorTest {
 		);
 
 		// when
-		boolean actual = this.sut.match(context.getType());
+		boolean actual = this.sut.match(context.getAnnotatedType());
 
 		then(actual).isTrue();
 	}
@@ -618,7 +618,7 @@ class JavaArbitraryTypeIntrospectorTest {
 		);
 
 		// when
-		boolean actual = this.sut.match(context.getType());
+		boolean actual = this.sut.match(context.getAnnotatedType());
 
 		then(actual).isTrue();
 	}
@@ -674,7 +674,7 @@ class JavaArbitraryTypeIntrospectorTest {
 		);
 
 		// when
-		boolean actual = this.sut.match(context.getType());
+		boolean actual = this.sut.match(context.getAnnotatedType());
 
 		then(actual).isTrue();
 	}
@@ -730,7 +730,7 @@ class JavaArbitraryTypeIntrospectorTest {
 		);
 
 		// when
-		boolean actual = this.sut.match(context.getType());
+		boolean actual = this.sut.match(context.getAnnotatedType());
 
 		then(actual).isTrue();
 	}
@@ -786,7 +786,7 @@ class JavaArbitraryTypeIntrospectorTest {
 		);
 
 		// when
-		boolean actual = this.sut.match(context.getType());
+		boolean actual = this.sut.match(context.getAnnotatedType());
 
 		then(actual).isTrue();
 	}
@@ -842,7 +842,7 @@ class JavaArbitraryTypeIntrospectorTest {
 		);
 
 		// when
-		boolean actual = this.sut.match(context.getType());
+		boolean actual = this.sut.match(context.getAnnotatedType());
 
 		then(actual).isTrue();
 	}
@@ -898,7 +898,7 @@ class JavaArbitraryTypeIntrospectorTest {
 		);
 
 		// when
-		boolean actual = this.sut.match(context.getType());
+		boolean actual = this.sut.match(context.getAnnotatedType());
 
 		then(actual).isTrue();
 	}
@@ -954,7 +954,7 @@ class JavaArbitraryTypeIntrospectorTest {
 		);
 
 		// when
-		boolean actual = this.sut.match(context.getType());
+		boolean actual = this.sut.match(context.getAnnotatedType());
 
 		then(actual).isTrue();
 	}
@@ -1010,7 +1010,7 @@ class JavaArbitraryTypeIntrospectorTest {
 		);
 
 		// when
-		boolean actual = this.sut.match(context.getType());
+		boolean actual = this.sut.match(context.getAnnotatedType());
 
 		then(actual).isFalse();
 	}
