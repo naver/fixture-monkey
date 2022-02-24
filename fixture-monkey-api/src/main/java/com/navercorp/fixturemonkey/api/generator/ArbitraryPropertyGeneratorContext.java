@@ -18,7 +18,6 @@
 
 package com.navercorp.fixturemonkey.api.generator;
 
-import java.lang.reflect.AnnotatedType;
 import java.util.List;
 
 import javax.annotation.Nullable;
@@ -26,7 +25,7 @@ import javax.annotation.Nullable;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.api.matcher.TypeMatcherOperator;
+import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.option.GenerateOptions;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
@@ -78,7 +77,7 @@ public final class ArbitraryPropertyGeneratorContext {
 		return this.ownerProperty;
 	}
 
-	public List<TypeMatcherOperator<PropertyNameResolver>> getPropertyNameResolvers() {
+	public List<MatcherOperator<PropertyNameResolver>> getPropertyNameResolvers() {
 		return this.generateOptions.getPropertyNameResolvers();
 	}
 
@@ -87,10 +86,9 @@ public final class ArbitraryPropertyGeneratorContext {
 	}
 
 	public PropertyNameResolver getPropertyNameResolver() {
-		AnnotatedType type = this.property.getAnnotatedType();
 		return this.getPropertyNameResolvers().stream()
-			.filter(it -> it.match(type))
-			.map(TypeMatcherOperator::getOperator)
+			.filter(it -> it.match(this.property))
+			.map(MatcherOperator::getOperator)
 			.findFirst()
 			.orElse(PropertyNameResolver.IDENTITY);
 	}

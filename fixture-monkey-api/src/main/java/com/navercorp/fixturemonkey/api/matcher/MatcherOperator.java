@@ -18,28 +18,28 @@
 
 package com.navercorp.fixturemonkey.api.matcher;
 
-import java.lang.reflect.AnnotatedType;
-
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import com.navercorp.fixturemonkey.api.property.Property;
+
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public final class TypeMatcherOperator<T> implements TypeMatcher {
-	private final TypeMatcher typeMatcher;
+public final class MatcherOperator<T> implements Matcher {
+	private final Matcher matcher;
 	private final T operator;
 
-	public TypeMatcherOperator(TypeMatcher typeMatcher, T operator) {
-		this.typeMatcher = typeMatcher;
+	public MatcherOperator(Matcher matcher, T operator) {
+		this.matcher = matcher;
 		this.operator = operator;
 	}
 
 	@Override
-	public boolean match(AnnotatedType type) {
-		return this.typeMatcher.match(type);
+	public boolean match(Property property) {
+		return this.matcher.match(property);
 	}
 
-	public TypeMatcher getTypeMatcher() {
-		return this.typeMatcher;
+	public Matcher getMatcher() {
+		return this.matcher;
 	}
 
 	public T getOperator() {

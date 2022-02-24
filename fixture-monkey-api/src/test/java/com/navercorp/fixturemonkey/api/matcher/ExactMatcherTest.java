@@ -35,7 +35,7 @@ class ExactMatcherTest {
 	@Test
 	void match() {
 		// given
-		TypeMatcher sut = new ExactTypeMatcher(String.class);
+		Matcher sut = new ExactTypeMatcher(String.class);
 
 		String propertyName = "str";
 		TypeReference<TypeMatcherSpec> typeReference = new TypeReference<TypeMatcherSpec>() {
@@ -56,7 +56,7 @@ class ExactMatcherTest {
 		);
 
 		// when
-		boolean actual = sut.match(context.getAnnotatedType());
+		boolean actual = sut.match(context.getProperty());
 
 		then(actual).isTrue();
 	}
@@ -64,7 +64,7 @@ class ExactMatcherTest {
 	@Test
 	void matchInheritedFalse() {
 		// given
-		TypeMatcher sut = new ExactTypeMatcher(TypeMatcherSpec.class);
+		Matcher sut = new ExactTypeMatcher(TypeMatcherSpec.class);
 
 		String propertyName = "inherited";
 		TypeReference<TypeMatcherSpec> typeReference = new TypeReference<TypeMatcherSpec>() {
@@ -85,7 +85,7 @@ class ExactMatcherTest {
 		);
 
 		// when
-		boolean actual = sut.match(context.getAnnotatedType());
+		boolean actual = sut.match(context.getProperty());
 
 		then(actual).isFalse();
 	}

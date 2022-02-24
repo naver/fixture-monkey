@@ -18,27 +18,26 @@
 
 package com.navercorp.fixturemonkey.api.introspector;
 
-import java.lang.reflect.AnnotatedType;
-
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
-import com.navercorp.fixturemonkey.api.matcher.TypeMatcher;
+import com.navercorp.fixturemonkey.api.matcher.Matcher;
+import com.navercorp.fixturemonkey.api.property.Property;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public class ArbitraryTypeIntrospectDelegator implements ArbitraryTypeIntrospector, TypeMatcher {
-	private final TypeMatcher matcher;
+public class ArbitraryTypeIntrospectDelegator implements ArbitraryTypeIntrospector, Matcher {
+	private final Matcher matcher;
 	private final ArbitraryTypeIntrospector delegate;
 
-	public ArbitraryTypeIntrospectDelegator(TypeMatcher matcher, ArbitraryTypeIntrospector delegate) {
+	public ArbitraryTypeIntrospectDelegator(Matcher matcher, ArbitraryTypeIntrospector delegate) {
 		this.matcher = matcher;
 		this.delegate = delegate;
 	}
 
 	@Override
-	public boolean match(AnnotatedType type) {
-		return this.matcher.match(type);
+	public boolean match(Property property) {
+		return this.matcher.match(property);
 	}
 
 	@Override

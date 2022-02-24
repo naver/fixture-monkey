@@ -57,7 +57,7 @@ class ArbitraryTypeIntrospectDelegatorTest {
 			ctx -> null
 		);
 
-		then(sut.match(context.getAnnotatedType())).isTrue();
+		then(sut.match(context.getProperty())).isTrue();
 		then(sut.introspect(context)).isEqualTo(ArbitraryIntrospectorResult.EMPTY);
 	}
 }

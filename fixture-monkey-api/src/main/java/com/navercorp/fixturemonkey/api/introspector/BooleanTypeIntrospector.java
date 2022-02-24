@@ -18,23 +18,22 @@
 
 package com.navercorp.fixturemonkey.api.introspector;
 
-import java.lang.reflect.AnnotatedType;
-
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import net.jqwik.api.Arbitraries;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
+import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.matcher.Matchers;
-import com.navercorp.fixturemonkey.api.matcher.TypeMatcher;
+import com.navercorp.fixturemonkey.api.property.Property;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public final class BooleanTypeIntrospector implements ArbitraryTypeIntrospector, TypeMatcher {
+public final class BooleanTypeIntrospector implements ArbitraryTypeIntrospector, Matcher {
 
 	@Override
-	public boolean match(AnnotatedType type) {
-		return Matchers.BOOLEAN_TYPE_MATCHER.match(type);
+	public boolean match(Property property) {
+		return Matchers.BOOLEAN_TYPE_MATCHER.match(property);
 	}
 
 	@Override
