@@ -18,7 +18,7 @@
 
 package com.navercorp.fixturemonkey.api.introspector;
 
-import java.lang.reflect.Type;
+import java.lang.reflect.AnnotatedType;
 import java.util.UUID;
 
 import org.apiguardian.api.API;
@@ -33,7 +33,7 @@ import com.navercorp.fixturemonkey.api.matcher.TypeMatcher;
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class UuidTypeIntrospector implements ArbitraryTypeIntrospector, TypeMatcher {
 	@Override
-	public boolean match(Type type) {
+	public boolean match(AnnotatedType type) {
 		return Matchers.UUID_TYPE_MATCHER.match(type);
 	}
 

@@ -30,6 +30,6 @@ public final class Matchers {
 
 	public static final TypeMatcher ENUM_TYPE_MATCHER = type -> Types.getActualType(type).isEnum();
 	public static final TypeMatcher BOOLEAN_TYPE_MATCHER = type ->
-		type == boolean.class || type == Boolean.class;
+		type.getType() == boolean.class || type.getType() == Boolean.class;
 	public static final TypeMatcher UUID_TYPE_MATCHER = new ExactTypeMatcher(UUID.class);
 }

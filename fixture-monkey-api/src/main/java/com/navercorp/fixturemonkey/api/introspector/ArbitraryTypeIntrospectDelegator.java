@@ -18,7 +18,7 @@
 
 package com.navercorp.fixturemonkey.api.introspector;
 
-import java.lang.reflect.Type;
+import java.lang.reflect.AnnotatedType;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -37,7 +37,7 @@ public class ArbitraryTypeIntrospectDelegator implements ArbitraryTypeIntrospect
 	}
 
 	@Override
-	public boolean match(Type type) {
+	public boolean match(AnnotatedType type) {
 		return this.matcher.match(type);
 	}
 

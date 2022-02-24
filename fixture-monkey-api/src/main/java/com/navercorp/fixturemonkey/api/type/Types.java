@@ -39,6 +39,10 @@ import org.apiguardian.api.API.Status;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public class Types {
+	public static Class<?> getActualType(AnnotatedType annotatedType) {
+		return getActualType(annotatedType.getType());
+	}
+
 	public static Class<?> getActualType(Type type) {
 		if (type.getClass() == Class.class) {
 			return (Class<?>)type;

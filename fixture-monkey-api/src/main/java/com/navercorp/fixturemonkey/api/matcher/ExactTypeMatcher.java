@@ -18,10 +18,12 @@
 
 package com.navercorp.fixturemonkey.api.matcher;
 
-import java.lang.reflect.Type;
+import java.lang.reflect.AnnotatedType;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
+
+import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class ExactTypeMatcher implements TypeMatcher {
@@ -32,7 +34,7 @@ public final class ExactTypeMatcher implements TypeMatcher {
 	}
 
 	@Override
-	public boolean match(Type type) {
-		return this.type == type;
+	public boolean match(AnnotatedType type) {
+		return this.type == Types.getActualType(type);
 	}
 }

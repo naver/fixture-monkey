@@ -38,7 +38,7 @@ public class CompositeArbitraryTypeIntrospector implements ArbitraryTypeIntrospe
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
 		for (ArbitraryTypeIntrospector introspector : this.introspectors) {
 			if (introspector instanceof TypeMatcher) {
-				if (((TypeMatcher)introspector).match(context.getType())) {
+				if (((TypeMatcher)introspector).match(context.getAnnotatedType())) {
 					ArbitraryIntrospectorResult result = introspector.introspect(context);
 					if (!ArbitraryIntrospectorResult.EMPTY.equals(result)) {
 						return result;

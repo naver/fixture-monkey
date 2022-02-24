@@ -18,7 +18,7 @@
 
 package com.navercorp.fixturemonkey.api.generator;
 
-import java.lang.reflect.Type;
+import java.lang.reflect.AnnotatedType;
 import java.util.List;
 
 import javax.annotation.Nullable;
@@ -87,7 +87,7 @@ public final class ArbitraryPropertyGeneratorContext {
 	}
 
 	public PropertyNameResolver getPropertyNameResolver() {
-		Type type = this.property.getType();
+		AnnotatedType type = this.property.getAnnotatedType();
 		return this.getPropertyNameResolvers().stream()
 			.filter(it -> it.match(type))
 			.map(TypeMatcherOperator::getOperator)
