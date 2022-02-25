@@ -24,20 +24,20 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGenerator;
-import com.navercorp.fixturemonkey.api.matcher.TypeMatcherOperator;
+import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class GenerateOptions {
-	private final List<TypeMatcherOperator<ArbitraryGenerator>> arbitraryGenerators;
-	private final List<TypeMatcherOperator<PropertyNameResolver>> propertyNameResolvers;
+	private final List<MatcherOperator<ArbitraryGenerator>> arbitraryGenerators;
+	private final List<MatcherOperator<PropertyNameResolver>> propertyNameResolvers;
 	private final double nullInject;
 	private final boolean nullableContainer;
 	private final boolean defaultNotNull;
 
 	public GenerateOptions(
-		List<TypeMatcherOperator<ArbitraryGenerator>> arbitraryGenerators,
-		List<TypeMatcherOperator<PropertyNameResolver>> propertyNameResolvers,
+		List<MatcherOperator<ArbitraryGenerator>> arbitraryGenerators,
+		List<MatcherOperator<PropertyNameResolver>> propertyNameResolvers,
 		double nullInject,
 		boolean nullableContainer,
 		boolean defaultNotNull
@@ -49,11 +49,11 @@ public final class GenerateOptions {
 		this.defaultNotNull = defaultNotNull;
 	}
 
-	public List<TypeMatcherOperator<ArbitraryGenerator>> getArbitraryGenerators() {
+	public List<MatcherOperator<ArbitraryGenerator>> getArbitraryGenerators() {
 		return this.arbitraryGenerators;
 	}
 
-	public List<TypeMatcherOperator<PropertyNameResolver>> getPropertyNameResolvers() {
+	public List<MatcherOperator<PropertyNameResolver>> getPropertyNameResolvers() {
 		return this.propertyNameResolvers;
 	}
 

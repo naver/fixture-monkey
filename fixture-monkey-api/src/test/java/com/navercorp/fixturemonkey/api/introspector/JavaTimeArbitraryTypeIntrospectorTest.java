@@ -71,7 +71,7 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 		);
 
 		// when
-		boolean actual = this.sut.match(context.getAnnotatedType());
+		boolean actual = this.sut.match(context.getProperty());
 
 		then(actual).isTrue();
 	}
@@ -127,7 +127,7 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 		);
 
 		// when
-		boolean actual = this.sut.match(context.getAnnotatedType());
+		boolean actual = this.sut.match(context.getProperty());
 
 		then(actual).isTrue();
 	}
@@ -183,7 +183,7 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 		);
 
 		// when
-		boolean actual = this.sut.match(context.getAnnotatedType());
+		boolean actual = this.sut.match(context.getProperty());
 
 		then(actual).isTrue();
 	}
@@ -239,7 +239,7 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 		);
 
 		// when
-		boolean actual = this.sut.match(context.getAnnotatedType());
+		boolean actual = this.sut.match(context.getProperty());
 
 		then(actual).isTrue();
 	}
@@ -295,7 +295,7 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 		);
 
 		// when
-		boolean actual = this.sut.match(context.getAnnotatedType());
+		boolean actual = this.sut.match(context.getProperty());
 
 		then(actual).isTrue();
 	}
@@ -351,7 +351,7 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 		);
 
 		// when
-		boolean actual = this.sut.match(context.getAnnotatedType());
+		boolean actual = this.sut.match(context.getProperty());
 
 		then(actual).isTrue();
 	}
@@ -407,7 +407,7 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 		);
 
 		// when
-		boolean actual = this.sut.match(context.getAnnotatedType());
+		boolean actual = this.sut.match(context.getProperty());
 
 		then(actual).isTrue();
 	}
@@ -463,7 +463,7 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 		);
 
 		// when
-		boolean actual = this.sut.match(context.getAnnotatedType());
+		boolean actual = this.sut.match(context.getProperty());
 
 		then(actual).isTrue();
 	}
@@ -519,7 +519,7 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 		);
 
 		// when
-		boolean actual = this.sut.match(context.getAnnotatedType());
+		boolean actual = this.sut.match(context.getProperty());
 
 		then(actual).isTrue();
 	}
@@ -575,7 +575,7 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 		);
 
 		// when
-		boolean actual = this.sut.match(context.getAnnotatedType());
+		boolean actual = this.sut.match(context.getProperty());
 
 		then(actual).isTrue();
 	}
@@ -631,7 +631,7 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 		);
 
 		// when
-		boolean actual = this.sut.match(context.getAnnotatedType());
+		boolean actual = this.sut.match(context.getProperty());
 
 		then(actual).isTrue();
 	}
@@ -687,7 +687,7 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 		);
 
 		// when
-		boolean actual = this.sut.match(context.getAnnotatedType());
+		boolean actual = this.sut.match(context.getProperty());
 
 		then(actual).isTrue();
 	}
@@ -743,7 +743,7 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 		);
 
 		// when
-		boolean actual = this.sut.match(context.getAnnotatedType());
+		boolean actual = this.sut.match(context.getProperty());
 
 		then(actual).isTrue();
 	}
@@ -799,7 +799,7 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 		);
 
 		// when
-		boolean actual = this.sut.match(context.getAnnotatedType());
+		boolean actual = this.sut.match(context.getProperty());
 
 		then(actual).isTrue();
 	}
@@ -855,7 +855,7 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 		);
 
 		// when
-		boolean actual = this.sut.match(context.getAnnotatedType());
+		boolean actual = this.sut.match(context.getProperty());
 
 		then(actual).isTrue();
 	}

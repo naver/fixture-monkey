@@ -18,13 +18,13 @@
 
 package com.navercorp.fixturemonkey.api.matcher;
 
-import java.lang.reflect.AnnotatedType;
-
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import com.navercorp.fixturemonkey.api.property.Property;
+
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 @FunctionalInterface
-public interface TypeMatcher {
-	boolean match(AnnotatedType type);
+public interface Matcher {
+	boolean match(Property property);
 }
