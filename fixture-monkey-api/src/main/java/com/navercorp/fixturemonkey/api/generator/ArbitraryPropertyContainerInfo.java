@@ -22,7 +22,6 @@ import java.lang.reflect.AnnotatedType;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -53,26 +52,6 @@ public final class ArbitraryPropertyContainerInfo {
 
 	public List<AnnotatedType> getElementTypes() {
 		return Collections.unmodifiableList(this.elementTypes);
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null || getClass() != obj.getClass()) {
-			return false;
-		}
-
-		ArbitraryPropertyContainerInfo that = (ArbitraryPropertyContainerInfo)obj;
-		return Objects.equals(elementMinSize, that.elementMinSize)
-			&& Objects.equals(elementMaxSize, that.elementMaxSize)
-			&& Objects.equals(elementTypes, that.elementTypes);
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(elementMinSize, elementMaxSize, elementTypes);
 	}
 
 	@Override
