@@ -18,7 +18,7 @@
 
 package com.navercorp.fixturemonkey.api.generator;
 
-import java.lang.reflect.Type;
+import java.lang.reflect.AnnotatedType;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -31,12 +31,12 @@ import org.apiguardian.api.API.Status;
 public final class ArbitraryPropertyContainerInfo {
 	private final Integer elementMinSize;
 	private final Integer elementMaxSize;
-	private final List<Type> elementTypes;
+	private final List<AnnotatedType> elementTypes;
 
 	public ArbitraryPropertyContainerInfo(
 		Integer elementMinSize,
 		Integer elementMaxSize,
-		List<Type> elementTypes
+		List<AnnotatedType> elementTypes
 	) {
 		this.elementMinSize = elementMinSize;
 		this.elementMaxSize = elementMaxSize;
@@ -51,7 +51,7 @@ public final class ArbitraryPropertyContainerInfo {
 		return this.elementMaxSize;
 	}
 
-	public List<Type> getElementTypes() {
+	public List<AnnotatedType> getElementTypes() {
 		return Collections.unmodifiableList(this.elementTypes);
 	}
 
