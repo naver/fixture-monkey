@@ -18,11 +18,10 @@
 
 package com.navercorp.fixturemonkey.api.generator;
 
-import java.lang.reflect.Type;
+import java.lang.reflect.AnnotatedType;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -31,12 +30,12 @@ import org.apiguardian.api.API.Status;
 public final class ArbitraryPropertyContainerInfo {
 	private final Integer elementMinSize;
 	private final Integer elementMaxSize;
-	private final List<Type> elementTypes;
+	private final List<AnnotatedType> elementTypes;
 
 	public ArbitraryPropertyContainerInfo(
 		Integer elementMinSize,
 		Integer elementMaxSize,
-		List<Type> elementTypes
+		List<AnnotatedType> elementTypes
 	) {
 		this.elementMinSize = elementMinSize;
 		this.elementMaxSize = elementMaxSize;
@@ -51,28 +50,8 @@ public final class ArbitraryPropertyContainerInfo {
 		return this.elementMaxSize;
 	}
 
-	public List<Type> getElementTypes() {
+	public List<AnnotatedType> getElementTypes() {
 		return Collections.unmodifiableList(this.elementTypes);
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null || getClass() != obj.getClass()) {
-			return false;
-		}
-
-		ArbitraryPropertyContainerInfo that = (ArbitraryPropertyContainerInfo)obj;
-		return Objects.equals(elementMinSize, that.elementMinSize)
-			&& Objects.equals(elementMaxSize, that.elementMaxSize)
-			&& Objects.equals(elementTypes, that.elementTypes);
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(elementMinSize, elementMaxSize, elementTypes);
 	}
 
 	@Override
