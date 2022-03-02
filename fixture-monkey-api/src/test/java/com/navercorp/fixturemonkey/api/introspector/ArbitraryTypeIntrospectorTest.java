@@ -46,6 +46,7 @@ class ArbitraryTypeIntrospectorTest {
 				null,
 				0.0D,
 				null,
+				Collections.emptyList(),
 				null
 			),
 			Collections.emptyList(),
@@ -72,6 +73,7 @@ class ArbitraryTypeIntrospectorTest {
 				null,
 				0.0D,
 				null,
+				Collections.emptyList(),
 				null
 			),
 			Collections.emptyList(),
@@ -98,6 +100,7 @@ class ArbitraryTypeIntrospectorTest {
 				null,
 				0.0D,
 				null,
+				Collections.emptyList(),
 				null
 			),
 			Collections.emptyList(),
@@ -124,6 +127,7 @@ class ArbitraryTypeIntrospectorTest {
 				null,
 				0.0D,
 				null,
+				Collections.emptyList(),
 				null
 			),
 			Collections.emptyList(),

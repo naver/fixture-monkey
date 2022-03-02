@@ -20,6 +20,8 @@ package com.navercorp.fixturemonkey.api.generator;
 
 import static org.assertj.core.api.BDDAssertions.then;
 
+import java.util.Collections;
+
 import org.junit.jupiter.api.Test;
 
 import com.navercorp.fixturemonkey.api.property.PropertyCache;
@@ -42,6 +44,7 @@ class ArbitraryPropertyTest {
 			null,
 			0.0D,
 			null,
+			Collections.emptyList(),
 			null
 		);
 
