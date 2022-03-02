@@ -18,6 +18,8 @@
 
 package com.navercorp.fixturemonkey.api.generator;
 
+import java.util.List;
+
 import javax.annotation.Nullable;
 
 import org.apiguardian.api.API;
@@ -41,6 +43,8 @@ public final class ArbitraryProperty {
 	@Nullable
 	private final Integer elementIndex;
 
+	private final List<Property> childProperties;
+
 	@Nullable
 	private final ArbitraryPropertyContainerInfo containerInfo;
 
@@ -50,6 +54,7 @@ public final class ArbitraryProperty {
 		@Nullable PropertyValue propertyValue,
 		double nullInject,
 		@Nullable Integer elementIndex,
+		List<Property> childProperties,
 		@Nullable ArbitraryPropertyContainerInfo containerInfo
 	) {
 		this.property = property;
@@ -57,6 +62,7 @@ public final class ArbitraryProperty {
 		this.propertyValue = propertyValue;
 		this.nullInject = nullInject;
 		this.elementIndex = elementIndex;
+		this.childProperties = childProperties;
 		this.containerInfo = containerInfo;
 	}
 
@@ -80,6 +86,10 @@ public final class ArbitraryProperty {
 	@Nullable
 	public Integer getElementIndex() {
 		return this.elementIndex;
+	}
+
+	public List<Property> getChildProperties() {
+		return this.childProperties;
 	}
 
 	@Nullable

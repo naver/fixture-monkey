@@ -63,6 +63,7 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 				null,
 				0.0D,
 				null,
+				Collections.emptyList(),
 				null
 			),
 			Collections.emptyList(),
@@ -91,6 +92,7 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 				null,
 				0.0D,
 				null,
+				Collections.emptyList(),
 				null
 			),
 			Collections.emptyList(),
@@ -119,6 +121,7 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 				null,
 				0.0D,
 				null,
+				Collections.emptyList(),
 				null
 			),
 			Collections.emptyList(),
@@ -147,6 +150,7 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 				null,
 				0.0D,
 				null,
+				Collections.emptyList(),
 				null
 			),
 			Collections.emptyList(),
@@ -175,6 +179,7 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 				null,
 				0.0D,
 				null,
+				Collections.emptyList(),
 				null
 			),
 			Collections.emptyList(),
@@ -203,6 +208,7 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 				null,
 				0.0D,
 				null,
+				Collections.emptyList(),
 				null
 			),
 			Collections.emptyList(),
@@ -231,6 +237,7 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 				null,
 				0.0D,
 				null,
+				Collections.emptyList(),
 				null
 			),
 			Collections.emptyList(),
@@ -259,6 +266,7 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 				null,
 				0.0D,
 				null,
+				Collections.emptyList(),
 				null
 			),
 			Collections.emptyList(),
@@ -287,6 +295,7 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 				null,
 				0.0D,
 				null,
+				Collections.emptyList(),
 				null
 			),
 			Collections.emptyList(),
@@ -315,6 +324,7 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 				null,
 				0.0D,
 				null,
+				Collections.emptyList(),
 				null
 			),
 			Collections.emptyList(),
@@ -343,6 +353,7 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 				null,
 				0.0D,
 				null,
+				Collections.emptyList(),
 				null
 			),
 			Collections.emptyList(),
@@ -371,6 +382,7 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 				null,
 				0.0D,
 				null,
+				Collections.emptyList(),
 				null
 			),
 			Collections.emptyList(),
@@ -399,6 +411,7 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 				null,
 				0.0D,
 				null,
+				Collections.emptyList(),
 				null
 			),
 			Collections.emptyList(),
@@ -427,6 +440,7 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 				null,
 				0.0D,
 				null,
+				Collections.emptyList(),
 				null
 			),
 			Collections.emptyList(),
@@ -455,6 +469,7 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 				null,
 				0.0D,
 				null,
+				Collections.emptyList(),
 				null
 			),
 			Collections.emptyList(),
@@ -483,6 +498,7 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 				null,
 				0.0D,
 				null,
+				Collections.emptyList(),
 				null
 			),
 			Collections.emptyList(),
@@ -511,6 +527,7 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 				null,
 				0.0D,
 				null,
+				Collections.emptyList(),
 				null
 			),
 			Collections.emptyList(),
@@ -539,6 +556,7 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 				null,
 				0.0D,
 				null,
+				Collections.emptyList(),
 				null
 			),
 			Collections.emptyList(),
@@ -567,6 +585,7 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 				null,
 				0.0D,
 				null,
+				Collections.emptyList(),
 				null
 			),
 			Collections.emptyList(),
@@ -595,6 +614,7 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 				null,
 				0.0D,
 				null,
+				Collections.emptyList(),
 				null
 			),
 			Collections.emptyList(),
@@ -623,6 +643,7 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 				null,
 				0.0D,
 				null,
+				Collections.emptyList(),
 				null
 			),
 			Collections.emptyList(),
@@ -651,6 +672,7 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 				null,
 				0.0D,
 				null,
+				Collections.emptyList(),
 				null
 			),
 			Collections.emptyList(),
@@ -679,6 +701,7 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 				null,
 				0.0D,
 				null,
+				Collections.emptyList(),
 				null
 			),
 			Collections.emptyList(),
@@ -707,6 +730,7 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 				null,
 				0.0D,
 				null,
+				Collections.emptyList(),
 				null
 			),
 			Collections.emptyList(),
@@ -735,6 +759,7 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 				null,
 				0.0D,
 				null,
+				Collections.emptyList(),
 				null
 			),
 			Collections.emptyList(),
@@ -763,6 +788,7 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 				null,
 				0.0D,
 				null,
+				Collections.emptyList(),
 				null
 			),
 			Collections.emptyList(),
@@ -791,6 +817,7 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 				null,
 				0.0D,
 				null,
+				Collections.emptyList(),
 				null
 			),
 			Collections.emptyList(),
@@ -819,6 +846,7 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 				null,
 				0.0D,
 				null,
+				Collections.emptyList(),
 				null
 			),
 			Collections.emptyList(),
@@ -847,6 +875,7 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 				null,
 				0.0D,
 				null,
+				Collections.emptyList(),
 				null
 			),
 			Collections.emptyList(),
@@ -875,6 +904,7 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 				null,
 				0.0D,
 				null,
+				Collections.emptyList(),
 				null
 			),
 			Collections.emptyList(),

@@ -43,6 +43,7 @@ class ArbitraryGeneratorContextTest {
 			null,
 			0.0D,
 			null,
+			Collections.emptyList(),
 			null
 		);
 		ArbitraryGeneratorContext sut = new ArbitraryGeneratorContext(
