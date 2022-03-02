@@ -23,7 +23,7 @@ import static com.navercorp.fixturemonkey.Constants.NO_OR_ALL_INDEX_INTEGER_VALU
 
 import java.util.Objects;
 
-abstract class Cursor {
+abstract class Cursor { // TODO: matcher를 구현하도록 수정
 	private final String name;
 	private final int index;
 
@@ -38,13 +38,13 @@ abstract class Cursor {
 		return sameName && sameIndex;
 	}
 
-	public boolean indexEquals(int index) {
+	private boolean indexEquals(int index) {
 		return this.index == index
 			|| index == NO_OR_ALL_INDEX_INTEGER_VALUE
 			|| this.index == NO_OR_ALL_INDEX_INTEGER_VALUE;
 	}
 
-	public boolean nameEquals(String name) {
+	private boolean nameEquals(String name) {
 		return this.name.equals(name)
 			|| name.equals(ALL_INDEX_STRING)
 			|| this.name.equals(ALL_INDEX_STRING);

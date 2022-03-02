@@ -18,8 +18,8 @@
 
 package com.navercorp.fixturemonkey.arbitrary;
 
-import static com.navercorp.fixturemonkey.Constants.ALL_INDEX_EXP_INDEX;
 import static com.navercorp.fixturemonkey.Constants.ALL_INDEX_STRING;
+import static com.navercorp.fixturemonkey.Constants.HEAD_NAME;
 import static com.navercorp.fixturemonkey.Constants.NO_OR_ALL_INDEX_INTEGER_VALUE;
 import static java.util.stream.Collectors.toList;
 
@@ -29,8 +29,15 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import org.apiguardian.api.API;
+import org.apiguardian.api.API.Status;
+
 public final class ArbitraryExpression implements Comparable<ArbitraryExpression> {
 	private final List<Exp> expList;
+
+	private ArbitraryExpression(List<Exp> expList) {
+		this.expList = expList;
+	}
 
 	private ArbitraryExpression(String expression) {
 		expList = Arrays.stream(expression.split("\\."))
@@ -52,22 +59,29 @@ public final class ArbitraryExpression implements Comparable<ArbitraryExpression
 		return new ArbitraryExpression(newStringExpression);
 	}
 
-	public List<Exp> getExpList() {
-		return expList;
-	}
+	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+	public ArbitraryExpression popRight() {
+		if (expList.isEmpty()) {
+			return this;
+		}
 
-	public int size() {
-		return expList.size();
-	}
+		List<Exp> newExpList = new ArrayList<>(this.expList);
+		int lastIndex = newExpList.size() - 1;
+		Exp lastExp = newExpList.get(lastIndex);
+		newExpList.remove(lastIndex);
 
-	public Exp get(int index) {
-		return expList.get(index);
+		if (!lastExp.index.isEmpty()) {
+			List<ExpIndex> newExpIndexList = new ArrayList<>(lastExp.index);
+			newExpIndexList.remove(newExpIndexList.size() - 1);
+			lastExp = new Exp(lastExp.name, newExpIndexList);
+			newExpList.add(lastExp);
+		}
+		return new ArbitraryExpression(newExpList);
 	}
 
 	@Override
 	public int compareTo(ArbitraryExpression arbitraryExpression) {
-		List<Exp> expList = this.getExpList();
-		List<Exp> oExpList = arbitraryExpression.getExpList();
+		List<Exp> oExpList = arbitraryExpression.expList;
 
 		int expLength = Math.min(oExpList.size(), expList.size());
 
@@ -91,8 +105,8 @@ public final class ArbitraryExpression implements Comparable<ArbitraryExpression
 		if (obj == null || getClass() != obj.getClass()) {
 			return false;
 		}
-		ArbitraryExpression fe = (ArbitraryExpression)obj;
-		return expList.equals(fe.expList);
+		ArbitraryExpression other = (ArbitraryExpression)obj;
+		return expList.equals(other.expList);
 	}
 
 	@Override
@@ -106,7 +120,22 @@ public final class ArbitraryExpression implements Comparable<ArbitraryExpression
 			.collect(Collectors.joining("."));
 	}
 
-	public static final class ExpIndex implements Comparable<ExpIndex> {
+	public List<Cursor> toCursors() {
+		return this.expList.stream()
+			.filter(it -> !HEAD_NAME.equals(it.getName()))
+			.map(Exp::toCursors)
+			.reduce(
+				new ArrayList<>(),
+				(list1, list2) -> {
+					list1.addAll(list2);
+					return list1;
+				}
+			);
+	}
+
+	private static final class ExpIndex implements Comparable<ExpIndex> {
+		public static final ExpIndex ALL_INDEX_EXP_INDEX = new ExpIndex(NO_OR_ALL_INDEX_INTEGER_VALUE);
+
 		private final int index;
 
 		public ExpIndex(int index) {
@@ -149,11 +178,17 @@ public final class ArbitraryExpression implements Comparable<ArbitraryExpression
 		}
 	}
 
-	public static class Exp implements Comparable<Exp> {
+	private static final class Exp implements Comparable<Exp> {
 		private final String name;
-		private final List<ExpIndex> index = new ArrayList<>();
+		private final List<ExpIndex> index;
+
+		private Exp(String name, List<ExpIndex> indices) {
+			this.name = name;
+			this.index = indices;
+		}
 
 		public Exp(String expression) {
+			index = new ArrayList<>();
 			int li = expression.indexOf('[');
 			int ri = expression.indexOf(']');
 
@@ -180,41 +215,14 @@ public final class ArbitraryExpression implements Comparable<ArbitraryExpression
 			}
 		}
 
-		public boolean hasAllIndex() {
-			return !index.isEmpty() && index.stream().anyMatch(it -> it.equalsIgnoreAllIndex(ALL_INDEX_EXP_INDEX));
-		}
-
-		public boolean equalsIgnoreAllIndex(Exp exp) {
-			int length = index.size();
-			int expLength = exp.index.size();
-
-			if (length != expLength) {
-				return false;
-			}
-
-			for (int i = 0; i < length; i++) {
-				if (!index.get(i).equalsIgnoreAllIndex(exp.index.get(i))) {
-					return false;
-				}
-			}
-			return true;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj) {
-				return true;
-			}
-			if (obj == null || getClass() != obj.getClass()) {
-				return false;
-			}
-			Exp exp = (Exp)obj;
-			return name.equals(exp.name) && index.equals(exp.index);
-		}
-
-		@Override
-		public int hashCode() {
-			return Objects.hash(name, index);
+		public List<Cursor> toCursors() {
+			List<Cursor> steps = new ArrayList<>();
+			String expName = this.getName();
+			steps.add(new ExpNameCursor(expName));
+			steps.addAll(this.getIndex().stream()
+				.map(it -> new ExpIndexCursor(expName, it.getIndex()))
+				.collect(toList()));
+			return steps;
 		}
 
 		public String getName() {
@@ -249,6 +257,23 @@ public final class ArbitraryExpression implements Comparable<ArbitraryExpression
 				}
 			}
 			return Integer.compare(indices.size(), oIndices.size());
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj) {
+				return true;
+			}
+			if (obj == null || getClass() != obj.getClass()) {
+				return false;
+			}
+			Exp exp = (Exp)obj;
+			return name.equals(exp.name) && index.equals(exp.index);
+		}
+
+		@Override
+		public int hashCode() {
+			return Objects.hash(name, index);
 		}
 	}
 }
