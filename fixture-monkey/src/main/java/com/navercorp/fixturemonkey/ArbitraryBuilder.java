@@ -247,6 +247,16 @@ public final class ArbitraryBuilder<T> {
 
 	public ArbitraryBuilder<T> set(String expression, Object value, long limit) {
 		ArbitraryExpression arbitraryExpression = ArbitraryExpression.from(expression);
+		if (value == null) {
+			return this.setNull(expression);
+		} else if (value instanceof Arbitrary) {
+			this.builderManipulators.add(new ArbitrarySetArbitrary<>(arbitraryExpression, (Arbitrary<T>)value, limit));
+			return this;
+		} else if (value instanceof ArbitraryBuilder) {
+			return this.setBuilder(expression, (ArbitraryBuilder<?>)value, limit);
+		} else if (value instanceof ExpressionSpec) {
+			return this.setSpec(expression, (ExpressionSpec)value);
+		}
 		this.builderManipulators.add(new ArbitrarySet<>(arbitraryExpression, value, limit));
 		return this;
 	}
@@ -273,7 +283,7 @@ public final class ArbitraryBuilder<T> {
 	}
 
 	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
-	public ArbitraryBuilder<T> setBuilder(
+	private ArbitraryBuilder<T> setBuilder(
 		ExpressionGenerator expressionGenerator,
 		ArbitraryBuilder<?> builder,
 		long limit
