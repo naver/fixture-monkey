@@ -42,4 +42,13 @@ public class ArbitraryExpressionTest {
 
 		then(actual.toString()).isEqualTo("");
 	}
+
+	@Test
+	void popRightNotAffectsOrigin() {
+		ArbitraryExpression arbitraryExpression = ArbitraryExpression.from("navercorp.fixturemonkey");
+
+		arbitraryExpression.popRight();
+
+		then(arbitraryExpression.toString()).isEqualTo("navercorp.fixturemonkey");
+	}
 }
