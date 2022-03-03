@@ -106,13 +106,13 @@ public final class ExpressionSpec {
 		return this;
 	}
 
-	private <T> ExpressionSpec setBuilder(String expression, @Nullable ArbitraryBuilder<T> builder, long limit) {
+	private <T> ExpressionSpec setBuilder(String expression, ArbitraryBuilder<T> builder, long limit) {
 		ArbitraryExpression fixtureExpression = ArbitraryExpression.from(expression);
 		builderManipulators.add(new ArbitrarySetArbitrary<>(fixtureExpression, builder.build(), limit));
 		return this;
 	}
 
-	private <T> ExpressionSpec setBuilder(String expression, @Nullable ArbitraryBuilder<T> builder) {
+	private <T> ExpressionSpec setBuilder(String expression, ArbitraryBuilder<T> builder) {
 		ArbitraryExpression fixtureExpression = ArbitraryExpression.from(expression);
 		builderManipulators.add(new ArbitrarySetArbitrary<>(fixtureExpression, builder.build()));
 		return this;
