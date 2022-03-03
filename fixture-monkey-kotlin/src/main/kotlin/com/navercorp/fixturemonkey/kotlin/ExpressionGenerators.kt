@@ -26,7 +26,6 @@ import java.lang.reflect.AnnotatedType
 import java.lang.reflect.Field
 import java.lang.reflect.ParameterizedType
 import java.util.function.Predicate
-import net.jqwik.api.Arbitrary
 import kotlin.reflect.KFunction1
 import kotlin.reflect.KProperty
 import kotlin.reflect.KProperty1
@@ -105,59 +104,19 @@ fun Exp(property: KFunction1<*, Boolean>) = Exp<Boolean>(
     )
 )
 
-fun <T> ArbitraryBuilder<T>.set(property: KProperty1<T, *>, value: Any): ArbitraryBuilder<T> =
+fun <T> ArbitraryBuilder<T>.set(property: KProperty1<T, Any?>, value: Any?): ArbitraryBuilder<T> =
     this.set(ParsedExpressionGenerator(listOf(PropertyExpressionGenerator(KotlinProperty(property)))), value)
 
-fun <T> ArbitraryBuilder<T>.set(property: KProperty1<T, *>, value: Any, limit: Long): ArbitraryBuilder<T> =
+fun <T> ArbitraryBuilder<T>.set(property: KProperty1<T, Any?>, value: Any?, limit: Long): ArbitraryBuilder<T> =
     this.set(ParsedExpressionGenerator(listOf(PropertyExpressionGenerator(KotlinProperty(property)))), value, limit)
 
-fun <T> ArbitraryBuilder<T>.set(property: KFunction1<T, *>, value: Any): ArbitraryBuilder<T> =
+fun <T> ArbitraryBuilder<T>.set(property: KFunction1<T, Any?>, value: Any?): ArbitraryBuilder<T> =
     this.set(ParsedExpressionGenerator(listOf(PropertyExpressionGenerator(KotlinGetterProperty(property)))), value)
 
-fun <T> ArbitraryBuilder<T>.set(property: KFunction1<T, *>, value: Any, limit: Long): ArbitraryBuilder<T> =
+fun <T> ArbitraryBuilder<T>.set(property: KFunction1<T, Any?>, value: Any?, limit: Long): ArbitraryBuilder<T> =
     this.set(
         ParsedExpressionGenerator(listOf(PropertyExpressionGenerator(KotlinGetterProperty(property)))),
         value,
-        limit
-    )
-
-fun <T> ArbitraryBuilder<T>.set(property: KProperty1<T, *>, value: Arbitrary<*>?): ArbitraryBuilder<T> =
-    this.set(ParsedExpressionGenerator(listOf(PropertyExpressionGenerator(KotlinProperty(property)))), value)
-
-fun <T> ArbitraryBuilder<T>.set(property: KFunction1<T, *>, value: Arbitrary<*>?): ArbitraryBuilder<T> =
-    this.set(ParsedExpressionGenerator(listOf(PropertyExpressionGenerator(KotlinGetterProperty(property)))), value)
-
-fun <T> ArbitraryBuilder<T>.setBuilder(property: KProperty1<T, *>, builder: ArbitraryBuilder<*>): ArbitraryBuilder<T> =
-    this.setBuilder(
-        ParsedExpressionGenerator(listOf(PropertyExpressionGenerator(KotlinProperty(property)))),
-        builder
-    )
-
-fun <T> ArbitraryBuilder<T>.setBuilder(
-    property: KProperty1<T, *>,
-    builder: ArbitraryBuilder<*>,
-    limit: Long,
-): ArbitraryBuilder<T> =
-    this.setBuilder(
-        ParsedExpressionGenerator(listOf(PropertyExpressionGenerator(KotlinProperty(property)))),
-        builder,
-        limit
-    )
-
-fun <T> ArbitraryBuilder<T>.setBuilder(property: KFunction1<T, *>, builder: ArbitraryBuilder<*>): ArbitraryBuilder<T> =
-    this.setBuilder(
-        ParsedExpressionGenerator(listOf(PropertyExpressionGenerator(KotlinGetterProperty(property)))),
-        builder
-    )
-
-fun <T> ArbitraryBuilder<T>.setBuilder(
-    property: KFunction1<T, *>,
-    builder: ArbitraryBuilder<*>,
-    limit: Long,
-): ArbitraryBuilder<T> =
-    this.setBuilder(
-        ParsedExpressionGenerator(listOf(PropertyExpressionGenerator(KotlinGetterProperty(property)))),
-        builder,
         limit
     )
 

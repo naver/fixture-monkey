@@ -225,16 +225,17 @@ public final class ArbitraryBuilder<T> {
 
 	@SuppressWarnings("unchecked")
 	public ArbitraryBuilder<T> set(String expression, @Nullable Object value) {
+		ArbitraryExpression arbitraryExpression = ArbitraryExpression.from(expression);
 		if (value == null) {
 			return this.setNull(expression);
 		} else if (value instanceof Arbitrary) {
-			return this.set(expression, (Arbitrary<T>)value);
+			this.builderManipulators.add(new ArbitrarySetArbitrary<>(arbitraryExpression, (Arbitrary<T>)value));
+			return this;
 		} else if (value instanceof ArbitraryBuilder) {
 			return this.setBuilder(expression, (ArbitraryBuilder<?>)value);
 		} else if (value instanceof ExpressionSpec) {
 			return this.setSpec(expression, (ExpressionSpec)value);
 		}
-		ArbitraryExpression arbitraryExpression = ArbitraryExpression.from(expression);
 		this.builderManipulators.add(new ArbitrarySet<>(arbitraryExpression, value));
 		return this;
 	}
@@ -246,6 +247,16 @@ public final class ArbitraryBuilder<T> {
 
 	public ArbitraryBuilder<T> set(String expression, Object value, long limit) {
 		ArbitraryExpression arbitraryExpression = ArbitraryExpression.from(expression);
+		if (value == null) {
+			return this.setNull(expression);
+		} else if (value instanceof Arbitrary) {
+			this.builderManipulators.add(new ArbitrarySetArbitrary<>(arbitraryExpression, (Arbitrary<T>)value, limit));
+			return this;
+		} else if (value instanceof ArbitraryBuilder) {
+			return this.setBuilder(expression, (ArbitraryBuilder<?>)value, limit);
+		} else if (value instanceof ExpressionSpec) {
+			return this.setSpec(expression, (ExpressionSpec)value);
+		}
 		this.builderManipulators.add(new ArbitrarySet<>(arbitraryExpression, value, limit));
 		return this;
 	}
@@ -255,43 +266,24 @@ public final class ArbitraryBuilder<T> {
 		return this.set(resolveExpression(expressionGenerator), value, limit);
 	}
 
-	public ArbitraryBuilder<T> set(String expression, @Nullable Arbitrary<?> value) {
-		if (value == null) {
-			return this.setNull(expression);
-		}
-		ArbitraryExpression arbitraryExpression = ArbitraryExpression.from(expression);
-		this.builderManipulators.add(new ArbitrarySetArbitrary<>(arbitraryExpression, value));
-		return this;
-	}
-
-	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
-	public ArbitraryBuilder<T> set(ExpressionGenerator expressionGenerator, @Nullable Arbitrary<?> value) {
-		return this.set(resolveExpression(expressionGenerator), value);
-	}
-
 	public ArbitraryBuilder<T> set(@Nullable Object value) {
 		return this.set(HEAD_NAME, value);
 	}
 
-	public ArbitraryBuilder<T> setBuilder(String expression, ArbitraryBuilder<?> builder) {
+	private ArbitraryBuilder<T> setBuilder(String expression, ArbitraryBuilder<?> builder) {
 		ArbitraryExpression arbitraryExpression = ArbitraryExpression.from(expression);
 		this.builderManipulators.add(new ArbitrarySetArbitrary<>(arbitraryExpression, builder.build()));
 		return this;
 	}
 
-	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
-	public ArbitraryBuilder<T> setBuilder(ExpressionGenerator expressionGenerator, ArbitraryBuilder<?> builder) {
-		return this.setBuilder(resolveExpression(expressionGenerator), builder);
-	}
-
-	public ArbitraryBuilder<T> setBuilder(String expression, ArbitraryBuilder<?> builder, long limit) {
+	private ArbitraryBuilder<T> setBuilder(String expression, ArbitraryBuilder<?> builder, long limit) {
 		ArbitraryExpression arbitraryExpression = ArbitraryExpression.from(expression);
 		this.builderManipulators.add(new ArbitrarySetArbitrary<>(arbitraryExpression, builder.build(), limit));
 		return this;
 	}
 
 	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
-	public ArbitraryBuilder<T> setBuilder(
+	private ArbitraryBuilder<T> setBuilder(
 		ExpressionGenerator expressionGenerator,
 		ArbitraryBuilder<?> builder,
 		long limit

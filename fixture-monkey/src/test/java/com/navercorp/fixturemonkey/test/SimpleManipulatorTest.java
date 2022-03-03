@@ -763,7 +763,7 @@ class SimpleManipulatorTest {
 	void giveMeSetArbitraryBuilder() {
 		// when
 		StringAndInt actual = SUT.giveMeBuilder(StringAndInt.class)
-			.setBuilder("value2", SUT.giveMeBuilder(IntValue.class).set("value", 1))
+			.set("value2", SUT.giveMeBuilder(IntValue.class).set("value", 1))
 			.sample();
 
 		then(actual.getValue2().getValue()).isEqualTo(1);
@@ -773,7 +773,7 @@ class SimpleManipulatorTest {
 	void giveMeSetArbitraryBuilderWithExpressionGenerator() {
 		// when
 		StringAndInt actual = SUT.giveMeBuilder(StringAndInt.class)
-			.setBuilder((resolver) -> "value2", SUT.giveMeBuilder(IntValue.class).set("value", 1))
+			.set((resolver) -> "value2", SUT.giveMeBuilder(IntValue.class).set("value", 1))
 			.sample();
 
 		then(actual.getValue2().getValue()).isEqualTo(1);
@@ -783,7 +783,7 @@ class SimpleManipulatorTest {
 	void giveMeSpecSetArbitraryBuilder() {
 		// when
 		StringAndInt actual = SUT.giveMeBuilder(StringAndInt.class)
-			.spec(new ExpressionSpec().setBuilder("value2",
+			.spec(new ExpressionSpec().set("value2",
 				SUT.giveMeBuilder(IntValue.class).set("value", 1))
 			)
 			.sample();

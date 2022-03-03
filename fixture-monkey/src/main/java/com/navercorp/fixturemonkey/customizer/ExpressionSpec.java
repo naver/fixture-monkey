@@ -67,10 +67,15 @@ public final class ExpressionSpec {
 	public ExpressionSpec set(String expression, @Nullable Object value) {
 		if (value == null) {
 			return this.setNull(expression);
+		} else if (value instanceof Arbitrary) {
+			this.set(expression, (Arbitrary<?>)value);
+			return this;
+		} else if (value instanceof ArbitraryBuilder) {
+			return this.setBuilder(expression, (ArbitraryBuilder<?>)value);
+		} else if (value instanceof ExpressionSpec) {
+			return this.set(expression, (ExpressionSpec)value);
 		}
-		if (value instanceof Arbitrary) {
-			return this.set(expression, (Arbitrary<?>)value);
-		}
+
 		ArbitraryExpression fixtureExpression = ArbitraryExpression.from(expression);
 		builderManipulators.add(new ArbitrarySet(fixtureExpression, value));
 		return this;
@@ -80,44 +85,40 @@ public final class ExpressionSpec {
 	public ExpressionSpec set(String expression, Object value, long limit) {
 		if (value == null) {
 			return this.setNull(expression);
+		} else if (value instanceof Arbitrary) {
+			this.set(expression, (Arbitrary<?>)value);
+			return this;
+		} else if (value instanceof ArbitraryBuilder) {
+			return this.setBuilder(expression, (ArbitraryBuilder<?>)value, limit);
+		} else if (value instanceof ExpressionSpec) {
+			return this.set(expression, (ExpressionSpec)value);
 		}
-		if (value instanceof Arbitrary) {
-			return this.set(expression, (Arbitrary<?>)value);
-		}
+
 		ArbitraryExpression fixtureExpression = ArbitraryExpression.from(expression);
 		builderManipulators.add(new ArbitrarySet(fixtureExpression, value, limit));
 		return this;
 	}
 
 	@SuppressWarnings({"rawtypes", "unchecked"})
-	public <T> ExpressionSpec set(String expression, Arbitrary<T> arbitrary) {
-		if (arbitrary == null) {
-			return this.setNull((String)null);
-		}
+	private <T> ExpressionSpec set(String expression, Arbitrary<T> arbitrary) {
 		ArbitraryExpression fixtureExpression = ArbitraryExpression.from(expression);
 		builderManipulators.add(new ArbitrarySetArbitrary(fixtureExpression, arbitrary));
 		return this;
 	}
 
-	public <T> ExpressionSpec setBuilder(String expression, @Nullable ArbitraryBuilder<T> builder, long limit) {
-		if (builder == null) {
-			return this.setNull((String)null);
-		}
+	private <T> ExpressionSpec setBuilder(String expression, ArbitraryBuilder<T> builder, long limit) {
 		ArbitraryExpression fixtureExpression = ArbitraryExpression.from(expression);
 		builderManipulators.add(new ArbitrarySetArbitrary<>(fixtureExpression, builder.build(), limit));
 		return this;
 	}
 
-	public <T> ExpressionSpec setBuilder(String expression, @Nullable ArbitraryBuilder<T> builder) {
-		if (builder == null) {
-			return this.setNull((String)null);
-		}
+	private <T> ExpressionSpec setBuilder(String expression, ArbitraryBuilder<T> builder) {
 		ArbitraryExpression fixtureExpression = ArbitraryExpression.from(expression);
 		builderManipulators.add(new ArbitrarySetArbitrary<>(fixtureExpression, builder.build()));
 		return this;
 	}
 
-	public ExpressionSpec set(String expression, ExpressionSpec spec) {
+	private ExpressionSpec set(String expression, ExpressionSpec spec) {
 		if (spec == null) {
 			return this.setNull(expression);
 		}
@@ -133,7 +134,7 @@ public final class ExpressionSpec {
 	}
 
 	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
-	public ExpressionSpec set(ExpressionGenerator expressionGenerator, ExpressionSpec spec) {
+	private ExpressionSpec set(ExpressionGenerator expressionGenerator, ExpressionSpec spec) {
 		return this.set(expressionGenerator.generate(), spec);
 	}
 
