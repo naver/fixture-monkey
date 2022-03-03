@@ -783,7 +783,7 @@ class SimpleManipulatorTest {
 	void giveMeSpecSetArbitraryBuilder() {
 		// when
 		StringAndInt actual = SUT.giveMeBuilder(StringAndInt.class)
-			.spec(new ExpressionSpec().setBuilder("value2",
+			.spec(new ExpressionSpec().set("value2",
 				SUT.giveMeBuilder(IntValue.class).set("value", 1))
 			)
 			.sample();
