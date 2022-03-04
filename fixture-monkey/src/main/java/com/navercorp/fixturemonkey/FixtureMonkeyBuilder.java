@@ -127,9 +127,9 @@ public class FixtureMonkeyBuilder {
 		return this;
 	}
 
-	public FixtureMonkeyBuilder addAnnotatedArbitraryGenerator(
-		Class<?> clazz,
-		AnnotatedArbitraryGenerator<?> generator
+	public <T> FixtureMonkeyBuilder addAnnotatedArbitraryGenerator(
+		Class<T> clazz,
+		AnnotatedArbitraryGenerator<T> generator
 	) {
 		this.optionsBuilder.addAnnotatedArbitraryGenerator(clazz, generator);
 		return this;
