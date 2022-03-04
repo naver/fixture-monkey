@@ -157,8 +157,8 @@ public final class ArbitraryBuilder<T> {
 		this.generator = getGenerator(generator, arbitraryCustomizers);
 		this.validator = validator;
 		this.arbitraryCustomizers = arbitraryCustomizers;
-		this.builderManipulators = new ArrayList<>(builderManipulators);
-		this.usedManipulators = new ArrayList<>(usedManipulators);
+		this.builderManipulators = builderManipulators;
+		this.usedManipulators = usedManipulators;
 		this.generatorMap = generatorMap.entrySet().stream()
 			.map(it -> new SimpleEntry<Class<?>, ArbitraryGenerator>(
 				it.getKey(),
