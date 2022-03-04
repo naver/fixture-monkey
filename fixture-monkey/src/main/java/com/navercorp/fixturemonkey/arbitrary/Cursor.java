@@ -32,9 +32,9 @@ abstract class Cursor { // TODO: matcher를 구현하도록 수정
 		this.index = index;
 	}
 
-	public boolean isMatch(ArbitraryNode<?> node) {
-		boolean sameName = nameEquals(node.getPropertyName());
-		boolean sameIndex = indexEquals(node.getIndexOfIterable());
+	public boolean match(Cursor cursor) {
+		boolean sameName = nameEquals(cursor.getName());
+		boolean sameIndex = indexEquals(cursor.getIndex());
 		return sameName && sameIndex;
 	}
 
