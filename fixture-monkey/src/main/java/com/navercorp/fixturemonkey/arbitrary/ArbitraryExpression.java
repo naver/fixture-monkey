@@ -49,18 +49,18 @@ public final class ArbitraryExpression implements Comparable<ArbitraryExpression
 		return new ArbitraryExpression(expression);
 	}
 
-	public ArbitraryExpression appendLeft(String expression) {
+	public ArbitraryExpression addFirst(String expression) {
 		String newStringExpression = expression + "." + this;
 		return new ArbitraryExpression(newStringExpression);
 	}
 
-	public ArbitraryExpression appendRight(String expression) {
+	public ArbitraryExpression addLast(String expression) {
 		String newStringExpression = this + "." + expression;
 		return new ArbitraryExpression(newStringExpression);
 	}
 
 	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
-	public ArbitraryExpression popRight() {
+	public ArbitraryExpression pollLast() {
 		if (expList.isEmpty()) {
 			return this;
 		}

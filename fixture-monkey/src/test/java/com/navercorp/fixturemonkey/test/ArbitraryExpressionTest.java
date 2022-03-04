@@ -11,7 +11,7 @@ public class ArbitraryExpressionTest {
 	void appendLeft() {
 		ArbitraryExpression arbitraryExpression = ArbitraryExpression.from("fixturemonkey");
 
-		ArbitraryExpression actual = arbitraryExpression.appendLeft("navercorp");
+		ArbitraryExpression actual = arbitraryExpression.addFirst("navercorp");
 
 		then(actual.toString()).isEqualTo("navercorp.fixturemonkey");
 	}
@@ -20,7 +20,7 @@ public class ArbitraryExpressionTest {
 	void appendRight() {
 		ArbitraryExpression arbitraryExpression = ArbitraryExpression.from("navercorp");
 
-		ArbitraryExpression actual = arbitraryExpression.appendRight("fixturemonkey");
+		ArbitraryExpression actual = arbitraryExpression.addLast("fixturemonkey");
 
 		then(actual.toString()).isEqualTo("navercorp.fixturemonkey");
 	}
@@ -29,7 +29,7 @@ public class ArbitraryExpressionTest {
 	void popRight() {
 		ArbitraryExpression arbitraryExpression = ArbitraryExpression.from("navercorp.fixturemonkey");
 
-		ArbitraryExpression actual = arbitraryExpression.popRight();
+		ArbitraryExpression actual = arbitraryExpression.pollLast();
 
 		then(actual.toString()).isEqualTo("navercorp");
 	}
@@ -38,7 +38,7 @@ public class ArbitraryExpressionTest {
 	void popRightWhenEmpty() {
 		ArbitraryExpression arbitraryExpression = ArbitraryExpression.from("");
 
-		ArbitraryExpression actual = arbitraryExpression.popRight();
+		ArbitraryExpression actual = arbitraryExpression.pollLast();
 
 		then(actual.toString()).isEqualTo("");
 	}
@@ -47,7 +47,7 @@ public class ArbitraryExpressionTest {
 	void popRightNotAffectsOrigin() {
 		ArbitraryExpression arbitraryExpression = ArbitraryExpression.from("navercorp.fixturemonkey");
 
-		arbitraryExpression.popRight();
+		arbitraryExpression.pollLast();
 
 		then(arbitraryExpression.toString()).isEqualTo("navercorp.fixturemonkey");
 	}
