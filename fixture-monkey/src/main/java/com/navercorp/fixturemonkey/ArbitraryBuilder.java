@@ -537,35 +537,50 @@ public final class ArbitraryBuilder<T> {
 		return activeManipulators;
 	}
 
-	@SuppressWarnings({"rawtypes", "unchecked"})
-	public ArbitraryBuilder<T> apply(MetadataManipulator manipulator) {
-		if (manipulator instanceof ContainerSizeManipulator) {
-			ContainerSizeManipulator containerSizeManipulator = ((ContainerSizeManipulator)manipulator);
-			ArbitraryExpression arbitraryExpression = containerSizeManipulator.getArbitraryExpression();
-
-			Collection<ArbitraryNode> foundNodes = this.findNodesByExpression(arbitraryExpression);
-			for (ArbitraryNode foundNode : foundNodes) {
-				if (!foundNode.getType().isContainer()) {
-					throw new IllegalArgumentException("Only Container can set size");
-				}
-				foundNode.setContainerSizeConstraint(
-					new ContainerSizeConstraint(containerSizeManipulator.getMin(), containerSizeManipulator.getMax())
-				);
-				traverser.traverse(
-					foundNode,
-					false,
-					(PropertyNameResolver)property -> this.generator.resolveFieldName(
-						((FieldProperty)property).getField())
-				); // regenerate subtree
-			}
+	@SuppressWarnings("unchecked")
+	public <R> ArbitraryBuilder<T> apply(BuilderManipulator builderManipulator) {
+		if (builderManipulator instanceof ArbitraryApply) {
+			apply((ArbitraryApply<T>)builderManipulator);
+		} else if (builderManipulator instanceof ContainerSizeManipulator) {
+			apply((ContainerSizeManipulator)builderManipulator);
+		} else if (builderManipulator instanceof AbstractArbitrarySet) {
+			apply((AbstractArbitrarySet<T>)builderManipulator);
+		} else if (builderManipulator instanceof ArbitraryNullity) {
+			apply((ArbitraryNullity)builderManipulator);
+		} else if (builderManipulator instanceof PostArbitraryManipulator) {
+			apply((PostArbitraryManipulator<R>)builderManipulator);
 		} else {
-			throw new IllegalArgumentException("Not Implemented MetadataManipulator");
+			throw new IllegalArgumentException(
+				"Unimplemented manipulator type : " + builderManipulator.getClass().toGenericString()
+			);
+		}
+		return this;
+	}
+
+	@SuppressWarnings({"rawtypes", "unchecked"})
+	private ArbitraryBuilder<T> apply(ContainerSizeManipulator containerSizeManipulator) {
+		ArbitraryExpression arbitraryExpression = containerSizeManipulator.getArbitraryExpression();
+
+		Collection<ArbitraryNode> foundNodes = this.findNodesByExpression(arbitraryExpression);
+		for (ArbitraryNode foundNode : foundNodes) {
+			if (!foundNode.getType().isContainer()) {
+				throw new IllegalArgumentException("Only Container can set size");
+			}
+			foundNode.setContainerSizeConstraint(
+				new ContainerSizeConstraint(containerSizeManipulator.getMin(), containerSizeManipulator.getMax())
+			);
+			traverser.traverse(
+				foundNode,
+				false,
+				(PropertyNameResolver)property -> this.generator.resolveFieldName(
+					((FieldProperty)property).getField())
+			); // regenerate subtree
 		}
 		return this;
 	}
 
 	@SuppressWarnings({"unchecked", "rawtypes"})
-	public void apply(AbstractArbitrarySet<T> fixtureSet) {
+	private void apply(AbstractArbitrarySet<T> fixtureSet) {
 		Collection<ArbitraryNode> foundNodes = this.findNodesByExpression(fixtureSet.getArbitraryExpression());
 
 		for (ArbitraryNode<T> foundNode : foundNodes) {
@@ -579,7 +594,7 @@ public final class ArbitraryBuilder<T> {
 	}
 
 	@SuppressWarnings("rawtypes")
-	public ArbitraryBuilder<T> setNullity(ArbitraryNullity arbitraryNullity) {
+	private ArbitraryBuilder<T> apply(ArbitraryNullity arbitraryNullity) {
 		ArbitraryExpression arbitraryExpression = arbitraryNullity.getArbitraryExpression();
 		Collection<ArbitraryNode> foundNodes = this.findNodesByExpression(arbitraryExpression);
 		for (ArbitraryNode foundNode : foundNodes) {
@@ -589,12 +604,12 @@ public final class ArbitraryBuilder<T> {
 	}
 
 	@SuppressWarnings({"unchecked", "rawtypes"})
-	public ArbitraryBuilder<T> apply(PostArbitraryManipulator<T> postArbitraryManipulator) {
+	private <R> ArbitraryBuilder<T> apply(PostArbitraryManipulator<R> postArbitraryManipulator) {
 		Collection<ArbitraryNode> foundNodes = this.findNodesByExpression(
 			postArbitraryManipulator.getArbitraryExpression()
 		);
 		if (!foundNodes.isEmpty()) {
-			for (ArbitraryNode<T> foundNode : foundNodes) {
+			for (ArbitraryNode<R> foundNode : foundNodes) {
 				if (postArbitraryManipulator.isMappableTo(foundNode)) {
 					foundNode.addPostArbitraryOperation(postArbitraryManipulator);
 				}
@@ -604,7 +619,7 @@ public final class ArbitraryBuilder<T> {
 	}
 
 	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
-	public ArbitraryBuilder<T> apply(ArbitraryApply<T> arbitraryApply) {
+	private ArbitraryBuilder<T> apply(ArbitraryApply<T> arbitraryApply) {
 		ArbitraryBuilder<T> toSampleArbitraryBuilder = arbitraryApply.getToSampleArbitraryBuilder();
 		BiConsumer<T, ArbitraryBuilder<T>> builderBiConsumer = arbitraryApply.getBuilderBiConsumer();
 		T sample = toSampleArbitraryBuilder.sample();
