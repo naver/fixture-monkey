@@ -23,6 +23,8 @@ import java.lang.reflect.AnnotatedParameterizedType;
 import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Type;
 
+import javax.annotation.Nullable;
+
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
@@ -42,6 +44,7 @@ public abstract class TypeReference<T> {
 				return type;
 			}
 
+			@Nullable
 			@Override
 			public <A extends Annotation> A getAnnotation(Class<A> annotationClass) {
 				return null;
