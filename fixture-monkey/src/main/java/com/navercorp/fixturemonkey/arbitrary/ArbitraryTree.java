@@ -48,7 +48,7 @@ public final class ArbitraryTree<T> {
 		head.setManipulated(true);
 		List<ArbitraryNode> nextNodes = new ArrayList<>();
 
-		List<Cursor> cursors = CursorFactory.create(arbitraryExpression);
+		List<Cursor> cursors = arbitraryExpression.toCursors();
 		for (Cursor cursor : cursors) {
 			while (!selectNodes.isEmpty()) {
 				ArbitraryNode<?> selectNode = selectNodes.poll();

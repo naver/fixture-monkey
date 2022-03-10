@@ -32,6 +32,6 @@ public abstract class AbstractArbitraryExpressionManipulator implements Arbitrar
 
 	@Override
 	public final void addPrefix(String expression) {
-		arbitraryExpression = arbitraryExpression.appendLeft(expression);
+		arbitraryExpression = arbitraryExpression.addFirst(expression);
 	}
 }

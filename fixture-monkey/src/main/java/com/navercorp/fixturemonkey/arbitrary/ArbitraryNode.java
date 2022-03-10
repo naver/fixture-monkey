@@ -86,7 +86,8 @@ public final class ArbitraryNode<T> {
 			if (child.isKeyOfMapStructure()) {
 				continue;
 			}
-			if (cursor.isMatch(child)) {
+			ExpIndexCursor nodeCursor = new ExpIndexCursor(child.propertyName, child.indexOfIterable);
+			if (cursor.match(nodeCursor)) {
 				child.mark();
 				foundChildren.add(child);
 			}
