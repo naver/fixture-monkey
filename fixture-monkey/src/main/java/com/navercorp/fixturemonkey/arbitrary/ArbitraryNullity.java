@@ -38,7 +38,7 @@ public final class ArbitraryNullity extends AbstractArbitraryExpressionManipulat
 	@SuppressWarnings("rawtypes")
 	@Override
 	public void accept(ArbitraryBuilder fixtureBuilder) {
-		fixtureBuilder.setNullity(this);
+		fixtureBuilder.apply(this);
 	}
 
 	@Override
