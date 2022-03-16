@@ -44,6 +44,7 @@ import net.jqwik.api.domains.Domain;
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.FixtureMonkey;
+import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.customizer.ExpressionSpec;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.DefaultArbitraryGroup;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.DefaultArbitraryGroup2;
@@ -69,6 +70,7 @@ import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.StringAndInt;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.StringQueue;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.StringWithNotBlank;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.StringWithNullable;
+import com.navercorp.fixturemonkey.test.SimpleManipulatorTestSpecs.StringValue;
 import com.navercorp.fixturemonkey.util.StringUtils;
 
 class FixtureMonkeyTest {
@@ -1312,5 +1314,56 @@ class FixtureMonkeyTest {
 	@Domain(FixtureMonkeyTestSpecs.class)
 	void giveMeNestedQueue(@ForAll NestedStringQueue expected) {
 		then(expected.getValues()).isNotNull();
+	}
+
+	@Property
+	void giveMeListType() {
+		List<String> actual = SUT.giveMeBuilder(new TypeReference<List<String>>() {
+			})
+			.sample();
+
+		then(actual).isNotNull();
+	}
+
+	@Property
+	void giveMeListTypeSize() {
+		List<String> actual = SUT.giveMeBuilder(new TypeReference<List<String>>() {
+			})
+			.size("$", 3)
+			.sample();
+
+		then(actual).hasSize(3);
+	}
+
+	@Property
+	void giveMeListTypeSet() {
+		List<String> actual = SUT.giveMeBuilder(new TypeReference<List<String>>() {
+			})
+			.size("$", 1)
+			.set("$[0]", "test")
+			.sample();
+
+		then(actual.get(0)).isEqualTo("test");
+	}
+
+	@Property
+	void giveMeListTypeSetNull() {
+		List<String> actual = SUT.giveMeBuilder(new TypeReference<List<String>>() {
+			})
+			.setNull("$")
+			.sample();
+
+		then(actual).isNull();
+	}
+
+	@Property
+	void giveMeListTypeNestedSet() {
+		List<StringValue> actual = SUT.giveMeBuilder(new TypeReference<List<StringValue>>() {
+			})
+			.size("$", 1)
+			.set("$[0].value", "test")
+			.sample();
+
+		then(actual.get(0).getValue()).isEqualTo("test");
 	}
 }

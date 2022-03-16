@@ -18,6 +18,8 @@
 
 package com.navercorp.fixturemonkey.arbitrary;
 
+import static com.navercorp.fixturemonkey.Constants.HEAD_NAME;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -50,6 +52,9 @@ public final class ArbitraryTree<T> {
 
 		List<Cursor> cursors = arbitraryExpression.toCursors();
 		for (Cursor cursor : cursors) {
+			if (isHeadNameCursor(cursor)) {
+				continue;
+			}
 			while (!selectNodes.isEmpty()) {
 				ArbitraryNode<?> selectNode = selectNodes.poll();
 
@@ -59,6 +64,10 @@ public final class ArbitraryTree<T> {
 			nextNodes.clear();
 		}
 		return selectNodes;
+	}
+
+	private boolean isHeadNameCursor(Cursor cursor) {
+		return cursor instanceof ExpNameCursor && HEAD_NAME.equals(cursor.getName());
 	}
 
 	@Nullable

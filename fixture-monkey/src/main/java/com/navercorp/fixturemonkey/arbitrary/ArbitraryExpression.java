@@ -19,7 +19,6 @@
 package com.navercorp.fixturemonkey.arbitrary;
 
 import static com.navercorp.fixturemonkey.Constants.ALL_INDEX_STRING;
-import static com.navercorp.fixturemonkey.Constants.HEAD_NAME;
 import static com.navercorp.fixturemonkey.Constants.NO_OR_ALL_INDEX_INTEGER_VALUE;
 import static java.util.stream.Collectors.toList;
 
@@ -122,7 +121,6 @@ public final class ArbitraryExpression implements Comparable<ArbitraryExpression
 
 	public List<Cursor> toCursors() {
 		return this.expList.stream()
-			.filter(it -> !HEAD_NAME.equals(it.getName()))
 			.map(Exp::toCursors)
 			.reduce(
 				new ArrayList<>(),

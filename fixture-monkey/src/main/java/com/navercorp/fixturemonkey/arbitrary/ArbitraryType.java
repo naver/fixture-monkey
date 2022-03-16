@@ -18,6 +18,8 @@
 
 package com.navercorp.fixturemonkey.arbitrary;
 
+import static java.util.stream.Collectors.toList;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedArrayType;
 import java.lang.reflect.AnnotatedParameterizedType;
@@ -36,6 +38,9 @@ import java.util.stream.BaseStream;
 
 import javax.annotation.Nullable;
 
+import com.navercorp.fixturemonkey.api.type.TypeReference;
+import com.navercorp.fixturemonkey.api.type.Types;
+
 public class ArbitraryType<T> {
 	private final Class<T> type;
 	private final AnnotatedType annotatedType;
@@ -45,6 +50,14 @@ public class ArbitraryType<T> {
 		this.type = type;
 		this.annotatedType = annotatedType;
 		this.annotations = Collections.unmodifiableList(annotations);
+	}
+
+	@SuppressWarnings("unchecked")
+	public ArbitraryType(TypeReference<T> typeReference) {
+		this.type = (Class<T>)Types.getActualType(typeReference.getType());
+		this.annotatedType = typeReference.getAnnotatedType();
+		this.annotations = Arrays.stream(annotatedType.getAnnotations()).collect(toList());
+
 	}
 
 	public ArbitraryType(Class<T> type) {
