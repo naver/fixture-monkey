@@ -52,7 +52,7 @@ public final class ArbitraryTree<T> {
 
 		List<Cursor> cursors = arbitraryExpression.toCursors();
 		for (Cursor cursor : cursors) {
-			if (isHeadNameCursor(cursor)) {
+			if (isHeadName(cursor)) {
 				continue;
 			}
 			while (!selectNodes.isEmpty()) {
@@ -66,7 +66,7 @@ public final class ArbitraryTree<T> {
 		return selectNodes;
 	}
 
-	private boolean isHeadNameCursor(Cursor cursor) {
+	private boolean isHeadName(Cursor cursor) {
 		return cursor instanceof ExpNameCursor && HEAD_NAME.equals(cursor.getName());
 	}
 
