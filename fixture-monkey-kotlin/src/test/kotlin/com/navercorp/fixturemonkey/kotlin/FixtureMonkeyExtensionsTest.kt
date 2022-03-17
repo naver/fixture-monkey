@@ -232,6 +232,20 @@ class FixtureMonkeyExtensionsTest {
         then(actual.intValue).isEqualTo(1)
     }
 
+    @Property
+    fun giveMeOneListType() {
+        val actual = sut.giveMeOne<List<String>>()
+
+        then(actual).isNotNull
+    }
+
+    @Property
+    fun giveMeBuilderListType() {
+        val actual = sut.giveMeBuilder<List<String>>().sample()
+
+        then(actual).isNotNull
+    }
+
     data class IntegerStringWrapperClass(
         val intValue: Int,
         val stringValue: String,

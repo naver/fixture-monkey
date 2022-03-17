@@ -206,12 +206,7 @@ public class ArbitraryType<T> {
 	}
 
 	private Class<?> findGenericType(AnnotatedType annotatedType) {
-		if (annotatedType instanceof AnnotatedParameterizedType) {
-			ParameterizedType parameterType = (ParameterizedType)annotatedType.getType();
-			return (Class<?>)parameterType.getRawType();
-		}
-
-		return (Class<?>)annotatedType.getType();
+		return Types.getActualType(annotatedType.getType());
 	}
 
 	@Override

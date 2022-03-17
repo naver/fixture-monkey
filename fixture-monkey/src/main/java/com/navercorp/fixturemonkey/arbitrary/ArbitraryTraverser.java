@@ -194,7 +194,7 @@ public final class ArbitraryTraverser {
 
 		Class<T> clazz;
 		if (argsType != null) {
-			clazz = (Class<T>)argsType.getType();
+			clazz = (Class<T>)Types.getActualType(argsType);
 		} else {
 			clazz = type.getType();
 		}
