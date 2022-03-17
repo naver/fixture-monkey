@@ -51,6 +51,7 @@ import com.navercorp.fixturemonkey.api.expression.ExpressionGenerator;
 import com.navercorp.fixturemonkey.api.property.FieldProperty;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.api.random.Randoms;
+import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.arbitrary.AbstractArbitrarySet;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryApply;
@@ -102,6 +103,32 @@ public final class ArbitraryBuilder<T> {
 			new ArbitraryTree<>(
 				ArbitraryNode.builder()
 					.type(new ArbitraryType(clazz))
+					.propertyName(HEAD_NAME)
+					.build()
+			),
+			new ArbitraryTraverser(options),
+			generator,
+			validator,
+			arbitraryCustomizers,
+			new ArrayList<>(),
+			new ArrayList<>(),
+			generatorMap
+		);
+	}
+
+	@SuppressWarnings({"unchecked", "rawtypes"})
+	ArbitraryBuilder(
+		TypeReference<T> typeReference,
+		ArbitraryOption options,
+		ArbitraryGenerator generator,
+		ArbitraryValidator validator,
+		ArbitraryCustomizers arbitraryCustomizers,
+		Map<Class<?>, ArbitraryGenerator> generatorMap
+	) {
+		this(
+			new ArbitraryTree<>(
+				ArbitraryNode.builder()
+					.type(new ArbitraryType(typeReference))
 					.propertyName(HEAD_NAME)
 					.build()
 			),

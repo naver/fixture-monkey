@@ -43,6 +43,7 @@ import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.ArbitraryBuilders;
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.random.Randoms;
+import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.test.ComplexManipulatorTestSpecs.AcceptIfArbitraryGroup;
 import com.navercorp.fixturemonkey.test.ComplexManipulatorTestSpecs.ApplyArbitraryGroup;
 import com.navercorp.fixturemonkey.test.ComplexManipulatorTestSpecs.ArbitraryGroup;
@@ -866,5 +867,31 @@ class ComplexManipulatorTest {
 				then(it.flagFalseValue).isNotNull();
 			}
 		);
+	}
+
+	@Property
+	void giveMeListTypeApply() {
+		Complex actual = FixtureMonkeyTestSpecs.SUT.giveMeBuilder(new TypeReference<List<Complex>>() {
+			})
+			.size("$", 1)
+			.apply((it, builder) -> builder.set("$[0].value1", it.get(0).getValue2() + ""))
+			.sample()
+			.get(0);
+
+		then(actual.getValue1()).isEqualTo(actual.getValue2() + "");
+	}
+
+	@Property
+	void giveMeRegisteredListType() {
+		FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+			.register(StringValue.class, it -> it.giveMeBuilder(StringValue.class)
+				.set("value", "test")
+			)
+			.build();
+
+		List<StringValue> actual = fixtureMonkey.giveMeOne(new TypeReference<List<StringValue>>() {
+		});
+
+		then(actual).allMatch(it -> it.getValue().equals("test"));
 	}
 }

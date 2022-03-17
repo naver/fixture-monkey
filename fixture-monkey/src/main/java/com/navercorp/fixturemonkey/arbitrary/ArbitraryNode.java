@@ -305,7 +305,7 @@ public final class ArbitraryNode<T> {
 	}
 
 	public boolean isHead() {
-		return this.getPropertyName().equals(HEAD_NAME);
+		return this.getPropertyName().equals(HEAD_NAME) && indexOfIterable == NO_OR_ALL_INDEX_INTEGER_VALUE;
 	}
 
 	public LazyValue<T> getValue() {

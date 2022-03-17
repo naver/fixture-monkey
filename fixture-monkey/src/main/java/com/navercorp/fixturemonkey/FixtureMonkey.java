@@ -27,6 +27,7 @@ import java.util.stream.Stream;
 
 import net.jqwik.api.Arbitrary;
 
+import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryTraverser;
 import com.navercorp.fixturemonkey.customizer.ArbitraryCustomizer;
 import com.navercorp.fixturemonkey.customizer.ArbitraryCustomizers;
@@ -73,6 +74,10 @@ public class FixtureMonkey {
 		return this.giveMeBuilder(type, options).build().sampleStream();
 	}
 
+	public <T> Stream<T> giveMe(TypeReference<T> typeReference) {
+		return this.giveMeBuilder(typeReference, options).build().sampleStream();
+	}
+
 	public <T> Stream<T> giveMe(Class<T> type, ArbitraryCustomizer<T> customizer) {
 		return this.giveMeBuilder(type, options, customizer).build().sampleStream();
 	}
@@ -81,12 +86,20 @@ public class FixtureMonkey {
 		return this.giveMe(type).limit(size).collect(toList());
 	}
 
+	public <T> List<T> giveMe(TypeReference<T> typeReference, int size) {
+		return this.giveMe(typeReference).limit(size).collect(toList());
+	}
+
 	public <T> List<T> giveMe(Class<T> type, int size, ArbitraryCustomizer<T> customizer) {
 		return this.giveMe(type, customizer).limit(size).collect(toList());
 	}
 
 	public <T> T giveMeOne(Class<T> type) {
 		return this.giveMe(type, 1).get(0);
+	}
+
+	public <T> T giveMeOne(TypeReference<T> typeReference) {
+		return this.giveMe(typeReference, 1).get(0);
 	}
 
 	public <T> T giveMeOne(Class<T> type, ArbitraryCustomizer<T> customizer) {
@@ -101,8 +114,16 @@ public class FixtureMonkey {
 		return this.giveMeBuilder(clazz, options);
 	}
 
+	public <T> ArbitraryBuilder<T> giveMeBuilder(TypeReference<T> typeReference) {
+		return this.giveMeBuilder(typeReference, options);
+	}
+
 	public <T> ArbitraryBuilder<T> giveMeBuilder(Class<T> clazz, ArbitraryOption options) {
 		return this.giveMeBuilder(clazz, options, this.arbitraryCustomizers);
+	}
+
+	public <T> ArbitraryBuilder<T> giveMeBuilder(TypeReference<T> typeReference, ArbitraryOption options) {
+		return this.giveMeBuilder(typeReference, options, this.arbitraryCustomizers);
 	}
 
 	public <T> ArbitraryBuilder<T> giveMeBuilder(T value) {
@@ -139,6 +160,21 @@ public class FixtureMonkey {
 
 		return new ArbitraryBuilder<>(
 			clazz,
+			option,
+			defaultGenerator,
+			this.validator,
+			customizers,
+			this.generatorMap
+		);
+	}
+
+	private <T> ArbitraryBuilder<T> giveMeBuilder(
+		TypeReference<T> typeReference,
+		ArbitraryOption option,
+		ArbitraryCustomizers customizers
+	) {
+		return new ArbitraryBuilder<>(
+			typeReference,
 			option,
 			defaultGenerator,
 			this.validator,
