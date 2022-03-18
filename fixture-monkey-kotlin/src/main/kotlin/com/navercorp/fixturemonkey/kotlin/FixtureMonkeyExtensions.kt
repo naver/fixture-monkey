@@ -21,9 +21,8 @@ package com.navercorp.fixturemonkey.kotlin
 import com.navercorp.fixturemonkey.ArbitraryBuilder
 import com.navercorp.fixturemonkey.ArbitraryOption
 import com.navercorp.fixturemonkey.FixtureMonkey
-import com.navercorp.fixturemonkey.customizer.ArbitraryCustomizer
-import com.navercorp.fixturemonkey.generator.FieldArbitraries
 import com.navercorp.fixturemonkey.kotlin.customizer.KArbitraryCustomizer
+import com.navercorp.fixturemonkey.kotlin.customizer.toArbitraryCustomizer
 import net.jqwik.api.Arbitrary
 import kotlin.streams.asSequence
 
@@ -54,17 +53,3 @@ inline fun <reified T : Any> FixtureMonkey.giveMeBuilder(): ArbitraryBuilder<T> 
 inline fun <reified T : Any> FixtureMonkey.giveMeBuilder(
     options: ArbitraryOption
 ): ArbitraryBuilder<T> = this.giveMeBuilder(T::class.java, options)
-
-inline fun <reified T : Any> KArbitraryCustomizer<T>.toArbitraryCustomizer(): ArbitraryCustomizer<T> {
-    return object : ArbitraryCustomizer<T> {
-        private val delegate = this@toArbitraryCustomizer
-
-        override fun customizeFields(type: Class<T>, fieldArbitraries: FieldArbitraries) {
-            delegate.customizeFields(type.kotlin, fieldArbitraries)
-        }
-
-        override fun customizeFixture(target: T?): T? {
-            return delegate.customizeFixture(target)
-        }
-    }
-}
