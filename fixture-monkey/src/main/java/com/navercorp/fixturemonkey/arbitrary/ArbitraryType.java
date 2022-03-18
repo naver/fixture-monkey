@@ -25,7 +25,6 @@ import java.lang.reflect.AnnotatedArrayType;
 import java.lang.reflect.AnnotatedParameterizedType;
 import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Modifier;
-import java.lang.reflect.ParameterizedType;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -206,12 +205,7 @@ public class ArbitraryType<T> {
 	}
 
 	private Class<?> findGenericType(AnnotatedType annotatedType) {
-		if (annotatedType instanceof AnnotatedParameterizedType) {
-			ParameterizedType parameterType = (ParameterizedType)annotatedType.getType();
-			return (Class<?>)parameterType.getRawType();
-		}
-
-		return (Class<?>)annotatedType.getType();
+		return Types.getActualType(annotatedType.getType());
 	}
 
 	@Override

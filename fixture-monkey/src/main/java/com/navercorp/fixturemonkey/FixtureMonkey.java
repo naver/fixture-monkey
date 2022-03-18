@@ -110,6 +110,10 @@ public class FixtureMonkey {
 		return this.giveMeBuilder(type, options).build();
 	}
 
+	public <T> Arbitrary<T> giveMeArbitrary(TypeReference<T> typeReference) {
+		return this.giveMeBuilder(typeReference, options).build();
+	}
+
 	public <T> ArbitraryBuilder<T> giveMeBuilder(Class<T> clazz) {
 		return this.giveMeBuilder(clazz, options);
 	}

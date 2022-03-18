@@ -21,35 +21,39 @@ package com.navercorp.fixturemonkey.kotlin
 import com.navercorp.fixturemonkey.ArbitraryBuilder
 import com.navercorp.fixturemonkey.ArbitraryOption
 import com.navercorp.fixturemonkey.FixtureMonkey
+import com.navercorp.fixturemonkey.api.type.TypeReference
 import com.navercorp.fixturemonkey.kotlin.customizer.KArbitraryCustomizer
 import com.navercorp.fixturemonkey.kotlin.customizer.toArbitraryCustomizer
 import net.jqwik.api.Arbitrary
 import kotlin.streams.asSequence
 
-inline fun <reified T : Any> FixtureMonkey.giveMe(): Sequence<T> = this.giveMe(T::class.java).asSequence()
+inline fun <reified T : Any> FixtureMonkey.giveMe(): Sequence<T> =
+    this.giveMe(object : TypeReference<T>() {}).asSequence()
 
 inline fun <reified T : Any> FixtureMonkey.giveMe(
-    customizer: KArbitraryCustomizer<T>
+    customizer: KArbitraryCustomizer<T>,
 ): Sequence<T> = this.giveMe(T::class.java, customizer.toArbitraryCustomizer()).asSequence()
 
 inline fun <reified T : Any> FixtureMonkey.giveMe(size: Int): List<T> =
-    this.giveMe(T::class.java, size)
+    this.giveMe(object : TypeReference<T>() {}, size)
 
 inline fun <reified T : Any> FixtureMonkey.giveMe(
     size: Int,
-    customizer: KArbitraryCustomizer<T>
+    customizer: KArbitraryCustomizer<T>,
 ): List<T> = this.giveMe(T::class.java, size, customizer.toArbitraryCustomizer())
 
-inline fun <reified T : Any> FixtureMonkey.giveMeOne(): T = this.giveMeOne(T::class.java)
+inline fun <reified T : Any> FixtureMonkey.giveMeOne(): T = this.giveMeOne(object : TypeReference<T>() {})
 
 inline fun <reified T : Any> FixtureMonkey.giveMeOne(
-    customizer: KArbitraryCustomizer<T>
+    customizer: KArbitraryCustomizer<T>,
 ): T = this.giveMeOne(T::class.java, customizer.toArbitraryCustomizer())
 
-inline fun <reified T : Any> FixtureMonkey.giveMeArbitrary(): Arbitrary<T> = this.giveMeArbitrary(T::class.java)
+inline fun <reified T : Any> FixtureMonkey.giveMeArbitrary(): Arbitrary<T> =
+    this.giveMeArbitrary(object : TypeReference<T>() {})
 
-inline fun <reified T : Any> FixtureMonkey.giveMeBuilder(): ArbitraryBuilder<T> = this.giveMeBuilder(T::class.java)
+inline fun <reified T : Any> FixtureMonkey.giveMeBuilder(): ArbitraryBuilder<T> =
+    this.giveMeBuilder(object : TypeReference<T>() {})
 
 inline fun <reified T : Any> FixtureMonkey.giveMeBuilder(
-    options: ArbitraryOption
-): ArbitraryBuilder<T> = this.giveMeBuilder(T::class.java, options)
+    options: ArbitraryOption,
+): ArbitraryBuilder<T> = this.giveMeBuilder(object : TypeReference<T>() {}, options)
