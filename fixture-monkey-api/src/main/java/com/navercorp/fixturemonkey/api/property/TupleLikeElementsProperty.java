@@ -21,12 +21,8 @@ package com.navercorp.fixturemonkey.api.property;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Type;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 
@@ -34,52 +30,75 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public final class ElementProperty implements Property {
-	private final Property containerProperty;
+public final class TupleLikeElementsProperty implements Property {
+	private final Property tupleLikeProperty;
 
-	private final AnnotatedType elementType;
+	private final List<Property> elementsProperties;
 
 	@Nullable
 	private final Integer index;
 
-	private final List<Annotation> annotations;
+	private final Type type = new Type() {
+		@Override
+		public String getTypeName() {
+			return "TupleLikeElement";
+		}
+	};
 
-	private final Map<Class<? extends Annotation>, Annotation> annotationsMap;
+	private final AnnotatedType annotatedType = new AnnotatedType() {
+		@Override
+		public Type getType() {
+			return type;
+		}
 
-	public ElementProperty(
-		Property containerProperty,
-		AnnotatedType elementType,
+		@Nullable
+		@Override
+		public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
+			return null;
+		}
+
+		@Override
+		public Annotation[] getAnnotations() {
+			return new Annotation[0];
+		}
+
+		@Override
+		public Annotation[] getDeclaredAnnotations() {
+			return new Annotation[0];
+		}
+	};
+
+	public TupleLikeElementsProperty(
+		Property tupleLikeProperty,
+		List<Property> elementsProperties,
 		@Nullable Integer index
 	) {
-		this.containerProperty = containerProperty;
-		this.elementType = elementType;
+		this.tupleLikeProperty = tupleLikeProperty;
+		this.elementsProperties = elementsProperties;
 		this.index = index;
-		this.annotations = Arrays.asList(this.elementType.getAnnotations());
-		this.annotationsMap = this.annotations.stream()
-			.collect(Collectors.toMap(Annotation::annotationType, Function.identity(), (a1, a2) -> a1));
 	}
 
-	@Override
-	public Type getType() {
-		return this.getAnnotatedType().getType();
+	public Property getTupleLikeProperty() {
+		return this.tupleLikeProperty;
 	}
 
-	@Override
-	public AnnotatedType getAnnotatedType() {
-		return this.elementType;
-	}
-
-	public Property getContainerProperty() {
-		return this.containerProperty;
-	}
-
-	public AnnotatedType getElementType() {
-		return this.elementType;
+	public List<Property> getElementsProperties() {
+		return this.elementsProperties;
 	}
 
 	@Nullable
 	public Integer getIndex() {
 		return this.index;
+	}
+
+	@Override
+	public Type getType() {
+		return this.type;
+	}
+
+	@Override
+	public AnnotatedType getAnnotatedType() {
+		return this.annotatedType;
 	}
 
 	@Override
@@ -89,13 +108,7 @@ public final class ElementProperty implements Property {
 
 	@Override
 	public List<Annotation> getAnnotations() {
-		return this.annotations;
-	}
-
-	@Override
-	public <T extends Annotation> Optional<T> getAnnotation(Class<T> annotationClass) {
-		return Optional.ofNullable(this.annotationsMap.get(annotationClass))
-			.map(annotationClass::cast);
+		return Collections.emptyList();
 	}
 
 	@Nullable
