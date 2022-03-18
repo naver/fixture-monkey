@@ -18,6 +18,7 @@
 
 package com.navercorp.fixturemonkey.arbitrary;
 
+import static com.navercorp.fixturemonkey.Constants.DEFAULT_ELEMENT_MAX_SIZE;
 import static com.navercorp.fixturemonkey.Constants.HEAD_NAME;
 import static com.navercorp.fixturemonkey.Constants.NO_OR_ALL_INDEX_INTEGER_VALUE;
 
@@ -114,7 +115,11 @@ public final class ArbitraryNode<T> {
 		Size size = type.getAnnotation(Size.class);
 		if (size != null) {
 			min = size.min();
-			max = size.max();
+			if (size.max() != Integer.MAX_VALUE) { // not initialized for preventing OOM
+				max = size.max();
+			} else {
+				max = min + DEFAULT_ELEMENT_MAX_SIZE;
+			}
 		}
 
 		NotEmpty notEmpty = type.getAnnotation(NotEmpty.class);

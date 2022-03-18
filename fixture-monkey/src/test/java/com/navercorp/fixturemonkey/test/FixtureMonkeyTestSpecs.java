@@ -31,6 +31,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
+import javax.validation.constraints.Size;
 
 import net.jqwik.api.Arbitrary;
 import net.jqwik.api.Provide;
@@ -66,6 +67,7 @@ class FixtureMonkeyTestSpecs extends AbstractDomainContextBase {
 		registerArbitrary(ListWithAnnotation.class, listWithAnnotation());
 		registerArbitrary(StringQueue.class, stringQueue());
 		registerArbitrary(NestedStringQueue.class, nestedStringQueue());
+		registerArbitrary(IntegerListAnnotatedBySizeWithoutMax.class, integerListAnnotatedBySizeWithoutMax());
 	}
 
 	@Provide
@@ -283,6 +285,17 @@ class FixtureMonkeyTestSpecs extends AbstractDomainContextBase {
 	@Provide
 	Arbitrary<NestedStringQueue> nestedStringQueue() {
 		return SUT.giveMeArbitrary(NestedStringQueue.class);
+	}
+
+	@Data
+	public static class IntegerListAnnotatedBySizeWithoutMax {
+		@Size(min = 1)
+		private List<Integer> values;
+	}
+
+	@Provide
+	Arbitrary<IntegerListAnnotatedBySizeWithoutMax> integerListAnnotatedBySizeWithoutMax() {
+		return SUT.giveMeArbitrary(IntegerListAnnotatedBySizeWithoutMax.class);
 	}
 
 	public static class DefaultArbitraryGroup {

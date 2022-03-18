@@ -18,6 +18,7 @@
 
 package com.navercorp.fixturemonkey.test;
 
+import static com.navercorp.fixturemonkey.Constants.DEFAULT_ELEMENT_MAX_SIZE;
 import static com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.SUT;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.BDDAssertions.then;
@@ -52,6 +53,7 @@ import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.DuplicateArbitrar
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.IntArray;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.IntWithAnnotation;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.IntegerArray;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.IntegerListAnnotatedBySizeWithoutMax;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.IntegerListWithNotEmpty;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.IntegerOptional;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.IntegerSet;
@@ -1336,5 +1338,11 @@ class FixtureMonkeyTest {
 	@Domain(FixtureMonkeyTestSpecs.class)
 	void giveMeNestedQueue(@ForAll NestedStringQueue expected) {
 		then(expected.getValues()).isNotNull();
+	}
+
+	@Property
+	@Domain(FixtureMonkeyTestSpecs.class)
+	void giveMeListAnnotatedBySizeWithoutMax(@ForAll IntegerListAnnotatedBySizeWithoutMax actual) {
+		then(actual.getValues()).hasSizeBetween(1, 1 + DEFAULT_ELEMENT_MAX_SIZE);
 	}
 }
