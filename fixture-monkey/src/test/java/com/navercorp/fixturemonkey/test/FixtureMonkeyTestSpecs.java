@@ -30,6 +30,7 @@ import javax.annotation.Nullable;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Positive;
+import javax.validation.constraints.Size;
 
 import net.jqwik.api.Arbitrary;
 import net.jqwik.api.Provide;
@@ -257,6 +258,17 @@ class FixtureMonkeyTestSpecs extends DomainContextBase {
 	@Provide
 	Arbitrary<NestedStringQueue> nestedStringQueue() {
 		return SUT.giveMeArbitrary(NestedStringQueue.class);
+	}
+
+	@Data
+	public static class IntegerListAnnotatedBySizeWithoutMax {
+		@Size(min = 1)
+		private List<Integer> values;
+	}
+
+	@Provide
+	Arbitrary<IntegerListAnnotatedBySizeWithoutMax> integerListAnnotatedBySizeWithoutMax() {
+		return SUT.giveMeArbitrary(IntegerListAnnotatedBySizeWithoutMax.class);
 	}
 
 	public static class DefaultArbitraryGroup {
