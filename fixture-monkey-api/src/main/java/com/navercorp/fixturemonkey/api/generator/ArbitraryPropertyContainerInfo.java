@@ -18,40 +18,38 @@
 
 package com.navercorp.fixturemonkey.api.generator;
 
-import java.lang.reflect.AnnotatedType;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import com.navercorp.fixturemonkey.api.random.Randoms;
+
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class ArbitraryPropertyContainerInfo {
-	private final Integer elementMinSize;
-	private final Integer elementMaxSize;
-	private final List<AnnotatedType> elementTypes;
+	private final int elementMinSize;
+	private final int elementMaxSize;
 
 	public ArbitraryPropertyContainerInfo(
-		Integer elementMinSize,
-		Integer elementMaxSize,
-		List<AnnotatedType> elementTypes
+		int elementMinSize,
+		int elementMaxSize
 	) {
 		this.elementMinSize = elementMinSize;
 		this.elementMaxSize = elementMaxSize;
-		this.elementTypes = new ArrayList<>(elementTypes);
 	}
 
-	public Integer getElementMinSize() {
+	public int getElementMinSize() {
 		return this.elementMinSize;
 	}
 
-	public Integer getElementMaxSize() {
+	public int getElementMaxSize() {
 		return this.elementMaxSize;
 	}
 
-	public List<AnnotatedType> getElementTypes() {
-		return Collections.unmodifiableList(this.elementTypes);
+	public int getRandomSize() {
+		if (this.elementMinSize == this.elementMaxSize) {
+			return this.elementMinSize;
+		}
+
+		return Randoms.nextInt(this.elementMaxSize - this.elementMinSize);
 	}
 
 	@Override
@@ -59,7 +57,6 @@ public final class ArbitraryPropertyContainerInfo {
 		return "ArbitraryPropertyContainerInfo{"
 			+ "elementMinSize=" + elementMinSize
 			+ ", elementMaxSize=" + elementMaxSize
-			+ ", elementTypes=" + elementTypes
 			+ '}';
 	}
 }
