@@ -22,6 +22,7 @@ import static com.navercorp.fixturemonkey.Constants.HEAD_NAME;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -63,6 +64,9 @@ public final class ArbitraryTree<T> {
 			selectNodes.addAll(nextNodes);
 			nextNodes.clear();
 		}
+		List selectNodesList = new ArrayList(selectNodes);
+		Collections.shuffle(selectNodesList);
+		selectNodes = new LinkedList<>(selectNodesList);
 		return selectNodes;
 	}
 
