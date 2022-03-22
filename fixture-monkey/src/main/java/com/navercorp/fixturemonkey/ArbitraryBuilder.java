@@ -229,7 +229,9 @@ public final class ArbitraryBuilder<T> {
 	}
 
 	public List<T> sampleList(int size) {
-		return this.sampleStream().limit(size).collect(toList());
+		List<T> sampleList = this.sampleStream().limit(size).collect(toList());
+		Collections.shuffle(sampleList);
+		return sampleList;
 	}
 
 	public Stream<T> sampleStream() {
