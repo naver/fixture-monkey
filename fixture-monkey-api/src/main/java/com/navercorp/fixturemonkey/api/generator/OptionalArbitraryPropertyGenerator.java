@@ -147,7 +147,7 @@ public final class OptionalArbitraryPropertyGenerator implements ArbitraryProper
 
 		if (type != Optional.class) {
 			throw new IllegalArgumentException(
-				"type is not Optional type. propertyType: " + optionalProperty.getType()
+				"type is not Optional type. propertyType: " + type
 			);
 		}
 
