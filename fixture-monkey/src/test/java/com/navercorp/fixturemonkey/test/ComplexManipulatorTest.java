@@ -894,4 +894,18 @@ class ComplexManipulatorTest {
 
 		then(actual).allMatch(it -> it.getValue().equals("test"));
 	}
+
+	@Property
+	void giveMeRegisteredNotGenericTypeWhenTypeReference() {
+		FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+			.register(StringValue.class, it -> it.giveMeBuilder(StringValue.class)
+				.set("value", "test")
+			)
+			.build();
+
+		StringValue actual = fixtureMonkey.giveMeOne(new TypeReference<StringValue>() {
+		});
+
+		then(actual.getValue()).isEqualTo("test");
+	}
 }
