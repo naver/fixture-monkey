@@ -31,7 +31,6 @@ import java.util.OptionalLong;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.api.option.GenerateOptions;
 import com.navercorp.fixturemonkey.api.property.ElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.type.Types;
@@ -107,12 +106,6 @@ public final class OptionalArbitraryPropertyGenerator implements ArbitraryProper
 	public ArbitraryProperty property(ArbitraryPropertyGeneratorContext context) {
 		Property property = context.getProperty();
 
-		GenerateOptions generateOptions = context.getGenerateOptions();
-		double nullInject = 0.0;
-		if (generateOptions.isNullableContainer()) {
-			nullInject = generateOptions.getNullInject();
-		}
-
 		AnnotatedType valueAnnotatedType = getValueAnnotatedType(property);
 		Property valueProperty = new ElementProperty(
 			property,
@@ -124,7 +117,7 @@ public final class OptionalArbitraryPropertyGenerator implements ArbitraryProper
 			property,
 			context.getPropertyNameResolver(),
 			context.getPropertyValue(),
-			nullInject,
+			context.getGenerateOptions().getContainerNullInject(),
 			context.getElementIndex(),
 			Collections.singletonList(valueProperty),
 			CONTAINER_INFO

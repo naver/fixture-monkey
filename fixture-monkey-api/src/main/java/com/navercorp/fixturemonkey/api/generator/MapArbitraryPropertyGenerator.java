@@ -26,21 +26,22 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.property.ElementProperty;
+import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public final class ContainerArbitraryPropertyGenerator implements ArbitraryPropertyGenerator {
+public final class MapArbitraryPropertyGenerator implements ArbitraryPropertyGenerator {
 	@Override
 	public ArbitraryProperty property(ArbitraryPropertyGeneratorContext context) {
 		Property property = context.getProperty();
 
-		List<AnnotatedType> elementTypes = Types.getGenericsTypes(property.getAnnotatedType());
-		if (elementTypes.size() != 1) {
+		List<AnnotatedType> genericsTypes = Types.getGenericsTypes(property.getAnnotatedType());
+		if (genericsTypes.size() != 2) {
 			throw new IllegalArgumentException(
-				"List elementsTypes must be have 1 generics type for element. "
+				"Map genericsTypes must be have 2 generics type for key and value. "
 					+ "propertyType: " + property.getType()
-					+ ", elementTypes: " + elementTypes
+					+ ", genericsTypes: " + genericsTypes
 			);
 		}
 
@@ -51,14 +52,25 @@ public final class ContainerArbitraryPropertyGenerator implements ArbitraryPrope
 		);
 
 		int size = containerInfo.getRandomSize();
-		AnnotatedType elementType = elementTypes.get(0);
+
+		AnnotatedType keyType = genericsTypes.get(0);
+		AnnotatedType valueType = genericsTypes.get(1);
+
 		List<Property> childProperties = new ArrayList<>();
 		for (int index = 0; index < size; index++) {
 			childProperties.add(
-				new ElementProperty(
+				new MapEntryElementProperty(
 					property,
-					elementType,
-					index
+					new ElementProperty(
+						property,
+						keyType,
+						index
+					),
+					new ElementProperty(
+						property,
+						valueType,
+						index
+					)
 				)
 			);
 		}
