@@ -28,6 +28,7 @@ import java.util.stream.Stream;
 import net.jqwik.api.Arbitrary;
 
 import com.navercorp.fixturemonkey.api.type.TypeReference;
+import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryTraverser;
 import com.navercorp.fixturemonkey.customizer.ArbitraryCustomizer;
 import com.navercorp.fixturemonkey.customizer.ArbitraryCustomizers;
@@ -172,11 +173,20 @@ public class FixtureMonkey {
 		);
 	}
 
+	@SuppressWarnings("unchecked")
 	private <T> ArbitraryBuilder<T> giveMeBuilder(
 		TypeReference<T> typeReference,
 		ArbitraryOption option,
 		ArbitraryCustomizers customizers
 	) {
+		if (typeReference.isNotGeneric()) {
+			ArbitraryBuilder<T> defaultArbitraryBuilder =
+				(ArbitraryBuilder<T>)option.getDefaultArbitraryBuilder(Types.getActualType(typeReference.getType()));
+			if (defaultArbitraryBuilder != null) {
+				return defaultArbitraryBuilder;
+			}
+		}
+
 		return new ArbitraryBuilder<>(
 			typeReference,
 			option,
