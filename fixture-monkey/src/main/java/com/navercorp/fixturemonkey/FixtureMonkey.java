@@ -179,7 +179,7 @@ public class FixtureMonkey {
 		ArbitraryOption option,
 		ArbitraryCustomizers customizers
 	) {
-		if (typeReference.isNotGeneric()) {
+		if (!typeReference.isGenericType()) {
 			ArbitraryBuilder<T> defaultArbitraryBuilder =
 				(ArbitraryBuilder<T>)option.getDefaultArbitraryBuilder(Types.getActualType(typeReference.getType()));
 			if (defaultArbitraryBuilder != null) {

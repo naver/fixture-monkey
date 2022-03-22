@@ -70,7 +70,7 @@ public abstract class TypeReference<T> {
 		return this.annotatedType;
 	}
 
-	public boolean isNotGeneric() {
-		return Types.getGenericsTypes(annotatedType).isEmpty();
+	public boolean isGenericType() {
+		return !Types.getGenericsTypes(annotatedType).isEmpty();
 	}
 }
