@@ -69,5 +69,13 @@ public final class GenerateOptions {
 		return this.defaultNotNull;
 	}
 
+	public double getContainerNullInject() {
+		if (this.isNullableContainer()) {
+			return this.getNullInject();
+		}
+
+		return 0.0;
+	}
+
 	// TODO: equals and hashCode and toString
 }
