@@ -5,7 +5,7 @@
 
 <figure align="center">
     <img src= "https://user-images.githubusercontent.com/10272119/132285552-3af3ef55-e211-4dff-bb47-83d563ad6046.png" width="85%"/>
-    <figcaption>Designed by <a href="https://www.behance.net/zziyeoon">Judy Kim </a> <figcaption>
+    <figcaption>Designed by <a href="https://www.behance.net/zziyeoon">Judy Kim </a> </figcaption>
 </figure>
 
 
@@ -73,7 +73,7 @@ void test() {
 ### Gradle
 
 ```groovy
-testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter:0.3.2")
+testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter:0.3.3")
 ```
 
 ### Maven
@@ -83,7 +83,7 @@ testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter:0.3.2")
 <dependency>
     <groupId>com.navercorp.fixturemonkey</groupId>
     <artifactId>fixture-monkey-starter</artifactId>
-    <version>0.3.2</version>
+    <version>0.3.3</version>
     <scope>test</scope>
 </dependency>
 ```
