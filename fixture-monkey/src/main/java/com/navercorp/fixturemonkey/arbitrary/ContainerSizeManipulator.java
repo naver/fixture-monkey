@@ -57,7 +57,15 @@ public final class ContainerSizeManipulator extends AbstractArbitraryExpressionM
 
 	@Override
 	public Priority getPriority() {
-		return Priority.HIGH;
+		return Priority.LOW;
+	}
+
+	@Override
+	public int compareTo(PriorityManipulator priorityManipulator) {
+		if (priorityManipulator instanceof ContainerSizeManipulator) {
+			return getArbitraryExpression().compareTo(priorityManipulator.getArbitraryExpression());
+		}
+		return MetadataManipulator.super.compareTo(priorityManipulator);
 	}
 
 	@Override

@@ -23,13 +23,7 @@ interface PriorityManipulator extends ArbitraryExpressionManipulator, Comparable
 
 	@Override
 	default int compareTo(PriorityManipulator priorityManipulator) {
-		int priorityCompare =
-			Integer.compare(this.getPriority().ordinal(), priorityManipulator.getPriority().ordinal());
-		if (priorityCompare != 0) {
-			return priorityCompare;
-		}
-
-		return getArbitraryExpression().compareTo(priorityManipulator.getArbitraryExpression());
+		return Integer.compare(this.getPriority().ordinal(), priorityManipulator.getPriority().ordinal());
 	}
 
 	enum Priority {
