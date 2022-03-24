@@ -82,9 +82,11 @@ public final class ArbitraryExpression implements Comparable<ArbitraryExpression
 	public int compareTo(ArbitraryExpression arbitraryExpression) {
 		List<Exp> oExpList = arbitraryExpression.expList;
 
-		int expLength = Math.min(oExpList.size(), expList.size());
+		if (expList.size() != oExpList.size()) {
+			return Integer.compare(expList.size(), oExpList.size());
+		}
 
-		for (int i = 0; i < expLength; i++) {
+		for (int i = 0; i < expList.size(); i++) {
 			Exp exp = expList.get(i);
 			Exp oExp = oExpList.get(i);
 			int expCompare = exp.compareTo(oExp);
@@ -93,7 +95,7 @@ public final class ArbitraryExpression implements Comparable<ArbitraryExpression
 			}
 		}
 
-		return Integer.compare(oExpList.size(), expList.size());
+		return 0;
 	}
 
 	@Override

@@ -57,6 +57,7 @@ import com.navercorp.fixturemonkey.test.ComplexManipulatorTestSpecs.NestedString
 import com.navercorp.fixturemonkey.test.ComplexManipulatorTestSpecs.SetArbitraryAcceptGroup;
 import com.navercorp.fixturemonkey.test.ComplexManipulatorTestSpecs.SetArbitraryArbitraryAcceptGroup;
 import com.navercorp.fixturemonkey.test.ComplexManipulatorTestSpecs.StringAndIntGroup;
+import com.navercorp.fixturemonkey.test.ComplexManipulatorTestSpecs.StringIntegerWrapper;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.IntegerArray;
 
 class ComplexManipulatorTest {
@@ -907,5 +908,17 @@ class ComplexManipulatorTest {
 		});
 
 		then(actual.getValue()).isEqualTo("test");
+	}
+
+	@Property
+	void giveMeNestedFieldSizeAndApplySize() {
+		StringIntegerWrapper actual = SUT.giveMeBuilder(StringIntegerWrapper.class)
+			.size("value.values", 1)
+			.apply((it, builder) -> {
+			})
+			.size("value.values", 2)
+			.sample();
+
+		then(actual.getValue().getValues()).hasSize(2);
 	}
 }
