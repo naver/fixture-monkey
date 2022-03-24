@@ -18,6 +18,8 @@
 
 package com.navercorp.fixturemonkey.traverser;
 
+import java.util.List;
+
 import javax.annotation.Nullable;
 
 import org.apiguardian.api.API;
@@ -28,8 +30,10 @@ import net.jqwik.api.Arbitrary;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-final class ArbitraryNode {
+public final class ArbitraryNode {
 	private ArbitraryProperty arbitraryProperty;
+
+	private List<ArbitraryNode> children;
 
 	@Nullable
 	private Arbitrary<?> arbitrary;
@@ -42,6 +46,25 @@ final class ArbitraryNode {
 
 	private boolean reset = false;
 
+	ArbitraryNode(
+		ArbitraryProperty arbitraryProperty,
+		List<ArbitraryNode> children,
+		@Nullable Arbitrary<?> arbitrary
+	) {
+		this.arbitraryProperty = arbitraryProperty;
+		this.children = children;
+		this.arbitrary = arbitrary;
+	}
+
+	public ArbitraryProperty getArbitraryProperty() {
+		return this.arbitraryProperty;
+	}
+
+	public List<ArbitraryNode> getChildren() {
+		return this.children;
+	}
+
+	@Nullable
 	public Arbitrary<?> getArbitrary() {
 		return this.arbitrary;
 	}
