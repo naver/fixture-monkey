@@ -19,7 +19,6 @@
 package com.navercorp.fixturemonkey.api.option;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
