@@ -30,7 +30,7 @@ import net.jqwik.api.Arbitrary;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public final class ArbitraryNode {
+final class ArbitraryNode {
 	private ArbitraryProperty arbitraryProperty;
 
 	private List<ArbitraryNode> children;
