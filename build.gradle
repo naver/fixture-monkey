@@ -39,6 +39,8 @@ subprojects {
         testImplementation("ch.qos.logback:logback-classic:1.2.3")
     }
 
+    tasks.withType(Javadoc).all { enabled = false }
+
     java {
         withJavadocJar()
         withSourcesJar()

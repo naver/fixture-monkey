@@ -54,6 +54,11 @@ class ComplexManipulatorTestSpecs extends DomainContextBase {
 	}
 
 	@Data
+	public static class StringIntegerWrapper {
+		private StringIntegerList value;
+	}
+
+	@Data
 	public static class StringIntegerList {
 		private String value;
 		private List<Integer> values;

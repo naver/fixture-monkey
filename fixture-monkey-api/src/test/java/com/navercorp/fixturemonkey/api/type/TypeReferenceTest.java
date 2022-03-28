@@ -79,4 +79,56 @@ class TypeReferenceTest {
 		then(annotatedParameterizedType.getAnnotatedActualTypeArguments()[0].getType()).isEqualTo(Integer.class);
 		then(annotatedParameterizedType.getAnnotatedActualTypeArguments()[1].getType()).isEqualTo(String.class);
 	}
+
+	@Test
+	void isGenericType() {
+		TypeReference<GenericValue<String>> typeReference = new TypeReference<GenericValue<String>>() {
+		};
+
+		boolean actual = typeReference.isGenericType();
+
+		then(actual).isTrue();
+	}
+
+	@Test
+	void isGenericTypeWhenNestedGenericType() {
+		TypeReference<GenericValue<List<String>>> typeReference = new TypeReference<GenericValue<List<String>>>() {
+		};
+
+		boolean actual = typeReference.isGenericType();
+
+		then(actual).isTrue();
+	}
+
+	@Test
+	void isGenericTypeWhenList() {
+		TypeReference<List<String>> typeReference = new TypeReference<List<String>>() {
+		};
+
+		boolean actual = typeReference.isGenericType();
+
+		then(actual).isTrue();
+	}
+
+	@Test
+	void isNotGenericType() {
+		TypeReference<String> typeReference = new TypeReference<String>() {
+		};
+
+		boolean actual = typeReference.isGenericType();
+
+		then(actual).isFalse();
+	}
+
+	private static class GenericValue<T> {
+		private final T value;
+
+		public GenericValue(T value) {
+			this.value = value;
+		}
+
+		public T getValue() {
+			return value;
+		}
+	}
 }
