@@ -22,10 +22,10 @@ import static com.navercorp.fixturemonkey.Constants.HEAD_NAME;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
@@ -33,6 +33,7 @@ import javax.annotation.Nullable;
 
 import net.jqwik.api.Arbitrary;
 
+import com.navercorp.fixturemonkey.api.random.Randoms;
 import com.navercorp.fixturemonkey.generator.ArbitraryGenerator;
 import com.navercorp.fixturemonkey.validator.ArbitraryValidator;
 
@@ -45,7 +46,7 @@ public final class ArbitraryTree<T> {
 
 	@SuppressWarnings("rawtypes")
 	public Collection<ArbitraryNode> findAll(ArbitraryExpression arbitraryExpression) {
-		Queue<ArbitraryNode> selectNodes = new LinkedList<>();
+		LinkedList<ArbitraryNode> selectNodes = new LinkedList<>();
 		selectNodes.add(head);
 		head.setManipulated(true);
 		List<ArbitraryNode> nextNodes = new ArrayList<>();
@@ -63,6 +64,7 @@ public final class ArbitraryTree<T> {
 			selectNodes.addAll(nextNodes);
 			nextNodes.clear();
 		}
+		Collections.shuffle(selectNodes, Randoms.current());
 		return selectNodes;
 	}
 
