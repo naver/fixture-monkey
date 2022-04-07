@@ -33,7 +33,7 @@ public final class MatcherOperator<T> implements Matcher {
 		this.operator = operator;
 	}
 
-	public static <T> MatcherOperator<T> exactTypeMatchOperator(Class<?> type, T operator) {
+	public static <T, C> MatcherOperator<T> exactTypeMatchOperator(Class<C> type, T operator) {
 		return new MatcherOperator<>(new ExactTypeMatcher(type), operator);
 	}
 
