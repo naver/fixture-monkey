@@ -31,6 +31,8 @@ import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class ContainerArbitraryPropertyGenerator implements ArbitraryPropertyGenerator {
+	public static final ContainerArbitraryPropertyGenerator INSTANCE = new ContainerArbitraryPropertyGenerator();
+
 	@Override
 	public ArbitraryProperty property(ArbitraryPropertyGeneratorContext context) {
 		Property property = context.getProperty();

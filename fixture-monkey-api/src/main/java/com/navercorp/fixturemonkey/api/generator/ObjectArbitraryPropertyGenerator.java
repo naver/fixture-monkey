@@ -28,6 +28,8 @@ import com.navercorp.fixturemonkey.api.property.PropertyCache;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class ObjectArbitraryPropertyGenerator implements ArbitraryPropertyGenerator {
+	public static final ObjectArbitraryPropertyGenerator INSTANCE = new ObjectArbitraryPropertyGenerator();
+
 	@Override
 	public ArbitraryProperty property(ArbitraryPropertyGeneratorContext context) {
 		Property property = context.getProperty();

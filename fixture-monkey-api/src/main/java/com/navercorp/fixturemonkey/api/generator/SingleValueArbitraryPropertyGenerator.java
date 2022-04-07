@@ -27,6 +27,8 @@ import com.navercorp.fixturemonkey.api.property.Property;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class SingleValueArbitraryPropertyGenerator implements ArbitraryPropertyGenerator {
+	public static final SingleValueArbitraryPropertyGenerator INSTANCE = new SingleValueArbitraryPropertyGenerator();
+
 	@Override
 	public ArbitraryProperty property(ArbitraryPropertyGeneratorContext context) {
 		Property property = context.getProperty();

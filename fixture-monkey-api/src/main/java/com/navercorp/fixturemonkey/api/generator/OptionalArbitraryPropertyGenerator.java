@@ -37,6 +37,8 @@ import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class OptionalArbitraryPropertyGenerator implements ArbitraryPropertyGenerator {
+	public static final OptionalArbitraryPropertyGenerator INSTANCE = new OptionalArbitraryPropertyGenerator();
+
 	private static final AnnotatedType INTEGER_TYPE = new AnnotatedType() {
 		@Override
 		public Type getType() {
