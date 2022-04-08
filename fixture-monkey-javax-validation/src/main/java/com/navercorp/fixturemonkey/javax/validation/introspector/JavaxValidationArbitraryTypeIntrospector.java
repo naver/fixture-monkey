@@ -46,20 +46,20 @@ import net.jqwik.api.arbitraries.StringArbitrary;
 import net.jqwik.web.api.Web;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
-import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
+import com.navercorp.fixturemonkey.api.introspector.ArbitraryTypeIntrospector;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public final class JavaxValidationArbitraryIntrospector implements ArbitraryIntrospector {
+public final class JavaxValidationArbitraryTypeIntrospector implements ArbitraryTypeIntrospector {
 	private static final String CONTROL_BLOCK = "\u0000-\u001f\u007f";
 	private static final RegexGenerator REGEX_GENERATOR = new RegexGenerator();
 
 	private final JavaxValidationConstraintGenerator constraintGenerator;
 
-	public JavaxValidationArbitraryIntrospector() {
+	public JavaxValidationArbitraryTypeIntrospector() {
 		this(new JavaxValidationConstraintGenerator());
 	}
 
-	public JavaxValidationArbitraryIntrospector(JavaxValidationConstraintGenerator constraintGenerator) {
+	public JavaxValidationArbitraryTypeIntrospector(JavaxValidationConstraintGenerator constraintGenerator) {
 		this.constraintGenerator = constraintGenerator;
 	}
 

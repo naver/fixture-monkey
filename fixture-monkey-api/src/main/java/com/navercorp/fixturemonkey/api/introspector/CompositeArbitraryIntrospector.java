@@ -18,26 +18,40 @@
 
 package com.navercorp.fixturemonkey.api.introspector;
 
+import java.util.List;
+
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import net.jqwik.api.Arbitraries;
-
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
-import com.navercorp.fixturemonkey.api.matcher.Matchers;
-import com.navercorp.fixturemonkey.api.property.Property;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public final class BooleanTypeIntrospector implements ArbitraryTypeIntrospector, Matcher {
+public class CompositeArbitraryIntrospector implements ArbitraryIntrospector {
+	private final List<ArbitraryIntrospector> introspectors;
 
-	@Override
-	public boolean match(Property property) {
-		return Matchers.BOOLEAN_TYPE_MATCHER.match(property);
+	public CompositeArbitraryIntrospector(List<ArbitraryIntrospector> introspectors) {
+		this.introspectors = introspectors;
 	}
 
 	@Override
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
-		return new ArbitraryIntrospectorResult(Arbitraries.of(true, false));
+		for (ArbitraryIntrospector introspector : this.introspectors) {
+			if (introspector instanceof Matcher) {
+				if (((Matcher)introspector).match(context.getProperty())) {
+					ArbitraryIntrospectorResult result = introspector.introspect(context);
+					if (!ArbitraryIntrospectorResult.EMPTY.equals(result)) {
+						return result;
+					}
+				}
+			} else {
+				ArbitraryIntrospectorResult result = introspector.introspect(context);
+				if (!ArbitraryIntrospectorResult.EMPTY.equals(result)) {
+					return result;
+				}
+			}
+		}
+
+		return ArbitraryIntrospectorResult.EMPTY;
 	}
 }

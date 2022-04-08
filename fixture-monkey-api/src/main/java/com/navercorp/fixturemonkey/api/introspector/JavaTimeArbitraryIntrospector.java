@@ -18,9 +18,22 @@
 
 package com.navercorp.fixturemonkey.api.introspector;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.MonthDay;
+import java.time.OffsetDateTime;
+import java.time.OffsetTime;
+import java.time.Period;
+import java.time.Year;
+import java.time.YearMonth;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
@@ -34,23 +47,23 @@ import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public final class JavaArbitraryTypeIntrospector implements ArbitraryTypeIntrospector, Matcher {
+public final class JavaTimeArbitraryIntrospector implements ArbitraryIntrospector, Matcher {
 	private final Map<Class<?>, Function<ArbitraryGeneratorContext, ArbitraryIntrospectorResult>> introspector;
 
-	public JavaArbitraryTypeIntrospector() {
+	public JavaTimeArbitraryIntrospector() {
 		this(
-			new IntrospectorArbitraryGenerator() {
+			new IntrospectorTimeArbitraryGenerator() {
 			},
-			new ArbitraryIntrospector() {
+			new TimeArbitraryTypeIntrospector() {
 			}
 		);
 	}
 
-	public JavaArbitraryTypeIntrospector(
-		IntrospectorArbitraryGenerator introspectorArbitraryGenerator,
-		ArbitraryIntrospector arbitraryIntrospector
+	public JavaTimeArbitraryIntrospector(
+		IntrospectorTimeArbitraryGenerator introspectorTimeArbitraryGenerator,
+		TimeArbitraryTypeIntrospector timeArbitraryIntrospector
 	) {
-		this.introspector = introspectors(introspectorArbitraryGenerator, arbitraryIntrospector);
+		this.introspector = introspectors(introspectorTimeArbitraryGenerator, timeArbitraryIntrospector);
 	}
 
 	@Override
@@ -70,176 +83,156 @@ public final class JavaArbitraryTypeIntrospector implements ArbitraryTypeIntrosp
 	}
 
 	private static Map<Class<?>, Function<ArbitraryGeneratorContext, ArbitraryIntrospectorResult>> introspectors(
-		IntrospectorArbitraryGenerator introspectorArbitraryGenerator,
-		ArbitraryIntrospector arbitraryIntrospector
+		IntrospectorTimeArbitraryGenerator introspectorTimeArbitraryGenerator,
+		TimeArbitraryTypeIntrospector timeArbitraryIntrospector
 	) {
 		Map<Class<?>, Function<ArbitraryGeneratorContext, ArbitraryIntrospectorResult>> introspector = new HashMap<>();
 
 		introspector.put(
-			String.class,
+			Calendar.class,
 			ctx -> new ArbitraryIntrospectorResult(
-				arbitraryIntrospector.strings(
-					introspectorArbitraryGenerator.strings(),
+				timeArbitraryIntrospector.calendars(
+					introspectorTimeArbitraryGenerator.calendars(),
 					ctx
 				)
 			)
 		);
 
 		introspector.put(
-			char.class,
+			Date.class,
 			ctx -> new ArbitraryIntrospectorResult(
-				arbitraryIntrospector.characters(
-					introspectorArbitraryGenerator.characters(),
+				timeArbitraryIntrospector.dates(
+					introspectorTimeArbitraryGenerator.dates(),
 					ctx
 				)
 			)
 		);
 
 		introspector.put(
-			Character.class,
+			Instant.class,
 			ctx -> new ArbitraryIntrospectorResult(
-				arbitraryIntrospector.characters(
-					introspectorArbitraryGenerator.characters(),
+				timeArbitraryIntrospector.instants(
+					introspectorTimeArbitraryGenerator.instants(),
 					ctx
 				)
 			)
 		);
 
 		introspector.put(
-			short.class,
+			LocalDate.class,
 			ctx -> new ArbitraryIntrospectorResult(
-				arbitraryIntrospector.shorts(
-					introspectorArbitraryGenerator.shorts(),
+				timeArbitraryIntrospector.localDates(
+					introspectorTimeArbitraryGenerator.localDates(),
 					ctx
 				)
 			)
 		);
 
 		introspector.put(
-			Short.class,
+			LocalDateTime.class,
 			ctx -> new ArbitraryIntrospectorResult(
-				arbitraryIntrospector.shorts(
-					introspectorArbitraryGenerator.shorts(),
+				timeArbitraryIntrospector.localDateTimes(
+					introspectorTimeArbitraryGenerator.localDateTimes(),
 					ctx
 				)
 			)
 		);
 
 		introspector.put(
-			byte.class,
+			LocalTime.class,
 			ctx -> new ArbitraryIntrospectorResult(
-				arbitraryIntrospector.bytes(
-					introspectorArbitraryGenerator.bytes(),
+				timeArbitraryIntrospector.localTimes(
+					introspectorTimeArbitraryGenerator.localTimes(),
 					ctx
 				)
 			)
 		);
 
 		introspector.put(
-			Byte.class,
+			ZonedDateTime.class,
 			ctx -> new ArbitraryIntrospectorResult(
-				arbitraryIntrospector.bytes(
-					introspectorArbitraryGenerator.bytes(),
+				timeArbitraryIntrospector.zonedDateTimes(
+					introspectorTimeArbitraryGenerator.zonedDateTimes(),
 					ctx
 				)
 			)
 		);
 
 		introspector.put(
-			double.class,
+			MonthDay.class,
 			ctx -> new ArbitraryIntrospectorResult(
-				arbitraryIntrospector.doubles(
-					introspectorArbitraryGenerator.doubles(),
+				timeArbitraryIntrospector.monthDays(
+					introspectorTimeArbitraryGenerator.monthDays(),
 					ctx
 				)
 			)
 		);
 
 		introspector.put(
-			Double.class,
+			OffsetDateTime.class,
 			ctx -> new ArbitraryIntrospectorResult(
-				arbitraryIntrospector.doubles(
-					introspectorArbitraryGenerator.doubles(),
+				timeArbitraryIntrospector.offsetDateTimes(
+					introspectorTimeArbitraryGenerator.offsetDateTimes(),
 					ctx
 				)
 			)
 		);
 
 		introspector.put(
-			float.class,
+			OffsetTime.class,
 			ctx -> new ArbitraryIntrospectorResult(
-				arbitraryIntrospector.floats(
-					introspectorArbitraryGenerator.floats(),
+				timeArbitraryIntrospector.offsetTimes(
+					introspectorTimeArbitraryGenerator.offsetTimes(),
 					ctx
 				)
 			)
 		);
 
 		introspector.put(
-			Float.class,
+			Period.class,
 			ctx -> new ArbitraryIntrospectorResult(
-				arbitraryIntrospector.floats(
-					introspectorArbitraryGenerator.floats(),
+				timeArbitraryIntrospector.periods(
+					introspectorTimeArbitraryGenerator.periods(),
 					ctx
 				)
 			)
 		);
 
 		introspector.put(
-			int.class,
+			Duration.class,
 			ctx -> new ArbitraryIntrospectorResult(
-				arbitraryIntrospector.integers(
-					introspectorArbitraryGenerator.integers(),
+				timeArbitraryIntrospector.durations(
+					introspectorTimeArbitraryGenerator.durations(),
 					ctx
 				)
 			)
 		);
 
 		introspector.put(
-			Integer.class,
+			Year.class,
 			ctx -> new ArbitraryIntrospectorResult(
-				arbitraryIntrospector.integers(
-					introspectorArbitraryGenerator.integers(),
+				timeArbitraryIntrospector.years(
+					introspectorTimeArbitraryGenerator.years(),
 					ctx
 				)
 			)
 		);
 
 		introspector.put(
-			long.class,
+			YearMonth.class,
 			ctx -> new ArbitraryIntrospectorResult(
-				arbitraryIntrospector.longs(
-					introspectorArbitraryGenerator.longs(),
+				timeArbitraryIntrospector.yearMonths(
+					introspectorTimeArbitraryGenerator.yearMonths(),
 					ctx
 				)
 			)
 		);
 
 		introspector.put(
-			Long.class,
+			ZoneOffset.class,
 			ctx -> new ArbitraryIntrospectorResult(
-				arbitraryIntrospector.longs(
-					introspectorArbitraryGenerator.longs(),
-					ctx
-				)
-			)
-		);
-
-		introspector.put(
-			BigInteger.class,
-			ctx -> new ArbitraryIntrospectorResult(
-				arbitraryIntrospector.bigIntegers(
-					introspectorArbitraryGenerator.bigIntegers(),
-					ctx
-				)
-			)
-		);
-
-		introspector.put(
-			BigDecimal.class,
-			ctx -> new ArbitraryIntrospectorResult(
-				arbitraryIntrospector.bigDecimals(
-					introspectorArbitraryGenerator.bigDecimals(),
+				timeArbitraryIntrospector.zoneOffsets(
+					introspectorTimeArbitraryGenerator.zoneOffsets(),
 					ctx
 				)
 			)

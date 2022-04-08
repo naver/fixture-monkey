@@ -20,22 +20,9 @@ package com.navercorp.fixturemonkey.api.introspector;
 
 import static org.assertj.core.api.BDDAssertions.then;
 
-import java.time.Duration;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.MonthDay;
-import java.time.OffsetDateTime;
-import java.time.OffsetTime;
-import java.time.Period;
-import java.time.Year;
-import java.time.YearMonth;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
-import java.util.Calendar;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.Collections;
-import java.util.Date;
 
 import net.jqwik.api.Property;
 
@@ -45,15 +32,15 @@ import com.navercorp.fixturemonkey.api.property.PropertyCache;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 
-class JavaTimeArbitraryTypeIntrospectorTest {
-	private final JavaTimeArbitraryTypeIntrospector sut = new JavaTimeArbitraryTypeIntrospector();
+class JavaArbitraryIntrospectorTest {
+	private final JavaArbitraryIntrospector sut = new JavaArbitraryIntrospector();
 
 	@Property
-	void calendarMatch() {
+	void stringMatch() {
 		// given
-		TypeReference<JavaTimeArbitraryTypeSpec> typeReference = new TypeReference<JavaTimeArbitraryTypeSpec>() {
+		TypeReference<JavaArbitraryTypeSpec> typeReference = new TypeReference<JavaArbitraryTypeSpec>() {
 		};
-		String propertyName = "calendar";
+		String propertyName = "str";
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
@@ -78,11 +65,11 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 	}
 
 	@Property
-	void calendarIntrospect() {
+	void stringIntrospect() {
 		// given
-		TypeReference<JavaTimeArbitraryTypeSpec> typeReference = new TypeReference<JavaTimeArbitraryTypeSpec>() {
+		TypeReference<JavaArbitraryTypeSpec> typeReference = new TypeReference<JavaArbitraryTypeSpec>() {
 		};
-		String propertyName = "calendar";
+		String propertyName = "str";
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
@@ -103,15 +90,15 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 		// when
 		ArbitraryIntrospectorResult actual = this.sut.introspect(context);
 
-		then(actual.getValue().sample()).isInstanceOf(Calendar.class);
+		then(actual.getValue().sample()).isExactlyInstanceOf(String.class);
 	}
 
 	@Property
-	void dateMatch() {
+	void charMatch() {
 		// given
-		TypeReference<JavaTimeArbitraryTypeSpec> typeReference = new TypeReference<JavaTimeArbitraryTypeSpec>() {
+		TypeReference<JavaArbitraryTypeSpec> typeReference = new TypeReference<JavaArbitraryTypeSpec>() {
 		};
-		String propertyName = "date";
+		String propertyName = "chars";
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
@@ -136,11 +123,11 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 	}
 
 	@Property
-	void dateIntrospect() {
+	void charIntrospect() {
 		// given
-		TypeReference<JavaTimeArbitraryTypeSpec> typeReference = new TypeReference<JavaTimeArbitraryTypeSpec>() {
+		TypeReference<JavaArbitraryTypeSpec> typeReference = new TypeReference<JavaArbitraryTypeSpec>() {
 		};
-		String propertyName = "date";
+		String propertyName = "chars";
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
@@ -161,11 +148,881 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 		// when
 		ArbitraryIntrospectorResult actual = this.sut.introspect(context);
 
-		then(actual.getValue().sample()).isInstanceOf(Date.class);
+		then(actual.getValue().sample()).isExactlyInstanceOf(Character.class);
 	}
 
 	@Property
-	void instantMatch() {
+	void charWrapperMatch() {
+		// given
+		TypeReference<JavaArbitraryTypeSpec> typeReference = new TypeReference<JavaArbitraryTypeSpec>() {
+		};
+		String propertyName = "charWrapper";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				0.0D,
+				null,
+				Collections.emptyList(),
+				null
+			),
+			Collections.emptyList(),
+			null,
+			ctx -> null
+		);
+
+		// when
+		boolean actual = this.sut.match(context.getProperty());
+
+		then(actual).isTrue();
+	}
+
+	@Property
+	void charWrapperIntrospect() {
+		// given
+		TypeReference<JavaArbitraryTypeSpec> typeReference = new TypeReference<JavaArbitraryTypeSpec>() {
+		};
+		String propertyName = "charWrapper";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				0.0D,
+				null,
+				Collections.emptyList(),
+				null
+			),
+			Collections.emptyList(),
+			null,
+			ctx -> null
+		);
+
+		// when
+		ArbitraryIntrospectorResult actual = this.sut.introspect(context);
+
+		then(actual.getValue().sample()).isExactlyInstanceOf(Character.class);
+	}
+
+	@Property
+	void shortMatch() {
+		// given
+		TypeReference<JavaArbitraryTypeSpec> typeReference = new TypeReference<JavaArbitraryTypeSpec>() {
+		};
+		String propertyName = "shorts";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				0.0D,
+				null,
+				Collections.emptyList(),
+				null
+			),
+			Collections.emptyList(),
+			null,
+			ctx -> null
+		);
+
+		// when
+		boolean actual = this.sut.match(context.getProperty());
+
+		then(actual).isTrue();
+	}
+
+	@Property
+	void shortIntrospect() {
+		// given
+		TypeReference<JavaArbitraryTypeSpec> typeReference = new TypeReference<JavaArbitraryTypeSpec>() {
+		};
+		String propertyName = "shorts";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				0.0D,
+				null,
+				Collections.emptyList(),
+				null
+			),
+			Collections.emptyList(),
+			null,
+			ctx -> null
+		);
+
+		// when
+		ArbitraryIntrospectorResult actual = this.sut.introspect(context);
+
+		then(actual.getValue().sample()).isExactlyInstanceOf(Short.class);
+	}
+
+	@Property
+	void shortWrapperMatch() {
+		// given
+		TypeReference<JavaArbitraryTypeSpec> typeReference = new TypeReference<JavaArbitraryTypeSpec>() {
+		};
+		String propertyName = "shortWrapper";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				0.0D,
+				null,
+				Collections.emptyList(),
+				null
+			),
+			Collections.emptyList(),
+			null,
+			ctx -> null
+		);
+
+		// when
+		boolean actual = this.sut.match(context.getProperty());
+
+		then(actual).isTrue();
+	}
+
+	@Property
+	void shortWrapperIntrospect() {
+		// given
+		TypeReference<JavaArbitraryTypeSpec> typeReference = new TypeReference<JavaArbitraryTypeSpec>() {
+		};
+		String propertyName = "shortWrapper";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				0.0D,
+				null,
+				Collections.emptyList(),
+				null
+			),
+			Collections.emptyList(),
+			null,
+			ctx -> null
+		);
+
+		// when
+		ArbitraryIntrospectorResult actual = this.sut.introspect(context);
+
+		then(actual.getValue().sample()).isExactlyInstanceOf(Short.class);
+	}
+
+	@Property
+	void byteMatch() {
+		// given
+		TypeReference<JavaArbitraryTypeSpec> typeReference = new TypeReference<JavaArbitraryTypeSpec>() {
+		};
+		String propertyName = "bytes";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				0.0D,
+				null,
+				Collections.emptyList(),
+				null
+			),
+			Collections.emptyList(),
+			null,
+			ctx -> null
+		);
+
+		// when
+		boolean actual = this.sut.match(context.getProperty());
+
+		then(actual).isTrue();
+	}
+
+	@Property
+	void byteIntrospect() {
+		// given
+		TypeReference<JavaArbitraryTypeSpec> typeReference = new TypeReference<JavaArbitraryTypeSpec>() {
+		};
+		String propertyName = "bytes";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				0.0D,
+				null,
+				Collections.emptyList(),
+				null
+			),
+			Collections.emptyList(),
+			null,
+			ctx -> null
+		);
+
+		// when
+		ArbitraryIntrospectorResult actual = this.sut.introspect(context);
+
+		then(actual.getValue().sample()).isExactlyInstanceOf(Byte.class);
+	}
+
+	@Property
+	void byteWrapperMatch() {
+		// given
+		TypeReference<JavaArbitraryTypeSpec> typeReference = new TypeReference<JavaArbitraryTypeSpec>() {
+		};
+		String propertyName = "byteWrapper";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				0.0D,
+				null,
+				Collections.emptyList(),
+				null
+			),
+			Collections.emptyList(),
+			null,
+			ctx -> null
+		);
+
+		// when
+		boolean actual = this.sut.match(context.getProperty());
+
+		then(actual).isTrue();
+	}
+
+	@Property
+	void byteWrapperIntrospect() {
+		// given
+		TypeReference<JavaArbitraryTypeSpec> typeReference = new TypeReference<JavaArbitraryTypeSpec>() {
+		};
+		String propertyName = "byteWrapper";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				0.0D,
+				null,
+				Collections.emptyList(),
+				null
+			),
+			Collections.emptyList(),
+			null,
+			ctx -> null
+		);
+
+		// when
+		ArbitraryIntrospectorResult actual = this.sut.introspect(context);
+
+		then(actual.getValue().sample()).isExactlyInstanceOf(Byte.class);
+	}
+
+	@Property
+	void doubleMatch() {
+		// given
+		TypeReference<JavaArbitraryTypeSpec> typeReference = new TypeReference<JavaArbitraryTypeSpec>() {
+		};
+		String propertyName = "doubles";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				0.0D,
+				null,
+				Collections.emptyList(),
+				null
+			),
+			Collections.emptyList(),
+			null,
+			ctx -> null
+		);
+
+		// when
+		boolean actual = this.sut.match(context.getProperty());
+
+		then(actual).isTrue();
+	}
+
+	@Property
+	void doubleIntrospect() {
+		// given
+		TypeReference<JavaArbitraryTypeSpec> typeReference = new TypeReference<JavaArbitraryTypeSpec>() {
+		};
+		String propertyName = "doubles";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				0.0D,
+				null,
+				Collections.emptyList(),
+				null
+			),
+			Collections.emptyList(),
+			null,
+			ctx -> null
+		);
+
+		// when
+		ArbitraryIntrospectorResult actual = this.sut.introspect(context);
+
+		then(actual.getValue().sample()).isExactlyInstanceOf(Double.class);
+	}
+
+	@Property
+	void doubleWrapperMatch() {
+		// given
+		TypeReference<JavaArbitraryTypeSpec> typeReference = new TypeReference<JavaArbitraryTypeSpec>() {
+		};
+		String propertyName = "doubleWrapper";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				0.0D,
+				null,
+				Collections.emptyList(),
+				null
+			),
+			Collections.emptyList(),
+			null,
+			ctx -> null
+		);
+
+		// when
+		boolean actual = this.sut.match(context.getProperty());
+
+		then(actual).isTrue();
+	}
+
+	@Property
+	void doubleWrapperIntrospect() {
+		// given
+		TypeReference<JavaArbitraryTypeSpec> typeReference = new TypeReference<JavaArbitraryTypeSpec>() {
+		};
+		String propertyName = "doubleWrapper";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				0.0D,
+				null,
+				Collections.emptyList(),
+				null
+			),
+			Collections.emptyList(),
+			null,
+			ctx -> null
+		);
+
+		// when
+		ArbitraryIntrospectorResult actual = this.sut.introspect(context);
+
+		then(actual.getValue().sample()).isExactlyInstanceOf(Double.class);
+	}
+
+	@Property
+	void floatMatch() {
+		// given
+		TypeReference<JavaArbitraryTypeSpec> typeReference = new TypeReference<JavaArbitraryTypeSpec>() {
+		};
+		String propertyName = "floats";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				0.0D,
+				null,
+				Collections.emptyList(),
+				null
+			),
+			Collections.emptyList(),
+			null,
+			ctx -> null
+		);
+
+		// when
+		boolean actual = this.sut.match(context.getProperty());
+
+		then(actual).isTrue();
+	}
+
+	@Property
+	void floatIntrospect() {
+		// given
+		TypeReference<JavaArbitraryTypeSpec> typeReference = new TypeReference<JavaArbitraryTypeSpec>() {
+		};
+		String propertyName = "floats";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				0.0D,
+				null,
+				Collections.emptyList(),
+				null
+			),
+			Collections.emptyList(),
+			null,
+			ctx -> null
+		);
+
+		// when
+		ArbitraryIntrospectorResult actual = this.sut.introspect(context);
+
+		then(actual.getValue().sample()).isExactlyInstanceOf(Float.class);
+	}
+
+	@Property
+	void floatWrapperMatch() {
+		// given
+		TypeReference<JavaArbitraryTypeSpec> typeReference = new TypeReference<JavaArbitraryTypeSpec>() {
+		};
+		String propertyName = "floatWrapper";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				0.0D,
+				null,
+				Collections.emptyList(),
+				null
+			),
+			Collections.emptyList(),
+			null,
+			ctx -> null
+		);
+
+		// when
+		boolean actual = this.sut.match(context.getProperty());
+
+		then(actual).isTrue();
+	}
+
+	@Property
+	void floatWrapperIntrospect() {
+		// given
+		TypeReference<JavaArbitraryTypeSpec> typeReference = new TypeReference<JavaArbitraryTypeSpec>() {
+		};
+		String propertyName = "floatWrapper";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				0.0D,
+				null,
+				Collections.emptyList(),
+				null
+			),
+			Collections.emptyList(),
+			null,
+			ctx -> null
+		);
+
+		// when
+		ArbitraryIntrospectorResult actual = this.sut.introspect(context);
+
+		then(actual.getValue().sample()).isExactlyInstanceOf(Float.class);
+	}
+
+	@Property
+	void intMatch() {
+		// given
+		TypeReference<JavaArbitraryTypeSpec> typeReference = new TypeReference<JavaArbitraryTypeSpec>() {
+		};
+		String propertyName = "ints";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				0.0D,
+				null,
+				Collections.emptyList(),
+				null
+			),
+			Collections.emptyList(),
+			null,
+			ctx -> null
+		);
+
+		// when
+		boolean actual = this.sut.match(context.getProperty());
+
+		then(actual).isTrue();
+	}
+
+	@Property
+	void intIntrospect() {
+		// given
+		TypeReference<JavaArbitraryTypeSpec> typeReference = new TypeReference<JavaArbitraryTypeSpec>() {
+		};
+		String propertyName = "ints";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				0.0D,
+				null,
+				Collections.emptyList(),
+				null
+			),
+			Collections.emptyList(),
+			null,
+			ctx -> null
+		);
+
+		// when
+		ArbitraryIntrospectorResult actual = this.sut.introspect(context);
+
+		then(actual.getValue().sample()).isExactlyInstanceOf(Integer.class);
+	}
+
+	@Property
+	void intWrapperMatch() {
+		// given
+		TypeReference<JavaArbitraryTypeSpec> typeReference = new TypeReference<JavaArbitraryTypeSpec>() {
+		};
+		String propertyName = "intWrapper";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				0.0D,
+				null,
+				Collections.emptyList(),
+				null
+			),
+			Collections.emptyList(),
+			null,
+			ctx -> null
+		);
+
+		// when
+		boolean actual = this.sut.match(context.getProperty());
+
+		then(actual).isTrue();
+	}
+
+	@Property
+	void intWrapperIntrospect() {
+		// given
+		TypeReference<JavaArbitraryTypeSpec> typeReference = new TypeReference<JavaArbitraryTypeSpec>() {
+		};
+		String propertyName = "intWrapper";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				0.0D,
+				null,
+				Collections.emptyList(),
+				null
+			),
+			Collections.emptyList(),
+			null,
+			ctx -> null
+		);
+
+		// when
+		ArbitraryIntrospectorResult actual = this.sut.introspect(context);
+
+		then(actual.getValue().sample()).isExactlyInstanceOf(Integer.class);
+	}
+
+	@Property
+	void longMatch() {
+		// given
+		TypeReference<JavaArbitraryTypeSpec> typeReference = new TypeReference<JavaArbitraryTypeSpec>() {
+		};
+		String propertyName = "longs";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				0.0D,
+				null,
+				Collections.emptyList(),
+				null
+			),
+			Collections.emptyList(),
+			null,
+			ctx -> null
+		);
+
+		// when
+		boolean actual = this.sut.match(context.getProperty());
+
+		then(actual).isTrue();
+	}
+
+	@Property
+	void longIntrospect() {
+		// given
+		TypeReference<JavaArbitraryTypeSpec> typeReference = new TypeReference<JavaArbitraryTypeSpec>() {
+		};
+		String propertyName = "longs";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				0.0D,
+				null,
+				Collections.emptyList(),
+				null
+			),
+			Collections.emptyList(),
+			null,
+			ctx -> null
+		);
+
+		// when
+		ArbitraryIntrospectorResult actual = this.sut.introspect(context);
+
+		then(actual.getValue().sample()).isExactlyInstanceOf(Long.class);
+	}
+
+	@Property
+	void longWrapperMatch() {
+		// given
+		TypeReference<JavaArbitraryTypeSpec> typeReference = new TypeReference<JavaArbitraryTypeSpec>() {
+		};
+		String propertyName = "longWrapper";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				0.0D,
+				null,
+				Collections.emptyList(),
+				null
+			),
+			Collections.emptyList(),
+			null,
+			ctx -> null
+		);
+
+		// when
+		boolean actual = this.sut.match(context.getProperty());
+
+		then(actual).isTrue();
+	}
+
+	@Property
+	void longWrapperIntrospect() {
+		// given
+		TypeReference<JavaArbitraryTypeSpec> typeReference = new TypeReference<JavaArbitraryTypeSpec>() {
+		};
+		String propertyName = "longWrapper";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				0.0D,
+				null,
+				Collections.emptyList(),
+				null
+			),
+			Collections.emptyList(),
+			null,
+			ctx -> null
+		);
+
+		// when
+		ArbitraryIntrospectorResult actual = this.sut.introspect(context);
+
+		then(actual.getValue().sample()).isExactlyInstanceOf(Long.class);
+	}
+
+	@Property
+	void bigIntegerMatch() {
+		// given
+		TypeReference<JavaArbitraryTypeSpec> typeReference = new TypeReference<JavaArbitraryTypeSpec>() {
+		};
+		String propertyName = "bigIntegers";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				0.0D,
+				null,
+				Collections.emptyList(),
+				null
+			),
+			Collections.emptyList(),
+			null,
+			ctx -> null
+		);
+
+		// when
+		boolean actual = this.sut.match(context.getProperty());
+
+		then(actual).isTrue();
+	}
+
+	@Property
+	void bigIntegerIntrospect() {
+		// given
+		TypeReference<JavaArbitraryTypeSpec> typeReference = new TypeReference<JavaArbitraryTypeSpec>() {
+		};
+		String propertyName = "bigIntegers";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				0.0D,
+				null,
+				Collections.emptyList(),
+				null
+			),
+			Collections.emptyList(),
+			null,
+			ctx -> null
+		);
+
+		// when
+		ArbitraryIntrospectorResult actual = this.sut.introspect(context);
+
+		then(actual.getValue().sample()).isExactlyInstanceOf(BigInteger.class);
+	}
+
+	@Property
+	void bigDecimalMatch() {
+		// given
+		TypeReference<JavaArbitraryTypeSpec> typeReference = new TypeReference<JavaArbitraryTypeSpec>() {
+		};
+		String propertyName = "bigDecimals";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				0.0D,
+				null,
+				Collections.emptyList(),
+				null
+			),
+			Collections.emptyList(),
+			null,
+			ctx -> null
+		);
+
+		// when
+		boolean actual = this.sut.match(context.getProperty());
+
+		then(actual).isTrue();
+	}
+
+	@Property
+	void bigDecimalIntrospect() {
+		// given
+		TypeReference<JavaArbitraryTypeSpec> typeReference = new TypeReference<JavaArbitraryTypeSpec>() {
+		};
+		String propertyName = "bigDecimals";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(
+				property,
+				PropertyNameResolver.IDENTITY,
+				null,
+				0.0D,
+				null,
+				Collections.emptyList(),
+				null
+			),
+			Collections.emptyList(),
+			null,
+			ctx -> null
+		);
+
+		// when
+		ArbitraryIntrospectorResult actual = this.sut.introspect(context);
+
+		then(actual.getValue().sample()).isExactlyInstanceOf(BigDecimal.class);
+	}
+
+	@Property
+	void matchFail() {
 		// given
 		TypeReference<JavaTimeArbitraryTypeSpec> typeReference = new TypeReference<JavaTimeArbitraryTypeSpec>() {
 		};
@@ -190,11 +1047,11 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 		// when
 		boolean actual = this.sut.match(context.getProperty());
 
-		then(actual).isTrue();
+		then(actual).isFalse();
 	}
 
 	@Property
-	void instantIntrospect() {
+	void introspectEmpty() {
 		// given
 		TypeReference<JavaTimeArbitraryTypeSpec> typeReference = new TypeReference<JavaTimeArbitraryTypeSpec>() {
 		};
@@ -219,702 +1076,6 @@ class JavaTimeArbitraryTypeIntrospectorTest {
 		// when
 		ArbitraryIntrospectorResult actual = this.sut.introspect(context);
 
-		then(actual.getValue().sample()).isInstanceOf(Instant.class);
-	}
-
-	@Property
-	void localDateMatch() {
-		// given
-		TypeReference<JavaTimeArbitraryTypeSpec> typeReference = new TypeReference<JavaTimeArbitraryTypeSpec>() {
-		};
-		String propertyName = "localDate";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				null,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			ctx -> null
-		);
-
-		// when
-		boolean actual = this.sut.match(context.getProperty());
-
-		then(actual).isTrue();
-	}
-
-	@Property
-	void localDateIntrospect() {
-		// given
-		TypeReference<JavaTimeArbitraryTypeSpec> typeReference = new TypeReference<JavaTimeArbitraryTypeSpec>() {
-		};
-		String propertyName = "localDate";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				null,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			ctx -> null
-		);
-
-		// when
-		ArbitraryIntrospectorResult actual = this.sut.introspect(context);
-
-		then(actual.getValue().sample()).isInstanceOf(LocalDate.class);
-	}
-
-	@Property
-	void localDateTimeMatch() {
-		// given
-		TypeReference<JavaTimeArbitraryTypeSpec> typeReference = new TypeReference<JavaTimeArbitraryTypeSpec>() {
-		};
-		String propertyName = "localDateTime";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				null,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			ctx -> null
-		);
-
-		// when
-		boolean actual = this.sut.match(context.getProperty());
-
-		then(actual).isTrue();
-	}
-
-	@Property
-	void localDateTimeIntrospect() {
-		// given
-		TypeReference<JavaTimeArbitraryTypeSpec> typeReference = new TypeReference<JavaTimeArbitraryTypeSpec>() {
-		};
-		String propertyName = "localDateTime";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				null,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			ctx -> null
-		);
-
-		// when
-		ArbitraryIntrospectorResult actual = this.sut.introspect(context);
-
-		then(actual.getValue().sample()).isInstanceOf(LocalDateTime.class);
-	}
-
-	@Property
-	void localTimeMatch() {
-		// given
-		TypeReference<JavaTimeArbitraryTypeSpec> typeReference = new TypeReference<JavaTimeArbitraryTypeSpec>() {
-		};
-		String propertyName = "localTime";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				null,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			ctx -> null
-		);
-
-		// when
-		boolean actual = this.sut.match(context.getProperty());
-
-		then(actual).isTrue();
-	}
-
-	@Property
-	void localTimeIntrospect() {
-		// given
-		TypeReference<JavaTimeArbitraryTypeSpec> typeReference = new TypeReference<JavaTimeArbitraryTypeSpec>() {
-		};
-		String propertyName = "localTime";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				null,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			ctx -> null
-		);
-
-		// when
-		ArbitraryIntrospectorResult actual = this.sut.introspect(context);
-
-		then(actual.getValue().sample()).isInstanceOf(LocalTime.class);
-	}
-
-	@Property
-	void zonedDateTimeMatch() {
-		// given
-		TypeReference<JavaTimeArbitraryTypeSpec> typeReference = new TypeReference<JavaTimeArbitraryTypeSpec>() {
-		};
-		String propertyName = "zonedDateTime";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				null,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			ctx -> null
-		);
-
-		// when
-		boolean actual = this.sut.match(context.getProperty());
-
-		then(actual).isTrue();
-	}
-
-	@Property
-	void zonedDateTimeIntrospect() {
-		// given
-		TypeReference<JavaTimeArbitraryTypeSpec> typeReference = new TypeReference<JavaTimeArbitraryTypeSpec>() {
-		};
-		String propertyName = "zonedDateTime";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				null,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			ctx -> null
-		);
-
-		// when
-		ArbitraryIntrospectorResult actual = this.sut.introspect(context);
-
-		then(actual.getValue().sample()).isInstanceOf(ZonedDateTime.class);
-	}
-
-	@Property
-	void monthDayMatch() {
-		// given
-		TypeReference<JavaTimeArbitraryTypeSpec> typeReference = new TypeReference<JavaTimeArbitraryTypeSpec>() {
-		};
-		String propertyName = "monthDay";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				null,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			ctx -> null
-		);
-
-		// when
-		boolean actual = this.sut.match(context.getProperty());
-
-		then(actual).isTrue();
-	}
-
-	@Property
-	void monthDayIntrospect() {
-		// given
-		TypeReference<JavaTimeArbitraryTypeSpec> typeReference = new TypeReference<JavaTimeArbitraryTypeSpec>() {
-		};
-		String propertyName = "monthDay";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				null,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			ctx -> null
-		);
-
-		// when
-		ArbitraryIntrospectorResult actual = this.sut.introspect(context);
-
-		then(actual.getValue().sample()).isInstanceOf(MonthDay.class);
-	}
-
-	@Property
-	void offsetDateTimeMatch() {
-		// given
-		TypeReference<JavaTimeArbitraryTypeSpec> typeReference = new TypeReference<JavaTimeArbitraryTypeSpec>() {
-		};
-		String propertyName = "offsetDateTime";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				null,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			ctx -> null
-		);
-
-		// when
-		boolean actual = this.sut.match(context.getProperty());
-
-		then(actual).isTrue();
-	}
-
-	@Property
-	void offsetDateTimeIntrospect() {
-		// given
-		TypeReference<JavaTimeArbitraryTypeSpec> typeReference = new TypeReference<JavaTimeArbitraryTypeSpec>() {
-		};
-		String propertyName = "offsetDateTime";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				null,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			ctx -> null
-		);
-
-		// when
-		ArbitraryIntrospectorResult actual = this.sut.introspect(context);
-
-		then(actual.getValue().sample()).isInstanceOf(OffsetDateTime.class);
-	}
-
-	@Property
-	void offsetTimeMatch() {
-		// given
-		TypeReference<JavaTimeArbitraryTypeSpec> typeReference = new TypeReference<JavaTimeArbitraryTypeSpec>() {
-		};
-		String propertyName = "offsetTime";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				null,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			ctx -> null
-		);
-
-		// when
-		boolean actual = this.sut.match(context.getProperty());
-
-		then(actual).isTrue();
-	}
-
-	@Property
-	void offsetTimeIntrospect() {
-		// given
-		TypeReference<JavaTimeArbitraryTypeSpec> typeReference = new TypeReference<JavaTimeArbitraryTypeSpec>() {
-		};
-		String propertyName = "offsetTime";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				null,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			ctx -> null
-		);
-
-		// when
-		ArbitraryIntrospectorResult actual = this.sut.introspect(context);
-
-		then(actual.getValue().sample()).isInstanceOf(OffsetTime.class);
-	}
-
-	@Property
-	void periodMatch() {
-		// given
-		TypeReference<JavaTimeArbitraryTypeSpec> typeReference = new TypeReference<JavaTimeArbitraryTypeSpec>() {
-		};
-		String propertyName = "period";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				null,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			ctx -> null
-		);
-
-		// when
-		boolean actual = this.sut.match(context.getProperty());
-
-		then(actual).isTrue();
-	}
-
-	@Property
-	void periodIntrospect() {
-		// given
-		TypeReference<JavaTimeArbitraryTypeSpec> typeReference = new TypeReference<JavaTimeArbitraryTypeSpec>() {
-		};
-		String propertyName = "period";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				null,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			ctx -> null
-		);
-
-		// when
-		ArbitraryIntrospectorResult actual = this.sut.introspect(context);
-
-		then(actual.getValue().sample()).isInstanceOf(Period.class);
-	}
-
-	@Property
-	void durationMatch() {
-		// given
-		TypeReference<JavaTimeArbitraryTypeSpec> typeReference = new TypeReference<JavaTimeArbitraryTypeSpec>() {
-		};
-		String propertyName = "duration";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				null,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			ctx -> null
-		);
-
-		// when
-		boolean actual = this.sut.match(context.getProperty());
-
-		then(actual).isTrue();
-	}
-
-	@Property
-	void durationIntrospect() {
-		// given
-		TypeReference<JavaTimeArbitraryTypeSpec> typeReference = new TypeReference<JavaTimeArbitraryTypeSpec>() {
-		};
-		String propertyName = "duration";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				null,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			ctx -> null
-		);
-
-		// when
-		ArbitraryIntrospectorResult actual = this.sut.introspect(context);
-
-		then(actual.getValue().sample()).isInstanceOf(Duration.class);
-	}
-
-	@Property
-	void yearMatch() {
-		// given
-		TypeReference<JavaTimeArbitraryTypeSpec> typeReference = new TypeReference<JavaTimeArbitraryTypeSpec>() {
-		};
-		String propertyName = "year";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				null,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			ctx -> null
-		);
-
-		// when
-		boolean actual = this.sut.match(context.getProperty());
-
-		then(actual).isTrue();
-	}
-
-	@Property
-	void yearIntrospect() {
-		// given
-		TypeReference<JavaTimeArbitraryTypeSpec> typeReference = new TypeReference<JavaTimeArbitraryTypeSpec>() {
-		};
-		String propertyName = "year";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				null,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			ctx -> null
-		);
-
-		// when
-		ArbitraryIntrospectorResult actual = this.sut.introspect(context);
-
-		then(actual.getValue().sample()).isInstanceOf(Year.class);
-	}
-
-	@Property
-	void yearMonthMatch() {
-		// given
-		TypeReference<JavaTimeArbitraryTypeSpec> typeReference = new TypeReference<JavaTimeArbitraryTypeSpec>() {
-		};
-		String propertyName = "yearMonth";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				null,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			ctx -> null
-		);
-
-		// when
-		boolean actual = this.sut.match(context.getProperty());
-
-		then(actual).isTrue();
-	}
-
-	@Property
-	void yearMonthIntrospect() {
-		// given
-		TypeReference<JavaTimeArbitraryTypeSpec> typeReference = new TypeReference<JavaTimeArbitraryTypeSpec>() {
-		};
-		String propertyName = "yearMonth";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				null,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			ctx -> null
-		);
-
-		// when
-		ArbitraryIntrospectorResult actual = this.sut.introspect(context);
-
-		then(actual.getValue().sample()).isInstanceOf(YearMonth.class);
-	}
-
-	@Property
-	void zoneOffsetMatch() {
-		// given
-		TypeReference<JavaTimeArbitraryTypeSpec> typeReference = new TypeReference<JavaTimeArbitraryTypeSpec>() {
-		};
-		String propertyName = "zoneOffset";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				null,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			ctx -> null
-		);
-
-		// when
-		boolean actual = this.sut.match(context.getProperty());
-
-		then(actual).isTrue();
-	}
-
-	@Property
-	void zoneOffsetIntrospect() {
-		// given
-		TypeReference<JavaTimeArbitraryTypeSpec> typeReference = new TypeReference<JavaTimeArbitraryTypeSpec>() {
-		};
-		String propertyName = "zoneOffset";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				null,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			ctx -> null
-		);
-
-		// when
-		ArbitraryIntrospectorResult actual = this.sut.introspect(context);
-
-		then(actual.getValue().sample()).isInstanceOf(ZoneOffset.class);
+		then(actual).isEqualTo(ArbitraryIntrospectorResult.EMPTY);
 	}
 }

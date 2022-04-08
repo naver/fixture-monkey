@@ -52,8 +52,8 @@ import com.navercorp.fixturemonkey.api.property.PropertyCache;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 
-class JavaxValidationTimeArbitraryIntrospectorTest {
-	private final JavaxValidationTimeArbitraryIntrospector sut = new JavaxValidationTimeArbitraryIntrospector();
+class JavaxValidationTimeArbitraryTypeIntrospectorTest {
+	private final JavaxValidationTimeArbitraryTypeIntrospector sut = new JavaxValidationTimeArbitraryTypeIntrospector();
 
 	@Property
 	void calendar() {

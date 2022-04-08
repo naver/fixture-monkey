@@ -40,7 +40,7 @@ import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 
 class JavaxValidationArbitraryIntrospectorTest {
-	private final JavaxValidationArbitraryIntrospector sut = new JavaxValidationArbitraryIntrospector();
+	private final JavaxValidationArbitraryTypeIntrospector sut = new JavaxValidationArbitraryTypeIntrospector();
 
 	@Property
 	void strings() {
