@@ -27,15 +27,15 @@ import org.apiguardian.api.API.Status;
 import net.jqwik.api.Arbitraries;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
+import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectDelegator;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult;
-import com.navercorp.fixturemonkey.api.introspector.ArbitraryTypeIntrospectDelegator;
-import com.navercorp.fixturemonkey.api.introspector.BooleanTypeIntrospector;
+import com.navercorp.fixturemonkey.api.introspector.BooleanIntrospector;
 import com.navercorp.fixturemonkey.api.matcher.Matchers;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public final class JavaxValidationBooleanIntrospector extends ArbitraryTypeIntrospectDelegator {
+public final class JavaxValidationBooleanIntrospector extends ArbitraryIntrospectDelegator {
 	public JavaxValidationBooleanIntrospector() {
-		super(Matchers.BOOLEAN_TYPE_MATCHER, new BooleanTypeIntrospector());
+		super(Matchers.BOOLEAN_TYPE_MATCHER, new BooleanIntrospector());
 	}
 
 	@Override

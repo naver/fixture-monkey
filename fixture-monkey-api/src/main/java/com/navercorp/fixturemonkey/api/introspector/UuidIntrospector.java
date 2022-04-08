@@ -18,40 +18,27 @@
 
 package com.navercorp.fixturemonkey.api.introspector;
 
-import java.util.List;
+import java.util.UUID;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import net.jqwik.api.Arbitraries;
+
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
+import com.navercorp.fixturemonkey.api.matcher.Matchers;
+import com.navercorp.fixturemonkey.api.property.Property;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public class CompositeArbitraryTypeIntrospector implements ArbitraryTypeIntrospector {
-	private final List<ArbitraryTypeIntrospector> introspectors;
-
-	public CompositeArbitraryTypeIntrospector(List<ArbitraryTypeIntrospector> introspectors) {
-		this.introspectors = introspectors;
+public final class UuidIntrospector implements ArbitraryIntrospector, Matcher {
+	@Override
+	public boolean match(Property property) {
+		return Matchers.UUID_TYPE_MATCHER.match(property);
 	}
 
 	@Override
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
-		for (ArbitraryTypeIntrospector introspector : this.introspectors) {
-			if (introspector instanceof Matcher) {
-				if (((Matcher)introspector).match(context.getProperty())) {
-					ArbitraryIntrospectorResult result = introspector.introspect(context);
-					if (!ArbitraryIntrospectorResult.EMPTY.equals(result)) {
-						return result;
-					}
-				}
-			} else {
-				ArbitraryIntrospectorResult result = introspector.introspect(context);
-				if (!ArbitraryIntrospectorResult.EMPTY.equals(result)) {
-					return result;
-				}
-			}
-		}
-
-		return ArbitraryIntrospectorResult.EMPTY;
+		return new ArbitraryIntrospectorResult(Arbitraries.create(UUID::randomUUID));
 	}
 }

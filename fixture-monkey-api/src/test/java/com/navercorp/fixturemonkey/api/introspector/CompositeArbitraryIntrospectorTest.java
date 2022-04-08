@@ -26,11 +26,11 @@ import org.junit.jupiter.api.Test;
 
 import net.jqwik.api.Arbitraries;
 
-class CompositeArbitraryTypeIntrospectorTest {
+class CompositeArbitraryIntrospectorTest {
 	@Test
 	void introspect() {
 		// given
-		CompositeArbitraryTypeIntrospector sut = new CompositeArbitraryTypeIntrospector(
+		CompositeArbitraryIntrospector sut = new CompositeArbitraryIntrospector(
 			Arrays.asList(
 				(context) -> ArbitraryIntrospectorResult.EMPTY,
 				(context) -> new ArbitraryIntrospectorResult(null),

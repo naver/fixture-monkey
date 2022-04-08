@@ -26,16 +26,16 @@ import org.junit.jupiter.api.Test;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
-import com.navercorp.fixturemonkey.api.introspector.ArbitraryTypeIntrospectorTest.Sample;
+import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorTest.Sample;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.PropertyCache;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 
-class ArbitraryTypeIntrospectDelegatorTest {
+class ArbitraryIntrospectDelegatorTest {
 	@Test
 	void matchAndIntrospectEmpty() {
-		ArbitraryTypeIntrospectDelegator sut = new ArbitraryTypeIntrospectDelegator(
+		ArbitraryIntrospectDelegator sut = new ArbitraryIntrospectDelegator(
 			ctx -> true,
 			ctx -> ArbitraryIntrospectorResult.EMPTY
 		);

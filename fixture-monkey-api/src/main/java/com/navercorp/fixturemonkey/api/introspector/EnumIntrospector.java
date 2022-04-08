@@ -31,7 +31,7 @@ import com.navercorp.fixturemonkey.api.matcher.Matchers;
 import com.navercorp.fixturemonkey.api.property.Property;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public final class EnumTypeIntrospector implements ArbitraryTypeIntrospector, Matcher {
+public final class EnumIntrospector implements ArbitraryIntrospector, Matcher {
 	@Override
 	public boolean match(Property property) {
 		return Matchers.ENUM_TYPE_MATCHER.match(property);

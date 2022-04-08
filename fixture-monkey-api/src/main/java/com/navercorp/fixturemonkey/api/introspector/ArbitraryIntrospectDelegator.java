@@ -26,11 +26,11 @@ import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.property.Property;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public class ArbitraryTypeIntrospectDelegator implements ArbitraryTypeIntrospector, Matcher {
+public class ArbitraryIntrospectDelegator implements ArbitraryIntrospector, Matcher {
 	private final Matcher matcher;
-	private final ArbitraryTypeIntrospector delegate;
+	private final ArbitraryIntrospector delegate;
 
-	public ArbitraryTypeIntrospectDelegator(Matcher matcher, ArbitraryTypeIntrospector delegate) {
+	public ArbitraryIntrospectDelegator(Matcher matcher, ArbitraryIntrospector delegate) {
 		this.matcher = matcher;
 		this.delegate = delegate;
 	}

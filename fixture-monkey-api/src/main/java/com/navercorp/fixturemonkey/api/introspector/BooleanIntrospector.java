@@ -18,8 +18,6 @@
 
 package com.navercorp.fixturemonkey.api.introspector;
 
-import java.util.UUID;
-
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
@@ -31,14 +29,15 @@ import com.navercorp.fixturemonkey.api.matcher.Matchers;
 import com.navercorp.fixturemonkey.api.property.Property;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public final class UuidTypeIntrospector implements ArbitraryTypeIntrospector, Matcher {
+public final class BooleanIntrospector implements ArbitraryIntrospector, Matcher {
+
 	@Override
 	public boolean match(Property property) {
-		return Matchers.UUID_TYPE_MATCHER.match(property);
+		return Matchers.BOOLEAN_TYPE_MATCHER.match(property);
 	}
 
 	@Override
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
-		return new ArbitraryIntrospectorResult(Arbitraries.create(UUID::randomUUID));
+		return new ArbitraryIntrospectorResult(Arbitraries.of(true, false));
 	}
 }

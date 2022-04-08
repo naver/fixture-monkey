@@ -32,7 +32,7 @@ import com.navercorp.fixturemonkey.api.property.PropertyCache;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 
-class ArbitraryTypeIntrospectorTest {
+class ArbitraryIntrospectorTest {
 	@Test
 	void introspectEnumType() {
 		// given
@@ -55,7 +55,7 @@ class ArbitraryTypeIntrospectorTest {
 		);
 
 		// when
-		ArbitraryIntrospectorResult actual = ArbitraryTypeIntrospector.INTROSPECTORS.introspect(context);
+		ArbitraryIntrospectorResult actual = ArbitraryIntrospector.INTROSPECTORS.introspect(context);
 
 		then(actual.getValue().sample()).isExactlyInstanceOf(Season.class);
 	}
@@ -82,7 +82,7 @@ class ArbitraryTypeIntrospectorTest {
 		);
 
 		// when
-		ArbitraryIntrospectorResult actual = ArbitraryTypeIntrospector.INTROSPECTORS.introspect(context);
+		ArbitraryIntrospectorResult actual = ArbitraryIntrospector.INTROSPECTORS.introspect(context);
 
 		then(actual.getValue().sample()).isIn(true, false);
 	}
@@ -109,7 +109,7 @@ class ArbitraryTypeIntrospectorTest {
 		);
 
 		// when
-		ArbitraryIntrospectorResult actual = ArbitraryTypeIntrospector.INTROSPECTORS.introspect(context);
+		ArbitraryIntrospectorResult actual = ArbitraryIntrospector.INTROSPECTORS.introspect(context);
 
 		then(actual.getValue().sample()).isIn(true, false);
 	}
@@ -136,7 +136,7 @@ class ArbitraryTypeIntrospectorTest {
 		);
 
 		// when
-		ArbitraryIntrospectorResult actual = ArbitraryTypeIntrospector.INTROSPECTORS.introspect(context);
+		ArbitraryIntrospectorResult actual = ArbitraryIntrospector.INTROSPECTORS.introspect(context);
 
 		String uuid = actual.getValue().sample().toString();
 		then(uuid).hasSize(36);
