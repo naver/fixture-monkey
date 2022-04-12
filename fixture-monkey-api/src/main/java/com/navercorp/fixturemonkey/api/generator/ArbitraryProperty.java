@@ -46,7 +46,7 @@ public final class ArbitraryProperty {
 	private final List<Property> childProperties;
 
 	@Nullable
-	private final ArbitraryPropertyContainerInfo containerInfo;
+	private final ArbitraryContainerInfo containerInfo;
 
 	public ArbitraryProperty(
 		Property property,
@@ -55,7 +55,7 @@ public final class ArbitraryProperty {
 		double nullInject,
 		@Nullable Integer elementIndex,
 		List<Property> childProperties,
-		@Nullable ArbitraryPropertyContainerInfo containerInfo
+		@Nullable ArbitraryContainerInfo containerInfo
 	) {
 		this.property = property;
 		this.propertyNameResolver = propertyNameResolver;
@@ -93,7 +93,7 @@ public final class ArbitraryProperty {
 	}
 
 	@Nullable
-	public ArbitraryPropertyContainerInfo getContainerInfo() {
+	public ArbitraryContainerInfo getContainerInfo() {
 		return this.containerInfo;
 	}
 

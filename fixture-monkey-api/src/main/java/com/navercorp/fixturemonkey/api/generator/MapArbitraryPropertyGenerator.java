@@ -47,11 +47,9 @@ public final class MapArbitraryPropertyGenerator implements ArbitraryPropertyGen
 			);
 		}
 
-		// TODO: extract container information from annotation
-		ArbitraryPropertyContainerInfo containerInfo = new ArbitraryPropertyContainerInfo(
-			0,
-			100
-		);
+		ArbitraryContainerInfo containerInfo = context.getGenerateOptions()
+			.getArbitraryContainerInfoGenerator(property)
+			.generate(context);
 
 		int size = containerInfo.getRandomSize();
 

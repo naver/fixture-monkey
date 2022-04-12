@@ -102,7 +102,7 @@ public final class OptionalArbitraryPropertyGenerator implements ArbitraryProper
 			return new Annotation[0];
 		}
 	};
-	private static final ArbitraryPropertyContainerInfo CONTAINER_INFO = new ArbitraryPropertyContainerInfo(0, 1);
+	private static final ArbitraryContainerInfo CONTAINER_INFO = new ArbitraryContainerInfo(0, 1);
 
 	@Override
 	public ArbitraryProperty property(ArbitraryPropertyGeneratorContext context) {

@@ -32,6 +32,8 @@ import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class EntryArbitraryPropertyGenerator implements ArbitraryPropertyGenerator {
+	private static final ArbitraryContainerInfo CONTAINER_INFO = new ArbitraryContainerInfo(0, 1);
+
 	@Override
 	public ArbitraryProperty property(ArbitraryPropertyGeneratorContext context) {
 		Property property = context.getProperty();
@@ -45,13 +47,7 @@ public final class EntryArbitraryPropertyGenerator implements ArbitraryPropertyG
 			);
 		}
 
-		// TODO: extract container information from annotation
-		ArbitraryPropertyContainerInfo containerInfo = new ArbitraryPropertyContainerInfo(
-			0,
-			1
-		);
-
-		int size = containerInfo.getRandomSize();
+		int size = CONTAINER_INFO.getRandomSize();
 
 		AnnotatedType keyType = genericsTypes.get(0);
 		AnnotatedType valueType = genericsTypes.get(1);
@@ -82,7 +78,7 @@ public final class EntryArbitraryPropertyGenerator implements ArbitraryPropertyG
 			context.getGenerateOptions().getContainerNullInject(),
 			context.getElementIndex(),
 			childProperties,
-			containerInfo
+			CONTAINER_INFO
 		);
 	}
 }
