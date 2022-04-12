@@ -22,6 +22,7 @@ import static org.assertj.core.api.BDDAssertions.then;
 
 import java.util.Collections;
 
+import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Property;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
@@ -54,7 +55,7 @@ class JavaxValidationBooleanIntrospectorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when
@@ -85,7 +86,7 @@ class JavaxValidationBooleanIntrospectorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when
@@ -115,7 +116,7 @@ class JavaxValidationBooleanIntrospectorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when

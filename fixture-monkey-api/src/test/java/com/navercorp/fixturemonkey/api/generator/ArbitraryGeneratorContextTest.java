@@ -24,6 +24,8 @@ import java.util.Collections;
 
 import org.junit.jupiter.api.Test;
 
+import net.jqwik.api.Arbitraries;
+
 import com.navercorp.fixturemonkey.api.generator.ArbitraryPropertyTest.GenericSample;
 import com.navercorp.fixturemonkey.api.property.PropertyCache;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
@@ -50,7 +52,7 @@ class ArbitraryGeneratorContextTest {
 			arbitraryProperty,
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when

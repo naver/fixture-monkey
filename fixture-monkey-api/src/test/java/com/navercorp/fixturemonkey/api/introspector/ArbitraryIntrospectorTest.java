@@ -20,10 +20,13 @@ package com.navercorp.fixturemonkey.api.introspector;
 
 import static org.assertj.core.api.BDDAssertions.then;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
+
+import net.jqwik.api.Arbitraries;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
@@ -33,6 +36,16 @@ import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 
 class ArbitraryIntrospectorTest {
+	private final ArbitraryIntrospector sut = new CompositeArbitraryIntrospector(
+		Arrays.asList(
+			new EnumIntrospector(),
+			new BooleanIntrospector(),
+			new UuidIntrospector(),
+			new JavaArbitraryIntrospector(),
+			new JavaTimeArbitraryIntrospector()
+		)
+	);
+
 	@Test
 	void introspectEnumType() {
 		// given
@@ -51,11 +64,11 @@ class ArbitraryIntrospectorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when
-		ArbitraryIntrospectorResult actual = ArbitraryIntrospector.INTROSPECTORS.introspect(context);
+		ArbitraryIntrospectorResult actual = this.sut.introspect(context);
 
 		then(actual.getValue().sample()).isExactlyInstanceOf(Season.class);
 	}
@@ -78,11 +91,11 @@ class ArbitraryIntrospectorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when
-		ArbitraryIntrospectorResult actual = ArbitraryIntrospector.INTROSPECTORS.introspect(context);
+		ArbitraryIntrospectorResult actual = this.sut.introspect(context);
 
 		then(actual.getValue().sample()).isIn(true, false);
 	}
@@ -105,11 +118,11 @@ class ArbitraryIntrospectorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when
-		ArbitraryIntrospectorResult actual = ArbitraryIntrospector.INTROSPECTORS.introspect(context);
+		ArbitraryIntrospectorResult actual = this.sut.introspect(context);
 
 		then(actual.getValue().sample()).isIn(true, false);
 	}
@@ -132,11 +145,11 @@ class ArbitraryIntrospectorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when
-		ArbitraryIntrospectorResult actual = ArbitraryIntrospector.INTROSPECTORS.introspect(context);
+		ArbitraryIntrospectorResult actual = this.sut.introspect(context);
 
 		String uuid = actual.getValue().sample().toString();
 		then(uuid).hasSize(36);

@@ -18,8 +18,6 @@
 
 package com.navercorp.fixturemonkey.api.introspector;
 
-import java.util.Arrays;
-
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
@@ -28,13 +26,5 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 @FunctionalInterface
 public interface ArbitraryIntrospector {
-	ArbitraryIntrospector INTROSPECTORS = new CompositeArbitraryIntrospector(
-		Arrays.asList(
-			new EnumIntrospector(),
-			new BooleanIntrospector(),
-			new UuidIntrospector()
-		)
-	);
-
 	ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context);
 }

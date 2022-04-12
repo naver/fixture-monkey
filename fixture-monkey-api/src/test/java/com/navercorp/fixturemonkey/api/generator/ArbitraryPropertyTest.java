@@ -21,9 +21,11 @@ package com.navercorp.fixturemonkey.api.generator;
 import static org.assertj.core.api.BDDAssertions.then;
 
 import java.util.Collections;
+import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 
+import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.PropertyCache;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
@@ -52,6 +54,27 @@ class ArbitraryPropertyTest {
 		then(actual.getProperty()).isEqualTo(rootProperty);
 		then(actual.getNullInject()).isEqualTo(0.0D);
 		then(actual.getContainerInfo()).isNull();
+	}
+
+	@Test
+	void getPropertyName() {
+		// given
+		TypeReference<GenericSample<String>> typeReference = new TypeReference<GenericSample<String>>() {
+		};
+		Optional<Property> property = PropertyCache.getProperty(typeReference.getAnnotatedType(), "name");
+
+		// when
+		ArbitraryProperty actual = new ArbitraryProperty(
+			property.get(),
+			prop -> "x_" + prop.getName(),
+			null,
+			0.0D,
+			null,
+			Collections.emptyList(),
+			null
+		);
+
+		then(actual.getPropertyName()).isEqualTo("x_name");
 	}
 
 	static class GenericSample<T> {

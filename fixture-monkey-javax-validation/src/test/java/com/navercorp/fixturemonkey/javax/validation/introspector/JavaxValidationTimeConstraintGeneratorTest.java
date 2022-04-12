@@ -25,6 +25,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Collections;
 
+import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Property;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
@@ -56,7 +57,7 @@ class JavaxValidationTimeConstraintGeneratorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when
@@ -87,7 +88,7 @@ class JavaxValidationTimeConstraintGeneratorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when
@@ -119,7 +120,7 @@ class JavaxValidationTimeConstraintGeneratorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when
@@ -152,7 +153,7 @@ class JavaxValidationTimeConstraintGeneratorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when
@@ -184,7 +185,7 @@ class JavaxValidationTimeConstraintGeneratorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when
@@ -216,7 +217,7 @@ class JavaxValidationTimeConstraintGeneratorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when
@@ -247,7 +248,7 @@ class JavaxValidationTimeConstraintGeneratorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when
@@ -279,7 +280,7 @@ class JavaxValidationTimeConstraintGeneratorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when
@@ -312,7 +313,7 @@ class JavaxValidationTimeConstraintGeneratorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when
@@ -344,7 +345,7 @@ class JavaxValidationTimeConstraintGeneratorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when
@@ -376,7 +377,7 @@ class JavaxValidationTimeConstraintGeneratorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when
@@ -407,7 +408,7 @@ class JavaxValidationTimeConstraintGeneratorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when
@@ -439,7 +440,7 @@ class JavaxValidationTimeConstraintGeneratorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when
@@ -472,7 +473,7 @@ class JavaxValidationTimeConstraintGeneratorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when
@@ -504,7 +505,7 @@ class JavaxValidationTimeConstraintGeneratorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when
