@@ -168,6 +168,17 @@ class ExpressionGeneratorsTest {
     }
 
     @Test
+    fun getPropertyExpressionListWithIndexOnceWithoutExp() {
+        // given
+        val generator = Person::dogs[1]
+
+        // when
+        val actual = generator.generate()
+
+        then(actual).isEqualTo("dogs[1]")
+    }
+
+    @Test
     fun getPropertyExpressionListWithAllIndexOnce() {
         // given
         val generator = Exp<Person>() into Person::dogs["*"]
@@ -182,6 +193,17 @@ class ExpressionGeneratorsTest {
     fun getPropertyExpressionListWithAllIndexOnceWithConstructor() {
         // given
         val generator = Exp(Person::dogs["*"])
+
+        // when
+        val actual = generator.generate()
+
+        then(actual).isEqualTo("dogs[*]")
+    }
+
+    @Test
+    fun getPropertyExpressionListWithAllIndexOnceWithoutExp() {
+        // given
+        val generator = Person::dogs["*"]
 
         // when
         val actual = generator.generate()

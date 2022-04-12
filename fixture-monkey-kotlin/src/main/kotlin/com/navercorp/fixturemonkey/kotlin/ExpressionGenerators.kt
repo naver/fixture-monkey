@@ -36,101 +36,65 @@ import kotlin.reflect.jvm.kotlinProperty
 class Exp<T> internal constructor(private val delegate: ExpressionGenerator) : ExpressionGenerator by delegate {
     constructor() : this(EmptyExpressionGenerator())
 
+    constructor(exp: Exp<T>) : this(exp.delegate)
+
     infix fun <R> into(property: KProperty1<T, R?>): Exp<R> =
-        Exp(ParsedExpressionGenerator(listOf(delegate, PropertyExpressionGenerator(KotlinProperty(property)))))
+        Exp(delegate.join(PropertyExpressionGenerator(KotlinProperty(property))))
 
     @JvmName("getterBoolean")
-    infix fun into(function: KFunction1<T, Boolean>): Exp<Boolean> =
-        Exp(ParsedExpressionGenerator(listOf(delegate, PropertyExpressionGenerator(KotlinGetterProperty(function)))))
+    infix fun into(getter: KFunction1<T, Boolean>): Exp<Boolean> =
+        Exp(delegate.join(PropertyExpressionGenerator(KotlinGetterProperty(getter))))
 
-    infix fun <R> into(function: KFunction1<T, R?>): Exp<R> =
-        Exp(ParsedExpressionGenerator(listOf(delegate, PropertyExpressionGenerator(KotlinGetterProperty(function)))))
+    infix fun <R> into(getter: KFunction1<T, R?>): Exp<R> =
+        Exp(delegate.join(PropertyExpressionGenerator(KotlinGetterProperty(getter))))
 
-    infix fun <R> into(exp: ExpList<T, R>): Exp<R> = Exp(ParsedExpressionGenerator(listOf(delegate, exp.delegate)))
+    infix fun <R> into(exp: ExpList<T, R>): Exp<R> = Exp(delegate.join(exp))
 
     @JvmName("intoList")
-    infix fun <R : Collection<E>, E : Any> into(property: KProperty1<T, R?>): ExpList<T, E> = ExpList(
-        ParsedExpressionGenerator(
-            listOf(
-                delegate,
-                PropertyExpressionGenerator(KotlinProperty(property))
-            )
-        )
-    )
+    infix fun <R : Collection<E>, E : Any> into(property: KProperty1<T, R?>): ExpList<T, E> =
+        ExpList(delegate.join(PropertyExpressionGenerator(KotlinProperty(property))))
 
     @JvmName("getterIntoList")
-    infix fun <R : Collection<E>, E : Any> into(getter: KFunction1<T, R?>): ExpList<T, E> = ExpList(
-        ParsedExpressionGenerator(
-            listOf(
-                delegate,
-                PropertyExpressionGenerator(KotlinGetterProperty(getter))
-            )
-        )
-    )
+    infix fun <R : Collection<E>, E : Any> into(getter: KFunction1<T, R?>): ExpList<T, E> =
+        ExpList(delegate.join(PropertyExpressionGenerator(KotlinGetterProperty(getter))))
 }
 
-fun <T> Exp(exp: Exp<T>) = Exp<T>(ParsedExpressionGenerator(listOf(exp)))
+fun <T, R> Exp(expList: ExpList<T, R>) = Exp<R>(expList)
 
-fun <T, R> Exp(expList: ExpList<T, R>) = Exp<R>(ParsedExpressionGenerator(listOf(expList)))
+fun <T, R> Exp(property: KProperty1<T, R?>) = Exp<R>(PropertyExpressionGenerator(KotlinProperty(property)))
 
-fun <T, R> Exp(property: KProperty1<T, R?>) = Exp<R>(
-    ParsedExpressionGenerator(
-        listOf(
-            PropertyExpressionGenerator(
-                KotlinProperty(property)
-            )
-        )
-    )
-)
-
-fun <T, R> Exp(property: KFunction1<T, R?>) = Exp<R>(
-    ParsedExpressionGenerator(
-        listOf(
-            PropertyExpressionGenerator(
-                KotlinGetterProperty(property)
-            )
-        )
-    )
-)
+fun <T, R> Exp(property: KFunction1<T, R?>) = Exp<R>(PropertyExpressionGenerator(KotlinGetterProperty(property)))
 
 @JvmName("getterBoolean")
-fun Exp(property: KFunction1<*, Boolean>) = Exp<Boolean>(
-    ParsedExpressionGenerator(
-        listOf(
-            PropertyExpressionGenerator(
-                KotlinGetterProperty(property)
-            )
-        )
-    )
-)
+fun Exp(property: KFunction1<*, Boolean>) = Exp<Boolean>(PropertyExpressionGenerator(KotlinGetterProperty(property)))
 
 fun <T> ArbitraryBuilder<T>.set(property: KProperty1<T, Any?>, value: Any?): ArbitraryBuilder<T> =
-    this.set(ParsedExpressionGenerator(listOf(PropertyExpressionGenerator(KotlinProperty(property)))), value)
+    this.set(PropertyExpressionGenerator(KotlinProperty(property)), value)
 
 fun <T> ArbitraryBuilder<T>.set(property: KProperty1<T, Any?>, value: Any?, limit: Long): ArbitraryBuilder<T> =
-    this.set(ParsedExpressionGenerator(listOf(PropertyExpressionGenerator(KotlinProperty(property)))), value, limit)
+    this.set(PropertyExpressionGenerator(KotlinProperty(property)), value, limit)
 
 fun <T> ArbitraryBuilder<T>.set(property: KFunction1<T, Any?>, value: Any?): ArbitraryBuilder<T> =
-    this.set(ParsedExpressionGenerator(listOf(PropertyExpressionGenerator(KotlinGetterProperty(property)))), value)
+    this.set(PropertyExpressionGenerator(KotlinGetterProperty(property)), value)
 
 fun <T> ArbitraryBuilder<T>.set(property: KFunction1<T, Any?>, value: Any?, limit: Long): ArbitraryBuilder<T> =
     this.set(
-        ParsedExpressionGenerator(listOf(PropertyExpressionGenerator(KotlinGetterProperty(property)))),
+        PropertyExpressionGenerator(KotlinGetterProperty(property)),
         value,
         limit
     )
 
 fun <T> ArbitraryBuilder<T>.setNull(property: KProperty1<T, *>): ArbitraryBuilder<T> =
-    this.setNull(ParsedExpressionGenerator(listOf(PropertyExpressionGenerator(KotlinProperty(property)))))
+    this.setNull(PropertyExpressionGenerator(KotlinProperty(property)))
 
 fun <T> ArbitraryBuilder<T>.setNull(property: KFunction1<T, *>): ArbitraryBuilder<T> =
-    this.setNull(ParsedExpressionGenerator(listOf(PropertyExpressionGenerator(KotlinGetterProperty(property)))))
+    this.setNull(PropertyExpressionGenerator(KotlinGetterProperty(property)))
 
 fun <T> ArbitraryBuilder<T>.setNotNull(property: KProperty1<T, *>): ArbitraryBuilder<T> =
-    this.setNotNull(ParsedExpressionGenerator(listOf(PropertyExpressionGenerator(KotlinProperty(property)))))
+    this.setNotNull(PropertyExpressionGenerator(KotlinProperty(property)))
 
 fun <T> ArbitraryBuilder<T>.setNotNull(property: KFunction1<T, *>): ArbitraryBuilder<T> =
-    this.setNotNull(ParsedExpressionGenerator(listOf(PropertyExpressionGenerator(KotlinGetterProperty(property)))))
+    this.setNotNull(PropertyExpressionGenerator(KotlinGetterProperty(property)))
 
 fun <T, U> ArbitraryBuilder<T>.setPostCondition(
     property: KProperty1<T, *>,
@@ -138,7 +102,7 @@ fun <T, U> ArbitraryBuilder<T>.setPostCondition(
     filter: Predicate<U>,
 ): ArbitraryBuilder<T> =
     this.setPostCondition(
-        ParsedExpressionGenerator(listOf(PropertyExpressionGenerator(KotlinProperty(property)))),
+        PropertyExpressionGenerator(KotlinProperty(property)),
         clazz,
         filter
     )
@@ -150,7 +114,7 @@ fun <T, U> ArbitraryBuilder<T>.setPostCondition(
     limit: Long,
 ): ArbitraryBuilder<T> =
     this.setPostCondition(
-        ParsedExpressionGenerator(listOf(PropertyExpressionGenerator(KotlinGetterProperty(property)))),
+        PropertyExpressionGenerator(KotlinGetterProperty(property)),
         clazz,
         filter,
         limit
@@ -163,7 +127,7 @@ fun <T, U> ArbitraryBuilder<T>.setPostCondition(
     limit: Long,
 ): ArbitraryBuilder<T> =
     this.setPostCondition(
-        ParsedExpressionGenerator(listOf(PropertyExpressionGenerator(KotlinProperty(property)))),
+        PropertyExpressionGenerator(KotlinProperty(property)),
         clazz,
         filter,
         limit
@@ -175,40 +139,67 @@ fun <T, U> ArbitraryBuilder<T>.setPostCondition(
     filter: Predicate<U>,
 ): ArbitraryBuilder<T> =
     this.setPostCondition(
-        ParsedExpressionGenerator(listOf(PropertyExpressionGenerator(KotlinGetterProperty(property)))),
+        PropertyExpressionGenerator(KotlinGetterProperty(property)),
         clazz,
         filter
     )
 
-fun <T> ArbitraryBuilder<T>.size(property: KProperty1<T, *>, size: Int): ArbitraryBuilder<T> =
-    this.size(ParsedExpressionGenerator(listOf(PropertyExpressionGenerator(KotlinProperty(property)))), size)
+fun <T> ArbitraryBuilder<T>.size(
+    property: KProperty1<T, *>,
+    size: Int
+): ArbitraryBuilder<T> =
+    this.size(PropertyExpressionGenerator(KotlinProperty(property)), size)
 
-fun <T> ArbitraryBuilder<T>.size(property: KFunction1<T, *>, size: Int): ArbitraryBuilder<T> =
-    this.size(ParsedExpressionGenerator(listOf(PropertyExpressionGenerator(KotlinGetterProperty(property)))), size)
+fun <T> ArbitraryBuilder<T>.size(
+    property: KFunction1<T, *>,
+    size: Int
+): ArbitraryBuilder<T> =
+    this.size(PropertyExpressionGenerator(KotlinGetterProperty(property)), size)
 
-fun <T> ArbitraryBuilder<T>.size(property: KProperty1<T, *>, min: Int, max: Int): ArbitraryBuilder<T> =
-    this.size(ParsedExpressionGenerator(listOf(PropertyExpressionGenerator(KotlinProperty(property)))), min, max)
+fun <T> ArbitraryBuilder<T>.size(
+    property: KProperty1<T, *>,
+    min: Int,
+    max: Int
+): ArbitraryBuilder<T> =
+    this.size(PropertyExpressionGenerator(KotlinProperty(property)), min, max)
 
-fun <T> ArbitraryBuilder<T>.size(property: KFunction1<T, *>, min: Int, max: Int): ArbitraryBuilder<T> =
-    this.size(ParsedExpressionGenerator(listOf(PropertyExpressionGenerator(KotlinGetterProperty(property)))), min, max)
+fun <T> ArbitraryBuilder<T>.size(
+    property: KFunction1<T, *>,
+    min: Int,
+    max: Int
+): ArbitraryBuilder<T> =
+    this.size(PropertyExpressionGenerator(KotlinGetterProperty(property)), min, max)
 
-fun <T> ArbitraryBuilder<T>.minSize(property: KProperty1<T, *>, min: Int): ArbitraryBuilder<T> =
-    this.minSize(ParsedExpressionGenerator(listOf(PropertyExpressionGenerator(KotlinProperty(property)))), min)
+fun <T> ArbitraryBuilder<T>.minSize(
+    property: KProperty1<T, *>,
+    min: Int
+): ArbitraryBuilder<T> =
+    this.minSize(PropertyExpressionGenerator(KotlinProperty(property)), min)
 
-fun <T> ArbitraryBuilder<T>.minSize(property: KFunction1<T, *>, min: Int): ArbitraryBuilder<T> =
-    this.minSize(ParsedExpressionGenerator(listOf(PropertyExpressionGenerator(KotlinGetterProperty(property)))), min)
+fun <T> ArbitraryBuilder<T>.minSize(
+    property: KFunction1<T, *>,
+    min: Int
+): ArbitraryBuilder<T> =
+    this.minSize(PropertyExpressionGenerator(KotlinGetterProperty(property)), min)
 
-fun <T> ArbitraryBuilder<T>.maxSize(property: KProperty1<T, *>, max: Int): ArbitraryBuilder<T> =
-    this.maxSize(ParsedExpressionGenerator(listOf(PropertyExpressionGenerator(KotlinProperty(property)))), max)
+fun <T> ArbitraryBuilder<T>.maxSize(
+    property: KProperty1<T, *>,
+    max: Int
+): ArbitraryBuilder<T> =
+    this.maxSize(PropertyExpressionGenerator(KotlinProperty(property)), max)
 
-fun <T> ArbitraryBuilder<T>.maxSize(property: KFunction1<T, *>, max: Int): ArbitraryBuilder<T> =
-    this.maxSize(ParsedExpressionGenerator(listOf(PropertyExpressionGenerator(KotlinGetterProperty(property)))), max)
+fun <T> ArbitraryBuilder<T>.maxSize(
+    property: KFunction1<T, *>,
+    max: Int
+): ArbitraryBuilder<T> =
+    this.maxSize(PropertyExpressionGenerator(KotlinGetterProperty(property)), max)
 
 infix fun <T, R, E> KProperty1<T, R?>.into(property: KProperty1<R, E?>): Exp<E> =
     Exp(
-        ParsedExpressionGenerator(
+        JoinExpressionGenerator(
             listOf(
                 PropertyExpressionGenerator(KotlinProperty(this)),
+                DotExpressionGenerator(),
                 PropertyExpressionGenerator(KotlinProperty(property))
             )
         )
@@ -216,9 +207,10 @@ infix fun <T, R, E> KProperty1<T, R?>.into(property: KProperty1<R, E?>): Exp<E> 
 
 infix fun <T, R, E> KProperty1<T, R?>.into(expList: ExpList<R, E>): Exp<E> =
     Exp(
-        ParsedExpressionGenerator(
+        JoinExpressionGenerator(
             listOf(
                 PropertyExpressionGenerator(KotlinProperty(this)),
+                DotExpressionGenerator(),
                 expList
             )
         )
@@ -226,9 +218,10 @@ infix fun <T, R, E> KProperty1<T, R?>.into(expList: ExpList<R, E>): Exp<E> =
 
 infix fun <T, R, E> KFunction1<T, R?>.into(property: KFunction1<R, E?>): Exp<E> =
     Exp(
-        ParsedExpressionGenerator(
+        JoinExpressionGenerator(
             listOf(
                 PropertyExpressionGenerator(KotlinGetterProperty(this)),
+                DotExpressionGenerator(),
                 PropertyExpressionGenerator(KotlinGetterProperty(property))
             )
         )
@@ -236,52 +229,75 @@ infix fun <T, R, E> KFunction1<T, R?>.into(property: KFunction1<R, E?>): Exp<E> 
 
 infix fun <T, R, E> KFunction1<T, R?>.into(expList: ExpList<R, E>): Exp<E> =
     Exp(
-        ParsedExpressionGenerator(
+        JoinExpressionGenerator(
             listOf(
                 PropertyExpressionGenerator(KotlinGetterProperty(this)),
+                DotExpressionGenerator(),
                 expList
             )
         )
     )
 
-infix operator fun <T, R : Collection<E>, E : Any> KProperty1<T, R?>.get(index: Int): ExpList<T, E> =
+infix operator
+fun <T, R : Collection<E>, E : Any> KProperty1<T, R?>.get(index: Int): ExpList<T, E> =
     ExpList(ArrayExpressionGenerator(KotlinProperty(this), index))
 
-infix operator fun <T, R : Collection<E>, E : Any> KProperty1<T, R?>.get(key: String): ExpList<T, E> =
+infix operator
+fun <T, R : Collection<E>, E : Any> KProperty1<T, R?>.get(key: String): ExpList<T, E> =
     ExpList(MapExpressionGenerator(KotlinProperty(this), key))
 
 @JvmName("getNestedList")
-infix operator fun <T, R : Collection<N>, N : Collection<E>, E : Any> KProperty1<T, R?>.get(index: Int): ExpList<T, N?> =
+infix operator fun <T, R : Collection<N>, N : Collection<E>, E : Any> KProperty1<T, R?>.get(
+    index: Int
+): ExpList<T, N?> =
     ExpList(ArrayExpressionGenerator(KotlinProperty(this), index))
 
 @JvmName("getNestedMap")
-infix operator fun <T, R : Collection<N>, N : Collection<E>, E : Any> KProperty1<T, R?>.get(key: String): ExpList<T, N?> =
+infix operator fun <T, R : Collection<N>, N : Collection<E>, E : Any> KProperty1<T, R?>.get(
+    key: String
+): ExpList<T, N?> =
     ExpList(MapExpressionGenerator(KotlinProperty(this), key))
 
-infix operator fun <T, R : Collection<E>, E : Any> KFunction1<T, R?>.get(index: Int): ExpList<T, E> =
+infix operator
+fun <T, R : Collection<E>, E : Any> KFunction1<T, R?>.get(index: Int): ExpList<T, E> =
     ExpList(ArrayExpressionGenerator(KotlinGetterProperty(this), index))
 
-infix operator fun <T, R : Collection<E>, E : Any> KFunction1<T, R?>.get(key: String): ExpList<T, E> =
+infix operator
+fun <T, R : Collection<E>, E : Any> KFunction1<T, R?>.get(key: String): ExpList<T, E> =
     ExpList(MapExpressionGenerator(KotlinGetterProperty(this), key))
 
 @JvmName("getNestedList")
-infix operator fun <T, R : Collection<N>, N : Collection<E>, E : Any> KFunction1<T, R?>.get(index: Int): ExpList<T, N?> =
+infix operator fun <T, R : Collection<N>, N : Collection<E>, E : Any> KFunction1<T, R?>.get(
+    index: Int
+): ExpList<T, N?> =
     ExpList(ArrayExpressionGenerator(KotlinGetterProperty(this), index))
 
 @JvmName("getNestedMap")
-infix operator fun <T, R : Collection<N>, N : Collection<E>, E : Any> KFunction1<T, R?>.get(key: String): ExpList<T, N?> =
+infix operator fun <T, R : Collection<N>, N : Collection<E>, E : Any> KFunction1<T, R?>.get(
+    key: String
+): ExpList<T, N?> =
     ExpList(MapExpressionGenerator(KotlinGetterProperty(this), key))
 
 @Suppress("unused")
-class ExpList<E, L> internal constructor(val delegate: ExpressionGenerator) : ExpressionGenerator by delegate {
+class ExpList<E, L> internal constructor(val delegate: ExpressionGenerator) :
+    ExpressionGenerator by delegate {
     infix fun <R> into(expList: ExpList<L, R>) =
-        Exp<R>(ParsedExpressionGenerator(listOf(this.delegate, expList.delegate)))
+        Exp<R>(
+            JoinExpressionGenerator(
+                listOf(
+                    this.delegate,
+                    DotExpressionGenerator(),
+                    expList.delegate
+                )
+            )
+        )
 
     infix fun <R> into(property: KProperty1<L, R?>): Exp<R> =
         Exp(
-            ParsedExpressionGenerator(
+            JoinExpressionGenerator(
                 listOf(
                     this,
+                    DotExpressionGenerator(),
                     PropertyExpressionGenerator(KotlinProperty(property))
                 )
             )
@@ -289,70 +305,120 @@ class ExpList<E, L> internal constructor(val delegate: ExpressionGenerator) : Ex
 
     infix fun <R> into(property: KFunction1<L, R?>): Exp<R> =
         Exp(
-            ParsedExpressionGenerator(
+            JoinExpressionGenerator(
                 listOf(
                     this,
+                    DotExpressionGenerator(),
                     PropertyExpressionGenerator(KotlinGetterProperty(property))
                 )
             )
         )
 }
 
-infix operator fun <T, R : Collection<E>, E : Any> ExpList<T, R?>.get(index: Int): ExpList<T, E> =
-    ExpList(ParsedExpressionGenerator(listOf(delegate, IndexExpressionGenerator(index))))
+infix operator
+fun <T, R : Collection<E>, E : Any> ExpList<T, R?>.get(index: Int): ExpList<T, E> =
+    ExpList(
+        JoinExpressionGenerator(
+            listOf(
+                delegate,
+                IndexExpressionGenerator(index)
+            )
+        )
+    )
 
-infix operator fun <T, R : Collection<E>, E : Any> ExpList<T, R?>.get(key: String): ExpList<T, E> =
-    ExpList(ParsedExpressionGenerator(listOf(delegate, KeyExpressionGenerator(key))))
+infix operator
+fun <T, R : Collection<E>, E : Any> ExpList<T, R?>.get(key: String): ExpList<T, E> =
+    ExpList(JoinExpressionGenerator(listOf(delegate, KeyExpressionGenerator(key))))
 
 @JvmName("getNestedList")
-infix operator fun <T, R : Collection<N>, N : Collection<E>, E : Any> ExpList<T, R?>.get(index: Int): ExpList<T, N?> =
-    ExpList(ParsedExpressionGenerator(listOf(delegate, IndexExpressionGenerator(index))))
+infix operator fun <T, R : Collection<N>, N : Collection<E>, E : Any> ExpList<T, R?>.get(
+    index: Int
+): ExpList<T, N?> =
+    ExpList(
+        JoinExpressionGenerator(
+            listOf(
+                delegate,
+                IndexExpressionGenerator(index)
+            )
+        )
+    )
 
 @JvmName("getNestedMap")
-infix operator fun <T, R : Collection<N>, N : Collection<E>, E : Any> ExpList<T, R?>.get(key: String): ExpList<T, N?> =
-    ExpList(ParsedExpressionGenerator(listOf(delegate, KeyExpressionGenerator(key))))
+infix operator fun <T, R : Collection<N>, N : Collection<E>, E : Any> ExpList<T, R?>.get(
+    key: String
+): ExpList<T, N?> =
+    ExpList(JoinExpressionGenerator(listOf(delegate, KeyExpressionGenerator(key))))
 
-private class ParsedExpressionGenerator(private val expressionGenerators: List<ExpressionGenerator>) :
+private class JoinExpressionGenerator(private val expressionGenerators: List<ExpressionGenerator>) :
     ExpressionGenerator {
     override fun generate(propertyNameResolver: PropertyNameResolver): String =
         expressionGenerators.joinToString(separator = "") { expressionGenerator ->
             expressionGenerator.generate(propertyNameResolver)
-        }.removePrefix(".")
+        }
 }
 
-private class PropertyExpressionGenerator(private val property: Property) : ExpressionGenerator {
+private class PropertyExpressionGenerator(private val property: Property) :
+    ExpressionGenerator {
     override fun generate(propertyNameResolver: PropertyNameResolver): String =
-        ".${propertyNameResolver.resolve(property)}"
+        propertyNameResolver.resolve(property)
 }
 
 private class IndexExpressionGenerator(val index: Int) : ExpressionGenerator {
-    override fun generate(propertyNameResolver: PropertyNameResolver): String = "[$index]"
+    override fun generate(propertyNameResolver: PropertyNameResolver): String =
+        "[$index]"
 }
 
-private class ArrayExpressionGenerator(private val property: Property, val index: Int) :
+private class ArrayExpressionGenerator(
+    private val property: Property,
+    val index: Int
+) :
     ExpressionGenerator {
     override fun generate(propertyNameResolver: PropertyNameResolver): String =
-        ".${propertyNameResolver.resolve(property)}[$index]"
+        "${propertyNameResolver.resolve(property)}[$index]"
 }
 
-private class MapExpressionGenerator(private val property: Property, val key: String) :
+private class MapExpressionGenerator(
+    private val property: Property,
+    val key: String
+) :
     ExpressionGenerator {
     override fun generate(propertyNameResolver: PropertyNameResolver): String =
-        ".${propertyNameResolver.resolve(property)}[$key]"
+        "${propertyNameResolver.resolve(property)}[$key]"
 }
 
-private class KeyExpressionGenerator(private val key: String) : ExpressionGenerator {
-    override fun generate(propertyNameResolver: PropertyNameResolver): String = "[$key]"
+private class KeyExpressionGenerator(private val key: String) :
+    ExpressionGenerator {
+    override fun generate(propertyNameResolver: PropertyNameResolver): String =
+        "[$key]"
+}
+
+private class DotExpressionGenerator : ExpressionGenerator {
+    override fun generate(propertyNameResolver: PropertyNameResolver): String = "."
 }
 
 private class EmptyExpressionGenerator : ExpressionGenerator {
     override fun generate(propertyNameResolver: PropertyNameResolver): String = ""
 }
 
-private class KotlinProperty<V, R>(private val property: KProperty1<V, R>) : Property {
+fun ExpressionGenerator.join(joinerExpressionGenerator: ExpressionGenerator): ExpressionGenerator =
+    if (this is EmptyExpressionGenerator) {
+        joinerExpressionGenerator
+    } else {
+        JoinExpressionGenerator(
+            listOf(
+                this,
+                DotExpressionGenerator(),
+                joinerExpressionGenerator
+            )
+        )
+    }
+
+private class KotlinProperty<V, R>(private val property: KProperty1<V, R>) :
+    Property {
     override fun getType(): Class<*> = property.javaField!!.type
 
-    override fun getAnnotatedType(): AnnotatedType = property.javaField!!.annotatedType
+    override fun getAnnotatedType(): AnnotatedType =
+        property.javaField!!.annotatedType
 
     override fun getName(): String = property.name
 
@@ -362,7 +428,8 @@ private class KotlinProperty<V, R>(private val property: KProperty1<V, R>) : Pro
     override fun getValue(obj: Any): Any? = property.get(obj as V)
 }
 
-private class KotlinGetterProperty<V, R>(private val getter: KFunction1<V, R>) : Property {
+private class KotlinGetterProperty<V, R>(private val getter: KFunction1<V, R>) :
+    Property {
     private val callerType = getter.parameters[0].type.javaType as Class<*>
     private val returnJavaType = getter.returnType.javaType
     private val type: Class<*> = if (returnJavaType is ParameterizedType) {
@@ -384,9 +451,11 @@ private class KotlinGetterProperty<V, R>(private val getter: KFunction1<V, R>) :
     } catch (ex: Exception) {
         null
     }
-    private val propertyAnnotation: List<Annotation> = property?.annotations ?: listOf()
+    private val propertyAnnotation: List<Annotation> =
+        property?.annotations ?: listOf()
     private val getterAnnotation: List<Annotation> = getter.annotations
-    private val javaFieldAnnotations: List<Annotation> = javaField?.annotations?.toList() ?: listOf()
+    private val javaFieldAnnotations: List<Annotation> =
+        javaField?.annotations?.toList() ?: listOf()
 
     override fun getType(): Class<*> = type
 
