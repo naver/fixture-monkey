@@ -28,11 +28,20 @@ import com.navercorp.fixturemonkey.junit.jupiter.annotation.GiveMe;
 import com.navercorp.fixturemonkey.junit.jupiter.extension.support.ParameterContextAwareFixtureMonkey;
 
 public class FixtureMonkeyParameterExtension implements ParameterResolver {
+	private static FixtureMonkey GLOBAL_DEFAULT_FIXTURE_MONKEY = FixtureMonkey.create();
 
 	protected final FixtureMonkey fixtureMonkey;
 
+	/**
+	 * Set up the global default {@link com.navercorp.fixturemonkey.FixtureMonkey} instance used by default constructor.
+	 * @param fixtureMonkey
+	 */
+	public static void setUp(FixtureMonkey fixtureMonkey) {
+		GLOBAL_DEFAULT_FIXTURE_MONKEY = fixtureMonkey;
+	}
+
 	public FixtureMonkeyParameterExtension() {
-		this.fixtureMonkey = FixtureMonkey.create();
+		this.fixtureMonkey = GLOBAL_DEFAULT_FIXTURE_MONKEY;
 	}
 
 	public FixtureMonkeyParameterExtension(FixtureMonkey fixtureMonkey) {

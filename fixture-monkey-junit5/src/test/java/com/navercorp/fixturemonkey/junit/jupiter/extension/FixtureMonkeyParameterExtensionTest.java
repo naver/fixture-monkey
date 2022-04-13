@@ -30,16 +30,23 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import lombok.Data;
 
+import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.junit.jupiter.annotation.GiveMe;
 
 @ExtendWith(FixtureMonkeyParameterExtension.class)
 class FixtureMonkeyParameterExtensionTest {
+	@BeforeAll
+	static void beforeAll() {
+		FixtureMonkeyParameterExtension.setUp(FixtureMonkey.create());
+	}
+
 	@RepeatedTest(10)
 	void giveMeOne(@GiveMe Order order) {
 		assertOrderCreatedCorrectly(order);
