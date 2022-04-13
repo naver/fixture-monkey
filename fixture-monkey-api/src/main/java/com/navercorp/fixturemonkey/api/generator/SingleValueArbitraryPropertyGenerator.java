@@ -30,7 +30,7 @@ public final class SingleValueArbitraryPropertyGenerator implements ArbitraryPro
 	public static final SingleValueArbitraryPropertyGenerator INSTANCE = new SingleValueArbitraryPropertyGenerator();
 
 	@Override
-	public ArbitraryProperty property(ArbitraryPropertyGeneratorContext context) {
+	public ArbitraryProperty generate(ArbitraryPropertyGeneratorContext context) {
 		Property property = context.getProperty();
 		return new ArbitraryProperty(
 			property,

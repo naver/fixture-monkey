@@ -35,7 +35,7 @@ public final class EntryArbitraryPropertyGenerator implements ArbitraryPropertyG
 	private static final ArbitraryContainerInfo CONTAINER_INFO = new ArbitraryContainerInfo(0, 1);
 
 	@Override
-	public ArbitraryProperty property(ArbitraryPropertyGeneratorContext context) {
+	public ArbitraryProperty generate(ArbitraryPropertyGeneratorContext context) {
 		Property property = context.getProperty();
 
 		List<AnnotatedType> genericsTypes = Types.getGenericsTypes(property.getAnnotatedType());

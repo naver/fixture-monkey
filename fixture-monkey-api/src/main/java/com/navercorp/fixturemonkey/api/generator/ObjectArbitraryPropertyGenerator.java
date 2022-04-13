@@ -31,7 +31,7 @@ public final class ObjectArbitraryPropertyGenerator implements ArbitraryProperty
 	public static final ObjectArbitraryPropertyGenerator INSTANCE = new ObjectArbitraryPropertyGenerator();
 
 	@Override
-	public ArbitraryProperty property(ArbitraryPropertyGeneratorContext context) {
+	public ArbitraryProperty generate(ArbitraryPropertyGeneratorContext context) {
 		Property property = context.getProperty();
 		List<Property> childProperties = PropertyCache.getProperties(property.getAnnotatedType());
 		return new ArbitraryProperty(

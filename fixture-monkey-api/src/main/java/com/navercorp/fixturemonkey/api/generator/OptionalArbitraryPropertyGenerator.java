@@ -105,7 +105,7 @@ public final class OptionalArbitraryPropertyGenerator implements ArbitraryProper
 	private static final ArbitraryContainerInfo CONTAINER_INFO = new ArbitraryContainerInfo(0, 1);
 
 	@Override
-	public ArbitraryProperty property(ArbitraryPropertyGeneratorContext context) {
+	public ArbitraryProperty generate(ArbitraryPropertyGeneratorContext context) {
 		Property property = context.getProperty();
 
 		AnnotatedType valueAnnotatedType = getValueAnnotatedType(property);

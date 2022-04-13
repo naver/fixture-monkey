@@ -35,7 +35,7 @@ public final class MapArbitraryPropertyGenerator implements ArbitraryPropertyGen
 	public static final MapArbitraryPropertyGenerator INSTANCE = new MapArbitraryPropertyGenerator();
 
 	@Override
-	public ArbitraryProperty property(ArbitraryPropertyGeneratorContext context) {
+	public ArbitraryProperty generate(ArbitraryPropertyGeneratorContext context) {
 		Property property = context.getProperty();
 
 		List<AnnotatedType> genericsTypes = Types.getGenericsTypes(property.getAnnotatedType());

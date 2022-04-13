@@ -34,7 +34,7 @@ public final class ContainerArbitraryPropertyGenerator implements ArbitraryPrope
 	public static final ContainerArbitraryPropertyGenerator INSTANCE = new ContainerArbitraryPropertyGenerator();
 
 	@Override
-	public ArbitraryProperty property(ArbitraryPropertyGeneratorContext context) {
+	public ArbitraryProperty generate(ArbitraryPropertyGeneratorContext context) {
 		Property property = context.getProperty();
 
 		List<AnnotatedType> elementTypes = Types.getGenericsTypes(property.getAnnotatedType());
