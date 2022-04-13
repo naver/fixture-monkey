@@ -58,7 +58,7 @@ class FieldReflectionArbitraryIntrospectorTest {
 
 		GenerateOptions generateOptions = GenerateOptions.DEFAULT_GENERATE_OPTIONS;
 		ArbitraryPropertyGenerator rootGenerator = generateOptions.getArbitraryPropertyGenerator(rootProperty);
-		ArbitraryProperty rootArbitraryProperty = rootGenerator.property(
+		ArbitraryProperty rootArbitraryProperty = rootGenerator.generate(
 			new ArbitraryPropertyGeneratorContext(
 				rootProperty,
 				null,
@@ -71,7 +71,7 @@ class FieldReflectionArbitraryIntrospectorTest {
 		List<ArbitraryProperty> childrenProperties = PropertyCache.getProperties(typeReference.getAnnotatedType())
 			.stream()
 			.map(it -> generateOptions.getArbitraryPropertyGenerator(it)
-				.property(
+				.generate(
 					new ArbitraryPropertyGeneratorContext(
 						it,
 						null,
