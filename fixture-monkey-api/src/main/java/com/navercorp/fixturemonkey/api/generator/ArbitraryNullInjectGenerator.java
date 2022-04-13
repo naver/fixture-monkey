@@ -18,11 +18,13 @@
 
 package com.navercorp.fixturemonkey.api.generator;
 
+import javax.annotation.Nullable;
+
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 @FunctionalInterface
-public interface ArbitraryContainerInfoGenerator {
-	ArbitraryContainerInfo generate(ArbitraryPropertyGeneratorContext context);
+public interface ArbitraryNullInjectGenerator {
+	double generate(ArbitraryPropertyGeneratorContext context, @Nullable ArbitraryContainerInfo containerInfo);
 }

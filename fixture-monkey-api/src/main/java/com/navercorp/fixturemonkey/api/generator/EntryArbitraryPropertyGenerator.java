@@ -71,11 +71,14 @@ public final class EntryArbitraryPropertyGenerator implements ArbitraryPropertyG
 			);
 		}
 
+		double nullInject = context.getGenerateOptions().getArbitraryNullInjectGenerator(property)
+			.generate(context, CONTAINER_INFO);
+
 		return new ArbitraryProperty(
 			property,
 			context.getPropertyNameResolver(),
 			context.getPropertyValue(),
-			context.getGenerateOptions().getContainerNullInject(),
+			nullInject,
 			context.getElementIndex(),
 			childProperties,
 			CONTAINER_INFO
