@@ -63,7 +63,7 @@ class JavaxValidationArbitraryIntrospectorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when
@@ -95,7 +95,7 @@ class JavaxValidationArbitraryIntrospectorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when
@@ -127,7 +127,7 @@ class JavaxValidationArbitraryIntrospectorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when
@@ -159,7 +159,7 @@ class JavaxValidationArbitraryIntrospectorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when
@@ -192,7 +192,7 @@ class JavaxValidationArbitraryIntrospectorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when
@@ -225,7 +225,7 @@ class JavaxValidationArbitraryIntrospectorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when
@@ -262,7 +262,7 @@ class JavaxValidationArbitraryIntrospectorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when
@@ -294,7 +294,7 @@ class JavaxValidationArbitraryIntrospectorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when
@@ -325,7 +325,7 @@ class JavaxValidationArbitraryIntrospectorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when
@@ -357,7 +357,7 @@ class JavaxValidationArbitraryIntrospectorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when
@@ -389,7 +389,7 @@ class JavaxValidationArbitraryIntrospectorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when
@@ -421,7 +421,7 @@ class JavaxValidationArbitraryIntrospectorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when
@@ -453,7 +453,7 @@ class JavaxValidationArbitraryIntrospectorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when
@@ -485,7 +485,7 @@ class JavaxValidationArbitraryIntrospectorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when
@@ -517,7 +517,7 @@ class JavaxValidationArbitraryIntrospectorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when
@@ -549,7 +549,7 @@ class JavaxValidationArbitraryIntrospectorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when
@@ -581,7 +581,7 @@ class JavaxValidationArbitraryIntrospectorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when
@@ -613,7 +613,7 @@ class JavaxValidationArbitraryIntrospectorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when
@@ -645,7 +645,7 @@ class JavaxValidationArbitraryIntrospectorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when
@@ -677,7 +677,7 @@ class JavaxValidationArbitraryIntrospectorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when
@@ -709,7 +709,7 @@ class JavaxValidationArbitraryIntrospectorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when
@@ -741,7 +741,7 @@ class JavaxValidationArbitraryIntrospectorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when
@@ -773,7 +773,7 @@ class JavaxValidationArbitraryIntrospectorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when
@@ -805,7 +805,7 @@ class JavaxValidationArbitraryIntrospectorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when
@@ -837,7 +837,7 @@ class JavaxValidationArbitraryIntrospectorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when
@@ -869,7 +869,7 @@ class JavaxValidationArbitraryIntrospectorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when
@@ -901,7 +901,7 @@ class JavaxValidationArbitraryIntrospectorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when
@@ -933,7 +933,7 @@ class JavaxValidationArbitraryIntrospectorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when
@@ -965,7 +965,7 @@ class JavaxValidationArbitraryIntrospectorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when
@@ -997,7 +997,7 @@ class JavaxValidationArbitraryIntrospectorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when
@@ -1029,7 +1029,7 @@ class JavaxValidationArbitraryIntrospectorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when
@@ -1061,7 +1061,7 @@ class JavaxValidationArbitraryIntrospectorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when
@@ -1093,7 +1093,7 @@ class JavaxValidationArbitraryIntrospectorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when
@@ -1125,7 +1125,7 @@ class JavaxValidationArbitraryIntrospectorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when
@@ -1157,7 +1157,7 @@ class JavaxValidationArbitraryIntrospectorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when
@@ -1189,7 +1189,7 @@ class JavaxValidationArbitraryIntrospectorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when
@@ -1221,7 +1221,7 @@ class JavaxValidationArbitraryIntrospectorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when
@@ -1253,7 +1253,7 @@ class JavaxValidationArbitraryIntrospectorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when
@@ -1285,7 +1285,7 @@ class JavaxValidationArbitraryIntrospectorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when
@@ -1317,7 +1317,7 @@ class JavaxValidationArbitraryIntrospectorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when
@@ -1349,7 +1349,7 @@ class JavaxValidationArbitraryIntrospectorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when
@@ -1381,7 +1381,7 @@ class JavaxValidationArbitraryIntrospectorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when
@@ -1413,7 +1413,7 @@ class JavaxValidationArbitraryIntrospectorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when
@@ -1445,7 +1445,7 @@ class JavaxValidationArbitraryIntrospectorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when

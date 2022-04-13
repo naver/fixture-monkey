@@ -74,6 +74,10 @@ public final class ArbitraryProperty {
 		return this.propertyNameResolver;
 	}
 
+	public String getPropertyName() {
+		return this.getPropertyNameResolver().resolve(this.property);
+	}
+
 	@Nullable
 	public PropertyValue getPropertyValue() {
 		return this.propertyValue;

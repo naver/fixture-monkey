@@ -23,15 +23,18 @@ import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 
 import javax.annotation.Nullable;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
 
 import com.navercorp.fixturemonkey.api.property.Property;
@@ -45,13 +48,13 @@ public final class ArbitraryGeneratorContext {
 	@Nullable
 	private final ArbitraryGeneratorContext ownerContext;
 
-	private final Function<ArbitraryGeneratorContext, Arbitrary<Object>> resolveArbitrary;
+	private final BiFunction<ArbitraryGeneratorContext, ArbitraryProperty, Arbitrary<?>> resolveArbitrary;
 
 	public ArbitraryGeneratorContext(
 		ArbitraryProperty property,
 		List<ArbitraryProperty> children,
 		@Nullable ArbitraryGeneratorContext ownerContext,
-		Function<ArbitraryGeneratorContext, Arbitrary<Object>> resolveArbitrary
+		BiFunction<ArbitraryGeneratorContext, ArbitraryProperty, Arbitrary<?>> resolveArbitrary
 	) {
 		this.property = property;
 		this.children = new ArrayList<>(children);
@@ -83,12 +86,24 @@ public final class ArbitraryGeneratorContext {
 		return Collections.unmodifiableList(this.children);
 	}
 
+	public Map<String, Arbitrary<?>> getChildrenArbitraries() {
+		Map<String, Arbitrary<?>> childrenValues = new HashMap<>();
+		for (ArbitraryProperty child : this.getChildren()) {
+			String propertyName = child.getPropertyName();
+			Arbitrary<?> arbitrary = child.getPropertyValue() != null
+				? Arbitraries.of(child.getPropertyValue().get())
+				: this.getResolveArbitrary().apply(this, child);
+			childrenValues.put(propertyName, arbitrary);
+		}
+		return childrenValues;
+	}
+
 	@Nullable
 	public ArbitraryGeneratorContext getOwnerContext() {
 		return this.ownerContext;
 	}
 
-	public Function<ArbitraryGeneratorContext, Arbitrary<Object>> getResolveArbitrary() {
+	public BiFunction<ArbitraryGeneratorContext, ArbitraryProperty, Arbitrary<?>> getResolveArbitrary() {
 		return this.resolveArbitrary;
 	}
 

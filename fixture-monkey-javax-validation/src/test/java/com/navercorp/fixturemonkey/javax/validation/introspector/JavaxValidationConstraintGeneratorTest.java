@@ -24,6 +24,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Collections;
 
+import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Example;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
@@ -55,7 +56,7 @@ class JavaxValidationConstraintGeneratorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when
@@ -88,7 +89,7 @@ class JavaxValidationConstraintGeneratorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when
@@ -121,7 +122,7 @@ class JavaxValidationConstraintGeneratorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when
@@ -154,7 +155,7 @@ class JavaxValidationConstraintGeneratorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when
@@ -187,7 +188,7 @@ class JavaxValidationConstraintGeneratorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when
@@ -220,7 +221,7 @@ class JavaxValidationConstraintGeneratorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when
@@ -251,7 +252,7 @@ class JavaxValidationConstraintGeneratorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when
@@ -282,7 +283,7 @@ class JavaxValidationConstraintGeneratorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when
@@ -313,7 +314,7 @@ class JavaxValidationConstraintGeneratorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when
@@ -344,7 +345,7 @@ class JavaxValidationConstraintGeneratorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when
@@ -375,7 +376,7 @@ class JavaxValidationConstraintGeneratorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when
@@ -406,7 +407,7 @@ class JavaxValidationConstraintGeneratorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when
@@ -437,7 +438,7 @@ class JavaxValidationConstraintGeneratorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when
@@ -468,7 +469,7 @@ class JavaxValidationConstraintGeneratorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when
@@ -499,7 +500,7 @@ class JavaxValidationConstraintGeneratorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when
@@ -530,7 +531,7 @@ class JavaxValidationConstraintGeneratorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when
@@ -561,7 +562,7 @@ class JavaxValidationConstraintGeneratorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when
@@ -592,7 +593,7 @@ class JavaxValidationConstraintGeneratorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when
@@ -625,7 +626,7 @@ class JavaxValidationConstraintGeneratorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when
@@ -658,7 +659,7 @@ class JavaxValidationConstraintGeneratorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when
@@ -691,7 +692,7 @@ class JavaxValidationConstraintGeneratorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when
@@ -724,7 +725,7 @@ class JavaxValidationConstraintGeneratorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when
@@ -757,7 +758,7 @@ class JavaxValidationConstraintGeneratorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when
@@ -790,7 +791,7 @@ class JavaxValidationConstraintGeneratorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when
@@ -823,7 +824,7 @@ class JavaxValidationConstraintGeneratorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when
@@ -856,7 +857,7 @@ class JavaxValidationConstraintGeneratorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when
@@ -889,7 +890,7 @@ class JavaxValidationConstraintGeneratorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when
@@ -922,7 +923,7 @@ class JavaxValidationConstraintGeneratorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when
@@ -955,7 +956,7 @@ class JavaxValidationConstraintGeneratorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		// when

@@ -24,6 +24,8 @@ import java.util.Collections;
 
 import org.junit.jupiter.api.Test;
 
+import net.jqwik.api.Arbitraries;
+
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorTest.Sample;
@@ -55,7 +57,7 @@ class ArbitraryIntrospectDelegatorTest {
 			),
 			Collections.emptyList(),
 			null,
-			ctx -> null
+			(ctx, prop) -> Arbitraries.just(null)
 		);
 
 		then(sut.match(context.getProperty())).isTrue();
