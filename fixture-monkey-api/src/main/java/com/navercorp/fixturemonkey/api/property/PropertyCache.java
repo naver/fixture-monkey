@@ -109,6 +109,7 @@ public final class PropertyCache {
 			List<Field> fields = ReflectionUtils.findFields(
 				clazz, field -> true, HierarchyTraversalMode.TOP_DOWN);
 			for (Field field : fields) {
+				field.setAccessible(true);
 				result.put(field.getName(), field);
 			}
 			return result;
