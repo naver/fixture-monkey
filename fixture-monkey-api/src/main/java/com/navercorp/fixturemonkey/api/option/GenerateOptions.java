@@ -52,11 +52,11 @@ import org.apiguardian.api.API.Status;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfoGenerator;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGenerator;
-import com.navercorp.fixturemonkey.api.generator.ArbitraryNullInjectGenerator;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.ContainerArbitraryPropertyGenerator;
-import com.navercorp.fixturemonkey.api.generator.DefaultArbitraryNullInjectGenerator;
+import com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator;
 import com.navercorp.fixturemonkey.api.generator.MapArbitraryPropertyGenerator;
+import com.navercorp.fixturemonkey.api.generator.NullInjectGenerator;
 import com.navercorp.fixturemonkey.api.generator.ObjectArbitraryPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.OptionalArbitraryPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.SingleValueArbitraryPropertyGenerator;
@@ -75,7 +75,7 @@ public final class GenerateOptions {
 		DEFAULT_ARBITRARY_PROPERTY_GENERATORS,
 		Collections.emptyList(),
 		Collections.emptyList(),
-		new DefaultArbitraryNullInjectGenerator(),
+		new DefaultNullInjectGenerator(),
 		Collections.emptyList(),
 		new ArbitraryContainerInfo(0, 3),
 		DEFAULT_ARBITRARY_GENERATOR
@@ -83,8 +83,8 @@ public final class GenerateOptions {
 
 	private final List<MatcherOperator<ArbitraryPropertyGenerator>> arbitraryPropertyGenerators;
 	private final List<MatcherOperator<PropertyNameResolver>> propertyNameResolvers;
-	private final List<MatcherOperator<ArbitraryNullInjectGenerator>> arbitraryNullInjectGenerators;
-	private final ArbitraryNullInjectGenerator defaultArbitraryNullInjectGenerator;
+	private final List<MatcherOperator<NullInjectGenerator>> nullInjectGenerators;
+	private final NullInjectGenerator defaultNullInjectGenerator;
 	private final List<MatcherOperator<ArbitraryContainerInfoGenerator>> arbitraryContainerInfoGenerators;
 	private final ArbitraryContainerInfo defaultArbitraryPropertyContainerInfo;
 	private final List<MatcherOperator<ArbitraryGenerator>> arbitraryGenerators;
@@ -92,16 +92,16 @@ public final class GenerateOptions {
 	public GenerateOptions(
 		List<MatcherOperator<ArbitraryPropertyGenerator>> arbitraryPropertyGenerators,
 		List<MatcherOperator<PropertyNameResolver>> propertyNameResolvers,
-		List<MatcherOperator<ArbitraryNullInjectGenerator>> arbitraryNullInjectGenerators,
-		ArbitraryNullInjectGenerator defaultArbitraryNullInjectGenerator,
+		List<MatcherOperator<NullInjectGenerator>> nullInjectGenerators,
+		NullInjectGenerator defaultNullInjectGenerator,
 		List<MatcherOperator<ArbitraryContainerInfoGenerator>> arbitraryContainerInfoGenerators,
 		ArbitraryContainerInfo defaultArbitraryPropertyContainerInfo,
 		List<MatcherOperator<ArbitraryGenerator>> arbitraryGenerators
 	) {
 		this.arbitraryPropertyGenerators = arbitraryPropertyGenerators;
 		this.propertyNameResolvers = propertyNameResolvers;
-		this.arbitraryNullInjectGenerators = arbitraryNullInjectGenerators;
-		this.defaultArbitraryNullInjectGenerator = defaultArbitraryNullInjectGenerator;
+		this.nullInjectGenerators = nullInjectGenerators;
+		this.defaultNullInjectGenerator = defaultNullInjectGenerator;
 		this.arbitraryContainerInfoGenerators = arbitraryContainerInfoGenerators;
 		this.defaultArbitraryPropertyContainerInfo = defaultArbitraryPropertyContainerInfo;
 		this.arbitraryGenerators = arbitraryGenerators;
@@ -131,16 +131,16 @@ public final class GenerateOptions {
 			.orElse(PropertyNameResolver.IDENTITY);
 	}
 
-	public List<MatcherOperator<ArbitraryNullInjectGenerator>> getArbitraryNullInjectGenerators() {
-		return this.arbitraryNullInjectGenerators;
+	public List<MatcherOperator<NullInjectGenerator>> getNullInjectGenerators() {
+		return this.nullInjectGenerators;
 	}
 
-	public ArbitraryNullInjectGenerator getArbitraryNullInjectGenerator(Property property) {
-		return this.getArbitraryNullInjectGenerators().stream()
+	public NullInjectGenerator getNullInjectGenerator(Property property) {
+		return this.getNullInjectGenerators().stream()
 			.filter(it -> it.match(property))
 			.map(MatcherOperator::getOperator)
 			.findFirst()
-			.orElse(this.defaultArbitraryNullInjectGenerator);
+			.orElse(this.defaultNullInjectGenerator);
 	}
 
 	public List<MatcherOperator<ArbitraryContainerInfoGenerator>> getArbitraryContainerInfoGenerators() {

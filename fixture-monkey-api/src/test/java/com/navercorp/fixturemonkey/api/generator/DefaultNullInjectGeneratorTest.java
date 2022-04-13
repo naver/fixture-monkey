@@ -32,11 +32,11 @@ import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.PropertyCache;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 
-class DefaultArbitraryNullInjectGeneratorTest {
+class DefaultNullInjectGeneratorTest {
 	@Test
 	void generateNullable() {
 		// given
-		DefaultArbitraryNullInjectGenerator sut = new DefaultArbitraryNullInjectGenerator();
+		DefaultNullInjectGenerator sut = new DefaultNullInjectGenerator();
 		TypeReference<SampleWithAnnotation> typeReference = new TypeReference<SampleWithAnnotation>() {
 		};
 		Property property = PropertyCache.getProperty(typeReference.getAnnotatedType(), "nullable").get();
@@ -57,7 +57,7 @@ class DefaultArbitraryNullInjectGeneratorTest {
 	@Test
 	void generateNonNull() {
 		// given
-		DefaultArbitraryNullInjectGenerator sut = new DefaultArbitraryNullInjectGenerator();
+		DefaultNullInjectGenerator sut = new DefaultNullInjectGenerator();
 		TypeReference<SampleWithAnnotation> typeReference = new TypeReference<SampleWithAnnotation>() {
 		};
 		Property property = PropertyCache.getProperty(typeReference.getAnnotatedType(), "nonnull").get();
@@ -78,7 +78,7 @@ class DefaultArbitraryNullInjectGeneratorTest {
 	@Test
 	void generateDefaultNotNullFalse() {
 		// given
-		DefaultArbitraryNullInjectGenerator sut = new DefaultArbitraryNullInjectGenerator(
+		DefaultNullInjectGenerator sut = new DefaultNullInjectGenerator(
 			0.2,
 			false,
 			false,
@@ -105,7 +105,7 @@ class DefaultArbitraryNullInjectGeneratorTest {
 	@Test
 	void generateDefaultNotNullTrue() {
 		// given
-		DefaultArbitraryNullInjectGenerator sut = new DefaultArbitraryNullInjectGenerator(
+		DefaultNullInjectGenerator sut = new DefaultNullInjectGenerator(
 			0.2,
 			false,
 			true,
@@ -132,7 +132,7 @@ class DefaultArbitraryNullInjectGeneratorTest {
 	@Test
 	void generatePrimitive() {
 		// given
-		DefaultArbitraryNullInjectGenerator sut = new DefaultArbitraryNullInjectGenerator();
+		DefaultNullInjectGenerator sut = new DefaultNullInjectGenerator();
 		TypeReference<SampleWithAnnotation> typeReference = new TypeReference<SampleWithAnnotation>() {
 		};
 		Property property = PropertyCache.getProperty(typeReference.getAnnotatedType(), "primitive").get();
@@ -153,7 +153,7 @@ class DefaultArbitraryNullInjectGeneratorTest {
 	@Test
 	void generateContainer() {
 		// given
-		DefaultArbitraryNullInjectGenerator sut = new DefaultArbitraryNullInjectGenerator(
+		DefaultNullInjectGenerator sut = new DefaultNullInjectGenerator(
 			0.2,
 			false,
 			true,
@@ -181,7 +181,7 @@ class DefaultArbitraryNullInjectGeneratorTest {
 	@Test
 	void generateNullableContainer() {
 		// given
-		DefaultArbitraryNullInjectGenerator sut = new DefaultArbitraryNullInjectGenerator(
+		DefaultNullInjectGenerator sut = new DefaultNullInjectGenerator(
 			0.2,
 			true,
 			true,

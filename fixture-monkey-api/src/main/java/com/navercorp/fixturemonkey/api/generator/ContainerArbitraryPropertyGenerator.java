@@ -63,7 +63,7 @@ public final class ContainerArbitraryPropertyGenerator implements ArbitraryPrope
 			);
 		}
 
-		double nullInject = context.getGenerateOptions().getArbitraryNullInjectGenerator(property)
+		double nullInject = context.getGenerateOptions().getNullInjectGenerator(property)
 			.generate(context, containerInfo);
 
 		return new ArbitraryProperty(

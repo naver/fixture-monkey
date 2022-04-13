@@ -25,6 +25,6 @@ import org.apiguardian.api.API.Status;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 @FunctionalInterface
-public interface ArbitraryNullInjectGenerator {
+public interface NullInjectGenerator {
 	double generate(ArbitraryPropertyGeneratorContext context, @Nullable ArbitraryContainerInfo containerInfo);
 }

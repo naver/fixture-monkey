@@ -32,7 +32,7 @@ public final class SingleValueArbitraryPropertyGenerator implements ArbitraryPro
 	@Override
 	public ArbitraryProperty generate(ArbitraryPropertyGeneratorContext context) {
 		Property property = context.getProperty();
-		double nullInject = context.getGenerateOptions().getArbitraryNullInjectGenerator(property)
+		double nullInject = context.getGenerateOptions().getNullInjectGenerator(property)
 			.generate(context, null);
 		return new ArbitraryProperty(
 			property,

@@ -33,7 +33,7 @@ import org.apiguardian.api.API.Status;
 import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public final class DefaultArbitraryNullInjectGenerator implements ArbitraryNullInjectGenerator {
+public final class DefaultNullInjectGenerator implements NullInjectGenerator {
 	public static final List<String> DEFAULT_NULLABLE_ANNOTATION_TYPES = Arrays.asList(
 		"javax.annotation.Nullable",
 		"org.springframework.lang.Nullable",
@@ -70,7 +70,7 @@ public final class DefaultArbitraryNullInjectGenerator implements ArbitraryNullI
 	private final Set<String> nullableAnnotationTypes;
 	private final Set<String> notNullAnnotationTypes;
 
-	public DefaultArbitraryNullInjectGenerator() {
+	public DefaultNullInjectGenerator() {
 		this(
 			0.2d,
 			false,
@@ -80,7 +80,7 @@ public final class DefaultArbitraryNullInjectGenerator implements ArbitraryNullI
 		);
 	}
 
-	public DefaultArbitraryNullInjectGenerator(
+	public DefaultNullInjectGenerator(
 		double defaultNullInject,
 		boolean nullableContainer,
 		boolean defaultNotNull,
@@ -94,14 +94,14 @@ public final class DefaultArbitraryNullInjectGenerator implements ArbitraryNullI
 		this.notNullAnnotationTypes = notNullAnnotationTypes;
 	}
 
-	public static DefaultArbitraryNullInjectGenerator of(
+	public static DefaultNullInjectGenerator of(
 		double defaultNullInject,
 		boolean nullableContainer,
 		boolean defaultNotNull,
 		Set<Class<? extends Annotation>> nullableAnnotationTypes,
 		Set<Class<? extends Annotation>> notNullAnnotationTypes
 	) {
-		return new DefaultArbitraryNullInjectGenerator(
+		return new DefaultNullInjectGenerator(
 			defaultNullInject,
 			nullableContainer,
 			defaultNotNull,
