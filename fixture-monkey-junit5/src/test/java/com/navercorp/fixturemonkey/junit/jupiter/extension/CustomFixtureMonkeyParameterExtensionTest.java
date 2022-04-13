@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.junit5.extension;
+package com.navercorp.fixturemonkey.junit.jupiter.extension;
 
 import static org.assertj.core.api.BDDAssertions.then;
 
@@ -30,8 +30,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import com.navercorp.fixturemonkey.FixtureMonkeyBuilder;
-import com.navercorp.fixturemonkey.junit5.annotation.GiveMe;
-import com.navercorp.fixturemonkey.junit5.extension.support.ParameterContextAwareFixtureMonkey;
+import com.navercorp.fixturemonkey.junit.jupiter.extension.support.ParameterContextAwareFixtureMonkey;
+import com.navercorp.fixturemonkey.junit.jupiter.annotation.GiveMe;
 
 @ExtendWith(CustomFixtureMonkeyParameterExtensionTest.CustomFixtureMonkeyParameterExtension.class)
 class CustomFixtureMonkeyParameterExtensionTest {

@@ -102,8 +102,8 @@ testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter:0.3.3")
   - Extends [AutoParams](https://github.com/JavaUnit/AutoParams) to support parameterized tests.
 * fixture-monkey-mockito (Experimental)
   - Supports for generating interfaces and abstract classes as [mockito](https://github.com/mockito/mockito) objects.
-* fixture-monkey-junit5 (Experimental)
-  - Supports [junit5](https://github.com/junit-team/junit5) extension model.
+* fixture-monkey-junit-jupiter (Experimental)
+  - Supports [junit-jupiter-api](https://github.com/junit-team/junit5)
 
 ## Contributors
 * 🐒 [ah.jo](https://github.com/seongside)

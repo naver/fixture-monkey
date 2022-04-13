@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.junit5.annotation;
+package com.navercorp.fixturemonkey.junit.jupiter.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

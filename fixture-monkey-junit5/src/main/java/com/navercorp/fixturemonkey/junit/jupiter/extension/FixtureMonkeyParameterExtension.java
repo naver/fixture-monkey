@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.junit5.extension;
+package com.navercorp.fixturemonkey.junit.jupiter.extension;
 
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterContext;
@@ -24,8 +24,8 @@ import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
-import com.navercorp.fixturemonkey.junit5.annotation.GiveMe;
-import com.navercorp.fixturemonkey.junit5.extension.support.ParameterContextAwareFixtureMonkey;
+import com.navercorp.fixturemonkey.junit.jupiter.annotation.GiveMe;
+import com.navercorp.fixturemonkey.junit.jupiter.extension.support.ParameterContextAwareFixtureMonkey;
 
 public class FixtureMonkeyParameterExtension implements ParameterResolver {
 

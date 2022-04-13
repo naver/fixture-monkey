@@ -16,9 +16,9 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.junit5.extension
+package com.navercorp.fixturemonkey.junit.jupiter.extension
 
-import com.navercorp.fixturemonkey.junit5.annotation.GiveMe
+import com.navercorp.fixturemonkey.junit.jupiter.annotation.GiveMe
 import org.assertj.core.api.BDDAssertions.then
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith

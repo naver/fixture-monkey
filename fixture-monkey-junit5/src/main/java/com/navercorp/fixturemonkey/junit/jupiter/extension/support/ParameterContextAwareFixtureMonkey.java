@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.junit5.extension.support;
+package com.navercorp.fixturemonkey.junit.jupiter.extension.support;
 
 import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
@@ -27,7 +27,7 @@ import java.util.stream.Stream;
 import org.junit.jupiter.api.extension.ParameterContext;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
-import com.navercorp.fixturemonkey.junit5.annotation.GiveMe;
+import com.navercorp.fixturemonkey.junit.jupiter.annotation.GiveMe;
 
 public interface ParameterContextAwareFixtureMonkey {
 
