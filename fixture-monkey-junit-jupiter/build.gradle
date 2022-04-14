@@ -1,0 +1,114 @@
+import com.github.spotbugs.snom.SpotBugsTask
+
+plugins {
+    id "org.ec4j.editorconfig" version "0.0.3"
+    id "com.github.spotbugs" version "4.7.6"
+    id "jacoco"
+    id "checkstyle"
+    id 'org.jetbrains.kotlin.jvm' version '1.6.20'
+}
+
+dependencies {
+    api(project(":fixture-monkey"))
+    api("org.junit.jupiter:junit-jupiter-api:5.8.2")
+
+    testImplementation(project(":fixture-monkey-engine"))
+    testImplementation("org.assertj:assertj-core:3.18.1")
+    testImplementation("org.projectlombok:lombok:1.18.20")
+    testImplementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.6.20")
+    testAnnotationProcessor("org.projectlombok:lombok:1.18.20")
+}
+
+editorconfig {
+    excludes = ["build"]
+}
+
+test {
+    useJUnitPlatform()
+}
+
+check.dependsOn editorconfigCheck
+
+checkstyle {
+    configFile = file("${project.rootDir}/tool/naver-checkstyle-rules.xml")
+    configProperties = ["suppressionFile": "${project.rootDir}/tool/naver-checkstyle-suppressions.xml"]
+    toolVersion = "8.45.1"
+    ignoreFailures = false
+    maxErrors = 0
+    maxWarnings = 0
+}
+
+spotbugs {
+    ignoreFailures = false
+    reportLevel = "high"
+    spotbugsTest.enabled = false
+}
+
+tasks.withType(SpotBugsTask) {
+    reports {
+        text.enabled = false
+        xml.enabled = true
+        html.enabled = false
+    }
+}
+
+tasks.register("printSpotbugsMain") {
+    doLast {
+        File mainResult = file("${buildDir}/reports/spotbugs/main.text")
+        if (mainResult.exists()) {
+            mainResult.readLines().forEach {
+                println(it)
+            }
+        }
+    }
+}
+tasks.getByPath("spotbugsMain").finalizedBy("printSpotbugsMain")
+
+jacoco {
+    toolVersion = "0.8.7"
+    reportsDir = file("${buildDir}/reports/jacoco")
+}
+
+jacocoTestReport {
+    afterEvaluate {
+        classDirectories.setFrom(file("${buildDir}/classes/java/main"))
+    }
+
+    reports {
+        xml.enabled true
+        xml.destination file("${buildDir}/reports/jacoco/jacoco.xml")
+        csv.enabled false
+        html.enabled true
+        html.destination file("${buildDir}/reports/jacoco/html")
+    }
+}
+
+jacocoTestCoverageVerification {
+    afterEvaluate {
+        classDirectories.setFrom(file("${buildDir}/classes/main"))
+    }
+
+    violationRules {
+        rule {
+            limit {
+                counter = "LINE"
+                 minimum = 0.3
+            }
+        }
+    }
+}
+check.dependsOn jacocoTestCoverageVerification
+
+
+jar {
+    manifest {
+        attributes(
+                "Specification-Title": artifactName,
+                "Specification-Version": project.version,
+                "Specification-Vendor": "com.navercorp",
+                "Implementation-Title": artifactName,
+                "Implementation-Version": project.version,
+                "Implementation-Vendor": "com.navercorp"
+        )
+    }
+}
