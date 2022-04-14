@@ -26,12 +26,14 @@ import org.junit.jupiter.api.extension.ParameterContext;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
 
-class StreamParameterContextAwareFixtureMonkey implements ParameterContextAwareFixtureMonkey {
+final class StreamParameterContextAwareFixtureMonkey implements ParameterContextAwareFixtureMonkey {
 	private final ParameterContext parameterContext;
 	private final FixtureMonkey fixtureMonkey;
 
-	public StreamParameterContextAwareFixtureMonkey(ParameterContext parameterContext,
-		FixtureMonkey fixtureMonkey) {
+	public StreamParameterContextAwareFixtureMonkey(
+		ParameterContext parameterContext,
+		FixtureMonkey fixtureMonkey
+	) {
 		if (parameterContext.getParameter().getType() != Stream.class) {
 			throw new IllegalArgumentException("Type of parameter must be Stream.");
 		}

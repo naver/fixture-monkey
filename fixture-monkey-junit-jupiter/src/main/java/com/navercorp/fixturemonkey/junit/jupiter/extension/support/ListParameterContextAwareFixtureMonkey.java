@@ -27,7 +27,7 @@ import org.junit.jupiter.api.extension.ParameterContext;
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.junit.jupiter.annotation.GiveMe;
 
-class ListParameterContextAwareFixtureMonkey implements ParameterContextAwareFixtureMonkey {
+final class ListParameterContextAwareFixtureMonkey implements ParameterContextAwareFixtureMonkey {
 	private final ParameterContext parameterContext;
 	private final FixtureMonkey fixtureMonkey;
 
