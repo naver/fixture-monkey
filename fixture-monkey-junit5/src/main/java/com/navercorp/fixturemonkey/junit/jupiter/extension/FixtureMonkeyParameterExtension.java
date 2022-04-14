@@ -49,16 +49,18 @@ public class FixtureMonkeyParameterExtension implements ParameterResolver {
 	}
 
 	@Override
-	public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext)
-		throws ParameterResolutionException
-	{
+	public boolean supportsParameter(
+		ParameterContext parameterContext,
+		ExtensionContext extensionContext
+	) throws ParameterResolutionException {
 		return parameterContext.isAnnotated(GiveMe.class);
 	}
 
 	@Override
-	public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext)
-		throws ParameterResolutionException
-	{
+	public Object resolveParameter(
+		ParameterContext parameterContext,
+		ExtensionContext extensionContext
+	) throws ParameterResolutionException {
 		return getParameterContextAwareFixtureMonkey(parameterContext).giveMe();
 	}
 
