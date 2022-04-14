@@ -22,10 +22,13 @@ import java.lang.reflect.Type;
 import java.util.List;
 import java.util.stream.Stream;
 
+import org.apiguardian.api.API;
+import org.apiguardian.api.API.Status;
 import org.junit.jupiter.api.extension.ParameterContext;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
 
+@API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public interface ParameterContextAwareFixtureMonkey {
 
 	Object giveMe();

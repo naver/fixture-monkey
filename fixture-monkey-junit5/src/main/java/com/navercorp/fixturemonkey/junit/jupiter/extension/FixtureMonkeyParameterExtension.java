@@ -18,6 +18,8 @@
 
 package com.navercorp.fixturemonkey.junit.jupiter.extension;
 
+import org.apiguardian.api.API;
+import org.apiguardian.api.API.Status;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
@@ -27,6 +29,7 @@ import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.junit.jupiter.annotation.GiveMe;
 import com.navercorp.fixturemonkey.junit.jupiter.extension.support.ParameterContextAwareFixtureMonkey;
 
+@API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public class FixtureMonkeyParameterExtension implements ParameterResolver {
 	private static FixtureMonkey GLOBAL_DEFAULT_FIXTURE_MONKEY = FixtureMonkey.create();
 
