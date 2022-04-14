@@ -13,6 +13,7 @@ dependencies {
     api("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.12.3")
     api("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.12.3")
 
+    testRuntimeOnly(project(":fixture-monkey-engine"))
     testImplementation("org.junit.jupiter:junit-jupiter-engine:${JUNIT_JUPITER_VERSION}")
     testImplementation("org.junit.platform:junit-platform-engine:${JUNIT_ENGINE_VERSION}")
     testImplementation("org.assertj:assertj-core:3.18.1")
@@ -25,9 +26,7 @@ editorconfig {
 }
 
 test {
-    useJUnitPlatform {
-        includeEngines "jqwik"
-    }
+    useJUnitPlatform()
 }
 
 check.dependsOn editorconfigCheck
