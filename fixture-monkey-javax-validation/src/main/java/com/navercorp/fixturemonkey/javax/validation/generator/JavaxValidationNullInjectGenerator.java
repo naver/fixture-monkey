@@ -21,7 +21,6 @@ package com.navercorp.fixturemonkey.javax.validation.generator;
 import static java.util.stream.Collectors.toSet;
 
 import java.lang.annotation.Annotation;
-import java.util.Arrays;
 import java.util.Set;
 
 import javax.annotation.Nullable;
