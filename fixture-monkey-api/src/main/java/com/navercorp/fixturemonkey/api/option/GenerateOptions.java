@@ -54,7 +54,9 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfoGenerator
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.ContainerArbitraryPropertyGenerator;
+import com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator;
 import com.navercorp.fixturemonkey.api.generator.MapArbitraryPropertyGenerator;
+import com.navercorp.fixturemonkey.api.generator.NullInjectGenerator;
 import com.navercorp.fixturemonkey.api.generator.ObjectArbitraryPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.OptionalArbitraryPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.SingleValueArbitraryPropertyGenerator;
@@ -73,40 +75,36 @@ public final class GenerateOptions {
 		DEFAULT_ARBITRARY_PROPERTY_GENERATORS,
 		Collections.emptyList(),
 		Collections.emptyList(),
+		new DefaultNullInjectGenerator(),
+		Collections.emptyList(),
 		new ArbitraryContainerInfo(0, 3),
-		DEFAULT_ARBITRARY_GENERATOR,
-		0.2,
-		false,
-		false
+		DEFAULT_ARBITRARY_GENERATOR
 	);
 
 	private final List<MatcherOperator<ArbitraryPropertyGenerator>> arbitraryPropertyGenerators;
 	private final List<MatcherOperator<PropertyNameResolver>> propertyNameResolvers;
+	private final List<MatcherOperator<NullInjectGenerator>> nullInjectGenerators;
+	private final NullInjectGenerator defaultNullInjectGenerator;
 	private final List<MatcherOperator<ArbitraryContainerInfoGenerator>> arbitraryContainerInfoGenerators;
 	private final ArbitraryContainerInfo defaultArbitraryPropertyContainerInfo;
 	private final List<MatcherOperator<ArbitraryGenerator>> arbitraryGenerators;
-	private final double nullInject;
-	private final boolean nullableContainer;
-	private final boolean defaultNotNull;
 
 	public GenerateOptions(
 		List<MatcherOperator<ArbitraryPropertyGenerator>> arbitraryPropertyGenerators,
 		List<MatcherOperator<PropertyNameResolver>> propertyNameResolvers,
+		List<MatcherOperator<NullInjectGenerator>> nullInjectGenerators,
+		NullInjectGenerator defaultNullInjectGenerator,
 		List<MatcherOperator<ArbitraryContainerInfoGenerator>> arbitraryContainerInfoGenerators,
 		ArbitraryContainerInfo defaultArbitraryPropertyContainerInfo,
-		List<MatcherOperator<ArbitraryGenerator>> arbitraryGenerators,
-		double nullInject,
-		boolean nullableContainer,
-		boolean defaultNotNull
+		List<MatcherOperator<ArbitraryGenerator>> arbitraryGenerators
 	) {
 		this.arbitraryPropertyGenerators = arbitraryPropertyGenerators;
 		this.propertyNameResolvers = propertyNameResolvers;
+		this.nullInjectGenerators = nullInjectGenerators;
+		this.defaultNullInjectGenerator = defaultNullInjectGenerator;
 		this.arbitraryContainerInfoGenerators = arbitraryContainerInfoGenerators;
 		this.defaultArbitraryPropertyContainerInfo = defaultArbitraryPropertyContainerInfo;
 		this.arbitraryGenerators = arbitraryGenerators;
-		this.nullInject = nullInject;
-		this.nullableContainer = nullableContainer;
-		this.defaultNotNull = defaultNotNull;
 	}
 
 	public List<MatcherOperator<ArbitraryPropertyGenerator>> getArbitraryPropertyGenerators() {
@@ -133,6 +131,18 @@ public final class GenerateOptions {
 			.orElse(PropertyNameResolver.IDENTITY);
 	}
 
+	public List<MatcherOperator<NullInjectGenerator>> getNullInjectGenerators() {
+		return this.nullInjectGenerators;
+	}
+
+	public NullInjectGenerator getNullInjectGenerator(Property property) {
+		return this.getNullInjectGenerators().stream()
+			.filter(it -> it.match(property))
+			.map(MatcherOperator::getOperator)
+			.findFirst()
+			.orElse(this.defaultNullInjectGenerator);
+	}
+
 	public List<MatcherOperator<ArbitraryContainerInfoGenerator>> getArbitraryContainerInfoGenerators() {
 		return this.arbitraryContainerInfoGenerators;
 	}
@@ -156,26 +166,6 @@ public final class GenerateOptions {
 			.map(MatcherOperator::getOperator)
 			.findFirst()
 			.orElseThrow(() -> new RuntimeException("Can not find ArbitraryGenerator."));
-	}
-
-	public double getNullInject() {
-		return this.nullInject;
-	}
-
-	public boolean isNullableContainer() {
-		return this.nullableContainer;
-	}
-
-	public boolean isDefaultNotNull() {
-		return this.defaultNotNull;
-	}
-
-	public double getContainerNullInject() {
-		if (this.isNullableContainer()) {
-			return this.getNullInject();
-		}
-
-		return 0.0;
 	}
 
 	// TODO: equals and hashCode and toString

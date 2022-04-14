@@ -18,30 +18,13 @@
 
 package com.navercorp.fixturemonkey.api.generator;
 
-import java.util.Collections;
+import javax.annotation.Nullable;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.api.property.Property;
-
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public final class SingleValueArbitraryPropertyGenerator implements ArbitraryPropertyGenerator {
-	public static final SingleValueArbitraryPropertyGenerator INSTANCE = new SingleValueArbitraryPropertyGenerator();
-
-	@Override
-	public ArbitraryProperty generate(ArbitraryPropertyGeneratorContext context) {
-		Property property = context.getProperty();
-		double nullInject = context.getGenerateOptions().getNullInjectGenerator(property)
-			.generate(context, null);
-		return new ArbitraryProperty(
-			property,
-			context.getPropertyNameResolver(),
-			context.getPropertyValue(),
-			nullInject,
-			context.getElementIndex(),
-			Collections.emptyList(),
-			null
-		);
-	}
+@FunctionalInterface
+public interface NullInjectGenerator {
+	double generate(ArbitraryPropertyGeneratorContext context, @Nullable ArbitraryContainerInfo containerInfo);
 }

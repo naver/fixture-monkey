@@ -34,11 +34,13 @@ public final class ObjectArbitraryPropertyGenerator implements ArbitraryProperty
 	public ArbitraryProperty generate(ArbitraryPropertyGeneratorContext context) {
 		Property property = context.getProperty();
 		List<Property> childProperties = PropertyCache.getProperties(property.getAnnotatedType());
+		double nullInject = context.getGenerateOptions().getNullInjectGenerator(property)
+			.generate(context, null);
 		return new ArbitraryProperty(
 			property,
 			context.getPropertyNameResolver(),
 			context.getPropertyValue(),
-			context.getGenerateOptions().getNullInject(),
+			nullInject,
 			context.getElementIndex(),
 			childProperties,
 			null

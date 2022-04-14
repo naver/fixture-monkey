@@ -115,11 +115,14 @@ public final class OptionalArbitraryPropertyGenerator implements ArbitraryProper
 			0
 		);
 
+		double nullInject = context.getGenerateOptions().getNullInjectGenerator(property)
+			.generate(context, CONTAINER_INFO);
+
 		return new ArbitraryProperty(
 			property,
 			context.getPropertyNameResolver(),
 			context.getPropertyValue(),
-			context.getGenerateOptions().getContainerNullInject(),
+			nullInject,
 			context.getElementIndex(),
 			Collections.singletonList(valueProperty),
 			CONTAINER_INFO
