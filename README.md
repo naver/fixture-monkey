@@ -114,6 +114,7 @@ testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter:0.3.3")
 * @[KoEonYack](https://github.com/KoEonYack)
 * @[G-ONL](https://github.com/G-ONL)
 * @[imbyungjun](https://github.com/imbyungjun)
+* @[dbgsprw](https://github.com/dbgsprw)
 
 ## More about Fixture Monkey
 * [Deview 2021](https://tv.naver.com/v/23650158)
