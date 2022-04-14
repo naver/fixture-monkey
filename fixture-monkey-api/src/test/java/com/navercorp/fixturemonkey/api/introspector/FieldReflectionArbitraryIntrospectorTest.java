@@ -26,11 +26,13 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
+import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryPropertyGeneratorContext;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorTest.Season;
+import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.option.GenerateOptions;
 import com.navercorp.fixturemonkey.api.property.PropertyCache;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
@@ -57,6 +59,79 @@ class FieldReflectionArbitraryIntrospectorTest {
 		RootProperty rootProperty = new RootProperty(typeReference.getAnnotatedType());
 
 		GenerateOptions generateOptions = GenerateOptions.DEFAULT_GENERATE_OPTIONS;
+		ArbitraryPropertyGenerator rootGenerator = generateOptions.getArbitraryPropertyGenerator(rootProperty);
+		ArbitraryProperty rootArbitraryProperty = rootGenerator.generate(
+			new ArbitraryPropertyGeneratorContext(
+				rootProperty,
+				null,
+				null,
+				null,
+				generateOptions
+			)
+		);
+
+		List<ArbitraryProperty> childrenProperties = PropertyCache.getProperties(typeReference.getAnnotatedType())
+			.stream()
+			.map(it -> generateOptions.getArbitraryPropertyGenerator(it)
+				.generate(
+					new ArbitraryPropertyGeneratorContext(
+						it,
+						null,
+						null,
+						rootArbitraryProperty,
+						generateOptions
+					)
+				)
+			)
+			.collect(toList());
+
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			rootArbitraryProperty,
+			childrenProperties,
+			null,
+			(ctx, prop) -> this.arbitraryIntrospector.introspect(
+				new ArbitraryGeneratorContext(
+					prop,
+					Collections.emptyList(),
+					ctx,
+					(ctx2, prop2) -> null
+				)
+			).getValue()
+		);
+
+		// when
+		ArbitraryIntrospectorResult actual = sut.introspect(context);
+
+		then(actual.getValue()).isNotNull();
+
+		FieldReflectionSample sample = (FieldReflectionSample)actual.getValue()
+			.sample();
+		then(sample.name).isNotNull();
+		then(sample.value).isNotNull();
+		then(sample.season).isNotNull();
+		then(sample.finalValue).isEqualTo("final");
+		then(sample.transientValue).isNull();
+	}
+
+	@Test
+	void introspectWithPropertyNameResolver() {
+		// given
+		FieldReflectionArbitraryIntrospector sut = FieldReflectionArbitraryIntrospector.INSTANCE;
+
+		TypeReference<FieldReflectionSample> typeReference = new TypeReference<FieldReflectionSample>() {
+		};
+		RootProperty rootProperty = new RootProperty(typeReference.getAnnotatedType());
+
+		GenerateOptions generateOptions = new GenerateOptions(
+			GenerateOptions.DEFAULT_ARBITRARY_PROPERTY_GENERATORS,
+			Collections.singletonList(new MatcherOperator<>(p -> true, property -> "x_" + property.getName())),
+			Collections.emptyList(),
+			new ArbitraryContainerInfo(0, 3),
+			GenerateOptions.DEFAULT_ARBITRARY_GENERATOR,
+			0.2,
+			false,
+			false
+		);
 		ArbitraryPropertyGenerator rootGenerator = generateOptions.getArbitraryPropertyGenerator(rootProperty);
 		ArbitraryProperty rootArbitraryProperty = rootGenerator.generate(
 			new ArbitraryPropertyGeneratorContext(

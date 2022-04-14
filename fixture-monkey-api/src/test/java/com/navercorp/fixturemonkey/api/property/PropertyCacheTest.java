@@ -22,7 +22,6 @@ import static org.assertj.core.api.BDDAssertions.then;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -163,13 +162,12 @@ class PropertyCacheTest {
 	}
 
 	@Test
-	void getPropertyDescriptors() throws NoSuchMethodException {
-		Map<Method, PropertyDescriptor> actual = PropertyCache.getPropertyDescriptors(PropertyValue.class);
+	void getPropertyDescriptors() {
+		Map<String, PropertyDescriptor> actual = PropertyCache.getPropertyDescriptors(PropertyValue.class);
 		then(actual).hasSize(1);
 
-		Method method = PropertyValue.class.getDeclaredMethod("getName");
-		then(actual.get(method)).isNotNull();
-		then(actual.get(method).getName()).isEqualTo("name");
+		then(actual.get("name")).isNotNull();
+		then(actual.get("name").getName()).isEqualTo("name");
 	}
 
 	static class GenericSample<T> {
