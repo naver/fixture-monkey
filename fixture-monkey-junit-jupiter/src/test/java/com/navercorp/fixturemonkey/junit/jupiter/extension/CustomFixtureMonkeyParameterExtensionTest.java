@@ -30,8 +30,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import com.navercorp.fixturemonkey.FixtureMonkeyBuilder;
-import com.navercorp.fixturemonkey.junit.jupiter.extension.support.ParameterContextAwareFixtureMonkey;
 import com.navercorp.fixturemonkey.junit.jupiter.annotation.GiveMe;
+import com.navercorp.fixturemonkey.junit.jupiter.extension.support.ParameterContextAwareFixtureMonkey;
 
 @ExtendWith(CustomFixtureMonkeyParameterExtensionTest.CustomFixtureMonkeyParameterExtension.class)
 class CustomFixtureMonkeyParameterExtensionTest {
