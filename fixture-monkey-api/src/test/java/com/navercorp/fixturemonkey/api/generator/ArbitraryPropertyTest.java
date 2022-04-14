@@ -57,7 +57,7 @@ class ArbitraryPropertyTest {
 	}
 
 	@Test
-	void getPropertyName() {
+	void getResolvePropertyName() {
 		// given
 		TypeReference<GenericSample<String>> typeReference = new TypeReference<GenericSample<String>>() {
 		};
@@ -74,7 +74,7 @@ class ArbitraryPropertyTest {
 			null
 		);
 
-		then(actual.getPropertyName()).isEqualTo("x_name");
+		then(actual.getResolvePropertyName()).isEqualTo("x_name");
 	}
 
 	static class GenericSample<T> {

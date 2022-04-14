@@ -74,7 +74,7 @@ public final class ArbitraryProperty {
 		return this.propertyNameResolver;
 	}
 
-	public String getPropertyName() {
+	public String getResolvePropertyName() {
 		return this.getPropertyNameResolver().resolve(this.property);
 	}
 

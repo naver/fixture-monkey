@@ -89,7 +89,7 @@ public final class ArbitraryGeneratorContext {
 	public Map<String, Arbitrary<?>> getChildrenArbitraries() {
 		Map<String, Arbitrary<?>> childrenValues = new HashMap<>();
 		for (ArbitraryProperty child : this.getChildren()) {
-			String propertyName = child.getPropertyName();
+			String propertyName = child.getResolvePropertyName();
 			Arbitrary<?> arbitrary = child.getPropertyValue() != null
 				? Arbitraries.of(child.getPropertyValue().get())
 				: this.getResolveArbitrary().apply(this, child);

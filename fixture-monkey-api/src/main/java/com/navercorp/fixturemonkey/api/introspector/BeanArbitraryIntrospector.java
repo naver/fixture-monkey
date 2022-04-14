@@ -65,7 +65,7 @@ public final class BeanArbitraryIntrospector implements ArbitraryIntrospector {
 				continue;
 			}
 
-			String resolvePropertyName = arbitraryProperty.getPropertyName();
+			String resolvePropertyName = arbitraryProperty.getResolvePropertyName();
 			Arbitrary<?> arbitrary = childrenArbitraries.get(resolvePropertyName);
 			if (arbitrary != null) {
 				builderCombinator = builderCombinator.use(arbitrary).in((b, v) -> {
