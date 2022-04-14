@@ -84,16 +84,44 @@ fun <T> ArbitraryBuilder<T>.set(property: KFunction1<T, Any?>, value: Any?, limi
         limit
     )
 
+fun <T> ArbitraryBuilder<T>.setExp(property: KProperty1<T, Any?>, value: Any?): ArbitraryBuilder<T> =
+    this.set(PropertyExpressionGenerator(KotlinProperty(property)), value)
+
+fun <T> ArbitraryBuilder<T>.setExp(property: KProperty1<T, Any?>, value: Any?, limit: Long): ArbitraryBuilder<T> =
+    this.set(PropertyExpressionGenerator(KotlinProperty(property)), value, limit)
+
+fun <T> ArbitraryBuilder<T>.setExp(property: KFunction1<T, Any?>, value: Any?): ArbitraryBuilder<T> =
+    this.set(PropertyExpressionGenerator(KotlinGetterProperty(property)), value)
+
+fun <T> ArbitraryBuilder<T>.setExp(property: KFunction1<T, Any?>, value: Any?, limit: Long): ArbitraryBuilder<T> =
+    this.set(
+        PropertyExpressionGenerator(KotlinGetterProperty(property)),
+        value,
+        limit
+    )
+
 fun <T> ArbitraryBuilder<T>.setNull(property: KProperty1<T, *>): ArbitraryBuilder<T> =
     this.setNull(PropertyExpressionGenerator(KotlinProperty(property)))
 
 fun <T> ArbitraryBuilder<T>.setNull(property: KFunction1<T, *>): ArbitraryBuilder<T> =
     this.setNull(PropertyExpressionGenerator(KotlinGetterProperty(property)))
 
+fun <T> ArbitraryBuilder<T>.setNullExp(property: KProperty1<T, *>): ArbitraryBuilder<T> =
+    this.setNull(PropertyExpressionGenerator(KotlinProperty(property)))
+
+fun <T> ArbitraryBuilder<T>.setNullExp(property: KFunction1<T, *>): ArbitraryBuilder<T> =
+    this.setNull(PropertyExpressionGenerator(KotlinGetterProperty(property)))
+
 fun <T> ArbitraryBuilder<T>.setNotNull(property: KProperty1<T, *>): ArbitraryBuilder<T> =
     this.setNotNull(PropertyExpressionGenerator(KotlinProperty(property)))
 
 fun <T> ArbitraryBuilder<T>.setNotNull(property: KFunction1<T, *>): ArbitraryBuilder<T> =
+    this.setNotNull(PropertyExpressionGenerator(KotlinGetterProperty(property)))
+
+fun <T> ArbitraryBuilder<T>.setNotNullExp(property: KProperty1<T, *>): ArbitraryBuilder<T> =
+    this.setNotNull(PropertyExpressionGenerator(KotlinProperty(property)))
+
+fun <T> ArbitraryBuilder<T>.setNotNullExp(property: KFunction1<T, *>): ArbitraryBuilder<T> =
     this.setNotNull(PropertyExpressionGenerator(KotlinGetterProperty(property)))
 
 fun <T, U> ArbitraryBuilder<T>.setPostCondition(
@@ -144,6 +172,54 @@ fun <T, U> ArbitraryBuilder<T>.setPostCondition(
         filter
     )
 
+fun <T, U> ArbitraryBuilder<T>.setPostConditionExp(
+    property: KProperty1<T, *>,
+    clazz: Class<U>,
+    filter: Predicate<U>,
+): ArbitraryBuilder<T> =
+    this.setPostCondition(
+        PropertyExpressionGenerator(KotlinProperty(property)),
+        clazz,
+        filter
+    )
+
+fun <T, U> ArbitraryBuilder<T>.setPostConditionExp(
+    property: KFunction1<T, *>,
+    clazz: Class<U>,
+    filter: Predicate<U>,
+    limit: Long,
+): ArbitraryBuilder<T> =
+    this.setPostCondition(
+        PropertyExpressionGenerator(KotlinGetterProperty(property)),
+        clazz,
+        filter,
+        limit
+    )
+
+fun <T, U> ArbitraryBuilder<T>.setPostConditionExp(
+    property: KProperty1<T, *>,
+    clazz: Class<U>,
+    filter: Predicate<U>,
+    limit: Long,
+): ArbitraryBuilder<T> =
+    this.setPostCondition(
+        PropertyExpressionGenerator(KotlinProperty(property)),
+        clazz,
+        filter,
+        limit
+    )
+
+fun <T, U> ArbitraryBuilder<T>.setPostConditionExp(
+    property: KFunction1<T, *>,
+    clazz: Class<U>,
+    filter: Predicate<U>,
+): ArbitraryBuilder<T> =
+    this.setPostCondition(
+        PropertyExpressionGenerator(KotlinGetterProperty(property)),
+        clazz,
+        filter
+    )
+
 fun <T> ArbitraryBuilder<T>.size(
     property: KProperty1<T, *>,
     size: Int
@@ -170,6 +246,32 @@ fun <T> ArbitraryBuilder<T>.size(
 ): ArbitraryBuilder<T> =
     this.size(PropertyExpressionGenerator(KotlinGetterProperty(property)), min, max)
 
+fun <T> ArbitraryBuilder<T>.sizeExp(
+    property: KProperty1<T, *>,
+    size: Int
+): ArbitraryBuilder<T> =
+    this.size(PropertyExpressionGenerator(KotlinProperty(property)), size)
+
+fun <T> ArbitraryBuilder<T>.sizeExp(
+    property: KFunction1<T, *>,
+    size: Int
+): ArbitraryBuilder<T> =
+    this.size(PropertyExpressionGenerator(KotlinGetterProperty(property)), size)
+
+fun <T> ArbitraryBuilder<T>.sizeExp(
+    property: KProperty1<T, *>,
+    min: Int,
+    max: Int
+): ArbitraryBuilder<T> =
+    this.size(PropertyExpressionGenerator(KotlinProperty(property)), min, max)
+
+fun <T> ArbitraryBuilder<T>.sizeExp(
+    property: KFunction1<T, *>,
+    min: Int,
+    max: Int
+): ArbitraryBuilder<T> =
+    this.size(PropertyExpressionGenerator(KotlinGetterProperty(property)), min, max)
+
 fun <T> ArbitraryBuilder<T>.minSize(
     property: KProperty1<T, *>,
     min: Int
@@ -182,6 +284,18 @@ fun <T> ArbitraryBuilder<T>.minSize(
 ): ArbitraryBuilder<T> =
     this.minSize(PropertyExpressionGenerator(KotlinGetterProperty(property)), min)
 
+fun <T> ArbitraryBuilder<T>.minSizeExp(
+    property: KProperty1<T, *>,
+    min: Int
+): ArbitraryBuilder<T> =
+    this.minSize(PropertyExpressionGenerator(KotlinProperty(property)), min)
+
+fun <T> ArbitraryBuilder<T>.minSizeExp(
+    property: KFunction1<T, *>,
+    min: Int
+): ArbitraryBuilder<T> =
+    this.minSize(PropertyExpressionGenerator(KotlinGetterProperty(property)), min)
+
 fun <T> ArbitraryBuilder<T>.maxSize(
     property: KProperty1<T, *>,
     max: Int
@@ -189,6 +303,18 @@ fun <T> ArbitraryBuilder<T>.maxSize(
     this.maxSize(PropertyExpressionGenerator(KotlinProperty(property)), max)
 
 fun <T> ArbitraryBuilder<T>.maxSize(
+    property: KFunction1<T, *>,
+    max: Int
+): ArbitraryBuilder<T> =
+    this.maxSize(PropertyExpressionGenerator(KotlinGetterProperty(property)), max)
+
+fun <T> ArbitraryBuilder<T>.maxSizeExp(
+    property: KProperty1<T, *>,
+    max: Int
+): ArbitraryBuilder<T> =
+    this.maxSize(PropertyExpressionGenerator(KotlinProperty(property)), max)
+
+fun <T> ArbitraryBuilder<T>.maxSizeExp(
     property: KFunction1<T, *>,
     max: Int
 ): ArbitraryBuilder<T> =
