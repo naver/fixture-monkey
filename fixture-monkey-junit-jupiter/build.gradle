@@ -92,7 +92,7 @@ jacocoTestCoverageVerification {
         rule {
             limit {
                 counter = "LINE"
-                // minimum = 0.3
+                 minimum = 0.3
             }
         }
     }
