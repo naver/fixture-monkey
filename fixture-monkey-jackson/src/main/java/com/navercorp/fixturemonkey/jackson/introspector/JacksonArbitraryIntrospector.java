@@ -61,14 +61,14 @@ public final class JacksonArbitraryIntrospector implements ArbitraryIntrospector
 
 		BuilderCombinator<Map<String, Object>> builderCombinator = Builders.withBuilder(HashMap::new);
 		for (ArbitraryProperty arbitraryProperty : childrenProperties) {
-			String propertyName = arbitraryProperty.getPropertyName();
+			String resolvePropertyName = arbitraryProperty.getResolvePropertyName();
 			Arbitrary<?> propertyArbitrary = childrenArbitraries.getOrDefault(
-				propertyName,
+				resolvePropertyName,
 				Arbitraries.just(null)
 			);
 			builderCombinator = builderCombinator.use(propertyArbitrary).in((map, value) -> {
 				if (value != null) {
-					map.put(propertyName, value);
+					map.put(resolvePropertyName, value);
 				}
 				return map;
 			});
