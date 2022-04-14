@@ -23,7 +23,6 @@ import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -46,7 +45,7 @@ import com.navercorp.fixturemonkey.api.type.Types;
 public final class PropertyCache {
 	private static final Logger LOGGER = LoggerFactory.getLogger(PropertyCache.class);
 
-	private static final Map<Class<?>, Map<Method, PropertyDescriptor>> PROPERTY_DESCRIPTORS =
+	private static final Map<Class<?>, Map<String, PropertyDescriptor>> PROPERTY_DESCRIPTORS =
 		new ConcurrentHashMap<>();
 	private static final Map<Class<?>, Map<String, Field>> FIELDS = new ConcurrentHashMap<>();
 
@@ -58,9 +57,9 @@ public final class PropertyCache {
 		Map<String, List<Property>> propertiesMap = new HashMap<>();
 
 		Class<?> actualType = Types.getActualType(annotatedType.getType());
-		Map<Method, PropertyDescriptor> propertyDescriptorMap = getPropertyDescriptors(actualType);
+		Map<String, PropertyDescriptor> propertyDescriptorMap = getPropertyDescriptors(actualType);
 
-		for (Entry<Method, PropertyDescriptor> entry : propertyDescriptorMap.entrySet()) {
+		for (Entry<String, PropertyDescriptor> entry : propertyDescriptorMap.entrySet()) {
 			List<Property> properties = propertiesMap.computeIfAbsent(
 				entry.getValue().getName(), name -> new ArrayList<>()
 			);
@@ -116,9 +115,9 @@ public final class PropertyCache {
 		});
 	}
 
-	public static Map<Method, PropertyDescriptor> getPropertyDescriptors(Class<?> clazz) {
+	public static Map<String, PropertyDescriptor> getPropertyDescriptors(Class<?> clazz) {
 		return PROPERTY_DESCRIPTORS.computeIfAbsent(clazz, type -> {
-			Map<Method, PropertyDescriptor> result = new ConcurrentHashMap<>();
+			Map<String, PropertyDescriptor> result = new ConcurrentHashMap<>();
 			try {
 				PropertyDescriptor[] descriptors = Introspector.getBeanInfo(type)
 					.getPropertyDescriptors();
@@ -126,8 +125,7 @@ public final class PropertyCache {
 					if (descriptor.getName().equals("class")) {
 						continue;
 					}
-					Method readMethod = descriptor.getReadMethod(); // can not be null
-					result.put(readMethod, descriptor);
+					result.put(descriptor.getName(), descriptor);
 				}
 			} catch (IntrospectionException ex) {
 				LOGGER.warn("Introspect bean property is failed. type: " + clazz, ex);

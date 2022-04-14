@@ -7,7 +7,6 @@ import java.lang.reflect.AnnotatedParameterizedType;
 import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.AnnotatedWildcardType;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.WildcardType;
@@ -431,16 +430,14 @@ class TypesTest {
 	}
 
 	@Test
-	void resolveWithTypeReferenceGenericsPropertyDescriptor() throws NoSuchMethodException {
+	void resolveWithTypeReferenceGenericsPropertyDescriptor() {
 		// given
 		TypeReference<GenericSample<String>> typeReference = new TypeReference<GenericSample<String>>() {
 		};
 
-		Map<Method, PropertyDescriptor> propertyDescriptors =
+		Map<String, PropertyDescriptor> propertyDescriptors =
 			PropertyCache.getPropertyDescriptors(GenericSample.class);
-		PropertyDescriptor propertyDescriptor = propertyDescriptors.get(
-			GenericSample.class.getDeclaredMethod("getName")
-		);
+		PropertyDescriptor propertyDescriptor = propertyDescriptors.get("name");
 
 		// when
 		AnnotatedType actual = Types.resolveWithTypeReferenceGenerics(
@@ -450,16 +447,14 @@ class TypesTest {
 	}
 
 	@Test
-	void resolveWithTypeReferenceNestedGenericsPropertyDescriptor() throws NoSuchMethodException {
+	void resolveWithTypeReferenceNestedGenericsPropertyDescriptor() {
 		// given
 		TypeReference<GenericSample<String>> typeReference = new TypeReference<GenericSample<String>>() {
 		};
 
-		Map<Method, PropertyDescriptor> propertyDescriptors =
+		Map<String, PropertyDescriptor> propertyDescriptors =
 			PropertyCache.getPropertyDescriptors(GenericSample.class);
-		PropertyDescriptor propertyDescriptor = propertyDescriptors.get(
-			GenericSample.class.getDeclaredMethod("getSample2")
-		);
+		PropertyDescriptor propertyDescriptor = propertyDescriptors.get("sample2");
 
 		// when
 		AnnotatedType actual = Types.resolveWithTypeReferenceGenerics(
@@ -475,16 +470,14 @@ class TypesTest {
 	}
 
 	@Test
-	void resolveWithTypeReferenceListGenericsPropertyDescriptor() throws NoSuchMethodException {
+	void resolveWithTypeReferenceListGenericsPropertyDescriptor() {
 		// given
 		TypeReference<GenericSample<String>> typeReference = new TypeReference<GenericSample<String>>() {
 		};
 
-		Map<Method, PropertyDescriptor> propertyDescriptors =
+		Map<String, PropertyDescriptor> propertyDescriptors =
 			PropertyCache.getPropertyDescriptors(GenericSample.class);
-		PropertyDescriptor propertyDescriptor = propertyDescriptors.get(
-			GenericSample.class.getDeclaredMethod("getList")
-		);
+		PropertyDescriptor propertyDescriptor = propertyDescriptors.get("list");
 
 		// when
 		AnnotatedType actual = Types.resolveWithTypeReferenceGenerics(
@@ -500,16 +493,14 @@ class TypesTest {
 	}
 
 	@Test
-	void resolveWithTypeReferenceGenericsRefiedPropertyDescriptor() throws NoSuchMethodException {
+	void resolveWithTypeReferenceGenericsRefiedPropertyDescriptor() {
 		// given
 		TypeReference<GenericSample<String>> typeReference = new TypeReference<GenericSample<String>>() {
 		};
 
-		Map<Method, PropertyDescriptor> propertyDescriptors =
+		Map<String, PropertyDescriptor> propertyDescriptors =
 			PropertyCache.getPropertyDescriptors(GenericSample.class);
-		PropertyDescriptor propertyDescriptor = propertyDescriptors.get(
-			GenericSample.class.getDeclaredMethod("getSamples")
-		);
+		PropertyDescriptor propertyDescriptor = propertyDescriptors.get("samples");
 
 		// when
 		AnnotatedType actual = Types.resolveWithTypeReferenceGenerics(
@@ -530,11 +521,9 @@ class TypesTest {
 		TypeReference<Sample> typeReference = new TypeReference<Sample>() {
 		};
 
-		Map<Method, PropertyDescriptor> propertyDescriptors =
+		Map<String, PropertyDescriptor> propertyDescriptors =
 			PropertyCache.getPropertyDescriptors(Sample.class);
-		PropertyDescriptor propertyDescriptor = propertyDescriptors.get(
-			Sample.class.getDeclaredMethod("getName")
-		);
+		PropertyDescriptor propertyDescriptor = propertyDescriptors.get("name");
 
 		// when
 		AnnotatedType actual = Types.resolveWithTypeReferenceGenerics(
@@ -549,11 +538,9 @@ class TypesTest {
 		TypeReference<GenericSample<?>> typeReference = new TypeReference<GenericSample<?>>() {
 		};
 
-		Map<Method, PropertyDescriptor> propertyDescriptors =
+		Map<String, PropertyDescriptor> propertyDescriptors =
 			PropertyCache.getPropertyDescriptors(GenericSample.class);
-		PropertyDescriptor propertyDescriptor = propertyDescriptors.get(
-			GenericSample.class.getDeclaredMethod("getName")
-		);
+		PropertyDescriptor propertyDescriptor = propertyDescriptors.get("name");
 
 		// when
 		AnnotatedType actual = Types.resolveWithTypeReferenceGenerics(
@@ -570,11 +557,9 @@ class TypesTest {
 		TypeReference<GenericSample> typeReference = new TypeReference<GenericSample>() {
 		};
 
-		Map<Method, PropertyDescriptor> propertyDescriptors =
+		Map<String, PropertyDescriptor> propertyDescriptors =
 			PropertyCache.getPropertyDescriptors(GenericSample.class);
-		PropertyDescriptor propertyDescriptor = propertyDescriptors.get(
-			GenericSample.class.getDeclaredMethod("getName")
-		);
+		PropertyDescriptor propertyDescriptor = propertyDescriptors.get("name");
 
 		// when
 		AnnotatedType actual = Types.resolveWithTypeReferenceGenerics(
@@ -590,11 +575,9 @@ class TypesTest {
 			new TypeReference<BiGenericSample<Integer, String>>() {
 			};
 
-		Map<Method, PropertyDescriptor> propertyDescriptors =
+		Map<String, PropertyDescriptor> propertyDescriptors =
 			PropertyCache.getPropertyDescriptors(BiGenericSample.class);
-		PropertyDescriptor propertyDescriptor = propertyDescriptors.get(
-			BiGenericSample.class.getDeclaredMethod("getName")
-		);
+		PropertyDescriptor propertyDescriptor = propertyDescriptors.get("name");
 
 		// when
 		AnnotatedType actual = Types.resolveWithTypeReferenceGenerics(
@@ -610,11 +593,9 @@ class TypesTest {
 			new TypeReference<BiGenericSample<Integer, String>>() {
 			};
 
-		Map<Method, PropertyDescriptor> propertyDescriptors =
+		Map<String, PropertyDescriptor> propertyDescriptors =
 			PropertyCache.getPropertyDescriptors(BiGenericSample.class);
-		PropertyDescriptor propertyDescriptor = propertyDescriptors.get(
-			BiGenericSample.class.getDeclaredMethod("getAddress")
-		);
+		PropertyDescriptor propertyDescriptor = propertyDescriptors.get("address");
 
 		// when
 		AnnotatedType actual = Types.resolveWithTypeReferenceGenerics(
@@ -630,11 +611,9 @@ class TypesTest {
 			new TypeReference<BiGenericSample<Integer, String>>() {
 			};
 
-		Map<Method, PropertyDescriptor> propertyDescriptors =
+		Map<String, PropertyDescriptor> propertyDescriptors =
 			PropertyCache.getPropertyDescriptors(BiGenericSample.class);
-		PropertyDescriptor propertyDescriptor = propertyDescriptors.get(
-			BiGenericSample.class.getDeclaredMethod("getSample2")
-		);
+		PropertyDescriptor propertyDescriptor = propertyDescriptors.get("sample2");
 
 		// when
 		AnnotatedType actual = Types.resolveWithTypeReferenceGenerics(
@@ -657,11 +636,9 @@ class TypesTest {
 			new TypeReference<BiGenericSample<GenericSample<Integer>, BiGenericSample<Integer, String>>>() {
 			};
 
-		Map<Method, PropertyDescriptor> propertyDescriptors =
+		Map<String, PropertyDescriptor> propertyDescriptors =
 			PropertyCache.getPropertyDescriptors(BiGenericSample.class);
-		PropertyDescriptor propertyDescriptor = propertyDescriptors.get(
-			BiGenericSample.class.getDeclaredMethod("getSample2")
-		);
+		PropertyDescriptor propertyDescriptor = propertyDescriptors.get("sample2");
 
 		// when
 		AnnotatedType actual = Types.resolveWithTypeReferenceGenerics(

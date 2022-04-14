@@ -21,7 +21,7 @@ package com.navercorp.fixturemonkey.api.introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import org.apiguardian.api.API;
@@ -35,6 +35,7 @@ import net.jqwik.api.Builders;
 import net.jqwik.api.Builders.BuilderCombinator;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
+import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.PropertyCache;
 import com.navercorp.fixturemonkey.api.type.Types;
@@ -52,16 +53,20 @@ public final class BeanArbitraryIntrospector implements ArbitraryIntrospector {
 			return ArbitraryIntrospectorResult.EMPTY;
 		}
 
+		List<ArbitraryProperty> childrenProperties = context.getChildren();
 		Map<String, Arbitrary<?>> childrenArbitraries = context.getChildrenArbitraries();
-		Collection<PropertyDescriptor> propertyDescriptors = PropertyCache.getPropertyDescriptors(type).values();
+		Map<String, PropertyDescriptor> propertyDescriptors = PropertyCache.getPropertyDescriptors(type);
 		BuilderCombinator<?> builderCombinator = Builders.withBuilder(() -> ReflectionUtils.newInstance(type));
-		for (PropertyDescriptor propertyDescriptor : propertyDescriptors) {
+		for (ArbitraryProperty arbitraryProperty : childrenProperties) {
+			String originPropertyName = arbitraryProperty.getProperty().getName();
+			PropertyDescriptor propertyDescriptor = propertyDescriptors.get(originPropertyName);
 			Method writeMethod = propertyDescriptor.getWriteMethod();
 			if (writeMethod == null) {
 				continue;
 			}
 
-			Arbitrary<?> arbitrary = childrenArbitraries.get(propertyDescriptor.getName());
+			String resolvePropertyName = arbitraryProperty.getPropertyName();
+			Arbitrary<?> arbitrary = childrenArbitraries.get(resolvePropertyName);
 			if (arbitrary != null) {
 				builderCombinator = builderCombinator.use(arbitrary).in((b, v) -> {
 					try {

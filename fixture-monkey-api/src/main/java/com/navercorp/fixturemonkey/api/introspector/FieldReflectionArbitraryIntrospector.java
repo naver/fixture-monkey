@@ -19,8 +19,8 @@ package com.navercorp.fixturemonkey.api.introspector;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -33,6 +33,7 @@ import net.jqwik.api.Builders;
 import net.jqwik.api.Builders.BuilderCombinator;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
+import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.PropertyCache;
 import com.navercorp.fixturemonkey.api.type.Types;
@@ -50,17 +51,20 @@ public final class FieldReflectionArbitraryIntrospector implements ArbitraryIntr
 			return ArbitraryIntrospectorResult.EMPTY;
 		}
 
+		List<ArbitraryProperty> childrenProperties = context.getChildren();
 		Map<String, Arbitrary<?>> childrenArbitraries = context.getChildrenArbitraries();
 		Map<String, Field> fields = PropertyCache.getFields(type);
 		BuilderCombinator<?> builderCombinator = Builders.withBuilder(() -> ReflectionUtils.newInstance(type));
-		for (Entry<String, Field> entry : fields.entrySet()) {
-			Field field = entry.getValue();
-			if (Modifier.isFinal(field.getModifiers()) || Modifier.isTransient(field.getModifiers())) {
+		for (ArbitraryProperty arbitraryProperty : childrenProperties) {
+			String originPropertyName = arbitraryProperty.getProperty().getName();
+			Field field = fields.get(originPropertyName);
+
+			if (field == null || Modifier.isFinal(field.getModifiers()) || Modifier.isTransient(field.getModifiers())) {
 				continue;
 			}
 
-			String fieldName = entry.getKey();
-			Arbitrary<?> arbitrary = childrenArbitraries.get(fieldName);
+			String resolvePropertyName = arbitraryProperty.getPropertyName();
+			Arbitrary<?> arbitrary = childrenArbitraries.get(resolvePropertyName);
 			builderCombinator = builderCombinator.use(arbitrary).in((object, value) -> {
 				try {
 					if (value != null) {
@@ -68,7 +72,7 @@ public final class FieldReflectionArbitraryIntrospector implements ArbitraryIntr
 					}
 				} catch (IllegalAccessException e) {
 					log.warn(e,
-						() -> "set field by reflection is failed. field: " + fieldName + " value: " + value
+						() -> "set field by reflection is failed. field: " + resolvePropertyName + " value: " + value
 					);
 				}
 				return object;
