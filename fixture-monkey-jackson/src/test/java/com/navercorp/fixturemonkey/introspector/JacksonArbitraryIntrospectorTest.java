@@ -11,7 +11,6 @@ import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryPropertyGenerator;
@@ -59,7 +58,7 @@ class JacksonArbitraryIntrospectorTest {
 			Collections.emptyList(),
 			new DefaultNullInjectGenerator(),
 			Collections.emptyList(),
-			new ArbitraryContainerInfo(0, 3),
+			3,
 			Collections.emptyList(),
 			GenerateOptions.DEFAULT_ARBITRARY_GENERATOR
 		);

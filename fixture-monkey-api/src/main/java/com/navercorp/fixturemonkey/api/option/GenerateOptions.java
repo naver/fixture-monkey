@@ -72,13 +72,14 @@ public final class GenerateOptions {
 	public static final List<MatcherOperator<ArbitraryPropertyGenerator>> DEFAULT_ARBITRARY_PROPERTY_GENERATORS =
 		getDefaultArbitraryPropertyGenerators();
 	public static final ArbitraryGenerator DEFAULT_ARBITRARY_GENERATOR = new DefaultArbitraryGenerator();
+	public static final int DEFAULT_ARBITRARY_CONTAINER_SIZE = 3;
 	public static final GenerateOptions DEFAULT_GENERATE_OPTIONS = new GenerateOptions(
 		DEFAULT_ARBITRARY_PROPERTY_GENERATORS,
 		Collections.emptyList(),
 		Collections.emptyList(),
 		new DefaultNullInjectGenerator(),
 		Collections.emptyList(),
-		new ArbitraryContainerInfo(0, 3),
+		DEFAULT_ARBITRARY_CONTAINER_SIZE,
 		Collections.emptyList(),
 		DEFAULT_ARBITRARY_GENERATOR
 	);
@@ -88,7 +89,8 @@ public final class GenerateOptions {
 	private final List<MatcherOperator<NullInjectGenerator>> nullInjectGenerators;
 	private final NullInjectGenerator defaultNullInjectGenerator;
 	private final List<MatcherOperator<ArbitraryContainerInfoGenerator>> arbitraryContainerInfoGenerators;
-	private final ArbitraryContainerInfo defaultArbitraryPropertyContainerInfo;
+	private final int defaultArbitraryContainerSize;
+	private final ArbitraryContainerInfo defaultArbitraryContainerInfo;
 	private final List<MatcherOperator<ArbitraryGenerator>> arbitraryGenerators;
 	private final ArbitraryGenerator defaultArbitraryGenerator;
 
@@ -98,7 +100,7 @@ public final class GenerateOptions {
 		List<MatcherOperator<NullInjectGenerator>> nullInjectGenerators,
 		NullInjectGenerator defaultNullInjectGenerator,
 		List<MatcherOperator<ArbitraryContainerInfoGenerator>> arbitraryContainerInfoGenerators,
-		ArbitraryContainerInfo defaultArbitraryPropertyContainerInfo,
+		int defaultArbitraryContainerSize,
 		List<MatcherOperator<ArbitraryGenerator>> arbitraryGenerators,
 		ArbitraryGenerator defaultArbitraryGenerator
 	) {
@@ -107,7 +109,8 @@ public final class GenerateOptions {
 		this.nullInjectGenerators = nullInjectGenerators;
 		this.defaultNullInjectGenerator = defaultNullInjectGenerator;
 		this.arbitraryContainerInfoGenerators = arbitraryContainerInfoGenerators;
-		this.defaultArbitraryPropertyContainerInfo = defaultArbitraryPropertyContainerInfo;
+		this.defaultArbitraryContainerSize = defaultArbitraryContainerSize;
+		this.defaultArbitraryContainerInfo = new ArbitraryContainerInfo(0, this.defaultArbitraryContainerSize);
 		this.arbitraryGenerators = arbitraryGenerators;
 		this.defaultArbitraryGenerator = defaultArbitraryGenerator;
 	}
@@ -157,7 +160,11 @@ public final class GenerateOptions {
 			.filter(it -> it.match(property))
 			.map(MatcherOperator::getOperator)
 			.findFirst()
-			.orElse(context -> this.defaultArbitraryPropertyContainerInfo);
+			.orElse(context -> this.defaultArbitraryContainerInfo);
+	}
+
+	public int getDefaultArbitraryContainerSize() {
+		return this.defaultArbitraryContainerSize;
 	}
 
 	public List<MatcherOperator<ArbitraryGenerator>> getArbitraryGenerators() {
