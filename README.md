@@ -114,6 +114,7 @@ testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter:0.3.3")
 * @[KoEonYack](https://github.com/KoEonYack)
 * @[G-ONL](https://github.com/G-ONL)
 * @[imbyungjun](https://github.com/imbyungjun)
+* @[sandrawangyx](https://github.com/sandrawangyx)
 * @[dbgsprw](https://github.com/dbgsprw)
 
 ## More about Fixture Monkey
@@ -123,6 +124,8 @@ testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter:0.3.3")
 * [fixure monkey로 예외 발생 테스트](https://yangbongsoo.tistory.com/68?category=982054)
 * [테스트 객체를 더쉽게 만들어보자, Fixture-monkey](https://taes-k.github.io/2021/12/12/fixture-monkey/)
 * [Junit Test with Fixture Monkey](https://kevin-park.medium.com/junit-test-with-fixture-monkey-ca50f6533385)
+* [Fixture monkey](https://leeheefull.tistory.com/m/27)
+* [테스트 데이터도구 - Fixture Monkey](https://jiwondev.tistory.com/272)
 
 Welcome to write articles about Fixture Monkey!
 
