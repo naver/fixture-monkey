@@ -39,8 +39,9 @@ class JavaxValidationArbitraryContainerInfoGeneratorTest {
 	void generateContainer() {
 		// given
 		JavaxValidationArbitraryContainerInfoGenerator sut = new JavaxValidationArbitraryContainerInfoGenerator();
-		TypeReference<SampleWithContainerAnnotation> typeReference = new TypeReference<SampleWithContainerAnnotation>() {
-		};
+		TypeReference<SampleWithContainerAnnotation> typeReference =
+			new TypeReference<SampleWithContainerAnnotation>() {
+			};
 		Property property = PropertyCache.getProperty(typeReference.getAnnotatedType(), "container").get();
 		ArbitraryPropertyGeneratorContext context = new ArbitraryPropertyGeneratorContext(
 			property,
@@ -61,8 +62,9 @@ class JavaxValidationArbitraryContainerInfoGeneratorTest {
 	void generateDefaultSizeContainer() {
 		// given
 		JavaxValidationArbitraryContainerInfoGenerator sut = new JavaxValidationArbitraryContainerInfoGenerator();
-		TypeReference<SampleWithContainerAnnotation> typeReference = new TypeReference<SampleWithContainerAnnotation>() {
-		};
+		TypeReference<SampleWithContainerAnnotation> typeReference =
+			new TypeReference<SampleWithContainerAnnotation>() {
+			};
 		Property property = PropertyCache.getProperty(typeReference.getAnnotatedType(), "defaultSizeContainer")
 			.get();
 		ArbitraryPropertyGeneratorContext context = new ArbitraryPropertyGeneratorContext(
@@ -84,8 +86,9 @@ class JavaxValidationArbitraryContainerInfoGeneratorTest {
 	void generateSizeContainer() {
 		// given
 		JavaxValidationArbitraryContainerInfoGenerator sut = new JavaxValidationArbitraryContainerInfoGenerator();
-		TypeReference<SampleWithContainerAnnotation> typeReference = new TypeReference<SampleWithContainerAnnotation>() {
-		};
+		TypeReference<SampleWithContainerAnnotation> typeReference =
+			new TypeReference<SampleWithContainerAnnotation>() {
+			};
 		Property property = PropertyCache.getProperty(typeReference.getAnnotatedType(), "sizeContainer")
 			.get();
 		ArbitraryPropertyGeneratorContext context = new ArbitraryPropertyGeneratorContext(
@@ -107,8 +110,9 @@ class JavaxValidationArbitraryContainerInfoGeneratorTest {
 	void generateMinSizeContainer() {
 		// given
 		JavaxValidationArbitraryContainerInfoGenerator sut = new JavaxValidationArbitraryContainerInfoGenerator();
-		TypeReference<SampleWithContainerAnnotation> typeReference = new TypeReference<SampleWithContainerAnnotation>() {
-		};
+		TypeReference<SampleWithContainerAnnotation> typeReference =
+			new TypeReference<SampleWithContainerAnnotation>() {
+			};
 		Property property = PropertyCache.getProperty(typeReference.getAnnotatedType(), "minSizeContainer")
 			.get();
 		ArbitraryPropertyGeneratorContext context = new ArbitraryPropertyGeneratorContext(
@@ -130,8 +134,9 @@ class JavaxValidationArbitraryContainerInfoGeneratorTest {
 	void generateMinSizeContainerWithDefaultSize() {
 		// given
 		JavaxValidationArbitraryContainerInfoGenerator sut = new JavaxValidationArbitraryContainerInfoGenerator();
-		TypeReference<SampleWithContainerAnnotation> typeReference = new TypeReference<SampleWithContainerAnnotation>() {
-		};
+		TypeReference<SampleWithContainerAnnotation> typeReference =
+			new TypeReference<SampleWithContainerAnnotation>() {
+			};
 		Property property = PropertyCache.getProperty(typeReference.getAnnotatedType(), "minSizeContainer")
 			.get();
 		GenerateOptions generateOptions = new GenerateOptions(
@@ -162,8 +167,9 @@ class JavaxValidationArbitraryContainerInfoGeneratorTest {
 	void generateMaxSizeContainer() {
 		// given
 		JavaxValidationArbitraryContainerInfoGenerator sut = new JavaxValidationArbitraryContainerInfoGenerator();
-		TypeReference<SampleWithContainerAnnotation> typeReference = new TypeReference<SampleWithContainerAnnotation>() {
-		};
+		TypeReference<SampleWithContainerAnnotation> typeReference =
+			new TypeReference<SampleWithContainerAnnotation>() {
+			};
 		Property property = PropertyCache.getProperty(typeReference.getAnnotatedType(), "maxSizeContainer")
 			.get();
 		ArbitraryPropertyGeneratorContext context = new ArbitraryPropertyGeneratorContext(
@@ -185,8 +191,9 @@ class JavaxValidationArbitraryContainerInfoGeneratorTest {
 	void generateNotEmptyContainer() {
 		// given
 		JavaxValidationArbitraryContainerInfoGenerator sut = new JavaxValidationArbitraryContainerInfoGenerator();
-		TypeReference<SampleWithContainerAnnotation> typeReference = new TypeReference<SampleWithContainerAnnotation>() {
-		};
+		TypeReference<SampleWithContainerAnnotation> typeReference =
+			new TypeReference<SampleWithContainerAnnotation>() {
+			};
 		Property property = PropertyCache.getProperty(typeReference.getAnnotatedType(), "notEmptyContainer")
 			.get();
 		ArbitraryPropertyGeneratorContext context = new ArbitraryPropertyGeneratorContext(
@@ -208,8 +215,9 @@ class JavaxValidationArbitraryContainerInfoGeneratorTest {
 	void generateNotEmptyContainerWithDefaultSize() {
 		// given
 		JavaxValidationArbitraryContainerInfoGenerator sut = new JavaxValidationArbitraryContainerInfoGenerator();
-		TypeReference<SampleWithContainerAnnotation> typeReference = new TypeReference<SampleWithContainerAnnotation>() {
-		};
+		TypeReference<SampleWithContainerAnnotation> typeReference =
+			new TypeReference<SampleWithContainerAnnotation>() {
+			};
 		Property property = PropertyCache.getProperty(typeReference.getAnnotatedType(), "notEmptyContainer")
 			.get();
 		GenerateOptions generateOptions = new GenerateOptions(
@@ -240,8 +248,9 @@ class JavaxValidationArbitraryContainerInfoGeneratorTest {
 	void generateNotEmptyAndMaxSizeContainer() {
 		// given
 		JavaxValidationArbitraryContainerInfoGenerator sut = new JavaxValidationArbitraryContainerInfoGenerator();
-		TypeReference<SampleWithContainerAnnotation> typeReference = new TypeReference<SampleWithContainerAnnotation>() {
-		};
+		TypeReference<SampleWithContainerAnnotation> typeReference =
+			new TypeReference<SampleWithContainerAnnotation>() {
+			};
 		Property property = PropertyCache.getProperty(typeReference.getAnnotatedType(), "notEmptyAndMaxSizeContainer")
 			.get();
 		ArbitraryPropertyGeneratorContext context = new ArbitraryPropertyGeneratorContext(
