@@ -146,6 +146,7 @@ class JavaxValidationArbitraryContainerInfoGeneratorTest {
 			new DefaultNullInjectGenerator(),
 			Collections.emptyList(),
 			10,
+			Collections.emptyList(),
 			GenerateOptions.DEFAULT_ARBITRARY_GENERATOR
 		);
 		ArbitraryPropertyGeneratorContext context = new ArbitraryPropertyGeneratorContext(
@@ -227,6 +228,7 @@ class JavaxValidationArbitraryContainerInfoGeneratorTest {
 			new DefaultNullInjectGenerator(),
 			Collections.emptyList(),
 			10,
+			Collections.emptyList(),
 			GenerateOptions.DEFAULT_ARBITRARY_GENERATOR
 		);
 		ArbitraryPropertyGeneratorContext context = new ArbitraryPropertyGeneratorContext(
