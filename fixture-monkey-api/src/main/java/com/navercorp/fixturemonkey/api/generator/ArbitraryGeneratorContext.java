@@ -88,7 +88,7 @@ public final class ArbitraryGeneratorContext {
 
 	// return children arbitraries for object childrens
 	// container children is elementProperty and it does not support propertyName value.
-	public Map<String, Arbitrary<?>> getObjectChildrenArbitraries() {
+	public Map<String, Arbitrary<?>> getObjectChildrenArbitrariesByResolvedPropertyName() {
 		if (this.getArbitraryProperty().getContainerInfo() != null) {
 			return Collections.emptyMap();
 		}
