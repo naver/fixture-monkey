@@ -56,7 +56,8 @@ public final class OptionalIntrospector implements ArbitraryIntrospector, Matche
 			return ArbitraryIntrospectorResult.EMPTY;
 		}
 
-		double presenceProbability = children.get(0).getNullInject();
+		ArbitraryProperty valueProperty = children.get(0);
+		double presenceProbability = valueProperty.getNullInject();
 		if (containerInfo.getElementMinSize() > 0) {
 			presenceProbability = 1.0d;
 		} else if (containerInfo.getElementMaxSize() == 0) {
