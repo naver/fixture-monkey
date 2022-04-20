@@ -26,5 +26,5 @@ import net.jqwik.api.Arbitrary;
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 @FunctionalInterface
 public interface ArbitraryGenerator {
-	Arbitrary<Object> generate(ArbitraryGeneratorContext context);
+	Arbitrary<?> generate(ArbitraryGeneratorContext context);
 }

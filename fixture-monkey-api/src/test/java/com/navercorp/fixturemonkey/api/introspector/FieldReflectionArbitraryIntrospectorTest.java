@@ -130,6 +130,7 @@ class FieldReflectionArbitraryIntrospectorTest {
 			new DefaultNullInjectGenerator(),
 			Collections.emptyList(),
 			new ArbitraryContainerInfo(0, 3),
+			Collections.emptyList(),
 			GenerateOptions.DEFAULT_ARBITRARY_GENERATOR
 		);
 		ArbitraryPropertyGenerator rootGenerator = generateOptions.getArbitraryPropertyGenerator(rootProperty);
