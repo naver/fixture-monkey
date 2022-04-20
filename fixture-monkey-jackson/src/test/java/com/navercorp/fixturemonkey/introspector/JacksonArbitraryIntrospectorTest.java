@@ -60,6 +60,7 @@ class JacksonArbitraryIntrospectorTest {
 			new DefaultNullInjectGenerator(),
 			Collections.emptyList(),
 			new ArbitraryContainerInfo(0, 3),
+			Collections.emptyList(),
 			GenerateOptions.DEFAULT_ARBITRARY_GENERATOR
 		);
 

@@ -54,6 +54,7 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfoGenerator
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.ContainerArbitraryPropertyGenerator;
+import com.navercorp.fixturemonkey.api.generator.DefaultArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator;
 import com.navercorp.fixturemonkey.api.generator.MapArbitraryPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.NullInjectGenerator;
@@ -70,7 +71,7 @@ import com.navercorp.fixturemonkey.api.type.Types;
 public final class GenerateOptions {
 	public static final List<MatcherOperator<ArbitraryPropertyGenerator>> DEFAULT_ARBITRARY_PROPERTY_GENERATORS =
 		getDefaultArbitraryPropertyGenerators();
-	public static final List<MatcherOperator<ArbitraryGenerator>> DEFAULT_ARBITRARY_GENERATOR = Collections.emptyList();
+	public static final ArbitraryGenerator DEFAULT_ARBITRARY_GENERATOR = new DefaultArbitraryGenerator();
 	public static final GenerateOptions DEFAULT_GENERATE_OPTIONS = new GenerateOptions(
 		DEFAULT_ARBITRARY_PROPERTY_GENERATORS,
 		Collections.emptyList(),
@@ -78,6 +79,7 @@ public final class GenerateOptions {
 		new DefaultNullInjectGenerator(),
 		Collections.emptyList(),
 		new ArbitraryContainerInfo(0, 3),
+		Collections.emptyList(),
 		DEFAULT_ARBITRARY_GENERATOR
 	);
 
@@ -88,6 +90,7 @@ public final class GenerateOptions {
 	private final List<MatcherOperator<ArbitraryContainerInfoGenerator>> arbitraryContainerInfoGenerators;
 	private final ArbitraryContainerInfo defaultArbitraryPropertyContainerInfo;
 	private final List<MatcherOperator<ArbitraryGenerator>> arbitraryGenerators;
+	private final ArbitraryGenerator defaultArbitraryGenerator;
 
 	public GenerateOptions(
 		List<MatcherOperator<ArbitraryPropertyGenerator>> arbitraryPropertyGenerators,
@@ -96,7 +99,8 @@ public final class GenerateOptions {
 		NullInjectGenerator defaultNullInjectGenerator,
 		List<MatcherOperator<ArbitraryContainerInfoGenerator>> arbitraryContainerInfoGenerators,
 		ArbitraryContainerInfo defaultArbitraryPropertyContainerInfo,
-		List<MatcherOperator<ArbitraryGenerator>> arbitraryGenerators
+		List<MatcherOperator<ArbitraryGenerator>> arbitraryGenerators,
+		ArbitraryGenerator defaultArbitraryGenerator
 	) {
 		this.arbitraryPropertyGenerators = arbitraryPropertyGenerators;
 		this.propertyNameResolvers = propertyNameResolvers;
@@ -105,6 +109,7 @@ public final class GenerateOptions {
 		this.arbitraryContainerInfoGenerators = arbitraryContainerInfoGenerators;
 		this.defaultArbitraryPropertyContainerInfo = defaultArbitraryPropertyContainerInfo;
 		this.arbitraryGenerators = arbitraryGenerators;
+		this.defaultArbitraryGenerator = defaultArbitraryGenerator;
 	}
 
 	public List<MatcherOperator<ArbitraryPropertyGenerator>> getArbitraryPropertyGenerators() {
@@ -160,12 +165,11 @@ public final class GenerateOptions {
 	}
 
 	public ArbitraryGenerator getArbitraryGenerator(Property property) {
-		// TODO: if can not find default ArbitraryGenerator
 		return this.getArbitraryGenerators().stream()
 			.filter(it -> it.match(property))
 			.map(MatcherOperator::getOperator)
 			.findFirst()
-			.orElseThrow(() -> new RuntimeException("Can not find ArbitraryGenerator."));
+			.orElse(this.defaultArbitraryGenerator);
 	}
 
 	// TODO: equals and hashCode and toString
