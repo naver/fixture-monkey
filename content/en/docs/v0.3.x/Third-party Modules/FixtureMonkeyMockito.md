@@ -6,7 +6,7 @@ weight: 4
 {{< alert color="warning" title="Warning">}}
 This module is experimental
 {{< /alert >}}
-- Supports for generating interfaces and abstract classes as [mockito](https://github.com/mockito/mockito) objects.`
+- Supports for generating interfaces and abstract classes as [mockito](https://github.com/mockito/mockito) objects.
 
 ## Installation
 ### Gradle
