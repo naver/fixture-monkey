@@ -116,6 +116,7 @@ public final class ArbitraryGeneratorContext {
 	public ArbitraryGeneratorContext getOwnerContext() {
 		return this.ownerContext;
 	}
+
 	public boolean isRootContext() {
 		return this.property.isRoot();
 	}
