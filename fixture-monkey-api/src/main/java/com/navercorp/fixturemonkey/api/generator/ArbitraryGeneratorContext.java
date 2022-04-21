@@ -18,6 +18,8 @@
 
 package com.navercorp.fixturemonkey.api.generator;
 
+import static java.util.stream.Collectors.toList;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Type;
@@ -86,6 +88,12 @@ public final class ArbitraryGeneratorContext {
 		return Collections.unmodifiableList(this.children);
 	}
 
+	public List<Arbitrary<?>> getChildrenArbitraries() {
+		return this.children.stream()
+			.map(it -> this.resolveArbitrary.apply(this, it))
+			.collect(toList());
+	}
+
 	// return children arbitraries for object childrens
 	// container children is elementProperty and it does not support propertyName value.
 	public Map<String, Arbitrary<?>> getObjectChildrenArbitrariesByResolvedPropertyName() {
@@ -98,7 +106,7 @@ public final class ArbitraryGeneratorContext {
 			String propertyName = child.getResolvePropertyName();
 			Arbitrary<?> arbitrary = child.getPropertyValue() != null
 				? Arbitraries.of(child.getPropertyValue().get())
-				: this.getResolveArbitrary().apply(this, child);
+				: this.resolveArbitrary.apply(this, child);
 			childrenValues.put(propertyName, arbitrary);
 		}
 		return childrenValues;
@@ -108,11 +116,6 @@ public final class ArbitraryGeneratorContext {
 	public ArbitraryGeneratorContext getOwnerContext() {
 		return this.ownerContext;
 	}
-
-	public BiFunction<ArbitraryGeneratorContext, ArbitraryProperty, Arbitrary<?>> getResolveArbitrary() {
-		return this.resolveArbitrary;
-	}
-
 	public boolean isRootContext() {
 		return this.property.isRoot();
 	}

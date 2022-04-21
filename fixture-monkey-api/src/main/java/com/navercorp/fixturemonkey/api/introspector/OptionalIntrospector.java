@@ -64,7 +64,7 @@ public final class OptionalIntrospector implements ArbitraryIntrospector, Matche
 			presenceProbability = 0.0d;
 		}
 
-		Arbitrary<?> elementArbitrary = context.getResolveArbitrary().apply(context, children.get(0));
+		Arbitrary<?> elementArbitrary = context.getChildrenArbitraries().get(0);
 		return new ArbitraryIntrospectorResult(elementArbitrary.optional(presenceProbability));
 	}
 }
