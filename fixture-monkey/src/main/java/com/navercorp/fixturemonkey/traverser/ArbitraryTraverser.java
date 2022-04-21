@@ -35,6 +35,7 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryPropertyGeneratorContext;
+import com.navercorp.fixturemonkey.api.generator.PropertyValue;
 import com.navercorp.fixturemonkey.api.option.GenerateOptions;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
@@ -97,15 +98,11 @@ public final class ArbitraryTraverser {
 			arbitrary = Arbitraries.ofSuppliers(() -> arbitraryProperty.getPropertyValue().get());
 		}
 
-		ArbitraryNode node = new ArbitraryNode(
+		return new ArbitraryNode(
 			arbitraryProperty,
 			children,
 			arbitrary
 		);
-
-		children.forEach(it -> it.setParent(node));
-
-		return node;
 	}
 
 	private ArbitraryGeneratorContext generateContext(
@@ -127,6 +124,11 @@ public final class ArbitraryTraverser {
 				ArbitraryNode node = childNodesByArbitraryProperty.get(prop);
 				if (node == null) {
 					return Arbitraries.just(null);
+				}
+
+				PropertyValue propertyValue = prop.getPropertyValue();
+				if (propertyValue != null) {
+					return Arbitraries.just(propertyValue.get());
 				}
 
 				return this.generateOptions.getArbitraryGenerator(prop.getProperty())
