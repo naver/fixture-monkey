@@ -69,13 +69,13 @@ public final class OptionalIntrospector implements ArbitraryIntrospector, Matche
 			.optional(presenceProbability)
 			.map(it -> {
 				if (type == OptionalInt.class) {
-					return it.map(o -> OptionalInt.of((int)o))
+					return it.map(o -> OptionalInt.of((Integer)o))
 						.orElseGet(OptionalInt::empty);
 				} else if (type == OptionalLong.class) {
-					return it.map(o -> OptionalLong.of((long)o))
+					return it.map(o -> OptionalLong.of((Long)o))
 						.orElseGet(OptionalLong::empty);
 				} else if (type == OptionalDouble.class) {
-					return it.map(o -> OptionalDouble.of((double)o))
+					return it.map(o -> OptionalDouble.of((Double)o))
 						.orElseGet(OptionalDouble::empty);
 				} else {
 					return it;
