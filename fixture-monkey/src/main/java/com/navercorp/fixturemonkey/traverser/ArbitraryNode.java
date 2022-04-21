@@ -33,6 +33,9 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 final class ArbitraryNode {
 	private ArbitraryProperty arbitraryProperty;
 
+	@Nullable
+	private ArbitraryNode parent;
+
 	private List<ArbitraryNode> children;
 
 	@Nullable
@@ -58,6 +61,15 @@ final class ArbitraryNode {
 
 	public ArbitraryProperty getArbitraryProperty() {
 		return this.arbitraryProperty;
+	}
+
+	@Nullable
+	public ArbitraryNode getParent() {
+		return this.parent;
+	}
+
+	public void setParent(ArbitraryNode parent) {
+		this.parent = parent;
 	}
 
 	public List<ArbitraryNode> getChildren() {

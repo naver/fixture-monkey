@@ -19,7 +19,11 @@
 package com.navercorp.fixturemonkey.traverser;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Nullable;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -27,6 +31,7 @@ import org.apiguardian.api.API.Status;
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
 
+import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryPropertyGeneratorContext;
@@ -42,7 +47,13 @@ public final class ArbitraryTraverser {
 		this.generateOptions = generateOptions;
 	}
 
-	public ArbitraryNode traverse(RootProperty rootProperty) {
+	public Arbitrary<?> traverse(RootProperty rootProperty) {
+		ArbitraryNode arbitraryNode = this.traverseNode(rootProperty);
+		ArbitraryGeneratorContext context = this.generateContext(arbitraryNode, null);
+		return this.generateOptions.getArbitraryGenerator(rootProperty).generate(context);
+	}
+
+	private ArbitraryNode traverseNode(RootProperty rootProperty) {
 		ArbitraryPropertyGenerator arbitraryPropertyGenerator =
 			this.generateOptions.getArbitraryPropertyGenerator(rootProperty);
 
@@ -86,10 +97,41 @@ public final class ArbitraryTraverser {
 			arbitrary = Arbitraries.ofSuppliers(() -> arbitraryProperty.getPropertyValue().get());
 		}
 
-		return new ArbitraryNode(
+		ArbitraryNode node = new ArbitraryNode(
 			arbitraryProperty,
 			children,
 			arbitrary
+		);
+
+		children.forEach(it -> it.setParent(node));
+
+		return node;
+	}
+
+	private ArbitraryGeneratorContext generateContext(
+		ArbitraryNode arbitraryNode,
+		@Nullable ArbitraryGeneratorContext parentContext
+	) {
+		Map<ArbitraryProperty, ArbitraryNode> childNodesByArbitraryProperty = new HashMap<>();
+		List<ArbitraryProperty> childrenProperties = new ArrayList<>();
+		for (ArbitraryNode childNode : arbitraryNode.getChildren()) {
+			childNodesByArbitraryProperty.put(childNode.getArbitraryProperty(), childNode);
+			childrenProperties.add(childNode.getArbitraryProperty());
+		}
+
+		return new ArbitraryGeneratorContext(
+			arbitraryNode.getArbitraryProperty(),
+			childrenProperties,
+			parentContext,
+			(ctx, prop) -> {
+				ArbitraryNode node = childNodesByArbitraryProperty.get(prop);
+				if (node == null) {
+					return Arbitraries.just(null);
+				}
+
+				return this.generateOptions.getArbitraryGenerator(prop.getProperty())
+					.generate(this.generateContext(node, ctx));
+			}
 		);
 	}
 }
