@@ -36,7 +36,6 @@ import javax.annotation.Nullable;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
 
 import com.navercorp.fixturemonkey.api.property.Property;
@@ -104,9 +103,7 @@ public final class ArbitraryGeneratorContext {
 		Map<String, Arbitrary<?>> childrenValues = new HashMap<>();
 		for (ArbitraryProperty child : this.getChildren()) {
 			String propertyName = child.getResolvePropertyName();
-			Arbitrary<?> arbitrary = child.getPropertyValue() != null
-				? Arbitraries.of(child.getPropertyValue().get())
-				: this.resolveArbitrary.apply(this, child);
+			Arbitrary<?> arbitrary = this.resolveArbitrary.apply(this, child);
 			childrenValues.put(propertyName, arbitrary);
 		}
 		return childrenValues;
