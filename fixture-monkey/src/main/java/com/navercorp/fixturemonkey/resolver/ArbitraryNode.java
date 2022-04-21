@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.traverser;
+package com.navercorp.fixturemonkey.resolver;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package com.navercorp.fixturemonkey.traverser;
+package com.navercorp.fixturemonkey.resolver;
 
 import java.util.ArrayList;
 import java.util.HashMap;
