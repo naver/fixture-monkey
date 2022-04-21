@@ -64,7 +64,24 @@ public final class OptionalIntrospector implements ArbitraryIntrospector, Matche
 			presenceProbability = 0.0d;
 		}
 
-		Arbitrary<?> elementArbitrary = context.getChildrenArbitraries().get(0);
-		return new ArbitraryIntrospectorResult(elementArbitrary.optional(presenceProbability));
+		Class<?> type = Types.getActualType(property.getProperty().getType());
+		Arbitrary<?> elementArbitrary = context.getChildrenArbitraries().get(0)
+			.optional(presenceProbability)
+			.map(it -> {
+				if (type == OptionalInt.class) {
+					return it.map(o -> OptionalInt.of((Integer)o))
+						.orElseGet(OptionalInt::empty);
+				} else if (type == OptionalLong.class) {
+					return it.map(o -> OptionalLong.of((Long)o))
+						.orElseGet(OptionalLong::empty);
+				} else if (type == OptionalDouble.class) {
+					return it.map(o -> OptionalDouble.of((Double)o))
+						.orElseGet(OptionalDouble::empty);
+				} else {
+					return it;
+				}
+			});
+
+		return new ArbitraryIntrospectorResult(elementArbitrary);
 	}
 }
