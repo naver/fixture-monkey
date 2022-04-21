@@ -37,7 +37,6 @@ public final class SingleValueArbitraryPropertyGenerator implements ArbitraryPro
 		return new ArbitraryProperty(
 			property,
 			context.getPropertyNameResolver(),
-			context.getPropertyValue(),
 			nullInject,
 			context.getElementIndex(),
 			Collections.emptyList(),

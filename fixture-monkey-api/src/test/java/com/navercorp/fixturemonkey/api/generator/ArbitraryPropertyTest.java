@@ -43,7 +43,6 @@ class ArbitraryPropertyTest {
 		ArbitraryProperty actual = new ArbitraryProperty(
 			rootProperty,
 			PropertyNameResolver.IDENTITY,
-			null,
 			0.0D,
 			null,
 			Collections.emptyList(),
@@ -67,7 +66,6 @@ class ArbitraryPropertyTest {
 		ArbitraryProperty actual = new ArbitraryProperty(
 			property.get(),
 			prop -> "x_" + prop.getName(),
-			null,
 			0.0D,
 			null,
 			Collections.emptyList(),

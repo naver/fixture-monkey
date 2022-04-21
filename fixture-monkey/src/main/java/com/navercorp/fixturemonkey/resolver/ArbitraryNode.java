@@ -48,12 +48,10 @@ final class ArbitraryNode {
 
 	ArbitraryNode(
 		ArbitraryProperty arbitraryProperty,
-		List<ArbitraryNode> children,
-		@Nullable Arbitrary<?> arbitrary
+		List<ArbitraryNode> children
 	) {
 		this.arbitraryProperty = arbitraryProperty;
 		this.children = children;
-		this.arbitrary = arbitrary;
 	}
 
 	public ArbitraryProperty getArbitraryProperty() {

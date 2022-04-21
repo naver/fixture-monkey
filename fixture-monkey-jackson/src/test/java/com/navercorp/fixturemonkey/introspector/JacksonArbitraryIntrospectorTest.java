@@ -69,7 +69,6 @@ class JacksonArbitraryIntrospectorTest {
 				rootProperty,
 				null,
 				null,
-				null,
 				generateOptions
 			)
 		);
@@ -80,7 +79,6 @@ class JacksonArbitraryIntrospectorTest {
 				.generate(
 					new ArbitraryPropertyGeneratorContext(
 						it,
-						null,
 						null,
 						rootArbitraryProperty,
 						generateOptions

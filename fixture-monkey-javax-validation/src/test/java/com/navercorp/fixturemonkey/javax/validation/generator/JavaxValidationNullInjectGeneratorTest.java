@@ -48,7 +48,6 @@ class JavaxValidationNullInjectGeneratorTest {
 			property,
 			null,
 			null,
-			null,
 			GenerateOptions.DEFAULT_GENERATE_OPTIONS
 		);
 
@@ -77,7 +76,6 @@ class JavaxValidationNullInjectGeneratorTest {
 			property,
 			null,
 			null,
-			null,
 			GenerateOptions.DEFAULT_GENERATE_OPTIONS
 		);
 
@@ -98,7 +96,6 @@ class JavaxValidationNullInjectGeneratorTest {
 			property,
 			null,
 			null,
-			null,
 			GenerateOptions.DEFAULT_GENERATE_OPTIONS
 		);
 
@@ -117,7 +114,6 @@ class JavaxValidationNullInjectGeneratorTest {
 		Property property = PropertyCache.getProperty(typeReference.getAnnotatedType(), "notEmpty").get();
 		ArbitraryPropertyGeneratorContext context = new ArbitraryPropertyGeneratorContext(
 			property,
-			null,
 			null,
 			null,
 			GenerateOptions.DEFAULT_GENERATE_OPTIONS
@@ -148,7 +144,6 @@ class JavaxValidationNullInjectGeneratorTest {
 			property,
 			null,
 			null,
-			null,
 			GenerateOptions.DEFAULT_GENERATE_OPTIONS
 		);
 
@@ -177,7 +172,6 @@ class JavaxValidationNullInjectGeneratorTest {
 			property,
 			null,
 			null,
-			null,
 			GenerateOptions.DEFAULT_GENERATE_OPTIONS
 		);
 
@@ -204,7 +198,6 @@ class JavaxValidationNullInjectGeneratorTest {
 		Property property = PropertyCache.getProperty(typeReference.getAnnotatedType(), "notEmptyContainer").get();
 		ArbitraryPropertyGeneratorContext context = new ArbitraryPropertyGeneratorContext(
 			property,
-			null,
 			null,
 			null,
 			GenerateOptions.DEFAULT_GENERATE_OPTIONS

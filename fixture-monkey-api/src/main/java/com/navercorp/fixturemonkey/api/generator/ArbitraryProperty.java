@@ -35,9 +35,6 @@ public final class ArbitraryProperty {
 
 	private final PropertyNameResolver propertyNameResolver;
 
-	@Nullable
-	private final PropertyValue propertyValue;
-
 	private final double nullInject;
 
 	@Nullable
@@ -51,7 +48,6 @@ public final class ArbitraryProperty {
 	public ArbitraryProperty(
 		Property property,
 		PropertyNameResolver propertyNameResolver,
-		@Nullable PropertyValue propertyValue,
 		double nullInject,
 		@Nullable Integer elementIndex,
 		List<Property> childProperties,
@@ -59,7 +55,6 @@ public final class ArbitraryProperty {
 	) {
 		this.property = property;
 		this.propertyNameResolver = propertyNameResolver;
-		this.propertyValue = propertyValue;
 		this.nullInject = nullInject;
 		this.elementIndex = elementIndex;
 		this.childProperties = childProperties;
@@ -76,11 +71,6 @@ public final class ArbitraryProperty {
 
 	public String getResolvePropertyName() {
 		return this.getPropertyNameResolver().resolve(this.property);
-	}
-
-	@Nullable
-	public PropertyValue getPropertyValue() {
-		return this.propertyValue;
 	}
 
 	public double getNullInject() {

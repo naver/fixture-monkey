@@ -121,7 +121,6 @@ public final class OptionalArbitraryPropertyGenerator implements ArbitraryProper
 		return new ArbitraryProperty(
 			property,
 			context.getPropertyNameResolver(),
-			context.getPropertyValue(),
 			nullInject,
 			context.getElementIndex(),
 			Collections.singletonList(valueProperty),

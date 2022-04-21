@@ -56,7 +56,6 @@ class ArbitraryIntrospectorTest {
 			new ArbitraryProperty(
 				property,
 				PropertyNameResolver.IDENTITY,
-				null,
 				0.0D,
 				null,
 				Collections.emptyList(),
@@ -83,7 +82,6 @@ class ArbitraryIntrospectorTest {
 			new ArbitraryProperty(
 				property,
 				PropertyNameResolver.IDENTITY,
-				null,
 				0.0D,
 				null,
 				Collections.emptyList(),
@@ -110,7 +108,6 @@ class ArbitraryIntrospectorTest {
 			new ArbitraryProperty(
 				property,
 				PropertyNameResolver.IDENTITY,
-				null,
 				0.0D,
 				null,
 				Collections.emptyList(),
@@ -137,7 +134,6 @@ class ArbitraryIntrospectorTest {
 			new ArbitraryProperty(
 				property,
 				PropertyNameResolver.IDENTITY,
-				null,
 				0.0D,
 				null,
 				Collections.emptyList(),

@@ -65,7 +65,6 @@ class FieldReflectionArbitraryIntrospectorTest {
 				rootProperty,
 				null,
 				null,
-				null,
 				generateOptions
 			)
 		);
@@ -76,7 +75,6 @@ class FieldReflectionArbitraryIntrospectorTest {
 				.generate(
 					new ArbitraryPropertyGeneratorContext(
 						it,
-						null,
 						null,
 						rootArbitraryProperty,
 						generateOptions
@@ -138,7 +136,6 @@ class FieldReflectionArbitraryIntrospectorTest {
 				rootProperty,
 				null,
 				null,
-				null,
 				generateOptions
 			)
 		);
@@ -149,7 +146,6 @@ class FieldReflectionArbitraryIntrospectorTest {
 				.generate(
 					new ArbitraryPropertyGeneratorContext(
 						it,
-						null,
 						null,
 						rootArbitraryProperty,
 						generateOptions

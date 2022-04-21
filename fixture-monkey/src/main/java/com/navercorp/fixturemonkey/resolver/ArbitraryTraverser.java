@@ -24,9 +24,6 @@ import java.util.List;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import net.jqwik.api.Arbitraries;
-import net.jqwik.api.Arbitrary;
-
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryPropertyGeneratorContext;
@@ -51,7 +48,6 @@ public final class ArbitraryTraverser {
 				rootProperty,
 				null,
 				null,
-				null,
 				this.generateOptions
 			)
 		);
@@ -71,7 +67,6 @@ public final class ArbitraryTraverser {
 			ArbitraryProperty childArbitraryProperty = arbitraryPropertyGenerator.generate(
 				new ArbitraryPropertyGeneratorContext(
 					childProperty,
-					null,
 					arbitraryProperty.getContainerInfo() != null ? index : null,
 					arbitraryProperty,
 					this.generateOptions
@@ -82,15 +77,9 @@ public final class ArbitraryTraverser {
 			children.add(childNode);
 		}
 
-		Arbitrary<?> arbitrary = null;
-		if (arbitraryProperty.getPropertyValue() != null) {
-			arbitrary = Arbitraries.ofSuppliers(() -> arbitraryProperty.getPropertyValue().get());
-		}
-
 		return new ArbitraryNode(
 			arbitraryProperty,
-			children,
-			arbitrary
+			children
 		);
 	}
 }
