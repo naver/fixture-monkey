@@ -69,6 +69,10 @@ final class ArbitraryNode {
 		return this.arbitrary;
 	}
 
+	public void setArbitrary(Arbitrary<?> arbitrary) {
+		this.arbitrary = arbitrary;
+	}
+
 	public boolean isManipulated() {
 		return this.manipulated;
 	}
