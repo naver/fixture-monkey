@@ -110,6 +110,7 @@ public final class MapEntryElementProperty implements Property {
 		throw new UnsupportedOperationException("elementProperty getValue is not support yet.");
 	}
 
+	// This class only for type marking
 	public static class MapEntryElementType {
 	}
 }
