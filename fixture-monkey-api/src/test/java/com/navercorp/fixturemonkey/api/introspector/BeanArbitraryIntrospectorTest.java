@@ -66,7 +66,6 @@ class BeanArbitraryIntrospectorTest {
 				rootProperty,
 				null,
 				null,
-				null,
 				generateOptions
 			)
 		);
@@ -77,7 +76,6 @@ class BeanArbitraryIntrospectorTest {
 				.generate(
 					new ArbitraryPropertyGeneratorContext(
 						it,
-						null,
 						null,
 						rootArbitraryProperty,
 						generateOptions
@@ -136,7 +134,6 @@ class BeanArbitraryIntrospectorTest {
 				rootProperty,
 				null,
 				null,
-				null,
 				generateOptions
 			)
 		);
@@ -147,7 +144,6 @@ class BeanArbitraryIntrospectorTest {
 				.generate(
 					new ArbitraryPropertyGeneratorContext(
 						it,
-						null,
 						null,
 						rootArbitraryProperty,
 						generateOptions

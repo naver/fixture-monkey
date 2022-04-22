@@ -77,7 +77,6 @@ public final class EntryArbitraryPropertyGenerator implements ArbitraryPropertyG
 		return new ArbitraryProperty(
 			property,
 			context.getPropertyNameResolver(),
-			context.getPropertyValue(),
 			nullInject,
 			context.getElementIndex(),
 			childProperties,

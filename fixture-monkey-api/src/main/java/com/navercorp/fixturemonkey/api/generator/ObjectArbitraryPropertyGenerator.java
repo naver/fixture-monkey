@@ -39,7 +39,6 @@ public final class ObjectArbitraryPropertyGenerator implements ArbitraryProperty
 		return new ArbitraryProperty(
 			property,
 			context.getPropertyNameResolver(),
-			context.getPropertyValue(),
 			nullInject,
 			context.getElementIndex(),
 			childProperties,

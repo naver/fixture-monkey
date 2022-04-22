@@ -44,7 +44,6 @@ class DefaultNullInjectGeneratorTest {
 			property,
 			null,
 			null,
-			null,
 			GenerateOptions.DEFAULT_GENERATE_OPTIONS
 		);
 
@@ -63,7 +62,6 @@ class DefaultNullInjectGeneratorTest {
 		Property property = PropertyCache.getProperty(typeReference.getAnnotatedType(), "nonnull").get();
 		ArbitraryPropertyGeneratorContext context = new ArbitraryPropertyGeneratorContext(
 			property,
-			null,
 			null,
 			null,
 			GenerateOptions.DEFAULT_GENERATE_OPTIONS
@@ -92,7 +90,6 @@ class DefaultNullInjectGeneratorTest {
 			property,
 			null,
 			null,
-			null,
 			GenerateOptions.DEFAULT_GENERATE_OPTIONS
 		);
 
@@ -117,7 +114,7 @@ class DefaultNullInjectGeneratorTest {
 		Property property = PropertyCache.getProperty(typeReference.getAnnotatedType(), "defaultValue").get();
 		ArbitraryPropertyGeneratorContext context = new ArbitraryPropertyGeneratorContext(
 			property,
-			null,
+
 			null,
 			null,
 			GenerateOptions.DEFAULT_GENERATE_OPTIONS
@@ -138,7 +135,6 @@ class DefaultNullInjectGeneratorTest {
 		Property property = PropertyCache.getProperty(typeReference.getAnnotatedType(), "primitive").get();
 		ArbitraryPropertyGeneratorContext context = new ArbitraryPropertyGeneratorContext(
 			property,
-			null,
 			null,
 			null,
 			GenerateOptions.DEFAULT_GENERATE_OPTIONS
@@ -167,7 +163,6 @@ class DefaultNullInjectGeneratorTest {
 			property,
 			null,
 			null,
-			null,
 			GenerateOptions.DEFAULT_GENERATE_OPTIONS
 		);
 		ArbitraryContainerInfo containerInfo = new ArbitraryContainerInfo(0, 3);
@@ -193,7 +188,6 @@ class DefaultNullInjectGeneratorTest {
 		Property property = PropertyCache.getProperty(typeReference.getAnnotatedType(), "container").get();
 		ArbitraryPropertyGeneratorContext context = new ArbitraryPropertyGeneratorContext(
 			property,
-			null,
 			null,
 			null,
 			GenerateOptions.DEFAULT_GENERATE_OPTIONS

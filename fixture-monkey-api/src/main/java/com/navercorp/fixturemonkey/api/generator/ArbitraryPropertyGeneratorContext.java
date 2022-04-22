@@ -35,9 +35,6 @@ public final class ArbitraryPropertyGeneratorContext {
 	private final Property property;
 
 	@Nullable
-	private final PropertyValue propertyValue;
-
-	@Nullable
 	private final Integer elementIndex;
 
 	@Nullable
@@ -47,13 +44,11 @@ public final class ArbitraryPropertyGeneratorContext {
 
 	public ArbitraryPropertyGeneratorContext(
 		Property property,
-		@Nullable PropertyValue propertyValue,
 		@Nullable Integer elementIndex,
 		@Nullable ArbitraryProperty ownerProperty,
 		GenerateOptions generateOptions
 	) {
 		this.property = property;
-		this.propertyValue = propertyValue;
 		this.elementIndex = elementIndex;
 		this.ownerProperty = ownerProperty;
 		this.generateOptions = generateOptions;
@@ -61,10 +56,6 @@ public final class ArbitraryPropertyGeneratorContext {
 
 	public Property getProperty() {
 		return this.property;
-	}
-
-	public PropertyValue getPropertyValue() {
-		return this.propertyValue;
 	}
 
 	@Nullable

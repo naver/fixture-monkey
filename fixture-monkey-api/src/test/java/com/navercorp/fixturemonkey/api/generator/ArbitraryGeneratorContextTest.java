@@ -42,7 +42,6 @@ class ArbitraryGeneratorContextTest {
 		ArbitraryProperty arbitraryProperty = new ArbitraryProperty(
 			rootProperty,
 			PropertyNameResolver.IDENTITY,
-			null,
 			0.0D,
 			null,
 			Collections.emptyList(),

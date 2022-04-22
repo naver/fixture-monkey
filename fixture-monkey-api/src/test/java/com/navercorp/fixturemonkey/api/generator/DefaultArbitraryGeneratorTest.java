@@ -52,7 +52,6 @@ class DefaultArbitraryGeneratorTest {
 			new ArbitraryProperty(
 				property,
 				PropertyNameResolver.IDENTITY,
-				null,
 				0.0D,
 				null,
 				Collections.emptyList(),
@@ -85,7 +84,6 @@ class DefaultArbitraryGeneratorTest {
 			new ArbitraryProperty(
 				property,
 				PropertyNameResolver.IDENTITY,
-				null,
 				0.0D,
 				null,
 				Collections.emptyList(),
@@ -118,7 +116,6 @@ class DefaultArbitraryGeneratorTest {
 			new ArbitraryProperty(
 				property,
 				PropertyNameResolver.IDENTITY,
-				null,
 				0.0D,
 				null,
 				Collections.emptyList(),
@@ -151,7 +148,6 @@ class DefaultArbitraryGeneratorTest {
 			new ArbitraryProperty(
 				property,
 				PropertyNameResolver.IDENTITY,
-				null,
 				0.0D,
 				null,
 				Collections.emptyList(),
@@ -184,7 +180,6 @@ class DefaultArbitraryGeneratorTest {
 			new ArbitraryProperty(
 				property,
 				PropertyNameResolver.IDENTITY,
-				null,
 				0.0D,
 				null,
 				Collections.emptyList(),
@@ -217,7 +212,6 @@ class DefaultArbitraryGeneratorTest {
 			new ArbitraryProperty(
 				property,
 				PropertyNameResolver.IDENTITY,
-				null,
 				0.0D,
 				null,
 				Collections.emptyList(),
@@ -250,7 +244,6 @@ class DefaultArbitraryGeneratorTest {
 			new ArbitraryProperty(
 				property,
 				PropertyNameResolver.IDENTITY,
-				null,
 				0.0D,
 				null,
 				Collections.emptyList(),
@@ -284,7 +277,6 @@ class DefaultArbitraryGeneratorTest {
 				rootProperty,
 				null,
 				null,
-				null,
 				generateOptions
 			)
 		);
@@ -295,7 +287,6 @@ class DefaultArbitraryGeneratorTest {
 				.generate(
 					new ArbitraryPropertyGeneratorContext(
 						it,
-						null,
 						null,
 						rootArbitraryProperty,
 						generateOptions
