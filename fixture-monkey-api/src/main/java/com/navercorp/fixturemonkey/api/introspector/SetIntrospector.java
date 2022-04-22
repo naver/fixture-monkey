@@ -18,8 +18,9 @@
 
 package com.navercorp.fixturemonkey.api.introspector;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -36,11 +37,11 @@ import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public final class ListIntrospector implements ArbitraryIntrospector, Matcher {
+public final class SetIntrospector implements ArbitraryIntrospector, Matcher {
 	@Override
 	public boolean match(Property property) {
 		Class<?> type = Types.getActualType(property.getType());
-		return List.class.isAssignableFrom(type);
+		return Set.class.isAssignableFrom(type);
 	}
 
 	@Override
@@ -53,14 +54,18 @@ public final class ListIntrospector implements ArbitraryIntrospector, Matcher {
 
 		List<Arbitrary<?>> childrenArbitraries = context.getChildrenArbitraries();
 
-		BuilderCombinator<List<Object>> builderCombinator = Builders.withBuilder(ArrayList::new);
+		BuilderCombinator<Set<Object>> builderCombinator = Builders.withBuilder(HashSet::new);
 		for (Arbitrary<?> childArbitrary : childrenArbitraries) {
-			builderCombinator.use(childArbitrary).in((list, element) -> {
-				list.add(element);
-				return list;
+			builderCombinator.use(childArbitrary).in((set, element) -> {
+				set.add(element);
+				return set;
 			});
 		}
 
-		return new ArbitraryIntrospectorResult(builderCombinator.build());
+		return new ArbitraryIntrospectorResult(
+			builderCombinator
+				.build()
+				.filter(it -> it.size() == childrenArbitraries.size())
+		);
 	}
 }
