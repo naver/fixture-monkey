@@ -70,7 +70,9 @@ public final class DefaultArbitraryGenerator implements ArbitraryGenerator {
 	public Arbitrary<?> generate(ArbitraryGeneratorContext context) {
 		ArbitraryIntrospectorResult result = this.arbitraryIntrospector.introspect(context);
 		if (result.getValue() != null) {
-			return result.getValue();
+			double nullInject = context.getArbitraryProperty().getNullInject();
+			return result.getValue()
+				.injectNull(nullInject);
 		}
 
 		return Arbitraries.just(null);

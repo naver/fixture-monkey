@@ -29,6 +29,7 @@ import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.option.GenerateOptions;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
+import com.navercorp.fixturemonkey.api.property.RootProperty;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class ArbitraryPropertyGeneratorContext {
@@ -82,5 +83,9 @@ public final class ArbitraryPropertyGeneratorContext {
 			.map(MatcherOperator::getOperator)
 			.findFirst()
 			.orElse(PropertyNameResolver.IDENTITY);
+	}
+
+	public boolean isRootContext() {
+		return this.property instanceof RootProperty;
 	}
 }
