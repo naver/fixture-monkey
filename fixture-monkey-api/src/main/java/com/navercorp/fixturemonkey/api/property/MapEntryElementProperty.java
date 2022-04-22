@@ -37,12 +37,7 @@ public final class MapEntryElementProperty implements Property {
 
 	private final Property valueProperty;
 
-	private final Type type = new Type() {
-		@Override
-		public String getTypeName() {
-			return "MapEntryElement";
-		}
-	};
+	private final Type type = MapEntryElementType.class;
 
 	private final AnnotatedType annotatedType = new AnnotatedType() {
 		@Override
@@ -113,5 +108,9 @@ public final class MapEntryElementProperty implements Property {
 	@Override
 	public Object getValue(Object obj) {
 		throw new UnsupportedOperationException("elementProperty getValue is not support yet.");
+	}
+
+	// This class only for type marking
+	public static class MapEntryElementType {
 	}
 }
