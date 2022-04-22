@@ -38,12 +38,7 @@ public final class TupleLikeElementsProperty implements Property {
 	@Nullable
 	private final Integer index;
 
-	private final Type type = new Type() {
-		@Override
-		public String getTypeName() {
-			return "TupleLikeElement";
-		}
-	};
+	private final Type type = TupleLikeElementType.class;
 
 	private final AnnotatedType annotatedType = new AnnotatedType() {
 		@Override
@@ -115,5 +110,8 @@ public final class TupleLikeElementsProperty implements Property {
 	@Override
 	public Object getValue(Object obj) {
 		throw new UnsupportedOperationException("elementProperty getValue is not support yet.");
+	}
+
+	public static class TupleLikeElementType {
 	}
 }
