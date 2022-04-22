@@ -18,8 +18,6 @@
 
 package com.navercorp.fixturemonkey.api.introspector;
 
-import java.util.Collection;
-
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
