@@ -121,6 +121,10 @@ public final class DefaultNullInjectGenerator implements NullInjectGenerator {
 		ArbitraryPropertyGeneratorContext context,
 		@Nullable ArbitraryContainerInfo containerInfo
 	) {
+		if (context.isRootContext()) {
+			return 0.0d;
+		}
+
 		if (Types.getActualType(context.getProperty().getType()).isPrimitive()) {
 			return 0.0d;
 		}

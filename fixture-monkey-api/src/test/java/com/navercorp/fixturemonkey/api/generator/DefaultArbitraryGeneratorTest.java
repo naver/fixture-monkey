@@ -270,7 +270,18 @@ class DefaultArbitraryGeneratorTest {
 		TypeReference<SampleArbitraryGenerator> typeReference = new TypeReference<SampleArbitraryGenerator>() {
 		};
 		Property rootProperty = new RootProperty(typeReference.getAnnotatedType());
-		GenerateOptions generateOptions = GenerateOptions.DEFAULT_GENERATE_OPTIONS;
+		GenerateOptions generateOptions = new GenerateOptions(
+			GenerateOptions.DEFAULT_ARBITRARY_PROPERTY_GENERATORS,
+			Collections.emptyList(),
+			Collections.emptyList(),
+			new DefaultNullInjectGenerator(
+				0.0d, false, false, Collections.emptySet(), Collections.emptySet()
+			),
+			Collections.emptyList(),
+			GenerateOptions.DEFAULT_ARBITRARY_CONTAINER_SIZE,
+			Collections.emptyList(),
+			GenerateOptions.DEFAULT_ARBITRARY_GENERATOR
+		);
 		ArbitraryPropertyGenerator rootGenerator = generateOptions.getArbitraryPropertyGenerator(rootProperty);
 		ArbitraryProperty rootArbitraryProperty = rootGenerator.generate(
 			new ArbitraryPropertyGeneratorContext(
