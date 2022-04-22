@@ -31,16 +31,17 @@ import net.jqwik.api.Builders.BuilderCombinator;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
+import com.navercorp.fixturemonkey.api.matcher.AssignableTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.property.Property;
-import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class ListIntrospector implements ArbitraryIntrospector, Matcher {
+	private static final Matcher MATCHER = new AssignableTypeMatcher(List.class);
+
 	@Override
 	public boolean match(Property property) {
-		Class<?> type = Types.getActualType(property.getType());
-		return List.class.isAssignableFrom(type);
+		return MATCHER.match(property);
 	}
 
 	@Override
