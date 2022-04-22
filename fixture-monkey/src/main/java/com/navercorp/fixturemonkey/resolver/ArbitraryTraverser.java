@@ -16,14 +16,10 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.traverser;
+package com.navercorp.fixturemonkey.resolver;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
-import javax.annotation.Nullable;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -31,11 +27,9 @@ import org.apiguardian.api.API.Status;
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
 
-import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryPropertyGeneratorContext;
-import com.navercorp.fixturemonkey.api.generator.PropertyValue;
 import com.navercorp.fixturemonkey.api.option.GenerateOptions;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
@@ -48,13 +42,7 @@ public final class ArbitraryTraverser {
 		this.generateOptions = generateOptions;
 	}
 
-	public Arbitrary<?> traverse(RootProperty rootProperty) {
-		ArbitraryNode arbitraryNode = this.traverseNode(rootProperty);
-		ArbitraryGeneratorContext context = this.generateContext(arbitraryNode, null);
-		return this.generateOptions.getArbitraryGenerator(rootProperty).generate(context);
-	}
-
-	private ArbitraryNode traverseNode(RootProperty rootProperty) {
+	public ArbitraryNode traverse(RootProperty rootProperty) {
 		ArbitraryPropertyGenerator arbitraryPropertyGenerator =
 			this.generateOptions.getArbitraryPropertyGenerator(rootProperty);
 
@@ -79,6 +67,7 @@ public final class ArbitraryTraverser {
 			Property childProperty = childProperties.get(0);
 			ArbitraryPropertyGenerator arbitraryPropertyGenerator =
 				this.generateOptions.getArbitraryPropertyGenerator(childProperty);
+
 			ArbitraryProperty childArbitraryProperty = arbitraryPropertyGenerator.generate(
 				new ArbitraryPropertyGeneratorContext(
 					childProperty,
@@ -102,38 +91,6 @@ public final class ArbitraryTraverser {
 			arbitraryProperty,
 			children,
 			arbitrary
-		);
-	}
-
-	private ArbitraryGeneratorContext generateContext(
-		ArbitraryNode arbitraryNode,
-		@Nullable ArbitraryGeneratorContext parentContext
-	) {
-		Map<ArbitraryProperty, ArbitraryNode> childNodesByArbitraryProperty = new HashMap<>();
-		List<ArbitraryProperty> childrenProperties = new ArrayList<>();
-		for (ArbitraryNode childNode : arbitraryNode.getChildren()) {
-			childNodesByArbitraryProperty.put(childNode.getArbitraryProperty(), childNode);
-			childrenProperties.add(childNode.getArbitraryProperty());
-		}
-
-		return new ArbitraryGeneratorContext(
-			arbitraryNode.getArbitraryProperty(),
-			childrenProperties,
-			parentContext,
-			(ctx, prop) -> {
-				ArbitraryNode node = childNodesByArbitraryProperty.get(prop);
-				if (node == null) {
-					return Arbitraries.just(null);
-				}
-
-				PropertyValue propertyValue = prop.getPropertyValue();
-				if (propertyValue != null) {
-					return Arbitraries.just(propertyValue.get());
-				}
-
-				return this.generateOptions.getArbitraryGenerator(prop.getProperty())
-					.generate(this.generateContext(node, ctx));
-			}
 		);
 	}
 }

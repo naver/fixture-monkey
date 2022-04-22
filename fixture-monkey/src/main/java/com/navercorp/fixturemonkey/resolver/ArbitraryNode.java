@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.traverser;
+package com.navercorp.fixturemonkey.resolver;
 
 import java.util.List;
 
@@ -67,6 +67,10 @@ final class ArbitraryNode {
 	@Nullable
 	public Arbitrary<?> getArbitrary() {
 		return this.arbitrary;
+	}
+
+	public void setArbitrary(Arbitrary<?> arbitrary) {
+		this.arbitrary = arbitrary;
 	}
 
 	public boolean isManipulated() {
