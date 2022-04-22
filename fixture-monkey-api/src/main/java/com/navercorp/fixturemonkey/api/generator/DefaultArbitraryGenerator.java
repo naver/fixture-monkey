@@ -33,6 +33,7 @@ import com.navercorp.fixturemonkey.api.introspector.BeanArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.BooleanIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.CompositeArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.EnumIntrospector;
+import com.navercorp.fixturemonkey.api.introspector.IterableIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.JavaArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.JavaTimeArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.ListIntrospector;
@@ -53,6 +54,7 @@ public final class DefaultArbitraryGenerator implements ArbitraryGenerator {
 				new UuidIntrospector(),
 				new OptionalIntrospector(),
 				new ListIntrospector(),
+				new IterableIntrospector(),
 				BeanArbitraryIntrospector.INSTANCE
 			)
 		);
