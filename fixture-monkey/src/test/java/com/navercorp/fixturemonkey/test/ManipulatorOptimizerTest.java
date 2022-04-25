@@ -22,8 +22,6 @@ import static org.assertj.core.api.BDDAssertions.then;
 
 import java.util.List;
 
-import org.junit.jupiter.api.Test;
-
 import net.jqwik.api.Property;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
