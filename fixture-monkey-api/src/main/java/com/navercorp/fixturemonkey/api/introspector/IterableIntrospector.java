@@ -22,18 +22,18 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
+import com.navercorp.fixturemonkey.api.matcher.AssignableTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.property.Property;
-import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class IterableIntrospector implements ArbitraryIntrospector, Matcher {
+	private static final Matcher MATCHER = new AssignableTypeMatcher(Iterable.class);
 	private static final ListIntrospector DELEGATE = new ListIntrospector();
 
 	@Override
 	public boolean match(Property property) {
-		Class<?> type = Types.getActualType(property.getType());
-		return Iterable.class.isAssignableFrom(type);
+		return MATCHER.match(property);
 	}
 
 	@Override
