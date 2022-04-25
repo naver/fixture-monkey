@@ -18,8 +18,9 @@
 
 package com.navercorp.fixturemonkey.api.introspector;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -31,16 +32,18 @@ import net.jqwik.api.Builders.BuilderCombinator;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
+import com.navercorp.fixturemonkey.api.matcher.AssignableTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
+import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty.MapEntryElementType;
 import com.navercorp.fixturemonkey.api.property.Property;
-import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public final class ListIntrospector implements ArbitraryIntrospector, Matcher {
+public final class MapIntrospector implements ArbitraryIntrospector, Matcher {
+	private static final Matcher MATCHER = new AssignableTypeMatcher(Map.class);
+
 	@Override
 	public boolean match(Property property) {
-		Class<?> type = Types.getActualType(property.getType());
-		return List.class.isAssignableFrom(type);
+		return MATCHER.match(property);
 	}
 
 	@Override
@@ -53,14 +56,19 @@ public final class ListIntrospector implements ArbitraryIntrospector, Matcher {
 
 		List<Arbitrary<?>> childrenArbitraries = context.getChildrenArbitraries();
 
-		BuilderCombinator<List<Object>> builderCombinator = Builders.withBuilder(ArrayList::new);
-		for (Arbitrary<?> childArbitrary : childrenArbitraries) {
-			builderCombinator = builderCombinator.use(childArbitrary).in((list, element) -> {
-				list.add(element);
-				return list;
-			});
+		BuilderCombinator<Map<Object, Object>> builderCombinator = Builders.withBuilder(HashMap::new);
+		for (Arbitrary<?> child : childrenArbitraries) {
+			builderCombinator = builderCombinator
+				.use(child).in((map, value) -> {
+					MapEntryElementType entryElement = (MapEntryElementType)value;
+					map.put(entryElement.getKey(), entryElement.getValue());
+					return map;
+				});
 		}
 
-		return new ArbitraryIntrospectorResult(builderCombinator.build());
+		return new ArbitraryIntrospectorResult(
+			builderCombinator.build()
+				.filter(it -> it.size() == childrenArbitraries.size())
+		);
 	}
 }

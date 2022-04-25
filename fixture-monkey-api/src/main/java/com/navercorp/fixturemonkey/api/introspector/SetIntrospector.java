@@ -56,7 +56,7 @@ public final class SetIntrospector implements ArbitraryIntrospector, Matcher {
 
 		BuilderCombinator<Set<Object>> builderCombinator = Builders.withBuilder(HashSet::new);
 		for (Arbitrary<?> childArbitrary : childrenArbitraries) {
-			builderCombinator.use(childArbitrary).in((set, element) -> {
+			builderCombinator = builderCombinator.use(childArbitrary).in((set, element) -> {
 				set.add(element);
 				return set;
 			});

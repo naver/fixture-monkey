@@ -112,5 +112,26 @@ public final class MapEntryElementProperty implements Property {
 
 	// This class only for type marking
 	public static class MapEntryElementType {
+		private Object key;
+
+		@Nullable
+		private Object value;
+
+		public Object getKey() {
+			return this.key;
+		}
+
+		public void setKey(Object key) {
+			this.key = key;
+		}
+
+		@Nullable
+		public Object getValue() {
+			return this.value;
+		}
+
+		public void setValue(@Nullable Object value) {
+			this.value = value;
+		}
 	}
 }
