@@ -37,6 +37,10 @@ public final class MatcherOperator<T> implements Matcher {
 		return new MatcherOperator<>(new ExactTypeMatcher(type), operator);
 	}
 
+	public static <T, C> MatcherOperator<T> assignableTypeMatchOperator(Class<C> type, T operator) {
+		return new MatcherOperator<>(new AssignableTypeMatcher(type), operator);
+	}
+
 	@Override
 	public boolean match(Property property) {
 		return this.matcher.match(property);

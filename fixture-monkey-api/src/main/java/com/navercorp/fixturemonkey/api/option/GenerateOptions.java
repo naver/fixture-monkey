@@ -56,6 +56,7 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.ContainerArbitraryPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.DefaultArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator;
+import com.navercorp.fixturemonkey.api.generator.EntryArbitraryPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.MapArbitraryPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.MapEntryElementArbitraryPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.NullInjectGenerator;
@@ -69,7 +70,6 @@ import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.api.property.TupleLikeElementsProperty;
-import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class GenerateOptions {
@@ -227,22 +227,10 @@ public final class GenerateOptions {
 			MatcherOperator.exactTypeMatchOperator(OptionalInt.class, OptionalArbitraryPropertyGenerator.INSTANCE),
 			MatcherOperator.exactTypeMatchOperator(OptionalLong.class, OptionalArbitraryPropertyGenerator.INSTANCE),
 			MatcherOperator.exactTypeMatchOperator(OptionalDouble.class, OptionalArbitraryPropertyGenerator.INSTANCE),
-			new MatcherOperator<>(
-				property -> Iterable.class.isAssignableFrom(Types.getActualType(property.getType())),
-				ContainerArbitraryPropertyGenerator.INSTANCE
-			),
-			new MatcherOperator<>(
-				property -> Iterator.class.isAssignableFrom(Types.getActualType(property.getType())),
-				ContainerArbitraryPropertyGenerator.INSTANCE
-			),
-			new MatcherOperator<>(
-				property -> Map.class.isAssignableFrom(Types.getActualType(property.getType())),
-				MapArbitraryPropertyGenerator.INSTANCE
-			),
-			new MatcherOperator<>(
-				property -> Entry.class.isAssignableFrom(Types.getActualType(property.getType())),
-				MapArbitraryPropertyGenerator.INSTANCE
-			),
+			MatcherOperator.assignableTypeMatchOperator(Iterable.class, ContainerArbitraryPropertyGenerator.INSTANCE),
+			MatcherOperator.assignableTypeMatchOperator(Iterator.class, ContainerArbitraryPropertyGenerator.INSTANCE),
+			MatcherOperator.assignableTypeMatchOperator(Map.class, MapArbitraryPropertyGenerator.INSTANCE),
+			MatcherOperator.assignableTypeMatchOperator(Entry.class, EntryArbitraryPropertyGenerator.INSTANCE),
 			new MatcherOperator<>(
 				property -> property.getClass() == MapEntryElementProperty.class,
 				MapEntryElementArbitraryPropertyGenerator.INSTANCE
