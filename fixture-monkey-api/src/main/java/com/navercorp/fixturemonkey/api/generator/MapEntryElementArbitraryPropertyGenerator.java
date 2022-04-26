@@ -28,7 +28,8 @@ import com.navercorp.fixturemonkey.api.property.Property;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class MapEntryElementArbitraryPropertyGenerator implements ArbitraryPropertyGenerator {
-	public static MapEntryElementArbitraryPropertyGenerator INSTANCE = new MapEntryElementArbitraryPropertyGenerator();
+	public static final MapEntryElementArbitraryPropertyGenerator INSTANCE =
+		new MapEntryElementArbitraryPropertyGenerator();
 
 	private static final ArbitraryContainerInfo CONTAINER_INFO = new ArbitraryContainerInfo(1, 1);
 	private static final double NULL_INJECT = 0.0d;
