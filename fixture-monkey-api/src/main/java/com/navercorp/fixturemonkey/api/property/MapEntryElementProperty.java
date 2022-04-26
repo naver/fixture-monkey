@@ -111,7 +111,7 @@ public final class MapEntryElementProperty implements Property {
 	}
 
 	// This class only for type marking
-	public static class MapEntryElementType {
+	public static final class MapEntryElementType {
 		private Object key;
 
 		@Nullable
