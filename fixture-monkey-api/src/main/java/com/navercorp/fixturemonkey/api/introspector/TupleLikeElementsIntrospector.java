@@ -41,6 +41,8 @@ public final class TupleLikeElementsIntrospector implements ArbitraryIntrospecto
 			});
 		}
 
-		return new ArbitraryIntrospectorResult(builderCombinator.build());
+		return new ArbitraryIntrospectorResult(
+			builderCombinator.build(TupleLikeElementsType::getList)
+		);
 	}
 }
