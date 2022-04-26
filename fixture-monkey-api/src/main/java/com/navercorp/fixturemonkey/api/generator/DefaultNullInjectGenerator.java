@@ -129,8 +129,12 @@ public final class DefaultNullInjectGenerator implements NullInjectGenerator {
 			return 0.0d;
 		}
 
-		boolean nullable = !this.defaultNotNull;
-		if (containerInfo != null) {
+		Boolean nullable = context.getProperty().isNullable();
+		if (nullable == null) {
+			nullable = !this.defaultNotNull;
+		}
+
+		if (containerInfo != null && context.getProperty().isNullable() == null) {
 			nullable = this.nullableContainer;
 		}
 

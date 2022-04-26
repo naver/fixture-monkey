@@ -58,7 +58,8 @@ public final class ContainerArbitraryPropertyGenerator implements ArbitraryPrope
 				new ElementProperty(
 					property,
 					elementType,
-					index
+					index,
+					0.0d
 				)
 			);
 		}

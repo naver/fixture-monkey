@@ -60,12 +60,14 @@ public final class EntryArbitraryPropertyGenerator implements ArbitraryPropertyG
 					new ElementProperty(
 						property,
 						keyType,
-						index
+						index,
+						0.0d
 					),
 					new ElementProperty(
 						property,
 						valueType,
-						index
+						index,
+						null
 					)
 				)
 			);
