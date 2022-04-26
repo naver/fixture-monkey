@@ -42,6 +42,9 @@ public final class ElementProperty implements Property {
 	@Nullable
 	private final Integer index;
 
+	@Nullable
+	private final Double nullInject;
+
 	private final List<Annotation> annotations;
 
 	private final Map<Class<? extends Annotation>, Annotation> annotationsMap;
@@ -49,11 +52,13 @@ public final class ElementProperty implements Property {
 	public ElementProperty(
 		Property containerProperty,
 		AnnotatedType elementType,
-		@Nullable Integer index
+		@Nullable Integer index,
+		@Nullable Double nullInject
 	) {
 		this.containerProperty = containerProperty;
 		this.elementType = elementType;
 		this.index = index;
+		this.nullInject = nullInject;
 		this.annotations = Arrays.asList(this.elementType.getAnnotations());
 		this.annotationsMap = this.annotations.stream()
 			.collect(Collectors.toMap(Annotation::annotationType, Function.identity(), (a1, a2) -> a1));
@@ -80,6 +85,11 @@ public final class ElementProperty implements Property {
 	@Nullable
 	public Integer getIndex() {
 		return this.index;
+	}
+
+	@Nullable
+	public Double getNullInject() {
+		return this.nullInject;
 	}
 
 	@Override

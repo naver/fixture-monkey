@@ -48,4 +48,9 @@ public interface Property {
 
 	@Nullable
 	Object getValue(Object obj);
+
+	@Nullable
+	default Boolean isNullable() {
+		return null;
+	}
 }
