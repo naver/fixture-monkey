@@ -29,18 +29,16 @@ import net.jqwik.api.Builders;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
-import com.navercorp.fixturemonkey.api.matcher.AssignableTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
+import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty;
 import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty.MapEntryElementType;
 import com.navercorp.fixturemonkey.api.property.Property;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class MapEntryElementIntrospector implements ArbitraryIntrospector, Matcher {
-	private static final Matcher MATCHER = new AssignableTypeMatcher(MapEntryElementType.class);
-
 	@Override
 	public boolean match(Property property) {
-		return MATCHER.match(property);
+		return property.getClass() == MapEntryElementProperty.class;
 	}
 
 	@Override

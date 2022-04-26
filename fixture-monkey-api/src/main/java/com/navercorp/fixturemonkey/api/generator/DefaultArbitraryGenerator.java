@@ -43,6 +43,7 @@ import com.navercorp.fixturemonkey.api.introspector.MapIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.OptionalIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.QueueIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.SetIntrospector;
+import com.navercorp.fixturemonkey.api.introspector.TupleLikeElementsIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.UuidIntrospector;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
@@ -65,6 +66,7 @@ public final class DefaultArbitraryGenerator implements ArbitraryGenerator {
 				new IteratorIntrospector(),
 				new MapIntrospector(),
 				new MapEntryElementIntrospector(),
+				new TupleLikeElementsIntrospector(),
 				BeanArbitraryIntrospector.INSTANCE
 			)
 		);
