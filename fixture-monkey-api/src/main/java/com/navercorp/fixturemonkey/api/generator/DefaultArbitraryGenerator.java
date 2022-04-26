@@ -40,6 +40,7 @@ import com.navercorp.fixturemonkey.api.introspector.ListIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.MapEntryElementIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.MapIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.OptionalIntrospector;
+import com.navercorp.fixturemonkey.api.introspector.QueueIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.SetIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.UuidIntrospector;
 
@@ -58,6 +59,7 @@ public final class DefaultArbitraryGenerator implements ArbitraryGenerator {
 				new OptionalIntrospector(),
 				new ListIntrospector(),
 				new SetIntrospector(),
+				new QueueIntrospector(),
 				new IterableIntrospector(),
 				new MapIntrospector(),
 				new MapEntryElementIntrospector(),
