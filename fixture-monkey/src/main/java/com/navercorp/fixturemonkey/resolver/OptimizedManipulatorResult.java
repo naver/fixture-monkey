@@ -20,9 +20,13 @@ package com.navercorp.fixturemonkey.resolver;
 
 import java.util.List;
 
+import org.apiguardian.api.API;
+import org.apiguardian.api.API.Status;
+
 import com.navercorp.fixturemonkey.arbitrary.BuilderManipulator;
 
-public class OptimizedManipulatorResult {
+@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+public final class OptimizedManipulatorResult {
 	private final List<BuilderManipulator> manipulators;
 
 	public OptimizedManipulatorResult(List<BuilderManipulator> manipulators) {

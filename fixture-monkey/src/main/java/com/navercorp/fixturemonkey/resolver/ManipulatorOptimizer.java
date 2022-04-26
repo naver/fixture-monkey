@@ -23,11 +23,15 @@ import static java.util.stream.Collectors.toList;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apiguardian.api.API;
+import org.apiguardian.api.API.Status;
+
 import com.navercorp.fixturemonkey.arbitrary.BuilderManipulator;
 import com.navercorp.fixturemonkey.arbitrary.MetadataManipulator;
 import com.navercorp.fixturemonkey.arbitrary.PostArbitraryManipulator;
 
-public class ManipulatorOptimizer {
+@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+public final class ManipulatorOptimizer {
 
 	@SuppressWarnings("rawtypes")
 	public OptimizedManipulatorResult optimize(List<BuilderManipulator> manipulators) {
@@ -44,18 +48,18 @@ public class ManipulatorOptimizer {
 		return new OptimizedManipulatorResult(optimizedManipulators);
 	}
 
-	private List<BuilderManipulator> extractOrderedManipulators(List<BuilderManipulator> manipulators) {
-		return manipulators.stream()
-			.filter(it -> !(it instanceof MetadataManipulator))
-			.filter(it -> !(it instanceof PostArbitraryManipulator))
-			.collect(toList());
-	}
-
 	private List<MetadataManipulator> extractMetadataManipulators(List<BuilderManipulator> manipulators) {
 		return manipulators.stream()
 			.filter(MetadataManipulator.class::isInstance)
 			.map(MetadataManipulator.class::cast)
 			.sorted()
+			.collect(toList());
+	}
+
+	private List<BuilderManipulator> extractOrderedManipulators(List<BuilderManipulator> manipulators) {
+		return manipulators.stream()
+			.filter(it -> !(it instanceof MetadataManipulator))
+			.filter(it -> !(it instanceof PostArbitraryManipulator))
 			.collect(toList());
 	}
 

@@ -30,12 +30,12 @@ import com.navercorp.fixturemonkey.arbitrary.BuilderManipulator;
 import com.navercorp.fixturemonkey.resolver.ManipulatorOptimizer;
 import com.navercorp.fixturemonkey.resolver.OptimizedManipulatorResult;
 
-public class ManipulatorOptimizerTest {
+class ManipulatorOptimizerTest {
 	private final FixtureMonkey fixture = FixtureMonkey.create();
 	private final ManipulatorOptimizer sut = new ManipulatorOptimizer();
 
 	@Property
-	public void optimize() {
+	void optimize() {
 		List<BuilderManipulator> manipulators = fixture.giveMeOne(new TypeReference<List<BuilderManipulator>>() {
 		});
 
