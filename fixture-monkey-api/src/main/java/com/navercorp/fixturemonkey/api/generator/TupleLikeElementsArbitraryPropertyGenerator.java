@@ -26,7 +26,7 @@ import com.navercorp.fixturemonkey.api.property.TupleLikeElementsProperty;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class TupleLikeElementsArbitraryPropertyGenerator implements ArbitraryPropertyGenerator {
-	public static TupleLikeElementsArbitraryPropertyGenerator INSTANCE =
+	public static final TupleLikeElementsArbitraryPropertyGenerator INSTANCE =
 		new TupleLikeElementsArbitraryPropertyGenerator();
 
 	private static final ArbitraryContainerInfo CONTAINER_INFO = new ArbitraryContainerInfo(1, 1);
