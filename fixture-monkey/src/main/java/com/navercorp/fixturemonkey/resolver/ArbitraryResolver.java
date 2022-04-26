@@ -36,17 +36,17 @@ import com.navercorp.fixturemonkey.arbitrary.BuilderManipulator;
 
 public final class ArbitraryResolver {
 	private final ArbitraryTraverser traverser;
-	private final GenerateOptions generateOptions;
 	private final ManipulatorOptimizer manipulatorOptimizer;
+	private final GenerateOptions generateOptions;
 
 	public ArbitraryResolver(
 		ArbitraryTraverser traverser,
-		GenerateOptions generateOptions,
-		ManipulatorOptimizer manipulatorOptimizer
+		ManipulatorOptimizer manipulatorOptimizer,
+		GenerateOptions generateOptions
 	) {
 		this.traverser = traverser;
-		this.generateOptions = generateOptions;
 		this.manipulatorOptimizer = manipulatorOptimizer;
+		this.generateOptions = generateOptions;
 	}
 
 	public Arbitrary<?> resolve(RootProperty rootProperty, List<BuilderManipulator> manipulators) {
