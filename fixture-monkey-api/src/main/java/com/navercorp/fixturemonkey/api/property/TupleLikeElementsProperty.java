@@ -21,6 +21,7 @@ package com.navercorp.fixturemonkey.api.property;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -114,5 +115,14 @@ public final class TupleLikeElementsProperty implements Property {
 
 	// This class only for type marking
 	public static final class TupleLikeElementsType {
+		private final List<Object> list = new ArrayList<>();
+
+		public void add(Object value) {
+			this.list.add(value);
+		}
+
+		public List<Object> getList() {
+			return this.list;
+		}
 	}
 }
