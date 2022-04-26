@@ -18,6 +18,7 @@
 
 package com.navercorp.fixturemonkey.api.introspector;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
@@ -41,17 +42,16 @@ import com.navercorp.fixturemonkey.api.property.Property;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class StreamIntrospector implements ArbitraryIntrospector, Matcher {
-	private static final Matcher STREAM_MATCHER = new AssignableTypeMatcher(Stream.class);
-	private static final Matcher INT_STREAM_MATCHER = new AssignableTypeMatcher(IntStream.class);
-	private static final Matcher LONG_STREAM_MATCHER = new AssignableTypeMatcher(LongStream.class);
-	private static final Matcher DOUBLE_STREAM_MATCHER = new AssignableTypeMatcher(DoubleStream.class);
+	private static final List<Matcher> MATCHERS = Arrays.asList(
+		new AssignableTypeMatcher(Stream.class),
+		new AssignableTypeMatcher(IntStream.class),
+		new AssignableTypeMatcher(LongStream.class),
+		new AssignableTypeMatcher(DoubleStream.class)
+	);
 
 	@Override
 	public boolean match(Property property) {
-		return STREAM_MATCHER.match(property)
-			|| INT_STREAM_MATCHER.match(property)
-			|| LONG_STREAM_MATCHER.match(property)
-			|| DOUBLE_STREAM_MATCHER.match(property);
+		return MATCHERS.stream().anyMatch(it -> it.match(property));
 	}
 
 	@Override
