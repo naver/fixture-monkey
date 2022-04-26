@@ -153,7 +153,7 @@ public final class StreamArbitraryPropertyGenerator implements ArbitraryProperty
 			return DOUBLE_TYPE;
 		}
 
-		if (Stream.class.isAssignableFrom(type)) {
+		if (!(Stream.class.isAssignableFrom(type))) {
 			throw new IllegalArgumentException(
 				"type is not Stream type. propertyType: " + type
 			);
