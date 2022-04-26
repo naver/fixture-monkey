@@ -38,7 +38,7 @@ public final class TupleLikeElementsProperty implements Property {
 	@Nullable
 	private final Integer index;
 
-	private final Type type = TupleLikeElementType.class;
+	private final Type type = TupleLikeElementsType.class;
 
 	private final AnnotatedType annotatedType = new AnnotatedType() {
 		@Override
@@ -113,6 +113,6 @@ public final class TupleLikeElementsProperty implements Property {
 	}
 
 	// This class only for type marking
-	public static class TupleLikeElementType {
+	public static final class TupleLikeElementsType {
 	}
 }
