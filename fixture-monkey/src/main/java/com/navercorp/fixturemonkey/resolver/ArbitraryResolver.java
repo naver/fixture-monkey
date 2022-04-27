@@ -25,6 +25,9 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
+import org.apiguardian.api.API;
+import org.apiguardian.api.API.Status;
+
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
 
@@ -34,6 +37,7 @@ import com.navercorp.fixturemonkey.api.option.GenerateOptions;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
 import com.navercorp.fixturemonkey.arbitrary.BuilderManipulator;
 
+@API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class ArbitraryResolver {
 	private final ArbitraryTraverser traverser;
 	private final ManipulatorOptimizer manipulatorOptimizer;
