@@ -18,7 +18,10 @@
 
 package com.navercorp.fixturemonkey.builder;
 
+import static java.util.stream.Collectors.toList;
+
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -30,8 +33,9 @@ import com.navercorp.fixturemonkey.arbitrary.BuilderManipulator;
 import com.navercorp.fixturemonkey.resolver.ArbitraryResolver;
 import com.navercorp.fixturemonkey.validator.ArbitraryValidator;
 
+// TODO: remove extends com.navercorp.fixturemonkey.ArbitraryBuilder<T> inheritance in 1.0.0
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public final class ArbitraryBuilder<T> {
+public final class ArbitraryBuilder<T> extends com.navercorp.fixturemonkey.ArbitraryBuilder<T> {
 	private final RootProperty rootProperty;
 	private final List<BuilderManipulator> manipulators;
 	private final ArbitraryResolver resolver;
@@ -44,23 +48,40 @@ public final class ArbitraryBuilder<T> {
 		ArbitraryResolver resolver,
 		ArbitraryValidator validator
 	) {
+		super();
 		this.rootProperty = rootProperty;
 		this.manipulators = manipulators;
 		this.resolver = resolver;
 		this.validator = validator;
 	}
 
+	@Override
 	public ArbitraryBuilder<T> validOnly(boolean validOnly) {
 		this.validOnly = validOnly;
 		return this;
 	}
 
 	@SuppressWarnings("unchecked")
+	@Override
 	public Arbitrary<T> build() {
 		return new ArbitraryValue<>(
 			() -> (Arbitrary<T>)this.resolver.resolve(this.rootProperty, this.manipulators),
 			this.validator,
 			this.validOnly
 		);
+	}
+
+	@Override
+	public T sample() {
+		return this.build().sample();
+	}
+
+	@Override
+	public Stream<T> sampleStream() {
+		return this.build().sampleStream();
+	}
+
+	public List<T> sampleList(int size) {
+		return this.sampleStream().limit(size).collect(toList());
 	}
 }
