@@ -196,7 +196,11 @@ public class ArbitraryBuilder<T> {
 
 	// Only for V04 ArbitraryBuilder inherit type
 	// Do not use this constructor.
-	@API(since = "0.4.0", status = Status.DEPRECATED, consumers = "com.navercorp.fixturemonkey.builder.ArbitraryBuilder")
+	@API(
+		since = "0.4.0",
+		status = Status.DEPRECATED,
+		consumers = "com.navercorp.fixturemonkey.builder.ArbitraryBuilder"
+	)
 	@Deprecated
 	protected ArbitraryBuilder() {
 		this(
