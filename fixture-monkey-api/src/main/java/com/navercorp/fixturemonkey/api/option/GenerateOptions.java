@@ -45,6 +45,10 @@ import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.OptionalInt;
 import java.util.OptionalLong;
+import java.util.stream.DoubleStream;
+import java.util.stream.IntStream;
+import java.util.stream.LongStream;
+import java.util.stream.Stream;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -63,6 +67,7 @@ import com.navercorp.fixturemonkey.api.generator.NullInjectGenerator;
 import com.navercorp.fixturemonkey.api.generator.ObjectArbitraryPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.OptionalArbitraryPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.SingleValueArbitraryPropertyGenerator;
+import com.navercorp.fixturemonkey.api.generator.StreamArbitraryPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.TupleLikeElementsArbitraryPropertyGenerator;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.matcher.Matchers;
@@ -227,6 +232,10 @@ public final class GenerateOptions {
 			MatcherOperator.exactTypeMatchOperator(OptionalInt.class, OptionalArbitraryPropertyGenerator.INSTANCE),
 			MatcherOperator.exactTypeMatchOperator(OptionalLong.class, OptionalArbitraryPropertyGenerator.INSTANCE),
 			MatcherOperator.exactTypeMatchOperator(OptionalDouble.class, OptionalArbitraryPropertyGenerator.INSTANCE),
+			MatcherOperator.assignableTypeMatchOperator(Stream.class, StreamArbitraryPropertyGenerator.INSTANCE),
+			MatcherOperator.assignableTypeMatchOperator(IntStream.class, StreamArbitraryPropertyGenerator.INSTANCE),
+			MatcherOperator.assignableTypeMatchOperator(LongStream.class, StreamArbitraryPropertyGenerator.INSTANCE),
+			MatcherOperator.assignableTypeMatchOperator(DoubleStream.class, StreamArbitraryPropertyGenerator.INSTANCE),
 			MatcherOperator.assignableTypeMatchOperator(Iterable.class, ContainerArbitraryPropertyGenerator.INSTANCE),
 			MatcherOperator.assignableTypeMatchOperator(Iterator.class, ContainerArbitraryPropertyGenerator.INSTANCE),
 			MatcherOperator.assignableTypeMatchOperator(Map.class, MapArbitraryPropertyGenerator.INSTANCE),
