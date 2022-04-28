@@ -36,6 +36,8 @@ import javax.annotation.Nullable;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import com.navercorp.fixturemonkey.api.type.TypeCache;
+
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class PropertyDescriptorProperty implements Property {
 	private final AnnotatedType annotatedType;
@@ -44,7 +46,7 @@ public final class PropertyDescriptorProperty implements Property {
 	private final Map<Class<? extends Annotation>, Annotation> annotationsMap;
 
 	public PropertyDescriptorProperty(PropertyDescriptor propertyDescriptor) {
-		this(propertyDescriptor.getReadMethod().getAnnotatedReturnType(), propertyDescriptor);
+		this(TypeCache.getAnnotatedType(propertyDescriptor), propertyDescriptor);
 	}
 
 	/**
