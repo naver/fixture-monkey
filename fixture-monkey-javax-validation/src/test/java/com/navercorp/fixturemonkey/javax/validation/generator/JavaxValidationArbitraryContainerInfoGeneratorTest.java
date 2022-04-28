@@ -20,7 +20,6 @@ package com.navercorp.fixturemonkey.javax.validation.generator;
 
 import static org.assertj.core.api.BDDAssertions.then;
 
-import java.util.Collections;
 import java.util.List;
 
 import javax.validation.constraints.NotEmpty;
@@ -28,7 +27,6 @@ import javax.validation.constraints.Size;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryPropertyGeneratorContext;
-import com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator;
 import com.navercorp.fixturemonkey.api.option.GenerateOptions;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.PropertyCache;
@@ -135,16 +133,10 @@ class JavaxValidationArbitraryContainerInfoGeneratorTest {
 			};
 		Property property = PropertyCache.getProperty(typeReference.getAnnotatedType(), "minSizeContainer")
 			.get();
-		GenerateOptions generateOptions = new GenerateOptions(
-			GenerateOptions.DEFAULT_ARBITRARY_PROPERTY_GENERATORS,
-			Collections.emptyList(),
-			Collections.emptyList(),
-			new DefaultNullInjectGenerator(),
-			Collections.emptyList(),
-			10,
-			Collections.emptyList(),
-			GenerateOptions.DEFAULT_ARBITRARY_GENERATOR
-		);
+		GenerateOptions generateOptions = GenerateOptions.builder()
+			.defaultArbitraryContainerSize(10)
+			.build();
+
 		ArbitraryPropertyGeneratorContext context = new ArbitraryPropertyGeneratorContext(
 			property,
 			null,
@@ -214,16 +206,9 @@ class JavaxValidationArbitraryContainerInfoGeneratorTest {
 			};
 		Property property = PropertyCache.getProperty(typeReference.getAnnotatedType(), "notEmptyContainer")
 			.get();
-		GenerateOptions generateOptions = new GenerateOptions(
-			GenerateOptions.DEFAULT_ARBITRARY_PROPERTY_GENERATORS,
-			Collections.emptyList(),
-			Collections.emptyList(),
-			new DefaultNullInjectGenerator(),
-			Collections.emptyList(),
-			10,
-			Collections.emptyList(),
-			GenerateOptions.DEFAULT_ARBITRARY_GENERATOR
-		);
+		GenerateOptions generateOptions = GenerateOptions.builder()
+			.defaultArbitraryContainerSize(10)
+			.build();
 		ArbitraryPropertyGeneratorContext context = new ArbitraryPropertyGeneratorContext(
 			property,
 			null,
