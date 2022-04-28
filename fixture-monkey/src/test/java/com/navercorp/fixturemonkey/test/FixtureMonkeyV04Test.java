@@ -26,7 +26,6 @@ import net.jqwik.api.Arbitrary;
 import net.jqwik.api.Property;
 
 import com.navercorp.fixturemonkey.api.option.GenerateOptions;
-import com.navercorp.fixturemonkey.api.property.PropertyCache;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.builder.ArbitraryBuilder;

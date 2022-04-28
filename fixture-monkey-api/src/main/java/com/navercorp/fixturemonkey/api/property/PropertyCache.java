@@ -49,10 +49,6 @@ public final class PropertyCache {
 		new ConcurrentHashMap<>();
 	private static final Map<Class<?>, Map<String, Field>> FIELDS = new ConcurrentHashMap<>();
 
-	public static RootProperty getRootProperty(AnnotatedType annotatedType) {
-		return new RootProperty(annotatedType);
-	}
-
 	public static List<Property> getProperties(AnnotatedType annotatedType) {
 		Map<String, List<Property>> propertiesMap = new HashMap<>();
 
