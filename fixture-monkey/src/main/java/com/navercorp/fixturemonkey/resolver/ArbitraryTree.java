@@ -79,8 +79,9 @@ final class ArbitraryTree {
 					return arbitrary;
 				}
 
+				ArbitraryGeneratorContext childArbitraryGeneratorContext = this.generateContext(node, ctx);
 				return this.generateOptions.getArbitraryGenerator(prop.getProperty())
-					.generate(this.generateContext(node, ctx));
+					.generate(childArbitraryGeneratorContext);
 			}
 		);
 	}

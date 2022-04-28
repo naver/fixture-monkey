@@ -59,7 +59,7 @@ final class ArbitraryNode {
 		return this.arbitraryProperty;
 	}
 
-	public Property getProperty(){
+	public Property getProperty() {
 		return this.getArbitraryProperty().getProperty();
 	}
 
