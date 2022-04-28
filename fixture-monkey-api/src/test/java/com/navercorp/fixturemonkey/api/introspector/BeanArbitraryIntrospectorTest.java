@@ -31,7 +31,6 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryPropertyGeneratorContext;
-import com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorTest.Season;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.option.GenerateOptions;
@@ -118,16 +117,12 @@ class BeanArbitraryIntrospectorTest {
 		};
 		RootProperty rootProperty = new RootProperty(typeReference.getAnnotatedType());
 
-		GenerateOptions generateOptions = new GenerateOptions(
-			GenerateOptions.DEFAULT_ARBITRARY_PROPERTY_GENERATORS,
-			Collections.singletonList(new MatcherOperator<>(p -> true, property -> "x_" + property.getName())),
-			Collections.emptyList(),
-			new DefaultNullInjectGenerator(),
-			Collections.emptyList(),
-			3,
-			Collections.emptyList(),
-			GenerateOptions.DEFAULT_ARBITRARY_GENERATOR
-		);
+		GenerateOptions generateOptions = GenerateOptions.builder()
+			.propertyNameResolvers(
+				Collections.singletonList(new MatcherOperator<>(p -> true, property -> "x_" + property.getName()))
+			)
+			.build();
+
 		ArbitraryPropertyGenerator rootGenerator = generateOptions.getArbitraryPropertyGenerator(rootProperty);
 		ArbitraryProperty rootArbitraryProperty = rootGenerator.generate(
 			new ArbitraryPropertyGeneratorContext(
