@@ -23,9 +23,6 @@ subprojects {
     apply plugin: "maven-publish"
     apply plugin: "signing"
 
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
-
     ext {
         JUNIT_ENGINE_VERSION = "1.8.1"
         JUNIT_JUPITER_VERSION = "5.8.1"
@@ -44,8 +41,7 @@ subprojects {
     java {
         withJavadocJar()
         withSourcesJar()
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        toolchain {languageVersion = JavaLanguageVersion.of(8)}
     }
 
     publishing {
