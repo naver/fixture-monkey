@@ -18,22 +18,13 @@
 
 package com.navercorp.fixturemonkey.resolver;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
-import javax.annotation.Nullable;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
 
-import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
-import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
-import com.navercorp.fixturemonkey.api.option.GenerateOptions;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
 import com.navercorp.fixturemonkey.arbitrary.BuilderManipulator;
 
@@ -41,57 +32,21 @@ import com.navercorp.fixturemonkey.arbitrary.BuilderManipulator;
 public final class ArbitraryResolver {
 	private final ArbitraryTraverser traverser;
 	private final ManipulatorOptimizer manipulatorOptimizer;
-	private final GenerateOptions generateOptions;
 
 	public ArbitraryResolver(
 		ArbitraryTraverser traverser,
-		ManipulatorOptimizer manipulatorOptimizer,
-		GenerateOptions generateOptions
+		ManipulatorOptimizer manipulatorOptimizer
 	) {
 		this.traverser = traverser;
 		this.manipulatorOptimizer = manipulatorOptimizer;
-		this.generateOptions = generateOptions;
 	}
 
 	public Arbitrary<?> resolve(RootProperty rootProperty, List<BuilderManipulator> manipulators) {
-		ArbitraryNode arbitraryNode = this.traverser.traverse(rootProperty);
+		ArbitraryTree arbitraryTree = this.traverser.traverse(rootProperty);
 
 		// manipulating 표현식 개수만큼 순회
 		List<BuilderManipulator> optimizedManipulator = manipulatorOptimizer.optimize(manipulators).getManipulators();
 
-		ArbitraryGeneratorContext context = this.generateContext(arbitraryNode, null);
-		return this.generateOptions.getArbitraryGenerator(rootProperty).generate(context);
-	}
-
-	private ArbitraryGeneratorContext generateContext(
-		ArbitraryNode arbitraryNode,
-		@Nullable ArbitraryGeneratorContext parentContext
-	) {
-		Map<ArbitraryProperty, ArbitraryNode> childNodesByArbitraryProperty = new HashMap<>();
-		List<ArbitraryProperty> childrenProperties = new ArrayList<>();
-		for (ArbitraryNode childNode : arbitraryNode.getChildren()) {
-			childNodesByArbitraryProperty.put(childNode.getArbitraryProperty(), childNode);
-			childrenProperties.add(childNode.getArbitraryProperty());
-		}
-
-		return new ArbitraryGeneratorContext(
-			arbitraryNode.getArbitraryProperty(),
-			childrenProperties,
-			parentContext,
-			(ctx, prop) -> {
-				ArbitraryNode node = childNodesByArbitraryProperty.get(prop);
-				if (node == null) {
-					return Arbitraries.just(null);
-				}
-
-				Arbitrary<?> arbitrary = node.getArbitrary();
-				if (arbitrary != null) {
-					return arbitrary;
-				}
-
-				return this.generateOptions.getArbitraryGenerator(prop.getProperty())
-					.generate(this.generateContext(node, ctx));
-			}
-		);
+		return arbitraryTree.generate();
 	}
 }
