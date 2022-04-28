@@ -52,7 +52,7 @@ public final class ArbitraryTraverser {
 			)
 		);
 
-		return new ArbitraryTree(rootProperty, this.traverse(rootArbitraryProperty), generateOptions);
+		return new ArbitraryTree(this.traverse(rootArbitraryProperty), generateOptions);
 	}
 
 	private ArbitraryNode traverse(ArbitraryProperty arbitraryProperty) {

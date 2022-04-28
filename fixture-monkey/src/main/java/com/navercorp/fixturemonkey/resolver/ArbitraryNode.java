@@ -28,6 +28,7 @@ import org.apiguardian.api.API.Status;
 import net.jqwik.api.Arbitrary;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
+import com.navercorp.fixturemonkey.api.property.Property;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 final class ArbitraryNode {
@@ -56,6 +57,10 @@ final class ArbitraryNode {
 
 	public ArbitraryProperty getArbitraryProperty() {
 		return this.arbitraryProperty;
+	}
+
+	public Property getProperty(){
+		return this.getArbitraryProperty().getProperty();
 	}
 
 	public List<ArbitraryNode> getChildren() {

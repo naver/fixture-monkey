@@ -34,33 +34,26 @@ import net.jqwik.api.Arbitrary;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.option.GenerateOptions;
-import com.navercorp.fixturemonkey.api.property.RootProperty;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 final class ArbitraryTree {
-	private final RootProperty rootProperty;
 	private final ArbitraryNode rootNode;
 	private final GenerateOptions generateOptions;
 
 	ArbitraryTree(
-		RootProperty rootProperty,
 		ArbitraryNode rootNode,
 		GenerateOptions generateOptions
 	) {
-		this.rootProperty = rootProperty;
 		this.rootNode = rootNode;
 		this.generateOptions = generateOptions;
 	}
 
 	Arbitrary<?> generate() {
-		return this.generateOptions.getArbitraryGenerator(rootProperty).generate(generateContext());
+		return this.generateOptions.getArbitraryGenerator(rootNode.getProperty())
+			.generate(generateContext(rootNode, null));
 	}
 
-	private ArbitraryGeneratorContext generateContext() {
-		return doGenerateContext(rootNode, null);
-	}
-
-	private ArbitraryGeneratorContext doGenerateContext(
+	private ArbitraryGeneratorContext generateContext(
 		ArbitraryNode arbitraryNode,
 		@Nullable ArbitraryGeneratorContext parentContext
 	) {
@@ -87,7 +80,7 @@ final class ArbitraryTree {
 				}
 
 				return this.generateOptions.getArbitraryGenerator(prop.getProperty())
-					.generate(this.doGenerateContext(node, ctx));
+					.generate(this.generateContext(node, ctx));
 			}
 		);
 	}
