@@ -49,8 +49,9 @@ final class ArbitraryTree {
 	}
 
 	Arbitrary<?> generate() {
+		ArbitraryGeneratorContext context = generateContext(rootNode, null);
 		return this.generateOptions.getArbitraryGenerator(rootNode.getProperty())
-			.generate(generateContext(rootNode, null));
+			.generate(context);
 	}
 
 	private ArbitraryGeneratorContext generateContext(
