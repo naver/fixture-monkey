@@ -19,8 +19,6 @@ repositories {
     mavenCentral()
 }
 
-java.sourceCompatibility = JavaVersion.VERSION_1_8
-
 dependencies {
     api(project(":fixture-monkey"))
     api("net.jqwik:jqwik-kotlin:${JQWIK_VERSION}")
