@@ -25,6 +25,9 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
+import org.apiguardian.api.API;
+import org.apiguardian.api.API.Status;
+
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
 
@@ -33,6 +36,7 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.option.GenerateOptions;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
 
+@API(since = "0.4.0", status = Status.EXPERIMENTAL)
 final class ArbitraryTree {
 	private final RootProperty rootProperty;
 	private final ArbitraryNode rootNode;
