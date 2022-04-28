@@ -23,17 +23,15 @@ import java.util.List;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.arbitrary.BuilderManipulator;
-
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class OptimizedManipulatorResult {
-	private final List<BuilderManipulator> manipulators;
+	private final List<ArbitraryManipulator> manipulators;
 
-	public OptimizedManipulatorResult(List<BuilderManipulator> manipulators) {
+	public OptimizedManipulatorResult(List<ArbitraryManipulator> manipulators) {
 		this.manipulators = manipulators;
 	}
 
-	public List<BuilderManipulator> getManipulators() {
+	public List<ArbitraryManipulator> getManipulators() {
 		return manipulators;
 	}
 }

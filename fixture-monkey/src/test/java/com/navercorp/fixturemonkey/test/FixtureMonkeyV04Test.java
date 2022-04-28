@@ -31,7 +31,7 @@ import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.builder.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.resolver.ArbitraryResolver;
 import com.navercorp.fixturemonkey.resolver.ArbitraryTraverser;
-import com.navercorp.fixturemonkey.resolver.ManipulatorOptimizer;
+import com.navercorp.fixturemonkey.resolver.NoneManipulatorOptimizer;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.ComplexObject;
 import com.navercorp.fixturemonkey.validator.DefaultArbitraryValidator;
 
@@ -42,7 +42,7 @@ class FixtureMonkeyV04Test {
 		GenerateOptions generateOptions = GenerateOptions.DEFAULT_GENERATE_OPTIONS;
 		ArbitraryResolver resolver = new ArbitraryResolver(
 			new ArbitraryTraverser(generateOptions),
-			new ManipulatorOptimizer()
+			new NoneManipulatorOptimizer()
 		);
 		TypeReference<ComplexObject> typeReference = new TypeReference<ComplexObject>() {
 		};

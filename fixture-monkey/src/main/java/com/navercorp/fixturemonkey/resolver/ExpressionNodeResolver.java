@@ -23,8 +23,19 @@ import java.util.List;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import com.navercorp.fixturemonkey.arbitrary.ArbitraryExpression;
+
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-@FunctionalInterface
-public interface ManipulatorOptimizer {
-	OptimizedManipulatorResult optimize(List<ArbitraryManipulator> manipulators);
+final class ExpressionNodeResolver implements NodeResolver {
+	private final ArbitraryExpression arbitraryExpression;
+
+	ExpressionNodeResolver(ArbitraryExpression arbitraryExpression) {
+		this.arbitraryExpression = arbitraryExpression;
+	}
+
+	@Override
+	public List<ArbitraryNode> resolve(ArbitraryTree arbitraryTree) {
+		// TODO: matching expression
+		return null;
+	}
 }

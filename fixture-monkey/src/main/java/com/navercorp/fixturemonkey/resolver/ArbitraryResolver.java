@@ -26,7 +26,6 @@ import org.apiguardian.api.API.Status;
 import net.jqwik.api.Arbitrary;
 
 import com.navercorp.fixturemonkey.api.property.RootProperty;
-import com.navercorp.fixturemonkey.arbitrary.BuilderManipulator;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class ArbitraryResolver {
@@ -41,11 +40,16 @@ public final class ArbitraryResolver {
 		this.manipulatorOptimizer = manipulatorOptimizer;
 	}
 
-	public Arbitrary<?> resolve(RootProperty rootProperty, List<BuilderManipulator> manipulators) {
+	public Arbitrary<?> resolve(RootProperty rootProperty, List<ArbitraryManipulator> manipulators) {
 		ArbitraryTree arbitraryTree = this.traverser.traverse(rootProperty);
 
-		// manipulating 표현식 개수만큼 순회
-		List<BuilderManipulator> optimizedManipulator = manipulatorOptimizer.optimize(manipulators).getManipulators();
+		List<ArbitraryManipulator> optimizedManipulator = manipulatorOptimizer
+			.optimize(manipulators)
+			.getManipulators();
+
+		for (ArbitraryManipulator manipulator : optimizedManipulator) {
+			manipulator.manipulate(arbitraryTree);
+		}
 
 		return arbitraryTree.generate();
 	}

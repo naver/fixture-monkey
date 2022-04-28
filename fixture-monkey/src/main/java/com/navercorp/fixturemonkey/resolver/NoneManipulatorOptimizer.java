@@ -24,7 +24,10 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-@FunctionalInterface
-public interface ManipulatorOptimizer {
-	OptimizedManipulatorResult optimize(List<ArbitraryManipulator> manipulators);
+public final class NoneManipulatorOptimizer implements ManipulatorOptimizer {
+
+	@Override
+	public OptimizedManipulatorResult optimize(List<ArbitraryManipulator> manipulators) {
+		return new OptimizedManipulatorResult(manipulators);
+	}
 }

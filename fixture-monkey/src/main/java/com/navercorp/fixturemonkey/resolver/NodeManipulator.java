@@ -18,13 +18,11 @@
 
 package com.navercorp.fixturemonkey.resolver;
 
-import java.util.List;
-
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 @FunctionalInterface
-public interface ManipulatorOptimizer {
-	OptimizedManipulatorResult optimize(List<ArbitraryManipulator> manipulators);
+interface NodeManipulator {
+	void manipulate(ArbitraryNode arbitraryNode);
 }
