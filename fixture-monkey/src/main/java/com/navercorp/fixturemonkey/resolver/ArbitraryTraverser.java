@@ -60,7 +60,7 @@ public final class ArbitraryTraverser {
 
 		List<Property> childProperties = arbitraryProperty.getChildProperties();
 		for (int index = 0; index < childProperties.size(); index++) {
-			Property childProperty = childProperties.get(0);
+			Property childProperty = childProperties.get(index);
 			ArbitraryPropertyGenerator arbitraryPropertyGenerator =
 				this.generateOptions.getArbitraryPropertyGenerator(childProperty);
 
