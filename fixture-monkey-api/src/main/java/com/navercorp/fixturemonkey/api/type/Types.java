@@ -248,7 +248,7 @@ public class Types {
 		PropertyDescriptor propertyDescriptor
 	) {
 		if (!(ownerType instanceof AnnotatedParameterizedType)) {
-			AnnotatedType propertyAnnotatedType = propertyDescriptor.getReadMethod().getAnnotatedReturnType();
+			AnnotatedType propertyAnnotatedType = TypeCache.getAnnotatedType(propertyDescriptor);
 			if (TypeVariable.class.isAssignableFrom(propertyAnnotatedType.getType().getClass())) {
 				return new AnnotatedType() {
 					@Override
@@ -279,7 +279,7 @@ public class Types {
 		AnnotatedParameterizedType ownerAnnotatedParameterizedType = (AnnotatedParameterizedType)ownerType;
 		AnnotatedType[] ownerGenericsTypes = ownerAnnotatedParameterizedType.getAnnotatedActualTypeArguments();
 		if (ownerGenericsTypes == null || ownerGenericsTypes.length == 0) {
-			return propertyDescriptor.getReadMethod().getAnnotatedReturnType();
+			return TypeCache.getAnnotatedType(propertyDescriptor);
 		}
 
 		ParameterizedType parameterizedType = (ParameterizedType)ownerAnnotatedParameterizedType.getType();
@@ -294,11 +294,11 @@ public class Types {
 		}
 
 		if (!(methodGenericsType instanceof ParameterizedType)) {
-			return propertyDescriptor.getReadMethod().getAnnotatedReturnType();
+			return TypeCache.getAnnotatedType(propertyDescriptor);
 		}
 
 		AnnotatedParameterizedType propertyParameterizedType =
-			(AnnotatedParameterizedType)propertyDescriptor.getReadMethod().getAnnotatedReturnType();
+			(AnnotatedParameterizedType)TypeCache.getAnnotatedType(propertyDescriptor);
 		AnnotatedType[] propertyGenericsTypes = propertyParameterizedType.getAnnotatedActualTypeArguments();
 		if (propertyGenericsTypes == null || propertyGenericsTypes.length == 0) {
 			return propertyParameterizedType;
