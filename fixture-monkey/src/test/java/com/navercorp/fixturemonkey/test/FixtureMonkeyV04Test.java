@@ -27,6 +27,7 @@ import net.jqwik.api.Property;
 
 import com.navercorp.fixturemonkey.api.option.GenerateOptions;
 import com.navercorp.fixturemonkey.api.property.PropertyCache;
+import com.navercorp.fixturemonkey.api.property.RootProperty;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.builder.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.resolver.ArbitraryResolver;
@@ -49,7 +50,7 @@ class FixtureMonkeyV04Test {
 		};
 
 		ArbitraryBuilder<ComplexObject> arbitraryBuilder = new ArbitraryBuilder<>(
-			PropertyCache.getRootProperty(typeReference.getAnnotatedType()),
+			new RootProperty(typeReference.getAnnotatedType()),
 			Collections.emptyList(),
 			resolver,
 			new DefaultArbitraryValidator()

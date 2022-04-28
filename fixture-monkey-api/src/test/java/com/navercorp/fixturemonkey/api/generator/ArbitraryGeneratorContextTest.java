@@ -38,7 +38,7 @@ class ArbitraryGeneratorContextTest {
 		// given
 		TypeReference<GenericSample<String>> typeReference = new TypeReference<GenericSample<String>>() {
 		};
-		RootProperty rootProperty = PropertyCache.getRootProperty(typeReference.getAnnotatedType());
+		RootProperty rootProperty = new RootProperty(typeReference.getAnnotatedType());
 		ArbitraryProperty arbitraryProperty = new ArbitraryProperty(
 			rootProperty,
 			PropertyNameResolver.IDENTITY,
