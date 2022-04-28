@@ -77,7 +77,7 @@ import com.navercorp.fixturemonkey.customizer.WithFixtureCustomizer;
 import com.navercorp.fixturemonkey.generator.ArbitraryGenerator;
 import com.navercorp.fixturemonkey.validator.ArbitraryValidator;
 
-public final class ArbitraryBuilder<T> {
+public class ArbitraryBuilder<T> {
 	private final ArbitraryTree<T> tree;
 	private final ArbitraryTraverser traverser;
 	private final List<BuilderManipulator> builderManipulators;
@@ -192,6 +192,27 @@ public final class ArbitraryBuilder<T> {
 				getGenerator(it.getValue(), arbitraryCustomizers))
 			)
 			.collect(toMap(SimpleEntry::getKey, SimpleEntry::getValue));
+	}
+
+	// Only for V04 ArbitraryBuilder inherit type
+	// Do not use this constructor.
+	@API(
+		since = "0.4.0",
+		status = Status.DEPRECATED,
+		consumers = "com.navercorp.fixturemonkey.builder.ArbitraryBuilder"
+	)
+	@Deprecated
+	protected ArbitraryBuilder() {
+		this(
+			null,
+			null,
+			null,
+			null,
+			null,
+			Collections.emptyList(),
+			Collections.emptyList(),
+			Collections.emptyMap()
+		);
 	}
 
 	public ArbitraryBuilder<T> validOnly(boolean validOnly) {
