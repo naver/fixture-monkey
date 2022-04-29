@@ -34,9 +34,7 @@ dependencies {
 }
 
 test {
-    useJUnitPlatform {
-        includeEngines "jqwik"
-    }
+    useJUnitPlatform()
 }
 
 

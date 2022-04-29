@@ -34,6 +34,7 @@ import java.lang.reflect.Field
 import kotlin.jvm.internal.Reflection
 import kotlin.reflect.KClass
 import kotlin.reflect.KParameter
+import kotlin.reflect.full.memberProperties
 import kotlin.reflect.full.primaryConstructor
 
 class PrimaryConstructorArbitraryGenerator(
