@@ -4,9 +4,7 @@ import java.lang.reflect.AnnotatedType
 import java.lang.reflect.Type
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.reflect.KProperty
-import kotlin.reflect.full.extensionReceiverParameter
 import kotlin.reflect.full.findAnnotations
-import kotlin.reflect.full.instanceParameter
 import kotlin.reflect.jvm.javaField
 import kotlin.reflect.jvm.javaType
 
