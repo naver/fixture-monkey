@@ -21,6 +21,8 @@ package com.navercorp.fixturemonkey;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 import com.navercorp.fixturemonkey.api.option.GenerateOptions;
 import com.navercorp.fixturemonkey.validator.ArbitraryValidator;
 
@@ -29,6 +31,7 @@ public class Monkey extends FixtureMonkey {
 	private final GenerateOptions generateOptions;
 	private final ArbitraryValidator validator;
 
+	@SuppressFBWarnings("NP_NULL_PARAM_DEREF_NONVIRTUAL")
 	public Monkey(
 		GenerateOptions generateOptions,
 		ArbitraryValidator validator
