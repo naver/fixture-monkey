@@ -59,4 +59,3 @@ data class PropertySample(
     @PastOrPresent
     val instant: Instant = Instant.now()
 }
-
