@@ -40,6 +40,8 @@ import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
 
 import com.navercorp.fixturemonkey.TypeSupports;
+import com.navercorp.fixturemonkey.arbitrary.ArbitraryExpression.Cursor;
+import com.navercorp.fixturemonkey.arbitrary.ArbitraryExpression.ExpIndexCursor;
 
 public final class ArbitraryNode<T> {
 	@SuppressWarnings("rawtypes")
@@ -88,7 +90,7 @@ public final class ArbitraryNode<T> {
 				continue;
 			}
 			ExpIndexCursor nodeCursor = new ExpIndexCursor(child.propertyName, child.indexOfIterable);
-			if (cursor.match(nodeCursor)) {
+			if (cursor.equals(nodeCursor)) {
 				child.mark();
 				foundChildren.add(child);
 			}

@@ -19,7 +19,9 @@
 package com.navercorp.fixturemonkey.resolver;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -34,6 +36,9 @@ import net.jqwik.api.Arbitrary;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.option.GenerateOptions;
+import com.navercorp.fixturemonkey.api.random.Randoms;
+import com.navercorp.fixturemonkey.arbitrary.ArbitraryExpression;
+import com.navercorp.fixturemonkey.arbitrary.ArbitraryExpression.Cursor;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 final class ArbitraryTree {
@@ -46,6 +51,32 @@ final class ArbitraryTree {
 	) {
 		this.rootNode = rootNode;
 		this.generateOptions = generateOptions;
+	}
+
+	List<ArbitraryNode> findAll(ArbitraryExpression arbitraryExpression) {
+		LinkedList<ArbitraryNode> selectedNodes = new LinkedList<>();
+		selectedNodes.add(rootNode);
+		rootNode.setManipulated(true);
+
+		List<Cursor> cursors = arbitraryExpression.toCursors();
+		for (Cursor cursor : cursors) {
+			selectedNodes = retrieveNextMatchingNodes(selectedNodes, cursor);
+		}
+		Collections.shuffle(selectedNodes, Randoms.current());
+		return selectedNodes;
+	}
+
+	private LinkedList<ArbitraryNode> retrieveNextMatchingNodes(List<ArbitraryNode> selectedNodes, Cursor cursor) {
+		LinkedList<ArbitraryNode> nextNodes = new LinkedList<>();
+		for (ArbitraryNode selectedNode : selectedNodes) {
+			List<ArbitraryNode> children = selectedNode.getChildren();
+			for (ArbitraryNode child : children) {
+				if (cursor.match(child.getArbitraryProperty())) {
+					nextNodes.add(child);
+				}
+			}
+		}
+		return nextNodes;
 	}
 
 	Arbitrary<?> generate() {
