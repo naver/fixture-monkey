@@ -24,7 +24,6 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import net.jqwik.api.Arbitraries;
-import net.jqwik.api.Arbitrary;
 
 import com.navercorp.fixturemonkey.api.property.Property;
 
