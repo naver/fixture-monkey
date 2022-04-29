@@ -31,10 +31,8 @@ import net.jqwik.api.Arbitrary;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import com.navercorp.fixturemonkey.api.property.RootProperty;
-import com.navercorp.fixturemonkey.arbitrary.BuilderManipulator;
 import com.navercorp.fixturemonkey.resolver.ArbitraryManipulator;
 import com.navercorp.fixturemonkey.resolver.ArbitraryResolver;
-import com.navercorp.fixturemonkey.resolver.BuilderManipulatorAdapter;
 import com.navercorp.fixturemonkey.validator.ArbitraryValidator;
 
 // TODO: remove extends com.navercorp.fixturemonkey.ArbitraryBuilder<T> inheritance in 1.0.0
@@ -42,16 +40,14 @@ import com.navercorp.fixturemonkey.validator.ArbitraryValidator;
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class ArbitraryBuilder<T> extends com.navercorp.fixturemonkey.ArbitraryBuilder<T> {
 	private final RootProperty rootProperty;
-	private final List<BuilderManipulator> manipulators;
+	private final List<ArbitraryManipulator> manipulators;
 	private final ArbitraryResolver resolver;
 	private final ArbitraryValidator validator;
-	@Deprecated
-	private final BuilderManipulatorAdapter builderManipulatorAdapter = new BuilderManipulatorAdapter();
 	private boolean validOnly = true;
 
 	public ArbitraryBuilder(
 		RootProperty rootProperty,
-		List<BuilderManipulator> manipulators,
+		List<ArbitraryManipulator> manipulators,
 		ArbitraryResolver resolver,
 		ArbitraryValidator validator
 	) {
@@ -71,12 +67,8 @@ public final class ArbitraryBuilder<T> extends com.navercorp.fixturemonkey.Arbit
 	@SuppressWarnings("unchecked")
 	@Override
 	public Arbitrary<T> build() {
-		List<ArbitraryManipulator> arbitraryManipulators = manipulators.stream()
-			.map(builderManipulatorAdapter::convert)
-			.collect(toList());
-
 		return new ArbitraryValue<>(
-			() -> (Arbitrary<T>)this.resolver.resolve(this.rootProperty, arbitraryManipulators),
+			() -> (Arbitrary<T>)this.resolver.resolve(this.rootProperty, this.manipulators),
 			this.validator,
 			this.validOnly
 		);
