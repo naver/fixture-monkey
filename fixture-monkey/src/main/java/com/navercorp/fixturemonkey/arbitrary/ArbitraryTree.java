@@ -18,8 +18,6 @@
 
 package com.navercorp.fixturemonkey.arbitrary;
 
-import static com.navercorp.fixturemonkey.Constants.HEAD_NAME;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;

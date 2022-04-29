@@ -275,7 +275,7 @@ public final class ArbitraryExpression implements Comparable<ArbitraryExpression
 		}
 	}
 
-	public static abstract class Cursor {
+	public abstract static class Cursor {
 		private final String name;
 		private final int index;
 
