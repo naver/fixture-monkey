@@ -27,7 +27,6 @@ import org.junit.jupiter.api.Test;
 import net.jqwik.api.Arbitraries;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryPropertyTest.GenericSample;
-import com.navercorp.fixturemonkey.api.property.PropertyCache;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
@@ -38,7 +37,7 @@ class ArbitraryGeneratorContextTest {
 		// given
 		TypeReference<GenericSample<String>> typeReference = new TypeReference<GenericSample<String>>() {
 		};
-		RootProperty rootProperty = PropertyCache.getRootProperty(typeReference.getAnnotatedType());
+		RootProperty rootProperty = new RootProperty(typeReference.getAnnotatedType());
 		ArbitraryProperty arbitraryProperty = new ArbitraryProperty(
 			rootProperty,
 			PropertyNameResolver.IDENTITY,

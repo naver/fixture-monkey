@@ -34,17 +34,6 @@ import org.junit.jupiter.api.Test;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 
 class PropertyCacheTest {
-	@Test
-	void getRootProperty() {
-		// given
-		TypeReference<GenericSample<String>> typeReference = new TypeReference<GenericSample<String>>() {
-		};
-
-		// when
-		RootProperty actual = PropertyCache.getRootProperty(typeReference.getAnnotatedType());
-
-		then(actual.getType()).isEqualTo(typeReference.getType());
-	}
 
 	@Test
 	void getProperties() {
