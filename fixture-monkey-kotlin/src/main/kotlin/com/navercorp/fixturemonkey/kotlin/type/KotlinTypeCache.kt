@@ -29,6 +29,7 @@ fun getAnnotatedType(kProperty: KProperty<*>): AnnotatedType =
             override fun getAnnotations(): Array<Annotation> = declaredAnnotations
 
             override fun <T : Annotation?> getAnnotation(annotationClass: Class<T>): T =
+                @Suppress("UNCHECKED_CAST")
                 annotations
                     .find { it.annotationClass.java == annotationClass }
                     .let { it as T }
