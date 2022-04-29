@@ -18,13 +18,21 @@
 
 package com.navercorp.fixturemonkey.resolver;
 
-import java.util.List;
-
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import net.jqwik.api.Arbitrary;
+
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-@FunctionalInterface
-public interface ManipulatorOptimizer {
-	OptimizedManipulatorResult optimize(List<ArbitraryManipulator> manipulators);
+final class NodeSetArbitraryManipulator<T> implements NodeManipulator {
+	private final Arbitrary<T> arbitrary;
+
+	NodeSetArbitraryManipulator(Arbitrary<T> arbitrary) {
+		this.arbitrary = arbitrary;
+	}
+
+	@Override
+	public void manipulate(ArbitraryNode arbitraryNode) {
+		arbitraryNode.setArbitrary(arbitrary);
+	}
 }
