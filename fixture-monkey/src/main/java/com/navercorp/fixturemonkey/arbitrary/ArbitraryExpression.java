@@ -19,6 +19,7 @@
 package com.navercorp.fixturemonkey.arbitrary;
 
 import static com.navercorp.fixturemonkey.Constants.ALL_INDEX_STRING;
+import static com.navercorp.fixturemonkey.Constants.HEAD_NAME;
 import static com.navercorp.fixturemonkey.Constants.NO_OR_ALL_INDEX_INTEGER_VALUE;
 import static java.util.stream.Collectors.toList;
 
@@ -30,6 +31,8 @@ import java.util.stream.Collectors;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
+
+import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 
 public final class ArbitraryExpression implements Comparable<ArbitraryExpression> {
 	private final List<Exp> expList;
@@ -123,14 +126,9 @@ public final class ArbitraryExpression implements Comparable<ArbitraryExpression
 
 	public List<Cursor> toCursors() {
 		return this.expList.stream()
-			.map(Exp::toCursors)
-			.reduce(
-				new ArrayList<>(),
-				(list1, list2) -> {
-					list1.addAll(list2);
-					return list1;
-				}
-			);
+			.flatMap(it -> it.toCursors().stream())
+			.filter(Cursor::isNotHeadName)
+			.collect(toList());
 	}
 
 	private static final class ExpIndex implements Comparable<ExpIndex> {
@@ -276,4 +274,81 @@ public final class ArbitraryExpression implements Comparable<ArbitraryExpression
 			return Objects.hash(name, index);
 		}
 	}
+
+	public abstract static class Cursor {
+		private final String name;
+		private final int index;
+
+		public Cursor(String name, int index) {
+			this.name = name;
+			this.index = index;
+		}
+
+		public boolean match(ArbitraryProperty arbitraryProperty) {
+			boolean samePropertyName = nameEquals(arbitraryProperty.getResolvePropertyName());
+			boolean sameIndex = true;
+			if (arbitraryProperty.isContainer()) {
+				//noinspection ConstantConditions
+				sameIndex = indexEquals(arbitraryProperty.getElementIndex()); // notNull
+			}
+			return samePropertyName && sameIndex;
+		}
+
+		public boolean isNotHeadName() {
+			return !(this instanceof ExpNameCursor) || !HEAD_NAME.equals(this.getName());
+		}
+
+		private boolean indexEquals(int index) {
+			return this.index == index
+				|| index == NO_OR_ALL_INDEX_INTEGER_VALUE
+				|| this.index == NO_OR_ALL_INDEX_INTEGER_VALUE;
+		}
+
+		private boolean nameEquals(String name) {
+			return this.name.equals(name)
+				|| name.equals(ALL_INDEX_STRING)
+				|| this.name.equals(ALL_INDEX_STRING);
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		public int getIndex() {
+			return index;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj) {
+				return true;
+			}
+			if (!(obj instanceof Cursor)) {
+				return false;
+			}
+			Cursor cursor = (Cursor)obj;
+
+			boolean indexEqual = indexEquals(cursor.getIndex());
+			boolean nameEqual = nameEquals(cursor.getName());
+			return nameEqual && indexEqual;
+		}
+
+		@Override
+		public int hashCode() {
+			return Objects.hash(name);
+		}
+	}
+
+	static final class ExpIndexCursor extends Cursor {
+		ExpIndexCursor(String name, int index) {
+			super(name, index);
+		}
+	}
+
+	public static final class ExpNameCursor extends Cursor {
+		ExpNameCursor(String name) {
+			super(name, NO_OR_ALL_INDEX_INTEGER_VALUE);
+		}
+	}
+
 }

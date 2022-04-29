@@ -35,7 +35,6 @@ final class ExpressionNodeResolver implements NodeResolver {
 
 	@Override
 	public List<ArbitraryNode> resolve(ArbitraryTree arbitraryTree) {
-		// TODO: matching expression
-		return null;
+		return arbitraryTree.findAll(arbitraryExpression);
 	}
 }

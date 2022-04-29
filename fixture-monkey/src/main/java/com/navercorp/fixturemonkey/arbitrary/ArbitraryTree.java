@@ -18,8 +18,6 @@
 
 package com.navercorp.fixturemonkey.arbitrary;
 
-import static com.navercorp.fixturemonkey.Constants.HEAD_NAME;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -34,6 +32,7 @@ import javax.annotation.Nullable;
 import net.jqwik.api.Arbitrary;
 
 import com.navercorp.fixturemonkey.api.random.Randoms;
+import com.navercorp.fixturemonkey.arbitrary.ArbitraryExpression.Cursor;
 import com.navercorp.fixturemonkey.generator.ArbitraryGenerator;
 import com.navercorp.fixturemonkey.validator.ArbitraryValidator;
 
@@ -53,12 +52,8 @@ public final class ArbitraryTree<T> {
 
 		List<Cursor> cursors = arbitraryExpression.toCursors();
 		for (Cursor cursor : cursors) {
-			if (isHeadName(cursor)) {
-				continue;
-			}
 			while (!selectNodes.isEmpty()) {
 				ArbitraryNode<?> selectNode = selectNodes.poll();
-
 				nextNodes.addAll(selectNode.findChildrenByCursor(cursor));
 			}
 			selectNodes.addAll(nextNodes);
@@ -66,10 +61,6 @@ public final class ArbitraryTree<T> {
 		}
 		Collections.shuffle(selectNodes, Randoms.current());
 		return selectNodes;
-	}
-
-	private boolean isHeadName(Cursor cursor) {
-		return cursor instanceof ExpNameCursor && HEAD_NAME.equals(cursor.getName());
 	}
 
 	@Nullable
