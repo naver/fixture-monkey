@@ -26,6 +26,7 @@ import org.apiguardian.api.API.Status;
 import net.jqwik.api.Arbitraries;
 
 import com.navercorp.fixturemonkey.api.property.Property;
+import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 final class NodeSetDecomposedValueManipulator<T> implements NodeManipulator {
@@ -37,7 +38,7 @@ final class NodeSetDecomposedValueManipulator<T> implements NodeManipulator {
 
 	@Override
 	public void manipulate(ArbitraryNode arbitraryNode) {
-		if (arbitraryNode.getProperty().getType() != value.getClass()) {
+		if (Types.getActualType(arbitraryNode.getProperty().getType()) != value.getClass()) {
 			throw new IllegalArgumentException("The value is not of the same type as the property");
 		}
 		setValue(arbitraryNode, value);
