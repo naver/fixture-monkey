@@ -59,7 +59,7 @@ public final class ContainerArbitraryPropertyGenerator implements ArbitraryPrope
 		for (int index = 0; index < size; index++) {
 			Integer elementIndex = index;
 
-			if (containerType.isAssignableFrom(Set.class)) {
+			if (Set.class.isAssignableFrom(containerType)) {
 				elementIndex = null;
 			}
 
