@@ -55,6 +55,14 @@ final class ArbitraryNode {
 		this.children = children;
 	}
 
+	public void setArbitraryProperty(ArbitraryProperty arbitraryProperty) {
+		this.arbitraryProperty = arbitraryProperty;
+	}
+
+	public void setChildren(List<ArbitraryNode> children) {
+		this.children = children;
+	}
+
 	public ArbitraryProperty getArbitraryProperty() {
 		return this.arbitraryProperty;
 	}

@@ -49,9 +49,12 @@ public final class ContainerArbitraryPropertyGenerator implements ArbitraryPrope
 			);
 		}
 
-		ArbitraryContainerInfo containerInfo = context.getGenerateOptions()
-			.getArbitraryContainerInfoGenerator(property)
-			.generate(context);
+		ArbitraryContainerInfo containerInfo = context.getContainerInfo();
+		if (containerInfo == null) {
+			containerInfo = context.getGenerateOptions()
+				.getArbitraryContainerInfoGenerator(property)
+				.generate(context);
+		}
 
 		int size = containerInfo.getRandomSize();
 		AnnotatedType elementType = elementTypes.get(0);

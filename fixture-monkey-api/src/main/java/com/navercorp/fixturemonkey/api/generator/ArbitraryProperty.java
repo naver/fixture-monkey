@@ -98,4 +98,26 @@ public final class ArbitraryProperty {
 	public boolean isContainer() {
 		return this.containerInfo != null;
 	}
+
+	public ArbitraryProperty withChildProperties(List<Property> childProperties) {
+		return new ArbitraryProperty(
+			this.property,
+			this.propertyNameResolver,
+			this.nullInject,
+			this.elementIndex,
+			childProperties,
+			this.containerInfo
+		);
+	}
+
+	public ArbitraryProperty withContainerInfo(@Nullable ArbitraryContainerInfo containerInfo) {
+		return new ArbitraryProperty(
+			this.property,
+			this.propertyNameResolver,
+			this.nullInject,
+			this.elementIndex,
+			this.childProperties,
+			containerInfo
+		);
+	}
 }
