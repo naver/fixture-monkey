@@ -49,8 +49,7 @@ public final class MapIntrospector implements ArbitraryIntrospector, Matcher {
 	@Override
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
 		ArbitraryProperty property = context.getArbitraryProperty();
-		ArbitraryContainerInfo containerInfo = property.getContainerInfo();
-		if (containerInfo == null) {
+		if (!property.isContainer()) {
 			return ArbitraryIntrospectorResult.EMPTY;
 		}
 

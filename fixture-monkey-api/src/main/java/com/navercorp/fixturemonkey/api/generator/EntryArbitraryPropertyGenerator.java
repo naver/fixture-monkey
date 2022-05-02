@@ -83,7 +83,7 @@ public final class EntryArbitraryPropertyGenerator implements ArbitraryPropertyG
 			nullInject,
 			context.getElementIndex(),
 			childProperties,
-			CONTAINER_INFO
+			true
 		);
 	}
 }

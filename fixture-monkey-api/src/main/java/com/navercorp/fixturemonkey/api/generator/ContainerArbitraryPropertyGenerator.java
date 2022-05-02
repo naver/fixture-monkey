@@ -73,7 +73,7 @@ public final class ContainerArbitraryPropertyGenerator implements ArbitraryPrope
 			nullInject,
 			context.getElementIndex(),
 			childProperties,
-			containerInfo
+			true
 		);
 	}
 }

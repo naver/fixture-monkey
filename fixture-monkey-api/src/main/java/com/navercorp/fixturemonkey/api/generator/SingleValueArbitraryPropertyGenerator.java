@@ -40,7 +40,7 @@ public final class SingleValueArbitraryPropertyGenerator implements ArbitraryPro
 			nullInject,
 			context.getElementIndex(),
 			Collections.emptyList(),
-			null
+			false
 		);
 	}
 }

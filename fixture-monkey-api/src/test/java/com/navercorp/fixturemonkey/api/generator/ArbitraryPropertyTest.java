@@ -46,13 +46,13 @@ class ArbitraryPropertyTest {
 			0.0D,
 			null,
 			Collections.emptyList(),
-			null
+			false
 		);
 
 		then(actual.isRoot()).isTrue();
 		then(actual.getProperty()).isEqualTo(rootProperty);
 		then(actual.getNullInject()).isEqualTo(0.0D);
-		then(actual.getContainerInfo()).isNull();
+		then(actual.isContainer()).isFalse();
 	}
 
 	@Test
@@ -69,7 +69,7 @@ class ArbitraryPropertyTest {
 			0.0D,
 			null,
 			Collections.emptyList(),
-			null
+			false
 		);
 
 		then(actual.getResolvePropertyName()).isEqualTo("x_name");

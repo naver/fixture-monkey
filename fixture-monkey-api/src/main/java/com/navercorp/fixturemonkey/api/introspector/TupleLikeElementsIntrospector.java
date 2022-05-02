@@ -27,8 +27,7 @@ public final class TupleLikeElementsIntrospector implements ArbitraryIntrospecto
 	@Override
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
 		ArbitraryProperty property = context.getArbitraryProperty();
-		ArbitraryContainerInfo containerInfo = property.getContainerInfo();
-		if (containerInfo == null) {
+		if (!property.isContainer()) {
 			return ArbitraryIntrospectorResult.EMPTY;
 		}
 

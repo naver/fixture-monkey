@@ -135,7 +135,7 @@ public final class StreamArbitraryPropertyGenerator implements ArbitraryProperty
 			nullInject,
 			context.getElementIndex(),
 			childProperties,
-			containerInfo
+			true
 		);
 	}
 

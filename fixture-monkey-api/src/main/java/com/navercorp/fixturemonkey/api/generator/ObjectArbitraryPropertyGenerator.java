@@ -42,7 +42,7 @@ public final class ObjectArbitraryPropertyGenerator implements ArbitraryProperty
 			nullInject,
 			context.getElementIndex(),
 			childProperties,
-			null
+			false
 		);
 	}
 }

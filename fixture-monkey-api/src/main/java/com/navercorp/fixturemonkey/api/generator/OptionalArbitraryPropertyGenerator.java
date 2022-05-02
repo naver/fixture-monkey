@@ -125,7 +125,7 @@ public final class OptionalArbitraryPropertyGenerator implements ArbitraryProper
 			nullInject,
 			context.getElementIndex(),
 			Collections.singletonList(valueProperty),
-			CONTAINER_INFO
+			true
 		);
 	}
 

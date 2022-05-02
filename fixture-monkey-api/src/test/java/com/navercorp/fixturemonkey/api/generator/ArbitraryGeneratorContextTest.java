@@ -44,7 +44,7 @@ class ArbitraryGeneratorContextTest {
 			0.0D,
 			null,
 			Collections.emptyList(),
-			null
+			false
 		);
 		ArbitraryGeneratorContext sut = new ArbitraryGeneratorContext(
 			arbitraryProperty,

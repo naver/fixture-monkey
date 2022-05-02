@@ -50,7 +50,7 @@ class JavaxValidationBooleanIntrospectorTest {
 				0.0D,
 				null,
 				Collections.emptyList(),
-				null
+				false
 			),
 			Collections.emptyList(),
 			null,
@@ -80,7 +80,7 @@ class JavaxValidationBooleanIntrospectorTest {
 				0.0D,
 				null,
 				Collections.emptyList(),
-				null
+				false
 			),
 			Collections.emptyList(),
 			null,
@@ -109,7 +109,7 @@ class JavaxValidationBooleanIntrospectorTest {
 				0.0D,
 				null,
 				Collections.emptyList(),
-				null
+				false
 			),
 			Collections.emptyList(),
 			null,

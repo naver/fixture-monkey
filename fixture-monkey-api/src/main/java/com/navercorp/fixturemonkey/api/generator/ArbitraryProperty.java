@@ -42,8 +42,7 @@ public final class ArbitraryProperty {
 
 	private final List<Property> childProperties;
 
-	@Nullable
-	private final ArbitraryContainerInfo containerInfo;
+	private final boolean container;
 
 	public ArbitraryProperty(
 		Property property,
@@ -51,14 +50,14 @@ public final class ArbitraryProperty {
 		double nullInject,
 		@Nullable Integer elementIndex,
 		List<Property> childProperties,
-		@Nullable ArbitraryContainerInfo containerInfo
+		boolean container
 	) {
 		this.property = property;
 		this.propertyNameResolver = propertyNameResolver;
 		this.nullInject = nullInject;
 		this.elementIndex = elementIndex;
 		this.childProperties = childProperties;
-		this.containerInfo = containerInfo;
+		this.container = container;
 	}
 
 	public Property getProperty() {
@@ -86,16 +85,11 @@ public final class ArbitraryProperty {
 		return this.childProperties;
 	}
 
-	@Nullable
-	public ArbitraryContainerInfo getContainerInfo() {
-		return this.containerInfo;
+	public boolean isContainer() {
+		return this.container;
 	}
 
 	public boolean isRoot() {
 		return this.property instanceof RootProperty;
-	}
-
-	public boolean isContainer() {
-		return this.containerInfo != null;
 	}
 }

@@ -67,7 +67,7 @@ public final class ArbitraryTraverser {
 			ArbitraryProperty childArbitraryProperty = arbitraryPropertyGenerator.generate(
 				new ArbitraryPropertyGeneratorContext(
 					childProperty,
-					arbitraryProperty.getContainerInfo() != null ? index : null,
+					arbitraryProperty.isContainer() ? index : null,
 					arbitraryProperty,
 					this.generateOptions
 				)

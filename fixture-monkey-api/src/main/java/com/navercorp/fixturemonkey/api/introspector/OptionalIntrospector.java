@@ -29,7 +29,6 @@ import org.apiguardian.api.API.Status;
 
 import net.jqwik.api.Arbitrary;
 
-import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
@@ -50,19 +49,13 @@ public final class OptionalIntrospector implements ArbitraryIntrospector, Matche
 	@Override
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
 		ArbitraryProperty property = context.getArbitraryProperty();
-		ArbitraryContainerInfo containerInfo = property.getContainerInfo();
 		List<ArbitraryProperty> children = context.getChildren();
-		if (containerInfo == null || children.size() != 1) {
+		if (!property.isContainer() || children.size() != 1) {
 			return ArbitraryIntrospectorResult.EMPTY;
 		}
 
 		ArbitraryProperty valueProperty = children.get(0);
 		double presenceProbability = valueProperty.getNullInject();
-		if (containerInfo.getElementMinSize() > 0) {
-			presenceProbability = 1.0d;
-		} else if (containerInfo.getElementMaxSize() == 0) {
-			presenceProbability = 0.0d;
-		}
 
 		Class<?> type = Types.getActualType(property.getProperty().getType());
 		Arbitrary<?> elementArbitrary = context.getChildrenArbitraries().get(0)

@@ -31,7 +31,6 @@ public final class MapEntryElementArbitraryPropertyGenerator implements Arbitrar
 	public static final MapEntryElementArbitraryPropertyGenerator INSTANCE =
 		new MapEntryElementArbitraryPropertyGenerator();
 
-	private static final ArbitraryContainerInfo CONTAINER_INFO = new ArbitraryContainerInfo(1, 1);
 	private static final double NULL_INJECT = 0.0d;
 
 	@Override
@@ -51,7 +50,7 @@ public final class MapEntryElementArbitraryPropertyGenerator implements Arbitrar
 			NULL_INJECT,
 			context.getElementIndex(),
 			Arrays.asList(mapEntryElementProperty.getKeyProperty(), mapEntryElementProperty.getValueProperty()),
-			CONTAINER_INFO
+			true
 		);
 	}
 }

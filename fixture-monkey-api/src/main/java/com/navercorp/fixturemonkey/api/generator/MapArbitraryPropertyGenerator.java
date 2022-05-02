@@ -86,7 +86,7 @@ public final class MapArbitraryPropertyGenerator implements ArbitraryPropertyGen
 			nullInject,
 			context.getElementIndex(),
 			childProperties,
-			containerInfo
+			true
 		);
 	}
 }
