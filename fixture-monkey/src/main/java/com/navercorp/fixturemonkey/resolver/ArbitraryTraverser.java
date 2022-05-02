@@ -39,20 +39,20 @@ public final class ArbitraryTraverser {
 		this.generateOptions = generateOptions;
 	}
 
-	public ArbitraryTree traverse(RootProperty rootProperty) {
+	public ArbitraryNode traverse(Property property) {
 		ArbitraryPropertyGenerator arbitraryPropertyGenerator =
-			this.generateOptions.getArbitraryPropertyGenerator(rootProperty);
+			this.generateOptions.getArbitraryPropertyGenerator(property);
 
 		ArbitraryProperty rootArbitraryProperty = arbitraryPropertyGenerator.generate(
 			new ArbitraryPropertyGeneratorContext(
-				rootProperty,
+				property,
 				null,
 				null,
 				this.generateOptions
 			)
 		);
 
-		return new ArbitraryTree(this.traverse(rootArbitraryProperty), generateOptions);
+		return this.traverse(rootArbitraryProperty);
 	}
 
 	private ArbitraryNode traverse(ArbitraryProperty arbitraryProperty) {
