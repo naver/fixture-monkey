@@ -42,7 +42,8 @@ class FixtureMonkeyV04Test {
 		GenerateOptions generateOptions = GenerateOptions.DEFAULT_GENERATE_OPTIONS;
 		ArbitraryResolver resolver = new ArbitraryResolver(
 			new ArbitraryTraverser(generateOptions),
-			new NoneManipulatorOptimizer()
+			new NoneManipulatorOptimizer(),
+			generateOptions
 		);
 		TypeReference<ComplexObject> typeReference = new TypeReference<ComplexObject>() {
 		};

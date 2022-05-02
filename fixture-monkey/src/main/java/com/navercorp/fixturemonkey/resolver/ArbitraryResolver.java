@@ -25,23 +25,27 @@ import org.apiguardian.api.API.Status;
 
 import net.jqwik.api.Arbitrary;
 
+import com.navercorp.fixturemonkey.api.option.GenerateOptions;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class ArbitraryResolver {
 	private final ArbitraryTraverser traverser;
 	private final ManipulatorOptimizer manipulatorOptimizer;
+	private final GenerateOptions generateOptions;
 
 	public ArbitraryResolver(
 		ArbitraryTraverser traverser,
-		ManipulatorOptimizer manipulatorOptimizer
+		ManipulatorOptimizer manipulatorOptimizer,
+		GenerateOptions generateOptions
 	) {
 		this.traverser = traverser;
 		this.manipulatorOptimizer = manipulatorOptimizer;
+		this.generateOptions = generateOptions;
 	}
 
 	public Arbitrary<?> resolve(RootProperty rootProperty, List<ArbitraryManipulator> manipulators) {
-		ArbitraryTree arbitraryTree = this.traverser.traverse(rootProperty);
+		ArbitraryTree arbitraryTree = new ArbitraryTree(this.traverser.traverse(rootProperty), generateOptions);
 
 		List<ArbitraryManipulator> optimizedManipulator = manipulatorOptimizer
 			.optimize(manipulators)
