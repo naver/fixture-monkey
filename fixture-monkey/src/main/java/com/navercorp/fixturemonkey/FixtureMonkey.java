@@ -25,6 +25,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import org.apiguardian.api.API;
+import org.apiguardian.api.API.Status;
+
 import net.jqwik.api.Arbitrary;
 
 import com.navercorp.fixturemonkey.api.type.TypeReference;
@@ -69,6 +72,24 @@ public class FixtureMonkey {
 
 	public static FixtureMonkeyBuilder builder() {
 		return new FixtureMonkeyBuilder();
+	}
+
+	/**
+	 * Experimental new api and implementation
+	 * @return Monkey
+	 */
+	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+	public static LabMonkey labMonkey() {
+		return FixtureMonkey.labMonkeyBuilder().build();
+	}
+
+	/**
+	 * Experimental new api and implementation
+	 * @return Monkey
+	 */
+	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+	public static LabMonkeyBuilder labMonkeyBuilder() {
+		return new LabMonkeyBuilder();
 	}
 
 	public <T> Stream<T> giveMe(Class<T> type) {
