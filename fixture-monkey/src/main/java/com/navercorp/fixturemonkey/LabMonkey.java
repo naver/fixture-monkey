@@ -27,12 +27,12 @@ import com.navercorp.fixturemonkey.api.option.GenerateOptions;
 import com.navercorp.fixturemonkey.validator.ArbitraryValidator;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public class Monkey extends FixtureMonkey {
+public class LabMonkey extends FixtureMonkey {
 	private final GenerateOptions generateOptions;
 	private final ArbitraryValidator validator;
 
 	@SuppressFBWarnings("NP_NULL_PARAM_DEREF_NONVIRTUAL")
-	public Monkey(
+	public LabMonkey(
 		GenerateOptions generateOptions,
 		ArbitraryValidator validator
 	) {

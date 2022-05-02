@@ -26,12 +26,12 @@ import com.navercorp.fixturemonkey.api.option.GenerateOptionsBuilder;
 import com.navercorp.fixturemonkey.validator.ArbitraryValidator;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public class MonkeyBuilder {
+public class LabMonkeyBuilder {
 	private GenerateOptionsBuilder generateOptionsBuilder = GenerateOptions.builder();
 	private ArbitraryValidator arbitraryValidator;
 
-	public Monkey build() {
-		return new Monkey(
+	public LabMonkey build() {
+		return new LabMonkey(
 			this.generateOptionsBuilder.build(),
 			this.arbitraryValidator
 		);

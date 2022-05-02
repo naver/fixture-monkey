@@ -79,8 +79,8 @@ public class FixtureMonkey {
 	 * @return Monkey
 	 */
 	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
-	public static Monkey monkey() {
-		return FixtureMonkey.monkeyBuilder().build();
+	public static LabMonkey labMonkey() {
+		return FixtureMonkey.labMonkeyBuilder().build();
 	}
 
 	/**
@@ -88,8 +88,8 @@ public class FixtureMonkey {
 	 * @return Monkey
 	 */
 	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
-	public static MonkeyBuilder monkeyBuilder() {
-		return new MonkeyBuilder();
+	public static LabMonkeyBuilder labMonkeyBuilder() {
+		return new LabMonkeyBuilder();
 	}
 
 	public <T> Stream<T> giveMe(Class<T> type) {
