@@ -64,13 +64,13 @@ public final class MapArbitraryPropertyGenerator implements ArbitraryPropertyGen
 					new ElementProperty(
 						property,
 						keyType,
-						index,
+						null,
 						0.0d
 					),
 					new ElementProperty(
 						property,
 						valueType,
-						index,
+						null,
 						null
 					)
 				)

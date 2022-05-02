@@ -21,6 +21,7 @@ package com.navercorp.fixturemonkey.api.generator;
 import java.lang.reflect.AnnotatedType;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -36,6 +37,8 @@ public final class ContainerArbitraryPropertyGenerator implements ArbitraryPrope
 	@Override
 	public ArbitraryProperty generate(ArbitraryPropertyGeneratorContext context) {
 		Property property = context.getProperty();
+
+		Class<?> containerType = Types.getActualType(property.getType());
 
 		List<AnnotatedType> elementTypes = Types.getGenericsTypes(property.getAnnotatedType());
 		if (elementTypes.size() != 1) {
@@ -54,11 +57,17 @@ public final class ContainerArbitraryPropertyGenerator implements ArbitraryPrope
 		AnnotatedType elementType = elementTypes.get(0);
 		List<Property> childProperties = new ArrayList<>();
 		for (int index = 0; index < size; index++) {
+			Integer elementIndex = index;
+
+			if (containerType.isAssignableFrom(Set.class)) {
+				elementIndex = null;
+			}
+
 			childProperties.add(
 				new ElementProperty(
 					property,
 					elementType,
-					index,
+					elementIndex,
 					0.0d
 				)
 			);
