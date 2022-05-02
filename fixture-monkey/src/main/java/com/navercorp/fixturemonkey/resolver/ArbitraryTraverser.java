@@ -29,7 +29,6 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryPropertyGeneratorContext;
 import com.navercorp.fixturemonkey.api.option.GenerateOptions;
 import com.navercorp.fixturemonkey.api.property.Property;
-import com.navercorp.fixturemonkey.api.property.RootProperty;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class ArbitraryTraverser {
