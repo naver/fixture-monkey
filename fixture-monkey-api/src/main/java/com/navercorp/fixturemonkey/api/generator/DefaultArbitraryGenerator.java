@@ -49,26 +49,37 @@ import com.navercorp.fixturemonkey.api.introspector.UuidIntrospector;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class DefaultArbitraryGenerator implements ArbitraryGenerator {
+	public static final ArbitraryIntrospector JAVA_INTROSPECTOR = new CompositeArbitraryIntrospector(
+		Arrays.asList(
+			new JavaArbitraryIntrospector(),
+			new JavaTimeArbitraryIntrospector(),
+			new BooleanIntrospector(),
+			new EnumIntrospector(),
+			new UuidIntrospector()
+		)
+	);
+	public static final ArbitraryIntrospector JAVA_CONTAINER_INTROSPECTOR = new CompositeArbitraryIntrospector(
+		Arrays.asList(
+			new OptionalIntrospector(),
+			new ListIntrospector(),
+			new SetIntrospector(),
+			new QueueIntrospector(),
+			new StreamIntrospector(),
+			new IterableIntrospector(),
+			new IteratorIntrospector(),
+			new MapIntrospector(),
+			new MapEntryElementIntrospector(),
+			new TupleLikeElementsIntrospector()
+		)
+	);
+
 	private final ArbitraryIntrospector arbitraryIntrospector;
 
 	public DefaultArbitraryGenerator() {
 		this(
 			Arrays.asList(
-				new JavaArbitraryIntrospector(),
-				new JavaTimeArbitraryIntrospector(),
-				new BooleanIntrospector(),
-				new EnumIntrospector(),
-				new UuidIntrospector(),
-				new OptionalIntrospector(),
-				new ListIntrospector(),
-				new SetIntrospector(),
-				new QueueIntrospector(),
-				new StreamIntrospector(),
-				new IterableIntrospector(),
-				new IteratorIntrospector(),
-				new MapIntrospector(),
-				new MapEntryElementIntrospector(),
-				new TupleLikeElementsIntrospector(),
+				JAVA_INTROSPECTOR,
+				JAVA_CONTAINER_INTROSPECTOR,
 				BeanArbitraryIntrospector.INSTANCE
 			)
 		);
