@@ -284,6 +284,7 @@ class DefaultArbitraryGeneratorTest {
 				rootProperty,
 				null,
 				null,
+				null,
 				generateOptions
 			)
 		);
@@ -296,6 +297,7 @@ class DefaultArbitraryGeneratorTest {
 						it,
 						null,
 						rootArbitraryProperty,
+						null,
 						generateOptions
 					)
 				)

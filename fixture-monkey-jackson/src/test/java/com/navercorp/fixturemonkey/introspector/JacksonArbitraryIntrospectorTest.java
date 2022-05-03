@@ -63,6 +63,7 @@ class JacksonArbitraryIntrospectorTest {
 				rootProperty,
 				null,
 				null,
+				null,
 				generateOptions
 			)
 		);
@@ -75,6 +76,7 @@ class JacksonArbitraryIntrospectorTest {
 						it,
 						null,
 						rootArbitraryProperty,
+						null,
 						generateOptions
 					)
 				)
