@@ -157,10 +157,11 @@ public final class ArbitraryOption {
 	}
 
 	public <T> boolean isExceptGeneratablePackage(Class<T> clazz) {
-		if (clazz.getPackage() == null) {
-			return false; // primitive
-		}
+		if (clazz.isPrimitive()) return false;
+		if (clazz.getPackage() == null) return true;
+
 		String packageName = clazz.getPackage().getName();
+
 		return exceptGeneratePackages.stream()
 			.noneMatch(packageName::startsWith);
 	}
