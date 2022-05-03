@@ -38,12 +38,12 @@ public final class JacksonModule implements Module {
 	private final List<Matcher> matchers = new ArrayList<>();
 	private boolean defaultGenerator = false;
 
-	public JacksonModule byJackson(Matcher matcher) {
+	public JacksonModule by(Matcher matcher) {
 		this.matchers.add(matcher);
 		return this;
 	}
 
-	public JacksonModule byJackson(Class<?> matchType) {
+	public JacksonModule by(Class<?> matchType) {
 		this.matchers.add(new AssignableTypeMatcher(matchType));
 		return this;
 	}
