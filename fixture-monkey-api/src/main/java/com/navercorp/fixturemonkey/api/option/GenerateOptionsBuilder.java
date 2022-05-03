@@ -37,7 +37,7 @@ import com.navercorp.fixturemonkey.api.generator.NullInjectGenerator;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
-import com.navercorp.fixturemonkey.api.module.Module;
+import com.navercorp.fixturemonkey.api.plugin.Plugin;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
@@ -268,8 +268,8 @@ public final class GenerateOptionsBuilder {
 		return this;
 	}
 
-	public GenerateOptionsBuilder module(Module module) {
-		module.accept(this);
+	public GenerateOptionsBuilder plugin(Plugin plugin) {
+		plugin.accept(this);
 		return this;
 	}
 

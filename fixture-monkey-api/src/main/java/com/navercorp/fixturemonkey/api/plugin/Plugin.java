@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.api.module;
+package com.navercorp.fixturemonkey.api.plugin;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -25,6 +25,6 @@ import com.navercorp.fixturemonkey.api.option.GenerateOptionsBuilder;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 @FunctionalInterface
-public interface Module {
+public interface Plugin {
 	void accept(GenerateOptionsBuilder optionsBuilder);
 }

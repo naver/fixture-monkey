@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.jackson.module;
+package com.navercorp.fixturemonkey.jackson.plugin;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,27 +28,27 @@ import org.apiguardian.api.API.Status;
 import com.navercorp.fixturemonkey.api.generator.DefaultArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.matcher.AssignableTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
-import com.navercorp.fixturemonkey.api.module.Module;
+import com.navercorp.fixturemonkey.api.plugin.Plugin;
 import com.navercorp.fixturemonkey.api.option.GenerateOptionsBuilder;
 import com.navercorp.fixturemonkey.jackson.introspector.JacksonArbitraryIntrospector;
 import com.navercorp.fixturemonkey.jackson.property.JacksonPropertyNameResolver;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public final class JacksonModule implements Module {
+public final class JacksonPlugin implements Plugin {
 	private final List<Matcher> matchers = new ArrayList<>();
 	private boolean defaultGenerator = false;
 
-	public JacksonModule by(Matcher matcher) {
+	public JacksonPlugin by(Matcher matcher) {
 		this.matchers.add(matcher);
 		return this;
 	}
 
-	public JacksonModule by(Class<?> matchType) {
+	public JacksonPlugin by(Class<?> matchType) {
 		this.matchers.add(new AssignableTypeMatcher(matchType));
 		return this;
 	}
 
-	public JacksonModule defaultGenerator(boolean defaultGenerator) {
+	public JacksonPlugin defaultGenerator(boolean defaultGenerator) {
 		this.defaultGenerator = defaultGenerator;
 		return this;
 	}
