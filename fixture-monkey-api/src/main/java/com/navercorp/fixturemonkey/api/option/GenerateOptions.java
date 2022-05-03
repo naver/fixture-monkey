@@ -79,12 +79,17 @@ import com.navercorp.fixturemonkey.api.property.TupleLikeElementsProperty;
 public final class GenerateOptions {
 	public static final List<MatcherOperator<ArbitraryPropertyGenerator>> DEFAULT_ARBITRARY_PROPERTY_GENERATORS =
 		getDefaultArbitraryPropertyGenerators();
+	public static final ArbitraryPropertyGenerator DEFAULT_ARBITRARY_PROPERTY_GENERATOR =
+		ObjectArbitraryPropertyGenerator.INSTANCE;
+	public static final PropertyNameResolver DEFAULT_PROPERTY_NAME_RESOLVER = PropertyNameResolver.IDENTITY;
 	public static final ArbitraryGenerator DEFAULT_ARBITRARY_GENERATOR = new DefaultArbitraryGenerator();
 	public static final int DEFAULT_ARBITRARY_CONTAINER_SIZE = 3;
 	public static final GenerateOptions DEFAULT_GENERATE_OPTIONS = GenerateOptions.builder().build();
 
 	private final List<MatcherOperator<ArbitraryPropertyGenerator>> arbitraryPropertyGenerators;
+	private final ArbitraryPropertyGenerator defaultArbitraryPropertyGenerator;
 	private final List<MatcherOperator<PropertyNameResolver>> propertyNameResolvers;
+	private final PropertyNameResolver defaultPropertyNameResolver;
 	private final List<MatcherOperator<NullInjectGenerator>> nullInjectGenerators;
 	private final NullInjectGenerator defaultNullInjectGenerator;
 	private final List<MatcherOperator<ArbitraryContainerInfoGenerator>> arbitraryContainerInfoGenerators;
@@ -95,7 +100,9 @@ public final class GenerateOptions {
 
 	public GenerateOptions(
 		List<MatcherOperator<ArbitraryPropertyGenerator>> arbitraryPropertyGenerators,
+		ArbitraryPropertyGenerator defaultArbitraryPropertyGenerator,
 		List<MatcherOperator<PropertyNameResolver>> propertyNameResolvers,
+		PropertyNameResolver defaultPropertyNameResolver,
 		List<MatcherOperator<NullInjectGenerator>> nullInjectGenerators,
 		NullInjectGenerator defaultNullInjectGenerator,
 		List<MatcherOperator<ArbitraryContainerInfoGenerator>> arbitraryContainerInfoGenerators,
@@ -105,7 +112,9 @@ public final class GenerateOptions {
 		ArbitraryGenerator defaultArbitraryGenerator
 	) {
 		this.arbitraryPropertyGenerators = arbitraryPropertyGenerators;
+		this.defaultArbitraryPropertyGenerator = defaultArbitraryPropertyGenerator;
 		this.propertyNameResolvers = propertyNameResolvers;
+		this.defaultPropertyNameResolver = defaultPropertyNameResolver;
 		this.nullInjectGenerators = nullInjectGenerators;
 		this.defaultNullInjectGenerator = defaultNullInjectGenerator;
 		this.arbitraryContainerInfoGenerators = arbitraryContainerInfoGenerators;
@@ -128,7 +137,11 @@ public final class GenerateOptions {
 			.filter(it -> it.match(property))
 			.map(MatcherOperator::getOperator)
 			.findFirst()
-			.orElseGet(ObjectArbitraryPropertyGenerator::new);
+			.orElse(this.getDefaultArbitraryPropertyGenerator());
+	}
+
+	public ArbitraryPropertyGenerator getDefaultArbitraryPropertyGenerator() {
+		return this.defaultArbitraryPropertyGenerator;
 	}
 
 	public List<MatcherOperator<PropertyNameResolver>> getPropertyNameResolvers() {
@@ -140,7 +153,11 @@ public final class GenerateOptions {
 			.filter(it -> it.match(property))
 			.map(MatcherOperator::getOperator)
 			.findFirst()
-			.orElse(PropertyNameResolver.IDENTITY);
+			.orElse(this.getDefaultPropertyNameResolver());
+	}
+
+	public PropertyNameResolver getDefaultPropertyNameResolver() {
+		return this.defaultPropertyNameResolver;
 	}
 
 	public List<MatcherOperator<NullInjectGenerator>> getNullInjectGenerators() {
@@ -152,7 +169,11 @@ public final class GenerateOptions {
 			.filter(it -> it.match(property))
 			.map(MatcherOperator::getOperator)
 			.findFirst()
-			.orElse(this.defaultNullInjectGenerator);
+			.orElse(this.getDefaultNullInjectGenerator());
+	}
+
+	public NullInjectGenerator getDefaultNullInjectGenerator() {
+		return this.defaultNullInjectGenerator;
 	}
 
 	public List<MatcherOperator<ArbitraryContainerInfoGenerator>> getArbitraryContainerInfoGenerators() {
@@ -164,11 +185,15 @@ public final class GenerateOptions {
 			.filter(it -> it.match(property))
 			.map(MatcherOperator::getOperator)
 			.findFirst()
-			.orElse(context -> this.defaultArbitraryContainerInfo);
+			.orElse(context -> this.getDefaultArbitraryContainerInfo());
 	}
 
 	public int getDefaultArbitraryContainerSize() {
 		return this.defaultArbitraryContainerSize;
+	}
+
+	public ArbitraryContainerInfo getDefaultArbitraryContainerInfo() {
+		return this.defaultArbitraryContainerInfo;
 	}
 
 	public List<MatcherOperator<ArbitraryGenerator>> getArbitraryGenerators() {
@@ -180,13 +205,19 @@ public final class GenerateOptions {
 			.filter(it -> it.match(property))
 			.map(MatcherOperator::getOperator)
 			.findFirst()
-			.orElse(this.defaultArbitraryGenerator);
+			.orElse(this.getDefaultArbitraryGenerator());
+	}
+
+	public ArbitraryGenerator getDefaultArbitraryGenerator() {
+		return this.defaultArbitraryGenerator;
 	}
 
 	public GenerateOptionsBuilder toBuilder() {
 		return builder()
 			.arbitraryPropertyGenerators(new ArrayList<>(this.arbitraryPropertyGenerators))
+			.defaultArbitraryPropertyGenerator(this.defaultArbitraryPropertyGenerator)
 			.propertyNameResolvers(new ArrayList<>(this.propertyNameResolvers))
+			.defaultPropertyNameResolver(this.defaultPropertyNameResolver)
 			.nullInjectGenerators(new ArrayList<>(this.nullInjectGenerators))
 			.defaultNullInjectGenerator(this.defaultNullInjectGenerator)
 			.arbitraryContainerInfoGenerators(new ArrayList<>(this.arbitraryContainerInfoGenerators))
@@ -255,8 +286,7 @@ public final class GenerateOptions {
 			new MatcherOperator<>(
 				property -> property.getClass() == TupleLikeElementsProperty.class,
 				TupleLikeElementsArbitraryPropertyGenerator.INSTANCE
-			),
-			new MatcherOperator<>(property -> true, ObjectArbitraryPropertyGenerator.INSTANCE)
+			)
 		);
 	}
 }
