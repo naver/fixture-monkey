@@ -109,9 +109,12 @@ public final class StreamArbitraryPropertyGenerator implements ArbitraryProperty
 
 		AnnotatedType elementAnnotatedType = getElementAnnotatedType(property);
 
-		ArbitraryContainerInfo containerInfo = context.getGenerateOptions()
-			.getArbitraryContainerInfoGenerator(property)
-			.generate(context);
+		ArbitraryContainerInfo containerInfo = context.getContainerInfo();
+		if (containerInfo == null) {
+			containerInfo = context.getGenerateOptions()
+				.getArbitraryContainerInfoGenerator(property)
+				.generate(context);
+		}
 
 		int size = containerInfo.getRandomSize();
 		List<Property> childProperties = new ArrayList<>();

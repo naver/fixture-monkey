@@ -45,7 +45,10 @@ public final class ArbitraryResolver {
 	}
 
 	public Arbitrary<?> resolve(RootProperty rootProperty, List<ArbitraryManipulator> manipulators) {
-		ArbitraryTree arbitraryTree = new ArbitraryTree(this.traverser.traverse(rootProperty), generateOptions);
+		ArbitraryTree arbitraryTree = new ArbitraryTree(
+			this.traverser.traverse(rootProperty, null),
+			generateOptions
+		);
 
 		List<ArbitraryManipulator> optimizedManipulator = manipulatorOptimizer
 			.optimize(manipulators)

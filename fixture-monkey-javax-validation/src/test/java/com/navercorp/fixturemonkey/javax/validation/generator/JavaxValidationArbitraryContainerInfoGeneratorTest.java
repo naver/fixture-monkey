@@ -45,6 +45,7 @@ class JavaxValidationArbitraryContainerInfoGeneratorTest {
 			property,
 			null,
 			null,
+			null,
 			GenerateOptions.DEFAULT_GENERATE_OPTIONS
 		);
 
@@ -66,6 +67,7 @@ class JavaxValidationArbitraryContainerInfoGeneratorTest {
 			.get();
 		ArbitraryPropertyGeneratorContext context = new ArbitraryPropertyGeneratorContext(
 			property,
+			null,
 			null,
 			null,
 			GenerateOptions.DEFAULT_GENERATE_OPTIONS
@@ -91,6 +93,7 @@ class JavaxValidationArbitraryContainerInfoGeneratorTest {
 			property,
 			null,
 			null,
+			null,
 			GenerateOptions.DEFAULT_GENERATE_OPTIONS
 		);
 
@@ -112,6 +115,7 @@ class JavaxValidationArbitraryContainerInfoGeneratorTest {
 			.get();
 		ArbitraryPropertyGeneratorContext context = new ArbitraryPropertyGeneratorContext(
 			property,
+			null,
 			null,
 			null,
 			GenerateOptions.DEFAULT_GENERATE_OPTIONS
@@ -141,6 +145,7 @@ class JavaxValidationArbitraryContainerInfoGeneratorTest {
 			property,
 			null,
 			null,
+			null,
 			generateOptions
 		);
 
@@ -164,6 +169,7 @@ class JavaxValidationArbitraryContainerInfoGeneratorTest {
 			property,
 			null,
 			null,
+			null,
 			GenerateOptions.DEFAULT_GENERATE_OPTIONS
 		);
 
@@ -185,6 +191,7 @@ class JavaxValidationArbitraryContainerInfoGeneratorTest {
 			.get();
 		ArbitraryPropertyGeneratorContext context = new ArbitraryPropertyGeneratorContext(
 			property,
+			null,
 			null,
 			null,
 			GenerateOptions.DEFAULT_GENERATE_OPTIONS
@@ -213,6 +220,7 @@ class JavaxValidationArbitraryContainerInfoGeneratorTest {
 			property,
 			null,
 			null,
+			null,
 			generateOptions
 		);
 
@@ -234,6 +242,7 @@ class JavaxValidationArbitraryContainerInfoGeneratorTest {
 			.get();
 		ArbitraryPropertyGeneratorContext context = new ArbitraryPropertyGeneratorContext(
 			property,
+			null,
 			null,
 			null,
 			GenerateOptions.DEFAULT_GENERATE_OPTIONS

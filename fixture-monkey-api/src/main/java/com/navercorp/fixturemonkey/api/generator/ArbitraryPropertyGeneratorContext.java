@@ -41,17 +41,22 @@ public final class ArbitraryPropertyGeneratorContext {
 	@Nullable
 	private final ArbitraryProperty ownerProperty;
 
+	@Nullable
+	private final ArbitraryContainerInfo containerInfo;
+
 	private final GenerateOptions generateOptions;
 
 	public ArbitraryPropertyGeneratorContext(
 		Property property,
 		@Nullable Integer elementIndex,
 		@Nullable ArbitraryProperty ownerProperty,
+		@Nullable ArbitraryContainerInfo containerInfo,
 		GenerateOptions generateOptions
 	) {
 		this.property = property;
 		this.elementIndex = elementIndex;
 		this.ownerProperty = ownerProperty;
+		this.containerInfo = containerInfo;
 		this.generateOptions = generateOptions;
 	}
 
@@ -67,6 +72,11 @@ public final class ArbitraryPropertyGeneratorContext {
 	@Nullable
 	public ArbitraryProperty getOwnerProperty() {
 		return this.ownerProperty;
+	}
+
+	@Nullable
+	public ArbitraryContainerInfo getContainerInfo() {
+		return containerInfo;
 	}
 
 	public List<MatcherOperator<PropertyNameResolver>> getPropertyNameResolvers() {

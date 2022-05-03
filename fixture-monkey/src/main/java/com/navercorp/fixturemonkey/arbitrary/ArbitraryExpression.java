@@ -287,8 +287,7 @@ public final class ArbitraryExpression implements Comparable<ArbitraryExpression
 		public boolean match(ArbitraryProperty arbitraryProperty) {
 			boolean samePropertyName = nameEquals(arbitraryProperty.getResolvePropertyName());
 			boolean sameIndex = true;
-			if (arbitraryProperty.isContainer()) {
-				//noinspection ConstantConditions
+			if (arbitraryProperty.getElementIndex() != null) {
 				sameIndex = indexEquals(arbitraryProperty.getElementIndex()); // notNull
 			}
 			return samePropertyName && sameIndex;

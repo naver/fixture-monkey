@@ -48,7 +48,12 @@ public final class EntryArbitraryPropertyGenerator implements ArbitraryPropertyG
 			);
 		}
 
-		int size = CONTAINER_INFO.getRandomSize();
+		ArbitraryContainerInfo containerInfo = context.getContainerInfo();
+		if (containerInfo == null) {
+			containerInfo = CONTAINER_INFO;
+		}
+
+		int size = containerInfo.getRandomSize();
 
 		AnnotatedType keyType = genericsTypes.get(0);
 		AnnotatedType valueType = genericsTypes.get(1);

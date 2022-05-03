@@ -21,9 +21,12 @@ package com.navercorp.fixturemonkey.resolver;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryPropertyGeneratorContext;
@@ -38,20 +41,24 @@ public final class ArbitraryTraverser {
 		this.generateOptions = generateOptions;
 	}
 
-	public ArbitraryNode traverse(Property property) {
+	public ArbitraryNode traverse(
+		Property property,
+		@Nullable ArbitraryContainerInfo containerInfo
+	) {
 		ArbitraryPropertyGenerator arbitraryPropertyGenerator =
 			this.generateOptions.getArbitraryPropertyGenerator(property);
 
-		ArbitraryProperty rootArbitraryProperty = arbitraryPropertyGenerator.generate(
+		ArbitraryProperty arbitraryProperty = arbitraryPropertyGenerator.generate(
 			new ArbitraryPropertyGeneratorContext(
 				property,
 				null,
 				null,
+				containerInfo,
 				this.generateOptions
 			)
 		);
 
-		return this.traverse(rootArbitraryProperty);
+		return this.traverse(arbitraryProperty);
 	}
 
 	private ArbitraryNode traverse(ArbitraryProperty arbitraryProperty) {
@@ -68,6 +75,7 @@ public final class ArbitraryTraverser {
 					childProperty,
 					arbitraryProperty.getContainerInfo() != null ? index : null,
 					arbitraryProperty,
+					null,
 					this.generateOptions
 				)
 			);

@@ -65,6 +65,7 @@ class BeanArbitraryIntrospectorTest {
 				rootProperty,
 				null,
 				null,
+				null,
 				generateOptions
 			)
 		);
@@ -77,6 +78,7 @@ class BeanArbitraryIntrospectorTest {
 						it,
 						null,
 						rootArbitraryProperty,
+						null,
 						generateOptions
 					)
 				)
@@ -129,6 +131,7 @@ class BeanArbitraryIntrospectorTest {
 				rootProperty,
 				null,
 				null,
+				null,
 				generateOptions
 			)
 		);
@@ -141,6 +144,7 @@ class BeanArbitraryIntrospectorTest {
 						it,
 						null,
 						rootArbitraryProperty,
+						null,
 						generateOptions
 					)
 				)

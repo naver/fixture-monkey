@@ -64,6 +64,7 @@ class FieldReflectionArbitraryIntrospectorTest {
 				rootProperty,
 				null,
 				null,
+				null,
 				generateOptions
 			)
 		);
@@ -76,6 +77,7 @@ class FieldReflectionArbitraryIntrospectorTest {
 						it,
 						null,
 						rootArbitraryProperty,
+						null,
 						generateOptions
 					)
 				)
@@ -130,6 +132,7 @@ class FieldReflectionArbitraryIntrospectorTest {
 				rootProperty,
 				null,
 				null,
+				null,
 				generateOptions
 			)
 		);
@@ -142,6 +145,7 @@ class FieldReflectionArbitraryIntrospectorTest {
 						it,
 						null,
 						rootArbitraryProperty,
+						null,
 						generateOptions
 					)
 				)
