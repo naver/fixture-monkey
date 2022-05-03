@@ -28,8 +28,8 @@ import org.apiguardian.api.API.Status;
 import com.navercorp.fixturemonkey.api.generator.DefaultArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.matcher.AssignableTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
-import com.navercorp.fixturemonkey.api.plugin.Plugin;
 import com.navercorp.fixturemonkey.api.option.GenerateOptionsBuilder;
+import com.navercorp.fixturemonkey.api.plugin.Plugin;
 import com.navercorp.fixturemonkey.jackson.introspector.JacksonArbitraryIntrospector;
 import com.navercorp.fixturemonkey.jackson.property.JacksonPropertyNameResolver;
 
