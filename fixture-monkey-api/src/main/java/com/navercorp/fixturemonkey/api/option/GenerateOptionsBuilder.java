@@ -31,10 +31,13 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfoGenerator;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryPropertyGenerator;
+import com.navercorp.fixturemonkey.api.generator.DefaultArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator;
 import com.navercorp.fixturemonkey.api.generator.NullInjectGenerator;
+import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
+import com.navercorp.fixturemonkey.api.plugin.Plugin;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
@@ -241,8 +244,32 @@ public final class GenerateOptionsBuilder {
 		);
 	}
 
+	public GenerateOptionsBuilder insertFirstArbitraryIntrospector(
+		Matcher matcher,
+		ArbitraryIntrospector arbitraryIntrospector
+	) {
+		return this.insertFirstArbitraryGenerator(
+			matcher,
+			new DefaultArbitraryGenerator(arbitraryIntrospector)
+		);
+	}
+
+	public GenerateOptionsBuilder insertFirstArbitraryIntrospector(
+		Class<?> type,
+		ArbitraryIntrospector arbitraryIntrospector
+	) {
+		return this.insertFirstArbitraryGenerator(
+			MatcherOperator.assignableTypeMatchOperator(type, new DefaultArbitraryGenerator(arbitraryIntrospector))
+		);
+	}
+
 	public GenerateOptionsBuilder defaultArbitraryGenerator(ArbitraryGenerator defaultArbitraryGenerator) {
 		this.defaultArbitraryGenerator = defaultArbitraryGenerator;
+		return this;
+	}
+
+	public GenerateOptionsBuilder plugin(Plugin plugin) {
+		plugin.accept(this);
 		return this;
 	}
 
