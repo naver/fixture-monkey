@@ -59,8 +59,8 @@ public final class ContainerArbitraryPropertyGenerator implements ArbitraryPrope
 		int size = containerInfo.getRandomSize();
 		AnnotatedType elementType = elementTypes.get(0);
 		List<Property> childProperties = new ArrayList<>();
-		for (int index = 0; index < size; index++) {
-			Integer elementIndex = index;
+		for (int sequence = 0; sequence < size; sequence++) {
+			Integer elementIndex = sequence;
 
 			if (Set.class.isAssignableFrom(containerType)) {
 				elementIndex = null;
@@ -71,6 +71,7 @@ public final class ContainerArbitraryPropertyGenerator implements ArbitraryPrope
 					property,
 					elementType,
 					elementIndex,
+					sequence,
 					0.0d
 				)
 			);

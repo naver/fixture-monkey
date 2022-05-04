@@ -39,8 +39,9 @@ class KotlinPropertyGenerator : PropertyGenerator {
         containerProperty: Property,
         elementType: AnnotatedType,
         index: Int?,
+        sequence: Int,
         nullInject: Double?
-    ): Property = ElementProperty(containerProperty, elementType, index, nullInject)
+    ): Property = ElementProperty(containerProperty, elementType, index, sequence, nullInject)
 
     override fun generateMapEntryElementProperty(
         containerProperty: Property,
