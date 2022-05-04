@@ -18,6 +18,8 @@
 
 package com.navercorp.fixturemonkey.resolver;
 
+import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.NOT_NULL_INJECT;
+
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
@@ -36,7 +38,7 @@ final class NodeSetArbitraryManipulator<T> implements NodeManipulator {
 	@Override
 	public void manipulate(ArbitraryNode arbitraryNode) {
 		ArbitraryProperty arbitraryProperty = arbitraryNode.getArbitraryProperty();
-		arbitraryNode.setArbitraryProperty(arbitraryProperty.withNullInject(0.0d));
+		arbitraryNode.setArbitraryProperty(arbitraryProperty.withNullInject(NOT_NULL_INJECT));
 		arbitraryNode.setArbitrary(arbitrary);
 	}
 }
