@@ -19,13 +19,11 @@
 package com.navercorp.fixturemonkey.jackson.plugin;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.api.generator.DefaultArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.matcher.AssignableTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.option.GenerateOptionsBuilder;
@@ -36,7 +34,7 @@ import com.navercorp.fixturemonkey.jackson.property.JacksonPropertyNameResolver;
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class JacksonPlugin implements Plugin {
 	private final List<Matcher> matchers = new ArrayList<>();
-	private boolean defaultGenerator = false;
+	private boolean defaultOptions = true;
 
 	public JacksonPlugin by(Matcher matcher) {
 		this.matchers.add(matcher);
@@ -48,8 +46,8 @@ public final class JacksonPlugin implements Plugin {
 		return this;
 	}
 
-	public JacksonPlugin defaultGenerator(boolean defaultGenerator) {
-		this.defaultGenerator = defaultGenerator;
+	public JacksonPlugin defaultOptions(boolean defaultOptions) {
+		this.defaultOptions = defaultOptions;
 		return this;
 	}
 
@@ -58,20 +56,15 @@ public final class JacksonPlugin implements Plugin {
 		if (!this.matchers.isEmpty()) {
 			Matcher matcher = property -> matchers.stream().anyMatch(it -> it.match(property));
 
-			optionsBuilder.insertFirstArbitraryIntrospector(matcher, new JacksonArbitraryIntrospector());
-			optionsBuilder.insertFirstPropertyNameResolver(matcher, new JacksonPropertyNameResolver());
+			optionsBuilder
+				.insertFirstArbitraryIntrospector(matcher, new JacksonArbitraryIntrospector())
+				.insertFirstPropertyNameResolver(matcher, new JacksonPropertyNameResolver());
 		}
 
-		if (this.defaultGenerator) {
-			optionsBuilder.defaultArbitraryGenerator(
-				new DefaultArbitraryGenerator(
-					Arrays.asList(
-						DefaultArbitraryGenerator.JAVA_INTROSPECTOR,
-						DefaultArbitraryGenerator.JAVA_CONTAINER_INTROSPECTOR,
-						new JacksonArbitraryIntrospector()
-					)
-				)
-			);
+		if (this.defaultOptions) {
+			optionsBuilder
+				.objectIntrospector(it -> new JacksonArbitraryIntrospector())
+				.defaultPropertyNameResolver(new JacksonPropertyNameResolver());
 		}
 	}
 }
