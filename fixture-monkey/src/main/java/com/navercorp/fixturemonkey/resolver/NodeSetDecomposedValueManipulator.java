@@ -18,6 +18,8 @@
 
 package com.navercorp.fixturemonkey.resolver;
 
+import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.NOT_NULL_INJECT;
+
 import java.util.List;
 
 import org.apiguardian.api.API;
@@ -38,13 +40,19 @@ final class NodeSetDecomposedValueManipulator<T> implements NodeManipulator {
 
 	@Override
 	public void manipulate(ArbitraryNode arbitraryNode) {
-		if (Types.getActualType(arbitraryNode.getProperty().getType()) != value.getClass()) {
-			throw new IllegalArgumentException("The value is not of the same type as the property");
+		Class<?> actualType = Types.getActualType(arbitraryNode.getProperty().getType());
+		if (!actualType.isAssignableFrom(value.getClass())) {
+			throw new IllegalArgumentException(
+				"The value is not of the same type as the property."
+						+ " node type: " + arbitraryNode.getProperty().getType().getTypeName()
+					+ " value type: " + value.getClass().getTypeName()
+			);
 		}
 		setValue(arbitraryNode, value);
 	}
 
 	private void setValue(ArbitraryNode arbitraryNode, Object value) {
+		arbitraryNode.setArbitraryProperty(arbitraryNode.getArbitraryProperty().withNullInject(NOT_NULL_INJECT));
 		List<ArbitraryNode> children = arbitraryNode.getChildren();
 		if (children.isEmpty()) {
 			arbitraryNode.setArbitrary(Arbitraries.just(value));

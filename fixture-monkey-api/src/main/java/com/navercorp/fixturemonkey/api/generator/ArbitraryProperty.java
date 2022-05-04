@@ -120,4 +120,15 @@ public final class ArbitraryProperty {
 			containerInfo
 		);
 	}
+
+	public ArbitraryProperty withNullInject(double nullInject) {
+		return new ArbitraryProperty(
+			this.property,
+			this.propertyNameResolver,
+			nullInject,
+			this.elementIndex,
+			this.childProperties,
+			this.containerInfo
+		);
+	}
 }
