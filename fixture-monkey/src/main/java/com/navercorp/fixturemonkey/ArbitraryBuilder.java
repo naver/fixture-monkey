@@ -246,6 +246,12 @@ public final class ArbitraryBuilder<T> {
 		return this;
 	}
 
+	public ArbitraryBuilder<T> set(String expression, Supplier<T> supplier) {
+		ArbitraryExpression arbitraryExpression = ArbitraryExpression.from(expression);
+		this.builderManipulators.add(new ArbitrarySet<>(arbitraryExpression, supplier));
+		return this;
+	}
+
 	public ArbitraryBuilder<T> set(String expression, Object value, long limit) {
 		ArbitraryExpression arbitraryExpression = ArbitraryExpression.from(expression);
 		this.builderManipulators.add(new ArbitrarySet<>(arbitraryExpression, value, limit));

@@ -19,12 +19,14 @@
 package com.navercorp.fixturemonkey.arbitrary;
 
 import java.util.Objects;
+import java.util.function.Supplier;
 
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
 
 public final class ArbitrarySet<T> extends AbstractArbitrarySet<T> {
-	private final T value;
+	private T value;
+	private Supplier<T> supplier;
 	private long limit;
 
 	public ArbitrarySet(ArbitraryExpression arbitraryExpression, T value, long limit) {
@@ -37,8 +39,17 @@ public final class ArbitrarySet<T> extends AbstractArbitrarySet<T> {
 		this(arbitraryExpression, value, Long.MAX_VALUE);
 	}
 
+	public ArbitrarySet(ArbitraryExpression arbitraryExpression, Supplier<T> supplier) {
+		super(arbitraryExpression);
+		this.supplier = supplier;
+		this.limit = Long.MAX_VALUE;
+	}
+
 	@Override
 	public T getValue() {
+		if (value == null && supplier != null) {
+			return supplier.get();
+		}
 		return value;
 	}
 
@@ -54,7 +65,7 @@ public final class ArbitrarySet<T> extends AbstractArbitrarySet<T> {
 
 	@Override
 	public ArbitrarySet<T> copy() {
-		return new ArbitrarySet<>(this.getArbitraryExpression(), this.value, this.limit);
+		return new ArbitrarySet<>(this.getArbitraryExpression(), this.getValue(), this.limit);
 	}
 
 	@Override
