@@ -58,7 +58,6 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfoGenerator
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.ContainerArbitraryPropertyGenerator;
-import com.navercorp.fixturemonkey.api.generator.DefaultArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.generator.EntryArbitraryPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.MapArbitraryPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.MapEntryElementArbitraryPropertyGenerator;
@@ -82,7 +81,6 @@ public final class GenerateOptions {
 	public static final ArbitraryPropertyGenerator DEFAULT_ARBITRARY_PROPERTY_GENERATOR =
 		ObjectArbitraryPropertyGenerator.INSTANCE;
 	public static final PropertyNameResolver DEFAULT_PROPERTY_NAME_RESOLVER = PropertyNameResolver.IDENTITY;
-	public static final ArbitraryGenerator DEFAULT_ARBITRARY_GENERATOR = new DefaultArbitraryGenerator();
 	public static final int DEFAULT_ARBITRARY_CONTAINER_SIZE = 3;
 	public static final GenerateOptions DEFAULT_GENERATE_OPTIONS = GenerateOptions.builder().build();
 

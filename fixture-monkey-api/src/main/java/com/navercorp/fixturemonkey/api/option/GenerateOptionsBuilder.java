@@ -19,8 +19,10 @@
 package com.navercorp.fixturemonkey.api.option;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Supplier;
+import java.util.function.UnaryOperator;
 
 import javax.annotation.Nullable;
 
@@ -35,6 +37,7 @@ import com.navercorp.fixturemonkey.api.generator.DefaultArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator;
 import com.navercorp.fixturemonkey.api.generator.NullInjectGenerator;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
+import com.navercorp.fixturemonkey.api.introspector.BeanArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.plugin.Plugin;
@@ -54,6 +57,7 @@ public final class GenerateOptionsBuilder {
 	private ArbitraryContainerInfo defaultArbitraryContainerInfo;
 	private List<MatcherOperator<ArbitraryGenerator>> arbitraryGenerators = new ArrayList<>();
 	private ArbitraryGenerator defaultArbitraryGenerator;
+	private DefaultArbitraryGeneratorBuilder defaultArbitraryGeneratorBuilder = new DefaultArbitraryGeneratorBuilder();
 
 	GenerateOptionsBuilder() {
 	}
@@ -268,6 +272,33 @@ public final class GenerateOptionsBuilder {
 		return this;
 	}
 
+	public GenerateOptionsBuilder priorityIntrospector(
+		UnaryOperator<ArbitraryIntrospector> priorityIntrospector
+	) {
+		ArbitraryIntrospector introspector =
+			priorityIntrospector.apply(this.defaultArbitraryGeneratorBuilder.priorityIntrospector);
+		this.defaultArbitraryGeneratorBuilder.priorityIntrospector(introspector);
+		return this;
+	}
+
+	public GenerateOptionsBuilder containerIntrospector(
+		UnaryOperator<ArbitraryIntrospector> containerIntrospector
+	) {
+		ArbitraryIntrospector introspector =
+			containerIntrospector.apply(this.defaultArbitraryGeneratorBuilder.containerIntrospector);
+		this.defaultArbitraryGeneratorBuilder.containerIntrospector(introspector);
+		return this;
+	}
+
+	public GenerateOptionsBuilder objectIntrospector(
+		UnaryOperator<ArbitraryIntrospector> objectIntrospector
+	) {
+		ArbitraryIntrospector introspector =
+			objectIntrospector.apply(this.defaultArbitraryGeneratorBuilder.objectIntrospector);
+		this.defaultArbitraryGeneratorBuilder.objectIntrospector(introspector);
+		return this;
+	}
+
 	public GenerateOptionsBuilder plugin(Plugin plugin) {
 		plugin.accept(this);
 		return this;
@@ -294,7 +325,7 @@ public final class GenerateOptionsBuilder {
 				() -> new ArbitraryContainerInfo(0, defaultArbitraryContainerSize)
 			);
 		ArbitraryGenerator defaultArbitraryGenerator =
-			defaultIfNull(this.defaultArbitraryGenerator, () -> GenerateOptions.DEFAULT_ARBITRARY_GENERATOR);
+			defaultIfNull(this.defaultArbitraryGenerator, () -> this.defaultArbitraryGeneratorBuilder.generate());
 
 		return new GenerateOptions(
 			this.arbitraryPropertyGenerators,
@@ -320,5 +351,33 @@ public final class GenerateOptionsBuilder {
 		result.add(value);
 		result.addAll(list);
 		return result;
+	}
+
+	private static class DefaultArbitraryGeneratorBuilder {
+		private ArbitraryIntrospector priorityIntrospector = DefaultArbitraryGenerator.JAVA_INTROSPECTOR;
+		private ArbitraryIntrospector containerIntrospector = DefaultArbitraryGenerator.JAVA_CONTAINER_INTROSPECTOR;
+		private ArbitraryIntrospector objectIntrospector = BeanArbitraryIntrospector.INSTANCE;
+
+		public void priorityIntrospector(ArbitraryIntrospector priorityIntrospector) {
+			this.priorityIntrospector = priorityIntrospector;
+		}
+
+		public void containerIntrospector(ArbitraryIntrospector containerIntrospector) {
+			this.containerIntrospector = containerIntrospector;
+		}
+
+		public void objectIntrospector(ArbitraryIntrospector objectIntrospector) {
+			this.objectIntrospector = objectIntrospector;
+		}
+
+		public ArbitraryGenerator generate() {
+			return new DefaultArbitraryGenerator(
+				Arrays.asList(
+					this.priorityIntrospector,
+					this.containerIntrospector,
+					this.objectIntrospector
+				)
+			);
+		}
 	}
 }
