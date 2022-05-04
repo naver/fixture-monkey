@@ -105,9 +105,7 @@ fun getAnnotatedType(ownerType: AnnotatedType, kProperty: KProperty<*>): Annotat
         override fun getDeclaredAnnotations(): Array<Annotation> = annotationArray
 
         // For compatibility with JDK >= 9. A breaking change in the JDK :-(
-        override fun getAnnotatedOwnerType(): AnnotatedType {
-            TODO("Not yet implemented")
-        }
+        override fun getAnnotatedOwnerType(): AnnotatedType? = null
 
         override fun <T : Annotation?> getAnnotation(annotationClass: Class<T>): T? =
             @Suppress("UNCHECKED_CAST")
