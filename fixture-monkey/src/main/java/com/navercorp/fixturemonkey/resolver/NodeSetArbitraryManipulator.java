@@ -23,6 +23,8 @@ import org.apiguardian.api.API.Status;
 
 import net.jqwik.api.Arbitrary;
 
+import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
+
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 final class NodeSetArbitraryManipulator<T> implements NodeManipulator {
 	private final Arbitrary<T> arbitrary;
@@ -33,6 +35,8 @@ final class NodeSetArbitraryManipulator<T> implements NodeManipulator {
 
 	@Override
 	public void manipulate(ArbitraryNode arbitraryNode) {
+		ArbitraryProperty arbitraryProperty = arbitraryNode.getArbitraryProperty();
+		arbitraryNode.setArbitraryProperty(arbitraryProperty.withNullInject(0.0d));
 		arbitraryNode.setArbitrary(arbitrary);
 	}
 }
