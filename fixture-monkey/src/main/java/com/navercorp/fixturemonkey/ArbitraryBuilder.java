@@ -45,13 +45,13 @@ import net.jqwik.api.Combinators.F3;
 import net.jqwik.api.Combinators.F4;
 
 import com.navercorp.fixturemonkey.arbitrary.AbstractArbitrarySet;
-import com.navercorp.fixturemonkey.arbitrary.ArbitrarySetLazyValue;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryExpression;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryExpressionManipulator;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryNode;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryNullity;
 import com.navercorp.fixturemonkey.arbitrary.ArbitrarySet;
 import com.navercorp.fixturemonkey.arbitrary.ArbitrarySetArbitrary;
+import com.navercorp.fixturemonkey.arbitrary.ArbitrarySetLazyValue;
 import com.navercorp.fixturemonkey.arbitrary.ArbitrarySetPostCondition;
 import com.navercorp.fixturemonkey.arbitrary.ArbitrarySpecAny;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryTraverser;
