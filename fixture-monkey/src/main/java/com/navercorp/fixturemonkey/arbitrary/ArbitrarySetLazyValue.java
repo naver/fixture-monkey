@@ -26,7 +26,6 @@ import net.jqwik.api.Arbitrary;
 
 public final class ArbitrarySetLazyValue<T> extends AbstractArbitrarySet<T> {
 	private final Supplier<T> supplier;
-	private T value;
 	private long limit;
 
 	public ArbitrarySetLazyValue(ArbitraryExpression arbitraryExpression, Supplier<T> supplier, long limit) {
