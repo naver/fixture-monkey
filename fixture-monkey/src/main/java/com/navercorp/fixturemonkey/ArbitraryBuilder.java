@@ -247,7 +247,7 @@ public final class ArbitraryBuilder<T> {
 		return this;
 	}
 
-	public ArbitraryBuilder<T> set(String expression, Supplier<T> supplier) {
+	public ArbitraryBuilder<T> setLazy(String expression, Supplier<T> supplier) {
 		ArbitraryExpression arbitraryExpression = ArbitraryExpression.from(expression);
 		this.builderManipulators.add(new ArbitrarySetLazyValue<>(arbitraryExpression, supplier));
 		return this;
