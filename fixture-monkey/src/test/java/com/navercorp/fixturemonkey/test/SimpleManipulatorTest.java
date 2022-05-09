@@ -859,7 +859,7 @@ class SimpleManipulatorTest {
 	}
 
 	@Property
-	void giveMeSetLazyValue(){
+	void giveMeSetLazyValue() {
 		// given
 		ArbitraryBuilder<String> variable = SUT.giveMeBuilder(String.class);
 		ArbitraryBuilder<String> builder = SUT.giveMeBuilder(String.class)
@@ -873,7 +873,7 @@ class SimpleManipulatorTest {
 	}
 
 	@Property
-	void giveMeSetLazyValueSampleGivesSameValue(){
+	void giveMeSetLazyValueSampleGivesSameValue() {
 		// given
 		ArbitraryBuilder<String> variable = SUT.giveMeBuilder(String.class);
 		ArbitraryBuilder<String> builder = SUT.giveMeBuilder(String.class)
