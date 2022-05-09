@@ -41,10 +41,7 @@ public final class ArbitrarySetLazyValue<T> extends AbstractArbitrarySet<T> {
 
 	@Override
 	public T getValue() {
-		if (value == null) {
-			value = supplier.get();
-		}
-		return value;
+		return supplier.get();
 	}
 
 	@Override
