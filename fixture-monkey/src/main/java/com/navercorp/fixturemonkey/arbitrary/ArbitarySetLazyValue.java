@@ -19,26 +19,31 @@
 package com.navercorp.fixturemonkey.arbitrary;
 
 import java.util.Objects;
+import java.util.function.Supplier;
 
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
 
-public final class ArbitrarySet<T> extends AbstractArbitrarySet<T> {
-	private final T value;
+public final class ArbitarySetLazyValue<T> extends AbstractArbitrarySet<T> {
+	private T value;
+	private final Supplier<T> supplier;
 	private long limit;
 
-	public ArbitrarySet(ArbitraryExpression arbitraryExpression, T value, long limit) {
+	public ArbitarySetLazyValue(ArbitraryExpression arbitraryExpression, Supplier<T> supplier, long limit) {
 		super(arbitraryExpression);
-		this.value = value;
+		this.supplier = supplier;
 		this.limit = limit;
 	}
 
-	public ArbitrarySet(ArbitraryExpression arbitraryExpression, T value) {
-		this(arbitraryExpression, value, Long.MAX_VALUE);
+	public ArbitarySetLazyValue(ArbitraryExpression arbitraryExpression, Supplier<T> supplier) {
+		this(arbitraryExpression, supplier, Long.MAX_VALUE);
 	}
 
 	@Override
 	public T getValue() {
+		if (value == null) {
+			value = supplier.get();
+		}
 		return value;
 	}
 
@@ -46,15 +51,15 @@ public final class ArbitrarySet<T> extends AbstractArbitrarySet<T> {
 	public Arbitrary<T> apply(Arbitrary<T> from) {
 		if (this.limit > 0) {
 			limit--;
-			return Arbitraries.just(value);
+			return Arbitraries.just(getValue());
 		} else {
 			return from;
 		}
 	}
 
 	@Override
-	public ArbitrarySet<T> copy() {
-		return new ArbitrarySet<>(this.getArbitraryExpression(), this.value, this.limit);
+	public ArbitarySetLazyValue<T> copy() {
+		return new ArbitarySetLazyValue<>(this.getArbitraryExpression(), this.supplier, this.limit);
 	}
 
 	@Override
@@ -68,12 +73,12 @@ public final class ArbitrarySet<T> extends AbstractArbitrarySet<T> {
 		if (!super.equals(obj)) {
 			return false;
 		}
-		ArbitrarySet<?> that = (ArbitrarySet<?>)obj;
-		return value.equals(that.value);
+		ArbitarySetLazyValue<?> that = (ArbitarySetLazyValue<?>)obj;
+		return getValue().equals(that.getValue());
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(super.hashCode(), value);
+		return Objects.hash(super.hashCode(), getValue());
 	}
 }
