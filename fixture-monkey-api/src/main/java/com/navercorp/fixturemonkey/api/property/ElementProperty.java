@@ -134,10 +134,10 @@ public final class ElementProperty implements Property {
 
 		Iterable<?> iterable = (Iterable<?>)obj;
 		Iterator<?> iterator = iterable.iterator();
-		int iterableSequence = 0;
+		int iteratorSequence = 0;
 		while (iterator.hasNext()) {
 			Object value = iterator.next();
-			if (iterableSequence == sequence) {
+			if (iteratorSequence == sequence) {
 				return value;
 			}
 		}
