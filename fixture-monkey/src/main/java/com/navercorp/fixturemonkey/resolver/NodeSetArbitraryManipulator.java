@@ -18,14 +18,10 @@
 
 package com.navercorp.fixturemonkey.resolver;
 
-import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.NOT_NULL_INJECT;
-
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import net.jqwik.api.Arbitrary;
-
-import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 final class NodeSetArbitraryManipulator<T> implements NodeManipulator {
