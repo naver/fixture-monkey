@@ -21,7 +21,6 @@ package com.navercorp.fixturemonkey.api.property;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -127,14 +126,22 @@ public final class ElementProperty implements Property {
 		if (!Iterable.class.isAssignableFrom(actualType)) {
 			throw new IllegalArgumentException("given value is not iterable, actual type : " + actualType);
 		}
-		Iterable<?> iterable = (Iterable<?>)obj;
-		Iterator<?> iterator = iterable.iterator();
 
-		List<Object> cachedList = new ArrayList<>();
-		while (iterator.hasNext()) {
-			cachedList.add(iterator.next());
+		if (List.class.isAssignableFrom(actualType)) {
+			List<?> list = (List<?>)obj;
+			return list.get(sequence);
 		}
 
-		return cachedList.get(sequence);
+		Iterable<?> iterable = (Iterable<?>)obj;
+		Iterator<?> iterator = iterable.iterator();
+		int iterableSequence = 0;
+		while (iterator.hasNext()) {
+			Object value = iterator.next();
+			if (iterableSequence == sequence) {
+				return value;
+			}
+		}
+
+		throw new IllegalArgumentException("given element value has no match sequence : " + sequence);
 	}
 }
