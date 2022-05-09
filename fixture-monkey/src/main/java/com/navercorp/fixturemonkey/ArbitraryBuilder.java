@@ -45,7 +45,7 @@ import net.jqwik.api.Combinators.F3;
 import net.jqwik.api.Combinators.F4;
 
 import com.navercorp.fixturemonkey.arbitrary.AbstractArbitrarySet;
-import com.navercorp.fixturemonkey.arbitrary.ArbitarySetLazyValue;
+import com.navercorp.fixturemonkey.arbitrary.ArbitrarySetLazyValue;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryExpression;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryExpressionManipulator;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryNode;
@@ -249,7 +249,7 @@ public final class ArbitraryBuilder<T> {
 
 	public ArbitraryBuilder<T> set(String expression, Supplier<T> supplier) {
 		ArbitraryExpression arbitraryExpression = ArbitraryExpression.from(expression);
-		this.builderManipulators.add(new ArbitarySetLazyValue<>(arbitraryExpression, supplier));
+		this.builderManipulators.add(new ArbitrarySetLazyValue<>(arbitraryExpression, supplier));
 		return this;
 	}
 
