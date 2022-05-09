@@ -59,7 +59,7 @@ public final class EntryArbitraryPropertyGenerator implements ArbitraryPropertyG
 		AnnotatedType valueType = genericsTypes.get(1);
 
 		List<Property> childProperties = new ArrayList<>();
-		for (int index = 0; index < size; index++) {
+		for (int sequence = 0; sequence < size; sequence++) {
 			childProperties.add(
 				new MapEntryElementProperty(
 					property,
@@ -67,12 +67,14 @@ public final class EntryArbitraryPropertyGenerator implements ArbitraryPropertyG
 						property,
 						keyType,
 						null,
+						sequence,
 						0.0d
 					),
 					new ElementProperty(
 						property,
 						valueType,
 						null,
+						sequence,
 						null
 					)
 				)

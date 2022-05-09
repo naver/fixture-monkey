@@ -118,12 +118,13 @@ public final class StreamArbitraryPropertyGenerator implements ArbitraryProperty
 
 		int size = containerInfo.getRandomSize();
 		List<Property> childProperties = new ArrayList<>();
-		for (int index = 0; index < size; index++) {
+		for (int sequence = 0; sequence < size; sequence++) {
 			childProperties.add(
 				new ElementProperty(
 					property,
 					elementAnnotatedType,
-					index,
+					sequence,
+					sequence,
 					0.0d
 				)
 			);
