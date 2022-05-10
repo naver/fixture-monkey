@@ -39,13 +39,7 @@ final class ArbitraryNode {
 	@Nullable
 	private Arbitrary<?> arbitrary;
 
-	private boolean manipulated = false;
-
 	private boolean active = true; // isNull
-
-	private boolean fixed = false;
-
-	private boolean reset = false;
 
 	ArbitraryNode(
 		ArbitraryProperty arbitraryProperty,
@@ -80,16 +74,8 @@ final class ArbitraryNode {
 		return this.arbitrary;
 	}
 
-	public void setArbitrary(Arbitrary<?> arbitrary) {
+	public void setArbitrary(@Nullable Arbitrary<?> arbitrary) {
 		this.arbitrary = arbitrary;
-	}
-
-	public boolean isManipulated() {
-		return this.manipulated;
-	}
-
-	public void setManipulated(boolean manipulated) {
-		this.manipulated = manipulated;
 	}
 
 	public boolean isActive() {
@@ -98,21 +84,5 @@ final class ArbitraryNode {
 
 	public void setActive(boolean active) {
 		this.active = active;
-	}
-
-	public boolean isFixed() {
-		return this.fixed;
-	}
-
-	public void setFixed(boolean fixed) {
-		this.fixed = fixed;
-	}
-
-	public boolean isReset() {
-		return this.reset;
-	}
-
-	public void setReset(boolean reset) {
-		this.reset = reset;
 	}
 }
