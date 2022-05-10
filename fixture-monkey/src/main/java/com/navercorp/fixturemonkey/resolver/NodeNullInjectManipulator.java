@@ -18,21 +18,18 @@
 
 package com.navercorp.fixturemonkey.resolver;
 
-import org.apiguardian.api.API;
-import org.apiguardian.api.API.Status;
+import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 
-import net.jqwik.api.Arbitrary;
+class NodeNullInjectManipulator implements NodeManipulator {
+	private final double nullInject;
 
-@API(since = "0.4.0", status = Status.EXPERIMENTAL)
-final class NodeSetArbitraryManipulator<T> implements NodeManipulator {
-	private final Arbitrary<T> arbitrary;
-
-	NodeSetArbitraryManipulator(Arbitrary<T> arbitrary) {
-		this.arbitrary = arbitrary;
+	public NodeNullInjectManipulator(double nullInject) {
+		this.nullInject = nullInject;
 	}
 
 	@Override
 	public void manipulate(ArbitraryNode arbitraryNode) {
-		arbitraryNode.setArbitrary(arbitrary);
+		ArbitraryProperty arbitraryProperty = arbitraryNode.getArbitraryProperty();
+		arbitraryNode.setArbitraryProperty(arbitraryProperty.withNullInject(nullInject));
 	}
 }
