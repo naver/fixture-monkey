@@ -51,6 +51,7 @@ import com.navercorp.fixturemonkey.arbitrary.ArbitraryNode;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryNullity;
 import com.navercorp.fixturemonkey.arbitrary.ArbitrarySet;
 import com.navercorp.fixturemonkey.arbitrary.ArbitrarySetArbitrary;
+import com.navercorp.fixturemonkey.arbitrary.ArbitrarySetLazyValue;
 import com.navercorp.fixturemonkey.arbitrary.ArbitrarySetPostCondition;
 import com.navercorp.fixturemonkey.arbitrary.ArbitrarySpecAny;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryTraverser;
@@ -243,6 +244,12 @@ public final class ArbitraryBuilder<T> {
 		}
 		ArbitraryExpression arbitraryExpression = ArbitraryExpression.from(expression);
 		this.builderManipulators.add(new ArbitrarySet<>(arbitraryExpression, value));
+		return this;
+	}
+
+	public ArbitraryBuilder<T> setLazy(String expression, Supplier<T> supplier) {
+		ArbitraryExpression arbitraryExpression = ArbitraryExpression.from(expression);
+		this.builderManipulators.add(new ArbitrarySetLazyValue<>(arbitraryExpression, supplier));
 		return this;
 	}
 
