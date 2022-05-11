@@ -670,12 +670,10 @@ public class ArbitraryBuilder<T> {
 	private ArbitraryBuilder<T> apply(ArbitraryApply<T> arbitraryApply) {
 		ArbitraryBuilder<T> toSampleArbitraryBuilder = arbitraryApply.getToSampleArbitraryBuilder();
 		BiConsumer<T, ArbitraryBuilder<T>> builderBiConsumer = arbitraryApply.getBuilderBiConsumer();
-		T sample = toSampleArbitraryBuilder.sample();
-		ArbitrarySet<T> toFixSampled = new ArbitrarySet<>(ArbitraryExpression.from(HEAD_NAME), sample);
-		toSampleArbitraryBuilder.builderManipulators.clear();
-		toSampleArbitraryBuilder.builderManipulators.add(toFixSampled);
-		builderBiConsumer.accept(sample, toSampleArbitraryBuilder);
-		this.apply(toSampleArbitraryBuilder.builderManipulators);
+		T fixedPreApplySampled = toSampleArbitraryBuilder.fixed().sample();
+		builderBiConsumer.accept(fixedPreApplySampled, toSampleArbitraryBuilder);
+		T postApplySampled = toSampleArbitraryBuilder.sample();
+		this.apply(new ArbitrarySet<>(ArbitraryExpression.from(HEAD_NAME), postApplySampled));
 		return this;
 	}
 
