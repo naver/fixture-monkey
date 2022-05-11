@@ -56,7 +56,6 @@ final class ArbitraryTree {
 	List<ArbitraryNode> findAll(ArbitraryExpression arbitraryExpression) {
 		LinkedList<ArbitraryNode> selectedNodes = new LinkedList<>();
 		selectedNodes.add(rootNode);
-		rootNode.setManipulated(true);
 
 		List<Cursor> cursors = arbitraryExpression.toCursors();
 		for (Cursor cursor : cursors) {
