@@ -26,7 +26,7 @@ import org.apiguardian.api.API.Status;
 import net.jqwik.api.Arbitrary;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public class NodeSetLazyManipulator<T> implements NodeManipulator {
+final class NodeSetLazyManipulator<T> implements NodeManipulator {
 	private final Supplier<T> supplier;
 
 	NodeSetLazyManipulator(Supplier<T> supplier) {
