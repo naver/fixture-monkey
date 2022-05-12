@@ -27,7 +27,6 @@ import org.apiguardian.api.API.Status;
 import net.jqwik.api.Arbitraries;
 
 import com.navercorp.fixturemonkey.api.property.Property;
-import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 final class NodeSetLazyDecomposedValueManipulator<T> implements NodeManipulator {
@@ -40,27 +39,7 @@ final class NodeSetLazyDecomposedValueManipulator<T> implements NodeManipulator 
 	@Override
 	public void manipulate(ArbitraryNode arbitraryNode) {
 		T value = valueSupplier.get();
-		Class<?> actualType = Types.getActualType(arbitraryNode.getProperty().getType());
-		if (!actualType.isAssignableFrom(value.getClass())) {
-			throw new IllegalArgumentException(
-				"The value is not of the same type as the property."
-					+ " node type: " + arbitraryNode.getProperty().getType().getTypeName()
-					+ " value type: " + value.getClass().getTypeName()
-			);
-		}
-		setValue(arbitraryNode, value);
-	}
-
-	private void setValue(ArbitraryNode arbitraryNode, Object value) {
-		List<ArbitraryNode> children = arbitraryNode.getChildren();
-		if (children.isEmpty()) {
-			arbitraryNode.setArbitrary(Arbitraries.just(value));
-			return;
-		}
-
-		for (ArbitraryNode child : children) {
-			Property childProperty = child.getProperty();
-			setValue(child, childProperty.getValue(value));
-		}
+		NodeSetDecomposedValueManipulator<T> nodeSetDecomposedValueManipulator = new NodeSetDecomposedValueManipulator<>(value);
+		nodeSetDecomposedValueManipulator.manipulate(arbitraryNode);
 	}
 }

@@ -46,7 +46,7 @@ import com.navercorp.fixturemonkey.validator.ArbitraryValidator;
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class ArbitraryBuilder<T> extends com.navercorp.fixturemonkey.ArbitraryBuilder<T> {
 	private final RootProperty rootProperty;
-	public final List<ArbitraryManipulator> manipulators;
+	private final List<ArbitraryManipulator> manipulators;
 	private final ArbitraryResolver resolver;
 	private final ArbitraryValidator validator;
 	private boolean validOnly = true;

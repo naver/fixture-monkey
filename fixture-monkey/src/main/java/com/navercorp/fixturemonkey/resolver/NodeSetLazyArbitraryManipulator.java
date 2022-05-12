@@ -35,6 +35,8 @@ final class NodeSetLazyArbitraryManipulator<T> implements NodeManipulator {
 
 	@Override
 	public void manipulate(ArbitraryNode arbitraryNode) {
-		arbitraryNode.setArbitrary((Arbitrary<?>)arbitrarySupplier.get());
+		NodeSetArbitraryManipulator<?> nodeSetArbitraryManipulator = new NodeSetArbitraryManipulator<>(
+			(Arbitrary<?>)arbitrarySupplier.get());
+		nodeSetArbitraryManipulator.manipulate(arbitraryNode);
 	}
 }
