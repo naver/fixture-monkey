@@ -24,19 +24,19 @@ void set(){
 ```java
 @Test
 void setExpressionSpec(){
-    // given
-    FixtureMonkey fixture = FixtureMonkey.create();
-    Instant orderedAt = Instant.now().minus(30L, ChronoUnit.DAYS);
+	// given
+	FixtureMonkey fixture = FixtureMonkey.create();
 
-    // when
-    Order actual = fixture.giveMeBuilder(Order.class)
-        .set(new ExpressionSpec()
-                .set("productName", "SALLY BOTTLE")
-                .set("price", 5000L)
-        )
-        .sample();
+	// when
+	Order actual = fixture.giveMeBuilder(Order.class)
+	.set(new ExpressionSpec()
+	.set("productName", "BOTTLE")
+	.set("price", 5000L)
+	)
+	.sample();
 
-    then(actual.orderedAt).isEqualTo(orderedAt);
+	then(actual.getProductName()).isEqualTo("BOTTLE");
+	then(actual.getPrice()).isEqualTo(5000L);
 }   
 ```
 
@@ -118,6 +118,11 @@ void setArbitrary() {
 	
     then(actual.id).isBetween(1, 50);
 }
+```
+**Set by Value vs. Set by Arbitrary**
+Arbitrary로 값을 설정하는 경우에는 하위 필드 값을 제어할 수 없다. 다음 예시를 살펴보자:
+```java
+
 ```
 
 ## 필드 값을 ArbitraryBuilder에서 생성할 객체로 고정하는 연산
