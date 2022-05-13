@@ -4,20 +4,21 @@ linkTitle: "연산"
 weight: 4
 ---
 
-Fixture Monkey는 `Manipulator`를 이용해 `ArbitraryBuilders`를 수정하는 기능을 제공하여 특정 테스트 케이스에 사용할 수 있는 fixture를 만들 수 있도록 돕습니다.
+Fixture Monkey는 `ArbitraryBuilder`를 수정할 수 있는 다양한 연산을 제공하여 특정 테스트 케이스에 사용할 수 있는 fixture를 만들 수 있도록 돕습니다.
 
-`ArbitraryBuilders`는 기본적으로 랜덤한 값을 생성합니다. 하지만 특정 테스트 케이스에 사용하기 위해 fixture를 더 세밀하게 조정하고 싶은 경우가 있을 것입니다. 
-Fixture Monkey는 `ArbitraryBuilders`를 수정할 수 있는 다양한 메소드들을 제공합니다. 다음 예시를 살펴봅시다:
+`ArbitraryBuilder`는 기본적으로 랜덤한 값을 생성합니다. 하지만 특정 테스트 케이스에 사용하기 위해 fixture를 더 세밀하게 조정하고 싶은 경우가 있을 것입니다. 
+그럴때 Fixture Monkey의 연산을 이용하면 `ArbitraryBuilder`를 수정할 수 있습니다. 다음 예시를 살펴봅시다:
 
 ```java
 fixtureMonkey.giveMeBuilder(Person.class)
     .set("city", "Seoul")
 ```
 
-예시에서는 set을 이용해 `Experssion`과 `Value`를 지정해줍니다. builder는 이제 Person 인스턴스를 만들 때 city 필드가 "Seoul"이라는 값을 가지도록 합니다.
-Fixture Monkey는 간단하게 특정 필드에 값을 설정하는 메소드 (*set*)부터 여러 `ArbitraryBuilder` 를 합치는 메소드 (*zip*)까지 `ArbitraryBuilders`를 변경할 수 있는 다양한 함수들을 제공합니다.
+예시에서는 set이라는 연산을 이용해 `Experssion`과 `Value`를 지정해줍니다. builder가 이제 Person 인스턴스를 만들 때 city 필드는 "Seoul"이라는 값을 가지게됩니다.
 
-더 많은 예시는 [다음]({{< relref "/docs/v0.3.x/examples/manipulator/" >}})을 참고해주세요.
+Fixture Monkey는 간단하게 특정 필드에 값을 설정하는 연산 (*set*)부터 여러 `ArbitraryBuilder` 를 합치는 연산 (*zip*)까지 다양한 연산을 제공합니다.
+
+더 많은 연산은 [다음]({{< relref "/docs/v0.3.x/examples/manipulator/" >}})을 참고해주세요.
 
 ## 구성요소
 

@@ -119,9 +119,28 @@ void setArbitrary() {
     then(actual.id).isBetween(1, 50);
 }
 ```
-**Set by Value vs. Set by Arbitrary**
+**- Set by Value vs. Set by Arbitrary**
 
+When a field value is set using an Arbitrary, you cannot control the field value of its subclass. Let's compare the following examples:
+```java
+    // Set by Arbitrary
+    Order order = SUT.giveMeBuilder(Order.class)
+        .set("product", Arbitraries.just(new Product("Apple")))
+        .set("product.name", "Banana")
+        .sample();
+```
 
+```java
+    // Set by Value
+    Order order = SUT.giveMeBuilder(Order.class)
+        .set("product", new Product("Apple"))
+        .set("product.name", "Banana")
+        .sample();
+```
+In the above, product.name of order is "Apple", while in the example below it is "Banana".
+
+This difference is because the field 'product' is set using an Arbitrary in the first case and by value in the second case.
+When using an Arbitrary, the value of "product" gets determined by the Arbitrary. So, even though you modify the field of its subclass, it will be ignored.
 
 ## SetBuilder
 ```java
