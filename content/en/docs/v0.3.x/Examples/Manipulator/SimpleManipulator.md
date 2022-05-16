@@ -24,20 +24,20 @@ void set(){
 ```java
 @Test
 void setExpressionSpec(){
-	// given
-	FixtureMonkey fixture = FixtureMonkey.create();
-
-	// when
-	Order actual = fixture.giveMeBuilder(Order.class)
-	    .set(new ExpressionSpec()
-                .set("productName", "BOTTLE")
-                .set("price", 5000L)
-	    )
-            .sample();
-
-	then(actual.getProductName()).isEqualTo("BOTTLE");
-	then(actual.getPrice()).isEqualTo(5000L);
-}   
+    // given
+    FixtureMonkey fixture = FixtureMonkey.create();
+    
+    // when
+    Order actual = fixture.giveMeBuilder(Order.class)
+        .set(new ExpressionSpec()
+            .set("productName", "BOTTLE")
+            .set("price", 5000L)
+        )
+        .sample();
+    
+    then(actual.getProductName()).isEqualTo("BOTTLE");
+    then(actual.getPrice()).isEqualTo(5000L);
+}
 ```
 
 ## SetRoot
@@ -124,22 +124,22 @@ void setArbitrary() {
 When a field value is set using an Arbitrary, you cannot control the field value of its subclass. Let's compare the following examples:
 ```java
     // Set by Arbitrary
-    Order order = SUT.giveMeBuilder(Order.class)
+    Order order = fixture.giveMeBuilder(Order.class)
         .set("product", Arbitraries.just(new Product("Apple")))
         .set("product.name", "Banana")
         .sample();
 
-	then(order.getProduct().getName()).isEqualTo("Apple");
+    then(order.getProduct().getName()).isEqualTo("Apple");
 ```
 
 ```java
     // Set by Value
-    Order order = SUT.giveMeBuilder(Order.class)
+    Order order = fixture.giveMeBuilder(Order.class)
         .set("product", new Product("Apple"))
         .set("product.name", "Banana")
         .sample();
 
-	then(order.getProduct().getName()).isEqualTo("Banana");
+    then(order.getProduct().getName()).isEqualTo("Banana");
 ```
 In the above, product.name of order is "Apple", while in the example below it is "Banana".
 
@@ -295,4 +295,3 @@ void size() {
 	then(actual.items).hasSizeGreaterThanOrEqualTo(1);
 }
 ```
-

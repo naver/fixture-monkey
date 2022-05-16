@@ -24,20 +24,20 @@ void set(){
 ```java
 @Test
 void setExpressionSpec(){
-	// given
-	FixtureMonkey fixture = FixtureMonkey.create();
+    // given
+    FixtureMonkey fixture = FixtureMonkey.create();
 
-	// when
-	Order actual = fixture.giveMeBuilder(Order.class)
+    // when
+    Order actual = fixture.giveMeBuilder(Order.class)
         .set(new ExpressionSpec()
             .set("productName", "BOTTLE")
             .set("price", 5000L)
-	)
-	.sample();
-
-	then(actual.getProductName()).isEqualTo("BOTTLE");
-	then(actual.getPrice()).isEqualTo(5000L);
-}   
+        )
+        .sample();
+    
+    then(actual.getProductName()).isEqualTo("BOTTLE");
+    then(actual.getPrice()).isEqualTo(5000L);
+    }
 ```
 
 ## 객체를 고정하는 연산
@@ -124,22 +124,22 @@ void setArbitrary() {
 Arbitrary로 값을 설정하는 경우에는 하위 클래스의 필드 값을 제어할 수 없습니다. 다음 두 예시를 비교해봅시다:
 ```java
     // Set by Arbitrary
-    Order order = SUT.giveMeBuilder(Order.class)
+    Order order = fixture.giveMeBuilder(Order.class)
         .set("product", Arbitraries.just(new Product("Apple")))
         .set("product.name", "Banana")
         .sample();
 
-	then(order.getProduct().getName()).isEqualTo("Apple");
+    then(order.getProduct().getName()).isEqualTo("Apple");
 ```
 
 ```java
     // Set by Value
-    Order order = SUT.giveMeBuilder(Order.class)
+    Order order = fixture.giveMeBuilder(Order.class)
         .set("product", new Product("Apple"))
         .set("product.name", "Banana")
         .sample();
 
-	then(order.getProduct().getName()).isEqualTo("Banana");
+    then(order.getProduct().getName()).isEqualTo("Banana");
 ```
 order의 product.name 값은 Arbitrary로 값을 설정한 위의 예시에서는 "Apple"이고, 직접 값을 설정한 아래 예시에서 "Banana"입니다.
 
@@ -295,4 +295,3 @@ void size() {
 	then(actual.items).hasSizeGreaterThanOrEqualTo(1);
 }
 ```
-
