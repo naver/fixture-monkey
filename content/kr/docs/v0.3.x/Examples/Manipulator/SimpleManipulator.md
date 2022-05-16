@@ -31,8 +31,8 @@ void setExpressionSpec(){
     // when
     Order actual = fixture.giveMeBuilder(Order.class)
         .set(new ExpressionSpec()
-                .set("productName", "SALLY BOTTLE")
-                .set("price", 5000L)
+            .set("productName", "SALLY BOTTLE")
+            .set("price", 5000L)
         )
         .sample();
 
