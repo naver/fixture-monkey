@@ -6,7 +6,7 @@ weight: 4
 
 Fixture Monkey uses `Manipulators` to modify `ArbitraryBuilders` to make fixtures for a certain test case.
 
-`ArbitraryBuilders` fill in random values by default. However, you might want to make custom fixtures that fits just right for your test case.
+`ArbitraryBuilders` fill in random values by default. However, you might want to make custom fixtures that fit just right for your test case.
 Fixture Monkey provides several methods to modify `ArbitraryBuilders` as you want. Have a look at the following example:
 
 ```java

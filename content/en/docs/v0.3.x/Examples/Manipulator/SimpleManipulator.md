@@ -29,11 +29,11 @@ void setExpressionSpec(){
 
 	// when
 	Order actual = fixture.giveMeBuilder(Order.class)
-	.set(new ExpressionSpec()
-        .set("productName", "BOTTLE")
-        .set("price", 5000L)
-	)
-	.sample();
+	    .set(new ExpressionSpec()
+            .set("productName", "BOTTLE")
+            .set("price", 5000L)
+	    )
+	    .sample();
 
 	then(actual.getProductName()).isEqualTo("BOTTLE");
 	then(actual.getPrice()).isEqualTo(5000L);
@@ -128,6 +128,8 @@ When a field value is set using an Arbitrary, you cannot control the field value
         .set("product", Arbitraries.just(new Product("Apple")))
         .set("product.name", "Banana")
         .sample();
+
+	then(order.getProduct().getName()).isEqualTo("Apple");
 ```
 
 ```java
@@ -136,6 +138,8 @@ When a field value is set using an Arbitrary, you cannot control the field value
         .set("product", new Product("Apple"))
         .set("product.name", "Banana")
         .sample();
+
+	then(order.getProduct().getName()).isEqualTo("Banana");
 ```
 In the above, product.name of order is "Apple", while in the example below it is "Banana".
 

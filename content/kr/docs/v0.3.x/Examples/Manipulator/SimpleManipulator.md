@@ -29,11 +29,11 @@ void setExpressionSpec(){
 
 	// when
 	Order actual = fixture.giveMeBuilder(Order.class)
-	.set(new ExpressionSpec()
-	.set("productName", "BOTTLE")
-	.set("price", 5000L)
-	)
-	.sample();
+        .set(new ExpressionSpec()
+            .set("productName", "BOTTLE")
+            .set("price", 5000L)
+	    )
+	    .sample();
 
 	then(actual.getProductName()).isEqualTo("BOTTLE");
 	then(actual.getPrice()).isEqualTo(5000L);
@@ -128,6 +128,8 @@ Arbitrary로 값을 설정하는 경우에는 하위 클래스의 필드 값을 
         .set("product", Arbitraries.just(new Product("Apple")))
         .set("product.name", "Banana")
         .sample();
+
+	then(order.getProduct().getName()).isEqualTo("Apple");
 ```
 
 ```java
@@ -136,6 +138,8 @@ Arbitrary로 값을 설정하는 경우에는 하위 클래스의 필드 값을 
         .set("product", new Product("Apple"))
         .set("product.name", "Banana")
         .sample();
+
+	then(order.getProduct().getName()).isEqualTo("Banana");
 ```
 order의 product.name 값은 Arbitrary로 값을 설정한 위의 예시에서는 "Apple"이고, 직접 값을 설정한 아래 예시에서 "Banana"입니다.
 
