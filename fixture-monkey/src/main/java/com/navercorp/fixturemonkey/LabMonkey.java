@@ -60,16 +60,9 @@ public class LabMonkey extends FixtureMonkey {
 
 	@Override
 	public <T> ArbitraryBuilder<T> giveMeBuilder(Class<T> type) {
-		return new ArbitraryBuilder<>(
-			new RootProperty(toAnnotatedType(type)),
-			new ArrayList<>(),
-			new ArbitraryResolver(
-				traverser,
-				manipulatorOptimizer,
-				generateOptions
-			),
-			this.validator
-		);
+		TypeReference<T> typeReference = new TypeReference<T>(type) {
+		};
+		return giveMeBuilder(typeReference);
 	}
 
 	@Override
