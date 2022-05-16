@@ -32,7 +32,7 @@ void setExpressionSpec(){
         .set(new ExpressionSpec()
             .set("productName", "BOTTLE")
             .set("price", 5000L)
-	    )
+	)
 	.sample();
 
 	then(actual.getProductName()).isEqualTo("BOTTLE");
