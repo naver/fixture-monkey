@@ -4,6 +4,13 @@ title: "Release Notes"
 linkTitle: "Release Notes"
 weight: 8
 ---
+### 0.3.4
+* Add `setLazy` for setting values lazily using lambda
+* Fix Arbitrary generation error when using a class without package (JDK 8)
+
+### 0.3.3
+* Remove warning when using `addAnnotatedArbitraryGenerator`
+* Fix OOM when annotation `@Size` max is empty
 
 ### 0.3.2
 * Add set ExpressionSpec

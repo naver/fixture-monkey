@@ -5,6 +5,10 @@ linkTitle: "Release Notes"
 weight: 8
 ---
 
+### 0.3.4
+
+### 0.3.3
+
 ### 0.3.2
 * 연산 set에 파라미터로 ExpressionSpec을 지원합니다.
 * QueueBuilder를 추가하여 큐 구현체를 생성할 수 있습니다.
