@@ -18,9 +18,6 @@
 
 package com.navercorp.fixturemonkey;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedType;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 import org.apiguardian.api.API;
@@ -77,29 +74,5 @@ public class LabMonkey extends FixtureMonkey {
 			),
 			this.validator
 		);
-	}
-
-	private <T> AnnotatedType toAnnotatedType(Class<T> type) {
-		return new AnnotatedType() {
-			@Override
-			public Type getType() {
-				return type;
-			}
-
-			@Override
-			public <A extends Annotation> A getAnnotation(Class<A> annotationClass) {
-				return null;
-			}
-
-			@Override
-			public Annotation[] getAnnotations() {
-				return new Annotation[0];
-			}
-
-			@Override
-			public Annotation[] getDeclaredAnnotations() {
-				return new Annotation[0];
-			}
-		};
 	}
 }
