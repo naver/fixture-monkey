@@ -4,9 +4,24 @@ linkTitle: "Manipulator"
 weight: 4
 ---
 
+Fixture Monkey uses `Manipulators` to modify `ArbitraryBuilders` to make fixtures for a certain test case.
+
+`ArbitraryBuilders` fill in random values by default. However, you might want to make custom fixtures that fit just right for your test case.
+Fixture Monkey provides several methods to modify `ArbitraryBuilders` as you want. Have a look at the following example:
+
+```java
+fixtureMonkey.giveMeBuilder(Person.class)
+    .set("city", "Seoul")
+```
+
+This example shows how to set a builder with an `Experssion` and `Value` to make it return a Person instance which has a city field with a value of "Seoul".
+
+Fixture Monkey supports a wide range of functions from simply setting a certain field (*set*) to combining `ArbitraryBuilder` instances (*zip*). 
+
+Check out [Examples]({{< relref "/docs/v0.3.x/examples/manipulator/" >}}) for more information.
+
 
 ## Component
-
 - Expression
 - Value or Filter
 - Limit

@@ -24,19 +24,19 @@ void set(){
 ```java
 @Test
 void setExpressionSpec(){
-    // given
-    FixtureMonkey fixture = FixtureMonkey.create();
-    Instant orderedAt = Instant.now().minus(30L, ChronoUnit.DAYS);
+	// given
+	FixtureMonkey fixture = FixtureMonkey.create();
 
-    // when
-    Order actual = fixture.giveMeBuilder(Order.class)
+	// when
+	Order actual = fixture.giveMeBuilder(Order.class)
         .set(new ExpressionSpec()
-                .set("productName", "SALLY BOTTLE")
-                .set("price", 5000L)
-        )
-        .sample();
+            .set("productName", "BOTTLE")
+            .set("price", 5000L)
+	)
+	.sample();
 
-    then(actual.orderedAt).isEqualTo(orderedAt);
+	then(actual.getProductName()).isEqualTo("BOTTLE");
+	then(actual.getPrice()).isEqualTo(5000L);
 }   
 ```
 
@@ -119,6 +119,32 @@ void setArbitrary() {
     then(actual.id).isBetween(1, 50);
 }
 ```
+**- Set by Value vs. Set by Arbitrary**
+
+Arbitrary로 값을 설정하는 경우에는 하위 클래스의 필드 값을 제어할 수 없습니다. 다음 두 예시를 비교해봅시다:
+```java
+    // Set by Arbitrary
+    Order order = SUT.giveMeBuilder(Order.class)
+        .set("product", Arbitraries.just(new Product("Apple")))
+        .set("product.name", "Banana")
+        .sample();
+
+	then(order.getProduct().getName()).isEqualTo("Apple");
+```
+
+```java
+    // Set by Value
+    Order order = SUT.giveMeBuilder(Order.class)
+        .set("product", new Product("Apple"))
+        .set("product.name", "Banana")
+        .sample();
+
+	then(order.getProduct().getName()).isEqualTo("Banana");
+```
+order의 product.name 값은 Arbitrary로 값을 설정한 위의 예시에서는 "Apple"이고, 직접 값을 설정한 아래 예시에서 "Banana"입니다.
+
+위의 예시에서는 상위 클래스인 product에 설정한 Arbitrary 값이 product를 결정하기 때문에 하위 필드 값을 변경해도 반영되지 않습니다.
+반대로, 아래 예시에서는 직접 값을 설정해주고 있어서 product.name이 "Apple"에서 "Banana"로 변경될 수 있습니다.
 
 ## 필드 값을 ArbitraryBuilder에서 생성할 객체로 고정하는 연산
 ```java

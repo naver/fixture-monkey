@@ -22,7 +22,7 @@ void expressionSpec() {
         .spec(initialOrderSpec)
         .sample();
     
-    then(actual.getPrice()).isEqaulTo(10L);
+    then(actual.getPrice()).isEqualTo(10L);
 }
 ```
 
