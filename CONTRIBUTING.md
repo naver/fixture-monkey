@@ -5,6 +5,33 @@
 This project is governed by the [Code of Conduct](./CODE_OF_CONDUCT.md). By participating you are expected to uphold
 this code. Please report unacceptable behavior to [issue](https://github.com/naver/fixture-monkey/issues).
 
+## Build from source
+
+Get the code.
+
+```shell
+git clone git@github.com:naver/fixture-monkey.git
+cd fixture-monkey
+```
+
+Build from the Command Line.
+
+```shell
+./gradlew build
+```
+
+Run all checks.
+
+```shell
+./gradlew check
+```
+
+Install to local Maven repository.
+
+```shell
+./gradlew publishToMavenLocal
+```
+
 ## How to submit Pull Requests
 
 > Either an issue title or a PR title should be written in English, content could be written in Korean or English
