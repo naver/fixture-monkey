@@ -9,7 +9,7 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-final class NodeSizeManipulator implements NodeManipulator {
+public final class NodeSizeManipulator implements NodeManipulator {
 	private final ArbitraryTraverser traverser;
 	@Nullable
 	private final Integer minSize;

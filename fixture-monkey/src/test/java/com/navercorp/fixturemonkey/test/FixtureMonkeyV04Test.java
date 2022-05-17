@@ -19,6 +19,7 @@
 package com.navercorp.fixturemonkey.test;
 
 import static org.assertj.core.api.BDDAssertions.then;
+import static org.assertj.core.api.BDDAssertions.thenThrownBy;
 
 import net.jqwik.api.Property;
 
@@ -50,5 +51,82 @@ class FixtureMonkeyV04Test {
 		// then
 		then(actual.getList()).isNotNull();
 		then(actual.getMap()).isNotNull();
+	}
+
+	@Property
+	void sizeZero() {
+		// when
+		ComplexObject actual = SUT.giveMeBuilder(ComplexObject.class)
+			.size("strList", 0)
+			.sample();
+
+		// then
+		then(actual.getStrList()).hasSize(0);
+	}
+
+	@Property
+	void size() {
+		// when
+		ComplexObject actual = SUT.giveMeBuilder(ComplexObject.class)
+			.size("strList", 10)
+			.sample();
+
+		// then
+		then(actual.getStrList()).hasSize(10);
+	}
+
+	@Property
+	void sizeMinMax() {
+		// when
+		ComplexObject actual = SUT.giveMeBuilder(ComplexObject.class)
+			.size("strList", 3, 8)
+			.sample();
+
+		// then
+		then(actual.getStrList()).hasSizeBetween(3, 8);
+	}
+
+	@Property
+	void sizeMinIsBiggerThanMax() {
+		// when
+		thenThrownBy(() ->
+			SUT.giveMeBuilder(ComplexObject.class)
+				.size("strList", 5, 1)
+				.sample()
+		).isExactlyInstanceOf(IllegalArgumentException.class)
+			.hasMessageContaining("should be min > max");
+	}
+
+	@Property
+	void minSize() {
+		// when
+		ComplexObject actual = SUT.giveMeBuilder(ComplexObject.class)
+			.minSize("strList", 10)
+			.sample();
+
+		// then
+		then(actual.getStrList()).hasSizeGreaterThanOrEqualTo(10);
+	}
+
+	@Property
+	void maxSize() {
+		// when
+		ComplexObject actual = SUT.giveMeBuilder(ComplexObject.class)
+			.maxSize("strList", 10)
+			.sample();
+
+		// then
+		then(actual.getStrList()).hasSizeLessThanOrEqualTo(10);
+	}
+
+	@Property
+	void maxSizeZero() {
+		// when
+		ComplexObject actual = SUT.giveMeBuilder(ComplexObject.class)
+			.maxSize("strList", 0)
+			.sample();
+
+		// then
+		then(actual.getStrList()).hasSizeLessThanOrEqualTo(0);
 	}
 }

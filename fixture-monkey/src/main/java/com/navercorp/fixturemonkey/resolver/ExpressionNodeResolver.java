@@ -26,10 +26,10 @@ import org.apiguardian.api.API.Status;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryExpression;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-final class ExpressionNodeResolver implements NodeResolver {
+public final class ExpressionNodeResolver implements NodeResolver {
 	private final ArbitraryExpression arbitraryExpression;
 
-	ExpressionNodeResolver(ArbitraryExpression arbitraryExpression) {
+	public ExpressionNodeResolver(ArbitraryExpression arbitraryExpression) {
 		this.arbitraryExpression = arbitraryExpression;
 	}
 
