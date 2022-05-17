@@ -18,6 +18,8 @@
 
 package com.navercorp.fixturemonkey.resolver;
 
+import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.NOT_NULL_INJECT;
+
 import java.util.List;
 
 import org.apiguardian.api.API;
@@ -29,7 +31,7 @@ import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-final class NodeSetDecomposedValueManipulator<T> implements NodeManipulator {
+public final class NodeSetDecomposedValueManipulator<T> implements NodeManipulator {
 	private final T value;
 
 	public NodeSetDecomposedValueManipulator(T value) {
@@ -51,11 +53,13 @@ final class NodeSetDecomposedValueManipulator<T> implements NodeManipulator {
 
 	private void setValue(ArbitraryNode arbitraryNode, Object value) {
 		List<ArbitraryNode> children = arbitraryNode.getChildren();
-		if (children.isEmpty()) {
+		arbitraryNode.setArbitraryProperty(arbitraryNode.getArbitraryProperty().withNullInject(NOT_NULL_INJECT));
+		if (children.isEmpty() || value == null) {
 			arbitraryNode.setArbitrary(Arbitraries.just(value));
 			return;
 		}
 
+		// TODO: if container is decomposed, should set minSize to given container value
 		for (ArbitraryNode child : children) {
 			Property childProperty = child.getProperty();
 			setValue(child, childProperty.getValue(value));

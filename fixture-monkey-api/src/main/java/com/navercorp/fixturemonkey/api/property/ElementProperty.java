@@ -123,6 +123,10 @@ public final class ElementProperty implements Property {
 	@Override
 	public Object getValue(Object obj) {
 		Class<?> actualType = Types.getActualType(obj.getClass());
+		if (Optional.class.isAssignableFrom(actualType)) {
+			return ((Optional<?>)obj).orElse(null);
+		}
+
 		if (!Iterable.class.isAssignableFrom(actualType)) {
 			throw new IllegalArgumentException("given value is not iterable, actual type : " + actualType);
 		}

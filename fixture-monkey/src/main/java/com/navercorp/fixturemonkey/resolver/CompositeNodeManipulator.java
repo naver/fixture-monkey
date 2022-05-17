@@ -21,7 +21,7 @@ package com.navercorp.fixturemonkey.resolver;
 import java.util.Arrays;
 import java.util.List;
 
-final class CompositeNodeManipulator implements NodeManipulator {
+public final class CompositeNodeManipulator implements NodeManipulator {
 	private final List<NodeManipulator> manipulators;
 
 	public CompositeNodeManipulator(NodeManipulator... manipulators) {
