@@ -20,46 +20,34 @@ package com.navercorp.fixturemonkey.test;
 
 import static org.assertj.core.api.BDDAssertions.then;
 
-import java.util.Collections;
-
-import net.jqwik.api.Arbitrary;
 import net.jqwik.api.Property;
 
-import com.navercorp.fixturemonkey.api.option.GenerateOptions;
-import com.navercorp.fixturemonkey.api.property.RootProperty;
+import com.navercorp.fixturemonkey.LabMonkey;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
-import com.navercorp.fixturemonkey.builder.ArbitraryBuilder;
-import com.navercorp.fixturemonkey.resolver.ArbitraryResolver;
-import com.navercorp.fixturemonkey.resolver.ArbitraryTraverser;
-import com.navercorp.fixturemonkey.resolver.NoneManipulatorOptimizer;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.ComplexObject;
-import com.navercorp.fixturemonkey.validator.DefaultArbitraryValidator;
 
 class FixtureMonkeyV04Test {
+	private static final LabMonkey SUT = LabMonkey.labMonkey();
+
 	@Property
-	void sample() {
-		// given
-		GenerateOptions generateOptions = GenerateOptions.DEFAULT_GENERATE_OPTIONS;
-		ArbitraryResolver resolver = new ArbitraryResolver(
-			new ArbitraryTraverser(generateOptions),
-			new NoneManipulatorOptimizer(),
-			generateOptions
-		);
-		TypeReference<ComplexObject> typeReference = new TypeReference<ComplexObject>() {
+	void sampleWithType() {
+		// when
+		ComplexObject actual = SUT.giveMeBuilder(ComplexObject.class).sample();
+
+		// then
+		then(actual.getList()).isNotNull();
+		then(actual.getMap()).isNotNull();
+	}
+
+	@Property
+	void sampleWithTypeReference() {
+		TypeReference<ComplexObject> type = new TypeReference<ComplexObject>() {
 		};
 
-		ArbitraryBuilder<ComplexObject> arbitraryBuilder = new ArbitraryBuilder<>(
-			new RootProperty(typeReference.getAnnotatedType()),
-			Collections.emptyList(),
-			resolver,
-			new DefaultArbitraryValidator()
-		);
-
-		Arbitrary<ComplexObject> sut = arbitraryBuilder.build();
-
 		// when
-		ComplexObject actual = sut.sample();
+		ComplexObject actual = SUT.giveMeBuilder(type).sample();
 
+		// then
 		then(actual.getList()).isNotNull();
 		then(actual.getMap()).isNotNull();
 	}

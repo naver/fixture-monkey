@@ -59,7 +59,9 @@ public class FixtureMonkey {
 		this.validator = validator;
 		this.generatorMap = generatorMap;
 		this.arbitraryCustomizers = arbitraryCustomizers;
-		options.applyArbitraryBuilders(this);
+		if (options != null) {
+			options.applyArbitraryBuilders(this);
+		}
 	}
 
 	/**

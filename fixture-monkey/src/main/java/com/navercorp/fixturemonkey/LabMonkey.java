@@ -18,26 +18,61 @@
 
 package com.navercorp.fixturemonkey;
 
+import java.util.ArrayList;
+
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import com.navercorp.fixturemonkey.api.option.GenerateOptions;
+import com.navercorp.fixturemonkey.api.property.RootProperty;
+import com.navercorp.fixturemonkey.api.type.TypeReference;
+import com.navercorp.fixturemonkey.builder.ArbitraryBuilder;
+import com.navercorp.fixturemonkey.resolver.ArbitraryResolver;
+import com.navercorp.fixturemonkey.resolver.ArbitraryTraverser;
+import com.navercorp.fixturemonkey.resolver.ManipulatorOptimizer;
 import com.navercorp.fixturemonkey.validator.ArbitraryValidator;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public class LabMonkey extends FixtureMonkey {
 	private final GenerateOptions generateOptions;
+	private final ArbitraryTraverser traverser;
+	private final ManipulatorOptimizer manipulatorOptimizer;
 	private final ArbitraryValidator validator;
 
 	@SuppressFBWarnings("NP_NULL_PARAM_DEREF_NONVIRTUAL")
 	public LabMonkey(
 		GenerateOptions generateOptions,
+		ArbitraryTraverser traverser,
+		ManipulatorOptimizer manipulatorOptimizer,
 		ArbitraryValidator validator
 	) {
 		super(null, null, null, null, null);
 		this.generateOptions = generateOptions;
+		this.traverser = traverser;
+		this.manipulatorOptimizer = manipulatorOptimizer;
 		this.validator = validator;
+	}
+
+	@Override
+	public <T> ArbitraryBuilder<T> giveMeBuilder(Class<T> type) {
+		TypeReference<T> typeReference = new TypeReference<T>(type) {
+		};
+		return giveMeBuilder(typeReference);
+	}
+
+	@Override
+	public <T> ArbitraryBuilder<T> giveMeBuilder(TypeReference<T> type) {
+		return new ArbitraryBuilder<>(
+			new RootProperty(type.getAnnotatedType()),
+			new ArrayList<>(),
+			new ArbitraryResolver(
+				traverser,
+				manipulatorOptimizer,
+				generateOptions
+			),
+			this.validator
+		);
 	}
 }
