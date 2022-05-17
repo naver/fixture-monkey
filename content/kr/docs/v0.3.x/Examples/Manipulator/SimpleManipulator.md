@@ -16,7 +16,7 @@ void set(){
         .set("orderedAt", orderedAt)
         .sample();
 
-    then(actual.orderedAt).isEqualTo(orderedAt);
+    then(actual.getOrderedAt()).isEqualTo(orderedAt);
 }   
 ```
 
@@ -77,13 +77,13 @@ void setRoot(){
 void setNull() {
     // given
     FixtureMonkey fixture = FixtureMonkey.create();
-	
+    
     // when
     Order actual = fixture.giveMeBuilder(Order.class)
         .setNull("sellerEmail")
         .sample();
 
-    then(actual.sellerEmail).isNull();
+    then(actual.getSellerEmail()).isNull();
 }
 ```
 
@@ -113,10 +113,10 @@ void setArbitrary() {
 
     // when
     Order actual = fixture.giveMeBuilder(Order.class)
-        .set("id", Arbitraries.integers().between(1, 50))
+        .set("id", Arbitraries.longs().between(1, 50))
         .sample();
-	
-    then(actual.id).isBetween(1, 50);
+    
+    then(actual.getId()).isBetween(1L, 50L);
 }
 ```
 **- Set by Value vs. Set by Arbitrary**
@@ -152,14 +152,14 @@ order의 product.name 값은 Arbitrary로 값을 설정한 위의 예시에서�
 void setBuilder() {
     // given
     FixtureMonkey fixture = FixtureMonkey.create();
-    ArbitraryBuilder<String> idBuilder = fixture.giveMeBuilder(String.class);
+    ArbitraryBuilder<String> orderNoBuilder = fixture.giveMeBuilder(String.class);
     
     // when
     Order actual = fixture.giveMeBuilder(Order.class)
-        .setBuilder("id", idBuilder)
+        .setBuilder("orderNo", orderNoBuilder)
         .sample();
-	
-    then(actual.id).isNotNull();
+    
+    then(actual.getOrderNo()).isNotNull();
 }
 ```
 
@@ -173,11 +173,11 @@ void setPostCondition() {
     // when
     Order actual = fixture.giveMeBuilder(Order.class)
         .set("id", Arbitraries.longs().between(-1, 1)) // not affected by postCondition 
-	    .set("id", Arbitraries.longs().between(10, 15)) // affected by postCondition
-	    .setPostCondition("id", Long.class, it -> 0 <= it && it <= 10)
-	    .sample();
+        .set("id", Arbitraries.longs().between(10, 15)) // affected by postCondition
+        .setPostCondition("id", Long.class, it -> 0 <= it && it <= 10)
+        .sample();
 
-    then(actual.id).isEqualTo(10);
+    then(actual.getId()).isEqualTo(10);
 }
 ```
 `setPostCondition`는 필드의 후행조건을 선언합니다. 여러 번의 고정 연산을 적용한 경우 마지막으로 고정한 연산에 후행조건을 적용합니다.
@@ -191,10 +191,10 @@ void setPostConditionRoot() {
 
     // when
     String actual = fixture.giveMeBuilder(String.class)
-	    .setPostCondition(it -> it.length() > 5)
-	    .sample();
+        .setPostCondition(it -> it.length() > 5)
+        .sample();
 
-	then(actual).hasSizeGreaterThan(5);
+    then(actual).hasSizeGreaterThan(5);
 }
 ```
 
@@ -206,10 +206,10 @@ void setPostConditionRoot() {
 
     // when
     String actual = fixture.giveMeBuilder(String.class)
-	    .setPostCondition("$", String.class, it -> it.length() > 5)
-	    .sample();
+        .setPostCondition("$", String.class, it -> it.length() > 5)
+        .sample();
 
-	then(actual).hasSizeGreaterThan(5);
+    then(actual).hasSizeGreaterThan(5);
 }
 ```
 
@@ -220,7 +220,7 @@ void customize() {
     // given
     FixtureMonkey fixture = FixtureMonkey.create();
     Instant orderedAt = Instant.now().minus(30L, ChronoUnit.DAYS);
-	
+    
     // when
     Order actual = fixture.giveMeBuilder(Order.class)
         .customize(Order.class, o -> {
@@ -229,7 +229,7 @@ void customize() {
         })
         .sample();
 
-    then(actual.orderedAt).isEqualTo(orderedAt);
+    then(actual.getOrderedAt()).isEqualTo(orderedAt);
 }
 ```
 
@@ -237,30 +237,30 @@ void customize() {
 ```java
 @Test
 void size() {	
-	// given
-	FixtureMonkey fixture = FixtureMonkey.create();
+    // given
+    FixtureMonkey fixture = FixtureMonkey.create();
 
-	// when
-	Order actual = fixture.giveMeBuilder(Order.class)
-		.size("items", 5)
-		.sample();
-	
-	then(actual.items).hasSize(5);
+    // when
+    Order actual = fixture.giveMeBuilder(Order.class)
+        .size("items", 5)
+        .sample();
+    
+    then(actual.getItems()).hasSize(5);
 }
 ```
 
 ```java
 @Test
 void size() {	
-	// given
-	FixtureMonkey fixture = FixtureMonkey.create();
+    // given
+    FixtureMonkey fixture = FixtureMonkey.create();
 
-	// when
-	Order actual = fixture.giveMeBuilder(Order.class)
-		.size("items", 1, 5)
-		.sample();
-	
-	then(actual.items).hasSizeBetween(1, 5);
+    // when
+    Order actual = fixture.giveMeBuilder(Order.class)
+        .size("items", 1, 5)
+        .sample();
+    
+    then(actual.getItems()).hasSizeBetween(1, 5);
 }
 ```
 
@@ -268,15 +268,15 @@ void size() {
 ```java
 @Test
 void size() {	
-	// given
-	FixtureMonkey fixture = FixtureMonkey.create();
+    // given
+    FixtureMonkey fixture = FixtureMonkey.create();
 
-	// when
-	Order actual = fixture.giveMeBuilder(Order.class)
-		.maxSize("items", 5)
-		.sample();
-	
-	then(actual.items).hasSizeLessThanOrEqualTo(5);
+    // when
+    Order actual = fixture.giveMeBuilder(Order.class)
+        .maxSize("items", 5)
+        .sample();
+    
+    then(actual.getItems()).hasSizeLessThanOrEqualTo(5);
 }
 ```
 
@@ -284,14 +284,14 @@ void size() {
 ```java
 @Test
 void size() {	
-	// given
-	FixtureMonkey fixture = FixtureMonkey.create();
+    // given
+    FixtureMonkey fixture = FixtureMonkey.create();
 
-	// when
-	Order actual = fixture.giveMeBuilder(Order.class)
-		.minSize("items", 1)
-		.sample();
-	
-	then(actual.items).hasSizeGreaterThanOrEqualTo(1);
+    // when
+    Order actual = fixture.giveMeBuilder(Order.class)
+        .minSize("items", 1)
+        .sample();
+    
+    then(actual.getItems()).hasSizeGreaterThanOrEqualTo(1);
 }
 ```

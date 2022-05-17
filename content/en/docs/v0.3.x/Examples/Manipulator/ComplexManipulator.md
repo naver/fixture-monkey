@@ -18,7 +18,7 @@ void manipulateExistingInstance() {
         .set("quantity", 1)
         .sample();
     
-    then(actual.quantity).isEqualTo(1);
+    then(actual.getQuantity()).isEqualTo(1);
 }
 ```
 
@@ -26,17 +26,17 @@ void manipulateExistingInstance() {
 ```java
 @Test
 void map() {
-	// given
-	FixtureMonkey fixture = FixtureMonkey.create();
+    // given
+    FixtureMonkey fixture = FixtureMonkey.create();
 
-	// when
-	Order actual = fixture.giveMeBuilder(RegisterOrder.class)
-		.map(it -> {
-			Order tempOrder = new Order();
-			tempOrder.setOrderNo(it.getOrderNo());
-			return tempOrder;
-		})
-		.sample();
+    // when
+    Order actual = fixture.giveMeBuilder(RegisterOrder.class)
+        .map(it -> {
+            Order tempOrder = fixture.giveMeOne(Order.class);
+            tempOrder.setOrderNo(it.getOrderNo());
+            return tempOrder;
+        })
+        .sample();
 }
 ```
 
@@ -44,19 +44,19 @@ void map() {
 ```java
 @Test
 void zip(){
-	// given
-	FixtureMonkey fixture = FixtureMonkey.create();
-	ArbitraryBuilder<String> stringArbitraryBuilder = fixture.giveMeBuilder(String.class);
-	ArbitraryBuilder<Integer> integerArbitraryBuilder = fixture.giveMeBuilder(Integer.class);
-	
-	// when
-	ArbitraryBuilder<String> actual = ArbitraryBuilders.zip(
-		stringArbitraryBuilder,
-		integerArbitraryBuilder,
-		(integer, string) -> integer + ". " + string
-	);
-	
-	then(actual.sample()).contains(".");
+    // given
+    FixtureMonkey fixture = FixtureMonkey.create();
+    ArbitraryBuilder<String> stringArbitraryBuilder = fixture.giveMeBuilder(String.class);
+    ArbitraryBuilder<Integer> integerArbitraryBuilder = fixture.giveMeBuilder(Integer.class);
+    
+    // when
+    ArbitraryBuilder<String> actual = ArbitraryBuilders.zip(
+        stringArbitraryBuilder,
+        integerArbitraryBuilder,
+        (string, integer) -> integer + ". " + string
+    );
+    
+    then(actual.sample()).contains(".");
 }
 ```
 
@@ -64,19 +64,19 @@ void zip(){
 ```java
 @Test
 void acceptIf() {
-	// given
-	FixtureMonkey fixture = FixtureMonkey.create();
+    // given
+    FixtureMonkey fixture = FixtureMonkey.create();
 
-	// when
-	Order actual = fixture.giveMeBuilder(Order.class)
-		.set("memberName", "seongahjo")
-		.acceptIf(it -> it.memberName.equals("BROWN"),
-			builder -> builder
-				.set("memberNo", 20)
-		)
-		.sample();
+    // when
+    Order actual = fixture.giveMeBuilder(Order.class)
+        .set("productName", "Apple")
+        .acceptIf(it -> it.getProductName().equals("Apple"),
+            builder -> builder
+                .set("productId", 100L)
+        )
+        .sample();
 
-	then(actual.memberNo).isEqualTo(20);
+    then(actual.getProductId()).isEqualTo(100L);
 }
 
 ```
@@ -85,15 +85,15 @@ void acceptIf() {
 ```java
 @Test
 void fixed() {	
-	// given
-	FixtureMonkey fixture = FixtureMonkey.create();
-	ArbitraryBuilder<Order> orderBuilder = fixture.giveMeBuilder(Order.class)
+    // given
+    FixtureMonkey fixture = FixtureMonkey.create();
+    ArbitraryBuilder<Order> orderBuilder = fixture.giveMeBuilder(Order.class)
         .fixed();
-	
-	// when
-	Order actual1 = orderBuilder.sample(); 
-	Order actual2 = orderBuilder.sample(); 
-	
-	then(actual1).isEqualTo(actual2);
+    
+    // when
+    Order actual1 = orderBuilder.sample(); 
+    Order actual2 = orderBuilder.sample(); 
+    
+    then(actual1).isEqualTo(actual2);
 }
 ```
