@@ -26,6 +26,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.OptionalDouble;
+import java.util.OptionalInt;
+import java.util.OptionalLong;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -123,8 +126,8 @@ public final class ElementProperty implements Property {
 	@Override
 	public Object getValue(Object obj) {
 		Class<?> actualType = Types.getActualType(obj.getClass());
-		if (Optional.class.isAssignableFrom(actualType)) {
-			return ((Optional<?>)obj).orElse(null);
+		if (isOptional(actualType)) {
+			return getOptionalValue(obj);
 		}
 
 		if (!Iterable.class.isAssignableFrom(actualType)) {
@@ -133,6 +136,9 @@ public final class ElementProperty implements Property {
 
 		if (List.class.isAssignableFrom(actualType)) {
 			List<?> list = (List<?>)obj;
+			if (list.isEmpty()) {
+				return null;
+			}
 			return list.get(sequence);
 		}
 
@@ -147,5 +153,34 @@ public final class ElementProperty implements Property {
 		}
 
 		throw new IllegalArgumentException("given element value has no match sequence : " + sequence);
+	}
+
+	private boolean isOptional(Class<?> type) {
+		return Optional.class.isAssignableFrom(type)
+			|| OptionalInt.class.isAssignableFrom(type)
+			|| OptionalLong.class.isAssignableFrom(type)
+			|| OptionalDouble.class.isAssignableFrom(type);
+	}
+
+	@Nullable
+	private Object getOptionalValue(Object obj) {
+		Class<?> actualType = Types.getActualType(obj.getClass());
+		if (Optional.class.isAssignableFrom(actualType)) {
+			return ((Optional<?>)obj).orElse(null);
+		}
+
+		if (OptionalInt.class.isAssignableFrom(actualType)) {
+			return ((OptionalInt)obj).orElse(0);
+		}
+
+		if (OptionalLong.class.isAssignableFrom(actualType)) {
+			return ((OptionalLong)obj).orElse(0L);
+		}
+
+		if (OptionalDouble.class.isAssignableFrom(actualType)) {
+			return ((OptionalDouble)obj).orElse(Double.NaN);
+		}
+
+		throw new IllegalArgumentException("given value is not optional, actual type : " + actualType);
 	}
 }
