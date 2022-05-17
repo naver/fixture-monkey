@@ -72,6 +72,7 @@ public class LabMonkey extends FixtureMonkey {
 				manipulatorOptimizer,
 				generateOptions
 			),
+			traverser,
 			this.validator
 		);
 	}
