@@ -33,7 +33,6 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
 import com.navercorp.fixturemonkey.resolver.ArbitraryManipulator;
 import com.navercorp.fixturemonkey.resolver.ArbitraryResolver;
-import com.navercorp.fixturemonkey.validator.ArbitraryValidator;
 import com.navercorp.fixturemonkey.validator.ArbitraryValidatorV4;
 
 // TODO: remove extends com.navercorp.fixturemonkey.ArbitraryBuilder<T> inheritance in 1.0.0
