@@ -12,9 +12,9 @@ For detail information check out [here]({{< relref "/docs/v0.3.x/features/manipu
 ```java
 @Test
 void expressionSpec() {
-	// given
+    // given
     FixtureMonkey fixture = FixtureMonkey.create();
-	ExpressionSpec initialOrderSpec = new ExpressionSpec()
+    ExpressionSpec initialOrderSpec = new ExpressionSpec()
         .set("price", 10L);
 
     // when
@@ -30,14 +30,14 @@ void expressionSpec() {
 ```java
 @Test
 void exprssionSpecs() {
-	// given
+    // given
     FixtureMonkey fixture = FixtureMonkey.create();
-	ExpressionSpec priceSpec = new ExpressionSpec()
-	    .set("price", 10L);
-	ExpressionSpec orderNoSpec = new ExpressionSpec()
-	    .set("orderNo", "1");
+    ExpressionSpec priceSpec = new ExpressionSpec()
+        .set("price", 10L);
+    ExpressionSpec orderNoSpec = new ExpressionSpec()
+        .set("orderNo", "1");
 
-	// when
+    // when
     Order actual = fixture.giveMeBuilder(Order.class)
         .spec(priceSpec)
         .spec(orderNoSpec)
@@ -52,22 +52,22 @@ void exprssionSpecs() {
 ```java
 @Test
 void specAny() {
-	// given
-	FixtureMonkey fixture = FixtureMonkey.create();
-	ExpressionSpec initialOrderSpec = new ExpressionSpec()
-	    .set("price", 10L);
-	ExpressionSpec nextOrderSpec = new ExpressionSpec()
-	    .set("price", 5L);
+    // given
+    FixtureMonkey fixture = FixtureMonkey.create();
+    ExpressionSpec initialOrderSpec = new ExpressionSpec()
+        .set("price", 10L);
+    ExpressionSpec nextOrderSpec = new ExpressionSpec()
+        .set("price", 5L);
 
-	// when
-	Order actual = fixture.giveMeBuilder(Order.class)
-		.specAny(initialOrderSpec, nextOrderSpec)
-		.sample();
-	
-	then(actual.getPrice()).satisfiesAnyOf(
-	    it -> then(it).isEqualTo(10L),
-	    it -> then(it).isEqualTo(5L)
-	);
+    // when
+    Order actual = fixture.giveMeBuilder(Order.class)
+        .specAny(initialOrderSpec, nextOrderSpec)
+        .sample();
+    
+    then(actual.getPrice()).satisfiesAnyOf(
+        it -> then(it).isEqualTo(10L),
+        it -> then(it).isEqualTo(5L)
+    );
 }
 ```
 
@@ -79,15 +79,15 @@ void specAny() {
 ```java
 @Test
 void size() {
-	// given
-	FixtureMonkey fixture = FixtureMonkey.create();
-	ExpressionSpec spec = new ExpressionSpec()
-	    .list("items", it -> it.ofSize(2));
-	
-	// when
+    // given
+    FixtureMonkey fixture = FixtureMonkey.create();
+    ExpressionSpec spec = new ExpressionSpec()
+        .list("items", it -> it.ofSize(2));
+    
+    // when
     Order actual = fixture.giveMeBuilder(Order.class)
-	    .spec(spec)
-	    .sample();
+        .spec(spec)
+        .sample();
     
     then(actual.getItems()).hasSize(2);
 }
@@ -98,19 +98,19 @@ void size() {
 ```java
 @Test
 void setElement() {
-	// given
- 	FixtureMonkey fixture = FixtureMonkey.create();
-	ExpressionSpec spec = new ExpressionSpec()
-	    .list("items", it -> {
-	        it.ofSize(2);
-	        it.setElement(0, "set");
-	    }
-	);
-	
-	// when
+    // given
+    FixtureMonkey fixture = FixtureMonkey.create();
+    ExpressionSpec spec = new ExpressionSpec()
+        .list("items", it -> {
+            it.ofSize(2);
+            it.setElement(0, "set");
+        }
+    );
+    
+    // when
     Order actual = fixture.giveMeBuilder(Order.class)
-	    .spec(spec)
-	    .sample();
+        .spec(spec)
+        .sample();
     
     then(actual.getItems().get(0)).isEqualTo("set");
 }
@@ -120,19 +120,19 @@ void setElement() {
 ```java
 @Test
 void setElementField() {
-	// given
- 	FixtureMonkey fixture = FixtureMonkey.create();
-	ExpressionSpec spec = new ExpressionSpec()
+    // given
+    FixtureMonkey fixture = FixtureMonkey.create();
+    ExpressionSpec spec = new ExpressionSpec()
         .list("orders", it -> {
             it.ofSize(1);
             it.setElementField(0, "id", "1");
         }
-	);
-	
-	// when
+    );
+    
+    // when
     StackedOrder actual = fixture.giveMeBuilder(StackedOrder.class)
-	    .spec(spec)
-	    .sample();
+        .spec(spec)
+        .sample();
 
     then(actual.getOrders()).hasSize(1);
     then(actual.getOrders().get(0).getId()).isEqualTo("1");
@@ -143,19 +143,19 @@ void setElementField() {
 ```java
 @Test
 void any() {
-	// given
- 	FixtureMonkey fixture = FixtureMonkey.create();
-	ExpressionSpec spec = new ExpressionSpec()
+    // given
+    FixtureMonkey fixture = FixtureMonkey.create();
+    ExpressionSpec spec = new ExpressionSpec()
         .list("items", it -> {
             it.ofSize(4);
             it.any("set");
         }
-	);
-	
-	// when
+    );
+    
+    // when
     Order actual = fixture.giveMeBuilder(Order.class)
-	    .spec(spec)
-	    .sample();
+        .spec(spec)
+        .sample();
     
     then(actual.getItems()).anyMatch(it -> it.equals("set"));
 }
@@ -166,18 +166,18 @@ void any() {
 ```java
 @Test
 void all() {
-	// given
-  	FixtureMonkey fixture = FixtureMonkey.create();
-	ExpressionSpec spec = new ExpressionSpec()
+    // given
+    FixtureMonkey fixture = FixtureMonkey.create();
+    ExpressionSpec spec = new ExpressionSpec()
         .list("items", it -> {
             it.all("set");
-	    }
-	);
-	
-	// when
+        }
+    );
+    
+    // when
     Order actual = fixture.giveMeBuilder(Order.class)
-	    .spec(spec)
-	    .sample();
+        .spec(spec)
+        .sample();
     
     then(actual.getItems()).allMatch(it -> it.equals("set"));
 }

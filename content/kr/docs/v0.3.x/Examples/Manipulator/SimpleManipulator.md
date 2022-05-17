@@ -77,7 +77,7 @@ void setRoot(){
 void setNull() {
     // given
     FixtureMonkey fixture = FixtureMonkey.create();
-	
+    
     // when
     Order actual = fixture.giveMeBuilder(Order.class)
         .setNull("sellerEmail")
@@ -115,7 +115,7 @@ void setArbitrary() {
     Order actual = fixture.giveMeBuilder(Order.class)
         .set("id", Arbitraries.longs().between(1, 50))
         .sample();
-	
+    
     then(actual.getId()).isBetween(1L, 50L);
 }
 ```
@@ -158,7 +158,7 @@ void setBuilder() {
     Order actual = fixture.giveMeBuilder(Order.class)
         .setBuilder("orderNo", orderNoBuilder)
         .sample();
-	
+    
     then(actual.getOrderNo()).isNotNull();
 }
 ```
@@ -173,9 +173,9 @@ void setPostCondition() {
     // when
     Order actual = fixture.giveMeBuilder(Order.class)
         .set("id", Arbitraries.longs().between(-1, 1)) // not affected by postCondition 
-	    .set("id", Arbitraries.longs().between(10, 15)) // affected by postCondition
-	    .setPostCondition("id", Long.class, it -> 0 <= it && it <= 10)
-	    .sample();
+        .set("id", Arbitraries.longs().between(10, 15)) // affected by postCondition
+        .setPostCondition("id", Long.class, it -> 0 <= it && it <= 10)
+        .sample();
 
     then(actual.getId()).isEqualTo(10);
 }
@@ -191,10 +191,10 @@ void setPostConditionRoot() {
 
     // when
     String actual = fixture.giveMeBuilder(String.class)
-	    .setPostCondition(it -> it.length() > 5)
-	    .sample();
+        .setPostCondition(it -> it.length() > 5)
+        .sample();
 
-	then(actual).hasSizeGreaterThan(5);
+    then(actual).hasSizeGreaterThan(5);
 }
 ```
 
@@ -206,10 +206,10 @@ void setPostConditionRoot() {
 
     // when
     String actual = fixture.giveMeBuilder(String.class)
-	    .setPostCondition("$", String.class, it -> it.length() > 5)
-	    .sample();
+        .setPostCondition("$", String.class, it -> it.length() > 5)
+        .sample();
 
-	then(actual).hasSizeGreaterThan(5);
+    then(actual).hasSizeGreaterThan(5);
 }
 ```
 
@@ -220,7 +220,7 @@ void customize() {
     // given
     FixtureMonkey fixture = FixtureMonkey.create();
     Instant orderedAt = Instant.now().minus(30L, ChronoUnit.DAYS);
-	
+    
     // when
     Order actual = fixture.giveMeBuilder(Order.class)
         .customize(Order.class, o -> {
@@ -237,30 +237,30 @@ void customize() {
 ```java
 @Test
 void size() {	
-	// given
-	FixtureMonkey fixture = FixtureMonkey.create();
+    // given
+    FixtureMonkey fixture = FixtureMonkey.create();
 
-	// when
-	Order actual = fixture.giveMeBuilder(Order.class)
-		.size("items", 5)
-		.sample();
-	
-	then(actual.getItems()).hasSize(5);
+    // when
+    Order actual = fixture.giveMeBuilder(Order.class)
+        .size("items", 5)
+        .sample();
+    
+    then(actual.getItems()).hasSize(5);
 }
 ```
 
 ```java
 @Test
 void size() {	
-	// given
-	FixtureMonkey fixture = FixtureMonkey.create();
+    // given
+    FixtureMonkey fixture = FixtureMonkey.create();
 
-	// when
-	Order actual = fixture.giveMeBuilder(Order.class)
-		.size("items", 1, 5)
-		.sample();
-	
-	then(actual.getItems()).hasSizeBetween(1, 5);
+    // when
+    Order actual = fixture.giveMeBuilder(Order.class)
+        .size("items", 1, 5)
+        .sample();
+    
+    then(actual.getItems()).hasSizeBetween(1, 5);
 }
 ```
 
@@ -268,15 +268,15 @@ void size() {
 ```java
 @Test
 void size() {	
-	// given
-	FixtureMonkey fixture = FixtureMonkey.create();
+    // given
+    FixtureMonkey fixture = FixtureMonkey.create();
 
-	// when
-	Order actual = fixture.giveMeBuilder(Order.class)
-		.maxSize("items", 5)
-		.sample();
-	
-	then(actual.getItems()).hasSizeLessThanOrEqualTo(5);
+    // when
+    Order actual = fixture.giveMeBuilder(Order.class)
+        .maxSize("items", 5)
+        .sample();
+    
+    then(actual.getItems()).hasSizeLessThanOrEqualTo(5);
 }
 ```
 
@@ -284,14 +284,14 @@ void size() {
 ```java
 @Test
 void size() {	
-	// given
-	FixtureMonkey fixture = FixtureMonkey.create();
+    // given
+    FixtureMonkey fixture = FixtureMonkey.create();
 
-	// when
-	Order actual = fixture.giveMeBuilder(Order.class)
-		.minSize("items", 1)
-		.sample();
-	
-	then(actual.getItems()).hasSizeGreaterThanOrEqualTo(1);
+    // when
+    Order actual = fixture.giveMeBuilder(Order.class)
+        .minSize("items", 1)
+        .sample();
+    
+    then(actual.getItems()).hasSizeGreaterThanOrEqualTo(1);
 }
 ```
