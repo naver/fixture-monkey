@@ -18,7 +18,7 @@ void manipulateExistingInstance() {
         .set("quantity", 1)
         .sample();
     
-    then(actual.quantity).isEqualTo(1);
+    then(actual.getQuantity()).isEqualTo(1);
 }
 ```
 
@@ -53,7 +53,7 @@ void zip(){
 	ArbitraryBuilder<String> actual = ArbitraryBuilders.zip(
 		stringArbitraryBuilder,
 		integerArbitraryBuilder,
-		(integer, string) -> integer + ". " + string
+        (string, integer) -> integer + ". " + string
 	);
 	
 	then(actual.sample()).contains(".");
@@ -68,16 +68,15 @@ void acceptIf() {
 	FixtureMonkey fixture = FixtureMonkey.create();
 
 	// when
-	Order actual = fixture.giveMeBuilder(Order.class)
-		.set("memberName", "seongahjo")
-		.acceptIf(it -> it.memberName.equals("BROWN"),
-			builder -> builder
-				.set("memberNo", 20)
-		)
-		.sample();
+    Order actual = fixture.giveMeBuilder(Order.class)
+        .set("productName", "Apple")
+        .acceptIf(it -> it.getProductName().equals("Apple"),
+            builder -> builder
+                .set("productId", 100L)
+        )
+        .sample();
 
-	then(actual.memberNo).isEqualTo(20);
-}
+    then(actual.getProductId()).isEqualTo(100L);
 
 ```
 

@@ -32,15 +32,15 @@ void expressionSpec() {
 void exprssionSpecs() {
 	// given
     FixtureMonkey fixture = FixtureMonkey.create();
-	ExpressionSpec initialOrderSpec = new ExpressionSpec()
+	ExpressionSpec priceSpec = new ExpressionSpec()
 	    .set("price", 10L);
-	ExpressionSpec nextOrderSpec = new ExpressionSpec()
+	ExpressionSpec orderNoSpec = new ExpressionSpec()
 	    .set("orderNo", "1");
 
 	// when
     Order actual = fixture.giveMeBuilder(Order.class)
-        .spec(initialOrderSpec)
-        .spec(initialProductOrderSpec)
+        .spec(priceSpec)
+        .spec(orderNoSpec)
         .sample();
     
     then(actual.getPrice()).isEqualTo(10L);
@@ -89,7 +89,7 @@ void size() {
 	    .spec(spec)
 	    .sample();
     
-    then(actual.items).hasSize(2);
+    then(actual.getItems()).hasSize(2);
 }
 ```
 
@@ -112,7 +112,7 @@ void setElement() {
 	    .spec(spec)
 	    .sample();
     
-    then(actual.items[0]).isEqualTo("set");
+    then(actual.getItems().get(0)).isEqualTo("set");
 }
 ```
 
@@ -133,9 +133,9 @@ void setElementField() {
     StackedOrder actual = fixture.giveMeBuilder(StackedOrder.class)
 	    .spec(spec)
 	    .sample();
-    
-    then(actual.orders).hasSize(1);
-    then(actual.orders[0].id).isEqualTo("1");
+
+    then(actual.getOrders()).hasSize(1);
+    then(actual.getOrders().get(0).getId()).isEqualTo("1");
 }
 ```
 
@@ -147,6 +147,7 @@ void any() {
  	FixtureMonkey fixture = FixtureMonkey.create();
 	ExpressionSpec spec = new ExpressionSpec()
         .list("items", it -> {
+            it.ofSize(4);
             it.any("set");
         }
 	);

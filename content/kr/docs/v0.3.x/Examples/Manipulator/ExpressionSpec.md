@@ -32,15 +32,15 @@ void expressionSpec() {
 void exprssionSpecs() {
 	// given
     FixtureMonkey fixture = FixtureMonkey.create();
-	ExpressionSpec initialOrderSpec = new ExpressionSpec()
+	ExpressionSpec priceSpec = new ExpressionSpec()
 	    .set("price", 10L);
-	ExpressionSpec nextOrderSpec = new ExpressionSpec()
+	ExpressionSpec orderNoSpec = new ExpressionSpec()
 	    .set("orderNo", "1");
 
 	// when
     Order actual = fixture.giveMeBuilder(Order.class)
-        .spec(initialOrderSpec)
-        .spec(initialProductOrderSpec)
+        .spec(priceSpec)
+        .spec(orderNoSpec)
         .sample();
     
     then(actual.getPrice()).isEqualTo(10L);
@@ -80,15 +80,16 @@ void specAny() {
 @Test
 void size() {
 	// given
+    FixtureMonkey fixture = FixtureMonkey.create();
 	ExpressionSpec spec = new ExpressionSpec()
 	    .list("items", it -> it.ofSize(2));
 	
 	// when
-    Order actual = this.fixture.giveMeBuilder(Order.class)
+    Order actual = fixture.giveMeBuilder(Order.class)
 	    .spec(spec)
 	    .sample();
     
-    then(actual.items).hasSize(2);
+    then(actual.getItems()).hasSize(2);
 }
 ```
 
@@ -98,6 +99,7 @@ void size() {
 @Test
 void setElement() {
 	// given
+    FixtureMonkey fixture = FixtureMonkey.create();
 	ExpressionSpec spec = new ExpressionSpec()
 	    .list("items", it -> {
 	        it.ofSize(2);
@@ -106,11 +108,11 @@ void setElement() {
 	);
 	
 	// when
-    Order actual = this.fixture.giveMeBuilder(Order.class)
+    Order actual = fixture.giveMeBuilder(Order.class)
 	    .spec(spec)
 	    .sample();
     
-    then(actual.items[0]).isEqualTo("set");
+    then(actual.getItems().get(0)).isEqualTo("set");
 }
 ```
 
@@ -119,6 +121,7 @@ void setElement() {
 @Test
 void setElementField() {
 	// given
+    FixtureMonkey fixture = FixtureMonkey.create();
 	ExpressionSpec spec = new ExpressionSpec()
         .list("orders", it -> {
             it.ofSize(1);
@@ -127,12 +130,12 @@ void setElementField() {
 	);
 	
 	// when
-    StackedOrder actual = this.fixture.giveMeBuilder(StackedOrder.class)
+    StackedOrder actual = fixture.giveMeBuilder(StackedOrder.class)
 	    .spec(spec)
 	    .sample();
     
-    then(actual.orders).hasSize(1);
-    then(actual.orders[0].id).isEqualTo("1");
+    then(actual.getOrders()).hasSize(1);
+    then(actual.getOrders().get(0).getId()).isEqualTo("1");
 }
 ```
 
@@ -143,6 +146,7 @@ void any() {
 	// given
 	ExpressionSpec spec = new ExpressionSpec()
         .list("items", it -> {
+            it.ofSize(4);
             it.any("set");
         }
 	);
@@ -162,6 +166,7 @@ void any() {
 @Test
 void all() {
 	// given
+    FixtureMonkey fixture = FixtureMonkey.create();
 	ExpressionSpec spec = new ExpressionSpec()
         .list("items", it -> {
             it.all("set");
@@ -169,7 +174,7 @@ void all() {
 	);
 	
 	// when
-    Order actual = this.fixture.giveMeBuilder(Order.class)
+    Order actual = fixture.giveMeBuilder(Order.class)
 	    .spec(spec)
 	    .sample();
     

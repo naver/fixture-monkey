@@ -17,6 +17,9 @@ public class Order {
     @Size(min = 2, max = 10)
     private String productName;
 
+    @NotNull
+    private Long productId;
+
     @Min(1)
     @Max(100)
     private int quantity;
