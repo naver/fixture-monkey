@@ -16,7 +16,7 @@ void set(){
         .set("orderedAt", orderedAt)
         .sample();
 
-    then(actual.orderedAt).isEqualTo(orderedAt);
+    then(actual.getOrderedAt()).isEqualTo(orderedAt);
 }   
 ```
 
@@ -83,7 +83,7 @@ void setNull() {
         .setNull("sellerEmail")
         .sample();
 
-    then(actual.sellerEmail).isNull();
+    then(actual.getSellerEmail()).isNull();
 }
 ```
 
@@ -113,10 +113,10 @@ void setArbitrary() {
 
     // when
     Order actual = fixture.giveMeBuilder(Order.class)
-        .set("id", Arbitraries.integers().between(1, 50))
+        .set("id", Arbitraries.longs().between(1, 50))
         .sample();
 	
-    then(actual.id).isBetween(1, 50);
+    then(actual.getId()).isBetween(1L, 50L);
 }
 ```
 **- Set by Value vs. Set by Arbitrary**
@@ -152,14 +152,14 @@ order의 product.name 값은 Arbitrary로 값을 설정한 위의 예시에서�
 void setBuilder() {
     // given
     FixtureMonkey fixture = FixtureMonkey.create();
-    ArbitraryBuilder<String> idBuilder = fixture.giveMeBuilder(String.class);
+    ArbitraryBuilder<String> orderNoBuilder = fixture.giveMeBuilder(String.class);
     
     // when
     Order actual = fixture.giveMeBuilder(Order.class)
-        .setBuilder("id", idBuilder)
+        .setBuilder("orderNo", orderNoBuilder)
         .sample();
 	
-    then(actual.id).isNotNull();
+    then(actual.getOrderNo()).isNotNull();
 }
 ```
 
@@ -177,7 +177,7 @@ void setPostCondition() {
 	    .setPostCondition("id", Long.class, it -> 0 <= it && it <= 10)
 	    .sample();
 
-    then(actual.id).isEqualTo(10);
+    then(actual.getId()).isEqualTo(10);
 }
 ```
 `setPostCondition`는 필드의 후행조건을 선언합니다. 여러 번의 고정 연산을 적용한 경우 마지막으로 고정한 연산에 후행조건을 적용합니다.
@@ -229,7 +229,7 @@ void customize() {
         })
         .sample();
 
-    then(actual.orderedAt).isEqualTo(orderedAt);
+    then(actual.getOrderedAt()).isEqualTo(orderedAt);
 }
 ```
 
@@ -245,7 +245,7 @@ void size() {
 		.size("items", 5)
 		.sample();
 	
-	then(actual.items).hasSize(5);
+	then(actual.getItems()).hasSize(5);
 }
 ```
 
@@ -260,7 +260,7 @@ void size() {
 		.size("items", 1, 5)
 		.sample();
 	
-	then(actual.items).hasSizeBetween(1, 5);
+	then(actual.getItems()).hasSizeBetween(1, 5);
 }
 ```
 
@@ -276,7 +276,7 @@ void size() {
 		.maxSize("items", 5)
 		.sample();
 	
-	then(actual.items).hasSizeLessThanOrEqualTo(5);
+	then(actual.getItems()).hasSizeLessThanOrEqualTo(5);
 }
 ```
 
@@ -292,6 +292,6 @@ void size() {
 		.minSize("items", 1)
 		.sample();
 	
-	then(actual.items).hasSizeGreaterThanOrEqualTo(1);
+	then(actual.getItems()).hasSizeGreaterThanOrEqualTo(1);
 }
 ```

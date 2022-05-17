@@ -24,11 +24,14 @@ public class Order {
     @Min(0)
     private long price;
 
-    @Size(max = 3)
+    @Size(max = 5)
     private List<@NotBlank @Size(max = 10) String> items = new ArrayList<>();
 
     @PastOrPresent
     private Instant orderedAt;
+
+    @Email
+    private String sellerEmail;
 }
 
 @Test
