@@ -42,7 +42,7 @@ public final class DefaultArbitraryValidator<T> implements ArbitraryValidator<T>
 			Set<ConstraintViolation<T>> violations = this.validator.validate(arbitrary);
 			if (!violations.isEmpty()) {
 				throw new ConstraintViolationException(
-					"DefaultFixtureValidator ConstraintViolations. type: " + arbitrary.getClass(), violations);
+					"DefaultArbitrayValidator ConstraintViolations. type: " + arbitrary.getClass(), violations);
 			}
 		}
 	}
