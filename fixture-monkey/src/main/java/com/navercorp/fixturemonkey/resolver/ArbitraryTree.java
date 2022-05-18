@@ -18,6 +18,8 @@
 
 package com.navercorp.fixturemonkey.resolver;
 
+import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.NOT_NULL_INJECT;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -71,6 +73,7 @@ final class ArbitraryTree {
 			List<ArbitraryNode> children = selectedNode.getChildren();
 			for (ArbitraryNode child : children) {
 				if (cursor.match(child.getArbitraryProperty())) {
+					child.setArbitraryProperty(child.getArbitraryProperty().withNullInject(NOT_NULL_INJECT));
 					nextNodes.add(child);
 				}
 			}

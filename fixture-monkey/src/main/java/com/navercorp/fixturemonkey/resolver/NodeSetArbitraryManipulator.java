@@ -24,10 +24,10 @@ import org.apiguardian.api.API.Status;
 import net.jqwik.api.Arbitrary;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-final class NodeSetArbitraryManipulator<T> implements NodeManipulator {
+public final class NodeSetArbitraryManipulator<T> implements NodeManipulator {
 	private final Arbitrary<T> arbitrary;
 
-	NodeSetArbitraryManipulator(Arbitrary<T> arbitrary) {
+	public NodeSetArbitraryManipulator(Arbitrary<T> arbitrary) {
 		this.arbitrary = arbitrary;
 	}
 

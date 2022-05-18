@@ -21,11 +21,16 @@ package com.navercorp.fixturemonkey.test;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.assertj.core.api.BDDAssertions.thenThrownBy;
 
+import java.time.Instant;
+import java.util.Optional;
+
+import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Property;
 
 import com.navercorp.fixturemonkey.LabMonkey;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.ComplexObject;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.SimpleObject;
 
 class FixtureMonkeyV04Test {
 	private static final LabMonkey SUT = LabMonkey.labMonkey();
@@ -51,6 +56,57 @@ class FixtureMonkeyV04Test {
 		// then
 		then(actual.getList()).isNotNull();
 		then(actual.getMap()).isNotNull();
+	}
+
+	@Property
+	void set() {
+		// when
+		ComplexObject actual = SUT.giveMeBuilder(ComplexObject.class)
+			.set("str", "str")
+			.sample();
+
+		// then
+		then(actual.getStr()).isEqualTo("str");
+	}
+
+	@Property
+	void setDecomposedValue() {
+		// given
+		SimpleObject expected = new SimpleObject();
+		expected.setInstant(Instant.now());
+		expected.setOptionalString(Optional.of("test"));
+
+		// when
+		SimpleObject actual = SUT.giveMeBuilder(ComplexObject.class)
+			.set("object", expected)
+			.set("object.str", "str")
+			.sample()
+			.getObject();
+
+		// then
+		then(actual.getInstant()).isEqualTo(expected.getInstant());
+		then(actual.getOptionalString()).isEqualTo(expected.getOptionalString());
+		then(actual.getStr()).isEqualTo("str");
+	}
+
+	@Property
+	void setArbitrary() {
+		// given
+		SimpleObject expected = new SimpleObject();
+		expected.setInstant(Instant.now());
+		expected.setOptionalString(Optional.of("test"));
+
+		// when
+		SimpleObject actual = SUT.giveMeBuilder(ComplexObject.class)
+			.set("object", Arbitraries.just(expected))
+			.set("object.str", "str")
+			.sample()
+			.getObject();
+
+		// then
+		then(actual.getInstant()).isEqualTo(expected.getInstant());
+		then(actual.getOptionalString()).isEqualTo(expected.getOptionalString());
+		then(actual.getStr()).isEqualTo(expected.getStr());
 	}
 
 	@Property

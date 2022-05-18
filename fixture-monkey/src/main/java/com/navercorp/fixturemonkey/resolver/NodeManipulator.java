@@ -23,6 +23,6 @@ import org.apiguardian.api.API.Status;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 @FunctionalInterface
-interface NodeManipulator {
+public interface NodeManipulator {
 	void manipulate(ArbitraryNode arbitraryNode);
 }

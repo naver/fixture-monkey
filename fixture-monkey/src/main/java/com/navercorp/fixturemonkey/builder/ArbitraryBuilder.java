@@ -24,6 +24,8 @@ import static java.util.stream.Collectors.toList;
 import java.util.List;
 import java.util.stream.Stream;
 
+import javax.annotation.Nullable;
+
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
@@ -37,6 +39,8 @@ import com.navercorp.fixturemonkey.resolver.ArbitraryManipulator;
 import com.navercorp.fixturemonkey.resolver.ArbitraryResolver;
 import com.navercorp.fixturemonkey.resolver.ArbitraryTraverser;
 import com.navercorp.fixturemonkey.resolver.ExpressionNodeResolver;
+import com.navercorp.fixturemonkey.resolver.NodeSetArbitraryManipulator;
+import com.navercorp.fixturemonkey.resolver.NodeSetDecomposedValueManipulator;
 import com.navercorp.fixturemonkey.resolver.NodeSizeManipulator;
 import com.navercorp.fixturemonkey.validator.ArbitraryValidator;
 
@@ -69,6 +73,32 @@ public final class ArbitraryBuilder<T> extends com.navercorp.fixturemonkey.Arbit
 	@Override
 	public ArbitraryBuilder<T> validOnly(boolean validOnly) {
 		this.validOnly = validOnly;
+		return this;
+	}
+
+	@Override
+	public ArbitraryBuilder<T> set(
+		String expression,
+		@Nullable Object value
+	) {
+		ExpressionNodeResolver nodeResolver = new ExpressionNodeResolver(ArbitraryExpression.from(expression));
+		if (value instanceof Arbitrary) {
+			manipulators.add(
+				new ArbitraryManipulator(
+					nodeResolver,
+					new NodeSetArbitraryManipulator<>((Arbitrary<?>)value)
+				)
+			);
+		} else if (value == null) {
+			// TODO: setNull
+		} else {
+			manipulators.add(
+				new ArbitraryManipulator(
+					nodeResolver,
+					new NodeSetDecomposedValueManipulator<>(value)
+				)
+			);
+		}
 		return this;
 	}
 
@@ -111,7 +141,7 @@ public final class ArbitraryBuilder<T> extends com.navercorp.fixturemonkey.Arbit
 	public Arbitrary<T> build() {
 		return new ArbitraryValue<>(
 			() -> (Arbitrary<T>)this.resolver.resolve(this.rootProperty, this.manipulators),
-			validator,
+			this.validator,
 			this.validOnly
 		);
 	}
