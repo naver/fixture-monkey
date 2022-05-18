@@ -26,13 +26,13 @@ import com.navercorp.fixturemonkey.api.option.GenerateOptionsBuilder;
 import com.navercorp.fixturemonkey.resolver.ArbitraryTraverser;
 import com.navercorp.fixturemonkey.resolver.ManipulatorOptimizer;
 import com.navercorp.fixturemonkey.resolver.NoneManipulatorOptimizer;
-import com.navercorp.fixturemonkey.validator.ArbitraryValidatorV4;
-import com.navercorp.fixturemonkey.validator.DefaultArbitraryValidatorV4;
+import com.navercorp.fixturemonkey.validator.ArbitraryValidator;
+import com.navercorp.fixturemonkey.validator.DefaultArbitraryValidator;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public class LabMonkeyBuilder {
 	private final GenerateOptionsBuilder generateOptionsBuilder = GenerateOptions.builder();
-	private ArbitraryValidatorV4 arbitraryValidator = new DefaultArbitraryValidatorV4();
+	private ArbitraryValidator arbitraryValidator = new DefaultArbitraryValidator();
 	private ManipulatorOptimizer manipulatorOptimizer = new NoneManipulatorOptimizer();
 
 	public void manipulatorOptimizer(ManipulatorOptimizer manipulatorOptimizer) {

@@ -18,7 +18,7 @@
 
 package com.navercorp.fixturemonkey.validator;
 
-public interface ArbitraryValidator<T> {
+public interface ArbitraryValidator {
 	// if arbitrary is not valid throw exception then re-create arbitrary for valid.
-	void validate(T arbitrary);
+	void validate(Object arbitrary);
 }

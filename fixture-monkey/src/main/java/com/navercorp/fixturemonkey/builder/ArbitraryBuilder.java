@@ -33,7 +33,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
 import com.navercorp.fixturemonkey.resolver.ArbitraryManipulator;
 import com.navercorp.fixturemonkey.resolver.ArbitraryResolver;
-import com.navercorp.fixturemonkey.validator.ArbitraryValidatorV4;
+import com.navercorp.fixturemonkey.validator.ArbitraryValidator;
 
 // TODO: remove extends com.navercorp.fixturemonkey.ArbitraryBuilder<T> inheritance in 1.0.0
 @SuppressFBWarnings("NM_SAME_SIMPLE_NAME_AS_SUPERCLASS")
@@ -42,14 +42,14 @@ public final class ArbitraryBuilder<T> extends com.navercorp.fixturemonkey.Arbit
 	private final RootProperty rootProperty;
 	private final List<ArbitraryManipulator> manipulators;
 	private final ArbitraryResolver resolver;
-	private final ArbitraryValidatorV4 validator;
+	private final ArbitraryValidator validator;
 	private boolean validOnly = true;
 
 	public ArbitraryBuilder(
 		RootProperty rootProperty,
 		List<ArbitraryManipulator> manipulators,
 		ArbitraryResolver resolver,
-		ArbitraryValidatorV4 validator
+		ArbitraryValidator validator
 	) {
 		super();
 		this.rootProperty = rootProperty;
@@ -69,7 +69,7 @@ public final class ArbitraryBuilder<T> extends com.navercorp.fixturemonkey.Arbit
 	public Arbitrary<T> build() {
 		return new ArbitraryValue<>(
 			() -> (Arbitrary<T>)this.resolver.resolve(this.rootProperty, this.manipulators),
-			validator::validate,
+			validator,
 			this.validOnly
 		);
 	}

@@ -25,7 +25,7 @@ import javax.validation.ConstraintViolationException;
 import javax.validation.Validation;
 import javax.validation.Validator;
 
-public final class DefaultArbitraryValidator<T> implements ArbitraryValidator<T> {
+public final class DefaultArbitraryValidator implements ArbitraryValidator {
 	private Validator validator;
 
 	public DefaultArbitraryValidator() {
@@ -37,9 +37,9 @@ public final class DefaultArbitraryValidator<T> implements ArbitraryValidator<T>
 	}
 
 	@Override
-	public void validate(T arbitrary) {
+	public void validate(Object arbitrary) {
 		if (this.validator != null) {
-			Set<ConstraintViolation<T>> violations = this.validator.validate(arbitrary);
+			Set<ConstraintViolation<Object>> violations = this.validator.validate(arbitrary);
 			if (!violations.isEmpty()) {
 				throw new ConstraintViolationException(
 					"DefaultArbitrayValidator ConstraintViolations. type: " + arbitrary.getClass(), violations);

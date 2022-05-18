@@ -82,7 +82,6 @@ public class ArbitraryBuilder<T> {
 	private final ArbitraryTraverser traverser;
 	private final List<BuilderManipulator> builderManipulators;
 	private final List<BuilderManipulator> usedManipulators;
-	@SuppressWarnings("rawtypes")
 	private final ArbitraryValidator validator;
 	private final Map<Class<?>, ArbitraryGenerator> generatorMap;
 
@@ -168,7 +167,6 @@ public class ArbitraryBuilder<T> {
 		);
 	}
 
-	@SuppressWarnings("rawtypes")
 	private ArbitraryBuilder(
 		ArbitraryTree<T> tree,
 		ArbitraryTraverser traverser,

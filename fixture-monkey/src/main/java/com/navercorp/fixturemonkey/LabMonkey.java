@@ -32,21 +32,21 @@ import com.navercorp.fixturemonkey.builder.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.resolver.ArbitraryResolver;
 import com.navercorp.fixturemonkey.resolver.ArbitraryTraverser;
 import com.navercorp.fixturemonkey.resolver.ManipulatorOptimizer;
-import com.navercorp.fixturemonkey.validator.ArbitraryValidatorV4;
+import com.navercorp.fixturemonkey.validator.ArbitraryValidator;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public class LabMonkey extends FixtureMonkey {
 	private final GenerateOptions generateOptions;
 	private final ArbitraryTraverser traverser;
 	private final ManipulatorOptimizer manipulatorOptimizer;
-	private final ArbitraryValidatorV4 validator;
+	private final ArbitraryValidator validator;
 
 	@SuppressFBWarnings("NP_NULL_PARAM_DEREF_NONVIRTUAL")
 	public LabMonkey(
 		GenerateOptions generateOptions,
 		ArbitraryTraverser traverser,
 		ManipulatorOptimizer manipulatorOptimizer,
-		ArbitraryValidatorV4 validator
+		ArbitraryValidator validator
 	) {
 		super(null, null, null, null, null);
 		this.generateOptions = generateOptions;
