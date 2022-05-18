@@ -111,7 +111,7 @@ public final class ArbitraryBuilder<T> extends com.navercorp.fixturemonkey.Arbit
 	public Arbitrary<T> build() {
 		return new ArbitraryValue<>(
 			() -> (Arbitrary<T>)this.resolver.resolve(this.rootProperty, this.manipulators),
-			this.validator,
+			validator,
 			this.validOnly
 		);
 	}

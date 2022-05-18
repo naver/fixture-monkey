@@ -127,7 +127,6 @@ public final class ArbitraryTree<T> {
 		return generatorMap.getOrDefault(clazz, defaultGenerator);
 	}
 
-	@SuppressWarnings("rawtypes")
 	public Arbitrary<T> result(
 		Supplier<Arbitrary<T>> generateArbitrary,
 		ArbitraryValidator validator,

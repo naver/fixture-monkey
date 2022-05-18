@@ -22,8 +22,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-@SuppressWarnings("rawtypes")
-public final class CompositeArbitraryValidator implements ArbitraryValidator<Object> {
+public final class CompositeArbitraryValidator implements ArbitraryValidator {
 	private final Map<Class<?>, ArbitraryValidator> validators;
 	private final ArbitraryValidator defaultValidator;
 
@@ -40,7 +39,6 @@ public final class CompositeArbitraryValidator implements ArbitraryValidator<Obj
 		return new DefaultArbitraryValidator();
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void validate(Object arbitrary) {
 		ArbitraryValidator validator = this.validators.get(arbitrary.getClass());

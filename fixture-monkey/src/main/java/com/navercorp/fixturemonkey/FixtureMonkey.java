@@ -41,12 +41,10 @@ import com.navercorp.fixturemonkey.validator.ArbitraryValidator;
 public class FixtureMonkey {
 	private final ArbitraryOption options;
 	private final ArbitraryGenerator defaultGenerator;
-	@SuppressWarnings("rawtypes")
 	private final ArbitraryValidator validator;
 	private final Map<Class<?>, ArbitraryGenerator> generatorMap;
 	private final ArbitraryCustomizers arbitraryCustomizers;
 
-	@SuppressWarnings("rawtypes")
 	public FixtureMonkey(
 		ArbitraryOption options,
 		ArbitraryGenerator defaultGenerator,

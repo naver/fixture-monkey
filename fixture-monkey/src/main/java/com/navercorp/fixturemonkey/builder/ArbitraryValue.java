@@ -44,7 +44,6 @@ import com.navercorp.fixturemonkey.validator.ArbitraryValidator;
 final class ArbitraryValue<T> implements Arbitrary<T> {
 	private final MonkeyRandomGenerator<T> monkeyRandomGenerator;
 
-	@SuppressWarnings("rawtypes")
 	public ArbitraryValue(
 		Supplier<Arbitrary<T>> generateArbitrary,
 		ArbitraryValidator validator,
@@ -68,13 +67,11 @@ final class ArbitraryValue<T> implements Arbitrary<T> {
 
 		private final Supplier<Arbitrary<T>> generateArbitrary;
 		private final boolean validOnly;
-		@SuppressWarnings("rawtypes")
 		private final ArbitraryValidator validator;
 		@SuppressWarnings("rawtypes")
 		private final Map<String, ConstraintViolation> violations = new ConcurrentHashMap<>();
 		private Exception lastException;
 
-		@SuppressWarnings("rawtypes")
 		private MonkeyRandomGenerator(
 			Supplier<Arbitrary<T>> generateArbitrary,
 			ArbitraryValidator validator,
@@ -109,7 +106,7 @@ final class ArbitraryValue<T> implements Arbitrary<T> {
 			}
 		}
 
-		@SuppressWarnings({"unchecked", "rawtypes"})
+		@SuppressWarnings("rawtypes")
 		private Predicate validateFilter(boolean validOnly) {
 			return fixture -> {
 				if (!validOnly) {
