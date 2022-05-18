@@ -31,7 +31,7 @@ import com.navercorp.fixturemonkey.api.option.GenerateOptions;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
 import com.navercorp.fixturemonkey.api.type.LazyAnnotatedType;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
-import com.navercorp.fixturemonkey.builder.ArbitraryBuilder;
+import com.navercorp.fixturemonkey.builder.NewArbitraryBuilderImpl;
 import com.navercorp.fixturemonkey.resolver.ArbitraryManipulator;
 import com.navercorp.fixturemonkey.resolver.ArbitraryResolver;
 import com.navercorp.fixturemonkey.resolver.ArbitraryTraverser;
@@ -70,7 +70,7 @@ public class LabMonkey extends FixtureMonkey {
 
 	@Override
 	public <T> ArbitraryBuilder<T> giveMeBuilder(TypeReference<T> type) {
-		return new ArbitraryBuilder<>(
+		return new NewArbitraryBuilderImpl<>(
 			generateOptions,
 			new RootProperty(type.getAnnotatedType()),
 			new ArbitraryResolver(
@@ -95,7 +95,7 @@ public class LabMonkey extends FixtureMonkey {
 			)
 		);
 
-		return new ArbitraryBuilder<>(
+		return new NewArbitraryBuilderImpl<>(
 			generateOptions,
 			new RootProperty(new LazyAnnotatedType<>(() -> value)),
 			new ArbitraryResolver(

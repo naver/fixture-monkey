@@ -153,7 +153,7 @@ public class FixtureMonkey {
 	}
 
 	public <T> ArbitraryBuilder<T> giveMeBuilder(T value) {
-		return new ArbitraryBuilder<>(
+		return new OldArbitraryBuilderImpl<>(
 			() -> value,
 			new ArbitraryTraverser(options),
 			defaultGenerator,
@@ -184,7 +184,7 @@ public class FixtureMonkey {
 			return defaultArbitraryBuilder;
 		}
 
-		return new ArbitraryBuilder<>(
+		return new OldArbitraryBuilderImpl<>(
 			clazz,
 			option,
 			defaultGenerator,
@@ -208,7 +208,7 @@ public class FixtureMonkey {
 			}
 		}
 
-		return new ArbitraryBuilder<>(
+		return new OldArbitraryBuilderImpl<>(
 			typeReference,
 			option,
 			defaultGenerator,

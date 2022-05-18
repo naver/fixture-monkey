@@ -37,7 +37,7 @@ import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
 import net.jqwik.api.Combinators;
 
-import com.navercorp.fixturemonkey.ArbitraryBuilder;
+import com.navercorp.fixturemonkey.OldArbitraryBuilderImpl;
 import com.navercorp.fixturemonkey.api.expression.ExpressionGenerator;
 import com.navercorp.fixturemonkey.arbitrary.AbstractArbitraryExpressionManipulator;
 import com.navercorp.fixturemonkey.arbitrary.AbstractArbitrarySet;
@@ -70,8 +70,8 @@ public final class ExpressionSpec {
 		} else if (value instanceof Arbitrary) {
 			this.set(expression, (Arbitrary<?>)value);
 			return this;
-		} else if (value instanceof ArbitraryBuilder) {
-			return this.setBuilder(expression, (ArbitraryBuilder<?>)value);
+		} else if (value instanceof OldArbitraryBuilderImpl) {
+			return this.setBuilder(expression, (OldArbitraryBuilderImpl<?>)value);
 		} else if (value instanceof ExpressionSpec) {
 			return this.set(expression, (ExpressionSpec)value);
 		}
@@ -88,8 +88,8 @@ public final class ExpressionSpec {
 		} else if (value instanceof Arbitrary) {
 			this.set(expression, (Arbitrary<?>)value);
 			return this;
-		} else if (value instanceof ArbitraryBuilder) {
-			return this.setBuilder(expression, (ArbitraryBuilder<?>)value, limit);
+		} else if (value instanceof OldArbitraryBuilderImpl) {
+			return this.setBuilder(expression, (OldArbitraryBuilderImpl<?>)value, limit);
 		} else if (value instanceof ExpressionSpec) {
 			return this.set(expression, (ExpressionSpec)value);
 		}
@@ -106,13 +106,13 @@ public final class ExpressionSpec {
 		return this;
 	}
 
-	private <T> ExpressionSpec setBuilder(String expression, ArbitraryBuilder<T> builder, long limit) {
+	private <T> ExpressionSpec setBuilder(String expression, OldArbitraryBuilderImpl<T> builder, long limit) {
 		ArbitraryExpression fixtureExpression = ArbitraryExpression.from(expression);
 		builderManipulators.add(new ArbitrarySetArbitrary<>(fixtureExpression, builder.build(), limit));
 		return this;
 	}
 
-	private <T> ExpressionSpec setBuilder(String expression, ArbitraryBuilder<T> builder) {
+	private <T> ExpressionSpec setBuilder(String expression, OldArbitraryBuilderImpl<T> builder) {
 		ArbitraryExpression fixtureExpression = ArbitraryExpression.from(expression);
 		builderManipulators.add(new ArbitrarySetArbitrary<>(fixtureExpression, builder.build()));
 		return this;

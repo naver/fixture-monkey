@@ -18,6 +18,7 @@
 
 package com.navercorp.fixturemonkey;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -63,6 +64,7 @@ public final class ArbitraryBuilders {
 			);
 		}
 		ArbitraryBuilder<?> first = list.get(0);
-		return first.zipWith(list.subList(1, list.size()), combinator);
+		List<ArbitraryBuilder<?>> arbitraryBuilders = new ArrayList<>(list.subList(1, list.size()));
+		return first.zipWith(arbitraryBuilders, combinator);
 	}
 }

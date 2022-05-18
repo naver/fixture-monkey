@@ -38,7 +38,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import com.navercorp.fixturemonkey.ArbitraryBuilder;
+import com.navercorp.fixturemonkey.OldArbitraryBuilderImpl;
 import com.navercorp.fixturemonkey.ArbitraryOption;
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.autoparams.FixtureMonkeyAutoSource;
@@ -111,7 +111,7 @@ class FixtureMonkeyValueCustomizerTest {
 	@ParameterizedTest
 	@Repeat(100)
 	@FixtureMonkeyAutoSource
-	void integerWrapperArbitraryBuilder(ArbitraryBuilder<IntegerWrapperClass> builder) {
+	void integerWrapperArbitraryBuilder(OldArbitraryBuilderImpl<IntegerWrapperClass> builder) {
 		then(builder).isNotNull();
 		then(builder.sample().getValue()).isGreaterThan(0);
 	}
@@ -119,7 +119,7 @@ class FixtureMonkeyValueCustomizerTest {
 	@ParameterizedTest
 	@Repeat(100)
 	@FixtureMonkeyAutoSource
-	void integerListWrapperArbitraryBuilder(ArbitraryBuilder<IntegerListClass> builder) {
+	void integerListWrapperArbitraryBuilder(OldArbitraryBuilderImpl<IntegerListClass> builder) {
 		then(builder).isNotNull();
 		then(builder.sample().getValues()).isNotNull();
 	}
@@ -127,7 +127,7 @@ class FixtureMonkeyValueCustomizerTest {
 	@ParameterizedTest
 	@Repeat(100)
 	@FixtureMonkeyAutoSource
-	void stringWrapperArbitraryBuilder(ArbitraryBuilder<StringWrapperClass> builder) {
+	void stringWrapperArbitraryBuilder(OldArbitraryBuilderImpl<StringWrapperClass> builder) {
 		then(builder).isNotNull();
 		then(builder.sample().getValue()).isNotNull();
 	}

@@ -23,7 +23,6 @@ import static com.navercorp.fixturemonkey.test.SimpleManipulatorTestSpecs.SUT;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.assertj.core.api.BDDAssertions.thenNoException;
-import static org.assertj.core.api.BDDAssertions.thenThrownBy;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +34,6 @@ import net.jqwik.api.Property;
 import net.jqwik.api.domains.Domain;
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
-import com.navercorp.fixturemonkey.arbitrary.BuilderManipulator;
 import com.navercorp.fixturemonkey.customizer.ExpressionSpec;
 import com.navercorp.fixturemonkey.test.SimpleManipulatorTestSpecs.IntValue;
 import com.navercorp.fixturemonkey.test.SimpleManipulatorTestSpecs.IntegerList;
@@ -1056,24 +1054,6 @@ class SimpleManipulatorTest {
 			.sample();
 
 		then(actual.getValues()).isEqualTo(integerList);
-	}
-
-	@Property
-	void unimplementedManipulatorThrows() {
-		thenThrownBy(() -> SUT.giveMeBuilder(Integer.class)
-			.apply(new BuilderManipulator() {
-				@Override
-				public void accept(@SuppressWarnings("rawtypes") ArbitraryBuilder arbitraryBuilder) {
-					arbitraryBuilder.apply(this);
-				}
-
-				@Override
-				public BuilderManipulator copy() {
-					return this;
-				}
-			})
-		).isExactlyInstanceOf(IllegalArgumentException.class)
-			.hasMessageContaining("Unimplemented manipulator type");
 	}
 
 	@Property
