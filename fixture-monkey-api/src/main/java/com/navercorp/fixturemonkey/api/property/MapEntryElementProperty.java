@@ -23,11 +23,14 @@ import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Nullable;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
+
+import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class MapEntryElementProperty implements Property {
@@ -107,7 +110,7 @@ public final class MapEntryElementProperty implements Property {
 	@Nullable
 	@Override
 	public Object getValue(Object obj) {
-		throw new UnsupportedOperationException("elementProperty getValue is not support yet.");
+		return obj;
 	}
 
 	// This class only for type marking

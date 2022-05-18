@@ -49,7 +49,7 @@ public final class MapEntryElementArbitraryPropertyGenerator implements Arbitrar
 			property,
 			context.getPropertyNameResolver(),
 			NULL_INJECT,
-			context.getElementIndex(),
+			null,
 			Arrays.asList(mapEntryElementProperty.getKeyProperty(), mapEntryElementProperty.getValueProperty()),
 			CONTAINER_INFO
 		);
