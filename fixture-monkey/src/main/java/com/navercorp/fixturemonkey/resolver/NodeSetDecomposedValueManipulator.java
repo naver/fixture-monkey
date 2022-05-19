@@ -18,13 +18,11 @@
 
 package com.navercorp.fixturemonkey.resolver;
 
-import static com.navercorp.fixturemonkey.Constants.DEFAULT_ELEMENT_MAX_SIZE;
 import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.NOT_NULL_INJECT;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.OptionalInt;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -75,8 +73,7 @@ public final class NodeSetDecomposedValueManipulator<T> implements NodeManipulat
 			} else if (Map.class.isAssignableFrom(actualType)) {
 				Map<?, ?> map = (Map<?, ?>)value;
 				decomposedContainerSize = map.size();
-			} else if (Map.Entry.class.isAssignableFrom(actualType) &&
-				Map.Entry.class.isAssignableFrom(nodeActualType)) {
+			} else if (isDecomposeMapEntry(actualType, nodeActualType)) {
 				decomposedContainerSize = 1;
 			}
 
@@ -98,5 +95,9 @@ public final class NodeSetDecomposedValueManipulator<T> implements NodeManipulat
 			Property childProperty = child.getProperty();
 			setValue(child, childProperty.getValue(value));
 		}
+	}
+
+	private boolean isDecomposeMapEntry(Class<?> actualType, Class<?> nodeActualType) {
+		return Map.Entry.class.isAssignableFrom(actualType) && Map.Entry.class.isAssignableFrom(nodeActualType);
 	}
 }
