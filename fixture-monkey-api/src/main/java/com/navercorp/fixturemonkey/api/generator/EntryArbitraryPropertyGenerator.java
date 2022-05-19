@@ -34,7 +34,7 @@ import com.navercorp.fixturemonkey.api.type.Types;
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class EntryArbitraryPropertyGenerator implements ArbitraryPropertyGenerator {
 	public static final EntryArbitraryPropertyGenerator INSTANCE = new EntryArbitraryPropertyGenerator();
-	private static final ArbitraryContainerInfo CONTAINER_INFO = new ArbitraryContainerInfo(0, 1);
+	private static final ArbitraryContainerInfo CONTAINER_INFO = new ArbitraryContainerInfo(1, 1);
 
 	@Override
 	public ArbitraryProperty generate(ArbitraryPropertyGeneratorContext context) {
