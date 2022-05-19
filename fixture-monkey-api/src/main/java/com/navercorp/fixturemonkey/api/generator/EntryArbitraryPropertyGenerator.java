@@ -25,15 +25,16 @@ import java.util.List;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.api.property.ElementProperty;
 import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty;
+import com.navercorp.fixturemonkey.api.property.MapKeyElementProperty;
+import com.navercorp.fixturemonkey.api.property.MapValueElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class EntryArbitraryPropertyGenerator implements ArbitraryPropertyGenerator {
 	public static final EntryArbitraryPropertyGenerator INSTANCE = new EntryArbitraryPropertyGenerator();
-	private static final ArbitraryContainerInfo CONTAINER_INFO = new ArbitraryContainerInfo(0, 1);
+	private static final ArbitraryContainerInfo CONTAINER_INFO = new ArbitraryContainerInfo(1, 1);
 
 	@Override
 	public ArbitraryProperty generate(ArbitraryPropertyGeneratorContext context) {
@@ -63,19 +64,15 @@ public final class EntryArbitraryPropertyGenerator implements ArbitraryPropertyG
 			childProperties.add(
 				new MapEntryElementProperty(
 					property,
-					new ElementProperty(
+					new MapKeyElementProperty(
 						property,
 						keyType,
-						null,
-						sequence,
-						0.0d
+						sequence
 					),
-					new ElementProperty(
+					new MapValueElementProperty(
 						property,
 						valueType,
-						null,
-						sequence,
-						null
+						sequence
 					)
 				)
 			);
@@ -90,7 +87,7 @@ public final class EntryArbitraryPropertyGenerator implements ArbitraryPropertyG
 			nullInject,
 			context.getElementIndex(),
 			childProperties,
-			CONTAINER_INFO
+			containerInfo
 		);
 	}
 }

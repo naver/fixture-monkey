@@ -25,7 +25,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import lombok.Getter;
+import lombok.Setter;
+
 class FixtureMonkeyV04TestSpecs {
+	@Setter
+	@Getter
 	public static class ComplexObject {
 		private String str;
 		private int integer;
@@ -36,79 +41,7 @@ class FixtureMonkeyV04TestSpecs {
 		private SimpleObject object;
 		private List<SimpleObject> list;
 		private Map<String, SimpleObject> map;
-
-		public String getStr() {
-			return str;
-		}
-
-		public void setStr(String str) {
-			this.str = str;
-		}
-
-		public int getInteger() {
-			return integer;
-		}
-
-		public void setInteger(int integer) {
-			this.integer = integer;
-		}
-
-		public Long getWrapperLong() {
-			return wrapperLong;
-		}
-
-		public void setWrapperLong(Long wrapperLong) {
-			this.wrapperLong = wrapperLong;
-		}
-
-		public List<String> getStrList() {
-			return strList;
-		}
-
-		public void setStrList(List<String> strList) {
-			this.strList = strList;
-		}
-
-		public SimpleEnum getEnumValue() {
-			return enumValue;
-		}
-
-		public void setEnumValue(SimpleEnum enumValue) {
-			this.enumValue = enumValue;
-		}
-
-		public LocalDateTime getLocalDateTime() {
-			return localDateTime;
-		}
-
-		public void setLocalDateTime(LocalDateTime localDateTime) {
-			this.localDateTime = localDateTime;
-		}
-
-		public SimpleObject getObject() {
-			return object;
-		}
-
-		public void setObject(SimpleObject object) {
-			this.object = object;
-		}
-
-		public List<SimpleObject> getList() {
-			return list;
-		}
-
-		public void setList(List<SimpleObject> list) {
-			this.list = list;
-		}
-
-		public Map<String, SimpleObject> getMap() {
-			return map;
-		}
-
-		public void setMap(
-			Map<String, SimpleObject> map) {
-			this.map = map;
-		}
+		private Map.Entry<String, SimpleObject> mapEntry;
 	}
 
 	public enum SimpleEnum {

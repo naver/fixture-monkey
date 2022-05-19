@@ -150,6 +150,7 @@ public final class ElementProperty implements Property {
 			if (iteratorSequence == sequence) {
 				return value;
 			}
+			iteratorSequence++;
 		}
 
 		throw new IllegalArgumentException("given element value has no match sequence : " + sequence);

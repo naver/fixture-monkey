@@ -25,8 +25,9 @@ import java.util.List;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.api.property.ElementProperty;
 import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty;
+import com.navercorp.fixturemonkey.api.property.MapKeyElementProperty;
+import com.navercorp.fixturemonkey.api.property.MapValueElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.type.Types;
 
@@ -64,19 +65,15 @@ public final class MapArbitraryPropertyGenerator implements ArbitraryPropertyGen
 			childProperties.add(
 				new MapEntryElementProperty(
 					property,
-					new ElementProperty(
+					new MapKeyElementProperty(
 						property,
 						keyType,
-						null,
-						sequence,
-						0.0d
+						sequence
 					),
-					new ElementProperty(
+					new MapValueElementProperty(
 						property,
 						valueType,
-						null,
-						sequence,
-						null
+						sequence
 					)
 				)
 			);

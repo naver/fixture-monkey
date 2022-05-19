@@ -43,6 +43,7 @@ class FixtureMonkeyV04Test {
 		// then
 		then(actual.getList()).isNotNull();
 		then(actual.getMap()).isNotNull();
+		then(actual.getMapEntry()).isNotNull();
 	}
 
 	@Property
@@ -56,6 +57,7 @@ class FixtureMonkeyV04Test {
 		// then
 		then(actual.getList()).isNotNull();
 		then(actual.getMap()).isNotNull();
+		then(actual.getMapEntry()).isNotNull();
 	}
 
 	@Property
