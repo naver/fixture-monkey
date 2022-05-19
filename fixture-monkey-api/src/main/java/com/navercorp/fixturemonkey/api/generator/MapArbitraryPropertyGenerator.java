@@ -69,16 +69,12 @@ public final class MapArbitraryPropertyGenerator implements ArbitraryPropertyGen
 					new MapKeyElementProperty(
 						property,
 						keyType,
-						null,
-						sequence,
-						0.0d
+						sequence
 					),
 					new MapValueElementProperty(
 						property,
 						valueType,
-						null,
-						sequence,
-						null
+						sequence
 					)
 				)
 			);

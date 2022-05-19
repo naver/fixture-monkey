@@ -18,10 +18,12 @@
 
 package com.navercorp.fixturemonkey.api.property;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedType;
-import java.util.Iterator;
+import java.lang.reflect.Type;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import javax.annotation.Nullable;
 
@@ -31,15 +33,56 @@ import org.apiguardian.api.API.Status;
 import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public final class MapValueElementProperty extends ElementProperty {
+public final class MapValueElementProperty implements Property {
+	private final Property mapProperty;
+
+	private final AnnotatedType valueType;
+
+	private final int sequence;
+
+	private final List<Annotation> annotations;
+
 	public MapValueElementProperty(
-		Property containerProperty,
-		AnnotatedType elementType,
-		@Nullable Integer index,
-		int sequence,
-		@Nullable Double nullInject
+		Property mapProperty,
+		AnnotatedType valueType,
+		int sequence
 	) {
-		super(containerProperty, elementType, index, sequence, nullInject);
+		this.mapProperty = mapProperty;
+		this.valueType = valueType;
+		this.sequence = sequence;
+		this.annotations = Arrays.asList(this.valueType.getAnnotations());
+	}
+
+	@Override
+	public Type getType() {
+		return this.getAnnotatedType().getType();
+	}
+
+	@Override
+	public AnnotatedType getAnnotatedType() {
+		return this.valueType;
+	}
+
+	public Property getMapProperty() {
+		return mapProperty;
+	}
+
+	public AnnotatedType getValueType() {
+		return valueType;
+	}
+
+	public int getSequence() {
+		return sequence;
+	}
+
+	@Override
+	public String getName() {
+		throw new UnsupportedOperationException("MapKeyElementProperty getName is not support yet.");
+	}
+
+	@Override
+	public List<Annotation> getAnnotations() {
+		return this.annotations;
 	}
 
 	@Nullable
