@@ -51,7 +51,7 @@ public final class ArbitraryContainerInfo {
 			return this.elementMinSize;
 		}
 
-		return this.elementMinSize + Randoms.nextInt(this.elementMaxSize - this.elementMinSize);
+		return this.elementMinSize + Randoms.nextInt(this.elementMaxSize - this.elementMinSize + 1);
 	}
 
 	public ArbitraryContainerInfo withElementMinSize(@Nullable Integer minSize) {
