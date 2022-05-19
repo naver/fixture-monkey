@@ -40,7 +40,7 @@ import org.apiguardian.api.API.Status;
 import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public class ElementProperty implements Property {
+public final class ElementProperty implements Property {
 	private final Property containerProperty;
 
 	private final AnnotatedType elementType;

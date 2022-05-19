@@ -56,7 +56,8 @@ public final class EntryIntrospector implements ArbitraryIntrospector, Matcher {
 
 		if (childrenArbitraries.size() != 1) {
 			throw new IllegalArgumentException(
-				"Map entry node should have only one child, current : " + childrenArbitraries.size());
+				"Map entry node should have only one child, current : " + childrenArbitraries.size()
+			);
 		}
 
 		Arbitrary<Entry<?, ?>> arbitrary = childrenArbitraries.get(0)
