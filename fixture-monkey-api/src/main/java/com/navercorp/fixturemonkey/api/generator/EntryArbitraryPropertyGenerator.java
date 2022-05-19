@@ -25,7 +25,6 @@ import java.util.List;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.api.property.ElementProperty;
 import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty;
 import com.navercorp.fixturemonkey.api.property.MapKeyElementProperty;
 import com.navercorp.fixturemonkey.api.property.MapValueElementProperty;
