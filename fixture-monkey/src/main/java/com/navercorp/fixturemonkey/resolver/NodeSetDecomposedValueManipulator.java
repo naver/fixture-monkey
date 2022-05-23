@@ -24,6 +24,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
@@ -55,7 +57,7 @@ public final class NodeSetDecomposedValueManipulator<T> implements NodeManipulat
 		setValue(arbitraryNode, value);
 	}
 
-	private void setValue(ArbitraryNode arbitraryNode, Object value) {
+	private void setValue(ArbitraryNode arbitraryNode, @Nullable Object value) {
 		if (value == null) {
 			arbitraryNode.setArbitrary(Arbitraries.just(null));
 			return;

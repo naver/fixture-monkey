@@ -23,11 +23,14 @@ import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Nullable;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
+
+import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class MapEntryElementProperty implements Property {
@@ -107,6 +110,14 @@ public final class MapEntryElementProperty implements Property {
 	@Nullable
 	@Override
 	public Object getValue(Object obj) {
+		if (obj == null) {
+			return null;
+		}
+
+		Class<?> actualType = Types.getActualType(obj.getClass());
+		if (!(Map.class.isAssignableFrom(actualType) || Map.Entry.class.isAssignableFrom(actualType))) {
+			throw new IllegalArgumentException("given value is not Map or MapEntry type " + actualType);
+		}
 		return obj;
 	}
 
