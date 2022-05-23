@@ -55,17 +55,16 @@ public final class MapEntryElementIntrospector implements ArbitraryIntrospector,
 			throw new IllegalArgumentException("Key and Value should be exist for MapEntryElementType.");
 		}
 
-		return new ArbitraryIntrospectorResult(
-			Builders.withBuilder(MapEntryElementType::new)
-				.use(childrenArbitraries.get(0)).in((element, key) -> {
-					element.setKey(key);
-					return element;
-				})
-				.use(childrenArbitraries.get(1)).in((element, value) -> {
-					element.setValue(value);
-					return element;
-				})
-				.build()
-		);
+		Arbitrary<MapEntryElementType> arbitrary = Builders.withBuilder(MapEntryElementType::new)
+			.use(childrenArbitraries.get(0)).in((element, key) -> {
+				element.setKey(key);
+				return element;
+			})
+			.use(childrenArbitraries.get(1)).in((element, value) -> {
+				element.setValue(value);
+				return element;
+			})
+			.build();
+		return new ArbitraryIntrospectorResult(arbitrary);
 	}
 }

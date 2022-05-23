@@ -22,8 +22,10 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Type;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.annotation.Nullable;
 
@@ -89,6 +91,19 @@ public final class MapValueElementProperty implements Property {
 	@Override
 	public Object getValue(Object obj) {
 		Class<?> actualType = Types.getActualType(obj.getClass());
+
+		if (Map.class.isAssignableFrom(actualType)) {
+			Map<?, ?> map = (Map<?, ?>)obj;
+			Iterator<? extends Entry<?, ?>> iterator = map.entrySet().iterator();
+			int iteratorSequence = 0;
+			while (iterator.hasNext()) {
+				Entry<?, ?> value = iterator.next();
+				if (iteratorSequence == getSequence()) {
+					return value.getValue();
+				}
+				iteratorSequence++;
+			}
+		}
 
 		if (Map.Entry.class.isAssignableFrom(actualType)) {
 			Map.Entry<?, ?> entry = (Map.Entry<?, ?>)obj;

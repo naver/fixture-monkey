@@ -95,7 +95,7 @@ public final class ArbitraryBuilder<T> extends com.navercorp.fixturemonkey.Arbit
 			manipulators.add(
 				new ArbitraryManipulator(
 					nodeResolver,
-					new NodeSetDecomposedValueManipulator<>(value)
+					new NodeSetDecomposedValueManipulator<>(traverser, value)
 				)
 			);
 		}

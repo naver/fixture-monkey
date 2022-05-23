@@ -22,13 +22,24 @@ import static org.assertj.core.api.BDDAssertions.then;
 import static org.assertj.core.api.BDDAssertions.thenThrownBy;
 
 import java.time.Instant;
+import java.util.AbstractMap.SimpleEntry;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.OptionalDouble;
+import java.util.OptionalInt;
+import java.util.OptionalLong;
+import java.util.Set;
 
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Property;
 
 import com.navercorp.fixturemonkey.LabMonkey;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
+import com.navercorp.fixturemonkey.builder.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.ComplexObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.SimpleObject;
 
@@ -109,6 +120,162 @@ class FixtureMonkeyV04Test {
 		then(actual.getInstant()).isEqualTo(expected.getInstant());
 		then(actual.getOptionalString()).isEqualTo(expected.getOptionalString());
 		then(actual.getStr()).isEqualTo(expected.getStr());
+	}
+
+	@Property
+	void setOptional() {
+		// given
+		Optional<String> optional = Optional.of("test");
+
+		// when
+		ArbitraryBuilder<SimpleObject> optionalString = SUT.giveMeBuilder(SimpleObject.class)
+			.set("optionalString", optional);
+		Optional<String> actual = optionalString
+			.sample()
+			.getOptionalString();
+
+		then(actual).isEqualTo(optional);
+	}
+
+	@Property
+	void setDecomposedList() {
+		// given
+		List<String> expected = new ArrayList<>();
+		expected.add("a");
+		expected.add("b");
+		expected.add("c");
+		expected.add("d");
+		expected.add("e");
+
+		// when
+		List<String> actual = SUT.giveMeBuilder(ComplexObject.class)
+			.set("strList", expected)
+			.sample()
+			.getStrList();
+
+		then(actual).isEqualTo(expected);
+	}
+
+	@Property
+	void setDecomposedSet() {
+		// given
+		Set<String> expected = new HashSet<>();
+		expected.add("a");
+		expected.add("b");
+		expected.add("c");
+		expected.add("d");
+		expected.add("e");
+
+		// when
+		Set<String> actual = SUT.giveMeBuilder(ComplexObject.class)
+			.set("strSet", expected)
+			.sample()
+			.getStrSet();
+
+		then(actual).isEqualTo(expected);
+	}
+
+	@Property
+	void setDecomposedMap() {
+		// given
+		Map<String, SimpleObject> expected = new HashMap<>();
+		expected.put("a", new SimpleObject());
+		expected.put("b", new SimpleObject());
+		expected.put("c", new SimpleObject());
+		expected.put("d", new SimpleObject());
+		expected.put("e", new SimpleObject());
+
+		// when
+		Map<String, SimpleObject> actual = SUT.giveMeBuilder(ComplexObject.class)
+			.set("map", expected)
+			.sample()
+			.getMap();
+
+		then(actual).isEqualTo(expected);
+	}
+
+	@Property
+	void setDecomposedMapEntry() {
+		// given
+		Map.Entry<String, SimpleObject> expected = new SimpleEntry<>("a", new SimpleObject());
+
+		// when
+		Map.Entry<String, SimpleObject> actual = SUT.giveMeBuilder(ComplexObject.class)
+			.set("mapEntry", expected)
+			.sample()
+			.getMapEntry();
+
+		then(actual).isEqualTo(expected);
+	}
+
+	@Property
+	void setDecomposedOptional() {
+		// given
+		Optional<String> expected = Optional.of("test");
+
+		// when
+		Optional<String> actual = SUT.giveMeBuilder(SimpleObject.class)
+			.set("optionalString", expected)
+			.sample()
+			.getOptionalString();
+
+		then(actual).isEqualTo(expected);
+	}
+
+	@Property
+	void setDecomposedOptionalEmpty() {
+		// given
+		Optional<String> expected = Optional.empty();
+
+		// when
+		Optional<String> actual = SUT.giveMeBuilder(SimpleObject.class)
+			.set("optionalString", expected)
+			.sample()
+			.getOptionalString();
+
+		then(actual).isEqualTo(expected);
+	}
+
+	@Property
+	void setDecomposedOptionalInt() {
+		// given
+		OptionalInt expected = OptionalInt.of(0);
+
+		// when
+		OptionalInt actual = SUT.giveMeBuilder(SimpleObject.class)
+			.set("optionalInt", expected)
+			.sample()
+			.getOptionalInt();
+
+		then(actual).isEqualTo(expected);
+	}
+
+	@Property
+	void setDecomposedOptionalLong() {
+		// given
+		OptionalLong expected = OptionalLong.of(0L);
+
+		// when
+		OptionalLong actual = SUT.giveMeBuilder(SimpleObject.class)
+			.set("optionalLong", expected)
+			.sample()
+			.getOptionalLong();
+
+		then(actual).isEqualTo(expected);
+	}
+
+	@Property
+	void setDecomposedOptionalDouble() {
+		// given
+		OptionalDouble expected = OptionalDouble.of(0.d);
+
+		// when
+		OptionalDouble actual = SUT.giveMeBuilder(SimpleObject.class)
+			.set("optionalDouble", expected)
+			.sample()
+			.getOptionalDouble();
+
+		then(actual).isEqualTo(expected);
 	}
 
 	@Property

@@ -27,9 +27,11 @@ import net.jqwik.api.Arbitrary;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 final class NodeSetLazyManipulator<T> implements NodeManipulator {
+	private final ArbitraryTraverser traverser;
 	private final Supplier<T> supplier;
 
-	NodeSetLazyManipulator(Supplier<T> supplier) {
+	public NodeSetLazyManipulator(ArbitraryTraverser traverser, Supplier<T> supplier) {
+		this.traverser = traverser;
 		this.supplier = supplier;
 	}
 
@@ -45,7 +47,7 @@ final class NodeSetLazyManipulator<T> implements NodeManipulator {
 		}
 
 		NodeSetDecomposedValueManipulator<T> nodeSetDecomposedValueManipulator =
-			new NodeSetDecomposedValueManipulator<>(value);
+			new NodeSetDecomposedValueManipulator<>(traverser, value);
 		nodeSetDecomposedValueManipulator.manipulate(arbitraryNode);
 	}
 }

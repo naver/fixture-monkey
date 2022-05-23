@@ -24,7 +24,12 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.OptionalDouble;
+import java.util.OptionalInt;
+import java.util.OptionalLong;
+import java.util.Set;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -36,6 +41,7 @@ class FixtureMonkeyV04TestSpecs {
 		private int integer;
 		private Long wrapperLong;
 		private List<String> strList;
+		private Set<String> strSet;
 		private SimpleEnum enumValue;
 		private LocalDateTime localDateTime;
 		private SimpleObject object;
@@ -48,33 +54,15 @@ class FixtureMonkeyV04TestSpecs {
 		ENUM_1, ENUM_2, ENUM_3, ENUM_4
 	}
 
+	@Getter
+	@Setter
+	@EqualsAndHashCode
 	public static class SimpleObject {
 		private String str;
 		private Optional<String> optionalString;
+		private OptionalInt optionalInt;
+		private OptionalLong optionalLong;
+		private OptionalDouble optionalDouble;
 		private Instant instant;
-
-		public String getStr() {
-			return str;
-		}
-
-		public void setStr(String str) {
-			this.str = str;
-		}
-
-		public Optional<String> getOptionalString() {
-			return optionalString;
-		}
-
-		public void setOptionalString(Optional<String> optionalString) {
-			this.optionalString = optionalString;
-		}
-
-		public Instant getInstant() {
-			return instant;
-		}
-
-		public void setInstant(Instant instant) {
-			this.instant = instant;
-		}
 	}
 }
