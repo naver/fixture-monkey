@@ -20,4 +20,6 @@ package com.navercorp.fixturemonkey.customizer;
 
 public interface ExpressionSpecVisitor {
 	void visit(ExpressionSpec spec);
+
+	void visit(com.navercorp.fixturemonkey.builder.ExpressionSpec expressionSpec);
 }

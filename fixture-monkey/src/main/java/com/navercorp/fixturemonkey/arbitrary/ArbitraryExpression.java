@@ -179,6 +179,8 @@ public final class ArbitraryExpression implements Comparable<ArbitraryExpression
 	private static final class Exp implements Comparable<Exp> {
 		private final String name;
 		private final List<ExpIndex> index;
+		private final List<Object> keys;
+		private final List<Boolean> isSetKey;
 
 		private Exp(String name, List<ExpIndex> indices) {
 			this.name = name;

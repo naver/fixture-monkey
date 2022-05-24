@@ -55,6 +55,10 @@ public class LabMonkey extends FixtureMonkey {
 		this.validator = validator;
 	}
 
+	public ArbitraryTraverser giveMeTraverser() {
+		return this.traverser;
+	}
+
 	@Override
 	public <T> ArbitraryBuilder<T> giveMeBuilder(Class<T> type) {
 		TypeReference<T> typeReference = new TypeReference<T>(type) {

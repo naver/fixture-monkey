@@ -36,7 +36,6 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryExpression;
 import com.navercorp.fixturemonkey.customizer.ExpressionSpec;
-import com.navercorp.fixturemonkey.customizer.MapSpec;
 import com.navercorp.fixturemonkey.resolver.ArbitraryManipulator;
 import com.navercorp.fixturemonkey.resolver.ArbitraryResolver;
 import com.navercorp.fixturemonkey.resolver.ArbitraryTraverser;
@@ -138,8 +137,8 @@ public final class ArbitraryBuilder<T> extends com.navercorp.fixturemonkey.Arbit
 		return this;
 	}
 
-	public ArbitraryBuilder<T> map(String expression, MapSpec mapSpec) {
-		// this.manipulators.addAll(mapSpec.getManipulators());
+	public ArbitraryBuilder<T> spec(ExpressionSpec expressionSpec) {
+		// this.manipulators.addAll(expressionSpec.getManipulators());
 		return this;
 	}
 
