@@ -18,6 +18,7 @@
 
 package com.navercorp.fixturemonkey.resolver;
 
+import static com.navercorp.fixturemonkey.Constants.KEY_INDEX_INTEGER_VALUE;
 import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.NOT_NULL_INJECT;
 
 import java.util.ArrayList;
@@ -64,7 +65,7 @@ final class ArbitraryTree {
 		List<Cursor> cursors = arbitraryExpression.toCursors();
 		int keyIdx = 0;
 		for (Cursor cursor : cursors) {
-			if (cursor.getIndex() == Integer.MAX_VALUE -1){
+			if (cursor.getIndex() == KEY_INDEX_INTEGER_VALUE){
 				selectedNodes = retrieveNextMatchingMapNodes(selectedNodes,
 					arbitraryExpression.keys.get(keyIdx), arbitraryExpression.isSetKey.get(keyIdx));
 				keyIdx++;

@@ -20,6 +20,7 @@ package com.navercorp.fixturemonkey.arbitrary;
 
 import static com.navercorp.fixturemonkey.Constants.ALL_INDEX_STRING;
 import static com.navercorp.fixturemonkey.Constants.HEAD_NAME;
+import static com.navercorp.fixturemonkey.Constants.KEY_INDEX_INTEGER_VALUE;
 import static com.navercorp.fixturemonkey.Constants.NO_OR_ALL_INDEX_INTEGER_VALUE;
 import static java.util.stream.Collectors.toList;
 
@@ -35,7 +36,6 @@ import org.apiguardian.api.API.Status;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 
 public final class ArbitraryExpression implements Comparable<ArbitraryExpression> {
-	public static final int KEY_INDEX_INTEGER_VALUE = Integer.MAX_VALUE -1;
 	private final List<Exp> expList;
 	public List<Object> keys;
 	public List<Boolean> isSetKey;
