@@ -43,6 +43,7 @@ public final class MapKeyElementProperty implements Property {
 	private final int sequence;
 
 	private final List<Annotation> annotations;
+	private Object fixedValue;
 
 	public MapKeyElementProperty(
 		Property mapProperty,
@@ -111,5 +112,13 @@ public final class MapKeyElementProperty implements Property {
 		}
 
 		throw new IllegalArgumentException("given value is not Map Entry. " + obj.getClass());
+	}
+
+	public Object getFixedValue() {
+		return fixedValue;
+	}
+
+	public void setFixedValue(Object fixedValue) {
+		this.fixedValue = fixedValue;
 	}
 }

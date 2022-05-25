@@ -38,6 +38,8 @@ import net.jqwik.api.Arbitrary;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.option.GenerateOptions;
+import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty;
+import com.navercorp.fixturemonkey.api.property.MapKeyElementProperty;
 import com.navercorp.fixturemonkey.api.random.Randoms;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryExpression;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryExpression.Cursor;
@@ -60,8 +62,15 @@ final class ArbitraryTree {
 		selectedNodes.add(rootNode);
 
 		List<Cursor> cursors = arbitraryExpression.toCursors();
+		int keyIdx = 0;
 		for (Cursor cursor : cursors) {
-			selectedNodes = retrieveNextMatchingNodes(selectedNodes, cursor);
+			if (cursor.getIndex() == Integer.MAX_VALUE -1){
+				selectedNodes = retrieveNextMatchingMapNodes(selectedNodes,
+					arbitraryExpression.keys.get(keyIdx), arbitraryExpression.isSetKey.get(keyIdx));
+				keyIdx++;
+			} else {
+				selectedNodes = retrieveNextMatchingNodes(selectedNodes, cursor);
+			}
 		}
 		Collections.shuffle(selectedNodes, Randoms.current());
 		return selectedNodes;
@@ -77,6 +86,35 @@ final class ArbitraryTree {
 					nextNodes.add(child);
 				}
 			}
+		}
+		return nextNodes;
+	}
+
+	private LinkedList<ArbitraryNode> retrieveNextMatchingMapNodes(List<ArbitraryNode> selectedNodes, Object key, Boolean isSetKey) {
+		LinkedList<ArbitraryNode> nextNodes = new LinkedList<>();
+		// selectedNode는 map
+		for (ArbitraryNode selectedNode: selectedNodes) {
+			List<ArbitraryNode> children = selectedNode.getChildren();
+			boolean hasKey = false;
+			// child는 mapEntry
+			for (ArbitraryNode child: children) {
+				MapKeyElementProperty mapKeyElementProperty = (MapKeyElementProperty)child.getChildren().get(0).getProperty();
+				// 키 값이 일치하는지 비교하는 부분. 비교 방법 수정해야함.
+				if (key.equals(mapKeyElementProperty.getFixedValue())) {
+					hasKey = true;
+					// NULL INJECT 부분 수정하기
+					child.setArbitraryProperty(child.getArbitraryProperty().withNullInject(NOT_NULL_INJECT));
+					if (isSetKey) {
+						nextNodes.add(child.getChildren().get(0));
+					} else {
+						nextNodes.add(child.getChildren().get(1));
+					}
+				}
+			}
+			//Todo: key가 없는 경우 entry를 새로 생성.
+			// if (!hasKey) {
+			// 	MapInsertNewEntry(selectedNode, key);
+			// }
 		}
 		return nextNodes;
 	}

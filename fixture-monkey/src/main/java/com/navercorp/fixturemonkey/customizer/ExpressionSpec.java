@@ -22,7 +22,6 @@ import static java.util.stream.Collectors.toList;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -52,7 +51,6 @@ import com.navercorp.fixturemonkey.arbitrary.BuilderManipulator;
 import com.navercorp.fixturemonkey.arbitrary.ContainerSizeManipulator;
 import com.navercorp.fixturemonkey.arbitrary.MetadataManipulator;
 import com.navercorp.fixturemonkey.arbitrary.PostArbitraryManipulator;
-import com.navercorp.fixturemonkey.resolver.ArbitraryManipulator;
 
 public final class ExpressionSpec {
 	private final List<BuilderManipulator> builderManipulators;

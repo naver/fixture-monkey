@@ -33,7 +33,7 @@ public final class ExpressionSpec {
 		// set map spec using consumer accept
 		mapSpecSupplier.accept(mapSpec);
 		//expression spec에 mapspec 내용 추가
-		// mapSpec.visit(this);
+		mapSpec.visit(this);
 		return this;
 	}
 
