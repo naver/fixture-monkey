@@ -36,6 +36,7 @@ import lombok.Setter;
 class FixtureMonkeyV04TestSpecs {
 	@Setter
 	@Getter
+	@EqualsAndHashCode
 	public static class ComplexObject {
 		private String str;
 		private int integer;

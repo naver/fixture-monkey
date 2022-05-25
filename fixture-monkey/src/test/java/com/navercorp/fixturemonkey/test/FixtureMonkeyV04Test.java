@@ -354,4 +354,40 @@ class FixtureMonkeyV04Test {
 		// then
 		then(actual.getStrList()).hasSizeLessThanOrEqualTo(0);
 	}
+
+	@Property
+	void notFixedSampleReturnsDiff() {
+		// when
+		ArbitraryBuilder<ComplexObject> fixedArbitraryBuilder = SUT.giveMeBuilder(ComplexObject.class);
+
+		// then
+		ComplexObject sample1 = fixedArbitraryBuilder.sample();
+		ComplexObject sample2 = fixedArbitraryBuilder.sample();
+		then(sample1).isNotEqualTo(sample2);
+	}
+
+	@Property
+	void fixedSampleReturnsSame() {
+		// when
+		ArbitraryBuilder<ComplexObject> fixedArbitraryBuilder = SUT.giveMeBuilder(ComplexObject.class)
+			.fixed();
+
+		// then
+		ComplexObject sample1 = fixedArbitraryBuilder.sample();
+		ComplexObject sample2 = fixedArbitraryBuilder.sample();
+		then(sample1).isEqualTo(sample2);
+	}
+
+	@Property
+	void arbitraryFixedSampleReturnsSame() {
+		// when
+		ArbitraryBuilder<ComplexObject> fixedArbitraryBuilder = SUT.giveMeBuilder(ComplexObject.class)
+			.set("str", Arbitraries.of("value1", "value2"))
+			.fixed();
+
+		// then
+		ComplexObject sample1 = fixedArbitraryBuilder.sample();
+		ComplexObject sample2 = fixedArbitraryBuilder.sample();
+		then(sample1).isEqualTo(sample2);
+	}
 }
