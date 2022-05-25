@@ -22,7 +22,11 @@ import static com.navercorp.fixturemonkey.Constants.DEFAULT_ELEMENT_MAX_SIZE;
 import static com.navercorp.fixturemonkey.Constants.HEAD_NAME;
 import static java.util.stream.Collectors.toList;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
@@ -30,6 +34,7 @@ import javax.annotation.Nullable;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -42,6 +47,7 @@ import com.navercorp.fixturemonkey.resolver.ArbitraryTraverser;
 import com.navercorp.fixturemonkey.resolver.ExpressionNodeResolver;
 import com.navercorp.fixturemonkey.resolver.NodeSetArbitraryManipulator;
 import com.navercorp.fixturemonkey.resolver.NodeSetDecomposedValueManipulator;
+import com.navercorp.fixturemonkey.resolver.NodeSetLazyManipulator;
 import com.navercorp.fixturemonkey.resolver.NodeSizeManipulator;
 import com.navercorp.fixturemonkey.resolver.RootNodeResolver;
 import com.navercorp.fixturemonkey.validator.ArbitraryValidator;
@@ -92,7 +98,12 @@ public final class ArbitraryBuilder<T> extends com.navercorp.fixturemonkey.Arbit
 				)
 			);
 		} else if (value == null) {
-			// TODO: setNull
+			manipulators.add(
+				new ArbitraryManipulator(
+					nodeResolver,
+					new NodeSetArbitraryManipulator<>(Arbitraries.just(null)) // TODO: nullInject as 1.0
+				)
+			);
 		} else {
 			manipulators.add(
 				new ArbitraryManipulator(
@@ -154,6 +165,40 @@ public final class ArbitraryBuilder<T> extends com.navercorp.fixturemonkey.Arbit
 		return this;
 	}
 
+	@Override
+	public ArbitraryBuilder<T> apply(
+		BiConsumer<T, com.navercorp.fixturemonkey.ArbitraryBuilder<T>> biConsumer
+	) {
+		ArbitraryBuilder<T> copied = this.copy();
+
+		this.manipulators.add(
+			new ArbitraryManipulator(
+				new RootNodeResolver(),
+				new NodeSetLazyManipulator<>(
+					traverser,
+					() -> {
+						T sampled = copied.fixed().sample();
+						biConsumer.accept(sampled, copied);
+						return copied.sample();
+					}
+				)
+			)
+		);
+		return this;
+	}
+
+	@Override
+	public ArbitraryBuilder<T> acceptIf(
+		Predicate<T> predicate,
+		Consumer<com.navercorp.fixturemonkey.ArbitraryBuilder<T>> consumer
+	) {
+		return apply((it, builder) -> {
+			if (predicate.test(it)) {
+				consumer.accept(builder);
+			}
+		});
+	}
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public Arbitrary<T> build() {
@@ -176,5 +221,16 @@ public final class ArbitraryBuilder<T> extends com.navercorp.fixturemonkey.Arbit
 
 	public List<T> sampleList(int size) {
 		return this.sampleStream().limit(size).collect(toList());
+	}
+
+	@Override
+	public ArbitraryBuilder<T> copy() {
+		return new ArbitraryBuilder<>(
+			rootProperty,
+			new ArrayList<>(manipulators),
+			resolver,
+			traverser,
+			validator
+		);
 	}
 }
