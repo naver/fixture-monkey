@@ -28,8 +28,8 @@ import org.apiguardian.api.API.Status;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryExpression;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-final class RootNodeResolver implements NodeResolver {
-	RootNodeResolver() {
+public final class RootNodeResolver implements NodeResolver {
+	public RootNodeResolver() {
 	}
 
 	@Override
