@@ -20,6 +20,7 @@ package com.navercorp.fixturemonkey.customizer;
 
 import static com.navercorp.fixturemonkey.Constants.DEFAULT_ELEMENT_MAX_SIZE;
 import static com.navercorp.fixturemonkey.Constants.DEFAULT_ELEMENT_MIN_SIZE;
+import static com.navercorp.fixturemonkey.Constants.MAX_MANIPULATION_COUNT;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -88,7 +89,7 @@ final class DefaultIterableSpec implements IterableSpec, ExpressionSpecVisitor {
 
 	@Override
 	public <T> IterableSpec setElementPostCondition(long fieldIndex, Class<T> clazz, Predicate<T> postCondition) {
-		return this.setElementPostCondition(fieldIndex, clazz, postCondition, Long.MAX_VALUE);
+		return this.setElementPostCondition(fieldIndex, clazz, postCondition, MAX_MANIPULATION_COUNT);
 	}
 
 	@Override
@@ -131,7 +132,7 @@ final class DefaultIterableSpec implements IterableSpec, ExpressionSpecVisitor {
 		Class<T> clazz,
 		Predicate<T> postCondition
 	) {
-		return this.setElementFieldPostCondition(fieldIndex, fieldName, clazz, postCondition, Long.MAX_VALUE);
+		return this.setElementFieldPostCondition(fieldIndex, fieldName, clazz, postCondition, MAX_MANIPULATION_COUNT);
 	}
 
 	@Override
@@ -234,7 +235,7 @@ final class DefaultIterableSpec implements IterableSpec, ExpressionSpecVisitor {
 		public IterableSpecSet(String expression, T value) {
 			this.expression = expression;
 			this.value = value;
-			this.limit = Long.MAX_VALUE;
+			this.limit = MAX_MANIPULATION_COUNT;
 		}
 
 		public IterableSpecSet(String expression, T value, long limit) {
@@ -254,7 +255,7 @@ final class DefaultIterableSpec implements IterableSpec, ExpressionSpecVisitor {
 			this.expression = expression;
 			this.clazz = clazz;
 			this.postCondition = postCondition;
-			this.limit = Long.MAX_VALUE;
+			this.limit = MAX_MANIPULATION_COUNT;
 		}
 
 		public IterableSpecPostCondition(String expression, Class<T> clazz, Predicate<T> postCondition, long limit) {

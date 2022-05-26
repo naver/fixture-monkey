@@ -18,6 +18,8 @@
 
 package com.navercorp.fixturemonkey.arbitrary;
 
+import static com.navercorp.fixturemonkey.Constants.MAX_MANIPULATION_COUNT;
+
 import java.util.Objects;
 import java.util.function.Predicate;
 
@@ -40,7 +42,7 @@ public final class ArbitrarySetPostCondition<T> extends AbstractArbitraryExpress
 	}
 
 	public ArbitrarySetPostCondition(Class<T> clazz, ArbitraryExpression arbitraryExpression, Predicate<T> filter) {
-		this(clazz, arbitraryExpression, filter, Long.MAX_VALUE);
+		this(clazz, arbitraryExpression, filter, MAX_MANIPULATION_COUNT);
 	}
 
 	public Class<T> getClazz() {

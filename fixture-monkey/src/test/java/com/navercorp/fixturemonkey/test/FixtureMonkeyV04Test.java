@@ -498,4 +498,18 @@ class FixtureMonkeyV04Test {
 
 		then(actual).isEqualTo(expected);
 	}
+
+	@Property
+	void setWithLimit() {
+		// when
+		List<String> actual = SUT.giveMeBuilder(ComplexObject.class)
+			.size("strList", 3)
+			.set("strList[*]", "test", 1)
+			.sample()
+			.getStrList();
+
+		// then
+		then(actual).anyMatch("test"::equals);
+		then(actual).anyMatch(it -> !"test".equals(it));
+	}
 }

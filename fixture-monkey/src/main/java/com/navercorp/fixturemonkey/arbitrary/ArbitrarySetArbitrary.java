@@ -18,6 +18,8 @@
 
 package com.navercorp.fixturemonkey.arbitrary;
 
+import static com.navercorp.fixturemonkey.Constants.MAX_MANIPULATION_COUNT;
+
 import java.util.Objects;
 
 import javax.annotation.Nullable;
@@ -35,7 +37,7 @@ public final class ArbitrarySetArbitrary<T> extends AbstractArbitrarySet<T> {
 	}
 
 	public ArbitrarySetArbitrary(ArbitraryExpression arbitraryExpression, Arbitrary<T> value) {
-		this(arbitraryExpression, value, Long.MAX_VALUE);
+		this(arbitraryExpression, value, MAX_MANIPULATION_COUNT);
 	}
 
 	@Nullable
