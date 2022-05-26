@@ -61,6 +61,7 @@ import com.navercorp.fixturemonkey.arbitrary.ArbitraryNode;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryNullity;
 import com.navercorp.fixturemonkey.arbitrary.ArbitrarySet;
 import com.navercorp.fixturemonkey.arbitrary.ArbitrarySetArbitrary;
+import com.navercorp.fixturemonkey.arbitrary.ArbitrarySetLazyValue;
 import com.navercorp.fixturemonkey.arbitrary.ArbitrarySetPostCondition;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryTraverser;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryTree;
@@ -314,6 +315,12 @@ public class ArbitraryBuilder<T> {
 
 	public ArbitraryBuilder<T> set(@Nullable Object value) {
 		return this.set(HEAD_NAME, value);
+	}
+
+	public ArbitraryBuilder<T> setLazy(String expression, Supplier<?> supplier) {
+		ArbitraryExpression arbitraryExpression = ArbitraryExpression.from(expression);
+		this.builderManipulators.add(new ArbitrarySetLazyValue<>(arbitraryExpression, supplier));
+		return this;
 	}
 
 	private ArbitraryBuilder<T> setBuilder(String expression, ArbitraryBuilder<?> builder) {
@@ -632,7 +639,10 @@ public class ArbitraryBuilder<T> {
 		for (ArbitraryNode<T> foundNode : foundNodes) {
 			if (fixtureSet.isApplicable()) {
 				foundNode.apply(fixtureSet);
-				if (fixtureSet instanceof ArbitrarySet) {
+				boolean isArbitrarySetLazyValue =
+					fixtureSet instanceof ArbitrarySetLazyValue
+						&& !((ArbitrarySetLazyValue)fixtureSet).isArbitraryValue();
+				if (fixtureSet instanceof ArbitrarySet || isArbitrarySetLazyValue) {
 					traverser.traverse(foundNode, foundNode.isKeyOfMapStructure(), generator);
 				}
 			}

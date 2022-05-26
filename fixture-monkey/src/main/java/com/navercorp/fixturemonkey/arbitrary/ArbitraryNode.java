@@ -140,7 +140,10 @@ public final class ArbitraryNode<T> {
 
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	public void apply(PreArbitraryManipulator preArbitraryManipulator) {
-		if (preArbitraryManipulator instanceof ArbitrarySetArbitrary) {
+		boolean isArbitrarySetLazyValueArbitrary =
+			preArbitraryManipulator instanceof ArbitrarySetLazyValue
+				&& ((ArbitrarySetLazyValue)preArbitraryManipulator).isArbitraryValue();
+		if (preArbitraryManipulator instanceof ArbitrarySetArbitrary || isArbitrarySetLazyValueArbitrary) {
 			this.setFixed(true);
 			this.setArbitrary((Arbitrary<T>)preArbitraryManipulator.getApplicableValue());
 		} else if (preArbitraryManipulator instanceof AbstractArbitrarySet) {
