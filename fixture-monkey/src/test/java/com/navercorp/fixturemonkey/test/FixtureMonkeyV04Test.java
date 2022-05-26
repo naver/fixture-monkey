@@ -390,4 +390,30 @@ class FixtureMonkeyV04Test {
 		ComplexObject sample2 = fixedArbitraryBuilder.sample();
 		then(sample1).isEqualTo(sample2);
 	}
+
+	@Property
+	void setRootJavaType() {
+		// given
+		String expected = "test";
+
+		// when
+		String actual = SUT.giveMeBuilder(String.class)
+			.set(expected)
+			.sample();
+
+		then(actual).isEqualTo(expected);
+	}
+
+	@Property
+	void setRootComplexType() {
+		ComplexObject expected = new ComplexObject();
+		expected.setStr("test");
+
+		// when
+		ComplexObject actual = SUT.giveMeBuilder(ComplexObject.class)
+			.set(expected)
+			.sample();
+
+		then(actual).isEqualTo(expected);
+	}
 }

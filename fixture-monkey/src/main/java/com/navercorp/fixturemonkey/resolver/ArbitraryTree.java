@@ -82,6 +82,10 @@ final class ArbitraryTree {
 	}
 
 	Arbitrary<?> generate() {
+		if (rootNode.getArbitrary() != null) {
+			return rootNode.getArbitrary();
+		}
+
 		ArbitraryGeneratorContext context = generateContext(rootNode, null);
 		return this.generateOptions.getArbitraryGenerator(rootNode.getProperty())
 			.generate(context);
