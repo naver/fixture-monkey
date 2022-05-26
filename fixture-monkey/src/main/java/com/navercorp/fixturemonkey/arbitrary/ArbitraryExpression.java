@@ -287,9 +287,8 @@ public final class ArbitraryExpression implements Comparable<ArbitraryExpression
 		}
 
 		public boolean match(ArbitraryProperty arbitraryProperty) {
-			Class<?> actualType = Types.getActualType(arbitraryProperty.getProperty().getClass());
 			boolean samePropertyName = true;
-			if (!ElementProperty.class.isAssignableFrom(actualType)) {
+			if (!ElementProperty.class.isAssignableFrom(arbitraryProperty.getProperty().getClass())) {
 				samePropertyName = nameEquals(arbitraryProperty.getResolvePropertyName());
 			}
 
