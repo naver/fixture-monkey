@@ -19,6 +19,7 @@
 package com.navercorp.fixturemonkey.builder;
 
 import static com.navercorp.fixturemonkey.Constants.DEFAULT_ELEMENT_MAX_SIZE;
+import static com.navercorp.fixturemonkey.Constants.HEAD_NAME;
 import static java.util.stream.Collectors.toList;
 
 import java.util.List;
@@ -101,6 +102,11 @@ public final class ArbitraryBuilder<T> extends com.navercorp.fixturemonkey.Arbit
 			);
 		}
 		return this;
+	}
+
+	@Override
+	public ArbitraryBuilder<T> set(@Nullable Object value) {
+		return this.set(HEAD_NAME, value);
 	}
 
 	@Override
