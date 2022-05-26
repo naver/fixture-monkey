@@ -708,16 +708,11 @@ class SimpleManipulatorTest {
 				it.ofSize(1);
 				it.listElement(0, nestedIt -> {
 					nestedIt.ofSize(1);
-					nestedIt.listElement(0, nestednestedIt -> {
-						nestednestedIt.ofSize(1);
-						nestednestedIt.setElement(0, "hello");
-					});
-					// nestedIt.setElementPostCondition(0, String.class, postConditioned -> postConditioned.length() > 5);
+					nestedIt.setElementPostCondition(0, String.class, postConditioned -> postConditioned.length() > 5);
 				});
 			}))
 			.sample();
 
-		System.out.println(actual);
 		then(actual.getValues()).hasSize(1);
 		then(actual.getValues().get(0)).hasSize(1);
 		then(actual.getValues().get(0).get(0).length()).isGreaterThan(5);

@@ -17,10 +17,10 @@ import com.navercorp.fixturemonkey.test.MapSpecTestSpecs.MapObject;
 
 public class MapSpecTest {
 	private static final LabMonkey SUT = LabMonkey.labMonkey();
+	private static final ArbitraryTraverser traverser = SUT.giveMeTraverser();
 
 	@Property(tries = 1)
 	void mapSetKeyValue() {
-		ArbitraryTraverser traverser = SUT.giveMeTraverser();
 		Map<String, String> map = new HashMap<>();
 		map.put("key", "value");
 
@@ -37,7 +37,6 @@ public class MapSpecTest {
 
 	@Property(tries = 1)
 	void mapSetNestedKeyValue() {
-		ArbitraryTraverser traverser = SUT.giveMeTraverser();
 		Map<Map<String, String>, Map<String, String>> mapKeyValueMap = new HashMap<>();
 		Map<String, String> keyMap = new HashMap<>();
 		Map<String, String> valueMap = new HashMap<>();
@@ -65,4 +64,30 @@ public class MapSpecTest {
 		then(actualKeyMap.get("newKeyKey")).isEqualTo("newKeyValue");
 		then(actualValueMap.get("newValueKey")).isEqualTo("newValueValue");
 	}
+
+	// @Property(tries = 1)
+	// void mapSetEmptyMapMakeNewEntry() {
+	// 	MapObject actual = SUT.giveMeBuilder(MapObject.class)
+	// 		.spec(new ExpressionSpec(traverser).map("strMap", m -> {
+	// 			m.setKey("key", "key");
+	// 			m.setValue("key", "value");
+	// 		}))
+	// 		.sample();
+	//
+	// 	then(actual.getStrMap().get("key")).isEqualTo("value");
+	// }
+
+	// MapObject actual = SUT.giveMeBuilder(MapObject.class)
+	// 	.set("mapKeyValueMap", mapKeyValueMap)
+	// 	.setMap("mapKeyValueMap", m -> {
+	// 		m.setKey(keyMap, v -> {
+	// 			v.setValue("KeyKey", "newKeyValue"); // 키의 값
+	// 			v.setKey("newKeyKey"); // 키의 키
+	// 		});
+	// 		m.setValue(keyMap, k -> {
+	// 			k.setValue("ValueKey", "newValueValue"); // 값의 값
+	// 			k.setKey("newValueKey"); // 값의 키
+	// 		});
+	// 	})
+	// 	.sample();
 }
