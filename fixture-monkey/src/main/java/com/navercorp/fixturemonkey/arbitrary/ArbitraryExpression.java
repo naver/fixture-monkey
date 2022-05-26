@@ -34,7 +34,6 @@ import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.property.ElementProperty;
-import com.navercorp.fixturemonkey.api.type.Types;
 
 public final class ArbitraryExpression implements Comparable<ArbitraryExpression> {
 	private final List<Exp> expList;
@@ -287,10 +286,7 @@ public final class ArbitraryExpression implements Comparable<ArbitraryExpression
 		}
 
 		public boolean match(ArbitraryProperty arbitraryProperty) {
-			boolean samePropertyName = true;
-			if (!ElementProperty.class.isAssignableFrom(arbitraryProperty.getProperty().getClass())) {
-				samePropertyName = nameEquals(arbitraryProperty.getResolvePropertyName());
-			}
+			boolean samePropertyName = nameEquals(arbitraryProperty.getResolvePropertyName());
 
 			boolean sameIndex = true;
 			if (arbitraryProperty.getElementIndex() != null) {

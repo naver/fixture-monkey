@@ -35,6 +35,7 @@ public interface Property {
 
 	AnnotatedType getAnnotatedType();
 
+	@Nullable
 	String getName();
 
 	List<Annotation> getAnnotations();
