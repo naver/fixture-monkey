@@ -98,8 +98,9 @@ public final class MapEntryElementProperty implements Property {
 	}
 
 	@Override
+	@Nullable
 	public String getName() {
-		throw new UnsupportedOperationException("elementProperty getName is not support yet.");
+		return null;
 	}
 
 	@Override

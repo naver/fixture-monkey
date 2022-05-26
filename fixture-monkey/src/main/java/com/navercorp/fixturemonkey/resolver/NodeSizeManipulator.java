@@ -44,6 +44,7 @@ public final class NodeSizeManipulator implements NodeManipulator {
 				.withChildProperties(traversedNodeArbitraryProperty.getChildProperties())
 				.withContainerInfo(traversedNodeArbitraryProperty.getContainerInfo())
 		);
+		arbitraryNode.setArbitrary(traversedNode.getArbitrary());
 		arbitraryNode.setChildren(traversedNode.getChildren());
 	}
 }

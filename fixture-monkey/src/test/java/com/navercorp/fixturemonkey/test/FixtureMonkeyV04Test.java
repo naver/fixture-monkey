@@ -392,6 +392,88 @@ class FixtureMonkeyV04Test {
 	}
 
 	@Property
+	void apply() {
+		// when
+		String actual = SUT.giveMeBuilder(ComplexObject.class)
+			.set("str", "set")
+			.apply((it, builder) ->
+				builder.size("strList", 1)
+					.set("strList[0]", it.getStr())
+			)
+			.sample()
+			.getStrList()
+			.get(0);
+
+		then(actual).isEqualTo("set");
+	}
+
+	@Property
+	void applyWithoutAnyManipulators() {
+		// when
+		ComplexObject actual = SUT.giveMeBuilder(ComplexObject.class)
+			.apply((it, builder) ->
+				builder.size("strList", 1)
+					.set("strList[0]", it.getStr())
+			)
+			.sample();
+
+		// then
+		String actualStr = actual.getStr();
+		List<String> actualStrList = actual.getStrList();
+		then(actualStrList).hasSize(1);
+		then(actualStrList.get(0)).isEqualTo(actualStr);
+	}
+
+	@Property
+	void applyNotAffectedManipulatorsAfterApply() {
+		// when
+		String actual = SUT.giveMeBuilder(ComplexObject.class)
+			.set("str", "set")
+			.apply((it, builder) ->
+				builder.size("strList", 1)
+					.set("strList[0]", it.getStr())
+			)
+			.set("str", "afterApply")
+			.sample()
+			.getStrList()
+			.get(0);
+
+		then(actual).isEqualTo("set");
+	}
+
+	@Property
+	void acceptIfAlwaysTrue() {
+		// when
+		String actual = SUT.giveMeBuilder(ComplexObject.class)
+			.acceptIf(
+				it -> true,
+				builder -> builder.set("str", "set")
+			)
+			.sample()
+			.getStr();
+
+		then(actual).isEqualTo("set");
+	}
+
+	@Property
+	void acceptIf() {
+		// when
+		String actual = SUT.giveMeBuilder(ComplexObject.class)
+			.set("str", "set")
+			.acceptIf(
+				it -> "set".equals(it.getStr()),
+				builder -> builder
+					.size("strList", 1)
+					.set("strList[0]", "set")
+			)
+			.sample()
+			.getStrList()
+			.get(0);
+
+		then(actual).isEqualTo("set");
+	}
+
+	@Property
 	void setRootJavaType() {
 		// given
 		String expected = "test";
