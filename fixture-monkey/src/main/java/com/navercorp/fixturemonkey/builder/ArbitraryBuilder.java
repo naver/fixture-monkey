@@ -20,6 +20,7 @@ package com.navercorp.fixturemonkey.builder;
 
 import static com.navercorp.fixturemonkey.Constants.DEFAULT_ELEMENT_MAX_SIZE;
 import static com.navercorp.fixturemonkey.Constants.HEAD_NAME;
+import static com.navercorp.fixturemonkey.Constants.MAX_MANIPULATION_COUNT;
 import static java.util.stream.Collectors.toList;
 
 import java.util.ArrayList;
@@ -41,6 +42,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import com.navercorp.fixturemonkey.api.property.RootProperty;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryExpression;
+import com.navercorp.fixturemonkey.resolver.ApplyNodeCountManipulator;
 import com.navercorp.fixturemonkey.resolver.ArbitraryManipulator;
 import com.navercorp.fixturemonkey.resolver.ArbitraryResolver;
 import com.navercorp.fixturemonkey.resolver.ArbitraryTraverser;
@@ -84,17 +86,20 @@ public final class ArbitraryBuilder<T> extends com.navercorp.fixturemonkey.Arbit
 		return this;
 	}
 
-	@Override
-	public ArbitraryBuilder<T> set(
+	private ArbitraryBuilder<T> set(
 		String expression,
-		@Nullable Object value
+		@Nullable Object value,
+		int limit
 	) {
 		ExpressionNodeResolver nodeResolver = new ExpressionNodeResolver(ArbitraryExpression.from(expression));
 		if (value instanceof Arbitrary) {
 			manipulators.add(
 				new ArbitraryManipulator(
 					nodeResolver,
-					new NodeSetArbitraryManipulator<>((Arbitrary<?>)value)
+					new ApplyNodeCountManipulator(
+						new NodeSetArbitraryManipulator<>((Arbitrary<?>)value),
+						limit
+					)
 				)
 			);
 		} else if (value == null) {
@@ -108,11 +113,31 @@ public final class ArbitraryBuilder<T> extends com.navercorp.fixturemonkey.Arbit
 			manipulators.add(
 				new ArbitraryManipulator(
 					nodeResolver,
-					new NodeSetDecomposedValueManipulator<>(traverser, value)
+					new ApplyNodeCountManipulator(
+						new NodeSetDecomposedValueManipulator<>(traverser, value),
+						limit
+					)
 				)
 			);
 		}
 		return this;
+	}
+
+	@Override
+	public ArbitraryBuilder<T> set(
+		String expression,
+		@Nullable Object value,
+		long limit
+	) {
+		return this.set(expression, value, (int)limit);
+	}
+
+	@Override
+	public ArbitraryBuilder<T> set(
+		String expression,
+		@Nullable Object value
+	) {
+		return this.set(expression, value, MAX_MANIPULATION_COUNT);
 	}
 
 	@Override

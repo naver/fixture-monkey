@@ -18,7 +18,7 @@
 
 package com.navercorp.fixturemonkey.resolver;
 
-final class ApplyNodeCountManipulator implements NodeManipulator {
+public final class ApplyNodeCountManipulator implements NodeManipulator {
 	private final NodeManipulator nodeManipulator;
 	private int count;
 
