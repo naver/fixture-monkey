@@ -27,6 +27,7 @@ import net.jqwik.api.Arbitrary;
 
 public final class ArbitrarySetLazyValue<T> extends AbstractArbitrarySet<T> {
 	private final Supplier<T> supplier;
+
 	private long limit;
 
 	public ArbitrarySetLazyValue(ArbitraryExpression arbitraryExpression, Supplier<T> supplier, long limit) {
@@ -37,6 +38,10 @@ public final class ArbitrarySetLazyValue<T> extends AbstractArbitrarySet<T> {
 
 	public ArbitrarySetLazyValue(ArbitraryExpression arbitraryExpression, Supplier<T> supplier) {
 		this(arbitraryExpression, supplier, Long.MAX_VALUE);
+	}
+
+	public long getLimit() {
+		return limit;
 	}
 
 	@Nullable
@@ -81,7 +86,7 @@ public final class ArbitrarySetLazyValue<T> extends AbstractArbitrarySet<T> {
 			return false;
 		}
 		ArbitrarySetLazyValue<?> that = (ArbitrarySetLazyValue<?>)obj;
-		return getInputValue().equals(that.getInputValue());
+		return supplier.equals(that.supplier);
 	}
 
 	@Override

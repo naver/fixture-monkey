@@ -638,11 +638,18 @@ public class ArbitraryBuilder<T> {
 
 		for (ArbitraryNode<T> foundNode : foundNodes) {
 			if (fixtureSet.isApplicable()) {
+				if (fixtureSet instanceof ArbitrarySetLazyValue) {
+					ArbitraryExpression arbitraryExpression = fixtureSet.getArbitraryExpression();
+					Object value = fixtureSet.getInputValue();
+					long limit = ((ArbitrarySetLazyValue<T>)fixtureSet).getLimit();
+					if (((ArbitrarySetLazyValue<T>)fixtureSet).isArbitraryValue()) {
+						fixtureSet = new ArbitrarySetArbitrary<>(arbitraryExpression, (Arbitrary<T>)value, limit);
+					} else {
+						fixtureSet = new ArbitrarySet<>(arbitraryExpression, (T)value, limit);
+					}
+				}
 				foundNode.apply(fixtureSet);
-				boolean isArbitrarySetLazyValue =
-					fixtureSet instanceof ArbitrarySetLazyValue
-						&& !((ArbitrarySetLazyValue)fixtureSet).isArbitraryValue();
-				if (fixtureSet instanceof ArbitrarySet || isArbitrarySetLazyValue) {
+				if (fixtureSet instanceof ArbitrarySet) {
 					traverser.traverse(foundNode, foundNode.isKeyOfMapStructure(), generator);
 				}
 			}
