@@ -25,6 +25,8 @@ import javax.annotation.Nullable;
 
 import net.jqwik.api.Arbitrary;
 
+import com.navercorp.fixturemonkey.ArbitraryBuilder;
+
 public final class ArbitrarySetLazyValue<T> extends AbstractArbitrarySet<T> {
 	private final Supplier<T> supplier;
 
@@ -40,8 +42,19 @@ public final class ArbitrarySetLazyValue<T> extends AbstractArbitrarySet<T> {
 		this(arbitraryExpression, supplier, Long.MAX_VALUE);
 	}
 
-	public long getLimit() {
-		return limit;
+	@SuppressWarnings({"rawtypes"})
+	@Override
+	public void accept(ArbitraryBuilder arbitraryBuilder) {
+		BuilderManipulator builderManipulator;
+		ArbitraryExpression arbitraryExpression = this.getArbitraryExpression();
+		T value = this.getInputValue();
+		long limit = this.limit;
+		if (isArbitraryValue()) {
+			builderManipulator = new ArbitrarySetArbitrary<>(arbitraryExpression, (Arbitrary<?>)value, limit);
+		} else {
+			builderManipulator = new ArbitrarySet<>(arbitraryExpression, value, limit);
+		}
+		arbitraryBuilder.apply(builderManipulator);
 	}
 
 	@Nullable
