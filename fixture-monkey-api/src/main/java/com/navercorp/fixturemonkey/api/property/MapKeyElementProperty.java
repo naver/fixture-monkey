@@ -40,7 +40,7 @@ public final class MapKeyElementProperty implements Property {
 
 	private final AnnotatedType keyType;
 
-	private final int sequence;
+	private int sequence;
 
 	private final List<Annotation> annotations;
 	private Object fixedValue;
@@ -76,6 +76,10 @@ public final class MapKeyElementProperty implements Property {
 
 	public int getSequence() {
 		return sequence;
+	}
+
+	public void setSequence(int sequence) {
+		this.sequence = sequence;
 	}
 
 	@Override

@@ -3,6 +3,8 @@ package com.navercorp.fixturemonkey.test;
 import java.util.List;
 import java.util.Map;
 
+import javax.validation.constraints.Size;
+
 import lombok.Getter;
 import lombok.Setter;
 

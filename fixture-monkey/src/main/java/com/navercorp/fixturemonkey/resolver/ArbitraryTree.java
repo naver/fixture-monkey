@@ -18,6 +18,7 @@
 
 package com.navercorp.fixturemonkey.resolver;
 
+import static com.navercorp.fixturemonkey.Constants.KEY_ANY_INTEGER_VALUE;
 import static com.navercorp.fixturemonkey.Constants.KEY_INDEX_INTEGER_VALUE;
 import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.NOT_NULL_INJECT;
 
@@ -36,11 +37,16 @@ import org.apiguardian.api.API.Status;
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
 
+import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
+import com.navercorp.fixturemonkey.api.generator.ArbitraryPropertyGeneratorContext;
+import com.navercorp.fixturemonkey.api.generator.MapEntryElementArbitraryPropertyGenerator;
 import com.navercorp.fixturemonkey.api.option.GenerateOptions;
 import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty;
 import com.navercorp.fixturemonkey.api.property.MapKeyElementProperty;
+import com.navercorp.fixturemonkey.api.property.MapValueElementProperty;
+import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.random.Randoms;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryExpression;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryExpression.Cursor;
@@ -49,13 +55,16 @@ import com.navercorp.fixturemonkey.arbitrary.ArbitraryExpression.Cursor;
 final class ArbitraryTree {
 	private final ArbitraryNode rootNode;
 	private final GenerateOptions generateOptions;
+	private final ArbitraryTraverser traverser;
 
 	ArbitraryTree(
 		ArbitraryNode rootNode,
-		GenerateOptions generateOptions
+		GenerateOptions generateOptions,
+		ArbitraryTraverser traverser
 	) {
 		this.rootNode = rootNode;
 		this.generateOptions = generateOptions;
+		this.traverser = traverser;
 	}
 
 	List<ArbitraryNode> findAll(ArbitraryExpression arbitraryExpression) {
@@ -65,9 +74,13 @@ final class ArbitraryTree {
 		List<Cursor> cursors = arbitraryExpression.toCursors();
 		int keyIdx = 0;
 		for (Cursor cursor : cursors) {
-			if (cursor.getIndex() == KEY_INDEX_INTEGER_VALUE){
+			if (cursor.getIndex() == KEY_INDEX_INTEGER_VALUE) {
 				selectedNodes = retrieveNextMatchingMapNodes(selectedNodes,
 					arbitraryExpression.keys.get(keyIdx), arbitraryExpression.isSetKey.get(keyIdx));
+				keyIdx++;
+			} else if (cursor.getIndex() == KEY_ANY_INTEGER_VALUE) {
+				selectedNodes = MapInsertNewEntry(selectedNodes, arbitraryExpression.keys.get(keyIdx),
+					arbitraryExpression.isSetKey.get(keyIdx));
 				keyIdx++;
 			} else {
 				selectedNodes = retrieveNextMatchingNodes(selectedNodes, cursor);
@@ -94,11 +107,11 @@ final class ArbitraryTree {
 	private LinkedList<ArbitraryNode> retrieveNextMatchingMapNodes(List<ArbitraryNode> selectedNodes, Object key, Boolean isSetKey) {
 		LinkedList<ArbitraryNode> nextNodes = new LinkedList<>();
 		// selectedNode는 map
-		for (ArbitraryNode selectedNode: selectedNodes) {
+		for (ArbitraryNode selectedNode : selectedNodes) {
 			List<ArbitraryNode> children = selectedNode.getChildren();
 			boolean hasKey = false;
 			// child는 mapEntry
-			for (ArbitraryNode child: children) {
+			for (ArbitraryNode child : children) {
 				MapKeyElementProperty mapKeyElementProperty = (MapKeyElementProperty)child.getChildren().get(0).getProperty();
 				// 키 값이 일치하는지 비교하는 부분. 비교 방법 수정해야함.
 				if (key.equals(mapKeyElementProperty.getFixedValue())) {
@@ -112,11 +125,51 @@ final class ArbitraryTree {
 					}
 				}
 			}
-			//Todo: key가 없는 경우 entry를 새로 생성.
-			// if (!hasKey) {
-			// 	MapInsertNewEntry(selectedNode, key);
-			// }
+			//key가 없는 경우 entry를 새로 생성.
+			if (!hasKey) {
+				nextNodes = MapInsertNewEntry(selectedNodes, key, isSetKey);
+			}
 		}
+		return nextNodes;
+	}
+
+	private LinkedList<ArbitraryNode> MapInsertNewEntry(List<ArbitraryNode> selectedNodes, Object key, Boolean isSetKey) {
+		LinkedList<ArbitraryNode> nextNodes = new LinkedList<>();
+		//selectedNode는 map
+		for (ArbitraryNode selectedNode: selectedNodes) {
+			//generate new entry node
+			ArbitraryProperty arbitraryProperty = selectedNode.getArbitraryProperty();
+			ArbitraryContainerInfo containerInfo = arbitraryProperty
+				.getContainerInfo().withElementMinSize(1).withElementMaxSize(1);
+			ArbitraryNode newMapEntry = traverser.traverse(arbitraryProperty.getProperty(),
+				containerInfo).getChildren().get(0);
+
+			// set sequence
+			// MapKeyElementProperty keyElementProperty = (MapKeyElementProperty)newMapEntry.getChildren().get(0).getProperty();
+			// keyElementProperty.setSequence(selectedNode.getChildren().size());
+
+			//Add ChildProperty & EntryNode
+			arbitraryProperty.getChildProperties().add(newMapEntry.getProperty());
+			selectedNode.getChildren().add(newMapEntry);
+
+			// selectedNode.setArbitraryProperty(
+			// 	arbitraryProperty
+			// 		.withChildProperties(newMapProperty)
+			// 		//Todo: change min max size
+			// 		.withContainerInfo(arbitraryProperty.getContainerInfo())
+			// );
+
+
+			//return entry key or val node (depends on isSetKey)
+			//isSetValue인데 key가 없었으면 key set해줘야함
+			//set할때 값으로 set? Arbitrary로 set?? 입력된 키에 따라??
+			if (isSetKey) {
+				nextNodes.add(newMapEntry.getChildren().get(0));
+			} else {
+				nextNodes.add(newMapEntry.getChildren().get(1));
+			}
+		}
+
 		return nextNodes;
 	}
 

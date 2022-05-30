@@ -36,69 +36,67 @@ import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 
-public final class ArbitraryExpression implements Comparable<ArbitraryExpression> {
+public final class NewArbitraryExpression implements Comparable<NewArbitraryExpression> {
 	private final List<Exp> expList;
-	public List<Object> keys;
-	public List<Boolean> isSetKey;
 
-	private ArbitraryExpression(List<Exp> expList) {
+	private NewArbitraryExpression(List<Exp> expList) {
 		this.expList = expList;
 	}
 
-	private ArbitraryExpression(String expression) {
+	private NewArbitraryExpression(String expression) {
 		expList = Arrays.stream(expression.split("\\."))
-			.map(Exp::new)
+			.map(it -> new Exp(it, null, null))
 			.collect(toList());
 	}
 
-	private ArbitraryExpression(String expression, List<Object> keys, List<Boolean> isSetKey) {
+	private NewArbitraryExpression(String expression, List<Object> keys, List<Boolean> isSetKey) {
 		expList = Arrays.stream(expression.split("\\."))
-			.map(Exp::new)
+			//Todo: keys, isSetKey를 잘라서 넣어야함
+			.map(it -> new Exp(it, keys, isSetKey))
 			.collect(toList());
-		this.keys = keys;
-		this.isSetKey = isSetKey;
 	}
 
-	public static ArbitraryExpression from(String expression) {
-		return new ArbitraryExpression(expression);
+	public static NewArbitraryExpression from(String expression) {
+		return new NewArbitraryExpression(expression);
 	}
 
-	public static ArbitraryExpression from(String expression, List<Object> keys, List<Boolean> isSetKey) {
-		return new ArbitraryExpression(expression, keys, isSetKey);
+	public static NewArbitraryExpression from(String expression, List<Object> keys, List<Boolean> isSetKey) {
+		return new NewArbitraryExpression(expression, keys, isSetKey);
 	}
 
-	public ArbitraryExpression addFirst(String expression) {
+	public NewArbitraryExpression addFirst(String expression) {
 		String newStringExpression = expression + "." + this;
-		return new ArbitraryExpression(newStringExpression);
+		return new NewArbitraryExpression(newStringExpression);
 	}
 
-	public ArbitraryExpression addLast(String expression) {
+	public NewArbitraryExpression addLast(String expression) {
 		String newStringExpression = this + "." + expression;
-		return new ArbitraryExpression(newStringExpression);
+		return new NewArbitraryExpression(newStringExpression);
 	}
 
 	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
-	public ArbitraryExpression pollLast() {
+	public NewArbitraryExpression pollLast() {
+		//Todo:
 		if (expList.isEmpty()) {
 			return this;
 		}
 
 		List<Exp> newExpList = new ArrayList<>(this.expList);
-		int lastIndex = newExpList.size() - 1;
-		Exp lastExp = newExpList.get(lastIndex);
-		newExpList.remove(lastIndex);
-
-		if (!lastExp.index.isEmpty()) {
-			List<ExpIndex> newExpIndexList = new ArrayList<>(lastExp.index);
-			newExpIndexList.remove(newExpIndexList.size() - 1);
-			lastExp = new Exp(lastExp.name, newExpIndexList);
-			newExpList.add(lastExp);
-		}
-		return new ArbitraryExpression(newExpList);
+		// int lastIndex = newExpList.size() - 1;
+		// Exp lastExp = newExpList.get(lastIndex);
+		// newExpList.remove(lastIndex);
+		//
+		// if (!lastExp.index.isEmpty()) {
+		// 	List<ExpIndex> newExpIndexList = new ArrayList<>(lastExp.index);
+		// 	newExpIndexList.remove(newExpIndexList.size() - 1);
+		// 	lastExp = new Exp(lastExp.name, newExpIndexList);
+		// 	newExpList.add(lastExp);
+		// }
+		return new NewArbitraryExpression(newExpList);
 	}
 
 	@Override
-	public int compareTo(ArbitraryExpression arbitraryExpression) {
+	public int compareTo(NewArbitraryExpression arbitraryExpression) {
 		List<Exp> oExpList = arbitraryExpression.expList;
 
 		if (expList.size() != oExpList.size()) {
@@ -125,7 +123,7 @@ public final class ArbitraryExpression implements Comparable<ArbitraryExpression
 		if (obj == null || getClass() != obj.getClass()) {
 			return false;
 		}
-		ArbitraryExpression other = (ArbitraryExpression)obj;
+		NewArbitraryExpression other = (NewArbitraryExpression)obj;
 		return expList.equals(other.expList);
 	}
 
@@ -147,7 +145,7 @@ public final class ArbitraryExpression implements Comparable<ArbitraryExpression
 			.collect(toList());
 	}
 
-	private static final class ExpIndex implements Comparable<ExpIndex>{
+	private static final class ExpIndex implements Comparable<ExpIndex>, ExpPath {
 		public static final ExpIndex ALL_INDEX_EXP_INDEX = new ExpIndex(NO_OR_ALL_INDEX_INTEGER_VALUE);
 
 		private final int index;
@@ -192,7 +190,7 @@ public final class ArbitraryExpression implements Comparable<ArbitraryExpression
 		}
 	}
 
-	private static final class ExpKey implements Comparable<ExpKey> {
+	private static final class ExpKey implements Comparable<ExpKey>, ExpPath {
 		private final Object key;
 		private final Boolean isSetKey;
 
@@ -200,6 +198,11 @@ public final class ArbitraryExpression implements Comparable<ArbitraryExpression
 			this.key = key;
 			this.isSetKey = isSetKey;
 		}
+
+		public Object getKey() {
+			return key;
+		}
+
 		@Override
 		public int compareTo(ExpKey expKey) {
 			// Object인 key는 어떻게 Compare?
@@ -228,62 +231,25 @@ public final class ArbitraryExpression implements Comparable<ArbitraryExpression
 		}
 	}
 	private interface ExpPath {
-		// public int getIndex() {
-		// 	return index;
-		// }
+		String toString();
+
+		Cursor toCursor(); // Index, NameCursor, MapCursor
 	}
 
 	private static final class Exp implements Comparable<Exp> {
 		private final String name;
-		private final List<ExpIndex> index;
+		private final List<ExpPath> path;
 
-		private Exp(String name, List<ExpIndex> indices) {
+		private Exp(String name, List<ExpPath> path) {
 			this.name = name;
-			this.index = indices;
-			// this.key = new ArrayList<>();
-		}
-
-		public Exp(String expression) {
-			index = new ArrayList<>();
-			int li = expression.indexOf('[');
-			int ri = expression.indexOf(']');
-
-			if ((li != -1 && ri == -1) || (li == -1 && ri != -1)) {
-				throw new IllegalArgumentException("expression is invalid. expression : " + expression);
-			}
-
-			if (li == -1) {
-				this.name = expression;
-			} else {
-				this.name = expression.substring(0, li);
-				while (li != -1 && ri != -1) {
-					if (ri - li > 1) {
-						String indexString = expression.substring(li + 1, ri);
-						if (indexString.equals("?")) {
-							this.index.add(new ExpIndex(KEY_ANY_INTEGER_VALUE));
-						} else {
-							final int indexValue = indexString.equals(ALL_INDEX_STRING)
-								? NO_OR_ALL_INDEX_INTEGER_VALUE
-								: Integer.parseInt(indexString);
-							this.index.add(new ExpIndex(indexValue));
-						}
-					} // key 위치를 판별하기 위해 임시로 추가
-					else if (ri - li == 1) {
-						this.index.add(new ExpIndex(KEY_INDEX_INTEGER_VALUE));
-					}
-					expression = expression.substring(ri + 1);
-					li = expression.indexOf('[');
-					ri = expression.indexOf(']');
-				}
-			}
+			this.path = path;
 		}
 
 		public Exp(String expression, List<Object> keys, List<Boolean> isSetKey) {
-			index = new ArrayList<>();
-			// key = new ArrayList<>();
+			this.path = new ArrayList<>();
 			int li = expression.indexOf('[');
 			int ri = expression.indexOf(']');
-
+			int keyCnt = 0;
 			if ((li != -1 && ri == -1) || (li == -1 && ri != -1)) {
 				throw new IllegalArgumentException("expression is invalid. expression : " + expression);
 			}
@@ -295,18 +261,23 @@ public final class ArbitraryExpression implements Comparable<ArbitraryExpression
 				while (li != -1 && ri != -1) {
 					if (ri - li > 1) {
 						String indexString = expression.substring(li + 1, ri);
-						if (indexString.equals("?")) {
-							this.index.add(new ExpIndex(KEY_ANY_INTEGER_VALUE));
-							continue;
+						//* 인 경우
+						if (indexString.equals(ALL_INDEX_STRING)) {
+							this.path.add(new ExpIndex(NO_OR_ALL_INDEX_INTEGER_VALUE));
 						}
-						final int indexValue = indexString.equals(ALL_INDEX_STRING)
-							? NO_OR_ALL_INDEX_INTEGER_VALUE
-							: Integer.parseInt(indexString);
-						this.index.add(new ExpIndex(indexValue));
-					}
-					// key 위치를 판별하기 위해 임시로 추가
+						//?인 경우
+						else if (indexString.equals("?")) {
+							this.path.add(new ExpKey(keys.get(keyCnt), isSetKey.get(keyCnt)));
+							keyCnt++;
+						}
+						//Index일 경우
+						else {
+							this.path.add(new ExpIndex(Integer.parseInt(indexString)));
+						}
+					} //Key일 경우
 					else if (ri - li == 1) {
-						this.index.add(new ExpIndex(KEY_INDEX_INTEGER_VALUE));
+						this.path.add(new ExpKey(keys.get(keyCnt), isSetKey.get(keyCnt)));
+						keyCnt++;
 					}
 					expression = expression.substring(ri + 1);
 					li = expression.indexOf('[');
@@ -319,8 +290,8 @@ public final class ArbitraryExpression implements Comparable<ArbitraryExpression
 			List<Cursor> steps = new ArrayList<>();
 			String expName = this.getName();
 			steps.add(new ExpNameCursor(expName));
-			steps.addAll(this.getIndex().stream()
-				.map(it -> new ExpIndexCursor(expName, it.getIndex()))
+			steps.addAll(this.getPath().stream()
+				.map(ExpPath::toCursor)
 				.collect(toList()));
 			return steps;
 		}
@@ -329,12 +300,12 @@ public final class ArbitraryExpression implements Comparable<ArbitraryExpression
 			return name;
 		}
 
-		public List<ExpIndex> getIndex() {
-			return index;
+		public List<ExpPath> getPath() {
+			return path;
 		}
 
 		public String toString() {
-			String indexBrackets = index.stream()
+			String indexBrackets = path.stream()
 				.map(i -> "[" + i.toString() + "]")
 				.collect(Collectors.joining());
 			return name + indexBrackets;
@@ -342,21 +313,23 @@ public final class ArbitraryExpression implements Comparable<ArbitraryExpression
 
 		@Override
 		public int compareTo(Exp exp) {
-			List<ExpIndex> indices = this.getIndex();
-			List<ExpIndex> oIndices = exp.getIndex();
-
-			if (exp.name.equals(this.name)) {
-				int indexLength = Math.min(oIndices.size(), indices.size());
-				for (int i = 0; i < indexLength; i++) {
-					ExpIndex index = indices.get(i);
-					ExpIndex oIndex = oIndices.get(i);
-					int indexCompare = oIndex.compareTo(index);
-					if (indexCompare != 0) {
-						return indexCompare;
-					}
-				}
-			}
-			return Integer.compare(indices.size(), oIndices.size());
+			//ToDo:
+			return 0;
+			// List<ExpIndex> indices = this.getIndex();
+			// List<ExpIndex> oIndices = exp.getIndex();
+			//
+			// if (exp.name.equals(this.name)) {
+			// 	int indexLength = Math.min(oIndices.size(), indices.size());
+			// 	for (int i = 0; i < indexLength; i++) {
+			// 		ExpIndex index = indices.get(i);
+			// 		ExpIndex oIndex = oIndices.get(i);
+			// 		int indexCompare = oIndex.compareTo(index);
+			// 		if (indexCompare != 0) {
+			// 			return indexCompare;
+			// 		}
+			// 	}
+			// }
+			// return Integer.compare(indices.size(), oIndices.size());
 		}
 
 		@Override
@@ -368,12 +341,12 @@ public final class ArbitraryExpression implements Comparable<ArbitraryExpression
 				return false;
 			}
 			Exp exp = (Exp)obj;
-			return name.equals(exp.name) && index.equals(exp.index);
+			return name.equals(exp.name) && path.equals(exp.path);
 		}
 
 		@Override
 		public int hashCode() {
-			return Objects.hash(name, index);
+			return Objects.hash(name, path);
 		}
 	}
 
@@ -393,6 +366,8 @@ public final class ArbitraryExpression implements Comparable<ArbitraryExpression
 			}
 			return samePropertyName && sameIndex;
 		}
+
+		//Todo: match method for Key
 
 		public boolean isNotHeadName() {
 			return !(this instanceof ExpNameCursor) || !HEAD_NAME.equals(this.getName());
@@ -441,13 +416,20 @@ public final class ArbitraryExpression implements Comparable<ArbitraryExpression
 
 	static final class ExpIndexCursor extends Cursor {
 		ExpIndexCursor(String name, int index) {
-			super(name, index);
+			super(name, index, null);
 		}
 	}
 
 	public static final class ExpNameCursor extends Cursor {
 		ExpNameCursor(String name) {
-			super(name, NO_OR_ALL_INDEX_INTEGER_VALUE);
+			super(name, NO_OR_ALL_INDEX_INTEGER_VALUE, null);
+		}
+	}
+
+	public static final class ExpKeyCursor extends Cursor {
+		// null 대신 키를 나타내는 특정 int?
+		ExpKeyCursor(String name, Object key) {
+			super(name, -1, key);
 		}
 	}
 

@@ -50,13 +50,13 @@ public class MapSpec implements ExpressionSpecVisitor {
 
 	//새로운 entry를 추가하고 key를 value로 설정.
 	public MapSpec setKey(Object value){
-		return setKey(value, value);
+		return setKey("?", value);
 	}
 
 	// 기존 entry의 key의 값을 value로 교체. 일치하는 키가 없다면 새로운 Entry 생성 후 key의 값을 value로 설정.
 	public MapSpec setKey(Object key, Object value) {
 		MapKey mapKey = getMapKey(key,true);
-		addSet(this.mapName+"[]", mapKey, value);
+		addSet(this.mapName+"[?]", mapKey, value);
 		return this;
 	}
 
