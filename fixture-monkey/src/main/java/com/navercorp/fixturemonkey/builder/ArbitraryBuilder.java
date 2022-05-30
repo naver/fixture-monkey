@@ -47,6 +47,7 @@ import com.navercorp.fixturemonkey.resolver.ArbitraryManipulator;
 import com.navercorp.fixturemonkey.resolver.ArbitraryResolver;
 import com.navercorp.fixturemonkey.resolver.ArbitraryTraverser;
 import com.navercorp.fixturemonkey.resolver.ExpressionNodeResolver;
+import com.navercorp.fixturemonkey.resolver.NodeNullityManipulator;
 import com.navercorp.fixturemonkey.resolver.NodeSetArbitraryManipulator;
 import com.navercorp.fixturemonkey.resolver.NodeSetDecomposedValueManipulator;
 import com.navercorp.fixturemonkey.resolver.NodeSetLazyManipulator;
@@ -103,12 +104,7 @@ public final class ArbitraryBuilder<T> extends com.navercorp.fixturemonkey.Arbit
 				)
 			);
 		} else if (value == null) {
-			manipulators.add(
-				new ArbitraryManipulator(
-					nodeResolver,
-					new NodeSetArbitraryManipulator<>(Arbitraries.just(null)) // TODO: nullInject as 1.0
-				)
-			);
+			this.setNull(expression);
 		} else {
 			manipulators.add(
 				new ArbitraryManipulator(
@@ -222,6 +218,24 @@ public final class ArbitraryBuilder<T> extends com.navercorp.fixturemonkey.Arbit
 				consumer.accept(builder);
 			}
 		});
+	}
+
+	@Override
+	public ArbitraryBuilder<T> setNull(String expression) {
+		this.manipulators.add(new ArbitraryManipulator(
+			new ExpressionNodeResolver(ArbitraryExpression.from(expression)),
+			new NodeNullityManipulator(true)
+		));
+		return this;
+	}
+
+	@Override
+	public ArbitraryBuilder<T> setNotNull(String expression) {
+		this.manipulators.add(new ArbitraryManipulator(
+			new ExpressionNodeResolver(ArbitraryExpression.from(expression)),
+			new NodeNullityManipulator(false)
+		));
+		return this;
 	}
 
 	@SuppressWarnings("unchecked")

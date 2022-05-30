@@ -512,4 +512,100 @@ class FixtureMonkeyV04Test {
 		then(actual).anyMatch("test"::equals);
 		then(actual).anyMatch(it -> !"test".equals(it));
 	}
+
+	@Property
+	void setNull() {
+		// when
+		String actual = SUT.giveMeBuilder(ComplexObject.class)
+			.setNull("str")
+			.sample()
+			.getStr();
+
+		// then
+		then(actual).isNull();
+	}
+
+	@Property
+	void setNullList() {
+		// when
+		List<String> actual = SUT.giveMeBuilder(ComplexObject.class)
+			.setNull("strList")
+			.sample()
+			.getStrList();
+
+		// then
+		then(actual).isNull();
+	}
+
+	@Property
+	void setNullMap() {
+		// when
+		Map<String, SimpleObject> actual = SUT.giveMeBuilder(ComplexObject.class)
+			.setNull("map")
+			.sample()
+			.getMap();
+
+		// then
+		then(actual).isNull();
+	}
+
+	@Property
+	void setNullMapEntry() {
+		// when
+		Map.Entry<String, SimpleObject> actual = SUT.giveMeBuilder(ComplexObject.class)
+			.setNull("mapEntry")
+			.sample()
+			.getMapEntry();
+
+		// then
+		then(actual).isNull();
+	}
+
+	@Property
+	void setNotNullString() {
+		// when
+		String actual = SUT.giveMeBuilder(ComplexObject.class)
+			.setNotNull("str")
+			.sample()
+			.getStr();
+
+		// then
+		then(actual).isNotNull();
+	}
+
+	@Property
+	void setNotNullList() {
+		// when
+		List<String> actual = SUT.giveMeBuilder(ComplexObject.class)
+			.setNotNull("strList")
+			.sample()
+			.getStrList();
+
+		// then
+		then(actual).isNotNull();
+	}
+
+	@Property
+	void setNotNullMap() {
+		// when
+		Map<String, SimpleObject> actual = SUT.giveMeBuilder(ComplexObject.class)
+			.setNotNull("map")
+			.sample()
+			.getMap();
+
+		// then
+		then(actual).isNotNull();
+	}
+
+	@Property
+	void setNotNullMapEntry() {
+		// when
+		Map.Entry<String, SimpleObject> actual = SUT.giveMeBuilder(ComplexObject.class)
+			.setNotNull("mapEntry")
+			.sample()
+			.getMapEntry();
+
+		// then
+		then(actual).isNotNull();
+	}
 }
