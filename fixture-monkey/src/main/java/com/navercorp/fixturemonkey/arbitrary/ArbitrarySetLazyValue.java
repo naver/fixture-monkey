@@ -23,13 +23,16 @@ import java.util.function.Supplier;
 
 import javax.annotation.Nullable;
 
+import org.apiguardian.api.API;
+import org.apiguardian.api.API.Status;
+
 import net.jqwik.api.Arbitrary;
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 
+@API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class ArbitrarySetLazyValue<T> extends AbstractArbitrarySet<T> {
 	private final Supplier<T> supplier;
-
 	private long limit;
 
 	public ArbitrarySetLazyValue(ArbitraryExpression arbitraryExpression, Supplier<T> supplier, long limit) {
@@ -45,11 +48,11 @@ public final class ArbitrarySetLazyValue<T> extends AbstractArbitrarySet<T> {
 	@SuppressWarnings({"rawtypes"})
 	@Override
 	public void accept(ArbitraryBuilder arbitraryBuilder) {
-		BuilderManipulator builderManipulator;
 		ArbitraryExpression arbitraryExpression = this.getArbitraryExpression();
-		T value = this.getInputValue();
+		T value = this.getApplicableValue();
 		long limit = this.limit;
-		if (isArbitraryValue()) {
+		BuilderManipulator builderManipulator;
+		if (value instanceof Arbitrary) {
 			builderManipulator = new ArbitrarySetArbitrary<>(arbitraryExpression, (Arbitrary<?>)value, limit);
 		} else {
 			builderManipulator = new ArbitrarySet<>(arbitraryExpression, value, limit);
@@ -71,10 +74,6 @@ public final class ArbitrarySetLazyValue<T> extends AbstractArbitrarySet<T> {
 	@Override
 	public boolean isApplicable() {
 		return limit > 0;
-	}
-
-	public boolean isArbitraryValue() {
-		return getInputValue() instanceof Arbitrary;
 	}
 
 	@Override
