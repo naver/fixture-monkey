@@ -18,7 +18,10 @@
 
 package com.navercorp.fixturemonkey.resolver;
 
-class NodeNullityManipulator implements NodeManipulator {
+import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.ALWAYS_NULL_INJECT;
+import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.NOT_NULL_INJECT;
+
+public class NodeNullityManipulator implements NodeManipulator {
 	private final boolean toNull;
 
 	public NodeNullityManipulator(boolean toNull) {
@@ -27,6 +30,16 @@ class NodeNullityManipulator implements NodeManipulator {
 
 	@Override
 	public void manipulate(ArbitraryNode arbitraryNode) {
-		arbitraryNode.setActive(!toNull);
+		if (toNull) {
+			arbitraryNode.setArbitraryProperty(
+				arbitraryNode.getArbitraryProperty()
+					.withNullInject(ALWAYS_NULL_INJECT)
+			);
+		} else {
+			arbitraryNode.setArbitraryProperty(
+				arbitraryNode.getArbitraryProperty()
+					.withNullInject(NOT_NULL_INJECT)
+			);
+		}
 	}
 }

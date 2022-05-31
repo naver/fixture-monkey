@@ -39,8 +39,6 @@ final class ArbitraryNode {
 	@Nullable
 	private Arbitrary<?> arbitrary;
 
-	private boolean active = true; // isNull
-
 	ArbitraryNode(
 		ArbitraryProperty arbitraryProperty,
 		List<ArbitraryNode> children
@@ -76,13 +74,5 @@ final class ArbitraryNode {
 
 	public void setArbitrary(@Nullable Arbitrary<?> arbitrary) {
 		this.arbitrary = arbitrary;
-	}
-
-	public boolean isActive() {
-		return this.active;
-	}
-
-	public void setActive(boolean active) {
-		this.active = active;
 	}
 }

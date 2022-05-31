@@ -37,6 +37,7 @@ import com.navercorp.fixturemonkey.api.type.Types;
 public final class DefaultNullInjectGenerator implements NullInjectGenerator {
 	public static final double NOT_NULL_INJECT = 0.0d;
 	public static final double DEFAULT_NULL_INJECT = 0.2d;
+	public static final double ALWAYS_NULL_INJECT = 1.0d;
 	public static final List<String> DEFAULT_NULLABLE_ANNOTATION_TYPES = Collections.unmodifiableList(
 		Arrays.asList(
 			"javax.annotation.Nullable",
