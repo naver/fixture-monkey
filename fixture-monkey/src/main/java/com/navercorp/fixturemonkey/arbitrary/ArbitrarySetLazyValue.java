@@ -83,26 +83,6 @@ public final class ArbitrarySetLazyValue<T> extends AbstractArbitrarySet<T> {
 
 	@Override
 	public ArbitrarySetLazyValue<T> copy() {
-		return new ArbitrarySetLazyValue<>(this.getArbitraryExpression(), this.supplier, this.limit);
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null || getClass() != obj.getClass()) {
-			return false;
-		}
-		if (!super.equals(obj)) {
-			return false;
-		}
-		ArbitrarySetLazyValue<?> that = (ArbitrarySetLazyValue<?>)obj;
-		return supplier.equals(that.supplier);
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(super.hashCode(), getInputValue());
+		return this;
 	}
 }
