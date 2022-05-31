@@ -23,10 +23,15 @@ import static com.navercorp.fixturemonkey.Constants.HEAD_NAME;
 import static com.navercorp.fixturemonkey.Constants.MAX_MANIPULATION_COUNT;
 import static java.util.stream.Collectors.toList;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -41,6 +46,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import com.navercorp.fixturemonkey.api.property.RootProperty;
 import com.navercorp.fixturemonkey.api.type.Types;
+import com.navercorp.fixturemonkey.api.type.Types.UnidentifiableType;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryExpression;
 import com.navercorp.fixturemonkey.resolver.ApplyNodeCountManipulator;
 import com.navercorp.fixturemonkey.resolver.ArbitraryManipulator;
@@ -281,6 +287,63 @@ public final class ArbitraryBuilder<T> extends com.navercorp.fixturemonkey.Arbit
 			)
 		);
 		return this;
+	}
+
+	@Override
+	public <U> ArbitraryBuilder<U> map(Function<T, U> mapper) {
+		U mapped = mapper.apply(this.sample());
+
+		if (mapped == null) {
+			RootProperty property = new RootProperty(generateAnnotatedTypeWithType(UnidentifiableType.class));
+			return new ArbitraryBuilder<>(
+				property,
+				Collections.emptyList(), // could not apply any manipulators, since type is unidentifiable.
+				this.resolver,
+				this.traverser,
+				this.validator
+			);
+		}
+
+		RootProperty property = new RootProperty(generateAnnotatedTypeWithType(mapped.getClass()));
+		List<ArbitraryManipulator> manipulators = new ArrayList<>();
+		manipulators.add(
+			new ArbitraryManipulator(
+				new RootNodeResolver(),
+				new NodeSetDecomposedValueManipulator<>(traverser, mapped)
+			)
+		);
+
+		return new ArbitraryBuilder<>(
+			property,
+			manipulators,
+			resolver,
+			traverser,
+			validator
+		);
+	}
+
+	private <U> AnnotatedType generateAnnotatedTypeWithType(Class<U> type) {
+		return new AnnotatedType() {
+			@Override
+			public Type getType() {
+				return type;
+			}
+
+			@Override
+			public <A extends Annotation> A getAnnotation(Class<A> annotationClass) {
+				return null;
+			}
+
+			@Override
+			public Annotation[] getAnnotations() {
+				return new Annotation[0];
+			}
+
+			@Override
+			public Annotation[] getDeclaredAnnotations() {
+				return new Annotation[0];
+			}
+		};
 	}
 
 	@SuppressWarnings("unchecked")

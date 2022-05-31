@@ -375,4 +375,9 @@ public class Types {
 			}
 		};
 	}
+
+	public static class UnidentifiableType {
+		private UnidentifiableType() {
+		}
+	}
 }
