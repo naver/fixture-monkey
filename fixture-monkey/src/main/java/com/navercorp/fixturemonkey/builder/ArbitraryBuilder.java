@@ -21,7 +21,10 @@ package com.navercorp.fixturemonkey.builder;
 import static com.navercorp.fixturemonkey.Constants.DEFAULT_ELEMENT_MAX_SIZE;
 import static java.util.stream.Collectors.toList;
 
+import java.util.AbstractMap;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
@@ -35,11 +38,11 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import com.navercorp.fixturemonkey.api.property.RootProperty;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryExpression;
-import com.navercorp.fixturemonkey.builder.ExpressionSpec;
 import com.navercorp.fixturemonkey.resolver.ArbitraryManipulator;
 import com.navercorp.fixturemonkey.resolver.ArbitraryResolver;
 import com.navercorp.fixturemonkey.resolver.ArbitraryTraverser;
 import com.navercorp.fixturemonkey.resolver.ExpressionNodeResolver;
+import com.navercorp.fixturemonkey.resolver.NodeAddMapEntryManipulator;
 import com.navercorp.fixturemonkey.resolver.NodeSetArbitraryManipulator;
 import com.navercorp.fixturemonkey.resolver.NodeSetDecomposedValueManipulator;
 import com.navercorp.fixturemonkey.resolver.NodeSizeManipulator;
@@ -103,6 +106,16 @@ public final class ArbitraryBuilder<T> extends com.navercorp.fixturemonkey.Arbit
 		return this;
 	}
 
+	public void set(String mapName, List isSetKey, Object key, Object value) {
+		ExpressionNodeResolver nodeResolver = new ExpressionNodeResolver(ArbitraryExpression.from(mapName, isSetKey));
+		manipulators.add(
+			new ArbitraryManipulator(
+				nodeResolver,
+				new NodeAddMapEntryManipulator(traverser, key, value)
+			)
+		);
+	}
+
 	@Override
 	public ArbitraryBuilder<T> minSize(String expression, int min) {
 		return this.size(expression, min, min + DEFAULT_ELEMENT_MAX_SIZE);
@@ -137,8 +150,10 @@ public final class ArbitraryBuilder<T> extends com.navercorp.fixturemonkey.Arbit
 		return this;
 	}
 
-	public ArbitraryBuilder<T> spec(ExpressionSpec expressionSpec) {
-		this.manipulators.addAll(expressionSpec.getManipulators());
+	public ArbitraryBuilder<T> setMap(String mapName, Consumer<MapSpec> mapSpecSupplier) {
+		MapSpec mapSpec = new MapSpec(mapName);
+		mapSpecSupplier.accept(mapSpec);
+		mapSpec.visit(this);
 		return this;
 	}
 

@@ -19,122 +19,107 @@
 package com.navercorp.fixturemonkey.builder;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class MapSpec implements ExpressionSpecVisitor {
-	//
-	private final String mapName;
-	private final MapKey mapKey;
-	private final List<ExpressionSpecVisitor> next;
-	private final List<MapSpecSet> setList;
+import net.jqwik.api.Arbitrary;
 
-	private Integer minSize = null;
-	private Integer maxSize = null;
-	private boolean notNull = false;
+import com.navercorp.fixturemonkey.arbitrary.ArbitraryExpression;
+import com.navercorp.fixturemonkey.resolver.ArbitraryManipulator;
+import com.navercorp.fixturemonkey.resolver.ArbitraryTraverser;
+import com.navercorp.fixturemonkey.resolver.ExpressionNodeResolver;
+import com.navercorp.fixturemonkey.resolver.NodeSetArbitraryManipulator;
+import com.navercorp.fixturemonkey.resolver.NodeSetDecomposedValueManipulator;
+
+public class MapSpec implements ArbitraryBuilderVisitor {
+	private final String mapName;
+	private final List<Boolean> isSetKey;
+	private final List<ArbitraryBuilderVisitor> next;
+	private final List<MapSpecSet> setList;
 
 	public MapSpec(String mapName) {
 		this.mapName = mapName;
-		this.mapKey = new MapKey();
+		this.isSetKey = new ArrayList<>();
 		this.next = new ArrayList<>();
 		this.setList = new ArrayList<>();
 	}
 
-	public MapSpec(String mapName, MapKey mapKey) {
+	public MapSpec(String mapName, List<Boolean> isSetKey) {
 		this.mapName = mapName;
-		this.mapKey = mapKey;
+		this.isSetKey = isSetKey;
 		this.next = new ArrayList<>();
 		this.setList = new ArrayList<>();
 	}
 
-	//새로운 entry를 추가하고 key를 value로 설정.
-	public MapSpec setKey(Object value){
-		return setKey("?", value);
-	}
-
-	// 기존 entry의 key의 값을 value로 교체. 일치하는 키가 없다면 새로운 Entry 생성 후 key의 값을 value로 설정.
-	public MapSpec setKey(Object key, Object value) {
-		MapKey mapKey = getMapKey(key,true);
-		addSet(this.mapName+"[?]", mapKey, value);
+	public MapSpec addKey(Object key) {
+		addSet(mapName, isSetKey, key, null);
 		return this;
 	}
 
-	public MapSpec setValue(Object key, Object value) {
-		MapKey mapKey = getMapKey(key,false);
-		addSet(this.mapName+"[]", mapKey, value);
-		return this;
-	}
-
-	public MapSpec setKey(Object key, Consumer<MapSpec> consumer) {
-		MapKey mapKey = getMapKey(key,true);
-		MapSpec mapSpec = new MapSpec(this.mapName+"[]", mapKey);
+	public MapSpec addKey(Consumer<MapSpec> consumer) {
+		List<Boolean> isSetKey = getIsSetKey(true);
+		MapSpec mapSpec = new MapSpec(this.mapName+"[]", isSetKey);
 		consumer.accept(mapSpec);
 		addNext(mapSpec);
 		return this;
 	}
 
-	public MapSpec setValue(Object key, Consumer<MapSpec> consumer) {
-		MapKey mapKey = getMapKey(key,false);
-		MapSpec mapSpec = new MapSpec(this.mapName+"[]", mapKey);
+	public MapSpec addValue(Object value) {
+		addSet(mapName, isSetKey, null, value);
+		return this;
+	}
+
+	public MapSpec addValue(Consumer<MapSpec> consumer) {
+		List<Boolean> isSetKey = getIsSetKey(false);
+		MapSpec mapSpec = new MapSpec(this.mapName+"[]", isSetKey);
 		consumer.accept(mapSpec);
 		addNext(mapSpec);
 		return this;
 	}
 
-	private MapKey getMapKey(Object key, Boolean bool) {
-		List<Object> keys = new ArrayList<>();
-		keys.addAll(this.mapKey.keys);
-		keys.add(key);
+	public MapSpec put(Object key, Object value) {
+		addSet(mapName, isSetKey, key, value);
+		return this;
+	}
+
+	private List<Boolean> getIsSetKey(Boolean bool) {
 		List<Boolean> isSetKey = new ArrayList<>();
-		isSetKey.addAll(this.mapKey.isSetKey);
+		isSetKey.addAll(this.isSetKey);
 		isSetKey.add(bool);
-		return new MapKey(keys, isSetKey);
+		return isSetKey;
 	}
 
-	private void addNext(ExpressionSpecVisitor specVisitor) {
-		this.next.add(specVisitor);
+	private void addNext(ArbitraryBuilderVisitor arbitraryBuilderVisitor) {
+		this.next.add(arbitraryBuilderVisitor);
 	}
-	private <T> void addSet(String mapName, MapKey mapKey, T object) {
-		this.setList.add(new MapSpecSet<>(mapName, mapKey, object));
+	private <K,V> void addSet(String mapName, List<Boolean> isSetKey, K key, V value) {
+		this.setList.add(new MapSpecSet<>(mapName, isSetKey, key, value));
 	}
 
 	@Override
-	public void visit(ExpressionSpec expressionSpec) {
-		this.setList.forEach(it ->
-			expressionSpec.set(it.mapName, it.mapKey.keys, it.mapKey.isSetKey, it.value));
+	public void visit(ArbitraryBuilder arbitraryBuilder) {
+		this.setList.forEach(it -> {
+			arbitraryBuilder.set(it.mapName, it.isSetKey, it.key, it.value);
+		});
 
-		for (ExpressionSpecVisitor nextMapSpec : this.next) {
-			nextMapSpec.visit(expressionSpec);
+		for (ArbitraryBuilderVisitor nextMapSpec : this.next) {
+			nextMapSpec.visit(arbitraryBuilder);
 		}
 	}
 
-	private static class MapSpecSet<T> {
-
+	private static class MapSpecSet<K,V> {
 		private final String mapName;
-		private final MapKey mapKey;
-		private final T value;
-
-		public MapSpecSet(String mapName, MapKey mapKey, T value) {
-			this.mapName = mapName;
-			this.mapKey = mapKey;
-			this.value = value;
-		}
-	}
-
-	//값을 설정해야하는 노드를 찾기 위한 정보를 저장하는 클래스
-	private static class MapKey {
-		private final List<Object> keys;
-		// Key의 값을 바꾸고 싶은지, Value의 값을 바꾸고 싶은지 히스토리를 기록. boolean list의 변수명??
 		private final List<Boolean> isSetKey;
+		private final K key;
+		private final V value;
 
-		public MapKey() {
-			this.keys = new ArrayList<>();
-			this.isSetKey = new ArrayList<>();
-		}
-		public MapKey(List<Object> key, List<Boolean> isSetKey) {
-			this.keys = key;
+		public MapSpecSet(String mapName, List<Boolean> isSetKey, K key, V value) {
+			this.mapName = mapName;
 			this.isSetKey = isSetKey;
+			this.key = key;
+			this.value = value;
 		}
 	}
 }

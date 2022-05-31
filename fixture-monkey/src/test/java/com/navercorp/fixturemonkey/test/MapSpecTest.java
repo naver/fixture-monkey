@@ -4,106 +4,103 @@ import static com.navercorp.fixturemonkey.test.SimpleManipulatorTestSpecs.SUT;
 import static org.assertj.core.api.BDDAssertions.then;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.assertj.core.data.MapEntry;
 
 import net.jqwik.api.Property;
 
 import com.navercorp.fixturemonkey.LabMonkey;
-import com.navercorp.fixturemonkey.builder.ExpressionSpec;
 import com.navercorp.fixturemonkey.resolver.ArbitraryTraverser;
 import com.navercorp.fixturemonkey.test.MapSpecTestSpecs.MapObject;
 
 public class MapSpecTest {
 	private static final LabMonkey SUT = LabMonkey.labMonkey();
-	private static final ArbitraryTraverser traverser = SUT.giveMeTraverser();
 
-	// @Property(tries = 1)
-	// void mapSetKeyValue() {
-	// 	Map<String, String> map = new HashMap<>();
-	// 	map.put("key", "value");
-	//
-	// 	MapObject actual = SUT.giveMeBuilder(MapObject.class)
-	// 		.set("strMap", map)
-	// 		.spec(new ExpressionSpec(traverser).map("strMap", m -> {
-	// 			m.setKey("key", "newKey");
-	// 			m.setValue("newKey", "newValue");
-	// 		}))
-	// 		.sample();
-	//
-	// 	then(actual.getStrMap().get("newKey")).isEqualTo("newValue");
-	// }
-	//
-	// @Property(tries = 1)
-	// void mapSetNestedKeyValue() {
-	// 	Map<Map<String, String>, Map<String, String>> mapKeyValueMap = new HashMap<>();
-	// 	Map<String, String> keyMap = new HashMap<>();
-	// 	Map<String, String> valueMap = new HashMap<>();
-	// 	keyMap.put("KeyKey", "KeyVal");
-	// 	valueMap.put("ValueKey", "ValueValue");
-	// 	mapKeyValueMap.put(keyMap, valueMap);
-	//
-	// 	MapObject actual = SUT.giveMeBuilder(MapObject.class)
-	// 		.set("mapKeyValueMap", mapKeyValueMap)
-	// 		.spec(new ExpressionSpec(traverser).map("mapKeyValueMap", m -> {
-	// 			m.setValue(keyMap, k -> {
-	// 				k.setValue("ValueKey", "newValueValue"); // 값의 값
-	// 				k.setKey("ValueKey", "newValueKey"); // 값의 키
-	// 			});
-	// 			m.setKey(keyMap, v -> {
-	// 				v.setValue("KeyKey", "newKeyValue"); // 키의 값
-	// 				v.setKey("KeyKey", "newKeyKey"); // 키의 키
-	// 			});
-	// 		}))
-	// 		.sample();
-	//
-	// 	Map<String, String> actualKeyMap = actual.getMapKeyValueMap().keySet().iterator().next();
-	// 	Map<String, String> actualValueMap = actual.getMapKeyValueMap().get(actualKeyMap);
-	//
-	// 	then(actualKeyMap.get("newKeyKey")).isEqualTo("newKeyValue");
-	// 	then(actualValueMap.get("newValueKey")).isEqualTo("newValueValue");
-	// }
-
-	@Property()
-	void mapSetEmptyMapMakeNewEntry() {
+	@Property
+	void mapAddKey() {
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
-			.spec(new ExpressionSpec(traverser).map("strMap", m -> {
-				m.setKey("key");
-				m.setValue("key", "value");
-				// m.setValue("nonExistingKey", "value");
-			}))
+			.setMap("strMap", m -> {
+				m.addKey("key");
+			})
+			.sample();
+
+		then(actual.getStrMap().containsKey("key")).isTrue();
+	}
+
+	@Property
+	void mapAddValue() {
+		MapObject actual = SUT.giveMeBuilder(MapObject.class)
+			.setMap("strMap", m -> {
+				m.addValue("value");
+			})
+			.sample();
+
+		then(actual.getStrMap().containsValue("value")).isTrue();
+	}
+
+	@Property
+	void mapPut() {
+		MapObject actual = SUT.giveMeBuilder(MapObject.class)
+			.setMap("strMap", m -> {
+				m.put("key", "value");
+			})
 			.sample();
 
 		then(actual.getStrMap().get("key")).isEqualTo("value");
 	}
 
-	@Property(tries = 100, seed="456")
-	void mapSetEmptyMapMakeNewEntry2() {
-		Map<String, String> map = new HashMap<>();
-		map.put("key","val");
+	@Property()
+	void mapAddNestedKey() {
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
-			.map("mapKeyMap", m -> {
-				m.addKey(map);
-				m.addValue("value");
-				m.put(key, val);
-			}))
+			.setMap("mapKeyMap", m -> {
+				m.addKey(k-> {
+					k.addKey("key");
+				});
+			})
 			.sample();
 
-		then(actual.getStrMap().get(map)).isEqualTo("value");
+		List<String> keyList = actual.getMapKeyMap().keySet().stream()
+			.map(Map::keySet).flatMap(Set::stream).collect(Collectors.toList());
+		then(keyList).contains("key");
 	}
 
-	// MapObject actual = SUT.giveMeBuilder(MapObject.class)
-	// 	.set("mapKeyValueMap", mapKeyValueMap)
-	// 	.setMap("mapKeyValueMap", m -> {
-	// 		m.setKey(keyMap, v -> {
-	// 			v.setValue("KeyKey", "newKeyValue"); // 키의 값
-	// 			v.setKey("newKeyKey"); // 키의 키
-	// 		});
-	// 		m.setValue(keyMap, k -> {
-	// 			k.setValue("ValueKey", "newValueValue"); // 값의 값
-	// 			k.setKey("newValueKey"); // 값의 키
-	// 		});
-	// 	})
-	// 	.sample();
+	// @Property(tries = 10)
+	// void mapAddNestedValue() {
+	// 	MapObject actual = SUT.giveMeBuilder(MapObject.class)
+	// 		.setMap("mapValueMap", m -> {
+	// 			m.addValue(k-> {
+	// 				k.addValue("value");
+	// 			});
+	// 		})
+	// 		.sample();
+	//
+	// 	List<String> valueList = actual.getMapKeyMap().entrySet().stream()
+	// 		.map(Map.Entry::getValue).map(Map::entrySet).stream().flatMap(Set::stream).collect(Collectors.toList());
+	// 	then(valueList).contains("value");
+	// }
+
+	// @Property()
+	// void mapAddNestedKeyValue() {
+	// 	MapObject actual = SUT.giveMeBuilder(MapObject.class)
+	// 		.setMap("mapKeyValueMap", m -> {
+	// 			m.addKey(k -> {
+	// 				k.addKey("KeyKey");
+	// 				k.addValue("KeyValue");
+	// 				k.put("Key", "Value");
+	// 			});
+	// 			m.addValue(v -> {
+	// 				v.addKey("ValueKey");
+	// 				v.addValue("ValueValue");
+	// 				v.put("Key","Value");
+	// 			});
+	// 		})
+	// 		.sample();
+	//
+	// 	System.out.println(actual.getMapKeyValueMap());
+	// 	then(actual.getMapKeyValueMap().entrySet());
+	// }
 }
