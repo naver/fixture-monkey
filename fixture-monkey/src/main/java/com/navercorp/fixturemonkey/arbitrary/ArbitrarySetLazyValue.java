@@ -18,7 +18,6 @@
 
 package com.navercorp.fixturemonkey.arbitrary;
 
-import java.util.Objects;
 import java.util.function.Supplier;
 
 import javax.annotation.Nullable;
