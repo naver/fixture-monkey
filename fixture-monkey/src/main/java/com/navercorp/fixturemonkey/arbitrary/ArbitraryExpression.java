@@ -413,7 +413,14 @@ public final class ArbitraryExpression implements Comparable<ArbitraryExpression
 
 		@Override
 		public boolean match(ArbitraryProperty arbitraryProperty) {
-			return nameEquals(arbitraryProperty.getResolvePropertyName());
+			String resolvePropertyName = arbitraryProperty.getResolvePropertyName();
+			boolean samePropertyName;
+			if (resolvePropertyName == null) {
+				samePropertyName = true; // ignore property name equivalence.
+			} else {
+				samePropertyName = nameEquals(resolvePropertyName);
+			}
+			return samePropertyName;
 		}
 
 		@Override
@@ -436,8 +443,8 @@ public final class ArbitraryExpression implements Comparable<ArbitraryExpression
 
 		private boolean nameEquals(String name) {
 			return this.name.equals(name)
-				|| name.equals(ALL_INDEX_STRING)
-				|| this.name.equals(ALL_INDEX_STRING);
+				|| ALL_INDEX_STRING.equals(name)
+				|| ALL_INDEX_STRING.equals(this.name);
 		}
 	}
 

@@ -24,6 +24,7 @@ public final class Constants {
 	public static final int NO_OR_ALL_INDEX_INTEGER_VALUE = Integer.MAX_VALUE;
 	public static final int KEY_INDEX_INTEGER_VALUE = Integer.MAX_VALUE -1;
 	public static final int KEY_ANY_INTEGER_VALUE = Integer.MAX_VALUE -2;
+	public static final int MAX_MANIPULATION_COUNT = Integer.MAX_VALUE;
 	public static final String ALL_INDEX_STRING = "*";
 	public static final String HEAD_NAME = "$";
 }

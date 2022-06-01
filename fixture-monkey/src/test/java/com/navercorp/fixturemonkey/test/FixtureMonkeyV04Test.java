@@ -354,4 +354,258 @@ class FixtureMonkeyV04Test {
 		// then
 		then(actual.getStrList()).hasSizeLessThanOrEqualTo(0);
 	}
+
+	@Property
+	void notFixedSampleReturnsDiff() {
+		// when
+		ArbitraryBuilder<ComplexObject> fixedArbitraryBuilder = SUT.giveMeBuilder(ComplexObject.class);
+
+		// then
+		ComplexObject sample1 = fixedArbitraryBuilder.sample();
+		ComplexObject sample2 = fixedArbitraryBuilder.sample();
+		then(sample1).isNotEqualTo(sample2);
+	}
+
+	@Property
+	void fixedSampleReturnsSame() {
+		// when
+		ArbitraryBuilder<ComplexObject> fixedArbitraryBuilder = SUT.giveMeBuilder(ComplexObject.class)
+			.fixed();
+
+		// then
+		ComplexObject sample1 = fixedArbitraryBuilder.sample();
+		ComplexObject sample2 = fixedArbitraryBuilder.sample();
+		then(sample1).isEqualTo(sample2);
+	}
+
+	@Property
+	void arbitraryFixedSampleReturnsSame() {
+		// when
+		ArbitraryBuilder<ComplexObject> fixedArbitraryBuilder = SUT.giveMeBuilder(ComplexObject.class)
+			.set("str", Arbitraries.of("value1", "value2"))
+			.fixed();
+
+		// then
+		ComplexObject sample1 = fixedArbitraryBuilder.sample();
+		ComplexObject sample2 = fixedArbitraryBuilder.sample();
+		then(sample1).isEqualTo(sample2);
+	}
+
+	@Property
+	void apply() {
+		// when
+		String actual = SUT.giveMeBuilder(ComplexObject.class)
+			.set("str", "set")
+			.apply((it, builder) ->
+				builder.size("strList", 1)
+					.set("strList[0]", it.getStr())
+			)
+			.sample()
+			.getStrList()
+			.get(0);
+
+		then(actual).isEqualTo("set");
+	}
+
+	@Property
+	void applyWithoutAnyManipulators() {
+		// when
+		ComplexObject actual = SUT.giveMeBuilder(ComplexObject.class)
+			.apply((it, builder) ->
+				builder.size("strList", 1)
+					.set("strList[0]", it.getStr())
+			)
+			.sample();
+
+		// then
+		String actualStr = actual.getStr();
+		List<String> actualStrList = actual.getStrList();
+		then(actualStrList).hasSize(1);
+		then(actualStrList.get(0)).isEqualTo(actualStr);
+	}
+
+	@Property
+	void applyNotAffectedManipulatorsAfterApply() {
+		// when
+		String actual = SUT.giveMeBuilder(ComplexObject.class)
+			.set("str", "set")
+			.apply((it, builder) ->
+				builder.size("strList", 1)
+					.set("strList[0]", it.getStr())
+			)
+			.set("str", "afterApply")
+			.sample()
+			.getStrList()
+			.get(0);
+
+		then(actual).isEqualTo("set");
+	}
+
+	@Property
+	void acceptIfAlwaysTrue() {
+		// when
+		String actual = SUT.giveMeBuilder(ComplexObject.class)
+			.acceptIf(
+				it -> true,
+				builder -> builder.set("str", "set")
+			)
+			.sample()
+			.getStr();
+
+		then(actual).isEqualTo("set");
+	}
+
+	@Property
+	void acceptIf() {
+		// when
+		String actual = SUT.giveMeBuilder(ComplexObject.class)
+			.set("str", "set")
+			.acceptIf(
+				it -> "set".equals(it.getStr()),
+				builder -> builder
+					.size("strList", 1)
+					.set("strList[0]", "set")
+			)
+			.sample()
+			.getStrList()
+			.get(0);
+
+		then(actual).isEqualTo("set");
+	}
+
+	@Property
+	void setRootJavaType() {
+		// given
+		String expected = "test";
+
+		// when
+		String actual = SUT.giveMeBuilder(String.class)
+			.set(expected)
+			.sample();
+
+		then(actual).isEqualTo(expected);
+	}
+
+	@Property
+	void setRootComplexType() {
+		ComplexObject expected = new ComplexObject();
+		expected.setStr("test");
+
+		// when
+		ComplexObject actual = SUT.giveMeBuilder(ComplexObject.class)
+			.set(expected)
+			.sample();
+
+		then(actual).isEqualTo(expected);
+	}
+
+	@Property
+	void setWithLimit() {
+		// when
+		List<String> actual = SUT.giveMeBuilder(ComplexObject.class)
+			.size("strList", 3)
+			.set("strList[*]", "test", 1)
+			.sample()
+			.getStrList();
+
+		// then
+		then(actual).anyMatch("test"::equals);
+		then(actual).anyMatch(it -> !"test".equals(it));
+	}
+
+	@Property
+	void setNull() {
+		// when
+		String actual = SUT.giveMeBuilder(ComplexObject.class)
+			.setNull("str")
+			.sample()
+			.getStr();
+
+		// then
+		then(actual).isNull();
+	}
+
+	@Property
+	void setNullList() {
+		// when
+		List<String> actual = SUT.giveMeBuilder(ComplexObject.class)
+			.setNull("strList")
+			.sample()
+			.getStrList();
+
+		// then
+		then(actual).isNull();
+	}
+
+	@Property
+	void setNullMap() {
+		// when
+		Map<String, SimpleObject> actual = SUT.giveMeBuilder(ComplexObject.class)
+			.setNull("map")
+			.sample()
+			.getMap();
+
+		// then
+		then(actual).isNull();
+	}
+
+	@Property
+	void setNullMapEntry() {
+		// when
+		Map.Entry<String, SimpleObject> actual = SUT.giveMeBuilder(ComplexObject.class)
+			.setNull("mapEntry")
+			.sample()
+			.getMapEntry();
+
+		// then
+		then(actual).isNull();
+	}
+
+	@Property
+	void setNotNullString() {
+		// when
+		String actual = SUT.giveMeBuilder(ComplexObject.class)
+			.setNotNull("str")
+			.sample()
+			.getStr();
+
+		// then
+		then(actual).isNotNull();
+	}
+
+	@Property
+	void setNotNullList() {
+		// when
+		List<String> actual = SUT.giveMeBuilder(ComplexObject.class)
+			.setNotNull("strList")
+			.sample()
+			.getStrList();
+
+		// then
+		then(actual).isNotNull();
+	}
+
+	@Property
+	void setNotNullMap() {
+		// when
+		Map<String, SimpleObject> actual = SUT.giveMeBuilder(ComplexObject.class)
+			.setNotNull("map")
+			.sample()
+			.getMap();
+
+		// then
+		then(actual).isNotNull();
+	}
+
+	@Property
+	void setNotNullMapEntry() {
+		// when
+		Map.Entry<String, SimpleObject> actual = SUT.giveMeBuilder(ComplexObject.class)
+			.setNotNull("mapEntry")
+			.sample()
+			.getMapEntry();
+
+		// then
+		then(actual).isNotNull();
+	}
 }

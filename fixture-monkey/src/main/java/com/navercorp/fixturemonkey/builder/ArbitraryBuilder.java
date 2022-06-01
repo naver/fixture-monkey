@@ -19,12 +19,15 @@
 package com.navercorp.fixturemonkey.builder;
 
 import static com.navercorp.fixturemonkey.Constants.DEFAULT_ELEMENT_MAX_SIZE;
+import static com.navercorp.fixturemonkey.Constants.HEAD_NAME;
+import static com.navercorp.fixturemonkey.Constants.MAX_MANIPULATION_COUNT;
 import static java.util.stream.Collectors.toList;
 
-import java.util.AbstractMap;
-import java.util.AbstractMap.SimpleEntry;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.ArrayList;
+import java.util.function.BiConsumer;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
@@ -38,14 +41,18 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import com.navercorp.fixturemonkey.api.property.RootProperty;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryExpression;
+import com.navercorp.fixturemonkey.resolver.ApplyNodeCountManipulator;
 import com.navercorp.fixturemonkey.resolver.ArbitraryManipulator;
 import com.navercorp.fixturemonkey.resolver.ArbitraryResolver;
 import com.navercorp.fixturemonkey.resolver.ArbitraryTraverser;
 import com.navercorp.fixturemonkey.resolver.ExpressionNodeResolver;
 import com.navercorp.fixturemonkey.resolver.NodeAddMapEntryManipulator;
+import com.navercorp.fixturemonkey.resolver.NodeNullityManipulator;
 import com.navercorp.fixturemonkey.resolver.NodeSetArbitraryManipulator;
 import com.navercorp.fixturemonkey.resolver.NodeSetDecomposedValueManipulator;
+import com.navercorp.fixturemonkey.resolver.NodeSetLazyManipulator;
 import com.navercorp.fixturemonkey.resolver.NodeSizeManipulator;
+import com.navercorp.fixturemonkey.resolver.RootNodeResolver;
 import com.navercorp.fixturemonkey.validator.ArbitraryValidator;
 
 // TODO: remove extends com.navercorp.fixturemonkey.ArbitraryBuilder<T> inheritance in 1.0.0
@@ -80,26 +87,32 @@ public final class ArbitraryBuilder<T> extends com.navercorp.fixturemonkey.Arbit
 		return this;
 	}
 
-	@Override
-	public ArbitraryBuilder<T> set(
+	private ArbitraryBuilder<T> set(
 		String expression,
-		@Nullable Object value
+		@Nullable Object value,
+		int limit
 	) {
 		ExpressionNodeResolver nodeResolver = new ExpressionNodeResolver(ArbitraryExpression.from(expression));
 		if (value instanceof Arbitrary) {
 			manipulators.add(
 				new ArbitraryManipulator(
 					nodeResolver,
-					new NodeSetArbitraryManipulator<>((Arbitrary<?>)value)
+					new ApplyNodeCountManipulator(
+						new NodeSetArbitraryManipulator<>((Arbitrary<?>)value),
+						limit
+					)
 				)
 			);
 		} else if (value == null) {
-			// TODO: setNull
+			this.setNull(expression);
 		} else {
 			manipulators.add(
 				new ArbitraryManipulator(
 					nodeResolver,
-					new NodeSetDecomposedValueManipulator<>(traverser, value)
+					new ApplyNodeCountManipulator(
+						new NodeSetDecomposedValueManipulator<>(traverser, value),
+						limit
+					)
 				)
 			);
 		}
@@ -114,6 +127,28 @@ public final class ArbitraryBuilder<T> extends com.navercorp.fixturemonkey.Arbit
 				new NodeAddMapEntryManipulator(traverser, key, value)
 			)
 		);
+	}
+
+	@Override
+	public ArbitraryBuilder<T> set(
+		String expression,
+		@Nullable Object value,
+		long limit
+	) {
+		return this.set(expression, value, (int)limit);
+	}
+
+	@Override
+	public ArbitraryBuilder<T> set(
+		String expression,
+		@Nullable Object value
+	) {
+		return this.set(expression, value, MAX_MANIPULATION_COUNT);
+	}
+
+	@Override
+	public ArbitraryBuilder<T> set(@Nullable Object value) {
+		return this.set(HEAD_NAME, value);
 	}
 
 	@Override
@@ -157,6 +192,69 @@ public final class ArbitraryBuilder<T> extends com.navercorp.fixturemonkey.Arbit
 		return this;
 	}
 
+	@Override
+	public ArbitraryBuilder<T> fixed() {
+		this.manipulators.add(
+			new ArbitraryManipulator(
+				new RootNodeResolver(),
+				new NodeSetDecomposedValueManipulator<>(traverser, this.sample())
+			)
+		);
+		return this;
+	}
+
+	@Override
+	public ArbitraryBuilder<T> apply(
+		BiConsumer<T, com.navercorp.fixturemonkey.ArbitraryBuilder<T>> biConsumer
+	) {
+		ArbitraryBuilder<T> copied = this.copy();
+
+		this.manipulators.add(
+			new ArbitraryManipulator(
+				new RootNodeResolver(),
+				new NodeSetLazyManipulator<>(
+					traverser,
+					() -> {
+						T sampled = copied.fixed().sample();
+						biConsumer.accept(sampled, copied);
+						return copied.sample();
+					}
+				)
+			)
+		);
+		return this;
+	}
+
+	@Override
+	public ArbitraryBuilder<T> acceptIf(
+		Predicate<T> predicate,
+		Consumer<com.navercorp.fixturemonkey.ArbitraryBuilder<T>> consumer
+	) {
+		return apply((it, builder) -> {
+			if (predicate.test(it)) {
+				consumer.accept(builder);
+			}
+		});
+	}
+
+	@Override
+	public ArbitraryBuilder<T> setNull(String expression) {
+		this.manipulators.add(new ArbitraryManipulator(
+			new ExpressionNodeResolver(ArbitraryExpression.from(expression)),
+			new NodeNullityManipulator(true)
+		));
+		return this;
+	}
+
+	@Override
+	public ArbitraryBuilder<T> setNotNull(String expression) {
+		this.manipulators.add(new ArbitraryManipulator(
+			new ExpressionNodeResolver(ArbitraryExpression.from(expression)),
+			new NodeNullityManipulator(false)
+		));
+		return this;
+	}
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public Arbitrary<T> build() {
@@ -179,5 +277,16 @@ public final class ArbitraryBuilder<T> extends com.navercorp.fixturemonkey.Arbit
 
 	public List<T> sampleList(int size) {
 		return this.sampleStream().limit(size).collect(toList());
+	}
+
+	@Override
+	public ArbitraryBuilder<T> copy() {
+		return new ArbitraryBuilder<>(
+			rootProperty,
+			new ArrayList<>(manipulators),
+			resolver,
+			traverser,
+			validator
+		);
 	}
 }

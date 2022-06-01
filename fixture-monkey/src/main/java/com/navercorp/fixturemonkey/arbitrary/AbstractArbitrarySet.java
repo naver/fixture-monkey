@@ -31,7 +31,7 @@ public abstract class AbstractArbitrarySet<T> extends AbstractArbitraryExpressio
 
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	@Override
-	public final void accept(ArbitraryBuilder arbitraryBuilder) {
+	public void accept(ArbitraryBuilder arbitraryBuilder) {
 		arbitraryBuilder.apply(this);
 	}
 
