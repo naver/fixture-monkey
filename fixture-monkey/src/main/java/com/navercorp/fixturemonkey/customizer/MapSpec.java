@@ -16,27 +16,19 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.builder;
+package com.navercorp.fixturemonkey.customizer;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 
-import net.jqwik.api.Arbitrary;
+import com.navercorp.fixturemonkey.builder.ArbitraryBuilder;
 
-import com.navercorp.fixturemonkey.arbitrary.ArbitraryExpression;
-import com.navercorp.fixturemonkey.resolver.ArbitraryManipulator;
-import com.navercorp.fixturemonkey.resolver.ArbitraryTraverser;
-import com.navercorp.fixturemonkey.resolver.ExpressionNodeResolver;
-import com.navercorp.fixturemonkey.resolver.NodeSetArbitraryManipulator;
-import com.navercorp.fixturemonkey.resolver.NodeSetDecomposedValueManipulator;
-
-public class MapSpec implements ArbitraryBuilderVisitor {
+public final class MapSpec implements ArbitraryBuilderVisitor {
 	private final String mapName;
 	private final List<Boolean> isSetKey;
 	private final List<ArbitraryBuilderVisitor> next;
+	@SuppressWarnings("rawtypes")
 	private final List<MapSpecSet> setList;
 
 	public MapSpec(String mapName) {
@@ -53,40 +45,49 @@ public class MapSpec implements ArbitraryBuilderVisitor {
 		this.setList = new ArrayList<>();
 	}
 
-	public MapSpec addKey(Object key) {
+	@SuppressWarnings("rawtypes")
+	@Override
+	public void visit(ArbitraryBuilder arbitraryBuilder) {
+		this.setList.forEach(it -> arbitraryBuilder.set(it.mapName, it.isSetKey, it.key, it.value));
+
+		for (ArbitraryBuilderVisitor nextMapSpec : this.next) {
+			nextMapSpec.visit(arbitraryBuilder);
+		}
+	}
+
+	public <K> MapSpec addKey(K key) {
 		addSet(mapName, isSetKey, key, null);
 		return this;
 	}
 
 	public MapSpec addKey(Consumer<MapSpec> consumer) {
 		List<Boolean> isSetKey = getIsSetKey(true);
-		MapSpec mapSpec = new MapSpec(this.mapName+"[]", isSetKey);
+		MapSpec mapSpec = new MapSpec(this.mapName + "[]", isSetKey);
 		consumer.accept(mapSpec);
 		addNext(mapSpec);
 		return this;
 	}
 
-	public MapSpec addValue(Object value) {
+	public <V> MapSpec addValue(V value) {
 		addSet(mapName, isSetKey, null, value);
 		return this;
 	}
 
 	public MapSpec addValue(Consumer<MapSpec> consumer) {
 		List<Boolean> isSetKey = getIsSetKey(false);
-		MapSpec mapSpec = new MapSpec(this.mapName+"[]", isSetKey);
+		MapSpec mapSpec = new MapSpec(this.mapName + "[]", isSetKey);
 		consumer.accept(mapSpec);
 		addNext(mapSpec);
 		return this;
 	}
 
-	public MapSpec put(Object key, Object value) {
+	public <K, V> MapSpec put(K key, V value) {
 		addSet(mapName, isSetKey, key, value);
 		return this;
 	}
 
 	private List<Boolean> getIsSetKey(Boolean bool) {
-		List<Boolean> isSetKey = new ArrayList<>();
-		isSetKey.addAll(this.isSetKey);
+		List<Boolean> isSetKey = new ArrayList<>(this.isSetKey);
 		isSetKey.add(bool);
 		return isSetKey;
 	}
@@ -94,22 +95,12 @@ public class MapSpec implements ArbitraryBuilderVisitor {
 	private void addNext(ArbitraryBuilderVisitor arbitraryBuilderVisitor) {
 		this.next.add(arbitraryBuilderVisitor);
 	}
-	private <K,V> void addSet(String mapName, List<Boolean> isSetKey, K key, V value) {
+
+	private <K, V> void addSet(String mapName, List<Boolean> isSetKey, K key, V value) {
 		this.setList.add(new MapSpecSet<>(mapName, isSetKey, key, value));
 	}
 
-	@Override
-	public void visit(ArbitraryBuilder arbitraryBuilder) {
-		this.setList.forEach(it -> {
-			arbitraryBuilder.set(it.mapName, it.isSetKey, it.key, it.value);
-		});
-
-		for (ArbitraryBuilderVisitor nextMapSpec : this.next) {
-			nextMapSpec.visit(arbitraryBuilder);
-		}
-	}
-
-	private static class MapSpecSet<K,V> {
+	private static class MapSpecSet<K, V> {
 		private final String mapName;
 		private final List<Boolean> isSetKey;
 		private final K key;
