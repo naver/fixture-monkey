@@ -40,12 +40,14 @@ import net.jqwik.api.Arbitrary;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import com.navercorp.fixturemonkey.api.property.RootProperty;
+import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryExpression;
 import com.navercorp.fixturemonkey.resolver.ApplyNodeCountManipulator;
 import com.navercorp.fixturemonkey.resolver.ArbitraryManipulator;
 import com.navercorp.fixturemonkey.resolver.ArbitraryResolver;
 import com.navercorp.fixturemonkey.resolver.ArbitraryTraverser;
 import com.navercorp.fixturemonkey.resolver.ExpressionNodeResolver;
+import com.navercorp.fixturemonkey.resolver.NodeFilterManipulator;
 import com.navercorp.fixturemonkey.resolver.NodeNullityManipulator;
 import com.navercorp.fixturemonkey.resolver.NodeSetArbitraryManipulator;
 import com.navercorp.fixturemonkey.resolver.NodeSetDecomposedValueManipulator;
@@ -234,6 +236,50 @@ public final class ArbitraryBuilder<T> extends com.navercorp.fixturemonkey.Arbit
 			new ExpressionNodeResolver(ArbitraryExpression.from(expression)),
 			new NodeNullityManipulator(false)
 		));
+		return this;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public ArbitraryBuilder<T> setPostCondition(Predicate<T> filter) {
+		return this.setPostCondition(HEAD_NAME, (Class<T>)Types.getActualType(rootProperty.getType()), filter);
+	}
+
+	@Override
+	public <U> ArbitraryBuilder<T> setPostCondition(
+		String expression,
+		Class<U> type,
+		Predicate<U> filter
+	) {
+		return this.setPostCondition(expression, type, filter, MAX_MANIPULATION_COUNT);
+	}
+
+	@Override
+	public <U> ArbitraryBuilder<T> setPostCondition(
+		String expression,
+		Class<U> type,
+		Predicate<U> filter,
+		long limit
+	) {
+		return this.setPostCondition(expression, type, filter, (int)limit);
+	}
+
+	public <U> ArbitraryBuilder<T> setPostCondition(
+		String expression,
+		Class<U> type,
+		Predicate<U> filter,
+		int limit
+	) {
+		ArbitraryExpression arbitraryExpression = ArbitraryExpression.from(expression);
+		this.manipulators.add(
+			new ArbitraryManipulator(
+				new ExpressionNodeResolver(arbitraryExpression),
+				new ApplyNodeCountManipulator(
+					new NodeFilterManipulator(type, filter),
+					limit
+				)
+			)
+		);
 		return this;
 	}
 

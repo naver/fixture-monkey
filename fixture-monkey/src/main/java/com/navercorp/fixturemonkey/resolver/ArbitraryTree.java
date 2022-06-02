@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 
 import javax.annotation.Nullable;
 
@@ -82,13 +83,8 @@ final class ArbitraryTree {
 	}
 
 	Arbitrary<?> generate() {
-		if (rootNode.getArbitrary() != null) {
-			return rootNode.getArbitrary();
-		}
-
 		ArbitraryGeneratorContext context = generateContext(rootNode, null);
-		return this.generateOptions.getArbitraryGenerator(rootNode.getProperty())
-			.generate(context);
+		return generateArbitrary(context, rootNode);
 	}
 
 	private ArbitraryGeneratorContext generateContext(
@@ -112,15 +108,31 @@ final class ArbitraryTree {
 					return Arbitraries.just(null);
 				}
 
-				Arbitrary<?> arbitrary = node.getArbitrary();
-				if (arbitrary != null) {
-					return arbitrary;
-				}
-
-				ArbitraryGeneratorContext childArbitraryGeneratorContext = this.generateContext(node, ctx);
-				return this.generateOptions.getArbitraryGenerator(prop.getProperty())
-					.generate(childArbitraryGeneratorContext);
+				return generateArbitrary(ctx, node);
 			}
 		);
+	}
+
+	@SuppressWarnings({"rawtypes", "unchecked"})
+	private Arbitrary<?> generateArbitrary(
+		ArbitraryGeneratorContext ctx,
+		ArbitraryNode node
+	) {
+		ArbitraryProperty prop = node.getArbitraryProperty();
+
+		Arbitrary<?> generated;
+		if (node.getArbitrary() != null) {
+			generated = node.getArbitrary(); // fixed
+		} else {
+			ArbitraryGeneratorContext childArbitraryGeneratorContext = this.generateContext(node, ctx);
+			generated = this.generateOptions.getArbitraryGenerator(prop.getProperty())
+				.generate(childArbitraryGeneratorContext);
+		}
+
+		List<Predicate> arbitraryFilters = node.getArbitraryFilters();
+		for (Predicate predicate : arbitraryFilters) {
+			generated = generated.filter(predicate);
+		}
+		return generated;
 	}
 }
