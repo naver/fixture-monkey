@@ -20,9 +20,13 @@ package com.navercorp.fixturemonkey.resolver;
 
 import java.util.function.Predicate;
 
+import org.apiguardian.api.API;
+import org.apiguardian.api.API.Status;
+
 import com.navercorp.fixturemonkey.api.type.Types;
 
 @SuppressWarnings("rawtypes")
+@API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class NodeFilterManipulator implements NodeManipulator {
 	private final Class<?> type;
 	private final Predicate filter;
