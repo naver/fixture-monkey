@@ -18,7 +18,9 @@
 
 package com.navercorp.fixturemonkey.resolver;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 
 import javax.annotation.Nullable;
 
@@ -38,6 +40,9 @@ final class ArbitraryNode {
 
 	@Nullable
 	private Arbitrary<?> arbitrary;
+
+	@SuppressWarnings("rawtypes")
+	private final List<Predicate> arbitraryFilters = new ArrayList<>();
 
 	ArbitraryNode(
 		ArbitraryProperty arbitraryProperty,
@@ -74,5 +79,15 @@ final class ArbitraryNode {
 
 	public void setArbitrary(@Nullable Arbitrary<?> arbitrary) {
 		this.arbitrary = arbitrary;
+	}
+
+	@SuppressWarnings("rawtypes")
+	public void addArbitraryFilter(Predicate filter) {
+		this.arbitraryFilters.add(filter);
+	}
+
+	@SuppressWarnings("rawtypes")
+	public List<Predicate> getArbitraryFilters() {
+		return arbitraryFilters;
 	}
 }
