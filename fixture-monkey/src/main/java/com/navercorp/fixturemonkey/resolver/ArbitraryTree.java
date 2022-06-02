@@ -74,10 +74,10 @@ final class ArbitraryTree {
 
 		List<Cursor> cursors = arbitraryExpression.toCursors();
 		for (Cursor cursor : cursors) {
-			if (cursor instanceof ExpMapCursor) {
-				//map에서 mapentry까지 내려오기
-				selectedNodes = retrieveNextMapEntryNodes(selectedNodes);
-			}
+			// if (cursor instanceof ExpMapCursor) {
+			// 	//map에서 mapentry까지 내려오기
+			// 	selectedNodes = retrieveNextMapEntryNodes(selectedNodes);
+			// }
 			selectedNodes = retrieveNextMatchingNodes(selectedNodes, cursor);
 		}
 		Collections.shuffle(selectedNodes, Randoms.current());
@@ -125,6 +125,7 @@ final class ArbitraryTree {
 		for (ArbitraryNode selectedNode : selectedNodes) {
 			List<ArbitraryNode> children = selectedNode.getChildren();
 			for (ArbitraryNode child : children) {
+				//mapentry 찾는 부분
 				if (cursor.match(child.getArbitraryProperty())) {
 					child.setArbitraryProperty(child.getArbitraryProperty().withNullInject(NOT_NULL_INJECT));
 					nextNodes.add(child);

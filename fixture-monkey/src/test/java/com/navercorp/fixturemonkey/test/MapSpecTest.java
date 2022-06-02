@@ -1,20 +1,15 @@
 package com.navercorp.fixturemonkey.test;
 
-import static com.navercorp.fixturemonkey.test.SimpleManipulatorTestSpecs.SUT;
 import static org.assertj.core.api.BDDAssertions.then;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.assertj.core.data.MapEntry;
-
 import net.jqwik.api.Property;
 
 import com.navercorp.fixturemonkey.LabMonkey;
-import com.navercorp.fixturemonkey.resolver.ArbitraryTraverser;
 import com.navercorp.fixturemonkey.test.MapSpecTestSpecs.MapObject;
 
 public class MapSpecTest {
@@ -68,20 +63,21 @@ public class MapSpecTest {
 		then(keyList).contains("key");
 	}
 
-	// @Property(tries = 10)
-	// void mapAddNestedValue() {
-	// 	MapObject actual = SUT.giveMeBuilder(MapObject.class)
-	// 		.setMap("mapValueMap", m -> {
-	// 			m.addValue(k-> {
-	// 				k.addValue("value");
-	// 			});
-	// 		})
-	// 		.sample();
-	//
-	// 	List<String> valueList = actual.getMapKeyMap().entrySet().stream()
-	// 		.map(Map.Entry::getValue).map(Map::entrySet).stream().flatMap(Set::stream).collect(Collectors.toList());
-	// 	then(valueList).contains("value");
-	// }
+	@Property(tries = 10)
+	void mapAddNestedValue() {
+		MapObject actual = SUT.giveMeBuilder(MapObject.class)
+			.setMap("mapValueMap", m -> {
+				m.addValue(k-> {
+					k.addValue("value");
+				});
+			})
+			.sample();
+		//
+		// System.out.println(actual.getMapValueMap());
+		// List<String> valueList = actual.getMapValueMap().entrySet().stream()
+		// 	.map(Map.Entry::getValue).map(it -> it.entrySet().).flatMap(Set::stream).collect(Collectors.toList());
+		// // then(valueList).contains("value");
+	}
 
 	// @Property()
 	// void mapAddNestedKeyValue() {

@@ -120,7 +120,7 @@ public final class ArbitraryBuilder<T> extends com.navercorp.fixturemonkey.Arbit
 		return this;
 	}
 
-	public void set(String mapName, List isSetKey, Object key, Object value) {
+	public void set(String mapName, List<Boolean> isSetKey, Object key, Object value) {
 		ExpressionNodeResolver nodeResolver = new ExpressionNodeResolver(ArbitraryExpression.from(mapName, isSetKey));
 		manipulators.add(
 			new ArbitraryManipulator(

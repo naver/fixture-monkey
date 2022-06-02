@@ -86,6 +86,9 @@ public final class MapSpec implements ArbitraryBuilderVisitor {
 		return this;
 	}
 
+	//map[]
+	//map[][0].field
+
 	private List<Boolean> getIsSetKey(Boolean bool) {
 		List<Boolean> isSetKey = new ArrayList<>(this.isSetKey);
 		isSetKey.add(bool);
