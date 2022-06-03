@@ -39,7 +39,6 @@ import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.api.property.FieldProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
-import com.navercorp.fixturemonkey.api.lazy.UnSafeLazyArbitraryImpl;
 import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.generator.AnnotatedArbitraryGenerator;
 import com.navercorp.fixturemonkey.generator.AnnotationSource;
