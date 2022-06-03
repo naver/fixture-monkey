@@ -24,6 +24,7 @@ import java.util.List;
 
 import net.jqwik.api.Arbitraries;
 
+import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.generator.FieldNameResolver;
 
 public class ArrayArbitraryNodeGenerator implements ContainerArbitraryNodeGenerator {
@@ -36,14 +37,14 @@ public class ArrayArbitraryNodeGenerator implements ContainerArbitraryNodeGenera
 		ArbitraryType<T> clazz = containerNode.getType();
 		ArbitraryType<?> childType = clazz.getArrayArbitraryType();
 		String propertyName = containerNode.getPropertyName();
-		LazyValue<T> lazyValue = containerNode.getValue();
+		LazyArbitrary<T> lazyValue = containerNode.getValue();
 
 		List<ArbitraryNode<?>> generatedNodeList = new ArrayList<>();
 
 		int elementSize = containerNode.getElementSize();
 
 		if (lazyValue != null) {
-			T value = lazyValue.get();
+			T value = lazyValue.getValue();
 
 			if (value == null) {
 				containerNode.setArbitrary(Arbitraries.just(null));

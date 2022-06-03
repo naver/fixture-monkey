@@ -16,53 +16,49 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.arbitrary;
+package com.navercorp.fixturemonkey.api.lazy;
 
 import java.util.function.Supplier;
 
-public class LazyValue<T> {
-	private T value;
-	private final Supplier<T> supplier;
+public final class UnSafeLazyArbitraryImpl<T> implements LazyArbitrary<T> {
+	private static final Object UNINITIALIZED_VALUE = new Object();
+
+	private final Supplier<T> initializer;
 	private final boolean fixed;
 
-	public LazyValue(T value) {
+	private Object value = UNINITIALIZED_VALUE;
+
+	UnSafeLazyArbitraryImpl(T value) {
 		this.value = value;
-		this.supplier = () -> value;
+		this.initializer = () -> value;
 		this.fixed = true;
 	}
 
-	public LazyValue(Supplier<T> supplier, boolean fixed) {
-		this.supplier = supplier;
+	UnSafeLazyArbitraryImpl(Supplier<T> initializer, boolean fixed) {
+		this.initializer = initializer;
 		this.fixed = fixed;
 	}
 
-	public LazyValue(Supplier<T> supplier) {
-		this.supplier = supplier;
-		this.fixed = false;
+	UnSafeLazyArbitraryImpl(Supplier<T> initializer) {
+		this(initializer, false);
 	}
 
 	@SuppressWarnings("unchecked")
-	public ArbitraryType<T> getArbitraryType() {
-		if (get() == null) {
-			return NullArbitraryType.INSTANCE;
+	public T getValue() {
+		if (value == UNINITIALIZED_VALUE) {
+			value = initializer.get();
 		}
-		return new ArbitraryType<>((Class<T>)get().getClass());
+		return (T)value;
 	}
 
-	public T get() {
-		if (value == null) {
-			value = supplier.get();
-		}
-		return value;
-	}
-
-	public boolean isEmpty() {
-		return get() == null;
+	@Override
+	public boolean isInitialized() {
+		return value != UNINITIALIZED_VALUE;
 	}
 
 	public void clear() {
 		if (!fixed) {
-			this.value = null;
+			this.value = UNINITIALIZED_VALUE;
 		}
 	}
 }

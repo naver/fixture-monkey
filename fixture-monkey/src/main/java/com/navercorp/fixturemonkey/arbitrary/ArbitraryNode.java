@@ -40,6 +40,7 @@ import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
 
 import com.navercorp.fixturemonkey.TypeSupports;
+import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryExpression.Cursor;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryExpression.ExpIndexCursor;
 
@@ -138,7 +139,7 @@ public final class ArbitraryNode<T> {
 		return getContainerSizeConstraint() == null;
 	}
 
-	@SuppressWarnings({"unchecked", "rawtypes"})
+	@SuppressWarnings("unchecked")
 	public void apply(PreArbitraryManipulator preArbitraryManipulator) {
 		if (preArbitraryManipulator instanceof ArbitrarySetArbitrary) {
 			this.setFixed(true);
@@ -161,7 +162,7 @@ public final class ArbitraryNode<T> {
 					);
 				}
 			}
-			this.status.setValue(new LazyValue(toValue));
+			this.status.setValue(LazyArbitrary.lazy(() -> (T)toValue, true));
 		} else {
 			throw new IllegalArgumentException("Not Implemented PreArbitraryManipulator");
 		}
@@ -200,11 +201,7 @@ public final class ArbitraryNode<T> {
 	}
 
 	public void setValue(Supplier<T> value) {
-		this.getStatus().setValue(new LazyValue<>(value));
-	}
-
-	public void setFixedValue(Supplier<T> value) {
-		this.getStatus().setValue(new LazyValue<>(value, true));
+		this.getStatus().setValue(LazyArbitrary.lazy(value));
 	}
 
 	public void clearValue() {
@@ -247,11 +244,11 @@ public final class ArbitraryNode<T> {
 
 	public ArbitraryType<T> getType() {
 		if (type instanceof NullArbitraryType) {
-			LazyValue<T> value = getValue();
+			LazyArbitrary<T> value = getValue();
 			if (value == null) {
 				return type;
 			}
-			return value.getArbitraryType();
+			return getArbitraryType(value);
 		}
 		return type;
 	}
@@ -315,7 +312,7 @@ public final class ArbitraryNode<T> {
 		return this.getPropertyName().equals(HEAD_NAME) && indexOfIterable == NO_OR_ALL_INDEX_INTEGER_VALUE;
 	}
 
-	public LazyValue<T> getValue() {
+	public LazyArbitrary<T> getValue() {
 		return this.getStatus().getValue();
 	}
 
@@ -324,8 +321,8 @@ public final class ArbitraryNode<T> {
 	}
 
 	public boolean isDecomposedAsNull() {
-		LazyValue<T> value = this.getValue();
-		return value != null && value.isEmpty();
+		LazyArbitrary<T> value = this.getValue();
+		return value != null && value.getValue() == null;
 	}
 
 	@SuppressWarnings({"rawtypes", "unchecked"})
@@ -383,6 +380,15 @@ public final class ArbitraryNode<T> {
 			this.setArbitrary(null);
 			this.clearValue();
 		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private ArbitraryType<T> getArbitraryType(LazyArbitrary<T> lazyValue) {
+		T value = lazyValue.getValue();
+		if (value == null) {
+			return NullArbitraryType.INSTANCE;
+		}
+		return new ArbitraryType<>((Class<T>)value.getClass());
 	}
 
 	public static final class ArbitraryNodeBuilder<T> {
@@ -464,18 +470,18 @@ public final class ArbitraryNode<T> {
 			return this;
 		}
 
-		public ArbitraryNodeBuilder<T> value(LazyValue<T> value) {
+		public ArbitraryNodeBuilder<T> value(LazyArbitrary<T> value) {
 			this.status.value = value;
 			return this;
 		}
 
 		public ArbitraryNodeBuilder<T> value(Supplier<T> valueSupplier) {
-			this.status.value = new LazyValue<>(valueSupplier);
+			this.status.value = LazyArbitrary.lazy(valueSupplier);
 			return this;
 		}
 
 		public ArbitraryNodeBuilder<T> value(T value) {
-			this.status.value = new LazyValue<>(value);
+			this.status.value = LazyArbitrary.lazy(() -> value, true);
 			return this;
 		}
 
@@ -503,7 +509,7 @@ public final class ArbitraryNode<T> {
 		private Arbitrary<T> arbitrary = null; // immutable
 		private ContainerSizeConstraint containerSizeConstraint; // immutable
 		private List<PostArbitraryManipulator<T>> postArbitraryManipulators = new ArrayList<>();
-		private LazyValue<T> value = null;
+		private LazyArbitrary<T> value = null;
 		private boolean nullable = false;
 		private boolean manipulated = false;
 		private boolean active = true; // isNull
@@ -517,7 +523,7 @@ public final class ArbitraryNode<T> {
 			@Nullable Arbitrary<T> arbitrary,
 			ContainerSizeConstraint containerSizeConstraint,
 			List<PostArbitraryManipulator<T>> postArbitraryManipulators,
-			LazyValue<T> value,
+			LazyArbitrary<T> value,
 			boolean nullable,
 			boolean manipulated,
 			boolean active,
@@ -564,7 +570,7 @@ public final class ArbitraryNode<T> {
 			return fixed;
 		}
 
-		public LazyValue<T> getValue() {
+		public LazyArbitrary<T> getValue() {
 			return value;
 		}
 
@@ -608,7 +614,7 @@ public final class ArbitraryNode<T> {
 			this.fixed = fixed;
 		}
 
-		public void setValue(LazyValue<T> value) {
+		public void setValue(LazyArbitrary<T> value) {
 			this.value = value;
 		}
 
