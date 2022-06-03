@@ -642,4 +642,36 @@ class FixtureMonkeyV04Test {
 		).isExactlyInstanceOf(IllegalArgumentException.class)
 			.hasMessageContaining("Wrong type filter is applied.");
 	}
+
+	@Property
+	void mapWhenNull() {
+		// when
+		String actual = SUT.giveMeBuilder(ComplexObject.class)
+			.setNull("str")
+			.map(ComplexObject::getStr)
+			.sample();
+
+		then(actual).isNull();
+	}
+
+	@Property
+	void mapWhenNotNull() {
+		// when
+		String actual = SUT.giveMeBuilder(ComplexObject.class)
+			.setNotNull("str")
+			.map(ComplexObject::getStr)
+			.sample();
+
+		then(actual).isNotNull();
+	}
+
+	@Property
+	void mapToFixedValue() {
+		// when
+		String actual = SUT.giveMeBuilder(ComplexObject.class)
+			.map(it -> "test")
+			.sample();
+
+		then(actual).isEqualTo("test");
+	}
 }
