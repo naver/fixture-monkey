@@ -18,8 +18,6 @@
 
 package com.navercorp.fixturemonkey.resolver;
 
-import static com.navercorp.fixturemonkey.Constants.KEY_ANY_INTEGER_VALUE;
-import static com.navercorp.fixturemonkey.Constants.KEY_INDEX_INTEGER_VALUE;
 import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.NOT_NULL_INJECT;
 
 import java.util.ArrayList;
@@ -37,20 +35,12 @@ import org.apiguardian.api.API.Status;
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
 
-import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
-import com.navercorp.fixturemonkey.api.generator.ArbitraryPropertyGeneratorContext;
-import com.navercorp.fixturemonkey.api.generator.MapEntryElementArbitraryPropertyGenerator;
 import com.navercorp.fixturemonkey.api.option.GenerateOptions;
-import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty;
-import com.navercorp.fixturemonkey.api.property.MapKeyElementProperty;
-import com.navercorp.fixturemonkey.api.property.MapValueElementProperty;
-import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.random.Randoms;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryExpression;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryExpression.Cursor;
-import com.navercorp.fixturemonkey.arbitrary.ArbitraryExpression.ExpMapCursor;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 final class ArbitraryTree {

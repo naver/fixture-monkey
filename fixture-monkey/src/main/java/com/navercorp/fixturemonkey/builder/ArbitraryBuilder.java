@@ -23,10 +23,10 @@ import static com.navercorp.fixturemonkey.Constants.HEAD_NAME;
 import static com.navercorp.fixturemonkey.Constants.MAX_MANIPULATION_COUNT;
 import static java.util.stream.Collectors.toList;
 
-import java.util.List;
-import java.util.function.Consumer;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -121,17 +121,6 @@ public final class ArbitraryBuilder<T> extends com.navercorp.fixturemonkey.Arbit
 		return this;
 	}
 
-	public void set(String mapExpression, List<NodeManipulator> manipulators) {
-		// 최상위 map 까지 찾음
-		ExpressionNodeResolver nodeResolver = new ExpressionNodeResolver(ArbitraryExpression.from(mapExpression));
-		this.manipulators.add(
-			new ArbitraryManipulator(
-				nodeResolver,
-				new CompositeNodeManipulator(manipulators.toArray(new NodeManipulator[0]))
-			)
-		);
-	}
-
 	@Override
 	public ArbitraryBuilder<T> set(
 		String expression,
@@ -152,6 +141,22 @@ public final class ArbitraryBuilder<T> extends com.navercorp.fixturemonkey.Arbit
 	@Override
 	public ArbitraryBuilder<T> set(@Nullable Object value) {
 		return this.set(HEAD_NAME, value);
+	}
+
+	public ArbitraryBuilder<T> setMap(String mapName, Consumer<MapSpec> mapSpecSupplier) {
+		MapSpec mapSpec = new MapSpec(traverser);
+		mapSpecSupplier.accept(mapSpec);
+
+		List<NodeManipulator> mapManipulators = mapSpec.getManipulators();
+		ExpressionNodeResolver nodeResolver = new ExpressionNodeResolver(ArbitraryExpression.from(mapName));
+
+		this.manipulators.add(
+			new ArbitraryManipulator(
+				nodeResolver,
+				new CompositeNodeManipulator(mapManipulators.toArray(new NodeManipulator[0]))
+			)
+		);
+		return this;
 	}
 
 	@Override
@@ -185,13 +190,6 @@ public final class ArbitraryBuilder<T> extends com.navercorp.fixturemonkey.Arbit
 				)
 			)
 		);
-		return this;
-	}
-
-	public ArbitraryBuilder<T> setMap(String mapName, Consumer<MapSpec> mapSpecSupplier) {
-		MapSpec mapSpec = new MapSpec(traverser, mapName);
-		mapSpecSupplier.accept(mapSpec);
-		mapSpec.visit(this);
 		return this;
 	}
 

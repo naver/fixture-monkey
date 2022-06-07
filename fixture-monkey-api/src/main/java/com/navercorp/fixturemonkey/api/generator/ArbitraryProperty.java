@@ -99,18 +99,6 @@ public final class ArbitraryProperty {
 		return this.containerInfo != null;
 	}
 
-	//sequence set하기 위해 추가
-	public ArbitraryProperty withProperty(Property property) {
-		return new ArbitraryProperty(
-			property,
-			this.propertyNameResolver,
-			this.nullInject,
-			this.elementIndex,
-			this.childProperties,
-			this.containerInfo
-		);
-	}
-
 	public ArbitraryProperty withChildProperties(List<Property> childProperties) {
 		return new ArbitraryProperty(
 			this.property,

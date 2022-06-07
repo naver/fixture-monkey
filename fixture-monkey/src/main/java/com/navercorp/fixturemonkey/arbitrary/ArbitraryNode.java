@@ -85,16 +85,16 @@ public final class ArbitraryNode<T> {
 	@SuppressWarnings("rawtypes")
 	public List<ArbitraryNode> findChildrenByCursor(Cursor cursor) {
 		List<ArbitraryNode> foundChildren = new ArrayList<>();
-		// for (ArbitraryNode child : children) {
-		// 	if (child.isKeyOfMapStructure()) {
-		// 		continue;
-		// 	}
-		// 	ExpIndexCursor nodeCursor = new ExpIndexCursor(child.propertyName, child.indexOfIterable);
-		// 	if (cursor.equals(nodeCursor)) {
-		// 		child.mark();
-		// 		foundChildren.add(child);
-		// 	}
-		// }
+		for (ArbitraryNode child : children) {
+			if (child.isKeyOfMapStructure()) {
+				continue;
+			}
+			ExpIndexCursor nodeCursor = new ExpIndexCursor(child.propertyName, child.indexOfIterable);
+			if (cursor.equals(nodeCursor)) {
+				child.mark();
+				foundChildren.add(child);
+			}
+		}
 		return foundChildren;
 	}
 

@@ -4,7 +4,6 @@ import java.util.List;
 
 public final class MapNodeManipulator implements NodeManipulator {
 	private final ArbitraryTraverser traverser;
-
 	private final List<NodeManipulator> keyManipulators;
 	private final List<NodeManipulator> valueManipulators;
 

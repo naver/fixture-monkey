@@ -25,82 +25,72 @@ import java.util.function.Consumer;
 
 import net.jqwik.api.Arbitrary;
 
-import com.navercorp.fixturemonkey.builder.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.resolver.ArbitraryTraverser;
 import com.navercorp.fixturemonkey.resolver.MapNodeManipulator;
 import com.navercorp.fixturemonkey.resolver.NodeManipulator;
+import com.navercorp.fixturemonkey.resolver.NodeNullityManipulator;
 import com.navercorp.fixturemonkey.resolver.NodeSetArbitraryManipulator;
 import com.navercorp.fixturemonkey.resolver.NodeSetDecomposedValueManipulator;
 
-public final class MapSpec implements ArbitraryBuilderVisitor {
+public final class MapSpec {
 	private final ArbitraryTraverser traverser;
-	private final String mapName;
 	private final List<NodeManipulator> manipulators;
 
-	public MapSpec(ArbitraryTraverser traverser, String mapName) {
+	public MapSpec(ArbitraryTraverser traverser) {
 		this.traverser = traverser;
-		this.mapName = mapName;
 		this.manipulators = new ArrayList<>();
 	}
 
-	@SuppressWarnings({"rawtypes", "unchecked"})
-	@Override
-	public void visit(ArbitraryBuilder arbitraryBuilder) {
-		arbitraryBuilder.set(this.mapName, manipulators);
-	}
-
-	public <K> MapSpec addKey(K key) {
-		// null 처리
+	public void addKey(Object key) {
 		NodeManipulator manipulator = getSetManipulator(key);
 		NodeManipulator mapManipulator = new MapNodeManipulator(traverser,
 			new ArrayList<>(Collections.singletonList(manipulator)), new ArrayList<>());
 		manipulators.add(mapManipulator);
-		return this;
 	}
 
-	public MapSpec addKey(Consumer<MapSpec> consumer) {
-		MapSpec mapSpec = new MapSpec(traverser, mapName);
+	public void addKey(Consumer<MapSpec> consumer) {
+		MapSpec mapSpec = new MapSpec(traverser);
 		consumer.accept(mapSpec);
 		ArrayList<NodeManipulator> nextManipulators = new ArrayList<>(mapSpec.manipulators);
 		NodeManipulator mapManipulator = new MapNodeManipulator(traverser, nextManipulators, new ArrayList<>());
 		manipulators.add(mapManipulator);
-		return this;
 	}
 
-	public <V> MapSpec addValue(V value) {
-		// null 처리
+	public void addValue(Object value) {
 		NodeManipulator manipulator = getSetManipulator(value);
-		NodeManipulator mapManipulator = new MapNodeManipulator(traverser, new ArrayList<>(), new ArrayList<>(
-			Collections.singletonList(manipulator)));
+		NodeManipulator mapManipulator = new MapNodeManipulator(traverser,
+			new ArrayList<>(), new ArrayList<>(Collections.singletonList(manipulator)));
 		manipulators.add(mapManipulator);
-		return this;
 	}
 
-	public MapSpec addValue(Consumer<MapSpec> consumer) {
-		MapSpec mapSpec = new MapSpec(traverser, mapName);
+	public void addValue(Consumer<MapSpec> consumer) {
+		MapSpec mapSpec = new MapSpec(traverser);
 		consumer.accept(mapSpec);
 		ArrayList<NodeManipulator> nextManipulators = new ArrayList<>(mapSpec.manipulators);
 		NodeManipulator mapManipulator = new MapNodeManipulator(traverser, new ArrayList<>(), nextManipulators);
 		manipulators.add(mapManipulator);
-		return this;
 	}
 
-	public <K, V> MapSpec put(K key, V value) {
+	public void put(Object key, Object value) {
 		NodeManipulator keyManipulator = getSetManipulator(key);
 		NodeManipulator valueManipulator = getSetManipulator(value);
 		NodeManipulator mapManipulator = new MapNodeManipulator(traverser,
 			new ArrayList<>(Collections.singletonList(keyManipulator)),
 			new ArrayList<>(Collections.singletonList(valueManipulator)));
 		manipulators.add(mapManipulator);
-		return this;
+	}
+
+	public List<NodeManipulator> getManipulators() {
+		return manipulators;
 	}
 
 	private NodeManipulator getSetManipulator(Object value) {
 		if (value instanceof Arbitrary) {
 			return new NodeSetArbitraryManipulator<>((Arbitrary<?>)value);
-		} else if (value != null) {
+		} else if (value == null) {
+			return new NodeNullityManipulator(true);
+		} else {
 			return new NodeSetDecomposedValueManipulator<>(this.traverser, value);
 		}
-		return null;
 	}
 }

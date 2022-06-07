@@ -40,10 +40,9 @@ public final class MapKeyElementProperty implements Property {
 
 	private final AnnotatedType keyType;
 
-	private int sequence;
+	private final int sequence;
 
 	private final List<Annotation> annotations;
-	private Object fixedValue;
 
 	public MapKeyElementProperty(
 		Property mapProperty,
@@ -76,10 +75,6 @@ public final class MapKeyElementProperty implements Property {
 
 	public int getSequence() {
 		return sequence;
-	}
-
-	public void setSequence(int sequence) {
-		this.sequence = sequence;
 	}
 
 	@Override
@@ -117,13 +112,5 @@ public final class MapKeyElementProperty implements Property {
 		}
 
 		throw new IllegalArgumentException("given value is not Map Entry. " + obj.getClass());
-	}
-
-	public Object getFixedValue() {
-		return fixedValue;
-	}
-
-	public void setFixedValue(Object fixedValue) {
-		this.fixedValue = fixedValue;
 	}
 }
