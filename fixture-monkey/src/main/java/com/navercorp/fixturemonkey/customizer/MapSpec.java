@@ -47,8 +47,10 @@ public final class MapSpec {
 
 	public void addKey(Object key) {
 		NodeManipulator manipulator = getSetManipulator(key);
-		NodeManipulator mapManipulator = new MapNodeManipulator(traverser,
-			new ArrayList<>(Collections.singletonList(manipulator)), new ArrayList<>());
+		NodeManipulator mapManipulator = new MapNodeManipulator(
+			traverser,
+			new ArrayList<>(Collections.singletonList(manipulator)),
+			new ArrayList<>());
 		manipulators.add(mapManipulator);
 	}
 
@@ -56,14 +58,19 @@ public final class MapSpec {
 		MapSpec mapSpec = new MapSpec(traverser);
 		consumer.accept(mapSpec);
 		ArrayList<NodeManipulator> nextManipulators = new ArrayList<>(mapSpec.manipulators);
-		NodeManipulator mapManipulator = new MapNodeManipulator(traverser, nextManipulators, new ArrayList<>());
+		NodeManipulator mapManipulator = new MapNodeManipulator(
+			traverser,
+			nextManipulators,
+			new ArrayList<>());
 		manipulators.add(mapManipulator);
 	}
 
 	public void addValue(Object value) {
 		NodeManipulator manipulator = getSetManipulator(value);
-		NodeManipulator mapManipulator = new MapNodeManipulator(traverser,
-			new ArrayList<>(), new ArrayList<>(Collections.singletonList(manipulator)));
+		NodeManipulator mapManipulator = new MapNodeManipulator(
+			traverser,
+			new ArrayList<>(),
+			new ArrayList<>(Collections.singletonList(manipulator)));
 		manipulators.add(mapManipulator);
 	}
 
@@ -71,14 +78,18 @@ public final class MapSpec {
 		MapSpec mapSpec = new MapSpec(traverser);
 		consumer.accept(mapSpec);
 		ArrayList<NodeManipulator> nextManipulators = new ArrayList<>(mapSpec.manipulators);
-		NodeManipulator mapManipulator = new MapNodeManipulator(traverser, new ArrayList<>(), nextManipulators);
+		NodeManipulator mapManipulator = new MapNodeManipulator(
+			traverser,
+			new ArrayList<>(),
+			nextManipulators);
 		manipulators.add(mapManipulator);
 	}
 
 	public void put(Object key, Object value) {
 		NodeManipulator keyManipulator = getSetManipulator(key);
 		NodeManipulator valueManipulator = getSetManipulator(value);
-		NodeManipulator mapManipulator = new MapNodeManipulator(traverser,
+		NodeManipulator mapManipulator = new MapNodeManipulator(
+			traverser,
 			new ArrayList<>(Collections.singletonList(keyManipulator)),
 			new ArrayList<>(Collections.singletonList(valueManipulator)));
 		manipulators.add(mapManipulator);

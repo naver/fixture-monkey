@@ -25,7 +25,7 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public class AddMapEntryNodeManipulator implements NodeManipulator {
+public final class AddMapEntryNodeManipulator implements NodeManipulator {
 	private final ArbitraryTraverser traverser;
 
 	public AddMapEntryNodeManipulator(ArbitraryTraverser traverser) {
