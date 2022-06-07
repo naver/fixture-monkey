@@ -686,4 +686,18 @@ class FixtureMonkeyV04Test {
 
 		then(actual).allMatch(Objects::nonNull);
 	}
+
+	@Property
+	void sampleAfterMapTwiceReturnsDiff() {
+		ArbitraryBuilder<String> arbitraryBuilder = SUT.giveMeBuilder(ComplexObject.class)
+			.set("str", Arbitraries.strings().ascii().filter(it -> !it.isEmpty()))
+			.map(ComplexObject::getStr);
+
+		// when
+		String actual = arbitraryBuilder.sample();
+
+		// then
+		String notExpected = arbitraryBuilder.sample();
+		then(actual).isNotEqualTo(notExpected);
+	}
 }
