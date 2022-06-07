@@ -23,10 +23,15 @@ import static com.navercorp.fixturemonkey.Constants.HEAD_NAME;
 import static com.navercorp.fixturemonkey.Constants.MAX_MANIPULATION_COUNT;
 import static java.util.stream.Collectors.toList;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -40,6 +45,8 @@ import net.jqwik.api.Arbitrary;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import com.navercorp.fixturemonkey.api.property.RootProperty;
+import com.navercorp.fixturemonkey.api.type.Types;
+import com.navercorp.fixturemonkey.api.type.Types.UnidentifiableType;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryExpression;
 import com.navercorp.fixturemonkey.customizer.MapSpec;
 import com.navercorp.fixturemonkey.resolver.ApplyNodeCountManipulator;
@@ -49,6 +56,7 @@ import com.navercorp.fixturemonkey.resolver.ArbitraryTraverser;
 import com.navercorp.fixturemonkey.resolver.CompositeNodeManipulator;
 import com.navercorp.fixturemonkey.resolver.ExpressionNodeResolver;
 import com.navercorp.fixturemonkey.resolver.NodeManipulator;
+import com.navercorp.fixturemonkey.resolver.NodeFilterManipulator;
 import com.navercorp.fixturemonkey.resolver.NodeNullityManipulator;
 import com.navercorp.fixturemonkey.resolver.NodeSetArbitraryManipulator;
 import com.navercorp.fixturemonkey.resolver.NodeSetDecomposedValueManipulator;
@@ -254,6 +262,107 @@ public final class ArbitraryBuilder<T> extends com.navercorp.fixturemonkey.Arbit
 			new NodeNullityManipulator(false)
 		));
 		return this;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public ArbitraryBuilder<T> setPostCondition(Predicate<T> filter) {
+		return this.setPostCondition(HEAD_NAME, (Class<T>)Types.getActualType(rootProperty.getType()), filter);
+	}
+
+	@Override
+	public <U> ArbitraryBuilder<T> setPostCondition(
+		String expression,
+		Class<U> type,
+		Predicate<U> filter
+	) {
+		return this.setPostCondition(expression, type, filter, MAX_MANIPULATION_COUNT);
+	}
+
+	@Override
+	public <U> ArbitraryBuilder<T> setPostCondition(
+		String expression,
+		Class<U> type,
+		Predicate<U> filter,
+		long limit
+	) {
+		return this.setPostCondition(expression, type, filter, (int)limit);
+	}
+
+	public <U> ArbitraryBuilder<T> setPostCondition(
+		String expression,
+		Class<U> type,
+		Predicate<U> filter,
+		int limit
+	) {
+		ArbitraryExpression arbitraryExpression = ArbitraryExpression.from(expression);
+		this.manipulators.add(
+			new ArbitraryManipulator(
+				new ExpressionNodeResolver(arbitraryExpression),
+				new ApplyNodeCountManipulator(
+					new NodeFilterManipulator(type, filter),
+					limit
+				)
+			)
+		);
+		return this;
+	}
+
+	@Override
+	public <U> ArbitraryBuilder<U> map(Function<T, U> mapper) {
+		U mapped = mapper.apply(this.sample());
+
+		if (mapped == null) {
+			RootProperty property = new RootProperty(generateAnnotatedTypeWithType(UnidentifiableType.class));
+			return new ArbitraryBuilder<>(
+				property,
+				Collections.emptyList(), // could not apply any manipulators, since type is unidentifiable.
+				this.resolver,
+				this.traverser,
+				this.validator
+			);
+		}
+
+		RootProperty property = new RootProperty(generateAnnotatedTypeWithType(mapped.getClass()));
+		List<ArbitraryManipulator> manipulators = new ArrayList<>();
+		manipulators.add(
+			new ArbitraryManipulator(
+				new RootNodeResolver(),
+				new NodeSetDecomposedValueManipulator<>(traverser, mapped)
+			)
+		);
+
+		return new ArbitraryBuilder<>(
+			property,
+			manipulators,
+			resolver,
+			traverser,
+			validator
+		);
+	}
+
+	private <U> AnnotatedType generateAnnotatedTypeWithType(Class<U> type) {
+		return new AnnotatedType() {
+			@Override
+			public Type getType() {
+				return type;
+			}
+
+			@Override
+			public <A extends Annotation> A getAnnotation(Class<A> annotationClass) {
+				return null;
+			}
+
+			@Override
+			public Annotation[] getAnnotations() {
+				return new Annotation[0];
+			}
+
+			@Override
+			public Annotation[] getDeclaredAnnotations() {
+				return new Annotation[0];
+			}
+		};
 	}
 
 	@SuppressWarnings("unchecked")

@@ -608,4 +608,70 @@ class FixtureMonkeyV04Test {
 		// then
 		then(actual).isNotNull();
 	}
+
+	@Property
+	void setPostCondition() {
+		// when
+		String actual = SUT.giveMeBuilder(ComplexObject.class)
+			.setPostCondition("str", String.class, it -> it.length() > 5)
+			.sample()
+			.getStr();
+
+		// then
+		then(actual).hasSizeGreaterThan(5);
+	}
+
+	@Property
+	void setPostConditionRoot() {
+		// when
+		String actual = SUT.giveMeBuilder(ComplexObject.class)
+			.setPostCondition(it -> it.getStr() != null && it.getStr().length() > 5)
+			.sample()
+			.getStr();
+
+		// then
+		then(actual).hasSizeGreaterThan(5);
+	}
+
+	@Property
+	void setPostConditionWrongTypeThrows() {
+		thenThrownBy(
+			() -> SUT.giveMeBuilder(ComplexObject.class)
+				.setPostCondition("str", Integer.class, it -> it > 5)
+				.sample()
+		).isExactlyInstanceOf(IllegalArgumentException.class)
+			.hasMessageContaining("Wrong type filter is applied.");
+	}
+
+	@Property
+	void mapWhenNull() {
+		// when
+		String actual = SUT.giveMeBuilder(ComplexObject.class)
+			.setNull("str")
+			.map(ComplexObject::getStr)
+			.sample();
+
+		then(actual).isNull();
+	}
+
+	@Property
+	void mapWhenNotNull() {
+		// when
+		String actual = SUT.giveMeBuilder(ComplexObject.class)
+			.setNotNull("str")
+			.map(ComplexObject::getStr)
+			.sample();
+
+		then(actual).isNotNull();
+	}
+
+	@Property
+	void mapToFixedValue() {
+		// when
+		String actual = SUT.giveMeBuilder(ComplexObject.class)
+			.map(it -> "test")
+			.sample();
+
+		then(actual).isEqualTo("test");
+	}
 }

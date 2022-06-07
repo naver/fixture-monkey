@@ -35,6 +35,7 @@ import net.jqwik.api.Arbitrary;
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.ArbitraryOption;
+import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.api.property.FieldProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
@@ -64,7 +65,7 @@ public final class ArbitraryTraverser {
 		boolean keyOfMapStructure,
 		PropertyNameResolver propertyNameResolver
 	) {
-		LazyValue<T> value = node.getValue();
+		LazyArbitrary<T> value = node.getValue();
 		if (value != null) {
 			value.clear();
 		}
@@ -84,7 +85,7 @@ public final class ArbitraryTraverser {
 	 */
 	@Deprecated
 	public <T> void traverse(ArbitraryNode<T> node, boolean keyOfMapStructure, FieldNameResolver fieldNameResolver) {
-		LazyValue<T> value = node.getValue();
+		LazyArbitrary<T> value = node.getValue();
 		if (value != null) {
 			value.clear();
 		}
@@ -100,7 +101,7 @@ public final class ArbitraryTraverser {
 	) {
 		node.getChildren().clear();
 		initializeDefaultArbitrary(node);
-		LazyValue<T> nowValue = node.getValue();
+		LazyArbitrary<T> nowValue = node.getValue();
 		ArbitraryType<T> nowNodeType = node.getType();
 		Class<?> clazz = nowNodeType.getType();
 		ContainerArbitraryNodeGenerator containerArbitraryNodeGenerator =
@@ -118,9 +119,9 @@ public final class ArbitraryTraverser {
 				double nullInject = arbitraryOption.getNullInject();
 				boolean defaultNotNull = arbitraryOption.isDefaultNotNull();
 				boolean nullable = isNullableField(arbitraryType, field, defaultNotNull);
-				LazyValue<?> nextValue = getNextValue(nowValue, property);
+				LazyArbitrary<?> nextValue = getNextValue(nowValue, property);
 				nullable = nextValue == null && nullable;
-				boolean nextActive = (nextValue == null || !nextValue.isEmpty()) && active;
+				boolean nextActive = (nextValue == null || nextValue.getValue() != null) && active;
 				if (node.isDecomposedAsNull()) {
 					node.setArbitrary(Arbitraries.just(null));
 				}
@@ -155,7 +156,7 @@ public final class ArbitraryTraverser {
 		} else {
 			if (nowValue != null) {
 				node.setManipulated(true);
-				node.setArbitrary(Arbitraries.just(nowValue.get()));
+				node.setArbitrary(Arbitraries.just(nowValue.getValue()));
 			} else if (arbitraryOption.isDefaultArbitraryType(nowNodeType.getType())
 				&& arbitraryOption.isGeneratableClass(clazz)
 			) {
@@ -210,13 +211,13 @@ public final class ArbitraryTraverser {
 	}
 
 	@Nullable
-	private <T> LazyValue<?> getNextValue(LazyValue<T> currentValue, Property property) {
+	private <T> LazyArbitrary<?> getNextValue(LazyArbitrary<T> currentValue, Property property) {
 		if (currentValue == null) {
 			return null;
 		}
-		return currentValue.isEmpty()
-			? new LazyValue<>((Object)null)
-			: new LazyValue<>(property.getValue(currentValue.get()));
+		return currentValue.getValue() == null
+			? LazyArbitrary.lazy(() -> null, true)
+			: LazyArbitrary.lazy(() -> property.getValue(currentValue.getValue()), true);
 	}
 
 	@SuppressWarnings("unchecked")

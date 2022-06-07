@@ -61,6 +61,7 @@ import com.navercorp.fixturemonkey.api.generator.ContainerArbitraryPropertyGener
 import com.navercorp.fixturemonkey.api.generator.EntryArbitraryPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.MapArbitraryPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.MapEntryElementArbitraryPropertyGenerator;
+import com.navercorp.fixturemonkey.api.generator.NullArbitraryPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.NullInjectGenerator;
 import com.navercorp.fixturemonkey.api.generator.ObjectArbitraryPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.OptionalArbitraryPropertyGenerator;
@@ -73,6 +74,7 @@ import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.api.property.TupleLikeElementsProperty;
+import com.navercorp.fixturemonkey.api.type.Types.UnidentifiableType;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class GenerateOptions {
@@ -284,7 +286,8 @@ public final class GenerateOptions {
 			new MatcherOperator<>(
 				property -> property.getClass() == TupleLikeElementsProperty.class,
 				TupleLikeElementsArbitraryPropertyGenerator.INSTANCE
-			)
+			),
+			MatcherOperator.exactTypeMatchOperator(UnidentifiableType.class, NullArbitraryPropertyGenerator.INSTANCE)
 		);
 	}
 }

@@ -27,6 +27,7 @@ import java.util.stream.Stream;
 
 import net.jqwik.api.Arbitraries;
 
+import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.generator.FieldNameResolver;
 
 public class DefaultContainerArbitraryNodeGenerator implements ContainerArbitraryNodeGenerator {
@@ -37,7 +38,7 @@ public class DefaultContainerArbitraryNodeGenerator implements ContainerArbitrar
 		int currentIndex = 0;
 
 		ArbitraryType<T> clazz = containerNode.getType();
-		LazyValue<T> lazyValue = containerNode.getValue();
+		LazyArbitrary<T> lazyValue = containerNode.getValue();
 		String propertyName = containerNode.getPropertyName();
 		ArbitraryType<?> elementType = clazz.getGenericArbitraryType(0);
 
@@ -46,11 +47,11 @@ public class DefaultContainerArbitraryNodeGenerator implements ContainerArbitrar
 		int elementSize = containerNode.getElementSize();
 
 		if (lazyValue != null) {
-			if (lazyValue.isEmpty()) {
+			if (lazyValue.getValue() == null) {
 				containerNode.setArbitrary(Arbitraries.just(null));
 				return generatedNodeList;
 			}
-			T value = lazyValue.get();
+			T value = lazyValue.getValue();
 
 			if (!(value instanceof Collection || value instanceof Iterator || value instanceof Stream)) {
 				throw new IllegalArgumentException(

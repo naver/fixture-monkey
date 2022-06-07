@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.generator.FieldNameResolver;
 
 public class OptionalArbitraryNodeGenerator implements ContainerArbitraryNodeGenerator {
@@ -35,9 +36,9 @@ public class OptionalArbitraryNodeGenerator implements ContainerArbitraryNodeGen
 		ArbitraryType<?> elementType = arbitraryType.getGenericArbitraryType(0);
 		String propertyName = containerNode.getPropertyName();
 
-		LazyValue<?> nextLazyValue = getNextLazyValue(containerNode.getValue());
+		LazyArbitrary<?> nextLazyValue = getNextLazyValue(containerNode.getValue());
 
-		if (nextLazyValue != null && nextLazyValue.isEmpty()) {
+		if (nextLazyValue != null && nextLazyValue.getValue() == null) {
 			// can not generate Optional empty by ArbitraryGenerator
 			return generatedNodeList;
 		}
@@ -63,15 +64,15 @@ public class OptionalArbitraryNodeGenerator implements ContainerArbitraryNodeGen
 	}
 
 	@SuppressWarnings("unchecked")
-	private <T, U> LazyValue<U> getNextLazyValue(LazyValue<T> lazyValue) {
+	private <T, U> LazyArbitrary<U> getNextLazyValue(LazyArbitrary<T> lazyValue) {
 		if (lazyValue == null) {
 			return null;
 		}
 
-		T value = lazyValue.get();
+		T value = lazyValue.getValue();
 
 		Optional<U> optional = ((Optional<U>)value);
 		U nextObject = optional.orElse(null);
-		return new LazyValue<>(() -> nextObject);
+		return LazyArbitrary.lazy(() -> nextObject, true);
 	}
 }

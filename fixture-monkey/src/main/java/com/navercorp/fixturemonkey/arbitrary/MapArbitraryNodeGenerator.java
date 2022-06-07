@@ -23,6 +23,7 @@ import java.util.List;
 
 import net.jqwik.api.Arbitraries;
 
+import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.generator.FieldNameResolver;
 
 @SuppressWarnings("unchecked")
@@ -33,9 +34,9 @@ public class MapArbitraryNodeGenerator implements ContainerArbitraryNodeGenerato
 	public <T> List<ArbitraryNode<?>> generate(ArbitraryNode<T> containerNode) {
 		List<ArbitraryNode<?>> generatedNodeList = new ArrayList<>();
 
-		LazyValue<T> lazyValue = containerNode.getValue();
+		LazyArbitrary<T> lazyValue = containerNode.getValue();
 		if (lazyValue != null) {
-			containerNode.setArbitrary(Arbitraries.just(lazyValue.get()));
+			containerNode.setArbitrary(Arbitraries.just(lazyValue.getValue()));
 			return generatedNodeList;
 		}
 
