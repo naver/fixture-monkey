@@ -20,6 +20,17 @@ package com.navercorp.fixturemonkey.api.lazy;
 
 import java.util.function.Supplier;
 
+import org.apiguardian.api.API;
+import org.apiguardian.api.API.Status;
+
+/**
+ * Represents an arbitrary value with lazy initialization.
+ *
+ * Similar to {@link kotlin.Lazy}
+ * But it could initialize value multiple times if call clear() method.
+ * Due to supporting {@link net.jqwik.api.Arbitrary}.
+ **/
+@API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public interface LazyArbitrary<T> {
 	T getValue();
 

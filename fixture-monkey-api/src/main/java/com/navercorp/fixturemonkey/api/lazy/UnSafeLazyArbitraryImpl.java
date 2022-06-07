@@ -20,6 +20,10 @@ package com.navercorp.fixturemonkey.api.lazy;
 
 import java.util.function.Supplier;
 
+import org.apiguardian.api.API;
+import org.apiguardian.api.API.Status;
+
+@API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class UnSafeLazyArbitraryImpl<T> implements LazyArbitrary<T> {
 	private static final Object UNINITIALIZED_VALUE = new Object();
 
