@@ -29,7 +29,6 @@ public class MapSpecTestSpecs {
 	@Getter
 	public static class MapObject {
 		private Map<String, String> strMap;
-		private Map<List<String>, String> listMap;
 		private Map<String, Map<String, String>> mapValueMap;
 		private Map<Map<String, String>, String> mapKeyMap;
 		private Map<Map<String, String>, Map<String, String>> mapKeyValueMap;
