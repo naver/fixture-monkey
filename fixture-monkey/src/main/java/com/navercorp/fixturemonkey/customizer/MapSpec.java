@@ -23,6 +23,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 
+import org.apiguardian.api.API;
+import org.apiguardian.api.API.Status;
+
 import net.jqwik.api.Arbitrary;
 
 import com.navercorp.fixturemonkey.resolver.ArbitraryTraverser;
@@ -32,6 +35,7 @@ import com.navercorp.fixturemonkey.resolver.NodeNullityManipulator;
 import com.navercorp.fixturemonkey.resolver.NodeSetArbitraryManipulator;
 import com.navercorp.fixturemonkey.resolver.NodeSetDecomposedValueManipulator;
 
+@API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class MapSpec {
 	private final ArbitraryTraverser traverser;
 	private final List<NodeManipulator> manipulators;

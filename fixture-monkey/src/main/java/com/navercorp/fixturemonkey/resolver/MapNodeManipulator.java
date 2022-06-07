@@ -20,6 +20,10 @@ package com.navercorp.fixturemonkey.resolver;
 
 import java.util.List;
 
+import org.apiguardian.api.API;
+import org.apiguardian.api.API.Status;
+
+@API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class MapNodeManipulator implements NodeManipulator {
 	private final ArbitraryTraverser traverser;
 	private final List<NodeManipulator> keyManipulators;

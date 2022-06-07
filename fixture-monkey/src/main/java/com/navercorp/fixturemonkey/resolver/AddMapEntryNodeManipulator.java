@@ -18,9 +18,13 @@
 
 package com.navercorp.fixturemonkey.resolver;
 
+import org.apiguardian.api.API;
+import org.apiguardian.api.API.Status;
+
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 
+@API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public class AddMapEntryNodeManipulator implements NodeManipulator {
 	private final ArbitraryTraverser traverser;
 
