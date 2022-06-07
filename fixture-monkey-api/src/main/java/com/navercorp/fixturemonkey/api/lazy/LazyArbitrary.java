@@ -26,7 +26,7 @@ import org.apiguardian.api.API.Status;
 /**
  * Represents an arbitrary value with lazy initialization.
  *
- * Similar to {@link kotlin.Lazy}
+ * Similar to <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-lazy/">Kotlin Lazy</a>
  * But it could initialize value multiple times if call clear() method.
  * Due to supporting {@link net.jqwik.api.Arbitrary}.
  **/
