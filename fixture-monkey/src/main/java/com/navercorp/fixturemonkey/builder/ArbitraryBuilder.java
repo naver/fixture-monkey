@@ -46,8 +46,9 @@ import com.navercorp.fixturemonkey.resolver.ApplyNodeCountManipulator;
 import com.navercorp.fixturemonkey.resolver.ArbitraryManipulator;
 import com.navercorp.fixturemonkey.resolver.ArbitraryResolver;
 import com.navercorp.fixturemonkey.resolver.ArbitraryTraverser;
+import com.navercorp.fixturemonkey.resolver.CompositeNodeManipulator;
 import com.navercorp.fixturemonkey.resolver.ExpressionNodeResolver;
-import com.navercorp.fixturemonkey.resolver.NodeAddMapEntryManipulator;
+import com.navercorp.fixturemonkey.resolver.NodeManipulator;
 import com.navercorp.fixturemonkey.resolver.NodeNullityManipulator;
 import com.navercorp.fixturemonkey.resolver.NodeSetArbitraryManipulator;
 import com.navercorp.fixturemonkey.resolver.NodeSetDecomposedValueManipulator;
@@ -120,12 +121,13 @@ public final class ArbitraryBuilder<T> extends com.navercorp.fixturemonkey.Arbit
 		return this;
 	}
 
-	public void set(String mapName, List<Boolean> isSetKey, Object key, Object value) {
-		ExpressionNodeResolver nodeResolver = new ExpressionNodeResolver(ArbitraryExpression.from(mapName, isSetKey));
-		manipulators.add(
+	public void set(String mapExpression, List<NodeManipulator> manipulators) {
+		// 최상위 map 까지 찾음
+		ExpressionNodeResolver nodeResolver = new ExpressionNodeResolver(ArbitraryExpression.from(mapExpression));
+		this.manipulators.add(
 			new ArbitraryManipulator(
 				nodeResolver,
-				new NodeAddMapEntryManipulator(traverser, key, value)
+				new CompositeNodeManipulator(manipulators.toArray(new NodeManipulator[0]))
 			)
 		);
 	}
@@ -187,7 +189,7 @@ public final class ArbitraryBuilder<T> extends com.navercorp.fixturemonkey.Arbit
 	}
 
 	public ArbitraryBuilder<T> setMap(String mapName, Consumer<MapSpec> mapSpecSupplier) {
-		MapSpec mapSpec = new MapSpec(mapName);
+		MapSpec mapSpec = new MapSpec(traverser, mapName);
 		mapSpecSupplier.accept(mapSpec);
 		mapSpec.visit(this);
 		return this;

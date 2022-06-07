@@ -3,8 +3,6 @@ package com.navercorp.fixturemonkey.test;
 import static org.assertj.core.api.BDDAssertions.then;
 
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import net.jqwik.api.Property;
@@ -48,8 +46,8 @@ public class MapSpecTest {
 		then(actual.getStrMap().get("key")).isEqualTo("value");
 	}
 
-	@Property()
-	void mapAddNestedKey() {
+	@Property
+	void mapAddKeyAddKey() {
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
 			.setMap("mapKeyMap", m -> {
 				m.addKey(k-> {
@@ -59,44 +57,52 @@ public class MapSpecTest {
 			.sample();
 
 		List<String> keyList = actual.getMapKeyMap().keySet().stream()
-			.map(Map::keySet).flatMap(Set::stream).collect(Collectors.toList());
+			.flatMap(it->it.keySet().stream()).collect(Collectors.toList());
 		then(keyList).contains("key");
 	}
 
-	@Property(tries = 10)
-	void mapAddNestedValue() {
+	@Property
+	void mapAddKeyAddValue() {
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
-			.setMap("mapValueMap", m -> {
-				m.addValue(k-> {
+			.setMap("mapKeyMap", m -> {
+				m.addKey(k-> {
 					k.addValue("value");
 				});
 			})
 			.sample();
-		//
-		// System.out.println(actual.getMapValueMap());
-		// List<String> valueList = actual.getMapValueMap().entrySet().stream()
-		// 	.map(Map.Entry::getValue).map(it -> it.entrySet().).flatMap(Set::stream).collect(Collectors.toList());
-		// // then(valueList).contains("value");
+
+		List<String> keyList = actual.getMapKeyMap().keySet().stream()
+			.flatMap(it->it.values().stream()).collect(Collectors.toList());
+		then(keyList).contains("value");
 	}
 
-	// @Property()
-	// void mapAddNestedKeyValue() {
-	// 	MapObject actual = SUT.giveMeBuilder(MapObject.class)
-	// 		.setMap("mapKeyValueMap", m -> {
-	// 			m.addKey(k -> {
-	// 				k.addKey("KeyKey");
-	// 				k.addValue("KeyValue");
-	// 				k.put("Key", "Value");
-	// 			});
-	// 			m.addValue(v -> {
-	// 				v.addKey("ValueKey");
-	// 				v.addValue("ValueValue");
-	// 				v.put("Key","Value");
-	// 			});
-	// 		})
-	// 		.sample();
-	//
-	// 	System.out.println(actual.getMapKeyValueMap());
-	// 	then(actual.getMapKeyValueMap().entrySet());
-	// }
+	@Property
+	void mapAddValueAddKey() {
+		MapObject actual = SUT.giveMeBuilder(MapObject.class)
+			.setMap("mapValueMap", m -> {
+				m.addValue(v-> {
+					v.addKey("key");
+				});
+			})
+			.sample();
+
+		List<String> valueList = actual.getMapValueMap().values().stream()
+			.flatMap(it-> it.keySet().stream()).collect(Collectors.toList());
+		then(valueList).contains("key");
+	}
+
+	@Property
+	void mapAddValueAddValue() {
+		MapObject actual = SUT.giveMeBuilder(MapObject.class)
+			.setMap("mapValueMap", m -> {
+				m.addValue(v-> {
+					v.addValue("value");
+				});
+			})
+			.sample();
+
+		List<String> valueList = actual.getMapValueMap().values().stream()
+			.flatMap(it-> it.values().stream()).collect(Collectors.toList());
+		then(valueList).contains("value");
+	}
 }

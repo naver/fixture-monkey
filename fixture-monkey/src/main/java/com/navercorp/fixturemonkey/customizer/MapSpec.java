@@ -19,101 +19,88 @@
 package com.navercorp.fixturemonkey.customizer;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 
+import net.jqwik.api.Arbitrary;
+
 import com.navercorp.fixturemonkey.builder.ArbitraryBuilder;
+import com.navercorp.fixturemonkey.resolver.ArbitraryTraverser;
+import com.navercorp.fixturemonkey.resolver.MapNodeManipulator;
+import com.navercorp.fixturemonkey.resolver.NodeManipulator;
+import com.navercorp.fixturemonkey.resolver.NodeSetArbitraryManipulator;
+import com.navercorp.fixturemonkey.resolver.NodeSetDecomposedValueManipulator;
 
 public final class MapSpec implements ArbitraryBuilderVisitor {
+	private final ArbitraryTraverser traverser;
 	private final String mapName;
-	private final List<Boolean> isSetKey;
-	private final List<ArbitraryBuilderVisitor> next;
-	@SuppressWarnings("rawtypes")
-	private final List<MapSpecSet> setList;
+	private final List<NodeManipulator> manipulators;
 
-	public MapSpec(String mapName) {
+	public MapSpec(ArbitraryTraverser traverser, String mapName) {
+		this.traverser = traverser;
 		this.mapName = mapName;
-		this.isSetKey = new ArrayList<>();
-		this.next = new ArrayList<>();
-		this.setList = new ArrayList<>();
+		this.manipulators = new ArrayList<>();
 	}
 
-	public MapSpec(String mapName, List<Boolean> isSetKey) {
-		this.mapName = mapName;
-		this.isSetKey = isSetKey;
-		this.next = new ArrayList<>();
-		this.setList = new ArrayList<>();
-	}
-
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	@Override
 	public void visit(ArbitraryBuilder arbitraryBuilder) {
-		this.setList.forEach(it -> arbitraryBuilder.set(it.mapName, it.isSetKey, it.key, it.value));
-
-		for (ArbitraryBuilderVisitor nextMapSpec : this.next) {
-			nextMapSpec.visit(arbitraryBuilder);
-		}
+		arbitraryBuilder.set(this.mapName, manipulators);
 	}
 
 	public <K> MapSpec addKey(K key) {
-		addSet(mapName, isSetKey, key, null);
+		// null 처리
+		NodeManipulator manipulator = getSetManipulator(key);
+		NodeManipulator mapManipulator = new MapNodeManipulator(traverser,
+			new ArrayList<>(Collections.singletonList(manipulator)), new ArrayList<>());
+		manipulators.add(mapManipulator);
 		return this;
 	}
 
 	public MapSpec addKey(Consumer<MapSpec> consumer) {
-		List<Boolean> isSetKey = getIsSetKey(true);
-		MapSpec mapSpec = new MapSpec(this.mapName + "[]", isSetKey);
+		MapSpec mapSpec = new MapSpec(traverser, mapName);
 		consumer.accept(mapSpec);
-		addNext(mapSpec);
+		ArrayList<NodeManipulator> nextManipulators = new ArrayList<>(mapSpec.manipulators);
+		NodeManipulator mapManipulator = new MapNodeManipulator(traverser, nextManipulators, new ArrayList<>());
+		manipulators.add(mapManipulator);
 		return this;
 	}
 
 	public <V> MapSpec addValue(V value) {
-		addSet(mapName, isSetKey, null, value);
+		// null 처리
+		NodeManipulator manipulator = getSetManipulator(value);
+		NodeManipulator mapManipulator = new MapNodeManipulator(traverser, new ArrayList<>(), new ArrayList<>(
+			Collections.singletonList(manipulator)));
+		manipulators.add(mapManipulator);
 		return this;
 	}
 
 	public MapSpec addValue(Consumer<MapSpec> consumer) {
-		List<Boolean> isSetKey = getIsSetKey(false);
-		MapSpec mapSpec = new MapSpec(this.mapName + "[]", isSetKey);
+		MapSpec mapSpec = new MapSpec(traverser, mapName);
 		consumer.accept(mapSpec);
-		addNext(mapSpec);
+		ArrayList<NodeManipulator> nextManipulators = new ArrayList<>(mapSpec.manipulators);
+		NodeManipulator mapManipulator = new MapNodeManipulator(traverser, new ArrayList<>(), nextManipulators);
+		manipulators.add(mapManipulator);
 		return this;
 	}
 
 	public <K, V> MapSpec put(K key, V value) {
-		addSet(mapName, isSetKey, key, value);
+		NodeManipulator keyManipulator = getSetManipulator(key);
+		NodeManipulator valueManipulator = getSetManipulator(value);
+		NodeManipulator mapManipulator = new MapNodeManipulator(traverser,
+			new ArrayList<>(Collections.singletonList(keyManipulator)),
+			new ArrayList<>(Collections.singletonList(valueManipulator)));
+		manipulators.add(mapManipulator);
 		return this;
 	}
 
-	//map[]
-	//map[][0].field
-
-	private List<Boolean> getIsSetKey(Boolean bool) {
-		List<Boolean> isSetKey = new ArrayList<>(this.isSetKey);
-		isSetKey.add(bool);
-		return isSetKey;
-	}
-
-	private void addNext(ArbitraryBuilderVisitor arbitraryBuilderVisitor) {
-		this.next.add(arbitraryBuilderVisitor);
-	}
-
-	private <K, V> void addSet(String mapName, List<Boolean> isSetKey, K key, V value) {
-		this.setList.add(new MapSpecSet<>(mapName, isSetKey, key, value));
-	}
-
-	private static class MapSpecSet<K, V> {
-		private final String mapName;
-		private final List<Boolean> isSetKey;
-		private final K key;
-		private final V value;
-
-		public MapSpecSet(String mapName, List<Boolean> isSetKey, K key, V value) {
-			this.mapName = mapName;
-			this.isSetKey = isSetKey;
-			this.key = key;
-			this.value = value;
+	private NodeManipulator getSetManipulator(Object value) {
+		if (value instanceof Arbitrary) {
+			return new NodeSetArbitraryManipulator<>((Arbitrary<?>)value);
+		} else if (value != null) {
+			return new NodeSetDecomposedValueManipulator<>(this.traverser, value);
 		}
+		return null;
 	}
 }
