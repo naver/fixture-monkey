@@ -46,7 +46,7 @@ public final class MapSpec {
 	}
 
 	public void addKey(Object key) {
-		NodeManipulator manipulator = getSetManipulator(key);
+		NodeManipulator manipulator = convertToNodeManipulator(key);
 		NodeManipulator mapManipulator = new MapNodeManipulator(
 			traverser,
 			Collections.singletonList(manipulator),
@@ -70,7 +70,7 @@ public final class MapSpec {
 	}
 
 	public void addValue(Object value) {
-		NodeManipulator manipulator = getSetManipulator(value);
+		NodeManipulator manipulator = convertToNodeManipulator(value);
 		NodeManipulator mapManipulator = new MapNodeManipulator(
 			traverser,
 			Collections.emptyList(),
@@ -94,8 +94,8 @@ public final class MapSpec {
 	}
 
 	public void put(Object key, Object value) {
-		NodeManipulator keyManipulator = getSetManipulator(key);
-		NodeManipulator valueManipulator = getSetManipulator(value);
+		NodeManipulator keyManipulator = convertToNodeManipulator(key);
+		NodeManipulator valueManipulator = convertToNodeManipulator(value);
 		NodeManipulator mapManipulator = new MapNodeManipulator(
 			traverser,
 			Collections.singletonList(keyManipulator),
@@ -107,7 +107,7 @@ public final class MapSpec {
 		return manipulators;
 	}
 
-	private NodeManipulator getSetManipulator(Object value) {
+	private NodeManipulator convertToNodeManipulator(Object value) {
 		if (value instanceof Arbitrary) {
 			return new NodeSetArbitraryManipulator<>((Arbitrary<?>)value);
 		} else if (value == null) {
