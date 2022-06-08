@@ -201,7 +201,8 @@ public final class ArbitraryBuilder<T> extends com.navercorp.fixturemonkey.Arbit
 	) {
 		ArbitraryBuilder<T> copied = this.copy();
 
-		LazyArbitrary<T> lazyArbitrary = LazyArbitrary.lazy(() -> {
+		LazyArbitrary<T> lazyArbitrary = LazyArbitrary.lazy(
+			() -> {
 				T sampled = copied.fixed().sample();
 				biConsumer.accept(sampled, copied);
 				return copied.sample();
