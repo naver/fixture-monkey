@@ -18,11 +18,14 @@
 
 package com.navercorp.fixturemonkey.resolver;
 
+import java.util.Map;
+
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
+import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class AddMapEntryNodeManipulator implements NodeManipulator {
@@ -34,6 +37,14 @@ public final class AddMapEntryNodeManipulator implements NodeManipulator {
 
 	@Override
 	public void manipulate(ArbitraryNode arbitraryNode) {
+		Class<?> nodeType = Types.getActualType(arbitraryNode.getProperty().getType());
+		if (!Map.class.isAssignableFrom(nodeType)) {
+			throw new IllegalArgumentException(
+				"Can only add an entry to a map node."
+					+ " node type: " + arbitraryNode.getProperty().getType().getTypeName()
+			);
+		}
+
 		ArbitraryProperty arbitraryProperty = arbitraryNode.getArbitraryProperty();
 		ArbitraryContainerInfo containerInfo = arbitraryProperty
 			.getContainerInfo().withElementMinSize(1).withElementMaxSize(1);

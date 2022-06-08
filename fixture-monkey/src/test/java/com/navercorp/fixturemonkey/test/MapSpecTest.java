@@ -65,6 +65,17 @@ public class MapSpecTest {
 	}
 
 	@Property
+	void mapAddNull() {
+		MapObject actual = SUT.giveMeBuilder(MapObject.class)
+			.setMap("strMap", m -> {
+				m.addKey(null);
+			})
+			.sample();
+
+		then(actual.getStrMap().containsKey(null)).isTrue();
+	}
+
+	@Property
 	void mapAddKeyAddKey() {
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
 			.setMap("mapKeyMap", m -> {

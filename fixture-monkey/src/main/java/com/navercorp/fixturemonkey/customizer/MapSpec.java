@@ -55,6 +55,10 @@ public final class MapSpec {
 	}
 
 	public void addKey(Consumer<MapSpec> consumer) {
+		if (consumer == null) {
+			addKey((Object)null);
+			return;
+		}
 		MapSpec mapSpec = new MapSpec(traverser);
 		consumer.accept(mapSpec);
 		ArrayList<NodeManipulator> nextManipulators = new ArrayList<>(mapSpec.manipulators);
@@ -75,6 +79,10 @@ public final class MapSpec {
 	}
 
 	public void addValue(Consumer<MapSpec> consumer) {
+		if (consumer == null) {
+			addValue((Object)null);
+			return;
+		}
 		MapSpec mapSpec = new MapSpec(traverser);
 		consumer.accept(mapSpec);
 		ArrayList<NodeManipulator> nextManipulators = new ArrayList<>(mapSpec.manipulators);
