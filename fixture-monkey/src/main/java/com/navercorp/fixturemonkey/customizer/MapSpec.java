@@ -49,8 +49,8 @@ public final class MapSpec {
 		NodeManipulator manipulator = getSetManipulator(key);
 		NodeManipulator mapManipulator = new MapNodeManipulator(
 			traverser,
-			new ArrayList<>(Collections.singletonList(manipulator)),
-			new ArrayList<>());
+			Collections.singletonList(manipulator),
+			Collections.emptyList());
 		manipulators.add(mapManipulator);
 	}
 
@@ -65,7 +65,7 @@ public final class MapSpec {
 		NodeManipulator mapManipulator = new MapNodeManipulator(
 			traverser,
 			nextManipulators,
-			new ArrayList<>());
+			Collections.emptyList());
 		manipulators.add(mapManipulator);
 	}
 
@@ -73,8 +73,8 @@ public final class MapSpec {
 		NodeManipulator manipulator = getSetManipulator(value);
 		NodeManipulator mapManipulator = new MapNodeManipulator(
 			traverser,
-			new ArrayList<>(),
-			new ArrayList<>(Collections.singletonList(manipulator)));
+			Collections.emptyList(),
+			Collections.singletonList(manipulator));
 		manipulators.add(mapManipulator);
 	}
 
@@ -88,7 +88,7 @@ public final class MapSpec {
 		ArrayList<NodeManipulator> nextManipulators = new ArrayList<>(mapSpec.manipulators);
 		NodeManipulator mapManipulator = new MapNodeManipulator(
 			traverser,
-			new ArrayList<>(),
+			Collections.emptyList(),
 			nextManipulators);
 		manipulators.add(mapManipulator);
 	}
@@ -98,8 +98,8 @@ public final class MapSpec {
 		NodeManipulator valueManipulator = getSetManipulator(value);
 		NodeManipulator mapManipulator = new MapNodeManipulator(
 			traverser,
-			new ArrayList<>(Collections.singletonList(keyManipulator)),
-			new ArrayList<>(Collections.singletonList(valueManipulator)));
+			Collections.singletonList(keyManipulator),
+			Collections.singletonList(valueManipulator));
 		manipulators.add(mapManipulator);
 	}
 

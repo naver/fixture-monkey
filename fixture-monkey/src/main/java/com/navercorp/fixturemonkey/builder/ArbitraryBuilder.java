@@ -151,12 +151,12 @@ public final class ArbitraryBuilder<T> extends com.navercorp.fixturemonkey.Arbit
 		return this.set(HEAD_NAME, value);
 	}
 
-	public ArbitraryBuilder<T> setMap(String mapName, Consumer<MapSpec> mapSpecSupplier) {
+	public ArbitraryBuilder<T> setMap(String expression, Consumer<MapSpec> mapSpecSupplier) {
 		MapSpec mapSpec = new MapSpec(traverser);
 		mapSpecSupplier.accept(mapSpec);
 
 		List<NodeManipulator> mapManipulators = mapSpec.getManipulators();
-		ExpressionNodeResolver nodeResolver = new ExpressionNodeResolver(ArbitraryExpression.from(mapName));
+		ExpressionNodeResolver nodeResolver = new ExpressionNodeResolver(ArbitraryExpression.from(expression));
 
 		this.manipulators.add(
 			new ArbitraryManipulator(
