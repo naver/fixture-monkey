@@ -19,6 +19,7 @@
 package com.navercorp.fixturemonkey.test;
 
 import static org.assertj.core.api.BDDAssertions.then;
+import static org.assertj.core.api.BDDAssertions.thenThrownBy;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -73,6 +74,18 @@ class MapSpecTest {
 			.sample();
 
 		then(actual.getStrMap().containsValue(null)).isTrue();
+	}
+
+	@Property
+	void mapAddNullKeyThrows() {
+		thenThrownBy(() ->
+			SUT.giveMeBuilder(MapObject.class)
+				.setMap("strMap", m -> {
+					m.key(null);
+				})
+				.sample()
+		).isExactlyInstanceOf(IllegalArgumentException.class)
+			.hasMessageContaining("Map key cannot be null.");
 	}
 
 	@Property
