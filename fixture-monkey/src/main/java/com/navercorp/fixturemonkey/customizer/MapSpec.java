@@ -97,6 +97,11 @@ public final class MapSpec {
 	}
 
 	public void entry(Object key, @Nullable Object value) {
+		if (key == null) {
+			throw new IllegalArgumentException(
+				"Map key cannot be null."
+			);
+		}
 		NodeManipulator keyManipulator = convertToNodeManipulator(key);
 		NodeManipulator valueManipulator = convertToNodeManipulator(value);
 		NodeManipulator mapManipulator = new MapNodeManipulator(
