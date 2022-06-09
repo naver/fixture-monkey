@@ -300,7 +300,7 @@ public final class ArbitraryBuilder<T> extends com.navercorp.fixturemonkey.Arbit
 	public <U> ArbitraryBuilder<U> map(Function<T, U> mapper) {
 		LazyArbitrary<U> lazyArbitrary = LazyArbitrary.lazy(() -> mapper.apply(this.sample()));
 
-		RootProperty property = new RootProperty(new LazyAnnotatedType<>(lazyArbitrary));
+		RootProperty property = new RootProperty(new LazyAnnotatedType<>(lazyArbitrary::getValue));
 
 		List<ArbitraryManipulator> manipulators = new ArrayList<>();
 		manipulators.add(

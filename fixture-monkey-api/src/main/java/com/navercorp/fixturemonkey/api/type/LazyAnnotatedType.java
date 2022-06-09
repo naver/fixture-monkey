@@ -21,20 +21,21 @@ package com.navercorp.fixturemonkey.api.type;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Type;
+import java.util.function.Supplier;
 
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.api.type.Types.UnidentifiableType;
 
 public final class LazyAnnotatedType<T> implements AnnotatedType {
-	private final LazyArbitrary<T> lazyValue;
+	private final Supplier<T> supplier;
 
-	public LazyAnnotatedType(LazyArbitrary<T> lazyValue) {
-		this.lazyValue = lazyValue;
+	public LazyAnnotatedType(Supplier<T> supplier) {
+		this.supplier = supplier;
 	}
 
 	@Override
 	public Type getType() {
-		T value = lazyValue.getValue();
+		T value = supplier.get();
 		if (value == null) {
 			return UnidentifiableType.class;
 		}
