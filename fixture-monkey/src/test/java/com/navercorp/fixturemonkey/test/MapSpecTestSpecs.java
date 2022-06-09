@@ -23,7 +23,7 @@ import java.util.Map;
 import lombok.Getter;
 import lombok.Setter;
 
-public class MapSpecTestSpecs {
+class MapSpecTestSpecs {
 	@Setter
 	@Getter
 	public static class MapObject {

@@ -28,7 +28,7 @@ import net.jqwik.api.Property;
 import com.navercorp.fixturemonkey.LabMonkey;
 import com.navercorp.fixturemonkey.test.MapSpecTestSpecs.MapObject;
 
-public class MapSpecTest {
+class MapSpecTest {
 	private static final LabMonkey SUT = LabMonkey.labMonkey();
 
 	@Property

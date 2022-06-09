@@ -23,6 +23,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 
+import javax.annotation.Nullable;
+
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
@@ -69,7 +71,7 @@ public final class MapSpec {
 		manipulators.add(mapManipulator);
 	}
 
-	public void addValue(Object value) {
+	public void addValue(@Nullable Object value) {
 		NodeManipulator manipulator = convertToNodeManipulator(value);
 		NodeManipulator mapManipulator = new MapNodeManipulator(
 			traverser,
@@ -93,7 +95,7 @@ public final class MapSpec {
 		manipulators.add(mapManipulator);
 	}
 
-	public void put(Object key, Object value) {
+	public void put(Object key, @Nullable Object value) {
 		NodeManipulator keyManipulator = convertToNodeManipulator(key);
 		NodeManipulator valueManipulator = convertToNodeManipulator(value);
 		NodeManipulator mapManipulator = new MapNodeManipulator(
@@ -107,7 +109,7 @@ public final class MapSpec {
 		return manipulators;
 	}
 
-	private NodeManipulator convertToNodeManipulator(Object value) {
+	private NodeManipulator convertToNodeManipulator(@Nullable Object value) {
 		if (value instanceof Arbitrary) {
 			return new NodeSetArbitraryManipulator<>((Arbitrary<?>)value);
 		} else if (value == null) {
