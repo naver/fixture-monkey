@@ -219,7 +219,7 @@ final class DefaultIterableSpec implements IterableSpec, ExpressionSpecVisitor {
 	}
 
 	private long getRandomLimit() {
-		this.minSize = this.minSize == null ? DEFAULT_ELEMENT_MIN_SIZE + 1: this.minSize;
+		this.minSize = this.minSize == null ? DEFAULT_ELEMENT_MIN_SIZE + 1 : this.minSize;
 		this.maxSize = this.maxSize == null ? DEFAULT_ELEMENT_MAX_SIZE + this.minSize : this.maxSize;
 		if (this.minSize.equals(this.maxSize)) {
 			return this.minSize;
