@@ -35,7 +35,7 @@ class MapSpecTest {
 	void mapAddKey() {
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
 			.setMap("strMap", m -> {
-				m.addKey("key");
+				m.key("key");
 			})
 			.sample();
 
@@ -46,7 +46,7 @@ class MapSpecTest {
 	void mapAddValue() {
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
 			.setMap("strMap", m -> {
-				m.addValue("value");
+				m.value("value");
 			})
 			.sample();
 
@@ -57,7 +57,7 @@ class MapSpecTest {
 	void mapPut() {
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
 			.setMap("strMap", m -> {
-				m.put("key", "value");
+				m.entry("key", "value");
 			})
 			.sample();
 
@@ -65,22 +65,22 @@ class MapSpecTest {
 	}
 
 	@Property
-	void mapAddNull() {
+	void mapAddNullValue() {
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
 			.setMap("strMap", m -> {
-				m.addKey(null);
+				m.value(null);
 			})
 			.sample();
 
-		then(actual.getStrMap().containsKey(null)).isTrue();
+		then(actual.getStrMap().containsValue(null)).isTrue();
 	}
 
 	@Property
 	void mapAddKeyAddKey() {
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
 			.setMap("mapKeyMap", m -> {
-				m.addKey(k-> {
-					k.addKey("key");
+				m.key(k-> {
+					k.key("key");
 				});
 			})
 			.sample();
@@ -94,8 +94,8 @@ class MapSpecTest {
 	void mapAddKeyAddValue() {
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
 			.setMap("mapKeyMap", m -> {
-				m.addKey(k-> {
-					k.addValue("value");
+				m.key(k-> {
+					k.value("value");
 				});
 			})
 			.sample();
@@ -109,8 +109,8 @@ class MapSpecTest {
 	void mapAddValueAddKey() {
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
 			.setMap("mapValueMap", m -> {
-				m.addValue(v-> {
-					v.addKey("key");
+				m.value(v-> {
+					v.key("key");
 				});
 			})
 			.sample();
@@ -124,8 +124,8 @@ class MapSpecTest {
 	void mapAddValueAddValue() {
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
 			.setMap("mapValueMap", m -> {
-				m.addValue(v-> {
-					v.addValue("value");
+				m.value(v-> {
+					v.value("value");
 				});
 			})
 			.sample();

@@ -47,7 +47,7 @@ public final class MapSpec {
 		this.manipulators = new ArrayList<>();
 	}
 
-	public void addKey(Object key) {
+	public void key(Object key) {
 		NodeManipulator manipulator = convertToNodeManipulator(key);
 		NodeManipulator mapManipulator = new MapNodeManipulator(
 			traverser,
@@ -56,10 +56,11 @@ public final class MapSpec {
 		manipulators.add(mapManipulator);
 	}
 
-	public void addKey(Consumer<MapSpec> consumer) {
+	public void key(Consumer<MapSpec> consumer) {
 		if (consumer == null) {
-			addKey((Object)null);
-			return;
+			throw new IllegalArgumentException(
+				"Map key cannot be null."
+			);
 		}
 		MapSpec mapSpec = new MapSpec(traverser);
 		consumer.accept(mapSpec);
@@ -71,7 +72,7 @@ public final class MapSpec {
 		manipulators.add(mapManipulator);
 	}
 
-	public void addValue(@Nullable Object value) {
+	public void value(@Nullable Object value) {
 		NodeManipulator manipulator = convertToNodeManipulator(value);
 		NodeManipulator mapManipulator = new MapNodeManipulator(
 			traverser,
@@ -80,9 +81,9 @@ public final class MapSpec {
 		manipulators.add(mapManipulator);
 	}
 
-	public void addValue(Consumer<MapSpec> consumer) {
+	public void value(Consumer<MapSpec> consumer) {
 		if (consumer == null) {
-			addValue((Object)null);
+			value((Object)null);
 			return;
 		}
 		MapSpec mapSpec = new MapSpec(traverser);
@@ -95,7 +96,7 @@ public final class MapSpec {
 		manipulators.add(mapManipulator);
 	}
 
-	public void put(Object key, @Nullable Object value) {
+	public void entry(Object key, @Nullable Object value) {
 		NodeManipulator keyManipulator = convertToNodeManipulator(key);
 		NodeManipulator valueManipulator = convertToNodeManipulator(value);
 		NodeManipulator mapManipulator = new MapNodeManipulator(
