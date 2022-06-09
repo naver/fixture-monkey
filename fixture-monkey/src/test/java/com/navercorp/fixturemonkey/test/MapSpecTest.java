@@ -147,4 +147,18 @@ class MapSpecTest {
 			.flatMap(it-> it.values().stream()).collect(Collectors.toList());
 		then(valueList).contains("value");
 	}
+
+	@Property
+	void mapSetNestedSize() {
+		MapObject actual = SUT.giveMeBuilder(MapObject.class)
+			.setMap("listValueMap", m -> {
+				m.value(v-> {
+					v.size(10,10);
+				});
+			})
+			.sample();
+		List<Integer> sizeList = actual.getListValueMap().values().stream()
+			.map(List::size).collect(Collectors.toList());
+		then(sizeList).contains(10);
+	}
 }

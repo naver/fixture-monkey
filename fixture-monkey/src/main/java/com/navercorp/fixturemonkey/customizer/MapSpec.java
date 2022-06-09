@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 
@@ -29,6 +30,7 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import net.jqwik.api.Arbitrary;
+import net.jqwik.api.Property;
 
 import com.navercorp.fixturemonkey.resolver.ArbitraryTraverser;
 import com.navercorp.fixturemonkey.resolver.MapNodeManipulator;
@@ -36,6 +38,7 @@ import com.navercorp.fixturemonkey.resolver.NodeManipulator;
 import com.navercorp.fixturemonkey.resolver.NodeNullityManipulator;
 import com.navercorp.fixturemonkey.resolver.NodeSetArbitraryManipulator;
 import com.navercorp.fixturemonkey.resolver.NodeSetDecomposedValueManipulator;
+import com.navercorp.fixturemonkey.resolver.NodeSizeManipulator;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class MapSpec {
@@ -45,6 +48,13 @@ public final class MapSpec {
 	public MapSpec(ArbitraryTraverser traverser) {
 		this.traverser = traverser;
 		this.manipulators = new ArrayList<>();
+	}
+
+	public void size(int min, int max) {
+		if (min > max) {
+			throw new IllegalArgumentException("should be min > max, min : " + min + " max : " + max);
+		}
+		manipulators.add(new NodeSizeManipulator(traverser, min, max));
 	}
 
 	public void key(Object key) {

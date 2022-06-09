@@ -18,6 +18,7 @@
 
 package com.navercorp.fixturemonkey.test;
 
+import java.util.List;
 import java.util.Map;
 
 import lombok.Getter;
@@ -31,5 +32,6 @@ class MapSpecTestSpecs {
 		private Map<String, Map<String, String>> mapValueMap;
 		private Map<Map<String, String>, String> mapKeyMap;
 		private Map<Map<String, String>, Map<String, String>> mapKeyValueMap;
+		private Map<String, List<String>> listValueMap;
 	}
 }
