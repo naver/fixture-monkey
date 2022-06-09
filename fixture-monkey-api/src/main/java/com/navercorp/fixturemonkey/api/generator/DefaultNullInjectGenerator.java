@@ -31,7 +31,6 @@ import javax.annotation.Nullable;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.api.property.MapKeyElementProperty;
 import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
@@ -125,10 +124,6 @@ public final class DefaultNullInjectGenerator implements NullInjectGenerator {
 		@Nullable ArbitraryContainerInfo containerInfo
 	) {
 		if (context.isRootContext()) {
-			return NOT_NULL_INJECT;
-		}
-
-		if (context.getProperty() instanceof MapKeyElementProperty) {
 			return NOT_NULL_INJECT;
 		}
 

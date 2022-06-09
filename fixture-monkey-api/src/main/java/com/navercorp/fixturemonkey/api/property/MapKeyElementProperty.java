@@ -88,6 +88,11 @@ public final class MapKeyElementProperty implements Property {
 		return this.annotations;
 	}
 
+	@Override
+	public Boolean isNullable() {
+		return false;
+	}
+
 	@Nullable
 	@Override
 	public Object getValue(Object obj) {
