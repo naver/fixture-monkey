@@ -37,4 +37,8 @@ public final class ExpressionNodeResolver implements NodeResolver {
 	public List<ArbitraryNode> resolve(ArbitraryTree arbitraryTree) {
 		return arbitraryTree.findAll(arbitraryExpression);
 	}
+
+	public String getExpression() {
+		return arbitraryExpression.toString();
+	}
 }

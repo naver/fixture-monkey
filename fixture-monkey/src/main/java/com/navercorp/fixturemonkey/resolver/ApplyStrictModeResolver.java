@@ -18,6 +18,7 @@
 
 package com.navercorp.fixturemonkey.resolver;
 
+import java.beans.Expression;
 import java.util.List;
 
 import org.apiguardian.api.API;
@@ -38,11 +39,14 @@ public final class ApplyStrictModeResolver implements NodeResolver {
 	@Override
 	public List<ArbitraryNode> resolve(ArbitraryTree arbitraryTree) {
 		List<ArbitraryNode> selectedNodes = nodeResolver.resolve(arbitraryTree);
+
 		if (isStrictMode && selectedNodes.isEmpty()) {
-			throw new IllegalArgumentException(
-				"No matching results for given expression."
-					+ " Expression: \"" + expression + "\""
-			);
+			String message = "No matching results for given expression.";
+			if (nodeResolver instanceof ExpressionNodeResolver) {
+				String expression = ((ExpressionNodeResolver)nodeResolver).getExpression();
+				message += " Expression: \"" + expression + "\"";
+			}
+			throw new IllegalArgumentException(message);
 		}
 		return selectedNodes;
 	}
