@@ -703,10 +703,10 @@ class FixtureMonkeyV04Test {
 
 	@Property
 	void strictModeSetWrongExpressionThrows() {
-		LabMonkey SUT = LabMonkey.labMonkeyBuilder().useStrictMode().build();
+		LabMonkey labMonkey = LabMonkey.labMonkeyBuilder().useStrictMode().build();
 
 		thenThrownBy(
-			() -> SUT.giveMeBuilder(ComplexObject.class)
+			() -> labMonkey.giveMeBuilder(ComplexObject.class)
 				.set("nonExistentField", 0)
 				.sample()
 		).isExactlyInstanceOf(IllegalArgumentException.class)
