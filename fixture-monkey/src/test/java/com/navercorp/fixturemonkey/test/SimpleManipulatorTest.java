@@ -656,7 +656,7 @@ class SimpleManipulatorTest {
 		// when
 		StringList actual = SUT.giveMeBuilder(StringList.class)
 			.spec(new ExpressionSpec().list("values", it -> {
-				it.ofMinSize(2);
+				it.ofMinSize(5);
 				it.any("set");
 			}))
 			.sample();
