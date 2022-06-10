@@ -97,7 +97,7 @@ public final class GenerateOptions {
 	private final ArbitraryContainerInfo defaultArbitraryContainerInfo;
 	private final List<MatcherOperator<ArbitraryGenerator>> arbitraryGenerators;
 	private final ArbitraryGenerator defaultArbitraryGenerator;
-	public final boolean isStrictMode;
+	private final boolean isStrictMode;
 
 	public GenerateOptions(
 		List<MatcherOperator<ArbitraryPropertyGenerator>> arbitraryPropertyGenerators,
@@ -213,6 +213,10 @@ public final class GenerateOptions {
 
 	public ArbitraryGenerator getDefaultArbitraryGenerator() {
 		return this.defaultArbitraryGenerator;
+	}
+
+	public boolean getStrictMode() {
+		return isStrictMode;
 	}
 
 	public GenerateOptionsBuilder toBuilder() {

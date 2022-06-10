@@ -113,7 +113,7 @@ public final class ArbitraryBuilder<T> extends com.navercorp.fixturemonkey.Arbit
 		NodeResolver nodeResolver = new ApplyStrictModeResolver(
 			new ExpressionNodeResolver(ArbitraryExpression.from(expression)),
 			expression,
-			generateOptions.isStrictMode
+			generateOptions.getStrictMode()
 		);
 		if (value instanceof Arbitrary) {
 			manipulators.add(
@@ -205,7 +205,7 @@ public final class ArbitraryBuilder<T> extends com.navercorp.fixturemonkey.Arbit
 				new ApplyStrictModeResolver(
 					new ExpressionNodeResolver(ArbitraryExpression.from(expression)),
 					expression,
-					generateOptions.isStrictMode
+					generateOptions.getStrictMode()
 				),
 				new NodeSizeManipulator(
 					traverser,
@@ -273,7 +273,7 @@ public final class ArbitraryBuilder<T> extends com.navercorp.fixturemonkey.Arbit
 			new ApplyStrictModeResolver(
 				new ExpressionNodeResolver(ArbitraryExpression.from(expression)),
 				expression,
-				generateOptions.isStrictMode
+				generateOptions.getStrictMode()
 			),
 			new NodeNullityManipulator(true)
 		));
@@ -286,7 +286,7 @@ public final class ArbitraryBuilder<T> extends com.navercorp.fixturemonkey.Arbit
 			new ApplyStrictModeResolver(
 				new ExpressionNodeResolver(ArbitraryExpression.from(expression)),
 				expression,
-				generateOptions.isStrictMode
+				generateOptions.getStrictMode()
 			),
 			new NodeNullityManipulator(false)
 		));
@@ -330,7 +330,7 @@ public final class ArbitraryBuilder<T> extends com.navercorp.fixturemonkey.Arbit
 				new ApplyStrictModeResolver(
 					new ExpressionNodeResolver(ArbitraryExpression.from(expression)),
 					expression,
-					generateOptions.isStrictMode
+					generateOptions.getStrictMode()
 				),
 				new ApplyNodeCountManipulator(
 					new NodeFilterManipulator(type, filter),

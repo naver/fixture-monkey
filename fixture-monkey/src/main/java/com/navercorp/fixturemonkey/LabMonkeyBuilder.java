@@ -52,7 +52,7 @@ public class LabMonkeyBuilder {
 	}
 
 	public LabMonkeyBuilder useStrictMode() {
-		generateOptionsBuilder = GenerateOptions.builder().strictMode(true);
+		this.generateOptionsBuilder = GenerateOptions.builder().strictMode(true);
 		return this;
 	}
 }
