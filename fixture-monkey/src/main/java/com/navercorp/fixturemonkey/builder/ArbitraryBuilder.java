@@ -48,12 +48,15 @@ import com.navercorp.fixturemonkey.api.property.RootProperty;
 import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.api.type.Types.UnidentifiableType;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryExpression;
+import com.navercorp.fixturemonkey.customizer.MapSpec;
 import com.navercorp.fixturemonkey.resolver.ApplyNodeCountManipulator;
 import com.navercorp.fixturemonkey.resolver.ArbitraryManipulator;
 import com.navercorp.fixturemonkey.resolver.ArbitraryResolver;
 import com.navercorp.fixturemonkey.resolver.ArbitraryTraverser;
+import com.navercorp.fixturemonkey.resolver.CompositeNodeManipulator;
 import com.navercorp.fixturemonkey.resolver.ExpressionNodeResolver;
 import com.navercorp.fixturemonkey.resolver.NodeFilterManipulator;
+import com.navercorp.fixturemonkey.resolver.NodeManipulator;
 import com.navercorp.fixturemonkey.resolver.NodeNullityManipulator;
 import com.navercorp.fixturemonkey.resolver.NodeSetArbitraryManipulator;
 import com.navercorp.fixturemonkey.resolver.NodeSetDecomposedValueManipulator;
@@ -146,6 +149,22 @@ public final class ArbitraryBuilder<T> extends com.navercorp.fixturemonkey.Arbit
 	@Override
 	public ArbitraryBuilder<T> set(@Nullable Object value) {
 		return this.set(HEAD_NAME, value);
+	}
+
+	public ArbitraryBuilder<T> setMap(String expression, Consumer<MapSpec> mapSpecSupplier) {
+		MapSpec mapSpec = new MapSpec(traverser);
+		mapSpecSupplier.accept(mapSpec);
+
+		List<NodeManipulator> mapManipulators = mapSpec.getManipulators();
+		ExpressionNodeResolver nodeResolver = new ExpressionNodeResolver(ArbitraryExpression.from(expression));
+
+		this.manipulators.add(
+			new ArbitraryManipulator(
+				nodeResolver,
+				new CompositeNodeManipulator(mapManipulators.toArray(new NodeManipulator[0]))
+			)
+		);
+		return this;
 	}
 
 	@Override
