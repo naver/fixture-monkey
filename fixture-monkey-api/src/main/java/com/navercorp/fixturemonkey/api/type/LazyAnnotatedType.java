@@ -23,7 +23,6 @@ import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Type;
 import java.util.function.Supplier;
 
-import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.api.type.Types.UnidentifiableType;
 
 public final class LazyAnnotatedType<T> implements AnnotatedType {
