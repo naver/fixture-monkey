@@ -121,6 +121,9 @@ public final class MapSpec {
 		manipulators.add(mapManipulator);
 	}
 
+	public void element(int index, @Nullable Object value) {
+	}
+
 	public List<NodeManipulator> getManipulators() {
 		return manipulators;
 	}
