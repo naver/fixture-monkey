@@ -686,4 +686,16 @@ class FixtureMonkeyV04Test {
 
 		then(actual).allMatch(Objects::nonNull);
 	}
+
+	@Property
+	void strictModeSetWrongExpressionThrows() {
+		LabMonkey SUT = LabMonkey.labMonkeyBuilder().useStrictMode().build();
+
+		thenThrownBy(
+			() -> SUT.giveMeBuilder(ComplexObject.class)
+				.set("nonExistentField", 0)
+				.sample()
+		).isExactlyInstanceOf(IllegalArgumentException.class)
+			.hasMessageContaining("No matching results for given expression.");
+	}
 }

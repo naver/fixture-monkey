@@ -31,7 +31,7 @@ import com.navercorp.fixturemonkey.validator.DefaultArbitraryValidator;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public class LabMonkeyBuilder {
-	private final GenerateOptionsBuilder generateOptionsBuilder = GenerateOptions.builder();
+	private GenerateOptionsBuilder generateOptionsBuilder = GenerateOptions.builder();
 	private ArbitraryValidator arbitraryValidator = new DefaultArbitraryValidator();
 	private ManipulatorOptimizer manipulatorOptimizer = new NoneManipulatorOptimizer();
 
@@ -49,5 +49,10 @@ public class LabMonkeyBuilder {
 			manipulatorOptimizer,
 			this.arbitraryValidator
 		);
+	}
+
+	public LabMonkeyBuilder useStrictMode() {
+		generateOptionsBuilder = GenerateOptions.builder().strictMode(true);
+		return this;
 	}
 }

@@ -24,7 +24,27 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-@FunctionalInterface
-public interface NodeResolver {
-	List<ArbitraryNode> resolve(ArbitraryTree arbitraryTree);
+public final class ApplyStrictModeResolver implements NodeResolver {
+	private final NodeResolver nodeResolver;
+	private final String expression;
+	private final boolean isStrictMode;
+
+
+	public ApplyStrictModeResolver(NodeResolver nodeResolver, String expression, boolean isStrictMode) {
+		this.nodeResolver = nodeResolver;
+		this.expression = expression;
+		this.isStrictMode = isStrictMode;
+	}
+
+	@Override
+	public List<ArbitraryNode> resolve(ArbitraryTree arbitraryTree) {
+		List<ArbitraryNode> selectedNodes = nodeResolver.resolve(arbitraryTree);
+		if (isStrictMode && selectedNodes.isEmpty()) {
+			throw new IllegalArgumentException(
+				"No matching results for given expression."
+					+ " Expression: \"" + expression + "\""
+			);
+		}
+		return selectedNodes;
+	}
 }

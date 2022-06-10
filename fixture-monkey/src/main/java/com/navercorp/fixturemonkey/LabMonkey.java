@@ -65,6 +65,7 @@ public class LabMonkey extends FixtureMonkey {
 	@Override
 	public <T> ArbitraryBuilder<T> giveMeBuilder(TypeReference<T> type) {
 		return new ArbitraryBuilder<>(
+			generateOptions,
 			new RootProperty(type.getAnnotatedType()),
 			new ArrayList<>(),
 			new ArbitraryResolver(
