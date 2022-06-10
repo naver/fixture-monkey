@@ -58,7 +58,7 @@ public final class GenerateOptionsBuilder {
 	private List<MatcherOperator<ArbitraryGenerator>> arbitraryGenerators = new ArrayList<>();
 	private ArbitraryGenerator defaultArbitraryGenerator;
 	private DefaultArbitraryGeneratorBuilder defaultArbitraryGeneratorBuilder = new DefaultArbitraryGeneratorBuilder();
-	private boolean isStrictMode = false;
+	private boolean strictMode = false;
 	GenerateOptionsBuilder() {
 	}
 
@@ -299,8 +299,8 @@ public final class GenerateOptionsBuilder {
 		return this;
 	}
 
-	public GenerateOptionsBuilder strictMode(boolean isStrictMode) {
-		this.isStrictMode = isStrictMode;
+	public GenerateOptionsBuilder strictMode(boolean strictMode) {
+		this.strictMode = strictMode;
 		return this;
 	}
 
@@ -344,7 +344,7 @@ public final class GenerateOptionsBuilder {
 			defaultArbitraryContainerInfo,
 			this.arbitraryGenerators,
 			defaultArbitraryGenerator,
-			this.isStrictMode
+			this.strictMode
 		);
 	}
 
