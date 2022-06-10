@@ -29,7 +29,6 @@ public final class ApplyStrictModeResolver implements NodeResolver {
 	private final String expression;
 	private final boolean isStrictMode;
 
-
 	public ApplyStrictModeResolver(NodeResolver nodeResolver, String expression, boolean isStrictMode) {
 		this.nodeResolver = nodeResolver;
 		this.expression = expression;

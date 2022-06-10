@@ -18,45 +18,38 @@
 
 package com.navercorp.fixturemonkey.resolver;
 
+import java.util.List;
+
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import net.jqwik.api.Arbitrary;
-
-import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
-
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public final class NodeSetLazyManipulator<T> implements NodeManipulator {
+public final class MapNodeManipulator implements NodeManipulator {
 	private final ArbitraryTraverser traverser;
-	private final LazyArbitrary<T> lazyArbitrary;
+	private final List<NodeManipulator> keyManipulators;
+	private final List<NodeManipulator> valueManipulators;
 
-	public NodeSetLazyManipulator(
+	public MapNodeManipulator(
 		ArbitraryTraverser traverser,
-		LazyArbitrary<T> lazyArbitrary
+		List<NodeManipulator> keyManipulators,
+		List<NodeManipulator> valueManipulators
 	) {
 		this.traverser = traverser;
-		this.lazyArbitrary = lazyArbitrary;
+		this.keyManipulators = keyManipulators;
+		this.valueManipulators = valueManipulators;
 	}
 
 	@Override
 	public void manipulate(ArbitraryNode arbitraryNode) {
-		T value = lazyArbitrary.getValue();
+		AddMapEntryNodeManipulator addMapEntryManipulator = new AddMapEntryNodeManipulator(traverser);
+		addMapEntryManipulator.manipulate(arbitraryNode);
 
-		if (value == null) {
-			NodeNullityManipulator nullityManipulator = new NodeNullityManipulator(true);
-			nullityManipulator.manipulate(arbitraryNode);
-			return;
+		ArbitraryNode entryNode = arbitraryNode.getChildren().get(arbitraryNode.getChildren().size() - 1);
+		for (NodeManipulator keyManipulator : keyManipulators) {
+			keyManipulator.manipulate(entryNode.getChildren().get(0));
 		}
-
-		if (value instanceof Arbitrary) {
-			NodeSetArbitraryManipulator<?> nodeSetArbitraryManipulator =
-				new NodeSetArbitraryManipulator<>((Arbitrary<?>)value);
-			nodeSetArbitraryManipulator.manipulate(arbitraryNode);
-			return;
+		for (NodeManipulator valueManipulator : valueManipulators) {
+			valueManipulator.manipulate(entryNode.getChildren().get(1));
 		}
-
-		NodeSetDecomposedValueManipulator<T> nodeSetDecomposedValueManipulator =
-			new NodeSetDecomposedValueManipulator<>(traverser, value);
-		nodeSetDecomposedValueManipulator.manipulate(arbitraryNode);
 	}
 }

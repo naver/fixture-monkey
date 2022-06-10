@@ -19,6 +19,7 @@
 package com.navercorp.fixturemonkey;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -67,14 +68,15 @@ public class LabMonkey extends FixtureMonkey {
 		return new ArbitraryBuilder<>(
 			generateOptions,
 			new RootProperty(type.getAnnotatedType()),
-			new ArrayList<>(),
 			new ArbitraryResolver(
 				traverser,
 				manipulatorOptimizer,
 				generateOptions
 			),
 			traverser,
-			this.validator
+			this.validator,
+			new ArrayList<>(),
+			new HashSet<>()
 		);
 	}
 }
