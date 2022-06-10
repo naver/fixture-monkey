@@ -173,10 +173,15 @@ final class DefaultIterableSpec implements IterableSpec, ExpressionSpecVisitor {
 	@Override
 	public IterableSpec any(Object object) {
 		String allExpression = getFieldExpression(this.iterableName, "*", EMPTY_FIELD);
+		this.checkBoundary();
 		long limit = getRandomLimit();
-		limit = limit == 0 ? 1 : limit;
 		this.addSet(allExpression, object, limit);
 		return this;
+	}
+
+	private void checkBoundary() {
+		this.minSize = this.minSize == null ? DEFAULT_ELEMENT_MIN_SIZE + 1 : this.minSize;
+		this.maxSize = this.maxSize == null ? DEFAULT_ELEMENT_MAX_SIZE + this.minSize : this.maxSize;
 	}
 
 	@Override
@@ -219,13 +224,11 @@ final class DefaultIterableSpec implements IterableSpec, ExpressionSpecVisitor {
 	}
 
 	private long getRandomLimit() {
-		this.minSize = this.minSize == null ? DEFAULT_ELEMENT_MIN_SIZE + 1 : this.minSize;
-		this.maxSize = this.maxSize == null ? DEFAULT_ELEMENT_MAX_SIZE + this.minSize : this.maxSize;
 		if (this.minSize.equals(this.maxSize)) {
 			return this.minSize;
 		}
 
-		return Randoms.nextInt(this.maxSize - this.minSize);
+		return Randoms.nextInt(this.maxSize - this.minSize) + 1;
 	}
 
 	private static class IterableSpecSet<T> {
