@@ -18,7 +18,6 @@
 
 package com.navercorp.fixturemonkey.resolver;
 
-import java.beans.Expression;
 import java.util.List;
 
 import org.apiguardian.api.API;
