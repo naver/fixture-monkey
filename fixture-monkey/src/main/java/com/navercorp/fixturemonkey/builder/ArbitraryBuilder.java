@@ -50,7 +50,7 @@ import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryExpression;
 import com.navercorp.fixturemonkey.customizer.MapSpec;
 import com.navercorp.fixturemonkey.resolver.ApplyNodeCountManipulator;
-import com.navercorp.fixturemonkey.resolver.ApplyStrictModeResolver;
+import com.navercorp.fixturemonkey.resolver.ApplyExpressionStrictModeResolver;
 import com.navercorp.fixturemonkey.resolver.ArbitraryManipulator;
 import com.navercorp.fixturemonkey.resolver.ArbitraryResolver;
 import com.navercorp.fixturemonkey.resolver.ArbitraryTraverser;
@@ -110,10 +110,10 @@ public final class ArbitraryBuilder<T> extends com.navercorp.fixturemonkey.Arbit
 		@Nullable Object value,
 		int limit
 	) {
-		NodeResolver nodeResolver = new ApplyStrictModeResolver(
+		NodeResolver nodeResolver = new ApplyExpressionStrictModeResolver(
 			new ExpressionNodeResolver(ArbitraryExpression.from(expression)),
 			expression,
-			generateOptions.isStrictMode()
+			generateOptions.isExpressionStrictMode()
 		);
 		if (value instanceof Arbitrary) {
 			manipulators.add(
@@ -202,10 +202,10 @@ public final class ArbitraryBuilder<T> extends com.navercorp.fixturemonkey.Arbit
 
 		this.manipulators.add(
 			new ArbitraryManipulator(
-				new ApplyStrictModeResolver(
+				new ApplyExpressionStrictModeResolver(
 					new ExpressionNodeResolver(ArbitraryExpression.from(expression)),
 					expression,
-					generateOptions.isStrictMode()
+					generateOptions.isExpressionStrictMode()
 				),
 				new NodeSizeManipulator(
 					traverser,
@@ -270,10 +270,10 @@ public final class ArbitraryBuilder<T> extends com.navercorp.fixturemonkey.Arbit
 	@Override
 	public ArbitraryBuilder<T> setNull(String expression) {
 		this.manipulators.add(new ArbitraryManipulator(
-			new ApplyStrictModeResolver(
+			new ApplyExpressionStrictModeResolver(
 				new ExpressionNodeResolver(ArbitraryExpression.from(expression)),
 				expression,
-				generateOptions.isStrictMode()
+				generateOptions.isExpressionStrictMode()
 			),
 			new NodeNullityManipulator(true)
 		));
@@ -283,10 +283,10 @@ public final class ArbitraryBuilder<T> extends com.navercorp.fixturemonkey.Arbit
 	@Override
 	public ArbitraryBuilder<T> setNotNull(String expression) {
 		this.manipulators.add(new ArbitraryManipulator(
-			new ApplyStrictModeResolver(
+			new ApplyExpressionStrictModeResolver(
 				new ExpressionNodeResolver(ArbitraryExpression.from(expression)),
 				expression,
-				generateOptions.isStrictMode()
+				generateOptions.isExpressionStrictMode()
 			),
 			new NodeNullityManipulator(false)
 		));
@@ -327,10 +327,10 @@ public final class ArbitraryBuilder<T> extends com.navercorp.fixturemonkey.Arbit
 		ArbitraryExpression arbitraryExpression = ArbitraryExpression.from(expression);
 		this.manipulators.add(
 			new ArbitraryManipulator(
-				new ApplyStrictModeResolver(
+				new ApplyExpressionStrictModeResolver(
 					new ExpressionNodeResolver(ArbitraryExpression.from(expression)),
 					expression,
-					generateOptions.isStrictMode()
+					generateOptions.isExpressionStrictMode()
 				),
 				new ApplyNodeCountManipulator(
 					new NodeFilterManipulator(type, filter),

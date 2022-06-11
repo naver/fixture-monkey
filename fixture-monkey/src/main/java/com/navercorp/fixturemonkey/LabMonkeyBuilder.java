@@ -51,8 +51,8 @@ public class LabMonkeyBuilder {
 		);
 	}
 
-	public LabMonkeyBuilder useStrictMode() {
-		this.generateOptionsBuilder.strictMode(true);
+	public LabMonkeyBuilder useExpressionStrictMode() {
+		this.generateOptionsBuilder.expressionStrictMode(true);
 		return this;
 	}
 }

@@ -24,22 +24,22 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public final class ApplyStrictModeResolver implements NodeResolver {
+public final class ApplyExpressionStrictModeResolver implements NodeResolver {
 	private final NodeResolver nodeResolver;
 	private final String expression;
-	private final boolean isStrictMode;
+	private final boolean expressionStrictMode;
 
-	public ApplyStrictModeResolver(NodeResolver nodeResolver, String expression, boolean isStrictMode) {
+	public ApplyExpressionStrictModeResolver(NodeResolver nodeResolver, String expression, boolean expressionStrictMode) {
 		this.nodeResolver = nodeResolver;
 		this.expression = expression;
-		this.isStrictMode = isStrictMode;
+		this.expressionStrictMode = expressionStrictMode;
 	}
 
 	@Override
 	public List<ArbitraryNode> resolve(ArbitraryTree arbitraryTree) {
 		List<ArbitraryNode> selectedNodes = nodeResolver.resolve(arbitraryTree);
 
-		if (isStrictMode && selectedNodes.isEmpty()) {
+		if (expressionStrictMode && selectedNodes.isEmpty()) {
 			String message = "No matching results for given expression.";
 			if (nodeResolver instanceof ExpressionNodeResolver) {
 				String expression = ((ExpressionNodeResolver)nodeResolver).getExpression();

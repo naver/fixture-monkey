@@ -703,7 +703,7 @@ class FixtureMonkeyV04Test {
 
 	@Property
 	void strictModeSetWrongExpressionThrows() {
-		LabMonkey labMonkey = LabMonkey.labMonkeyBuilder().useStrictMode().build();
+		LabMonkey labMonkey = LabMonkey.labMonkeyBuilder().useExpressionStrictMode().build();
 
 		thenThrownBy(
 			() -> labMonkey.giveMeBuilder(ComplexObject.class)
