@@ -29,7 +29,11 @@ public final class ApplyExpressionStrictModeResolver implements NodeResolver {
 	private final String expression;
 	private final boolean expressionStrictMode;
 
-	public ApplyExpressionStrictModeResolver(NodeResolver nodeResolver, String expression, boolean expressionStrictMode) {
+	public ApplyExpressionStrictModeResolver(
+		NodeResolver nodeResolver,
+		String expression,
+		boolean expressionStrictMode
+	) {
 		this.nodeResolver = nodeResolver;
 		this.expression = expression;
 		this.expressionStrictMode = expressionStrictMode;
