@@ -110,7 +110,7 @@ public final class ArbitraryBuilder<T> extends com.navercorp.fixturemonkey.Arbit
 		@Nullable Object value,
 		int limit
 	) {
-		NodeResolver nodeResolver = convertToNodeResolver(expression);
+		NodeResolver nodeResolver = convertToExpressionNodeResolver(expression);
 		if (value instanceof Arbitrary) {
 			manipulators.add(
 				new ArbitraryManipulator(
@@ -198,7 +198,7 @@ public final class ArbitraryBuilder<T> extends com.navercorp.fixturemonkey.Arbit
 
 		this.manipulators.add(
 			new ArbitraryManipulator(
-				convertToNodeResolver(expression),
+				convertToExpressionNodeResolver(expression),
 				new NodeSizeManipulator(
 					traverser,
 					min,
@@ -262,7 +262,7 @@ public final class ArbitraryBuilder<T> extends com.navercorp.fixturemonkey.Arbit
 	@Override
 	public ArbitraryBuilder<T> setNull(String expression) {
 		this.manipulators.add(new ArbitraryManipulator(
-			convertToNodeResolver(expression),
+			convertToExpressionNodeResolver(expression),
 			new NodeNullityManipulator(true)
 		));
 		return this;
@@ -271,7 +271,7 @@ public final class ArbitraryBuilder<T> extends com.navercorp.fixturemonkey.Arbit
 	@Override
 	public ArbitraryBuilder<T> setNotNull(String expression) {
 		this.manipulators.add(new ArbitraryManipulator(
-			convertToNodeResolver(expression),
+			convertToExpressionNodeResolver(expression),
 			new NodeNullityManipulator(false)
 		));
 		return this;
@@ -310,7 +310,7 @@ public final class ArbitraryBuilder<T> extends com.navercorp.fixturemonkey.Arbit
 	) {
 		this.manipulators.add(
 			new ArbitraryManipulator(
-				convertToNodeResolver(expression),
+				convertToExpressionNodeResolver(expression),
 				new ApplyNodeCountManipulator(
 					new NodeFilterManipulator(type, filter),
 					limit
@@ -387,7 +387,7 @@ public final class ArbitraryBuilder<T> extends com.navercorp.fixturemonkey.Arbit
 		);
 	}
 
-	private NodeResolver convertToNodeResolver(String expression) {
+	private NodeResolver convertToExpressionNodeResolver(String expression) {
 		NodeResolver nodeResolver = new ExpressionNodeResolver(ArbitraryExpression.from(expression));
 		if (generateOptions.isExpressionStrictMode()) {
 			nodeResolver = new ApplyExpressionStrictModeResolver(nodeResolver);
