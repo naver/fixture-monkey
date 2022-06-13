@@ -110,11 +110,7 @@ public final class ArbitraryBuilder<T> extends com.navercorp.fixturemonkey.Arbit
 		@Nullable Object value,
 		int limit
 	) {
-		NodeResolver nodeResolver = new ApplyExpressionStrictModeResolver(
-			new ExpressionNodeResolver(ArbitraryExpression.from(expression)),
-			expression,
-			generateOptions.isExpressionStrictMode()
-		);
+		NodeResolver nodeResolver = convertToNodeResolver(expression);
 		if (value instanceof Arbitrary) {
 			manipulators.add(
 				new ArbitraryManipulator(
@@ -202,11 +198,7 @@ public final class ArbitraryBuilder<T> extends com.navercorp.fixturemonkey.Arbit
 
 		this.manipulators.add(
 			new ArbitraryManipulator(
-				new ApplyExpressionStrictModeResolver(
-					new ExpressionNodeResolver(ArbitraryExpression.from(expression)),
-					expression,
-					generateOptions.isExpressionStrictMode()
-				),
+				convertToNodeResolver(expression),
 				new NodeSizeManipulator(
 					traverser,
 					min,
@@ -270,11 +262,7 @@ public final class ArbitraryBuilder<T> extends com.navercorp.fixturemonkey.Arbit
 	@Override
 	public ArbitraryBuilder<T> setNull(String expression) {
 		this.manipulators.add(new ArbitraryManipulator(
-			new ApplyExpressionStrictModeResolver(
-				new ExpressionNodeResolver(ArbitraryExpression.from(expression)),
-				expression,
-				generateOptions.isExpressionStrictMode()
-			),
+			convertToNodeResolver(expression),
 			new NodeNullityManipulator(true)
 		));
 		return this;
@@ -283,11 +271,7 @@ public final class ArbitraryBuilder<T> extends com.navercorp.fixturemonkey.Arbit
 	@Override
 	public ArbitraryBuilder<T> setNotNull(String expression) {
 		this.manipulators.add(new ArbitraryManipulator(
-			new ApplyExpressionStrictModeResolver(
-				new ExpressionNodeResolver(ArbitraryExpression.from(expression)),
-				expression,
-				generateOptions.isExpressionStrictMode()
-			),
+			convertToNodeResolver(expression),
 			new NodeNullityManipulator(false)
 		));
 		return this;
@@ -324,14 +308,9 @@ public final class ArbitraryBuilder<T> extends com.navercorp.fixturemonkey.Arbit
 		Predicate<U> filter,
 		int limit
 	) {
-		ArbitraryExpression arbitraryExpression = ArbitraryExpression.from(expression);
 		this.manipulators.add(
 			new ArbitraryManipulator(
-				new ApplyExpressionStrictModeResolver(
-					new ExpressionNodeResolver(ArbitraryExpression.from(expression)),
-					expression,
-					generateOptions.isExpressionStrictMode()
-				),
+				convertToNodeResolver(expression),
 				new ApplyNodeCountManipulator(
 					new NodeFilterManipulator(type, filter),
 					limit
@@ -406,5 +385,13 @@ public final class ArbitraryBuilder<T> extends com.navercorp.fixturemonkey.Arbit
 			new ArrayList<>(this.manipulators),
 			new HashSet<>(this.lazyArbitraries)
 		);
+	}
+
+	private NodeResolver convertToNodeResolver(String expression) {
+		NodeResolver nodeResolver = new ExpressionNodeResolver(ArbitraryExpression.from(expression));
+		if (generateOptions.isExpressionStrictMode()) {
+			nodeResolver = new ApplyExpressionStrictModeResolver(nodeResolver);
+		}
+		return nodeResolver;
 	}
 }
