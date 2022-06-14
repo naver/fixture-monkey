@@ -27,6 +27,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.BiConsumer;
@@ -58,6 +59,7 @@ import com.navercorp.fixturemonkey.resolver.ExpressionNodeResolver;
 import com.navercorp.fixturemonkey.resolver.NodeFilterManipulator;
 import com.navercorp.fixturemonkey.resolver.NodeManipulator;
 import com.navercorp.fixturemonkey.resolver.NodeNullityManipulator;
+import com.navercorp.fixturemonkey.resolver.NodeResolver;
 import com.navercorp.fixturemonkey.resolver.NodeSetArbitraryManipulator;
 import com.navercorp.fixturemonkey.resolver.NodeSetDecomposedValueManipulator;
 import com.navercorp.fixturemonkey.resolver.NodeSetLazyManipulator;
@@ -152,18 +154,12 @@ public final class ArbitraryBuilder<T> extends com.navercorp.fixturemonkey.Arbit
 	}
 
 	public ArbitraryBuilder<T> setMap(String expression, Consumer<MapSpec> mapSpecSupplier) {
-		MapSpec mapSpec = new MapSpec(traverser);
+		NodeResolver nodeResolver = new ExpressionNodeResolver(ArbitraryExpression.from(expression));
+		MapSpec mapSpec = new MapSpec(traverser,  new ArrayList<>(Collections.singletonList(nodeResolver)));
 		mapSpecSupplier.accept(mapSpec);
 
-		List<NodeManipulator> mapManipulators = mapSpec.getManipulators();
-		ExpressionNodeResolver nodeResolver = new ExpressionNodeResolver(ArbitraryExpression.from(expression));
-
-		this.manipulators.add(
-			new ArbitraryManipulator(
-				nodeResolver,
-				new CompositeNodeManipulator(mapManipulators.toArray(new NodeManipulator[0]))
-			)
-		);
+		List<ArbitraryManipulator> mapManipulators = mapSpec.getArbitraryManipulators();
+		manipulators.addAll(mapManipulators);
 		return this;
 	}
 

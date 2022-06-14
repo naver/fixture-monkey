@@ -18,9 +18,15 @@
 
 package com.navercorp.fixturemonkey.test;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.OptionalDouble;
+import java.util.OptionalInt;
+import java.util.OptionalLong;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -33,5 +39,20 @@ class MapSpecTestSpecs {
 		private Map<Map<String, String>, String> mapKeyMap;
 		private Map<Map<String, String>, Map<String, String>> mapKeyValueMap;
 		private Map<String, List<String>> listValueMap;
+		private Map<String, List<List<String>>> listListValueMap;
+		private Map<String, SimpleObject> objectValueMap;
+	}
+
+	@Setter
+	@Getter
+	public static class ObjectMapObject {
+		private Map<String, SimpleObject> objectValueMap;
+	}
+
+	@Getter
+	@Setter
+	public static class SimpleObject {
+		private String str;
+		private Integer integer;
 	}
 }

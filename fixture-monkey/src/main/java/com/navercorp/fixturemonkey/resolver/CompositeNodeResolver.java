@@ -17,14 +17,30 @@
  */
 
 package com.navercorp.fixturemonkey.resolver;
-
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-@FunctionalInterface
-public interface NodeResolver {
-	List<ArbitraryNode> resolve(ArbitraryTree arbitraryTree);
+public final class CompositeNodeResolver implements NodeResolver {
+	private final List<NodeResolver> resolvers;
+
+	public CompositeNodeResolver(List<NodeResolver> resolvers) {
+		this.resolvers = resolvers;
+	}
+
+	@Override
+	public List<ArbitraryNode> resolve(ArbitraryTree arbitraryTree) {
+		List<ArbitraryNode> selectedNodes = new ArrayList<>();
+		for (NodeResolver resolver : resolvers) {
+			if (resolver instanceof ExpressionNodeResolver) {
+				selectedNodes = resolver.resolve(arbitraryTree);
+			} else {
+				selectedNodes = ((ChildrenNodeResolver)resolver).getNext(selectedNodes);
+			}
+		}
+		return selectedNodes;
+	}
 }

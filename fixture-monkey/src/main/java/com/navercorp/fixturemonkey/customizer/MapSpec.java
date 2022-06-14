@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 
@@ -30,12 +29,16 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import net.jqwik.api.Arbitrary;
-import net.jqwik.api.Property;
 
+import com.navercorp.fixturemonkey.resolver.AddMapEntryNodeManipulator;
+import com.navercorp.fixturemonkey.resolver.ArbitraryManipulator;
 import com.navercorp.fixturemonkey.resolver.ArbitraryTraverser;
+import com.navercorp.fixturemonkey.resolver.ChildrenNodeResolver;
+import com.navercorp.fixturemonkey.resolver.CompositeNodeResolver;
 import com.navercorp.fixturemonkey.resolver.MapNodeManipulator;
 import com.navercorp.fixturemonkey.resolver.NodeManipulator;
 import com.navercorp.fixturemonkey.resolver.NodeNullityManipulator;
+import com.navercorp.fixturemonkey.resolver.NodeResolver;
 import com.navercorp.fixturemonkey.resolver.NodeSetArbitraryManipulator;
 import com.navercorp.fixturemonkey.resolver.NodeSetDecomposedValueManipulator;
 import com.navercorp.fixturemonkey.resolver.NodeSizeManipulator;
@@ -43,27 +46,30 @@ import com.navercorp.fixturemonkey.resolver.NodeSizeManipulator;
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class MapSpec {
 	private final ArbitraryTraverser traverser;
-	private final List<NodeManipulator> manipulators;
+	private final List<NodeResolver> resolvers;
+	private final List<ArbitraryManipulator> arbitraryManipulators;
 
-	public MapSpec(ArbitraryTraverser traverser) {
+	public MapSpec(ArbitraryTraverser traverser, List<NodeResolver> resolvers) {
 		this.traverser = traverser;
-		this.manipulators = new ArrayList<>();
+		this.resolvers = resolvers;
+		this.arbitraryManipulators = new ArrayList<>();
 	}
 
 	public void size(int min, int max) {
 		if (min > max) {
 			throw new IllegalArgumentException("should be min > max, min : " + min + " max : " + max);
 		}
-		manipulators.add(new NodeSizeManipulator(traverser, min, max));
+		arbitraryManipulators.add(new ArbitraryManipulator(new CompositeNodeResolver(new ArrayList<>(resolvers)), new NodeSizeManipulator(traverser, min, max)));
 	}
 
 	public void key(Object key) {
-		NodeManipulator manipulator = convertToNodeManipulator(key);
-		NodeManipulator mapManipulator = new MapNodeManipulator(
+		NodeResolver resolver = new CompositeNodeResolver(new ArrayList<>(resolvers));
+		NodeManipulator manipulator = new MapNodeManipulator(
 			traverser,
-			Collections.singletonList(manipulator),
-			Collections.emptyList());
-		manipulators.add(mapManipulator);
+			Collections.singletonList(convertToNodeManipulator(key)),
+			Collections.emptyList()
+		);
+		arbitraryManipulators.add(new ArbitraryManipulator(resolver, manipulator));
 	}
 
 	public void key(Consumer<MapSpec> consumer) {
@@ -72,23 +78,25 @@ public final class MapSpec {
 				"Map key cannot be null."
 			);
 		}
-		MapSpec mapSpec = new MapSpec(traverser);
+		NodeResolver resolver = new CompositeNodeResolver(new ArrayList<>(resolvers));
+		arbitraryManipulators.add(new ArbitraryManipulator(resolver, new AddMapEntryNodeManipulator(traverser)));
+
+		List<NodeResolver> nextResolvers = new ArrayList<>(resolvers);
+		nextResolvers.add(new ChildrenNodeResolver("[-1]"));
+		nextResolvers.add(new ChildrenNodeResolver("[0]"));
+		MapSpec mapSpec = new MapSpec(traverser, nextResolvers);
 		consumer.accept(mapSpec);
-		ArrayList<NodeManipulator> nextManipulators = new ArrayList<>(mapSpec.manipulators);
-		NodeManipulator mapManipulator = new MapNodeManipulator(
-			traverser,
-			nextManipulators,
-			Collections.emptyList());
-		manipulators.add(mapManipulator);
+		arbitraryManipulators.addAll(mapSpec.arbitraryManipulators);
 	}
 
 	public void value(@Nullable Object value) {
-		NodeManipulator manipulator = convertToNodeManipulator(value);
-		NodeManipulator mapManipulator = new MapNodeManipulator(
+		NodeResolver resolver = new CompositeNodeResolver(new ArrayList<>(resolvers));
+		NodeManipulator manipulator = new MapNodeManipulator(
 			traverser,
 			Collections.emptyList(),
-			Collections.singletonList(manipulator));
-		manipulators.add(mapManipulator);
+			Collections.singletonList(convertToNodeManipulator(value))
+		);
+		arbitraryManipulators.add(new ArbitraryManipulator(resolver, manipulator));
 	}
 
 	public void value(Consumer<MapSpec> consumer) {
@@ -96,14 +104,15 @@ public final class MapSpec {
 			value((Object)null);
 			return;
 		}
-		MapSpec mapSpec = new MapSpec(traverser);
+		NodeResolver resolver = new CompositeNodeResolver(new ArrayList<>(resolvers));
+		arbitraryManipulators.add(new ArbitraryManipulator(resolver, new AddMapEntryNodeManipulator(traverser)));
+
+		List<NodeResolver> nextResolvers = new ArrayList<>(resolvers);
+		nextResolvers.add(new ChildrenNodeResolver("[-1]"));
+		nextResolvers.add(new ChildrenNodeResolver("[1]"));
+		MapSpec mapSpec = new MapSpec(traverser, nextResolvers);
 		consumer.accept(mapSpec);
-		ArrayList<NodeManipulator> nextManipulators = new ArrayList<>(mapSpec.manipulators);
-		NodeManipulator mapManipulator = new MapNodeManipulator(
-			traverser,
-			Collections.emptyList(),
-			nextManipulators);
-		manipulators.add(mapManipulator);
+		arbitraryManipulators.addAll(mapSpec.arbitraryManipulators);
 	}
 
 	public void entry(Object key, @Nullable Object value) {
@@ -112,20 +121,50 @@ public final class MapSpec {
 				"Map key cannot be null."
 			);
 		}
+		NodeResolver resolver = new CompositeNodeResolver(new ArrayList<>(resolvers));
 		NodeManipulator keyManipulator = convertToNodeManipulator(key);
 		NodeManipulator valueManipulator = convertToNodeManipulator(value);
 		NodeManipulator mapManipulator = new MapNodeManipulator(
 			traverser,
 			Collections.singletonList(keyManipulator),
 			Collections.singletonList(valueManipulator));
-		manipulators.add(mapManipulator);
+		arbitraryManipulators.add(new ArbitraryManipulator(resolver, mapManipulator));
 	}
 
-	public void element(int index, @Nullable Object value) {
+	public void setElement(int index, @Nullable Object value) {
+		List<NodeResolver> nextResolvers = new ArrayList<>(resolvers);
+		nextResolvers.add(new ChildrenNodeResolver("[" + Integer.toString(index) + "]"));
+		NodeResolver resolver = new CompositeNodeResolver(new ArrayList<>(nextResolvers));
+		NodeManipulator manipulator = convertToNodeManipulator(value);
+		arbitraryManipulators.add(new ArbitraryManipulator(resolver, manipulator));
 	}
 
-	public List<NodeManipulator> getManipulators() {
-		return manipulators;
+	public void listElement(int index, Consumer<MapSpec> consumer) {
+		List<NodeResolver> nextResolvers = new ArrayList<>(resolvers);
+		nextResolvers.add(new ChildrenNodeResolver("[" + Integer.toString(index) + "]"));
+		MapSpec mapSpec = new MapSpec(traverser, nextResolvers);
+		consumer.accept(mapSpec);
+		arbitraryManipulators.addAll(mapSpec.arbitraryManipulators);
+	}
+
+	public void setField(String field, @Nullable Object value) {
+		List<NodeResolver> nextResolvers = new ArrayList<>(resolvers);
+		nextResolvers.add(new ChildrenNodeResolver(field));
+		NodeResolver resolver = new CompositeNodeResolver(new ArrayList<>(nextResolvers));
+		NodeManipulator manipulator = convertToNodeManipulator(value);
+		arbitraryManipulators.add(new ArbitraryManipulator(resolver, manipulator));
+	}
+
+	public void fieldElement(String field, Consumer<MapSpec> consumer) {
+		List<NodeResolver> nextResolvers = new ArrayList<>(resolvers);
+		nextResolvers.add(new ChildrenNodeResolver(field));
+		MapSpec mapSpec = new MapSpec(traverser, nextResolvers);
+		consumer.accept(mapSpec);
+		arbitraryManipulators.addAll(mapSpec.arbitraryManipulators);
+	}
+
+	public List<ArbitraryManipulator> getArbitraryManipulators() {
+		return arbitraryManipulators;
 	}
 
 	private NodeManipulator convertToNodeManipulator(@Nullable Object value) {
