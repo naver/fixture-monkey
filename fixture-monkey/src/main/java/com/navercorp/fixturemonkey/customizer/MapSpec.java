@@ -18,6 +18,8 @@
 
 package com.navercorp.fixturemonkey.customizer;
 
+import static com.navercorp.fixturemonkey.Constants.DEFAULT_ELEMENT_MAX_SIZE;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -33,9 +35,10 @@ import net.jqwik.api.Arbitrary;
 import com.navercorp.fixturemonkey.resolver.AddMapEntryNodeManipulator;
 import com.navercorp.fixturemonkey.resolver.ArbitraryManipulator;
 import com.navercorp.fixturemonkey.resolver.ArbitraryTraverser;
-import com.navercorp.fixturemonkey.resolver.ChildrenNodeResolver;
 import com.navercorp.fixturemonkey.resolver.CompositeNodeResolver;
 import com.navercorp.fixturemonkey.resolver.MapNodeManipulator;
+import com.navercorp.fixturemonkey.resolver.NodeFieldResolver;
+import com.navercorp.fixturemonkey.resolver.NodeIndexResolver;
 import com.navercorp.fixturemonkey.resolver.NodeManipulator;
 import com.navercorp.fixturemonkey.resolver.NodeNullityManipulator;
 import com.navercorp.fixturemonkey.resolver.NodeResolver;
@@ -53,6 +56,18 @@ public final class MapSpec {
 		this.traverser = traverser;
 		this.resolvers = resolvers;
 		this.arbitraryManipulators = new ArrayList<>();
+	}
+
+	public void minSize(int min) {
+		size(min, min + DEFAULT_ELEMENT_MAX_SIZE);
+	}
+
+	public void maxSize(int max) {
+		size(Math.max(0, max - DEFAULT_ELEMENT_MAX_SIZE), max);
+	}
+
+	public void size(int size) {
+		size(size, size);
 	}
 
 	public void size(int min, int max) {
@@ -82,8 +97,8 @@ public final class MapSpec {
 		arbitraryManipulators.add(new ArbitraryManipulator(resolver, new AddMapEntryNodeManipulator(traverser)));
 
 		List<NodeResolver> nextResolvers = new ArrayList<>(resolvers);
-		nextResolvers.add(new ChildrenNodeResolver("[-1]"));
-		nextResolvers.add(new ChildrenNodeResolver("[0]"));
+		nextResolvers.add(new NodeIndexResolver(-1));
+		nextResolvers.add(new NodeIndexResolver(0));
 		MapSpec mapSpec = new MapSpec(traverser, nextResolvers);
 		consumer.accept(mapSpec);
 		arbitraryManipulators.addAll(mapSpec.arbitraryManipulators);
@@ -108,8 +123,8 @@ public final class MapSpec {
 		arbitraryManipulators.add(new ArbitraryManipulator(resolver, new AddMapEntryNodeManipulator(traverser)));
 
 		List<NodeResolver> nextResolvers = new ArrayList<>(resolvers);
-		nextResolvers.add(new ChildrenNodeResolver("[-1]"));
-		nextResolvers.add(new ChildrenNodeResolver("[1]"));
+		nextResolvers.add(new NodeIndexResolver(-1));
+		nextResolvers.add(new NodeIndexResolver(1));
 		MapSpec mapSpec = new MapSpec(traverser, nextResolvers);
 		consumer.accept(mapSpec);
 		arbitraryManipulators.addAll(mapSpec.arbitraryManipulators);
@@ -131,9 +146,9 @@ public final class MapSpec {
 		arbitraryManipulators.add(new ArbitraryManipulator(resolver, mapManipulator));
 	}
 
-	public void setElement(int index, @Nullable Object value) {
+	public void listElement(int index, @Nullable Object value) {
 		List<NodeResolver> nextResolvers = new ArrayList<>(resolvers);
-		nextResolvers.add(new ChildrenNodeResolver("[" + Integer.toString(index) + "]"));
+		nextResolvers.add(new NodeIndexResolver(index));
 		NodeResolver resolver = new CompositeNodeResolver(new ArrayList<>(nextResolvers));
 		NodeManipulator manipulator = convertToNodeManipulator(value);
 		arbitraryManipulators.add(new ArbitraryManipulator(resolver, manipulator));
@@ -141,23 +156,23 @@ public final class MapSpec {
 
 	public void listElement(int index, Consumer<MapSpec> consumer) {
 		List<NodeResolver> nextResolvers = new ArrayList<>(resolvers);
-		nextResolvers.add(new ChildrenNodeResolver("[" + Integer.toString(index) + "]"));
+		nextResolvers.add(new NodeIndexResolver(index));
 		MapSpec mapSpec = new MapSpec(traverser, nextResolvers);
 		consumer.accept(mapSpec);
 		arbitraryManipulators.addAll(mapSpec.arbitraryManipulators);
 	}
 
-	public void setField(String field, @Nullable Object value) {
+	public void field(String field, @Nullable Object value) {
 		List<NodeResolver> nextResolvers = new ArrayList<>(resolvers);
-		nextResolvers.add(new ChildrenNodeResolver(field));
+		nextResolvers.add(new NodeFieldResolver(field));
 		NodeResolver resolver = new CompositeNodeResolver(new ArrayList<>(nextResolvers));
 		NodeManipulator manipulator = convertToNodeManipulator(value);
 		arbitraryManipulators.add(new ArbitraryManipulator(resolver, manipulator));
 	}
 
-	public void fieldElement(String field, Consumer<MapSpec> consumer) {
+	public void field(String field, Consumer<MapSpec> consumer) {
 		List<NodeResolver> nextResolvers = new ArrayList<>(resolvers);
-		nextResolvers.add(new ChildrenNodeResolver(field));
+		nextResolvers.add(new NodeFieldResolver(field));
 		MapSpec mapSpec = new MapSpec(traverser, nextResolvers);
 		consumer.accept(mapSpec);
 		arbitraryManipulators.addAll(mapSpec.arbitraryManipulators);

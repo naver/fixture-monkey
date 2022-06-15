@@ -43,12 +43,6 @@ class MapSpecTestSpecs {
 		private Map<String, SimpleObject> objectValueMap;
 	}
 
-	@Setter
-	@Getter
-	public static class ObjectMapObject {
-		private Map<String, SimpleObject> objectValueMap;
-	}
-
 	@Getter
 	@Setter
 	public static class SimpleObject {

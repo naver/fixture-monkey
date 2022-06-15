@@ -21,20 +21,14 @@ package com.navercorp.fixturemonkey.test;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.assertj.core.api.BDDAssertions.thenThrownBy;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
 import net.jqwik.api.Property;
 
 import com.navercorp.fixturemonkey.LabMonkey;
-import com.navercorp.fixturemonkey.arbitrary.ArbitraryExpression;
 import com.navercorp.fixturemonkey.test.MapSpecTestSpecs.MapObject;
-import com.navercorp.fixturemonkey.test.MapSpecTestSpecs.ObjectMapObject;
 import com.navercorp.fixturemonkey.test.MapSpecTestSpecs.SimpleObject;
 
 class MapSpecTest {
@@ -157,32 +151,11 @@ class MapSpecTest {
 	}
 
 	@Property
-	void mapComplexAdd() {
-		Map<String, String> map = new HashMap<>();
-		map.put("key1", "val1");
-		MapObject actual = SUT.giveMeBuilder(MapObject.class)
-			.setMap("mapKeyValueMap", m -> {
-				m.value(map);
-				m.value(v-> {
-					v.value("value3");
-					v.key("key3");
-				});
-				m.key(map);
-				m.key(k-> {
-					k.key("aneo");
-				});
-			})
-			.sample();
-
-		then(actual);
-	}
-
-	@Property
-	void mapSetNestedSize() {
+	void mapSetValueSize() {
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
 			.setMap("listValueMap", m -> {
 				m.value(v-> {
-					v.size(10,10);
+					v.size(10);
 				});
 			})
 			.sample();
@@ -192,60 +165,33 @@ class MapSpecTest {
 	}
 
 	@Property
-	void mapSetListValue() {
+	void mapSetValueListElement() {
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
 			.setMap("listValueMap", m -> {
 				m.value(v->{
-					v.size(1,1);
-					v.setElement(0, "test");
+					v.size(1);
+					v.listElement(0, "test");
 				});
 			})
 			.sample();
-		List<String> sizeList = actual.getListValueMap().values().stream()
+		List<String> elementList = actual.getListValueMap().values().stream()
 			.flatMap(List::stream).collect(Collectors.toList());
-		then(sizeList).contains("test");
+		then(elementList).contains("test");
 	}
 
 	@Property
-	void mapSetListValue2() {
+	void mapSetValueField() {
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
-			.setMap("listListValueMap", m -> {
-				m.value(v->{
-					v.size(1,1);
-					v.listElement(0, l -> {
-						l.size(1,1);
-						l.setElement(0, "test");
-					});
-				});
-			})
-			.sample();
-		then(actual);
-	}
-
-	@Property
-	void mapSetFieldValue() {
-		ObjectMapObject actual = SUT.giveMeBuilder(ObjectMapObject.class)
 			.setMap("objectValueMap", m -> {
 				m.value(v->{
-					v.setField("str", "test");
+					v.field("str", "test");
 				});
 			})
 			.sample();
 
-		List<String> list = actual.getObjectValueMap()
-			.values()
-			.stream()
-			.filter(Objects::nonNull)
-			.map(it->it.getStr())
-			.collect(Collectors.toList());
+		List<String> fieldList = actual.getObjectValueMap().values().stream().filter(Objects::nonNull)
+			.map(SimpleObject::getStr).collect(Collectors.toList());
 
-		then(list).contains("test");
-	}
-
-	@Property
-	void arbitraryExpression() {
-		ArbitraryExpression field = ArbitraryExpression.from("field");
-		ArbitraryExpression index = ArbitraryExpression.from("field[0][1]");
-		System.out.println(field);
+		then(fieldList).contains("test");
 	}
 }

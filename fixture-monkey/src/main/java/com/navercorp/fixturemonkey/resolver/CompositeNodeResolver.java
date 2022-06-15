@@ -37,8 +37,10 @@ public final class CompositeNodeResolver implements NodeResolver {
 		for (NodeResolver resolver : resolvers) {
 			if (resolver instanceof ExpressionNodeResolver) {
 				selectedNodes = resolver.resolve(arbitraryTree);
-			} else {
-				selectedNodes = ((ChildrenNodeResolver)resolver).getNext(selectedNodes);
+			} else if (resolver instanceof NodeIndexResolver) {
+				selectedNodes = ((NodeIndexResolver)resolver).getNext(selectedNodes);
+			} else if (resolver instanceof NodeFieldResolver) {
+				selectedNodes = ((NodeFieldResolver)resolver).getNext(selectedNodes);
 			}
 		}
 		return selectedNodes;
