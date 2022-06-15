@@ -43,11 +43,13 @@ import net.jqwik.api.Arbitrary;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
+import com.navercorp.fixturemonkey.api.option.GenerateOptions;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
 import com.navercorp.fixturemonkey.api.type.LazyAnnotatedType;
 import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryExpression;
 import com.navercorp.fixturemonkey.customizer.MapSpec;
+import com.navercorp.fixturemonkey.resolver.ApplyExpressionStrictModeResolver;
 import com.navercorp.fixturemonkey.resolver.ApplyNodeCountManipulator;
 import com.navercorp.fixturemonkey.resolver.ArbitraryManipulator;
 import com.navercorp.fixturemonkey.resolver.ArbitraryResolver;
@@ -57,6 +59,7 @@ import com.navercorp.fixturemonkey.resolver.ExpressionNodeResolver;
 import com.navercorp.fixturemonkey.resolver.NodeFilterManipulator;
 import com.navercorp.fixturemonkey.resolver.NodeManipulator;
 import com.navercorp.fixturemonkey.resolver.NodeNullityManipulator;
+import com.navercorp.fixturemonkey.resolver.NodeResolver;
 import com.navercorp.fixturemonkey.resolver.NodeSetArbitraryManipulator;
 import com.navercorp.fixturemonkey.resolver.NodeSetDecomposedValueManipulator;
 import com.navercorp.fixturemonkey.resolver.NodeSetLazyManipulator;
@@ -68,6 +71,7 @@ import com.navercorp.fixturemonkey.validator.ArbitraryValidator;
 @SuppressFBWarnings("NM_SAME_SIMPLE_NAME_AS_SUPERCLASS")
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class ArbitraryBuilder<T> extends com.navercorp.fixturemonkey.ArbitraryBuilder<T> {
+	private final GenerateOptions generateOptions;
 	private final RootProperty rootProperty;
 	private final ArbitraryResolver resolver;
 	private final ArbitraryTraverser traverser;
@@ -77,6 +81,7 @@ public final class ArbitraryBuilder<T> extends com.navercorp.fixturemonkey.Arbit
 	private boolean validOnly = true;
 
 	public ArbitraryBuilder(
+		GenerateOptions generateOptions,
 		RootProperty rootProperty,
 		ArbitraryResolver resolver,
 		ArbitraryTraverser traverser,
@@ -85,6 +90,7 @@ public final class ArbitraryBuilder<T> extends com.navercorp.fixturemonkey.Arbit
 		Set<LazyArbitrary<?>> lazyArbitraries
 	) {
 		super();
+		this.generateOptions = generateOptions;
 		this.rootProperty = rootProperty;
 		this.resolver = resolver;
 		this.traverser = traverser;
@@ -104,7 +110,7 @@ public final class ArbitraryBuilder<T> extends com.navercorp.fixturemonkey.Arbit
 		@Nullable Object value,
 		int limit
 	) {
-		ExpressionNodeResolver nodeResolver = new ExpressionNodeResolver(ArbitraryExpression.from(expression));
+		NodeResolver nodeResolver = convertToExpressionNodeResolver(expression);
 		if (value instanceof Arbitrary) {
 			manipulators.add(
 				new ArbitraryManipulator(
@@ -192,7 +198,7 @@ public final class ArbitraryBuilder<T> extends com.navercorp.fixturemonkey.Arbit
 
 		this.manipulators.add(
 			new ArbitraryManipulator(
-				new ExpressionNodeResolver(ArbitraryExpression.from(expression)),
+				convertToExpressionNodeResolver(expression),
 				new NodeSizeManipulator(
 					traverser,
 					min,
@@ -256,7 +262,7 @@ public final class ArbitraryBuilder<T> extends com.navercorp.fixturemonkey.Arbit
 	@Override
 	public ArbitraryBuilder<T> setNull(String expression) {
 		this.manipulators.add(new ArbitraryManipulator(
-			new ExpressionNodeResolver(ArbitraryExpression.from(expression)),
+			convertToExpressionNodeResolver(expression),
 			new NodeNullityManipulator(true)
 		));
 		return this;
@@ -265,7 +271,7 @@ public final class ArbitraryBuilder<T> extends com.navercorp.fixturemonkey.Arbit
 	@Override
 	public ArbitraryBuilder<T> setNotNull(String expression) {
 		this.manipulators.add(new ArbitraryManipulator(
-			new ExpressionNodeResolver(ArbitraryExpression.from(expression)),
+			convertToExpressionNodeResolver(expression),
 			new NodeNullityManipulator(false)
 		));
 		return this;
@@ -302,10 +308,9 @@ public final class ArbitraryBuilder<T> extends com.navercorp.fixturemonkey.Arbit
 		Predicate<U> filter,
 		int limit
 	) {
-		ArbitraryExpression arbitraryExpression = ArbitraryExpression.from(expression);
 		this.manipulators.add(
 			new ArbitraryManipulator(
-				new ExpressionNodeResolver(arbitraryExpression),
+				convertToExpressionNodeResolver(expression),
 				new ApplyNodeCountManipulator(
 					new NodeFilterManipulator(type, filter),
 					limit
@@ -333,6 +338,7 @@ public final class ArbitraryBuilder<T> extends com.navercorp.fixturemonkey.Arbit
 		lazyArbitraries.add(lazyArbitrary);
 
 		return new ArbitraryBuilder<>(
+			generateOptions,
 			property,
 			resolver,
 			traverser,
@@ -371,6 +377,7 @@ public final class ArbitraryBuilder<T> extends com.navercorp.fixturemonkey.Arbit
 	@Override
 	public ArbitraryBuilder<T> copy() {
 		return new ArbitraryBuilder<>(
+			generateOptions,
 			rootProperty,
 			resolver,
 			traverser,
@@ -378,5 +385,13 @@ public final class ArbitraryBuilder<T> extends com.navercorp.fixturemonkey.Arbit
 			new ArrayList<>(this.manipulators),
 			new HashSet<>(this.lazyArbitraries)
 		);
+	}
+
+	private NodeResolver convertToExpressionNodeResolver(String expression) {
+		NodeResolver nodeResolver = new ExpressionNodeResolver(ArbitraryExpression.from(expression));
+		if (generateOptions.isExpressionStrictMode()) {
+			nodeResolver = new ApplyExpressionStrictModeResolver(nodeResolver);
+		}
+		return nodeResolver;
 	}
 }

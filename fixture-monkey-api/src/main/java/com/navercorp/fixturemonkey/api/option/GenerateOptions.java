@@ -97,6 +97,7 @@ public final class GenerateOptions {
 	private final ArbitraryContainerInfo defaultArbitraryContainerInfo;
 	private final List<MatcherOperator<ArbitraryGenerator>> arbitraryGenerators;
 	private final ArbitraryGenerator defaultArbitraryGenerator;
+	private final boolean expressionStrictMode;
 
 	public GenerateOptions(
 		List<MatcherOperator<ArbitraryPropertyGenerator>> arbitraryPropertyGenerators,
@@ -109,7 +110,8 @@ public final class GenerateOptions {
 		int defaultArbitraryContainerSize,
 		ArbitraryContainerInfo defaultArbitraryContainerInfo,
 		List<MatcherOperator<ArbitraryGenerator>> arbitraryGenerators,
-		ArbitraryGenerator defaultArbitraryGenerator
+		ArbitraryGenerator defaultArbitraryGenerator,
+		boolean expressionStrictMode
 	) {
 		this.arbitraryPropertyGenerators = arbitraryPropertyGenerators;
 		this.defaultArbitraryPropertyGenerator = defaultArbitraryPropertyGenerator;
@@ -122,6 +124,7 @@ public final class GenerateOptions {
 		this.defaultArbitraryContainerInfo = defaultArbitraryContainerInfo;
 		this.arbitraryGenerators = arbitraryGenerators;
 		this.defaultArbitraryGenerator = defaultArbitraryGenerator;
+		this.expressionStrictMode = expressionStrictMode;
 	}
 
 	public static GenerateOptionsBuilder builder() {
@@ -210,6 +213,10 @@ public final class GenerateOptions {
 
 	public ArbitraryGenerator getDefaultArbitraryGenerator() {
 		return this.defaultArbitraryGenerator;
+	}
+
+	public boolean isExpressionStrictMode() {
+		return expressionStrictMode;
 	}
 
 	public GenerateOptionsBuilder toBuilder() {

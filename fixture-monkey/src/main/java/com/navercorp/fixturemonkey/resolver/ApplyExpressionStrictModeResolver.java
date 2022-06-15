@@ -24,7 +24,27 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-@FunctionalInterface
-public interface NodeResolver {
-	List<ArbitraryNode> resolve(ArbitraryTree arbitraryTree);
+public final class ApplyExpressionStrictModeResolver implements NodeResolver {
+	private final NodeResolver nodeResolver;
+
+	public ApplyExpressionStrictModeResolver(
+		NodeResolver nodeResolver
+	) {
+		this.nodeResolver = nodeResolver;
+	}
+
+	@Override
+	public List<ArbitraryNode> resolve(ArbitraryTree arbitraryTree) {
+		List<ArbitraryNode> selectedNodes = nodeResolver.resolve(arbitraryTree);
+
+		if (selectedNodes.isEmpty()) {
+			String message = "No matching results for given expression.";
+			if (nodeResolver instanceof ExpressionNodeResolver) {
+				String expression = ((ExpressionNodeResolver)nodeResolver).getExpression();
+				message += " Expression: \"" + expression + "\"";
+			}
+			throw new IllegalArgumentException(message);
+		}
+		return selectedNodes;
+	}
 }

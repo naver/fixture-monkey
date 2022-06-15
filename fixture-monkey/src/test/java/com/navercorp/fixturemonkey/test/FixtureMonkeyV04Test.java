@@ -700,4 +700,16 @@ class FixtureMonkeyV04Test {
 		String notExpected = arbitraryBuilder.sample();
 		then(actual).isNotEqualTo(notExpected);
 	}
+
+	@Property
+	void strictModeSetWrongExpressionThrows() {
+		LabMonkey labMonkey = LabMonkey.labMonkeyBuilder().useExpressionStrictMode().build();
+
+		thenThrownBy(
+			() -> labMonkey.giveMeBuilder(ComplexObject.class)
+				.set("nonExistentField", 0)
+				.sample()
+		).isExactlyInstanceOf(IllegalArgumentException.class)
+			.hasMessageContaining("No matching results for given expression.");
+	}
 }
