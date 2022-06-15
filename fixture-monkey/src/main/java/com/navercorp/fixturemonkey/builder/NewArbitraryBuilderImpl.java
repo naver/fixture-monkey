@@ -107,6 +107,7 @@ public final class NewArbitraryBuilderImpl<T> extends OldArbitraryBuilderImpl<T>
 		return this;
 	}
 
+	@Override
 	public ArbitraryBuilder<T> set(
 		String expression,
 		@Nullable Object value,
@@ -137,15 +138,6 @@ public final class NewArbitraryBuilderImpl<T> extends OldArbitraryBuilderImpl<T>
 			);
 		}
 		return this;
-	}
-
-	@Override
-	public ArbitraryBuilder<T> set(
-		String expression,
-		@Nullable Object value,
-		long limit
-	) {
-		return this.set(expression, value, (int)limit);
 	}
 
 	@Override
@@ -299,15 +291,6 @@ public final class NewArbitraryBuilderImpl<T> extends OldArbitraryBuilderImpl<T>
 		String expression,
 		Class<U> type,
 		Predicate<U> filter,
-		long limit
-	) {
-		return this.setPostCondition(expression, type, filter, (int)limit);
-	}
-
-	public <U> ArbitraryBuilder<T> setPostCondition(
-		String expression,
-		Class<U> type,
-		Predicate<U> filter,
 		int limit
 	) {
 		this.manipulators.add(
@@ -372,6 +355,7 @@ public final class NewArbitraryBuilderImpl<T> extends OldArbitraryBuilderImpl<T>
 		return this.build().sampleStream();
 	}
 
+	@Override
 	public List<T> sampleList(int size) {
 		return this.sampleStream().limit(size).collect(toList());
 	}

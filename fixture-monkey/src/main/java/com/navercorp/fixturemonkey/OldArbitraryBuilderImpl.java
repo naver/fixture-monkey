@@ -214,16 +214,13 @@ public class OldArbitraryBuilderImpl<T> implements ArbitraryBuilder<T> {
 		);
 	}
 
+	@Override
 	public ArbitraryBuilder<T> validOnly(boolean validOnly) {
 		this.validOnly = validOnly;
 		return this;
 	}
 
-	public ArbitraryBuilder<T> generator(ArbitraryGenerator generator) {
-		this.generator = getGenerator(generator, arbitraryCustomizers);
-		return this;
-	}
-
+	@Override
 	public Arbitrary<T> build() {
 		OldArbitraryBuilderImpl<T> buildArbitraryBuilder = (OldArbitraryBuilderImpl<T>)this.copy();
 		return buildArbitraryBuilder.tree.result(() -> {
@@ -244,23 +241,28 @@ public class OldArbitraryBuilderImpl<T> implements ArbitraryBuilder<T> {
 		}, this.validator, this.validOnly);
 	}
 
+	@Override
 	public T sample() {
 		return this.build().sample();
 	}
 
+	@Override
 	public List<T> sampleList(int size) {
 		return this.sampleStream().limit(size).collect(toList());
 	}
 
+	@Override
 	public Stream<T> sampleStream() {
 		return this.build().sampleStream();
 	}
 
+	@Override
 	public ArbitraryBuilder<T> spec(ExpressionSpec expressionSpec) {
 		this.builderManipulators.addAll(expressionSpec.getBuilderManipulators());
 		return this;
 	}
 
+	@Override
 	public ArbitraryBuilder<T> specAny(ExpressionSpec... specs) {
 		if (specs == null || specs.length == 0) {
 			return this;
@@ -271,6 +273,7 @@ public class OldArbitraryBuilderImpl<T> implements ArbitraryBuilder<T> {
 	}
 
 	@SuppressWarnings("unchecked")
+	@Override
 	public ArbitraryBuilder<T> set(String expression, @Nullable Object value) {
 		ArbitraryExpression arbitraryExpression = ArbitraryExpression.from(expression);
 		if (value == null) {
@@ -287,22 +290,15 @@ public class OldArbitraryBuilderImpl<T> implements ArbitraryBuilder<T> {
 		return this;
 	}
 
-	public ArbitraryBuilder<T> set(String expression, @Nullable Object value, int limit) {
-		return this.set(expression, value, (long)limit);
-	}
-
 	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+	@Override
 	public ArbitraryBuilder<T> set(ExpressionGenerator expressionGenerator, @Nullable Object value) {
 		return this.set(resolveExpression(expressionGenerator), value);
 	}
 
-	public ArbitraryBuilder<T> set(
-		ExpressionGenerator expressionGenerator, @Nullable Object value, int limit
-	) {
-		return this.set(expressionGenerator, value, (long)limit);
-	}
-
-	public ArbitraryBuilder<T> set(String expression, @Nullable Object value, long limit) {
+	@Override
+	@SuppressWarnings("unchecked")
+	public ArbitraryBuilder<T> set(String expression, @Nullable Object value, int limit) {
 		ArbitraryExpression arbitraryExpression = ArbitraryExpression.from(expression);
 		if (value == null) {
 			return this.setNull(expression);
@@ -319,14 +315,17 @@ public class OldArbitraryBuilderImpl<T> implements ArbitraryBuilder<T> {
 	}
 
 	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
-	public ArbitraryBuilder<T> set(ExpressionGenerator expressionGenerator, Object value, long limit) {
+	@Override
+	public ArbitraryBuilder<T> set(ExpressionGenerator expressionGenerator, Object value, int limit) {
 		return this.set(resolveExpression(expressionGenerator), value, limit);
 	}
 
+	@Override
 	public ArbitraryBuilder<T> set(@Nullable Object value) {
 		return this.set(HEAD_NAME, value);
 	}
 
+	@Override
 	public ArbitraryBuilder<T> setLazy(String expression, Supplier<?> supplier) {
 		ArbitraryExpression arbitraryExpression = ArbitraryExpression.from(expression);
 		this.builderManipulators.add(new ArbitrarySetLazyValue<>(arbitraryExpression, supplier));
@@ -339,17 +338,16 @@ public class OldArbitraryBuilderImpl<T> implements ArbitraryBuilder<T> {
 		return this;
 	}
 
-	private ArbitraryBuilder<T> setBuilder(String expression, OldArbitraryBuilderImpl<?> builder, long limit) {
+	private ArbitraryBuilder<T> setBuilder(String expression, OldArbitraryBuilderImpl<?> builder, int limit) {
 		ArbitraryExpression arbitraryExpression = ArbitraryExpression.from(expression);
 		this.builderManipulators.add(new ArbitrarySetArbitrary<>(arbitraryExpression, builder.build(), limit));
 		return this;
 	}
 
-	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
 	private ArbitraryBuilder<T> setBuilder(
 		ExpressionGenerator expressionGenerator,
 		OldArbitraryBuilderImpl<?> builder,
-		long limit
+		int limit
 	) {
 		return this.setBuilder(resolveExpression(expressionGenerator), builder, limit);
 	}
@@ -388,26 +386,6 @@ public class OldArbitraryBuilderImpl<T> implements ArbitraryBuilder<T> {
 		return this;
 	}
 
-	@Override
-	public <U> ArbitraryBuilder<T> setPostCondition(
-		String expression,
-		Class<U> clazz,
-		Predicate<U> filter,
-		int limit
-	) {
-		return this.setPostCondition(expression, clazz, filter, (long)limit);
-	}
-
-	@Override
-	public <U> ArbitraryBuilder<T> setPostCondition(
-		ExpressionGenerator expressionGenerator,
-		Class<U> clazz,
-		Predicate<U> filter,
-		int limit
-	) {
-		return this.setPostCondition(expressionGenerator, clazz, filter, (long)limit);
-	}
-
 	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
 	public <U> ArbitraryBuilder<T> setPostCondition(
 		ExpressionGenerator expressionGenerator,
@@ -417,27 +395,30 @@ public class OldArbitraryBuilderImpl<T> implements ArbitraryBuilder<T> {
 		return this.setPostCondition(resolveExpression(expressionGenerator), clazz, filter);
 	}
 
+	@Override
 	public <U> ArbitraryBuilder<T> setPostCondition(
 		String expression,
 		Class<U> clazz,
 		Predicate<U> filter,
-		long limit
+		int limit
 	) {
 		ArbitraryExpression arbitraryExpression = ArbitraryExpression.from(expression);
 		this.builderManipulators.add(new ArbitrarySetPostCondition<>(clazz, arbitraryExpression, filter, limit));
 		return this;
 	}
 
+	@Override
 	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
 	public <U> ArbitraryBuilder<T> setPostCondition(
 		ExpressionGenerator expressionGenerator,
 		Class<U> clazz,
 		Predicate<U> filter,
-		long limit
+		int limit
 	) {
 		return this.setPostCondition(resolveExpression(expressionGenerator), clazz, filter, limit);
 	}
 
+	@Override
 	public ArbitraryBuilder<T> size(String expression, int size) {
 		ArbitraryExpression arbitraryExpression = ArbitraryExpression.from(expression);
 		builderManipulators.add(new ContainerSizeManipulator(arbitraryExpression, size, size));
@@ -445,10 +426,12 @@ public class OldArbitraryBuilderImpl<T> implements ArbitraryBuilder<T> {
 	}
 
 	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+	@Override
 	public ArbitraryBuilder<T> size(ExpressionGenerator expressionGenerator, int size) {
 		return this.size(resolveExpression(expressionGenerator), size);
 	}
 
+	@Override
 	public ArbitraryBuilder<T> size(String expression, int min, int max) {
 		ArbitraryExpression arbitraryExpression = ArbitraryExpression.from(expression);
 		builderManipulators.add(new ContainerSizeManipulator(arbitraryExpression, min, max));
@@ -456,10 +439,12 @@ public class OldArbitraryBuilderImpl<T> implements ArbitraryBuilder<T> {
 	}
 
 	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+	@Override
 	public ArbitraryBuilder<T> size(ExpressionGenerator expressionGenerator, int min, int max) {
 		return this.size(resolveExpression(expressionGenerator), min, max);
 	}
 
+	@Override
 	public ArbitraryBuilder<T> minSize(String expression, int min) {
 		ArbitraryExpression arbitraryExpression = ArbitraryExpression.from(expression);
 		builderManipulators.add(
@@ -469,10 +454,12 @@ public class OldArbitraryBuilderImpl<T> implements ArbitraryBuilder<T> {
 	}
 
 	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+	@Override
 	public ArbitraryBuilder<T> minSize(ExpressionGenerator expressionGenerator, int min) {
 		return this.minSize(resolveExpression(expressionGenerator), min);
 	}
 
+	@Override
 	public ArbitraryBuilder<T> maxSize(String expression, int max) {
 		ArbitraryExpression arbitraryExpression = ArbitraryExpression.from(expression);
 		builderManipulators.add(new ContainerSizeManipulator(arbitraryExpression, null, max));
@@ -480,10 +467,12 @@ public class OldArbitraryBuilderImpl<T> implements ArbitraryBuilder<T> {
 	}
 
 	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+	@Override
 	public ArbitraryBuilder<T> maxSize(ExpressionGenerator expressionGenerator, int max) {
 		return this.maxSize(resolveExpression(expressionGenerator), max);
 	}
 
+	@Override
 	public ArbitraryBuilder<T> customize(Class<T> type, ArbitraryCustomizer<T> customizer) {
 		this.arbitraryCustomizers = this.arbitraryCustomizers.mergeWith(
 			Collections.singletonMap(type, customizer)
@@ -495,6 +484,7 @@ public class OldArbitraryBuilderImpl<T> implements ArbitraryBuilder<T> {
 		return this;
 	}
 
+	@Override
 	public <U> ArbitraryBuilder<U> map(Function<T, U> mapper) {
 		return new OldArbitraryBuilderImpl<>(() -> mapper.apply(this.sample()),
 			this.traverser,
@@ -519,6 +509,7 @@ public class OldArbitraryBuilderImpl<T> implements ArbitraryBuilder<T> {
 		);
 	}
 
+	@Override
 	public <U, V, R> ArbitraryBuilder<R> zipWith(
 		ArbitraryBuilder<U> other,
 		ArbitraryBuilder<V> another,
@@ -536,6 +527,7 @@ public class OldArbitraryBuilderImpl<T> implements ArbitraryBuilder<T> {
 			this.generatorMap);
 	}
 
+	@Override
 	public <U, V, W, R> ArbitraryBuilder<R> zipWith(
 		ArbitraryBuilder<U> other,
 		ArbitraryBuilder<V> another,
@@ -556,6 +548,7 @@ public class OldArbitraryBuilderImpl<T> implements ArbitraryBuilder<T> {
 	}
 
 	@SuppressWarnings({"unchecked", "rawtypes"})
+	@Override
 	public <U> ArbitraryBuilder<U> zipWith(
 		List<ArbitraryBuilder<?>> others,
 		Function<List<?>, U> combinator
@@ -584,6 +577,7 @@ public class OldArbitraryBuilderImpl<T> implements ArbitraryBuilder<T> {
 		return this;
 	}
 
+	@Override
 	public ArbitraryBuilder<T> acceptIf(Predicate<T> predicate, Consumer<ArbitraryBuilder<T>> consumer) {
 		return this.apply((obj, builder) -> {
 			if (predicate.test(obj)) {
@@ -592,6 +586,7 @@ public class OldArbitraryBuilderImpl<T> implements ArbitraryBuilder<T> {
 		});
 	}
 
+	@Override
 	public ArbitraryBuilder<T> fixed() {
 		T sample = this.sample();
 		setCurrentBuilderManipulatorsAsUsed();
@@ -702,7 +697,6 @@ public class OldArbitraryBuilderImpl<T> implements ArbitraryBuilder<T> {
 		return this;
 	}
 
-	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
 	private ArbitraryBuilder<T> apply(ArbitraryApply<T> arbitraryApply) {
 		ArbitraryBuilder<T> toSampleArbitraryBuilder = arbitraryApply.getToSampleArbitraryBuilder();
 		BiConsumer<T, ArbitraryBuilder<T>> builderBiConsumer = arbitraryApply.getBuilderBiConsumer();
@@ -713,7 +707,6 @@ public class OldArbitraryBuilderImpl<T> implements ArbitraryBuilder<T> {
 		return this;
 	}
 
-	@API(since = "0.4.0", status = Status.INTERNAL)
 	@SuppressWarnings("rawtypes")
 	private void apply(List<BuilderManipulator> arbitraryManipulators) {
 		List<MetadataManipulator> metadataManipulators = this.extractMetadataManipulatorsFrom(arbitraryManipulators);
@@ -725,11 +718,6 @@ public class OldArbitraryBuilderImpl<T> implements ArbitraryBuilder<T> {
 		metadataManipulators.stream().sorted().forEachOrdered(it -> it.accept(this));
 		orderedArbitraryManipulators.forEach(it -> it.accept(this));
 		postArbitraryManipulators.forEach(it -> it.accept(this));
-	}
-
-	@Deprecated
-	public boolean isDirty() {
-		return usedManipulators.size() != builderManipulators.size();
 	}
 
 	@Override
