@@ -21,14 +21,12 @@ package com.navercorp.fixturemonkey;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
-import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.api.option.GenerateOptions;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
 import com.navercorp.fixturemonkey.api.type.LazyAnnotatedType;
