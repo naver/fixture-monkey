@@ -25,6 +25,7 @@ import org.javaunit.autoparams.customization.Customizer;
 import org.javaunit.autoparams.generator.ObjectContainer;
 import org.javaunit.autoparams.generator.ObjectGenerator;
 
+import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.OldArbitraryBuilderImpl;
 
@@ -49,7 +50,7 @@ final class FixtureMonkeyArbitraryBuilderCustomizer implements Customizer {
 
 	private ObjectContainer generate(ParameterizedType parameterizedType) {
 		Class<?> type = (Class<?>)parameterizedType.getRawType();
-		return type == OldArbitraryBuilderImpl.class
+		return ArbitraryBuilder.class.isAssignableFrom(type)
 			? this.generate((Class<?>)parameterizedType.getActualTypeArguments()[0])
 			: ObjectContainer.EMPTY;
 	}
