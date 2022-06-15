@@ -38,9 +38,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import com.navercorp.fixturemonkey.OldArbitraryBuilderImpl;
 import com.navercorp.fixturemonkey.ArbitraryOption;
 import com.navercorp.fixturemonkey.FixtureMonkey;
+import com.navercorp.fixturemonkey.OldArbitraryBuilderImpl;
 import com.navercorp.fixturemonkey.autoparams.FixtureMonkeyAutoSource;
 import com.navercorp.fixturemonkey.autoparams.customization.FixtureMonkeyCustomizer;
 import com.navercorp.fixturemonkey.engine.jupiter.extension.FixtureMonkeySessionExtension;
