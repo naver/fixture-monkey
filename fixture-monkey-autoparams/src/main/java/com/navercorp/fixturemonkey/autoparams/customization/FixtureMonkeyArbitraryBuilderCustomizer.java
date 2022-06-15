@@ -27,7 +27,6 @@ import org.javaunit.autoparams.generator.ObjectGenerator;
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.FixtureMonkey;
-import com.navercorp.fixturemonkey.OldArbitraryBuilderImpl;
 
 final class FixtureMonkeyArbitraryBuilderCustomizer implements Customizer {
 	private final FixtureMonkey fixtureMonkey;
