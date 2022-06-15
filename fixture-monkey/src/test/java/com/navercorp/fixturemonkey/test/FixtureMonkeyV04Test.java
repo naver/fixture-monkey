@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.OptionalInt;
@@ -673,5 +674,30 @@ class FixtureMonkeyV04Test {
 			.sample();
 
 		then(actual).isEqualTo("test");
+	}
+
+	@Property
+	void mapKeyIsNotNull() {
+		// when
+		Set<String> actual = SUT.giveMeBuilder(new TypeReference<Map<String, String>>() {
+			})
+			.sample()
+			.keySet();
+
+		then(actual).allMatch(Objects::nonNull);
+	}
+
+	@Property
+	void sampleAfterMapTwiceReturnsDiff() {
+		ArbitraryBuilder<String> arbitraryBuilder = SUT.giveMeBuilder(ComplexObject.class)
+			.set("str", Arbitraries.strings().ascii().filter(it -> !it.isEmpty()))
+			.map(ComplexObject::getStr);
+
+		// when
+		String actual = arbitraryBuilder.sample();
+
+		// then
+		String notExpected = arbitraryBuilder.sample();
+		then(actual).isNotEqualTo(notExpected);
 	}
 }

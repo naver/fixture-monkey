@@ -642,6 +642,42 @@ class SimpleManipulatorTest {
 	}
 
 	@Property
+	void giveMeSpecListAnyWithoutSize() {
+		// when
+		StringList actual = SUT.giveMeBuilder(StringList.class)
+			.spec(new ExpressionSpec().list("values", it -> it.any("set")))
+			.sample();
+
+		then(actual.getValues()).anyMatch(it -> it.equals("set"));
+	}
+
+	@Property
+	void giveMeSpecListAnyWithoutMaxSize() {
+		// when
+		StringList actual = SUT.giveMeBuilder(StringList.class)
+			.spec(new ExpressionSpec().list("values", it -> {
+				it.ofMinSize(5);
+				it.any("set");
+			}))
+			.sample();
+
+		then(actual.getValues()).anyMatch(it -> it.equals("set"));
+	}
+
+	@Property
+	void giveMeSpecListAnyWithoutMinSize() {
+		// when
+		StringList actual = SUT.giveMeBuilder(StringList.class)
+			.spec(new ExpressionSpec().list("values", it -> {
+				it.ofMaxSize(2);
+				it.any("set");
+			}))
+			.sample();
+
+		then(actual.getValues()).anyMatch(it -> it.equals("set"));
+	}
+
+	@Property
 	void giveMeSpecListAllSet() {
 		// when
 		IntegerList actual = SUT.giveMeBuilder(IntegerList.class)

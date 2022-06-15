@@ -18,30 +18,39 @@
 
 package com.navercorp.fixturemonkey.resolver;
 
-import java.util.function.Supplier;
-
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import net.jqwik.api.Arbitrary;
 
+import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
+
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class NodeSetLazyManipulator<T> implements NodeManipulator {
 	private final ArbitraryTraverser traverser;
-	private final Supplier<T> supplier;
+	private final LazyArbitrary<T> lazyArbitrary;
 
-	public NodeSetLazyManipulator(ArbitraryTraverser traverser, Supplier<T> supplier) {
+	public NodeSetLazyManipulator(
+		ArbitraryTraverser traverser,
+		LazyArbitrary<T> lazyArbitrary
+	) {
 		this.traverser = traverser;
-		this.supplier = supplier;
+		this.lazyArbitrary = lazyArbitrary;
 	}
 
 	@Override
 	public void manipulate(ArbitraryNode arbitraryNode) {
-		T value = supplier.get();
+		T value = lazyArbitrary.getValue();
+
+		if (value == null) {
+			NodeNullityManipulator nullityManipulator = new NodeNullityManipulator(true);
+			nullityManipulator.manipulate(arbitraryNode);
+			return;
+		}
 
 		if (value instanceof Arbitrary) {
-			NodeSetArbitraryManipulator<?> nodeSetArbitraryManipulator = new NodeSetArbitraryManipulator<>(
-				(Arbitrary<?>)supplier.get());
+			NodeSetArbitraryManipulator<?> nodeSetArbitraryManipulator =
+				new NodeSetArbitraryManipulator<>((Arbitrary<?>)value);
 			nodeSetArbitraryManipulator.manipulate(arbitraryNode);
 			return;
 		}
