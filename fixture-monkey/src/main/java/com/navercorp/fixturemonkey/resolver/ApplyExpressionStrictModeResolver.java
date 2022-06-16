@@ -23,22 +23,28 @@ import java.util.List;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.arbitrary.ArbitraryExpression;
-
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public final class ExpressionNodeResolver implements NodeResolver {
-	private final ArbitraryExpression arbitraryExpression;
+public final class ApplyExpressionStrictModeResolver implements NodeResolver {
+	private final NodeResolver nodeResolver;
 
-	public ExpressionNodeResolver(ArbitraryExpression arbitraryExpression) {
-		this.arbitraryExpression = arbitraryExpression;
+	public ApplyExpressionStrictModeResolver(
+		NodeResolver nodeResolver
+	) {
+		this.nodeResolver = nodeResolver;
 	}
 
 	@Override
 	public List<ArbitraryNode> resolve(ArbitraryTree arbitraryTree) {
-		return arbitraryTree.findAll(arbitraryExpression);
-	}
+		List<ArbitraryNode> selectedNodes = nodeResolver.resolve(arbitraryTree);
 
-	public String getExpression() {
-		return arbitraryExpression.toString();
+		if (selectedNodes.isEmpty()) {
+			String message = "No matching results for given expression.";
+			if (nodeResolver instanceof ExpressionNodeResolver) {
+				String expression = ((ExpressionNodeResolver)nodeResolver).getExpression();
+				message += " Expression: \"" + expression + "\"";
+			}
+			throw new IllegalArgumentException(message);
+		}
+		return selectedNodes;
 	}
 }

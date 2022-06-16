@@ -50,4 +50,9 @@ public class LabMonkeyBuilder {
 			this.arbitraryValidator
 		);
 	}
+
+	public LabMonkeyBuilder useExpressionStrictMode() {
+		this.generateOptionsBuilder.expressionStrictMode(true);
+		return this;
+	}
 }
