@@ -156,6 +156,11 @@ public final class CollectionSpec {
 	}
 
 	public void listElement(int index, Consumer<CollectionSpec> consumer) {
+		if (consumer == null) {
+			listElement(index, (Object)null);
+			return;
+		}
+
 		NodeResolver nextResolver = new NodeIndexResolver(index, this.treePathResolver);
 		CollectionSpec collectionSpec = new CollectionSpec(traverser, nextResolver);
 		consumer.accept(collectionSpec);
@@ -169,6 +174,11 @@ public final class CollectionSpec {
 	}
 
 	public void field(String field, Consumer<CollectionSpec> consumer) {
+		if (consumer == null) {
+			field(field, (Object)null);
+			return;
+		}
+
 		NodeResolver nextResolver = new NodeFieldResolver(field, this.treePathResolver);
 		CollectionSpec collectionSpec = new CollectionSpec(traverser, nextResolver);
 		consumer.accept(collectionSpec);
