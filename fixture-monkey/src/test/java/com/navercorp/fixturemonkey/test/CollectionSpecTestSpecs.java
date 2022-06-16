@@ -25,8 +25,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 class CollectionSpecTestSpecs {
-	@Setter
 	@Getter
+	@Setter
 	public static class MapObject {
 		private Map<String, String> strMap;
 		private Map<String, Map<String, String>> mapValueMap;
@@ -37,10 +37,15 @@ class CollectionSpecTestSpecs {
 		private Map<String, SimpleObject> objectValueMap;
 	}
 
-	@Setter
 	@Getter
-	public static class Sample {
+	@Setter
+	public static class ListObject {
 		private List<List<String>> listListStr;
+	}
+
+	@Getter
+	@Setter
+	public static class ObjectObject {
 		private ComplexObject complexObject;
 	}
 

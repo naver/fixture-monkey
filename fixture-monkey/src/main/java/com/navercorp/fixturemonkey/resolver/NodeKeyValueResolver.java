@@ -45,7 +45,6 @@ public final class NodeKeyValueResolver implements NodeResolver {
 	public List<ArbitraryNode> getNext(List<ArbitraryNode> nodes) {
 		LinkedList<ArbitraryNode> nextNodes = new LinkedList<>();
 		for (ArbitraryNode selectedNode : nodes) {
-			// MapEntry Node가 아니면 예외처리??
 			ArbitraryNode child;
 			if (isKey) {
 				child = selectedNode.getChildren().get(0);

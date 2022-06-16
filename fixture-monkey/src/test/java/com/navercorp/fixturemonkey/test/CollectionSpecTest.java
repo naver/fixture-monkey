@@ -21,17 +21,16 @@ package com.navercorp.fixturemonkey.test;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.assertj.core.api.BDDAssertions.thenThrownBy;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
 import net.jqwik.api.Property;
 
 import com.navercorp.fixturemonkey.LabMonkey;
+import com.navercorp.fixturemonkey.test.CollectionSpecTestSpecs.ListObject;
 import com.navercorp.fixturemonkey.test.CollectionSpecTestSpecs.MapObject;
-import com.navercorp.fixturemonkey.test.CollectionSpecTestSpecs.Sample;
+import com.navercorp.fixturemonkey.test.CollectionSpecTestSpecs.ObjectObject;
 import com.navercorp.fixturemonkey.test.CollectionSpecTestSpecs.SimpleObject;
 
 class CollectionSpecTest {
@@ -199,8 +198,8 @@ class CollectionSpecTest {
 	}
 
 	@Property
-	void sampleTest() {
-		Sample actual = SUT.giveMeBuilder(Sample.class)
+	void listSetListElementSetListElement() {
+		ListObject actual = SUT.giveMeBuilder(ListObject.class)
 			.spec("listListStr", m -> {
 				m.size(1);
 				m.listElement(0, l->{
@@ -210,12 +209,12 @@ class CollectionSpecTest {
 			})
 			.sample();
 
-		then(actual);
+		then(actual.getListListStr().get(0).get(0)).isEqualTo("test");
 	}
 
 	@Property
-	void sampleTest2() {
-		Sample actual = SUT.giveMeBuilder(Sample.class)
+	void objectSetFieldSetField() {
+		ObjectObject actual = SUT.giveMeBuilder(ObjectObject.class)
 			.spec("complexObject", m -> {
 				m.field("simpleObject", o->{
 					o.field("str", "test");
@@ -223,28 +222,6 @@ class CollectionSpecTest {
 			})
 			.sample();
 
-		then(actual);
-	}
-
-
-	@Property
-	void mapComplexAdd() {
-		Map<String, String> map = new HashMap<>();
-		map.put("key1", "val1");
-		MapObject actual = SUT.giveMeBuilder(MapObject.class)
-			.spec("mapKeyValueMap", m -> {
-				m.value(map);
-				m.value(v-> {
-					v.value("value3");
-					v.key("key3");
-				});
-				m.key(map);
-				m.key(k-> {
-					k.key("aneo");
-				});
-			})
-			.sample();
-
-		then(actual);
+		then(actual.getComplexObject().getSimpleObject().getStr()).isEqualTo("test");
 	}
 }
