@@ -24,7 +24,6 @@ import static com.navercorp.fixturemonkey.Constants.MAX_MANIPULATION_COUNT;
 import static java.util.stream.Collectors.toList;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -48,15 +47,13 @@ import com.navercorp.fixturemonkey.api.property.RootProperty;
 import com.navercorp.fixturemonkey.api.type.LazyAnnotatedType;
 import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryExpression;
-import com.navercorp.fixturemonkey.customizer.MapSpec;
+import com.navercorp.fixturemonkey.customizer.CollectionSpec;
 import com.navercorp.fixturemonkey.resolver.ApplyNodeCountManipulator;
 import com.navercorp.fixturemonkey.resolver.ArbitraryManipulator;
 import com.navercorp.fixturemonkey.resolver.ArbitraryResolver;
 import com.navercorp.fixturemonkey.resolver.ArbitraryTraverser;
-import com.navercorp.fixturemonkey.resolver.CompositeNodeManipulator;
 import com.navercorp.fixturemonkey.resolver.ExpressionNodeResolver;
 import com.navercorp.fixturemonkey.resolver.NodeFilterManipulator;
-import com.navercorp.fixturemonkey.resolver.NodeManipulator;
 import com.navercorp.fixturemonkey.resolver.NodeNullityManipulator;
 import com.navercorp.fixturemonkey.resolver.NodeResolver;
 import com.navercorp.fixturemonkey.resolver.NodeSetArbitraryManipulator;
@@ -155,12 +152,11 @@ public final class ArbitraryBuilder<T> extends com.navercorp.fixturemonkey.Arbit
 		return this.set(HEAD_NAME, value);
 	}
 
-	public ArbitraryBuilder<T> setMap(String expression, Consumer<MapSpec> mapSpecSupplier) {
+	public ArbitraryBuilder<T> spec(String expression, Consumer<CollectionSpec> specSupplier) {
 		NodeResolver nodeResolver = new ExpressionNodeResolver(ArbitraryExpression.from(expression));
-		MapSpec mapSpec = new MapSpec(traverser,  new ArrayList<>(Collections.singletonList(nodeResolver)));
-		mapSpecSupplier.accept(mapSpec);
-
-		List<ArbitraryManipulator> mapManipulators = mapSpec.getArbitraryManipulators();
+		CollectionSpec collectionSpec = new CollectionSpec(traverser,  nodeResolver);
+		specSupplier.accept(collectionSpec);
+		List<ArbitraryManipulator> mapManipulators = collectionSpec.getArbitraryManipulators();
 		manipulators.addAll(mapManipulators);
 		return this;
 	}

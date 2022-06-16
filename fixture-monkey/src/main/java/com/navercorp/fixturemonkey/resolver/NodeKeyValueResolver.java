@@ -27,12 +27,12 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public final class NodeFieldResolver implements NodeResolver {
-	private final String field;
+public final class NodeKeyValueResolver implements NodeResolver {
+	private final boolean isKey;
 	private NodeResolver prevResolver;
 
-	public NodeFieldResolver(String field, NodeResolver prevResolver) {
-		this.field = field;
+	public NodeKeyValueResolver(boolean isKey, NodeResolver prevResolver) {
+		this.isKey = isKey;
 		this.prevResolver = prevResolver;
 	}
 
@@ -45,13 +45,15 @@ public final class NodeFieldResolver implements NodeResolver {
 	public List<ArbitraryNode> getNext(List<ArbitraryNode> nodes) {
 		LinkedList<ArbitraryNode> nextNodes = new LinkedList<>();
 		for (ArbitraryNode selectedNode : nodes) {
-			List<ArbitraryNode> children = selectedNode.getChildren();
-			for (ArbitraryNode child : children) {
-				if (field.equals(child.getArbitraryProperty().getResolvePropertyName())) {
-					child.setArbitraryProperty(child.getArbitraryProperty().withNullInject(NOT_NULL_INJECT));
-					nextNodes.add(child);
-				}
+			// MapEntry Node가 아니면 예외처리??
+			ArbitraryNode child;
+			if (isKey) {
+				child = selectedNode.getChildren().get(0);
+			} else {
+				child = selectedNode.getChildren().get(1);
 			}
+			child.setArbitraryProperty(child.getArbitraryProperty().withNullInject(NOT_NULL_INJECT));
+			nextNodes.add(child);
 		}
 		return nextNodes;
 	}

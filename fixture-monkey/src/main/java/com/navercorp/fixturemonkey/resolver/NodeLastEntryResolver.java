@@ -17,32 +17,36 @@
  */
 
 package com.navercorp.fixturemonkey.resolver;
-import java.util.ArrayList;
+
+import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.NOT_NULL_INJECT;
+
+import java.util.LinkedList;
 import java.util.List;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public final class CompositeNodeResolver implements NodeResolver {
-	private final List<NodeResolver> resolvers;
+public final class NodeLastEntryResolver implements NodeResolver {
+	private NodeResolver prevResolver;
 
-	public CompositeNodeResolver(List<NodeResolver> resolvers) {
-		this.resolvers = resolvers;
+	public NodeLastEntryResolver(NodeResolver prevResolver) {
+		this.prevResolver = prevResolver;
 	}
 
 	@Override
 	public List<ArbitraryNode> resolve(ArbitraryTree arbitraryTree) {
-		List<ArbitraryNode> selectedNodes = new ArrayList<>();
-		for (NodeResolver resolver : resolvers) {
-			if (resolver instanceof ExpressionNodeResolver) {
-				selectedNodes = resolver.resolve(arbitraryTree);
-			} else if (resolver instanceof NodeIndexResolver) {
-				selectedNodes = ((NodeIndexResolver)resolver).getNext(selectedNodes);
-			} else if (resolver instanceof NodeFieldResolver) {
-				selectedNodes = ((NodeFieldResolver)resolver).getNext(selectedNodes);
-			}
+		List<ArbitraryNode> nodes = prevResolver.resolve(arbitraryTree);
+		return getNext(nodes);
+	}
+
+	public List<ArbitraryNode> getNext(List<ArbitraryNode> nodes) {
+		LinkedList<ArbitraryNode> nextNodes = new LinkedList<>();
+		for (ArbitraryNode selectedNode : nodes) {
+			ArbitraryNode child = selectedNode.getChildren().get(selectedNode.getChildren().size() - 1);
+			child.setArbitraryProperty(child.getArbitraryProperty().withNullInject(NOT_NULL_INJECT));
+			nextNodes.add(child);
 		}
-		return selectedNodes;
+		return nextNodes;
 	}
 }

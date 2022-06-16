@@ -24,7 +24,7 @@ import java.util.Map;
 import lombok.Getter;
 import lombok.Setter;
 
-class MapSpecTestSpecs {
+class CollectionSpecTestSpecs {
 	@Setter
 	@Getter
 	public static class MapObject {
@@ -35,6 +35,19 @@ class MapSpecTestSpecs {
 		private Map<String, List<String>> listValueMap;
 		private Map<String, List<List<String>>> listListValueMap;
 		private Map<String, SimpleObject> objectValueMap;
+	}
+
+	@Setter
+	@Getter
+	public static class Sample {
+		private List<List<String>> listListStr;
+		private ComplexObject complexObject;
+	}
+
+	@Getter
+	@Setter
+	public static class ComplexObject {
+		private SimpleObject simpleObject;
 	}
 
 	@Getter

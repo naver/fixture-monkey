@@ -21,23 +21,26 @@ package com.navercorp.fixturemonkey.test;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.assertj.core.api.BDDAssertions.thenThrownBy;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
 import net.jqwik.api.Property;
 
 import com.navercorp.fixturemonkey.LabMonkey;
-import com.navercorp.fixturemonkey.test.MapSpecTestSpecs.MapObject;
-import com.navercorp.fixturemonkey.test.MapSpecTestSpecs.SimpleObject;
+import com.navercorp.fixturemonkey.test.CollectionSpecTestSpecs.MapObject;
+import com.navercorp.fixturemonkey.test.CollectionSpecTestSpecs.Sample;
+import com.navercorp.fixturemonkey.test.CollectionSpecTestSpecs.SimpleObject;
 
-class MapSpecTest {
+class CollectionSpecTest {
 	private static final LabMonkey SUT = LabMonkey.labMonkey();
 
 	@Property
 	void mapAddKey() {
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
-			.setMap("strMap", m -> {
+			.spec("strMap", m -> {
 				m.key("key");
 			})
 			.sample();
@@ -48,7 +51,7 @@ class MapSpecTest {
 	@Property
 	void mapAddValue() {
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
-			.setMap("strMap", m -> {
+			.spec("strMap", m -> {
 				m.value("value");
 			})
 			.sample();
@@ -59,7 +62,7 @@ class MapSpecTest {
 	@Property
 	void mapPut() {
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
-			.setMap("strMap", m -> {
+			.spec("strMap", m -> {
 				m.entry("key", "value");
 			})
 			.sample();
@@ -70,7 +73,7 @@ class MapSpecTest {
 	@Property
 	void mapAddNullValue() {
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
-			.setMap("strMap", m -> {
+			.spec("strMap", m -> {
 				m.value(null);
 			})
 			.sample();
@@ -82,7 +85,7 @@ class MapSpecTest {
 	void mapAddNullKeyThrows() {
 		thenThrownBy(() ->
 			SUT.giveMeBuilder(MapObject.class)
-				.setMap("strMap", m -> {
+				.spec("strMap", m -> {
 					m.key(null);
 				})
 				.sample()
@@ -93,7 +96,7 @@ class MapSpecTest {
 	@Property
 	void mapAddKeyAddKey() {
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
-			.setMap("mapKeyMap", m -> {
+			.spec("mapKeyMap", m -> {
 				m.key(k-> {
 					k.key("key");
 				});
@@ -108,7 +111,7 @@ class MapSpecTest {
 	@Property
 	void mapAddKeyAddValue() {
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
-			.setMap("mapKeyMap", m -> {
+			.spec("mapKeyMap", m -> {
 				m.key(k-> {
 					k.value("value");
 				});
@@ -123,7 +126,7 @@ class MapSpecTest {
 	@Property
 	void mapAddValueAddKey() {
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
-			.setMap("mapValueMap", m -> {
+			.spec("mapValueMap", m -> {
 				m.value(v-> {
 					v.key("key");
 				});
@@ -138,7 +141,7 @@ class MapSpecTest {
 	@Property
 	void mapAddValueAddValue() {
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
-			.setMap("mapValueMap", m -> {
+			.spec("mapValueMap", m -> {
 				m.value(v-> {
 					v.value("value");
 				});
@@ -153,7 +156,7 @@ class MapSpecTest {
 	@Property
 	void mapSetValueSize() {
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
-			.setMap("listValueMap", m -> {
+			.spec("listValueMap", m -> {
 				m.value(v-> {
 					v.size(10);
 				});
@@ -167,7 +170,7 @@ class MapSpecTest {
 	@Property
 	void mapSetValueListElement() {
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
-			.setMap("listValueMap", m -> {
+			.spec("listValueMap", m -> {
 				m.value(v->{
 					v.size(1);
 					v.listElement(0, "test");
@@ -182,7 +185,7 @@ class MapSpecTest {
 	@Property
 	void mapSetValueField() {
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
-			.setMap("objectValueMap", m -> {
+			.spec("objectValueMap", m -> {
 				m.value(v->{
 					v.field("str", "test");
 				});
@@ -193,5 +196,55 @@ class MapSpecTest {
 			.map(SimpleObject::getStr).collect(Collectors.toList());
 
 		then(fieldList).contains("test");
+	}
+
+	@Property
+	void sampleTest() {
+		Sample actual = SUT.giveMeBuilder(Sample.class)
+			.spec("listListStr", m -> {
+				m.size(1);
+				m.listElement(0, l->{
+					l.size(1);
+					l.listElement(0, "test");
+				});
+			})
+			.sample();
+
+		then(actual);
+	}
+
+	@Property
+	void sampleTest2() {
+		Sample actual = SUT.giveMeBuilder(Sample.class)
+			.spec("complexObject", m -> {
+				m.field("simpleObject", o->{
+					o.field("str", "test");
+				});
+			})
+			.sample();
+
+		then(actual);
+	}
+
+
+	@Property
+	void mapComplexAdd() {
+		Map<String, String> map = new HashMap<>();
+		map.put("key1", "val1");
+		MapObject actual = SUT.giveMeBuilder(MapObject.class)
+			.spec("mapKeyValueMap", m -> {
+				m.value(map);
+				m.value(v-> {
+					v.value("value3");
+					v.key("key3");
+				});
+				m.key(map);
+				m.key(k-> {
+					k.key("aneo");
+				});
+			})
+			.sample();
+
+		then(actual);
 	}
 }
