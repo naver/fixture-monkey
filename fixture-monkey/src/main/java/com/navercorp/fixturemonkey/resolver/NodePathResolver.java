@@ -18,28 +18,24 @@
 
 package com.navercorp.fixturemonkey.resolver;
 
-import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.NOT_NULL_INJECT;
-
-import java.util.LinkedList;
 import java.util.List;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public final class NodeLastEntryResolver extends NodePathResolver {
-	public NodeLastEntryResolver(NodeResolver prevResolver) {
-		super(prevResolver);
+public abstract class NodePathResolver implements NodeResolver {
+	private final NodeResolver prevResolver;
+
+	public NodePathResolver(NodeResolver prevResolver) {
+		this.prevResolver = prevResolver;
 	}
 
 	@Override
-	public List<ArbitraryNode> getNext(List<ArbitraryNode> nodes) {
-		LinkedList<ArbitraryNode> nextNodes = new LinkedList<>();
-		for (ArbitraryNode selectedNode : nodes) {
-			ArbitraryNode child = selectedNode.getChildren().get(selectedNode.getChildren().size() - 1);
-			child.setArbitraryProperty(child.getArbitraryProperty().withNullInject(NOT_NULL_INJECT));
-			nextNodes.add(child);
-		}
-		return nextNodes;
+	public List<ArbitraryNode> resolve(ArbitraryTree arbitraryTree) {
+		List<ArbitraryNode> nodes = this.prevResolver.resolve(arbitraryTree);
+		return getNext(nodes);
 	}
+
+	abstract List<ArbitraryNode> getNext(List<ArbitraryNode> nodes);
 }
