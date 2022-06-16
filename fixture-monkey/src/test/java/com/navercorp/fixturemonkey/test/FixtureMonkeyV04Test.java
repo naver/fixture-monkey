@@ -712,4 +712,16 @@ class FixtureMonkeyV04Test {
 		).isExactlyInstanceOf(IllegalArgumentException.class)
 			.hasMessageContaining("No matching results for given expression.");
 	}
+
+	@Property
+	void giveMeBuilderWithValue() {
+		SimpleObject expected = new SimpleObject();
+		expected.setStr("test");
+		expected.setOptionalInt(OptionalInt.of(-1));
+
+		SimpleObject actual = SUT.giveMeBuilder(expected)
+			.sample();
+
+		then(actual).isEqualTo(expected);
+	}
 }
