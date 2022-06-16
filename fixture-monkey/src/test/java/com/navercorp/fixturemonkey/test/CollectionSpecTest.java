@@ -170,7 +170,7 @@ class CollectionSpecTest {
 	void mapSetValueListElement() {
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
 			.spec("listValueMap", m -> {
-				m.value(v->{
+				m.value(v-> {
 					v.size(1);
 					v.listElement(0, "test");
 				});
@@ -185,7 +185,7 @@ class CollectionSpecTest {
 	void mapSetValueField() {
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
 			.spec("objectValueMap", m -> {
-				m.value(v->{
+				m.value(v-> {
 					v.field("str", "test");
 				});
 			})
@@ -202,7 +202,7 @@ class CollectionSpecTest {
 		ListObject actual = SUT.giveMeBuilder(ListObject.class)
 			.spec("listListStr", m -> {
 				m.size(1);
-				m.listElement(0, l->{
+				m.listElement(0, l-> {
 					l.size(1);
 					l.listElement(0, "test");
 				});
@@ -216,7 +216,7 @@ class CollectionSpecTest {
 	void objectSetFieldSetField() {
 		ObjectObject actual = SUT.giveMeBuilder(ObjectObject.class)
 			.spec("complexObject", m -> {
-				m.field("simpleObject", o->{
+				m.field("simpleObject", o-> {
 					o.field("str", "test");
 				});
 			})
