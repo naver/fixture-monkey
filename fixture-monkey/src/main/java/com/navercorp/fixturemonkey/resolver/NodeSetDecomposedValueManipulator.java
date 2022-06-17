@@ -37,9 +37,10 @@ import com.navercorp.fixturemonkey.api.type.Types;
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class NodeSetDecomposedValueManipulator<T> implements NodeManipulator {
 	private final ArbitraryTraverser traverser;
+	@Nullable
 	private final T value;
 
-	public NodeSetDecomposedValueManipulator(ArbitraryTraverser traverser, T value) {
+	public NodeSetDecomposedValueManipulator(ArbitraryTraverser traverser, @Nullable T value) {
 		this.traverser = traverser;
 		this.value = value;
 	}
@@ -47,7 +48,7 @@ public final class NodeSetDecomposedValueManipulator<T> implements NodeManipulat
 	@Override
 	public void manipulate(ArbitraryNode arbitraryNode) {
 		Class<?> actualType = Types.getActualType(arbitraryNode.getProperty().getType());
-		if (!actualType.isAssignableFrom(value.getClass())) {
+		if (value != null && !actualType.isAssignableFrom(value.getClass())) {
 			throw new IllegalArgumentException(
 				"The value is not of the same type as the property."
 					+ " node type: " + arbitraryNode.getProperty().getType().getTypeName()

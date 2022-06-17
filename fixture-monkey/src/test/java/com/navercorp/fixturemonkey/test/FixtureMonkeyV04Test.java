@@ -934,4 +934,14 @@ class FixtureMonkeyV04Test {
 		String result2 = zippedArbitraryBuilder.sample();
 		then(result1).isNotEqualTo(result2);
 	}
+
+	@Property
+	void setNullFixedReturnsNull() {
+		SimpleObject actual = SUT.giveMeBuilder(SimpleObject.class)
+			.setNull("$")
+			.fixed()
+			.sample();
+
+		then(actual).isNull();
+	}
 }
