@@ -332,42 +332,6 @@ class ArbitraryGeneratorTest {
 	}
 
 	@Property
-	void overwriteCustomize() {
-		// given
-		FixtureMonkey sut = FixtureMonkey.builder()
-			.addCustomizer(BuilderInteger.class, new ArbitraryCustomizer<BuilderInteger>() {
-				@Override
-				public void customizeFields(Class<BuilderInteger> type, FieldArbitraries fieldArbitraries) {
-					fieldArbitraries.replaceArbitrary("value", Arbitraries.just(-1));
-				}
-
-				@Override
-				public BuilderInteger customizeFixture(BuilderInteger object) {
-					return object;
-				}
-			})
-			.addCustomizer(BuilderInteger.class, new ArbitraryCustomizer<BuilderInteger>() {
-				@Override
-				public void customizeFields(Class<BuilderInteger> type, FieldArbitraries fieldArbitraries) {
-					fieldArbitraries.replaceArbitrary("value", Arbitraries.just(-2));
-				}
-
-				@Override
-				public BuilderInteger customizeFixture(BuilderInteger object) {
-					return object;
-				}
-			})
-			.build();
-
-		// when
-		BuilderInteger actual = sut.giveMeBuilder(BuilderInteger.class)
-			.generator(BuilderArbitraryGenerator.INSTANCE)
-			.sample();
-
-		then(actual.getValue()).isEqualTo(-2);
-	}
-
-	@Property
 	void giveMeWithCustomAnnotatedArbitraryGenerator() {
 		// given
 		BeanInteger value = new BeanInteger();

@@ -42,6 +42,8 @@ import net.jqwik.api.Arbitrary;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
+import com.navercorp.fixturemonkey.ArbitraryBuilder;
+import com.navercorp.fixturemonkey.OldArbitraryBuilderImpl;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.api.option.GenerateOptions;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
@@ -70,7 +72,7 @@ import com.navercorp.fixturemonkey.validator.ArbitraryValidator;
 // TODO: remove extends com.navercorp.fixturemonkey.ArbitraryBuilder<T> inheritance in 1.0.0
 @SuppressFBWarnings("NM_SAME_SIMPLE_NAME_AS_SUPERCLASS")
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public final class ArbitraryBuilder<T> extends com.navercorp.fixturemonkey.ArbitraryBuilder<T> {
+public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T> {
 	private final GenerateOptions generateOptions;
 	private final RootProperty rootProperty;
 	private final ArbitraryResolver resolver;
@@ -80,7 +82,7 @@ public final class ArbitraryBuilder<T> extends com.navercorp.fixturemonkey.Arbit
 	private final Set<LazyArbitrary<?>> lazyArbitraries;
 	private boolean validOnly = true;
 
-	public ArbitraryBuilder(
+	public DefaultArbitraryBuilder(
 		GenerateOptions generateOptions,
 		RootProperty rootProperty,
 		ArbitraryResolver resolver,
@@ -105,7 +107,8 @@ public final class ArbitraryBuilder<T> extends com.navercorp.fixturemonkey.Arbit
 		return this;
 	}
 
-	private ArbitraryBuilder<T> set(
+	@Override
+	public ArbitraryBuilder<T> set(
 		String expression,
 		@Nullable Object value,
 		int limit
@@ -135,15 +138,6 @@ public final class ArbitraryBuilder<T> extends com.navercorp.fixturemonkey.Arbit
 			);
 		}
 		return this;
-	}
-
-	@Override
-	public ArbitraryBuilder<T> set(
-		String expression,
-		@Nullable Object value,
-		long limit
-	) {
-		return this.set(expression, value, (int)limit);
 	}
 
 	@Override
@@ -222,7 +216,7 @@ public final class ArbitraryBuilder<T> extends com.navercorp.fixturemonkey.Arbit
 
 	@Override
 	public ArbitraryBuilder<T> apply(
-		BiConsumer<T, com.navercorp.fixturemonkey.ArbitraryBuilder<T>> biConsumer
+		BiConsumer<T, ArbitraryBuilder<T>> biConsumer
 	) {
 		ArbitraryBuilder<T> copied = this.copy();
 
@@ -250,7 +244,7 @@ public final class ArbitraryBuilder<T> extends com.navercorp.fixturemonkey.Arbit
 	@Override
 	public ArbitraryBuilder<T> acceptIf(
 		Predicate<T> predicate,
-		Consumer<com.navercorp.fixturemonkey.ArbitraryBuilder<T>> consumer
+		Consumer<ArbitraryBuilder<T>> consumer
 	) {
 		return apply((it, builder) -> {
 			if (predicate.test(it)) {
@@ -297,15 +291,6 @@ public final class ArbitraryBuilder<T> extends com.navercorp.fixturemonkey.Arbit
 		String expression,
 		Class<U> type,
 		Predicate<U> filter,
-		long limit
-	) {
-		return this.setPostCondition(expression, type, filter, (int)limit);
-	}
-
-	public <U> ArbitraryBuilder<T> setPostCondition(
-		String expression,
-		Class<U> type,
-		Predicate<U> filter,
 		int limit
 	) {
 		this.manipulators.add(
@@ -337,7 +322,7 @@ public final class ArbitraryBuilder<T> extends com.navercorp.fixturemonkey.Arbit
 		Set<LazyArbitrary<?>> lazyArbitraries = new HashSet<>();
 		lazyArbitraries.add(lazyArbitrary);
 
-		return new ArbitraryBuilder<>(
+		return new DefaultArbitraryBuilder<>(
 			generateOptions,
 			property,
 			resolver,
@@ -370,13 +355,14 @@ public final class ArbitraryBuilder<T> extends com.navercorp.fixturemonkey.Arbit
 		return this.build().sampleStream();
 	}
 
+	@Override
 	public List<T> sampleList(int size) {
 		return this.sampleStream().limit(size).collect(toList());
 	}
 
 	@Override
 	public ArbitraryBuilder<T> copy() {
-		return new ArbitraryBuilder<>(
+		return new DefaultArbitraryBuilder<>(
 			generateOptions,
 			rootProperty,
 			resolver,

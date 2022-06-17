@@ -20,16 +20,16 @@ package com.navercorp.fixturemonkey.arbitrary;
 
 import net.jqwik.api.Arbitrary;
 
-import com.navercorp.fixturemonkey.ArbitraryBuilder;
+import com.navercorp.fixturemonkey.OldArbitraryBuilderImpl;
 
 public interface PostArbitraryManipulator<T> extends BuilderManipulator, ArbitraryExpressionManipulator {
 	Arbitrary<T> apply(Arbitrary<T> from);
 
 	boolean isMappableTo(ArbitraryNode<T> node);
 
-	@SuppressWarnings({"rawtypes", "unchecked"})
+	@SuppressWarnings("rawtypes")
 	@Override
-	default void accept(ArbitraryBuilder arbitraryBuilder) {
+	default void accept(OldArbitraryBuilderImpl arbitraryBuilder) {
 		arbitraryBuilder.apply(this);
 	}
 }

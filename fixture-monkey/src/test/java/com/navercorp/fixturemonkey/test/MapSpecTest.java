@@ -35,9 +35,7 @@ class MapSpecTest {
 	@Property
 	void mapAddKey() {
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
-			.setMap("strMap", m -> {
-				m.key("key");
-			})
+			.setMap("strMap", m -> m.key("key"))
 			.sample();
 
 		then(actual.getStrMap().containsKey("key")).isTrue();
@@ -46,9 +44,7 @@ class MapSpecTest {
 	@Property
 	void mapAddValue() {
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
-			.setMap("strMap", m -> {
-				m.value("value");
-			})
+			.setMap("strMap", m -> m.value("value"))
 			.sample();
 
 		then(actual.getStrMap().containsValue("value")).isTrue();
@@ -57,9 +53,7 @@ class MapSpecTest {
 	@Property
 	void mapPut() {
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
-			.setMap("strMap", m -> {
-				m.entry("key", "value");
-			})
+			.setMap("strMap", m -> m.entry("key", "value"))
 			.sample();
 
 		then(actual.getStrMap().get("key")).isEqualTo("value");
@@ -68,9 +62,7 @@ class MapSpecTest {
 	@Property
 	void mapAddNullValue() {
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
-			.setMap("strMap", m -> {
-				m.value(null);
-			})
+			.setMap("strMap", m -> m.value(null))
 			.sample();
 
 		then(actual.getStrMap().containsValue(null)).isTrue();
@@ -80,9 +72,7 @@ class MapSpecTest {
 	void mapAddNullKeyThrows() {
 		thenThrownBy(() ->
 			SUT.giveMeBuilder(MapObject.class)
-				.setMap("strMap", m -> {
-					m.key(null);
-				})
+				.setMap("strMap", m -> m.key(null))
 				.sample()
 		).isExactlyInstanceOf(IllegalArgumentException.class)
 			.hasMessageContaining("Map key cannot be null.");
@@ -91,60 +81,44 @@ class MapSpecTest {
 	@Property
 	void mapAddKeyAddKey() {
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
-			.setMap("mapKeyMap", m -> {
-				m.key(k-> {
-					k.key("key");
-				});
-			})
+			.setMap("mapKeyMap", m -> m.key(k -> k.key("key")))
 			.sample();
 
 		List<String> keyList = actual.getMapKeyMap().keySet().stream()
-			.flatMap(it->it.keySet().stream()).collect(Collectors.toList());
+			.flatMap(it -> it.keySet().stream()).collect(Collectors.toList());
 		then(keyList).contains("key");
 	}
 
 	@Property
 	void mapAddKeyAddValue() {
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
-			.setMap("mapKeyMap", m -> {
-				m.key(k-> {
-					k.value("value");
-				});
-			})
+			.setMap("mapKeyMap", m -> m.key(k -> k.value("value")))
 			.sample();
 
 		List<String> keyList = actual.getMapKeyMap().keySet().stream()
-			.flatMap(it->it.values().stream()).collect(Collectors.toList());
+			.flatMap(it -> it.values().stream()).collect(Collectors.toList());
 		then(keyList).contains("value");
 	}
 
 	@Property
 	void mapAddValueAddKey() {
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
-			.setMap("mapValueMap", m -> {
-				m.value(v-> {
-					v.key("key");
-				});
-			})
+			.setMap("mapValueMap", m -> m.value(v -> v.key("key")))
 			.sample();
 
 		List<String> valueList = actual.getMapValueMap().values().stream()
-			.flatMap(it-> it.keySet().stream()).collect(Collectors.toList());
+			.flatMap(it -> it.keySet().stream()).collect(Collectors.toList());
 		then(valueList).contains("key");
 	}
 
 	@Property
 	void mapAddValueAddValue() {
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
-			.setMap("mapValueMap", m -> {
-				m.value(v-> {
-					v.value("value");
-				});
-			})
+			.setMap("mapValueMap", m -> m.value(v -> v.value("value")))
 			.sample();
 
 		List<String> valueList = actual.getMapValueMap().values().stream()
-			.flatMap(it-> it.values().stream()).collect(Collectors.toList());
+			.flatMap(it -> it.values().stream()).collect(Collectors.toList());
 		then(valueList).contains("value");
 	}
 }

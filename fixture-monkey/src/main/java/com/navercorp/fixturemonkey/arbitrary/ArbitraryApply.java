@@ -24,6 +24,7 @@ import java.util.Objects;
 import java.util.function.BiConsumer;
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
+import com.navercorp.fixturemonkey.OldArbitraryBuilderImpl;
 
 public final class ArbitraryApply<T> extends AbstractArbitraryExpressionManipulator
 	implements MetadataManipulator {
@@ -39,9 +40,9 @@ public final class ArbitraryApply<T> extends AbstractArbitraryExpressionManipula
 		this.builderBiConsumer = builderBiConsumer;
 	}
 
-	@SuppressWarnings({"rawtypes", "unchecked"})
+	@SuppressWarnings("rawtypes")
 	@Override
-	public void accept(ArbitraryBuilder arbitraryBuilder) {
+	public void accept(OldArbitraryBuilderImpl arbitraryBuilder) {
 		arbitraryBuilder.apply(this);
 	}
 
