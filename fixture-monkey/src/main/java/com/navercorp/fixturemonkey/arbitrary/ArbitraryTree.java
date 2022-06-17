@@ -97,6 +97,10 @@ public final class ArbitraryTree<T> {
 		Map<Class<?>, ArbitraryGenerator> generatorMap
 	) {
 
+		if (entryNode.getValue() != null && entryNode.getValue().getValue() == null) {
+			return;
+		}
+
 		if (!entryNode.isLeafNode() && !entryNode.isFixed() && entryNode.isActive()) {
 			for (ArbitraryNode<?> nextChild : entryNode.getChildren()) {
 				update(nextChild, defaultGenerator, generatorMap);
