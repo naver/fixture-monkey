@@ -26,7 +26,7 @@ import java.util.Objects;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.ArbitraryBuilder;
+import com.navercorp.fixturemonkey.OldArbitraryBuilderImpl;
 import com.navercorp.fixturemonkey.customizer.ExpressionSpec;
 
 @API(since = "0.4.0", status = Status.DEPRECATED)
@@ -40,7 +40,7 @@ public final class ArbitrarySpecAny implements BuilderManipulator {
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	public void accept(ArbitraryBuilder arbitraryBuilder) {
+	public void accept(OldArbitraryBuilderImpl arbitraryBuilder) {
 		arbitraryBuilder.specAny(specs.toArray(new ExpressionSpec[0]));
 	}
 

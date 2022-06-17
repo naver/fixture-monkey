@@ -382,7 +382,7 @@ public final class ArbitraryOption {
 			for (Method method : methods) {
 				int paramCount = method.getParameterCount();
 				Class<?> returnType = method.getReturnType();
-				if (paramCount != 1 || returnType != ArbitraryBuilder.class) {
+				if (paramCount != 1 || !ArbitraryBuilder.class.isAssignableFrom(returnType)) {
 					continue;
 				}
 				try {
@@ -390,7 +390,7 @@ public final class ArbitraryOption {
 					Object noArgsInstance = arbitraryBuilderGroup.getDeclaredConstructor().newInstance();
 					Function<FixtureMonkey, ArbitraryBuilder<?>> registerArbitraryBuilder = (fixtureMonkey) -> {
 						try {
-							return (ArbitraryBuilder<?>)method.invoke(noArgsInstance, fixtureMonkey);
+							return (OldArbitraryBuilderImpl<?>)method.invoke(noArgsInstance, fixtureMonkey);
 						} catch (IllegalAccessException | InvocationTargetException e) {
 							e.printStackTrace();
 							throw new RuntimeException(e);

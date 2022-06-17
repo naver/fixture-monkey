@@ -22,7 +22,7 @@ import java.util.Objects;
 
 import javax.annotation.Nullable;
 
-import com.navercorp.fixturemonkey.ArbitraryBuilder;
+import com.navercorp.fixturemonkey.OldArbitraryBuilderImpl;
 
 public final class ContainerSizeManipulator extends AbstractArbitraryExpressionManipulator
 	implements MetadataManipulator {
@@ -51,7 +51,7 @@ public final class ContainerSizeManipulator extends AbstractArbitraryExpressionM
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	public void accept(ArbitraryBuilder arbitraryBuilder) {
+	public void accept(OldArbitraryBuilderImpl arbitraryBuilder) {
 		arbitraryBuilder.apply(this);
 	}
 

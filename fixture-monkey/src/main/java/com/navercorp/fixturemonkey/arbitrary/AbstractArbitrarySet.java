@@ -20,7 +20,7 @@ package com.navercorp.fixturemonkey.arbitrary;
 
 import java.util.Objects;
 
-import com.navercorp.fixturemonkey.ArbitraryBuilder;
+import com.navercorp.fixturemonkey.OldArbitraryBuilderImpl;
 
 public abstract class AbstractArbitrarySet<T> extends AbstractArbitraryExpressionManipulator
 	implements PreArbitraryManipulator {
@@ -29,9 +29,9 @@ public abstract class AbstractArbitrarySet<T> extends AbstractArbitraryExpressio
 		super(arbitraryExpression);
 	}
 
-	@SuppressWarnings({"rawtypes", "unchecked"})
+	@SuppressWarnings("rawtypes")
 	@Override
-	public void accept(ArbitraryBuilder arbitraryBuilder) {
+	public void accept(OldArbitraryBuilderImpl arbitraryBuilder) {
 		arbitraryBuilder.apply(this);
 	}
 

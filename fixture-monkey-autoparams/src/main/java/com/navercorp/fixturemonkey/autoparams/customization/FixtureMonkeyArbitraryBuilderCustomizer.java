@@ -49,7 +49,7 @@ final class FixtureMonkeyArbitraryBuilderCustomizer implements Customizer {
 
 	private ObjectContainer generate(ParameterizedType parameterizedType) {
 		Class<?> type = (Class<?>)parameterizedType.getRawType();
-		return type == ArbitraryBuilder.class
+		return ArbitraryBuilder.class.isAssignableFrom(type)
 			? this.generate((Class<?>)parameterizedType.getActualTypeArguments()[0])
 			: ObjectContainer.EMPTY;
 	}

@@ -21,11 +21,11 @@ package com.navercorp.fixturemonkey.arbitrary;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.ArbitraryBuilder;
+import com.navercorp.fixturemonkey.OldArbitraryBuilderImpl;
 
 public interface BuilderManipulator {
 	@SuppressWarnings("rawtypes")
-	void accept(ArbitraryBuilder arbitraryBuilder);
+	void accept(OldArbitraryBuilderImpl arbitraryBuilder);
 
 	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
 	default boolean isApplicable() {

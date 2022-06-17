@@ -20,6 +20,7 @@ package com.navercorp.fixturemonkey;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -28,11 +29,15 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import com.navercorp.fixturemonkey.api.option.GenerateOptions;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
+import com.navercorp.fixturemonkey.api.type.LazyAnnotatedType;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
-import com.navercorp.fixturemonkey.builder.ArbitraryBuilder;
+import com.navercorp.fixturemonkey.builder.DefaultArbitraryBuilder;
+import com.navercorp.fixturemonkey.resolver.ArbitraryManipulator;
 import com.navercorp.fixturemonkey.resolver.ArbitraryResolver;
 import com.navercorp.fixturemonkey.resolver.ArbitraryTraverser;
 import com.navercorp.fixturemonkey.resolver.ManipulatorOptimizer;
+import com.navercorp.fixturemonkey.resolver.NodeSetDecomposedValueManipulator;
+import com.navercorp.fixturemonkey.resolver.RootNodeResolver;
 import com.navercorp.fixturemonkey.validator.ArbitraryValidator;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
@@ -57,15 +62,15 @@ public class LabMonkey extends FixtureMonkey {
 	}
 
 	@Override
-	public <T> ArbitraryBuilder<T> giveMeBuilder(Class<T> type) {
+	public <T> DefaultArbitraryBuilder<T> giveMeBuilder(Class<T> type) {
 		TypeReference<T> typeReference = new TypeReference<T>(type) {
 		};
 		return giveMeBuilder(typeReference);
 	}
 
 	@Override
-	public <T> ArbitraryBuilder<T> giveMeBuilder(TypeReference<T> type) {
-		return new ArbitraryBuilder<>(
+	public <T> DefaultArbitraryBuilder<T> giveMeBuilder(TypeReference<T> type) {
+		return new DefaultArbitraryBuilder<>(
 			generateOptions,
 			new RootProperty(type.getAnnotatedType()),
 			new ArbitraryResolver(
@@ -76,6 +81,31 @@ public class LabMonkey extends FixtureMonkey {
 			traverser,
 			this.validator,
 			new ArrayList<>(),
+			new HashSet<>()
+		);
+	}
+
+	@Override
+	public <T> DefaultArbitraryBuilder<T> giveMeBuilder(T value) {
+		List<ArbitraryManipulator> manipulators = new ArrayList<>();
+		manipulators.add(
+			new ArbitraryManipulator(
+				new RootNodeResolver(),
+				new NodeSetDecomposedValueManipulator<>(traverser, value)
+			)
+		);
+
+		return new DefaultArbitraryBuilder<>(
+			generateOptions,
+			new RootProperty(new LazyAnnotatedType<>(() -> value)),
+			new ArbitraryResolver(
+				traverser,
+				manipulatorOptimizer,
+				generateOptions
+			),
+			traverser,
+			this.validator,
+			manipulators,
 			new HashSet<>()
 		);
 	}

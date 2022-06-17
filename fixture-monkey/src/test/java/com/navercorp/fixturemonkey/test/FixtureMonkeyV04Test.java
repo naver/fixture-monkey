@@ -38,9 +38,9 @@ import java.util.Set;
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Property;
 
+import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.LabMonkey;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
-import com.navercorp.fixturemonkey.builder.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.ComplexObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.SimpleObject;
 
@@ -711,5 +711,17 @@ class FixtureMonkeyV04Test {
 				.sample()
 		).isExactlyInstanceOf(IllegalArgumentException.class)
 			.hasMessageContaining("No matching results for given expression.");
+	}
+
+	@Property
+	void giveMeBuilderWithValue() {
+		SimpleObject expected = new SimpleObject();
+		expected.setStr("test");
+		expected.setOptionalInt(OptionalInt.of(-1));
+
+		SimpleObject actual = SUT.giveMeBuilder(expected)
+			.sample();
+
+		then(actual).isEqualTo(expected);
 	}
 }

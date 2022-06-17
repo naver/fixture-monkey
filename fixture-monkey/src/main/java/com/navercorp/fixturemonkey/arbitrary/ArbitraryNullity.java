@@ -20,7 +20,7 @@ package com.navercorp.fixturemonkey.arbitrary;
 
 import java.util.Objects;
 
-import com.navercorp.fixturemonkey.ArbitraryBuilder;
+import com.navercorp.fixturemonkey.OldArbitraryBuilderImpl;
 
 public final class ArbitraryNullity extends AbstractArbitraryExpressionManipulator
 	implements BuilderManipulator {
@@ -37,7 +37,7 @@ public final class ArbitraryNullity extends AbstractArbitraryExpressionManipulat
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	public void accept(ArbitraryBuilder fixtureBuilder) {
+	public void accept(OldArbitraryBuilderImpl fixtureBuilder) {
 		fixtureBuilder.apply(this);
 	}
 
