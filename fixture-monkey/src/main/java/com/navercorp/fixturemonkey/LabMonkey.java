@@ -62,14 +62,14 @@ public class LabMonkey extends FixtureMonkey {
 	}
 
 	@Override
-	public <T> ArbitraryBuilder<T> giveMeBuilder(Class<T> type) {
+	public <T> NewArbitraryBuilderImpl<T> giveMeBuilder(Class<T> type) {
 		TypeReference<T> typeReference = new TypeReference<T>(type) {
 		};
 		return giveMeBuilder(typeReference);
 	}
 
 	@Override
-	public <T> ArbitraryBuilder<T> giveMeBuilder(TypeReference<T> type) {
+	public <T> NewArbitraryBuilderImpl<T> giveMeBuilder(TypeReference<T> type) {
 		return new NewArbitraryBuilderImpl<>(
 			generateOptions,
 			new RootProperty(type.getAnnotatedType()),
@@ -86,7 +86,7 @@ public class LabMonkey extends FixtureMonkey {
 	}
 
 	@Override
-	public <T> ArbitraryBuilder<T> giveMeBuilder(T value) {
+	public <T> NewArbitraryBuilderImpl<T> giveMeBuilder(T value) {
 		List<ArbitraryManipulator> manipulators = new ArrayList<>();
 		manipulators.add(
 			new ArbitraryManipulator(

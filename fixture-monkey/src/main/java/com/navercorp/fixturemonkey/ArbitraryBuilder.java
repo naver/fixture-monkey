@@ -147,4 +147,6 @@ public interface ArbitraryBuilder<T> {
 	ArbitraryBuilder<T> copy();
 
 	ArbitraryBuilder<T> validOnly(boolean validOnly);
+
+	// TODO: setMap 추가
 }
