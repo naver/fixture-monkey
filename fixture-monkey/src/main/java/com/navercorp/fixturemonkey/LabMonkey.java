@@ -31,7 +31,7 @@ import com.navercorp.fixturemonkey.api.option.GenerateOptions;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
 import com.navercorp.fixturemonkey.api.type.LazyAnnotatedType;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
-import com.navercorp.fixturemonkey.builder.NewArbitraryBuilderImpl;
+import com.navercorp.fixturemonkey.builder.DefaultArbitraryBuilder;
 import com.navercorp.fixturemonkey.resolver.ArbitraryManipulator;
 import com.navercorp.fixturemonkey.resolver.ArbitraryResolver;
 import com.navercorp.fixturemonkey.resolver.ArbitraryTraverser;
@@ -62,15 +62,15 @@ public class LabMonkey extends FixtureMonkey {
 	}
 
 	@Override
-	public <T> NewArbitraryBuilderImpl<T> giveMeBuilder(Class<T> type) {
+	public <T> DefaultArbitraryBuilder<T> giveMeBuilder(Class<T> type) {
 		TypeReference<T> typeReference = new TypeReference<T>(type) {
 		};
 		return giveMeBuilder(typeReference);
 	}
 
 	@Override
-	public <T> NewArbitraryBuilderImpl<T> giveMeBuilder(TypeReference<T> type) {
-		return new NewArbitraryBuilderImpl<>(
+	public <T> DefaultArbitraryBuilder<T> giveMeBuilder(TypeReference<T> type) {
+		return new DefaultArbitraryBuilder<>(
 			generateOptions,
 			new RootProperty(type.getAnnotatedType()),
 			new ArbitraryResolver(
@@ -86,7 +86,7 @@ public class LabMonkey extends FixtureMonkey {
 	}
 
 	@Override
-	public <T> NewArbitraryBuilderImpl<T> giveMeBuilder(T value) {
+	public <T> DefaultArbitraryBuilder<T> giveMeBuilder(T value) {
 		List<ArbitraryManipulator> manipulators = new ArrayList<>();
 		manipulators.add(
 			new ArbitraryManipulator(
@@ -95,7 +95,7 @@ public class LabMonkey extends FixtureMonkey {
 			)
 		);
 
-		return new NewArbitraryBuilderImpl<>(
+		return new DefaultArbitraryBuilder<>(
 			generateOptions,
 			new RootProperty(new LazyAnnotatedType<>(() -> value)),
 			new ArbitraryResolver(

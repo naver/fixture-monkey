@@ -78,6 +78,8 @@ import com.navercorp.fixturemonkey.customizer.WithFixtureCustomizer;
 import com.navercorp.fixturemonkey.generator.ArbitraryGenerator;
 import com.navercorp.fixturemonkey.validator.ArbitraryValidator;
 
+@API(since = "0.4.0", status = Status.DEPRECATED)
+@Deprecated // use com.navercorp.fixturemonkey.builder.DefaultArbitraryBuilder
 public class OldArbitraryBuilderImpl<T> implements ArbitraryBuilder<T> {
 	private final ArbitraryTree<T> tree;
 	private final ArbitraryTraverser traverser;

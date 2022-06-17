@@ -72,7 +72,7 @@ import com.navercorp.fixturemonkey.validator.ArbitraryValidator;
 // TODO: remove extends com.navercorp.fixturemonkey.ArbitraryBuilder<T> inheritance in 1.0.0
 @SuppressFBWarnings("NM_SAME_SIMPLE_NAME_AS_SUPERCLASS")
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public final class NewArbitraryBuilderImpl<T> extends OldArbitraryBuilderImpl<T> {
+public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T> {
 	private final GenerateOptions generateOptions;
 	private final RootProperty rootProperty;
 	private final ArbitraryResolver resolver;
@@ -82,7 +82,7 @@ public final class NewArbitraryBuilderImpl<T> extends OldArbitraryBuilderImpl<T>
 	private final Set<LazyArbitrary<?>> lazyArbitraries;
 	private boolean validOnly = true;
 
-	public NewArbitraryBuilderImpl(
+	public DefaultArbitraryBuilder(
 		GenerateOptions generateOptions,
 		RootProperty rootProperty,
 		ArbitraryResolver resolver,
@@ -322,7 +322,7 @@ public final class NewArbitraryBuilderImpl<T> extends OldArbitraryBuilderImpl<T>
 		Set<LazyArbitrary<?>> lazyArbitraries = new HashSet<>();
 		lazyArbitraries.add(lazyArbitrary);
 
-		return new NewArbitraryBuilderImpl<>(
+		return new DefaultArbitraryBuilder<>(
 			generateOptions,
 			property,
 			resolver,
@@ -362,7 +362,7 @@ public final class NewArbitraryBuilderImpl<T> extends OldArbitraryBuilderImpl<T>
 
 	@Override
 	public ArbitraryBuilder<T> copy() {
-		return new NewArbitraryBuilderImpl<>(
+		return new DefaultArbitraryBuilder<>(
 			generateOptions,
 			rootProperty,
 			resolver,
