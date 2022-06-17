@@ -38,14 +38,12 @@ import net.jqwik.api.Combinators.F4;
 
 import com.navercorp.fixturemonkey.api.expression.ExpressionGenerator;
 import com.navercorp.fixturemonkey.customizer.ArbitraryCustomizer;
-import com.navercorp.fixturemonkey.customizer.CollectionSpec;
+import com.navercorp.fixturemonkey.customizer.ContainerSpec;
 import com.navercorp.fixturemonkey.customizer.ExpressionSpec;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public interface ArbitraryBuilder<T> {
 	ArbitraryBuilder<T> spec(ExpressionSpec expressionSpec);
-
-	ArbitraryBuilder<T> spec(String expression, Consumer<CollectionSpec> specSupplier);
 
 	ArbitraryBuilder<T> specAny(ExpressionSpec... specs);
 
@@ -58,6 +56,8 @@ public interface ArbitraryBuilder<T> {
 	ArbitraryBuilder<T> set(ExpressionGenerator expressionGenerator, @Nullable Object value, int limit);
 
 	ArbitraryBuilder<T> set(@Nullable Object value);
+
+	ArbitraryBuilder<T> setContainer(String expression, Consumer<ContainerSpec> specSupplier);
 
 	ArbitraryBuilder<T> setLazy(String expression, Supplier<?> supplier);
 

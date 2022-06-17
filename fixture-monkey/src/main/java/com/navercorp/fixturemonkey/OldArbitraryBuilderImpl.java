@@ -75,7 +75,7 @@ import com.navercorp.fixturemonkey.arbitrary.MetadataManipulator;
 import com.navercorp.fixturemonkey.arbitrary.PostArbitraryManipulator;
 import com.navercorp.fixturemonkey.customizer.ArbitraryCustomizer;
 import com.navercorp.fixturemonkey.customizer.ArbitraryCustomizers;
-import com.navercorp.fixturemonkey.customizer.CollectionSpec;
+import com.navercorp.fixturemonkey.customizer.ContainerSpec;
 import com.navercorp.fixturemonkey.customizer.ExpressionSpec;
 import com.navercorp.fixturemonkey.customizer.WithFixtureCustomizer;
 import com.navercorp.fixturemonkey.generator.ArbitraryGenerator;
@@ -268,7 +268,7 @@ public class OldArbitraryBuilderImpl<T> implements ArbitraryBuilder<T> {
 	}
 
 	@Override
-	public ArbitraryBuilder<T> spec(String expression, Consumer<CollectionSpec> specSupplier) {
+	public ArbitraryBuilder<T> setContainer(String expression, Consumer<ContainerSpec> specSupplier) {
 		throw new NotImplementedException();
 	}
 

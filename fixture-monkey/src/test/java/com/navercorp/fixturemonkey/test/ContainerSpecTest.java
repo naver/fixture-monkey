@@ -28,18 +28,18 @@ import java.util.stream.Collectors;
 import net.jqwik.api.Property;
 
 import com.navercorp.fixturemonkey.LabMonkey;
-import com.navercorp.fixturemonkey.test.CollectionSpecTestSpecs.ListObject;
-import com.navercorp.fixturemonkey.test.CollectionSpecTestSpecs.MapObject;
-import com.navercorp.fixturemonkey.test.CollectionSpecTestSpecs.ObjectObject;
-import com.navercorp.fixturemonkey.test.CollectionSpecTestSpecs.SimpleObject;
+import com.navercorp.fixturemonkey.test.ContainerSpecTestSpecs.ListObject;
+import com.navercorp.fixturemonkey.test.ContainerSpecTestSpecs.MapObject;
+import com.navercorp.fixturemonkey.test.ContainerSpecTestSpecs.ObjectObject;
+import com.navercorp.fixturemonkey.test.ContainerSpecTestSpecs.SimpleObject;
 
-class CollectionSpecTest {
+class ContainerSpecTest {
 	private static final LabMonkey SUT = LabMonkey.labMonkey();
 
 	@Property
 	void mapAddKey() {
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
-			.spec("strMap", m -> {
+			.setContainer("strMap", m -> {
 				m.key("key");
 			})
 			.sample();
@@ -50,7 +50,7 @@ class CollectionSpecTest {
 	@Property
 	void mapAddValue() {
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
-			.spec("strMap", m -> {
+			.setContainer("strMap", m -> {
 				m.value("value");
 			})
 			.sample();
@@ -61,7 +61,7 @@ class CollectionSpecTest {
 	@Property
 	void mapPut() {
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
-			.spec("strMap", m -> {
+			.setContainer("strMap", m -> {
 				m.entry("key", "value");
 			})
 			.sample();
@@ -72,7 +72,7 @@ class CollectionSpecTest {
 	@Property
 	void mapAddNullValue() {
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
-			.spec("strMap", m -> {
+			.setContainer("strMap", m -> {
 				m.value(null);
 			})
 			.sample();
@@ -84,7 +84,7 @@ class CollectionSpecTest {
 	void mapAddNullKeyThrows() {
 		thenThrownBy(() ->
 			SUT.giveMeBuilder(MapObject.class)
-				.spec("strMap", m -> {
+				.setContainer("strMap", m -> {
 					m.key(null);
 				})
 				.sample()
@@ -95,7 +95,7 @@ class CollectionSpecTest {
 	@Property
 	void mapAddKeyAddKey() {
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
-			.spec("mapKeyMap", m -> {
+			.setContainer("mapKeyMap", m -> {
 				m.key(k-> {
 					k.key("key");
 				});
@@ -110,7 +110,7 @@ class CollectionSpecTest {
 	@Property
 	void mapAddKeyAddValue() {
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
-			.spec("mapKeyMap", m -> {
+			.setContainer("mapKeyMap", m -> {
 				m.key(k-> {
 					k.value("value");
 				});
@@ -125,7 +125,7 @@ class CollectionSpecTest {
 	@Property
 	void mapAddValueAddKey() {
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
-			.spec("mapValueMap", m -> {
+			.setContainer("mapValueMap", m -> {
 				m.value(v-> {
 					v.key("key");
 				});
@@ -140,7 +140,7 @@ class CollectionSpecTest {
 	@Property
 	void mapAddValueAddValue() {
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
-			.spec("mapValueMap", m -> {
+			.setContainer("mapValueMap", m -> {
 				m.value(v-> {
 					v.value("value");
 				});
@@ -155,7 +155,7 @@ class CollectionSpecTest {
 	@Property
 	void mapSetValueSize() {
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
-			.spec("listValueMap", m -> {
+			.setContainer("listValueMap", m -> {
 				m.value(v-> {
 					v.size(10);
 				});
@@ -169,7 +169,7 @@ class CollectionSpecTest {
 	@Property
 	void mapSetValueListElement() {
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
-			.spec("listValueMap", m -> {
+			.setContainer("listValueMap", m -> {
 				m.value(v-> {
 					v.size(1);
 					v.listElement(0, "test");
@@ -184,7 +184,7 @@ class CollectionSpecTest {
 	@Property
 	void mapSetValueField() {
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
-			.spec("objectValueMap", m -> {
+			.setContainer("objectValueMap", m -> {
 				m.value(v-> {
 					v.field("str", "test");
 				});
@@ -200,7 +200,7 @@ class CollectionSpecTest {
 	@Property
 	void listSetListElementSetListElement() {
 		ListObject actual = SUT.giveMeBuilder(ListObject.class)
-			.spec("listListStr", m -> {
+			.setContainer("listListStr", m -> {
 				m.size(1);
 				m.listElement(0, l-> {
 					l.size(1);
@@ -215,7 +215,7 @@ class CollectionSpecTest {
 	@Property
 	void objectSetFieldSetField() {
 		ObjectObject actual = SUT.giveMeBuilder(ObjectObject.class)
-			.spec("complexObject", m -> {
+			.setContainer("complexObject", m -> {
 				m.field("simpleObject", o-> {
 					o.field("str", "test");
 				});

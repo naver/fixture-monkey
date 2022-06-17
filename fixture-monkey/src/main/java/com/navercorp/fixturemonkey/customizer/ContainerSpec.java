@@ -48,12 +48,12 @@ import com.navercorp.fixturemonkey.resolver.NodeSetDecomposedValueManipulator;
 import com.navercorp.fixturemonkey.resolver.NodeSizeManipulator;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public final class CollectionSpec {
+public final class ContainerSpec {
 	private final ArbitraryTraverser traverser;
 	private final NodeResolver treePathResolver;
 	private final List<ArbitraryManipulator> arbitraryManipulators;
 
-	public CollectionSpec(ArbitraryTraverser traverser, NodeResolver treePathResolver) {
+	public ContainerSpec(ArbitraryTraverser traverser, NodeResolver treePathResolver) {
 		this.traverser = traverser;
 		this.treePathResolver = treePathResolver;
 		this.arbitraryManipulators = new ArrayList<>();
@@ -89,7 +89,7 @@ public final class CollectionSpec {
 		arbitraryManipulators.add(new ArbitraryManipulator(this.treePathResolver, manipulator));
 	}
 
-	public void key(Consumer<CollectionSpec> consumer) {
+	public void key(Consumer<ContainerSpec> consumer) {
 		if (consumer == null) {
 			throw new IllegalArgumentException(
 				"Map key cannot be null."
@@ -102,9 +102,9 @@ public final class CollectionSpec {
 
 		NodeResolver nextResolver = new NodeLastEntryResolver(this.treePathResolver);
 		nextResolver = new NodeKeyValueResolver(true, nextResolver);
-		CollectionSpec collectionSpec = new CollectionSpec(traverser, nextResolver);
-		consumer.accept(collectionSpec);
-		arbitraryManipulators.addAll(collectionSpec.arbitraryManipulators);
+		ContainerSpec containerSpec = new ContainerSpec(traverser, nextResolver);
+		consumer.accept(containerSpec);
+		arbitraryManipulators.addAll(containerSpec.arbitraryManipulators);
 	}
 
 	public void value(@Nullable Object value) {
@@ -116,7 +116,7 @@ public final class CollectionSpec {
 		arbitraryManipulators.add(new ArbitraryManipulator(this.treePathResolver, manipulator));
 	}
 
-	public void value(Consumer<CollectionSpec> consumer) {
+	public void value(Consumer<ContainerSpec> consumer) {
 		if (consumer == null) {
 			value((Object)null);
 			return;
@@ -128,9 +128,9 @@ public final class CollectionSpec {
 
 		NodeResolver nextResolver = new NodeLastEntryResolver(this.treePathResolver);
 		nextResolver = new NodeKeyValueResolver(false, nextResolver);
-		CollectionSpec collectionSpec = new CollectionSpec(traverser, nextResolver);
-		consumer.accept(collectionSpec);
-		arbitraryManipulators.addAll(collectionSpec.arbitraryManipulators);
+		ContainerSpec containerSpec = new ContainerSpec(traverser, nextResolver);
+		consumer.accept(containerSpec);
+		arbitraryManipulators.addAll(containerSpec.arbitraryManipulators);
 	}
 
 	public void entry(Object key, @Nullable Object value) {
@@ -155,16 +155,16 @@ public final class CollectionSpec {
 		arbitraryManipulators.add(new ArbitraryManipulator(nextResolver, manipulator));
 	}
 
-	public void listElement(int index, Consumer<CollectionSpec> consumer) {
+	public void listElement(int index, Consumer<ContainerSpec> consumer) {
 		if (consumer == null) {
 			listElement(index, (Object)null);
 			return;
 		}
 
 		NodeResolver nextResolver = new NodeIndexResolver(index, this.treePathResolver);
-		CollectionSpec collectionSpec = new CollectionSpec(traverser, nextResolver);
-		consumer.accept(collectionSpec);
-		arbitraryManipulators.addAll(collectionSpec.arbitraryManipulators);
+		ContainerSpec containerSpec = new ContainerSpec(traverser, nextResolver);
+		consumer.accept(containerSpec);
+		arbitraryManipulators.addAll(containerSpec.arbitraryManipulators);
 	}
 
 	public void field(String field, @Nullable Object value) {
@@ -173,16 +173,16 @@ public final class CollectionSpec {
 		arbitraryManipulators.add(new ArbitraryManipulator(nextResolver, manipulator));
 	}
 
-	public void field(String field, Consumer<CollectionSpec> consumer) {
+	public void field(String field, Consumer<ContainerSpec> consumer) {
 		if (consumer == null) {
 			field(field, (Object)null);
 			return;
 		}
 
 		NodeResolver nextResolver = new NodeFieldResolver(field, this.treePathResolver);
-		CollectionSpec collectionSpec = new CollectionSpec(traverser, nextResolver);
-		consumer.accept(collectionSpec);
-		arbitraryManipulators.addAll(collectionSpec.arbitraryManipulators);
+		ContainerSpec containerSpec = new ContainerSpec(traverser, nextResolver);
+		consumer.accept(containerSpec);
+		arbitraryManipulators.addAll(containerSpec.arbitraryManipulators);
 	}
 
 	public List<ArbitraryManipulator> getArbitraryManipulators() {
