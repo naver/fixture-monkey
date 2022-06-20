@@ -28,7 +28,7 @@ import org.apiguardian.api.API.Status;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class NodeIndexResolver implements NodeResolver {
-	private NodeResolver prevResolver;
+	private final NodeResolver prevResolver;
 	private final int index;
 
 	public NodeIndexResolver(NodeResolver prevResolver, int index) {

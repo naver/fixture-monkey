@@ -47,8 +47,6 @@ import net.jqwik.api.Arbitrary;
 import net.jqwik.api.Combinators.F3;
 import net.jqwik.api.Combinators.F4;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
 import com.navercorp.fixturemonkey.api.expression.ExpressionGenerator;
 import com.navercorp.fixturemonkey.api.property.FieldProperty;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
@@ -269,7 +267,7 @@ public class OldArbitraryBuilderImpl<T> implements ArbitraryBuilder<T> {
 
 	@Override
 	public ArbitraryBuilder<T> setContainer(String expression, Consumer<ContainerSpec> specSupplier) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException();
 	}
 
 	@Override

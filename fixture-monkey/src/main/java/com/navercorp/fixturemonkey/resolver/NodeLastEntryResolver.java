@@ -28,7 +28,7 @@ import org.apiguardian.api.API.Status;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class NodeLastEntryResolver implements NodeResolver {
-	private NodeResolver prevResolver;
+	private final NodeResolver prevResolver;
 
 	public NodeLastEntryResolver(NodeResolver prevResolver) {
 		this.prevResolver = prevResolver;
