@@ -28,22 +28,18 @@ import org.apiguardian.api.API.Status;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class NodeIndexResolver implements NodeResolver {
-	private final int index;
 	private NodeResolver prevResolver;
+	private final int index;
 
-	public NodeIndexResolver(int index, NodeResolver prevResolver) {
-		this.index = index;
+	public NodeIndexResolver(NodeResolver prevResolver, int index) {
 		this.prevResolver = prevResolver;
+		this.index = index;
 	}
 
 	@Override
 	public List<ArbitraryNode> resolve(ArbitraryTree arbitraryTree) {
-		List<ArbitraryNode> nodes = prevResolver.resolve(arbitraryTree);
-		return getNext(nodes);
-	}
-
-	public List<ArbitraryNode> getNext(List<ArbitraryNode> nodes) {
 		LinkedList<ArbitraryNode> nextNodes = new LinkedList<>();
+		List<ArbitraryNode> nodes = prevResolver.resolve(arbitraryTree);
 		for (ArbitraryNode selectedNode : nodes) {
 			List<ArbitraryNode> children = selectedNode.getChildren();
 			if (children.size() > index) {

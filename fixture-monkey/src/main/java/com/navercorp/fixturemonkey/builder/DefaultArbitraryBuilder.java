@@ -154,7 +154,7 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 	@Override
 	public ArbitraryBuilder<T> setContainer(String expression, Consumer<ContainerSpec> specSupplier) {
 		NodeResolver nodeResolver = new ExpressionNodeResolver(ArbitraryExpression.from(expression));
-		ContainerSpec containerSpec = new ContainerSpec(traverser,  nodeResolver);
+		ContainerSpec containerSpec = new ContainerSpec(traverser, nodeResolver);
 		specSupplier.accept(containerSpec);
 		List<ArbitraryManipulator> mapManipulators = containerSpec.getArbitraryManipulators();
 		manipulators.addAll(mapManipulators);

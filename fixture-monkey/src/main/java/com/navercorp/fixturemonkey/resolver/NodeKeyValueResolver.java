@@ -28,25 +28,21 @@ import org.apiguardian.api.API.Status;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class NodeKeyValueResolver implements NodeResolver {
-	private final boolean isKey;
 	private NodeResolver prevResolver;
+	private final boolean key;
 
-	public NodeKeyValueResolver(boolean isKey, NodeResolver prevResolver) {
-		this.isKey = isKey;
+	public NodeKeyValueResolver(NodeResolver prevResolver, boolean key) {
 		this.prevResolver = prevResolver;
+		this.key = key;
 	}
 
 	@Override
 	public List<ArbitraryNode> resolve(ArbitraryTree arbitraryTree) {
-		List<ArbitraryNode> nodes = prevResolver.resolve(arbitraryTree);
-		return getNext(nodes);
-	}
-
-	public List<ArbitraryNode> getNext(List<ArbitraryNode> nodes) {
 		LinkedList<ArbitraryNode> nextNodes = new LinkedList<>();
+		List<ArbitraryNode> nodes = prevResolver.resolve(arbitraryTree);
 		for (ArbitraryNode selectedNode : nodes) {
 			ArbitraryNode child;
-			if (isKey) {
+			if (key) {
 				child = selectedNode.getChildren().get(0);
 			} else {
 				child = selectedNode.getChildren().get(1);

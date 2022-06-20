@@ -36,12 +36,8 @@ public final class NodeLastEntryResolver implements NodeResolver {
 
 	@Override
 	public List<ArbitraryNode> resolve(ArbitraryTree arbitraryTree) {
-		List<ArbitraryNode> nodes = prevResolver.resolve(arbitraryTree);
-		return getNext(nodes);
-	}
-
-	public List<ArbitraryNode> getNext(List<ArbitraryNode> nodes) {
 		LinkedList<ArbitraryNode> nextNodes = new LinkedList<>();
+		List<ArbitraryNode> nodes = prevResolver.resolve(arbitraryTree);
 		for (ArbitraryNode selectedNode : nodes) {
 			ArbitraryNode child = selectedNode.getChildren().get(selectedNode.getChildren().size() - 1);
 			child.setArbitraryProperty(child.getArbitraryProperty().withNullInject(NOT_NULL_INJECT));

@@ -100,8 +100,10 @@ public final class ContainerSpec {
 			new ArbitraryManipulator(this.treePathResolver, new AddMapEntryNodeManipulator(traverser))
 		);
 
-		NodeResolver nextResolver = new NodeLastEntryResolver(this.treePathResolver);
-		nextResolver = new NodeKeyValueResolver(true, nextResolver);
+		NodeResolver nextResolver = new NodeKeyValueResolver(
+			new NodeLastEntryResolver(this.treePathResolver),
+			true
+		);
 		ContainerSpec containerSpec = new ContainerSpec(traverser, nextResolver);
 		consumer.accept(containerSpec);
 		arbitraryManipulators.addAll(containerSpec.arbitraryManipulators);
@@ -125,9 +127,10 @@ public final class ContainerSpec {
 		arbitraryManipulators.add(new ArbitraryManipulator(
 			this.treePathResolver, new AddMapEntryNodeManipulator(traverser))
 		);
-
-		NodeResolver nextResolver = new NodeLastEntryResolver(this.treePathResolver);
-		nextResolver = new NodeKeyValueResolver(false, nextResolver);
+		NodeResolver nextResolver = new NodeKeyValueResolver(
+			new NodeLastEntryResolver(this.treePathResolver),
+			false
+		);
 		ContainerSpec containerSpec = new ContainerSpec(traverser, nextResolver);
 		consumer.accept(containerSpec);
 		arbitraryManipulators.addAll(containerSpec.arbitraryManipulators);
@@ -150,7 +153,7 @@ public final class ContainerSpec {
 	}
 
 	public void listElement(int index, @Nullable Object value) {
-		NodeResolver nextResolver = new NodeIndexResolver(index, this.treePathResolver);
+		NodeResolver nextResolver = new NodeIndexResolver(this.treePathResolver, index);
 		NodeManipulator manipulator = convertToNodeManipulator(value);
 		arbitraryManipulators.add(new ArbitraryManipulator(nextResolver, manipulator));
 	}
@@ -161,14 +164,14 @@ public final class ContainerSpec {
 			return;
 		}
 
-		NodeResolver nextResolver = new NodeIndexResolver(index, this.treePathResolver);
+		NodeResolver nextResolver = new NodeIndexResolver(this.treePathResolver, index);
 		ContainerSpec containerSpec = new ContainerSpec(traverser, nextResolver);
 		consumer.accept(containerSpec);
 		arbitraryManipulators.addAll(containerSpec.arbitraryManipulators);
 	}
 
 	public void field(String field, @Nullable Object value) {
-		NodeResolver nextResolver = new NodeFieldResolver(field, this.treePathResolver);
+		NodeResolver nextResolver = new NodeFieldResolver(this.treePathResolver, field);
 		NodeManipulator manipulator = convertToNodeManipulator(value);
 		arbitraryManipulators.add(new ArbitraryManipulator(nextResolver, manipulator));
 	}
@@ -179,7 +182,7 @@ public final class ContainerSpec {
 			return;
 		}
 
-		NodeResolver nextResolver = new NodeFieldResolver(field, this.treePathResolver);
+		NodeResolver nextResolver = new NodeFieldResolver(this.treePathResolver, field);
 		ContainerSpec containerSpec = new ContainerSpec(traverser, nextResolver);
 		consumer.accept(containerSpec);
 		arbitraryManipulators.addAll(containerSpec.arbitraryManipulators);
