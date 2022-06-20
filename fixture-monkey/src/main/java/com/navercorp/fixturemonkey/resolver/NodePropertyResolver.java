@@ -27,13 +27,13 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public final class NodeFieldResolver implements NodeResolver {
+public final class NodePropertyResolver implements NodeResolver {
 	private NodeResolver prevResolver;
-	private final String field;
+	private final String property;
 
-	public NodeFieldResolver(NodeResolver prevResolver, String field) {
+	public NodePropertyResolver(NodeResolver prevResolver, String property) {
 		this.prevResolver = prevResolver;
-		this.field = field;
+		this.property = property;
 	}
 
 	@Override
@@ -43,7 +43,7 @@ public final class NodeFieldResolver implements NodeResolver {
 		for (ArbitraryNode selectedNode : nodes) {
 			List<ArbitraryNode> children = selectedNode.getChildren();
 			for (ArbitraryNode child : children) {
-				if (field.equals(child.getArbitraryProperty().getResolvePropertyName())) {
+				if (property.equals(child.getArbitraryProperty().getResolvePropertyName())) {
 					child.setArbitraryProperty(child.getArbitraryProperty().withNullInject(NOT_NULL_INJECT));
 					nextNodes.add(child);
 				}

@@ -36,7 +36,7 @@ import com.navercorp.fixturemonkey.resolver.AddMapEntryNodeManipulator;
 import com.navercorp.fixturemonkey.resolver.ArbitraryManipulator;
 import com.navercorp.fixturemonkey.resolver.ArbitraryTraverser;
 import com.navercorp.fixturemonkey.resolver.MapNodeManipulator;
-import com.navercorp.fixturemonkey.resolver.NodeFieldResolver;
+import com.navercorp.fixturemonkey.resolver.NodePropertyResolver;
 import com.navercorp.fixturemonkey.resolver.NodeIndexResolver;
 import com.navercorp.fixturemonkey.resolver.NodeKeyValueResolver;
 import com.navercorp.fixturemonkey.resolver.NodeLastEntryResolver;
@@ -170,19 +170,19 @@ public final class ContainerSpec {
 		arbitraryManipulators.addAll(containerSpec.arbitraryManipulators);
 	}
 
-	public void field(String field, @Nullable Object value) {
-		NodeResolver nextResolver = new NodeFieldResolver(this.treePathResolver, field);
+	public void property(String property, @Nullable Object value) {
+		NodeResolver nextResolver = new NodePropertyResolver(this.treePathResolver, property);
 		NodeManipulator manipulator = convertToNodeManipulator(value);
 		arbitraryManipulators.add(new ArbitraryManipulator(nextResolver, manipulator));
 	}
 
-	public void field(String field, Consumer<ContainerSpec> consumer) {
+	public void property(String property, Consumer<ContainerSpec> consumer) {
 		if (consumer == null) {
-			field(field, (Object)null);
+			property(property, (Object)null);
 			return;
 		}
 
-		NodeResolver nextResolver = new NodeFieldResolver(this.treePathResolver, field);
+		NodeResolver nextResolver = new NodePropertyResolver(this.treePathResolver, property);
 		ContainerSpec containerSpec = new ContainerSpec(traverser, nextResolver);
 		consumer.accept(containerSpec);
 		arbitraryManipulators.addAll(containerSpec.arbitraryManipulators);

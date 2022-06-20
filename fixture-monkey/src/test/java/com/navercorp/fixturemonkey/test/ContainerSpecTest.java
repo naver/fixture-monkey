@@ -182,11 +182,11 @@ class ContainerSpecTest {
 	}
 
 	@Property
-	void mapSetValueField() {
+	void mapSetValueProperty() {
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
 			.setContainer("objectValueMap", m -> {
 				m.value(v-> {
-					v.field("str", "test");
+					v.property("str", "test");
 				});
 			})
 			.sample();
@@ -213,11 +213,11 @@ class ContainerSpecTest {
 	}
 
 	@Property
-	void objectSetFieldSetField() {
+	void objectSetPropertySetProperty() {
 		ObjectObject actual = SUT.giveMeBuilder(ObjectObject.class)
 			.setContainer("complexObject", m -> {
-				m.field("simpleObject", o-> {
-					o.field("str", "test");
+				m.property("simpleObject", o-> {
+					o.property("str", "test");
 				});
 			})
 			.sample();
