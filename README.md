@@ -73,7 +73,7 @@ void test() {
 ### Gradle
 
 ```groovy
-testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter:0.3.4")
+testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter:0.3.5")
 ```
 
 ### Maven
@@ -83,7 +83,7 @@ testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter:0.3.4")
 <dependency>
     <groupId>com.navercorp.fixturemonkey</groupId>
     <artifactId>fixture-monkey-starter</artifactId>
-    <version>0.3.4</version>
+    <version>0.3.5</version>
     <scope>test</scope>
 </dependency>
 ```
