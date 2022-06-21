@@ -73,7 +73,7 @@ void test() {
 ### Gradle
 
 ```groovy
-testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter:0.3.4")
+testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter:0.3.5")
 ```
 
 ### Maven
@@ -83,7 +83,7 @@ testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter:0.3.4")
 <dependency>
     <groupId>com.navercorp.fixturemonkey</groupId>
     <artifactId>fixture-monkey-starter</artifactId>
-    <version>0.3.4</version>
+    <version>0.3.5</version>
     <scope>test</scope>
 </dependency>
 ```
@@ -111,11 +111,13 @@ testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter:0.3.4")
 * 🐒 [acktsap](https://github.com/acktsap)
 * 🐒 [benelog](https://github.com/benelog)
 * 🐒 [jwChung](https://github.com/jwChung)
+* 🐒 [SooKim1110](https://github.com/SooKim1110)
 * @[KoEonYack](https://github.com/KoEonYack)
 * @[G-ONL](https://github.com/G-ONL)
 * @[imbyungjun](https://github.com/imbyungjun)
 * @[sandrawangyx](https://github.com/sandrawangyx)
 * @[dbgsprw](https://github.com/dbgsprw)
+* @[kshired](https://github.com/kshired)
 
 ## More about Fixture Monkey
 * [Deview 2021](https://tv.naver.com/v/23650158)
