@@ -727,4 +727,24 @@ class ComplexManipulatorTest {
 
 		then(actual.getValues()).isEmpty();
 	}
+
+	@Property
+	void setNullFixedReturnsNull() {
+		Complex actual = SUT.giveMeBuilder(Complex.class)
+			.setNull("$")
+			.fixed()
+			.sample();
+
+		then(actual).isNull();
+	}
+
+	@Property
+	void setAllFieldNullFixedReturnsNotNull() {
+		Complex actual = SUT.giveMeBuilder(Complex.class)
+			.setNull("*")
+			.fixed()
+			.sample();
+
+		then(actual).isNotNull();
+	}
 }

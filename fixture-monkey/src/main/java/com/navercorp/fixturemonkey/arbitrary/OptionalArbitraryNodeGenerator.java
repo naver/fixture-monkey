@@ -22,47 +22,48 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import net.jqwik.api.Arbitraries;
+
 import com.navercorp.fixturemonkey.generator.FieldNameResolver;
 
 public class OptionalArbitraryNodeGenerator implements ContainerArbitraryNodeGenerator {
 	public static final OptionalArbitraryNodeGenerator INSTANCE = new OptionalArbitraryNodeGenerator();
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public <T> List<ArbitraryNode<?>> generate(ArbitraryNode<T> nowNode, FieldNameResolver fieldNameResolver) {
+	public <T> List<ArbitraryNode<?>> generate(ArbitraryNode<T> containerNode, FieldNameResolver fieldNameResolver) {
 		List<ArbitraryNode<?>> generatedNodeList = new ArrayList<>();
 
-		ArbitraryType<T> arbitraryType = nowNode.getType();
+		ArbitraryType<T> arbitraryType = containerNode.getType();
 		ArbitraryType<?> elementType = arbitraryType.getGenericArbitraryType(0);
-		String fieldName = nowNode.getFieldName();
+		String fieldName = containerNode.getFieldName();
+		LazyValue<T> lazyValue = containerNode.getValue();
 
-		LazyValue<?> nextLazyValue = getNextLazyValue(nowNode.getValue());
+		if (lazyValue != null) {
+			T value = lazyValue.get();
+			if (value == null) {
+				containerNode.setArbitrary(Arbitraries.just(null));
+				return generatedNodeList;
+			}
 
-		if (nextLazyValue != null && nextLazyValue.isEmpty()) {
-			// can not generate Optional empty by ArbitraryGenerator
-			return generatedNodeList;
+			Optional<?> optional = ((Optional<?>)value);
+			Object nextObject = optional.orElse(null);
+			LazyValue<?> nextLazyValue = new LazyValue<>(() -> nextObject);
+
+			if (nextLazyValue.isEmpty()) {
+				// can not generate Optional empty by ArbitraryGenerator
+				return generatedNodeList;
+			}
+
+			@SuppressWarnings("unchecked")
+			ArbitraryNode<?> nextNode = ArbitraryNode.builder()
+				.type(elementType)
+				.value(nextLazyValue)
+				.fieldName(fieldName)
+				.indexOfIterable(0)
+				.build();
+			generatedNodeList.add(nextNode);
 		}
 
-		ArbitraryNode<?> nextNode = ArbitraryNode.builder()
-			.type(elementType)
-			.value(nextLazyValue)
-			.fieldName(fieldName)
-			.indexOfIterable(0)
-			.build();
-		generatedNodeList.add(nextNode);
 		return generatedNodeList;
-	}
-
-	@SuppressWarnings("unchecked")
-	private <T, U> LazyValue<U> getNextLazyValue(LazyValue<T> lazyValue) {
-		if (lazyValue == null) {
-			return null;
-		}
-
-		T value = lazyValue.get();
-
-		Optional<U> optional = ((Optional<U>)value);
-		U nextObject = optional.orElse(null);
-		return new LazyValue<>(() -> nextObject);
 	}
 }
