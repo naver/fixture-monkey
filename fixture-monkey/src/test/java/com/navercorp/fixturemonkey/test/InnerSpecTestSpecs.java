@@ -18,18 +18,47 @@
 
 package com.navercorp.fixturemonkey.test;
 
+import java.util.List;
 import java.util.Map;
 
 import lombok.Getter;
 import lombok.Setter;
 
-class MapSpecTestSpecs {
-	@Setter
+class InnerSpecTestSpecs {
 	@Getter
+	@Setter
 	public static class MapObject {
 		private Map<String, String> strMap;
 		private Map<String, Map<String, String>> mapValueMap;
 		private Map<Map<String, String>, String> mapKeyMap;
 		private Map<Map<String, String>, Map<String, String>> mapKeyValueMap;
+		private Map<String, List<String>> listValueMap;
+		private Map<String, List<List<String>>> listListValueMap;
+		private Map<String, SimpleObject> objectValueMap;
+	}
+
+	@Getter
+	@Setter
+	public static class ListObject {
+		private List<List<String>> listListStr;
+	}
+
+	@Getter
+	@Setter
+	public static class ObjectObject {
+		private ComplexObject complexObject;
+	}
+
+	@Getter
+	@Setter
+	public static class ComplexObject {
+		private SimpleObject simpleObject;
+	}
+
+	@Getter
+	@Setter
+	public static class SimpleObject {
+		private String str;
+		private Integer integer;
 	}
 }

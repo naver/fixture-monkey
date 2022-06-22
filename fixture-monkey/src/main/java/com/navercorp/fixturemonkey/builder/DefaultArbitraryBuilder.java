@@ -53,16 +53,14 @@ import com.navercorp.fixturemonkey.api.property.RootProperty;
 import com.navercorp.fixturemonkey.api.type.LazyAnnotatedType;
 import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryExpression;
-import com.navercorp.fixturemonkey.customizer.MapSpec;
+import com.navercorp.fixturemonkey.customizer.InnerSpec;
 import com.navercorp.fixturemonkey.resolver.ApplyExpressionStrictModeResolver;
 import com.navercorp.fixturemonkey.resolver.ApplyNodeCountManipulator;
 import com.navercorp.fixturemonkey.resolver.ArbitraryManipulator;
 import com.navercorp.fixturemonkey.resolver.ArbitraryResolver;
 import com.navercorp.fixturemonkey.resolver.ArbitraryTraverser;
-import com.navercorp.fixturemonkey.resolver.CompositeNodeManipulator;
 import com.navercorp.fixturemonkey.resolver.ExpressionNodeResolver;
 import com.navercorp.fixturemonkey.resolver.NodeFilterManipulator;
-import com.navercorp.fixturemonkey.resolver.NodeManipulator;
 import com.navercorp.fixturemonkey.resolver.NodeNullityManipulator;
 import com.navercorp.fixturemonkey.resolver.NodeResolver;
 import com.navercorp.fixturemonkey.resolver.NodeSetArbitraryManipulator;
@@ -156,19 +154,13 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 		return this.set(HEAD_NAME, value);
 	}
 
-	public ArbitraryBuilder<T> setMap(String expression, Consumer<MapSpec> mapSpecSupplier) {
-		MapSpec mapSpec = new MapSpec(traverser);
-		mapSpecSupplier.accept(mapSpec);
-
-		List<NodeManipulator> mapManipulators = mapSpec.getManipulators();
-		ExpressionNodeResolver nodeResolver = new ExpressionNodeResolver(ArbitraryExpression.from(expression));
-
-		this.manipulators.add(
-			new ArbitraryManipulator(
-				nodeResolver,
-				new CompositeNodeManipulator(mapManipulators.toArray(new NodeManipulator[0]))
-			)
-		);
+	@Override
+	public ArbitraryBuilder<T> setInner(String expression, Consumer<InnerSpec> specSpecifier) {
+		NodeResolver nodeResolver = new ExpressionNodeResolver(ArbitraryExpression.from(expression));
+		InnerSpec innerSpec = new InnerSpec(traverser, nodeResolver);
+		specSpecifier.accept(innerSpec);
+		List<ArbitraryManipulator> mapManipulators = innerSpec.getArbitraryManipulators();
+		manipulators.addAll(mapManipulators);
 		return this;
 	}
 

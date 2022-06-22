@@ -74,6 +74,7 @@ import com.navercorp.fixturemonkey.arbitrary.PostArbitraryManipulator;
 import com.navercorp.fixturemonkey.customizer.ArbitraryCustomizer;
 import com.navercorp.fixturemonkey.customizer.ArbitraryCustomizers;
 import com.navercorp.fixturemonkey.customizer.ExpressionSpec;
+import com.navercorp.fixturemonkey.customizer.InnerSpec;
 import com.navercorp.fixturemonkey.customizer.WithFixtureCustomizer;
 import com.navercorp.fixturemonkey.generator.ArbitraryGenerator;
 import com.navercorp.fixturemonkey.validator.ArbitraryValidator;
@@ -262,6 +263,11 @@ public class OldArbitraryBuilderImpl<T> implements ArbitraryBuilder<T> {
 	public ArbitraryBuilder<T> spec(ExpressionSpec expressionSpec) {
 		this.builderManipulators.addAll(expressionSpec.getBuilderManipulators());
 		return this;
+	}
+
+	@Override
+	public ArbitraryBuilder<T> setInner(String expression, Consumer<InnerSpec> specSupplier) {
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
