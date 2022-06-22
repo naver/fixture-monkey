@@ -131,15 +131,6 @@ public final class InnerSpec {
 		arbitraryManipulators.addAll(innerSpec.arbitraryManipulators);
 	}
 
-	private void setValue(@Nullable Object value) {
-		NodeManipulator manipulator = new MapNodeManipulator(
-			traverser,
-			Collections.emptyList(),
-			Collections.singletonList(convertToNodeManipulator(value))
-		);
-		arbitraryManipulators.add(new ArbitraryManipulator(this.treePathResolver, manipulator));
-	}
-
 	public void entry(Object key, @Nullable Object value) {
 		if (key == null) {
 			throw new IllegalArgumentException(
@@ -194,6 +185,15 @@ public final class InnerSpec {
 
 	public List<ArbitraryManipulator> getArbitraryManipulators() {
 		return arbitraryManipulators;
+	}
+
+	private void setValue(@Nullable Object value) {
+		NodeManipulator manipulator = new MapNodeManipulator(
+			traverser,
+			Collections.emptyList(),
+			Collections.singletonList(convertToNodeManipulator(value))
+		);
+		arbitraryManipulators.add(new ArbitraryManipulator(this.treePathResolver, manipulator));
 	}
 
 	private NodeManipulator convertToNodeManipulator(@Nullable Object value) {
