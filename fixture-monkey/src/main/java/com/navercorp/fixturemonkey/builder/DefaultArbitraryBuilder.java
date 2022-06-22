@@ -50,7 +50,7 @@ import com.navercorp.fixturemonkey.api.property.RootProperty;
 import com.navercorp.fixturemonkey.api.type.LazyAnnotatedType;
 import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryExpression;
-import com.navercorp.fixturemonkey.customizer.ContainerSpec;
+import com.navercorp.fixturemonkey.customizer.InnerSpec;
 import com.navercorp.fixturemonkey.resolver.ApplyExpressionStrictModeResolver;
 import com.navercorp.fixturemonkey.resolver.ApplyNodeCountManipulator;
 import com.navercorp.fixturemonkey.resolver.ArbitraryManipulator;
@@ -152,11 +152,11 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 	}
 
 	@Override
-	public ArbitraryBuilder<T> setContainer(String expression, Consumer<ContainerSpec> specSpecifier) {
+	public ArbitraryBuilder<T> setInner(String expression, Consumer<InnerSpec> specSpecifier) {
 		NodeResolver nodeResolver = new ExpressionNodeResolver(ArbitraryExpression.from(expression));
-		ContainerSpec containerSpec = new ContainerSpec(traverser, nodeResolver);
-		specSpecifier.accept(containerSpec);
-		List<ArbitraryManipulator> mapManipulators = containerSpec.getArbitraryManipulators();
+		InnerSpec innerSpec = new InnerSpec(traverser, nodeResolver);
+		specSpecifier.accept(innerSpec);
+		List<ArbitraryManipulator> mapManipulators = innerSpec.getArbitraryManipulators();
 		manipulators.addAll(mapManipulators);
 		return this;
 	}

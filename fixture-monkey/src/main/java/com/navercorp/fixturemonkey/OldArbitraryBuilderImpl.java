@@ -73,7 +73,7 @@ import com.navercorp.fixturemonkey.arbitrary.MetadataManipulator;
 import com.navercorp.fixturemonkey.arbitrary.PostArbitraryManipulator;
 import com.navercorp.fixturemonkey.customizer.ArbitraryCustomizer;
 import com.navercorp.fixturemonkey.customizer.ArbitraryCustomizers;
-import com.navercorp.fixturemonkey.customizer.ContainerSpec;
+import com.navercorp.fixturemonkey.customizer.InnerSpec;
 import com.navercorp.fixturemonkey.customizer.ExpressionSpec;
 import com.navercorp.fixturemonkey.customizer.WithFixtureCustomizer;
 import com.navercorp.fixturemonkey.generator.ArbitraryGenerator;
@@ -266,7 +266,7 @@ public class OldArbitraryBuilderImpl<T> implements ArbitraryBuilder<T> {
 	}
 
 	@Override
-	public ArbitraryBuilder<T> setContainer(String expression, Consumer<ContainerSpec> specSupplier) {
+	public ArbitraryBuilder<T> setInner(String expression, Consumer<InnerSpec> specSupplier) {
 		throw new UnsupportedOperationException();
 	}
 

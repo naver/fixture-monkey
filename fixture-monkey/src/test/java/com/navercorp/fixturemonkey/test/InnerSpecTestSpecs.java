@@ -24,7 +24,7 @@ import java.util.Map;
 import lombok.Getter;
 import lombok.Setter;
 
-class ContainerSpecTestSpecs {
+class InnerSpecTestSpecs {
 	@Getter
 	@Setter
 	public static class MapObject {
