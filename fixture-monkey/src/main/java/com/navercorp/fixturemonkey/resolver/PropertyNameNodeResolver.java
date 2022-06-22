@@ -24,6 +24,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apiguardian.api.API;
+import org.apiguardian.api.API.Status;
+
+@API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class PropertyNameNodeResolver implements NodeResolver {
 	private final NodeResolver nodeResolver;
 	private final String propertyName;

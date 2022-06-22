@@ -25,9 +25,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apiguardian.api.API;
+import org.apiguardian.api.API.Status;
+
 import com.navercorp.fixturemonkey.api.property.ElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 
+@API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class ContainerElementNodeResolver implements NodeResolver {
 	private final NodeResolver nodeResolver;
 	private final int sequence;
