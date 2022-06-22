@@ -38,8 +38,8 @@ import net.jqwik.api.Combinators.F4;
 
 import com.navercorp.fixturemonkey.api.expression.ExpressionGenerator;
 import com.navercorp.fixturemonkey.customizer.ArbitraryCustomizer;
-import com.navercorp.fixturemonkey.customizer.InnerSpec;
 import com.navercorp.fixturemonkey.customizer.ExpressionSpec;
+import com.navercorp.fixturemonkey.customizer.InnerSpec;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public interface ArbitraryBuilder<T> {
