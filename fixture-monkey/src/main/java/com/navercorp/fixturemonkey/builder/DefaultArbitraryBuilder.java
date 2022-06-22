@@ -55,11 +55,14 @@ import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryExpression;
 import com.navercorp.fixturemonkey.customizer.InnerSpec;
 import com.navercorp.fixturemonkey.resolver.ApplyExpressionStrictModeResolver;
+import com.navercorp.fixturemonkey.customizer.MapSpec;
 import com.navercorp.fixturemonkey.resolver.ApplyNodeCountManipulator;
+import com.navercorp.fixturemonkey.resolver.ApplyStrictModeResolver;
 import com.navercorp.fixturemonkey.resolver.ArbitraryManipulator;
 import com.navercorp.fixturemonkey.resolver.ArbitraryResolver;
 import com.navercorp.fixturemonkey.resolver.ArbitraryTraverser;
 import com.navercorp.fixturemonkey.resolver.ExpressionNodeResolver;
+import com.navercorp.fixturemonkey.resolver.CompositeNodeManipulator;
 import com.navercorp.fixturemonkey.resolver.NodeFilterManipulator;
 import com.navercorp.fixturemonkey.resolver.NodeNullityManipulator;
 import com.navercorp.fixturemonkey.resolver.NodeResolver;
@@ -156,7 +159,7 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 
 	@Override
 	public ArbitraryBuilder<T> setInner(String expression, Consumer<InnerSpec> specSpecifier) {
-		NodeResolver nodeResolver = new ExpressionNodeResolver(ArbitraryExpression.from(expression));
+		NodeResolver nodeResolver = ArbitraryExpression.from(expression).toNodeResolver();;
 		InnerSpec innerSpec = new InnerSpec(traverser, nodeResolver);
 		specSpecifier.accept(innerSpec);
 		List<ArbitraryManipulator> mapManipulators = innerSpec.getArbitraryManipulators();
@@ -399,9 +402,9 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 	}
 
 	private NodeResolver convertToExpressionNodeResolver(String expression) {
-		NodeResolver nodeResolver = new ExpressionNodeResolver(ArbitraryExpression.from(expression));
+		NodeResolver nodeResolver = ArbitraryExpression.from(expression).toNodeResolver();
 		if (generateOptions.isExpressionStrictMode()) {
-			nodeResolver = new ApplyExpressionStrictModeResolver(nodeResolver);
+			nodeResolver = new ApplyStrictModeResolver(nodeResolver);
 		}
 		return nodeResolver;
 	}

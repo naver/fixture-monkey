@@ -18,14 +18,11 @@
 
 package com.navercorp.fixturemonkey.resolver;
 
-import static com.navercorp.fixturemonkey.Constants.HEAD_NAME;
-
+import java.util.Collections;
 import java.util.List;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
-
-import com.navercorp.fixturemonkey.arbitrary.ArbitraryExpression;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class RootNodeResolver implements NodeResolver {
@@ -34,6 +31,6 @@ public final class RootNodeResolver implements NodeResolver {
 
 	@Override
 	public List<ArbitraryNode> resolve(ArbitraryTree arbitraryTree) {
-		return arbitraryTree.findAll(ArbitraryExpression.from(HEAD_NAME));
+		return Collections.singletonList(arbitraryTree.findRoot());
 	}
 }

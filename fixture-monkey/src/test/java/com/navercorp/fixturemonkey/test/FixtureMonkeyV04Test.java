@@ -19,6 +19,7 @@
 package com.navercorp.fixturemonkey.test;
 
 import static org.assertj.core.api.BDDAssertions.then;
+import static org.assertj.core.api.BDDAssertions.thenNoException;
 import static org.assertj.core.api.BDDAssertions.thenThrownBy;
 
 import java.time.Instant;
@@ -716,7 +717,15 @@ class FixtureMonkeyV04Test {
 				.set("nonExistentField", 0)
 				.sample()
 		).isExactlyInstanceOf(IllegalArgumentException.class)
-			.hasMessageContaining("No matching results for given expression.");
+			.hasMessageContaining("No matching results for given NodeResolvers.");
+	}
+
+	@Property
+	void notStrictModeSetWrongExpressionDoesNotThrows() {
+		thenNoException()
+			.isThrownBy(() -> SUT.giveMeBuilder(ComplexObject.class)
+				.set("nonExistentField", 0)
+				.sample());
 	}
 
 	@Property

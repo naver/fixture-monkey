@@ -33,6 +33,10 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
+import com.navercorp.fixturemonkey.resolver.ContainerElementNodeResolver;
+import com.navercorp.fixturemonkey.resolver.NodeResolver;
+import com.navercorp.fixturemonkey.resolver.PropertyNameNodeResolver;
+import com.navercorp.fixturemonkey.resolver.RootNodeResolver;
 
 public final class ArbitraryExpression implements Comparable<ArbitraryExpression> {
 	private final List<Exp> expList;
@@ -72,8 +76,8 @@ public final class ArbitraryExpression implements Comparable<ArbitraryExpression
 		Exp lastExp = newExpList.get(lastIndex);
 		newExpList.remove(lastIndex);
 
-		if (!lastExp.index.isEmpty()) {
-			List<ExpIndex> newExpIndexList = new ArrayList<>(lastExp.index);
+		if (!lastExp.indices.isEmpty()) {
+			List<ExpIndex> newExpIndexList = new ArrayList<>(lastExp.indices);
 			newExpIndexList.remove(newExpIndexList.size() - 1);
 			lastExp = new Exp(lastExp.name, newExpIndexList);
 			newExpList.add(lastExp);
@@ -124,6 +128,21 @@ public final class ArbitraryExpression implements Comparable<ArbitraryExpression
 			.collect(Collectors.joining("."));
 	}
 
+	public NodeResolver toNodeResolver() {
+		NodeResolver nodeResolver = new RootNodeResolver();
+		for (Exp exp : expList) {
+			if (HEAD_NAME.equals(exp.getName())) {
+				continue;
+			}
+			nodeResolver = exp.toNodeResolver(nodeResolver);
+		}
+		return nodeResolver;
+	}
+
+	/**
+	 *  use {@link com.navercorp.fixturemonkey.resolver.NodeResolver} instead
+	 *  */
+	@Deprecated
 	public List<Cursor> toCursors() {
 		return this.expList.stream()
 			.flatMap(it -> it.toCursors().stream())
@@ -178,15 +197,15 @@ public final class ArbitraryExpression implements Comparable<ArbitraryExpression
 
 	private static final class Exp implements Comparable<Exp> {
 		private final String name;
-		private final List<ExpIndex> index;
+		private final List<ExpIndex> indices;
 
 		private Exp(String name, List<ExpIndex> indices) {
 			this.name = name;
-			this.index = indices;
+			this.indices = indices;
 		}
 
 		public Exp(String expression) {
-			index = new ArrayList<>();
+			indices = new ArrayList<>();
 			int li = expression.indexOf('[');
 			int ri = expression.indexOf(']');
 
@@ -204,7 +223,7 @@ public final class ArbitraryExpression implements Comparable<ArbitraryExpression
 						final int indexValue = indexString.equals(ALL_INDEX_STRING)
 							? NO_OR_ALL_INDEX_INTEGER_VALUE
 							: Integer.parseInt(indexString);
-						this.index.add(new ExpIndex(indexValue));
+						this.indices.add(new ExpIndex(indexValue));
 					}
 					expression = expression.substring(ri + 1);
 					li = expression.indexOf('[');
@@ -217,22 +236,34 @@ public final class ArbitraryExpression implements Comparable<ArbitraryExpression
 			List<Cursor> steps = new ArrayList<>();
 			String expName = this.getName();
 			steps.add(new ExpNameCursor(expName));
-			steps.addAll(this.getIndex().stream()
+			steps.addAll(this.getIndices().stream()
 				.map(it -> new ExpIndexCursor(expName, it.getIndex()))
 				.collect(toList()));
 			return steps;
+		}
+
+		public NodeResolver toNodeResolver(NodeResolver prevNodeResolver) {
+			NodeResolver nodeResolver = new PropertyNameNodeResolver(
+				prevNodeResolver,
+				name
+			);
+
+			for (ExpIndex index : indices) {
+				nodeResolver = new ContainerElementNodeResolver(nodeResolver, index.getIndex());
+			}
+			return nodeResolver;
 		}
 
 		public String getName() {
 			return name;
 		}
 
-		public List<ExpIndex> getIndex() {
-			return index;
+		public List<ExpIndex> getIndices() {
+			return indices;
 		}
 
 		public String toString() {
-			String indexBrackets = index.stream()
+			String indexBrackets = indices.stream()
 				.map(i -> "[" + i.toString() + "]")
 				.collect(Collectors.joining());
 			return name + indexBrackets;
@@ -240,8 +271,8 @@ public final class ArbitraryExpression implements Comparable<ArbitraryExpression
 
 		@Override
 		public int compareTo(Exp exp) {
-			List<ExpIndex> indices = this.getIndex();
-			List<ExpIndex> oIndices = exp.getIndex();
+			List<ExpIndex> indices = this.getIndices();
+			List<ExpIndex> oIndices = exp.getIndices();
 
 			if (exp.name.equals(this.name)) {
 				int indexLength = Math.min(oIndices.size(), indices.size());
@@ -266,15 +297,19 @@ public final class ArbitraryExpression implements Comparable<ArbitraryExpression
 				return false;
 			}
 			Exp exp = (Exp)obj;
-			return name.equals(exp.name) && index.equals(exp.index);
+			return name.equals(exp.name) && indices.equals(exp.indices);
 		}
 
 		@Override
 		public int hashCode() {
-			return Objects.hash(name, index);
+			return Objects.hash(name, indices);
 		}
 	}
 
+	/**
+	 *  use {@link com.navercorp.fixturemonkey.resolver.NodeResolver} instead
+	 *  */
+	@Deprecated
 	public abstract static class Cursor {
 		private final String name;
 		private final int index;
