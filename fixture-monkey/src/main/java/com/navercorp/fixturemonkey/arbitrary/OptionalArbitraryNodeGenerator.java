@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import net.jqwik.api.Arbitraries;
+
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.generator.FieldNameResolver;
 
@@ -35,22 +37,34 @@ public class OptionalArbitraryNodeGenerator implements ContainerArbitraryNodeGen
 		ArbitraryType<T> arbitraryType = containerNode.getType();
 		ArbitraryType<?> elementType = arbitraryType.getGenericArbitraryType(0);
 		String propertyName = containerNode.getPropertyName();
+		LazyArbitrary<T> lazyValue = containerNode.getValue();
 
-		LazyArbitrary<?> nextLazyValue = getNextLazyValue(containerNode.getValue());
+		if (lazyValue != null) {
+			T value = lazyValue.getValue();
+			if (value == null) {
+				containerNode.setArbitrary(Arbitraries.just(null));
+				return generatedNodeList;
+			}
 
-		if (nextLazyValue != null && nextLazyValue.getValue() == null) {
-			// can not generate Optional empty by ArbitraryGenerator
-			return generatedNodeList;
+			Optional<?> optional = ((Optional<?>)value);
+			Object nextObject = optional.orElse(null);
+			LazyArbitrary<?> nextLazyValue = LazyArbitrary.lazy(() -> nextObject, true);
+
+			if (nextLazyValue.getValue() == null) {
+				// can not generate Optional empty by ArbitraryGenerator
+				return generatedNodeList;
+			}
+
+			@SuppressWarnings("unchecked")
+			ArbitraryNode<?> nextNode = ArbitraryNode.builder()
+				.type(elementType)
+				.value(nextLazyValue)
+				.propertyName(propertyName)
+				.indexOfIterable(0)
+				.build();
+			generatedNodeList.add(nextNode);
 		}
 
-		@SuppressWarnings("unchecked")
-		ArbitraryNode<?> nextNode = ArbitraryNode.builder()
-			.type(elementType)
-			.value(nextLazyValue)
-			.propertyName(propertyName)
-			.indexOfIterable(0)
-			.build();
-		generatedNodeList.add(nextNode);
 		return generatedNodeList;
 	}
 
@@ -61,18 +75,5 @@ public class OptionalArbitraryNodeGenerator implements ContainerArbitraryNodeGen
 	@Override
 	public <T> List<ArbitraryNode<?>> generate(ArbitraryNode<T> nowNode, FieldNameResolver fieldNameResolver) {
 		return this.generate(nowNode);
-	}
-
-	@SuppressWarnings("unchecked")
-	private <T, U> LazyArbitrary<U> getNextLazyValue(LazyArbitrary<T> lazyValue) {
-		if (lazyValue == null) {
-			return null;
-		}
-
-		T value = lazyValue.getValue();
-
-		Optional<U> optional = ((Optional<U>)value);
-		U nextObject = optional.orElse(null);
-		return LazyArbitrary.lazy(() -> nextObject, true);
 	}
 }

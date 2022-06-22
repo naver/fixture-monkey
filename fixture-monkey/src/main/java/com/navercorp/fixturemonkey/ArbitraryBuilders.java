@@ -54,9 +54,9 @@ public final class ArbitraryBuilders {
 		return a1.zipWith(a2, a3, a4, combinator);
 	}
 
-	public static <T> ArbitraryBuilder<T> zip(
+	public static <R> ArbitraryBuilder<R> zip(
 		List<ArbitraryBuilder<?>> list,
-		Function<List<?>, T> combinator
+		Function<List<?>, R> combinator
 	) {
 		if (list.size() < 2) {
 			throw new IllegalArgumentException(

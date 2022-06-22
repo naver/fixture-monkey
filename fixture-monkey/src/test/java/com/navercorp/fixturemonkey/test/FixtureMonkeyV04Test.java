@@ -36,11 +36,17 @@ import java.util.OptionalLong;
 import java.util.Set;
 
 import net.jqwik.api.Arbitraries;
+import net.jqwik.api.Arbitrary;
 import net.jqwik.api.Property;
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
+import com.navercorp.fixturemonkey.ArbitraryBuilders;
 import com.navercorp.fixturemonkey.LabMonkey;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
+import com.navercorp.fixturemonkey.test.ComplexManipulatorTestSpecs.IntValue;
+import com.navercorp.fixturemonkey.test.ComplexManipulatorTestSpecs.NestedStringList;
+import com.navercorp.fixturemonkey.test.ComplexManipulatorTestSpecs.StringAndInt;
+import com.navercorp.fixturemonkey.test.ComplexManipulatorTestSpecs.StringValue;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.ComplexObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.SimpleObject;
 
@@ -723,5 +729,219 @@ class FixtureMonkeyV04Test {
 			.sample();
 
 		then(actual).isEqualTo(expected);
+	}
+
+	@Property
+	void giveMeZipList() {
+		// given
+		List<ArbitraryBuilder<?>> list = new ArrayList<>();
+		list.add(SUT.giveMeBuilder(StringValue.class));
+		list.add(SUT.giveMeBuilder(IntValue.class));
+
+		// when
+		StringAndInt actual = ArbitraryBuilders.zip(
+			list,
+			(l) -> {
+				StringAndInt result = new StringAndInt();
+				result.setValue1((StringValue)l.get(0));
+				result.setValue2((IntValue)l.get(1));
+				return result;
+			}
+		).sample();
+
+		then(actual.getValue1()).isNotNull();
+		then(actual.getValue2()).isNotNull();
+	}
+
+	@Property
+	void giveMeZipEmptyListThrows() {
+		// given
+		List<ArbitraryBuilder<?>> list = new ArrayList<>();
+
+		thenThrownBy(
+			() -> ArbitraryBuilders.zip(
+				list,
+				(l) -> new StringAndInt()
+			).sample()
+		).isExactlyInstanceOf(IllegalArgumentException.class)
+			.hasMessageContaining("zip should be used in more than two ArbitraryBuilders, given size");
+	}
+
+	@Property
+	void zipThree() {
+		// given
+		ArbitraryBuilder<StringValue> s1 = SUT.giveMeBuilder(StringValue.class)
+			.set("value", "s1");
+		ArbitraryBuilder<StringValue> s2 = SUT.giveMeBuilder(StringValue.class)
+			.set("value", "s2");
+		ArbitraryBuilder<StringValue> s3 = SUT.giveMeBuilder(StringValue.class)
+			.set("value", "s3");
+
+		// when
+		NestedStringList actual = ArbitraryBuilders.zip(s1, s2, s3, (a1, a2, a3) -> {
+			List<StringValue> list = new ArrayList<>();
+			list.add(a1);
+			list.add(a2);
+			list.add(a3);
+
+			NestedStringList result = new NestedStringList();
+			result.setValues(list);
+			return result;
+		}).sample();
+
+		then(actual.getValues()).hasSize(3);
+		then(actual.getValues().get(0).getValue()).isEqualTo("s1");
+		then(actual.getValues().get(1).getValue()).isEqualTo("s2");
+		then(actual.getValues().get(2).getValue()).isEqualTo("s3");
+	}
+
+	@Property
+	void giveMeZipWithThree() {
+		// given
+		ArbitraryBuilder<StringValue> s1 = SUT.giveMeBuilder(StringValue.class)
+			.set("value", "s1");
+		ArbitraryBuilder<StringValue> s2 = SUT.giveMeBuilder(StringValue.class)
+			.set("value", "s2");
+		ArbitraryBuilder<StringValue> s3 = SUT.giveMeBuilder(StringValue.class)
+			.set("value", "s3");
+
+		// when
+		NestedStringList actual = s1.zipWith(s2, s3, (a1, a2, a3) -> {
+			List<StringValue> list = new ArrayList<>();
+			list.add(a1);
+			list.add(a2);
+			list.add(a3);
+
+			NestedStringList result = new NestedStringList();
+			result.setValues(list);
+			return result;
+		}).sample();
+
+		then(actual.getValues()).hasSize(3);
+		then(actual.getValues().get(0).getValue()).isEqualTo("s1");
+		then(actual.getValues().get(1).getValue()).isEqualTo("s2");
+		then(actual.getValues().get(2).getValue()).isEqualTo("s3");
+	}
+
+	@Property
+	void zipFour() {
+		// given
+		ArbitraryBuilder<StringValue> s1 = SUT.giveMeBuilder(StringValue.class)
+			.set("value", "s1");
+		ArbitraryBuilder<StringValue> s2 = SUT.giveMeBuilder(StringValue.class)
+			.set("value", "s2");
+		ArbitraryBuilder<StringValue> s3 = SUT.giveMeBuilder(StringValue.class)
+			.set("value", "s3");
+		ArbitraryBuilder<StringValue> s4 = SUT.giveMeBuilder(StringValue.class)
+			.set("value", "s4");
+
+		// when
+		NestedStringList actual = ArbitraryBuilders.zip(s1, s2, s3, s4, (a1, a2, a3, a4) -> {
+			List<StringValue> list = new ArrayList<>();
+			list.add(a1);
+			list.add(a2);
+			list.add(a3);
+			list.add(a4);
+
+			NestedStringList result = new NestedStringList();
+			result.setValues(list);
+			return result;
+		}).sample();
+
+		then(actual.getValues()).hasSize(4);
+		then(actual.getValues().get(0).getValue()).isEqualTo("s1");
+		then(actual.getValues().get(1).getValue()).isEqualTo("s2");
+		then(actual.getValues().get(2).getValue()).isEqualTo("s3");
+		then(actual.getValues().get(3).getValue()).isEqualTo("s4");
+	}
+
+	@Property
+	void giveMeZipWithFour() {
+		// given
+		ArbitraryBuilder<StringValue> s1 = SUT.giveMeBuilder(StringValue.class)
+			.set("value", "s1");
+		ArbitraryBuilder<StringValue> s2 = SUT.giveMeBuilder(StringValue.class)
+			.set("value", "s2");
+		ArbitraryBuilder<StringValue> s3 = SUT.giveMeBuilder(StringValue.class)
+			.set("value", "s3");
+		ArbitraryBuilder<StringValue> s4 = SUT.giveMeBuilder(StringValue.class)
+			.set("value", "s4");
+
+		// when
+		NestedStringList actual = s1.zipWith(s2, s3, s4, (a1, a2, a3, a4) -> {
+			List<StringValue> list = new ArrayList<>();
+			list.add(a1);
+			list.add(a2);
+			list.add(a3);
+			list.add(a4);
+
+			NestedStringList result = new NestedStringList();
+			result.setValues(list);
+			return result;
+		}).sample();
+
+		then(actual.getValues()).hasSize(4);
+		then(actual.getValues().get(0).getValue()).isEqualTo("s1");
+		then(actual.getValues().get(1).getValue()).isEqualTo("s2");
+		then(actual.getValues().get(2).getValue()).isEqualTo("s3");
+		then(actual.getValues().get(3).getValue()).isEqualTo("s4");
+	}
+
+	@Property
+	void giveMeZipWith() {
+		// given
+		ArbitraryBuilder<String> stringArbitraryBuilder = SUT.giveMeBuilder(String.class);
+
+		// when
+		String actual = SUT.giveMeBuilder(Integer.class)
+			.zipWith(stringArbitraryBuilder, (integer, string) -> integer + "" + string)
+			.sample();
+
+		then(actual).isNotNull();
+	}
+
+	@Property
+	void giveMeZipTwoElement() {
+		// given
+		ArbitraryBuilder<String> stringArbitraryBuilder = SUT.giveMeBuilder(String.class);
+		ArbitraryBuilder<Integer> integerArbitraryBuilder = SUT.giveMeBuilder(Integer.class);
+
+		// when
+		String actual = ArbitraryBuilders.zip(
+			stringArbitraryBuilder,
+			integerArbitraryBuilder,
+			(integer, string) -> integer + "" + string
+		).sample();
+
+		then(actual).isNotNull();
+	}
+
+	@Property
+	void giveMeZipReturnsNew() {
+		// given
+		ArbitraryBuilder<String> stringArbitraryBuilder = SUT.giveMeBuilder(String.class);
+		ArbitraryBuilder<Integer> integerArbitraryBuilder = SUT.giveMeBuilder(Integer.class);
+
+		// when
+		Arbitrary<String> zippedArbitraryBuilder = ArbitraryBuilders.zip(
+			stringArbitraryBuilder,
+			integerArbitraryBuilder,
+			(integer, string) -> integer + "" + string
+		).build();
+
+		// then
+		String result1 = zippedArbitraryBuilder.sample();
+		String result2 = zippedArbitraryBuilder.sample();
+		then(result1).isNotEqualTo(result2);
+	}
+
+	@Property
+	void setNullFixedReturnsNull() {
+		SimpleObject actual = SUT.giveMeBuilder(SimpleObject.class)
+			.setNull("$")
+			.fixed()
+			.sample();
+
+		then(actual).isNull();
 	}
 }

@@ -28,6 +28,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -39,6 +40,8 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import net.jqwik.api.Arbitrary;
+import net.jqwik.api.Combinators.F3;
+import net.jqwik.api.Combinators.F4;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
@@ -300,36 +303,68 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 	@Override
 	public <U> ArbitraryBuilder<U> map(Function<T, U> mapper) {
 		LazyArbitrary<U> lazyArbitrary = LazyArbitrary.lazy(() -> mapper.apply(this.sample()));
+		return generateArbitraryBuilderLazily(lazyArbitrary);
+	}
 
-		RootProperty property = new RootProperty(new LazyAnnotatedType<>(lazyArbitrary::getValue));
+	@Override
+	public <U, R> ArbitraryBuilder<R> zipWith(ArbitraryBuilder<U> other, BiFunction<T, U, R> combinator) {
+		LazyArbitrary<R> lazyArbitrary = LazyArbitrary.lazy(() -> combinator.apply(this.sample(), other.sample()));
+		return generateArbitraryBuilderLazily(lazyArbitrary);
+	}
 
-		List<ArbitraryManipulator> manipulators = new ArrayList<>();
-		manipulators.add(
-			new ArbitraryManipulator(
-				new RootNodeResolver(),
-				new NodeSetLazyManipulator<>(traverser, lazyArbitrary)
-			)
+	@Override
+	public <U, V, R> ArbitraryBuilder<R> zipWith(
+		ArbitraryBuilder<U> other,
+		ArbitraryBuilder<V> another,
+		F3<T, U, V, R> combinator
+	) {
+		LazyArbitrary<R> lazyArbitrary = LazyArbitrary.lazy(
+			() -> combinator.apply(this.sample(), other.sample(), another.sample())
 		);
+		return generateArbitraryBuilderLazily(lazyArbitrary);
+	}
 
-		Set<LazyArbitrary<?>> lazyArbitraries = new HashSet<>();
-		lazyArbitraries.add(lazyArbitrary);
-
-		return new DefaultArbitraryBuilder<>(
-			generateOptions,
-			property,
-			resolver,
-			traverser,
-			validator,
-			manipulators,
-			lazyArbitraries
+	@Override
+	public <U, V, W, R> ArbitraryBuilder<R> zipWith(
+		ArbitraryBuilder<U> other,
+		ArbitraryBuilder<V> another,
+		ArbitraryBuilder<W> theOther,
+		F4<T, U, V, W, R> combinator
+	) {
+		LazyArbitrary<R> lazyArbitrary = LazyArbitrary.lazy(
+			() -> combinator.apply(this.sample(), other.sample(), another.sample(), theOther.sample())
 		);
+		return generateArbitraryBuilderLazily(lazyArbitrary);
+	}
+
+	@SuppressWarnings({"rawtypes", "unchecked"})
+	@Override
+	public <R> ArbitraryBuilder<R> zipWith(
+		List<ArbitraryBuilder<?>> others,
+		Function<List<?>, R> combinator
+	) {
+		LazyArbitrary<R> lazyArbitrary = LazyArbitrary.lazy(
+			() -> {
+				List combinedList = new ArrayList<>();
+				combinedList.add(this.sample());
+				for (ArbitraryBuilder<?> other : others) {
+					combinedList.add(other.sample());
+				}
+				return combinator.apply(combinedList);
+			}
+		);
+		return generateArbitraryBuilderLazily(lazyArbitrary);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public Arbitrary<T> build() {
 		return new ArbitraryValue<>(
-			() -> (Arbitrary<T>)this.resolver.resolve(this.rootProperty, this.manipulators),
+			() -> {
+				Arbitrary<T> arbitrary = (Arbitrary<T>)this.resolver.resolve(this.rootProperty, this.manipulators);
+				lazyArbitraries.forEach(LazyArbitrary::clear);
+				return arbitrary;
+			},
 			this.validator,
 			this.validOnly
 		);
@@ -337,9 +372,7 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 
 	@Override
 	public T sample() {
-		T sampled = this.build().sample();
-		lazyArbitraries.forEach(LazyArbitrary::clear);
-		return sampled;
+		return this.build().sample();
 	}
 
 	@Override
@@ -371,5 +404,28 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 			nodeResolver = new ApplyExpressionStrictModeResolver(nodeResolver);
 		}
 		return nodeResolver;
+	}
+
+	private <R> DefaultArbitraryBuilder<R> generateArbitraryBuilderLazily(LazyArbitrary<R> lazyArbitrary) {
+		List<ArbitraryManipulator> manipulators = new ArrayList<>();
+		manipulators.add(
+			new ArbitraryManipulator(
+				new RootNodeResolver(),
+				new NodeSetLazyManipulator<>(traverser, lazyArbitrary)
+			)
+		);
+
+		Set<LazyArbitrary<?>> lazyArbitraries = new HashSet<>();
+		lazyArbitraries.add(lazyArbitrary);
+
+		return new DefaultArbitraryBuilder<>(
+			generateOptions,
+			new RootProperty(new LazyAnnotatedType<>(lazyArbitrary::getValue)),
+			resolver,
+			traverser,
+			validator,
+			manipulators,
+			lazyArbitraries
+		);
 	}
 }
