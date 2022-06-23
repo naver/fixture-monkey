@@ -75,7 +75,6 @@ public class LabMonkey extends FixtureMonkey {
 	@Override
 	public <T> DefaultArbitraryBuilder<T> giveMeBuilder(TypeReference<T> type) {
 		return new DefaultArbitraryBuilder<>(
-			generateOptions,
 			manipulateOptions,
 			new RootProperty(type.getAnnotatedType()),
 			new ArbitraryResolver(
@@ -101,7 +100,6 @@ public class LabMonkey extends FixtureMonkey {
 		);
 
 		return new DefaultArbitraryBuilder<>(
-			generateOptions,
 			manipulateOptions,
 			new RootProperty(new LazyAnnotatedType<>(() -> value)),
 			new ArbitraryResolver(

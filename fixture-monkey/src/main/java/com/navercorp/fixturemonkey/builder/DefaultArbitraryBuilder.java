@@ -48,7 +48,6 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.OldArbitraryBuilderImpl;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
-import com.navercorp.fixturemonkey.api.option.GenerateOptions;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
 import com.navercorp.fixturemonkey.api.type.LazyAnnotatedType;
 import com.navercorp.fixturemonkey.api.type.Types;
@@ -73,7 +72,6 @@ import com.navercorp.fixturemonkey.validator.ArbitraryValidator;
 @SuppressFBWarnings("NM_SAME_SIMPLE_NAME_AS_SUPERCLASS")
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T> {
-	private final GenerateOptions generateOptions;
 	private final ManipulateOptions manipulateOptions;
 	private final RootProperty rootProperty;
 	private final ArbitraryResolver resolver;
@@ -85,7 +83,6 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 	private boolean validOnly = true;
 
 	public DefaultArbitraryBuilder(
-		GenerateOptions generateOptions,
 		ManipulateOptions manipulateOptions,
 		RootProperty rootProperty,
 		ArbitraryResolver resolver,
@@ -95,7 +92,6 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 		Set<LazyArbitrary<?>> lazyArbitraries
 	) {
 		super();
-		this.generateOptions = generateOptions;
 		this.manipulateOptions = manipulateOptions;
 		this.rootProperty = rootProperty;
 		this.resolver = resolver;
@@ -401,7 +397,6 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 	@Override
 	public ArbitraryBuilder<T> copy() {
 		return new DefaultArbitraryBuilder<>(
-			generateOptions,
 			manipulateOptions,
 			rootProperty,
 			resolver,
@@ -425,7 +420,6 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 		lazyArbitraries.add(lazyArbitrary);
 
 		return new DefaultArbitraryBuilder<>(
-			generateOptions,
 			manipulateOptions,
 			new RootProperty(new LazyAnnotatedType<>(lazyArbitrary::getValue)),
 			resolver,
