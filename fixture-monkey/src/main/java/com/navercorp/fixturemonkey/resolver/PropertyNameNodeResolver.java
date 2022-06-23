@@ -20,35 +20,38 @@ package com.navercorp.fixturemonkey.resolver;
 
 import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.NOT_NULL_INJECT;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public final class NodePropertyResolver implements NodeResolver {
-	private final NodeResolver prevResolver;
-	private final String property;
+public final class PropertyNameNodeResolver implements NodeResolver {
+	private final NodeResolver nodeResolver;
+	private final String propertyName;
 
-	public NodePropertyResolver(NodeResolver prevResolver, String property) {
-		this.prevResolver = prevResolver;
-		this.property = property;
+	public PropertyNameNodeResolver(NodeResolver nodeResolver, String propertyName) {
+		this.nodeResolver = nodeResolver;
+		this.propertyName = propertyName;
 	}
 
 	@Override
 	public List<ArbitraryNode> resolve(ArbitraryTree arbitraryTree) {
-		List<ArbitraryNode> nodes = prevResolver.resolve(arbitraryTree);
-		LinkedList<ArbitraryNode> nextNodes = new LinkedList<>();
-		for (ArbitraryNode selectedNode : nodes) {
-			List<ArbitraryNode> children = selectedNode.getChildren();
-			for (ArbitraryNode child : children) {
-				if (property.equals(child.getArbitraryProperty().getResolvePropertyName())) {
-					child.setArbitraryProperty(child.getArbitraryProperty().withNullInject(NOT_NULL_INJECT));
-					nextNodes.add(child);
-				}
+		List<ArbitraryNode> result = new ArrayList<>();
+
+		List<ArbitraryNode> previousNodes = nodeResolver.resolve(arbitraryTree).stream()
+			.flatMap(it -> it.getChildren().stream())
+			.collect(Collectors.toList());
+
+		for (ArbitraryNode node : previousNodes) {
+			String nodePropertyName = node.getArbitraryProperty().getResolvePropertyName();
+			if (propertyName.equals(nodePropertyName)) {
+				node.setArbitraryProperty(node.getArbitraryProperty().withNullInject(NOT_NULL_INJECT));
+				result.add(node);
 			}
 		}
-		return nextNodes;
+		return result;
 	}
 }
