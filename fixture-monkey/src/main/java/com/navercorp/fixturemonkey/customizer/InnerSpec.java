@@ -35,17 +35,17 @@ import net.jqwik.api.Arbitrary;
 import com.navercorp.fixturemonkey.resolver.AddMapEntryNodeManipulator;
 import com.navercorp.fixturemonkey.resolver.ArbitraryManipulator;
 import com.navercorp.fixturemonkey.resolver.ArbitraryTraverser;
+import com.navercorp.fixturemonkey.resolver.ContainerElementNodeResolver;
 import com.navercorp.fixturemonkey.resolver.MapNodeManipulator;
-import com.navercorp.fixturemonkey.resolver.NodeIndexResolver;
 import com.navercorp.fixturemonkey.resolver.NodeKeyValueResolver;
 import com.navercorp.fixturemonkey.resolver.NodeLastEntryResolver;
 import com.navercorp.fixturemonkey.resolver.NodeManipulator;
 import com.navercorp.fixturemonkey.resolver.NodeNullityManipulator;
-import com.navercorp.fixturemonkey.resolver.NodePropertyResolver;
 import com.navercorp.fixturemonkey.resolver.NodeResolver;
 import com.navercorp.fixturemonkey.resolver.NodeSetArbitraryManipulator;
 import com.navercorp.fixturemonkey.resolver.NodeSetDecomposedValueManipulator;
 import com.navercorp.fixturemonkey.resolver.NodeSizeManipulator;
+import com.navercorp.fixturemonkey.resolver.PropertyNameNodeResolver;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class InnerSpec {
@@ -148,7 +148,7 @@ public final class InnerSpec {
 	}
 
 	public void listElement(int index, @Nullable Object value) {
-		NodeResolver nextResolver = new NodeIndexResolver(this.treePathResolver, index);
+		NodeResolver nextResolver = new ContainerElementNodeResolver(this.treePathResolver, index);
 		NodeManipulator manipulator = convertToNodeManipulator(value);
 		arbitraryManipulators.add(new ArbitraryManipulator(nextResolver, manipulator));
 	}
@@ -159,14 +159,14 @@ public final class InnerSpec {
 			return;
 		}
 
-		NodeResolver nextResolver = new NodeIndexResolver(this.treePathResolver, index);
+		NodeResolver nextResolver = new ContainerElementNodeResolver(this.treePathResolver, index);
 		InnerSpec innerSpec = new InnerSpec(traverser, nextResolver);
 		consumer.accept(innerSpec);
 		arbitraryManipulators.addAll(innerSpec.arbitraryManipulators);
 	}
 
 	public void property(String property, @Nullable Object value) {
-		NodeResolver nextResolver = new NodePropertyResolver(this.treePathResolver, property);
+		NodeResolver nextResolver = new PropertyNameNodeResolver(this.treePathResolver, property);
 		NodeManipulator manipulator = convertToNodeManipulator(value);
 		arbitraryManipulators.add(new ArbitraryManipulator(nextResolver, manipulator));
 	}
@@ -177,7 +177,7 @@ public final class InnerSpec {
 			return;
 		}
 
-		NodeResolver nextResolver = new NodePropertyResolver(this.treePathResolver, property);
+		NodeResolver nextResolver = new PropertyNameNodeResolver(this.treePathResolver, property);
 		InnerSpec innerSpec = new InnerSpec(traverser, nextResolver);
 		consumer.accept(innerSpec);
 		arbitraryManipulators.addAll(innerSpec.arbitraryManipulators);
