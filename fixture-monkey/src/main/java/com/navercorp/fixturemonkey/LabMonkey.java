@@ -18,12 +18,17 @@
 
 package com.navercorp.fixturemonkey;
 
+import static java.util.stream.Collectors.toList;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
+
+import net.jqwik.api.Arbitrary;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
@@ -112,5 +117,45 @@ public class LabMonkey extends FixtureMonkey {
 			manipulators,
 			new HashSet<>()
 		);
+	}
+
+	@Override
+	public <T> Stream<T> giveMe(Class<T> type) {
+		return this.giveMeBuilder(type).build().sampleStream();
+	}
+
+	@Override
+	public <T> Stream<T> giveMe(TypeReference<T> typeReference) {
+		return this.giveMeBuilder(typeReference).build().sampleStream();
+	}
+
+	@Override
+	public <T> List<T> giveMe(Class<T> type, int size) {
+		return this.giveMe(type).limit(size).collect(toList());
+	}
+
+	@Override
+	public <T> List<T> giveMe(TypeReference<T> typeReference, int size) {
+		return this.giveMe(typeReference).limit(size).collect(toList());
+	}
+
+	@Override
+	public <T> T giveMeOne(Class<T> type) {
+		return this.giveMe(type, 1).get(0);
+	}
+
+	@Override
+	public <T> T giveMeOne(TypeReference<T> typeReference) {
+		return this.giveMe(typeReference, 1).get(0);
+	}
+
+	@Override
+	public <T> Arbitrary<T> giveMeArbitrary(Class<T> type) {
+		return this.giveMeBuilder(type).build();
+	}
+
+	@Override
+	public <T> Arbitrary<T> giveMeArbitrary(TypeReference<T> typeReference) {
+		return this.giveMeBuilder(typeReference).build();
 	}
 }
