@@ -21,6 +21,7 @@ package com.navercorp.fixturemonkey;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import com.navercorp.fixturemonkey.api.generator.ArbitraryPropertyGenerator;
 import com.navercorp.fixturemonkey.api.option.GenerateOptions;
 import com.navercorp.fixturemonkey.api.option.GenerateOptionsBuilder;
 import com.navercorp.fixturemonkey.expression.MonkeyExpressionFactory;
@@ -46,6 +47,11 @@ public class LabMonkeyBuilder {
 
 	public LabMonkeyBuilder monkeyExpressionFactory(MonkeyExpressionFactory monkeyExpressionFactory) {
 		manipulateOptionsBuilder.monkeyExpressionFactory(monkeyExpressionFactory);
+		return this;
+	}
+
+	public LabMonkeyBuilder defaultArbitraryPropertyGenerator(ArbitraryPropertyGenerator arbitraryPropertyGenerator) {
+		generateOptionsBuilder.defaultArbitraryPropertyGenerator(arbitraryPropertyGenerator);
 		return this;
 	}
 
