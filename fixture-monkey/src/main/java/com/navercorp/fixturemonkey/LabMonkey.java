@@ -35,6 +35,7 @@ import com.navercorp.fixturemonkey.builder.DefaultArbitraryBuilder;
 import com.navercorp.fixturemonkey.resolver.ArbitraryManipulator;
 import com.navercorp.fixturemonkey.resolver.ArbitraryResolver;
 import com.navercorp.fixturemonkey.resolver.ArbitraryTraverser;
+import com.navercorp.fixturemonkey.resolver.ManipulateOptions;
 import com.navercorp.fixturemonkey.resolver.ManipulatorOptimizer;
 import com.navercorp.fixturemonkey.resolver.NodeSetDecomposedValueManipulator;
 import com.navercorp.fixturemonkey.resolver.RootNodeResolver;
@@ -43,6 +44,7 @@ import com.navercorp.fixturemonkey.validator.ArbitraryValidator;
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public class LabMonkey extends FixtureMonkey {
 	private final GenerateOptions generateOptions;
+	private final ManipulateOptions manipulateOptions;
 	private final ArbitraryTraverser traverser;
 	private final ManipulatorOptimizer manipulatorOptimizer;
 	private final ArbitraryValidator validator;
@@ -50,12 +52,14 @@ public class LabMonkey extends FixtureMonkey {
 	@SuppressFBWarnings("NP_NULL_PARAM_DEREF_NONVIRTUAL")
 	public LabMonkey(
 		GenerateOptions generateOptions,
+		ManipulateOptions manipulateOptions,
 		ArbitraryTraverser traverser,
 		ManipulatorOptimizer manipulatorOptimizer,
 		ArbitraryValidator validator
 	) {
 		super(null, null, null, null, null);
 		this.generateOptions = generateOptions;
+		this.manipulateOptions = manipulateOptions;
 		this.traverser = traverser;
 		this.manipulatorOptimizer = manipulatorOptimizer;
 		this.validator = validator;
@@ -71,7 +75,7 @@ public class LabMonkey extends FixtureMonkey {
 	@Override
 	public <T> DefaultArbitraryBuilder<T> giveMeBuilder(TypeReference<T> type) {
 		return new DefaultArbitraryBuilder<>(
-			generateOptions,
+			manipulateOptions,
 			new RootProperty(type.getAnnotatedType()),
 			new ArbitraryResolver(
 				traverser,
@@ -96,7 +100,7 @@ public class LabMonkey extends FixtureMonkey {
 		);
 
 		return new DefaultArbitraryBuilder<>(
-			generateOptions,
+			manipulateOptions,
 			new RootProperty(new LazyAnnotatedType<>(() -> value)),
 			new ArbitraryResolver(
 				traverser,
