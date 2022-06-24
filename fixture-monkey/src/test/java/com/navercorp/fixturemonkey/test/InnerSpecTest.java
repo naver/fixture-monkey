@@ -22,6 +22,8 @@ import static org.assertj.core.api.BDDAssertions.then;
 import static org.assertj.core.api.BDDAssertions.thenThrownBy;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -195,6 +197,50 @@ class InnerSpecTest {
 			.map(SimpleObject::getStr).collect(Collectors.toList());
 
 		then(fieldList).contains("test");
+	}
+
+	@Property
+	void mapSetEntryKeyAddEntry() {
+		MapObject actual = SUT.giveMeBuilder(MapObject.class)
+			.setInner("mapValueMap", m -> {
+				m.entry("key1", v-> {
+					v.entry("key2", "value");
+				});
+			})
+			.sample();
+
+		Map<String, String> value = actual.getMapValueMap().get("key1");
+		then(value.get("key2")).isEqualTo("value");
+	}
+
+	@Property
+	void mapSetEntryValueAddEntry() {
+		MapObject actual = SUT.giveMeBuilder(MapObject.class)
+			.setInner("mapKeyMap", m -> {
+				m.entry(k-> {
+					k.entry("key", "value2");
+				}, "value1");
+			})
+			.sample();
+
+		Map<String, String> key = null;
+		for (Entry<Map<String, String>, String> entry : actual.getMapKeyMap().entrySet()) {
+			if (entry.getValue() != null && entry.getValue().equals("value1")) {
+				key = entry.getKey();
+			}
+		}
+		then(key.get("key")).isEqualTo("value2");
+	}
+
+	@Property
+	void mapSetEntryValueNull() {
+		MapObject actual = SUT.giveMeBuilder(MapObject.class)
+			.setInner("strMap", m -> {
+				m.entry("key", null);
+			})
+			.sample();
+
+		then(actual.getStrMap().get("key")).isNull();
 	}
 
 	@Property

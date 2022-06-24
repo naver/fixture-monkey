@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import javax.annotation.Nullable;
+import javax.validation.constraints.Null;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -132,19 +133,54 @@ public final class InnerSpec {
 	}
 
 	public void entry(Object key, @Nullable Object value) {
+		setEntry(key, value);
+	}
+
+	public void entry(Object key, Consumer<InnerSpec> consumer) {
 		if (key == null) {
 			throw new IllegalArgumentException(
 				"Map key cannot be null."
 			);
 		}
 
+		if (consumer == null) {
+			setEntry(key, null);
+			return;
+		}
+
 		NodeManipulator keyManipulator = convertToNodeManipulator(key);
-		NodeManipulator valueManipulator = convertToNodeManipulator(value);
 		NodeManipulator mapManipulator = new MapNodeManipulator(
 			traverser,
 			Collections.singletonList(keyManipulator),
-			Collections.singletonList(valueManipulator));
+			Collections.emptyList()
+		);
 		arbitraryManipulators.add(new ArbitraryManipulator(this.treePathResolver, mapManipulator));
+
+		NodeResolver nextResolver = new NodeKeyValueResolver(
+			new NodeLastEntryResolver(this.treePathResolver),
+			false
+		);
+		InnerSpec innerSpec = new InnerSpec(traverser, nextResolver);
+		consumer.accept(innerSpec);
+		arbitraryManipulators.addAll(innerSpec.arbitraryManipulators);
+	}
+
+	public void entry(Consumer<InnerSpec> consumer, @Nullable Object value) {
+		NodeManipulator valueManipulator = convertToNodeManipulator(value);
+		NodeManipulator mapManipulator = new MapNodeManipulator(
+			traverser,
+			Collections.emptyList(),
+			Collections.singletonList(valueManipulator)
+		);
+		arbitraryManipulators.add(new ArbitraryManipulator(this.treePathResolver, mapManipulator));
+
+		NodeResolver nextResolver = new NodeKeyValueResolver(
+			new NodeLastEntryResolver(this.treePathResolver),
+			true
+		);
+		InnerSpec innerSpec = new InnerSpec(traverser, nextResolver);
+		consumer.accept(innerSpec);
+		arbitraryManipulators.addAll(innerSpec.arbitraryManipulators);
 	}
 
 	public void listElement(int index, @Nullable Object value) {
@@ -194,6 +230,22 @@ public final class InnerSpec {
 			Collections.singletonList(convertToNodeManipulator(value))
 		);
 		arbitraryManipulators.add(new ArbitraryManipulator(this.treePathResolver, manipulator));
+	}
+
+	private void setEntry(Object key, @Nullable Object value) {
+		if (key == null) {
+			throw new IllegalArgumentException(
+				"Map key cannot be null."
+			);
+		}
+
+		NodeManipulator keyManipulator = convertToNodeManipulator(key);
+		NodeManipulator valueManipulator = convertToNodeManipulator(value);
+		NodeManipulator mapManipulator = new MapNodeManipulator(
+			traverser,
+			Collections.singletonList(keyManipulator),
+			Collections.singletonList(valueManipulator));
+		arbitraryManipulators.add(new ArbitraryManipulator(this.treePathResolver, mapManipulator));
 	}
 
 	private NodeManipulator convertToNodeManipulator(@Nullable Object value) {
