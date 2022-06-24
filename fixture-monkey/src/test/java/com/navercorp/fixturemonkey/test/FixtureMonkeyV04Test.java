@@ -19,7 +19,6 @@
 package com.navercorp.fixturemonkey.test;
 
 import static org.assertj.core.api.BDDAssertions.then;
-import static org.assertj.core.api.BDDAssertions.thenNoException;
 import static org.assertj.core.api.BDDAssertions.thenThrownBy;
 
 import java.time.Instant;
@@ -44,7 +43,6 @@ import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.ArbitraryBuilders;
 import com.navercorp.fixturemonkey.LabMonkey;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
-import com.navercorp.fixturemonkey.resolver.RootNodeResolver;
 import com.navercorp.fixturemonkey.test.ComplexManipulatorTestSpecs.IntValue;
 import com.navercorp.fixturemonkey.test.ComplexManipulatorTestSpecs.NestedStringList;
 import com.navercorp.fixturemonkey.test.ComplexManipulatorTestSpecs.StringAndInt;
@@ -707,40 +705,6 @@ class FixtureMonkeyV04Test {
 		// then
 		String notExpected = arbitraryBuilder.sample();
 		then(actual).isNotEqualTo(notExpected);
-	}
-
-	@Property
-	void strictModeSetWrongExpressionThrows() {
-		LabMonkey labMonkey = LabMonkey.labMonkeyBuilder().useExpressionStrictMode().build();
-
-		thenThrownBy(
-			() -> labMonkey.giveMeBuilder(ComplexObject.class)
-				.set("nonExistentField", 0)
-				.sample()
-		).isExactlyInstanceOf(IllegalArgumentException.class)
-			.hasMessageContaining("No matching results for given NodeResolvers.");
-	}
-
-	@Property
-	void notStrictModeSetWrongExpressionDoesNotThrows() {
-		thenNoException()
-			.isThrownBy(() -> SUT.giveMeBuilder(ComplexObject.class)
-				.set("nonExistentField", 0)
-				.sample());
-	}
-
-	@Property
-	void alterMonkeyFactory() {
-		LabMonkey labMonkey = LabMonkey.labMonkeyBuilder()
-			.monkeyExpressionFactory((expression) -> RootNodeResolver::new)
-			.build();
-		String expected = "expected";
-
-		String actual = labMonkey.giveMeBuilder(String.class)
-			.set("test", expected)
-			.sample();
-
-		then(actual).isEqualTo(expected);
 	}
 
 	@Property
