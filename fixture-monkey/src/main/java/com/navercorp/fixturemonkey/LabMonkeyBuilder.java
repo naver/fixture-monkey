@@ -22,6 +22,7 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryPropertyGenerator;
+import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.option.GenerateOptions;
 import com.navercorp.fixturemonkey.api.option.GenerateOptionsBuilder;
 import com.navercorp.fixturemonkey.expression.MonkeyExpressionFactory;
@@ -52,6 +53,31 @@ public class LabMonkeyBuilder {
 
 	public LabMonkeyBuilder defaultArbitraryPropertyGenerator(ArbitraryPropertyGenerator arbitraryPropertyGenerator) {
 		generateOptionsBuilder.defaultArbitraryPropertyGenerator(arbitraryPropertyGenerator);
+		return this;
+	}
+
+	public LabMonkeyBuilder pushAssignableTypeArbitraryPropertyGenerator(
+		Class<?> type,
+		ArbitraryPropertyGenerator arbitraryPropertyGenerator
+	) {
+		generateOptionsBuilder.insertFirstArbitraryPropertyGenerator(type, arbitraryPropertyGenerator);
+		return this;
+	}
+
+	public LabMonkeyBuilder pushExactTypeArbitraryPropertyGenerator(
+		Class<?> type,
+		ArbitraryPropertyGenerator arbitraryPropertyGenerator
+	) {
+		generateOptionsBuilder.insertFirstArbitraryPropertyGenerator(
+			MatcherOperator.exactTypeMatchOperator(type, arbitraryPropertyGenerator)
+		);
+		return this;
+	}
+
+	public LabMonkeyBuilder pushArbitraryPropertyGenerator(
+		MatcherOperator<ArbitraryPropertyGenerator> arbitraryPropertyGenerator
+	) {
+		generateOptionsBuilder.insertFirstArbitraryPropertyGenerator(arbitraryPropertyGenerator);
 		return this;
 	}
 

@@ -25,9 +25,13 @@ import static org.assertj.core.api.BDDAssertions.thenThrownBy;
 import net.jqwik.api.Property;
 
 import com.navercorp.fixturemonkey.LabMonkey;
+import com.navercorp.fixturemonkey.api.generator.ArbitraryPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.ObjectArbitraryPropertyGenerator;
+import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.resolver.RootNodeResolver;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.SimpleObjectChild;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.ComplexObject;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.SimpleObject;
 
 class FixtureMonkeyV04OptionsTest {
 	@Property
@@ -76,6 +80,70 @@ class FixtureMonkeyV04OptionsTest {
 			.build();
 
 		ComplexObject actual = sut.giveMeOne(ComplexObject.class);
+
+		then(actual).isNull();
+	}
+
+	@Property
+	void pushAssignableTypeArbitraryPropertyGenerator() {
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.pushAssignableTypeArbitraryPropertyGenerator(
+				SimpleObject.class,
+				(context) -> ObjectArbitraryPropertyGenerator.INSTANCE.generate(context)
+					.withNullInject(1.0)
+			)
+			.build();
+
+		SimpleObjectChild actual = sut.giveMeOne(SimpleObjectChild.class);
+
+		then(actual).isNull();
+	}
+
+	@Property
+	void pushExactTypeArbitraryPropertyGenerator() {
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.pushExactTypeArbitraryPropertyGenerator(
+				SimpleObjectChild.class,
+				(context) -> ObjectArbitraryPropertyGenerator.INSTANCE.generate(context)
+					.withNullInject(1.0)
+			)
+			.build();
+
+		SimpleObjectChild actual = sut.giveMeOne(SimpleObjectChild.class);
+
+		then(actual).isNull();
+	}
+
+	@Property
+	void pushExactTypeArbitraryPropertyGeneratorNotAffectsAssignable() {
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.pushExactTypeArbitraryPropertyGenerator(
+				SimpleObject.class,
+				(context) -> ObjectArbitraryPropertyGenerator.INSTANCE.generate(context)
+					.withNullInject(1.0)
+			)
+			.build();
+
+		SimpleObjectChild actual = sut.giveMeOne(SimpleObjectChild.class);
+
+		then(actual).isNotNull();
+	}
+
+	@Property
+	void pushArbitraryPropertyGenerator() {
+		ArbitraryPropertyGenerator arbitraryPropertyGenerator = (context) ->
+			ObjectArbitraryPropertyGenerator.INSTANCE.generate(context)
+				.withNullInject(1.0);
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.pushArbitraryPropertyGenerator(
+				MatcherOperator.exactTypeMatchOperator(
+					SimpleObject.class,
+					arbitraryPropertyGenerator
+				)
+			)
+			.build();
+
+		SimpleObject actual = sut.giveMeOne(SimpleObject.class);
 
 		then(actual).isNull();
 	}
