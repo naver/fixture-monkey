@@ -98,14 +98,14 @@ class InnerSpecTest {
 	void mapAddKeyAddKey() {
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
 			.setInner("mapKeyMap", m -> {
-				m.key(k-> {
+				m.key(k -> {
 					k.key("key");
 				});
 			})
 			.sample();
 
 		List<String> keyList = actual.getMapKeyMap().keySet().stream()
-			.flatMap(it->it.keySet().stream()).collect(Collectors.toList());
+			.flatMap(it -> it.keySet().stream()).collect(Collectors.toList());
 		then(keyList).contains("key");
 	}
 
@@ -113,14 +113,14 @@ class InnerSpecTest {
 	void mapAddKeyAddValue() {
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
 			.setInner("mapKeyMap", m -> {
-				m.key(k-> {
+				m.key(k -> {
 					k.value("value");
 				});
 			})
 			.sample();
 
 		List<String> keyList = actual.getMapKeyMap().keySet().stream()
-			.flatMap(it->it.values().stream()).collect(Collectors.toList());
+			.flatMap(it -> it.values().stream()).collect(Collectors.toList());
 		then(keyList).contains("value");
 	}
 
@@ -128,14 +128,14 @@ class InnerSpecTest {
 	void mapAddValueAddKey() {
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
 			.setInner("mapValueMap", m -> {
-				m.value(v-> {
+				m.value(v -> {
 					v.key("key");
 				});
 			})
 			.sample();
 
 		List<String> valueList = actual.getMapValueMap().values().stream()
-			.flatMap(it-> it.keySet().stream()).collect(Collectors.toList());
+			.flatMap(it -> it.keySet().stream()).collect(Collectors.toList());
 		then(valueList).contains("key");
 	}
 
@@ -143,14 +143,14 @@ class InnerSpecTest {
 	void mapAddValueAddValue() {
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
 			.setInner("mapValueMap", m -> {
-				m.value(v-> {
+				m.value(v -> {
 					v.value("value");
 				});
 			})
 			.sample();
 
 		List<String> valueList = actual.getMapValueMap().values().stream()
-			.flatMap(it-> it.values().stream()).collect(Collectors.toList());
+			.flatMap(it -> it.values().stream()).collect(Collectors.toList());
 		then(valueList).contains("value");
 	}
 
@@ -158,11 +158,12 @@ class InnerSpecTest {
 	void mapSetValueSize() {
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
 			.setInner("listValueMap", m -> {
-				m.value(v-> {
+				m.value(v -> {
 					v.size(10);
 				});
 			})
 			.sample();
+
 		List<Integer> sizeList = actual.getListValueMap().values().stream()
 			.map(List::size).collect(Collectors.toList());
 		then(sizeList).contains(10);
@@ -172,12 +173,13 @@ class InnerSpecTest {
 	void mapSetValueListElement() {
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
 			.setInner("listValueMap", m -> {
-				m.value(v-> {
+				m.value(v -> {
 					v.size(1);
 					v.listElement(0, "test");
 				});
 			})
 			.sample();
+
 		List<String> elementList = actual.getListValueMap().values().stream()
 			.flatMap(List::stream).collect(Collectors.toList());
 		then(elementList).contains("test");
@@ -187,7 +189,7 @@ class InnerSpecTest {
 	void mapSetValueProperty() {
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
 			.setInner("objectValueMap", m -> {
-				m.value(v-> {
+				m.value(v -> {
 					v.property("str", "test");
 				});
 			})
@@ -195,7 +197,6 @@ class InnerSpecTest {
 
 		List<String> fieldList = actual.getObjectValueMap().values().stream().filter(Objects::nonNull)
 			.map(SimpleObject::getStr).collect(Collectors.toList());
-
 		then(fieldList).contains("test");
 	}
 
@@ -203,7 +204,7 @@ class InnerSpecTest {
 	void mapSetEntryKeyAddEntry() {
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
 			.setInner("mapValueMap", m -> {
-				m.entry("key1", v-> {
+				m.entry("key1", v -> {
 					v.entry("key2", "value");
 				});
 			})
@@ -217,19 +218,20 @@ class InnerSpecTest {
 	void mapSetEntryValueAddEntry() {
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
 			.setInner("mapKeyMap", m -> {
-				m.entry(k-> {
+				m.entry(k -> {
 					k.entry("key", "value2");
 				}, "value1");
 			})
 			.sample();
 
-		Map<String, String> key = null;
-		for (Entry<Map<String, String>, String> entry : actual.getMapKeyMap().entrySet()) {
-			if (entry.getValue() != null && entry.getValue().equals("value1")) {
-				key = entry.getKey();
-			}
-		}
-		then(key.get("key")).isEqualTo("value2");
+		Map<String, String> expected = actual.getMapKeyMap().entrySet()
+			.stream()
+			.filter(it -> "value1".equals(it.getValue()))
+			.findAny()
+			.get()
+			.getKey();
+
+		then(expected.get("key")).isEqualTo("value2");
 	}
 
 	@Property
@@ -248,7 +250,7 @@ class InnerSpecTest {
 		ListObject actual = SUT.giveMeBuilder(ListObject.class)
 			.setInner("listListStr", m -> {
 				m.size(1);
-				m.listElement(0, l-> {
+				m.listElement(0, l -> {
 					l.size(1);
 					l.listElement(0, "test");
 				});
@@ -262,7 +264,7 @@ class InnerSpecTest {
 	void objectSetPropertySetProperty() {
 		ObjectObject actual = SUT.giveMeBuilder(ObjectObject.class)
 			.setInner("complexObject", m -> {
-				m.property("simpleObject", o-> {
+				m.property("simpleObject", o -> {
 					o.property("str", "test");
 				});
 			})
