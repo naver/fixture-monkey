@@ -16,7 +16,7 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v2
         with:
-          distribution: 'adopt'
+          distribution: 'temurin'
           java-version: 8
       - name: Execute check without tests
         uses: gradle/gradle-build-action@v2.2.1
@@ -47,7 +47,7 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v2
         with:
-          distribution: 'adopt'
+          distribution: 'temurin'
           java-version: ${{ matrix.Java }}
       - name: Execute tests
         uses: gradle/gradle-build-action@v2.2.1
