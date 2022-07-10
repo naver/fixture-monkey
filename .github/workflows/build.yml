@@ -8,8 +8,36 @@ on:
   workflow_dispatch:
 
 jobs:
-  check:
-    name: JDK ${{ matrix.java }}
+  static-analysis:
+    name: Static analysis
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up JDK
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt'
+          java-version: 8
+      - name: Execute check without tests
+        uses: gradle/gradle-build-action@v2.2.1
+        with:
+          arguments: check -x test
+
+      - name: Publish SpotBugs report
+        uses: jwgmeligmeyling/spotbugs-github-action@v1.2
+        if: always()
+        with:
+          name: SpotBugs Report
+          path: '**/build/reports/spotbugs/main.xml'
+
+      - name: Publish Checkstyle report
+        uses: jwgmeligmeyling/checkstyle-github-action@v1.2
+        if: always()
+        with:
+          name: Checkstyle Report
+          path: '**/build/reports/checkstyle/*.xml'
+  test:
+    name: Testing on JDK ${{ matrix.java }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -21,24 +49,10 @@ jobs:
         with:
           distribution: 'adopt'
           java-version: ${{ matrix.Java }}
-      - name: Execute check
+      - name: Execute tests
         uses: gradle/gradle-build-action@v2.2.1
         with:
-          arguments: check
-
-      - name: Publish SpotBugs report
-        uses: jwgmeligmeyling/spotbugs-github-action@v1.2
-        if: always()
-        with:
-          name: SpotBugs Report on JDK ${{ matrix.Java }}
-          path: '**/build/reports/spotbugs/main.xml'
-
-      - name: Publish Checkstyle report
-        uses: jwgmeligmeyling/checkstyle-github-action@v1.2
-        if: always()
-        with:
-          name: Checkstyle Report on JDK ${{ matrix.Java }}
-          path: '**/build/reports/checkstyle/*.xml'
+          arguments: test
 
       - name: Publish test report
         uses: mikepenz/action-junit-report@v3.0.3
