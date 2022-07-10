@@ -25,3 +25,30 @@ jobs:
         uses: gradle/gradle-build-action@v2.2.1
         with:
           arguments: check
+
+      - name: Publish SpotBugs report
+        uses: jwgmeligmeyling/spotbugs-github-action@v1.2
+        if: always()
+        with:
+          name: SpotBugs Report on JDK ${{ matrix.Java }}
+          path: '**/build/reports/spotbugs/main.xml'
+
+      - name: Publish Checkstyle report
+        uses: jwgmeligmeyling/checkstyle-github-action@v1.2
+        if: always()
+        with:
+          name: Checkstyle Report on JDK ${{ matrix.Java }}
+          path: '**/build/reports/checkstyle/*.xml'
+
+      - name: Publish test report
+        uses: mikepenz/action-junit-report@v3.0.3
+        if: always() # always run even if the previous step fails
+        with:
+          check_name: JUnit Test Report on JDK ${{ matrix.Java }}
+          report_paths: '**/build/test-results/test/TEST-*.xml'
+
+      - name: Test Summary
+        uses: test-summary/action@v1
+        if: always()
+        with:
+          paths: '**/build/test-results/test/TEST-*.xml'
