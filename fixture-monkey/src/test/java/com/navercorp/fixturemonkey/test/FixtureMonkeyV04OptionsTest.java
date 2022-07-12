@@ -22,15 +22,19 @@ import static org.assertj.core.api.BDDAssertions.then;
 import static org.assertj.core.api.BDDAssertions.thenNoException;
 import static org.assertj.core.api.BDDAssertions.thenThrownBy;
 
+import java.lang.reflect.AnnotatedType;
 import java.time.Instant;
 import java.time.temporal.Temporal;
+import java.util.List;
 
 import net.jqwik.api.Property;
 
 import com.navercorp.fixturemonkey.LabMonkey;
+import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.ObjectArbitraryPropertyGenerator;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
+import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.resolver.RootNodeResolver;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.SimpleObjectChild;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.ComplexObject;
@@ -261,5 +265,71 @@ class FixtureMonkeyV04OptionsTest {
 			.getStr();
 
 		then(actual).isEqualTo(expected);
+	}
+
+	@Property
+	void pushArbitraryContainerInfoGenerator() {
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.pushArbitraryContainerInfoGenerator(
+				new MatcherOperator<>(
+					(property) -> {
+						AnnotatedType elementType = Types.getGenericsTypes(property.getAnnotatedType()).get(0);
+						Class<?> type = Types.getActualType(elementType);
+						return type.isAssignableFrom(String.class);
+					},
+					(context) -> new ArbitraryContainerInfo(5, 5)
+				)
+			)
+			.build();
+
+		List<String> actual = sut.giveMeOne(ComplexObject.class)
+			.getStrList();
+
+		then(actual).hasSize(5);
+	}
+
+	@Property
+	void pushArbitraryContainerInfoGeneratorNotMatching() {
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.pushArbitraryContainerInfoGenerator(
+				new MatcherOperator<>(
+					(property) -> {
+						AnnotatedType elementType = Types.getGenericsTypes(property.getAnnotatedType()).get(0);
+						Class<?> type = Types.getActualType(elementType);
+						return type.isAssignableFrom(String.class);
+					},
+					(context) -> new ArbitraryContainerInfo(5, 5)
+				)
+			)
+			.build();
+
+		List<SimpleObject> actual = sut.giveMeOne(ComplexObject.class)
+			.getList();
+
+		then(actual).hasSizeBetween(0, 3);
+	}
+
+	@Property
+	void defaultArbitraryContainerMaxSize() {
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.defaultArbitraryContainerMaxSize(1)
+			.build();
+
+		List<SimpleObject> actual = sut.giveMeOne(ComplexObject.class)
+			.getList();
+
+		then(actual).hasSizeLessThanOrEqualTo(1);
+	}
+
+	@Property
+	void defaultArbitraryContainerInfo() {
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.defaultArbitraryContainerInfo(new ArbitraryContainerInfo(3, 3))
+			.build();
+
+		List<SimpleObject> actual = sut.giveMeOne(ComplexObject.class)
+			.getList();
+
+		then(actual).hasSize(3);
 	}
 }

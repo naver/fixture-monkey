@@ -53,7 +53,7 @@ public final class GenerateOptionsBuilder {
 	private List<MatcherOperator<NullInjectGenerator>> nullInjectGenerators = new ArrayList<>();
 	private NullInjectGenerator defaultNullInjectGenerator;
 	private List<MatcherOperator<ArbitraryContainerInfoGenerator>> arbitraryContainerInfoGenerators = new ArrayList<>();
-	private Integer defaultArbitraryContainerSize;
+	private Integer defaultArbitraryContainerMaxSize;
 	private ArbitraryContainerInfo defaultArbitraryContainerInfo;
 	private List<MatcherOperator<ArbitraryGenerator>> arbitraryGenerators = new ArrayList<>();
 	private ArbitraryGenerator defaultArbitraryGenerator;
@@ -205,8 +205,8 @@ public final class GenerateOptionsBuilder {
 		);
 	}
 
-	public GenerateOptionsBuilder defaultArbitraryContainerSize(int defaultArbitraryContainerSize) {
-		this.defaultArbitraryContainerSize = defaultArbitraryContainerSize;
+	public GenerateOptionsBuilder defaultArbitraryContainerMaxSize(int defaultArbitraryContainerMaxSize) {
+		this.defaultArbitraryContainerMaxSize = defaultArbitraryContainerMaxSize;
 		return this;
 	}
 
@@ -315,14 +315,14 @@ public final class GenerateOptionsBuilder {
 		);
 		NullInjectGenerator defaultNullInjectGenerator =
 			defaultIfNull(this.defaultNullInjectGenerator, DefaultNullInjectGenerator::new);
-		int defaultArbitraryContainerSize = defaultIfNull(
-			this.defaultArbitraryContainerSize,
-			() -> GenerateOptions.DEFAULT_ARBITRARY_CONTAINER_SIZE
+		int defaultArbitraryContainerMaxSize = defaultIfNull(
+			this.defaultArbitraryContainerMaxSize,
+			() -> GenerateOptions.DEFAULT_ARBITRARY_CONTAINER_MAX_SIZE
 		);
 		ArbitraryContainerInfo defaultArbitraryContainerInfo =
 			defaultIfNull(
 				this.defaultArbitraryContainerInfo,
-				() -> new ArbitraryContainerInfo(0, defaultArbitraryContainerSize)
+				() -> new ArbitraryContainerInfo(0, defaultArbitraryContainerMaxSize)
 			);
 		ArbitraryGenerator defaultArbitraryGenerator =
 			defaultIfNull(this.defaultArbitraryGenerator, () -> this.defaultArbitraryGeneratorBuilder.generate());
@@ -335,7 +335,7 @@ public final class GenerateOptionsBuilder {
 			this.nullInjectGenerators,
 			defaultNullInjectGenerator,
 			this.arbitraryContainerInfoGenerators,
-			defaultArbitraryContainerSize,
+			defaultArbitraryContainerMaxSize,
 			defaultArbitraryContainerInfo,
 			this.arbitraryGenerators,
 			defaultArbitraryGenerator
