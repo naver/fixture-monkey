@@ -51,7 +51,7 @@ import net.jqwik.time.api.arbitraries.ZoneOffsetArbitrary;
 import net.jqwik.time.api.arbitraries.ZonedDateTimeArbitrary;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public interface IntrospectorTimeArbitraryGenerator {
+public interface JavaTimeTypeArbitraryGenerator {
 
 	default CalendarArbitrary calendars() {
 		Instant now = Instant.now();

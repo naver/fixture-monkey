@@ -34,7 +34,7 @@ import net.jqwik.api.arbitraries.ShortArbitrary;
 import net.jqwik.api.arbitraries.StringArbitrary;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public interface IntrospectorArbitraryGenerator {
+public interface JavaTypeArbitraryGenerator {
 
 	default StringArbitrary strings() {
 		return Arbitraries.strings();

@@ -52,18 +52,18 @@ public final class JavaTimeArbitraryIntrospector implements ArbitraryIntrospecto
 
 	public JavaTimeArbitraryIntrospector() {
 		this(
-			new IntrospectorTimeArbitraryGenerator() {
+			new JavaTimeTypeArbitraryGenerator() {
 			},
-			new TimeArbitraryTypeIntrospector() {
+			new JavaTimeArbitraryResolver() {
 			}
 		);
 	}
 
 	public JavaTimeArbitraryIntrospector(
-		IntrospectorTimeArbitraryGenerator introspectorTimeArbitraryGenerator,
-		TimeArbitraryTypeIntrospector timeArbitraryIntrospector
+		JavaTimeTypeArbitraryGenerator arbitraryGenerator,
+		JavaTimeArbitraryResolver arbitraryResolver
 	) {
-		this.introspector = introspectors(introspectorTimeArbitraryGenerator, timeArbitraryIntrospector);
+		this.introspector = introspectors(arbitraryGenerator, arbitraryResolver);
 	}
 
 	@Override
@@ -83,16 +83,16 @@ public final class JavaTimeArbitraryIntrospector implements ArbitraryIntrospecto
 	}
 
 	private static Map<Class<?>, Function<ArbitraryGeneratorContext, ArbitraryIntrospectorResult>> introspectors(
-		IntrospectorTimeArbitraryGenerator introspectorTimeArbitraryGenerator,
-		TimeArbitraryTypeIntrospector timeArbitraryIntrospector
+		JavaTimeTypeArbitraryGenerator arbitraryGenerator,
+		JavaTimeArbitraryResolver arbitraryResolver
 	) {
 		Map<Class<?>, Function<ArbitraryGeneratorContext, ArbitraryIntrospectorResult>> introspector = new HashMap<>();
 
 		introspector.put(
 			Calendar.class,
 			ctx -> new ArbitraryIntrospectorResult(
-				timeArbitraryIntrospector.calendars(
-					introspectorTimeArbitraryGenerator.calendars(),
+				arbitraryResolver.calendars(
+					arbitraryGenerator.calendars(),
 					ctx
 				)
 			)
@@ -101,8 +101,8 @@ public final class JavaTimeArbitraryIntrospector implements ArbitraryIntrospecto
 		introspector.put(
 			Date.class,
 			ctx -> new ArbitraryIntrospectorResult(
-				timeArbitraryIntrospector.dates(
-					introspectorTimeArbitraryGenerator.dates(),
+				arbitraryResolver.dates(
+					arbitraryGenerator.dates(),
 					ctx
 				)
 			)
@@ -111,8 +111,8 @@ public final class JavaTimeArbitraryIntrospector implements ArbitraryIntrospecto
 		introspector.put(
 			Instant.class,
 			ctx -> new ArbitraryIntrospectorResult(
-				timeArbitraryIntrospector.instants(
-					introspectorTimeArbitraryGenerator.instants(),
+				arbitraryResolver.instants(
+					arbitraryGenerator.instants(),
 					ctx
 				)
 			)
@@ -121,8 +121,8 @@ public final class JavaTimeArbitraryIntrospector implements ArbitraryIntrospecto
 		introspector.put(
 			LocalDate.class,
 			ctx -> new ArbitraryIntrospectorResult(
-				timeArbitraryIntrospector.localDates(
-					introspectorTimeArbitraryGenerator.localDates(),
+				arbitraryResolver.localDates(
+					arbitraryGenerator.localDates(),
 					ctx
 				)
 			)
@@ -131,8 +131,8 @@ public final class JavaTimeArbitraryIntrospector implements ArbitraryIntrospecto
 		introspector.put(
 			LocalDateTime.class,
 			ctx -> new ArbitraryIntrospectorResult(
-				timeArbitraryIntrospector.localDateTimes(
-					introspectorTimeArbitraryGenerator.localDateTimes(),
+				arbitraryResolver.localDateTimes(
+					arbitraryGenerator.localDateTimes(),
 					ctx
 				)
 			)
@@ -141,8 +141,8 @@ public final class JavaTimeArbitraryIntrospector implements ArbitraryIntrospecto
 		introspector.put(
 			LocalTime.class,
 			ctx -> new ArbitraryIntrospectorResult(
-				timeArbitraryIntrospector.localTimes(
-					introspectorTimeArbitraryGenerator.localTimes(),
+				arbitraryResolver.localTimes(
+					arbitraryGenerator.localTimes(),
 					ctx
 				)
 			)
@@ -151,8 +151,8 @@ public final class JavaTimeArbitraryIntrospector implements ArbitraryIntrospecto
 		introspector.put(
 			ZonedDateTime.class,
 			ctx -> new ArbitraryIntrospectorResult(
-				timeArbitraryIntrospector.zonedDateTimes(
-					introspectorTimeArbitraryGenerator.zonedDateTimes(),
+				arbitraryResolver.zonedDateTimes(
+					arbitraryGenerator.zonedDateTimes(),
 					ctx
 				)
 			)
@@ -161,8 +161,8 @@ public final class JavaTimeArbitraryIntrospector implements ArbitraryIntrospecto
 		introspector.put(
 			MonthDay.class,
 			ctx -> new ArbitraryIntrospectorResult(
-				timeArbitraryIntrospector.monthDays(
-					introspectorTimeArbitraryGenerator.monthDays(),
+				arbitraryResolver.monthDays(
+					arbitraryGenerator.monthDays(),
 					ctx
 				)
 			)
@@ -171,8 +171,8 @@ public final class JavaTimeArbitraryIntrospector implements ArbitraryIntrospecto
 		introspector.put(
 			OffsetDateTime.class,
 			ctx -> new ArbitraryIntrospectorResult(
-				timeArbitraryIntrospector.offsetDateTimes(
-					introspectorTimeArbitraryGenerator.offsetDateTimes(),
+				arbitraryResolver.offsetDateTimes(
+					arbitraryGenerator.offsetDateTimes(),
 					ctx
 				)
 			)
@@ -181,8 +181,8 @@ public final class JavaTimeArbitraryIntrospector implements ArbitraryIntrospecto
 		introspector.put(
 			OffsetTime.class,
 			ctx -> new ArbitraryIntrospectorResult(
-				timeArbitraryIntrospector.offsetTimes(
-					introspectorTimeArbitraryGenerator.offsetTimes(),
+				arbitraryResolver.offsetTimes(
+					arbitraryGenerator.offsetTimes(),
 					ctx
 				)
 			)
@@ -191,8 +191,8 @@ public final class JavaTimeArbitraryIntrospector implements ArbitraryIntrospecto
 		introspector.put(
 			Period.class,
 			ctx -> new ArbitraryIntrospectorResult(
-				timeArbitraryIntrospector.periods(
-					introspectorTimeArbitraryGenerator.periods(),
+				arbitraryResolver.periods(
+					arbitraryGenerator.periods(),
 					ctx
 				)
 			)
@@ -201,8 +201,8 @@ public final class JavaTimeArbitraryIntrospector implements ArbitraryIntrospecto
 		introspector.put(
 			Duration.class,
 			ctx -> new ArbitraryIntrospectorResult(
-				timeArbitraryIntrospector.durations(
-					introspectorTimeArbitraryGenerator.durations(),
+				arbitraryResolver.durations(
+					arbitraryGenerator.durations(),
 					ctx
 				)
 			)
@@ -211,8 +211,8 @@ public final class JavaTimeArbitraryIntrospector implements ArbitraryIntrospecto
 		introspector.put(
 			Year.class,
 			ctx -> new ArbitraryIntrospectorResult(
-				timeArbitraryIntrospector.years(
-					introspectorTimeArbitraryGenerator.years(),
+				arbitraryResolver.years(
+					arbitraryGenerator.years(),
 					ctx
 				)
 			)
@@ -221,8 +221,8 @@ public final class JavaTimeArbitraryIntrospector implements ArbitraryIntrospecto
 		introspector.put(
 			YearMonth.class,
 			ctx -> new ArbitraryIntrospectorResult(
-				timeArbitraryIntrospector.yearMonths(
-					introspectorTimeArbitraryGenerator.yearMonths(),
+				arbitraryResolver.yearMonths(
+					arbitraryGenerator.yearMonths(),
 					ctx
 				)
 			)
@@ -231,8 +231,8 @@ public final class JavaTimeArbitraryIntrospector implements ArbitraryIntrospecto
 		introspector.put(
 			ZoneOffset.class,
 			ctx -> new ArbitraryIntrospectorResult(
-				timeArbitraryIntrospector.zoneOffsets(
-					introspectorTimeArbitraryGenerator.zoneOffsets(),
+				arbitraryResolver.zoneOffsets(
+					arbitraryGenerator.zoneOffsets(),
 					ctx
 				)
 			)

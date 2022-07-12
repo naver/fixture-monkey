@@ -24,36 +24,34 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.introspector.CompositeArbitraryIntrospector;
-import com.navercorp.fixturemonkey.api.introspector.IntrospectorArbitraryGenerator;
-import com.navercorp.fixturemonkey.api.introspector.IntrospectorTimeArbitraryGenerator;
-import com.navercorp.fixturemonkey.api.introspector.JavaArbitraryIntrospector;
-import com.navercorp.fixturemonkey.api.introspector.JavaTimeArbitraryIntrospector;
+import com.navercorp.fixturemonkey.api.introspector.JavaTypeArbitraryGenerator;
+import com.navercorp.fixturemonkey.api.introspector.JavaTimeTypeArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.option.GenerateOptionsBuilder;
 import com.navercorp.fixturemonkey.api.plugin.Plugin;
 import com.navercorp.fixturemonkey.javax.validation.generator.JavaxValidationArbitraryContainerInfoGenerator;
 import com.navercorp.fixturemonkey.javax.validation.generator.JavaxValidationNullInjectGenerator;
-import com.navercorp.fixturemonkey.javax.validation.introspector.JavaxValidationArbitraryTypeIntrospector;
+import com.navercorp.fixturemonkey.javax.validation.introspector.JavaxValidationJavaArbitraryResolver;
 import com.navercorp.fixturemonkey.javax.validation.introspector.JavaxValidationBooleanIntrospector;
 import com.navercorp.fixturemonkey.javax.validation.introspector.JavaxValidationConstraintGenerator;
-import com.navercorp.fixturemonkey.javax.validation.introspector.JavaxValidationTimeArbitraryTypeIntrospector;
+import com.navercorp.fixturemonkey.javax.validation.introspector.JavaxValidationJavaTimeArbitraryResolver;
 import com.navercorp.fixturemonkey.javax.validation.introspector.JavaxValidationTimeConstraintGenerator;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class JavaxValidationPlugin implements Plugin {
-	private IntrospectorArbitraryGenerator introspectorArbitraryGenerator = new IntrospectorArbitraryGenerator() {
+	private JavaTypeArbitraryGenerator javaTypeArbitraryGenerator = new JavaTypeArbitraryGenerator() {
 	};
 	private JavaxValidationConstraintGenerator javaxValidationConstraintGenerator =
 		new JavaxValidationConstraintGenerator();
-	private IntrospectorTimeArbitraryGenerator introspectorTimeArbitraryGenerator =
-		new IntrospectorTimeArbitraryGenerator() {
+	private JavaTimeTypeArbitraryGenerator javaTimeTypeArbitraryGenerator =
+		new JavaTimeTypeArbitraryGenerator() {
 		};
 	private JavaxValidationTimeConstraintGenerator javaxValidationTimeConstraintGenerator =
 		new JavaxValidationTimeConstraintGenerator();
 
-	public JavaxValidationPlugin introspectorArbitraryGenerator(
-		IntrospectorArbitraryGenerator introspectorArbitraryGenerator
+	public JavaxValidationPlugin javaTypeArbitraryGenerator(
+		JavaTypeArbitraryGenerator javaTypeArbitraryGenerator
 	) {
-		this.introspectorArbitraryGenerator = introspectorArbitraryGenerator;
+		this.javaTypeArbitraryGenerator = javaTypeArbitraryGenerator;
 		return this;
 	}
 
@@ -64,10 +62,10 @@ public final class JavaxValidationPlugin implements Plugin {
 		return this;
 	}
 
-	public JavaxValidationPlugin introspectorTimeArbitraryGenerator(
-		IntrospectorTimeArbitraryGenerator introspectorTimeArbitraryGenerator
+	public JavaxValidationPlugin javaTimeTypeArbitraryGenerator(
+		JavaTimeTypeArbitraryGenerator javaTimeTypeArbitraryGenerator
 	) {
-		this.introspectorTimeArbitraryGenerator = introspectorTimeArbitraryGenerator;
+		this.javaTimeTypeArbitraryGenerator = javaTimeTypeArbitraryGenerator;
 		return this;
 	}
 
@@ -86,19 +84,19 @@ public final class JavaxValidationPlugin implements Plugin {
 				prop -> true,
 				new JavaxValidationArbitraryContainerInfoGenerator()
 			)
+			.javaTypeArbitraryGenerator(javaTypeArbitraryGenerator)
+			.javaArbitraryResolver(
+				new JavaxValidationJavaArbitraryResolver(this.javaxValidationConstraintGenerator)
+			)
+			.javaTimeTypeArbitraryGenerator(javaTimeTypeArbitraryGenerator)
+			.javaTimeArbitraryResolver(
+				new JavaxValidationJavaTimeArbitraryResolver(
+					this.javaxValidationTimeConstraintGenerator
+				)
+			)
 			.priorityIntrospector(current ->
 				new CompositeArbitraryIntrospector(
 					Arrays.asList(
-						new JavaArbitraryIntrospector(
-							this.introspectorArbitraryGenerator,
-							new JavaxValidationArbitraryTypeIntrospector(this.javaxValidationConstraintGenerator)
-						),
-						new JavaTimeArbitraryIntrospector(
-							this.introspectorTimeArbitraryGenerator,
-							new JavaxValidationTimeArbitraryTypeIntrospector(
-								this.javaxValidationTimeConstraintGenerator
-							)
-						),
 						new JavaxValidationBooleanIntrospector(),
 						current
 					)

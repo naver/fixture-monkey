@@ -46,8 +46,8 @@ import net.jqwik.time.api.arbitraries.YearArbitrary;
 import net.jqwik.time.api.arbitraries.YearMonthArbitrary;
 import net.jqwik.time.api.arbitraries.ZonedDateTimeArbitrary;
 
-class IntrospectorTimeArbitraryGeneratorTests {
-	private final IntrospectorTimeArbitraryGenerator sut = new IntrospectorTimeArbitraryGenerator() {
+class JavaTimeTypeArbitraryGeneratorTests {
+	private final JavaTimeTypeArbitraryGenerator sut = new JavaTimeTypeArbitraryGenerator() {
 	};
 
 	@Property

@@ -52,8 +52,6 @@ import com.navercorp.fixturemonkey.api.introspector.UuidIntrospector;
 public final class DefaultArbitraryGenerator implements ArbitraryGenerator {
 	public static final ArbitraryIntrospector JAVA_INTROSPECTOR = new CompositeArbitraryIntrospector(
 		Arrays.asList(
-			new JavaArbitraryIntrospector(),
-			new JavaTimeArbitraryIntrospector(),
 			new BooleanIntrospector(),
 			new EnumIntrospector(),
 			new UuidIntrospector()
