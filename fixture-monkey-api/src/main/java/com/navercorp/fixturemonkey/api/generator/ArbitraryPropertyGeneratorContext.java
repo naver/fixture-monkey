@@ -88,11 +88,7 @@ public final class ArbitraryPropertyGeneratorContext {
 	}
 
 	public PropertyNameResolver getPropertyNameResolver() {
-		return this.getPropertyNameResolvers().stream()
-			.filter(it -> it.match(this.property))
-			.map(MatcherOperator::getOperator)
-			.findFirst()
-			.orElse(PropertyNameResolver.IDENTITY);
+		return generateOptions.getPropertyNameResolver(property);
 	}
 
 	public boolean isRootContext() {
