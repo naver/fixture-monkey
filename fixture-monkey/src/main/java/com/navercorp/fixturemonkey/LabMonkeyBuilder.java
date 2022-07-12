@@ -22,6 +22,7 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryPropertyGenerator;
+import com.navercorp.fixturemonkey.api.generator.NullInjectGenerator;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.option.GenerateOptions;
 import com.navercorp.fixturemonkey.api.option.GenerateOptionsBuilder;
@@ -109,6 +110,34 @@ public class LabMonkeyBuilder {
 
 	public LabMonkeyBuilder defaultPropertyNameResolver(PropertyNameResolver propertyNameResolver) {
 		generateOptionsBuilder.defaultPropertyNameResolver(propertyNameResolver);
+		return this;
+	}
+
+	public LabMonkeyBuilder pushExactTypeNullInjectGenerator(
+		Class<?> type,
+		NullInjectGenerator nullInjectGenerator
+	) {
+		generateOptionsBuilder.insertFirstNullInjectGenerators(
+			MatcherOperator.exactTypeMatchOperator(type, nullInjectGenerator)
+		);
+		return this;
+	}
+
+	public LabMonkeyBuilder pushAssignableTypeNullInjectGenerator(
+		Class<?> type,
+		NullInjectGenerator nullInjectGenerator
+	) {
+		generateOptionsBuilder.insertFirstNullInjectGenerators(type, nullInjectGenerator);
+		return this;
+	}
+
+	public LabMonkeyBuilder pushNullInjectGenerator(MatcherOperator<NullInjectGenerator> nullInjectGenerator) {
+		generateOptionsBuilder.insertFirstNullInjectGenerators(nullInjectGenerator);
+		return this;
+	}
+
+	public LabMonkeyBuilder defaultNullInjectGenerator(NullInjectGenerator nullInjectGenerator) {
+		generateOptionsBuilder.defaultNullInjectGenerator(nullInjectGenerator);
 		return this;
 	}
 
