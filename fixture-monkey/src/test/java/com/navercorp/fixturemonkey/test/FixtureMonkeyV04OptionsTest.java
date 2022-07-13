@@ -152,6 +152,58 @@ class FixtureMonkeyV04OptionsTest {
 	}
 
 	@Property
+	void pushAssignableTypeNullInjectGenerator() {
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.pushAssignableTypeNullInjectGenerator(
+				SimpleObject.class,
+				(context, containerInfo) -> 1.0d
+			)
+			.build();
+
+		SimpleObjectChild actual = sut.giveMeOne(SimpleObjectChild.class);
+
+		then(actual).isNull();
+	}
+
+	@Property
+	void pushExactTypeNullInjectGenerator() {
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.pushExactTypeNullInjectGenerator(
+				SimpleObject.class,
+				(context, containerInfo) -> 1.0d
+			)
+			.build();
+
+		SimpleObject actual = sut.giveMeOne(SimpleObject.class);
+
+		then(actual).isNull();
+	}
+
+	@Property
+	void pushNullInjectGenerator() {
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.pushNullInjectGenerator(
+				MatcherOperator.exactTypeMatchOperator(SimpleObject.class, (context, containerInfo) -> 1.0d)
+			)
+			.build();
+
+		SimpleObject actual = sut.giveMeOne(SimpleObject.class);
+
+		then(actual).isNull();
+	}
+
+	@Property
+	void defaultNullInjectGenerator() {
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.defaultNullInjectGenerator((context, containerInfo) -> 1.0d)
+			.build();
+
+		SimpleObject actual = sut.giveMeOne(SimpleObject.class);
+
+		then(actual).isNull();
+	}
+
+	@Property
 	void pushExactTypePropertyNameResolver() {
 		LabMonkey sut = LabMonkey.labMonkeyBuilder()
 			.pushExactTypePropertyNameResolver(String.class, (property) -> "string")
