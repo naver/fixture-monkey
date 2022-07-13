@@ -22,6 +22,9 @@ import static org.assertj.core.api.BDDAssertions.then;
 import static org.assertj.core.api.BDDAssertions.thenNoException;
 import static org.assertj.core.api.BDDAssertions.thenThrownBy;
 
+import java.time.Instant;
+import java.time.temporal.Temporal;
+
 import net.jqwik.api.Property;
 
 import com.navercorp.fixturemonkey.LabMonkey;
@@ -146,5 +149,65 @@ class FixtureMonkeyV04OptionsTest {
 		SimpleObject actual = sut.giveMeOne(SimpleObject.class);
 
 		then(actual).isNull();
+	}
+
+	@Property
+	void pushExactTypePropertyNameResolver() {
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.pushExactTypePropertyNameResolver(String.class, (property) -> "string")
+			.build();
+		String expected = "test";
+
+		String actual = sut.giveMeBuilder(SimpleObject.class)
+			.set("string", expected)
+			.sample()
+			.getStr();
+
+		then(actual).isEqualTo(expected);
+	}
+
+	@Property
+	void pushAssignableTypePropertyNameResolver() {
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.pushAssignableTypePropertyNameResolver(Temporal.class, (property) -> "temporal")
+			.build();
+		Instant expected = Instant.now();
+
+		Instant actual = sut.giveMeBuilder(SimpleObject.class)
+			.set("temporal", expected)
+			.sample()
+			.getInstant();
+
+		then(actual).isEqualTo(expected);
+	}
+
+	@Property
+	void pushPropertyNameResolver() {
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.pushPropertyNameResolver(MatcherOperator.exactTypeMatchOperator(String.class, (property) -> "string"))
+			.build();
+		String expected = "test";
+
+		String actual = sut.giveMeBuilder(SimpleObject.class)
+			.set("string", expected)
+			.sample()
+			.getStr();
+
+		then(actual).isEqualTo(expected);
+	}
+
+	@Property
+	void defaultPropertyNameResolver() {
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.defaultPropertyNameResolver((property) -> "'" + property.getName() + "'")
+			.build();
+		String expected = "test";
+
+		String actual = sut.giveMeBuilder(SimpleObject.class)
+			.set("'str'", expected)
+			.sample()
+			.getStr();
+
+		then(actual).isEqualTo(expected);
 	}
 }

@@ -25,6 +25,7 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryPropertyGenerator;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.option.GenerateOptions;
 import com.navercorp.fixturemonkey.api.option.GenerateOptionsBuilder;
+import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.expression.MonkeyExpressionFactory;
 import com.navercorp.fixturemonkey.resolver.ArbitraryTraverser;
 import com.navercorp.fixturemonkey.resolver.ManipulateOptions;
@@ -78,6 +79,36 @@ public class LabMonkeyBuilder {
 		MatcherOperator<ArbitraryPropertyGenerator> arbitraryPropertyGenerator
 	) {
 		generateOptionsBuilder.insertFirstArbitraryPropertyGenerator(arbitraryPropertyGenerator);
+		return this;
+	}
+
+	public LabMonkeyBuilder pushAssignableTypePropertyNameResolver(
+		Class<?> type,
+		PropertyNameResolver propertyNameResolver
+	) {
+		generateOptionsBuilder.insertFirstPropertyNameResolver(type, propertyNameResolver);
+		return this;
+	}
+
+	public LabMonkeyBuilder pushExactTypePropertyNameResolver(
+		Class<?> type,
+		PropertyNameResolver propertyNameResolver
+	) {
+		generateOptionsBuilder.insertFirstPropertyNameResolver(
+			MatcherOperator.exactTypeMatchOperator(type, propertyNameResolver)
+		);
+		return this;
+	}
+
+	public LabMonkeyBuilder pushPropertyNameResolver(
+		MatcherOperator<PropertyNameResolver> propertyNameResolver
+	) {
+		generateOptionsBuilder.insertFirstPropertyNameResolver(propertyNameResolver);
+		return this;
+	}
+
+	public LabMonkeyBuilder defaultPropertyNameResolver(PropertyNameResolver propertyNameResolver) {
+		generateOptionsBuilder.defaultPropertyNameResolver(propertyNameResolver);
 		return this;
 	}
 
