@@ -83,7 +83,7 @@ public final class GenerateOptions {
 	public static final ArbitraryPropertyGenerator DEFAULT_ARBITRARY_PROPERTY_GENERATOR =
 		ObjectArbitraryPropertyGenerator.INSTANCE;
 	public static final PropertyNameResolver DEFAULT_PROPERTY_NAME_RESOLVER = PropertyNameResolver.IDENTITY;
-	public static final int DEFAULT_ARBITRARY_CONTAINER_SIZE = 3;
+	public static final int DEFAULT_ARBITRARY_CONTAINER_MAX_SIZE = 3;
 	public static final GenerateOptions DEFAULT_GENERATE_OPTIONS = GenerateOptions.builder().build();
 
 	private final List<MatcherOperator<ArbitraryPropertyGenerator>> arbitraryPropertyGenerators;
@@ -221,7 +221,7 @@ public final class GenerateOptions {
 			.nullInjectGenerators(new ArrayList<>(this.nullInjectGenerators))
 			.defaultNullInjectGenerator(this.defaultNullInjectGenerator)
 			.arbitraryContainerInfoGenerators(new ArrayList<>(this.arbitraryContainerInfoGenerators))
-			.defaultArbitraryContainerSize(this.defaultArbitraryContainerSize)
+			.defaultArbitraryContainerMaxSize(this.defaultArbitraryContainerSize)
 			.defaultArbitraryContainerInfo(this.defaultArbitraryContainerInfo)
 			.arbitraryGenerators(new ArrayList<>(this.arbitraryGenerators))
 			.defaultArbitraryGenerator(this.defaultArbitraryGenerator);

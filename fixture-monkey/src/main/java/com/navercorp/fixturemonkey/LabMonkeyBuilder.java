@@ -21,6 +21,8 @@ package com.navercorp.fixturemonkey;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
+import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfoGenerator;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.NullInjectGenerator;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
@@ -138,6 +140,23 @@ public class LabMonkeyBuilder {
 
 	public LabMonkeyBuilder defaultNullInjectGenerator(NullInjectGenerator nullInjectGenerator) {
 		generateOptionsBuilder.defaultNullInjectGenerator(nullInjectGenerator);
+		return this;
+	}
+
+	public LabMonkeyBuilder pushArbitraryContainerInfoGenerator(
+		MatcherOperator<ArbitraryContainerInfoGenerator> arbitraryContainerInfoGenerator
+	) {
+		generateOptionsBuilder.insertFirstArbitraryContainerInfoGenerator(arbitraryContainerInfoGenerator);
+		return this;
+	}
+
+	public LabMonkeyBuilder defaultArbitraryContainerMaxSize(int defaultArbitraryContainerMaxSize) {
+		generateOptionsBuilder.defaultArbitraryContainerMaxSize(defaultArbitraryContainerMaxSize);
+		return this;
+	}
+
+	public LabMonkeyBuilder defaultArbitraryContainerInfo(ArbitraryContainerInfo defaultArbitraryContainerInfo) {
+		generateOptionsBuilder.defaultArbitraryContainerInfo(defaultArbitraryContainerInfo);
 		return this;
 	}
 

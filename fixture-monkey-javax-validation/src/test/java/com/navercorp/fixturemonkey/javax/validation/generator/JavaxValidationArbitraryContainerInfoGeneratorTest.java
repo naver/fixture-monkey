@@ -138,7 +138,7 @@ class JavaxValidationArbitraryContainerInfoGeneratorTest {
 		Property property = PropertyCache.getProperty(typeReference.getAnnotatedType(), "minSizeContainer")
 			.get();
 		GenerateOptions generateOptions = GenerateOptions.builder()
-			.defaultArbitraryContainerSize(10)
+			.defaultArbitraryContainerMaxSize(10)
 			.build();
 
 		ArbitraryPropertyGeneratorContext context = new ArbitraryPropertyGeneratorContext(
@@ -214,7 +214,7 @@ class JavaxValidationArbitraryContainerInfoGeneratorTest {
 		Property property = PropertyCache.getProperty(typeReference.getAnnotatedType(), "notEmptyContainer")
 			.get();
 		GenerateOptions generateOptions = GenerateOptions.builder()
-			.defaultArbitraryContainerSize(10)
+			.defaultArbitraryContainerMaxSize(10)
 			.build();
 		ArbitraryPropertyGeneratorContext context = new ArbitraryPropertyGeneratorContext(
 			property,
