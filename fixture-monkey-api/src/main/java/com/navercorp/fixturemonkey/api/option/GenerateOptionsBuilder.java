@@ -37,13 +37,13 @@ import com.navercorp.fixturemonkey.api.generator.DefaultArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator;
 import com.navercorp.fixturemonkey.api.generator.NullInjectGenerator;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
-import com.navercorp.fixturemonkey.api.introspector.JavaArbitraryResolver;
 import com.navercorp.fixturemonkey.api.introspector.BeanArbitraryIntrospector;
-import com.navercorp.fixturemonkey.api.introspector.JavaTypeArbitraryGenerator;
-import com.navercorp.fixturemonkey.api.introspector.JavaTimeTypeArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.introspector.JavaArbitraryIntrospector;
+import com.navercorp.fixturemonkey.api.introspector.JavaArbitraryResolver;
 import com.navercorp.fixturemonkey.api.introspector.JavaTimeArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.JavaTimeArbitraryResolver;
+import com.navercorp.fixturemonkey.api.introspector.JavaTimeTypeArbitraryGenerator;
+import com.navercorp.fixturemonkey.api.introspector.JavaTypeArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.plugin.Plugin;
@@ -315,7 +315,7 @@ public final class GenerateOptionsBuilder {
 	public GenerateOptionsBuilder javaArbitraryResolver(
 		JavaArbitraryResolver javaArbitraryResolver
 	) {
-		this.defaultArbitraryGeneratorBuilder.JavaArbitraryResolver(javaArbitraryResolver);
+		this.defaultArbitraryGeneratorBuilder.javaArbitraryResolver(javaArbitraryResolver);
 		return this;
 	}
 
@@ -426,7 +426,7 @@ public final class GenerateOptionsBuilder {
 			return this;
 		}
 
-		public DefaultArbitraryGeneratorBuilder JavaArbitraryResolver(JavaArbitraryResolver javaArbitraryResolver) {
+		public DefaultArbitraryGeneratorBuilder javaArbitraryResolver(JavaArbitraryResolver javaArbitraryResolver) {
 			this.javaArbitraryResolver = javaArbitraryResolver;
 			return this;
 		}

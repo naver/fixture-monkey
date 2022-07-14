@@ -24,15 +24,15 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.introspector.CompositeArbitraryIntrospector;
-import com.navercorp.fixturemonkey.api.introspector.JavaTypeArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.introspector.JavaTimeTypeArbitraryGenerator;
+import com.navercorp.fixturemonkey.api.introspector.JavaTypeArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.option.GenerateOptionsBuilder;
 import com.navercorp.fixturemonkey.api.plugin.Plugin;
 import com.navercorp.fixturemonkey.javax.validation.generator.JavaxValidationArbitraryContainerInfoGenerator;
 import com.navercorp.fixturemonkey.javax.validation.generator.JavaxValidationNullInjectGenerator;
-import com.navercorp.fixturemonkey.javax.validation.introspector.JavaxValidationJavaArbitraryResolver;
 import com.navercorp.fixturemonkey.javax.validation.introspector.JavaxValidationBooleanIntrospector;
 import com.navercorp.fixturemonkey.javax.validation.introspector.JavaxValidationConstraintGenerator;
+import com.navercorp.fixturemonkey.javax.validation.introspector.JavaxValidationJavaArbitraryResolver;
 import com.navercorp.fixturemonkey.javax.validation.introspector.JavaxValidationJavaTimeArbitraryResolver;
 import com.navercorp.fixturemonkey.javax.validation.introspector.JavaxValidationTimeConstraintGenerator;
 

@@ -26,9 +26,9 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfoGenerator
 import com.navercorp.fixturemonkey.api.generator.ArbitraryPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.NullInjectGenerator;
 import com.navercorp.fixturemonkey.api.introspector.JavaArbitraryResolver;
-import com.navercorp.fixturemonkey.api.introspector.JavaTypeArbitraryGenerator;
-import com.navercorp.fixturemonkey.api.introspector.JavaTimeTypeArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.introspector.JavaTimeArbitraryResolver;
+import com.navercorp.fixturemonkey.api.introspector.JavaTimeTypeArbitraryGenerator;
+import com.navercorp.fixturemonkey.api.introspector.JavaTypeArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.option.GenerateOptions;
 import com.navercorp.fixturemonkey.api.option.GenerateOptionsBuilder;
