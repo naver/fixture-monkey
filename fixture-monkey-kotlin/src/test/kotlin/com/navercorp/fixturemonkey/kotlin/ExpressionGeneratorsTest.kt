@@ -431,7 +431,7 @@ class ExpressionGeneratorsTest {
     @Test
     fun getGetterExpressionField() {
         // given
-        val generator = Exp<PersonJava>() into PersonJava::getDogs
+        val generator = Exp<PersonJava>() intoGetter PersonJava::getDogs
 
         // when
         val actual = generator.generate()
@@ -442,7 +442,7 @@ class ExpressionGeneratorsTest {
     @Test
     fun getGetterExpressionFieldWithConstructor() {
         // given
-        val generator = Exp(PersonJava::getDogs)
+        val generator = ExpGetter(PersonJava::getDogs)
 
         // when
         val actual = generator.generate()
@@ -453,7 +453,7 @@ class ExpressionGeneratorsTest {
     @Test
     fun getGetterExpressionNestedField() {
         // given
-        val generator = Exp<PersonJava>() into PersonJava::getDog into DogJava::getName
+        val generator = Exp<PersonJava>() intoGetter PersonJava::getDog intoGetter DogJava::getName
 
         // when
         val actual = generator.generate()
@@ -464,7 +464,7 @@ class ExpressionGeneratorsTest {
     @Test
     fun getGetterExpressionNestedFieldWithConstructor() {
         // given
-        val generator = Exp(PersonJava::getDog into DogJava::getName)
+        val generator = Exp(PersonJava::getDog intoGetter DogJava::getName)
 
         // when
         val actual = generator.generate()
@@ -475,7 +475,7 @@ class ExpressionGeneratorsTest {
     @Test
     fun getGetterExpressionNestedFieldWithoutExp() {
         // given
-        val generator = PersonJava::getDog into DogJava::getName
+        val generator = PersonJava::getDog intoGetter DogJava::getName
 
         // when
         val actual = generator.generate()
@@ -486,7 +486,7 @@ class ExpressionGeneratorsTest {
     @Test
     fun getGetterExpressionNestedFieldWithIndex() {
         // given
-        val generator = Exp<PersonJava>() into PersonJava::getDog into DogJava::getLoves[0]
+        val generator = Exp<PersonJava>() intoGetter PersonJava::getDog into DogJava::getLoves[0]
 
         // when
         val actual = generator.generate()
@@ -508,7 +508,7 @@ class ExpressionGeneratorsTest {
     @Test
     fun getGetterExpressionNestedFieldWithAllIndex() {
         // given
-        val generator = Exp<PersonJava>() into PersonJava::getDog into DogJava::getLoves["*"]
+        val generator = Exp<PersonJava>() intoGetter PersonJava::getDog into DogJava::getLoves["*"]
 
         // when
         val actual = generator.generate()
@@ -596,7 +596,7 @@ class ExpressionGeneratorsTest {
     @Test
     fun getGetterExpressionListWithAllIndexTwiceWithField() {
         // given
-        val generator = Exp<PersonJava>() into PersonJava::getNestedDogs["*"]["*"] into DogJava::getName
+        val generator = Exp<PersonJava>() into PersonJava::getNestedDogs["*"]["*"] intoGetter DogJava::getName
 
         // when
         val actual = generator.generate()
@@ -607,7 +607,7 @@ class ExpressionGeneratorsTest {
     @Test
     fun getGetterExpressionListWithIndexTwiceWithFieldDiffExpression1() {
         // given
-        val generator = Exp<PersonJava>() into PersonJava::getNestedDogs[1][2] into DogJava::getName
+        val generator = Exp<PersonJava>() into PersonJava::getNestedDogs[1][2] intoGetter DogJava::getName
 
         // when
         val actual = generator.generate()
@@ -618,7 +618,7 @@ class ExpressionGeneratorsTest {
     @Test
     fun getGetterExpressionListWithIndexTwiceWithFieldDiffExpression2() {
         // given
-        val generator = Exp<PersonJava>() into (PersonJava::getNestedDogs get 1 get 2) into DogJava::getName
+        val generator = Exp<PersonJava>() into (PersonJava::getNestedDogs get 1 get 2) intoGetter DogJava::getName
 
         // when
         val actual = generator.generate()
@@ -631,7 +631,7 @@ class ExpressionGeneratorsTest {
         // given
         val generator = Exp<PersonJava>()
             .into((PersonJava::getNestedDogs)[1][2])
-            .into(DogJava::getName)
+            .intoGetter(DogJava::getName)
 
         // when
         val actual = generator.generate()
@@ -644,7 +644,7 @@ class ExpressionGeneratorsTest {
         // given
         val generator = Exp<PersonJava>()
             .into(PersonJava::getNestedDogs[1][2])
-            .into(DogJava::getName)
+            .intoGetter(DogJava::getName)
 
         // when
         val actual = generator.generate()
@@ -669,7 +669,7 @@ class ExpressionGeneratorsTest {
         // given
         val generator = Exp<PersonJava>()
             .into(PersonJava::getNestedThriceDogs[1][2][2])
-            .into(DogJava::getName)
+            .intoGetter(DogJava::getName)
 
         // when
         val actual = generator.generate()
@@ -680,7 +680,7 @@ class ExpressionGeneratorsTest {
     @Test
     fun notGetter() {
         // given
-        val generator = Exp<PersonJava>() into PersonJava::notGetter
+        val generator = Exp<PersonJava>() intoGetter PersonJava::notGetter
 
         // when
         val actual = generator.generate()
@@ -691,7 +691,7 @@ class ExpressionGeneratorsTest {
     @Test
     fun getterNullableField() {
         // given
-        val generator = Exp<PersonJava>() into PersonJava::getNullableDog into DogJava::getName
+        val generator = Exp<PersonJava>() intoGetter PersonJava::getNullableDog intoGetter DogJava::getName
 
         // when
         val actual = generator.generate()
@@ -702,7 +702,7 @@ class ExpressionGeneratorsTest {
     @Test
     fun getterNullableFieldWithConstructor() {
         // given
-        val generator = Exp(PersonJava::getNullableDog into DogJava::getName)
+        val generator = Exp(PersonJava::getNullableDog intoGetter DogJava::getName)
 
         // when
         val actual = generator.generate()
@@ -713,7 +713,7 @@ class ExpressionGeneratorsTest {
     @Test
     fun getterNullableFieldWithoutExp() {
         // given
-        val generator = PersonJava::getNullableDog into DogJava::getName
+        val generator = PersonJava::getNullableDog intoGetter DogJava::getName
 
         // when
         val actual = generator.generate()
@@ -724,7 +724,7 @@ class ExpressionGeneratorsTest {
     @Test
     fun getterNullableNestedField() {
         // given
-        val generator = Exp<PersonJava>() into PersonJava::getNullableDog into DogJava::getNullableName
+        val generator = Exp<PersonJava>() intoGetter PersonJava::getNullableDog intoGetter DogJava::getNullableName
 
         // when
         val actual = generator.generate()
@@ -735,7 +735,7 @@ class ExpressionGeneratorsTest {
     @Test
     fun getterNullableNestedFieldWithConstructor() {
         // given
-        val generator = Exp(PersonJava::getNullableDog into DogJava::getNullableName)
+        val generator = Exp(PersonJava::getNullableDog intoGetter DogJava::getNullableName)
 
         // when
         val actual = generator.generate()
@@ -900,7 +900,7 @@ class ExpressionGeneratorsTest {
     @Test
     fun getterBoolean() {
         // given
-        val generator = Exp<PersonJava>() into PersonJava::isMarried
+        val generator = Exp<PersonJava>() intoGetter PersonJava::isMarried
 
         // when
         val actual = generator.generate()
@@ -911,7 +911,7 @@ class ExpressionGeneratorsTest {
     @Test
     fun getterBooleanWithConstructor() {
         // given
-        val generator = Exp(PersonJava::isMarried)
+        val generator = ExpGetter(PersonJava::isMarried)
 
         // when
         val actual = generator.generate()
@@ -922,7 +922,7 @@ class ExpressionGeneratorsTest {
     @Test
     fun getterNullableBoolean() {
         // given
-        val generator = Exp<PersonJava>() into PersonJava::getHappy
+        val generator = Exp<PersonJava>() intoGetter PersonJava::getHappy
 
         // when
         val actual = generator.generate()
@@ -933,7 +933,7 @@ class ExpressionGeneratorsTest {
     @Test
     fun getterNullableBooleanWithConstructor() {
         // given
-        val generator = Exp(PersonJava::getHappy)
+        val generator = ExpGetter(PersonJava::getHappy)
 
         // when
         val actual = generator.generate()
