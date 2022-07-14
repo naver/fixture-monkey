@@ -68,32 +68,32 @@ fun <T, R> Exp(property: KFunction1<T, R?>) = Exp<R>(PropertyExpressionGenerator
 @JvmName("getterBoolean")
 fun Exp(property: KFunction1<*, Boolean>) = Exp<Boolean>(PropertyExpressionGenerator(KotlinGetterProperty(property)))
 
-fun <T> ArbitraryBuilder<T>.set(property: KProperty1<T, Any?>, value: Any?): ArbitraryBuilder<T> =
+fun <T, V> ArbitraryBuilder<T>.set(property: KProperty1<T, V>, value: V): ArbitraryBuilder<T> =
     this.set(PropertyExpressionGenerator(KotlinProperty(property)), value)
 
-fun <T> ArbitraryBuilder<T>.set(property: KProperty1<T, Any?>, value: Any?, limit: Long): ArbitraryBuilder<T> =
+fun <T, V> ArbitraryBuilder<T>.set(property: KProperty1<T, V>, value: V, limit: Long): ArbitraryBuilder<T> =
     this.set(PropertyExpressionGenerator(KotlinProperty(property)), value, limit.toInt())
 
-fun <T> ArbitraryBuilder<T>.set(property: KFunction1<T, Any?>, value: Any?): ArbitraryBuilder<T> =
+fun <T, V> ArbitraryBuilder<T>.set(property: KFunction1<T, V>, value: V): ArbitraryBuilder<T> =
     this.set(PropertyExpressionGenerator(KotlinGetterProperty(property)), value)
 
-fun <T> ArbitraryBuilder<T>.set(property: KFunction1<T, Any?>, value: Any?, limit: Long): ArbitraryBuilder<T> =
+fun <T, V> ArbitraryBuilder<T>.set(property: KFunction1<T, V>, value: V, limit: Long): ArbitraryBuilder<T> =
     this.set(
         PropertyExpressionGenerator(KotlinGetterProperty(property)),
         value,
         limit.toInt()
     )
 
-fun <T> ArbitraryBuilder<T>.setExp(property: KProperty1<T, Any?>, value: Any?): ArbitraryBuilder<T> =
+fun <T, V> ArbitraryBuilder<T>.setExp(property: KProperty1<T, V>, value: V): ArbitraryBuilder<T> =
     this.set(PropertyExpressionGenerator(KotlinProperty(property)), value)
 
-fun <T> ArbitraryBuilder<T>.setExp(property: KProperty1<T, Any?>, value: Any?, limit: Long): ArbitraryBuilder<T> =
+fun <T, V> ArbitraryBuilder<T>.setExp(property: KProperty1<T, V>, value: V, limit: Long): ArbitraryBuilder<T> =
     this.set(PropertyExpressionGenerator(KotlinProperty(property)), value, limit.toInt())
 
-fun <T> ArbitraryBuilder<T>.setExp(property: KFunction1<T, Any?>, value: Any?): ArbitraryBuilder<T> =
+fun <T, V> ArbitraryBuilder<T>.setExp(property: KFunction1<T, V>, value: V): ArbitraryBuilder<T> =
     this.set(PropertyExpressionGenerator(KotlinGetterProperty(property)), value)
 
-fun <T> ArbitraryBuilder<T>.setExp(property: KFunction1<T, Any?>, value: Any?, limit: Long): ArbitraryBuilder<T> =
+fun <T, V> ArbitraryBuilder<T>.setExp(property: KFunction1<T, V>, value: V, limit: Long): ArbitraryBuilder<T> =
     this.set(
         PropertyExpressionGenerator(KotlinGetterProperty(property)),
         value,
