@@ -89,6 +89,9 @@ public final class JavaDefaultArbitraryGeneratorBuilder {
 		JavaDefaultArbitraryGeneratorBuilder.JAVA_CONTAINER_INTROSPECTOR;
 	private ArbitraryIntrospector objectIntrospector = BeanArbitraryIntrospector.INSTANCE;
 
+	JavaDefaultArbitraryGeneratorBuilder() {
+	}
+
 	public JavaDefaultArbitraryGeneratorBuilder priorityIntrospector(ArbitraryIntrospector priorityIntrospector) {
 		this.priorityIntrospector = priorityIntrospector;
 		return this;

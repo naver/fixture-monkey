@@ -60,8 +60,8 @@ public final class GenerateOptionsBuilder {
 	private ArbitraryContainerInfo defaultArbitraryContainerInfo;
 	private List<MatcherOperator<ArbitraryGenerator>> arbitraryGenerators = new ArrayList<>();
 	private ArbitraryGenerator defaultArbitraryGenerator;
-	private JavaDefaultArbitraryGeneratorBuilder javaDefaultArbitraryGeneratorBuilder =
-		new JavaDefaultArbitraryGeneratorBuilder();
+	private final JavaDefaultArbitraryGeneratorBuilder javaDefaultArbitraryGeneratorBuilder =
+		DefaultArbitraryGenerator.javaBuilder();
 
 	GenerateOptionsBuilder() {
 	}
@@ -351,7 +351,7 @@ public final class GenerateOptionsBuilder {
 				() -> new ArbitraryContainerInfo(0, defaultArbitraryContainerMaxSize)
 			);
 		ArbitraryGenerator defaultArbitraryGenerator =
-			defaultIfNull(this.defaultArbitraryGenerator, () -> this.javaDefaultArbitraryGeneratorBuilder.build());
+			defaultIfNull(this.defaultArbitraryGenerator, this.javaDefaultArbitraryGeneratorBuilder::build);
 
 		return new GenerateOptions(
 			this.arbitraryPropertyGenerators,
