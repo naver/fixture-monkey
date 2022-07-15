@@ -19,7 +19,6 @@
 package com.navercorp.fixturemonkey.api.option;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
@@ -35,12 +34,10 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.DefaultArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator;
+import com.navercorp.fixturemonkey.api.generator.JavaDefaultArbitraryGeneratorBuilder;
 import com.navercorp.fixturemonkey.api.generator.NullInjectGenerator;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
-import com.navercorp.fixturemonkey.api.introspector.BeanArbitraryIntrospector;
-import com.navercorp.fixturemonkey.api.introspector.JavaArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.JavaArbitraryResolver;
-import com.navercorp.fixturemonkey.api.introspector.JavaTimeArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.JavaTimeArbitraryResolver;
 import com.navercorp.fixturemonkey.api.introspector.JavaTimeTypeArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.introspector.JavaTypeArbitraryGenerator;
@@ -63,7 +60,8 @@ public final class GenerateOptionsBuilder {
 	private ArbitraryContainerInfo defaultArbitraryContainerInfo;
 	private List<MatcherOperator<ArbitraryGenerator>> arbitraryGenerators = new ArrayList<>();
 	private ArbitraryGenerator defaultArbitraryGenerator;
-	private DefaultArbitraryGeneratorBuilder defaultArbitraryGeneratorBuilder = new DefaultArbitraryGeneratorBuilder();
+	private JavaDefaultArbitraryGeneratorBuilder javaDefaultArbitraryGeneratorBuilder =
+		new JavaDefaultArbitraryGeneratorBuilder();
 
 	GenerateOptionsBuilder() {
 	}
@@ -281,55 +279,49 @@ public final class GenerateOptionsBuilder {
 	public GenerateOptionsBuilder priorityIntrospector(
 		UnaryOperator<ArbitraryIntrospector> priorityIntrospector
 	) {
-		ArbitraryIntrospector introspector =
-			priorityIntrospector.apply(this.defaultArbitraryGeneratorBuilder.priorityIntrospector);
-		this.defaultArbitraryGeneratorBuilder.priorityIntrospector(introspector);
+		this.javaDefaultArbitraryGeneratorBuilder.priorityIntrospector(priorityIntrospector);
 		return this;
 	}
 
 	public GenerateOptionsBuilder containerIntrospector(
 		UnaryOperator<ArbitraryIntrospector> containerIntrospector
 	) {
-		ArbitraryIntrospector introspector =
-			containerIntrospector.apply(this.defaultArbitraryGeneratorBuilder.containerIntrospector);
-		this.defaultArbitraryGeneratorBuilder.containerIntrospector(introspector);
+		this.javaDefaultArbitraryGeneratorBuilder.containerIntrospector(containerIntrospector);
 		return this;
 	}
 
 	public GenerateOptionsBuilder objectIntrospector(
 		UnaryOperator<ArbitraryIntrospector> objectIntrospector
 	) {
-		ArbitraryIntrospector introspector =
-			objectIntrospector.apply(this.defaultArbitraryGeneratorBuilder.objectIntrospector);
-		this.defaultArbitraryGeneratorBuilder.objectIntrospector(introspector);
+		this.javaDefaultArbitraryGeneratorBuilder.objectIntrospector(objectIntrospector);
 		return this;
 	}
 
 	public GenerateOptionsBuilder javaTypeArbitraryGenerator(
 		JavaTypeArbitraryGenerator javaTypeArbitraryGenerator
 	) {
-		this.defaultArbitraryGeneratorBuilder.javaTypeArbitraryGenerator(javaTypeArbitraryGenerator);
+		this.javaDefaultArbitraryGeneratorBuilder.javaTypeArbitraryGenerator(javaTypeArbitraryGenerator);
 		return this;
 	}
 
 	public GenerateOptionsBuilder javaArbitraryResolver(
 		JavaArbitraryResolver javaArbitraryResolver
 	) {
-		this.defaultArbitraryGeneratorBuilder.javaArbitraryResolver(javaArbitraryResolver);
+		this.javaDefaultArbitraryGeneratorBuilder.javaArbitraryResolver(javaArbitraryResolver);
 		return this;
 	}
 
 	public GenerateOptionsBuilder javaTimeTypeArbitraryGenerator(
 		JavaTimeTypeArbitraryGenerator javaTimeTypeArbitraryGenerator
 	) {
-		this.defaultArbitraryGeneratorBuilder.javaTimeTypeArbitraryGenerator(javaTimeTypeArbitraryGenerator);
+		this.javaDefaultArbitraryGeneratorBuilder.javaTimeTypeArbitraryGenerator(javaTimeTypeArbitraryGenerator);
 		return this;
 	}
 
 	public GenerateOptionsBuilder javaTimeArbitraryResolver(
 		JavaTimeArbitraryResolver javaTimeArbitraryResolver
 	) {
-		this.defaultArbitraryGeneratorBuilder.javaTimeArbitraryResolver(javaTimeArbitraryResolver);
+		this.javaDefaultArbitraryGeneratorBuilder.javaTimeArbitraryResolver(javaTimeArbitraryResolver);
 		return this;
 	}
 
@@ -359,7 +351,7 @@ public final class GenerateOptionsBuilder {
 				() -> new ArbitraryContainerInfo(0, defaultArbitraryContainerMaxSize)
 			);
 		ArbitraryGenerator defaultArbitraryGenerator =
-			defaultIfNull(this.defaultArbitraryGenerator, () -> this.defaultArbitraryGeneratorBuilder.generate());
+			defaultIfNull(this.defaultArbitraryGenerator, () -> this.javaDefaultArbitraryGeneratorBuilder.build());
 
 		return new GenerateOptions(
 			this.arbitraryPropertyGenerators,
@@ -385,79 +377,5 @@ public final class GenerateOptionsBuilder {
 		result.add(value);
 		result.addAll(list);
 		return result;
-	}
-
-	private static class DefaultArbitraryGeneratorBuilder {
-
-		private JavaTypeArbitraryGenerator javaTypeArbitraryGenerator = new JavaTypeArbitraryGenerator() {
-		};
-
-		private JavaArbitraryResolver javaArbitraryResolver = new JavaArbitraryResolver() {
-		};
-
-		private JavaTimeTypeArbitraryGenerator javaTimeTypeArbitraryGenerator = new JavaTimeTypeArbitraryGenerator() {
-		};
-
-		private JavaTimeArbitraryResolver javaTimeArbitraryResolver = new JavaTimeArbitraryResolver() {
-		};
-		private ArbitraryIntrospector priorityIntrospector = DefaultArbitraryGenerator.JAVA_INTROSPECTOR;
-		private ArbitraryIntrospector containerIntrospector = DefaultArbitraryGenerator.JAVA_CONTAINER_INTROSPECTOR;
-		private ArbitraryIntrospector objectIntrospector = BeanArbitraryIntrospector.INSTANCE;
-
-		public DefaultArbitraryGeneratorBuilder priorityIntrospector(ArbitraryIntrospector priorityIntrospector) {
-			this.priorityIntrospector = priorityIntrospector;
-			return this;
-		}
-
-		public DefaultArbitraryGeneratorBuilder containerIntrospector(ArbitraryIntrospector containerIntrospector) {
-			this.containerIntrospector = containerIntrospector;
-			return this;
-		}
-
-		public DefaultArbitraryGeneratorBuilder objectIntrospector(ArbitraryIntrospector objectIntrospector) {
-			this.objectIntrospector = objectIntrospector;
-			return this;
-		}
-
-		public DefaultArbitraryGeneratorBuilder javaTypeArbitraryGenerator(
-			JavaTypeArbitraryGenerator javaTypeArbitraryGenerator
-		) {
-			this.javaTypeArbitraryGenerator = javaTypeArbitraryGenerator;
-			return this;
-		}
-
-		public DefaultArbitraryGeneratorBuilder javaArbitraryResolver(JavaArbitraryResolver javaArbitraryResolver) {
-			this.javaArbitraryResolver = javaArbitraryResolver;
-			return this;
-		}
-
-		public DefaultArbitraryGeneratorBuilder javaTimeTypeArbitraryGenerator(
-			JavaTimeTypeArbitraryGenerator javaTimeTypeArbitraryGenerator
-		) {
-			this.javaTimeTypeArbitraryGenerator = javaTimeTypeArbitraryGenerator;
-			return this;
-		}
-
-		public DefaultArbitraryGeneratorBuilder javaTimeArbitraryResolver(
-			JavaTimeArbitraryResolver javaTimeArbitraryResolver
-		) {
-			this.javaTimeArbitraryResolver = javaTimeArbitraryResolver;
-			return this;
-		}
-
-		public ArbitraryGenerator generate() {
-			return new DefaultArbitraryGenerator(
-				Arrays.asList(
-					new JavaArbitraryIntrospector(javaTypeArbitraryGenerator, javaArbitraryResolver),
-					new JavaTimeArbitraryIntrospector(
-						javaTimeTypeArbitraryGenerator,
-						javaTimeArbitraryResolver
-					),
-					this.priorityIntrospector,
-					this.containerIntrospector,
-					this.objectIntrospector
-				)
-			);
-		}
 	}
 }
