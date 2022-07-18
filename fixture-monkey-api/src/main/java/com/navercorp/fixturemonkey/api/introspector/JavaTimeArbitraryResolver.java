@@ -57,7 +57,7 @@ import net.jqwik.time.api.arbitraries.ZonedDateTimeArbitrary;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public interface TimeArbitraryTypeIntrospector {
+public interface JavaTimeArbitraryResolver {
 	default Arbitrary<Calendar> calendars(CalendarArbitrary calendarArbitrary, ArbitraryGeneratorContext context) {
 		return calendarArbitrary;
 	}

@@ -55,17 +55,17 @@ import net.jqwik.time.api.arbitraries.ZoneOffsetArbitrary;
 import net.jqwik.time.api.arbitraries.ZonedDateTimeArbitrary;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
-import com.navercorp.fixturemonkey.api.introspector.TimeArbitraryTypeIntrospector;
+import com.navercorp.fixturemonkey.api.introspector.JavaTimeArbitraryResolver;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public final class JavaxValidationTimeArbitraryTypeIntrospector implements TimeArbitraryTypeIntrospector {
+public final class JavaxValidationJavaTimeArbitraryResolver implements JavaTimeArbitraryResolver {
 	private final JavaxValidationTimeConstraintGenerator constraintGenerator;
 
-	public JavaxValidationTimeArbitraryTypeIntrospector() {
+	public JavaxValidationJavaTimeArbitraryResolver() {
 		this(new JavaxValidationTimeConstraintGenerator());
 	}
 
-	public JavaxValidationTimeArbitraryTypeIntrospector(JavaxValidationTimeConstraintGenerator constraintGenerator) {
+	public JavaxValidationJavaTimeArbitraryResolver(JavaxValidationTimeConstraintGenerator constraintGenerator) {
 		this.constraintGenerator = constraintGenerator;
 	}
 

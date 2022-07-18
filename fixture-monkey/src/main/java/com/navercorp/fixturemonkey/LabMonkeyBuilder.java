@@ -25,6 +25,10 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfoGenerator;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.NullInjectGenerator;
+import com.navercorp.fixturemonkey.api.introspector.JavaArbitraryResolver;
+import com.navercorp.fixturemonkey.api.introspector.JavaTimeArbitraryResolver;
+import com.navercorp.fixturemonkey.api.introspector.JavaTimeTypeArbitraryGenerator;
+import com.navercorp.fixturemonkey.api.introspector.JavaTypeArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.option.GenerateOptions;
 import com.navercorp.fixturemonkey.api.option.GenerateOptionsBuilder;
@@ -157,6 +161,30 @@ public class LabMonkeyBuilder {
 
 	public LabMonkeyBuilder defaultArbitraryContainerInfo(ArbitraryContainerInfo defaultArbitraryContainerInfo) {
 		generateOptionsBuilder.defaultArbitraryContainerInfo(defaultArbitraryContainerInfo);
+		return this;
+	}
+
+	public LabMonkeyBuilder javaTypeArbitraryGenerator(
+		JavaTypeArbitraryGenerator javaTypeArbitraryGenerator
+	) {
+		generateOptionsBuilder.javaTypeArbitraryGenerator(javaTypeArbitraryGenerator);
+		return this;
+	}
+
+	public LabMonkeyBuilder javaArbitraryResolver(JavaArbitraryResolver javaArbitraryResolver) {
+		generateOptionsBuilder.javaArbitraryResolver(javaArbitraryResolver);
+		return this;
+	}
+
+	public LabMonkeyBuilder javaTimeTypeArbitraryGenerator(
+		JavaTimeTypeArbitraryGenerator javaTimeTypeArbitraryGenerator
+	) {
+		generateOptionsBuilder.javaTimeTypeArbitraryGenerator(javaTimeTypeArbitraryGenerator);
+		return this;
+	}
+
+	public LabMonkeyBuilder javaTimeArbitraryResolver(JavaTimeArbitraryResolver javaTimeArbitraryResolver) {
+		generateOptionsBuilder.javaTimeArbitraryResolver(javaTimeArbitraryResolver);
 		return this;
 	}
 

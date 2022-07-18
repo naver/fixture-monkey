@@ -39,18 +39,18 @@ public final class JavaArbitraryIntrospector implements ArbitraryIntrospector, M
 
 	public JavaArbitraryIntrospector() {
 		this(
-			new IntrospectorArbitraryGenerator() {
+			new JavaTypeArbitraryGenerator() {
 			},
-			new ArbitraryTypeIntrospector() {
+			new JavaArbitraryResolver() {
 			}
 		);
 	}
 
 	public JavaArbitraryIntrospector(
-		IntrospectorArbitraryGenerator introspectorArbitraryGenerator,
-		ArbitraryTypeIntrospector arbitraryIntrospector
+		JavaTypeArbitraryGenerator arbitraryGenerator,
+		JavaArbitraryResolver arbitraryResolver
 	) {
-		this.introspector = introspectors(introspectorArbitraryGenerator, arbitraryIntrospector);
+		this.introspector = introspectors(arbitraryGenerator, arbitraryResolver);
 	}
 
 	@Override
@@ -63,23 +63,23 @@ public final class JavaArbitraryIntrospector implements ArbitraryIntrospector, M
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
 		Class<?> type = Types.getActualType(context.getType());
 		return this.introspector.getOrDefault(
-			type,
-			ctx -> ArbitraryIntrospectorResult.EMPTY
-		)
+				type,
+				ctx -> ArbitraryIntrospectorResult.EMPTY
+			)
 			.apply(context);
 	}
 
 	private static Map<Class<?>, Function<ArbitraryGeneratorContext, ArbitraryIntrospectorResult>> introspectors(
-		IntrospectorArbitraryGenerator introspectorArbitraryGenerator,
-		ArbitraryTypeIntrospector arbitraryIntrospector
+		JavaTypeArbitraryGenerator arbitraryGenerator,
+		JavaArbitraryResolver arbitraryResolver
 	) {
 		Map<Class<?>, Function<ArbitraryGeneratorContext, ArbitraryIntrospectorResult>> introspector = new HashMap<>();
 
 		introspector.put(
 			String.class,
 			ctx -> new ArbitraryIntrospectorResult(
-				arbitraryIntrospector.strings(
-					introspectorArbitraryGenerator.strings(),
+				arbitraryResolver.strings(
+					arbitraryGenerator.strings(),
 					ctx
 				)
 			)
@@ -88,8 +88,8 @@ public final class JavaArbitraryIntrospector implements ArbitraryIntrospector, M
 		introspector.put(
 			char.class,
 			ctx -> new ArbitraryIntrospectorResult(
-				arbitraryIntrospector.characters(
-					introspectorArbitraryGenerator.characters(),
+				arbitraryResolver.characters(
+					arbitraryGenerator.characters(),
 					ctx
 				)
 			)
@@ -98,8 +98,8 @@ public final class JavaArbitraryIntrospector implements ArbitraryIntrospector, M
 		introspector.put(
 			Character.class,
 			ctx -> new ArbitraryIntrospectorResult(
-				arbitraryIntrospector.characters(
-					introspectorArbitraryGenerator.characters(),
+				arbitraryResolver.characters(
+					arbitraryGenerator.characters(),
 					ctx
 				)
 			)
@@ -108,8 +108,8 @@ public final class JavaArbitraryIntrospector implements ArbitraryIntrospector, M
 		introspector.put(
 			short.class,
 			ctx -> new ArbitraryIntrospectorResult(
-				arbitraryIntrospector.shorts(
-					introspectorArbitraryGenerator.shorts(),
+				arbitraryResolver.shorts(
+					arbitraryGenerator.shorts(),
 					ctx
 				)
 			)
@@ -118,8 +118,8 @@ public final class JavaArbitraryIntrospector implements ArbitraryIntrospector, M
 		introspector.put(
 			Short.class,
 			ctx -> new ArbitraryIntrospectorResult(
-				arbitraryIntrospector.shorts(
-					introspectorArbitraryGenerator.shorts(),
+				arbitraryResolver.shorts(
+					arbitraryGenerator.shorts(),
 					ctx
 				)
 			)
@@ -128,8 +128,8 @@ public final class JavaArbitraryIntrospector implements ArbitraryIntrospector, M
 		introspector.put(
 			byte.class,
 			ctx -> new ArbitraryIntrospectorResult(
-				arbitraryIntrospector.bytes(
-					introspectorArbitraryGenerator.bytes(),
+				arbitraryResolver.bytes(
+					arbitraryGenerator.bytes(),
 					ctx
 				)
 			)
@@ -138,8 +138,8 @@ public final class JavaArbitraryIntrospector implements ArbitraryIntrospector, M
 		introspector.put(
 			Byte.class,
 			ctx -> new ArbitraryIntrospectorResult(
-				arbitraryIntrospector.bytes(
-					introspectorArbitraryGenerator.bytes(),
+				arbitraryResolver.bytes(
+					arbitraryGenerator.bytes(),
 					ctx
 				)
 			)
@@ -148,8 +148,8 @@ public final class JavaArbitraryIntrospector implements ArbitraryIntrospector, M
 		introspector.put(
 			double.class,
 			ctx -> new ArbitraryIntrospectorResult(
-				arbitraryIntrospector.doubles(
-					introspectorArbitraryGenerator.doubles(),
+				arbitraryResolver.doubles(
+					arbitraryGenerator.doubles(),
 					ctx
 				)
 			)
@@ -158,8 +158,8 @@ public final class JavaArbitraryIntrospector implements ArbitraryIntrospector, M
 		introspector.put(
 			Double.class,
 			ctx -> new ArbitraryIntrospectorResult(
-				arbitraryIntrospector.doubles(
-					introspectorArbitraryGenerator.doubles(),
+				arbitraryResolver.doubles(
+					arbitraryGenerator.doubles(),
 					ctx
 				)
 			)
@@ -168,8 +168,8 @@ public final class JavaArbitraryIntrospector implements ArbitraryIntrospector, M
 		introspector.put(
 			float.class,
 			ctx -> new ArbitraryIntrospectorResult(
-				arbitraryIntrospector.floats(
-					introspectorArbitraryGenerator.floats(),
+				arbitraryResolver.floats(
+					arbitraryGenerator.floats(),
 					ctx
 				)
 			)
@@ -178,8 +178,8 @@ public final class JavaArbitraryIntrospector implements ArbitraryIntrospector, M
 		introspector.put(
 			Float.class,
 			ctx -> new ArbitraryIntrospectorResult(
-				arbitraryIntrospector.floats(
-					introspectorArbitraryGenerator.floats(),
+				arbitraryResolver.floats(
+					arbitraryGenerator.floats(),
 					ctx
 				)
 			)
@@ -188,8 +188,8 @@ public final class JavaArbitraryIntrospector implements ArbitraryIntrospector, M
 		introspector.put(
 			int.class,
 			ctx -> new ArbitraryIntrospectorResult(
-				arbitraryIntrospector.integers(
-					introspectorArbitraryGenerator.integers(),
+				arbitraryResolver.integers(
+					arbitraryGenerator.integers(),
 					ctx
 				)
 			)
@@ -198,8 +198,8 @@ public final class JavaArbitraryIntrospector implements ArbitraryIntrospector, M
 		introspector.put(
 			Integer.class,
 			ctx -> new ArbitraryIntrospectorResult(
-				arbitraryIntrospector.integers(
-					introspectorArbitraryGenerator.integers(),
+				arbitraryResolver.integers(
+					arbitraryGenerator.integers(),
 					ctx
 				)
 			)
@@ -208,8 +208,8 @@ public final class JavaArbitraryIntrospector implements ArbitraryIntrospector, M
 		introspector.put(
 			long.class,
 			ctx -> new ArbitraryIntrospectorResult(
-				arbitraryIntrospector.longs(
-					introspectorArbitraryGenerator.longs(),
+				arbitraryResolver.longs(
+					arbitraryGenerator.longs(),
 					ctx
 				)
 			)
@@ -218,8 +218,8 @@ public final class JavaArbitraryIntrospector implements ArbitraryIntrospector, M
 		introspector.put(
 			Long.class,
 			ctx -> new ArbitraryIntrospectorResult(
-				arbitraryIntrospector.longs(
-					introspectorArbitraryGenerator.longs(),
+				arbitraryResolver.longs(
+					arbitraryGenerator.longs(),
 					ctx
 				)
 			)
@@ -228,8 +228,8 @@ public final class JavaArbitraryIntrospector implements ArbitraryIntrospector, M
 		introspector.put(
 			BigInteger.class,
 			ctx -> new ArbitraryIntrospectorResult(
-				arbitraryIntrospector.bigIntegers(
-					introspectorArbitraryGenerator.bigIntegers(),
+				arbitraryResolver.bigIntegers(
+					arbitraryGenerator.bigIntegers(),
 					ctx
 				)
 			)
@@ -238,8 +238,8 @@ public final class JavaArbitraryIntrospector implements ArbitraryIntrospector, M
 		introspector.put(
 			BigDecimal.class,
 			ctx -> new ArbitraryIntrospectorResult(
-				arbitraryIntrospector.bigDecimals(
-					introspectorArbitraryGenerator.bigDecimals(),
+				arbitraryResolver.bigDecimals(
+					arbitraryGenerator.bigDecimals(),
 					ctx
 				)
 			)

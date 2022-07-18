@@ -26,13 +26,24 @@ import java.lang.reflect.AnnotatedType;
 import java.time.Instant;
 import java.time.temporal.Temporal;
 import java.util.List;
+import java.util.regex.Pattern;
 
+import net.jqwik.api.Arbitraries;
+import net.jqwik.api.Arbitrary;
 import net.jqwik.api.Property;
+import net.jqwik.api.arbitraries.StringArbitrary;
+import net.jqwik.time.api.DateTimes;
+import net.jqwik.time.api.arbitraries.InstantArbitrary;
 
 import com.navercorp.fixturemonkey.LabMonkey;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
+import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.ObjectArbitraryPropertyGenerator;
+import com.navercorp.fixturemonkey.api.introspector.JavaArbitraryResolver;
+import com.navercorp.fixturemonkey.api.introspector.JavaTimeArbitraryResolver;
+import com.navercorp.fixturemonkey.api.introspector.JavaTimeTypeArbitraryGenerator;
+import com.navercorp.fixturemonkey.api.introspector.JavaTypeArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.resolver.RootNodeResolver;
@@ -331,5 +342,147 @@ class FixtureMonkeyV04OptionsTest {
 			.getList();
 
 		then(actual).hasSize(3);
+	}
+
+	@Property
+	void javaTypeArbitraryGenerator() {
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.javaTypeArbitraryGenerator(new JavaTypeArbitraryGenerator() {
+				@Override
+				public StringArbitrary strings() {
+					return Arbitraries.strings().numeric();
+				}
+			})
+			.build();
+
+		String actual = sut.giveMeOne(String.class);
+
+		then(actual).matches(Pattern.compile("\\d*"));
+	}
+
+	@Property
+	void javaTypeArbitraryGeneratorAffectsField() {
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.javaTypeArbitraryGenerator(new JavaTypeArbitraryGenerator() {
+				@Override
+				public StringArbitrary strings() {
+					return Arbitraries.strings().numeric();
+				}
+			})
+			.build();
+
+		String actual = sut.giveMeOne(SimpleObject.class)
+			.getStr();
+
+		then(actual).matches(it -> it == null || Pattern.compile("\\d*").matcher(it).matches());
+	}
+
+	@Property
+	void javaArbitraryResolver() {
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.javaArbitraryResolver(new JavaArbitraryResolver() {
+				@Override
+				public Arbitrary<String> strings(StringArbitrary stringArbitrary, ArbitraryGeneratorContext context) {
+					return Arbitraries.just("test");
+				}
+			})
+			.build();
+
+		String actual = sut.giveMeOne(String.class);
+
+		then(actual).isEqualTo("test");
+	}
+
+	@Property
+	void javaArbitraryResolverAffectsField() {
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.javaArbitraryResolver(new JavaArbitraryResolver() {
+				@Override
+				public Arbitrary<String> strings(StringArbitrary stringArbitrary, ArbitraryGeneratorContext context) {
+					return Arbitraries.just("test");
+				}
+			})
+			.build();
+
+		String actual = sut.giveMeOne(SimpleObject.class)
+			.getStr();
+
+		then(actual).isIn("test", null);
+	}
+
+	@Property
+	void javaTimeTypeArbitraryGenerator() {
+		Instant expected = Instant.now();
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.javaTimeTypeArbitraryGenerator(new JavaTimeTypeArbitraryGenerator() {
+				@Override
+				public InstantArbitrary instants() {
+					return DateTimes.instants().between(expected, expected);
+				}
+			})
+			.build();
+
+		Instant actual = sut.giveMeOne(Instant.class);
+
+		then(actual).isEqualTo(expected);
+	}
+
+	@Property
+	void javaTimeTypeArbitraryGeneratorAffectsField() {
+		Instant expected = Instant.now();
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.javaTimeTypeArbitraryGenerator(new JavaTimeTypeArbitraryGenerator() {
+				@Override
+				public InstantArbitrary instants() {
+					return DateTimes.instants().between(expected, expected);
+				}
+			})
+			.build();
+
+		Instant actual = sut.giveMeOne(SimpleObject.class)
+			.getInstant();
+
+		then(actual).isIn(null, expected);
+	}
+
+	@Property
+	void javaTimeArbitraryResolver() {
+		Instant expected = Instant.now();
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.javaTimeArbitraryResolver(new JavaTimeArbitraryResolver() {
+				@Override
+				public Arbitrary<Instant> instants(
+					InstantArbitrary instantArbitrary,
+					ArbitraryGeneratorContext context
+				) {
+					return Arbitraries.just(expected);
+				}
+			})
+			.build();
+
+		Instant actual = sut.giveMeOne(Instant.class);
+
+		then(actual).isEqualTo(expected);
+	}
+
+	@Property
+	void javaTimeArbitraryResolverAffectsField() {
+		Instant expected = Instant.now();
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.javaTimeArbitraryResolver(new JavaTimeArbitraryResolver() {
+				@Override
+				public Arbitrary<Instant> instants(
+					InstantArbitrary instantArbitrary,
+					ArbitraryGeneratorContext context
+				) {
+					return Arbitraries.just(expected);
+				}
+			})
+			.build();
+
+		Instant actual = sut.giveMeOne(SimpleObject.class)
+			.getInstant();
+
+		then(actual).isIn(expected, null);
 	}
 }

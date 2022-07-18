@@ -38,11 +38,11 @@ import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 
-class DefaultArbitraryGeneratorTest {
+class JavaDefaultArbitraryGeneratorTest {
 	@Test
 	void generateString() {
 		// given
-		DefaultArbitraryGenerator sut = new DefaultArbitraryGenerator();
+		DefaultArbitraryGenerator sut = DefaultArbitraryGenerator.javaBuilder().build();
 		TypeReference<SampleArbitraryGenerator> typeReference = new TypeReference<SampleArbitraryGenerator>() {
 		};
 		String propertyName = "str";
@@ -74,7 +74,7 @@ class DefaultArbitraryGeneratorTest {
 	@Test
 	void generateInteger() {
 		// given
-		DefaultArbitraryGenerator sut = new DefaultArbitraryGenerator();
+		DefaultArbitraryGenerator sut = DefaultArbitraryGenerator.javaBuilder().build();
 		TypeReference<SampleArbitraryGenerator> typeReference = new TypeReference<SampleArbitraryGenerator>() {
 		};
 		String propertyName = "integer";
@@ -106,7 +106,7 @@ class DefaultArbitraryGeneratorTest {
 	@Test
 	void generateInstant() {
 		// given
-		DefaultArbitraryGenerator sut = new DefaultArbitraryGenerator();
+		DefaultArbitraryGenerator sut = DefaultArbitraryGenerator.javaBuilder().build();
 		TypeReference<SampleArbitraryGenerator> typeReference = new TypeReference<SampleArbitraryGenerator>() {
 		};
 		String propertyName = "instant";
@@ -138,7 +138,7 @@ class DefaultArbitraryGeneratorTest {
 	@Test
 	void generateLocalDateTime() {
 		// given
-		DefaultArbitraryGenerator sut = new DefaultArbitraryGenerator();
+		DefaultArbitraryGenerator sut = DefaultArbitraryGenerator.javaBuilder().build();
 		TypeReference<SampleArbitraryGenerator> typeReference = new TypeReference<SampleArbitraryGenerator>() {
 		};
 		String propertyName = "localDateTime";
@@ -170,7 +170,7 @@ class DefaultArbitraryGeneratorTest {
 	@Test
 	void generateBoolean() {
 		// given
-		DefaultArbitraryGenerator sut = new DefaultArbitraryGenerator();
+		DefaultArbitraryGenerator sut = DefaultArbitraryGenerator.javaBuilder().build();
 		TypeReference<SampleArbitraryGenerator> typeReference = new TypeReference<SampleArbitraryGenerator>() {
 		};
 		String propertyName = "booleans";
@@ -202,7 +202,7 @@ class DefaultArbitraryGeneratorTest {
 	@Test
 	void generateEnum() {
 		// given
-		DefaultArbitraryGenerator sut = new DefaultArbitraryGenerator();
+		DefaultArbitraryGenerator sut = DefaultArbitraryGenerator.javaBuilder().build();
 		TypeReference<SampleArbitraryGenerator> typeReference = new TypeReference<SampleArbitraryGenerator>() {
 		};
 		String propertyName = "enums";
@@ -234,7 +234,7 @@ class DefaultArbitraryGeneratorTest {
 	@Test
 	void generateUuid() {
 		// given
-		DefaultArbitraryGenerator sut = new DefaultArbitraryGenerator();
+		DefaultArbitraryGenerator sut = DefaultArbitraryGenerator.javaBuilder().build();
 		TypeReference<SampleArbitraryGenerator> typeReference = new TypeReference<SampleArbitraryGenerator>() {
 		};
 		String propertyName = "uuid";
@@ -266,7 +266,7 @@ class DefaultArbitraryGeneratorTest {
 	@Test
 	void generateBean() {
 		// given
-		DefaultArbitraryGenerator sut = new DefaultArbitraryGenerator();
+		DefaultArbitraryGenerator sut = DefaultArbitraryGenerator.javaBuilder().build();
 		TypeReference<SampleArbitraryGenerator> typeReference = new TypeReference<SampleArbitraryGenerator>() {
 		};
 		Property rootProperty = new RootProperty(typeReference.getAnnotatedType());
