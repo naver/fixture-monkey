@@ -22,7 +22,10 @@ import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerat
 import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.DEFAULT_NULLABLE_ANNOTATION_TYPES;
 import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.DEFAULT_NULL_INJECT;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.HashSet;
+import java.util.function.Function;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -254,6 +257,75 @@ public class LabMonkeyBuilder {
 		return this;
 	}
 
+	public LabMonkeyBuilder register(
+		Class<?> type,
+		Function<LabMonkey, ? extends ArbitraryBuilder<?>> registeredArbitraryBuilder
+	) {
+		manipulateOptionsBuilder.register(
+			MatcherOperator.assignableTypeMatchOperator(type, registeredArbitraryBuilder)
+		);
+		return this;
+	}
+
+	public LabMonkeyBuilder registerExactType(
+		Class<?> type,
+		Function<LabMonkey, ? extends ArbitraryBuilder<?>> registeredArbitraryBuilder
+	) {
+		manipulateOptionsBuilder.register(MatcherOperator.exactTypeMatchOperator(type, registeredArbitraryBuilder));
+		return this;
+	}
+
+	public LabMonkeyBuilder registerAssinableType(
+		Class<?> type,
+		Function<LabMonkey, ? extends ArbitraryBuilder<?>> registeredArbitraryBuilder
+	) {
+		manipulateOptionsBuilder.register(
+			MatcherOperator.assignableTypeMatchOperator(type, registeredArbitraryBuilder)
+		);
+		return this;
+	}
+
+	public LabMonkeyBuilder register(
+		MatcherOperator<Function<LabMonkey, ? extends ArbitraryBuilder<?>>> registeredArbitraryBuilder
+	) {
+		manipulateOptionsBuilder.register(registeredArbitraryBuilder);
+		return this;
+	}
+
+	public LabMonkeyBuilder registerGroup(Class<?>... arbitraryBuilderGroups) {
+		for (Class<?> arbitraryBuilderGroup : arbitraryBuilderGroups) {
+			Method[] methods = arbitraryBuilderGroup.getMethods();
+			for (Method method : methods) {
+				int paramCount = method.getParameterCount();
+				Class<?> returnType = method.getReturnType();
+				if (paramCount != 1 || !ArbitraryBuilder.class.isAssignableFrom(returnType)) {
+					continue;
+				}
+				try {
+					Class<?> actualType = Types.getActualType(
+						Types.getGenericsTypes(method.getAnnotatedReturnType()).get(0)
+					);
+					Object noArgsInstance = arbitraryBuilderGroup.getDeclaredConstructor().newInstance();
+					Function<LabMonkey, ? extends ArbitraryBuilder<?>> registerArbitraryBuilder = (fixtureMonkey) -> {
+						try {
+							return (ArbitraryBuilder<?>)method.invoke(noArgsInstance, fixtureMonkey);
+						} catch (IllegalAccessException | InvocationTargetException e) {
+							e.printStackTrace();
+							throw new RuntimeException(e);
+						}
+					};
+					this.register(actualType, registerArbitraryBuilder);
+				} catch (InvocationTargetException
+						 | InstantiationException
+						 | IllegalAccessException
+						 | NoSuchMethodException e) {
+					// ignored
+				}
+			}
+		}
+		return this;
+	}
+
 	public LabMonkey build() {
 		if (defaultNullInjectGenerator != null) {
 			generateOptionsBuilder.defaultNullInjectGenerator(defaultNullInjectGenerator);
@@ -270,12 +342,11 @@ public class LabMonkeyBuilder {
 		}
 
 		GenerateOptions generateOptions = generateOptionsBuilder.build();
-		ManipulateOptions manipulateOptions = manipulateOptionsBuilder.build();
 		ArbitraryTraverser traverser = new ArbitraryTraverser(generateOptions);
 
 		return new LabMonkey(
 			generateOptions,
-			manipulateOptions,
+			manipulateOptionsBuilder,
 			traverser,
 			manipulatorOptimizer,
 			this.arbitraryValidator

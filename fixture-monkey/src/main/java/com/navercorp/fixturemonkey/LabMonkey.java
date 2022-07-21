@@ -41,6 +41,7 @@ import com.navercorp.fixturemonkey.resolver.ArbitraryManipulator;
 import com.navercorp.fixturemonkey.resolver.ArbitraryResolver;
 import com.navercorp.fixturemonkey.resolver.ArbitraryTraverser;
 import com.navercorp.fixturemonkey.resolver.ManipulateOptions;
+import com.navercorp.fixturemonkey.resolver.ManipulateOptionsBuilder;
 import com.navercorp.fixturemonkey.resolver.ManipulatorOptimizer;
 import com.navercorp.fixturemonkey.resolver.NodeSetDecomposedValueManipulator;
 import com.navercorp.fixturemonkey.resolver.RootNodeResolver;
@@ -49,7 +50,7 @@ import com.navercorp.fixturemonkey.validator.ArbitraryValidator;
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public class LabMonkey extends FixtureMonkey {
 	private final GenerateOptions generateOptions;
-	private final ManipulateOptions manipulateOptions;
+	private final ManipulateOptionsBuilder manipulateOptionsBuilder;
 	private final ArbitraryTraverser traverser;
 	private final ManipulatorOptimizer manipulatorOptimizer;
 	private final ArbitraryValidator validator;
@@ -57,17 +58,18 @@ public class LabMonkey extends FixtureMonkey {
 	@SuppressFBWarnings("NP_NULL_PARAM_DEREF_NONVIRTUAL")
 	public LabMonkey(
 		GenerateOptions generateOptions,
-		ManipulateOptions manipulateOptions,
+		ManipulateOptionsBuilder manipulateOptionsBuilder,
 		ArbitraryTraverser traverser,
 		ManipulatorOptimizer manipulatorOptimizer,
 		ArbitraryValidator validator
 	) {
 		super(null, null, null, null, null);
 		this.generateOptions = generateOptions;
-		this.manipulateOptions = manipulateOptions;
+		this.manipulateOptionsBuilder = manipulateOptionsBuilder;
 		this.traverser = traverser;
 		this.manipulatorOptimizer = manipulatorOptimizer;
 		this.validator = validator;
+		manipulateOptionsBuilder.sampleRegisteredArbitraryBuilder(this);
 	}
 
 	@Override
@@ -79,13 +81,16 @@ public class LabMonkey extends FixtureMonkey {
 
 	@Override
 	public <T> DefaultArbitraryBuilder<T> giveMeBuilder(TypeReference<T> type) {
+		ManipulateOptions manipulateOptions = manipulateOptionsBuilder.build();
+
 		return new DefaultArbitraryBuilder<>(
 			manipulateOptions,
 			new RootProperty(type.getAnnotatedType()),
 			new ArbitraryResolver(
 				traverser,
 				manipulatorOptimizer,
-				generateOptions
+				generateOptions,
+				manipulateOptions
 			),
 			traverser,
 			this.validator,
@@ -96,6 +101,7 @@ public class LabMonkey extends FixtureMonkey {
 
 	@Override
 	public <T> DefaultArbitraryBuilder<T> giveMeBuilder(T value) {
+		ManipulateOptions manipulateOptions = manipulateOptionsBuilder.build();
 		List<ArbitraryManipulator> manipulators = new ArrayList<>();
 		manipulators.add(
 			new ArbitraryManipulator(
@@ -110,7 +116,8 @@ public class LabMonkey extends FixtureMonkey {
 			new ArbitraryResolver(
 				traverser,
 				manipulatorOptimizer,
-				generateOptions
+				generateOptions,
+				manipulateOptions
 			),
 			traverser,
 			this.validator,
