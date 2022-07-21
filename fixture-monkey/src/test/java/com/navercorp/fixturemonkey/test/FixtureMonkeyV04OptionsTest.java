@@ -25,12 +25,16 @@ import static org.assertj.core.api.BDDAssertions.thenThrownBy;
 import java.lang.reflect.AnnotatedType;
 import java.time.Instant;
 import java.time.temporal.Temporal;
+import java.util.HashSet;
 import java.util.List;
 import java.util.regex.Pattern;
+
+import javax.validation.ConstraintViolationException;
 
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
 import net.jqwik.api.Property;
+import net.jqwik.api.TooManyFilterMissesException;
 import net.jqwik.api.arbitraries.StringArbitrary;
 import net.jqwik.time.api.DateTimes;
 import net.jqwik.time.api.arbitraries.InstantArbitrary;
@@ -484,5 +488,17 @@ class FixtureMonkeyV04OptionsTest {
 			.getInstant();
 
 		then(actual).isIn(expected, null);
+	}
+
+	@Property(tries = 1)
+	void alterArbitraryValidator() {
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.arbitraryValidator(obj -> {
+				throw new ConstraintViolationException("thrown by test ArbitraryValidator", new HashSet<>());
+			})
+			.build();
+
+		thenThrownBy(() -> sut.giveMeOne(String.class))
+			.isExactlyInstanceOf(TooManyFilterMissesException.class);
 	}
 }

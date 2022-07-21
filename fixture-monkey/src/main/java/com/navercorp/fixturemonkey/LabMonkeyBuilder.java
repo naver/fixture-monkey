@@ -188,6 +188,11 @@ public class LabMonkeyBuilder {
 		return this;
 	}
 
+	public LabMonkeyBuilder arbitraryValidator(ArbitraryValidator arbitraryValidator) {
+		this.arbitraryValidator = arbitraryValidator;
+		return this;
+	}
+
 	public LabMonkey build() {
 		GenerateOptions generateOptions = generateOptionsBuilder.build();
 		ManipulateOptions manipulateOptions = manipulateOptionsBuilder.build();
