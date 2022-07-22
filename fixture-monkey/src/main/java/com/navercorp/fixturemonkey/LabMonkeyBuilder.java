@@ -240,6 +240,13 @@ public class LabMonkeyBuilder {
 		return this;
 	}
 
+	public LabMonkeyBuilder addExceptGeneratePackages(String... exceptGeneratePackages) {
+		for (String exceptGeneratePackage : exceptGeneratePackages) {
+			addExceptGeneratePackage(exceptGeneratePackage);
+		}
+		return this;
+	}
+
 	public LabMonkey build() {
 		if (defaultNullInjectGenerator != null) {
 			generateOptionsBuilder.defaultNullInjectGenerator(defaultNullInjectGenerator);
