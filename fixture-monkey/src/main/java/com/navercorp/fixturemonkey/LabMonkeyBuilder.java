@@ -37,6 +37,8 @@ import com.navercorp.fixturemonkey.api.introspector.JavaArbitraryResolver;
 import com.navercorp.fixturemonkey.api.introspector.JavaTimeArbitraryResolver;
 import com.navercorp.fixturemonkey.api.introspector.JavaTimeTypeArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.introspector.JavaTypeArbitraryGenerator;
+import com.navercorp.fixturemonkey.api.matcher.AssignableTypeMatcher;
+import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.option.GenerateOptions;
 import com.navercorp.fixturemonkey.api.option.GenerateOptionsBuilder;
@@ -205,9 +207,18 @@ public class LabMonkeyBuilder {
 		return this;
 	}
 
-	public LabMonkeyBuilder addExceptGenerateClass(Class<?> type) {
-		generateOptionsBuilder.insertFirstArbitraryPropertyGenerator(type, NullArbitraryPropertyGenerator.INSTANCE);
+	public LabMonkeyBuilder pushExceptGenerateType(Matcher matcher) {
+		generateOptionsBuilder.insertFirstArbitraryPropertyGenerator(
+			new MatcherOperator<>(
+				matcher,
+				NullArbitraryPropertyGenerator.INSTANCE
+			)
+		);
 		return this;
+	}
+
+	public LabMonkeyBuilder addExceptGenerateClass(Class<?> type) {
+		return pushExceptGenerateType(new AssignableTypeMatcher(type));
 	}
 
 	public LabMonkeyBuilder addExceptGenerateClassses(Class<?>... types) {
@@ -218,16 +229,12 @@ public class LabMonkeyBuilder {
 	}
 
 	public LabMonkeyBuilder addExceptGeneratePackage(String exceptGeneratePackage) {
-		generateOptionsBuilder.insertFirstArbitraryPropertyGenerator(
-			new MatcherOperator<>(
-				property -> Types.getActualType(property.getType())
-					.getPackage()
-					.getName()
-					.startsWith(exceptGeneratePackage),
-				NullArbitraryPropertyGenerator.INSTANCE
-			)
+		return pushExceptGenerateType(
+			property -> Types.getActualType(property.getType())
+				.getPackage()
+				.getName()
+				.startsWith(exceptGeneratePackage)
 		);
-		return this;
 	}
 
 	public LabMonkeyBuilder defaultNotNull(boolean defaultNotNull) {
