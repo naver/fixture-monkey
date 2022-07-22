@@ -18,12 +18,19 @@
 
 package com.navercorp.fixturemonkey;
 
+import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.DEFAULT_NOTNULL_ANNOTATION_TYPES;
+import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.DEFAULT_NULLABLE_ANNOTATION_TYPES;
+import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.DEFAULT_NULL_INJECT;
+
+import java.util.HashSet;
+
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfoGenerator;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryPropertyGenerator;
+import com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator;
 import com.navercorp.fixturemonkey.api.generator.NullInjectGenerator;
 import com.navercorp.fixturemonkey.api.introspector.JavaArbitraryResolver;
 import com.navercorp.fixturemonkey.api.introspector.JavaTimeArbitraryResolver;
@@ -48,6 +55,9 @@ public class LabMonkeyBuilder {
 	private final ManipulateOptionsBuilder manipulateOptionsBuilder = ManipulateOptions.builder();
 	private ArbitraryValidator arbitraryValidator = new DefaultArbitraryValidator();
 	private ManipulatorOptimizer manipulatorOptimizer = new NoneManipulatorOptimizer();
+	private NullInjectGenerator defaultNullInjectGenerator = null;
+	private boolean defaultNotNull = false;
+	private boolean nullableContainer = false;
 
 	public LabMonkeyBuilder manipulatorOptimizer(ManipulatorOptimizer manipulatorOptimizer) {
 		this.manipulatorOptimizer = manipulatorOptimizer;
@@ -143,7 +153,7 @@ public class LabMonkeyBuilder {
 	}
 
 	public LabMonkeyBuilder defaultNullInjectGenerator(NullInjectGenerator nullInjectGenerator) {
-		generateOptionsBuilder.defaultNullInjectGenerator(nullInjectGenerator);
+		this.defaultNullInjectGenerator = nullInjectGenerator;
 		return this;
 	}
 
@@ -193,7 +203,31 @@ public class LabMonkeyBuilder {
 		return this;
 	}
 
+	public LabMonkeyBuilder defaultNotNull(boolean defaultNotNull) {
+		this.defaultNotNull = defaultNotNull;
+		return this;
+	}
+
+	public LabMonkeyBuilder nullableContainer(boolean nullableContainer) {
+		this.nullableContainer = nullableContainer;
+		return this;
+	}
+
 	public LabMonkey build() {
+		if (defaultNullInjectGenerator != null) {
+			generateOptionsBuilder.defaultNullInjectGenerator(defaultNullInjectGenerator);
+		} else if (defaultNotNull || nullableContainer) {
+			generateOptionsBuilder.defaultNullInjectGenerator(
+				new DefaultNullInjectGenerator(
+					DEFAULT_NULL_INJECT,
+					nullableContainer,
+					defaultNotNull,
+					new HashSet<>(DEFAULT_NULLABLE_ANNOTATION_TYPES),
+					new HashSet<>(DEFAULT_NOTNULL_ANNOTATION_TYPES)
+				)
+			);
+		}
+
 		GenerateOptions generateOptions = generateOptionsBuilder.build();
 		ManipulateOptions manipulateOptions = manipulateOptionsBuilder.build();
 		ArbitraryTraverser traverser = new ArbitraryTraverser(generateOptions);
