@@ -18,12 +18,17 @@
 
 package com.navercorp.fixturemonkey;
 
+import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.NOT_NULL_INJECT;
+
+import javax.annotation.Nullable;
+
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfoGenerator;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryPropertyGenerator;
+import com.navercorp.fixturemonkey.api.generator.ArbitraryPropertyGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.NullInjectGenerator;
 import com.navercorp.fixturemonkey.api.introspector.JavaArbitraryResolver;
 import com.navercorp.fixturemonkey.api.introspector.JavaTimeArbitraryResolver;
@@ -48,6 +53,7 @@ public class LabMonkeyBuilder {
 	private final ManipulateOptionsBuilder manipulateOptionsBuilder = ManipulateOptions.builder();
 	private ArbitraryValidator arbitraryValidator = new DefaultArbitraryValidator();
 	private ManipulatorOptimizer manipulatorOptimizer = new NoneManipulatorOptimizer();
+	private boolean defaultNotNull = false;
 
 	public LabMonkeyBuilder manipulatorOptimizer(ManipulatorOptimizer manipulatorOptimizer) {
 		this.manipulatorOptimizer = manipulatorOptimizer;
@@ -193,7 +199,16 @@ public class LabMonkeyBuilder {
 		return this;
 	}
 
+	public LabMonkeyBuilder defaultNotNull(boolean defaultNotNull) {
+		this.defaultNotNull = defaultNotNull;
+		return this;
+	}
+
 	public LabMonkey build() {
+		if (defaultNotNull) {
+			generateOptionsBuilder.defaultNullInjectGenerator((context, containerInfo) -> NOT_NULL_INJECT);
+		}
+
 		GenerateOptions generateOptions = generateOptionsBuilder.build();
 		ManipulateOptions manipulateOptions = manipulateOptionsBuilder.build();
 		ArbitraryTraverser traverser = new ArbitraryTraverser(generateOptions);

@@ -501,4 +501,16 @@ class FixtureMonkeyV04OptionsTest {
 		thenThrownBy(() -> sut.giveMeOne(String.class))
 			.isExactlyInstanceOf(TooManyFilterMissesException.class);
 	}
+
+	@Property
+	void defaultNotNull() {
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.defaultNotNull(true)
+			.build();
+
+		String actual = sut.giveMeOne(SimpleObject.class)
+			.getStr();
+
+		then(actual).isNotNull();
+	}
 }
