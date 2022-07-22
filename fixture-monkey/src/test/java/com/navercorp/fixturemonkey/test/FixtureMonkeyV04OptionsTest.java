@@ -18,6 +18,7 @@
 
 package com.navercorp.fixturemonkey.test;
 
+import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.ALWAYS_NULL_INJECT;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.assertj.core.api.BDDAssertions.thenNoException;
 import static org.assertj.core.api.BDDAssertions.thenThrownBy;
@@ -25,6 +26,7 @@ import static org.assertj.core.api.BDDAssertions.thenThrownBy;
 import java.lang.reflect.AnnotatedType;
 import java.time.Instant;
 import java.time.temporal.Temporal;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -43,6 +45,7 @@ import com.navercorp.fixturemonkey.LabMonkey;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryPropertyGenerator;
+import com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator;
 import com.navercorp.fixturemonkey.api.generator.ObjectArbitraryPropertyGenerator;
 import com.navercorp.fixturemonkey.api.introspector.JavaArbitraryResolver;
 import com.navercorp.fixturemonkey.api.introspector.JavaTimeArbitraryResolver;
@@ -512,5 +515,26 @@ class FixtureMonkeyV04OptionsTest {
 			.getStr();
 
 		then(actual).isNotNull();
+	}
+
+	@Property
+	void defaultNotNullNotWorksWhenSetDefaultNullInjectGenerator() {
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.defaultNullInjectGenerator(
+				new DefaultNullInjectGenerator(
+					ALWAYS_NULL_INJECT,
+					false,
+					false,
+					Collections.emptySet(),
+					Collections.emptySet()
+				)
+			)
+			.defaultNotNull(true)
+			.build();
+
+		String actual = sut.giveMeOne(SimpleObject.class)
+			.getStr();
+
+		then(actual).isNull();
 	}
 }
