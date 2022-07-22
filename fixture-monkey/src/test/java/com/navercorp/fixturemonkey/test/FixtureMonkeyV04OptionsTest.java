@@ -51,6 +51,7 @@ import com.navercorp.fixturemonkey.api.introspector.JavaArbitraryResolver;
 import com.navercorp.fixturemonkey.api.introspector.JavaTimeArbitraryResolver;
 import com.navercorp.fixturemonkey.api.introspector.JavaTimeTypeArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.introspector.JavaTypeArbitraryGenerator;
+import com.navercorp.fixturemonkey.api.matcher.ExactTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.resolver.RootNodeResolver;
@@ -530,6 +531,63 @@ class FixtureMonkeyV04OptionsTest {
 				)
 			)
 			.defaultNotNull(true)
+			.build();
+
+		String actual = sut.giveMeOne(SimpleObject.class)
+			.getStr();
+
+		then(actual).isNull();
+	}
+
+	@Property
+	void pushExceptGenerateType() {
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.pushExceptGenerateType(new ExactTypeMatcher(String.class))
+			.build();
+
+		String actual = sut.giveMeOne(String.class);
+
+		then(actual).isNull();
+	}
+
+	@Property
+	void addExceptGenerateClass() {
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.addExceptGenerateClass(String.class)
+			.build();
+
+		String actual = sut.giveMeOne(String.class);
+
+		then(actual).isNull();
+	}
+
+	@Property
+	void addExceptGenerateClassNotGenerateField() {
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.addExceptGenerateClass(String.class)
+			.build();
+
+		String actual = sut.giveMeOne(SimpleObject.class)
+			.getStr();
+
+		then(actual).isNull();
+	}
+
+	@Property
+	void addExceptGeneratePackage() {
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.addExceptGeneratePackage("java.lang")
+			.build();
+
+		String actual = sut.giveMeOne(String.class);
+
+		then(actual).isNull();
+	}
+
+	@Property
+	void addExceptGeneratePackageNotGenerateField() {
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.addExceptGeneratePackage("java.lang")
 			.build();
 
 		String actual = sut.giveMeOne(SimpleObject.class)

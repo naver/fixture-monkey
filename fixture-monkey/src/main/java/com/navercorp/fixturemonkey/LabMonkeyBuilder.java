@@ -31,15 +31,19 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfoGenerator;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator;
+import com.navercorp.fixturemonkey.api.generator.NullArbitraryPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.NullInjectGenerator;
 import com.navercorp.fixturemonkey.api.introspector.JavaArbitraryResolver;
 import com.navercorp.fixturemonkey.api.introspector.JavaTimeArbitraryResolver;
 import com.navercorp.fixturemonkey.api.introspector.JavaTimeTypeArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.introspector.JavaTypeArbitraryGenerator;
+import com.navercorp.fixturemonkey.api.matcher.AssignableTypeMatcher;
+import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.option.GenerateOptions;
 import com.navercorp.fixturemonkey.api.option.GenerateOptionsBuilder;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
+import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.expression.MonkeyExpressionFactory;
 import com.navercorp.fixturemonkey.resolver.ArbitraryTraverser;
 import com.navercorp.fixturemonkey.resolver.ManipulateOptions;
@@ -203,6 +207,36 @@ public class LabMonkeyBuilder {
 		return this;
 	}
 
+	public LabMonkeyBuilder pushExceptGenerateType(Matcher matcher) {
+		generateOptionsBuilder.insertFirstArbitraryPropertyGenerator(
+			new MatcherOperator<>(
+				matcher,
+				NullArbitraryPropertyGenerator.INSTANCE
+			)
+		);
+		return this;
+	}
+
+	public LabMonkeyBuilder addExceptGenerateClass(Class<?> type) {
+		return pushExceptGenerateType(new AssignableTypeMatcher(type));
+	}
+
+	public LabMonkeyBuilder addExceptGenerateClassses(Class<?>... types) {
+		for (Class<?> type : types) {
+			addExceptGenerateClass(type);
+		}
+		return this;
+	}
+
+	public LabMonkeyBuilder addExceptGeneratePackage(String exceptGeneratePackage) {
+		return pushExceptGenerateType(
+			property -> Types.getActualType(property.getType())
+				.getPackage()
+				.getName()
+				.startsWith(exceptGeneratePackage)
+		);
+	}
+
 	public LabMonkeyBuilder defaultNotNull(boolean defaultNotNull) {
 		this.defaultNotNull = defaultNotNull;
 		return this;
@@ -210,6 +244,13 @@ public class LabMonkeyBuilder {
 
 	public LabMonkeyBuilder nullableContainer(boolean nullableContainer) {
 		this.nullableContainer = nullableContainer;
+		return this;
+	}
+
+	public LabMonkeyBuilder addExceptGeneratePackages(String... exceptGeneratePackages) {
+		for (String exceptGeneratePackage : exceptGeneratePackages) {
+			addExceptGeneratePackage(exceptGeneratePackage);
+		}
 		return this;
 	}
 
