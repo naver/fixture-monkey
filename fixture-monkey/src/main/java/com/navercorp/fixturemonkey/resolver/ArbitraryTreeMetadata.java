@@ -1,4 +1,3 @@
-
 /*
  * Fixture Monkey
  *
@@ -17,19 +16,25 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.test;
+package com.navercorp.fixturemonkey.resolver;
 
-import com.navercorp.fixturemonkey.ArbitraryBuilder;
-import com.navercorp.fixturemonkey.LabMonkey;
-import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.SimpleObject;
+import java.util.List;
+import java.util.Map;
 
-class FixtureMonkeyV04OptionsAdditionalTestSpecs {
-	public static class SimpleObjectChild extends SimpleObject {
+import org.apiguardian.api.API;
+import org.apiguardian.api.API.Status;
+
+import com.navercorp.fixturemonkey.api.property.Property;
+
+@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+public class ArbitraryTreeMetadata {
+	private final Map<Property, List<ArbitraryNode>> nodesByProperty; // matchOperator
+
+	public ArbitraryTreeMetadata(Map<Property, List<ArbitraryNode>> nodesByProperty) {
+		this.nodesByProperty = nodesByProperty;
 	}
 
-	public static class RegisterGroup {
-		public ArbitraryBuilder<String> string(LabMonkey labMonkey) {
-			return labMonkey.giveMeBuilder("test");
-		}
+	public Map<Property, List<ArbitraryNode>> getNodesByProperty() {
+		return nodesByProperty;
 	}
 }

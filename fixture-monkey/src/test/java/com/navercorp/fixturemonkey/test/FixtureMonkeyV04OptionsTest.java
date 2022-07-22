@@ -55,6 +55,7 @@ import com.navercorp.fixturemonkey.api.matcher.ExactTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.resolver.RootNodeResolver;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.RegisterGroup;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.SimpleObjectChild;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.ComplexObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.SimpleObject;
@@ -594,5 +595,53 @@ class FixtureMonkeyV04OptionsTest {
 			.getStr();
 
 		then(actual).isNull();
+	}
+
+	@Property
+	void registerInstance() {
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.register(String.class, monkey -> monkey.giveMeBuilder("test"))
+			.build();
+
+		String actual = sut.giveMeOne(String.class);
+
+		then(actual).isEqualTo("test");
+	}
+
+	@Property
+	void registerField() {
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.register(String.class, monkey -> monkey.giveMeBuilder("test"))
+			.build();
+
+		String actual = sut.giveMeOne(SimpleObject.class)
+			.getStr();
+
+		then(actual).isEqualTo("test");
+	}
+
+	@Property
+	void registerGroup() {
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.registerGroup(RegisterGroup.class)
+			.build();
+
+		String actual = sut.giveMeOne(SimpleObject.class)
+			.getStr();
+
+		then(actual).isEqualTo("test");
+	}
+
+	@Property
+	void registerSameInstancesTwiceWorksLast() {
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.register(String.class, monkey -> monkey.giveMeBuilder("test"))
+			.register(String.class, monkey -> monkey.giveMeBuilder("test2"))
+			.build();
+
+		String actual = sut.giveMeOne(SimpleObject.class)
+			.getStr();
+
+		then(actual).isEqualTo("test2");
 	}
 }

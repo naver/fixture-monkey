@@ -40,6 +40,7 @@ import com.navercorp.fixturemonkey.api.option.GenerateOptions;
 final class ArbitraryTree {
 	private final ArbitraryNode rootNode;
 	private final GenerateOptions generateOptions;
+	private final ArbitraryTreeMetadata metadata;
 
 	ArbitraryTree(
 		ArbitraryNode rootNode,
@@ -47,6 +48,12 @@ final class ArbitraryTree {
 	) {
 		this.rootNode = rootNode;
 		this.generateOptions = generateOptions;
+		MetadataCollector metadataCollector = new MetadataCollector(rootNode);
+		this.metadata = metadataCollector.collect();
+	}
+
+	public ArbitraryTreeMetadata getMetadata() {
+		return metadata;
 	}
 
 	ArbitraryNode findRoot() {
