@@ -537,4 +537,50 @@ class FixtureMonkeyV04OptionsTest {
 
 		then(actual).isNull();
 	}
+
+	@Property
+	void addExceptGenerateClass() {
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.addExceptGenerateClass(String.class)
+			.build();
+
+		String actual = sut.giveMeOne(String.class);
+
+		then(actual).isNull();
+	}
+
+	@Property
+	void addExceptGenerateClassNotGenerateField() {
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.addExceptGenerateClass(String.class)
+			.build();
+
+		String actual = sut.giveMeOne(SimpleObject.class)
+			.getStr();
+
+		then(actual).isNull();
+	}
+
+	@Property
+	void addExceptGeneratePackage() {
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.addExceptGeneratePackage("java.lang")
+			.build();
+
+		String actual = sut.giveMeOne(String.class);
+
+		then(actual).isNull();
+	}
+
+	@Property
+	void addExceptGeneratePackageNotGenerateField() {
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.addExceptGeneratePackage("java.lang")
+			.build();
+
+		String actual = sut.giveMeOne(SimpleObject.class)
+			.getStr();
+
+		then(actual).isNull();
+	}
 }
