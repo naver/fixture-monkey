@@ -18,14 +18,12 @@
 
 package com.navercorp.fixturemonkey.api.generator;
 
-import static java.util.stream.Collectors.toList;
-
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -87,26 +85,14 @@ public final class ArbitraryGeneratorContext {
 		return Collections.unmodifiableList(this.children);
 	}
 
-	public List<Arbitrary<?>> getChildrenArbitraries() {
-		return this.children.stream()
-			.map(it -> this.resolveArbitrary.apply(this, it))
-			.collect(toList());
-	}
-
-	// return children arbitraries for object childrens
-	// container children is elementProperty and it does not support propertyName value.
-	public Map<String, Arbitrary<?>> getObjectChildrenArbitrariesByResolvedPropertyName() {
-		if (this.getArbitraryProperty().getContainerInfo() != null) {
-			return Collections.emptyMap();
-		}
-
-		Map<String, Arbitrary<?>> childrenValues = new HashMap<>();
+	public ChildArbitraryContext getChildrenArbitraryContexts() {
+		Map<ArbitraryProperty, Arbitrary<?>> childrenValues = new LinkedHashMap<>();
 		for (ArbitraryProperty child : this.getChildren()) {
-			String propertyName = child.getResolvePropertyName();
 			Arbitrary<?> arbitrary = this.resolveArbitrary.apply(this, child);
-			childrenValues.put(propertyName, arbitrary);
+			childrenValues.put(child, arbitrary);
 		}
-		return childrenValues;
+
+		return new ChildArbitraryContext(property.getProperty(), childrenValues);
 	}
 
 	@Nullable

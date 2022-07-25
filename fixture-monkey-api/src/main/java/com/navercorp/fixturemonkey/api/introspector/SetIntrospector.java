@@ -53,7 +53,7 @@ public final class SetIntrospector implements ArbitraryIntrospector, Matcher {
 			return ArbitraryIntrospectorResult.EMPTY;
 		}
 
-		List<Arbitrary<?>> childrenArbitraries = context.getChildrenArbitraries();
+		List<Arbitrary<?>> childrenArbitraries = context.getChildrenArbitraryContexts().getArbitraries();
 
 		BuilderCombinator<Set<Object>> builderCombinator = Builders.withBuilder(HashSet::new);
 		for (Arbitrary<?> childArbitrary : childrenArbitraries) {

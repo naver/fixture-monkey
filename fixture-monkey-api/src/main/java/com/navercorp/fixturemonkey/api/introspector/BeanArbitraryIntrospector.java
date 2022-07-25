@@ -54,7 +54,8 @@ public final class BeanArbitraryIntrospector implements ArbitraryIntrospector {
 		}
 
 		List<ArbitraryProperty> childrenProperties = context.getChildren();
-		Map<String, Arbitrary<?>> childrenArbitraries = context.getObjectChildrenArbitrariesByResolvedPropertyName();
+		Map<String, Arbitrary<?>> childrenArbitraries = context.getChildrenArbitraryContexts()
+			.getArbitrariesByResolvedName();
 		Map<String, PropertyDescriptor> propertyDescriptors = PropertyCache.getPropertyDescriptors(type);
 		BuilderCombinator<?> builderCombinator = Builders.withBuilder(() -> ReflectionUtils.newInstance(type));
 		for (ArbitraryProperty arbitraryProperty : childrenProperties) {
