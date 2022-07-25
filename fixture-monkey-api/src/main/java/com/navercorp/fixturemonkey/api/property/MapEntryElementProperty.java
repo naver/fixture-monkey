@@ -18,6 +18,8 @@
 
 package com.navercorp.fixturemonkey.api.property;
 
+import static com.navercorp.fixturemonkey.api.type.Types.generateAnnotatedTypeWithoutAnnotation;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Type;
@@ -42,28 +44,7 @@ public final class MapEntryElementProperty implements Property {
 
 	private final Type type = MapEntryElementType.class;
 
-	private final AnnotatedType annotatedType = new AnnotatedType() {
-		@Override
-		public Type getType() {
-			return type;
-		}
-
-		@Nullable
-		@Override
-		public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
-			return null;
-		}
-
-		@Override
-		public Annotation[] getAnnotations() {
-			return new Annotation[0];
-		}
-
-		@Override
-		public Annotation[] getDeclaredAnnotations() {
-			return new Annotation[0];
-		}
-	};
+	private final AnnotatedType annotatedType = generateAnnotatedTypeWithoutAnnotation(type);
 
 	public MapEntryElementProperty(
 		Property mapEntryProperty,
