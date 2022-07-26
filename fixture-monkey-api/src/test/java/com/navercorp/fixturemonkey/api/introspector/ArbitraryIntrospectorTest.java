@@ -63,7 +63,8 @@ class ArbitraryIntrospectorTest {
 			),
 			Collections.emptyList(),
 			null,
-			(ctx, prop) -> Arbitraries.just(null)
+			(ctx, prop) -> Arbitraries.just(null),
+			Collections.emptyList()
 		);
 
 		// when
@@ -89,7 +90,8 @@ class ArbitraryIntrospectorTest {
 			),
 			Collections.emptyList(),
 			null,
-			(ctx, prop) -> Arbitraries.just(null)
+			(ctx, prop) -> Arbitraries.just(null),
+			Collections.emptyList()
 		);
 
 		// when
@@ -115,7 +117,8 @@ class ArbitraryIntrospectorTest {
 			),
 			Collections.emptyList(),
 			null,
-			(ctx, prop) -> Arbitraries.just(null)
+			(ctx, prop) -> Arbitraries.just(null),
+			Collections.emptyList()
 		);
 
 		// when
@@ -141,7 +144,8 @@ class ArbitraryIntrospectorTest {
 			),
 			Collections.emptyList(),
 			null,
-			(ctx, prop) -> Arbitraries.just(null)
+			(ctx, prop) -> Arbitraries.just(null),
+			Collections.emptyList()
 		);
 
 		// when

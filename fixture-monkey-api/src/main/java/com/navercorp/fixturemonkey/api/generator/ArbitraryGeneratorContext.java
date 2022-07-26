@@ -36,6 +36,8 @@ import org.apiguardian.api.API.Status;
 
 import net.jqwik.api.Arbitrary;
 
+import com.navercorp.fixturemonkey.api.customizer.ArbitraryCustomizer;
+import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.property.Property;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
@@ -49,16 +51,22 @@ public final class ArbitraryGeneratorContext {
 
 	private final BiFunction<ArbitraryGeneratorContext, ArbitraryProperty, Arbitrary<?>> resolveArbitrary;
 
+	@SuppressWarnings("rawtypes")
+	private final List<MatcherOperator<ArbitraryCustomizer>> arbitraryCustomizers;
+
+	@SuppressWarnings("rawtypes")
 	public ArbitraryGeneratorContext(
 		ArbitraryProperty property,
 		List<ArbitraryProperty> children,
 		@Nullable ArbitraryGeneratorContext ownerContext,
-		BiFunction<ArbitraryGeneratorContext, ArbitraryProperty, Arbitrary<?>> resolveArbitrary
+		BiFunction<ArbitraryGeneratorContext, ArbitraryProperty, Arbitrary<?>> resolveArbitrary,
+		List<MatcherOperator<ArbitraryCustomizer>> arbitraryCustomizers
 	) {
 		this.property = property;
 		this.children = new ArrayList<>(children);
 		this.ownerContext = ownerContext;
 		this.resolveArbitrary = resolveArbitrary;
+		this.arbitraryCustomizers = arbitraryCustomizers;
 	}
 
 	public ArbitraryProperty getArbitraryProperty() {
@@ -92,7 +100,14 @@ public final class ArbitraryGeneratorContext {
 			childrenValues.put(child, arbitrary);
 		}
 
-		return new ChildArbitraryContext(property.getProperty(), childrenValues);
+		ChildArbitraryContext childArbitraryContext = new ChildArbitraryContext(property.getProperty(), childrenValues);
+		arbitraryCustomizers.stream()
+			.filter(it -> it.match(property.getProperty()))
+			.map(MatcherOperator::getOperator)
+			.findFirst()
+			.ifPresent(customizer -> customizer.customizeFields(childArbitraryContext));
+
+		return childArbitraryContext;
 	}
 
 	@Nullable
@@ -102,5 +117,10 @@ public final class ArbitraryGeneratorContext {
 
 	public boolean isRootContext() {
 		return this.property.isRoot();
+	}
+
+	@SuppressWarnings("rawtypes")
+	public List<MatcherOperator<ArbitraryCustomizer>> getArbitraryCustomizers() {
+		return arbitraryCustomizers;
 	}
 }

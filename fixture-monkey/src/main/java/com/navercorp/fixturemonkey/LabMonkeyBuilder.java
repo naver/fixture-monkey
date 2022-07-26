@@ -30,6 +30,7 @@ import java.util.function.Function;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import com.navercorp.fixturemonkey.api.customizer.ArbitraryCustomizer;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfoGenerator;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryPropertyGenerator;
@@ -323,6 +324,30 @@ public class LabMonkeyBuilder {
 				}
 			}
 		}
+		return this;
+	}
+
+	public <T> LabMonkeyBuilder pushAssignableTypeArbitraryCustomizer(
+		Class<T> type,
+		ArbitraryCustomizer<? extends T> arbitraryCustomizer
+	) {
+		generateOptionsBuilder.insertFirstArbitraryCustomizer(type, arbitraryCustomizer);
+		return this;
+	}
+
+	public <T> LabMonkeyBuilder pushExactTypeArbitraryCustomizer(
+		Class<T> type,
+		ArbitraryCustomizer<T> arbitraryCustomizer
+	) {
+		generateOptionsBuilder.insertFirstArbitraryCustomizer(
+			MatcherOperator.exactTypeMatchOperator(type, arbitraryCustomizer)
+		);
+		return this;
+	}
+
+	@SuppressWarnings("rawtypes")
+	public LabMonkeyBuilder pushArbitraryCustomizer(MatcherOperator<ArbitraryCustomizer> arbitraryCustomizer) {
+		generateOptionsBuilder.insertFirstArbitraryCustomizer(arbitraryCustomizer);
 		return this;
 	}
 

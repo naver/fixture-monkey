@@ -54,7 +54,8 @@ class AssignableMatcherTest {
 			),
 			Collections.emptyList(),
 			null,
-			(ctx, prop) -> Arbitraries.just(null)
+			(ctx, prop) -> Arbitraries.just(null),
+			Collections.emptyList()
 		);
 
 		// when
@@ -83,7 +84,8 @@ class AssignableMatcherTest {
 			),
 			Collections.emptyList(),
 			null,
-			(ctx, prop) -> Arbitraries.just(null)
+			(ctx, prop) -> Arbitraries.just(null),
+			Collections.emptyList()
 		);
 
 		// when

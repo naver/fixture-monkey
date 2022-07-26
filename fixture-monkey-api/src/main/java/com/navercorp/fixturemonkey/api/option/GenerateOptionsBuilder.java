@@ -28,6 +28,7 @@ import javax.annotation.Nullable;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import com.navercorp.fixturemonkey.api.customizer.ArbitraryCustomizer;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfoGenerator;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGenerator;
@@ -60,6 +61,8 @@ public final class GenerateOptionsBuilder {
 	private ArbitraryContainerInfo defaultArbitraryContainerInfo;
 	private List<MatcherOperator<ArbitraryGenerator>> arbitraryGenerators = new ArrayList<>();
 	private ArbitraryGenerator defaultArbitraryGenerator;
+
+	private List<MatcherOperator<ArbitraryCustomizer>> arbitraryCustomizers = new ArrayList<>();
 	private final JavaDefaultArbitraryGeneratorBuilder javaDefaultArbitraryGeneratorBuilder =
 		DefaultArbitraryGenerator.javaBuilder();
 
@@ -330,6 +333,39 @@ public final class GenerateOptionsBuilder {
 		return this;
 	}
 
+	public GenerateOptionsBuilder arbitraryCustomizers(
+		List<MatcherOperator<ArbitraryCustomizer>> arbitraryCustomizers
+	) {
+		this.arbitraryCustomizers = arbitraryCustomizers;
+		return this;
+	}
+
+	public GenerateOptionsBuilder insertFirstArbitraryCustomizer(
+		MatcherOperator<ArbitraryCustomizer> arbitraryCustomizer
+	) {
+		List<MatcherOperator<ArbitraryCustomizer>> result =
+			insertFirst(this.arbitraryCustomizers, arbitraryCustomizer);
+		return arbitraryCustomizers(result);
+	}
+
+	public GenerateOptionsBuilder insertFirstArbitraryCustomizer(
+		Matcher matcher,
+		ArbitraryCustomizer arbitraryCustomizer
+	) {
+		return this.insertFirstArbitraryCustomizer(
+			new MatcherOperator<>(matcher, arbitraryCustomizer)
+		);
+	}
+
+	public GenerateOptionsBuilder insertFirstArbitraryCustomizer(
+		Class<?> type,
+		ArbitraryCustomizer arbitraryCustomizer
+	) {
+		return this.insertFirstArbitraryCustomizer(
+			MatcherOperator.assignableTypeMatchOperator(type, arbitraryCustomizer)
+		);
+	}
+
 	public GenerateOptions build() {
 		ArbitraryPropertyGenerator defaultArbitraryPropertyGenerator = defaultIfNull(
 			this.defaultArbitraryPropertyGenerator,
@@ -364,7 +400,8 @@ public final class GenerateOptionsBuilder {
 			defaultArbitraryContainerMaxSize,
 			defaultArbitraryContainerInfo,
 			this.arbitraryGenerators,
-			defaultArbitraryGenerator
+			defaultArbitraryGenerator,
+			this.arbitraryCustomizers
 		);
 	}
 
