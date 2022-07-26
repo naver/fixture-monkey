@@ -25,11 +25,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apiguardian.api.API;
+import org.apiguardian.api.API.Status;
+
 import net.jqwik.api.Arbitrary;
 
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.property.Property;
 
+@API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class ChildArbitraryContext {
 	private final Property parentProperty;
 	private final Map<ArbitraryProperty, Arbitrary<?>> arbitrariesByChildProperty;
