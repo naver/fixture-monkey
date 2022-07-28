@@ -54,7 +54,7 @@ public final class MapIntrospector implements ArbitraryIntrospector, Matcher {
 			return ArbitraryIntrospectorResult.EMPTY;
 		}
 
-		List<Arbitrary<?>> childrenArbitraries = context.getChildrenArbitraries();
+		List<Arbitrary<?>> childrenArbitraries = context.getChildrenArbitraryContexts().getArbitraries();
 
 		BuilderCombinator<Map<Object, Object>> builderCombinator = Builders.withBuilder(HashMap::new);
 		for (Arbitrary<?> child : childrenArbitraries) {
@@ -68,7 +68,7 @@ public final class MapIntrospector implements ArbitraryIntrospector, Matcher {
 
 		return new ArbitraryIntrospectorResult(
 			builderCombinator.build()
-				// .filter(it -> it.size() == childrenArbitraries.size())
+			// .filter(it -> it.size() == childrenArbitraries.size())
 		);
 	}
 }

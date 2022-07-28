@@ -49,18 +49,18 @@ public final class MapEntryElementIntrospector implements ArbitraryIntrospector,
 			return ArbitraryIntrospectorResult.EMPTY;
 		}
 
-		List<Arbitrary<?>> childrenArbitraries = context.getChildrenArbitraries();
+		List<Arbitrary<?>> arbitraries = context.getChildrenArbitraryContexts().getArbitraries();
 
-		if (childrenArbitraries.size() != 2) {
+		if (arbitraries.size() != 2) {
 			throw new IllegalArgumentException("Key and Value should be exist for MapEntryElementType.");
 		}
 
 		Arbitrary<MapEntryElementType> arbitrary = Builders.withBuilder(MapEntryElementType::new)
-			.use(childrenArbitraries.get(0)).in((element, key) -> {
+			.use(arbitraries.get(0)).in((element, key) -> {
 				element.setKey(key);
 				return element;
 			})
-			.use(childrenArbitraries.get(1)).in((element, value) -> {
+			.use(arbitraries.get(1)).in((element, value) -> {
 				element.setValue(value);
 				return element;
 			})

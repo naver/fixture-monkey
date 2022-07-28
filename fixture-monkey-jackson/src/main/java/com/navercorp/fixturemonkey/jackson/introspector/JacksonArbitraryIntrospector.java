@@ -57,7 +57,8 @@ public final class JacksonArbitraryIntrospector implements ArbitraryIntrospector
 	@Override
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
 		List<ArbitraryProperty> childrenProperties = context.getChildren();
-		Map<String, Arbitrary<?>> childrenArbitraries = context.getObjectChildrenArbitrariesByResolvedPropertyName();
+		Map<String, Arbitrary<?>> childrenArbitraries = context.getChildrenArbitraryContexts()
+			.getArbitrariesByResolvedName();
 
 		BuilderCombinator<Map<String, Object>> builderCombinator = Builders.withBuilder(HashMap::new);
 		for (ArbitraryProperty arbitraryProperty : childrenProperties) {
