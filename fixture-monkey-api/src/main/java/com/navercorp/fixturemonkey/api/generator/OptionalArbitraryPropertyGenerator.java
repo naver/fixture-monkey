@@ -18,9 +18,9 @@
 
 package com.navercorp.fixturemonkey.api.generator;
 
-import java.lang.annotation.Annotation;
+import static com.navercorp.fixturemonkey.api.type.Types.generateAnnotatedTypeWithoutAnnotation;
+
 import java.lang.reflect.AnnotatedType;
-import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -39,69 +39,9 @@ import com.navercorp.fixturemonkey.api.type.Types;
 public final class OptionalArbitraryPropertyGenerator implements ArbitraryPropertyGenerator {
 	public static final OptionalArbitraryPropertyGenerator INSTANCE = new OptionalArbitraryPropertyGenerator();
 
-	private static final AnnotatedType INTEGER_TYPE = new AnnotatedType() {
-		@Override
-		public Type getType() {
-			return Integer.class;
-		}
-
-		@Override
-		public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
-			return null;
-		}
-
-		@Override
-		public Annotation[] getAnnotations() {
-			return new Annotation[0];
-		}
-
-		@Override
-		public Annotation[] getDeclaredAnnotations() {
-			return new Annotation[0];
-		}
-	};
-	private static final AnnotatedType LONG_TYPE = new AnnotatedType() {
-		@Override
-		public Type getType() {
-			return Long.class;
-		}
-
-		@Override
-		public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
-			return null;
-		}
-
-		@Override
-		public Annotation[] getAnnotations() {
-			return new Annotation[0];
-		}
-
-		@Override
-		public Annotation[] getDeclaredAnnotations() {
-			return new Annotation[0];
-		}
-	};
-	private static final AnnotatedType DOUBLE_TYPE = new AnnotatedType() {
-		@Override
-		public Type getType() {
-			return Double.class;
-		}
-
-		@Override
-		public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
-			return null;
-		}
-
-		@Override
-		public Annotation[] getAnnotations() {
-			return new Annotation[0];
-		}
-
-		@Override
-		public Annotation[] getDeclaredAnnotations() {
-			return new Annotation[0];
-		}
-	};
+	private static final AnnotatedType INTEGER_TYPE = generateAnnotatedTypeWithoutAnnotation(Integer.class);
+	private static final AnnotatedType LONG_TYPE = generateAnnotatedTypeWithoutAnnotation(Long.class);
+	private static final AnnotatedType DOUBLE_TYPE = generateAnnotatedTypeWithoutAnnotation(Double.class);
 	private static final ArbitraryContainerInfo CONTAINER_INFO = new ArbitraryContainerInfo(0, 1);
 
 	@Override

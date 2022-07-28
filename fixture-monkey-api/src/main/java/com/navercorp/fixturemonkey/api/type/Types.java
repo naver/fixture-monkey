@@ -216,6 +216,7 @@ public class Types {
 
 			// For compatibility with JDK >= 9. A breaking change in the JDK :-(
 			// @Override
+			@SuppressWarnings("Since15")
 			public AnnotatedType getAnnotatedOwnerType() {
 				// TODO: Return annotatedType.getAnnotatedOwnerType() as soon as Java >= 9 is being used
 				return null;
@@ -349,6 +350,7 @@ public class Types {
 
 			// For compatibility with JDK >= 9. A breaking change in the JDK :-(
 			// @Override
+			@SuppressWarnings("Since15")
 			public AnnotatedType getAnnotatedOwnerType() {
 				// TODO: Return annotatedType.getAnnotatedOwnerType() as soon as Java >= 9 is being used
 				return null;
@@ -372,6 +374,30 @@ public class Types {
 			@Override
 			public Annotation[] getDeclaredAnnotations() {
 				return propertyParameterizedType.getDeclaredAnnotations();
+			}
+		};
+	}
+
+	public static AnnotatedType generateAnnotatedTypeWithoutAnnotation(Type type) {
+		return new AnnotatedType() {
+			@Override
+			public Type getType() {
+				return type;
+			}
+
+			@Override
+			public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
+				return null;
+			}
+
+			@Override
+			public Annotation[] getAnnotations() {
+				return new Annotation[0];
+			}
+
+			@Override
+			public Annotation[] getDeclaredAnnotations() {
+				return new Annotation[0];
 			}
 		};
 	}

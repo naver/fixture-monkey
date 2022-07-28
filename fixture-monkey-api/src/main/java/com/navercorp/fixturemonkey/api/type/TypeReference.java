@@ -18,12 +18,11 @@
 
 package com.navercorp.fixturemonkey.api.type;
 
-import java.lang.annotation.Annotation;
+import static com.navercorp.fixturemonkey.api.type.Types.generateAnnotatedTypeWithoutAnnotation;
+
 import java.lang.reflect.AnnotatedParameterizedType;
 import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Type;
-
-import javax.annotation.Nullable;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -38,28 +37,7 @@ public abstract class TypeReference<T> {
 	}
 
 	protected TypeReference(Class<T> type) {
-		this.annotatedType = new AnnotatedType() {
-			@Override
-			public Type getType() {
-				return type;
-			}
-
-			@Nullable
-			@Override
-			public <A extends Annotation> A getAnnotation(Class<A> annotationClass) {
-				return null;
-			}
-
-			@Override
-			public Annotation[] getAnnotations() {
-				return new Annotation[0];
-			}
-
-			@Override
-			public Annotation[] getDeclaredAnnotations() {
-				return new Annotation[0];
-			}
-		};
+		this.annotatedType = generateAnnotatedTypeWithoutAnnotation(type);
 	}
 
 	public Type getType() {
