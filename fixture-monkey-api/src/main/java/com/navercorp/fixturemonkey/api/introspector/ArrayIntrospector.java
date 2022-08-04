@@ -18,7 +18,6 @@
 
 package com.navercorp.fixturemonkey.api.introspector;
 
-import java.lang.reflect.AnnotatedArrayType;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +32,6 @@ import net.jqwik.api.Builders.BuilderCombinator;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
-import com.navercorp.fixturemonkey.api.matcher.AssignableTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.type.Types;
