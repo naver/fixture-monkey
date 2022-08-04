@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+@file:Suppress("unused")
+
 package com.navercorp.fixturemonkey.kotlin
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder
@@ -399,7 +401,29 @@ infix fun <T, R, E> KProperty1<T, R?>.into(property: KProperty1<R, E?>): Exp<E> 
         )
     )
 
+infix fun <T, R, E> KProperty1<T, R?>.intoGetter(property: KFunction1<R, E?>): Exp<E> =
+    Exp(
+        JoinExpressionGenerator(
+            listOf(
+                PropertyExpressionGenerator(KotlinProperty(this)),
+                DotExpressionGenerator(),
+                PropertyExpressionGenerator(KotlinGetterProperty(property))
+            )
+        )
+    )
+
 infix fun <T, R, E> KProperty1<T, R?>.into(expList: ExpList<R, E>): Exp<E> =
+    Exp(
+        JoinExpressionGenerator(
+            listOf(
+                PropertyExpressionGenerator(KotlinProperty(this)),
+                DotExpressionGenerator(),
+                expList
+            )
+        )
+    )
+
+infix fun <T, R, E> KProperty1<T, R?>.intoGetter(expList: ExpList<R, E>): Exp<E> =
     Exp(
         JoinExpressionGenerator(
             listOf(
@@ -422,6 +446,17 @@ infix fun <T, R, E> KFunction1<T, R?>.intoGetter(property: KFunction1<R, E?>): E
     )
 
 infix fun <T, R, E> KFunction1<T, R?>.into(expList: ExpList<R, E>): Exp<E> =
+    Exp(
+        JoinExpressionGenerator(
+            listOf(
+                PropertyExpressionGenerator(KotlinGetterProperty(this)),
+                DotExpressionGenerator(),
+                expList
+            )
+        )
+    )
+
+infix fun <T, R, E> KFunction1<T, R?>.intoGetter(expList: ExpList<R, E>): Exp<E> =
     Exp(
         JoinExpressionGenerator(
             listOf(
@@ -620,8 +655,7 @@ private class KotlinProperty<V, R>(private val property: KProperty1<V, R>) :
     override fun getValue(obj: Any): Any? = property.get(obj as V)
 }
 
-private class KotlinGetterProperty<V, R>(private val getter: KFunction1<V, R>) :
-    Property {
+private class KotlinGetterProperty<V, R>(private val getter: KFunction1<V, R>) : Property {
     private val callerType = getter.parameters[0].type.javaType as Class<*>
     private val returnJavaType = getter.returnType.javaType
     private val type: Class<*> = if (returnJavaType is ParameterizedType) {
@@ -629,9 +663,16 @@ private class KotlinGetterProperty<V, R>(private val getter: KFunction1<V, R>) :
     } else {
         returnJavaType as Class<*>
     }
-    private val propertyName: String =
-        getter.name.substringAfter("get", getter.name.substringAfter("is"))
-            .replaceFirstChar { it.lowercaseChar() }
+    private val propertyName: String = resolvePropertyName()
+
+    private fun resolvePropertyName(): String =
+        if (getter.name.startsWith("get")) {
+            getter.name.substringAfter("get")
+        } else if (getter.returnType == Boolean::class.java && getter.name.startsWith("is")) {
+            getter.name.substringAfter("is")
+        } else {
+            getter.name
+        }.replaceFirstChar { it.lowercaseChar() }
 
     private val property: KProperty<*>? = try {
         callerType.getDeclaredField(name).kotlinProperty
