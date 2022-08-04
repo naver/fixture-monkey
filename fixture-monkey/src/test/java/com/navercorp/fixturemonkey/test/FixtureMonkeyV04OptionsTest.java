@@ -293,6 +293,10 @@ class FixtureMonkeyV04OptionsTest {
 			.pushArbitraryContainerInfoGenerator(
 				new MatcherOperator<>(
 					(property) -> {
+						if (Types.getActualType(property.getType()).isArray()) {
+							return false;
+						}
+
 						AnnotatedType elementType = Types.getGenericsTypes(property.getAnnotatedType()).get(0);
 						Class<?> type = Types.getActualType(elementType);
 						return type.isAssignableFrom(String.class);
@@ -314,6 +318,10 @@ class FixtureMonkeyV04OptionsTest {
 			.pushArbitraryContainerInfoGenerator(
 				new MatcherOperator<>(
 					(property) -> {
+						if (Types.getActualType(property.getType()).isArray()) {
+							return false;
+						}
+
 						AnnotatedType elementType = Types.getGenericsTypes(property.getAnnotatedType()).get(0);
 						Class<?> type = Types.getActualType(elementType);
 						return type.isAssignableFrom(String.class);

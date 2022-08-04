@@ -131,6 +131,15 @@ public final class ElementProperty implements Property {
 			return getOptionalValue(obj);
 		}
 
+		if (actualType.isArray()) {
+			Object[] array = (Object[])obj;
+			if (array.length == 0) {
+				return null;
+			}
+
+			return array[sequence];
+		}
+
 		if (!Iterable.class.isAssignableFrom(actualType)) {
 			throw new IllegalArgumentException("given value is not iterable, actual type : " + actualType);
 		}

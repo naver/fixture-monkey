@@ -57,6 +57,7 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfoGenerator;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryPropertyGenerator;
+import com.navercorp.fixturemonkey.api.generator.ArrayArbitraryPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.ContainerArbitraryPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.EntryArbitraryPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.MapArbitraryPropertyGenerator;
@@ -74,6 +75,7 @@ import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.api.property.TupleLikeElementsProperty;
+import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.api.type.Types.UnidentifiableType;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
@@ -279,6 +281,10 @@ public final class GenerateOptions {
 			MatcherOperator.assignableTypeMatchOperator(Iterator.class, ContainerArbitraryPropertyGenerator.INSTANCE),
 			MatcherOperator.assignableTypeMatchOperator(Map.class, MapArbitraryPropertyGenerator.INSTANCE),
 			MatcherOperator.assignableTypeMatchOperator(Entry.class, EntryArbitraryPropertyGenerator.INSTANCE),
+			new MatcherOperator<>(
+				property -> Types.getActualType(property.getType()).isArray(),
+				ArrayArbitraryPropertyGenerator.INSTANCE
+			),
 			new MatcherOperator<>(
 				property -> property.getClass() == MapEntryElementProperty.class,
 				MapEntryElementArbitraryPropertyGenerator.INSTANCE
