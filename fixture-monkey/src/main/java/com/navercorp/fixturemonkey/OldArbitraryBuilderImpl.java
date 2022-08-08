@@ -232,8 +232,12 @@ public class OldArbitraryBuilderImpl<T> implements ArbitraryBuilder<T> {
 			buildArbitraryBuilder.traverser.traverse(
 				buildTree,
 				false,
-				(PropertyNameResolver)property -> buildArbitraryBuilder.generator.resolveFieldName(
-					((FieldProperty)property).getField())
+				(PropertyNameResolver)property ->
+					this.generatorMap.getOrDefault(
+							tree.getClazz(),
+							buildArbitraryBuilder.generator
+						)
+						.resolveFieldName(((FieldProperty)property).getField())
 			);
 
 			List<BuilderManipulator> actualManipulators = buildArbitraryBuilder.getActiveManipulators();
