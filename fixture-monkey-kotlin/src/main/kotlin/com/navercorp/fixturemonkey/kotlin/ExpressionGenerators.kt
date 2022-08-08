@@ -685,11 +685,13 @@ private class KotlinGetterProperty<V, R>(private val getter: KFunction1<V, R>) :
     private fun resolvePropertyName(): String =
         if (getter.name.startsWith("get")) {
             getter.name.substringAfter("get")
+                .replaceFirstChar { it.lowercaseChar() }
         } else if (getter.returnType == Boolean::class.java && getter.name.startsWith("is")) {
             getter.name.substringAfter("is")
+                .replaceFirstChar { it.lowercaseChar() }
         } else {
             getter.name
-        }.replaceFirstChar { it.lowercaseChar() }
+        }
 
     private val property: KProperty<*>? = try {
         callerType.getDeclaredField(name).kotlinProperty
