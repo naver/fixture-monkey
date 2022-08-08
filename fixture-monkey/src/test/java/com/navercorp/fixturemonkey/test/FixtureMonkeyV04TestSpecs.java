@@ -42,6 +42,7 @@ class FixtureMonkeyV04TestSpecs {
 		private int integer;
 		private Long wrapperLong;
 		private List<String> strList;
+		private String[] strArray;
 		private Set<String> strSet;
 		private SimpleEnum enumValue;
 		private LocalDateTime localDateTime;
@@ -55,6 +56,7 @@ class FixtureMonkeyV04TestSpecs {
 		ENUM_1, ENUM_2, ENUM_3, ENUM_4
 	}
 
+	@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 	@Getter
 	@Setter
 	@EqualsAndHashCode

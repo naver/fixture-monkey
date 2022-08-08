@@ -20,6 +20,7 @@ package com.navercorp.fixturemonkey.api.type;
 
 import java.beans.PropertyDescriptor;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedArrayType;
 import java.lang.reflect.AnnotatedParameterizedType;
 import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.AnnotatedWildcardType;
@@ -376,6 +377,21 @@ public class Types {
 				return propertyParameterizedType.getDeclaredAnnotations();
 			}
 		};
+	}
+
+	public static AnnotatedType getArrayComponentAnnotatedType(AnnotatedType annotatedType) {
+		if (!(annotatedType instanceof AnnotatedArrayType)) {
+			throw new IllegalArgumentException(
+				"given type is not Array type, annotatedType: " + annotatedType
+			);
+		}
+		AnnotatedArrayType annotatedArrayType = (AnnotatedArrayType)annotatedType;
+
+		return annotatedArrayType.getAnnotatedGenericComponentType();
+	}
+
+	public static Class<?> getArrayComponentType(AnnotatedType annotatedType) {
+		return getActualType(getArrayComponentAnnotatedType(annotatedType));
 	}
 
 	public static AnnotatedType generateAnnotatedTypeWithoutAnnotation(Type type) {

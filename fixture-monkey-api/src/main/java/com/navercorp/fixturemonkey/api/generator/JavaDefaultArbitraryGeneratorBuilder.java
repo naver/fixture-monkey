@@ -25,6 +25,7 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
+import com.navercorp.fixturemonkey.api.introspector.ArrayIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.BeanArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.BooleanIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.CompositeArbitraryIntrospector;
@@ -48,6 +49,7 @@ import com.navercorp.fixturemonkey.api.introspector.StreamIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.TupleLikeElementsIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.UuidIntrospector;
 
+@SuppressWarnings("UnusedReturnValue")
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class JavaDefaultArbitraryGeneratorBuilder {
 	public static final ArbitraryIntrospector JAVA_INTROSPECTOR = new CompositeArbitraryIntrospector(
@@ -69,7 +71,8 @@ public final class JavaDefaultArbitraryGeneratorBuilder {
 			new MapIntrospector(),
 			new EntryIntrospector(),
 			new MapEntryElementIntrospector(),
-			new TupleLikeElementsIntrospector()
+			new TupleLikeElementsIntrospector(),
+			new ArrayIntrospector()
 		)
 	);
 

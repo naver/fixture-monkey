@@ -20,6 +20,7 @@ package com.navercorp.fixturemonkey.resolver;
 
 import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.NOT_NULL_INJECT;
 
+import java.lang.reflect.Array;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -73,6 +74,8 @@ public final class NodeSetDecomposedValueManipulator<T> implements NodeManipulat
 			if (Collection.class.isAssignableFrom(actualType)) {
 				Collection<?> container = (Collection<?>)value;
 				decomposedContainerSize = container.size();
+			} else if (actualType.isArray()) {
+				decomposedContainerSize = Array.getLength(value);
 			} else if (Map.class.isAssignableFrom(actualType)) {
 				Map<?, ?> map = (Map<?, ?>)value;
 				decomposedContainerSize = map.size();

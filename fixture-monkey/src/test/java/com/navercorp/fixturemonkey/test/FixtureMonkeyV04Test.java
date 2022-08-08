@@ -308,6 +308,17 @@ class FixtureMonkeyV04Test {
 	}
 
 	@Property
+	void sizeArray() {
+		// when
+		ComplexObject actual = SUT.giveMeBuilder(ComplexObject.class)
+			.size("strArray", 10)
+			.sample();
+
+		// then
+		then(actual.getStrArray()).hasSize(10);
+	}
+
+	@Property
 	void sizeMinMax() {
 		// when
 		ComplexObject actual = SUT.giveMeBuilder(ComplexObject.class)
