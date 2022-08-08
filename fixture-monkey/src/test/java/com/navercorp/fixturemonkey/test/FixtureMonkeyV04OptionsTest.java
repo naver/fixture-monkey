@@ -699,7 +699,7 @@ class FixtureMonkeyV04OptionsTest {
 		LabMonkey sut = LabMonkey.labMonkeyBuilder()
 			.pushExactTypeArbitraryCustomizer(SimpleObject.class, new ArbitraryCustomizer<SimpleObject>() {
 				@Override
-				public void customizeFields(ChildArbitraryContext childArbitraryContext) {
+				public void customizeProperties(ChildArbitraryContext childArbitraryContext) {
 					childArbitraryContext.replaceArbitrary(
 						property -> "str".equals(property.getName()),
 						Arbitraries.just(expected)

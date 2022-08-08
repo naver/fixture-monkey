@@ -105,7 +105,7 @@ public final class ArbitraryGeneratorContext {
 			.filter(it -> it.match(property.getProperty()))
 			.map(MatcherOperator::getOperator)
 			.findFirst()
-			.ifPresent(customizer -> customizer.customizeFields(childArbitraryContext));
+			.ifPresent(customizer -> customizer.customizeProperties(childArbitraryContext));
 
 		return childArbitraryContext;
 	}

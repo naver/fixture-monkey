@@ -20,11 +20,15 @@ package com.navercorp.fixturemonkey.api.customizer;
 
 import javax.annotation.Nullable;
 
+import org.apiguardian.api.API;
+import org.apiguardian.api.API.Status;
+
 import com.navercorp.fixturemonkey.api.generator.ChildArbitraryContext;
 
+@API(since = "0.4.0", status = Status.EXPERIMENTAL)
 @FunctionalInterface
 public interface ArbitraryCustomizer<T> {
-	default void customizeFields(ChildArbitraryContext childArbitraryContext) {
+	default void customizeProperties(ChildArbitraryContext childArbitraryContext) {
 	}
 
 	@Nullable
