@@ -1,5 +1,8 @@
 package com.navercorp.fixturemonkey.resolver;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.annotation.Nullable;
 
 import org.apiguardian.api.API;
@@ -37,14 +40,39 @@ public final class NodeSizeManipulator implements NodeManipulator {
 			.withElementMinSize(minSize)
 			.withElementMaxSize(maxSize);
 
-		ArbitraryNode traversedNode = traverser.traverse(arbitraryNode.getProperty(), containerInfo);
-		ArbitraryProperty traversedNodeArbitraryProperty = traversedNode.getArbitraryProperty();
+		ArbitraryNode manipulatedNode = traverser.traverse(arbitraryNode.getProperty(), containerInfo);
+		ArbitraryProperty traversedNodeArbitraryProperty = manipulatedNode.getArbitraryProperty();
 		arbitraryNode.setArbitraryProperty(
 			arbitraryProperty
 				.withChildProperties(traversedNodeArbitraryProperty.getChildProperties())
 				.withContainerInfo(traversedNodeArbitraryProperty.getContainerInfo())
 		);
-		arbitraryNode.setArbitrary(traversedNode.getArbitrary());
-		arbitraryNode.setChildren(traversedNode.getChildren());
+		arbitraryNode.setArbitrary(manipulatedNode.getArbitrary());
+		arbitraryNode.setChildren(leftJoin(manipulatedNode, arbitraryNode).getChildren());
+	}
+
+	private ArbitraryNode leftJoin(
+		ArbitraryNode leftNode,
+		@Nullable ArbitraryNode rightNode
+	) {
+		if (rightNode == null) {
+			return leftNode;
+		}
+
+		leftNode.setArbitrary(rightNode.getArbitrary());
+
+		List<ArbitraryNode> leftChildren = leftNode.getChildren();
+		List<ArbitraryNode> rightChildren = rightNode.getChildren();
+		int childrenSize = leftChildren.size();
+
+		List<ArbitraryNode> result = new ArrayList<>();
+		for (int i = 0; i < childrenSize; i++) {
+			ArbitraryNode leftChild = leftChildren.get(i);
+			ArbitraryNode rightChild = rightChildren.size() > i ? rightChildren.get(i) : null;
+
+			result.add(leftJoin(leftChild, rightChild));
+		}
+		leftNode.setChildren(result);
+		return leftNode;
 	}
 }

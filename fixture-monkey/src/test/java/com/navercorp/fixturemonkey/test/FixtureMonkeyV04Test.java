@@ -957,4 +957,19 @@ class FixtureMonkeyV04Test {
 
 		then(actual).isEqualTo(expected);
 	}
+
+	@Property
+	void sizeSmallerRemains() {
+		String expected = "test";
+		List<String> actual = SUT.giveMeBuilder(ComplexObject.class)
+			.size("strList", 2)
+			.set("strList[0]", expected)
+			.set("strList[1]", expected)
+			.size("strList", 1)
+			.sample()
+			.getStrList();
+
+		then(actual).hasSize(1);
+		then(actual.get(0)).isEqualTo(expected);
+	}
 }
