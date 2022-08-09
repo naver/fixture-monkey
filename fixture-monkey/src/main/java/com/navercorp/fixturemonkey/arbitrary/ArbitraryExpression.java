@@ -29,6 +29,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import javax.annotation.Nullable;
+
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
@@ -130,11 +132,8 @@ public final class ArbitraryExpression implements MonkeyExpression, Comparable<A
 	}
 
 	public NodeResolver toNodeResolver() {
-		NodeResolver nodeResolver = new RootNodeResolver();
+		NodeResolver nodeResolver = null;
 		for (Exp exp : expList) {
-			if (HEAD_NAME.equals(exp.getName())) {
-				continue;
-			}
 			nodeResolver = exp.toNodeResolver(nodeResolver);
 		}
 		return nodeResolver;
@@ -243,11 +242,17 @@ public final class ArbitraryExpression implements MonkeyExpression, Comparable<A
 			return steps;
 		}
 
-		public NodeResolver toNodeResolver(NodeResolver prevNodeResolver) {
-			NodeResolver nodeResolver = new PropertyNameNodeResolver(
-				prevNodeResolver,
-				name
-			);
+		public NodeResolver toNodeResolver(@Nullable NodeResolver prevNodeResolver) {
+			NodeResolver nodeResolver;
+
+			if (HEAD_NAME.equals(name)) {
+				nodeResolver = new RootNodeResolver();
+			} else {
+				nodeResolver = new PropertyNameNodeResolver(
+					prevNodeResolver == null ? new RootNodeResolver() : prevNodeResolver,
+					name
+				);
+			}
 
 			for (ExpIndex index : indices) {
 				nodeResolver = new ContainerElementNodeResolver(nodeResolver, index.getIndex());
