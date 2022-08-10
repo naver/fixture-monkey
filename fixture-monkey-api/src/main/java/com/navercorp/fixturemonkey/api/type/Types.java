@@ -33,13 +33,39 @@ import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public class Types {
+	private static final Map<Class<?>, Class<?>> primitiveWrapperMap = new HashMap<>();
+
+	static {
+		primitiveWrapperMap.put(Boolean.TYPE, Boolean.class);
+		primitiveWrapperMap.put(Byte.TYPE, Byte.class);
+		primitiveWrapperMap.put(Character.TYPE, Character.class);
+		primitiveWrapperMap.put(Short.TYPE, Short.class);
+		primitiveWrapperMap.put(Integer.TYPE, Integer.class);
+		primitiveWrapperMap.put(Long.TYPE, Long.class);
+		primitiveWrapperMap.put(Double.TYPE, Double.class);
+		primitiveWrapperMap.put(Float.TYPE, Float.class);
+		primitiveWrapperMap.put(Void.TYPE, Void.TYPE);
+	}
+
+	private static final Map<Class<?>, Class<?>> wrapperPrimitiveMap = new HashMap<>();
+
+	static {
+		primitiveWrapperMap.forEach((primitiveClass, wrapperClass) -> {
+			if (!primitiveClass.equals(wrapperClass)) {
+				wrapperPrimitiveMap.put(wrapperClass, primitiveClass);
+			}
+		});
+	}
+
 	public static Class<?> getActualType(AnnotatedType annotatedType) {
 		return getActualType(annotatedType.getType());
 	}
@@ -421,5 +447,81 @@ public class Types {
 	public static class UnidentifiableType {
 		private UnidentifiableType() {
 		}
+	}
+
+	public static Class<?> primitiveToWrapper(final Class<?> cls) {
+		Class<?> convertedClass = cls;
+		if (cls != null && cls.isPrimitive()) {
+			convertedClass = primitiveWrapperMap.get(cls);
+		}
+		return convertedClass;
+	}
+
+	public static Class<?> wrapperToPrimitive(final Class<?> cls) {
+		return wrapperPrimitiveMap.get(cls);
+	}
+
+	public static boolean isAssignable(Class<?> cls, Class<?> toClass) {
+		return isAssignable(cls, toClass, true);
+	}
+
+	public static boolean isAssignable(Class<?> cls, Class<?> toClass, boolean autoboxing) {
+		if (toClass == null) {
+			return false;
+		}
+		// have to check for null, as isAssignableFrom doesn't
+		if (cls == null) {
+			return !toClass.isPrimitive();
+		}
+		// autoboxing:
+		if (autoboxing) {
+			if (cls.isPrimitive() && !toClass.isPrimitive()) {
+				cls = primitiveToWrapper(cls);
+				if (cls == null) {
+					return false;
+				}
+			}
+			if (toClass.isPrimitive() && !cls.isPrimitive()) {
+				cls = wrapperToPrimitive(cls);
+				if (cls == null) {
+					return false;
+				}
+			}
+		}
+		if (cls.equals(toClass)) {
+			return true;
+		}
+		if (cls.isPrimitive()) {
+			if (!toClass.isPrimitive()) {
+				return false;
+			}
+			if (Integer.TYPE.equals(cls)) {
+				return Long.TYPE.equals(toClass) || Float.TYPE.equals(toClass) || Double.TYPE.equals(toClass);
+			}
+			if (Long.TYPE.equals(cls)) {
+				return Float.TYPE.equals(toClass) || Double.TYPE.equals(toClass);
+			}
+			if (Boolean.TYPE.equals(cls)) {
+				return false;
+			}
+			if (Double.TYPE.equals(cls)) {
+				return false;
+			}
+			if (Float.TYPE.equals(cls)) {
+				return Double.TYPE.equals(toClass);
+			}
+			if (Character.TYPE.equals(cls) || Short.TYPE.equals(cls)) {
+				return Integer.TYPE.equals(toClass) || Long.TYPE.equals(toClass) || Float.TYPE.equals(toClass)
+					|| Double.TYPE.equals(toClass);
+			}
+			if (Byte.TYPE.equals(cls)) {
+				return Short.TYPE.equals(toClass) || Integer.TYPE.equals(toClass) || Long.TYPE.equals(toClass)
+					|| Float.TYPE.equals(toClass)
+					|| Double.TYPE.equals(toClass);
+			}
+			// should never get here
+			return false;
+		}
+		return toClass.isAssignableFrom(cls);
 	}
 }

@@ -19,6 +19,7 @@
 package com.navercorp.fixturemonkey.resolver;
 
 import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.NOT_NULL_INJECT;
+import static com.navercorp.fixturemonkey.api.type.Types.isAssignable;
 
 import java.lang.reflect.Array;
 import java.util.Collection;
@@ -49,7 +50,7 @@ public final class NodeSetDecomposedValueManipulator<T> implements NodeManipulat
 	@Override
 	public void manipulate(ArbitraryNode arbitraryNode) {
 		Class<?> actualType = Types.getActualType(arbitraryNode.getProperty().getType());
-		if (value != null && !actualType.isAssignableFrom(value.getClass())) {
+		if (value != null && !isAssignable(actualType, value.getClass())) {
 			throw new IllegalArgumentException(
 				"The value is not of the same type as the property."
 					+ " node type: " + arbitraryNode.getProperty().getType().getTypeName()
