@@ -996,4 +996,20 @@ class FixtureMonkeyV04Test {
 
 		then(actual).isNull();
 	}
+
+	@Property
+	void setAfterBuildNotAffected() {
+		// given
+		ArbitraryBuilder<SimpleObject> builder = SUT.giveMeBuilder(SimpleObject.class);
+		Arbitrary<SimpleObject> buildArbitrary = builder.build();
+
+		// when
+		ArbitraryBuilder<SimpleObject> actual = builder.set("str", "set");
+
+		// then
+		SimpleObject actualSample = actual.sample();
+		SimpleObject buildSample = buildArbitrary.sample();
+		then(actualSample).isNotEqualTo(buildSample);
+		then(actualSample.getStr()).isEqualTo("set");
+	}
 }
