@@ -1024,4 +1024,24 @@ class FixtureMonkeyV04Test {
 		SimpleObject expected = builder.sample();
 		then(actual).isNotEqualTo(expected);
 	}
+
+	@Property
+	void setPrimitiveToReference() {
+		int integer = SUT.giveMeBuilder(SimpleObject.class)
+			.set("integer", Integer.valueOf("1234"))
+			.sample()
+			.getInteger();
+
+		then(integer).isEqualTo(1234);
+	}
+
+	@Property
+	void setReferenceToPrimitive() {
+		int integer = SUT.giveMeBuilder(SimpleObject.class)
+			.set("wrapperInteger", 1234)
+			.sample()
+			.getWrapperInteger();
+
+		then(integer).isEqualTo(1234);
+	}
 }

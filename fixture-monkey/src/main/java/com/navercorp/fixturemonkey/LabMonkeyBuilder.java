@@ -233,7 +233,7 @@ public class LabMonkeyBuilder {
 
 	public LabMonkeyBuilder addExceptGeneratePackage(String exceptGeneratePackage) {
 		return pushExceptGenerateType(
-			property -> Types.getActualType(property.getType())
+			property -> Types.primitiveToWrapper(Types.getActualType(property.getType()))
 				.getPackage()
 				.getName()
 				.startsWith(exceptGeneratePackage)
