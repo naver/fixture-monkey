@@ -50,7 +50,7 @@ public final class NodeSetDecomposedValueManipulator<T> implements NodeManipulat
 	@Override
 	public void manipulate(ArbitraryNode arbitraryNode) {
 		Class<?> actualType = Types.getActualType(arbitraryNode.getProperty().getType());
-		if (value != null && !isAssignable(actualType, value.getClass())) {
+		if (value != null && !isAssignable(value.getClass(), actualType)) {
 			throw new IllegalArgumentException(
 				"The value is not of the same type as the property."
 					+ " node type: " + arbitraryNode.getProperty().getType().getTypeName()
