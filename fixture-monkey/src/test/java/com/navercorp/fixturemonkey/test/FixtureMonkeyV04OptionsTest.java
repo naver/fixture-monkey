@@ -652,4 +652,18 @@ class FixtureMonkeyV04OptionsTest {
 
 		then(actual).isEqualTo("test2");
 	}
+
+	@Property
+	void registerSetFirst() {
+		String expected = "test2";
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.register(String.class, monkey -> monkey.giveMeBuilder("test"))
+			.build();
+
+		String actual = sut.giveMeBuilder(String.class)
+			.set("$", expected)
+			.sample();
+
+		then(actual).isEqualTo(expected);
+	}
 }
