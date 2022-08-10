@@ -368,9 +368,11 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 	@SuppressWarnings("unchecked")
 	@Override
 	public Arbitrary<T> build() {
+		List<ArbitraryManipulator> buildManipulators = new ArrayList<>(this.manipulators);
+
 		return new ArbitraryValue<>(
 			() -> {
-				Arbitrary<T> arbitrary = (Arbitrary<T>)this.resolver.resolve(this.rootProperty, this.manipulators);
+				Arbitrary<T> arbitrary = (Arbitrary<T>)this.resolver.resolve(this.rootProperty, buildManipulators);
 				lazyArbitraries.forEach(LazyArbitrary::clear);
 				return arbitrary;
 			},
