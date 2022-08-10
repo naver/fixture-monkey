@@ -28,7 +28,7 @@ import javax.annotation.Nullable;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.api.customizer.ArbitraryCustomizer;
+import com.navercorp.fixturemonkey.api.customizer.FixtureCustomizer;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfoGenerator;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGenerator;
@@ -62,7 +62,8 @@ public final class GenerateOptionsBuilder {
 	private List<MatcherOperator<ArbitraryGenerator>> arbitraryGenerators = new ArrayList<>();
 	private ArbitraryGenerator defaultArbitraryGenerator;
 
-	private List<MatcherOperator<ArbitraryCustomizer>> arbitraryCustomizers = new ArrayList<>();
+	@SuppressWarnings("rawtypes")
+	private List<MatcherOperator<FixtureCustomizer>> arbitraryCustomizers = new ArrayList<>();
 	private final JavaDefaultArbitraryGeneratorBuilder javaDefaultArbitraryGeneratorBuilder =
 		DefaultArbitraryGenerator.javaBuilder();
 
@@ -333,36 +334,38 @@ public final class GenerateOptionsBuilder {
 		return this;
 	}
 
+	@SuppressWarnings("rawtypes")
 	public GenerateOptionsBuilder arbitraryCustomizers(
-		List<MatcherOperator<ArbitraryCustomizer>> arbitraryCustomizers
+		List<MatcherOperator<FixtureCustomizer>> arbitraryCustomizers
 	) {
 		this.arbitraryCustomizers = arbitraryCustomizers;
 		return this;
 	}
 
+	@SuppressWarnings("rawtypes")
 	public GenerateOptionsBuilder insertFirstArbitraryCustomizer(
-		MatcherOperator<ArbitraryCustomizer> arbitraryCustomizer
+		MatcherOperator<FixtureCustomizer> arbitraryCustomizer
 	) {
-		List<MatcherOperator<ArbitraryCustomizer>> result =
+		List<MatcherOperator<FixtureCustomizer>> result =
 			insertFirst(this.arbitraryCustomizers, arbitraryCustomizer);
 		return arbitraryCustomizers(result);
 	}
 
 	public GenerateOptionsBuilder insertFirstArbitraryCustomizer(
 		Matcher matcher,
-		ArbitraryCustomizer arbitraryCustomizer
+		FixtureCustomizer<?> fixtureCustomizer
 	) {
 		return this.insertFirstArbitraryCustomizer(
-			new MatcherOperator<>(matcher, arbitraryCustomizer)
+			new MatcherOperator<>(matcher, fixtureCustomizer)
 		);
 	}
 
-	public GenerateOptionsBuilder insertFirstArbitraryCustomizer(
-		Class<?> type,
-		ArbitraryCustomizer arbitraryCustomizer
+	public <T> GenerateOptionsBuilder insertFirstArbitraryCustomizer(
+		Class<T> type,
+		FixtureCustomizer<? extends T> fixtureCustomizer
 	) {
 		return this.insertFirstArbitraryCustomizer(
-			MatcherOperator.assignableTypeMatchOperator(type, arbitraryCustomizer)
+			MatcherOperator.assignableTypeMatchOperator(type, fixtureCustomizer)
 		);
 	}
 

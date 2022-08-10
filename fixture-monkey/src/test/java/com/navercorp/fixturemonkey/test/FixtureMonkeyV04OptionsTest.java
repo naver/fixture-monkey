@@ -43,7 +43,7 @@ import net.jqwik.time.api.DateTimes;
 import net.jqwik.time.api.arbitraries.InstantArbitrary;
 
 import com.navercorp.fixturemonkey.LabMonkey;
-import com.navercorp.fixturemonkey.api.customizer.ArbitraryCustomizer;
+import com.navercorp.fixturemonkey.api.customizer.FixtureCustomizer;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryPropertyGenerator;
@@ -697,7 +697,7 @@ class FixtureMonkeyV04OptionsTest {
 	void pushArbitraryCustomizerCustomizeFields() {
 		String expected = "test";
 		LabMonkey sut = LabMonkey.labMonkeyBuilder()
-			.pushExactTypeArbitraryCustomizer(SimpleObject.class, new ArbitraryCustomizer<SimpleObject>() {
+			.pushExactTypeArbitraryCustomizer(SimpleObject.class, new FixtureCustomizer<SimpleObject>() {
 				@Override
 				public void customizeProperties(ChildArbitraryContext childArbitraryContext) {
 					childArbitraryContext.replaceArbitrary(

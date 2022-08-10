@@ -53,7 +53,7 @@ import java.util.stream.Stream;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.api.customizer.ArbitraryCustomizer;
+import com.navercorp.fixturemonkey.api.customizer.FixtureCustomizer;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfoGenerator;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGenerator;
@@ -102,7 +102,7 @@ public final class GenerateOptions {
 	private final ArbitraryGenerator defaultArbitraryGenerator;
 
 	@SuppressWarnings("rawtypes")
-	private final List<MatcherOperator<ArbitraryCustomizer>> arbitraryCustomizers;
+	private final List<MatcherOperator<FixtureCustomizer>> arbitraryCustomizers;
 
 	@SuppressWarnings("rawtypes")
 	public GenerateOptions(
@@ -117,7 +117,7 @@ public final class GenerateOptions {
 		ArbitraryContainerInfo defaultArbitraryContainerInfo,
 		List<MatcherOperator<ArbitraryGenerator>> arbitraryGenerators,
 		ArbitraryGenerator defaultArbitraryGenerator,
-		List<MatcherOperator<ArbitraryCustomizer>> arbitraryCustomizers
+		List<MatcherOperator<FixtureCustomizer>> arbitraryCustomizers
 	) {
 		this.arbitraryPropertyGenerators = arbitraryPropertyGenerators;
 		this.defaultArbitraryPropertyGenerator = defaultArbitraryPropertyGenerator;
@@ -222,7 +222,7 @@ public final class GenerateOptions {
 	}
 
 	@SuppressWarnings("rawtypes")
-	public List<MatcherOperator<ArbitraryCustomizer>> getArbitraryCustomizers() {
+	public List<MatcherOperator<FixtureCustomizer>> getArbitraryCustomizers() {
 		return arbitraryCustomizers;
 	}
 

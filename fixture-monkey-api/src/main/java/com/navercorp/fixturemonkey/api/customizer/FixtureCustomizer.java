@@ -27,7 +27,7 @@ import com.navercorp.fixturemonkey.api.generator.ChildArbitraryContext;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 @FunctionalInterface
-public interface ArbitraryCustomizer<T> {
+public interface FixtureCustomizer<T> {
 	default void customizeProperties(ChildArbitraryContext childArbitraryContext) {
 	}
 

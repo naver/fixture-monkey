@@ -36,7 +36,7 @@ import org.apiguardian.api.API.Status;
 
 import net.jqwik.api.Arbitrary;
 
-import com.navercorp.fixturemonkey.api.customizer.ArbitraryCustomizer;
+import com.navercorp.fixturemonkey.api.customizer.FixtureCustomizer;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.property.Property;
 
@@ -52,7 +52,7 @@ public final class ArbitraryGeneratorContext {
 	private final BiFunction<ArbitraryGeneratorContext, ArbitraryProperty, Arbitrary<?>> resolveArbitrary;
 
 	@SuppressWarnings("rawtypes")
-	private final List<MatcherOperator<ArbitraryCustomizer>> arbitraryCustomizers;
+	private final List<MatcherOperator<FixtureCustomizer>> arbitraryCustomizers;
 
 	@SuppressWarnings("rawtypes")
 	public ArbitraryGeneratorContext(
@@ -60,7 +60,7 @@ public final class ArbitraryGeneratorContext {
 		List<ArbitraryProperty> children,
 		@Nullable ArbitraryGeneratorContext ownerContext,
 		BiFunction<ArbitraryGeneratorContext, ArbitraryProperty, Arbitrary<?>> resolveArbitrary,
-		List<MatcherOperator<ArbitraryCustomizer>> arbitraryCustomizers
+		List<MatcherOperator<FixtureCustomizer>> arbitraryCustomizers
 	) {
 		this.property = property;
 		this.children = new ArrayList<>(children);
@@ -120,7 +120,7 @@ public final class ArbitraryGeneratorContext {
 	}
 
 	@SuppressWarnings("rawtypes")
-	public List<MatcherOperator<ArbitraryCustomizer>> getArbitraryCustomizers() {
+	public List<MatcherOperator<FixtureCustomizer>> getArbitraryCustomizers() {
 		return arbitraryCustomizers;
 	}
 }
