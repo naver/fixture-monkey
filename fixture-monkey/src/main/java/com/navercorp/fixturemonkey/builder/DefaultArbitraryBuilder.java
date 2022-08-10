@@ -222,8 +222,8 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 			() -> {
 				ArbitraryBuilder<T> lazyBuilder = appliedBuilder.copy();
 				T sampled = lazyBuilder.fixed().sample();
-				biConsumer.accept(sampled, appliedBuilder);
-				return appliedBuilder.sample();
+				biConsumer.accept(sampled, lazyBuilder);
+				return lazyBuilder.sample();
 			}
 		);
 
