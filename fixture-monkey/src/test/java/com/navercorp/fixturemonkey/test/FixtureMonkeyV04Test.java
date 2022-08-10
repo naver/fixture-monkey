@@ -1014,7 +1014,7 @@ class FixtureMonkeyV04Test {
 	}
 
 	@Property
-	void applySampleTwiceReturnsDiff(){
+	void applySampleTwiceReturnsDiff() {
 		ArbitraryBuilder<SimpleObject> builder = SUT.giveMeBuilder(SimpleObject.class)
 			.apply((obj, b) -> {
 			});
