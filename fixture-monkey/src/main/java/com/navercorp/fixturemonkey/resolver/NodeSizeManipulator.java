@@ -60,6 +60,10 @@ public final class NodeSizeManipulator implements NodeManipulator {
 		}
 
 		leftNode.setArbitrary(rightNode.getArbitrary());
+		leftNode.setArbitraryProperty(
+			leftNode.getArbitraryProperty()
+				.withNullInject(rightNode.getArbitraryProperty().getNullInject())
+		);
 
 		List<ArbitraryNode> leftChildren = leftNode.getChildren();
 		List<ArbitraryNode> rightChildren = rightNode.getChildren();

@@ -21,6 +21,8 @@ package com.navercorp.fixturemonkey.resolver;
 import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.ALWAYS_NULL_INJECT;
 import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.NOT_NULL_INJECT;
 
+import net.jqwik.api.Arbitraries;
+
 public class NodeNullityManipulator implements NodeManipulator {
 	private final boolean toNull;
 

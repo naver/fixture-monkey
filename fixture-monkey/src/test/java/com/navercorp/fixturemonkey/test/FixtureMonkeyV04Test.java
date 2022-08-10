@@ -972,4 +972,28 @@ class FixtureMonkeyV04Test {
 		then(actual).hasSize(1);
 		then(actual.get(0)).isEqualTo(expected);
 	}
+
+	@Property
+	void applySetElementNull() {
+		String actual = SUT.giveMeBuilder(ComplexObject.class)
+			.apply((obj, builder) -> builder.size("strList", 1)
+				.setNull("strList[0]")
+			)
+			.sample()
+			.getStrList()
+			.get(0);
+
+		then(actual).isNull();
+	}
+
+	@Property
+	void setAndSetNull() {
+		String actual = SUT.giveMeBuilder(SimpleObject.class)
+			.set("str", "test")
+			.setNull("str")
+			.sample()
+			.getStr();
+
+		then(actual).isNull();
+	}
 }
