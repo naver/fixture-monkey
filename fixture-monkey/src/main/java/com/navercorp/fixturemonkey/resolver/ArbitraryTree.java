@@ -100,7 +100,8 @@ final class ArbitraryTree {
 
 		Arbitrary<?> generated;
 		if (node.getArbitrary() != null) {
-			generated = node.getArbitrary(); // fixed
+			generated = node.getArbitrary() // fixed
+				.injectNull(node.getArbitraryProperty().getNullInject());
 		} else {
 			ArbitraryGeneratorContext childArbitraryGeneratorContext = this.generateContext(node, ctx);
 			generated = this.generateOptions.getArbitraryGenerator(prop.getProperty())
