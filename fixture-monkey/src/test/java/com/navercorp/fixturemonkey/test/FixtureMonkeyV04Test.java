@@ -1012,4 +1012,16 @@ class FixtureMonkeyV04Test {
 		then(actualSample).isNotEqualTo(buildSample);
 		then(actualSample.getStr()).isEqualTo("set");
 	}
+
+	@Property
+	void applySampleTwiceReturnsDiff() {
+		ArbitraryBuilder<SimpleObject> builder = SUT.giveMeBuilder(SimpleObject.class)
+			.apply((obj, b) -> {
+			});
+
+		SimpleObject actual = builder.sample();
+
+		SimpleObject expected = builder.sample();
+		then(actual).isNotEqualTo(expected);
+	}
 }
