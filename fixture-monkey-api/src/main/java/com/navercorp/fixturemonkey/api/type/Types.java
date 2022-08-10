@@ -53,7 +53,6 @@ public class Types {
 		primitiveWrapperMap.put(Long.TYPE, Long.class);
 		primitiveWrapperMap.put(Double.TYPE, Double.class);
 		primitiveWrapperMap.put(Float.TYPE, Float.class);
-		primitiveWrapperMap.put(Void.TYPE, Void.TYPE);
 	}
 
 	private static final Map<Class<?>, Class<?>> wrapperPrimitiveMap = new HashMap<>();
