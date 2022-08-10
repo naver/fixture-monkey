@@ -943,4 +943,18 @@ class FixtureMonkeyV04Test {
 
 		then(actual).isNull();
 	}
+
+	@Property
+	void setListElement() {
+		String expected = "test";
+
+		String actual = SUT.giveMeBuilder(new TypeReference<List<String>>() {
+			})
+			.size("$", 1)
+			.set("$[0]", expected)
+			.sample()
+			.get(0);
+
+		then(actual).isEqualTo(expected);
+	}
 }
