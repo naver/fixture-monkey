@@ -233,7 +233,7 @@ public class LabMonkeyBuilder {
 
 	public LabMonkeyBuilder addExceptGeneratePackage(String exceptGeneratePackage) {
 		return pushExceptGenerateType(
-			property -> Types.getActualType(property.getType())
+			property -> Types.primitiveToWrapper(Types.getActualType(property.getType()))
 				.getPackage()
 				.getName()
 				.startsWith(exceptGeneratePackage)
@@ -316,9 +316,9 @@ public class LabMonkeyBuilder {
 					};
 					this.register(actualType, registerArbitraryBuilder);
 				} catch (InvocationTargetException
-						| InstantiationException
-						| IllegalAccessException
-						| NoSuchMethodException e) {
+						 | InstantiationException
+						 | IllegalAccessException
+						 | NoSuchMethodException e) {
 					// ignored
 				}
 			}
