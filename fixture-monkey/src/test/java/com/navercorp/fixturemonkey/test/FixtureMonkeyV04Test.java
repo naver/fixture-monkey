@@ -128,7 +128,7 @@ class FixtureMonkeyV04Test {
 		// then
 		then(actual.getInstant()).isEqualTo(expected.getInstant());
 		then(actual.getOptionalString()).isEqualTo(expected.getOptionalString());
-		then(actual.getStr()).isEqualTo(expected.getStr());
+		then(actual.getStr()).isEqualTo("str");
 	}
 
 	@Property

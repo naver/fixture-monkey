@@ -38,6 +38,7 @@ public final class NodeSetLazyManipulator<T> implements NodeManipulator {
 		this.lazyArbitrary = lazyArbitrary;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void manipulate(ArbitraryNode arbitraryNode) {
 		T value = lazyArbitrary.getValue();
@@ -49,10 +50,7 @@ public final class NodeSetLazyManipulator<T> implements NodeManipulator {
 		}
 
 		if (value instanceof Arbitrary) {
-			NodeSetArbitraryManipulator<?> nodeSetArbitraryManipulator =
-				new NodeSetArbitraryManipulator<>((Arbitrary<?>)value);
-			nodeSetArbitraryManipulator.manipulate(arbitraryNode);
-			return;
+			value = (T)((Arbitrary<?>)value).sample();
 		}
 
 		NodeSetDecomposedValueManipulator<T> nodeSetDecomposedValueManipulator =
