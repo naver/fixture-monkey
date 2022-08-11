@@ -72,6 +72,15 @@ public class LabMonkey extends FixtureMonkey {
 		manipulateOptionsBuilder.sampleRegisteredArbitraryBuilder(this);
 	}
 
+	/**
+	 * Equivalent to {@code LabMonkey.builder().build()}
+	 * @return LabMonkey
+	 */
+
+	public static LabMonkey create() {
+		return new LabMonkeyBuilder().build();
+	}
+
 	@Override
 	public <T> DefaultArbitraryBuilder<T> giveMeBuilder(Class<T> type) {
 		TypeReference<T> typeReference = new TypeReference<T>(type) {
