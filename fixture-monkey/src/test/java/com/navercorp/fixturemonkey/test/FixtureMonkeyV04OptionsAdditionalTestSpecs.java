@@ -20,7 +20,7 @@
 package com.navercorp.fixturemonkey.test;
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
-import com.navercorp.fixturemonkey.LabMonkey;
+import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.SimpleObject;
 
 class FixtureMonkeyV04OptionsAdditionalTestSpecs {
@@ -28,8 +28,8 @@ class FixtureMonkeyV04OptionsAdditionalTestSpecs {
 	}
 
 	public static class RegisterGroup {
-		public ArbitraryBuilder<String> string(LabMonkey labMonkey) {
-			return labMonkey.giveMeBuilder("test");
+		public ArbitraryBuilder<String> string(FixtureMonkey fixtureMonkey) {
+			return fixtureMonkey.giveMeBuilder("test");
 		}
 	}
 }

@@ -41,7 +41,7 @@ import net.jqwik.api.Property;
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.ArbitraryBuilders;
-import com.navercorp.fixturemonkey.LabMonkey;
+import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.test.ComplexManipulatorTestSpecs.IntValue;
 import com.navercorp.fixturemonkey.test.ComplexManipulatorTestSpecs.NestedStringList;
@@ -51,7 +51,7 @@ import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.ComplexObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.SimpleObject;
 
 class FixtureMonkeyV04Test {
-	private static final LabMonkey SUT = LabMonkey.labMonkey();
+	private static final FixtureMonkey SUT = FixtureMonkey.builder().build();
 
 	@Property
 	void sampleWithType() {

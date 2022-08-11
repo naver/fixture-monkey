@@ -41,7 +41,7 @@ import net.jqwik.api.arbitraries.StringArbitrary;
 import net.jqwik.time.api.DateTimes;
 import net.jqwik.time.api.arbitraries.InstantArbitrary;
 
-import com.navercorp.fixturemonkey.LabMonkey;
+import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryPropertyGenerator;
@@ -63,7 +63,7 @@ import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.SimpleObject;
 class FixtureMonkeyV04OptionsTest {
 	@Property
 	void strictModeSetWrongExpressionThrows() {
-		LabMonkey sut = LabMonkey.labMonkeyBuilder().useExpressionStrictMode().build();
+		FixtureMonkey sut = FixtureMonkey.builder().useExpressionStrictMode().build();
 
 		thenThrownBy(
 			() -> sut.giveMeBuilder(String.class)
@@ -75,7 +75,7 @@ class FixtureMonkeyV04OptionsTest {
 
 	@Property
 	void notStrictModeSetWrongExpressionDoesNotThrows() {
-		LabMonkey sut = LabMonkey.labMonkeyBuilder().build();
+		FixtureMonkey sut = FixtureMonkey.builder().build();
 
 		thenNoException()
 			.isThrownBy(() -> sut.giveMeBuilder(String.class)
@@ -85,7 +85,7 @@ class FixtureMonkeyV04OptionsTest {
 
 	@Property
 	void alterMonkeyFactory() {
-		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+		FixtureMonkey sut = FixtureMonkey.builder()
 			.monkeyExpressionFactory((expression) -> RootNodeResolver::new)
 			.build();
 		String expected = "expected";
@@ -99,7 +99,7 @@ class FixtureMonkeyV04OptionsTest {
 
 	@Property
 	void alterDefaultArbitraryPropertyGenerator() {
-		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+		FixtureMonkey sut = FixtureMonkey.builder()
 			.defaultArbitraryPropertyGenerator(
 				(context) -> ObjectArbitraryPropertyGenerator.INSTANCE.generate(context)
 					.withNullInject(1.0)
@@ -113,7 +113,7 @@ class FixtureMonkeyV04OptionsTest {
 
 	@Property
 	void pushAssignableTypeArbitraryPropertyGenerator() {
-		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+		FixtureMonkey sut = FixtureMonkey.builder()
 			.pushAssignableTypeArbitraryPropertyGenerator(
 				SimpleObject.class,
 				(context) -> ObjectArbitraryPropertyGenerator.INSTANCE.generate(context)
@@ -128,7 +128,7 @@ class FixtureMonkeyV04OptionsTest {
 
 	@Property
 	void pushExactTypeArbitraryPropertyGenerator() {
-		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+		FixtureMonkey sut = FixtureMonkey.builder()
 			.pushExactTypeArbitraryPropertyGenerator(
 				SimpleObjectChild.class,
 				(context) -> ObjectArbitraryPropertyGenerator.INSTANCE.generate(context)
@@ -143,7 +143,7 @@ class FixtureMonkeyV04OptionsTest {
 
 	@Property
 	void pushExactTypeArbitraryPropertyGeneratorNotAffectsAssignable() {
-		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+		FixtureMonkey sut = FixtureMonkey.builder()
 			.pushExactTypeArbitraryPropertyGenerator(
 				SimpleObject.class,
 				(context) -> ObjectArbitraryPropertyGenerator.INSTANCE.generate(context)
@@ -161,7 +161,7 @@ class FixtureMonkeyV04OptionsTest {
 		ArbitraryPropertyGenerator arbitraryPropertyGenerator = (context) ->
 			ObjectArbitraryPropertyGenerator.INSTANCE.generate(context)
 				.withNullInject(1.0);
-		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+		FixtureMonkey sut = FixtureMonkey.builder()
 			.pushArbitraryPropertyGenerator(
 				MatcherOperator.exactTypeMatchOperator(
 					SimpleObject.class,
@@ -177,7 +177,7 @@ class FixtureMonkeyV04OptionsTest {
 
 	@Property
 	void pushAssignableTypeNullInjectGenerator() {
-		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+		FixtureMonkey sut = FixtureMonkey.builder()
 			.pushAssignableTypeNullInjectGenerator(
 				SimpleObject.class,
 				(context, containerInfo) -> 1.0d
@@ -191,7 +191,7 @@ class FixtureMonkeyV04OptionsTest {
 
 	@Property
 	void pushExactTypeNullInjectGenerator() {
-		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+		FixtureMonkey sut = FixtureMonkey.builder()
 			.pushExactTypeNullInjectGenerator(
 				SimpleObject.class,
 				(context, containerInfo) -> 1.0d
@@ -205,7 +205,7 @@ class FixtureMonkeyV04OptionsTest {
 
 	@Property
 	void pushNullInjectGenerator() {
-		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+		FixtureMonkey sut = FixtureMonkey.builder()
 			.pushNullInjectGenerator(
 				MatcherOperator.exactTypeMatchOperator(SimpleObject.class, (context, containerInfo) -> 1.0d)
 			)
@@ -218,7 +218,7 @@ class FixtureMonkeyV04OptionsTest {
 
 	@Property
 	void defaultNullInjectGenerator() {
-		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+		FixtureMonkey sut = FixtureMonkey.builder()
 			.defaultNullInjectGenerator((context, containerInfo) -> 1.0d)
 			.build();
 
@@ -229,7 +229,7 @@ class FixtureMonkeyV04OptionsTest {
 
 	@Property
 	void pushExactTypePropertyNameResolver() {
-		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+		FixtureMonkey sut = FixtureMonkey.builder()
 			.pushExactTypePropertyNameResolver(String.class, (property) -> "string")
 			.build();
 		String expected = "test";
@@ -244,7 +244,7 @@ class FixtureMonkeyV04OptionsTest {
 
 	@Property
 	void pushAssignableTypePropertyNameResolver() {
-		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+		FixtureMonkey sut = FixtureMonkey.builder()
 			.pushAssignableTypePropertyNameResolver(Temporal.class, (property) -> "temporal")
 			.build();
 		Instant expected = Instant.now();
@@ -259,7 +259,7 @@ class FixtureMonkeyV04OptionsTest {
 
 	@Property
 	void pushPropertyNameResolver() {
-		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+		FixtureMonkey sut = FixtureMonkey.builder()
 			.pushPropertyNameResolver(MatcherOperator.exactTypeMatchOperator(String.class, (property) -> "string"))
 			.build();
 		String expected = "test";
@@ -274,7 +274,7 @@ class FixtureMonkeyV04OptionsTest {
 
 	@Property
 	void defaultPropertyNameResolver() {
-		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+		FixtureMonkey sut = FixtureMonkey.builder()
 			.defaultPropertyNameResolver((property) -> "'" + property.getName() + "'")
 			.build();
 		String expected = "test";
@@ -289,7 +289,7 @@ class FixtureMonkeyV04OptionsTest {
 
 	@Property
 	void pushArbitraryContainerInfoGenerator() {
-		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+		FixtureMonkey sut = FixtureMonkey.builder()
 			.pushArbitraryContainerInfoGenerator(
 				new MatcherOperator<>(
 					(property) -> {
@@ -314,7 +314,7 @@ class FixtureMonkeyV04OptionsTest {
 
 	@Property
 	void pushArbitraryContainerInfoGeneratorNotMatching() {
-		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+		FixtureMonkey sut = FixtureMonkey.builder()
 			.pushArbitraryContainerInfoGenerator(
 				new MatcherOperator<>(
 					(property) -> {
@@ -339,7 +339,7 @@ class FixtureMonkeyV04OptionsTest {
 
 	@Property
 	void defaultArbitraryContainerMaxSize() {
-		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+		FixtureMonkey sut = FixtureMonkey.builder()
 			.defaultArbitraryContainerMaxSize(1)
 			.build();
 
@@ -351,7 +351,7 @@ class FixtureMonkeyV04OptionsTest {
 
 	@Property
 	void defaultArbitraryContainerInfo() {
-		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+		FixtureMonkey sut = FixtureMonkey.builder()
 			.defaultArbitraryContainerInfo(new ArbitraryContainerInfo(3, 3))
 			.build();
 
@@ -363,7 +363,7 @@ class FixtureMonkeyV04OptionsTest {
 
 	@Property
 	void javaTypeArbitraryGenerator() {
-		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+		FixtureMonkey sut = FixtureMonkey.builder()
 			.javaTypeArbitraryGenerator(new JavaTypeArbitraryGenerator() {
 				@Override
 				public StringArbitrary strings() {
@@ -379,7 +379,7 @@ class FixtureMonkeyV04OptionsTest {
 
 	@Property
 	void javaTypeArbitraryGeneratorAffectsField() {
-		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+		FixtureMonkey sut = FixtureMonkey.builder()
 			.javaTypeArbitraryGenerator(new JavaTypeArbitraryGenerator() {
 				@Override
 				public StringArbitrary strings() {
@@ -396,7 +396,7 @@ class FixtureMonkeyV04OptionsTest {
 
 	@Property
 	void javaArbitraryResolver() {
-		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+		FixtureMonkey sut = FixtureMonkey.builder()
 			.javaArbitraryResolver(new JavaArbitraryResolver() {
 				@Override
 				public Arbitrary<String> strings(StringArbitrary stringArbitrary, ArbitraryGeneratorContext context) {
@@ -412,7 +412,7 @@ class FixtureMonkeyV04OptionsTest {
 
 	@Property
 	void javaArbitraryResolverAffectsField() {
-		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+		FixtureMonkey sut = FixtureMonkey.builder()
 			.javaArbitraryResolver(new JavaArbitraryResolver() {
 				@Override
 				public Arbitrary<String> strings(StringArbitrary stringArbitrary, ArbitraryGeneratorContext context) {
@@ -430,7 +430,7 @@ class FixtureMonkeyV04OptionsTest {
 	@Property
 	void javaTimeTypeArbitraryGenerator() {
 		Instant expected = Instant.now();
-		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+		FixtureMonkey sut = FixtureMonkey.builder()
 			.javaTimeTypeArbitraryGenerator(new JavaTimeTypeArbitraryGenerator() {
 				@Override
 				public InstantArbitrary instants() {
@@ -447,7 +447,7 @@ class FixtureMonkeyV04OptionsTest {
 	@Property
 	void javaTimeTypeArbitraryGeneratorAffectsField() {
 		Instant expected = Instant.now();
-		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+		FixtureMonkey sut = FixtureMonkey.builder()
 			.javaTimeTypeArbitraryGenerator(new JavaTimeTypeArbitraryGenerator() {
 				@Override
 				public InstantArbitrary instants() {
@@ -465,7 +465,7 @@ class FixtureMonkeyV04OptionsTest {
 	@Property
 	void javaTimeArbitraryResolver() {
 		Instant expected = Instant.now();
-		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+		FixtureMonkey sut = FixtureMonkey.builder()
 			.javaTimeArbitraryResolver(new JavaTimeArbitraryResolver() {
 				@Override
 				public Arbitrary<Instant> instants(
@@ -485,7 +485,7 @@ class FixtureMonkeyV04OptionsTest {
 	@Property
 	void javaTimeArbitraryResolverAffectsField() {
 		Instant expected = Instant.now();
-		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+		FixtureMonkey sut = FixtureMonkey.builder()
 			.javaTimeArbitraryResolver(new JavaTimeArbitraryResolver() {
 				@Override
 				public Arbitrary<Instant> instants(
@@ -505,7 +505,7 @@ class FixtureMonkeyV04OptionsTest {
 
 	@Property(tries = 1)
 	void alterArbitraryValidator() {
-		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+		FixtureMonkey sut = FixtureMonkey.builder()
 			.arbitraryValidator(obj -> {
 				throw new ConstraintViolationException("thrown by test ArbitraryValidator", new HashSet<>());
 			})
@@ -517,7 +517,7 @@ class FixtureMonkeyV04OptionsTest {
 
 	@Property
 	void defaultNotNull() {
-		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+		FixtureMonkey sut = FixtureMonkey.builder()
 			.defaultNotNull(true)
 			.build();
 
@@ -529,7 +529,7 @@ class FixtureMonkeyV04OptionsTest {
 
 	@Property
 	void defaultNotNullNotWorksWhenSetDefaultNullInjectGenerator() {
-		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+		FixtureMonkey sut = FixtureMonkey.builder()
 			.defaultNullInjectGenerator(
 				new DefaultNullInjectGenerator(
 					ALWAYS_NULL_INJECT,
@@ -550,7 +550,7 @@ class FixtureMonkeyV04OptionsTest {
 
 	@Property
 	void pushExceptGenerateType() {
-		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+		FixtureMonkey sut = FixtureMonkey.builder()
 			.pushExceptGenerateType(new ExactTypeMatcher(String.class))
 			.build();
 
@@ -561,7 +561,7 @@ class FixtureMonkeyV04OptionsTest {
 
 	@Property
 	void addExceptGenerateClass() {
-		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+		FixtureMonkey sut = FixtureMonkey.builder()
 			.addExceptGenerateClass(String.class)
 			.build();
 
@@ -572,7 +572,7 @@ class FixtureMonkeyV04OptionsTest {
 
 	@Property
 	void addExceptGenerateClassNotGenerateField() {
-		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+		FixtureMonkey sut = FixtureMonkey.builder()
 			.addExceptGenerateClass(String.class)
 			.build();
 
@@ -584,7 +584,7 @@ class FixtureMonkeyV04OptionsTest {
 
 	@Property
 	void addExceptGeneratePackage() {
-		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+		FixtureMonkey sut = FixtureMonkey.builder()
 			.addExceptGeneratePackage("java.lang")
 			.build();
 
@@ -595,7 +595,7 @@ class FixtureMonkeyV04OptionsTest {
 
 	@Property
 	void addExceptGeneratePackageNotGenerateField() {
-		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+		FixtureMonkey sut = FixtureMonkey.builder()
 			.addExceptGeneratePackage("java.lang")
 			.build();
 
@@ -607,7 +607,7 @@ class FixtureMonkeyV04OptionsTest {
 
 	@Property
 	void registerInstance() {
-		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+		FixtureMonkey sut = FixtureMonkey.builder()
 			.register(String.class, monkey -> monkey.giveMeBuilder("test"))
 			.build();
 
@@ -618,7 +618,7 @@ class FixtureMonkeyV04OptionsTest {
 
 	@Property
 	void registerField() {
-		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+		FixtureMonkey sut = FixtureMonkey.builder()
 			.register(String.class, monkey -> monkey.giveMeBuilder("test"))
 			.build();
 
@@ -630,7 +630,7 @@ class FixtureMonkeyV04OptionsTest {
 
 	@Property
 	void registerGroup() {
-		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+		FixtureMonkey sut = FixtureMonkey.builder()
 			.registerGroup(RegisterGroup.class)
 			.build();
 
@@ -642,7 +642,7 @@ class FixtureMonkeyV04OptionsTest {
 
 	@Property
 	void registerSameInstancesTwiceWorksLast() {
-		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+		FixtureMonkey sut = FixtureMonkey.builder()
 			.register(String.class, monkey -> monkey.giveMeBuilder("test"))
 			.register(String.class, monkey -> monkey.giveMeBuilder("test2"))
 			.build();

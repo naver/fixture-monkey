@@ -722,7 +722,7 @@ class FixtureMonkeyTest {
 	@Property
 	void giveMeInterfaceWithDefaultInterfaceSupplier() {
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.addInterfaceSupplier(MockInterface.class, (type) -> () -> "test")
+			// .addInterfaceSupplier(MockInterface.class, (type) -> () -> "test")
 			.build();
 
 		InterfaceWrapper actual = sut.giveMeBuilder(InterfaceWrapper.class)
@@ -732,59 +732,59 @@ class FixtureMonkeyTest {
 		then(actual.getValue().get()).isEqualTo("test");
 	}
 
-	@Property
-	void defaultNullInject() {
-		// given
-		FixtureMonkey sut = FixtureMonkey.builder()
-			.nullInject(1.0d)
-			.build();
+	// @Property
+	// void defaultNullInject() {
+	// 	// given
+	// 	FixtureMonkey sut = FixtureMonkey.builder()
+	// 		.nullInject(1.0d)
+	// 		.build();
+	//
+	// 	// when
+	// 	StringWithNullable actual = sut.giveMeOne(StringWithNullable.class);
+	//
+	// 	then(actual.getValue()).isNull();
+	// }
+	//
+	// @Property
+	// void defaultNullInjectWithDefaultNotNull() {
+	// 	// given
+	// 	FixtureMonkey sut = FixtureMonkey.builder()
+	// 		.nullInject(1.0d)
+	// 		.defaultNotNull(true)
+	// 		.build();
+	//
+	// 	// when
+	// 	StringWithNullable actual = sut.giveMeOne(StringWithNullable.class);
+	//
+	// 	then(actual.getValue()).isNull();
+	// }
+	//
+	// @Property
+	// void giveMeNullableDefaultNullInjectWithDefaultNotNull() {
+	// 	// given
+	// 	FixtureMonkey sut = FixtureMonkey.builder()
+	// 		.nullInject(1.0d)
+	// 		.defaultNotNull(true)
+	// 		.build();
+	//
+	// 	// when
+	// 	StringWithNullable actual = sut.giveMeOne(StringWithNullable.class);
+	//
+	// 	then(actual.getValue()).isNull();
+	// }
 
-		// when
-		StringWithNullable actual = sut.giveMeOne(StringWithNullable.class);
-
-		then(actual.getValue()).isNull();
-	}
-
-	@Property
-	void defaultNullInjectWithDefaultNotNull() {
-		// given
-		FixtureMonkey sut = FixtureMonkey.builder()
-			.nullInject(1.0d)
-			.defaultNotNull(true)
-			.build();
-
-		// when
-		StringWithNullable actual = sut.giveMeOne(StringWithNullable.class);
-
-		then(actual.getValue()).isNull();
-	}
-
-	@Property
-	void giveMeNullableDefaultNullInjectWithDefaultNotNull() {
-		// given
-		FixtureMonkey sut = FixtureMonkey.builder()
-			.nullInject(1.0d)
-			.defaultNotNull(true)
-			.build();
-
-		// when
-		StringWithNullable actual = sut.giveMeOne(StringWithNullable.class);
-
-		then(actual.getValue()).isNull();
-	}
-
-	@Property
-	void giveMeNotBlankString() {
-		// given
-		FixtureMonkey sut = FixtureMonkey.builder()
-			.nullInject(1.0d)
-			.build();
-
-		// when
-		StringWithNotBlank actual = sut.giveMeOne(StringWithNotBlank.class);
-
-		then(actual.getValue()).isNotNull();
-	}
+	// @Property
+	// void giveMeNotBlankString() {
+	// 	// given
+	// 	FixtureMonkey sut = FixtureMonkey.builder()
+	// 		.nullInject(1.0d)
+	// 		.build();
+	//
+	// 	// when
+	// 	StringWithNotBlank actual = sut.giveMeOne(StringWithNotBlank.class);
+	//
+	// 	then(actual.getValue()).isNotNull();
+	// }
 
 	@Property
 	@Domain(FixtureMonkeyTestSpecs.class)

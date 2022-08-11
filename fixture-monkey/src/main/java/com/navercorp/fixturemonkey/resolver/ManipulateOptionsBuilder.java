@@ -30,7 +30,7 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
-import com.navercorp.fixturemonkey.LabMonkey;
+import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryExpressionFactory;
 import com.navercorp.fixturemonkey.expression.MonkeyExpressionFactory;
@@ -42,7 +42,7 @@ public final class ManipulateOptionsBuilder {
 
 	private boolean expressionStrictMode = false;
 
-	private List<MatcherOperator<Function<LabMonkey, ? extends ArbitraryBuilder<?>>>>
+	private List<MatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>>>
 		registeredArbitraryBuilders = new ArrayList<>();
 
 	private List<MatcherOperator<? extends ArbitraryBuilder<?>>> registeredSampledArbitraryBuilders = new ArrayList<>();
@@ -61,7 +61,7 @@ public final class ManipulateOptionsBuilder {
 	}
 
 	public ManipulateOptionsBuilder register(
-		MatcherOperator<Function<LabMonkey, ? extends ArbitraryBuilder<?>>> arbitraryBuilderSupplier
+		MatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>> arbitraryBuilderSupplier
 	) {
 		registeredArbitraryBuilders = insertFirst(registeredArbitraryBuilders, arbitraryBuilderSupplier);
 		return this;
@@ -82,11 +82,11 @@ public final class ManipulateOptionsBuilder {
 		return new ManipulateOptions(defaultMonkeyExpressionFactory, registeredSampledArbitraryBuilders);
 	}
 
-	public void sampleRegisteredArbitraryBuilder(LabMonkey labMonkey) {
+	public void sampleRegisteredArbitraryBuilder(FixtureMonkey fixtureMonkey) {
 		registeredSampledArbitraryBuilders = registeredArbitraryBuilders.stream()
 			.map(operator -> new MatcherOperator<>(
 					operator.getMatcher(),
-					operator.getOperator().apply(labMonkey)
+					operator.getOperator().apply(fixtureMonkey)
 				)
 			)
 			.collect(Collectors.toList());

@@ -28,14 +28,14 @@ import java.util.stream.Collectors;
 
 import net.jqwik.api.Property;
 
-import com.navercorp.fixturemonkey.LabMonkey;
+import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.test.InnerSpecTestSpecs.ListObject;
 import com.navercorp.fixturemonkey.test.InnerSpecTestSpecs.MapObject;
 import com.navercorp.fixturemonkey.test.InnerSpecTestSpecs.ObjectObject;
 import com.navercorp.fixturemonkey.test.InnerSpecTestSpecs.SimpleObject;
 
 class InnerSpecTest {
-	private static final LabMonkey SUT = LabMonkey.labMonkey();
+	private static final FixtureMonkey SUT = FixtureMonkey.builder().build();
 
 	@Property
 	void mapAddKey() {
