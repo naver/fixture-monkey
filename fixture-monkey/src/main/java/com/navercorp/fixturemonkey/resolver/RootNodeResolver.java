@@ -18,6 +18,8 @@
 
 package com.navercorp.fixturemonkey.resolver;
 
+import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.NOT_NULL_INJECT;
+
 import java.util.Collections;
 import java.util.List;
 
@@ -32,6 +34,7 @@ public final class RootNodeResolver implements NodeResolver {
 	@Override
 	public List<ArbitraryNode> resolve(ArbitraryTree arbitraryTree) {
 		ArbitraryNode root = arbitraryTree.findRoot();
+		root.setArbitraryProperty(root.getArbitraryProperty().withNullInject(NOT_NULL_INJECT));
 		root.setArbitrary(null);
 		return Collections.singletonList(root);
 	}
