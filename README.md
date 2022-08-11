@@ -105,6 +105,10 @@ testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter:0.3.5")
 * fixture-monkey-junit-jupiter (Experimental)
   - Supports [junit-jupiter-api](https://github.com/junit-team/junit5)
 
+## Plugins
+* [FixtureMonkey Helper](https://plugins.jetbrains.com/plugin/19589-fixturemonkey-helper)
+  - IntelliJ plugin that makes it easier to use Fixture Monkey string expressions & Kotlin DSL
+
 ## Contributors
 * 🐒 [ah.jo](https://github.com/seongside)
 * 🐒 [mhyeon-lee](https://github.com/mhyeon-lee)
