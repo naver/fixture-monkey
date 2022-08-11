@@ -1066,4 +1066,31 @@ class FixtureMonkeyV04Test {
 
 		then(actual).isNotNull();
 	}
+
+	@Property
+	void setFieldWhichObjectIsFixedNull() {
+		String expected = "test";
+
+		String actual = SUT.giveMeBuilder(ComplexObject.class)
+			.set("object", Arbitraries.just(null))
+			.set("object.str", expected)
+			.sample()
+			.getObject()
+			.getStr();
+
+		then(actual).isEqualTo(expected);
+	}
+
+	@Property
+	void setFieldWhichRootIsFixedNull() {
+		String expected = "test";
+
+		String actual = SUT.giveMeBuilder(SimpleObject.class)
+			.set("$", Arbitraries.just(null))
+			.set("str", expected)
+			.sample()
+			.getStr();
+
+		then(actual).isEqualTo(expected);
+	}
 }

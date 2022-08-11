@@ -31,6 +31,8 @@ public final class RootNodeResolver implements NodeResolver {
 
 	@Override
 	public List<ArbitraryNode> resolve(ArbitraryTree arbitraryTree) {
-		return Collections.singletonList(arbitraryTree.findRoot());
+		ArbitraryNode root = arbitraryTree.findRoot();
+		root.setArbitrary(null);
+		return Collections.singletonList(root);
 	}
 }
