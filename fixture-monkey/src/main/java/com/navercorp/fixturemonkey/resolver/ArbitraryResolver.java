@@ -68,7 +68,7 @@ public final class ArbitraryResolver {
 		);
 
 		List<ArbitraryManipulator> joinedManipulators =
-			Stream.concat(manipulators.stream(), registeredManipulators.stream())
+			Stream.concat(registeredManipulators.stream(), manipulators.stream())
 				.collect(Collectors.toList());
 
 		List<ArbitraryManipulator> optimizedManipulator = manipulatorOptimizer
