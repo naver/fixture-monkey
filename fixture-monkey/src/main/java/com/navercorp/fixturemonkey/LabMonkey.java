@@ -76,7 +76,6 @@ public class LabMonkey extends FixtureMonkey {
 	 * Equivalent to {@code LabMonkey.builder().build()}
 	 * @return LabMonkey
 	 */
-
 	public static LabMonkey create() {
 		return new LabMonkeyBuilder().build();
 	}
