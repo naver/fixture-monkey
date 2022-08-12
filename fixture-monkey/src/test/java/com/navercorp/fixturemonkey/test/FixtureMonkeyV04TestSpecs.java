@@ -29,6 +29,9 @@ import java.util.OptionalInt;
 import java.util.OptionalLong;
 import java.util.Set;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -69,5 +72,13 @@ class FixtureMonkeyV04TestSpecs {
 		private OptionalLong optionalLong;
 		private OptionalDouble optionalDouble;
 		private Instant instant;
+	}
+
+	@Getter
+	@Setter
+	@EqualsAndHashCode
+	public static class ListWithAnnotation {
+		@NotEmpty
+		private List<@NotBlank String> values;
 	}
 }
