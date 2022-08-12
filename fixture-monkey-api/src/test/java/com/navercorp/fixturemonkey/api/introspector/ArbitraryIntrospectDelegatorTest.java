@@ -56,7 +56,8 @@ class ArbitraryIntrospectDelegatorTest {
 			),
 			Collections.emptyList(),
 			null,
-			(ctx, prop) -> Arbitraries.just(null)
+			(ctx, prop) -> Arbitraries.just(null),
+			Collections.emptyList()
 		);
 
 		then(sut.match(context.getProperty())).isTrue();

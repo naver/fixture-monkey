@@ -93,9 +93,11 @@ class FieldReflectionArbitraryIntrospectorTest {
 					prop,
 					Collections.emptyList(),
 					ctx,
-					(ctx2, prop2) -> null
+					(ctx2, prop2) -> null,
+					Collections.emptyList()
 				)
-			).getValue()
+			).getValue(),
+			Collections.emptyList()
 		);
 
 		// when
@@ -161,9 +163,11 @@ class FieldReflectionArbitraryIntrospectorTest {
 					prop,
 					Collections.emptyList(),
 					ctx,
-					(ctx2, prop2) -> null
+					(ctx2, prop2) -> null,
+					Collections.emptyList()
 				)
-			).getValue()
+			).getValue(),
+			Collections.emptyList()
 		);
 
 		// when

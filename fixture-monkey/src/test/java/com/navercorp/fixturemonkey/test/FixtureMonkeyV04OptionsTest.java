@@ -31,6 +31,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import javax.annotation.Nullable;
 import javax.validation.ConstraintViolationException;
 
 import net.jqwik.api.Arbitraries;
@@ -42,9 +43,11 @@ import net.jqwik.time.api.DateTimes;
 import net.jqwik.time.api.arbitraries.InstantArbitrary;
 
 import com.navercorp.fixturemonkey.LabMonkey;
+import com.navercorp.fixturemonkey.api.customizer.FixtureCustomizer;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryPropertyGenerator;
+import com.navercorp.fixturemonkey.api.generator.ChildArbitraryContext;
 import com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator;
 import com.navercorp.fixturemonkey.api.generator.ObjectArbitraryPropertyGenerator;
 import com.navercorp.fixturemonkey.api.introspector.JavaArbitraryResolver;
@@ -663,6 +666,56 @@ class FixtureMonkeyV04OptionsTest {
 		String actual = sut.giveMeBuilder(String.class)
 			.set("$", expected)
 			.sample();
+
+		then(actual).isEqualTo(expected);
+	}
+
+	@Property
+	void pushArbitraryCustomizerCustomizeFixtureSetValue() {
+		String expected = "test";
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.pushExactTypeArbitraryCustomizer(String.class, (object) -> expected)
+			.build();
+
+		String actual = sut.giveMeOne(String.class);
+
+		then(actual).isEqualTo(expected);
+	}
+
+	@Property
+	void pushArbitraryCustomizerCustomizeFixtureModifyValue() {
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.pushExactTypeArbitraryCustomizer(String.class, String::toLowerCase)
+			.build();
+
+		String actual = sut.giveMeOne(String.class);
+
+		then(actual).isLowerCase();
+	}
+
+	@Property
+	void pushArbitraryCustomizerCustomizeFields() {
+		String expected = "test";
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.pushExactTypeArbitraryCustomizer(SimpleObject.class, new FixtureCustomizer<SimpleObject>() {
+				@Override
+				public void customizeProperties(ChildArbitraryContext childArbitraryContext) {
+					childArbitraryContext.replaceArbitrary(
+						property -> "str".equals(property.getName()),
+						Arbitraries.just(expected)
+					);
+				}
+
+				@Nullable
+				@Override
+				public SimpleObject customizeFixture(@Nullable SimpleObject object) {
+					return object;
+				}
+			})
+			.build();
+
+		String actual = sut.giveMeOne(SimpleObject.class)
+			.getStr();
 
 		then(actual).isEqualTo(expected);
 	}

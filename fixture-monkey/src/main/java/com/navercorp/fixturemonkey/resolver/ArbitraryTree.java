@@ -34,6 +34,7 @@ import net.jqwik.api.Arbitrary;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
+import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.option.GenerateOptions;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
@@ -87,7 +88,8 @@ final class ArbitraryTree {
 				}
 
 				return generateArbitrary(ctx, node);
-			}
+			},
+			generateOptions.getArbitraryCustomizers()
 		);
 	}
 
@@ -112,6 +114,15 @@ final class ArbitraryTree {
 		for (Predicate predicate : arbitraryFilters) {
 			generated = generated.filter(predicate);
 		}
-		return generated;
+
+		return generated.map(
+			object -> ctx.getArbitraryCustomizers().stream()
+				.filter(it -> it.match(node.getProperty()))
+				.map(MatcherOperator::getOperator)
+				.findFirst()
+				.map(it -> it.customizeFixture(object))
+				.orElse(object)
+		);
 	}
+
 }

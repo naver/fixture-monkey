@@ -53,6 +53,7 @@ import java.util.stream.Stream;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import com.navercorp.fixturemonkey.api.customizer.FixtureCustomizer;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfoGenerator;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGenerator;
@@ -100,6 +101,10 @@ public final class GenerateOptions {
 	private final List<MatcherOperator<ArbitraryGenerator>> arbitraryGenerators;
 	private final ArbitraryGenerator defaultArbitraryGenerator;
 
+	@SuppressWarnings("rawtypes")
+	private final List<MatcherOperator<FixtureCustomizer>> arbitraryCustomizers;
+
+	@SuppressWarnings("rawtypes")
 	public GenerateOptions(
 		List<MatcherOperator<ArbitraryPropertyGenerator>> arbitraryPropertyGenerators,
 		ArbitraryPropertyGenerator defaultArbitraryPropertyGenerator,
@@ -111,7 +116,8 @@ public final class GenerateOptions {
 		int defaultArbitraryContainerSize,
 		ArbitraryContainerInfo defaultArbitraryContainerInfo,
 		List<MatcherOperator<ArbitraryGenerator>> arbitraryGenerators,
-		ArbitraryGenerator defaultArbitraryGenerator
+		ArbitraryGenerator defaultArbitraryGenerator,
+		List<MatcherOperator<FixtureCustomizer>> arbitraryCustomizers
 	) {
 		this.arbitraryPropertyGenerators = arbitraryPropertyGenerators;
 		this.defaultArbitraryPropertyGenerator = defaultArbitraryPropertyGenerator;
@@ -124,6 +130,7 @@ public final class GenerateOptions {
 		this.defaultArbitraryContainerInfo = defaultArbitraryContainerInfo;
 		this.arbitraryGenerators = arbitraryGenerators;
 		this.defaultArbitraryGenerator = defaultArbitraryGenerator;
+		this.arbitraryCustomizers = arbitraryCustomizers;
 	}
 
 	public static GenerateOptionsBuilder builder() {
@@ -212,6 +219,11 @@ public final class GenerateOptions {
 
 	public ArbitraryGenerator getDefaultArbitraryGenerator() {
 		return this.defaultArbitraryGenerator;
+	}
+
+	@SuppressWarnings("rawtypes")
+	public List<MatcherOperator<FixtureCustomizer>> getArbitraryCustomizers() {
+		return arbitraryCustomizers;
 	}
 
 	public GenerateOptionsBuilder toBuilder() {

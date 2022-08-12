@@ -59,7 +59,8 @@ class JavaDefaultArbitraryGeneratorTest {
 			),
 			Collections.emptyList(),
 			null,
-			(ctx, prop) -> sut.generate(ctx)
+			(ctx, prop) -> sut.generate(ctx),
+			Collections.emptyList()
 		);
 
 		// when
@@ -91,7 +92,8 @@ class JavaDefaultArbitraryGeneratorTest {
 			),
 			Collections.emptyList(),
 			null,
-			(ctx, prop) -> sut.generate(ctx)
+			(ctx, prop) -> sut.generate(ctx),
+			Collections.emptyList()
 		);
 
 		// when
@@ -123,7 +125,8 @@ class JavaDefaultArbitraryGeneratorTest {
 			),
 			Collections.emptyList(),
 			null,
-			(ctx, prop) -> sut.generate(ctx)
+			(ctx, prop) -> sut.generate(ctx),
+			Collections.emptyList()
 		);
 
 		// when
@@ -155,7 +158,8 @@ class JavaDefaultArbitraryGeneratorTest {
 			),
 			Collections.emptyList(),
 			null,
-			(ctx, prop) -> sut.generate(ctx)
+			(ctx, prop) -> sut.generate(ctx),
+			Collections.emptyList()
 		);
 
 		// when
@@ -187,7 +191,8 @@ class JavaDefaultArbitraryGeneratorTest {
 			),
 			Collections.emptyList(),
 			null,
-			(ctx, prop) -> sut.generate(ctx)
+			(ctx, prop) -> sut.generate(ctx),
+			Collections.emptyList()
 		);
 
 		// when
@@ -219,7 +224,8 @@ class JavaDefaultArbitraryGeneratorTest {
 			),
 			Collections.emptyList(),
 			null,
-			(ctx, prop) -> sut.generate(ctx)
+			(ctx, prop) -> sut.generate(ctx),
+			Collections.emptyList()
 		);
 
 		// when
@@ -251,7 +257,8 @@ class JavaDefaultArbitraryGeneratorTest {
 			),
 			Collections.emptyList(),
 			null,
-			(ctx, prop) -> sut.generate(ctx)
+			(ctx, prop) -> sut.generate(ctx),
+			Collections.emptyList()
 		);
 
 		// when
@@ -313,9 +320,11 @@ class JavaDefaultArbitraryGeneratorTest {
 					prop,
 					Collections.emptyList(),
 					ctx,
-					(ctx2, prop2) -> null
+					(ctx2, prop2) -> null,
+					Collections.emptyList()
 				)
-			)
+			),
+			Collections.emptyList()
 		);
 
 		// when

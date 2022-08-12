@@ -28,6 +28,7 @@ import javax.annotation.Nullable;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import com.navercorp.fixturemonkey.api.customizer.FixtureCustomizer;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfoGenerator;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGenerator;
@@ -60,6 +61,9 @@ public final class GenerateOptionsBuilder {
 	private ArbitraryContainerInfo defaultArbitraryContainerInfo;
 	private List<MatcherOperator<ArbitraryGenerator>> arbitraryGenerators = new ArrayList<>();
 	private ArbitraryGenerator defaultArbitraryGenerator;
+
+	@SuppressWarnings("rawtypes")
+	private List<MatcherOperator<FixtureCustomizer>> arbitraryCustomizers = new ArrayList<>();
 	private final JavaDefaultArbitraryGeneratorBuilder javaDefaultArbitraryGeneratorBuilder =
 		DefaultArbitraryGenerator.javaBuilder();
 
@@ -330,6 +334,41 @@ public final class GenerateOptionsBuilder {
 		return this;
 	}
 
+	@SuppressWarnings("rawtypes")
+	public GenerateOptionsBuilder arbitraryCustomizers(
+		List<MatcherOperator<FixtureCustomizer>> arbitraryCustomizers
+	) {
+		this.arbitraryCustomizers = arbitraryCustomizers;
+		return this;
+	}
+
+	@SuppressWarnings("rawtypes")
+	public GenerateOptionsBuilder insertFirstArbitraryCustomizer(
+		MatcherOperator<FixtureCustomizer> arbitraryCustomizer
+	) {
+		List<MatcherOperator<FixtureCustomizer>> result =
+			insertFirst(this.arbitraryCustomizers, arbitraryCustomizer);
+		return arbitraryCustomizers(result);
+	}
+
+	public GenerateOptionsBuilder insertFirstArbitraryCustomizer(
+		Matcher matcher,
+		FixtureCustomizer<?> fixtureCustomizer
+	) {
+		return this.insertFirstArbitraryCustomizer(
+			new MatcherOperator<>(matcher, fixtureCustomizer)
+		);
+	}
+
+	public <T> GenerateOptionsBuilder insertFirstArbitraryCustomizer(
+		Class<T> type,
+		FixtureCustomizer<? extends T> fixtureCustomizer
+	) {
+		return this.insertFirstArbitraryCustomizer(
+			MatcherOperator.assignableTypeMatchOperator(type, fixtureCustomizer)
+		);
+	}
+
 	public GenerateOptions build() {
 		ArbitraryPropertyGenerator defaultArbitraryPropertyGenerator = defaultIfNull(
 			this.defaultArbitraryPropertyGenerator,
@@ -364,7 +403,8 @@ public final class GenerateOptionsBuilder {
 			defaultArbitraryContainerMaxSize,
 			defaultArbitraryContainerInfo,
 			this.arbitraryGenerators,
-			defaultArbitraryGenerator
+			defaultArbitraryGenerator,
+			this.arbitraryCustomizers
 		);
 	}
 
