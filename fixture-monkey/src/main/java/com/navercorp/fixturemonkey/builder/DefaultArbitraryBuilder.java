@@ -399,7 +399,7 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 
 	@Override
 	public ArbitraryBuilder<T> copy() {
-		return new DefaultArbitraryBuilder<>(
+		DefaultArbitraryBuilder<T> copied = new DefaultArbitraryBuilder<>(
 			manipulateOptions,
 			rootProperty,
 			resolver,
@@ -408,6 +408,8 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 			new ArrayList<>(this.manipulators),
 			new HashSet<>(this.lazyArbitraries)
 		);
+		copied.validOnly(this.validOnly);
+		return copied;
 	}
 
 	private <R> DefaultArbitraryBuilder<R> generateArbitraryBuilderLazily(LazyArbitrary<R> lazyArbitrary) {

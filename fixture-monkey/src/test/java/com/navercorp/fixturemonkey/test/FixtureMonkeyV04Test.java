@@ -18,9 +18,6 @@
 
 package com.navercorp.fixturemonkey.test;
 
-import static org.assertj.core.api.BDDAssertions.then;
-import static org.assertj.core.api.BDDAssertions.thenThrownBy;
-
 import java.time.Instant;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
@@ -49,6 +46,9 @@ import com.navercorp.fixturemonkey.test.ComplexManipulatorTestSpecs.StringAndInt
 import com.navercorp.fixturemonkey.test.ComplexManipulatorTestSpecs.StringValue;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.ComplexObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.SimpleObject;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.ListWithAnnotation;
+
+import static org.assertj.core.api.BDDAssertions.*;
 
 class FixtureMonkeyV04Test {
 	private static final LabMonkey SUT = LabMonkey.labMonkey();
@@ -1043,5 +1043,15 @@ class FixtureMonkeyV04Test {
 			.getWrapperInteger();
 
 		then(integer).isEqualTo(1234);
+	}
+
+	@Property
+	void copyValidOnly() {
+		thenNoException()
+			.isThrownBy(() -> SUT.giveMeBuilder(ListWithAnnotation.class)
+				.size("values", 0)
+				.validOnly(false)
+				.copy()
+				.sample());
 	}
 }
