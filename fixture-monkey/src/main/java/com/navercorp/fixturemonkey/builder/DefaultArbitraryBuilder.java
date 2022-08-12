@@ -425,7 +425,7 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 			)
 		);
 
-		Set<LazyArbitrary<?>> lazyArbitraries = new HashSet<>();
+		Set<LazyArbitrary<?>> lazyArbitraries = new HashSet<>(this.lazyArbitraries);
 		lazyArbitraries.add(lazyArbitrary);
 
 		return new DefaultArbitraryBuilder<>(
