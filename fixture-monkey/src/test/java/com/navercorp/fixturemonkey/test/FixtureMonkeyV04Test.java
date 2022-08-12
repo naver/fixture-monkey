@@ -18,6 +18,10 @@
 
 package com.navercorp.fixturemonkey.test;
 
+import static org.assertj.core.api.BDDAssertions.then;
+import static org.assertj.core.api.BDDAssertions.thenNoException;
+import static org.assertj.core.api.BDDAssertions.thenThrownBy;
+
 import java.time.Instant;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
@@ -45,10 +49,8 @@ import com.navercorp.fixturemonkey.test.ComplexManipulatorTestSpecs.NestedString
 import com.navercorp.fixturemonkey.test.ComplexManipulatorTestSpecs.StringAndInt;
 import com.navercorp.fixturemonkey.test.ComplexManipulatorTestSpecs.StringValue;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.ComplexObject;
-import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.SimpleObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.ListWithAnnotation;
-
-import static org.assertj.core.api.BDDAssertions.*;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.SimpleObject;
 
 class FixtureMonkeyV04Test {
 	private static final LabMonkey SUT = LabMonkey.labMonkey();

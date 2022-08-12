@@ -29,12 +29,12 @@ import java.util.OptionalInt;
 import java.util.OptionalLong;
 import java.util.Set;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
 
 class FixtureMonkeyV04TestSpecs {
 	@Setter
