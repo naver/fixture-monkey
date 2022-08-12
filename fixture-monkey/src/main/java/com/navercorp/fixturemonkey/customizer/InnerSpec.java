@@ -32,6 +32,7 @@ import org.apiguardian.api.API.Status;
 
 import net.jqwik.api.Arbitrary;
 
+import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.resolver.AddMapEntryNodeManipulator;
 import com.navercorp.fixturemonkey.resolver.ArbitraryManipulator;
 import com.navercorp.fixturemonkey.resolver.ArbitraryTraverser;
@@ -42,8 +43,8 @@ import com.navercorp.fixturemonkey.resolver.NodeLastEntryResolver;
 import com.navercorp.fixturemonkey.resolver.NodeManipulator;
 import com.navercorp.fixturemonkey.resolver.NodeNullityManipulator;
 import com.navercorp.fixturemonkey.resolver.NodeResolver;
-import com.navercorp.fixturemonkey.resolver.NodeSetArbitraryManipulator;
 import com.navercorp.fixturemonkey.resolver.NodeSetDecomposedValueManipulator;
+import com.navercorp.fixturemonkey.resolver.NodeSetLazyManipulator;
 import com.navercorp.fixturemonkey.resolver.NodeSizeManipulator;
 import com.navercorp.fixturemonkey.resolver.PropertyNameNodeResolver;
 
@@ -249,7 +250,7 @@ public final class InnerSpec {
 
 	private NodeManipulator convertToNodeManipulator(@Nullable Object value) {
 		if (value instanceof Arbitrary) {
-			return new NodeSetArbitraryManipulator<>((Arbitrary<?>)value);
+			return new NodeSetLazyManipulator<>(traverser, LazyArbitrary.lazy(() -> ((Arbitrary<?>)value).sample()));
 		} else if (value == null) {
 			return new NodeNullityManipulator(true);
 		} else {
