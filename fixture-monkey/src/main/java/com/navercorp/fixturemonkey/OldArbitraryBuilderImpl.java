@@ -47,7 +47,9 @@ import net.jqwik.api.Arbitrary;
 import net.jqwik.api.Combinators.F3;
 import net.jqwik.api.Combinators.F4;
 
+import com.navercorp.fixturemonkey.api.customizer.FixtureCustomizer;
 import com.navercorp.fixturemonkey.api.expression.ExpressionGenerator;
+import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.property.FieldProperty;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.api.random.Randoms;
@@ -71,7 +73,6 @@ import com.navercorp.fixturemonkey.arbitrary.ContainerSizeConstraint;
 import com.navercorp.fixturemonkey.arbitrary.ContainerSizeManipulator;
 import com.navercorp.fixturemonkey.arbitrary.MetadataManipulator;
 import com.navercorp.fixturemonkey.arbitrary.PostArbitraryManipulator;
-import com.navercorp.fixturemonkey.customizer.ArbitraryCustomizer;
 import com.navercorp.fixturemonkey.customizer.ArbitraryCustomizers;
 import com.navercorp.fixturemonkey.customizer.ExpressionSpec;
 import com.navercorp.fixturemonkey.customizer.InnerSpec;
@@ -490,15 +491,8 @@ public class OldArbitraryBuilderImpl<T> implements ArbitraryBuilder<T> {
 	}
 
 	@Override
-	public ArbitraryBuilder<T> customize(Class<T> type, ArbitraryCustomizer<T> customizer) {
-		this.arbitraryCustomizers = this.arbitraryCustomizers.mergeWith(
-			Collections.singletonMap(type, customizer)
-		);
-
-		if (this.generator instanceof WithFixtureCustomizer) {
-			this.generator = ((WithFixtureCustomizer)this.generator).withFixtureCustomizers(arbitraryCustomizers);
-		}
-		return this;
+	public ArbitraryBuilder<T> customize(MatcherOperator<FixtureCustomizer<T>> customizer) {
+		throw new UnsupportedOperationException();
 	}
 
 	@Override

@@ -31,6 +31,7 @@ import org.apiguardian.api.API.Status;
 import net.jqwik.api.Arbitrary;
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
+import com.navercorp.fixturemonkey.api.customizer.FixtureCustomizer;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.option.GenerateOptions;
@@ -56,10 +57,16 @@ public final class ArbitraryResolver {
 		this.manipulateOptions = manipulateOptions;
 	}
 
-	public Arbitrary<?> resolve(RootProperty rootProperty, List<ArbitraryManipulator> manipulators) {
+	@SuppressWarnings("rawtypes")
+	public Arbitrary<?> resolve(
+		RootProperty rootProperty,
+		List<ArbitraryManipulator> manipulators,
+		List<MatcherOperator<? extends FixtureCustomizer>> customziers
+	) {
 		ArbitraryTree arbitraryTree = new ArbitraryTree(
 			this.traverser.traverse(rootProperty, null),
-			generateOptions
+			generateOptions,
+			customziers
 		);
 
 		List<ArbitraryManipulator> registeredManipulators = getRegisteredToManipulators(

@@ -52,7 +52,7 @@ public final class ArbitraryGeneratorContext {
 	private final BiFunction<ArbitraryGeneratorContext, ArbitraryProperty, Arbitrary<?>> resolveArbitrary;
 
 	@SuppressWarnings("rawtypes")
-	private final List<MatcherOperator<FixtureCustomizer>> arbitraryCustomizers;
+	private final List<MatcherOperator<? extends FixtureCustomizer>> arbitraryCustomizers;
 
 	@SuppressWarnings("rawtypes")
 	public ArbitraryGeneratorContext(
@@ -60,7 +60,7 @@ public final class ArbitraryGeneratorContext {
 		List<ArbitraryProperty> children,
 		@Nullable ArbitraryGeneratorContext ownerContext,
 		BiFunction<ArbitraryGeneratorContext, ArbitraryProperty, Arbitrary<?>> resolveArbitrary,
-		List<MatcherOperator<FixtureCustomizer>> arbitraryCustomizers
+		List<MatcherOperator<? extends FixtureCustomizer>> arbitraryCustomizers
 	) {
 		this.property = property;
 		this.children = new ArrayList<>(children);
@@ -120,7 +120,7 @@ public final class ArbitraryGeneratorContext {
 	}
 
 	@SuppressWarnings("rawtypes")
-	public List<MatcherOperator<FixtureCustomizer>> getArbitraryCustomizers() {
+	public List<MatcherOperator<? extends FixtureCustomizer>> getArbitraryCustomizers() {
 		return arbitraryCustomizers;
 	}
 }

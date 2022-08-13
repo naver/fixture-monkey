@@ -43,45 +43,45 @@ class ArbitraryCustomizerTest {
 		then(actual.getValue()).isEqualTo(1);
 	}
 
-	@Property
-	void giveMeCustomize() {
-		// when
-		IntValue actual = SUT.giveMeBuilder(IntValue.class)
-			.customize(IntValue.class, new ArbitraryCustomizer<IntValue>() {
-				@Override
-				public void customizeFields(Class<IntValue> type, FieldArbitraries fieldArbitraries) {
-					fieldArbitraries.replaceArbitrary("value", Arbitraries.just(1));
-				}
-
-				@Nullable
-				@Override
-				public IntValue customizeFixture(@Nullable IntValue object) {
-					return object;
-				}
-			}).sample();
-
-		then(actual.getValue()).isEqualTo(1);
-	}
-
-	@Property
-	void nestedCustomize() {
-		// given
-		FixtureMonkey sut = FixtureMonkey.builder()
-			.addCustomizer(StringValue.class, it -> new StringValue("test"))
-			.addCustomizer(IntValue.class, it -> {
-				IntValue integerWrapperClass = new IntValue();
-				integerWrapperClass.setValue(-1);
-				return integerWrapperClass;
-			})
-			.build();
-
-		// when
-		StringAndInt actual = sut.giveMeBuilder(StringAndInt.class)
-			.setNotNull("value1")
-			.setNotNull("value2")
-			.sample();
-
-		then(actual.getValue1().getValue()).isEqualTo("test");
-		then(actual.getValue2().getValue()).isEqualTo(-1);
-	}
+	// @Property
+	// void giveMeCustomize() {
+	// 	// when
+	// 	IntValue actual = SUT.giveMeBuilder(IntValue.class)
+	// 		.customize(IntValue.class, new ArbitraryCustomizer<IntValue>() {
+	// 			@Override
+	// 			public void customizeFields(Class<IntValue> type, FieldArbitraries fieldArbitraries) {
+	// 				fieldArbitraries.replaceArbitrary("value", Arbitraries.just(1));
+	// 			}
+	//
+	// 			@Nullable
+	// 			@Override
+	// 			public IntValue customizeFixture(@Nullable IntValue object) {
+	// 				return object;
+	// 			}
+	// 		}).sample();
+	//
+	// 	then(actual.getValue()).isEqualTo(1);
+	// }
+	//
+	// @Property
+	// void nestedCustomize() {
+	// 	// given
+	// 	FixtureMonkey sut = FixtureMonkey.builder()
+	// 		.addCustomizer(StringValue.class, it -> new StringValue("test"))
+	// 		.addCustomizer(IntValue.class, it -> {
+	// 			IntValue integerWrapperClass = new IntValue();
+	// 			integerWrapperClass.setValue(-1);
+	// 			return integerWrapperClass;
+	// 		})
+	// 		.build();
+	//
+	// 	// when
+	// 	StringAndInt actual = sut.giveMeBuilder(StringAndInt.class)
+	// 		.setNotNull("value1")
+	// 		.setNotNull("value2")
+	// 		.sample();
+	//
+	// 	then(actual.getValue1().getValue()).isEqualTo("test");
+	// 	then(actual.getValue2().getValue()).isEqualTo(-1);
+	// }
 }

@@ -32,6 +32,8 @@ import net.jqwik.api.Arbitrary;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
+import com.navercorp.fixturemonkey.api.customizer.FixtureCustomizer;
+import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.option.GenerateOptions;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
 import com.navercorp.fixturemonkey.api.type.LazyAnnotatedType;
@@ -105,7 +107,8 @@ public class LabMonkey extends FixtureMonkey {
 			traverser,
 			this.validator,
 			new ArrayList<>(),
-			new HashSet<>()
+			new HashSet<>(),
+			new ArrayList<>()
 		);
 	}
 
@@ -132,7 +135,8 @@ public class LabMonkey extends FixtureMonkey {
 			traverser,
 			this.validator,
 			manipulators,
-			new HashSet<>()
+			new HashSet<>(),
+			new ArrayList<>()
 		);
 	}
 
@@ -174,5 +178,19 @@ public class LabMonkey extends FixtureMonkey {
 	@Override
 	public <T> Arbitrary<T> giveMeArbitrary(TypeReference<T> typeReference) {
 		return this.giveMeBuilder(typeReference).build();
+	}
+
+	public <T> Stream<T> giveMe(Class<T> type, FixtureCustomizer<T> customizer) {
+		return this.giveMeBuilder(type)
+			.customize(MatcherOperator.exactTypeMatchOperator(type, customizer))
+			.sampleStream();
+	}
+
+	public <T> List<T> giveMe(Class<T> type, int size, FixtureCustomizer<T> customizer) {
+		return this.giveMe(type, customizer).limit(size).collect(toList());
+	}
+
+	public <T> T giveMeOne(Class<T> type, FixtureCustomizer<T> customizer) {
+		return this.giveMe(type, 1, customizer).get(0);
 	}
 }
