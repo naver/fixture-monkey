@@ -18,7 +18,6 @@
 
 package com.navercorp.fixturemonkey.test;
 
-import static com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.SUT;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.assertj.core.api.BDDAssertions.thenNoException;
 import static org.assertj.core.api.BDDAssertions.thenThrownBy;
@@ -39,9 +38,7 @@ import java.util.Set;
 
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
-import net.jqwik.api.ForAll;
 import net.jqwik.api.Property;
-import net.jqwik.api.domains.Domain;
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.ArbitraryBuilders;
@@ -51,7 +48,6 @@ import com.navercorp.fixturemonkey.test.ComplexManipulatorTestSpecs.IntValue;
 import com.navercorp.fixturemonkey.test.ComplexManipulatorTestSpecs.NestedStringList;
 import com.navercorp.fixturemonkey.test.ComplexManipulatorTestSpecs.StringAndInt;
 import com.navercorp.fixturemonkey.test.ComplexManipulatorTestSpecs.StringValue;
-import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.IntArray;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.ComplexObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.ListWithAnnotation;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.SimpleObject;
