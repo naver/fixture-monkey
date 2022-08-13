@@ -66,6 +66,7 @@ class JavaxValidationNullInjectGeneratorTest {
 				0.2d,
 				false,
 				false,
+				false,
 				Collections.emptySet(),
 				Collections.emptySet()
 			)
@@ -137,6 +138,7 @@ class JavaxValidationNullInjectGeneratorTest {
 				0.2d,
 				false,
 				false,
+				false,
 				Collections.emptySet(),
 				Collections.emptySet()
 			)
@@ -166,6 +168,7 @@ class JavaxValidationNullInjectGeneratorTest {
 				0.2d,
 				false,
 				true,
+				false,
 				Collections.emptySet(),
 				Collections.emptySet()
 			)
@@ -194,6 +197,7 @@ class JavaxValidationNullInjectGeneratorTest {
 			new DefaultNullInjectGenerator(
 				0.2d,
 				true,
+				false,
 				false,
 				Collections.emptySet(),
 				Collections.emptySet()
