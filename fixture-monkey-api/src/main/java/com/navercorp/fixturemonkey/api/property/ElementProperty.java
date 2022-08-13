@@ -20,6 +20,7 @@ package com.navercorp.fixturemonkey.api.property;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedType;
+import java.lang.reflect.Array;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -132,12 +133,11 @@ public final class ElementProperty implements Property {
 		}
 
 		if (actualType.isArray()) {
-			Object[] array = (Object[])obj;
-			if (array.length == 0) {
+			if (Array.getLength(obj) == 0) {
 				return null;
 			}
 
-			return array[sequence];
+			return Array.get(obj, sequence);
 		}
 
 		if (!Iterable.class.isAssignableFrom(actualType)) {
