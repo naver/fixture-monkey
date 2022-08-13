@@ -280,7 +280,7 @@ class JavaDefaultArbitraryGeneratorTest {
 		GenerateOptions generateOptions = GenerateOptions.builder()
 			.defaultNullInjectGenerator(
 				new DefaultNullInjectGenerator(
-					0.0d, false, false, Collections.emptySet(), Collections.emptySet()
+					0.0d, false, false, false, Collections.emptySet(), Collections.emptySet()
 				)
 			)
 			.build();

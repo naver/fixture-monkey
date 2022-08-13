@@ -82,6 +82,7 @@ class DefaultNullInjectGeneratorTest {
 			0.2,
 			false,
 			false,
+			false,
 			Collections.emptySet(),
 			Collections.emptySet()
 		);
@@ -109,6 +110,7 @@ class DefaultNullInjectGeneratorTest {
 			0.2,
 			false,
 			true,
+			false,
 			Collections.emptySet(),
 			Collections.emptySet()
 		);
@@ -157,6 +159,7 @@ class DefaultNullInjectGeneratorTest {
 			0.2,
 			false,
 			true,
+			false,
 			Collections.emptySet(),
 			Collections.emptySet()
 		);
@@ -185,6 +188,7 @@ class DefaultNullInjectGeneratorTest {
 			0.2,
 			true,
 			true,
+			false,
 			Collections.emptySet(),
 			Collections.emptySet()
 		);
