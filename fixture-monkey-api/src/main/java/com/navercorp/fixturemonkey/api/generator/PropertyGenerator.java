@@ -38,8 +38,7 @@ public interface PropertyGenerator {
 		Property containerProperty,
 		AnnotatedType elementType,
 		@Nullable Integer index,
-		int sequence,
-		@Nullable Double nullInject
+		int sequence
 	);
 
 	Property generateMapEntryElementProperty(

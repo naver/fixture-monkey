@@ -71,8 +71,7 @@ public final class ContainerArbitraryPropertyGenerator implements ArbitraryPrope
 					property,
 					elementType,
 					elementIndex,
-					sequence,
-					0.0d
+					sequence
 				)
 			);
 		}
