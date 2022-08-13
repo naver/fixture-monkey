@@ -1056,4 +1056,14 @@ class FixtureMonkeyV04Test {
 				.copy()
 				.sample());
 	}
+
+	@Property
+	void giveMePrimitiveArrayToBuilder() {
+		int[] actual = SUT.giveMeBuilder(ComplexObject.class)
+			.fixed()
+			.sample()
+			.getIntArray();
+
+		then(actual).isNotNull();
+	}
 }

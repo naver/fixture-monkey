@@ -43,6 +43,7 @@ class FixtureMonkeyV04TestSpecs {
 	public static class ComplexObject {
 		private String str;
 		private int integer;
+		private int[] intArray;
 		private Long wrapperLong;
 		private List<String> strList;
 		private String[] strArray;
