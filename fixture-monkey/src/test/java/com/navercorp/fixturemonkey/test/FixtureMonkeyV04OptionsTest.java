@@ -538,6 +538,7 @@ class FixtureMonkeyV04OptionsTest {
 					ALWAYS_NULL_INJECT,
 					false,
 					false,
+					false,
 					Collections.emptySet(),
 					Collections.emptySet()
 				)

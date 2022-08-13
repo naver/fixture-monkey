@@ -163,11 +163,6 @@ public final class ElementProperty implements Property {
 			|| OptionalDouble.class.isAssignableFrom(type);
 	}
 
-	@Override
-	public Boolean isNullable() {
-		return false;
-	}
-
 	@Nullable
 	private Object getOptionalValue(Object obj) {
 		Class<?> actualType = Types.getActualType(obj.getClass());
