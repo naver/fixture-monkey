@@ -57,6 +57,7 @@ public final class ContainerElementNodeResolver implements NodeResolver {
 
 			ElementProperty elementProperty = (ElementProperty)property;
 			if (sequence == NO_OR_ALL_INDEX_INTEGER_VALUE || sequence == elementProperty.getSequence()) {
+				node.setArbitrary(null);
 				node.setArbitraryProperty(node.getArbitraryProperty().withNullInject(NOT_NULL_INJECT));
 				result.add(node);
 			}

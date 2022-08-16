@@ -128,7 +128,7 @@ class FixtureMonkeyV04Test {
 		// then
 		then(actual.getInstant()).isEqualTo(expected.getInstant());
 		then(actual.getOptionalString()).isEqualTo(expected.getOptionalString());
-		then(actual.getStr()).isEqualTo(expected.getStr());
+		then(actual.getStr()).isEqualTo("str");
 	}
 
 	@Property
@@ -706,7 +706,7 @@ class FixtureMonkeyV04Test {
 		then(actual).allMatch(Objects::nonNull);
 	}
 
-	@Property
+	@Property(tries = 100)
 	void sampleAfterMapTwiceReturnsDiff() {
 		ArbitraryBuilder<String> arbitraryBuilder = SUT.giveMeBuilder(ComplexObject.class)
 			.set("str", Arbitraries.strings().ascii().filter(it -> !it.isEmpty()))
@@ -1065,5 +1065,32 @@ class FixtureMonkeyV04Test {
 			.getIntArray();
 
 		then(actual).isNotNull();
+	}
+
+	@Property
+	void setFieldWhichObjectIsFixedNull() {
+		String expected = "test";
+
+		String actual = SUT.giveMeBuilder(ComplexObject.class)
+			.set("object", Arbitraries.just(null))
+			.set("object.str", expected)
+			.sample()
+			.getObject()
+			.getStr();
+
+		then(actual).isEqualTo(expected);
+	}
+
+	@Property
+	void setFieldWhichRootIsFixedNull() {
+		String expected = "test";
+
+		String actual = SUT.giveMeBuilder(SimpleObject.class)
+			.set("$", Arbitraries.just(null))
+			.set("str", expected)
+			.sample()
+			.getStr();
+
+		then(actual).isEqualTo(expected);
 	}
 }

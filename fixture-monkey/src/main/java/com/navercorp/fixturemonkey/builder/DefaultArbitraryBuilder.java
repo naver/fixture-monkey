@@ -61,7 +61,6 @@ import com.navercorp.fixturemonkey.resolver.ManipulateOptions;
 import com.navercorp.fixturemonkey.resolver.NodeFilterManipulator;
 import com.navercorp.fixturemonkey.resolver.NodeNullityManipulator;
 import com.navercorp.fixturemonkey.resolver.NodeResolver;
-import com.navercorp.fixturemonkey.resolver.NodeSetArbitraryManipulator;
 import com.navercorp.fixturemonkey.resolver.NodeSetDecomposedValueManipulator;
 import com.navercorp.fixturemonkey.resolver.NodeSetLazyManipulator;
 import com.navercorp.fixturemonkey.resolver.NodeSizeManipulator;
@@ -117,11 +116,16 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 		NodeResolver nodeResolver = monkeyExpressionFactory.from(expression).toNodeResolver();
 
 		if (value instanceof Arbitrary) {
+			LazyArbitrary<?> lazyArbitrary = LazyArbitrary.lazy(() -> ((Arbitrary<?>)value).sample());
+			lazyArbitraries.add(lazyArbitrary);
 			manipulators.add(
 				new ArbitraryManipulator(
 					nodeResolver,
 					new ApplyNodeCountManipulator(
-						new NodeSetArbitraryManipulator<>((Arbitrary<?>)value),
+						new NodeSetLazyManipulator<>(
+							traverser,
+							lazyArbitrary
+						),
 						limit
 					)
 				)
@@ -421,7 +425,7 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 			)
 		);
 
-		Set<LazyArbitrary<?>> lazyArbitraries = new HashSet<>();
+		Set<LazyArbitrary<?>> lazyArbitraries = new HashSet<>(this.lazyArbitraries);
 		lazyArbitraries.add(lazyArbitrary);
 
 		return new DefaultArbitraryBuilder<>(
