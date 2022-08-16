@@ -18,6 +18,7 @@
 
 package com.navercorp.fixturemonkey.resolver;
 
+import static com.navercorp.fixturemonkey.Constants.ALL_INDEX_STRING;
 import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.NOT_NULL_INJECT;
 
 import java.util.ArrayList;
@@ -47,7 +48,7 @@ public final class PropertyNameNodeResolver implements NodeResolver {
 
 		for (ArbitraryNode node : previousNodes) {
 			String nodePropertyName = node.getArbitraryProperty().getResolvePropertyName();
-			if (propertyName.equals(nodePropertyName)) {
+			if (propertyName.equals(ALL_INDEX_STRING) || propertyName.equals(nodePropertyName)) {
 				node.setArbitrary(null);
 				node.setArbitraryProperty(node.getArbitraryProperty().withNullInject(NOT_NULL_INJECT));
 				result.add(node);

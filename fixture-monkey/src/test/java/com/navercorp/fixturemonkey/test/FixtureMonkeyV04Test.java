@@ -51,6 +51,7 @@ import com.navercorp.fixturemonkey.test.ComplexManipulatorTestSpecs.StringValue;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.ComplexObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.ListWithAnnotation;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.SimpleObject;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.StringPair;
 
 class FixtureMonkeyV04Test {
 	private static final LabMonkey SUT = LabMonkey.labMonkey();
@@ -285,6 +286,17 @@ class FixtureMonkeyV04Test {
 			.getOptionalDouble();
 
 		then(actual).isEqualTo(expected);
+	}
+
+	@Property
+	void setAllFields() {
+		// when
+		StringPair actual = SUT.giveMeBuilder(StringPair.class)
+			.set("*", "str")
+			.sample();
+
+		then(actual.getValue1()).isEqualTo("str");
+		then(actual.getValue2()).isEqualTo("str");
 	}
 
 	@Property
