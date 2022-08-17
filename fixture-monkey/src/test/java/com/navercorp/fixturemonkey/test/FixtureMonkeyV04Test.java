@@ -18,7 +18,6 @@
 
 package com.navercorp.fixturemonkey.test;
 
-import static com.navercorp.fixturemonkey.test.SimpleManipulatorTestSpecs.SUT;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.assertj.core.api.BDDAssertions.thenNoException;
 import static org.assertj.core.api.BDDAssertions.thenThrownBy;

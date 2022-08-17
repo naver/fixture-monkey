@@ -60,6 +60,7 @@ public interface ArbitraryBuilder<T> {
 	ArbitraryBuilder<T> setInner(String expression, Consumer<InnerSpec> specSupplier);
 
 	ArbitraryBuilder<T> setLazy(String expression, Supplier<?> supplier);
+
 	ArbitraryBuilder<T> setLazy(String expression, Supplier<?> supplier, int limit);
 
 	ArbitraryBuilder<T> setNull(String expression);
