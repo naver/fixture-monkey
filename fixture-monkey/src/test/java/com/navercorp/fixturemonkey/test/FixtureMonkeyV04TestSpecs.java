@@ -78,6 +78,14 @@ class FixtureMonkeyV04TestSpecs {
 	@Getter
 	@Setter
 	@EqualsAndHashCode
+	public static class StringPair {
+		private String value1;
+		private String value2;
+	}
+
+	@Getter
+	@Setter
+	@EqualsAndHashCode
 	public static class ListWithAnnotation {
 		@NotEmpty
 		private List<@NotBlank String> values;
