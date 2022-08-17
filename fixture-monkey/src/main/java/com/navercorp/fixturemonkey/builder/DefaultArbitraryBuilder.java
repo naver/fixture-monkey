@@ -116,7 +116,7 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 		NodeResolver nodeResolver = monkeyExpressionFactory.from(expression).toNodeResolver();
 
 		if (value instanceof Arbitrary) {
-			LazyArbitrary<?> lazyArbitrary = LazyArbitrary.lazy(() -> ((Arbitrary<?>) value).sample());
+			LazyArbitrary<?> lazyArbitrary = LazyArbitrary.lazy(() -> ((Arbitrary<?>)value).sample());
 			lazyArbitraries.add(lazyArbitrary);
 			manipulators.add(
 				new ArbitraryManipulator(
@@ -297,7 +297,7 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 	@SuppressWarnings("unchecked")
 	@Override
 	public ArbitraryBuilder<T> setPostCondition(Predicate<T> filter) {
-		return this.setPostCondition(HEAD_NAME, (Class<T>) Types.getActualType(rootProperty.getType()), filter);
+		return this.setPostCondition(HEAD_NAME, (Class<T>)Types.getActualType(rootProperty.getType()), filter);
 	}
 
 	@Override
@@ -393,7 +393,7 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 
 		return new ArbitraryValue<>(
 			() -> {
-				Arbitrary<T> arbitrary = (Arbitrary<T>) this.resolver.resolve(this.rootProperty, buildManipulators);
+				Arbitrary<T> arbitrary = (Arbitrary<T>)this.resolver.resolve(this.rootProperty, buildManipulators);
 				lazyArbitraries.forEach(LazyArbitrary::clear);
 				return arbitrary;
 			},
