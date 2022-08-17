@@ -29,7 +29,7 @@ import org.apiguardian.api.API.Status;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class StreamCache {
-	private final static Map<Stream<?>, List<?>> STREAM_TO_LIST = new HashMap<>();
+	private static final Map<Stream<?>, List<?>> STREAM_TO_LIST = new HashMap<>();
 
 	public static List<?> getList(Stream<?> stream) {
 		if (STREAM_TO_LIST.containsKey(stream)) {
