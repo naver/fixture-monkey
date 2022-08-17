@@ -1093,4 +1093,13 @@ class FixtureMonkeyV04Test {
 
 		then(actual).isEqualTo(expected);
 	}
+
+	@Property
+	void setArbitraryBuilder() {
+		SimpleObject actual = SUT.giveMeBuilder(SimpleObject.class)
+			.set("str", SUT.giveMeBuilder(String.class).set("$", "test"))
+			.sample();
+
+		then(actual.getStr()).isEqualTo("test");
+	}
 }
