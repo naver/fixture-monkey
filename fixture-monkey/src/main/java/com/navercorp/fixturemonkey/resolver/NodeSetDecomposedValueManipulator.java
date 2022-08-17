@@ -22,7 +22,6 @@ import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerat
 import static com.navercorp.fixturemonkey.api.type.Types.isAssignable;
 
 import java.lang.reflect.Array;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -111,10 +110,7 @@ public final class NodeSetDecomposedValueManipulator<T> implements NodeManipulat
 		private static DecomposedContainerValue<?> from(Object value) {
 			Class<?> actualType = value.getClass();
 
-			if (Collection.class.isAssignableFrom(actualType)) {
-				Collection<?> container = (Collection<?>)value;
-				return new DecomposedContainerValue<>(container, container.size());
-			} else if (Iterable.class.isAssignableFrom(actualType)) {
+			if (Iterable.class.isAssignableFrom(actualType)) {
 				Iterator<?> iterator = ((Iterable<?>)value).iterator();
 				List<?> list = IteratorCache.getList(iterator);
 				return new DecomposedContainerValue<>(list, list.size());
