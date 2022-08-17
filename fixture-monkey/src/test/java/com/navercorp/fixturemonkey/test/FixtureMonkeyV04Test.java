@@ -718,7 +718,7 @@ class FixtureMonkeyV04Test {
 		then(actual).allMatch(Objects::nonNull);
 	}
 
-	@Property(tries = 100)
+	@Property(tries = 50)
 	void sampleAfterMapTwiceReturnsDiff() {
 		ArbitraryBuilder<String> arbitraryBuilder = SUT.giveMeBuilder(ComplexObject.class)
 			.set("str", Arbitraries.strings().ascii().filter(it -> !it.isEmpty()))
@@ -1104,5 +1104,54 @@ class FixtureMonkeyV04Test {
 			.getStr();
 
 		then(actual).isEqualTo(expected);
+	}
+
+	@Property
+	void setLazyValue() {
+		ArbitraryBuilder<String> variable = SUT.giveMeBuilder(String.class);
+		ArbitraryBuilder<String> builder = SUT.giveMeBuilder(String.class)
+			.setLazy("$", () -> variable.sample());
+		variable.set("test");
+
+		String actual = builder.sample();
+
+		then(actual).isEqualTo("test");
+	}
+
+	@Property
+	void setLazyValueWithLimit() {
+		// when
+		ArbitraryBuilder<String> variable = SUT.giveMeBuilder(String.class);
+		ArbitraryBuilder<ComplexObject> builder = SUT.giveMeBuilder(ComplexObject.class)
+			.size("strList", 3)
+			.setLazy("strList[*]", () -> variable.sample(), 1);
+		variable.set("test");
+
+		List<String> actual = builder.sample().getStrList();
+
+		// then
+		then(actual).anyMatch("test"::equals);
+		then(actual).anyMatch(it -> !"test".equals(it));
+	}
+
+	@Property(tries = 1)
+	void setLazyValueSampleGivesDifferentValue() {
+		ArbitraryBuilder<String> variable = SUT.giveMeBuilder(String.class);
+		ArbitraryBuilder<String> builder = SUT.giveMeBuilder(String.class)
+			.setLazy("$", () -> variable.sample());
+		String expected = builder.sample();
+
+		String actual = builder.sample();
+
+		then(actual).isNotEqualTo(expected);
+	}
+
+	@Property
+	void setArbitraryBuilder() {
+		SimpleObject actual = SUT.giveMeBuilder(SimpleObject.class)
+			.set("str", SUT.giveMeBuilder(String.class).set("$", "test"))
+			.sample();
+
+		then(actual.getStr()).isEqualTo("test");
 	}
 }

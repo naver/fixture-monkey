@@ -61,6 +61,8 @@ public interface ArbitraryBuilder<T> {
 
 	ArbitraryBuilder<T> setLazy(String expression, Supplier<?> supplier);
 
+	ArbitraryBuilder<T> setLazy(String expression, Supplier<?> supplier, int limit);
+
 	ArbitraryBuilder<T> setNull(String expression);
 
 	ArbitraryBuilder<T> setNull(ExpressionGenerator expressionGenerator);
