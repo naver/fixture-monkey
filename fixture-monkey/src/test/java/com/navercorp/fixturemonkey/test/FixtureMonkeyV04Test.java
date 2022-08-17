@@ -706,7 +706,7 @@ class FixtureMonkeyV04Test {
 		then(actual).allMatch(Objects::nonNull);
 	}
 
-	@Property(tries = 100)
+	@Property(tries = 50)
 	void sampleAfterMapTwiceReturnsDiff() {
 		ArbitraryBuilder<String> arbitraryBuilder = SUT.giveMeBuilder(ComplexObject.class)
 			.set("str", Arbitraries.strings().ascii().filter(it -> !it.isEmpty()))
@@ -1132,5 +1132,14 @@ class FixtureMonkeyV04Test {
 		String actual = builder.sample();
 
 		then(actual).isNotEqualTo(expected);
+	}
+
+	@Property
+	void setArbitraryBuilder() {
+		SimpleObject actual = SUT.giveMeBuilder(SimpleObject.class)
+			.set("str", SUT.giveMeBuilder(String.class).set("$", "test"))
+			.sample();
+
+		then(actual.getStr()).isEqualTo("test");
 	}
 }

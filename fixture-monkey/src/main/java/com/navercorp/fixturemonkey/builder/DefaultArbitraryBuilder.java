@@ -117,20 +117,9 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 		NodeResolver nodeResolver = monkeyExpressionFactory.from(expression).toNodeResolver();
 
 		if (value instanceof Arbitrary) {
-			LazyArbitrary<?> lazyArbitrary = LazyArbitrary.lazy(() -> ((Arbitrary<?>)value).sample());
-			lazyArbitraries.add(lazyArbitrary);
-			manipulators.add(
-				new ArbitraryManipulator(
-					nodeResolver,
-					new ApplyNodeCountManipulator(
-						new NodeSetLazyManipulator<>(
-							traverser,
-							lazyArbitrary
-						),
-						limit
-					)
-				)
-			);
+			this.setLazy(expression, () -> ((Arbitrary<?>)value).sample(), limit);
+		} else if (value instanceof DefaultArbitraryBuilder) {
+			this.setLazy(expression, () -> ((DefaultArbitraryBuilder<?>) value).sample());
 		} else if (value == null) {
 			this.setNull(expression);
 		} else {
