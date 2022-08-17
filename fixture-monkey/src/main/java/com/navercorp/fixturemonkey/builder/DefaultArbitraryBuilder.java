@@ -27,15 +27,13 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
+import java.util.function.*;
 import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
 
+import com.navercorp.fixturemonkey.arbitrary.ArbitraryExpression;
+import com.navercorp.fixturemonkey.arbitrary.ArbitrarySetLazyValue;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
@@ -157,6 +155,31 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 	@Override
 	public ArbitraryBuilder<T> set(@Nullable Object value) {
 		return this.set(HEAD_NAME, value);
+	}
+
+	@Override
+	public ArbitraryBuilder<T> setLazy(String expression, Supplier<?> supplier, int limit) {
+		NodeResolver nodeResolver = monkeyExpressionFactory.from(expression).toNodeResolver();
+		LazyArbitrary<?> lazyArbitrary = LazyArbitrary.lazy(supplier);
+		lazyArbitraries.add(lazyArbitrary);
+		manipulators.add(
+			new ArbitraryManipulator(
+				nodeResolver,
+				new ApplyNodeCountManipulator(
+					new NodeSetLazyManipulator<>(
+						traverser,
+						lazyArbitrary
+					),
+					limit
+				)
+			)
+		);
+		return this;
+	}
+
+	@Override
+	public ArbitraryBuilder<T> setLazy(String expression, Supplier<?> supplier) {
+		return this.setLazy(expression, supplier, MAX_MANIPULATION_COUNT);
 	}
 
 	@Override

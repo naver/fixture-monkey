@@ -18,6 +18,7 @@
 
 package com.navercorp.fixturemonkey.test;
 
+import static com.navercorp.fixturemonkey.test.SimpleManipulatorTestSpecs.SUT;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.assertj.core.api.BDDAssertions.thenNoException;
 import static org.assertj.core.api.BDDAssertions.thenThrownBy;
@@ -1092,5 +1093,45 @@ class FixtureMonkeyV04Test {
 			.getStr();
 
 		then(actual).isEqualTo(expected);
+	}
+
+	@Property
+	void setLazyValue() {
+		ArbitraryBuilder<String> variable = SUT.giveMeBuilder(String.class);
+		ArbitraryBuilder<String> builder = SUT.giveMeBuilder(String.class)
+			.setLazy("$", () -> variable.sample());
+		variable.set("test");
+
+		String actual = builder.sample();
+
+		then(actual).isEqualTo("test");
+	}
+
+	@Property
+	void setLazyValueWithLimit() {
+		// when
+		ArbitraryBuilder<String> variable = SUT.giveMeBuilder(String.class);
+		ArbitraryBuilder<ComplexObject> builder = SUT.giveMeBuilder(ComplexObject.class)
+			.size("strList", 3)
+			.setLazy("strList[*]", () -> variable.sample(), 1);
+		variable.set("test");
+
+		List<String> actual = builder.sample().getStrList();
+
+		// then
+		then(actual).anyMatch("test"::equals);
+		then(actual).anyMatch(it -> !"test".equals(it));
+	}
+
+	@Property(tries = 1)
+	void setLazyValueSampleGivesDifferentValue() {
+		ArbitraryBuilder<String> variable = SUT.giveMeBuilder(String.class);
+		ArbitraryBuilder<String> builder = SUT.giveMeBuilder(String.class)
+			.setLazy("$", () -> variable.sample());
+		String expected = builder.sample();
+
+		String actual = builder.sample();
+
+		then(actual).isNotEqualTo(expected);
 	}
 }

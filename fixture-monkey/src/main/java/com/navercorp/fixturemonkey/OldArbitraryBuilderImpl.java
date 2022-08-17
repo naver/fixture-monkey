@@ -344,6 +344,11 @@ public class OldArbitraryBuilderImpl<T> implements ArbitraryBuilder<T> {
 		return this;
 	}
 
+	@Override
+	public ArbitraryBuilder<T> setLazy(String expression, Supplier<?> supplier, int limit) {
+		throw new UnsupportedOperationException();
+	}
+
 	private ArbitraryBuilder<T> setBuilder(String expression, OldArbitraryBuilderImpl<?> builder) {
 		ArbitraryExpression arbitraryExpression = ArbitraryExpression.from(expression);
 		this.builderManipulators.add(new ArbitrarySetArbitrary<>(arbitraryExpression, builder.build()));
