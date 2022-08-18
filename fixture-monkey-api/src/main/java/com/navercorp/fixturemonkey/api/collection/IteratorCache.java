@@ -19,17 +19,15 @@
 package com.navercorp.fixturemonkey.api.collection;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class IteratorCache {
-	private static final Map<Iterator<?>, List<?>> ITERATOR_TO_LIST = new HashMap<>();
+	private static final LruCache<Iterator<?>, List<?>> ITERATOR_TO_LIST = new LruCache<>(1000);
 
 	public static List<?> getList(Iterator<?> iterator) {
 		if (ITERATOR_TO_LIST.containsKey(iterator)) {

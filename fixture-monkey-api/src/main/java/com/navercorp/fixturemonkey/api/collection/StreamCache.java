@@ -18,9 +18,7 @@
 
 package com.navercorp.fixturemonkey.api.collection;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -29,7 +27,7 @@ import org.apiguardian.api.API.Status;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class StreamCache {
-	private static final Map<Stream<?>, List<?>> STREAM_TO_LIST = new HashMap<>();
+	private static final LruCache<Stream<?>, List<?>> STREAM_TO_LIST = new LruCache<>(1000);
 
 	public static List<?> getList(Stream<?> stream) {
 		if (STREAM_TO_LIST.containsKey(stream)) {
