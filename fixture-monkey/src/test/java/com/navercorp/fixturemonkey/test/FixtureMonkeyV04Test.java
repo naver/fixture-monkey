@@ -1154,4 +1154,16 @@ class FixtureMonkeyV04Test {
 
 		then(actual.getStr()).isEqualTo("test");
 	}
+
+	@Property
+	void giveMeListTypeApply() {
+		SimpleObject actual = SUT.giveMeBuilder(new TypeReference<List<SimpleObject>>() {
+			})
+			.size("$", 1)
+			.apply((it, builder) -> builder.set("$[0].str", it.get(0).getInteger() + ""))
+			.sample()
+			.get(0);
+
+		then(actual.getStr()).isEqualTo(actual.getInteger() + "");
+	}
 }

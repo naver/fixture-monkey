@@ -29,6 +29,7 @@ import java.time.temporal.Temporal;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
@@ -56,6 +57,7 @@ import com.navercorp.fixturemonkey.api.introspector.JavaTimeTypeArbitraryGenerat
 import com.navercorp.fixturemonkey.api.introspector.JavaTypeArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.matcher.ExactTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
+import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.resolver.RootNodeResolver;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.RegisterGroup;
@@ -538,6 +540,7 @@ class FixtureMonkeyV04OptionsTest {
 					ALWAYS_NULL_INJECT,
 					false,
 					false,
+					false,
 					Collections.emptySet(),
 					Collections.emptySet()
 				)
@@ -718,5 +721,26 @@ class FixtureMonkeyV04OptionsTest {
 			.getStr();
 
 		then(actual).isEqualTo(expected);
+	}
+
+	@Property
+	void nullableElement() {
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.defaultNullInjectGenerator(
+				new DefaultNullInjectGenerator(
+					1.0d,
+					false,
+					false,
+					true,
+					new HashSet<>(),
+					new HashSet<>()
+				)
+			)
+			.build();
+
+		List<String> actual = sut.giveMeOne(new TypeReference<List<String>>() {
+		});
+
+		then(actual).allMatch(Objects::isNull);
 	}
 }

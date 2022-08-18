@@ -75,12 +75,15 @@ public final class DefaultNullInjectGenerator implements NullInjectGenerator {
 	private final double defaultNullInject;
 	private final boolean nullableContainer;
 	private final boolean defaultNotNull;
+
+	private final boolean nullableElement;
 	private final Set<String> nullableAnnotationTypes;
 	private final Set<String> notNullAnnotationTypes;
 
 	public DefaultNullInjectGenerator() {
 		this(
 			DEFAULT_NULL_INJECT,
+			false,
 			false,
 			false,
 			new HashSet<>(DEFAULT_NULLABLE_ANNOTATION_TYPES),
@@ -92,12 +95,14 @@ public final class DefaultNullInjectGenerator implements NullInjectGenerator {
 		double defaultNullInject,
 		boolean nullableContainer,
 		boolean defaultNotNull,
+		boolean nullableElement,
 		Set<String> nullableAnnotationTypes,
 		Set<String> notNullAnnotationTypes
 	) {
 		this.defaultNullInject = defaultNullInject;
 		this.nullableContainer = nullableContainer;
 		this.defaultNotNull = defaultNotNull;
+		this.nullableElement = nullableElement;
 		this.nullableAnnotationTypes = nullableAnnotationTypes;
 		this.notNullAnnotationTypes = notNullAnnotationTypes;
 	}
@@ -106,6 +111,7 @@ public final class DefaultNullInjectGenerator implements NullInjectGenerator {
 		double defaultNullInject,
 		boolean nullableContainer,
 		boolean defaultNotNull,
+		boolean nullableElement,
 		Set<Class<? extends Annotation>> nullableAnnotationTypes,
 		Set<Class<? extends Annotation>> notNullAnnotationTypes
 	) {
@@ -113,6 +119,7 @@ public final class DefaultNullInjectGenerator implements NullInjectGenerator {
 			defaultNullInject,
 			nullableContainer,
 			defaultNotNull,
+			nullableElement,
 			nullableAnnotationTypes.stream().map(Class::getName).collect(toSet()),
 			notNullAnnotationTypes.stream().map(Class::getName).collect(toSet())
 		);
@@ -138,6 +145,10 @@ public final class DefaultNullInjectGenerator implements NullInjectGenerator {
 
 		if (containerInfo != null && context.getProperty().isNullable() == null) {
 			nullable = this.nullableContainer;
+		}
+
+		if (context.getOwnerProperty() != null && context.getOwnerProperty().getContainerInfo() != null) {
+			nullable = this.nullableElement;
 		}
 
 		Set<String> annotations = context.getProperty().getAnnotations().stream()

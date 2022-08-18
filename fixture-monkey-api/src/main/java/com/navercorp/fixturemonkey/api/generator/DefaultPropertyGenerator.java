@@ -50,10 +50,9 @@ public final class DefaultPropertyGenerator implements PropertyGenerator {
 		Property containerProperty,
 		AnnotatedType elementType,
 		@Nullable Integer index,
-		int sequence,
-		@Nullable Double nullInject
+		int sequence
 	) {
-		return new ElementProperty(containerProperty, elementType, index, sequence, nullInject);
+		return new ElementProperty(containerProperty, elementType, index, sequence);
 	}
 
 	@Override

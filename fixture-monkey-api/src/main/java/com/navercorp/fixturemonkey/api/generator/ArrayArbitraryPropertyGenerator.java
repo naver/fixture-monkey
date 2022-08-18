@@ -53,8 +53,7 @@ public final class ArrayArbitraryPropertyGenerator implements ArbitraryPropertyG
 					property,
 					elementType,
 					sequence,
-					sequence,
-					0.0d
+					sequence
 				)
 			);
 		}

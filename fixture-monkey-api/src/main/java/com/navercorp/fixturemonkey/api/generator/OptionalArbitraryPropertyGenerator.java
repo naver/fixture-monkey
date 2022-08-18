@@ -53,8 +53,7 @@ public final class OptionalArbitraryPropertyGenerator implements ArbitraryProper
 			property,
 			valueAnnotatedType,
 			0,
-			0,
-			null
+			0
 		);
 
 		double nullInject = context.getGenerateOptions().getNullInjectGenerator(property)

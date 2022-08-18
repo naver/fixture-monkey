@@ -66,6 +66,7 @@ public class LabMonkeyBuilder {
 	private NullInjectGenerator defaultNullInjectGenerator = null;
 	private boolean defaultNotNull = false;
 	private boolean nullableContainer = false;
+	private boolean nullableElement = false;
 
 	public LabMonkeyBuilder manipulatorOptimizer(ManipulatorOptimizer manipulatorOptimizer) {
 		this.manipulatorOptimizer = manipulatorOptimizer;
@@ -251,6 +252,11 @@ public class LabMonkeyBuilder {
 		return this;
 	}
 
+	public LabMonkeyBuilder nullableElement(boolean nullableElement) {
+		this.nullableElement = nullableElement;
+		return this;
+	}
+
 	public LabMonkeyBuilder addExceptGeneratePackages(String... exceptGeneratePackages) {
 		for (String exceptGeneratePackage : exceptGeneratePackages) {
 			addExceptGeneratePackage(exceptGeneratePackage);
@@ -360,6 +366,7 @@ public class LabMonkeyBuilder {
 					DEFAULT_NULL_INJECT,
 					nullableContainer,
 					defaultNotNull,
+					nullableElement,
 					new HashSet<>(DEFAULT_NULLABLE_ANNOTATION_TYPES),
 					new HashSet<>(DEFAULT_NOTNULL_ANNOTATION_TYPES)
 				)

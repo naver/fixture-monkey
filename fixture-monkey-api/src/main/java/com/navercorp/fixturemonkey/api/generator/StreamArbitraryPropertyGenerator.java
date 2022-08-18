@@ -64,8 +64,7 @@ public final class StreamArbitraryPropertyGenerator implements ArbitraryProperty
 					property,
 					elementAnnotatedType,
 					sequence,
-					sequence,
-					0.0d
+					sequence
 				)
 			);
 		}
