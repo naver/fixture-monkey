@@ -73,6 +73,7 @@ import com.navercorp.fixturemonkey.arbitrary.ContainerSizeConstraint;
 import com.navercorp.fixturemonkey.arbitrary.ContainerSizeManipulator;
 import com.navercorp.fixturemonkey.arbitrary.MetadataManipulator;
 import com.navercorp.fixturemonkey.arbitrary.PostArbitraryManipulator;
+import com.navercorp.fixturemonkey.customizer.ArbitraryCustomizer;
 import com.navercorp.fixturemonkey.customizer.ArbitraryCustomizers;
 import com.navercorp.fixturemonkey.customizer.ExpressionSpec;
 import com.navercorp.fixturemonkey.customizer.InnerSpec;
@@ -488,6 +489,18 @@ public class OldArbitraryBuilderImpl<T> implements ArbitraryBuilder<T> {
 	@Override
 	public ArbitraryBuilder<T> maxSize(ExpressionGenerator expressionGenerator, int max) {
 		return this.maxSize(resolveExpression(expressionGenerator), max);
+	}
+
+	@Override
+	public ArbitraryBuilder<T> customize(Class<T> type, ArbitraryCustomizer<T> customizer) {
+		this.arbitraryCustomizers = this.arbitraryCustomizers.mergeWith(
+			Collections.singletonMap(type, customizer)
+		);
+
+		if (this.generator instanceof WithFixtureCustomizer) {
+			this.generator = ((WithFixtureCustomizer)this.generator).withFixtureCustomizers(arbitraryCustomizers);
+		}
+		return this;
 	}
 
 	@Override
