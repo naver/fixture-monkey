@@ -24,8 +24,6 @@ import static org.assertj.core.api.BDDAssertions.thenThrownBy;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.Nullable;
-
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.ForAll;
 import net.jqwik.api.Property;
