@@ -21,15 +21,7 @@ package com.navercorp.fixturemonkey.resolver;
 import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.NOT_NULL_INJECT;
 import static com.navercorp.fixturemonkey.api.type.Types.isAssignable;
 
-import java.lang.reflect.Array;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.OptionalDouble;
-import java.util.OptionalInt;
-import java.util.OptionalLong;
-import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
 
@@ -38,19 +30,24 @@ import org.apiguardian.api.API.Status;
 
 import net.jqwik.api.Arbitraries;
 
-import com.navercorp.fixturemonkey.api.collection.IteratorCache;
-import com.navercorp.fixturemonkey.api.collection.StreamCache;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class NodeSetDecomposedValueManipulator<T> implements NodeManipulator {
 	private final ArbitraryTraverser traverser;
+
+	private final ManipulateOptions manipulateOptions;
 	@Nullable
 	private final T value;
 
-	public NodeSetDecomposedValueManipulator(ArbitraryTraverser traverser, @Nullable T value) {
+	public NodeSetDecomposedValueManipulator(
+		ArbitraryTraverser traverser,
+		ManipulateOptions manipulateOptions,
+		@Nullable T value
+	) {
 		this.traverser = traverser;
+		this.manipulateOptions = manipulateOptions;
 		this.value = value;
 	}
 
@@ -74,9 +71,10 @@ public final class NodeSetDecomposedValueManipulator<T> implements NodeManipulat
 		}
 
 		if (arbitraryNode.getArbitraryProperty().isContainer()) {
-			DecomposedContainerValue<?> decomposedContainerValue = DecomposedContainerValue.from(value);
-			value = decomposedContainerValue.container;
-			int decomposedContainerSize = decomposedContainerValue.size;
+			DecomposableContainerValue decomposableContainerValue =
+				manipulateOptions.getDecomposedContainerValueFactory().from(value);
+			value = decomposableContainerValue.getContainer();
+			int decomposedContainerSize = decomposableContainerValue.getSize();
 
 			if (decomposedContainerSize != arbitraryNode.getChildren().size()) {
 				NodeSizeManipulator nodeSizeManipulator =
@@ -98,48 +96,4 @@ public final class NodeSetDecomposedValueManipulator<T> implements NodeManipulat
 		}
 	}
 
-	private static final class DecomposedContainerValue<T> {
-		private final T container;
-		private final int size;
-
-		DecomposedContainerValue(T container, int size) {
-			this.container = container;
-			this.size = size;
-		}
-
-		private static DecomposedContainerValue<?> from(Object value) {
-			Class<?> actualType = value.getClass();
-
-			if (Iterable.class.isAssignableFrom(actualType)) {
-				Iterator<?> iterator = ((Iterable<?>)value).iterator();
-				List<?> list = IteratorCache.getList(iterator);
-				return new DecomposedContainerValue<>(list, list.size());
-			} else if (Iterator.class.isAssignableFrom(actualType)) {
-				Iterator<?> iterator = ((Iterator<?>)value);
-				List<?> list = IteratorCache.getList(iterator);
-				return new DecomposedContainerValue<>(list, list.size());
-			} else if (Stream.class.isAssignableFrom(actualType)) {
-				List<?> container = StreamCache.getList((Stream<?>)value);
-				return new DecomposedContainerValue<>(container, container.size());
-			} else if (actualType.isArray()) {
-				return new DecomposedContainerValue<>(value, Array.getLength(value));
-			} else if (Map.class.isAssignableFrom(actualType)) {
-				Map<?, ?> map = (Map<?, ?>)value;
-				return new DecomposedContainerValue<>(value, map.size());
-			} else if (Map.Entry.class.isAssignableFrom(actualType)) {
-				return new DecomposedContainerValue<>(value, 1);
-			} else if (isOptional(actualType)) {
-				return new DecomposedContainerValue<>(value, 1);
-			}
-
-			throw new IllegalArgumentException("given type is not supported container : " + actualType.getTypeName());
-		}
-
-		private static boolean isOptional(Class<?> type) {
-			return Optional.class.isAssignableFrom(type)
-				|| OptionalInt.class.isAssignableFrom(type)
-				|| OptionalLong.class.isAssignableFrom(type)
-				|| OptionalDouble.class.isAssignableFrom(type);
-		}
-	}
 }

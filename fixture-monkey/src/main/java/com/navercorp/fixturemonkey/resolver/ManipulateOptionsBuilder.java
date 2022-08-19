@@ -47,6 +47,8 @@ public final class ManipulateOptionsBuilder {
 
 	private List<MatcherOperator<? extends ArbitraryBuilder<?>>> registeredSampledArbitraryBuilders = new ArrayList<>();
 
+	private DecomposedContainerValueFactory additionalDecomposedContainerValueFactory = null;
+
 	ManipulateOptionsBuilder() {
 	}
 
@@ -67,6 +69,13 @@ public final class ManipulateOptionsBuilder {
 		return this;
 	}
 
+	public ManipulateOptionsBuilder additionalDecomposedContainerValueFactory(
+		DecomposedContainerValueFactory additionalDecomposedContainerValueFactory
+	) {
+		this.additionalDecomposedContainerValueFactory = additionalDecomposedContainerValueFactory;
+		return this;
+	}
+
 	public ManipulateOptions build() {
 		defaultMonkeyExpressionFactory = defaultIfNull(
 			this.defaultMonkeyExpressionFactory,
@@ -79,7 +88,15 @@ public final class ManipulateOptionsBuilder {
 				() -> new ApplyStrictModeResolver(currentMonkeyExpressionFactory.from(expression).toNodeResolver());
 		}
 
-		return new ManipulateOptions(defaultMonkeyExpressionFactory, registeredSampledArbitraryBuilders);
+		DecomposedContainerValueFactory decomposedContainerValueFactory = new DefaultDecomposedContainerValueFactory(
+			additionalDecomposedContainerValueFactory
+		);
+
+		return new ManipulateOptions(
+			defaultMonkeyExpressionFactory,
+			registeredSampledArbitraryBuilders,
+			decomposedContainerValueFactory
+		);
 	}
 
 	public void sampleRegisteredArbitraryBuilder(LabMonkey labMonkey) {

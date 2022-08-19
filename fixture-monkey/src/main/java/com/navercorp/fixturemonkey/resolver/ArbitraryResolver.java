@@ -107,6 +107,7 @@ public final class ArbitraryResolver {
 
 			NodeManipulator nodeManipulator = new NodeSetLazyManipulator<>(
 				traverser,
+				manipulateOptions,
 				LazyArbitrary.lazy(registeredArbitraryBuilder::sample)
 			);
 			manipulators.add(

@@ -26,6 +26,7 @@ import static org.assertj.core.api.BDDAssertions.thenThrownBy;
 import java.lang.reflect.AnnotatedType;
 import java.time.Instant;
 import java.time.temporal.Temporal;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -59,7 +60,11 @@ import com.navercorp.fixturemonkey.api.matcher.ExactTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.api.type.Types;
+import com.navercorp.fixturemonkey.resolver.DecomposableContainerValue;
 import com.navercorp.fixturemonkey.resolver.RootNodeResolver;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.Pair;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.PairArbitraryPropertyGenerator;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.PairIntrospector;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.RegisterGroup;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.SimpleObjectChild;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.ComplexObject;
@@ -742,5 +747,72 @@ class FixtureMonkeyV04OptionsTest {
 		});
 
 		then(actual).allMatch(Objects::isNull);
+	}
+
+	@Property
+	void generateNewContainer() {
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.pushAssignableTypeArbitraryPropertyGenerator(Pair.class, new PairArbitraryPropertyGenerator())
+			.pushContainerIntrospector(new PairIntrospector())
+			.build();
+
+		Pair<String, String> pair = sut.giveMeBuilder(new TypeReference<Pair<String, String>>() {
+			})
+			.sample();
+
+		then(pair).isNotNull();
+	}
+
+	@Property
+	void decomposeNewContainer() {
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.pushAssignableTypeArbitraryPropertyGenerator(Pair.class, new PairArbitraryPropertyGenerator())
+			.pushContainerIntrospector(new PairIntrospector())
+			.defaultDecomposedContainerValueFactory((obj) -> {
+					if (obj instanceof Pair) {
+						Pair<?, ?> pair = (Pair<?, ?>)obj;
+						List<Object> list = new ArrayList<>();
+						list.add(pair.getFirst());
+						list.add(pair.getSecond());
+						return new DecomposableContainerValue(list, 1);
+					}
+					throw new IllegalArgumentException(
+						"given type is not supported container : " + obj.getClass().getTypeName()
+					);
+				}
+			)
+			.build();
+
+		Pair<String, String> pair = sut.giveMeBuilder(new TypeReference<Pair<String, String>>() {
+			})
+			.fixed()
+			.sample();
+
+		then(pair).isNotNull();
+	}
+
+	@Property
+	void decomposeNewContainerByAddContainerType() {
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.addContainerType(
+				Pair.class,
+				new PairArbitraryPropertyGenerator(),
+				new PairIntrospector(),
+				(obj) -> {
+					Pair<?, ?> pair = (Pair<?, ?>)obj;
+					List<Object> list = new ArrayList<>();
+					list.add(pair.getFirst());
+					list.add(pair.getSecond());
+					return new DecomposableContainerValue(list, 1);
+				}
+			)
+			.build();
+
+		Pair<String, String> pair = sut.giveMeBuilder(new TypeReference<Pair<String, String>>() {
+			})
+			.fixed()
+			.sample();
+
+		then(pair).isNotNull();
 	}
 }

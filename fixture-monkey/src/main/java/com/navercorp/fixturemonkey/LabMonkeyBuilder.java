@@ -24,7 +24,11 @@ import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerat
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.function.Function;
 
 import org.apiguardian.api.API;
@@ -37,6 +41,8 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator;
 import com.navercorp.fixturemonkey.api.generator.NullArbitraryPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.NullInjectGenerator;
+import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
+import com.navercorp.fixturemonkey.api.introspector.CompositeArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.JavaArbitraryResolver;
 import com.navercorp.fixturemonkey.api.introspector.JavaTimeArbitraryResolver;
 import com.navercorp.fixturemonkey.api.introspector.JavaTimeTypeArbitraryGenerator;
@@ -50,6 +56,8 @@ import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.expression.MonkeyExpressionFactory;
 import com.navercorp.fixturemonkey.resolver.ArbitraryTraverser;
+import com.navercorp.fixturemonkey.resolver.DecomposableContainerValue;
+import com.navercorp.fixturemonkey.resolver.DecomposedContainerValueFactory;
 import com.navercorp.fixturemonkey.resolver.ManipulateOptions;
 import com.navercorp.fixturemonkey.resolver.ManipulateOptionsBuilder;
 import com.navercorp.fixturemonkey.resolver.ManipulatorOptimizer;
@@ -67,6 +75,12 @@ public class LabMonkeyBuilder {
 	private boolean defaultNotNull = false;
 	private boolean nullableContainer = false;
 	private boolean nullableElement = false;
+	private DecomposedContainerValueFactory defaultDecomposedContainerValueFactory = (obj) -> {
+		throw new IllegalArgumentException(
+			"given type is not supported container : " + obj.getClass().getTypeName()
+		);
+	};
+	private final Map<Class<?>, DecomposedContainerValueFactory> decomposableContainerFactoryMap = new HashMap<>();
 
 	public LabMonkeyBuilder manipulatorOptimizer(ManipulatorOptimizer manipulatorOptimizer) {
 		this.manipulatorOptimizer = manipulatorOptimizer;
@@ -357,6 +371,37 @@ public class LabMonkeyBuilder {
 		return this;
 	}
 
+	public LabMonkeyBuilder defaultDecomposedContainerValueFactory(
+		DecomposedContainerValueFactory defaultDecomposedContainerValueFactory
+	) {
+		this.defaultDecomposedContainerValueFactory = defaultDecomposedContainerValueFactory;
+		return this;
+	}
+
+	public LabMonkeyBuilder pushContainerIntrospector(ArbitraryIntrospector containerIntrospector) {
+		this.generateOptionsBuilder.containerIntrospector(it ->
+			new CompositeArbitraryIntrospector(
+				Arrays.asList(
+					containerIntrospector,
+					it
+				)
+			)
+		);
+		return this;
+	}
+
+	public LabMonkeyBuilder addContainerType(
+		Class<?> type,
+		ArbitraryPropertyGenerator containerArbitraryPropertyGenerator,
+		ArbitraryIntrospector containerArbitraryIntrospector,
+		DecomposedContainerValueFactory decomposedContainerValueFactory
+	) {
+		this.pushAssignableTypeArbitraryPropertyGenerator(type, containerArbitraryPropertyGenerator);
+		this.pushContainerIntrospector(containerArbitraryIntrospector);
+		decomposableContainerFactoryMap.put(type, decomposedContainerValueFactory);
+		return this;
+	}
+
 	public LabMonkey build() {
 		if (defaultNullInjectGenerator != null) {
 			generateOptionsBuilder.defaultNullInjectGenerator(defaultNullInjectGenerator);
@@ -372,6 +417,24 @@ public class LabMonkeyBuilder {
 				)
 			);
 		}
+
+		manipulateOptionsBuilder.additionalDecomposedContainerValueFactory(
+			obj -> {
+				Class<?> actualType = obj.getClass();
+				for (
+					Entry<Class<?>, DecomposedContainerValueFactory> entry :
+					this.decomposableContainerFactoryMap.entrySet()
+				) {
+					Class<?> type = entry.getKey();
+					DecomposableContainerValue decomposedValue = entry.getValue().from(obj);
+
+					if (actualType.isAssignableFrom(type)) {
+						return decomposedValue;
+					}
+				}
+				return this.defaultDecomposedContainerValueFactory.from(obj);
+			}
+		);
 
 		GenerateOptions generateOptions = generateOptionsBuilder.build();
 		ArbitraryTraverser traverser = new ArbitraryTraverser(generateOptions);
