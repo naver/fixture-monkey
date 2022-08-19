@@ -768,7 +768,8 @@ class FixtureMonkeyV04OptionsTest {
 		LabMonkey sut = LabMonkey.labMonkeyBuilder()
 			.pushAssignableTypeArbitraryPropertyGenerator(Pair.class, new PairArbitraryPropertyGenerator())
 			.pushContainerIntrospector(new PairIntrospector())
-			.defaultDecomposedContainerValueFactory((obj) -> {
+			.defaultDecomposedContainerValueFactory(
+				(obj) -> {
 					if (obj instanceof Pair) {
 						Pair<?, ?> pair = (Pair<?, ?>)obj;
 						List<Object> list = new ArrayList<>();

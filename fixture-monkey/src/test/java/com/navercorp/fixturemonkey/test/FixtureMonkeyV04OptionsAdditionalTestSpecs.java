@@ -23,8 +23,6 @@ import java.lang.reflect.AnnotatedType;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.jupiter.api.Test;
-
 import net.jqwik.api.Arbitrary;
 import net.jqwik.api.Builders;
 import net.jqwik.api.Builders.BuilderCombinator;
