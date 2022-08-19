@@ -89,6 +89,8 @@ public class LabMonkey extends FixtureMonkey {
 
 	@Override
 	public <T> DefaultArbitraryBuilder<T> giveMeBuilder(TypeReference<T> type) {
+		manipulateOptionsBuilder.propertyNameResolvers(generateOptions.getPropertyNameResolvers());
+		manipulateOptionsBuilder.defaultPropertyNameResolver(generateOptions.getDefaultPropertyNameResolver());
 		ManipulateOptions manipulateOptions = manipulateOptionsBuilder.build();
 
 		return new DefaultArbitraryBuilder<>(
@@ -109,6 +111,8 @@ public class LabMonkey extends FixtureMonkey {
 
 	@Override
 	public <T> DefaultArbitraryBuilder<T> giveMeBuilder(T value) {
+		manipulateOptionsBuilder.propertyNameResolvers(generateOptions.getPropertyNameResolvers());
+		manipulateOptionsBuilder.defaultPropertyNameResolver(generateOptions.getDefaultPropertyNameResolver());
 		ManipulateOptions manipulateOptions = manipulateOptionsBuilder.build();
 		List<ArbitraryManipulator> manipulators = new ArrayList<>();
 		manipulators.add(

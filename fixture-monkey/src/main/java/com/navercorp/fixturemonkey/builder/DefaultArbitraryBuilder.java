@@ -48,7 +48,9 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.OldArbitraryBuilderImpl;
+import com.navercorp.fixturemonkey.api.expression.ExpressionGenerator;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
+import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
 import com.navercorp.fixturemonkey.api.type.LazyAnnotatedType;
 import com.navercorp.fixturemonkey.api.type.Types;
@@ -147,6 +149,18 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 	@Override
 	public ArbitraryBuilder<T> set(@Nullable Object value) {
 		return this.set(HEAD_NAME, value);
+	}
+
+	@Override
+	public ArbitraryBuilder<T> set(ExpressionGenerator expressionGenerator, @Nullable Object value) {
+		return this.set(resolveExpression(expressionGenerator), value);
+	}
+
+	private String resolveExpression(ExpressionGenerator expressionGenerator) {
+		return expressionGenerator.generate(property -> {
+			PropertyNameResolver propertyNameResolver = manipulateOptions.getPropertyNameResolver(property);
+			return propertyNameResolver.resolve(property);
+		});
 	}
 
 	@Override

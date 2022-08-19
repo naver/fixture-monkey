@@ -25,6 +25,8 @@ import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
+import com.navercorp.fixturemonkey.api.property.Property;
+import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.expression.MonkeyExpressionFactory;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
@@ -34,14 +36,22 @@ public final class ManipulateOptions {
 	private final List<MatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuilders;
 	private final DecomposedContainerValueFactory decomposedContainerValueFactory;
 
+	private final List<MatcherOperator<PropertyNameResolver>> propertyNameResolvers;
+
+	private final PropertyNameResolver defaultPropertyNameResolver;
+
 	public ManipulateOptions(
 		MonkeyExpressionFactory defaultMonkeyExpressionFactory,
 		List<MatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuilders,
-		DecomposedContainerValueFactory decomposedContainerValueFactory
+		DecomposedContainerValueFactory decomposedContainerValueFactory,
+		List<MatcherOperator<PropertyNameResolver>> propertyNameResolvers,
+		PropertyNameResolver defaultPropertyNameResolver
 	) {
+		this.decomposedContainerValueFactory = decomposedContainerValueFactory;
 		this.defaultMonkeyExpressionFactory = defaultMonkeyExpressionFactory;
 		this.registeredArbitraryBuilders = registeredArbitraryBuilders;
-		this.decomposedContainerValueFactory = decomposedContainerValueFactory;
+		this.propertyNameResolvers = propertyNameResolvers;
+		this.defaultPropertyNameResolver = defaultPropertyNameResolver;
 	}
 
 	public MonkeyExpressionFactory getDefaultMonkeyExpressionFactory() {
@@ -54,6 +64,14 @@ public final class ManipulateOptions {
 
 	public DecomposedContainerValueFactory getDecomposedContainerValueFactory() {
 		return decomposedContainerValueFactory;
+	}
+
+	public PropertyNameResolver getPropertyNameResolver(Property property) {
+		return this.propertyNameResolvers.stream()
+			.filter(it -> it.match(property))
+			.map(MatcherOperator::getOperator)
+			.findFirst()
+			.orElse(this.defaultPropertyNameResolver);
 	}
 
 	public static ManipulateOptionsBuilder builder() {

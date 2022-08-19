@@ -32,6 +32,7 @@ import org.apiguardian.api.API.Status;
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.LabMonkey;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
+import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryExpressionFactory;
 import com.navercorp.fixturemonkey.expression.MonkeyExpressionFactory;
 
@@ -48,6 +49,10 @@ public final class ManipulateOptionsBuilder {
 	private List<MatcherOperator<? extends ArbitraryBuilder<?>>> registeredSampledArbitraryBuilders = new ArrayList<>();
 
 	private DecomposedContainerValueFactory additionalDecomposedContainerValueFactory = null;
+
+	private List<MatcherOperator<PropertyNameResolver>> propertyNameResolvers;
+
+	private PropertyNameResolver defaultPropertyNameResolver;
 
 	ManipulateOptionsBuilder() {
 	}
@@ -76,6 +81,16 @@ public final class ManipulateOptionsBuilder {
 		return this;
 	}
 
+	public ManipulateOptionsBuilder propertyNameResolvers(List<MatcherOperator<PropertyNameResolver>> propertyNameResolvers) {
+		this.propertyNameResolvers = propertyNameResolvers;
+		return this;
+	}
+
+	public ManipulateOptionsBuilder defaultPropertyNameResolver(PropertyNameResolver defaultPropertyNameResolver) {
+		this.defaultPropertyNameResolver = defaultPropertyNameResolver;
+		return this;
+	}
+
 	public ManipulateOptions build() {
 		defaultMonkeyExpressionFactory = defaultIfNull(
 			this.defaultMonkeyExpressionFactory,
@@ -95,7 +110,9 @@ public final class ManipulateOptionsBuilder {
 		return new ManipulateOptions(
 			defaultMonkeyExpressionFactory,
 			registeredSampledArbitraryBuilders,
-			decomposedContainerValueFactory
+			decomposedContainerValueFactory,
+			propertyNameResolvers,
+			defaultPropertyNameResolver
 		);
 	}
 
