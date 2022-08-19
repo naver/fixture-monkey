@@ -1,15 +1,18 @@
 package com.navercorp.fixturemonkey.test;
 
+import static org.assertj.core.api.BDDAssertions.then;
+
+import net.jqwik.api.Property;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import lombok.Data;
+
 import com.navercorp.fixturemonkey.LabMonkey;
 import com.navercorp.fixturemonkey.api.expression.ExpressionGenerator;
 import com.navercorp.fixturemonkey.api.property.PropertyCache;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.jackson.property.JacksonPropertyNameResolver;
-import lombok.Data;
-import net.jqwik.api.Property;
-
-import static org.assertj.core.api.BDDAssertions.then;
 
 public class FixtureMonkeyV04ExpressionGeneratorTest {
 	@Property
