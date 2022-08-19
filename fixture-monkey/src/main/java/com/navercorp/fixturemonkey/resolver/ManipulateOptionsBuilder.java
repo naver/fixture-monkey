@@ -81,7 +81,9 @@ public final class ManipulateOptionsBuilder {
 		return this;
 	}
 
-	public ManipulateOptionsBuilder propertyNameResolvers(List<MatcherOperator<PropertyNameResolver>> propertyNameResolvers) {
+	public ManipulateOptionsBuilder propertyNameResolvers(
+		List<MatcherOperator<PropertyNameResolver>> propertyNameResolvers
+	) {
 		this.propertyNameResolvers = propertyNameResolvers;
 		return this;
 	}
