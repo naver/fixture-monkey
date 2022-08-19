@@ -152,15 +152,13 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 	}
 
 	@Override
-	public ArbitraryBuilder<T> set(ExpressionGenerator expressionGenerator, @Nullable Object value) {
-		return this.set(resolveExpression(expressionGenerator), value);
+	public ArbitraryBuilder<T> set(ExpressionGenerator expressionGenerator, @Nullable Object value, int limit) {
+		return this.set(resolveExpression(expressionGenerator), value, limit);
 	}
 
-	private String resolveExpression(ExpressionGenerator expressionGenerator) {
-		return expressionGenerator.generate(property -> {
-			PropertyNameResolver propertyNameResolver = manipulateOptions.getPropertyNameResolver(property);
-			return propertyNameResolver.resolve(property);
-		});
+	@Override
+	public ArbitraryBuilder<T> set(ExpressionGenerator expressionGenerator, @Nullable Object value) {
+		return this.set(resolveExpression(expressionGenerator), value);
 	}
 
 	@Override
@@ -205,13 +203,28 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 	}
 
 	@Override
+	public ArbitraryBuilder<T> minSize(ExpressionGenerator expressionGenerator, int min) {
+		return this.size(resolveExpression(expressionGenerator), min, min + DEFAULT_ELEMENT_MAX_SIZE);
+	}
+
+	@Override
 	public ArbitraryBuilder<T> maxSize(String expression, int max) {
 		return this.size(expression, Math.max(0, max - DEFAULT_ELEMENT_MAX_SIZE), max);
 	}
 
 	@Override
+	public ArbitraryBuilder<T> maxSize(ExpressionGenerator expressionGenerator, int max) {
+		return this.size(resolveExpression(expressionGenerator), Math.max(0, max - DEFAULT_ELEMENT_MAX_SIZE), max);
+	}
+
+	@Override
 	public ArbitraryBuilder<T> size(String expression, int size) {
 		return this.size(expression, size, size);
+	}
+
+	@Override
+	public ArbitraryBuilder<T> size(ExpressionGenerator expressionGenerator, int size) {
+		return this.size(resolveExpression(expressionGenerator), size, size);
 	}
 
 	@Override
@@ -233,6 +246,11 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 			)
 		);
 		return this;
+	}
+
+	@Override
+	public ArbitraryBuilder<T> size(ExpressionGenerator expressionGenerator, int min, int max) {
+		return this.size(resolveExpression(expressionGenerator), min, max);
 	}
 
 	@Override
@@ -299,6 +317,11 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 	}
 
 	@Override
+	public ArbitraryBuilder<T> setNull(ExpressionGenerator expressionGenerator) {
+		return this.setNull(resolveExpression(expressionGenerator));
+	}
+
+	@Override
 	public ArbitraryBuilder<T> setNotNull(String expression) {
 		NodeResolver nodeResolver = monkeyExpressionFactory.from(expression).toNodeResolver();
 
@@ -307,6 +330,11 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 			new NodeNullityManipulator(false)
 		));
 		return this;
+	}
+
+	@Override
+	public ArbitraryBuilder<T> setNotNull(ExpressionGenerator expressionGenerator) {
+		return this.setNotNull(resolveExpression(expressionGenerator));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -343,6 +371,25 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 			)
 		);
 		return this;
+	}
+
+	@Override
+	public <U> ArbitraryBuilder<T> setPostCondition(
+		ExpressionGenerator expressionGenerator,
+		Class<U> clazz,
+		Predicate<U> filter,
+		int limit
+	) {
+		return this.setPostCondition(resolveExpression(expressionGenerator), clazz, filter, limit);
+	}
+
+	@Override
+	public <U> ArbitraryBuilder<T> setPostCondition(
+		ExpressionGenerator expressionGenerator,
+		Class<U> clazz,
+		Predicate<U> filter
+	) {
+		return this.setPostCondition(resolveExpression(expressionGenerator), clazz, filter);
 	}
 
 	@Override
@@ -445,6 +492,13 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 		);
 		copied.validOnly(this.validOnly);
 		return copied;
+	}
+
+	private String resolveExpression(ExpressionGenerator expressionGenerator) {
+		return expressionGenerator.generate(property -> {
+			PropertyNameResolver propertyNameResolver = manipulateOptions.getPropertyNameResolver(property);
+			return propertyNameResolver.resolve(property);
+		});
 	}
 
 	private <R> DefaultArbitraryBuilder<R> generateArbitraryBuilderLazily(LazyArbitrary<R> lazyArbitrary) {

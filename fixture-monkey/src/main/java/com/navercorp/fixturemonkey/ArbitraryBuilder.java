@@ -101,7 +101,7 @@ public interface ArbitraryBuilder<T> {
 
 	ArbitraryBuilder<T> size(String expression, int min, int max);
 
-	ArbitraryBuilder<T> size(ExpressionGenerator expression, int min, int max);
+	ArbitraryBuilder<T> size(ExpressionGenerator expressionGenerator, int min, int max);
 
 	ArbitraryBuilder<T> minSize(String expression, int min);
 
