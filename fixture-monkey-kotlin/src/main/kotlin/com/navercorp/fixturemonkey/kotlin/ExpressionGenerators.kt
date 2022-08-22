@@ -52,6 +52,8 @@ class Exp<T> internal constructor(private val delegate: ExpressionGenerator) : E
 
     infix fun <R> into(exp: ExpList<T, R>): Exp<R> = Exp(delegate.join(exp))
 
+    infix fun <R> intoGetter(exp: ExpList<T, R>): Exp<R> = Exp(delegate.join(exp))
+
     @JvmName("intoList")
     infix fun <R : Collection<E>, E : Any> into(property: KProperty1<T, R?>): ExpList<T, E> =
         ExpList(delegate.join(PropertyExpressionGenerator(KotlinProperty(property))))
