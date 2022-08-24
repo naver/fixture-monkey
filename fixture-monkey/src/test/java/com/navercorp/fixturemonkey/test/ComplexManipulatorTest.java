@@ -941,4 +941,58 @@ class ComplexManipulatorTest {
 
 		then(actual).isNotNull();
 	}
+
+	@Property
+	void registerEmptyListSize() {
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.register(
+				NestedStringList.class,
+				fixture -> fixture.giveMeBuilder(NestedStringList.class).set("values", new ArrayList<>())
+			)
+			.build();
+
+		List<StringValue> actual = sut.giveMeBuilder(NestedStringList.class)
+			.size("values", 1)
+			.sample()
+			.getValues();
+
+		then(actual).hasSize(1);
+	}
+
+	@Property
+	void registerReturnsDiff() {
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.register(
+				Complex.class,
+				fixture -> fixture.giveMeBuilder(Complex.class)
+			)
+			.build();
+
+		Complex actual = sut.giveMeBuilder(Complex.class)
+			.sample();
+
+		Complex notExpected = sut.giveMeBuilder(Complex.class)
+			.sample();
+		then(actual).isNotEqualTo(notExpected);
+	}
+
+	@Property
+	void registerTypeReferenceEmptyListSize() {
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.register(
+				NestedStringList.class,
+				fixture -> fixture.giveMeBuilder(NestedStringList.class).set("values", new ArrayList<>())
+			)
+			.build();
+
+		List<StringValue> actual = sut.giveMeBuilder(new TypeReference<List<NestedStringList>>() {
+			})
+			.size("$", 1)
+			.size("$[0].values", 1)
+			.sample()
+			.get(0)
+			.getValues();
+
+		then(actual).hasSize(1);
+	}
 }

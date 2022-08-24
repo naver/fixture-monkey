@@ -32,6 +32,8 @@ import net.jqwik.api.Arbitrary;
 
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.api.type.Types;
+import com.navercorp.fixturemonkey.arbitrary.ArbitraryExpression;
+import com.navercorp.fixturemonkey.arbitrary.ArbitrarySetLazyValue;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryTraverser;
 import com.navercorp.fixturemonkey.customizer.ArbitraryCustomizer;
 import com.navercorp.fixturemonkey.customizer.ArbitraryCustomizers;
@@ -179,12 +181,7 @@ public class FixtureMonkey {
 		ArbitraryOption option,
 		ArbitraryCustomizers customizers
 	) {
-		ArbitraryBuilder<T> defaultArbitraryBuilder = option.getDefaultArbitraryBuilder(clazz);
-		if (defaultArbitraryBuilder != null) {
-			return defaultArbitraryBuilder;
-		}
-
-		return new OldArbitraryBuilderImpl<>(
+		OldArbitraryBuilderImpl<T> arbitraryBuilder = new OldArbitraryBuilderImpl<>(
 			clazz,
 			option,
 			defaultGenerator,
@@ -192,6 +189,18 @@ public class FixtureMonkey {
 			customizers,
 			this.generatorMap
 		);
+
+		ArbitraryBuilder<T> defaultArbitraryBuilder = option.getDefaultArbitraryBuilder(clazz);
+		if (defaultArbitraryBuilder != null) {
+			arbitraryBuilder.pushBuilderManipulator(
+				new ArbitrarySetLazyValue<>(
+					ArbitraryExpression.from("$"),
+					defaultArbitraryBuilder::sample
+				)
+			);
+		}
+
+		return arbitraryBuilder;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -200,15 +209,7 @@ public class FixtureMonkey {
 		ArbitraryOption option,
 		ArbitraryCustomizers customizers
 	) {
-		if (!typeReference.isGenericType()) {
-			ArbitraryBuilder<T> defaultArbitraryBuilder =
-				(ArbitraryBuilder<T>)option.getDefaultArbitraryBuilder(Types.getActualType(typeReference.getType()));
-			if (defaultArbitraryBuilder != null) {
-				return defaultArbitraryBuilder;
-			}
-		}
-
-		return new OldArbitraryBuilderImpl<>(
+		OldArbitraryBuilderImpl<T> arbitraryBuilder = new OldArbitraryBuilderImpl<>(
 			typeReference,
 			option,
 			defaultGenerator,
@@ -216,5 +217,20 @@ public class FixtureMonkey {
 			customizers,
 			this.generatorMap
 		);
+
+		if (!typeReference.isGenericType()) {
+			ArbitraryBuilder<T> defaultArbitraryBuilder =
+				(ArbitraryBuilder<T>)option.getDefaultArbitraryBuilder(Types.getActualType(typeReference.getType()));
+			if (defaultArbitraryBuilder != null) {
+				arbitraryBuilder.pushBuilderManipulator(
+					new ArbitrarySetLazyValue<>(
+						ArbitraryExpression.from("$"),
+						defaultArbitraryBuilder::sample
+					)
+				);
+			}
+		}
+
+		return arbitraryBuilder;
 	}
 }

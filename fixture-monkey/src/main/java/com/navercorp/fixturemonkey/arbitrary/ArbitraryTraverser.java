@@ -222,7 +222,7 @@ public final class ArbitraryTraverser {
 
 	@SuppressWarnings("unchecked")
 	private <T> void initializeDefaultArbitrary(ArbitraryNode<T> node) {
-		if (!node.isHead() && node.getValue() == null) {
+		if (!node.isHead() && node.getValue() == null && node.isNotSetContainerSize()) {
 			Class<?> clazz = node.getType().getType();
 			ArbitraryBuilder<?> defaultArbitraryBuilder = arbitraryOption.getDefaultArbitraryBuilder(clazz);
 

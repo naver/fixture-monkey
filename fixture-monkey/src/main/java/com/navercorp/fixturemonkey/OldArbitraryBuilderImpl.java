@@ -71,6 +71,7 @@ import com.navercorp.fixturemonkey.arbitrary.ContainerSizeConstraint;
 import com.navercorp.fixturemonkey.arbitrary.ContainerSizeManipulator;
 import com.navercorp.fixturemonkey.arbitrary.MetadataManipulator;
 import com.navercorp.fixturemonkey.arbitrary.PostArbitraryManipulator;
+import com.navercorp.fixturemonkey.arbitrary.PriorityManipulatorDelegator;
 import com.navercorp.fixturemonkey.customizer.ArbitraryCustomizer;
 import com.navercorp.fixturemonkey.customizer.ArbitraryCustomizers;
 import com.navercorp.fixturemonkey.customizer.ExpressionSpec;
@@ -632,6 +633,11 @@ public class OldArbitraryBuilderImpl<T> implements ArbitraryBuilder<T> {
 			activeManipulators.add(builderManipulator);
 		}
 		return activeManipulators;
+	}
+
+	public OldArbitraryBuilderImpl<T> pushBuilderManipulator(BuilderManipulator builderManipulator) {
+		this.builderManipulators.add(new PriorityManipulatorDelegator(builderManipulator));
+		return this;
 	}
 
 	@SuppressWarnings("unchecked")
