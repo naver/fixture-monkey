@@ -47,9 +47,9 @@ public final class ManipulateOptions {
 		List<MatcherOperator<PropertyNameResolver>> propertyNameResolvers,
 		PropertyNameResolver defaultPropertyNameResolver
 	) {
-		this.decomposedContainerValueFactory = decomposedContainerValueFactory;
 		this.defaultMonkeyExpressionFactory = defaultMonkeyExpressionFactory;
 		this.registeredArbitraryBuilders = registeredArbitraryBuilders;
+		this.decomposedContainerValueFactory = decomposedContainerValueFactory;
 		this.propertyNameResolvers = propertyNameResolvers;
 		this.defaultPropertyNameResolver = defaultPropertyNameResolver;
 	}
