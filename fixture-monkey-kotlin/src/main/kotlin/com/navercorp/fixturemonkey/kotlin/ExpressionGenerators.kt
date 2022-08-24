@@ -688,7 +688,7 @@ private class KotlinGetterProperty<V, R>(private val getter: KFunction1<V, R>) :
         if (getter.name.startsWith("get")) {
             getter.name.substringAfter("get")
                 .replaceFirstChar { it.lowercaseChar() }
-        } else if (getter.returnType == Boolean::class.java && getter.name.startsWith("is")) {
+        } else if (getter.returnType.javaType == Boolean::class.java && getter.name.startsWith("is")) {
             getter.name.substringAfter("is")
                 .replaceFirstChar { it.lowercaseChar() }
         } else {
