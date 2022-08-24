@@ -70,6 +70,8 @@ public class LabMonkey extends FixtureMonkey {
 		this.manipulatorOptimizer = manipulatorOptimizer;
 		this.validator = validator;
 		manipulateOptionsBuilder.sampleRegisteredArbitraryBuilder(this);
+		manipulateOptionsBuilder.propertyNameResolvers(generateOptions.getPropertyNameResolvers());
+		manipulateOptionsBuilder.defaultPropertyNameResolver(generateOptions.getDefaultPropertyNameResolver());
 	}
 
 	/**
