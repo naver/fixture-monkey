@@ -21,10 +21,7 @@ package com.navercorp.fixturemonkey.resolver;
 import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.NOT_NULL_INJECT;
 import static com.navercorp.fixturemonkey.api.type.Types.isAssignable;
 
-import java.lang.reflect.Array;
-import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 import javax.annotation.Nullable;
 
@@ -39,11 +36,18 @@ import com.navercorp.fixturemonkey.api.type.Types;
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class NodeSetDecomposedValueManipulator<T> implements NodeManipulator {
 	private final ArbitraryTraverser traverser;
+
+	private final ManipulateOptions manipulateOptions;
 	@Nullable
 	private final T value;
 
-	public NodeSetDecomposedValueManipulator(ArbitraryTraverser traverser, @Nullable T value) {
+	public NodeSetDecomposedValueManipulator(
+		ArbitraryTraverser traverser,
+		ManipulateOptions manipulateOptions,
+		@Nullable T value
+	) {
 		this.traverser = traverser;
+		this.manipulateOptions = manipulateOptions;
 		this.value = value;
 	}
 
@@ -67,22 +71,10 @@ public final class NodeSetDecomposedValueManipulator<T> implements NodeManipulat
 		}
 
 		if (arbitraryNode.getArbitraryProperty().isContainer()) {
-			int decomposedContainerSize = arbitraryNode.getChildren().size();
-
-			Class<?> actualType = Types.getActualType(value.getClass());
-			Class<?> nodeActualType = Types.getActualType(arbitraryNode.getProperty().getType());
-
-			if (Collection.class.isAssignableFrom(actualType)) {
-				Collection<?> container = (Collection<?>)value;
-				decomposedContainerSize = container.size();
-			} else if (actualType.isArray()) {
-				decomposedContainerSize = Array.getLength(value);
-			} else if (Map.class.isAssignableFrom(actualType)) {
-				Map<?, ?> map = (Map<?, ?>)value;
-				decomposedContainerSize = map.size();
-			} else if (isDecomposeMapEntry(actualType, nodeActualType)) {
-				decomposedContainerSize = 1;
-			}
+			DecomposableContainerValue decomposableContainerValue =
+				manipulateOptions.getDecomposedContainerValueFactory().from(value);
+			value = decomposableContainerValue.getContainer();
+			int decomposedContainerSize = decomposableContainerValue.getSize();
 
 			if (decomposedContainerSize != arbitraryNode.getChildren().size()) {
 				NodeSizeManipulator nodeSizeManipulator =
@@ -93,7 +85,7 @@ public final class NodeSetDecomposedValueManipulator<T> implements NodeManipulat
 
 		List<ArbitraryNode> children = arbitraryNode.getChildren();
 		arbitraryNode.setArbitraryProperty(arbitraryNode.getArbitraryProperty().withNullInject(NOT_NULL_INJECT));
-		if (children.isEmpty()) {
+		if (children.isEmpty() && !arbitraryNode.getArbitraryProperty().isContainer()) {
 			arbitraryNode.setArbitrary(Arbitraries.just(value));
 			return;
 		}
@@ -104,7 +96,4 @@ public final class NodeSetDecomposedValueManipulator<T> implements NodeManipulat
 		}
 	}
 
-	private boolean isDecomposeMapEntry(Class<?> actualType, Class<?> nodeActualType) {
-		return Map.Entry.class.isAssignableFrom(actualType) && Map.Entry.class.isAssignableFrom(nodeActualType);
-	}
 }

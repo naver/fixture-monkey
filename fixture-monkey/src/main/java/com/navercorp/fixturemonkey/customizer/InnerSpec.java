@@ -37,6 +37,7 @@ import com.navercorp.fixturemonkey.resolver.AddMapEntryNodeManipulator;
 import com.navercorp.fixturemonkey.resolver.ArbitraryManipulator;
 import com.navercorp.fixturemonkey.resolver.ArbitraryTraverser;
 import com.navercorp.fixturemonkey.resolver.ContainerElementNodeResolver;
+import com.navercorp.fixturemonkey.resolver.ManipulateOptions;
 import com.navercorp.fixturemonkey.resolver.MapNodeManipulator;
 import com.navercorp.fixturemonkey.resolver.NodeKeyValueResolver;
 import com.navercorp.fixturemonkey.resolver.NodeLastEntryResolver;
@@ -51,11 +52,13 @@ import com.navercorp.fixturemonkey.resolver.PropertyNameNodeResolver;
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class InnerSpec {
 	private final ArbitraryTraverser traverser;
+	private final ManipulateOptions manipulateOptions;
 	private final NodeResolver treePathResolver;
 	private final List<ArbitraryManipulator> arbitraryManipulators;
 
-	public InnerSpec(ArbitraryTraverser traverser, NodeResolver treePathResolver) {
+	public InnerSpec(ArbitraryTraverser traverser, ManipulateOptions manipulateOptions, NodeResolver treePathResolver) {
 		this.traverser = traverser;
+		this.manipulateOptions = manipulateOptions;
 		this.treePathResolver = treePathResolver;
 		this.arbitraryManipulators = new ArrayList<>();
 	}
@@ -105,7 +108,7 @@ public final class InnerSpec {
 			new NodeLastEntryResolver(this.treePathResolver),
 			true
 		);
-		InnerSpec innerSpec = new InnerSpec(traverser, nextResolver);
+		InnerSpec innerSpec = new InnerSpec(traverser, manipulateOptions, nextResolver);
 		consumer.accept(innerSpec);
 		arbitraryManipulators.addAll(innerSpec.arbitraryManipulators);
 	}
@@ -127,7 +130,7 @@ public final class InnerSpec {
 			new NodeLastEntryResolver(this.treePathResolver),
 			false
 		);
-		InnerSpec innerSpec = new InnerSpec(traverser, nextResolver);
+		InnerSpec innerSpec = new InnerSpec(traverser, manipulateOptions, nextResolver);
 		consumer.accept(innerSpec);
 		arbitraryManipulators.addAll(innerSpec.arbitraryManipulators);
 	}
@@ -160,7 +163,7 @@ public final class InnerSpec {
 			new NodeLastEntryResolver(this.treePathResolver),
 			false
 		);
-		InnerSpec innerSpec = new InnerSpec(traverser, nextResolver);
+		InnerSpec innerSpec = new InnerSpec(traverser, manipulateOptions, nextResolver);
 		consumer.accept(innerSpec);
 		arbitraryManipulators.addAll(innerSpec.arbitraryManipulators);
 	}
@@ -178,7 +181,7 @@ public final class InnerSpec {
 			new NodeLastEntryResolver(this.treePathResolver),
 			true
 		);
-		InnerSpec innerSpec = new InnerSpec(traverser, nextResolver);
+		InnerSpec innerSpec = new InnerSpec(traverser, manipulateOptions, nextResolver);
 		consumer.accept(innerSpec);
 		arbitraryManipulators.addAll(innerSpec.arbitraryManipulators);
 	}
@@ -196,7 +199,7 @@ public final class InnerSpec {
 		}
 
 		NodeResolver nextResolver = new ContainerElementNodeResolver(this.treePathResolver, index);
-		InnerSpec innerSpec = new InnerSpec(traverser, nextResolver);
+		InnerSpec innerSpec = new InnerSpec(traverser, manipulateOptions, nextResolver);
 		consumer.accept(innerSpec);
 		arbitraryManipulators.addAll(innerSpec.arbitraryManipulators);
 	}
@@ -214,7 +217,7 @@ public final class InnerSpec {
 		}
 
 		NodeResolver nextResolver = new PropertyNameNodeResolver(this.treePathResolver, property);
-		InnerSpec innerSpec = new InnerSpec(traverser, nextResolver);
+		InnerSpec innerSpec = new InnerSpec(traverser, manipulateOptions, nextResolver);
 		consumer.accept(innerSpec);
 		arbitraryManipulators.addAll(innerSpec.arbitraryManipulators);
 	}
@@ -250,11 +253,15 @@ public final class InnerSpec {
 
 	private NodeManipulator convertToNodeManipulator(@Nullable Object value) {
 		if (value instanceof Arbitrary) {
-			return new NodeSetLazyManipulator<>(traverser, LazyArbitrary.lazy(() -> ((Arbitrary<?>)value).sample()));
+			return new NodeSetLazyManipulator<>(
+				traverser,
+				manipulateOptions,
+				LazyArbitrary.lazy(() -> ((Arbitrary<?>)value).sample())
+			);
 		} else if (value == null) {
 			return new NodeNullityManipulator(true);
 		} else {
-			return new NodeSetDecomposedValueManipulator<>(this.traverser, value);
+			return new NodeSetDecomposedValueManipulator<>(this.traverser, manipulateOptions, value);
 		}
 	}
 }

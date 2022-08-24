@@ -32,13 +32,16 @@ public final class ManipulateOptions {
 	private final MonkeyExpressionFactory defaultMonkeyExpressionFactory;
 
 	private final List<MatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuilders;
+	private final DecomposedContainerValueFactory decomposedContainerValueFactory;
 
 	public ManipulateOptions(
 		MonkeyExpressionFactory defaultMonkeyExpressionFactory,
-		List<MatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuilders
+		List<MatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuilders,
+		DecomposedContainerValueFactory decomposedContainerValueFactory
 	) {
 		this.defaultMonkeyExpressionFactory = defaultMonkeyExpressionFactory;
 		this.registeredArbitraryBuilders = registeredArbitraryBuilders;
+		this.decomposedContainerValueFactory = decomposedContainerValueFactory;
 	}
 
 	public MonkeyExpressionFactory getDefaultMonkeyExpressionFactory() {
@@ -47,6 +50,10 @@ public final class ManipulateOptions {
 
 	public List<MatcherOperator<? extends ArbitraryBuilder<?>>> getRegisteredArbitraryBuilders() {
 		return registeredArbitraryBuilders;
+	}
+
+	public DecomposedContainerValueFactory getDecomposedContainerValueFactory() {
+		return decomposedContainerValueFactory;
 	}
 
 	public static ManipulateOptionsBuilder builder() {

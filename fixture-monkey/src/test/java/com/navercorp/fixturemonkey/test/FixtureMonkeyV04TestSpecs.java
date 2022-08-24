@@ -21,6 +21,7 @@ package com.navercorp.fixturemonkey.test;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -28,6 +29,7 @@ import java.util.OptionalDouble;
 import java.util.OptionalInt;
 import java.util.OptionalLong;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
@@ -39,7 +41,7 @@ import lombok.Setter;
 class FixtureMonkeyV04TestSpecs {
 	@Setter
 	@Getter
-	@EqualsAndHashCode
+	@EqualsAndHashCode(exclude = {"strIterator", "strStream"})
 	public static class ComplexObject {
 		private String str;
 		private int integer;
@@ -54,6 +56,9 @@ class FixtureMonkeyV04TestSpecs {
 		private List<SimpleObject> list;
 		private Map<String, SimpleObject> map;
 		private Map.Entry<String, SimpleObject> mapEntry;
+		private Iterable<String> strIterable;
+		private Iterator<String> strIterator;
+		private Stream<String> strStream;
 	}
 
 	public enum SimpleEnum {

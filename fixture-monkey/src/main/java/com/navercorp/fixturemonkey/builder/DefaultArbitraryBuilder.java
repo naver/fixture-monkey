@@ -119,7 +119,7 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 		if (value instanceof Arbitrary) {
 			this.setLazy(expression, () -> ((Arbitrary<?>)value).sample(), limit);
 		} else if (value instanceof DefaultArbitraryBuilder) {
-			this.setLazy(expression, () -> ((DefaultArbitraryBuilder<?>) value).sample());
+			this.setLazy(expression, () -> ((DefaultArbitraryBuilder<?>)value).sample());
 		} else if (value == null) {
 			this.setNull(expression);
 		} else {
@@ -127,7 +127,7 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 				new ArbitraryManipulator(
 					nodeResolver,
 					new ApplyNodeCountManipulator(
-						new NodeSetDecomposedValueManipulator<>(traverser, value),
+						new NodeSetDecomposedValueManipulator<>(traverser, manipulateOptions, value),
 						limit
 					)
 				)
@@ -160,6 +160,7 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 				new ApplyNodeCountManipulator(
 					new NodeSetLazyManipulator<>(
 						traverser,
+						manipulateOptions,
 						lazyArbitrary
 					),
 					limit
@@ -177,7 +178,7 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 	@Override
 	public ArbitraryBuilder<T> setInner(String expression, Consumer<InnerSpec> specSpecifier) {
 		NodeResolver nodeResolver = monkeyExpressionFactory.from(expression).toNodeResolver();
-		InnerSpec innerSpec = new InnerSpec(traverser, nodeResolver);
+		InnerSpec innerSpec = new InnerSpec(traverser, manipulateOptions, nodeResolver);
 		specSpecifier.accept(innerSpec);
 		List<ArbitraryManipulator> mapManipulators = innerSpec.getArbitraryManipulators();
 		manipulators.addAll(mapManipulators);
@@ -225,7 +226,7 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 		this.manipulators.add(
 			new ArbitraryManipulator(
 				new RootNodeResolver(),
-				new NodeSetDecomposedValueManipulator<>(traverser, this.sample())
+				new NodeSetDecomposedValueManipulator<>(traverser, manipulateOptions, this.sample())
 			)
 		);
 		return this;
@@ -252,6 +253,7 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 				new RootNodeResolver(),
 				new NodeSetLazyManipulator<>(
 					traverser,
+					manipulateOptions,
 					lazyArbitrary
 				)
 			)
@@ -436,7 +438,7 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 		manipulators.add(
 			new ArbitraryManipulator(
 				new RootNodeResolver(),
-				new NodeSetLazyManipulator<>(traverser, lazyArbitrary)
+				new NodeSetLazyManipulator<>(traverser, manipulateOptions, lazyArbitrary)
 			)
 		);
 

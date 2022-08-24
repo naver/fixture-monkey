@@ -25,8 +25,10 @@ import static org.assertj.core.api.BDDAssertions.thenThrownBy;
 import java.time.Instant;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -35,6 +37,8 @@ import java.util.OptionalDouble;
 import java.util.OptionalInt;
 import java.util.OptionalLong;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
@@ -1165,5 +1169,41 @@ class FixtureMonkeyV04Test {
 			.get(0);
 
 		then(actual.getStr()).isEqualTo(actual.getInteger() + "");
+	}
+
+	@Property
+	void setIterable() {
+		String expected = "test";
+
+		Iterable<String> actual = SUT.giveMeBuilder(ComplexObject.class)
+			.set("strIterable", Collections.singletonList(expected))
+			.sample()
+			.getStrIterable();
+
+		then(actual.iterator().next()).isEqualTo(expected);
+	}
+
+	@Property
+	void setIterator() {
+		String expected = "test";
+
+		Iterator<String> actual = SUT.giveMeBuilder(ComplexObject.class)
+			.set("strIterator", Stream.of(expected).iterator())
+			.sample()
+			.getStrIterator();
+
+		then(actual.next()).isEqualTo(expected);
+	}
+
+	@Property
+	void setStream() {
+		String expected = "test";
+
+		Stream<String> actual = SUT.giveMeBuilder(ComplexObject.class)
+			.set("strStream", Stream.of(expected))
+			.sample()
+			.getStrStream();
+
+		then(actual.collect(Collectors.toList()).get(0)).isEqualTo(expected);
 	}
 }
