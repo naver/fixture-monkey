@@ -24,6 +24,8 @@ import static org.assertj.core.api.BDDAssertions.thenThrownBy;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.ForAll;
 import net.jqwik.api.Property;
@@ -151,31 +153,31 @@ class ArbitraryGeneratorTest {
 		then(actual.getValue()).isBetween(Integer.MIN_VALUE, Integer.MAX_VALUE);
 	}
 
-	// @Property
-	// void giveMeWhenDefaultGeneratorIsBuilderArbitraryGeneratorWithCustomizer() {
-	// 	// given
-	// 	FixtureMonkey sut = FixtureMonkey.builder()
-	// 		.defaultGenerator(BuilderArbitraryGenerator.INSTANCE)
-	// 		.build();
-	//
-	// 	// when
-	// 	BuilderInteger actual = sut.giveMeBuilder(BuilderInteger.class)
-	// 		.customize(BuilderInteger.class, new ArbitraryCustomizer<BuilderInteger>() {
-	// 			@Override
-	// 			public void customizeFields(Class<BuilderInteger> type, FieldArbitraries fieldArbitraries) {
-	// 				fieldArbitraries.putArbitrary("value", Arbitraries.just(1));
-	// 			}
-	//
-	// 			@Nullable
-	// 			@Override
-	// 			public BuilderInteger customizeFixture(@Nullable BuilderInteger fixture) {
-	// 				return fixture;
-	// 			}
-	// 		})
-	// 		.sample();
-	//
-	// 	then(actual.getValue()).isEqualTo(1);
-	// }
+	@Property
+	void giveMeWhenDefaultGeneratorIsBuilderArbitraryGeneratorWithCustomizer() {
+		// given
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.defaultGenerator(BuilderArbitraryGenerator.INSTANCE)
+			.build();
+
+		// when
+		BuilderInteger actual = sut.giveMeBuilder(BuilderInteger.class)
+			.customize(BuilderInteger.class, new ArbitraryCustomizer<BuilderInteger>() {
+				@Override
+				public void customizeFields(Class<BuilderInteger> type, FieldArbitraries fieldArbitraries) {
+					fieldArbitraries.putArbitrary("value", Arbitraries.just(1));
+				}
+
+				@Nullable
+				@Override
+				public BuilderInteger customizeFixture(@Nullable BuilderInteger fixture) {
+					return fixture;
+				}
+			})
+			.sample();
+
+		then(actual.getValue()).isEqualTo(1);
+	}
 
 	@Property
 	void generatorMapBeanGeneratorWithBuilderGenerator() {
