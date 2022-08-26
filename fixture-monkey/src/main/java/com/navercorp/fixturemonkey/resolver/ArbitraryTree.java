@@ -32,6 +32,7 @@ import org.apiguardian.api.API.Status;
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
 
+import com.navercorp.fixturemonkey.api.customizer.FixtureCustomizer;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
@@ -42,13 +43,18 @@ final class ArbitraryTree {
 	private final ArbitraryNode rootNode;
 	private final GenerateOptions generateOptions;
 	private final ArbitraryTreeMetadata metadata;
+	@SuppressWarnings("rawtypes")
+	private final List<MatcherOperator<? extends FixtureCustomizer>> customizers;
 
+	@SuppressWarnings("rawtypes")
 	ArbitraryTree(
 		ArbitraryNode rootNode,
-		GenerateOptions generateOptions
+		GenerateOptions generateOptions,
+		List<MatcherOperator<? extends FixtureCustomizer>> customizers
 	) {
 		this.rootNode = rootNode;
 		this.generateOptions = generateOptions;
+		this.customizers = customizers;
 		MetadataCollector metadataCollector = new MetadataCollector(rootNode);
 		this.metadata = metadataCollector.collect();
 	}
@@ -62,12 +68,14 @@ final class ArbitraryTree {
 	}
 
 	Arbitrary<?> generate() {
-		ArbitraryGeneratorContext context = generateContext(rootNode, null);
+		ArbitraryGeneratorContext context = generateContext(rootNode, customizers, null);
 		return generateArbitrary(context, rootNode);
 	}
 
+	@SuppressWarnings("rawtypes")
 	private ArbitraryGeneratorContext generateContext(
 		ArbitraryNode arbitraryNode,
+		List<MatcherOperator<? extends FixtureCustomizer>> customizers,
 		@Nullable ArbitraryGeneratorContext parentContext
 	) {
 		Map<ArbitraryProperty, ArbitraryNode> childNodesByArbitraryProperty = new HashMap<>();
@@ -76,6 +84,9 @@ final class ArbitraryTree {
 			childNodesByArbitraryProperty.put(childNode.getArbitraryProperty(), childNode);
 			childrenProperties.add(childNode.getArbitraryProperty());
 		}
+		List<MatcherOperator<? extends FixtureCustomizer>> arbitraryCustomizers = new ArrayList<>();
+		arbitraryCustomizers.addAll(generateOptions.getArbitraryCustomizers());
+		arbitraryCustomizers.addAll(customizers);
 
 		return new ArbitraryGeneratorContext(
 			arbitraryNode.getArbitraryProperty(),
@@ -89,7 +100,7 @@ final class ArbitraryTree {
 
 				return generateArbitrary(ctx, node);
 			},
-			generateOptions.getArbitraryCustomizers()
+			arbitraryCustomizers
 		);
 	}
 
@@ -105,7 +116,7 @@ final class ArbitraryTree {
 			generated = node.getArbitrary() // fixed
 				.injectNull(node.getArbitraryProperty().getNullInject());
 		} else {
-			ArbitraryGeneratorContext childArbitraryGeneratorContext = this.generateContext(node, ctx);
+			ArbitraryGeneratorContext childArbitraryGeneratorContext = this.generateContext(node, customizers, ctx);
 			generated = this.generateOptions.getArbitraryGenerator(prop.getProperty())
 				.generate(childArbitraryGeneratorContext);
 		}

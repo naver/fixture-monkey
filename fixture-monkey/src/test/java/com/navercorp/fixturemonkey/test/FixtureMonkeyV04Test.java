@@ -40,6 +40,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.annotation.Nullable;
+
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
 import net.jqwik.api.Property;
@@ -47,6 +49,10 @@ import net.jqwik.api.Property;
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.ArbitraryBuilders;
 import com.navercorp.fixturemonkey.LabMonkey;
+import com.navercorp.fixturemonkey.api.customizer.FixtureCustomizer;
+import com.navercorp.fixturemonkey.api.generator.ChildArbitraryContext;
+import com.navercorp.fixturemonkey.api.matcher.ExactTypeMatcher;
+import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.test.ComplexManipulatorTestSpecs.IntValue;
 import com.navercorp.fixturemonkey.test.ComplexManipulatorTestSpecs.NestedStringList;
@@ -1205,5 +1211,54 @@ class FixtureMonkeyV04Test {
 			.getStrStream();
 
 		then(actual.collect(Collectors.toList()).get(0)).isEqualTo(expected);
+	}
+
+	@Property
+	void giveMeOneCustomizerCustomizeFixture() {
+		String expected = "test";
+
+		String actual = SUT.giveMeOne(
+			String.class,
+			(FixtureCustomizer<String>)str -> expected
+		);
+
+		then(actual).isEqualTo(expected);
+	}
+
+	@Property
+	void giveMeOneCustomizerCustomizeProperties() {
+		String expected = "test";
+
+		String actual = SUT.giveMeOne(
+				SimpleObject.class,
+				new FixtureCustomizer<SimpleObject>() {
+					@Override
+					public void customizeProperties(ChildArbitraryContext childArbitraryContext) {
+						childArbitraryContext.replaceArbitrary(
+							new ExactTypeMatcher(String.class),
+							Arbitraries.just(expected)
+						);
+					}
+
+					@Nullable
+					@Override
+					public SimpleObject customizeFixture(@Nullable SimpleObject obj) {
+						return obj;
+					}
+				})
+			.getStr();
+
+		then(actual).isEqualTo(expected);
+	}
+
+	@Property
+	void customize() {
+		String expected = "test";
+
+		String actual = SUT.giveMeBuilder(String.class)
+			.customize(MatcherOperator.exactTypeMatchOperator(String.class, it -> expected))
+			.sample();
+
+		then(actual).isEqualTo(expected);
 	}
 }

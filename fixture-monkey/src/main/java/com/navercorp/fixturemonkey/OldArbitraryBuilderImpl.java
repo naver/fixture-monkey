@@ -47,7 +47,9 @@ import net.jqwik.api.Arbitrary;
 import net.jqwik.api.Combinators.F3;
 import net.jqwik.api.Combinators.F4;
 
+import com.navercorp.fixturemonkey.api.customizer.FixtureCustomizer;
 import com.navercorp.fixturemonkey.api.expression.ExpressionGenerator;
+import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.property.FieldProperty;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.api.random.Randoms;
@@ -499,6 +501,11 @@ public class OldArbitraryBuilderImpl<T> implements ArbitraryBuilder<T> {
 			this.generator = ((WithFixtureCustomizer)this.generator).withFixtureCustomizers(arbitraryCustomizers);
 		}
 		return this;
+	}
+
+	@Override
+	public ArbitraryBuilder<T> customize(MatcherOperator<FixtureCustomizer<T>> customizer) {
+		throw new UnsupportedOperationException();
 	}
 
 	@Override

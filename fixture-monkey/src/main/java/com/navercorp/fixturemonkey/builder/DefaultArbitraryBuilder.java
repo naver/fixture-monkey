@@ -48,12 +48,15 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.OldArbitraryBuilderImpl;
+import com.navercorp.fixturemonkey.api.customizer.FixtureCustomizer;
 import com.navercorp.fixturemonkey.api.expression.ExpressionGenerator;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
+import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
 import com.navercorp.fixturemonkey.api.type.LazyAnnotatedType;
 import com.navercorp.fixturemonkey.api.type.Types;
+import com.navercorp.fixturemonkey.customizer.ArbitraryCustomizer;
 import com.navercorp.fixturemonkey.customizer.InnerSpec;
 import com.navercorp.fixturemonkey.expression.MonkeyExpressionFactory;
 import com.navercorp.fixturemonkey.resolver.ApplyNodeCountManipulator;
@@ -82,8 +85,11 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 	private final MonkeyExpressionFactory monkeyExpressionFactory;
 	private final List<ArbitraryManipulator> manipulators;
 	private final Set<LazyArbitrary<?>> lazyArbitraries;
+	@SuppressWarnings("rawtypes")
+	private final List<MatcherOperator<? extends FixtureCustomizer>> customizers;
 	private boolean validOnly = true;
 
+	@SuppressWarnings("rawtypes")
 	public DefaultArbitraryBuilder(
 		ManipulateOptions manipulateOptions,
 		RootProperty rootProperty,
@@ -91,7 +97,8 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 		ArbitraryTraverser traverser,
 		ArbitraryValidator validator,
 		List<ArbitraryManipulator> manipulators,
-		Set<LazyArbitrary<?>> lazyArbitraries
+		Set<LazyArbitrary<?>> lazyArbitraries,
+		List<MatcherOperator<? extends FixtureCustomizer>> customizers
 	) {
 		super();
 		this.manipulateOptions = manipulateOptions;
@@ -101,6 +108,7 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 		this.validator = validator;
 		this.manipulators = manipulators;
 		this.lazyArbitraries = lazyArbitraries;
+		this.customizers = customizers;
 		this.monkeyExpressionFactory = manipulateOptions.getDefaultMonkeyExpressionFactory();
 	}
 
@@ -448,6 +456,17 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 		return generateArbitraryBuilderLazily(lazyArbitrary);
 	}
 
+	@Override
+	public ArbitraryBuilder<T> customize(Class<T> type, ArbitraryCustomizer<T> customizer) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public ArbitraryBuilder<T> customize(MatcherOperator<FixtureCustomizer<T>> fixtureCustomizer) {
+		this.customizers.add(fixtureCustomizer);
+		return this;
+	}
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public Arbitrary<T> build() {
@@ -455,7 +474,11 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 
 		return new ArbitraryValue<>(
 			() -> {
-				Arbitrary<T> arbitrary = (Arbitrary<T>)this.resolver.resolve(this.rootProperty, buildManipulators);
+				Arbitrary<T> arbitrary = (Arbitrary<T>)this.resolver.resolve(
+					this.rootProperty,
+					buildManipulators,
+					customizers
+				);
 				lazyArbitraries.forEach(LazyArbitrary::clear);
 				return arbitrary;
 			},
@@ -488,7 +511,8 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 			traverser,
 			validator,
 			new ArrayList<>(this.manipulators),
-			new HashSet<>(this.lazyArbitraries)
+			new HashSet<>(this.lazyArbitraries),
+			new ArrayList<>(this.customizers)
 		);
 		copied.validOnly(this.validOnly);
 		return copied;
@@ -520,7 +544,8 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 			traverser,
 			validator,
 			manipulators,
-			lazyArbitraries
+			lazyArbitraries,
+			customizers
 		);
 	}
 }
