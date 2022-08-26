@@ -59,6 +59,10 @@ public final class ChildArbitraryContext {
 		}
 	}
 
+	public void removeArbitrary(Matcher matcher) {
+		arbitrariesByChildProperty.entrySet().removeIf(it -> matcher.match(it.getKey().getProperty()));
+	}
+
 	public Map<String, Arbitrary<?>> getArbitrariesByResolvedName() {
 		return arbitrariesByChildProperty.entrySet().stream()
 			.collect(toMap(it -> it.getKey().getResolvePropertyName(), Entry::getValue));
