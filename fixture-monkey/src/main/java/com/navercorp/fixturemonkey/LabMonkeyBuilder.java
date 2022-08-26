@@ -218,9 +218,12 @@ public class LabMonkeyBuilder {
 	}
 
 	public LabMonkeyBuilder pushArbitraryIntrospector(
-		MatcherOperator<ArbitraryGenerator> arbitraryIntrospector
+		MatcherOperator<ArbitraryIntrospector> arbitraryIntrospector
 	) {
-		generateOptionsBuilder.insertFirstArbitraryIntrospector(arbitraryIntrospector);
+		generateOptionsBuilder.insertFirstArbitraryIntrospector(
+			arbitraryIntrospector.getMatcher(),
+			arbitraryIntrospector.getOperator()
+		);
 		return this;
 	}
 
