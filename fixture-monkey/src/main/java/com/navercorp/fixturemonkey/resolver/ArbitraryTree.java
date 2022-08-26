@@ -75,7 +75,7 @@ final class ArbitraryTree {
 	@SuppressWarnings("rawtypes")
 	private ArbitraryGeneratorContext generateContext(
 		ArbitraryNode arbitraryNode,
-		List<MatcherOperator<? extends FixtureCustomizer>> customziers,
+		List<MatcherOperator<? extends FixtureCustomizer>> customizers,
 		@Nullable ArbitraryGeneratorContext parentContext
 	) {
 		Map<ArbitraryProperty, ArbitraryNode> childNodesByArbitraryProperty = new HashMap<>();
@@ -86,7 +86,7 @@ final class ArbitraryTree {
 		}
 		List<MatcherOperator<? extends FixtureCustomizer>> arbitraryCustomizers = new ArrayList<>();
 		arbitraryCustomizers.addAll(generateOptions.getArbitraryCustomizers());
-		arbitraryCustomizers.addAll(customziers);
+		arbitraryCustomizers.addAll(customizers);
 
 		return new ArbitraryGeneratorContext(
 			arbitraryNode.getArbitraryProperty(),

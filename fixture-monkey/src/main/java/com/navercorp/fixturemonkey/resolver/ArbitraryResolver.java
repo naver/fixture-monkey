@@ -61,12 +61,12 @@ public final class ArbitraryResolver {
 	public Arbitrary<?> resolve(
 		RootProperty rootProperty,
 		List<ArbitraryManipulator> manipulators,
-		List<MatcherOperator<? extends FixtureCustomizer>> customziers
+		List<MatcherOperator<? extends FixtureCustomizer>> customizers
 	) {
 		ArbitraryTree arbitraryTree = new ArbitraryTree(
 			this.traverser.traverse(rootProperty, null),
 			generateOptions,
-			customziers
+			customizers
 		);
 
 		List<ArbitraryManipulator> registeredManipulators = getRegisteredToManipulators(
