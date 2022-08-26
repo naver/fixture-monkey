@@ -197,6 +197,31 @@ public class LabMonkeyBuilder {
 		return this;
 	}
 
+	public LabMonkeyBuilder pushAssignableTypeArbitraryIntrospector(
+		Class<?> type,
+		ArbitraryIntrospector arbitraryIntrospector
+	) {
+		generateOptionsBuilder.insertFirstArbitraryIntrospector(type, arbitraryIntrospector);
+		return this;
+	}
+
+	public LabMonkeyBuilder pushExactTypeArbitraryIntrospector(
+		Class<?> type,
+		ArbitraryIntrospector arbitraryIntrospector
+	) {
+		generateOptionsBuilder.insertFirstArbitraryIntrospector(
+			MatcherOperator.exactTypeMatchOperator(type, arbitraryIntrospector)
+		);
+		return this;
+	}
+
+	public LabMonkeyBuilder pushArbitraryIntrospector(
+		MatcherOperator<ArbitraryIntrospector> arbitraryIntrospector
+	) {
+		generateOptionsBuilder.insertFirstArbitraryIntrospector(arbitraryIntrospector);
+		return this;
+	}
+
 	public LabMonkeyBuilder javaTypeArbitraryGenerator(
 		JavaTypeArbitraryGenerator javaTypeArbitraryGenerator
 	) {
@@ -296,7 +321,7 @@ public class LabMonkeyBuilder {
 		return this;
 	}
 
-	public LabMonkeyBuilder registerAssinableType(
+	public LabMonkeyBuilder registerAssignableType(
 		Class<?> type,
 		Function<LabMonkey, ? extends ArbitraryBuilder<?>> registeredArbitraryBuilder
 	) {
