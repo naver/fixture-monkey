@@ -816,4 +816,19 @@ class FixtureMonkeyV04OptionsTest {
 
 		then(pair).isNotNull();
 	}
+
+	@Property
+	void plugin() {
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.plugin((optionsBuilder)->{
+				optionsBuilder.insertFirstNullInjectGenerators(String.class, (context, containerInfo) -> 1.0d);
+			})
+			.build();
+
+		String actual = sut.giveMeBuilder(SimpleObject.class)
+			.sample()
+			.getStr();
+
+		then(actual).isEqualTo(null);
+	}
 }
