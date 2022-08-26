@@ -257,6 +257,14 @@ public final class GenerateOptionsBuilder {
 	}
 
 	public GenerateOptionsBuilder insertFirstArbitraryIntrospector(
+		MatcherOperator<ArbitraryGenerator> arbitraryGenerator
+	) {
+		return this.insertFirstArbitraryGenerator(
+			arbitraryGenerator
+		);
+	}
+
+	public GenerateOptionsBuilder insertFirstArbitraryIntrospector(
 		Matcher matcher,
 		ArbitraryIntrospector arbitraryIntrospector
 	) {

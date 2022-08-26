@@ -37,7 +37,9 @@ import org.apiguardian.api.API.Status;
 import com.navercorp.fixturemonkey.api.customizer.FixtureCustomizer;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfoGenerator;
+import com.navercorp.fixturemonkey.api.generator.ArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryPropertyGenerator;
+import com.navercorp.fixturemonkey.api.generator.DefaultArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator;
 import com.navercorp.fixturemonkey.api.generator.NullArbitraryPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.NullInjectGenerator;
@@ -197,6 +199,31 @@ public class LabMonkeyBuilder {
 		return this;
 	}
 
+	public LabMonkeyBuilder pushAssignableTypeArbitraryIntrospector(
+		Class<?> type,
+		ArbitraryIntrospector arbitraryIntrospector
+	) {
+		generateOptionsBuilder.insertFirstArbitraryIntrospector(type, arbitraryIntrospector);
+		return this;
+	}
+
+	public LabMonkeyBuilder pushExactTypeArbitraryIntrospector(
+		Class<?> type,
+		ArbitraryIntrospector arbitraryIntrospector
+	) {
+		generateOptionsBuilder.insertFirstArbitraryIntrospector(
+			MatcherOperator.exactTypeMatchOperator(type, new DefaultArbitraryGenerator(arbitraryIntrospector))
+		);
+		return this;
+	}
+
+	public LabMonkeyBuilder pushArbitraryIntrospector(
+		MatcherOperator<ArbitraryGenerator> arbitraryIntrospector
+	) {
+		generateOptionsBuilder.insertFirstArbitraryIntrospector(arbitraryIntrospector);
+		return this;
+	}
+
 	public LabMonkeyBuilder javaTypeArbitraryGenerator(
 		JavaTypeArbitraryGenerator javaTypeArbitraryGenerator
 	) {
@@ -296,7 +323,7 @@ public class LabMonkeyBuilder {
 		return this;
 	}
 
-	public LabMonkeyBuilder registerAssinableType(
+	public LabMonkeyBuilder registerAssignableType(
 		Class<?> type,
 		Function<LabMonkey, ? extends ArbitraryBuilder<?>> registeredArbitraryBuilder
 	) {
