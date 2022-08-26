@@ -820,7 +820,7 @@ class FixtureMonkeyV04OptionsTest {
 	@Property
 	void plugin() {
 		LabMonkey sut = LabMonkey.labMonkeyBuilder()
-			.plugin((optionsBuilder)->{
+			.plugin((optionsBuilder) -> {
 				optionsBuilder.insertFirstNullInjectGenerators(String.class, (context, containerInfo) -> 1.0d);
 			})
 			.build();
