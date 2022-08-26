@@ -69,9 +69,9 @@ public class LabMonkey extends FixtureMonkey {
 		this.traverser = traverser;
 		this.manipulatorOptimizer = manipulatorOptimizer;
 		this.validator = validator;
-		manipulateOptionsBuilder.sampleRegisteredArbitraryBuilder(this);
 		manipulateOptionsBuilder.propertyNameResolvers(generateOptions.getPropertyNameResolvers());
 		manipulateOptionsBuilder.defaultPropertyNameResolver(generateOptions.getDefaultPropertyNameResolver());
+		manipulateOptionsBuilder.sampleRegisteredArbitraryBuilder(this);
 	}
 
 	/**
