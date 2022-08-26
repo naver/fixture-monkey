@@ -37,6 +37,7 @@ public class NodeNullityManipulator implements NodeManipulator {
 			);
 		} else {
 			if (arbitraryNode.getArbitrary() != null) {
+				//noinspection ConstantConditions
 				if (arbitraryNode.getArbitrary().sample() == null) { // without nullInject
 					arbitraryNode.setArbitrary(null);
 				}
