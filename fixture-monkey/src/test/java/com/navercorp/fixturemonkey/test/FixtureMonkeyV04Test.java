@@ -1261,4 +1261,27 @@ class FixtureMonkeyV04Test {
 
 		then(actual).isEqualTo(expected);
 	}
+
+	@Property
+	void customizeRemoveArbitrary() {
+		String actual = SUT.giveMeBuilder(SimpleObject.class)
+			.customize(MatcherOperator.exactTypeMatchOperator(SimpleObject.class,
+				new FixtureCustomizer<SimpleObject>() {
+					@Override
+					public void customizeProperties(ChildArbitraryContext childArbitraryContext) {
+						childArbitraryContext.removeArbitrary(it -> "str".equals(it.getName()));
+					}
+
+					@Nullable
+					@Override
+					public SimpleObject customizeFixture(@Nullable SimpleObject obj) {
+						return obj;
+					}
+				})
+			)
+			.sample()
+			.getStr();
+
+		then(actual).isNull();
+	}
 }
