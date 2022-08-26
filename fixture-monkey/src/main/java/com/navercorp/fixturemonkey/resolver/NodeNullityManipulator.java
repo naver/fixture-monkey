@@ -36,6 +36,11 @@ public class NodeNullityManipulator implements NodeManipulator {
 					.withNullInject(ALWAYS_NULL_INJECT)
 			);
 		} else {
+			if (arbitraryNode.getArbitrary() != null) {
+				if (arbitraryNode.getArbitrary().sample() == null) { // without nullInject
+					arbitraryNode.setArbitrary(null);
+				}
+			}
 			arbitraryNode.setArbitraryProperty(
 				arbitraryNode.getArbitraryProperty()
 					.withNullInject(NOT_NULL_INJECT)
