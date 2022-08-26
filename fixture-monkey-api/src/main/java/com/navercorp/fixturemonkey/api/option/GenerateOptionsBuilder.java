@@ -257,10 +257,11 @@ public final class GenerateOptionsBuilder {
 	}
 
 	public GenerateOptionsBuilder insertFirstArbitraryIntrospector(
-		MatcherOperator<ArbitraryGenerator> arbitraryGenerator
+		MatcherOperator<ArbitraryIntrospector> arbitraryIntrospector
 	) {
-		return this.insertFirstArbitraryGenerator(
-			arbitraryGenerator
+		return this.insertFirstArbitraryIntrospector(
+			arbitraryIntrospector.getMatcher(),
+			arbitraryIntrospector.getOperator()
 		);
 	}
 

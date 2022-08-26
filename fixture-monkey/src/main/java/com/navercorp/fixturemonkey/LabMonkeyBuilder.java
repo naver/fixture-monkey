@@ -38,7 +38,6 @@ import com.navercorp.fixturemonkey.api.customizer.FixtureCustomizer;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfoGenerator;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryPropertyGenerator;
-import com.navercorp.fixturemonkey.api.generator.DefaultArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator;
 import com.navercorp.fixturemonkey.api.generator.NullArbitraryPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.NullInjectGenerator;
@@ -211,7 +210,7 @@ public class LabMonkeyBuilder {
 		ArbitraryIntrospector arbitraryIntrospector
 	) {
 		generateOptionsBuilder.insertFirstArbitraryIntrospector(
-			MatcherOperator.exactTypeMatchOperator(type, new DefaultArbitraryGenerator(arbitraryIntrospector))
+			MatcherOperator.exactTypeMatchOperator(type, arbitraryIntrospector)
 		);
 		return this;
 	}
@@ -219,10 +218,7 @@ public class LabMonkeyBuilder {
 	public LabMonkeyBuilder pushArbitraryIntrospector(
 		MatcherOperator<ArbitraryIntrospector> arbitraryIntrospector
 	) {
-		generateOptionsBuilder.insertFirstArbitraryIntrospector(
-			arbitraryIntrospector.getMatcher(),
-			arbitraryIntrospector.getOperator()
-		);
+		generateOptionsBuilder.insertFirstArbitraryIntrospector(arbitraryIntrospector);
 		return this;
 	}
 
