@@ -52,6 +52,7 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.ChildArbitraryContext;
 import com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator;
 import com.navercorp.fixturemonkey.api.generator.ObjectArbitraryPropertyGenerator;
+import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult;
 import com.navercorp.fixturemonkey.api.introspector.JavaArbitraryResolver;
 import com.navercorp.fixturemonkey.api.introspector.JavaTimeArbitraryResolver;
 import com.navercorp.fixturemonkey.api.introspector.JavaTimeTypeArbitraryGenerator;
@@ -295,6 +296,50 @@ class FixtureMonkeyV04OptionsTest {
 			.getStr();
 
 		then(actual).isEqualTo(expected);
+	}
+
+	@Property
+	void pushAssignableTypeArbitraryIntrospector() {
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.pushAssignableTypeArbitraryIntrospector(
+				SimpleObject.class,
+				(context) -> new ArbitraryIntrospectorResult(null)
+			)
+			.build();
+
+		SimpleObjectChild actual = sut.giveMeOne(SimpleObjectChild.class);
+
+		then(actual).isNull();
+	}
+
+	@Property
+	void pushExactTypeArbitraryIntrospector() {
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.pushExactTypeArbitraryIntrospector(
+				SimpleObjectChild.class,
+				(context) -> new ArbitraryIntrospectorResult(null)
+			)
+			.build();
+
+		SimpleObjectChild actual = sut.giveMeOne(SimpleObjectChild.class);
+
+		then(actual).isNull();
+	}
+
+	@Property
+	void pushArbitraryIntrospector() {
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.pushArbitraryIntrospector(
+				MatcherOperator.exactTypeMatchOperator(
+					SimpleObjectChild.class,
+					(context) -> new ArbitraryIntrospectorResult(null)
+				)
+			)
+			.build();
+
+		SimpleObjectChild actual = sut.giveMeOne(SimpleObjectChild.class);
+
+		then(actual).isNull();
 	}
 
 	@Property
