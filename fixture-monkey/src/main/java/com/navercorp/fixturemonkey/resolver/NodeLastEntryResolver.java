@@ -41,7 +41,6 @@ public final class NodeLastEntryResolver implements NodeResolver {
 		for (ArbitraryNode selectedNode : nodes) {
 			ArbitraryNode child = selectedNode.getChildren().get(selectedNode.getChildren().size() - 1);
 			child.setArbitraryProperty(child.getArbitraryProperty().withNullInject(NOT_NULL_INJECT));
-			child.setArbitrary(null);
 			nextNodes.add(child);
 		}
 		return nextNodes;

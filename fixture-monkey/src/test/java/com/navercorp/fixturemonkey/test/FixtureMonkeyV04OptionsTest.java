@@ -876,4 +876,20 @@ class FixtureMonkeyV04OptionsTest {
 
 		then(actual).isEqualTo(null);
 	}
+
+	@Property
+	void registerMultipleTimesWithHierarchyReturnsCorrectOrder() {
+		String expected = "test";
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.register(String.class, fixture -> fixture.giveMeBuilder(String.class).set(expected))
+			.register(SimpleObject.class, fixture -> fixture.giveMeBuilder(SimpleObject.class).set("integer", 1))
+			.build();
+
+		String actual = sut.giveMeBuilder(SimpleObject.class)
+			.setNotNull("str")
+			.sample()
+			.getStr();
+
+		then(actual).isEqualTo(expected);
+	}
 }
