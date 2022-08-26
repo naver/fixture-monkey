@@ -52,6 +52,7 @@ import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.option.GenerateOptions;
 import com.navercorp.fixturemonkey.api.option.GenerateOptionsBuilder;
+import com.navercorp.fixturemonkey.api.plugin.Plugin;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.expression.MonkeyExpressionFactory;
@@ -368,6 +369,11 @@ public class LabMonkeyBuilder {
 	@SuppressWarnings("rawtypes")
 	public LabMonkeyBuilder pushArbitraryCustomizer(MatcherOperator<FixtureCustomizer> arbitraryCustomizer) {
 		generateOptionsBuilder.insertFirstArbitraryCustomizer(arbitraryCustomizer);
+		return this;
+	}
+
+	public LabMonkeyBuilder plugin(Plugin plugin) {
+		generateOptionsBuilder.plugin(plugin);
 		return this;
 	}
 
