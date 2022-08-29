@@ -100,7 +100,7 @@ public final class ArbitraryResolver {
 
 		for (Entry<Property, List<ArbitraryNode>> nodeByType : nodesByType.entrySet()) {
 			Property property = nodeByType.getKey();
-			List<ArbitraryNode> arbitraryNodes = nodesByType.get(property);
+			List<ArbitraryNode> arbitraryNodes = nodeByType.getValue();
 
 			ArbitraryBuilder<?> registeredArbitraryBuilder = registeredArbitraryBuilders.stream()
 				.filter(it -> it.match(property))

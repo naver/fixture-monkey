@@ -49,7 +49,6 @@ public final class PropertyNameNodeResolver implements NodeResolver {
 		for (ArbitraryNode node : previousNodes) {
 			String nodePropertyName = node.getArbitraryProperty().getResolvePropertyName();
 			if (propertyName.equals(ALL_INDEX_STRING) || propertyName.equals(nodePropertyName)) {
-				node.setArbitrary(null);
 				node.setArbitraryProperty(node.getArbitraryProperty().withNullInject(NOT_NULL_INJECT));
 				result.add(node);
 			}

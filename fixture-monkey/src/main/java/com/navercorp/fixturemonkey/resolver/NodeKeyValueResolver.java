@@ -47,7 +47,6 @@ public final class NodeKeyValueResolver implements NodeResolver {
 			} else {
 				child = selectedNode.getChildren().get(1);
 			}
-			child.setArbitrary(null);
 			child.setArbitraryProperty(child.getArbitraryProperty().withNullInject(NOT_NULL_INJECT));
 			nextNodes.add(child);
 		}

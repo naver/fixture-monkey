@@ -35,7 +35,6 @@ public final class RootNodeResolver implements NodeResolver {
 	public List<ArbitraryNode> resolve(ArbitraryTree arbitraryTree) {
 		ArbitraryNode root = arbitraryTree.findRoot();
 		root.setArbitraryProperty(root.getArbitraryProperty().withNullInject(NOT_NULL_INJECT));
-		root.setArbitrary(null);
 		return Collections.singletonList(root);
 	}
 }

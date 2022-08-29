@@ -19,7 +19,7 @@
 package com.navercorp.fixturemonkey.resolver;
 
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -37,7 +37,7 @@ final class MetadataCollector {
 
 	public MetadataCollector(ArbitraryNode rootNode) {
 		this.rootNode = rootNode;
-		this.nodesByProperty = new HashMap<>();
+		this.nodesByProperty = new LinkedHashMap<>();
 	}
 
 	public ArbitraryTreeMetadata collect() {
