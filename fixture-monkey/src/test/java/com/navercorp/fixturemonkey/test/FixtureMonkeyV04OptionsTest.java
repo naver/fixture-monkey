@@ -343,6 +343,22 @@ class FixtureMonkeyV04OptionsTest {
 	}
 
 	@Property
+	void objectIntrospector() {
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.objectIntrospector(
+				(context) -> new ArbitraryIntrospectorResult(Arbitraries.just(null))
+			)
+			.build();
+
+		SimpleObject simpleObject = sut.giveMeOne(SimpleObject.class);
+		ComplexObject complexObject = sut.giveMeOne(ComplexObject.class);
+
+		then(simpleObject).isNull();
+		then(complexObject).isNull();
+	}
+
+
+	@Property
 	void pushArbitraryContainerInfoGenerator() {
 		LabMonkey sut = LabMonkey.labMonkeyBuilder()
 			.pushArbitraryContainerInfoGenerator(
