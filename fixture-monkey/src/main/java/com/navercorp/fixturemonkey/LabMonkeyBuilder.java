@@ -223,6 +223,11 @@ public class LabMonkeyBuilder {
 		return this;
 	}
 
+	public LabMonkeyBuilder objectIntrospector(ArbitraryIntrospector objectIntrospector) {
+		this.generateOptionsBuilder.objectIntrospector(it -> objectIntrospector);
+		return this;
+	}
+
 	public LabMonkeyBuilder javaTypeArbitraryGenerator(
 		JavaTypeArbitraryGenerator javaTypeArbitraryGenerator
 	) {
@@ -266,7 +271,7 @@ public class LabMonkeyBuilder {
 		return pushExceptGenerateType(new AssignableTypeMatcher(type));
 	}
 
-	public LabMonkeyBuilder addExceptGenerateClassses(Class<?>... types) {
+	public LabMonkeyBuilder addExceptGenerateClasses(Class<?>... types) {
 		for (Class<?> type : types) {
 			addExceptGenerateClass(type);
 		}
