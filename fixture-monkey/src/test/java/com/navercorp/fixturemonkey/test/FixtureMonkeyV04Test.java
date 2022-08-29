@@ -59,6 +59,7 @@ import com.navercorp.fixturemonkey.test.ComplexManipulatorTestSpecs.NestedString
 import com.navercorp.fixturemonkey.test.ComplexManipulatorTestSpecs.StringAndInt;
 import com.navercorp.fixturemonkey.test.ComplexManipulatorTestSpecs.StringValue;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.ComplexObject;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.EnumObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.ListWithAnnotation;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.SimpleObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.StringPair;
@@ -1283,5 +1284,13 @@ class FixtureMonkeyV04Test {
 			.getStr();
 
 		then(actual).isNull();
+	}
+
+	@Property
+	void giveMeListWildcardEnum() {
+		List<? extends EnumObject> actual = SUT.giveMeOne(new TypeReference<List<? extends EnumObject>>() {
+		});
+
+		then(actual).isNotNull();
 	}
 }
