@@ -223,14 +223,7 @@ public class LabMonkeyBuilder {
 	}
 
 	public LabMonkeyBuilder objectIntrospector(ArbitraryIntrospector objectIntrospector) {
-		this.generateOptionsBuilder.objectIntrospector(it ->
-			new CompositeArbitraryIntrospector(
-				Arrays.asList(
-					objectIntrospector,
-					it
-				)
-			)
-		);
+		this.generateOptionsBuilder.objectIntrospector(it -> objectIntrospector);
 		return this;
 	}
 
