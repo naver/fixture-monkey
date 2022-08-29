@@ -95,4 +95,10 @@ class FixtureMonkeyV04TestSpecs {
 		@NotEmpty
 		private List<@NotBlank String> values;
 	}
+
+	public enum EnumObject {
+		ONE,
+		TWO,
+		THREE
+	}
 }
