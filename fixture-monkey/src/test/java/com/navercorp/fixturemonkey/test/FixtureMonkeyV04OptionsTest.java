@@ -912,14 +912,14 @@ class FixtureMonkeyV04OptionsTest {
 
 	@Property
 	void generateWithBuilderArbitraryIntrospector() {
-			// given
-			LabMonkey sut = LabMonkey.labMonkeyBuilder()
-				.pushExactTypeArbitraryIntrospector(BuilderInteger.class, BuilderArbitraryIntrospector.INSTANCE)
-				.build();
+		// given
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.pushExactTypeArbitraryIntrospector(BuilderInteger.class, BuilderArbitraryIntrospector.INSTANCE)
+			.build();
 
-			// when
-			BuilderInteger actual = sut.giveMeOne(BuilderInteger.class);
+		// when
+		BuilderInteger actual = sut.giveMeOne(BuilderInteger.class);
 
-			then(actual.getValue()).isBetween(Integer.MIN_VALUE, Integer.MAX_VALUE);
+		then(actual.getValue()).isBetween(Integer.MIN_VALUE, Integer.MAX_VALUE);
 	}
 }
