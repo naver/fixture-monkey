@@ -1,14 +1,13 @@
 package com.navercorp.fixturemonkey.api.introspector;
 
-import static java.util.stream.Collectors.*;
-import static org.assertj.core.api.BDDAssertions.*;
+import static java.util.stream.Collectors.toList;
+import static org.assertj.core.api.BDDAssertions.then;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
-
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
@@ -91,7 +90,7 @@ public class BuilderArbitraryIntrospectorTest {
 		then(sample.getValue()).isNotNull();
 	}
 
-	 static class BuilderSample {
+	static class BuilderSample {
 		private String name;
 		private int value;
 
@@ -100,15 +99,15 @@ public class BuilderArbitraryIntrospectorTest {
 			this.value = value;
 		}
 
-		 public String getName() {
-			 return name;
-		 }
+		public String getName() {
+			return name;
+		}
 
-		 public int getValue() {
-			 return value;
-		 }
+		public int getValue() {
+			return value;
+		}
 
-		 public static BuilderSampleBuilder builder() {
+		public static BuilderSampleBuilder builder() {
 			return new BuilderSampleBuilder();
 		}
 
