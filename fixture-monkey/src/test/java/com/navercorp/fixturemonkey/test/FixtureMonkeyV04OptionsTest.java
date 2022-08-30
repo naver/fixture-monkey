@@ -53,6 +53,7 @@ import com.navercorp.fixturemonkey.api.generator.ChildArbitraryContext;
 import com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator;
 import com.navercorp.fixturemonkey.api.generator.ObjectArbitraryPropertyGenerator;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult;
+import com.navercorp.fixturemonkey.api.introspector.BuilderArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.JavaArbitraryResolver;
 import com.navercorp.fixturemonkey.api.introspector.JavaTimeArbitraryResolver;
 import com.navercorp.fixturemonkey.api.introspector.JavaTimeTypeArbitraryGenerator;
@@ -63,6 +64,7 @@ import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.resolver.DecomposableContainerValue;
 import com.navercorp.fixturemonkey.resolver.IdentityNodeResolver;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.BuilderInteger;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.Pair;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.PairArbitraryPropertyGenerator;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.PairIntrospector;
@@ -906,5 +908,18 @@ class FixtureMonkeyV04OptionsTest {
 			.getStr();
 
 		then(actual).isEqualTo(expected);
+	}
+
+	@Property
+	void generateWithBuilderArbitraryIntrospector() {
+			// given
+			LabMonkey sut = LabMonkey.labMonkeyBuilder()
+				.pushExactTypeArbitraryIntrospector(BuilderInteger.class, BuilderArbitraryIntrospector.INSTANCE)
+				.build();
+
+			// when
+			BuilderInteger actual = sut.giveMeOne(BuilderInteger.class);
+
+			then(actual.getValue()).isBetween(Integer.MIN_VALUE, Integer.MAX_VALUE);
 	}
 }

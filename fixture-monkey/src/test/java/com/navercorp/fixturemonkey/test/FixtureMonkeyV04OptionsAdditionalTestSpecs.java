@@ -27,6 +27,9 @@ import net.jqwik.api.Arbitrary;
 import net.jqwik.api.Builders;
 import net.jqwik.api.Builders.BuilderCombinator;
 
+import lombok.Builder;
+import lombok.Getter;
+
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.LabMonkey;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
@@ -157,5 +160,11 @@ class FixtureMonkeyV04OptionsAdditionalTestSpecs {
 			);
 		}
 
+	}
+
+	@Getter
+	@Builder
+	public static class BuilderInteger {
+		private int value;
 	}
 }
