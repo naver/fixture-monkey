@@ -10,9 +10,9 @@ plugins {
 dependencies {
     api(project(":fixture-monkey"))
     api(project(":fixture-monkey-engine"))
-    api("ch.qos.logback:logback-classic:1.2.3")
+    api("ch.qos.logback:logback-classic:1.2.9")
     api("org.hibernate.validator:hibernate-validator:6.2.0.Final")
-    api("org.glassfish:jakarta.el:3.0.3")
+    api("org.glassfish:jakarta.el:3.0.4")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.7.0")
     testImplementation("org.junit.jupiter:junit-jupiter-engine:5.7.0")
