@@ -645,7 +645,6 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 		then(localTime).isAfterOrEqualTo(now);
 	}
 
-	//Todo: zonedDateTimes, monthdays, offsetDatetimes, offsetTimes, years, yearmonths
 	@Property
 	void zonedDateTime() {
 		// given
