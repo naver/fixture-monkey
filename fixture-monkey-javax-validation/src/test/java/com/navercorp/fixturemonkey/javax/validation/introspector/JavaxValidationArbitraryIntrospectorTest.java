@@ -53,24 +53,9 @@ class JavaxValidationArbitraryIntrospectorTest {
 	void strings() {
 		// given
 		StringArbitrary stringArbitrary = Arbitraries.strings();
-		TypeReference<StringIntrospectorSpec> typeReference = new TypeReference<StringIntrospectorSpec>() {
-		};
-		String propertyName = "str";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<StringIntrospectorSpec>(){},
+			"str"
 		);
 
 		// when
@@ -85,24 +70,9 @@ class JavaxValidationArbitraryIntrospectorTest {
 	void stringsNotBlank() {
 		// given
 		StringArbitrary stringArbitrary = Arbitraries.strings();
-		TypeReference<StringIntrospectorSpec> typeReference = new TypeReference<StringIntrospectorSpec>() {
-		};
-		String propertyName = "notBlank";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<StringIntrospectorSpec>(){},
+			"notBlank"
 		);
 
 		// when
@@ -117,24 +87,9 @@ class JavaxValidationArbitraryIntrospectorTest {
 	void stringsNotEmpty() {
 		// given
 		StringArbitrary stringArbitrary = Arbitraries.strings();
-		TypeReference<StringIntrospectorSpec> typeReference = new TypeReference<StringIntrospectorSpec>() {
-		};
-		String propertyName = "notEmpty";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<StringIntrospectorSpec>(){},
+			"notEmpty"
 		);
 
 		// when
@@ -149,24 +104,9 @@ class JavaxValidationArbitraryIntrospectorTest {
 	void stringsSize() {
 		// given
 		StringArbitrary stringArbitrary = Arbitraries.strings();
-		TypeReference<StringIntrospectorSpec> typeReference = new TypeReference<StringIntrospectorSpec>() {
-		};
-		String propertyName = "size";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<StringIntrospectorSpec>(){},
+			"size"
 		);
 
 		// when
@@ -182,24 +122,9 @@ class JavaxValidationArbitraryIntrospectorTest {
 	void stringDigits() {
 		// given
 		StringArbitrary stringArbitrary = Arbitraries.strings();
-		TypeReference<StringIntrospectorSpec> typeReference = new TypeReference<StringIntrospectorSpec>() {
-		};
-		String propertyName = "digits";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<StringIntrospectorSpec>(){},
+			"digits"
 		);
 
 		// when
@@ -215,24 +140,9 @@ class JavaxValidationArbitraryIntrospectorTest {
 	void stringPattern() {
 		// given
 		StringArbitrary stringArbitrary = Arbitraries.strings();
-		TypeReference<StringIntrospectorSpec> typeReference = new TypeReference<StringIntrospectorSpec>() {
-		};
-		String propertyName = "pattern";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<StringIntrospectorSpec>(){},
+			"pattern"
 		);
 
 		// when
@@ -252,24 +162,9 @@ class JavaxValidationArbitraryIntrospectorTest {
 	void stringEmail() {
 		// given
 		StringArbitrary stringArbitrary = Arbitraries.strings();
-		TypeReference<StringIntrospectorSpec> typeReference = new TypeReference<StringIntrospectorSpec>() {
-		};
-		String propertyName = "email";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<StringIntrospectorSpec>(){},
+			"email"
 		);
 
 		// when
@@ -284,24 +179,9 @@ class JavaxValidationArbitraryIntrospectorTest {
 	void characters() {
 		// given
 		CharacterArbitrary characterArbitrary = Arbitraries.chars();
-		TypeReference<CharacterIntrospectorSpec> typeReference = new TypeReference<CharacterIntrospectorSpec>() {
-		};
-		String propertyName = "character";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<CharacterIntrospectorSpec>(){},
+			"character"
 		);
 
 		// when
@@ -315,24 +195,9 @@ class JavaxValidationArbitraryIntrospectorTest {
 	void shorts() {
 		// given
 		ShortArbitrary shortArbitrary = Arbitraries.shorts();
-		TypeReference<ShortIntrospectorSpec> typeReference = new TypeReference<ShortIntrospectorSpec>() {
-		};
-		String propertyName = "shortValue";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<ShortIntrospectorSpec>(){},
+			"shortValue"
 		);
 
 		// when
@@ -347,24 +212,9 @@ class JavaxValidationArbitraryIntrospectorTest {
 	void shortDigitsValue() {
 		// given
 		ShortArbitrary shortArbitrary = Arbitraries.shorts();
-		TypeReference<ShortIntrospectorSpec> typeReference = new TypeReference<ShortIntrospectorSpec>() {
-		};
-		String propertyName = "digitsValue";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<ShortIntrospectorSpec>(){},
+			"digitsValue"
 		);
 
 		// when
@@ -379,24 +229,9 @@ class JavaxValidationArbitraryIntrospectorTest {
 	void shortMinValue() {
 		// given
 		ShortArbitrary shortArbitrary = Arbitraries.shorts();
-		TypeReference<ShortIntrospectorSpec> typeReference = new TypeReference<ShortIntrospectorSpec>() {
-		};
-		String propertyName = "minValue";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<ShortIntrospectorSpec>(){},
+			"minValue"
 		);
 
 		// when
@@ -411,24 +246,9 @@ class JavaxValidationArbitraryIntrospectorTest {
 	void shortMaxValue() {
 		// given
 		ShortArbitrary shortArbitrary = Arbitraries.shorts();
-		TypeReference<ShortIntrospectorSpec> typeReference = new TypeReference<ShortIntrospectorSpec>() {
-		};
-		String propertyName = "maxValue";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<ShortIntrospectorSpec>(){},
+			"maxValue"
 		);
 
 		// when
@@ -443,24 +263,9 @@ class JavaxValidationArbitraryIntrospectorTest {
 	void shortDecimalMin() {
 		// given
 		ShortArbitrary shortArbitrary = Arbitraries.shorts();
-		TypeReference<ShortIntrospectorSpec> typeReference = new TypeReference<ShortIntrospectorSpec>() {
-		};
-		String propertyName = "decimalMin";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<ShortIntrospectorSpec>(){},
+			"decimalMin"
 		);
 
 		// when
@@ -475,24 +280,9 @@ class JavaxValidationArbitraryIntrospectorTest {
 	void shortDecimalMinExclusive() {
 		// given
 		ShortArbitrary shortArbitrary = Arbitraries.shorts();
-		TypeReference<ShortIntrospectorSpec> typeReference = new TypeReference<ShortIntrospectorSpec>() {
-		};
-		String propertyName = "decimalMinExclusive";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<ShortIntrospectorSpec>(){},
+			"decimalMinExclusive"
 		);
 
 		// when
@@ -507,24 +297,9 @@ class JavaxValidationArbitraryIntrospectorTest {
 	void shortDecimalMax() {
 		// given
 		ShortArbitrary shortArbitrary = Arbitraries.shorts();
-		TypeReference<ShortIntrospectorSpec> typeReference = new TypeReference<ShortIntrospectorSpec>() {
-		};
-		String propertyName = "decimalMax";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<ShortIntrospectorSpec>(){},
+			"decimalMax"
 		);
 
 		// when
@@ -539,24 +314,9 @@ class JavaxValidationArbitraryIntrospectorTest {
 	void shortDecimalMaxExclusive() {
 		// given
 		ShortArbitrary shortArbitrary = Arbitraries.shorts();
-		TypeReference<ShortIntrospectorSpec> typeReference = new TypeReference<ShortIntrospectorSpec>() {
-		};
-		String propertyName = "decimalMaxExclusive";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<ShortIntrospectorSpec>(){},
+			"decimalMaxExclusive"
 		);
 
 		// when
@@ -571,24 +331,9 @@ class JavaxValidationArbitraryIntrospectorTest {
 	void shortNegative() {
 		// given
 		ShortArbitrary shortArbitrary = Arbitraries.shorts();
-		TypeReference<ShortIntrospectorSpec> typeReference = new TypeReference<ShortIntrospectorSpec>() {
-		};
-		String propertyName = "negative";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<ShortIntrospectorSpec>(){},
+			"negative"
 		);
 
 		// when
@@ -603,24 +348,9 @@ class JavaxValidationArbitraryIntrospectorTest {
 	void shortNegativeOrZero() {
 		// given
 		ShortArbitrary shortArbitrary = Arbitraries.shorts();
-		TypeReference<ShortIntrospectorSpec> typeReference = new TypeReference<ShortIntrospectorSpec>() {
-		};
-		String propertyName = "negativeOrZero";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<ShortIntrospectorSpec>(){},
+			"negativeOrZero"
 		);
 
 		// when
@@ -635,24 +365,9 @@ class JavaxValidationArbitraryIntrospectorTest {
 	void shortPositive() {
 		// given
 		ShortArbitrary shortArbitrary = Arbitraries.shorts();
-		TypeReference<ShortIntrospectorSpec> typeReference = new TypeReference<ShortIntrospectorSpec>() {
-		};
-		String propertyName = "positive";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<ShortIntrospectorSpec>(){},
+			"positive"
 		);
 
 		// when
@@ -667,24 +382,9 @@ class JavaxValidationArbitraryIntrospectorTest {
 	void shortPositiveOrZero() {
 		// given
 		ShortArbitrary shortArbitrary = Arbitraries.shorts();
-		TypeReference<ShortIntrospectorSpec> typeReference = new TypeReference<ShortIntrospectorSpec>() {
-		};
-		String propertyName = "positiveOrZero";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<ShortIntrospectorSpec>(){},
+			"positiveOrZero"
 		);
 
 		// when
@@ -699,24 +399,9 @@ class JavaxValidationArbitraryIntrospectorTest {
 	void bytes() {
 		// given
 		ByteArbitrary byteArbitrary = Arbitraries.bytes();
-		TypeReference<ByteIntrospectorSpec> typeReference = new TypeReference<ByteIntrospectorSpec>() {
-		};
-		String propertyName = "byteValue";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<ByteIntrospectorSpec>(){},
+			"byteValue"
 		);
 
 		// when
@@ -731,24 +416,9 @@ class JavaxValidationArbitraryIntrospectorTest {
 	void byteDigitsValue() {
 		// given
 		ByteArbitrary byteArbitrary = Arbitraries.bytes();
-		TypeReference<ByteIntrospectorSpec> typeReference = new TypeReference<ByteIntrospectorSpec>() {
-		};
-		String propertyName = "digitsValue";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<ByteIntrospectorSpec>(){},
+			"digitsValue"
 		);
 
 		// when
@@ -763,24 +433,9 @@ class JavaxValidationArbitraryIntrospectorTest {
 	void byteMinValue() {
 		// given
 		ByteArbitrary byteArbitrary = Arbitraries.bytes();
-		TypeReference<ByteIntrospectorSpec> typeReference = new TypeReference<ByteIntrospectorSpec>() {
-		};
-		String propertyName = "minValue";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<ByteIntrospectorSpec>(){},
+			"minValue"
 		);
 
 		// when
@@ -795,24 +450,9 @@ class JavaxValidationArbitraryIntrospectorTest {
 	void byteMaxValue() {
 		// given
 		ByteArbitrary byteArbitrary = Arbitraries.bytes();
-		TypeReference<ByteIntrospectorSpec> typeReference = new TypeReference<ByteIntrospectorSpec>() {
-		};
-		String propertyName = "maxValue";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<ByteIntrospectorSpec>(){},
+			"maxValue"
 		);
 
 		// when
@@ -827,24 +467,9 @@ class JavaxValidationArbitraryIntrospectorTest {
 	void byteDecimalMin() {
 		// given
 		ByteArbitrary byteArbitrary = Arbitraries.bytes();
-		TypeReference<ByteIntrospectorSpec> typeReference = new TypeReference<ByteIntrospectorSpec>() {
-		};
-		String propertyName = "decimalMin";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<ByteIntrospectorSpec>(){},
+			"decimalMin"
 		);
 
 		// when
@@ -859,24 +484,9 @@ class JavaxValidationArbitraryIntrospectorTest {
 	void byteDecimalMinExclusive() {
 		// given
 		ByteArbitrary byteArbitrary = Arbitraries.bytes();
-		TypeReference<ByteIntrospectorSpec> typeReference = new TypeReference<ByteIntrospectorSpec>() {
-		};
-		String propertyName = "decimalMinExclusive";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<ByteIntrospectorSpec>(){},
+			"decimalMinExclusive"
 		);
 
 		// when
@@ -891,24 +501,9 @@ class JavaxValidationArbitraryIntrospectorTest {
 	void byteDecimalMax() {
 		// given
 		ByteArbitrary byteArbitrary = Arbitraries.bytes();
-		TypeReference<ByteIntrospectorSpec> typeReference = new TypeReference<ByteIntrospectorSpec>() {
-		};
-		String propertyName = "decimalMax";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<ByteIntrospectorSpec>(){},
+			"decimalMax"
 		);
 
 		// when
@@ -923,24 +518,9 @@ class JavaxValidationArbitraryIntrospectorTest {
 	void byteDecimalMaxExclusive() {
 		// given
 		ByteArbitrary byteArbitrary = Arbitraries.bytes();
-		TypeReference<ByteIntrospectorSpec> typeReference = new TypeReference<ByteIntrospectorSpec>() {
-		};
-		String propertyName = "decimalMaxExclusive";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<ByteIntrospectorSpec>(){},
+			"decimalMaxExclusive"
 		);
 
 		// when
@@ -955,24 +535,9 @@ class JavaxValidationArbitraryIntrospectorTest {
 	void byteNegative() {
 		// given
 		ByteArbitrary byteArbitrary = Arbitraries.bytes();
-		TypeReference<ByteIntrospectorSpec> typeReference = new TypeReference<ByteIntrospectorSpec>() {
-		};
-		String propertyName = "negative";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<ByteIntrospectorSpec>(){},
+			"negative"
 		);
 
 		// when
@@ -987,24 +552,9 @@ class JavaxValidationArbitraryIntrospectorTest {
 	void byteNegativeOrZero() {
 		// given
 		ByteArbitrary byteArbitrary = Arbitraries.bytes();
-		TypeReference<ByteIntrospectorSpec> typeReference = new TypeReference<ByteIntrospectorSpec>() {
-		};
-		String propertyName = "negativeOrZero";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<ByteIntrospectorSpec>(){},
+			"negativeOrZero"
 		);
 
 		// when
@@ -1019,24 +569,9 @@ class JavaxValidationArbitraryIntrospectorTest {
 	void bytePositive() {
 		// given
 		ByteArbitrary byteArbitrary = Arbitraries.bytes();
-		TypeReference<ByteIntrospectorSpec> typeReference = new TypeReference<ByteIntrospectorSpec>() {
-		};
-		String propertyName = "positive";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<ByteIntrospectorSpec>(){},
+			"positive"
 		);
 
 		// when
@@ -1051,24 +586,9 @@ class JavaxValidationArbitraryIntrospectorTest {
 	void bytePositiveOrZero() {
 		// given
 		ByteArbitrary byteArbitrary = Arbitraries.bytes();
-		TypeReference<ByteIntrospectorSpec> typeReference = new TypeReference<ByteIntrospectorSpec>() {
-		};
-		String propertyName = "positiveOrZero";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<ByteIntrospectorSpec>(){},
+			"positiveOrZero"
 		);
 
 		// when
@@ -1491,24 +1011,9 @@ class JavaxValidationArbitraryIntrospectorTest {
 	void integers() {
 		// given
 		IntegerArbitrary integerArbitrary = Arbitraries.integers();
-		TypeReference<IntIntrospectorSpec> typeReference = new TypeReference<IntIntrospectorSpec>() {
-		};
-		String propertyName = "intValue";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<IntIntrospectorSpec>(){},
+			"intValue"
 		);
 
 		// when
@@ -1523,24 +1028,9 @@ class JavaxValidationArbitraryIntrospectorTest {
 	void integersDigitsValue() {
 		// given
 		IntegerArbitrary integerArbitrary = Arbitraries.integers();
-		TypeReference<IntIntrospectorSpec> typeReference = new TypeReference<IntIntrospectorSpec>() {
-		};
-		String propertyName = "digitsValue";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<IntIntrospectorSpec>(){},
+			"digitsValue"
 		);
 
 		// when
@@ -1555,24 +1045,9 @@ class JavaxValidationArbitraryIntrospectorTest {
 	void integersMinValue() {
 		// given
 		IntegerArbitrary integerArbitrary = Arbitraries.integers();
-		TypeReference<IntIntrospectorSpec> typeReference = new TypeReference<IntIntrospectorSpec>() {
-		};
-		String propertyName = "minValue";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<IntIntrospectorSpec>(){},
+			"minValue"
 		);
 
 		// when
@@ -1587,24 +1062,9 @@ class JavaxValidationArbitraryIntrospectorTest {
 	void integersMaxValue() {
 		// given
 		IntegerArbitrary integerArbitrary = Arbitraries.integers();
-		TypeReference<IntIntrospectorSpec> typeReference = new TypeReference<IntIntrospectorSpec>() {
-		};
-		String propertyName = "maxValue";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<IntIntrospectorSpec>(){},
+			"maxValue"
 		);
 
 		// when
@@ -1619,24 +1079,9 @@ class JavaxValidationArbitraryIntrospectorTest {
 	void integersDecimalMin() {
 		// given
 		IntegerArbitrary integerArbitrary = Arbitraries.integers();
-		TypeReference<IntIntrospectorSpec> typeReference = new TypeReference<IntIntrospectorSpec>() {
-		};
-		String propertyName = "decimalMin";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<IntIntrospectorSpec>(){},
+			"decimalMin"
 		);
 
 		// when
@@ -1651,24 +1096,9 @@ class JavaxValidationArbitraryIntrospectorTest {
 	void integersDecimalMinExclusive() {
 		// given
 		IntegerArbitrary integerArbitrary = Arbitraries.integers();
-		TypeReference<IntIntrospectorSpec> typeReference = new TypeReference<IntIntrospectorSpec>() {
-		};
-		String propertyName = "decimalMinExclusive";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<IntIntrospectorSpec>(){},
+			"decimalMinExclusive"
 		);
 
 		// when
@@ -1683,24 +1113,9 @@ class JavaxValidationArbitraryIntrospectorTest {
 	void integersDecimalMax() {
 		// given
 		IntegerArbitrary integerArbitrary = Arbitraries.integers();
-		TypeReference<IntIntrospectorSpec> typeReference = new TypeReference<IntIntrospectorSpec>() {
-		};
-		String propertyName = "decimalMax";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<IntIntrospectorSpec>(){},
+			"decimalMax"
 		);
 
 		// when
@@ -1715,25 +1130,11 @@ class JavaxValidationArbitraryIntrospectorTest {
 	void integersDecimalMaxExclusive() {
 		// given
 		IntegerArbitrary integerArbitrary = Arbitraries.integers();
-		TypeReference<IntIntrospectorSpec> typeReference = new TypeReference<IntIntrospectorSpec>() {
-		};
-		String propertyName = "decimalMaxExclusive";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<IntIntrospectorSpec>(){},
+			"decimalMaxExclusive"
 		);
+
 
 		// when
 		Arbitrary<Integer> actual = this.sut.integers(integerArbitrary, context);
@@ -1747,25 +1148,11 @@ class JavaxValidationArbitraryIntrospectorTest {
 	void integersNegative() {
 		// given
 		IntegerArbitrary integerArbitrary = Arbitraries.integers();
-		TypeReference<IntIntrospectorSpec> typeReference = new TypeReference<IntIntrospectorSpec>() {
-		};
-		String propertyName = "negative";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<IntIntrospectorSpec>(){},
+			"negative"
 		);
+
 
 		// when
 		Arbitrary<Integer> actual = this.sut.integers(integerArbitrary, context);
@@ -1779,25 +1166,11 @@ class JavaxValidationArbitraryIntrospectorTest {
 	void integersNegativeOrZero() {
 		// given
 		IntegerArbitrary integerArbitrary = Arbitraries.integers();
-		TypeReference<IntIntrospectorSpec> typeReference = new TypeReference<IntIntrospectorSpec>() {
-		};
-		String propertyName = "negativeOrZero";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<IntIntrospectorSpec>(){},
+			"negativeOrZero"
 		);
+
 
 		// when
 		Arbitrary<Integer> actual = this.sut.integers(integerArbitrary, context);
@@ -1811,25 +1184,11 @@ class JavaxValidationArbitraryIntrospectorTest {
 	void integersPositive() {
 		// given
 		IntegerArbitrary integerArbitrary = Arbitraries.integers();
-		TypeReference<IntIntrospectorSpec> typeReference = new TypeReference<IntIntrospectorSpec>() {
-		};
-		String propertyName = "positive";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<IntIntrospectorSpec>(){},
+			"positive"
 		);
+
 
 		// when
 		Arbitrary<Integer> actual = this.sut.integers(integerArbitrary, context);
@@ -1843,25 +1202,11 @@ class JavaxValidationArbitraryIntrospectorTest {
 	void integersPositiveOrZero() {
 		// given
 		IntegerArbitrary integerArbitrary = Arbitraries.integers();
-		TypeReference<IntIntrospectorSpec> typeReference = new TypeReference<IntIntrospectorSpec>() {
-		};
-		String propertyName = "positiveOrZero";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<IntIntrospectorSpec>(){},
+			"positiveOrZero"
 		);
+
 
 		// when
 		Arbitrary<Integer> actual = this.sut.integers(integerArbitrary, context);
