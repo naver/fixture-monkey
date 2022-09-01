@@ -25,8 +25,15 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.MonthDay;
+import java.time.OffsetDateTime;
+import java.time.OffsetTime;
 import java.time.Period;
+import java.time.Year;
+import java.time.YearMonth;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -44,8 +51,14 @@ import net.jqwik.time.api.arbitraries.InstantArbitrary;
 import net.jqwik.time.api.arbitraries.LocalDateArbitrary;
 import net.jqwik.time.api.arbitraries.LocalDateTimeArbitrary;
 import net.jqwik.time.api.arbitraries.LocalTimeArbitrary;
+import net.jqwik.time.api.arbitraries.MonthDayArbitrary;
+import net.jqwik.time.api.arbitraries.OffsetDateTimeArbitrary;
+import net.jqwik.time.api.arbitraries.OffsetTimeArbitrary;
 import net.jqwik.time.api.arbitraries.PeriodArbitrary;
+import net.jqwik.time.api.arbitraries.YearArbitrary;
+import net.jqwik.time.api.arbitraries.YearMonthArbitrary;
 import net.jqwik.time.api.arbitraries.ZoneOffsetArbitrary;
+import net.jqwik.time.api.arbitraries.ZonedDateTimeArbitrary;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
@@ -60,24 +73,10 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 	void calendar() {
 		// given
 		CalendarArbitrary calendarArbitrary = Dates.datesAsCalendar();
-		TypeReference<TimeIntrospectorSpec> typeReference = new TypeReference<TimeIntrospectorSpec>() {
-		};
-		String propertyName = "calendar";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<TimeIntrospectorSpec>() {
+			},
+			"calendar"
 		);
 
 		// when
@@ -92,24 +91,10 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 	void calendarPast() {
 		// given
 		CalendarArbitrary calendarArbitrary = Dates.datesAsCalendar();
-		TypeReference<TimeIntrospectorSpec> typeReference = new TypeReference<TimeIntrospectorSpec>() {
-		};
-		String propertyName = "calendarPast";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<TimeIntrospectorSpec>() {
+			},
+			"calendarPast"
 		);
 
 		// when
@@ -126,24 +111,10 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 	void calendarPastOrPresent() {
 		// given
 		CalendarArbitrary calendarArbitrary = Dates.datesAsCalendar();
-		TypeReference<TimeIntrospectorSpec> typeReference = new TypeReference<TimeIntrospectorSpec>() {
-		};
-		String propertyName = "calendarPastOrPresent";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<TimeIntrospectorSpec>() {
+			},
+			"calendarPastOrPresent"
 		);
 
 		// when
@@ -160,24 +131,10 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 	void calendarFuture() {
 		// given
 		CalendarArbitrary calendarArbitrary = Dates.datesAsCalendar();
-		TypeReference<TimeIntrospectorSpec> typeReference = new TypeReference<TimeIntrospectorSpec>() {
-		};
-		String propertyName = "calendarFuture";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<TimeIntrospectorSpec>() {
+			},
+			"calendarFuture"
 		);
 
 		// when
@@ -194,24 +151,10 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 	void calendarFutureOrPresent() {
 		// given
 		CalendarArbitrary calendarArbitrary = Dates.datesAsCalendar();
-		TypeReference<TimeIntrospectorSpec> typeReference = new TypeReference<TimeIntrospectorSpec>() {
-		};
-		String propertyName = "calendarFutureOrPresent";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<TimeIntrospectorSpec>() {
+			},
+			"calendarFutureOrPresent"
 		);
 
 		// when
@@ -228,24 +171,10 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 	void dates() {
 		// given
 		DateArbitrary dateArbitrary = Dates.datesAsDate();
-		TypeReference<TimeIntrospectorSpec> typeReference = new TypeReference<TimeIntrospectorSpec>() {
-		};
-		String propertyName = "date";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<TimeIntrospectorSpec>() {
+			},
+			"date"
 		);
 
 		// when
@@ -260,24 +189,10 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 	void datesPast() {
 		// given
 		DateArbitrary dateArbitrary = Dates.datesAsDate();
-		TypeReference<TimeIntrospectorSpec> typeReference = new TypeReference<TimeIntrospectorSpec>() {
-		};
-		String propertyName = "datePast";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<TimeIntrospectorSpec>() {
+			},
+			"datePast"
 		);
 
 		// when
@@ -294,24 +209,10 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 	void datesPastOrPresent() {
 		// given
 		DateArbitrary dateArbitrary = Dates.datesAsDate();
-		TypeReference<TimeIntrospectorSpec> typeReference = new TypeReference<TimeIntrospectorSpec>() {
-		};
-		String propertyName = "datePastOrPresent";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<TimeIntrospectorSpec>() {
+			},
+			"datePastOrPresent"
 		);
 
 		// when
@@ -328,24 +229,10 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 	void datesFuture() {
 		// given
 		DateArbitrary dateArbitrary = Dates.datesAsDate();
-		TypeReference<TimeIntrospectorSpec> typeReference = new TypeReference<TimeIntrospectorSpec>() {
-		};
-		String propertyName = "dateFuture";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<TimeIntrospectorSpec>() {
+			},
+			"dateFuture"
 		);
 
 		// when
@@ -362,24 +249,10 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 	void datesFutureOrPresent() {
 		// given
 		DateArbitrary dateArbitrary = Dates.datesAsDate();
-		TypeReference<TimeIntrospectorSpec> typeReference = new TypeReference<TimeIntrospectorSpec>() {
-		};
-		String propertyName = "dateFutureOrPresent";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<TimeIntrospectorSpec>() {
+			},
+			"dateFutureOrPresent"
 		);
 
 		// when
@@ -396,24 +269,10 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 	void instant() {
 		// given
 		InstantArbitrary instantArbitrary = DateTimes.instants();
-		TypeReference<TimeIntrospectorSpec> typeReference = new TypeReference<TimeIntrospectorSpec>() {
-		};
-		String propertyName = "instant";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<TimeIntrospectorSpec>() {
+			},
+			"instant"
 		);
 
 		// when
@@ -428,24 +287,10 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 	void instantPast() {
 		// given
 		InstantArbitrary instantArbitrary = DateTimes.instants();
-		TypeReference<TimeIntrospectorSpec> typeReference = new TypeReference<TimeIntrospectorSpec>() {
-		};
-		String propertyName = "instantPast";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<TimeIntrospectorSpec>() {
+			},
+			"instantPast"
 		);
 
 		// when
@@ -463,24 +308,10 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 	void instantPastOrPresent() {
 		// given
 		InstantArbitrary instantArbitrary = DateTimes.instants();
-		TypeReference<TimeIntrospectorSpec> typeReference = new TypeReference<TimeIntrospectorSpec>() {
-		};
-		String propertyName = "instantPastOrPresent";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<TimeIntrospectorSpec>() {
+			},
+			"instantPastOrPresent"
 		);
 
 		// when
@@ -499,24 +330,10 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 		// given
 		Instant now = Instant.now();
 		InstantArbitrary instantArbitrary = DateTimes.instants();
-		TypeReference<TimeIntrospectorSpec> typeReference = new TypeReference<TimeIntrospectorSpec>() {
-		};
-		String propertyName = "instantFuture";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<TimeIntrospectorSpec>() {
+			},
+			"instantFuture"
 		);
 
 		// when
@@ -532,24 +349,10 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 		// given
 		Instant now = Instant.now();
 		InstantArbitrary instantArbitrary = DateTimes.instants();
-		TypeReference<TimeIntrospectorSpec> typeReference = new TypeReference<TimeIntrospectorSpec>() {
-		};
-		String propertyName = "instantFutureOrPresent";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<TimeIntrospectorSpec>() {
+			},
+			"instantFutureOrPresent"
 		);
 
 		// when
@@ -564,24 +367,10 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 	void localDates() {
 		// given
 		LocalDateArbitrary localDateArbitrary = Dates.dates();
-		TypeReference<TimeIntrospectorSpec> typeReference = new TypeReference<TimeIntrospectorSpec>() {
-		};
-		String propertyName = "localDate";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<TimeIntrospectorSpec>() {
+			},
+			"localDate"
 		);
 
 		// when
@@ -596,24 +385,10 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 	void localDatesPast() {
 		// given
 		LocalDateArbitrary localDateArbitrary = Dates.dates();
-		TypeReference<TimeIntrospectorSpec> typeReference = new TypeReference<TimeIntrospectorSpec>() {
-		};
-		String propertyName = "localDatePast";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<TimeIntrospectorSpec>() {
+			},
+			"localDatePast"
 		);
 
 		// when
@@ -629,24 +404,10 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 	void localDatesPastOrPresent() {
 		// given
 		LocalDateArbitrary localDateArbitrary = Dates.dates();
-		TypeReference<TimeIntrospectorSpec> typeReference = new TypeReference<TimeIntrospectorSpec>() {
-		};
-		String propertyName = "localDatePastOrPresent";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<TimeIntrospectorSpec>() {
+			},
+			"localDatePastOrPresent"
 		);
 
 		// when
@@ -663,24 +424,10 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 		// given
 		LocalDate now = LocalDate.now();
 		LocalDateArbitrary localDateArbitrary = Dates.dates();
-		TypeReference<TimeIntrospectorSpec> typeReference = new TypeReference<TimeIntrospectorSpec>() {
-		};
-		String propertyName = "localDateFuture";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<TimeIntrospectorSpec>() {
+			},
+			"localDateFuture"
 		);
 
 		// when
@@ -696,24 +443,10 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 		// given
 		LocalDate now = LocalDate.now();
 		LocalDateArbitrary localDateArbitrary = Dates.dates();
-		TypeReference<TimeIntrospectorSpec> typeReference = new TypeReference<TimeIntrospectorSpec>() {
-		};
-		String propertyName = "localDateFutureOrPresent";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<TimeIntrospectorSpec>() {
+			},
+			"localDateFutureOrPresent"
 		);
 
 		// when
@@ -728,24 +461,10 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 	void localDateTimes() {
 		// given
 		LocalDateTimeArbitrary localDateTimeArbitrary = DateTimes.dateTimes();
-		TypeReference<TimeIntrospectorSpec> typeReference = new TypeReference<TimeIntrospectorSpec>() {
-		};
-		String propertyName = "localDateTime";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<TimeIntrospectorSpec>() {
+			},
+			"localDateTime"
 		);
 
 		// when
@@ -760,24 +479,10 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 	void localDateTimesPast() {
 		// given
 		LocalDateTimeArbitrary localDateTimeArbitrary = DateTimes.dateTimes();
-		TypeReference<TimeIntrospectorSpec> typeReference = new TypeReference<TimeIntrospectorSpec>() {
-		};
-		String propertyName = "localDateTimePast";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<TimeIntrospectorSpec>() {
+			},
+			"localDateTimePast"
 		);
 
 		// when
@@ -793,24 +498,10 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 	void localDateTimesPastOrPresent() {
 		// given
 		LocalDateTimeArbitrary localDateTimeArbitrary = DateTimes.dateTimes();
-		TypeReference<TimeIntrospectorSpec> typeReference = new TypeReference<TimeIntrospectorSpec>() {
-		};
-		String propertyName = "localDateTimePastOrPresent";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<TimeIntrospectorSpec>() {
+			},
+			"localDateTimePastOrPresent"
 		);
 
 		// when
@@ -827,24 +518,10 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 		// given
 		LocalDateTime now = LocalDateTime.now();
 		LocalDateTimeArbitrary localDateTimeArbitrary = DateTimes.dateTimes();
-		TypeReference<TimeIntrospectorSpec> typeReference = new TypeReference<TimeIntrospectorSpec>() {
-		};
-		String propertyName = "localDateTimeFuture";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<TimeIntrospectorSpec>() {
+			},
+			"localDateTimeFuture"
 		);
 
 		// when
@@ -860,24 +537,10 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 		// given
 		LocalDateTime now = LocalDateTime.now();
 		LocalDateTimeArbitrary localDateTimeArbitrary = DateTimes.dateTimes();
-		TypeReference<TimeIntrospectorSpec> typeReference = new TypeReference<TimeIntrospectorSpec>() {
-		};
-		String propertyName = "localDateTimeFutureOrPresent";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<TimeIntrospectorSpec>() {
+			},
+			"localDateTimeFutureOrPresent"
 		);
 
 		// when
@@ -892,24 +555,10 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 	void localTimes() {
 		// given
 		LocalTimeArbitrary localTimeArbitrary = Times.times();
-		TypeReference<TimeIntrospectorSpec> typeReference = new TypeReference<TimeIntrospectorSpec>() {
-		};
-		String propertyName = "localTime";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<TimeIntrospectorSpec>() {
+			},
+			"localTime"
 		);
 
 		// when
@@ -924,24 +573,10 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 	void localTimesPast() {
 		// given
 		LocalTimeArbitrary localTimeArbitrary = Times.times();
-		TypeReference<TimeIntrospectorSpec> typeReference = new TypeReference<TimeIntrospectorSpec>() {
-		};
-		String propertyName = "localTimePast";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<TimeIntrospectorSpec>() {
+			},
+			"localTimePast"
 		);
 
 		// when
@@ -957,24 +592,10 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 	void localTimesPastOrPresent() {
 		// given
 		LocalTimeArbitrary localTimeArbitrary = Times.times();
-		TypeReference<TimeIntrospectorSpec> typeReference = new TypeReference<TimeIntrospectorSpec>() {
-		};
-		String propertyName = "localTimePastOrPresent";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<TimeIntrospectorSpec>() {
+			},
+			"localTimePastOrPresent"
 		);
 
 		// when
@@ -991,24 +612,10 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 		// given
 		LocalTime now = LocalTime.now();
 		LocalTimeArbitrary localTimeArbitrary = Times.times();
-		TypeReference<TimeIntrospectorSpec> typeReference = new TypeReference<TimeIntrospectorSpec>() {
-		};
-		String propertyName = "localTimeFuture";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<TimeIntrospectorSpec>() {
+			},
+			"localTimeFuture"
 		);
 
 		// when
@@ -1024,24 +631,10 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 		// given
 		LocalTime now = LocalTime.now();
 		LocalTimeArbitrary localTimeArbitrary = Times.times();
-		TypeReference<TimeIntrospectorSpec> typeReference = new TypeReference<TimeIntrospectorSpec>() {
-		};
-		String propertyName = "localTimeFutureOrPresent";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<TimeIntrospectorSpec>() {
+			},
+			"localTimeFutureOrPresent"
 		);
 
 		// when
@@ -1052,59 +645,603 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 		then(localTime).isAfterOrEqualTo(now);
 	}
 
+	//Todo: zonedDateTimes, monthdays, offsetDatetimes, offsetTimes, years, yearmonths
 	@Property
-	void durations() {
+	void zonedDateTime() {
 		// given
-		DurationArbitrary durationArbitrary = Times.durations();
-		TypeReference<TimeIntrospectorSpec> typeReference = new TypeReference<TimeIntrospectorSpec>() {
-		};
-		String propertyName = "duration";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
+		ZonedDateTimeArbitrary zonedDateTimeArbitrary = DateTimes.zonedDateTimes();
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<TimeIntrospectorSpec>() {
+			},
+			"zonedDateTime"
 		);
 
 		// when
-		Arbitrary<Duration> actual = this.sut.durations(durationArbitrary, context);
+		Arbitrary<ZonedDateTime> actual = this.sut.zonedDateTimes(zonedDateTimeArbitrary, context);
 
 		// then
-		then(actual).isNotNull();
+		ZonedDateTime zonedDateTime = actual.sample();
+		then(zonedDateTime).isNotNull();
+	}
+
+	@Property
+	void zonedDateTimePast() {
+		// given
+		ZonedDateTimeArbitrary zonedDateTimeArbitrary = DateTimes.zonedDateTimes();
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<TimeIntrospectorSpec>() {
+			},
+			"zonedDateTimePast"
+		);
+
+		// when
+		Arbitrary<ZonedDateTime> actual = this.sut.zonedDateTimes(zonedDateTimeArbitrary, context);
+
+		// then
+		ZonedDateTime zonedDateTime = actual.sample().withZoneSameLocal(ZoneId.systemDefault());
+
+		ZonedDateTime now = ZonedDateTime.now();
+		then(zonedDateTime).isBefore(now);
+	}
+
+	@Property
+	void zonedDateTimePastOrPresent() {
+		// given
+		ZonedDateTimeArbitrary zonedDateTimeArbitrary = DateTimes.zonedDateTimes();
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<TimeIntrospectorSpec>() {
+			},
+			"zonedDateTimePastOrPresent"
+		);
+
+		// when
+		Arbitrary<ZonedDateTime> actual = this.sut.zonedDateTimes(zonedDateTimeArbitrary, context);
+
+		// then
+		ZonedDateTime zonedDateTime = actual.sample().withZoneSameLocal(ZoneId.systemDefault());
+
+		ZonedDateTime now = ZonedDateTime.now();
+		then(zonedDateTime).isBeforeOrEqualTo(now);
+	}
+
+	@Property
+	void zonedDateTimeFuture() {
+		// given
+		ZonedDateTimeArbitrary zonedDateTimeArbitrary = DateTimes.zonedDateTimes();
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<TimeIntrospectorSpec>() {
+			},
+			"zonedDateTimeFuture"
+		);
+
+		// when
+		Arbitrary<ZonedDateTime> actual = this.sut.zonedDateTimes(zonedDateTimeArbitrary, context);
+
+		// then
+		ZonedDateTime zonedDateTime = actual.sample().withZoneSameLocal(ZoneId.systemDefault());
+
+		ZonedDateTime now = ZonedDateTime.now();
+		then(zonedDateTime).isAfter(now);
+	}
+
+	@Property
+	void zonedDateTimeFutureOrPresent() {
+		// given
+		ZonedDateTimeArbitrary zonedDateTimeArbitrary = DateTimes.zonedDateTimes();
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<TimeIntrospectorSpec>() {
+			},
+			"zonedDateTimeFutureOrPresent"
+		);
+
+		// when
+		Arbitrary<ZonedDateTime> actual = this.sut.zonedDateTimes(zonedDateTimeArbitrary, context);
+
+		// then
+		ZonedDateTime zonedDateTime = actual.sample().withZoneSameLocal(ZoneId.systemDefault());
+
+		ZonedDateTime now = ZonedDateTime.now();
+		then(zonedDateTime).isAfterOrEqualTo(now);
+	}
+
+	@Property
+	void monthDay() {
+		// given
+		MonthDayArbitrary monthDayArbitrary = Dates.monthDays();
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<TimeIntrospectorSpec>() {
+			},
+			"monthDay"
+		);
+
+		// when
+		Arbitrary<MonthDay> actual = this.sut.monthDays(monthDayArbitrary, context);
+
+		// then
+		MonthDay monthDay = actual.sample();
+		then(monthDay).isNotNull();
+	}
+
+	@Property
+	void monthDayPast() {
+		// given
+		MonthDayArbitrary monthDayArbitrary = Dates.monthDays();
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<TimeIntrospectorSpec>() {
+			},
+			"monthDayPast"
+		);
+
+		// when
+		Arbitrary<MonthDay> actual = this.sut.monthDays(monthDayArbitrary, context);
+
+		// then
+		MonthDay monthDay = actual.sample();
+
+		MonthDay now = MonthDay.now();
+		then(monthDay).isLessThan(now);
+	}
+
+	@Property
+	void monthDayPastOrPresent() {
+		// given
+		MonthDayArbitrary monthDayArbitrary = Dates.monthDays();
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<TimeIntrospectorSpec>() {
+			},
+			"monthDayPastOrPresent"
+		);
+
+		// when
+		Arbitrary<MonthDay> actual = this.sut.monthDays(monthDayArbitrary, context);
+
+		// then
+		MonthDay monthDay = actual.sample();
+
+		MonthDay now = MonthDay.now();
+		then(monthDay).isLessThanOrEqualTo(now);
+	}
+
+	@Property
+	void monthDayFuture() {
+		// given
+		MonthDayArbitrary monthDayArbitrary = Dates.monthDays();
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<TimeIntrospectorSpec>() {
+			},
+			"monthDayFuture"
+		);
+
+		// when
+		Arbitrary<MonthDay> actual = this.sut.monthDays(monthDayArbitrary, context);
+
+		// then
+		MonthDay monthDay = actual.sample();
+
+		MonthDay now = MonthDay.now();
+		then(monthDay).isGreaterThan(now);
+	}
+
+	@Property
+	void monthDayFutureOrPresent() {
+		// given
+		MonthDayArbitrary monthDayArbitrary = Dates.monthDays();
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<TimeIntrospectorSpec>() {
+			},
+			"monthDayFutureOrPresent"
+		);
+
+		// when
+		Arbitrary<MonthDay> actual = this.sut.monthDays(monthDayArbitrary, context);
+
+		// then
+		MonthDay monthDay = actual.sample();
+
+		MonthDay now = MonthDay.now();
+		then(monthDay).isGreaterThanOrEqualTo(now);
+	}
+
+	@Property
+	void offsetDateTime() {
+		// given
+		OffsetDateTimeArbitrary offsetDateTimeArbitrary = DateTimes.offsetDateTimes();
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<TimeIntrospectorSpec>() {
+			},
+			"offsetDateTime"
+		);
+
+		// when
+		Arbitrary<OffsetDateTime> actual = this.sut.offsetDateTimes(offsetDateTimeArbitrary, context);
+
+		// then
+		OffsetDateTime offsetDateTime = actual.sample();
+		then(offsetDateTime).isNotNull();
+	}
+
+	@Property
+	void offsetDateTimePast() {
+		// given
+		OffsetDateTimeArbitrary offsetDateTimeArbitrary = DateTimes.offsetDateTimes();
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<TimeIntrospectorSpec>() {
+			},
+			"offsetDateTimePast"
+		);
+
+		// when
+		Arbitrary<OffsetDateTime> actual = this.sut.offsetDateTimes(offsetDateTimeArbitrary, context);
+
+		// then
+		OffsetDateTime offsetDateTime = actual.sample().withOffsetSameLocal(OffsetDateTime.now().getOffset());
+
+		OffsetDateTime now = OffsetDateTime.now();
+		then(offsetDateTime).isBefore(now);
+	}
+
+	@Property
+	void offsetDateTimePastOrPresent() {
+		// given
+		OffsetDateTimeArbitrary offsetDateTimeArbitrary = DateTimes.offsetDateTimes();
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<TimeIntrospectorSpec>() {
+			},
+			"offsetDateTimePastOrPresent"
+		);
+
+		// when
+		Arbitrary<OffsetDateTime> actual = this.sut.offsetDateTimes(offsetDateTimeArbitrary, context);
+
+		// then
+		OffsetDateTime offsetDateTime = actual.sample().withOffsetSameLocal(OffsetDateTime.now().getOffset());
+
+		OffsetDateTime now = OffsetDateTime.now();
+		then(offsetDateTime).isBeforeOrEqualTo(now);
+	}
+
+	@Property
+	void offsetDateTimeFuture() {
+		// given
+		OffsetDateTimeArbitrary offsetDateTimeArbitrary = DateTimes.offsetDateTimes();
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<TimeIntrospectorSpec>() {
+			},
+			"offsetDateTimeFuture"
+		);
+
+		// when
+		Arbitrary<OffsetDateTime> actual = this.sut.offsetDateTimes(offsetDateTimeArbitrary, context);
+
+		// then
+		OffsetDateTime offsetDateTime = actual.sample().withOffsetSameLocal(OffsetDateTime.now().getOffset());
+
+		OffsetDateTime now = OffsetDateTime.now();
+		then(offsetDateTime).isAfter(now);
+	}
+
+	@Property
+	void offsetDateTimeFutureOrPresent() {
+		// given
+		OffsetDateTimeArbitrary offsetDateTimeArbitrary = DateTimes.offsetDateTimes();
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<TimeIntrospectorSpec>() {
+			},
+			"offsetDateTimeFutureOrPresent"
+		);
+
+		// when
+		Arbitrary<OffsetDateTime> actual = this.sut.offsetDateTimes(offsetDateTimeArbitrary, context);
+
+		// then
+		OffsetDateTime offsetDateTime = actual.sample().withOffsetSameLocal(OffsetDateTime.now().getOffset());
+
+		OffsetDateTime now = OffsetDateTime.now();
+		then(offsetDateTime).isAfterOrEqualTo(now);
+	}
+
+	@Property
+	void offsetTime() {
+		// given
+		OffsetTimeArbitrary offsetTimeArbitrary = Times.offsetTimes();
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<TimeIntrospectorSpec>() {
+			},
+			"offsetTime"
+		);
+
+		// when
+		Arbitrary<OffsetTime> actual = this.sut.offsetTimes(offsetTimeArbitrary, context);
+
+		// then
+		OffsetTime offsetTime = actual.sample();
+		then(offsetTime).isNotNull();
+	}
+
+	@Property
+	void offsetTimePast() {
+		// given
+		OffsetTimeArbitrary offsetTimeArbitrary = Times.offsetTimes();
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<TimeIntrospectorSpec>() {
+			},
+			"offsetTimePast"
+		);
+
+		// when
+		Arbitrary<OffsetTime> actual = this.sut.offsetTimes(offsetTimeArbitrary, context);
+
+		// then
+		OffsetTime offsetTime = actual.sample().withOffsetSameLocal(OffsetTime.now().getOffset());
+
+		OffsetTime now = OffsetTime.now();
+		then(offsetTime).isBefore(now);
+	}
+
+	@Property
+	void offsetTimePastOrPresent() {
+		// given
+		OffsetTimeArbitrary offsetTimeArbitrary = Times.offsetTimes();
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<TimeIntrospectorSpec>() {
+			},
+			"offsetTimePastOrPresent"
+		);
+
+		// when
+		Arbitrary<OffsetTime> actual = this.sut.offsetTimes(offsetTimeArbitrary, context);
+
+		// then
+		OffsetTime offsetTime = actual.sample().withOffsetSameLocal(OffsetTime.now().getOffset());
+
+		OffsetTime now = OffsetTime.now();
+		then(offsetTime).isBeforeOrEqualTo(now);
+	}
+
+	@Property
+	void offsetTimeFuture() {
+		// given
+		OffsetTimeArbitrary offsetTimeArbitrary = Times.offsetTimes();
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<TimeIntrospectorSpec>() {
+			},
+			"offsetTimeFuture"
+		);
+
+		// when
+		Arbitrary<OffsetTime> actual = this.sut.offsetTimes(offsetTimeArbitrary, context);
+
+		// then
+		OffsetTime offsetTime = actual.sample().withOffsetSameLocal(OffsetTime.now().getOffset());
+
+		OffsetTime now = OffsetTime.now();
+		then(offsetTime).isAfter(now);
+	}
+
+	@Property
+	void offsetTimeFutureOrPresent() {
+		// given
+		OffsetTimeArbitrary offsetTimeArbitrary = Times.offsetTimes();
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<TimeIntrospectorSpec>() {
+			},
+			"offsetTimeFutureOrPresent"
+		);
+
+		// when
+		Arbitrary<OffsetTime> actual = this.sut.offsetTimes(offsetTimeArbitrary, context);
+
+		// then
+		OffsetTime offsetTime = actual.sample().withOffsetSameLocal(OffsetTime.now().getOffset());
+
+		OffsetTime now = OffsetTime.now();
+		then(offsetTime).isAfterOrEqualTo(now);
+	}
+
+	@Property
+	void year() {
+		// given
+		YearArbitrary yearArbitrary = Dates.years();
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<TimeIntrospectorSpec>() {
+			},
+			"year"
+		);
+
+		// when
+		Arbitrary<Year> actual = this.sut.years(yearArbitrary, context);
+
+		// then
+		Year year = actual.sample();
+		then(year).isNotNull();
+	}
+
+	@Property
+	void yearPast() {
+		// given
+		YearArbitrary yearArbitrary = Dates.years();
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<TimeIntrospectorSpec>() {
+			},
+			"yearPast"
+		);
+
+		// when
+		Arbitrary<Year> actual = this.sut.years(yearArbitrary, context);
+
+		// then
+		Year year = actual.sample();
+
+		Year now = Year.now();
+		then(year).isLessThan(now);
+	}
+
+	@Property
+	void yearPastOrPresent() {
+		// given
+		YearArbitrary yearArbitrary = Dates.years();
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<TimeIntrospectorSpec>() {
+			},
+			"yearPastOrPresent"
+		);
+
+		// when
+		Arbitrary<Year> actual = this.sut.years(yearArbitrary, context);
+
+		// then
+		Year year = actual.sample();
+
+		Year now = Year.now();
+		then(year).isLessThanOrEqualTo(now);
+	}
+
+	@Property
+	void yearFuture() {
+		// given
+		YearArbitrary yearArbitrary = Dates.years();
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<TimeIntrospectorSpec>() {
+			},
+			"yearFuture"
+		);
+
+		// when
+		Arbitrary<Year> actual = this.sut.years(yearArbitrary, context);
+
+		// then
+		Year year = actual.sample();
+
+		Year now = Year.now();
+		then(year).isGreaterThan(now);
+	}
+
+	@Property
+	void yearFutureOrPresent() {
+		// given
+		YearArbitrary yearArbitrary = Dates.years();
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<TimeIntrospectorSpec>() {
+			},
+			"yearFutureOrPresent"
+		);
+
+		// when
+		Arbitrary<Year> actual = this.sut.years(yearArbitrary, context);
+
+		// then
+		Year year = actual.sample();
+
+		Year now = Year.now();
+		then(year).isGreaterThanOrEqualTo(now);
+	}
+
+	@Property
+	void yearMonth() {
+		// given
+		YearMonthArbitrary yearMonthArbitrary = Dates.yearMonths();
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<TimeIntrospectorSpec>() {
+			},
+			"yearMonth"
+		);
+
+		// when
+		Arbitrary<YearMonth> actual = this.sut.yearMonths(yearMonthArbitrary, context);
+
+		// then
+		YearMonth yearMonth = actual.sample();
+		then(yearMonth).isNotNull();
+	}
+
+	@Property
+	void yearMonthPast() {
+		// given
+		YearMonthArbitrary yearMonthArbitrary = Dates.yearMonths();
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<TimeIntrospectorSpec>() {
+			},
+			"yearMonthPast"
+		);
+
+		// when
+		Arbitrary<YearMonth> actual = this.sut.yearMonths(yearMonthArbitrary, context);
+
+		// then
+		YearMonth yearMonth = actual.sample();
+
+		YearMonth now = YearMonth.now();
+		then(yearMonth).isLessThan(now);
+	}
+
+	@Property
+	void yearMonthPastOrPresent() {
+		// given
+		YearMonthArbitrary yearMonthArbitrary = Dates.yearMonths();
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<TimeIntrospectorSpec>() {
+			},
+			"yearMonthPastOrPresent"
+		);
+
+		// when
+		Arbitrary<YearMonth> actual = this.sut.yearMonths(yearMonthArbitrary, context);
+
+		// then
+		YearMonth yearMonth = actual.sample();
+
+		YearMonth now = YearMonth.now();
+		then(yearMonth).isLessThanOrEqualTo(now);
+	}
+
+	@Property
+	void yearMonthFuture() {
+		// given
+		YearMonthArbitrary yearMonthArbitrary = Dates.yearMonths();
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<TimeIntrospectorSpec>() {
+			},
+			"yearMonthFuture"
+		);
+
+		// when
+		Arbitrary<YearMonth> actual = this.sut.yearMonths(yearMonthArbitrary, context);
+
+		// then
+		YearMonth yearMonth = actual.sample();
+
+		YearMonth now = YearMonth.now();
+		then(yearMonth).isGreaterThan(now);
+	}
+
+	@Property
+	void yearMonthFutureOrPresent() {
+		// given
+		YearMonthArbitrary yearMonthArbitrary = Dates.yearMonths();
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<TimeIntrospectorSpec>() {
+			},
+			"yearMonthFutureOrPresent"
+		);
+
+		// when
+		Arbitrary<YearMonth> actual = this.sut.yearMonths(yearMonthArbitrary, context);
+
+		// then
+		YearMonth yearMonth = actual.sample();
+
+		YearMonth now = YearMonth.now();
+		then(yearMonth).isGreaterThanOrEqualTo(now);
 	}
 
 	@Property
 	void periods() {
 		// given
 		PeriodArbitrary periodArbitrary = Dates.periods();
-		TypeReference<TimeIntrospectorSpec> typeReference = new TypeReference<TimeIntrospectorSpec>() {
-		};
-		String propertyName = "period";
-		com.navercorp.fixturemonkey.api.property.Property property =
-			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<TimeIntrospectorSpec>() {
+			},
+			"period"
 		);
 
 		// when
@@ -1115,15 +1252,110 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 	}
 
 	@Property
+	void durations() {
+		// given
+		DurationArbitrary durationArbitrary = Times.durations();
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<TimeIntrospectorSpec>() {
+			},
+			"duration"
+		);
+
+		// when
+		Arbitrary<Duration> actual = this.sut.durations(durationArbitrary, context);
+
+		// then
+		then(actual).isNotNull();
+	}
+
+	@Property
 	void zoneOffsets() {
 		// given
 		ZoneOffsetArbitrary zoneOffsetArbitrary = Times.zoneOffsets();
-		TypeReference<TimeIntrospectorSpec> typeReference = new TypeReference<TimeIntrospectorSpec>() {
-		};
-		String propertyName = "zoneOffset";
+		ArbitraryGeneratorContext context = makeContext(
+			new TypeReference<TimeIntrospectorSpec>() {
+			},
+			"zoneOffset"
+		);
+		// when
+		Arbitrary<ZoneOffset> actual = this.sut.zoneOffsets(zoneOffsetArbitrary, context);
+
+		// then
+		then(actual).isNotNull();
+	}
+	//
+	// @Property
+	// void zonedDateTimesPast() {
+	// 	// given
+	// 	ZonedDateTimeArbitrary zonedDateTimeArbitrary = DateTimes.zonedDateTimes();
+	// 	TypeReference<TimeIntrospectorSpec> typeReference = new TypeReference<TimeIntrospectorSpec>() {
+	// 	};
+	// 	String propertyName = "zonedDateTimePast";
+	// 	com.navercorp.fixturemonkey.api.property.Property property =
+	// 		PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
+	// 	ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+	// 		new ArbitraryProperty(
+	// 			property,
+	// 			PropertyNameResolver.IDENTITY,
+	// 			0.0D,
+	// 			null,
+	// 			Collections.emptyList(),
+	// 			null
+	// 		),
+	// 		Collections.emptyList(),
+	// 		null,
+	// 		(ctx, prop) -> Arbitraries.just(null),
+	// 		Collections.emptyList()
+	// 	);
+	//
+	// 	// when
+	// 	Arbitrary<ZonedDateTime> actual = this.sut.zonedDateTimes(zonedDateTimeArbitrary, context);
+	//
+	// 	// then
+	// 	ZonedDateTime zonedDateTime = actual.sample();
+	//
+	// 	ZonedDateTime now = ZonedDateTime.now();
+	// 	then(zonedDateTime.toLocalDateTime()).isBefore(now.toLocalDateTime());
+	// }
+	//
+	// @Property
+	// void monthDaysPast() {
+	// 	// given
+	// 	MonthDayArbitrary monthDayArbitrary = Dates.monthDays();
+	// 	TypeReference<TimeIntrospectorSpec> typeReference = new TypeReference<TimeIntrospectorSpec>() {
+	// 	};
+	// 	String propertyName = "monthDayPast";
+	// 	com.navercorp.fixturemonkey.api.property.Property property =
+	// 		PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
+	// 	ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+	// 		new ArbitraryProperty(
+	// 			property,
+	// 			PropertyNameResolver.IDENTITY,
+	// 			0.0D,
+	// 			null,
+	// 			Collections.emptyList(),
+	// 			null
+	// 		),
+	// 		Collections.emptyList(),
+	// 		null,
+	// 		(ctx, prop) -> Arbitraries.just(null),
+	// 		Collections.emptyList()
+	// 	);
+	//
+	// 	// when
+	// 	Arbitrary<MonthDay> actual = this.sut.monthDays(monthDayArbitrary, context);
+	//
+	// 	// then
+	// 	MonthDay monthDay = actual.sample();
+	// 	MonthDay now = monthDay.now();
+	// 	then(monthDay);
+	// }
+
+	private <T> ArbitraryGeneratorContext makeContext(TypeReference<T> typeReference, String propertyName) {
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+
+		return new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
 				property,
 				PropertyNameResolver.IDENTITY,
@@ -1137,11 +1369,5 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 			(ctx, prop) -> Arbitraries.just(null),
 			Collections.emptyList()
 		);
-
-		// when
-		Arbitrary<ZoneOffset> actual = this.sut.zoneOffsets(zoneOffsetArbitrary, context);
-
-		// then
-		then(actual).isNotNull();
 	}
 }
