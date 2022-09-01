@@ -54,7 +54,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		StringArbitrary stringArbitrary = Arbitraries.strings();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<StringIntrospectorSpec>(){},
+			new TypeReference<StringIntrospectorSpec>() {
+			},
 			"str"
 		);
 
@@ -71,7 +72,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		StringArbitrary stringArbitrary = Arbitraries.strings();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<StringIntrospectorSpec>(){},
+			new TypeReference<StringIntrospectorSpec>() {
+			},
 			"notBlank"
 		);
 
@@ -88,7 +90,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		StringArbitrary stringArbitrary = Arbitraries.strings();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<StringIntrospectorSpec>(){},
+			new TypeReference<StringIntrospectorSpec>() {
+			},
 			"notEmpty"
 		);
 
@@ -105,7 +108,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		StringArbitrary stringArbitrary = Arbitraries.strings();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<StringIntrospectorSpec>(){},
+			new TypeReference<StringIntrospectorSpec>() {
+			},
 			"size"
 		);
 
@@ -123,7 +127,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		StringArbitrary stringArbitrary = Arbitraries.strings();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<StringIntrospectorSpec>(){},
+			new TypeReference<StringIntrospectorSpec>() {
+			},
 			"digits"
 		);
 
@@ -141,7 +146,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		StringArbitrary stringArbitrary = Arbitraries.strings();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<StringIntrospectorSpec>(){},
+			new TypeReference<StringIntrospectorSpec>() {
+			},
 			"pattern"
 		);
 
@@ -163,7 +169,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		StringArbitrary stringArbitrary = Arbitraries.strings();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<StringIntrospectorSpec>(){},
+			new TypeReference<StringIntrospectorSpec>() {
+			},
 			"email"
 		);
 
@@ -180,7 +187,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		CharacterArbitrary characterArbitrary = Arbitraries.chars();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<CharacterIntrospectorSpec>(){},
+			new TypeReference<CharacterIntrospectorSpec>() {
+			},
 			"character"
 		);
 
@@ -196,7 +204,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		ShortArbitrary shortArbitrary = Arbitraries.shorts();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<ShortIntrospectorSpec>(){},
+			new TypeReference<ShortIntrospectorSpec>() {
+			},
 			"shortValue"
 		);
 
@@ -213,7 +222,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		ShortArbitrary shortArbitrary = Arbitraries.shorts();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<ShortIntrospectorSpec>(){},
+			new TypeReference<ShortIntrospectorSpec>() {
+			},
 			"digitsValue"
 		);
 
@@ -230,7 +240,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		ShortArbitrary shortArbitrary = Arbitraries.shorts();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<ShortIntrospectorSpec>(){},
+			new TypeReference<ShortIntrospectorSpec>() {
+			},
 			"minValue"
 		);
 
@@ -247,7 +258,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		ShortArbitrary shortArbitrary = Arbitraries.shorts();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<ShortIntrospectorSpec>(){},
+			new TypeReference<ShortIntrospectorSpec>() {
+			},
 			"maxValue"
 		);
 
@@ -264,7 +276,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		ShortArbitrary shortArbitrary = Arbitraries.shorts();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<ShortIntrospectorSpec>(){},
+			new TypeReference<ShortIntrospectorSpec>() {
+			},
 			"decimalMin"
 		);
 
@@ -281,7 +294,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		ShortArbitrary shortArbitrary = Arbitraries.shorts();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<ShortIntrospectorSpec>(){},
+			new TypeReference<ShortIntrospectorSpec>() {
+			},
 			"decimalMinExclusive"
 		);
 
@@ -298,7 +312,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		ShortArbitrary shortArbitrary = Arbitraries.shorts();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<ShortIntrospectorSpec>(){},
+			new TypeReference<ShortIntrospectorSpec>() {
+			},
 			"decimalMax"
 		);
 
@@ -315,7 +330,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		ShortArbitrary shortArbitrary = Arbitraries.shorts();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<ShortIntrospectorSpec>(){},
+			new TypeReference<ShortIntrospectorSpec>() {
+			},
 			"decimalMaxExclusive"
 		);
 
@@ -332,7 +348,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		ShortArbitrary shortArbitrary = Arbitraries.shorts();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<ShortIntrospectorSpec>(){},
+			new TypeReference<ShortIntrospectorSpec>() {
+			},
 			"negative"
 		);
 
@@ -349,7 +366,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		ShortArbitrary shortArbitrary = Arbitraries.shorts();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<ShortIntrospectorSpec>(){},
+			new TypeReference<ShortIntrospectorSpec>() {
+			},
 			"negativeOrZero"
 		);
 
@@ -366,7 +384,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		ShortArbitrary shortArbitrary = Arbitraries.shorts();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<ShortIntrospectorSpec>(){},
+			new TypeReference<ShortIntrospectorSpec>() {
+			},
 			"positive"
 		);
 
@@ -383,7 +402,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		ShortArbitrary shortArbitrary = Arbitraries.shorts();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<ShortIntrospectorSpec>(){},
+			new TypeReference<ShortIntrospectorSpec>() {
+			},
 			"positiveOrZero"
 		);
 
@@ -400,7 +420,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		ByteArbitrary byteArbitrary = Arbitraries.bytes();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<ByteIntrospectorSpec>(){},
+			new TypeReference<ByteIntrospectorSpec>() {
+			},
 			"byteValue"
 		);
 
@@ -417,7 +438,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		ByteArbitrary byteArbitrary = Arbitraries.bytes();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<ByteIntrospectorSpec>(){},
+			new TypeReference<ByteIntrospectorSpec>() {
+			},
 			"digitsValue"
 		);
 
@@ -434,7 +456,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		ByteArbitrary byteArbitrary = Arbitraries.bytes();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<ByteIntrospectorSpec>(){},
+			new TypeReference<ByteIntrospectorSpec>() {
+			},
 			"minValue"
 		);
 
@@ -451,7 +474,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		ByteArbitrary byteArbitrary = Arbitraries.bytes();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<ByteIntrospectorSpec>(){},
+			new TypeReference<ByteIntrospectorSpec>() {
+			},
 			"maxValue"
 		);
 
@@ -468,7 +492,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		ByteArbitrary byteArbitrary = Arbitraries.bytes();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<ByteIntrospectorSpec>(){},
+			new TypeReference<ByteIntrospectorSpec>() {
+			},
 			"decimalMin"
 		);
 
@@ -485,7 +510,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		ByteArbitrary byteArbitrary = Arbitraries.bytes();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<ByteIntrospectorSpec>(){},
+			new TypeReference<ByteIntrospectorSpec>() {
+			},
 			"decimalMinExclusive"
 		);
 
@@ -502,7 +528,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		ByteArbitrary byteArbitrary = Arbitraries.bytes();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<ByteIntrospectorSpec>(){},
+			new TypeReference<ByteIntrospectorSpec>() {
+			},
 			"decimalMax"
 		);
 
@@ -519,7 +546,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		ByteArbitrary byteArbitrary = Arbitraries.bytes();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<ByteIntrospectorSpec>(){},
+			new TypeReference<ByteIntrospectorSpec>() {
+			},
 			"decimalMaxExclusive"
 		);
 
@@ -536,7 +564,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		ByteArbitrary byteArbitrary = Arbitraries.bytes();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<ByteIntrospectorSpec>(){},
+			new TypeReference<ByteIntrospectorSpec>() {
+			},
 			"negative"
 		);
 
@@ -553,7 +582,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		ByteArbitrary byteArbitrary = Arbitraries.bytes();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<ByteIntrospectorSpec>(){},
+			new TypeReference<ByteIntrospectorSpec>() {
+			},
 			"negativeOrZero"
 		);
 
@@ -570,7 +600,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		ByteArbitrary byteArbitrary = Arbitraries.bytes();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<ByteIntrospectorSpec>(){},
+			new TypeReference<ByteIntrospectorSpec>() {
+			},
 			"positive"
 		);
 
@@ -587,7 +618,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		ByteArbitrary byteArbitrary = Arbitraries.bytes();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<ByteIntrospectorSpec>(){},
+			new TypeReference<ByteIntrospectorSpec>() {
+			},
 			"positiveOrZero"
 		);
 
@@ -604,7 +636,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		FloatArbitrary floatArbitrary = Arbitraries.floats();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<FloatIntrospectorSpec>(){},
+			new TypeReference<FloatIntrospectorSpec>() {
+			},
 			"floatValue"
 		);
 
@@ -621,7 +654,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		FloatArbitrary floatArbitrary = Arbitraries.floats();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<FloatIntrospectorSpec>(){},
+			new TypeReference<FloatIntrospectorSpec>() {
+			},
 			"digitsValue"
 		);
 
@@ -638,7 +672,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		FloatArbitrary floatArbitrary = Arbitraries.floats();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<FloatIntrospectorSpec>(){},
+			new TypeReference<FloatIntrospectorSpec>() {
+			},
 			"minValue"
 		);
 
@@ -655,7 +690,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		FloatArbitrary floatArbitrary = Arbitraries.floats();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<FloatIntrospectorSpec>(){},
+			new TypeReference<FloatIntrospectorSpec>() {
+			},
 			"maxValue"
 		);
 
@@ -672,7 +708,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		FloatArbitrary floatArbitrary = Arbitraries.floats();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<FloatIntrospectorSpec>(){},
+			new TypeReference<FloatIntrospectorSpec>() {
+			},
 			"decimalMin"
 		);
 
@@ -689,7 +726,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		FloatArbitrary floatArbitrary = Arbitraries.floats();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<FloatIntrospectorSpec>(){},
+			new TypeReference<FloatIntrospectorSpec>() {
+			},
 			"decimalMinExclusive"
 		);
 
@@ -706,7 +744,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		FloatArbitrary floatArbitrary = Arbitraries.floats();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<FloatIntrospectorSpec>(){},
+			new TypeReference<FloatIntrospectorSpec>() {
+			},
 			"decimalMax"
 		);
 
@@ -723,7 +762,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		FloatArbitrary floatArbitrary = Arbitraries.floats();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<FloatIntrospectorSpec>(){},
+			new TypeReference<FloatIntrospectorSpec>() {
+			},
 			"decimalMaxExclusive"
 		);
 
@@ -740,7 +780,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		FloatArbitrary floatArbitrary = Arbitraries.floats();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<FloatIntrospectorSpec>(){},
+			new TypeReference<FloatIntrospectorSpec>() {
+			},
 			"negative"
 		);
 
@@ -757,7 +798,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		FloatArbitrary floatArbitrary = Arbitraries.floats();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<FloatIntrospectorSpec>(){},
+			new TypeReference<FloatIntrospectorSpec>() {
+			},
 			"negativeOrZero"
 		);
 
@@ -774,7 +816,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		FloatArbitrary floatArbitrary = Arbitraries.floats();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<FloatIntrospectorSpec>(){},
+			new TypeReference<FloatIntrospectorSpec>() {
+			},
 			"positive"
 		);
 
@@ -791,7 +834,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		FloatArbitrary floatArbitrary = Arbitraries.floats();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<FloatIntrospectorSpec>(){},
+			new TypeReference<FloatIntrospectorSpec>() {
+			},
 			"positiveOrZero"
 		);
 
@@ -808,7 +852,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		DoubleArbitrary doubleArbitrary = Arbitraries.doubles();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<DoubleIntrospectorSpec>(){},
+			new TypeReference<DoubleIntrospectorSpec>() {
+			},
 			"doubleValue"
 		);
 
@@ -825,7 +870,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		DoubleArbitrary doubleArbitrary = Arbitraries.doubles();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<DoubleIntrospectorSpec>(){},
+			new TypeReference<DoubleIntrospectorSpec>() {
+			},
 			"digitsValue"
 		);
 
@@ -842,7 +888,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		DoubleArbitrary doubleArbitrary = Arbitraries.doubles();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<DoubleIntrospectorSpec>(){},
+			new TypeReference<DoubleIntrospectorSpec>() {
+			},
 			"minValue"
 		);
 
@@ -859,7 +906,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		DoubleArbitrary doubleArbitrary = Arbitraries.doubles();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<DoubleIntrospectorSpec>(){},
+			new TypeReference<DoubleIntrospectorSpec>() {
+			},
 			"maxValue"
 		);
 
@@ -876,7 +924,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		DoubleArbitrary doubleArbitrary = Arbitraries.doubles();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<DoubleIntrospectorSpec>(){},
+			new TypeReference<DoubleIntrospectorSpec>() {
+			},
 			"decimalMin"
 		);
 
@@ -893,7 +942,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		DoubleArbitrary doubleArbitrary = Arbitraries.doubles();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<DoubleIntrospectorSpec>(){},
+			new TypeReference<DoubleIntrospectorSpec>() {
+			},
 			"decimalMinExclusive"
 		);
 
@@ -910,7 +960,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		DoubleArbitrary doubleArbitrary = Arbitraries.doubles();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<DoubleIntrospectorSpec>(){},
+			new TypeReference<DoubleIntrospectorSpec>() {
+			},
 			"decimalMax"
 		);
 
@@ -927,7 +978,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		DoubleArbitrary doubleArbitrary = Arbitraries.doubles();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<DoubleIntrospectorSpec>(){},
+			new TypeReference<DoubleIntrospectorSpec>() {
+			},
 			"decimalMaxExclusive"
 		);
 
@@ -944,7 +996,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		DoubleArbitrary doubleArbitrary = Arbitraries.doubles();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<DoubleIntrospectorSpec>(){},
+			new TypeReference<DoubleIntrospectorSpec>() {
+			},
 			"negative"
 		);
 
@@ -961,7 +1014,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		DoubleArbitrary doubleArbitrary = Arbitraries.doubles();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<DoubleIntrospectorSpec>(){},
+			new TypeReference<DoubleIntrospectorSpec>() {
+			},
 			"negativeOrZero"
 		);
 
@@ -978,7 +1032,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		DoubleArbitrary doubleArbitrary = Arbitraries.doubles();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<DoubleIntrospectorSpec>(){},
+			new TypeReference<DoubleIntrospectorSpec>() {
+			},
 			"positive"
 		);
 
@@ -995,7 +1050,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		DoubleArbitrary doubleArbitrary = Arbitraries.doubles();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<DoubleIntrospectorSpec>(){},
+			new TypeReference<DoubleIntrospectorSpec>() {
+			},
 			"positiveOrZero"
 		);
 
@@ -1012,7 +1068,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		IntegerArbitrary integerArbitrary = Arbitraries.integers();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<IntIntrospectorSpec>(){},
+			new TypeReference<IntIntrospectorSpec>() {
+			},
 			"intValue"
 		);
 
@@ -1029,7 +1086,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		IntegerArbitrary integerArbitrary = Arbitraries.integers();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<IntIntrospectorSpec>(){},
+			new TypeReference<IntIntrospectorSpec>() {
+			},
 			"digitsValue"
 		);
 
@@ -1046,7 +1104,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		IntegerArbitrary integerArbitrary = Arbitraries.integers();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<IntIntrospectorSpec>(){},
+			new TypeReference<IntIntrospectorSpec>() {
+			},
 			"minValue"
 		);
 
@@ -1063,7 +1122,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		IntegerArbitrary integerArbitrary = Arbitraries.integers();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<IntIntrospectorSpec>(){},
+			new TypeReference<IntIntrospectorSpec>() {
+			},
 			"maxValue"
 		);
 
@@ -1080,7 +1140,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		IntegerArbitrary integerArbitrary = Arbitraries.integers();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<IntIntrospectorSpec>(){},
+			new TypeReference<IntIntrospectorSpec>() {
+			},
 			"decimalMin"
 		);
 
@@ -1097,7 +1158,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		IntegerArbitrary integerArbitrary = Arbitraries.integers();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<IntIntrospectorSpec>(){},
+			new TypeReference<IntIntrospectorSpec>() {
+			},
 			"decimalMinExclusive"
 		);
 
@@ -1114,7 +1176,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		IntegerArbitrary integerArbitrary = Arbitraries.integers();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<IntIntrospectorSpec>(){},
+			new TypeReference<IntIntrospectorSpec>() {
+			},
 			"decimalMax"
 		);
 
@@ -1131,10 +1194,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		IntegerArbitrary integerArbitrary = Arbitraries.integers();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<IntIntrospectorSpec>(){},
+			new TypeReference<IntIntrospectorSpec>() {
+			},
 			"decimalMaxExclusive"
 		);
-
 
 		// when
 		Arbitrary<Integer> actual = this.sut.integers(integerArbitrary, context);
@@ -1149,10 +1212,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		IntegerArbitrary integerArbitrary = Arbitraries.integers();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<IntIntrospectorSpec>(){},
+			new TypeReference<IntIntrospectorSpec>() {
+			},
 			"negative"
 		);
-
 
 		// when
 		Arbitrary<Integer> actual = this.sut.integers(integerArbitrary, context);
@@ -1167,10 +1230,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		IntegerArbitrary integerArbitrary = Arbitraries.integers();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<IntIntrospectorSpec>(){},
+			new TypeReference<IntIntrospectorSpec>() {
+			},
 			"negativeOrZero"
 		);
-
 
 		// when
 		Arbitrary<Integer> actual = this.sut.integers(integerArbitrary, context);
@@ -1185,10 +1248,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		IntegerArbitrary integerArbitrary = Arbitraries.integers();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<IntIntrospectorSpec>(){},
+			new TypeReference<IntIntrospectorSpec>() {
+			},
 			"positive"
 		);
-
 
 		// when
 		Arbitrary<Integer> actual = this.sut.integers(integerArbitrary, context);
@@ -1203,10 +1266,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		IntegerArbitrary integerArbitrary = Arbitraries.integers();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<IntIntrospectorSpec>(){},
+			new TypeReference<IntIntrospectorSpec>() {
+			},
 			"positiveOrZero"
 		);
-
 
 		// when
 		Arbitrary<Integer> actual = this.sut.integers(integerArbitrary, context);
@@ -1221,7 +1284,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		LongArbitrary longArbitrary = Arbitraries.longs();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<LongIntrospectorSpec>(){},
+			new TypeReference<LongIntrospectorSpec>() {
+			},
 			"longValue"
 		);
 
@@ -1238,7 +1302,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		LongArbitrary longArbitrary = Arbitraries.longs();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<LongIntrospectorSpec>(){},
+			new TypeReference<LongIntrospectorSpec>() {
+			},
 			"digitsValue"
 		);
 
@@ -1255,7 +1320,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		LongArbitrary longArbitrary = Arbitraries.longs();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<LongIntrospectorSpec>(){},
+			new TypeReference<LongIntrospectorSpec>() {
+			},
 			"minValue"
 		);
 
@@ -1272,7 +1338,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		LongArbitrary longArbitrary = Arbitraries.longs();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<LongIntrospectorSpec>(){},
+			new TypeReference<LongIntrospectorSpec>() {
+			},
 			"maxValue"
 		);
 
@@ -1289,7 +1356,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		LongArbitrary longArbitrary = Arbitraries.longs();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<LongIntrospectorSpec>(){},
+			new TypeReference<LongIntrospectorSpec>() {
+			},
 			"decimalMin"
 		);
 
@@ -1306,7 +1374,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		LongArbitrary longArbitrary = Arbitraries.longs();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<LongIntrospectorSpec>(){},
+			new TypeReference<LongIntrospectorSpec>() {
+			},
 			"decimalMinExclusive"
 		);
 
@@ -1323,7 +1392,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		LongArbitrary longArbitrary = Arbitraries.longs();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<LongIntrospectorSpec>(){},
+			new TypeReference<LongIntrospectorSpec>() {
+			},
 			"decimalMax"
 		);
 
@@ -1340,7 +1410,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		LongArbitrary longArbitrary = Arbitraries.longs();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<LongIntrospectorSpec>(){},
+			new TypeReference<LongIntrospectorSpec>() {
+			},
 			"decimalMaxExclusive"
 		);
 
@@ -1357,7 +1428,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		LongArbitrary longArbitrary = Arbitraries.longs();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<LongIntrospectorSpec>(){},
+			new TypeReference<LongIntrospectorSpec>() {
+			},
 			"negative"
 		);
 
@@ -1374,7 +1446,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		LongArbitrary longArbitrary = Arbitraries.longs();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<LongIntrospectorSpec>(){},
+			new TypeReference<LongIntrospectorSpec>() {
+			},
 			"negativeOrZero"
 		);
 
@@ -1391,7 +1464,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		LongArbitrary longArbitrary = Arbitraries.longs();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<LongIntrospectorSpec>(){},
+			new TypeReference<LongIntrospectorSpec>() {
+			},
 			"positive"
 		);
 
@@ -1408,7 +1482,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		LongArbitrary longArbitrary = Arbitraries.longs();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<LongIntrospectorSpec>(){},
+			new TypeReference<LongIntrospectorSpec>() {
+			},
 			"positiveOrZero"
 		);
 
@@ -1425,7 +1500,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		BigIntegerArbitrary bigIntegerArbitrary = Arbitraries.bigIntegers();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<BigIntegerIntrospectorSpec>(){},
+			new TypeReference<BigIntegerIntrospectorSpec>() {
+			},
 			"bigIntegerValue"
 		);
 
@@ -1442,7 +1518,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		BigIntegerArbitrary bigIntegerArbitrary = Arbitraries.bigIntegers();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<BigIntegerIntrospectorSpec>(){},
+			new TypeReference<BigIntegerIntrospectorSpec>() {
+			},
 			"digitsValue"
 		);
 
@@ -1459,7 +1536,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		BigIntegerArbitrary bigIntegerArbitrary = Arbitraries.bigIntegers();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<BigIntegerIntrospectorSpec>(){},
+			new TypeReference<BigIntegerIntrospectorSpec>() {
+			},
 			"minValue"
 		);
 
@@ -1476,7 +1554,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		BigIntegerArbitrary bigIntegerArbitrary = Arbitraries.bigIntegers();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<BigIntegerIntrospectorSpec>(){},
+			new TypeReference<BigIntegerIntrospectorSpec>() {
+			},
 			"maxValue"
 		);
 
@@ -1493,7 +1572,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		BigIntegerArbitrary bigIntegerArbitrary = Arbitraries.bigIntegers();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<BigIntegerIntrospectorSpec>(){},
+			new TypeReference<BigIntegerIntrospectorSpec>() {
+			},
 			"decimalMin"
 		);
 
@@ -1510,7 +1590,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		BigIntegerArbitrary bigIntegerArbitrary = Arbitraries.bigIntegers();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<BigIntegerIntrospectorSpec>(){},
+			new TypeReference<BigIntegerIntrospectorSpec>() {
+			},
 			"decimalMinExclusive"
 		);
 
@@ -1527,7 +1608,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		BigIntegerArbitrary bigIntegerArbitrary = Arbitraries.bigIntegers();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<BigIntegerIntrospectorSpec>(){},
+			new TypeReference<BigIntegerIntrospectorSpec>() {
+			},
 			"decimalMax"
 		);
 
@@ -1544,7 +1626,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		BigIntegerArbitrary bigIntegerArbitrary = Arbitraries.bigIntegers();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<BigIntegerIntrospectorSpec>(){},
+			new TypeReference<BigIntegerIntrospectorSpec>() {
+			},
 			"decimalMaxExclusive"
 		);
 
@@ -1561,7 +1644,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		BigIntegerArbitrary bigIntegerArbitrary = Arbitraries.bigIntegers();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<BigIntegerIntrospectorSpec>(){},
+			new TypeReference<BigIntegerIntrospectorSpec>() {
+			},
 			"negative"
 		);
 
@@ -1578,7 +1662,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		BigIntegerArbitrary bigIntegerArbitrary = Arbitraries.bigIntegers();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<BigIntegerIntrospectorSpec>(){},
+			new TypeReference<BigIntegerIntrospectorSpec>() {
+			},
 			"negativeOrZero"
 		);
 
@@ -1595,7 +1680,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		BigIntegerArbitrary bigIntegerArbitrary = Arbitraries.bigIntegers();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<BigIntegerIntrospectorSpec>(){},
+			new TypeReference<BigIntegerIntrospectorSpec>() {
+			},
 			"positive"
 		);
 
@@ -1612,7 +1698,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		BigIntegerArbitrary bigIntegerArbitrary = Arbitraries.bigIntegers();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<BigIntegerIntrospectorSpec>(){},
+			new TypeReference<BigIntegerIntrospectorSpec>() {
+			},
 			"positiveOrZero"
 		);
 
@@ -1629,7 +1716,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		BigDecimalArbitrary bigDecimalArbitrary = Arbitraries.bigDecimals();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<BigDecimalIntrospectorSpec>(){},
+			new TypeReference<BigDecimalIntrospectorSpec>() {
+			},
 			"bigDecimalValue"
 		);
 
@@ -1646,7 +1734,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		BigDecimalArbitrary bigDecimalArbitrary = Arbitraries.bigDecimals();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<BigDecimalIntrospectorSpec>(){},
+			new TypeReference<BigDecimalIntrospectorSpec>() {
+			},
 			"digitsValue"
 		);
 
@@ -1663,7 +1752,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		BigDecimalArbitrary bigDecimalArbitrary = Arbitraries.bigDecimals();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<BigDecimalIntrospectorSpec>(){},
+			new TypeReference<BigDecimalIntrospectorSpec>() {
+			},
 			"minValue"
 		);
 
@@ -1680,7 +1770,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		BigDecimalArbitrary bigDecimalArbitrary = Arbitraries.bigDecimals();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<BigDecimalIntrospectorSpec>(){},
+			new TypeReference<BigDecimalIntrospectorSpec>() {
+			},
 			"maxValue"
 		);
 
@@ -1697,7 +1788,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		BigDecimalArbitrary bigDecimalArbitrary = Arbitraries.bigDecimals();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<BigDecimalIntrospectorSpec>(){},
+			new TypeReference<BigDecimalIntrospectorSpec>() {
+			},
 			"decimalMin"
 		);
 
@@ -1714,7 +1806,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		BigDecimalArbitrary bigDecimalArbitrary = Arbitraries.bigDecimals();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<BigDecimalIntrospectorSpec>(){},
+			new TypeReference<BigDecimalIntrospectorSpec>() {
+			},
 			"decimalMinExclusive"
 		);
 
@@ -1731,7 +1824,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		BigDecimalArbitrary bigDecimalArbitrary = Arbitraries.bigDecimals();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<BigDecimalIntrospectorSpec>(){},
+			new TypeReference<BigDecimalIntrospectorSpec>() {
+			},
 			"decimalMax"
 		);
 
@@ -1748,7 +1842,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		BigDecimalArbitrary bigDecimalArbitrary = Arbitraries.bigDecimals();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<BigDecimalIntrospectorSpec>(){},
+			new TypeReference<BigDecimalIntrospectorSpec>() {
+			},
 			"decimalMaxExclusive"
 		);
 
@@ -1765,7 +1860,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		BigDecimalArbitrary bigDecimalArbitrary = Arbitraries.bigDecimals();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<BigDecimalIntrospectorSpec>(){},
+			new TypeReference<BigDecimalIntrospectorSpec>() {
+			},
 			"negative"
 		);
 
@@ -1782,7 +1878,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		BigDecimalArbitrary bigDecimalArbitrary = Arbitraries.bigDecimals();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<BigDecimalIntrospectorSpec>(){},
+			new TypeReference<BigDecimalIntrospectorSpec>() {
+			},
 			"negativeOrZero"
 		);
 
@@ -1799,7 +1896,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		BigDecimalArbitrary bigDecimalArbitrary = Arbitraries.bigDecimals();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<BigDecimalIntrospectorSpec>(){},
+			new TypeReference<BigDecimalIntrospectorSpec>() {
+			},
 			"positive"
 		);
 
@@ -1816,7 +1914,8 @@ class JavaxValidationJavaArbitraryResolverTest {
 		// given
 		BigDecimalArbitrary bigDecimalArbitrary = Arbitraries.bigDecimals();
 		ArbitraryGeneratorContext context = makeContext(
-			new TypeReference<BigDecimalIntrospectorSpec>(){},
+			new TypeReference<BigDecimalIntrospectorSpec>() {
+			},
 			"positiveOrZero"
 		);
 
