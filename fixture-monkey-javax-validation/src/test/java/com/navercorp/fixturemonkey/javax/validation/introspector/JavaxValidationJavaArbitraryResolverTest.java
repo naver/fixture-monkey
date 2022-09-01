@@ -46,7 +46,7 @@ import com.navercorp.fixturemonkey.api.property.PropertyCache;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 
-class JavaxValidationArbitraryIntrospectorTest {
+class JavaxValidationJavaArbitraryResolverTest {
 	private final JavaxValidationJavaArbitraryResolver sut = new JavaxValidationJavaArbitraryResolver();
 
 	@Property
