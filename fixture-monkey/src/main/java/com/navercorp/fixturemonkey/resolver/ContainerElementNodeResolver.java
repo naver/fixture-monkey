@@ -23,7 +23,6 @@ import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerat
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -33,23 +32,17 @@ import com.navercorp.fixturemonkey.api.property.Property;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class ContainerElementNodeResolver implements NodeResolver {
-	private final NodeResolver nodeResolver;
 	private final int sequence;
 
-	public ContainerElementNodeResolver(NodeResolver nodeResolver, int sequence) {
-		this.nodeResolver = nodeResolver;
+	public ContainerElementNodeResolver(int sequence) {
 		this.sequence = sequence;
 	}
 
 	@Override
-	public List<ArbitraryNode> resolve(ArbitraryTree arbitraryTree) {
+	public List<ArbitraryNode> resolve(ArbitraryNode arbitraryNode) {
 		List<ArbitraryNode> result = new ArrayList<>();
 
-		List<ArbitraryNode> previousNodes = nodeResolver.resolve(arbitraryTree).stream()
-			.flatMap(it -> it.getChildren().stream())
-			.collect(Collectors.toList());
-
-		for (ArbitraryNode node : previousNodes) {
+		for (ArbitraryNode node : arbitraryNode.getChildren()) {
 			Property property = node.getArbitraryProperty().getProperty();
 			if (!(property instanceof ElementProperty)) {
 				throw new IllegalArgumentException("Resolved node is not element type. : " + property);

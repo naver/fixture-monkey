@@ -18,34 +18,37 @@
 
 package com.navercorp.fixturemonkey.resolver;
 
-import static com.navercorp.fixturemonkey.Constants.ALL_INDEX_STRING;
-import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.NOT_NULL_INJECT;
-
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public final class PropertyNameNodeResolver implements NodeResolver {
-	private final String propertyName;
+public final class CompositeNodeResolver implements NodeResolver {
+	private final List<NodeResolver> nodeResolvers;
 
-	public PropertyNameNodeResolver(String propertyName) {
-		this.propertyName = propertyName;
+	public CompositeNodeResolver(NodeResolver... nodeResolvers) {
+		this.nodeResolvers = Arrays.asList(nodeResolvers);
+	}
+
+	public CompositeNodeResolver(List<NodeResolver> nodeResolvers) {
+		this.nodeResolvers = nodeResolvers;
 	}
 
 	@Override
 	public List<ArbitraryNode> resolve(ArbitraryNode arbitraryNode) {
-		List<ArbitraryNode> result = new ArrayList<>();
-
-		for (ArbitraryNode node : arbitraryNode.getChildren()) {
-			String nodePropertyName = node.getArbitraryProperty().getResolvePropertyName();
-			if (propertyName.equals(ALL_INDEX_STRING) || propertyName.equals(nodePropertyName)) {
-				node.setArbitraryProperty(node.getArbitraryProperty().withNullInject(NOT_NULL_INJECT));
-				result.add(node);
+		LinkedList<ArbitraryNode> nextNodes = new LinkedList<>();
+		nextNodes.add(arbitraryNode);
+		for (NodeResolver nodeResolver : nodeResolvers) {
+			List<ArbitraryNode> resolvedNodes = new LinkedList<>();
+			while (!nextNodes.isEmpty()) {
+				ArbitraryNode currentNode = nextNodes.pop();
+				resolvedNodes.addAll(nodeResolver.resolve(currentNode));
 			}
+			nextNodes.addAll(resolvedNodes);
 		}
-		return result;
+		return nextNodes;
 	}
 }

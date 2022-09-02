@@ -29,17 +29,16 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import javax.annotation.Nullable;
-
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.expression.MonkeyExpression;
+import com.navercorp.fixturemonkey.resolver.CompositeNodeResolver;
 import com.navercorp.fixturemonkey.resolver.ContainerElementNodeResolver;
+import com.navercorp.fixturemonkey.resolver.IdentityNodeResolver;
 import com.navercorp.fixturemonkey.resolver.NodeResolver;
 import com.navercorp.fixturemonkey.resolver.PropertyNameNodeResolver;
-import com.navercorp.fixturemonkey.resolver.RootNodeResolver;
 
 public final class ArbitraryExpression implements MonkeyExpression, Comparable<ArbitraryExpression> {
 	private final List<Exp> expList;
@@ -132,9 +131,10 @@ public final class ArbitraryExpression implements MonkeyExpression, Comparable<A
 	}
 
 	public NodeResolver toNodeResolver() {
-		NodeResolver nodeResolver = null;
+		NodeResolver nodeResolver = IdentityNodeResolver.INSTANCE;
+
 		for (Exp exp : expList) {
-			nodeResolver = exp.toNodeResolver(nodeResolver);
+			nodeResolver = new CompositeNodeResolver(nodeResolver, exp.toNodeResolver());
 		}
 		return nodeResolver;
 	}
@@ -242,20 +242,20 @@ public final class ArbitraryExpression implements MonkeyExpression, Comparable<A
 			return steps;
 		}
 
-		public NodeResolver toNodeResolver(@Nullable NodeResolver prevNodeResolver) {
+		public NodeResolver toNodeResolver() {
 			NodeResolver nodeResolver;
 
 			if (HEAD_NAME.equals(name)) {
-				nodeResolver = new RootNodeResolver();
+				nodeResolver = IdentityNodeResolver.INSTANCE;
 			} else {
-				nodeResolver = new PropertyNameNodeResolver(
-					prevNodeResolver == null ? new RootNodeResolver() : prevNodeResolver,
-					name
-				);
+				nodeResolver = new PropertyNameNodeResolver(name);
 			}
 
 			for (ExpIndex index : indices) {
-				nodeResolver = new ContainerElementNodeResolver(nodeResolver, index.getIndex());
+				nodeResolver = new CompositeNodeResolver(
+					nodeResolver,
+					new ContainerElementNodeResolver(index.getIndex())
+				);
 			}
 			return nodeResolver;
 		}

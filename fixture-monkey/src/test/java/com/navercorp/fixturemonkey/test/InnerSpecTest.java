@@ -40,9 +40,7 @@ class InnerSpecTest {
 	@Property
 	void mapAddKey() {
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
-			.setInner("strMap", m -> {
-				m.key("key");
-			})
+			.setInner("strMap", m -> m.key("key"))
 			.sample();
 
 		then(actual.getStrMap().containsKey("key")).isTrue();
@@ -51,9 +49,7 @@ class InnerSpecTest {
 	@Property
 	void mapAddValue() {
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
-			.setInner("strMap", m -> {
-				m.value("value");
-			})
+			.setInner("strMap", m -> m.value("value"))
 			.sample();
 
 		then(actual.getStrMap().containsValue("value")).isTrue();
@@ -62,9 +58,7 @@ class InnerSpecTest {
 	@Property
 	void mapPut() {
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
-			.setInner("strMap", m -> {
-				m.entry("key", "value");
-			})
+			.setInner("strMap", m -> m.entry("key", "value"))
 			.sample();
 
 		then(actual.getStrMap().get("key")).isEqualTo("value");
@@ -73,21 +67,18 @@ class InnerSpecTest {
 	@Property
 	void mapAddNullValue() {
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
-			.setInner("strMap", m -> {
-				m.value(null);
-			})
+			.setInner("strMap", m -> m.value(null))
 			.sample();
 
 		then(actual.getStrMap().containsValue(null)).isTrue();
 	}
 
+	@SuppressWarnings("ConstantConditions")
 	@Property
 	void mapAddNullKeyThrows() {
 		thenThrownBy(() ->
 			SUT.giveMeBuilder(MapObject.class)
-				.setInner("strMap", m -> {
-					m.key(null);
-				})
+				.setInner("strMap", m -> m.key(null))
 				.sample()
 		).isExactlyInstanceOf(IllegalArgumentException.class)
 			.hasMessageContaining("Map key cannot be null.");
@@ -96,11 +87,7 @@ class InnerSpecTest {
 	@Property
 	void mapAddKeyAddKey() {
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
-			.setInner("mapKeyMap", m -> {
-				m.key(k -> {
-					k.key("key");
-				});
-			})
+			.setInner("mapKeyMap", m -> m.key(k -> k.key("key")))
 			.sample();
 
 		List<String> keyList = actual.getMapKeyMap().keySet().stream()
@@ -111,11 +98,7 @@ class InnerSpecTest {
 	@Property
 	void mapAddKeyAddValue() {
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
-			.setInner("mapKeyMap", m -> {
-				m.key(k -> {
-					k.value("value");
-				});
-			})
+			.setInner("mapKeyMap", m -> m.key(k -> k.value("value")))
 			.sample();
 
 		List<String> keyList = actual.getMapKeyMap().keySet().stream()
@@ -126,11 +109,7 @@ class InnerSpecTest {
 	@Property
 	void mapAddValueAddKey() {
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
-			.setInner("mapValueMap", m -> {
-				m.value(v -> {
-					v.key("key");
-				});
-			})
+			.setInner("mapValueMap", m -> m.value(v -> v.key("key")))
 			.sample();
 
 		List<String> valueList = actual.getMapValueMap().values().stream()
@@ -141,11 +120,7 @@ class InnerSpecTest {
 	@Property
 	void mapAddValueAddValue() {
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
-			.setInner("mapValueMap", m -> {
-				m.value(v -> {
-					v.value("value");
-				});
-			})
+			.setInner("mapValueMap", m -> m.value(v -> v.value("value")))
 			.sample();
 
 		List<String> valueList = actual.getMapValueMap().values().stream()
@@ -156,11 +131,7 @@ class InnerSpecTest {
 	@Property
 	void mapSetValueSize() {
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
-			.setInner("listValueMap", m -> {
-				m.value(v -> {
-					v.size(10);
-				});
-			})
+			.setInner("listValueMap", m -> m.value(v -> v.size(10)))
 			.sample();
 
 		List<Integer> sizeList = actual.getListValueMap().values().stream()
@@ -171,12 +142,12 @@ class InnerSpecTest {
 	@Property
 	void mapSetValueListElement() {
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
-			.setInner("listValueMap", m -> {
+			.setInner("listValueMap", m ->
 				m.value(v -> {
 					v.size(1);
 					v.listElement(0, "test");
-				});
-			})
+				})
+			)
 			.sample();
 
 		List<String> elementList = actual.getListValueMap().values().stream()
@@ -187,11 +158,9 @@ class InnerSpecTest {
 	@Property
 	void mapSetValueProperty() {
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
-			.setInner("objectValueMap", m -> {
-				m.value(v -> {
-					v.property("str", "test");
-				});
-			})
+			.setInner("objectValueMap", m ->
+				m.value(v -> v.property("str", "test"))
+			)
 			.sample();
 
 		List<String> fieldList = actual.getObjectValueMap().values().stream().filter(Objects::nonNull)
@@ -202,25 +171,25 @@ class InnerSpecTest {
 	@Property
 	void mapSetEntryKeyAddEntry() {
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
-			.setInner("mapValueMap", m -> {
-				m.entry("key1", v -> {
-					v.entry("key2", "value");
-				});
-			})
+			.setInner("mapValueMap", m ->
+				m.entry("key1", v -> v.entry("key2", "value"))
+			)
 			.sample();
 
 		Map<String, String> value = actual.getMapValueMap().get("key1");
 		then(value.get("key2")).isEqualTo("value");
 	}
 
+	@SuppressWarnings("OptionalGetWithoutIsPresent")
 	@Property
 	void mapSetEntryValueAddEntry() {
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
-			.setInner("mapKeyMap", m -> {
-				m.entry(k -> {
-					k.entry("key", "value2");
-				}, "value1");
-			})
+			.setInner("mapKeyMap", m ->
+				m.entry(
+					k -> k.entry("key", "value2"),
+					"value1"
+				)
+			)
 			.sample();
 
 		Map<String, String> expected = actual.getMapKeyMap().entrySet()
@@ -236,9 +205,9 @@ class InnerSpecTest {
 	@Property
 	void mapSetEntryValueNull() {
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
-			.setInner("strMap", m -> {
-				m.entry("key", null);
-			})
+			.setInner("strMap", m ->
+				m.entry("key", null)
+			)
 			.sample();
 
 		then(actual.getStrMap().get("key")).isNull();
@@ -262,11 +231,9 @@ class InnerSpecTest {
 	@Property
 	void objectSetPropertySetProperty() {
 		ObjectObject actual = SUT.giveMeBuilder(ObjectObject.class)
-			.setInner("complexObject", m -> {
-				m.property("simpleObject", o -> {
-					o.property("str", "test");
-				});
-			})
+			.setInner("complexObject", m ->
+				m.property("simpleObject", o -> o.property("str", "test"))
+			)
 			.sample();
 
 		then(actual.getComplexObject().getSimpleObject().getStr()).isEqualTo("test");
