@@ -278,17 +278,15 @@ public final class JavaxValidationJavaTimeArbitraryResolver implements JavaTimeA
 		YearArbitrary yearArbitrary,
 		ArbitraryGeneratorContext context
 	) {
-		JavaxValidationDateConstraint constraint = this.constraintGenerator.generateDateConstraint(context);
-		LocalDate min = constraint.getMin();
-		LocalDate max = constraint.getMax();
+		JavaxValidationYearConstraint constraint = this.constraintGenerator.generateYearConstraint(context);
+		Year min = constraint.getMin();
+		Year max = constraint.getMax();
 
 		if (min != null) {
-			min = min.plusYears(1);
-			yearArbitrary = yearArbitrary.between(min.getYear(), Year.MAX_VALUE);
+			yearArbitrary = yearArbitrary.between(min.getValue(), Year.MAX_VALUE);
 		}
 		if (max != null) {
-			max = max.minusYears(1);
-			yearArbitrary = yearArbitrary.between(Year.MIN_VALUE, max.getYear());
+			yearArbitrary = yearArbitrary.between(Year.MIN_VALUE, max.getValue());
 		}
 
 		return yearArbitrary;
@@ -299,17 +297,15 @@ public final class JavaxValidationJavaTimeArbitraryResolver implements JavaTimeA
 		YearMonthArbitrary yearMonthArbitrary,
 		ArbitraryGeneratorContext context
 	) {
-		JavaxValidationDateConstraint constraint = this.constraintGenerator.generateDateConstraint(context);
-		LocalDate min = constraint.getMin();
-		LocalDate max = constraint.getMax();
+		JavaxValidationYearMonthConstraint constraint = this.constraintGenerator.generateYearMonthConstraint(context);
+		YearMonth min = constraint.getMin();
+		YearMonth max = constraint.getMax();
 
 		if (min != null) {
-			min = min.plusMonths(1);
-			yearMonthArbitrary = yearMonthArbitrary.atTheEarliest(YearMonth.of(min.getYear(), min.getMonth()));
+			yearMonthArbitrary = yearMonthArbitrary.atTheEarliest(min);
 		}
 		if (max != null) {
-			max = max.minusMonths(1);
-			yearMonthArbitrary = yearMonthArbitrary.atTheLatest((YearMonth.of(max.getYear(), max.getMonth())));
+			yearMonthArbitrary = yearMonthArbitrary.atTheLatest(max);
 		}
 
 		return yearMonthArbitrary;
