@@ -26,7 +26,7 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public class CompositeNodeResolver implements NodeResolver {
+public final class CompositeNodeResolver implements NodeResolver {
 	private final List<NodeResolver> nodeResolvers;
 
 	public CompositeNodeResolver(NodeResolver... nodeResolvers) {
