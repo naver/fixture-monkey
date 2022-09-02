@@ -30,7 +30,6 @@ import org.apiguardian.api.API.Status;
 public final class NodeLastEntryResolver implements NodeResolver {
 
 	public NodeLastEntryResolver() {
-
 	}
 
 	@Override
