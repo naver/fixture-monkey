@@ -26,5 +26,5 @@ import org.apiguardian.api.API.Status;
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 @FunctionalInterface
 public interface NodeResolver {
-	List<ArbitraryNode> resolve(ArbitraryTree arbitraryTree);
+	List<ArbitraryNode> resolve(ArbitraryNode arbitraryNode);
 }

@@ -42,11 +42,11 @@ import com.navercorp.fixturemonkey.builder.DefaultArbitraryBuilder;
 import com.navercorp.fixturemonkey.resolver.ArbitraryManipulator;
 import com.navercorp.fixturemonkey.resolver.ArbitraryResolver;
 import com.navercorp.fixturemonkey.resolver.ArbitraryTraverser;
+import com.navercorp.fixturemonkey.resolver.IdentityNodeResolver;
 import com.navercorp.fixturemonkey.resolver.ManipulateOptions;
 import com.navercorp.fixturemonkey.resolver.ManipulateOptionsBuilder;
 import com.navercorp.fixturemonkey.resolver.ManipulatorOptimizer;
 import com.navercorp.fixturemonkey.resolver.NodeSetDecomposedValueManipulator;
-import com.navercorp.fixturemonkey.resolver.RootNodeResolver;
 import com.navercorp.fixturemonkey.validator.ArbitraryValidator;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
@@ -118,7 +118,7 @@ public class LabMonkey extends FixtureMonkey {
 		List<ArbitraryManipulator> manipulators = new ArrayList<>();
 		manipulators.add(
 			new ArbitraryManipulator(
-				new RootNodeResolver(),
+				IdentityNodeResolver.INSTANCE,
 				new NodeSetDecomposedValueManipulator<>(traverser, manipulateOptions, value)
 			)
 		);

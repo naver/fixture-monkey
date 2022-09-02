@@ -62,7 +62,7 @@ import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.resolver.DecomposableContainerValue;
-import com.navercorp.fixturemonkey.resolver.RootNodeResolver;
+import com.navercorp.fixturemonkey.resolver.IdentityNodeResolver;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.Pair;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.PairArbitraryPropertyGenerator;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.PairIntrospector;
@@ -97,7 +97,7 @@ class FixtureMonkeyV04OptionsTest {
 	@Property
 	void alterMonkeyFactory() {
 		LabMonkey sut = LabMonkey.labMonkeyBuilder()
-			.monkeyExpressionFactory((expression) -> RootNodeResolver::new)
+			.monkeyExpressionFactory((expression) -> () -> IdentityNodeResolver.INSTANCE)
 			.build();
 		String expected = "expected";
 
@@ -356,7 +356,6 @@ class FixtureMonkeyV04OptionsTest {
 		then(simpleObject).isNull();
 		then(complexObject).isNull();
 	}
-
 
 	@Property
 	void pushArbitraryContainerInfoGenerator() {

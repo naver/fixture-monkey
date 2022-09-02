@@ -36,6 +36,7 @@ import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.resolver.AddMapEntryNodeManipulator;
 import com.navercorp.fixturemonkey.resolver.ArbitraryManipulator;
 import com.navercorp.fixturemonkey.resolver.ArbitraryTraverser;
+import com.navercorp.fixturemonkey.resolver.CompositeNodeResolver;
 import com.navercorp.fixturemonkey.resolver.ContainerElementNodeResolver;
 import com.navercorp.fixturemonkey.resolver.ManipulateOptions;
 import com.navercorp.fixturemonkey.resolver.MapNodeManipulator;
@@ -104,9 +105,10 @@ public final class InnerSpec {
 			new ArbitraryManipulator(this.treePathResolver, new AddMapEntryNodeManipulator(traverser))
 		);
 
-		NodeResolver nextResolver = new NodeKeyValueResolver(
-			new NodeLastEntryResolver(this.treePathResolver),
-			true
+		NodeResolver nextResolver = new CompositeNodeResolver(
+			this.treePathResolver,
+			new NodeLastEntryResolver(),
+			new NodeKeyValueResolver(true)
 		);
 		InnerSpec innerSpec = new InnerSpec(traverser, manipulateOptions, nextResolver);
 		consumer.accept(innerSpec);
@@ -123,12 +125,16 @@ public final class InnerSpec {
 			return;
 		}
 
-		arbitraryManipulators.add(new ArbitraryManipulator(
-			this.treePathResolver, new AddMapEntryNodeManipulator(traverser))
+		arbitraryManipulators.add(
+			new ArbitraryManipulator(
+				this.treePathResolver,
+				new AddMapEntryNodeManipulator(traverser)
+			)
 		);
-		NodeResolver nextResolver = new NodeKeyValueResolver(
-			new NodeLastEntryResolver(this.treePathResolver),
-			false
+		NodeResolver nextResolver = new CompositeNodeResolver(
+			this.treePathResolver,
+			new NodeLastEntryResolver(),
+			new NodeKeyValueResolver(false)
 		);
 		InnerSpec innerSpec = new InnerSpec(traverser, manipulateOptions, nextResolver);
 		consumer.accept(innerSpec);
@@ -159,10 +165,12 @@ public final class InnerSpec {
 		);
 		arbitraryManipulators.add(new ArbitraryManipulator(this.treePathResolver, mapManipulator));
 
-		NodeResolver nextResolver = new NodeKeyValueResolver(
-			new NodeLastEntryResolver(this.treePathResolver),
-			false
+		NodeResolver nextResolver = new CompositeNodeResolver(
+			this.treePathResolver,
+			new NodeLastEntryResolver(),
+			new NodeKeyValueResolver(false)
 		);
+
 		InnerSpec innerSpec = new InnerSpec(traverser, manipulateOptions, nextResolver);
 		consumer.accept(innerSpec);
 		arbitraryManipulators.addAll(innerSpec.arbitraryManipulators);
@@ -177,9 +185,10 @@ public final class InnerSpec {
 		);
 		arbitraryManipulators.add(new ArbitraryManipulator(this.treePathResolver, mapManipulator));
 
-		NodeResolver nextResolver = new NodeKeyValueResolver(
-			new NodeLastEntryResolver(this.treePathResolver),
-			true
+		NodeResolver nextResolver = new CompositeNodeResolver(
+			this.treePathResolver,
+			new NodeLastEntryResolver(),
+			new NodeKeyValueResolver(true)
 		);
 		InnerSpec innerSpec = new InnerSpec(traverser, manipulateOptions, nextResolver);
 		consumer.accept(innerSpec);
@@ -187,7 +196,10 @@ public final class InnerSpec {
 	}
 
 	public void listElement(int index, @Nullable Object value) {
-		NodeResolver nextResolver = new ContainerElementNodeResolver(this.treePathResolver, index);
+		NodeResolver nextResolver = new CompositeNodeResolver(
+			this.treePathResolver,
+			new ContainerElementNodeResolver(index)
+		);
 		NodeManipulator manipulator = convertToNodeManipulator(value);
 		arbitraryManipulators.add(new ArbitraryManipulator(nextResolver, manipulator));
 	}
@@ -198,14 +210,20 @@ public final class InnerSpec {
 			return;
 		}
 
-		NodeResolver nextResolver = new ContainerElementNodeResolver(this.treePathResolver, index);
+		NodeResolver nextResolver = new CompositeNodeResolver(
+			this.treePathResolver,
+			new ContainerElementNodeResolver(index)
+		);
 		InnerSpec innerSpec = new InnerSpec(traverser, manipulateOptions, nextResolver);
 		consumer.accept(innerSpec);
 		arbitraryManipulators.addAll(innerSpec.arbitraryManipulators);
 	}
 
 	public void property(String property, @Nullable Object value) {
-		NodeResolver nextResolver = new PropertyNameNodeResolver(this.treePathResolver, property);
+		NodeResolver nextResolver = new CompositeNodeResolver(
+			this.treePathResolver,
+			new PropertyNameNodeResolver(property)
+		);
 		NodeManipulator manipulator = convertToNodeManipulator(value);
 		arbitraryManipulators.add(new ArbitraryManipulator(nextResolver, manipulator));
 	}
@@ -216,7 +234,10 @@ public final class InnerSpec {
 			return;
 		}
 
-		NodeResolver nextResolver = new PropertyNameNodeResolver(this.treePathResolver, property);
+		NodeResolver nextResolver = new CompositeNodeResolver(
+			this.treePathResolver,
+			new PropertyNameNodeResolver(property)
+		);
 		InnerSpec innerSpec = new InnerSpec(traverser, manipulateOptions, nextResolver);
 		consumer.accept(innerSpec);
 		arbitraryManipulators.addAll(innerSpec.arbitraryManipulators);

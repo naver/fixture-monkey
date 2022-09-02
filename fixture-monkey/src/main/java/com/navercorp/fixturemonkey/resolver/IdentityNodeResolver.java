@@ -27,14 +27,15 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public final class RootNodeResolver implements NodeResolver {
-	public RootNodeResolver() {
+public final class IdentityNodeResolver implements NodeResolver {
+	public static final IdentityNodeResolver INSTANCE = new IdentityNodeResolver();
+
+	private IdentityNodeResolver() {
 	}
 
 	@Override
-	public List<ArbitraryNode> resolve(ArbitraryTree arbitraryTree) {
-		ArbitraryNode root = arbitraryTree.findRoot();
-		root.setArbitraryProperty(root.getArbitraryProperty().withNullInject(NOT_NULL_INJECT));
-		return Collections.singletonList(root);
+	public List<ArbitraryNode> resolve(ArbitraryNode arbitraryNode) {
+		arbitraryNode.setArbitraryProperty(arbitraryNode.getArbitraryProperty().withNullInject(NOT_NULL_INJECT));
+		return Collections.singletonList(arbitraryNode);
 	}
 }

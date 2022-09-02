@@ -70,7 +70,7 @@ import com.navercorp.fixturemonkey.resolver.NodeResolver;
 import com.navercorp.fixturemonkey.resolver.NodeSetDecomposedValueManipulator;
 import com.navercorp.fixturemonkey.resolver.NodeSetLazyManipulator;
 import com.navercorp.fixturemonkey.resolver.NodeSizeManipulator;
-import com.navercorp.fixturemonkey.resolver.RootNodeResolver;
+import com.navercorp.fixturemonkey.resolver.IdentityNodeResolver;
 import com.navercorp.fixturemonkey.validator.ArbitraryValidator;
 
 // TODO: remove extends com.navercorp.fixturemonkey.ArbitraryBuilder<T> inheritance in 1.0.0
@@ -265,7 +265,7 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 	public ArbitraryBuilder<T> fixed() {
 		this.manipulators.add(
 			new ArbitraryManipulator(
-				new RootNodeResolver(),
+				IdentityNodeResolver.INSTANCE,
 				new NodeSetDecomposedValueManipulator<>(traverser, manipulateOptions, this.sample())
 			)
 		);
@@ -290,7 +290,7 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 		this.lazyArbitraries.add(lazyArbitrary);
 		this.manipulators.add(
 			new ArbitraryManipulator(
-				new RootNodeResolver(),
+				IdentityNodeResolver.INSTANCE,
 				new NodeSetLazyManipulator<>(
 					traverser,
 					manipulateOptions,
@@ -529,7 +529,7 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 		List<ArbitraryManipulator> manipulators = new ArrayList<>();
 		manipulators.add(
 			new ArbitraryManipulator(
-				new RootNodeResolver(),
+				IdentityNodeResolver.INSTANCE,
 				new NodeSetLazyManipulator<>(traverser, manipulateOptions, lazyArbitrary)
 			)
 		);
