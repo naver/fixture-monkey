@@ -39,7 +39,6 @@ import java.util.Collections;
 import java.util.Date;
 
 import net.jqwik.api.Arbitraries;
-import net.jqwik.api.Arbitrary;
 import net.jqwik.api.Property;
 import net.jqwik.time.api.DateTimes;
 import net.jqwik.time.api.Dates;
@@ -80,11 +79,10 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Calendar> actual = this.sut.calendars(calendarArbitrary, context);
+		Calendar actual = this.sut.calendars(calendarArbitrary, context).sample();
 
 		// then
-		Calendar calendar = actual.sample();
-		then(calendar).isNotNull();
+		then(actual).isNotNull();
 	}
 
 	@Property
@@ -98,13 +96,11 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Calendar> actual = this.sut.calendars(calendarArbitrary, context);
+		Calendar actual = this.sut.calendars(calendarArbitrary, context).sample();
 
 		// then
-		Calendar calendar = actual.sample();
-
 		Calendar now = Calendar.getInstance();
-		then(calendar.toInstant().toEpochMilli()).isLessThan(now.toInstant().toEpochMilli());
+		then(actual.getTimeInMillis()).isLessThan(now.toInstant().toEpochMilli());
 	}
 
 	@Property
@@ -118,13 +114,11 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Calendar> actual = this.sut.calendars(calendarArbitrary, context);
+		Calendar actual = this.sut.calendars(calendarArbitrary, context).sample();
 
 		// then
-		Calendar calendar = actual.sample();
-
 		Calendar now = Calendar.getInstance();
-		then(calendar.getTimeInMillis()).isLessThanOrEqualTo(now.toInstant().toEpochMilli());
+		then(actual.getTimeInMillis()).isLessThanOrEqualTo(now.toInstant().toEpochMilli());
 	}
 
 	@Property
@@ -138,13 +132,11 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Calendar> actual = this.sut.calendars(calendarArbitrary, context);
+		Calendar actual = this.sut.calendars(calendarArbitrary, context).sample();
 
 		// then
-		Calendar calendar = actual.sample();
-
 		Calendar now = Calendar.getInstance();
-		then(calendar.getTimeInMillis()).isGreaterThan(now.toInstant().toEpochMilli());
+		then(actual.getTimeInMillis()).isGreaterThan(now.toInstant().toEpochMilli());
 	}
 
 	@Property
@@ -158,13 +150,11 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Calendar> actual = this.sut.calendars(calendarArbitrary, context);
+		Calendar actual = this.sut.calendars(calendarArbitrary, context).sample();
 
 		// then
-		Calendar calendar = actual.sample();
-
 		Calendar now = Calendar.getInstance();
-		then(calendar.getTimeInMillis()).isGreaterThanOrEqualTo(now.toInstant().toEpochMilli());
+		then(actual.getTimeInMillis()).isGreaterThanOrEqualTo(now.toInstant().toEpochMilli());
 	}
 
 	@Property
@@ -178,11 +168,10 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Date> actual = this.sut.dates(dateArbitrary, context);
+		Date actual = this.sut.dates(dateArbitrary, context).sample();
 
 		// then
-		Date date = actual.sample();
-		then(date).isNotNull();
+		then(actual).isNotNull();
 	}
 
 	@Property
@@ -196,13 +185,11 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Date> actual = this.sut.dates(dateArbitrary, context);
+		Date actual = this.sut.dates(dateArbitrary, context).sample();
 
 		// then
-		Date date = actual.sample();
-
 		Date now = new Date();
-		then(date.getTime()).isLessThan(now.getTime());
+		then(actual.getTime()).isLessThan(now.getTime());
 	}
 
 	@Property
@@ -216,13 +203,11 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Date> actual = this.sut.dates(dateArbitrary, context);
+		Date actual = this.sut.dates(dateArbitrary, context).sample();
 
 		// then
-		Date date = actual.sample();
-
 		Date now = new Date();
-		then(date.getTime()).isLessThanOrEqualTo(now.getTime());
+		then(actual.getTime()).isLessThanOrEqualTo(now.getTime());
 	}
 
 	@Property
@@ -236,13 +221,11 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Date> actual = this.sut.dates(dateArbitrary, context);
+		Date actual = this.sut.dates(dateArbitrary, context).sample();
 
 		// then
-		Date date = actual.sample();
-
 		Date now = new Date();
-		then(date.getTime()).isGreaterThan(now.getTime());
+		then(actual.getTime()).isGreaterThan(now.getTime());
 	}
 
 	@Property
@@ -256,13 +239,11 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Date> actual = this.sut.dates(dateArbitrary, context);
+		Date actual = this.sut.dates(dateArbitrary, context).sample();
 
 		// then
-		Date date = actual.sample();
-
 		Date now = new Date();
-		then(date.getTime()).isGreaterThanOrEqualTo(now.getTime());
+		then(actual.getTime()).isGreaterThanOrEqualTo(now.getTime());
 	}
 
 	@Property
@@ -276,11 +257,10 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Instant> actual = this.sut.instants(instantArbitrary, context);
+		Instant actual = this.sut.instants(instantArbitrary, context).sample();
 
 		// then
-		Instant instant = actual.sample();
-		then(instant).isNotNull();
+		then(actual).isNotNull();
 	}
 
 	@Property
@@ -294,14 +274,11 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Instant> actual = this.sut.instants(instantArbitrary, context);
+		Instant actual = this.sut.instants(instantArbitrary, context).sample();
 
 		// then
-		Instant instant = actual.sample();
-		then(instant).isNotNull();
-
 		Instant now = Instant.now();
-		then(instant).isBefore(now);
+		then(actual).isBefore(now);
 	}
 
 	@Property
@@ -315,20 +292,16 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Instant> actual = this.sut.instants(instantArbitrary, context);
+		Instant actual = this.sut.instants(instantArbitrary, context).sample();
 
 		// then
-		Instant instant = actual.sample();
-		then(instant).isNotNull();
-
 		Instant now = Instant.now();
-		then(instant).isBeforeOrEqualTo(now);
+		then(actual).isBeforeOrEqualTo(now);
 	}
 
 	@Property
 	void instantFuture() {
 		// given
-		Instant now = Instant.now();
 		InstantArbitrary instantArbitrary = DateTimes.instants();
 		ArbitraryGeneratorContext context = makeContext(
 			new TypeReference<TimeIntrospectorSpec>() {
@@ -337,17 +310,16 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Instant> actual = this.sut.instants(instantArbitrary, context);
+		Instant actual = this.sut.instants(instantArbitrary, context).sample();
 
 		// then
-		Instant instant = actual.sample();
-		then(instant).isAfter(now);
+		Instant now = Instant.now();
+		then(actual).isAfter(now);
 	}
 
 	@Property
 	void instantFutureOrPresent() {
 		// given
-		Instant now = Instant.now();
 		InstantArbitrary instantArbitrary = DateTimes.instants();
 		ArbitraryGeneratorContext context = makeContext(
 			new TypeReference<TimeIntrospectorSpec>() {
@@ -356,11 +328,11 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Instant> actual = this.sut.instants(instantArbitrary, context);
+		Instant actual = this.sut.instants(instantArbitrary, context).sample();
 
 		// then
-		Instant instant = actual.sample();
-		then(instant).isAfterOrEqualTo(now);
+		Instant now = Instant.now();
+		then(actual).isAfterOrEqualTo(now);
 	}
 
 	@Property
@@ -374,11 +346,10 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<LocalDate> actual = this.sut.localDates(localDateArbitrary, context);
+		LocalDate actual = this.sut.localDates(localDateArbitrary, context).sample();
 
 		// then
-		LocalDate localDate = actual.sample();
-		then(localDate).isNotNull();
+		then(actual).isNotNull();
 	}
 
 	@Property
@@ -392,12 +363,11 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<LocalDate> actual = this.sut.localDates(localDateArbitrary, context);
+		LocalDate actual = this.sut.localDates(localDateArbitrary, context).sample();
 
 		// then
-		LocalDate localDate = actual.sample();
 		LocalDate now = LocalDate.now();
-		then(localDate).isBefore(now);
+		then(actual).isBefore(now);
 	}
 
 	@Property
@@ -411,18 +381,16 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<LocalDate> actual = this.sut.localDates(localDateArbitrary, context);
+		LocalDate actual = this.sut.localDates(localDateArbitrary, context).sample();
 
 		// then
-		LocalDate localDate = actual.sample();
 		LocalDate now = LocalDate.now();
-		then(localDate).isBeforeOrEqualTo(now);
+		then(actual).isBeforeOrEqualTo(now);
 	}
 
 	@Property
 	void localDatesFuture() {
 		// given
-		LocalDate now = LocalDate.now();
 		LocalDateArbitrary localDateArbitrary = Dates.dates();
 		ArbitraryGeneratorContext context = makeContext(
 			new TypeReference<TimeIntrospectorSpec>() {
@@ -431,17 +399,16 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<LocalDate> actual = this.sut.localDates(localDateArbitrary, context);
+		LocalDate actual = this.sut.localDates(localDateArbitrary, context).sample();
 
 		// then
-		LocalDate localDate = actual.sample();
-		then(localDate).isAfter(now);
+		LocalDate now = LocalDate.now();
+		then(actual).isAfter(now);
 	}
 
 	@Property
 	void localDatesFutureOrPresent() {
 		// given
-		LocalDate now = LocalDate.now();
 		LocalDateArbitrary localDateArbitrary = Dates.dates();
 		ArbitraryGeneratorContext context = makeContext(
 			new TypeReference<TimeIntrospectorSpec>() {
@@ -450,11 +417,11 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<LocalDate> actual = this.sut.localDates(localDateArbitrary, context);
+		LocalDate actual = this.sut.localDates(localDateArbitrary, context).sample();
 
 		// then
-		LocalDate localDate = actual.sample();
-		then(localDate).isAfterOrEqualTo(now);
+		LocalDate now = LocalDate.now();
+		then(actual).isAfterOrEqualTo(now);
 	}
 
 	@Property
@@ -468,11 +435,10 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<LocalDateTime> actual = this.sut.localDateTimes(localDateTimeArbitrary, context);
+		LocalDateTime actual = this.sut.localDateTimes(localDateTimeArbitrary, context).sample();
 
 		// then
-		LocalDateTime localDateTime = actual.sample();
-		then(localDateTime).isNotNull();
+		then(actual).isNotNull();
 	}
 
 	@Property
@@ -486,12 +452,11 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<LocalDateTime> actual = this.sut.localDateTimes(localDateTimeArbitrary, context);
+		LocalDateTime actual = this.sut.localDateTimes(localDateTimeArbitrary, context).sample();
 
 		// then
-		LocalDateTime localDateTime = actual.sample();
 		LocalDateTime now = LocalDateTime.now();
-		then(localDateTime).isBefore(now);
+		then(actual).isBefore(now);
 	}
 
 	@Property
@@ -505,18 +470,16 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<LocalDateTime> actual = this.sut.localDateTimes(localDateTimeArbitrary, context);
+		LocalDateTime actual = this.sut.localDateTimes(localDateTimeArbitrary, context).sample();
 
 		// then
-		LocalDateTime localDateTime = actual.sample();
 		LocalDateTime now = LocalDateTime.now();
-		then(localDateTime).isBeforeOrEqualTo(now);
+		then(actual).isBeforeOrEqualTo(now);
 	}
 
 	@Property
 	void localDateTimesFuture() {
 		// given
-		LocalDateTime now = LocalDateTime.now();
 		LocalDateTimeArbitrary localDateTimeArbitrary = DateTimes.dateTimes();
 		ArbitraryGeneratorContext context = makeContext(
 			new TypeReference<TimeIntrospectorSpec>() {
@@ -525,17 +488,16 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<LocalDateTime> actual = this.sut.localDateTimes(localDateTimeArbitrary, context);
+		LocalDateTime actual = this.sut.localDateTimes(localDateTimeArbitrary, context).sample();
 
 		// then
-		LocalDateTime localDateTime = actual.sample();
-		then(localDateTime).isAfter(now);
+		LocalDateTime now = LocalDateTime.now();
+		then(actual).isAfter(now);
 	}
 
 	@Property
 	void localDateTimesFutureOrPresent() {
 		// given
-		LocalDateTime now = LocalDateTime.now();
 		LocalDateTimeArbitrary localDateTimeArbitrary = DateTimes.dateTimes();
 		ArbitraryGeneratorContext context = makeContext(
 			new TypeReference<TimeIntrospectorSpec>() {
@@ -544,11 +506,11 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<LocalDateTime> actual = this.sut.localDateTimes(localDateTimeArbitrary, context);
+		LocalDateTime actual = this.sut.localDateTimes(localDateTimeArbitrary, context).sample();
 
 		// then
-		LocalDateTime localDateTime = actual.sample();
-		then(localDateTime).isAfterOrEqualTo(now);
+		LocalDateTime now = LocalDateTime.now();
+		then(actual).isAfterOrEqualTo(now);
 	}
 
 	@Property
@@ -562,11 +524,10 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<LocalTime> actual = this.sut.localTimes(localTimeArbitrary, context);
+		LocalTime actual = this.sut.localTimes(localTimeArbitrary, context).sample();
 
 		// then
-		LocalTime localTime = actual.sample();
-		then(localTime).isNotNull();
+		then(actual).isNotNull();
 	}
 
 	@Property
@@ -580,12 +541,11 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<LocalTime> actual = this.sut.localTimes(localTimeArbitrary, context);
+		LocalTime actual = this.sut.localTimes(localTimeArbitrary, context).sample();
 
 		// then
-		LocalTime localTime = actual.sample();
 		LocalTime now = LocalTime.now();
-		then(localTime).isBefore(now);
+		then(actual).isBefore(now);
 	}
 
 	@Property
@@ -599,18 +559,16 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<LocalTime> actual = this.sut.localTimes(localTimeArbitrary, context);
+		LocalTime actual = this.sut.localTimes(localTimeArbitrary, context).sample();
 
 		// then
-		LocalTime localTime = actual.sample();
 		LocalTime now = LocalTime.now();
-		then(localTime).isBeforeOrEqualTo(now);
+		then(actual).isBeforeOrEqualTo(now);
 	}
 
 	@Property
 	void localTimesFuture() {
 		// given
-		LocalTime now = LocalTime.now();
 		LocalTimeArbitrary localTimeArbitrary = Times.times();
 		ArbitraryGeneratorContext context = makeContext(
 			new TypeReference<TimeIntrospectorSpec>() {
@@ -619,17 +577,16 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<LocalTime> actual = this.sut.localTimes(localTimeArbitrary, context);
+		LocalTime actual = this.sut.localTimes(localTimeArbitrary, context).sample();
 
 		// then
-		LocalTime localTime = actual.sample();
-		then(localTime).isAfter(now);
+		LocalTime now = LocalTime.now();
+		then(actual).isAfter(now);
 	}
 
 	@Property
 	void localTimesFutureOrPresent() {
 		// given
-		LocalTime now = LocalTime.now();
 		LocalTimeArbitrary localTimeArbitrary = Times.times();
 		ArbitraryGeneratorContext context = makeContext(
 			new TypeReference<TimeIntrospectorSpec>() {
@@ -638,11 +595,11 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<LocalTime> actual = this.sut.localTimes(localTimeArbitrary, context);
+		LocalTime actual = this.sut.localTimes(localTimeArbitrary, context).sample();
 
 		// then
-		LocalTime localTime = actual.sample();
-		then(localTime).isAfterOrEqualTo(now);
+		LocalTime now = LocalTime.now();
+		then(actual).isAfterOrEqualTo(now);
 	}
 
 	@Property
@@ -656,11 +613,10 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<ZonedDateTime> actual = this.sut.zonedDateTimes(zonedDateTimeArbitrary, context);
+		ZonedDateTime actual = this.sut.zonedDateTimes(zonedDateTimeArbitrary, context).sample();
 
 		// then
-		ZonedDateTime zonedDateTime = actual.sample();
-		then(zonedDateTime).isNotNull();
+		then(actual).isNotNull();
 	}
 
 	@Property
@@ -674,13 +630,13 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<ZonedDateTime> actual = this.sut.zonedDateTimes(zonedDateTimeArbitrary, context);
+		ZonedDateTime actual = this.sut.zonedDateTimes(zonedDateTimeArbitrary, context)
+			.sample()
+			.withZoneSameLocal(ZoneId.systemDefault());
 
 		// then
-		ZonedDateTime zonedDateTime = actual.sample().withZoneSameLocal(ZoneId.systemDefault());
-
 		ZonedDateTime now = ZonedDateTime.now();
-		then(zonedDateTime).isBefore(now);
+		then(actual).isBefore(now);
 	}
 
 	@Property
@@ -694,13 +650,13 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<ZonedDateTime> actual = this.sut.zonedDateTimes(zonedDateTimeArbitrary, context);
+		ZonedDateTime actual = this.sut.zonedDateTimes(zonedDateTimeArbitrary, context)
+			.sample()
+			.withZoneSameLocal(ZoneId.systemDefault());
 
 		// then
-		ZonedDateTime zonedDateTime = actual.sample().withZoneSameLocal(ZoneId.systemDefault());
-
 		ZonedDateTime now = ZonedDateTime.now();
-		then(zonedDateTime).isBeforeOrEqualTo(now);
+		then(actual).isBeforeOrEqualTo(now);
 	}
 
 	@Property
@@ -714,13 +670,13 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<ZonedDateTime> actual = this.sut.zonedDateTimes(zonedDateTimeArbitrary, context);
+		ZonedDateTime actual = this.sut.zonedDateTimes(zonedDateTimeArbitrary, context)
+			.sample()
+			.withZoneSameLocal(ZoneId.systemDefault());
 
 		// then
-		ZonedDateTime zonedDateTime = actual.sample().withZoneSameLocal(ZoneId.systemDefault());
-
 		ZonedDateTime now = ZonedDateTime.now();
-		then(zonedDateTime).isAfter(now);
+		then(actual).isAfter(now);
 	}
 
 	@Property
@@ -734,13 +690,13 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<ZonedDateTime> actual = this.sut.zonedDateTimes(zonedDateTimeArbitrary, context);
+		ZonedDateTime actual = this.sut.zonedDateTimes(zonedDateTimeArbitrary, context)
+			.sample()
+			.withZoneSameLocal(ZoneId.systemDefault());
 
 		// then
-		ZonedDateTime zonedDateTime = actual.sample().withZoneSameLocal(ZoneId.systemDefault());
-
 		ZonedDateTime now = ZonedDateTime.now();
-		then(zonedDateTime).isAfterOrEqualTo(now);
+		then(actual).isAfterOrEqualTo(now);
 	}
 
 	@Property
@@ -754,11 +710,10 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<MonthDay> actual = this.sut.monthDays(monthDayArbitrary, context);
+		MonthDay actual = this.sut.monthDays(monthDayArbitrary, context).sample();
 
 		// then
-		MonthDay monthDay = actual.sample();
-		then(monthDay).isNotNull();
+		then(actual).isNotNull();
 	}
 
 	@Property
@@ -772,13 +727,11 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<MonthDay> actual = this.sut.monthDays(monthDayArbitrary, context);
+		MonthDay actual = this.sut.monthDays(monthDayArbitrary, context).sample();
 
 		// then
-		MonthDay monthDay = actual.sample();
-
 		MonthDay now = MonthDay.now();
-		then(monthDay).isLessThan(now);
+		then(actual).isLessThan(now);
 	}
 
 	@Property
@@ -792,13 +745,11 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<MonthDay> actual = this.sut.monthDays(monthDayArbitrary, context);
+		MonthDay actual = this.sut.monthDays(monthDayArbitrary, context).sample();
 
 		// then
-		MonthDay monthDay = actual.sample();
-
 		MonthDay now = MonthDay.now();
-		then(monthDay).isLessThanOrEqualTo(now);
+		then(actual).isLessThanOrEqualTo(now);
 	}
 
 	@Property
@@ -812,13 +763,11 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<MonthDay> actual = this.sut.monthDays(monthDayArbitrary, context);
+		MonthDay actual = this.sut.monthDays(monthDayArbitrary, context).sample();
 
 		// then
-		MonthDay monthDay = actual.sample();
-
 		MonthDay now = MonthDay.now();
-		then(monthDay).isGreaterThan(now);
+		then(actual).isGreaterThan(now);
 	}
 
 	@Property
@@ -832,13 +781,11 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<MonthDay> actual = this.sut.monthDays(monthDayArbitrary, context);
+		MonthDay actual = this.sut.monthDays(monthDayArbitrary, context).sample();
 
 		// then
-		MonthDay monthDay = actual.sample();
-
 		MonthDay now = MonthDay.now();
-		then(monthDay).isGreaterThanOrEqualTo(now);
+		then(actual).isGreaterThanOrEqualTo(now);
 	}
 
 	@Property
@@ -852,11 +799,10 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<OffsetDateTime> actual = this.sut.offsetDateTimes(offsetDateTimeArbitrary, context);
+		OffsetDateTime actual = this.sut.offsetDateTimes(offsetDateTimeArbitrary, context).sample();
 
 		// then
-		OffsetDateTime offsetDateTime = actual.sample();
-		then(offsetDateTime).isNotNull();
+		then(actual).isNotNull();
 	}
 
 	@Property
@@ -870,13 +816,13 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<OffsetDateTime> actual = this.sut.offsetDateTimes(offsetDateTimeArbitrary, context);
+		OffsetDateTime actual = this.sut.offsetDateTimes(offsetDateTimeArbitrary, context)
+			.sample()
+			.withOffsetSameLocal(OffsetDateTime.now().getOffset());
 
 		// then
-		OffsetDateTime offsetDateTime = actual.sample().withOffsetSameLocal(OffsetDateTime.now().getOffset());
-
 		OffsetDateTime now = OffsetDateTime.now();
-		then(offsetDateTime).isBefore(now);
+		then(actual).isBefore(now);
 	}
 
 	@Property
@@ -890,13 +836,13 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<OffsetDateTime> actual = this.sut.offsetDateTimes(offsetDateTimeArbitrary, context);
+		OffsetDateTime actual = this.sut.offsetDateTimes(offsetDateTimeArbitrary, context)
+			.sample()
+			.withOffsetSameLocal(OffsetDateTime.now().getOffset());
 
 		// then
-		OffsetDateTime offsetDateTime = actual.sample().withOffsetSameLocal(OffsetDateTime.now().getOffset());
-
 		OffsetDateTime now = OffsetDateTime.now();
-		then(offsetDateTime).isBeforeOrEqualTo(now);
+		then(actual).isBeforeOrEqualTo(now);
 	}
 
 	@Property
@@ -910,13 +856,13 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<OffsetDateTime> actual = this.sut.offsetDateTimes(offsetDateTimeArbitrary, context);
+		OffsetDateTime actual = this.sut.offsetDateTimes(offsetDateTimeArbitrary, context)
+			.sample()
+			.withOffsetSameLocal(OffsetDateTime.now().getOffset());
 
 		// then
-		OffsetDateTime offsetDateTime = actual.sample().withOffsetSameLocal(OffsetDateTime.now().getOffset());
-
 		OffsetDateTime now = OffsetDateTime.now();
-		then(offsetDateTime).isAfter(now);
+		then(actual).isAfter(now);
 	}
 
 	@Property
@@ -930,13 +876,13 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<OffsetDateTime> actual = this.sut.offsetDateTimes(offsetDateTimeArbitrary, context);
+		OffsetDateTime actual = this.sut.offsetDateTimes(offsetDateTimeArbitrary, context)
+			.sample()
+			.withOffsetSameLocal(OffsetDateTime.now().getOffset());
 
 		// then
-		OffsetDateTime offsetDateTime = actual.sample().withOffsetSameLocal(OffsetDateTime.now().getOffset());
-
 		OffsetDateTime now = OffsetDateTime.now();
-		then(offsetDateTime).isAfterOrEqualTo(now);
+		then(actual).isAfterOrEqualTo(now);
 	}
 
 	@Property
@@ -950,11 +896,10 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<OffsetTime> actual = this.sut.offsetTimes(offsetTimeArbitrary, context);
+		OffsetTime actual = this.sut.offsetTimes(offsetTimeArbitrary, context).sample();
 
 		// then
-		OffsetTime offsetTime = actual.sample();
-		then(offsetTime).isNotNull();
+		then(actual).isNotNull();
 	}
 
 	@Property
@@ -968,13 +913,13 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<OffsetTime> actual = this.sut.offsetTimes(offsetTimeArbitrary, context);
+		OffsetTime actual = this.sut.offsetTimes(offsetTimeArbitrary, context)
+			.sample()
+			.withOffsetSameLocal(OffsetTime.now().getOffset());
 
 		// then
-		OffsetTime offsetTime = actual.sample().withOffsetSameLocal(OffsetTime.now().getOffset());
-
 		OffsetTime now = OffsetTime.now();
-		then(offsetTime).isBefore(now);
+		then(actual).isBefore(now);
 	}
 
 	@Property
@@ -988,13 +933,13 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<OffsetTime> actual = this.sut.offsetTimes(offsetTimeArbitrary, context);
+		OffsetTime actual = this.sut.offsetTimes(offsetTimeArbitrary, context)
+			.sample()
+			.withOffsetSameLocal(OffsetTime.now().getOffset());
 
 		// then
-		OffsetTime offsetTime = actual.sample().withOffsetSameLocal(OffsetTime.now().getOffset());
-
 		OffsetTime now = OffsetTime.now();
-		then(offsetTime).isBeforeOrEqualTo(now);
+		then(actual).isBeforeOrEqualTo(now);
 	}
 
 	@Property
@@ -1008,13 +953,13 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<OffsetTime> actual = this.sut.offsetTimes(offsetTimeArbitrary, context);
+		OffsetTime actual = this.sut.offsetTimes(offsetTimeArbitrary, context)
+			.sample()
+			.withOffsetSameLocal(OffsetTime.now().getOffset());
 
 		// then
-		OffsetTime offsetTime = actual.sample().withOffsetSameLocal(OffsetTime.now().getOffset());
-
 		OffsetTime now = OffsetTime.now();
-		then(offsetTime).isAfter(now);
+		then(actual).isAfter(now);
 	}
 
 	@Property
@@ -1028,13 +973,13 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<OffsetTime> actual = this.sut.offsetTimes(offsetTimeArbitrary, context);
+		OffsetTime actual = this.sut.offsetTimes(offsetTimeArbitrary, context)
+			.sample()
+			.withOffsetSameLocal(OffsetTime.now().getOffset());
 
 		// then
-		OffsetTime offsetTime = actual.sample().withOffsetSameLocal(OffsetTime.now().getOffset());
-
 		OffsetTime now = OffsetTime.now();
-		then(offsetTime).isAfterOrEqualTo(now);
+		then(actual).isAfterOrEqualTo(now);
 	}
 
 	@Property
@@ -1048,11 +993,11 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Year> actual = this.sut.years(yearArbitrary, context);
+		Year actual = this.sut.years(yearArbitrary, context).sample();
 
 		// then
-		Year year = actual.sample();
-		then(year).isNotNull();
+		Year now = Year.now();
+		then(actual).isNotNull();
 	}
 
 	@Property
@@ -1066,13 +1011,11 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Year> actual = this.sut.years(yearArbitrary, context);
+		Year actual = this.sut.years(yearArbitrary, context).sample();
 
 		// then
-		Year year = actual.sample();
-
 		Year now = Year.now();
-		then(year).isLessThan(now);
+		then(actual).isLessThan(now);
 	}
 
 	@Property
@@ -1086,13 +1029,11 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Year> actual = this.sut.years(yearArbitrary, context);
+		Year actual = this.sut.years(yearArbitrary, context).sample();
 
 		// then
-		Year year = actual.sample();
-
 		Year now = Year.now();
-		then(year).isLessThanOrEqualTo(now);
+		then(actual).isLessThanOrEqualTo(now);
 	}
 
 	@Property
@@ -1106,13 +1047,11 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Year> actual = this.sut.years(yearArbitrary, context);
+		Year actual = this.sut.years(yearArbitrary, context).sample();
 
 		// then
-		Year year = actual.sample();
-
 		Year now = Year.now();
-		then(year).isGreaterThan(now);
+		then(actual).isGreaterThan(now);
 	}
 
 	@Property
@@ -1126,13 +1065,11 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Year> actual = this.sut.years(yearArbitrary, context);
+		Year actual = this.sut.years(yearArbitrary, context).sample();
 
 		// then
-		Year year = actual.sample();
-
 		Year now = Year.now();
-		then(year).isGreaterThanOrEqualTo(now);
+		then(actual).isGreaterThanOrEqualTo(now);
 	}
 
 	@Property
@@ -1146,11 +1083,11 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<YearMonth> actual = this.sut.yearMonths(yearMonthArbitrary, context);
+		YearMonth actual = this.sut.yearMonths(yearMonthArbitrary, context).sample();
 
 		// then
-		YearMonth yearMonth = actual.sample();
-		then(yearMonth).isNotNull();
+		YearMonth now = YearMonth.now();
+		then(actual).isNotNull();
 	}
 
 	@Property
@@ -1164,13 +1101,11 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<YearMonth> actual = this.sut.yearMonths(yearMonthArbitrary, context);
+		YearMonth actual = this.sut.yearMonths(yearMonthArbitrary, context).sample();
 
 		// then
-		YearMonth yearMonth = actual.sample();
-
 		YearMonth now = YearMonth.now();
-		then(yearMonth).isLessThan(now);
+		then(actual).isLessThan(now);
 	}
 
 	@Property
@@ -1184,13 +1119,11 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<YearMonth> actual = this.sut.yearMonths(yearMonthArbitrary, context);
+		YearMonth actual = this.sut.yearMonths(yearMonthArbitrary, context).sample();
 
 		// then
-		YearMonth yearMonth = actual.sample();
-
 		YearMonth now = YearMonth.now();
-		then(yearMonth).isLessThanOrEqualTo(now);
+		then(actual).isLessThanOrEqualTo(now);
 	}
 
 	@Property
@@ -1204,13 +1137,11 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<YearMonth> actual = this.sut.yearMonths(yearMonthArbitrary, context);
+		YearMonth actual = this.sut.yearMonths(yearMonthArbitrary, context).sample();
 
 		// then
-		YearMonth yearMonth = actual.sample();
-
 		YearMonth now = YearMonth.now();
-		then(yearMonth).isGreaterThan(now);
+		then(actual).isGreaterThan(now);
 	}
 
 	@Property
@@ -1224,13 +1155,11 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<YearMonth> actual = this.sut.yearMonths(yearMonthArbitrary, context);
+		YearMonth actual = this.sut.yearMonths(yearMonthArbitrary, context).sample();
 
 		// then
-		YearMonth yearMonth = actual.sample();
-
 		YearMonth now = YearMonth.now();
-		then(yearMonth).isGreaterThanOrEqualTo(now);
+		then(actual).isGreaterThanOrEqualTo(now);
 	}
 
 	@Property
@@ -1244,7 +1173,7 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Period> actual = this.sut.periods(periodArbitrary, context);
+		Period actual = this.sut.periods(periodArbitrary, context).sample();
 
 		// then
 		then(actual).isNotNull();
@@ -1261,7 +1190,7 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Duration> actual = this.sut.durations(durationArbitrary, context);
+		Duration actual = this.sut.durations(durationArbitrary, context).sample();
 
 		// then
 		then(actual).isNotNull();
@@ -1277,7 +1206,7 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 			"zoneOffset"
 		);
 		// when
-		Arbitrary<ZoneOffset> actual = this.sut.zoneOffsets(zoneOffsetArbitrary, context);
+		ZoneOffset actual = this.sut.zoneOffsets(zoneOffsetArbitrary, context).sample();
 
 		// then
 		then(actual).isNotNull();
