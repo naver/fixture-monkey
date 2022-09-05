@@ -9,7 +9,6 @@ plugins {
 
 dependencies {
     api("org.apiguardian:apiguardian-api:1.1.2")
-    testImplementation 'org.projectlombok:lombok:1.18.22'
     compileOnly("net.jqwik:jqwik-engine:${JQWIK_VERSION}")
     compileOnly("net.jqwik:jqwik-api:${JQWIK_VERSION}")
     compileOnly("net.jqwik:jqwik-time:${JQWIK_VERSION}")
