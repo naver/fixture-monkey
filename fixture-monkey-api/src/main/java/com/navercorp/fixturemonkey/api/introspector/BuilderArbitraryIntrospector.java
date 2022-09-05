@@ -80,7 +80,6 @@ public final class BuilderArbitraryIntrospector
 			String resolvePropertyName = arbitraryProperty.getResolvePropertyName();
 			Arbitrary<?> arbitrary = childrenArbitraries.get(resolvePropertyName);
 
-
 			Method method = BUILD_FIELD_METHOD_CACHE.computeIfAbsent(buildFieldMethodName, f -> {
 				Method buildFieldMethod = ReflectionUtils.findMethods(builderType, m -> m.getName().equals(
 						methodName))
