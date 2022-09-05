@@ -74,19 +74,16 @@ public final class BuilderArbitraryIntrospector
 			ReflectionUtils.invokeMethod(builderMethod, null));
 
 		for (ArbitraryProperty arbitraryProperty : childrenProperties) {
-			Property childProperty = arbitraryProperty.getProperty();
-
-			String methodName = arbitraryProperty.getProperty().getName();
-			methodName = getFieldNameIfPresent(childProperty, methodName);
+			String methodName = getFieldName(arbitraryProperty.getProperty());
 			String buildFieldMethodName = builderType.getName() + "#" + methodName;
 
 			String resolvePropertyName = arbitraryProperty.getResolvePropertyName();
 			Arbitrary<?> arbitrary = childrenArbitraries.get(resolvePropertyName);
 
-			String finalMethodName = methodName;
+
 			Method method = BUILD_FIELD_METHOD_CACHE.computeIfAbsent(buildFieldMethodName, f -> {
 				Method buildFieldMethod = ReflectionUtils.findMethods(builderType, m -> m.getName().equals(
-						finalMethodName))
+						methodName))
 					.stream()
 					.filter(Objects::nonNull)
 					.filter(m -> m.getParameterCount() == 1)
@@ -159,15 +156,15 @@ public final class BuilderArbitraryIntrospector
 		});
 	}
 
-	private String getFieldNameIfPresent(Property childProperty, String methodName) {
-		if (childProperty instanceof CompositeProperty) {
-			CompositeProperty compositeProperty = (CompositeProperty)childProperty;
+	private String getFieldName(Property property) {
+		if (property instanceof CompositeProperty) {
+			CompositeProperty compositeProperty = (CompositeProperty)property;
 			if (compositeProperty.getPrimaryProperty() instanceof FieldProperty) {
-				methodName = ((CompositeProperty)childProperty).getPrimaryProperty().getName();
+				return ((CompositeProperty)property).getPrimaryProperty().getName();
 			} else if (compositeProperty.getSecondaryProperty() instanceof FieldProperty) {
-				methodName = ((CompositeProperty)childProperty).getSecondaryProperty().getName();
+				return ((CompositeProperty)property).getSecondaryProperty().getName();
 			}
 		}
-		return methodName;
+		return property.getName();
 	}
 }
