@@ -65,6 +65,8 @@ import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.resolver.DecomposableContainerValue;
 import com.navercorp.fixturemonkey.resolver.IdentityNodeResolver;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.BuilderInteger;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.CustomBuildMethodInteger;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.CustomBuilderMethodInteger;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.Pair;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.PairArbitraryPropertyGenerator;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.PairIntrospector;
@@ -919,6 +921,38 @@ class FixtureMonkeyV04OptionsTest {
 
 		// when
 		BuilderInteger actual = sut.giveMeOne(BuilderInteger.class);
+
+		then(actual.getValue()).isBetween(Integer.MIN_VALUE, Integer.MAX_VALUE);
+	}
+
+	@Property
+	void generateWithBuilderArbitraryIntrospectorDefaultBuilderMethod() {
+		// given
+		BuilderArbitraryIntrospector builderArbitraryIntrospector = new BuilderArbitraryIntrospector();
+		builderArbitraryIntrospector.setDefaultBuilderMethodName("customBuilder");
+
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.pushExactTypeArbitraryIntrospector(CustomBuilderMethodInteger.class, builderArbitraryIntrospector)
+			.build();
+
+		// when
+		CustomBuilderMethodInteger actual = sut.giveMeOne(CustomBuilderMethodInteger.class);
+
+		then(actual.getValue()).isBetween(Integer.MIN_VALUE, Integer.MAX_VALUE);
+	}
+
+	@Property
+	void generateWithBuilderArbitraryIntrospectorDefaultBuildMethod() {
+		// given
+		BuilderArbitraryIntrospector builderArbitraryIntrospector = new BuilderArbitraryIntrospector();
+		builderArbitraryIntrospector.setDefaultBuildMethodName("customBuild");
+
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.pushExactTypeArbitraryIntrospector(CustomBuildMethodInteger.class, builderArbitraryIntrospector)
+			.build();
+
+		// when
+		CustomBuildMethodInteger actual = sut.giveMeOne(CustomBuildMethodInteger.class);
 
 		then(actual.getValue()).isBetween(Integer.MIN_VALUE, Integer.MAX_VALUE);
 	}

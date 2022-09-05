@@ -1,3 +1,21 @@
+/*
+ * Fixture Monkey
+ *
+ * Copyright (c) 2021-present NAVER Corp.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.navercorp.fixturemonkey.api.introspector;
 
 import static java.util.stream.Collectors.toList;
@@ -9,6 +27,9 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
+import lombok.Builder;
+import lombok.Getter;
+
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryPropertyGenerator;
@@ -19,6 +40,126 @@ import com.navercorp.fixturemonkey.api.property.RootProperty;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 
 public class BuilderArbitraryIntrospectorTest {
+	@Test
+	void introspect() {
+		// given
+		BuilderArbitraryIntrospector sut = new BuilderArbitraryIntrospector();
+
+		ArbitraryGeneratorContext context = makeContext(new TypeReference<BuilderSample>(){
+		});
+
+		// when
+		ArbitraryIntrospectorResult actual = sut.introspect(context);
+		then(actual.getValue()).isNotNull();
+
+		BuilderSample sample = (BuilderSample)actual.getValue().sample();
+		then(sample.getName()).isNotNull();
+		then(sample.getValue()).isNotNull();
+	}
+
+	@Test
+	void introspectClassWithDefaultBuilderMethod() {
+		// given
+		BuilderArbitraryIntrospector sut = new BuilderArbitraryIntrospector();
+		sut.setDefaultBuilderMethodName("customBuilder");
+
+		ArbitraryGeneratorContext context = makeContext(new TypeReference<CustomBuilderMethodSample>(){
+		});
+
+		// when
+		ArbitraryIntrospectorResult actual = sut.introspect(context);
+		then(actual.getValue()).isNotNull();
+
+		CustomBuilderMethodSample sample = (CustomBuilderMethodSample)actual.getValue().sample();
+		then(sample.getName()).isNotNull();
+		then(sample.getValue()).isNotNull();
+	}
+
+	@Test
+	void introspectClassWithDefaultBuildMethod() {
+		// given
+		BuilderArbitraryIntrospector sut = new BuilderArbitraryIntrospector();
+		sut.setDefaultBuildMethodName("customBuild");
+
+		ArbitraryGeneratorContext context = makeContext(new TypeReference<CustomBuildMethodSample>(){
+		});
+
+		// when
+		ArbitraryIntrospectorResult actual = sut.introspect(context);
+		then(actual.getValue()).isNotNull();
+
+		CustomBuildMethodSample sample = (CustomBuildMethodSample)actual.getValue().sample();
+		then(sample.getName()).isNotNull();
+		then(sample.getValue()).isNotNull();
+	}
+
+	@Test
+	void introspectClassWithTypedBuilderMethod() {
+		// given
+		BuilderArbitraryIntrospector sut = new BuilderArbitraryIntrospector();
+		sut.setBuilderMethodName(CustomBuilderMethodSample.class, "customBuilder");
+
+		ArbitraryGeneratorContext context = makeContext(new TypeReference<CustomBuilderMethodSample>(){
+		});
+
+		// when
+		ArbitraryIntrospectorResult actual = sut.introspect(context);
+		then(actual.getValue()).isNotNull();
+
+		CustomBuilderMethodSample sample = (CustomBuilderMethodSample)actual.getValue().sample();
+		then(sample.getName()).isNotNull();
+		then(sample.getValue()).isNotNull();
+	}
+
+	@Test
+	void introspectClassWithTypedBuildMethod() {
+		// given
+		BuilderArbitraryIntrospector sut = new BuilderArbitraryIntrospector();
+		sut.setBuildMethodName(CustomBuildMethodSample.CustomBuildMethodSampleBuilder.class, "customBuild");
+
+		ArbitraryGeneratorContext context = makeContext(new TypeReference<CustomBuildMethodSample>(){
+		});
+
+		// when
+		ArbitraryIntrospectorResult actual = sut.introspect(context);
+		then(actual.getValue()).isNotNull();
+
+		CustomBuildMethodSample sample = (CustomBuildMethodSample)actual.getValue().sample();
+		then(sample.getName()).isNotNull();
+		then(sample.getValue()).isNotNull();
+	}
+
+	@Getter
+	@Builder
+	static class BuilderSample {
+		private String name;
+		private int value;
+	}
+
+	@Getter
+	@Builder
+	static class CustomBuilderMethodSample {
+		private String name;
+		private int value;
+
+		public static CustomBuilderMethodSampleBuilder customBuilder() {
+			return new CustomBuilderMethodSampleBuilder();
+		}
+	}
+
+	@Getter
+	@Builder
+	static class CustomBuildMethodSample {
+		private String name;
+		private int value;
+
+		public static class CustomBuildMethodSampleBuilder {
+			public CustomBuildMethodSample customBuild() {
+				return new CustomBuildMethodSample(name, value);
+			}
+		}
+	}
+
 	private final ArbitraryIntrospector arbitraryIntrospector = new CompositeArbitraryIntrospector(
 		Arrays.asList(
 			new EnumIntrospector(),
@@ -29,13 +170,7 @@ public class BuilderArbitraryIntrospectorTest {
 		)
 	);
 
-	@Test
-	void introspect() {
-		// given
-		BuilderArbitraryIntrospector sut = BuilderArbitraryIntrospector.INSTANCE;
-
-		TypeReference<BuilderSample> typeReference = new TypeReference<BuilderSample>() {
-		};
+	private <T> ArbitraryGeneratorContext makeContext(TypeReference<T> typeReference) {
 		RootProperty rootProperty = new RootProperty(typeReference.getAnnotatedType());
 
 		GenerateOptions generateOptions = GenerateOptions.DEFAULT_GENERATE_OPTIONS;
@@ -65,7 +200,7 @@ public class BuilderArbitraryIntrospectorTest {
 			)
 			.collect(toList());
 
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+		return new ArbitraryGeneratorContext(
 			rootArbitraryProperty,
 			childrenProperties,
 			null,
@@ -80,58 +215,5 @@ public class BuilderArbitraryIntrospectorTest {
 			).getValue(),
 			Collections.emptyList()
 		);
-
-		// when
-		ArbitraryIntrospectorResult actual = sut.introspect(context);
-		then(actual.getValue()).isNotNull();
-
-		BuilderSample sample = (BuilderSample)actual.getValue().sample();
-		then(sample.getName()).isNotNull();
-		then(sample.getValue()).isNotNull();
-	}
-
-	static class BuilderSample {
-		private String name;
-		private int value;
-
-		BuilderSample(String name, int value) {
-			this.name = name;
-			this.value = value;
-		}
-
-		public String getName() {
-			return name;
-		}
-
-		public int getValue() {
-			return value;
-		}
-
-		public static BuilderSampleBuilder builder() {
-			return new BuilderSampleBuilder();
-		}
-
-		public static class BuilderSampleBuilder {
-
-			private String name;
-			private int value;
-
-			BuilderSampleBuilder() {
-			}
-
-			public BuilderSampleBuilder name(String name) {
-				this.name = name;
-				return this;
-			}
-
-			public BuilderSampleBuilder value(int value) {
-				this.value = value;
-				return this;
-			}
-
-			public BuilderSample build() {
-				return new BuilderSample(name, value);
-			}
-		}
 	}
 }

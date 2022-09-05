@@ -1,3 +1,21 @@
+/*
+ * Fixture Monkey
+ *
+ * Copyright (c) 2021-present NAVER Corp.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.navercorp.fixturemonkey.api.introspector;
 
 import java.lang.reflect.Method;
@@ -6,6 +24,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apiguardian.api.API;
 import org.junit.platform.commons.util.ReflectionUtils;
 
 import net.jqwik.api.Arbitrary;
@@ -14,10 +33,13 @@ import net.jqwik.api.Builders.BuilderCombinator;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
+import com.navercorp.fixturemonkey.api.property.CompositeProperty;
+import com.navercorp.fixturemonkey.api.property.FieldProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.type.Types;
 
-public class BuilderArbitraryIntrospector
+@API(since = "0.4.0", status = API.Status.EXPERIMENTAL)
+public final class BuilderArbitraryIntrospector
 	implements ArbitraryIntrospector {
 	public static final BuilderArbitraryIntrospector INSTANCE = new BuilderArbitraryIntrospector();
 	private static final Map<Class<?>, Method> BUILDER_CACHE = new ConcurrentHashMap<>();
@@ -52,14 +74,19 @@ public class BuilderArbitraryIntrospector
 			ReflectionUtils.invokeMethod(builderMethod, null));
 
 		for (ArbitraryProperty arbitraryProperty : childrenProperties) {
+			Property childProperty = arbitraryProperty.getProperty();
+
 			String methodName = arbitraryProperty.getProperty().getName();
+			methodName = getFieldNameIfPresent(childProperty, methodName);
 			String buildFieldMethodName = builderType.getName() + "#" + methodName;
 
 			String resolvePropertyName = arbitraryProperty.getResolvePropertyName();
 			Arbitrary<?> arbitrary = childrenArbitraries.get(resolvePropertyName);
 
+			String finalMethodName = methodName;
 			Method method = BUILD_FIELD_METHOD_CACHE.computeIfAbsent(buildFieldMethodName, f -> {
-				Method buildFieldMethod = ReflectionUtils.findMethods(builderType, m -> m.getName().equals(methodName))
+				Method buildFieldMethod = ReflectionUtils.findMethods(builderType, m -> m.getName().equals(
+						finalMethodName))
 					.stream()
 					.filter(Objects::nonNull)
 					.filter(m -> m.getParameterCount() == 1)
@@ -77,7 +104,7 @@ public class BuilderArbitraryIntrospector
 		}
 
 		Method buildMethod = BUILD_METHOD_CACHE.computeIfAbsent(builderType, t -> {
-			String buildMethodName = this.getBuildMethodName(t);
+			String buildMethodName = typedBuildMethodName.getOrDefault(t, defaultBuildMethodName);
 			Method method = ReflectionUtils.findMethod(builderType, buildMethodName)
 				.orElseThrow(() -> new IllegalStateException(
 					"Can not find BuilderCombiner build method for clazz. clazz: " + type));
@@ -90,14 +117,6 @@ public class BuilderArbitraryIntrospector
 			}
 			return ReflectionUtils.invokeMethod(buildMethod, b);
 		}));
-	}
-
-	public String getBuildMethodName(Class<?> type) {
-		return this.typedBuildMethodName.getOrDefault(type, defaultBuildMethodName);
-	}
-
-	public String getBuilderMethodName(Class<?> type) {
-		return this.typedBuilderMethodName.getOrDefault(type, defaultBuilderMethodName);
 	}
 
 	public void setDefaultBuilderMethodName(String defaultBuilderMethodName) {
@@ -122,7 +141,7 @@ public class BuilderArbitraryIntrospector
 
 	private Class<?> getBuilderType(Class<?> objectType) {
 		Method builderMethod = BUILDER_CACHE.computeIfAbsent(objectType, t -> {
-			String builderMethodName = this.getBuilderMethodName(t);
+			String builderMethodName = typedBuilderMethodName.getOrDefault(t, defaultBuilderMethodName);
 			Method method = ReflectionUtils.findMethod(t, builderMethodName).orElse(null);
 			if (method != null) {
 				method.setAccessible(true);
@@ -138,5 +157,17 @@ public class BuilderArbitraryIntrospector
 			Object builder = ReflectionUtils.invokeMethod(builderMethod, null);
 			return builder.getClass();
 		});
+	}
+
+	private String getFieldNameIfPresent(Property childProperty, String methodName) {
+		if (childProperty instanceof CompositeProperty) {
+			CompositeProperty compositeProperty = (CompositeProperty)childProperty;
+			if (compositeProperty.getPrimaryProperty() instanceof FieldProperty) {
+				methodName = ((CompositeProperty)childProperty).getPrimaryProperty().getName();
+			} else if (compositeProperty.getSecondaryProperty() instanceof FieldProperty) {
+				methodName = ((CompositeProperty)childProperty).getSecondaryProperty().getName();
+			}
+		}
+		return methodName;
 	}
 }

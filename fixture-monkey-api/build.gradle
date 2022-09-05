@@ -9,6 +9,7 @@ plugins {
 
 dependencies {
     api("org.apiguardian:apiguardian-api:1.1.2")
+    testImplementation 'org.projectlombok:lombok:1.18.22'
     compileOnly("net.jqwik:jqwik-engine:${JQWIK_VERSION}")
     compileOnly("net.jqwik:jqwik-api:${JQWIK_VERSION}")
     compileOnly("net.jqwik:jqwik-time:${JQWIK_VERSION}")
@@ -17,6 +18,7 @@ dependencies {
     testImplementation("net.jqwik:jqwik-api:${JQWIK_VERSION}")
     testImplementation("org.junit.jupiter:junit-jupiter-engine:${JUNIT_JUPITER_VERSION}")
     testImplementation("org.junit.platform:junit-platform-engine:${JUNIT_ENGINE_VERSION}")
+    testImplementation("org.projectlombok:lombok:1.18.20")
     testImplementation("org.assertj:assertj-core:3.18.1")
     testImplementation("net.jqwik:jqwik-time:${JQWIK_VERSION}")
 }

@@ -167,4 +167,26 @@ class FixtureMonkeyV04OptionsAdditionalTestSpecs {
 	public static class BuilderInteger {
 		private int value;
 	}
+
+	@Getter
+	@Builder
+	public static class CustomBuilderMethodInteger {
+		private int value;
+
+		public static CustomBuilderMethodIntegerBuilder customBuilder() {
+			return new CustomBuilderMethodIntegerBuilder();
+		}
+	}
+
+	@Getter
+	@Builder
+	public static class CustomBuildMethodInteger {
+		private int value;
+
+		public static class CustomBuildMethodIntegerBuilder {
+			public CustomBuildMethodInteger customBuild() {
+				return new CustomBuildMethodInteger(value);
+			}
+		}
+	}
 }
