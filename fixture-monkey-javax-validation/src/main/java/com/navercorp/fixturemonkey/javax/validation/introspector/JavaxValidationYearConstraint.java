@@ -18,33 +18,29 @@
 
 package com.navercorp.fixturemonkey.javax.validation.introspector;
 
-import java.math.BigInteger;
+import java.time.Year;
 
 import javax.annotation.Nullable;
 
-import org.apiguardian.api.API;
-import org.apiguardian.api.API.Status;
-
-@API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public final class JavaxValidationIntegerConstraint {
+public final class JavaxValidationYearConstraint {
 	@Nullable
-	private final BigInteger min;
+	private final Year min;
 
 	@Nullable
-	private final BigInteger max;
+	private final Year max;
 
-	public JavaxValidationIntegerConstraint(@Nullable BigInteger min, @Nullable BigInteger max) {
+	public JavaxValidationYearConstraint(@Nullable Year min, @Nullable Year max) {
 		this.min = min;
 		this.max = max;
 	}
 
 	@Nullable
-	public BigInteger getMin() {
+	public Year getMin() {
 		return this.min;
 	}
 
 	@Nullable
-	public BigInteger getMax() {
+	public Year getMax() {
 		return this.max;
 	}
 }

@@ -26,7 +26,7 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public class JavaxValidationTimeConstraint {
+public final class JavaxValidationTimeConstraint {
 	@Nullable
 	private final LocalTime min;
 

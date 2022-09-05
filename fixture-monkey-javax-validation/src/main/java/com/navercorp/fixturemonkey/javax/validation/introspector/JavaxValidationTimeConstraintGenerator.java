@@ -21,6 +21,8 @@ package com.navercorp.fixturemonkey.javax.validation.introspector;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.Year;
+import java.time.YearMonth;
 import java.time.temporal.ChronoUnit;
 
 import javax.validation.constraints.Future;
@@ -91,5 +93,43 @@ public class JavaxValidationTimeConstraintGenerator {
 		}
 
 		return new JavaxValidationTimeConstraint(min, max);
+	}
+
+	public JavaxValidationYearConstraint generateYearConstraint(ArbitraryGeneratorContext context) {
+		Year now = Year.now();
+		Year min = null;
+		if (context.findAnnotation(Future.class).isPresent()) {
+			min = now.plusYears(1);
+		} else if (context.findAnnotation(FutureOrPresent.class).isPresent()) {
+			min = now;
+		}
+
+		Year max = null;
+		if (context.findAnnotation(Past.class).isPresent()) {
+			max = now.minusYears(1);
+		} else if (context.findAnnotation(PastOrPresent.class).isPresent()) {
+			max = now;
+		}
+
+		return new JavaxValidationYearConstraint(min, max);
+	}
+
+	public JavaxValidationYearMonthConstraint generateYearMonthConstraint(ArbitraryGeneratorContext context) {
+		YearMonth now = YearMonth.now();
+		YearMonth min = null;
+		if (context.findAnnotation(Future.class).isPresent()) {
+			min = now.plusMonths(1);
+		} else if (context.findAnnotation(FutureOrPresent.class).isPresent()) {
+			min = now;
+		}
+
+		YearMonth max = null;
+		if (context.findAnnotation(Past.class).isPresent()) {
+			max = now.minusMonths(1);
+		} else if (context.findAnnotation(PastOrPresent.class).isPresent()) {
+			max = now;
+		}
+
+		return new JavaxValidationYearMonthConstraint(min, max);
 	}
 }
