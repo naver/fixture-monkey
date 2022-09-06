@@ -20,6 +20,7 @@ dependencies {
     testImplementation("org.projectlombok:lombok:1.18.20")
     testImplementation("org.assertj:assertj-core:3.18.1")
     testImplementation("net.jqwik:jqwik-time:${JQWIK_VERSION}")
+    testAnnotationProcessor("org.projectlombok:lombok:1.18.20")
 }
 
 editorconfig {
