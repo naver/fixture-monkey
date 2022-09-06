@@ -45,7 +45,7 @@ public class BuilderArbitraryIntrospectorTest {
 		// given
 		BuilderArbitraryIntrospector sut = new BuilderArbitraryIntrospector();
 
-		ArbitraryGeneratorContext context = makeContext(new TypeReference<BuilderSample>(){
+		ArbitraryGeneratorContext context = makeContext(new TypeReference<BuilderSample>() {
 		});
 
 		// when
@@ -63,7 +63,7 @@ public class BuilderArbitraryIntrospectorTest {
 		BuilderArbitraryIntrospector sut = new BuilderArbitraryIntrospector();
 		sut.setDefaultBuilderMethodName("customBuilder");
 
-		ArbitraryGeneratorContext context = makeContext(new TypeReference<CustomBuilderMethodSample>(){
+		ArbitraryGeneratorContext context = makeContext(new TypeReference<CustomBuilderMethodSample>() {
 		});
 
 		// when
@@ -81,7 +81,7 @@ public class BuilderArbitraryIntrospectorTest {
 		BuilderArbitraryIntrospector sut = new BuilderArbitraryIntrospector();
 		sut.setDefaultBuildMethodName("customBuild");
 
-		ArbitraryGeneratorContext context = makeContext(new TypeReference<CustomBuildMethodSample>(){
+		ArbitraryGeneratorContext context = makeContext(new TypeReference<CustomBuildMethodSample>() {
 		});
 
 		// when
@@ -99,7 +99,7 @@ public class BuilderArbitraryIntrospectorTest {
 		BuilderArbitraryIntrospector sut = new BuilderArbitraryIntrospector();
 		sut.setBuilderMethodName(CustomBuilderMethodSample.class, "customBuilder");
 
-		ArbitraryGeneratorContext context = makeContext(new TypeReference<CustomBuilderMethodSample>(){
+		ArbitraryGeneratorContext context = makeContext(new TypeReference<CustomBuilderMethodSample>() {
 		});
 
 		// when
@@ -117,7 +117,7 @@ public class BuilderArbitraryIntrospectorTest {
 		BuilderArbitraryIntrospector sut = new BuilderArbitraryIntrospector();
 		sut.setBuildMethodName(CustomBuildMethodSample.CustomBuildMethodSampleBuilder.class, "customBuild");
 
-		ArbitraryGeneratorContext context = makeContext(new TypeReference<CustomBuildMethodSample>(){
+		ArbitraryGeneratorContext context = makeContext(new TypeReference<CustomBuildMethodSample>() {
 		});
 
 		// when
