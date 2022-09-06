@@ -60,11 +60,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<String> actual = this.sut.strings(stringArbitrary, context);
+		String actual = this.sut.strings(stringArbitrary, context).sample();
 
 		// then
-		String value = actual.sample();
-		then(value).isNotNull();
+		then(actual).isNotNull();
 	}
 
 	@Property
@@ -78,11 +77,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<String> actual = this.sut.strings(stringArbitrary, context);
+		String actual = this.sut.strings(stringArbitrary, context).sample();
 
 		// then
-		String value = actual.sample();
-		then(value).isNotBlank();
+		then(actual).isNotBlank();
 	}
 
 	@Property
@@ -96,11 +94,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<String> actual = this.sut.strings(stringArbitrary, context);
+		String actual = this.sut.strings(stringArbitrary, context).sample();
 
 		// then
-		String value = actual.sample();
-		then(value).isNotEmpty();
+		then(actual).isNotEmpty();
 	}
 
 	@Property
@@ -114,12 +111,11 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<String> actual = this.sut.strings(stringArbitrary, context);
+		String actual = this.sut.strings(stringArbitrary, context).sample();
 
 		// then
-		String value = actual.sample();
-		then(value.length()).isGreaterThanOrEqualTo(5);
-		then(value.length()).isLessThanOrEqualTo(10);
+		then(actual.length()).isGreaterThanOrEqualTo(5);
+		then(actual.length()).isLessThanOrEqualTo(10);
 	}
 
 	@Property
@@ -133,12 +129,11 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<String> actual = this.sut.strings(stringArbitrary, context);
+		String actual = this.sut.strings(stringArbitrary, context).sample();
 
 		// then
-		String value = actual.sample();
-		then(value.length()).isLessThanOrEqualTo(10);
-		thenNoException().isThrownBy(() -> Long.parseLong(value));
+		then(actual.length()).isLessThanOrEqualTo(10);
+		thenNoException().isThrownBy(() -> Long.parseLong(actual));
 	}
 
 	@Property
@@ -152,14 +147,13 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<String> actual = this.sut.strings(stringArbitrary, context);
+		String actual = this.sut.strings(stringArbitrary, context).sample();
 
 		// then
-		String value = actual.sample();
 		Pattern pattern = Pattern.compile("[e-o]");
-		then(pattern.asPredicate().test(value)).isTrue();
-		for (int i = 0; i < value.length(); i++) {
-			char ch = value.charAt(i);
+		then(pattern.asPredicate().test(actual)).isTrue();
+		for (int i = 0; i < actual.length(); i++) {
+			char ch = actual.charAt(i);
 			then(ch).isBetween('e', 'o');
 		}
 	}
@@ -175,11 +169,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<String> actual = this.sut.strings(stringArbitrary, context);
+		String actual = this.sut.strings(stringArbitrary, context).sample();
 
 		// then
-		String value = actual.sample();
-		then(value).containsOnlyOnce("@");
+		then(actual).containsOnlyOnce("@");
 	}
 
 	@Property
@@ -210,11 +203,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Short> actual = this.sut.shorts(shortArbitrary, context);
+		Short actual = this.sut.shorts(shortArbitrary, context).sample();
 
 		// then
-		short value = actual.sample();
-		then(value).isNotNull();
+		then(actual).isNotNull();
 	}
 
 	@Property
@@ -228,11 +220,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Short> actual = this.sut.shorts(shortArbitrary, context);
+		Short actual = this.sut.shorts(shortArbitrary, context).sample();
 
 		// then
-		short value = actual.sample();
-		then(value).isBetween((short)-10000, (short)10000);
+		then(actual).isBetween((short)-10000, (short)10000);
 	}
 
 	@Property
@@ -246,11 +237,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Short> actual = this.sut.shorts(shortArbitrary, context);
+		Short actual = this.sut.shorts(shortArbitrary, context).sample();
 
 		// then
-		short value = actual.sample();
-		then(value).isGreaterThanOrEqualTo((short)100);
+		then(actual).isGreaterThanOrEqualTo((short)100);
 	}
 
 	@Property
@@ -264,11 +254,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Short> actual = this.sut.shorts(shortArbitrary, context);
+		Short actual = this.sut.shorts(shortArbitrary, context).sample();
 
 		// then
-		short value = actual.sample();
-		then(value).isLessThanOrEqualTo((short)100);
+		then(actual).isLessThanOrEqualTo((short)100);
 	}
 
 	@Property
@@ -282,11 +271,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Short> actual = this.sut.shorts(shortArbitrary, context);
+		Short actual = this.sut.shorts(shortArbitrary, context).sample();
 
 		// then
-		short value = actual.sample();
-		then(value).isGreaterThanOrEqualTo((short)100);
+		then(actual).isGreaterThanOrEqualTo((short)100);
 	}
 
 	@Property
@@ -300,11 +288,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Short> actual = this.sut.shorts(shortArbitrary, context);
+		Short actual = this.sut.shorts(shortArbitrary, context).sample();
 
 		// then
-		short value = actual.sample();
-		then(value).isGreaterThanOrEqualTo((short)101);
+		then(actual).isGreaterThanOrEqualTo((short)101);
 	}
 
 	@Property
@@ -318,11 +305,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Short> actual = this.sut.shorts(shortArbitrary, context);
+		Short actual = this.sut.shorts(shortArbitrary, context).sample();
 
 		// then
-		short value = actual.sample();
-		then(value).isLessThanOrEqualTo((short)100);
+		then(actual).isLessThanOrEqualTo((short)100);
 	}
 
 	@Property
@@ -336,11 +322,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Short> actual = this.sut.shorts(shortArbitrary, context);
+		Short actual = this.sut.shorts(shortArbitrary, context).sample();
 
 		// then
-		short value = actual.sample();
-		then(value).isLessThanOrEqualTo((short)99);
+		then(actual).isLessThanOrEqualTo((short)99);
 	}
 
 	@Property
@@ -354,11 +339,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Short> actual = this.sut.shorts(shortArbitrary, context);
+		Short actual = this.sut.shorts(shortArbitrary, context).sample();
 
 		// then
-		short value = actual.sample();
-		then(value).isLessThan((short)0);
+		then(actual).isLessThan((short)0);
 	}
 
 	@Property
@@ -372,11 +356,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Short> actual = this.sut.shorts(shortArbitrary, context);
+		Short actual = this.sut.shorts(shortArbitrary, context).sample();
 
 		// then
-		short value = actual.sample();
-		then(value).isLessThanOrEqualTo((short)0);
+		then(actual).isLessThanOrEqualTo((short)0);
 	}
 
 	@Property
@@ -390,11 +373,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Short> actual = this.sut.shorts(shortArbitrary, context);
+		Short actual = this.sut.shorts(shortArbitrary, context).sample();
 
 		// then
-		short value = actual.sample();
-		then(value).isGreaterThan((short)0);
+		then(actual).isGreaterThan((short)0);
 	}
 
 	@Property
@@ -408,11 +390,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Short> actual = this.sut.shorts(shortArbitrary, context);
+		Short actual = this.sut.shorts(shortArbitrary, context).sample();
 
 		// then
-		short value = actual.sample();
-		then(value).isGreaterThanOrEqualTo((short)0);
+		then(actual).isGreaterThanOrEqualTo((short)0);
 	}
 
 	@Property
@@ -426,11 +407,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Byte> actual = this.sut.bytes(byteArbitrary, context);
+		Byte actual = this.sut.bytes(byteArbitrary, context).sample();
 
 		// then
-		byte value = actual.sample();
-		then(value).isNotNull();
+		then(actual).isNotNull();
 	}
 
 	@Property
@@ -444,11 +424,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Byte> actual = this.sut.bytes(byteArbitrary, context);
+		Byte actual = this.sut.bytes(byteArbitrary, context).sample();
 
 		// then
-		byte value = actual.sample();
-		then(value).isBetween((byte)-100, (byte)100);
+		then(actual).isBetween((byte)-100, (byte)100);
 	}
 
 	@Property
@@ -462,11 +441,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Byte> actual = this.sut.bytes(byteArbitrary, context);
+		Byte actual = this.sut.bytes(byteArbitrary, context).sample();
 
 		// then
-		byte value = actual.sample();
-		then(value).isGreaterThanOrEqualTo((byte)100);
+		then(actual).isGreaterThanOrEqualTo((byte)100);
 	}
 
 	@Property
@@ -480,11 +458,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Byte> actual = this.sut.bytes(byteArbitrary, context);
+		Byte actual = this.sut.bytes(byteArbitrary, context).sample();
 
 		// then
-		byte value = actual.sample();
-		then(value).isLessThanOrEqualTo((byte)100);
+		then(actual).isLessThanOrEqualTo((byte)100);
 	}
 
 	@Property
@@ -498,11 +475,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Byte> actual = this.sut.bytes(byteArbitrary, context);
+		Byte actual = this.sut.bytes(byteArbitrary, context).sample();
 
 		// then
-		byte value = actual.sample();
-		then(value).isGreaterThanOrEqualTo((byte)100);
+		then(actual).isGreaterThanOrEqualTo((byte)100);
 	}
 
 	@Property
@@ -516,11 +492,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Byte> actual = this.sut.bytes(byteArbitrary, context);
+		Byte actual = this.sut.bytes(byteArbitrary, context).sample();
 
 		// then
-		byte value = actual.sample();
-		then(value).isGreaterThanOrEqualTo((byte)101);
+		then(actual).isGreaterThanOrEqualTo((byte)101);
 	}
 
 	@Property
@@ -534,11 +509,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Byte> actual = this.sut.bytes(byteArbitrary, context);
+		Byte actual = this.sut.bytes(byteArbitrary, context).sample();
 
 		// then
-		byte value = actual.sample();
-		then(value).isLessThanOrEqualTo((byte)100);
+		then(actual).isLessThanOrEqualTo((byte)100);
 	}
 
 	@Property
@@ -552,11 +526,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Byte> actual = this.sut.bytes(byteArbitrary, context);
+		Byte actual = this.sut.bytes(byteArbitrary, context).sample();
 
 		// then
-		byte value = actual.sample();
-		then(value).isLessThanOrEqualTo((byte)99);
+		then(actual).isLessThanOrEqualTo((byte)99);
 	}
 
 	@Property
@@ -570,11 +543,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Byte> actual = this.sut.bytes(byteArbitrary, context);
+		Byte actual = this.sut.bytes(byteArbitrary, context).sample();
 
 		// then
-		byte value = actual.sample();
-		then(value).isLessThan((byte)0);
+		then(actual).isLessThan((byte)0);
 	}
 
 	@Property
@@ -588,11 +560,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Byte> actual = this.sut.bytes(byteArbitrary, context);
+		Byte actual = this.sut.bytes(byteArbitrary, context).sample();
 
 		// then
-		byte value = actual.sample();
-		then(value).isLessThanOrEqualTo((byte)0);
+		then(actual).isLessThanOrEqualTo((byte)0);
 	}
 
 	@Property
@@ -606,11 +577,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Byte> actual = this.sut.bytes(byteArbitrary, context);
+		Byte actual = this.sut.bytes(byteArbitrary, context).sample();
 
 		// then
-		byte value = actual.sample();
-		then(value).isGreaterThan((byte)0);
+		then(actual).isGreaterThan((byte)0);
 	}
 
 	@Property
@@ -624,11 +594,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Byte> actual = this.sut.bytes(byteArbitrary, context);
+		Byte actual = this.sut.bytes(byteArbitrary, context).sample();
 
 		// then
-		byte value = actual.sample();
-		then(value).isGreaterThanOrEqualTo((byte)0);
+		then(actual).isGreaterThanOrEqualTo((byte)0);
 	}
 
 	@Property
@@ -642,11 +611,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Float> actual = this.sut.floats(floatArbitrary, context);
+		Float actual = this.sut.floats(floatArbitrary, context).sample();
 
 		// then
-		Float value = actual.sample();
-		then(value).isNotNull();
+		then(actual).isNotNull();
 	}
 
 	@Property
@@ -660,11 +628,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Float> actual = this.sut.floats(floatArbitrary, context);
+		Float actual = this.sut.floats(floatArbitrary, context).sample();
 
 		// then
-		Float value = actual.sample();
-		then(value).isBetween(-10000F, 10000F);
+		then(actual).isBetween(-10000F, 10000F);
 	}
 
 	@Property
@@ -678,11 +645,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Float> actual = this.sut.floats(floatArbitrary, context);
+		Float actual = this.sut.floats(floatArbitrary, context).sample();
 
 		// then
-		Float value = actual.sample();
-		then(value).isGreaterThanOrEqualTo(100);
+		then(actual).isGreaterThanOrEqualTo(100);
 	}
 
 	@Property
@@ -696,11 +662,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Float> actual = this.sut.floats(floatArbitrary, context);
+		Float actual = this.sut.floats(floatArbitrary, context).sample();
 
 		// then
-		Float value = actual.sample();
-		then(value).isLessThanOrEqualTo(100);
+		then(actual).isLessThanOrEqualTo(100);
 	}
 
 	@Property
@@ -714,11 +679,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Float> actual = this.sut.floats(floatArbitrary, context);
+		Float actual = this.sut.floats(floatArbitrary, context).sample();
 
 		// then
-		Float value = actual.sample();
-		then(value).isGreaterThanOrEqualTo(100.1F);
+		then(actual).isGreaterThanOrEqualTo(100.1F);
 	}
 
 	@Property
@@ -732,11 +696,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Float> actual = this.sut.floats(floatArbitrary, context);
+		Float actual = this.sut.floats(floatArbitrary, context).sample();
 
 		// then
-		Float value = actual.sample();
-		then(value).isGreaterThanOrEqualTo(100.1F);
+		then(actual).isGreaterThanOrEqualTo(100.1F);
 	}
 
 	@Property
@@ -750,11 +713,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Float> actual = this.sut.floats(floatArbitrary, context);
+		Float actual = this.sut.floats(floatArbitrary, context).sample();
 
 		// then
-		Float value = actual.sample();
-		then(value).isLessThanOrEqualTo(100.1F);
+		then(actual).isLessThanOrEqualTo(100.1F);
 	}
 
 	@Property
@@ -768,11 +730,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Float> actual = this.sut.floats(floatArbitrary, context);
+		Float actual = this.sut.floats(floatArbitrary, context).sample();
 
 		// then
-		Float value = actual.sample();
-		then(value).isLessThanOrEqualTo(100.1F);
+		then(actual).isLessThanOrEqualTo(100.1F);
 	}
 
 	@Property
@@ -786,11 +747,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Float> actual = this.sut.floats(floatArbitrary, context);
+		Float actual = this.sut.floats(floatArbitrary, context).sample();
 
 		// then
-		Float value = actual.sample();
-		then(value).isLessThan(0);
+		then(actual).isLessThan(0);
 	}
 
 	@Property
@@ -804,11 +764,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Float> actual = this.sut.floats(floatArbitrary, context);
+		Float actual = this.sut.floats(floatArbitrary, context).sample();
 
 		// then
-		Float value = actual.sample();
-		then(value).isLessThanOrEqualTo(0);
+		then(actual).isLessThanOrEqualTo(0);
 	}
 
 	@Property
@@ -822,11 +781,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Float> actual = this.sut.floats(floatArbitrary, context);
+		Float actual = this.sut.floats(floatArbitrary, context).sample();
 
 		// then
-		Float value = actual.sample();
-		then(value).isGreaterThan(0);
+		then(actual).isGreaterThan(0);
 	}
 
 	@Property
@@ -840,11 +798,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Float> actual = this.sut.floats(floatArbitrary, context);
+		Float actual = this.sut.floats(floatArbitrary, context).sample();
 
 		// then
-		Float value = actual.sample();
-		then(value).isGreaterThanOrEqualTo(0);
+		then(actual).isGreaterThanOrEqualTo(0);
 	}
 
 	@Property
@@ -858,11 +815,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Double> actual = this.sut.doubles(doubleArbitrary, context);
+		Double actual = this.sut.doubles(doubleArbitrary, context).sample();
 
 		// then
-		Double value = actual.sample();
-		then(value).isNotNull();
+		then(actual).isNotNull();
 	}
 
 	@Property
@@ -876,11 +832,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Double> actual = this.sut.doubles(doubleArbitrary, context);
+		Double actual = this.sut.doubles(doubleArbitrary, context).sample();
 
 		// then
-		Double value = actual.sample();
-		then(value).isBetween(-10000D, 10000D);
+		then(actual).isBetween(-10000D, 10000D);
 	}
 
 	@Property
@@ -894,11 +849,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Double> actual = this.sut.doubles(doubleArbitrary, context);
+		Double actual = this.sut.doubles(doubleArbitrary, context).sample();
 
 		// then
-		Double value = actual.sample();
-		then(value).isGreaterThanOrEqualTo(100);
+		then(actual).isGreaterThanOrEqualTo(100);
 	}
 
 	@Property
@@ -912,11 +866,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Double> actual = this.sut.doubles(doubleArbitrary, context);
+		Double actual = this.sut.doubles(doubleArbitrary, context).sample();
 
 		// then
-		Double value = actual.sample();
-		then(value).isLessThanOrEqualTo(100);
+		then(actual).isLessThanOrEqualTo(100);
 	}
 
 	@Property
@@ -930,11 +883,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Double> actual = this.sut.doubles(doubleArbitrary, context);
+		Double actual = this.sut.doubles(doubleArbitrary, context).sample();
 
 		// then
-		Double value = actual.sample();
-		then(value).isGreaterThanOrEqualTo(100.1D);
+		then(actual).isGreaterThanOrEqualTo(100.1D);
 	}
 
 	@Property
@@ -948,11 +900,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Double> actual = this.sut.doubles(doubleArbitrary, context);
+		Double actual = this.sut.doubles(doubleArbitrary, context).sample();
 
 		// then
-		Double value = actual.sample();
-		then(value).isGreaterThanOrEqualTo(100.1D);
+		then(actual).isGreaterThanOrEqualTo(100.1D);
 	}
 
 	@Property
@@ -966,11 +917,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Double> actual = this.sut.doubles(doubleArbitrary, context);
+		Double actual = this.sut.doubles(doubleArbitrary, context).sample();
 
 		// then
-		Double value = actual.sample();
-		then(value).isLessThanOrEqualTo(100.1D);
+		then(actual).isLessThanOrEqualTo(100.1D);
 	}
 
 	@Property
@@ -984,11 +934,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Double> actual = this.sut.doubles(doubleArbitrary, context);
+		Double actual = this.sut.doubles(doubleArbitrary, context).sample();
 
 		// then
-		Double value = actual.sample();
-		then(value).isLessThanOrEqualTo(100.1D);
+		then(actual).isLessThanOrEqualTo(100.1D);
 	}
 
 	@Property
@@ -1002,11 +951,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Double> actual = this.sut.doubles(doubleArbitrary, context);
+		Double actual = this.sut.doubles(doubleArbitrary, context).sample();
 
 		// then
-		Double value = actual.sample();
-		then(value).isLessThan(0);
+		then(actual).isLessThan(0);
 	}
 
 	@Property
@@ -1020,11 +968,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Double> actual = this.sut.doubles(doubleArbitrary, context);
+		Double actual = this.sut.doubles(doubleArbitrary, context).sample();
 
 		// then
-		Double value = actual.sample();
-		then(value).isLessThanOrEqualTo(0);
+		then(actual).isLessThanOrEqualTo(0);
 	}
 
 	@Property
@@ -1038,11 +985,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Double> actual = this.sut.doubles(doubleArbitrary, context);
+		Double actual = this.sut.doubles(doubleArbitrary, context).sample();
 
 		// then
-		Double value = actual.sample();
-		then(value).isGreaterThan(0);
+		then(actual).isGreaterThan(0);
 	}
 
 	@Property
@@ -1056,11 +1002,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Double> actual = this.sut.doubles(doubleArbitrary, context);
+		Double actual = this.sut.doubles(doubleArbitrary, context).sample();
 
 		// then
-		Double value = actual.sample();
-		then(value).isGreaterThanOrEqualTo(0);
+		then(actual).isGreaterThanOrEqualTo(0);
 	}
 
 	@Property
@@ -1074,11 +1019,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Integer> actual = this.sut.integers(integerArbitrary, context);
+		Integer actual = this.sut.integers(integerArbitrary, context).sample();
 
 		// then
-		Integer value = actual.sample();
-		then(value).isNotNull();
+		then(actual).isNotNull();
 	}
 
 	@Property
@@ -1092,11 +1036,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Integer> actual = this.sut.integers(integerArbitrary, context);
+		Integer actual = this.sut.integers(integerArbitrary, context).sample();
 
 		// then
-		Integer value = actual.sample();
-		then(value).isBetween(-10000, 10000);
+		then(actual).isBetween(-10000, 10000);
 	}
 
 	@Property
@@ -1110,11 +1053,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Integer> actual = this.sut.integers(integerArbitrary, context);
+		Integer actual = this.sut.integers(integerArbitrary, context).sample();
 
 		// then
-		Integer value = actual.sample();
-		then(value).isGreaterThanOrEqualTo(100);
+		then(actual).isGreaterThanOrEqualTo(100);
 	}
 
 	@Property
@@ -1128,11 +1070,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Integer> actual = this.sut.integers(integerArbitrary, context);
+		Integer actual = this.sut.integers(integerArbitrary, context).sample();
 
 		// then
-		Integer value = actual.sample();
-		then(value).isLessThanOrEqualTo(100);
+		then(actual).isLessThanOrEqualTo(100);
 	}
 
 	@Property
@@ -1146,11 +1087,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Integer> actual = this.sut.integers(integerArbitrary, context);
+		Integer actual = this.sut.integers(integerArbitrary, context).sample();
 
 		// then
-		Integer value = actual.sample();
-		then(value).isGreaterThanOrEqualTo(100);
+		then(actual).isGreaterThanOrEqualTo(100);
 	}
 
 	@Property
@@ -1164,11 +1104,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Integer> actual = this.sut.integers(integerArbitrary, context);
+		Integer actual = this.sut.integers(integerArbitrary, context).sample();
 
 		// then
-		Integer value = actual.sample();
-		then(value).isGreaterThanOrEqualTo(101);
+		then(actual).isGreaterThanOrEqualTo(101);
 	}
 
 	@Property
@@ -1182,11 +1121,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Integer> actual = this.sut.integers(integerArbitrary, context);
+		Integer actual = this.sut.integers(integerArbitrary, context).sample();
 
 		// then
-		Integer value = actual.sample();
-		then(value).isLessThanOrEqualTo(100);
+		then(actual).isLessThanOrEqualTo(100);
 	}
 
 	@Property
@@ -1200,11 +1138,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Integer> actual = this.sut.integers(integerArbitrary, context);
+		Integer actual = this.sut.integers(integerArbitrary, context).sample();
 
 		// then
-		Integer value = actual.sample();
-		then(value).isLessThanOrEqualTo(99);
+		then(actual).isLessThanOrEqualTo(99);
 	}
 
 	@Property
@@ -1218,11 +1155,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Integer> actual = this.sut.integers(integerArbitrary, context);
+		Integer actual = this.sut.integers(integerArbitrary, context).sample();
 
 		// then
-		Integer value = actual.sample();
-		then(value).isLessThan(0);
+		then(actual).isLessThan(0);
 	}
 
 	@Property
@@ -1236,11 +1172,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Integer> actual = this.sut.integers(integerArbitrary, context);
+		Integer actual = this.sut.integers(integerArbitrary, context).sample();
 
 		// then
-		Integer value = actual.sample();
-		then(value).isLessThanOrEqualTo(0);
+		then(actual).isLessThanOrEqualTo(0);
 	}
 
 	@Property
@@ -1254,11 +1189,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Integer> actual = this.sut.integers(integerArbitrary, context);
+		Integer actual = this.sut.integers(integerArbitrary, context).sample();
 
 		// then
-		Integer value = actual.sample();
-		then(value).isGreaterThan(0);
+		then(actual).isGreaterThan(0);
 	}
 
 	@Property
@@ -1272,11 +1206,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Integer> actual = this.sut.integers(integerArbitrary, context);
+		Integer actual = this.sut.integers(integerArbitrary, context).sample();
 
 		// then
-		Integer value = actual.sample();
-		then(value).isGreaterThanOrEqualTo(0);
+		then(actual).isGreaterThanOrEqualTo(0);
 	}
 
 	@Property
@@ -1290,11 +1223,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Long> actual = this.sut.longs(longArbitrary, context);
+		Long actual = this.sut.longs(longArbitrary, context).sample();
 
 		// then
-		Long value = actual.sample();
-		then(value).isNotNull();
+		then(actual).isNotNull();
 	}
 
 	@Property
@@ -1308,11 +1240,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Long> actual = this.sut.longs(longArbitrary, context);
+		Long actual = this.sut.longs(longArbitrary, context).sample();
 
 		// then
-		Long value = actual.sample();
-		then(value).isBetween(-10000L, 10000L);
+		then(actual).isBetween(-10000L, 10000L);
 	}
 
 	@Property
@@ -1326,11 +1257,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Long> actual = this.sut.longs(longArbitrary, context);
+		Long actual = this.sut.longs(longArbitrary, context).sample();
 
 		// then
-		Long value = actual.sample();
-		then(value).isGreaterThanOrEqualTo(100);
+		then(actual).isGreaterThanOrEqualTo(100);
 	}
 
 	@Property
@@ -1344,11 +1274,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Long> actual = this.sut.longs(longArbitrary, context);
+		Long actual = this.sut.longs(longArbitrary, context).sample();
 
 		// then
-		Long value = actual.sample();
-		then(value).isLessThanOrEqualTo(100);
+		then(actual).isLessThanOrEqualTo(100);
 	}
 
 	@Property
@@ -1362,11 +1291,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Long> actual = this.sut.longs(longArbitrary, context);
+		Long actual = this.sut.longs(longArbitrary, context).sample();
 
 		// then
-		Long value = actual.sample();
-		then(value).isGreaterThanOrEqualTo(100);
+		then(actual).isGreaterThanOrEqualTo(100);
 	}
 
 	@Property
@@ -1380,11 +1308,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Long> actual = this.sut.longs(longArbitrary, context);
+		Long actual = this.sut.longs(longArbitrary, context).sample();
 
 		// then
-		Long value = actual.sample();
-		then(value).isGreaterThanOrEqualTo(101);
+		then(actual).isGreaterThanOrEqualTo(101);
 	}
 
 	@Property
@@ -1398,11 +1325,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Long> actual = this.sut.longs(longArbitrary, context);
+		Long actual = this.sut.longs(longArbitrary, context).sample();
 
 		// then
-		Long value = actual.sample();
-		then(value).isLessThanOrEqualTo(100);
+		then(actual).isLessThanOrEqualTo(100);
 	}
 
 	@Property
@@ -1416,11 +1342,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Long> actual = this.sut.longs(longArbitrary, context);
+		Long actual = this.sut.longs(longArbitrary, context).sample();
 
 		// then
-		Long value = actual.sample();
-		then(value).isLessThanOrEqualTo(99);
+		then(actual).isLessThanOrEqualTo(99);
 	}
 
 	@Property
@@ -1434,11 +1359,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Long> actual = this.sut.longs(longArbitrary, context);
+		Long actual = this.sut.longs(longArbitrary, context).sample();
 
 		// then
-		Long value = actual.sample();
-		then(value).isLessThan(0);
+		then(actual).isLessThan(0);
 	}
 
 	@Property
@@ -1452,11 +1376,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Long> actual = this.sut.longs(longArbitrary, context);
+		Long actual = this.sut.longs(longArbitrary, context).sample();
 
 		// then
-		Long value = actual.sample();
-		then(value).isLessThanOrEqualTo(0);
+		then(actual).isLessThanOrEqualTo(0);
 	}
 
 	@Property
@@ -1470,11 +1393,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Long> actual = this.sut.longs(longArbitrary, context);
+		Long actual = this.sut.longs(longArbitrary, context).sample();
 
 		// then
-		Long value = actual.sample();
-		then(value).isGreaterThan(0);
+		then(actual).isGreaterThan(0);
 	}
 
 	@Property
@@ -1488,11 +1410,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<Long> actual = this.sut.longs(longArbitrary, context);
+		Long actual = this.sut.longs(longArbitrary, context).sample();
 
 		// then
-		Long value = actual.sample();
-		then(value).isGreaterThanOrEqualTo(0);
+		then(actual).isGreaterThanOrEqualTo(0);
 	}
 
 	@Property
@@ -1506,11 +1427,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<BigInteger> actual = this.sut.bigIntegers(bigIntegerArbitrary, context);
+		BigInteger actual = this.sut.bigIntegers(bigIntegerArbitrary, context).sample();
 
 		// then
-		BigInteger value = actual.sample();
-		then(value).isNotNull();
+		then(actual).isNotNull();
 	}
 
 	@Property
@@ -1524,11 +1444,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<BigInteger> actual = this.sut.bigIntegers(bigIntegerArbitrary, context);
+		BigInteger actual = this.sut.bigIntegers(bigIntegerArbitrary, context).sample();
 
 		// then
-		BigInteger value = actual.sample();
-		then(value).isBetween(BigInteger.valueOf(-10000), BigInteger.valueOf(10000));
+		then(actual).isBetween(BigInteger.valueOf(-10000), BigInteger.valueOf(10000));
 	}
 
 	@Property
@@ -1542,11 +1461,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<BigInteger> actual = this.sut.bigIntegers(bigIntegerArbitrary, context);
+		BigInteger actual = this.sut.bigIntegers(bigIntegerArbitrary, context).sample();
 
 		// then
-		BigInteger value = actual.sample();
-		then(value).isGreaterThanOrEqualTo(BigInteger.valueOf(100));
+		then(actual).isGreaterThanOrEqualTo(BigInteger.valueOf(100));
 	}
 
 	@Property
@@ -1560,11 +1478,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<BigInteger> actual = this.sut.bigIntegers(bigIntegerArbitrary, context);
+		BigInteger actual = this.sut.bigIntegers(bigIntegerArbitrary, context).sample();
 
 		// then
-		BigInteger value = actual.sample();
-		then(value).isLessThanOrEqualTo(BigInteger.valueOf(100));
+		then(actual).isLessThanOrEqualTo(BigInteger.valueOf(100));
 	}
 
 	@Property
@@ -1578,11 +1495,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<BigInteger> actual = this.sut.bigIntegers(bigIntegerArbitrary, context);
+		BigInteger actual = this.sut.bigIntegers(bigIntegerArbitrary, context).sample();
 
 		// then
-		BigInteger value = actual.sample();
-		then(value).isGreaterThanOrEqualTo(BigInteger.valueOf(100));
+		then(actual).isGreaterThanOrEqualTo(BigInteger.valueOf(100));
 	}
 
 	@Property
@@ -1596,11 +1512,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<BigInteger> actual = this.sut.bigIntegers(bigIntegerArbitrary, context);
+		BigInteger actual = this.sut.bigIntegers(bigIntegerArbitrary, context).sample();
 
 		// then
-		BigInteger value = actual.sample();
-		then(value).isGreaterThanOrEqualTo(BigInteger.valueOf(101));
+		then(actual).isGreaterThanOrEqualTo(BigInteger.valueOf(101));
 	}
 
 	@Property
@@ -1614,11 +1529,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<BigInteger> actual = this.sut.bigIntegers(bigIntegerArbitrary, context);
+		BigInteger actual = this.sut.bigIntegers(bigIntegerArbitrary, context).sample();
 
 		// then
-		BigInteger value = actual.sample();
-		then(value).isLessThanOrEqualTo(BigInteger.valueOf(100));
+		then(actual).isLessThanOrEqualTo(BigInteger.valueOf(100));
 	}
 
 	@Property
@@ -1632,11 +1546,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<BigInteger> actual = this.sut.bigIntegers(bigIntegerArbitrary, context);
+		BigInteger actual = this.sut.bigIntegers(bigIntegerArbitrary, context).sample();
 
 		// then
-		BigInteger value = actual.sample();
-		then(value).isLessThanOrEqualTo(BigInteger.valueOf(99));
+		then(actual).isLessThanOrEqualTo(BigInteger.valueOf(99));
 	}
 
 	@Property
@@ -1650,11 +1563,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<BigInteger> actual = this.sut.bigIntegers(bigIntegerArbitrary, context);
+		BigInteger actual = this.sut.bigIntegers(bigIntegerArbitrary, context).sample();
 
 		// then
-		BigInteger value = actual.sample();
-		then(value).isLessThan(BigInteger.valueOf(0));
+		then(actual).isLessThan(BigInteger.valueOf(0));
 	}
 
 	@Property
@@ -1668,11 +1580,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<BigInteger> actual = this.sut.bigIntegers(bigIntegerArbitrary, context);
+		BigInteger actual = this.sut.bigIntegers(bigIntegerArbitrary, context).sample();
 
 		// then
-		BigInteger value = actual.sample();
-		then(value).isLessThanOrEqualTo(BigInteger.valueOf(0));
+		then(actual).isLessThanOrEqualTo(BigInteger.valueOf(0));
 	}
 
 	@Property
@@ -1686,11 +1597,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<BigInteger> actual = this.sut.bigIntegers(bigIntegerArbitrary, context);
+		BigInteger actual = this.sut.bigIntegers(bigIntegerArbitrary, context).sample();
 
 		// then
-		BigInteger value = actual.sample();
-		then(value).isGreaterThan(BigInteger.valueOf(0));
+		then(actual).isGreaterThan(BigInteger.valueOf(0));
 	}
 
 	@Property
@@ -1704,11 +1614,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<BigInteger> actual = this.sut.bigIntegers(bigIntegerArbitrary, context);
+		BigInteger actual = this.sut.bigIntegers(bigIntegerArbitrary, context).sample();
 
 		// then
-		BigInteger value = actual.sample();
-		then(value).isGreaterThanOrEqualTo(BigInteger.valueOf(0));
+		then(actual).isGreaterThanOrEqualTo(BigInteger.valueOf(0));
 	}
 
 	@Property
@@ -1722,11 +1631,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<BigDecimal> actual = this.sut.bigDecimals(bigDecimalArbitrary, context);
+		BigDecimal actual = this.sut.bigDecimals(bigDecimalArbitrary, context).sample();
 
 		// then
-		BigDecimal value = actual.sample();
-		then(value).isNotNull();
+		then(actual).isNotNull();
 	}
 
 	@Property
@@ -1740,11 +1648,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<BigDecimal> actual = this.sut.bigDecimals(bigDecimalArbitrary, context);
+		BigDecimal actual = this.sut.bigDecimals(bigDecimalArbitrary, context).sample();
 
 		// then
-		BigDecimal value = actual.sample();
-		then(value).isBetween(BigDecimal.valueOf(-10000), BigDecimal.valueOf(10000));
+		then(actual).isBetween(BigDecimal.valueOf(-10000), BigDecimal.valueOf(10000));
 	}
 
 	@Property
@@ -1758,11 +1665,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<BigDecimal> actual = this.sut.bigDecimals(bigDecimalArbitrary, context);
+		BigDecimal actual = this.sut.bigDecimals(bigDecimalArbitrary, context).sample();
 
 		// then
-		BigDecimal value = actual.sample();
-		then(value).isGreaterThanOrEqualTo(BigDecimal.valueOf(100));
+		then(actual).isGreaterThanOrEqualTo(BigDecimal.valueOf(100));
 	}
 
 	@Property
@@ -1776,11 +1682,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<BigDecimal> actual = this.sut.bigDecimals(bigDecimalArbitrary, context);
+		BigDecimal actual = this.sut.bigDecimals(bigDecimalArbitrary, context).sample();
 
 		// then
-		BigDecimal value = actual.sample();
-		then(value).isLessThanOrEqualTo(BigDecimal.valueOf(100));
+		then(actual).isLessThanOrEqualTo(BigDecimal.valueOf(100));
 	}
 
 	@Property
@@ -1794,11 +1699,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<BigDecimal> actual = this.sut.bigDecimals(bigDecimalArbitrary, context);
+		BigDecimal actual = this.sut.bigDecimals(bigDecimalArbitrary, context).sample();
 
 		// then
-		BigDecimal value = actual.sample();
-		then(value).isGreaterThanOrEqualTo(BigDecimal.valueOf(100.1));
+		then(actual).isGreaterThanOrEqualTo(BigDecimal.valueOf(100.1));
 	}
 
 	@Property
@@ -1812,11 +1716,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<BigDecimal> actual = this.sut.bigDecimals(bigDecimalArbitrary, context);
+		BigDecimal actual = this.sut.bigDecimals(bigDecimalArbitrary, context).sample();
 
 		// then
-		BigDecimal value = actual.sample();
-		then(value).isGreaterThanOrEqualTo(BigDecimal.valueOf(100.1));
+		then(actual).isGreaterThanOrEqualTo(BigDecimal.valueOf(100.1));
 	}
 
 	@Property
@@ -1830,11 +1733,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<BigDecimal> actual = this.sut.bigDecimals(bigDecimalArbitrary, context);
+		BigDecimal actual = this.sut.bigDecimals(bigDecimalArbitrary, context).sample();
 
 		// then
-		BigDecimal value = actual.sample();
-		then(value).isLessThanOrEqualTo(BigDecimal.valueOf(100.1));
+		then(actual).isLessThanOrEqualTo(BigDecimal.valueOf(100.1));
 	}
 
 	@Property
@@ -1848,11 +1750,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<BigDecimal> actual = this.sut.bigDecimals(bigDecimalArbitrary, context);
+		BigDecimal actual = this.sut.bigDecimals(bigDecimalArbitrary, context).sample();
 
 		// then
-		BigDecimal value = actual.sample();
-		then(value).isLessThanOrEqualTo(BigDecimal.valueOf(100.1));
+		then(actual).isLessThanOrEqualTo(BigDecimal.valueOf(100.1));
 	}
 
 	@Property
@@ -1866,11 +1767,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<BigDecimal> actual = this.sut.bigDecimals(bigDecimalArbitrary, context);
+		BigDecimal actual = this.sut.bigDecimals(bigDecimalArbitrary, context).sample();
 
 		// then
-		BigDecimal value = actual.sample();
-		then(value).isLessThan(BigDecimal.valueOf(0));
+		then(actual).isLessThan(BigDecimal.valueOf(0));
 	}
 
 	@Property
@@ -1884,11 +1784,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<BigDecimal> actual = this.sut.bigDecimals(bigDecimalArbitrary, context);
+		BigDecimal actual = this.sut.bigDecimals(bigDecimalArbitrary, context).sample();
 
 		// then
-		BigDecimal value = actual.sample();
-		then(value).isLessThanOrEqualTo(BigDecimal.valueOf(0));
+		then(actual).isLessThanOrEqualTo(BigDecimal.valueOf(0));
 	}
 
 	@Property
@@ -1902,11 +1801,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<BigDecimal> actual = this.sut.bigDecimals(bigDecimalArbitrary, context);
+		BigDecimal actual = this.sut.bigDecimals(bigDecimalArbitrary, context).sample();
 
 		// then
-		BigDecimal value = actual.sample();
-		then(value).isGreaterThan(BigDecimal.valueOf(0));
+		then(actual).isGreaterThan(BigDecimal.valueOf(0));
 	}
 
 	@Property
@@ -1920,11 +1818,10 @@ class JavaxValidationJavaArbitraryResolverTest {
 		);
 
 		// when
-		Arbitrary<BigDecimal> actual = this.sut.bigDecimals(bigDecimalArbitrary, context);
+		BigDecimal actual = this.sut.bigDecimals(bigDecimalArbitrary, context).sample();
 
 		// then
-		BigDecimal value = actual.sample();
-		then(value).isGreaterThanOrEqualTo(BigDecimal.valueOf(0));
+		then(actual).isGreaterThanOrEqualTo(BigDecimal.valueOf(0));
 	}
 
 	private <T> ArbitraryGeneratorContext makeContext(TypeReference<T> typeReference, String propertyName) {
