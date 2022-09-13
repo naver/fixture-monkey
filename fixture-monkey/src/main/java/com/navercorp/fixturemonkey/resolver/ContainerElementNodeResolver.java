@@ -27,6 +27,7 @@ import java.util.List;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.property.ElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 
@@ -43,14 +44,15 @@ public final class ContainerElementNodeResolver implements NodeResolver {
 		List<ArbitraryNode> result = new ArrayList<>();
 
 		for (ArbitraryNode node : arbitraryNode.getChildren()) {
-			Property property = node.getArbitraryProperty().getProperty();
+			ArbitraryProperty arbitraryProperty = node.getArbitraryProperty();
+			Property property = arbitraryProperty.getObjectProperty().getProperty();
 			if (!(property instanceof ElementProperty)) {
 				throw new IllegalArgumentException("Resolved node is not element type. : " + property);
 			}
 
 			ElementProperty elementProperty = (ElementProperty)property;
 			if (sequence == NO_OR_ALL_INDEX_INTEGER_VALUE || sequence == elementProperty.getSequence()) {
-				node.setArbitraryProperty(node.getArbitraryProperty().withNullInject(NOT_NULL_INJECT));
+				node.setArbitraryProperty(arbitraryProperty.withNullInject(NOT_NULL_INJECT));
 				result.add(node);
 			}
 		}

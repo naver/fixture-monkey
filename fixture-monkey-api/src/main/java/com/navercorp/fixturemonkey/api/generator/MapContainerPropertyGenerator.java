@@ -32,11 +32,11 @@ import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public final class MapArbitraryPropertyGenerator implements ArbitraryPropertyGenerator {
-	public static final MapArbitraryPropertyGenerator INSTANCE = new MapArbitraryPropertyGenerator();
+public final class MapContainerPropertyGenerator implements ContainerPropertyGenerator {
+	public static final MapContainerPropertyGenerator INSTANCE = new MapContainerPropertyGenerator();
 
 	@Override
-	public ArbitraryProperty generate(ArbitraryPropertyGeneratorContext context) {
+	public ContainerProperty generate(ContainerPropertyGeneratorContext context) {
 		Property property = context.getProperty();
 
 		List<AnnotatedType> genericsTypes = Types.getGenericsTypes(property.getAnnotatedType());
@@ -79,14 +79,7 @@ public final class MapArbitraryPropertyGenerator implements ArbitraryPropertyGen
 			);
 		}
 
-		double nullInject = context.getGenerateOptions().getNullInjectGenerator(property)
-			.generate(context, containerInfo);
-
-		return new ArbitraryProperty(
-			property,
-			context.getPropertyNameResolver(),
-			nullInject,
-			context.getElementIndex(),
+		return new ContainerProperty(
 			childProperties,
 			containerInfo
 		);

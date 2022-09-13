@@ -35,8 +35,9 @@ import com.navercorp.fixturemonkey.LabMonkey;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
-import com.navercorp.fixturemonkey.api.generator.ArbitraryPropertyGenerator;
-import com.navercorp.fixturemonkey.api.generator.ArbitraryPropertyGeneratorContext;
+import com.navercorp.fixturemonkey.api.generator.ContainerProperty;
+import com.navercorp.fixturemonkey.api.generator.ContainerPropertyGenerator;
+import com.navercorp.fixturemonkey.api.generator.ContainerPropertyGeneratorContext;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult;
 import com.navercorp.fixturemonkey.api.matcher.AssignableTypeMatcher;
@@ -74,9 +75,9 @@ class FixtureMonkeyV04OptionsAdditionalTestSpecs {
 		}
 	}
 
-	public static class PairArbitraryPropertyGenerator implements ArbitraryPropertyGenerator {
+	public static class PairContainerPropertyGenerator implements ContainerPropertyGenerator {
 		@Override
-		public ArbitraryProperty generate(ArbitraryPropertyGeneratorContext context) {
+		public ContainerProperty generate(ContainerPropertyGeneratorContext context) {
 			com.navercorp.fixturemonkey.api.property.Property property = context.getProperty();
 
 			List<AnnotatedType> elementTypes = Types.getGenericsTypes(property.getAnnotatedType());
@@ -88,18 +89,10 @@ class FixtureMonkeyV04OptionsAdditionalTestSpecs {
 				);
 			}
 
-			ArbitraryContainerInfo containerInfo = context.getContainerInfo();
-			if (containerInfo == null) {
-				containerInfo = context.getGenerateOptions()
-					.getArbitraryContainerInfoGenerator(property)
-					.generate(context);
-			}
-
-			int size = containerInfo.getRandomSize();
 			AnnotatedType firstElementType = elementTypes.get(0);
 			AnnotatedType secondElementType = elementTypes.get(1);
-			List<com.navercorp.fixturemonkey.api.property.Property> childProperties = new ArrayList<>();
-			childProperties.add(
+			List<com.navercorp.fixturemonkey.api.property.Property> elementProperties = new ArrayList<>();
+			elementProperties.add(
 				new ElementProperty(
 					property,
 					firstElementType,
@@ -107,7 +100,7 @@ class FixtureMonkeyV04OptionsAdditionalTestSpecs {
 					0
 				)
 			);
-			childProperties.add(
+			elementProperties.add(
 				new ElementProperty(
 					property,
 					secondElementType,
@@ -116,16 +109,9 @@ class FixtureMonkeyV04OptionsAdditionalTestSpecs {
 				)
 			);
 
-			double nullInject = context.getGenerateOptions().getNullInjectGenerator(property)
-				.generate(context, containerInfo);
-
-			return new ArbitraryProperty(
-				property,
-				context.getPropertyNameResolver(),
-				nullInject,
-				context.getElementIndex(),
-				childProperties,
-				containerInfo
+			return new ContainerProperty(
+				elementProperties,
+				new ArbitraryContainerInfo(1, 1)
 			);
 		}
 	}
@@ -141,7 +127,7 @@ class FixtureMonkeyV04OptionsAdditionalTestSpecs {
 		@Override
 		public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
 			ArbitraryProperty property = context.getArbitraryProperty();
-			ArbitraryContainerInfo containerInfo = property.getContainerInfo();
+			ArbitraryContainerInfo containerInfo = property.getContainerProperty().getContainerInfo();
 			if (containerInfo == null) {
 				return ArbitraryIntrospectorResult.EMPTY;
 			}

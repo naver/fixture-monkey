@@ -27,6 +27,8 @@ import java.util.List;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
+
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class PropertyNameNodeResolver implements NodeResolver {
 	private final String propertyName;
@@ -39,11 +41,12 @@ public final class PropertyNameNodeResolver implements NodeResolver {
 	public List<ArbitraryNode> resolve(ArbitraryNode arbitraryNode) {
 		List<ArbitraryNode> result = new ArrayList<>();
 
-		for (ArbitraryNode node : arbitraryNode.getChildren()) {
-			String nodePropertyName = node.getArbitraryProperty().getResolvePropertyName();
+		for (ArbitraryNode child : arbitraryNode.getChildren()) {
+			String nodePropertyName = child.getArbitraryProperty().getObjectProperty().getResolvePropertyName();
 			if (propertyName.equals(ALL_INDEX_STRING) || propertyName.equals(nodePropertyName)) {
-				node.setArbitraryProperty(node.getArbitraryProperty().withNullInject(NOT_NULL_INJECT));
-				result.add(node);
+				ArbitraryProperty childArbitraryProperty = child.getArbitraryProperty();
+				child.setArbitraryProperty(childArbitraryProperty.withNullInject(NOT_NULL_INJECT));
+				result.add(child);
 			}
 		}
 		return result;

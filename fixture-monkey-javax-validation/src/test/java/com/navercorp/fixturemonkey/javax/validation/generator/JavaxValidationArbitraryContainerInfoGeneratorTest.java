@@ -26,12 +26,13 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
-import com.navercorp.fixturemonkey.api.generator.ArbitraryPropertyGeneratorContext;
+import com.navercorp.fixturemonkey.api.generator.ContainerPropertyGeneratorContext;
 import com.navercorp.fixturemonkey.api.option.GenerateOptions;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.PropertyCache;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 
+@SuppressWarnings("OptionalGetWithoutIsPresent")
 class JavaxValidationArbitraryContainerInfoGeneratorTest {
 	@net.jqwik.api.Property
 	void generateContainer() {
@@ -41,9 +42,8 @@ class JavaxValidationArbitraryContainerInfoGeneratorTest {
 			new TypeReference<SampleWithContainerAnnotation>() {
 			};
 		Property property = PropertyCache.getProperty(typeReference.getAnnotatedType(), "container").get();
-		ArbitraryPropertyGeneratorContext context = new ArbitraryPropertyGeneratorContext(
+		ContainerPropertyGeneratorContext context = new ContainerPropertyGeneratorContext(
 			property,
-			null,
 			null,
 			null,
 			GenerateOptions.DEFAULT_GENERATE_OPTIONS
@@ -65,9 +65,8 @@ class JavaxValidationArbitraryContainerInfoGeneratorTest {
 			};
 		Property property = PropertyCache.getProperty(typeReference.getAnnotatedType(), "defaultSizeContainer")
 			.get();
-		ArbitraryPropertyGeneratorContext context = new ArbitraryPropertyGeneratorContext(
+		ContainerPropertyGeneratorContext context = new ContainerPropertyGeneratorContext(
 			property,
-			null,
 			null,
 			null,
 			GenerateOptions.DEFAULT_GENERATE_OPTIONS
@@ -89,9 +88,8 @@ class JavaxValidationArbitraryContainerInfoGeneratorTest {
 			};
 		Property property = PropertyCache.getProperty(typeReference.getAnnotatedType(), "sizeContainer")
 			.get();
-		ArbitraryPropertyGeneratorContext context = new ArbitraryPropertyGeneratorContext(
+		ContainerPropertyGeneratorContext context = new ContainerPropertyGeneratorContext(
 			property,
-			null,
 			null,
 			null,
 			GenerateOptions.DEFAULT_GENERATE_OPTIONS
@@ -113,9 +111,8 @@ class JavaxValidationArbitraryContainerInfoGeneratorTest {
 			};
 		Property property = PropertyCache.getProperty(typeReference.getAnnotatedType(), "minSizeContainer")
 			.get();
-		ArbitraryPropertyGeneratorContext context = new ArbitraryPropertyGeneratorContext(
+		ContainerPropertyGeneratorContext context = new ContainerPropertyGeneratorContext(
 			property,
-			null,
 			null,
 			null,
 			GenerateOptions.DEFAULT_GENERATE_OPTIONS
@@ -141,9 +138,8 @@ class JavaxValidationArbitraryContainerInfoGeneratorTest {
 			.defaultArbitraryContainerMaxSize(10)
 			.build();
 
-		ArbitraryPropertyGeneratorContext context = new ArbitraryPropertyGeneratorContext(
+		ContainerPropertyGeneratorContext context = new ContainerPropertyGeneratorContext(
 			property,
-			null,
 			null,
 			null,
 			generateOptions
@@ -165,9 +161,8 @@ class JavaxValidationArbitraryContainerInfoGeneratorTest {
 			};
 		Property property = PropertyCache.getProperty(typeReference.getAnnotatedType(), "maxSizeContainer")
 			.get();
-		ArbitraryPropertyGeneratorContext context = new ArbitraryPropertyGeneratorContext(
+		ContainerPropertyGeneratorContext context = new ContainerPropertyGeneratorContext(
 			property,
-			null,
 			null,
 			null,
 			GenerateOptions.DEFAULT_GENERATE_OPTIONS
@@ -189,9 +184,8 @@ class JavaxValidationArbitraryContainerInfoGeneratorTest {
 			};
 		Property property = PropertyCache.getProperty(typeReference.getAnnotatedType(), "notEmptyContainer")
 			.get();
-		ArbitraryPropertyGeneratorContext context = new ArbitraryPropertyGeneratorContext(
+		ContainerPropertyGeneratorContext context = new ContainerPropertyGeneratorContext(
 			property,
-			null,
 			null,
 			null,
 			GenerateOptions.DEFAULT_GENERATE_OPTIONS
@@ -216,9 +210,8 @@ class JavaxValidationArbitraryContainerInfoGeneratorTest {
 		GenerateOptions generateOptions = GenerateOptions.builder()
 			.defaultArbitraryContainerMaxSize(10)
 			.build();
-		ArbitraryPropertyGeneratorContext context = new ArbitraryPropertyGeneratorContext(
+		ContainerPropertyGeneratorContext context = new ContainerPropertyGeneratorContext(
 			property,
-			null,
 			null,
 			null,
 			generateOptions
@@ -240,9 +233,8 @@ class JavaxValidationArbitraryContainerInfoGeneratorTest {
 			};
 		Property property = PropertyCache.getProperty(typeReference.getAnnotatedType(), "notEmptyAndMaxSizeContainer")
 			.get();
-		ArbitraryPropertyGeneratorContext context = new ArbitraryPropertyGeneratorContext(
+		ContainerPropertyGeneratorContext context = new ContainerPropertyGeneratorContext(
 			property,
-			null,
 			null,
 			null,
 			GenerateOptions.DEFAULT_GENERATE_OPTIONS

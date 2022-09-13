@@ -74,10 +74,10 @@ public final class BuilderArbitraryIntrospector
 			ReflectionUtils.invokeMethod(builderMethod, null));
 
 		for (ArbitraryProperty arbitraryProperty : childrenProperties) {
-			String methodName = getFieldName(arbitraryProperty.getProperty());
+			String methodName = getFieldName(arbitraryProperty.getObjectProperty().getProperty());
 			String buildFieldMethodName = builderType.getName() + "#" + methodName;
 
-			String resolvePropertyName = arbitraryProperty.getResolvePropertyName();
+			String resolvePropertyName = arbitraryProperty.getObjectProperty().getResolvePropertyName();
 			Arbitrary<?> arbitrary = childrenArbitraries.get(resolvePropertyName);
 
 			Method method = BUILD_FIELD_METHOD_CACHE.computeIfAbsent(buildFieldMethodName, f -> {

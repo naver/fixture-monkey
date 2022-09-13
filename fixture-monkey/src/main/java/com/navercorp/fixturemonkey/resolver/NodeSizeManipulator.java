@@ -32,20 +32,18 @@ public final class NodeSizeManipulator implements NodeManipulator {
 	@Override
 	public void manipulate(ArbitraryNode arbitraryNode) {
 		ArbitraryProperty arbitraryProperty = arbitraryNode.getArbitraryProperty();
-		if (arbitraryProperty.getContainerInfo() == null) {
+		if (arbitraryProperty.getContainerProperty() == null) {
 			throw new IllegalArgumentException("Only container type supports NodeSizeManipulator.");
 		}
 
-		ArbitraryContainerInfo containerInfo = arbitraryProperty.getContainerInfo()
+		ArbitraryContainerInfo containerInfo = arbitraryProperty.getContainerProperty().getContainerInfo()
 			.withElementMinSize(minSize)
 			.withElementMaxSize(maxSize);
 
 		ArbitraryNode manipulatedNode = traverser.traverse(arbitraryNode.getProperty(), containerInfo);
 		ArbitraryProperty traversedNodeArbitraryProperty = manipulatedNode.getArbitraryProperty();
 		arbitraryNode.setArbitraryProperty(
-			arbitraryProperty
-				.withChildProperties(traversedNodeArbitraryProperty.getChildProperties())
-				.withContainerInfo(traversedNodeArbitraryProperty.getContainerInfo())
+			arbitraryProperty.withContainerProperty(traversedNodeArbitraryProperty.getContainerProperty())
 		);
 		arbitraryNode.setArbitrary(manipulatedNode.getArbitrary());
 		arbitraryNode.setChildren(leftJoin(manipulatedNode, arbitraryNode).getChildren());
@@ -62,7 +60,7 @@ public final class NodeSizeManipulator implements NodeManipulator {
 		leftNode.setArbitrary(rightNode.getArbitrary());
 		leftNode.setArbitraryProperty(
 			leftNode.getArbitraryProperty()
-				.withNullInject(rightNode.getArbitraryProperty().getNullInject())
+				.withNullInject(rightNode.getArbitraryProperty().getObjectProperty().getNullInject())
 		);
 
 		List<ArbitraryNode> leftChildren = leftNode.getChildren();

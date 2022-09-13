@@ -33,6 +33,7 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
+import com.navercorp.fixturemonkey.api.generator.ObjectProperty;
 import com.navercorp.fixturemonkey.expression.MonkeyExpression;
 import com.navercorp.fixturemonkey.resolver.CompositeNodeResolver;
 import com.navercorp.fixturemonkey.resolver.ContainerElementNodeResolver;
@@ -326,7 +327,8 @@ public final class ArbitraryExpression implements MonkeyExpression, Comparable<A
 		}
 
 		public boolean match(ArbitraryProperty arbitraryProperty) {
-			String resolvePropertyName = arbitraryProperty.getResolvePropertyName();
+			ObjectProperty objectProperty = arbitraryProperty.getObjectProperty();
+			String resolvePropertyName = objectProperty.getResolvePropertyName();
 			boolean samePropertyName;
 			if (resolvePropertyName == null) {
 				samePropertyName = true; // ignore property name equivalence.
@@ -335,8 +337,8 @@ public final class ArbitraryExpression implements MonkeyExpression, Comparable<A
 			}
 
 			boolean sameIndex = true;
-			if (arbitraryProperty.getElementIndex() != null) {
-				sameIndex = indexEquals(arbitraryProperty.getElementIndex()); // notNull
+			if (objectProperty.getElementIndex() != null) {
+				sameIndex = indexEquals(objectProperty.getElementIndex()); // notNull
 			}
 			return samePropertyName && sameIndex;
 		}

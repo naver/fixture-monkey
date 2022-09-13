@@ -42,10 +42,12 @@ import net.jqwik.api.arbitraries.StringArbitrary;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
+import com.navercorp.fixturemonkey.api.generator.ObjectProperty;
 import com.navercorp.fixturemonkey.api.property.PropertyCache;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 
+@SuppressWarnings("OptionalGetWithoutIsPresent")
 class JavaxValidationJavaArbitraryResolverTest {
 	private final JavaxValidationJavaArbitraryResolver sut = new JavaxValidationJavaArbitraryResolver();
 
@@ -118,6 +120,7 @@ class JavaxValidationJavaArbitraryResolverTest {
 		then(actual.length()).isLessThanOrEqualTo(10);
 	}
 
+	@SuppressWarnings("ResultOfMethodCallIgnored")
 	@Property
 	void stringDigits() {
 		// given
@@ -1830,11 +1833,13 @@ class JavaxValidationJavaArbitraryResolverTest {
 
 		return new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
+				new ObjectProperty(
+					property,
+					PropertyNameResolver.IDENTITY,
+					0.0D,
+					null,
+					Collections.emptyList()
+				),
 				null
 			),
 			Collections.emptyList(),

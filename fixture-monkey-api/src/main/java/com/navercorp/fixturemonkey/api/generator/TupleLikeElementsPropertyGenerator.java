@@ -18,31 +18,33 @@
 
 package com.navercorp.fixturemonkey.api.generator;
 
-import java.util.List;
-
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.property.Property;
-import com.navercorp.fixturemonkey.api.property.PropertyCache;
+import com.navercorp.fixturemonkey.api.property.TupleLikeElementsProperty;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public final class ObjectArbitraryPropertyGenerator implements ArbitraryPropertyGenerator {
-	public static final ObjectArbitraryPropertyGenerator INSTANCE = new ObjectArbitraryPropertyGenerator();
+public final class TupleLikeElementsPropertyGenerator implements ContainerPropertyGenerator {
+	public static final TupleLikeElementsPropertyGenerator INSTANCE =
+		new TupleLikeElementsPropertyGenerator();
+
+	private static final ArbitraryContainerInfo CONTAINER_INFO = new ArbitraryContainerInfo(1, 1);
 
 	@Override
-	public ArbitraryProperty generate(ArbitraryPropertyGeneratorContext context) {
+	public ContainerProperty generate(ContainerPropertyGeneratorContext context) {
 		Property property = context.getProperty();
-		List<Property> childProperties = PropertyCache.getProperties(property.getAnnotatedType());
-		double nullInject = context.getGenerateOptions().getNullInjectGenerator(property)
-			.generate(context, null);
-		return new ArbitraryProperty(
-			property,
-			context.getPropertyNameResolver(),
-			nullInject,
-			context.getElementIndex(),
-			childProperties,
-			null
+		if (property.getClass() != TupleLikeElementsProperty.class) {
+			throw new IllegalArgumentException(
+				"property should be TupleLikeElementsProperty. property: " + property.getClass()
+			);
+		}
+
+		TupleLikeElementsProperty tupleLikeElementsProperty = (TupleLikeElementsProperty)property;
+
+		return new ContainerProperty(
+			tupleLikeElementsProperty.getElementsProperties(),
+			CONTAINER_INFO
 		);
 	}
 }

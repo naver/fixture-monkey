@@ -25,47 +25,61 @@ import java.util.List;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.api.property.ElementProperty;
+import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty;
+import com.navercorp.fixturemonkey.api.property.MapKeyElementProperty;
+import com.navercorp.fixturemonkey.api.property.MapValueElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public final class ArrayArbitraryPropertyGenerator implements ArbitraryPropertyGenerator {
-	public static final ArrayArbitraryPropertyGenerator INSTANCE = new ArrayArbitraryPropertyGenerator();
+public final class EntryContainerPropertyGenerator implements ContainerPropertyGenerator {
+	public static final EntryContainerPropertyGenerator INSTANCE =
+		new EntryContainerPropertyGenerator();
+	private static final ArbitraryContainerInfo CONTAINER_INFO = new ArbitraryContainerInfo(1, 1);
 
 	@Override
-	public ArbitraryProperty generate(ArbitraryPropertyGeneratorContext context) {
+	public ContainerProperty generate(ContainerPropertyGeneratorContext context) {
 		Property property = context.getProperty();
+
+		List<AnnotatedType> genericsTypes = Types.getGenericsTypes(property.getAnnotatedType());
+		if (genericsTypes.size() != 2) {
+			throw new IllegalArgumentException(
+				"Entry genericsTypes must be have 2 generics type for key and value. "
+					+ "propertyType: " + property.getType()
+					+ ", genericsTypes: " + genericsTypes
+			);
+		}
 
 		ArbitraryContainerInfo containerInfo = context.getContainerInfo();
 		if (containerInfo == null) {
-			containerInfo = context.getGenerateOptions()
-				.getArbitraryContainerInfoGenerator(property)
-				.generate(context);
+			containerInfo = CONTAINER_INFO;
 		}
 
 		int size = containerInfo.getRandomSize();
-		AnnotatedType elementType = Types.getArrayComponentAnnotatedType(property.getAnnotatedType());
+
+		AnnotatedType keyType = genericsTypes.get(0);
+		AnnotatedType valueType = genericsTypes.get(1);
+
 		List<Property> childProperties = new ArrayList<>();
 		for (int sequence = 0; sequence < size; sequence++) {
 			childProperties.add(
-				new ElementProperty(
+				new MapEntryElementProperty(
 					property,
-					elementType,
-					sequence,
-					sequence
+					new MapKeyElementProperty(
+						property,
+						keyType,
+						sequence
+					),
+					new MapValueElementProperty(
+						property,
+						valueType,
+						sequence
+					)
 				)
 			);
 		}
 
-		double nullInject = context.getGenerateOptions().getNullInjectGenerator(property)
-			.generate(context, containerInfo);
-
-		return new ArbitraryProperty(
-			property,
-			context.getPropertyNameResolver(),
-			nullInject,
-			context.getElementIndex(),
+		return new ContainerProperty(
 			childProperties,
 			containerInfo
 		);

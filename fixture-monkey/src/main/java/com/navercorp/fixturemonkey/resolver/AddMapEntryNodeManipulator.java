@@ -46,12 +46,13 @@ public final class AddMapEntryNodeManipulator implements NodeManipulator {
 		}
 
 		ArbitraryProperty arbitraryProperty = arbitraryNode.getArbitraryProperty();
-		ArbitraryContainerInfo containerInfo = arbitraryProperty
-			.getContainerInfo().withElementMinSize(1).withElementMaxSize(1);
-		ArbitraryNode entryNode = traverser.traverse(arbitraryProperty.getProperty(), containerInfo)
+		ArbitraryContainerInfo containerInfo = new ArbitraryContainerInfo(1, 1);
+		ArbitraryNode entryNode = traverser.traverse(arbitraryProperty.getObjectProperty().getProperty(), containerInfo)
 			.getChildren().get(0);
 
-		arbitraryProperty.getChildProperties().add(entryNode.getProperty());
+		arbitraryNode.setArbitraryProperty(
+			arbitraryProperty.withContainerProperty(entryNode.getArbitraryProperty().getContainerProperty())
+		);
 		arbitraryNode.getChildren().add(entryNode);
 	}
 }

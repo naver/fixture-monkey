@@ -61,6 +61,7 @@ import net.jqwik.time.api.arbitraries.ZonedDateTimeArbitrary;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
+import com.navercorp.fixturemonkey.api.generator.ObjectProperty;
 import com.navercorp.fixturemonkey.api.property.PropertyCache;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
@@ -100,7 +101,7 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 
 		// then
 		Calendar now = Calendar.getInstance();
-		then(actual.getTimeInMillis()).isLessThan(now.toInstant().toEpochMilli());
+		then(actual.toInstant().toEpochMilli()).isLessThan(now.toInstant().toEpochMilli());
 	}
 
 	@Property
@@ -1218,11 +1219,13 @@ class JavaxValidationTimeJavaArbitraryResolverTest {
 
 		return new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
+				new ObjectProperty(
+					property,
+					PropertyNameResolver.IDENTITY,
+					0.0D,
+					null,
+					Collections.emptyList()
+				),
 				null
 			),
 			Collections.emptyList(),

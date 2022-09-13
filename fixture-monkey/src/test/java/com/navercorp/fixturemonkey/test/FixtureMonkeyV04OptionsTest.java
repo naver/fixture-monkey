@@ -48,10 +48,10 @@ import com.navercorp.fixturemonkey.LabMonkey;
 import com.navercorp.fixturemonkey.api.customizer.FixtureCustomizer;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
-import com.navercorp.fixturemonkey.api.generator.ArbitraryPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.ChildArbitraryContext;
 import com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator;
-import com.navercorp.fixturemonkey.api.generator.ObjectArbitraryPropertyGenerator;
+import com.navercorp.fixturemonkey.api.generator.DefaultObjectPropertyGenerator;
+import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGenerator;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult;
 import com.navercorp.fixturemonkey.api.introspector.BuilderArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.JavaArbitraryResolver;
@@ -68,7 +68,7 @@ import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpe
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.CustomBuildMethodInteger;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.CustomBuilderMethodInteger;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.Pair;
-import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.PairArbitraryPropertyGenerator;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.PairContainerPropertyGenerator;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.PairIntrospector;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.RegisterGroup;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.SimpleObjectChild;
@@ -115,8 +115,8 @@ class FixtureMonkeyV04OptionsTest {
 	@Property
 	void alterDefaultArbitraryPropertyGenerator() {
 		LabMonkey sut = LabMonkey.labMonkeyBuilder()
-			.defaultArbitraryPropertyGenerator(
-				(context) -> ObjectArbitraryPropertyGenerator.INSTANCE.generate(context)
+			.defaultObjectPropertyGenerator(
+				(context) -> DefaultObjectPropertyGenerator.INSTANCE.generate(context)
 					.withNullInject(1.0)
 			)
 			.build();
@@ -129,9 +129,9 @@ class FixtureMonkeyV04OptionsTest {
 	@Property
 	void pushAssignableTypeArbitraryPropertyGenerator() {
 		LabMonkey sut = LabMonkey.labMonkeyBuilder()
-			.pushAssignableTypeArbitraryPropertyGenerator(
+			.pushAssignableTypeObjectPropertyGenerator(
 				SimpleObject.class,
-				(context) -> ObjectArbitraryPropertyGenerator.INSTANCE.generate(context)
+				(context) -> DefaultObjectPropertyGenerator.INSTANCE.generate(context)
 					.withNullInject(1.0)
 			)
 			.build();
@@ -144,9 +144,9 @@ class FixtureMonkeyV04OptionsTest {
 	@Property
 	void pushExactTypeArbitraryPropertyGenerator() {
 		LabMonkey sut = LabMonkey.labMonkeyBuilder()
-			.pushExactTypeArbitraryPropertyGenerator(
+			.pushExactTypeObjectPropertyGenerator(
 				SimpleObjectChild.class,
-				(context) -> ObjectArbitraryPropertyGenerator.INSTANCE.generate(context)
+				(context) -> DefaultObjectPropertyGenerator.INSTANCE.generate(context)
 					.withNullInject(1.0)
 			)
 			.build();
@@ -159,9 +159,9 @@ class FixtureMonkeyV04OptionsTest {
 	@Property
 	void pushExactTypeArbitraryPropertyGeneratorNotAffectsAssignable() {
 		LabMonkey sut = LabMonkey.labMonkeyBuilder()
-			.pushExactTypeArbitraryPropertyGenerator(
+			.pushExactTypeObjectPropertyGenerator(
 				SimpleObject.class,
-				(context) -> ObjectArbitraryPropertyGenerator.INSTANCE.generate(context)
+				(context) -> DefaultObjectPropertyGenerator.INSTANCE.generate(context)
 					.withNullInject(1.0)
 			)
 			.build();
@@ -172,12 +172,12 @@ class FixtureMonkeyV04OptionsTest {
 	}
 
 	@Property
-	void pushArbitraryPropertyGenerator() {
-		ArbitraryPropertyGenerator arbitraryPropertyGenerator = (context) ->
-			ObjectArbitraryPropertyGenerator.INSTANCE.generate(context)
+	void pushObjectPropertyGenerator() {
+		ObjectPropertyGenerator arbitraryPropertyGenerator = (context) ->
+			DefaultObjectPropertyGenerator.INSTANCE.generate(context)
 				.withNullInject(1.0);
 		LabMonkey sut = LabMonkey.labMonkeyBuilder()
-			.pushArbitraryPropertyGenerator(
+			.pushObjectPropertyGenerator(
 				MatcherOperator.exactTypeMatchOperator(
 					SimpleObject.class,
 					arbitraryPropertyGenerator
@@ -195,7 +195,7 @@ class FixtureMonkeyV04OptionsTest {
 		LabMonkey sut = LabMonkey.labMonkeyBuilder()
 			.pushAssignableTypeNullInjectGenerator(
 				SimpleObject.class,
-				(context, containerInfo) -> 1.0d
+				(context) -> 1.0d
 			)
 			.build();
 
@@ -209,7 +209,7 @@ class FixtureMonkeyV04OptionsTest {
 		LabMonkey sut = LabMonkey.labMonkeyBuilder()
 			.pushExactTypeNullInjectGenerator(
 				SimpleObject.class,
-				(context, containerInfo) -> 1.0d
+				(context) -> 1.0d
 			)
 			.build();
 
@@ -222,7 +222,7 @@ class FixtureMonkeyV04OptionsTest {
 	void pushNullInjectGenerator() {
 		LabMonkey sut = LabMonkey.labMonkeyBuilder()
 			.pushNullInjectGenerator(
-				MatcherOperator.exactTypeMatchOperator(SimpleObject.class, (context, containerInfo) -> 1.0d)
+				MatcherOperator.exactTypeMatchOperator(SimpleObject.class, (context) -> 1.0d)
 			)
 			.build();
 
@@ -234,7 +234,7 @@ class FixtureMonkeyV04OptionsTest {
 	@Property
 	void defaultNullInjectGenerator() {
 		LabMonkey sut = LabMonkey.labMonkeyBuilder()
-			.defaultNullInjectGenerator((context, containerInfo) -> 1.0d)
+			.defaultNullInjectGenerator((context) -> 1.0d)
 			.build();
 
 		SimpleObject actual = sut.giveMeOne(SimpleObject.class);
@@ -816,7 +816,7 @@ class FixtureMonkeyV04OptionsTest {
 	@Property
 	void generateNewContainer() {
 		LabMonkey sut = LabMonkey.labMonkeyBuilder()
-			.pushAssignableTypeArbitraryPropertyGenerator(Pair.class, new PairArbitraryPropertyGenerator())
+			.pushAssignableTypeContainerPropertyGenerator(Pair.class, new PairContainerPropertyGenerator())
 			.pushContainerIntrospector(new PairIntrospector())
 			.build();
 
@@ -830,7 +830,7 @@ class FixtureMonkeyV04OptionsTest {
 	@Property
 	void decomposeNewContainer() {
 		LabMonkey sut = LabMonkey.labMonkeyBuilder()
-			.pushAssignableTypeArbitraryPropertyGenerator(Pair.class, new PairArbitraryPropertyGenerator())
+			.pushAssignableTypeContainerPropertyGenerator(Pair.class, new PairContainerPropertyGenerator())
 			.pushContainerIntrospector(new PairIntrospector())
 			.defaultDecomposedContainerValueFactory(
 				(obj) -> {
@@ -861,7 +861,7 @@ class FixtureMonkeyV04OptionsTest {
 		LabMonkey sut = LabMonkey.labMonkeyBuilder()
 			.addContainerType(
 				Pair.class,
-				new PairArbitraryPropertyGenerator(),
+				new PairContainerPropertyGenerator(),
 				new PairIntrospector(),
 				(obj) -> {
 					Pair<?, ?> pair = (Pair<?, ?>)obj;
@@ -884,9 +884,7 @@ class FixtureMonkeyV04OptionsTest {
 	@Property
 	void plugin() {
 		LabMonkey sut = LabMonkey.labMonkeyBuilder()
-			.plugin((optionsBuilder) -> {
-				optionsBuilder.insertFirstNullInjectGenerators(String.class, (context, containerInfo) -> 1.0d);
-			})
+			.plugin((optionsBuilder) -> optionsBuilder.insertFirstNullInjectGenerators(String.class, (context) -> 1.0d))
 			.build();
 
 		String actual = sut.giveMeBuilder(SimpleObject.class)

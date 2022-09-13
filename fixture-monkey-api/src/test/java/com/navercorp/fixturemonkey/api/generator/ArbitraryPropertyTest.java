@@ -40,21 +40,20 @@ class ArbitraryPropertyTest {
 		RootProperty rootProperty = new RootProperty(typeReference.getAnnotatedType());
 
 		// when
-		ArbitraryProperty actual = new ArbitraryProperty(
+		ObjectProperty actual = new ObjectProperty(
 			rootProperty,
 			PropertyNameResolver.IDENTITY,
 			0.0D,
 			null,
-			Collections.emptyList(),
-			null
+			Collections.emptyList()
 		);
 
 		then(actual.isRoot()).isTrue();
 		then(actual.getProperty()).isEqualTo(rootProperty);
 		then(actual.getNullInject()).isEqualTo(0.0D);
-		then(actual.getContainerInfo()).isNull();
 	}
 
+	@SuppressWarnings("OptionalGetWithoutIsPresent")
 	@Test
 	void getResolvePropertyName() {
 		// given
@@ -63,13 +62,12 @@ class ArbitraryPropertyTest {
 		Optional<Property> property = PropertyCache.getProperty(typeReference.getAnnotatedType(), "name");
 
 		// when
-		ArbitraryProperty actual = new ArbitraryProperty(
+		ObjectProperty actual = new ObjectProperty(
 			property.get(),
 			prop -> "x_" + prop.getName(),
 			0.0D,
 			null,
-			Collections.emptyList(),
-			null
+			Collections.emptyList()
 		);
 
 		then(actual.getResolvePropertyName()).isEqualTo("x_name");

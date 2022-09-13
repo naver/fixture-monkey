@@ -36,15 +36,15 @@ import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public final class StreamArbitraryPropertyGenerator implements ArbitraryPropertyGenerator {
-	public static final StreamArbitraryPropertyGenerator INSTANCE = new StreamArbitraryPropertyGenerator();
+public final class StreamContainerPropertyGenerator implements ContainerPropertyGenerator {
+	public static final StreamContainerPropertyGenerator INSTANCE = new StreamContainerPropertyGenerator();
 
 	private static final AnnotatedType INTEGER_TYPE = generateAnnotatedTypeWithoutAnnotation(Integer.class);
 	private static final AnnotatedType LONG_TYPE = generateAnnotatedTypeWithoutAnnotation(Long.class);
 	private static final AnnotatedType DOUBLE_TYPE = generateAnnotatedTypeWithoutAnnotation(Double.class);
 
 	@Override
-	public ArbitraryProperty generate(ArbitraryPropertyGeneratorContext context) {
+	public ContainerProperty generate(ContainerPropertyGeneratorContext context) {
 		Property property = context.getProperty();
 
 		AnnotatedType elementAnnotatedType = getElementAnnotatedType(property);
@@ -69,14 +69,7 @@ public final class StreamArbitraryPropertyGenerator implements ArbitraryProperty
 			);
 		}
 
-		double nullInject = context.getGenerateOptions().getNullInjectGenerator(property)
-			.generate(context, containerInfo);
-
-		return new ArbitraryProperty(
-			property,
-			context.getPropertyNameResolver(),
-			nullInject,
-			context.getElementIndex(),
+		return new ContainerProperty(
 			childProperties,
 			containerInfo
 		);

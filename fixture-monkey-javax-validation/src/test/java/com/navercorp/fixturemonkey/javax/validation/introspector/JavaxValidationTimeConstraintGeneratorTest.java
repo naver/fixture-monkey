@@ -30,10 +30,12 @@ import net.jqwik.api.Property;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
+import com.navercorp.fixturemonkey.api.generator.ObjectProperty;
 import com.navercorp.fixturemonkey.api.property.PropertyCache;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 
+@SuppressWarnings("OptionalGetWithoutIsPresent")
 class JavaxValidationTimeConstraintGeneratorTest {
 	private final JavaxValidationTimeConstraintGenerator sut = new JavaxValidationTimeConstraintGenerator();
 
@@ -47,11 +49,13 @@ class JavaxValidationTimeConstraintGeneratorTest {
 			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
+				new ObjectProperty(
+					property,
+					PropertyNameResolver.IDENTITY,
+					0.0D,
+					null,
+					Collections.emptyList()
+				),
 				null
 			),
 			Collections.emptyList(),
@@ -78,11 +82,13 @@ class JavaxValidationTimeConstraintGeneratorTest {
 			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
+				new ObjectProperty(
+					property,
+					PropertyNameResolver.IDENTITY,
+					0.0D,
+					null,
+					Collections.emptyList()
+				),
 				null
 			),
 			Collections.emptyList(),
@@ -110,11 +116,13 @@ class JavaxValidationTimeConstraintGeneratorTest {
 			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
+				new ObjectProperty(
+					property,
+					PropertyNameResolver.IDENTITY,
+					0.0D,
+					null,
+					Collections.emptyList()
+				),
 				null
 			),
 			Collections.emptyList(),
@@ -143,11 +151,13 @@ class JavaxValidationTimeConstraintGeneratorTest {
 			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
+				new ObjectProperty(
+					property,
+					PropertyNameResolver.IDENTITY,
+					0.0D,
+					null,
+					Collections.emptyList()
+				),
 				null
 			),
 			Collections.emptyList(),
@@ -175,11 +185,13 @@ class JavaxValidationTimeConstraintGeneratorTest {
 			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
+				new ObjectProperty(
+					property,
+					PropertyNameResolver.IDENTITY,
+					0.0D,
+					null,
+					Collections.emptyList()
+				),
 				null
 			),
 			Collections.emptyList(),
@@ -207,11 +219,13 @@ class JavaxValidationTimeConstraintGeneratorTest {
 			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
+				new ObjectProperty(
+					property,
+					PropertyNameResolver.IDENTITY,
+					0.0D,
+					null,
+					Collections.emptyList()
+				),
 				null
 			),
 			Collections.emptyList(),
@@ -238,11 +252,13 @@ class JavaxValidationTimeConstraintGeneratorTest {
 			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
+				new ObjectProperty(
+					property,
+					PropertyNameResolver.IDENTITY,
+					0.0D,
+					null,
+					Collections.emptyList()
+				),
 				null
 			),
 			Collections.emptyList(),
@@ -270,11 +286,13 @@ class JavaxValidationTimeConstraintGeneratorTest {
 			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
+				new ObjectProperty(
+					property,
+					PropertyNameResolver.IDENTITY,
+					0.0D,
+					null,
+					Collections.emptyList()
+				),
 				null
 			),
 			Collections.emptyList(),
@@ -303,11 +321,13 @@ class JavaxValidationTimeConstraintGeneratorTest {
 			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
+				new ObjectProperty(
+					property,
+					PropertyNameResolver.IDENTITY,
+					0.0D,
+					null,
+					Collections.emptyList()
+				),
 				null
 			),
 			Collections.emptyList(),
@@ -335,11 +355,13 @@ class JavaxValidationTimeConstraintGeneratorTest {
 			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
+				new ObjectProperty(
+					property,
+					PropertyNameResolver.IDENTITY,
+					0.0D,
+					null,
+					Collections.emptyList()
+				),
 				null
 			),
 			Collections.emptyList(),
@@ -367,11 +389,13 @@ class JavaxValidationTimeConstraintGeneratorTest {
 			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
+				new ObjectProperty(
+					property,
+					PropertyNameResolver.IDENTITY,
+					0.0D,
+					null,
+					Collections.emptyList()
+				),
 				null
 			),
 			Collections.emptyList(),
@@ -398,11 +422,13 @@ class JavaxValidationTimeConstraintGeneratorTest {
 			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
+				new ObjectProperty(
+					property,
+					PropertyNameResolver.IDENTITY,
+					0.0D,
+					null,
+					Collections.emptyList()
+				),
 				null
 			),
 			Collections.emptyList(),
@@ -430,11 +456,13 @@ class JavaxValidationTimeConstraintGeneratorTest {
 			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
+				new ObjectProperty(
+					property,
+					PropertyNameResolver.IDENTITY,
+					0.0D,
+					null,
+					Collections.emptyList()
+				),
 				null
 			),
 			Collections.emptyList(),
@@ -463,11 +491,13 @@ class JavaxValidationTimeConstraintGeneratorTest {
 			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
+				new ObjectProperty(
+					property,
+					PropertyNameResolver.IDENTITY,
+					0.0D,
+					null,
+					Collections.emptyList()
+				),
 				null
 			),
 			Collections.emptyList(),
@@ -495,11 +525,13 @@ class JavaxValidationTimeConstraintGeneratorTest {
 			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
+				new ObjectProperty(
+					property,
+					PropertyNameResolver.IDENTITY,
+					0.0D,
+					null,
+					Collections.emptyList()
+				),
 				null
 			),
 			Collections.emptyList(),

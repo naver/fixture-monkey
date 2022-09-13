@@ -56,7 +56,7 @@ class JavaTimeTypeArbitraryGeneratorTests {
 		Calendar min = Calendar.getInstance();
 		min.setTimeInMillis(now.minus(366, ChronoUnit.DAYS).toEpochMilli());
 		Calendar max = Calendar.getInstance();
-		max.setTimeInMillis(now.plus(365, ChronoUnit.DAYS).toEpochMilli());
+		max.setTimeInMillis(now.plus(366, ChronoUnit.DAYS).toEpochMilli());
 
 		CalendarArbitrary calendarArbitrary = this.sut.calendars();
 		Calendar actual = calendarArbitrary.sample();

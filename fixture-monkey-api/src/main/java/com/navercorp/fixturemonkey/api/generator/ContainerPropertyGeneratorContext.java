@@ -18,77 +18,55 @@
 
 package com.navercorp.fixturemonkey.api.generator;
 
-import java.util.List;
-
 import javax.annotation.Nullable;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.option.GenerateOptions;
 import com.navercorp.fixturemonkey.api.property.Property;
-import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public final class ArbitraryPropertyGeneratorContext {
+public final class ContainerPropertyGeneratorContext {
 	private final Property property;
 
 	@Nullable
 	private final Integer elementIndex;
 
 	@Nullable
-	private final ArbitraryProperty ownerProperty;
-
-	@Nullable
 	private final ArbitraryContainerInfo containerInfo;
 
 	private final GenerateOptions generateOptions;
 
-	public ArbitraryPropertyGeneratorContext(
+	public ContainerPropertyGeneratorContext(
 		Property property,
 		@Nullable Integer elementIndex,
-		@Nullable ArbitraryProperty ownerProperty,
 		@Nullable ArbitraryContainerInfo containerInfo,
 		GenerateOptions generateOptions
 	) {
 		this.property = property;
 		this.elementIndex = elementIndex;
-		this.ownerProperty = ownerProperty;
 		this.containerInfo = containerInfo;
 		this.generateOptions = generateOptions;
 	}
 
 	public Property getProperty() {
-		return this.property;
+		return property;
 	}
 
 	@Nullable
 	public Integer getElementIndex() {
-		return this.elementIndex;
+		return elementIndex;
 	}
 
-	@Nullable
-	public ArbitraryProperty getOwnerProperty() {
-		return this.ownerProperty;
+	public GenerateOptions getGenerateOptions() {
+		return generateOptions;
 	}
 
 	@Nullable
 	public ArbitraryContainerInfo getContainerInfo() {
 		return containerInfo;
-	}
-
-	public List<MatcherOperator<PropertyNameResolver>> getPropertyNameResolvers() {
-		return this.generateOptions.getPropertyNameResolvers();
-	}
-
-	public GenerateOptions getGenerateOptions() {
-		return this.generateOptions;
-	}
-
-	public PropertyNameResolver getPropertyNameResolver() {
-		return generateOptions.getPropertyNameResolver(property);
 	}
 
 	public boolean isRootContext() {

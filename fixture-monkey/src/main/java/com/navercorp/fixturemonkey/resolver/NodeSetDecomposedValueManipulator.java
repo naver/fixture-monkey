@@ -30,6 +30,7 @@ import org.apiguardian.api.API.Status;
 
 import net.jqwik.api.Arbitraries;
 
+import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.type.Types;
 
@@ -70,7 +71,8 @@ public final class NodeSetDecomposedValueManipulator<T> implements NodeManipulat
 			return;
 		}
 
-		if (arbitraryNode.getArbitraryProperty().isContainer()) {
+		ArbitraryProperty arbitraryProperty = arbitraryNode.getArbitraryProperty();
+		if (arbitraryProperty.getContainerProperty() != null) {
 			DecomposableContainerValue decomposableContainerValue =
 				manipulateOptions.getDecomposedContainerValueFactory().from(value);
 			value = decomposableContainerValue.getContainer();
@@ -84,8 +86,9 @@ public final class NodeSetDecomposedValueManipulator<T> implements NodeManipulat
 		}
 
 		List<ArbitraryNode> children = arbitraryNode.getChildren();
-		arbitraryNode.setArbitraryProperty(arbitraryNode.getArbitraryProperty().withNullInject(NOT_NULL_INJECT));
-		if (children.isEmpty() && !arbitraryNode.getArbitraryProperty().isContainer()) {
+		arbitraryNode.setArbitraryProperty(arbitraryProperty.withNullInject(NOT_NULL_INJECT));
+
+		if (children.isEmpty() && arbitraryProperty.getContainerProperty() == null) {
 			arbitraryNode.setArbitrary(Arbitraries.just(value));
 			return;
 		}

@@ -21,71 +21,63 @@ package com.navercorp.fixturemonkey.api.generator;
 import java.lang.reflect.AnnotatedType;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty;
-import com.navercorp.fixturemonkey.api.property.MapKeyElementProperty;
-import com.navercorp.fixturemonkey.api.property.MapValueElementProperty;
+import com.navercorp.fixturemonkey.api.property.ElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public final class EntryArbitraryPropertyGenerator implements ArbitraryPropertyGenerator {
-	public static final EntryArbitraryPropertyGenerator INSTANCE = new EntryArbitraryPropertyGenerator();
-	private static final ArbitraryContainerInfo CONTAINER_INFO = new ArbitraryContainerInfo(1, 1);
+public final class DefaultContainerPropertyGenerator implements ContainerPropertyGenerator {
+	public static final DefaultContainerPropertyGenerator INSTANCE =
+		new DefaultContainerPropertyGenerator();
 
 	@Override
-	public ArbitraryProperty generate(ArbitraryPropertyGeneratorContext context) {
+	public ContainerProperty generate(ContainerPropertyGeneratorContext context) {
 		Property property = context.getProperty();
 
-		List<AnnotatedType> genericsTypes = Types.getGenericsTypes(property.getAnnotatedType());
-		if (genericsTypes.size() != 2) {
+		Class<?> containerType = Types.getActualType(property.getType());
+
+		List<AnnotatedType> elementTypes = Types.getGenericsTypes(property.getAnnotatedType());
+		if (elementTypes.size() != 1) {
 			throw new IllegalArgumentException(
-				"Entry genericsTypes must be have 2 generics type for key and value. "
+				"List elementsTypes must be have 1 generics type for element. "
 					+ "propertyType: " + property.getType()
-					+ ", genericsTypes: " + genericsTypes
+					+ ", elementTypes: " + elementTypes
 			);
 		}
 
 		ArbitraryContainerInfo containerInfo = context.getContainerInfo();
 		if (containerInfo == null) {
-			containerInfo = CONTAINER_INFO;
+			containerInfo = context.getGenerateOptions()
+				.getArbitraryContainerInfoGenerator(property)
+				.generate(context);
 		}
 
 		int size = containerInfo.getRandomSize();
-
-		AnnotatedType keyType = genericsTypes.get(0);
-		AnnotatedType valueType = genericsTypes.get(1);
-
+		AnnotatedType elementType = elementTypes.get(0);
 		List<Property> childProperties = new ArrayList<>();
 		for (int sequence = 0; sequence < size; sequence++) {
+			Integer elementIndex = sequence;
+
+			if (Set.class.isAssignableFrom(containerType)) {
+				elementIndex = null;
+			}
+
 			childProperties.add(
-				new MapEntryElementProperty(
+				new ElementProperty(
 					property,
-					new MapKeyElementProperty(
-						property,
-						keyType,
-						sequence
-					),
-					new MapValueElementProperty(
-						property,
-						valueType,
-						sequence
-					)
+					elementType,
+					elementIndex,
+					sequence
 				)
 			);
 		}
 
-		double nullInject = context.getGenerateOptions().getNullInjectGenerator(property)
-			.generate(context, CONTAINER_INFO);
-
-		return new ArbitraryProperty(
-			property,
-			context.getPropertyNameResolver(),
-			nullInject,
-			context.getElementIndex(),
+		return new ContainerProperty(
 			childProperties,
 			containerInfo
 		);

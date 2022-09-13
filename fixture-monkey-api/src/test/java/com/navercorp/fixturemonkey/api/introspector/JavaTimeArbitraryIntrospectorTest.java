@@ -42,10 +42,12 @@ import net.jqwik.api.Property;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
+import com.navercorp.fixturemonkey.api.generator.ObjectProperty;
 import com.navercorp.fixturemonkey.api.property.PropertyCache;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 
+@SuppressWarnings({"OptionalGetWithoutIsPresent", "ConstantConditions"})
 class JavaTimeArbitraryIntrospectorTest {
 	private final JavaTimeArbitraryIntrospector sut = new JavaTimeArbitraryIntrospector();
 
@@ -57,20 +59,7 @@ class JavaTimeArbitraryIntrospectorTest {
 		String propertyName = "calendar";
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
-		);
+		ArbitraryGeneratorContext context = getArbitraryGeneratorContext(property);
 
 		// when
 		boolean actual = this.sut.match(context.getProperty());
@@ -86,20 +75,7 @@ class JavaTimeArbitraryIntrospectorTest {
 		String propertyName = "calendar";
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
-		);
+		ArbitraryGeneratorContext context = getArbitraryGeneratorContext(property);
 
 		// when
 		ArbitraryIntrospectorResult actual = this.sut.introspect(context);
@@ -115,20 +91,7 @@ class JavaTimeArbitraryIntrospectorTest {
 		String propertyName = "date";
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
-		);
+		ArbitraryGeneratorContext context = getArbitraryGeneratorContext(property);
 
 		// when
 		boolean actual = this.sut.match(context.getProperty());
@@ -144,20 +107,7 @@ class JavaTimeArbitraryIntrospectorTest {
 		String propertyName = "date";
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
-		);
+		ArbitraryGeneratorContext context = getArbitraryGeneratorContext(property);
 
 		// when
 		ArbitraryIntrospectorResult actual = this.sut.introspect(context);
@@ -173,20 +123,7 @@ class JavaTimeArbitraryIntrospectorTest {
 		String propertyName = "instant";
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
-		);
+		ArbitraryGeneratorContext context = getArbitraryGeneratorContext(property);
 
 		// when
 		boolean actual = this.sut.match(context.getProperty());
@@ -202,20 +139,7 @@ class JavaTimeArbitraryIntrospectorTest {
 		String propertyName = "instant";
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
-		);
+		ArbitraryGeneratorContext context = getArbitraryGeneratorContext(property);
 
 		// when
 		ArbitraryIntrospectorResult actual = this.sut.introspect(context);
@@ -231,20 +155,7 @@ class JavaTimeArbitraryIntrospectorTest {
 		String propertyName = "localDate";
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
-		);
+		ArbitraryGeneratorContext context = getArbitraryGeneratorContext(property);
 
 		// when
 		boolean actual = this.sut.match(context.getProperty());
@@ -260,20 +171,7 @@ class JavaTimeArbitraryIntrospectorTest {
 		String propertyName = "localDate";
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
-		);
+		ArbitraryGeneratorContext context = getArbitraryGeneratorContext(property);
 
 		// when
 		ArbitraryIntrospectorResult actual = this.sut.introspect(context);
@@ -289,20 +187,7 @@ class JavaTimeArbitraryIntrospectorTest {
 		String propertyName = "localDateTime";
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
-		);
+		ArbitraryGeneratorContext context = getArbitraryGeneratorContext(property);
 
 		// when
 		boolean actual = this.sut.match(context.getProperty());
@@ -318,20 +203,7 @@ class JavaTimeArbitraryIntrospectorTest {
 		String propertyName = "localDateTime";
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
-		);
+		ArbitraryGeneratorContext context = getArbitraryGeneratorContext(property);
 
 		// when
 		ArbitraryIntrospectorResult actual = this.sut.introspect(context);
@@ -347,20 +219,7 @@ class JavaTimeArbitraryIntrospectorTest {
 		String propertyName = "localTime";
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
-		);
+		ArbitraryGeneratorContext context = getArbitraryGeneratorContext(property);
 
 		// when
 		boolean actual = this.sut.match(context.getProperty());
@@ -376,20 +235,7 @@ class JavaTimeArbitraryIntrospectorTest {
 		String propertyName = "localTime";
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
-		);
+		ArbitraryGeneratorContext context = getArbitraryGeneratorContext(property);
 
 		// when
 		ArbitraryIntrospectorResult actual = this.sut.introspect(context);
@@ -405,20 +251,7 @@ class JavaTimeArbitraryIntrospectorTest {
 		String propertyName = "zonedDateTime";
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
-		);
+		ArbitraryGeneratorContext context = getArbitraryGeneratorContext(property);
 
 		// when
 		boolean actual = this.sut.match(context.getProperty());
@@ -434,20 +267,7 @@ class JavaTimeArbitraryIntrospectorTest {
 		String propertyName = "zonedDateTime";
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
-		);
+		ArbitraryGeneratorContext context = getArbitraryGeneratorContext(property);
 
 		// when
 		ArbitraryIntrospectorResult actual = this.sut.introspect(context);
@@ -463,20 +283,7 @@ class JavaTimeArbitraryIntrospectorTest {
 		String propertyName = "monthDay";
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
-		);
+		ArbitraryGeneratorContext context = getArbitraryGeneratorContext(property);
 
 		// when
 		boolean actual = this.sut.match(context.getProperty());
@@ -492,20 +299,7 @@ class JavaTimeArbitraryIntrospectorTest {
 		String propertyName = "monthDay";
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
-		);
+		ArbitraryGeneratorContext context = getArbitraryGeneratorContext(property);
 
 		// when
 		ArbitraryIntrospectorResult actual = this.sut.introspect(context);
@@ -521,20 +315,7 @@ class JavaTimeArbitraryIntrospectorTest {
 		String propertyName = "offsetDateTime";
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
-		);
+		ArbitraryGeneratorContext context = getArbitraryGeneratorContext(property);
 
 		// when
 		boolean actual = this.sut.match(context.getProperty());
@@ -550,20 +331,7 @@ class JavaTimeArbitraryIntrospectorTest {
 		String propertyName = "offsetDateTime";
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
-		);
+		ArbitraryGeneratorContext context = getArbitraryGeneratorContext(property);
 
 		// when
 		ArbitraryIntrospectorResult actual = this.sut.introspect(context);
@@ -579,20 +347,7 @@ class JavaTimeArbitraryIntrospectorTest {
 		String propertyName = "offsetTime";
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
-		);
+		ArbitraryGeneratorContext context = getArbitraryGeneratorContext(property);
 
 		// when
 		boolean actual = this.sut.match(context.getProperty());
@@ -608,20 +363,7 @@ class JavaTimeArbitraryIntrospectorTest {
 		String propertyName = "offsetTime";
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
-		);
+		ArbitraryGeneratorContext context = getArbitraryGeneratorContext(property);
 
 		// when
 		ArbitraryIntrospectorResult actual = this.sut.introspect(context);
@@ -637,20 +379,7 @@ class JavaTimeArbitraryIntrospectorTest {
 		String propertyName = "period";
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
-		);
+		ArbitraryGeneratorContext context = getArbitraryGeneratorContext(property);
 
 		// when
 		boolean actual = this.sut.match(context.getProperty());
@@ -666,20 +395,7 @@ class JavaTimeArbitraryIntrospectorTest {
 		String propertyName = "period";
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
-		);
+		ArbitraryGeneratorContext context = getArbitraryGeneratorContext(property);
 
 		// when
 		ArbitraryIntrospectorResult actual = this.sut.introspect(context);
@@ -695,20 +411,7 @@ class JavaTimeArbitraryIntrospectorTest {
 		String propertyName = "duration";
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
-		);
+		ArbitraryGeneratorContext context = getArbitraryGeneratorContext(property);
 
 		// when
 		boolean actual = this.sut.match(context.getProperty());
@@ -724,20 +427,7 @@ class JavaTimeArbitraryIntrospectorTest {
 		String propertyName = "duration";
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
-		);
+		ArbitraryGeneratorContext context = getArbitraryGeneratorContext(property);
 
 		// when
 		ArbitraryIntrospectorResult actual = this.sut.introspect(context);
@@ -753,20 +443,7 @@ class JavaTimeArbitraryIntrospectorTest {
 		String propertyName = "year";
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
-		);
+		ArbitraryGeneratorContext context = getArbitraryGeneratorContext(property);
 
 		// when
 		boolean actual = this.sut.match(context.getProperty());
@@ -782,20 +459,7 @@ class JavaTimeArbitraryIntrospectorTest {
 		String propertyName = "year";
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
-		);
+		ArbitraryGeneratorContext context = getArbitraryGeneratorContext(property);
 
 		// when
 		ArbitraryIntrospectorResult actual = this.sut.introspect(context);
@@ -811,20 +475,7 @@ class JavaTimeArbitraryIntrospectorTest {
 		String propertyName = "yearMonth";
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
-		);
+		ArbitraryGeneratorContext context = getArbitraryGeneratorContext(property);
 
 		// when
 		boolean actual = this.sut.match(context.getProperty());
@@ -840,20 +491,7 @@ class JavaTimeArbitraryIntrospectorTest {
 		String propertyName = "yearMonth";
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
-		);
+		ArbitraryGeneratorContext context = getArbitraryGeneratorContext(property);
 
 		// when
 		ArbitraryIntrospectorResult actual = this.sut.introspect(context);
@@ -869,20 +507,7 @@ class JavaTimeArbitraryIntrospectorTest {
 		String propertyName = "zoneOffset";
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
-		);
+		ArbitraryGeneratorContext context = getArbitraryGeneratorContext(property);
 
 		// when
 		boolean actual = this.sut.match(context.getProperty());
@@ -898,13 +523,26 @@ class JavaTimeArbitraryIntrospectorTest {
 		String propertyName = "zoneOffset";
 		com.navercorp.fixturemonkey.api.property.Property property =
 			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+		ArbitraryGeneratorContext context = getArbitraryGeneratorContext(property);
+
+		// when
+		ArbitraryIntrospectorResult actual = this.sut.introspect(context);
+
+		then(actual.getValue().sample()).isInstanceOf(ZoneOffset.class);
+	}
+
+	private ArbitraryGeneratorContext getArbitraryGeneratorContext(
+		com.navercorp.fixturemonkey.api.property.Property property
+	) {
+		return new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
+				new ObjectProperty(
+					property,
+					PropertyNameResolver.IDENTITY,
+					0.0D,
+					null,
+					Collections.emptyList()
+				),
 				null
 			),
 			Collections.emptyList(),
@@ -912,10 +550,5 @@ class JavaTimeArbitraryIntrospectorTest {
 			(ctx, prop) -> Arbitraries.just(null),
 			Collections.emptyList()
 		);
-
-		// when
-		ArbitraryIntrospectorResult actual = this.sut.introspect(context);
-
-		then(actual.getValue().sample()).isInstanceOf(ZoneOffset.class);
 	}
 }
