@@ -25,6 +25,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import org.junit.jupiter.api.Test;
 
 import lombok.Builder;
@@ -32,9 +34,10 @@ import lombok.Getter;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
-import com.navercorp.fixturemonkey.api.generator.ArbitraryPropertyGenerator;
-import com.navercorp.fixturemonkey.api.generator.ArbitraryPropertyGeneratorContext;
+import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGenerator;
+import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGeneratorContext;
 import com.navercorp.fixturemonkey.api.option.GenerateOptions;
+import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.PropertyCache;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
@@ -174,30 +177,11 @@ public class BuilderArbitraryIntrospectorTest {
 		RootProperty rootProperty = new RootProperty(typeReference.getAnnotatedType());
 
 		GenerateOptions generateOptions = GenerateOptions.DEFAULT_GENERATE_OPTIONS;
-		ArbitraryPropertyGenerator rootGenerator = generateOptions.getArbitraryPropertyGenerator(rootProperty);
-		ArbitraryProperty rootArbitraryProperty = rootGenerator.generate(
-			new ArbitraryPropertyGeneratorContext(
-				rootProperty,
-				null,
-				null,
-				null,
-				generateOptions
-			)
-		);
+		ArbitraryProperty rootArbitraryProperty = getArbitraryProperty(rootProperty, null, generateOptions);
 
 		List<ArbitraryProperty> childrenProperties = PropertyCache.getProperties(typeReference.getAnnotatedType())
 			.stream()
-			.map(it -> generateOptions.getArbitraryPropertyGenerator(it)
-				.generate(
-					new ArbitraryPropertyGeneratorContext(
-						it,
-						null,
-						rootArbitraryProperty,
-						null,
-						generateOptions
-					)
-				)
-			)
+			.map(it -> getArbitraryProperty(it, rootArbitraryProperty, generateOptions))
 			.collect(toList());
 
 		return new ArbitraryGeneratorContext(
@@ -214,6 +198,26 @@ public class BuilderArbitraryIntrospectorTest {
 				)
 			).getValue(),
 			Collections.emptyList()
+		);
+	}
+
+	private ArbitraryProperty getArbitraryProperty(
+		Property property,
+		@Nullable ArbitraryProperty ownerArbitraryProperty,
+		GenerateOptions generateOptions
+	) {
+		ObjectPropertyGenerator rootGenerator = generateOptions.getObjectPropertyGenerator(property);
+		return new ArbitraryProperty(
+			rootGenerator.generate(
+				new ObjectPropertyGeneratorContext(
+					property,
+					null,
+					ownerArbitraryProperty,
+					false,
+					generateOptions
+				)
+			),
+			null
 		);
 	}
 }
