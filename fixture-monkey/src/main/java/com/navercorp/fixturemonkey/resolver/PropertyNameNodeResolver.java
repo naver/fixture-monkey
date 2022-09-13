@@ -42,7 +42,7 @@ public final class PropertyNameNodeResolver implements NodeResolver {
 		List<ArbitraryNode> result = new ArrayList<>();
 
 		for (ArbitraryNode child : arbitraryNode.getChildren()) {
-			String nodePropertyName = child.getArbitraryProperty().getObjectProperty().getResolvePropertyName();
+			String nodePropertyName = child.getArbitraryProperty().getObjectProperty().getResolvedPropertyName();
 			if (propertyName.equals(ALL_INDEX_STRING) || propertyName.equals(nodePropertyName)) {
 				ArbitraryProperty childArbitraryProperty = child.getArbitraryProperty();
 				child.setArbitraryProperty(childArbitraryProperty.withNullInject(NOT_NULL_INJECT));

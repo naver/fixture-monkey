@@ -64,7 +64,7 @@ public final class FieldReflectionArbitraryIntrospector implements ArbitraryIntr
 				continue;
 			}
 
-			String resolvePropertyName = arbitraryProperty.getObjectProperty().getResolvePropertyName();
+			String resolvePropertyName = arbitraryProperty.getObjectProperty().getResolvedPropertyName();
 			Arbitrary<?> arbitrary = childrenArbitraries.get(resolvePropertyName);
 			builderCombinator = builderCombinator.use(arbitrary).in((object, value) -> {
 				try {

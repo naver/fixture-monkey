@@ -328,7 +328,7 @@ public final class ArbitraryExpression implements MonkeyExpression, Comparable<A
 
 		public boolean match(ArbitraryProperty arbitraryProperty) {
 			ObjectProperty objectProperty = arbitraryProperty.getObjectProperty();
-			String resolvePropertyName = objectProperty.getResolvePropertyName();
+			String resolvePropertyName = objectProperty.getResolvedPropertyName();
 			boolean samePropertyName;
 			if (resolvePropertyName == null) {
 				samePropertyName = true; // ignore property name equivalence.

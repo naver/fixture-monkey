@@ -65,7 +65,7 @@ public final class ObjectProperty {
 		return this.propertyNameResolver;
 	}
 
-	public String getResolvePropertyName() {
+	public String getResolvedPropertyName() {
 		return this.getPropertyNameResolver().resolve(this.property);
 	}
 

@@ -77,7 +77,7 @@ public final class BuilderArbitraryIntrospector
 			String methodName = getFieldName(arbitraryProperty.getObjectProperty().getProperty());
 			String buildFieldMethodName = builderType.getName() + "#" + methodName;
 
-			String resolvePropertyName = arbitraryProperty.getObjectProperty().getResolvePropertyName();
+			String resolvePropertyName = arbitraryProperty.getObjectProperty().getResolvedPropertyName();
 			Arbitrary<?> arbitrary = childrenArbitraries.get(resolvePropertyName);
 
 			Method method = BUILD_FIELD_METHOD_CACHE.computeIfAbsent(buildFieldMethodName, f -> {

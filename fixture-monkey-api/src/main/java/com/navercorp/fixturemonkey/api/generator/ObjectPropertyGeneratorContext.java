@@ -57,29 +57,29 @@ public final class ObjectPropertyGeneratorContext {
 	}
 
 	public Property getProperty() {
-		return property;
+		return this.property;
 	}
 
 	@Nullable
 	public Integer getElementIndex() {
-		return elementIndex;
+		return this.elementIndex;
 	}
 
 	@Nullable
 	public ArbitraryProperty getOwnerProperty() {
-		return ownerProperty;
+		return this.ownerProperty;
 	}
 
 	public boolean isContainer() {
-		return container;
+		return this.container;
 	}
 
 	public GenerateOptions getGenerateOptions() {
-		return generateOptions;
+		return this.generateOptions;
 	}
 
 	public PropertyNameResolver getPropertyNameResolver() {
-		return generateOptions.getPropertyNameResolver(property);
+		return this.generateOptions.getPropertyNameResolver(property);
 	}
 
 	public boolean isRootContext() {

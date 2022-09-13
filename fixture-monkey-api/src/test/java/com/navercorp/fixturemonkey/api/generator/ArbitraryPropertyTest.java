@@ -70,7 +70,7 @@ class ArbitraryPropertyTest {
 			Collections.emptyList()
 		);
 
-		then(actual.getResolvePropertyName()).isEqualTo("x_name");
+		then(actual.getResolvedPropertyName()).isEqualTo("x_name");
 	}
 
 	static class GenericSample<T> {
