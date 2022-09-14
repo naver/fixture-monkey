@@ -18,8 +18,6 @@
 
 package com.navercorp.fixturemonkey.resolver;
 
-import java.util.Objects;
-
 import javax.annotation.Nullable;
 
 import org.apiguardian.api.API;
