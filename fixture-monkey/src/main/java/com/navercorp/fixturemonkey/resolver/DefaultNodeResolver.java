@@ -15,40 +15,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.navercorp.fixturemonkey.resolver;
 
 import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.NOT_NULL_INJECT;
 
-import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
-
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public final class NodeKeyValueResolver implements NodeResolver {
-	private final boolean key;
+public class DefaultNodeResolver implements NodeResolver {
+	private final NodeSelector nodeSelector;
 
-	public NodeKeyValueResolver(boolean key) {
-		this.key = key;
+	public DefaultNodeResolver(NodeSelector nodeSelector) {
+		this.nodeSelector = nodeSelector;
 	}
 
 	@Override
 	public List<ArbitraryNode> resolve(ArbitraryNode arbitraryNode) {
-		LinkedList<ArbitraryNode> nextNodes = new LinkedList<>();
-		ArbitraryNode child;
-		if (key) {
-			child = arbitraryNode.getChildren().get(0);
-		} else {
-			child = arbitraryNode.getChildren().get(1);
+		List<ArbitraryNode> resolved = arbitraryNode.getChildren().stream()
+			.filter(it -> nodeSelector.isResolvable(
+				arbitraryNode.getArbitraryProperty(),
+				it.getArbitraryProperty().getObjectProperty(),
+				it.getArbitraryProperty().getContainerProperty()
+			))
+			.collect(Collectors.toList());
+
+		for (ArbitraryNode node : resolved) {
+			node.setArbitraryProperty(node.getArbitraryProperty().withNullInject(NOT_NULL_INJECT));
 		}
 
-		ArbitraryProperty arbitraryProperty = child.getArbitraryProperty();
-		child.setArbitraryProperty(arbitraryProperty.withNullInject(NOT_NULL_INJECT));
-		nextNodes.add(child);
-		return nextNodes;
+		return resolved;
 	}
 }

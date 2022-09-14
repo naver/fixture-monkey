@@ -19,36 +19,31 @@
 package com.navercorp.fixturemonkey.resolver;
 
 import static com.navercorp.fixturemonkey.Constants.ALL_INDEX_STRING;
-import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.NOT_NULL_INJECT;
 
-import java.util.ArrayList;
-import java.util.List;
+import javax.annotation.Nullable;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
+import com.navercorp.fixturemonkey.api.generator.ContainerProperty;
+import com.navercorp.fixturemonkey.api.generator.ObjectProperty;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public final class PropertyNameNodeResolver implements NodeResolver {
+public final class PropertyNameNodeSelector implements NodeSelector {
 	private final String propertyName;
 
-	public PropertyNameNodeResolver(String propertyName) {
+	public PropertyNameNodeSelector(String propertyName) {
 		this.propertyName = propertyName;
 	}
 
 	@Override
-	public List<ArbitraryNode> resolve(ArbitraryNode arbitraryNode) {
-		List<ArbitraryNode> result = new ArrayList<>();
-
-		for (ArbitraryNode child : arbitraryNode.getChildren()) {
-			String nodePropertyName = child.getArbitraryProperty().getObjectProperty().getResolvedPropertyName();
-			if (propertyName.equals(ALL_INDEX_STRING) || propertyName.equals(nodePropertyName)) {
-				ArbitraryProperty childArbitraryProperty = child.getArbitraryProperty();
-				child.setArbitraryProperty(childArbitraryProperty.withNullInject(NOT_NULL_INJECT));
-				result.add(child);
-			}
-		}
-		return result;
+	public boolean isResolvable(
+		@Nullable ArbitraryProperty parentArbitraryProperty,
+		ObjectProperty nowObjectProperty,
+		@Nullable ContainerProperty nowContainerProperty
+	) {
+		String nodePropertyName = nowObjectProperty.getResolvedPropertyName();
+		return ALL_INDEX_STRING.equals(propertyName) || propertyName.equals(nodePropertyName);
 	}
 }

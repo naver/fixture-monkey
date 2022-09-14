@@ -19,44 +19,38 @@
 package com.navercorp.fixturemonkey.resolver;
 
 import static com.navercorp.fixturemonkey.Constants.NO_OR_ALL_INDEX_INTEGER_VALUE;
-import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.NOT_NULL_INJECT;
 
-import java.util.ArrayList;
-import java.util.List;
+import javax.annotation.Nullable;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
+import com.navercorp.fixturemonkey.api.generator.ContainerProperty;
+import com.navercorp.fixturemonkey.api.generator.ObjectProperty;
 import com.navercorp.fixturemonkey.api.property.ElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public final class ContainerElementNodeResolver implements NodeResolver {
+public final class ContainerElementNodeSelector implements NodeSelector {
 	private final int sequence;
 
-	public ContainerElementNodeResolver(int sequence) {
+	public ContainerElementNodeSelector(int sequence) {
 		this.sequence = sequence;
 	}
 
 	@Override
-	public List<ArbitraryNode> resolve(ArbitraryNode arbitraryNode) {
-		List<ArbitraryNode> result = new ArrayList<>();
-
-		for (ArbitraryNode node : arbitraryNode.getChildren()) {
-			ArbitraryProperty arbitraryProperty = node.getArbitraryProperty();
-			Property property = arbitraryProperty.getObjectProperty().getProperty();
-			if (!(property instanceof ElementProperty)) {
-				throw new IllegalArgumentException("Resolved node is not element type. : " + property);
-			}
-
-			ElementProperty elementProperty = (ElementProperty)property;
-			if (sequence == NO_OR_ALL_INDEX_INTEGER_VALUE || sequence == elementProperty.getSequence()) {
-				node.setArbitraryProperty(arbitraryProperty.withNullInject(NOT_NULL_INJECT));
-				result.add(node);
-			}
+	public boolean isResolvable(
+		@Nullable ArbitraryProperty parentArbitraryProperty,
+		ObjectProperty nowObjectProperty,
+		@Nullable ContainerProperty nowContainerProperty
+	) {
+		Property property = nowObjectProperty.getProperty();
+		if (!(property instanceof ElementProperty)) {
+			throw new IllegalArgumentException("Resolved node is not element type. : " + property);
 		}
 
-		return result;
+		ElementProperty elementProperty = (ElementProperty)property;
+		return sequence == NO_OR_ALL_INDEX_INTEGER_VALUE || sequence == elementProperty.getSequence();
 	}
 }

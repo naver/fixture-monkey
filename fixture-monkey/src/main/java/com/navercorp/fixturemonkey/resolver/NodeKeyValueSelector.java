@@ -18,29 +18,35 @@
 
 package com.navercorp.fixturemonkey.resolver;
 
-import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.NOT_NULL_INJECT;
-
-import java.util.LinkedList;
-import java.util.List;
+import javax.annotation.Nullable;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
+import com.navercorp.fixturemonkey.api.generator.ContainerProperty;
+import com.navercorp.fixturemonkey.api.generator.ObjectProperty;
+import com.navercorp.fixturemonkey.api.property.MapKeyElementProperty;
+import com.navercorp.fixturemonkey.api.property.MapValueElementProperty;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public final class NodeLastEntryResolver implements NodeResolver {
+public final class NodeKeyValueSelector implements NodeSelector {
+	private final boolean key;
 
-	public NodeLastEntryResolver() {
+	public NodeKeyValueSelector(boolean key) {
+		this.key = key;
 	}
 
 	@Override
-	public List<ArbitraryNode> resolve(ArbitraryNode arbitraryNode) {
-		LinkedList<ArbitraryNode> nextNodes = new LinkedList<>();
-		ArbitraryNode child = arbitraryNode.getChildren().get(arbitraryNode.getChildren().size() - 1);
-		ArbitraryProperty arbitraryProperty = child.getArbitraryProperty();
-		child.setArbitraryProperty(arbitraryProperty.withNullInject(NOT_NULL_INJECT));
-		nextNodes.add(child);
-		return nextNodes;
+	public boolean isResolvable(
+		@Nullable ArbitraryProperty parentArbitraryProperty,
+		ObjectProperty nowObjectProperty,
+		@Nullable ContainerProperty nowContainerProperty
+	) {
+		if (key) {
+			return nowObjectProperty.getProperty() instanceof MapKeyElementProperty;
+		} else {
+			return nowObjectProperty.getProperty() instanceof MapValueElementProperty;
+		}
 	}
 }
