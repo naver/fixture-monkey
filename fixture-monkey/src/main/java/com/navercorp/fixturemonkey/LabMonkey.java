@@ -20,6 +20,7 @@ package com.navercorp.fixturemonkey;
 
 import static java.util.stream.Collectors.toList;
 
+import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -85,17 +86,16 @@ public class LabMonkey extends FixtureMonkey {
 	}
 
 	@Override
-	public <T> DefaultArbitraryBuilder<T> giveMeBuilder(Class<T> type) {
+	public <T> ArbitraryBuilder<T> giveMeBuilder(Class<T> type) {
 		TypeReference<T> typeReference = new TypeReference<T>(type) {
 		};
 		return giveMeBuilder(typeReference);
 	}
 
 	@Override
-	public <T> DefaultArbitraryBuilder<T> giveMeBuilder(TypeReference<T> type) {
+	public <T> ArbitraryBuilder<T> giveMeBuilder(TypeReference<T> type) {
 		ManipulateOptions manipulateOptions = manipulateOptionsBuilder.build();
-
-		return new DefaultArbitraryBuilder<>(
+		DefaultArbitraryBuilder builder = new DefaultArbitraryBuilder<>(
 			manipulateOptions,
 			new RootProperty(type.getAnnotatedType()),
 			new ArbitraryResolver(
@@ -109,6 +109,12 @@ public class LabMonkey extends FixtureMonkey {
 			new ArrayList<>(),
 			new HashSet<>(),
 			new ArrayList<>()
+		);
+
+		return (ArbitraryBuilder<T>) Proxy.newProxyInstance(
+			this.getClass().getClassLoader(),
+			new Class[]{ArbitraryBuilder.class},
+			new DebugHandler(builder)
 		);
 	}
 

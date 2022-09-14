@@ -23,6 +23,7 @@ import static com.navercorp.fixturemonkey.Constants.HEAD_NAME;
 import static com.navercorp.fixturemonkey.Constants.MAX_MANIPULATION_COUNT;
 import static java.util.stream.Collectors.toList;
 
+import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -37,6 +38,7 @@ import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
 
+import com.navercorp.fixturemonkey.DebugHandler;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
@@ -112,6 +114,10 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 		this.monkeyExpressionFactory = manipulateOptions.getDefaultMonkeyExpressionFactory();
 	}
 
+	public List<ArbitraryManipulator> getManipulators() {
+		return manipulators;
+	}
+
 	@Override
 	public ArbitraryBuilder<T> validOnly(boolean validOnly) {
 		this.validOnly = validOnly;
@@ -143,7 +149,12 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 				)
 			);
 		}
-		return this;
+		return (ArbitraryBuilder<T>) Proxy.newProxyInstance(
+			this.getClass().getClassLoader(),
+			new Class[]{ArbitraryBuilder.class},
+			new DebugHandler(this)
+		);
+//		return this;
 	}
 
 	@Override
@@ -547,5 +558,21 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 			lazyArbitraries,
 			customizers
 		);
+	}
+
+	@Override
+	public String toString() {
+		return "DefaultArbitraryBuilder{" +
+			"manipulateOptions=" + manipulateOptions +
+			", rootProperty=" + rootProperty +
+			", resolver=" + resolver +
+			", traverser=" + traverser +
+			", validator=" + validator +
+			", monkeyExpressionFactory=" + monkeyExpressionFactory +
+			", manipulators=" + manipulators +
+			", lazyArbitraries=" + lazyArbitraries +
+			", customizers=" + customizers +
+			", validOnly=" + validOnly +
+			'}';
 	}
 }
