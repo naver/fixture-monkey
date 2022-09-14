@@ -26,6 +26,8 @@ import java.util.List;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
+
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class NodeKeyValueResolver implements NodeResolver {
 	private final boolean key;
@@ -43,7 +45,9 @@ public final class NodeKeyValueResolver implements NodeResolver {
 		} else {
 			child = arbitraryNode.getChildren().get(1);
 		}
-		child.setArbitraryProperty(child.getArbitraryProperty().withNullInject(NOT_NULL_INJECT));
+
+		ArbitraryProperty arbitraryProperty = child.getArbitraryProperty();
+		child.setArbitraryProperty(arbitraryProperty.withNullInject(NOT_NULL_INJECT));
 		nextNodes.add(child);
 		return nextNodes;
 	}

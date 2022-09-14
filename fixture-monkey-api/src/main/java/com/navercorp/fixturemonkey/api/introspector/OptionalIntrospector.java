@@ -32,6 +32,7 @@ import net.jqwik.api.Arbitrary;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
+import com.navercorp.fixturemonkey.api.generator.ContainerProperty;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.type.Types;
@@ -50,21 +51,27 @@ public final class OptionalIntrospector implements ArbitraryIntrospector, Matche
 	@Override
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
 		ArbitraryProperty property = context.getArbitraryProperty();
-		ArbitraryContainerInfo containerInfo = property.getContainerInfo();
+		ContainerProperty containerProperty = property.getContainerProperty();
+		if (containerProperty == null) {
+			throw new IllegalArgumentException(
+				"container property should not null. type : " + property.getObjectProperty().getProperty().getName()
+			);
+		}
+		ArbitraryContainerInfo containerInfo = containerProperty.getContainerInfo();
 		List<ArbitraryProperty> children = context.getChildren();
 		if (containerInfo == null || children.size() != 1) {
 			return ArbitraryIntrospectorResult.EMPTY;
 		}
 
 		ArbitraryProperty valueProperty = children.get(0);
-		double presenceProbability = 1 - valueProperty.getNullInject();
+		double presenceProbability = 1 - valueProperty.getObjectProperty().getNullInject();
 		if (containerInfo.getElementMinSize() > 0) {
 			presenceProbability = 1.0d;
 		} else if (containerInfo.getElementMaxSize() == 0) {
 			presenceProbability = 0.0d;
 		}
 
-		Class<?> type = Types.getActualType(property.getProperty().getType());
+		Class<?> type = Types.getActualType(property.getObjectProperty().getProperty().getType());
 		List<Arbitrary<?>> childArbitraries = context.getChildrenArbitraryContexts().getArbitraries();
 		Arbitrary<?> elementArbitrary = childArbitraries.get(0)
 			.optional(presenceProbability)

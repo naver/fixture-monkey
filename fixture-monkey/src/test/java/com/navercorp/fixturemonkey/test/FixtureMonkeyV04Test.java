@@ -729,7 +729,7 @@ class FixtureMonkeyV04Test {
 		then(actual).allMatch(Objects::nonNull);
 	}
 
-	@Property(tries = 50)
+	@Property(tries = 10)
 	void sampleAfterMapTwiceReturnsDiff() {
 		ArbitraryBuilder<String> arbitraryBuilder = SUT.giveMeBuilder(ComplexObject.class)
 			.set("str", Arbitraries.strings().ascii().filter(it -> !it.isEmpty()))

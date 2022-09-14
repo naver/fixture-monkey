@@ -28,14 +28,14 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Null;
 
-import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
-import com.navercorp.fixturemonkey.api.generator.ArbitraryPropertyGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator;
+import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGeneratorContext;
 import com.navercorp.fixturemonkey.api.option.GenerateOptions;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.PropertyCache;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 
+@SuppressWarnings("OptionalGetWithoutIsPresent")
 class JavaxValidationNullInjectGeneratorTest {
 	@net.jqwik.api.Property
 	void generateNull() {
@@ -44,16 +44,16 @@ class JavaxValidationNullInjectGeneratorTest {
 		TypeReference<SampleWithAnnotation> typeReference = new TypeReference<SampleWithAnnotation>() {
 		};
 		Property property = PropertyCache.getProperty(typeReference.getAnnotatedType(), "nullValue").get();
-		ArbitraryPropertyGeneratorContext context = new ArbitraryPropertyGeneratorContext(
+		ObjectPropertyGeneratorContext context = new ObjectPropertyGeneratorContext(
 			property,
 			null,
 			null,
-			null,
+			false,
 			GenerateOptions.DEFAULT_GENERATE_OPTIONS
 		);
 
 		// when
-		double actual = sut.generate(context, null);
+		double actual = sut.generate(context);
 
 		then(actual).isEqualTo(1.0d);
 	}
@@ -74,16 +74,16 @@ class JavaxValidationNullInjectGeneratorTest {
 		TypeReference<SampleWithAnnotation> typeReference = new TypeReference<SampleWithAnnotation>() {
 		};
 		Property property = PropertyCache.getProperty(typeReference.getAnnotatedType(), "notNull").get();
-		ArbitraryPropertyGeneratorContext context = new ArbitraryPropertyGeneratorContext(
+		ObjectPropertyGeneratorContext context = new ObjectPropertyGeneratorContext(
 			property,
 			null,
 			null,
-			null,
+			false,
 			GenerateOptions.DEFAULT_GENERATE_OPTIONS
 		);
 
 		// when
-		double actual = sut.generate(context, null);
+		double actual = sut.generate(context);
 
 		then(actual).isEqualTo(0.0d);
 	}
@@ -95,16 +95,16 @@ class JavaxValidationNullInjectGeneratorTest {
 		TypeReference<SampleWithAnnotation> typeReference = new TypeReference<SampleWithAnnotation>() {
 		};
 		Property property = PropertyCache.getProperty(typeReference.getAnnotatedType(), "notBlank").get();
-		ArbitraryPropertyGeneratorContext context = new ArbitraryPropertyGeneratorContext(
+		ObjectPropertyGeneratorContext context = new ObjectPropertyGeneratorContext(
 			property,
 			null,
 			null,
-			null,
+			false,
 			GenerateOptions.DEFAULT_GENERATE_OPTIONS
 		);
 
 		// when
-		double actual = sut.generate(context, null);
+		double actual = sut.generate(context);
 
 		then(actual).isEqualTo(0.0d);
 	}
@@ -116,16 +116,16 @@ class JavaxValidationNullInjectGeneratorTest {
 		TypeReference<SampleWithAnnotation> typeReference = new TypeReference<SampleWithAnnotation>() {
 		};
 		Property property = PropertyCache.getProperty(typeReference.getAnnotatedType(), "notEmpty").get();
-		ArbitraryPropertyGeneratorContext context = new ArbitraryPropertyGeneratorContext(
+		ObjectPropertyGeneratorContext context = new ObjectPropertyGeneratorContext(
 			property,
 			null,
 			null,
-			null,
+			false,
 			GenerateOptions.DEFAULT_GENERATE_OPTIONS
 		);
 
 		// when
-		double actual = sut.generate(context, null);
+		double actual = sut.generate(context);
 
 		then(actual).isEqualTo(0.0d);
 	}
@@ -146,16 +146,16 @@ class JavaxValidationNullInjectGeneratorTest {
 		TypeReference<SampleWithAnnotation> typeReference = new TypeReference<SampleWithAnnotation>() {
 		};
 		Property property = PropertyCache.getProperty(typeReference.getAnnotatedType(), "defaultValue").get();
-		ArbitraryPropertyGeneratorContext context = new ArbitraryPropertyGeneratorContext(
+		ObjectPropertyGeneratorContext context = new ObjectPropertyGeneratorContext(
 			property,
 			null,
 			null,
-			null,
+			false,
 			GenerateOptions.DEFAULT_GENERATE_OPTIONS
 		);
 
 		// when
-		double actual = sut.generate(context, null);
+		double actual = sut.generate(context);
 
 		then(actual).isEqualTo(0.2d);
 	}
@@ -176,16 +176,16 @@ class JavaxValidationNullInjectGeneratorTest {
 		TypeReference<SampleWithAnnotation> typeReference = new TypeReference<SampleWithAnnotation>() {
 		};
 		Property property = PropertyCache.getProperty(typeReference.getAnnotatedType(), "defaultValue").get();
-		ArbitraryPropertyGeneratorContext context = new ArbitraryPropertyGeneratorContext(
+		ObjectPropertyGeneratorContext context = new ObjectPropertyGeneratorContext(
 			property,
 			null,
 			null,
-			null,
+			false,
 			GenerateOptions.DEFAULT_GENERATE_OPTIONS
 		);
 
 		// when
-		double actual = sut.generate(context, null);
+		double actual = sut.generate(context);
 
 		then(actual).isEqualTo(0.0d);
 	}
@@ -206,17 +206,16 @@ class JavaxValidationNullInjectGeneratorTest {
 		TypeReference<SampleWithAnnotation> typeReference = new TypeReference<SampleWithAnnotation>() {
 		};
 		Property property = PropertyCache.getProperty(typeReference.getAnnotatedType(), "notEmptyContainer").get();
-		ArbitraryPropertyGeneratorContext context = new ArbitraryPropertyGeneratorContext(
+		ObjectPropertyGeneratorContext context = new ObjectPropertyGeneratorContext(
 			property,
 			null,
 			null,
-			null,
+			true,
 			GenerateOptions.DEFAULT_GENERATE_OPTIONS
 		);
-		ArbitraryContainerInfo containerInfo = new ArbitraryContainerInfo(0, 3);
 
 		// when
-		double actual = sut.generate(context, containerInfo);
+		double actual = sut.generate(context);
 
 		then(actual).isEqualTo(0.0d);
 	}

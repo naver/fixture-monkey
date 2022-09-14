@@ -21,7 +21,6 @@ package com.navercorp.fixturemonkey.api.generator;
 import java.lang.reflect.AnnotatedType;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -31,23 +30,13 @@ import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public final class ContainerArbitraryPropertyGenerator implements ArbitraryPropertyGenerator {
-	public static final ContainerArbitraryPropertyGenerator INSTANCE = new ContainerArbitraryPropertyGenerator();
+public final class ArrayContainerPropertyGenerator implements ContainerPropertyGenerator {
+	public static final ArrayContainerPropertyGenerator INSTANCE =
+		new ArrayContainerPropertyGenerator();
 
 	@Override
-	public ArbitraryProperty generate(ArbitraryPropertyGeneratorContext context) {
+	public ContainerProperty generate(ContainerPropertyGeneratorContext context) {
 		Property property = context.getProperty();
-
-		Class<?> containerType = Types.getActualType(property.getType());
-
-		List<AnnotatedType> elementTypes = Types.getGenericsTypes(property.getAnnotatedType());
-		if (elementTypes.size() != 1) {
-			throw new IllegalArgumentException(
-				"List elementsTypes must be have 1 generics type for element. "
-					+ "propertyType: " + property.getType()
-					+ ", elementTypes: " + elementTypes
-			);
-		}
 
 		ArbitraryContainerInfo containerInfo = context.getContainerInfo();
 		if (containerInfo == null) {
@@ -57,33 +46,20 @@ public final class ContainerArbitraryPropertyGenerator implements ArbitraryPrope
 		}
 
 		int size = containerInfo.getRandomSize();
-		AnnotatedType elementType = elementTypes.get(0);
+		AnnotatedType elementType = Types.getArrayComponentAnnotatedType(property.getAnnotatedType());
 		List<Property> childProperties = new ArrayList<>();
 		for (int sequence = 0; sequence < size; sequence++) {
-			Integer elementIndex = sequence;
-
-			if (Set.class.isAssignableFrom(containerType)) {
-				elementIndex = null;
-			}
-
 			childProperties.add(
 				new ElementProperty(
 					property,
 					elementType,
-					elementIndex,
+					sequence,
 					sequence
 				)
 			);
 		}
 
-		double nullInject = context.getGenerateOptions().getNullInjectGenerator(property)
-			.generate(context, containerInfo);
-
-		return new ArbitraryProperty(
-			property,
-			context.getPropertyNameResolver(),
-			nullInject,
-			context.getElementIndex(),
+		return new ContainerProperty(
 			childProperties,
 			containerInfo
 		);

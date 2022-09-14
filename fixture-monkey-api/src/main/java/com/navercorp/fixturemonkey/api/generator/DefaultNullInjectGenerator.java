@@ -26,8 +26,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.annotation.Nullable;
-
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
@@ -126,10 +124,7 @@ public final class DefaultNullInjectGenerator implements NullInjectGenerator {
 	}
 
 	@Override
-	public double generate(
-		ArbitraryPropertyGeneratorContext context,
-		@Nullable ArbitraryContainerInfo containerInfo
-	) {
+	public double generate(ObjectPropertyGeneratorContext context) {
 		if (context.isRootContext()) {
 			return NOT_NULL_INJECT;
 		}
@@ -143,11 +138,11 @@ public final class DefaultNullInjectGenerator implements NullInjectGenerator {
 			nullable = !this.defaultNotNull;
 		}
 
-		if (containerInfo != null && context.getProperty().isNullable() == null) {
+		if (context.isContainer() && context.getProperty().isNullable() == null) {
 			nullable = this.nullableContainer;
 		}
 
-		if (context.getOwnerProperty() != null && context.getOwnerProperty().getContainerInfo() != null) {
+		if (context.getOwnerProperty() != null && context.getOwnerProperty().getContainerProperty() != null) {
 			nullable = this.nullableElement;
 		}
 

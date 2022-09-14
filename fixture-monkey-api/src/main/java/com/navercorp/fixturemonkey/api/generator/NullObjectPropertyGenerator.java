@@ -16,29 +16,25 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.resolver;
-
-import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.NOT_NULL_INJECT;
+package com.navercorp.fixturemonkey.api.generator;
 
 import java.util.Collections;
-import java.util.List;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
-
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public final class IdentityNodeResolver implements NodeResolver {
-	public static final IdentityNodeResolver INSTANCE = new IdentityNodeResolver();
-
-	private IdentityNodeResolver() {
-	}
+public final class NullObjectPropertyGenerator implements ObjectPropertyGenerator {
+	public static final NullObjectPropertyGenerator INSTANCE = new NullObjectPropertyGenerator();
 
 	@Override
-	public List<ArbitraryNode> resolve(ArbitraryNode arbitraryNode) {
-		ArbitraryProperty arbitraryProperty = arbitraryNode.getArbitraryProperty();
-		arbitraryNode.setArbitraryProperty(arbitraryProperty.withNullInject(NOT_NULL_INJECT));
-		return Collections.singletonList(arbitraryNode);
+	public ObjectProperty generate(ObjectPropertyGeneratorContext context) {
+		return new ObjectProperty(
+			context.getProperty(),
+			context.getPropertyNameResolver(),
+			1.0d,
+			null,
+			Collections.emptyList()
+		);
 	}
 }

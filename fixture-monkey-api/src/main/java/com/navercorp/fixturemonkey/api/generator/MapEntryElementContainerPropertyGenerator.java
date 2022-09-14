@@ -27,15 +27,14 @@ import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public final class MapEntryElementArbitraryPropertyGenerator implements ArbitraryPropertyGenerator {
-	public static final MapEntryElementArbitraryPropertyGenerator INSTANCE =
-		new MapEntryElementArbitraryPropertyGenerator();
+public final class MapEntryElementContainerPropertyGenerator implements ContainerPropertyGenerator {
+	public static final MapEntryElementContainerPropertyGenerator INSTANCE =
+		new MapEntryElementContainerPropertyGenerator();
 
 	private static final ArbitraryContainerInfo CONTAINER_INFO = new ArbitraryContainerInfo(1, 1);
-	private static final double NULL_INJECT = 0.0d;
 
 	@Override
-	public ArbitraryProperty generate(ArbitraryPropertyGeneratorContext context) {
+	public ContainerProperty generate(ContainerPropertyGeneratorContext context) {
 		Property property = context.getProperty();
 		if (property.getClass() != MapEntryElementProperty.class) {
 			throw new IllegalArgumentException(
@@ -45,11 +44,7 @@ public final class MapEntryElementArbitraryPropertyGenerator implements Arbitrar
 
 		MapEntryElementProperty mapEntryElementProperty = (MapEntryElementProperty)property;
 
-		return new ArbitraryProperty(
-			property,
-			context.getPropertyNameResolver(),
-			NULL_INJECT,
-			null,
+		return new ContainerProperty(
 			Arrays.asList(mapEntryElementProperty.getKeyProperty(), mapEntryElementProperty.getValueProperty()),
 			CONTAINER_INFO
 		);

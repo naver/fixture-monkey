@@ -50,6 +50,8 @@ import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
+import javax.annotation.Nullable;
+
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
@@ -57,19 +59,20 @@ import com.navercorp.fixturemonkey.api.customizer.FixtureCustomizer;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfoGenerator;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGenerator;
-import com.navercorp.fixturemonkey.api.generator.ArbitraryPropertyGenerator;
-import com.navercorp.fixturemonkey.api.generator.ArrayArbitraryPropertyGenerator;
-import com.navercorp.fixturemonkey.api.generator.ContainerArbitraryPropertyGenerator;
-import com.navercorp.fixturemonkey.api.generator.EntryArbitraryPropertyGenerator;
-import com.navercorp.fixturemonkey.api.generator.MapArbitraryPropertyGenerator;
-import com.navercorp.fixturemonkey.api.generator.MapEntryElementArbitraryPropertyGenerator;
-import com.navercorp.fixturemonkey.api.generator.NullArbitraryPropertyGenerator;
+import com.navercorp.fixturemonkey.api.generator.ArrayContainerPropertyGenerator;
+import com.navercorp.fixturemonkey.api.generator.ContainerPropertyGenerator;
+import com.navercorp.fixturemonkey.api.generator.DefaultContainerPropertyGenerator;
+import com.navercorp.fixturemonkey.api.generator.DefaultObjectPropertyGenerator;
+import com.navercorp.fixturemonkey.api.generator.EntryContainerPropertyGenerator;
+import com.navercorp.fixturemonkey.api.generator.MapContainerPropertyGenerator;
+import com.navercorp.fixturemonkey.api.generator.MapEntryElementContainerPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.NullInjectGenerator;
-import com.navercorp.fixturemonkey.api.generator.ObjectArbitraryPropertyGenerator;
-import com.navercorp.fixturemonkey.api.generator.OptionalArbitraryPropertyGenerator;
-import com.navercorp.fixturemonkey.api.generator.SingleValueArbitraryPropertyGenerator;
-import com.navercorp.fixturemonkey.api.generator.StreamArbitraryPropertyGenerator;
-import com.navercorp.fixturemonkey.api.generator.TupleLikeElementsArbitraryPropertyGenerator;
+import com.navercorp.fixturemonkey.api.generator.NullObjectPropertyGenerator;
+import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGenerator;
+import com.navercorp.fixturemonkey.api.generator.OptionalContainerPropertyGenerator;
+import com.navercorp.fixturemonkey.api.generator.SingleValueObjectPropertyGenerator;
+import com.navercorp.fixturemonkey.api.generator.StreamContainerPropertyGenerator;
+import com.navercorp.fixturemonkey.api.generator.TupleLikeElementsPropertyGenerator;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.matcher.Matchers;
 import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty;
@@ -81,16 +84,19 @@ import com.navercorp.fixturemonkey.api.type.Types.UnidentifiableType;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class GenerateOptions {
-	public static final List<MatcherOperator<ArbitraryPropertyGenerator>> DEFAULT_ARBITRARY_PROPERTY_GENERATORS =
-		getDefaultArbitraryPropertyGenerators();
-	public static final ArbitraryPropertyGenerator DEFAULT_ARBITRARY_PROPERTY_GENERATOR =
-		ObjectArbitraryPropertyGenerator.INSTANCE;
+	public static final List<MatcherOperator<ObjectPropertyGenerator>> DEFAULT_OBJECT_PROPERTY_GENERATORS =
+		getDefaultObjectPropertyGenerators();
+	public static final List<MatcherOperator<ContainerPropertyGenerator>> DEFAULT_CONTAINER_PROPERTY_GENERATORS =
+		getDefaultContainerPropertyGenerators();
+	public static final ObjectPropertyGenerator DEFAULT_OBJECT_PROPERTY_GENERATOR =
+		DefaultObjectPropertyGenerator.INSTANCE;
 	public static final PropertyNameResolver DEFAULT_PROPERTY_NAME_RESOLVER = PropertyNameResolver.IDENTITY;
 	public static final int DEFAULT_ARBITRARY_CONTAINER_MAX_SIZE = 3;
 	public static final GenerateOptions DEFAULT_GENERATE_OPTIONS = GenerateOptions.builder().build();
 
-	private final List<MatcherOperator<ArbitraryPropertyGenerator>> arbitraryPropertyGenerators;
-	private final ArbitraryPropertyGenerator defaultArbitraryPropertyGenerator;
+	private final List<MatcherOperator<ObjectPropertyGenerator>> objectPropertyGenerators;
+	private final ObjectPropertyGenerator defaultObjectPropertyGenerator;
+	private final List<MatcherOperator<ContainerPropertyGenerator>> containerPropertyGenerators;
 	private final List<MatcherOperator<PropertyNameResolver>> propertyNameResolvers;
 	private final PropertyNameResolver defaultPropertyNameResolver;
 	private final List<MatcherOperator<NullInjectGenerator>> nullInjectGenerators;
@@ -106,21 +112,22 @@ public final class GenerateOptions {
 
 	@SuppressWarnings("rawtypes")
 	public GenerateOptions(
-		List<MatcherOperator<ArbitraryPropertyGenerator>> arbitraryPropertyGenerators,
-		ArbitraryPropertyGenerator defaultArbitraryPropertyGenerator,
+		List<MatcherOperator<ObjectPropertyGenerator>> objectPropertyGenerators,
+		ObjectPropertyGenerator defaultObjectPropertyGenerator,
+		List<MatcherOperator<ContainerPropertyGenerator>> containerPropertyGenerators,
 		List<MatcherOperator<PropertyNameResolver>> propertyNameResolvers,
 		PropertyNameResolver defaultPropertyNameResolver,
 		List<MatcherOperator<NullInjectGenerator>> nullInjectGenerators,
 		NullInjectGenerator defaultNullInjectGenerator,
 		List<MatcherOperator<ArbitraryContainerInfoGenerator>> arbitraryContainerInfoGenerators,
-		int defaultArbitraryContainerSize,
-		ArbitraryContainerInfo defaultArbitraryContainerInfo,
+		int defaultArbitraryContainerSize, ArbitraryContainerInfo defaultArbitraryContainerInfo,
 		List<MatcherOperator<ArbitraryGenerator>> arbitraryGenerators,
 		ArbitraryGenerator defaultArbitraryGenerator,
 		List<MatcherOperator<FixtureCustomizer>> arbitraryCustomizers
 	) {
-		this.arbitraryPropertyGenerators = arbitraryPropertyGenerators;
-		this.defaultArbitraryPropertyGenerator = defaultArbitraryPropertyGenerator;
+		this.objectPropertyGenerators = objectPropertyGenerators;
+		this.defaultObjectPropertyGenerator = defaultObjectPropertyGenerator;
+		this.containerPropertyGenerators = containerPropertyGenerators;
 		this.propertyNameResolvers = propertyNameResolvers;
 		this.defaultPropertyNameResolver = defaultPropertyNameResolver;
 		this.nullInjectGenerators = nullInjectGenerators;
@@ -137,20 +144,33 @@ public final class GenerateOptions {
 		return new GenerateOptionsBuilder();
 	}
 
-	public List<MatcherOperator<ArbitraryPropertyGenerator>> getArbitraryPropertyGenerators() {
-		return this.arbitraryPropertyGenerators;
+	public List<MatcherOperator<ObjectPropertyGenerator>> getObjectPropertyGenerators() {
+		return objectPropertyGenerators;
 	}
 
-	public ArbitraryPropertyGenerator getArbitraryPropertyGenerator(Property property) {
-		return this.getArbitraryPropertyGenerators().stream()
+	public ObjectPropertyGenerator getObjectPropertyGenerator(Property property) {
+		return this.getObjectPropertyGenerators().stream()
 			.filter(it -> it.match(property))
 			.map(MatcherOperator::getOperator)
 			.findFirst()
-			.orElse(this.getDefaultArbitraryPropertyGenerator());
+			.orElse(this.getDefaultObjectPropertyGenerator());
 	}
 
-	public ArbitraryPropertyGenerator getDefaultArbitraryPropertyGenerator() {
-		return this.defaultArbitraryPropertyGenerator;
+	public ObjectPropertyGenerator getDefaultObjectPropertyGenerator() {
+		return defaultObjectPropertyGenerator;
+	}
+
+	public List<MatcherOperator<ContainerPropertyGenerator>> getContainerPropertyGenerators() {
+		return containerPropertyGenerators;
+	}
+
+	@Nullable
+	public ContainerPropertyGenerator getContainerPropertyGenerator(Property property) {
+		return this.getContainerPropertyGenerators().stream()
+			.filter(it -> it.match(property))
+			.map(MatcherOperator::getOperator)
+			.findFirst()
+			.orElse(null);
 	}
 
 	public List<MatcherOperator<PropertyNameResolver>> getPropertyNameResolvers() {
@@ -228,8 +248,9 @@ public final class GenerateOptions {
 
 	public GenerateOptionsBuilder toBuilder() {
 		return builder()
-			.arbitraryPropertyGenerators(new ArrayList<>(this.arbitraryPropertyGenerators))
-			.defaultArbitraryPropertyGenerator(this.defaultArbitraryPropertyGenerator)
+			.arbitraryObjectPropertyGenerators(objectPropertyGenerators)
+			.defaultObjectPropertyGenerator(defaultObjectPropertyGenerator)
+			.arbitraryContainerPropertyGenerators(containerPropertyGenerators)
 			.propertyNameResolvers(new ArrayList<>(this.propertyNameResolvers))
 			.defaultPropertyNameResolver(this.defaultPropertyNameResolver)
 			.nullInjectGenerators(new ArrayList<>(this.nullInjectGenerators))
@@ -240,72 +261,151 @@ public final class GenerateOptions {
 			.arbitraryGenerators(new ArrayList<>(this.arbitraryGenerators))
 			.defaultArbitraryGenerator(this.defaultArbitraryGenerator);
 	}
-
 	// TODO: equals and hashCode and toString
 
-	private static List<MatcherOperator<ArbitraryPropertyGenerator>> getDefaultArbitraryPropertyGenerators() {
+	private static List<MatcherOperator<ObjectPropertyGenerator>> getDefaultObjectPropertyGenerators(
+	) {
 		return Arrays.asList(
-			MatcherOperator.exactTypeMatchOperator(String.class, SingleValueArbitraryPropertyGenerator.INSTANCE),
-			MatcherOperator.exactTypeMatchOperator(Character.class, SingleValueArbitraryPropertyGenerator.INSTANCE),
-			MatcherOperator.exactTypeMatchOperator(char.class, SingleValueArbitraryPropertyGenerator.INSTANCE),
-			MatcherOperator.exactTypeMatchOperator(Short.class, SingleValueArbitraryPropertyGenerator.INSTANCE),
-			MatcherOperator.exactTypeMatchOperator(short.class, SingleValueArbitraryPropertyGenerator.INSTANCE),
-			MatcherOperator.exactTypeMatchOperator(Byte.class, SingleValueArbitraryPropertyGenerator.INSTANCE),
-			MatcherOperator.exactTypeMatchOperator(byte.class, SingleValueArbitraryPropertyGenerator.INSTANCE),
-			MatcherOperator.exactTypeMatchOperator(Double.class, SingleValueArbitraryPropertyGenerator.INSTANCE),
-			MatcherOperator.exactTypeMatchOperator(double.class, SingleValueArbitraryPropertyGenerator.INSTANCE),
-			MatcherOperator.exactTypeMatchOperator(Float.class, SingleValueArbitraryPropertyGenerator.INSTANCE),
-			MatcherOperator.exactTypeMatchOperator(float.class, SingleValueArbitraryPropertyGenerator.INSTANCE),
-			MatcherOperator.exactTypeMatchOperator(Integer.class, SingleValueArbitraryPropertyGenerator.INSTANCE),
-			MatcherOperator.exactTypeMatchOperator(int.class, SingleValueArbitraryPropertyGenerator.INSTANCE),
-			MatcherOperator.exactTypeMatchOperator(Long.class, SingleValueArbitraryPropertyGenerator.INSTANCE),
-			MatcherOperator.exactTypeMatchOperator(long.class, SingleValueArbitraryPropertyGenerator.INSTANCE),
-			MatcherOperator.exactTypeMatchOperator(BigInteger.class, SingleValueArbitraryPropertyGenerator.INSTANCE),
-			MatcherOperator.exactTypeMatchOperator(BigDecimal.class, SingleValueArbitraryPropertyGenerator.INSTANCE),
-			MatcherOperator.exactTypeMatchOperator(Calendar.class, SingleValueArbitraryPropertyGenerator.INSTANCE),
-			MatcherOperator.exactTypeMatchOperator(Date.class, SingleValueArbitraryPropertyGenerator.INSTANCE),
-			MatcherOperator.exactTypeMatchOperator(Instant.class, SingleValueArbitraryPropertyGenerator.INSTANCE),
-			MatcherOperator.exactTypeMatchOperator(LocalDate.class, SingleValueArbitraryPropertyGenerator.INSTANCE),
-			MatcherOperator.exactTypeMatchOperator(LocalDateTime.class, SingleValueArbitraryPropertyGenerator.INSTANCE),
-			MatcherOperator.exactTypeMatchOperator(LocalTime.class, SingleValueArbitraryPropertyGenerator.INSTANCE),
-			MatcherOperator.exactTypeMatchOperator(ZonedDateTime.class, SingleValueArbitraryPropertyGenerator.INSTANCE),
-			MatcherOperator.exactTypeMatchOperator(MonthDay.class, SingleValueArbitraryPropertyGenerator.INSTANCE),
-			MatcherOperator.exactTypeMatchOperator(OffsetDateTime.class,
-				SingleValueArbitraryPropertyGenerator.INSTANCE),
-			MatcherOperator.exactTypeMatchOperator(OffsetTime.class, SingleValueArbitraryPropertyGenerator.INSTANCE),
-			MatcherOperator.exactTypeMatchOperator(Period.class, SingleValueArbitraryPropertyGenerator.INSTANCE),
-			MatcherOperator.exactTypeMatchOperator(Duration.class, SingleValueArbitraryPropertyGenerator.INSTANCE),
-			MatcherOperator.exactTypeMatchOperator(Year.class, SingleValueArbitraryPropertyGenerator.INSTANCE),
-			MatcherOperator.exactTypeMatchOperator(YearMonth.class, SingleValueArbitraryPropertyGenerator.INSTANCE),
-			MatcherOperator.exactTypeMatchOperator(ZoneOffset.class, SingleValueArbitraryPropertyGenerator.INSTANCE),
-			new MatcherOperator<>(Matchers.BOOLEAN_TYPE_MATCHER, SingleValueArbitraryPropertyGenerator.INSTANCE),
-			new MatcherOperator<>(Matchers.UUID_TYPE_MATCHER, SingleValueArbitraryPropertyGenerator.INSTANCE),
-			new MatcherOperator<>(Matchers.ENUM_TYPE_MATCHER, SingleValueArbitraryPropertyGenerator.INSTANCE),
-			MatcherOperator.exactTypeMatchOperator(Optional.class, OptionalArbitraryPropertyGenerator.INSTANCE),
-			MatcherOperator.exactTypeMatchOperator(OptionalInt.class, OptionalArbitraryPropertyGenerator.INSTANCE),
-			MatcherOperator.exactTypeMatchOperator(OptionalLong.class, OptionalArbitraryPropertyGenerator.INSTANCE),
-			MatcherOperator.exactTypeMatchOperator(OptionalDouble.class, OptionalArbitraryPropertyGenerator.INSTANCE),
-			MatcherOperator.assignableTypeMatchOperator(Stream.class, StreamArbitraryPropertyGenerator.INSTANCE),
-			MatcherOperator.assignableTypeMatchOperator(IntStream.class, StreamArbitraryPropertyGenerator.INSTANCE),
-			MatcherOperator.assignableTypeMatchOperator(LongStream.class, StreamArbitraryPropertyGenerator.INSTANCE),
-			MatcherOperator.assignableTypeMatchOperator(DoubleStream.class, StreamArbitraryPropertyGenerator.INSTANCE),
-			MatcherOperator.assignableTypeMatchOperator(Iterable.class, ContainerArbitraryPropertyGenerator.INSTANCE),
-			MatcherOperator.assignableTypeMatchOperator(Iterator.class, ContainerArbitraryPropertyGenerator.INSTANCE),
-			MatcherOperator.assignableTypeMatchOperator(Map.class, MapArbitraryPropertyGenerator.INSTANCE),
-			MatcherOperator.assignableTypeMatchOperator(Entry.class, EntryArbitraryPropertyGenerator.INSTANCE),
+			MatcherOperator.exactTypeMatchOperator(String.class, SingleValueObjectPropertyGenerator.INSTANCE),
+			MatcherOperator.exactTypeMatchOperator(
+				Character.class,
+				SingleValueObjectPropertyGenerator.INSTANCE
+			),
+			MatcherOperator.exactTypeMatchOperator(char.class, SingleValueObjectPropertyGenerator.INSTANCE),
+			MatcherOperator.exactTypeMatchOperator(Short.class, SingleValueObjectPropertyGenerator.INSTANCE),
+			MatcherOperator.exactTypeMatchOperator(short.class, SingleValueObjectPropertyGenerator.INSTANCE),
+			MatcherOperator.exactTypeMatchOperator(Byte.class, SingleValueObjectPropertyGenerator.INSTANCE),
+			MatcherOperator.exactTypeMatchOperator(byte.class, SingleValueObjectPropertyGenerator.INSTANCE),
+			MatcherOperator.exactTypeMatchOperator(Double.class, SingleValueObjectPropertyGenerator.INSTANCE),
+			MatcherOperator.exactTypeMatchOperator(double.class, SingleValueObjectPropertyGenerator.INSTANCE),
+			MatcherOperator.exactTypeMatchOperator(Float.class, SingleValueObjectPropertyGenerator.INSTANCE),
+			MatcherOperator.exactTypeMatchOperator(float.class, SingleValueObjectPropertyGenerator.INSTANCE),
+			MatcherOperator.exactTypeMatchOperator(Integer.class, SingleValueObjectPropertyGenerator.INSTANCE),
+			MatcherOperator.exactTypeMatchOperator(int.class, SingleValueObjectPropertyGenerator.INSTANCE),
+			MatcherOperator.exactTypeMatchOperator(Long.class, SingleValueObjectPropertyGenerator.INSTANCE),
+			MatcherOperator.exactTypeMatchOperator(long.class, SingleValueObjectPropertyGenerator.INSTANCE),
+			MatcherOperator.exactTypeMatchOperator(
+				BigInteger.class,
+				SingleValueObjectPropertyGenerator.INSTANCE
+			),
+			MatcherOperator.exactTypeMatchOperator(
+				BigDecimal.class,
+				SingleValueObjectPropertyGenerator.INSTANCE
+			),
+			MatcherOperator.exactTypeMatchOperator(
+				Calendar.class,
+				SingleValueObjectPropertyGenerator.INSTANCE
+			),
+			MatcherOperator.exactTypeMatchOperator(Date.class, SingleValueObjectPropertyGenerator.INSTANCE),
+			MatcherOperator.exactTypeMatchOperator(Instant.class, SingleValueObjectPropertyGenerator.INSTANCE),
+			MatcherOperator.exactTypeMatchOperator(
+				LocalDate.class,
+				SingleValueObjectPropertyGenerator.INSTANCE
+			),
+			MatcherOperator.exactTypeMatchOperator(
+				LocalDateTime.class,
+				SingleValueObjectPropertyGenerator.INSTANCE
+			),
+			MatcherOperator.exactTypeMatchOperator(
+				LocalTime.class,
+				SingleValueObjectPropertyGenerator.INSTANCE
+			),
+			MatcherOperator.exactTypeMatchOperator(
+				ZonedDateTime.class,
+				SingleValueObjectPropertyGenerator.INSTANCE
+			),
+			MatcherOperator.exactTypeMatchOperator(
+				MonthDay.class,
+				SingleValueObjectPropertyGenerator.INSTANCE
+			),
+			MatcherOperator.exactTypeMatchOperator(
+				OffsetDateTime.class,
+				SingleValueObjectPropertyGenerator.INSTANCE
+			),
+			MatcherOperator.exactTypeMatchOperator(
+				OffsetTime.class,
+				SingleValueObjectPropertyGenerator.INSTANCE
+			),
+			MatcherOperator.exactTypeMatchOperator(Period.class, SingleValueObjectPropertyGenerator.INSTANCE),
+			MatcherOperator.exactTypeMatchOperator(
+				Duration.class,
+				SingleValueObjectPropertyGenerator.INSTANCE
+			),
+			MatcherOperator.exactTypeMatchOperator(Year.class, SingleValueObjectPropertyGenerator.INSTANCE),
+			MatcherOperator.exactTypeMatchOperator(
+				YearMonth.class,
+				SingleValueObjectPropertyGenerator.INSTANCE
+			),
+			MatcherOperator.exactTypeMatchOperator(
+				ZoneOffset.class,
+				SingleValueObjectPropertyGenerator.INSTANCE
+			),
+			new MatcherOperator<>(Matchers.BOOLEAN_TYPE_MATCHER, SingleValueObjectPropertyGenerator.INSTANCE),
+			new MatcherOperator<>(Matchers.UUID_TYPE_MATCHER, SingleValueObjectPropertyGenerator.INSTANCE),
+			new MatcherOperator<>(Matchers.ENUM_TYPE_MATCHER, SingleValueObjectPropertyGenerator.INSTANCE),
+			MatcherOperator.exactTypeMatchOperator(
+				UnidentifiableType.class,
+				NullObjectPropertyGenerator.INSTANCE
+			)
+		);
+	}
+
+	private static List<MatcherOperator<ContainerPropertyGenerator>> getDefaultContainerPropertyGenerators() {
+		return Arrays.asList(
+			MatcherOperator.exactTypeMatchOperator(
+				Optional.class,
+				OptionalContainerPropertyGenerator.INSTANCE
+			),
+			MatcherOperator.exactTypeMatchOperator(
+				OptionalInt.class,
+				OptionalContainerPropertyGenerator.INSTANCE
+			),
+			MatcherOperator.exactTypeMatchOperator(
+				OptionalLong.class,
+				OptionalContainerPropertyGenerator.INSTANCE
+			),
+			MatcherOperator.exactTypeMatchOperator(
+				OptionalDouble.class,
+				OptionalContainerPropertyGenerator.INSTANCE
+			),
+			MatcherOperator.assignableTypeMatchOperator(
+				Stream.class,
+				StreamContainerPropertyGenerator.INSTANCE
+			),
+			MatcherOperator.assignableTypeMatchOperator(
+				IntStream.class,
+				StreamContainerPropertyGenerator.INSTANCE
+			),
+			MatcherOperator.assignableTypeMatchOperator(
+				LongStream.class,
+				StreamContainerPropertyGenerator.INSTANCE
+			),
+			MatcherOperator.assignableTypeMatchOperator(
+				DoubleStream.class,
+				StreamContainerPropertyGenerator.INSTANCE
+			),
+			MatcherOperator.assignableTypeMatchOperator(
+				Iterable.class,
+				DefaultContainerPropertyGenerator.INSTANCE
+			),
+			MatcherOperator.assignableTypeMatchOperator(
+				Iterator.class,
+				DefaultContainerPropertyGenerator.INSTANCE
+			),
+			MatcherOperator.assignableTypeMatchOperator(Map.class, MapContainerPropertyGenerator.INSTANCE),
+			MatcherOperator.assignableTypeMatchOperator(Entry.class, EntryContainerPropertyGenerator.INSTANCE),
 			new MatcherOperator<>(
 				property -> Types.getActualType(property.getType()).isArray(),
-				ArrayArbitraryPropertyGenerator.INSTANCE
+				ArrayContainerPropertyGenerator.INSTANCE
 			),
 			new MatcherOperator<>(
 				property -> property.getClass() == MapEntryElementProperty.class,
-				MapEntryElementArbitraryPropertyGenerator.INSTANCE
+				MapEntryElementContainerPropertyGenerator.INSTANCE
 			),
 			new MatcherOperator<>(
 				property -> property.getClass() == TupleLikeElementsProperty.class,
-				TupleLikeElementsArbitraryPropertyGenerator.INSTANCE
-			),
-			MatcherOperator.exactTypeMatchOperator(UnidentifiableType.class, NullArbitraryPropertyGenerator.INSTANCE)
+				TupleLikeElementsPropertyGenerator.INSTANCE
+			)
 		);
 	}
 }

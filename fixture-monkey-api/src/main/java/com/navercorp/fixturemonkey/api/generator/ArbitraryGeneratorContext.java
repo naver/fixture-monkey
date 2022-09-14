@@ -74,7 +74,7 @@ public final class ArbitraryGeneratorContext {
 	}
 
 	public Property getProperty() {
-		return this.getArbitraryProperty().getProperty();
+		return this.getArbitraryProperty().getObjectProperty().getProperty();
 	}
 
 	public AnnotatedType getAnnotatedType() {
@@ -100,9 +100,13 @@ public final class ArbitraryGeneratorContext {
 			childrenValues.put(child, arbitrary);
 		}
 
-		ChildArbitraryContext childArbitraryContext = new ChildArbitraryContext(property.getProperty(), childrenValues);
+		ChildArbitraryContext childArbitraryContext = new ChildArbitraryContext(
+			property.getObjectProperty().getProperty(),
+			childrenValues
+		);
+
 		arbitraryCustomizers.stream()
-			.filter(it -> it.match(property.getProperty()))
+			.filter(it -> it.match(property.getObjectProperty().getProperty()))
 			.map(MatcherOperator::getOperator)
 			.findFirst()
 			.ifPresent(customizer -> customizer.customizeProperties(childArbitraryContext));
@@ -116,7 +120,7 @@ public final class ArbitraryGeneratorContext {
 	}
 
 	public boolean isRootContext() {
-		return this.property.isRoot();
+		return this.property.getObjectProperty().isRoot();
 	}
 
 	@SuppressWarnings("rawtypes")

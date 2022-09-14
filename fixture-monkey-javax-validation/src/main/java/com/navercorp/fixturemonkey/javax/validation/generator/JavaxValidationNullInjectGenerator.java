@@ -23,7 +23,6 @@ import static java.util.stream.Collectors.toSet;
 import java.lang.annotation.Annotation;
 import java.util.Set;
 
-import javax.annotation.Nullable;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -32,10 +31,9 @@ import javax.validation.constraints.Null;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
-import com.navercorp.fixturemonkey.api.generator.ArbitraryPropertyGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator;
 import com.navercorp.fixturemonkey.api.generator.NullInjectGenerator;
+import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGeneratorContext;
 import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
@@ -51,10 +49,7 @@ public final class JavaxValidationNullInjectGenerator implements NullInjectGener
 	}
 
 	@Override
-	public double generate(
-		ArbitraryPropertyGeneratorContext context,
-		@Nullable ArbitraryContainerInfo containerInfo
-	) {
+	public double generate(ObjectPropertyGeneratorContext context) {
 		Set<Class<? extends Annotation>> annotations = context.getProperty().getAnnotations().stream()
 			.map(Annotation::annotationType)
 			.collect(toSet());
@@ -63,7 +58,7 @@ public final class JavaxValidationNullInjectGenerator implements NullInjectGener
 			return 1.0d;
 		}
 
-		double nullInject = this.delegate.generate(context, containerInfo);
+		double nullInject = this.delegate.generate(context);
 		if (nullInject == 0.0d) {
 			return nullInject;
 		}
@@ -78,7 +73,7 @@ public final class JavaxValidationNullInjectGenerator implements NullInjectGener
 			}
 		}
 
-		if (containerInfo != null && annotations.contains(NotEmpty.class)) {
+		if (context.isContainer() && annotations.contains(NotEmpty.class)) {
 			return 0.0d;
 		}
 

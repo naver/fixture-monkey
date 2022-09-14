@@ -32,11 +32,12 @@ import com.navercorp.fixturemonkey.api.customizer.FixtureCustomizer;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfoGenerator;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGenerator;
-import com.navercorp.fixturemonkey.api.generator.ArbitraryPropertyGenerator;
+import com.navercorp.fixturemonkey.api.generator.ContainerPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.DefaultArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator;
 import com.navercorp.fixturemonkey.api.generator.JavaDefaultArbitraryGeneratorBuilder;
 import com.navercorp.fixturemonkey.api.generator.NullInjectGenerator;
+import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGenerator;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.JavaArbitraryResolver;
 import com.navercorp.fixturemonkey.api.introspector.JavaTimeArbitraryResolver;
@@ -47,11 +48,14 @@ import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.plugin.Plugin;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 
+@SuppressWarnings("UnusedReturnValue")
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class GenerateOptionsBuilder {
-	private List<MatcherOperator<ArbitraryPropertyGenerator>> arbitraryPropertyGenerators =
-		new ArrayList<>(GenerateOptions.DEFAULT_ARBITRARY_PROPERTY_GENERATORS);
-	private ArbitraryPropertyGenerator defaultArbitraryPropertyGenerator;
+	private List<MatcherOperator<ObjectPropertyGenerator>> arbitraryObjectPropertyGenerators =
+		new ArrayList<>(GenerateOptions.DEFAULT_OBJECT_PROPERTY_GENERATORS);
+	private List<MatcherOperator<ContainerPropertyGenerator>> containerPropertyGenerators =
+		new ArrayList<>(GenerateOptions.DEFAULT_CONTAINER_PROPERTY_GENERATORS);
+	private ObjectPropertyGenerator defaultObjectPropertyGenerator;
 	private List<MatcherOperator<PropertyNameResolver>> propertyNameResolvers = new ArrayList<>();
 	private PropertyNameResolver defaultPropertyNameResolver;
 	private List<MatcherOperator<NullInjectGenerator>> nullInjectGenerators = new ArrayList<>();
@@ -70,41 +74,76 @@ public final class GenerateOptionsBuilder {
 	GenerateOptionsBuilder() {
 	}
 
-	public GenerateOptionsBuilder arbitraryPropertyGenerators(
-		List<MatcherOperator<ArbitraryPropertyGenerator>> arbitraryPropertyGenerators
+	public GenerateOptionsBuilder arbitraryObjectPropertyGenerators(
+		List<MatcherOperator<ObjectPropertyGenerator>> arbitraryObjectPropertyGenerators
 	) {
-		this.arbitraryPropertyGenerators = arbitraryPropertyGenerators;
+		this.arbitraryObjectPropertyGenerators = arbitraryObjectPropertyGenerators;
 		return this;
 	}
 
-	public GenerateOptionsBuilder insertFirstArbitraryPropertyGenerator(
-		MatcherOperator<ArbitraryPropertyGenerator> arbitraryPropertyGenerator
+	public GenerateOptionsBuilder insertFirstArbitraryObjectPropertyGenerator(
+		MatcherOperator<ObjectPropertyGenerator> arbitraryObjectPropertyGenerator
 	) {
-		List<MatcherOperator<ArbitraryPropertyGenerator>> result =
-			insertFirst(this.arbitraryPropertyGenerators, arbitraryPropertyGenerator);
-		return this.arbitraryPropertyGenerators(result);
+		List<MatcherOperator<ObjectPropertyGenerator>> result =
+			insertFirst(this.arbitraryObjectPropertyGenerators, arbitraryObjectPropertyGenerator);
+		return this.arbitraryObjectPropertyGenerators(result);
 	}
 
-	public GenerateOptionsBuilder insertFirstArbitraryPropertyGenerator(
+	public GenerateOptionsBuilder insertFirstArbitraryObjectPropertyGenerator(
 		Matcher matcher,
-		ArbitraryPropertyGenerator arbitraryPropertyGenerator
+		ObjectPropertyGenerator objectPropertyGenerator
 	) {
-		return this.insertFirstArbitraryPropertyGenerator(new MatcherOperator<>(matcher, arbitraryPropertyGenerator));
-	}
-
-	public GenerateOptionsBuilder insertFirstArbitraryPropertyGenerator(
-		Class<?> type,
-		ArbitraryPropertyGenerator arbitraryPropertyGenerator
-	) {
-		return this.insertFirstArbitraryPropertyGenerator(
-			MatcherOperator.assignableTypeMatchOperator(type, arbitraryPropertyGenerator)
+		return this.insertFirstArbitraryObjectPropertyGenerator(
+			new MatcherOperator<>(matcher, objectPropertyGenerator)
 		);
 	}
 
-	public GenerateOptionsBuilder defaultArbitraryPropertyGenerator(
-		ArbitraryPropertyGenerator defaultArbitraryPropertyGenerator
+	public GenerateOptionsBuilder insertFirstArbitraryObjectPropertyGenerator(
+		Class<?> type,
+		ObjectPropertyGenerator objectPropertyGenerator
 	) {
-		this.defaultArbitraryPropertyGenerator = defaultArbitraryPropertyGenerator;
+		return this.insertFirstArbitraryObjectPropertyGenerator(
+			MatcherOperator.assignableTypeMatchOperator(type, objectPropertyGenerator)
+		);
+	}
+
+	public GenerateOptionsBuilder arbitraryContainerPropertyGenerators(
+		List<MatcherOperator<ContainerPropertyGenerator>> arbitraryContainerPropertyGenerators
+	) {
+		this.containerPropertyGenerators = arbitraryContainerPropertyGenerators;
+		return this;
+	}
+
+	public GenerateOptionsBuilder insertFirstArbitraryContainerPropertyGenerator(
+		MatcherOperator<ContainerPropertyGenerator> arbitraryContainerPropertyGenerator
+	) {
+		List<MatcherOperator<ContainerPropertyGenerator>> result =
+			insertFirst(this.containerPropertyGenerators, arbitraryContainerPropertyGenerator);
+		return this.arbitraryContainerPropertyGenerators(result);
+	}
+
+	public GenerateOptionsBuilder insertFirstArbitraryContainerPropertyGenerator(
+		Matcher matcher,
+		ContainerPropertyGenerator containerPropertyGenerator
+	) {
+		return this.insertFirstArbitraryContainerPropertyGenerator(
+			new MatcherOperator<>(matcher, containerPropertyGenerator)
+		);
+	}
+
+	public GenerateOptionsBuilder insertFirstArbitraryContainerPropertyGenerator(
+		Class<?> type,
+		ContainerPropertyGenerator containerPropertyGenerator
+	) {
+		return this.insertFirstArbitraryContainerPropertyGenerator(
+			MatcherOperator.assignableTypeMatchOperator(type, containerPropertyGenerator)
+		);
+	}
+
+	public GenerateOptionsBuilder defaultObjectPropertyGenerator(
+		ObjectPropertyGenerator defaultObjectPropertyGenerator
+	) {
+		this.defaultObjectPropertyGenerator = defaultObjectPropertyGenerator;
 		return this;
 	}
 
@@ -379,9 +418,9 @@ public final class GenerateOptionsBuilder {
 	}
 
 	public GenerateOptions build() {
-		ArbitraryPropertyGenerator defaultArbitraryPropertyGenerator = defaultIfNull(
-			this.defaultArbitraryPropertyGenerator,
-			() -> GenerateOptions.DEFAULT_ARBITRARY_PROPERTY_GENERATOR
+		ObjectPropertyGenerator defaultObjectPropertyGenerator = defaultIfNull(
+			this.defaultObjectPropertyGenerator,
+			() -> GenerateOptions.DEFAULT_OBJECT_PROPERTY_GENERATOR
 		);
 		PropertyNameResolver defaultPropertyNameResolver = defaultIfNull(
 			this.defaultPropertyNameResolver,
@@ -402,8 +441,9 @@ public final class GenerateOptionsBuilder {
 			defaultIfNull(this.defaultArbitraryGenerator, this.javaDefaultArbitraryGeneratorBuilder::build);
 
 		return new GenerateOptions(
-			this.arbitraryPropertyGenerators,
-			defaultArbitraryPropertyGenerator,
+			this.arbitraryObjectPropertyGenerators,
+			defaultObjectPropertyGenerator,
+			this.containerPropertyGenerators,
 			this.propertyNameResolvers,
 			defaultPropertyNameResolver,
 			this.nullInjectGenerators,

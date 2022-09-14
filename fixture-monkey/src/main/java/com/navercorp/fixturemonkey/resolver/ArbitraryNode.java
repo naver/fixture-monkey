@@ -65,7 +65,7 @@ final class ArbitraryNode {
 	}
 
 	public Property getProperty() {
-		return this.getArbitraryProperty().getProperty();
+		return this.getArbitraryProperty().getObjectProperty().getProperty();
 	}
 
 	public List<ArbitraryNode> getChildren() {

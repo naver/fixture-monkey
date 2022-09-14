@@ -36,8 +36,8 @@ import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public final class OptionalArbitraryPropertyGenerator implements ArbitraryPropertyGenerator {
-	public static final OptionalArbitraryPropertyGenerator INSTANCE = new OptionalArbitraryPropertyGenerator();
+public final class OptionalContainerPropertyGenerator implements ContainerPropertyGenerator {
+	public static final OptionalContainerPropertyGenerator INSTANCE = new OptionalContainerPropertyGenerator();
 
 	private static final AnnotatedType INTEGER_TYPE = generateAnnotatedTypeWithoutAnnotation(Integer.class);
 	private static final AnnotatedType LONG_TYPE = generateAnnotatedTypeWithoutAnnotation(Long.class);
@@ -45,7 +45,7 @@ public final class OptionalArbitraryPropertyGenerator implements ArbitraryProper
 	private static final ArbitraryContainerInfo CONTAINER_INFO = new ArbitraryContainerInfo(0, 1);
 
 	@Override
-	public ArbitraryProperty generate(ArbitraryPropertyGeneratorContext context) {
+	public ContainerProperty generate(ContainerPropertyGeneratorContext context) {
 		Property property = context.getProperty();
 
 		AnnotatedType valueAnnotatedType = getValueAnnotatedType(property);
@@ -56,14 +56,7 @@ public final class OptionalArbitraryPropertyGenerator implements ArbitraryProper
 			0
 		);
 
-		double nullInject = context.getGenerateOptions().getNullInjectGenerator(property)
-			.generate(context, CONTAINER_INFO);
-
-		return new ArbitraryProperty(
-			property,
-			context.getPropertyNameResolver(),
-			nullInject,
-			context.getElementIndex(),
+		return new ContainerProperty(
 			Collections.singletonList(valueProperty),
 			CONTAINER_INFO
 		);

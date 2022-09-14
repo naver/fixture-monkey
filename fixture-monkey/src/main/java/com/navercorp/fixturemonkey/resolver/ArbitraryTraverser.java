@@ -28,8 +28,12 @@ import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
-import com.navercorp.fixturemonkey.api.generator.ArbitraryPropertyGenerator;
-import com.navercorp.fixturemonkey.api.generator.ArbitraryPropertyGeneratorContext;
+import com.navercorp.fixturemonkey.api.generator.ContainerProperty;
+import com.navercorp.fixturemonkey.api.generator.ContainerPropertyGenerator;
+import com.navercorp.fixturemonkey.api.generator.ContainerPropertyGeneratorContext;
+import com.navercorp.fixturemonkey.api.generator.ObjectProperty;
+import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGenerator;
+import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGeneratorContext;
 import com.navercorp.fixturemonkey.api.option.GenerateOptions;
 import com.navercorp.fixturemonkey.api.property.Property;
 
@@ -45,43 +49,120 @@ public final class ArbitraryTraverser {
 		Property property,
 		@Nullable ArbitraryContainerInfo containerInfo
 	) {
-		ArbitraryPropertyGenerator arbitraryPropertyGenerator =
-			this.generateOptions.getArbitraryPropertyGenerator(property);
+		ObjectPropertyGenerator objectPropertyGenerator =
+			this.generateOptions.getObjectPropertyGenerator(property);
+		ContainerPropertyGenerator containerPropertyGenerator =
+			this.generateOptions.getContainerPropertyGenerator(property);
+		boolean container = containerPropertyGenerator != null;
 
-		ArbitraryProperty arbitraryProperty = arbitraryPropertyGenerator.generate(
-			new ArbitraryPropertyGeneratorContext(
+		ObjectProperty objectProperty = objectPropertyGenerator.generate(
+			new ObjectPropertyGeneratorContext(
 				property,
 				null,
 				null,
-				containerInfo,
+				container,
 				this.generateOptions
 			)
 		);
 
+		ContainerProperty containerProperty = null;
+		if (container) {
+			containerProperty = containerPropertyGenerator.generate(
+				new ContainerPropertyGeneratorContext(
+					property,
+					null,
+					containerInfo,
+					generateOptions
+				)
+			);
+		}
+
+		ArbitraryProperty arbitraryProperty = new ArbitraryProperty(
+			objectProperty,
+			containerProperty
+		);
 		return this.traverse(arbitraryProperty);
 	}
 
 	private ArbitraryNode traverse(ArbitraryProperty arbitraryProperty) {
 		List<ArbitraryNode> children = new ArrayList<>();
 
-		List<Property> childProperties = arbitraryProperty.getChildProperties();
-		for (int index = 0; index < childProperties.size(); index++) {
-			Property childProperty = childProperties.get(index);
-			ArbitraryPropertyGenerator arbitraryPropertyGenerator =
-				this.generateOptions.getArbitraryPropertyGenerator(childProperty);
+		ObjectProperty objectProperty = arbitraryProperty.getObjectProperty();
+		ContainerProperty containerProperty = arbitraryProperty.getContainerProperty();
 
-			ArbitraryProperty childArbitraryProperty = arbitraryPropertyGenerator.generate(
-				new ArbitraryPropertyGeneratorContext(
-					childProperty,
-					arbitraryProperty.getContainerInfo() != null ? index : null,
-					arbitraryProperty,
-					null,
-					this.generateOptions
-				)
-			);
+		if (containerProperty != null) {
+			List<Property> elementProperties = containerProperty.getElementProperties();
+			for (int index = 0; index < elementProperties.size(); index++) {
+				Property elementProperty = elementProperties.get(index);
+				ObjectPropertyGenerator objectPropertyGenerator =
+					this.generateOptions.getObjectPropertyGenerator(elementProperty);
+				ContainerPropertyGenerator containerPropertyGenerator =
+					this.generateOptions.getContainerPropertyGenerator(elementProperty);
+				boolean childContainer = containerPropertyGenerator != null;
 
-			ArbitraryNode childNode = this.traverse(childArbitraryProperty);
-			children.add(childNode);
+				ObjectProperty elementObjectProperty = objectPropertyGenerator.generate(
+					new ObjectPropertyGeneratorContext(
+						elementProperty,
+						index,
+						arbitraryProperty,
+						childContainer,
+						this.generateOptions
+					)
+				);
+
+				ContainerProperty elementContainerProperty = null;
+				if (childContainer) {
+					elementContainerProperty = containerPropertyGenerator.generate(
+						new ContainerPropertyGeneratorContext(
+							elementProperty,
+							index,
+							null,
+							generateOptions
+						)
+					);
+				}
+
+				ArbitraryNode childNode = this.traverse(
+					new ArbitraryProperty(elementObjectProperty, elementContainerProperty)
+				);
+				children.add(childNode);
+			}
+		} else {
+			List<Property> childProperties = objectProperty.getChildProperties();
+			for (Property childProperty : childProperties) {
+				ObjectPropertyGenerator objectPropertyGenerator =
+					this.generateOptions.getObjectPropertyGenerator(childProperty);
+				ContainerPropertyGenerator containerPropertyGenerator =
+					this.generateOptions.getContainerPropertyGenerator(childProperty);
+				boolean childContainer = containerPropertyGenerator != null;
+
+				ObjectProperty childObjectProperty = objectPropertyGenerator.generate(
+					new ObjectPropertyGeneratorContext(
+						childProperty,
+						null,
+						arbitraryProperty,
+						childContainer,
+						this.generateOptions
+					)
+				);
+
+				ContainerProperty childContainerProperty = null;
+				if (childContainer) {
+					childContainerProperty = containerPropertyGenerator.generate(
+						new ContainerPropertyGeneratorContext(
+							childProperty,
+							null,
+							null,
+							this.generateOptions
+						)
+					);
+				}
+
+				ArbitraryNode childNode = this.traverse(
+					new ArbitraryProperty(childObjectProperty, childContainerProperty)
+				);
+				children.add(childNode);
+			}
 		}
 
 		return new ArbitraryNode(
@@ -89,4 +170,5 @@ public final class ArbitraryTraverser {
 			children
 		);
 	}
+
 }

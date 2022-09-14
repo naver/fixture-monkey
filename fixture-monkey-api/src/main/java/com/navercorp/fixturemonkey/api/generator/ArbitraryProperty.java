@@ -26,109 +26,56 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.property.Property;
-import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
-import com.navercorp.fixturemonkey.api.property.RootProperty;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class ArbitraryProperty {
-	private final Property property;
-
-	private final PropertyNameResolver propertyNameResolver;
-
-	private final double nullInject;
+	private final ObjectProperty objectProperty;
 
 	@Nullable
-	private final Integer elementIndex;
-
-	private final List<Property> childProperties;
-
-	@Nullable
-	private final ArbitraryContainerInfo containerInfo;
+	private final ContainerProperty containerProperty;
 
 	public ArbitraryProperty(
-		Property property,
-		PropertyNameResolver propertyNameResolver,
-		double nullInject,
-		@Nullable Integer elementIndex,
-		List<Property> childProperties,
-		@Nullable ArbitraryContainerInfo containerInfo
+		ObjectProperty objectProperty,
+		@Nullable ContainerProperty containerProperty
 	) {
-		this.property = property;
-		this.propertyNameResolver = propertyNameResolver;
-		this.nullInject = nullInject;
-		this.elementIndex = elementIndex;
-		this.childProperties = childProperties;
-		this.containerInfo = containerInfo;
+		this.objectProperty = objectProperty;
+		this.containerProperty = containerProperty;
 	}
 
-	public Property getProperty() {
-		return this.property;
-	}
-
-	public PropertyNameResolver getPropertyNameResolver() {
-		return this.propertyNameResolver;
-	}
-
-	public String getResolvePropertyName() {
-		return this.getPropertyNameResolver().resolve(this.property);
-	}
-
-	public double getNullInject() {
-		return this.nullInject;
+	public ObjectProperty getObjectProperty() {
+		return objectProperty;
 	}
 
 	@Nullable
-	public Integer getElementIndex() {
-		return this.elementIndex;
-	}
-
-	public List<Property> getChildProperties() {
-		return this.childProperties;
-	}
-
-	@Nullable
-	public ArbitraryContainerInfo getContainerInfo() {
-		return this.containerInfo;
-	}
-
-	public boolean isRoot() {
-		return this.property instanceof RootProperty;
-	}
-
-	public boolean isContainer() {
-		return this.containerInfo != null;
-	}
-
-	public ArbitraryProperty withChildProperties(List<Property> childProperties) {
-		return new ArbitraryProperty(
-			this.property,
-			this.propertyNameResolver,
-			this.nullInject,
-			this.elementIndex,
-			childProperties,
-			this.containerInfo
-		);
-	}
-
-	public ArbitraryProperty withContainerInfo(@Nullable ArbitraryContainerInfo containerInfo) {
-		return new ArbitraryProperty(
-			this.property,
-			this.propertyNameResolver,
-			this.nullInject,
-			this.elementIndex,
-			this.childProperties,
-			containerInfo
-		);
+	public ContainerProperty getContainerProperty() {
+		return containerProperty;
 	}
 
 	public ArbitraryProperty withNullInject(double nullInject) {
 		return new ArbitraryProperty(
-			this.property,
-			this.propertyNameResolver,
-			nullInject,
-			this.elementIndex,
-			this.childProperties,
-			this.containerInfo
+			this.objectProperty.withNullInject(nullInject),
+			this.containerProperty
+		);
+	}
+
+	public ArbitraryProperty withElementProperties(List<Property> elementProperties) {
+		return new ArbitraryProperty(
+			this.objectProperty,
+			this.containerProperty.withElementProperties(elementProperties)
+		);
+	}
+
+	public ArbitraryProperty withContainerInfo(ArbitraryContainerInfo containerInfo) {
+		return new ArbitraryProperty(
+			this.objectProperty,
+			this.containerProperty.withContainerInfo(containerInfo)
+		);
+	}
+
+	public ArbitraryProperty withContainerProperty(ContainerProperty containerProperty) {
+		return new ArbitraryProperty(
+			this.objectProperty,
+			containerProperty
 		);
 	}
 }

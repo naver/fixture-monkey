@@ -57,14 +57,14 @@ public final class FieldReflectionArbitraryIntrospector implements ArbitraryIntr
 		Map<String, Field> fields = PropertyCache.getFields(type);
 		BuilderCombinator<?> builderCombinator = Builders.withBuilder(() -> ReflectionUtils.newInstance(type));
 		for (ArbitraryProperty arbitraryProperty : childrenProperties) {
-			String originPropertyName = arbitraryProperty.getProperty().getName();
+			String originPropertyName = arbitraryProperty.getObjectProperty().getProperty().getName();
 			Field field = fields.get(originPropertyName);
 
 			if (field == null || Modifier.isFinal(field.getModifiers()) || Modifier.isTransient(field.getModifiers())) {
 				continue;
 			}
 
-			String resolvePropertyName = arbitraryProperty.getResolvePropertyName();
+			String resolvePropertyName = arbitraryProperty.getObjectProperty().getResolvedPropertyName();
 			Arbitrary<?> arbitrary = childrenArbitraries.get(resolvePropertyName);
 			builderCombinator = builderCombinator.use(arbitrary).in((object, value) -> {
 				try {

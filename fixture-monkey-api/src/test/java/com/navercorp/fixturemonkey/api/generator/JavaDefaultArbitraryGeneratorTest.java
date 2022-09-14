@@ -38,6 +38,7 @@ import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 
+@SuppressWarnings("OptionalGetWithoutIsPresent")
 class JavaDefaultArbitraryGeneratorTest {
 	@Test
 	void generateString() {
@@ -50,11 +51,13 @@ class JavaDefaultArbitraryGeneratorTest {
 			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
+				new ObjectProperty(
+					property,
+					PropertyNameResolver.IDENTITY,
+					0.0D,
+					null,
+					Collections.emptyList()
+				),
 				null
 			),
 			Collections.emptyList(),
@@ -83,11 +86,13 @@ class JavaDefaultArbitraryGeneratorTest {
 			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
+				new ObjectProperty(
+					property,
+					PropertyNameResolver.IDENTITY,
+					0.0D,
+					null,
+					Collections.emptyList()
+				),
 				null
 			),
 			Collections.emptyList(),
@@ -116,11 +121,13 @@ class JavaDefaultArbitraryGeneratorTest {
 			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
+				new ObjectProperty(
+					property,
+					PropertyNameResolver.IDENTITY,
+					0.0D,
+					null,
+					Collections.emptyList()
+				),
 				null
 			),
 			Collections.emptyList(),
@@ -149,11 +156,13 @@ class JavaDefaultArbitraryGeneratorTest {
 			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
+				new ObjectProperty(
+					property,
+					PropertyNameResolver.IDENTITY,
+					0.0D,
+					null,
+					Collections.emptyList()
+				),
 				null
 			),
 			Collections.emptyList(),
@@ -182,11 +191,13 @@ class JavaDefaultArbitraryGeneratorTest {
 			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
+				new ObjectProperty(
+					property,
+					PropertyNameResolver.IDENTITY,
+					0.0D,
+					null,
+					Collections.emptyList()
+				),
 				null
 			),
 			Collections.emptyList(),
@@ -215,11 +226,13 @@ class JavaDefaultArbitraryGeneratorTest {
 			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
+				new ObjectProperty(
+					property,
+					PropertyNameResolver.IDENTITY,
+					0.0D,
+					null,
+					Collections.emptyList()
+				),
 				null
 			),
 			Collections.emptyList(),
@@ -248,11 +261,13 @@ class JavaDefaultArbitraryGeneratorTest {
 			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
 			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
+				new ObjectProperty(
+					property,
+					PropertyNameResolver.IDENTITY,
+					0.0D,
+					null,
+					Collections.emptyList()
+				),
 				null
 			),
 			Collections.emptyList(),
@@ -280,35 +295,21 @@ class JavaDefaultArbitraryGeneratorTest {
 		GenerateOptions generateOptions = GenerateOptions.builder()
 			.defaultNullInjectGenerator(
 				new DefaultNullInjectGenerator(
-					0.0d, false, false, false, Collections.emptySet(), Collections.emptySet()
+					0.0d,
+					false,
+					false,
+					false,
+					Collections.emptySet(),
+					Collections.emptySet()
 				)
 			)
 			.build();
 
-		ArbitraryPropertyGenerator rootGenerator = generateOptions.getArbitraryPropertyGenerator(rootProperty);
-		ArbitraryProperty rootArbitraryProperty = rootGenerator.generate(
-			new ArbitraryPropertyGeneratorContext(
-				rootProperty,
-				null,
-				null,
-				null,
-				generateOptions
-			)
-		);
+		ArbitraryProperty rootArbitraryProperty = getArbitraryProperty(rootProperty, generateOptions);
 
 		List<ArbitraryProperty> childrenProperties = PropertyCache.getProperties(typeReference.getAnnotatedType())
 			.stream()
-			.map(it -> generateOptions.getArbitraryPropertyGenerator(it)
-				.generate(
-					new ArbitraryPropertyGeneratorContext(
-						it,
-						null,
-						rootArbitraryProperty,
-						null,
-						generateOptions
-					)
-				)
-			)
+			.map(it -> getArbitraryProperty(it, generateOptions))
 			.collect(toList());
 
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
@@ -343,6 +344,22 @@ class JavaDefaultArbitraryGeneratorTest {
 		then(result.getBooleans()).isNotNull();
 		then(result.getEnums()).isNotNull();
 		then(result.getUuid()).isNotNull();
+	}
+
+	private ArbitraryProperty getArbitraryProperty(Property property, GenerateOptions generateOptions) {
+		ObjectPropertyGenerator rootGenerator = generateOptions.getObjectPropertyGenerator(property);
+		return new ArbitraryProperty(
+			rootGenerator.generate(
+				new ObjectPropertyGeneratorContext(
+					property,
+					null,
+					null,
+					false,
+					generateOptions
+				)
+			),
+			null
+		);
 	}
 
 	public static class SampleArbitraryGenerator {

@@ -28,12 +28,12 @@ import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfoGenerator;
-import com.navercorp.fixturemonkey.api.generator.ArbitraryPropertyGeneratorContext;
+import com.navercorp.fixturemonkey.api.generator.ContainerPropertyGeneratorContext;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class JavaxValidationArbitraryContainerInfoGenerator implements ArbitraryContainerInfoGenerator {
 	@Override
-	public ArbitraryContainerInfo generate(ArbitraryPropertyGeneratorContext context) {
+	public ArbitraryContainerInfo generate(ContainerPropertyGeneratorContext context) {
 		Integer min = null;
 		Integer max = null;
 		Optional<Size> sizeAnnotation = context.getProperty().getAnnotation(Size.class);

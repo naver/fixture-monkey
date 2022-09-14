@@ -30,11 +30,13 @@ import net.jqwik.api.Arbitraries;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
+import com.navercorp.fixturemonkey.api.generator.ObjectProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.PropertyCache;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 
+@SuppressWarnings({"OptionalGetWithoutIsPresent", "ConstantConditions"})
 class ArbitraryIntrospectorTest {
 	private final ArbitraryIntrospector sut = new CompositeArbitraryIntrospector(
 		Arrays.asList(
@@ -52,20 +54,7 @@ class ArbitraryIntrospectorTest {
 		TypeReference<Sample> typeReference = new TypeReference<Sample>() {
 		};
 		Property property = PropertyCache.getProperty(typeReference.getAnnotatedType(), "season").get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
-		);
+		ArbitraryGeneratorContext context = getArbitraryGeneratorContext(property);
 
 		// when
 		ArbitraryIntrospectorResult actual = this.sut.introspect(context);
@@ -79,20 +68,7 @@ class ArbitraryIntrospectorTest {
 		TypeReference<Sample> typeReference = new TypeReference<Sample>() {
 		};
 		Property property = PropertyCache.getProperty(typeReference.getAnnotatedType(), "bool").get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
-		);
+		ArbitraryGeneratorContext context = getArbitraryGeneratorContext(property);
 
 		// when
 		ArbitraryIntrospectorResult actual = this.sut.introspect(context);
@@ -106,20 +82,7 @@ class ArbitraryIntrospectorTest {
 		TypeReference<Sample> typeReference = new TypeReference<Sample>() {
 		};
 		Property property = PropertyCache.getProperty(typeReference.getAnnotatedType(), "bool").get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
-		);
+		ArbitraryGeneratorContext context = getArbitraryGeneratorContext(property);
 
 		// when
 		ArbitraryIntrospectorResult actual = this.sut.introspect(context);
@@ -133,20 +96,7 @@ class ArbitraryIntrospectorTest {
 		TypeReference<Sample> typeReference = new TypeReference<Sample>() {
 		};
 		Property property = PropertyCache.getProperty(typeReference.getAnnotatedType(), "uuid").get();
-		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
-			new ArbitraryProperty(
-				property,
-				PropertyNameResolver.IDENTITY,
-				0.0D,
-				null,
-				Collections.emptyList(),
-				null
-			),
-			Collections.emptyList(),
-			null,
-			(ctx, prop) -> Arbitraries.just(null),
-			Collections.emptyList()
-		);
+		ArbitraryGeneratorContext context = getArbitraryGeneratorContext(property);
 
 		// when
 		ArbitraryIntrospectorResult actual = this.sut.introspect(context);
@@ -154,6 +104,25 @@ class ArbitraryIntrospectorTest {
 		String uuid = actual.getValue().sample().toString();
 		then(uuid).hasSize(36);
 		then(uuid.replaceAll("-", "")).hasSize(32);
+	}
+
+	private ArbitraryGeneratorContext getArbitraryGeneratorContext(Property property) {
+		return new ArbitraryGeneratorContext(
+			new ArbitraryProperty(
+				new ObjectProperty(
+					property,
+					PropertyNameResolver.IDENTITY,
+					0.0D,
+					null,
+					Collections.emptyList()
+				),
+				null
+			),
+			Collections.emptyList(),
+			null,
+			(ctx, prop) -> Arbitraries.just(null),
+			Collections.emptyList()
+		);
 	}
 
 	static class Sample {
