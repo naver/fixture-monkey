@@ -77,6 +77,7 @@ public class LabMonkeyBuilder {
 	private boolean defaultNotNull = false;
 	private boolean nullableContainer = false;
 	private boolean nullableElement = false;
+	private boolean debugMode = false;
 	private DecomposedContainerValueFactory defaultDecomposedContainerValueFactory = (obj) -> {
 		throw new IllegalArgumentException(
 			"given type is not supported container : " + obj.getClass().getTypeName()
@@ -514,6 +515,11 @@ public class LabMonkeyBuilder {
 
 	public LabMonkeyBuilder useExpressionStrictMode() {
 		this.manipulateOptionsBuilder.expressionStrictMode(true);
+		return this;
+	}
+
+	public LabMonkeyBuilder useDebugMode() {
+		debugMode = true;
 		return this;
 	}
 }

@@ -23,11 +23,7 @@ import static com.navercorp.fixturemonkey.Constants.HEAD_NAME;
 import static com.navercorp.fixturemonkey.Constants.MAX_MANIPULATION_COUNT;
 import static java.util.stream.Collectors.toList;
 
-import java.lang.reflect.Proxy;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -38,7 +34,7 @@ import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
 
-import com.navercorp.fixturemonkey.DebugHandler;
+import com.navercorp.fixturemonkey.DebugMonkey;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
@@ -149,12 +145,7 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 				)
 			);
 		}
-		return (ArbitraryBuilder<T>) Proxy.newProxyInstance(
-			this.getClass().getClassLoader(),
-			new Class[]{ArbitraryBuilder.class},
-			new DebugHandler(this)
-		);
-//		return this;
+		return this;
 	}
 
 	@Override
