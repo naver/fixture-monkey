@@ -18,6 +18,7 @@
 
 package com.navercorp.fixturemonkey.resolver;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -50,5 +51,19 @@ public final class CompositeNodeResolver implements NodeResolver {
 			nextNodes.addAll(resolvedNodes);
 		}
 		return nextNodes;
+	}
+
+	public List<NodeResolver> flatten() {
+		List<NodeResolver> flatten = new ArrayList<>();
+
+		for (NodeResolver nodeResolver : nodeResolvers) {
+			if (nodeResolver instanceof CompositeNodeResolver) {
+				flatten.addAll(((CompositeNodeResolver)nodeResolver).nodeResolvers);
+			} else {
+				flatten.add(nodeResolver);
+			}
+		}
+
+		return flatten;
 	}
 }

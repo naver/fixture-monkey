@@ -15,27 +15,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.navercorp.fixturemonkey.resolver;
 
-import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.NOT_NULL_INJECT;
-
-import java.util.Collections;
-import java.util.List;
+import javax.annotation.Nullable;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
+import com.navercorp.fixturemonkey.api.generator.ContainerProperty;
+import com.navercorp.fixturemonkey.api.generator.ObjectProperty;
+
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public final class IdentityNodeResolver implements NodeResolver {
-	public static final IdentityNodeResolver INSTANCE = new IdentityNodeResolver();
-
-	private IdentityNodeResolver() {
-	}
-
-	@Override
-	public List<ArbitraryNode> resolve(ArbitraryNode arbitraryNode) {
-		arbitraryNode.setArbitraryProperty(arbitraryNode.getArbitraryProperty().withNullInject(NOT_NULL_INJECT));
-		return Collections.singletonList(arbitraryNode);
-	}
+@FunctionalInterface
+public interface NextNodePredicate {
+	boolean test(
+		@Nullable ArbitraryProperty parentArbitraryProperty,
+		ObjectProperty currentObjectProperty,
+		@Nullable ContainerProperty currentContainerProperty
+	);
 }

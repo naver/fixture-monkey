@@ -15,40 +15,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.navercorp.fixturemonkey.resolver;
 
-import static com.navercorp.fixturemonkey.Constants.ALL_INDEX_STRING;
 import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.NOT_NULL_INJECT;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
-
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public final class PropertyNameNodeResolver implements NodeResolver {
-	private final String propertyName;
+public class DefaultNodeResolver implements NodeResolver {
+	private final NextNodePredicate nextNodePredicate;
 
-	public PropertyNameNodeResolver(String propertyName) {
-		this.propertyName = propertyName;
+	public DefaultNodeResolver(NextNodePredicate nextNodePredicate) {
+		this.nextNodePredicate = nextNodePredicate;
 	}
 
 	@Override
 	public List<ArbitraryNode> resolve(ArbitraryNode arbitraryNode) {
-		List<ArbitraryNode> result = new ArrayList<>();
+		List<ArbitraryNode> resolved = arbitraryNode.getChildren().stream()
+			.filter(it -> nextNodePredicate.test(
+				arbitraryNode.getArbitraryProperty(),
+				it.getArbitraryProperty().getObjectProperty(),
+				it.getArbitraryProperty().getContainerProperty()
+			))
+			.collect(Collectors.toList());
 
-		for (ArbitraryNode child : arbitraryNode.getChildren()) {
-			String nodePropertyName = child.getArbitraryProperty().getObjectProperty().getResolvedPropertyName();
-			if (propertyName.equals(ALL_INDEX_STRING) || propertyName.equals(nodePropertyName)) {
-				ArbitraryProperty childArbitraryProperty = child.getArbitraryProperty();
-				child.setArbitraryProperty(childArbitraryProperty.withNullInject(NOT_NULL_INJECT));
-				result.add(child);
-			}
+		for (ArbitraryNode node : resolved) {
+			node.setArbitraryProperty(node.getArbitraryProperty().withNullInject(NOT_NULL_INJECT));
 		}
-		return result;
+
+		return resolved;
 	}
 }
