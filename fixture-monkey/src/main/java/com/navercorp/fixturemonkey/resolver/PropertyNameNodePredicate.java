@@ -18,6 +18,8 @@
 
 package com.navercorp.fixturemonkey.resolver;
 
+import static com.navercorp.fixturemonkey.Constants.ALL_INDEX_STRING;
+
 import javax.annotation.Nullable;
 
 import org.apiguardian.api.API;
@@ -28,26 +30,20 @@ import com.navercorp.fixturemonkey.api.generator.ContainerProperty;
 import com.navercorp.fixturemonkey.api.generator.ObjectProperty;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public final class NodeLastEntrySelector implements NodeSelector {
-	public NodeLastEntrySelector() {
+public final class PropertyNameNodePredicate implements NextNodePredicate {
+	private final String propertyName;
+
+	public PropertyNameNodePredicate(String propertyName) {
+		this.propertyName = propertyName;
 	}
 
 	@Override
-	public boolean isResolvable(
+	public boolean test(
 		@Nullable ArbitraryProperty parentArbitraryProperty,
 		ObjectProperty nowObjectProperty,
 		@Nullable ContainerProperty nowContainerProperty
 	) {
-		if (parentArbitraryProperty == null
-			|| parentArbitraryProperty.getContainerProperty() == null
-			|| nowObjectProperty.getElementIndex() == null) {
-			throw new IllegalArgumentException(
-				"Only Map.Entry could be selected. now type : " + nowObjectProperty.getProperty().getName()
-			);
-		}
-
-		int index = nowObjectProperty.getElementIndex();
-		int entrySize = (parentArbitraryProperty.getContainerProperty().getElementProperties().size()) / 2;
-		return index == entrySize - 1;
+		String nodePropertyName = nowObjectProperty.getResolvedPropertyName();
+		return ALL_INDEX_STRING.equals(propertyName) || propertyName.equals(nodePropertyName);
 	}
 }

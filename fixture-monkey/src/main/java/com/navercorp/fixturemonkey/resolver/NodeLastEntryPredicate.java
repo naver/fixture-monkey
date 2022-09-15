@@ -18,8 +18,6 @@
 
 package com.navercorp.fixturemonkey.resolver;
 
-import static com.navercorp.fixturemonkey.Constants.NO_OR_ALL_INDEX_INTEGER_VALUE;
-
 import javax.annotation.Nullable;
 
 import org.apiguardian.api.API;
@@ -28,29 +26,28 @@ import org.apiguardian.api.API.Status;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.generator.ContainerProperty;
 import com.navercorp.fixturemonkey.api.generator.ObjectProperty;
-import com.navercorp.fixturemonkey.api.property.ElementProperty;
-import com.navercorp.fixturemonkey.api.property.Property;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public final class ContainerElementNodeSelector implements NodeSelector {
-	private final int sequence;
-
-	public ContainerElementNodeSelector(int sequence) {
-		this.sequence = sequence;
+public final class NodeLastEntryPredicate implements NextNodePredicate {
+	public NodeLastEntryPredicate() {
 	}
 
 	@Override
-	public boolean isResolvable(
+	public boolean test(
 		@Nullable ArbitraryProperty parentArbitraryProperty,
 		ObjectProperty nowObjectProperty,
 		@Nullable ContainerProperty nowContainerProperty
 	) {
-		Property property = nowObjectProperty.getProperty();
-		if (!(property instanceof ElementProperty)) {
-			throw new IllegalArgumentException("Resolved node is not element type. : " + property);
+		if (parentArbitraryProperty == null
+			|| parentArbitraryProperty.getContainerProperty() == null
+			|| nowObjectProperty.getElementIndex() == null) {
+			throw new IllegalArgumentException(
+				"Only Map.Entry could be selected. now type : " + nowObjectProperty.getProperty().getName()
+			);
 		}
 
-		ElementProperty elementProperty = (ElementProperty)property;
-		return sequence == NO_OR_ALL_INDEX_INTEGER_VALUE || sequence == elementProperty.getSequence();
+		int index = nowObjectProperty.getElementIndex();
+		int entrySize = (parentArbitraryProperty.getContainerProperty().getElementProperties().size()) / 2;
+		return index == entrySize - 1;
 	}
 }

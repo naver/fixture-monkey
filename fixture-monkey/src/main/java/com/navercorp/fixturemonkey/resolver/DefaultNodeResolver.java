@@ -27,16 +27,16 @@ import org.apiguardian.api.API.Status;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public class DefaultNodeResolver implements NodeResolver {
-	private final NodeSelector nodeSelector;
+	private final NextNodePredicate nextNodePredicate;
 
-	public DefaultNodeResolver(NodeSelector nodeSelector) {
-		this.nodeSelector = nodeSelector;
+	public DefaultNodeResolver(NextNodePredicate nextNodePredicate) {
+		this.nextNodePredicate = nextNodePredicate;
 	}
 
 	@Override
 	public List<ArbitraryNode> resolve(ArbitraryNode arbitraryNode) {
 		List<ArbitraryNode> resolved = arbitraryNode.getChildren().stream()
-			.filter(it -> nodeSelector.isResolvable(
+			.filter(it -> nextNodePredicate.test(
 				arbitraryNode.getArbitraryProperty(),
 				it.getArbitraryProperty().getObjectProperty(),
 				it.getArbitraryProperty().getContainerProperty()

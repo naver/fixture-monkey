@@ -18,8 +18,6 @@
 
 package com.navercorp.fixturemonkey.resolver;
 
-import static com.navercorp.fixturemonkey.Constants.ALL_INDEX_STRING;
-
 import javax.annotation.Nullable;
 
 import org.apiguardian.api.API;
@@ -28,22 +26,27 @@ import org.apiguardian.api.API.Status;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.generator.ContainerProperty;
 import com.navercorp.fixturemonkey.api.generator.ObjectProperty;
+import com.navercorp.fixturemonkey.api.property.MapKeyElementProperty;
+import com.navercorp.fixturemonkey.api.property.MapValueElementProperty;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public final class PropertyNameNodeSelector implements NodeSelector {
-	private final String propertyName;
+public final class NodeKeyValuePredicate implements NextNodePredicate {
+	private final boolean key;
 
-	public PropertyNameNodeSelector(String propertyName) {
-		this.propertyName = propertyName;
+	public NodeKeyValuePredicate(boolean key) {
+		this.key = key;
 	}
 
 	@Override
-	public boolean isResolvable(
+	public boolean test(
 		@Nullable ArbitraryProperty parentArbitraryProperty,
 		ObjectProperty nowObjectProperty,
 		@Nullable ContainerProperty nowContainerProperty
 	) {
-		String nodePropertyName = nowObjectProperty.getResolvedPropertyName();
-		return ALL_INDEX_STRING.equals(propertyName) || propertyName.equals(nodePropertyName);
+		if (key) {
+			return nowObjectProperty.getProperty() instanceof MapKeyElementProperty;
+		} else {
+			return nowObjectProperty.getProperty() instanceof MapValueElementProperty;
+		}
 	}
 }

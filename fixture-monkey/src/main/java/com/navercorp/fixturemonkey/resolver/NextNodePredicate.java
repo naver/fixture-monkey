@@ -28,8 +28,8 @@ import com.navercorp.fixturemonkey.api.generator.ObjectProperty;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 @FunctionalInterface
-public interface NodeSelector {
-	boolean isResolvable(
+public interface NextNodePredicate {
+	boolean test(
 		@Nullable ArbitraryProperty parentArbitraryProperty,
 		ObjectProperty nowObjectProperty,
 		@Nullable ContainerProperty nowContainerProperty

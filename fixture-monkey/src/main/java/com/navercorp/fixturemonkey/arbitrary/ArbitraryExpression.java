@@ -36,11 +36,11 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.generator.ObjectProperty;
 import com.navercorp.fixturemonkey.expression.MonkeyExpression;
 import com.navercorp.fixturemonkey.resolver.CompositeNodeResolver;
-import com.navercorp.fixturemonkey.resolver.ContainerElementNodeSelector;
+import com.navercorp.fixturemonkey.resolver.ContainerElementPredicate;
 import com.navercorp.fixturemonkey.resolver.DefaultNodeResolver;
 import com.navercorp.fixturemonkey.resolver.IdentityNodeResolver;
 import com.navercorp.fixturemonkey.resolver.NodeResolver;
-import com.navercorp.fixturemonkey.resolver.PropertyNameNodeSelector;
+import com.navercorp.fixturemonkey.resolver.PropertyNameNodePredicate;
 
 public final class ArbitraryExpression implements MonkeyExpression, Comparable<ArbitraryExpression> {
 	private final List<Exp> expList;
@@ -250,13 +250,13 @@ public final class ArbitraryExpression implements MonkeyExpression, Comparable<A
 			if (HEAD_NAME.equals(name)) {
 				nodeResolver = IdentityNodeResolver.INSTANCE;
 			} else {
-				nodeResolver = new DefaultNodeResolver(new PropertyNameNodeSelector(name));
+				nodeResolver = new DefaultNodeResolver(new PropertyNameNodePredicate(name));
 			}
 
 			for (ExpIndex index : indices) {
 				nodeResolver = new CompositeNodeResolver(
 					nodeResolver,
-					new DefaultNodeResolver(new ContainerElementNodeSelector(index.getIndex()))
+					new DefaultNodeResolver(new ContainerElementPredicate(index.getIndex()))
 				);
 			}
 			return nodeResolver;

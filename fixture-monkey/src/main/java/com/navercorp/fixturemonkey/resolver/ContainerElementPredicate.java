@@ -18,6 +18,8 @@
 
 package com.navercorp.fixturemonkey.resolver;
 
+import static com.navercorp.fixturemonkey.Constants.NO_OR_ALL_INDEX_INTEGER_VALUE;
+
 import javax.annotation.Nullable;
 
 import org.apiguardian.api.API;
@@ -26,27 +28,29 @@ import org.apiguardian.api.API.Status;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.generator.ContainerProperty;
 import com.navercorp.fixturemonkey.api.generator.ObjectProperty;
-import com.navercorp.fixturemonkey.api.property.MapKeyElementProperty;
-import com.navercorp.fixturemonkey.api.property.MapValueElementProperty;
+import com.navercorp.fixturemonkey.api.property.ElementProperty;
+import com.navercorp.fixturemonkey.api.property.Property;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public final class NodeKeyValueSelector implements NodeSelector {
-	private final boolean key;
+public final class ContainerElementPredicate implements NextNodePredicate {
+	private final int sequence;
 
-	public NodeKeyValueSelector(boolean key) {
-		this.key = key;
+	public ContainerElementPredicate(int sequence) {
+		this.sequence = sequence;
 	}
 
 	@Override
-	public boolean isResolvable(
+	public boolean test(
 		@Nullable ArbitraryProperty parentArbitraryProperty,
 		ObjectProperty nowObjectProperty,
 		@Nullable ContainerProperty nowContainerProperty
 	) {
-		if (key) {
-			return nowObjectProperty.getProperty() instanceof MapKeyElementProperty;
-		} else {
-			return nowObjectProperty.getProperty() instanceof MapValueElementProperty;
+		Property property = nowObjectProperty.getProperty();
+		if (!(property instanceof ElementProperty)) {
+			throw new IllegalArgumentException("Resolved node is not element type. : " + property);
 		}
+
+		ElementProperty elementProperty = (ElementProperty)property;
+		return sequence == NO_OR_ALL_INDEX_INTEGER_VALUE || sequence == elementProperty.getSequence();
 	}
 }
