@@ -42,10 +42,10 @@ public final class ContainerElementPredicate implements NextNodePredicate {
 	@Override
 	public boolean test(
 		@Nullable ArbitraryProperty parentArbitraryProperty,
-		ObjectProperty nowObjectProperty,
-		@Nullable ContainerProperty nowContainerProperty
+		ObjectProperty currentObjectProperty,
+		@Nullable ContainerProperty currentContainerProperty
 	) {
-		Property property = nowObjectProperty.getProperty();
+		Property property = currentObjectProperty.getProperty();
 		if (!(property instanceof ElementProperty)) {
 			throw new IllegalArgumentException("Resolved node is not element type. : " + property);
 		}

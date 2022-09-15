@@ -40,13 +40,13 @@ public final class NodeKeyValuePredicate implements NextNodePredicate {
 	@Override
 	public boolean test(
 		@Nullable ArbitraryProperty parentArbitraryProperty,
-		ObjectProperty nowObjectProperty,
-		@Nullable ContainerProperty nowContainerProperty
+		ObjectProperty currentObjectProperty,
+		@Nullable ContainerProperty currentContainerProperty
 	) {
 		if (key) {
-			return nowObjectProperty.getProperty() instanceof MapKeyElementProperty;
+			return currentObjectProperty.getProperty() instanceof MapKeyElementProperty;
 		} else {
-			return nowObjectProperty.getProperty() instanceof MapValueElementProperty;
+			return currentObjectProperty.getProperty() instanceof MapValueElementProperty;
 		}
 	}
 }

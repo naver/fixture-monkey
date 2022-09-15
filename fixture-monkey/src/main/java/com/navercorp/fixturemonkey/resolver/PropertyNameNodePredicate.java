@@ -40,10 +40,10 @@ public final class PropertyNameNodePredicate implements NextNodePredicate {
 	@Override
 	public boolean test(
 		@Nullable ArbitraryProperty parentArbitraryProperty,
-		ObjectProperty nowObjectProperty,
-		@Nullable ContainerProperty nowContainerProperty
+		ObjectProperty currentObjectProperty,
+		@Nullable ContainerProperty currentContainerProperty
 	) {
-		String nodePropertyName = nowObjectProperty.getResolvedPropertyName();
+		String nodePropertyName = currentObjectProperty.getResolvedPropertyName();
 		return ALL_INDEX_STRING.equals(propertyName) || propertyName.equals(nodePropertyName);
 	}
 }

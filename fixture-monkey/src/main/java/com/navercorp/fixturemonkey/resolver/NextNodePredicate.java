@@ -31,7 +31,7 @@ import com.navercorp.fixturemonkey.api.generator.ObjectProperty;
 public interface NextNodePredicate {
 	boolean test(
 		@Nullable ArbitraryProperty parentArbitraryProperty,
-		ObjectProperty nowObjectProperty,
-		@Nullable ContainerProperty nowContainerProperty
+		ObjectProperty currentObjectProperty,
+		@Nullable ContainerProperty currentContainerProperty
 	);
 }

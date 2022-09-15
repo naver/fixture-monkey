@@ -35,18 +35,18 @@ public final class NodeLastEntryPredicate implements NextNodePredicate {
 	@Override
 	public boolean test(
 		@Nullable ArbitraryProperty parentArbitraryProperty,
-		ObjectProperty nowObjectProperty,
-		@Nullable ContainerProperty nowContainerProperty
+		ObjectProperty currentObjectProperty,
+		@Nullable ContainerProperty currentContainerProperty
 	) {
 		if (parentArbitraryProperty == null
 			|| parentArbitraryProperty.getContainerProperty() == null
-			|| nowObjectProperty.getElementIndex() == null) {
+			|| currentObjectProperty.getElementIndex() == null) {
 			throw new IllegalArgumentException(
-				"Only Map.Entry could be selected. now type : " + nowObjectProperty.getProperty().getName()
+				"Only Map.Entry could be selected. now type : " + currentObjectProperty.getProperty().getName()
 			);
 		}
 
-		int index = nowObjectProperty.getElementIndex();
+		int index = currentObjectProperty.getElementIndex();
 		int entrySize = (parentArbitraryProperty.getContainerProperty().getElementProperties().size()) / 2;
 		return index == entrySize - 1;
 	}
