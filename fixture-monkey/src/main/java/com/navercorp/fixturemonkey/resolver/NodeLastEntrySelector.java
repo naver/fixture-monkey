@@ -47,6 +47,7 @@ public final class NodeLastEntrySelector implements NodeSelector {
 		}
 
 		int index = nowObjectProperty.getElementIndex();
-		return index == parentArbitraryProperty.getContainerProperty().getElementProperties().size() - 1;
+		int entrySize = (parentArbitraryProperty.getContainerProperty().getElementProperties().size()) / 2;
+		return index == entrySize - 1;
 	}
 }
