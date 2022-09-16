@@ -32,6 +32,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 import javax.validation.ConstraintViolationException;
@@ -953,5 +954,22 @@ class FixtureMonkeyV04OptionsTest {
 		CustomBuildMethodInteger actual = sut.giveMeOne(CustomBuildMethodInteger.class);
 
 		then(actual.getValue()).isBetween(Integer.MIN_VALUE, Integer.MAX_VALUE);
+	}
+
+	@Property
+	void registerRootAndChildElementGeneratingRoot() {
+		// given
+		String expected = "test";
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.register(ComplexObject.class, fixture -> fixture.giveMeBuilder(ComplexObject.class))
+			.register(String.class, fixture -> fixture.giveMeBuilder(String.class).set(expected))
+			.build();
+
+		// when
+		List<String> actual = sut.giveMeOne(ComplexObject.class).getList().stream()
+			.map(SimpleObject::getStr)
+			.collect(Collectors.toList());
+
+		then(actual).allMatch(expected::equals);
 	}
 }
