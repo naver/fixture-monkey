@@ -38,4 +38,9 @@ public final class IdentityNodeResolver implements NodeResolver {
 		arbitraryNode.setArbitraryProperty(arbitraryNode.getArbitraryProperty().withNullInject(NOT_NULL_INJECT));
 		return Collections.singletonList(arbitraryNode);
 	}
+
+	@Override
+	public List<NextNodePredicate> toNextNodePredicate() {
+		return Collections.emptyList();
+	}
 }

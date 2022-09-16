@@ -42,12 +42,14 @@ public final class NodeLastEntryPredicate implements NextNodePredicate {
 			|| parentArbitraryProperty.getContainerProperty() == null
 			|| currentObjectProperty.getElementIndex() == null) {
 			throw new IllegalArgumentException(
-				"Only Map.Entry could be selected. now type : " + currentObjectProperty.getProperty().getName()
+				"Only Map.Entry could be selected. now type : " + currentObjectProperty.getProperty()
+					.getType()
+					.getTypeName()
 			);
 		}
 
 		int index = currentObjectProperty.getElementIndex();
-		int entrySize = (parentArbitraryProperty.getContainerProperty().getElementProperties().size()) / 2;
-		return index == entrySize - 1;
+		int elementPropertiesSize = parentArbitraryProperty.getContainerProperty().getElementProperties().size();
+		return index == elementPropertiesSize - 1;
 	}
 }

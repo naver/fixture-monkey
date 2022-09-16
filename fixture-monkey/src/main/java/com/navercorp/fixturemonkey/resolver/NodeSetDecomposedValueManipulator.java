@@ -21,7 +21,9 @@ package com.navercorp.fixturemonkey.resolver;
 import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.NOT_NULL_INJECT;
 import static com.navercorp.fixturemonkey.api.type.Types.isAssignable;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Nullable;
 
@@ -30,14 +32,15 @@ import org.apiguardian.api.API.Status;
 
 import net.jqwik.api.Arbitraries;
 
+import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
+import com.navercorp.fixturemonkey.api.generator.ContainerProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class NodeSetDecomposedValueManipulator<T> implements NodeManipulator {
 	private final ArbitraryTraverser traverser;
-
 	private final ManipulateOptions manipulateOptions;
 	@Nullable
 	private final T value;
@@ -72,23 +75,36 @@ public final class NodeSetDecomposedValueManipulator<T> implements NodeManipulat
 		}
 
 		ArbitraryProperty arbitraryProperty = arbitraryNode.getArbitraryProperty();
-		if (arbitraryProperty.getContainerProperty() != null) {
+		ContainerProperty containerProperty = arbitraryProperty.getContainerProperty();
+		if (containerProperty != null) {
 			DecomposableContainerValue decomposableContainerValue =
 				manipulateOptions.getDecomposedContainerValueFactory().from(value);
 			value = decomposableContainerValue.getContainer();
 			int decomposedContainerSize = decomposableContainerValue.getSize();
 
-			if (decomposedContainerSize != arbitraryNode.getChildren().size()) {
-				NodeSizeManipulator nodeSizeManipulator =
-					new NodeSizeManipulator(traverser, decomposedContainerSize, decomposedContainerSize);
-				nodeSizeManipulator.manipulate(arbitraryNode);
+			if (!containerProperty.getContainerInfo().isManipulated()) {
+				Map<NodeResolver, ArbitraryContainerInfo> arbitraryContainerInfosByExpression =
+					Collections.singletonMap(
+						IdentityNodeResolver.INSTANCE,
+						new ArbitraryContainerInfo(decomposedContainerSize, decomposedContainerSize, true)
+					);
+
+				ArbitraryNode newNode = traverser.traverse(
+					arbitraryNode.getProperty(),
+					arbitraryContainerInfosByExpression
+				);
+				arbitraryNode.setArbitraryProperty(
+					arbitraryNode.getArbitraryProperty()
+						.withContainerProperty(newNode.getArbitraryProperty().getContainerProperty())
+				);
+				arbitraryNode.setChildren(newNode.getChildren());
 			}
 		}
 
 		List<ArbitraryNode> children = arbitraryNode.getChildren();
 		arbitraryNode.setArbitraryProperty(arbitraryProperty.withNullInject(NOT_NULL_INJECT));
 
-		if (children.isEmpty() && arbitraryProperty.getContainerProperty() == null) {
+		if (children.isEmpty() && containerProperty == null) {
 			arbitraryNode.setArbitrary(Arbitraries.just(value));
 			return;
 		}

@@ -40,4 +40,9 @@ public final class ApplyStrictModeResolver implements NodeResolver {
 		}
 		return selectedNodes;
 	}
+
+	@Override
+	public List<NextNodePredicate> toNextNodePredicate() {
+		return nodeResolver.toNextNodePredicate();
+	}
 }

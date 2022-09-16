@@ -20,8 +20,8 @@ package com.navercorp.fixturemonkey.resolver;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.annotation.Nullable;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -47,7 +47,7 @@ public final class ArbitraryTraverser {
 
 	public ArbitraryNode traverse(
 		Property property,
-		@Nullable ArbitraryContainerInfo containerInfo
+		Map<NodeResolver, ArbitraryContainerInfo> arbitraryContainerInfosByNodeResolver
 	) {
 		ObjectPropertyGenerator objectPropertyGenerator =
 			this.generateOptions.getObjectPropertyGenerator(property);
@@ -65,6 +65,8 @@ public final class ArbitraryTraverser {
 			)
 		);
 
+		ArbitraryContainerInfo containerInfo = arbitraryContainerInfosByNodeResolver.get(IdentityNodeResolver.INSTANCE);
+
 		ContainerProperty containerProperty = null;
 		if (container) {
 			containerProperty = containerPropertyGenerator.generate(
@@ -81,88 +83,29 @@ public final class ArbitraryTraverser {
 			objectProperty,
 			containerProperty
 		);
-		return this.traverse(arbitraryProperty);
+		return this.traverse(
+			arbitraryProperty,
+			new TraverseContext(
+				new ArrayList<>(),
+				arbitraryContainerInfosByNodeResolver
+			)
+		);
 	}
 
-	private ArbitraryNode traverse(ArbitraryProperty arbitraryProperty) {
-		List<ArbitraryNode> children = new ArrayList<>();
-
+	private ArbitraryNode traverse(
+		ArbitraryProperty arbitraryProperty,
+		TraverseContext context
+	) {
 		ObjectProperty objectProperty = arbitraryProperty.getObjectProperty();
 		ContainerProperty containerProperty = arbitraryProperty.getContainerProperty();
 
+		List<ArbitraryNode> children;
 		if (containerProperty != null) {
 			List<Property> elementProperties = containerProperty.getElementProperties();
-			for (int index = 0; index < elementProperties.size(); index++) {
-				Property elementProperty = elementProperties.get(index);
-				ObjectPropertyGenerator objectPropertyGenerator =
-					this.generateOptions.getObjectPropertyGenerator(elementProperty);
-				ContainerPropertyGenerator containerPropertyGenerator =
-					this.generateOptions.getContainerPropertyGenerator(elementProperty);
-				boolean childContainer = containerPropertyGenerator != null;
-
-				ObjectProperty elementObjectProperty = objectPropertyGenerator.generate(
-					new ObjectPropertyGeneratorContext(
-						elementProperty,
-						index,
-						arbitraryProperty,
-						childContainer,
-						this.generateOptions
-					)
-				);
-
-				ContainerProperty elementContainerProperty = null;
-				if (childContainer) {
-					elementContainerProperty = containerPropertyGenerator.generate(
-						new ContainerPropertyGeneratorContext(
-							elementProperty,
-							index,
-							null,
-							generateOptions
-						)
-					);
-				}
-
-				ArbitraryNode childNode = this.traverse(
-					new ArbitraryProperty(elementObjectProperty, elementContainerProperty)
-				);
-				children.add(childNode);
-			}
+			children = generateChildrenNodes(elementProperties, arbitraryProperty, context);
 		} else {
 			List<Property> childProperties = objectProperty.getChildProperties();
-			for (Property childProperty : childProperties) {
-				ObjectPropertyGenerator objectPropertyGenerator =
-					this.generateOptions.getObjectPropertyGenerator(childProperty);
-				ContainerPropertyGenerator containerPropertyGenerator =
-					this.generateOptions.getContainerPropertyGenerator(childProperty);
-				boolean childContainer = containerPropertyGenerator != null;
-
-				ObjectProperty childObjectProperty = objectPropertyGenerator.generate(
-					new ObjectPropertyGeneratorContext(
-						childProperty,
-						null,
-						arbitraryProperty,
-						childContainer,
-						this.generateOptions
-					)
-				);
-
-				ContainerProperty childContainerProperty = null;
-				if (childContainer) {
-					childContainerProperty = containerPropertyGenerator.generate(
-						new ContainerPropertyGeneratorContext(
-							childProperty,
-							null,
-							null,
-							this.generateOptions
-						)
-					);
-				}
-
-				ArbitraryNode childNode = this.traverse(
-					new ArbitraryProperty(childObjectProperty, childContainerProperty)
-				);
-				children.add(childNode);
-			}
+			children = generateChildrenNodes(childProperties, arbitraryProperty, context);
 		}
 
 		return new ArbitraryNode(
@@ -171,4 +114,105 @@ public final class ArbitraryTraverser {
 		);
 	}
 
+	private List<ArbitraryNode> generateChildrenNodes(
+		List<Property> properties,
+		ArbitraryProperty parentArbitraryProperty,
+		TraverseContext context
+	) {
+		List<ArbitraryNode> children = new ArrayList<>();
+		Map<NodeResolver, ArbitraryContainerInfo> arbitraryContainerInfosByNodeResolver =
+			context.getArbitraryContainerInfosByNodeResolver();
+		boolean container = parentArbitraryProperty.getContainerProperty() != null;
+
+		for (int index = 0; index < properties.size(); index++) {
+			Property childProperty = properties.get(index);
+
+			ObjectPropertyGenerator objectPropertyGenerator =
+				this.generateOptions.getObjectPropertyGenerator(childProperty);
+			ContainerPropertyGenerator containerPropertyGenerator =
+				this.generateOptions.getContainerPropertyGenerator(childProperty);
+			boolean childContainer = containerPropertyGenerator != null;
+
+			ObjectProperty childObjectProperty = objectPropertyGenerator.generate(
+				new ObjectPropertyGeneratorContext(
+					childProperty,
+					container ? index : null,
+					parentArbitraryProperty,
+					childContainer,
+					this.generateOptions
+				)
+			);
+
+			ContainerProperty childContainerProperty = null;
+			if (childContainer) {
+				ArbitraryContainerInfo containerInfo = arbitraryContainerInfosByNodeResolver.entrySet().stream()
+					.filter(it -> isMatch(
+							context.getArbitraryProperties(),
+							childObjectProperty,
+							it.getKey().toNextNodePredicate()
+						)
+					)
+					.map(Entry::getValue)
+					.findAny()
+					.orElse(null);
+
+				childContainerProperty = containerPropertyGenerator.generate(
+					new ContainerPropertyGeneratorContext(
+						childProperty,
+						container ? index : null,
+						containerInfo,
+						generateOptions
+					)
+				);
+			}
+
+			ArbitraryProperty childArbitraryProperty = new ArbitraryProperty(
+				childObjectProperty,
+				childContainerProperty
+			);
+			ArbitraryNode childNode = this.traverse(
+				childArbitraryProperty,
+				context.appendArbitraryProperty(childArbitraryProperty)
+			);
+			children.add(childNode);
+		}
+		return children;
+	}
+
+	private boolean isMatch(
+		List<ArbitraryProperty> parentArbitraryProperties,
+		ObjectProperty currentObjectProperty,
+		List<NextNodePredicate> nextNodePredicates
+	) {
+		int parentArbitraryPropertySize = parentArbitraryProperties.size();
+		int nextNodePredicateSize = nextNodePredicates.size();
+
+		if (parentArbitraryPropertySize + 1 != nextNodePredicateSize) {
+			return false;
+		}
+
+		for (int i = 0; i < parentArbitraryPropertySize; i++) {
+			NextNodePredicate nextNodePredicate = nextNodePredicates.get(i);
+			ArbitraryProperty parentArbitraryProperty = i == 0 ? null : parentArbitraryProperties.get(i - 1);
+			ArbitraryProperty currentArbitraryProperty = parentArbitraryProperties.get(i);
+
+			if (!nextNodePredicate.test(
+				parentArbitraryProperty,
+				currentArbitraryProperty.getObjectProperty(),
+				currentArbitraryProperty.getContainerProperty()
+			)) {
+				return false;
+			}
+		}
+
+		ArbitraryProperty parentArbitraryProperty = parentArbitraryPropertySize == 0
+			? null
+			: parentArbitraryProperties.get(parentArbitraryPropertySize - 1);
+		NextNodePredicate nextNodePredicate = nextNodePredicates.get(nextNodePredicateSize - 1);
+		return nextNodePredicate.test(
+			parentArbitraryProperty,
+			currentObjectProperty,
+			null
+		);
+	}
 }

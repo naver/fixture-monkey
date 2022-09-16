@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -65,5 +67,30 @@ public final class CompositeNodeResolver implements NodeResolver {
 		}
 
 		return flatten;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null || getClass() != obj.getClass()) {
+			return false;
+		}
+		CompositeNodeResolver that = (CompositeNodeResolver)obj;
+		return nodeResolvers.equals(that.nodeResolvers);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(nodeResolvers);
+	}
+
+	@Override
+	public List<NextNodePredicate> toNextNodePredicate() {
+		return flatten().stream()
+			.flatMap(it -> it.toNextNodePredicate().stream())
+			.filter(Objects::nonNull)
+			.collect(Collectors.toList());
 	}
 }
