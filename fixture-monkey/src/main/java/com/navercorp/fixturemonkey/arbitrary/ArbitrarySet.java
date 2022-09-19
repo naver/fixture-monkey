@@ -59,6 +59,11 @@ public final class ArbitrarySet<T> extends AbstractArbitrarySet<T> {
 		return value;
 	}
 
+	public long getLimit() {
+		return limit;
+	}
+
+
 	@Override
 	public ArbitrarySet<T> copy() {
 		return new ArbitrarySet<>(this.getArbitraryExpression(), this.value, this.limit);

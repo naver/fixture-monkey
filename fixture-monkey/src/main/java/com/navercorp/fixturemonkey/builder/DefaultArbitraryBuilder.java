@@ -24,13 +24,13 @@ import static com.navercorp.fixturemonkey.Constants.MAX_MANIPULATION_COUNT;
 import static java.util.stream.Collectors.toList;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -41,8 +41,6 @@ import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
 
-import com.navercorp.fixturemonkey.api.random.Randoms;
-import com.navercorp.fixturemonkey.customizer.ExpressionSpec;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
@@ -61,9 +59,11 @@ import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
+import com.navercorp.fixturemonkey.api.random.Randoms;
 import com.navercorp.fixturemonkey.api.type.LazyAnnotatedType;
 import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.customizer.ArbitraryCustomizer;
+import com.navercorp.fixturemonkey.customizer.ExpressionSpec;
 import com.navercorp.fixturemonkey.customizer.InnerSpec;
 import com.navercorp.fixturemonkey.expression.MonkeyExpressionFactory;
 import com.navercorp.fixturemonkey.resolver.ApplyNodeCountManipulator;
@@ -206,7 +206,9 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 
 	@Override
 	public ArbitraryBuilder<T> spec(ExpressionSpec expressionSpec) {
-		this.containerInfosByNodeResolver.putAll(expressionSpec.getContainerInfosByNodeResolver(traverser, manipulateOptions));
+		this.containerInfosByNodeResolver.putAll(
+			expressionSpec.getContainerInfosByNodeResolver(traverser, manipulateOptions)
+		);
 		this.manipulators.addAll(expressionSpec.getArbitraryManipulators(traverser, manipulateOptions));
 		return this;
 	}

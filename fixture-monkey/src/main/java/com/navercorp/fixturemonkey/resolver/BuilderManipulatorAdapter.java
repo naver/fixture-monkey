@@ -18,12 +18,14 @@
 
 package com.navercorp.fixturemonkey.resolver;
 
-import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
+import java.util.AbstractMap;
+import java.util.Map;
+
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
-import com.navercorp.fixturemonkey.arbitrary.AbstractArbitrarySet;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryExpressionManipulator;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryNullity;
 import com.navercorp.fixturemonkey.arbitrary.ArbitrarySet;
@@ -32,9 +34,6 @@ import com.navercorp.fixturemonkey.arbitrary.ArbitrarySetLazyValue;
 import com.navercorp.fixturemonkey.arbitrary.ArbitrarySetPostCondition;
 import com.navercorp.fixturemonkey.arbitrary.BuilderManipulator;
 import com.navercorp.fixturemonkey.arbitrary.ContainerSizeManipulator;
-
-import java.util.AbstractMap;
-import java.util.Map;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class BuilderManipulatorAdapter {
@@ -47,50 +46,8 @@ public final class BuilderManipulatorAdapter {
 	}
 
 	public ArbitraryManipulator convertToArbitraryManipulator(BuilderManipulator builderManipulator) {
-		NodeResolver nodeResolver;
-		if (builderManipulator instanceof ArbitraryExpressionManipulator) {
-			nodeResolver = ((ArbitraryExpressionManipulator) builderManipulator).getArbitraryExpression()
-				.toNodeResolver();
-		} else {
-			nodeResolver = IdentityNodeResolver.INSTANCE;
-		}
-
-		NodeManipulator nodeManipulator = null;
-		if (builderManipulator instanceof ArbitrarySet) {
-			ArbitrarySet<?> manipulator = (ArbitrarySet<?>) builderManipulator;
-			nodeManipulator = new NodeSetDecomposedValueManipulator<>(
-				traverser,
-				manipulateOptions,
-				manipulator.getApplicableValue()
-			);
-		} else if (builderManipulator instanceof ArbitrarySetArbitrary) {
-			ArbitrarySetArbitrary<?> manipulator = (ArbitrarySetArbitrary<?>) builderManipulator;
-			nodeManipulator = new NodeSetLazyManipulator<>(
-				traverser,
-				manipulateOptions,
-				LazyArbitrary.lazy(manipulator::getApplicableValue)
-			);
-		} else if (builderManipulator instanceof ArbitrarySetLazyValue) {
-			ArbitrarySetLazyValue<?> manipulator = (ArbitrarySetLazyValue<?>) builderManipulator;
-			nodeManipulator = new NodeSetLazyManipulator<>(
-				traverser,
-				manipulateOptions,
-				LazyArbitrary.lazy(manipulator::getApplicableValue)
-			);
-		} else if (builderManipulator instanceof ArbitrarySetPostCondition) {
-			ArbitrarySetPostCondition<?> manipulator = (ArbitrarySetPostCondition<?>) builderManipulator;
-			nodeManipulator = new NodeFilterManipulator(
-				manipulator.getClazz(),
-				manipulator.getFilter()
-			);
-		} else if (builderManipulator instanceof ArbitraryNullity) {
-			ArbitraryNullity manipulator = (ArbitraryNullity) builderManipulator;
-			nodeManipulator = new NodeNullityManipulator(manipulator.toNull());
-		} else {
-			throw new IllegalArgumentException(
-				"No convertable NodeManipulator exists : " + builderManipulator.getClass().getTypeName()
-			);
-		}
+		NodeResolver nodeResolver = getNodeResolver(builderManipulator);
+		NodeManipulator nodeManipulator = getNodeManipulator(builderManipulator);
 
 		return new ArbitraryManipulator(
 			nodeResolver,
@@ -98,17 +55,85 @@ public final class BuilderManipulatorAdapter {
 		);
 	}
 
-	public Map.Entry<NodeResolver, ArbitraryContainerInfo> convertToContainerInfosByNodeResolverEntry(BuilderManipulator builderManipulator) {
-		NodeResolver nodeResolver;
-		if (builderManipulator instanceof ArbitraryExpressionManipulator) {
-			nodeResolver = ((ArbitraryExpressionManipulator) builderManipulator).getArbitraryExpression()
-				.toNodeResolver();
-		} else {
-			nodeResolver = IdentityNodeResolver.INSTANCE;
-		}
-
+	public Map.Entry<NodeResolver, ArbitraryContainerInfo> convertToContainerInfosByNodeResolverEntry(
+		BuilderManipulator builderManipulator
+	) {
+		NodeResolver nodeResolver = getNodeResolver(builderManipulator);
 		ContainerSizeManipulator manipulator = (ContainerSizeManipulator) builderManipulator;
 
-		return new AbstractMap.SimpleEntry<>(nodeResolver, new ArbitraryContainerInfo(manipulator.getMin(), manipulator.getMax(), true));
+		return new AbstractMap.SimpleEntry<>(
+			nodeResolver,
+			new ArbitraryContainerInfo(manipulator.getMin(), manipulator.getMax(), true)
+		);
+	}
+
+	private NodeResolver getNodeResolver(BuilderManipulator builderManipulator) {
+		if (builderManipulator instanceof ArbitraryExpressionManipulator) {
+			return ((ArbitraryExpressionManipulator)builderManipulator).getArbitraryExpression().toNodeResolver();
+		}
+		return IdentityNodeResolver.INSTANCE;
+	}
+
+	private NodeManipulator getNodeManipulator(BuilderManipulator builderManipulator) {
+		if (builderManipulator instanceof ArbitrarySet) {
+			ArbitrarySet<?> manipulator = (ArbitrarySet<?>) builderManipulator;
+			int limit = safeCastLongToInt(manipulator.getLimit());
+			return new ApplyNodeCountManipulator(
+				new NodeSetDecomposedValueManipulator<>(
+					traverser,
+					manipulateOptions,
+					manipulator.getApplicableValue()
+				),
+				limit
+			);
+		} else if (builderManipulator instanceof ArbitrarySetArbitrary) {
+			ArbitrarySetArbitrary<?> manipulator = (ArbitrarySetArbitrary<?>) builderManipulator;
+			int limit = safeCastLongToInt(manipulator.getLimit());
+			return new ApplyNodeCountManipulator(
+				new NodeSetLazyManipulator<>(
+					traverser,
+					manipulateOptions,
+					LazyArbitrary.lazy(manipulator::getApplicableValue)
+				),
+				limit
+			);
+		} else if (builderManipulator instanceof ArbitrarySetLazyValue) {
+			ArbitrarySetLazyValue<?> manipulator = (ArbitrarySetLazyValue<?>) builderManipulator;
+			int limit = safeCastLongToInt(manipulator.getLimit());
+			return new ApplyNodeCountManipulator(
+				new NodeSetLazyManipulator<>(
+					traverser,
+					manipulateOptions,
+					 LazyArbitrary.lazy(manipulator::getApplicableValue)
+				),
+				limit
+			);
+		} else if (builderManipulator instanceof ArbitrarySetPostCondition) {
+			ArbitrarySetPostCondition<?> manipulator = (ArbitrarySetPostCondition<?>) builderManipulator;
+			int limit = safeCastLongToInt(manipulator.getLimit());
+			return new ApplyNodeCountManipulator(
+				new NodeFilterManipulator(
+					manipulator.getClazz(),
+					manipulator.getFilter()
+				),
+				limit
+			);
+		} else if (builderManipulator instanceof ArbitraryNullity) {
+			ArbitraryNullity manipulator = (ArbitraryNullity) builderManipulator;
+			return new NodeNullityManipulator(manipulator.toNull());
+		} else {
+			throw new IllegalArgumentException(
+				"No convertable NodeManipulator exists : " + builderManipulator.getClass().getTypeName()
+			);
+		}
+	}
+
+	private int safeCastLongToInt(long l) {
+		if (l < Integer.MIN_VALUE || l > Integer.MAX_VALUE) {
+			throw new IllegalArgumentException(
+				"limit should be within the range of int type. limit : " + l
+			);
+		}
+		return (int) l;
 	}
 }
