@@ -19,17 +19,17 @@
 package com.navercorp.fixturemonkey.customizer;
 
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 
+import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
+import com.navercorp.fixturemonkey.resolver.*;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
@@ -335,6 +335,20 @@ public final class ExpressionSpec {
 
 	public List<BuilderManipulator> getBuilderManipulators() {
 		return builderManipulators;
+	}
+
+	public List<ArbitraryManipulator> getArbitraryManipulators(ArbitraryTraverser traverser, ManipulateOptions manipulateOptions) {
+		return this.builderManipulators.stream()
+			.filter(it -> !(it instanceof ContainerSizeManipulator))
+			.map(new BuilderManipulatorAdapter(traverser, manipulateOptions)::convertToArbitraryManipulator)
+			.collect(toList());
+	}
+
+	public Map<NodeResolver, ArbitraryContainerInfo> getContainerInfosByNodeResolver(ArbitraryTraverser traverser, ManipulateOptions manipulateOptions) {
+		return this.builderManipulators.stream()
+			.filter(ContainerSizeManipulator.class::isInstance)
+			.map(new BuilderManipulatorAdapter(traverser, manipulateOptions)::convertToContainerInfosByNodeResolverEntry)
+			.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 	}
 
 	@Override

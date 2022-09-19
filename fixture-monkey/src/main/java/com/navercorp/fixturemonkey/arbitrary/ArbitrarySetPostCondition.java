@@ -49,6 +49,10 @@ public final class ArbitrarySetPostCondition<T> extends AbstractArbitraryExpress
 		return clazz;
 	}
 
+	public Predicate<T> getFilter() {
+		return filter;
+	}
+
 	@Override
 	public Arbitrary<T> apply(Arbitrary<T> from) {
 		if (this.limit > 0) {

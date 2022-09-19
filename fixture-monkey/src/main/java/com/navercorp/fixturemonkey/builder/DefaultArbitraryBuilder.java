@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -40,6 +41,8 @@ import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
 
+import com.navercorp.fixturemonkey.api.random.Randoms;
+import com.navercorp.fixturemonkey.customizer.ExpressionSpec;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
@@ -199,6 +202,23 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 	@Override
 	public ArbitraryBuilder<T> setLazy(String expression, Supplier<?> supplier) {
 		return this.setLazy(expression, supplier, MAX_MANIPULATION_COUNT);
+	}
+
+	@Override
+	public ArbitraryBuilder<T> spec(ExpressionSpec expressionSpec) {
+		this.containerInfosByNodeResolver.putAll(expressionSpec.getContainerInfosByNodeResolver(traverser, manipulateOptions));
+		this.manipulators.addAll(expressionSpec.getArbitraryManipulators(traverser, manipulateOptions));
+		return this;
+	}
+
+	@Override
+	public ArbitraryBuilder<T> specAny(ExpressionSpec... specs) {
+		if (specs == null || specs.length == 0) {
+			return this;
+		}
+
+		ExpressionSpec spec = Arrays.asList(specs).get(Randoms.nextInt(specs.length));
+		return this.spec(spec);
 	}
 
 	@Override
