@@ -35,7 +35,7 @@ import com.navercorp.fixturemonkey.api.type.Types;
 public final class EntryContainerPropertyGenerator implements ContainerPropertyGenerator {
 	public static final EntryContainerPropertyGenerator INSTANCE =
 		new EntryContainerPropertyGenerator();
-	private static final ArbitraryContainerInfo CONTAINER_INFO = new ArbitraryContainerInfo(1, 1);
+	private static final ArbitraryContainerInfo CONTAINER_INFO = new ArbitraryContainerInfo(1, 1, false);
 
 	@Override
 	public ContainerProperty generate(ContainerPropertyGeneratorContext context) {

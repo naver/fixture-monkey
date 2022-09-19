@@ -36,6 +36,7 @@ import javax.validation.constraints.NotEmpty;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 class FixtureMonkeyV04TestSpecs {
 	@Setter
@@ -89,6 +90,7 @@ class FixtureMonkeyV04TestSpecs {
 	@Getter
 	@Setter
 	@EqualsAndHashCode
+	@ToString
 	public static class ListWithAnnotation {
 		@NotEmpty
 		private List<@NotBlank String> values;

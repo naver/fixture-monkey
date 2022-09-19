@@ -18,8 +18,6 @@
 
 package com.navercorp.fixturemonkey.api.generator;
 
-import javax.annotation.Nullable;
-
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
@@ -29,13 +27,16 @@ import com.navercorp.fixturemonkey.api.random.Randoms;
 public final class ArbitraryContainerInfo {
 	private final int elementMinSize;
 	private final int elementMaxSize;
+	private final boolean manipulated;
 
 	public ArbitraryContainerInfo(
 		int elementMinSize,
-		int elementMaxSize
+		int elementMaxSize,
+		boolean manipulated
 	) {
 		this.elementMinSize = elementMinSize;
 		this.elementMaxSize = elementMaxSize;
+		this.manipulated = manipulated;
 	}
 
 	public int getElementMinSize() {
@@ -46,26 +47,16 @@ public final class ArbitraryContainerInfo {
 		return this.elementMaxSize;
 	}
 
+	public boolean isManipulated() {
+		return manipulated;
+	}
+
 	public int getRandomSize() {
 		if (this.elementMinSize == this.elementMaxSize) {
 			return this.elementMinSize;
 		}
 
 		return this.elementMinSize + Randoms.nextInt(this.elementMaxSize - this.elementMinSize + 1);
-	}
-
-	public ArbitraryContainerInfo withElementMinSize(@Nullable Integer minSize) {
-		if (minSize == null) {
-			return this;
-		}
-		return new ArbitraryContainerInfo(minSize, this.elementMaxSize);
-	}
-
-	public ArbitraryContainerInfo withElementMaxSize(@Nullable Integer maxSize) {
-		if (maxSize == null) {
-			return this;
-		}
-		return new ArbitraryContainerInfo(this.elementMinSize, maxSize);
 	}
 
 	@Override

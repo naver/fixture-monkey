@@ -20,6 +20,8 @@ package com.navercorp.fixturemonkey.resolver;
 
 import static com.navercorp.fixturemonkey.Constants.ALL_INDEX_STRING;
 
+import java.util.Objects;
+
 import javax.annotation.Nullable;
 
 import org.apiguardian.api.API;
@@ -45,5 +47,22 @@ public final class PropertyNameNodePredicate implements NextNodePredicate {
 	) {
 		String nodePropertyName = currentObjectProperty.getResolvedPropertyName();
 		return ALL_INDEX_STRING.equals(propertyName) || propertyName.equals(nodePropertyName);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null || getClass() != obj.getClass()) {
+			return false;
+		}
+		PropertyNameNodePredicate that = (PropertyNameNodePredicate)obj;
+		return propertyName.equals(that.propertyName);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(propertyName);
 	}
 }

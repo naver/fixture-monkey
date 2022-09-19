@@ -21,6 +21,7 @@ package com.navercorp.fixturemonkey;
 import static java.util.stream.Collectors.toList;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Stream;
@@ -120,7 +121,8 @@ public class LabMonkey extends FixtureMonkey {
 			this.validator,
 			new ArrayList<>(),
 			new HashSet<>(),
-			new ArrayList<>()
+			new ArrayList<>(),
+			new HashMap<>()
 		);
 	}
 
@@ -148,7 +150,8 @@ public class LabMonkey extends FixtureMonkey {
 			this.validator,
 			manipulators,
 			new HashSet<>(),
-			new ArrayList<>()
+			new ArrayList<>(),
+			new HashMap<>()
 		);
 	}
 

@@ -133,10 +133,14 @@ public final class ArbitraryExpression implements MonkeyExpression, Comparable<A
 	}
 
 	public NodeResolver toNodeResolver() {
-		NodeResolver nodeResolver = IdentityNodeResolver.INSTANCE;
+		NodeResolver nodeResolver = null;
 
 		for (Exp exp : expList) {
-			nodeResolver = new CompositeNodeResolver(nodeResolver, exp.toNodeResolver());
+			if (nodeResolver == null) {
+				nodeResolver = exp.toNodeResolver();
+			} else {
+				nodeResolver = new CompositeNodeResolver(nodeResolver, exp.toNodeResolver());
+			}
 		}
 		return nodeResolver;
 	}
