@@ -19,7 +19,6 @@
 package com.navercorp.fixturemonkey.resolver;
 
 import static com.navercorp.fixturemonkey.Constants.DEFAULT_ELEMENT_MAX_SIZE;
-import static com.navercorp.fixturemonkey.Constants.DEFAULT_ELEMENT_MIN_SIZE;
 
 import java.util.AbstractMap;
 import java.util.Map;
@@ -151,12 +150,12 @@ public final class BuilderManipulatorAdapter {
 		}
 	}
 
-	private int safeCastLongToInt(long l) {
-		if (l < Integer.MIN_VALUE || l > Integer.MAX_VALUE) {
+	private int safeCastLongToInt(long value) {
+		if (value < Integer.MIN_VALUE || value > Integer.MAX_VALUE) {
 			throw new IllegalArgumentException(
-				"Limit should be within the range of int type. limit : " + l
+				"Limit should be within the range of int type. limit : " + value
 			);
 		}
-		return (int)l;
+		return (int)value;
 	}
 }

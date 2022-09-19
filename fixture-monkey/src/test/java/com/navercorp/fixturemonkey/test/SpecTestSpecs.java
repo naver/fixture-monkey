@@ -18,12 +18,10 @@
 
 package com.navercorp.fixturemonkey.test;
 
-import com.navercorp.fixturemonkey.LabMonkey;
-
-import lombok.Data;
-
 import java.util.List;
 import java.util.Map;
+
+import lombok.Data;
 
 public class SpecTestSpecs {
 	@Data

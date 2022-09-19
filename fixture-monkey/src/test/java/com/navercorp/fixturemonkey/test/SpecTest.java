@@ -18,27 +18,26 @@
 
 package com.navercorp.fixturemonkey.test;
 
-import com.navercorp.fixturemonkey.LabMonkey;
-import com.navercorp.fixturemonkey.customizer.ExpressionSpec;
+import static java.util.stream.Collectors.toList;
+import static org.assertj.core.api.BDDAssertions.then;
+import static org.assertj.core.api.BDDAssertions.thenNoException;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
 import net.jqwik.api.Property;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static com.navercorp.fixturemonkey.test.SpecTestSpecs.IntegerList;
-import static com.navercorp.fixturemonkey.test.SpecTestSpecs.IntValue;
-import static com.navercorp.fixturemonkey.test.SpecTestSpecs.ListListString;
-import static com.navercorp.fixturemonkey.test.SpecTestSpecs.NestedStringValueList;
-import static com.navercorp.fixturemonkey.test.SpecTestSpecs.StringAndInt;
-import static com.navercorp.fixturemonkey.test.SpecTestSpecs.StringList;
-import static com.navercorp.fixturemonkey.test.SpecTestSpecs.StringValue;
-
-import static java.util.stream.Collectors.toList;
-import static org.assertj.core.api.BDDAssertions.then;
-import static org.assertj.core.api.BDDAssertions.thenNoException;
+import com.navercorp.fixturemonkey.LabMonkey;
+import com.navercorp.fixturemonkey.customizer.ExpressionSpec;
+import com.navercorp.fixturemonkey.test.SpecTestSpecs.IntValue;
+import com.navercorp.fixturemonkey.test.SpecTestSpecs.IntegerList;
+import com.navercorp.fixturemonkey.test.SpecTestSpecs.ListListString;
+import com.navercorp.fixturemonkey.test.SpecTestSpecs.NestedStringValueList;
+import com.navercorp.fixturemonkey.test.SpecTestSpecs.StringAndInt;
+import com.navercorp.fixturemonkey.test.SpecTestSpecs.StringList;
+import com.navercorp.fixturemonkey.test.SpecTestSpecs.StringValue;
 
 public class SpecTest {
 	public static final LabMonkey SUT = LabMonkey.create();
@@ -83,7 +82,6 @@ public class SpecTest {
 		then(actual.getValues()).hasSizeGreaterThanOrEqualTo(10);
 	}
 
-
 	@Property
 	void specMaxSize() {
 		// when
@@ -93,7 +91,6 @@ public class SpecTest {
 
 		then(actual.getValues()).hasSizeLessThanOrEqualTo(10);
 	}
-
 
 	@Property
 	void specSetNull() {
