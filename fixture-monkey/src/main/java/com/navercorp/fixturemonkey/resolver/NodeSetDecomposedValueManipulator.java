@@ -61,6 +61,9 @@ public final class NodeSetDecomposedValueManipulator<T> implements NodeManipulat
 		if (value != null && !isAssignable(value.getClass(), actualType)) {
 			throw new IllegalArgumentException(
 				"The value is not of the same type as the property."
+					+ " node name: " + arbitraryNode.getArbitraryProperty()
+					.getObjectProperty()
+					.getResolvedPropertyName()
 					+ " node type: " + arbitraryNode.getProperty().getType().getTypeName()
 					+ " value type: " + value.getClass().getTypeName()
 			);
@@ -99,12 +102,21 @@ public final class NodeSetDecomposedValueManipulator<T> implements NodeManipulat
 				);
 				arbitraryNode.setChildren(newNode.getChildren());
 			}
+
+			List<ArbitraryNode> children = arbitraryNode.getChildren();
+			int decomposedNodeSize = Math.min(decomposedContainerSize, children.size());
+			for (int i = 0; i < decomposedNodeSize; i++) {
+				ArbitraryNode child = children.get(i);
+				Property childProperty = child.getProperty();
+				setValue(child, childProperty.getValue(value));
+			}
+			return;
 		}
 
 		List<ArbitraryNode> children = arbitraryNode.getChildren();
 		arbitraryNode.setArbitraryProperty(arbitraryProperty.withNullInject(NOT_NULL_INJECT));
 
-		if (children.isEmpty() && containerProperty == null) {
+		if (children.isEmpty()) {
 			arbitraryNode.setArbitrary(Arbitraries.just(value));
 			return;
 		}

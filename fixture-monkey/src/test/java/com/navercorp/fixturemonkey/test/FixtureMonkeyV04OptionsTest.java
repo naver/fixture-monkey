@@ -1000,4 +1000,18 @@ class FixtureMonkeyV04OptionsTest {
 
 		then(actual).allMatch(expected::equals);
 	}
+
+	@Property
+	void sizeBiggerThanRegisterSized() {
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.register(ComplexObject.class, fixture -> fixture.giveMeBuilder(ComplexObject.class).size("strList", 3))
+			.build();
+
+		List<String> actual = sut.giveMeBuilder(ComplexObject.class)
+			.size("strList", 10)
+			.sample()
+			.getStrList();
+
+		then(actual).hasSize(10);
+	}
 }

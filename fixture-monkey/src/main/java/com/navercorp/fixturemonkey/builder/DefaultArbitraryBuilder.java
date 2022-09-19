@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
@@ -260,6 +261,20 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 
 	@Override
 	public ArbitraryBuilder<T> fixed() {
+		for (Entry<NodeResolver, ArbitraryContainerInfo> containerInfoByNodeResolver :
+			this.containerInfosByNodeResolver.entrySet()
+		) {
+			int fixedSize = containerInfoByNodeResolver.getValue().getRandomSize();
+			containerInfosByNodeResolver.put(
+				containerInfoByNodeResolver.getKey(),
+				new ArbitraryContainerInfo(
+					fixedSize,
+					fixedSize,
+					true
+				)
+			);
+		}
+
 		this.manipulators.add(
 			new ArbitraryManipulator(
 				IdentityNodeResolver.INSTANCE,
