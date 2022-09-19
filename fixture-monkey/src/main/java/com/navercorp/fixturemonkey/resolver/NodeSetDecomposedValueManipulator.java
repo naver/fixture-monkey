@@ -35,6 +35,7 @@ import net.jqwik.api.Arbitraries;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.generator.ContainerProperty;
+import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.type.Types;
 
@@ -104,6 +105,11 @@ public final class NodeSetDecomposedValueManipulator<T> implements NodeManipulat
 			}
 
 			List<ArbitraryNode> children = arbitraryNode.getChildren();
+
+			if (arbitraryProperty.getObjectProperty().getProperty() instanceof MapEntryElementProperty) {
+				decomposedContainerSize *= 2; // key, value
+			}
+
 			int decomposedNodeSize = Math.min(decomposedContainerSize, children.size());
 			for (int i = 0; i < decomposedNodeSize; i++) {
 				ArbitraryNode child = children.get(i);
