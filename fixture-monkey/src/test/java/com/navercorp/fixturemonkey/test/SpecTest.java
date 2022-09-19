@@ -18,7 +18,9 @@
 
 package com.navercorp.fixturemonkey.test;
 
+import com.navercorp.fixturemonkey.LabMonkey;
 import com.navercorp.fixturemonkey.customizer.ExpressionSpec;
+
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
 import net.jqwik.api.Property;
@@ -26,7 +28,6 @@ import net.jqwik.api.Property;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.navercorp.fixturemonkey.test.SpecTestSpecs.SUT;
 import static com.navercorp.fixturemonkey.test.SpecTestSpecs.IntegerList;
 import static com.navercorp.fixturemonkey.test.SpecTestSpecs.IntValue;
 import static com.navercorp.fixturemonkey.test.SpecTestSpecs.ListListString;
@@ -40,8 +41,10 @@ import static org.assertj.core.api.BDDAssertions.then;
 import static org.assertj.core.api.BDDAssertions.thenNoException;
 
 public class SpecTest {
+	public static final LabMonkey SUT = LabMonkey.create();
+
 	@Property
-	void giveMeSpecSet() {
+	void specSet() {
 		// when
 		IntValue actual = SUT.giveMeBuilder(IntValue.class)
 			.spec(new ExpressionSpec().set("value", -1))
@@ -51,7 +54,7 @@ public class SpecTest {
 	}
 
 	@Property
-	void giveMeSpecSetArbitrary() {
+	void specSetArbitrary() {
 		// when
 		IntValue actual = SUT.giveMeBuilder(IntValue.class)
 			.spec(new ExpressionSpec().set("value", Arbitraries.just(1)))
@@ -61,7 +64,7 @@ public class SpecTest {
 	}
 
 	@Property
-	void giveMeListSize() {
+	void specSize() {
 		// when
 		IntegerList actual = SUT.giveMeBuilder(IntegerList.class)
 			.spec(new ExpressionSpec().size("values", 1, 1))
@@ -71,7 +74,29 @@ public class SpecTest {
 	}
 
 	@Property
-	void giveMeSetNull() {
+	void specMinSize() {
+		// when
+		IntegerList actual = SUT.giveMeBuilder(IntegerList.class)
+			.spec(new ExpressionSpec().minSize("values", 10))
+			.sample();
+
+		then(actual.getValues()).hasSizeGreaterThanOrEqualTo(10);
+	}
+
+
+	@Property
+	void specMaxSize() {
+		// when
+		IntegerList actual = SUT.giveMeBuilder(IntegerList.class)
+			.spec(new ExpressionSpec().maxSize("values", 10))
+			.sample();
+
+		then(actual.getValues()).hasSizeLessThanOrEqualTo(10);
+	}
+
+
+	@Property
+	void specSetNull() {
 		// when
 		IntegerList actual = SUT.giveMeBuilder(IntegerList.class)
 			.spec(new ExpressionSpec().setNull("values"))
@@ -81,7 +106,7 @@ public class SpecTest {
 	}
 
 	@Property
-	void giveMeSizeAfterSetNullReturnsNull() {
+	void specSizeAfterSetNullReturnsNull() {
 		// when
 		IntegerList actual = SUT.giveMeBuilder(IntegerList.class)
 			.spec(new ExpressionSpec()
@@ -94,7 +119,7 @@ public class SpecTest {
 	}
 
 	@Property
-	void giveMeSetAfterSetNullReturnsNotNull() {
+	void specSetAfterSetNullReturnsNotNull() {
 		// when
 		IntegerList actual = SUT.giveMeBuilder(IntegerList.class)
 			.spec(new ExpressionSpec()
@@ -110,7 +135,7 @@ public class SpecTest {
 	}
 
 	@Property
-	void giveMeSetNotNullAfterSetNullReturnsNotNull() {
+	void specSetNotNullAfterSetNullReturnsNotNull() {
 		// when
 		IntegerList actual = SUT.giveMeBuilder(IntegerList.class)
 			.spec(new ExpressionSpec()
@@ -123,7 +148,7 @@ public class SpecTest {
 	}
 
 	@Property
-	void giveMeSetNullAfterSetNotNullReturnsNull() {
+	void specSetNullAfterSetNotNullReturnsNull() {
 		// when
 		IntegerList actual = SUT.giveMeBuilder(IntegerList.class)
 			.spec(new ExpressionSpec()
@@ -136,7 +161,7 @@ public class SpecTest {
 	}
 
 	@Property
-	void giveMeSetNullAfterSetReturnsNull() {
+	void specSetNullAfterSetReturnsNull() {
 		// when
 		IntegerList actual = SUT.giveMeBuilder(IntegerList.class)
 			.spec(new ExpressionSpec()
@@ -150,7 +175,7 @@ public class SpecTest {
 	}
 
 	@Property
-	void giveMeSpecPostCondition() {
+	void specPostCondition() {
 		// when
 		IntValue actual = SUT.giveMeBuilder(IntValue.class)
 			.spec(new ExpressionSpec().setPostCondition(
@@ -164,7 +189,7 @@ public class SpecTest {
 	}
 
 	@Property
-	void giveMeSpecPostConditionType() {
+	void specPostConditionType() {
 		// when
 		IntValue actual = SUT.giveMeBuilder(IntValue.class)
 			.spec(new ExpressionSpec().setPostCondition(
@@ -178,7 +203,7 @@ public class SpecTest {
 	}
 
 	@Property
-	void giveMePostConditionIndex() {
+	void specPostConditionIndex() {
 		// when
 		IntegerList actual = SUT.giveMeBuilder(IntegerList.class)
 			.spec(new ExpressionSpec()
@@ -191,7 +216,7 @@ public class SpecTest {
 	}
 
 	@Property
-	void giveMeObjectToBuilderSetIndex() {
+	void specObjectToBuilderSetIndex() {
 		// given
 		IntegerList expected = SUT.giveMeBuilder(IntegerList.class)
 			.spec(new ExpressionSpec().size("values", 2, 2))
@@ -206,7 +231,7 @@ public class SpecTest {
 	}
 
 	@Property
-	void giveMeListSpecMaxSize() {
+	void specListMaxSize() {
 		// when
 		StringList actual = SUT.giveMeBuilder(StringList.class)
 			.spec(new ExpressionSpec()
@@ -220,7 +245,7 @@ public class SpecTest {
 	}
 
 	@Property
-	void giveMeListSpecSizeBetween() {
+	void specListSizeBetween() {
 		// when
 		StringList actual = SUT.giveMeBuilder(StringList.class)
 			.spec(new ExpressionSpec()
@@ -234,7 +259,7 @@ public class SpecTest {
 	}
 
 	@Property
-	void giveMeSetRightOrder() {
+	void specSetRightOrder() {
 		// when
 		StringList actual = SUT.giveMeBuilder(StringList.class)
 			.spec(new ExpressionSpec()
@@ -256,7 +281,7 @@ public class SpecTest {
 	}
 
 	@Property
-	void giveMePostConditionRightOrder() {
+	void specPostConditionRightOrder() {
 		// when
 		StringList actual = SUT.giveMeBuilder(StringList.class)
 			.spec(new ExpressionSpec()
@@ -275,7 +300,7 @@ public class SpecTest {
 	}
 
 	@Property
-	void giveMeListSpecMinSize() {
+	void specListMinSize() {
 		// when
 		StringList actual = SUT.giveMeBuilder(StringList.class)
 			.spec(new ExpressionSpec()
@@ -289,7 +314,7 @@ public class SpecTest {
 	}
 
 	@Property
-	void giveMeSpecAny() {
+	void specAny() {
 		// given
 		ExpressionSpec specOne = new ExpressionSpec()
 			.list("values", it -> it
@@ -322,7 +347,7 @@ public class SpecTest {
 	}
 
 	@Property
-	void giveMeSpecAnyWithEmpty() {
+	void specAnyWithEmpty() {
 		thenNoException().isThrownBy(
 			() -> SUT.giveMeBuilder(StringList.class)
 				.specAny()
@@ -331,7 +356,7 @@ public class SpecTest {
 	}
 
 	@Property
-	void giveMeSpecAnyWithNull() {
+	void specAnyWithNull() {
 		thenNoException().isThrownBy(
 			() -> SUT.giveMeBuilder(StringList.class)
 				.specAny((ExpressionSpec[])null)
@@ -340,7 +365,7 @@ public class SpecTest {
 	}
 
 	@Property(tries = 2)
-	void giveMeSpecAnyReturnsDiff() {
+	void specAnyReturnsDiff() {
 		// given
 		Arbitrary<StringValue> complex = SUT.giveMeBuilder(
 				StringValue.class)
@@ -367,7 +392,7 @@ public class SpecTest {
 	}
 
 	@Property
-	void giveMeSpecAnyFirstWithMetadataManipulatorReturnsGivenOrder() {
+	void specAnyFirstWithMetadataManipulatorReturnsGivenOrder() {
 		// when
 		StringList actual = SUT.giveMeBuilder(StringList.class)
 			.specAny(new ExpressionSpec().size("values", 2))
@@ -378,7 +403,7 @@ public class SpecTest {
 	}
 
 	@Property
-	void giveMeSpecAnyLastWithMetadataManipulatorReturnsGivenOrder() {
+	void specAnyLastWithMetadataManipulatorReturnsGivenOrder() {
 		// when
 		StringList actual = SUT.giveMeBuilder(StringList.class)
 			.size("values", 1)
@@ -389,7 +414,7 @@ public class SpecTest {
 	}
 
 	@Property
-	void giveMeSpecListSetSize() {
+	void specListSetSize() {
 		// when
 		IntegerList actual = SUT.giveMeBuilder(IntegerList.class)
 			.spec(new ExpressionSpec().list("values", it -> it.ofSize(1)))
@@ -399,7 +424,7 @@ public class SpecTest {
 	}
 
 	@Property
-	void giveMeSpecListSetElement() {
+	void specListSetElement() {
 		// when
 		IntegerList actual = SUT.giveMeBuilder(IntegerList.class)
 			.spec(new ExpressionSpec().list("values", it -> {
@@ -413,7 +438,7 @@ public class SpecTest {
 	}
 
 	@Property
-	void giveMeSpecListAnySet() {
+	void specListAnySet() {
 		// when
 		IntegerList actual = SUT.giveMeBuilder(IntegerList.class)
 			.spec(new ExpressionSpec().list("values", it -> {
@@ -426,7 +451,7 @@ public class SpecTest {
 	}
 
 	@Property
-	void giveMeSpecListAnyWithoutSize() {
+	void specListAnyWithoutSize() {
 		// when
 		StringList actual = SUT.giveMeBuilder(StringList.class)
 			.spec(new ExpressionSpec().list("values", it -> it.any("set")))
@@ -436,7 +461,7 @@ public class SpecTest {
 	}
 
 	@Property
-	void giveMeSpecListAnyWithoutMaxSize() {
+	void specListAnyWithoutMaxSize() {
 		// when
 		StringList actual = SUT.giveMeBuilder(StringList.class)
 			.spec(new ExpressionSpec().list("values", it -> {
@@ -449,7 +474,7 @@ public class SpecTest {
 	}
 
 	@Property
-	void giveMeSpecListAnyWithoutMinSize() {
+	void specListAnyWithoutMinSize() {
 		// when
 		StringList actual = SUT.giveMeBuilder(StringList.class)
 			.spec(new ExpressionSpec().list("values", it -> {
@@ -462,7 +487,7 @@ public class SpecTest {
 	}
 
 	@Property
-	void giveMeSpecListAllSet() {
+	void specListAllSet() {
 		// when
 		IntegerList actual = SUT.giveMeBuilder(IntegerList.class)
 			.spec(new ExpressionSpec().list("values", it -> {
@@ -475,7 +500,7 @@ public class SpecTest {
 	}
 
 	@Property
-	void giveMeSpecListPostConditionElement() {
+	void specListPostConditionElement() {
 		// when
 		IntegerList actual = SUT.giveMeBuilder(IntegerList.class)
 			.spec(new ExpressionSpec().list("values", it -> {
@@ -489,7 +514,7 @@ public class SpecTest {
 	}
 
 	@Property
-	void giveMeSpecListPostConditionElementField() {
+	void specListPostConditionElementField() {
 		// when
 		NestedStringValueList actual = SUT.giveMeBuilder(NestedStringValueList.class)
 			.spec(new ExpressionSpec().list("values", it -> {
@@ -503,7 +528,7 @@ public class SpecTest {
 	}
 
 	@Property
-	void giveMeSpecListListElementSet() {
+	void specListListElementSet() {
 		// when
 		ListListString actual = SUT.giveMeBuilder(ListListString.class)
 			.spec(new ExpressionSpec().list("values", it -> {
@@ -521,7 +546,7 @@ public class SpecTest {
 	}
 
 	@Property
-	void giveMeSpecListListElementPostCondition() {
+	void specListListElementPostCondition() {
 		// when
 		ListListString actual = SUT.giveMeBuilder(ListListString.class)
 			.spec(new ExpressionSpec().list("values", it -> {
@@ -539,7 +564,7 @@ public class SpecTest {
 	}
 
 	@Property
-	void giveMeSpecSetWithLimit() {
+	void specSetWithLimit() {
 		// when
 		IntValue actual = SUT.giveMeBuilder(IntValue.class)
 			.spec(new ExpressionSpec()
@@ -550,7 +575,7 @@ public class SpecTest {
 	}
 
 	@Property
-	void giveMeSpecSetIndexWithLimitReturns() {
+	void specSetIndexWithLimitReturns() {
 		// when
 		StringList actual = SUT.giveMeBuilder(StringList.class)
 			.spec(new ExpressionSpec()
@@ -562,7 +587,7 @@ public class SpecTest {
 	}
 
 	@Property
-	void giveMeSpecSetArbitraryBuilder() {
+	void specSetArbitraryBuilder() {
 		// when
 		StringAndInt actual = SUT.giveMeBuilder(StringAndInt.class)
 			.spec(new ExpressionSpec().set("value2",

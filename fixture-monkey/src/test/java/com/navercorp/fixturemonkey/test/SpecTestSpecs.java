@@ -26,8 +26,6 @@ import java.util.List;
 import java.util.Map;
 
 public class SpecTestSpecs {
-	public static final LabMonkey SUT = LabMonkey.create();
-
 	@Data
 	public static class IntValue {
 		private int value;

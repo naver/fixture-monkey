@@ -18,6 +18,9 @@
 
 package com.navercorp.fixturemonkey.resolver;
 
+import static com.navercorp.fixturemonkey.Constants.DEFAULT_ELEMENT_MAX_SIZE;
+import static com.navercorp.fixturemonkey.Constants.DEFAULT_ELEMENT_MIN_SIZE;
+
 import java.util.AbstractMap;
 import java.util.Map;
 
@@ -59,11 +62,11 @@ public final class BuilderManipulatorAdapter {
 		BuilderManipulator builderManipulator
 	) {
 		NodeResolver nodeResolver = getNodeResolver(builderManipulator);
-		ContainerSizeManipulator manipulator = (ContainerSizeManipulator) builderManipulator;
+		ArbitraryContainerInfo containerInfo = getContainerInfo(builderManipulator);
 
 		return new AbstractMap.SimpleEntry<>(
 			nodeResolver,
-			new ArbitraryContainerInfo(manipulator.getMin(), manipulator.getMax(), true)
+			containerInfo
 		);
 	}
 
@@ -76,7 +79,7 @@ public final class BuilderManipulatorAdapter {
 
 	private NodeManipulator getNodeManipulator(BuilderManipulator builderManipulator) {
 		if (builderManipulator instanceof ArbitrarySet) {
-			ArbitrarySet<?> manipulator = (ArbitrarySet<?>) builderManipulator;
+			ArbitrarySet<?> manipulator = (ArbitrarySet<?>)builderManipulator;
 			int limit = safeCastLongToInt(manipulator.getLimit());
 			return new ApplyNodeCountManipulator(
 				new NodeSetDecomposedValueManipulator<>(
@@ -87,7 +90,7 @@ public final class BuilderManipulatorAdapter {
 				limit
 			);
 		} else if (builderManipulator instanceof ArbitrarySetArbitrary) {
-			ArbitrarySetArbitrary<?> manipulator = (ArbitrarySetArbitrary<?>) builderManipulator;
+			ArbitrarySetArbitrary<?> manipulator = (ArbitrarySetArbitrary<?>)builderManipulator;
 			int limit = safeCastLongToInt(manipulator.getLimit());
 			return new ApplyNodeCountManipulator(
 				new NodeSetLazyManipulator<>(
@@ -98,18 +101,18 @@ public final class BuilderManipulatorAdapter {
 				limit
 			);
 		} else if (builderManipulator instanceof ArbitrarySetLazyValue) {
-			ArbitrarySetLazyValue<?> manipulator = (ArbitrarySetLazyValue<?>) builderManipulator;
+			ArbitrarySetLazyValue<?> manipulator = (ArbitrarySetLazyValue<?>)builderManipulator;
 			int limit = safeCastLongToInt(manipulator.getLimit());
 			return new ApplyNodeCountManipulator(
 				new NodeSetLazyManipulator<>(
 					traverser,
 					manipulateOptions,
-					 LazyArbitrary.lazy(manipulator::getApplicableValue)
+					LazyArbitrary.lazy(manipulator::getApplicableValue)
 				),
 				limit
 			);
 		} else if (builderManipulator instanceof ArbitrarySetPostCondition) {
-			ArbitrarySetPostCondition<?> manipulator = (ArbitrarySetPostCondition<?>) builderManipulator;
+			ArbitrarySetPostCondition<?> manipulator = (ArbitrarySetPostCondition<?>)builderManipulator;
 			int limit = safeCastLongToInt(manipulator.getLimit());
 			return new ApplyNodeCountManipulator(
 				new NodeFilterManipulator(
@@ -119,7 +122,7 @@ public final class BuilderManipulatorAdapter {
 				limit
 			);
 		} else if (builderManipulator instanceof ArbitraryNullity) {
-			ArbitraryNullity manipulator = (ArbitraryNullity) builderManipulator;
+			ArbitraryNullity manipulator = (ArbitraryNullity)builderManipulator;
 			return new NodeNullityManipulator(manipulator.toNull());
 		} else {
 			throw new IllegalArgumentException(
@@ -128,12 +131,32 @@ public final class BuilderManipulatorAdapter {
 		}
 	}
 
+	private ArbitraryContainerInfo getContainerInfo(BuilderManipulator builderManipulator) {
+		if (builderManipulator instanceof ContainerSizeManipulator) {
+			ContainerSizeManipulator manipulator = (ContainerSizeManipulator)builderManipulator;
+			Integer min = manipulator.getMin();
+			Integer max = manipulator.getMax();
+
+			if (min == null && max != null) {
+				min = Math.max(0, manipulator.getMax() - DEFAULT_ELEMENT_MAX_SIZE);
+			} else if (min != null && max == null) {
+				max = manipulator.getMin() + DEFAULT_ELEMENT_MAX_SIZE;
+			}
+			return new ArbitraryContainerInfo(min, max, true);
+		} else {
+			throw new IllegalArgumentException(
+				"BuilderManipulator not convertable to ArbitraryContainerInfo. BuilderManipulator type : "
+					+ builderManipulator.getClass().getTypeName()
+			);
+		}
+	}
+
 	private int safeCastLongToInt(long l) {
 		if (l < Integer.MIN_VALUE || l > Integer.MAX_VALUE) {
 			throw new IllegalArgumentException(
-				"limit should be within the range of int type. limit : " + l
+				"Limit should be within the range of int type. limit : " + l
 			);
 		}
-		return (int) l;
+		return (int)l;
 	}
 }
