@@ -91,13 +91,25 @@ public class LabMonkey extends FixtureMonkey {
 		return giveMeBuilder(typeReference);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public <T> DefaultArbitraryBuilder<T> giveMeBuilder(TypeReference<T> type) {
 		ManipulateOptions manipulateOptions = manipulateOptionsBuilder.build();
+		RootProperty rootProperty = new RootProperty(type.getAnnotatedType());
+
+		ArbitraryBuilder<?> registered = manipulateOptions.getRegisteredArbitraryBuilders().stream()
+			.filter(it -> it.match(rootProperty))
+			.map(MatcherOperator::getOperator)
+			.findAny()
+			.orElse(null);
+
+		if (registered != null) {
+			return (DefaultArbitraryBuilder<T>)registered.copy();
+		}
 
 		return new DefaultArbitraryBuilder<>(
 			manipulateOptions,
-			new RootProperty(type.getAnnotatedType()),
+			rootProperty,
 			new ArbitraryResolver(
 				traverser,
 				manipulatorOptimizer,

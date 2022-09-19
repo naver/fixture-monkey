@@ -41,7 +41,9 @@ final class MetadataCollector {
 	}
 
 	public ArbitraryTreeMetadata collect() {
-		collect(rootNode);
+		for (ArbitraryNode child : rootNode.getChildren()) {
+			collect(child);
+		}
 		return new ArbitraryTreeMetadata(Collections.unmodifiableMap(nodesByProperty));
 	}
 

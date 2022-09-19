@@ -188,10 +188,10 @@ class FixtureMonkeyV04Test {
 		expected.add("e");
 
 		// when
-		Set<String> actual = SUT.giveMeBuilder(ComplexObject.class)
-			.set("strSet", expected)
-			.sample()
-			.getStrSet();
+		Set<String> actual = SUT.giveMeBuilder(new TypeReference<Set<String>>() {
+			})
+			.set(expected)
+			.sample();
 
 		then(actual).isEqualTo(expected);
 	}
