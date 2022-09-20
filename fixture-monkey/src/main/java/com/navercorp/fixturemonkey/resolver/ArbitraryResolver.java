@@ -75,9 +75,6 @@ public final class ArbitraryResolver {
 			arbitraryTree.getMetadata()
 		);
 
-		DebugMonkey.INSTANCE.printRegistered(registeredManipulators);
-		DebugMonkey.INSTANCE.printManipulators(manipulators);
-
 		List<ArbitraryManipulator> joinedManipulators =
 			Stream.concat(registeredManipulators.stream(), manipulators.stream())
 				.collect(Collectors.toList());
@@ -85,8 +82,6 @@ public final class ArbitraryResolver {
 		List<ArbitraryManipulator> optimizedManipulator = manipulatorOptimizer
 			.optimize(joinedManipulators)
 			.getManipulators();
-
-		DebugMonkey.INSTANCE.printOptimizedManipulators(optimizedManipulator);
 
 		for (ArbitraryManipulator manipulator : optimizedManipulator) {
 			manipulator.manipulate(arbitraryTree);

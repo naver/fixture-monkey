@@ -71,6 +71,7 @@ class FixtureMonkeyV04TestSpecs {
 	@EqualsAndHashCode
 	public static class SimpleObject {
 		private String str;
+		private List<String> strList;
 		private int integer;
 		private Integer wrapperInteger;
 		private Optional<String> optionalString;
