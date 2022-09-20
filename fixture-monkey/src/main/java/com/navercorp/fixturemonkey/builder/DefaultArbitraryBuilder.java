@@ -214,22 +214,18 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 	public ArbitraryBuilder<T> spec(ExpressionSpec expressionSpec) {
 		List<BuilderManipulator> builderManipulators = expressionSpec.getBuilderManipulators();
 
-		List<ArbitraryManipulator> convertedArbitraryManipulators =
-			builderManipulators.stream()
-				.filter(it -> !(it instanceof ContainerSizeManipulator))
-				.map(builderManipulatorAdapter::convertToArbitraryManipulator)
-				.collect(toList());
-
-		Map<NodeResolver, ArbitraryContainerInfo> convertedContainerInfosByNodeResolver =
+		this.containerInfosByNodeResolver.putAll(
 			builderManipulators.stream()
 				.filter(ContainerSizeManipulator.class::isInstance)
 				.map(builderManipulatorAdapter::convertToContainerInfosByNodeResolverEntry)
-				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-
-		this.containerInfosByNodeResolver.putAll(
-			convertedContainerInfosByNodeResolver
+				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))
 		);
-		this.manipulators.addAll(convertedArbitraryManipulators);
+		this.manipulators.addAll(
+			builderManipulators.stream()
+				.filter(it -> !(it instanceof ContainerSizeManipulator))
+				.map(builderManipulatorAdapter::convertToArbitraryManipulator)
+				.collect(toList())
+		);
 		return this;
 	}
 
