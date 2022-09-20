@@ -41,7 +41,6 @@ import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
 
-import com.navercorp.fixturemonkey.resolver.*;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
@@ -67,6 +66,18 @@ import com.navercorp.fixturemonkey.customizer.ArbitraryCustomizer;
 import com.navercorp.fixturemonkey.customizer.ExpressionSpec;
 import com.navercorp.fixturemonkey.customizer.InnerSpec;
 import com.navercorp.fixturemonkey.expression.MonkeyExpressionFactory;
+import com.navercorp.fixturemonkey.resolver.ApplyNodeCountManipulator;
+import com.navercorp.fixturemonkey.resolver.ArbitraryManipulator;
+import com.navercorp.fixturemonkey.resolver.ArbitraryResolver;
+import com.navercorp.fixturemonkey.resolver.ArbitraryTraverser;
+import com.navercorp.fixturemonkey.resolver.BuilderManipulatorAdapter;
+import com.navercorp.fixturemonkey.resolver.IdentityNodeResolver;
+import com.navercorp.fixturemonkey.resolver.ManipulateOptions;
+import com.navercorp.fixturemonkey.resolver.NodeFilterManipulator;
+import com.navercorp.fixturemonkey.resolver.NodeNullityManipulator;
+import com.navercorp.fixturemonkey.resolver.NodeResolver;
+import com.navercorp.fixturemonkey.resolver.NodeSetDecomposedValueManipulator;
+import com.navercorp.fixturemonkey.resolver.NodeSetLazyManipulator;
 import com.navercorp.fixturemonkey.validator.ArbitraryValidator;
 
 // TODO: remove extends com.navercorp.fixturemonkey.ArbitraryBuilder<T> inheritance in 1.0.0
