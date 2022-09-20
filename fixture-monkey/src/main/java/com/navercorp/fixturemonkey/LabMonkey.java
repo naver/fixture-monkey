@@ -109,27 +109,27 @@ public class LabMonkey extends FixtureMonkey {
 			return (DefaultArbitraryBuilder<T>)registered.copy();
 		}
 
-		return new DefaultArbitraryBuilder<>(
-			manipulateOptions,
-			rootProperty,
-			new ArbitraryResolver(
-				traverser,
-				manipulatorOptimizer,
-				generateOptions,
-				manipulateOptions
-			),
-			traverser,
-			this.validator,
-			new ArrayList<>(),
-			new HashSet<>(),
-			new ArrayList<>(),
-			new HashMap<>()
-		);
-
-		return (ArbitraryBuilder<T>) Proxy.newProxyInstance(
+		return (ArbitraryBuilder<T>)Proxy.newProxyInstance(
 			this.getClass().getClassLoader(),
-			new Class[]{ArbitraryBuilder.class},
-			new DebugHandler(builder)
+			new Class[] {ArbitraryBuilder.class},
+			new DebugHandler(
+				new DefaultArbitraryBuilder<>(
+					manipulateOptions,
+					rootProperty,
+					new ArbitraryResolver(
+						traverser,
+						manipulatorOptimizer,
+						generateOptions,
+						manipulateOptions
+					),
+					traverser,
+					this.validator,
+					new ArrayList<>(),
+					new HashSet<>(),
+					new ArrayList<>(),
+					new HashMap<>()
+				)
+			)
 		);
 	}
 

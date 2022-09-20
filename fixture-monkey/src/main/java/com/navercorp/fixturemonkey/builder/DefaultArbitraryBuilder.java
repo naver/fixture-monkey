@@ -29,6 +29,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
@@ -576,6 +577,12 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 			customizers,
 			containerInfosByNodeResolver
 		);
+	}
+
+	@Override
+	public int hashCode() {
+		Class<?> generateClazz = (Class<T>)Types.getActualType(rootProperty.getType());
+		return Objects.hash(generateClazz, manipulators);
 	}
 
 	@Override

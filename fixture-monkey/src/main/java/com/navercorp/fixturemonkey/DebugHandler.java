@@ -2,20 +2,33 @@ package com.navercorp.fixturemonkey;
 
 import com.navercorp.fixturemonkey.builder.DefaultArbitraryBuilder;
 import com.navercorp.fixturemonkey.resolver.ArbitraryManipulator;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.validation.groups.Default;
+
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class DebugHandler implements InvocationHandler, com.navercorp.fixturemonkey.Observable {
 	ArbitraryBuilder target;
 	Observer observer = DebugMonkey.INSTANCE;
-	private final Logger log = LoggerFactory.getLogger(this.getClass());
+
+	private static final Set<String> manipulateMethods =
+		Stream.of("spec", "specAny", "set", "setInner", "setLazy",
+				"setNull", "setNotNull", "setPostCondition", "size", "minSize",
+				"maxSize", "apply", "acceptIf", "fixed")
+			.collect(Collectors.toCollection(HashSet::new));
+
 	public DebugHandler(ArbitraryBuilder target) {
 		this.target = target;
 	}
@@ -23,33 +36,27 @@ public class DebugHandler implements InvocationHandler, com.navercorp.fixturemon
 	@Override
 	public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 		List<ArbitraryManipulator> manipulators = ((DefaultArbitraryBuilder)target).getManipulators();
-		String s = "";
+
 		Object ret = method.invoke(target, args);
-		if (method.getName().equals("set")) {
-			String[] strArgs = Arrays.stream(args).map(Object::toString).toArray(String[]::new);
-			s = ".set(" + String.join(", ", strArgs) + ")";
-			notify(manipulators.get(manipulators.size()-1), s);
-			return (ArbitraryBuilder) Proxy.newProxyInstance(
-				this.getClass().getClassLoader(),
-				new Class[]{ArbitraryBuilder.class},
-				new DebugHandler((ArbitraryBuilder) ret)
+
+		if (manipulateMethods.equals(method.getName())) {
+			notify(
+				((DefaultArbitraryBuilder)target).hashCode(),
+				new UserInputManipulatorsInfo(method.getName(), new ArrayList(Arrays.asList(args)))
 			);
-		} else if (method.getName().equals("size")) {
-			String[] strArgs = Arrays.stream(args).map(Object::toString).toArray(String[]::new);
-			s = ".size(" + String.join(", ", strArgs) + ")";
-			notify(manipulators.get(manipulators.size() - 1), s);
-			return (ArbitraryBuilder) Proxy.newProxyInstance(
+
+			return (ArbitraryBuilder)Proxy.newProxyInstance(
 				this.getClass().getClassLoader(),
-				new Class[]{ArbitraryBuilder.class},
-				new DebugHandler((ArbitraryBuilder) ret)
+				new Class[] {ArbitraryBuilder.class},
+				new DebugHandler((ArbitraryBuilder)ret)
 			);
 		}
 		return ret;
 	}
 
 	@Override
-	public void notify(Object manipulator, Object s) {
-		observer.update(manipulator, s);
+	public void notify(int builder, Object s) {
+		observer.update(builder, s);
 	}
 
 	public ArbitraryBuilder getTarget() {
