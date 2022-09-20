@@ -28,7 +28,6 @@ import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.OptionalInt;
 import java.util.OptionalLong;
-import java.util.Set;
 import java.util.stream.Stream;
 
 import javax.validation.constraints.NotBlank;
@@ -37,6 +36,7 @@ import javax.validation.constraints.NotEmpty;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 class FixtureMonkeyV04TestSpecs {
 	@Setter
@@ -49,7 +49,6 @@ class FixtureMonkeyV04TestSpecs {
 		private Long wrapperLong;
 		private List<String> strList;
 		private String[] strArray;
-		private Set<String> strSet;
 		private SimpleEnum enumValue;
 		private LocalDateTime localDateTime;
 		private SimpleObject object;
@@ -92,6 +91,7 @@ class FixtureMonkeyV04TestSpecs {
 	@Getter
 	@Setter
 	@EqualsAndHashCode
+	@ToString
 	public static class ListWithAnnotation {
 		@NotEmpty
 		private List<@NotBlank String> values;

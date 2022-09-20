@@ -19,6 +19,7 @@
 package com.navercorp.fixturemonkey.resolver;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -33,6 +34,7 @@ import net.jqwik.api.Arbitrary;
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.api.customizer.FixtureCustomizer;
+import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.option.GenerateOptions;
@@ -43,6 +45,7 @@ import com.navercorp.fixturemonkey.api.property.RootProperty;
 public final class ArbitraryResolver {
 	private final ArbitraryTraverser traverser;
 	private final ManipulatorOptimizer manipulatorOptimizer;
+
 	private final GenerateOptions generateOptions;
 	private final ManipulateOptions manipulateOptions;
 
@@ -62,10 +65,11 @@ public final class ArbitraryResolver {
 	public Arbitrary<?> resolve(
 		RootProperty rootProperty,
 		List<ArbitraryManipulator> manipulators,
-		List<MatcherOperator<? extends FixtureCustomizer>> customizers
+		List<MatcherOperator<? extends FixtureCustomizer>> customizers,
+		Map<NodeResolver, ArbitraryContainerInfo> containerInfosByNodeResolver
 	) {
 		ArbitraryTree arbitraryTree = new ArbitraryTree(
-			this.traverser.traverse(rootProperty, null),
+			this.traverser.traverse(rootProperty, containerInfosByNodeResolver),
 			generateOptions,
 			customizers
 		);
@@ -120,7 +124,17 @@ public final class ArbitraryResolver {
 			);
 			manipulators.add(
 				new ArbitraryManipulator(
-					(tree) -> arbitraryNodes,
+					new NodeResolver() {
+						@Override
+						public List<ArbitraryNode> resolve(ArbitraryNode arbitraryNode) {
+							return arbitraryNodes;
+						}
+
+						@Override
+						public List<NextNodePredicate> toNextNodePredicate() {
+							return Collections.emptyList(); // Do not need node predicate since it is SetLazyManipulator
+						}
+					},
 					nodeManipulator
 				)
 			);

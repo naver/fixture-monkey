@@ -36,10 +36,11 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.generator.ObjectProperty;
 import com.navercorp.fixturemonkey.expression.MonkeyExpression;
 import com.navercorp.fixturemonkey.resolver.CompositeNodeResolver;
-import com.navercorp.fixturemonkey.resolver.ContainerElementNodeResolver;
+import com.navercorp.fixturemonkey.resolver.ContainerElementPredicate;
+import com.navercorp.fixturemonkey.resolver.DefaultNodeResolver;
 import com.navercorp.fixturemonkey.resolver.IdentityNodeResolver;
 import com.navercorp.fixturemonkey.resolver.NodeResolver;
-import com.navercorp.fixturemonkey.resolver.PropertyNameNodeResolver;
+import com.navercorp.fixturemonkey.resolver.PropertyNameNodePredicate;
 
 public final class ArbitraryExpression implements MonkeyExpression, Comparable<ArbitraryExpression> {
 	private final List<Exp> expList;
@@ -132,10 +133,14 @@ public final class ArbitraryExpression implements MonkeyExpression, Comparable<A
 	}
 
 	public NodeResolver toNodeResolver() {
-		NodeResolver nodeResolver = IdentityNodeResolver.INSTANCE;
+		NodeResolver nodeResolver = null;
 
 		for (Exp exp : expList) {
-			nodeResolver = new CompositeNodeResolver(nodeResolver, exp.toNodeResolver());
+			if (nodeResolver == null) {
+				nodeResolver = exp.toNodeResolver();
+			} else {
+				nodeResolver = new CompositeNodeResolver(nodeResolver, exp.toNodeResolver());
+			}
 		}
 		return nodeResolver;
 	}
@@ -249,13 +254,13 @@ public final class ArbitraryExpression implements MonkeyExpression, Comparable<A
 			if (HEAD_NAME.equals(name)) {
 				nodeResolver = IdentityNodeResolver.INSTANCE;
 			} else {
-				nodeResolver = new PropertyNameNodeResolver(name);
+				nodeResolver = new DefaultNodeResolver(new PropertyNameNodePredicate(name));
 			}
 
 			for (ExpIndex index : indices) {
 				nodeResolver = new CompositeNodeResolver(
 					nodeResolver,
-					new ContainerElementNodeResolver(index.getIndex())
+					new DefaultNodeResolver(new ContainerElementPredicate(index.getIndex()))
 				);
 			}
 			return nodeResolver;

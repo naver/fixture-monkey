@@ -32,6 +32,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 import javax.validation.ConstraintViolationException;
@@ -73,6 +74,7 @@ import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpe
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.RegisterGroup;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.SimpleObjectChild;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.ComplexObject;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.ListWithAnnotation;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.SimpleObject;
 
 class FixtureMonkeyV04OptionsTest {
@@ -375,7 +377,7 @@ class FixtureMonkeyV04OptionsTest {
 						Class<?> type = Types.getActualType(elementType);
 						return type.isAssignableFrom(String.class);
 					},
-					(context) -> new ArbitraryContainerInfo(5, 5)
+					(context) -> new ArbitraryContainerInfo(5, 5, false)
 				)
 			)
 			.build();
@@ -400,7 +402,7 @@ class FixtureMonkeyV04OptionsTest {
 						Class<?> type = Types.getActualType(elementType);
 						return type.isAssignableFrom(String.class);
 					},
-					(context) -> new ArbitraryContainerInfo(5, 5)
+					(context) -> new ArbitraryContainerInfo(5, 5, false)
 				)
 			)
 			.build();
@@ -426,7 +428,7 @@ class FixtureMonkeyV04OptionsTest {
 	@Property
 	void defaultArbitraryContainerInfo() {
 		LabMonkey sut = LabMonkey.labMonkeyBuilder()
-			.defaultArbitraryContainerInfo(new ArbitraryContainerInfo(3, 3))
+			.defaultArbitraryContainerInfo(new ArbitraryContainerInfo(3, 3, false))
 			.build();
 
 		List<SimpleObject> actual = sut.giveMeOne(ComplexObject.class)
@@ -953,5 +955,63 @@ class FixtureMonkeyV04OptionsTest {
 		CustomBuildMethodInteger actual = sut.giveMeOne(CustomBuildMethodInteger.class);
 
 		then(actual.getValue()).isBetween(Integer.MIN_VALUE, Integer.MAX_VALUE);
+	}
+
+	@Property
+	void registerRootAndChildElementGeneratingRoot() {
+		// given
+		String expected = "test";
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.register(ComplexObject.class, fixture -> fixture.giveMeBuilder(ComplexObject.class))
+			.register(String.class, fixture -> fixture.giveMeBuilder(String.class).set(expected))
+			.build();
+
+		// when
+		List<String> actual = sut.giveMeOne(ComplexObject.class).getList().stream()
+			.map(SimpleObject::getStr)
+			.collect(Collectors.toList());
+
+		then(actual).allMatch(expected::equals);
+	}
+
+	@Property
+	void registerSize() {
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.register(ComplexObject.class, fixture -> fixture.giveMeBuilder(ComplexObject.class).size("strList", 1))
+			.build();
+
+		List<String> actual = sut.giveMeOne(ComplexObject.class)
+			.getStrList();
+
+		then(actual).hasSize(1);
+	}
+
+	@Property
+	void sizeRegisteredElement() {
+		String expected = "test";
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.register(String.class, fixture -> fixture.giveMeBuilder(String.class).set(expected))
+			.build();
+
+		List<String> actual = sut.giveMeBuilder(ListWithAnnotation.class)
+			.size("values", 5)
+			.sample()
+			.getValues();
+
+		then(actual).allMatch(expected::equals);
+	}
+
+	@Property
+	void sizeBiggerThanRegisterSized() {
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.register(ComplexObject.class, fixture -> fixture.giveMeBuilder(ComplexObject.class).size("strList", 3))
+			.build();
+
+		List<String> actual = sut.giveMeBuilder(ComplexObject.class)
+			.size("strList", 10)
+			.sample()
+			.getStrList();
+
+		then(actual).hasSize(10);
 	}
 }

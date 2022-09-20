@@ -22,6 +22,7 @@ import static java.util.stream.Collectors.toList;
 
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Stream;
@@ -92,12 +93,25 @@ public class LabMonkey extends FixtureMonkey {
 		return giveMeBuilder(typeReference);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public <T> ArbitraryBuilder<T> giveMeBuilder(TypeReference<T> type) {
 		ManipulateOptions manipulateOptions = manipulateOptionsBuilder.build();
-		DefaultArbitraryBuilder builder = new DefaultArbitraryBuilder<>(
+		RootProperty rootProperty = new RootProperty(type.getAnnotatedType());
+
+		ArbitraryBuilder<?> registered = manipulateOptions.getRegisteredArbitraryBuilders().stream()
+			.filter(it -> it.match(rootProperty))
+			.map(MatcherOperator::getOperator)
+			.findAny()
+			.orElse(null);
+
+		if (registered != null) {
+			return (DefaultArbitraryBuilder<T>)registered.copy();
+		}
+
+		return new DefaultArbitraryBuilder<>(
 			manipulateOptions,
-			new RootProperty(type.getAnnotatedType()),
+			rootProperty,
 			new ArbitraryResolver(
 				traverser,
 				manipulatorOptimizer,
@@ -108,7 +122,8 @@ public class LabMonkey extends FixtureMonkey {
 			this.validator,
 			new ArrayList<>(),
 			new HashSet<>(),
-			new ArrayList<>()
+			new ArrayList<>(),
+			new HashMap<>()
 		);
 
 		return (ArbitraryBuilder<T>) Proxy.newProxyInstance(
@@ -142,7 +157,8 @@ public class LabMonkey extends FixtureMonkey {
 			this.validator,
 			manipulators,
 			new HashSet<>(),
-			new ArrayList<>()
+			new ArrayList<>(),
+			new HashMap<>()
 		);
 	}
 

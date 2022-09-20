@@ -188,10 +188,10 @@ class FixtureMonkeyV04Test {
 		expected.add("e");
 
 		// when
-		Set<String> actual = SUT.giveMeBuilder(ComplexObject.class)
-			.set("strSet", expected)
-			.sample()
-			.getStrSet();
+		Set<String> actual = SUT.giveMeBuilder(new TypeReference<Set<String>>() {
+			})
+			.set(expected)
+			.sample();
 
 		then(actual).isEqualTo(expected);
 	}
@@ -1292,5 +1292,21 @@ class FixtureMonkeyV04Test {
 		});
 
 		then(actual).isNotNull();
+	}
+
+	@Property
+	void fixedRangedSizeReturnsSameSize() {
+		ArbitraryBuilder<ComplexObject> fixedArbitraryBuilder = SUT.giveMeBuilder(ComplexObject.class)
+			.size("strList", 1, 5)
+			.fixed();
+
+		List<String> actual = fixedArbitraryBuilder
+			.sample()
+			.getStrList();
+
+		List<String> expected = fixedArbitraryBuilder
+			.sample()
+			.getStrList();
+		then(actual).isEqualTo(expected);
 	}
 }

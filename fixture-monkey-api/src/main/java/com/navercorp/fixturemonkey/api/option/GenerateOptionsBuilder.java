@@ -435,7 +435,7 @@ public final class GenerateOptionsBuilder {
 		ArbitraryContainerInfo defaultArbitraryContainerInfo =
 			defaultIfNull(
 				this.defaultArbitraryContainerInfo,
-				() -> new ArbitraryContainerInfo(0, defaultArbitraryContainerMaxSize)
+				() -> new ArbitraryContainerInfo(0, defaultArbitraryContainerMaxSize, false)
 			);
 		ArbitraryGenerator defaultArbitraryGenerator =
 			defaultIfNull(this.defaultArbitraryGenerator, this.javaDefaultArbitraryGeneratorBuilder::build);

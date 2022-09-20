@@ -29,6 +29,8 @@ import net.jqwik.api.Builders.BuilderCombinator;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.LabMonkey;
@@ -45,10 +47,18 @@ import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.property.ElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.type.Types;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.ListWithAnnotation;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.SimpleObject;
 
 class FixtureMonkeyV04OptionsAdditionalTestSpecs {
 	public static class SimpleObjectChild extends SimpleObject {
+	}
+
+	@Getter
+	@Setter
+	@ToString
+	public static class NestedList {
+		List<ListWithAnnotation> values;
 	}
 
 	public static class RegisterGroup {
@@ -111,7 +121,7 @@ class FixtureMonkeyV04OptionsAdditionalTestSpecs {
 
 			return new ContainerProperty(
 				elementProperties,
-				new ArbitraryContainerInfo(1, 1)
+				new ArbitraryContainerInfo(1, 1, false)
 			);
 		}
 	}

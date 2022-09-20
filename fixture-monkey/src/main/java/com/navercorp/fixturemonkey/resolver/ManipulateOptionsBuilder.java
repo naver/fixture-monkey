@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 
@@ -119,13 +118,15 @@ public final class ManipulateOptionsBuilder {
 	}
 
 	public void sampleRegisteredArbitraryBuilder(LabMonkey labMonkey) {
-		registeredSampledArbitraryBuilders = registeredArbitraryBuilders.stream()
-			.map(operator -> new MatcherOperator<>(
-					operator.getMatcher(),
-					operator.getOperator().apply(labMonkey)
+		for (MatcherOperator<Function<LabMonkey, ? extends ArbitraryBuilder<?>>> registeredArbitraryBuilder
+			: registeredArbitraryBuilders) {
+			registeredSampledArbitraryBuilders.add(
+				new MatcherOperator<>(
+					registeredArbitraryBuilder.getMatcher(),
+					registeredArbitraryBuilder.getOperator().apply(labMonkey)
 				)
-			)
-			.collect(Collectors.toList());
+			);
+		}
 	}
 
 	private static <T> T defaultIfNull(@Nullable T obj, Supplier<T> defaultValue) {

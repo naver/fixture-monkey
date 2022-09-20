@@ -15,32 +15,63 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.navercorp.fixturemonkey.resolver;
 
 import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.NOT_NULL_INJECT;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public final class IdentityNodeResolver implements NodeResolver {
-	public static final IdentityNodeResolver INSTANCE = new IdentityNodeResolver();
+public class DefaultNodeResolver implements NodeResolver {
+	private final NextNodePredicate nextNodePredicate;
 
-	private IdentityNodeResolver() {
+	public DefaultNodeResolver(NextNodePredicate nextNodePredicate) {
+		this.nextNodePredicate = nextNodePredicate;
 	}
 
 	@Override
 	public List<ArbitraryNode> resolve(ArbitraryNode arbitraryNode) {
+		List<ArbitraryNode> resolved = arbitraryNode.getChildren().stream()
+			.filter(it -> nextNodePredicate.test(
+				arbitraryNode.getArbitraryProperty(),
+				it.getArbitraryProperty().getObjectProperty(),
+				it.getArbitraryProperty().getContainerProperty()
+			))
+			.collect(Collectors.toList());
+
 		arbitraryNode.setArbitraryProperty(arbitraryNode.getArbitraryProperty().withNullInject(NOT_NULL_INJECT));
-		return Collections.singletonList(arbitraryNode);
+		for (ArbitraryNode node : resolved) {
+			node.setArbitraryProperty(node.getArbitraryProperty().withNullInject(NOT_NULL_INJECT));
+		}
+
+		return resolved;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null || getClass() != obj.getClass()) {
+			return false;
+		}
+		DefaultNodeResolver that = (DefaultNodeResolver)obj;
+		return nextNodePredicate.equals(that.nextNodePredicate);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(nextNodePredicate);
 	}
 
 	@Override
 	public List<NextNodePredicate> toNextNodePredicate() {
-		return Collections.emptyList();
+		return Collections.singletonList(nextNodePredicate);
 	}
 }
