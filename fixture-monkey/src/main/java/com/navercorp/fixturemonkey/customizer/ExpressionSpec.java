@@ -23,12 +23,10 @@ import static java.util.stream.Collectors.toList;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 
@@ -41,7 +39,6 @@ import net.jqwik.api.Combinators;
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.api.expression.ExpressionGenerator;
-import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.arbitrary.AbstractArbitraryExpressionManipulator;
 import com.navercorp.fixturemonkey.arbitrary.AbstractArbitrarySet;
 import com.navercorp.fixturemonkey.arbitrary.ArbitraryExpression;
@@ -54,9 +51,6 @@ import com.navercorp.fixturemonkey.arbitrary.BuilderManipulator;
 import com.navercorp.fixturemonkey.arbitrary.ContainerSizeManipulator;
 import com.navercorp.fixturemonkey.arbitrary.MetadataManipulator;
 import com.navercorp.fixturemonkey.arbitrary.PostArbitraryManipulator;
-import com.navercorp.fixturemonkey.resolver.ArbitraryManipulator;
-import com.navercorp.fixturemonkey.resolver.BuilderManipulatorAdapter;
-import com.navercorp.fixturemonkey.resolver.NodeResolver;
 
 public final class ExpressionSpec {
 	private final List<BuilderManipulator> builderManipulators;
@@ -341,24 +335,6 @@ public final class ExpressionSpec {
 
 	public List<BuilderManipulator> getBuilderManipulators() {
 		return builderManipulators;
-	}
-
-	public List<ArbitraryManipulator> getArbitraryManipulators(
-		BuilderManipulatorAdapter builderManipulatorAdapter
-	) {
-		return this.builderManipulators.stream()
-			.filter(it -> !(it instanceof ContainerSizeManipulator))
-			.map(builderManipulatorAdapter::convertToArbitraryManipulator)
-			.collect(toList());
-	}
-
-	public Map<NodeResolver, ArbitraryContainerInfo> getContainerInfosByNodeResolver(
-		BuilderManipulatorAdapter builderManipulatorAdapter
-	) {
-		return this.builderManipulators.stream()
-			.filter(ContainerSizeManipulator.class::isInstance)
-			.map(builderManipulatorAdapter::convertToContainerInfosByNodeResolverEntry)
-			.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 	}
 
 	@Override

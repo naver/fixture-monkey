@@ -44,9 +44,11 @@ class SpecTest {
 
 	@Property
 	void specSet() {
-		// when
+		ExpressionSpec spec = new ExpressionSpec()
+			.set("value", -1);
+
 		IntValue actual = SUT.giveMeBuilder(IntValue.class)
-			.spec(new ExpressionSpec().set("value", -1))
+			.spec(spec)
 			.sample();
 
 		then(actual.getValue()).isEqualTo(-1);
@@ -54,9 +56,11 @@ class SpecTest {
 
 	@Property
 	void specSetArbitrary() {
-		// when
+		ExpressionSpec spec = new ExpressionSpec()
+			.set("value", Arbitraries.just(1));
+
 		IntValue actual = SUT.giveMeBuilder(IntValue.class)
-			.spec(new ExpressionSpec().set("value", Arbitraries.just(1)))
+			.spec(spec)
 			.sample();
 
 		then(actual.getValue()).isEqualTo(1);
@@ -64,9 +68,11 @@ class SpecTest {
 
 	@Property
 	void specSize() {
-		// when
+		ExpressionSpec spec = new ExpressionSpec()
+			.size("values", 1, 1);
+
 		IntegerList actual = SUT.giveMeBuilder(IntegerList.class)
-			.spec(new ExpressionSpec().size("values", 1, 1))
+			.spec(spec)
 			.sample();
 
 		then(actual.getValues()).hasSize(1);
@@ -74,9 +80,11 @@ class SpecTest {
 
 	@Property
 	void specMinSize() {
-		// when
+		ExpressionSpec spec = new ExpressionSpec()
+			.minSize("values", 10);
+
 		IntegerList actual = SUT.giveMeBuilder(IntegerList.class)
-			.spec(new ExpressionSpec().minSize("values", 10))
+			.spec(spec)
 			.sample();
 
 		then(actual.getValues()).hasSizeGreaterThanOrEqualTo(10);
@@ -84,9 +92,10 @@ class SpecTest {
 
 	@Property
 	void specMaxSize() {
-		// when
+		ExpressionSpec spec = new ExpressionSpec()
+			.maxSize("values", 10);
 		IntegerList actual = SUT.giveMeBuilder(IntegerList.class)
-			.spec(new ExpressionSpec().maxSize("values", 10))
+			.spec(spec)
 			.sample();
 
 		then(actual.getValues()).hasSizeLessThanOrEqualTo(10);
@@ -94,9 +103,11 @@ class SpecTest {
 
 	@Property
 	void specSetNull() {
-		// when
+		ExpressionSpec spec = new ExpressionSpec()
+			.setNull("values");
+
 		IntegerList actual = SUT.giveMeBuilder(IntegerList.class)
-			.spec(new ExpressionSpec().setNull("values"))
+			.spec(spec)
 			.sample();
 
 		then(actual.getValues()).isNull();
@@ -104,12 +115,12 @@ class SpecTest {
 
 	@Property
 	void specSizeAfterSetNullReturnsNull() {
-		// when
+		ExpressionSpec spec = new ExpressionSpec()
+			.setNull("values")
+			.size("values", 1, 1);
+
 		IntegerList actual = SUT.giveMeBuilder(IntegerList.class)
-			.spec(new ExpressionSpec()
-				.setNull("values")
-				.size("values", 1, 1)
-			)
+			.spec(spec)
 			.sample();
 
 		then(actual.getValues()).isNull();
@@ -117,13 +128,13 @@ class SpecTest {
 
 	@Property
 	void specSetAfterSetNullReturnsNotNull() {
-		// when
+		ExpressionSpec spec = new ExpressionSpec()
+			.setNull("values")
+			.size("values", 1, 1)
+			.set("values[0]", 0);
+
 		IntegerList actual = SUT.giveMeBuilder(IntegerList.class)
-			.spec(new ExpressionSpec()
-				.setNull("values")
-				.size("values", 1, 1)
-				.set("values[0]", 0)
-			)
+			.spec(spec)
 			.sample();
 
 		then(actual.getValues()).isNotNull();
@@ -133,12 +144,12 @@ class SpecTest {
 
 	@Property
 	void specSetNotNullAfterSetNullReturnsNotNull() {
-		// when
+		ExpressionSpec spec = new ExpressionSpec()
+			.setNull("values")
+			.setNotNull("values");
+
 		IntegerList actual = SUT.giveMeBuilder(IntegerList.class)
-			.spec(new ExpressionSpec()
-				.setNull("values")
-				.setNotNull("values")
-			)
+			.spec(spec)
 			.sample();
 
 		then(actual.getValues()).isNotNull();
@@ -146,12 +157,12 @@ class SpecTest {
 
 	@Property
 	void specSetNullAfterSetNotNullReturnsNull() {
-		// when
+		ExpressionSpec spec = new ExpressionSpec()
+			.setNotNull("values")
+			.setNull("values");
+
 		IntegerList actual = SUT.giveMeBuilder(IntegerList.class)
-			.spec(new ExpressionSpec()
-				.setNotNull("values")
-				.setNull("values")
-			)
+			.spec(spec)
 			.sample();
 
 		then(actual.getValues()).isNull();
@@ -159,13 +170,13 @@ class SpecTest {
 
 	@Property
 	void specSetNullAfterSetReturnsNull() {
-		// when
+		ExpressionSpec spec = new ExpressionSpec()
+			.size("values", 1, 1)
+			.set("values[0]", 0)
+			.setNull("values");
+
 		IntegerList actual = SUT.giveMeBuilder(IntegerList.class)
-			.spec(new ExpressionSpec()
-				.size("values", 1, 1)
-				.set("values[0]", 0)
-				.setNull("values")
-			)
+			.spec(spec)
 			.sample();
 
 		then(actual.getValues()).isNull();
@@ -173,13 +184,15 @@ class SpecTest {
 
 	@Property
 	void specPostCondition() {
-		// when
-		IntValue actual = SUT.giveMeBuilder(IntValue.class)
-			.spec(new ExpressionSpec().setPostCondition(
+		ExpressionSpec spec = new ExpressionSpec()
+			.setPostCondition(
 				"value",
 				int.class,
 				value -> value >= 0 && value <= 100
-			))
+			);
+
+		IntValue actual = SUT.giveMeBuilder(IntValue.class)
+			.spec(spec)
 			.sample();
 
 		then(actual.getValue()).isBetween(0, 100);
@@ -187,13 +200,15 @@ class SpecTest {
 
 	@Property
 	void specPostConditionType() {
-		// when
-		IntValue actual = SUT.giveMeBuilder(IntValue.class)
-			.spec(new ExpressionSpec().setPostCondition(
+		ExpressionSpec spec = new ExpressionSpec()
+			.setPostCondition(
 				"value",
 				int.class,
 				value -> value >= 0 && value <= 100
-			))
+			);
+
+		IntValue actual = SUT.giveMeBuilder(IntValue.class)
+			.spec(spec)
 			.sample();
 
 		then(actual.getValue()).isBetween(0, 100);
@@ -201,11 +216,12 @@ class SpecTest {
 
 	@Property
 	void specPostConditionIndex() {
-		// when
+		ExpressionSpec spec = new ExpressionSpec()
+			.setPostCondition("values[0]", Integer.class, value -> value >= 0 && value <= 100)
+			.size("values", 1, 1);
+
 		IntegerList actual = SUT.giveMeBuilder(IntegerList.class)
-			.spec(new ExpressionSpec()
-				.setPostCondition("values[0]", Integer.class, value -> value >= 0 && value <= 100)
-				.size("values", 1, 1))
+			.spec(spec)
 			.sample();
 
 		then(actual.getValues()).hasSize(1);
@@ -214,12 +230,12 @@ class SpecTest {
 
 	@Property
 	void specObjectToBuilderSetIndex() {
-		// given
+		ExpressionSpec spec = new ExpressionSpec()
+			.size("values", 2, 2);
 		IntegerList expected = SUT.giveMeBuilder(IntegerList.class)
-			.spec(new ExpressionSpec().size("values", 2, 2))
+			.spec(spec)
 			.sample();
 
-		// when
 		IntegerList actual = SUT.giveMeBuilder(expected)
 			.set("values[1]", 1)
 			.sample();
@@ -229,13 +245,13 @@ class SpecTest {
 
 	@Property
 	void specListMaxSize() {
-		// when
+		ExpressionSpec spec = new ExpressionSpec()
+			.list("values",
+				it -> it.ofMaxSize(2)
+			);
+
 		StringList actual = SUT.giveMeBuilder(StringList.class)
-			.spec(new ExpressionSpec()
-				.list("values",
-					it -> it.ofMaxSize(2)
-				)
-			)
+			.spec(spec)
 			.sample();
 
 		then(actual.getValues().size()).isLessThanOrEqualTo(2);
@@ -243,13 +259,13 @@ class SpecTest {
 
 	@Property
 	void specListSizeBetween() {
-		// when
+		ExpressionSpec spec = new ExpressionSpec()
+			.list("values",
+				it -> it.ofSizeBetween(1, 3)
+			);
+
 		StringList actual = SUT.giveMeBuilder(StringList.class)
-			.spec(new ExpressionSpec()
-				.list("values",
-					it -> it.ofSizeBetween(1, 3)
-				)
-			)
+			.spec(spec)
 			.sample();
 
 		then(actual.getValues().size()).isBetween(1, 3);
@@ -257,16 +273,16 @@ class SpecTest {
 
 	@Property
 	void specSetRightOrder() {
-		// when
+		ExpressionSpec spec = new ExpressionSpec()
+			.list("values",
+				it -> it.ofSize(3)
+					.setElement(0, "field1")
+					.setElement(1, "field2")
+					.setElement(2, "field3")
+			);
+
 		StringList actual = SUT.giveMeBuilder(StringList.class)
-			.spec(new ExpressionSpec()
-				.list("values",
-					it -> it.ofSize(3)
-						.setElement(0, "field1")
-						.setElement(1, "field2")
-						.setElement(2, "field3")
-				)
-			)
+			.spec(spec)
 			.sample();
 
 		// then
@@ -279,14 +295,15 @@ class SpecTest {
 
 	@Property
 	void specPostConditionRightOrder() {
-		// when
+		ExpressionSpec spec = new ExpressionSpec()
+			.list("values",
+				(it) -> it.ofSize(2)
+					.setElementPostCondition(0, String.class, s -> s.length() > 5)
+					.setElementPostCondition(1, String.class, s -> s.length() > 10)
+			);
+
 		StringList actual = SUT.giveMeBuilder(StringList.class)
-			.spec(new ExpressionSpec()
-				.list("values",
-					(it) -> it.ofSize(2)
-						.setElementPostCondition(0, String.class, s -> s.length() > 5)
-						.setElementPostCondition(1, String.class, s -> s.length() > 10)
-				))
+			.spec(spec)
 			.sample();
 
 		// then
@@ -298,13 +315,13 @@ class SpecTest {
 
 	@Property
 	void specListMinSize() {
-		// when
+		ExpressionSpec spec = new ExpressionSpec()
+			.list("values",
+				it -> it.ofMinSize(1)
+			);
+
 		StringList actual = SUT.giveMeBuilder(StringList.class)
-			.spec(new ExpressionSpec()
-				.list("values",
-					it -> it.ofMinSize(1)
-				)
-			)
+			.spec(spec)
 			.sample();
 
 		then(actual.getValues().size()).isGreaterThanOrEqualTo(1);
@@ -325,7 +342,6 @@ class SpecTest {
 				.setElement(1, 2)
 			);
 
-		// when
 		IntegerList actual = SUT.giveMeBuilder(IntegerList.class)
 			.specAny(specOne, specTwo)
 			.sample();
@@ -363,7 +379,6 @@ class SpecTest {
 
 	@Property(tries = 2)
 	void specAnyReturnsDiff() {
-		// given
 		Arbitrary<StringValue> complex = SUT.giveMeBuilder(
 				StringValue.class)
 			.specAny(
@@ -380,19 +395,19 @@ class SpecTest {
 			)
 			.build();
 
-		// when
 		List<StringValue> sampled = complex.list().ofSize(100).sample();
 
-		// then
 		List<StringValue> distinct = sampled.stream().distinct().collect(toList());
 		then(distinct.size()).isNotEqualTo(sampled.size());
 	}
 
 	@Property
 	void specAnyFirstWithMetadataManipulatorReturnsGivenOrder() {
-		// when
+		ExpressionSpec spec = new ExpressionSpec()
+			.size("values", 2);
+
 		StringList actual = SUT.giveMeBuilder(StringList.class)
-			.specAny(new ExpressionSpec().size("values", 2))
+			.specAny(spec)
 			.size("values", 1)
 			.sample();
 
@@ -401,10 +416,12 @@ class SpecTest {
 
 	@Property
 	void specAnyLastWithMetadataManipulatorReturnsGivenOrder() {
-		// when
+		ExpressionSpec spec = new ExpressionSpec()
+			.size("values", 2);
+
 		StringList actual = SUT.giveMeBuilder(StringList.class)
 			.size("values", 1)
-			.specAny(new ExpressionSpec().size("values", 2))
+			.specAny(spec)
 			.sample();
 
 		then(actual.getValues()).hasSize(2);
@@ -412,9 +429,11 @@ class SpecTest {
 
 	@Property
 	void specListSetSize() {
-		// when
+		ExpressionSpec spec = new ExpressionSpec()
+			.list("values", it -> it.ofSize(1));
+
 		IntegerList actual = SUT.giveMeBuilder(IntegerList.class)
-			.spec(new ExpressionSpec().list("values", it -> it.ofSize(1)))
+			.spec(spec)
 			.sample();
 
 		then(actual.getValues()).hasSize(1);
@@ -422,12 +441,13 @@ class SpecTest {
 
 	@Property
 	void specListSetElement() {
-		// when
+		ExpressionSpec spec = new ExpressionSpec().list("values", it -> {
+			it.ofSize(1);
+			it.setElement(0, 1);
+		});
+
 		IntegerList actual = SUT.giveMeBuilder(IntegerList.class)
-			.spec(new ExpressionSpec().list("values", it -> {
-				it.ofSize(1);
-				it.setElement(0, 1);
-			}))
+			.spec(spec)
 			.sample();
 
 		then(actual.getValues()).hasSize(1);
@@ -436,12 +456,13 @@ class SpecTest {
 
 	@Property
 	void specListAnySet() {
-		// when
+		ExpressionSpec spec = new ExpressionSpec().list("values", it -> {
+			it.ofSize(3);
+			it.any(1);
+		});
+
 		IntegerList actual = SUT.giveMeBuilder(IntegerList.class)
-			.spec(new ExpressionSpec().list("values", it -> {
-				it.ofSize(3);
-				it.any(1);
-			}))
+			.spec(spec)
 			.sample();
 
 		then(actual.getValues()).anyMatch(it -> it == 1);
@@ -449,9 +470,11 @@ class SpecTest {
 
 	@Property
 	void specListAnyWithoutSize() {
-		// when
+		ExpressionSpec spec = new ExpressionSpec()
+			.list("values", it -> it.any("set"));
+
 		StringList actual = SUT.giveMeBuilder(StringList.class)
-			.spec(new ExpressionSpec().list("values", it -> it.any("set")))
+			.spec(spec)
 			.sample();
 
 		then(actual.getValues()).anyMatch(it -> it.equals("set"));
@@ -459,12 +482,14 @@ class SpecTest {
 
 	@Property
 	void specListAnyWithoutMaxSize() {
-		// when
-		StringList actual = SUT.giveMeBuilder(StringList.class)
-			.spec(new ExpressionSpec().list("values", it -> {
+		ExpressionSpec spec = new ExpressionSpec()
+			.list("values", it -> {
 				it.ofMinSize(5);
 				it.any("set");
-			}))
+			});
+
+		StringList actual = SUT.giveMeBuilder(StringList.class)
+			.spec(spec)
 			.sample();
 
 		then(actual.getValues()).anyMatch(it -> it.equals("set"));
@@ -472,12 +497,14 @@ class SpecTest {
 
 	@Property
 	void specListAnyWithoutMinSize() {
-		// when
-		StringList actual = SUT.giveMeBuilder(StringList.class)
-			.spec(new ExpressionSpec().list("values", it -> {
+		ExpressionSpec spec = new ExpressionSpec()
+			.list("values", it -> {
 				it.ofMaxSize(2);
 				it.any("set");
-			}))
+			});
+
+		StringList actual = SUT.giveMeBuilder(StringList.class)
+			.spec(spec)
 			.sample();
 
 		then(actual.getValues()).anyMatch(it -> it.equals("set"));
@@ -485,12 +512,14 @@ class SpecTest {
 
 	@Property
 	void specListAllSet() {
-		// when
-		IntegerList actual = SUT.giveMeBuilder(IntegerList.class)
-			.spec(new ExpressionSpec().list("values", it -> {
+		ExpressionSpec spec = new ExpressionSpec()
+			.list("values", it -> {
 				it.ofSize(3);
 				it.all(1);
-			}))
+			});
+
+		IntegerList actual = SUT.giveMeBuilder(IntegerList.class)
+			.spec(spec)
 			.sample();
 
 		then(actual.getValues()).allMatch(it -> it == 1);
@@ -498,12 +527,14 @@ class SpecTest {
 
 	@Property
 	void specListPostConditionElement() {
-		// when
-		IntegerList actual = SUT.giveMeBuilder(IntegerList.class)
-			.spec(new ExpressionSpec().list("values", it -> {
+		ExpressionSpec spec = new ExpressionSpec()
+			.list("values", it -> {
 				it.ofSize(1);
 				it.setElementPostCondition(0, Integer.class, postConditioned -> postConditioned > 1);
-			}))
+			});
+
+		IntegerList actual = SUT.giveMeBuilder(IntegerList.class)
+			.spec(spec)
 			.sample();
 
 		then(actual.getValues()).hasSize(1);
@@ -512,13 +543,15 @@ class SpecTest {
 
 	@Property
 	void specListPostConditionElementField() {
-		// when
-		NestedStringValueList actual = SUT.giveMeBuilder(NestedStringValueList.class)
-			.spec(new ExpressionSpec().list("values", it -> {
+		ExpressionSpec spec = new ExpressionSpec()
+			.list("values", it -> {
 				it.ofSize(1);
 				it.setElementFieldPostCondition(0, "value", String.class,
 					postConditioned -> postConditioned.length() > 5);
-			}))
+			});
+
+		NestedStringValueList actual = SUT.giveMeBuilder(NestedStringValueList.class)
+			.spec(spec)
 			.sample();
 
 		then(actual.getValues()).allMatch(it -> it.getValue().length() > 5);
@@ -526,15 +559,17 @@ class SpecTest {
 
 	@Property
 	void specListListElementSet() {
-		// when
-		ListListString actual = SUT.giveMeBuilder(ListListString.class)
-			.spec(new ExpressionSpec().list("values", it -> {
+		ExpressionSpec spec = new ExpressionSpec()
+			.list("values", it -> {
 				it.ofSize(1);
 				it.listElement(0, nestedIt -> {
 					nestedIt.ofSize(1);
 					nestedIt.setElement(0, "set");
 				});
-			}))
+			});
+
+		ListListString actual = SUT.giveMeBuilder(ListListString.class)
+			.spec(spec)
 			.sample();
 
 		then(actual.getValues()).hasSize(1);
@@ -544,15 +579,17 @@ class SpecTest {
 
 	@Property
 	void specListListElementPostCondition() {
-		// when
-		ListListString actual = SUT.giveMeBuilder(ListListString.class)
-			.spec(new ExpressionSpec().list("values", it -> {
+		ExpressionSpec spec = new ExpressionSpec()
+			.list("values", it -> {
 				it.ofSize(1);
 				it.listElement(0, nestedIt -> {
 					nestedIt.ofSize(1);
 					nestedIt.setElementPostCondition(0, String.class, postConditioned -> postConditioned.length() > 5);
 				});
-			}))
+			});
+
+		ListListString actual = SUT.giveMeBuilder(ListListString.class)
+			.spec(spec)
 			.sample();
 
 		then(actual.getValues()).hasSize(1);
@@ -561,23 +598,25 @@ class SpecTest {
 	}
 
 	@Property
-	void specSetWithLimit() {
-		// when
-		IntValue actual = SUT.giveMeBuilder(IntValue.class)
-			.spec(new ExpressionSpec()
-				.set("value", 1, 0))
+	void specSetWithLimitZeroAffectsNothing() {
+		ExpressionSpec spec = new ExpressionSpec()
+			.set("values[*]", "set", 0);
+
+		StringList actual = SUT.giveMeBuilder(StringList.class)
+			.spec(spec)
 			.sample();
 
-		then(actual.getValue()).isBetween(Integer.MIN_VALUE, Integer.MAX_VALUE);
+		then(actual.getValues()).allMatch(it -> !it.equals("set"));
 	}
 
 	@Property
 	void specSetIndexWithLimitReturns() {
-		// when
+		ExpressionSpec spec = new ExpressionSpec()
+			.size("values", 2, 2)
+			.set("values[*]", "set", 1);
+
 		StringList actual = SUT.giveMeBuilder(StringList.class)
-			.spec(new ExpressionSpec()
-				.size("values", 2, 2)
-				.set("values[*]", "set", 1))
+			.spec(spec)
 			.sample();
 
 		then(actual.getValues()).anyMatch(it -> !it.equals("set"));
@@ -585,11 +624,11 @@ class SpecTest {
 
 	@Property
 	void specSetArbitraryBuilder() {
-		// when
+		ExpressionSpec spec = new ExpressionSpec()
+			.set("value2", SUT.giveMeBuilder(IntValue.class).set("value", 1));
+
 		StringAndInt actual = SUT.giveMeBuilder(StringAndInt.class)
-			.spec(new ExpressionSpec().set("value2",
-				SUT.giveMeBuilder(IntValue.class).set("value", 1))
-			)
+			.spec(spec)
 			.sample();
 
 		then(actual.getValue2().getValue()).isEqualTo(1);

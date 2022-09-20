@@ -57,7 +57,7 @@ class SpecTestSpecs {
 
 	@Data
 	public static class NestedStringValueList {
-		private List<SpecTestSpecs.StringValue> values;
+		private List<StringValue> values;
 	}
 
 	@Data
@@ -67,7 +67,7 @@ class SpecTestSpecs {
 
 	@Data
 	public static class StringAndInt {
-		private SpecTestSpecs.StringValue value1;
-		private SpecTestSpecs.IntValue value2;
+		private StringValue value1;
+		private IntValue value2;
 	}
 }

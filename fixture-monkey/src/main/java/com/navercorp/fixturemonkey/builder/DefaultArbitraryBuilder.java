@@ -37,6 +37,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
@@ -62,6 +63,8 @@ import com.navercorp.fixturemonkey.api.property.RootProperty;
 import com.navercorp.fixturemonkey.api.random.Randoms;
 import com.navercorp.fixturemonkey.api.type.LazyAnnotatedType;
 import com.navercorp.fixturemonkey.api.type.Types;
+import com.navercorp.fixturemonkey.arbitrary.BuilderManipulator;
+import com.navercorp.fixturemonkey.arbitrary.ContainerSizeManipulator;
 import com.navercorp.fixturemonkey.customizer.ArbitraryCustomizer;
 import com.navercorp.fixturemonkey.customizer.ExpressionSpec;
 import com.navercorp.fixturemonkey.customizer.InnerSpec;
@@ -209,10 +212,24 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 
 	@Override
 	public ArbitraryBuilder<T> spec(ExpressionSpec expressionSpec) {
+		List<BuilderManipulator> builderManipulators = expressionSpec.getBuilderManipulators();
+
+		List<ArbitraryManipulator> convertedArbitraryManipulators =
+			builderManipulators.stream()
+				.filter(it -> !(it instanceof ContainerSizeManipulator))
+				.map(builderManipulatorAdapter::convertToArbitraryManipulator)
+				.collect(toList());
+
+		Map<NodeResolver, ArbitraryContainerInfo> convertedContainerInfosByNodeResolver =
+			builderManipulators.stream()
+				.filter(ContainerSizeManipulator.class::isInstance)
+				.map(builderManipulatorAdapter::convertToContainerInfosByNodeResolverEntry)
+				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
 		this.containerInfosByNodeResolver.putAll(
-			expressionSpec.getContainerInfosByNodeResolver(builderManipulatorAdapter)
+			convertedContainerInfosByNodeResolver
 		);
-		this.manipulators.addAll(expressionSpec.getArbitraryManipulators(builderManipulatorAdapter));
+		this.manipulators.addAll(convertedArbitraryManipulators);
 		return this;
 	}
 
