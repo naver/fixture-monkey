@@ -346,24 +346,20 @@ public final class ExpressionSpec {
 	}
 
 	public List<ArbitraryManipulator> getArbitraryManipulators(
-		ArbitraryTraverser traverser,
-		ManipulateOptions manipulateOptions
+		BuilderManipulatorAdapter builderManipulatorAdapter
 	) {
 		return this.builderManipulators.stream()
 			.filter(it -> !(it instanceof ContainerSizeManipulator))
-			.map(new BuilderManipulatorAdapter(traverser, manipulateOptions)::convertToArbitraryManipulator)
+			.map(builderManipulatorAdapter::convertToArbitraryManipulator)
 			.collect(toList());
 	}
 
 	public Map<NodeResolver, ArbitraryContainerInfo> getContainerInfosByNodeResolver(
-		ArbitraryTraverser traverser,
-		ManipulateOptions manipulateOptions
+		BuilderManipulatorAdapter builderManipulatorAdapter
 	) {
 		return this.builderManipulators.stream()
 			.filter(ContainerSizeManipulator.class::isInstance)
-			.map(
-				new BuilderManipulatorAdapter(traverser, manipulateOptions)::convertToContainerInfosByNodeResolverEntry
-			)
+			.map(builderManipulatorAdapter::convertToContainerInfosByNodeResolverEntry)
 			.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 	}
 

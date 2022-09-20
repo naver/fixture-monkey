@@ -39,7 +39,7 @@ import com.navercorp.fixturemonkey.test.SpecTestSpecs.StringAndInt;
 import com.navercorp.fixturemonkey.test.SpecTestSpecs.StringList;
 import com.navercorp.fixturemonkey.test.SpecTestSpecs.StringValue;
 
-public class SpecTest {
+class SpecTest {
 	public static final LabMonkey SUT = LabMonkey.create();
 
 	@Property

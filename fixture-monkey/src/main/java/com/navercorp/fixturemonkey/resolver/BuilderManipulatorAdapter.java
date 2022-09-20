@@ -19,6 +19,7 @@
 package com.navercorp.fixturemonkey.resolver;
 
 import static com.navercorp.fixturemonkey.Constants.DEFAULT_ELEMENT_MAX_SIZE;
+import static com.navercorp.fixturemonkey.Constants.DEFAULT_ELEMENT_MIN_SIZE;
 
 import java.util.AbstractMap;
 import java.util.Map;
@@ -79,7 +80,7 @@ public final class BuilderManipulatorAdapter {
 	private NodeManipulator getNodeManipulator(BuilderManipulator builderManipulator) {
 		if (builderManipulator instanceof ArbitrarySet) {
 			ArbitrarySet<?> manipulator = (ArbitrarySet<?>)builderManipulator;
-			int limit = safeCastLongToInt(manipulator.getLimit());
+			int limit = safeCast(manipulator.getLimit());
 			return new ApplyNodeCountManipulator(
 				new NodeSetDecomposedValueManipulator<>(
 					traverser,
@@ -90,7 +91,7 @@ public final class BuilderManipulatorAdapter {
 			);
 		} else if (builderManipulator instanceof ArbitrarySetArbitrary) {
 			ArbitrarySetArbitrary<?> manipulator = (ArbitrarySetArbitrary<?>)builderManipulator;
-			int limit = safeCastLongToInt(manipulator.getLimit());
+			int limit = safeCast(manipulator.getLimit());
 			return new ApplyNodeCountManipulator(
 				new NodeSetLazyManipulator<>(
 					traverser,
@@ -101,7 +102,7 @@ public final class BuilderManipulatorAdapter {
 			);
 		} else if (builderManipulator instanceof ArbitrarySetLazyValue) {
 			ArbitrarySetLazyValue<?> manipulator = (ArbitrarySetLazyValue<?>)builderManipulator;
-			int limit = safeCastLongToInt(manipulator.getLimit());
+			int limit = safeCast(manipulator.getLimit());
 			return new ApplyNodeCountManipulator(
 				new NodeSetLazyManipulator<>(
 					traverser,
@@ -112,7 +113,7 @@ public final class BuilderManipulatorAdapter {
 			);
 		} else if (builderManipulator instanceof ArbitrarySetPostCondition) {
 			ArbitrarySetPostCondition<?> manipulator = (ArbitrarySetPostCondition<?>)builderManipulator;
-			int limit = safeCastLongToInt(manipulator.getLimit());
+			int limit = safeCast(manipulator.getLimit());
 			return new ApplyNodeCountManipulator(
 				new NodeFilterManipulator(
 					manipulator.getClazz(),
@@ -137,7 +138,7 @@ public final class BuilderManipulatorAdapter {
 			Integer max = manipulator.getMax();
 
 			if (min == null && max != null) {
-				min = Math.max(0, manipulator.getMax() - DEFAULT_ELEMENT_MAX_SIZE);
+				min = Math.max(DEFAULT_ELEMENT_MIN_SIZE, manipulator.getMax() - DEFAULT_ELEMENT_MAX_SIZE);
 			} else if (min != null && max == null) {
 				max = manipulator.getMin() + DEFAULT_ELEMENT_MAX_SIZE;
 			}
@@ -150,7 +151,7 @@ public final class BuilderManipulatorAdapter {
 		}
 	}
 
-	private int safeCastLongToInt(long value) {
+	private int safeCast(long value) {
 		if (value < Integer.MIN_VALUE || value > Integer.MAX_VALUE) {
 			throw new IllegalArgumentException(
 				"Limit should be within the range of int type. limit : " + value

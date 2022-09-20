@@ -23,7 +23,7 @@ import java.util.Map;
 
 import lombok.Data;
 
-public class SpecTestSpecs {
+class SpecTestSpecs {
 	@Data
 	public static class IntValue {
 		private int value;

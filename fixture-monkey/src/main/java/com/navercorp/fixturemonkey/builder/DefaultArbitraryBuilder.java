@@ -41,6 +41,7 @@ import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
 
+import com.navercorp.fixturemonkey.resolver.*;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
@@ -66,17 +67,6 @@ import com.navercorp.fixturemonkey.customizer.ArbitraryCustomizer;
 import com.navercorp.fixturemonkey.customizer.ExpressionSpec;
 import com.navercorp.fixturemonkey.customizer.InnerSpec;
 import com.navercorp.fixturemonkey.expression.MonkeyExpressionFactory;
-import com.navercorp.fixturemonkey.resolver.ApplyNodeCountManipulator;
-import com.navercorp.fixturemonkey.resolver.ArbitraryManipulator;
-import com.navercorp.fixturemonkey.resolver.ArbitraryResolver;
-import com.navercorp.fixturemonkey.resolver.ArbitraryTraverser;
-import com.navercorp.fixturemonkey.resolver.IdentityNodeResolver;
-import com.navercorp.fixturemonkey.resolver.ManipulateOptions;
-import com.navercorp.fixturemonkey.resolver.NodeFilterManipulator;
-import com.navercorp.fixturemonkey.resolver.NodeNullityManipulator;
-import com.navercorp.fixturemonkey.resolver.NodeResolver;
-import com.navercorp.fixturemonkey.resolver.NodeSetDecomposedValueManipulator;
-import com.navercorp.fixturemonkey.resolver.NodeSetLazyManipulator;
 import com.navercorp.fixturemonkey.validator.ArbitraryValidator;
 
 // TODO: remove extends com.navercorp.fixturemonkey.ArbitraryBuilder<T> inheritance in 1.0.0
@@ -94,6 +84,7 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 	@SuppressWarnings("rawtypes")
 	private final List<MatcherOperator<? extends FixtureCustomizer>> customizers;
 	private final Map<NodeResolver, ArbitraryContainerInfo> containerInfosByNodeResolver;
+	private final BuilderManipulatorAdapter builderManipulatorAdapter;
 	private boolean validOnly = true;
 
 	@SuppressWarnings("rawtypes")
@@ -119,6 +110,7 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 		this.customizers = customizers;
 		this.containerInfosByNodeResolver = containerInfosByNodeResolver;
 		this.monkeyExpressionFactory = manipulateOptions.getDefaultMonkeyExpressionFactory();
+		this.builderManipulatorAdapter = new BuilderManipulatorAdapter(traverser, manipulateOptions);
 	}
 
 	@Override
@@ -207,9 +199,9 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 	@Override
 	public ArbitraryBuilder<T> spec(ExpressionSpec expressionSpec) {
 		this.containerInfosByNodeResolver.putAll(
-			expressionSpec.getContainerInfosByNodeResolver(traverser, manipulateOptions)
+			expressionSpec.getContainerInfosByNodeResolver(builderManipulatorAdapter)
 		);
-		this.manipulators.addAll(expressionSpec.getArbitraryManipulators(traverser, manipulateOptions));
+		this.manipulators.addAll(expressionSpec.getArbitraryManipulators(builderManipulatorAdapter));
 		return this;
 	}
 
