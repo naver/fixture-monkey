@@ -28,8 +28,11 @@ import com.navercorp.fixturemonkey.api.generator.ContainerProperty;
 import com.navercorp.fixturemonkey.api.generator.ObjectProperty;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public final class NodeLastEntryPredicate implements NextNodePredicate {
-	public NodeLastEntryPredicate() {
+public final class NodeEntryPredicate implements NextNodePredicate {
+	private final int index;
+
+	public NodeEntryPredicate(int index) {
+		this.index = index;
 	}
 
 	@Override
@@ -48,8 +51,7 @@ public final class NodeLastEntryPredicate implements NextNodePredicate {
 			);
 		}
 
-		int index = currentObjectProperty.getElementIndex();
-		int elementPropertiesSize = parentArbitraryProperty.getContainerProperty().getElementProperties().size();
-		return index == elementPropertiesSize - 1;
+		int elementIndex = currentObjectProperty.getElementIndex();
+		return elementIndex == index;
 	}
 }

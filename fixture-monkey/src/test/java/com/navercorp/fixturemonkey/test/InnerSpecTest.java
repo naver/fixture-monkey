@@ -26,8 +26,10 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Property;
 
+import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.LabMonkey;
 import com.navercorp.fixturemonkey.test.InnerSpecTestSpecs.ListObject;
 import com.navercorp.fixturemonkey.test.InnerSpecTestSpecs.MapObject;
@@ -250,5 +252,64 @@ class InnerSpecTest {
 			.sample();
 
 		then(actual.getComplexObject().getSimpleObject().getStr()).isEqualTo("test");
+	}
+
+	@Property
+	void sizeAndEntry() {
+		Map<String, String> actual = SUT.giveMeBuilder(MapObject.class)
+			.setInner("strMap", m -> {
+					m.size(1);
+					m.entry("key", "test");
+				}
+			)
+			.sample()
+			.getStrMap();
+
+		then(actual).hasSize(2);
+	}
+
+	@Property
+	void entryAndSize() {
+		Map<String, String> actual = SUT.giveMeBuilder(MapObject.class)
+			.setInner("strMap", m -> {
+					m.entry("key", "test");
+					m.size(1);
+				}
+			)
+			.sample()
+			.getStrMap();
+
+		then(actual).hasSize(2);
+		then(actual.get("key")).isEqualTo("test");
+	}
+
+	@Property
+	void sizeTwiceLastSizeWorks() {
+		Map<String, String> actual = SUT.giveMeBuilder(MapObject.class)
+			.setInner("strMap", m -> {
+					m.size(1);
+					m.entry("key", "test");
+					m.size(0);
+				}
+			)
+			.sample()
+			.getStrMap();
+
+		then(actual).hasSize(1);
+	}
+
+	@Property
+	void sizeTwiceLastSizeWorksWithEntry() {
+		Map<String, String> actual = SUT.giveMeBuilder(MapObject.class)
+			.setInner("strMap", m -> {
+					m.size(0);
+					m.entry("key", "test");
+					m.size(1);
+				}
+			)
+			.sample()
+			.getStrMap();
+
+		then(actual).hasSize(2);
 	}
 }
