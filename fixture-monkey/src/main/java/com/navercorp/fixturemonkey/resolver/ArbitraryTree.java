@@ -28,17 +28,16 @@ import javax.annotation.Nullable;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
-import org.junit.platform.commons.util.LruCache;
 
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
 
+import com.navercorp.fixturemonkey.api.collection.LruCache;
 import com.navercorp.fixturemonkey.api.customizer.FixtureCustomizer;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.option.GenerateOptions;
-import com.navercorp.fixturemonkey.api.property.MapKeyElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
@@ -49,18 +48,21 @@ final class ArbitraryTree {
 	@SuppressWarnings("rawtypes")
 	private final List<MatcherOperator<? extends FixtureCustomizer>> customizers;
 	private final LruCache<Property, Arbitrary<?>> arbitrariesByProperty;
+	private final List<MatcherOperator<Boolean>> uniqueProperties;
 
 	@SuppressWarnings("rawtypes")
 	ArbitraryTree(
 		ArbitraryNode rootNode,
 		GenerateOptions generateOptions,
 		List<MatcherOperator<? extends FixtureCustomizer>> customizers,
-		LruCache<Property, Arbitrary<?>> arbitrariesByProperty
+		LruCache<Property, Arbitrary<?>> arbitrariesByProperty,
+		List<MatcherOperator<Boolean>> uniqueProperties
 	) {
 		this.rootNode = rootNode;
 		this.generateOptions = generateOptions;
 		this.customizers = customizers;
 		this.arbitrariesByProperty = arbitrariesByProperty;
+		this.uniqueProperties = uniqueProperties;
 		MetadataCollector metadataCollector = new MetadataCollector(rootNode);
 		this.metadata = metadataCollector.collect();
 	}
@@ -132,7 +134,13 @@ final class ArbitraryTree {
 				generated = this.generateOptions.getArbitraryGenerator(prop.getObjectProperty().getProperty())
 					.generate(childArbitraryGeneratorContext);
 
-				if (isUnique(node)) {
+				boolean unique = uniqueProperties.stream()
+					.filter(it -> it.match(node.getProperty()))
+					.findAny()
+					.map(MatcherOperator::getOperator)
+					.orElse(false);
+
+				if (unique) {
 					generated = generated.injectDuplicates(0d);
 				}
 
@@ -159,9 +167,4 @@ final class ArbitraryTree {
 				.orElse(object)
 		);
 	}
-
-	private boolean isUnique(ArbitraryNode node) {
-		return node.getProperty() instanceof MapKeyElementProperty;
-	}
-
 }

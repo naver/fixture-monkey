@@ -28,11 +28,11 @@ import java.util.stream.Stream;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
-import org.junit.platform.commons.util.LruCache;
 
 import net.jqwik.api.Arbitrary;
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
+import com.navercorp.fixturemonkey.api.collection.LruCache;
 import com.navercorp.fixturemonkey.api.customizer.FixtureCustomizer;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
@@ -72,7 +72,8 @@ public final class ArbitraryResolver {
 			this.traverser.traverse(rootProperty, containerInfosByNodeResolver),
 			generateOptions,
 			customizers,
-			new LruCache<>(1000)
+			new LruCache<>(1000),
+			generateOptions.getUniqueProperties()
 		);
 
 		List<ArbitraryManipulator> registeredManipulators = getRegisteredToManipulators(
