@@ -125,7 +125,7 @@ public final class PropertyDescriptorProperty implements Property {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(annotatedType, annotations);
+		return Objects.hash(annotatedType.getType(), annotations);
 	}
 
 	@Override

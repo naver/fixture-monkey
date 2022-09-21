@@ -93,11 +93,11 @@ final class ArbitraryNode {
 		return arbitraryFilters;
 	}
 
-	public void setManipulated(boolean manipulated) {
-		this.manipulated = manipulated;
-	}
-
 	public boolean isNotManipulated() {
 		return !manipulated;
+	}
+
+	public void setManipulated(boolean manipulated) {
+		this.manipulated = manipulated;
 	}
 }

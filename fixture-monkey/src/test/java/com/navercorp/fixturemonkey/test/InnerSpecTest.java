@@ -28,9 +28,13 @@ import java.util.stream.Collectors;
 
 import net.jqwik.api.Property;
 
+import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.LabMonkey;
+import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.test.InnerSpecTestSpecs.ListObject;
 import com.navercorp.fixturemonkey.test.InnerSpecTestSpecs.MapObject;
+import com.navercorp.fixturemonkey.test.InnerSpecTestSpecs.MapObjectTest;
+import com.navercorp.fixturemonkey.test.InnerSpecTestSpecs.NestedKeyMapObject;
 import com.navercorp.fixturemonkey.test.InnerSpecTestSpecs.ObjectObject;
 import com.navercorp.fixturemonkey.test.InnerSpecTestSpecs.SimpleObject;
 
@@ -48,8 +52,9 @@ class InnerSpecTest {
 
 	@Property
 	void mapAddValue() {
-		MapObject actual = SUT.giveMeBuilder(MapObject.class)
-			.setInner("strMap", m -> m.value("value"))
+		ArbitraryBuilder<MapObjectTest> builder = SUT.giveMeBuilder(MapObjectTest.class)
+			.setInner("strMap", m -> m.value("value"));
+		MapObjectTest actual = builder
 			.sample();
 
 		then(actual.getStrMap().containsValue("value")).isTrue();
@@ -99,7 +104,11 @@ class InnerSpecTest {
 
 	@Property
 	void mapAddKeyAddKey() {
-		MapObject actual = SUT.giveMeBuilder(MapObject.class)
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.defaultArbitraryContainerInfo(new ArbitraryContainerInfo(1, 3, false))
+			.build();
+
+		NestedKeyMapObject actual = sut.giveMeBuilder(NestedKeyMapObject.class)
 			.setInner("mapKeyMap", m -> m.key(k -> k.key("key")))
 			.sample();
 
@@ -110,7 +119,11 @@ class InnerSpecTest {
 
 	@Property
 	void mapAddKeyAddValue() {
-		MapObject actual = SUT.giveMeBuilder(MapObject.class)
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.defaultArbitraryContainerInfo(new ArbitraryContainerInfo(1, 3, false))
+			.build();
+
+		NestedKeyMapObject actual = sut.giveMeBuilder(NestedKeyMapObject.class)
 			.setInner("mapKeyMap", m -> m.key(k -> k.value("value")))
 			.sample();
 
@@ -196,7 +209,11 @@ class InnerSpecTest {
 	@SuppressWarnings("OptionalGetWithoutIsPresent")
 	@Property
 	void mapSetEntryValueAddEntry() {
-		MapObject actual = SUT.giveMeBuilder(MapObject.class)
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.defaultArbitraryContainerInfo(new ArbitraryContainerInfo(1, 3, false))
+			.build();
+
+		NestedKeyMapObject actual = sut.giveMeBuilder(NestedKeyMapObject.class)
 			.setInner("mapKeyMap", m ->
 				m.entry(
 					k -> k.entry("key", "value2"),

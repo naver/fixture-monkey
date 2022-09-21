@@ -134,11 +134,11 @@ final class ArbitraryTree {
 				generated = this.generateOptions.getArbitraryGenerator(prop.getObjectProperty().getProperty())
 					.generate(childArbitraryGeneratorContext);
 
-				if (node.isNotManipulated()) {
-					if (isUnique(node)) {
-						generated = generated.injectDuplicates(0.0d);
-					}
+				if (isUnique(node)) {
+					generated = generated.injectDuplicates(0d);
+				}
 
+				if (node.isNotManipulated()) {
 					cachedArbitraries.add(
 						new MatcherOperator<>(
 							it -> it.equals(node.getProperty()),

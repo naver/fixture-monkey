@@ -35,6 +35,7 @@ import com.navercorp.fixturemonkey.api.generator.ObjectProperty;
 import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGeneratorContext;
 import com.navercorp.fixturemonkey.api.option.GenerateOptions;
+import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
@@ -124,14 +125,19 @@ public final class ArbitraryTraverser {
 			context.getArbitraryContainerInfosByNodeResolver();
 		boolean container = parentArbitraryProperty.getContainerProperty() != null;
 
-		for (int index = 0; index < properties.size(); index++) {
-			Property childProperty = properties.get(index);
+		for (int sequence = 0; sequence < properties.size(); sequence++) {
+			Property childProperty = properties.get(sequence);
 
 			ObjectPropertyGenerator objectPropertyGenerator =
 				this.generateOptions.getObjectPropertyGenerator(childProperty);
 			ContainerPropertyGenerator containerPropertyGenerator =
 				this.generateOptions.getContainerPropertyGenerator(childProperty);
 			boolean childContainer = containerPropertyGenerator != null;
+
+			int index = sequence;
+			if (parentArbitraryProperty.getObjectProperty().getProperty() instanceof MapEntryElementProperty) {
+				index /= 2;
+			}
 
 			ObjectProperty childObjectProperty = objectPropertyGenerator.generate(
 				new ObjectPropertyGeneratorContext(

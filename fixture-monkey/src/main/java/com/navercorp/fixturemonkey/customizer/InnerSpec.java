@@ -22,7 +22,6 @@ import static com.navercorp.fixturemonkey.Constants.DEFAULT_ELEMENT_MAX_SIZE;
 import static com.navercorp.fixturemonkey.Constants.DEFAULT_ELEMENT_MIN_SIZE;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,7 +42,6 @@ import com.navercorp.fixturemonkey.resolver.CompositeNodeResolver;
 import com.navercorp.fixturemonkey.resolver.ContainerElementPredicate;
 import com.navercorp.fixturemonkey.resolver.DefaultNodeResolver;
 import com.navercorp.fixturemonkey.resolver.ManipulateOptions;
-import com.navercorp.fixturemonkey.resolver.MapNodeManipulator;
 import com.navercorp.fixturemonkey.resolver.NodeEntryPredicate;
 import com.navercorp.fixturemonkey.resolver.NodeKeyValuePredicate;
 import com.navercorp.fixturemonkey.resolver.NodeManipulator;
@@ -104,16 +102,19 @@ public final class InnerSpec {
 
 	public void key(Object key) {
 		entrySize++;
-		NodeManipulator manipulator = new MapNodeManipulator(
-			entrySize - 1, // index
-			Collections.singletonList(convertToNodeManipulator(key)),
-			Collections.emptyList()
-		);
 		this.containerInfosByNodeResolver.put(
 			this.treePathResolver,
 			new ArbitraryContainerInfo(this.entrySize + this.min, this.entrySize + this.max, true)
 		);
-		arbitraryManipulators.add(new ArbitraryManipulator(this.treePathResolver, manipulator));
+		arbitraryManipulators.add(new ArbitraryManipulator(
+				new CompositeNodeResolver(
+					this.treePathResolver,
+					new DefaultNodeResolver(new NodeEntryPredicate(entrySize - 1)),
+					new DefaultNodeResolver(new NodeKeyValuePredicate(true))
+				),
+				convertToNodeManipulator(key)
+			)
+		);
 	}
 
 	public void key(Consumer<InnerSpec> consumer) {
@@ -182,17 +183,21 @@ public final class InnerSpec {
 		}
 
 		entrySize++;
-		NodeManipulator keyManipulator = convertToNodeManipulator(key);
-		NodeManipulator mapManipulator = new MapNodeManipulator(
-			entrySize - 1, // index
-			Collections.singletonList(keyManipulator),
-			Collections.emptyList()
-		);
 		this.containerInfosByNodeResolver.put(
 			this.treePathResolver,
 			new ArbitraryContainerInfo(this.entrySize + this.min, this.entrySize + this.max, true)
 		);
-		arbitraryManipulators.add(new ArbitraryManipulator(this.treePathResolver, mapManipulator));
+
+		arbitraryManipulators.add(
+			new ArbitraryManipulator(
+				new CompositeNodeResolver(
+					this.treePathResolver,
+					new DefaultNodeResolver(new NodeEntryPredicate(entrySize - 1)),
+					new DefaultNodeResolver(new NodeKeyValuePredicate(true))
+				),
+				convertToNodeManipulator(key)
+			)
+		);
 
 		NodeResolver nextResolver = new CompositeNodeResolver(
 			this.treePathResolver,
@@ -208,17 +213,21 @@ public final class InnerSpec {
 
 	public void entry(Consumer<InnerSpec> consumer, @Nullable Object value) {
 		entrySize++;
-		NodeManipulator valueManipulator = convertToNodeManipulator(value);
-		NodeManipulator mapManipulator = new MapNodeManipulator(
-			entrySize - 1, // index
-			Collections.emptyList(),
-			Collections.singletonList(valueManipulator)
-		);
+
 		this.containerInfosByNodeResolver.put(
 			this.treePathResolver,
 			new ArbitraryContainerInfo(this.entrySize + this.min, this.entrySize + this.max, true)
 		);
-		arbitraryManipulators.add(new ArbitraryManipulator(this.treePathResolver, mapManipulator));
+		arbitraryManipulators.add(
+			new ArbitraryManipulator(
+				new CompositeNodeResolver(
+					this.treePathResolver,
+					new DefaultNodeResolver(new NodeEntryPredicate(entrySize - 1)),
+					new DefaultNodeResolver(new NodeKeyValuePredicate(false))
+				),
+				convertToNodeManipulator(value)
+			)
+		);
 
 		NodeResolver nextResolver = new CompositeNodeResolver(
 			this.treePathResolver,
@@ -291,16 +300,22 @@ public final class InnerSpec {
 
 	private void setValue(@Nullable Object value) {
 		entrySize++;
-		NodeManipulator manipulator = new MapNodeManipulator(
-			entrySize - 1, // index
-			Collections.emptyList(),
-			Collections.singletonList(convertToNodeManipulator(value))
-		);
+
 		this.containerInfosByNodeResolver.put(
 			this.treePathResolver,
 			new ArbitraryContainerInfo(this.entrySize + this.min, this.entrySize + this.max, true)
 		);
-		this.arbitraryManipulators.add(new ArbitraryManipulator(this.treePathResolver, manipulator));
+
+		this.arbitraryManipulators.add(
+			new ArbitraryManipulator(
+				new CompositeNodeResolver(
+					this.treePathResolver,
+					new DefaultNodeResolver(new NodeEntryPredicate(entrySize - 1)),
+					new DefaultNodeResolver(new NodeKeyValuePredicate(false))
+				),
+				convertToNodeManipulator(value)
+			)
+		);
 	}
 
 	private void setEntry(Object key, @Nullable Object value) {
@@ -310,18 +325,34 @@ public final class InnerSpec {
 			);
 		}
 		entrySize++;
-		NodeManipulator keyManipulator = convertToNodeManipulator(key);
-		NodeManipulator valueManipulator = convertToNodeManipulator(value);
-		NodeManipulator mapManipulator = new MapNodeManipulator(
-			entrySize - 1, // index
-			Collections.singletonList(keyManipulator),
-			Collections.singletonList(valueManipulator)
-		);
+
 		this.containerInfosByNodeResolver.put(
 			this.treePathResolver,
 			new ArbitraryContainerInfo(this.entrySize + this.min, this.entrySize + this.max, true)
 		);
-		this.arbitraryManipulators.add(new ArbitraryManipulator(this.treePathResolver, mapManipulator));
+
+		this.arbitraryManipulators.add(
+			new ArbitraryManipulator(
+				new CompositeNodeResolver(
+					this.treePathResolver,
+					new DefaultNodeResolver(new NodeEntryPredicate(entrySize - 1)),
+					new DefaultNodeResolver(new NodeKeyValuePredicate(true))
+				),
+				convertToNodeManipulator(key)
+			)
+		);
+
+		this.arbitraryManipulators.add(
+			new ArbitraryManipulator(
+				new CompositeNodeResolver(
+					this.treePathResolver,
+					new DefaultNodeResolver(new NodeEntryPredicate(entrySize - 1)),
+					new DefaultNodeResolver(new NodeKeyValuePredicate(false))
+				),
+				convertToNodeManipulator(value)
+			)
+		);
+
 	}
 
 	private NodeManipulator convertToNodeManipulator(@Nullable Object value) {
