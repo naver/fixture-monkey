@@ -132,5 +132,4 @@ public final class NodeSetDecomposedValueManipulator<T> implements NodeManipulat
 			setValue(child, childProperty.getValue(value));
 		}
 	}
-
 }

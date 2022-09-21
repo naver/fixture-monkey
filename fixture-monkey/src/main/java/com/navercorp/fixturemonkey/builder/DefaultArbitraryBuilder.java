@@ -24,6 +24,7 @@ import static com.navercorp.fixturemonkey.Constants.MAX_MANIPULATION_COUNT;
 import static java.util.stream.Collectors.toList;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -36,6 +37,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
@@ -58,15 +60,20 @@ import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
+import com.navercorp.fixturemonkey.api.random.Randoms;
 import com.navercorp.fixturemonkey.api.type.LazyAnnotatedType;
 import com.navercorp.fixturemonkey.api.type.Types;
+import com.navercorp.fixturemonkey.arbitrary.BuilderManipulator;
+import com.navercorp.fixturemonkey.arbitrary.ContainerSizeManipulator;
 import com.navercorp.fixturemonkey.customizer.ArbitraryCustomizer;
+import com.navercorp.fixturemonkey.customizer.ExpressionSpec;
 import com.navercorp.fixturemonkey.customizer.InnerSpec;
 import com.navercorp.fixturemonkey.expression.MonkeyExpressionFactory;
 import com.navercorp.fixturemonkey.resolver.ApplyNodeCountManipulator;
 import com.navercorp.fixturemonkey.resolver.ArbitraryManipulator;
 import com.navercorp.fixturemonkey.resolver.ArbitraryResolver;
 import com.navercorp.fixturemonkey.resolver.ArbitraryTraverser;
+import com.navercorp.fixturemonkey.resolver.BuilderManipulatorAdapter;
 import com.navercorp.fixturemonkey.resolver.IdentityNodeResolver;
 import com.navercorp.fixturemonkey.resolver.ManipulateOptions;
 import com.navercorp.fixturemonkey.resolver.NodeFilterManipulator;
@@ -91,6 +98,7 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 	@SuppressWarnings("rawtypes")
 	private final List<MatcherOperator<? extends FixtureCustomizer>> customizers;
 	private final Map<NodeResolver, ArbitraryContainerInfo> containerInfosByNodeResolver;
+	private final BuilderManipulatorAdapter builderManipulatorAdapter;
 	private boolean validOnly = true;
 
 	@SuppressWarnings("rawtypes")
@@ -116,6 +124,7 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 		this.customizers = customizers;
 		this.containerInfosByNodeResolver = containerInfosByNodeResolver;
 		this.monkeyExpressionFactory = manipulateOptions.getDefaultMonkeyExpressionFactory();
+		this.builderManipulatorAdapter = new BuilderManipulatorAdapter(traverser, manipulateOptions);
 	}
 
 	@Override
@@ -199,6 +208,35 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 	@Override
 	public ArbitraryBuilder<T> setLazy(String expression, Supplier<?> supplier) {
 		return this.setLazy(expression, supplier, MAX_MANIPULATION_COUNT);
+	}
+
+	@Override
+	public ArbitraryBuilder<T> spec(ExpressionSpec expressionSpec) {
+		List<BuilderManipulator> builderManipulators = expressionSpec.getBuilderManipulators();
+
+		this.containerInfosByNodeResolver.putAll(
+			builderManipulators.stream()
+				.filter(ContainerSizeManipulator.class::isInstance)
+				.map(builderManipulatorAdapter::convertToContainerInfosByNodeResolverEntry)
+				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))
+		);
+		this.manipulators.addAll(
+			builderManipulators.stream()
+				.filter(it -> !(it instanceof ContainerSizeManipulator))
+				.map(builderManipulatorAdapter::convertToArbitraryManipulator)
+				.collect(toList())
+		);
+		return this;
+	}
+
+	@Override
+	public ArbitraryBuilder<T> specAny(ExpressionSpec... specs) {
+		if (specs == null || specs.length == 0) {
+			return this;
+		}
+
+		ExpressionSpec spec = Arrays.asList(specs).get(Randoms.nextInt(specs.length));
+		return this.spec(spec);
 	}
 
 	@Override

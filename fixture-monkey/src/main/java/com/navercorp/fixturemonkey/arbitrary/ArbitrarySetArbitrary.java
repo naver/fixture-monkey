@@ -55,6 +55,10 @@ public final class ArbitrarySetArbitrary<T> extends AbstractArbitrarySet<T> {
 		return value;
 	}
 
+	public long getLimit() {
+		return limit;
+	}
+
 	@Override
 	public boolean isApplicable() {
 		return limit > 0;
