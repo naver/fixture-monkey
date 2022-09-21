@@ -41,6 +41,8 @@ final class ArbitraryNode {
 	@Nullable
 	private Arbitrary<?> arbitrary;
 
+	private boolean manipulated = false;
+
 	@SuppressWarnings("rawtypes")
 	private final List<Predicate> arbitraryFilters = new ArrayList<>();
 
@@ -89,5 +91,13 @@ final class ArbitraryNode {
 	@SuppressWarnings("rawtypes")
 	public List<Predicate> getArbitraryFilters() {
 		return arbitraryFilters;
+	}
+
+	public void setManipulated(boolean manipulated) {
+		this.manipulated = manipulated;
+	}
+
+	public boolean isNotManipulated() {
+		return !manipulated;
 	}
 }

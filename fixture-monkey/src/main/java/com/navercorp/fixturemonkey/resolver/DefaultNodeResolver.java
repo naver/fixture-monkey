@@ -46,7 +46,9 @@ public class DefaultNodeResolver implements NodeResolver {
 			.collect(Collectors.toList());
 
 		arbitraryNode.setArbitraryProperty(arbitraryNode.getArbitraryProperty().withNullInject(NOT_NULL_INJECT));
+		arbitraryNode.setManipulated(true);
 		for (ArbitraryNode node : resolved) {
+			node.setManipulated(true);
 			node.setArbitraryProperty(node.getArbitraryProperty().withNullInject(NOT_NULL_INJECT));
 		}
 

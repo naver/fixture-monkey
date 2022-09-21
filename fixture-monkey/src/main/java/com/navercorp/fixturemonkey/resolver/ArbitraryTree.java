@@ -37,6 +37,7 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.option.GenerateOptions;
+import com.navercorp.fixturemonkey.api.property.MapKeyElementProperty;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 final class ArbitraryTree {
@@ -45,16 +46,19 @@ final class ArbitraryTree {
 	private final ArbitraryTreeMetadata metadata;
 	@SuppressWarnings("rawtypes")
 	private final List<MatcherOperator<? extends FixtureCustomizer>> customizers;
+	private final List<MatcherOperator<Arbitrary<?>>> cachedArbitraries;
 
 	@SuppressWarnings("rawtypes")
 	ArbitraryTree(
 		ArbitraryNode rootNode,
 		GenerateOptions generateOptions,
-		List<MatcherOperator<? extends FixtureCustomizer>> customizers
+		List<MatcherOperator<? extends FixtureCustomizer>> customizers,
+		List<MatcherOperator<Arbitrary<?>>> cachedArbitraries
 	) {
 		this.rootNode = rootNode;
 		this.generateOptions = generateOptions;
 		this.customizers = customizers;
+		this.cachedArbitraries = cachedArbitraries;
 		MetadataCollector metadataCollector = new MetadataCollector(rootNode);
 		this.metadata = metadataCollector.collect();
 	}
@@ -117,8 +121,32 @@ final class ArbitraryTree {
 				.injectNull(node.getArbitraryProperty().getObjectProperty().getNullInject());
 		} else {
 			ArbitraryGeneratorContext childArbitraryGeneratorContext = this.generateContext(node, customizers, ctx);
-			generated = this.generateOptions.getArbitraryGenerator(prop.getObjectProperty().getProperty())
-				.generate(childArbitraryGeneratorContext);
+
+			Arbitrary<?> cached = cachedArbitraries.stream()
+				.filter(it -> it.match(node.getProperty()))
+				.findAny()
+				.map(MatcherOperator::getOperator)
+				.orElse(null);
+
+			if (node.isNotManipulated() && cached != null) {
+				generated = cached;
+			} else {
+				generated = this.generateOptions.getArbitraryGenerator(prop.getObjectProperty().getProperty())
+					.generate(childArbitraryGeneratorContext);
+
+				if (node.isNotManipulated()) {
+					if (isUnique(node)) {
+						generated = generated.injectDuplicates(0.0d);
+					}
+
+					cachedArbitraries.add(
+						new MatcherOperator<>(
+							it -> it.equals(node.getProperty()),
+							generated
+						)
+					);
+				}
+			}
 		}
 
 		List<Predicate> arbitraryFilters = node.getArbitraryFilters();
@@ -134,6 +162,10 @@ final class ArbitraryTree {
 				.map(it -> it.customizeFixture(object))
 				.orElse(object)
 		);
+	}
+
+	private boolean isUnique(ArbitraryNode node) {
+		return node.getProperty() instanceof MapKeyElementProperty;
 	}
 
 }

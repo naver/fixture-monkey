@@ -70,7 +70,8 @@ public final class ArbitraryResolver {
 		ArbitraryTree arbitraryTree = new ArbitraryTree(
 			this.traverser.traverse(rootProperty, containerInfosByNodeResolver),
 			generateOptions,
-			customizers
+			customizers,
+			new ArrayList<>()
 		);
 
 		List<ArbitraryManipulator> registeredManipulators = getRegisteredToManipulators(

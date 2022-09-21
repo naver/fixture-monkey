@@ -25,6 +25,7 @@ import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.OptionalInt;
@@ -138,6 +139,25 @@ public final class ElementProperty implements Property {
 		}
 
 		throw new IllegalArgumentException("given element value has no match sequence : " + sequence);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null || getClass() != obj.getClass()) {
+			return false;
+		}
+		ElementProperty that = (ElementProperty)obj;
+		return containerProperty.equals(that.containerProperty)
+			&& elementType.equals(that.elementType)
+			&& annotations.equals(that.annotations);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(containerProperty, elementType, annotations);
 	}
 
 	private boolean isOptional(Class<?> type) {

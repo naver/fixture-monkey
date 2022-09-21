@@ -26,6 +26,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 
 import javax.annotation.Nullable;
 
@@ -112,5 +113,24 @@ public final class MapValueElementProperty implements Property {
 		}
 
 		throw new IllegalArgumentException("given value is not Map Entry. " + obj.getClass());
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null || getClass() != obj.getClass()) {
+			return false;
+		}
+		MapValueElementProperty that = (MapValueElementProperty)obj;
+		return mapProperty.equals(that.mapProperty)
+			&& valueType.equals(that.valueType)
+			&& annotations.equals(that.annotations);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(mapProperty, valueType, annotations);
 	}
 }
