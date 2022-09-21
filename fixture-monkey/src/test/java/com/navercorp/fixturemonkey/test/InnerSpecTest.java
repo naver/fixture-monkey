@@ -26,10 +26,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Property;
 
-import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.LabMonkey;
 import com.navercorp.fixturemonkey.test.InnerSpecTestSpecs.ListObject;
 import com.navercorp.fixturemonkey.test.InnerSpecTestSpecs.MapObject;
@@ -257,7 +255,9 @@ class InnerSpecTest {
 	@Property
 	void sizeAndEntry() {
 		Map<String, String> actual = SUT.giveMeBuilder(MapObject.class)
-			.setInner("strMap", m -> {
+			.setInner(
+				"strMap",
+				m -> {
 					m.size(1);
 					m.entry("key", "test");
 				}
@@ -271,7 +271,9 @@ class InnerSpecTest {
 	@Property
 	void entryAndSize() {
 		Map<String, String> actual = SUT.giveMeBuilder(MapObject.class)
-			.setInner("strMap", m -> {
+			.setInner(
+				"strMap",
+				m -> {
 					m.entry("key", "test");
 					m.size(1);
 				}
@@ -286,7 +288,9 @@ class InnerSpecTest {
 	@Property
 	void sizeTwiceLastSizeWorks() {
 		Map<String, String> actual = SUT.giveMeBuilder(MapObject.class)
-			.setInner("strMap", m -> {
+			.setInner(
+				"strMap",
+				m -> {
 					m.size(1);
 					m.entry("key", "test");
 					m.size(0);
@@ -301,7 +305,9 @@ class InnerSpecTest {
 	@Property
 	void sizeTwiceLastSizeWorksWithEntry() {
 		Map<String, String> actual = SUT.giveMeBuilder(MapObject.class)
-			.setInner("strMap", m -> {
+			.setInner(
+				"strMap",
+				m -> {
 					m.size(0);
 					m.entry("key", "test");
 					m.size(1);
