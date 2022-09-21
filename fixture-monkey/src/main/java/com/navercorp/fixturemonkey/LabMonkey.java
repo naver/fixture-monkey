@@ -33,6 +33,7 @@ import org.apiguardian.api.API.Status;
 import net.jqwik.api.Arbitrary;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import com.navercorp.fixturemonkey.report.DebugHandler;
 
 import com.navercorp.fixturemonkey.api.customizer.FixtureCustomizer;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
@@ -90,6 +91,7 @@ public class LabMonkey extends FixtureMonkey {
 	public <T> ArbitraryBuilder<T> giveMeBuilder(Class<T> type) {
 		TypeReference<T> typeReference = new TypeReference<T>(type) {
 		};
+
 		return giveMeBuilder(typeReference);
 	}
 

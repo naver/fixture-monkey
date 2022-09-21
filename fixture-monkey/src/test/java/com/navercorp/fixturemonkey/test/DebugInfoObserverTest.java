@@ -8,7 +8,7 @@ import net.jqwik.api.Example;
 
 import static org.assertj.core.api.BDDAssertions.then;
 
-public class DebugMonkeyTest {
+public class DebugInfoObserverTest {
 
 	@Example
 	void sample() {

@@ -26,7 +26,6 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.navercorp.fixturemonkey.DebugMonkey;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 

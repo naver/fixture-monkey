@@ -11,6 +11,7 @@ dependencies {
     implementation("org.junit.platform:junit-platform-engine:${JUNIT_ENGINE_VERSION}")
     implementation("org.junit.jupiter:junit-jupiter-engine:${JUNIT_JUPITER_VERSION}")
     api("net.jqwik:jqwik-engine:${JQWIK_VERSION}")
+    api(project(":fixture-monkey"))
 
     testImplementation("org.assertj:assertj-core:3.18.1")
     testImplementation("org.projectlombok:lombok:1.18.20")

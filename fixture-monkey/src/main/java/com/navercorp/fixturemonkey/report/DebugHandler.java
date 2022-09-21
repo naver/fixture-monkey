@@ -1,12 +1,8 @@
-package com.navercorp.fixturemonkey;
+package com.navercorp.fixturemonkey.report;
 
+import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.builder.DefaultArbitraryBuilder;
 import com.navercorp.fixturemonkey.resolver.ArbitraryManipulator;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.validation.groups.Default;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -19,9 +15,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class DebugHandler implements InvocationHandler, com.navercorp.fixturemonkey.Observable {
+public class DebugHandler implements InvocationHandler, Observable {
 	ArbitraryBuilder target;
-	Observer observer = DebugMonkey.INSTANCE;
+	Observer observer = DebugInfoObserver.INSTANCE;
 
 	private static final Set<String> manipulateMethods =
 		Stream.of("spec", "specAny", "set", "setInner", "setLazy",
@@ -39,7 +35,7 @@ public class DebugHandler implements InvocationHandler, com.navercorp.fixturemon
 
 		Object ret = method.invoke(target, args);
 
-		if (manipulateMethods.equals(method.getName())) {
+		if (manipulateMethods.contains(method.getName())) {
 			notify(
 				((DefaultArbitraryBuilder)target).hashCode(),
 				new UserInputManipulatorsInfo(method.getName(), new ArrayList(Arrays.asList(args)))
@@ -50,13 +46,18 @@ public class DebugHandler implements InvocationHandler, com.navercorp.fixturemon
 				new Class[] {ArbitraryBuilder.class},
 				new DebugHandler((ArbitraryBuilder)ret)
 			);
+		} else if (method.getName().equals("sample")) {
+			notify(
+				((DefaultArbitraryBuilder)target).hashCode(),
+				new OptimizedManipulatorsInfo(manipulators)
+			);
 		}
 		return ret;
 	}
 
 	@Override
-	public void notify(int builder, Object s) {
-		observer.update(builder, s);
+	public void notify(Integer builder, DebugInfo debugInfo) {
+		observer.update(builder, debugInfo);
 	}
 
 	public ArbitraryBuilder getTarget() {

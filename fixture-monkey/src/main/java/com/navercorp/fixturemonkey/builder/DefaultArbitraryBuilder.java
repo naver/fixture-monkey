@@ -41,7 +41,6 @@ import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
 
-import com.navercorp.fixturemonkey.DebugMonkey;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
@@ -488,13 +487,6 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 	@SuppressWarnings("unchecked")
 	@Override
 	public Arbitrary<T> build() {
-		//debug log print
-//		List<MatcherOperator<? extends ArbitraryBuilder<?>>> registered = manipulateOptions.getRegisteredArbitraryBuilders();
-//		DebugMonkey.INSTANCE.printRegistered(registeredManipulators);
-//		DebugMonkey.INSTANCE.printManipulators(manipulators);
-//		DebugMonkey.INSTANCE.printOptimizedManipulators(optimizedManipulator);
-
-
 		List<ArbitraryManipulator> buildManipulators = new ArrayList<>(this.manipulators);
 
 		return new ArbitraryValue<>(
@@ -516,7 +508,6 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 	@Override
 	public T sample() {
 		Arbitrary<T> arbitrary = this.build();
-		DebugMonkey.INSTANCE.printManipulators(manipulators);
 		return arbitrary.sample();
 	}
 
