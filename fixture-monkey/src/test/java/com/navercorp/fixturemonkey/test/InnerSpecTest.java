@@ -79,25 +79,6 @@ class InnerSpecTest {
 	}
 
 	@Property
-	void mapPutFourth() {
-		MapObject actual = SUT.giveMeBuilder(MapObject.class)
-			.setInner(
-				"strMap",
-				m -> m.minSize(4)
-					.entry("key1", "value1")
-					.entry("key2", "value2")
-					.entry("key3", "value3")
-					.entry("key4", "value4")
-			)
-			.sample();
-
-		then(actual.getStrMap().get("key1")).isEqualTo("value1");
-		then(actual.getStrMap().get("key2")).isEqualTo("value2");
-		then(actual.getStrMap().get("key3")).isEqualTo("value3");
-		then(actual.getStrMap().get("key4")).isEqualTo("value4");
-	}
-
-	@Property
 	void mapAddNullValue() {
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
 			.setInner("strMap", m -> m.minSize(1).value(null))
