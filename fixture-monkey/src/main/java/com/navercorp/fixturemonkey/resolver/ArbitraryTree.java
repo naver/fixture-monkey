@@ -28,6 +28,7 @@ import javax.annotation.Nullable;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
+import org.junit.platform.commons.util.LruCache;
 
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
@@ -38,6 +39,7 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.option.GenerateOptions;
 import com.navercorp.fixturemonkey.api.property.MapKeyElementProperty;
+import com.navercorp.fixturemonkey.api.property.Property;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 final class ArbitraryTree {
@@ -46,19 +48,19 @@ final class ArbitraryTree {
 	private final ArbitraryTreeMetadata metadata;
 	@SuppressWarnings("rawtypes")
 	private final List<MatcherOperator<? extends FixtureCustomizer>> customizers;
-	private final List<MatcherOperator<Arbitrary<?>>> cachedArbitraries;
+	private final LruCache<Property, Arbitrary<?>> arbitrariesByProperty;
 
 	@SuppressWarnings("rawtypes")
 	ArbitraryTree(
 		ArbitraryNode rootNode,
 		GenerateOptions generateOptions,
 		List<MatcherOperator<? extends FixtureCustomizer>> customizers,
-		List<MatcherOperator<Arbitrary<?>>> cachedArbitraries
+		LruCache<Property, Arbitrary<?>> arbitrariesByProperty
 	) {
 		this.rootNode = rootNode;
 		this.generateOptions = generateOptions;
 		this.customizers = customizers;
-		this.cachedArbitraries = cachedArbitraries;
+		this.arbitrariesByProperty = arbitrariesByProperty;
 		MetadataCollector metadataCollector = new MetadataCollector(rootNode);
 		this.metadata = metadataCollector.collect();
 	}
@@ -122,11 +124,7 @@ final class ArbitraryTree {
 		} else {
 			ArbitraryGeneratorContext childArbitraryGeneratorContext = this.generateContext(node, customizers, ctx);
 
-			Arbitrary<?> cached = cachedArbitraries.stream()
-				.filter(it -> it.match(node.getProperty()))
-				.findAny()
-				.map(MatcherOperator::getOperator)
-				.orElse(null);
+			Arbitrary<?> cached = arbitrariesByProperty.get(node.getProperty());
 
 			if (node.isNotManipulated() && cached != null) {
 				generated = cached;
@@ -139,11 +137,9 @@ final class ArbitraryTree {
 				}
 
 				if (node.isNotManipulated()) {
-					cachedArbitraries.add(
-						new MatcherOperator<>(
-							it -> it.equals(node.getProperty()),
-							generated
-						)
+					arbitrariesByProperty.put(
+						node.getProperty(),
+						generated
 					);
 				}
 			}

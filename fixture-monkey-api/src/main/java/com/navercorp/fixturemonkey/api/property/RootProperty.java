@@ -5,6 +5,7 @@ import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -48,6 +49,23 @@ public final class RootProperty implements Property {
 		throw new IllegalArgumentException(
 			"RootProperty obj is not a root type. annotatedType: " + this.annotatedType + ", objType: " + obj.getClass()
 		);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null || getClass() != obj.getClass()) {
+			return false;
+		}
+		RootProperty that = (RootProperty)obj;
+		return annotatedType.getType().equals(that.annotatedType.getType());
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(annotatedType);
 	}
 
 	@Override
