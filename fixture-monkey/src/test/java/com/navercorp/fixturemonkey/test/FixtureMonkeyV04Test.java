@@ -1309,4 +1309,14 @@ class FixtureMonkeyV04Test {
 			.getStrList();
 		then(actual).isEqualTo(expected);
 	}
+
+	@Property
+	void generateHugeSetToCheckUniquePropertiesWorks() {
+		Set<String> actual = SUT.giveMeBuilder(new TypeReference<Set<String>>() {
+			})
+			.size("$", 100)
+			.sample();
+
+		then(actual).hasSize(100);
+	}
 }

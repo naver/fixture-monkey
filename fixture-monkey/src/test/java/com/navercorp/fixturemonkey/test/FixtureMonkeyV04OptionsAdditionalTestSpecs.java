@@ -185,4 +185,8 @@ class FixtureMonkeyV04OptionsAdditionalTestSpecs {
 			}
 		}
 	}
+
+	public enum TwoEnum {
+		ONE, TWO
+	}
 }

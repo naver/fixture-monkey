@@ -45,6 +45,7 @@ import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.OptionalInt;
 import java.util.OptionalLong;
+import java.util.Set;
 import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
@@ -75,7 +76,9 @@ import com.navercorp.fixturemonkey.api.generator.StreamContainerPropertyGenerato
 import com.navercorp.fixturemonkey.api.generator.TupleLikeElementsPropertyGenerator;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.matcher.Matchers;
+import com.navercorp.fixturemonkey.api.property.ElementProperty;
 import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty;
+import com.navercorp.fixturemonkey.api.property.MapKeyElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.api.property.TupleLikeElementsProperty;
@@ -88,6 +91,7 @@ public final class GenerateOptions {
 		getDefaultObjectPropertyGenerators();
 	public static final List<MatcherOperator<ContainerPropertyGenerator>> DEFAULT_CONTAINER_PROPERTY_GENERATORS =
 		getDefaultContainerPropertyGenerators();
+	public static final List<MatcherOperator<Boolean>> DEFAULT_UNIQUE_PROPERTIES = getDefaultUniqueProperties();
 	public static final ObjectPropertyGenerator DEFAULT_OBJECT_PROPERTY_GENERATOR =
 		DefaultObjectPropertyGenerator.INSTANCE;
 	public static final PropertyNameResolver DEFAULT_PROPERTY_NAME_RESOLVER = PropertyNameResolver.IDENTITY;
@@ -109,6 +113,7 @@ public final class GenerateOptions {
 
 	@SuppressWarnings("rawtypes")
 	private final List<MatcherOperator<FixtureCustomizer>> arbitraryCustomizers;
+	private final List<MatcherOperator<Boolean>> uniqueProperties;
 
 	@SuppressWarnings("rawtypes")
 	public GenerateOptions(
@@ -123,7 +128,8 @@ public final class GenerateOptions {
 		int defaultArbitraryContainerSize, ArbitraryContainerInfo defaultArbitraryContainerInfo,
 		List<MatcherOperator<ArbitraryGenerator>> arbitraryGenerators,
 		ArbitraryGenerator defaultArbitraryGenerator,
-		List<MatcherOperator<FixtureCustomizer>> arbitraryCustomizers
+		List<MatcherOperator<FixtureCustomizer>> arbitraryCustomizers,
+		List<MatcherOperator<Boolean>> uniqueProperties
 	) {
 		this.objectPropertyGenerators = objectPropertyGenerators;
 		this.defaultObjectPropertyGenerator = defaultObjectPropertyGenerator;
@@ -138,6 +144,7 @@ public final class GenerateOptions {
 		this.arbitraryGenerators = arbitraryGenerators;
 		this.defaultArbitraryGenerator = defaultArbitraryGenerator;
 		this.arbitraryCustomizers = arbitraryCustomizers;
+		this.uniqueProperties = uniqueProperties;
 	}
 
 	public static GenerateOptionsBuilder builder() {
@@ -246,6 +253,10 @@ public final class GenerateOptions {
 		return arbitraryCustomizers;
 	}
 
+	public List<MatcherOperator<Boolean>> getUniqueProperties() {
+		return uniqueProperties;
+	}
+
 	public GenerateOptionsBuilder toBuilder() {
 		return builder()
 			.arbitraryObjectPropertyGenerators(objectPropertyGenerators)
@@ -259,7 +270,8 @@ public final class GenerateOptions {
 			.defaultArbitraryContainerMaxSize(this.defaultArbitraryContainerSize)
 			.defaultArbitraryContainerInfo(this.defaultArbitraryContainerInfo)
 			.arbitraryGenerators(new ArrayList<>(this.arbitraryGenerators))
-			.defaultArbitraryGenerator(this.defaultArbitraryGenerator);
+			.defaultArbitraryGenerator(this.defaultArbitraryGenerator)
+			.uniqueProperties(new ArrayList<>(this.uniqueProperties));
 	}
 	// TODO: equals and hashCode and toString
 
@@ -405,6 +417,23 @@ public final class GenerateOptions {
 			new MatcherOperator<>(
 				property -> property.getClass() == TupleLikeElementsProperty.class,
 				TupleLikeElementsPropertyGenerator.INSTANCE
+			)
+		);
+	}
+
+	private static List<MatcherOperator<Boolean>> getDefaultUniqueProperties() {
+		return Arrays.asList(
+			new MatcherOperator<>(
+				property -> property.getClass() == MapKeyElementProperty.class,
+				true
+			),
+			new MatcherOperator<>(
+				property -> property.getClass() == ElementProperty.class
+					&&
+					Set.class.isAssignableFrom(
+						Types.getActualType(((ElementProperty)property).getContainerProperty().getType())
+					),
+				true
 			)
 		);
 	}
