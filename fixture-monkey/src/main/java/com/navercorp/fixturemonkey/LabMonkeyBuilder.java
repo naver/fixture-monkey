@@ -33,8 +33,8 @@ import java.util.function.Function;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
-import org.junit.platform.commons.util.LruCache;
 
+import com.navercorp.fixturemonkey.api.collection.LruCache;
 import com.navercorp.fixturemonkey.api.customizer.FixtureCustomizer;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfoGenerator;
@@ -397,9 +397,9 @@ public class LabMonkeyBuilder {
 					};
 					this.register(actualType, registerArbitraryBuilder);
 				} catch (InvocationTargetException
-						 | InstantiationException
-						 | IllegalAccessException
-						 | NoSuchMethodException e) {
+						| InstantiationException
+						| IllegalAccessException
+						| NoSuchMethodException e) {
 					// ignored
 				}
 			}
