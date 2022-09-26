@@ -28,6 +28,7 @@ import java.util.stream.Stream;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
+import org.junit.platform.commons.util.LruCache;
 
 import net.jqwik.api.Arbitrary;
 
@@ -36,6 +37,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import com.navercorp.fixturemonkey.api.customizer.FixtureCustomizer;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.option.GenerateOptions;
+import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
 import com.navercorp.fixturemonkey.api.type.LazyAnnotatedType;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
@@ -57,6 +59,7 @@ public class LabMonkey extends FixtureMonkey {
 	private final ArbitraryTraverser traverser;
 	private final ManipulatorOptimizer manipulatorOptimizer;
 	private final ArbitraryValidator validator;
+	private final LruCache<Property, Arbitrary<?>> arbitrariesByProperty;
 
 	@SuppressFBWarnings("NP_NULL_PARAM_DEREF_NONVIRTUAL")
 	public LabMonkey(
@@ -64,7 +67,8 @@ public class LabMonkey extends FixtureMonkey {
 		ManipulateOptionsBuilder manipulateOptionsBuilder,
 		ArbitraryTraverser traverser,
 		ManipulatorOptimizer manipulatorOptimizer,
-		ArbitraryValidator validator
+		ArbitraryValidator validator,
+		LruCache<Property, Arbitrary<?>> arbitrariesByProperty
 	) {
 		super(null, null, null, null, null);
 		this.generateOptions = generateOptions;
@@ -72,6 +76,7 @@ public class LabMonkey extends FixtureMonkey {
 		this.traverser = traverser;
 		this.manipulatorOptimizer = manipulatorOptimizer;
 		this.validator = validator;
+		this.arbitrariesByProperty = arbitrariesByProperty;
 		manipulateOptionsBuilder.propertyNameResolvers(generateOptions.getPropertyNameResolvers());
 		manipulateOptionsBuilder.defaultPropertyNameResolver(generateOptions.getDefaultPropertyNameResolver());
 		manipulateOptionsBuilder.sampleRegisteredArbitraryBuilder(this);
@@ -115,7 +120,8 @@ public class LabMonkey extends FixtureMonkey {
 				traverser,
 				manipulatorOptimizer,
 				generateOptions,
-				manipulateOptions
+				manipulateOptions,
+				arbitrariesByProperty
 			),
 			traverser,
 			this.validator,
@@ -144,7 +150,8 @@ public class LabMonkey extends FixtureMonkey {
 				traverser,
 				manipulatorOptimizer,
 				generateOptions,
-				manipulateOptions
+				manipulateOptions,
+				arbitrariesByProperty
 			),
 			traverser,
 			this.validator,

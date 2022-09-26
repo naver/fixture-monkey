@@ -48,17 +48,20 @@ public final class ArbitraryResolver {
 
 	private final GenerateOptions generateOptions;
 	private final ManipulateOptions manipulateOptions;
+	private final LruCache<Property, Arbitrary<?>> arbitrariesByProperty;
 
 	public ArbitraryResolver(
 		ArbitraryTraverser traverser,
 		ManipulatorOptimizer manipulatorOptimizer,
 		GenerateOptions generateOptions,
-		ManipulateOptions manipulateOptions
+		ManipulateOptions manipulateOptions,
+		LruCache<Property, Arbitrary<?>> arbitrariesByProperty
 	) {
 		this.traverser = traverser;
 		this.manipulatorOptimizer = manipulatorOptimizer;
 		this.generateOptions = generateOptions;
 		this.manipulateOptions = manipulateOptions;
+		this.arbitrariesByProperty = arbitrariesByProperty;
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -72,9 +75,13 @@ public final class ArbitraryResolver {
 			this.traverser.traverse(rootProperty, containerInfosByNodeResolver),
 			generateOptions,
 			customizers,
-			new LruCache<>(1000),
+			arbitrariesByProperty,
 			generateOptions.getUniqueProperties()
 		);
+
+		containerInfosByNodeResolver.keySet().stream()
+			.flatMap(it -> it.resolve(arbitraryTree.findRoot()).stream())
+			.forEach(it -> it.setManipulated(true));
 
 		List<ArbitraryManipulator> registeredManipulators = getRegisteredToManipulators(
 			manipulateOptions,
@@ -129,6 +136,9 @@ public final class ArbitraryResolver {
 					new NodeResolver() {
 						@Override
 						public List<ArbitraryNode> resolve(ArbitraryNode arbitraryNode) {
+							for (ArbitraryNode node : arbitraryNodes) {
+								node.setManipulated(true);
+							}
 							return arbitraryNodes;
 						}
 

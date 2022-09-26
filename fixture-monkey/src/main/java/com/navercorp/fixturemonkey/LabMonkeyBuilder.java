@@ -33,6 +33,7 @@ import java.util.function.Function;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
+import org.junit.platform.commons.util.LruCache;
 
 import com.navercorp.fixturemonkey.api.customizer.FixtureCustomizer;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
@@ -396,9 +397,9 @@ public class LabMonkeyBuilder {
 					};
 					this.register(actualType, registerArbitraryBuilder);
 				} catch (InvocationTargetException
-						| InstantiationException
-						| IllegalAccessException
-						| NoSuchMethodException e) {
+						 | InstantiationException
+						 | IllegalAccessException
+						 | NoSuchMethodException e) {
 					// ignored
 				}
 			}
@@ -523,7 +524,8 @@ public class LabMonkeyBuilder {
 			manipulateOptionsBuilder,
 			traverser,
 			manipulatorOptimizer,
-			this.arbitraryValidator
+			this.arbitraryValidator,
+			new LruCache<>(1000)
 		);
 	}
 
