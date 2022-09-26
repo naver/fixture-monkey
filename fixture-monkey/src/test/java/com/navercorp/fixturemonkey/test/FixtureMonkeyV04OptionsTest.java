@@ -967,7 +967,10 @@ class FixtureMonkeyV04OptionsTest {
 			.build();
 
 		// when
-		List<String> actual = sut.giveMeOne(ComplexObject.class).getList().stream()
+		List<String> actual = sut.giveMeBuilder(ComplexObject.class)
+			.size("map", 1)
+			.sample()
+			.getList().stream()
 			.map(SimpleObject::getStr)
 			.collect(Collectors.toList());
 

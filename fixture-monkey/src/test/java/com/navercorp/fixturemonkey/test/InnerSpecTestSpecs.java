@@ -30,11 +30,21 @@ class InnerSpecTestSpecs {
 	public static class MapObject {
 		private Map<String, String> strMap;
 		private Map<String, Map<String, String>> mapValueMap;
-		private Map<Map<String, String>, String> mapKeyMap;
-		private Map<Map<String, String>, Map<String, String>> mapKeyValueMap;
 		private Map<String, List<String>> listValueMap;
 		private Map<String, List<List<String>>> listListValueMap;
 		private Map<String, SimpleObject> objectValueMap;
+	}
+
+	@Getter
+	@Setter
+	public static class NestedKeyMapObject {
+		private Map<Map<String, String>, String> mapKeyMap;
+	}
+
+	@Getter
+	@Setter
+	public static class MapObjectTest {
+		private Map<String, String> strMap;
 	}
 
 	@Getter

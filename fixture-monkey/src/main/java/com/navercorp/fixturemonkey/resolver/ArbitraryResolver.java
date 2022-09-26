@@ -28,6 +28,7 @@ import java.util.stream.Stream;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
+import org.junit.platform.commons.util.LruCache;
 
 import net.jqwik.api.Arbitrary;
 
@@ -70,7 +71,8 @@ public final class ArbitraryResolver {
 		ArbitraryTree arbitraryTree = new ArbitraryTree(
 			this.traverser.traverse(rootProperty, containerInfosByNodeResolver),
 			generateOptions,
-			customizers
+			customizers,
+			new LruCache<>(1000)
 		);
 
 		List<ArbitraryManipulator> registeredManipulators = getRegisteredToManipulators(
