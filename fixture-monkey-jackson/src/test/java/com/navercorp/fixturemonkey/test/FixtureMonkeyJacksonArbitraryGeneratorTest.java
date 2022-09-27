@@ -25,7 +25,6 @@ import net.jqwik.api.Property;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 
-import lombok.Data;
 import lombok.Value;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
@@ -41,17 +40,20 @@ class FixtureMonkeyJacksonArbitraryGeneratorTest {
 		.build();
 
 	@Property
-	void giveMeJsonPropertySet() {
-		// when
-		JsonPropertyClass actual = sut.giveMeBuilder(JsonPropertyClass.class)
-			.set("jsonValue", "set")
-			.sample();
+	void setJsonProperty() {
+		String expected = "set";
 
-		then(actual.value).isEqualTo("set");
+		String actual = sut.giveMeBuilder(JsonPropertyClass.class)
+			.set("jsonValue", expected)
+			.sample()
+			.getValue();
+
+		then(actual).isEqualTo(expected);
 	}
 
+	@SuppressWarnings("OptionalGetWithoutIsPresent")
 	@Property
-	void giveMeJsonPropertySetWithExpressionGenerator() {
+	void setJsonPropertyWithExpressionGenerator() {
 		// given
 		TypeReference<JsonPropertyClass> typeReference = new TypeReference<JsonPropertyClass>() {
 		};
@@ -60,17 +62,18 @@ class FixtureMonkeyJacksonArbitraryGeneratorTest {
 				PropertyCache.getProperty(typeReference.getAnnotatedType(), "value").get();
 			return resolver.resolve(property);
 		};
+		String expected = "set";
 
 		// when
 		JsonPropertyClass actual = sut.giveMeBuilder(JsonPropertyClass.class)
-			.set(expressionGenerator, "set")
+			.set(expressionGenerator, expected)
 			.sample();
 
-		then(actual.value).isEqualTo("set");
+		then(actual.value).isEqualTo(expected);
 	}
 
 	@Property
-	void giveMeJsonPropertyWithBeanArbitraryGenerator() {
+	void beanArbitraryGeneratorNotAffectedByJsonProperty() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.defaultGenerator(BeanArbitraryGenerator.INSTANCE)
@@ -85,17 +88,17 @@ class FixtureMonkeyJacksonArbitraryGeneratorTest {
 	}
 
 	@Property
-	void giveMeJsonNodeReturnsNull() {
+	void jsonNodeReturnsNull() {
 		// when
 		JsonNodeWrapperClass actual = sut.giveMeOne(JsonNodeWrapperClass.class);
 
 		then(actual.getValue().isNull()).isTrue();
 	}
 
-	@Data
+	@Value
 	public static class JsonPropertyClass {
 		@JsonProperty("jsonValue")
-		private String value;
+		String value;
 	}
 
 	@Value

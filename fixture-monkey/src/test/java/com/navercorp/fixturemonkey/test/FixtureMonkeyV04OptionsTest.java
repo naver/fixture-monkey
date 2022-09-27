@@ -75,7 +75,7 @@ import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpe
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.SimpleObjectChild;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.TwoEnum;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.ComplexObject;
-import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.ListWithAnnotation;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.ListStringObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.SimpleObject;
 
 class FixtureMonkeyV04OptionsTest {
@@ -757,6 +757,7 @@ class FixtureMonkeyV04OptionsTest {
 		then(actual).isEqualTo(expected);
 	}
 
+	@SuppressWarnings("ConstantConditions")
 	@Property
 	void pushArbitraryCustomizerCustomizeFixtureModifyValue() {
 		LabMonkey sut = LabMonkey.labMonkeyBuilder()
@@ -997,7 +998,7 @@ class FixtureMonkeyV04OptionsTest {
 			.register(String.class, fixture -> fixture.giveMeBuilder(String.class).set(expected))
 			.build();
 
-		List<String> actual = sut.giveMeBuilder(ListWithAnnotation.class)
+		List<String> actual = sut.giveMeBuilder(ListStringObject.class)
 			.size("values", 5)
 			.sample()
 			.getValues();

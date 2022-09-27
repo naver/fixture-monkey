@@ -25,7 +25,7 @@ import lombok.Data;
 
 class SpecTestSpecs {
 	@Data
-	public static class IntValue {
+	public static class IntObject {
 		private int value;
 	}
 
@@ -35,7 +35,7 @@ class SpecTestSpecs {
 	}
 
 	@Data
-	public static class StringValue {
+	public static class StringObject {
 		private String value;
 	}
 
@@ -45,7 +45,7 @@ class SpecTestSpecs {
 	}
 
 	@Data
-	public static class TwoString {
+	public static class TwoStringObject {
 		private String value1;
 		private String value2;
 	}
@@ -56,18 +56,18 @@ class SpecTestSpecs {
 	}
 
 	@Data
-	public static class NestedStringValueList {
-		private List<StringValue> values;
+	public static class StringObjectListObject {
+		private List<StringObject> values;
 	}
 
 	@Data
-	public static class ListListString {
+	public static class StringListListObject {
 		private List<List<String>> values;
 	}
 
 	@Data
-	public static class StringAndInt {
-		private StringValue value1;
-		private IntValue value2;
+	public static class StringObjectAndIntObject {
+		private StringObject value1;
+		private IntObject value2;
 	}
 }

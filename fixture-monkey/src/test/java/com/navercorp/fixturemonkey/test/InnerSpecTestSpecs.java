@@ -21,12 +21,10 @@ package com.navercorp.fixturemonkey.test;
 import java.util.List;
 import java.util.Map;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 class InnerSpecTestSpecs {
-	@Getter
-	@Setter
+	@Data
 	public static class MapObject {
 		private Map<String, String> strMap;
 		private Map<String, Map<String, String>> mapValueMap;
@@ -35,38 +33,27 @@ class InnerSpecTestSpecs {
 		private Map<String, SimpleObject> objectValueMap;
 	}
 
-	@Getter
-	@Setter
+	@Data
 	public static class NestedKeyMapObject {
 		private Map<Map<String, String>, String> mapKeyMap;
 	}
 
-	@Getter
-	@Setter
-	public static class MapObjectTest {
-		private Map<String, String> strMap;
+	@Data
+	public static class NestedListStringObject {
+		private List<List<String>> values;
 	}
 
-	@Getter
-	@Setter
-	public static class ListObject {
-		private List<List<String>> listListStr;
+	@Data
+	public static class ComplexObjectObject {
+		private ComplexObject value;
 	}
 
-	@Getter
-	@Setter
-	public static class ObjectObject {
-		private ComplexObject complexObject;
-	}
-
-	@Getter
-	@Setter
+	@Data
 	public static class ComplexObject {
-		private SimpleObject simpleObject;
+		private SimpleObject value;
 	}
 
-	@Getter
-	@Setter
+	@Data
 	public static class SimpleObject {
 		private String str;
 		private Integer integer;

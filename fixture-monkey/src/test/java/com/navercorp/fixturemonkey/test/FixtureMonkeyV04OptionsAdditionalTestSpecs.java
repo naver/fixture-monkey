@@ -28,9 +28,8 @@ import net.jqwik.api.Builders;
 import net.jqwik.api.Builders.BuilderCombinator;
 
 import lombok.Builder;
+import lombok.Data;
 import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.LabMonkey;
@@ -47,18 +46,16 @@ import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.property.ElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.type.Types;
-import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.ListWithAnnotation;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.ListStringObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.SimpleObject;
 
 class FixtureMonkeyV04OptionsAdditionalTestSpecs {
 	public static class SimpleObjectChild extends SimpleObject {
 	}
 
-	@Getter
-	@Setter
-	@ToString
-	public static class NestedList {
-		List<ListWithAnnotation> values;
+	@Data
+	public static class NestedListStringObject {
+		List<ListStringObject> values;
 	}
 
 	public static class RegisterGroup {
@@ -134,6 +131,7 @@ class FixtureMonkeyV04OptionsAdditionalTestSpecs {
 			return MATCHER.match(property);
 		}
 
+		@SuppressWarnings("ConstantConditions")
 		@Override
 		public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
 			ArbitraryProperty property = context.getArbitraryProperty();
