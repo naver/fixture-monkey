@@ -30,10 +30,10 @@ import net.jqwik.api.Property;
 
 import com.navercorp.fixturemonkey.LabMonkey;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
-import com.navercorp.fixturemonkey.test.InnerSpecTestSpecs.NestedListStringObject;
+import com.navercorp.fixturemonkey.test.InnerSpecTestSpecs.ComplexObjectObject;
 import com.navercorp.fixturemonkey.test.InnerSpecTestSpecs.MapObject;
 import com.navercorp.fixturemonkey.test.InnerSpecTestSpecs.NestedKeyMapObject;
-import com.navercorp.fixturemonkey.test.InnerSpecTestSpecs.ComplexObjectObject;
+import com.navercorp.fixturemonkey.test.InnerSpecTestSpecs.NestedListStringObject;
 import com.navercorp.fixturemonkey.test.InnerSpecTestSpecs.SimpleObject;
 
 class InnerSpecTest {

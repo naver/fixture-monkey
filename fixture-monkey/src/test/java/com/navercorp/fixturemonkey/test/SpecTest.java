@@ -33,11 +33,11 @@ import com.navercorp.fixturemonkey.LabMonkey;
 import com.navercorp.fixturemonkey.customizer.ExpressionSpec;
 import com.navercorp.fixturemonkey.test.SpecTestSpecs.IntObject;
 import com.navercorp.fixturemonkey.test.SpecTestSpecs.IntegerList;
-import com.navercorp.fixturemonkey.test.SpecTestSpecs.StringListListObject;
-import com.navercorp.fixturemonkey.test.SpecTestSpecs.StringObjectListObject;
-import com.navercorp.fixturemonkey.test.SpecTestSpecs.StringObjectAndIntObject;
 import com.navercorp.fixturemonkey.test.SpecTestSpecs.StringList;
+import com.navercorp.fixturemonkey.test.SpecTestSpecs.StringListListObject;
 import com.navercorp.fixturemonkey.test.SpecTestSpecs.StringObject;
+import com.navercorp.fixturemonkey.test.SpecTestSpecs.StringObjectAndIntObject;
+import com.navercorp.fixturemonkey.test.SpecTestSpecs.StringObjectListObject;
 
 class SpecTest {
 	public static final LabMonkey SUT = LabMonkey.create();
