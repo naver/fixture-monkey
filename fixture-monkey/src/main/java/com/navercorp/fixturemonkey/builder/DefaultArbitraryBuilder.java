@@ -25,8 +25,6 @@ import static java.util.stream.Collectors.toList;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -70,6 +68,7 @@ import com.navercorp.fixturemonkey.customizer.ExpressionSpec;
 import com.navercorp.fixturemonkey.customizer.InnerSpec;
 import com.navercorp.fixturemonkey.expression.MonkeyExpressionFactory;
 import com.navercorp.fixturemonkey.resolver.ApplyNodeCountManipulator;
+import com.navercorp.fixturemonkey.resolver.ArbitraryBuilderContext;
 import com.navercorp.fixturemonkey.resolver.ArbitraryManipulator;
 import com.navercorp.fixturemonkey.resolver.ArbitraryResolver;
 import com.navercorp.fixturemonkey.resolver.ArbitraryTraverser;
@@ -93,25 +92,16 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 	private final ArbitraryTraverser traverser;
 	private final ArbitraryValidator validator;
 	private final MonkeyExpressionFactory monkeyExpressionFactory;
-	private final List<ArbitraryManipulator> manipulators;
-	private final Set<LazyArbitrary<?>> lazyArbitraries;
-	@SuppressWarnings("rawtypes")
-	private final List<MatcherOperator<? extends FixtureCustomizer>> customizers;
-	private final Map<NodeResolver, ArbitraryContainerInfo> containerInfosByNodeResolver;
+	private final ArbitraryBuilderContext context;
 	private final BuilderManipulatorAdapter builderManipulatorAdapter;
-	private boolean validOnly = true;
 
-	@SuppressWarnings("rawtypes")
 	public DefaultArbitraryBuilder(
 		ManipulateOptions manipulateOptions,
 		RootProperty rootProperty,
 		ArbitraryResolver resolver,
 		ArbitraryTraverser traverser,
 		ArbitraryValidator validator,
-		List<ArbitraryManipulator> manipulators,
-		Set<LazyArbitrary<?>> lazyArbitraries,
-		List<MatcherOperator<? extends FixtureCustomizer>> customizers,
-		Map<NodeResolver, ArbitraryContainerInfo> containerInfosByNodeResolver
+		ArbitraryBuilderContext context
 	) {
 		super();
 		this.manipulateOptions = manipulateOptions;
@@ -119,17 +109,14 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 		this.resolver = resolver;
 		this.traverser = traverser;
 		this.validator = validator;
-		this.manipulators = manipulators;
-		this.lazyArbitraries = lazyArbitraries;
-		this.customizers = customizers;
-		this.containerInfosByNodeResolver = containerInfosByNodeResolver;
+		this.context = context;
 		this.monkeyExpressionFactory = manipulateOptions.getDefaultMonkeyExpressionFactory();
 		this.builderManipulatorAdapter = new BuilderManipulatorAdapter(traverser, manipulateOptions);
 	}
 
 	@Override
 	public ArbitraryBuilder<T> validOnly(boolean validOnly) {
-		this.validOnly = validOnly;
+		this.context.setValidOnly(validOnly);
 		return this;
 	}
 
@@ -148,7 +135,7 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 		} else if (value == null) {
 			this.setNull(expression);
 		} else {
-			manipulators.add(
+			this.context.getManipulators().add(
 				new ArbitraryManipulator(
 					nodeResolver,
 					new ApplyNodeCountManipulator(
@@ -188,8 +175,8 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 	public ArbitraryBuilder<T> setLazy(String expression, Supplier<?> supplier, int limit) {
 		NodeResolver nodeResolver = monkeyExpressionFactory.from(expression).toNodeResolver();
 		LazyArbitrary<?> lazyArbitrary = LazyArbitrary.lazy(supplier);
-		lazyArbitraries.add(lazyArbitrary);
-		manipulators.add(
+		this.context.getLazyArbitraries().add(lazyArbitrary);
+		this.context.getManipulators().add(
 			new ArbitraryManipulator(
 				nodeResolver,
 				new ApplyNodeCountManipulator(
@@ -214,13 +201,13 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 	public ArbitraryBuilder<T> spec(ExpressionSpec expressionSpec) {
 		List<BuilderManipulator> builderManipulators = expressionSpec.getBuilderManipulators();
 
-		this.containerInfosByNodeResolver.putAll(
+		this.context.getContainerInfosByNodeResolver().putAll(
 			builderManipulators.stream()
 				.filter(ContainerSizeManipulator.class::isInstance)
 				.map(builderManipulatorAdapter::convertToContainerInfosByNodeResolverEntry)
 				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))
 		);
-		this.manipulators.addAll(
+		this.context.getManipulators().addAll(
 			builderManipulators.stream()
 				.filter(it -> !(it instanceof ContainerSizeManipulator))
 				.map(builderManipulatorAdapter::convertToArbitraryManipulator)
@@ -245,8 +232,8 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 		InnerSpec innerSpec = new InnerSpec(traverser, manipulateOptions, nodeResolver);
 		specSpecifier.accept(innerSpec);
 		List<ArbitraryManipulator> mapManipulators = innerSpec.getArbitraryManipulators();
-		this.containerInfosByNodeResolver.putAll(innerSpec.getContainerInfosByNodeResolver());
-		this.manipulators.addAll(mapManipulators);
+		this.context.getContainerInfosByNodeResolver().putAll(innerSpec.getContainerInfosByNodeResolver());
+		this.context.getManipulators().addAll(mapManipulators);
 		return this;
 	}
 
@@ -288,7 +275,7 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 
 		NodeResolver nodeResolver = monkeyExpressionFactory.from(expression).toNodeResolver();
 
-		this.containerInfosByNodeResolver.put(nodeResolver, new ArbitraryContainerInfo(min, max, true));
+		this.context.getContainerInfosByNodeResolver().put(nodeResolver, new ArbitraryContainerInfo(min, max, true));
 		return this;
 	}
 
@@ -299,11 +286,14 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 
 	@Override
 	public ArbitraryBuilder<T> fixed() {
+		Set<Entry<NodeResolver, ArbitraryContainerInfo>> containerInfosByNodeResolverEntries =
+			this.context.getContainerInfosByNodeResolver().entrySet();
+
 		for (Entry<NodeResolver, ArbitraryContainerInfo> containerInfoByNodeResolver :
-			this.containerInfosByNodeResolver.entrySet()
+			containerInfosByNodeResolverEntries
 		) {
 			int fixedSize = containerInfoByNodeResolver.getValue().getRandomSize();
-			containerInfosByNodeResolver.put(
+			this.context.getContainerInfosByNodeResolver().put(
 				containerInfoByNodeResolver.getKey(),
 				new ArbitraryContainerInfo(
 					fixedSize,
@@ -313,7 +303,7 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 			);
 		}
 
-		this.manipulators.add(
+		this.context.getManipulators().add(
 			new ArbitraryManipulator(
 				IdentityNodeResolver.INSTANCE,
 				new NodeSetDecomposedValueManipulator<>(traverser, manipulateOptions, this.sample())
@@ -337,8 +327,8 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 			}
 		);
 
-		this.lazyArbitraries.add(lazyArbitrary);
-		this.manipulators.add(
+		this.context.getLazyArbitraries().add(lazyArbitrary);
+		this.context.getManipulators().add(
 			new ArbitraryManipulator(
 				IdentityNodeResolver.INSTANCE,
 				new NodeSetLazyManipulator<>(
@@ -367,7 +357,7 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 	public ArbitraryBuilder<T> setNull(String expression) {
 		NodeResolver nodeResolver = monkeyExpressionFactory.from(expression).toNodeResolver();
 
-		this.manipulators.add(new ArbitraryManipulator(
+		this.context.getManipulators().add(new ArbitraryManipulator(
 			nodeResolver,
 			new NodeNullityManipulator(true)
 		));
@@ -383,10 +373,12 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 	public ArbitraryBuilder<T> setNotNull(String expression) {
 		NodeResolver nodeResolver = monkeyExpressionFactory.from(expression).toNodeResolver();
 
-		this.manipulators.add(new ArbitraryManipulator(
-			nodeResolver,
-			new NodeNullityManipulator(false)
-		));
+		this.context.getManipulators().add(
+			new ArbitraryManipulator(
+				nodeResolver,
+				new NodeNullityManipulator(false)
+			)
+		);
 		return this;
 	}
 
@@ -419,7 +411,7 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 	) {
 		NodeResolver nodeResolver = monkeyExpressionFactory.from(expression).toNodeResolver();
 
-		this.manipulators.add(
+		this.context.getManipulators().add(
 			new ArbitraryManipulator(
 				nodeResolver,
 				new ApplyNodeCountManipulator(
@@ -513,28 +505,28 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 
 	@Override
 	public ArbitraryBuilder<T> customize(MatcherOperator<FixtureCustomizer<T>> fixtureCustomizer) {
-		this.customizers.add(fixtureCustomizer);
+		this.context.getCustomizers().add(fixtureCustomizer);
 		return this;
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public Arbitrary<T> build() {
-		List<ArbitraryManipulator> buildManipulators = new ArrayList<>(this.manipulators);
+		List<ArbitraryManipulator> buildManipulators = new ArrayList<>(this.context.getManipulators());
 
 		return new ArbitraryValue<>(
 			() -> {
 				Arbitrary<T> arbitrary = (Arbitrary<T>)this.resolver.resolve(
 					this.rootProperty,
 					buildManipulators,
-					customizers,
-					containerInfosByNodeResolver
+					context.getCustomizers(),
+					context.getContainerInfosByNodeResolver()
 				);
-				lazyArbitraries.forEach(LazyArbitrary::clear);
+				context.getLazyArbitraries().forEach(LazyArbitrary::clear);
 				return arbitrary;
 			},
 			this.validator,
-			this.validOnly
+			context.isValidOnly()
 		);
 	}
 
@@ -555,19 +547,14 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 
 	@Override
 	public ArbitraryBuilder<T> copy() {
-		DefaultArbitraryBuilder<T> copied = new DefaultArbitraryBuilder<>(
+		return new DefaultArbitraryBuilder<>(
 			manipulateOptions,
 			rootProperty,
 			resolver,
 			traverser,
 			validator,
-			new ArrayList<>(this.manipulators),
-			new HashSet<>(this.lazyArbitraries),
-			new ArrayList<>(this.customizers),
-			new HashMap<>(this.containerInfosByNodeResolver)
+			context.copy()
 		);
-		copied.validOnly(this.validOnly);
-		return copied;
 	}
 
 	private String resolveExpression(ExpressionGenerator expressionGenerator) {
@@ -578,16 +565,15 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 	}
 
 	private <R> DefaultArbitraryBuilder<R> generateArbitraryBuilderLazily(LazyArbitrary<R> lazyArbitrary) {
-		List<ArbitraryManipulator> manipulators = new ArrayList<>();
-		manipulators.add(
+		ArbitraryBuilderContext context = new ArbitraryBuilderContext();
+		context.getManipulators().add(
 			new ArbitraryManipulator(
 				IdentityNodeResolver.INSTANCE,
 				new NodeSetLazyManipulator<>(traverser, manipulateOptions, lazyArbitrary)
 			)
 		);
-
-		Set<LazyArbitrary<?>> lazyArbitraries = new HashSet<>(this.lazyArbitraries);
-		lazyArbitraries.add(lazyArbitrary);
+		context.getLazyArbitraries().addAll(this.context.getLazyArbitraries());
+		context.getLazyArbitraries().add(lazyArbitrary);
 
 		return new DefaultArbitraryBuilder<>(
 			manipulateOptions,
@@ -595,10 +581,7 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 			resolver,
 			traverser,
 			validator,
-			manipulators,
-			lazyArbitraries,
-			customizers,
-			containerInfosByNodeResolver
+			context
 		);
 	}
 }

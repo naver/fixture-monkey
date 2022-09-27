@@ -20,9 +20,6 @@ package com.navercorp.fixturemonkey;
 
 import static java.util.stream.Collectors.toList;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -33,15 +30,14 @@ import net.jqwik.api.Arbitrary;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
-import com.navercorp.fixturemonkey.api.collection.LruCache;
 import com.navercorp.fixturemonkey.api.customizer.FixtureCustomizer;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.option.GenerateOptions;
-import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
 import com.navercorp.fixturemonkey.api.type.LazyAnnotatedType;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.builder.DefaultArbitraryBuilder;
+import com.navercorp.fixturemonkey.resolver.ArbitraryBuilderContext;
 import com.navercorp.fixturemonkey.resolver.ArbitraryManipulator;
 import com.navercorp.fixturemonkey.resolver.ArbitraryResolver;
 import com.navercorp.fixturemonkey.resolver.ArbitraryTraverser;
@@ -49,6 +45,7 @@ import com.navercorp.fixturemonkey.resolver.IdentityNodeResolver;
 import com.navercorp.fixturemonkey.resolver.ManipulateOptions;
 import com.navercorp.fixturemonkey.resolver.ManipulateOptionsBuilder;
 import com.navercorp.fixturemonkey.resolver.ManipulatorOptimizer;
+import com.navercorp.fixturemonkey.resolver.MonkeyContext;
 import com.navercorp.fixturemonkey.resolver.NodeSetDecomposedValueManipulator;
 import com.navercorp.fixturemonkey.validator.ArbitraryValidator;
 
@@ -59,7 +56,7 @@ public class LabMonkey extends FixtureMonkey {
 	private final ArbitraryTraverser traverser;
 	private final ManipulatorOptimizer manipulatorOptimizer;
 	private final ArbitraryValidator validator;
-	private final LruCache<Property, Arbitrary<?>> arbitrariesByProperty;
+	private final MonkeyContext monkeyContext;
 
 	@SuppressFBWarnings("NP_NULL_PARAM_DEREF_NONVIRTUAL")
 	public LabMonkey(
@@ -68,7 +65,7 @@ public class LabMonkey extends FixtureMonkey {
 		ArbitraryTraverser traverser,
 		ManipulatorOptimizer manipulatorOptimizer,
 		ArbitraryValidator validator,
-		LruCache<Property, Arbitrary<?>> arbitrariesByProperty
+		MonkeyContext monkeyContext
 	) {
 		super(null, null, null, null, null);
 		this.generateOptions = generateOptions;
@@ -76,7 +73,7 @@ public class LabMonkey extends FixtureMonkey {
 		this.traverser = traverser;
 		this.manipulatorOptimizer = manipulatorOptimizer;
 		this.validator = validator;
-		this.arbitrariesByProperty = arbitrariesByProperty;
+		this.monkeyContext = monkeyContext;
 		manipulateOptionsBuilder.propertyNameResolvers(generateOptions.getPropertyNameResolvers());
 		manipulateOptionsBuilder.defaultPropertyNameResolver(generateOptions.getDefaultPropertyNameResolver());
 		manipulateOptionsBuilder.sampleRegisteredArbitraryBuilder(this);
@@ -121,22 +118,19 @@ public class LabMonkey extends FixtureMonkey {
 				manipulatorOptimizer,
 				generateOptions,
 				manipulateOptions,
-				arbitrariesByProperty
+				monkeyContext.getArbitrariesByProperty()
 			),
 			traverser,
 			this.validator,
-			new ArrayList<>(),
-			new HashSet<>(),
-			new ArrayList<>(),
-			new HashMap<>()
+			new ArbitraryBuilderContext()
 		);
 	}
 
 	@Override
 	public <T> DefaultArbitraryBuilder<T> giveMeBuilder(T value) {
 		ManipulateOptions manipulateOptions = manipulateOptionsBuilder.build();
-		List<ArbitraryManipulator> manipulators = new ArrayList<>();
-		manipulators.add(
+		ArbitraryBuilderContext context = new ArbitraryBuilderContext();
+		context.getManipulators().add(
 			new ArbitraryManipulator(
 				IdentityNodeResolver.INSTANCE,
 				new NodeSetDecomposedValueManipulator<>(traverser, manipulateOptions, value)
@@ -151,14 +145,11 @@ public class LabMonkey extends FixtureMonkey {
 				manipulatorOptimizer,
 				generateOptions,
 				manipulateOptions,
-				arbitrariesByProperty
+				monkeyContext.getArbitrariesByProperty()
 			),
 			traverser,
 			this.validator,
-			manipulators,
-			new HashSet<>(),
-			new ArrayList<>(),
-			new HashMap<>()
+			context
 		);
 	}
 
