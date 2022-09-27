@@ -14,11 +14,11 @@ dependencies {
     api("org.hibernate.validator:hibernate-validator:6.2.0.Final")
     api("org.glassfish:jakarta.el:3.0.3")
 
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.7.0")
-    testImplementation("org.junit.jupiter:junit-jupiter-engine:5.7.0")
-    testImplementation("org.assertj:assertj-core:3.18.1")
-    testImplementation("org.projectlombok:lombok:1.18.20")
-    testAnnotationProcessor("org.projectlombok:lombok:1.18.20")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:${JUNIT_JUPITER_VERSION}")
+    testImplementation("org.junit.jupiter:junit-jupiter-engine:${JUNIT_JUPITER_VERSION}")
+    testImplementation("org.assertj:assertj-core:3.22.0")
+    testImplementation("org.projectlombok:lombok:1.18.24")
+    testAnnotationProcessor("org.projectlombok:lombok:1.18.24")
 }
 
 editorconfig {

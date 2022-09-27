@@ -25,6 +25,7 @@ import com.navercorp.fixturemonkey.kotlin.customizer.KArbitraryCustomizer
 import net.jqwik.api.Arbitraries
 import net.jqwik.api.Property
 import org.assertj.core.api.BDDAssertions.then
+import java.util.function.Consumer
 import kotlin.reflect.KClass
 
 class FixtureMonkeyExtensionsTest {
@@ -35,12 +36,14 @@ class FixtureMonkeyExtensionsTest {
         // when
         val actual = sut.giveMe<IntegerStringWrapperClass>().take(10).toList()
 
-        then(actual).hasSize(10).allSatisfy {
-            with(it) {
-                then(intValue).isBetween(Int.MIN_VALUE, Int.MAX_VALUE)
-                then(stringValue).isNotNull()
+        then(actual).hasSize(10).allSatisfy(
+            Consumer {
+                with(it) {
+                    then(intValue).isBetween(Int.MIN_VALUE, Int.MAX_VALUE)
+                    then(stringValue).isNotNull()
+                }
             }
-        }
+        )
     }
 
     @Property
@@ -63,12 +66,14 @@ class FixtureMonkeyExtensionsTest {
             }
         ).take(10).toList()
 
-        then(actual).hasSize(10).allSatisfy {
-            with(it) {
-                then(intValue).isEqualTo(-1)
-                then(stringValue).isEqualTo("test_value")
+        then(actual).hasSize(10).allSatisfy(
+            Consumer {
+                with(it) {
+                    then(intValue).isEqualTo(-1)
+                    then(stringValue).isEqualTo("test_value")
+                }
             }
-        }
+        )
     }
 
     @Property
@@ -78,11 +83,13 @@ class FixtureMonkeyExtensionsTest {
             it?.copy(stringValue = "test_value")
         }.take(10).toList()
 
-        then(actual).hasSize(10).allSatisfy {
-            with(it) {
-                then(stringValue).isEqualTo("test_value")
+        then(actual).hasSize(10).allSatisfy(
+            Consumer {
+                with(it) {
+                    then(stringValue).isEqualTo("test_value")
+                }
             }
-        }
+        )
     }
 
     @Property
@@ -90,12 +97,14 @@ class FixtureMonkeyExtensionsTest {
         // when
         val actual = sut.giveMe<IntegerStringWrapperClass>(10)
 
-        then(actual).hasSize(10).allSatisfy {
-            with(it) {
-                then(intValue).isBetween(Int.MIN_VALUE, Int.MAX_VALUE)
-                then(stringValue).isNotNull()
+        then(actual).hasSize(10).allSatisfy(
+            Consumer {
+                with(it) {
+                    then(intValue).isBetween(Int.MIN_VALUE, Int.MAX_VALUE)
+                    then(stringValue).isNotNull()
+                }
             }
-        }
+        )
     }
 
     @Property
@@ -119,12 +128,14 @@ class FixtureMonkeyExtensionsTest {
             }
         )
 
-        then(actual).hasSize(10).allSatisfy {
-            with(it) {
-                then(intValue).isEqualTo(-1)
-                then(stringValue).isEqualTo("test_value")
+        then(actual).hasSize(10).allSatisfy(
+            Consumer {
+                with(it) {
+                    then(intValue).isEqualTo(-1)
+                    then(stringValue).isEqualTo("test_value")
+                }
             }
-        }
+        )
     }
 
     @Property
@@ -134,11 +145,13 @@ class FixtureMonkeyExtensionsTest {
             it?.copy(stringValue = "test_value")
         }
 
-        then(actual).hasSize(10).allSatisfy {
-            with(it) {
-                then(stringValue).isEqualTo("test_value")
+        then(actual).hasSize(10).allSatisfy(
+            Consumer {
+                with(it) {
+                    then(stringValue).isEqualTo("test_value")
+                }
             }
-        }
+        )
     }
 
     @Property
