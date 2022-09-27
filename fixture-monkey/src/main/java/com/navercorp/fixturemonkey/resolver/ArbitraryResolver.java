@@ -73,6 +73,19 @@ public final class ArbitraryResolver {
 			customizers
 		);
 
+		List<ArbitraryManipulator> optimizedManipulator = getOptimizedManipulator(arbitraryTree, manipulators);
+
+		for (ArbitraryManipulator manipulator : optimizedManipulator) {
+			manipulator.manipulate(arbitraryTree);
+		}
+
+		return arbitraryTree.generate();
+	}
+
+	private List<ArbitraryManipulator> getOptimizedManipulator(
+		ArbitraryTree arbitraryTree,
+		List<ArbitraryManipulator> manipulators
+	) {
 		List<ArbitraryManipulator> registeredManipulators = getRegisteredToManipulators(
 			manipulateOptions,
 			arbitraryTree.getMetadata()
@@ -82,15 +95,9 @@ public final class ArbitraryResolver {
 			Stream.concat(registeredManipulators.stream(), manipulators.stream())
 				.collect(Collectors.toList());
 
-		List<ArbitraryManipulator> optimizedManipulator = manipulatorOptimizer
+		return manipulatorOptimizer
 			.optimize(joinedManipulators)
 			.getManipulators();
-
-		for (ArbitraryManipulator manipulator : optimizedManipulator) {
-			manipulator.manipulate(arbitraryTree);
-		}
-
-		return arbitraryTree.generate();
 	}
 
 	private List<ArbitraryManipulator> getRegisteredToManipulators(

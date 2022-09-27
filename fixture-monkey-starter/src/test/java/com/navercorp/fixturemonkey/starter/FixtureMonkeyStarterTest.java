@@ -21,6 +21,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 import lombok.Data;
 
+import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.LabMonkey;
 import com.navercorp.fixturemonkey.engine.jupiter.extension.FixtureMonkeySessionExtension;
@@ -83,11 +84,22 @@ class FixtureMonkeyStarterTest {
 	void test2() {
 		// given
 		LabMonkey sut = LabMonkey.create();
+		ArbitraryBuilder<Order> builder = sut.giveMeBuilder(Order.class);
 
 		// when
-		Order actual = sut.giveMeBuilder(Order.class)
-			.set("productName", "abc")
+		Order actual = builder
+			.set("productName", "actual1")
 			.size("items", 2)
+			.sample();
+
+		Order actual2 = sut.giveMeBuilder(Order.class)
+			.set("productName", "actual2")
+			.size("items", 1)
+			.sample();
+
+		Order actual3 = builder
+			.set("productName", "actual3")
+			.size("items", 1)
 			.sample();
 	}
 

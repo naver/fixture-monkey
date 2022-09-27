@@ -18,10 +18,19 @@
 
 package com.navercorp.fixturemonkey.resolver;
 
+import java.lang.reflect.Proxy;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
+
+import com.navercorp.fixturemonkey.ArbitraryBuilder;
+import com.navercorp.fixturemonkey.builder.DefaultArbitraryBuilder;
+import com.navercorp.fixturemonkey.report.ArbitraryBuilderHandler;
+import com.navercorp.fixturemonkey.report.NodeResolverHandler;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class ArbitraryManipulator {
@@ -32,7 +41,11 @@ public final class ArbitraryManipulator {
 		NodeResolver nodeResolver,
 		NodeManipulator nodeManipulator
 	) {
-		this.nodeResolver = nodeResolver;
+		this.nodeResolver = (NodeResolver)Proxy.newProxyInstance(
+			this.getClass().getClassLoader(),
+			new Class[] {NodeResolver.class},
+			new NodeResolverHandler(nodeResolver)
+		);
 		this.nodeManipulator = nodeManipulator;
 	}
 

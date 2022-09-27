@@ -15,7 +15,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class DebugHandler implements InvocationHandler, Observable {
+public class ArbitraryBuilderHandler implements InvocationHandler, Observable {
 	ArbitraryBuilder target;
 	Observer observer = DebugInfoObserver.INSTANCE;
 
@@ -25,31 +25,30 @@ public class DebugHandler implements InvocationHandler, Observable {
 				"maxSize", "apply", "acceptIf", "fixed")
 			.collect(Collectors.toCollection(HashSet::new));
 
-	public DebugHandler(ArbitraryBuilder target) {
+	public ArbitraryBuilderHandler(ArbitraryBuilder target) {
 		this.target = target;
 	}
 
 	@Override
 	public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-		List<ArbitraryManipulator> manipulators = ((DefaultArbitraryBuilder)target).getManipulators();
-
 		Object ret = method.invoke(target, args);
+		List<ArbitraryManipulator> manipulators = ((DefaultArbitraryBuilder)target).getManipulators();
 
 		if (manipulateMethods.contains(method.getName())) {
 			notify(
-				((DefaultArbitraryBuilder)target).hashCode(),
+				((DefaultArbitraryBuilder)target).getId(),
 				new UserInputManipulatorsInfo(method.getName(), new ArrayList(Arrays.asList(args)))
 			);
 
 			return (ArbitraryBuilder)Proxy.newProxyInstance(
 				this.getClass().getClassLoader(),
 				new Class[] {ArbitraryBuilder.class},
-				new DebugHandler((ArbitraryBuilder)ret)
+				new ArbitraryBuilderHandler((ArbitraryBuilder)ret)
 			);
 		} else if (method.getName().equals("sample")) {
 			notify(
-				((DefaultArbitraryBuilder)target).hashCode(),
-				new OptimizedManipulatorsInfo(manipulators)
+				((DefaultArbitraryBuilder)target).getId(),
+				new ArbitraryBuilderSampledInfo(manipulators.size())
 			);
 		}
 		return ret;

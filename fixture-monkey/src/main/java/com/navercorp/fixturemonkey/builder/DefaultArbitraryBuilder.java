@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -93,6 +94,9 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 	private final List<MatcherOperator<? extends FixtureCustomizer>> customizers;
 	private final Map<NodeResolver, ArbitraryContainerInfo> containerInfosByNodeResolver;
 	private boolean validOnly = true;
+	static final AtomicInteger NEXT_ID = new AtomicInteger(0);
+	final int id = NEXT_ID.getAndIncrement();
+
 
 	@SuppressWarnings("rawtypes")
 	public DefaultArbitraryBuilder(
@@ -121,6 +125,10 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 
 	public List<ArbitraryManipulator> getManipulators() {
 		return manipulators;
+	}
+
+	public int getId() {
+		return id;
 	}
 
 	@Override
@@ -568,12 +576,6 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 			customizers,
 			containerInfosByNodeResolver
 		);
-	}
-
-	@Override
-	public int hashCode() {
-		Class<?> generateClazz = (Class<T>)Types.getActualType(rootProperty.getType());
-		return Objects.hash(generateClazz, manipulators);
 	}
 
 	@Override

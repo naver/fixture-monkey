@@ -33,7 +33,8 @@ import org.apiguardian.api.API.Status;
 import net.jqwik.api.Arbitrary;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import com.navercorp.fixturemonkey.report.DebugHandler;
+
+import com.navercorp.fixturemonkey.report.ArbitraryBuilderHandler;
 
 import com.navercorp.fixturemonkey.api.customizer.FixtureCustomizer;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
@@ -42,6 +43,8 @@ import com.navercorp.fixturemonkey.api.property.RootProperty;
 import com.navercorp.fixturemonkey.api.type.LazyAnnotatedType;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.builder.DefaultArbitraryBuilder;
+import com.navercorp.fixturemonkey.report.ArbitraryResolverHandler;
+import com.navercorp.fixturemonkey.report.NodeResolverHandler;
 import com.navercorp.fixturemonkey.resolver.ArbitraryManipulator;
 import com.navercorp.fixturemonkey.resolver.ArbitraryResolver;
 import com.navercorp.fixturemonkey.resolver.ArbitraryTraverser;
@@ -49,6 +52,7 @@ import com.navercorp.fixturemonkey.resolver.IdentityNodeResolver;
 import com.navercorp.fixturemonkey.resolver.ManipulateOptions;
 import com.navercorp.fixturemonkey.resolver.ManipulateOptionsBuilder;
 import com.navercorp.fixturemonkey.resolver.ManipulatorOptimizer;
+import com.navercorp.fixturemonkey.resolver.NodeResolver;
 import com.navercorp.fixturemonkey.resolver.NodeSetDecomposedValueManipulator;
 import com.navercorp.fixturemonkey.validator.ArbitraryValidator;
 
@@ -114,10 +118,22 @@ public class LabMonkey extends FixtureMonkey {
 		return (ArbitraryBuilder<T>)Proxy.newProxyInstance(
 			this.getClass().getClassLoader(),
 			new Class[] {ArbitraryBuilder.class},
-			new DebugHandler(
+			new ArbitraryBuilderHandler(
 				new DefaultArbitraryBuilder<>(
 					manipulateOptions,
 					rootProperty,
+					// 	(ArbitraryResolver)Proxy.newProxyInstance(
+					// 		this.getClass().getClassLoader(),
+					// 		new Class[] {ArbitraryResolver.class},
+					// 		new ArbitraryResolverHandler(
+					// 			new ArbitraryResolver(
+					// 				traverser,
+					// 				manipulatorOptimizer,
+					// 				generateOptions,
+					// 				manipulateOptions
+					// 			)
+					// 		)
+					// 	),
 					new ArbitraryResolver(
 						traverser,
 						manipulatorOptimizer,
