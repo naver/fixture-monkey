@@ -42,13 +42,11 @@ import com.navercorp.fixturemonkey.jackson.FixtureMonkeyJackson;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class JacksonArbitraryIntrospector implements ArbitraryIntrospector {
-	public static final JacksonArbitraryIntrospector INSTANCE = new JacksonArbitraryIntrospector();
+	public static final JacksonArbitraryIntrospector INSTANCE = new JacksonArbitraryIntrospector(
+		FixtureMonkeyJackson.defaultObjectMapper()
+	);
 
 	private final ObjectMapper objectMapper;
-
-	public JacksonArbitraryIntrospector() {
-		this(FixtureMonkeyJackson.defaultObjectMapper());
-	}
 
 	public JacksonArbitraryIntrospector(ObjectMapper objectMapper) {
 		this.objectMapper = objectMapper;
