@@ -25,6 +25,9 @@ import net.jqwik.api.Property;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Value;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
@@ -95,7 +98,9 @@ class FixtureMonkeyJacksonArbitraryGeneratorTest {
 		then(actual.getValue().isNull()).isTrue();
 	}
 
-	@Value
+	@Getter
+	@NoArgsConstructor
+	@AllArgsConstructor
 	public static class JsonPropertyClass {
 		@JsonProperty("jsonValue")
 		String value;
