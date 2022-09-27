@@ -89,7 +89,7 @@ class FixtureMonkeyJacksonArbitraryGeneratorTest {
 		// when
 		JsonNodeWrapperClass actual = sut.giveMeOne(JsonNodeWrapperClass.class);
 
-		then(actual.getValue().isNull()).isTrue();
+		then(actual.getValue()).isNull();
 	}
 
 	@Data
