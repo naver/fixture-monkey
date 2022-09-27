@@ -24,17 +24,29 @@ import java.util.List;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import com.navercorp.fixturemonkey.api.matcher.AssignableTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.option.GenerateOptionsBuilder;
 import com.navercorp.fixturemonkey.api.plugin.Plugin;
+import com.navercorp.fixturemonkey.jackson.FixtureMonkeyJackson;
 import com.navercorp.fixturemonkey.jackson.introspector.JacksonArbitraryIntrospector;
 import com.navercorp.fixturemonkey.jackson.property.JacksonPropertyNameResolver;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class JacksonPlugin implements Plugin {
+	private final ObjectMapper objectMapper;
 	private final List<Matcher> matchers = new ArrayList<>();
 	private boolean defaultOptions = true;
+
+	public JacksonPlugin(ObjectMapper objectMapper) {
+		this.objectMapper = objectMapper;
+	}
+
+	public JacksonPlugin() {
+		this(FixtureMonkeyJackson.defaultObjectMapper());
+	}
 
 	public JacksonPlugin by(Matcher matcher) {
 		this.matchers.add(matcher);
@@ -57,13 +69,13 @@ public final class JacksonPlugin implements Plugin {
 			Matcher matcher = property -> matchers.stream().anyMatch(it -> it.match(property));
 
 			optionsBuilder
-				.insertFirstArbitraryIntrospector(matcher, new JacksonArbitraryIntrospector())
+				.insertFirstArbitraryIntrospector(matcher, new JacksonArbitraryIntrospector(objectMapper))
 				.insertFirstPropertyNameResolver(matcher, new JacksonPropertyNameResolver());
 		}
 
 		if (this.defaultOptions) {
 			optionsBuilder
-				.objectIntrospector(it -> new JacksonArbitraryIntrospector())
+				.objectIntrospector(it -> new JacksonArbitraryIntrospector(objectMapper))
 				.defaultPropertyNameResolver(new JacksonPropertyNameResolver());
 		}
 	}
