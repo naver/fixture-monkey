@@ -1352,9 +1352,9 @@ class FixtureMonkeyV04Test {
 			.sample();
 
 		ListStringObject actual = SUT.giveMeBuilder(expected)
-			.set("values[1]", 1)
+			.set("values[1]", "test")
 			.sample();
 
-		then(actual.getValues().get(1)).isEqualTo(1);
+		then(actual.getValues().get(1)).isEqualTo("test");
 	}
 }
