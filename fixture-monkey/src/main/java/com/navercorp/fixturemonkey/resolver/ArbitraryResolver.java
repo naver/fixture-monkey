@@ -100,11 +100,6 @@ public final class ArbitraryResolver {
 			manipulator.manipulate(arbitraryTree);
 		}
 
-		arbitraryTree.getMetadata().getNodesByProperty().entrySet().stream()
-			.filter(it -> customizers.stream().anyMatch(customizer -> customizer.match(it.getKey())))
-			.flatMap(it -> it.getValue().stream())
-			.forEach(it -> it.setManipulated(true));
-
 		return arbitraryTree.generate();
 	}
 

@@ -128,7 +128,10 @@ final class ArbitraryTree {
 
 			Arbitrary<?> cached = arbitrariesByProperty.get(node.getProperty());
 
-			if (node.isNotManipulated() && cached != null) {
+			boolean notCustomized = ctx.getArbitraryCustomizers().stream()
+				.noneMatch(it -> it.match(node.getProperty()));
+
+			if (node.isNotManipulated() && notCustomized && cached != null) {
 				generated = cached;
 			} else {
 				generated = this.generateOptions.getArbitraryGenerator(prop.getObjectProperty().getProperty())
@@ -144,7 +147,7 @@ final class ArbitraryTree {
 					generated = generated.injectDuplicates(0d);
 				}
 
-				if (node.isNotManipulated()) {
+				if (node.isNotManipulated() && notCustomized) {
 					arbitrariesByProperty.put(
 						node.getProperty(),
 						generated
