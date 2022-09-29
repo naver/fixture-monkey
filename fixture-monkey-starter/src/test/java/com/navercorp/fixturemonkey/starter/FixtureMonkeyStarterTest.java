@@ -92,15 +92,15 @@ class FixtureMonkeyStarterTest {
 			.size("items", 2)
 			.sample();
 
-		Order actual2 = sut.giveMeBuilder(Order.class)
-			.set("productName", "actual2")
-			.size("items", 1)
-			.sample();
-
-		Order actual3 = builder
-			.set("productName", "actual3")
-			.size("items", 1)
-			.sample();
+		// Order actual2 = sut.giveMeBuilder(Order.class)
+		// 	.set("productName", "actual2")
+		// 	.size("items", 1)
+		// 	.sample();
+		//
+		// Order actual3 = builder
+		// 	.set("productName", "actual3")
+		// 	.size("items", 1)
+		// 	.sample();
 	}
 
 	@AfterEach

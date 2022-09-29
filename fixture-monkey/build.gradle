@@ -8,6 +8,7 @@ plugins {
 }
 
 dependencies {
+    implementation("cglib:cglib:3.3.0")
     runtimeOnly(project(":fixture-monkey-engine"))
     api(project(":fixture-monkey-api"))
 

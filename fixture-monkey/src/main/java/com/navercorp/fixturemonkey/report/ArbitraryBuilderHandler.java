@@ -37,7 +37,7 @@ public class ArbitraryBuilderHandler implements InvocationHandler, Observable {
 		if (manipulateMethods.contains(method.getName())) {
 			notify(
 				((DefaultArbitraryBuilder)target).getId(),
-				new UserInputManipulatorsInfo(method.getName(), new ArrayList(Arrays.asList(args)))
+				new UserInputManipulatorInfo(method.getName(), new ArrayList(Arrays.asList(args)))
 			);
 
 			return (ArbitraryBuilder)Proxy.newProxyInstance(
@@ -46,6 +46,13 @@ public class ArbitraryBuilderHandler implements InvocationHandler, Observable {
 				new ArbitraryBuilderHandler((ArbitraryBuilder)ret)
 			);
 		} else if (method.getName().equals("sample")) {
+			//Todo: 해당 notify 삭제하고 ArbitrryResolverHandler에서 받기~
+			notify(
+				((DefaultArbitraryBuilder)target).getId(),
+				new OptimizedManipulatorsInfo(manipulators)
+			);
+
+
 			notify(
 				((DefaultArbitraryBuilder)target).getId(),
 				new ArbitraryBuilderSampledInfo(manipulators.size())

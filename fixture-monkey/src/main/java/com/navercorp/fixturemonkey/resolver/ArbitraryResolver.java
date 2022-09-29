@@ -41,12 +41,13 @@ import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public final class ArbitraryResolver {
-	private final ArbitraryTraverser traverser;
-	private final ManipulatorOptimizer manipulatorOptimizer;
+public class ArbitraryResolver {
+	private ArbitraryTraverser traverser;
+	private ManipulatorOptimizer manipulatorOptimizer;
 
-	private final GenerateOptions generateOptions;
-	private final ManipulateOptions manipulateOptions;
+	private GenerateOptions generateOptions;
+	private ManipulateOptions manipulateOptions;
+
 
 	public ArbitraryResolver(
 		ArbitraryTraverser traverser,

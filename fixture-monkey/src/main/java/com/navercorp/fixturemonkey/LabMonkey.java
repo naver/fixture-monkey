@@ -31,6 +31,7 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import net.jqwik.api.Arbitrary;
+import net.sf.cglib.proxy.Enhancer;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
@@ -115,6 +116,17 @@ public class LabMonkey extends FixtureMonkey {
 			return (DefaultArbitraryBuilder<T>)registered.copy();
 		}
 
+		// Make Proxy for ArbitraryResolver
+		ArbitraryResolver target = new ArbitraryResolver(traverser,
+			manipulatorOptimizer,
+			generateOptions,
+			manipulateOptions
+		);
+		Enhancer enhancer = new Enhancer();
+		enhancer.setSuperclass(ArbitraryResolver.class);
+		enhancer.setCallback(new ArbitraryResolverHandler(target));
+		ArbitraryResolver resolver = (ArbitraryResolver)enhancer.create();
+
 		return (ArbitraryBuilder<T>)Proxy.newProxyInstance(
 			this.getClass().getClassLoader(),
 			new Class[] {ArbitraryBuilder.class},
@@ -122,24 +134,7 @@ public class LabMonkey extends FixtureMonkey {
 				new DefaultArbitraryBuilder<>(
 					manipulateOptions,
 					rootProperty,
-					// 	(ArbitraryResolver)Proxy.newProxyInstance(
-					// 		this.getClass().getClassLoader(),
-					// 		new Class[] {ArbitraryResolver.class},
-					// 		new ArbitraryResolverHandler(
-					// 			new ArbitraryResolver(
-					// 				traverser,
-					// 				manipulatorOptimizer,
-					// 				generateOptions,
-					// 				manipulateOptions
-					// 			)
-					// 		)
-					// 	),
-					new ArbitraryResolver(
-						traverser,
-						manipulatorOptimizer,
-						generateOptions,
-						manipulateOptions
-					),
+					resolver,
 					traverser,
 					this.validator,
 					new ArrayList<>(),

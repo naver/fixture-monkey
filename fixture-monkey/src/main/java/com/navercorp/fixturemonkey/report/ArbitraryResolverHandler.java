@@ -2,14 +2,19 @@ package com.navercorp.fixturemonkey.report;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.util.List;
+
+import net.sf.cglib.proxy.MethodInterceptor;
+import net.sf.cglib.proxy.MethodProxy;
 
 import sun.reflect.Reflection;
 
 import com.navercorp.fixturemonkey.builder.DefaultArbitraryBuilder;
+import com.navercorp.fixturemonkey.resolver.ArbitraryManipulator;
 import com.navercorp.fixturemonkey.resolver.ArbitraryResolver;
 import com.navercorp.fixturemonkey.resolver.NodeResolver;
 
-public class ArbitraryResolverHandler implements InvocationHandler, Observable {
+public class ArbitraryResolverHandler implements MethodInterceptor {
 	ArbitraryResolver target;
 	Observer observer = DebugInfoObserver.INSTANCE;
 
@@ -17,20 +22,20 @@ public class ArbitraryResolverHandler implements InvocationHandler, Observable {
 		this.target = target;
 	}
 
-	@Override
 	public void notify(Integer builder, DebugInfo debugInfo) {
 		observer.update(builder, debugInfo);
 	}
 
 	@Override
-	public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-		Object ret = method.invoke(target, args);
+	public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
+		Object result = null;
+		result = proxy.invokeSuper(obj, args);
 		if (method.getName().equals("getOptimizedManipulator")) {
-			// notify(
-			// 	((DefaultArbitraryBuilder)target).getId(),
-			// 	new OptimizedManipulatorsInfo(manipulators)
-			// );
+			notify(
+				((DefaultArbitraryBuilder)obj).getId(),
+				new OptimizedManipulatorsInfo((List<ArbitraryManipulator>)result)
+			);
 		}
-		return ret;
+		return result;
 	}
 }

@@ -1,7 +1,5 @@
 package com.navercorp.fixturemonkey.report;
 
-import com.navercorp.fixturemonkey.resolver.ArbitraryManipulator;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -9,25 +7,23 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 
 public class DebugInfoObserver implements Observer {
 	public static DebugInfoObserver INSTANCE;
-	private final Map<Integer, List<UserInputManipulatorsInfo>> arbitraryBuilderToUserInputInfo = new HashMap<>();
+	private final Map<Integer, UserInputManipulatorListInfo> arbitraryBuilderToUserInputInfo = new HashMap<>();
 	private final Map<Integer, OptimizedManipulatorsInfo> arbitraryBuilderToOptimizedInfo = new HashMap<>();
 	private final Map<Integer, List<Integer>> arbitraryBuilderSampledPoint = new HashMap<>();
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
 	@Override
 	public void update(Integer builder, DebugInfo debugInfo) {
-		if (debugInfo instanceof UserInputManipulatorsInfo) {
-			List<UserInputManipulatorsInfo> infoList = arbitraryBuilderToUserInputInfo.get(builder);
-			if (infoList == null) {
-				infoList = new ArrayList<>();
+		if (debugInfo instanceof UserInputManipulatorInfo) {
+			UserInputManipulatorListInfo manipulatorListInfo = arbitraryBuilderToUserInputInfo.get(builder);
+			if (manipulatorListInfo == null) {
+				manipulatorListInfo = new UserInputManipulatorListInfo(new ArrayList<>());
+				arbitraryBuilderToUserInputInfo.put(builder, manipulatorListInfo);
 			}
-			infoList.add((UserInputManipulatorsInfo)debugInfo);
-			arbitraryBuilderToUserInputInfo.put(builder, infoList);
+			manipulatorListInfo.getManipulators().add((UserInputManipulatorInfo)debugInfo);
 		} else if (debugInfo instanceof OptimizedManipulatorsInfo) {
 			arbitraryBuilderToOptimizedInfo.put(builder, (OptimizedManipulatorsInfo)debugInfo);
 		} else if (debugInfo instanceof ArbitraryBuilderSampledInfo) {
@@ -47,7 +43,7 @@ public class DebugInfoObserver implements Observer {
 				messageBuilder.append(
 					String.format("\n%s",
 						ManipulatorReport.from(
-							arbitraryBuilderToUserInputInfo.get(builder).subList(0, sampleIndex),
+							arbitraryBuilderToUserInputInfo.get(builder),
 							arbitraryBuilderToOptimizedInfo.get(builder)
 						)
 					)

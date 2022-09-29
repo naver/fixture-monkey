@@ -3,11 +3,11 @@ package com.navercorp.fixturemonkey.report;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public final class UserInputManipulatorsInfo implements ManipulatorsInfo {
+public final class UserInputManipulatorInfo implements ManipulatorsInfo {
 	private final String methodName;
 	private final List<Object> args;
 
-	public UserInputManipulatorsInfo(String methodName, List<Object> args) {
+	public UserInputManipulatorInfo(String methodName, List<Object> args) {
 		this.methodName = methodName;
 		this.args = args;
 	}
