@@ -130,8 +130,8 @@ class PropertyCacheTest {
 		then(actual.get()).isExactlyInstanceOf(CompositeProperty.class);
 
 		CompositeProperty compositeProperty = (CompositeProperty)actual.get();
-		then(compositeProperty.getPrimaryProperty()).isExactlyInstanceOf(PropertyDescriptorProperty.class);
-		then(compositeProperty.getSecondaryProperty()).isExactlyInstanceOf(FieldProperty.class);
+		then(compositeProperty.getPrimaryProperty()).isExactlyInstanceOf(FieldProperty.class);
+		then(compositeProperty.getSecondaryProperty()).isExactlyInstanceOf(PropertyDescriptorProperty.class);
 	}
 
 	@Test

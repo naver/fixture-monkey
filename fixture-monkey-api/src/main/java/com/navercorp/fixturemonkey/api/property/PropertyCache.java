@@ -53,20 +53,6 @@ public final class PropertyCache {
 		Map<String, List<Property>> propertiesMap = new HashMap<>();
 
 		Class<?> actualType = Types.getActualType(annotatedType.getType());
-		Map<String, PropertyDescriptor> propertyDescriptorMap = getPropertyDescriptors(actualType);
-
-		for (Entry<String, PropertyDescriptor> entry : propertyDescriptorMap.entrySet()) {
-			List<Property> properties = propertiesMap.computeIfAbsent(
-				entry.getValue().getName(), name -> new ArrayList<>()
-			);
-			properties.add(
-				new PropertyDescriptorProperty(
-					Types.resolveWithTypeReferenceGenerics(annotatedType, entry.getValue()),
-					entry.getValue()
-				)
-			);
-		}
-
 		Map<String, Field> fieldMap = getFields(actualType);
 		for (Entry<String, Field> entry : fieldMap.entrySet()) {
 			List<Property> properties = propertiesMap.computeIfAbsent(
@@ -74,6 +60,19 @@ public final class PropertyCache {
 			);
 			properties.add(
 				new FieldProperty(
+					Types.resolveWithTypeReferenceGenerics(annotatedType, entry.getValue()),
+					entry.getValue()
+				)
+			);
+		}
+
+		Map<String, PropertyDescriptor> propertyDescriptorMap = getPropertyDescriptors(actualType);
+		for (Entry<String, PropertyDescriptor> entry : propertyDescriptorMap.entrySet()) {
+			List<Property> properties = propertiesMap.computeIfAbsent(
+				entry.getValue().getName(), name -> new ArrayList<>()
+			);
+			properties.add(
+				new PropertyDescriptorProperty(
 					Types.resolveWithTypeReferenceGenerics(annotatedType, entry.getValue()),
 					entry.getValue()
 				)
