@@ -19,6 +19,8 @@
 package com.navercorp.fixturemonkey.resolver;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -72,21 +74,50 @@ public final class ArbitraryBuilderContext {
 		);
 	}
 
+	public void addManipulator(ArbitraryManipulator arbitraryManipulator) {
+		this.manipulators.add(arbitraryManipulator);
+	}
+
+	public void addManipulators(Collection<ArbitraryManipulator> arbitraryManipulators) {
+		this.manipulators.addAll(arbitraryManipulators);
+	}
+
 	public List<ArbitraryManipulator> getManipulators() {
-		return manipulators;
+		return Collections.unmodifiableList(manipulators);
+	}
+
+	public void addLazyArbitrary(LazyArbitrary<?> lazyArbitrary) {
+		this.lazyArbitraries.add(lazyArbitrary);
+	}
+
+	public void addLazyArbitraries(Collection<LazyArbitrary<?>> lazyArbitraries) {
+		this.lazyArbitraries.addAll(lazyArbitraries);
 	}
 
 	public Set<LazyArbitrary<?>> getLazyArbitraries() {
-		return lazyArbitraries;
+		return Collections.unmodifiableSet(lazyArbitraries);
+	}
+
+	@SuppressWarnings("rawtypes")
+	public void addCustomizer(MatcherOperator<? extends FixtureCustomizer> fixtureCustomizer) {
+		this.customizers.add(fixtureCustomizer);
 	}
 
 	@SuppressWarnings("rawtypes")
 	public List<MatcherOperator<? extends FixtureCustomizer>> getCustomizers() {
-		return customizers;
+		return Collections.unmodifiableList(customizers);
+	}
+
+	public void putContainerInfo(NodeResolver nodeResolver, ArbitraryContainerInfo containerInfo) {
+		this.containerInfosByNodeResolver.put(nodeResolver, containerInfo);
+	}
+
+	public void putContainerInfos(Map<NodeResolver, ArbitraryContainerInfo> containerInfosByNodeResolver) {
+		this.containerInfosByNodeResolver.putAll(containerInfosByNodeResolver);
 	}
 
 	public Map<NodeResolver, ArbitraryContainerInfo> getContainerInfosByNodeResolver() {
-		return containerInfosByNodeResolver;
+		return Collections.unmodifiableMap(containerInfosByNodeResolver);
 	}
 
 	public void setValidOnly(boolean validOnly) {

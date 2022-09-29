@@ -32,7 +32,6 @@ import org.apiguardian.api.API.Status;
 import net.jqwik.api.Arbitrary;
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
-import com.navercorp.fixturemonkey.api.collection.LruCache;
 import com.navercorp.fixturemonkey.api.customizer.FixtureCustomizer;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
@@ -48,20 +47,20 @@ public final class ArbitraryResolver {
 
 	private final GenerateOptions generateOptions;
 	private final ManipulateOptions manipulateOptions;
-	private final LruCache<Property, Arbitrary<?>> arbitrariesByProperty;
+	private final MonkeyContext monkeyContext;
 
 	public ArbitraryResolver(
 		ArbitraryTraverser traverser,
 		ManipulatorOptimizer manipulatorOptimizer,
 		GenerateOptions generateOptions,
 		ManipulateOptions manipulateOptions,
-		LruCache<Property, Arbitrary<?>> arbitrariesByProperty
+		MonkeyContext monkeyContext
 	) {
 		this.traverser = traverser;
 		this.manipulatorOptimizer = manipulatorOptimizer;
 		this.generateOptions = generateOptions;
 		this.manipulateOptions = manipulateOptions;
-		this.arbitrariesByProperty = arbitrariesByProperty;
+		this.monkeyContext = monkeyContext;
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -74,8 +73,8 @@ public final class ArbitraryResolver {
 		ArbitraryTree arbitraryTree = new ArbitraryTree(
 			this.traverser.traverse(rootProperty, containerInfosByNodeResolver),
 			generateOptions,
+			monkeyContext,
 			customizers,
-			arbitrariesByProperty,
 			generateOptions.getUniqueProperties()
 		);
 

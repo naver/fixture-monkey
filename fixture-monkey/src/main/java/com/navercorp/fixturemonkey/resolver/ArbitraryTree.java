@@ -32,36 +32,34 @@ import org.apiguardian.api.API.Status;
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
 
-import com.navercorp.fixturemonkey.api.collection.LruCache;
 import com.navercorp.fixturemonkey.api.customizer.FixtureCustomizer;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.option.GenerateOptions;
-import com.navercorp.fixturemonkey.api.property.Property;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 final class ArbitraryTree {
 	private final ArbitraryNode rootNode;
 	private final GenerateOptions generateOptions;
 	private final ArbitraryTreeMetadata metadata;
+	private final MonkeyContext monkeyContext;
 	@SuppressWarnings("rawtypes")
 	private final List<MatcherOperator<? extends FixtureCustomizer>> customizers;
-	private final LruCache<Property, Arbitrary<?>> arbitrariesByProperty;
 	private final List<MatcherOperator<Boolean>> uniqueProperties;
 
 	@SuppressWarnings("rawtypes")
 	ArbitraryTree(
 		ArbitraryNode rootNode,
 		GenerateOptions generateOptions,
+		MonkeyContext monkeyContext,
 		List<MatcherOperator<? extends FixtureCustomizer>> customizers,
-		LruCache<Property, Arbitrary<?>> arbitrariesByProperty,
 		List<MatcherOperator<Boolean>> uniqueProperties
 	) {
 		this.rootNode = rootNode;
 		this.generateOptions = generateOptions;
+		this.monkeyContext = monkeyContext;
 		this.customizers = customizers;
-		this.arbitrariesByProperty = arbitrariesByProperty;
 		this.uniqueProperties = uniqueProperties;
 		MetadataCollector metadataCollector = new MetadataCollector(rootNode);
 		this.metadata = metadataCollector.collect();
@@ -126,7 +124,7 @@ final class ArbitraryTree {
 		} else {
 			ArbitraryGeneratorContext childArbitraryGeneratorContext = this.generateContext(node, customizers, ctx);
 
-			Arbitrary<?> cached = arbitrariesByProperty.get(node.getProperty());
+			Arbitrary<?> cached = monkeyContext.getCachedArbitrary(node.getProperty());
 
 			boolean notCustomized = ctx.getArbitraryCustomizers().stream()
 				.noneMatch(it -> it.match(node.getProperty()));
@@ -148,7 +146,7 @@ final class ArbitraryTree {
 				}
 
 				if (node.isNotManipulated() && notCustomized) {
-					arbitrariesByProperty.put(
+					monkeyContext.putCachedArbitrary(
 						node.getProperty(),
 						generated
 					);

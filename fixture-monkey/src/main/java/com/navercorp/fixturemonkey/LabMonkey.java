@@ -118,7 +118,7 @@ public class LabMonkey extends FixtureMonkey {
 				manipulatorOptimizer,
 				generateOptions,
 				manipulateOptions,
-				monkeyContext.getArbitrariesByProperty()
+				monkeyContext
 			),
 			traverser,
 			this.validator,
@@ -130,7 +130,7 @@ public class LabMonkey extends FixtureMonkey {
 	public <T> DefaultArbitraryBuilder<T> giveMeBuilder(T value) {
 		ManipulateOptions manipulateOptions = manipulateOptionsBuilder.build();
 		ArbitraryBuilderContext context = new ArbitraryBuilderContext();
-		context.getManipulators().add(
+		context.addManipulator(
 			new ArbitraryManipulator(
 				IdentityNodeResolver.INSTANCE,
 				new NodeSetDecomposedValueManipulator<>(traverser, manipulateOptions, value)
@@ -145,7 +145,7 @@ public class LabMonkey extends FixtureMonkey {
 				manipulatorOptimizer,
 				generateOptions,
 				manipulateOptions,
-				monkeyContext.getArbitrariesByProperty()
+				monkeyContext
 			),
 			traverser,
 			this.validator,

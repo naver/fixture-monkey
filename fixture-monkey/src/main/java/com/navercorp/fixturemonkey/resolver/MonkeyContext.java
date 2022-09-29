@@ -38,7 +38,11 @@ public final class MonkeyContext {
 		return new MonkeyContextBuilder();
 	}
 
-	public LruCache<Property, Arbitrary<?>> getArbitrariesByProperty() {
-		return arbitrariesByProperty;
+	public Arbitrary<?> getCachedArbitrary(Property property) {
+		return arbitrariesByProperty.get(property);
+	}
+
+	public void putCachedArbitrary(Property property, Arbitrary<?> arbitrary) {
+		arbitrariesByProperty.put(property, arbitrary);
 	}
 }
