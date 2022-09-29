@@ -116,16 +116,8 @@ public class LabMonkey extends FixtureMonkey {
 			return (DefaultArbitraryBuilder<T>)registered.copy();
 		}
 
-		// Make Proxy for ArbitraryResolver
-		ArbitraryResolver target = new ArbitraryResolver(traverser,
-			manipulatorOptimizer,
-			generateOptions,
-			manipulateOptions
-		);
-		Enhancer enhancer = new Enhancer();
-		enhancer.setSuperclass(ArbitraryResolver.class);
-		enhancer.setCallback(new ArbitraryResolverHandler(target));
-		ArbitraryResolver resolver = (ArbitraryResolver)enhancer.create();
+		// Todo: Make Proxy for ArbitraryResolver
+
 
 		return (ArbitraryBuilder<T>)Proxy.newProxyInstance(
 			this.getClass().getClassLoader(),
@@ -134,7 +126,12 @@ public class LabMonkey extends FixtureMonkey {
 				new DefaultArbitraryBuilder<>(
 					manipulateOptions,
 					rootProperty,
-					resolver,
+					new ArbitraryResolver(
+						traverser,
+						manipulatorOptimizer,
+						generateOptions,
+						manipulateOptions
+					),
 					traverser,
 					this.validator,
 					new ArrayList<>(),

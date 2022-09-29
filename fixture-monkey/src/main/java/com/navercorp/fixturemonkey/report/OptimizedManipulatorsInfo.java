@@ -14,10 +14,11 @@ public class OptimizedManipulatorsInfo implements ManipulatorsInfo {
 	}
 
 	@Override
-	public String toDebugLog() {
+	public String toDebugLog(Integer idx) {
 		AtomicInteger index = new AtomicInteger();
 		return String.join("\n",
 			manipulators
+				.subList(0, idx)
 				.stream()
 				.map(it -> String.format("[%s] %s", index.getAndIncrement(), it.toString()))
 				.collect(Collectors.toList())

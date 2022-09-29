@@ -46,12 +46,11 @@ public class ArbitraryBuilderHandler implements InvocationHandler, Observable {
 				new ArbitraryBuilderHandler((ArbitraryBuilder)ret)
 			);
 		} else if (method.getName().equals("sample")) {
-			//Todo: 해당 notify 삭제하고 ArbitrryResolverHandler에서 받기~
+			//Todo: 지금은 그냥 manipulator 받고 있음. 해당 notify 삭제하고 ArbitrryResolverHandler에서 optimizedManipulator List 받기
 			notify(
 				((DefaultArbitraryBuilder)target).getId(),
 				new OptimizedManipulatorsInfo(manipulators)
 			);
-
 
 			notify(
 				((DefaultArbitraryBuilder)target).getId(),

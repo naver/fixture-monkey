@@ -2,18 +2,28 @@ package com.navercorp.fixturemonkey.report;
 
 
 public class ArbitraryBuilderSampledInfo implements ManipulatorsInfo {
-	private final Integer sampledIndex;
+	private Integer userInputIndex;
+	private final Integer optimizedIndex;
 
-	public ArbitraryBuilderSampledInfo(Integer sampledIndex) {
-		this.sampledIndex = sampledIndex;
+	public ArbitraryBuilderSampledInfo(Integer optimizedIndex) {
+		this.optimizedIndex = optimizedIndex;
 	}
 
-	public Integer getSampledIndex() {
-		return sampledIndex;
+	public ArbitraryBuilderSampledInfo setUserInputIndex(Integer userInputIndex) {
+		this.userInputIndex = userInputIndex;
+		return this;
+	}
+
+	public Integer getUserInputIndex() {
+		return userInputIndex;
+	}
+
+	public Integer getOptimizedIndex() {
+		return optimizedIndex;
 	}
 
 	@Override
-	public String toDebugLog() {
+	public String toDebugLog(Integer index) {
 		throw new IllegalArgumentException("Should not be used for logging");
 	}
 }

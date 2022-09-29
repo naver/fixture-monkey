@@ -41,7 +41,7 @@ import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public class ArbitraryResolver {
+public final class ArbitraryResolver {
 	private ArbitraryTraverser traverser;
 	private ManipulatorOptimizer manipulatorOptimizer;
 
@@ -59,6 +59,7 @@ public class ArbitraryResolver {
 		this.manipulatorOptimizer = manipulatorOptimizer;
 		this.generateOptions = generateOptions;
 		this.manipulateOptions = manipulateOptions;
+
 	}
 
 	@SuppressWarnings("rawtypes")

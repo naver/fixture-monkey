@@ -13,8 +13,9 @@ public final class UserInputManipulatorInfo implements ManipulatorsInfo {
 	}
 
 	@Override
-	public String toDebugLog() {
-		List<String> strArgs = args.stream().map(Object::toString).collect(Collectors.toList());
+	public String toDebugLog(Integer idx) {
+		List<String> strArgs = args
+			.stream().map(Object::toString).collect(Collectors.toList());
 		String joinedArgs = String.join(", ", strArgs);
 		if (methodName.equals("set")) {
 			return String.format(".set(%s)", joinedArgs);

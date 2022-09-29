@@ -12,7 +12,7 @@ public class DebugInfoObserver implements Observer {
 	public static DebugInfoObserver INSTANCE;
 	private final Map<Integer, UserInputManipulatorListInfo> arbitraryBuilderToUserInputInfo = new HashMap<>();
 	private final Map<Integer, OptimizedManipulatorsInfo> arbitraryBuilderToOptimizedInfo = new HashMap<>();
-	private final Map<Integer, List<Integer>> arbitraryBuilderSampledPoint = new HashMap<>();
+	private final Map<Integer, List<ArbitraryBuilderSampledInfo>> arbitraryBuilderSampledPoint = new HashMap<>();
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
 	@Override
@@ -27,24 +27,30 @@ public class DebugInfoObserver implements Observer {
 		} else if (debugInfo instanceof OptimizedManipulatorsInfo) {
 			arbitraryBuilderToOptimizedInfo.put(builder, (OptimizedManipulatorsInfo)debugInfo);
 		} else if (debugInfo instanceof ArbitraryBuilderSampledInfo) {
-			List<Integer> sampledInfoList = arbitraryBuilderSampledPoint.get(builder);
+			List<ArbitraryBuilderSampledInfo> sampledInfoList = arbitraryBuilderSampledPoint.get(builder);
 			if (sampledInfoList == null) {
 				sampledInfoList = new ArrayList<>();
 			}
-			sampledInfoList.add(((ArbitraryBuilderSampledInfo)debugInfo).getSampledIndex());
+			Integer userInputSampledInfo = arbitraryBuilderToUserInputInfo.get(builder).getManipulators().size();
+			ArbitraryBuilderSampledInfo info = (((ArbitraryBuilderSampledInfo)debugInfo).setUserInputIndex(userInputSampledInfo));
+			sampledInfoList.add((ArbitraryBuilderSampledInfo)info);
 			arbitraryBuilderSampledPoint.put(builder, sampledInfoList);
 		}
 	}
 
 	public void reportResult() {
 		StringBuilder messageBuilder = new StringBuilder();
+		//for every ArbitraryBuilder used
 		for (Integer builder : arbitraryBuilderToOptimizedInfo.keySet()) {
-			for (Integer sampleIndex : arbitraryBuilderSampledPoint.get(builder)) {
+			//for every .sample()
+			for (ArbitraryBuilderSampledInfo sampledInfo : arbitraryBuilderSampledPoint.get(builder)) {
 				messageBuilder.append(
 					String.format("\n%s",
 						ManipulatorReport.from(
 							arbitraryBuilderToUserInputInfo.get(builder),
-							arbitraryBuilderToOptimizedInfo.get(builder)
+							arbitraryBuilderToOptimizedInfo.get(builder),
+							sampledInfo.getUserInputIndex(),
+							sampledInfo.getOptimizedIndex()
 						)
 					)
 				);
