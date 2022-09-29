@@ -65,7 +65,7 @@ public final class RootProperty implements Property {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(annotatedType);
+		return Objects.hash(annotatedType.getType());
 	}
 
 	@Override

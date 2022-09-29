@@ -32,7 +32,6 @@ import org.apiguardian.api.API.Status;
 import net.jqwik.api.Arbitrary;
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
-import com.navercorp.fixturemonkey.api.collection.LruCache;
 import com.navercorp.fixturemonkey.api.customizer.FixtureCustomizer;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
@@ -48,17 +47,20 @@ public final class ArbitraryResolver {
 
 	private final GenerateOptions generateOptions;
 	private final ManipulateOptions manipulateOptions;
+	private final MonkeyContext monkeyContext;
 
 	public ArbitraryResolver(
 		ArbitraryTraverser traverser,
 		ManipulatorOptimizer manipulatorOptimizer,
 		GenerateOptions generateOptions,
-		ManipulateOptions manipulateOptions
+		ManipulateOptions manipulateOptions,
+		MonkeyContext monkeyContext
 	) {
 		this.traverser = traverser;
 		this.manipulatorOptimizer = manipulatorOptimizer;
 		this.generateOptions = generateOptions;
 		this.manipulateOptions = manipulateOptions;
+		this.monkeyContext = monkeyContext;
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -71,10 +73,14 @@ public final class ArbitraryResolver {
 		ArbitraryTree arbitraryTree = new ArbitraryTree(
 			this.traverser.traverse(rootProperty, containerInfosByNodeResolver),
 			generateOptions,
+			monkeyContext,
 			customizers,
-			new LruCache<>(1000),
 			generateOptions.getUniqueProperties()
 		);
+
+		containerInfosByNodeResolver.keySet().stream()
+			.flatMap(it -> it.resolve(arbitraryTree.findRoot()).stream())
+			.forEach(it -> it.setManipulated(true));
 
 		List<ArbitraryManipulator> registeredManipulators = getRegisteredToManipulators(
 			manipulateOptions,
@@ -129,6 +135,9 @@ public final class ArbitraryResolver {
 					new NodeResolver() {
 						@Override
 						public List<ArbitraryNode> resolve(ArbitraryNode arbitraryNode) {
+							for (ArbitraryNode node : arbitraryNodes) {
+								node.setManipulated(true);
+							}
 							return arbitraryNodes;
 						}
 

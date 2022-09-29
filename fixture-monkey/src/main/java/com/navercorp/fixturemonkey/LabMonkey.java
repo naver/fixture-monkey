@@ -20,9 +20,6 @@ package com.navercorp.fixturemonkey;
 
 import static java.util.stream.Collectors.toList;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -40,6 +37,7 @@ import com.navercorp.fixturemonkey.api.property.RootProperty;
 import com.navercorp.fixturemonkey.api.type.LazyAnnotatedType;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.builder.DefaultArbitraryBuilder;
+import com.navercorp.fixturemonkey.resolver.ArbitraryBuilderContext;
 import com.navercorp.fixturemonkey.resolver.ArbitraryManipulator;
 import com.navercorp.fixturemonkey.resolver.ArbitraryResolver;
 import com.navercorp.fixturemonkey.resolver.ArbitraryTraverser;
@@ -47,6 +45,7 @@ import com.navercorp.fixturemonkey.resolver.IdentityNodeResolver;
 import com.navercorp.fixturemonkey.resolver.ManipulateOptions;
 import com.navercorp.fixturemonkey.resolver.ManipulateOptionsBuilder;
 import com.navercorp.fixturemonkey.resolver.ManipulatorOptimizer;
+import com.navercorp.fixturemonkey.resolver.MonkeyContext;
 import com.navercorp.fixturemonkey.resolver.NodeSetDecomposedValueManipulator;
 import com.navercorp.fixturemonkey.validator.ArbitraryValidator;
 
@@ -57,6 +56,7 @@ public class LabMonkey extends FixtureMonkey {
 	private final ArbitraryTraverser traverser;
 	private final ManipulatorOptimizer manipulatorOptimizer;
 	private final ArbitraryValidator validator;
+	private final MonkeyContext monkeyContext;
 
 	@SuppressFBWarnings("NP_NULL_PARAM_DEREF_NONVIRTUAL")
 	public LabMonkey(
@@ -64,7 +64,8 @@ public class LabMonkey extends FixtureMonkey {
 		ManipulateOptionsBuilder manipulateOptionsBuilder,
 		ArbitraryTraverser traverser,
 		ManipulatorOptimizer manipulatorOptimizer,
-		ArbitraryValidator validator
+		ArbitraryValidator validator,
+		MonkeyContext monkeyContext
 	) {
 		super(null, null, null, null, null);
 		this.generateOptions = generateOptions;
@@ -72,6 +73,7 @@ public class LabMonkey extends FixtureMonkey {
 		this.traverser = traverser;
 		this.manipulatorOptimizer = manipulatorOptimizer;
 		this.validator = validator;
+		this.monkeyContext = monkeyContext;
 		manipulateOptionsBuilder.propertyNameResolvers(generateOptions.getPropertyNameResolvers());
 		manipulateOptionsBuilder.defaultPropertyNameResolver(generateOptions.getDefaultPropertyNameResolver());
 		manipulateOptionsBuilder.sampleRegisteredArbitraryBuilder(this);
@@ -115,22 +117,20 @@ public class LabMonkey extends FixtureMonkey {
 				traverser,
 				manipulatorOptimizer,
 				generateOptions,
-				manipulateOptions
+				manipulateOptions,
+				monkeyContext
 			),
 			traverser,
 			this.validator,
-			new ArrayList<>(),
-			new HashSet<>(),
-			new ArrayList<>(),
-			new HashMap<>()
+			new ArbitraryBuilderContext()
 		);
 	}
 
 	@Override
 	public <T> DefaultArbitraryBuilder<T> giveMeBuilder(T value) {
 		ManipulateOptions manipulateOptions = manipulateOptionsBuilder.build();
-		List<ArbitraryManipulator> manipulators = new ArrayList<>();
-		manipulators.add(
+		ArbitraryBuilderContext context = new ArbitraryBuilderContext();
+		context.addManipulator(
 			new ArbitraryManipulator(
 				IdentityNodeResolver.INSTANCE,
 				new NodeSetDecomposedValueManipulator<>(traverser, manipulateOptions, value)
@@ -144,14 +144,12 @@ public class LabMonkey extends FixtureMonkey {
 				traverser,
 				manipulatorOptimizer,
 				generateOptions,
-				manipulateOptions
+				manipulateOptions,
+				monkeyContext
 			),
 			traverser,
 			this.validator,
-			manipulators,
-			new HashSet<>(),
-			new ArrayList<>(),
-			new HashMap<>()
+			context
 		);
 	}
 

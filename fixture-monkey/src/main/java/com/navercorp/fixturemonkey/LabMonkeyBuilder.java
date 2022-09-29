@@ -63,6 +63,7 @@ import com.navercorp.fixturemonkey.resolver.DecomposedContainerValueFactory;
 import com.navercorp.fixturemonkey.resolver.ManipulateOptions;
 import com.navercorp.fixturemonkey.resolver.ManipulateOptionsBuilder;
 import com.navercorp.fixturemonkey.resolver.ManipulatorOptimizer;
+import com.navercorp.fixturemonkey.resolver.MonkeyContext;
 import com.navercorp.fixturemonkey.resolver.NoneManipulatorOptimizer;
 import com.navercorp.fixturemonkey.validator.ArbitraryValidator;
 import com.navercorp.fixturemonkey.validator.DefaultArbitraryValidator;
@@ -523,7 +524,8 @@ public class LabMonkeyBuilder {
 			manipulateOptionsBuilder,
 			traverser,
 			manipulatorOptimizer,
-			this.arbitraryValidator
+			this.arbitraryValidator,
+			MonkeyContext.builder().build()
 		);
 	}
 
