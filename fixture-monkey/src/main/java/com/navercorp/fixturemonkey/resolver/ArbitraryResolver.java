@@ -119,10 +119,12 @@ public final class ArbitraryResolver {
 				continue;
 			}
 
+			LazyArbitrary<?> lazyArbitrary = LazyArbitrary.lazy(registeredArbitraryBuilder::sample);
+
 			NodeManipulator nodeManipulator = new NodeSetLazyManipulator<>(
 				traverser,
 				manipulateOptions,
-				LazyArbitrary.lazy(registeredArbitraryBuilder::sample)
+				lazyArbitrary
 			);
 			manipulators.add(
 				new ArbitraryManipulator(
@@ -137,7 +139,10 @@ public final class ArbitraryResolver {
 							return Collections.emptyList(); // Do not need node predicate since it is SetLazyManipulator
 						}
 					},
-					nodeManipulator
+					arbitraryNode -> {
+						nodeManipulator.manipulate(arbitraryNode);
+						lazyArbitrary.clear();
+					}
 				)
 			);
 		}

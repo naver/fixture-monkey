@@ -31,6 +31,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -1032,5 +1033,20 @@ class FixtureMonkeyV04OptionsTest {
 			.sample();
 
 		then(twoEnums).hasSize(2);
+	}
+
+	@Property
+	void registerObjectNotFixed() {
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.register(String.class, it -> it.giveMeBuilder(String.class).set("$", Arbitraries.strings().alpha()))
+			.build();
+
+		List<String> sampled = sut.giveMeBuilder(new TypeReference<List<String>>() {
+			})
+			.minSize("$", 3)
+			.sample();
+
+		Set<String> actual = new HashSet<>(sampled);
+		then(actual).hasSizeGreaterThan(1);
 	}
 }
