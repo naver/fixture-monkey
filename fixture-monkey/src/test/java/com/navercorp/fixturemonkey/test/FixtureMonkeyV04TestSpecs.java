@@ -82,6 +82,11 @@ class FixtureMonkeyV04TestSpecs {
 		private List<String> values;
 	}
 
+	@Data
+	public static class StaticFieldObject {
+		public static final StaticFieldObject CONSTANT = new StaticFieldObject();
+	}
+
 	public enum EnumObject {
 		ONE,
 		TWO,

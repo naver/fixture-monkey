@@ -23,6 +23,7 @@ import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -102,7 +103,7 @@ public final class PropertyCache {
 		return FIELDS.computeIfAbsent(clazz, type -> {
 			Map<String, Field> result = new ConcurrentHashMap<>();
 			List<Field> fields = ReflectionUtils.findFields(
-				clazz, field -> true, HierarchyTraversalMode.TOP_DOWN);
+				clazz, field -> !Modifier.isStatic(field.getModifiers()), HierarchyTraversalMode.TOP_DOWN);
 			for (Field field : fields) {
 				field.setAccessible(true);
 				result.put(field.getName(), field);

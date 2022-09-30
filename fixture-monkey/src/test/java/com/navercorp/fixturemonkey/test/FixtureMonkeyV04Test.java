@@ -62,6 +62,7 @@ import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.ComplexObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.EnumObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.ListStringObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.SimpleObject;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.StaticFieldObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.StringPair;
 
 class FixtureMonkeyV04Test {
@@ -1356,5 +1357,11 @@ class FixtureMonkeyV04Test {
 			.sample();
 
 		then(actual.getValues().get(1)).isEqualTo("test");
+	}
+
+	@Property
+	void sampleNotGeneratingStaticField() {
+		// when, then
+		thenNoException().isThrownBy(() -> SUT.giveMeOne(StaticFieldObject.class));
 	}
 }
