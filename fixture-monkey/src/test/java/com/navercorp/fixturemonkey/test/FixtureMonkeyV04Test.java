@@ -64,6 +64,7 @@ import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.ListStringObje
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.SimpleObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.StaticFieldObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.StringPair;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.TwoEnum;
 
 class FixtureMonkeyV04Test {
 	private static final LabMonkey SUT = LabMonkey.labMonkey();
@@ -1391,5 +1392,14 @@ class FixtureMonkeyV04Test {
 			.getMap();
 
 		then(actual).isEmpty();
+	}
+
+	@Property
+	void sampleEnumSet() {
+		// when
+		Set<TwoEnum> actual = SUT.giveMeOne(new TypeReference<Set<TwoEnum>>() {
+		});
+
+		then(actual).hasSizeLessThanOrEqualTo(2);
 	}
 }

@@ -87,6 +87,10 @@ class FixtureMonkeyV04TestSpecs {
 		public static final StaticFieldObject CONSTANT = new StaticFieldObject();
 	}
 
+	public enum TwoEnum {
+		ONE, TWO
+	}
+
 	public enum EnumObject {
 		ONE,
 		TWO,

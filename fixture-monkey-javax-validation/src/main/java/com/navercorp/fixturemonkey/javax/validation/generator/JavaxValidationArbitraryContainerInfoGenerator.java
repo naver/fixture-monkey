@@ -18,7 +18,11 @@
 
 package com.navercorp.fixturemonkey.javax.validation.generator;
 
+import java.lang.annotation.Annotation;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
@@ -32,6 +36,15 @@ import com.navercorp.fixturemonkey.api.generator.ContainerPropertyGeneratorConte
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class JavaxValidationArbitraryContainerInfoGenerator implements ArbitraryContainerInfoGenerator {
+	public static final Set<Class<? extends Annotation>> JAVAX_VALIDATION_CONTAINER_ANNOTATIONS;
+
+	static {
+		Set<Class<? extends Annotation>> set = new HashSet<>();
+		set.add(Size.class);
+		set.add(NotEmpty.class);
+		JAVAX_VALIDATION_CONTAINER_ANNOTATIONS = Collections.unmodifiableSet(set);
+	}
+
 	@Override
 	public ArbitraryContainerInfo generate(ContainerPropertyGeneratorContext context) {
 		Integer min = null;

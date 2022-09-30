@@ -18,6 +18,8 @@
 
 package com.navercorp.fixturemonkey.javax.validation.plugin;
 
+import static com.navercorp.fixturemonkey.javax.validation.generator.JavaxValidationArbitraryContainerInfoGenerator.JAVAX_VALIDATION_CONTAINER_ANNOTATIONS;
+
 import java.util.Arrays;
 
 import org.apiguardian.api.API;
@@ -81,7 +83,8 @@ public final class JavaxValidationPlugin implements Plugin {
 		optionsBuilder
 			.defaultNullInjectGenerator(new JavaxValidationNullInjectGenerator())
 			.insertFirstArbitraryContainerInfoGenerator(
-				prop -> true,
+				prop -> JAVAX_VALIDATION_CONTAINER_ANNOTATIONS.stream()
+					.anyMatch(it -> prop.getAnnotation(it).isPresent()),
 				new JavaxValidationArbitraryContainerInfoGenerator()
 			)
 			.javaTypeArbitraryGenerator(javaTypeArbitraryGenerator)
