@@ -51,11 +51,16 @@ public final class ArbitraryTraverser {
 		Property property,
 		Map<NodeResolver, ArbitraryContainerInfo> arbitraryContainerInfosByNodeResolver
 	) {
-		ObjectPropertyGenerator objectPropertyGenerator =
-			this.generateOptions.getObjectPropertyGenerator(property);
 		ContainerPropertyGenerator containerPropertyGenerator =
 			this.generateOptions.getContainerPropertyGenerator(property);
 		boolean container = containerPropertyGenerator != null;
+
+		ObjectPropertyGenerator objectPropertyGenerator;
+		if (container) {
+			objectPropertyGenerator = SingleValueObjectPropertyGenerator.INSTANCE;
+		} else {
+			objectPropertyGenerator = this.generateOptions.getObjectPropertyGenerator(property);
+		}
 
 		ObjectProperty objectProperty = objectPropertyGenerator.generate(
 			new ObjectPropertyGeneratorContext(
