@@ -72,10 +72,10 @@ public final class ArbitraryTraverser {
 			)
 		);
 
-		ArbitraryContainerInfo containerInfo = arbitraryContainerInfosByNodeResolver.get(IdentityNodeResolver.INSTANCE);
-
 		ContainerProperty containerProperty = null;
 		if (container) {
+			ArbitraryContainerInfo containerInfo =
+				arbitraryContainerInfosByNodeResolver.get(IdentityNodeResolver.INSTANCE);
 			containerProperty = containerPropertyGenerator.generate(
 				new ContainerPropertyGeneratorContext(
 					property,
