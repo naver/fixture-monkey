@@ -40,6 +40,7 @@ import org.junit.platform.commons.util.ReflectionUtils.HierarchyTraversalMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.navercorp.fixturemonkey.api.collection.LruCache;
 import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
@@ -47,8 +48,8 @@ public final class PropertyCache {
 	private static final Logger LOGGER = LoggerFactory.getLogger(PropertyCache.class);
 
 	private static final Map<Class<?>, Map<String, PropertyDescriptor>> PROPERTY_DESCRIPTORS =
-		new ConcurrentHashMap<>();
-	private static final Map<Class<?>, Map<String, Field>> FIELDS = new ConcurrentHashMap<>();
+		new LruCache<>(2000);
+	private static final Map<Class<?>, Map<String, Field>> FIELDS = new LruCache<>(2000);
 
 	public static List<Property> getProperties(AnnotatedType annotatedType) {
 		Map<String, List<Property>> propertiesMap = new HashMap<>();
@@ -95,7 +96,7 @@ public final class PropertyCache {
 
 	public static Optional<Property> getProperty(AnnotatedType annotatedType, String name) {
 		return getProperties(annotatedType).stream()
-			.filter(it -> it.getName().equals(name))
+			.filter(it -> name.equals(it.getName()))
 			.findFirst();
 	}
 
@@ -129,5 +130,10 @@ public final class PropertyCache {
 			}
 			return result;
 		});
+	}
+
+	public static void clearCache() {
+		PROPERTY_DESCRIPTORS.clear();
+		FIELDS.clear();
 	}
 }

@@ -42,15 +42,15 @@ import com.navercorp.fixturemonkey.api.type.Types;
 public final class BuilderArbitraryIntrospector
 	implements ArbitraryIntrospector {
 	public static final BuilderArbitraryIntrospector INSTANCE = new BuilderArbitraryIntrospector();
-	private static final Map<Class<?>, Method> BUILDER_CACHE = new ConcurrentHashMap<>();
-	private static final Map<String, Method> BUILD_FIELD_METHOD_CACHE = new ConcurrentHashMap<>();
-	private static final Map<Class<?>, Method> BUILD_METHOD_CACHE = new ConcurrentHashMap<>();
-	private static final Map<Class<?>, Class<?>> BUILDER_TYPE_CACHE = new ConcurrentHashMap<>();
+	private static final Map<Class<?>, Method> BUILDER_CACHE = new ConcurrentHashMap<>(2000);
+	private static final Map<String, Method> BUILD_FIELD_METHOD_CACHE = new ConcurrentHashMap<>(2000);
+	private static final Map<Class<?>, Method> BUILD_METHOD_CACHE = new ConcurrentHashMap<>(2000);
+	private static final Map<Class<?>, Class<?>> BUILDER_TYPE_CACHE = new ConcurrentHashMap<>(2000);
 
 	private String defaultBuildMethodName = "build";
 	private String defaultBuilderMethodName = "builder";
-	private final Map<Class<?>, String> typedBuilderMethodName = new ConcurrentHashMap<>();
-	private final Map<Class<?>, String> typedBuildMethodName = new ConcurrentHashMap<>();
+	private final Map<Class<?>, String> typedBuilderMethodName = new ConcurrentHashMap<>(2000);
+	private final Map<Class<?>, String> typedBuildMethodName = new ConcurrentHashMap<>(2000);
 
 	private static void clearMethodCache() {
 		BUILDER_CACHE.clear();

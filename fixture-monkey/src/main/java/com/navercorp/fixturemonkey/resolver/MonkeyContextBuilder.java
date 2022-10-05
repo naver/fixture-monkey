@@ -29,7 +29,7 @@ import com.navercorp.fixturemonkey.api.property.Property;
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class MonkeyContextBuilder {
 	private LruCache<Property, Arbitrary<?>> arbitrariesByProperty;
-	private int cacheSize = 1000;
+	private int cacheSize = 2000;
 
 	public MonkeyContextBuilder arbitrariesByProperty(LruCache<Property, Arbitrary<?>> arbitrariesByProperty) {
 		this.arbitrariesByProperty = arbitrariesByProperty;

@@ -5,6 +5,7 @@ plugins {
     id "com.github.spotbugs" version "4.7.6"
     id "jacoco"
     id "checkstyle"
+    id "me.champeau.jmh" version "0.6.6"
 }
 
 dependencies {
@@ -23,6 +24,13 @@ dependencies {
     testImplementation("org.hibernate.validator:hibernate-validator:6.2.0.Final")
     testImplementation("org.glassfish:jakarta.el:3.0.3")
     testAnnotationProcessor("org.projectlombok:lombok:1.18.24")
+
+    jmhImplementation("org.openjdk.jmh:jmh-core:1.35")
+    jmhImplementation("org.openjdk.jmh:jmh-generator-annprocess:1.35")
+    jmhImplementation("org.projectlombok:lombok:1.18.24")
+    jmhImplementation(project(":fixture-monkey-javax-validation"))
+    jmhImplementation(project(":fixture-monkey-jackson"))
+    jmhAnnotationProcessor("org.projectlombok:lombok:1.18.24")
 }
 
 editorconfig {
@@ -118,4 +126,10 @@ jar {
                 "Implementation-Vendor": "com.navercorp"
         )
     }
+}
+
+jmh {
+    fork = 1
+    warmupIterations = 3
+    iterations = 10
 }
