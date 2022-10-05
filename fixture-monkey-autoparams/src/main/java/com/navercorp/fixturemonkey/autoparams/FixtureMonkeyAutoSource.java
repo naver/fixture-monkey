@@ -5,8 +5,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.javaunit.autoparams.AutoSource;
-import org.javaunit.autoparams.customization.Customization;
+import autoparams.AutoSource;
+import autoparams.customization.Customization;
 
 import com.navercorp.fixturemonkey.autoparams.customization.FixtureMonkeyCustomizer;
 

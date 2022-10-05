@@ -27,13 +27,13 @@ import java.util.stream.Stream;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 
-import org.javaunit.autoparams.Repeat;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 
 import net.jqwik.api.Arbitrary;
 
+import autoparams.Repeat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
