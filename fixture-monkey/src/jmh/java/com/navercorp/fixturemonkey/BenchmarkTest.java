@@ -33,8 +33,8 @@ import com.navercorp.fixturemonkey.javax.validation.plugin.JavaxValidationPlugin
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
 @State(Scope.Benchmark)
 public class BenchmarkTest {
-	private final static int COUNT = 500;
-	private final static ObjectMapper OBJECT_MAPPER = new ObjectMapper()
+	private static final int COUNT = 500;
+	private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper()
 		.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
 		.registerModules(new Jdk8Module(), new JavaTimeModule());
 
