@@ -18,7 +18,7 @@
 
 package com.navercorp.fixturemonkey.autoparams.customization;
 
-import org.javaunit.autoparams.customization.CompositeCustomizer;
+import autoparams.customization.CompositeCustomizer;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
 
