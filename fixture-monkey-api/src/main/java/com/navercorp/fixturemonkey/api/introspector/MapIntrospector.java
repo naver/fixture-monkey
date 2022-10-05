@@ -75,7 +75,6 @@ public final class MapIntrospector implements ArbitraryIntrospector, Matcher {
 
 		return new ArbitraryIntrospectorResult(
 			builderCombinator.build()
-			.filter(it -> it.size() == childrenArbitraries.size())
 		);
 	}
 }

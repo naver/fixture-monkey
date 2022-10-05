@@ -60,6 +60,7 @@ public final class SetIntrospector implements ArbitraryIntrospector, Matcher {
 			return ArbitraryIntrospectorResult.EMPTY;
 		}
 
+
 		List<Arbitrary<?>> childrenArbitraries = context.getChildrenArbitraryContexts().getArbitraries();
 
 		BuilderCombinator<Set<Object>> builderCombinator = Builders.withBuilder(HashSet::new);
@@ -73,7 +74,6 @@ public final class SetIntrospector implements ArbitraryIntrospector, Matcher {
 		return new ArbitraryIntrospectorResult(
 			builderCombinator
 				.build()
-				.filter(it -> it.size() == childrenArbitraries.size())
 		);
 	}
 }

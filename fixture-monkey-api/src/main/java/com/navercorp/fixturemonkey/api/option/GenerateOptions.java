@@ -36,6 +36,7 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -422,17 +423,9 @@ public final class GenerateOptions {
 	}
 
 	private static List<MatcherOperator<Boolean>> getDefaultUniqueProperties() {
-		return Arrays.asList(
+		return Collections.singletonList(
 			new MatcherOperator<>(
 				property -> property.getClass() == MapKeyElementProperty.class,
-				true
-			),
-			new MatcherOperator<>(
-				property -> property.getClass() == ElementProperty.class
-					&&
-					Set.class.isAssignableFrom(
-						Types.getActualType(((ElementProperty)property).getContainerProperty().getType())
-					),
 				true
 			)
 		);
