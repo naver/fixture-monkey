@@ -34,6 +34,7 @@ import com.navercorp.fixturemonkey.api.generator.ContainerPropertyGeneratorConte
 import com.navercorp.fixturemonkey.api.generator.ObjectProperty;
 import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGeneratorContext;
+import com.navercorp.fixturemonkey.api.generator.SingleValueObjectPropertyGenerator;
 import com.navercorp.fixturemonkey.api.option.GenerateOptions;
 import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
@@ -50,11 +51,16 @@ public final class ArbitraryTraverser {
 		Property property,
 		Map<NodeResolver, ArbitraryContainerInfo> arbitraryContainerInfosByNodeResolver
 	) {
-		ObjectPropertyGenerator objectPropertyGenerator =
-			this.generateOptions.getObjectPropertyGenerator(property);
 		ContainerPropertyGenerator containerPropertyGenerator =
 			this.generateOptions.getContainerPropertyGenerator(property);
 		boolean container = containerPropertyGenerator != null;
+
+		ObjectPropertyGenerator objectPropertyGenerator;
+		if (container) {
+			objectPropertyGenerator = SingleValueObjectPropertyGenerator.INSTANCE;
+		} else {
+			objectPropertyGenerator = this.generateOptions.getObjectPropertyGenerator(property);
+		}
 
 		ObjectProperty objectProperty = objectPropertyGenerator.generate(
 			new ObjectPropertyGeneratorContext(
@@ -66,10 +72,10 @@ public final class ArbitraryTraverser {
 			)
 		);
 
-		ArbitraryContainerInfo containerInfo = arbitraryContainerInfosByNodeResolver.get(IdentityNodeResolver.INSTANCE);
-
 		ContainerProperty containerProperty = null;
 		if (container) {
+			ArbitraryContainerInfo containerInfo =
+				arbitraryContainerInfosByNodeResolver.get(IdentityNodeResolver.INSTANCE);
 			containerProperty = containerPropertyGenerator.generate(
 				new ContainerPropertyGeneratorContext(
 					property,
@@ -128,11 +134,16 @@ public final class ArbitraryTraverser {
 		for (int sequence = 0; sequence < properties.size(); sequence++) {
 			Property childProperty = properties.get(sequence);
 
-			ObjectPropertyGenerator objectPropertyGenerator =
-				this.generateOptions.getObjectPropertyGenerator(childProperty);
 			ContainerPropertyGenerator containerPropertyGenerator =
 				this.generateOptions.getContainerPropertyGenerator(childProperty);
 			boolean childContainer = containerPropertyGenerator != null;
+
+			ObjectPropertyGenerator objectPropertyGenerator;
+			if (childContainer) {
+				objectPropertyGenerator = SingleValueObjectPropertyGenerator.INSTANCE;
+			} else {
+				objectPropertyGenerator = this.generateOptions.getObjectPropertyGenerator(childProperty);
+			}
 
 			int index = sequence;
 			if (parentArbitraryProperty.getObjectProperty().getProperty() instanceof MapEntryElementProperty) {
