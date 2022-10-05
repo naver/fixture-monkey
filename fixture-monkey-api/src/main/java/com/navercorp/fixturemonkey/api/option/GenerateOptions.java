@@ -46,7 +46,6 @@ import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.OptionalInt;
 import java.util.OptionalLong;
-import java.util.Set;
 import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
@@ -77,7 +76,6 @@ import com.navercorp.fixturemonkey.api.generator.StreamContainerPropertyGenerato
 import com.navercorp.fixturemonkey.api.generator.TupleLikeElementsPropertyGenerator;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.matcher.Matchers;
-import com.navercorp.fixturemonkey.api.property.ElementProperty;
 import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty;
 import com.navercorp.fixturemonkey.api.property.MapKeyElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
