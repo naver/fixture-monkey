@@ -131,5 +131,5 @@ jar {
 jmh {
     fork = 1
     warmupIterations = 3
-    iterations = 20
+    iterations = 10
 }
