@@ -47,8 +47,8 @@ public final class PropertyCache {
 	private static final Logger LOGGER = LoggerFactory.getLogger(PropertyCache.class);
 
 	private static final Map<Class<?>, Map<String, PropertyDescriptor>> PROPERTY_DESCRIPTORS =
-		new LruCache<>(1000);
-	private static final Map<Class<?>, Map<String, Field>> FIELDS = new LruCache<>(1000);
+		new LruCache<>(2000);
+	private static final Map<Class<?>, Map<String, Field>> FIELDS = new LruCache<>(2000);
 
 	public static List<Property> getProperties(AnnotatedType annotatedType) {
 		Map<String, List<Property>> propertiesMap = new HashMap<>();

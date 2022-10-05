@@ -29,9 +29,9 @@ import org.apiguardian.api.API.Status;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class TypeCache {
-	private static final Map<Field, AnnotatedType> FIELD_ANNOTATED_TYPE_MAP = new ConcurrentHashMap<>();
+	private static final Map<Field, AnnotatedType> FIELD_ANNOTATED_TYPE_MAP = new ConcurrentHashMap<>(2000);
 	private static final Map<PropertyDescriptor, AnnotatedType> PROPERTY_DESCRIPTOR_ANNOTATED_TYPE_MAP =
-		new ConcurrentHashMap<>();
+		new ConcurrentHashMap<>(2000);
 
 	public static AnnotatedType getAnnotatedType(Field field) {
 		return FIELD_ANNOTATED_TYPE_MAP.computeIfAbsent(field, Field::getAnnotatedType);
