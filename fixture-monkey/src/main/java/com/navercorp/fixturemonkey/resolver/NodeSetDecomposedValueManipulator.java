@@ -73,13 +73,14 @@ public final class NodeSetDecomposedValueManipulator<T> implements NodeManipulat
 	}
 
 	private void setValue(ArbitraryNode arbitraryNode, @Nullable Object value) {
+		ArbitraryProperty arbitraryProperty = arbitraryNode.getArbitraryProperty();
 		arbitraryNode.setManipulated(true);
+		arbitraryNode.setArbitraryProperty(arbitraryProperty.withNullInject(NOT_NULL_INJECT));
 		if (value == null) {
 			arbitraryNode.setArbitrary(Arbitraries.just(null));
 			return;
 		}
 
-		ArbitraryProperty arbitraryProperty = arbitraryNode.getArbitraryProperty();
 		ContainerProperty containerProperty = arbitraryProperty.getContainerProperty();
 		if (containerProperty != null) {
 			DecomposableContainerValue decomposableContainerValue =
@@ -121,7 +122,6 @@ public final class NodeSetDecomposedValueManipulator<T> implements NodeManipulat
 		}
 
 		List<ArbitraryNode> children = arbitraryNode.getChildren();
-		arbitraryNode.setArbitraryProperty(arbitraryProperty.withNullInject(NOT_NULL_INJECT));
 
 		if (children.isEmpty()) {
 			arbitraryNode.setArbitrary(Arbitraries.just(value));
