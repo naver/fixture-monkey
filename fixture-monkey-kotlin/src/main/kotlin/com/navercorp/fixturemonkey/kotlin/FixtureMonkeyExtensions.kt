@@ -27,33 +27,33 @@ import com.navercorp.fixturemonkey.kotlin.customizer.toArbitraryCustomizer
 import net.jqwik.api.Arbitrary
 import kotlin.streams.asSequence
 
-inline fun <reified T : Any> FixtureMonkey.giveMe(): Sequence<T> =
+inline fun <reified T : Any?> FixtureMonkey.giveMe(): Sequence<T> =
     this.giveMe(object : TypeReference<T>() {}).asSequence()
 
 inline fun <reified T : Any> FixtureMonkey.giveMe(
-    customizer: KArbitraryCustomizer<T>,
+    customizer: KArbitraryCustomizer<T>
 ): Sequence<T> = this.giveMe(T::class.java, customizer.toArbitraryCustomizer()).asSequence()
 
-inline fun <reified T : Any> FixtureMonkey.giveMe(size: Int): List<T> =
+inline fun <reified T : Any?> FixtureMonkey.giveMe(size: Int): List<T> =
     this.giveMe(object : TypeReference<T>() {}, size)
 
 inline fun <reified T : Any> FixtureMonkey.giveMe(
     size: Int,
-    customizer: KArbitraryCustomizer<T>,
+    customizer: KArbitraryCustomizer<T>
 ): List<T> = this.giveMe(T::class.java, size, customizer.toArbitraryCustomizer())
 
-inline fun <reified T : Any> FixtureMonkey.giveMeOne(): T = this.giveMeOne(object : TypeReference<T>() {})
+inline fun <reified T : Any?> FixtureMonkey.giveMeOne(): T = this.giveMeOne(object : TypeReference<T>() {})
 
 inline fun <reified T : Any> FixtureMonkey.giveMeOne(
-    customizer: KArbitraryCustomizer<T>,
+    customizer: KArbitraryCustomizer<T>
 ): T = this.giveMeOne(T::class.java, customizer.toArbitraryCustomizer())
 
-inline fun <reified T : Any> FixtureMonkey.giveMeArbitrary(): Arbitrary<T> =
+inline fun <reified T : Any?> FixtureMonkey.giveMeArbitrary(): Arbitrary<T> =
     this.giveMeArbitrary(object : TypeReference<T>() {})
 
-inline fun <reified T : Any> FixtureMonkey.giveMeBuilder(): ArbitraryBuilder<T> =
+inline fun <reified T : Any?> FixtureMonkey.giveMeBuilder(): ArbitraryBuilder<T> =
     this.giveMeBuilder(object : TypeReference<T>() {})
 
 inline fun <reified T : Any> FixtureMonkey.giveMeBuilder(
-    options: ArbitraryOption,
+    options: ArbitraryOption
 ): ArbitraryBuilder<T> = this.giveMeBuilder(object : TypeReference<T>() {}, options)

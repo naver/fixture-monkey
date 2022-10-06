@@ -42,6 +42,7 @@ import com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator;
 import com.navercorp.fixturemonkey.api.generator.NullInjectGenerator;
 import com.navercorp.fixturemonkey.api.generator.NullObjectPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGenerator;
+import com.navercorp.fixturemonkey.api.generator.PropertyGenerator;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.CompositeArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.JavaArbitraryResolver;
@@ -479,6 +480,11 @@ public class LabMonkeyBuilder {
 
 	public LabMonkeyBuilder pushAssignableTypeUniqueProperty(Class<?> type) {
 		this.generateOptionsBuilder.insertFirstUniqueProperty(MatcherOperator.assignableTypeMatchOperator(type, true));
+		return this;
+	}
+
+	public LabMonkeyBuilder defaultPropertyGenerator(PropertyGenerator propertyGenerator) {
+		this.generateOptionsBuilder.defaultPropertyGenerator(propertyGenerator);
 		return this;
 	}
 

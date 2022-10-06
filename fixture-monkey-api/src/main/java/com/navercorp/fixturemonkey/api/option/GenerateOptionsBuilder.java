@@ -37,9 +37,11 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.generator.ContainerPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.DefaultArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator;
+import com.navercorp.fixturemonkey.api.generator.DefaultPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.JavaDefaultArbitraryGeneratorBuilder;
 import com.navercorp.fixturemonkey.api.generator.NullInjectGenerator;
 import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGenerator;
+import com.navercorp.fixturemonkey.api.generator.PropertyGenerator;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.JavaArbitraryResolver;
 import com.navercorp.fixturemonkey.api.introspector.JavaTimeArbitraryResolver;
@@ -55,6 +57,7 @@ import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 public final class GenerateOptionsBuilder {
 	private List<MatcherOperator<ObjectPropertyGenerator>> arbitraryObjectPropertyGenerators =
 		new ArrayList<>(GenerateOptions.DEFAULT_OBJECT_PROPERTY_GENERATORS);
+	private PropertyGenerator defaultPropertyGenerator = new DefaultPropertyGenerator();
 	private List<MatcherOperator<ContainerPropertyGenerator>> containerPropertyGenerators =
 		new ArrayList<>(GenerateOptions.DEFAULT_CONTAINER_PROPERTY_GENERATORS);
 	private ObjectPropertyGenerator defaultObjectPropertyGenerator;
@@ -431,6 +434,11 @@ public final class GenerateOptionsBuilder {
 		return this;
 	}
 
+	public GenerateOptionsBuilder defaultPropertyGenerator(PropertyGenerator propertyGenerator) {
+		this.defaultPropertyGenerator = propertyGenerator;
+		return this;
+	}
+
 	public GenerateOptions build() {
 		ObjectPropertyGenerator defaultObjectPropertyGenerator = defaultIfNull(
 			this.defaultObjectPropertyGenerator,
@@ -456,6 +464,7 @@ public final class GenerateOptionsBuilder {
 
 		return new GenerateOptions(
 			this.arbitraryObjectPropertyGenerators,
+			this.defaultPropertyGenerator,
 			defaultObjectPropertyGenerator,
 			this.containerPropertyGenerators,
 			this.propertyNameResolvers,

@@ -71,6 +71,7 @@ import com.navercorp.fixturemonkey.api.generator.NullInjectGenerator;
 import com.navercorp.fixturemonkey.api.generator.NullObjectPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.OptionalContainerPropertyGenerator;
+import com.navercorp.fixturemonkey.api.generator.PropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.SetContainerPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.SingleValueObjectPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.StreamContainerPropertyGenerator;
@@ -100,6 +101,7 @@ public final class GenerateOptions {
 	public static final GenerateOptions DEFAULT_GENERATE_OPTIONS = GenerateOptions.builder().build();
 
 	private final List<MatcherOperator<ObjectPropertyGenerator>> objectPropertyGenerators;
+	private final PropertyGenerator defaultPropertyGenerator;
 	private final ObjectPropertyGenerator defaultObjectPropertyGenerator;
 	private final List<MatcherOperator<ContainerPropertyGenerator>> containerPropertyGenerators;
 	private final List<MatcherOperator<PropertyNameResolver>> propertyNameResolvers;
@@ -119,6 +121,7 @@ public final class GenerateOptions {
 	@SuppressWarnings("rawtypes")
 	public GenerateOptions(
 		List<MatcherOperator<ObjectPropertyGenerator>> objectPropertyGenerators,
+		PropertyGenerator defaultPropertyGenerator,
 		ObjectPropertyGenerator defaultObjectPropertyGenerator,
 		List<MatcherOperator<ContainerPropertyGenerator>> containerPropertyGenerators,
 		List<MatcherOperator<PropertyNameResolver>> propertyNameResolvers,
@@ -133,6 +136,7 @@ public final class GenerateOptions {
 		List<MatcherOperator<Boolean>> uniqueProperties
 	) {
 		this.objectPropertyGenerators = objectPropertyGenerators;
+		this.defaultPropertyGenerator = defaultPropertyGenerator;
 		this.defaultObjectPropertyGenerator = defaultObjectPropertyGenerator;
 		this.containerPropertyGenerators = containerPropertyGenerators;
 		this.propertyNameResolvers = propertyNameResolvers;
@@ -258,6 +262,10 @@ public final class GenerateOptions {
 		return uniqueProperties;
 	}
 
+	public PropertyGenerator getDefaultPropertyGenerator() {
+		return defaultPropertyGenerator;
+	}
+
 	public GenerateOptionsBuilder toBuilder() {
 		return builder()
 			.arbitraryObjectPropertyGenerators(objectPropertyGenerators)
@@ -272,7 +280,8 @@ public final class GenerateOptions {
 			.defaultArbitraryContainerInfo(this.defaultArbitraryContainerInfo)
 			.arbitraryGenerators(new ArrayList<>(this.arbitraryGenerators))
 			.defaultArbitraryGenerator(this.defaultArbitraryGenerator)
-			.uniqueProperties(new ArrayList<>(this.uniqueProperties));
+			.uniqueProperties(new ArrayList<>(this.uniqueProperties))
+			.defaultPropertyGenerator(defaultPropertyGenerator);
 	}
 	// TODO: equals and hashCode and toString
 

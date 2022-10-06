@@ -14,20 +14,20 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */
+ */ // ktlint-disable filename
 
 package com.navercorp.fixturemonkey.kotlin.property
 
+import com.navercorp.fixturemonkey.api.collection.LruCache
 import com.navercorp.fixturemonkey.api.property.Property
 import com.navercorp.fixturemonkey.api.type.Types
 import com.navercorp.fixturemonkey.kotlin.type.getAnnotatedType
 import org.apiguardian.api.API
 import java.lang.reflect.AnnotatedType
-import java.util.concurrent.ConcurrentHashMap
 import kotlin.reflect.KProperty
 import kotlin.reflect.full.memberProperties
 
-private val KPROPERTY_ANNOTATED_TYPE_MAP = ConcurrentHashMap<Class<*>, Collection<KProperty<*>>>()
+private val KPROPERTY_ANNOTATED_TYPE_MAP = LruCache<Class<*>, Collection<KProperty<*>>>(2000)
 
 @API(since = "0.4.0", status = API.Status.EXPERIMENTAL)
 fun getMemberProperties(annotatedType: AnnotatedType): List<Property> {
