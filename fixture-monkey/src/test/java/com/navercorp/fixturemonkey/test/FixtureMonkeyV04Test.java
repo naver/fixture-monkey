@@ -1378,4 +1378,18 @@ class FixtureMonkeyV04Test {
 
 		then(actual).isEmpty();
 	}
+
+	@Property
+	void setEmptyMap() {
+		Map<String, SimpleObject> map = new HashMap<>();
+		map.put("test", new SimpleObject());
+
+		Map<String, SimpleObject> actual = SUT.giveMeBuilder(ComplexObject.class)
+			.set("map", map)
+			.set("map", new HashMap<>())
+			.sample()
+			.getMap();
+
+		then(actual).isEmpty();
+	}
 }
