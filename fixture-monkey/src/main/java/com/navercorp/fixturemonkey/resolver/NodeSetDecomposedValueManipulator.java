@@ -113,10 +113,6 @@ public final class NodeSetDecomposedValueManipulator<T> implements NodeManipulat
 			}
 
 			int decomposedNodeSize = Math.min(decomposedContainerSize, children.size());
-			if (decomposedNodeSize == 0) {
-				arbitraryNode.setArbitrary(Arbitraries.just(value));
-				return;
-			}
 
 			for (int i = 0; i < decomposedNodeSize; i++) {
 				ArbitraryNode child = children.get(i);
