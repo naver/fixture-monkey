@@ -268,6 +268,7 @@ public final class GenerateOptions {
 
 	public GenerateOptionsBuilder toBuilder() {
 		return builder()
+			.defaultPropertyGenerator(defaultPropertyGenerator)
 			.arbitraryObjectPropertyGenerators(objectPropertyGenerators)
 			.defaultObjectPropertyGenerator(defaultObjectPropertyGenerator)
 			.arbitraryContainerPropertyGenerators(containerPropertyGenerators)
@@ -280,8 +281,7 @@ public final class GenerateOptions {
 			.defaultArbitraryContainerInfo(this.defaultArbitraryContainerInfo)
 			.arbitraryGenerators(new ArrayList<>(this.arbitraryGenerators))
 			.defaultArbitraryGenerator(this.defaultArbitraryGenerator)
-			.uniqueProperties(new ArrayList<>(this.uniqueProperties))
-			.defaultPropertyGenerator(defaultPropertyGenerator);
+			.uniqueProperties(new ArrayList<>(this.uniqueProperties));
 	}
 	// TODO: equals and hashCode and toString
 
