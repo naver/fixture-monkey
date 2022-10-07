@@ -100,8 +100,8 @@ public final class GenerateOptions {
 	public static final int DEFAULT_ARBITRARY_CONTAINER_MAX_SIZE = 3;
 	public static final GenerateOptions DEFAULT_GENERATE_OPTIONS = GenerateOptions.builder().build();
 
-	private final List<MatcherOperator<ObjectPropertyGenerator>> objectPropertyGenerators;
 	private final PropertyGenerator defaultPropertyGenerator;
+	private final List<MatcherOperator<ObjectPropertyGenerator>> objectPropertyGenerators;
 	private final ObjectPropertyGenerator defaultObjectPropertyGenerator;
 	private final List<MatcherOperator<ContainerPropertyGenerator>> containerPropertyGenerators;
 	private final List<MatcherOperator<PropertyNameResolver>> propertyNameResolvers;
@@ -120,8 +120,8 @@ public final class GenerateOptions {
 
 	@SuppressWarnings("rawtypes")
 	public GenerateOptions(
-		List<MatcherOperator<ObjectPropertyGenerator>> objectPropertyGenerators,
 		PropertyGenerator defaultPropertyGenerator,
+		List<MatcherOperator<ObjectPropertyGenerator>> objectPropertyGenerators,
 		ObjectPropertyGenerator defaultObjectPropertyGenerator,
 		List<MatcherOperator<ContainerPropertyGenerator>> containerPropertyGenerators,
 		List<MatcherOperator<PropertyNameResolver>> propertyNameResolvers,
@@ -135,8 +135,8 @@ public final class GenerateOptions {
 		List<MatcherOperator<FixtureCustomizer>> arbitraryCustomizers,
 		List<MatcherOperator<Boolean>> uniqueProperties
 	) {
-		this.objectPropertyGenerators = objectPropertyGenerators;
 		this.defaultPropertyGenerator = defaultPropertyGenerator;
+		this.objectPropertyGenerators = objectPropertyGenerators;
 		this.defaultObjectPropertyGenerator = defaultObjectPropertyGenerator;
 		this.containerPropertyGenerators = containerPropertyGenerators;
 		this.propertyNameResolvers = propertyNameResolvers;
@@ -154,6 +154,10 @@ public final class GenerateOptions {
 
 	public static GenerateOptionsBuilder builder() {
 		return new GenerateOptionsBuilder();
+	}
+
+	public PropertyGenerator getDefaultPropertyGenerator() {
+		return defaultPropertyGenerator;
 	}
 
 	public List<MatcherOperator<ObjectPropertyGenerator>> getObjectPropertyGenerators() {
@@ -260,10 +264,6 @@ public final class GenerateOptions {
 
 	public List<MatcherOperator<Boolean>> getUniqueProperties() {
 		return uniqueProperties;
-	}
-
-	public PropertyGenerator getDefaultPropertyGenerator() {
-		return defaultPropertyGenerator;
 	}
 
 	public GenerateOptionsBuilder toBuilder() {

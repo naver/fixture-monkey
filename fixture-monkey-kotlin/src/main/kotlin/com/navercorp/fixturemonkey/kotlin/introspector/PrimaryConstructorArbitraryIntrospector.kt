@@ -18,19 +18,25 @@
 
 package com.navercorp.fixturemonkey.kotlin.introspector
 
+import com.navercorp.fixturemonkey.api.collection.LruCache
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult
 import com.navercorp.fixturemonkey.api.type.Types
 import net.jqwik.api.Builders
+import org.apiguardian.api.API
+import org.apiguardian.api.API.Status.EXPERIMENTAL
 import kotlin.jvm.internal.Reflection
 import kotlin.reflect.KClass
+import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 import kotlin.reflect.full.primaryConstructor
 
+@API(since = "0.4.0", status = EXPERIMENTAL)
 class PrimaryConstructorArbitraryIntrospector : ArbitraryIntrospector {
     companion object {
         val INSTANCE = PrimaryConstructorArbitraryIntrospector()
+        private val CONSTRUCTOR_CACHE = LruCache<Class<*>, KFunction<*>>(2000)
     }
 
     override fun introspect(context: ArbitraryGeneratorContext): ArbitraryIntrospectorResult {
@@ -39,15 +45,16 @@ class PrimaryConstructorArbitraryIntrospector : ArbitraryIntrospector {
             return ArbitraryIntrospectorResult.EMPTY
         }
 
-        val arbitrariesByResolvedName = context.childrenArbitraryContexts.arbitrariesByResolvedName
+        val arbitrariesByPropertyName = context.childrenArbitraryContexts.arbitrariesByPropertyName
 
         val kotlinClass = Reflection.createKotlinClass(type) as KClass<*>
-        val constructor =
-            requireNotNull(kotlinClass.primaryConstructor) { "No primary constructor provided for $kotlinClass" }
+        val constructor = CONSTRUCTOR_CACHE.computeIfAbsent(type) {
+            requireNotNull(kotlinClass.primaryConstructor) { "No kotlin primary constructor provided for $kotlinClass" }
+        }
 
         var builderCombinator = Builders.withBuilder { mutableMapOf<KParameter, Any?>() }
         for (parameter in constructor.parameters) {
-            val parameterArbitrary = arbitrariesByResolvedName[parameter.name]
+            val parameterArbitrary = arbitrariesByPropertyName[parameter.name]
             builderCombinator = builderCombinator.use(parameterArbitrary).`in` { map, value ->
                 map.apply {
                     this[parameter] = value

@@ -20,8 +20,10 @@ package com.navercorp.fixturemonkey.kotlin.test
 
 import com.navercorp.fixturemonkey.FixtureMonkey
 import com.navercorp.fixturemonkey.LabMonkey
+import com.navercorp.fixturemonkey.api.introspector.BeanArbitraryIntrospector
 import com.navercorp.fixturemonkey.kotlin.KotlinPlugin
 import com.navercorp.fixturemonkey.kotlin.giveMeOne
+import com.navercorp.fixturemonkey.kotlin.spec.JavaObject
 import net.jqwik.api.Property
 import org.assertj.core.api.BDDAssertions.then
 import org.assertj.core.api.BDDAssertions.thenNoException
@@ -78,5 +80,17 @@ class PrimaryConstructorArbitraryIntrospectorTest {
         val actual = sut.giveMeOne<InterfaceClass>()
 
         then(actual).isNull()
+    }
+
+    @Property
+    fun sampleJavaObject() {
+        val sut: LabMonkey = FixtureMonkey.labMonkeyBuilder()
+            .plugin(KotlinPlugin())
+            .objectIntrospector(BeanArbitraryIntrospector.INSTANCE)
+            .build()
+        // when
+        val actual = sut.giveMeOne<JavaObject>()
+
+        then(actual).isNotNull
     }
 }

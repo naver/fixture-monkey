@@ -55,9 +55,9 @@ import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 @SuppressWarnings("UnusedReturnValue")
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class GenerateOptionsBuilder {
+	private PropertyGenerator defaultPropertyGenerator = new DefaultPropertyGenerator();
 	private List<MatcherOperator<ObjectPropertyGenerator>> arbitraryObjectPropertyGenerators =
 		new ArrayList<>(GenerateOptions.DEFAULT_OBJECT_PROPERTY_GENERATORS);
-	private PropertyGenerator defaultPropertyGenerator = new DefaultPropertyGenerator();
 	private List<MatcherOperator<ContainerPropertyGenerator>> containerPropertyGenerators =
 		new ArrayList<>(GenerateOptions.DEFAULT_CONTAINER_PROPERTY_GENERATORS);
 	private ObjectPropertyGenerator defaultObjectPropertyGenerator;
@@ -79,6 +79,11 @@ public final class GenerateOptionsBuilder {
 	private List<MatcherOperator<Boolean>> uniqueProperties = new ArrayList<>(DEFAULT_UNIQUE_PROPERTIES);
 
 	GenerateOptionsBuilder() {
+	}
+
+	public GenerateOptionsBuilder defaultPropertyGenerator(PropertyGenerator propertyGenerator) {
+		this.defaultPropertyGenerator = propertyGenerator;
+		return this;
 	}
 
 	public GenerateOptionsBuilder arbitraryObjectPropertyGenerators(
@@ -434,11 +439,6 @@ public final class GenerateOptionsBuilder {
 		return this;
 	}
 
-	public GenerateOptionsBuilder defaultPropertyGenerator(PropertyGenerator propertyGenerator) {
-		this.defaultPropertyGenerator = propertyGenerator;
-		return this;
-	}
-
 	public GenerateOptions build() {
 		ObjectPropertyGenerator defaultObjectPropertyGenerator = defaultIfNull(
 			this.defaultObjectPropertyGenerator,
@@ -463,8 +463,8 @@ public final class GenerateOptionsBuilder {
 			defaultIfNull(this.defaultArbitraryGenerator, this.javaDefaultArbitraryGeneratorBuilder::build);
 
 		return new GenerateOptions(
-			this.arbitraryObjectPropertyGenerators,
 			this.defaultPropertyGenerator,
+			this.arbitraryObjectPropertyGenerators,
 			defaultObjectPropertyGenerator,
 			this.containerPropertyGenerators,
 			this.propertyNameResolvers,
