@@ -71,6 +71,7 @@ import com.navercorp.fixturemonkey.api.generator.NullInjectGenerator;
 import com.navercorp.fixturemonkey.api.generator.NullObjectPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.OptionalContainerPropertyGenerator;
+import com.navercorp.fixturemonkey.api.generator.SetContainerPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.SingleValueObjectPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.StreamContainerPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.TupleLikeElementsPropertyGenerator;
@@ -395,6 +396,10 @@ public final class GenerateOptions {
 			MatcherOperator.assignableTypeMatchOperator(
 				DoubleStream.class,
 				StreamContainerPropertyGenerator.INSTANCE
+			),
+			MatcherOperator.assignableTypeMatchOperator(
+				Set.class,
+				SetContainerPropertyGenerator.INSTANCE
 			),
 			MatcherOperator.assignableTypeMatchOperator(
 				Iterable.class,

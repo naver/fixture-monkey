@@ -20,6 +20,7 @@ package com.navercorp.fixturemonkey.api.generator;
 
 import java.lang.reflect.AnnotatedType;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 
 import org.apiguardian.api.API;
@@ -30,10 +31,10 @@ import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public final class DefaultContainerPropertyGenerator implements ContainerPropertyGenerator {
-	public static final DefaultContainerPropertyGenerator INSTANCE =
-		new DefaultContainerPropertyGenerator();
+public final class SetContainerPropertyGenerator implements ContainerPropertyGenerator {
+	public static final SetContainerPropertyGenerator INSTANCE = new SetContainerPropertyGenerator();
 
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Override
 	public ContainerProperty generate(ContainerPropertyGeneratorContext context) {
 		Property property = context.getProperty();
@@ -41,30 +42,39 @@ public final class DefaultContainerPropertyGenerator implements ContainerPropert
 		List<AnnotatedType> elementTypes = Types.getGenericsTypes(property.getAnnotatedType());
 		if (elementTypes.size() != 1) {
 			throw new IllegalArgumentException(
-				"Container elementsTypes must be have 1 generics type for element. "
+				"Set elementsTypes must be have 1 generics type for element. "
 					+ "propertyType: " + property.getType()
 					+ ", elementTypes: " + elementTypes
 			);
 		}
 
+		AnnotatedType elementType = elementTypes.get(0);
 		ArbitraryContainerInfo containerInfo = context.getContainerInfo();
+
 		if (containerInfo == null) {
 			containerInfo = context.getGenerateOptions()
 				.getArbitraryContainerInfoGenerator(property)
 				.generate(context);
+
+			Class<?> actualElementType = Types.getActualType(elementType.getType());
+			if (actualElementType.isEnum()) {
+				int enumSize = EnumSet.allOf((Class<? extends Enum>)actualElementType).size();
+				containerInfo = new ArbitraryContainerInfo(
+					containerInfo.getElementMinSize(),
+					Math.min(containerInfo.getElementMaxSize(), enumSize),
+					false
+				);
+			}
 		}
 
 		int size = containerInfo.getRandomSize();
-		AnnotatedType elementType = elementTypes.get(0);
 		List<Property> childProperties = new ArrayList<>();
 		for (int sequence = 0; sequence < size; sequence++) {
-			Integer elementIndex = sequence;
-
 			childProperties.add(
 				new ElementProperty(
 					property,
 					elementType,
-					elementIndex,
+					null,
 					sequence
 				)
 			);
