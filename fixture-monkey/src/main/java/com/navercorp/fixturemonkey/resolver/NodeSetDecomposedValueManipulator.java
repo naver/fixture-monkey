@@ -91,7 +91,7 @@ public final class NodeSetDecomposedValueManipulator<T> implements NodeManipulat
 				Map<NodeResolver, ArbitraryContainerInfo> arbitraryContainerInfosByExpression =
 					Collections.singletonMap(
 						IdentityNodeResolver.INSTANCE,
-						new ArbitraryContainerInfo(decomposedContainerSize, decomposedContainerSize, true)
+						new ArbitraryContainerInfo(decomposedContainerSize, decomposedContainerSize, false)
 					);
 
 				ArbitraryNode newNode = traverser.traverse(

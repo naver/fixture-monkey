@@ -1364,4 +1364,18 @@ class FixtureMonkeyV04Test {
 		// when, then
 		thenNoException().isThrownBy(() -> SUT.giveMeOne(StaticFieldObject.class));
 	}
+
+	@Property
+	void setDecomposeContainerTwice() {
+		List<String> strings = new ArrayList<>();
+		strings.add("test");
+
+		List<String> actual = SUT.giveMeBuilder(ComplexObject.class)
+			.set("strList", strings)
+			.set("strList", new ArrayList<>())
+			.sample()
+			.getStrList();
+
+		then(actual).isEmpty();
+	}
 }
