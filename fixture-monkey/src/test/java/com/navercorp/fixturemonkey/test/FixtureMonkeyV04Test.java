@@ -1402,4 +1402,20 @@ class FixtureMonkeyV04Test {
 
 		then(actual).hasSizeLessThanOrEqualTo(2);
 	}
+
+	@Property
+	void setNullFixed() {
+		String expected = "test";
+
+		String actual = SUT.giveMeBuilder(ComplexObject.class)
+			.setNull("object")
+			.fixed()
+			.set("object.str", expected)
+			.sample()
+			.getObject()
+			.getStr();
+
+		then(actual).isEqualTo(expected);
+
+	}
 }

@@ -18,6 +18,7 @@
 
 package com.navercorp.fixturemonkey.resolver;
 
+import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.ALWAYS_NULL_INJECT;
 import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.NOT_NULL_INJECT;
 import static com.navercorp.fixturemonkey.api.type.Types.isAssignable;
 
@@ -77,7 +78,7 @@ public final class NodeSetDecomposedValueManipulator<T> implements NodeManipulat
 		arbitraryNode.setManipulated(true);
 		arbitraryNode.setArbitraryProperty(arbitraryProperty.withNullInject(NOT_NULL_INJECT));
 		if (value == null) {
-			arbitraryNode.setArbitrary(Arbitraries.just(null));
+			arbitraryNode.setArbitraryProperty(arbitraryProperty.withNullInject(ALWAYS_NULL_INJECT));
 			return;
 		}
 
