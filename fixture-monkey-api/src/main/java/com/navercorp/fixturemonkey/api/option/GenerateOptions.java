@@ -61,6 +61,7 @@ import com.navercorp.fixturemonkey.api.generator.SingleValueObjectPropertyGenera
 import com.navercorp.fixturemonkey.api.generator.StreamContainerPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.TupleLikeElementsPropertyGenerator;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
+import com.navercorp.fixturemonkey.api.matcher.Matchers;
 import com.navercorp.fixturemonkey.api.property.ElementProperty;
 import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty;
 import com.navercorp.fixturemonkey.api.property.MapKeyElementProperty;
@@ -271,6 +272,7 @@ public final class GenerateOptions {
 	private static List<MatcherOperator<ObjectPropertyGenerator>> getDefaultObjectPropertyGenerators(
 	) {
 		return Arrays.asList(
+			new MatcherOperator<>(Matchers.ENUM_TYPE_MATCHER, SingleValueObjectPropertyGenerator.INSTANCE),
 			new MatcherOperator<>(
 				property -> {
 					Class<?> actualType = Types.getActualType(property.getType());
