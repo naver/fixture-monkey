@@ -18,25 +18,9 @@
 
 package com.navercorp.fixturemonkey.api.option;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.time.Duration;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.MonthDay;
-import java.time.OffsetDateTime;
-import java.time.OffsetTime;
-import java.time.Period;
-import java.time.Year;
-import java.time.YearMonth;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -77,7 +61,6 @@ import com.navercorp.fixturemonkey.api.generator.SingleValueObjectPropertyGenera
 import com.navercorp.fixturemonkey.api.generator.StreamContainerPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.TupleLikeElementsPropertyGenerator;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
-import com.navercorp.fixturemonkey.api.matcher.Matchers;
 import com.navercorp.fixturemonkey.api.property.ElementProperty;
 import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty;
 import com.navercorp.fixturemonkey.api.property.MapKeyElementProperty;
@@ -288,83 +271,17 @@ public final class GenerateOptions {
 	private static List<MatcherOperator<ObjectPropertyGenerator>> getDefaultObjectPropertyGenerators(
 	) {
 		return Arrays.asList(
-			MatcherOperator.exactTypeMatchOperator(String.class, SingleValueObjectPropertyGenerator.INSTANCE),
-			MatcherOperator.exactTypeMatchOperator(
-				Character.class,
+			new MatcherOperator<>(
+				property -> {
+					Class<?> actualType = Types.getActualType(property.getType());
+					return actualType.isPrimitive() || actualType.getPackage().getName().startsWith("java.");
+				},
 				SingleValueObjectPropertyGenerator.INSTANCE
 			),
-			MatcherOperator.exactTypeMatchOperator(char.class, SingleValueObjectPropertyGenerator.INSTANCE),
-			MatcherOperator.exactTypeMatchOperator(Short.class, SingleValueObjectPropertyGenerator.INSTANCE),
-			MatcherOperator.exactTypeMatchOperator(short.class, SingleValueObjectPropertyGenerator.INSTANCE),
-			MatcherOperator.exactTypeMatchOperator(Byte.class, SingleValueObjectPropertyGenerator.INSTANCE),
-			MatcherOperator.exactTypeMatchOperator(byte.class, SingleValueObjectPropertyGenerator.INSTANCE),
-			MatcherOperator.exactTypeMatchOperator(Double.class, SingleValueObjectPropertyGenerator.INSTANCE),
-			MatcherOperator.exactTypeMatchOperator(double.class, SingleValueObjectPropertyGenerator.INSTANCE),
-			MatcherOperator.exactTypeMatchOperator(Float.class, SingleValueObjectPropertyGenerator.INSTANCE),
-			MatcherOperator.exactTypeMatchOperator(float.class, SingleValueObjectPropertyGenerator.INSTANCE),
-			MatcherOperator.exactTypeMatchOperator(Integer.class, SingleValueObjectPropertyGenerator.INSTANCE),
-			MatcherOperator.exactTypeMatchOperator(int.class, SingleValueObjectPropertyGenerator.INSTANCE),
-			MatcherOperator.exactTypeMatchOperator(Long.class, SingleValueObjectPropertyGenerator.INSTANCE),
-			MatcherOperator.exactTypeMatchOperator(long.class, SingleValueObjectPropertyGenerator.INSTANCE),
-			MatcherOperator.exactTypeMatchOperator(
-				BigInteger.class,
-				SingleValueObjectPropertyGenerator.INSTANCE
+			new MatcherOperator<>(
+				property -> Modifier.isAbstract(Types.getActualType(property.getType()).getModifiers()),
+				NullObjectPropertyGenerator.INSTANCE
 			),
-			MatcherOperator.exactTypeMatchOperator(
-				BigDecimal.class,
-				SingleValueObjectPropertyGenerator.INSTANCE
-			),
-			MatcherOperator.exactTypeMatchOperator(
-				Calendar.class,
-				SingleValueObjectPropertyGenerator.INSTANCE
-			),
-			MatcherOperator.exactTypeMatchOperator(Date.class, SingleValueObjectPropertyGenerator.INSTANCE),
-			MatcherOperator.exactTypeMatchOperator(Instant.class, SingleValueObjectPropertyGenerator.INSTANCE),
-			MatcherOperator.exactTypeMatchOperator(
-				LocalDate.class,
-				SingleValueObjectPropertyGenerator.INSTANCE
-			),
-			MatcherOperator.exactTypeMatchOperator(
-				LocalDateTime.class,
-				SingleValueObjectPropertyGenerator.INSTANCE
-			),
-			MatcherOperator.exactTypeMatchOperator(
-				LocalTime.class,
-				SingleValueObjectPropertyGenerator.INSTANCE
-			),
-			MatcherOperator.exactTypeMatchOperator(
-				ZonedDateTime.class,
-				SingleValueObjectPropertyGenerator.INSTANCE
-			),
-			MatcherOperator.exactTypeMatchOperator(
-				MonthDay.class,
-				SingleValueObjectPropertyGenerator.INSTANCE
-			),
-			MatcherOperator.exactTypeMatchOperator(
-				OffsetDateTime.class,
-				SingleValueObjectPropertyGenerator.INSTANCE
-			),
-			MatcherOperator.exactTypeMatchOperator(
-				OffsetTime.class,
-				SingleValueObjectPropertyGenerator.INSTANCE
-			),
-			MatcherOperator.exactTypeMatchOperator(Period.class, SingleValueObjectPropertyGenerator.INSTANCE),
-			MatcherOperator.exactTypeMatchOperator(
-				Duration.class,
-				SingleValueObjectPropertyGenerator.INSTANCE
-			),
-			MatcherOperator.exactTypeMatchOperator(Year.class, SingleValueObjectPropertyGenerator.INSTANCE),
-			MatcherOperator.exactTypeMatchOperator(
-				YearMonth.class,
-				SingleValueObjectPropertyGenerator.INSTANCE
-			),
-			MatcherOperator.exactTypeMatchOperator(
-				ZoneOffset.class,
-				SingleValueObjectPropertyGenerator.INSTANCE
-			),
-			new MatcherOperator<>(Matchers.BOOLEAN_TYPE_MATCHER, SingleValueObjectPropertyGenerator.INSTANCE),
-			new MatcherOperator<>(Matchers.UUID_TYPE_MATCHER, SingleValueObjectPropertyGenerator.INSTANCE),
-			new MatcherOperator<>(Matchers.ENUM_TYPE_MATCHER, SingleValueObjectPropertyGenerator.INSTANCE),
 			MatcherOperator.exactTypeMatchOperator(
 				UnidentifiableType.class,
 				NullObjectPropertyGenerator.INSTANCE
