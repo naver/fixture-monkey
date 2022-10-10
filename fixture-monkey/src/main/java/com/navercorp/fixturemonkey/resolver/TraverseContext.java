@@ -20,33 +20,31 @@ package com.navercorp.fixturemonkey.resolver;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 final class TraverseContext {
 	private final List<ArbitraryProperty> arbitraryProperties;
-	private final Map<NodeResolver, ArbitraryContainerInfo> arbitraryContainerInfosByNodeResolver;
+	private final List<ContainerInfoManipulator> containerInfoManipulators;
 
 	public TraverseContext(
 		List<ArbitraryProperty> arbitraryProperties,
-		Map<NodeResolver, ArbitraryContainerInfo> arbitraryContainerInfosByNodeResolver
+		List<ContainerInfoManipulator> containerInfoManipulators
 	) {
 		this.arbitraryProperties = arbitraryProperties;
-		this.arbitraryContainerInfosByNodeResolver = arbitraryContainerInfosByNodeResolver;
+		this.containerInfoManipulators = containerInfoManipulators;
 	}
 
 	public List<ArbitraryProperty> getArbitraryProperties() {
 		return arbitraryProperties;
 	}
 
-	public Map<NodeResolver, ArbitraryContainerInfo> getArbitraryContainerInfosByNodeResolver() {
-		return arbitraryContainerInfosByNodeResolver;
+	public List<ContainerInfoManipulator> getContainerInfoManipulators() {
+		return containerInfoManipulators;
 	}
 
 	public TraverseContext appendArbitraryProperty(
@@ -54,6 +52,6 @@ final class TraverseContext {
 	) {
 		List<ArbitraryProperty> arbitraryProperties = new ArrayList<>(this.arbitraryProperties);
 		arbitraryProperties.add(arbitraryProperty);
-		return new TraverseContext(arbitraryProperties, arbitraryContainerInfosByNodeResolver);
+		return new TraverseContext(arbitraryProperties, containerInfoManipulators);
 	}
 }

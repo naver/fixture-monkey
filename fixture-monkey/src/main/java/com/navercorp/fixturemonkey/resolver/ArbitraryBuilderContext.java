@@ -21,11 +21,10 @@ package com.navercorp.fixturemonkey.resolver;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -41,7 +40,7 @@ public final class ArbitraryBuilderContext {
 	private final Set<LazyArbitrary<?>> lazyArbitraries;
 	@SuppressWarnings("rawtypes")
 	private final List<MatcherOperator<? extends FixtureCustomizer>> customizers;
-	private final Map<NodeResolver, ArbitraryContainerInfo> containerInfosByNodeResolver;
+	private final List<ContainerInfoManipulator> containerInfoManipulators;
 
 	private boolean validOnly;
 
@@ -50,26 +49,34 @@ public final class ArbitraryBuilderContext {
 		List<ArbitraryManipulator> manipulators,
 		Set<LazyArbitrary<?>> lazyArbitraries,
 		List<MatcherOperator<? extends FixtureCustomizer>> customizers,
-		Map<NodeResolver, ArbitraryContainerInfo> containerInfosByNodeResolver,
+		List<ContainerInfoManipulator> containerInfoManipulators,
 		boolean validOnly
 	) {
 		this.manipulators = manipulators;
 		this.lazyArbitraries = lazyArbitraries;
 		this.customizers = customizers;
-		this.containerInfosByNodeResolver = containerInfosByNodeResolver;
+		this.containerInfoManipulators = containerInfoManipulators;
 		this.validOnly = validOnly;
 	}
 
 	public ArbitraryBuilderContext() {
-		this(new ArrayList<>(), new HashSet<>(), new ArrayList<>(), new HashMap<>(), true);
+		this(new ArrayList<>(), new HashSet<>(), new ArrayList<>(), new ArrayList<>(), true);
 	}
 
 	public ArbitraryBuilderContext copy() {
+		List<ContainerInfoManipulator> copiedContainerInfoManipulators = this.containerInfoManipulators.stream()
+			.map(it -> new ContainerInfoManipulator(
+					it.getNodeResolver(),
+					it.getContainerInfo()
+				)
+			)
+			.collect(Collectors.toList());
+
 		return new ArbitraryBuilderContext(
 			new ArrayList<>(this.manipulators),
 			new HashSet<>(this.lazyArbitraries),
 			new ArrayList<>(this.customizers),
-			new HashMap<>(this.containerInfosByNodeResolver),
+			copiedContainerInfoManipulators,
 			this.validOnly
 		);
 	}
@@ -108,16 +115,16 @@ public final class ArbitraryBuilderContext {
 		return Collections.unmodifiableList(customizers);
 	}
 
-	public void putContainerInfo(NodeResolver nodeResolver, ArbitraryContainerInfo containerInfo) {
-		this.containerInfosByNodeResolver.put(nodeResolver, containerInfo);
+	public void addContainerInfoManipulator(NodeResolver nodeResolver, ArbitraryContainerInfo containerInfo) {
+		this.containerInfoManipulators.add(new ContainerInfoManipulator(nodeResolver, containerInfo));
 	}
 
-	public void putContainerInfos(Map<NodeResolver, ArbitraryContainerInfo> containerInfosByNodeResolver) {
-		this.containerInfosByNodeResolver.putAll(containerInfosByNodeResolver);
+	public void addContainerInfoManipulators(List<ContainerInfoManipulator> containerInfoManipulators) {
+		this.containerInfoManipulators.addAll(containerInfoManipulators);
 	}
 
-	public Map<NodeResolver, ArbitraryContainerInfo> getContainerInfosByNodeResolver() {
-		return Collections.unmodifiableMap(containerInfosByNodeResolver);
+	public List<ContainerInfoManipulator> getContainerInfoManipulators() {
+		return Collections.unmodifiableList(containerInfoManipulators);
 	}
 
 	public void setValidOnly(boolean validOnly) {

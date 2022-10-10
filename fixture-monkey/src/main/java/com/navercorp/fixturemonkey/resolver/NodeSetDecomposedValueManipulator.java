@@ -24,7 +24,6 @@ import static com.navercorp.fixturemonkey.api.type.Types.isAssignable;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import javax.annotation.Nullable;
 
@@ -90,15 +89,14 @@ public final class NodeSetDecomposedValueManipulator<T> implements NodeManipulat
 			int decomposedContainerSize = decomposableContainerValue.getSize();
 
 			if (!containerProperty.getContainerInfo().isManipulated()) {
-				Map<NodeResolver, ArbitraryContainerInfo> arbitraryContainerInfosByExpression =
-					Collections.singletonMap(
-						IdentityNodeResolver.INSTANCE,
-						new ArbitraryContainerInfo(decomposedContainerSize, decomposedContainerSize, false)
-					);
+				ContainerInfoManipulator containerInfoManipulator = new ContainerInfoManipulator(
+					IdentityNodeResolver.INSTANCE,
+					new ArbitraryContainerInfo(decomposedContainerSize, decomposedContainerSize, false)
+				);
 
 				ArbitraryNode newNode = traverser.traverse(
 					arbitraryNode.getProperty(),
-					arbitraryContainerInfosByExpression
+					Collections.singletonList(containerInfoManipulator)
 				);
 				arbitraryNode.setArbitraryProperty(
 					arbitraryNode.getArbitraryProperty()

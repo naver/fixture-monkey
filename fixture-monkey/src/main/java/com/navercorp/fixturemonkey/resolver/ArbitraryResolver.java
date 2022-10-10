@@ -33,7 +33,6 @@ import net.jqwik.api.Arbitrary;
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.api.customizer.FixtureCustomizer;
-import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.option.GenerateOptions;
@@ -68,18 +67,18 @@ public final class ArbitraryResolver {
 		RootProperty rootProperty,
 		List<ArbitraryManipulator> manipulators,
 		List<MatcherOperator<? extends FixtureCustomizer>> customizers,
-		Map<NodeResolver, ArbitraryContainerInfo> containerInfosByNodeResolver
+		List<ContainerInfoManipulator> containerInfoManipulators
 	) {
 		ArbitraryTree arbitraryTree = new ArbitraryTree(
-			this.traverser.traverse(rootProperty, containerInfosByNodeResolver),
+			this.traverser.traverse(rootProperty, containerInfoManipulators),
 			generateOptions,
 			monkeyContext,
 			customizers,
 			generateOptions.getUniqueProperties()
 		);
 
-		containerInfosByNodeResolver.keySet().stream()
-			.flatMap(it -> it.resolve(arbitraryTree.findRoot()).stream())
+		containerInfoManipulators.stream()
+			.flatMap(it -> it.getNodeResolver().resolve(arbitraryTree.findRoot()).stream())
 			.forEach(it -> it.setManipulated(true));
 
 		List<ArbitraryManipulator> registeredManipulators = getRegisteredToManipulators(

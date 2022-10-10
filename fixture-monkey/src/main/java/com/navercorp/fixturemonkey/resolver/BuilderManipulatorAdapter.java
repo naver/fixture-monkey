@@ -21,9 +21,6 @@ package com.navercorp.fixturemonkey.resolver;
 import static com.navercorp.fixturemonkey.Constants.DEFAULT_ELEMENT_MAX_SIZE;
 import static com.navercorp.fixturemonkey.Constants.DEFAULT_ELEMENT_MIN_SIZE;
 
-import java.util.AbstractMap;
-import java.util.Map;
-
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
@@ -58,13 +55,13 @@ public final class BuilderManipulatorAdapter {
 		);
 	}
 
-	public Map.Entry<NodeResolver, ArbitraryContainerInfo> convertToContainerInfosByNodeResolverEntry(
+	public ContainerInfoManipulator convertToContainerInfoManipulator(
 		BuilderManipulator builderManipulator
 	) {
 		NodeResolver nodeResolver = getNodeResolver(builderManipulator);
 		ArbitraryContainerInfo containerInfo = getContainerInfo(builderManipulator);
 
-		return new AbstractMap.SimpleEntry<>(
+		return new ContainerInfoManipulator(
 			nodeResolver,
 			containerInfo
 		);

@@ -22,9 +22,7 @@ import static com.navercorp.fixturemonkey.Constants.DEFAULT_ELEMENT_MAX_SIZE;
 import static com.navercorp.fixturemonkey.Constants.DEFAULT_ELEMENT_MIN_SIZE;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Consumer;
 
 import javax.annotation.Nullable;
@@ -40,6 +38,7 @@ import com.navercorp.fixturemonkey.resolver.ArbitraryManipulator;
 import com.navercorp.fixturemonkey.resolver.ArbitraryTraverser;
 import com.navercorp.fixturemonkey.resolver.CompositeNodeResolver;
 import com.navercorp.fixturemonkey.resolver.ContainerElementPredicate;
+import com.navercorp.fixturemonkey.resolver.ContainerInfoManipulator;
 import com.navercorp.fixturemonkey.resolver.DefaultNodeResolver;
 import com.navercorp.fixturemonkey.resolver.ManipulateOptions;
 import com.navercorp.fixturemonkey.resolver.NodeEntryPredicate;
@@ -61,7 +60,7 @@ public final class InnerSpec {
 	private int max = DEFAULT_ELEMENT_MAX_SIZE;
 	private int entrySize = 0;
 	private final List<ArbitraryManipulator> arbitraryManipulators;
-	private final Map<NodeResolver, ArbitraryContainerInfo> containerInfosByNodeResolver;
+	private final List<ContainerInfoManipulator> containerInfoManipulators;
 
 	public InnerSpec(
 		ArbitraryTraverser traverser,
@@ -72,7 +71,7 @@ public final class InnerSpec {
 		this.manipulateOptions = manipulateOptions;
 		this.treePathResolver = treePathResolver;
 		this.arbitraryManipulators = new ArrayList<>();
-		this.containerInfosByNodeResolver = new HashMap<>();
+		this.containerInfoManipulators = new ArrayList<>();
 	}
 
 	public InnerSpec minSize(int min) {
@@ -94,9 +93,11 @@ public final class InnerSpec {
 		this.min = min;
 		this.max = max;
 
-		containerInfosByNodeResolver.put(
-			this.treePathResolver,
-			new ArbitraryContainerInfo(this.min, this.max, true)
+		containerInfoManipulators.add(
+			new ContainerInfoManipulator(
+				this.treePathResolver,
+				new ArbitraryContainerInfo(this.min, this.max, true)
+			)
 		);
 		return this;
 	}
@@ -133,7 +134,7 @@ public final class InnerSpec {
 		InnerSpec innerSpec = new InnerSpec(traverser, manipulateOptions, nextResolver);
 		consumer.accept(innerSpec);
 		arbitraryManipulators.addAll(innerSpec.arbitraryManipulators);
-		containerInfosByNodeResolver.putAll(innerSpec.containerInfosByNodeResolver);
+		containerInfoManipulators.addAll(innerSpec.containerInfoManipulators);
 		return this;
 	}
 
@@ -157,10 +158,12 @@ public final class InnerSpec {
 		InnerSpec innerSpec = new InnerSpec(traverser, manipulateOptions, nextResolver);
 		consumer.accept(innerSpec);
 		arbitraryManipulators.addAll(innerSpec.arbitraryManipulators);
-		containerInfosByNodeResolver.putAll(innerSpec.containerInfosByNodeResolver);
-		this.containerInfosByNodeResolver.put(
-			this.treePathResolver,
-			new ArbitraryContainerInfo(this.entrySize + this.min, this.entrySize + this.max, true)
+		containerInfoManipulators.addAll(innerSpec.containerInfoManipulators);
+		this.containerInfoManipulators.add(
+			new ContainerInfoManipulator(
+				this.treePathResolver,
+				new ArbitraryContainerInfo(this.entrySize + this.min, this.entrySize + this.max, true)
+			)
 		);
 		return this;
 	}
@@ -204,16 +207,18 @@ public final class InnerSpec {
 		InnerSpec innerSpec = new InnerSpec(traverser, manipulateOptions, nextResolver);
 		consumer.accept(innerSpec);
 		arbitraryManipulators.addAll(innerSpec.arbitraryManipulators);
-		containerInfosByNodeResolver.putAll(innerSpec.containerInfosByNodeResolver);
+		containerInfoManipulators.addAll(innerSpec.containerInfoManipulators);
 		return this;
 	}
 
 	public InnerSpec entry(Consumer<InnerSpec> consumer, @Nullable Object value) {
 		entrySize++;
 
-		this.containerInfosByNodeResolver.put(
-			this.treePathResolver,
-			new ArbitraryContainerInfo(this.entrySize + this.min, this.entrySize + this.max, true)
+		this.containerInfoManipulators.add(
+			new ContainerInfoManipulator(
+				this.treePathResolver,
+				new ArbitraryContainerInfo(this.entrySize + this.min, this.entrySize + this.max, true)
+			)
 		);
 		arbitraryManipulators.add(
 			new ArbitraryManipulator(
@@ -234,7 +239,7 @@ public final class InnerSpec {
 		InnerSpec innerSpec = new InnerSpec(traverser, manipulateOptions, nextResolver);
 		consumer.accept(innerSpec);
 		arbitraryManipulators.addAll(innerSpec.arbitraryManipulators);
-		containerInfosByNodeResolver.putAll(innerSpec.containerInfosByNodeResolver);
+		containerInfoManipulators.addAll(innerSpec.containerInfoManipulators);
 		return this;
 	}
 
@@ -260,7 +265,7 @@ public final class InnerSpec {
 		InnerSpec innerSpec = new InnerSpec(traverser, manipulateOptions, nextResolver);
 		consumer.accept(innerSpec);
 		arbitraryManipulators.addAll(innerSpec.arbitraryManipulators);
-		containerInfosByNodeResolver.putAll(innerSpec.containerInfosByNodeResolver);
+		containerInfoManipulators.addAll(innerSpec.containerInfoManipulators);
 		return this;
 	}
 
@@ -286,7 +291,7 @@ public final class InnerSpec {
 		InnerSpec innerSpec = new InnerSpec(traverser, manipulateOptions, nextResolver);
 		consumer.accept(innerSpec);
 		arbitraryManipulators.addAll(innerSpec.arbitraryManipulators);
-		containerInfosByNodeResolver.putAll(innerSpec.containerInfosByNodeResolver);
+		containerInfoManipulators.addAll(innerSpec.containerInfoManipulators);
 		return this;
 	}
 
@@ -294,8 +299,8 @@ public final class InnerSpec {
 		return arbitraryManipulators;
 	}
 
-	public Map<NodeResolver, ArbitraryContainerInfo> getContainerInfosByNodeResolver() {
-		return containerInfosByNodeResolver;
+	public List<ContainerInfoManipulator> getContainerInfoManipulators() {
+		return containerInfoManipulators;
 	}
 
 	private void setValue(@Nullable Object value) {
