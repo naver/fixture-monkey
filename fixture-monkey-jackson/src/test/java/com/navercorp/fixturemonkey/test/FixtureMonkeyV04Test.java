@@ -1,6 +1,5 @@
 package com.navercorp.fixturemonkey.test;
 
-import static org.assertj.core.api.BDDAssertions.then;
 import static org.assertj.core.api.BDDAssertions.thenNoException;
 
 import java.time.Instant;
@@ -9,7 +8,6 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
-import java.util.Calendar;
 import java.util.Date;
 
 import net.jqwik.api.Property;
