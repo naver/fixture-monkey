@@ -21,6 +21,7 @@ package com.navercorp.fixturemonkey.api.option;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -73,6 +74,7 @@ import com.navercorp.fixturemonkey.api.type.Types.UnidentifiableType;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class GenerateOptions {
+	private static final List<String> DEFAULT_JAVA_PACKAGES;
 	public static final List<MatcherOperator<ObjectPropertyGenerator>> DEFAULT_OBJECT_PROPERTY_GENERATORS =
 		getDefaultObjectPropertyGenerators();
 	public static final List<MatcherOperator<ContainerPropertyGenerator>> DEFAULT_CONTAINER_PROPERTY_GENERATORS =
@@ -83,6 +85,15 @@ public final class GenerateOptions {
 	public static final PropertyNameResolver DEFAULT_PROPERTY_NAME_RESOLVER = PropertyNameResolver.IDENTITY;
 	public static final int DEFAULT_ARBITRARY_CONTAINER_MAX_SIZE = 3;
 	public static final GenerateOptions DEFAULT_GENERATE_OPTIONS = GenerateOptions.builder().build();
+
+	static {
+		List<String> defaultJavaPackages = new ArrayList<>();
+		defaultJavaPackages.add("java.lang");
+		defaultJavaPackages.add("java.net");
+		defaultJavaPackages.add("jdk.internal.reflect");
+		defaultJavaPackages.add("sun.reflect");
+		DEFAULT_JAVA_PACKAGES = Collections.unmodifiableList(defaultJavaPackages);
+	}
 
 	private final PropertyGenerator defaultPropertyGenerator;
 	private final List<MatcherOperator<ObjectPropertyGenerator>> objectPropertyGenerators;
@@ -276,7 +287,9 @@ public final class GenerateOptions {
 			new MatcherOperator<>(
 				property -> {
 					Class<?> actualType = Types.getActualType(property.getType());
-					return actualType.isPrimitive() || actualType.getPackage().getName().startsWith("java.");
+					return actualType.isPrimitive()
+						|| DEFAULT_JAVA_PACKAGES.stream()
+						.anyMatch(actualType.getPackage().getName()::startsWith);
 				},
 				SingleValueObjectPropertyGenerator.INSTANCE
 			),
