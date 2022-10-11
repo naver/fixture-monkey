@@ -61,7 +61,6 @@ public final class ObjectProperty {
 		return this.property;
 	}
 
-	@Nullable
 	public PropertyNameResolver getPropertyNameResolver() {
 		return this.propertyNameResolver;
 	}
