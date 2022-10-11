@@ -284,7 +284,6 @@ public final class GenerateOptions {
 	private static List<MatcherOperator<ObjectPropertyGenerator>> getDefaultObjectPropertyGenerators(
 	) {
 		return Arrays.asList(
-			new MatcherOperator<>(Matchers.ENUM_TYPE_MATCHER, SingleValueObjectPropertyGenerator.INSTANCE),
 			new MatcherOperator<>(
 				property -> {
 					Class<?> actualType = Types.getActualType(property.getType());
@@ -294,6 +293,7 @@ public final class GenerateOptions {
 				},
 				SingleValueObjectPropertyGenerator.INSTANCE
 			),
+			new MatcherOperator<>(Matchers.ENUM_TYPE_MATCHER, SingleValueObjectPropertyGenerator.INSTANCE),
 			new MatcherOperator<>(
 				property -> Modifier.isAbstract(Types.getActualType(property.getType()).getModifiers()),
 				NullObjectPropertyGenerator.INSTANCE
