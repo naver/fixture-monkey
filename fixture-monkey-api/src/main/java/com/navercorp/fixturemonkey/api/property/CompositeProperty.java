@@ -85,11 +85,7 @@ public final class CompositeProperty implements Property {
 	@Nullable
 	@Override
 	public Object getValue(Object obj) {
-		Object result = this.primaryProperty.getValue(obj);
-		if (result == null) {
-			result = this.secondaryProperty.getValue(obj);
-		}
-		return result;
+		return this.primaryProperty.getValue(obj);
 	}
 
 	@Override
