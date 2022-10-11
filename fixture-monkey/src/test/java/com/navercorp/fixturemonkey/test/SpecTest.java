@@ -559,4 +559,17 @@ class SpecTest {
 
 		then(actual.getValue2().getValue()).isEqualTo(1);
 	}
+
+	@Property
+	void sizeOverwrite() {
+		ExpressionSpec spec = new ExpressionSpec()
+			.size("values", 1)
+			.size("values", 2);
+
+		IntegerList actual = SUT.giveMeBuilder(IntegerList.class)
+			.spec(spec)
+			.sample();
+
+		then(actual.getValues()).hasSize(2);
+	}
 }

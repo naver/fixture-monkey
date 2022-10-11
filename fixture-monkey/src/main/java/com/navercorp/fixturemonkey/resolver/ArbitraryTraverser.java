@@ -20,8 +20,6 @@ package com.navercorp.fixturemonkey.resolver;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -49,7 +47,7 @@ public final class ArbitraryTraverser {
 
 	public ArbitraryNode traverse(
 		Property property,
-		Map<NodeResolver, ArbitraryContainerInfo> arbitraryContainerInfosByNodeResolver
+		List<ContainerInfoManipulator> containerInfoManipulators
 	) {
 		ContainerPropertyGenerator containerPropertyGenerator =
 			this.generateOptions.getContainerPropertyGenerator(property);
@@ -74,8 +72,12 @@ public final class ArbitraryTraverser {
 
 		ContainerProperty containerProperty = null;
 		if (container) {
-			ArbitraryContainerInfo containerInfo =
-				arbitraryContainerInfosByNodeResolver.get(IdentityNodeResolver.INSTANCE);
+			ArbitraryContainerInfo containerInfo = containerInfoManipulators.stream()
+				.filter(it -> it.getNodeResolver().equals(IdentityNodeResolver.INSTANCE))
+				.findFirst()
+				.map(ContainerInfoManipulator::getContainerInfo)
+				.orElse(null);
+
 			containerProperty = containerPropertyGenerator.generate(
 				new ContainerPropertyGeneratorContext(
 					property,
@@ -94,7 +96,7 @@ public final class ArbitraryTraverser {
 			arbitraryProperty,
 			new TraverseContext(
 				new ArrayList<>(),
-				arbitraryContainerInfosByNodeResolver
+				containerInfoManipulators
 			)
 		);
 	}
@@ -127,8 +129,7 @@ public final class ArbitraryTraverser {
 		TraverseContext context
 	) {
 		List<ArbitraryNode> children = new ArrayList<>();
-		Map<NodeResolver, ArbitraryContainerInfo> arbitraryContainerInfosByNodeResolver =
-			context.getArbitraryContainerInfosByNodeResolver();
+		List<ContainerInfoManipulator> containerInfoManipulators = context.getContainerInfoManipulators();
 		boolean container = parentArbitraryProperty.getContainerProperty() != null;
 
 		for (int sequence = 0; sequence < properties.size(); sequence++) {
@@ -162,17 +163,15 @@ public final class ArbitraryTraverser {
 
 			ContainerProperty childContainerProperty = null;
 			if (childContainer) {
-				ArbitraryContainerInfo containerInfo = arbitraryContainerInfosByNodeResolver.entrySet().stream()
-					.filter(it -> isMatch(
-							context.getArbitraryProperties(),
-							childObjectProperty,
-							it.getKey().toNextNodePredicate()
-						)
-					)
-					.map(Entry::getValue)
-					.findAny()
-					.orElse(null);
-
+				ArbitraryContainerInfo containerInfo = null;
+				for (ContainerInfoManipulator containerInfoManipulator : containerInfoManipulators) {
+					if (containerInfoManipulator.isMatch(
+						context.getArbitraryProperties(),
+						childObjectProperty
+					)) {
+						containerInfo = containerInfoManipulator.getContainerInfo();
+					}
+				}
 				childContainerProperty = containerPropertyGenerator.generate(
 					new ContainerPropertyGeneratorContext(
 						childProperty,
@@ -194,42 +193,5 @@ public final class ArbitraryTraverser {
 			children.add(childNode);
 		}
 		return children;
-	}
-
-	private boolean isMatch(
-		List<ArbitraryProperty> parentArbitraryProperties,
-		ObjectProperty currentObjectProperty,
-		List<NextNodePredicate> nextNodePredicates
-	) {
-		int parentArbitraryPropertySize = parentArbitraryProperties.size();
-		int nextNodePredicateSize = nextNodePredicates.size();
-
-		if (parentArbitraryPropertySize + 1 != nextNodePredicateSize) {
-			return false;
-		}
-
-		for (int i = 0; i < parentArbitraryPropertySize; i++) {
-			NextNodePredicate nextNodePredicate = nextNodePredicates.get(i);
-			ArbitraryProperty parentArbitraryProperty = i == 0 ? null : parentArbitraryProperties.get(i - 1);
-			ArbitraryProperty currentArbitraryProperty = parentArbitraryProperties.get(i);
-
-			if (!nextNodePredicate.test(
-				parentArbitraryProperty,
-				currentArbitraryProperty.getObjectProperty(),
-				currentArbitraryProperty.getContainerProperty()
-			)) {
-				return false;
-			}
-		}
-
-		ArbitraryProperty parentArbitraryProperty = parentArbitraryPropertySize == 0
-			? null
-			: parentArbitraryProperties.get(parentArbitraryPropertySize - 1);
-		NextNodePredicate nextNodePredicate = nextNodePredicates.get(nextNodePredicateSize - 1);
-		return nextNodePredicate.test(
-			parentArbitraryProperty,
-			currentObjectProperty,
-			null
-		);
 	}
 }

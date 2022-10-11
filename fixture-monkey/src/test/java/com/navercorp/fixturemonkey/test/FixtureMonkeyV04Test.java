@@ -1418,4 +1418,17 @@ class FixtureMonkeyV04Test {
 		then(actual).isEqualTo(expected);
 
 	}
+
+	@Property
+	void applyFixedSize() {
+		String expectedElement = "test";
+
+		List<String> actual = SUT.giveMeBuilder(ComplexObject.class)
+			.minSize("strList", 1)
+			.apply((it, builder) -> builder.set("strList[*]", expectedElement))
+			.sample()
+			.getStrList();
+
+		then(actual).allMatch(expectedElement::equals);
+	}
 }

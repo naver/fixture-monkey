@@ -26,9 +26,6 @@ import static java.util.stream.Collectors.toList;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -73,6 +70,7 @@ import com.navercorp.fixturemonkey.resolver.ArbitraryManipulator;
 import com.navercorp.fixturemonkey.resolver.ArbitraryResolver;
 import com.navercorp.fixturemonkey.resolver.ArbitraryTraverser;
 import com.navercorp.fixturemonkey.resolver.BuilderManipulatorAdapter;
+import com.navercorp.fixturemonkey.resolver.ContainerInfoManipulator;
 import com.navercorp.fixturemonkey.resolver.IdentityNodeResolver;
 import com.navercorp.fixturemonkey.resolver.ManipulateOptions;
 import com.navercorp.fixturemonkey.resolver.NodeFilterManipulator;
@@ -201,11 +199,11 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 	public ArbitraryBuilder<T> spec(ExpressionSpec expressionSpec) {
 		List<BuilderManipulator> builderManipulators = expressionSpec.getBuilderManipulators();
 
-		this.context.putContainerInfos(
+		this.context.addContainerInfoManipulators(
 			builderManipulators.stream()
 				.filter(ContainerSizeManipulator.class::isInstance)
-				.map(builderManipulatorAdapter::convertToContainerInfosByNodeResolverEntry)
-				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))
+				.map(builderManipulatorAdapter::convertToContainerInfoManipulator)
+				.collect(Collectors.toList())
 		);
 		this.context.addManipulators(
 			builderManipulators.stream()
@@ -232,7 +230,7 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 		InnerSpec innerSpec = new InnerSpec(traverser, manipulateOptions, nodeResolver);
 		specSpecifier.accept(innerSpec);
 		List<ArbitraryManipulator> mapManipulators = innerSpec.getArbitraryManipulators();
-		this.context.putContainerInfos(innerSpec.getContainerInfosByNodeResolver());
+		this.context.addContainerInfoManipulators(innerSpec.getContainerInfoManipulators());
 		this.context.addManipulators(mapManipulators);
 		return this;
 	}
@@ -275,7 +273,10 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 
 		NodeResolver nodeResolver = monkeyExpressionFactory.from(expression).toNodeResolver();
 
-		this.context.putContainerInfo(nodeResolver, new ArbitraryContainerInfo(min, max, true));
+		this.context.addContainerInfoManipulator(
+			nodeResolver,
+			new ArbitraryContainerInfo(min, max, true)
+		);
 		return this;
 	}
 
@@ -286,22 +287,7 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 
 	@Override
 	public ArbitraryBuilder<T> fixed() {
-		Set<Entry<NodeResolver, ArbitraryContainerInfo>> containerInfosByNodeResolverEntries =
-			this.context.getContainerInfosByNodeResolver().entrySet();
-
-		for (Entry<NodeResolver, ArbitraryContainerInfo> containerInfoByNodeResolver :
-			containerInfosByNodeResolverEntries
-		) {
-			int fixedSize = containerInfoByNodeResolver.getValue().getRandomSize();
-			this.context.putContainerInfo(
-				containerInfoByNodeResolver.getKey(),
-				new ArbitraryContainerInfo(
-					fixedSize,
-					fixedSize,
-					true
-				)
-			);
-		}
+		this.context.getContainerInfoManipulators().forEach(ContainerInfoManipulator::fixed);
 
 		this.context.addManipulator(
 			new ArbitraryManipulator(
@@ -316,6 +302,8 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 	public ArbitraryBuilder<T> apply(
 		BiConsumer<T, ArbitraryBuilder<T>> biConsumer
 	) {
+		this.context.getContainerInfoManipulators().forEach(ContainerInfoManipulator::fixed);
+
 		ArbitraryBuilder<T> appliedBuilder = this.copy();
 
 		LazyArbitrary<T> lazyArbitrary = LazyArbitrary.lazy(
@@ -520,7 +508,7 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 					this.rootProperty,
 					buildManipulators,
 					context.getCustomizers(),
-					context.getContainerInfosByNodeResolver()
+					context.getContainerInfoManipulators()
 				);
 				context.getLazyArbitraries().forEach(LazyArbitrary::clear);
 				return arbitrary;
