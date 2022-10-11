@@ -71,6 +71,7 @@ import com.navercorp.fixturemonkey.api.generator.NullInjectGenerator;
 import com.navercorp.fixturemonkey.api.generator.NullObjectPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.OptionalContainerPropertyGenerator;
+import com.navercorp.fixturemonkey.api.generator.PropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.SetContainerPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.SingleValueObjectPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.StreamContainerPropertyGenerator;
@@ -99,6 +100,7 @@ public final class GenerateOptions {
 	public static final int DEFAULT_ARBITRARY_CONTAINER_MAX_SIZE = 3;
 	public static final GenerateOptions DEFAULT_GENERATE_OPTIONS = GenerateOptions.builder().build();
 
+	private final PropertyGenerator defaultPropertyGenerator;
 	private final List<MatcherOperator<ObjectPropertyGenerator>> objectPropertyGenerators;
 	private final ObjectPropertyGenerator defaultObjectPropertyGenerator;
 	private final List<MatcherOperator<ContainerPropertyGenerator>> containerPropertyGenerators;
@@ -118,6 +120,7 @@ public final class GenerateOptions {
 
 	@SuppressWarnings("rawtypes")
 	public GenerateOptions(
+		PropertyGenerator defaultPropertyGenerator,
 		List<MatcherOperator<ObjectPropertyGenerator>> objectPropertyGenerators,
 		ObjectPropertyGenerator defaultObjectPropertyGenerator,
 		List<MatcherOperator<ContainerPropertyGenerator>> containerPropertyGenerators,
@@ -132,6 +135,7 @@ public final class GenerateOptions {
 		List<MatcherOperator<FixtureCustomizer>> arbitraryCustomizers,
 		List<MatcherOperator<Boolean>> uniqueProperties
 	) {
+		this.defaultPropertyGenerator = defaultPropertyGenerator;
 		this.objectPropertyGenerators = objectPropertyGenerators;
 		this.defaultObjectPropertyGenerator = defaultObjectPropertyGenerator;
 		this.containerPropertyGenerators = containerPropertyGenerators;
@@ -150,6 +154,10 @@ public final class GenerateOptions {
 
 	public static GenerateOptionsBuilder builder() {
 		return new GenerateOptionsBuilder();
+	}
+
+	public PropertyGenerator getDefaultPropertyGenerator() {
+		return defaultPropertyGenerator;
 	}
 
 	public List<MatcherOperator<ObjectPropertyGenerator>> getObjectPropertyGenerators() {
@@ -260,6 +268,7 @@ public final class GenerateOptions {
 
 	public GenerateOptionsBuilder toBuilder() {
 		return builder()
+			.defaultPropertyGenerator(defaultPropertyGenerator)
 			.arbitraryObjectPropertyGenerators(objectPropertyGenerators)
 			.defaultObjectPropertyGenerator(defaultObjectPropertyGenerator)
 			.arbitraryContainerPropertyGenerators(containerPropertyGenerators)

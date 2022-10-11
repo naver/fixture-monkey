@@ -37,9 +37,11 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.generator.ContainerPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.DefaultArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator;
+import com.navercorp.fixturemonkey.api.generator.DefaultPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.JavaDefaultArbitraryGeneratorBuilder;
 import com.navercorp.fixturemonkey.api.generator.NullInjectGenerator;
 import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGenerator;
+import com.navercorp.fixturemonkey.api.generator.PropertyGenerator;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.JavaArbitraryResolver;
 import com.navercorp.fixturemonkey.api.introspector.JavaTimeArbitraryResolver;
@@ -53,6 +55,7 @@ import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 @SuppressWarnings("UnusedReturnValue")
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class GenerateOptionsBuilder {
+	private PropertyGenerator defaultPropertyGenerator = new DefaultPropertyGenerator();
 	private List<MatcherOperator<ObjectPropertyGenerator>> arbitraryObjectPropertyGenerators =
 		new ArrayList<>(GenerateOptions.DEFAULT_OBJECT_PROPERTY_GENERATORS);
 	private List<MatcherOperator<ContainerPropertyGenerator>> containerPropertyGenerators =
@@ -76,6 +79,11 @@ public final class GenerateOptionsBuilder {
 	private List<MatcherOperator<Boolean>> uniqueProperties = new ArrayList<>(DEFAULT_UNIQUE_PROPERTIES);
 
 	GenerateOptionsBuilder() {
+	}
+
+	public GenerateOptionsBuilder defaultPropertyGenerator(PropertyGenerator propertyGenerator) {
+		this.defaultPropertyGenerator = propertyGenerator;
+		return this;
 	}
 
 	public GenerateOptionsBuilder arbitraryObjectPropertyGenerators(
@@ -455,6 +463,7 @@ public final class GenerateOptionsBuilder {
 			defaultIfNull(this.defaultArbitraryGenerator, this.javaDefaultArbitraryGeneratorBuilder::build);
 
 		return new GenerateOptions(
+			this.defaultPropertyGenerator,
 			this.arbitraryObjectPropertyGenerators,
 			defaultObjectPropertyGenerator,
 			this.containerPropertyGenerators,

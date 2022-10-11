@@ -70,6 +70,11 @@ public final class ChildArbitraryContext {
 			.collect(toMap(it -> it.getKey().getObjectProperty().getResolvedPropertyName(), Entry::getValue));
 	}
 
+	public Map<String, Arbitrary<?>> getArbitrariesByPropertyName() {
+		return arbitrariesByChildProperty.entrySet().stream()
+			.collect(toMap(it -> it.getKey().getObjectProperty().getProperty().getName(), Entry::getValue));
+	}
+
 	public List<Arbitrary<?>> getArbitraries() {
 		return new ArrayList<>(arbitrariesByChildProperty.values());
 	}
