@@ -22,7 +22,7 @@ dependencies {
     testImplementation("org.assertj:assertj-core:3.22.0")
     testImplementation("org.projectlombok:lombok:1.18.24")
     testImplementation("org.hibernate.validator:hibernate-validator:6.2.0.Final")
-    testImplementation("org.glassfish:jakarta.el:3.0.3")
+    testImplementation('org.glassfish:jakarta.el:3.0.4')
     testAnnotationProcessor("org.projectlombok:lombok:1.18.24")
 
     jmhImplementation("org.openjdk.jmh:jmh-core:1.35")
