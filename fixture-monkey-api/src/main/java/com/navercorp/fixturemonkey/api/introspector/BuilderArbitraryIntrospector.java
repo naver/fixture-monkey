@@ -62,6 +62,9 @@ public final class BuilderArbitraryIntrospector
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
 		Property property = context.getProperty();
 		Class<?> type = Types.getActualType(property.getType());
+		if (type.isInterface()) {
+			return ArbitraryIntrospectorResult.EMPTY;
+		}
 
 		List<ArbitraryProperty> childrenProperties = context.getChildren();
 		Map<String, Arbitrary<?>> childrenArbitraries = context.getChildrenArbitraryContexts()

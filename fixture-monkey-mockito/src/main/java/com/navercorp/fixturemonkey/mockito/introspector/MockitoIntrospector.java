@@ -18,8 +18,6 @@
 
 package com.navercorp.fixturemonkey.mockito.introspector;
 
-import java.lang.reflect.Modifier;
-
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 import org.mockito.Mockito;
@@ -40,7 +38,7 @@ public final class MockitoIntrospector implements ArbitraryIntrospector, Matcher
 	@Override
 	public boolean match(Property property) {
 		Class<?> actualType = Types.getActualType(property.getType());
-		return actualType.isInterface() || Modifier.isAbstract(actualType.getModifiers());
+		return actualType.isInterface();
 	}
 
 	@Override
