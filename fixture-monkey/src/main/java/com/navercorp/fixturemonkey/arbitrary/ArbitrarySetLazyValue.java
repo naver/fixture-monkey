@@ -80,6 +80,10 @@ public final class ArbitrarySetLazyValue<T> extends AbstractArbitrarySet<T> {
 		return supplier.get();
 	}
 
+	public long getLimit() {
+		return limit;
+	}
+
 	@Override
 	public ArbitrarySetLazyValue<T> copy() {
 		return this;

@@ -26,7 +26,7 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public class JavaxValidationIntegerConstraint {
+public final class JavaxValidationIntegerConstraint {
 	@Nullable
 	private final BigInteger min;
 

@@ -24,5 +24,5 @@ import org.apiguardian.api.API.Status;
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 @FunctionalInterface
 public interface ArbitraryContainerInfoGenerator {
-	ArbitraryContainerInfo generate(ArbitraryPropertyGeneratorContext context);
+	ArbitraryContainerInfo generate(ContainerPropertyGeneratorContext context);
 }

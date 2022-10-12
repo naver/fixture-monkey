@@ -43,7 +43,7 @@ public class DefaultArbitraryGenerator implements ArbitraryGenerator {
 	public Arbitrary<?> generate(ArbitraryGeneratorContext context) {
 		ArbitraryIntrospectorResult result = this.arbitraryIntrospector.introspect(context);
 		if (result.getValue() != null) {
-			double nullInject = context.getArbitraryProperty().getNullInject();
+			double nullInject = context.getArbitraryProperty().getObjectProperty().getNullInject();
 			return result.getValue()
 				.injectNull(nullInject);
 		}

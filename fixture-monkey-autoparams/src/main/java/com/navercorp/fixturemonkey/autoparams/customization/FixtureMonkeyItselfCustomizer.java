@@ -20,9 +20,9 @@ package com.navercorp.fixturemonkey.autoparams.customization;
 
 import java.lang.reflect.Type;
 
-import org.javaunit.autoparams.customization.Customizer;
-import org.javaunit.autoparams.generator.ObjectContainer;
-import org.javaunit.autoparams.generator.ObjectGenerator;
+import autoparams.customization.Customizer;
+import autoparams.generator.ObjectContainer;
+import autoparams.generator.ObjectGenerator;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
 

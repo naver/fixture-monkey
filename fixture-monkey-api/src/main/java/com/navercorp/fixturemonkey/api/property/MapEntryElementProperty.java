@@ -26,6 +26,7 @@ import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import javax.annotation.Nullable;
 
@@ -103,6 +104,25 @@ public final class MapEntryElementProperty implements Property {
 		return obj;
 	}
 
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null || getClass() != obj.getClass()) {
+			return false;
+		}
+		MapEntryElementProperty that = (MapEntryElementProperty)obj;
+		return mapEntryProperty.equals(that.mapEntryProperty)
+			&& keyProperty.equals(that.keyProperty)
+			&& valueProperty.equals(that.valueProperty);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(mapEntryProperty, keyProperty, valueProperty);
+	}
+
 	// This class only for type marking
 	public static final class MapEntryElementType {
 		private Object key;
@@ -126,5 +146,6 @@ public final class MapEntryElementProperty implements Property {
 		public void setValue(@Nullable Object value) {
 			this.value = value;
 		}
+
 	}
 }

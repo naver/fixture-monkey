@@ -20,6 +20,7 @@ package com.navercorp.fixturemonkey.kotlin
 
 import org.assertj.core.api.BDDAssertions.then
 import org.junit.jupiter.api.Test
+import java.util.function.Consumer
 
 class FixtureMonkeyBuilderExtensionsTest {
 
@@ -35,12 +36,14 @@ class FixtureMonkeyBuilderExtensionsTest {
             }.build()
         val actual = sut.giveMeOne<IntegerStringWrapperClass>()
 
-        then(actual).satisfies {
-            with(it) {
-                then(intValue).isEqualTo(-1)
-                then(stringValue).isEqualTo("test_value")
+        then(actual).satisfies(
+            Consumer {
+                with(it) {
+                    then(intValue).isEqualTo(-1)
+                    then(stringValue).isEqualTo("test_value")
+                }
             }
-        }
+        )
     }
 
     data class IntegerStringWrapperClass(

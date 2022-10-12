@@ -29,6 +29,7 @@ import net.jqwik.api.Builders;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
+import com.navercorp.fixturemonkey.api.generator.ContainerProperty;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty;
 import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty.MapEntryElementType;
@@ -44,7 +45,13 @@ public final class MapEntryElementIntrospector implements ArbitraryIntrospector,
 	@Override
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
 		ArbitraryProperty property = context.getArbitraryProperty();
-		ArbitraryContainerInfo containerInfo = property.getContainerInfo();
+		ContainerProperty containerProperty = property.getContainerProperty();
+		if (containerProperty == null) {
+			throw new IllegalArgumentException(
+				"container property should not null. type : " + property.getObjectProperty().getProperty().getName()
+			);
+		}
+		ArbitraryContainerInfo containerInfo = containerProperty.getContainerInfo();
 		if (containerInfo == null) {
 			return ArbitraryIntrospectorResult.EMPTY;
 		}

@@ -27,7 +27,7 @@ import org.apiguardian.api.API.Status;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class IteratorCache {
-	private static final LruCache<Iterator<?>, List<?>> ITERATOR_TO_LIST = new LruCache<>(1000);
+	private static final LruCache<Iterator<?>, List<?>> ITERATOR_TO_LIST = new LruCache<>(2000);
 
 	public static List<?> getList(Iterator<?> iterator) {
 		if (ITERATOR_TO_LIST.containsKey(iterator)) {

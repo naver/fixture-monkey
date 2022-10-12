@@ -37,10 +37,12 @@ import org.apiguardian.api.API.Status;
 import com.navercorp.fixturemonkey.api.customizer.FixtureCustomizer;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfoGenerator;
-import com.navercorp.fixturemonkey.api.generator.ArbitraryPropertyGenerator;
+import com.navercorp.fixturemonkey.api.generator.ContainerPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator;
-import com.navercorp.fixturemonkey.api.generator.NullArbitraryPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.NullInjectGenerator;
+import com.navercorp.fixturemonkey.api.generator.NullObjectPropertyGenerator;
+import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGenerator;
+import com.navercorp.fixturemonkey.api.generator.PropertyGenerator;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.CompositeArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.JavaArbitraryResolver;
@@ -62,6 +64,7 @@ import com.navercorp.fixturemonkey.resolver.DecomposedContainerValueFactory;
 import com.navercorp.fixturemonkey.resolver.ManipulateOptions;
 import com.navercorp.fixturemonkey.resolver.ManipulateOptionsBuilder;
 import com.navercorp.fixturemonkey.resolver.ManipulatorOptimizer;
+import com.navercorp.fixturemonkey.resolver.MonkeyContext;
 import com.navercorp.fixturemonkey.resolver.NoneManipulatorOptimizer;
 import com.navercorp.fixturemonkey.validator.ArbitraryValidator;
 import com.navercorp.fixturemonkey.validator.DefaultArbitraryValidator;
@@ -93,33 +96,60 @@ public class LabMonkeyBuilder {
 		return this;
 	}
 
-	public LabMonkeyBuilder defaultArbitraryPropertyGenerator(ArbitraryPropertyGenerator arbitraryPropertyGenerator) {
-		generateOptionsBuilder.defaultArbitraryPropertyGenerator(arbitraryPropertyGenerator);
+	public LabMonkeyBuilder defaultObjectPropertyGenerator(
+		ObjectPropertyGenerator objectPropertyGenerator
+	) {
+		generateOptionsBuilder.defaultObjectPropertyGenerator(objectPropertyGenerator);
 		return this;
 	}
 
-	public LabMonkeyBuilder pushAssignableTypeArbitraryPropertyGenerator(
+	public LabMonkeyBuilder pushAssignableTypeObjectPropertyGenerator(
 		Class<?> type,
-		ArbitraryPropertyGenerator arbitraryPropertyGenerator
+		ObjectPropertyGenerator objectPropertyGenerator
 	) {
-		generateOptionsBuilder.insertFirstArbitraryPropertyGenerator(type, arbitraryPropertyGenerator);
+		generateOptionsBuilder.insertFirstArbitraryObjectPropertyGenerator(type, objectPropertyGenerator);
 		return this;
 	}
 
-	public LabMonkeyBuilder pushExactTypeArbitraryPropertyGenerator(
+	public LabMonkeyBuilder pushExactTypeObjectPropertyGenerator(
 		Class<?> type,
-		ArbitraryPropertyGenerator arbitraryPropertyGenerator
+		ObjectPropertyGenerator objectPropertyGenerator
 	) {
-		generateOptionsBuilder.insertFirstArbitraryPropertyGenerator(
-			MatcherOperator.exactTypeMatchOperator(type, arbitraryPropertyGenerator)
+		generateOptionsBuilder.insertFirstArbitraryObjectPropertyGenerator(
+			MatcherOperator.exactTypeMatchOperator(type, objectPropertyGenerator)
 		);
 		return this;
 	}
 
-	public LabMonkeyBuilder pushArbitraryPropertyGenerator(
-		MatcherOperator<ArbitraryPropertyGenerator> arbitraryPropertyGenerator
+	public LabMonkeyBuilder pushObjectPropertyGenerator(
+		MatcherOperator<ObjectPropertyGenerator> arbitraryObjectPropertyGenerator
 	) {
-		generateOptionsBuilder.insertFirstArbitraryPropertyGenerator(arbitraryPropertyGenerator);
+		generateOptionsBuilder.insertFirstArbitraryObjectPropertyGenerator(arbitraryObjectPropertyGenerator);
+		return this;
+	}
+
+	public LabMonkeyBuilder pushAssignableTypeContainerPropertyGenerator(
+		Class<?> type,
+		ContainerPropertyGenerator containerPropertyGenerator
+	) {
+		generateOptionsBuilder.insertFirstArbitraryContainerPropertyGenerator(type, containerPropertyGenerator);
+		return this;
+	}
+
+	public LabMonkeyBuilder pushExactTypeContainerPropertyGenerator(
+		Class<?> type,
+		ContainerPropertyGenerator containerPropertyGenerator
+	) {
+		generateOptionsBuilder.insertFirstArbitraryContainerPropertyGenerator(
+			MatcherOperator.exactTypeMatchOperator(type, containerPropertyGenerator)
+		);
+		return this;
+	}
+
+	public LabMonkeyBuilder pushContainerPropertyGenerator(
+		MatcherOperator<ContainerPropertyGenerator> containerPropertyGenerator
+	) {
+		generateOptionsBuilder.insertFirstArbitraryContainerPropertyGenerator(containerPropertyGenerator);
 		return this;
 	}
 
@@ -258,10 +288,10 @@ public class LabMonkeyBuilder {
 	}
 
 	public LabMonkeyBuilder pushExceptGenerateType(Matcher matcher) {
-		generateOptionsBuilder.insertFirstArbitraryPropertyGenerator(
+		generateOptionsBuilder.insertFirstArbitraryObjectPropertyGenerator(
 			new MatcherOperator<>(
 				matcher,
-				NullArbitraryPropertyGenerator.INSTANCE
+				NullObjectPropertyGenerator.INSTANCE
 			)
 		);
 		return this;
@@ -428,13 +458,33 @@ public class LabMonkeyBuilder {
 
 	public LabMonkeyBuilder addContainerType(
 		Class<?> type,
-		ArbitraryPropertyGenerator containerArbitraryPropertyGenerator,
+		ContainerPropertyGenerator containerObjectPropertyGenerator,
 		ArbitraryIntrospector containerArbitraryIntrospector,
 		DecomposedContainerValueFactory decomposedContainerValueFactory
 	) {
-		this.pushAssignableTypeArbitraryPropertyGenerator(type, containerArbitraryPropertyGenerator);
+		this.pushAssignableTypeContainerPropertyGenerator(type, containerObjectPropertyGenerator);
 		this.pushContainerIntrospector(containerArbitraryIntrospector);
 		decomposableContainerFactoryMap.put(type, decomposedContainerValueFactory);
+		return this;
+	}
+
+	public LabMonkeyBuilder pushUniqueProperty(MatcherOperator<Boolean> uniqueProperty) {
+		this.generateOptionsBuilder.insertFirstUniqueProperty(uniqueProperty);
+		return this;
+	}
+
+	public LabMonkeyBuilder pushExactTypeUniqueProperty(Class<?> type) {
+		this.generateOptionsBuilder.insertFirstUniqueProperty(MatcherOperator.exactTypeMatchOperator(type, true));
+		return this;
+	}
+
+	public LabMonkeyBuilder pushAssignableTypeUniqueProperty(Class<?> type) {
+		this.generateOptionsBuilder.insertFirstUniqueProperty(MatcherOperator.assignableTypeMatchOperator(type, true));
+		return this;
+	}
+
+	public LabMonkeyBuilder defaultPropertyGenerator(PropertyGenerator propertyGenerator) {
+		this.generateOptionsBuilder.defaultPropertyGenerator(propertyGenerator);
 		return this;
 	}
 
@@ -480,7 +530,8 @@ public class LabMonkeyBuilder {
 			manipulateOptionsBuilder,
 			traverser,
 			manipulatorOptimizer,
-			this.arbitraryValidator
+			this.arbitraryValidator,
+			MonkeyContext.builder().build()
 		);
 	}
 

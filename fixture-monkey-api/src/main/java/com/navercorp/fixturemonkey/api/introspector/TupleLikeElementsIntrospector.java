@@ -12,6 +12,7 @@ import net.jqwik.api.Builders.BuilderCombinator;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
+import com.navercorp.fixturemonkey.api.generator.ContainerProperty;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.TupleLikeElementsProperty;
@@ -27,7 +28,13 @@ public final class TupleLikeElementsIntrospector implements ArbitraryIntrospecto
 	@Override
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
 		ArbitraryProperty property = context.getArbitraryProperty();
-		ArbitraryContainerInfo containerInfo = property.getContainerInfo();
+		ContainerProperty containerProperty = property.getContainerProperty();
+		if (containerProperty == null) {
+			throw new IllegalArgumentException(
+				"container property should not null. type : " + property.getObjectProperty().getProperty().getName()
+			);
+		}
+		ArbitraryContainerInfo containerInfo = containerProperty.getContainerInfo();
 		if (containerInfo == null) {
 			return ArbitraryIntrospectorResult.EMPTY;
 		}

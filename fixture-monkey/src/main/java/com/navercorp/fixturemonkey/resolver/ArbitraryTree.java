@@ -43,18 +43,24 @@ final class ArbitraryTree {
 	private final ArbitraryNode rootNode;
 	private final GenerateOptions generateOptions;
 	private final ArbitraryTreeMetadata metadata;
+	private final MonkeyContext monkeyContext;
 	@SuppressWarnings("rawtypes")
 	private final List<MatcherOperator<? extends FixtureCustomizer>> customizers;
+	private final List<MatcherOperator<Boolean>> uniqueProperties;
 
 	@SuppressWarnings("rawtypes")
 	ArbitraryTree(
 		ArbitraryNode rootNode,
 		GenerateOptions generateOptions,
-		List<MatcherOperator<? extends FixtureCustomizer>> customizers
+		MonkeyContext monkeyContext,
+		List<MatcherOperator<? extends FixtureCustomizer>> customizers,
+		List<MatcherOperator<Boolean>> uniqueProperties
 	) {
 		this.rootNode = rootNode;
 		this.generateOptions = generateOptions;
+		this.monkeyContext = monkeyContext;
 		this.customizers = customizers;
+		this.uniqueProperties = uniqueProperties;
 		MetadataCollector metadataCollector = new MetadataCollector(rootNode);
 		this.metadata = metadataCollector.collect();
 	}
@@ -114,11 +120,38 @@ final class ArbitraryTree {
 		Arbitrary<?> generated;
 		if (node.getArbitrary() != null) {
 			generated = node.getArbitrary() // fixed
-				.injectNull(node.getArbitraryProperty().getNullInject());
+				.injectNull(node.getArbitraryProperty().getObjectProperty().getNullInject());
 		} else {
 			ArbitraryGeneratorContext childArbitraryGeneratorContext = this.generateContext(node, customizers, ctx);
-			generated = this.generateOptions.getArbitraryGenerator(prop.getProperty())
-				.generate(childArbitraryGeneratorContext);
+
+			Arbitrary<?> cached = monkeyContext.getCachedArbitrary(node.getProperty());
+
+			boolean notCustomized = ctx.getArbitraryCustomizers().stream()
+				.noneMatch(it -> it.match(node.getProperty()));
+
+			if (node.isNotManipulated() && notCustomized && cached != null) {
+				generated = cached;
+			} else {
+				generated = this.generateOptions.getArbitraryGenerator(prop.getObjectProperty().getProperty())
+					.generate(childArbitraryGeneratorContext);
+
+				boolean unique = uniqueProperties.stream()
+					.filter(it -> it.match(node.getProperty()))
+					.findAny()
+					.map(MatcherOperator::getOperator)
+					.orElse(false);
+
+				if (unique) {
+					generated = generated.injectDuplicates(0d);
+				}
+
+				if (node.isNotManipulated() && notCustomized) {
+					monkeyContext.putCachedArbitrary(
+						node.getProperty(),
+						generated
+					);
+				}
+			}
 		}
 
 		List<Predicate> arbitraryFilters = node.getArbitraryFilters();
@@ -135,5 +168,4 @@ final class ArbitraryTree {
 				.orElse(object)
 		);
 	}
-
 }

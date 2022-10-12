@@ -13,8 +13,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
-import com.navercorp.fixturemonkey.api.generator.ArbitraryPropertyGenerator;
-import com.navercorp.fixturemonkey.api.generator.ArbitraryPropertyGeneratorContext;
+import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGenerator;
+import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGeneratorContext;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult;
 import com.navercorp.fixturemonkey.api.introspector.BooleanIntrospector;
@@ -25,6 +25,7 @@ import com.navercorp.fixturemonkey.api.introspector.JavaTimeArbitraryIntrospecto
 import com.navercorp.fixturemonkey.api.introspector.UuidIntrospector;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.option.GenerateOptions;
+import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.PropertyCache;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
@@ -57,30 +58,11 @@ class JacksonArbitraryIntrospectorTest {
 			)
 			.build();
 
-		ArbitraryPropertyGenerator rootGenerator = generateOptions.getArbitraryPropertyGenerator(rootProperty);
-		ArbitraryProperty rootArbitraryProperty = rootGenerator.generate(
-			new ArbitraryPropertyGeneratorContext(
-				rootProperty,
-				null,
-				null,
-				null,
-				generateOptions
-			)
-		);
+		ArbitraryProperty rootArbitraryProperty = getArbitraryProperty(rootProperty, generateOptions);
 
 		List<ArbitraryProperty> childrenProperties = PropertyCache.getProperties(typeReference.getAnnotatedType())
 			.stream()
-			.map(it -> generateOptions.getArbitraryPropertyGenerator(it)
-				.generate(
-					new ArbitraryPropertyGeneratorContext(
-						it,
-						null,
-						rootArbitraryProperty,
-						null,
-						generateOptions
-					)
-				)
-			)
+			.map(it -> getArbitraryProperty(it, generateOptions))
 			.collect(toList());
 
 		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
@@ -108,6 +90,22 @@ class JacksonArbitraryIntrospectorTest {
 		then(sample.getName()).isNotNull();
 		then(sample.getValue()).isNotNull();
 		then(sample.getSeason()).isNotNull();
+	}
+
+	private ArbitraryProperty getArbitraryProperty(Property property, GenerateOptions generateOptions) {
+		ObjectPropertyGenerator rootGenerator = generateOptions.getObjectPropertyGenerator(property);
+		return new ArbitraryProperty(
+			rootGenerator.generate(
+				new ObjectPropertyGeneratorContext(
+					property,
+					null,
+					null,
+					false,
+					generateOptions
+				)
+			),
+			null
+		);
 	}
 
 	static class JacksonSample {

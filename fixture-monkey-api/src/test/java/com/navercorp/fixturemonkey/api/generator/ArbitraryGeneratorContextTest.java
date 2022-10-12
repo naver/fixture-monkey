@@ -39,11 +39,13 @@ class ArbitraryGeneratorContextTest {
 		};
 		RootProperty rootProperty = new RootProperty(typeReference.getAnnotatedType());
 		ArbitraryProperty arbitraryProperty = new ArbitraryProperty(
-			rootProperty,
-			PropertyNameResolver.IDENTITY,
-			0.0D,
-			null,
-			Collections.emptyList(),
+			new ObjectProperty(
+				rootProperty,
+				PropertyNameResolver.IDENTITY,
+				0.0D,
+				null,
+				Collections.emptyList()
+			),
 			null
 		);
 		ArbitraryGeneratorContext sut = new ArbitraryGeneratorContext(

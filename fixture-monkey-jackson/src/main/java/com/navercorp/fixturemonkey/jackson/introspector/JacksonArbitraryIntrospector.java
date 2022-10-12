@@ -18,6 +18,10 @@
 
 package com.navercorp.fixturemonkey.jackson.introspector;
 
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAccessor;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +34,7 @@ import net.jqwik.api.Arbitrary;
 import net.jqwik.api.Builders;
 import net.jqwik.api.Builders.BuilderCombinator;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
@@ -42,13 +47,11 @@ import com.navercorp.fixturemonkey.jackson.FixtureMonkeyJackson;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class JacksonArbitraryIntrospector implements ArbitraryIntrospector {
-	public static final JacksonArbitraryIntrospector INSTANCE = new JacksonArbitraryIntrospector();
+	public static final JacksonArbitraryIntrospector INSTANCE = new JacksonArbitraryIntrospector(
+		FixtureMonkeyJackson.defaultObjectMapper()
+	);
 
 	private final ObjectMapper objectMapper;
-
-	public JacksonArbitraryIntrospector() {
-		this(FixtureMonkeyJackson.defaultObjectMapper());
-	}
 
 	public JacksonArbitraryIntrospector(ObjectMapper objectMapper) {
 		this.objectMapper = objectMapper;
@@ -62,14 +65,20 @@ public final class JacksonArbitraryIntrospector implements ArbitraryIntrospector
 
 		BuilderCombinator<Map<String, Object>> builderCombinator = Builders.withBuilder(HashMap::new);
 		for (ArbitraryProperty arbitraryProperty : childrenProperties) {
-			String resolvePropertyName = arbitraryProperty.getResolvePropertyName();
+			String resolvePropertyName = arbitraryProperty.getObjectProperty().getResolvedPropertyName();
 			Arbitrary<?> propertyArbitrary = childrenArbitraries.getOrDefault(
 				resolvePropertyName,
 				Arbitraries.just(null)
 			);
 			builderCombinator = builderCombinator.use(propertyArbitrary).in((map, value) -> {
 				if (value != null) {
-					map.put(resolvePropertyName, value);
+					Object jsonFormatted = arbitraryProperty.getObjectProperty()
+						.getProperty()
+						.getAnnotation(JsonFormat.class)
+						.map(it -> format(value, it))
+						.orElse(value);
+
+					map.put(resolvePropertyName, jsonFormatted);
 				}
 				return map;
 			});
@@ -84,5 +93,24 @@ public final class JacksonArbitraryIntrospector implements ArbitraryIntrospector
 				}
 			)
 		);
+	}
+
+	private Object format(Object object, JsonFormat jsonFormat) {
+		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(jsonFormat.pattern())
+			.withZone(ZoneId.systemDefault());
+
+		if (object instanceof TemporalAccessor) {
+			TemporalAccessor temporalAccessor = (TemporalAccessor)object;
+			return dateTimeFormatter.format(temporalAccessor);
+		} else if (object instanceof Date) {
+			TemporalAccessor dateTemporalAccessor = ((Date)object).toInstant()
+				.atZone(ZoneId.systemDefault())
+				.toLocalDate();
+			return dateTimeFormatter.format(dateTemporalAccessor);
+		} else if (object instanceof Enum && jsonFormat.shape().isNumeric()) {
+			return ((Enum<?>)object).ordinal();
+		} else {
+			return object;
+		}
 	}
 }

@@ -3,10 +3,10 @@ package com.navercorp.fixturemonkey.api.collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-final class LruCache<K, V> extends LinkedHashMap<K, V> {
+public final class LruCache<K, V> extends LinkedHashMap<K, V> {
 	private final int maxSize;
 
-	LruCache(int maxSize) {
+	public LruCache(int maxSize) {
 		super(maxSize + 1, 1, true);
 		this.maxSize = maxSize;
 	}

@@ -23,6 +23,7 @@ import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -39,6 +40,7 @@ import org.junit.platform.commons.util.ReflectionUtils.HierarchyTraversalMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.navercorp.fixturemonkey.api.collection.LruCache;
 import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
@@ -46,27 +48,13 @@ public final class PropertyCache {
 	private static final Logger LOGGER = LoggerFactory.getLogger(PropertyCache.class);
 
 	private static final Map<Class<?>, Map<String, PropertyDescriptor>> PROPERTY_DESCRIPTORS =
-		new ConcurrentHashMap<>();
-	private static final Map<Class<?>, Map<String, Field>> FIELDS = new ConcurrentHashMap<>();
+		new LruCache<>(2000);
+	private static final Map<Class<?>, Map<String, Field>> FIELDS = new LruCache<>(2000);
 
 	public static List<Property> getProperties(AnnotatedType annotatedType) {
 		Map<String, List<Property>> propertiesMap = new HashMap<>();
 
 		Class<?> actualType = Types.getActualType(annotatedType.getType());
-		Map<String, PropertyDescriptor> propertyDescriptorMap = getPropertyDescriptors(actualType);
-
-		for (Entry<String, PropertyDescriptor> entry : propertyDescriptorMap.entrySet()) {
-			List<Property> properties = propertiesMap.computeIfAbsent(
-				entry.getValue().getName(), name -> new ArrayList<>()
-			);
-			properties.add(
-				new PropertyDescriptorProperty(
-					Types.resolveWithTypeReferenceGenerics(annotatedType, entry.getValue()),
-					entry.getValue()
-				)
-			);
-		}
-
 		Map<String, Field> fieldMap = getFields(actualType);
 		for (Entry<String, Field> entry : fieldMap.entrySet()) {
 			List<Property> properties = propertiesMap.computeIfAbsent(
@@ -74,6 +62,19 @@ public final class PropertyCache {
 			);
 			properties.add(
 				new FieldProperty(
+					Types.resolveWithTypeReferenceGenerics(annotatedType, entry.getValue()),
+					entry.getValue()
+				)
+			);
+		}
+
+		Map<String, PropertyDescriptor> propertyDescriptorMap = getPropertyDescriptors(actualType);
+		for (Entry<String, PropertyDescriptor> entry : propertyDescriptorMap.entrySet()) {
+			List<Property> properties = propertiesMap.computeIfAbsent(
+				entry.getValue().getName(), name -> new ArrayList<>()
+			);
+			properties.add(
+				new PropertyDescriptorProperty(
 					Types.resolveWithTypeReferenceGenerics(annotatedType, entry.getValue()),
 					entry.getValue()
 				)
@@ -94,7 +95,7 @@ public final class PropertyCache {
 
 	public static Optional<Property> getProperty(AnnotatedType annotatedType, String name) {
 		return getProperties(annotatedType).stream()
-			.filter(it -> it.getName().equals(name))
+			.filter(it -> name.equals(it.getName()))
 			.findFirst();
 	}
 
@@ -102,7 +103,7 @@ public final class PropertyCache {
 		return FIELDS.computeIfAbsent(clazz, type -> {
 			Map<String, Field> result = new ConcurrentHashMap<>();
 			List<Field> fields = ReflectionUtils.findFields(
-				clazz, field -> true, HierarchyTraversalMode.TOP_DOWN);
+				clazz, field -> !Modifier.isStatic(field.getModifiers()), HierarchyTraversalMode.TOP_DOWN);
 			for (Field field : fields) {
 				field.setAccessible(true);
 				result.put(field.getName(), field);
@@ -128,5 +129,10 @@ public final class PropertyCache {
 			}
 			return result;
 		});
+	}
+
+	public static void clearCache() {
+		PROPERTY_DESCRIPTORS.clear();
+		FIELDS.clear();
 	}
 }

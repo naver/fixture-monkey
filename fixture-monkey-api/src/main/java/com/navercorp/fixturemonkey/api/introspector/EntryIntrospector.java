@@ -21,6 +21,7 @@ package com.navercorp.fixturemonkey.api.introspector;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Objects;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -30,6 +31,7 @@ import net.jqwik.api.Arbitrary;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
+import com.navercorp.fixturemonkey.api.generator.ContainerProperty;
 import com.navercorp.fixturemonkey.api.matcher.AssignableTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty.MapEntryElementType;
@@ -47,7 +49,13 @@ public final class EntryIntrospector implements ArbitraryIntrospector, Matcher {
 	@Override
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
 		ArbitraryProperty property = context.getArbitraryProperty();
-		ArbitraryContainerInfo containerInfo = property.getContainerInfo();
+		ContainerProperty containerProperty = property.getContainerProperty();
+		if (containerProperty == null) {
+			throw new IllegalArgumentException(
+				"container property should not null. type : " + property.getObjectProperty().getProperty().getName()
+			);
+		}
+		ArbitraryContainerInfo containerInfo = containerProperty.getContainerInfo();
 		List<Arbitrary<?>> childrenArbitraries = context.getChildrenArbitraryContexts().getArbitraries();
 
 		if (containerInfo == null) {
@@ -62,6 +70,7 @@ public final class EntryIntrospector implements ArbitraryIntrospector, Matcher {
 
 		Arbitrary<Entry<?, ?>> arbitrary = childrenArbitraries.get(0)
 			.map(it -> (MapEntryElementType)it)
+			.filter(Objects::nonNull)
 			.map(it -> new SimpleEntry<>(it.getKey(), it.getValue()));
 
 		return new ArbitraryIntrospectorResult(arbitrary);

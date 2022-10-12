@@ -53,19 +53,26 @@ public final class ChildArbitraryContext {
 	public void replaceArbitrary(Matcher matcher, Arbitrary<?> arbitrary) {
 		for (Entry<ArbitraryProperty, Arbitrary<?>> arbitraryByChildProperty : arbitrariesByChildProperty.entrySet()) {
 			ArbitraryProperty arbitraryProperty = arbitraryByChildProperty.getKey();
-			if (matcher.match(arbitraryProperty.getProperty())) {
+			ObjectProperty objectProperty = arbitraryProperty.getObjectProperty();
+			if (matcher.match(objectProperty.getProperty())) {
 				arbitrariesByChildProperty.put(arbitraryProperty, arbitrary);
 			}
 		}
 	}
 
 	public void removeArbitrary(Matcher matcher) {
-		arbitrariesByChildProperty.entrySet().removeIf(it -> matcher.match(it.getKey().getProperty()));
+		arbitrariesByChildProperty.entrySet()
+			.removeIf(it -> matcher.match(it.getKey().getObjectProperty().getProperty()));
 	}
 
 	public Map<String, Arbitrary<?>> getArbitrariesByResolvedName() {
 		return arbitrariesByChildProperty.entrySet().stream()
-			.collect(toMap(it -> it.getKey().getResolvePropertyName(), Entry::getValue));
+			.collect(toMap(it -> it.getKey().getObjectProperty().getResolvedPropertyName(), Entry::getValue));
+	}
+
+	public Map<String, Arbitrary<?>> getArbitrariesByPropertyName() {
+		return arbitrariesByChildProperty.entrySet().stream()
+			.collect(toMap(it -> it.getKey().getObjectProperty().getProperty().getName(), Entry::getValue));
 	}
 
 	public List<Arbitrary<?>> getArbitraries() {

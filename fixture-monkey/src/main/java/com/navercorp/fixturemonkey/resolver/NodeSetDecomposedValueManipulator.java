@@ -18,9 +18,11 @@
 
 package com.navercorp.fixturemonkey.resolver;
 
+import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.ALWAYS_NULL_INJECT;
 import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.NOT_NULL_INJECT;
 import static com.navercorp.fixturemonkey.api.type.Types.isAssignable;
 
+import java.util.Collections;
 import java.util.List;
 
 import javax.annotation.Nullable;
@@ -30,13 +32,16 @@ import org.apiguardian.api.API.Status;
 
 import net.jqwik.api.Arbitraries;
 
+import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
+import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
+import com.navercorp.fixturemonkey.api.generator.ContainerProperty;
+import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class NodeSetDecomposedValueManipulator<T> implements NodeManipulator {
 	private final ArbitraryTraverser traverser;
-
 	private final ManipulateOptions manipulateOptions;
 	@Nullable
 	private final T value;
@@ -57,6 +62,9 @@ public final class NodeSetDecomposedValueManipulator<T> implements NodeManipulat
 		if (value != null && !isAssignable(value.getClass(), actualType)) {
 			throw new IllegalArgumentException(
 				"The value is not of the same type as the property."
+					+ " node name: " + arbitraryNode.getArbitraryProperty()
+					.getObjectProperty()
+					.getResolvedPropertyName()
 					+ " node type: " + arbitraryNode.getProperty().getType().getTypeName()
 					+ " value type: " + value.getClass().getTypeName()
 			);
@@ -65,27 +73,57 @@ public final class NodeSetDecomposedValueManipulator<T> implements NodeManipulat
 	}
 
 	private void setValue(ArbitraryNode arbitraryNode, @Nullable Object value) {
+		ArbitraryProperty arbitraryProperty = arbitraryNode.getArbitraryProperty();
+		arbitraryNode.setManipulated(true);
+		arbitraryNode.setArbitraryProperty(arbitraryProperty.withNullInject(NOT_NULL_INJECT));
 		if (value == null) {
-			arbitraryNode.setArbitrary(Arbitraries.just(null));
+			arbitraryNode.setArbitraryProperty(arbitraryProperty.withNullInject(ALWAYS_NULL_INJECT));
 			return;
 		}
 
-		if (arbitraryNode.getArbitraryProperty().isContainer()) {
+		ContainerProperty containerProperty = arbitraryProperty.getContainerProperty();
+		if (containerProperty != null) {
 			DecomposableContainerValue decomposableContainerValue =
 				manipulateOptions.getDecomposedContainerValueFactory().from(value);
 			value = decomposableContainerValue.getContainer();
 			int decomposedContainerSize = decomposableContainerValue.getSize();
 
-			if (decomposedContainerSize != arbitraryNode.getChildren().size()) {
-				NodeSizeManipulator nodeSizeManipulator =
-					new NodeSizeManipulator(traverser, decomposedContainerSize, decomposedContainerSize);
-				nodeSizeManipulator.manipulate(arbitraryNode);
+			if (!containerProperty.getContainerInfo().isManipulated()) {
+				ContainerInfoManipulator containerInfoManipulator = new ContainerInfoManipulator(
+					IdentityNodeResolver.INSTANCE,
+					new ArbitraryContainerInfo(decomposedContainerSize, decomposedContainerSize, false)
+				);
+
+				ArbitraryNode newNode = traverser.traverse(
+					arbitraryNode.getProperty(),
+					Collections.singletonList(containerInfoManipulator)
+				);
+				arbitraryNode.setArbitraryProperty(
+					arbitraryNode.getArbitraryProperty()
+						.withContainerProperty(newNode.getArbitraryProperty().getContainerProperty())
+				);
+				arbitraryNode.setChildren(newNode.getChildren());
 			}
+
+			List<ArbitraryNode> children = arbitraryNode.getChildren();
+
+			if (arbitraryProperty.getObjectProperty().getProperty() instanceof MapEntryElementProperty) {
+				decomposedContainerSize *= 2; // key, value
+			}
+
+			int decomposedNodeSize = Math.min(decomposedContainerSize, children.size());
+
+			for (int i = 0; i < decomposedNodeSize; i++) {
+				ArbitraryNode child = children.get(i);
+				Property childProperty = child.getProperty();
+				setValue(child, childProperty.getValue(value));
+			}
+			return;
 		}
 
 		List<ArbitraryNode> children = arbitraryNode.getChildren();
-		arbitraryNode.setArbitraryProperty(arbitraryNode.getArbitraryProperty().withNullInject(NOT_NULL_INJECT));
-		if (children.isEmpty() && !arbitraryNode.getArbitraryProperty().isContainer()) {
+
+		if (children.isEmpty()) {
 			arbitraryNode.setArbitrary(Arbitraries.just(value));
 			return;
 		}
@@ -95,5 +133,4 @@ public final class NodeSetDecomposedValueManipulator<T> implements NodeManipulat
 			setValue(child, childProperty.getValue(value));
 		}
 	}
-
 }

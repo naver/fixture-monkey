@@ -31,7 +31,9 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 import javax.validation.ConstraintViolationException;
@@ -48,11 +50,12 @@ import com.navercorp.fixturemonkey.LabMonkey;
 import com.navercorp.fixturemonkey.api.customizer.FixtureCustomizer;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
-import com.navercorp.fixturemonkey.api.generator.ArbitraryPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.ChildArbitraryContext;
 import com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator;
-import com.navercorp.fixturemonkey.api.generator.ObjectArbitraryPropertyGenerator;
+import com.navercorp.fixturemonkey.api.generator.DefaultObjectPropertyGenerator;
+import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGenerator;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult;
+import com.navercorp.fixturemonkey.api.introspector.BuilderArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.JavaArbitraryResolver;
 import com.navercorp.fixturemonkey.api.introspector.JavaTimeArbitraryResolver;
 import com.navercorp.fixturemonkey.api.introspector.JavaTimeTypeArbitraryGenerator;
@@ -62,14 +65,19 @@ import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.resolver.DecomposableContainerValue;
-import com.navercorp.fixturemonkey.resolver.RootNodeResolver;
+import com.navercorp.fixturemonkey.resolver.IdentityNodeResolver;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.BuilderInteger;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.CustomBuildMethodInteger;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.CustomBuilderMethodInteger;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.Pair;
-import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.PairArbitraryPropertyGenerator;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.PairContainerPropertyGenerator;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.PairIntrospector;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.RegisterGroup;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.SimpleObjectChild;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.ComplexObject;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.ListStringObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.SimpleObject;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.TwoEnum;
 
 class FixtureMonkeyV04OptionsTest {
 	@Property
@@ -97,7 +105,7 @@ class FixtureMonkeyV04OptionsTest {
 	@Property
 	void alterMonkeyFactory() {
 		LabMonkey sut = LabMonkey.labMonkeyBuilder()
-			.monkeyExpressionFactory((expression) -> RootNodeResolver::new)
+			.monkeyExpressionFactory((expression) -> () -> IdentityNodeResolver.INSTANCE)
 			.build();
 		String expected = "expected";
 
@@ -111,8 +119,8 @@ class FixtureMonkeyV04OptionsTest {
 	@Property
 	void alterDefaultArbitraryPropertyGenerator() {
 		LabMonkey sut = LabMonkey.labMonkeyBuilder()
-			.defaultArbitraryPropertyGenerator(
-				(context) -> ObjectArbitraryPropertyGenerator.INSTANCE.generate(context)
+			.defaultObjectPropertyGenerator(
+				(context) -> DefaultObjectPropertyGenerator.INSTANCE.generate(context)
 					.withNullInject(1.0)
 			)
 			.build();
@@ -125,9 +133,9 @@ class FixtureMonkeyV04OptionsTest {
 	@Property
 	void pushAssignableTypeArbitraryPropertyGenerator() {
 		LabMonkey sut = LabMonkey.labMonkeyBuilder()
-			.pushAssignableTypeArbitraryPropertyGenerator(
+			.pushAssignableTypeObjectPropertyGenerator(
 				SimpleObject.class,
-				(context) -> ObjectArbitraryPropertyGenerator.INSTANCE.generate(context)
+				(context) -> DefaultObjectPropertyGenerator.INSTANCE.generate(context)
 					.withNullInject(1.0)
 			)
 			.build();
@@ -140,9 +148,9 @@ class FixtureMonkeyV04OptionsTest {
 	@Property
 	void pushExactTypeArbitraryPropertyGenerator() {
 		LabMonkey sut = LabMonkey.labMonkeyBuilder()
-			.pushExactTypeArbitraryPropertyGenerator(
+			.pushExactTypeObjectPropertyGenerator(
 				SimpleObjectChild.class,
-				(context) -> ObjectArbitraryPropertyGenerator.INSTANCE.generate(context)
+				(context) -> DefaultObjectPropertyGenerator.INSTANCE.generate(context)
 					.withNullInject(1.0)
 			)
 			.build();
@@ -155,9 +163,9 @@ class FixtureMonkeyV04OptionsTest {
 	@Property
 	void pushExactTypeArbitraryPropertyGeneratorNotAffectsAssignable() {
 		LabMonkey sut = LabMonkey.labMonkeyBuilder()
-			.pushExactTypeArbitraryPropertyGenerator(
+			.pushExactTypeObjectPropertyGenerator(
 				SimpleObject.class,
-				(context) -> ObjectArbitraryPropertyGenerator.INSTANCE.generate(context)
+				(context) -> DefaultObjectPropertyGenerator.INSTANCE.generate(context)
 					.withNullInject(1.0)
 			)
 			.build();
@@ -168,12 +176,12 @@ class FixtureMonkeyV04OptionsTest {
 	}
 
 	@Property
-	void pushArbitraryPropertyGenerator() {
-		ArbitraryPropertyGenerator arbitraryPropertyGenerator = (context) ->
-			ObjectArbitraryPropertyGenerator.INSTANCE.generate(context)
+	void pushObjectPropertyGenerator() {
+		ObjectPropertyGenerator arbitraryPropertyGenerator = (context) ->
+			DefaultObjectPropertyGenerator.INSTANCE.generate(context)
 				.withNullInject(1.0);
 		LabMonkey sut = LabMonkey.labMonkeyBuilder()
-			.pushArbitraryPropertyGenerator(
+			.pushObjectPropertyGenerator(
 				MatcherOperator.exactTypeMatchOperator(
 					SimpleObject.class,
 					arbitraryPropertyGenerator
@@ -191,7 +199,7 @@ class FixtureMonkeyV04OptionsTest {
 		LabMonkey sut = LabMonkey.labMonkeyBuilder()
 			.pushAssignableTypeNullInjectGenerator(
 				SimpleObject.class,
-				(context, containerInfo) -> 1.0d
+				(context) -> 1.0d
 			)
 			.build();
 
@@ -205,7 +213,7 @@ class FixtureMonkeyV04OptionsTest {
 		LabMonkey sut = LabMonkey.labMonkeyBuilder()
 			.pushExactTypeNullInjectGenerator(
 				SimpleObject.class,
-				(context, containerInfo) -> 1.0d
+				(context) -> 1.0d
 			)
 			.build();
 
@@ -218,7 +226,7 @@ class FixtureMonkeyV04OptionsTest {
 	void pushNullInjectGenerator() {
 		LabMonkey sut = LabMonkey.labMonkeyBuilder()
 			.pushNullInjectGenerator(
-				MatcherOperator.exactTypeMatchOperator(SimpleObject.class, (context, containerInfo) -> 1.0d)
+				MatcherOperator.exactTypeMatchOperator(SimpleObject.class, (context) -> 1.0d)
 			)
 			.build();
 
@@ -230,7 +238,7 @@ class FixtureMonkeyV04OptionsTest {
 	@Property
 	void defaultNullInjectGenerator() {
 		LabMonkey sut = LabMonkey.labMonkeyBuilder()
-			.defaultNullInjectGenerator((context, containerInfo) -> 1.0d)
+			.defaultNullInjectGenerator((context) -> 1.0d)
 			.build();
 
 		SimpleObject actual = sut.giveMeOne(SimpleObject.class);
@@ -357,7 +365,6 @@ class FixtureMonkeyV04OptionsTest {
 		then(complexObject).isNull();
 	}
 
-
 	@Property
 	void pushArbitraryContainerInfoGenerator() {
 		LabMonkey sut = LabMonkey.labMonkeyBuilder()
@@ -372,7 +379,7 @@ class FixtureMonkeyV04OptionsTest {
 						Class<?> type = Types.getActualType(elementType);
 						return type.isAssignableFrom(String.class);
 					},
-					(context) -> new ArbitraryContainerInfo(5, 5)
+					(context) -> new ArbitraryContainerInfo(5, 5, false)
 				)
 			)
 			.build();
@@ -397,7 +404,7 @@ class FixtureMonkeyV04OptionsTest {
 						Class<?> type = Types.getActualType(elementType);
 						return type.isAssignableFrom(String.class);
 					},
-					(context) -> new ArbitraryContainerInfo(5, 5)
+					(context) -> new ArbitraryContainerInfo(5, 5, false)
 				)
 			)
 			.build();
@@ -423,7 +430,7 @@ class FixtureMonkeyV04OptionsTest {
 	@Property
 	void defaultArbitraryContainerInfo() {
 		LabMonkey sut = LabMonkey.labMonkeyBuilder()
-			.defaultArbitraryContainerInfo(new ArbitraryContainerInfo(3, 3))
+			.defaultArbitraryContainerInfo(new ArbitraryContainerInfo(3, 3, false))
 			.build();
 
 		List<SimpleObject> actual = sut.giveMeOne(ComplexObject.class)
@@ -751,6 +758,7 @@ class FixtureMonkeyV04OptionsTest {
 		then(actual).isEqualTo(expected);
 	}
 
+	@SuppressWarnings("ConstantConditions")
 	@Property
 	void pushArbitraryCustomizerCustomizeFixtureModifyValue() {
 		LabMonkey sut = LabMonkey.labMonkeyBuilder()
@@ -813,7 +821,7 @@ class FixtureMonkeyV04OptionsTest {
 	@Property
 	void generateNewContainer() {
 		LabMonkey sut = LabMonkey.labMonkeyBuilder()
-			.pushAssignableTypeArbitraryPropertyGenerator(Pair.class, new PairArbitraryPropertyGenerator())
+			.pushAssignableTypeContainerPropertyGenerator(Pair.class, new PairContainerPropertyGenerator())
 			.pushContainerIntrospector(new PairIntrospector())
 			.build();
 
@@ -827,7 +835,7 @@ class FixtureMonkeyV04OptionsTest {
 	@Property
 	void decomposeNewContainer() {
 		LabMonkey sut = LabMonkey.labMonkeyBuilder()
-			.pushAssignableTypeArbitraryPropertyGenerator(Pair.class, new PairArbitraryPropertyGenerator())
+			.pushAssignableTypeContainerPropertyGenerator(Pair.class, new PairContainerPropertyGenerator())
 			.pushContainerIntrospector(new PairIntrospector())
 			.defaultDecomposedContainerValueFactory(
 				(obj) -> {
@@ -858,7 +866,7 @@ class FixtureMonkeyV04OptionsTest {
 		LabMonkey sut = LabMonkey.labMonkeyBuilder()
 			.addContainerType(
 				Pair.class,
-				new PairArbitraryPropertyGenerator(),
+				new PairContainerPropertyGenerator(),
 				new PairIntrospector(),
 				(obj) -> {
 					Pair<?, ?> pair = (Pair<?, ?>)obj;
@@ -881,9 +889,7 @@ class FixtureMonkeyV04OptionsTest {
 	@Property
 	void plugin() {
 		LabMonkey sut = LabMonkey.labMonkeyBuilder()
-			.plugin((optionsBuilder) -> {
-				optionsBuilder.insertFirstNullInjectGenerators(String.class, (context, containerInfo) -> 1.0d);
-			})
+			.plugin((optionsBuilder) -> optionsBuilder.insertFirstNullInjectGenerators(String.class, (context) -> 1.0d))
 			.build();
 
 		String actual = sut.giveMeBuilder(SimpleObject.class)
@@ -907,5 +913,140 @@ class FixtureMonkeyV04OptionsTest {
 			.getStr();
 
 		then(actual).isEqualTo(expected);
+	}
+
+	@Property
+	void generateWithBuilderArbitraryIntrospector() {
+		// given
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.pushExactTypeArbitraryIntrospector(BuilderInteger.class, BuilderArbitraryIntrospector.INSTANCE)
+			.build();
+
+		// when
+		BuilderInteger actual = sut.giveMeOne(BuilderInteger.class);
+
+		then(actual.getValue()).isBetween(Integer.MIN_VALUE, Integer.MAX_VALUE);
+	}
+
+	@Property
+	void generateWithBuilderArbitraryIntrospectorDefaultBuilderMethod() {
+		// given
+		BuilderArbitraryIntrospector builderArbitraryIntrospector = new BuilderArbitraryIntrospector();
+		builderArbitraryIntrospector.setDefaultBuilderMethodName("customBuilder");
+
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.pushExactTypeArbitraryIntrospector(CustomBuilderMethodInteger.class, builderArbitraryIntrospector)
+			.build();
+
+		// when
+		CustomBuilderMethodInteger actual = sut.giveMeOne(CustomBuilderMethodInteger.class);
+
+		then(actual.getValue()).isBetween(Integer.MIN_VALUE, Integer.MAX_VALUE);
+	}
+
+	@Property
+	void generateWithBuilderArbitraryIntrospectorDefaultBuildMethod() {
+		// given
+		BuilderArbitraryIntrospector builderArbitraryIntrospector = new BuilderArbitraryIntrospector();
+		builderArbitraryIntrospector.setDefaultBuildMethodName("customBuild");
+
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.pushExactTypeArbitraryIntrospector(CustomBuildMethodInteger.class, builderArbitraryIntrospector)
+			.build();
+
+		// when
+		CustomBuildMethodInteger actual = sut.giveMeOne(CustomBuildMethodInteger.class);
+
+		then(actual.getValue()).isBetween(Integer.MIN_VALUE, Integer.MAX_VALUE);
+	}
+
+	@Property
+	void registerRootAndChildElementGeneratingRoot() {
+		// given
+		String expected = "test";
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.register(ComplexObject.class, fixture -> fixture.giveMeBuilder(ComplexObject.class))
+			.register(String.class, fixture -> fixture.giveMeBuilder(String.class).set(expected))
+			.build();
+
+		// when
+		List<String> actual = sut.giveMeBuilder(ComplexObject.class)
+			.size("map", 1)
+			.sample()
+			.getList().stream()
+			.map(SimpleObject::getStr)
+			.collect(Collectors.toList());
+
+		then(actual).allMatch(expected::equals);
+	}
+
+	@Property
+	void registerSize() {
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.register(ComplexObject.class, fixture -> fixture.giveMeBuilder(ComplexObject.class).size("strList", 1))
+			.build();
+
+		List<String> actual = sut.giveMeOne(ComplexObject.class)
+			.getStrList();
+
+		then(actual).hasSize(1);
+	}
+
+	@Property
+	void sizeRegisteredElement() {
+		String expected = "test";
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.register(String.class, fixture -> fixture.giveMeBuilder(String.class).set(expected))
+			.build();
+
+		List<String> actual = sut.giveMeBuilder(ListStringObject.class)
+			.size("values", 5)
+			.sample()
+			.getValues();
+
+		then(actual).allMatch(expected::equals);
+	}
+
+	@Property
+	void sizeBiggerThanRegisterSized() {
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.register(ComplexObject.class, fixture -> fixture.giveMeBuilder(ComplexObject.class).size("strList", 3))
+			.build();
+
+		List<String> actual = sut.giveMeBuilder(ComplexObject.class)
+			.size("strList", 10)
+			.sample()
+			.getStrList();
+
+		then(actual).hasSize(10);
+	}
+
+	@Property
+	void uniqueProperty() {
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.pushExactTypeUniqueProperty(TwoEnum.class)
+			.build();
+
+		List<TwoEnum> twoEnums = sut.giveMeBuilder(new TypeReference<List<TwoEnum>>() {
+			})
+			.size("$", 2)
+			.sample();
+
+		then(twoEnums).hasSize(2);
+	}
+
+	@Property
+	void registerObjectNotFixed() {
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.register(String.class, it -> it.giveMeBuilder(String.class).set("$", Arbitraries.strings().alpha()))
+			.build();
+
+		List<String> sampled = sut.giveMeBuilder(new TypeReference<List<String>>() {
+			})
+			.minSize("$", 3)
+			.sample();
+
+		Set<String> actual = new HashSet<>(sampled);
+		then(actual).hasSizeGreaterThan(1);
 	}
 }

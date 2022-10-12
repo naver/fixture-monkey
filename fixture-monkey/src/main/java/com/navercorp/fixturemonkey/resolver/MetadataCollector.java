@@ -41,12 +41,14 @@ final class MetadataCollector {
 	}
 
 	public ArbitraryTreeMetadata collect() {
-		collect(rootNode);
+		for (ArbitraryNode child : rootNode.getChildren()) {
+			collect(child);
+		}
 		return new ArbitraryTreeMetadata(Collections.unmodifiableMap(nodesByProperty));
 	}
 
 	private void collect(ArbitraryNode node) {
-		Property property = node.getArbitraryProperty().getProperty();
+		Property property = node.getArbitraryProperty().getObjectProperty().getProperty();
 
 		List<ArbitraryNode> list = Collections.singletonList(node);
 		nodesByProperty.merge(

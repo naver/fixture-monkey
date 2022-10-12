@@ -21,11 +21,11 @@ package com.navercorp.fixturemonkey.autoparams.customization;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
-import org.javaunit.autoparams.customization.Customizer;
-import org.javaunit.autoparams.generator.ObjectContainer;
-import org.javaunit.autoparams.generator.ObjectGenerator;
-
 import net.jqwik.api.Arbitrary;
+
+import autoparams.customization.Customizer;
+import autoparams.generator.ObjectContainer;
+import autoparams.generator.ObjectGenerator;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
 

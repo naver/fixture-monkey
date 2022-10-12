@@ -18,7 +18,11 @@
 
 package com.navercorp.fixturemonkey.javax.validation.generator;
 
+import java.lang.annotation.Annotation;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
@@ -28,12 +32,21 @@ import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfoGenerator;
-import com.navercorp.fixturemonkey.api.generator.ArbitraryPropertyGeneratorContext;
+import com.navercorp.fixturemonkey.api.generator.ContainerPropertyGeneratorContext;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class JavaxValidationArbitraryContainerInfoGenerator implements ArbitraryContainerInfoGenerator {
+	public static final Set<Class<? extends Annotation>> JAVAX_VALIDATION_CONTAINER_ANNOTATIONS;
+
+	static {
+		Set<Class<? extends Annotation>> set = new HashSet<>();
+		set.add(Size.class);
+		set.add(NotEmpty.class);
+		JAVAX_VALIDATION_CONTAINER_ANNOTATIONS = Collections.unmodifiableSet(set);
+	}
+
 	@Override
-	public ArbitraryContainerInfo generate(ArbitraryPropertyGeneratorContext context) {
+	public ArbitraryContainerInfo generate(ContainerPropertyGeneratorContext context) {
 		Integer min = null;
 		Integer max = null;
 		Optional<Size> sizeAnnotation = context.getProperty().getAnnotation(Size.class);
@@ -67,6 +80,6 @@ public final class JavaxValidationArbitraryContainerInfoGenerator implements Arb
 			max = min + defaultArbitraryContainerSize;
 		}
 
-		return new ArbitraryContainerInfo(min, max);
+		return new ArbitraryContainerInfo(min, max, false);
 	}
 }

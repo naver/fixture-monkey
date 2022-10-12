@@ -29,78 +29,92 @@ import java.util.stream.Collectors;
 import net.jqwik.api.Property;
 
 import com.navercorp.fixturemonkey.LabMonkey;
-import com.navercorp.fixturemonkey.test.InnerSpecTestSpecs.ListObject;
+import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
+import com.navercorp.fixturemonkey.test.InnerSpecTestSpecs.ComplexObjectObject;
 import com.navercorp.fixturemonkey.test.InnerSpecTestSpecs.MapObject;
-import com.navercorp.fixturemonkey.test.InnerSpecTestSpecs.ObjectObject;
+import com.navercorp.fixturemonkey.test.InnerSpecTestSpecs.NestedKeyMapObject;
+import com.navercorp.fixturemonkey.test.InnerSpecTestSpecs.NestedListStringObject;
 import com.navercorp.fixturemonkey.test.InnerSpecTestSpecs.SimpleObject;
 
 class InnerSpecTest {
 	private static final LabMonkey SUT = LabMonkey.labMonkey();
 
 	@Property
-	void mapAddKey() {
+	void key() {
+		// when
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
-			.setInner("strMap", m -> {
-				m.key("key");
-			})
+			.setInner("strMap", m -> m.minSize(1).key("key"))
 			.sample();
 
 		then(actual.getStrMap().containsKey("key")).isTrue();
 	}
 
 	@Property
-	void mapAddValue() {
-		MapObject actual = SUT.giveMeBuilder(MapObject.class)
-			.setInner("strMap", m -> {
-				m.value("value");
-			})
-			.sample();
+	void value() {
+		// when
+		Map<String, String> actual = SUT.giveMeBuilder(MapObject.class)
+			.setInner("strMap", m -> m.minSize(1).value("value"))
+			.sample()
+			.getStrMap();
 
-		then(actual.getStrMap().containsValue("value")).isTrue();
+		then(actual.values()).contains("value");
 	}
 
 	@Property
-	void mapPut() {
+	void entry() {
+		// when
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
-			.setInner("strMap", m -> {
-				m.entry("key", "value");
-			})
+			.setInner("strMap", m -> m.minSize(1).entry("key", "value"))
 			.sample();
 
 		then(actual.getStrMap().get("key")).isEqualTo("value");
 	}
 
 	@Property
-	void mapAddNullValue() {
+	void entryTwice() {
+		// when
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
-			.setInner("strMap", m -> {
-				m.value(null);
-			})
+			.setInner(
+				"strMap",
+				m -> m.minSize(2)
+					.entry("key1", "value1")
+					.entry("key2", "value2")
+			)
+			.sample();
+
+		then(actual.getStrMap().get("key1")).isEqualTo("value1");
+		then(actual.getStrMap().get("key2")).isEqualTo("value2");
+	}
+
+	@Property
+	void valueNull() {
+		// when
+		MapObject actual = SUT.giveMeBuilder(MapObject.class)
+			.setInner("strMap", m -> m.minSize(1).value(null))
 			.sample();
 
 		then(actual.getStrMap().containsValue(null)).isTrue();
 	}
 
+	@SuppressWarnings("ConstantConditions")
 	@Property
-	void mapAddNullKeyThrows() {
+	void keyNullThrows() {
 		thenThrownBy(() ->
 			SUT.giveMeBuilder(MapObject.class)
-				.setInner("strMap", m -> {
-					m.key(null);
-				})
+				.setInner("strMap", m -> m.minSize(1).key(null))
 				.sample()
 		).isExactlyInstanceOf(IllegalArgumentException.class)
 			.hasMessageContaining("Map key cannot be null.");
 	}
 
 	@Property
-	void mapAddKeyAddKey() {
-		MapObject actual = SUT.giveMeBuilder(MapObject.class)
-			.setInner("mapKeyMap", m -> {
-				m.key(k -> {
-					k.key("key");
-				});
-			})
+	void keyInKey() {
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.defaultArbitraryContainerInfo(new ArbitraryContainerInfo(1, 3, false))
+			.build();
+
+		NestedKeyMapObject actual = sut.giveMeBuilder(NestedKeyMapObject.class)
+			.setInner("mapKeyMap", m -> m.key(k -> k.key("key")))
 			.sample();
 
 		List<String> keyList = actual.getMapKeyMap().keySet().stream()
@@ -109,13 +123,13 @@ class InnerSpecTest {
 	}
 
 	@Property
-	void mapAddKeyAddValue() {
-		MapObject actual = SUT.giveMeBuilder(MapObject.class)
-			.setInner("mapKeyMap", m -> {
-				m.key(k -> {
-					k.value("value");
-				});
-			})
+	void valueInKey() {
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.defaultArbitraryContainerInfo(new ArbitraryContainerInfo(1, 3, false))
+			.build();
+
+		NestedKeyMapObject actual = sut.giveMeBuilder(NestedKeyMapObject.class)
+			.setInner("mapKeyMap", m -> m.key(k -> k.value("value")))
 			.sample();
 
 		List<String> keyList = actual.getMapKeyMap().keySet().stream()
@@ -124,13 +138,10 @@ class InnerSpecTest {
 	}
 
 	@Property
-	void mapAddValueAddKey() {
+	void keyInValue() {
+		// when
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
-			.setInner("mapValueMap", m -> {
-				m.value(v -> {
-					v.key("key");
-				});
-			})
+			.setInner("mapValueMap", m -> m.minSize(1).value(v -> v.minSize(1).key("key")))
 			.sample();
 
 		List<String> valueList = actual.getMapValueMap().values().stream()
@@ -139,13 +150,10 @@ class InnerSpecTest {
 	}
 
 	@Property
-	void mapAddValueAddValue() {
+	void valueInValue() {
+		// when
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
-			.setInner("mapValueMap", m -> {
-				m.value(v -> {
-					v.value("value");
-				});
-			})
+			.setInner("mapValueMap", m -> m.minSize(1).value(v -> v.minSize(1).value("value")))
 			.sample();
 
 		List<String> valueList = actual.getMapValueMap().values().stream()
@@ -154,13 +162,10 @@ class InnerSpecTest {
 	}
 
 	@Property
-	void mapSetValueSize() {
+	void sizeInValue() {
+		// when
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
-			.setInner("listValueMap", m -> {
-				m.value(v -> {
-					v.size(10);
-				});
-			})
+			.setInner("listValueMap", m -> m.value(v -> v.size(10)))
 			.sample();
 
 		List<Integer> sizeList = actual.getListValueMap().values().stream()
@@ -169,14 +174,15 @@ class InnerSpecTest {
 	}
 
 	@Property
-	void mapSetValueListElement() {
+	void listElementInValue() {
+		// when
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
-			.setInner("listValueMap", m -> {
+			.setInner("listValueMap", m ->
 				m.value(v -> {
 					v.size(1);
 					v.listElement(0, "test");
-				});
-			})
+				})
+			)
 			.sample();
 
 		List<String> elementList = actual.getListValueMap().values().stream()
@@ -185,13 +191,12 @@ class InnerSpecTest {
 	}
 
 	@Property
-	void mapSetValueProperty() {
+	void propertyInValue() {
+		// when
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
-			.setInner("objectValueMap", m -> {
-				m.value(v -> {
-					v.property("str", "test");
-				});
-			})
+			.setInner("objectValueMap", m ->
+				m.value(v -> v.property("str", "test"))
+			)
 			.sample();
 
 		List<String> fieldList = actual.getObjectValueMap().values().stream().filter(Objects::nonNull)
@@ -200,54 +205,64 @@ class InnerSpecTest {
 	}
 
 	@Property
-	void mapSetEntryKeyAddEntry() {
+	void entryInEntryValue() {
+		// when
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
-			.setInner("mapValueMap", m -> {
-				m.entry("key1", v -> {
-					v.entry("key2", "value");
-				});
-			})
+			.setInner(
+				"mapValueMap",
+				m -> m.minSize(1).entry("key1", v -> v.minSize(1).entry("key2", "value"))
+			)
 			.sample();
 
 		Map<String, String> value = actual.getMapValueMap().get("key1");
 		then(value.get("key2")).isEqualTo("value");
 	}
 
+	@SuppressWarnings("OptionalGetWithoutIsPresent")
 	@Property
-	void mapSetEntryValueAddEntry() {
-		MapObject actual = SUT.giveMeBuilder(MapObject.class)
-			.setInner("mapKeyMap", m -> {
-				m.entry(k -> {
-					k.entry("key", "value2");
-				}, "value1");
-			})
+	void entryInEntryKey() {
+		// given
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.defaultArbitraryContainerInfo(new ArbitraryContainerInfo(1, 3, false))
+			.build();
+
+		// when
+		NestedKeyMapObject actual = sut.giveMeBuilder(NestedKeyMapObject.class)
+			.setInner("mapKeyMap", m ->
+				m.entry(
+					k -> k.entry("key", "value2"),
+					"value1"
+				)
+			)
 			.sample();
 
+		// then
 		Map<String, String> expected = actual.getMapKeyMap().entrySet()
 			.stream()
 			.filter(it -> "value1".equals(it.getValue()))
 			.findAny()
 			.get()
 			.getKey();
-
 		then(expected.get("key")).isEqualTo("value2");
 	}
 
 	@Property
-	void mapSetEntryValueNull() {
+	void entryValueSetNull() {
+		// when
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
-			.setInner("strMap", m -> {
-				m.entry("key", null);
-			})
+			.setInner("strMap", m ->
+				m.entry("key", null)
+			)
 			.sample();
 
 		then(actual.getStrMap().get("key")).isNull();
 	}
 
 	@Property
-	void listSetListElementSetListElement() {
-		ListObject actual = SUT.giveMeBuilder(ListObject.class)
-			.setInner("listListStr", m -> {
+	void listElementInListElement() {
+		// when
+		NestedListStringObject actual = SUT.giveMeBuilder(NestedListStringObject.class)
+			.setInner("values", m -> {
 				m.size(1);
 				m.listElement(0, l -> {
 					l.size(1);
@@ -256,19 +271,72 @@ class InnerSpecTest {
 			})
 			.sample();
 
-		then(actual.getListListStr().get(0).get(0)).isEqualTo("test");
+		then(actual.getValues().get(0).get(0)).isEqualTo("test");
 	}
 
 	@Property
-	void objectSetPropertySetProperty() {
-		ObjectObject actual = SUT.giveMeBuilder(ObjectObject.class)
-			.setInner("complexObject", m -> {
-				m.property("simpleObject", o -> {
-					o.property("str", "test");
-				});
-			})
+	void propertyInProperty() {
+		// when
+		ComplexObjectObject actual = SUT.giveMeBuilder(ComplexObjectObject.class)
+			.setInner("value", m ->
+				m.property("value", o -> o.property("str", "test"))
+			)
 			.sample();
 
-		then(actual.getComplexObject().getSimpleObject().getStr()).isEqualTo("test");
+		then(actual.getValue().getValue().getStr()).isEqualTo("test");
+	}
+
+	@Property
+	void sizeAndEntry() {
+		// when
+		Map<String, String> actual = SUT.giveMeBuilder(MapObject.class)
+			.setInner(
+				"strMap",
+				m -> {
+					m.size(4);
+					m.entry("key", "test");
+				}
+			)
+			.sample()
+			.getStrMap();
+
+		then(actual).hasSize(4);
+		then(actual.get("key")).isEqualTo("test");
+	}
+
+	@Property
+	void entryAndSize() {
+		// when
+		Map<String, String> actual = SUT.giveMeBuilder(MapObject.class)
+			.setInner(
+				"strMap",
+				m -> {
+					m.entry("key", "test");
+					m.size(4);
+				}
+			)
+			.sample()
+			.getStrMap();
+
+		then(actual).hasSize(4);
+		then(actual.get("key")).isEqualTo("test");
+	}
+
+	@Property
+	void sizeTwiceReturnsLatterSize() {
+		// when
+		Map<String, String> actual = SUT.giveMeBuilder(MapObject.class)
+			.setInner(
+				"strMap",
+				m -> {
+					m.size(1);
+					m.entry("key", "test");
+					m.size(0);
+				}
+			)
+			.sample()
+			.getStrMap();
+
+		then(actual).hasSize(0);
 	}
 }

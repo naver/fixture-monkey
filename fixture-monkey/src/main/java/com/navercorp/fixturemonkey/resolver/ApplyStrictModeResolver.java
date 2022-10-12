@@ -32,12 +32,17 @@ public final class ApplyStrictModeResolver implements NodeResolver {
 	}
 
 	@Override
-	public List<ArbitraryNode> resolve(ArbitraryTree arbitraryTree) {
-		List<ArbitraryNode> selectedNodes = nodeResolver.resolve(arbitraryTree);
+	public List<ArbitraryNode> resolve(ArbitraryNode arbitraryNode) {
+		List<ArbitraryNode> selectedNodes = nodeResolver.resolve(arbitraryNode);
 
 		if (selectedNodes.isEmpty()) {
 			throw new IllegalArgumentException("No matching results for given NodeResolvers.");
 		}
 		return selectedNodes;
+	}
+
+	@Override
+	public List<NextNodePredicate> toNextNodePredicate() {
+		return nodeResolver.toNextNodePredicate();
 	}
 }

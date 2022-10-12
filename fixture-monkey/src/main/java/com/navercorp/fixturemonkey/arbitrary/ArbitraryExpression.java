@@ -29,17 +29,18 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import javax.annotation.Nullable;
-
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
+import com.navercorp.fixturemonkey.api.generator.ObjectProperty;
 import com.navercorp.fixturemonkey.expression.MonkeyExpression;
-import com.navercorp.fixturemonkey.resolver.ContainerElementNodeResolver;
+import com.navercorp.fixturemonkey.resolver.CompositeNodeResolver;
+import com.navercorp.fixturemonkey.resolver.ContainerElementPredicate;
+import com.navercorp.fixturemonkey.resolver.DefaultNodeResolver;
+import com.navercorp.fixturemonkey.resolver.IdentityNodeResolver;
 import com.navercorp.fixturemonkey.resolver.NodeResolver;
-import com.navercorp.fixturemonkey.resolver.PropertyNameNodeResolver;
-import com.navercorp.fixturemonkey.resolver.RootNodeResolver;
+import com.navercorp.fixturemonkey.resolver.PropertyNameNodePredicate;
 
 public final class ArbitraryExpression implements MonkeyExpression, Comparable<ArbitraryExpression> {
 	private final List<Exp> expList;
@@ -133,8 +134,13 @@ public final class ArbitraryExpression implements MonkeyExpression, Comparable<A
 
 	public NodeResolver toNodeResolver() {
 		NodeResolver nodeResolver = null;
+
 		for (Exp exp : expList) {
-			nodeResolver = exp.toNodeResolver(nodeResolver);
+			if (nodeResolver == null) {
+				nodeResolver = exp.toNodeResolver();
+			} else {
+				nodeResolver = new CompositeNodeResolver(nodeResolver, exp.toNodeResolver());
+			}
 		}
 		return nodeResolver;
 	}
@@ -242,20 +248,20 @@ public final class ArbitraryExpression implements MonkeyExpression, Comparable<A
 			return steps;
 		}
 
-		public NodeResolver toNodeResolver(@Nullable NodeResolver prevNodeResolver) {
+		public NodeResolver toNodeResolver() {
 			NodeResolver nodeResolver;
 
 			if (HEAD_NAME.equals(name)) {
-				nodeResolver = new RootNodeResolver();
+				nodeResolver = IdentityNodeResolver.INSTANCE;
 			} else {
-				nodeResolver = new PropertyNameNodeResolver(
-					prevNodeResolver == null ? new RootNodeResolver() : prevNodeResolver,
-					name
-				);
+				nodeResolver = new DefaultNodeResolver(new PropertyNameNodePredicate(name));
 			}
 
 			for (ExpIndex index : indices) {
-				nodeResolver = new ContainerElementNodeResolver(nodeResolver, index.getIndex());
+				nodeResolver = new CompositeNodeResolver(
+					nodeResolver,
+					new DefaultNodeResolver(new ContainerElementPredicate(index.getIndex()))
+				);
 			}
 			return nodeResolver;
 		}
@@ -326,7 +332,8 @@ public final class ArbitraryExpression implements MonkeyExpression, Comparable<A
 		}
 
 		public boolean match(ArbitraryProperty arbitraryProperty) {
-			String resolvePropertyName = arbitraryProperty.getResolvePropertyName();
+			ObjectProperty objectProperty = arbitraryProperty.getObjectProperty();
+			String resolvePropertyName = objectProperty.getResolvedPropertyName();
 			boolean samePropertyName;
 			if (resolvePropertyName == null) {
 				samePropertyName = true; // ignore property name equivalence.
@@ -335,8 +342,8 @@ public final class ArbitraryExpression implements MonkeyExpression, Comparable<A
 			}
 
 			boolean sameIndex = true;
-			if (arbitraryProperty.getElementIndex() != null) {
-				sameIndex = indexEquals(arbitraryProperty.getElementIndex()); // notNull
+			if (objectProperty.getElementIndex() != null) {
+				sameIndex = indexEquals(objectProperty.getElementIndex()); // notNull
 			}
 			return samePropertyName && sameIndex;
 		}

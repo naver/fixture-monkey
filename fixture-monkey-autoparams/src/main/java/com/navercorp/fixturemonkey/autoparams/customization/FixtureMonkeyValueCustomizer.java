@@ -23,10 +23,10 @@ import java.lang.reflect.Type;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import org.javaunit.autoparams.Builder;
-import org.javaunit.autoparams.customization.Customizer;
-import org.javaunit.autoparams.generator.ObjectContainer;
-import org.javaunit.autoparams.generator.ObjectGenerator;
+import autoparams.Builder;
+import autoparams.customization.Customizer;
+import autoparams.generator.ObjectContainer;
+import autoparams.generator.ObjectGenerator;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
 

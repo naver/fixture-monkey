@@ -19,6 +19,7 @@
 package com.navercorp.fixturemonkey.resolver;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -42,32 +43,43 @@ import com.navercorp.fixturemonkey.api.property.RootProperty;
 public final class ArbitraryResolver {
 	private final ArbitraryTraverser traverser;
 	private final ManipulatorOptimizer manipulatorOptimizer;
+
 	private final GenerateOptions generateOptions;
 	private final ManipulateOptions manipulateOptions;
+	private final MonkeyContext monkeyContext;
 
 	public ArbitraryResolver(
 		ArbitraryTraverser traverser,
 		ManipulatorOptimizer manipulatorOptimizer,
 		GenerateOptions generateOptions,
-		ManipulateOptions manipulateOptions
+		ManipulateOptions manipulateOptions,
+		MonkeyContext monkeyContext
 	) {
 		this.traverser = traverser;
 		this.manipulatorOptimizer = manipulatorOptimizer;
 		this.generateOptions = generateOptions;
 		this.manipulateOptions = manipulateOptions;
+		this.monkeyContext = monkeyContext;
 	}
 
 	@SuppressWarnings("rawtypes")
 	public Arbitrary<?> resolve(
 		RootProperty rootProperty,
 		List<ArbitraryManipulator> manipulators,
-		List<MatcherOperator<? extends FixtureCustomizer>> customizers
+		List<MatcherOperator<? extends FixtureCustomizer>> customizers,
+		List<ContainerInfoManipulator> containerInfoManipulators
 	) {
 		ArbitraryTree arbitraryTree = new ArbitraryTree(
-			this.traverser.traverse(rootProperty, null),
+			this.traverser.traverse(rootProperty, containerInfoManipulators),
 			generateOptions,
-			customizers
+			monkeyContext,
+			customizers,
+			generateOptions.getUniqueProperties()
 		);
+
+		containerInfoManipulators.stream()
+			.flatMap(it -> it.getNodeResolver().resolve(arbitraryTree.findRoot()).stream())
+			.forEach(it -> it.setManipulated(true));
 
 		List<ArbitraryManipulator> registeredManipulators = getRegisteredToManipulators(
 			manipulateOptions,
@@ -112,15 +124,33 @@ public final class ArbitraryResolver {
 				continue;
 			}
 
+			LazyArbitrary<?> lazyArbitrary = LazyArbitrary.lazy(registeredArbitraryBuilder::sample);
+
 			NodeManipulator nodeManipulator = new NodeSetLazyManipulator<>(
 				traverser,
 				manipulateOptions,
-				LazyArbitrary.lazy(registeredArbitraryBuilder::sample)
+				lazyArbitrary
 			);
 			manipulators.add(
 				new ArbitraryManipulator(
-					(tree) -> arbitraryNodes,
-					nodeManipulator
+					new NodeResolver() {
+						@Override
+						public List<ArbitraryNode> resolve(ArbitraryNode arbitraryNode) {
+							for (ArbitraryNode node : arbitraryNodes) {
+								node.setManipulated(true);
+							}
+							return arbitraryNodes;
+						}
+
+						@Override
+						public List<NextNodePredicate> toNextNodePredicate() {
+							return Collections.emptyList(); // Do not need node predicate since it is SetLazyManipulator
+						}
+					},
+					arbitraryNode -> {
+						nodeManipulator.manipulate(arbitraryNode);
+						lazyArbitrary.clear();
+					}
 				)
 			);
 		}

@@ -6,20 +6,21 @@ import net.jqwik.api.Property;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import lombok.Data;
+import lombok.Value;
 
 import com.navercorp.fixturemonkey.LabMonkey;
 import com.navercorp.fixturemonkey.api.expression.ExpressionGenerator;
 import com.navercorp.fixturemonkey.api.property.PropertyCache;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
-import com.navercorp.fixturemonkey.jackson.property.JacksonPropertyNameResolver;
+import com.navercorp.fixturemonkey.jackson.plugin.JacksonPlugin;
 
 public class FixtureMonkeyV04ExpressionGeneratorTest {
+	@SuppressWarnings("OptionalGetWithoutIsPresent")
 	@Property
-	void giveMeJsonPropertySetWithExpressionGenerator() {
+	void setJsonPropertyWithExpressionGenerator() {
 		// given
 		LabMonkey sut = LabMonkey.labMonkeyBuilder()
-			.defaultPropertyNameResolver(new JacksonPropertyNameResolver())
+			.plugin(new JacksonPlugin())
 			.build();
 		TypeReference<JsonPropertyClass> typeReference = new TypeReference<JsonPropertyClass>() {
 		};
@@ -37,9 +38,9 @@ public class FixtureMonkeyV04ExpressionGeneratorTest {
 		then(actual.value).isEqualTo("set");
 	}
 
-	@Data
+	@Value
 	public static class JsonPropertyClass {
 		@JsonProperty("jsonValue")
-		private String value;
+		String value;
 	}
 }

@@ -28,19 +28,13 @@ import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.OptionalInt;
 import java.util.OptionalLong;
-import java.util.Set;
 import java.util.stream.Stream;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-
+import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
 
 class FixtureMonkeyV04TestSpecs {
-	@Setter
-	@Getter
+	@Data
 	@EqualsAndHashCode(exclude = {"strIterator", "strStream"})
 	public static class ComplexObject {
 		private String str;
@@ -49,7 +43,6 @@ class FixtureMonkeyV04TestSpecs {
 		private Long wrapperLong;
 		private List<String> strList;
 		private String[] strArray;
-		private Set<String> strSet;
 		private SimpleEnum enumValue;
 		private LocalDateTime localDateTime;
 		private SimpleObject object;
@@ -66,9 +59,7 @@ class FixtureMonkeyV04TestSpecs {
 	}
 
 	@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-	@Getter
-	@Setter
-	@EqualsAndHashCode
+	@Data
 	public static class SimpleObject {
 		private String str;
 		private int integer;
@@ -80,19 +71,29 @@ class FixtureMonkeyV04TestSpecs {
 		private Instant instant;
 	}
 
-	@Getter
-	@Setter
-	@EqualsAndHashCode
+	@Data
 	public static class StringPair {
 		private String value1;
 		private String value2;
 	}
 
-	@Getter
-	@Setter
-	@EqualsAndHashCode
-	public static class ListWithAnnotation {
-		@NotEmpty
-		private List<@NotBlank String> values;
+	@Data
+	public static class ListStringObject {
+		private List<String> values;
+	}
+
+	@Data
+	public static class StaticFieldObject {
+		public static final StaticFieldObject CONSTANT = new StaticFieldObject();
+	}
+
+	public enum TwoEnum {
+		ONE, TWO
+	}
+
+	public enum EnumObject {
+		ONE,
+		TWO,
+		THREE
 	}
 }

@@ -5,6 +5,7 @@ plugins {
     id "com.github.spotbugs" version "4.7.6"
     id "jacoco"
     id "checkstyle"
+    id "me.champeau.jmh" version "0.6.6"
 }
 
 dependencies {
@@ -18,11 +19,18 @@ dependencies {
     testRuntimeOnly(project(":fixture-monkey-engine"))
     testImplementation("org.junit.jupiter:junit-jupiter-engine:${JUNIT_JUPITER_VERSION}")
     testImplementation("org.junit.platform:junit-platform-engine:${JUNIT_ENGINE_VERSION}")
-    testImplementation("org.assertj:assertj-core:3.18.1")
-    testImplementation("org.projectlombok:lombok:1.18.20")
+    testImplementation("org.assertj:assertj-core:3.22.0")
+    testImplementation("org.projectlombok:lombok:1.18.24")
     testImplementation("org.hibernate.validator:hibernate-validator:6.2.0.Final")
     testImplementation('org.glassfish:jakarta.el:3.0.4')
-    testAnnotationProcessor("org.projectlombok:lombok:1.18.20")
+    testAnnotationProcessor("org.projectlombok:lombok:1.18.24")
+
+    jmhImplementation("org.openjdk.jmh:jmh-core:1.35")
+    jmhImplementation("org.openjdk.jmh:jmh-generator-annprocess:1.35")
+    jmhImplementation("org.projectlombok:lombok:1.18.24")
+    jmhImplementation(project(":fixture-monkey-javax-validation"))
+    jmhImplementation(project(":fixture-monkey-jackson"))
+    jmhAnnotationProcessor("org.projectlombok:lombok:1.18.24")
 }
 
 editorconfig {
@@ -118,4 +126,10 @@ jar {
                 "Implementation-Vendor": "com.navercorp"
         )
     }
+}
+
+jmh {
+    fork = 1
+    warmupIterations = 3
+    iterations = 10
 }
