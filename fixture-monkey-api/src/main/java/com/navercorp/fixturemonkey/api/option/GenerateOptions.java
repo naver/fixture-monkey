@@ -294,10 +294,6 @@ public final class GenerateOptions {
 				SingleValueObjectPropertyGenerator.INSTANCE
 			),
 			new MatcherOperator<>(Matchers.ENUM_TYPE_MATCHER, SingleValueObjectPropertyGenerator.INSTANCE),
-			new MatcherOperator<>(
-				property -> Modifier.isAbstract(Types.getActualType(property.getType()).getModifiers()),
-				NullObjectPropertyGenerator.INSTANCE
-			),
 			MatcherOperator.exactTypeMatchOperator(
 				UnidentifiableType.class,
 				NullObjectPropertyGenerator.INSTANCE

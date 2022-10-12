@@ -361,6 +361,13 @@ public final class GenerateOptionsBuilder {
 		return this;
 	}
 
+	public GenerateOptionsBuilder fallbackIntrospector(
+		UnaryOperator<ArbitraryIntrospector> fallbackIntrospector
+	) {
+		this.javaDefaultArbitraryGeneratorBuilder.fallbackIntrospector(fallbackIntrospector);
+		return this;
+	}
+
 	public GenerateOptionsBuilder javaTypeArbitraryGenerator(
 		JavaTypeArbitraryGenerator javaTypeArbitraryGenerator
 	) {
