@@ -22,6 +22,7 @@ import static org.assertj.core.api.BDDAssertions.then;
 import static org.assertj.core.api.BDDAssertions.thenNoException;
 import static org.assertj.core.api.BDDAssertions.thenThrownBy;
 
+import java.net.URI;
 import java.time.Instant;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
@@ -1430,5 +1431,13 @@ class FixtureMonkeyV04Test {
 			.getStrList();
 
 		then(actual).allMatch(expectedElement::equals);
+	}
+
+	@Property
+	void sampleUri() {
+		// when
+		URI actual = SUT.giveMeOne(URI.class);
+
+		then(actual).isNotNull();
 	}
 }
