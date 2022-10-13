@@ -92,6 +92,7 @@ public final class GenerateOptions {
 		defaultJavaPackages.add("java.time");
 		defaultJavaPackages.add("jdk.internal.reflect");
 		defaultJavaPackages.add("sun.reflect");
+		defaultJavaPackages.add("sun.util");
 		DEFAULT_JAVA_PACKAGES = Collections.unmodifiableList(defaultJavaPackages);
 	}
 
