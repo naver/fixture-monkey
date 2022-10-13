@@ -229,9 +229,9 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 		NodeResolver nodeResolver = monkeyExpressionFactory.from(expression).toNodeResolver();
 		InnerSpec innerSpec = new InnerSpec(traverser, manipulateOptions, nodeResolver);
 		specSpecifier.accept(innerSpec);
-		List<ArbitraryManipulator> mapManipulators = innerSpec.getArbitraryManipulators();
+		this.context.addManipulators(innerSpec.getArbitraryManipulators());
 		this.context.addContainerInfoManipulators(innerSpec.getContainerInfoManipulators());
-		this.context.addManipulators(mapManipulators);
+		this.context.addLazyArbitraries(innerSpec.getLazyArbitraries());
 		return this;
 	}
 

@@ -18,6 +18,7 @@
 
 package com.navercorp.fixturemonkey.test;
 
+import static com.navercorp.fixturemonkey.test.SimpleManipulatorTestSpecs.SUT;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.assertj.core.api.BDDAssertions.thenThrownBy;
 
@@ -28,13 +29,16 @@ import java.util.stream.Collectors;
 
 import net.jqwik.api.Property;
 
+import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.LabMonkey;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
+import com.navercorp.fixturemonkey.customizer.ExpressionSpec;
 import com.navercorp.fixturemonkey.test.InnerSpecTestSpecs.ComplexObjectObject;
 import com.navercorp.fixturemonkey.test.InnerSpecTestSpecs.MapObject;
 import com.navercorp.fixturemonkey.test.InnerSpecTestSpecs.NestedKeyMapObject;
 import com.navercorp.fixturemonkey.test.InnerSpecTestSpecs.NestedListStringObject;
 import com.navercorp.fixturemonkey.test.InnerSpecTestSpecs.SimpleObject;
+import com.navercorp.fixturemonkey.test.SimpleManipulatorTestSpecs.IntegerList;
 
 class InnerSpecTest {
 	private static final LabMonkey SUT = LabMonkey.labMonkey();
@@ -339,4 +343,77 @@ class InnerSpecTest {
 
 		then(actual).hasSize(0);
 	}
+
+	@Property
+	void allKeyLazy() {
+		// when
+		MapObject actual = SUT.giveMeBuilder(MapObject.class)
+			.setInner("strMap", m -> m.minSize(3).allKeyLazy("key"))
+			.sample();
+
+		then(actual.getStrMap().keySet()).allMatch(it -> it.equals("key"));
+	}
+
+	@Property
+	void keyLazy() {
+		ArbitraryBuilder<String> variable = SUT.giveMeBuilder(String.class);
+		ArbitraryBuilder<MapObject> builder = SUT.giveMeBuilder(MapObject.class)
+			.setInner("strMap", m -> m.size(1).keyLazy(variable::sample));
+		variable.set("key");
+
+		MapObject actual = builder.sample();
+
+		then(actual.getStrMap().containsKey("key")).isTrue();
+	}
+
+	@Property
+	void valueLazy() {
+		ArbitraryBuilder<String> variable = SUT.giveMeBuilder(String.class);
+		ArbitraryBuilder<MapObject> builder = SUT.giveMeBuilder(MapObject.class)
+			.setInner("strMap", m -> m.minSize(1).valueLazy(variable::sample));
+		variable.set("value");
+
+		MapObject actual = builder.sample();
+
+		then(actual.getStrMap().containsValue("value")).isTrue();
+	}
+
+	@Property
+	void entryLazy() {
+		ArbitraryBuilder<String> keyVariable = SUT.giveMeBuilder(String.class);
+		ArbitraryBuilder<String> valueVariable = SUT.giveMeBuilder(String.class);
+		ArbitraryBuilder<MapObject> builder = SUT.giveMeBuilder(MapObject.class)
+			.setInner("strMap", m -> m.minSize(1).entryLazy(keyVariable::sample, valueVariable::sample));
+		keyVariable.set("key");
+		valueVariable.set("value");
+
+		MapObject actual = builder.sample();
+
+		then(actual.getStrMap().get("key")).isEqualTo("value");
+	}
+
+	@Property
+	void keyLazyNullThrows() {
+		thenThrownBy(() ->
+			SUT.giveMeBuilder(MapObject.class)
+				.setInner("strMap", m -> m.minSize(1).keyLazy(()->null))
+				.sample()
+		).isExactlyInstanceOf(IllegalArgumentException.class)
+			.hasMessageContaining("Map key cannot be null.");
+	}
+
+	// @Property
+	// void keyInKeyLazy() {
+	// 	LabMonkey sut = LabMonkey.labMonkeyBuilder()
+	// 		.defaultArbitraryContainerInfo(new ArbitraryContainerInfo(1, 3, false))
+	// 		.build();
+	//
+	// 	NestedKeyMapObject actual = sut.giveMeBuilder(NestedKeyMapObject.class)
+	// 		.setInner("mapKeyMap", m -> m.key(k -> k.key("key")))
+	// 		.sample();
+	//
+	// 	List<String> keyList = actual.getMapKeyMap().keySet().stream()
+	// 		.flatMap(it -> it.keySet().stream()).collect(Collectors.toList());
+	// 	then(keyList).contains("key");
+	// }
 }
