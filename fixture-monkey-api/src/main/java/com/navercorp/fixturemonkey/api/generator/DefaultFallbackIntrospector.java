@@ -16,36 +16,28 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.mockito.introspector;
-
-import java.lang.reflect.Modifier;
+package com.navercorp.fixturemonkey.api.generator;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
-import org.mockito.Mockito;
 
-import net.jqwik.api.Arbitraries;
-
-import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.property.Property;
-import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public final class MockitoIntrospector implements ArbitraryIntrospector, Matcher {
-	public static final MockitoIntrospector INSTANCE = new MockitoIntrospector();
+public final class DefaultFallbackIntrospector implements Matcher, ArbitraryIntrospector {
+	public static final DefaultFallbackIntrospector INSTANCE = new DefaultFallbackIntrospector();
 
 	@Override
 	public boolean match(Property property) {
-		Class<?> actualType = Types.getActualType(property.getType());
-		return Modifier.isAbstract(actualType.getModifiers());
+		return false;
 	}
 
+	// not return
 	@Override
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
-		Class<?> actualType = Types.getActualType(context.getType());
-		return new ArbitraryIntrospectorResult(Arbitraries.of(Mockito.mock(actualType)));
+		return ArbitraryIntrospectorResult.EMPTY;
 	}
 }
