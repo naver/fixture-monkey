@@ -661,6 +661,12 @@ fun ExpressionGenerator.join(joinerExpressionGenerator: ExpressionGenerator): Ex
 
 private class KotlinProperty<V, R>(private val property: KProperty1<V, R>) :
     Property {
+
+    private val propertyAnnotations: List<Annotation> = property.annotations
+    private val getterAnnotations: List<Annotation> =
+        property.getter.annotations.toList()
+    private val fieldAnnotations: List<Annotation> =
+        property.javaField?.annotations?.toList() ?: listOf()
     override fun getType(): Class<*> = property.javaField!!.type
 
     override fun getAnnotatedType(): AnnotatedType =
@@ -668,10 +674,13 @@ private class KotlinProperty<V, R>(private val property: KProperty1<V, R>) :
 
     override fun getName(): String = property.name
 
-    override fun getAnnotations(): List<Annotation> = property.annotations
+    override fun getAnnotations(): List<Annotation> =
+        (propertyAnnotations + getterAnnotations + fieldAnnotations).distinct()
 
     @Suppress("UNCHECKED_CAST")
     override fun getValue(obj: Any): Any? = property.get(obj as V)
+
+    override fun isNullable(): Boolean = property.returnType.isMarkedNullable
 }
 
 private class KotlinGetterProperty<V, R>(private val getter: KFunction1<V, R>) : Property {
@@ -705,10 +714,10 @@ private class KotlinGetterProperty<V, R>(private val getter: KFunction1<V, R>) :
     } catch (ex: Exception) {
         null
     }
-    private val propertyAnnotation: List<Annotation> =
+    private val propertyAnnotations: List<Annotation> =
         property?.annotations ?: listOf()
-    private val getterAnnotation: List<Annotation> = getter.annotations
-    private val javaFieldAnnotations: List<Annotation> =
+    private val getterAnnotations: List<Annotation> = getter.annotations
+    private val fieldAnnotations: List<Annotation> =
         javaField?.annotations?.toList() ?: listOf()
 
     override fun getType(): Class<*> = type
@@ -719,8 +728,10 @@ private class KotlinGetterProperty<V, R>(private val getter: KFunction1<V, R>) :
     override fun getName(): String = propertyName
 
     override fun getAnnotations(): List<Annotation> =
-        (propertyAnnotation + getterAnnotation + javaFieldAnnotations).distinct()
+        (propertyAnnotations + getterAnnotations + fieldAnnotations).distinct()
 
     @Suppress("UNCHECKED_CAST")
     override fun getValue(obj: Any?): Any? = getter.invoke(obj as V)
+
+    override fun isNullable(): Boolean = getter.returnType.isMarkedNullable
 }
