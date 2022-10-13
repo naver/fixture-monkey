@@ -26,11 +26,14 @@ import net.jqwik.api.Example;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.LabMonkey;
+import com.navercorp.fixturemonkey.api.generator.NullInjectGenerator;
+import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGeneratorContext;
 import com.navercorp.fixturemonkey.mockito.plugin.MockitoPluginTestSpecs.Sample;
 
 class MockitoPluginTest {
 	private final LabMonkey sut = FixtureMonkey.labMonkeyBuilder()
 		.plugin(new MockitoPlugin())
+		.defaultNullInjectGenerator(context -> 0)
 		.build();
 
 	@Example
