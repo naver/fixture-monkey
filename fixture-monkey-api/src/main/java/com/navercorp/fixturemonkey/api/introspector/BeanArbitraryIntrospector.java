@@ -50,7 +50,7 @@ public final class BeanArbitraryIntrospector implements ArbitraryIntrospector {
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
 		Property property = context.getProperty();
 		Class<?> type = Types.getActualType(property.getType());
-		if (type.isInterface() || Modifier.isAbstract(type.getModifiers())) {
+		if (Modifier.isAbstract(type.getModifiers())) {
 			return ArbitraryIntrospectorResult.EMPTY;
 		}
 
