@@ -25,6 +25,7 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
+import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult;
 import com.navercorp.fixturemonkey.api.introspector.ArrayIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.BeanArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.BooleanIntrospector;
@@ -92,6 +93,8 @@ public final class JavaDefaultArbitraryGeneratorBuilder {
 		JavaDefaultArbitraryGeneratorBuilder.JAVA_CONTAINER_INTROSPECTOR;
 	private ArbitraryIntrospector objectIntrospector = BeanArbitraryIntrospector.INSTANCE;
 
+	private ArbitraryIntrospector fallbackIntrospector = (context) -> ArbitraryIntrospectorResult.EMPTY;
+
 	JavaDefaultArbitraryGeneratorBuilder() {
 	}
 
@@ -128,6 +131,18 @@ public final class JavaDefaultArbitraryGeneratorBuilder {
 		UnaryOperator<ArbitraryIntrospector> objectIntrospector
 	) {
 		this.objectIntrospector = objectIntrospector.apply(this.objectIntrospector);
+		return this;
+	}
+
+	public JavaDefaultArbitraryGeneratorBuilder fallbackIntrospector(ArbitraryIntrospector fallbackIntrospector) {
+		this.fallbackIntrospector = fallbackIntrospector;
+		return this;
+	}
+
+	public JavaDefaultArbitraryGeneratorBuilder fallbackIntrospector(
+		UnaryOperator<ArbitraryIntrospector> fallbackIntrospector
+	) {
+		this.fallbackIntrospector = fallbackIntrospector.apply(this.fallbackIntrospector);
 		return this;
 	}
 
@@ -168,7 +183,8 @@ public final class JavaDefaultArbitraryGeneratorBuilder {
 					),
 					this.priorityIntrospector,
 					this.containerIntrospector,
-					this.objectIntrospector
+					this.objectIntrospector,
+					this.fallbackIntrospector
 				)
 			)
 		);
