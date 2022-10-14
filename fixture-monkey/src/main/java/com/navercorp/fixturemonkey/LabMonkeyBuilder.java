@@ -468,21 +468,6 @@ public class LabMonkeyBuilder {
 		return this;
 	}
 
-	public LabMonkeyBuilder pushUniqueProperty(MatcherOperator<Boolean> uniqueProperty) {
-		this.generateOptionsBuilder.insertFirstUniqueProperty(uniqueProperty);
-		return this;
-	}
-
-	public LabMonkeyBuilder pushExactTypeUniqueProperty(Class<?> type) {
-		this.generateOptionsBuilder.insertFirstUniqueProperty(MatcherOperator.exactTypeMatchOperator(type, true));
-		return this;
-	}
-
-	public LabMonkeyBuilder pushAssignableTypeUniqueProperty(Class<?> type) {
-		this.generateOptionsBuilder.insertFirstUniqueProperty(MatcherOperator.assignableTypeMatchOperator(type, true));
-		return this;
-	}
-
 	public LabMonkeyBuilder defaultPropertyGenerator(PropertyGenerator propertyGenerator) {
 		this.generateOptionsBuilder.defaultPropertyGenerator(propertyGenerator);
 		return this;

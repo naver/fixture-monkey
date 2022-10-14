@@ -18,8 +18,6 @@
 
 package com.navercorp.fixturemonkey.api.option;
 
-import static com.navercorp.fixturemonkey.api.option.GenerateOptions.DEFAULT_UNIQUE_PROPERTIES;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
@@ -75,8 +73,6 @@ public final class GenerateOptionsBuilder {
 	private List<MatcherOperator<FixtureCustomizer>> arbitraryCustomizers = new ArrayList<>();
 	private final JavaDefaultArbitraryGeneratorBuilder javaDefaultArbitraryGeneratorBuilder =
 		DefaultArbitraryGenerator.javaBuilder();
-
-	private List<MatcherOperator<Boolean>> uniqueProperties = new ArrayList<>(DEFAULT_UNIQUE_PROPERTIES);
 
 	GenerateOptionsBuilder() {
 	}
@@ -436,16 +432,6 @@ public final class GenerateOptionsBuilder {
 		);
 	}
 
-	public GenerateOptionsBuilder uniqueProperties(List<MatcherOperator<Boolean>> uniqueProperties) {
-		this.uniqueProperties = uniqueProperties;
-		return this;
-	}
-
-	public GenerateOptionsBuilder insertFirstUniqueProperty(MatcherOperator<Boolean> uniqueProperty) {
-		this.uniqueProperties.add(uniqueProperty);
-		return this;
-	}
-
 	public GenerateOptions build() {
 		ObjectPropertyGenerator defaultObjectPropertyGenerator = defaultIfNull(
 			this.defaultObjectPropertyGenerator,
@@ -483,8 +469,7 @@ public final class GenerateOptionsBuilder {
 			defaultArbitraryContainerInfo,
 			this.arbitraryGenerators,
 			defaultArbitraryGenerator,
-			this.arbitraryCustomizers,
-			this.uniqueProperties
+			this.arbitraryCustomizers
 		);
 	}
 
