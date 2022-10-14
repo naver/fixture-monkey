@@ -47,7 +47,7 @@ public final class FieldReflectionArbitraryIntrospector implements ArbitraryIntr
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
 		Property property = context.getProperty();
 		Class<?> type = Types.getActualType(property.getType());
-		if (type.isInterface()) {
+		if (type.isInterface() || Modifier.isAbstract(type.getModifiers())) {
 			return ArbitraryIntrospectorResult.EMPTY;
 		}
 

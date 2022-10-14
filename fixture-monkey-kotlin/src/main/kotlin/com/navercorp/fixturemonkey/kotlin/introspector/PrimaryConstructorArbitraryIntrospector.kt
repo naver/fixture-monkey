@@ -26,6 +26,7 @@ import com.navercorp.fixturemonkey.api.type.Types
 import net.jqwik.api.Builders
 import org.apiguardian.api.API
 import org.apiguardian.api.API.Status.EXPERIMENTAL
+import java.lang.reflect.Modifier
 import kotlin.jvm.internal.Reflection
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
@@ -41,7 +42,7 @@ class PrimaryConstructorArbitraryIntrospector : ArbitraryIntrospector {
 
     override fun introspect(context: ArbitraryGeneratorContext): ArbitraryIntrospectorResult {
         val type = Types.getActualType(context.property.type)
-        if (type.isInterface) {
+        if (type.isInterface || Modifier.isAbstract(type.modifiers)) {
             return ArbitraryIntrospectorResult.EMPTY
         }
 
