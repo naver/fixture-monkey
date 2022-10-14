@@ -44,6 +44,7 @@ import com.navercorp.fixturemonkey.resolver.ContainerElementPredicate;
 import com.navercorp.fixturemonkey.resolver.ContainerInfoManipulator;
 import com.navercorp.fixturemonkey.resolver.DefaultNodeResolver;
 import com.navercorp.fixturemonkey.resolver.ManipulateOptions;
+import com.navercorp.fixturemonkey.resolver.NodeAllEntryPredicate;
 import com.navercorp.fixturemonkey.resolver.NodeEntryPredicate;
 import com.navercorp.fixturemonkey.resolver.NodeKeyValuePredicate;
 import com.navercorp.fixturemonkey.resolver.NodeManipulator;
@@ -63,7 +64,6 @@ public final class InnerSpec {
 	private int max = DEFAULT_ELEMENT_MAX_SIZE;
 	private int entrySize = 0;
 	private final List<ArbitraryManipulator> arbitraryManipulators;
-	private final Set<LazyArbitrary<?>> lazyArbitraries;
 	private final List<ContainerInfoManipulator> containerInfoManipulators;
 
 	public InnerSpec(
@@ -75,7 +75,6 @@ public final class InnerSpec {
 		this.manipulateOptions = manipulateOptions;
 		this.treePathResolver = treePathResolver;
 		this.arbitraryManipulators = new ArrayList<>();
-		this.lazyArbitraries = new HashSet<>();
 		this.containerInfoManipulators = new ArrayList<>();
 	}
 
@@ -304,7 +303,6 @@ public final class InnerSpec {
 		entrySize++;
 
 		LazyArbitrary<?> lazyArbitrary = LazyArbitrary.lazy(supplier);
-		lazyArbitraries.add(lazyArbitrary);
 		arbitraryManipulators.add(new ArbitraryManipulator(
 				new CompositeNodeResolver(
 					this.treePathResolver,
@@ -321,7 +319,6 @@ public final class InnerSpec {
 		entrySize++;
 
 		LazyArbitrary<?> lazyArbitrary = LazyArbitrary.lazy(supplier);
-		lazyArbitraries.add(lazyArbitrary);
 		arbitraryManipulators.add(new ArbitraryManipulator(
 				new CompositeNodeResolver(
 					this.treePathResolver,
@@ -339,8 +336,6 @@ public final class InnerSpec {
 
 		LazyArbitrary<?> keyLazyArbitrary = LazyArbitrary.lazy(keySupplier);
 		LazyArbitrary<?> valueLazyArbitrary = LazyArbitrary.lazy(valueSupplier);
-		lazyArbitraries.add(keyLazyArbitrary);
-		lazyArbitraries.add(valueLazyArbitrary);
 
 		this.arbitraryManipulators.add(
 			new ArbitraryManipulator(
@@ -367,17 +362,56 @@ public final class InnerSpec {
 	}
 
 	public InnerSpec allKeyLazy(Supplier<?> supplier) {
-		entrySize++;
-
 		LazyArbitrary<?> lazyArbitrary = LazyArbitrary.lazy(supplier);
-		lazyArbitraries.add(lazyArbitrary);
 		arbitraryManipulators.add(new ArbitraryManipulator(
 				new CompositeNodeResolver(
 					this.treePathResolver,
-					new DefaultNodeResolver(new NodeEntryPredicate(entrySize - 1)),
+					new DefaultNodeResolver(new NodeAllEntryPredicate()),
 					new DefaultNodeResolver(new NodeKeyValuePredicate(true))
 				),
 				convertToNodeManipulator(lazyArbitrary)
+			)
+		);
+		return this;
+	}
+
+	public InnerSpec allValueLazy(Supplier<?> supplier) {
+		LazyArbitrary<?> lazyArbitrary = LazyArbitrary.lazy(supplier);
+		arbitraryManipulators.add(new ArbitraryManipulator(
+				new CompositeNodeResolver(
+					this.treePathResolver,
+					new DefaultNodeResolver(new NodeAllEntryPredicate()),
+					new DefaultNodeResolver(new NodeKeyValuePredicate(false))
+				),
+				convertToNodeManipulator(lazyArbitrary)
+			)
+		);
+		return this;
+	}
+
+	public InnerSpec allEntryLazy(Supplier<?> keySupplier, Supplier<?> valueSupplier) {
+		LazyArbitrary<?> keyLazyArbitrary = LazyArbitrary.lazy(keySupplier);
+		LazyArbitrary<?> valueLazyArbitrary = LazyArbitrary.lazy(valueSupplier);
+
+		this.arbitraryManipulators.add(
+			new ArbitraryManipulator(
+				new CompositeNodeResolver(
+					this.treePathResolver,
+					new DefaultNodeResolver(new NodeAllEntryPredicate()),
+					new DefaultNodeResolver(new NodeKeyValuePredicate(true))
+				),
+				convertToNodeManipulator(keyLazyArbitrary)
+			)
+		);
+
+		this.arbitraryManipulators.add(
+			new ArbitraryManipulator(
+				new CompositeNodeResolver(
+					this.treePathResolver,
+					new DefaultNodeResolver(new NodeAllEntryPredicate()),
+					new DefaultNodeResolver(new NodeKeyValuePredicate(false))
+				),
+				convertToNodeManipulator(valueLazyArbitrary)
 			)
 		);
 		return this;
@@ -389,10 +423,6 @@ public final class InnerSpec {
 
 	public List<ContainerInfoManipulator> getContainerInfoManipulators() {
 		return containerInfoManipulators;
-	}
-
-	public Set<LazyArbitrary<?>> getLazyArbitraries() {
-		return lazyArbitraries;
 	}
 
 	private void setValue(@Nullable Object value) {

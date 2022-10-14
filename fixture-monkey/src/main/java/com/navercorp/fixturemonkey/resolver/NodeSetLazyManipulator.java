@@ -24,7 +24,6 @@ import org.apiguardian.api.API.Status;
 import net.jqwik.api.Arbitrary;
 
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
-import com.navercorp.fixturemonkey.api.property.MapKeyElementProperty;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class NodeSetLazyManipulator<T> implements NodeManipulator {
@@ -48,9 +47,6 @@ public final class NodeSetLazyManipulator<T> implements NodeManipulator {
 		T value = lazyArbitrary.getValue();
 
 		if (value == null) {
-			if (arbitraryNode.getProperty() instanceof MapKeyElementProperty) {
-				throw new IllegalArgumentException("Map key cannot be null.");
-			}
 			NodeNullityManipulator nullityManipulator = new NodeNullityManipulator(true);
 			nullityManipulator.manipulate(arbitraryNode);
 			return;
@@ -63,5 +59,6 @@ public final class NodeSetLazyManipulator<T> implements NodeManipulator {
 		NodeSetDecomposedValueManipulator<T> nodeSetDecomposedValueManipulator =
 			new NodeSetDecomposedValueManipulator<>(traverser, manipulateOptions, value);
 		nodeSetDecomposedValueManipulator.manipulate(arbitraryNode);
+		lazyArbitrary.clear();
 	}
 }

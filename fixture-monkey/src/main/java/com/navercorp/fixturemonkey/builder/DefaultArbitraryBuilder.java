@@ -173,7 +173,6 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 	public ArbitraryBuilder<T> setLazy(String expression, Supplier<?> supplier, int limit) {
 		NodeResolver nodeResolver = monkeyExpressionFactory.from(expression).toNodeResolver();
 		LazyArbitrary<?> lazyArbitrary = LazyArbitrary.lazy(supplier);
-		this.context.addLazyArbitrary(lazyArbitrary);
 		this.context.addManipulator(
 			new ArbitraryManipulator(
 				nodeResolver,
@@ -231,7 +230,6 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 		specSpecifier.accept(innerSpec);
 		this.context.addManipulators(innerSpec.getArbitraryManipulators());
 		this.context.addContainerInfoManipulators(innerSpec.getContainerInfoManipulators());
-		this.context.addLazyArbitraries(innerSpec.getLazyArbitraries());
 		return this;
 	}
 
@@ -315,7 +313,6 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 			}
 		);
 
-		this.context.addLazyArbitrary(lazyArbitrary);
 		this.context.addManipulator(
 			new ArbitraryManipulator(
 				IdentityNodeResolver.INSTANCE,
@@ -510,7 +507,6 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 					context.getCustomizers(),
 					context.getContainerInfoManipulators()
 				);
-				context.getLazyArbitraries().forEach(LazyArbitrary::clear);
 				return arbitrary;
 			},
 			this.validator,
@@ -560,8 +556,6 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 				new NodeSetLazyManipulator<>(traverser, manipulateOptions, lazyArbitrary)
 			)
 		);
-		context.addLazyArbitraries(this.context.getLazyArbitraries());
-		context.addLazyArbitrary(lazyArbitrary);
 
 		return new DefaultArbitraryBuilder<>(
 			manipulateOptions,

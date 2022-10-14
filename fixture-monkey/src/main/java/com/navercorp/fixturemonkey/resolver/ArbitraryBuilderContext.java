@@ -21,9 +21,7 @@ package com.navercorp.fixturemonkey.resolver;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apiguardian.api.API;
@@ -31,13 +29,11 @@ import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.customizer.FixtureCustomizer;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
-import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class ArbitraryBuilderContext {
 	private final List<ArbitraryManipulator> manipulators;
-	private final Set<LazyArbitrary<?>> lazyArbitraries;
 	@SuppressWarnings("rawtypes")
 	private final List<MatcherOperator<? extends FixtureCustomizer>> customizers;
 	private final List<ContainerInfoManipulator> containerInfoManipulators;
@@ -47,20 +43,18 @@ public final class ArbitraryBuilderContext {
 	@SuppressWarnings("rawtypes")
 	public ArbitraryBuilderContext(
 		List<ArbitraryManipulator> manipulators,
-		Set<LazyArbitrary<?>> lazyArbitraries,
 		List<MatcherOperator<? extends FixtureCustomizer>> customizers,
 		List<ContainerInfoManipulator> containerInfoManipulators,
 		boolean validOnly
 	) {
 		this.manipulators = manipulators;
-		this.lazyArbitraries = lazyArbitraries;
 		this.customizers = customizers;
 		this.containerInfoManipulators = containerInfoManipulators;
 		this.validOnly = validOnly;
 	}
 
 	public ArbitraryBuilderContext() {
-		this(new ArrayList<>(), new HashSet<>(), new ArrayList<>(), new ArrayList<>(), true);
+		this(new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), true);
 	}
 
 	public ArbitraryBuilderContext copy() {
@@ -74,7 +68,6 @@ public final class ArbitraryBuilderContext {
 
 		return new ArbitraryBuilderContext(
 			new ArrayList<>(this.manipulators),
-			new HashSet<>(this.lazyArbitraries),
 			new ArrayList<>(this.customizers),
 			copiedContainerInfoManipulators,
 			this.validOnly
@@ -91,18 +84,6 @@ public final class ArbitraryBuilderContext {
 
 	public List<ArbitraryManipulator> getManipulators() {
 		return Collections.unmodifiableList(manipulators);
-	}
-
-	public void addLazyArbitrary(LazyArbitrary<?> lazyArbitrary) {
-		this.lazyArbitraries.add(lazyArbitrary);
-	}
-
-	public void addLazyArbitraries(Collection<LazyArbitrary<?>> lazyArbitraries) {
-		this.lazyArbitraries.addAll(lazyArbitraries);
-	}
-
-	public Set<LazyArbitrary<?>> getLazyArbitraries() {
-		return Collections.unmodifiableSet(lazyArbitraries);
 	}
 
 	@SuppressWarnings("rawtypes")

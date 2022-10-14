@@ -18,7 +18,6 @@
 
 package com.navercorp.fixturemonkey.test;
 
-import static com.navercorp.fixturemonkey.test.SimpleManipulatorTestSpecs.SUT;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.assertj.core.api.BDDAssertions.thenThrownBy;
 
@@ -27,18 +26,18 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Property;
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.LabMonkey;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
-import com.navercorp.fixturemonkey.customizer.ExpressionSpec;
 import com.navercorp.fixturemonkey.test.InnerSpecTestSpecs.ComplexObjectObject;
+import com.navercorp.fixturemonkey.test.InnerSpecTestSpecs.IntegerMapObject;
 import com.navercorp.fixturemonkey.test.InnerSpecTestSpecs.MapObject;
 import com.navercorp.fixturemonkey.test.InnerSpecTestSpecs.NestedKeyMapObject;
 import com.navercorp.fixturemonkey.test.InnerSpecTestSpecs.NestedListStringObject;
 import com.navercorp.fixturemonkey.test.InnerSpecTestSpecs.SimpleObject;
-import com.navercorp.fixturemonkey.test.SimpleManipulatorTestSpecs.IntegerList;
 
 class InnerSpecTest {
 	private static final LabMonkey SUT = LabMonkey.labMonkey();
@@ -345,16 +344,6 @@ class InnerSpecTest {
 	}
 
 	@Property
-	void allKeyLazy() {
-		// when
-		MapObject actual = SUT.giveMeBuilder(MapObject.class)
-			.setInner("strMap", m -> m.minSize(3).allKeyLazy("key"))
-			.sample();
-
-		then(actual.getStrMap().keySet()).allMatch(it -> it.equals("key"));
-	}
-
-	@Property
 	void keyLazy() {
 		ArbitraryBuilder<String> variable = SUT.giveMeBuilder(String.class);
 		ArbitraryBuilder<MapObject> builder = SUT.giveMeBuilder(MapObject.class)
@@ -402,18 +391,37 @@ class InnerSpecTest {
 			.hasMessageContaining("Map key cannot be null.");
 	}
 
-	// @Property
-	// void keyInKeyLazy() {
-	// 	LabMonkey sut = LabMonkey.labMonkeyBuilder()
-	// 		.defaultArbitraryContainerInfo(new ArbitraryContainerInfo(1, 3, false))
-	// 		.build();
-	//
-	// 	NestedKeyMapObject actual = sut.giveMeBuilder(NestedKeyMapObject.class)
-	// 		.setInner("mapKeyMap", m -> m.key(k -> k.key("key")))
-	// 		.sample();
-	//
-	// 	List<String> keyList = actual.getMapKeyMap().keySet().stream()
-	// 		.flatMap(it -> it.keySet().stream()).collect(Collectors.toList());
-	// 	then(keyList).contains("key");
-	// }
+	// TODO: Remove 'tries' after preventing the generation of duplicate map keys
+	@Property(tries = 5)
+	void allKeyLazy() {
+		IntegerMapObject actual = SUT.giveMeBuilder(IntegerMapObject.class)
+			.setInner("integerMap", m -> m.allKeyLazy(()-> Arbitraries.integers().between(0, 100)))
+			.sample();
+
+		then(actual.getIntegerMap().keySet()).allMatch(it-> it >= 0 && it <= 100);
+	}
+
+	@Property
+	void allValueLazy() {
+		IntegerMapObject actual = SUT.giveMeBuilder(IntegerMapObject.class)
+			.setInner("integerMap", m -> m.allValueLazy(()-> Arbitraries.integers().between(0, 100)))
+			.sample();
+
+
+		then(actual.getIntegerMap().values()).allMatch(it-> it >= 0 && it <= 100);
+	}
+
+	// TODO: Remove 'tries' after preventing the generation of duplicate map keys
+	@Property(tries = 5)
+	void allEntryLazy() {
+		IntegerMapObject actual = SUT.giveMeBuilder(IntegerMapObject.class)
+			.setInner("integerMap", m -> m.allEntryLazy(
+				()-> Arbitraries.integers().between(0, 100),
+				()-> Arbitraries.integers().between(0, 100)
+			))
+			.sample();
+
+		then(actual.getIntegerMap().keySet()).allMatch(it-> it >= 0 && it <= 100);
+		then(actual.getIntegerMap().values()).allMatch(it-> it >= 0 && it <= 100);
+	}
 }
