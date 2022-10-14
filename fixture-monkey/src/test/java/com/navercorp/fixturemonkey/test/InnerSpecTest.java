@@ -26,11 +26,15 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import net.jqwik.api.Arbitraries;
+import net.jqwik.api.Disabled;
 import net.jqwik.api.Property;
 
+import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.LabMonkey;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.test.InnerSpecTestSpecs.ComplexObjectObject;
+import com.navercorp.fixturemonkey.test.InnerSpecTestSpecs.IntegerMapObject;
 import com.navercorp.fixturemonkey.test.InnerSpecTestSpecs.MapObject;
 import com.navercorp.fixturemonkey.test.InnerSpecTestSpecs.NestedKeyMapObject;
 import com.navercorp.fixturemonkey.test.InnerSpecTestSpecs.NestedListStringObject;
@@ -338,5 +342,89 @@ class InnerSpecTest {
 			.getStrMap();
 
 		then(actual).hasSize(0);
+	}
+
+	@Property
+	void keyLazy() {
+		ArbitraryBuilder<String> variable = SUT.giveMeBuilder(String.class);
+		ArbitraryBuilder<MapObject> builder = SUT.giveMeBuilder(MapObject.class)
+			.setInner("strMap", m -> m.size(1).keyLazy(variable::sample));
+		variable.set("key");
+
+		MapObject actual = builder.sample();
+
+		then(actual.getStrMap().containsKey("key")).isTrue();
+	}
+
+	@Property
+	void valueLazy() {
+		ArbitraryBuilder<String> variable = SUT.giveMeBuilder(String.class);
+		ArbitraryBuilder<MapObject> builder = SUT.giveMeBuilder(MapObject.class)
+			.setInner("strMap", m -> m.minSize(1).valueLazy(variable::sample));
+		variable.set("value");
+
+		MapObject actual = builder.sample();
+
+		then(actual.getStrMap().containsValue("value")).isTrue();
+	}
+
+	@Property
+	void entryLazy() {
+		ArbitraryBuilder<String> keyVariable = SUT.giveMeBuilder(String.class);
+		ArbitraryBuilder<String> valueVariable = SUT.giveMeBuilder(String.class);
+		ArbitraryBuilder<MapObject> builder = SUT.giveMeBuilder(MapObject.class)
+			.setInner("strMap", m -> m.minSize(1).entryLazy(keyVariable::sample, valueVariable::sample));
+		keyVariable.set("key");
+		valueVariable.set("value");
+
+		MapObject actual = builder.sample();
+
+		then(actual.getStrMap().get("key")).isEqualTo("value");
+	}
+
+	@Property
+	void keyLazyNullThrows() {
+		thenThrownBy(() ->
+			SUT.giveMeBuilder(MapObject.class)
+				.setInner("strMap", m -> m.minSize(1).keyLazy(()->null))
+				.sample()
+		).isExactlyInstanceOf(IllegalArgumentException.class)
+			.hasMessageContaining("Map key cannot be null.");
+	}
+
+	// TODO: Remove @Disabled after preventing the generation of duplicate map keys
+	@Disabled
+	@Property
+	void allKeyLazy() {
+		IntegerMapObject actual = SUT.giveMeBuilder(IntegerMapObject.class)
+			.setInner("integerMap", m -> m.allKeyLazy(()-> Arbitraries.integers().between(0, 100)))
+			.sample();
+
+		then(actual.getIntegerMap().keySet()).allMatch(it-> it >= 0 && it <= 100);
+	}
+
+	@Property
+	void allValueLazy() {
+		IntegerMapObject actual = SUT.giveMeBuilder(IntegerMapObject.class)
+			.setInner("integerMap", m -> m.allValueLazy(()-> Arbitraries.integers().between(0, 100)))
+			.sample();
+
+
+		then(actual.getIntegerMap().values()).allMatch(it-> it >= 0 && it <= 100);
+	}
+
+	// TODO: Remove @Disabled after preventing the generation of duplicate map keys
+	@Disabled
+	@Property
+	void allEntryLazy() {
+		IntegerMapObject actual = SUT.giveMeBuilder(IntegerMapObject.class)
+			.setInner("integerMap", m -> m.allEntryLazy(
+				()-> Arbitraries.integers().between(0, 100),
+				()-> Arbitraries.integers().between(0, 100)
+			))
+			.sample();
+
+		then(actual.getIntegerMap().keySet()).allMatch(it-> it >= 0 && it <= 100);
+		then(actual.getIntegerMap().values()).allMatch(it-> it >= 0 && it <= 100);
 	}
 }

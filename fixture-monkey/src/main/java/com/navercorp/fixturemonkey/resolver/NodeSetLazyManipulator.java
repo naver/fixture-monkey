@@ -59,5 +59,6 @@ public final class NodeSetLazyManipulator<T> implements NodeManipulator {
 		NodeSetDecomposedValueManipulator<T> nodeSetDecomposedValueManipulator =
 			new NodeSetDecomposedValueManipulator<>(traverser, manipulateOptions, value);
 		nodeSetDecomposedValueManipulator.manipulate(arbitraryNode);
+		lazyArbitrary.clear();
 	}
 }

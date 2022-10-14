@@ -68,6 +68,9 @@ public final class MapIntrospector implements ArbitraryIntrospector, Matcher {
 			builderCombinator = builderCombinator
 				.use(child).in((map, value) -> {
 					MapEntryElementType entryElement = (MapEntryElementType)value;
+					if (entryElement.getKey() == null) {
+						throw new IllegalArgumentException("Map key cannot be null.");
+					}
 					map.put(entryElement.getKey(), entryElement.getValue());
 					return map;
 				});

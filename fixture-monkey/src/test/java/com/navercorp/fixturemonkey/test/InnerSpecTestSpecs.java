@@ -58,4 +58,9 @@ class InnerSpecTestSpecs {
 		private String str;
 		private Integer integer;
 	}
+
+	@Data
+	public static class IntegerMapObject {
+		private Map<Integer, Integer> integerMap;
+	}
 }
