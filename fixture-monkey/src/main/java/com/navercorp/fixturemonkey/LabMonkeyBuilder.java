@@ -398,9 +398,9 @@ public class LabMonkeyBuilder {
 					};
 					this.register(actualType, registerArbitraryBuilder);
 				} catch (InvocationTargetException
-						| InstantiationException
-						| IllegalAccessException
-						| NoSuchMethodException e) {
+						 | InstantiationException
+						 | IllegalAccessException
+						 | NoSuchMethodException e) {
 					// ignored
 				}
 			}
@@ -465,21 +465,6 @@ public class LabMonkeyBuilder {
 		this.pushAssignableTypeContainerPropertyGenerator(type, containerObjectPropertyGenerator);
 		this.pushContainerIntrospector(containerArbitraryIntrospector);
 		decomposableContainerFactoryMap.put(type, decomposedContainerValueFactory);
-		return this;
-	}
-
-	public LabMonkeyBuilder pushUniqueProperty(MatcherOperator<Boolean> uniqueProperty) {
-		this.generateOptionsBuilder.insertFirstUniqueProperty(uniqueProperty);
-		return this;
-	}
-
-	public LabMonkeyBuilder pushExactTypeUniqueProperty(Class<?> type) {
-		this.generateOptionsBuilder.insertFirstUniqueProperty(MatcherOperator.exactTypeMatchOperator(type, true));
-		return this;
-	}
-
-	public LabMonkeyBuilder pushAssignableTypeUniqueProperty(Class<?> type) {
-		this.generateOptionsBuilder.insertFirstUniqueProperty(MatcherOperator.assignableTypeMatchOperator(type, true));
 		return this;
 	}
 

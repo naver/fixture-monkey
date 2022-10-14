@@ -46,21 +46,18 @@ final class ArbitraryTree {
 	private final MonkeyContext monkeyContext;
 	@SuppressWarnings("rawtypes")
 	private final List<MatcherOperator<? extends FixtureCustomizer>> customizers;
-	private final List<MatcherOperator<Boolean>> uniqueProperties;
 
 	@SuppressWarnings("rawtypes")
 	ArbitraryTree(
 		ArbitraryNode rootNode,
 		GenerateOptions generateOptions,
 		MonkeyContext monkeyContext,
-		List<MatcherOperator<? extends FixtureCustomizer>> customizers,
-		List<MatcherOperator<Boolean>> uniqueProperties
+		List<MatcherOperator<? extends FixtureCustomizer>> customizers
 	) {
 		this.rootNode = rootNode;
 		this.generateOptions = generateOptions;
 		this.monkeyContext = monkeyContext;
 		this.customizers = customizers;
-		this.uniqueProperties = uniqueProperties;
 		MetadataCollector metadataCollector = new MetadataCollector(rootNode);
 		this.metadata = metadataCollector.collect();
 	}
@@ -134,16 +131,6 @@ final class ArbitraryTree {
 			} else {
 				generated = this.generateOptions.getArbitraryGenerator(prop.getObjectProperty().getProperty())
 					.generate(childArbitraryGeneratorContext);
-
-				boolean unique = uniqueProperties.stream()
-					.filter(it -> it.match(node.getProperty()))
-					.findAny()
-					.map(MatcherOperator::getOperator)
-					.orElse(false);
-
-				if (unique) {
-					generated = generated.injectDuplicates(0d);
-				}
 
 				if (node.isNotManipulated() && notCustomized) {
 					monkeyContext.putCachedArbitrary(

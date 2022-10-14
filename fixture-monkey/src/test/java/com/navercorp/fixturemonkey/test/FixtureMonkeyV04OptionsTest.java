@@ -77,7 +77,6 @@ import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpe
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.ComplexObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.ListStringObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.SimpleObject;
-import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.TwoEnum;
 
 class FixtureMonkeyV04OptionsTest {
 	@Property
@@ -1019,20 +1018,6 @@ class FixtureMonkeyV04OptionsTest {
 			.getStrList();
 
 		then(actual).hasSize(10);
-	}
-
-	@Property
-	void uniqueProperty() {
-		LabMonkey sut = LabMonkey.labMonkeyBuilder()
-			.pushExactTypeUniqueProperty(TwoEnum.class)
-			.build();
-
-		List<TwoEnum> twoEnums = sut.giveMeBuilder(new TypeReference<List<TwoEnum>>() {
-			})
-			.size("$", 2)
-			.sample();
-
-		then(twoEnums).hasSize(2);
 	}
 
 	@Property

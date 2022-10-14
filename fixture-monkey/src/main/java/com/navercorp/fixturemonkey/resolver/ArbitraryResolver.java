@@ -73,8 +73,7 @@ public final class ArbitraryResolver {
 			this.traverser.traverse(rootProperty, containerInfoManipulators),
 			generateOptions,
 			monkeyContext,
-			customizers,
-			generateOptions.getUniqueProperties()
+			customizers
 		);
 
 		containerInfoManipulators.stream()
