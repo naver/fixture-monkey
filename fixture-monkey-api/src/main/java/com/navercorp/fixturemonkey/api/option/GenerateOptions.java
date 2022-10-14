@@ -18,7 +18,6 @@
 
 package com.navercorp.fixturemonkey.api.option;
 
-import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -93,6 +92,7 @@ public final class GenerateOptions {
 		defaultJavaPackages.add("java.time");
 		defaultJavaPackages.add("jdk.internal.reflect");
 		defaultJavaPackages.add("sun.reflect");
+		defaultJavaPackages.add("sun.util");
 		DEFAULT_JAVA_PACKAGES = Collections.unmodifiableList(defaultJavaPackages);
 	}
 
@@ -294,10 +294,6 @@ public final class GenerateOptions {
 				SingleValueObjectPropertyGenerator.INSTANCE
 			),
 			new MatcherOperator<>(Matchers.ENUM_TYPE_MATCHER, SingleValueObjectPropertyGenerator.INSTANCE),
-			new MatcherOperator<>(
-				property -> Modifier.isAbstract(Types.getActualType(property.getType()).getModifiers()),
-				NullObjectPropertyGenerator.INSTANCE
-			),
 			MatcherOperator.exactTypeMatchOperator(
 				UnidentifiableType.class,
 				NullObjectPropertyGenerator.INSTANCE

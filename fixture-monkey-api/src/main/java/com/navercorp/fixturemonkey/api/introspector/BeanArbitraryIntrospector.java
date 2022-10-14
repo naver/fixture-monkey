@@ -21,6 +21,7 @@ package com.navercorp.fixturemonkey.api.introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.List;
 import java.util.Map;
 
@@ -49,7 +50,7 @@ public final class BeanArbitraryIntrospector implements ArbitraryIntrospector {
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
 		Property property = context.getProperty();
 		Class<?> type = Types.getActualType(property.getType());
-		if (type.isInterface()) {
+		if (Modifier.isAbstract(type.getModifiers())) {
 			return ArbitraryIntrospectorResult.EMPTY;
 		}
 
