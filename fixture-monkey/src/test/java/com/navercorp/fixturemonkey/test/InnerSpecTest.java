@@ -392,7 +392,7 @@ class InnerSpecTest {
 	}
 
 	// TODO: Remove 'tries' after preventing the generation of duplicate map keys
-	@Property(tries = 5)
+	@Property(tries = 1)
 	void allKeyLazy() {
 		IntegerMapObject actual = SUT.giveMeBuilder(IntegerMapObject.class)
 			.setInner("integerMap", m -> m.allKeyLazy(()-> Arbitraries.integers().between(0, 100)))
@@ -412,7 +412,7 @@ class InnerSpecTest {
 	}
 
 	// TODO: Remove 'tries' after preventing the generation of duplicate map keys
-	@Property(tries = 5)
+	@Property(tries = 1)
 	void allEntryLazy() {
 		IntegerMapObject actual = SUT.giveMeBuilder(IntegerMapObject.class)
 			.setInner("integerMap", m -> m.allEntryLazy(
