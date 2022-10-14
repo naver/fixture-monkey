@@ -182,8 +182,8 @@ public final class JavaDefaultArbitraryGeneratorBuilder {
 					),
 					this.priorityIntrospector,
 					this.containerIntrospector,
-					this.fallbackIntrospector,
-					this.objectIntrospector
+					this.objectIntrospector,
+					this.fallbackIntrospector
 				)
 			)
 		);

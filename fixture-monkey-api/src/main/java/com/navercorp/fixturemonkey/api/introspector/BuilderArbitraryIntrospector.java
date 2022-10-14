@@ -19,6 +19,7 @@
 package com.navercorp.fixturemonkey.api.introspector;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -62,7 +63,7 @@ public final class BuilderArbitraryIntrospector
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
 		Property property = context.getProperty();
 		Class<?> type = Types.getActualType(property.getType());
-		if (type.isInterface()) {
+		if (type.isInterface() || Modifier.isAbstract(type.getModifiers())) {
 			return ArbitraryIntrospectorResult.EMPTY;
 		}
 

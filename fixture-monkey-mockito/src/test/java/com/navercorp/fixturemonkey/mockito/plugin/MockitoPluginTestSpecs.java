@@ -27,7 +27,7 @@ class MockitoPluginTestSpecs {
 		private InterfaceSample interfaceSample;
 	}
 
-	public abstract static class AbstractSample {
+	abstract static class AbstractSample {
 		private String value;
 
 		public String getValue() {
