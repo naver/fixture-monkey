@@ -1339,16 +1339,6 @@ class FixtureMonkeyV04Test {
 	}
 
 	@Property
-	void generateHugeSetToCheckUniquePropertiesWorks() {
-		Set<String> actual = SUT.giveMeBuilder(new TypeReference<Set<String>>() {
-			})
-			.size("$", 100)
-			.sample();
-
-		then(actual).hasSize(100);
-	}
-
-	@Property
 	void giveMeManipulatedObjectRemainsManipulator() {
 		ListStringObject expected = SUT.giveMeBuilder(ListStringObject.class)
 			.size("values", 2, 2)
@@ -1439,5 +1429,17 @@ class FixtureMonkeyV04Test {
 		URI actual = SUT.giveMeOne(URI.class);
 
 		then(actual).isNotNull();
+	}
+
+	@Property
+	void sizeNotSetEmptyList() {
+		// when
+		List<String> actual = SUT.giveMeBuilder(ComplexObject.class)
+			.size("strList", 1)
+			.set("strList", new ArrayList<>())
+			.sample()
+			.getStrList();
+
+		then(actual).hasSize(1);
 	}
 }
