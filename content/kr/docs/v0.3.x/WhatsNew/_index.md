@@ -1,7 +1,6 @@
 
 ---
-title: "What's New"
-linkTitle: "What's New"
+title: "What's New in 0.3.x"
 weight: 7
 ---
 ## What's New in 0.3.4

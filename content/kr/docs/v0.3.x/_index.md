@@ -1,11 +1,7 @@
 
 ---
-title: "Hello, Fixture Monkey"
-linkTitle: "Hello, Fixture Monkey"
-weight: 1
-menu:
-  main:
-    weight: 1
+title: "Fixture Monkey"
+toc_hide: true
 ---
 ## Fixture Monkey는
 
