@@ -36,6 +36,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -134,6 +135,14 @@ public class Types {
 			}
 
 			return Arrays.asList(rawTypes);
+		}
+
+		if (ParameterizedType.class.isAssignableFrom(type.getClass())) {
+			Type[] actualTypeArguments = ((ParameterizedType)type).getActualTypeArguments();
+
+			return Arrays.stream(actualTypeArguments)
+				.map(Types::generateAnnotatedTypeWithoutAnnotation)
+				.collect(Collectors.toList());
 		}
 
 		throw new UnsupportedOperationException(
@@ -405,14 +414,20 @@ public class Types {
 	}
 
 	public static AnnotatedType getArrayComponentAnnotatedType(AnnotatedType annotatedType) {
-		if (!(annotatedType instanceof AnnotatedArrayType)) {
-			throw new IllegalArgumentException(
-				"given type is not Array type, annotatedType: " + annotatedType
-			);
-		}
-		AnnotatedArrayType annotatedArrayType = (AnnotatedArrayType)annotatedType;
+		if ((annotatedType instanceof AnnotatedArrayType)) {
+			AnnotatedArrayType annotatedArrayType = (AnnotatedArrayType)annotatedType;
 
-		return annotatedArrayType.getAnnotatedGenericComponentType();
+			return annotatedArrayType.getAnnotatedGenericComponentType();
+		}
+
+		Class<?> type = Types.getActualType(annotatedType.getType());
+		if (type.isArray()) {
+			return generateAnnotatedTypeWithoutAnnotation(type.getComponentType());
+		}
+
+		throw new IllegalArgumentException(
+			"given type is not Array type, annotatedType: " + annotatedType
+		);
 	}
 
 	public static Class<?> getArrayComponentType(AnnotatedType annotatedType) {
