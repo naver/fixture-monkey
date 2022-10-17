@@ -86,6 +86,8 @@ public final class GenerateOptions {
 		List<String> defaultJavaPackages = new ArrayList<>();
 		defaultJavaPackages.add("java.lang");
 		defaultJavaPackages.add("java.net");
+		defaultJavaPackages.add("java.util");
+		defaultJavaPackages.add("java.math");
 		defaultJavaPackages.add("java.time");
 		defaultJavaPackages.add("jdk.internal.reflect");
 		defaultJavaPackages.add("sun.reflect");
