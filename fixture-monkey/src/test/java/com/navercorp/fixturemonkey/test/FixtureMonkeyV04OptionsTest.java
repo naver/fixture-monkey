@@ -1034,4 +1034,21 @@ class FixtureMonkeyV04OptionsTest {
 		Set<String> actual = new HashSet<>(sampled);
 		then(actual).hasSizeGreaterThan(1);
 	}
+
+	@Property
+	void registerParentSetNullChildAndChildRegistered() {
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.register(SimpleObject.class, fixture -> fixture.giveMeBuilder(SimpleObject.class).set("str", "test"))
+			.register(ComplexObject.class, fixture -> fixture.giveMeBuilder(ComplexObject.class).setNull("object"))
+			.build();
+
+		SimpleObject actual = sut.giveMeBuilder(new TypeReference<List<ComplexObject>>() {
+			})
+			.size("$", 1)
+			.sample()
+			.get(0)
+			.getObject();
+
+		then(actual).isNull();
+	}
 }
