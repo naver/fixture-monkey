@@ -50,17 +50,17 @@ final class MetadataCollector {
 	private void collect(ArbitraryNode node) {
 		Property property = node.getArbitraryProperty().getObjectProperty().getProperty();
 
+		List<ArbitraryNode> children = node.getChildren();
+		for (ArbitraryNode child : children) {
+			collect(child);
+		}
+
 		List<ArbitraryNode> list = Collections.singletonList(node);
 		nodesByProperty.merge(
 			property,
 			list,
 			(prev, now) -> Stream.concat(prev.stream(), now.stream()).collect(Collectors.toList())
 		);
-
-		List<ArbitraryNode> children = node.getChildren();
-		for (ArbitraryNode child : children) {
-			collect(child);
-		}
 	}
 
 }
