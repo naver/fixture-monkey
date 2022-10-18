@@ -23,6 +23,8 @@ import org.apiguardian.api.API
 import java.lang.reflect.AnnotatedType
 import java.lang.reflect.Type
 import kotlin.reflect.KProperty
+import kotlin.reflect.jvm.isAccessible
+import kotlin.reflect.jvm.javaField
 
 @API(since = "0.4.0", status = API.Status.EXPERIMENTAL)
 data class KPropertyProperty(
@@ -38,7 +40,14 @@ data class KPropertyProperty(
 
     override fun getAnnotations(): List<Annotation> = this.annotatedType.annotations.toList()
 
-    override fun getValue(obj: Any): Any? = this.kProperty.getter.call(obj)
+    override fun getValue(obj: Any): Any? =
+        if (this.kProperty.isAccessible) {
+            this.kProperty.getter.call(obj)
+        } else {
+            val javaField = this.kProperty.javaField!!
+            javaField.isAccessible = true
+            javaField.get(obj)
+        }
 
     override fun isNullable(): Boolean = this.kProperty.returnType.isMarkedNullable
 }

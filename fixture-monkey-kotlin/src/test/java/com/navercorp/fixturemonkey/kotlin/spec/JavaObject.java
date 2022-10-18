@@ -18,17 +18,28 @@
 
 package com.navercorp.fixturemonkey.kotlin.spec;
 
+import java.util.Map;
+
 public class JavaObject {
 	private String value;
+	private Map<String, String> map;
 
 	public JavaObject() {
+	}
+
+	public String getValue() {
+		return value;
 	}
 
 	public void setValue(String value) {
 		this.value = value;
 	}
 
-	public String getValue() {
-		return value;
+	public Map<String, String> getMap() {
+		return map;
+	}
+
+	public void setMap(Map<String, String> map) {
+		this.map = map;
 	}
 }
