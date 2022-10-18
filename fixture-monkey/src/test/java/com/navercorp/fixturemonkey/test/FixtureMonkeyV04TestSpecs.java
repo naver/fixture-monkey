@@ -19,8 +19,23 @@
 
 package com.navercorp.fixturemonkey.test;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.time.Duration;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.MonthDay;
+import java.time.OffsetDateTime;
+import java.time.OffsetTime;
+import java.time.Period;
+import java.time.Year;
+import java.time.YearMonth;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -42,11 +57,9 @@ class FixtureMonkeyV04TestSpecs {
 		private String str;
 		private int integer;
 		private int[] intArray;
-		private Long wrapperLong;
 		private List<String> strList;
 		private String[] strArray;
 		private SimpleEnum enumValue;
-		private LocalDateTime localDateTime;
 		private SimpleObject object;
 		private List<SimpleObject> list;
 		private Map<String, SimpleObject> map;
@@ -64,13 +77,41 @@ class FixtureMonkeyV04TestSpecs {
 	@Data
 	public static class SimpleObject {
 		private String str;
+		private char character;
+		private Character wrapperCharacter;
+		private short primitiveShort;
+		private Short wrapperShort;
+		private byte primitiveByte;
+		private Byte wrapperByte;
+		private double primitiveDouble;
+		private Double wrapperDouble;
+		private float primitiveFloat;
+		private Float wrapperFloat;
 		private int integer;
 		private Integer wrapperInteger;
+		private long primitiveLong;
+		private Long wrapperLong;
+		private BigInteger bigInteger;
+		private BigDecimal bigDecimal;
+		private Calendar calendar;
+		private Date date;
+		private Instant instant;
+		private LocalDate localDate;
+		private LocalDateTime localDateTime;
+		private LocalTime localTime;
+		private ZonedDateTime zonedDateTime;
+		private MonthDay monthDay;
+		private OffsetDateTime offsetDateTime;
+		private OffsetTime offsetTime;
+		private Period period;
+		private Duration duration;
+		private Year year;
+		private YearMonth yearMonth;
+		private ZoneOffset zoneOffset;
 		private Optional<String> optionalString;
 		private OptionalInt optionalInt;
 		private OptionalLong optionalLong;
 		private OptionalDouble optionalDouble;
-		private Instant instant;
 	}
 
 	@Data
