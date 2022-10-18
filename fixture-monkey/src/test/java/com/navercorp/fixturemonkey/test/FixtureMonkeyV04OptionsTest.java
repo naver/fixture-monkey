@@ -75,8 +75,8 @@ import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpe
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.SimpleObjectChild;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.ComplexObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.Interface;
-import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.InterfaceImplementation;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.InterfaceFieldObject;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.InterfaceImplementation;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.ListStringObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.NullableObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.SimpleObject;
