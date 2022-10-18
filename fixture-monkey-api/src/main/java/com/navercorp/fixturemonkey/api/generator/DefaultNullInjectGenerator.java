@@ -138,14 +138,6 @@ public final class DefaultNullInjectGenerator implements NullInjectGenerator {
 			nullable = !this.defaultNotNull;
 		}
 
-		if (context.isContainer() && context.getProperty().isNullable() == null) {
-			nullable = this.nullableContainer;
-		}
-
-		if (context.getOwnerProperty() != null && context.getOwnerProperty().getContainerProperty() != null) {
-			nullable = this.nullableElement;
-		}
-
 		Set<String> annotations = context.getProperty().getAnnotations().stream()
 			.map(it -> it.annotationType().getName())
 			.collect(toSet());
@@ -164,6 +156,14 @@ public final class DefaultNullInjectGenerator implements NullInjectGenerator {
 			if (hasNotNullAnnotation) {
 				nullable = false;
 			}
+		}
+
+		if (context.isContainer() && context.getProperty().isNullable() == null) {
+			nullable = this.nullableContainer;
+		}
+
+		if (context.getOwnerProperty() != null && context.getOwnerProperty().getContainerProperty() != null) {
+			nullable = this.nullableElement;
 		}
 
 		return nullable ? this.defaultNullInject : NOT_NULL_INJECT;

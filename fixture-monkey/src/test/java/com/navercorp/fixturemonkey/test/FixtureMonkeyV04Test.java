@@ -62,6 +62,7 @@ import com.navercorp.fixturemonkey.test.ComplexManipulatorTestSpecs.StringValue;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.ComplexObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.EnumObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.ListStringObject;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.NullableObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.SimpleObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.StaticFieldObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.StringPair;
@@ -1441,5 +1442,14 @@ class FixtureMonkeyV04Test {
 			.getStrList();
 
 		then(actual).hasSize(1);
+	}
+
+	@Property
+	void sampleNullableContainerReturnsNotNull() {
+		// when
+		List<String> values = SUT.giveMeOne(NullableObject.class)
+			.getValues();
+
+		then(values).isNotNull();
 	}
 }
