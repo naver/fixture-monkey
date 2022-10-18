@@ -136,6 +136,19 @@ class FixtureMonkeyV04TestSpecs {
 		List<String> values;
 	}
 
+	public interface Interface {
+	}
+
+	@Data
+	public static class InterfaceImplementation implements Interface {
+		private String value;
+	}
+
+	@Data
+	public static class InterfaceFieldObject {
+		InterfaceImplementation value;
+	}
+
 	public enum TwoEnum {
 		ONE, TWO
 	}

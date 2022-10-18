@@ -25,7 +25,6 @@ import static org.assertj.core.api.BDDAssertions.thenThrownBy;
 
 import java.lang.reflect.AnnotatedType;
 import java.time.Instant;
-import java.time.temporal.Temporal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -75,6 +74,9 @@ import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpe
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.RegisterGroup;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.SimpleObjectChild;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.ComplexObject;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.Interface;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.InterfaceImplementation;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.InterfaceFieldObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.ListStringObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.NullableObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.SimpleObject;
@@ -264,14 +266,15 @@ class FixtureMonkeyV04OptionsTest {
 	@Property
 	void pushAssignableTypePropertyNameResolver() {
 		LabMonkey sut = LabMonkey.labMonkeyBuilder()
-			.pushAssignableTypePropertyNameResolver(Temporal.class, (property) -> "temporal")
+			.pushAssignableTypePropertyNameResolver(Interface.class, (property) -> "interface")
 			.build();
-		Instant expected = Instant.now();
+		InterfaceImplementation expected = new InterfaceImplementation();
+		expected.setValue("test");
 
-		Instant actual = sut.giveMeBuilder(SimpleObject.class)
-			.set("temporal", expected)
+		InterfaceImplementation actual = sut.giveMeBuilder(InterfaceFieldObject.class)
+			.set("interface", expected)
 			.sample()
-			.getInstant();
+			.getValue();
 
 		then(actual).isEqualTo(expected);
 	}
