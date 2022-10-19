@@ -18,13 +18,17 @@
 
 package com.navercorp.fixturemonkey.api.property;
 
+import java.beans.ConstructorProperties;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.AnnotatedType;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Parameter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -55,6 +59,15 @@ public final class PropertyCache {
 		Map<String, List<Property>> propertiesMap = new HashMap<>();
 
 		Class<?> actualType = Types.getActualType(annotatedType.getType());
+
+		Map<String, Property> constructorProperties = getConstructorProperties(actualType);
+		for (Entry<String, Property> entry : constructorProperties.entrySet()) {
+			List<Property> properties = propertiesMap.computeIfAbsent(
+				entry.getKey(), name -> new ArrayList<>()
+			);
+			properties.add(entry.getValue());
+		}
+
 		Map<String, Field> fieldMap = getFields(actualType);
 		for (Entry<String, Field> entry : fieldMap.entrySet()) {
 			List<Property> properties = propertiesMap.computeIfAbsent(
@@ -129,6 +142,59 @@ public final class PropertyCache {
 			}
 			return result;
 		});
+	}
+
+	public static Map<String, Property> getConstructorProperties(Class<?> clazz) {
+		Map<String, Property> constructorPropertiesByName = new HashMap<>();
+
+		Constructor<?> constructor = Arrays.stream(clazz.getDeclaredConstructors())
+			.filter(it -> it.getAnnotation(ConstructorProperties.class) != null)
+			.findFirst()
+			.orElse(null);
+
+		if (constructor == null) {
+			return Collections.emptyMap();
+		}
+
+		String[] parameterNames;
+
+		Parameter[] parameters = constructor.getParameters();
+		boolean namePresent = Arrays.stream(parameters).anyMatch(Parameter::isNamePresent);
+		if (namePresent) {
+			parameterNames = Arrays.stream(parameters)
+				.map(Parameter::getName)
+				.toArray(String[]::new);
+		} else {
+			ConstructorProperties constructorPropertiesAnnotation =
+				constructor.getAnnotation(ConstructorProperties.class);
+			parameterNames = constructorPropertiesAnnotation.value();
+		}
+
+		AnnotatedType[] annotatedParameterTypes = constructor.getAnnotatedParameterTypes();
+
+		if (parameterNames.length != annotatedParameterTypes.length) {
+			throw new IllegalArgumentException(
+				"@ConstructorProperties values size should same as constructor parameter size"
+			);
+		}
+		Map<String, Field> fieldsByName = getFields(clazz);
+		int parameterSize = parameterNames.length;
+		for (int i = 0; i < parameterSize; i++) {
+			AnnotatedType annotatedParameterType = annotatedParameterTypes[i];
+			String parameterName = parameterNames[i];
+			Field field = fieldsByName.get(parameterName);
+			Property fieldProperty = field != null ? new FieldProperty(field) : null;
+			constructorPropertiesByName.put(
+				parameterName,
+				new ConstructorProperty(
+					annotatedParameterType,
+					constructor,
+					parameterName,
+					fieldProperty
+				)
+			);
+		}
+		return Collections.unmodifiableMap(constructorPropertiesByName);
 	}
 
 	public static void clearCache() {

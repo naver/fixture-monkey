@@ -27,6 +27,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -47,6 +49,7 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult;
 import com.navercorp.fixturemonkey.api.property.Property;
+import com.navercorp.fixturemonkey.api.property.PropertyCache;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
 import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.jackson.FixtureMonkeyJackson;
@@ -66,21 +69,29 @@ public final class JacksonArbitraryIntrospector implements ArbitraryIntrospector
 	@Override
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
 		Property property = context.getProperty();
-		Class<?> actualType = Types.getActualType(property.getType());
+		Class<?> type = Types.getActualType(property.getType());
 
 		List<ArbitraryProperty> childrenProperties = context.getChildren();
 		Map<String, Arbitrary<?>> childrenArbitraries = context.getChildrenArbitraryContexts()
 			.getArbitrariesByResolvedName();
 
 		BuilderCombinator<Map<String, Object>> builderCombinator = Builders.withBuilder(() -> initializeMap(property));
+		List<String> deserializedPropertyNames = Stream.concat(
+				PropertyCache.getFields(type).keySet().stream(),
+				PropertyCache.getPropertyDescriptors(type).keySet().stream()
+			)
+			.collect(Collectors.toList());
 
 		for (ArbitraryProperty arbitraryProperty : childrenProperties) {
+			if (!deserializedPropertyNames.contains(arbitraryProperty.getObjectProperty().getProperty().getName())) {
+				continue;
+			}
+
 			String resolvePropertyName = arbitraryProperty.getObjectProperty().getResolvedPropertyName();
 			Arbitrary<?> propertyArbitrary = childrenArbitraries.getOrDefault(
 				resolvePropertyName,
 				Arbitraries.just(null)
 			);
-
 			builderCombinator = builderCombinator.use(propertyArbitrary).in((map, value) -> {
 				if (value != null) {
 					Object jsonFormatted = arbitraryProperty.getObjectProperty()
