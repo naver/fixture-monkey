@@ -91,6 +91,8 @@ class FixtureMonkeyV04TestSpecs {
 		private Integer wrapperInteger;
 		private long primitiveLong;
 		private Long wrapperLong;
+		private boolean primitiveBoolean;
+		private Boolean wrapperBoolean;
 		private BigInteger bigInteger;
 		private BigDecimal bigDecimal;
 		private Calendar calendar;
