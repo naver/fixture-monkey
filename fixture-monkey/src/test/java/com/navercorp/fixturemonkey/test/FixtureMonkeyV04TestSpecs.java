@@ -30,6 +30,8 @@ import java.util.OptionalInt;
 import java.util.OptionalLong;
 import java.util.stream.Stream;
 
+import javax.annotation.Nullable;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -85,6 +87,12 @@ class FixtureMonkeyV04TestSpecs {
 	@Data
 	public static class StaticFieldObject {
 		public static final StaticFieldObject CONSTANT = new StaticFieldObject();
+	}
+
+	@Data
+	public static class NullableObject {
+		@Nullable
+		List<String> values;
 	}
 
 	public enum TwoEnum {

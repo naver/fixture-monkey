@@ -76,6 +76,7 @@ import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpe
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.SimpleObjectChild;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.ComplexObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.ListStringObject;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.NullableObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.SimpleObject;
 
 class FixtureMonkeyV04OptionsTest {
@@ -1050,5 +1051,25 @@ class FixtureMonkeyV04OptionsTest {
 			.getObject();
 
 		then(actual).isNull();
+	}
+
+	@Property
+	void sampleNullableContainerWhenOptionNullableContainerIsSetReturnsNull() {
+		DefaultNullInjectGenerator nullInjectGenerator = new DefaultNullInjectGenerator(
+			1.0,
+			true,
+			false,
+			false,
+			Collections.emptySet(),
+			Collections.emptySet()
+		);
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.defaultNullInjectGenerator(nullInjectGenerator)
+			.build();
+
+		List<String> values = sut.giveMeOne(NullableObject.class)
+			.getValues();
+
+		then(values).isNull();
 	}
 }
