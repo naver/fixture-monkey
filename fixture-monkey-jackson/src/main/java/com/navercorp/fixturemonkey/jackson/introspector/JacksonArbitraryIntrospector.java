@@ -18,6 +18,8 @@
 
 package com.navercorp.fixturemonkey.jackson.introspector;
 
+import static com.navercorp.fixturemonkey.jackson.property.JacksonAnnotations.getJacksonAnnotation;
+
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAccessor;
@@ -35,6 +37,9 @@ import net.jqwik.api.Builders;
 import net.jqwik.api.Builders.BuilderCombinator;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
@@ -42,6 +47,7 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult;
 import com.navercorp.fixturemonkey.api.property.Property;
+import com.navercorp.fixturemonkey.api.property.RootProperty;
 import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.jackson.FixtureMonkeyJackson;
 
@@ -59,17 +65,22 @@ public final class JacksonArbitraryIntrospector implements ArbitraryIntrospector
 
 	@Override
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
+		Property property = context.getProperty();
+		Class<?> actualType = Types.getActualType(property.getType());
+
 		List<ArbitraryProperty> childrenProperties = context.getChildren();
 		Map<String, Arbitrary<?>> childrenArbitraries = context.getChildrenArbitraryContexts()
 			.getArbitrariesByResolvedName();
 
-		BuilderCombinator<Map<String, Object>> builderCombinator = Builders.withBuilder(HashMap::new);
+		BuilderCombinator<Map<String, Object>> builderCombinator = Builders.withBuilder(() -> initializeMap(property));
+
 		for (ArbitraryProperty arbitraryProperty : childrenProperties) {
 			String resolvePropertyName = arbitraryProperty.getObjectProperty().getResolvedPropertyName();
 			Arbitrary<?> propertyArbitrary = childrenArbitraries.getOrDefault(
 				resolvePropertyName,
 				Arbitraries.just(null)
 			);
+
 			builderCombinator = builderCombinator.use(propertyArbitrary).in((map, value) -> {
 				if (value != null) {
 					Object jsonFormatted = arbitraryProperty.getObjectProperty()
@@ -87,12 +98,47 @@ public final class JacksonArbitraryIntrospector implements ArbitraryIntrospector
 		return new ArbitraryIntrospectorResult(
 			builderCombinator.build(
 				map -> {
-					Property property = context.getProperty();
-					Class<?> type = Types.getActualType(property.getType());
-					return objectMapper.convertValue(map, type);
+					if (property instanceof RootProperty) {
+						return objectMapper.convertValue(map, actualType);
+					}
+					return map;
 				}
 			)
 		);
+	}
+
+	private Map<String, Object> initializeMap(Property property) {
+		Map<String, Object> defaultMap = new HashMap<>();
+
+		Class<?> concreteClass = Types.getActualType(property.getType());
+		JsonTypeInfo jsonTypeInfo = getJacksonAnnotation(property, JsonTypeInfo.class);
+
+		if (jsonTypeInfo == null) {
+			return defaultMap;
+		}
+
+		Id id = jsonTypeInfo.use();
+		String jsonTypeInfoValue;
+		switch (id) {
+			case NAME:
+				JsonTypeName jsonTypeName = getJacksonAnnotation(property, JsonTypeName.class);
+				if (jsonTypeName != null) {
+					jsonTypeInfoValue = jsonTypeName.value();
+				} else {
+					jsonTypeInfoValue = concreteClass.getSimpleName();
+				}
+				break;
+			case CLASS:
+				jsonTypeInfoValue = concreteClass.getName();
+				break;
+			default:
+				throw new IllegalArgumentException("Unsupported JsonTypeInfo Id : " + id.name());
+		}
+		String jsonTypeInfoPropertyName =
+			"".equals(jsonTypeInfo.property()) ? id.getDefaultPropertyName() : jsonTypeInfo.property();
+
+		defaultMap.put(jsonTypeInfoPropertyName, jsonTypeInfoValue);
+		return defaultMap;
 	}
 
 	private Object format(Object object, JsonFormat jsonFormat) {
