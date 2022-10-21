@@ -27,6 +27,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -54,6 +55,8 @@ public final class PropertyCache {
 	private static final Map<Class<?>, Map<String, PropertyDescriptor>> PROPERTY_DESCRIPTORS =
 		new LruCache<>(2000);
 	private static final Map<Class<?>, Map<String, Field>> FIELDS = new LruCache<>(2000);
+	private static final Map<Class<?>, Map.Entry<Constructor<?>, String[]>> PARAMETER_NAMES_BY_PRIMARY_CONSTRUCTOR =
+		new LruCache<>(2000);
 
 	public static List<Property> getProperties(AnnotatedType annotatedType) {
 		Map<String, List<Property>> propertiesMap = new HashMap<>();
@@ -146,37 +149,12 @@ public final class PropertyCache {
 
 	public static Map<String, Property> getConstructorProperties(Class<?> clazz) {
 		Map<String, Property> constructorPropertiesByName = new HashMap<>();
+		Map.Entry<Constructor<?>, String[]> parameterNamesByConstructor = getParameterNamesByConstructor(clazz);
 
-		Constructor<?> constructor = Arrays.stream(clazz.getDeclaredConstructors())
-			.filter(it -> it.getAnnotation(ConstructorProperties.class) != null)
-			.findFirst()
-			.orElse(null);
+		Constructor<?> primaryConstructor = parameterNamesByConstructor.getKey();
+		String[] parameterNames = parameterNamesByConstructor.getValue();
+		AnnotatedType[] annotatedParameterTypes = primaryConstructor.getAnnotatedParameterTypes();
 
-		if (constructor == null) {
-			return Collections.emptyMap();
-		}
-
-		String[] parameterNames;
-
-		Parameter[] parameters = constructor.getParameters();
-		boolean namePresent = Arrays.stream(parameters).anyMatch(Parameter::isNamePresent);
-		if (namePresent) {
-			parameterNames = Arrays.stream(parameters)
-				.map(Parameter::getName)
-				.toArray(String[]::new);
-		} else {
-			ConstructorProperties constructorPropertiesAnnotation =
-				constructor.getAnnotation(ConstructorProperties.class);
-			parameterNames = constructorPropertiesAnnotation.value();
-		}
-
-		AnnotatedType[] annotatedParameterTypes = constructor.getAnnotatedParameterTypes();
-
-		if (parameterNames.length != annotatedParameterTypes.length) {
-			throw new IllegalArgumentException(
-				"@ConstructorProperties values size should same as constructor parameter size"
-			);
-		}
 		Map<String, Field> fieldsByName = getFields(clazz);
 		int parameterSize = parameterNames.length;
 		for (int i = 0; i < parameterSize; i++) {
@@ -188,7 +166,7 @@ public final class PropertyCache {
 				parameterName,
 				new ConstructorProperty(
 					annotatedParameterType,
-					constructor,
+					primaryConstructor,
 					parameterName,
 					fieldProperty
 				)
@@ -197,8 +175,77 @@ public final class PropertyCache {
 		return Collections.unmodifiableMap(constructorPropertiesByName);
 	}
 
+	public static Entry<Constructor<?>, String[]> getParameterNamesByConstructor(Class<?> clazz) {
+		return PARAMETER_NAMES_BY_PRIMARY_CONSTRUCTOR.computeIfAbsent(clazz,
+			type -> {
+				List<Constructor<?>> possibilities = new ArrayList<>();
+
+				Constructor<?>[] constructors = clazz.getDeclaredConstructors();
+
+				for (Constructor<?> constructor : constructors) {
+					Parameter[] parameters = constructor.getParameters();
+					boolean namePresent = Arrays.stream(parameters).anyMatch(Parameter::isNamePresent);
+					if (namePresent) {
+						possibilities.add(constructor);
+					} else {
+						ConstructorProperties constructorPropertiesAnnotation =
+							constructor.getAnnotation(ConstructorProperties.class);
+
+						if (constructorPropertiesAnnotation != null) {
+							possibilities.add(constructor);
+						}
+					}
+				}
+
+				boolean constructorPropertiesPresent = possibilities.stream()
+					.anyMatch(it -> it.getAnnotation(ConstructorProperties.class) != null);
+
+				Constructor<?> primaryConstructor;
+				if (constructorPropertiesPresent) {
+					primaryConstructor = possibilities.stream()
+						.filter(it -> it.getAnnotation(ConstructorProperties.class) != null)
+						.findFirst()
+						.orElseThrow(() -> new IllegalArgumentException(
+							"Constructor should have @ConstructorProperties" + clazz.getSimpleName())
+						);
+				} else {
+					primaryConstructor = possibilities.stream()
+						.findFirst()
+						.orElseThrow(
+							() -> new IllegalArgumentException(
+								"Constructor is not present type " + clazz.getSimpleName())
+						);
+				}
+
+				String[] parameterNames = getParameterNames(primaryConstructor);
+				AnnotatedType[] annotatedParameterTypes = primaryConstructor.getAnnotatedParameterTypes();
+
+				if (parameterNames.length != annotatedParameterTypes.length) {
+					throw new IllegalArgumentException(
+						"@ConstructorProperties values size should same as constructor parameter size"
+					);
+				}
+				return new SimpleEntry<>(primaryConstructor, parameterNames);
+			});
+	}
+
 	public static void clearCache() {
 		PROPERTY_DESCRIPTORS.clear();
 		FIELDS.clear();
+	}
+
+	private static String[] getParameterNames(Constructor<?> constructor) {
+		Parameter[] parameters = constructor.getParameters();
+		boolean namePresent = Arrays.stream(parameters).anyMatch(Parameter::isNamePresent);
+
+		if (namePresent) {
+			return Arrays.stream(parameters)
+				.map(Parameter::getName)
+				.toArray(String[]::new);
+		} else {
+			ConstructorProperties constructorPropertiesAnnotation =
+				constructor.getAnnotation(ConstructorProperties.class);
+			return constructorPropertiesAnnotation.value();
+		}
 	}
 }

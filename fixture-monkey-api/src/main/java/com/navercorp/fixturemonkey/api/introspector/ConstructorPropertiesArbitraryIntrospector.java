@@ -18,13 +18,14 @@
 
 package com.navercorp.fixturemonkey.api.introspector;
 
-import java.beans.ConstructorProperties;
+import static com.navercorp.fixturemonkey.api.property.PropertyCache.getParameterNamesByConstructor;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -53,19 +54,16 @@ public final class ConstructorPropertiesArbitraryIntrospector implements Arbitra
 		Map<String, Arbitrary<?>> childrenArbitraries = context.getChildrenArbitraryContexts()
 			.getArbitrariesByResolvedName();
 
-		Constructor<?> constructor = Arrays.stream(type.getDeclaredConstructors())
-			.filter(it -> it.getAnnotation(ConstructorProperties.class) != null)
-			.findFirst()
-			.orElseThrow(() -> new IllegalArgumentException("@ConstructorProperties is required."));
-
-		String[] parameters = constructor.getAnnotation(ConstructorProperties.class).value();
-		int parameterSize = parameters.length;
+		Entry<Constructor<?>, String[]> parameterNamesByConstructor = getParameterNamesByConstructor(type);
+		Constructor<?> primaryConstructor = parameterNamesByConstructor.getKey();
+		String[] parameterNames = parameterNamesByConstructor.getValue();
+		int parameterSize = parameterNames.length;
 
 		Builders.BuilderCombinator<List<Object>> builderCombinator =
 			Builders.withBuilder(() -> new ArrayList<>(parameterSize));
 
-		for (String parameter : parameters) {
-			Arbitrary<?> arbitrary = childrenArbitraries.get(parameter);
+		for (String parameterName : parameterNames) {
+			Arbitrary<?> arbitrary = childrenArbitraries.get(parameterName);
 
 			builderCombinator = builderCombinator.use(arbitrary).in((list, value) -> {
 				list.add(value);
@@ -75,7 +73,7 @@ public final class ConstructorPropertiesArbitraryIntrospector implements Arbitra
 
 		return new ArbitraryIntrospectorResult(
 			builderCombinator.build(
-				list -> ReflectionUtils.newInstance(constructor, list.toArray())
+				list -> ReflectionUtils.newInstance(primaryConstructor, list.toArray())
 			)
 		);
 	}
