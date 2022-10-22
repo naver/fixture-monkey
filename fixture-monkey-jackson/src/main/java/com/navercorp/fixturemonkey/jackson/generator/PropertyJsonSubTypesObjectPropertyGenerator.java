@@ -43,7 +43,7 @@ import com.navercorp.fixturemonkey.api.generator.PropertyGenerator;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.type.Types;
 
-@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+@API(since = "0.4.2", status = Status.EXPERIMENTAL)
 public final class PropertyJsonSubTypesObjectPropertyGenerator implements ObjectPropertyGenerator {
 	public static final PropertyJsonSubTypesObjectPropertyGenerator INSTANCE =
 		new PropertyJsonSubTypesObjectPropertyGenerator();
