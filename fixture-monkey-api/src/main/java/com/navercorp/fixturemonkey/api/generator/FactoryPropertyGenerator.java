@@ -33,7 +33,7 @@ import com.navercorp.fixturemonkey.api.property.PropertyCache;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
 import com.navercorp.fixturemonkey.api.property.TupleLikeElementsProperty;
 
-@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+@API(since = "0.4.2", status = Status.EXPERIMENTAL)
 public final class FactoryPropertyGenerator implements PropertyGenerator {
 	@Override
 	public Property generateRootProperty(AnnotatedType annotatedType) {

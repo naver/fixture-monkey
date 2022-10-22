@@ -40,7 +40,7 @@ import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.random.Randoms;
 import com.navercorp.fixturemonkey.api.type.Types;
 
-@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+@API(since = "0.4.2", status = Status.EXPERIMENTAL)
 public final class FactoryMethodArbitraryIntrospector implements ArbitraryIntrospector {
 	public static final FactoryMethodArbitraryIntrospector INSTANCE =
 		new FactoryMethodArbitraryIntrospector();
