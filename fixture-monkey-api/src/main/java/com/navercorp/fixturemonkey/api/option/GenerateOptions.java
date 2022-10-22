@@ -95,6 +95,7 @@ public final class GenerateOptions {
 		DEFAULT_JAVA_PACKAGES = Collections.unmodifiableList(defaultJavaPackages);
 	}
 
+	private final List<MatcherOperator<PropertyGenerator>> propertyGenerators;
 	private final PropertyGenerator defaultPropertyGenerator;
 	private final List<MatcherOperator<ObjectPropertyGenerator>> objectPropertyGenerators;
 	private final ObjectPropertyGenerator defaultObjectPropertyGenerator;
@@ -114,6 +115,7 @@ public final class GenerateOptions {
 
 	@SuppressWarnings("rawtypes")
 	public GenerateOptions(
+		List<MatcherOperator<PropertyGenerator>> propertyGenerators,
 		PropertyGenerator defaultPropertyGenerator,
 		List<MatcherOperator<ObjectPropertyGenerator>> objectPropertyGenerators,
 		ObjectPropertyGenerator defaultObjectPropertyGenerator,
@@ -128,6 +130,7 @@ public final class GenerateOptions {
 		ArbitraryGenerator defaultArbitraryGenerator,
 		List<MatcherOperator<FixtureCustomizer>> arbitraryCustomizers
 	) {
+		this.propertyGenerators = propertyGenerators;
 		this.defaultPropertyGenerator = defaultPropertyGenerator;
 		this.objectPropertyGenerators = objectPropertyGenerators;
 		this.defaultObjectPropertyGenerator = defaultObjectPropertyGenerator;
@@ -146,6 +149,18 @@ public final class GenerateOptions {
 
 	public static GenerateOptionsBuilder builder() {
 		return new GenerateOptionsBuilder();
+	}
+
+	public List<MatcherOperator<PropertyGenerator>> getPropertyGenerators() {
+		return propertyGenerators;
+	}
+
+	public PropertyGenerator getPropertyGenerator(Property property) {
+		return this.getPropertyGenerators().stream()
+			.filter(it -> it.match(property))
+			.map(MatcherOperator::getOperator)
+			.findFirst()
+			.orElse(this.getDefaultPropertyGenerator());
 	}
 
 	public PropertyGenerator getDefaultPropertyGenerator() {

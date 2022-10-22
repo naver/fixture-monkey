@@ -33,7 +33,7 @@ public final class DefaultObjectPropertyGenerator implements ObjectPropertyGener
 	@Override
 	public ObjectProperty generate(ObjectPropertyGeneratorContext context) {
 		Property property = context.getProperty();
-		PropertyGenerator defaultPropertyGenerator = context.getGenerateOptions().getDefaultPropertyGenerator();
+		PropertyGenerator defaultPropertyGenerator = context.getGenerateOptions().getPropertyGenerator(property);
 		List<Property> childProperties =
 			defaultPropertyGenerator.generateObjectChildProperties(property.getAnnotatedType());
 		double nullInject = context.getGenerateOptions().getNullInjectGenerator(property)
