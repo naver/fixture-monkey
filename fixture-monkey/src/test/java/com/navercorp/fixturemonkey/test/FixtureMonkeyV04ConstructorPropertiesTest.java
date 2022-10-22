@@ -1,6 +1,7 @@
 package com.navercorp.fixturemonkey.test;
 
 import static org.assertj.core.api.BDDAssertions.then;
+import static org.assertj.core.api.BDDAssertions.thenNoException;
 
 import net.jqwik.api.Property;
 
@@ -56,5 +57,11 @@ class FixtureMonkeyV04ConstructorPropertiesTest {
 			.isLengthOverFive();
 
 		then(actual).isTrue();
+	}
+
+	@Property
+	void fixed() {
+		thenNoException()
+			.isThrownBy(() -> SUT.giveMeBuilder(ConstructorComplexObject.class).fixed().sample());
 	}
 }
