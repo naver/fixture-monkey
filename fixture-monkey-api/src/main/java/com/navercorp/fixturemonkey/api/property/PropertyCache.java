@@ -38,6 +38,8 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.annotation.Nullable;
+
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 import org.junit.platform.commons.util.ReflectionUtils;
@@ -150,6 +152,9 @@ public final class PropertyCache {
 	public static Map<String, Property> getConstructorProperties(Class<?> clazz) {
 		Map<String, Property> constructorPropertiesByName = new HashMap<>();
 		Map.Entry<Constructor<?>, String[]> parameterNamesByConstructor = getParameterNamesByConstructor(clazz);
+		if (parameterNamesByConstructor == null) {
+			return Collections.emptyMap();
+		}
 
 		Constructor<?> primaryConstructor = parameterNamesByConstructor.getKey();
 		String[] parameterNames = parameterNamesByConstructor.getValue();
@@ -175,6 +180,7 @@ public final class PropertyCache {
 		return Collections.unmodifiableMap(constructorPropertiesByName);
 	}
 
+	@Nullable
 	public static Entry<Constructor<?>, String[]> getParameterNamesByConstructor(Class<?> clazz) {
 		return PARAMETER_NAMES_BY_PRIMARY_CONSTRUCTOR.computeIfAbsent(clazz,
 			type -> {
@@ -211,10 +217,11 @@ public final class PropertyCache {
 				} else {
 					primaryConstructor = possibilities.stream()
 						.findFirst()
-						.orElseThrow(
-							() -> new IllegalArgumentException(
-								"Constructor is not present type " + clazz.getSimpleName())
-						);
+						.orElse(null);
+				}
+
+				if (primaryConstructor == null) {
+					return null;
 				}
 
 				String[] parameterNames = getParameterNames(primaryConstructor);
