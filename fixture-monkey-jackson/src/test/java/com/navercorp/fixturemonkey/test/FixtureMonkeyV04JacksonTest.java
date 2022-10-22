@@ -100,16 +100,18 @@ class FixtureMonkeyV04JacksonTest {
 	@Value
 	public static class JsonTypeInfoIdClassSpec {
 		@JsonTypeInfo(use = Id.CLASS)
-		@JsonSubTypes({
-			@JsonSubTypes.Type(
-				value = TypeA.class,
-				name = "com.navercorp.fixturemonkey.test.FixtureMonkeyV04Test$TypeA"
-			),
-			@JsonSubTypes.Type(
-				value = TypeB.class,
-				name = "com.navercorp.fixturemonkey.test.FixtureMonkeyV04Test$TypeB"
-			)
-		})
+		@JsonSubTypes(
+			{
+				@JsonSubTypes.Type(
+					value = TypeA.class,
+					name = "com.navercorp.fixturemonkey.test.FixtureMonkeyV04Test$TypeA"
+				),
+				@JsonSubTypes.Type(
+					value = TypeB.class,
+					name = "com.navercorp.fixturemonkey.test.FixtureMonkeyV04Test$TypeB"
+				)
+			}
+		)
 		Type type;
 	}
 
