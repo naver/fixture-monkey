@@ -38,7 +38,7 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.type.Types;
 
-@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+@API(since = "0.4.2", status = Status.EXPERIMENTAL)
 public final class ConstructorPropertiesArbitraryIntrospector implements ArbitraryIntrospector {
 	public static final ConstructorPropertiesArbitraryIntrospector INSTANCE =
 		new ConstructorPropertiesArbitraryIntrospector();
