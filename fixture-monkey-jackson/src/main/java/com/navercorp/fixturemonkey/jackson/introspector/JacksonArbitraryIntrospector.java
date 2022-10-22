@@ -110,7 +110,7 @@ public final class JacksonArbitraryIntrospector implements ArbitraryIntrospector
 			builderCombinator.build(
 				map -> {
 					if (property instanceof RootProperty) {
-						return objectMapper.convertValue(map, actualType);
+						return objectMapper.convertValue(map, type);
 					}
 					return map;
 				}
