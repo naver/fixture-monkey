@@ -24,10 +24,13 @@ import com.navercorp.fixturemonkey.ArbitraryBuilder
 import com.navercorp.fixturemonkey.api.expression.ExpressionGenerator
 import com.navercorp.fixturemonkey.api.property.Property
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver
+import com.navercorp.fixturemonkey.customizer.InnerSpec
 import java.lang.reflect.AnnotatedType
 import java.lang.reflect.Field
 import java.lang.reflect.ParameterizedType
+import java.util.function.Consumer
 import java.util.function.Predicate
+import java.util.function.Supplier
 import kotlin.reflect.KFunction1
 import kotlin.reflect.KProperty
 import kotlin.reflect.KProperty1
@@ -391,6 +394,18 @@ fun <T> ArbitraryBuilder<T>.maxSizeExpGetter(
     max: Int
 ): ArbitraryBuilder<T> =
     this.maxSize(expressionGenerator, max)
+
+fun <T> ArbitraryBuilder<T>.setInnerExp(property: KProperty1<T, Any?>, consumer: Consumer<InnerSpec>): ArbitraryBuilder<T> =
+    this.setInner(PropertyExpressionGenerator(KotlinProperty(property)), consumer)
+
+fun <T> ArbitraryBuilder<T>.setInnerExpGetter(property: KFunction1<T, Any?>, consumer: Consumer<InnerSpec>): ArbitraryBuilder<T> =
+    this.setInner(PropertyExpressionGenerator(KotlinGetterProperty(property)), consumer)
+
+fun <T> ArbitraryBuilder<T>.setLazyExp(property: KProperty1<T, Any?>, supplier: Supplier<Any?>): ArbitraryBuilder<T> =
+    this.setLazy(PropertyExpressionGenerator(KotlinProperty(property)), supplier)
+
+fun <T> ArbitraryBuilder<T>.setLazyExpGetter(property: KFunction1<T, Any?>, supplier: Supplier<Any?>, limit: Long): ArbitraryBuilder<T> =
+    this.setLazy(PropertyExpressionGenerator(KotlinGetterProperty(property)), supplier, limit.toInt())
 
 infix fun <T, R, E> KProperty1<T, R?>.into(property: KProperty1<R, E?>): Exp<E> =
     Exp(
