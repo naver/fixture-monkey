@@ -73,6 +73,12 @@ public final class FactoryMethodArbitraryIntrospector implements ArbitraryIntros
 			Builders.withBuilder(() -> new ArrayList<>(parameterSize));
 
 		for (Parameter parameter : parameters) {
+			if (!childrenArbitraries.containsKey(parameter.getName())) {
+				throw new IllegalArgumentException(
+					"Factory method parameter property does not exist. " + parameter.getName() + " \n"
+						+ "check out if using FactoryPropertyGenerator."
+				);
+			}
 			Arbitrary<?> arbitrary = childrenArbitraries.get(parameter.getName());
 
 			builderCombinator = builderCombinator.use(arbitrary).in((list, value) -> {
