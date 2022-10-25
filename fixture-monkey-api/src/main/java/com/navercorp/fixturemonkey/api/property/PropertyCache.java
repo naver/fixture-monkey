@@ -18,13 +18,18 @@
 
 package com.navercorp.fixturemonkey.api.property;
 
+import java.beans.ConstructorProperties;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.AnnotatedType;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Parameter;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -32,6 +37,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+
+import javax.annotation.Nullable;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -50,11 +57,22 @@ public final class PropertyCache {
 	private static final Map<Class<?>, Map<String, PropertyDescriptor>> PROPERTY_DESCRIPTORS =
 		new LruCache<>(2000);
 	private static final Map<Class<?>, Map<String, Field>> FIELDS = new LruCache<>(2000);
+	private static final Map<Class<?>, Map.Entry<Constructor<?>, String[]>> PARAMETER_NAMES_BY_PRIMARY_CONSTRUCTOR =
+		new LruCache<>(2000);
 
 	public static List<Property> getProperties(AnnotatedType annotatedType) {
 		Map<String, List<Property>> propertiesMap = new HashMap<>();
 
 		Class<?> actualType = Types.getActualType(annotatedType.getType());
+
+		Map<String, Property> constructorProperties = getConstructorProperties(actualType);
+		for (Entry<String, Property> entry : constructorProperties.entrySet()) {
+			List<Property> properties = propertiesMap.computeIfAbsent(
+				entry.getKey(), name -> new ArrayList<>()
+			);
+			properties.add(entry.getValue());
+		}
+
 		Map<String, Field> fieldMap = getFields(actualType);
 		for (Entry<String, Field> entry : fieldMap.entrySet()) {
 			List<Property> properties = propertiesMap.computeIfAbsent(
@@ -131,8 +149,110 @@ public final class PropertyCache {
 		});
 	}
 
+	public static Map<String, Property> getConstructorProperties(Class<?> clazz) {
+		Map<String, Property> constructorPropertiesByName = new HashMap<>();
+		Map.Entry<Constructor<?>, String[]> parameterNamesByConstructor = getParameterNamesByConstructor(clazz);
+		if (parameterNamesByConstructor == null) {
+			return Collections.emptyMap();
+		}
+
+		Constructor<?> primaryConstructor = parameterNamesByConstructor.getKey();
+		String[] parameterNames = parameterNamesByConstructor.getValue();
+		AnnotatedType[] annotatedParameterTypes = primaryConstructor.getAnnotatedParameterTypes();
+
+		Map<String, Field> fieldsByName = getFields(clazz);
+		int parameterSize = parameterNames.length;
+		for (int i = 0; i < parameterSize; i++) {
+			AnnotatedType annotatedParameterType = annotatedParameterTypes[i];
+			String parameterName = parameterNames[i];
+			Field field = fieldsByName.get(parameterName);
+			Property fieldProperty = field != null ? new FieldProperty(field) : null;
+			constructorPropertiesByName.put(
+				parameterName,
+				new ConstructorProperty(
+					annotatedParameterType,
+					primaryConstructor,
+					parameterName,
+					fieldProperty
+				)
+			);
+		}
+		return Collections.unmodifiableMap(constructorPropertiesByName);
+	}
+
+	@Nullable
+	public static Entry<Constructor<?>, String[]> getParameterNamesByConstructor(Class<?> clazz) {
+		return PARAMETER_NAMES_BY_PRIMARY_CONSTRUCTOR.computeIfAbsent(clazz,
+			type -> {
+				List<Constructor<?>> possibilities = new ArrayList<>();
+
+				Constructor<?>[] constructors = clazz.getDeclaredConstructors();
+
+				for (Constructor<?> constructor : constructors) {
+					Parameter[] parameters = constructor.getParameters();
+					boolean namePresent = Arrays.stream(parameters).anyMatch(Parameter::isNamePresent);
+					if (namePresent) {
+						possibilities.add(constructor);
+					} else {
+						ConstructorProperties constructorPropertiesAnnotation =
+							constructor.getAnnotation(ConstructorProperties.class);
+
+						if (constructorPropertiesAnnotation != null) {
+							possibilities.add(constructor);
+						}
+					}
+				}
+
+				boolean constructorPropertiesPresent = possibilities.stream()
+					.anyMatch(it -> it.getAnnotation(ConstructorProperties.class) != null);
+
+				Constructor<?> primaryConstructor;
+				if (constructorPropertiesPresent) {
+					primaryConstructor = possibilities.stream()
+						.filter(it -> it.getAnnotation(ConstructorProperties.class) != null)
+						.findFirst()
+						.orElseThrow(() -> new IllegalArgumentException(
+							"Constructor should have @ConstructorProperties" + clazz.getSimpleName())
+						);
+				} else {
+					primaryConstructor = possibilities.stream()
+						.findFirst()
+						.orElse(null);
+				}
+
+				if (primaryConstructor == null) {
+					return null;
+				}
+
+				String[] parameterNames = getParameterNames(primaryConstructor);
+				AnnotatedType[] annotatedParameterTypes = primaryConstructor.getAnnotatedParameterTypes();
+
+				if (parameterNames.length != annotatedParameterTypes.length) {
+					throw new IllegalArgumentException(
+						"@ConstructorProperties values size should same as constructor parameter size"
+					);
+				}
+				return new SimpleEntry<>(primaryConstructor, parameterNames);
+			});
+	}
+
 	public static void clearCache() {
 		PROPERTY_DESCRIPTORS.clear();
 		FIELDS.clear();
+	}
+
+	private static String[] getParameterNames(Constructor<?> constructor) {
+		Parameter[] parameters = constructor.getParameters();
+		boolean namePresent = Arrays.stream(parameters).anyMatch(Parameter::isNamePresent);
+
+		if (namePresent) {
+			return Arrays.stream(parameters)
+				.map(Parameter::getName)
+				.toArray(String[]::new);
+		} else {
+			ConstructorProperties constructorPropertiesAnnotation =
+				constructor.getAnnotation(ConstructorProperties.class);
+			return constructorPropertiesAnnotation.value();
+		}
 	}
 }
