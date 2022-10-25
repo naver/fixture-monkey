@@ -56,7 +56,7 @@ public final class ConstructorPropertiesArbitraryIntrospector implements Arbitra
 
 		Entry<Constructor<?>, String[]> parameterNamesByConstructor = getParameterNamesByConstructor(type);
 		if (parameterNamesByConstructor == null) {
-			throw new IllegalArgumentException("primary Constructor does not exist. type " + type.getSimpleName());
+			throw new IllegalArgumentException("Primary Constructor does not exist. type " + type.getSimpleName());
 		}
 		Constructor<?> primaryConstructor = parameterNamesByConstructor.getKey();
 		String[] parameterNames = parameterNamesByConstructor.getValue();

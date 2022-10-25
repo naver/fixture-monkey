@@ -20,7 +20,6 @@ package com.navercorp.fixturemonkey.api.type;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.AnnotatedType;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -33,8 +32,6 @@ public final class TypeCache {
 	private static final Map<Field, AnnotatedType> FIELD_ANNOTATED_TYPE_MAP = new ConcurrentHashMap<>(2000);
 	private static final Map<PropertyDescriptor, AnnotatedType> PROPERTY_DESCRIPTOR_ANNOTATED_TYPE_MAP =
 		new ConcurrentHashMap<>(2000);
-	private static final Map<Constructor<?>, AnnotatedType> CONSTRUCTOR_TYPE_MAP =
-		new ConcurrentHashMap<>(2000);
 
 	public static AnnotatedType getAnnotatedType(Field field) {
 		return FIELD_ANNOTATED_TYPE_MAP.computeIfAbsent(field, Field::getAnnotatedType);
@@ -45,9 +42,5 @@ public final class TypeCache {
 			propertyDescriptor,
 			it -> it.getReadMethod().getAnnotatedReturnType()
 		);
-	}
-
-	public static AnnotatedType getAnnotedType(Constructor<?> constructor) {
-		return CONSTRUCTOR_TYPE_MAP.computeIfAbsent(constructor, Constructor::getAnnotatedReturnType);
 	}
 }
