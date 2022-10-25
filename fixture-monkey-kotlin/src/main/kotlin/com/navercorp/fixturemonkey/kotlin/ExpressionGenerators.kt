@@ -395,23 +395,79 @@ fun <T> ArbitraryBuilder<T>.maxSizeExpGetter(
 ): ArbitraryBuilder<T> =
     this.maxSize(expressionGenerator, max)
 
-fun <T> ArbitraryBuilder<T>.setInnerExp(property: KProperty1<T, Any?>, consumer: Consumer<InnerSpec>): ArbitraryBuilder<T> =
+fun <T> ArbitraryBuilder<T>.setInnerExp(
+    property: KProperty1<T, Any?>,
+    consumer: Consumer<InnerSpec>
+): ArbitraryBuilder<T> =
     this.setInner(PropertyExpressionGenerator(KotlinProperty(property)), consumer)
 
-fun <T> ArbitraryBuilder<T>.setInnerExpGetter(property: KFunction1<T, Any?>, consumer: Consumer<InnerSpec>): ArbitraryBuilder<T> =
+fun <T> ArbitraryBuilder<T>.setInnerExpGetter(
+    property: KFunction1<T, Any?>,
+    consumer: Consumer<InnerSpec>
+): ArbitraryBuilder<T> =
     this.setInner(PropertyExpressionGenerator(KotlinGetterProperty(property)), consumer)
 
-fun <T> ArbitraryBuilder<T>.setLazyExp(property: KProperty1<T, Any?>, supplier: Supplier<Any?>): ArbitraryBuilder<T> =
+fun <T> ArbitraryBuilder<T>.setInnerExp(
+    expressionGenerator: ExpressionGenerator,
+    consumer: Consumer<InnerSpec>
+): ArbitraryBuilder<T> =
+    this.setInner(expressionGenerator, consumer)
+
+fun <T> ArbitraryBuilder<T>.setInnerExpGetter(
+    expressionGenerator: ExpressionGenerator,
+    consumer: Consumer<InnerSpec>
+): ArbitraryBuilder<T> =
+    this.setInner(expressionGenerator, consumer)
+
+fun <T> ArbitraryBuilder<T>.setLazyExp(
+    property: KProperty1<T, Any?>,
+    supplier: Supplier<Any?>
+): ArbitraryBuilder<T> =
     this.setLazy(PropertyExpressionGenerator(KotlinProperty(property)), supplier)
 
-fun <T> ArbitraryBuilder<T>.setLazyExp(property: KProperty1<T, Any?>, supplier: Supplier<Any?>, limit: Long): ArbitraryBuilder<T> =
+fun <T> ArbitraryBuilder<T>.setLazyExp(
+    property: KProperty1<T, Any?>,
+    supplier: Supplier<Any?>,
+    limit: Long
+): ArbitraryBuilder<T> =
     this.setLazy(PropertyExpressionGenerator(KotlinProperty(property)), supplier, limit.toInt())
 
-fun <T> ArbitraryBuilder<T>.setLazyExpGetter(property: KFunction1<T, Any?>, supplier: Supplier<Any?>): ArbitraryBuilder<T> =
+fun <T> ArbitraryBuilder<T>.setLazyExpGetter(
+    property: KFunction1<T, Any?>,
+    supplier: Supplier<Any?>
+): ArbitraryBuilder<T> =
     this.setLazy(PropertyExpressionGenerator(KotlinGetterProperty(property)), supplier)
 
-fun <T> ArbitraryBuilder<T>.setLazyExpGetter(property: KFunction1<T, Any?>, supplier: Supplier<Any?>, limit: Long): ArbitraryBuilder<T> =
+fun <T> ArbitraryBuilder<T>.setLazyExpGetter(
+    property: KFunction1<T, Any?>,
+    supplier: Supplier<Any?>,
+    limit: Long
+): ArbitraryBuilder<T> =
     this.setLazy(PropertyExpressionGenerator(KotlinGetterProperty(property)), supplier, limit.toInt())
+
+fun <T> ArbitraryBuilder<T>.setLazyExp(
+    expressionGenerator: ExpressionGenerator,
+    supplier: Supplier<Any?>
+): ArbitraryBuilder<T> =
+    this.setLazy(expressionGenerator, supplier)
+
+fun <T> ArbitraryBuilder<T>.setLazyExp(
+    expressionGenerator: ExpressionGenerator,
+    supplier: Supplier<Any?>, limit: Long
+): ArbitraryBuilder<T> =
+    this.setLazy(expressionGenerator, supplier, limit.toInt())
+
+fun <T> ArbitraryBuilder<T>.setLazyExpGetter(
+    expressionGenerator: ExpressionGenerator,
+    supplier: Supplier<Any?>
+): ArbitraryBuilder<T> =
+    this.setLazy(expressionGenerator, supplier)
+
+fun <T> ArbitraryBuilder<T>.setLazyExpGetter(
+    expressionGenerator: ExpressionGenerator,
+    supplier: Supplier<Any?>, limit: Long
+): ArbitraryBuilder<T> =
+    this.setLazy(expressionGenerator, supplier, limit.toInt())
 
 infix fun <T, R, E> KProperty1<T, R?>.into(property: KProperty1<R, E?>): Exp<E> =
     Exp(
