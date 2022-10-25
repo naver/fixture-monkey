@@ -404,6 +404,12 @@ fun <T> ArbitraryBuilder<T>.setInnerExpGetter(property: KFunction1<T, Any?>, con
 fun <T> ArbitraryBuilder<T>.setLazyExp(property: KProperty1<T, Any?>, supplier: Supplier<Any?>): ArbitraryBuilder<T> =
     this.setLazy(PropertyExpressionGenerator(KotlinProperty(property)), supplier)
 
+fun <T> ArbitraryBuilder<T>.setLazyExp(property: KProperty1<T, Any?>, supplier: Supplier<Any?>, limit: Long): ArbitraryBuilder<T> =
+    this.setLazy(PropertyExpressionGenerator(KotlinProperty(property)), supplier, limit.toInt())
+
+fun <T> ArbitraryBuilder<T>.setLazyExpGetter(property: KFunction1<T, Any?>, supplier: Supplier<Any?>): ArbitraryBuilder<T> =
+    this.setLazy(PropertyExpressionGenerator(KotlinGetterProperty(property)), supplier)
+
 fun <T> ArbitraryBuilder<T>.setLazyExpGetter(property: KFunction1<T, Any?>, supplier: Supplier<Any?>, limit: Long): ArbitraryBuilder<T> =
     this.setLazy(PropertyExpressionGenerator(KotlinGetterProperty(property)), supplier, limit.toInt())
 
