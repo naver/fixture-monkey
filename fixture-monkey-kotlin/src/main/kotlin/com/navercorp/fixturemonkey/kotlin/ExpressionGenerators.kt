@@ -453,7 +453,8 @@ fun <T> ArbitraryBuilder<T>.setLazyExp(
 
 fun <T> ArbitraryBuilder<T>.setLazyExp(
     expressionGenerator: ExpressionGenerator,
-    supplier: Supplier<Any?>, limit: Long
+    supplier: Supplier<Any?>,
+    limit: Long
 ): ArbitraryBuilder<T> =
     this.setLazy(expressionGenerator, supplier, limit.toInt())
 
@@ -465,7 +466,8 @@ fun <T> ArbitraryBuilder<T>.setLazyExpGetter(
 
 fun <T> ArbitraryBuilder<T>.setLazyExpGetter(
     expressionGenerator: ExpressionGenerator,
-    supplier: Supplier<Any?>, limit: Long
+    supplier: Supplier<Any?>,
+    limit: Long
 ): ArbitraryBuilder<T> =
     this.setLazy(expressionGenerator, supplier, limit.toInt())
 
