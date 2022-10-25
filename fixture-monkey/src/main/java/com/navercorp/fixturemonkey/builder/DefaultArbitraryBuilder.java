@@ -195,6 +195,16 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 	}
 
 	@Override
+	public ArbitraryBuilder<T> setLazy(ExpressionGenerator expressionGenerator, Supplier<?> supplier, int limit) {
+		return this.setLazy(resolveExpression(expressionGenerator), supplier, limit);
+	}
+
+	@Override
+	public ArbitraryBuilder<T> setLazy(ExpressionGenerator expressionGenerator, Supplier<?> supplier) {
+		return this.setLazy(resolveExpression(expressionGenerator), supplier, MAX_MANIPULATION_COUNT);
+	}
+
+	@Override
 	public ArbitraryBuilder<T> spec(ExpressionSpec expressionSpec) {
 		List<BuilderManipulator> builderManipulators = expressionSpec.getBuilderManipulators();
 
@@ -231,6 +241,11 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 		this.context.addManipulators(innerSpec.getArbitraryManipulators());
 		this.context.addContainerInfoManipulators(innerSpec.getContainerInfoManipulators());
 		return this;
+	}
+
+	@Override
+	public ArbitraryBuilder<T> setInner(ExpressionGenerator expressionGenerator,  Consumer<InnerSpec> specSpecifier) {
+		return this.setInner(resolveExpression(expressionGenerator), specSpecifier);
 	}
 
 	@Override

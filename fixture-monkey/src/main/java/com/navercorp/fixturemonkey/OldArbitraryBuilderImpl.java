@@ -277,6 +277,11 @@ public class OldArbitraryBuilderImpl<T> implements ArbitraryBuilder<T> {
 	}
 
 	@Override
+	public ArbitraryBuilder<T> setInner(ExpressionGenerator expressionGenerator, Consumer<InnerSpec> specSupplier) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
 	public ArbitraryBuilder<T> specAny(ExpressionSpec... specs) {
 		if (specs == null || specs.length == 0) {
 			return this;
@@ -348,6 +353,16 @@ public class OldArbitraryBuilderImpl<T> implements ArbitraryBuilder<T> {
 
 	@Override
 	public ArbitraryBuilder<T> setLazy(String expression, Supplier<?> supplier, int limit) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public ArbitraryBuilder<T> setLazy(ExpressionGenerator expressionGenerator, Supplier<?> supplier) {
+		return this.setLazy(resolveExpression(expressionGenerator), supplier);
+	}
+
+	@Override
+	public ArbitraryBuilder<T> setLazy(ExpressionGenerator expressionGenerator, Supplier<?> supplier, int limit) {
 		throw new UnsupportedOperationException();
 	}
 
