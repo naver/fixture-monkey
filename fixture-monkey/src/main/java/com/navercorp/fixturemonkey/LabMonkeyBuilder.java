@@ -86,6 +86,23 @@ public class LabMonkeyBuilder {
 	};
 	private final Map<Class<?>, DecomposedContainerValueFactory> decomposableContainerFactoryMap = new HashMap<>();
 
+	public LabMonkeyBuilder pushAssignableTypePropertyGenerator(Class<?> type, PropertyGenerator propertyGenerator) {
+		generateOptionsBuilder.insertFirstPropertyGenerator(type, propertyGenerator);
+		return this;
+	}
+
+	public LabMonkeyBuilder pushExactTypePropertyGenerator(Class<?> type, PropertyGenerator propertyGenerator) {
+		generateOptionsBuilder.insertFirstPropertyGenerator(
+			MatcherOperator.assignableTypeMatchOperator(type, propertyGenerator)
+		);
+		return this;
+	}
+
+	public LabMonkeyBuilder pushExactTypePropertyGenerator(MatcherOperator<PropertyGenerator> propertyGenerator) {
+		generateOptionsBuilder.insertFirstPropertyGenerator(propertyGenerator);
+		return this;
+	}
+
 	public LabMonkeyBuilder manipulatorOptimizer(ManipulatorOptimizer manipulatorOptimizer) {
 		this.manipulatorOptimizer = manipulatorOptimizer;
 		return this;

@@ -53,6 +53,7 @@ import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 @SuppressWarnings("UnusedReturnValue")
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class GenerateOptionsBuilder {
+	private List<MatcherOperator<PropertyGenerator>> propertyGenerators = new ArrayList<>();
 	private PropertyGenerator defaultPropertyGenerator = new DefaultPropertyGenerator();
 	private List<MatcherOperator<ObjectPropertyGenerator>> arbitraryObjectPropertyGenerators =
 		new ArrayList<>(GenerateOptions.DEFAULT_OBJECT_PROPERTY_GENERATORS);
@@ -75,6 +76,37 @@ public final class GenerateOptionsBuilder {
 		DefaultArbitraryGenerator.javaBuilder();
 
 	GenerateOptionsBuilder() {
+	}
+
+	public GenerateOptionsBuilder propertyGenerators(List<MatcherOperator<PropertyGenerator>> propertyGenerators) {
+		this.propertyGenerators = propertyGenerators;
+		return this;
+	}
+
+	public GenerateOptionsBuilder insertFirstPropertyGenerator(
+		MatcherOperator<PropertyGenerator> propertyGenerator
+	) {
+		List<MatcherOperator<PropertyGenerator>> result =
+			insertFirst(this.propertyGenerators, propertyGenerator);
+		return this.propertyGenerators(result);
+	}
+
+	public GenerateOptionsBuilder insertFirstPropertyGenerator(
+		Matcher matcher,
+		PropertyGenerator propertyGenerator
+	) {
+		return this.insertFirstPropertyGenerator(
+			new MatcherOperator<>(matcher, propertyGenerator)
+		);
+	}
+
+	public GenerateOptionsBuilder insertFirstPropertyGenerator(
+		Class<?> type,
+		PropertyGenerator propertyGenerator
+	) {
+		return this.insertFirstPropertyGenerator(
+			MatcherOperator.assignableTypeMatchOperator(type, propertyGenerator)
+		);
 	}
 
 	public GenerateOptionsBuilder defaultPropertyGenerator(PropertyGenerator propertyGenerator) {
@@ -456,6 +488,7 @@ public final class GenerateOptionsBuilder {
 			defaultIfNull(this.defaultArbitraryGenerator, this.javaDefaultArbitraryGeneratorBuilder::build);
 
 		return new GenerateOptions(
+			this.propertyGenerators,
 			this.defaultPropertyGenerator,
 			this.arbitraryObjectPropertyGenerators,
 			defaultObjectPropertyGenerator,
