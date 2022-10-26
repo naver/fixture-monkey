@@ -25,9 +25,7 @@ ArbitraryBuilder<Generate> generateBuilder = fixtureMonkey.giveMeBuilder(Generat
 ### 2. 객체 값 설정
 
 ```java
-
-Generate generateObject = new Generate("test"); 
-
+Generate generateObject = new Generate("test");
 ```
 
 
