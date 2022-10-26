@@ -4,6 +4,38 @@ weight: 2
 ---
 
 ## 불변 객체
+### ConstructorPropertiesIntrospector
+#### 0. 필요조건
+타입이 둘 중 하나의 조건만 만족하면 됩니다.
+* record 타입입니다. 
+* 생성자에 `@ConstructorProperties` 가 있습니다.
+
+{{< alert color="primary" title="Tip">}}
+record에 생성자가 여러 개 일경우 `@ConstructorProperties`가 있는 생성자가 우선순위를 가집니다.
+{{< /alert >}}
+
+#### 1. 옵션 변경
+`LabMonkeyBuilder`의 옵션 중 `objectIntrospector`를 변경합니다.
+
+```java
+LabMonkey labMonkey = LabMonkey.labMonkeyBuilder()
+    .objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)
+    .build();
+```
+
+### FactoryMethodArbitraryIntrospector
+#### 0. 필요조건
+* static한 팩토리 메서드가 있어야 합니다.
+
+#### 1. 옵션 변경
+`LabMonkeyBuilder`의 옵션 중 `objectIntrospector`를 변경합니다.
+
+```java
+LabMonkey labMonkey = LabMonkey.labMonkeyBuilder()
+    .objectIntrospector(FactoryMethodArbitraryIntrospector.INSTANCE)
+    .build();
+```
+
 ### JacksonArbitraryIntrospector
 {{< alert color="primary" title="Tip">}}
 서드파티 라이브러리 `Jackson`에 의존성이 있어 모듈 추가가 필요합니다.

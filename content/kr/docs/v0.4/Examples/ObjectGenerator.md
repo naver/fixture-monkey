@@ -2,6 +2,7 @@
 title: "객체 생성 방식 변경"
 weight: 4
 ---
+
 ## 1. 객체 생성 방식 선택
 ### BeanArbitraryIntrospector
 #### 필요조건
@@ -16,6 +17,21 @@ weight: 4
 ### BuilderArbitraryIntrospector
 #### 필요조건
 1. 클래스가 빌더를 가지고 있습니다.
+
+### ConstructorPropertiesIntrospector
+#### 필요조건
+타입이 셋 중 하나의 조건만 만족하면 됩니다.
+* record 타입입니다.
+* lombok `@Value`을 사용하고 `lombok.anyConstructor.addConstructorProperties=true` 옵션을 추가합니다.
+* 생성자에 `@ConstructorProperties` 가 있습니다
+
+{{< alert color="primary" title="Tip">}}
+record에 생성자가 여러 개 일경우 `@ConstructorProperties`가 있는 생성자가 우선순위를 가집니다.
+{{< /alert >}}
+
+### FactoryMethodArbitraryIntrospector
+#### 필요조건
+* static한 팩토리 메서드가 있어야 합니다.
 
 ### PrimaryConstructorArbitraryIntrospector
 #### 필요조건

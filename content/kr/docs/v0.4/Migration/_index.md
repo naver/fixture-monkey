@@ -234,6 +234,26 @@ public final class DefaultNullInjectGenerator implements NullInjectGenerator {
 ##### 0.4
 * `defaultNullInjectGenerator` 옵션으로 null 설정합니다.
 
-## 연산
-
 ## Plugin
+```java
+public LabMonkeyBuilder plugin(Plugin plugin) {
+		generateOptionsBuilder.plugin(plugin);
+		return this;
+}
+```
+
+```java
+public interface Plugin {
+	void accept(GenerateOptionsBuilder optionsBuilder);
+}
+```
+
+서드파티 라이브러리와 간편한 연동을 위해 `Plugin` 인터페이스를 추가합니다.
+
+서드파티 모듈 의존성 추가하고 plugin 옵션을 추가하면 됩니다.
+
+plugin에서 중복으로 설정한 옵션이 있을 경우 가장 마지막에 추가한 plugin을 적용합니다.
+
+
+
+

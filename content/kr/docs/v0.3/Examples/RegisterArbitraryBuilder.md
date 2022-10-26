@@ -4,7 +4,7 @@ linkTitle: "ArbitraryBuilder 등록하기"
 weight: 5
 ---
 {{< alert color="secondary" title="Note">}}
-자세한 내용은 [여기]({{< relref "/docs/v0.3.x/features/registerarbitrarybuilder" >}})를 확인해주세요.
+자세한 내용은 [여기]({{< relref "/docs/v0.3/features/registerarbitrarybuilder" >}})를 확인해주세요.
 {{< /alert >}}
 
 ```java

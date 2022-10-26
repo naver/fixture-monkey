@@ -30,4 +30,4 @@ weight: 2
 - Uuid
   
 ## 생성 타입 추가
-[예제]({{< relref "/docs/v0.3.x/examples/annotatedarbitrarygenerator" >}})를 참조하세요
+[예제]({{< relref "/docs/v0.3/examples/annotatedarbitrarygenerator" >}})를 참조하세요

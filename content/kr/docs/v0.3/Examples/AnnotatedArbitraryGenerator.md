@@ -4,7 +4,7 @@ linkTitle: "AnnotatedArbitraryGenerator"
 weight: 4
 ---
 {{< alert color="secondary" title="Note">}}
-기본적으로 제공하는 AnnotatedArbitraryGenerator는 [여기]({{< relref "/docs/v0.3.x/features/defaultsupportedtypes" >}})에서 확인할 수 있습니다.
+기본적으로 제공하는 AnnotatedArbitraryGenerator는 [여기]({{< relref "/docs/v0.3/features/defaultsupportedtypes" >}})에서 확인할 수 있습니다.
 {{< /alert >}}
 
 ## AnnotatedArbitraryGenerator 추가하기

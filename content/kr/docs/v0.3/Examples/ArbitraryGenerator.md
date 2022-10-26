@@ -4,7 +4,7 @@ linkTitle: "ArbitraryGenerator"
 weight: 2
 ---
 {{< alert color="secondary" title="Note">}}
-기본적으로 제공하는 ArbitraryGenerator는 [여기]({{< relref "/docs/v0.3.x/features/arbitrarygenerator" >}})에서 확인할 수 있습니다.
+기본적으로 제공하는 ArbitraryGenerator는 [여기]({{< relref "/docs/v0.3/features/arbitrarygenerator" >}})에서 확인할 수 있습니다.
 {{< /alert >}}
 
 ## ArbitraryGenerator 추가하기

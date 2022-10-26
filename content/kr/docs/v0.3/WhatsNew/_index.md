@@ -1,6 +1,6 @@
 
 ---
-title: "What's New in 0.3.x"
+title: "What's New in 0.3"
 weight: 7
 ---
 ## What's New in 0.3.4

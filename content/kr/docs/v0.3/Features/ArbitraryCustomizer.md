@@ -29,4 +29,4 @@ weight: 7
 
 ## 예제
 
-자세한 내용은 [여기]({{< relref "/docs/v0.3.x/examples/arbitrarycustomizer" >}})에서 확인하세요.
+자세한 내용은 [여기]({{< relref "/docs/v0.3/examples/arbitrarycustomizer" >}})에서 확인하세요.

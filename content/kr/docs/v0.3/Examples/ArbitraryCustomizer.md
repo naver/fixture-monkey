@@ -4,7 +4,7 @@ linkTitle: "ArbitraryCustomizer"
 weight: 3
 ---
 {{< alert color="secondary" title="Note">}}
-자세한 내용은 [여기]({{< relref "/docs/v0.3.x/features/arbitrarycustomizer" >}})를 확인해주세요.
+자세한 내용은 [여기]({{< relref "/docs/v0.3/features/arbitrarycustomizer" >}})를 확인해주세요.
 {{< /alert >}}
 
 ```java
