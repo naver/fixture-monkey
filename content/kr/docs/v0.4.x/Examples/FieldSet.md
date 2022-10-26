@@ -47,7 +47,7 @@ generateBuilder.setExpGetter(Generate::getValue, "test");
 {{< tab header ="일반 표현식" >}}
 
 
-generateBuilder.set("value[n]", "test");
+generateBuilder.set("values[n]", "test");
 
 
 {{< /tab>}}
@@ -55,7 +55,7 @@ generateBuilder.set("value[n]", "test");
 {{< tab header= "Exp" >}}
 
 
-generateBuilder.setExpGetter(Generate::getValue[n], "test");
+generateBuilder.setExpGetter(Generate::getValues[n], "test");
 
 
 {{< /tab >}}
@@ -71,7 +71,7 @@ generateBuilder.setExpGetter(Generate::getValue[n], "test");
 {{< tab header ="일반 표현식">}}
 
 
-generateBuilder.set("value[*]", "test");
+generateBuilder.set("values[*]", "test");
 
 
 {{< /tab>}}
@@ -79,7 +79,7 @@ generateBuilder.set("value[*]", "test");
 {{< tab header="Exp" >}}
 
 
-generateBuilder.setExpGetter(Generate::getValue["*"], "test");
+generateBuilder.setExpGetter(Generate::getValues["*"], "test");
 
 
 {{< /tab >}}
@@ -119,14 +119,14 @@ generateBuilder.setExpGetter(Generate::getValue, Arbitraries.strings());
 {{<tab header="일반 표현식" >}}
 
 
-generateBuilder.set("value[n]", Arbitraries.strings());
+generateBuilder.set("values[n]", Arbitraries.strings());
 
 {{< /tab >}}
 
 {{< tab header="Exp" >}}
 
 
-generateBuilder.setExpGetter(Generate::getValue[n], Arbitraries.strings());
+generateBuilder.setExpGetter(Generate::getValues[n], Arbitraries.strings());
 
 
 {{< /tab >}}
@@ -142,7 +142,7 @@ generateBuilder.setExpGetter(Generate::getValue[n], Arbitraries.strings());
 {{< tab header="일반 표현식" >}}
 
 
-generateBuilder.set("value[*]", Arbitraries.strings());
+generateBuilder.set("values[*]", Arbitraries.strings());
 
 
 {{< /tab >}}
@@ -150,7 +150,7 @@ generateBuilder.set("value[*]", Arbitraries.strings());
 {{< tab header="Exp" >}}
 
 
-generateBuilder.setExpGetter(Generate::getValue["*"], Arbitraries.strings());
+generateBuilder.setExpGetter(Generate::getValues["*"], Arbitraries.strings());
 
 
 {{< /tab >}}
