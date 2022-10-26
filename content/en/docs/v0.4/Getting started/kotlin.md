@@ -1,0 +1,57 @@
+---
+title: "Kotlin"
+weight: 3
+---
+## Jackson
+### JacksonArbitraryIntrospector
+{{< alert color="primary" title="Tip">}}
+This practice should add extra module because it depends on third-party library `Jackson`
+{{< /alert >}}
+
+#### 1. Adding dependency
+
+```groovy
+testImplementation("com.navercorp.fixturemonkey:fixture-monkey-jackson:0.4.2")
+```
+
+```xml
+<dependency>
+  <groupId>com.navercorp.fixturemonkey</groupId>
+  <artifactId>fixture-monkey-jackson</artifactId>
+  <version>0.4.2</version>
+  <scope>test</scope>
+</dependency>
+```
+
+#### 2. Altering `objectIntrospector` option
+
+##### If you have custom ObjectMapper
+```java
+LabMonkey labMonkey = LabMonkey.labMonkeyBuilder()
+	.plugin(KotlinPlugin())
+    .plugin(JacksonPlugin(objectMapper))
+    .objectIntrospector(JacksonArbitraryIntrospector(objectMapper))
+    .build();
+```
+
+##### If you DON'T have a custom ObjectMapper
+```java
+LabMonkey labMonkey = LabMonkey.labMonkeyBuilder()
+    .plugin(KotlinPlugin())
+    .plugin(JacksonPlugin())
+    .objectIntrospector(JacksonArbitraryIntrospector.INSTANCE)
+    .build();
+```
+
+## No Jackson
+### PrimaryConstructorArbitraryIntrospector
+
+#### 1. Altering `objectIntrospector` option
+
+```java
+LabMonkey labMonkey = LabMonkey.labMonkeyBuilder()
+    .plugin(KotlinPlugin())
+    .objectIntrospector(PrimaryConstructorArbitraryIntrospector.INSTANCE)
+    .build();
+```
+

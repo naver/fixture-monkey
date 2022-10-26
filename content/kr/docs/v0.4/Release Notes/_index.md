@@ -7,7 +7,6 @@ weight: 6
 * 생성자로 객체를 생성하는 ConstructorPropertiesArbitraryIntrospector 추가
 * 팩토리 메서드로 객체를 생성하는 FactoryMethodIntrospector 추가
 * nullableContainer 옵션이 적용안되는 문제 해결
-* jackson 모듈 `@JsonTypeInfo` 지원
 * setInner, setLazy Exp 추가
 
 ### 0.4.1

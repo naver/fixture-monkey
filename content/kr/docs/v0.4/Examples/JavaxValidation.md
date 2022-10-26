@@ -8,7 +8,7 @@ weight: 1
 
 ## 1. 의존성 추가
 ```groovy
-testImplementation("com.navercorp.fixturemonkey:fixture-monkey-javax-validation.md:0.4.2")
+testImplementation("com.navercorp.fixturemonkey:fixture-monkey-javax-validation:0.4.2")
 ```
 
 ```xml

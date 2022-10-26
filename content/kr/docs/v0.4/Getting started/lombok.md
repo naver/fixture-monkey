@@ -8,7 +8,7 @@ weight: 1
 #### 0. 필요조건
 둘 중 하나의 조건만 만족하면 됩니다.
 * `lombok.config`에 `lombok.anyConstructor.addConstructorProperties=true` 옵션을 추가합니다.
-* 생성자에 `@ConstructorProperties` 가 있다.
+* 생성자에 `@ConstructorProperties` 가 있습니다.
 
 #### 1. 옵션 변경
 `LabMonkeyBuilder`의 옵션 중 `objectIntrospector`를 변경합니다.

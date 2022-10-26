@@ -1,6 +1,6 @@
 ---
 title: "ArbitraryValidator"
-weight: 5
+weight: 6
 ---
 ```java
 public interface ArbitraryValidator {

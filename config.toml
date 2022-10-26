@@ -175,9 +175,9 @@ enable = false
 
 [[params.versions]]
 version = "0.4"
-url = "/fixture-monkey/docs/v0.4.x"
+url = "/fixture-monkey/docs/v0.4"
 
 [[params.versions]]
 version = "0.3"
-url = "/fixture-monkey/docs/v0.3.x"
+url = "/fixture-monkey/docs/v0.3"
 

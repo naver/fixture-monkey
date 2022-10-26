@@ -1,6 +1,6 @@
 ---
 title: "새로운 컨테이너 추가"
-weight: 9
+weight: 10
 ---
 
 ## 1. ArbitraryIntrospector, Matcher 인터페이스 구현체 정의

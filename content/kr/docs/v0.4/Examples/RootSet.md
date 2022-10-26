@@ -15,8 +15,7 @@ public class Generate {
 }
 ```
 
-## 연산
-### 1. ArbitraryBuilder 정의
+## 1. ArbitraryBuilder 정의
 
 ```java
 ArbitraryBuilder<Generate> generateBuilder = fixtureMonkey.giveMeBuilder(Generate.class);

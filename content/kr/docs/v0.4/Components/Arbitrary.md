@@ -1,6 +1,6 @@
 ---
 title: "Arbitrary"
-weight: 6
+weight: 7
 ---
 
 `Arbitrary` 는 `Jqwik`에서 정의한 [fixture](https://junit.org/junit4/cookbook.html#Fixture) 객체입니다. 

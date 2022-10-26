@@ -25,32 +25,9 @@ public final class ArbitraryProperty {
 	private final ContainerProperty containerProperty;
 }
 ```
-#### ObjectProperty
-객체에 대한 불변한 정보입니다.
+#### [ObjectProperty]({{< relref "/docs/v0.4/components/objectproperty" >}})
 
-##### property
-생성하려고 하는 property의 정보입니다.
-
-##### propertyNameResolver
-property의 이름을 결정하는 인터페이스입니다.
-
-##### nullInject
-null을 반환하는 확률을 정의합니다.
-
-##### elementIndex
-객체가 element 일경우 몇 번째 element인지 나타냅니다.
-
-##### childProperties
-객체를 이루는 필드 Property 리스트입니다.
-
-#### ContainerProperty
-컨테이너에 대한 불변한 정보입니다.
-
-##### elementProperties
-컨테이너에 포함한 element Property 리스트입니다.
-
-##### containerInfo
-컨테이너 크기에 대한 정보입니다.
+#### [ContainerProperty]({{< relref "/docs/v0.4/components/containerproperty" >}})
 
 ### children
 생성하고자 하는 arbitraryProperty의 자식 arbitraryProperty 리스트입니다.
@@ -63,5 +40,4 @@ null을 반환하는 확률을 정의합니다.
 ### rootContext
 최상위 `ArbitraryGeneratorContext` 여부입니다.
 
-### arbitraryCustomizers
-Arbitrary 생성에 사용하는 `FixtureCustomizer` 리스트를 반환합니다.
+### [fixtureCustomizers]({{< relref "/docs/v0.4/components/fixturecustomizer" >}})

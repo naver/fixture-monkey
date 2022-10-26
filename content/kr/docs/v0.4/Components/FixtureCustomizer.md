@@ -1,6 +1,6 @@
 ---
 title: "FixtureCustomizer"
-weight: 4
+weight: 5
 ---
 ```java
 public interface FixtureCustomizer<T> {

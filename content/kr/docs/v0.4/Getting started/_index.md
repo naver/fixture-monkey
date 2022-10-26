@@ -26,7 +26,7 @@ testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter:0.4.2")
 ```
 
 
-## 간단한 예제
+## 사용해보기
 ### 객체 예시
 ```java
 @Data
