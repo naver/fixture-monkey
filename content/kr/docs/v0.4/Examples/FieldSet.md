@@ -31,7 +31,7 @@ ArbitraryBuilder<Generate> generateBuilder = fixtureMonkey.giveMeBuilder(Generat
 generateBuilder.set("value", "test");
 
 {{< /tab >}}
-{{< tab header= "Exp" >}}
+{{< tab header= "Kotlin Exp" >}}
 
 generateBuilder.setExpGetter(Generate::getValue, "test");
 
@@ -52,7 +52,7 @@ generateBuilder.set("values[n]", "test");
 
 {{< /tab>}}
 
-{{< tab header= "Exp" >}}
+{{< tab header= "Kotlin Exp" >}}
 
 
 generateBuilder.setExpGetter(Generate::getValues[n], "test");
@@ -76,7 +76,7 @@ generateBuilder.set("values[*]", "test");
 
 {{< /tab>}}
 
-{{< tab header="Exp" >}}
+{{< tab header="Kotlin Exp" >}}
 
 
 generateBuilder.setExpGetter(Generate::getValues["*"], "test");
@@ -100,7 +100,7 @@ generateBuilder.set("value", Arbitraries.strings());
 
 {{< /tab>}}
 
-{{< tab header="Exp" >}}
+{{< tab header="Kotlin Exp" >}}
 
 
 generateBuilder.setExpGetter(Generate::getValue, Arbitraries.strings());
@@ -123,7 +123,7 @@ generateBuilder.set("values[n]", Arbitraries.strings());
 
 {{< /tab >}}
 
-{{< tab header="Exp" >}}
+{{< tab header="Kotlin Exp" >}}
 
 
 generateBuilder.setExpGetter(Generate::getValues[n], Arbitraries.strings());
@@ -147,7 +147,7 @@ generateBuilder.set("values[*]", Arbitraries.strings());
 
 {{< /tab >}}
 
-{{< tab header="Exp" >}}
+{{< tab header="Kotlin Exp" >}}
 
 
 generateBuilder.setExpGetter(Generate::getValues["*"], Arbitraries.strings());
@@ -156,55 +156,3 @@ generateBuilder.setExpGetter(Generate::getValues["*"], Arbitraries.strings());
 {{< /tab >}}
 
 {{< /tabpane>}}
-
-[//]: # ()
-[//]: # (### 객체 값 설정)
-
-[//]: # (```java)
-
-[//]: # (Generate generateObject = new Generate&#40;...&#41;; )
-
-[//]: # (```)
-
-[//]: # ()
-[//]: # ()
-[//]: # ({{< tabpane lang="java" >}})
-
-[//]: # ({{< tab header="일반 표현식" >}})
-
-[//]: # ()
-[//]: # (generateBuilder.set&#40;generateObject&#41;;)
-
-[//]: # ()
-[//]: # ({{< /tab>}})
-
-[//]: # ({{< tab header="Exp" >}})
-
-[//]: # ()
-[//]: # (generateBuilder.set&#40;generateObject&#41;;)
-
-[//]: # ()
-[//]: # ({{< /tab >}})
-
-[//]: # ({{< /tabpane>}})
-
-[//]: # ()
-[//]: # ({{< tabpane lang="java" >}})
-
-[//]: # ({{< tab header="일반 표현식" >}})
-
-[//]: # ()
-[//]: # (generateBuilder.set&#40;"$", generateObject&#41;;)
-
-[//]: # ()
-[//]: # ({{< /tab>}})
-
-[//]: # ({{< tab header="Exp" >}})
-
-[//]: # ()
-[//]: # (미지원)
-
-[//]: # ()
-[//]: # ({{< /tab >}})
-
-[//]: # ({{< /tabpane>}})

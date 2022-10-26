@@ -41,7 +41,7 @@ ArbitraryBuilder<Generate> generateBuilder = fixtureMonkey.giveMeBuilder(Generat
 generateBuilder.size("values", 5);
 
 {{< /tab >}}
-{{< tab header= "Exp" >}}
+{{< tab header= "Kotlin Exp" >}}
 
 generateBuilder.sizeExpGetter(Generate::getValues, 5);
 
@@ -57,7 +57,7 @@ generateBuilder.sizeExpGetter(Generate::getValues, 5);
 generateBuilder.size("values[n]", 5);
 
 {{< /tab >}}
-{{< tab header= "Exp" >}}
+{{< tab header= "Kotlin Exp" >}}
 
 generateBuilder.sizeExpGetter(Generate::getValues[n], 5);
 
@@ -72,7 +72,7 @@ generateBuilder.sizeExpGetter(Generate::getValues[n], 5);
 generateBuilder.size("values[*]", 5);
 
 {{< /tab >}}
-{{< tab header= "Exp" >}}
+{{< tab header= "Kotlin Exp" >}}
 
 generateBuilder.sizeExpGetter(Generate::getValues["*"], 5);
 

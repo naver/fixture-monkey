@@ -40,7 +40,7 @@ generateBuilder.set(generateObject);
 
 {{< /tab>}}
 
-{{< tab header="Exp" >}}
+{{< tab header="Kotlin Exp" >}}
 
 
 generateBuilder.set(generateObject);
@@ -61,7 +61,7 @@ generateBuilder.set("$", generateObject);
 
 {{< /tab>}}
 
-{{< tab header="Exp" >}}
+{{< tab header="Kotlin Exp" >}}
 
 
 미지원

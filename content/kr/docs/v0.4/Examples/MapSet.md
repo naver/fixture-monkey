@@ -34,7 +34,7 @@ generateBuilder.setInner("namesById", m -> m.size(5));
 
 
 {{< /tab >}}
-{{< tab header= "Exp" >}}
+{{< tab header= "Kotlin Exp" >}}
 
 generateBuilder.setInnerExpGetter(Generate::getNamesById) { m -> m.size(5) }
 
@@ -49,7 +49,7 @@ generateBuilder.setInnerExpGetter(Generate::getNamesById) { m -> m.size(5) }
 generateBuilder.setInner("namesById", m -> m.entry("key", "value"));
 
 {{< /tab >}}
-{{< tab header= "Exp" >}}
+{{< tab header= "Kotlin Exp" >}}
 
 generateBuilder.setInnerExpGetter(Generate::getNamesById) { m -> m.entry("key", "value") }
 
@@ -64,7 +64,7 @@ entry의 key 값만 설정합니다.
 generateBuilder.setInner("namesById", m -> m.key("key"));
 
 {{< /tab >}}
-{{< tab header= "Exp" >}}
+{{< tab header= "Kotlin Exp" >}}
 
 generateBuilder.setInnerExpGetter(Generate::getNamesById) { m -> m.key("key") }
 
@@ -79,7 +79,7 @@ entry의 value 값만 설정합니다.
 generateBuilder.setInner("namesById", m -> m.value("value"));
 
 {{< /tab >}}
-{{< tab header= "Exp" >}}
+{{< tab header= "Kotlin Exp" >}}
 
 generateBuilder.setInnerExpGetter(Generate::getNamesById) { m -> m.value("value") }
 
@@ -103,7 +103,7 @@ key의 entry를 설정합니다.
 generateBuilder.setInner("mapByString", m -> m.key(k -> k.entry("key", "value")));
 
 {{< /tab >}}
-{{< tab header= "Exp" >}}
+{{< tab header= "Kotlin Exp" >}}
 
 generateBuilder.setInnerExpGetter(Generate::getMapByString) { m -> m.key { k -> k.entry("key", "value") } }
 
@@ -118,7 +118,7 @@ generateBuilder.setInnerExpGetter(Generate::getMapByString) { m -> m.key { k -> 
 generateBuilder.setInner("mapByString", m -> m.entry(k -> k.entry("innerKey", "innerValue")), "value");
 
 {{< /tab >}}
-{{< tab header= "Exp" >}}
+{{< tab header= "Kotlin Exp" >}}
 
 generateBuilder.setInnerExpGetter(Generate::getMapByString) { m -> m.entry ({ k -> k.entry("innerKey", "innerValue") }, "value")
 
@@ -133,7 +133,7 @@ value의 entry를 설정합니다.
 generateBuilder.setInner("stringByMap", m -> m.value(v -> v.entry("key", "value")));
 
 {{< /tab >}}
-{{< tab header= "Exp" >}}
+{{< tab header= "Kotlin Exp" >}}
 
 generateBuilder.setInnerExpGetter(Generate::getStringByMap) { m -> m.value { v -> v.entry("key", "value") } }
 
@@ -148,7 +148,7 @@ generateBuilder.setInnerExpGetter(Generate::getStringByMap) { m -> m.value { v -
 generateBuilder.setInner("stringByMap", m -> m.entry("key", v -> v.entry("innerKey", "innerValue")));
 
 {{< /tab >}}
-{{< tab header= "Exp" >}}
+{{< tab header= "Kotlin Exp" >}}
 
 generateBuilder.setInnerExpGetter(Generate::getStringByMap) { m -> m.entry ("key") { v -> v.entry("innerKey", "innerValue") } }
 
