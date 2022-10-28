@@ -80,11 +80,14 @@ public class LabMonkeyBuilder {
 	private boolean nullableContainer = false;
 	private boolean nullableElement = false;
 	private DecomposedContainerValueFactory defaultDecomposedContainerValueFactory = (obj) -> {
-		throw new IllegalArgumentException(
-			"given type is not supported container : " + obj.getClass().getTypeName()
-		);
+		throw new IllegalArgumentException("given type is not supported container : " + obj.getClass().getTypeName());
 	};
 	private final Map<Class<?>, DecomposedContainerValueFactory> decomposableContainerFactoryMap = new HashMap<>();
+
+	public LabMonkeyBuilder pushPropertyGenerator(MatcherOperator<PropertyGenerator> propertyGenerator) {
+		generateOptionsBuilder.insertFirstPropertyGenerator(propertyGenerator);
+		return this;
+	}
 
 	public LabMonkeyBuilder pushAssignableTypePropertyGenerator(Class<?> type, PropertyGenerator propertyGenerator) {
 		generateOptionsBuilder.insertFirstPropertyGenerator(type, propertyGenerator);
@@ -95,11 +98,6 @@ public class LabMonkeyBuilder {
 		generateOptionsBuilder.insertFirstPropertyGenerator(
 			MatcherOperator.assignableTypeMatchOperator(type, propertyGenerator)
 		);
-		return this;
-	}
-
-	public LabMonkeyBuilder pushExactTypePropertyGenerator(MatcherOperator<PropertyGenerator> propertyGenerator) {
-		generateOptionsBuilder.insertFirstPropertyGenerator(propertyGenerator);
 		return this;
 	}
 
@@ -425,27 +423,27 @@ public class LabMonkeyBuilder {
 		return this;
 	}
 
-	public <T> LabMonkeyBuilder pushAssignableTypeArbitraryCustomizer(
+	@SuppressWarnings("rawtypes")
+	public LabMonkeyBuilder pushFixtureCustomizer(MatcherOperator<FixtureCustomizer> arbitraryCustomizer) {
+		generateOptionsBuilder.insertFirstFixtureCustomizer(arbitraryCustomizer);
+		return this;
+	}
+
+	public <T> LabMonkeyBuilder pushAssignableTypeFixtureCustomizer(
 		Class<T> type,
 		FixtureCustomizer<? extends T> fixtureCustomizer
 	) {
-		generateOptionsBuilder.insertFirstArbitraryCustomizer(type, fixtureCustomizer);
+		generateOptionsBuilder.insertFirstFixtureCustomizer(type, fixtureCustomizer);
 		return this;
 	}
 
-	public <T> LabMonkeyBuilder pushExactTypeArbitraryCustomizer(
+	public <T> LabMonkeyBuilder pushExactTypeFixtureCustomizer(
 		Class<T> type,
 		FixtureCustomizer<T> fixtureCustomizer
 	) {
-		generateOptionsBuilder.insertFirstArbitraryCustomizer(
+		generateOptionsBuilder.insertFirstFixtureCustomizer(
 			MatcherOperator.exactTypeMatchOperator(type, fixtureCustomizer)
 		);
-		return this;
-	}
-
-	@SuppressWarnings("rawtypes")
-	public LabMonkeyBuilder pushArbitraryCustomizer(MatcherOperator<FixtureCustomizer> arbitraryCustomizer) {
-		generateOptionsBuilder.insertFirstArbitraryCustomizer(arbitraryCustomizer);
 		return this;
 	}
 
