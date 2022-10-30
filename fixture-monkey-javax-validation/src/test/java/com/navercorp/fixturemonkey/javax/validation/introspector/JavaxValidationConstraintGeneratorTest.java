@@ -610,6 +610,39 @@ class JavaxValidationConstraintGeneratorTest {
 	}
 
 	@Example
+	void generateIntegerConstraintOverflow() {
+		// given
+		TypeReference<ShortIntrospectorSpec> typeReference = new TypeReference<ShortIntrospectorSpec>() {
+		};
+		String propertyName = "overflow";
+		com.navercorp.fixturemonkey.api.property.Property property =
+			PropertyCache.getProperty(typeReference.getAnnotatedType(), propertyName).get();
+		ArbitraryGeneratorContext context = new ArbitraryGeneratorContext(
+			new ArbitraryProperty(
+				new ObjectProperty(
+					property,
+					PropertyNameResolver.IDENTITY,
+					0.0D,
+					null,
+					Collections.emptyList()
+				),
+				null
+			),
+			Collections.emptyList(),
+			null,
+			(ctx, prop) -> Arbitraries.just(null),
+			Collections.emptyList()
+		);
+
+		// when
+		JavaxValidationIntegerConstraint actual = this.sut.generateIntegerConstraint(context);
+
+		// then
+		then(actual.getMin()).isEqualTo(BigInteger.valueOf(Short.MIN_VALUE));
+		then(actual.getMax()).isEqualTo(BigInteger.valueOf(Short.MAX_VALUE));
+	}
+
+	@Example
 	void generateDecimalConstraint() {
 		// given
 		TypeReference<DoubleIntrospectorSpec> typeReference = new TypeReference<DoubleIntrospectorSpec>() {

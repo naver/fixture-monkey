@@ -18,6 +18,7 @@
 
 package com.navercorp.fixturemonkey.javax.validation.introspector;
 
+import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Optional;
@@ -42,6 +43,14 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public class JavaxValidationConstraintGenerator {
+	private static final BigInteger BIG_INTEGER_MIN_LONG = BigInteger.valueOf(Long.MIN_VALUE);
+	private static final BigInteger BIG_INTEGER_MAX_LONG = BigInteger.valueOf(Long.MAX_VALUE);
+	private static final BigInteger BIG_INTEGER_MIN_INT = BigInteger.valueOf(Integer.MIN_VALUE);
+	private static final BigInteger BIG_INTEGER_MAX_INT = BigInteger.valueOf(Integer.MAX_VALUE);
+	private static final BigInteger BIG_INTEGER_MIN_SHORT = BigInteger.valueOf(Short.MIN_VALUE);
+	private static final BigInteger BIG_INTEGER_MAX_SHORT = BigInteger.valueOf(Short.MAX_VALUE);
+	private static final BigInteger BIG_INTEGER_MIN_BYTE = BigInteger.valueOf(Byte.MIN_VALUE);
+	private static final BigInteger BIG_INTEGER_MAX_BYTE = BigInteger.valueOf(Byte.MAX_VALUE);
 
 	public JavaxValidationStringConstraint generateStringConstraint(ArbitraryGeneratorContext context) {
 		BigInteger min = null;
@@ -173,6 +182,36 @@ public class JavaxValidationConstraintGenerator {
 		if (context.findAnnotation(PositiveOrZero.class).isPresent()) {
 			if (min == null || min.compareTo(BigInteger.ZERO) < 0) {
 				min = BigInteger.ZERO;
+			}
+		}
+
+		Type type = context.getType();
+		if (min != null) {
+			if ((type == Long.class || type == long.class) && min.compareTo(BIG_INTEGER_MIN_LONG) < 0) {
+				min = BIG_INTEGER_MIN_LONG;
+			}
+			if ((type == Integer.class || type == int.class) && min.compareTo(BIG_INTEGER_MIN_INT) < 0) {
+				min = BIG_INTEGER_MIN_INT;
+			}
+			if ((type == Short.class || type == short.class) && min.compareTo(BIG_INTEGER_MIN_SHORT) < 0) {
+				min = BIG_INTEGER_MIN_SHORT;
+			}
+			if ((type == Byte.class || type == byte.class) && min.compareTo(BIG_INTEGER_MIN_BYTE) < 0) {
+				min = BIG_INTEGER_MIN_BYTE;
+			}
+		}
+		if (max != null) {
+			if ((type == Long.class || type == long.class) && max.compareTo(BIG_INTEGER_MAX_LONG) > 0) {
+				max = BIG_INTEGER_MAX_LONG;
+			}
+			if ((type == Integer.class || type == int.class) && max.compareTo(BIG_INTEGER_MAX_INT) > 0) {
+				max = BIG_INTEGER_MAX_INT;
+			}
+			if ((type == Short.class || type == short.class) && max.compareTo(BIG_INTEGER_MAX_SHORT) > 0) {
+				max = BIG_INTEGER_MAX_SHORT;
+			}
+			if ((type == Byte.class || type == byte.class) && max.compareTo(BIG_INTEGER_MAX_BYTE) > 0) {
+				max = BIG_INTEGER_MAX_BYTE;
 			}
 		}
 
