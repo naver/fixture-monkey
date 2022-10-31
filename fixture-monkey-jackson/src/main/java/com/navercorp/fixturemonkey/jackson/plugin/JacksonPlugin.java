@@ -24,6 +24,7 @@ import java.util.List;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.navercorp.fixturemonkey.api.matcher.AssignableTypeMatcher;
@@ -31,7 +32,9 @@ import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.option.GenerateOptionsBuilder;
 import com.navercorp.fixturemonkey.api.plugin.Plugin;
 import com.navercorp.fixturemonkey.jackson.FixtureMonkeyJackson;
+import com.navercorp.fixturemonkey.jackson.generator.JsonNodeContainerPropertyGenerator;
 import com.navercorp.fixturemonkey.jackson.introspector.JacksonArbitraryIntrospector;
+import com.navercorp.fixturemonkey.jackson.introspector.JsonNodeIntrospector;
 import com.navercorp.fixturemonkey.jackson.property.JacksonPropertyNameResolver;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
@@ -78,5 +81,15 @@ public final class JacksonPlugin implements Plugin {
 				.objectIntrospector(it -> new JacksonArbitraryIntrospector(objectMapper))
 				.defaultPropertyNameResolver(new JacksonPropertyNameResolver());
 		}
+
+		optionsBuilder
+			.insertFirstArbitraryContainerPropertyGenerator(
+				JsonNode.class,
+				JsonNodeContainerPropertyGenerator.INSTANCE
+			)
+			.insertFirstArbitraryIntrospector(
+				JsonNode.class,
+				JsonNodeIntrospector.INSTANCE
+			);
 	}
 }
