@@ -34,6 +34,7 @@ import java.time.Year;
 import java.time.YearMonth;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
@@ -159,5 +160,13 @@ class FixtureMonkeyV04TestSpecs {
 		ONE,
 		TWO,
 		THREE
+	}
+
+	public static class CustomContainer extends ArrayList<String> {
+	}
+
+	@Data
+	public static class CustomContainerFieldObject {
+		CustomContainer value;
 	}
 }

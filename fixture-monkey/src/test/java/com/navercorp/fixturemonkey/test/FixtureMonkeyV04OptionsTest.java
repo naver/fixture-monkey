@@ -59,6 +59,7 @@ import com.navercorp.fixturemonkey.api.introspector.JavaArbitraryResolver;
 import com.navercorp.fixturemonkey.api.introspector.JavaTimeArbitraryResolver;
 import com.navercorp.fixturemonkey.api.introspector.JavaTimeTypeArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.introspector.JavaTypeArbitraryGenerator;
+import com.navercorp.fixturemonkey.api.introspector.ListIntrospector;
 import com.navercorp.fixturemonkey.api.matcher.ExactTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
@@ -74,6 +75,8 @@ import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpe
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.RegisterGroup;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.SimpleObjectChild;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.ComplexObject;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.CustomContainer;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.CustomContainerFieldObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.Interface;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.InterfaceFieldObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.InterfaceImplementation;
@@ -1074,5 +1077,28 @@ class FixtureMonkeyV04OptionsTest {
 			.getValues();
 
 		then(values).isNull();
+	}
+
+	@Property
+	void defaultContainerElementDefaultTypeString() {
+		// when
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.pushExactTypeArbitraryIntrospector(
+				CustomContainer.class,
+				context -> new ArbitraryIntrospectorResult(
+					new ListIntrospector().introspect(context).getValue()
+						.map(it -> {
+							CustomContainer result = new CustomContainer();
+							result.addAll((List<String>)it);
+							return result;
+						})
+				)
+			)
+			.build();
+
+		CustomContainerFieldObject actual = sut.giveMeOne(CustomContainerFieldObject.class);
+
+		then(actual).isNotNull();
+		then(actual.getValue()).isNotNull();
 	}
 }
