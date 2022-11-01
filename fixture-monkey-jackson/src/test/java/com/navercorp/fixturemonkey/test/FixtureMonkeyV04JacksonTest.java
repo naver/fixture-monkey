@@ -35,6 +35,7 @@ class FixtureMonkeyV04JacksonTest {
 	@Property
 	void jsonNode() {
 		JsonNodeWrapperClass actual = SUT.giveMeOne(JsonNodeWrapperClass.class);
+
 		then(actual).isNotNull();
 		then(actual.value).isNotNull();
 	}
