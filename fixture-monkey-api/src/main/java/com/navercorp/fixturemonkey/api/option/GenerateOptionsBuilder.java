@@ -438,7 +438,7 @@ public final class GenerateOptionsBuilder {
 	}
 
 	@SuppressWarnings("rawtypes")
-	public GenerateOptionsBuilder insertFirstArbitraryCustomizer(
+	public GenerateOptionsBuilder insertFirstFixtureCustomizer(
 		MatcherOperator<FixtureCustomizer> arbitraryCustomizer
 	) {
 		List<MatcherOperator<FixtureCustomizer>> result =
@@ -446,20 +446,20 @@ public final class GenerateOptionsBuilder {
 		return arbitraryCustomizers(result);
 	}
 
-	public GenerateOptionsBuilder insertFirstArbitraryCustomizer(
+	public GenerateOptionsBuilder insertFirstFixtureCustomizer(
 		Matcher matcher,
 		FixtureCustomizer<?> fixtureCustomizer
 	) {
-		return this.insertFirstArbitraryCustomizer(
+		return this.insertFirstFixtureCustomizer(
 			new MatcherOperator<>(matcher, fixtureCustomizer)
 		);
 	}
 
-	public <T> GenerateOptionsBuilder insertFirstArbitraryCustomizer(
+	public <T> GenerateOptionsBuilder insertFirstFixtureCustomizer(
 		Class<T> type,
 		FixtureCustomizer<? extends T> fixtureCustomizer
 	) {
-		return this.insertFirstArbitraryCustomizer(
+		return this.insertFirstFixtureCustomizer(
 			MatcherOperator.assignableTypeMatchOperator(type, fixtureCustomizer)
 		);
 	}

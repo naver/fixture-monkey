@@ -52,7 +52,7 @@ public final class ArbitraryGeneratorContext {
 	private final BiFunction<ArbitraryGeneratorContext, ArbitraryProperty, Arbitrary<?>> resolveArbitrary;
 
 	@SuppressWarnings("rawtypes")
-	private final List<MatcherOperator<? extends FixtureCustomizer>> arbitraryCustomizers;
+	private final List<MatcherOperator<? extends FixtureCustomizer>> fixtureCustomizers;
 
 	@SuppressWarnings("rawtypes")
 	public ArbitraryGeneratorContext(
@@ -60,13 +60,13 @@ public final class ArbitraryGeneratorContext {
 		List<ArbitraryProperty> children,
 		@Nullable ArbitraryGeneratorContext ownerContext,
 		BiFunction<ArbitraryGeneratorContext, ArbitraryProperty, Arbitrary<?>> resolveArbitrary,
-		List<MatcherOperator<? extends FixtureCustomizer>> arbitraryCustomizers
+		List<MatcherOperator<? extends FixtureCustomizer>> fixtureCustomizers
 	) {
 		this.property = property;
 		this.children = new ArrayList<>(children);
 		this.ownerContext = ownerContext;
 		this.resolveArbitrary = resolveArbitrary;
-		this.arbitraryCustomizers = arbitraryCustomizers;
+		this.fixtureCustomizers = fixtureCustomizers;
 	}
 
 	public ArbitraryProperty getArbitraryProperty() {
@@ -105,7 +105,7 @@ public final class ArbitraryGeneratorContext {
 			childrenValues
 		);
 
-		arbitraryCustomizers.stream()
+		fixtureCustomizers.stream()
 			.filter(it -> it.match(property.getObjectProperty().getProperty()))
 			.map(MatcherOperator::getOperator)
 			.findFirst()
@@ -124,7 +124,7 @@ public final class ArbitraryGeneratorContext {
 	}
 
 	@SuppressWarnings("rawtypes")
-	public List<MatcherOperator<? extends FixtureCustomizer>> getArbitraryCustomizers() {
-		return arbitraryCustomizers;
+	public List<MatcherOperator<? extends FixtureCustomizer>> getFixtureCustomizers() {
+		return fixtureCustomizers;
 	}
 }

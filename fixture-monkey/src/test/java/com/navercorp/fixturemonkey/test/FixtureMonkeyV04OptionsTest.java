@@ -753,7 +753,7 @@ class FixtureMonkeyV04OptionsTest {
 	void pushArbitraryCustomizerCustomizeFixtureSetValue() {
 		String expected = "test";
 		LabMonkey sut = LabMonkey.labMonkeyBuilder()
-			.pushExactTypeArbitraryCustomizer(String.class, (object) -> expected)
+			.pushExactTypeFixtureCustomizer(String.class, (object) -> expected)
 			.build();
 
 		String actual = sut.giveMeOne(String.class);
@@ -765,7 +765,7 @@ class FixtureMonkeyV04OptionsTest {
 	@Property
 	void pushArbitraryCustomizerCustomizeFixtureModifyValue() {
 		LabMonkey sut = LabMonkey.labMonkeyBuilder()
-			.pushExactTypeArbitraryCustomizer(String.class, String::toLowerCase)
+			.pushExactTypeFixtureCustomizer(String.class, String::toLowerCase)
 			.build();
 
 		String actual = sut.giveMeOne(String.class);
@@ -777,7 +777,7 @@ class FixtureMonkeyV04OptionsTest {
 	void pushArbitraryCustomizerCustomizeFields() {
 		String expected = "test";
 		LabMonkey sut = LabMonkey.labMonkeyBuilder()
-			.pushExactTypeArbitraryCustomizer(SimpleObject.class, new FixtureCustomizer<SimpleObject>() {
+			.pushExactTypeFixtureCustomizer(SimpleObject.class, new FixtureCustomizer<SimpleObject>() {
 				@Override
 				public void customizeProperties(ChildArbitraryContext childArbitraryContext) {
 					childArbitraryContext.replaceArbitrary(

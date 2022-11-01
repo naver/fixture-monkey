@@ -123,7 +123,7 @@ final class ArbitraryTree {
 
 			Arbitrary<?> cached = monkeyContext.getCachedArbitrary(node.getProperty());
 
-			boolean notCustomized = ctx.getArbitraryCustomizers().stream()
+			boolean notCustomized = ctx.getFixtureCustomizers().stream()
 				.noneMatch(it -> it.match(node.getProperty()));
 
 			if (node.isNotManipulated() && notCustomized && cached != null) {
@@ -147,7 +147,7 @@ final class ArbitraryTree {
 		}
 
 		return generated.map(
-			object -> ctx.getArbitraryCustomizers().stream()
+			object -> ctx.getFixtureCustomizers().stream()
 				.filter(it -> it.match(node.getProperty()))
 				.map(MatcherOperator::getOperator)
 				.findFirst()
