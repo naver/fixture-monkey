@@ -137,9 +137,9 @@ public class LabMonkeyBuilder {
 	}
 
 	public LabMonkeyBuilder pushObjectPropertyGenerator(
-		MatcherOperator<ObjectPropertyGenerator> arbitraryObjectPropertyGenerator
+		MatcherOperator<ObjectPropertyGenerator> objectPropertyGenerator
 	) {
-		generateOptionsBuilder.insertFirstArbitraryObjectPropertyGenerator(arbitraryObjectPropertyGenerator);
+		generateOptionsBuilder.insertFirstArbitraryObjectPropertyGenerator(objectPropertyGenerator);
 		return this;
 	}
 
