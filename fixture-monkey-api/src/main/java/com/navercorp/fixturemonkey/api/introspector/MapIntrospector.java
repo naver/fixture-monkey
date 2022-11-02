@@ -19,8 +19,11 @@
 package com.navercorp.fixturemonkey.api.introspector;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -37,10 +40,12 @@ import com.navercorp.fixturemonkey.api.matcher.AssignableTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty.MapEntryElementType;
 import com.navercorp.fixturemonkey.api.property.Property;
+import com.navercorp.fixturemonkey.api.unique.UniqueArbitraryFilter;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class MapIntrospector implements ArbitraryIntrospector, Matcher {
 	private static final Matcher MATCHER = new AssignableTypeMatcher(Map.class);
+	private static final int MAX_TRIES = 10000;
 
 	@Override
 	public boolean match(Property property) {
@@ -61,7 +66,10 @@ public final class MapIntrospector implements ArbitraryIntrospector, Matcher {
 			return ArbitraryIntrospectorResult.EMPTY;
 		}
 
-		List<Arbitrary<?>> childrenArbitraries = context.getChildrenArbitraryContexts().getArbitraries();
+		Set<Object> uniqueEntrySet = new HashSet<>();
+		List<Arbitrary<?>> childrenArbitraries = context.getChildrenArbitraryContexts().getArbitraries().stream()
+			.map(it -> new UniqueArbitraryFilter<>(it, uniqueEntrySet, MAX_TRIES))
+			.collect(Collectors.toList());
 
 		BuilderCombinator<Map<Object, Object>> builderCombinator = Builders.withBuilder(HashMap::new);
 		for (Arbitrary<?> child : childrenArbitraries) {

@@ -147,5 +147,21 @@ public final class MapEntryElementProperty implements Property {
 			this.value = value;
 		}
 
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj) {
+				return true;
+			}
+			if (obj == null || getClass() != obj.getClass()) {
+				return false;
+			}
+			MapEntryElementType that = (MapEntryElementType)obj;
+			return Objects.equals(key, that.key);
+		}
+
+		@Override
+		public int hashCode() {
+			return Objects.hash(key);
+		}
 	}
 }
