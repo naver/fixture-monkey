@@ -1,5 +1,6 @@
 package com.navercorp.fixturemonkey.test;
 
+import static org.assertj.core.api.BDDAssertions.then;
 import static org.assertj.core.api.BDDAssertions.thenNoException;
 
 import java.time.Instant;
@@ -14,6 +15,7 @@ import net.jqwik.api.Property;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonFormat.Shape;
+import com.fasterxml.jackson.databind.JsonNode;
 
 import lombok.Value;
 
@@ -28,6 +30,14 @@ class FixtureMonkeyV04JacksonTest {
 	@Property
 	void jsonFormat() {
 		thenNoException().isThrownBy(() -> SUT.giveMeOne(JsonFormatSpec.class));
+	}
+
+	@Property
+	void jsonNode() {
+		JsonNodeWrapperClass actual = SUT.giveMeOne(JsonNodeWrapperClass.class);
+
+		then(actual).isNotNull();
+		then(actual.value).isNotNull();
 	}
 
 	@Value
@@ -59,5 +69,10 @@ class FixtureMonkeyV04JacksonTest {
 
 	public enum JsonEnum {
 		ONE, TWO, THREE
+	}
+
+	@Value
+	public static class JsonNodeWrapperClass {
+		JsonNode value;
 	}
 }
