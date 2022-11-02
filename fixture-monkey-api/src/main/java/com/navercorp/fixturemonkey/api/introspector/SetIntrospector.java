@@ -21,6 +21,7 @@ package com.navercorp.fixturemonkey.api.introspector;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -36,10 +37,12 @@ import com.navercorp.fixturemonkey.api.generator.ContainerProperty;
 import com.navercorp.fixturemonkey.api.matcher.AssignableTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.property.Property;
+import com.navercorp.fixturemonkey.api.unique.UniqueArbitraryFilter;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class SetIntrospector implements ArbitraryIntrospector, Matcher {
 	private static final Matcher MATCHER = new AssignableTypeMatcher(Set.class);
+	private static final int MAX_TRIES = 10000;
 
 	@Override
 	public boolean match(Property property) {
@@ -60,7 +63,16 @@ public final class SetIntrospector implements ArbitraryIntrospector, Matcher {
 			return ArbitraryIntrospectorResult.EMPTY;
 		}
 
-		List<Arbitrary<?>> childrenArbitraries = context.getChildrenArbitraryContexts().getArbitraries();
+		Set<Object> uniqueChildSet = new HashSet<>();
+		List<Arbitrary<?>> childrenArbitraries = context.getChildrenArbitraryContexts().getArbitraries().stream()
+			.map(arbitrary ->
+				new UniqueArbitraryFilter<>(
+					arbitrary,
+					uniqueChildSet,
+					MAX_TRIES
+				)
+			)
+			.collect(Collectors.toList());
 
 		BuilderCombinator<Set<Object>> builderCombinator = Builders.withBuilder(HashSet::new);
 		for (Arbitrary<?> childArbitrary : childrenArbitraries) {
@@ -70,10 +82,6 @@ public final class SetIntrospector implements ArbitraryIntrospector, Matcher {
 			});
 		}
 
-		return new ArbitraryIntrospectorResult(
-			builderCombinator
-				.build()
-				.filter(it -> it.size() == childrenArbitraries.size())
-		);
+		return new ArbitraryIntrospectorResult(builderCombinator.build());
 	}
 }

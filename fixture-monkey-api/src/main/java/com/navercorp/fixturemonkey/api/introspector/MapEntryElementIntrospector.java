@@ -18,7 +18,9 @@
 
 package com.navercorp.fixturemonkey.api.introspector;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -34,9 +36,12 @@ import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty;
 import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty.MapEntryElementType;
 import com.navercorp.fixturemonkey.api.property.Property;
+import com.navercorp.fixturemonkey.api.unique.UniqueArbitraryFilter;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class MapEntryElementIntrospector implements ArbitraryIntrospector, Matcher {
+	private static final int MAX_TRIES = 10000;
+
 	@Override
 	public boolean match(Property property) {
 		return property.getClass() == MapEntryElementProperty.class;
@@ -61,6 +66,8 @@ public final class MapEntryElementIntrospector implements ArbitraryIntrospector,
 		if (arbitraries.size() != 2) {
 			throw new IllegalArgumentException("Key and Value should be exist for MapEntryElementType.");
 		}
+		Set<Object> uniqueKeySet = new HashSet<>();
+		arbitraries.set(0, new UniqueArbitraryFilter<>(arbitraries.get(0), uniqueKeySet, MAX_TRIES));
 
 		Arbitrary<MapEntryElementType> arbitrary = Builders.withBuilder(MapEntryElementType::new)
 			.use(arbitraries.get(0)).in((element, key) -> {
