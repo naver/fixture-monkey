@@ -46,8 +46,8 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfoGenerator
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.generator.ArrayContainerPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.ContainerPropertyGenerator;
-import com.navercorp.fixturemonkey.api.generator.DefaultContainerPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.DefaultObjectPropertyGenerator;
+import com.navercorp.fixturemonkey.api.generator.DefaultSingleContainerPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.EntryContainerPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.MapContainerPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.MapEntryElementContainerPropertyGenerator;
@@ -285,7 +285,6 @@ public final class GenerateOptions {
 			.arbitraryGenerators(new ArrayList<>(this.arbitraryGenerators))
 			.defaultArbitraryGenerator(this.defaultArbitraryGenerator);
 	}
-	// TODO: equals and hashCode and toString
 
 	private static List<MatcherOperator<ObjectPropertyGenerator>> getDefaultObjectPropertyGenerators(
 	) {
@@ -347,11 +346,11 @@ public final class GenerateOptions {
 			),
 			MatcherOperator.assignableTypeMatchOperator(
 				Iterable.class,
-				DefaultContainerPropertyGenerator.INSTANCE
+				DefaultSingleContainerPropertyGenerator.INSTANCE
 			),
 			MatcherOperator.assignableTypeMatchOperator(
 				Iterator.class,
-				DefaultContainerPropertyGenerator.INSTANCE
+				DefaultSingleContainerPropertyGenerator.INSTANCE
 			),
 			MatcherOperator.assignableTypeMatchOperator(Map.class, MapContainerPropertyGenerator.INSTANCE),
 			MatcherOperator.assignableTypeMatchOperator(Entry.class, EntryContainerPropertyGenerator.INSTANCE),

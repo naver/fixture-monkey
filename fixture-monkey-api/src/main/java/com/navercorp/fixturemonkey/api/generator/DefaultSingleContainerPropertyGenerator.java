@@ -27,28 +27,33 @@ import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.property.ElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
+import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.api.type.Types;
 
-/**
- * Deprecated. use DefaultSingleContainerPropertyGenerator instead.
- */
-@API(since = "0.4.0", status = Status.DEPRECATED)
-public final class DefaultContainerPropertyGenerator implements ContainerPropertyGenerator {
-	public static final DefaultContainerPropertyGenerator INSTANCE =
-		new DefaultContainerPropertyGenerator();
+@API(since = "0.4.3", status = Status.EXPERIMENTAL)
+public final class DefaultSingleContainerPropertyGenerator implements ContainerPropertyGenerator {
+	public static final DefaultSingleContainerPropertyGenerator INSTANCE =
+		new DefaultSingleContainerPropertyGenerator();
+	private static final TypeReference<String> DEFAULT_ELEMENT_TYPE = new TypeReference<String>() {
+	};
 
 	@Override
 	public ContainerProperty generate(ContainerPropertyGeneratorContext context) {
 		Property property = context.getProperty();
 
 		List<AnnotatedType> elementTypes = Types.getGenericsTypes(property.getAnnotatedType());
-		if (elementTypes.size() != 1) {
+		if (elementTypes.size() > 1) {
 			throw new IllegalArgumentException(
-				"Container elementsTypes must be have 1 generics type for element. "
+				"Container elementsTypes support 1 generics type. "
+					+ "You should be custom ContainerPropertyGenerator for N generics container type. "
 					+ "propertyType: " + property.getType()
 					+ ", elementTypes: " + elementTypes
 			);
 		}
+
+		AnnotatedType elementType = elementTypes.isEmpty()
+			? DEFAULT_ELEMENT_TYPE.getAnnotatedType()
+			: elementTypes.get(0);
 
 		ArbitraryContainerInfo containerInfo = context.getContainerInfo();
 		if (containerInfo == null) {
@@ -58,7 +63,6 @@ public final class DefaultContainerPropertyGenerator implements ContainerPropert
 		}
 
 		int size = containerInfo.getRandomSize();
-		AnnotatedType elementType = elementTypes.get(0);
 		List<Property> childProperties = new ArrayList<>();
 		for (int sequence = 0; sequence < size; sequence++) {
 			Integer elementIndex = sequence;
