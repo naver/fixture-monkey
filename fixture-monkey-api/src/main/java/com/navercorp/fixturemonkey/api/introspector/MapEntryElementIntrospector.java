@@ -36,7 +36,6 @@ import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty.MapEntry
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.api.unique.UniqueArbitraryFilter;
-import com.navercorp.fixturemonkey.api.unique.UniqueCache;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class MapEntryElementIntrospector implements ArbitraryIntrospector, Matcher {
@@ -74,7 +73,7 @@ public final class MapEntryElementIntrospector implements ArbitraryIntrospector,
 			0,
 			new UniqueArbitraryFilter<>(
 				arbitraries.get(0),
-				it -> UniqueCache.isUniqueAndCheck(
+				it -> context.isUniqueAndCheck(
 					Types.getActualType(mapEntryProperty.getType()),
 					it
 				),

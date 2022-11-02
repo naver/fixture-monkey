@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Predicate;
 
 import javax.annotation.Nullable;
@@ -32,6 +33,7 @@ import org.apiguardian.api.API.Status;
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
 
+import com.navercorp.fixturemonkey.api.collection.LruCache;
 import com.navercorp.fixturemonkey.api.customizer.FixtureCustomizer;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
@@ -91,6 +93,13 @@ final class ArbitraryTree {
 		arbitraryCustomizers.addAll(generateOptions.getArbitraryCustomizers());
 		arbitraryCustomizers.addAll(customizers);
 
+		Map<Class<?>, Set<Object>> uniqueSetsByType;
+		if (parentContext != null) {
+			uniqueSetsByType = parentContext.getUniqueSetsByType();
+		} else {
+			uniqueSetsByType = new LruCache<>(100);
+		}
+
 		return new ArbitraryGeneratorContext(
 			arbitraryNode.getArbitraryProperty(),
 			childrenProperties,
@@ -103,7 +112,8 @@ final class ArbitraryTree {
 
 				return generateArbitrary(ctx, node);
 			},
-			arbitraryCustomizers
+			arbitraryCustomizers,
+			uniqueSetsByType
 		);
 	}
 

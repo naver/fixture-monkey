@@ -392,8 +392,6 @@ class InnerSpecTest {
 			.hasMessageContaining("Map key cannot be null.");
 	}
 
-	// TODO: Remove @Disabled after preventing the generation of duplicate map keys
-	@Disabled
 	@Property
 	void allKeyLazy() {
 		IntegerMapObject actual = SUT.giveMeBuilder(IntegerMapObject.class)
@@ -413,8 +411,6 @@ class InnerSpecTest {
 		then(actual.getIntegerMap().values()).allMatch(it-> it >= 0 && it <= 100);
 	}
 
-	// TODO: Remove @Disabled after preventing the generation of duplicate map keys
-	@Disabled
 	@Property
 	void allEntryLazy() {
 		IntegerMapObject actual = SUT.giveMeBuilder(IntegerMapObject.class)

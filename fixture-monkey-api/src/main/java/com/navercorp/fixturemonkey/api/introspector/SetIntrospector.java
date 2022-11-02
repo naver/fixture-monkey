@@ -38,7 +38,6 @@ import com.navercorp.fixturemonkey.api.matcher.AssignableTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.unique.UniqueArbitraryFilter;
-import com.navercorp.fixturemonkey.api.unique.UniqueCache;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class SetIntrospector implements ArbitraryIntrospector, Matcher {
@@ -68,7 +67,7 @@ public final class SetIntrospector implements ArbitraryIntrospector, Matcher {
 			.map(arbitrary ->
 				new UniqueArbitraryFilter<>(
 					arbitrary,
-					it -> UniqueCache.isUniqueAndCheck(
+					it -> context.isUniqueAndCheck(
 						Set.class,
 						it
 					),
@@ -87,7 +86,7 @@ public final class SetIntrospector implements ArbitraryIntrospector, Matcher {
 
 		return new ArbitraryIntrospectorResult(
 			builderCombinator.build(set -> {
-				UniqueCache.clear(Set.class);
+				context.evictUnique(Set.class);
 				return set;
 			})
 		);

@@ -37,7 +37,6 @@ import com.navercorp.fixturemonkey.api.matcher.AssignableTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty.MapEntryElementType;
 import com.navercorp.fixturemonkey.api.property.Property;
-import com.navercorp.fixturemonkey.api.unique.UniqueCache;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class MapIntrospector implements ArbitraryIntrospector, Matcher {
@@ -78,8 +77,8 @@ public final class MapIntrospector implements ArbitraryIntrospector, Matcher {
 		}
 
 		return new ArbitraryIntrospectorResult(builderCombinator.build(map -> {
-			UniqueCache.clear(Map.class);
-			UniqueCache.clear(Map.Entry.class);
+			context.evictUnique(Map.class);
+			context.evictUnique(Map.Entry.class);
 			return map;
 		}));
 	}

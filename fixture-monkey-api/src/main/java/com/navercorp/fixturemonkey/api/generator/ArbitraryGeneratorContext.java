@@ -27,6 +27,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.BiFunction;
 
 import javax.annotation.Nullable;
@@ -53,6 +54,7 @@ public final class ArbitraryGeneratorContext {
 
 	@SuppressWarnings("rawtypes")
 	private final List<MatcherOperator<? extends FixtureCustomizer>> fixtureCustomizers;
+	private final Map<Class<?>, Set<Object>> uniqueSetsByType;
 
 	@SuppressWarnings("rawtypes")
 	public ArbitraryGeneratorContext(
@@ -60,13 +62,15 @@ public final class ArbitraryGeneratorContext {
 		List<ArbitraryProperty> children,
 		@Nullable ArbitraryGeneratorContext ownerContext,
 		BiFunction<ArbitraryGeneratorContext, ArbitraryProperty, Arbitrary<?>> resolveArbitrary,
-		List<MatcherOperator<? extends FixtureCustomizer>> fixtureCustomizers
+		List<MatcherOperator<? extends FixtureCustomizer>> fixtureCustomizers,
+		Map<Class<?>, Set<Object>> uniqueSetsByType
 	) {
 		this.property = property;
 		this.children = new ArrayList<>(children);
 		this.ownerContext = ownerContext;
 		this.resolveArbitrary = resolveArbitrary;
 		this.fixtureCustomizers = fixtureCustomizers;
+		this.uniqueSetsByType = uniqueSetsByType;
 	}
 
 	public ArbitraryProperty getArbitraryProperty() {
@@ -126,5 +130,26 @@ public final class ArbitraryGeneratorContext {
 	@SuppressWarnings("rawtypes")
 	public List<MatcherOperator<? extends FixtureCustomizer>> getFixtureCustomizers() {
 		return fixtureCustomizers;
+	}
+
+	public Map<Class<?>, Set<Object>> getUniqueSetsByType() {
+		return uniqueSetsByType;
+	}
+
+	public synchronized boolean isUniqueAndCheck(Class<?> type, Object value) {
+		Set<Object> set = uniqueSetsByType.computeIfAbsent(type, p -> new HashSet<>());
+		boolean unique = !set.contains(value);
+		if (unique) {
+			set.add(value);
+			return true;
+		}
+		return false;
+	}
+
+	public void evictUnique(Class<?> type) {
+		if (!uniqueSetsByType.containsKey(type)) {
+			return;
+		}
+		uniqueSetsByType.get(type).clear();
 	}
 }
