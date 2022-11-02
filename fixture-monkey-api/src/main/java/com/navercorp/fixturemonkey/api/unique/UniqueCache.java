@@ -43,7 +43,6 @@ public final class UniqueCache {
 
 	public static void clear(Class<?> type) {
 		if (!UNIQUE_CACHE_BY_TYPE.containsKey(type)) {
-			// throw new IllegalArgumentException("Property has no unique cache. " + type.getSimpleName());
 			return;
 		}
 		UNIQUE_CACHE_BY_TYPE.get(type).clear();
