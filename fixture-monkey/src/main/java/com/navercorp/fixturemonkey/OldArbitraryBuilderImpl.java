@@ -235,8 +235,8 @@ public class OldArbitraryBuilderImpl<T> implements ArbitraryBuilder<T> {
 				buildTree,
 				false,
 				(PropertyNameResolver)property ->
-					this.generatorMap.getOrDefault(
-							tree.getClazz(),
+					buildArbitraryBuilder.generatorMap.getOrDefault(
+							Types.getActualType(property.getType()),
 							buildArbitraryBuilder.generator
 						)
 						.resolveFieldName(((FieldProperty)property).getField())
