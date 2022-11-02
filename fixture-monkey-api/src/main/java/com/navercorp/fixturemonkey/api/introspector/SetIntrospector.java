@@ -37,7 +37,9 @@ import com.navercorp.fixturemonkey.api.generator.ContainerProperty;
 import com.navercorp.fixturemonkey.api.matcher.AssignableTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.property.Property;
+import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.api.unique.UniqueArbitraryFilter;
+import com.navercorp.fixturemonkey.api.unique.UniqueCache;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class SetIntrospector implements ArbitraryIntrospector, Matcher {
@@ -63,12 +65,14 @@ public final class SetIntrospector implements ArbitraryIntrospector, Matcher {
 			return ArbitraryIntrospectorResult.EMPTY;
 		}
 
-		Set<Object> uniqueChildSet = new HashSet<>();
 		List<Arbitrary<?>> childrenArbitraries = context.getChildrenArbitraryContexts().getArbitraries().stream()
 			.map(arbitrary ->
 				new UniqueArbitraryFilter<>(
 					arbitrary,
-					uniqueChildSet,
+					it -> UniqueCache.isUniqueAndCheck(
+						Types.getActualType(property.getObjectProperty().getProperty().getType()),
+						it
+					),
 					MAX_TRIES
 				)
 			)
@@ -82,6 +86,11 @@ public final class SetIntrospector implements ArbitraryIntrospector, Matcher {
 			});
 		}
 
-		return new ArbitraryIntrospectorResult(builderCombinator.build());
+		return new ArbitraryIntrospectorResult(
+			builderCombinator.build(set -> {
+				UniqueCache.clear(Types.getActualType(property.getObjectProperty().getProperty().getType()));
+				return set;
+			})
+		);
 	}
 }

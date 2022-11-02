@@ -34,9 +34,14 @@ import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty;
 import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty.MapEntryElementType;
 import com.navercorp.fixturemonkey.api.property.Property;
+import com.navercorp.fixturemonkey.api.type.Types;
+import com.navercorp.fixturemonkey.api.unique.UniqueArbitraryFilter;
+import com.navercorp.fixturemonkey.api.unique.UniqueCache;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class MapEntryElementIntrospector implements ArbitraryIntrospector, Matcher {
+	private static final int MAX_TRIES = 10000;
+
 	@Override
 	public boolean match(Property property) {
 		return property.getClass() == MapEntryElementProperty.class;
@@ -61,6 +66,21 @@ public final class MapEntryElementIntrospector implements ArbitraryIntrospector,
 		if (arbitraries.size() != 2) {
 			throw new IllegalArgumentException("Key and Value should be exist for MapEntryElementType.");
 		}
+
+		Property mapEntryProperty =
+			((MapEntryElementProperty)property.getObjectProperty().getProperty()).getMapEntryProperty();
+
+		arbitraries.set(
+			0,
+			new UniqueArbitraryFilter<>(
+				arbitraries.get(0),
+				it -> UniqueCache.isUniqueAndCheck(
+					Types.getActualType(mapEntryProperty.getType()),
+					it
+				),
+				MAX_TRIES
+			)
+		);
 
 		Arbitrary<MapEntryElementType> arbitrary = Builders.withBuilder(MapEntryElementType::new)
 			.use(arbitraries.get(0)).in((element, key) -> {

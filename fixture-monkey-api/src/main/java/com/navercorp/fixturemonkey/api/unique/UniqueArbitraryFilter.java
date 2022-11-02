@@ -19,7 +19,6 @@
 package com.navercorp.fixturemonkey.api.unique;
 
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Predicate;
 
 import org.apiguardian.api.API;
@@ -32,48 +31,57 @@ import net.jqwik.api.RandomGenerator;
 import net.jqwik.api.support.LambdaSupport;
 import net.jqwik.engine.ArbitraryDelegator;
 import net.jqwik.engine.properties.arbitraries.EdgeCasesSupport;
+import net.jqwik.engine.properties.arbitraries.JustArbitrary;
 
 @SuppressWarnings("NullableProblems")
 @API(since = "0.4.3", status = Status.EXPERIMENTAL)
 public final class UniqueArbitraryFilter<T> extends ArbitraryDelegator<T> {
-	private final Set<Object> uniqueSet;
-	private final int maxMisses;
 	private final Predicate<T> filterPredicate;
+	private final int maxMisses;
 
-	public UniqueArbitraryFilter(Arbitrary<T> self, Set<Object> uniqueSet, int maxMisses) {
+	public UniqueArbitraryFilter(Arbitrary<T> self, Predicate<T> filterPredicate, int maxMisses) {
 		super(self);
-		this.uniqueSet = uniqueSet;
+		this.filterPredicate = filterPredicate;
 		this.maxMisses = maxMisses;
-		this.filterPredicate = this::isUniqueAndCheck;
 	}
 
 	@Override
 	public RandomGenerator<T> generator(int genSize) {
+		if (isFixed()) {
+			return super.generator(genSize);
+		}
 		return super.generator(genSize).filter(filterPredicate, maxMisses);
 	}
 
 	@Override
 	public RandomGenerator<T> generatorWithEmbeddedEdgeCases(int genSize) {
+		if (isFixed()) {
+			return super.generatorWithEmbeddedEdgeCases(genSize);
+		}
 		return super.generatorWithEmbeddedEdgeCases(genSize).filter(filterPredicate, maxMisses);
 	}
 
 	@Override
 	public Optional<ExhaustiveGenerator<T>> exhaustive(long maxNumberOfSamples) {
+		if (isFixed()) {
+			return super.exhaustive(maxNumberOfSamples);
+		}
+
 		return super.exhaustive(maxNumberOfSamples)
 			.map(generator -> generator.filter(filterPredicate, maxMisses));
 	}
 
 	@Override
 	public EdgeCases<T> edgeCases(int maxEdgeCases) {
+		if (isFixed()) {
+			return super.edgeCases(maxEdgeCases);
+		}
+
 		return EdgeCasesSupport.filter(super.edgeCases(maxEdgeCases), filterPredicate);
 	}
 
-	private synchronized boolean isUniqueAndCheck(T value) {
-		boolean unique = !uniqueSet.contains(value);
-		if (unique) {
-			uniqueSet.add(value);
-		}
-		return unique;
+	private boolean isFixed() {
+		return arbitrary() instanceof JustArbitrary;
 	}
 
 	@Override
@@ -98,5 +106,4 @@ public final class UniqueArbitraryFilter<T> extends ArbitraryDelegator<T> {
 		result = 31 * result + maxMisses;
 		return result;
 	}
-
 }

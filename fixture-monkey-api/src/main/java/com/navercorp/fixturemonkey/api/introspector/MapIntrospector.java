@@ -19,11 +19,8 @@
 package com.navercorp.fixturemonkey.api.introspector;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -38,14 +35,15 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.generator.ContainerProperty;
 import com.navercorp.fixturemonkey.api.matcher.AssignableTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
+import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty;
 import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty.MapEntryElementType;
 import com.navercorp.fixturemonkey.api.property.Property;
-import com.navercorp.fixturemonkey.api.unique.UniqueArbitraryFilter;
+import com.navercorp.fixturemonkey.api.type.Types;
+import com.navercorp.fixturemonkey.api.unique.UniqueCache;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class MapIntrospector implements ArbitraryIntrospector, Matcher {
 	private static final Matcher MATCHER = new AssignableTypeMatcher(Map.class);
-	private static final int MAX_TRIES = 10000;
 
 	@Override
 	public boolean match(Property property) {
@@ -66,10 +64,7 @@ public final class MapIntrospector implements ArbitraryIntrospector, Matcher {
 			return ArbitraryIntrospectorResult.EMPTY;
 		}
 
-		Set<Object> uniqueEntrySet = new HashSet<>();
-		List<Arbitrary<?>> childrenArbitraries = context.getChildrenArbitraryContexts().getArbitraries().stream()
-			.map(it -> new UniqueArbitraryFilter<>(it, uniqueEntrySet, MAX_TRIES))
-			.collect(Collectors.toList());
+		List<Arbitrary<?>> childrenArbitraries = context.getChildrenArbitraryContexts().getArbitraries();
 
 		BuilderCombinator<Map<Object, Object>> builderCombinator = Builders.withBuilder(HashMap::new);
 		for (Arbitrary<?> child : childrenArbitraries) {
@@ -84,6 +79,10 @@ public final class MapIntrospector implements ArbitraryIntrospector, Matcher {
 				});
 		}
 
-		return new ArbitraryIntrospectorResult(builderCombinator.build());
+		return new ArbitraryIntrospectorResult(builderCombinator.build(map -> {
+			UniqueCache.clear(Map.class);
+			UniqueCache.clear(Map.Entry.class);
+			return map;
+		}));
 	}
 }
