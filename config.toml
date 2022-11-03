@@ -99,15 +99,15 @@ copyright = "Naver"
 # This menu appears only if you have at least one [params.versions] set.
 version_menu = "Version"
 
-# Flag used in the "version-banner" partial to decide whether to display a 
+# Flag used in the "version-banner" partial to decide whether to display a
 # banner on every page indicating that this is an archived version of the docs.
 # Set this flag to "true" if you want to display the banner.
 archived_version = false
 
 # The version number for the version of the docs represented in this doc set.
-# Used in the "version-banner" partial to display a version number for the 
+# Used in the "version-banner" partial to display a version number for the
 # current doc set.
-version = "0.3"
+version = "0.4"
 
 # A link to latest version of the docs. Used in the "version-banner" partial to
 # point people to the main doc site.
@@ -123,7 +123,7 @@ github_project_repo = "https://github.com/naver/fixture-monkey"
 
 # Uncomment this if you have a newer GitHub repo with "main" as the default branch,
 # or specify a new value if you want to reference another branch in your GitHub links
-github_branch= "gh-pages"
+github_branch= "doc"
 
 # Google Custom Search Engine ID. Remove or comment out to disable search.
 # gcs_engine_id = "d72aa9b2712488cc3"
@@ -161,7 +161,7 @@ enable = false
 #no = 'Sorry to hear that. Please <a href="https://github.com/USERNAME/REPOSITORY/issues/new">tell us how we can improve</a>.'
 
 # Adds a reading time to the top of each doc.
-# If you want this feature, but occasionally need to remove the Reading time from a single page, 
+# If you want this feature, but occasionally need to remove the Reading time from a single page,
 # add "hide_readingtime: true" to the page's front matter
 [params.ui.readingtime]
 enable = false
@@ -174,5 +174,10 @@ enable = false
         desc = "Development takes place here!"
 
 [[params.versions]]
-  version = "latest"
-  url = "/fixture-monkey/docs"
+version = "0.4"
+url = "/fixture-monkey/docs/v0.4"
+
+[[params.versions]]
+version = "0.3"
+url = "/fixture-monkey/docs/v0.3"
+

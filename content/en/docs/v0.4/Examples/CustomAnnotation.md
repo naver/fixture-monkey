@@ -1,0 +1,27 @@
+---
+title: "Adding Java class custom annotations"
+weight: 3
+---
+## 1. Implementing JavaArbitraryResolver interface
+
+Override specific type method to define how annotation works 
+
+```java
+public class CustomJavaArbitraryResolver implements JavaArbitraryResolver{
+    @Override
+    public Arbitrary<String> strings(StringArbitrary stringArbitrary, ArbitraryGeneratorContext context) {
+        ...
+	}
+}
+```
+
+### Concrete Class
+* JavaxValidationJavaArbitraryResolver
+
+## 2. Altering `javaArbitraryResolver` option
+```java
+LabMonkey labMonkey = LabMonkey.labMonkeyBuilder()
+    .plugin(new JavaxValidationPlugin())
+    .javaArbitraryResolver(new CustomJavaArbitraryResolver())
+    .build();
+```
