@@ -52,8 +52,6 @@ public final class DefaultNullInjectGenerator implements NullInjectGenerator {
 		)
 	);
 
-	public static final List<String> DEFAULT_NULL_ANNOTATION_TYPES = Collections.singletonList(
-		"javax.validation.constraints.Null");
 	public static final List<String> DEFAULT_NOTNULL_ANNOTATION_TYPES = Collections.unmodifiableList(
 		Arrays.asList(
 			"javax.annotation.Nonnull",
@@ -78,7 +76,6 @@ public final class DefaultNullInjectGenerator implements NullInjectGenerator {
 	private final boolean defaultNotNull;
 
 	private final boolean nullableElement;
-	private final Set<String> nullAnnotationTypes;
 	private final Set<String> nullableAnnotationTypes;
 	private final Set<String> notNullAnnotationTypes;
 
@@ -88,7 +85,6 @@ public final class DefaultNullInjectGenerator implements NullInjectGenerator {
 			false,
 			false,
 			false,
-			new HashSet<>(DEFAULT_NULL_ANNOTATION_TYPES),
 			new HashSet<>(DEFAULT_NULLABLE_ANNOTATION_TYPES),
 			new HashSet<>(DEFAULT_NOTNULL_ANNOTATION_TYPES)
 		);
@@ -99,7 +95,6 @@ public final class DefaultNullInjectGenerator implements NullInjectGenerator {
 		boolean nullableContainer,
 		boolean defaultNotNull,
 		boolean nullableElement,
-		Set<String> nullAnnotationTypes,
 		Set<String> nullableAnnotationTypes,
 		Set<String> notNullAnnotationTypes
 	) {
@@ -107,7 +102,6 @@ public final class DefaultNullInjectGenerator implements NullInjectGenerator {
 		this.nullableContainer = nullableContainer;
 		this.defaultNotNull = defaultNotNull;
 		this.nullableElement = nullableElement;
-		this.nullAnnotationTypes = nullAnnotationTypes;
 		this.nullableAnnotationTypes = nullableAnnotationTypes;
 		this.notNullAnnotationTypes = notNullAnnotationTypes;
 	}
@@ -117,7 +111,6 @@ public final class DefaultNullInjectGenerator implements NullInjectGenerator {
 		boolean nullableContainer,
 		boolean defaultNotNull,
 		boolean nullableElement,
-		Set<Class<? extends Annotation>> nullAnnotationTypes,
 		Set<Class<? extends Annotation>> nullableAnnotationTypes,
 		Set<Class<? extends Annotation>> notNullAnnotationTypes
 	) {
@@ -126,7 +119,6 @@ public final class DefaultNullInjectGenerator implements NullInjectGenerator {
 			nullableContainer,
 			defaultNotNull,
 			nullableElement,
-			nullAnnotationTypes.stream().map(Class::getName).collect(toSet()),
 			nullableAnnotationTypes.stream().map(Class::getName).collect(toSet()),
 			notNullAnnotationTypes.stream().map(Class::getName).collect(toSet())
 		);
@@ -150,12 +142,6 @@ public final class DefaultNullInjectGenerator implements NullInjectGenerator {
 		Set<String> annotations = context.getProperty().getAnnotations().stream()
 			.map(it -> it.annotationType().getName())
 			.collect(toSet());
-
-		boolean isNull = annotations.stream().anyMatch(this.nullAnnotationTypes::contains);
-
-		if (isNull) {
-			return ALWAYS_NULL_INJECT;
-		}
 
 		if (!nullable) {
 			boolean hasNullableAnnotation = annotations.stream()

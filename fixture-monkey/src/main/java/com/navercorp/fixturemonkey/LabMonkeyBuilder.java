@@ -18,16 +18,10 @@
 
 package com.navercorp.fixturemonkey;
 
-import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.DEFAULT_NOTNULL_ANNOTATION_TYPES;
-import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.DEFAULT_NULLABLE_ANNOTATION_TYPES;
-import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.DEFAULT_NULL_ANNOTATION_TYPES;
-import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.DEFAULT_NULL_INJECT;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Function;
@@ -39,7 +33,6 @@ import com.navercorp.fixturemonkey.api.customizer.FixtureCustomizer;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfoGenerator;
 import com.navercorp.fixturemonkey.api.generator.ContainerPropertyGenerator;
-import com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator;
 import com.navercorp.fixturemonkey.api.generator.NullInjectGenerator;
 import com.navercorp.fixturemonkey.api.generator.NullObjectPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGenerator;
@@ -76,10 +69,6 @@ public class LabMonkeyBuilder {
 	private final ManipulateOptionsBuilder manipulateOptionsBuilder = ManipulateOptions.builder();
 	private ArbitraryValidator arbitraryValidator = new DefaultArbitraryValidator();
 	private ManipulatorOptimizer manipulatorOptimizer = new NoneManipulatorOptimizer();
-	private NullInjectGenerator defaultNullInjectGenerator = null;
-	private boolean defaultNotNull = false;
-	private boolean nullableContainer = false;
-	private boolean nullableElement = false;
 	private DecomposedContainerValueFactory defaultDecomposedContainerValueFactory = (obj) -> {
 		throw new IllegalArgumentException("given type is not supported container : " + obj.getClass().getTypeName());
 	};
@@ -223,7 +212,7 @@ public class LabMonkeyBuilder {
 	}
 
 	public LabMonkeyBuilder defaultNullInjectGenerator(NullInjectGenerator nullInjectGenerator) {
-		this.defaultNullInjectGenerator = nullInjectGenerator;
+		generateOptionsBuilder.defaultNullInjectGenerator(nullInjectGenerator);
 		return this;
 	}
 
@@ -333,21 +322,6 @@ public class LabMonkeyBuilder {
 		);
 	}
 
-	public LabMonkeyBuilder defaultNotNull(boolean defaultNotNull) {
-		this.defaultNotNull = defaultNotNull;
-		return this;
-	}
-
-	public LabMonkeyBuilder nullableContainer(boolean nullableContainer) {
-		this.nullableContainer = nullableContainer;
-		return this;
-	}
-
-	public LabMonkeyBuilder nullableElement(boolean nullableElement) {
-		this.nullableElement = nullableElement;
-		return this;
-	}
-
 	public LabMonkeyBuilder addExceptGeneratePackages(String... exceptGeneratePackages) {
 		for (String exceptGeneratePackage : exceptGeneratePackages) {
 			addExceptGeneratePackage(exceptGeneratePackage);
@@ -414,9 +388,9 @@ public class LabMonkeyBuilder {
 					};
 					this.register(actualType, registerArbitraryBuilder);
 				} catch (InvocationTargetException
-						| InstantiationException
-						| IllegalAccessException
-						| NoSuchMethodException e) {
+						 | InstantiationException
+						 | IllegalAccessException
+						 | NoSuchMethodException e) {
 					// ignored
 				}
 			}
@@ -489,23 +463,22 @@ public class LabMonkeyBuilder {
 		return this;
 	}
 
-	public LabMonkey build() {
-		if (defaultNullInjectGenerator != null) {
-			generateOptionsBuilder.defaultNullInjectGenerator(defaultNullInjectGenerator);
-		} else if (defaultNotNull || nullableContainer) {
-			generateOptionsBuilder.defaultNullInjectGenerator(
-				new DefaultNullInjectGenerator(
-					DEFAULT_NULL_INJECT,
-					nullableContainer,
-					defaultNotNull,
-					nullableElement,
-					new HashSet<>(DEFAULT_NULL_ANNOTATION_TYPES),
-					new HashSet<>(DEFAULT_NULLABLE_ANNOTATION_TYPES),
-					new HashSet<>(DEFAULT_NOTNULL_ANNOTATION_TYPES)
-				)
-			);
-		}
+	public LabMonkeyBuilder defaultNotNull(boolean defaultNotNull) {
+		this.generateOptionsBuilder.defaultNotNull(defaultNotNull);
+		return this;
+	}
 
+	public LabMonkeyBuilder nullableContainer(boolean nullableContainer) {
+		this.generateOptionsBuilder.nullableContainer(nullableContainer);
+		return this;
+	}
+
+	public LabMonkeyBuilder nullableElement(boolean nullableElement) {
+		this.generateOptionsBuilder.nullableElement(nullableElement);
+		return this;
+	}
+
+	public LabMonkey build() {
 		manipulateOptionsBuilder.additionalDecomposedContainerValueFactory(
 			obj -> {
 				Class<?> actualType = obj.getClass();

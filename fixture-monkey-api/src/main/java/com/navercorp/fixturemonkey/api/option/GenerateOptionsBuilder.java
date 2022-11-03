@@ -18,7 +18,12 @@
 
 package com.navercorp.fixturemonkey.api.option;
 
+import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.DEFAULT_NOTNULL_ANNOTATION_TYPES;
+import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.DEFAULT_NULLABLE_ANNOTATION_TYPES;
+import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.DEFAULT_NULL_INJECT;
+
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
@@ -74,6 +79,9 @@ public final class GenerateOptionsBuilder {
 	private List<MatcherOperator<FixtureCustomizer>> arbitraryCustomizers = new ArrayList<>();
 	private final JavaDefaultArbitraryGeneratorBuilder javaDefaultArbitraryGeneratorBuilder =
 		DefaultArbitraryGenerator.javaBuilder();
+	private boolean defaultNotNull = false;
+	private boolean nullableContainer = false;
+	private boolean nullableElement = false;
 
 	GenerateOptionsBuilder() {
 	}
@@ -464,6 +472,21 @@ public final class GenerateOptionsBuilder {
 		);
 	}
 
+	public GenerateOptionsBuilder defaultNotNull(boolean defaultNotNull) {
+		this.defaultNotNull = defaultNotNull;
+		return this;
+	}
+
+	public GenerateOptionsBuilder nullableContainer(boolean nullableContainer) {
+		this.nullableContainer = nullableContainer;
+		return this;
+	}
+
+	public GenerateOptionsBuilder nullableElement(boolean nullableElement) {
+		this.nullableElement = nullableElement;
+		return this;
+	}
+
 	public GenerateOptions build() {
 		ObjectPropertyGenerator defaultObjectPropertyGenerator = defaultIfNull(
 			this.defaultObjectPropertyGenerator,
@@ -473,8 +496,18 @@ public final class GenerateOptionsBuilder {
 			this.defaultPropertyNameResolver,
 			() -> GenerateOptions.DEFAULT_PROPERTY_NAME_RESOLVER
 		);
-		NullInjectGenerator defaultNullInjectGenerator =
-			defaultIfNull(this.defaultNullInjectGenerator, DefaultNullInjectGenerator::new);
+
+		NullInjectGenerator defaultNullInjectGenerator = defaultIfNull(
+			this.defaultNullInjectGenerator,
+			() -> new DefaultNullInjectGenerator(
+				DEFAULT_NULL_INJECT,
+				nullableContainer,
+				defaultNotNull,
+				nullableElement,
+				new HashSet<>(DEFAULT_NULLABLE_ANNOTATION_TYPES),
+				new HashSet<>(DEFAULT_NOTNULL_ANNOTATION_TYPES)
+			)
+		);
 		int defaultArbitraryContainerMaxSize = defaultIfNull(
 			this.defaultArbitraryContainerMaxSize,
 			() -> GenerateOptions.DEFAULT_ARBITRARY_CONTAINER_MAX_SIZE
