@@ -621,7 +621,6 @@ class FixtureMonkeyV04OptionsTest {
 					false,
 					false,
 					Collections.emptySet(),
-					Collections.emptySet(),
 					Collections.emptySet()
 				)
 			)
@@ -813,7 +812,6 @@ class FixtureMonkeyV04OptionsTest {
 					false,
 					false,
 					true,
-					Collections.emptySet(),
 					Collections.emptySet(),
 					Collections.emptySet()
 				)
@@ -1068,7 +1066,6 @@ class FixtureMonkeyV04OptionsTest {
 			true,
 			false,
 			false,
-			Collections.emptySet(),
 			Collections.emptySet(),
 			Collections.emptySet()
 		);
