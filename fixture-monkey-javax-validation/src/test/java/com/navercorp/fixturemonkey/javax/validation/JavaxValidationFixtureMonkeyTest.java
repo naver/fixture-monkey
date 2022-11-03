@@ -57,7 +57,7 @@ import com.navercorp.fixturemonkey.javax.validation.spec.StringIntrospectorSpec;
 import com.navercorp.fixturemonkey.javax.validation.spec.TimeIntrospectorSpec;
 
 class JavaxValidationFixtureMonkeyTest {
-	private final static LabMonkey SUT = LabMonkey.labMonkeyBuilder()
+	private static final LabMonkey SUT = LabMonkey.labMonkeyBuilder()
 		.plugin(new JavaxValidationPlugin())
 		.defaultNotNull(true)
 		.build();
