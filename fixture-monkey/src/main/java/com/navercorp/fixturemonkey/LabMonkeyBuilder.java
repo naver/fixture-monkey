@@ -20,6 +20,7 @@ package com.navercorp.fixturemonkey;
 
 import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.DEFAULT_NOTNULL_ANNOTATION_TYPES;
 import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.DEFAULT_NULLABLE_ANNOTATION_TYPES;
+import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.DEFAULT_NULL_ANNOTATION_TYPES;
 import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.DEFAULT_NULL_INJECT;
 
 import java.lang.reflect.InvocationTargetException;
@@ -498,6 +499,7 @@ public class LabMonkeyBuilder {
 					nullableContainer,
 					defaultNotNull,
 					nullableElement,
+					new HashSet<>(DEFAULT_NULL_ANNOTATION_TYPES),
 					new HashSet<>(DEFAULT_NULLABLE_ANNOTATION_TYPES),
 					new HashSet<>(DEFAULT_NOTNULL_ANNOTATION_TYPES)
 				)

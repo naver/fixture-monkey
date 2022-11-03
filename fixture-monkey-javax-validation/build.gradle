@@ -15,6 +15,7 @@ dependencies {
     api("com.github.mifmif:generex:1.0.2")
 
     testRuntimeOnly(project(":fixture-monkey-engine"))
+    testImplementation(project(":fixture-monkey"))
     testImplementation("org.hibernate.validator:hibernate-validator:6.2.1.Final")
     testImplementation("org.glassfish:jakarta.el:3.0.4")
     testImplementation("org.junit.jupiter:junit-jupiter-engine:${JUNIT_JUPITER_VERSION}")
