@@ -1,4 +1,4 @@
-package com.navercorp.fixturemonkey.javax.validation.introspector;
+package com.navercorp.fixturemonkey.javax.validation.spec;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -21,7 +21,12 @@ import javax.validation.constraints.FutureOrPresent;
 import javax.validation.constraints.Past;
 import javax.validation.constraints.PastOrPresent;
 
-class TimeIntrospectorSpec {
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
+public class TimeIntrospectorSpec {
 	private Calendar calendar;
 
 	@Past

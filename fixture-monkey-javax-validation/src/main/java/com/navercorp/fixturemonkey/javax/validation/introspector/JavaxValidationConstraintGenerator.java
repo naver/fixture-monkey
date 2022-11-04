@@ -223,6 +223,7 @@ public class JavaxValidationConstraintGenerator {
 		Boolean minInclusive = null;
 		BigDecimal max = null;
 		Boolean maxInclusive = null;
+		Integer scale = null;
 
 		Optional<Digits> digits = context.findAnnotation(Digits.class);
 		if (digits.isPresent()) {
@@ -233,6 +234,7 @@ public class JavaxValidationConstraintGenerator {
 			}
 			max = value.multiply(BigDecimal.TEN).subtract(BigDecimal.ONE);
 			min = max.negate();
+			scale = digits.get().fraction();
 		}
 
 		Optional<Min> minAnnotation = context.findAnnotation(Min.class);
@@ -325,6 +327,6 @@ public class JavaxValidationConstraintGenerator {
 			maxInclusive = true;
 		}
 
-		return new JavaxValidationDecimalConstraint(min, minInclusive, max, maxInclusive);
+		return new JavaxValidationDecimalConstraint(min, minInclusive, max, maxInclusive, scale);
 	}
 }

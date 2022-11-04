@@ -16,8 +16,22 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.javax.validation.introspector;
+package com.navercorp.fixturemonkey.javax.validation.spec;
 
-class CharacterIntrospectorSpec {
-	char character;
+import javax.validation.constraints.AssertFalse;
+import javax.validation.constraints.AssertTrue;
+
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
+public class BooleanIntrospectorSpec {
+	private boolean boolValue;
+
+	@AssertTrue
+	private boolean assertTrue;
+
+	@AssertFalse
+	private boolean assertFalse;
 }

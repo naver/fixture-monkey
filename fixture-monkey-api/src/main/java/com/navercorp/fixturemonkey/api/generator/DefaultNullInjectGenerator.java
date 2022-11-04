@@ -51,6 +51,7 @@ public final class DefaultNullInjectGenerator implements NullInjectGenerator {
 			"org.jmlspecs.annotation.Nullable"
 		)
 	);
+
 	public static final List<String> DEFAULT_NOTNULL_ANNOTATION_TYPES = Collections.unmodifiableList(
 		Arrays.asList(
 			"javax.annotation.Nonnull",

@@ -299,6 +299,7 @@ public final class JavaxValidationJavaArbitraryResolver implements JavaArbitrary
 		BigDecimal max = constraint.getMax();
 		Boolean minInclusive = constraint.getMinInclusive();
 		Boolean maxInclusive = constraint.getMaxInclusive();
+		Integer scale = constraint.getScale();
 
 		if (min != null) {
 			if (minInclusive != null && !minInclusive) {
@@ -313,6 +314,10 @@ public final class JavaxValidationJavaArbitraryResolver implements JavaArbitrary
 			} else {
 				bigDecimalArbitrary = bigDecimalArbitrary.lessOrEqual(max);
 			}
+		}
+
+		if (scale != null) {
+			bigDecimalArbitrary = bigDecimalArbitrary.ofScale(scale);
 		}
 
 		return bigDecimalArbitrary;

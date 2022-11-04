@@ -1,4 +1,4 @@
-package com.navercorp.fixturemonkey.javax.validation.introspector;
+package com.navercorp.fixturemonkey.javax.validation.spec;
 
 import java.math.BigInteger;
 
@@ -12,6 +12,11 @@ import javax.validation.constraints.NegativeOrZero;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class BigIntegerIntrospectorSpec {
 	private BigInteger bigIntegerValue;
 

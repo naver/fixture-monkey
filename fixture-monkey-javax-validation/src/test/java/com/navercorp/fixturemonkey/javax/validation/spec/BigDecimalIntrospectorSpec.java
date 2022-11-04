@@ -1,4 +1,6 @@
-package com.navercorp.fixturemonkey.javax.validation.introspector;
+package com.navercorp.fixturemonkey.javax.validation.spec;
+
+import java.math.BigDecimal;
 
 import javax.validation.constraints.DecimalMax;
 import javax.validation.constraints.DecimalMin;
@@ -10,39 +12,44 @@ import javax.validation.constraints.NegativeOrZero;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 
-class DoubleIntrospectorSpec {
-	private double doubleValue;
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
+public class BigDecimalIntrospectorSpec {
+	private BigDecimal bigDecimalValue;
 
 	@Digits(integer = 3, fraction = 0)
-	private double digitsValue;
+	private BigDecimal digitsValue;
 
 	@Min(100)
-	private double minValue;
+	private BigDecimal minValue;
 
 	@Max(100)
-	private double maxValue;
+	private BigDecimal maxValue;
 
 	@DecimalMin(value = "100.1")
-	private double decimalMin;
+	private BigDecimal decimalMin;
 
 	@DecimalMin(value = "100.1", inclusive = false)
-	private double decimalMinExclusive;
+	private BigDecimal decimalMinExclusive;
 
 	@DecimalMax(value = "100.1")
-	private double decimalMax;
+	private BigDecimal decimalMax;
 
 	@DecimalMax(value = "100.1", inclusive = false)
-	private double decimalMaxExclusive;
+	private BigDecimal decimalMaxExclusive;
 
 	@Negative
-	private double negative;
+	private BigDecimal negative;
 
 	@NegativeOrZero
-	private double negativeOrZero;
+	private BigDecimal negativeOrZero;
 
 	@Positive
-	private double positive;
+	private BigDecimal positive;
 
 	@PositiveOrZero
-	private double positiveOrZero;
+	private BigDecimal positiveOrZero;
 }

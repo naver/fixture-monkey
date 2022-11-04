@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.javax.validation.introspector;
+package com.navercorp.fixturemonkey.javax.validation.spec;
 
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.Email;
@@ -25,7 +25,12 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
-class StringIntrospectorSpec {
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
+public class StringIntrospectorSpec {
 	private String str;
 
 	@NotBlank

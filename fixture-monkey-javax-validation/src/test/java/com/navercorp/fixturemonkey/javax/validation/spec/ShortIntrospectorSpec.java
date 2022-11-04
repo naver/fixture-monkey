@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.javax.validation.introspector;
+package com.navercorp.fixturemonkey.javax.validation.spec;
 
 import javax.validation.constraints.DecimalMax;
 import javax.validation.constraints.DecimalMin;
@@ -28,39 +28,47 @@ import javax.validation.constraints.NegativeOrZero;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 
-class ByteIntrospectorSpec {
-	private byte byteValue;
+import lombok.Getter;
+import lombok.Setter;
 
-	@Digits(integer = 2, fraction = 0)
-	private byte digitsValue;
+@Getter
+@Setter
+public class ShortIntrospectorSpec {
+	private short shortValue;
+
+	@Digits(integer = 3, fraction = 0)
+	private short digitsValue;
 
 	@Min(100)
-	private byte minValue;
+	private short minValue;
 
 	@Max(100)
-	private byte maxValue;
+	private short maxValue;
 
 	@DecimalMin(value = "100")
-	private byte decimalMin;
+	private short decimalMin;
 
 	@DecimalMin(value = "100", inclusive = false)
-	private byte decimalMinExclusive;
+	private short decimalMinExclusive;
 
 	@DecimalMax(value = "100")
-	private byte decimalMax;
+	private short decimalMax;
 
 	@DecimalMax(value = "100", inclusive = false)
-	private byte decimalMaxExclusive;
+	private short decimalMaxExclusive;
 
 	@Negative
-	private byte negative;
+	private short negative;
 
 	@NegativeOrZero
-	private byte negativeOrZero;
+	private short negativeOrZero;
 
 	@Positive
-	private byte positive;
+	private short positive;
 
 	@PositiveOrZero
-	private byte positiveOrZero;
+	private short positiveOrZero;
+
+	@Digits(integer = 20, fraction = 0)
+	private short overflow;
 }

@@ -812,8 +812,8 @@ class FixtureMonkeyV04OptionsTest {
 					false,
 					false,
 					true,
-					new HashSet<>(),
-					new HashSet<>()
+					Collections.emptySet(),
+					Collections.emptySet()
 				)
 			)
 			.build();

@@ -16,9 +16,13 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.api.matcher;
+package com.navercorp.fixturemonkey.javax.validation.spec;
 
-class TypeMatcherSpec {
-	private String str;
-	private InheritedTypeMatcherSpec inherited;
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
+public class CharacterIntrospectorSpec {
+	char character;
 }

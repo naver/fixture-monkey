@@ -39,16 +39,21 @@ public final class JavaxValidationDecimalConstraint {
 	@Nullable
 	private final Boolean maxInclusive;
 
+	@Nullable
+	private final Integer scale;
+
 	public JavaxValidationDecimalConstraint(
 		@Nullable BigDecimal min,
 		@Nullable Boolean minInclusive,
 		@Nullable BigDecimal max,
-		@Nullable Boolean maxInclusive
+		@Nullable Boolean maxInclusive,
+		@Nullable Integer scale
 	) {
 		this.min = min;
 		this.minInclusive = minInclusive;
 		this.max = max;
 		this.maxInclusive = maxInclusive;
+		this.scale = scale;
 	}
 
 	@Nullable
@@ -69,5 +74,10 @@ public final class JavaxValidationDecimalConstraint {
 	@Nullable
 	public Boolean getMaxInclusive() {
 		return this.maxInclusive;
+	}
+
+	@Nullable
+	public Integer getScale() {
+		return scale;
 	}
 }
