@@ -85,7 +85,6 @@ class DefaultNullInjectGeneratorTest {
 			false,
 			false,
 			Collections.emptySet(),
-			Collections.emptySet(),
 			Collections.emptySet()
 		);
 		TypeReference<SampleWithAnnotation> typeReference = new TypeReference<SampleWithAnnotation>() {
@@ -113,7 +112,6 @@ class DefaultNullInjectGeneratorTest {
 			false,
 			true,
 			false,
-			Collections.emptySet(),
 			Collections.emptySet(),
 			Collections.emptySet()
 		);
@@ -164,7 +162,6 @@ class DefaultNullInjectGeneratorTest {
 			true,
 			false,
 			Collections.emptySet(),
-			Collections.emptySet(),
 			Collections.emptySet()
 		);
 		TypeReference<SampleWithAnnotation> typeReference = new TypeReference<SampleWithAnnotation>() {
@@ -192,7 +189,6 @@ class DefaultNullInjectGeneratorTest {
 			true,
 			true,
 			false,
-			Collections.emptySet(),
 			Collections.emptySet(),
 			Collections.emptySet()
 		);
