@@ -82,6 +82,7 @@ public final class GenerateOptionsBuilder {
 	private boolean defaultNotNull = false;
 	private boolean nullableContainer = false;
 	private boolean nullableElement = false;
+	private UnaryOperator<NullInjectGenerator> defaultNullInjectGeneratorOperator = it -> it;
 
 	GenerateOptionsBuilder() {
 	}
@@ -264,6 +265,13 @@ public final class GenerateOptionsBuilder {
 
 	public GenerateOptionsBuilder defaultNullInjectGenerator(NullInjectGenerator defaultNullInjectGenerator) {
 		this.defaultNullInjectGenerator = defaultNullInjectGenerator;
+		return this;
+	}
+
+	public GenerateOptionsBuilder defaultNullInjectGeneratorOperator(
+		UnaryOperator<NullInjectGenerator> defaultNullInjectGeneratorOperator
+	) {
+		this.defaultNullInjectGeneratorOperator = defaultNullInjectGeneratorOperator;
 		return this;
 	}
 
@@ -508,6 +516,11 @@ public final class GenerateOptionsBuilder {
 				new HashSet<>(DEFAULT_NOTNULL_ANNOTATION_TYPES)
 			)
 		);
+
+		if (defaultNullInjectGeneratorOperator != null) {
+			defaultNullInjectGenerator = defaultNullInjectGeneratorOperator.apply(defaultNullInjectGenerator);
+		}
+
 		int defaultArbitraryContainerMaxSize = defaultIfNull(
 			this.defaultArbitraryContainerMaxSize,
 			() -> GenerateOptions.DEFAULT_ARBITRARY_CONTAINER_MAX_SIZE

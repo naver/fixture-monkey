@@ -79,7 +79,7 @@ public final class JavaxValidationPlugin implements Plugin {
 	@Override
 	public void accept(GenerateOptionsBuilder optionsBuilder) {
 		optionsBuilder
-			.defaultNullInjectGenerator(new JavaxValidationNullInjectGenerator())
+			.defaultNullInjectGeneratorOperator(JavaxValidationNullInjectGenerator::new)
 			.insertFirstArbitraryContainerInfoGenerator(
 				prop -> true,
 				new JavaxValidationArbitraryContainerInfoGenerator()
