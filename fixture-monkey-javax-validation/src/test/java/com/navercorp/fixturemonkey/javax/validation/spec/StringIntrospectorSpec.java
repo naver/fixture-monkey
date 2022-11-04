@@ -46,6 +46,7 @@ public class StringIntrospectorSpec {
 	private String digits;
 
 	@Pattern(regexp = "[e-o]")
+	@NotBlank
 	private String pattern;
 
 	@Email
