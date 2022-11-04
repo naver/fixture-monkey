@@ -1101,4 +1101,23 @@ class FixtureMonkeyV04OptionsTest {
 		then(actual).isNotNull();
 		then(actual.getValue()).isNotNull();
 	}
+
+	@Property
+	void applySizeWhenRegisteredWithSize() {
+		// given
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.register(
+				ListStringObject.class,
+				fixture -> fixture.giveMeBuilder(ListStringObject.class).size("values", 5)
+			)
+			.build();
+
+		// when
+		List<String> actual = sut.giveMeBuilder(ListStringObject.class)
+			.apply((it, builder) -> builder.size("values", 10))
+			.sample()
+			.getValues();
+
+		then(actual).hasSize(10);
+	}
 }

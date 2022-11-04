@@ -475,18 +475,20 @@ public final class InnerSpec {
 			return new NodeSetLazyManipulator<>(
 				traverser,
 				manipulateOptions,
-				LazyArbitrary.lazy(() -> ((Arbitrary<?>)value).sample())
+				LazyArbitrary.lazy(() -> ((Arbitrary<?>)value).sample()),
+				false
 			);
 		} else if (value instanceof LazyArbitrary) {
 			return new NodeSetLazyManipulator<>(
 				traverser,
 				manipulateOptions,
-				(LazyArbitrary<?>)value
+				(LazyArbitrary<?>)value,
+				false
 			);
 		} else if (value == null) {
 			return new NodeNullityManipulator(true);
 		} else {
-			return new NodeSetDecomposedValueManipulator<>(traverser, manipulateOptions, value);
+			return new NodeSetDecomposedValueManipulator<>(traverser, manipulateOptions, value, false);
 		}
 	}
 }
