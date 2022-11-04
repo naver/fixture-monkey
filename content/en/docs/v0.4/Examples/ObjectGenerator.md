@@ -12,7 +12,6 @@ weight: 4
 ### FieldReflectionArbitraryIntrospector
 #### Preconditions
 1. No args constructor
-2. Getter / Setter
 
 ### BuilderArbitraryIntrospector
 #### Preconditions

@@ -24,7 +24,7 @@ LabMonkey labMonkey = LabMonkey.labMonkeyBuilder()
 
 ### JacksonArbitraryIntrospector
 {{< alert color="primary" title="Tip">}}
-This practice should add extra module because it depends on third-party library `Jackson`
+This practice should add extra module because it depends on third-party library [Jackson](https://github.com/FasterXML/jackson)
 {{< /alert >}}
 
 #### 1. Adding dependency
@@ -47,7 +47,6 @@ testImplementation("com.navercorp.fixturemonkey:fixture-monkey-jackson:0.4.2")
 ```java
 LabMonkey labMonkey = LabMonkey.labMonkeyBuilder()
     .plugin(new JacksonPlugin(objectMapper))
-    .objectIntrospector(new JacksonArbitraryIntrospector(objectMapper))
     .build();
 ```
 
@@ -55,7 +54,6 @@ LabMonkey labMonkey = LabMonkey.labMonkeyBuilder()
 ```java
 LabMonkey labMonkey = LabMonkey.labMonkeyBuilder()
 	.plugin(new JacksonPlugin())
-	.objectIntrospector(JacksonArbitraryIntrospector.INSTANCE)
 	.build();
 ```
 
@@ -68,7 +66,7 @@ LabMonkey labMonkey = LabMonkey.labMonkeyBuilder()
 ```
 
 
-## @NoArgsConstructor + @Getter
+## @NoArgsConstructor
 ### FieldReflectionArbitraryIntrospector
 #### 1. Altering `objectIntrospector` option
 
@@ -78,12 +76,12 @@ LabMonkey labMonkey = LabMonkey.labMonkeyBuilder()
     .build();
 ```
 
+## @NoArgsConstructor + @Setter
 ### BeanArbitraryIntrospector
 {{< alert color="primary" title="Tip">}}
 `BeanArbitraryIntrospector` is default `objectIntrospector`
 {{< /alert >}}
 
-## @NoArgsConstructor + @Setter
 ### 1. Altering `objectIntrospector` option
 
 ```java

@@ -38,7 +38,7 @@ LabMonkey labMonkey = LabMonkey.labMonkeyBuilder()
 
 ### JacksonArbitraryIntrospector
 {{< alert color="primary" title="Tip">}}
-서드파티 라이브러리 `Jackson`에 의존성이 있어 모듈 추가가 필요합니다.
+서드파티 라이브러리 [Jackson](https://github.com/FasterXML/jackson)에 의존성이 있어 모듈 추가가 필요합니다.
 {{< /alert >}}
 
 #### 0. 필요조건
@@ -68,7 +68,6 @@ testImplementation("com.navercorp.fixturemonkey:fixture-monkey-jackson:0.4.2")
 ```java
 LabMonkey labMonkey = LabMonkey.labMonkeyBuilder()
     .plugin(new JacksonPlugin(objectMapper))
-    .objectIntrospector(new JacksonArbitraryIntrospector(objectMapper))
     .build();
 ```
 
@@ -76,7 +75,6 @@ LabMonkey labMonkey = LabMonkey.labMonkeyBuilder()
 ```java
 LabMonkey labMonkey = LabMonkey.labMonkeyBuilder()
     .plugin(new JacksonPlugin())
-    .objectIntrospector(JacksonArbitraryIntrospector.INSTANCE)
     .build();
 ```
 

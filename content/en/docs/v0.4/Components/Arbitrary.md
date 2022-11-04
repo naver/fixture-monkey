@@ -3,7 +3,7 @@ title: "Arbitrary"
 weight: 7
 ---
 
-`Arbitrary` is a [fixture](https://junit.org/junit4/cookbook.html#Fixture) in `Jqwik`. 
+`Arbitrary` is a [fixture](https://junit.org/junit4/cookbook.html#Fixture) in `jqwik`. 
 
 You can generate `Arbitrary`, simply by calling static methods in `Arbitraries`
 

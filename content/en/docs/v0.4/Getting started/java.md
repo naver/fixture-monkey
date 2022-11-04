@@ -36,7 +36,7 @@ LabMonkey labMonkey = LabMonkey.labMonkeyBuilder()
 
 ### JacksonArbitraryIntrospector
 {{< alert color="primary" title="Tip">}}
-This practice should add extra module because it depends on third-party library `Jackson`
+This practice should add extra module because it depends on third-party library [Jackson](https://github.com/FasterXML/jackson)
 {{< /alert >}}
 
 #### 0. Prerequisites
@@ -64,7 +64,6 @@ testImplementation("com.navercorp.fixturemonkey:fixture-monkey-jackson:0.4.2")
 ```java
 LabMonkey labMonkey = LabMonkey.labMonkeyBuilder()
     .plugin(new JacksonPlugin(objectMapper))
-    .objectIntrospector(new JacksonArbitraryIntrospector(objectMapper))
     .build();
 ```
 
@@ -72,11 +71,28 @@ LabMonkey labMonkey = LabMonkey.labMonkeyBuilder()
 ```java
 LabMonkey labMonkey = LabMonkey.labMonkeyBuilder()
     .plugin(new JacksonPlugin())
-    .objectIntrospector(JacksonArbitraryIntrospector.INSTANCE)
     .build();
 ```
 
 ## Mutable type
+### ConstructorPropertiesIntrospector
+#### 0. Prerequisites
+Should satisfy one of below preconditions
+* record type
+* any constructors with `@ConstructorProperties`
+
+{{< alert color="primary" title="Tip">}}
+Multiple constructors with record would be instantiated by constructor with `@ConstructorProperties`
+{{< /alert >}}
+
+#### 1. Altering `objectIntrospector` option
+
+```java
+LabMonkey labMonkey = LabMonkey.labMonkeyBuilder()
+    .objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)
+    .build();
+```
+
 ### FieldReflectionArbitraryIntrospector
 #### 0. Prerequisites
 1. No args constructor
