@@ -258,9 +258,9 @@ class FixtureMonkeyExtensionsTest {
 
         then(actual).isNotNull
     }
-
-    data class IntegerStringWrapperClass(
-        val intValue: Int,
-        val stringValue: String,
-    )
 }
+
+data class IntegerStringWrapperClass(
+    val intValue: Int,
+    val stringValue: String,
+)

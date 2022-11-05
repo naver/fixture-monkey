@@ -89,6 +89,12 @@ public final class CompositeProperty implements Property {
 	}
 
 	@Override
+	@Nullable
+	public Boolean isNullable() {
+		return this.primaryProperty.isNullable();
+	}
+
+	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;

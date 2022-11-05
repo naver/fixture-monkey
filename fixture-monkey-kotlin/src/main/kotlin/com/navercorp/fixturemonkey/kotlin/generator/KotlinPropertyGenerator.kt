@@ -18,22 +18,50 @@
 
 package com.navercorp.fixturemonkey.kotlin.generator
 
+import com.navercorp.fixturemonkey.api.collection.LruCache
 import com.navercorp.fixturemonkey.api.generator.PropertyGenerator
+import com.navercorp.fixturemonkey.api.property.CompositeProperty
 import com.navercorp.fixturemonkey.api.property.ElementProperty
 import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty
 import com.navercorp.fixturemonkey.api.property.Property
+import com.navercorp.fixturemonkey.api.property.PropertyCache
 import com.navercorp.fixturemonkey.api.property.RootProperty
 import com.navercorp.fixturemonkey.api.property.TupleLikeElementsProperty
+import com.navercorp.fixturemonkey.api.type.Types
 import com.navercorp.fixturemonkey.kotlin.property.getMemberProperties
 import org.apiguardian.api.API
 import java.lang.reflect.AnnotatedType
 
 @API(since = "0.4.0", status = API.Status.EXPERIMENTAL)
 class KotlinPropertyGenerator : PropertyGenerator {
+    private val OBJECT_CHILD_PROPERTIES_CACHE = LruCache<Class<*>, List<Property>> (2000)
     override fun generateRootProperty(annotatedType: AnnotatedType): Property = RootProperty(annotatedType)
 
     override fun generateObjectChildProperties(annotatedType: AnnotatedType): List<Property> =
-        getMemberProperties(annotatedType)
+        OBJECT_CHILD_PROPERTIES_CACHE.computeIfAbsent(Types.getActualType(annotatedType.type)) {
+            val javaProperties = PropertyCache.getProperties(annotatedType)
+                .filter { it.name != null }
+                .associateBy { it.name!! }
+            val kotlinProperties = getMemberProperties(annotatedType)
+                .filter { it.name != null }
+                .associateBy { it.name!! }
+
+            val propertyNames = mutableListOf<String>()
+            propertyNames.addAll(kotlinProperties.keys)
+            javaProperties.keys.forEach {
+                if (!propertyNames.contains(it)) {
+                    propertyNames.add(it)
+                }
+            }
+
+            propertyNames.mapNotNull {
+                val kotlinProperty: Property? = kotlinProperties[it]
+                val javaProperty: Property? = javaProperties[it]
+                if (kotlinProperty != null && javaProperty != null) {
+                    CompositeProperty(kotlinProperty, javaProperty)
+                } else kotlinProperty ?: javaProperty
+            }
+        }
 
     override fun generateElementProperty(
         containerProperty: Property,
