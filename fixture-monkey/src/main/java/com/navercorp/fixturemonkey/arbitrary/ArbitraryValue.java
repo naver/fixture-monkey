@@ -61,6 +61,11 @@ public final class ArbitraryValue<T> implements Arbitrary<T> {
 		return EdgeCases.none();
 	}
 
+	@Override
+	public boolean isGeneratorMemoizable() {
+		return false;
+	}
+
 	private static final class MonkeyRandomGenerator<T> implements RandomGenerator<T> {
 		private final Supplier<Arbitrary<T>> generateArbitrary;
 		private final boolean validOnly;
