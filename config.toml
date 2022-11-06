@@ -72,7 +72,7 @@ contentDir = "content/kr"
 # Everything below this are Site Params
 
 [[menus.main]]
-url = "docs/v0.3.x/release-notes"
+url = "docs/v0.4/release-notes"
 name = "Release Notes"
 pre = "<i class='fas fa-book-open'></i> "
 weight = 2

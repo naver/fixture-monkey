@@ -2,9 +2,6 @@
 title: "fixture-monkey-autoparams"
 weight: 6
 ---
-{{< alert color="warning" title="Warning">}}
-This module does not support 0.4 LabMonkey
-{{< /alert >}}
 
 ## Featuers
 Extending [AutoParams](https://github.com/AutoParams/AutoParams) ParameterizedTest
@@ -28,6 +25,8 @@ testImplementation("com.navercorp.fixturemonkey:fixture-monkey-autoparams:0.4.2"
 
 ## Usage
 ```java
+FixtureMonkeyCustomizer.setUp(LabMonkey.create());
+
 @Data   // lombok getter, setter
 public class Order {
     @NotNull

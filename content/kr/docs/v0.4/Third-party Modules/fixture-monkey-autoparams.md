@@ -2,9 +2,6 @@
 title: "fixture-monkey-autoparams"
 weight: 6
 ---
-{{< alert color="warning" title="Warning">}}
-해당 모듈은 아직 0.4 버젼의 LabMonkey를 지원하지 않습니다.
-{{< /alert >}}
 
 ## 기능
 테스트 파라미터에 대해 객체를 생성해주는 [AutoParams](https://github.com/AutoParams/AutoParams)의 ParameterizedTest 지원 기능을 확장합니다.  
@@ -27,6 +24,8 @@ testImplementation("com.navercorp.fixturemonkey:fixture-monkey-autoparams:0.4.2"
 
 ## 사용 예시
 ```java
+FixtureMonkeyCustomizer.setUp(LabMonkey.create());
+
 @Data   // lombok getter, setter
 public class Order {
     @NotNull
