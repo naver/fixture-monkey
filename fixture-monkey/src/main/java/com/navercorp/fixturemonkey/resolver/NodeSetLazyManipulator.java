@@ -30,15 +30,18 @@ public final class NodeSetLazyManipulator<T> implements NodeManipulator {
 	private final ArbitraryTraverser traverser;
 	private final ManipulateOptions manipulateOptions;
 	private final LazyArbitrary<T> lazyArbitrary;
+	private final boolean forced;
 
 	public NodeSetLazyManipulator(
 		ArbitraryTraverser traverser,
 		ManipulateOptions manipulateOptions,
-		LazyArbitrary<T> lazyArbitrary
+		LazyArbitrary<T> lazyArbitrary,
+		boolean forced
 	) {
 		this.traverser = traverser;
 		this.manipulateOptions = manipulateOptions;
 		this.lazyArbitrary = lazyArbitrary;
+		this.forced = forced;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -57,7 +60,7 @@ public final class NodeSetLazyManipulator<T> implements NodeManipulator {
 		}
 
 		NodeSetDecomposedValueManipulator<T> nodeSetDecomposedValueManipulator =
-			new NodeSetDecomposedValueManipulator<>(traverser, manipulateOptions, value);
+			new NodeSetDecomposedValueManipulator<>(traverser, manipulateOptions, value, forced);
 		nodeSetDecomposedValueManipulator.manipulate(arbitraryNode);
 		lazyArbitrary.clear();
 	}

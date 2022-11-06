@@ -82,7 +82,8 @@ public final class BuilderManipulatorAdapter {
 				new NodeSetDecomposedValueManipulator<>(
 					traverser,
 					manipulateOptions,
-					manipulator.getApplicableValue()
+					manipulator.getApplicableValue(),
+					false
 				),
 				limit
 			);
@@ -93,7 +94,8 @@ public final class BuilderManipulatorAdapter {
 				new NodeSetLazyManipulator<>(
 					traverser,
 					manipulateOptions,
-					LazyArbitrary.lazy(manipulator::getApplicableValue)
+					LazyArbitrary.lazy(manipulator::getApplicableValue),
+					false
 				),
 				limit
 			);
@@ -104,7 +106,8 @@ public final class BuilderManipulatorAdapter {
 				new NodeSetLazyManipulator<>(
 					traverser,
 					manipulateOptions,
-					LazyArbitrary.lazy(manipulator::getApplicableValue)
+					LazyArbitrary.lazy(manipulator::getApplicableValue),
+					false
 				),
 				limit
 			);

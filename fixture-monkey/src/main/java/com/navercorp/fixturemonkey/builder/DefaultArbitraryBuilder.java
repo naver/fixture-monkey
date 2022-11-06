@@ -137,7 +137,7 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 				new ArbitraryManipulator(
 					nodeResolver,
 					new ApplyNodeCountManipulator(
-						new NodeSetDecomposedValueManipulator<>(traverser, manipulateOptions, value),
+						new NodeSetDecomposedValueManipulator<>(traverser, manipulateOptions, value, false),
 						limit
 					)
 				)
@@ -180,7 +180,8 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 					new NodeSetLazyManipulator<>(
 						traverser,
 						manipulateOptions,
-						lazyArbitrary
+						lazyArbitrary,
+						false
 					),
 					limit
 				)
@@ -244,7 +245,7 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 	}
 
 	@Override
-	public ArbitraryBuilder<T> setInner(ExpressionGenerator expressionGenerator,  Consumer<InnerSpec> specSpecifier) {
+	public ArbitraryBuilder<T> setInner(ExpressionGenerator expressionGenerator, Consumer<InnerSpec> specSpecifier) {
 		return this.setInner(resolveExpression(expressionGenerator), specSpecifier);
 	}
 
@@ -305,7 +306,7 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 		this.context.addManipulator(
 			new ArbitraryManipulator(
 				IdentityNodeResolver.INSTANCE,
-				new NodeSetDecomposedValueManipulator<>(traverser, manipulateOptions, this.sample())
+				new NodeSetDecomposedValueManipulator<>(traverser, manipulateOptions, this.sample(), false)
 			)
 		);
 		return this;
@@ -334,7 +335,8 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 				new NodeSetLazyManipulator<>(
 					traverser,
 					manipulateOptions,
-					lazyArbitrary
+					lazyArbitrary,
+					true
 				)
 			)
 		);
@@ -568,7 +570,7 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 		context.addManipulator(
 			new ArbitraryManipulator(
 				IdentityNodeResolver.INSTANCE,
-				new NodeSetLazyManipulator<>(traverser, manipulateOptions, lazyArbitrary)
+				new NodeSetLazyManipulator<>(traverser, manipulateOptions, lazyArbitrary, true)
 			)
 		);
 

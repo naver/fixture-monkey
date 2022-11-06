@@ -45,15 +45,18 @@ public final class NodeSetDecomposedValueManipulator<T> implements NodeManipulat
 	private final ManipulateOptions manipulateOptions;
 	@Nullable
 	private final T value;
+	private final boolean forced;
 
 	public NodeSetDecomposedValueManipulator(
 		ArbitraryTraverser traverser,
 		ManipulateOptions manipulateOptions,
-		@Nullable T value
+		@Nullable T value,
+		boolean forced
 	) {
 		this.traverser = traverser;
 		this.manipulateOptions = manipulateOptions;
 		this.value = value;
+		this.forced = forced;
 	}
 
 	@Override
@@ -88,7 +91,7 @@ public final class NodeSetDecomposedValueManipulator<T> implements NodeManipulat
 			value = decomposableContainerValue.getContainer();
 			int decomposedContainerSize = decomposableContainerValue.getSize();
 
-			if (!containerProperty.getContainerInfo().isManipulated()) {
+			if (forced || !containerProperty.getContainerInfo().isManipulated()) {
 				ContainerInfoManipulator containerInfoManipulator = new ContainerInfoManipulator(
 					IdentityNodeResolver.INSTANCE,
 					new ArbitraryContainerInfo(decomposedContainerSize, decomposedContainerSize, false)
