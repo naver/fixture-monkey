@@ -39,6 +39,7 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.option.GenerateOptions;
+import com.navercorp.fixturemonkey.api.property.Property;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 final class ArbitraryTree {
@@ -93,9 +94,9 @@ final class ArbitraryTree {
 		arbitraryCustomizers.addAll(generateOptions.getArbitraryCustomizers());
 		arbitraryCustomizers.addAll(customizers);
 
-		Map<Class<?>, Set<Object>> uniqueSetsByType;
+		Map<Property, Set<Object>> uniqueSetsByType;
 		if (parentContext != null) {
-			uniqueSetsByType = parentContext.getUniqueSetsByType();
+			uniqueSetsByType = parentContext.getUniqueSetsByProperty();
 		} else {
 			uniqueSetsByType = new LruCache<>(100);
 		}

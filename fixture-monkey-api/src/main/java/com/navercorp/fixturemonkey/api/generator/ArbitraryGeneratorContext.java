@@ -23,6 +23,7 @@ import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,7 +55,7 @@ public final class ArbitraryGeneratorContext {
 
 	@SuppressWarnings("rawtypes")
 	private final List<MatcherOperator<? extends FixtureCustomizer>> fixtureCustomizers;
-	private final Map<Class<?>, Set<Object>> uniqueSetsByType;
+	private final Map<Property, Set<Object>> uniqueSetsByProperty;
 
 	@SuppressWarnings("rawtypes")
 	public ArbitraryGeneratorContext(
@@ -63,14 +64,14 @@ public final class ArbitraryGeneratorContext {
 		@Nullable ArbitraryGeneratorContext ownerContext,
 		BiFunction<ArbitraryGeneratorContext, ArbitraryProperty, Arbitrary<?>> resolveArbitrary,
 		List<MatcherOperator<? extends FixtureCustomizer>> fixtureCustomizers,
-		Map<Class<?>, Set<Object>> uniqueSetsByType
+		Map<Property, Set<Object>> uniqueSetsByProperty
 	) {
 		this.property = property;
 		this.children = new ArrayList<>(children);
 		this.ownerContext = ownerContext;
 		this.resolveArbitrary = resolveArbitrary;
 		this.fixtureCustomizers = fixtureCustomizers;
-		this.uniqueSetsByType = uniqueSetsByType;
+		this.uniqueSetsByProperty = uniqueSetsByProperty;
 	}
 
 	public ArbitraryProperty getArbitraryProperty() {
@@ -132,12 +133,12 @@ public final class ArbitraryGeneratorContext {
 		return fixtureCustomizers;
 	}
 
-	public Map<Class<?>, Set<Object>> getUniqueSetsByType() {
-		return uniqueSetsByType;
+	public Map<Property, Set<Object>> getUniqueSetsByProperty() {
+		return uniqueSetsByProperty;
 	}
 
-	public synchronized boolean isUniqueAndCheck(Class<?> type, Object value) {
-		Set<Object> set = uniqueSetsByType.computeIfAbsent(type, p -> new HashSet<>());
+	public synchronized boolean isUniqueAndCheck(Property property, Object value) {
+		Set<Object> set = uniqueSetsByProperty.computeIfAbsent(property, p -> new HashSet<>());
 		boolean unique = !set.contains(value);
 		if (unique) {
 			set.add(value);
@@ -146,10 +147,10 @@ public final class ArbitraryGeneratorContext {
 		return false;
 	}
 
-	public void evictUnique(Class<?> type) {
-		if (!uniqueSetsByType.containsKey(type)) {
+	public void evictUnique(Property property) {
+		if (!uniqueSetsByProperty.containsKey(property)) {
 			return;
 		}
-		uniqueSetsByType.get(type).clear();
+		uniqueSetsByProperty.get(property).clear();
 	}
 }

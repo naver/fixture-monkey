@@ -19,6 +19,7 @@
 package com.navercorp.fixturemonkey.api.introspector;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -69,17 +70,19 @@ public final class MapEntryElementIntrospector implements ArbitraryIntrospector,
 		Property mapEntryProperty =
 			((MapEntryElementProperty)property.getObjectProperty().getProperty()).getMapEntryProperty();
 
-		arbitraries.set(
-			0,
-			new UniqueArbitraryFilter<>(
-				arbitraries.get(0),
-				it -> context.isUniqueAndCheck(
-					Types.getActualType(mapEntryProperty.getType()),
-					it
-				),
-				MAX_TRIES
-			)
-		);
+		if (Types.getActualType(mapEntryProperty.getType()) != Map.Entry.class) {
+			arbitraries.set(
+				0,
+				new UniqueArbitraryFilter<>(
+					arbitraries.get(0),
+					it -> context.isUniqueAndCheck(
+						mapEntryProperty,
+						it
+					),
+					MAX_TRIES
+				)
+			);
+		}
 
 		Arbitrary<MapEntryElementType> arbitrary = Builders.withBuilder(MapEntryElementType::new)
 			.use(arbitraries.get(0)).in((element, key) -> {

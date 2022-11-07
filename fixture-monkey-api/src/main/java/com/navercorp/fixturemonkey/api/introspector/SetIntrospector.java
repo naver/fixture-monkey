@@ -51,11 +51,12 @@ public final class SetIntrospector implements ArbitraryIntrospector, Matcher {
 
 	@Override
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
-		ArbitraryProperty property = context.getArbitraryProperty();
-		ContainerProperty containerProperty = property.getContainerProperty();
+		ArbitraryProperty arbitraryProperty = context.getArbitraryProperty();
+		ContainerProperty containerProperty = arbitraryProperty.getContainerProperty();
+		Property property = arbitraryProperty.getObjectProperty().getProperty();
 		if (containerProperty == null) {
 			throw new IllegalArgumentException(
-				"container property should not null. type : " + property.getObjectProperty().getProperty().getName()
+				"container arbitraryProperty should not null. property : " + property.getName()
 			);
 		}
 		ArbitraryContainerInfo containerInfo = containerProperty.getContainerInfo();
@@ -68,7 +69,7 @@ public final class SetIntrospector implements ArbitraryIntrospector, Matcher {
 				new UniqueArbitraryFilter<>(
 					arbitrary,
 					it -> context.isUniqueAndCheck(
-						Set.class,
+						property,
 						it
 					),
 					MAX_TRIES
@@ -86,7 +87,7 @@ public final class SetIntrospector implements ArbitraryIntrospector, Matcher {
 
 		return new ArbitraryIntrospectorResult(
 			builderCombinator.build(set -> {
-				context.evictUnique(Set.class);
+				context.evictUnique(property);
 				return set;
 			})
 		);
