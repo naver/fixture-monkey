@@ -1,0 +1,13 @@
+name: auto assign
+on:
+  pull_request_target:
+    types: [opened, ready_for_review]
+
+jobs:
+  add-reviews:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: kentaro-m/auto-assign-action@v1.2.0
+      - uses: actions-ecosystem/action-add-labels@v1
+          with:
+            labels: doc
