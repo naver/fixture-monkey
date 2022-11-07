@@ -62,6 +62,11 @@ final class ArbitraryValue<T> implements Arbitrary<T> {
 		return EdgeCases.none();
 	}
 
+	@Override
+	public boolean isGeneratorMemoizable() {
+		return false;
+	}
+
 	private static final class MonkeyRandomGenerator<T> implements RandomGenerator<T> {
 		private final Logger log = LoggerFactory.getLogger(this.getClass());
 
