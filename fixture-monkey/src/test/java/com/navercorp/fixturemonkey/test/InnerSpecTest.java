@@ -27,7 +27,6 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import net.jqwik.api.Arbitraries;
-import net.jqwik.api.Disabled;
 import net.jqwik.api.Property;
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
@@ -386,7 +385,7 @@ class InnerSpecTest {
 	void keyLazyNullThrows() {
 		thenThrownBy(() ->
 			SUT.giveMeBuilder(MapObject.class)
-				.setInner("strMap", m -> m.minSize(1).keyLazy(()->null))
+				.setInner("strMap", m -> m.minSize(1).keyLazy(() -> null))
 				.sample()
 		).isExactlyInstanceOf(IllegalArgumentException.class)
 			.hasMessageContaining("Map key cannot be null.");
@@ -395,32 +394,31 @@ class InnerSpecTest {
 	@Property
 	void allKeyLazy() {
 		IntegerMapObject actual = SUT.giveMeBuilder(IntegerMapObject.class)
-			.setInner("integerMap", m -> m.allKeyLazy(()-> Arbitraries.integers().between(0, 100)))
+			.setInner("integerMap", m -> m.allKeyLazy(() -> Arbitraries.integers().between(0, 100)))
 			.sample();
 
-		then(actual.getIntegerMap().keySet()).allMatch(it-> it >= 0 && it <= 100);
+		then(actual.getIntegerMap().keySet()).allMatch(it -> it >= 0 && it <= 100);
 	}
 
 	@Property
 	void allValueLazy() {
 		IntegerMapObject actual = SUT.giveMeBuilder(IntegerMapObject.class)
-			.setInner("integerMap", m -> m.allValueLazy(()-> Arbitraries.integers().between(0, 100)))
+			.setInner("integerMap", m -> m.allValueLazy(() -> Arbitraries.integers().between(0, 100)))
 			.sample();
 
-
-		then(actual.getIntegerMap().values()).allMatch(it-> it >= 0 && it <= 100);
+		then(actual.getIntegerMap().values()).allMatch(it -> it >= 0 && it <= 100);
 	}
 
 	@Property
 	void allEntryLazy() {
 		IntegerMapObject actual = SUT.giveMeBuilder(IntegerMapObject.class)
 			.setInner("integerMap", m -> m.allEntryLazy(
-				()-> Arbitraries.integers().between(0, 100),
-				()-> Arbitraries.integers().between(0, 100)
+				() -> Arbitraries.integers().between(0, 100),
+				() -> Arbitraries.integers().between(0, 100)
 			))
 			.sample();
 
-		then(actual.getIntegerMap().keySet()).allMatch(it-> it >= 0 && it <= 100);
-		then(actual.getIntegerMap().values()).allMatch(it-> it >= 0 && it <= 100);
+		then(actual.getIntegerMap().keySet()).allMatch(it -> it >= 0 && it <= 100);
+		then(actual.getIntegerMap().values()).allMatch(it -> it >= 0 && it <= 100);
 	}
 }
