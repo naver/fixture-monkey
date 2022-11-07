@@ -45,7 +45,6 @@ void test(Order order, ArbitraryBuilder<Order> orderBuilder) {
     then(order).isNotNull();
 
     Order actual = orderBuilder
-        .generator(JacksonArbitraryGenerator.INSTANCE)
         .set("name", "factory")
         .set("quantity", Arbitraries.integers().between(5, 10))
         .sample();
