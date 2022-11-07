@@ -26,7 +26,7 @@ generateBuilder.setInner("mapByString", m -> m.key(k -> k.entry("key", "value"))
 {{< /tab >}}
 {{< tab header="Kotlin Exp" lang="kotlin">}}
 
-generateBuilder.setInnerExpGetter(Generate::getMapByString) { m -> m.key { k -> k.entry("key", "value") } }
+generateBuilder.setInnerExp(Generate::getMapByString) { m -> m.key { k -> k.entry("key", "value") } }
 
 {{< /tab >}}
 {{< /tabpane>}}
@@ -41,7 +41,7 @@ generateBuilder.setInner("mapByString", m -> m.entry(k -> k.entry("innerKey", "i
 {{< /tab >}}
 {{< tab header="Kotlin Exp" lang="kotlin">}}
 
-generateBuilder.setInnerExpGetter(Generate::getMapByString) { m -> m.entry ({ k -> k.entry("innerKey", "innerValue") }, "value")
+generateBuilder.setInnerExp(Generate::getMapByString) { m -> m.entry ({ k -> k.entry("innerKey", "innerValue") }, "value")
 
 {{< /tab >}}
 {{< /tabpane>}}
@@ -55,7 +55,7 @@ generateBuilder.setInner("stringByMap", m -> m.value(v -> v.entry("key", "value"
 {{< /tab >}}
 {{< tab header="Kotlin Exp" lang="kotlin">}}
 
-generateBuilder.setInnerExpGetter(Generate::getStringByMap) { m -> m.value { v -> v.entry("key", "value") } }
+generateBuilder.setInnerExp(Generate::getStringByMap) { m -> m.value { v -> v.entry("key", "value") } }
 
 {{< /tab >}}
 {{< /tabpane>}}
@@ -70,7 +70,7 @@ generateBuilder.setInner("stringByMap", m -> m.entry("key", v -> v.entry("innerK
 {{< /tab >}}
 {{< tab header="Kotlin Exp" lang="kotlin">}}
 
-generateBuilder.setInnerExpGetter(Generate::getStringByMap) { m -> m.entry ("key") { v -> v.entry("innerKey", "innerValue") } }
+generateBuilder.setInnerExp(Generate::getStringByMap) { m -> m.entry ("key") { v -> v.entry("innerKey", "innerValue") } }
 
 {{< /tab >}}
 {{< /tabpane>}}

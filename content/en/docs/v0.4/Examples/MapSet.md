@@ -37,7 +37,7 @@ generateBuilder.setInner("namesById", m -> m.size(5));
 {{< /tab >}}
 {{< tab header="Kotlin Exp" lang="kotlin">}}
 
-generateBuilder.setInnerExpGetter(Generate::getNamesById) { m -> m.size(5) }
+generateBuilder.setInnerExp(Generate::getNamesById) { m -> m.size(5) }
 
 {{< /tab >}}
 {{< /tabpane>}}
@@ -52,7 +52,7 @@ generateBuilder.setInner("namesById", m -> m.entry("key", "value"));
 {{< /tab >}}
 {{< tab header="Kotlin Exp" lang="kotlin">}}
 
-generateBuilder.setInnerExpGetter(Generate::getNamesById) { m -> m.entry("key", "value") }
+generateBuilder.setInnerExp(Generate::getNamesById) { m -> m.entry("key", "value") }
 
 {{< /tab >}}
 {{< /tabpane>}}
@@ -67,7 +67,7 @@ generateBuilder.setInner("namesById", m -> m.key("key"));
 {{< /tab >}}
 {{< tab header="Kotlin Exp" lang="kotlin">}}
 
-generateBuilder.setInnerExpGetter(Generate::getNamesById) { m -> m.key("key") }
+generateBuilder.setInnerExp(Generate::getNamesById) { m -> m.key("key") }
 
 {{< /tab >}}
 {{< /tabpane>}}
@@ -82,7 +82,7 @@ generateBuilder.setInner("namesById", m -> m.value("value"));
 {{< /tab >}}
 {{< tab header="Kotlin Exp" lang="kotlin">}}
 
-generateBuilder.setInnerExpGetter(Generate::getNamesById) { m -> m.value("value") }
+generateBuilder.setInnerExp(Generate::getNamesById) { m -> m.value("value") }
 
 {{< /tab >}}
 {{< /tabpane>}}

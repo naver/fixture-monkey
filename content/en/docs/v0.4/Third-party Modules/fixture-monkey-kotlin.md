@@ -7,6 +7,18 @@ weight: 3
 - Using objectIntrospector `PrimaryConstructorArbitraryGenerator`
 - Extensions, Kotlin DSL Exp [see](https://github.com/naver/fixture-monkey/blob/main/fixture-monkey-kotlin/src/main/kotlin/com/navercorp/fixturemonkey/kotlin/FixtureMonkeyExtensions.kt)
 
+### Exp
+Kotlin DSL for generating type-safe expression.
+
+* Manipulation name has a suffix `exp` or `expGetter`
+* Using method reference.
+* `into`, `intoGetter` is used for referencing a field in the field.
+* `[index]`, `["*"]` is used for referencing an element in a container. 
+
+|              | manipulation name | nested field | element        | 
+|--------------|-------------------|--------------|----------------|
+| Java Class   | expGetter         | intoGetter   | [index], ["*"] |
+| Kotlin Class | exp               | into         | [index], ["*"] |
 
 ## How-to
 ### 1. Adding dependency
