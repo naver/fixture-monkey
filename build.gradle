@@ -84,7 +84,7 @@ subprojects {
                         developer {
                             id = "mhyeon-lee"
                             name = "Myeonghyeon Lee"
-                            email = "mheyon.lee@navercorp.com"
+                            email = "mheyon.lee@gmail.com"
                         }
                     }
                     scm {
