@@ -81,7 +81,7 @@ public final class JavaxValidationJavaArbitraryResolver implements JavaArbitrary
 			List<String> values = REGEX_GENERATOR.generateAll(pattern.get(), minValue, maxValue);
 			if (notBlank) {
 				values = values.stream()
-					.filter(it -> it != null && it.trim().isEmpty())
+					.filter(it -> it != null && !it.trim().isEmpty())
 					.collect(toList());
 			}
 
