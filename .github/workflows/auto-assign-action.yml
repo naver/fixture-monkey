@@ -1,4 +1,4 @@
-name: auto assign
+name: auto assign and add tag
 on:
   pull_request_target:
     types: [opened, ready_for_review]
@@ -9,5 +9,5 @@ jobs:
     steps:
       - uses: kentaro-m/auto-assign-action@v1.2.0
       - uses: actions-ecosystem/action-add-labels@v1
-          with:
-            labels: doc
+        with:
+          labels: doc
