@@ -36,7 +36,7 @@ import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty;
 import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty.MapEntryElementType;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.type.Types;
-import com.navercorp.fixturemonkey.api.unique.UniqueArbitraryFilter;
+import com.navercorp.fixturemonkey.api.unique.FilteredMonkeyArbitrary;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class MapEntryElementIntrospector implements ArbitraryIntrospector, Matcher {
@@ -73,7 +73,7 @@ public final class MapEntryElementIntrospector implements ArbitraryIntrospector,
 		if (Types.getActualType(mapEntryProperty.getType()) != Map.Entry.class) {
 			arbitraries.set(
 				0,
-				new UniqueArbitraryFilter<>(
+				new FilteredMonkeyArbitrary<>(
 					arbitraries.get(0),
 					it -> context.isUniqueAndCheck(
 						mapEntryProperty,

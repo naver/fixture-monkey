@@ -35,11 +35,11 @@ import net.jqwik.engine.properties.arbitraries.JustArbitrary;
 
 @SuppressWarnings("NullableProblems")
 @API(since = "0.4.3", status = Status.EXPERIMENTAL)
-public final class UniqueArbitraryFilter<T> extends ArbitraryDelegator<T> {
+public final class FilteredMonkeyArbitrary<T> extends ArbitraryDelegator<T> {
 	private final Predicate<T> filterPredicate;
 	private final int maxMisses;
 
-	public UniqueArbitraryFilter(Arbitrary<T> self, Predicate<T> filterPredicate, int maxMisses) {
+	public FilteredMonkeyArbitrary(Arbitrary<T> self, Predicate<T> filterPredicate, int maxMisses) {
 		super(self);
 		this.filterPredicate = filterPredicate;
 		this.maxMisses = maxMisses;
@@ -93,7 +93,7 @@ public final class UniqueArbitraryFilter<T> extends ArbitraryDelegator<T> {
 			return false;
 		}
 
-		UniqueArbitraryFilter<?> that = (UniqueArbitraryFilter<?>)obj;
+		FilteredMonkeyArbitrary<?> that = (FilteredMonkeyArbitrary<?>)obj;
 		if (maxMisses != that.maxMisses) {
 			return false;
 		}

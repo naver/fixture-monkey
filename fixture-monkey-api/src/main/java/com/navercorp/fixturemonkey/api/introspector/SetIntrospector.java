@@ -37,7 +37,7 @@ import com.navercorp.fixturemonkey.api.generator.ContainerProperty;
 import com.navercorp.fixturemonkey.api.matcher.AssignableTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.property.Property;
-import com.navercorp.fixturemonkey.api.unique.UniqueArbitraryFilter;
+import com.navercorp.fixturemonkey.api.unique.FilteredMonkeyArbitrary;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class SetIntrospector implements ArbitraryIntrospector, Matcher {
@@ -66,7 +66,7 @@ public final class SetIntrospector implements ArbitraryIntrospector, Matcher {
 
 		List<Arbitrary<?>> childrenArbitraries = context.getChildrenArbitraryContexts().getArbitraries().stream()
 			.map(arbitrary ->
-				new UniqueArbitraryFilter<>(
+				new FilteredMonkeyArbitrary<>(
 					arbitrary,
 					it -> context.isUniqueAndCheck(
 						property,
