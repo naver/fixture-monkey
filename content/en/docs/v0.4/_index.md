@@ -1,9 +1,6 @@
 ---
 title: "Hello, Lab Monkey"
 weight: 1
-menu:
-  main:
-    weight: 1
 ---
 {{< alert color="warning" title="Warning">}}
 Fixture Monkey is designed for test environment, not recommended for production use

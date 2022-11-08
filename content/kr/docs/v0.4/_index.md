@@ -2,9 +2,6 @@
 ---
 title: "안녕, Fixture Monkey"
 weight: 1
-menu:
-  main:
-    weight: 1
 ---
 {{< alert color="warning" title="Warning">}}
 Fixture Monkey는 테스트 환경에서 사용을 권장합니다.
