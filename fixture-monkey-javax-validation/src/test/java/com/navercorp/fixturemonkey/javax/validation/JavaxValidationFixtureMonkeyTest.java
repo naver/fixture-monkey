@@ -146,10 +146,10 @@ class JavaxValidationFixtureMonkeyTest {
 
 		then(actual.getFloatValue()).isBetween(-Float.MAX_VALUE, Float.MAX_VALUE);
 		then(actual.getDigitsValue()).isBetween(-999f, 999f);
-		then(actual.getDecimalMin()).isGreaterThanOrEqualTo(100);
-		then(actual.getDecimalMinExclusive()).isGreaterThan(100);
-		then(actual.getDecimalMax()).isLessThanOrEqualTo(100);
-		then(actual.getDecimalMaxExclusive()).isLessThan(100);
+		then(actual.getDecimalMin()).isGreaterThanOrEqualTo(100.1f);
+		then(actual.getDecimalMinExclusive()).isGreaterThan(100.1f);
+		then(actual.getDecimalMax()).isLessThanOrEqualTo(100.1f);
+		then(actual.getDecimalMaxExclusive()).isLessThan(1001.f);
 		then(actual.getNegative()).isNegative();
 		then(actual.getNegativeOrZero()).isLessThanOrEqualTo(0);
 		then(actual.getPositive()).isPositive();
