@@ -33,7 +33,7 @@ generateBuilder.set("value", "test");
 {{< /tab >}}
 {{< tab header= "Kotlin Exp" >}}
 
-generateBuilder.setExp(Generate::getValue, "test");
+generateBuilder.setExp(Generate::value, "test");
 
 {{< /tab >}}
 {{< /tabpane>}}
@@ -55,7 +55,7 @@ generateBuilder.set("values[n]", "test");
 {{< tab header= "Kotlin Exp" >}}
 
 
-generateBuilder.setExp(Generate::getValues[n], "test");
+generateBuilder.setExp(Generate::values[n], "test");
 
 
 {{< /tab >}}
@@ -79,7 +79,7 @@ generateBuilder.set("values[*]", "test");
 {{< tab header="Kotlin Exp" >}}
 
 
-generateBuilder.setExp(Generate::getValues["*"], "test");
+generateBuilder.setExp(Generate::values["*"], "test");
 
 
 {{< /tab >}}
@@ -103,7 +103,7 @@ generateBuilder.set("value", Arbitraries.strings());
 {{< tab header="Kotlin Exp" >}}
 
 
-generateBuilder.setExp(Generate::getValue, Arbitraries.strings());
+generateBuilder.setExp(Generate::value, Arbitraries.strings());
 
 
 {{< /tab >}}
@@ -126,7 +126,7 @@ generateBuilder.set("values[n]", Arbitraries.strings());
 {{< tab header="Kotlin Exp" >}}
 
 
-generateBuilder.setExp(Generate::getValues[n], Arbitraries.strings());
+generateBuilder.setExp(Generate::values[n], Arbitraries.strings());
 
 
 {{< /tab >}}
@@ -150,7 +150,7 @@ generateBuilder.set("values[*]", Arbitraries.strings());
 {{< tab header="Kotlin Exp" >}}
 
 
-generateBuilder.setExp(Generate::getValues["*"], Arbitraries.strings());
+generateBuilder.setExp(Generate::values["*"], Arbitraries.strings());
 
 
 {{< /tab >}}
