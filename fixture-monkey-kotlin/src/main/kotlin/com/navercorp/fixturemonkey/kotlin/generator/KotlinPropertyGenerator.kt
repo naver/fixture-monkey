@@ -34,11 +34,11 @@ import java.lang.reflect.AnnotatedType
 
 @API(since = "0.4.0", status = API.Status.EXPERIMENTAL)
 class KotlinPropertyGenerator : PropertyGenerator {
-    private val OBJECT_CHILD_PROPERTIES_CACHE = LruCache<Class<*>, List<Property>> (2000)
+    private val objectChildPropertiesCache = LruCache<Class<*>, List<Property>> (2000)
     override fun generateRootProperty(annotatedType: AnnotatedType): Property = RootProperty(annotatedType)
 
     override fun generateObjectChildProperties(annotatedType: AnnotatedType): List<Property> =
-        OBJECT_CHILD_PROPERTIES_CACHE.computeIfAbsent(Types.getActualType(annotatedType.type)) {
+        objectChildPropertiesCache.computeIfAbsent(Types.getActualType(annotatedType.type)) {
             val javaProperties = PropertyCache.getProperties(annotatedType)
                 .filter { it.name != null }
                 .associateBy { it.name!! }
