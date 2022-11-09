@@ -23,12 +23,10 @@ import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.BiFunction;
 
 import javax.annotation.Nullable;
@@ -38,6 +36,7 @@ import org.apiguardian.api.API.Status;
 
 import net.jqwik.api.Arbitrary;
 
+import com.navercorp.fixturemonkey.api.context.MonkeyGeneratorContext;
 import com.navercorp.fixturemonkey.api.customizer.FixtureCustomizer;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.property.Property;
@@ -55,7 +54,8 @@ public final class ArbitraryGeneratorContext {
 
 	@SuppressWarnings("rawtypes")
 	private final List<MatcherOperator<? extends FixtureCustomizer>> fixtureCustomizers;
-	private final Map<Property, Set<Object>> uniqueSetsByProperty;
+
+	private final MonkeyGeneratorContext monkeyGeneratorContext;
 
 	@SuppressWarnings("rawtypes")
 	public ArbitraryGeneratorContext(
@@ -64,14 +64,14 @@ public final class ArbitraryGeneratorContext {
 		@Nullable ArbitraryGeneratorContext ownerContext,
 		BiFunction<ArbitraryGeneratorContext, ArbitraryProperty, Arbitrary<?>> resolveArbitrary,
 		List<MatcherOperator<? extends FixtureCustomizer>> fixtureCustomizers,
-		Map<Property, Set<Object>> uniqueSetsByProperty
+		MonkeyGeneratorContext monkeyGeneratorContext
 	) {
 		this.property = property;
 		this.children = new ArrayList<>(children);
 		this.ownerContext = ownerContext;
 		this.resolveArbitrary = resolveArbitrary;
 		this.fixtureCustomizers = fixtureCustomizers;
-		this.uniqueSetsByProperty = uniqueSetsByProperty;
+		this.monkeyGeneratorContext = monkeyGeneratorContext;
 	}
 
 	public ArbitraryProperty getArbitraryProperty() {
@@ -133,24 +133,11 @@ public final class ArbitraryGeneratorContext {
 		return fixtureCustomizers;
 	}
 
-	public Map<Property, Set<Object>> getUniqueSetsByProperty() {
-		return uniqueSetsByProperty;
-	}
-
 	public synchronized boolean isUniqueAndCheck(Property property, Object value) {
-		Set<Object> set = uniqueSetsByProperty.computeIfAbsent(property, p -> new HashSet<>());
-		boolean unique = !set.contains(value);
-		if (unique) {
-			set.add(value);
-			return true;
-		}
-		return false;
+		return monkeyGeneratorContext.isUniqueAndCheck(property, value);
 	}
 
 	public void evictUnique(Property property) {
-		if (!uniqueSetsByProperty.containsKey(property)) {
-			return;
-		}
-		uniqueSetsByProperty.get(property).clear();
+		monkeyGeneratorContext.evictUnique(property);
 	}
 }

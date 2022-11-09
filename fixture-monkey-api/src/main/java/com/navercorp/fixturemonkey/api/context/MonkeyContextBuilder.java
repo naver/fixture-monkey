@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.resolver;
+package com.navercorp.fixturemonkey.api.context;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -25,14 +25,24 @@ import net.jqwik.api.Arbitrary;
 
 import com.navercorp.fixturemonkey.api.collection.LruCache;
 import com.navercorp.fixturemonkey.api.property.Property;
+import com.navercorp.fixturemonkey.api.property.RootProperty;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class MonkeyContextBuilder {
 	private LruCache<Property, Arbitrary<?>> arbitrariesByProperty;
+	private LruCache<RootProperty, MonkeyGeneratorContext> generatorContextByRootProperty;
 	private int cacheSize = 2000;
+	private int generatorContextSize = 1000;
 
 	public MonkeyContextBuilder arbitrariesByProperty(LruCache<Property, Arbitrary<?>> arbitrariesByProperty) {
 		this.arbitrariesByProperty = arbitrariesByProperty;
+		return this;
+	}
+
+	public MonkeyContextBuilder generatorContextByRootProperty(
+		LruCache<RootProperty, MonkeyGeneratorContext> generatorContextByRootProperty
+	) {
+		this.generatorContextByRootProperty = generatorContextByRootProperty;
 		return this;
 	}
 
@@ -41,11 +51,20 @@ public final class MonkeyContextBuilder {
 		return this;
 	}
 
+	public MonkeyContextBuilder generatorContextSize(int generatorContextSize) {
+		this.generatorContextSize = generatorContextSize;
+		return this;
+	}
+
 	public MonkeyContext build() {
 		if (arbitrariesByProperty == null) {
 			arbitrariesByProperty = new LruCache<>(cacheSize);
 		}
 
-		return new MonkeyContext(arbitrariesByProperty);
+		if (generatorContextByRootProperty == null) {
+			generatorContextByRootProperty = new LruCache<>(generatorContextSize);
+		}
+
+		return new MonkeyContext(arbitrariesByProperty, generatorContextByRootProperty);
 	}
 }
