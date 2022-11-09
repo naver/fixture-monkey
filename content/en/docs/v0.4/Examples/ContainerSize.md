@@ -43,7 +43,7 @@ generateBuilder.size("values", 5);
 {{< /tab >}}
 {{< tab header= "Kotlin Exp" >}}
 
-generateBuilder.sizeExpGetter(Generate::getValues, 5);
+generateBuilder.sizeExp(Generate::values, 5);
 
 {{< /tab >}}
 {{< /tabpane>}}
@@ -59,7 +59,7 @@ generateBuilder.size("values[n]", 5);
 {{< /tab >}}
 {{< tab header= "Kotlin Exp" >}}
 
-generateBuilder.sizeExpGetter(Generate::getValues[n], 5);
+generateBuilder.sizeExp(Generate::values[n], 5);
 
 {{< /tab >}}
 {{< /tabpane>}}
@@ -74,7 +74,7 @@ generateBuilder.size("values[*]", 5);
 {{< /tab >}}
 {{< tab header= "Kotlin Exp" >}}
 
-generateBuilder.sizeExpGetter(Generate::getValues["*"], 5);
+generateBuilder.sizeExp(Generate::values["*"], 5);
 
 {{< /tab >}}
 {{< /tabpane>}}

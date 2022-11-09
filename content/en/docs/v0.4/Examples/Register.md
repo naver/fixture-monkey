@@ -55,7 +55,7 @@ LabMonkey labMonkey = LabMonkey.labMonkeyBuilder()
 public class GenerateGroup {
 	public ArbitraryBuilder<GenerateString> generateString(FixtureMonkey fixtureMonkey){
 		return fixtureMonkey.giveMeBuilder(GenerateString.class)
-			.set("value", Arbitraries.strings().alpha());
+			.set("value", Arbitraries.strings().numeric());
     }
 	
 	public ArbitraryBuilder<GenerateInt> generateInt(FixtureMonkey fixtureMonkey){
@@ -70,4 +70,13 @@ public class GenerateGroup {
 LabMonkey labMonkey = LabMonkey.labMonkeyBuilder()
     .registerGroup(GenerateGroup.class)
 	.build();
+```
+
+#### Example
+```java
+GenerateString generateString = labMonkey.giveMeOne(GenerateString.class);
+GenerateInt generateInt = labMonkey.giveMeOne(GenerateInt.class);
+
+then(generateString.getValue()).containsOnlyDigits()();
+then(generateInt.getValue()).isBetween(1, 100);
 ```

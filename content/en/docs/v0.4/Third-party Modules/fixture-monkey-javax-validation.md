@@ -4,7 +4,7 @@ weight: 2
 ---
 
 ## Features
-Generating object validated by javax.validation annotations
+Generating object validated by [JSR380: Bean Validation 2.0](https://jcp.org/en/jsr/detail?id=380) annotations
 
 ## How-to
 ### 1. Adding dependency

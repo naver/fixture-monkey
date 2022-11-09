@@ -3,7 +3,7 @@ title: "Arbitrary"
 weight: 7
 ---
 
-`Arbitrary` 는 `Jqwik`에서 정의한 [fixture](https://junit.org/junit4/cookbook.html#Fixture) 객체입니다. 
+`Arbitrary` 는 [jqwik](https://jqwik.net/)에서 정의한 [fixture](https://junit.org/junit4/cookbook.html#Fixture) 객체입니다. 
 
 `Arbitrary`는 `Arbitraries`의 정적 메소드를 호출해서 생성할 수 있습니다.
 

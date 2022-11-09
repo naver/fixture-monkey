@@ -1,10 +1,7 @@
 ---
-title: "Hello, Lab Monkey"
+title: "Hello, Fixture Monkey"
 weight: 1
 ---
-{{< alert color="warning" title="Warning">}}
-Fixture Monkey is designed for test environment, not recommended for production use
-{{< /alert >}}
 
 <img src="../../images/fixture-monkey.png" width="15%"/>
 
@@ -19,3 +16,7 @@ Fixture Monkey has two different generating object structures since 0.4.
 * `LabMonkey` instance supports experimental features in 0.4
 
 0.3 would be deprecated since 1.0, `Fixture Monkey` instance supports 0.4 then.
+
+{{< alert color="warning" title="Warning">}}
+Fixture Monkey is designed for test environment, not recommended for production use
+{{< /alert >}}

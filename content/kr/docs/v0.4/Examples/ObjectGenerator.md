@@ -12,7 +12,6 @@ weight: 4
 ### FieldReflectionArbitraryIntrospector
 #### 필요조건
 1. 클래스가 파라미터가 없는 빈 생성자를 가지고 있습니다.
-2. 클래스에 세터/게터가 존재합니다.
 
 ### BuilderArbitraryIntrospector
 #### 필요조건

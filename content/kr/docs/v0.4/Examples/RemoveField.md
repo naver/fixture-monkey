@@ -11,7 +11,7 @@ weight: 11
 public class CustomFixtureCustomizer implements FixtureCustomizer<CustomObject> {
 	@Override
 	public void customizeProperties(ChildArbitraryContext childArbitraryContext) {
-		childArbitraryContext.removeArbitrary(it -> removeFieldName.equals(it.getName()));
+		childArbitraryContext.removeArbitrary(property -> "removePropertyName".equals(property.getName()));
 	}
 
 	@Nullable

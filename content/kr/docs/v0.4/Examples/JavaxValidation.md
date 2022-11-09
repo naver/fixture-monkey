@@ -1,10 +1,12 @@
 ---
-title: "Javax.validation 어노테이션 적용"
+title: "JSR380: Bean Validation 2.0 어노테이션 적용"
 weight: 1
 ---
 {{< alert color="primary" title="Tip">}}
-서드파티 라이브러리 `Javax.validation`에 의존성이 있어 모듈 추가가 필요합니다.
+서드파티 라이브러리 `javax.validation`에 의존성이 있어 모듈 추가가 필요합니다.
 {{< /alert >}}
+
+[JSR380: Bean Validation 2.0](https://jcp.org/en/jsr/detail?id=380) 어노테이션을 만족하는 객체를 생성합니다.
 
 ## 1. 의존성 추가
 ```groovy
