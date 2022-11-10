@@ -1452,4 +1452,26 @@ class FixtureMonkeyV04Test {
 
 		then(values).isNotNull();
 	}
+
+	@Property
+	void sampleUniqueSet() {
+		// when
+		Set<String> actual = SUT.giveMeBuilder(new TypeReference<Set<String>>() {
+			})
+			.size("$", 200)
+			.sample();
+
+		then(actual).hasSize(200);
+	}
+
+	@Property
+	void sampleUniqueMap() {
+		// when
+		Map<String, String> actual = SUT.giveMeBuilder(new TypeReference<Map<String, String>>() {
+			})
+			.size("$", 200)
+			.sample();
+
+		then(actual).hasSize(200);
+	}
 }

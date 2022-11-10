@@ -32,6 +32,7 @@ import org.apiguardian.api.API.Status;
 import net.jqwik.api.Arbitrary;
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
+import com.navercorp.fixturemonkey.api.context.MonkeyContext;
 import com.navercorp.fixturemonkey.api.customizer.FixtureCustomizer;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
@@ -70,6 +71,7 @@ public final class ArbitraryResolver {
 		List<ContainerInfoManipulator> containerInfoManipulators
 	) {
 		ArbitraryTree arbitraryTree = new ArbitraryTree(
+			rootProperty,
 			this.traverser.traverse(rootProperty, containerInfoManipulators),
 			generateOptions,
 			monkeyContext,

@@ -146,6 +146,5 @@ public final class MapEntryElementProperty implements Property {
 		public void setValue(@Nullable Object value) {
 			this.value = value;
 		}
-
 	}
 }

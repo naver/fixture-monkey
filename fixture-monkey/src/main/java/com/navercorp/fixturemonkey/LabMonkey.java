@@ -30,6 +30,7 @@ import net.jqwik.api.Arbitrary;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
+import com.navercorp.fixturemonkey.api.context.MonkeyContext;
 import com.navercorp.fixturemonkey.api.customizer.FixtureCustomizer;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.option.GenerateOptions;
@@ -45,7 +46,6 @@ import com.navercorp.fixturemonkey.resolver.IdentityNodeResolver;
 import com.navercorp.fixturemonkey.resolver.ManipulateOptions;
 import com.navercorp.fixturemonkey.resolver.ManipulateOptionsBuilder;
 import com.navercorp.fixturemonkey.resolver.ManipulatorOptimizer;
-import com.navercorp.fixturemonkey.resolver.MonkeyContext;
 import com.navercorp.fixturemonkey.resolver.NodeSetDecomposedValueManipulator;
 import com.navercorp.fixturemonkey.validator.ArbitraryValidator;
 

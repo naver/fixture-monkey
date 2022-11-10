@@ -36,6 +36,7 @@ import org.apiguardian.api.API.Status;
 
 import net.jqwik.api.Arbitrary;
 
+import com.navercorp.fixturemonkey.api.context.MonkeyGeneratorContext;
 import com.navercorp.fixturemonkey.api.customizer.FixtureCustomizer;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.property.Property;
@@ -54,19 +55,23 @@ public final class ArbitraryGeneratorContext {
 	@SuppressWarnings("rawtypes")
 	private final List<MatcherOperator<? extends FixtureCustomizer>> fixtureCustomizers;
 
+	private final MonkeyGeneratorContext monkeyGeneratorContext;
+
 	@SuppressWarnings("rawtypes")
 	public ArbitraryGeneratorContext(
 		ArbitraryProperty property,
 		List<ArbitraryProperty> children,
 		@Nullable ArbitraryGeneratorContext ownerContext,
 		BiFunction<ArbitraryGeneratorContext, ArbitraryProperty, Arbitrary<?>> resolveArbitrary,
-		List<MatcherOperator<? extends FixtureCustomizer>> fixtureCustomizers
+		List<MatcherOperator<? extends FixtureCustomizer>> fixtureCustomizers,
+		MonkeyGeneratorContext monkeyGeneratorContext
 	) {
 		this.property = property;
 		this.children = new ArrayList<>(children);
 		this.ownerContext = ownerContext;
 		this.resolveArbitrary = resolveArbitrary;
 		this.fixtureCustomizers = fixtureCustomizers;
+		this.monkeyGeneratorContext = monkeyGeneratorContext;
 	}
 
 	public ArbitraryProperty getArbitraryProperty() {
@@ -126,5 +131,13 @@ public final class ArbitraryGeneratorContext {
 	@SuppressWarnings("rawtypes")
 	public List<MatcherOperator<? extends FixtureCustomizer>> getFixtureCustomizers() {
 		return fixtureCustomizers;
+	}
+
+	public synchronized boolean isUniqueAndCheck(Property property, Object value) {
+		return monkeyGeneratorContext.isUniqueAndCheck(property, value);
+	}
+
+	public void evictUnique(Property property) {
+		monkeyGeneratorContext.evictUnique(property);
 	}
 }

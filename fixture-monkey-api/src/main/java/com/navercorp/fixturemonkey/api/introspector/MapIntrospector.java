@@ -49,11 +49,12 @@ public final class MapIntrospector implements ArbitraryIntrospector, Matcher {
 
 	@Override
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
-		ArbitraryProperty property = context.getArbitraryProperty();
-		ContainerProperty containerProperty = property.getContainerProperty();
+		ArbitraryProperty arbitraryProperty = context.getArbitraryProperty();
+		ContainerProperty containerProperty = arbitraryProperty.getContainerProperty();
+		Property property = arbitraryProperty.getObjectProperty().getProperty();
 		if (containerProperty == null) {
 			throw new IllegalArgumentException(
-				"container property should not null. type : " + property.getObjectProperty().getProperty().getName()
+				"container arbitraryProperty should not null. property : " + property.getName()
 			);
 		}
 		ArbitraryContainerInfo containerInfo = containerProperty.getContainerInfo();
@@ -76,9 +77,9 @@ public final class MapIntrospector implements ArbitraryIntrospector, Matcher {
 				});
 		}
 
-		return new ArbitraryIntrospectorResult(
-			builderCombinator.build()
-			.filter(it -> it.size() == childrenArbitraries.size())
-		);
+		return new ArbitraryIntrospectorResult(builderCombinator.build(map -> {
+			context.evictUnique(property);
+			return map;
+		}));
 	}
 }

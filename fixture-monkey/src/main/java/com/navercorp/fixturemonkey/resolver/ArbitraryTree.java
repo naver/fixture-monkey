@@ -32,14 +32,18 @@ import org.apiguardian.api.API.Status;
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
 
+import com.navercorp.fixturemonkey.api.context.MonkeyContext;
+import com.navercorp.fixturemonkey.api.context.MonkeyGeneratorContext;
 import com.navercorp.fixturemonkey.api.customizer.FixtureCustomizer;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.option.GenerateOptions;
+import com.navercorp.fixturemonkey.api.property.RootProperty;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 final class ArbitraryTree {
+	private final RootProperty rootProperty;
 	private final ArbitraryNode rootNode;
 	private final GenerateOptions generateOptions;
 	private final ArbitraryTreeMetadata metadata;
@@ -49,11 +53,13 @@ final class ArbitraryTree {
 
 	@SuppressWarnings("rawtypes")
 	ArbitraryTree(
+		RootProperty rootProperty,
 		ArbitraryNode rootNode,
 		GenerateOptions generateOptions,
 		MonkeyContext monkeyContext,
 		List<MatcherOperator<? extends FixtureCustomizer>> customizers
 	) {
+		this.rootProperty = rootProperty;
 		this.rootNode = rootNode;
 		this.generateOptions = generateOptions;
 		this.monkeyContext = monkeyContext;
@@ -91,6 +97,7 @@ final class ArbitraryTree {
 		arbitraryCustomizers.addAll(generateOptions.getArbitraryCustomizers());
 		arbitraryCustomizers.addAll(customizers);
 
+		MonkeyGeneratorContext monkeyGeneratorContext = monkeyContext.retrieveGeneratorContext(rootProperty);
 		return new ArbitraryGeneratorContext(
 			arbitraryNode.getArbitraryProperty(),
 			childrenProperties,
@@ -103,7 +110,8 @@ final class ArbitraryTree {
 
 				return generateArbitrary(ctx, node);
 			},
-			arbitraryCustomizers
+			arbitraryCustomizers,
+			monkeyGeneratorContext
 		);
 	}
 
