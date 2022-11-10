@@ -1030,7 +1030,7 @@ class FixtureMonkeyV04OptionsTest {
 	@Property
 	void registerObjectNotFixed() {
 		LabMonkey sut = LabMonkey.labMonkeyBuilder()
-			.register(String.class, it -> it.giveMeBuilder(String.class).set("$", Arbitraries.strings().alpha()))
+			.register(String.class, it -> it.giveMeBuilder(String.class).set("$", Arbitraries.strings().ofLength(10)))
 			.build();
 
 		List<String> sampled = sut.giveMeBuilder(new TypeReference<List<String>>() {
