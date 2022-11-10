@@ -1120,4 +1120,46 @@ class FixtureMonkeyV04OptionsTest {
 
 		then(actual).hasSize(10);
 	}
+
+	@Property
+	void sizeWhenRegisterSizeInApply() {
+		// given
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.register(
+				ListStringObject.class,
+				fixture -> fixture.giveMeBuilder(ListStringObject.class)
+					.apply((it, builder) -> builder.size("values", 1))
+			)
+			.build();
+
+		// when
+		List<String> actual = sut.giveMeBuilder(ListStringObject.class)
+			.size("values", 2)
+			.sample()
+			.getValues();
+
+		then(actual).hasSize(2);
+	}
+
+	@Property
+	void sizeWhenRegisterApply() {
+		// given
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.register(
+				ListStringObject.class,
+				fixture -> fixture.giveMeBuilder(ListStringObject.class)
+					.size("values", 1)
+					.apply((it, builder) -> {
+					})
+			)
+			.build();
+
+		// when
+		List<String> actual = sut.giveMeBuilder(ListStringObject.class)
+			.size("values", 2)
+			.sample()
+			.getValues();
+
+		then(actual).hasSize(2);
+	}
 }

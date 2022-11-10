@@ -78,7 +78,7 @@ public final class MapIntrospector implements ArbitraryIntrospector, Matcher {
 		}
 
 		return new ArbitraryIntrospectorResult(builderCombinator.build(map -> {
-			context.evictUnique(property);
+			context.evictUnique(context.getPathProperty());
 			return map;
 		}));
 	}

@@ -69,7 +69,7 @@ public final class SetIntrospector implements ArbitraryIntrospector, Matcher {
 				new FilteredMonkeyArbitrary<>(
 					arbitrary,
 					it -> context.isUniqueAndCheck(
-						property,
+						context.getPathProperty(),
 						it
 					),
 					MAX_TRIES
@@ -87,7 +87,7 @@ public final class SetIntrospector implements ArbitraryIntrospector, Matcher {
 
 		return new ArbitraryIntrospectorResult(
 			builderCombinator.build(set -> {
-				context.evictUnique(property);
+				context.evictUnique(context.getPathProperty());
 				return set;
 			})
 		);
