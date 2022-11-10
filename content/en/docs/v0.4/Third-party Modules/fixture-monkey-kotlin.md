@@ -23,14 +23,14 @@ Kotlin DSL for generating type-safe expression.
 ## How-to
 ### 1. Adding dependency
 ```groovy
-testImplementation("com.navercorp.fixturemonkey:fixture-monkey-kotlin:0.4.2")
+testImplementation("com.navercorp.fixturemonkey:fixture-monkey-kotlin:0.4.3")
 ```
 
 ```xml
 <dependency>
   <groupId>com.navercorp.fixturemonkey</groupId>
   <artifactId>fixture-monkey-kotlin</artifactId>
-  <version>0.4.2</version>
+  <version>0.4.3</version>
   <scope>test</scope>
 </dependency>
 ```

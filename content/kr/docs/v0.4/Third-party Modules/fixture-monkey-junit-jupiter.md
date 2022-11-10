@@ -10,14 +10,14 @@ weight: 5
 ## 설정
 ### 1. 의존성 추가
 ```groovy
-testImplementation("com.navercorp.fixturemonkey:fixture-monkey-junit-jupiter:0.4.2")
+testImplementation("com.navercorp.fixturemonkey:fixture-monkey-junit-jupiter:0.4.3")
 ```
 
 ```xml
 <dependency>
   <groupId>com.navercorp.fixturemonkey</groupId>
   <artifactId>fixture-monkey-junit-jupiter</artifactId>
-  <version>0.4.2</version>
+  <version>0.4.3</version>
   <scope>test</scope>
 </dependency>
 ```

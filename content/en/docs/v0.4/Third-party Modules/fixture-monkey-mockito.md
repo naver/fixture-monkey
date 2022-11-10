@@ -8,14 +8,14 @@ Generating mock interafce, abstract class by [Mockito](https://site.mockito.org/
 ## How-to
 ### 1. Adding dependency
 ```groovy
-testImplementation("com.navercorp.fixturemonkey:fixture-monkey-mockito:0.4.2")
+testImplementation("com.navercorp.fixturemonkey:fixture-monkey-mockito:0.4.3")
 ```
 
 ```xml
 <dependency>
   <groupId>com.navercorp.fixturemonkey</groupId>
   <artifactId>fixture-monkey-mockito</artifactId>
-  <version>0.4.2</version>
+  <version>0.4.3</version>
   <scope>test</scope>
 </dependency>
 ```
