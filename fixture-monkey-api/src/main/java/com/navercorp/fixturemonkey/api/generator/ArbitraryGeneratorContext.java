@@ -38,7 +38,9 @@ import net.jqwik.api.Arbitrary;
 
 import com.navercorp.fixturemonkey.api.context.MonkeyGeneratorContext;
 import com.navercorp.fixturemonkey.api.customizer.FixtureCustomizer;
+import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
+import com.navercorp.fixturemonkey.api.property.CompositeProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
@@ -56,6 +58,8 @@ public final class ArbitraryGeneratorContext {
 	private final List<MatcherOperator<? extends FixtureCustomizer>> fixtureCustomizers;
 
 	private final MonkeyGeneratorContext monkeyGeneratorContext;
+
+	private final LazyArbitrary<Property> pathProperty = LazyArbitrary.lazy(this::initPathProperty);
 
 	@SuppressWarnings("rawtypes")
 	public ArbitraryGeneratorContext(
@@ -139,5 +143,17 @@ public final class ArbitraryGeneratorContext {
 
 	public void evictUnique(Property property) {
 		monkeyGeneratorContext.evictUnique(property);
+	}
+
+	public Property getPathProperty() {
+		return pathProperty.getValue();
+	}
+
+	private Property initPathProperty() {
+		if (ownerContext == null) {
+			return property.getObjectProperty().getProperty();
+		}
+
+		return new CompositeProperty(property.getObjectProperty().getProperty(), ownerContext.getPathProperty());
 	}
 }

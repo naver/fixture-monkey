@@ -1030,7 +1030,7 @@ class FixtureMonkeyV04OptionsTest {
 	@Property
 	void registerObjectNotFixed() {
 		LabMonkey sut = LabMonkey.labMonkeyBuilder()
-			.register(String.class, it -> it.giveMeBuilder(String.class).set("$", Arbitraries.strings().alpha()))
+			.register(String.class, it -> it.giveMeBuilder(String.class).set("$", Arbitraries.strings().ofLength(10)))
 			.build();
 
 		List<String> sampled = sut.giveMeBuilder(new TypeReference<List<String>>() {
@@ -1119,5 +1119,47 @@ class FixtureMonkeyV04OptionsTest {
 			.getValues();
 
 		then(actual).hasSize(10);
+	}
+
+	@Property
+	void sizeWhenRegisterSizeInApply() {
+		// given
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.register(
+				ListStringObject.class,
+				fixture -> fixture.giveMeBuilder(ListStringObject.class)
+					.apply((it, builder) -> builder.size("values", 1))
+			)
+			.build();
+
+		// when
+		List<String> actual = sut.giveMeBuilder(ListStringObject.class)
+			.size("values", 2)
+			.sample()
+			.getValues();
+
+		then(actual).hasSize(2);
+	}
+
+	@Property
+	void sizeWhenRegisterApply() {
+		// given
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.register(
+				ListStringObject.class,
+				fixture -> fixture.giveMeBuilder(ListStringObject.class)
+					.size("values", 1)
+					.apply((it, builder) -> {
+					})
+			)
+			.build();
+
+		// when
+		List<String> actual = sut.giveMeBuilder(ListStringObject.class)
+			.size("values", 2)
+			.sample()
+			.getValues();
+
+		then(actual).hasSize(2);
 	}
 }

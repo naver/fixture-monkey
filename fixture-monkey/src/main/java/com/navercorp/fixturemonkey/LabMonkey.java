@@ -94,7 +94,6 @@ public class LabMonkey extends FixtureMonkey {
 		return giveMeBuilder(typeReference);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public <T> DefaultArbitraryBuilder<T> giveMeBuilder(TypeReference<T> type) {
 		ManipulateOptions manipulateOptions = manipulateOptionsBuilder.build();
@@ -106,11 +105,7 @@ public class LabMonkey extends FixtureMonkey {
 			.findAny()
 			.orElse(null);
 
-		if (registered != null) {
-			return (DefaultArbitraryBuilder<T>)registered.copy();
-		}
-
-		return new DefaultArbitraryBuilder<>(
+		DefaultArbitraryBuilder<T> arbitraryBuilder = new DefaultArbitraryBuilder<>(
 			manipulateOptions,
 			rootProperty,
 			new ArbitraryResolver(
@@ -124,6 +119,12 @@ public class LabMonkey extends FixtureMonkey {
 			this.validator,
 			new ArbitraryBuilderContext()
 		);
+
+		if (registered != null) {
+			arbitraryBuilder.setLazy("$", registered::sample);
+		}
+
+		return arbitraryBuilder;
 	}
 
 	@Override

@@ -76,7 +76,7 @@ public final class MapEntryElementIntrospector implements ArbitraryIntrospector,
 				new FilteredMonkeyArbitrary<>(
 					arbitraries.get(0),
 					it -> context.isUniqueAndCheck(
-						mapEntryProperty,
+						context.getOwnerContext().getPathProperty(),
 						it
 					),
 					MAX_TRIES
