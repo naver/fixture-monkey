@@ -11,7 +11,7 @@ weight: 2
 ## Installation
 ### Gradle 
 ```groovy
-testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter:0.4.2")
+testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter:0.4.3")
 ```
 
 
@@ -20,7 +20,7 @@ testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter:0.4.2")
 <dependency>
   <groupId>com.navercorp.fixturemonkey</groupId>
   <artifactId>fixture-monkey-starter</artifactId>
-  <version>0.4.2</version>
+  <version>0.4.3</version>
   <scope>test</scope>
 </dependency>
 ```

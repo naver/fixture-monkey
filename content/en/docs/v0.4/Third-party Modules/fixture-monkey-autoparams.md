@@ -11,14 +11,14 @@ Using `@FixtureMonkeyAutoSource` instead of `@AutoSource` in AutoParams
 ## How-to
 ### 1. Adding denependcy
 ```groovy
-testImplementation("com.navercorp.fixturemonkey:fixture-monkey-autoparams:0.4.2")
+testImplementation("com.navercorp.fixturemonkey:fixture-monkey-autoparams:0.4.3")
 ```
 
 ```xml
 <dependency>
   <groupId>com.navercorp.fixturemonkey</groupId>
   <artifactId>fixture-monkey-autoparams</artifactId>
-  <version>0.4.2</version>
+  <version>0.4.3</version>
   <scope>test</scope>
 </dependency>
 ```

@@ -10,14 +10,14 @@ AutoParams의 `@AutoSource` 대신 `@FixtureMonkeyAutoSource`를 사용할 수 �
 ## 설정
 ### 1. 의존성 추가
 ```groovy
-testImplementation("com.navercorp.fixturemonkey:fixture-monkey-autoparams:0.4.2")
+testImplementation("com.navercorp.fixturemonkey:fixture-monkey-autoparams:0.4.3")
 ```
 
 ```xml
 <dependency>
   <groupId>com.navercorp.fixturemonkey</groupId>
   <artifactId>fixture-monkey-autoparams</artifactId>
-  <version>0.4.2</version>
+  <version>0.4.3</version>
   <scope>test</scope>
 </dependency>
 ```

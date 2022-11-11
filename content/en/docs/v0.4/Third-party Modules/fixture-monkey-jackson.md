@@ -12,14 +12,14 @@ Supporting instantiating by [Jackson](https://github.com/FasterXML/jackson) Obje
 ## How-to
 ### 1. Adding dependency
 ```groovy
-testImplementation("com.navercorp.fixturemonkey:fixture-monkey-jackson:0.4.2")
+testImplementation("com.navercorp.fixturemonkey:fixture-monkey-jackson:0.4.3")
 ```
 
 ```xml
 <dependency>
   <groupId>com.navercorp.fixturemonkey</groupId>
   <artifactId>fixture-monkey-jackson</artifactId>
-  <version>0.4.2</version>
+  <version>0.4.3</version>
   <scope>test</scope>
 </dependency>
 ```
