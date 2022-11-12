@@ -60,7 +60,7 @@ public final class SetContainerPropertyGenerator implements ContainerPropertyGen
 			if (actualElementType.isEnum()) {
 				int enumSize = EnumSet.allOf((Class<? extends Enum>)actualElementType).size();
 				containerInfo = new ArbitraryContainerInfo(
-					containerInfo.getElementMinSize(),
+					Math.min(containerInfo.getElementMinSize(), enumSize),
 					Math.min(containerInfo.getElementMaxSize(), enumSize),
 					false
 				);
