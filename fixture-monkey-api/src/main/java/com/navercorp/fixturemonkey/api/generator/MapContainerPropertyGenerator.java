@@ -20,6 +20,7 @@ package com.navercorp.fixturemonkey.api.generator;
 
 import java.lang.reflect.AnnotatedType;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 
 import org.apiguardian.api.API;
@@ -35,6 +36,7 @@ import com.navercorp.fixturemonkey.api.type.Types;
 public final class MapContainerPropertyGenerator implements ContainerPropertyGenerator {
 	public static final MapContainerPropertyGenerator INSTANCE = new MapContainerPropertyGenerator();
 
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Override
 	public ContainerProperty generate(ContainerPropertyGeneratorContext context) {
 		Property property = context.getProperty();
@@ -48,17 +50,27 @@ public final class MapContainerPropertyGenerator implements ContainerPropertyGen
 			);
 		}
 
+		AnnotatedType keyType = genericsTypes.get(0);
+		AnnotatedType valueType = genericsTypes.get(1);
+
 		ArbitraryContainerInfo containerInfo = context.getContainerInfo();
 		if (containerInfo == null) {
 			containerInfo = context.getGenerateOptions()
 				.getArbitraryContainerInfoGenerator(property)
 				.generate(context);
+
+			Class<?> actualKeyType = Types.getActualType(keyType);
+			if (actualKeyType.isEnum()) {
+				int enumSize = EnumSet.allOf((Class<? extends Enum>)actualKeyType).size();
+				containerInfo = new ArbitraryContainerInfo(
+					Math.min(containerInfo.getElementMinSize(), enumSize),
+					Math.min(containerInfo.getElementMaxSize(), enumSize),
+					false
+				);
+			}
 		}
 
 		int size = containerInfo.getRandomSize();
-
-		AnnotatedType keyType = genericsTypes.get(0);
-		AnnotatedType valueType = genericsTypes.get(1);
 
 		List<Property> childProperties = new ArrayList<>();
 		for (int sequence = 0; sequence < size; sequence++) {

@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -83,6 +84,7 @@ import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.InterfaceImple
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.ListStringObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.NullableObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.SimpleObject;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.TwoEnum;
 
 class FixtureMonkeyV04OptionsTest {
 	@Property
@@ -1161,5 +1163,41 @@ class FixtureMonkeyV04OptionsTest {
 			.getValues();
 
 		then(actual).hasSize(2);
+	}
+
+	@Property
+	void sampleEnumMapWithEnumSizeIsLessThanContainerInfoMaxSize() {
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.defaultArbitraryContainerMaxSize(5)
+			.build();
+
+		Map<TwoEnum, String> values = sut.giveMeOne(new TypeReference<Map<TwoEnum, String>>() {
+		});
+
+		then(values).hasSizeLessThanOrEqualTo(2);
+	}
+
+	@Property
+	void sampleEnumMapWithEnumSizeIsLessThanContainerInfoMinSize() {
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.defaultArbitraryContainerInfo(new ArbitraryContainerInfo(3, 5, false))
+			.build();
+
+		Map<TwoEnum, String> values = sut.giveMeOne(new TypeReference<Map<TwoEnum, String>>() {
+		});
+
+		then(values).hasSizeLessThanOrEqualTo(2);
+	}
+
+	@Property
+	void sampleEnumSetWithEnumSizeIsLessThanContainerInfoMinSize() {
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.defaultArbitraryContainerInfo(new ArbitraryContainerInfo(3, 5, false))
+			.build();
+
+		Set<TwoEnum> values = sut.giveMeOne(new TypeReference<Set<TwoEnum>>() {
+		});
+
+		then(values).hasSizeLessThanOrEqualTo(2);
 	}
 }

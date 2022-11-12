@@ -46,6 +46,7 @@ import javax.annotation.Nullable;
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
 import net.jqwik.api.Property;
+import net.jqwik.api.TooManyFilterMissesException;
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.ArbitraryBuilders;
@@ -1473,5 +1474,33 @@ class FixtureMonkeyV04Test {
 			.sample();
 
 		then(actual).hasSize(200);
+	}
+
+	@Property
+	void sampleEnumMap() {
+		Map<TwoEnum, String> values = SUT.giveMeOne(new TypeReference<Map<TwoEnum, String>>() {
+		});
+
+		then(values).hasSizeLessThanOrEqualTo(2);
+	}
+
+	@Property
+	void sizeEnumSetGreaterThanEnumSizeThrows() {
+		thenThrownBy(
+			() -> SUT.giveMeBuilder(new TypeReference<Set<TwoEnum>>() {
+				})
+				.size("$", 3)
+				.sample()
+		).isExactlyInstanceOf(TooManyFilterMissesException.class);
+	}
+
+	@Property
+	void sizeEnumMapGreaterThanEnumSizeThrows() {
+		thenThrownBy(
+			() -> SUT.giveMeBuilder(new TypeReference<Map<TwoEnum, String>>() {
+				})
+				.size("$", 3)
+				.sample()
+		).isExactlyInstanceOf(TooManyFilterMissesException.class);
 	}
 }
