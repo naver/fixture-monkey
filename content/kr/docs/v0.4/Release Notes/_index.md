@@ -3,6 +3,9 @@
 title: "Release Notes"
 weight: 6
 ---
+### 0.4.4
+* EnumSet, EnumMap을 생성할 때 크기가 size 연산을 적용하지 않는다면 enum 크기를 넘지 않습니다.
+
 ### 0.4.3
 #### LabMonkey
 * Javax.validation에서 숫자 타입을 생성할 때 min, max값을 타입에 맞게 제한합니다.

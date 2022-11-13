@@ -3,6 +3,9 @@
 title: "Release Notes"
 weight: 6
 ---
+### 0.4.4
+* EnumMap or EnumSet size would not exceed enum size if no size manipulation
+
 ### 0.4.3
 #### LabMonkey
 * Fix not generating over number type's min value and max value
