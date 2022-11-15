@@ -41,7 +41,6 @@ import com.navercorp.fixturemonkey.api.context.MonkeyGeneratorContext;
 import com.navercorp.fixturemonkey.api.customizer.FixtureCustomizer;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
-import com.navercorp.fixturemonkey.api.property.CompositeProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
@@ -152,24 +151,27 @@ public final class ArbitraryGeneratorContext {
 
 	private PropertyPath initPathProperty() {
 		if (ownerContext == null) {
-			return new PropertyPath(property.getObjectProperty().getProperty(), 1);
+			return new PropertyPath(property.getObjectProperty().getProperty(), null, 1);
 		}
 
+		PropertyPath parentPropertyPath = ownerContext.getPathProperty();
 		return new PropertyPath(
-			new CompositeProperty(
-				property.getObjectProperty().getProperty(),
-				ownerContext.getPathProperty().getProperty()
-			),
-			ownerContext.getPathProperty().getDepth() + 1
+			property.getObjectProperty().getProperty(),
+			parentPropertyPath,
+			parentPropertyPath.getDepth() + 1
 		);
 	}
 
 	public static class PropertyPath implements Comparable<PropertyPath> {
 		private final Property property;
+
+		@Nullable
+		private final PropertyPath parentPropertyPath;
 		private final int depth;
 
-		public PropertyPath(Property property, int depth) {
+		public PropertyPath(Property property, @Nullable PropertyPath parentPropertyPath, int depth) {
 			this.property = property;
+			this.parentPropertyPath = parentPropertyPath;
 			this.depth = depth;
 		}
 
@@ -190,12 +192,14 @@ public final class ArbitraryGeneratorContext {
 				return false;
 			}
 			PropertyPath that = (PropertyPath)obj;
-			return depth == that.depth && property.equals(that.property);
+			return depth == that.depth
+				&& property.equals(that.property)
+				&& Objects.equals(parentPropertyPath, that.parentPropertyPath);
 		}
 
 		@Override
 		public int hashCode() {
-			return Objects.hash(property, depth);
+			return Objects.hash(property, parentPropertyPath, depth);
 		}
 
 		@Override
