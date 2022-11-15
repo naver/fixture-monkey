@@ -1503,4 +1503,13 @@ class FixtureMonkeyV04Test {
 				.sample()
 		).isExactlyInstanceOf(TooManyFilterMissesException.class);
 	}
+
+	@Property
+	void sampleEnumMapInMap() {
+		thenNoException().isThrownBy(
+			() -> SUT.giveMeOne(
+				new TypeReference<Map<String, Map<TwoEnum, String>>>() {
+				})
+		);
+	}
 }

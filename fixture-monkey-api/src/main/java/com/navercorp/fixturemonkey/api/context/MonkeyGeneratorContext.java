@@ -19,33 +19,36 @@
 package com.navercorp.fixturemonkey.api.context;
 
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
+import java.util.SortedMap;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.api.property.Property;
+import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext.PropertyPath;
 
 @API(since = "0.4.3", status = Status.EXPERIMENTAL)
 public final class MonkeyGeneratorContext {
-	private final Map<Property, Set<Object>> uniqueSetsByProperty;
+	private final SortedMap<PropertyPath, Set<Object>> uniqueSetsByProperty;
 
-	public MonkeyGeneratorContext(Map<Property, Set<Object>> uniqueSetsByProperty) {
+	public MonkeyGeneratorContext(SortedMap<PropertyPath, Set<Object>> uniqueSetsByProperty) {
 		this.uniqueSetsByProperty = uniqueSetsByProperty;
 	}
 
-	public synchronized boolean isUniqueAndCheck(Property property, Object value) {
+	public synchronized boolean isUniqueAndCheck(PropertyPath property, Object value) {
+		uniqueSetsByProperty.headMap(property).clear();
+
 		Set<Object> set = uniqueSetsByProperty.computeIfAbsent(property, p -> new HashSet<>());
 		boolean unique = !set.contains(value);
 		if (unique) {
 			set.add(value);
 			return true;
 		}
+
 		return false;
 	}
 
-	public void evictUnique(Property property) {
+	public void evictUnique(PropertyPath property) {
 		if (!uniqueSetsByProperty.containsKey(property)) {
 			return;
 		}
