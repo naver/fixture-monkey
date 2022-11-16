@@ -18,6 +18,8 @@
 
 package com.navercorp.fixturemonkey.api.context;
 
+import java.util.TreeMap;
+
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
@@ -55,7 +57,7 @@ public final class MonkeyContext {
 	public MonkeyGeneratorContext retrieveGeneratorContext(RootProperty rootProperty) {
 		return generatorContextByRootProperty.computeIfAbsent(
 			rootProperty,
-			property -> new MonkeyGeneratorContext(new LruCache<>(100))
+			property -> new MonkeyGeneratorContext(new TreeMap<>())
 		);
 	}
 }
