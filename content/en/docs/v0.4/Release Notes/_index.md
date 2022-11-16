@@ -3,6 +3,9 @@
 title: "Release Notes"
 weight: 6
 ---
+### 0.4.5
+* Fix nested map generates entry uniquely
+
 ### 0.4.4
 * EnumMap or EnumSet size would not exceed enum size if no size manipulation
 
