@@ -16,6 +16,7 @@ assignees: ''
 
 ### Steps to reproduce
 *Tell us how to reproduce this issue.*
+*Or provide us an example repository to check the bug*
 
 ### Expected behaviour
 *Tell us what should happen*
