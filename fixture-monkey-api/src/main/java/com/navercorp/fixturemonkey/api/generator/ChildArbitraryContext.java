@@ -36,11 +36,11 @@ import com.navercorp.fixturemonkey.api.property.Property;
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class ChildArbitraryContext {
 	private final Property parentProperty;
-	private final Map<ArbitraryProperty, Arbitrary<?>> arbitrariesByChildProperty;
+	private final Map<ArbitraryProperty, Arbitrary<Object>> arbitrariesByChildProperty;
 
 	public ChildArbitraryContext(
 		Property parentProperty,
-		Map<ArbitraryProperty, Arbitrary<?>> arbitrariesByChildProperty
+		Map<ArbitraryProperty, Arbitrary<Object>> arbitrariesByChildProperty
 	) {
 		this.parentProperty = parentProperty;
 		this.arbitrariesByChildProperty = arbitrariesByChildProperty;
@@ -50,8 +50,8 @@ public final class ChildArbitraryContext {
 		return parentProperty;
 	}
 
-	public void replaceArbitrary(Matcher matcher, Arbitrary<?> arbitrary) {
-		for (Entry<ArbitraryProperty, Arbitrary<?>> arbitraryByChildProperty : arbitrariesByChildProperty.entrySet()) {
+	public void replaceArbitrary(Matcher matcher, Arbitrary<Object> arbitrary) {
+		for (Entry<ArbitraryProperty, Arbitrary<Object>> arbitraryByChildProperty : arbitrariesByChildProperty.entrySet()) {
 			ArbitraryProperty arbitraryProperty = arbitraryByChildProperty.getKey();
 			ObjectProperty objectProperty = arbitraryProperty.getObjectProperty();
 			if (matcher.match(objectProperty.getProperty())) {
@@ -65,17 +65,17 @@ public final class ChildArbitraryContext {
 			.removeIf(it -> matcher.match(it.getKey().getObjectProperty().getProperty()));
 	}
 
-	public Map<String, Arbitrary<?>> getArbitrariesByResolvedName() {
+	public Map<String, Arbitrary<Object>> getArbitrariesByResolvedName() {
 		return arbitrariesByChildProperty.entrySet().stream()
 			.collect(toMap(it -> it.getKey().getObjectProperty().getResolvedPropertyName(), Entry::getValue));
 	}
 
-	public Map<String, Arbitrary<?>> getArbitrariesByPropertyName() {
+	public Map<String, Arbitrary<Object>> getArbitrariesByPropertyName() {
 		return arbitrariesByChildProperty.entrySet().stream()
 			.collect(toMap(it -> it.getKey().getObjectProperty().getProperty().getName(), Entry::getValue));
 	}
 
-	public List<Arbitrary<?>> getArbitraries() {
+	public List<Arbitrary<Object>> getArbitraries() {
 		return new ArrayList<>(arbitrariesByChildProperty.values());
 	}
 }

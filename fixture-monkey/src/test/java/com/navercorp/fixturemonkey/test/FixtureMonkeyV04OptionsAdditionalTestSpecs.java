@@ -140,7 +140,7 @@ class FixtureMonkeyV04OptionsAdditionalTestSpecs {
 				return ArbitraryIntrospectorResult.EMPTY;
 			}
 
-			List<Arbitrary<?>> childrenArbitraries = context.getChildrenArbitraryContexts().getArbitraries();
+			List<Arbitrary<Object>> childrenArbitraries = context.getChildrenArbitraryContexts().getArbitraries();
 			BuilderCombinator<List<Object>> builderCombinator = Builders.withBuilder(ArrayList::new);
 			for (Arbitrary<?> childArbitrary : childrenArbitraries) {
 				builderCombinator = builderCombinator.use(childArbitrary).in((list, element) -> {

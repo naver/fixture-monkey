@@ -67,7 +67,7 @@ public final class JsonNodeIntrospector implements ArbitraryIntrospector {
 			return ArbitraryIntrospectorResult.EMPTY;
 		}
 
-		List<Arbitrary<?>> childrenArbitraries = context.getChildrenArbitraryContexts().getArbitraries();
+		List<Arbitrary<Object>> childrenArbitraries = context.getChildrenArbitraryContexts().getArbitraries();
 
 		BuilderCombinator<Map<Object, Object>> builderCombinator = Builders.withBuilder(HashMap::new);
 		for (Arbitrary<?> child : childrenArbitraries) {

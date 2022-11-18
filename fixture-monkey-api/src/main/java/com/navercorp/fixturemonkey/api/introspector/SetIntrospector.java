@@ -27,8 +27,6 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import net.jqwik.api.Arbitrary;
-import net.jqwik.api.Builders;
-import net.jqwik.api.Builders.BuilderCombinator;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
@@ -38,6 +36,7 @@ import com.navercorp.fixturemonkey.api.matcher.AssignableTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.unique.FilteredMonkeyArbitrary;
+import com.navercorp.fixturemonkey.api.unique.MonkeyCombineArbitrary;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class SetIntrospector implements ArbitraryIntrospector, Matcher {
@@ -64,7 +63,7 @@ public final class SetIntrospector implements ArbitraryIntrospector, Matcher {
 			return ArbitraryIntrospectorResult.EMPTY;
 		}
 
-		List<Arbitrary<?>> childrenArbitraries = context.getChildrenArbitraryContexts().getArbitraries().stream()
+		List<Arbitrary<Object>> childrenArbitraries = context.getChildrenArbitraryContexts().getArbitraries().stream()
 			.map(arbitrary ->
 				new FilteredMonkeyArbitrary<>(
 					arbitrary,
@@ -77,19 +76,12 @@ public final class SetIntrospector implements ArbitraryIntrospector, Matcher {
 			)
 			.collect(Collectors.toList());
 
-		BuilderCombinator<Set<Object>> builderCombinator = Builders.withBuilder(HashSet::new);
-		for (Arbitrary<?> childArbitrary : childrenArbitraries) {
-			builderCombinator = builderCombinator.use(childArbitrary).in((set, element) -> {
-				set.add(element);
-				return set;
-			});
-		}
-
-		return new ArbitraryIntrospectorResult(
-			builderCombinator.build(set -> {
-				context.evictUnique(context.getPathProperty());
-				return set;
-			})
+		MonkeyCombineArbitrary monkeyCombineArbitrary = new MonkeyCombineArbitrary(
+			HashSet::new,
+			context::evictAll,
+			childrenArbitraries
 		);
+
+		return new ArbitraryIntrospectorResult(monkeyCombineArbitrary);
 	}
 }

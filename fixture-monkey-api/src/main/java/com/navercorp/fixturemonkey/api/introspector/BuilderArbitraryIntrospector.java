@@ -68,7 +68,7 @@ public final class BuilderArbitraryIntrospector
 		}
 
 		List<ArbitraryProperty> childrenProperties = context.getChildren();
-		Map<String, Arbitrary<?>> childrenArbitraries = context.getChildrenArbitraryContexts()
+		Map<String, Arbitrary<Object>> childrenArbitraries = context.getChildrenArbitraryContexts()
 			.getArbitrariesByResolvedName();
 
 		Class<?> builderType = this.getBuilderType(type);

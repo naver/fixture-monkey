@@ -53,7 +53,7 @@ public final class FactoryMethodArbitraryIntrospector implements ArbitraryIntros
 			return ArbitraryIntrospectorResult.EMPTY;
 		}
 
-		Map<String, Arbitrary<?>> childrenArbitraries = context.getChildrenArbitraryContexts()
+		Map<String, Arbitrary<Object>> childrenArbitraries = context.getChildrenArbitraryContexts()
 			.getArbitrariesByResolvedName();
 
 		Map<Method, Parameter[]> parametersByFactoryMethods = getParametersByFactoryMethods(type);

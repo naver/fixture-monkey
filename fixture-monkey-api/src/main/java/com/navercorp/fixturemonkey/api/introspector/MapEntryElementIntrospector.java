@@ -61,7 +61,7 @@ public final class MapEntryElementIntrospector implements ArbitraryIntrospector,
 			return ArbitraryIntrospectorResult.EMPTY;
 		}
 
-		List<Arbitrary<?>> arbitraries = context.getChildrenArbitraryContexts().getArbitraries();
+		List<Arbitrary<Object>> arbitraries = context.getChildrenArbitraryContexts().getArbitraries();
 
 		if (arbitraries.size() != 2) {
 			throw new IllegalArgumentException("Key and Value should be exist for MapEntryElementType.");

@@ -63,7 +63,7 @@ public final class JacksonArbitraryIntrospector implements ArbitraryIntrospector
 		Class<?> type = Types.getActualType(property.getType());
 
 		List<ArbitraryProperty> childrenProperties = context.getChildren();
-		Map<String, Arbitrary<?>> childrenArbitraries = context.getChildrenArbitraryContexts()
+		Map<String, Arbitrary<Object>> childrenArbitraries = context.getChildrenArbitraryContexts()
 			.getArbitrariesByResolvedName();
 
 		BuilderCombinator<Map<String, Object>> builderCombinator = Builders.withBuilder(() -> initializeMap(property));

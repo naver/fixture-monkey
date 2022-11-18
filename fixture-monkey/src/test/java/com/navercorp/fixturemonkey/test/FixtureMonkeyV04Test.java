@@ -1528,4 +1528,14 @@ class FixtureMonkeyV04Test {
 
 		then(actual).isEqualTo(expected);
 	}
+
+	@Property
+	void sampleEnumSetList() {
+		thenNoException().isThrownBy(
+			() -> SUT.giveMeBuilder(new TypeReference<List<Set<TwoEnum>>>() {
+				})
+				.size("$", 3)
+				.sample()
+		);
+	}
 }

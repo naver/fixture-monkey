@@ -52,7 +52,7 @@ public final class FieldReflectionArbitraryIntrospector implements ArbitraryIntr
 		}
 
 		List<ArbitraryProperty> childrenProperties = context.getChildren();
-		Map<String, Arbitrary<?>> childrenArbitraries = context.getChildrenArbitraryContexts()
+		Map<String, Arbitrary<Object>> childrenArbitraries = context.getChildrenArbitraryContexts()
 			.getArbitrariesByResolvedName();
 		Map<String, Field> fields = PropertyCache.getFields(type);
 		BuilderCombinator<?> builderCombinator = Builders.withBuilder(() -> ReflectionUtils.newInstance(type));

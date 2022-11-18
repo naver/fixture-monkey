@@ -26,8 +26,6 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import net.jqwik.api.Arbitrary;
-import net.jqwik.api.Builders;
-import net.jqwik.api.Builders.BuilderCombinator;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
@@ -37,6 +35,7 @@ import com.navercorp.fixturemonkey.api.matcher.AssignableTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty.MapEntryElementType;
 import com.navercorp.fixturemonkey.api.property.Property;
+import com.navercorp.fixturemonkey.api.unique.MonkeyCombineArbitrary;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class MapIntrospector implements ArbitraryIntrospector, Matcher {
@@ -62,24 +61,23 @@ public final class MapIntrospector implements ArbitraryIntrospector, Matcher {
 			return ArbitraryIntrospectorResult.EMPTY;
 		}
 
-		List<Arbitrary<?>> childrenArbitraries = context.getChildrenArbitraryContexts().getArbitraries();
+		List<Arbitrary<Object>> childrenArbitraries = context.getChildrenArbitraryContexts().getArbitraries();
 
-		BuilderCombinator<Map<Object, Object>> builderCombinator = Builders.withBuilder(HashMap::new);
-		for (Arbitrary<?> child : childrenArbitraries) {
-			builderCombinator = builderCombinator
-				.use(child).in((map, value) -> {
-					MapEntryElementType entryElement = (MapEntryElementType)value;
-					if (entryElement.getKey() == null) {
-						throw new IllegalArgumentException("Map key cannot be null.");
-					}
-					map.put(entryElement.getKey(), entryElement.getValue());
-					return map;
-				});
-		}
+		Arbitrary<?> mapArbitrary = new MonkeyCombineArbitrary(
+			list -> {
+				Map<Object, Object> map = new HashMap<>();
+				for (Object mapEntryElement : list) {
+					map.put(
+						((MapEntryElementType)mapEntryElement).getKey(),
+						((MapEntryElementType)mapEntryElement).getValue()
+					);
+				}
+				return map;
+			},
+			context::evictAll,
+			childrenArbitraries
+		);
 
-		return new ArbitraryIntrospectorResult(builderCombinator.build(map -> {
-			context.evictUnique(context.getPathProperty());
-			return map;
-		}));
+		return new ArbitraryIntrospectorResult(mapArbitrary);
 	}
 }

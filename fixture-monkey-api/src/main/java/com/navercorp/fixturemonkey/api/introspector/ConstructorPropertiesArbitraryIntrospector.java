@@ -51,7 +51,7 @@ public final class ConstructorPropertiesArbitraryIntrospector implements Arbitra
 			return ArbitraryIntrospectorResult.EMPTY;
 		}
 
-		Map<String, Arbitrary<?>> childrenArbitraries = context.getChildrenArbitraryContexts()
+		Map<String, Arbitrary<Object>> childrenArbitraries = context.getChildrenArbitraryContexts()
 			.getArbitrariesByResolvedName();
 
 		Entry<Constructor<?>, String[]> parameterNamesByConstructor = getParameterNamesByConstructor(type);
