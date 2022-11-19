@@ -66,10 +66,14 @@ public final class MapIntrospector implements ArbitraryIntrospector, Matcher {
 		Arbitrary<?> mapArbitrary = new MonkeyCombineArbitrary(
 			list -> {
 				Map<Object, Object> map = new HashMap<>();
-				for (Object mapEntryElement : list) {
+				for (Object obj : list) {
+					MapEntryElementType mapEntryElement = (MapEntryElementType)obj;
+					if (mapEntryElement.getKey() == null) {
+						throw new IllegalArgumentException("Map key cannot be null.");
+					}
 					map.put(
-						((MapEntryElementType)mapEntryElement).getKey(),
-						((MapEntryElementType)mapEntryElement).getValue()
+						mapEntryElement.getKey(),
+						mapEntryElement.getValue()
 					);
 				}
 				return map;
@@ -78,6 +82,8 @@ public final class MapIntrospector implements ArbitraryIntrospector, Matcher {
 			childrenArbitraries
 		);
 
-		return new ArbitraryIntrospectorResult(mapArbitrary);
+		return new
+
+			ArbitraryIntrospectorResult(mapArbitrary);
 	}
 }
