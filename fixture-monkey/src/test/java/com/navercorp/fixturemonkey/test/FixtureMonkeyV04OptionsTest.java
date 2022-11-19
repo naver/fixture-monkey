@@ -79,7 +79,7 @@ import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.ComplexObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.CustomContainer;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.CustomContainerFieldObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.Interface;
-import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.InterfaceFieldObject;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.InterfaceFieldImplementationValue;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.InterfaceImplementation;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.ListStringObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.NullableObject;
@@ -276,7 +276,7 @@ class FixtureMonkeyV04OptionsTest {
 		InterfaceImplementation expected = new InterfaceImplementation();
 		expected.setValue("test");
 
-		InterfaceImplementation actual = sut.giveMeBuilder(InterfaceFieldObject.class)
+		InterfaceImplementation actual = sut.giveMeBuilder(InterfaceFieldImplementationValue.class)
 			.set("interface", expected)
 			.sample()
 			.getValue();
