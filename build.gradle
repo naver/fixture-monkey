@@ -15,7 +15,7 @@ apply plugin: "io.github.gradle-nexus.publish-plugin"
 nexusPublishing {
     repositories {
         sonatype {  //only for users registered in Sonatype after 24 Feb 2021
-            nexusUrl.set(uri("https://oss.sonatype.org/service/local/staging/deploy/maven2/"))
+            nexusUrl.set(uri("https://oss.sonatype.org/service/local/"))
             snapshotRepositoryUrl.set(uri("https://oss.sonatype.org/content/repositories/snapshots/"))
             username = project.hasProperty("ossrhUsername") ? ossrhUsername : ""
             password = project.hasProperty("ossrhPassword") ? ossrhPassword : ""
@@ -30,8 +30,8 @@ allprojects {
         mavenCentral()
     }
 
-    group = "com.navercorp.fixturemonkey"
-    version = "0.4.6-SNAPSHOT"
+    group = "com.navercorp.fixturemonkey.snapshot"
+    version = "0.4.6-aec509d5-3"
 }
 
 subprojects {
@@ -64,22 +64,6 @@ subprojects {
         publications {
             mavenJava(MavenPublication) {
                 from components.java
-
-                repositories {
-                    maven {
-                        def ossrhUsername = project.hasProperty("ossrhUsername") ? ossrhUsername : ""
-                        def ossrhPassword = project.hasProperty("ossrhPassword") ? ossrhPassword : ""
-
-                        credentials {
-                            username ossrhUsername
-                            password ossrhPassword
-                        }
-
-                        def releasesRepoUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
-                        def snapshotsRepoUrl = "https://oss.sonatype.org/content/repositories/snapshots/"
-                        url = version.endsWith("SNAPSHOT") ? snapshotsRepoUrl : releasesRepoUrl
-                    }
-                }
 
                 pom {
                     name = "fixture-monkey"
