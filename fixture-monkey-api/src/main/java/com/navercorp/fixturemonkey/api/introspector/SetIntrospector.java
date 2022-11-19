@@ -78,7 +78,7 @@ public final class SetIntrospector implements ArbitraryIntrospector, Matcher {
 
 		MonkeyCombineArbitrary monkeyCombineArbitrary = new MonkeyCombineArbitrary(
 			HashSet::new,
-			context::evictAll,
+			() -> context.evict(context.getPathProperty()),
 			childrenArbitraries
 		);
 

@@ -46,7 +46,9 @@ public final class MonkeyGeneratorContext {
 		return false;
 	}
 
-	public void evictAll() {
-		uniqueSetsByProperty.clear();
+	public void evict(PropertyPath propertyPath) {
+		if (uniqueSetsByProperty.containsKey(propertyPath)) {
+			uniqueSetsByProperty.get(propertyPath).clear();
+		}
 	}
 }
