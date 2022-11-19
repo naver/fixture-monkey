@@ -47,7 +47,6 @@ import net.jqwik.engine.properties.shrinking.CombinedShrinkable;
 @SuppressWarnings("NullableProblems")
 @API(since = "0.4.6", status = Status.EXPERIMENTAL)
 public final class MonkeyCombineArbitrary implements Arbitrary<Object> {
-
 	private final Function<List<Object>, Object> combinator;
 	private final CombinationCallback combinationCallback;
 	private final List<Arbitrary<Object>> arbitraries;
@@ -96,15 +95,18 @@ public final class MonkeyCombineArbitrary implements Arbitrary<Object> {
 	}
 
 	@Override
-	public boolean equals(Object o) {
-		if (this == o)
+	public boolean equals(Object obj) {
+		if (this == obj) {
 			return true;
-		if (o == null || getClass() != o.getClass())
+		}
+		if (obj == null || getClass() != obj.getClass()) {
 			return false;
+		}
 
-		MonkeyCombineArbitrary that = (MonkeyCombineArbitrary)o;
-		if (!arbitraries.equals(that.arbitraries))
+		MonkeyCombineArbitrary that = (MonkeyCombineArbitrary)obj;
+		if (!arbitraries.equals(that.arbitraries)) {
 			return false;
+		}
 		return LambdaSupport.areEqual(combinator, that.combinator);
 	}
 
@@ -156,7 +158,8 @@ public final class MonkeyCombineArbitrary implements Arbitrary<Object> {
 	}
 
 	private Shrinkable<Object> combineShrinkables(
-		List<Shrinkable<Object>> shrinkables, Function<List<Object>, Object> combineFunction
+		List<Shrinkable<Object>> shrinkables,
+		Function<List<Object>, Object> combineFunction
 	) {
 		return new CombinedShrinkable<>(shrinkables, combineFunction);
 	}
