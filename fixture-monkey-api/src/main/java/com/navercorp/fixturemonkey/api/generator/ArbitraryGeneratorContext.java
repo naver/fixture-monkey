@@ -141,8 +141,8 @@ public final class ArbitraryGeneratorContext {
 		return monkeyGeneratorContext.isUniqueAndCheck(property, value);
 	}
 
-	public void evict(PropertyPath propertyPath) {
-		monkeyGeneratorContext.evict(propertyPath);
+	public void evictUnique(PropertyPath propertyPath) {
+		monkeyGeneratorContext.evictUnique(propertyPath);
 	}
 
 	public PropertyPath getPathProperty() {
