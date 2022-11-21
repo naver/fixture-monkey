@@ -1,41 +1,11 @@
-name: Gradle check
+name: Run build and test
 
 on:
-  push:
-    branches: [ main, '[0-9]*.[0-9]*.x' ]
-  pull_request:
-    branches: [ main, '[0-9]*.[0-9]*.x' ]
-  workflow_dispatch:
-
+  workflow_run:
+    workflows: ["Run Static analysis"]
+    types:
+      - completed
 jobs:
-  static-analysis:
-    name: Static analysis
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Set up JDK
-        uses: actions/setup-java@v2
-        with:
-          distribution: 'temurin'
-          java-version: 8
-      - name: Execute check without tests
-        uses: gradle/gradle-build-action@v2.2.1
-        with:
-          arguments: check -x test
-
-      - name: Publish SpotBugs report
-        uses: jwgmeligmeyling/spotbugs-github-action@v1.2
-        if: always()
-        with:
-          name: SpotBugs Report
-          path: '**/build/reports/spotbugs/main.xml'
-
-      - name: Publish Checkstyle report
-        uses: jwgmeligmeyling/checkstyle-github-action@v1.2
-        if: always()
-        with:
-          name: Checkstyle Report
-          path: '**/build/reports/checkstyle/*.xml'
   test:
     name: Testing on JDK ${{ matrix.java }}
     runs-on: ubuntu-latest
