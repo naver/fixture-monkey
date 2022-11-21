@@ -82,8 +82,6 @@ public final class MapIntrospector implements ArbitraryIntrospector, Matcher {
 			childrenArbitraries
 		);
 
-		return new
-
-			ArbitraryIntrospectorResult(mapArbitrary);
+		return new ArbitraryIntrospectorResult(mapArbitrary);
 	}
 }

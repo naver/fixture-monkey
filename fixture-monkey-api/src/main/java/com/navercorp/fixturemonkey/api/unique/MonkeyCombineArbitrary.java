@@ -94,27 +94,6 @@ public final class MonkeyCombineArbitrary implements Arbitrary<Object> {
 		);
 	}
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null || getClass() != obj.getClass()) {
-			return false;
-		}
-
-		MonkeyCombineArbitrary that = (MonkeyCombineArbitrary)obj;
-		if (!arbitraries.equals(that.arbitraries)) {
-			return false;
-		}
-		return LambdaSupport.areEqual(combinator, that.combinator);
-	}
-
-	@Override
-	public int hashCode() {
-		return HashCodeSupport.hash(arbitraries);
-	}
-
 	private boolean isCombinedGeneratorMemoizable(List<Arbitrary<Object>> arbitraries) {
 		return arbitraries.stream().allMatch(Arbitrary::isGeneratorMemoizable);
 	}
@@ -180,4 +159,24 @@ public final class MonkeyCombineArbitrary implements Arbitrary<Object> {
 		return EdgeCasesSupport.combine(arbitraries, combineFunction, maxEdgeCases);
 	}
 
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null || getClass() != obj.getClass()) {
+			return false;
+		}
+
+		MonkeyCombineArbitrary that = (MonkeyCombineArbitrary)obj;
+		if (!arbitraries.equals(that.arbitraries)) {
+			return false;
+		}
+		return LambdaSupport.areEqual(combinator, that.combinator);
+	}
+
+	@Override
+	public int hashCode() {
+		return HashCodeSupport.hash(arbitraries);
+	}
 }
