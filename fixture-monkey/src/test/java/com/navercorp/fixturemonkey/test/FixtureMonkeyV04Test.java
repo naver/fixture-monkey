@@ -62,6 +62,9 @@ import com.navercorp.fixturemonkey.test.ComplexManipulatorTestSpecs.StringAndInt
 import com.navercorp.fixturemonkey.test.ComplexManipulatorTestSpecs.StringValue;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.ComplexObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.EnumObject;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.Interface;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.InterfaceFieldValue;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.InterfaceImplementation;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.ListStringObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.NullableObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.SimpleObject;
@@ -1511,5 +1514,18 @@ class FixtureMonkeyV04Test {
 				new TypeReference<Map<String, Map<TwoEnum, String>>>() {
 				})
 		);
+	}
+
+	@Property
+	void setInterface() {
+		InterfaceImplementation expected = new InterfaceImplementation();
+		expected.setValue("test");
+
+		Interface actual = SUT.giveMeBuilder(InterfaceFieldValue.class)
+			.set("value", expected)
+			.sample()
+			.getValue();
+
+		then(actual).isEqualTo(expected);
 	}
 }
