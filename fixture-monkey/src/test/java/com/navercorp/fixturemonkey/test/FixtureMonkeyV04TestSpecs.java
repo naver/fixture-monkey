@@ -148,7 +148,12 @@ class FixtureMonkeyV04TestSpecs {
 	}
 
 	@Data
-	public static class InterfaceFieldObject {
+	public static class InterfaceFieldValue {
+		Interface value;
+	}
+
+	@Data
+	public static class InterfaceFieldImplementationValue {
 		InterfaceImplementation value;
 	}
 
