@@ -161,12 +161,6 @@ public final class InnerSpec {
 		consumer.accept(innerSpec);
 		arbitraryManipulators.addAll(innerSpec.arbitraryManipulators);
 		containerInfoManipulators.addAll(innerSpec.containerInfoManipulators);
-		this.containerInfoManipulators.add(
-			new ContainerInfoManipulator(
-				this.treePathResolver,
-				new ArbitraryContainerInfo(this.entrySize + this.min, this.entrySize + this.max, true)
-			)
-		);
 		return this;
 	}
 
@@ -216,12 +210,6 @@ public final class InnerSpec {
 	public InnerSpec entry(Consumer<InnerSpec> consumer, @Nullable Object value) {
 		entrySize++;
 
-		this.containerInfoManipulators.add(
-			new ContainerInfoManipulator(
-				this.treePathResolver,
-				new ArbitraryContainerInfo(this.entrySize + this.min, this.entrySize + this.max, true)
-			)
-		);
 		arbitraryManipulators.add(
 			new ArbitraryManipulator(
 				new CompositeNodeResolver(

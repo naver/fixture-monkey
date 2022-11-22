@@ -168,7 +168,8 @@ class InnerSpecTest {
 	void sizeInValue() {
 		// when
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
-			.setInner("listValueMap", m -> m.value(v -> v.size(10)))
+			.setInner("listValueMap", m -> m.size(1)
+				.value(v -> v.size(10)))
 			.sample();
 
 		List<Integer> sizeList = actual.getListValueMap().values().stream()
@@ -180,8 +181,8 @@ class InnerSpecTest {
 	void listElementInValue() {
 		// when
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
-			.setInner("listValueMap", m ->
-				m.value(v -> {
+			.setInner("listValueMap", m -> m.size(1)
+				.value(v -> {
 					v.size(1);
 					v.listElement(0, "test");
 				})
@@ -197,8 +198,8 @@ class InnerSpecTest {
 	void propertyInValue() {
 		// when
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
-			.setInner("objectValueMap", m ->
-				m.value(v -> v.property("str", "test"))
+			.setInner("objectValueMap", m -> m.size(1)
+				.value(v -> v.property("str", "test"))
 			)
 			.sample();
 
@@ -253,8 +254,8 @@ class InnerSpecTest {
 	void entryValueSetNull() {
 		// when
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
-			.setInner("strMap", m ->
-				m.entry("key", null)
+			.setInner("strMap", m -> m.size(1)
+				.entry("key", null)
 			)
 			.sample();
 
