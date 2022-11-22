@@ -60,7 +60,7 @@ public final class MapIntrospector implements ArbitraryIntrospector, Matcher {
 			return ArbitraryIntrospectorResult.EMPTY;
 		}
 
-		List<Arbitrary<Object>> childrenArbitraries = context.getChildrenArbitraryContexts().getArbitraries();
+		List<Arbitrary<?>> childrenArbitraries = context.getChildrenArbitraryContexts().getArbitraries();
 
 		Arbitrary<?> mapArbitrary = new MonkeyCombineArbitrary(
 			list -> {

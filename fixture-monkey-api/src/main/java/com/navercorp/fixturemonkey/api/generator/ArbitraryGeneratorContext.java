@@ -103,7 +103,7 @@ public final class ArbitraryGeneratorContext {
 	}
 
 	public ChildArbitraryContext getChildrenArbitraryContexts() {
-		Map<ArbitraryProperty, Arbitrary<Object>> childrenValues = new LinkedHashMap<>();
+		Map<ArbitraryProperty, Arbitrary<?>> childrenValues = new LinkedHashMap<>();
 		for (ArbitraryProperty child : this.getChildren()) {
 			Arbitrary<Object> arbitrary = this.resolveArbitrary.apply(this, child);
 			childrenValues.put(child, arbitrary);

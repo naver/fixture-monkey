@@ -62,7 +62,7 @@ public final class SetIntrospector implements ArbitraryIntrospector, Matcher {
 			return ArbitraryIntrospectorResult.EMPTY;
 		}
 
-		List<Arbitrary<Object>> childrenArbitraries = context.getChildrenArbitraryContexts().getArbitraries().stream()
+		List<Arbitrary<?>> childrenArbitraries = context.getChildrenArbitraryContexts().getArbitraries().stream()
 			.map(arbitrary ->
 				new FilteredMonkeyArbitrary<>(
 					arbitrary,

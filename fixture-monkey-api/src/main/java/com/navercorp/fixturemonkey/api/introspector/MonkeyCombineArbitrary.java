@@ -52,10 +52,11 @@ final class MonkeyCombineArbitrary implements Arbitrary<Object> {
 	private final Runnable combinationCallback;
 	private final List<Arbitrary<Object>> arbitraries;
 
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	public MonkeyCombineArbitrary(
 		Function<List<Object>, Object> combinator,
 		Runnable combinationCallback,
-		List<Arbitrary<Object>> arbitraries
+		List arbitraries
 	) {
 		this.combinator = combinator;
 		this.combinationCallback = combinationCallback;
