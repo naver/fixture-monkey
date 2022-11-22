@@ -52,7 +52,7 @@ public final class ArbitraryGeneratorContext {
 	@Nullable
 	private final ArbitraryGeneratorContext ownerContext;
 
-	private final BiFunction<ArbitraryGeneratorContext, ArbitraryProperty, Arbitrary<?>> resolveArbitrary;
+	private final BiFunction<ArbitraryGeneratorContext, ArbitraryProperty, Arbitrary<Object>> resolveArbitrary;
 
 	@SuppressWarnings("rawtypes")
 	private final List<MatcherOperator<? extends FixtureCustomizer>> fixtureCustomizers;
@@ -66,7 +66,7 @@ public final class ArbitraryGeneratorContext {
 		ArbitraryProperty property,
 		List<ArbitraryProperty> children,
 		@Nullable ArbitraryGeneratorContext ownerContext,
-		BiFunction<ArbitraryGeneratorContext, ArbitraryProperty, Arbitrary<?>> resolveArbitrary,
+		BiFunction<ArbitraryGeneratorContext, ArbitraryProperty, Arbitrary<Object>> resolveArbitrary,
 		List<MatcherOperator<? extends FixtureCustomizer>> fixtureCustomizers,
 		MonkeyGeneratorContext monkeyGeneratorContext
 	) {
@@ -105,7 +105,7 @@ public final class ArbitraryGeneratorContext {
 	public ChildArbitraryContext getChildrenArbitraryContexts() {
 		Map<ArbitraryProperty, Arbitrary<?>> childrenValues = new LinkedHashMap<>();
 		for (ArbitraryProperty child : this.getChildren()) {
-			Arbitrary<?> arbitrary = this.resolveArbitrary.apply(this, child);
+			Arbitrary<Object> arbitrary = this.resolveArbitrary.apply(this, child);
 			childrenValues.put(child, arbitrary);
 		}
 
@@ -141,8 +141,8 @@ public final class ArbitraryGeneratorContext {
 		return monkeyGeneratorContext.isUniqueAndCheck(property, value);
 	}
 
-	public void evictUnique(PropertyPath property) {
-		monkeyGeneratorContext.evictUnique(property);
+	public void evictUnique(PropertyPath propertyPath) {
+		monkeyGeneratorContext.evictUnique(propertyPath);
 	}
 
 	public PropertyPath getPathProperty() {

@@ -116,7 +116,7 @@ final class ArbitraryTree {
 	}
 
 	@SuppressWarnings({"rawtypes", "unchecked"})
-	private Arbitrary<?> generateArbitrary(
+	private Arbitrary<Object> generateArbitrary(
 		ArbitraryGeneratorContext ctx,
 		ArbitraryNode node
 	) {

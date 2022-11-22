@@ -36,8 +36,6 @@ public final class MonkeyGeneratorContext {
 	}
 
 	public synchronized boolean isUniqueAndCheck(PropertyPath property, Object value) {
-		uniqueSetsByProperty.headMap(property).clear();
-
 		Set<Object> set = uniqueSetsByProperty.computeIfAbsent(property, p -> new HashSet<>());
 		boolean unique = !set.contains(value);
 		if (unique) {
@@ -48,10 +46,9 @@ public final class MonkeyGeneratorContext {
 		return false;
 	}
 
-	public void evictUnique(PropertyPath property) {
-		if (!uniqueSetsByProperty.containsKey(property)) {
-			return;
+	public void evictUnique(PropertyPath propertyPath) {
+		if (uniqueSetsByProperty.containsKey(propertyPath)) {
+			uniqueSetsByProperty.get(propertyPath).clear();
 		}
-		uniqueSetsByProperty.get(property).clear();
 	}
 }

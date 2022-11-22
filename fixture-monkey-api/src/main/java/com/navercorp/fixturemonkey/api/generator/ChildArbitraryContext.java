@@ -51,7 +51,8 @@ public final class ChildArbitraryContext {
 	}
 
 	public void replaceArbitrary(Matcher matcher, Arbitrary<?> arbitrary) {
-		for (Entry<ArbitraryProperty, Arbitrary<?>> arbitraryByChildProperty : arbitrariesByChildProperty.entrySet()) {
+		for (Entry<ArbitraryProperty, Arbitrary<?>> arbitraryByChildProperty
+			: arbitrariesByChildProperty.entrySet()) {
 			ArbitraryProperty arbitraryProperty = arbitraryByChildProperty.getKey();
 			ObjectProperty objectProperty = arbitraryProperty.getObjectProperty();
 			if (matcher.match(objectProperty.getProperty())) {

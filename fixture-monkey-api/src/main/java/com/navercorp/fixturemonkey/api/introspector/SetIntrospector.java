@@ -27,8 +27,6 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import net.jqwik.api.Arbitrary;
-import net.jqwik.api.Builders;
-import net.jqwik.api.Builders.BuilderCombinator;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
@@ -77,19 +75,12 @@ public final class SetIntrospector implements ArbitraryIntrospector, Matcher {
 			)
 			.collect(Collectors.toList());
 
-		BuilderCombinator<Set<Object>> builderCombinator = Builders.withBuilder(HashSet::new);
-		for (Arbitrary<?> childArbitrary : childrenArbitraries) {
-			builderCombinator = builderCombinator.use(childArbitrary).in((set, element) -> {
-				set.add(element);
-				return set;
-			});
-		}
-
-		return new ArbitraryIntrospectorResult(
-			builderCombinator.build(set -> {
-				context.evictUnique(context.getPathProperty());
-				return set;
-			})
+		MonkeyCombineArbitrary monkeyCombineArbitrary = new MonkeyCombineArbitrary(
+			HashSet::new,
+			() -> context.evictUnique(context.getPathProperty()),
+			childrenArbitraries
 		);
+
+		return new ArbitraryIntrospectorResult(monkeyCombineArbitrary);
 	}
 }
