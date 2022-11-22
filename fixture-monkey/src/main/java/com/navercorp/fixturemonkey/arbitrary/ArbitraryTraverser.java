@@ -293,7 +293,6 @@ public final class ArbitraryTraverser {
 
 		@Override
 		public String resolve(Property property) {
-			// 아직까지는 FieldProperty 만 존재한다.
 			FieldProperty fieldProperty = (FieldProperty)property;
 			return this.fieldNameResolver.resolveFieldName(fieldProperty.getField());
 		}

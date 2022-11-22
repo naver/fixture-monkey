@@ -67,7 +67,6 @@ final class ArrayBuilder {
 			return this;
 		}
 
-		// primitive 타입일 때, ClassCastException 이 발생하기 때문에 Object 로 반환한다.
 		Object build() {
 			Object array = Array.newInstance(componentType, size);
 			for (int i = 0; i < this.array.size(); i++) {

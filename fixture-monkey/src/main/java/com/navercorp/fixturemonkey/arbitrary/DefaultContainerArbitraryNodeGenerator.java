@@ -137,8 +137,6 @@ public class DefaultContainerArbitraryNodeGenerator implements ContainerArbitrar
 
 			return copied.iterator();
 		} else {
-			// ListIterator 가 아니면 element 를 복사할 수 없다.
-			// 기존 Iterator 의 커서가 이동하는 문제가 있다.
 			return (Iterator<U>)value;
 		}
 	}
