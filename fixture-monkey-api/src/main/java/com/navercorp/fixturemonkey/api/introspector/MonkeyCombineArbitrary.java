@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.api.unique;
+package com.navercorp.fixturemonkey.api.introspector;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,16 +44,17 @@ import net.jqwik.engine.properties.shrinking.CombinedShrinkable;
  * It is a same Arbitrary instance as {@link net.jqwik.engine.properties.arbitraries.CombineArbitrary}
  * Added some features for Fixture Monkey
  */
+// TODO: move package when unique manipulation works for any type
 @SuppressWarnings("NullableProblems")
 @API(since = "0.4.6", status = Status.EXPERIMENTAL)
-public final class MonkeyCombineArbitrary implements Arbitrary<Object> {
+final class MonkeyCombineArbitrary implements Arbitrary<Object> {
 	private final Function<List<Object>, Object> combinator;
-	private final CombinationCallback combinationCallback;
+	private final Runnable combinationCallback;
 	private final List<Arbitrary<Object>> arbitraries;
 
 	public MonkeyCombineArbitrary(
 		Function<List<Object>, Object> combinator,
-		CombinationCallback combinationCallback,
+		Runnable combinationCallback,
 		List<Arbitrary<Object>> arbitraries
 	) {
 		this.combinator = combinator;
@@ -132,7 +133,7 @@ public final class MonkeyCombineArbitrary implements Arbitrary<Object> {
 		for (RandomGenerator<Object> generator : generators) {
 			list.add(generator.next(random));
 		}
-		combinationCallback.onElementGenerated();
+		combinationCallback.run();
 		return list;
 	}
 

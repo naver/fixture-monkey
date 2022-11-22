@@ -36,7 +36,6 @@ import com.navercorp.fixturemonkey.api.matcher.AssignableTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.unique.FilteredMonkeyArbitrary;
-import com.navercorp.fixturemonkey.api.unique.MonkeyCombineArbitrary;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class SetIntrospector implements ArbitraryIntrospector, Matcher {
