@@ -3,6 +3,11 @@
 title: "Release Notes"
 weight: 6
 ---
+### 0.4.6
+* Fix set interface as value
+* Fix generate a unique nested Set or Map element
+* Fix innerSpec manipulations not generate entry
+
 ### 0.4.5
 * Fix nested map generates entry uniquely
 
