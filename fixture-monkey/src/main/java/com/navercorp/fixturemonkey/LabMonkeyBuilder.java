@@ -18,13 +18,22 @@
 
 package com.navercorp.fixturemonkey;
 
+import static com.navercorp.fixturemonkey.api.type.Types.generateAnnotatedTypeWithoutAnnotation;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Function;
+
+import javax.annotation.Nullable;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -36,6 +45,7 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfoGenerator
 import com.navercorp.fixturemonkey.api.generator.ContainerPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.NullInjectGenerator;
 import com.navercorp.fixturemonkey.api.generator.NullObjectPropertyGenerator;
+import com.navercorp.fixturemonkey.api.generator.ObjectProperty;
 import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.PropertyGenerator;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
@@ -50,7 +60,9 @@ import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.option.GenerateOptions;
 import com.navercorp.fixturemonkey.api.option.GenerateOptionsBuilder;
 import com.navercorp.fixturemonkey.api.plugin.Plugin;
+import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
+import com.navercorp.fixturemonkey.api.random.Randoms;
 import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.expression.MonkeyExpressionFactory;
 import com.navercorp.fixturemonkey.resolver.ArbitraryTraverser;
@@ -388,9 +400,9 @@ public class LabMonkeyBuilder {
 					};
 					this.register(actualType, registerArbitraryBuilder);
 				} catch (InvocationTargetException
-						| InstantiationException
-						| IllegalAccessException
-						| NoSuchMethodException e) {
+						 | InstantiationException
+						 | IllegalAccessException
+						 | NoSuchMethodException e) {
 					// ignored
 				}
 			}
@@ -476,6 +488,66 @@ public class LabMonkeyBuilder {
 	public LabMonkeyBuilder nullableElement(boolean nullableElement) {
 		this.generateOptionsBuilder.nullableElement(nullableElement);
 		return this;
+	}
+
+	public LabMonkeyBuilder interfaceImplements(
+		Class<?> interfaceClass,
+		Class<?>... implementations
+	) {
+		this.pushObjectPropertyGenerator(
+			new MatcherOperator<>(
+				new AssignableTypeMatcher(interfaceClass),
+				getImplementationObjectProperty(implementations)
+			)
+		);
+		return this;
+	}
+
+	private static ObjectPropertyGenerator getImplementationObjectProperty(Class<?>[] implementations) {
+		return context -> {
+			Property interfaceProperty = context.getProperty();
+			Class<?> implementation = implementations[Randoms.nextInt(implementations.length)];
+
+			Property property = new Property() {
+				@Override
+				public Type getType() {
+					return implementation;
+				}
+
+				@Override
+				public AnnotatedType getAnnotatedType() {
+					return generateAnnotatedTypeWithoutAnnotation(implementation);
+				}
+
+				@Nullable
+				@Override
+				public String getName() {
+					return interfaceProperty.getName();
+				}
+
+				@Override
+				public List<Annotation> getAnnotations() {
+					return interfaceProperty.getAnnotations();
+				}
+
+				@Nullable
+				@Override
+				public Object getValue(Object obj) {
+					return interfaceProperty.getValue(obj);
+				}
+			};
+
+			double nullInject = context.getGenerateOptions().getNullInjectGenerator(property)
+				.generate(context);
+
+			return new ObjectProperty(
+				property,
+				context.getPropertyNameResolver(),
+				nullInject,
+				context.getElementIndex(),
+				Collections.emptyList()
+			);
+		};
 	}
 
 	public LabMonkey build() {

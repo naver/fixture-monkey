@@ -70,6 +70,9 @@ import com.navercorp.fixturemonkey.resolver.IdentityNodeResolver;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.BuilderInteger;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.CustomBuildMethodInteger;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.CustomBuilderMethodInteger;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.GetFixedValue;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.GetIntegerFixedValue;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.GetStringFixedValue;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.Pair;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.PairContainerPropertyGenerator;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.PairIntrospector;
@@ -1199,5 +1202,16 @@ class FixtureMonkeyV04OptionsTest {
 		});
 
 		then(values).hasSizeLessThanOrEqualTo(2);
+	}
+
+	@Property
+	void interfaceImplements() {
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.interfaceImplements(GetFixedValue.class, GetIntegerFixedValue.class, GetStringFixedValue.class)
+			.build();
+
+		Object actual = sut.giveMeOne(GetFixedValue.class).get();
+
+		then(actual).isIn(1, "fixed");
 	}
 }

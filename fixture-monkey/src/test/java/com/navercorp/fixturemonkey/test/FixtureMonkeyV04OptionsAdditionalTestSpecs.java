@@ -183,4 +183,22 @@ class FixtureMonkeyV04OptionsAdditionalTestSpecs {
 			}
 		}
 	}
+
+	public interface GetFixedValue {
+		Object get();
+	}
+
+	public static class GetIntegerFixedValue implements GetFixedValue {
+		@Override
+		public Object get() {
+			return 1;
+		}
+	}
+
+	public static class GetStringFixedValue implements GetFixedValue {
+		@Override
+		public Object get() {
+			return "fixed";
+		}
+	}
 }
