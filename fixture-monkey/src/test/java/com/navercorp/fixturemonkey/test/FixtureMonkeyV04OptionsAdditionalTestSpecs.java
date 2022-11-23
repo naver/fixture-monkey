@@ -201,4 +201,9 @@ class FixtureMonkeyV04OptionsAdditionalTestSpecs {
 			return "fixed";
 		}
 	}
+
+	@Data
+	public static class GenericGetFixedValue<T extends GetFixedValue>{
+		T value;
+	}
 }

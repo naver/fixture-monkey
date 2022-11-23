@@ -400,9 +400,9 @@ public class LabMonkeyBuilder {
 					};
 					this.register(actualType, registerArbitraryBuilder);
 				} catch (InvocationTargetException
-						| InstantiationException
-						| IllegalAccessException
-						| NoSuchMethodException e) {
+						 | InstantiationException
+						 | IllegalAccessException
+						 | NoSuchMethodException e) {
 					// ignored
 				}
 			}
@@ -490,9 +490,9 @@ public class LabMonkeyBuilder {
 		return this;
 	}
 
-	public LabMonkeyBuilder interfaceImplements(
-		Class<?> interfaceClass,
-		Class<?>... implementations
+	public <T> LabMonkeyBuilder interfaceImplements(
+		Class<T> interfaceClass,
+		List<Class<? extends T>> implementations
 	) {
 		this.pushObjectPropertyGenerator(
 			new MatcherOperator<>(
@@ -540,10 +540,10 @@ public class LabMonkeyBuilder {
 		return this;
 	}
 
-	private ObjectPropertyGenerator getImplementationObjectProperty(Class<?>[] implementations) {
+	private <T> ObjectPropertyGenerator getImplementationObjectProperty(List<Class<? extends T>> implementations) {
 		return context -> {
 			Property interfaceProperty = context.getProperty();
-			Class<?> implementation = implementations[Randoms.nextInt(implementations.length)];
+			Class<?> implementation = implementations.get(Randoms.nextInt(implementations.size()));
 
 			Property property = new Property() {
 				@Override

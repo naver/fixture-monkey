@@ -70,6 +70,7 @@ import com.navercorp.fixturemonkey.resolver.IdentityNodeResolver;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.BuilderInteger;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.CustomBuildMethodInteger;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.CustomBuilderMethodInteger;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.GenericGetFixedValue;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.GetFixedValue;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.GetIntegerFixedValue;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.GetStringFixedValue;
@@ -1206,12 +1207,55 @@ class FixtureMonkeyV04OptionsTest {
 
 	@Property
 	void interfaceImplements() {
+		List<Class<? extends GetFixedValue>> implementations = new ArrayList<>();
+		implementations.add(GetIntegerFixedValue.class);
+		implementations.add(GetStringFixedValue.class);
 		LabMonkey sut = LabMonkey.labMonkeyBuilder()
-			.interfaceImplements(GetFixedValue.class, GetIntegerFixedValue.class, GetStringFixedValue.class)
+			.interfaceImplements(GetFixedValue.class, implementations)
 			.build();
 
 		Object actual = sut.giveMeOne(GetFixedValue.class).get();
 
 		then(actual).isIn(1, "fixed");
+	}
+
+	@Property
+	void sampleGenericInterface() {
+		List<Class<? extends GetFixedValue>> implementations = new ArrayList<>();
+		implementations.add(GetIntegerFixedValue.class);
+		implementations.add(GetStringFixedValue.class);
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.interfaceImplements(GetFixedValue.class, implementations)
+			.build();
+
+		Object actual = sut.giveMeBuilder(new TypeReference<GenericGetFixedValue<GetFixedValue>>() {
+			})
+			.setNotNull("value")
+			.sample()
+			.getValue()
+			.get();
+
+		then(actual).isIn(1, "fixed");
+	}
+
+	@Property
+	void sampleGenericInterfaceReturnsDiff() {
+		List<Class<? extends GetFixedValue>> implementations = new ArrayList<>();
+		implementations.add(GetIntegerFixedValue.class);
+		implementations.add(GetStringFixedValue.class);
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.interfaceImplements(GetFixedValue.class, implementations)
+			.build();
+
+		Set<Class<? extends GetFixedValue>> actual = sut.giveMeBuilder(
+				new TypeReference<GenericGetFixedValue<GetFixedValue>>() {
+				})
+			.setNotNull("value")
+			.sampleList(100)
+			.stream()
+			.map(it -> it.getValue().getClass())
+			.collect(Collectors.toSet());
+
+		then(actual).hasSize(2);
 	}
 }
