@@ -400,9 +400,9 @@ public class LabMonkeyBuilder {
 					};
 					this.register(actualType, registerArbitraryBuilder);
 				} catch (InvocationTargetException
-						 | InstantiationException
-						 | IllegalAccessException
-						 | NoSuchMethodException e) {
+						| InstantiationException
+						| IllegalAccessException
+						| NoSuchMethodException e) {
 					// ignored
 				}
 			}
