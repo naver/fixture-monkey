@@ -503,7 +503,44 @@ public class LabMonkeyBuilder {
 		return this;
 	}
 
-	private static ObjectPropertyGenerator getImplementationObjectProperty(Class<?>[] implementations) {
+	public LabMonkey build() {
+		manipulateOptionsBuilder.additionalDecomposedContainerValueFactory(
+			obj -> {
+				Class<?> actualType = obj.getClass();
+				for (
+					Entry<Class<?>, DecomposedContainerValueFactory> entry :
+					this.decomposableContainerFactoryMap.entrySet()
+				) {
+					Class<?> type = entry.getKey();
+					DecomposableContainerValue decomposedValue = entry.getValue().from(obj);
+
+					if (actualType.isAssignableFrom(type)) {
+						return decomposedValue;
+					}
+				}
+				return this.defaultDecomposedContainerValueFactory.from(obj);
+			}
+		);
+
+		GenerateOptions generateOptions = generateOptionsBuilder.build();
+		ArbitraryTraverser traverser = new ArbitraryTraverser(generateOptions);
+
+		return new LabMonkey(
+			generateOptions,
+			manipulateOptionsBuilder,
+			traverser,
+			manipulatorOptimizer,
+			this.arbitraryValidator,
+			MonkeyContext.builder().build()
+		);
+	}
+
+	public LabMonkeyBuilder useExpressionStrictMode() {
+		this.manipulateOptionsBuilder.expressionStrictMode(true);
+		return this;
+	}
+
+	private ObjectPropertyGenerator getImplementationObjectProperty(Class<?>[] implementations) {
 		return context -> {
 			Property interfaceProperty = context.getProperty();
 			Class<?> implementation = implementations[Randoms.nextInt(implementations.length)];
@@ -548,42 +585,5 @@ public class LabMonkeyBuilder {
 				Collections.emptyList()
 			);
 		};
-	}
-
-	public LabMonkey build() {
-		manipulateOptionsBuilder.additionalDecomposedContainerValueFactory(
-			obj -> {
-				Class<?> actualType = obj.getClass();
-				for (
-					Entry<Class<?>, DecomposedContainerValueFactory> entry :
-					this.decomposableContainerFactoryMap.entrySet()
-				) {
-					Class<?> type = entry.getKey();
-					DecomposableContainerValue decomposedValue = entry.getValue().from(obj);
-
-					if (actualType.isAssignableFrom(type)) {
-						return decomposedValue;
-					}
-				}
-				return this.defaultDecomposedContainerValueFactory.from(obj);
-			}
-		);
-
-		GenerateOptions generateOptions = generateOptionsBuilder.build();
-		ArbitraryTraverser traverser = new ArbitraryTraverser(generateOptions);
-
-		return new LabMonkey(
-			generateOptions,
-			manipulateOptionsBuilder,
-			traverser,
-			manipulatorOptimizer,
-			this.arbitraryValidator,
-			MonkeyContext.builder().build()
-		);
-	}
-
-	public LabMonkeyBuilder useExpressionStrictMode() {
-		this.manipulateOptionsBuilder.expressionStrictMode(true);
-		return this;
 	}
 }
