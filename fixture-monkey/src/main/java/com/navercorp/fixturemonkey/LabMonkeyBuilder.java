@@ -55,6 +55,7 @@ import com.navercorp.fixturemonkey.api.introspector.JavaTimeArbitraryResolver;
 import com.navercorp.fixturemonkey.api.introspector.JavaTimeTypeArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.introspector.JavaTypeArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.matcher.AssignableTypeMatcher;
+import com.navercorp.fixturemonkey.api.matcher.ExactTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.option.GenerateOptions;
@@ -400,9 +401,9 @@ public class LabMonkeyBuilder {
 					};
 					this.register(actualType, registerArbitraryBuilder);
 				} catch (InvocationTargetException
-						| InstantiationException
-						| IllegalAccessException
-						| NoSuchMethodException e) {
+						 | InstantiationException
+						 | IllegalAccessException
+						 | NoSuchMethodException e) {
 					// ignored
 				}
 			}
@@ -491,16 +492,29 @@ public class LabMonkeyBuilder {
 	}
 
 	public <T> LabMonkeyBuilder interfaceImplements(
-		Class<T> interfaceClass,
+		Matcher matcher,
 		List<Class<? extends T>> implementations
 	) {
 		this.pushObjectPropertyGenerator(
 			new MatcherOperator<>(
-				new AssignableTypeMatcher(interfaceClass),
+				matcher,
 				getImplementationObjectProperty(implementations)
 			)
 		);
 		return this;
+	}
+
+	public <T> LabMonkeyBuilder interfaceImplements(
+		Class<T> interfaceClass,
+		List<Class<? extends T>> implementations
+	) {
+		if (!interfaceClass.isInterface()) {
+			throw new IllegalArgumentException(
+				"interfaceImplements option first parameter should be interface. " + interfaceClass.getTypeName()
+			);
+		}
+
+		return this.interfaceImplements(new ExactTypeMatcher(interfaceClass), implementations);
 	}
 
 	public LabMonkey build() {

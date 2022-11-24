@@ -202,8 +202,19 @@ class FixtureMonkeyV04OptionsAdditionalTestSpecs {
 		}
 	}
 
+	public interface GetFixedValueChild extends GetFixedValue {
+	}
+
+	public static class GetIntegerFixedValueChild implements GetFixedValueChild {
+
+		@Override
+		public Object get() {
+			return 2;
+		}
+	}
+
 	@Data
-	public static class GenericGetFixedValue<T extends GetFixedValue>{
+	public static class GenericGetFixedValue<T extends GetFixedValue> {
 		T value;
 	}
 }
