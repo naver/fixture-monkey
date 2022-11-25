@@ -24,10 +24,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.junit.platform.commons.logging.Logger;
-import org.junit.platform.commons.logging.LoggerFactory;
 import org.junit.platform.commons.util.ReflectionUtils;
 import org.junit.platform.commons.util.ReflectionUtils.HierarchyTraversalMode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
@@ -98,9 +98,7 @@ public final class FieldReflectionArbitraryGenerator extends AbstractArbitraryGe
 						field.set(object, value);
 					}
 				} catch (IllegalAccessException e) {
-					log.warn(e,
-						() -> "set field by reflection is failed. field: " + fieldName + " value: " + value
-					);
+					log.warn("set field by reflection is failed. field: {} value: {}", fieldName, value, e);
 				}
 				return object;
 			});

@@ -24,9 +24,9 @@ import java.util.Map;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
-import org.junit.platform.commons.logging.Logger;
-import org.junit.platform.commons.logging.LoggerFactory;
 import org.junit.platform.commons.util.ReflectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import net.jqwik.api.Arbitrary;
 import net.jqwik.api.Builders;
@@ -72,9 +72,7 @@ public final class FieldReflectionArbitraryIntrospector implements ArbitraryIntr
 						field.set(object, value);
 					}
 				} catch (IllegalAccessException e) {
-					log.warn(e,
-						() -> "set field by reflection is failed. field: " + resolvePropertyName + " value: " + value
-					);
+					log.warn("set field by reflection is failed. field: {} value: {}", resolvePropertyName, value, e);
 				}
 				return object;
 			});
