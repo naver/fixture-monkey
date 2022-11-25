@@ -28,9 +28,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.platform.commons.logging.Logger;
-import org.junit.platform.commons.logging.LoggerFactory;
 import org.junit.platform.commons.util.ReflectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
@@ -87,9 +87,7 @@ public final class BeanArbitraryGenerator extends AbstractArbitraryGenerator
 							writeMethod.invoke(b, v);
 						}
 					} catch (IllegalAccessException | InvocationTargetException e) {
-						log.warn(e,
-							() -> "set bean property is failed. field: " + fieldName + " value: " + v
-						);
+						log.warn("set bean property is failed. field: {} value: {}", fieldName, v, e);
 					}
 					return b;
 				});
@@ -121,7 +119,7 @@ public final class BeanArbitraryGenerator extends AbstractArbitraryGenerator
 				result.put(descriptor.getName(), descriptor);
 			}
 		} catch (IntrospectionException e) {
-			log.warn(e, () -> "Introspect bean property is failed. type: " + clazz);
+			log.warn("Introspect bean property is failed. type: {}", clazz, e);
 		}
 
 		return result;
