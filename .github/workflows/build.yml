@@ -23,19 +23,6 @@ jobs:
         with:
           arguments: check -x test
 
-      - name: Publish SpotBugs report
-        uses: jwgmeligmeyling/spotbugs-github-action@v1.2
-        if: always()
-        with:
-          name: SpotBugs Report
-          path: '**/build/reports/spotbugs/main.xml'
-
-      - name: Publish Checkstyle report
-        uses: jwgmeligmeyling/checkstyle-github-action@v1.2
-        if: always()
-        with:
-          name: Checkstyle Report
-          path: '**/build/reports/checkstyle/*.xml'
   test:
     name: Testing on JDK ${{ matrix.java }}
     runs-on: ubuntu-latest
