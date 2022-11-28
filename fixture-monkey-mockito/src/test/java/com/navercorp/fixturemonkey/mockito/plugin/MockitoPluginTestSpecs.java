@@ -27,15 +27,32 @@ class MockitoPluginTestSpecs {
 		private InterfaceSample interfaceSample;
 	}
 
-	abstract static class AbstractSample {
+	public abstract static class AbstractSample {
 		private String value;
 
 		public String getValue() {
 			return this.value;
 		}
+
+		public void setValue(String value) {
+			this.value = value;
+		}
+	}
+
+	static class AbstractSampleImpl extends AbstractSample {
 	}
 
 	interface InterfaceSample {
-		int getInt();
+		int getValue();
+	}
+
+	@Data
+	public static class InterfaceSampleImpl implements InterfaceSample {
+		private int value;
+
+		@Override
+		public int getValue() {
+			return this.value;
+		}
 	}
 }

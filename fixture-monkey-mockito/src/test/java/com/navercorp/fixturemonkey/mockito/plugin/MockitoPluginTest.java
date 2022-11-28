@@ -21,24 +21,33 @@ package com.navercorp.fixturemonkey.mockito.plugin;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.mockito.Mockito.when;
 
+import java.util.Collections;
+
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Example;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.LabMonkey;
+import com.navercorp.fixturemonkey.mockito.plugin.MockitoPluginTestSpecs.AbstractSample;
+import com.navercorp.fixturemonkey.mockito.plugin.MockitoPluginTestSpecs.AbstractSampleImpl;
+import com.navercorp.fixturemonkey.mockito.plugin.MockitoPluginTestSpecs.InterfaceSample;
+import com.navercorp.fixturemonkey.mockito.plugin.MockitoPluginTestSpecs.InterfaceSampleImpl;
 import com.navercorp.fixturemonkey.mockito.plugin.MockitoPluginTestSpecs.Sample;
 
 class MockitoPluginTest {
-	private final LabMonkey sut = FixtureMonkey.labMonkeyBuilder()
-		.plugin(new MockitoPlugin())
-		.defaultNullInjectGenerator(context -> 0)
-		.build();
-
 	@Example
 	void mockitoAbstractInterface() {
-		Sample actual = this.sut.giveMeOne(Sample.class);
-		then(actual.getAbstractSample()).isNotNull();
+		// given
+		LabMonkey sut = FixtureMonkey.labMonkeyBuilder()
+			.plugin(new MockitoPlugin())
+			.defaultNullInjectGenerator(context -> 0)
+			.build();
 
+		// when
+		Sample actual = sut.giveMeOne(Sample.class);
+
+		// then
+		then(actual.getAbstractSample()).isNotNull();
 		String mockStringValue = Arbitraries.strings().sample();
 		when(actual.getAbstractSample().getValue()).thenReturn(mockStringValue);
 		then(actual.getAbstractSample().getValue()).isEqualTo(mockStringValue);
@@ -46,7 +55,32 @@ class MockitoPluginTest {
 		then(actual.getInterfaceSample()).isNotNull();
 
 		int mockIntValue = Arbitraries.integers().sample();
-		when(actual.getInterfaceSample().getInt()).thenReturn(mockIntValue);
-		then(actual.getInterfaceSample().getInt()).isEqualTo(mockIntValue);
+		when(actual.getInterfaceSample().getValue()).thenReturn(mockIntValue);
+		then(actual.getInterfaceSample().getValue()).isEqualTo(mockIntValue);
+	}
+
+	@Example
+	void interfaceImplementsAndMockitoInterface() {
+		LabMonkey sut = FixtureMonkey.labMonkeyBuilder()
+			.plugin(new MockitoPlugin())
+			.interfaceImplements(InterfaceSample.class, Collections.singletonList(InterfaceSampleImpl.class))
+			.build();
+
+		int actual = sut.giveMeOne(Sample.class).getInterfaceSample().getValue();
+
+		then(actual).isNotNull();
+	}
+
+	@Example
+	void interfaceImplementsAndMockitoAbstract() {
+		LabMonkey sut = FixtureMonkey.labMonkeyBuilder()
+			.plugin(new MockitoPlugin())
+			.defaultNullInjectGenerator(context -> 0)
+			.interfaceImplements(AbstractSample.class, Collections.singletonList(AbstractSampleImpl.class))
+			.build();
+
+		String actual = sut.giveMeOne(Sample.class).getAbstractSample().getValue();
+
+		then(actual).isNotNull();
 	}
 }
