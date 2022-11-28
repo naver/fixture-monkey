@@ -70,6 +70,12 @@ import com.navercorp.fixturemonkey.resolver.IdentityNodeResolver;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.BuilderInteger;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.CustomBuildMethodInteger;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.CustomBuilderMethodInteger;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.GenericGetFixedValue;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.GetFixedValue;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.GetFixedValueChild;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.GetIntegerFixedValue;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.GetIntegerFixedValueChild;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.GetStringFixedValue;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.Pair;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.PairContainerPropertyGenerator;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.PairIntrospector;
@@ -1199,5 +1205,91 @@ class FixtureMonkeyV04OptionsTest {
 		});
 
 		then(values).hasSizeLessThanOrEqualTo(2);
+	}
+
+	@Property
+	void interfaceImplements() {
+		// given
+		List<Class<? extends GetFixedValue>> implementations = new ArrayList<>();
+		implementations.add(GetIntegerFixedValue.class);
+		implementations.add(GetStringFixedValue.class);
+
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.interfaceImplements(GetFixedValue.class, implementations)
+			.build();
+
+		// when
+		Object actual = sut.giveMeOne(GetFixedValue.class).get();
+
+		then(actual).isIn(1, "fixed");
+	}
+
+	@Property
+	void sampleGenericInterface() {
+		// given
+		List<Class<? extends GetFixedValue>> implementations = new ArrayList<>();
+		implementations.add(GetIntegerFixedValue.class);
+		implementations.add(GetStringFixedValue.class);
+
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.interfaceImplements(GetFixedValue.class, implementations)
+			.build();
+
+		// when
+		Object actual = sut.giveMeBuilder(new TypeReference<GenericGetFixedValue<GetFixedValue>>() {
+			})
+			.setNotNull("value")
+			.sample()
+			.getValue()
+			.get();
+
+		then(actual).isIn(1, "fixed");
+	}
+
+	@Property
+	void sampleGenericInterfaceReturnsDiff() {
+		// given
+		List<Class<? extends GetFixedValue>> implementations = new ArrayList<>();
+		implementations.add(GetIntegerFixedValue.class);
+		implementations.add(GetStringFixedValue.class);
+
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.interfaceImplements(GetFixedValue.class, implementations)
+			.build();
+
+		// when
+		Set<Class<? extends GetFixedValue>> actual = sut.giveMeBuilder(
+				new TypeReference<GenericGetFixedValue<GetFixedValue>>() {
+				})
+			.setNotNull("value")
+			.sampleList(100)
+			.stream()
+			.map(it -> it.getValue().getClass())
+			.collect(Collectors.toSet());
+
+		then(actual).hasSize(2);
+	}
+
+	@Property
+	void sampleInterfaceChildWhenOptionHasHierarchy() {
+		// given
+		List<Class<? extends GetFixedValue>> implementations = new ArrayList<>();
+		implementations.add(GetIntegerFixedValue.class);
+		implementations.add(GetStringFixedValue.class);
+
+		List<Class<? extends GetFixedValueChild>> childImplementations = new ArrayList<>();
+		childImplementations.add(GetIntegerFixedValueChild.class);
+
+		// when
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.interfaceImplements(GetFixedValueChild.class, childImplementations)
+			.interfaceImplements(GetFixedValue.class, implementations)
+			.build();
+
+		Object actual = sut.giveMeOne(new TypeReference<GetFixedValueChild>() {
+			})
+			.get();
+
+		then(actual).isEqualTo(2);
 	}
 }

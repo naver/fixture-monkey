@@ -20,8 +20,10 @@ package com.navercorp.fixturemonkey;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Function;
@@ -34,6 +36,7 @@ import com.navercorp.fixturemonkey.api.customizer.FixtureCustomizer;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfoGenerator;
 import com.navercorp.fixturemonkey.api.generator.ContainerPropertyGenerator;
+import com.navercorp.fixturemonkey.api.generator.InterfaceObjectPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.NullInjectGenerator;
 import com.navercorp.fixturemonkey.api.generator.NullObjectPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGenerator;
@@ -45,6 +48,7 @@ import com.navercorp.fixturemonkey.api.introspector.JavaTimeArbitraryResolver;
 import com.navercorp.fixturemonkey.api.introspector.JavaTimeTypeArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.introspector.JavaTypeArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.matcher.AssignableTypeMatcher;
+import com.navercorp.fixturemonkey.api.matcher.ExactTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.option.GenerateOptions;
@@ -388,9 +392,9 @@ public class LabMonkeyBuilder {
 					};
 					this.register(actualType, registerArbitraryBuilder);
 				} catch (InvocationTargetException
-						| InstantiationException
-						| IllegalAccessException
-						| NoSuchMethodException e) {
+					| InstantiationException
+					| IllegalAccessException
+					| NoSuchMethodException e) {
 					// ignored
 				}
 			}
@@ -476,6 +480,33 @@ public class LabMonkeyBuilder {
 	public LabMonkeyBuilder nullableElement(boolean nullableElement) {
 		this.generateOptionsBuilder.nullableElement(nullableElement);
 		return this;
+	}
+
+	public <T> LabMonkeyBuilder interfaceImplements(
+		Matcher matcher,
+		List<Class<? extends T>> implementations
+	) {
+		this.pushObjectPropertyGenerator(
+			new MatcherOperator<>(
+				matcher,
+				new InterfaceObjectPropertyGenerator(implementations)
+			)
+		);
+		return this;
+	}
+
+	public <T> LabMonkeyBuilder interfaceImplements(
+		Class<T> interfaceClass,
+		List<Class<? extends T>> implementations
+	) {
+		if (!Modifier.isAbstract(interfaceClass.getModifiers())) {
+			throw new IllegalArgumentException(
+				"interfaceImplements option first parameter should be interface or abstract class. "
+					+ interfaceClass.getTypeName()
+			);
+		}
+
+		return this.interfaceImplements(new ExactTypeMatcher(interfaceClass), implementations);
 	}
 
 	public LabMonkey build() {
