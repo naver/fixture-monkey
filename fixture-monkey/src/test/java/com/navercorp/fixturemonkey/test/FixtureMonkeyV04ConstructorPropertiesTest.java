@@ -9,6 +9,7 @@ import com.navercorp.fixturemonkey.LabMonkey;
 import com.navercorp.fixturemonkey.api.introspector.ConstructorPropertiesArbitraryIntrospector;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04ConstructorPropertiesTestSpecs.ConstructorComplexObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04ConstructorPropertiesTestSpecs.ConstructorSimpleObject;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyV04ConstructorPropertiesTestSpecs.NoParameterConstructor;
 
 class FixtureMonkeyV04ConstructorPropertiesTest {
 	private static final LabMonkey SUT = LabMonkey.labMonkeyBuilder()
@@ -63,5 +64,13 @@ class FixtureMonkeyV04ConstructorPropertiesTest {
 	void fixed() {
 		thenNoException()
 			.isThrownBy(() -> SUT.giveMeBuilder(ConstructorComplexObject.class).fixed().sample());
+	}
+
+	@Property
+	void noParameterConstructor() {
+		String actual = SUT.giveMeOne(NoParameterConstructor.class)
+			.getValue();
+
+		then(actual).isEqualTo("fixed");
 	}
 }

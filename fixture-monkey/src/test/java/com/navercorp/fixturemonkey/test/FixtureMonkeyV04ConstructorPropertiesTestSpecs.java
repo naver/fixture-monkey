@@ -3,6 +3,7 @@ package com.navercorp.fixturemonkey.test;
 import java.beans.ConstructorProperties;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 class FixtureMonkeyV04ConstructorPropertiesTestSpecs {
 	@Getter
@@ -29,5 +30,11 @@ class FixtureMonkeyV04ConstructorPropertiesTestSpecs {
 		public ConstructorComplexObject(ConstructorSimpleObject value) {
 			this.value = value;
 		}
+	}
+
+	@NoArgsConstructor
+	@Getter
+	public static class NoParameterConstructor {
+		private final String value = "fixed";
 	}
 }
