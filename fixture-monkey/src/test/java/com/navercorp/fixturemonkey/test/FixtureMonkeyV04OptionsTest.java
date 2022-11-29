@@ -46,6 +46,7 @@ import net.jqwik.api.arbitraries.StringArbitrary;
 import net.jqwik.time.api.DateTimes;
 import net.jqwik.time.api.arbitraries.InstantArbitrary;
 
+import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.LabMonkey;
 import com.navercorp.fixturemonkey.api.customizer.FixtureCustomizer;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
@@ -858,7 +859,7 @@ class FixtureMonkeyV04OptionsTest {
 						List<Object> list = new ArrayList<>();
 						list.add(pair.getFirst());
 						list.add(pair.getSecond());
-						return new DecomposableContainerValue(list, 1);
+						return new DecomposableContainerValue(list, 2);
 					}
 					throw new IllegalArgumentException(
 						"given type is not supported container : " + obj.getClass().getTypeName()
@@ -866,13 +867,14 @@ class FixtureMonkeyV04OptionsTest {
 				}
 			)
 			.build();
-
-		Pair<String, String> pair = sut.giveMeBuilder(new TypeReference<Pair<String, String>>() {
+		ArbitraryBuilder<Pair<String, String>> builder = sut.giveMeBuilder(new TypeReference<Pair<String, String>>() {
 			})
-			.fixed()
-			.sample();
+			.fixed();
 
-		then(pair).isNotNull();
+		Pair<String, String> actual1 = builder.sample();
+		Pair<String, String> actual2 = builder.sample();
+
+		then(actual1).isEqualTo(actual2);
 	}
 
 	@Property
@@ -887,17 +889,18 @@ class FixtureMonkeyV04OptionsTest {
 					List<Object> list = new ArrayList<>();
 					list.add(pair.getFirst());
 					list.add(pair.getSecond());
-					return new DecomposableContainerValue(list, 1);
+					return new DecomposableContainerValue(list, 2);
 				}
 			)
 			.build();
-
-		Pair<String, String> pair = sut.giveMeBuilder(new TypeReference<Pair<String, String>>() {
+		ArbitraryBuilder<Pair<String, String>> builder = sut.giveMeBuilder(new TypeReference<Pair<String, String>>() {
 			})
-			.fixed()
-			.sample();
+			.fixed();
 
-		then(pair).isNotNull();
+		Pair<String, String> actual1 = builder.sample();
+		Pair<String, String> actual2 = builder.sample();
+
+		then(actual1).isEqualTo(actual2);
 	}
 
 	@Property
