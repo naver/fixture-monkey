@@ -35,6 +35,7 @@ import javax.annotation.Nullable;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+@Deprecated
 @API(since = "0.4.2", status = Status.EXPERIMENTAL)
 public final class FactoryMethodProperty implements Property {
 	private final AnnotatedType annotatedType;
