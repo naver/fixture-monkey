@@ -25,18 +25,26 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
+import com.navercorp.fixturemonkey.api.property.Property;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 final class TraverseContext {
+	private final ArbitraryProperty rootArbitraryProperty;
 	private final List<ArbitraryProperty> arbitraryProperties;
 	private final List<ContainerInfoManipulator> containerInfoManipulators;
 
 	public TraverseContext(
+		ArbitraryProperty rootArbitraryProperty,
 		List<ArbitraryProperty> arbitraryProperties,
 		List<ContainerInfoManipulator> containerInfoManipulators
 	) {
+		this.rootArbitraryProperty = rootArbitraryProperty;
 		this.arbitraryProperties = arbitraryProperties;
 		this.containerInfoManipulators = containerInfoManipulators;
+	}
+
+	public ArbitraryProperty getRootArbitraryProperty() {
+		return rootArbitraryProperty;
 	}
 
 	public List<ArbitraryProperty> getArbitraryProperties() {
@@ -52,6 +60,12 @@ final class TraverseContext {
 	) {
 		List<ArbitraryProperty> arbitraryProperties = new ArrayList<>(this.arbitraryProperties);
 		arbitraryProperties.add(arbitraryProperty);
-		return new TraverseContext(arbitraryProperties, containerInfoManipulators);
+		return new TraverseContext(rootArbitraryProperty, arbitraryProperties, containerInfoManipulators);
+	}
+
+	public boolean isTraversed(Property property) {
+		return property.equals(rootArbitraryProperty.getObjectProperty().getProperty())
+			|| arbitraryProperties.stream()
+			.anyMatch(it -> property.equals(it.getObjectProperty().getProperty()));
 	}
 }
