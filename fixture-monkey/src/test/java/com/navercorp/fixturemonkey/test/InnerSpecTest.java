@@ -413,6 +413,19 @@ class InnerSpecTest {
 	}
 
 	@Property
+	void allEntry() {
+		IntegerMapObject actual = SUT.giveMeBuilder(IntegerMapObject.class)
+			.setInner("integerMap", m -> m.allEntry(
+				() -> Arbitraries.integers().between(0, 100),
+				100
+			))
+			.sample();
+
+		then(actual.getIntegerMap().keySet()).allMatch(it -> it >= 0 && it <= 100);
+		then(actual.getIntegerMap().values()).allMatch(it -> it == 100);
+	}
+
+	@Property
 	void allEntryLazy() {
 		IntegerMapObject actual = SUT.giveMeBuilder(IntegerMapObject.class)
 			.setInner("integerMap", m -> m.allEntryLazy(
@@ -445,6 +458,19 @@ class InnerSpecTest {
 
 	@Property
 	void allValue() {
+		String expected = "test";
+
+		Collection<String> actual = SUT.giveMeBuilder(MapObject.class)
+			.setInner("strMap", m -> m.allValue(expected))
+			.sample()
+			.getStrMap()
+			.values();
+
+		then(actual).allMatch(expected::equals);
+	}
+
+	@Property
+	void allValueInner() {
 		String expected = "test";
 
 		List<String> actual = SUT.giveMeBuilder(MapObject.class)
