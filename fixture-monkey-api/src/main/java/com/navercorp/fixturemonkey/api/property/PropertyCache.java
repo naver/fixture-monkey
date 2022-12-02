@@ -95,16 +95,24 @@ public final class PropertyCache {
 			List<Property> properties = propertiesMap.computeIfAbsent(
 				entry.getValue().getName(), name -> new ArrayList<>()
 			);
-			properties.add(
-				new PropertyDescriptorProperty(
-					Types.resolveWithTypeReferenceGenerics(annotatedType, entry.getValue()),
-					entry.getValue()
-				)
-			);
+
+			PropertyDescriptor propertyDescriptor = entry.getValue();
+			if (propertyDescriptor.getReadMethod() != null && propertyDescriptor.getWriteMethod() != null) {
+				properties.add(
+					new PropertyDescriptorProperty(
+						Types.resolveWithTypeReferenceGenerics(annotatedType, entry.getValue()),
+						entry.getValue()
+					)
+				);
+			}
 		}
 
 		List<Property> result = new ArrayList<>();
 		for (List<Property> properties : propertiesMap.values()) {
+			if (properties.isEmpty()) {
+				continue;
+			}
+
 			if (properties.size() == 1) {
 				result.add(properties.get(0));
 			} else {
