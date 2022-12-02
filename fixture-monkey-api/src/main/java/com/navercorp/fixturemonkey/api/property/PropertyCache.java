@@ -235,7 +235,8 @@ public final class PropertyCache {
 				for (Constructor<?> constructor : constructors) {
 					Parameter[] parameters = constructor.getParameters();
 					boolean namePresent = Arrays.stream(parameters).anyMatch(Parameter::isNamePresent);
-					if (namePresent) {
+					boolean parameterEmpty = parameters.length == 0;
+					if (namePresent || parameterEmpty) {
 						possibilities.add(constructor);
 					} else {
 						ConstructorProperties constructorPropertiesAnnotation =
@@ -288,6 +289,11 @@ public final class PropertyCache {
 	private static String[] getParameterNames(Constructor<?> constructor) {
 		Parameter[] parameters = constructor.getParameters();
 		boolean namePresent = Arrays.stream(parameters).anyMatch(Parameter::isNamePresent);
+		boolean parameterEmpty = parameters.length == 0;
+
+		if (parameterEmpty) {
+			return new String[0];
+		}
 
 		if (namePresent) {
 			return Arrays.stream(parameters)
