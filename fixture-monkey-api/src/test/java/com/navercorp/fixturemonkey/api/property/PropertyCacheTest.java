@@ -51,6 +51,18 @@ class PropertyCacheTest {
 	}
 
 	@Test
+	void getPropertiesOnlyGetterNotReturnsProperty() {
+		// given
+		TypeReference<NotPropertyValue> typeReference = new TypeReference<NotPropertyValue>() {
+		};
+
+		// when
+		List<Property> actual = PropertyCache.getProperties(typeReference.getAnnotatedType());
+
+		then(actual).isEmpty();
+	}
+
+	@Test
 	void getPropertiesGenerics() {
 		// given
 		TypeReference<GenericSample<String>> typeReference = new TypeReference<GenericSample<String>>() {

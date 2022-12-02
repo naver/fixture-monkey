@@ -19,22 +19,10 @@
 package com.navercorp.fixturemonkey.api.property;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
-public class PropertyValue {
-	@Nullable
-	private String name;
-
-	public PropertyValue(String name) {
-		this.name = name;
-	}
-
+public class NotPropertyValue {
 	@Nonnull
 	public String getName() {
-		return this.name;
-	}
-
-	public void setName(@Nullable String name) {
-		this.name = name;
+		return "getter";
 	}
 }
