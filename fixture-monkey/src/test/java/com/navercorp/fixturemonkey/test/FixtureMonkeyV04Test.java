@@ -56,6 +56,7 @@ import com.navercorp.fixturemonkey.api.generator.ChildArbitraryContext;
 import com.navercorp.fixturemonkey.api.matcher.ExactTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
+import com.navercorp.fixturemonkey.customizer.ExpressionSpec;
 import com.navercorp.fixturemonkey.test.ComplexManipulatorTestSpecs.IntValue;
 import com.navercorp.fixturemonkey.test.ComplexManipulatorTestSpecs.NestedStringList;
 import com.navercorp.fixturemonkey.test.ComplexManipulatorTestSpecs.StringAndInt;
@@ -1537,5 +1538,17 @@ class FixtureMonkeyV04Test {
 				.size("$", 3)
 				.sample()
 		);
+	}
+
+	@Property
+	void setSpec() {
+		String expected = "test";
+
+		String actual = SUT.giveMeBuilder(SimpleObject.class)
+			.set(new ExpressionSpec().set("str", expected))
+			.sample()
+			.getStr();
+
+		then(actual).isEqualTo(expected);
 	}
 }

@@ -130,6 +130,8 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 			this.setLazy(expression, () -> ((Arbitrary<?>)value).sample(), limit);
 		} else if (value instanceof DefaultArbitraryBuilder) {
 			this.setLazy(expression, () -> ((DefaultArbitraryBuilder<?>)value).sample());
+		} else if (value instanceof ExpressionSpec) {
+			this.spec((ExpressionSpec)value);
 		} else if (value == null) {
 			this.setNull(expression);
 		} else {
