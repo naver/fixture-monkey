@@ -47,6 +47,7 @@ import net.jqwik.api.Combinators.F4;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
+import com.navercorp.fixturemonkey.MonkeyManipulatorFactory;
 import com.navercorp.fixturemonkey.OldArbitraryBuilderImpl;
 import com.navercorp.fixturemonkey.api.customizer.FixtureCustomizer;
 import com.navercorp.fixturemonkey.api.expression.ExpressionGenerator;
@@ -90,6 +91,7 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 	private final ArbitraryTraverser traverser;
 	private final ArbitraryValidator validator;
 	private final MonkeyExpressionFactory monkeyExpressionFactory;
+	private final MonkeyManipulatorFactory monkeyManipulatorFactory;
 	private final ArbitraryBuilderContext context;
 	private final BuilderManipulatorAdapter builderManipulatorAdapter;
 
@@ -109,6 +111,7 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 		this.validator = validator;
 		this.context = context;
 		this.monkeyExpressionFactory = manipulateOptions.getDefaultMonkeyExpressionFactory();
+		this.monkeyManipulatorFactory = new MonkeyManipulatorFactory(traverser, manipulateOptions);
 		this.builderManipulatorAdapter = new BuilderManipulatorAdapter(traverser, manipulateOptions);
 	}
 
@@ -239,10 +242,12 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 	@Override
 	public ArbitraryBuilder<T> setInner(String expression, Consumer<InnerSpec> specSpecifier) {
 		NodeResolver nodeResolver = monkeyExpressionFactory.from(expression).toNodeResolver();
-		InnerSpec innerSpec = new InnerSpec(traverser, manipulateOptions, nodeResolver);
+		InnerSpec innerSpec = new InnerSpec(nodeResolver, InnerSpec.getUninitializedValue(), null);
 		specSpecifier.accept(innerSpec);
-		this.context.addManipulators(innerSpec.getArbitraryManipulators());
-		this.context.addContainerInfoManipulators(innerSpec.getContainerInfoManipulators());
+
+		ManipulatorInfo manipulatorInfo = traverseInnerSpec(innerSpec);
+		this.context.addManipulators(manipulatorInfo.arbitraryManipulators);
+		this.context.addContainerInfoManipulators(manipulatorInfo.containerInfoManipulators);
 		return this;
 	}
 
@@ -584,5 +589,57 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 			validator,
 			context
 		);
+	}
+
+	private ManipulatorInfo traverseInnerSpec(InnerSpec innerSpec) {
+		if (innerSpec.isLeaf()) {
+			List<ArbitraryManipulator> arbitraryManipulators = new ArrayList<>();
+			List<ContainerInfoManipulator> containerInfoManipulators = new ArrayList<>();
+
+			if (innerSpec.getValue() != InnerSpec.getUninitializedValue()) {
+				arbitraryManipulators.add(new ArbitraryManipulator(
+					innerSpec.getTreePathResolver(),
+					monkeyManipulatorFactory.convertToNodeManipulator(innerSpec.getValue())
+				));
+			}
+			if (innerSpec.getContainerInfo() != null) {
+				containerInfoManipulators.add(
+					new ContainerInfoManipulator(innerSpec.getTreePathResolver(),
+						innerSpec.getContainerInfo())
+				);
+			}
+
+			return new ManipulatorInfo(arbitraryManipulators, containerInfoManipulators);
+		}
+
+		List<ArbitraryManipulator> arbitraryManipulators = new ArrayList<>();
+		List<ContainerInfoManipulator> containerInfoManipulators = new ArrayList<>();
+
+		if (innerSpec.getContainerInfo() != null) {
+			containerInfoManipulators.add(
+				new ContainerInfoManipulator(innerSpec.getTreePathResolver(),
+					innerSpec.getContainerInfo())
+			);
+		}
+
+		for (InnerSpec spec : innerSpec.getInnerSpecs()) {
+			arbitraryManipulators.addAll(traverseInnerSpec(spec).arbitraryManipulators);
+			containerInfoManipulators.addAll(traverseInnerSpec(spec).containerInfoManipulators);
+		}
+
+		return new ManipulatorInfo(arbitraryManipulators, containerInfoManipulators);
+	}
+
+	public static class ManipulatorInfo {
+		private final List<ArbitraryManipulator> arbitraryManipulators;
+		private final List<ContainerInfoManipulator> containerInfoManipulators;
+
+		public ManipulatorInfo(
+			List<ArbitraryManipulator> arbitraryManipulators,
+			List<ContainerInfoManipulator> containerInfoManipulators
+		) {
+			this.arbitraryManipulators = arbitraryManipulators;
+			this.containerInfoManipulators = containerInfoManipulators;
+		}
 	}
 }

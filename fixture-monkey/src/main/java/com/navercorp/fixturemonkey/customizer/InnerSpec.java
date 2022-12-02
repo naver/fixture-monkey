@@ -32,91 +32,72 @@ import javax.annotation.Nullable;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import net.jqwik.api.Arbitrary;
-
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
-import com.navercorp.fixturemonkey.resolver.ArbitraryManipulator;
-import com.navercorp.fixturemonkey.resolver.ArbitraryTraverser;
 import com.navercorp.fixturemonkey.resolver.CompositeNodeResolver;
 import com.navercorp.fixturemonkey.resolver.ContainerElementPredicate;
-import com.navercorp.fixturemonkey.resolver.ContainerInfoManipulator;
 import com.navercorp.fixturemonkey.resolver.DefaultNodeResolver;
-import com.navercorp.fixturemonkey.resolver.ManipulateOptions;
 import com.navercorp.fixturemonkey.resolver.NodeAllEntryPredicate;
 import com.navercorp.fixturemonkey.resolver.NodeEntryPredicate;
 import com.navercorp.fixturemonkey.resolver.NodeKeyValuePredicate;
-import com.navercorp.fixturemonkey.resolver.NodeManipulator;
-import com.navercorp.fixturemonkey.resolver.NodeNullityManipulator;
 import com.navercorp.fixturemonkey.resolver.NodeResolver;
-import com.navercorp.fixturemonkey.resolver.NodeSetDecomposedValueManipulator;
-import com.navercorp.fixturemonkey.resolver.NodeSetLazyManipulator;
 import com.navercorp.fixturemonkey.resolver.PropertyNameNodePredicate;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class InnerSpec {
-	private final ArbitraryTraverser traverser;
-	private final ManipulateOptions manipulateOptions;
+	private static final Object UNINITIALIZED_VALUE = new Object();
 	private final NodeResolver treePathResolver;
+	@Nullable
+	private final Object value;
+	@Nullable
+	private ArbitraryContainerInfo containerInfo;
+	private final List<InnerSpec> innerSpecs;
 
-	private int min = DEFAULT_ELEMENT_MIN_SIZE;
-	private int max = DEFAULT_ELEMENT_MAX_SIZE;
 	private int entrySize = 0;
-	private final List<ArbitraryManipulator> arbitraryManipulators;
-	private final List<ContainerInfoManipulator> containerInfoManipulators;
 
 	public InnerSpec(
-		ArbitraryTraverser traverser,
-		ManipulateOptions manipulateOptions,
-		NodeResolver treePathResolver
+		NodeResolver treePathResolver,
+		@Nullable Object value,
+		@Nullable ArbitraryContainerInfo containerInfo
 	) {
-		this.traverser = traverser;
-		this.manipulateOptions = manipulateOptions;
 		this.treePathResolver = treePathResolver;
-		this.arbitraryManipulators = new ArrayList<>();
-		this.containerInfoManipulators = new ArrayList<>();
-	}
-
-	public InnerSpec minSize(int min) {
-		return size(min, min + DEFAULT_ELEMENT_MAX_SIZE);
-	}
-
-	public InnerSpec maxSize(int max) {
-		return size(Math.max(DEFAULT_ELEMENT_MIN_SIZE, max - DEFAULT_ELEMENT_MAX_SIZE), max);
-	}
-
-	public InnerSpec size(int size) {
-		return size(size, size);
+		this.value = value;
+		this.containerInfo = containerInfo;
+		this.innerSpecs = new ArrayList<>();
 	}
 
 	public InnerSpec size(int min, int max) {
 		if (min > max) {
 			throw new IllegalArgumentException("should be min > max, min : " + min + " max : " + max);
 		}
-		this.min = min;
-		this.max = max;
 
-		containerInfoManipulators.add(
-			new ContainerInfoManipulator(
-				this.treePathResolver,
-				new ArbitraryContainerInfo(this.min, this.max, true)
-			)
-		);
+		containerInfo = new ArbitraryContainerInfo(min, max, true);
 		return this;
+	}
+
+	public InnerSpec size(int size) {
+		return this.size(size, size);
+	}
+
+	public InnerSpec minSize(int min) {
+		return this.size(min, min + DEFAULT_ELEMENT_MAX_SIZE);
+	}
+
+	public InnerSpec maxSize(int max) {
+		return this.size(Math.max(DEFAULT_ELEMENT_MIN_SIZE, max - DEFAULT_ELEMENT_MAX_SIZE), max);
 	}
 
 	public InnerSpec key(Object key) {
 		entrySize++;
 
-		arbitraryManipulators.add(new ArbitraryManipulator(
-				new CompositeNodeResolver(
-					this.treePathResolver,
-					new DefaultNodeResolver(new NodeEntryPredicate(entrySize - 1)),
-					new DefaultNodeResolver(new NodeKeyValuePredicate(true))
-				),
-				convertToNodeManipulator(key)
+		this.innerSpecs.add(
+			new InnerSpec(
+				nextKeyNodeResolver(),
+				key,
+				null
 			)
 		);
+
 		return this;
 	}
 
@@ -129,19 +110,13 @@ public final class InnerSpec {
 
 		entrySize++;
 
-		NodeResolver nextResolver = new CompositeNodeResolver(
-			this.treePathResolver,
-			new DefaultNodeResolver(new NodeEntryPredicate(entrySize - 1)),
-			new DefaultNodeResolver(new NodeKeyValuePredicate(true))
-		);
-		InnerSpec innerSpec = new InnerSpec(traverser, manipulateOptions, nextResolver);
-		consumer.accept(innerSpec);
-		arbitraryManipulators.addAll(innerSpec.arbitraryManipulators);
-		containerInfoManipulators.addAll(innerSpec.containerInfoManipulators);
+		InnerSpec nextNodeInnerSpec = new InnerSpec(nextKeyNodeResolver(), UNINITIALIZED_VALUE, null);
+		consumer.accept(nextNodeInnerSpec);
+		this.innerSpecs.add(nextNodeInnerSpec);
 		return this;
 	}
 
-	public InnerSpec value(@Nullable Object value) {
+	public InnerSpec value(Object value) {
 		setValue(value);
 		return this;
 	}
@@ -153,15 +128,10 @@ public final class InnerSpec {
 		}
 
 		entrySize++;
-		NodeResolver nextResolver = new CompositeNodeResolver(
-			this.treePathResolver,
-			new DefaultNodeResolver(new NodeEntryPredicate(entrySize - 1)),
-			new DefaultNodeResolver(new NodeKeyValuePredicate(false))
-		);
-		InnerSpec innerSpec = new InnerSpec(traverser, manipulateOptions, nextResolver);
-		consumer.accept(innerSpec);
-		arbitraryManipulators.addAll(innerSpec.arbitraryManipulators);
-		containerInfoManipulators.addAll(innerSpec.containerInfoManipulators);
+
+		InnerSpec nextNodeInnerSpec = new InnerSpec(nextValueNodeResolver(), UNINITIALIZED_VALUE, null);
+		consumer.accept(nextNodeInnerSpec);
+		this.innerSpecs.add(nextNodeInnerSpec);
 		return this;
 	}
 
@@ -184,113 +154,34 @@ public final class InnerSpec {
 
 		entrySize++;
 
-		arbitraryManipulators.add(
-			new ArbitraryManipulator(
-				new CompositeNodeResolver(
-					this.treePathResolver,
-					new DefaultNodeResolver(new NodeEntryPredicate(entrySize - 1)),
-					new DefaultNodeResolver(new NodeKeyValuePredicate(true))
-				),
-				convertToNodeManipulator(key)
+		this.innerSpecs.add(
+			new InnerSpec(
+				nextKeyNodeResolver(),
+				key,
+				null
 			)
 		);
 
-		NodeResolver nextResolver = new CompositeNodeResolver(
-			this.treePathResolver,
-			new DefaultNodeResolver(new NodeEntryPredicate(entrySize - 1)),
-			new DefaultNodeResolver(new NodeKeyValuePredicate(false))
-		);
-
-		InnerSpec innerSpec = new InnerSpec(traverser, manipulateOptions, nextResolver);
-		consumer.accept(innerSpec);
-		arbitraryManipulators.addAll(innerSpec.arbitraryManipulators);
-		containerInfoManipulators.addAll(innerSpec.containerInfoManipulators);
+		InnerSpec nextNodeInnerSpec = new InnerSpec(nextValueNodeResolver(), UNINITIALIZED_VALUE, null);
+		consumer.accept(nextNodeInnerSpec);
+		this.innerSpecs.add(nextNodeInnerSpec);
 		return this;
 	}
 
 	public InnerSpec entry(Consumer<InnerSpec> consumer, @Nullable Object value) {
 		entrySize++;
 
-		arbitraryManipulators.add(
-			new ArbitraryManipulator(
-				new CompositeNodeResolver(
-					this.treePathResolver,
-					new DefaultNodeResolver(new NodeEntryPredicate(entrySize - 1)),
-					new DefaultNodeResolver(new NodeKeyValuePredicate(false))
-				),
-				convertToNodeManipulator(value)
+		this.innerSpecs.add(
+			new InnerSpec(
+				nextValueNodeResolver(),
+				value,
+				null
 			)
 		);
 
-		NodeResolver nextResolver = new CompositeNodeResolver(
-			this.treePathResolver,
-			new DefaultNodeResolver(new NodeEntryPredicate(entrySize - 1)),
-			new DefaultNodeResolver(new NodeKeyValuePredicate(true))
-		);
-		InnerSpec innerSpec = new InnerSpec(traverser, manipulateOptions, nextResolver);
-		consumer.accept(innerSpec);
-		arbitraryManipulators.addAll(innerSpec.arbitraryManipulators);
-		containerInfoManipulators.addAll(innerSpec.containerInfoManipulators);
-		return this;
-	}
-
-	public InnerSpec listElement(int index, @Nullable Object value) {
-		NodeResolver nextResolver = new CompositeNodeResolver(
-			this.treePathResolver,
-			new DefaultNodeResolver(new ContainerElementPredicate(index))
-		);
-		NodeManipulator manipulator = convertToNodeManipulator(value);
-		arbitraryManipulators.add(new ArbitraryManipulator(nextResolver, manipulator));
-		return this;
-	}
-
-	public InnerSpec listElement(int index, Consumer<InnerSpec> consumer) {
-		if (consumer == null) {
-			return listElement(index, (Object)null);
-		}
-
-		NodeResolver nextResolver = new CompositeNodeResolver(
-			this.treePathResolver,
-			new DefaultNodeResolver(new ContainerElementPredicate(index))
-		);
-		InnerSpec innerSpec = new InnerSpec(traverser, manipulateOptions, nextResolver);
-		consumer.accept(innerSpec);
-		arbitraryManipulators.addAll(innerSpec.arbitraryManipulators);
-		containerInfoManipulators.addAll(innerSpec.containerInfoManipulators);
-		return this;
-	}
-
-	public InnerSpec allListElement(@Nullable Object value) {
-		return listElement(NO_OR_ALL_INDEX_INTEGER_VALUE, value);
-	}
-
-	public InnerSpec allListElement(Consumer<InnerSpec> consumer) {
-		return listElement(NO_OR_ALL_INDEX_INTEGER_VALUE, consumer);
-	}
-
-	public InnerSpec property(String property, @Nullable Object value) {
-		NodeResolver nextResolver = new CompositeNodeResolver(
-			this.treePathResolver,
-			new DefaultNodeResolver(new PropertyNameNodePredicate(property))
-		);
-		NodeManipulator manipulator = convertToNodeManipulator(value);
-		arbitraryManipulators.add(new ArbitraryManipulator(nextResolver, manipulator));
-		return this;
-	}
-
-	public InnerSpec property(String property, Consumer<InnerSpec> consumer) {
-		if (consumer == null) {
-			return property(property, (Object)null);
-		}
-
-		NodeResolver nextResolver = new CompositeNodeResolver(
-			this.treePathResolver,
-			new DefaultNodeResolver(new PropertyNameNodePredicate(property))
-		);
-		InnerSpec innerSpec = new InnerSpec(traverser, manipulateOptions, nextResolver);
-		consumer.accept(innerSpec);
-		arbitraryManipulators.addAll(innerSpec.arbitraryManipulators);
-		containerInfoManipulators.addAll(innerSpec.containerInfoManipulators);
+		InnerSpec nextNodeInnerSpec = new InnerSpec(nextKeyNodeResolver(), UNINITIALIZED_VALUE, null);
+		consumer.accept(nextNodeInnerSpec);
+		this.innerSpecs.add(nextNodeInnerSpec);
 		return this;
 	}
 
@@ -298,13 +189,11 @@ public final class InnerSpec {
 		entrySize++;
 
 		LazyArbitrary<?> lazyArbitrary = LazyArbitrary.lazy(supplier);
-		arbitraryManipulators.add(new ArbitraryManipulator(
-				new CompositeNodeResolver(
-					this.treePathResolver,
-					new DefaultNodeResolver(new NodeEntryPredicate(entrySize - 1)),
-					new DefaultNodeResolver(new NodeKeyValuePredicate(true))
-				),
-				convertToNodeManipulator(lazyArbitrary)
+		this.innerSpecs.add(
+			new InnerSpec(
+				nextKeyNodeResolver(),
+				lazyArbitrary,
+				null
 			)
 		);
 		return this;
@@ -314,13 +203,11 @@ public final class InnerSpec {
 		entrySize++;
 
 		LazyArbitrary<?> lazyArbitrary = LazyArbitrary.lazy(supplier);
-		arbitraryManipulators.add(new ArbitraryManipulator(
-				new CompositeNodeResolver(
-					this.treePathResolver,
-					new DefaultNodeResolver(new NodeEntryPredicate(entrySize - 1)),
-					new DefaultNodeResolver(new NodeKeyValuePredicate(false))
-				),
-				convertToNodeManipulator(lazyArbitrary)
+		this.innerSpecs.add(
+			new InnerSpec(
+				nextValueNodeResolver(),
+				lazyArbitrary,
+				null
 			)
 		);
 		return this;
@@ -332,25 +219,19 @@ public final class InnerSpec {
 		LazyArbitrary<?> keyLazyArbitrary = LazyArbitrary.lazy(keySupplier);
 		LazyArbitrary<?> valueLazyArbitrary = LazyArbitrary.lazy(valueSupplier);
 
-		this.arbitraryManipulators.add(
-			new ArbitraryManipulator(
-				new CompositeNodeResolver(
-					this.treePathResolver,
-					new DefaultNodeResolver(new NodeEntryPredicate(entrySize - 1)),
-					new DefaultNodeResolver(new NodeKeyValuePredicate(true))
-				),
-				convertToNodeManipulator(keyLazyArbitrary)
+		this.innerSpecs.add(
+			new InnerSpec(
+				nextKeyNodeResolver(),
+				keyLazyArbitrary,
+				null
 			)
 		);
 
-		this.arbitraryManipulators.add(
-			new ArbitraryManipulator(
-				new CompositeNodeResolver(
-					this.treePathResolver,
-					new DefaultNodeResolver(new NodeEntryPredicate(entrySize - 1)),
-					new DefaultNodeResolver(new NodeKeyValuePredicate(false))
-				),
-				convertToNodeManipulator(valueLazyArbitrary)
+		this.innerSpecs.add(
+			new InnerSpec(
+				nextValueNodeResolver(),
+				valueLazyArbitrary,
+				null
 			)
 		);
 		return this;
@@ -362,41 +243,30 @@ public final class InnerSpec {
 			return this;
 		}
 
-		NodeResolver nextResolver = new CompositeNodeResolver(
-			this.treePathResolver,
-			new DefaultNodeResolver(new NodeAllEntryPredicate()),
-			new DefaultNodeResolver(new NodeKeyValuePredicate(true))
-		);
-		InnerSpec innerSpec = new InnerSpec(traverser, manipulateOptions, nextResolver);
-		consumer.accept(innerSpec);
-		arbitraryManipulators.addAll(innerSpec.arbitraryManipulators);
-		containerInfoManipulators.addAll(innerSpec.containerInfoManipulators);
+		InnerSpec nextNodeInnerSpec = new InnerSpec(nextAllKeyNodeResolver(), UNINITIALIZED_VALUE, null);
+		consumer.accept(nextNodeInnerSpec);
+		this.innerSpecs.add(nextNodeInnerSpec);
 		return this;
 	}
 
 	public InnerSpec allKeyLazy(Supplier<?> supplier) {
 		LazyArbitrary<?> lazyArbitrary = LazyArbitrary.lazy(supplier);
-		arbitraryManipulators.add(new ArbitraryManipulator(
-				new CompositeNodeResolver(
-					this.treePathResolver,
-					new DefaultNodeResolver(new NodeAllEntryPredicate()),
-					new DefaultNodeResolver(new NodeKeyValuePredicate(true))
-				),
-				convertToNodeManipulator(lazyArbitrary)
+		this.innerSpecs.add(
+			new InnerSpec(
+				nextAllKeyNodeResolver(),
+				lazyArbitrary,
+				null
 			)
 		);
 		return this;
 	}
 
 	public InnerSpec allValue(@Nullable Object value) {
-		this.arbitraryManipulators.add(
-			new ArbitraryManipulator(
-				new CompositeNodeResolver(
-					this.treePathResolver,
-					new DefaultNodeResolver(new NodeAllEntryPredicate()),
-					new DefaultNodeResolver(new NodeKeyValuePredicate(false))
-				),
-				convertToNodeManipulator(value)
+		this.innerSpecs.add(
+			new InnerSpec(
+				nextAllValueNodeResolver(),
+				value,
+				null
 			)
 		);
 
@@ -409,27 +279,19 @@ public final class InnerSpec {
 			return this;
 		}
 
-		NodeResolver nextResolver = new CompositeNodeResolver(
-			this.treePathResolver,
-			new DefaultNodeResolver(new NodeAllEntryPredicate()),
-			new DefaultNodeResolver(new NodeKeyValuePredicate(false))
-		);
-		InnerSpec innerSpec = new InnerSpec(traverser, manipulateOptions, nextResolver);
-		consumer.accept(innerSpec);
-		arbitraryManipulators.addAll(innerSpec.arbitraryManipulators);
-		containerInfoManipulators.addAll(innerSpec.containerInfoManipulators);
+		InnerSpec nextNodeInnerSpec = new InnerSpec(nextAllValueNodeResolver(), UNINITIALIZED_VALUE, null);
+		consumer.accept(nextNodeInnerSpec);
+		this.innerSpecs.add(nextNodeInnerSpec);
 		return this;
 	}
 
 	public InnerSpec allValueLazy(Supplier<?> supplier) {
 		LazyArbitrary<?> lazyArbitrary = LazyArbitrary.lazy(supplier);
-		arbitraryManipulators.add(new ArbitraryManipulator(
-				new CompositeNodeResolver(
-					this.treePathResolver,
-					new DefaultNodeResolver(new NodeAllEntryPredicate()),
-					new DefaultNodeResolver(new NodeKeyValuePredicate(false))
-				),
-				convertToNodeManipulator(lazyArbitrary)
+		this.innerSpecs.add(
+			new InnerSpec(
+				nextAllValueNodeResolver(),
+				lazyArbitrary,
+				null
 			)
 		);
 		return this;
@@ -438,25 +300,19 @@ public final class InnerSpec {
 	public InnerSpec allEntry(Supplier<?> keySupplier, Object value) {
 		LazyArbitrary<?> keyLazyArbitrary = LazyArbitrary.lazy(keySupplier);
 
-		this.arbitraryManipulators.add(
-			new ArbitraryManipulator(
-				new CompositeNodeResolver(
-					this.treePathResolver,
-					new DefaultNodeResolver(new NodeAllEntryPredicate()),
-					new DefaultNodeResolver(new NodeKeyValuePredicate(true))
-				),
-				convertToNodeManipulator(keyLazyArbitrary)
+		this.innerSpecs.add(
+			new InnerSpec(
+				nextAllKeyNodeResolver(),
+				keyLazyArbitrary,
+				null
 			)
 		);
 
-		this.arbitraryManipulators.add(
-			new ArbitraryManipulator(
-				new CompositeNodeResolver(
-					this.treePathResolver,
-					new DefaultNodeResolver(new NodeAllEntryPredicate()),
-					new DefaultNodeResolver(new NodeKeyValuePredicate(false))
-				),
-				convertToNodeManipulator(value)
+		this.innerSpecs.add(
+			new InnerSpec(
+				nextAllValueNodeResolver(),
+				value,
+				null
 			)
 		);
 		return this;
@@ -466,38 +322,108 @@ public final class InnerSpec {
 		return this.allEntry(keySupplier, valueSupplier);
 	}
 
-	public List<ArbitraryManipulator> getArbitraryManipulators() {
-		return arbitraryManipulators;
+	public InnerSpec listElement(int index, @Nullable Object value) {
+		this.innerSpecs.add(
+			new InnerSpec(
+				new CompositeNodeResolver(
+					this.treePathResolver,
+					new DefaultNodeResolver(new ContainerElementPredicate(index))
+				),
+				value,
+				null
+			)
+		);
+
+		return this;
 	}
 
-	public List<ContainerInfoManipulator> getContainerInfoManipulators() {
-		return containerInfoManipulators;
+	public InnerSpec listElement(int index, Consumer<InnerSpec> consumer) {
+		if (consumer == null) {
+			return listElement(index, (Object)null);
+		}
+
+		NodeResolver nextNodeResolver = new CompositeNodeResolver(
+			this.treePathResolver,
+			new DefaultNodeResolver(new ContainerElementPredicate(index))
+		);
+
+		InnerSpec nextNodeInnerSpec = new InnerSpec(nextNodeResolver, UNINITIALIZED_VALUE, null);
+		consumer.accept(nextNodeInnerSpec);
+		this.innerSpecs.add(nextNodeInnerSpec);
+		return this;
+	}
+
+	public InnerSpec allListElement(@Nullable Object value) {
+		return listElement(NO_OR_ALL_INDEX_INTEGER_VALUE, value);
+	}
+
+	public InnerSpec allListElement(Consumer<InnerSpec> consumer) {
+		return listElement(NO_OR_ALL_INDEX_INTEGER_VALUE, consumer);
+	}
+
+	public InnerSpec property(String property, @Nullable Object value) {
+		this.innerSpecs.add(
+			new InnerSpec(
+				new CompositeNodeResolver(
+					this.treePathResolver,
+					new DefaultNodeResolver(new PropertyNameNodePredicate(property))
+				),
+				value,
+				null
+			)
+		);
+
+		return this;
+	}
+
+	public InnerSpec property(String property, Consumer<InnerSpec> consumer) {
+		if (consumer == null) {
+			return property(property, (Object)null);
+		}
+
+		NodeResolver nextNodeResolver = new CompositeNodeResolver(
+			this.treePathResolver,
+			new DefaultNodeResolver(new PropertyNameNodePredicate(property))
+		);
+
+		InnerSpec nextNodeInnerSpec = new InnerSpec(nextNodeResolver, UNINITIALIZED_VALUE, null);
+		consumer.accept(nextNodeInnerSpec);
+		this.innerSpecs.add(nextNodeInnerSpec);
+		return this;
+	}
+
+	public static Object getUninitializedValue() {
+		return UNINITIALIZED_VALUE;
+	}
+
+	public NodeResolver getTreePathResolver() {
+		return treePathResolver;
+	}
+
+	public Object getValue() {
+		return value;
+	}
+
+	public ArbitraryContainerInfo getContainerInfo() {
+		return containerInfo;
+	}
+
+	public List<InnerSpec> getInnerSpecs() {
+		return innerSpecs;
+	}
+
+	public boolean isLeaf() {
+		return innerSpecs.isEmpty();
 	}
 
 	private void setValue(@Nullable Object value) {
 		entrySize++;
 
-		this.arbitraryManipulators.add(
-			new ArbitraryManipulator(
-				new CompositeNodeResolver(
-					this.treePathResolver,
-					new DefaultNodeResolver(new NodeEntryPredicate(entrySize - 1)),
-					new DefaultNodeResolver(new NodeKeyValuePredicate(false))
-				),
-				convertToNodeManipulator(value)
-			)
-		);
-	}
-
-	private void setKeyAll(@Nullable Object value) {
-		this.arbitraryManipulators.add(
-			new ArbitraryManipulator(
-				new CompositeNodeResolver(
-					this.treePathResolver,
-					new DefaultNodeResolver(new NodeAllEntryPredicate()),
-					new DefaultNodeResolver(new NodeKeyValuePredicate(true))
-				),
-				convertToNodeManipulator(value)
+		this.innerSpecs.add(
+			new InnerSpec(
+				nextValueNodeResolver(),
+				value,
+				null
 			)
 		);
 	}
@@ -510,56 +436,62 @@ public final class InnerSpec {
 		}
 		entrySize++;
 
-		this.arbitraryManipulators.add(
-			new ArbitraryManipulator(
-				new CompositeNodeResolver(
-					this.treePathResolver,
-					new DefaultNodeResolver(new NodeEntryPredicate(entrySize - 1)),
-					new DefaultNodeResolver(new NodeKeyValuePredicate(true))
-				),
-				convertToNodeManipulator(key)
+		this.innerSpecs.add(
+			new InnerSpec(
+				nextKeyNodeResolver(),
+				key,
+				null
 			)
 		);
 
-		this.arbitraryManipulators.add(
-			new ArbitraryManipulator(
-				new CompositeNodeResolver(
-					this.treePathResolver,
-					new DefaultNodeResolver(new NodeEntryPredicate(entrySize - 1)),
-					new DefaultNodeResolver(new NodeKeyValuePredicate(false))
-				),
-				convertToNodeManipulator(value)
+		this.innerSpecs.add(
+			new InnerSpec(
+				nextValueNodeResolver(),
+				value,
+				null
 			)
 		);
-
 	}
 
-	private NodeManipulator convertToNodeManipulator(@Nullable Object value) {
-		if (value instanceof Arbitrary) {
-			return new NodeSetLazyManipulator<>(
-				traverser,
-				manipulateOptions,
-				LazyArbitrary.lazy(() -> ((Arbitrary<?>)value).sample()),
-				false
-			);
-		} else if (value instanceof Supplier) {
-			return new NodeSetLazyManipulator<>(
-				traverser,
-				manipulateOptions,
-				LazyArbitrary.lazy((Supplier<?>)value),
-				false
-			);
-		} else if (value instanceof LazyArbitrary) {
-			return new NodeSetLazyManipulator<>(
-				traverser,
-				manipulateOptions,
-				(LazyArbitrary<?>)value,
-				false
-			);
-		} else if (value == null) {
-			return new NodeNullityManipulator(true);
-		} else {
-			return new NodeSetDecomposedValueManipulator<>(traverser, manipulateOptions, value, false);
-		}
+	private void setKeyAll(@Nullable Object value) {
+		this.innerSpecs.add(
+			new InnerSpec(
+				nextAllKeyNodeResolver(),
+				value,
+				null
+			)
+		);
+	}
+
+	private NodeResolver nextKeyNodeResolver() {
+		return new CompositeNodeResolver(
+			this.treePathResolver,
+			new DefaultNodeResolver(new NodeEntryPredicate(entrySize - 1)),
+			new DefaultNodeResolver(new NodeKeyValuePredicate(true))
+		);
+	}
+
+	private NodeResolver nextValueNodeResolver() {
+		return new CompositeNodeResolver(
+			this.treePathResolver,
+			new DefaultNodeResolver(new NodeEntryPredicate(entrySize - 1)),
+			new DefaultNodeResolver(new NodeKeyValuePredicate(false))
+		);
+	}
+
+	private NodeResolver nextAllKeyNodeResolver() {
+		return new CompositeNodeResolver(
+			this.treePathResolver,
+			new DefaultNodeResolver(new NodeAllEntryPredicate()),
+			new DefaultNodeResolver(new NodeKeyValuePredicate(true))
+		);
+	}
+
+	private NodeResolver nextAllValueNodeResolver() {
+		return new CompositeNodeResolver(
+			this.treePathResolver,
+			new DefaultNodeResolver(new NodeAllEntryPredicate()),
+			new DefaultNodeResolver(new NodeKeyValuePredicate(false))
+		);
 	}
 }
