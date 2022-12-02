@@ -29,6 +29,7 @@ import net.jqwik.api.Builders.BuilderCombinator;
 
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
@@ -64,6 +65,7 @@ class FixtureMonkeyV04OptionsAdditionalTestSpecs {
 		}
 	}
 
+	@EqualsAndHashCode
 	public static class Pair<S, T> {
 		private final S first;
 		private final T second;
