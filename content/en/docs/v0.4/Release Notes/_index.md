@@ -3,6 +3,16 @@
 title: "Release Notes"
 weight: 6
 ---
+### 0.4.8
+* Add `set` compatible for `ExpressionSpec`
+* Add noArgsConstructor compatible for ConstructorPropertiesIntrospector
+* Deprecate FactoryMethodArbitraryIntrospector
+* Fix PropertyDescriptorProperty not generating only getter or setter
+* Add more `innerSpec` support methods
+
+### 0.4.7
+* Add a simple option for generating concrete class with interface
+
 ### 0.4.6
 * Fix set interface as value
 * Fix generate a unique nested Set or Map element
