@@ -93,7 +93,7 @@ public class PairDecomposedContainerValueFactory implements DecomposedContainerV
 		List<Object> list = new ArrayList<>();
 		list.add(pair.getFirst());
 		list.add(pair.getSecond());
-		return new DecomposableContainerValue(list, 1);
+		return new DecomposableContainerValue(list, 2);
 	}
 }
 ```
