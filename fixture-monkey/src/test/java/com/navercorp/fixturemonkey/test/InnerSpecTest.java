@@ -21,6 +21,7 @@ package com.navercorp.fixturemonkey.test;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.assertj.core.api.BDDAssertions.thenThrownBy;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -32,6 +33,7 @@ import net.jqwik.api.Property;
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.LabMonkey;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
+import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.test.InnerSpecTestSpecs.ComplexObjectObject;
 import com.navercorp.fixturemonkey.test.InnerSpecTestSpecs.IntegerMapObject;
 import com.navercorp.fixturemonkey.test.InnerSpecTestSpecs.MapObject;
@@ -411,6 +413,19 @@ class InnerSpecTest {
 	}
 
 	@Property
+	void allEntry() {
+		IntegerMapObject actual = SUT.giveMeBuilder(IntegerMapObject.class)
+			.setInner("integerMap", m -> m.allEntry(
+				() -> Arbitraries.integers().between(0, 100),
+				100
+			))
+			.sample();
+
+		then(actual.getIntegerMap().keySet()).allMatch(it -> it >= 0 && it <= 100);
+		then(actual.getIntegerMap().values()).allMatch(it -> it == 100);
+	}
+
+	@Property
 	void allEntryLazy() {
 		IntegerMapObject actual = SUT.giveMeBuilder(IntegerMapObject.class)
 			.setInner("integerMap", m -> m.allEntryLazy(
@@ -421,5 +436,83 @@ class InnerSpecTest {
 
 		then(actual.getIntegerMap().keySet()).allMatch(it -> it >= 0 && it <= 100);
 		then(actual.getIntegerMap().values()).allMatch(it -> it >= 0 && it <= 100);
+	}
+
+	@Property
+	void allKey() {
+		String expected = "test";
+
+		List<String> actual = SUT.giveMeBuilder(MapObject.class)
+			.setInner("objectKeyMap", m -> m.allKey(v ->
+				v.property("str", expected)
+			))
+			.sample()
+			.getObjectKeyMap()
+			.keySet()
+			.stream()
+			.map(SimpleObject::getStr)
+			.collect(Collectors.toList());
+
+		then(actual).allMatch(expected::equals);
+	}
+
+	@Property
+	void allValue() {
+		String expected = "test";
+
+		Collection<String> actual = SUT.giveMeBuilder(MapObject.class)
+			.setInner("strMap", m -> m.allValue(expected))
+			.sample()
+			.getStrMap()
+			.values();
+
+		then(actual).allMatch(expected::equals);
+	}
+
+	@Property
+	void allValueInner() {
+		String expected = "test";
+
+		List<String> actual = SUT.giveMeBuilder(MapObject.class)
+			.setInner("objectValueMap", m -> m.allValue(v ->
+				v.property("str", expected)
+			))
+			.sample()
+			.getObjectValueMap()
+			.values()
+			.stream()
+			.map(SimpleObject::getStr)
+			.collect(Collectors.toList());
+
+		then(actual).allMatch(expected::equals);
+	}
+
+	@Property
+	void allListElement() {
+		String expected = "test";
+
+		// when
+		List<String> actual = SUT.giveMeBuilder(new TypeReference<List<String>>() {
+			})
+			.setInner("$", l -> l.allListElement(expected))
+			.sample();
+
+		then(actual).allMatch(expected::equals);
+	}
+
+	@Property
+	void allListElementInnerSpec() {
+		String expected = "test";
+
+		// when
+		List<String> actual = SUT.giveMeBuilder(new TypeReference<List<List<String>>>() {
+			})
+			.setInner("$", l -> l.allListElement(inner -> inner.allListElement(expected)))
+			.sample()
+			.stream()
+			.flatMap(Collection::stream)
+			.collect(Collectors.toList());
+
+		then(actual).allMatch(expected::equals);
 	}
 }

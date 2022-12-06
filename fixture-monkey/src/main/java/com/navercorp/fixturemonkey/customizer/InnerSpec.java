@@ -20,6 +20,7 @@ package com.navercorp.fixturemonkey.customizer;
 
 import static com.navercorp.fixturemonkey.Constants.DEFAULT_ELEMENT_MAX_SIZE;
 import static com.navercorp.fixturemonkey.Constants.DEFAULT_ELEMENT_MIN_SIZE;
+import static com.navercorp.fixturemonkey.Constants.NO_OR_ALL_INDEX_INTEGER_VALUE;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -259,6 +260,14 @@ public final class InnerSpec {
 		return this;
 	}
 
+	public InnerSpec allListElement(@Nullable Object value) {
+		return listElement(NO_OR_ALL_INDEX_INTEGER_VALUE, value);
+	}
+
+	public InnerSpec allListElement(Consumer<InnerSpec> consumer) {
+		return listElement(NO_OR_ALL_INDEX_INTEGER_VALUE, consumer);
+	}
+
 	public InnerSpec property(String property, @Nullable Object value) {
 		NodeResolver nextResolver = new CompositeNodeResolver(
 			this.treePathResolver,
@@ -347,6 +356,24 @@ public final class InnerSpec {
 		return this;
 	}
 
+	public InnerSpec allKey(Consumer<InnerSpec> consumer) {
+		if (consumer == null) {
+			setKeyAll(null);
+			return this;
+		}
+
+		NodeResolver nextResolver = new CompositeNodeResolver(
+			this.treePathResolver,
+			new DefaultNodeResolver(new NodeAllEntryPredicate()),
+			new DefaultNodeResolver(new NodeKeyValuePredicate(true))
+		);
+		InnerSpec innerSpec = new InnerSpec(traverser, manipulateOptions, nextResolver);
+		consumer.accept(innerSpec);
+		arbitraryManipulators.addAll(innerSpec.arbitraryManipulators);
+		containerInfoManipulators.addAll(innerSpec.containerInfoManipulators);
+		return this;
+	}
+
 	public InnerSpec allKeyLazy(Supplier<?> supplier) {
 		LazyArbitrary<?> lazyArbitrary = LazyArbitrary.lazy(supplier);
 		arbitraryManipulators.add(new ArbitraryManipulator(
@@ -358,6 +385,39 @@ public final class InnerSpec {
 				convertToNodeManipulator(lazyArbitrary)
 			)
 		);
+		return this;
+	}
+
+	public InnerSpec allValue(@Nullable Object value) {
+		this.arbitraryManipulators.add(
+			new ArbitraryManipulator(
+				new CompositeNodeResolver(
+					this.treePathResolver,
+					new DefaultNodeResolver(new NodeAllEntryPredicate()),
+					new DefaultNodeResolver(new NodeKeyValuePredicate(false))
+				),
+				convertToNodeManipulator(value)
+			)
+		);
+
+		return this;
+	}
+
+	public InnerSpec allValue(Consumer<InnerSpec> consumer) {
+		if (consumer == null) {
+			allValue((Object)null);
+			return this;
+		}
+
+		NodeResolver nextResolver = new CompositeNodeResolver(
+			this.treePathResolver,
+			new DefaultNodeResolver(new NodeAllEntryPredicate()),
+			new DefaultNodeResolver(new NodeKeyValuePredicate(false))
+		);
+		InnerSpec innerSpec = new InnerSpec(traverser, manipulateOptions, nextResolver);
+		consumer.accept(innerSpec);
+		arbitraryManipulators.addAll(innerSpec.arbitraryManipulators);
+		containerInfoManipulators.addAll(innerSpec.containerInfoManipulators);
 		return this;
 	}
 
@@ -375,9 +435,8 @@ public final class InnerSpec {
 		return this;
 	}
 
-	public InnerSpec allEntryLazy(Supplier<?> keySupplier, Supplier<?> valueSupplier) {
+	public InnerSpec allEntry(Supplier<?> keySupplier, Object value) {
 		LazyArbitrary<?> keyLazyArbitrary = LazyArbitrary.lazy(keySupplier);
-		LazyArbitrary<?> valueLazyArbitrary = LazyArbitrary.lazy(valueSupplier);
 
 		this.arbitraryManipulators.add(
 			new ArbitraryManipulator(
@@ -397,10 +456,14 @@ public final class InnerSpec {
 					new DefaultNodeResolver(new NodeAllEntryPredicate()),
 					new DefaultNodeResolver(new NodeKeyValuePredicate(false))
 				),
-				convertToNodeManipulator(valueLazyArbitrary)
+				convertToNodeManipulator(value)
 			)
 		);
 		return this;
+	}
+
+	public InnerSpec allEntryLazy(Supplier<?> keySupplier, Supplier<?> valueSupplier) {
+		return this.allEntry(keySupplier, valueSupplier);
 	}
 
 	public List<ArbitraryManipulator> getArbitraryManipulators() {
@@ -420,6 +483,19 @@ public final class InnerSpec {
 					this.treePathResolver,
 					new DefaultNodeResolver(new NodeEntryPredicate(entrySize - 1)),
 					new DefaultNodeResolver(new NodeKeyValuePredicate(false))
+				),
+				convertToNodeManipulator(value)
+			)
+		);
+	}
+
+	private void setKeyAll(@Nullable Object value) {
+		this.arbitraryManipulators.add(
+			new ArbitraryManipulator(
+				new CompositeNodeResolver(
+					this.treePathResolver,
+					new DefaultNodeResolver(new NodeAllEntryPredicate()),
+					new DefaultNodeResolver(new NodeKeyValuePredicate(true))
 				),
 				convertToNodeManipulator(value)
 			)
@@ -464,6 +540,13 @@ public final class InnerSpec {
 				traverser,
 				manipulateOptions,
 				LazyArbitrary.lazy(() -> ((Arbitrary<?>)value).sample()),
+				false
+			);
+		} else if (value instanceof Supplier) {
+			return new NodeSetLazyManipulator<>(
+				traverser,
+				manipulateOptions,
+				LazyArbitrary.lazy((Supplier<?>)value),
 				false
 			);
 		} else if (value instanceof LazyArbitrary) {

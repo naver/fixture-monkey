@@ -31,6 +31,7 @@ class InnerSpecTestSpecs {
 		private Map<String, List<String>> listValueMap;
 		private Map<String, List<List<String>>> listListValueMap;
 		private Map<String, SimpleObject> objectValueMap;
+		private Map<SimpleObject, String> objectKeyMap;
 	}
 
 	@Data
