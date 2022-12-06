@@ -137,7 +137,7 @@ fun sampleOrder() {
             .build()
 
     // when
-    val actual = sut.giveMeBuilder(Order::class.java)
+    val actual = sut.giveMeBuilder<Order>()
             .setExp(Order::orderNo, "1")
             .setExp(Order::productName, "Line Sally")
             .minSizeExp(Order::items, 1)
