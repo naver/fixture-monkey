@@ -31,7 +31,7 @@ allprojects {
     }
 
     group = "com.navercorp.fixturemonkey"
-    version = "0.4.8"
+    version = "0.4.9-SNAPSHOT"
 }
 
 subprojects {
