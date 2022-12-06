@@ -161,6 +161,7 @@ public final class PropertyCache {
 		});
 	}
 
+	@Deprecated
 	public static List<Property> getFactoryProperties(AnnotatedType annotatedType) {
 		List<Property> properties = new ArrayList<>();
 		Class<?> actualType = Types.getActualType(annotatedType);
