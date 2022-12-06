@@ -8,7 +8,7 @@ weight: 6
 * `ConstructorPropertiesIntrospector`에서 파라미터가 없는 생성자도 생성합니다.
 * `FactoryMethodArbitraryIntrospector`를 deprecate 합니다.
 * `PropertyDescriptorProperty`는 getter와 setter 모두 있는 경우에만 생성합니다.
-* `InnerSpec`에서 맵을 제어하는 다양한 기능을 추가합니다
+* `InnerSpec`에서 맵을 제어하는 다양한 기능을 추가합니다.
 
 ### 0.4.7
 * 인터페이스를 입력했을 때 생성할 구현체를 간단하게 설정하는 옵션을 추가합니다.

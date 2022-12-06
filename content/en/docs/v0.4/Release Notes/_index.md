@@ -5,9 +5,9 @@ weight: 6
 ---
 ### 0.4.8
 * Add `set` compatible for `ExpressionSpec`
-* Add noArgsConstructor compatible for ConstructorPropertiesIntrospector
-* Deprecate FactoryMethodArbitraryIntrospector
-* Fix PropertyDescriptorProperty not generating only getter or setter
+* Add noArgsConstructor compatible for `ConstructorPropertiesIntrospector`
+* Deprecate `FactoryMethodArbitraryIntrospector`
+* Fix `PropertyDescriptorProperty` not generating only getter or setter
 * Add more `innerSpec` support methods
 
 ### 0.4.7
