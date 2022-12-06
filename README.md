@@ -67,6 +67,8 @@ testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter-kotlin:0.
 
 ## Example
 
+#### Java
+
 ```java
 
 @Value
@@ -104,6 +106,47 @@ void sampleOrder() {
     then(actual.getOrderNo()).isEqualTo("1");
     then(actual.getProductName()).isEqualTo("Line Sally");
     then(actual.getItems()).hasSizeGreaterThanOrEqualTo(1);
+}
+```
+
+#### Kotlin
+
+```kotlin
+
+data class Order (
+    val id: Long,
+    
+    val orderNo: String,
+    
+    val productName: String,
+    
+    val quantity: Int,
+    
+    val price: Long,
+    
+    val items: List<String>,
+    
+    val orderedAt: Instant
+)
+
+@Test
+fun sampleOrder() {
+    //given
+    val sut = LabMonkey.labMonkeyBuilder()
+            .plugin(KotlinPlugin())
+            .build()
+
+    // when
+    val actual = sut.giveMeBuilder<Order>()
+            .setExp(Order::orderNo, "1")
+            .setExp(Order::productName, "Line Sally")
+            .minSizeExp(Order::items, 1)
+            .sample()
+
+    // then
+    then(actual.orderNo).isEqualTo("1")
+    then(actual.productName).isEqualTo("Line Sally")
+    then(actual.items).hasSizeGreaterThanOrEqualTo(1)
 }
 ```
 
