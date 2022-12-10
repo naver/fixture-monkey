@@ -95,6 +95,7 @@ public final class ArbitraryTraverser {
 		return this.traverse(
 			arbitraryProperty,
 			new TraverseContext(
+				arbitraryProperty,
 				new ArrayList<>(),
 				containerInfoManipulators
 			)
@@ -134,6 +135,10 @@ public final class ArbitraryTraverser {
 
 		for (int sequence = 0; sequence < properties.size(); sequence++) {
 			Property childProperty = properties.get(sequence);
+
+			if (context.isTraversed(childProperty)) {
+				continue;
+			}
 
 			ContainerPropertyGenerator containerPropertyGenerator =
 				this.generateOptions.getContainerPropertyGenerator(childProperty);

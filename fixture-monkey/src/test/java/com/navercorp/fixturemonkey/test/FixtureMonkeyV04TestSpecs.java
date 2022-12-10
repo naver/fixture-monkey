@@ -174,4 +174,32 @@ class FixtureMonkeyV04TestSpecs {
 	public static class CustomContainerFieldObject {
 		CustomContainer value;
 	}
+
+	@Data
+	public static class SelfRecursiveObject {
+		String value;
+
+		SelfRecursiveObject recursive;
+	}
+
+	@Data
+	public static class SelfRecursiveListObject {
+		String value;
+
+		List<SelfRecursiveObject> recursives;
+	}
+
+	@Data
+	public static class RecursiveLeftObject {
+		String value;
+
+		RecursiveRightObject recursive;
+	}
+
+	@Data
+	public static class RecursiveRightObject {
+		int value;
+
+		RecursiveLeftObject recursive;
+	}
 }

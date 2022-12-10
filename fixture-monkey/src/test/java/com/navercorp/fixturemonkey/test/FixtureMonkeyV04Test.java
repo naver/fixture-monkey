@@ -68,6 +68,9 @@ import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.InterfaceField
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.InterfaceImplementation;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.ListStringObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.NullableObject;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.RecursiveLeftObject;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.SelfRecursiveListObject;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.SelfRecursiveObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.SimpleObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.StaticFieldObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.StringPair;
@@ -1550,5 +1553,43 @@ class FixtureMonkeyV04Test {
 			.getStr();
 
 		then(actual).isEqualTo(expected);
+	}
+
+	@Property
+	void sampleSelfRecursiveObject() {
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.defaultNotNull(true)
+			.build();
+
+		SelfRecursiveObject actual = sut.giveMeOne(SelfRecursiveObject.class);
+
+		then(actual.getValue()).isNotNull();
+		then(actual.getRecursive()).isNotNull();
+		then(actual.getRecursive().getValue()).isNotNull();
+	}
+
+	@Property
+	void sampleSelfRecursiveList() {
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.defaultNotNull(true)
+			.build();
+
+		SelfRecursiveListObject actual = sut.giveMeOne(SelfRecursiveListObject.class);
+
+		then(actual.getValue()).isNotNull();
+		then(actual.getRecursives()).isNotNull();
+	}
+
+	@Property
+	void sampleRecursiveObject() {
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.defaultNotNull(true)
+			.build();
+
+		RecursiveLeftObject actual = sut.giveMeOne(RecursiveLeftObject.class);
+
+		then(actual.getValue()).isNotNull();
+		then(actual.getRecursive()).isNotNull();
+		then(actual.getRecursive().getValue()).isNotNull();
 	}
 }
