@@ -7,7 +7,6 @@ import javax.annotation.Nullable;
 import net.jqwik.api.Arbitrary;
 
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
-import com.navercorp.fixturemonkey.resolver.ApplyNodeCountManipulator;
 import com.navercorp.fixturemonkey.resolver.ArbitraryTraverser;
 import com.navercorp.fixturemonkey.resolver.ManipulateOptions;
 import com.navercorp.fixturemonkey.resolver.NodeManipulator;
