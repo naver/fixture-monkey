@@ -97,7 +97,6 @@ public final class InnerSpec {
 				null
 			)
 		);
-
 		return this;
 	}
 
