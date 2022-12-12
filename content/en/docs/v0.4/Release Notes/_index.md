@@ -3,6 +3,9 @@
 title: "Release Notes"
 weight: 6
 ---
+### 0.4.9
+* Add generating a circular-reference object
+
 ### 0.4.8
 * Add `set` compatible for `ExpressionSpec`
 * Add noArgsConstructor compatible for `ConstructorPropertiesIntrospector`

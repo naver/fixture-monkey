@@ -3,6 +3,9 @@
 title: "Release Notes"
 weight: 6
 ---
+### 0.4.9
+* 순환 참조인 객체를 생성할 수 있습니다.
+
 ### 0.4.8
 * `ExpressionSpec`을 `set`할 수 있습니다.
 * `ConstructorPropertiesIntrospector`에서 파라미터가 없는 생성자도 생성합니다.
