@@ -22,6 +22,9 @@ import java.util.function.Supplier;
 
 import javax.annotation.Nullable;
 
+import org.apiguardian.api.API;
+import org.apiguardian.api.API.Status;
+
 import net.jqwik.api.Arbitrary;
 
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
@@ -32,6 +35,7 @@ import com.navercorp.fixturemonkey.resolver.NodeNullityManipulator;
 import com.navercorp.fixturemonkey.resolver.NodeSetDecomposedValueManipulator;
 import com.navercorp.fixturemonkey.resolver.NodeSetLazyManipulator;
 
+@API(since = "0.4.10", status = Status.EXPERIMENTAL)
 public final class MonkeyManipulatorFactory {
 	private final ArbitraryTraverser traverser;
 	private final ManipulateOptions manipulateOptions;
