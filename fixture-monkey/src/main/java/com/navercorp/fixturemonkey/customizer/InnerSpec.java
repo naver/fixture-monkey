@@ -46,6 +46,7 @@ import com.navercorp.fixturemonkey.resolver.PropertyNameNodePredicate;
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class InnerSpec {
 	private static final Object UNINITIALIZED_VALUE = new Object();
+
 	private final NodeResolver treePathResolver;
 	@Nullable
 	private final Object value;

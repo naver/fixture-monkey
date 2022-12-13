@@ -630,7 +630,7 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 		return new ManipulatorInfo(arbitraryManipulators, containerInfoManipulators);
 	}
 
-	public static class ManipulatorInfo {
+	private static class ManipulatorInfo {
 		private final List<ArbitraryManipulator> arbitraryManipulators;
 		private final List<ContainerInfoManipulator> containerInfoManipulators;
 

@@ -46,7 +46,9 @@ public final class MonkeyManipulatorFactory {
 	}
 
 	public NodeManipulator convertToNodeManipulator(@Nullable Object value) {
-		if (value instanceof Arbitrary) {
+		if (value == null) {
+			return new NodeNullityManipulator(true);
+		} else if (value instanceof Arbitrary) {
 			return new NodeSetLazyManipulator<>(
 				traverser,
 				manipulateOptions,
@@ -67,8 +69,6 @@ public final class MonkeyManipulatorFactory {
 				(LazyArbitrary<?>)value,
 				false
 			);
-		} else if (value == null) {
-			return new NodeNullityManipulator(true);
 		} else {
 			return new NodeSetDecomposedValueManipulator<>(traverser, manipulateOptions, value, false);
 		}
