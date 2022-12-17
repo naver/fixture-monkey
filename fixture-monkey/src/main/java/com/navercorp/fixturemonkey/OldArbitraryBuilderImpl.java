@@ -272,12 +272,7 @@ public class OldArbitraryBuilderImpl<T> implements ArbitraryBuilder<T> {
 	}
 
 	@Override
-	public ArbitraryBuilder<T> setInner(String expression, Consumer<InnerSpec> specSupplier) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public ArbitraryBuilder<T> setInner(ExpressionGenerator expressionGenerator, Consumer<InnerSpec> specSupplier) {
+	public ArbitraryBuilder<T> setInner(InnerSpec innerSpec) {
 		throw new UnsupportedOperationException();
 	}
 

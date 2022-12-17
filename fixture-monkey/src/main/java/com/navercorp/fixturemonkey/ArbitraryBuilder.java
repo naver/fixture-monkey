@@ -59,9 +59,7 @@ public interface ArbitraryBuilder<T> {
 
 	ArbitraryBuilder<T> set(@Nullable Object value);
 
-	ArbitraryBuilder<T> setInner(String expression, Consumer<InnerSpec> specSupplier);
-
-	ArbitraryBuilder<T> setInner(ExpressionGenerator expressionGenerator, Consumer<InnerSpec> specSupplier);
+	ArbitraryBuilder<T> setInner(InnerSpec innerSpec);
 
 	ArbitraryBuilder<T> setLazy(String expression, Supplier<?> supplier);
 

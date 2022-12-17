@@ -240,20 +240,15 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 	}
 
 	@Override
-	public ArbitraryBuilder<T> setInner(String expression, Consumer<InnerSpec> specSpecifier) {
-		NodeResolver nodeResolver = monkeyExpressionFactory.from(expression).toNodeResolver();
-		InnerSpec innerSpec = new InnerSpec(nodeResolver, InnerSpec.getUninitializedValue(), null);
-		specSpecifier.accept(innerSpec);
+	public ArbitraryBuilder<T> setInner(InnerSpec innerSpec) {
+		ManipulatorSet manipulatorSet = innerSpec.getMergedManipulatorSet();
+		List<ArbitraryManipulator> arbitraryManipulators = manipulatorSet.getNodeResolverObjectHolders().stream()
+			.map(it -> it.convert(monkeyManipulatorFactory))
+			.collect(toList());
 
-		ManipulatorInfo manipulatorInfo = traverseInnerSpec(innerSpec);
-		this.context.addManipulators(manipulatorInfo.arbitraryManipulators);
-		this.context.addContainerInfoManipulators(manipulatorInfo.containerInfoManipulators);
+		this.context.addManipulators(arbitraryManipulators);
+		this.context.addContainerInfoManipulators(manipulatorSet.getContainerInfoManipulators());
 		return this;
-	}
-
-	@Override
-	public ArbitraryBuilder<T> setInner(ExpressionGenerator expressionGenerator, Consumer<InnerSpec> specSpecifier) {
-		return this.setInner(resolveExpression(expressionGenerator), specSpecifier);
 	}
 
 	@Override
@@ -589,57 +584,5 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 			validator,
 			context
 		);
-	}
-
-	private ManipulatorInfo traverseInnerSpec(InnerSpec innerSpec) {
-		if (innerSpec.isLeaf()) {
-			List<ArbitraryManipulator> arbitraryManipulators = new ArrayList<>();
-			List<ContainerInfoManipulator> containerInfoManipulators = new ArrayList<>();
-
-			if (innerSpec.getValue() != InnerSpec.getUninitializedValue()) {
-				arbitraryManipulators.add(new ArbitraryManipulator(
-					innerSpec.getTreePathResolver(),
-					monkeyManipulatorFactory.convertToNodeManipulator(innerSpec.getValue())
-				));
-			}
-			if (innerSpec.getContainerInfo() != null) {
-				containerInfoManipulators.add(
-					new ContainerInfoManipulator(innerSpec.getTreePathResolver(),
-						innerSpec.getContainerInfo())
-				);
-			}
-
-			return new ManipulatorInfo(arbitraryManipulators, containerInfoManipulators);
-		}
-
-		List<ArbitraryManipulator> arbitraryManipulators = new ArrayList<>();
-		List<ContainerInfoManipulator> containerInfoManipulators = new ArrayList<>();
-
-		if (innerSpec.getContainerInfo() != null) {
-			containerInfoManipulators.add(
-				new ContainerInfoManipulator(innerSpec.getTreePathResolver(),
-					innerSpec.getContainerInfo())
-			);
-		}
-
-		for (InnerSpec spec : innerSpec.getInnerSpecs()) {
-			arbitraryManipulators.addAll(traverseInnerSpec(spec).arbitraryManipulators);
-			containerInfoManipulators.addAll(traverseInnerSpec(spec).containerInfoManipulators);
-		}
-
-		return new ManipulatorInfo(arbitraryManipulators, containerInfoManipulators);
-	}
-
-	private static class ManipulatorInfo {
-		private final List<ArbitraryManipulator> arbitraryManipulators;
-		private final List<ContainerInfoManipulator> containerInfoManipulators;
-
-		public ManipulatorInfo(
-			List<ArbitraryManipulator> arbitraryManipulators,
-			List<ContainerInfoManipulator> containerInfoManipulators
-		) {
-			this.arbitraryManipulators = arbitraryManipulators;
-			this.containerInfoManipulators = containerInfoManipulators;
-		}
 	}
 }
