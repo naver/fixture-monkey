@@ -32,6 +32,8 @@ import java.time.OffsetDateTime;
 import java.time.OffsetTime;
 import java.time.Year;
 import java.time.YearMonth;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.Date;
@@ -62,7 +64,10 @@ class JavaxValidationFixtureMonkeyTest {
 		.defaultNotNull(true)
 		.build();
 
-	@Property
+	private static final ZoneId ZONED_ID = ZoneId.systemDefault();
+	private static final ZoneOffset ZONE_OFFSET = ZoneOffset.UTC;
+
+	@Property(tries = 100)
 	void sampleBigDecimal() {
 		BigDecimalIntrospectorSpec actual = SUT.giveMeOne(BigDecimalIntrospectorSpec.class);
 
@@ -77,7 +82,7 @@ class JavaxValidationFixtureMonkeyTest {
 		then(actual.getPositiveOrZero()).isGreaterThanOrEqualTo(BigDecimal.ZERO);
 	}
 
-	@Property
+	@Property(tries = 100)
 	void sampleBigInteger() {
 		BigIntegerIntrospectorSpec actual = SUT.giveMeOne(BigIntegerIntrospectorSpec.class);
 
@@ -92,7 +97,7 @@ class JavaxValidationFixtureMonkeyTest {
 		then(actual.getPositiveOrZero()).isGreaterThanOrEqualTo(BigInteger.ZERO);
 	}
 
-	@Property
+	@Property(tries = 100)
 	void sampleBoolean() {
 		BooleanIntrospectorSpec actual = SUT.giveMeOne(BooleanIntrospectorSpec.class);
 
@@ -101,7 +106,7 @@ class JavaxValidationFixtureMonkeyTest {
 		then(actual.isAssertTrue()).isTrue();
 	}
 
-	@Property
+	@Property(tries = 100)
 	void sampleByte() {
 		ByteIntrospectorSpec actual = SUT.giveMeOne(ByteIntrospectorSpec.class);
 
@@ -117,14 +122,14 @@ class JavaxValidationFixtureMonkeyTest {
 		then(actual.getPositiveOrZero()).isGreaterThanOrEqualTo((byte)0);
 	}
 
-	@Property
+	@Property(tries = 100)
 	void sampleCharacter() {
 		CharacterIntrospectorSpec actual = SUT.giveMeOne(CharacterIntrospectorSpec.class);
 
 		then(actual.getCharacter()).isBetween(Character.MIN_VALUE, Character.MAX_VALUE);
 	}
 
-	@Property
+	@Property(tries = 100)
 	void sampleDouble() {
 		DoubleIntrospectorSpec actual = SUT.giveMeOne(DoubleIntrospectorSpec.class);
 
@@ -140,7 +145,7 @@ class JavaxValidationFixtureMonkeyTest {
 		then(actual.getPositiveOrZero()).isGreaterThanOrEqualTo(0);
 	}
 
-	@Property
+	@Property(tries = 100)
 	void sampleFloat() {
 		FloatIntrospectorSpec actual = SUT.giveMeOne(FloatIntrospectorSpec.class);
 
@@ -156,7 +161,7 @@ class JavaxValidationFixtureMonkeyTest {
 		then(actual.getPositiveOrZero()).isGreaterThanOrEqualTo(0);
 	}
 
-	@Property
+	@Property(tries = 100)
 	void sampleInt() {
 		IntIntrospectorSpec actual = SUT.giveMeOne(IntIntrospectorSpec.class);
 
@@ -172,7 +177,7 @@ class JavaxValidationFixtureMonkeyTest {
 		then(actual.getPositiveOrZero()).isGreaterThanOrEqualTo(0);
 	}
 
-	@Property
+	@Property(tries = 100)
 	void sampleLong() {
 		LongIntrospectorSpec actual = SUT.giveMeOne(LongIntrospectorSpec.class);
 
@@ -188,7 +193,7 @@ class JavaxValidationFixtureMonkeyTest {
 		then(actual.getPositiveOrZero()).isGreaterThanOrEqualTo(0);
 	}
 
-	@Property
+	@Property(tries = 100)
 	void sampleShort() {
 		ShortIntrospectorSpec actual = SUT.giveMeOne(ShortIntrospectorSpec.class);
 
@@ -204,7 +209,7 @@ class JavaxValidationFixtureMonkeyTest {
 		then(actual.getPositiveOrZero()).isGreaterThanOrEqualTo((short)0);
 	}
 
-	@Property
+	@Property(tries = 100)
 	void sampleString() {
 		StringIntrospectorSpec actual = SUT.giveMeOne(StringIntrospectorSpec.class);
 
@@ -222,7 +227,7 @@ class JavaxValidationFixtureMonkeyTest {
 		then(actual.getEmail()).containsOnlyOnce("@");
 	}
 
-	@Property
+	@Property(tries = 100)
 	void sampleCalendar() {
 		TimeIntrospectorSpec actual = SUT.giveMeOne(TimeIntrospectorSpec.class);
 
@@ -234,7 +239,7 @@ class JavaxValidationFixtureMonkeyTest {
 			.isGreaterThanOrEqualTo(now.toInstant().toEpochMilli());
 	}
 
-	@Property
+	@Property(tries = 100)
 	void sampleDate() {
 		TimeIntrospectorSpec actual = SUT.giveMeOne(TimeIntrospectorSpec.class);
 
@@ -245,7 +250,7 @@ class JavaxValidationFixtureMonkeyTest {
 		then(actual.getDateFutureOrPresent().getTime()).isGreaterThanOrEqualTo(now.getTime());
 	}
 
-	@Property
+	@Property(tries = 100)
 	void sampleInstant() {
 		TimeIntrospectorSpec actual = SUT.giveMeOne(TimeIntrospectorSpec.class);
 
@@ -256,7 +261,7 @@ class JavaxValidationFixtureMonkeyTest {
 		then(actual.getInstantFutureOrPresent()).isAfterOrEqualTo(now);
 	}
 
-	@Property
+	@Property(tries = 100)
 	void sampleLocalDate() {
 		TimeIntrospectorSpec actual = SUT.giveMeOne(TimeIntrospectorSpec.class);
 
@@ -267,7 +272,7 @@ class JavaxValidationFixtureMonkeyTest {
 		then(actual.getLocalDateFutureOrPresent()).isAfterOrEqualTo(now);
 	}
 
-	@Property
+	@Property(tries = 100)
 	void sampleLocalDateTime() {
 		TimeIntrospectorSpec actual = SUT.giveMeOne(TimeIntrospectorSpec.class);
 
@@ -278,29 +283,29 @@ class JavaxValidationFixtureMonkeyTest {
 		then(actual.getLocalDateTimeFutureOrPresent()).isAfterOrEqualTo(now);
 	}
 
-	@Property
+	@Property(tries = 100)
 	void sampleLocalTime() {
+		LocalTime now = LocalTime.now(); // to fix @Future latency
 		TimeIntrospectorSpec actual = SUT.giveMeOne(TimeIntrospectorSpec.class);
 
-		LocalTime now = LocalTime.now();
 		then(actual.getLocalTimePast()).isBefore(now);
 		then(actual.getLocalTimePastOrPresent()).isBeforeOrEqualTo(now);
 		then(actual.getLocalTimeFuture()).isAfter(now);
 		then(actual.getLocalTimeFutureOrPresent()).isAfterOrEqualTo(now);
 	}
 
-	@Property
+	@Property(tries = 100)
 	void sampleZonedDateTime() {
 		TimeIntrospectorSpec actual = SUT.giveMeOne(TimeIntrospectorSpec.class);
 
-		ZonedDateTime now = ZonedDateTime.now();
-		then(actual.getZonedDateTimePast()).isBefore(now);
-		then(actual.getZonedDateTimePastOrPresent()).isBeforeOrEqualTo(now);
-		then(actual.getZonedDateTimeFuture()).isAfter(now);
-		then(actual.getZonedDateTimeFutureOrPresent()).isAfterOrEqualTo(now);
+		ZonedDateTime now = ZonedDateTime.now().withZoneSameLocal(ZONED_ID);
+		then(actual.getZonedDateTimePast().withZoneSameLocal(ZONED_ID)).isBefore(now);
+		then(actual.getZonedDateTimePastOrPresent().withZoneSameLocal(ZONED_ID)).isBeforeOrEqualTo(now);
+		then(actual.getZonedDateTimeFuture().withZoneSameLocal(ZONED_ID)).isAfter(now);
+		then(actual.getZonedDateTimeFutureOrPresent().withZoneSameLocal(ZONED_ID)).isAfterOrEqualTo(now);
 	}
 
-	@Property
+	@Property(tries = 100)
 	void sampleMonthDay() {
 		TimeIntrospectorSpec actual = SUT.giveMeOne(TimeIntrospectorSpec.class);
 
@@ -311,29 +316,29 @@ class JavaxValidationFixtureMonkeyTest {
 		then(actual.getMonthDayFutureOrPresent()).isGreaterThanOrEqualTo(now);
 	}
 
-	@Property
+	@Property(tries = 100)
 	void sampleOffsetDateTime() {
 		TimeIntrospectorSpec actual = SUT.giveMeOne(TimeIntrospectorSpec.class);
 
-		OffsetDateTime now = OffsetDateTime.now();
-		then(actual.getOffsetDateTimePast()).isBefore(now);
-		then(actual.getOffsetDateTimePastOrPresent()).isBeforeOrEqualTo(now);
-		then(actual.getOffsetDateTimeFuture()).isAfter(now);
-		then(actual.getOffsetDateTimeFutureOrPresent()).isAfterOrEqualTo(now);
+		OffsetDateTime now = OffsetDateTime.now().withOffsetSameLocal(ZONE_OFFSET);
+		then(actual.getOffsetDateTimePast().withOffsetSameLocal(ZONE_OFFSET)).isBefore(now);
+		then(actual.getOffsetDateTimePastOrPresent().withOffsetSameLocal(ZONE_OFFSET)).isBeforeOrEqualTo(now);
+		then(actual.getOffsetDateTimeFuture().withOffsetSameLocal(ZONE_OFFSET)).isAfter(now);
+		then(actual.getOffsetDateTimeFutureOrPresent().withOffsetSameLocal(ZONE_OFFSET)).isAfterOrEqualTo(now);
 	}
 
-	@Property
+	@Property(tries = 100)
 	void sampleOffsetTime() {
 		TimeIntrospectorSpec actual = SUT.giveMeOne(TimeIntrospectorSpec.class);
 
-		OffsetTime now = OffsetTime.now();
-		then(actual.getOffsetTimePast()).isBefore(now);
-		then(actual.getOffsetTimePastOrPresent()).isBeforeOrEqualTo(now);
-		then(actual.getOffsetTimeFuture()).isAfter(now);
-		then(actual.getOffsetTimeFutureOrPresent()).isAfterOrEqualTo(now);
+		OffsetTime now = OffsetTime.now().withOffsetSameLocal(ZONE_OFFSET);
+		then(actual.getOffsetTimePast().withOffsetSameLocal(ZONE_OFFSET)).isBefore(now);
+		then(actual.getOffsetTimePastOrPresent().withOffsetSameLocal(ZONE_OFFSET)).isBeforeOrEqualTo(now);
+		then(actual.getOffsetTimeFuture().withOffsetSameLocal(ZONE_OFFSET)).isAfter(now);
+		then(actual.getOffsetTimeFutureOrPresent().withOffsetSameLocal(ZONE_OFFSET)).isAfterOrEqualTo(now);
 	}
 
-	@Property
+	@Property(tries = 100)
 	void sampleYear() {
 		TimeIntrospectorSpec actual = SUT.giveMeOne(TimeIntrospectorSpec.class);
 
@@ -344,7 +349,7 @@ class JavaxValidationFixtureMonkeyTest {
 		then(actual.getYearFutureOrPresent()).isGreaterThanOrEqualTo(now);
 	}
 
-	@Property
+	@Property(tries = 100)
 	void sampleYearMonth() {
 		TimeIntrospectorSpec actual = SUT.giveMeOne(TimeIntrospectorSpec.class);
 
@@ -355,7 +360,7 @@ class JavaxValidationFixtureMonkeyTest {
 		then(actual.getYearMonthFutureOrPresent()).isGreaterThanOrEqualTo(now);
 	}
 
-	@Property
+	@Property(tries = 100)
 	void sampleNullAnnotations() {
 		NullAnnotationIntrospectorSpec actual = SUT.giveMeOne(NullAnnotationIntrospectorSpec.class);
 
@@ -366,7 +371,7 @@ class JavaxValidationFixtureMonkeyTest {
 		then(actual.getNotEmptyContainer()).isNotEmpty();
 	}
 
-	@Property
+	@Property(tries = 100)
 	void sampleContainerAnnotations() {
 		ContainerAnnotationIntrospectorSpec actual = SUT.giveMeOne(ContainerAnnotationIntrospectorSpec.class);
 
