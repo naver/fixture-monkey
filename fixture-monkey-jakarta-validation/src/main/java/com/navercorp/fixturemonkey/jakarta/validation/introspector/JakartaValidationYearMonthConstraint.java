@@ -22,6 +22,10 @@ import java.time.YearMonth;
 
 import javax.annotation.Nullable;
 
+import org.apiguardian.api.API;
+import org.apiguardian.api.API.Status;
+
+@API(since = "0.4.1", status = Status.EXPERIMENTAL)
 public final class JakartaValidationYearMonthConstraint {
 	@Nullable
 	private final YearMonth min;

@@ -34,7 +34,7 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfoGenerator;
 import com.navercorp.fixturemonkey.api.generator.ContainerPropertyGeneratorContext;
 
-@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+@API(since = "0.4.1", status = Status.EXPERIMENTAL)
 public final class JakartaValidationArbitraryContainerInfoGenerator implements ArbitraryContainerInfoGenerator {
 	public static final Set<Class<? extends Annotation>> JAKARTA_VALIDATION_CONTAINER_ANNOTATIONS;
 
