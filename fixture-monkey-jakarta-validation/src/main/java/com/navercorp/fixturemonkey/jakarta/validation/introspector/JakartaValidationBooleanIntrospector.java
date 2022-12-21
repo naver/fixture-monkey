@@ -32,7 +32,7 @@ import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult;
 import com.navercorp.fixturemonkey.api.introspector.BooleanIntrospector;
 import com.navercorp.fixturemonkey.api.matcher.Matchers;
 
-@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+@API(since = "0.4.10", status = Status.EXPERIMENTAL)
 public final class JakartaValidationBooleanIntrospector extends ArbitraryIntrospectDelegator {
 	public JakartaValidationBooleanIntrospector() {
 		super(Matchers.BOOLEAN_TYPE_MATCHER, new BooleanIntrospector());

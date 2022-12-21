@@ -48,7 +48,7 @@ import jakarta.validation.constraints.Pattern;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.introspector.JavaArbitraryResolver;
 
-@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+@API(since = "0.4.10", status = Status.EXPERIMENTAL)
 public final class JakartaValidationJavaArbitraryResolver implements JavaArbitraryResolver {
 	private static final String CONTROL_BLOCK = "\u0000-\u001f\u007f";
 	private static final RegexGenerator REGEX_GENERATOR = new RegexGenerator();

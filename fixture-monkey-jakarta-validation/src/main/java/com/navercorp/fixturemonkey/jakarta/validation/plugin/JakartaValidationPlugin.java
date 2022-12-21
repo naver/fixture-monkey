@@ -36,7 +36,7 @@ import com.navercorp.fixturemonkey.jakarta.validation.introspector.JakartaValida
 import com.navercorp.fixturemonkey.jakarta.validation.introspector.JakartaValidationJavaTimeArbitraryResolver;
 import com.navercorp.fixturemonkey.jakarta.validation.introspector.JakartaValidationTimeConstraintGenerator;
 
-@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+@API(since = "0.4.10", status = Status.EXPERIMENTAL)
 public final class JakartaValidationPlugin implements Plugin {
 	private JavaTypeArbitraryGenerator javaTypeArbitraryGenerator = new JavaTypeArbitraryGenerator() {
 	};

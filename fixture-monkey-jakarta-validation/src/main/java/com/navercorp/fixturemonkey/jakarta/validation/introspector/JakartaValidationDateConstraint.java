@@ -25,7 +25,7 @@ import javax.annotation.Nullable;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+@API(since = "0.4.10", status = Status.EXPERIMENTAL)
 public final class JakartaValidationDateConstraint {
 	@Nullable
 	private final LocalDate min;
