@@ -34,6 +34,8 @@ import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.LabMonkey;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
+import com.navercorp.fixturemonkey.customizer.InnerSpec;
+import com.navercorp.fixturemonkey.test.InnerSpecTestSpecs.ComplexObject;
 import com.navercorp.fixturemonkey.test.InnerSpecTestSpecs.ComplexObjectObject;
 import com.navercorp.fixturemonkey.test.InnerSpecTestSpecs.IntegerMapObject;
 import com.navercorp.fixturemonkey.test.InnerSpecTestSpecs.MapObject;
@@ -48,7 +50,10 @@ class InnerSpecTest {
 	void key() {
 		// when
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
-			.setInner("strMap", m -> m.minSize(1).key("key"))
+			.setInner(
+				new InnerSpec()
+					.property("strMap", m -> m.minSize(1).key("key"))
+			)
 			.sample();
 
 		then(actual.getStrMap().containsKey("key")).isTrue();
@@ -58,7 +63,10 @@ class InnerSpecTest {
 	void value() {
 		// when
 		Map<String, String> actual = SUT.giveMeBuilder(MapObject.class)
-			.setInner("strMap", m -> m.minSize(1).value("value"))
+			.setInner(
+				new InnerSpec()
+					.property("strMap", m -> m.minSize(1).value("value"))
+			)
 			.sample()
 			.getStrMap();
 
@@ -69,7 +77,10 @@ class InnerSpecTest {
 	void entry() {
 		// when
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
-			.setInner("strMap", m -> m.minSize(1).entry("key", "value"))
+			.setInner(
+				new InnerSpec()
+					.property("strMap", m -> m.minSize(1).entry("key", "value"))
+			)
 			.sample();
 
 		then(actual.getStrMap().get("key")).isEqualTo("value");
@@ -80,10 +91,12 @@ class InnerSpecTest {
 		// when
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
 			.setInner(
-				"strMap",
-				m -> m.minSize(2)
-					.entry("key1", "value1")
-					.entry("key2", "value2")
+				new InnerSpec()
+					.property("strMap",
+						m -> m.minSize(2)
+							.entry("key1", "value1")
+							.entry("key2", "value2")
+					)
 			)
 			.sample();
 
@@ -95,7 +108,10 @@ class InnerSpecTest {
 	void valueNull() {
 		// when
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
-			.setInner("strMap", m -> m.minSize(1).value(null))
+			.setInner(
+				new InnerSpec()
+					.property("strMap", m -> m.minSize(1).value(null))
+			)
 			.sample();
 
 		then(actual.getStrMap().containsValue(null)).isTrue();
@@ -106,7 +122,10 @@ class InnerSpecTest {
 	void keyNullThrows() {
 		thenThrownBy(() ->
 			SUT.giveMeBuilder(MapObject.class)
-				.setInner("strMap", m -> m.minSize(1).key(null))
+				.setInner(
+					new InnerSpec()
+						.property("strMap", m -> m.minSize(1).key(null))
+				)
 				.sample()
 		).isExactlyInstanceOf(IllegalArgumentException.class)
 			.hasMessageContaining("Map key cannot be null.");
@@ -119,7 +138,10 @@ class InnerSpecTest {
 			.build();
 
 		NestedKeyMapObject actual = sut.giveMeBuilder(NestedKeyMapObject.class)
-			.setInner("mapKeyMap", m -> m.key(k -> k.key("key")))
+			.setInner(
+				new InnerSpec()
+					.property("mapKeyMap", m -> m.key(k -> k.key("key")))
+			)
 			.sample();
 
 		List<String> keyList = actual.getMapKeyMap().keySet().stream()
@@ -134,7 +156,9 @@ class InnerSpecTest {
 			.build();
 
 		NestedKeyMapObject actual = sut.giveMeBuilder(NestedKeyMapObject.class)
-			.setInner("mapKeyMap", m -> m.key(k -> k.value("value")))
+			.setInner(
+				new InnerSpec().property("mapKeyMap", m -> m.key(k -> k.value("value")))
+			)
 			.sample();
 
 		List<String> keyList = actual.getMapKeyMap().keySet().stream()
@@ -146,7 +170,10 @@ class InnerSpecTest {
 	void keyInValue() {
 		// when
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
-			.setInner("mapValueMap", m -> m.minSize(1).value(v -> v.minSize(1).key("key")))
+			.setInner(
+				new InnerSpec()
+					.property("mapValueMap", m -> m.minSize(1).value(v -> v.minSize(1).key("key")))
+			)
 			.sample();
 
 		List<String> valueList = actual.getMapValueMap().values().stream()
@@ -158,7 +185,10 @@ class InnerSpecTest {
 	void valueInValue() {
 		// when
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
-			.setInner("mapValueMap", m -> m.minSize(1).value(v -> v.minSize(1).value("value")))
+			.setInner(
+				new InnerSpec()
+					.property("mapValueMap", m -> m.minSize(1).value(v -> v.minSize(1).value("value")))
+			)
 			.sample();
 
 		List<String> valueList = actual.getMapValueMap().values().stream()
@@ -170,8 +200,11 @@ class InnerSpecTest {
 	void sizeInValue() {
 		// when
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
-			.setInner("listValueMap", m -> m.size(1)
-				.value(v -> v.size(10)))
+			.setInner(
+				new InnerSpec()
+					.property("listValueMap", m -> m.size(1)
+						.value(v -> v.size(10)))
+			)
 			.sample();
 
 		List<Integer> sizeList = actual.getListValueMap().values().stream()
@@ -183,11 +216,13 @@ class InnerSpecTest {
 	void listElementInValue() {
 		// when
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
-			.setInner("listValueMap", m -> m.size(1)
-				.value(v -> {
-					v.size(1);
-					v.listElement(0, "test");
-				})
+			.setInner(
+				new InnerSpec()
+					.property("listValueMap", m -> m.size(1)
+						.value(v -> {
+							v.size(1);
+							v.listElement(0, "test");
+						}))
 			)
 			.sample();
 
@@ -200,8 +235,11 @@ class InnerSpecTest {
 	void propertyInValue() {
 		// when
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
-			.setInner("objectValueMap", m -> m.size(1)
-				.value(v -> v.property("str", "test"))
+			.setInner(
+				new InnerSpec()
+					.property("objectValueMap", m -> m.size(1)
+						.value(v -> v.property("str", "test"))
+					)
 			)
 			.sample();
 
@@ -215,8 +253,10 @@ class InnerSpecTest {
 		// when
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
 			.setInner(
-				"mapValueMap",
-				m -> m.minSize(1).entry("key1", v -> v.minSize(1).entry("key2", "value"))
+				new InnerSpec()
+					.property("mapValueMap",
+						m -> m.minSize(1).entry("key1", v -> v.minSize(1).entry("key2", "value"))
+					)
 			)
 			.sample();
 
@@ -234,11 +274,11 @@ class InnerSpecTest {
 
 		// when
 		NestedKeyMapObject actual = sut.giveMeBuilder(NestedKeyMapObject.class)
-			.setInner("mapKeyMap", m ->
-				m.entry(
-					k -> k.entry("key", "value2"),
-					"value1"
-				)
+			.setInner(
+				new InnerSpec()
+					.property("mapKeyMap",
+						m -> m.entry(k -> k.entry("key", "value2"), "value1")
+					)
 			)
 			.sample();
 
@@ -256,8 +296,11 @@ class InnerSpecTest {
 	void entryValueSetNull() {
 		// when
 		MapObject actual = SUT.giveMeBuilder(MapObject.class)
-			.setInner("strMap", m -> m.size(1)
-				.entry("key", null)
+			.setInner(
+				new InnerSpec()
+					.property("strMap",
+						m -> m.size(1).entry("key", null)
+					)
 			)
 			.sample();
 
@@ -268,13 +311,17 @@ class InnerSpecTest {
 	void listElementInListElement() {
 		// when
 		NestedListStringObject actual = SUT.giveMeBuilder(NestedListStringObject.class)
-			.setInner("values", m -> {
-				m.size(1);
-				m.listElement(0, l -> {
-					l.size(1);
-					l.listElement(0, "test");
-				});
-			})
+			.setInner(
+				new InnerSpec()
+					.property("values",
+						m -> {
+							m.size(1);
+							m.listElement(0, l -> {
+								l.size(1);
+								l.listElement(0, "test");
+							});
+						})
+			)
 			.sample();
 
 		then(actual.getValues().get(0).get(0)).isEqualTo("test");
@@ -284,8 +331,11 @@ class InnerSpecTest {
 	void propertyInProperty() {
 		// when
 		ComplexObjectObject actual = SUT.giveMeBuilder(ComplexObjectObject.class)
-			.setInner("value", m ->
-				m.property("value", o -> o.property("str", "test"))
+			.setInner(
+				new InnerSpec()
+					.property("value",
+						m -> m.property("value", o -> o.property("str", "test"))
+					)
 			)
 			.sample();
 
@@ -297,11 +347,13 @@ class InnerSpecTest {
 		// when
 		Map<String, String> actual = SUT.giveMeBuilder(MapObject.class)
 			.setInner(
-				"strMap",
-				m -> {
-					m.size(4);
-					m.entry("key", "test");
-				}
+				new InnerSpec()
+					.property("strMap",
+						m -> {
+							m.size(4);
+							m.entry("key", "test");
+						}
+					)
 			)
 			.sample()
 			.getStrMap();
@@ -315,11 +367,13 @@ class InnerSpecTest {
 		// when
 		Map<String, String> actual = SUT.giveMeBuilder(MapObject.class)
 			.setInner(
-				"strMap",
-				m -> {
-					m.entry("key", "test");
-					m.size(4);
-				}
+				new InnerSpec()
+					.property("strMap",
+						m -> {
+							m.entry("key", "test");
+							m.size(4);
+						}
+					)
 			)
 			.sample()
 			.getStrMap();
@@ -333,12 +387,14 @@ class InnerSpecTest {
 		// when
 		Map<String, String> actual = SUT.giveMeBuilder(MapObject.class)
 			.setInner(
-				"strMap",
-				m -> {
-					m.size(1);
-					m.entry("key", "test");
-					m.size(0);
-				}
+				new InnerSpec()
+					.property("strMap",
+						m -> {
+							m.size(1);
+							m.entry("key", "test");
+							m.size(0);
+						}
+					)
 			)
 			.sample()
 			.getStrMap();
@@ -350,7 +406,12 @@ class InnerSpecTest {
 	void keyLazy() {
 		ArbitraryBuilder<String> variable = SUT.giveMeBuilder(String.class);
 		ArbitraryBuilder<MapObject> builder = SUT.giveMeBuilder(MapObject.class)
-			.setInner("strMap", m -> m.size(1).keyLazy(variable::sample));
+			.setInner(
+				new InnerSpec()
+					.property("strMap",
+						m -> m.size(1).keyLazy(variable::sample)
+					)
+			);
 		variable.set("key");
 
 		MapObject actual = builder.sample();
@@ -362,7 +423,12 @@ class InnerSpecTest {
 	void valueLazy() {
 		ArbitraryBuilder<String> variable = SUT.giveMeBuilder(String.class);
 		ArbitraryBuilder<MapObject> builder = SUT.giveMeBuilder(MapObject.class)
-			.setInner("strMap", m -> m.minSize(1).valueLazy(variable::sample));
+			.setInner(
+				new InnerSpec()
+					.property("strMap",
+						m -> m.minSize(1).valueLazy(variable::sample)
+					)
+			);
 		variable.set("value");
 
 		MapObject actual = builder.sample();
@@ -375,7 +441,12 @@ class InnerSpecTest {
 		ArbitraryBuilder<String> keyVariable = SUT.giveMeBuilder(String.class);
 		ArbitraryBuilder<String> valueVariable = SUT.giveMeBuilder(String.class);
 		ArbitraryBuilder<MapObject> builder = SUT.giveMeBuilder(MapObject.class)
-			.setInner("strMap", m -> m.minSize(1).entryLazy(keyVariable::sample, valueVariable::sample));
+			.setInner(
+				new InnerSpec()
+					.property("strMap",
+						m -> m.minSize(1).entryLazy(keyVariable::sample, valueVariable::sample)
+					)
+			);
 		keyVariable.set("key");
 		valueVariable.set("value");
 
@@ -388,7 +459,12 @@ class InnerSpecTest {
 	void keyLazyNullThrows() {
 		thenThrownBy(() ->
 			SUT.giveMeBuilder(MapObject.class)
-				.setInner("strMap", m -> m.minSize(1).keyLazy(() -> null))
+				.setInner(
+					new InnerSpec()
+						.property("strMap",
+							m -> m.minSize(1).keyLazy(() -> null)
+						)
+				)
 				.sample()
 		).isExactlyInstanceOf(IllegalArgumentException.class)
 			.hasMessageContaining("Map key cannot be null.");
@@ -397,7 +473,12 @@ class InnerSpecTest {
 	@Property
 	void allKeyLazy() {
 		IntegerMapObject actual = SUT.giveMeBuilder(IntegerMapObject.class)
-			.setInner("integerMap", m -> m.allKeyLazy(() -> Arbitraries.integers().between(0, 100)))
+			.setInner(
+				new InnerSpec()
+					.property("integerMap",
+						m -> m.allKeyLazy(() -> Arbitraries.integers().between(0, 100))
+					)
+			)
 			.sample();
 
 		then(actual.getIntegerMap().keySet()).allMatch(it -> it >= 0 && it <= 100);
@@ -406,7 +487,12 @@ class InnerSpecTest {
 	@Property
 	void allValueLazy() {
 		IntegerMapObject actual = SUT.giveMeBuilder(IntegerMapObject.class)
-			.setInner("integerMap", m -> m.allValueLazy(() -> Arbitraries.integers().between(0, 100)))
+			.setInner(
+				new InnerSpec()
+					.property("integerMap",
+						m -> m.allValueLazy(() -> Arbitraries.integers().between(0, 100))
+					)
+			)
 			.sample();
 
 		then(actual.getIntegerMap().values()).allMatch(it -> it >= 0 && it <= 100);
@@ -415,10 +501,15 @@ class InnerSpecTest {
 	@Property
 	void allEntry() {
 		IntegerMapObject actual = SUT.giveMeBuilder(IntegerMapObject.class)
-			.setInner("integerMap", m -> m.allEntry(
-				() -> Arbitraries.integers().between(0, 100),
-				100
-			))
+			.setInner(
+				new InnerSpec()
+					.property("integerMap",
+						m -> m.allEntry(
+							() -> Arbitraries.integers().between(0, 100),
+							100
+						)
+					)
+			)
 			.sample();
 
 		then(actual.getIntegerMap().keySet()).allMatch(it -> it >= 0 && it <= 100);
@@ -428,10 +519,15 @@ class InnerSpecTest {
 	@Property
 	void allEntryLazy() {
 		IntegerMapObject actual = SUT.giveMeBuilder(IntegerMapObject.class)
-			.setInner("integerMap", m -> m.allEntryLazy(
-				() -> Arbitraries.integers().between(0, 100),
-				() -> Arbitraries.integers().between(0, 100)
-			))
+			.setInner(
+				new InnerSpec()
+					.property("integerMap",
+						m -> m.allEntryLazy(
+							() -> Arbitraries.integers().between(0, 100),
+							() -> Arbitraries.integers().between(0, 100)
+						)
+					)
+			)
 			.sample();
 
 		then(actual.getIntegerMap().keySet()).allMatch(it -> it >= 0 && it <= 100);
@@ -443,9 +539,14 @@ class InnerSpecTest {
 		String expected = "test";
 
 		List<String> actual = SUT.giveMeBuilder(MapObject.class)
-			.setInner("objectKeyMap", m -> m.allKey(v ->
-				v.property("str", expected)
-			))
+			.setInner(
+				new InnerSpec()
+					.property("objectKeyMap",
+						m -> m.allKey(v ->
+							v.property("str", expected)
+						)
+					)
+			)
 			.sample()
 			.getObjectKeyMap()
 			.keySet()
@@ -461,7 +562,12 @@ class InnerSpecTest {
 		String expected = "test";
 
 		Collection<String> actual = SUT.giveMeBuilder(MapObject.class)
-			.setInner("strMap", m -> m.allValue(expected))
+			.setInner(
+				new InnerSpec()
+					.property("strMap",
+						m -> m.allValue(expected)
+					)
+			)
 			.sample()
 			.getStrMap()
 			.values();
@@ -474,9 +580,14 @@ class InnerSpecTest {
 		String expected = "test";
 
 		List<String> actual = SUT.giveMeBuilder(MapObject.class)
-			.setInner("objectValueMap", m -> m.allValue(v ->
-				v.property("str", expected)
-			))
+			.setInner(
+				new InnerSpec()
+					.property("objectValueMap",
+						m -> m.allValue(v ->
+							v.property("str", expected)
+						)
+					)
+			)
 			.sample()
 			.getObjectValueMap()
 			.values()
@@ -494,7 +605,10 @@ class InnerSpecTest {
 		// when
 		List<String> actual = SUT.giveMeBuilder(new TypeReference<List<String>>() {
 			})
-			.setInner("$", l -> l.allListElement(expected))
+			.setInner(
+				new InnerSpec()
+					.allListElement(expected)
+			)
 			.sample();
 
 		then(actual).allMatch(expected::equals);
@@ -507,12 +621,52 @@ class InnerSpecTest {
 		// when
 		List<String> actual = SUT.giveMeBuilder(new TypeReference<List<List<String>>>() {
 			})
-			.setInner("$", l -> l.allListElement(inner -> inner.allListElement(expected)))
+			.setInner(
+				new InnerSpec()
+					.allListElement(inner -> inner.allListElement(expected))
+			)
 			.sample()
 			.stream()
 			.flatMap(Collection::stream)
 			.collect(Collectors.toList());
 
 		then(actual).allMatch(expected::equals);
+	}
+
+	@Property
+	void setPostCondition() {
+		SimpleObject actual = SUT.giveMeBuilder(SimpleObject.class)
+			.setInner(
+				new InnerSpec()
+				.property(
+					"str",
+					inner -> inner.postCondition(String.class, it -> it.length() > 5)
+				)
+			)
+			.sample();
+
+		then(actual.getStr()).hasSizeGreaterThan(5);
+	}
+
+	@Property
+	void inner() {
+		InnerSpec innerSpec = new InnerSpec().property("str", "test");
+
+		SimpleObject actual = SUT.giveMeBuilder(SimpleObject.class)
+			.setInner(new InnerSpec().inner(innerSpec))
+			.sample();
+
+		then(actual.getStr()).isEqualTo("test");
+	}
+
+	@Property
+	void propertyInner() {
+		InnerSpec innerSpec = new InnerSpec().property("str", "test");
+
+		ComplexObject actual = SUT.giveMeBuilder(ComplexObject.class)
+			.setInner(new InnerSpec().property("value", innerSpec))
+			.sample();
+
+		then(actual.getValue().getStr()).isEqualTo("test");
 	}
 }

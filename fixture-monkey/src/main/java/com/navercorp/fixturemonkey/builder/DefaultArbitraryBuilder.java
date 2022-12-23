@@ -47,6 +47,7 @@ import net.jqwik.api.Combinators.F4;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
+import com.navercorp.fixturemonkey.MonkeyManipulatorFactory;
 import com.navercorp.fixturemonkey.OldArbitraryBuilderImpl;
 import com.navercorp.fixturemonkey.api.customizer.FixtureCustomizer;
 import com.navercorp.fixturemonkey.api.expression.ExpressionGenerator;
@@ -90,6 +91,7 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 	private final ArbitraryTraverser traverser;
 	private final ArbitraryValidator validator;
 	private final MonkeyExpressionFactory monkeyExpressionFactory;
+	private final MonkeyManipulatorFactory monkeyManipulatorFactory;
 	private final ArbitraryBuilderContext context;
 	private final BuilderManipulatorAdapter builderManipulatorAdapter;
 
@@ -109,6 +111,7 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 		this.validator = validator;
 		this.context = context;
 		this.monkeyExpressionFactory = manipulateOptions.getDefaultMonkeyExpressionFactory();
+		this.monkeyManipulatorFactory = new MonkeyManipulatorFactory(traverser, manipulateOptions);
 		this.builderManipulatorAdapter = new BuilderManipulatorAdapter(traverser, manipulateOptions);
 	}
 
@@ -237,18 +240,16 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 	}
 
 	@Override
-	public ArbitraryBuilder<T> setInner(String expression, Consumer<InnerSpec> specSpecifier) {
-		NodeResolver nodeResolver = monkeyExpressionFactory.from(expression).toNodeResolver();
-		InnerSpec innerSpec = new InnerSpec(traverser, manipulateOptions, nodeResolver);
-		specSpecifier.accept(innerSpec);
-		this.context.addManipulators(innerSpec.getArbitraryManipulators());
-		this.context.addContainerInfoManipulators(innerSpec.getContainerInfoManipulators());
-		return this;
-	}
+	public ArbitraryBuilder<T> setInner(InnerSpec innerSpec) {
+		ManipulatorSet manipulatorSet = innerSpec.getMergedManipulatorSet();
+		List<ArbitraryManipulator> arbitraryManipulators = manipulatorSet.getNodeResolverObjectHolders().stream()
+			.map(it -> it.convert(monkeyManipulatorFactory))
+			.collect(toList());
 
-	@Override
-	public ArbitraryBuilder<T> setInner(ExpressionGenerator expressionGenerator, Consumer<InnerSpec> specSpecifier) {
-		return this.setInner(resolveExpression(expressionGenerator), specSpecifier);
+		this.context.addManipulators(arbitraryManipulators);
+		this.context.addManipulators(manipulatorSet.getPostConditionManipulators());
+		this.context.addContainerInfoManipulators(manipulatorSet.getContainerInfoManipulators());
+		return this;
 	}
 
 	@Override
