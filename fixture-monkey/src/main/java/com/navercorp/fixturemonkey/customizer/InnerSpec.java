@@ -397,10 +397,10 @@ public final class InnerSpec {
 		return listElement(NO_OR_ALL_INDEX_INTEGER_VALUE, consumer);
 	}
 
-	public InnerSpec property(String property, @Nullable Object value) {
+	public InnerSpec property(String propertyName, @Nullable Object value) {
 		if (value instanceof InnerSpec) {
 			InnerSpec prefix = new InnerSpec(
-				new DefaultNodeResolver(new PropertyNameNodePredicate(property)),
+				new DefaultNodeResolver(new PropertyNameNodePredicate(propertyName)),
 				UNINITIALIZED_VALUE,
 				null,
 				null
@@ -411,7 +411,7 @@ public final class InnerSpec {
 
 		this.innerSpecs.add(
 			new InnerSpec(
-				new DefaultNodeResolver(new PropertyNameNodePredicate(property)),
+				new DefaultNodeResolver(new PropertyNameNodePredicate(propertyName)),
 				value,
 				null,
 				null
@@ -421,13 +421,13 @@ public final class InnerSpec {
 		return this;
 	}
 
-	public InnerSpec property(String property, Consumer<InnerSpec> consumer) {
+	public InnerSpec property(String propertyName, Consumer<InnerSpec> consumer) {
 		if (consumer == null) {
-			return property(property, (Object)null);
+			return property(propertyName, (Object)null);
 		}
 
 		InnerSpec nextNodeInnerSpec = new InnerSpec(
-			new DefaultNodeResolver(new PropertyNameNodePredicate(property)),
+			new DefaultNodeResolver(new PropertyNameNodePredicate(propertyName)),
 			UNINITIALIZED_VALUE,
 			null,
 			null
