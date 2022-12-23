@@ -634,6 +634,15 @@ class InnerSpecTest {
 	}
 
 	@Property
+	void setPostCondition() {
+		SimpleObject actual = SUT.giveMeBuilder(SimpleObject.class)
+			.setInner(new InnerSpec().property("str", inner -> inner.postCondition(String.class, it -> it.length() > 5)))
+			.sample();
+
+		then(actual.getStr()).hasSizeGreaterThan(5);
+	}
+
+	@Property
 	void inner() {
 		InnerSpec innerSpec = new InnerSpec().property("str", "test");
 

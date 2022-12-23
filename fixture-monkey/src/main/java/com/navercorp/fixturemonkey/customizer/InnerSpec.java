@@ -25,6 +25,7 @@ import static com.navercorp.fixturemonkey.Constants.NO_OR_ALL_INDEX_INTEGER_VALU
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import javax.annotation.Nullable;
@@ -36,6 +37,7 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.builder.ManipulatorSet;
 import com.navercorp.fixturemonkey.builder.ManipulatorSet.NodeResolverObjectHolder;
+import com.navercorp.fixturemonkey.resolver.ArbitraryManipulator;
 import com.navercorp.fixturemonkey.resolver.CompositeNodeResolver;
 import com.navercorp.fixturemonkey.resolver.ContainerElementPredicate;
 import com.navercorp.fixturemonkey.resolver.ContainerInfoManipulator;
@@ -43,6 +45,7 @@ import com.navercorp.fixturemonkey.resolver.DefaultNodeResolver;
 import com.navercorp.fixturemonkey.resolver.IdentityNodeResolver;
 import com.navercorp.fixturemonkey.resolver.NodeAllEntryPredicate;
 import com.navercorp.fixturemonkey.resolver.NodeEntryPredicate;
+import com.navercorp.fixturemonkey.resolver.NodeFilterManipulator;
 import com.navercorp.fixturemonkey.resolver.NodeKeyValuePredicate;
 import com.navercorp.fixturemonkey.resolver.NodeResolver;
 import com.navercorp.fixturemonkey.resolver.PropertyNameNodePredicate;
@@ -56,22 +59,31 @@ public final class InnerSpec {
 	private final Object value;
 	@Nullable
 	private ArbitraryContainerInfo containerInfo;
+	@Nullable
+	private NodeFilterManipulator nodeFilterManipulator;
 	private final List<InnerSpec> innerSpecs = new ArrayList<>();
 
 	private int entrySize = 0;
 
 	public InnerSpec() {
-		this(IdentityNodeResolver.INSTANCE, UNINITIALIZED_VALUE, null);
+		this(IdentityNodeResolver.INSTANCE, UNINITIALIZED_VALUE, null, null);
 	}
 
 	private InnerSpec(
 		NodeResolver treePathResolver,
 		@Nullable Object value,
-		@Nullable ArbitraryContainerInfo containerInfo
+		@Nullable ArbitraryContainerInfo containerInfo,
+		@Nullable NodeFilterManipulator nodeFilterManipulator
 	) {
 		this.treePathResolver = treePathResolver;
 		this.value = value;
 		this.containerInfo = containerInfo;
+		this.nodeFilterManipulator = nodeFilterManipulator;
+	}
+
+	public InnerSpec inner(InnerSpec innerSpec) {
+		this.innerSpecs.add(innerSpec);
+		return this;
 	}
 
 	public InnerSpec size(int min, int max) {
@@ -95,11 +107,6 @@ public final class InnerSpec {
 		return this.size(Math.max(DEFAULT_ELEMENT_MIN_SIZE, max - DEFAULT_ELEMENT_MAX_SIZE), max);
 	}
 
-	public InnerSpec inner(InnerSpec innerSpec) {
-		this.innerSpecs.add(innerSpec);
-		return this;
-	}
-
 	public InnerSpec key(Object key) {
 		entrySize++;
 
@@ -107,6 +114,7 @@ public final class InnerSpec {
 			new InnerSpec(
 				nextKeyNodeResolver(),
 				key,
+				null,
 				null
 			)
 		);
@@ -122,7 +130,7 @@ public final class InnerSpec {
 
 		entrySize++;
 
-		InnerSpec nextNodeInnerSpec = new InnerSpec(nextKeyNodeResolver(), UNINITIALIZED_VALUE, null);
+		InnerSpec nextNodeInnerSpec = new InnerSpec(nextKeyNodeResolver(), UNINITIALIZED_VALUE, null, null);
 		consumer.accept(nextNodeInnerSpec);
 		this.innerSpecs.add(nextNodeInnerSpec);
 		return this;
@@ -141,7 +149,7 @@ public final class InnerSpec {
 
 		entrySize++;
 
-		InnerSpec nextNodeInnerSpec = new InnerSpec(nextValueNodeResolver(), UNINITIALIZED_VALUE, null);
+		InnerSpec nextNodeInnerSpec = new InnerSpec(nextValueNodeResolver(), UNINITIALIZED_VALUE, null, null);
 		consumer.accept(nextNodeInnerSpec);
 		this.innerSpecs.add(nextNodeInnerSpec);
 		return this;
@@ -170,11 +178,12 @@ public final class InnerSpec {
 			new InnerSpec(
 				nextKeyNodeResolver(),
 				key,
+				null,
 				null
 			)
 		);
 
-		InnerSpec nextNodeInnerSpec = new InnerSpec(nextValueNodeResolver(), UNINITIALIZED_VALUE, null);
+		InnerSpec nextNodeInnerSpec = new InnerSpec(nextValueNodeResolver(), UNINITIALIZED_VALUE, null, null);
 		consumer.accept(nextNodeInnerSpec);
 		this.innerSpecs.add(nextNodeInnerSpec);
 		return this;
@@ -187,11 +196,12 @@ public final class InnerSpec {
 			new InnerSpec(
 				nextValueNodeResolver(),
 				value,
+				null,
 				null
 			)
 		);
 
-		InnerSpec nextNodeInnerSpec = new InnerSpec(nextKeyNodeResolver(), UNINITIALIZED_VALUE, null);
+		InnerSpec nextNodeInnerSpec = new InnerSpec(nextKeyNodeResolver(), UNINITIALIZED_VALUE, null, null);
 		consumer.accept(nextNodeInnerSpec);
 		this.innerSpecs.add(nextNodeInnerSpec);
 		return this;
@@ -205,6 +215,7 @@ public final class InnerSpec {
 			new InnerSpec(
 				nextKeyNodeResolver(),
 				lazyArbitrary,
+				null,
 				null
 			)
 		);
@@ -219,6 +230,7 @@ public final class InnerSpec {
 			new InnerSpec(
 				nextValueNodeResolver(),
 				lazyArbitrary,
+				null,
 				null
 			)
 		);
@@ -235,6 +247,7 @@ public final class InnerSpec {
 			new InnerSpec(
 				nextKeyNodeResolver(),
 				keyLazyArbitrary,
+				null,
 				null
 			)
 		);
@@ -243,6 +256,7 @@ public final class InnerSpec {
 			new InnerSpec(
 				nextValueNodeResolver(),
 				valueLazyArbitrary,
+				null,
 				null
 			)
 		);
@@ -255,13 +269,14 @@ public final class InnerSpec {
 				new InnerSpec(
 					nextAllKeyNodeResolver(),
 					null,
+					null,
 					null
 				)
 			);
 			return this;
 		}
 
-		InnerSpec nextNodeInnerSpec = new InnerSpec(nextAllKeyNodeResolver(), UNINITIALIZED_VALUE, null);
+		InnerSpec nextNodeInnerSpec = new InnerSpec(nextAllKeyNodeResolver(), UNINITIALIZED_VALUE, null, null);
 		consumer.accept(nextNodeInnerSpec);
 		this.innerSpecs.add(nextNodeInnerSpec);
 		return this;
@@ -273,6 +288,7 @@ public final class InnerSpec {
 			new InnerSpec(
 				nextAllKeyNodeResolver(),
 				lazyArbitrary,
+				null,
 				null
 			)
 		);
@@ -284,6 +300,7 @@ public final class InnerSpec {
 			new InnerSpec(
 				nextAllValueNodeResolver(),
 				value,
+				null,
 				null
 			)
 		);
@@ -297,7 +314,7 @@ public final class InnerSpec {
 			return this;
 		}
 
-		InnerSpec nextNodeInnerSpec = new InnerSpec(nextAllValueNodeResolver(), UNINITIALIZED_VALUE, null);
+		InnerSpec nextNodeInnerSpec = new InnerSpec(nextAllValueNodeResolver(), UNINITIALIZED_VALUE, null, null);
 		consumer.accept(nextNodeInnerSpec);
 		this.innerSpecs.add(nextNodeInnerSpec);
 		return this;
@@ -309,6 +326,7 @@ public final class InnerSpec {
 			new InnerSpec(
 				nextAllValueNodeResolver(),
 				lazyArbitrary,
+				null,
 				null
 			)
 		);
@@ -322,6 +340,7 @@ public final class InnerSpec {
 			new InnerSpec(
 				nextAllKeyNodeResolver(),
 				keyLazyArbitrary,
+				null,
 				null
 			)
 		);
@@ -330,6 +349,7 @@ public final class InnerSpec {
 			new InnerSpec(
 				nextAllValueNodeResolver(),
 				value,
+				null,
 				null
 			)
 		);
@@ -345,6 +365,7 @@ public final class InnerSpec {
 			new InnerSpec(
 				new DefaultNodeResolver(new ContainerElementPredicate(index)),
 				value,
+				null,
 				null
 			)
 		);
@@ -360,6 +381,7 @@ public final class InnerSpec {
 		InnerSpec nextNodeInnerSpec = new InnerSpec(
 			new DefaultNodeResolver(new ContainerElementPredicate(index)),
 			UNINITIALIZED_VALUE,
+			null,
 			null
 		);
 		consumer.accept(nextNodeInnerSpec);
@@ -380,6 +402,7 @@ public final class InnerSpec {
 			InnerSpec prefix = new InnerSpec(
 				new DefaultNodeResolver(new PropertyNameNodePredicate(property)),
 				UNINITIALIZED_VALUE,
+				null,
 				null
 			);
 			this.innerSpecs.add(prefix.inner((InnerSpec)value));
@@ -390,6 +413,7 @@ public final class InnerSpec {
 			new InnerSpec(
 				new DefaultNodeResolver(new PropertyNameNodePredicate(property)),
 				value,
+				null,
 				null
 			)
 		);
@@ -405,10 +429,16 @@ public final class InnerSpec {
 		InnerSpec nextNodeInnerSpec = new InnerSpec(
 			new DefaultNodeResolver(new PropertyNameNodePredicate(property)),
 			UNINITIALIZED_VALUE,
+			null,
 			null
 		);
 		consumer.accept(nextNodeInnerSpec);
 		this.innerSpecs.add(nextNodeInnerSpec);
+		return this;
+	}
+
+	public <T> InnerSpec postCondition(Class<T> type, Predicate<T> filter) {
+		this.nodeFilterManipulator = new NodeFilterManipulator(type, filter);
 		return this;
 	}
 
@@ -423,6 +453,7 @@ public final class InnerSpec {
 			new InnerSpec(
 				nextValueNodeResolver(),
 				value,
+				null,
 				null
 			)
 		);
@@ -440,6 +471,7 @@ public final class InnerSpec {
 			new InnerSpec(
 				nextKeyNodeResolver(),
 				key,
+				null,
 				null
 			)
 		);
@@ -448,6 +480,7 @@ public final class InnerSpec {
 			new InnerSpec(
 				nextValueNodeResolver(),
 				value,
+				null,
 				null
 			)
 		);
@@ -484,6 +517,7 @@ public final class InnerSpec {
 	private ManipulatorSet traverse(InnerSpec innerSpec, NodeResolver nodeResolver) {
 		List<NodeResolverObjectHolder> nodeResolverObjectHolders = new ArrayList<>();
 		List<ContainerInfoManipulator> containerInfoManipulators = new ArrayList<>();
+		List<ArbitraryManipulator> postConditionManipulators = new ArrayList<>();
 
 		NodeResolver nextNodeResolver = new CompositeNodeResolver(
 			nodeResolver,
@@ -508,11 +542,21 @@ public final class InnerSpec {
 			);
 		}
 
+		if (innerSpec.nodeFilterManipulator != null) {
+			postConditionManipulators.add(
+				new ArbitraryManipulator(
+					nextNodeResolver,
+					innerSpec.nodeFilterManipulator
+				)
+			);
+		}
+
 		for (InnerSpec spec : innerSpec.innerSpecs) {
 			nodeResolverObjectHolders.addAll(traverse(spec, nextNodeResolver).getNodeResolverObjectHolders());
 			containerInfoManipulators.addAll(traverse(spec, nextNodeResolver).getContainerInfoManipulators());
+			postConditionManipulators.addAll(traverse(spec, nextNodeResolver).getPostConditionManipulators());
 		}
 
-		return new ManipulatorSet(nodeResolverObjectHolders, containerInfoManipulators);
+		return new ManipulatorSet(nodeResolverObjectHolders, containerInfoManipulators, postConditionManipulators);
 	}
 }

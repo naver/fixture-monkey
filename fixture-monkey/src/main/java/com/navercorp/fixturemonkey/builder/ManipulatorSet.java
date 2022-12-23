@@ -10,13 +10,16 @@ import com.navercorp.fixturemonkey.resolver.NodeResolver;
 public class ManipulatorSet {
 	private final List<NodeResolverObjectHolder> nodeResolverObjectHolders;
 	private final List<ContainerInfoManipulator> containerInfoManipulators;
+	private final List<ArbitraryManipulator> postConditionManipulators;
 
 	public ManipulatorSet(
 		List<NodeResolverObjectHolder> nodeResolverObjectHolders,
-		List<ContainerInfoManipulator> containerInfoManipulators
+		List<ContainerInfoManipulator> containerInfoManipulators,
+		List<ArbitraryManipulator> postConditionManipulators
 	) {
 		this.nodeResolverObjectHolders = nodeResolverObjectHolders;
 		this.containerInfoManipulators = containerInfoManipulators;
+		this.postConditionManipulators = postConditionManipulators;
 	}
 
 	public List<NodeResolverObjectHolder> getNodeResolverObjectHolders() {
@@ -25,6 +28,10 @@ public class ManipulatorSet {
 
 	public List<ContainerInfoManipulator> getContainerInfoManipulators() {
 		return containerInfoManipulators;
+	}
+
+	public List<ArbitraryManipulator> getPostConditionManipulators() {
+		return postConditionManipulators;
 	}
 
 	public static class NodeResolverObjectHolder {

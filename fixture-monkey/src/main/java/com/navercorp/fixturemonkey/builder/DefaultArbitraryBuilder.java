@@ -247,6 +247,7 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 			.collect(toList());
 
 		this.context.addManipulators(arbitraryManipulators);
+		this.context.addManipulators(manipulatorSet.getPostConditionManipulators());
 		this.context.addContainerInfoManipulators(manipulatorSet.getContainerInfoManipulators());
 		return this;
 	}
