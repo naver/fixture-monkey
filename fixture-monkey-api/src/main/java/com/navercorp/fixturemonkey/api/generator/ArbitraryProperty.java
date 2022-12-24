@@ -19,6 +19,8 @@
 package com.navercorp.fixturemonkey.api.generator;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 import javax.annotation.Nullable;
 
@@ -65,6 +67,15 @@ public final class ArbitraryProperty {
 		);
 	}
 
+	public ArbitraryProperty withChildPropertyListsByCandidateProperty(
+		Map<Property, List<Property>> childPropertyListsByCandidateProperty
+	) {
+		return new ArbitraryProperty(
+			this.objectProperty.withChildPropertyListsByCandidateProperty(childPropertyListsByCandidateProperty),
+			this.containerProperty
+		);
+	}
+
 	public ArbitraryProperty withContainerInfo(ArbitraryContainerInfo containerInfo) {
 		return new ArbitraryProperty(
 			this.objectProperty,
@@ -77,5 +88,23 @@ public final class ArbitraryProperty {
 			this.objectProperty,
 			containerProperty
 		);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null || getClass() != obj.getClass()) {
+			return false;
+		}
+		ArbitraryProperty that = (ArbitraryProperty)obj;
+		return objectProperty.equals(that.objectProperty)
+			&& Objects.equals(containerProperty, that.containerProperty);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(objectProperty, containerProperty);
 	}
 }

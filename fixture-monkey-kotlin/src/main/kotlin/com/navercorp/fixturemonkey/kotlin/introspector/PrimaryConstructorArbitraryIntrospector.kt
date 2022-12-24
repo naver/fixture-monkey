@@ -41,7 +41,7 @@ class PrimaryConstructorArbitraryIntrospector : ArbitraryIntrospector {
     }
 
     override fun introspect(context: ArbitraryGeneratorContext): ArbitraryIntrospectorResult {
-        val type = Types.getActualType(context.property.type)
+        val type = Types.getActualType(context.resolvedType)
         if (Modifier.isAbstract(type.modifiers)) {
             return ArbitraryIntrospectorResult.EMPTY
         }

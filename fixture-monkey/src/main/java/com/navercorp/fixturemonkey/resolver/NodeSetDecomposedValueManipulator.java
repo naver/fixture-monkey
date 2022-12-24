@@ -24,6 +24,7 @@ import static com.navercorp.fixturemonkey.api.type.Types.isAssignable;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map.Entry;
 
 import javax.annotation.Nullable;
 
@@ -88,7 +89,7 @@ public final class NodeSetDecomposedValueManipulator<T> implements NodeManipulat
 		if (containerProperty != null) {
 			DecomposableContainerValue decomposableContainerValue =
 				manipulateOptions.getDecomposedContainerValueFactory().from(value);
-			value = decomposableContainerValue.getContainer();
+			Object containerValue = decomposableContainerValue.getContainer();
 			int decomposedContainerSize = decomposableContainerValue.getSize();
 
 			if (forced || !containerProperty.getContainerInfo().isManipulated()) {
@@ -119,21 +120,41 @@ public final class NodeSetDecomposedValueManipulator<T> implements NodeManipulat
 			for (int i = 0; i < decomposedNodeSize; i++) {
 				ArbitraryNode child = children.get(i);
 				Property childProperty = child.getProperty();
-				setValue(child, childProperty.getValue(value));
+				setValue(child, childProperty.getValue(containerValue));
 			}
 			return;
 		}
 
 		List<ArbitraryNode> children = arbitraryNode.getChildren();
-
 		if (children.isEmpty() || Types.getActualType(arbitraryNode.getProperty().getType()).isInterface()) {
 			arbitraryNode.setArbitrary(Arbitraries.just(value));
 			return;
 		}
 
+		Entry<Property, List<Property>> childPropertiesByResolvedProperty = arbitraryNode.getArbitraryProperty()
+			.getObjectProperty()
+			.getChildPropertiesByResolvedProperty(
+				property -> isAssignable(Types.getActualType(property.getType()), value.getClass())
+			);
+
+		arbitraryNode.setArbitraryProperty(
+			arbitraryNode.getArbitraryProperty()
+				.withChildPropertyListsByCandidateProperty(
+					Collections.singletonMap(
+						childPropertiesByResolvedProperty.getKey(),
+						childPropertiesByResolvedProperty.getValue()
+					)
+				)
+		);
+
+		Property resolvedParentProperty = childPropertiesByResolvedProperty.getKey();
+		List<Property> childProperties = childPropertiesByResolvedProperty.getValue();
 		for (ArbitraryNode child : children) {
-			Property childProperty = child.getProperty();
-			setValue(child, childProperty.getValue(value));
+			if (childProperties.contains(child.getProperty())) {
+				child.setResolvedParentProperty(resolvedParentProperty);
+				Property childProperty = child.getProperty();
+				setValue(child, childProperty.getValue(value));
+			}
 		}
 	}
 }

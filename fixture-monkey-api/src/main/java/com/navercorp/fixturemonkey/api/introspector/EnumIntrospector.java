@@ -41,7 +41,7 @@ public final class EnumIntrospector implements ArbitraryIntrospector, Matcher {
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Override
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
-		Type type = Types.getActualType(context.getType());
+		Type type = Types.getActualType(context.getResolvedType());
 		return new ArbitraryIntrospectorResult(Arbitraries.of((Class<Enum>)type));
 	}
 }

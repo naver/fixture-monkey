@@ -18,6 +18,7 @@
 
 package com.navercorp.fixturemonkey.api.generator;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.apiguardian.api.API;
@@ -44,7 +45,7 @@ public final class DefaultObjectPropertyGenerator implements ObjectPropertyGener
 			context.getPropertyNameResolver(),
 			nullInject,
 			context.getElementIndex(),
-			childProperties
+			Collections.singletonMap(property, childProperties)
 		);
 	}
 }

@@ -20,6 +20,7 @@ package com.navercorp.fixturemonkey.resolver;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Predicate;
 
 import javax.annotation.Nullable;
@@ -34,6 +35,8 @@ import com.navercorp.fixturemonkey.api.property.Property;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 final class ArbitraryNode {
+	@Nullable
+	private Property resolvedParentProperty;
 	private ArbitraryProperty arbitraryProperty;
 
 	private List<ArbitraryNode> children;
@@ -47,11 +50,17 @@ final class ArbitraryNode {
 	private final List<Predicate> arbitraryFilters = new ArrayList<>();
 
 	ArbitraryNode(
+		@Nullable Property resolvedParentProperty,
 		ArbitraryProperty arbitraryProperty,
 		List<ArbitraryNode> children
 	) {
+		this.resolvedParentProperty = resolvedParentProperty;
 		this.arbitraryProperty = arbitraryProperty;
 		this.children = children;
+	}
+
+	public void setResolvedParentProperty(@Nullable Property resolvedParentProperty) {
+		this.resolvedParentProperty = resolvedParentProperty;
 	}
 
 	public void setArbitraryProperty(ArbitraryProperty arbitraryProperty) {
@@ -60,6 +69,11 @@ final class ArbitraryNode {
 
 	public void setChildren(List<ArbitraryNode> children) {
 		this.children = children;
+	}
+
+	@Nullable
+	public Property getResolvedParentProperty() {
+		return resolvedParentProperty;
 	}
 
 	public ArbitraryProperty getArbitraryProperty() {
@@ -99,5 +113,30 @@ final class ArbitraryNode {
 
 	public void setManipulated(boolean manipulated) {
 		this.manipulated = manipulated;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null || getClass() != obj.getClass()) {
+			return false;
+		}
+		ArbitraryNode that = (ArbitraryNode)obj;
+		return Objects.equals(resolvedParentProperty, that.resolvedParentProperty)
+			&& arbitraryProperty.equals(that.arbitraryProperty)
+			&& children.equals(that.children)
+			&& Objects.equals(arbitrary, that.arbitrary);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(
+			resolvedParentProperty,
+			arbitraryProperty,
+			children,
+			arbitrary
+		);
 	}
 }

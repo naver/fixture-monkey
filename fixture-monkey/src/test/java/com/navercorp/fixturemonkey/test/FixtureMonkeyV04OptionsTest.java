@@ -57,6 +57,7 @@ import com.navercorp.fixturemonkey.api.generator.DefaultObjectPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGenerator;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult;
 import com.navercorp.fixturemonkey.api.introspector.BuilderArbitraryIntrospector;
+import com.navercorp.fixturemonkey.api.introspector.ConstructorPropertiesArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.JavaArbitraryResolver;
 import com.navercorp.fixturemonkey.api.introspector.JavaTimeArbitraryResolver;
 import com.navercorp.fixturemonkey.api.introspector.JavaTimeTypeArbitraryGenerator;
@@ -68,7 +69,12 @@ import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.resolver.DecomposableContainerValue;
 import com.navercorp.fixturemonkey.resolver.IdentityNodeResolver;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.AbstractSamePropertyValue;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.AbstractValue;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.BuilderInteger;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.ConcreteIntValue;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.ConcreteSamePropertyValue;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.ConcreteStringValue;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.CustomBuildMethodInteger;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.CustomBuilderMethodInteger;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.GenericGetFixedValue;
@@ -1294,5 +1300,48 @@ class FixtureMonkeyV04OptionsTest {
 			.get();
 
 		then(actual).isEqualTo(2);
+	}
+
+	@Property
+	void sampleConcreteWhenHasSameNameProperty() {
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.interfaceImplements(
+				AbstractSamePropertyValue.class,
+				Collections.singletonList(ConcreteSamePropertyValue.class)
+			)
+			.objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)
+			.build();
+
+		AbstractSamePropertyValue actual = sut.giveMeOne(AbstractSamePropertyValue.class);
+
+		then(actual).isNotNull();
+	}
+
+	@Property
+	void setConcreteList() {
+		// given
+		List<Class<? extends AbstractValue>> implementations = new ArrayList<>();
+		implementations.add(ConcreteStringValue.class);
+		implementations.add(ConcreteIntValue.class);
+
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.interfaceImplements(AbstractValue.class, implementations)
+			.build();
+
+		ConcreteStringValue concreteStringValue = new ConcreteStringValue();
+		concreteStringValue.setStringValue("test");
+		ConcreteIntValue concreteIntValue = new ConcreteIntValue();
+		concreteIntValue.setIntValue(-999);
+		List<AbstractValue> expected = new ArrayList<>();
+		expected.add(concreteStringValue);
+		expected.add(concreteIntValue);
+
+		// when
+		List<AbstractValue> actual = sut.giveMeBuilder(new TypeReference<List<AbstractValue>>() {
+			})
+			.set(expected)
+			.sample();
+
+		then(actual).isEqualTo(expected);
 	}
 }

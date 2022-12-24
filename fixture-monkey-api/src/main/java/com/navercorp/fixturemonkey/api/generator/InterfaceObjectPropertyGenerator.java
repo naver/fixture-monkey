@@ -23,7 +23,9 @@ import static com.navercorp.fixturemonkey.api.type.Types.generateAnnotatedTypeWi
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Type;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Nullable;
 
@@ -31,7 +33,6 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.property.Property;
-import com.navercorp.fixturemonkey.api.random.Randoms;
 
 @API(since = "0.4.7", status = Status.EXPERIMENTAL)
 public final class InterfaceObjectPropertyGenerator<T> implements ObjectPropertyGenerator {
@@ -43,50 +44,54 @@ public final class InterfaceObjectPropertyGenerator<T> implements ObjectProperty
 
 	@Override
 	public ObjectProperty generate(ObjectPropertyGeneratorContext context) {
+		Map<Property, List<Property>> childPropertiesByProperty = new HashMap<>();
+
 		Property interfaceProperty = context.getProperty();
-		Class<?> implementation = implementations.get(Randoms.nextInt(implementations.size()));
-
-		Property property = new Property() {
-			@Override
-			public Type getType() {
-				return implementation;
-			}
-
-			@Override
-			public AnnotatedType getAnnotatedType() {
-				return generateAnnotatedTypeWithoutAnnotation(implementation);
-			}
-
-			@Nullable
-			@Override
-			public String getName() {
-				return interfaceProperty.getName();
-			}
-
-			@Override
-			public List<Annotation> getAnnotations() {
-				return interfaceProperty.getAnnotations();
-			}
-
-			@Nullable
-			@Override
-			public Object getValue(Object obj) {
-				return interfaceProperty.getValue(obj);
-			}
-		};
-
-		double nullInject = context.getGenerateOptions().getNullInjectGenerator(property)
+		double nullInject = context.getGenerateOptions().getNullInjectGenerator(interfaceProperty)
 			.generate(context);
 
-		List<Property> childProperties = context.getGenerateOptions().getPropertyGenerator(property)
-			.generateObjectChildProperties(property.getAnnotatedType());
+		for (Class<? extends T> implementation : implementations) {
+			Property property = new Property() {
+				@Override
+				public Type getType() {
+					return implementation;
+				}
+
+				@Override
+				public AnnotatedType getAnnotatedType() {
+					return generateAnnotatedTypeWithoutAnnotation(implementation);
+				}
+
+				@Nullable
+				@Override
+				public String getName() {
+					return interfaceProperty.getName();
+				}
+
+				@Override
+				public List<Annotation> getAnnotations() {
+					return interfaceProperty.getAnnotations();
+				}
+
+				@Nullable
+				@Override
+				public Object getValue(Object obj) {
+					return interfaceProperty.getValue(obj);
+				}
+			};
+
+			List<Property> childProperties = context.getGenerateOptions().getPropertyGenerator(property)
+				.generateObjectChildProperties(property.getAnnotatedType());
+
+			childPropertiesByProperty.put(property, childProperties);
+		}
 
 		return new ObjectProperty(
-			property,
+			interfaceProperty,
 			context.getPropertyNameResolver(),
 			nullInject,
 			context.getElementIndex(),
-			childProperties
+			childPropertiesByProperty
 		);
 	}
 }

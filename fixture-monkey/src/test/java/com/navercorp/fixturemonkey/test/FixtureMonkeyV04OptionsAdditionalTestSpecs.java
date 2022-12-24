@@ -19,6 +19,7 @@
 
 package com.navercorp.fixturemonkey.test;
 
+import java.beans.ConstructorProperties;
 import java.lang.reflect.AnnotatedType;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +32,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.Setter;
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.LabMonkey;
@@ -218,5 +220,46 @@ class FixtureMonkeyV04OptionsAdditionalTestSpecs {
 	@Data
 	public static class GenericGetFixedValue<T extends GetFixedValue> {
 		T value;
+	}
+
+	@Getter
+	@Setter
+	public abstract static class AbstractSamePropertyValue {
+		private String value;
+
+		public AbstractSamePropertyValue(String value) {
+			this.value = value;
+		}
+	}
+
+	@Setter
+	public static class ConcreteSamePropertyValue extends AbstractSamePropertyValue {
+		private int value;
+
+		@ConstructorProperties({"value", "intValue"})
+		public ConcreteSamePropertyValue(String value, int intValue) {
+			super(value);
+			this.value = intValue;
+		}
+
+		public int getIntValue() {
+			return value;
+		}
+	}
+
+	@Data
+	public abstract static class AbstractValue {
+	}
+
+	@Data
+	@EqualsAndHashCode(callSuper = true)
+	public static class ConcreteIntValue extends AbstractValue {
+		private int intValue;
+	}
+
+	@Data
+	@EqualsAndHashCode(callSuper = true)
+	public static class ConcreteStringValue extends AbstractValue {
+		private String stringValue;
 	}
 }

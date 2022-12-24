@@ -34,7 +34,7 @@ public final class NullObjectPropertyGenerator implements ObjectPropertyGenerato
 			context.getPropertyNameResolver(),
 			1.0d,
 			null,
-			Collections.emptyList()
+			Collections.singletonMap(context.getProperty(), Collections.emptyList())
 		);
 	}
 }

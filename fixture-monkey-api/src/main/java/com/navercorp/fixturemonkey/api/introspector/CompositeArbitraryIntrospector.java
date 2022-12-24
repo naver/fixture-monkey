@@ -38,7 +38,7 @@ public class CompositeArbitraryIntrospector implements ArbitraryIntrospector {
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
 		for (ArbitraryIntrospector introspector : this.introspectors) {
 			if (introspector instanceof Matcher) {
-				if (((Matcher)introspector).match(context.getProperty())) {
+				if (((Matcher)introspector).match(context.getResolvedProperty())) {
 					ArbitraryIntrospectorResult result = introspector.introspect(context);
 					if (!ArbitraryIntrospectorResult.EMPTY.equals(result)) {
 						return result;

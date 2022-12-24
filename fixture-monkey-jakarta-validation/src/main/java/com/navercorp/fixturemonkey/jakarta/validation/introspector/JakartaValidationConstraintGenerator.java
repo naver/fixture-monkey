@@ -185,7 +185,7 @@ public class JakartaValidationConstraintGenerator {
 			}
 		}
 
-		Type type = context.getType();
+		Type type = context.getResolvedType();
 		if (min != null) {
 			if ((type == Long.class || type == long.class) && min.compareTo(BIG_INTEGER_MIN_LONG) < 0) {
 				min = BIG_INTEGER_MIN_LONG;

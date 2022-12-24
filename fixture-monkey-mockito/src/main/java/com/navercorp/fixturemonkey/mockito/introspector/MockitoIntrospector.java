@@ -45,7 +45,7 @@ public final class MockitoIntrospector implements ArbitraryIntrospector, Matcher
 
 	@Override
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
-		Class<?> actualType = Types.getActualType(context.getType());
+		Class<?> actualType = Types.getActualType(context.getResolvedType());
 		return new ArbitraryIntrospectorResult(Arbitraries.of(Mockito.mock(actualType)));
 	}
 }
