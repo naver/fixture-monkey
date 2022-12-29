@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.javax.validation;
+package com.navercorp.fixturemonkey.jakarta.validation;
 
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.assertj.core.api.BDDAssertions.thenNoException;
@@ -42,25 +42,25 @@ import java.util.regex.Pattern;
 import net.jqwik.api.Property;
 
 import com.navercorp.fixturemonkey.LabMonkey;
-import com.navercorp.fixturemonkey.javax.validation.plugin.JavaxValidationPlugin;
-import com.navercorp.fixturemonkey.javax.validation.spec.BigDecimalIntrospectorSpec;
-import com.navercorp.fixturemonkey.javax.validation.spec.BigIntegerIntrospectorSpec;
-import com.navercorp.fixturemonkey.javax.validation.spec.BooleanIntrospectorSpec;
-import com.navercorp.fixturemonkey.javax.validation.spec.ByteIntrospectorSpec;
-import com.navercorp.fixturemonkey.javax.validation.spec.CharacterIntrospectorSpec;
-import com.navercorp.fixturemonkey.javax.validation.spec.ContainerAnnotationIntrospectorSpec;
-import com.navercorp.fixturemonkey.javax.validation.spec.DoubleIntrospectorSpec;
-import com.navercorp.fixturemonkey.javax.validation.spec.FloatIntrospectorSpec;
-import com.navercorp.fixturemonkey.javax.validation.spec.IntIntrospectorSpec;
-import com.navercorp.fixturemonkey.javax.validation.spec.LongIntrospectorSpec;
-import com.navercorp.fixturemonkey.javax.validation.spec.NullAnnotationIntrospectorSpec;
-import com.navercorp.fixturemonkey.javax.validation.spec.ShortIntrospectorSpec;
-import com.navercorp.fixturemonkey.javax.validation.spec.StringIntrospectorSpec;
-import com.navercorp.fixturemonkey.javax.validation.spec.TimeIntrospectorSpec;
+import com.navercorp.fixturemonkey.jakarta.validation.plugin.JakartaValidationPlugin;
+import com.navercorp.fixturemonkey.jakarta.validation.spec.BigDecimalIntrospectorSpec;
+import com.navercorp.fixturemonkey.jakarta.validation.spec.BigIntegerIntrospectorSpec;
+import com.navercorp.fixturemonkey.jakarta.validation.spec.BooleanIntrospectorSpec;
+import com.navercorp.fixturemonkey.jakarta.validation.spec.ByteIntrospectorSpec;
+import com.navercorp.fixturemonkey.jakarta.validation.spec.CharacterIntrospectorSpec;
+import com.navercorp.fixturemonkey.jakarta.validation.spec.ContainerAnnotationIntrospectorSpec;
+import com.navercorp.fixturemonkey.jakarta.validation.spec.DoubleIntrospectorSpec;
+import com.navercorp.fixturemonkey.jakarta.validation.spec.FloatIntrospectorSpec;
+import com.navercorp.fixturemonkey.jakarta.validation.spec.IntIntrospectorSpec;
+import com.navercorp.fixturemonkey.jakarta.validation.spec.LongIntrospectorSpec;
+import com.navercorp.fixturemonkey.jakarta.validation.spec.NullAnnotationIntrospectorSpec;
+import com.navercorp.fixturemonkey.jakarta.validation.spec.ShortIntrospectorSpec;
+import com.navercorp.fixturemonkey.jakarta.validation.spec.StringIntrospectorSpec;
+import com.navercorp.fixturemonkey.jakarta.validation.spec.TimeIntrospectorSpec;
 
-class JavaxValidationFixtureMonkeyTest {
+class JakartaValidationFixtureMonkeyTest {
 	private static final LabMonkey SUT = LabMonkey.labMonkeyBuilder()
-		.plugin(new JavaxValidationPlugin())
+		.plugin(new JakartaValidationPlugin())
 		.defaultNotNull(true)
 		.build();
 
@@ -285,7 +285,7 @@ class JavaxValidationFixtureMonkeyTest {
 
 	@Property(tries = 100)
 	void sampleLocalTime() {
-		LocalTime now = LocalTime.now(); // to fix @Future latency
+		LocalTime now = LocalTime.now();
 		TimeIntrospectorSpec actual = SUT.giveMeOne(TimeIntrospectorSpec.class);
 
 		then(actual.getLocalTimePast()).isBefore(now);

@@ -11,3 +11,4 @@ include "fixture-monkey-mockito"
 include "fixture-monkey-starter"
 include "fixture-monkey-starter-kotlin"
 include "fixture-monkey-junit-jupiter"
+include 'fixture-monkey-jakarta-validation'

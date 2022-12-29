@@ -16,35 +16,21 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.javax.validation.introspector;
+package com.navercorp.fixturemonkey.jakarta.validation.spec;
 
-import java.time.Year;
+import jakarta.validation.constraints.AssertFalse;
+import jakarta.validation.constraints.AssertTrue;
+import lombok.Getter;
+import lombok.Setter;
 
-import javax.annotation.Nullable;
+@Getter
+@Setter
+public class BooleanIntrospectorSpec {
+	private boolean boolValue;
 
-import org.apiguardian.api.API;
-import org.apiguardian.api.API.Status;
+	@AssertTrue
+	private boolean assertTrue;
 
-@API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public final class JavaxValidationYearConstraint {
-	@Nullable
-	private final Year min;
-
-	@Nullable
-	private final Year max;
-
-	public JavaxValidationYearConstraint(@Nullable Year min, @Nullable Year max) {
-		this.min = min;
-		this.max = max;
-	}
-
-	@Nullable
-	public Year getMin() {
-		return this.min;
-	}
-
-	@Nullable
-	public Year getMax() {
-		return this.max;
-	}
+	@AssertFalse
+	private boolean assertFalse;
 }

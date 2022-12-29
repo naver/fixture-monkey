@@ -16,35 +16,35 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.javax.validation.introspector;
+package com.navercorp.fixturemonkey.jakarta.validation.introspector;
 
-import java.time.Year;
+import java.time.LocalDateTime;
 
 import javax.annotation.Nullable;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-@API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public final class JavaxValidationYearConstraint {
+@API(since = "0.4.10", status = Status.EXPERIMENTAL)
+public final class JakartaValidationDateTimeConstraint {
 	@Nullable
-	private final Year min;
+	private final LocalDateTime min;
 
 	@Nullable
-	private final Year max;
+	private final LocalDateTime max;
 
-	public JavaxValidationYearConstraint(@Nullable Year min, @Nullable Year max) {
+	public JakartaValidationDateTimeConstraint(@Nullable LocalDateTime min, @Nullable LocalDateTime max) {
 		this.min = min;
 		this.max = max;
 	}
 
 	@Nullable
-	public Year getMin() {
+	public LocalDateTime getMin() {
 		return this.min;
 	}
 
 	@Nullable
-	public Year getMax() {
+	public LocalDateTime getMax() {
 		return this.max;
 	}
 }
