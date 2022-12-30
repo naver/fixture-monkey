@@ -22,14 +22,14 @@ LabMonkey labMonkey = LabMonkey.labMonkeyBuilder()
 ### 1. 의존성 추가
 
 ```groovy
-testImplementation("com.navercorp.fixturemonkey:fixture-monkey-jackson:0.4.3")
+testImplementation("com.navercorp.fixturemonkey:fixture-monkey-jackson:{{< param version >}}")
 ```
 
 ```xml
 <dependency>
   <groupId>com.navercorp.fixturemonkey</groupId>
   <artifactId>fixture-monkey-jackson</artifactId>
-  <version>0.4.3</version>
+  <version>{{< param version >}}</version>
   <scope>test</scope>
 </dependency>
 ```
