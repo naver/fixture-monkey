@@ -71,39 +71,40 @@ public final class ElementJsonSubTypesObjectPropertyGenerator implements ObjectP
 		List<Annotation> annotations = new ArrayList<>(property.getAnnotations());
 		annotations.add(jsonTypeInfo);
 
+		Property actualProperty = new Property() {
+			@Override
+			public Type getType() {
+				return type;
+			}
+
+			@Override
+			public AnnotatedType getAnnotatedType() {
+				return annotatedType;
+			}
+
+			@Nullable
+			@Override
+			public String getName() {
+				return property.getName();
+			}
+
+			@Override
+			public List<Annotation> getAnnotations() {
+				return Collections.unmodifiableList(annotations);
+			}
+
+			@Nullable
+			@Override
+			public Object getValue(Object obj) {
+				return property.getValue(obj);
+			}
+		};
 		return new ObjectProperty(
-			new Property() {
-				@Override
-				public Type getType() {
-					return type;
-				}
-
-				@Override
-				public AnnotatedType getAnnotatedType() {
-					return annotatedType;
-				}
-
-				@Nullable
-				@Override
-				public String getName() {
-					return property.getName();
-				}
-
-				@Override
-				public List<Annotation> getAnnotations() {
-					return Collections.unmodifiableList(annotations);
-				}
-
-				@Nullable
-				@Override
-				public Object getValue(Object obj) {
-					return property.getValue(obj);
-				}
-			},
+			actualProperty,
 			context.getPropertyNameResolver(),
 			nullInject,
 			context.getElementIndex(),
-			childProperties
+			Collections.singletonMap(actualProperty, childProperties)
 		);
 	}
 }

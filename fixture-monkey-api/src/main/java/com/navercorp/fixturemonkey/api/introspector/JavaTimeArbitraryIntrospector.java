@@ -74,7 +74,7 @@ public final class JavaTimeArbitraryIntrospector implements ArbitraryIntrospecto
 
 	@Override
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
-		Class<?> type = Types.getActualType(context.getType());
+		Class<?> type = Types.getActualType(context.getResolvedType());
 		return this.introspector.getOrDefault(
 			type,
 			ctx -> ArbitraryIntrospectorResult.EMPTY

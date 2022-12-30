@@ -45,7 +45,7 @@ class ArbitraryPropertyTest {
 			PropertyNameResolver.IDENTITY,
 			0.0D,
 			null,
-			Collections.emptyList()
+			Collections.emptyMap()
 		);
 
 		then(actual.isRoot()).isTrue();
@@ -67,7 +67,7 @@ class ArbitraryPropertyTest {
 			prop -> "x_" + prop.getName(),
 			0.0D,
 			null,
-			Collections.emptyList()
+			Collections.emptyMap()
 		);
 
 		then(actual.getResolvedPropertyName()).isEqualTo("x_name");

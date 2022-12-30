@@ -24,6 +24,7 @@ import static com.navercorp.fixturemonkey.api.type.Types.isAssignable;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map.Entry;
 
 import javax.annotation.Nullable;
 
@@ -33,7 +34,6 @@ import org.apiguardian.api.API.Status;
 import net.jqwik.api.Arbitraries;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
-import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.generator.ContainerProperty;
 import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
@@ -76,19 +76,18 @@ public final class NodeSetDecomposedValueManipulator<T> implements NodeManipulat
 	}
 
 	private void setValue(ArbitraryNode arbitraryNode, @Nullable Object value) {
-		ArbitraryProperty arbitraryProperty = arbitraryNode.getArbitraryProperty();
 		arbitraryNode.setManipulated(true);
-		arbitraryNode.setArbitraryProperty(arbitraryProperty.withNullInject(NOT_NULL_INJECT));
+		arbitraryNode.setArbitraryProperty(arbitraryNode.getArbitraryProperty().withNullInject(NOT_NULL_INJECT));
 		if (value == null) {
-			arbitraryNode.setArbitraryProperty(arbitraryProperty.withNullInject(ALWAYS_NULL_INJECT));
+			arbitraryNode.setArbitraryProperty(arbitraryNode.getArbitraryProperty().withNullInject(ALWAYS_NULL_INJECT));
 			return;
 		}
 
-		ContainerProperty containerProperty = arbitraryProperty.getContainerProperty();
+		ContainerProperty containerProperty = arbitraryNode.getArbitraryProperty().getContainerProperty();
 		if (containerProperty != null) {
 			DecomposableContainerValue decomposableContainerValue =
 				manipulateOptions.getDecomposedContainerValueFactory().from(value);
-			value = decomposableContainerValue.getContainer();
+			Object containerValue = decomposableContainerValue.getContainer();
 			int decomposedContainerSize = decomposableContainerValue.getSize();
 
 			if (forced || !containerProperty.getContainerInfo().isManipulated()) {
@@ -110,7 +109,9 @@ public final class NodeSetDecomposedValueManipulator<T> implements NodeManipulat
 
 			List<ArbitraryNode> children = arbitraryNode.getChildren();
 
-			if (arbitraryProperty.getObjectProperty().getProperty() instanceof MapEntryElementProperty) {
+			if (arbitraryNode.getArbitraryProperty()
+				.getObjectProperty()
+				.getProperty() instanceof MapEntryElementProperty) {
 				decomposedContainerSize *= 2; // key, value
 			}
 
@@ -119,21 +120,41 @@ public final class NodeSetDecomposedValueManipulator<T> implements NodeManipulat
 			for (int i = 0; i < decomposedNodeSize; i++) {
 				ArbitraryNode child = children.get(i);
 				Property childProperty = child.getProperty();
-				setValue(child, childProperty.getValue(value));
+				setValue(child, childProperty.getValue(containerValue));
 			}
 			return;
 		}
 
 		List<ArbitraryNode> children = arbitraryNode.getChildren();
-
 		if (children.isEmpty() || Types.getActualType(arbitraryNode.getProperty().getType()).isInterface()) {
 			arbitraryNode.setArbitrary(Arbitraries.just(value));
 			return;
 		}
 
+		Entry<Property, List<Property>> childPropertiesByResolvedProperty = arbitraryNode.getArbitraryProperty()
+			.getObjectProperty()
+			.getChildPropertiesByResolvedProperty(
+				property -> isAssignable(Types.getActualType(property.getType()), value.getClass())
+			);
+
+		arbitraryNode.setArbitraryProperty(
+			arbitraryNode.getArbitraryProperty()
+				.withChildPropertyListsByCandidateProperty(
+					Collections.singletonMap(
+						childPropertiesByResolvedProperty.getKey(),
+						childPropertiesByResolvedProperty.getValue()
+					)
+				)
+		);
+
+		Property resolvedParentProperty = childPropertiesByResolvedProperty.getKey();
+		List<Property> childProperties = childPropertiesByResolvedProperty.getValue();
 		for (ArbitraryNode child : children) {
-			Property childProperty = child.getProperty();
-			setValue(child, childProperty.getValue(value));
+			if (childProperties.contains(child.getProperty())) {
+				child.setResolvedParentProperty(resolvedParentProperty);
+				Property childProperty = child.getProperty();
+				setValue(child, childProperty.getValue(value));
+			}
 		}
 	}
 }

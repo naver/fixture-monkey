@@ -19,7 +19,13 @@
 package com.navercorp.fixturemonkey.resolver;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+
+import javax.annotation.Nullable;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -94,6 +100,7 @@ public final class ArbitraryTraverser {
 		);
 		return this.traverse(
 			arbitraryProperty,
+			null,
 			new TraverseContext(
 				arbitraryProperty,
 				new ArrayList<>(),
@@ -104,37 +111,65 @@ public final class ArbitraryTraverser {
 
 	private ArbitraryNode traverse(
 		ArbitraryProperty arbitraryProperty,
+		@Nullable Property resolvedParentProperty,
 		TraverseContext context
 	) {
+		Set<ArbitraryNode> children = new LinkedHashSet<>();
 		ObjectProperty objectProperty = arbitraryProperty.getObjectProperty();
 		ContainerProperty containerProperty = arbitraryProperty.getContainerProperty();
+		boolean container = containerProperty != null;
 
-		List<ArbitraryNode> children;
-		if (containerProperty != null) {
+		if (container) {
 			List<Property> elementProperties = containerProperty.getElementProperties();
-			children = generateChildrenNodes(elementProperties, arbitraryProperty, context);
+			children.addAll(
+				generateChildrenNodes(
+					elementProperties,
+					arbitraryProperty,
+					objectProperty.getProperty(),
+					context
+				)
+			);
 		} else {
-			List<Property> childProperties = objectProperty.getChildProperties();
-			children = generateChildrenNodes(childProperties, arbitraryProperty, context);
+			Map<Property, List<Property>> childPropertyListsByCandidateProperty =
+				objectProperty.getChildPropertyListsByCandidateProperty();
+
+			for (
+				Entry<Property, List<Property>> childPropertiesByCandidateProperty :
+				childPropertyListsByCandidateProperty.entrySet()
+			) {
+				List<Property> childProperties = childPropertiesByCandidateProperty.getValue();
+				Property candidateProperty = childPropertiesByCandidateProperty.getKey();
+
+				children.addAll(
+					generateChildrenNodes(
+						childProperties,
+						arbitraryProperty,
+						candidateProperty,
+						context
+					)
+				);
+			}
 		}
 
 		return new ArbitraryNode(
+			resolvedParentProperty,
 			arbitraryProperty,
-			children
+			new ArrayList<>(children)
 		);
 	}
 
 	private List<ArbitraryNode> generateChildrenNodes(
-		List<Property> properties,
+		List<Property> childProperties,
 		ArbitraryProperty parentArbitraryProperty,
+		Property resolvedParentProperty,
 		TraverseContext context
 	) {
-		List<ArbitraryNode> children = new ArrayList<>();
+		Set<ArbitraryNode> children = new LinkedHashSet<>();
 		List<ContainerInfoManipulator> containerInfoManipulators = context.getContainerInfoManipulators();
 		boolean container = parentArbitraryProperty.getContainerProperty() != null;
 
-		for (int sequence = 0; sequence < properties.size(); sequence++) {
-			Property childProperty = properties.get(sequence);
+		for (int sequence = 0; sequence < childProperties.size(); sequence++) {
+			Property childProperty = childProperties.get(sequence);
 
 			if (context.isTraversed(childProperty)) {
 				continue;
@@ -193,10 +228,11 @@ public final class ArbitraryTraverser {
 			);
 			ArbitraryNode childNode = this.traverse(
 				childArbitraryProperty,
+				resolvedParentProperty,
 				context.appendArbitraryProperty(childArbitraryProperty)
 			);
 			children.add(childNode);
 		}
-		return children;
+		return new ArrayList<>(children);
 	}
 }

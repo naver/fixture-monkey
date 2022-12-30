@@ -19,6 +19,7 @@ package com.navercorp.fixturemonkey.api.generator;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -59,5 +60,22 @@ public final class ContainerProperty {
 			this.elementProperties,
 			containerInfo
 		);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null || getClass() != obj.getClass()) {
+			return false;
+		}
+		ContainerProperty that = (ContainerProperty)obj;
+		return elementProperties.equals(that.elementProperties) && containerInfo.equals(that.containerInfo);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(elementProperties, containerInfo);
 	}
 }

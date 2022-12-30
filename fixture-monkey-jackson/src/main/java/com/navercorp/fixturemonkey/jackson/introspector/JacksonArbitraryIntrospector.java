@@ -59,7 +59,7 @@ public final class JacksonArbitraryIntrospector implements ArbitraryIntrospector
 
 	@Override
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
-		Property property = context.getProperty();
+		Property property = context.getResolvedProperty();
 		Class<?> type = Types.getActualType(property.getType());
 
 		List<ArbitraryProperty> childrenProperties = context.getChildren();

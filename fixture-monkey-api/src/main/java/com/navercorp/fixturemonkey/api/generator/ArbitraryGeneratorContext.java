@@ -45,6 +45,8 @@ import com.navercorp.fixturemonkey.api.property.Property;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class ArbitraryGeneratorContext {
+	private final Property resolvedProperty;
+
 	private final ArbitraryProperty property;
 
 	private final List<ArbitraryProperty> children;
@@ -63,6 +65,7 @@ public final class ArbitraryGeneratorContext {
 
 	@SuppressWarnings("rawtypes")
 	public ArbitraryGeneratorContext(
+		Property resolvedProperty,
 		ArbitraryProperty property,
 		List<ArbitraryProperty> children,
 		@Nullable ArbitraryGeneratorContext ownerContext,
@@ -70,6 +73,7 @@ public final class ArbitraryGeneratorContext {
 		List<MatcherOperator<? extends FixtureCustomizer>> fixtureCustomizers,
 		MonkeyGeneratorContext monkeyGeneratorContext
 	) {
+		this.resolvedProperty = resolvedProperty;
 		this.property = property;
 		this.children = new ArrayList<>(children);
 		this.ownerContext = ownerContext;
@@ -82,20 +86,20 @@ public final class ArbitraryGeneratorContext {
 		return this.property;
 	}
 
-	public Property getProperty() {
-		return this.getArbitraryProperty().getObjectProperty().getProperty();
+	public Property getResolvedProperty() {
+		return this.resolvedProperty;
 	}
 
-	public AnnotatedType getAnnotatedType() {
-		return this.getProperty().getAnnotatedType();
+	public AnnotatedType getResolvedAnnotatedType() {
+		return this.getResolvedProperty().getAnnotatedType();
 	}
 
-	public Type getType() {
-		return this.getProperty().getType();
+	public Type getResolvedType() {
+		return this.getResolvedProperty().getType();
 	}
 
 	public <T extends Annotation> Optional<T> findAnnotation(Class<T> annotationClass) {
-		return this.getProperty().getAnnotation(annotationClass);
+		return this.getResolvedProperty().getAnnotation(annotationClass);
 	}
 
 	public List<ArbitraryProperty> getChildren() {

@@ -40,7 +40,7 @@ public final class SingleValueObjectPropertyGenerator implements ObjectPropertyG
 			context.getPropertyNameResolver(),
 			nullInject,
 			context.getElementIndex(),
-			Collections.emptyList()
+			Collections.singletonMap(context.getProperty(), Collections.emptyList())
 		);
 	}
 }

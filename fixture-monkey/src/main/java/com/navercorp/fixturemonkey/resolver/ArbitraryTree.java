@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 
@@ -39,6 +40,7 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.option.GenerateOptions;
+import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
@@ -89,7 +91,28 @@ final class ArbitraryTree {
 	) {
 		Map<ArbitraryProperty, ArbitraryNode> childNodesByArbitraryProperty = new HashMap<>();
 		List<ArbitraryProperty> childrenProperties = new ArrayList<>();
-		for (ArbitraryNode childNode : arbitraryNode.getChildren()) {
+
+		ArbitraryProperty arbitraryProperty = arbitraryNode.getArbitraryProperty();
+		Property resolvedParentProperty;
+		List<ArbitraryNode> children;
+		if (arbitraryProperty.getContainerProperty() == null) {
+			resolvedParentProperty = arbitraryProperty.getObjectProperty()
+				.getChildPropertyListsByCandidateProperty()
+				.keySet()
+				.stream()
+				.findAny()
+				.orElseThrow(() -> new IllegalArgumentException("No resolved property is found."));
+
+			children = arbitraryNode.getChildren().stream()
+				.filter(it -> it.getResolvedParentProperty() != null
+					&& it.getResolvedParentProperty().equals(resolvedParentProperty))
+				.collect(Collectors.toList());
+		} else {
+			resolvedParentProperty = arbitraryProperty.getObjectProperty().getProperty();
+			children = arbitraryNode.getChildren();
+		}
+
+		for (ArbitraryNode childNode : children) {
 			childNodesByArbitraryProperty.put(childNode.getArbitraryProperty(), childNode);
 			childrenProperties.add(childNode.getArbitraryProperty());
 		}
@@ -99,7 +122,8 @@ final class ArbitraryTree {
 
 		MonkeyGeneratorContext monkeyGeneratorContext = monkeyContext.retrieveGeneratorContext(rootProperty);
 		return new ArbitraryGeneratorContext(
-			arbitraryNode.getArbitraryProperty(),
+			resolvedParentProperty,
+			arbitraryProperty,
 			childrenProperties,
 			parentContext,
 			(ctx, prop) -> {
