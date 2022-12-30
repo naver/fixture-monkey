@@ -11,14 +11,14 @@ weight: 7
 ## How-to
 ### 1. Adding dependency
 ```groovy
-testImplementation("com.navercorp.fixturemonkey:fixture-monkey-engine:0.4.3")
+testImplementation("com.navercorp.fixturemonkey:fixture-monkey-engine:{{< param version >}}")
 ```
 
 ```xml
 <dependency>
   <groupId>com.navercorp.fixturemonkey</groupId>
   <artifactId>fixture-monkey-engine</artifactId>
-  <version>0.4.3</version>
+  <version>{{< param version >}}</version>
   <scope>test</scope>
 </dependency>
 ```
