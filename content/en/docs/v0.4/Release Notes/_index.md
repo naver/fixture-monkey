@@ -3,6 +3,10 @@
 title: "Release Notes"
 weight: 6
 ---
+### 0.4.10
+* Add fixture-monkey-jakarta-validation module
+* Add generate interface with multiple implementations
+
 ### 0.4.9
 * Add generating a circular-reference object
 
