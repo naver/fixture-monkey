@@ -18,8 +18,6 @@
 
 package com.navercorp.fixturemonkey.api.property;
 
-import javax.annotation.Nullable;
-
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
@@ -28,6 +26,5 @@ import org.apiguardian.api.API.Status;
 public interface PropertyNameResolver {
 	PropertyNameResolver IDENTITY = new IdentityPropertyNameResolver();
 
-	@Nullable
 	String resolve(Property property);
 }

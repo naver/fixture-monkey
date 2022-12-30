@@ -68,7 +68,6 @@ public final class ObjectProperty {
 		return this.propertyNameResolver;
 	}
 
-	@Nullable
 	public String getResolvedPropertyName() {
 		return this.getPropertyNameResolver().resolve(this.property);
 	}
