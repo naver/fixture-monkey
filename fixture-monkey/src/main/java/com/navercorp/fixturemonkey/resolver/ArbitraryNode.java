@@ -127,7 +127,8 @@ final class ArbitraryNode {
 		return Objects.equals(resolvedParentProperty, that.resolvedParentProperty)
 			&& arbitraryProperty.equals(that.arbitraryProperty)
 			&& children.equals(that.children)
-			&& Objects.equals(arbitrary, that.arbitrary);
+			&& Objects.equals(arbitrary, that.arbitrary)
+			&& arbitraryFilters.equals(that.arbitraryFilters);
 	}
 
 	@Override
@@ -136,7 +137,8 @@ final class ArbitraryNode {
 			resolvedParentProperty,
 			arbitraryProperty,
 			children,
-			arbitrary
+			arbitrary,
+			arbitraryFilters
 		);
 	}
 }

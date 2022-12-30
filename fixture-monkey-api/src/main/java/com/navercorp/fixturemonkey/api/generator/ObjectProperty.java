@@ -133,9 +133,9 @@ public final class ObjectProperty {
 			return false;
 		}
 		ObjectProperty that = (ObjectProperty)obj;
-		return Double.compare(that.nullInject, nullInject) == 0
-			&& property.equals(that.property)
+		return property.equals(that.property)
 			&& Objects.equals(getResolvedPropertyName(), that.getResolvedPropertyName())
+			&& Double.compare(that.nullInject, nullInject) == 0
 			&& Objects.equals(elementIndex, that.elementIndex)
 			&& childPropertyListsByCandidateProperty.equals(that.childPropertyListsByCandidateProperty);
 	}
