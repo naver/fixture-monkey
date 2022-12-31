@@ -3,6 +3,10 @@
 title: "Release Notes"
 weight: 6
 ---
+### 0.4.10
+* fixture-monkey-jakarta-validation 모듈을 추가합니다.
+* `interface`를 생성할 때 여러 구현체를 옵션으로 설정한 경우를 지원합니다.
+
 ### 0.4.9
 * 순환 참조인 객체를 생성할 수 있습니다.
 
