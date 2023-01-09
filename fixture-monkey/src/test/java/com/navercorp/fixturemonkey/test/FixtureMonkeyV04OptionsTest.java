@@ -69,6 +69,9 @@ import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.resolver.DecomposableContainerValue;
 import com.navercorp.fixturemonkey.resolver.IdentityNodeResolver;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.AbstractNoneConcreteIntValue;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.AbstractNoneConcreteStringValue;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.AbstractNoneValue;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.AbstractSamePropertyValue;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.AbstractValue;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.BuilderInteger;
@@ -1318,6 +1321,75 @@ class FixtureMonkeyV04OptionsTest {
 	}
 
 	@Property
+	void setConcreteListWithNoParentValue() {
+		// given
+		List<Class<? extends AbstractNoneValue>> implementations = new ArrayList<>();
+		implementations.add(AbstractNoneConcreteStringValue.class);
+		implementations.add(AbstractNoneConcreteIntValue.class);
+
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.interfaceImplements(AbstractNoneValue.class, implementations)
+			.build();
+
+		AbstractNoneConcreteStringValue abstractNoneConcreteStringValue = new AbstractNoneConcreteStringValue();
+		abstractNoneConcreteStringValue.setStringValue("test");
+		AbstractNoneConcreteIntValue abstractNoneConcreteIntValue = new AbstractNoneConcreteIntValue();
+		abstractNoneConcreteIntValue.setIntValue(-999);
+		List<AbstractNoneValue> expected = new ArrayList<>();
+		expected.add(abstractNoneConcreteStringValue);
+		expected.add(abstractNoneConcreteIntValue);
+
+		// when
+		List<AbstractNoneValue> actual = sut.giveMeBuilder(new TypeReference<List<AbstractNoneValue>>() {
+			})
+			.set(expected)
+			.sample();
+
+		then(actual).isEqualTo(expected);
+	}
+
+	@Property
+	void setConcreteClassWhenHasParentValue() {
+		// given
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.interfaceImplements(AbstractValue.class, Collections.singletonList(ConcreteStringValue.class))
+			.build();
+
+		ConcreteStringValue expected = new ConcreteStringValue();
+		expected.setValue("stringValue");
+
+		// when
+		AbstractValue actual = sut.giveMeBuilder(new TypeReference<AbstractValue>() {
+			})
+			.set(expected)
+			.sample();
+
+		then(actual).isEqualTo(expected);
+	}
+
+	@Property
+	void setConcreteClassWhenHasNoParentValue() {
+		// given
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.interfaceImplements(
+				AbstractNoneValue.class,
+				Collections.singletonList(AbstractNoneConcreteStringValue.class)
+			)
+			.build();
+
+		AbstractNoneConcreteStringValue expected = new AbstractNoneConcreteStringValue();
+		expected.setStringValue("stringValue");
+
+		// when
+		AbstractNoneValue actual = sut.giveMeBuilder(new TypeReference<AbstractNoneValue>() {
+			})
+			.set(expected)
+			.sample();
+
+		then(actual).isEqualTo(expected);
+	}
+
+	@Property
 	void setConcreteList() {
 		// given
 		List<Class<? extends AbstractValue>> implementations = new ArrayList<>();
@@ -1329,8 +1401,10 @@ class FixtureMonkeyV04OptionsTest {
 			.build();
 
 		ConcreteStringValue concreteStringValue = new ConcreteStringValue();
+		concreteStringValue.setValue("stringValue");
 		concreteStringValue.setStringValue("test");
 		ConcreteIntValue concreteIntValue = new ConcreteIntValue();
+		concreteIntValue.setValue("intValue");
 		concreteIntValue.setIntValue(-999);
 		List<AbstractValue> expected = new ArrayList<>();
 		expected.add(concreteStringValue);

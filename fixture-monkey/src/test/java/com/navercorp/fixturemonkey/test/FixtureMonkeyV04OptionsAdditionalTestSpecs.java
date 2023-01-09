@@ -248,18 +248,35 @@ class FixtureMonkeyV04OptionsAdditionalTestSpecs {
 	}
 
 	@Data
-	public abstract static class AbstractValue {
+	public abstract static class AbstractNoneValue {
 	}
 
 	@Data
 	@EqualsAndHashCode(callSuper = true)
-	public static class ConcreteIntValue extends AbstractValue {
+	public static class AbstractNoneConcreteIntValue extends AbstractNoneValue {
 		private int intValue;
+	}
+
+	@Data
+	@EqualsAndHashCode(callSuper = true)
+	public static class AbstractNoneConcreteStringValue extends AbstractNoneValue {
+		private String stringValue;
+	}
+
+	@Data
+	public abstract static class AbstractValue {
+		private String value;
 	}
 
 	@Data
 	@EqualsAndHashCode(callSuper = true)
 	public static class ConcreteStringValue extends AbstractValue {
 		private String stringValue;
+	}
+
+	@Data
+	@EqualsAndHashCode(callSuper = true)
+	public static class ConcreteIntValue extends AbstractValue {
+		private int intValue;
 	}
 }

@@ -36,7 +36,7 @@ import com.navercorp.fixturemonkey.api.property.Property;
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 final class ArbitraryNode {
 	@Nullable
-	private Property resolvedParentProperty;
+	private final Property resolvedParentProperty;
 	private ArbitraryProperty arbitraryProperty;
 
 	private List<ArbitraryNode> children;
@@ -57,10 +57,6 @@ final class ArbitraryNode {
 		this.resolvedParentProperty = resolvedParentProperty;
 		this.arbitraryProperty = arbitraryProperty;
 		this.children = children;
-	}
-
-	public void setResolvedParentProperty(@Nullable Property resolvedParentProperty) {
-		this.resolvedParentProperty = resolvedParentProperty;
 	}
 
 	public void setArbitraryProperty(ArbitraryProperty arbitraryProperty) {
