@@ -23,7 +23,7 @@ interface JoinableExpressionGenerator<F, T> : ExpressionGenerator {
     infix fun <R> intoGetter(expressionGenerator: JoinableExpressionGenerator<T, R>): JoinableExpressionGenerator<F, R>
 }
 
-infix fun <F, T, R> KFunction1<F, T?>.intoGetter(getter: KFunction1<T, R?>): JoinableExpressionGenerator<T, R> =
+infix fun <F, T : Any, R : Any> KFunction1<F, T?>.intoGetter(getter: KFunction1<T, R?>): JoinableExpressionGenerator<T, R> =
     DefaultJoinableExpressionGenerator(
         JoinExpressionGenerator(
             listOf(
@@ -34,7 +34,7 @@ infix fun <F, T, R> KFunction1<F, T?>.intoGetter(getter: KFunction1<T, R?>): Joi
         )
     )
 
-infix fun <F, T, R> KFunction1<F, T?>.into(property: KProperty1<T, R?>): JoinableExpressionGenerator<T, R> =
+infix fun <F, T : Any, R> KFunction1<F, T?>.into(property: KProperty1<T, R?>): JoinableExpressionGenerator<T, R> =
     DefaultJoinableExpressionGenerator(
         JoinExpressionGenerator(
             listOf(
@@ -45,7 +45,7 @@ infix fun <F, T, R> KFunction1<F, T?>.into(property: KProperty1<T, R?>): Joinabl
         )
     )
 
-infix fun <F, T, R> KFunction1<F, T?>.into(expressionGenerator: JoinableExpressionGenerator<T, R>): JoinableExpressionGenerator<F, R> =
+infix fun <F, T : Any, R> KFunction1<F, T?>.into(expressionGenerator: JoinableExpressionGenerator<T, R>): JoinableExpressionGenerator<F, R> =
     DefaultJoinableExpressionGenerator(
         JoinExpressionGenerator(
             listOf(
@@ -56,7 +56,18 @@ infix fun <F, T, R> KFunction1<F, T?>.into(expressionGenerator: JoinableExpressi
         )
     )
 
-infix fun <F, T, R> KProperty1<F, T?>.into(property: KProperty1<T, R?>): JoinableExpressionGenerator<F, R> =
+infix fun <F, T : Any, R> KFunction1<F, T?>.intoGetter(expressionGenerator: JoinableExpressionGenerator<T, R>): JoinableExpressionGenerator<F, R> =
+    DefaultJoinableExpressionGenerator(
+        JoinExpressionGenerator(
+            listOf(
+                property(this),
+                DotExpressionGenerator(),
+                expressionGenerator
+            )
+        )
+    )
+
+infix fun <F, T : Any, R> KProperty1<F, T?>.into(property: KProperty1<T, R?>): JoinableExpressionGenerator<F, R> =
     DefaultJoinableExpressionGenerator(
         JoinExpressionGenerator(
             listOf(
@@ -67,7 +78,7 @@ infix fun <F, T, R> KProperty1<F, T?>.into(property: KProperty1<T, R?>): Joinabl
         )
     )
 
-infix fun <F, T, R> KProperty1<F, T>.into(expressionGenerator: JoinableExpressionGenerator<T, R>): JoinableExpressionGenerator<F, R> =
+infix fun <F, T : Any, R> KProperty1<F, T?>.into(expressionGenerator: JoinableExpressionGenerator<T, R>): JoinableExpressionGenerator<F, R> =
     DefaultJoinableExpressionGenerator(
         JoinExpressionGenerator(
             listOf(
@@ -78,7 +89,18 @@ infix fun <F, T, R> KProperty1<F, T>.into(expressionGenerator: JoinableExpressio
         )
     )
 
-infix fun <F, T, R> KProperty1<F, T?>.intoGetter(getter: KFunction1<T, R?>): JoinableExpressionGenerator<F, R> =
+infix fun <F, T : Any, R> KProperty1<F, T?>.intoGetter(expressionGenerator: JoinableExpressionGenerator<T, R>): JoinableExpressionGenerator<F, R> =
+    DefaultJoinableExpressionGenerator(
+        JoinExpressionGenerator(
+            listOf(
+                property(this),
+                DotExpressionGenerator(),
+                expressionGenerator
+            )
+        )
+    )
+
+infix fun <F, T : Any, R> KProperty1<F, T?>.intoGetter(getter: KFunction1<T, R?>): JoinableExpressionGenerator<F, R> =
     DefaultJoinableExpressionGenerator(
         JoinExpressionGenerator(
             listOf(
