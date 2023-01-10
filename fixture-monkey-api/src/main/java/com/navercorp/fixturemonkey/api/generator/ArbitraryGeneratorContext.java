@@ -54,7 +54,7 @@ public final class ArbitraryGeneratorContext {
 	@Nullable
 	private final ArbitraryGeneratorContext ownerContext;
 
-	private final BiFunction<ArbitraryGeneratorContext, ArbitraryProperty, Arbitrary<Object>> resolveArbitrary;
+	private final BiFunction<ArbitraryGeneratorContext, ArbitraryProperty, CombinableArbitrary> resolveArbitrary;
 
 	@SuppressWarnings("rawtypes")
 	private final List<MatcherOperator<? extends FixtureCustomizer>> fixtureCustomizers;
@@ -72,7 +72,7 @@ public final class ArbitraryGeneratorContext {
 		ArbitraryProperty property,
 		List<ArbitraryProperty> children,
 		@Nullable ArbitraryGeneratorContext ownerContext,
-		BiFunction<ArbitraryGeneratorContext, ArbitraryProperty, Arbitrary<Object>> resolveArbitrary,
+		BiFunction<ArbitraryGeneratorContext, ArbitraryProperty, CombinableArbitrary> resolveArbitrary,
 		List<MatcherOperator<? extends FixtureCustomizer>> fixtureCustomizers,
 		MonkeyGeneratorContext monkeyGeneratorContext
 	) {
@@ -109,12 +109,12 @@ public final class ArbitraryGeneratorContext {
 		return Collections.unmodifiableList(this.children);
 	}
 
-	public Map<String, LazyArbitrary<Arbitrary<?>>> getArbitrariesByResolvedName() {
-		return childArbitraryContext.getValue().getArbitrariesByResolvedName();
+	public Map<String, CombinableArbitrary> getCombinableArbitrariesByResolvedName() {
+		return childArbitraryContext.getValue().getCombinableArbitrariesByResolvedName();
 	}
 
-	public Map<String, LazyArbitrary<Arbitrary<?>>> getArbitrariesByPropertyName() {
-		return childArbitraryContext.getValue().getArbitrariesByPropertyName();
+	public Map<String, CombinableArbitrary> getCombinableArbitrariesByPropertyName() {
+		return childArbitraryContext.getValue().getCombinableArbitraryByPropertyName();
 	}
 
 	public List<Arbitrary<?>> getArbitraries() {
@@ -161,9 +161,10 @@ public final class ArbitraryGeneratorContext {
 	}
 
 	private ChildArbitraryContext initChildArbitraryContext() {
-		Map<ArbitraryProperty, LazyArbitrary<Arbitrary<?>>> childrenValues = new LinkedHashMap<>();
+		Map<ArbitraryProperty, CombinableArbitrary> childrenValues = new LinkedHashMap<>();
 		for (ArbitraryProperty child : this.getChildren()) {
-			childrenValues.put(child, LazyArbitrary.lazy(() -> this.resolveArbitrary.apply(this, child)));
+			CombinableArbitrary arbitrary = this.resolveArbitrary.apply(this, child);
+			childrenValues.put(child, arbitrary);
 		}
 
 		ChildArbitraryContext childArbitraryContext = new ChildArbitraryContext(

@@ -47,7 +47,7 @@ class PrimaryConstructorArbitraryIntrospector : ArbitraryIntrospector {
             return ArbitraryIntrospectorResult.EMPTY
         }
 
-        val arbitrariesByPropertyName = context.arbitrariesByPropertyName
+        val arbitrariesByPropertyName = context.combinableArbitrariesByPropertyName.mapValues { it.value.combined() }
 
         val kotlinClass = Reflection.createKotlinClass(type) as KClass<*>
         val constructor = CONSTRUCTOR_CACHE.computeIfAbsent(type) {
@@ -56,7 +56,7 @@ class PrimaryConstructorArbitraryIntrospector : ArbitraryIntrospector {
 
         var builderCombinator = Builders.withBuilder { mutableMapOf<KParameter, Any?>() }
         for (parameter in constructor.parameters) {
-            val parameterArbitrary = arbitrariesByPropertyName[parameter.name]?.value ?: Arbitraries.just(null)
+            val parameterArbitrary = arbitrariesByPropertyName[parameter.name] ?: Arbitraries.just(null)
             builderCombinator = builderCombinator.use(parameterArbitrary).`in` { map, value ->
                 map.apply {
                     this[parameter] = value
@@ -66,7 +66,7 @@ class PrimaryConstructorArbitraryIntrospector : ArbitraryIntrospector {
         return ArbitraryIntrospectorResult(
             builderCombinator.build {
                 constructor.callBy(it)
-            }
+            },
         )
     }
 }

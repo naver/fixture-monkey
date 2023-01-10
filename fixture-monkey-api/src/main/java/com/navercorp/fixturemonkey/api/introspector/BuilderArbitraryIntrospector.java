@@ -28,13 +28,14 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apiguardian.api.API;
 import org.junit.platform.commons.util.ReflectionUtils;
 
-import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
 import net.jqwik.api.Builders;
 import net.jqwik.api.Builders.BuilderCombinator;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
+import com.navercorp.fixturemonkey.api.generator.CombinableArbitrary;
+import com.navercorp.fixturemonkey.api.generator.LazyCombinableArbitrary;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.api.property.CompositeProperty;
 import com.navercorp.fixturemonkey.api.property.FieldProperty;
@@ -42,8 +43,7 @@ import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.4.0", status = API.Status.EXPERIMENTAL)
-public final class BuilderArbitraryIntrospector
-	implements ArbitraryIntrospector {
+public final class BuilderArbitraryIntrospector implements ArbitraryIntrospector {
 	public static final BuilderArbitraryIntrospector INSTANCE = new BuilderArbitraryIntrospector();
 	private static final Map<Class<?>, Method> BUILDER_CACHE = new ConcurrentHashMap<>(2000);
 	private static final Map<String, Method> BUILD_FIELD_METHOD_CACHE = new ConcurrentHashMap<>(2000);
@@ -70,58 +70,63 @@ public final class BuilderArbitraryIntrospector
 		}
 
 		List<ArbitraryProperty> childrenProperties = context.getChildren();
-		Map<String, LazyArbitrary<Arbitrary<?>>> childrenArbitraries = context.getArbitrariesByResolvedName();
+		Map<String, CombinableArbitrary> arbitrariesByResolvedName =
+			context.getCombinableArbitrariesByResolvedName();
 
-		Class<?> builderType = this.getBuilderType(type);
-		Method builderMethod = BUILDER_CACHE.get(type);
+		LazyArbitrary<Arbitrary<Object>> generateArbitrary = LazyArbitrary.lazy(
+			() -> {
+				Class<?> builderType = this.getBuilderType(type);
+				Method builderMethod = BUILDER_CACHE.get(type);
 
-		BuilderCombinator<Object> builderCombinator = Builders.withBuilder(() ->
-			ReflectionUtils.invokeMethod(builderMethod, null));
+				BuilderCombinator<Object> builderCombinator = Builders.withBuilder(() ->
+					ReflectionUtils.invokeMethod(builderMethod, null));
 
-		for (ArbitraryProperty arbitraryProperty : childrenProperties) {
-			String methodName = getFieldName(arbitraryProperty.getObjectProperty().getProperty());
-			String buildFieldMethodName = builderType.getName() + "#" + methodName;
+				for (ArbitraryProperty arbitraryProperty : childrenProperties) {
+					String methodName = getFieldName(arbitraryProperty.getObjectProperty().getProperty());
+					String buildFieldMethodName = builderType.getName() + "#" + methodName;
 
-			String resolvePropertyName = arbitraryProperty.getObjectProperty().getResolvedPropertyName();
-			Arbitrary<?> arbitrary = childrenArbitraries.getOrDefault(
-					resolvePropertyName,
-					LazyArbitrary.lazy(() -> Arbitraries.just(null))
-				)
-				.getValue();
+					String resolvePropertyName =
+						arbitraryProperty.getObjectProperty().getResolvedPropertyName();
+					CombinableArbitrary combinableArbitrary =
+						arbitrariesByResolvedName.get(resolvePropertyName);
 
-			Method method = BUILD_FIELD_METHOD_CACHE.computeIfAbsent(buildFieldMethodName, f -> {
-				Method buildFieldMethod = ReflectionUtils.findMethods(builderType, m -> m.getName().equals(
-						methodName))
-					.stream()
-					.filter(Objects::nonNull)
-					.filter(m -> m.getParameterCount() == 1)
-					.findFirst()
-					.orElse(null);
-				if (buildFieldMethod != null) {
-					buildFieldMethod.setAccessible(true);
+					Method method = BUILD_FIELD_METHOD_CACHE.computeIfAbsent(buildFieldMethodName, f -> {
+						Method buildFieldMethod = ReflectionUtils.findMethods(builderType, m -> m.getName().equals(
+								methodName))
+							.stream()
+							.filter(Objects::nonNull)
+							.filter(m -> m.getParameterCount() == 1)
+							.findFirst()
+							.orElse(null);
+						if (buildFieldMethod != null) {
+							buildFieldMethod.setAccessible(true);
+						}
+						return buildFieldMethod;
+					});
+					if (method != null) {
+						builderCombinator = builderCombinator.use(combinableArbitrary.combined())
+							.in((b, v) -> v != null ? ReflectionUtils.invokeMethod(method, b, v) : b);
+					}
 				}
-				return buildFieldMethod;
-			});
-			if (method != null) {
-				builderCombinator = builderCombinator.use(arbitrary)
-					.in((b, v) -> v != null ? ReflectionUtils.invokeMethod(method, b, v) : b);
-			}
-		}
 
-		Method buildMethod = BUILD_METHOD_CACHE.computeIfAbsent(builderType, t -> {
-			String buildMethodName = typedBuildMethodName.getOrDefault(t, defaultBuildMethodName);
-			Method method = ReflectionUtils.findMethod(builderType, buildMethodName)
-				.orElseThrow(() -> new IllegalStateException(
-					"Can not find BuilderCombiner build method for clazz. clazz: " + type));
-			method.setAccessible(true);
-			return method;
-		});
-		return new ArbitraryIntrospectorResult(builderCombinator.build(b -> {
-			if (b == null) {
-				return null;
+				Method buildMethod = BUILD_METHOD_CACHE.computeIfAbsent(builderType, t -> {
+					String buildMethodName = typedBuildMethodName.getOrDefault(t, defaultBuildMethodName);
+					Method method = ReflectionUtils.findMethod(builderType, buildMethodName)
+						.orElseThrow(() -> new IllegalStateException(
+							"Can not find BuilderCombiner build method for clazz. clazz: " + type)
+						);
+					method.setAccessible(true);
+					return method;
+				});
+				return builderCombinator.build(b -> {
+					if (b == null) {
+						return null;
+					}
+					return ReflectionUtils.invokeMethod(buildMethod, b);
+				});
 			}
-			return ReflectionUtils.invokeMethod(buildMethod, b);
-		}));
+		);
+		return new ArbitraryIntrospectorResult(new LazyCombinableArbitrary(generateArbitrary));
 	}
 
 	public void setDefaultBuilderMethodName(String defaultBuilderMethodName) {

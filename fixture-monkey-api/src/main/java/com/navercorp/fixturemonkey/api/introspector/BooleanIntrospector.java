@@ -38,6 +38,7 @@ public final class BooleanIntrospector implements ArbitraryIntrospector, Matcher
 
 	@Override
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
-		return new ArbitraryIntrospectorResult(Arbitraries.of(true, false));
+		return new ArbitraryIntrospectorResult(
+			Arbitraries.of(true, false));
 	}
 }

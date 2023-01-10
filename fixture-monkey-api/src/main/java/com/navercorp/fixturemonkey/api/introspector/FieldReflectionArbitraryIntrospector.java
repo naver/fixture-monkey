@@ -28,13 +28,14 @@ import org.junit.platform.commons.util.ReflectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
 import net.jqwik.api.Builders;
 import net.jqwik.api.Builders.BuilderCombinator;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
+import com.navercorp.fixturemonkey.api.generator.CombinableArbitrary;
+import com.navercorp.fixturemonkey.api.generator.LazyCombinableArbitrary;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.PropertyCache;
@@ -54,35 +55,47 @@ public final class FieldReflectionArbitraryIntrospector implements ArbitraryIntr
 		}
 
 		List<ArbitraryProperty> childrenProperties = context.getChildren();
-		Map<String, LazyArbitrary<Arbitrary<?>>> childrenArbitraries = context.getArbitrariesByResolvedName();
+		Map<String, CombinableArbitrary> arbitrariesByResolvedName
+			= context.getCombinableArbitrariesByResolvedName();
 		Map<String, Field> fields = PropertyCache.getFields(type);
-		BuilderCombinator<?> builderCombinator = Builders.withBuilder(() -> ReflectionUtils.newInstance(type));
-		for (ArbitraryProperty arbitraryProperty : childrenProperties) {
-			String originPropertyName = arbitraryProperty.getObjectProperty().getProperty().getName();
-			Field field = fields.get(originPropertyName);
 
-			if (field == null || Modifier.isFinal(field.getModifiers()) || Modifier.isTransient(field.getModifiers())) {
-				continue;
-			}
+		LazyArbitrary<Arbitrary<Object>> generateArbitrary = LazyArbitrary.lazy(
+			() -> {
+				BuilderCombinator<Object> builderCombinator = Builders.withBuilder(
+					() -> ReflectionUtils.newInstance(type)
+				);
+				for (ArbitraryProperty arbitraryProperty : childrenProperties) {
+					String originPropertyName = arbitraryProperty.getObjectProperty().getProperty().getName();
+					Field field = fields.get(originPropertyName);
 
-			String resolvePropertyName = arbitraryProperty.getObjectProperty().getResolvedPropertyName();
-			Arbitrary<?> arbitrary = childrenArbitraries.getOrDefault(
-					resolvePropertyName,
-					LazyArbitrary.lazy(() -> Arbitraries.just(null))
-				)
-				.getValue();
-			builderCombinator = builderCombinator.use(arbitrary).in((object, value) -> {
-				try {
-					if (value != null) {
-						field.set(object, value);
+					if (field == null
+						|| Modifier.isFinal(field.getModifiers())
+						|| Modifier.isTransient(field.getModifiers())) {
+						continue;
 					}
-				} catch (IllegalAccessException e) {
-					log.warn("set field by reflection is failed. field: {} value: {}", resolvePropertyName, value, e);
-				}
-				return object;
-			});
-		}
 
-		return new ArbitraryIntrospectorResult(builderCombinator.build());
+					String resolvePropertyName =
+						arbitraryProperty.getObjectProperty().getResolvedPropertyName();
+					CombinableArbitrary combinableArbitrary =
+						arbitrariesByResolvedName.get(resolvePropertyName);
+					builderCombinator = builderCombinator.use(combinableArbitrary.combined())
+						.in((object, value) -> {
+							try {
+								if (value != null) {
+									field.set(object, value);
+								}
+							} catch (IllegalAccessException e) {
+								log.warn("set field by reflection is failed. field: {} value: {}",
+									resolvePropertyName,
+									value, e);
+							}
+							return object;
+						});
+				}
+
+				return builderCombinator.build();
+			}
+		);
+		return new ArbitraryIntrospectorResult(new LazyCombinableArbitrary(generateArbitrary));
 	}
 }

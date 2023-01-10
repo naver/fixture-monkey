@@ -30,18 +30,17 @@ import org.apiguardian.api.API.Status;
 
 import net.jqwik.api.Arbitrary;
 
-import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.property.Property;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class ChildArbitraryContext {
 	private final Property parentProperty;
-	private final Map<ArbitraryProperty, LazyArbitrary<Arbitrary<?>>> arbitrariesByChildProperty;
+	private final Map<ArbitraryProperty, CombinableArbitrary> arbitrariesByChildProperty;
 
 	public ChildArbitraryContext(
 		Property parentProperty,
-		Map<ArbitraryProperty, LazyArbitrary<Arbitrary<?>>> arbitrariesByChildProperty
+		Map<ArbitraryProperty, CombinableArbitrary> arbitrariesByChildProperty
 	) {
 		this.parentProperty = parentProperty;
 		this.arbitrariesByChildProperty = arbitrariesByChildProperty;
@@ -52,12 +51,15 @@ public final class ChildArbitraryContext {
 	}
 
 	public void replaceArbitrary(Matcher matcher, Arbitrary<?> arbitrary) {
-		for (Entry<ArbitraryProperty, LazyArbitrary<Arbitrary<?>>> arbitraryByChildProperty
+		for (Entry<ArbitraryProperty, CombinableArbitrary> arbitraryByChildProperty
 			: arbitrariesByChildProperty.entrySet()) {
 			ArbitraryProperty arbitraryProperty = arbitraryByChildProperty.getKey();
 			ObjectProperty objectProperty = arbitraryProperty.getObjectProperty();
 			if (matcher.match(objectProperty.getProperty())) {
-				arbitrariesByChildProperty.put(arbitraryProperty, LazyArbitrary.lazy(() -> arbitrary));
+				arbitrariesByChildProperty.put(
+					arbitraryProperty,
+					new FixedCombinableArbitrary(arbitrary.asGeneric())
+				);
 			}
 		}
 	}
@@ -67,19 +69,19 @@ public final class ChildArbitraryContext {
 			.removeIf(it -> matcher.match(it.getKey().getObjectProperty().getProperty()));
 	}
 
-	public Map<String, LazyArbitrary<Arbitrary<?>>> getArbitrariesByPropertyName() {
-		return arbitrariesByChildProperty.entrySet().stream()
-			.collect(toMap(it -> it.getKey().getObjectProperty().getProperty().getName(), Entry::getValue));
-	}
-
-	public Map<String, LazyArbitrary<Arbitrary<?>>> getArbitrariesByResolvedName() {
+	public Map<String, CombinableArbitrary> getCombinableArbitrariesByResolvedName() {
 		return arbitrariesByChildProperty.entrySet().stream()
 			.collect(toMap(it -> it.getKey().getObjectProperty().getResolvedPropertyName(), Entry::getValue));
 	}
 
+	public Map<String, CombinableArbitrary> getCombinableArbitraryByPropertyName() {
+		return arbitrariesByChildProperty.entrySet().stream()
+			.collect(toMap(it -> it.getKey().getObjectProperty().getProperty().getName(), Entry::getValue));
+	}
+
 	public List<Arbitrary<?>> getArbitraries() {
 		return arbitrariesByChildProperty.values().stream()
-			.map(LazyArbitrary::getValue)
+			.map(CombinableArbitrary::combined)
 			.collect(Collectors.toList());
 	}
 }

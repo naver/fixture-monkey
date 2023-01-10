@@ -23,19 +23,18 @@ import java.util.TreeMap;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import net.jqwik.api.Arbitrary;
-
 import com.navercorp.fixturemonkey.api.collection.LruCache;
+import com.navercorp.fixturemonkey.api.generator.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class MonkeyContext {
-	private final LruCache<Property, Arbitrary<?>> arbitrariesByProperty;
+	private final LruCache<Property, CombinableArbitrary> arbitrariesByProperty;
 	private final LruCache<RootProperty, MonkeyGeneratorContext> generatorContextByRootProperty;
 
 	public MonkeyContext(
-		LruCache<Property, Arbitrary<?>> arbitrariesByProperty,
+		LruCache<Property, CombinableArbitrary> arbitrariesByProperty,
 		LruCache<RootProperty, MonkeyGeneratorContext> generatorContextByRootProperty
 	) {
 		this.arbitrariesByProperty = arbitrariesByProperty;
@@ -46,12 +45,12 @@ public final class MonkeyContext {
 		return new MonkeyContextBuilder();
 	}
 
-	public Arbitrary<?> getCachedArbitrary(Property property) {
+	public CombinableArbitrary getCachedArbitrary(Property property) {
 		return arbitrariesByProperty.get(property);
 	}
 
-	public void putCachedArbitrary(Property property, Arbitrary<?> arbitrary) {
-		arbitrariesByProperty.put(property, arbitrary);
+	public void putCachedArbitrary(Property property, CombinableArbitrary combinableArbitrary) {
+		arbitrariesByProperty.put(property, combinableArbitrary);
 	}
 
 	public MonkeyGeneratorContext retrieveGeneratorContext(RootProperty rootProperty) {
