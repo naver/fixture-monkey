@@ -90,6 +90,8 @@ import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpe
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.PairContainerPropertyGenerator;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.PairIntrospector;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.RegisterGroup;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.SelfRecursiveAbstractValue;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.SelfRecursiveImplementationValue;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04OptionsAdditionalTestSpecs.SimpleObjectChild;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.ComplexObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.CustomContainer;
@@ -1417,5 +1419,20 @@ class FixtureMonkeyV04OptionsTest {
 			.sample();
 
 		then(actual).isEqualTo(expected);
+	}
+
+	@Property
+	void sampleSelfRecursiveAbstract() {
+		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+			.interfaceImplements(
+				SelfRecursiveAbstractValue.class,
+				Collections.singletonList(SelfRecursiveImplementationValue.class)
+			)
+			.objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)
+			.build();
+
+		SelfRecursiveAbstractValue actual = sut.giveMeOne(SelfRecursiveAbstractValue.class);
+
+		then(actual).isNotNull();
 	}
 }

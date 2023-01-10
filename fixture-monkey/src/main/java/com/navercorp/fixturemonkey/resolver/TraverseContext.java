@@ -25,6 +25,7 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
+import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
@@ -66,6 +67,11 @@ final class TraverseContext {
 	public boolean isTraversed(Property property) {
 		return property.equals(rootArbitraryProperty.getObjectProperty().getProperty())
 			|| arbitraryProperties.stream()
-			.anyMatch(it -> property.equals(it.getObjectProperty().getProperty()));
+			.anyMatch(it -> isSameType(property, it.getObjectProperty().getProperty()));
+	}
+
+	private static boolean isSameType(Property p1, Property p2) {
+		boolean notMapEntry = !(p1 instanceof MapEntryElementProperty) || !(p2 instanceof MapEntryElementProperty);
+		return notMapEntry && p1.getAnnotatedType().getType().equals(p2.getAnnotatedType().getType());
 	}
 }

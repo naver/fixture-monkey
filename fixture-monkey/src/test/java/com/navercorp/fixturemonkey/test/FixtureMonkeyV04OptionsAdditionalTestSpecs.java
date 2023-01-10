@@ -279,4 +279,25 @@ class FixtureMonkeyV04OptionsAdditionalTestSpecs {
 	public static class ConcreteIntValue extends AbstractValue {
 		private int intValue;
 	}
+
+	@Getter
+	public abstract static class SelfRecursiveAbstractValue {
+		private final List<SelfRecursiveAbstractValue> recursives;
+
+		@ConstructorProperties("recursives")
+		public SelfRecursiveAbstractValue(List<SelfRecursiveAbstractValue> recursives) {
+			this.recursives = recursives;
+		}
+	}
+
+	@Getter
+	public static class SelfRecursiveImplementationValue extends SelfRecursiveAbstractValue {
+		private final String value;
+
+		@ConstructorProperties({"recursives", "value"})
+		public SelfRecursiveImplementationValue(List<SelfRecursiveAbstractValue> recursives, String value) {
+			super(recursives);
+			this.value = value;
+		}
+	}
 }

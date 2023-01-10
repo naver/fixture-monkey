@@ -19,6 +19,7 @@
 package com.navercorp.fixturemonkey.resolver;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -171,10 +172,6 @@ public final class ArbitraryTraverser {
 		for (int sequence = 0; sequence < childProperties.size(); sequence++) {
 			Property childProperty = childProperties.get(sequence);
 
-			if (context.isTraversed(childProperty)) {
-				continue;
-			}
-
 			ContainerPropertyGenerator containerPropertyGenerator =
 				this.generateOptions.getContainerPropertyGenerator(childProperty);
 			boolean childContainer = containerPropertyGenerator != null;
@@ -226,11 +223,21 @@ public final class ArbitraryTraverser {
 				childObjectProperty,
 				childContainerProperty
 			);
-			ArbitraryNode childNode = this.traverse(
-				childArbitraryProperty,
-				resolvedParentProperty,
-				context.appendArbitraryProperty(childArbitraryProperty)
-			);
+
+			ArbitraryNode childNode;
+			if (context.isTraversed(childProperty)) {
+				childNode = new ArbitraryNode(
+					resolvedParentProperty,
+					childArbitraryProperty,
+					Collections.emptyList()
+				);
+			} else {
+				childNode = this.traverse(
+					childArbitraryProperty,
+					resolvedParentProperty,
+					context.appendArbitraryProperty(childArbitraryProperty)
+				);
+			}
 			children.add(childNode);
 		}
 		return new ArrayList<>(children);
