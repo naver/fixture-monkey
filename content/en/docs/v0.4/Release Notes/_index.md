@@ -4,7 +4,7 @@ title: "Release Notes"
 weight: 6
 ---
 ### 0.4.11
-* Add `set` a List of concrete classes inherits an abstract class
+* Add `set` for lists in concrete classes that inherits an abstract class
 * Add generating an abstract circular-reference object
 
 ### 0.4.10
