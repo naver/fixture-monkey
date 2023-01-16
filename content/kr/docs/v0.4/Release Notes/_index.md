@@ -3,6 +3,10 @@
 title: "Release Notes"
 weight: 6
 ---
+### 0.4.11
+* 추상 클래스 구현체 리스트를 `set`할 수 있습니다.
+* 추상 클래스가 순환 참조를 가지더라도 생성할 수 있습니다.
+
 ### 0.4.10
 * fixture-monkey-jakarta-validation 모듈을 추가합니다.
 * `interface`를 생성할 때 여러 구현체를 옵션으로 설정한 경우를 지원합니다.
