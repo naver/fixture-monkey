@@ -4,7 +4,7 @@ weight: 8
 ---
 
 ## 기능
-[JSR380: Bean Validation 2.0](https://jcp.org/en/jsr/detail?id=380) annotation을 활용해 객체의 값을 제어할 수 있도록 플러그인을 지원합니다.
+[Jakarta Bean Validation 3.0](https://jakarta.ee/specifications/bean-validation/3.0/jakarta-bean-validation-spec-3.0.html) annotation을 활용해 객체의 값을 제어할 수 있도록 플러그인을 지원합니다.
 
 ## 설정
 ### 1. 의존성 추가
