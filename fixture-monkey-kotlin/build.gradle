@@ -5,9 +5,6 @@ buildscript {
             url "https://plugins.gradle.org/m2/"
         }
     }
-    dependencies {
-        classpath("org.jlleitschuh.gradle:ktlint-gradle:9.4.1")
-    }
 }
 
 plugins {
@@ -23,8 +20,8 @@ dependencies {
     api(project(":fixture-monkey"))
     api("net.jqwik:jqwik-kotlin:${JQWIK_VERSION}")
 
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.6.10")
-    implementation("org.jetbrains.kotlin:kotlin-reflect:1.6.10")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.6.21")
+    implementation("org.jetbrains.kotlin:kotlin-reflect:1.6.21")
 
     testImplementation(project(":fixture-monkey-jackson"))
     testImplementation("com.fasterxml.jackson.module:jackson-module-kotlin")
@@ -38,7 +35,6 @@ test {
         includeEngines "jqwik"
     }
 }
-
 
 jar {
     manifest {
