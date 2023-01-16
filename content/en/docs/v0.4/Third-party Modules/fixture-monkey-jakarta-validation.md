@@ -4,7 +4,7 @@ weight: 8
 ---
 
 ## Features
-Generating an object validated by [JSR380: Bean Validation 2.0](https://jcp.org/en/jsr/detail?id=380) annotations
+Generating an object validated by [Jakarta Bean Validation 3.0](https://jakarta.ee/specifications/bean-validation/3.0/jakarta-bean-validation-spec-3.0.html) annotations
 
 ## How-to
 ### 1. Adding dependency
