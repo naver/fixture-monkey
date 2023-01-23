@@ -36,6 +36,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apiguardian.api.API;
@@ -162,8 +163,10 @@ public class Types {
 					ParameterizedType parameterizedType = (ParameterizedType)annotatedSuperClassType.getType();
 					Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
 
-					int index = getTypeVariableIndex((TypeVariable<?>)field.getGenericType());
-					Type actualType = actualTypeArguments[index];
+					Type actualType = getTypeVariableIndex((TypeVariable<?>)field.getGenericType())
+						.map(index -> actualTypeArguments[index])
+						.orElse(Object.class);
+
 					return new AnnotatedType() {
 						@Override
 						public Type getType() {
@@ -553,15 +556,15 @@ public class Types {
 	 * @return index
 	 * @see TypeVariableImpl#typeVarIndex()
 	 */
-	private static int getTypeVariableIndex(TypeVariable<?> typeVariable) {
+	private static Optional<Integer> getTypeVariableIndex(TypeVariable<?> typeVariable) {
 		TypeVariable<?>[] tVars = typeVariable.getGenericDeclaration().getTypeParameters();
 		int index = -1;
 		for (TypeVariable<?> v : tVars) {
 			index++;
 			if (typeVariable.equals(v)) {
-				return index;
+				return Optional.of(index);
 			}
 		}
-		return -1;
+		return Optional.empty();
 	}
 }
