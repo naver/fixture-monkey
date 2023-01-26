@@ -1658,4 +1658,11 @@ class FixtureMonkeyV04Test {
 
 		then(actual).isNotNull();
 	}
+
+	@Property
+	void sampleWildcard() {
+		thenNoException()
+			.isThrownBy(() -> SUT.giveMeOne(new TypeReference<List<? extends SimpleObject>>() {
+			}));
+	}
 }
