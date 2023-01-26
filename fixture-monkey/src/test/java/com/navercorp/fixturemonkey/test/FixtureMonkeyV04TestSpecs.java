@@ -50,6 +50,8 @@ import javax.annotation.Nullable;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
 class FixtureMonkeyV04TestSpecs {
 	@Data
@@ -201,5 +203,59 @@ class FixtureMonkeyV04TestSpecs {
 		int value;
 
 		RecursiveLeftObject recursive;
+	}
+
+	@Setter
+	@Getter
+	public static class GenericValue<T> {
+		T value;
+	}
+
+	@Setter
+	@Getter
+	public static class GenericStringWrapperValue {
+		GenericValue<String> value;
+	}
+
+	@Setter
+	@Getter
+	public static class GenericWrapperValue<T> {
+		GenericValue<T> value;
+	}
+
+	@Setter
+	@Getter
+	public static class GenericChildValue extends GenericValue<String> {
+	}
+
+	@Setter
+	@Getter
+	public static class GenericTwoValue<T, U> {
+		T value;
+
+		U value2;
+	}
+
+	@Setter
+	@Getter
+	public static class GenericChildTwoValue extends GenericTwoValue<String, Integer> {
+	}
+
+	@Setter
+	@Getter
+	public static class ObjectValue {
+		Object value;
+	}
+
+	@Setter
+	@Getter
+	public static class ParentValue {
+		String parentValue;
+	}
+
+	@Setter
+	@Getter
+	public static class ChildValue extends ParentValue {
+		String childValue;
 	}
 }

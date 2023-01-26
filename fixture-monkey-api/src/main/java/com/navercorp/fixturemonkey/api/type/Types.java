@@ -36,10 +36,13 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
+
+import sun.reflect.generics.reflectiveObjects.TypeVariableImpl;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public class Types {
@@ -153,31 +156,41 @@ public class Types {
 	public static AnnotatedType resolveWithTypeReferenceGenerics(AnnotatedType ownerType, Field field) {
 		if (!(ownerType instanceof AnnotatedParameterizedType)) {
 			AnnotatedType fieldAnnotatedType = field.getAnnotatedType();
-			if (TypeVariable.class.isAssignableFrom(fieldAnnotatedType.getType().getClass())) {
-				return new AnnotatedType() {
-					@Override
-					public Type getType() {
-						return Object.class;
-					}
 
-					@Override
-					public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
-						return fieldAnnotatedType.getAnnotation(annotationClass);
-					}
+			AnnotatedType annotatedSuperClassType = ((Class<?>)ownerType.getType()).getAnnotatedSuperclass();
+			if (annotatedSuperClassType != null) {
+				if (ParameterizedType.class.isAssignableFrom(annotatedSuperClassType.getType().getClass())) {
+					ParameterizedType parameterizedType = (ParameterizedType)annotatedSuperClassType.getType();
+					Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
 
-					@Override
-					public Annotation[] getAnnotations() {
-						return fieldAnnotatedType.getAnnotations();
-					}
+					Type actualType = getTypeVariableIndex((TypeVariable<?>)field.getGenericType())
+						.map(index -> actualTypeArguments[index])
+						.orElse(Object.class);
 
-					@Override
-					public Annotation[] getDeclaredAnnotations() {
-						return fieldAnnotatedType.getDeclaredAnnotations();
-					}
-				};
-			} else {
-				return fieldAnnotatedType;
+					return new AnnotatedType() {
+						@Override
+						public Type getType() {
+							return actualType;
+						}
+
+						@Override
+						public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
+							return fieldAnnotatedType.getAnnotation(annotationClass);
+						}
+
+						@Override
+						public Annotation[] getAnnotations() {
+							return fieldAnnotatedType.getAnnotations();
+						}
+
+						@Override
+						public Annotation[] getDeclaredAnnotations() {
+							return fieldAnnotatedType.getDeclaredAnnotations();
+						}
+					};
+				}
 			}
+			return fieldAnnotatedType;
 		}
 
 		AnnotatedParameterizedType ownerAnnotatedParameterizedType = (AnnotatedParameterizedType)ownerType;
@@ -537,5 +550,21 @@ public class Types {
 			return false;
 		}
 		return toClass.isAssignableFrom(cls);
+	}
+
+	/**
+	 * @return index
+	 * @see TypeVariableImpl#typeVarIndex()
+	 */
+	private static Optional<Integer> getTypeVariableIndex(TypeVariable<?> typeVariable) {
+		TypeVariable<?>[] tVars = typeVariable.getGenericDeclaration().getTypeParameters();
+		int index = -1;
+		for (TypeVariable<?> v : tVars) {
+			index++;
+			if (typeVariable.equals(v)) {
+				return Optional.of(index);
+			}
+		}
+		return Optional.empty();
 	}
 }

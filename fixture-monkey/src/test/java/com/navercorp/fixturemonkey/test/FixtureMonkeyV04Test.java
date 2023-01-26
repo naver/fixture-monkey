@@ -61,13 +61,20 @@ import com.navercorp.fixturemonkey.test.ComplexManipulatorTestSpecs.IntValue;
 import com.navercorp.fixturemonkey.test.ComplexManipulatorTestSpecs.NestedStringList;
 import com.navercorp.fixturemonkey.test.ComplexManipulatorTestSpecs.StringAndInt;
 import com.navercorp.fixturemonkey.test.ComplexManipulatorTestSpecs.StringValue;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.ChildValue;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.ComplexObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.EnumObject;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.GenericChildTwoValue;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.GenericChildValue;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.GenericStringWrapperValue;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.GenericValue;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.GenericWrapperValue;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.Interface;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.InterfaceFieldValue;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.InterfaceImplementation;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.ListStringObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.NullableObject;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.ObjectValue;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.RecursiveLeftObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.SelfRecursiveListObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.SelfRecursiveObject;
@@ -1591,5 +1598,64 @@ class FixtureMonkeyV04Test {
 		then(actual.getValue()).isNotNull();
 		then(actual.getRecursive()).isNotNull();
 		then(actual.getRecursive().getValue()).isNotNull();
+	}
+
+	@Property
+	void sampleGeneric() {
+		GenericValue<String> actual = SUT.giveMeOne(new TypeReference<GenericValue<String>>() {
+		});
+
+		then(actual).isNotNull();
+	}
+
+	@Property
+	void sampleGenericWildcardExtends() {
+		GenericValue<? extends String> actual = SUT.giveMeOne(new TypeReference<GenericValue<? extends String>>() {
+		});
+
+		then(actual).isNotNull();
+	}
+
+	@Property
+	void sampleStringGenericField() {
+		GenericStringWrapperValue actual = SUT.giveMeOne(GenericStringWrapperValue.class);
+
+		then(actual).isNotNull();
+	}
+
+	@Property
+	void sampleGenericField() {
+		GenericWrapperValue<String> actual = SUT.giveMeOne(new TypeReference<GenericWrapperValue<String>>() {
+		});
+
+		then(actual).isNotNull();
+	}
+
+	@Property
+	void sampleGenericChild() {
+		GenericChildValue actual = SUT.giveMeOne(GenericChildValue.class);
+
+		then(actual).isNotNull();
+	}
+
+	@Property
+	void sampleTwoGenericChild() {
+		GenericChildTwoValue actual = SUT.giveMeOne(GenericChildTwoValue.class);
+
+		then(actual).isNotNull();
+	}
+
+	@Property
+	void sampleObjectField() {
+		ObjectValue actual = SUT.giveMeOne(ObjectValue.class);
+
+		then(actual).isNotNull();
+	}
+
+	@Property
+	void sampleChildValue() {
+		ChildValue actual = SUT.giveMeOne(ChildValue.class);
+
+		then(actual).isNotNull();
 	}
 }
