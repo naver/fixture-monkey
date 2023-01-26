@@ -60,6 +60,7 @@ import com.navercorp.fixturemonkey.test.ComplexManipulatorTestSpecs.StringAndInt
 import com.navercorp.fixturemonkey.test.ComplexManipulatorTestSpecs.StringIntegerWrapper;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.IntegerArray;
 
+@Deprecated
 class ComplexManipulatorTest {
 	@Property
 	void giveMeAcceptIf() {

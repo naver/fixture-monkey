@@ -28,6 +28,7 @@ import org.assertj.core.api.BDDAssertions.then
 import java.util.function.Consumer
 import kotlin.reflect.KClass
 
+@Deprecated(message = "Deprecated since 0.3, use 0.4 instead")
 class FixtureMonkeyExtensionsTest {
     private val sut: FixtureMonkey = KFixtureMonkey.create()
 
@@ -53,7 +54,7 @@ class FixtureMonkeyExtensionsTest {
             object : KArbitraryCustomizer<IntegerStringWrapperClass> {
                 override fun customizeFields(
                     type: KClass<IntegerStringWrapperClass>,
-                    fieldArbitraries: FieldArbitraries,
+                    fieldArbitraries: FieldArbitraries
                 ) {
                     fieldArbitraries.apply {
                         replaceArbitrary("intValue", Arbitraries.just(-1))
@@ -115,7 +116,7 @@ class FixtureMonkeyExtensionsTest {
             object : KArbitraryCustomizer<IntegerStringWrapperClass> {
                 override fun customizeFields(
                     type: KClass<IntegerStringWrapperClass>,
-                    fieldArbitraries: FieldArbitraries,
+                    fieldArbitraries: FieldArbitraries
                 ) {
                     fieldArbitraries.apply {
                         replaceArbitrary("intValue", Arbitraries.just(-1))
@@ -172,7 +173,7 @@ class FixtureMonkeyExtensionsTest {
             object : KArbitraryCustomizer<IntegerStringWrapperClass> {
                 override fun customizeFields(
                     type: KClass<IntegerStringWrapperClass>,
-                    fieldArbitraries: FieldArbitraries,
+                    fieldArbitraries: FieldArbitraries
                 ) {
                     fieldArbitraries.apply {
                         replaceArbitrary("intValue", Arbitraries.just(-1))
@@ -258,9 +259,9 @@ class FixtureMonkeyExtensionsTest {
 
         then(actual).isNotNull
     }
-}
 
-data class IntegerStringWrapperClass(
-    val intValue: Int,
-    val stringValue: String,
-)
+    data class IntegerStringWrapperClass(
+        val intValue: Int,
+        val stringValue: String
+    )
+}

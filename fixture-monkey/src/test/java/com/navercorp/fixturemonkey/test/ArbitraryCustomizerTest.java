@@ -36,6 +36,7 @@ import com.navercorp.fixturemonkey.test.ArbitraryCustomizeTestSpecs.IntValue;
 import com.navercorp.fixturemonkey.test.ArbitraryCustomizeTestSpecs.StringAndInt;
 import com.navercorp.fixturemonkey.test.ArbitraryCustomizeTestSpecs.StringValue;
 
+@Deprecated
 class ArbitraryCustomizerTest {
 	@Property
 	@Domain(ArbitraryCustomizeTestSpecs.class)

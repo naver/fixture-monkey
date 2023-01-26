@@ -57,6 +57,7 @@ import com.navercorp.fixturemonkey.test.ArbitraryGeneratorTestSpecs.FieldReflect
 import com.navercorp.fixturemonkey.test.ArbitraryGeneratorTestSpecs.FieldReflectionInteger;
 import com.navercorp.fixturemonkey.test.ArbitraryGeneratorTestSpecs.NullInt;
 
+@Deprecated
 class ArbitraryGeneratorTest {
 	@Property
 	void giveMeWhenDefaultGeneratorIsBuilderArbitraryGenerator() {

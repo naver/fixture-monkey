@@ -45,6 +45,7 @@ import com.navercorp.fixturemonkey.test.SimpleManipulatorTestSpecs.StringList;
 import com.navercorp.fixturemonkey.test.SimpleManipulatorTestSpecs.StringValue;
 import com.navercorp.fixturemonkey.test.SimpleManipulatorTestSpecs.TwoString;
 
+@Deprecated
 class SimpleManipulatorTest {
 	@Property
 	void giveMeSpecSet() {

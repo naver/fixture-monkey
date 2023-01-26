@@ -31,6 +31,7 @@ import lombok.Setter;
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.mockito.arbitrary.MockitoInterfaceSupplier;
 
+@Deprecated
 class FixtureMonkeyMockitoInterfaceSupplierTest {
 	private final FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
 		.defaultInterfaceSupplier(MockitoInterfaceSupplier.INSTANCE)
