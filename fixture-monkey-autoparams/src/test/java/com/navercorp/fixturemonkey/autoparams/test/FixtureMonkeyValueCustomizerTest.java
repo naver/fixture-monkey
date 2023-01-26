@@ -45,6 +45,7 @@ import com.navercorp.fixturemonkey.autoparams.FixtureMonkeyAutoSource;
 import com.navercorp.fixturemonkey.autoparams.customization.FixtureMonkeyCustomizer;
 import com.navercorp.fixturemonkey.engine.jupiter.extension.FixtureMonkeySessionExtension;
 
+@Deprecated
 @ExtendWith(FixtureMonkeySessionExtension.class)
 class FixtureMonkeyValueCustomizerTest {
 	@BeforeAll

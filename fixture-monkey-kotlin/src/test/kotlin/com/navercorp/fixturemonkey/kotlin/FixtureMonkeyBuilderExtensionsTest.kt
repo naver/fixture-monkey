@@ -22,6 +22,7 @@ import org.assertj.core.api.BDDAssertions.then
 import org.junit.jupiter.api.Test
 import java.util.function.Consumer
 
+@Deprecated(message = "Deprecated since 0.3, use 0.4 instead")
 class FixtureMonkeyBuilderExtensionsTest {
 
     @Test
@@ -31,7 +32,7 @@ class FixtureMonkeyBuilderExtensionsTest {
             .addCustomizer<IntegerStringWrapperClass> {
                 it?.copy(
                     intValue = -1,
-                    stringValue = "test_value",
+                    stringValue = "test_value"
                 )
             }.build()
         val actual = sut.giveMeOne<IntegerStringWrapperClass>()
@@ -48,6 +49,6 @@ class FixtureMonkeyBuilderExtensionsTest {
 
     data class IntegerStringWrapperClass(
         val intValue: Int,
-        val stringValue: String,
+        val stringValue: String
     )
 }

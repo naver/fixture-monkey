@@ -75,6 +75,7 @@ import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.StringWithNullabl
 import com.navercorp.fixturemonkey.test.SimpleManipulatorTestSpecs.StringValue;
 import com.navercorp.fixturemonkey.util.StringUtils;
 
+@Deprecated
 class FixtureMonkeyTest {
 	@Property
 	@Domain(FixtureMonkeyTestSpecs.class)

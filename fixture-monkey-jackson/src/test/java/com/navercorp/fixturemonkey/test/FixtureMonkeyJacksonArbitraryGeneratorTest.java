@@ -37,6 +37,7 @@ import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.generator.BeanArbitraryGenerator;
 import com.navercorp.fixturemonkey.jackson.generator.JacksonArbitraryGenerator;
 
+@Deprecated
 class FixtureMonkeyJacksonArbitraryGeneratorTest {
 	private final FixtureMonkey sut = FixtureMonkey.builder()
 		.defaultGenerator(JacksonArbitraryGenerator.INSTANCE)

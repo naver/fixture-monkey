@@ -23,6 +23,7 @@ import net.jqwik.api.Property
 import org.assertj.core.api.BDDAssertions.then
 import javax.validation.constraints.NotNull
 
+@Deprecated(message = "Deprecated since 0.3, use 0.4 instead")
 class KotlinNullableArbitraryEvaluatorTest {
     private val fixture: FixtureMonkey = KFixtureMonkey.create()
 
@@ -37,13 +38,13 @@ class KotlinNullableArbitraryEvaluatorTest {
             then(it.address).isNotNull
         }
     }
-}
 
-data class KotlinDataObject(
-    @field:NotNull var name: String? = null,
-    @field:NotNull val address: String? = null,
-    var description: String? = null,
-    var time: String?,
-    val company: String? = null,
-    val money: Int?,
-)
+    data class KotlinDataObject(
+        @field:NotNull var name: String? = null,
+        @field:NotNull val address: String? = null,
+        var description: String? = null,
+        var time: String?,
+        val company: String? = null,
+        val money: Int?
+    )
+}
