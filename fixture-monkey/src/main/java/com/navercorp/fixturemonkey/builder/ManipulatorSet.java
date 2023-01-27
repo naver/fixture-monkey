@@ -68,7 +68,7 @@ public final class ManipulatorSet {
 		public ArbitraryManipulator convert(MonkeyManipulatorFactory monkeyManipulatorFactory) {
 			return new ArbitraryManipulator(
 				nodeResolver,
-				monkeyManipulatorFactory.convertToNodeManipulator(this.value)
+				monkeyManipulatorFactory.convertToNodeManipulator(this.value, false)
 			);
 		}
 	}

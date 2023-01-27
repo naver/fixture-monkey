@@ -28,6 +28,8 @@ import org.apiguardian.api.API.Status;
 import net.jqwik.api.Arbitrary;
 
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
+import com.navercorp.fixturemonkey.builder.DefaultArbitraryBuilder;
+import com.navercorp.fixturemonkey.resolver.ApplyNodeCountManipulator;
 import com.navercorp.fixturemonkey.resolver.ArbitraryTraverser;
 import com.navercorp.fixturemonkey.resolver.ManipulateOptions;
 import com.navercorp.fixturemonkey.resolver.NodeManipulator;
@@ -45,7 +47,12 @@ public final class MonkeyManipulatorFactory {
 		this.manipulateOptions = manipulateOptions;
 	}
 
-	public NodeManipulator convertToNodeManipulator(@Nullable Object value) {
+	public NodeManipulator convertToNodeManipulator(@Nullable Object value, boolean forced, int limit) {
+		NodeManipulator nodeManipulator = convertToNodeManipulator(value, forced);
+		return new ApplyNodeCountManipulator(nodeManipulator, limit);
+	}
+
+	public NodeManipulator convertToNodeManipulator(@Nullable Object value, boolean forced) {
 		if (value == null) {
 			return new NodeNullityManipulator(true);
 		} else if (value instanceof Arbitrary) {
@@ -53,24 +60,36 @@ public final class MonkeyManipulatorFactory {
 				traverser,
 				manipulateOptions,
 				LazyArbitrary.lazy(() -> ((Arbitrary<?>)value).sample()),
-				false
+				forced
+			);
+		} else if (value instanceof DefaultArbitraryBuilder) {
+			return new NodeSetLazyManipulator<>(
+				traverser,
+				manipulateOptions,
+				LazyArbitrary.lazy(() -> ((DefaultArbitraryBuilder<?>)value).sample()),
+				forced
 			);
 		} else if (value instanceof Supplier) {
 			return new NodeSetLazyManipulator<>(
 				traverser,
 				manipulateOptions,
 				LazyArbitrary.lazy((Supplier<?>)value),
-				false
+				forced
 			);
 		} else if (value instanceof LazyArbitrary) {
 			return new NodeSetLazyManipulator<>(
 				traverser,
 				manipulateOptions,
 				(LazyArbitrary<?>)value,
-				false
+				forced
 			);
 		} else {
-			return new NodeSetDecomposedValueManipulator<>(traverser, manipulateOptions, value, false);
+			return new NodeSetDecomposedValueManipulator<>(
+				traverser,
+				manipulateOptions,
+				value,
+				forced
+			);
 		}
 	}
 }
