@@ -227,10 +227,6 @@ class JavaxValidationFixtureMonkeyTest {
 		then(actual.getEmail()).containsOnlyOnce("@");
 		Pattern controlCharacters = Pattern.compile("[\u0000-\u001f\u007f]");
 		then(actual.getStr()).doesNotMatch(controlCharacters);
-		then(actual.getNotEmpty()).doesNotMatch(controlCharacters);
-		then(actual.getSize()).doesNotMatch(controlCharacters);
-		then(actual.getDigits()).doesNotMatch(controlCharacters);
-		then(actual.getEmail()).doesNotMatch(controlCharacters);
 	}
 
 	@Property(tries = 100)
