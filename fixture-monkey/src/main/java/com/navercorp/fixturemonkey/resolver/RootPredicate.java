@@ -18,35 +18,25 @@
 
 package com.navercorp.fixturemonkey.resolver;
 
-import java.util.List;
+import javax.annotation.Nullable;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
+import com.navercorp.fixturemonkey.api.generator.ContainerProperty;
+import com.navercorp.fixturemonkey.api.generator.ObjectProperty;
+
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public final class ArbitraryManipulator {
-	private final NodeResolver nodeResolver;
-	private final NodeManipulator nodeManipulator;
+public final class RootPredicate implements NextNodePredicate {
+	public static final RootPredicate INSTANCE = new RootPredicate();
 
-	public ArbitraryManipulator(
-		NodeResolver nodeResolver,
-		NodeManipulator nodeManipulator
+	@Override
+	public boolean test(
+		@Nullable ArbitraryProperty parentArbitraryProperty,
+		ObjectProperty currentObjectProperty,
+		@Nullable ContainerProperty currentContainerProperty
 	) {
-		this.nodeResolver = nodeResolver;
-		this.nodeManipulator = nodeManipulator;
-	}
-
-	ArbitraryManipulator withPrependNodeResolver(NodeResolver nodeResolver) {
-		return new ArbitraryManipulator(
-			new CompositeNodeResolver(nodeResolver, this.nodeResolver),
-			this.nodeManipulator
-		);
-	}
-
-	public void manipulate(ArbitraryTree tree) {
-		List<ArbitraryNode> nodes = nodeResolver.resolve(tree.findRoot());
-		for (ArbitraryNode node : nodes) {
-			nodeManipulator.manipulate(node);
-		}
+		return parentArbitraryProperty == null;
 	}
 }

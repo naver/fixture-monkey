@@ -26,10 +26,15 @@ import org.apiguardian.api.API.Status;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.generator.ContainerProperty;
 import com.navercorp.fixturemonkey.api.generator.ObjectProperty;
+import com.navercorp.fixturemonkey.api.property.Property;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public final class RootNodePredicate implements NextNodePredicate {
-	public static final RootNodePredicate INSTANCE = new RootNodePredicate();
+public final class PropertyPredicate implements NextNodePredicate {
+	private final Property property;
+
+	public PropertyPredicate(Property property) {
+		this.property = property;
+	}
 
 	@Override
 	public boolean test(
@@ -37,6 +42,6 @@ public final class RootNodePredicate implements NextNodePredicate {
 		ObjectProperty currentObjectProperty,
 		@Nullable ContainerProperty currentContainerProperty
 	) {
-		return parentArbitraryProperty == null;
+		return property.equals(currentObjectProperty.getProperty());
 	}
 }

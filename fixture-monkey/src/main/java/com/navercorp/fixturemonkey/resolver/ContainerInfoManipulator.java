@@ -18,7 +18,9 @@
 
 package com.navercorp.fixturemonkey.resolver;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -29,20 +31,35 @@ import com.navercorp.fixturemonkey.api.generator.ObjectProperty;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class ContainerInfoManipulator {
-	private final NodeResolver nodeResolver;
+	private final List<NextNodePredicate> nextNodePredicates;
 	private ArbitraryContainerInfo containerInfo;
 
-	public ContainerInfoManipulator(NodeResolver nodeResolver, ArbitraryContainerInfo containerInfo) {
-		this.nodeResolver = nodeResolver;
+	public ContainerInfoManipulator(List<NextNodePredicate> nextNodePredicates, ArbitraryContainerInfo containerInfo) {
+		this.nextNodePredicates = nextNodePredicates;
 		this.containerInfo = containerInfo;
 	}
 
-	public NodeResolver getNodeResolver() {
-		return nodeResolver;
+	public List<NextNodePredicate> getNextNodePredicates() {
+		return nextNodePredicates;
 	}
 
 	public ArbitraryContainerInfo getContainerInfo() {
 		return containerInfo;
+	}
+
+	ContainerInfoManipulator withPrependNextNodePredicate(NextNodePredicate nextNodePredicate) {
+		List<NextNodePredicate> nodePredicatesWithoutRoot = this.nextNodePredicates.stream()
+			.filter(it -> it instanceof RootPredicate)
+			.collect(Collectors.toList());
+
+		List<NextNodePredicate> newNextNodePredicates = new ArrayList<>();
+		newNextNodePredicates.add(nextNodePredicate);
+		newNextNodePredicates.addAll(nodePredicatesWithoutRoot);
+
+		return new ContainerInfoManipulator(
+			newNextNodePredicates,
+			this.containerInfo
+		);
 	}
 
 	public void fixed() {
@@ -59,18 +76,17 @@ public final class ContainerInfoManipulator {
 		List<ArbitraryProperty> parentArbitraryProperties,
 		ObjectProperty currentObjectProperty
 	) {
-		List<NextNodePredicate> nextNodePredicates = nodeResolver.toNextNodePredicate();
 		int parentArbitraryPropertySize = parentArbitraryProperties.size();
 		int nextNodePredicateSize = nextNodePredicates.size();
 
-		if (nextNodePredicateSize != parentArbitraryPropertySize + 1) {
+		boolean registered = nextNodePredicates.get(0) instanceof PropertyPredicate;
+		if (!registered && nextNodePredicateSize != parentArbitraryPropertySize + 1) {
 			return false;
 		}
 
 		for (int i = 0; i < nextNodePredicateSize; i++) {
 			int reversedNextNodePredicateIndex = nextNodePredicateSize - 1 - i;
 			int reversedCurrentArbitraryPropertyIndex = parentArbitraryPropertySize - i;
-
 			NextNodePredicate nextNodePredicate = nextNodePredicates.get(reversedNextNodePredicateIndex);
 			ArbitraryProperty parentArbitraryProperty = reversedCurrentArbitraryPropertyIndex == 0
 				? null

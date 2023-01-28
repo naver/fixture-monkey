@@ -92,13 +92,14 @@ public final class NodeSetDecomposedValueManipulator<T> implements NodeManipulat
 
 			if (forced || !containerProperty.getContainerInfo().isManipulated()) {
 				ContainerInfoManipulator containerInfoManipulator = new ContainerInfoManipulator(
-					IdentityNodeResolver.INSTANCE,
+					IdentityNodeResolver.INSTANCE.toNextNodePredicate(),
 					new ArbitraryContainerInfo(decomposedContainerSize, decomposedContainerSize, false)
 				);
 
 				ArbitraryNode newNode = traverser.traverse(
 					arbitraryNode.getProperty(),
-					Collections.singletonList(containerInfoManipulator)
+					Collections.singletonList(containerInfoManipulator),
+					Collections.emptyList()
 				);
 				arbitraryNode.setArbitraryProperty(
 					arbitraryNode.getArbitraryProperty()

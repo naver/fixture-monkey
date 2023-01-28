@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.builder;
+package com.navercorp.fixturemonkey.resolver;
 
 import static com.navercorp.fixturemonkey.Constants.DEFAULT_ELEMENT_MAX_SIZE;
 import static com.navercorp.fixturemonkey.Constants.HEAD_NAME;
@@ -56,21 +56,9 @@ import com.navercorp.fixturemonkey.api.property.RootProperty;
 import com.navercorp.fixturemonkey.api.type.LazyAnnotatedType;
 import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.api.validator.ArbitraryValidator;
+import com.navercorp.fixturemonkey.builder.ManipulatorSet;
 import com.navercorp.fixturemonkey.customizer.InnerSpec;
 import com.navercorp.fixturemonkey.expression.MonkeyExpressionFactory;
-import com.navercorp.fixturemonkey.resolver.ApplyNodeCountManipulator;
-import com.navercorp.fixturemonkey.resolver.ArbitraryBuilderContext;
-import com.navercorp.fixturemonkey.resolver.ArbitraryManipulator;
-import com.navercorp.fixturemonkey.resolver.ArbitraryResolver;
-import com.navercorp.fixturemonkey.resolver.ArbitraryTraverser;
-import com.navercorp.fixturemonkey.resolver.ContainerInfoManipulator;
-import com.navercorp.fixturemonkey.resolver.IdentityNodeResolver;
-import com.navercorp.fixturemonkey.resolver.ManipulateOptions;
-import com.navercorp.fixturemonkey.resolver.NodeFilterManipulator;
-import com.navercorp.fixturemonkey.resolver.NodeManipulator;
-import com.navercorp.fixturemonkey.resolver.NodeNullityManipulator;
-import com.navercorp.fixturemonkey.resolver.NodeResolver;
-import com.navercorp.fixturemonkey.resolver.NodeSetLazyManipulator;
 
 @SuppressFBWarnings("NM_SAME_SIMPLE_NAME_AS_SUPERCLASS")
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
@@ -223,8 +211,10 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T> {
 		NodeResolver nodeResolver = monkeyExpressionFactory.from(expression).toNodeResolver();
 
 		this.context.addContainerInfoManipulator(
-			nodeResolver,
-			new ArbitraryContainerInfo(min, max, true)
+			new ContainerInfoManipulator(
+				nodeResolver.toNextNodePredicate(),
+				new ArbitraryContainerInfo(min, max, true)
+			)
 		);
 		return this;
 	}
@@ -469,6 +459,10 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T> {
 			validator,
 			context.copy()
 		);
+	}
+
+	ArbitraryBuilderContext getContext() {
+		return this.context;
 	}
 
 	private String resolveExpression(ExpressionGenerator expressionGenerator) {

@@ -538,7 +538,7 @@ public final class InnerSpec {
 		if (innerSpec.containerInfo != null) {
 			containerInfoManipulators.add(
 				new ContainerInfoManipulator(
-					nextNodeResolver,
+					nextNodeResolver.toNextNodePredicate(),
 					innerSpec.containerInfo
 				)
 			);

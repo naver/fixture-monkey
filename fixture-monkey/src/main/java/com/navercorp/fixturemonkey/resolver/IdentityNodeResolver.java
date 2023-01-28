@@ -42,6 +42,6 @@ public final class IdentityNodeResolver implements NodeResolver {
 
 	@Override
 	public List<NextNodePredicate> toNextNodePredicate() {
-		return Collections.singletonList(RootNodePredicate.INSTANCE);
+		return Collections.singletonList(RootPredicate.INSTANCE);
 	}
 }

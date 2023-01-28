@@ -28,7 +28,6 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.customizer.FixtureCustomizer;
-import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
@@ -60,7 +59,7 @@ public final class ArbitraryBuilderContext {
 	public ArbitraryBuilderContext copy() {
 		List<ContainerInfoManipulator> copiedContainerInfoManipulators = this.containerInfoManipulators.stream()
 			.map(it -> new ContainerInfoManipulator(
-					it.getNodeResolver(),
+					it.getNextNodePredicates(),
 					it.getContainerInfo()
 				)
 			)
@@ -96,8 +95,8 @@ public final class ArbitraryBuilderContext {
 		return Collections.unmodifiableList(customizers);
 	}
 
-	public void addContainerInfoManipulator(NodeResolver nodeResolver, ArbitraryContainerInfo containerInfo) {
-		this.containerInfoManipulators.add(new ContainerInfoManipulator(nodeResolver, containerInfo));
+	public void addContainerInfoManipulator(ContainerInfoManipulator containerInfo) {
+		this.containerInfoManipulators.add(containerInfo);
 	}
 
 	public void addContainerInfoManipulators(List<ContainerInfoManipulator> containerInfoManipulators) {
