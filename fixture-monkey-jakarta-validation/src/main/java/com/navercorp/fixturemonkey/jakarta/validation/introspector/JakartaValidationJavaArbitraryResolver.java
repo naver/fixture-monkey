@@ -50,7 +50,6 @@ import com.navercorp.fixturemonkey.api.introspector.JavaArbitraryResolver;
 
 @API(since = "0.4.10", status = Status.EXPERIMENTAL)
 public final class JakartaValidationJavaArbitraryResolver implements JavaArbitraryResolver {
-	private static final String CONTROL_BLOCK = "\u0000-\u001f\u007f";
 	private static final RegexGenerator REGEX_GENERATOR = new RegexGenerator();
 
 	private final JakartaValidationConstraintGenerator constraintGenerator;
@@ -117,15 +116,29 @@ public final class JakartaValidationJavaArbitraryResolver implements JavaArbitra
 		return arbitrary
 			.filter(it -> {
 				if (!notBlank) {
-					return true;
+					if (it == null) {
+						return true;
+					} else {
+						return !containsControlCharacters(it);
+					}
 				}
 
-				if (it == null || it.trim().length() == 0) {
+				if (it == null || it.trim().isEmpty()) {
 					return false;
 				}
 
-				return !CONTROL_BLOCK.equals(it.trim());
+				return !containsControlCharacters(it);
 			});
+	}
+
+	private static boolean containsControlCharacters(String value) {
+		for (char c : value.toCharArray()) {
+			if (Character.isISOControl(c)) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	@Override
