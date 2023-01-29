@@ -63,32 +63,40 @@ public final class ContainerInfoManipulator {
 		int parentArbitraryPropertySize = parentArbitraryProperties.size();
 		int nextNodePredicateSize = nextNodePredicates.size();
 
-		if (parentArbitraryPropertySize + 1 != nextNodePredicateSize) {
+		if (nextNodePredicateSize != parentArbitraryPropertySize + 1) {
 			return false;
 		}
 
-		for (int i = 0; i < parentArbitraryPropertySize; i++) {
-			NextNodePredicate nextNodePredicate = nextNodePredicates.get(i);
-			ArbitraryProperty parentArbitraryProperty = i == 0 ? null : parentArbitraryProperties.get(i - 1);
-			ArbitraryProperty currentArbitraryProperty = parentArbitraryProperties.get(i);
+		for (int i = 0; i < nextNodePredicateSize; i++) {
+			int reversedNextNodePredicateIndex = nextNodePredicateSize - 1 - i;
+			int reversedCurrentArbitraryPropertyIndex = parentArbitraryPropertySize - i;
 
-			if (!nextNodePredicate.test(
-				parentArbitraryProperty,
-				currentArbitraryProperty.getObjectProperty(),
-				currentArbitraryProperty.getContainerProperty()
-			)) {
-				return false;
+			NextNodePredicate nextNodePredicate = nextNodePredicates.get(reversedNextNodePredicateIndex);
+			ArbitraryProperty parentArbitraryProperty = reversedCurrentArbitraryPropertyIndex == 0
+				? null
+				: parentArbitraryProperties.get(reversedCurrentArbitraryPropertyIndex - 1);
+
+			if (reversedCurrentArbitraryPropertyIndex == parentArbitraryPropertySize) {
+				if (!nextNodePredicate.test(
+					parentArbitraryProperty,
+					currentObjectProperty,
+					null
+				)) {
+					return false;
+				}
+			} else {
+				ArbitraryProperty currentArbitraryProperty =
+					parentArbitraryProperties.get(reversedCurrentArbitraryPropertyIndex);
+
+				if (!nextNodePredicate.test(
+					parentArbitraryProperty,
+					currentArbitraryProperty.getObjectProperty(),
+					currentArbitraryProperty.getContainerProperty()
+				)) {
+					return false;
+				}
 			}
 		}
-
-		ArbitraryProperty parentArbitraryProperty = parentArbitraryPropertySize == 0
-			? null
-			: parentArbitraryProperties.get(parentArbitraryPropertySize - 1);
-		NextNodePredicate nextNodePredicate = nextNodePredicates.get(nextNodePredicateSize - 1);
-		return nextNodePredicate.test(
-			parentArbitraryProperty,
-			currentObjectProperty,
-			null
-		);
+		return true;
 	}
 }
