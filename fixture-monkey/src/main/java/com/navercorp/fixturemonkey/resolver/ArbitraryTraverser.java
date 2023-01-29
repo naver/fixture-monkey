@@ -80,7 +80,7 @@ public final class ArbitraryTraverser {
 		ContainerProperty containerProperty = null;
 		if (container) {
 			ArbitraryContainerInfo containerInfo = containerInfoManipulators.stream()
-				.filter(it -> it.getNodeResolver().equals(IdentityNodeResolver.INSTANCE))
+				.filter(it -> it.isMatch(Collections.emptyList(), objectProperty))
 				.findFirst()
 				.map(ContainerInfoManipulator::getContainerInfo)
 				.orElse(null);
@@ -99,12 +99,16 @@ public final class ArbitraryTraverser {
 			objectProperty,
 			containerProperty
 		);
+
+		List<ArbitraryProperty> parentArbitraryProperties = new ArrayList<>();
+		parentArbitraryProperties.add(arbitraryProperty);
+
 		return this.traverse(
 			arbitraryProperty,
 			null,
 			new TraverseContext(
 				arbitraryProperty,
-				new ArrayList<>(),
+				parentArbitraryProperties,
 				containerInfoManipulators
 			)
 		);
