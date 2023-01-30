@@ -225,6 +225,8 @@ class JakartaValidationFixtureMonkeyTest {
 			then(ch).isBetween('e', 'o');
 		}
 		then(actual.getEmail()).containsOnlyOnce("@");
+		Pattern controlCharacters = Pattern.compile("[\u0000-\u001f\u007f]");
+		then(actual.getStr()).doesNotMatch(controlCharacters);
 	}
 
 	@Property(tries = 100)
