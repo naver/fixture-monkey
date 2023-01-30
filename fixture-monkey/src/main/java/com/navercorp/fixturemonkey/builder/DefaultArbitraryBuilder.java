@@ -75,9 +75,9 @@ import com.navercorp.fixturemonkey.resolver.ContainerInfoManipulator;
 import com.navercorp.fixturemonkey.resolver.IdentityNodeResolver;
 import com.navercorp.fixturemonkey.resolver.ManipulateOptions;
 import com.navercorp.fixturemonkey.resolver.NodeFilterManipulator;
+import com.navercorp.fixturemonkey.resolver.NodeManipulator;
 import com.navercorp.fixturemonkey.resolver.NodeNullityManipulator;
 import com.navercorp.fixturemonkey.resolver.NodeResolver;
-import com.navercorp.fixturemonkey.resolver.NodeSetDecomposedValueManipulator;
 import com.navercorp.fixturemonkey.resolver.NodeSetLazyManipulator;
 import com.navercorp.fixturemonkey.validator.ArbitraryValidator;
 
@@ -127,26 +127,12 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 		@Nullable Object value,
 		int limit
 	) {
-		NodeResolver nodeResolver = monkeyExpressionFactory.from(expression).toNodeResolver();
-
-		if (value instanceof Arbitrary) {
-			this.setLazy(expression, () -> ((Arbitrary<?>)value).sample(), limit);
-		} else if (value instanceof DefaultArbitraryBuilder) {
-			this.setLazy(expression, () -> ((DefaultArbitraryBuilder<?>)value).sample());
-		} else if (value instanceof ExpressionSpec) {
+		if (value instanceof ExpressionSpec) {
 			this.spec((ExpressionSpec)value);
-		} else if (value == null) {
-			this.setNull(expression);
 		} else {
-			this.context.addManipulator(
-				new ArbitraryManipulator(
-					nodeResolver,
-					new ApplyNodeCountManipulator(
-						new NodeSetDecomposedValueManipulator<>(traverser, manipulateOptions, value, false),
-						limit
-					)
-				)
-			);
+			NodeResolver nodeResolver = monkeyExpressionFactory.from(expression).toNodeResolver();
+			NodeManipulator nodeManipulator = monkeyManipulatorFactory.convertToNodeManipulator(value, false, limit);
+			this.context.addManipulator(new ArbitraryManipulator(nodeResolver, nodeManipulator));
 		}
 		return this;
 	}
@@ -177,21 +163,8 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 	@Override
 	public ArbitraryBuilder<T> setLazy(String expression, Supplier<?> supplier, int limit) {
 		NodeResolver nodeResolver = monkeyExpressionFactory.from(expression).toNodeResolver();
-		LazyArbitrary<?> lazyArbitrary = LazyArbitrary.lazy(supplier);
-		this.context.addManipulator(
-			new ArbitraryManipulator(
-				nodeResolver,
-				new ApplyNodeCountManipulator(
-					new NodeSetLazyManipulator<>(
-						traverser,
-						manipulateOptions,
-						lazyArbitrary,
-						false
-					),
-					limit
-				)
-			)
-		);
+		NodeManipulator nodeManipulator = monkeyManipulatorFactory.convertToNodeManipulator(supplier, false, limit);
+		this.context.addManipulator(new ArbitraryManipulator(nodeResolver, nodeManipulator));
 		return this;
 	}
 
@@ -306,12 +279,9 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 	public ArbitraryBuilder<T> fixed() {
 		this.context.getContainerInfoManipulators().forEach(ContainerInfoManipulator::fixed);
 
-		this.context.addManipulator(
-			new ArbitraryManipulator(
-				IdentityNodeResolver.INSTANCE,
-				new NodeSetDecomposedValueManipulator<>(traverser, manipulateOptions, this.sample(), false)
-			)
-		);
+		NodeResolver nodeResolver = IdentityNodeResolver.INSTANCE;
+		NodeManipulator nodeManipulator = monkeyManipulatorFactory.convertToNodeManipulator(this.sample(), false);
+		this.context.addManipulator(new ArbitraryManipulator(nodeResolver, nodeManipulator));
 		return this;
 	}
 
@@ -332,17 +302,9 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 			}
 		);
 
-		this.context.addManipulator(
-			new ArbitraryManipulator(
-				IdentityNodeResolver.INSTANCE,
-				new NodeSetLazyManipulator<>(
-					traverser,
-					manipulateOptions,
-					lazyArbitrary,
-					true
-				)
-			)
-		);
+		NodeResolver nodeResolver = IdentityNodeResolver.INSTANCE;
+		NodeManipulator nodeManipulator = monkeyManipulatorFactory.convertToNodeManipulator(lazyArbitrary, true);
+		this.context.addManipulator(new ArbitraryManipulator(nodeResolver, nodeManipulator));
 		return this;
 	}
 
@@ -361,11 +323,8 @@ public final class DefaultArbitraryBuilder<T> extends OldArbitraryBuilderImpl<T>
 	@Override
 	public ArbitraryBuilder<T> setNull(String expression) {
 		NodeResolver nodeResolver = monkeyExpressionFactory.from(expression).toNodeResolver();
-
-		this.context.addManipulator(new ArbitraryManipulator(
-			nodeResolver,
-			new NodeNullityManipulator(true)
-		));
+		NodeManipulator nodeManipulator = monkeyManipulatorFactory.convertToNodeManipulator(null, false);
+		this.context.addManipulator(new ArbitraryManipulator(nodeResolver, nodeManipulator));
 		return this;
 	}
 
