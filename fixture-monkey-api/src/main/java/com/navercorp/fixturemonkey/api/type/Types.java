@@ -157,7 +157,8 @@ public class Types {
 		if (!(ownerType instanceof AnnotatedParameterizedType)) {
 			AnnotatedType fieldAnnotatedType = field.getAnnotatedType();
 
-			AnnotatedType annotatedSuperClassType = ((Class<?>)ownerType.getType()).getAnnotatedSuperclass();
+			Class<?> actualOwnerType = Types.getActualType(ownerType.getType());
+			AnnotatedType annotatedSuperClassType = actualOwnerType.getAnnotatedSuperclass();
 			if (annotatedSuperClassType != null) {
 				if (ParameterizedType.class.isAssignableFrom(annotatedSuperClassType.getType().getClass())) {
 					ParameterizedType parameterizedType = (ParameterizedType)annotatedSuperClassType.getType();
