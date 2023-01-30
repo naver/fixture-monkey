@@ -134,7 +134,7 @@ public class LabMonkey extends FixtureMonkey {
 		context.addManipulator(
 			new ArbitraryManipulator(
 				IdentityNodeResolver.INSTANCE,
-				new NodeSetDecomposedValueManipulator<>(traverser, manipulateOptions, value, true)
+				new NodeSetDecomposedValueManipulator<>(traverser, manipulateOptions, value, false)
 			)
 		);
 

@@ -1665,4 +1665,16 @@ class FixtureMonkeyV04Test {
 			.isThrownBy(() -> SUT.giveMeOne(new TypeReference<List<? extends SimpleObject>>() {
 			}));
 	}
+
+	@Property
+	void sizeGivenAsNull() {
+		ListStringObject empty = new ListStringObject();
+
+		List<String> actual = SUT.giveMeBuilder(empty)
+			.size("values", 1)
+			.sample()
+			.getValues();
+
+		then(actual).hasSize(1);
+	}
 }

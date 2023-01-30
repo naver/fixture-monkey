@@ -79,6 +79,7 @@ public final class ContainerInfoManipulator {
 			)) {
 				return false;
 			}
+			currentArbitraryProperty.markManipulated();
 		}
 
 		ArbitraryProperty parentArbitraryProperty = parentArbitraryPropertySize == 0

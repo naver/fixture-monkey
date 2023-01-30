@@ -36,6 +36,8 @@ public final class ArbitraryProperty {
 	@Nullable
 	private final ContainerProperty containerProperty;
 
+	private boolean manipulated = false;
+
 	public ArbitraryProperty(
 		ObjectProperty objectProperty,
 		@Nullable ContainerProperty containerProperty
@@ -51,6 +53,10 @@ public final class ArbitraryProperty {
 	@Nullable
 	public ContainerProperty getContainerProperty() {
 		return containerProperty;
+	}
+
+	public boolean isManipulated() {
+		return manipulated;
 	}
 
 	public ArbitraryProperty withNullInject(double nullInject) {
@@ -88,6 +94,10 @@ public final class ArbitraryProperty {
 			this.objectProperty,
 			containerProperty
 		);
+	}
+
+	public void markManipulated() {
+		this.manipulated = true;
 	}
 
 	@Override

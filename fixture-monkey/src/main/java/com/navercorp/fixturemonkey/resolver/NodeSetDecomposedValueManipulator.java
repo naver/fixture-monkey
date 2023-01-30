@@ -76,12 +76,18 @@ public final class NodeSetDecomposedValueManipulator<T> implements NodeManipulat
 	}
 
 	private void setValue(ArbitraryNode arbitraryNode, @Nullable Object value) {
-		arbitraryNode.setManipulated(true);
-		arbitraryNode.setArbitraryProperty(arbitraryNode.getArbitraryProperty().withNullInject(NOT_NULL_INJECT));
 		if (value == null) {
-			arbitraryNode.setArbitraryProperty(arbitraryNode.getArbitraryProperty().withNullInject(ALWAYS_NULL_INJECT));
+			if (arbitraryNode.isNotManipulated()) { // setNull
+				arbitraryNode.markManipulated();
+				arbitraryNode.setArbitraryProperty(
+					arbitraryNode.getArbitraryProperty().withNullInject(ALWAYS_NULL_INJECT)
+				);
+			}
 			return;
 		}
+
+		arbitraryNode.markManipulated();
+		arbitraryNode.setArbitraryProperty(arbitraryNode.getArbitraryProperty().withNullInject(NOT_NULL_INJECT));
 
 		ContainerProperty containerProperty = arbitraryNode.getArbitraryProperty().getContainerProperty();
 		if (containerProperty != null) {

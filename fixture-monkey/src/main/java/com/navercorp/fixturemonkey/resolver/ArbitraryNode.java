@@ -31,6 +31,7 @@ import org.apiguardian.api.API.Status;
 import net.jqwik.api.Arbitrary;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
+import com.navercorp.fixturemonkey.api.generator.ContainerProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
@@ -104,11 +105,14 @@ final class ArbitraryNode {
 	}
 
 	public boolean isNotManipulated() {
-		return !manipulated;
+		ContainerProperty containerProperty = arbitraryProperty.getContainerProperty();
+		return !manipulated
+			&& !arbitraryProperty.isManipulated()
+			&& (containerProperty == null || !containerProperty.getContainerInfo().isManipulated());
 	}
 
-	public void setManipulated(boolean manipulated) {
-		this.manipulated = manipulated;
+	public void markManipulated() {
+		this.manipulated = true;
 	}
 
 	@Override

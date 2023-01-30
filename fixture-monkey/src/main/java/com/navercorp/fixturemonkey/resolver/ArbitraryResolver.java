@@ -78,10 +78,6 @@ public final class ArbitraryResolver {
 			customizers
 		);
 
-		containerInfoManipulators.stream()
-			.flatMap(it -> it.getNodeResolver().resolve(arbitraryTree.findRoot()).stream())
-			.forEach(it -> it.setManipulated(true));
-
 		List<ArbitraryManipulator> registeredManipulators = getRegisteredToManipulators(
 			manipulateOptions,
 			arbitraryTree.getMetadata()
@@ -139,7 +135,7 @@ public final class ArbitraryResolver {
 						@Override
 						public List<ArbitraryNode> resolve(ArbitraryNode arbitraryNode) {
 							for (ArbitraryNode node : arbitraryNodes) {
-								node.setManipulated(true);
+								node.markManipulated();
 							}
 							return arbitraryNodes;
 						}
