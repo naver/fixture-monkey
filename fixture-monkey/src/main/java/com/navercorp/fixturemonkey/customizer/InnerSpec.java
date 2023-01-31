@@ -443,7 +443,7 @@ public final class InnerSpec {
 	}
 
 	public ManipulatorSet getMergedManipulatorSet() {
-		return traverse(this, this.treePathResolver);
+		return traverse(this, null);
 	}
 
 	private void setValue(@Nullable Object value) {
@@ -514,12 +514,14 @@ public final class InnerSpec {
 		);
 	}
 
-	private ManipulatorSet traverse(InnerSpec innerSpec, NodeResolver nodeResolver) {
+	private ManipulatorSet traverse(InnerSpec innerSpec, @Nullable NodeResolver nodeResolver) {
 		List<NodeResolverObjectHolder> nodeResolverObjectHolders = new ArrayList<>();
 		List<ContainerInfoManipulator> containerInfoManipulators = new ArrayList<>();
 		List<ArbitraryManipulator> postConditionManipulators = new ArrayList<>();
 
-		NodeResolver nextNodeResolver = new CompositeNodeResolver(
+		NodeResolver nextNodeResolver = nodeResolver == null
+			? innerSpec.treePathResolver
+			: new CompositeNodeResolver(
 			nodeResolver,
 			innerSpec.treePathResolver
 		);

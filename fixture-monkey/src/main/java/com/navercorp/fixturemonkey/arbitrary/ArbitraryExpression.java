@@ -146,8 +146,8 @@ public final class ArbitraryExpression implements MonkeyExpression, Comparable<A
 	}
 
 	/**
-	 *  use {@link com.navercorp.fixturemonkey.resolver.NodeResolver} instead
-	 *  */
+	 * use {@link com.navercorp.fixturemonkey.resolver.NodeResolver} instead
+	 */
 	@Deprecated
 	public List<Cursor> toCursors() {
 		return this.expList.stream()
@@ -249,12 +249,13 @@ public final class ArbitraryExpression implements MonkeyExpression, Comparable<A
 		}
 
 		public NodeResolver toNodeResolver() {
-			NodeResolver nodeResolver;
+			NodeResolver nodeResolver = IdentityNodeResolver.INSTANCE;
 
-			if (HEAD_NAME.equals(name)) {
-				nodeResolver = IdentityNodeResolver.INSTANCE;
-			} else {
-				nodeResolver = new DefaultNodeResolver(new PropertyNameNodePredicate(name));
+			if (!HEAD_NAME.equals(name)) {
+				nodeResolver = new CompositeNodeResolver(
+					nodeResolver,
+					new DefaultNodeResolver(new PropertyNameNodePredicate(name))
+				);
 			}
 
 			for (ExpIndex index : indices) {
@@ -319,8 +320,8 @@ public final class ArbitraryExpression implements MonkeyExpression, Comparable<A
 	}
 
 	/**
-	 *  use {@link com.navercorp.fixturemonkey.resolver.NodeResolver} instead
-	 *  */
+	 * use {@link com.navercorp.fixturemonkey.resolver.NodeResolver} instead
+	 */
 	@Deprecated
 	public abstract static class Cursor {
 		private final String name;
