@@ -114,10 +114,13 @@ public class ExpressionGeneratorJavaTestSpecs {
 		@Nullable
 		private final String nullableName;
 
-		public DogJava(String name, List<Integer> loves, @Nullable String nullableName) {
+		private final boolean cute;
+
+		public DogJava(String name, List<Integer> loves, @Nullable String nullableName, boolean cute) {
 			this.name = name;
 			this.loves = loves;
 			this.nullableName = nullableName;
+			this.cute = cute;
 		}
 
 		public String getName() {
@@ -131,6 +134,10 @@ public class ExpressionGeneratorJavaTestSpecs {
 		@Nullable
 		public String getNullableName() {
 			return nullableName;
+		}
+
+		public boolean isCute() {
+			return cute;
 		}
 	}
 }

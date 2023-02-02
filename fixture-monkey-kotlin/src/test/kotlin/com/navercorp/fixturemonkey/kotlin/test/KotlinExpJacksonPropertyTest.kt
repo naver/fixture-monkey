@@ -59,7 +59,7 @@ data class JsonPropertyDataValue(
     var intValue: Int,
 
     @field:JsonProperty("string")
-    val stringValue: String,
+    val stringValue: String
 ) {
     @JsonProperty("intValue")
     fun getInt() = this.intValue
