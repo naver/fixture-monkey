@@ -38,13 +38,16 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import lombok.Data;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
+import com.navercorp.fixturemonkey.javax.validation.plugin.JavaxValidationPlugin;
 import com.navercorp.fixturemonkey.junit.jupiter.annotation.GiveMe;
 
 @ExtendWith(FixtureMonkeyParameterExtension.class)
 class FixtureMonkeyParameterExtensionTest {
 	@BeforeAll
 	static void beforeAll() {
-		FixtureMonkeyParameterExtension.setUp(FixtureMonkey.create());
+		FixtureMonkeyParameterExtension.setUp(FixtureMonkey.builder()
+			.plugin(new JavaxValidationPlugin())
+			.build());
 	}
 
 	@RepeatedTest(10)

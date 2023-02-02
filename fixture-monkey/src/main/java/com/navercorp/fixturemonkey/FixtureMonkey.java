@@ -20,9 +20,7 @@ package com.navercorp.fixturemonkey;
 
 import static java.util.stream.Collectors.toList;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Stream;
 
 import org.apiguardian.api.API;
@@ -30,78 +28,134 @@ import org.apiguardian.api.API.Status;
 
 import net.jqwik.api.Arbitrary;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
+import com.navercorp.fixturemonkey.api.context.MonkeyContext;
+import com.navercorp.fixturemonkey.api.customizer.FixtureCustomizer;
+import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
+import com.navercorp.fixturemonkey.api.option.GenerateOptions;
+import com.navercorp.fixturemonkey.api.property.RootProperty;
+import com.navercorp.fixturemonkey.api.type.LazyAnnotatedType;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
-import com.navercorp.fixturemonkey.api.type.Types;
-import com.navercorp.fixturemonkey.arbitrary.ArbitraryTraverser;
-import com.navercorp.fixturemonkey.customizer.ArbitraryCustomizer;
-import com.navercorp.fixturemonkey.customizer.ArbitraryCustomizers;
-import com.navercorp.fixturemonkey.generator.ArbitraryGenerator;
+import com.navercorp.fixturemonkey.builder.DefaultArbitraryBuilder;
+import com.navercorp.fixturemonkey.resolver.ArbitraryBuilderContext;
+import com.navercorp.fixturemonkey.resolver.ArbitraryManipulator;
+import com.navercorp.fixturemonkey.resolver.ArbitraryResolver;
+import com.navercorp.fixturemonkey.resolver.ArbitraryTraverser;
+import com.navercorp.fixturemonkey.resolver.IdentityNodeResolver;
+import com.navercorp.fixturemonkey.resolver.ManipulateOptions;
+import com.navercorp.fixturemonkey.resolver.ManipulateOptionsBuilder;
+import com.navercorp.fixturemonkey.resolver.ManipulatorOptimizer;
+import com.navercorp.fixturemonkey.resolver.NodeSetDecomposedValueManipulator;
 import com.navercorp.fixturemonkey.validator.ArbitraryValidator;
 
+@API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public class FixtureMonkey {
-	private final ArbitraryOption options;
-	private final ArbitraryGenerator defaultGenerator;
+	private final GenerateOptions generateOptions;
+	private final ManipulateOptionsBuilder manipulateOptionsBuilder;
+	private final ArbitraryTraverser traverser;
+	private final ManipulatorOptimizer manipulatorOptimizer;
 	private final ArbitraryValidator validator;
-	private final Map<Class<?>, ArbitraryGenerator> generatorMap;
-	private final ArbitraryCustomizers arbitraryCustomizers;
+	private final MonkeyContext monkeyContext;
 
+	@SuppressFBWarnings("NP_NULL_PARAM_DEREF_NONVIRTUAL")
 	public FixtureMonkey(
-		ArbitraryOption options,
-		ArbitraryGenerator defaultGenerator,
+		GenerateOptions generateOptions,
+		ManipulateOptionsBuilder manipulateOptionsBuilder,
+		ArbitraryTraverser traverser,
+		ManipulatorOptimizer manipulatorOptimizer,
 		ArbitraryValidator validator,
-		Map<Class<?>, ArbitraryGenerator> generatorMap,
-		ArbitraryCustomizers arbitraryCustomizers
+		MonkeyContext monkeyContext
 	) {
-		this.options = options;
-		this.defaultGenerator = defaultGenerator;
+		this.generateOptions = generateOptions;
+		this.manipulateOptionsBuilder = manipulateOptionsBuilder;
+		this.traverser = traverser;
+		this.manipulatorOptimizer = manipulatorOptimizer;
 		this.validator = validator;
-		this.generatorMap = generatorMap;
-		this.arbitraryCustomizers = arbitraryCustomizers;
-		if (options != null) {
-			options.applyArbitraryBuilders(this);
-		}
-	}
-
-	/**
-	 * Equivalent to {@code FixtureMonkey.builder().build()}
-	 * @return FixtureMonkey
-	 */
-	public static FixtureMonkey create() {
-		return FixtureMonkey.builder().build();
+		this.monkeyContext = monkeyContext;
+		manipulateOptionsBuilder.propertyNameResolvers(generateOptions.getPropertyNameResolvers());
+		manipulateOptionsBuilder.defaultPropertyNameResolver(generateOptions.getDefaultPropertyNameResolver());
+		manipulateOptionsBuilder.sampleRegisteredArbitraryBuilder(this);
 	}
 
 	public static FixtureMonkeyBuilder builder() {
 		return new FixtureMonkeyBuilder();
 	}
 
-	/**
-	 * Experimental new api and implementation
-	 * @return Monkey
-	 */
-	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
-	public static LabMonkey labMonkey() {
-		return FixtureMonkey.labMonkeyBuilder().build();
+	public static FixtureMonkey create() {
+		return builder().build();
 	}
 
-	/**
-	 * Experimental new api and implementation
-	 * @return Monkey
-	 */
-	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
-	public static LabMonkeyBuilder labMonkeyBuilder() {
-		return new LabMonkeyBuilder();
+	public <T> DefaultArbitraryBuilder<T> giveMeBuilder(Class<T> type) {
+		TypeReference<T> typeReference = new TypeReference<T>(type) {
+		};
+		return giveMeBuilder(typeReference);
+	}
+
+	public <T> DefaultArbitraryBuilder<T> giveMeBuilder(TypeReference<T> type) {
+		ManipulateOptions manipulateOptions = manipulateOptionsBuilder.build();
+		RootProperty rootProperty = new RootProperty(type.getAnnotatedType());
+
+		ArbitraryBuilder<?> registered = manipulateOptions.getRegisteredArbitraryBuilders().stream()
+			.filter(it -> it.match(rootProperty))
+			.map(MatcherOperator::getOperator)
+			.findAny()
+			.orElse(null);
+
+		DefaultArbitraryBuilder<T> arbitraryBuilder = new DefaultArbitraryBuilder<>(
+			manipulateOptions,
+			rootProperty,
+			new ArbitraryResolver(
+				traverser,
+				manipulatorOptimizer,
+				generateOptions,
+				manipulateOptions,
+				monkeyContext
+			),
+			traverser,
+			this.validator,
+			new ArbitraryBuilderContext()
+		);
+
+		if (registered != null) {
+			arbitraryBuilder.setLazy("$", registered::sample);
+		}
+
+		return arbitraryBuilder;
+	}
+
+	public <T> DefaultArbitraryBuilder<T> giveMeBuilder(T value) {
+		ManipulateOptions manipulateOptions = manipulateOptionsBuilder.build();
+		ArbitraryBuilderContext context = new ArbitraryBuilderContext();
+		context.addManipulator(
+			new ArbitraryManipulator(
+				IdentityNodeResolver.INSTANCE,
+				new NodeSetDecomposedValueManipulator<>(traverser, manipulateOptions, value, true)
+			)
+		);
+
+		return new DefaultArbitraryBuilder<>(
+			manipulateOptions,
+			new RootProperty(new LazyAnnotatedType<>(() -> value)),
+			new ArbitraryResolver(
+				traverser,
+				manipulatorOptimizer,
+				generateOptions,
+				manipulateOptions,
+				monkeyContext
+			),
+			traverser,
+			this.validator,
+			context
+		);
 	}
 
 	public <T> Stream<T> giveMe(Class<T> type) {
-		return this.giveMeBuilder(type, options).build().sampleStream();
+		return this.giveMeBuilder(type).build().sampleStream();
 	}
 
 	public <T> Stream<T> giveMe(TypeReference<T> typeReference) {
-		return this.giveMeBuilder(typeReference, options).build().sampleStream();
-	}
-
-	public <T> Stream<T> giveMe(Class<T> type, ArbitraryCustomizer<T> customizer) {
-		return this.giveMeBuilder(type, options, customizer).build().sampleStream();
+		return this.giveMeBuilder(typeReference).build().sampleStream();
 	}
 
 	public <T> List<T> giveMe(Class<T> type, int size) {
@@ -112,10 +166,6 @@ public class FixtureMonkey {
 		return this.giveMe(typeReference).limit(size).collect(toList());
 	}
 
-	public <T> List<T> giveMe(Class<T> type, int size, ArbitraryCustomizer<T> customizer) {
-		return this.giveMe(type, customizer).limit(size).collect(toList());
-	}
-
 	public <T> T giveMeOne(Class<T> type) {
 		return this.giveMe(type, 1).get(0);
 	}
@@ -124,97 +174,25 @@ public class FixtureMonkey {
 		return this.giveMe(typeReference, 1).get(0);
 	}
 
-	public <T> T giveMeOne(Class<T> type, ArbitraryCustomizer<T> customizer) {
-		return this.giveMe(type, 1, customizer).get(0);
-	}
-
 	public <T> Arbitrary<T> giveMeArbitrary(Class<T> type) {
-		return this.giveMeBuilder(type, options).build();
+		return this.giveMeBuilder(type).build();
 	}
 
 	public <T> Arbitrary<T> giveMeArbitrary(TypeReference<T> typeReference) {
-		return this.giveMeBuilder(typeReference, options).build();
+		return this.giveMeBuilder(typeReference).build();
 	}
 
-	public <T> ArbitraryBuilder<T> giveMeBuilder(Class<T> clazz) {
-		return this.giveMeBuilder(clazz, options);
+	public <T> Stream<T> giveMe(Class<T> type, FixtureCustomizer<T> customizer) {
+		return this.giveMeBuilder(type)
+			.customize(MatcherOperator.exactTypeMatchOperator(type, customizer))
+			.sampleStream();
 	}
 
-	public <T> ArbitraryBuilder<T> giveMeBuilder(TypeReference<T> typeReference) {
-		return this.giveMeBuilder(typeReference, options);
+	public <T> List<T> giveMe(Class<T> type, int size, FixtureCustomizer<T> customizer) {
+		return this.giveMe(type, customizer).limit(size).collect(toList());
 	}
 
-	public <T> ArbitraryBuilder<T> giveMeBuilder(Class<T> clazz, ArbitraryOption options) {
-		return this.giveMeBuilder(clazz, options, this.arbitraryCustomizers);
-	}
-
-	public <T> ArbitraryBuilder<T> giveMeBuilder(TypeReference<T> typeReference, ArbitraryOption options) {
-		return this.giveMeBuilder(typeReference, options, this.arbitraryCustomizers);
-	}
-
-	public <T> ArbitraryBuilder<T> giveMeBuilder(T value) {
-		return new OldArbitraryBuilderImpl<>(
-			() -> value,
-			new ArbitraryTraverser(options),
-			defaultGenerator,
-			validator,
-			this.arbitraryCustomizers,
-			this.generatorMap
-		);
-	}
-
-	private <T> ArbitraryBuilder<T> giveMeBuilder(
-		Class<T> clazz,
-		ArbitraryOption options,
-		ArbitraryCustomizer<T> customizer
-	) {
-		ArbitraryCustomizers newArbitraryCustomizers =
-			this.arbitraryCustomizers.mergeWith(Collections.singletonMap(clazz, customizer));
-
-		return this.giveMeBuilder(clazz, options, newArbitraryCustomizers);
-	}
-
-	private <T> ArbitraryBuilder<T> giveMeBuilder(
-		Class<T> clazz,
-		ArbitraryOption option,
-		ArbitraryCustomizers customizers
-	) {
-		ArbitraryBuilder<T> defaultArbitraryBuilder = option.getDefaultArbitraryBuilder(clazz);
-		if (defaultArbitraryBuilder != null) {
-			return defaultArbitraryBuilder;
-		}
-
-		return new OldArbitraryBuilderImpl<>(
-			clazz,
-			option,
-			defaultGenerator,
-			this.validator,
-			customizers,
-			this.generatorMap
-		);
-	}
-
-	@SuppressWarnings("unchecked")
-	private <T> ArbitraryBuilder<T> giveMeBuilder(
-		TypeReference<T> typeReference,
-		ArbitraryOption option,
-		ArbitraryCustomizers customizers
-	) {
-		if (!typeReference.isGenericType()) {
-			ArbitraryBuilder<T> defaultArbitraryBuilder =
-				(ArbitraryBuilder<T>)option.getDefaultArbitraryBuilder(Types.getActualType(typeReference.getType()));
-			if (defaultArbitraryBuilder != null) {
-				return defaultArbitraryBuilder;
-			}
-		}
-
-		return new OldArbitraryBuilderImpl<>(
-			typeReference,
-			option,
-			defaultGenerator,
-			this.validator,
-			customizers,
-			this.generatorMap
-		);
+	public <T> T giveMeOne(Class<T> type, FixtureCustomizer<T> customizer) {
+		return this.giveMe(type, 1, customizer).get(0);
 	}
 }

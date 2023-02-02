@@ -31,7 +31,7 @@ import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Property;
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
-import com.navercorp.fixturemonkey.LabMonkey;
+import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.customizer.InnerSpec;
@@ -44,7 +44,7 @@ import com.navercorp.fixturemonkey.test.InnerSpecTestSpecs.NestedListStringObjec
 import com.navercorp.fixturemonkey.test.InnerSpecTestSpecs.SimpleObject;
 
 class InnerSpecTest {
-	private static final LabMonkey SUT = LabMonkey.labMonkey();
+	private static final FixtureMonkey SUT = FixtureMonkey.create();
 
 	@Property
 	void key() {
@@ -133,7 +133,7 @@ class InnerSpecTest {
 
 	@Property
 	void keyInKey() {
-		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+		FixtureMonkey sut = FixtureMonkey.builder()
 			.defaultArbitraryContainerInfo(new ArbitraryContainerInfo(1, 3, false))
 			.build();
 
@@ -151,7 +151,7 @@ class InnerSpecTest {
 
 	@Property
 	void valueInKey() {
-		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+		FixtureMonkey sut = FixtureMonkey.builder()
 			.defaultArbitraryContainerInfo(new ArbitraryContainerInfo(1, 3, false))
 			.build();
 
@@ -268,7 +268,7 @@ class InnerSpecTest {
 	@Property
 	void entryInEntryKey() {
 		// given
-		LabMonkey sut = LabMonkey.labMonkeyBuilder()
+		FixtureMonkey sut = FixtureMonkey.builder()
 			.defaultArbitraryContainerInfo(new ArbitraryContainerInfo(1, 3, false))
 			.build();
 

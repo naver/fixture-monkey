@@ -22,9 +22,6 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.navercorp.fixturemonkey.api.introspector.BuilderArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.FieldReflectionArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.property.PropertyCache;
-import com.navercorp.fixturemonkey.generator.BuilderArbitraryGenerator;
-import com.navercorp.fixturemonkey.generator.FieldReflectionArbitraryGenerator;
-import com.navercorp.fixturemonkey.jackson.generator.JacksonArbitraryGenerator;
 import com.navercorp.fixturemonkey.jackson.plugin.JacksonPlugin;
 import com.navercorp.fixturemonkey.javax.validation.plugin.JavaxValidationPlugin;
 
@@ -44,66 +41,34 @@ public class BenchmarkTest {
 	}
 
 	@Benchmark
-	public void beanGenerateOrderSheetWithLabMonkey(Blackhole blackhole) throws Exception {
-		LabMonkey labMonkey = LabMonkey.labMonkeyBuilder()
-			.plugin(new JavaxValidationPlugin())
-			.build();
-		blackhole.consume(generateOrderSheet(labMonkey));
-	}
-
-	@Benchmark
 	public void beanGenerateOrderSheetWithFixtureMonkey(Blackhole blackhole) throws Exception {
 		FixtureMonkey fixtureMonkey = FixtureMonkey.create();
 		blackhole.consume(generateOrderSheet(fixtureMonkey));
 	}
 
 	@Benchmark
-	public void fieldReflectionGenerateOrderSheetWithLabMonkey(Blackhole blackhole) throws Exception {
-		LabMonkey labMonkey = LabMonkey.labMonkeyBuilder()
+	public void fieldReflectionGenerateOrderSheetWithFixtureMonkey(Blackhole blackhole) throws Exception {
+		FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
 			.objectIntrospector(FieldReflectionArbitraryIntrospector.INSTANCE)
 			.plugin(new JavaxValidationPlugin())
 			.build();
-		blackhole.consume(generateOrderSheet(labMonkey));
-	}
-
-	@Benchmark
-	public void fieldReflectionGenerateOrderSheetWithFixtureMonkey(Blackhole blackhole) throws Exception {
-		FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
-			.defaultGenerator(FieldReflectionArbitraryGenerator.INSTANCE)
-			.build();
 		blackhole.consume(generateOrderSheet(fixtureMonkey));
-	}
-
-	@Benchmark
-	public void jacksonGenerateOrderSheetWithLabMonkey(Blackhole blackhole) throws Exception {
-		LabMonkey labMonkey = LabMonkey.labMonkeyBuilder()
-			.plugin(new JacksonPlugin())
-			.plugin(new JavaxValidationPlugin())
-			.build();
-		blackhole.consume(generateOrderSheet(labMonkey));
 	}
 
 	@Benchmark
 	public void jacksonGenerateOrderSheetWithFixtureMonkey(Blackhole blackhole) throws Exception {
 		FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
-			.defaultGenerator(new JacksonArbitraryGenerator(OBJECT_MAPPER))
+			.plugin(new JacksonPlugin())
+			.plugin(new JavaxValidationPlugin())
 			.build();
 		blackhole.consume(generateOrderSheet(fixtureMonkey));
 	}
 
 	@Benchmark
-	public void builderGenerateOrderSheetWithLabMonkey(Blackhole blackhole) throws Exception {
-		LabMonkey labMonkey = LabMonkey.labMonkeyBuilder()
-			.objectIntrospector(BuilderArbitraryIntrospector.INSTANCE)
-			.plugin(new JavaxValidationPlugin())
-			.build();
-		blackhole.consume(generateBuilderOrderSheet(labMonkey));
-	}
-
-	@Benchmark
 	public void builderGenerateOrderSheetWithFixtureMonkey(Blackhole blackhole) throws Exception {
 		FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
-			.defaultGenerator(BuilderArbitraryGenerator.INSTANCE)
+			.objectIntrospector(BuilderArbitraryIntrospector.INSTANCE)
+			.plugin(new JavaxValidationPlugin())
 			.build();
 		blackhole.consume(generateBuilderOrderSheet(fixtureMonkey));
 	}

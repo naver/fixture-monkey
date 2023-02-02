@@ -27,7 +27,6 @@ import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Example;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
-import com.navercorp.fixturemonkey.LabMonkey;
 import com.navercorp.fixturemonkey.mockito.plugin.MockitoPluginTestSpecs.AbstractSample;
 import com.navercorp.fixturemonkey.mockito.plugin.MockitoPluginTestSpecs.AbstractSampleImpl;
 import com.navercorp.fixturemonkey.mockito.plugin.MockitoPluginTestSpecs.InterfaceSample;
@@ -38,7 +37,7 @@ class MockitoPluginTest {
 	@Example
 	void mockitoAbstractInterface() {
 		// given
-		LabMonkey sut = FixtureMonkey.labMonkeyBuilder()
+		FixtureMonkey sut = FixtureMonkey.builder()
 			.plugin(new MockitoPlugin())
 			.defaultNullInjectGenerator(context -> 0)
 			.build();
@@ -61,7 +60,7 @@ class MockitoPluginTest {
 
 	@Example
 	void interfaceImplementsAndMockitoInterface() {
-		LabMonkey sut = FixtureMonkey.labMonkeyBuilder()
+		FixtureMonkey sut = FixtureMonkey.builder()
 			.plugin(new MockitoPlugin())
 			.interfaceImplements(InterfaceSample.class, Collections.singletonList(InterfaceSampleImpl.class))
 			.defaultNullInjectGenerator(context -> 0)
@@ -74,7 +73,7 @@ class MockitoPluginTest {
 
 	@Example
 	void interfaceImplementsAndMockitoAbstract() {
-		LabMonkey sut = FixtureMonkey.labMonkeyBuilder()
+		FixtureMonkey sut = FixtureMonkey.builder()
 			.plugin(new MockitoPlugin())
 			.defaultNullInjectGenerator(context -> 0)
 			.interfaceImplements(AbstractSample.class, Collections.singletonList(AbstractSampleImpl.class))
