@@ -3,6 +3,10 @@
 title: "Release Notes"
 weight: 6
 ---
+### 0.4.12
+* Add supporting complex generic types
+* Add a condition to not include control characters when creating String values when importing `javax-validation`, `jakarta-validation` module 
+
 ### 0.4.11
 * Add `set` for lists in concrete classes that inherits an abstract class
 * Add generating an abstract circular-reference object

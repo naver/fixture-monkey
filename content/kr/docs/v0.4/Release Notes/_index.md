@@ -3,6 +3,10 @@
 title: "Release Notes"
 weight: 6
 ---
+### 0.4.12
+* generic을 가지고 있는 다양한 복잡한 타입을 생성할 수 있습니다.
+* `javax-validation`, `jakarta-validation` 모듈을 사용하면 control block에 속하는 문자를 생성하지 않습니다.
+
 ### 0.4.11
 * 추상 클래스 구현체 리스트를 `set`할 수 있습니다.
 * 추상 클래스가 순환 참조를 가지더라도 생성할 수 있습니다.
