@@ -21,12 +21,16 @@ public class Generate {
 {{< tabpane persistLang=false >}}
 {{< tab header="general expression" lang="java">}}
 
-generateBuilder.setInner("mapByString", m -> m.key(k -> k.entry("key", "value")));
+generateBuilder.setInner(
+    InnerSpec().property("mapByString", m -> m.key(k -> k.entry("key", "value")))
+);
 
 {{< /tab >}}
 {{< tab header="Kotlin Exp" lang="kotlin">}}
 
-generateBuilder.setInnerExp(Generate::mapByString) { m -> m.key { k -> k.entry("key", "value") } }
+generateBuilder.setInner(
+    InnerSpec().property("mapByString") { m -> m.key { k -> k.entry("key", "value") } }
+);
 
 {{< /tab >}}
 {{< /tabpane>}}
@@ -36,12 +40,16 @@ If setting value given key, check out `entry` just as shown below
 {{< tabpane persistLang=false >}}
 {{< tab header="general expression" lang="java">}}
 
-generateBuilder.setInner("mapByString", m -> m.entry(k -> k.entry("innerKey", "innerValue")), "value");
+generateBuilder.setInner(
+    InnerSpec().property("mapByString", m -> m.entry(k -> k.entry("innerKey", "innerValue")), "value")
+);
 
 {{< /tab >}}
 {{< tab header="Kotlin Exp" lang="kotlin">}}
 
-generateBuilder.setInnerExp(Generate::mapByString) { m -> m.entry ({ k -> k.entry("innerKey", "innerValue") }, "value")
+generateBuilder.setInner(
+    InnerSpec().property("mapByString") { m -> m.entry({ k -> k.entry("innerKey", "innerValue") }, "value") }
+);
 
 {{< /tab >}}
 {{< /tabpane>}}
@@ -50,12 +58,16 @@ generateBuilder.setInnerExp(Generate::mapByString) { m -> m.entry ({ k -> k.entr
 {{< tabpane persistLang=false >}}
 {{< tab header="general expression" lang="java">}}
 
-generateBuilder.setInner("stringByMap", m -> m.value(v -> v.entry("key", "value")));
+generateBuilder.setInner(
+    InnerSpec().property("stringByMap", m -> m.value(v -> v.entry("key", "value")))
+);
 
 {{< /tab >}}
 {{< tab header="Kotlin Exp" lang="kotlin">}}
 
-generateBuilder.setInnerExp(Generate::stringByMap) { m -> m.value { v -> v.entry("key", "value") } }
+generateBuilder.setInner(
+    InnerSpec().property("stringByMap") { m -> m.value { v -> v.entry("key", "value") } }
+);
 
 {{< /tab >}}
 {{< /tabpane>}}
@@ -65,12 +77,16 @@ If setting key given value, check out `entry` just as shown below
 {{< tabpane persistLang=false >}}
 {{< tab header="general expression" lang="java">}}
 
-generateBuilder.setInner("stringByMap", m -> m.entry("key", v -> v.entry("innerKey", "innerValue")));
+generateBuilder.setInner(
+    InnerSpec().property("stringByMap", m -> m.entry("key", v -> v.entry("innerKey", "innerValue")))
+);
 
 {{< /tab >}}
 {{< tab header="Kotlin Exp" lang="kotlin">}}
 
-generateBuilder.setInnerExp(Generate::stringByMap) { m -> m.entry ("key") { v -> v.entry("innerKey", "innerValue") } }
+generateBuilder.setInner(
+    InnerSpec().property("stringByMap") { m -> m.entry("key") {v -> v.entry("innerKey", "innerValue")} }
+);
 
 {{< /tab >}}
 {{< /tabpane>}}
