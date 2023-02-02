@@ -11,7 +11,7 @@ weight: 6
 
 ```java
 public class Generate {
-	Map<String, String> namesById;
+    Map<String, String> namesById;
 }
 ```
 
@@ -30,13 +30,16 @@ ArbitraryBuilder<Generate> generateBuilder = fixtureMonkey.giveMeBuilder(Generat
 {{< tabpane persistLang=false >}}
 {{< tab header="일반 표현식" lang="java">}}
 
-generateBuilder.setInner("namesById", m -> m.size(5));
-
+generateBuilder.setInner(
+    InnerSpec().property("namesById", m -> m.size(5))
+);
 
 {{< /tab >}}
-{{< tab header= "Kotlin Exp" lang="kotlin">}}
+{{< tab header="Kotlin Exp" lang="kotlin">}}
 
-generateBuilder.setInnerExp(Generate::namesById) { m -> m.size(5) }
+generateBuilder.setInner(
+    InnerSpec().property("namesById") { m -> m.size(5) }
+)
 
 {{< /tab >}}
 {{< /tabpane >}}
@@ -46,13 +49,16 @@ generateBuilder.setInnerExp(Generate::namesById) { m -> m.size(5) }
 {{< tabpane persistLang=false >}}
 {{< tab header="일반 표현식" lang="java">}}
 
-generateBuilder.setInner("namesById", m -> m.entry("key", "value"));
+generateBuilder.setInner(
+    InnerSpec().property("namesById", m -> m.entry("key", "value"))
+);
 
 {{< /tab >}}
 {{< tab header="Kotlin Exp" lang="kotlin">}}
 
-generateBuilder.setInnerExp(Generate::namesById) { m -> m.entry("key", "value") }
-
+generateBuilder.setInner(
+    InnerSpec().property("namesById") { m -> m.entry("key", "value") }
+)
 {{< /tab >}}
 {{< /tabpane>}}
 
@@ -61,12 +67,16 @@ entry의 key 값만 설정합니다.
 {{< tabpane persistLang=false >}}
 {{< tab header="일반 표현식" lang="java">}}
 
-generateBuilder.setInner("namesById", m -> m.key("key"));
+generateBuilder.setInner(
+    InnerSpec().property("namesById", m -> m.key("key"))
+);
 
 {{< /tab >}}
 {{< tab header="Kotlin Exp" lang="kotlin">}}
 
-generateBuilder.setInnerExp(Generate::namesById) { m -> m.key("key") }
+generateBuilder.setInner(
+    InnerSpec().property("namesById") { m -> m.key("key") }
+)
 
 {{< /tab >}}
 {{< /tabpane>}}
@@ -76,12 +86,16 @@ entry의 value 값만 설정합니다.
 {{< tabpane persistLang=false >}}
 {{< tab header="일반 표현식" lang="java">}}
 
-generateBuilder.setInner("namesById", m -> m.value("value"));
+generateBuilder.setInner(
+    InnerSpec().property("namesById", m -> m.value("value"))
+);
 
 {{< /tab >}}
 {{< tab header="Kotlin Exp" lang="kotlin">}}
 
-generateBuilder.setInnerExp(Generate::namesById) { m -> m.value("value") }
+generateBuilder.setInner(
+    InnerSpec().property("namesById") { m -> m.value("value") }
+)
 
 {{< /tab >}}
 {{< /tabpane>}}

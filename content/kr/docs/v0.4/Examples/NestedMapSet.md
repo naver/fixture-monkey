@@ -21,12 +21,16 @@ key의 entry를 설정합니다.
 {{< tabpane persistLang=false >}}
 {{< tab header="일반 표현식" lang="java">}}
 
-generateBuilder.setInner("mapByString", m -> m.key(k -> k.entry("key", "value")));
+generateBuilder.setInner(
+    InnerSpec().property("mapByString", m -> m.key(k -> k.entry("key", "value")))
+);
 
 {{< /tab >}}
 {{< tab header="Kotlin Exp" lang="kotlin">}}
 
-generateBuilder.setInnerExp(Generate::mapByString) { m -> m.key { k -> k.entry("key", "value") } }
+generateBuilder.setInner(
+    InnerSpec().property("mapByString") { m -> m.key { k -> k.entry("key", "value") } }
+);
 
 {{< /tab >}}
 {{< /tabpane>}}
@@ -36,12 +40,16 @@ generateBuilder.setInnerExp(Generate::mapByString) { m -> m.key { k -> k.entry("
 {{< tabpane persistLang=false >}}
 {{< tab header="일반 표현식" lang="java">}}
 
-generateBuilder.setInner("mapByString", m -> m.entry(k -> k.entry("innerKey", "innerValue")), "value");
+generateBuilder.setInner(
+    InnerSpec().property("mapByString", m -> m.entry(k -> k.entry("innerKey", "innerValue")), "value")
+);
 
 {{< /tab >}}
 {{< tab header="Kotlin Exp" lang="kotlin">}}
 
-generateBuilder.setInnerExp(Generate::mapByString) { m -> m.entry ({ k -> k.entry("innerKey", "innerValue") }, "value")
+generateBuilder.setInner(
+    InnerSpec().property("mapByString") { m -> m.entry({ k -> k.entry("innerKey", "innerValue") }, "value") }
+);
 
 {{< /tab >}}
 {{< /tabpane>}}
@@ -51,13 +59,16 @@ value의 entry를 설정합니다.
 {{< tabpane persistLang=false >}}
 {{< tab header="일반 표현식" lang="java" >}}
 
-generateBuilder.setInner("stringByMap", m -> m.value(v -> v.entry("key", "value")));
+generateBuilder.setInner(
+    InnerSpec().property("stringByMap", m -> m.value(v -> v.entry("key", "value")))
+);
 
 {{< /tab >}}
-{{< tab header="Kotlin Exp" lang="kotlin" >}}
+{{< tab header="Kotlin Exp" lang="kotlin">}}
 
-generateBuilder.setInnerExp(Generate::stringByMap) { m -> m.value { v -> v.entry("key", "value") } }
-
+generateBuilder.setInner(
+    InnerSpec().property("stringByMap") { m -> m.value { v -> v.entry("key", "value") } }
+);
 {{< /tab >}}
 {{< /tabpane>}}
 
@@ -66,12 +77,16 @@ generateBuilder.setInnerExp(Generate::stringByMap) { m -> m.value { v -> v.entry
 {{< tabpane persistLang=false >}}
 {{< tab header="일반 표현식" lang="java">}}
 
-generateBuilder.setInner("stringByMap", m -> m.entry("key", v -> v.entry("innerKey", "innerValue")));
+generateBuilder.setInner(
+InnerSpec().property("stringByMap", m -> m.entry("key", v -> v.entry("innerKey", "innerValue")))
+);
 
 {{< /tab >}}
 {{< tab header="Kotlin Exp" lang="kotlin">}}
 
-generateBuilder.setInnerExp(Generate::stringByMap) { m -> m.entry ("key") { v -> v.entry("innerKey", "innerValue") } }
+generateBuilder.setInner(
+InnerSpec().property("stringByMap") { m -> m.entry("key") {v -> v.entry("innerKey", "innerValue")} }
+);
 
 {{< /tab >}}
 {{< /tabpane>}}
