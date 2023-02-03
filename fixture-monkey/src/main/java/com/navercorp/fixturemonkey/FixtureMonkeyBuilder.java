@@ -56,6 +56,7 @@ import com.navercorp.fixturemonkey.api.option.GenerateOptionsBuilder;
 import com.navercorp.fixturemonkey.api.plugin.Plugin;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.api.type.Types;
+import com.navercorp.fixturemonkey.api.validator.ArbitraryValidator;
 import com.navercorp.fixturemonkey.expression.MonkeyExpressionFactory;
 import com.navercorp.fixturemonkey.resolver.ArbitraryTraverser;
 import com.navercorp.fixturemonkey.resolver.DecomposableContainerValue;
@@ -64,14 +65,11 @@ import com.navercorp.fixturemonkey.resolver.ManipulateOptions;
 import com.navercorp.fixturemonkey.resolver.ManipulateOptionsBuilder;
 import com.navercorp.fixturemonkey.resolver.ManipulatorOptimizer;
 import com.navercorp.fixturemonkey.resolver.NoneManipulatorOptimizer;
-import com.navercorp.fixturemonkey.validator.ArbitraryValidator;
-import com.navercorp.fixturemonkey.validator.DefaultArbitraryValidator;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public class FixtureMonkeyBuilder {
 	private final GenerateOptionsBuilder generateOptionsBuilder = GenerateOptions.builder();
 	private final ManipulateOptionsBuilder manipulateOptionsBuilder = ManipulateOptions.builder();
-	private ArbitraryValidator arbitraryValidator = new DefaultArbitraryValidator();
 	private ManipulatorOptimizer manipulatorOptimizer = new NoneManipulatorOptimizer();
 	private DecomposedContainerValueFactory defaultDecomposedContainerValueFactory = (obj) -> {
 		throw new IllegalArgumentException("given type is not supported container : " + obj.getClass().getTypeName());
@@ -295,7 +293,7 @@ public class FixtureMonkeyBuilder {
 	}
 
 	public FixtureMonkeyBuilder arbitraryValidator(ArbitraryValidator arbitraryValidator) {
-		this.arbitraryValidator = arbitraryValidator;
+		this.generateOptionsBuilder.defaultArbitraryValidator(arbitraryValidator);
 		return this;
 	}
 
@@ -540,7 +538,7 @@ public class FixtureMonkeyBuilder {
 			manipulateOptionsBuilder,
 			traverser,
 			manipulatorOptimizer,
-			this.arbitraryValidator,
+			generateOptions.getDefaultArbitraryValidator(),
 			MonkeyContext.builder().build()
 		);
 	}

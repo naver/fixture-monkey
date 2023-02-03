@@ -16,9 +16,9 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.arbitrary;
+package com.navercorp.fixturemonkey.api.validator;
 
-@FunctionalInterface
-public interface InterfaceSupplier<T> {
-	T get(Class<T> type);
+public interface ArbitraryValidator {
+	// if arbitrary is not valid throw exception then re-create arbitrary for valid.
+	void validate(Object arbitrary);
 }

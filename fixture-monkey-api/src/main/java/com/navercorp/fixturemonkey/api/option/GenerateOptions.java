@@ -68,6 +68,7 @@ import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.api.property.TupleLikeElementsProperty;
 import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.api.type.Types.UnidentifiableType;
+import com.navercorp.fixturemonkey.api.validator.ArbitraryValidator;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class GenerateOptions {
@@ -112,6 +113,7 @@ public final class GenerateOptions {
 
 	@SuppressWarnings("rawtypes")
 	private final List<MatcherOperator<FixtureCustomizer>> arbitraryCustomizers;
+	private final ArbitraryValidator defaultArbitraryValidator;
 
 	@SuppressWarnings("rawtypes")
 	public GenerateOptions(
@@ -128,7 +130,8 @@ public final class GenerateOptions {
 		int defaultArbitraryContainerSize, ArbitraryContainerInfo defaultArbitraryContainerInfo,
 		List<MatcherOperator<ArbitraryGenerator>> arbitraryGenerators,
 		ArbitraryGenerator defaultArbitraryGenerator,
-		List<MatcherOperator<FixtureCustomizer>> arbitraryCustomizers
+		List<MatcherOperator<FixtureCustomizer>> arbitraryCustomizers,
+		ArbitraryValidator defaultArbitraryValidator
 	) {
 		this.propertyGenerators = propertyGenerators;
 		this.defaultPropertyGenerator = defaultPropertyGenerator;
@@ -145,6 +148,7 @@ public final class GenerateOptions {
 		this.arbitraryGenerators = arbitraryGenerators;
 		this.defaultArbitraryGenerator = defaultArbitraryGenerator;
 		this.arbitraryCustomizers = arbitraryCustomizers;
+		this.defaultArbitraryValidator = defaultArbitraryValidator;
 	}
 
 	public static GenerateOptionsBuilder builder() {
@@ -269,6 +273,10 @@ public final class GenerateOptions {
 		return arbitraryCustomizers;
 	}
 
+	public ArbitraryValidator getDefaultArbitraryValidator() {
+		return defaultArbitraryValidator;
+	}
+
 	public GenerateOptionsBuilder toBuilder() {
 		return builder()
 			.defaultPropertyGenerator(defaultPropertyGenerator)
@@ -283,7 +291,8 @@ public final class GenerateOptions {
 			.defaultArbitraryContainerMaxSize(this.defaultArbitraryContainerSize)
 			.defaultArbitraryContainerInfo(this.defaultArbitraryContainerInfo)
 			.arbitraryGenerators(new ArrayList<>(this.arbitraryGenerators))
-			.defaultArbitraryGenerator(this.defaultArbitraryGenerator);
+			.defaultArbitraryGenerator(this.defaultArbitraryGenerator)
+			.defaultArbitraryValidator(defaultArbitraryValidator);
 	}
 
 	private static List<MatcherOperator<ObjectPropertyGenerator>> getDefaultObjectPropertyGenerators(

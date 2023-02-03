@@ -38,7 +38,7 @@ import net.jqwik.api.RandomGenerator;
 import net.jqwik.api.Shrinkable;
 import net.jqwik.api.TooManyFilterMissesException;
 
-import com.navercorp.fixturemonkey.validator.ArbitraryValidator;
+import com.navercorp.fixturemonkey.api.validator.ArbitraryValidator;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 final class ArbitraryValue<T> implements Arbitrary<T> {

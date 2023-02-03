@@ -54,6 +54,7 @@ import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.plugin.Plugin;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
+import com.navercorp.fixturemonkey.api.validator.ArbitraryValidator;
 
 @SuppressWarnings("UnusedReturnValue")
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
@@ -83,6 +84,8 @@ public final class GenerateOptionsBuilder {
 	private boolean nullableContainer = false;
 	private boolean nullableElement = false;
 	private UnaryOperator<NullInjectGenerator> defaultNullInjectGeneratorOperator = it -> it;
+	private ArbitraryValidator defaultArbitraryValidator = (obj) -> {
+	};
 
 	GenerateOptionsBuilder() {
 	}
@@ -495,6 +498,11 @@ public final class GenerateOptionsBuilder {
 		return this;
 	}
 
+	public GenerateOptionsBuilder defaultArbitraryValidator(ArbitraryValidator arbitraryValidator) {
+		this.defaultArbitraryValidator = arbitraryValidator;
+		return this;
+	}
+
 	public GenerateOptions build() {
 		ObjectPropertyGenerator defaultObjectPropertyGenerator = defaultIfNull(
 			this.defaultObjectPropertyGenerator,
@@ -548,7 +556,8 @@ public final class GenerateOptionsBuilder {
 			defaultArbitraryContainerInfo,
 			this.arbitraryGenerators,
 			defaultArbitraryGenerator,
-			this.arbitraryCustomizers
+			this.arbitraryCustomizers,
+			this.defaultArbitraryValidator
 		);
 	}
 

@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.validator;
+package com.navercorp.fixturemonkey.api.validator;
 
 import java.util.Collections;
 import java.util.HashMap;

@@ -28,6 +28,7 @@ import com.navercorp.fixturemonkey.api.introspector.JavaTimeTypeArbitraryGenerat
 import com.navercorp.fixturemonkey.api.introspector.JavaTypeArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.option.GenerateOptionsBuilder;
 import com.navercorp.fixturemonkey.api.plugin.Plugin;
+import com.navercorp.fixturemonkey.api.validator.DefaultArbitraryValidator;
 import com.navercorp.fixturemonkey.jakarta.validation.generator.JakartaValidationArbitraryContainerInfoGenerator;
 import com.navercorp.fixturemonkey.jakarta.validation.generator.JakartaValidationNullInjectGenerator;
 import com.navercorp.fixturemonkey.jakarta.validation.introspector.JakartaValidationBooleanIntrospector;
@@ -101,6 +102,7 @@ public final class JakartaValidationPlugin implements Plugin {
 						current
 					)
 				)
-			);
+			)
+			.defaultArbitraryValidator(new DefaultArbitraryValidator());
 	}
 }
