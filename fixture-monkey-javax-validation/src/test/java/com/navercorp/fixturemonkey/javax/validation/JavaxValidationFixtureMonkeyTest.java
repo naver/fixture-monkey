@@ -41,7 +41,7 @@ import java.util.regex.Pattern;
 
 import net.jqwik.api.Property;
 
-import com.navercorp.fixturemonkey.LabMonkey;
+import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.javax.validation.plugin.JavaxValidationPlugin;
 import com.navercorp.fixturemonkey.javax.validation.spec.BigDecimalIntrospectorSpec;
 import com.navercorp.fixturemonkey.javax.validation.spec.BigIntegerIntrospectorSpec;
@@ -59,7 +59,7 @@ import com.navercorp.fixturemonkey.javax.validation.spec.StringIntrospectorSpec;
 import com.navercorp.fixturemonkey.javax.validation.spec.TimeIntrospectorSpec;
 
 class JavaxValidationFixtureMonkeyTest {
-	private static final LabMonkey SUT = LabMonkey.labMonkeyBuilder()
+	private static final FixtureMonkey SUT = FixtureMonkey.builder()
 		.plugin(new JavaxValidationPlugin())
 		.defaultNotNull(true)
 		.build();

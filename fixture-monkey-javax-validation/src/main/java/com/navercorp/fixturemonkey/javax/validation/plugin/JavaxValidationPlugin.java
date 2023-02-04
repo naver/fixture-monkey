@@ -28,6 +28,7 @@ import com.navercorp.fixturemonkey.api.introspector.JavaTimeTypeArbitraryGenerat
 import com.navercorp.fixturemonkey.api.introspector.JavaTypeArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.option.GenerateOptionsBuilder;
 import com.navercorp.fixturemonkey.api.plugin.Plugin;
+import com.navercorp.fixturemonkey.api.validator.DefaultArbitraryValidator;
 import com.navercorp.fixturemonkey.javax.validation.generator.JavaxValidationArbitraryContainerInfoGenerator;
 import com.navercorp.fixturemonkey.javax.validation.generator.JavaxValidationNullInjectGenerator;
 import com.navercorp.fixturemonkey.javax.validation.introspector.JavaxValidationBooleanIntrospector;
@@ -101,6 +102,7 @@ public final class JavaxValidationPlugin implements Plugin {
 						current
 					)
 				)
-			);
+			)
+			.defaultArbitraryValidator(new DefaultArbitraryValidator());
 	}
 }

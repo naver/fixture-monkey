@@ -13,6 +13,7 @@ dependencies {
     api("org.junit.jupiter:junit-jupiter-api:${JUNIT_JUPITER_VERSION}")
 
     testImplementation(project(":fixture-monkey-engine"))
+    testImplementation(project(":fixture-monkey-javax-validation"))
     testImplementation("org.assertj:assertj-core:3.22.0")
     testImplementation("org.projectlombok:lombok:1.18.24")
     testImplementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.6.20")

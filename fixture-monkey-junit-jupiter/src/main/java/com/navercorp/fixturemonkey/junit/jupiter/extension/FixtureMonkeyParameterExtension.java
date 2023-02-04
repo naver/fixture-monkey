@@ -33,22 +33,13 @@ import com.navercorp.fixturemonkey.junit.jupiter.extension.support.ParameterCont
 public class FixtureMonkeyParameterExtension implements ParameterResolver {
 	private static FixtureMonkey GLOBAL_DEFAULT_FIXTURE_MONKEY = FixtureMonkey.create();
 
-	protected final FixtureMonkey fixtureMonkey;
-
 	/**
 	 * Set up the global default {@link com.navercorp.fixturemonkey.FixtureMonkey} instance used by default constructor.
-	 * @param fixtureMonkey
+	 *
+	 * @param fixtureMonkey a Fixture Monkey instance to generate
 	 */
 	public static void setUp(FixtureMonkey fixtureMonkey) {
 		GLOBAL_DEFAULT_FIXTURE_MONKEY = fixtureMonkey;
-	}
-
-	public FixtureMonkeyParameterExtension() {
-		this.fixtureMonkey = GLOBAL_DEFAULT_FIXTURE_MONKEY;
-	}
-
-	public FixtureMonkeyParameterExtension(FixtureMonkey fixtureMonkey) {
-		this.fixtureMonkey = fixtureMonkey;
 	}
 
 	@Override
@@ -69,6 +60,6 @@ public class FixtureMonkeyParameterExtension implements ParameterResolver {
 
 	protected ParameterContextAwareFixtureMonkey getParameterContextAwareFixtureMonkey(
 		ParameterContext parameterContext) {
-		return ParameterContextAwareFixtureMonkey.of(parameterContext, fixtureMonkey);
+		return ParameterContextAwareFixtureMonkey.of(parameterContext, GLOBAL_DEFAULT_FIXTURE_MONKEY);
 	}
 }

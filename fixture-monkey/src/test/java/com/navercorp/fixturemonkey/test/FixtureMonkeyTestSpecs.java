@@ -1,3 +1,4 @@
+
 /*
  * Fixture Monkey
  *
@@ -18,291 +19,262 @@
 
 package com.navercorp.fixturemonkey.test;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.MonthDay;
+import java.time.OffsetDateTime;
+import java.time.OffsetTime;
+import java.time.Period;
+import java.time.Year;
+import java.time.YearMonth;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Queue;
-import java.util.Set;
+import java.util.OptionalDouble;
+import java.util.OptionalInt;
+import java.util.OptionalLong;
 import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Positive;
-import javax.validation.constraints.Size;
-
-import net.jqwik.api.Arbitrary;
-import net.jqwik.api.Provide;
-import net.jqwik.api.domains.DomainContextBase;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
-import com.navercorp.fixturemonkey.ArbitraryBuilder;
-import com.navercorp.fixturemonkey.FixtureMonkey;
+import com.navercorp.fixturemonkey.test.ExpressionGeneratorTestSpecs.StringValue;
 
-class FixtureMonkeyTestSpecs extends DomainContextBase {
-	public static final FixtureMonkey SUT = FixtureMonkey.create();
+class FixtureMonkeyTestSpecs {
+	@Data
+	@EqualsAndHashCode(exclude = {"strIterator", "strStream"})
+	public static class ComplexObject {
+		private String str;
+		private int integer;
+		private int[] intArray;
+		private List<String> strList;
+		private String[] strArray;
+		private SimpleEnum enumValue;
+		private SimpleObject object;
+		private List<SimpleObject> list;
+		private Map<String, SimpleObject> map;
+		private Map.Entry<String, SimpleObject> mapEntry;
+		private Iterable<String> strIterable;
+		private Iterator<String> strIterator;
+		private Stream<String> strStream;
+	}
 
-	@Provide
-	Arbitrary<Integer> integer() {
-		return SUT.giveMeArbitrary(Integer.class);
+	public enum SimpleEnum {
+		ENUM_1, ENUM_2, ENUM_3, ENUM_4
+	}
+
+	@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+	@Data
+	public static class SimpleObject {
+		private String str;
+		private char character;
+		private Character wrapperCharacter;
+		private short primitiveShort;
+		private Short wrapperShort;
+		private byte primitiveByte;
+		private Byte wrapperByte;
+		private double primitiveDouble;
+		private Double wrapperDouble;
+		private float primitiveFloat;
+		private Float wrapperFloat;
+		private int integer;
+		private Integer wrapperInteger;
+		private long primitiveLong;
+		private Long wrapperLong;
+		private boolean primitiveBoolean;
+		private Boolean wrapperBoolean;
+		private BigInteger bigInteger;
+		private BigDecimal bigDecimal;
+		private Calendar calendar;
+		private Date date;
+		private Instant instant;
+		private LocalDate localDate;
+		private LocalDateTime localDateTime;
+		private LocalTime localTime;
+		private ZonedDateTime zonedDateTime;
+		private MonthDay monthDay;
+		private OffsetDateTime offsetDateTime;
+		private OffsetTime offsetTime;
+		private Period period;
+		private Duration duration;
+		private Year year;
+		private YearMonth yearMonth;
+		private ZoneOffset zoneOffset;
+		private Optional<String> optionalString;
+		private OptionalInt optionalInt;
+		private OptionalLong optionalLong;
+		private OptionalDouble optionalDouble;
 	}
 
 	@Data
-	public static class IntWithAnnotation {
-		@Positive
-		private int value;
-	}
-
-	@Provide
-	Arbitrary<IntWithAnnotation> integerWithAnnotation() {
-		return SUT.giveMeArbitrary(IntWithAnnotation.class);
-	}
-
-	@Data
-	public static class IntegerArray {
-		private Integer[] values;
-	}
-
-	@Provide
-	Arbitrary<IntegerArray> integerArray() {
-		return SUT.giveMeArbitrary(IntegerArray.class);
-	}
-
-	@Data
-	public static class IntArray {
-		private int[] values;
-	}
-
-	@Provide
-	Arbitrary<IntArray> intArray() {
-		return SUT.giveMeArbitrary(IntArray.class);
-	}
-
-	@Data
-	public static class MapKeyIntegerValueInteger {
-		private Map<Integer, Integer> values;
-	}
-
-	@Provide
-	Arbitrary<MapKeyIntegerValueInteger> mapKeyIntegerValueInteger() {
-		return SUT.giveMeArbitrary(MapKeyIntegerValueInteger.class);
-	}
-
-	@Data
-	public static class MapKeyIntegerValueString {
-		private Map<Integer, String> values;
-	}
-
-	@Provide
-	Arbitrary<MapKeyIntegerValueString> mapKeyIntegerValueString() {
-		return SUT.giveMeArbitrary(MapKeyIntegerValueString.class);
-	}
-
-	@Data
-	public static class MapEntryKeyIntegerValueString {
-		private Map.Entry<Integer, String> value;
-	}
-
-	@Provide
-	Arbitrary<MapEntryKeyIntegerValueString> mapEntryKeyIntegerValueString() {
-		return SUT.giveMeArbitrary(MapEntryKeyIntegerValueString.class);
-	}
-
-	@Data
-	public static class IntegerListWithNotEmpty {
-		@NotEmpty
-		private List<Integer> values;
-	}
-
-	@Provide
-	Arbitrary<IntegerListWithNotEmpty> integerListWithNotEmpty() {
-		return SUT.giveMeArbitrary(IntegerListWithNotEmpty.class);
-	}
-
-	@Data
-	public static class IntegerSet {
-		private Set<Integer> values;
-	}
-
-	@Provide
-	Arbitrary<IntegerSet> integerSet() {
-		return SUT.giveMeArbitrary(IntegerSet.class);
-	}
-
-	@Data
-	public static class IntegerIterable {
-		private Iterable<Integer> values;
-	}
-
-	@Provide
-	Arbitrary<IntegerIterable> integerIterable() {
-		return SUT.giveMeArbitrary(IntegerIterable.class);
-	}
-
-	@Data
-	public static class IntegerIterator {
-		private Iterator<Integer> values;
-	}
-
-	@Provide
-	Arbitrary<IntegerIterator> integerIterator() {
-		return SUT.giveMeArbitrary(IntegerIterator.class);
-	}
-
-	@Data
-	public static class IntegerStream {
-		private Stream<Integer> values;
-	}
-
-	@Provide
-	Arbitrary<IntegerStream> integerStream() {
-		return SUT.giveMeArbitrary(IntegerStream.class);
-	}
-
-	@Data
-	public static class IntegerOptional {
-		@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-		private Optional<Integer> value;
-	}
-
-	@Provide
-	Arbitrary<IntegerOptional> integerOptional() {
-		return SUT.giveMeArbitrary(IntegerOptional.class);
-	}
-
-	@Data
-	public static class StringWithNotBlank {
-		@NotBlank
-		private String value;
-	}
-
-	@Provide
-	Arbitrary<StringWithNotBlank> stringWithNotBlank() {
-		return SUT.giveMeArbitrary(StringWithNotBlank.class);
-	}
-
-	@Data
-	public static class StringWithNullable {
-		@Nullable
-		private String value;
-	}
-
-	@Provide
-	Arbitrary<StringWithNullable> stringWithNullable() {
-		return SUT.giveMeArbitrary(StringWithNullable.class);
-	}
-
-	@Data
-	public static class InterfaceWrapper {
-		private MockInterface value;
-	}
-
-	public interface MockInterface {
-		String get();
-	}
-
-	@Provide
-	Arbitrary<InterfaceWrapper> interfaceWrapper() {
-		return SUT.giveMeArbitrary(InterfaceWrapper.class);
+	public static class IntValue {
+		Integer value;
 	}
 
 	@Data
 	public static class StringAndInt {
-		private StringWithNotBlank value1;
-		private IntWithAnnotation value2;
-	}
+		StringValue value1;
 
-	@Provide
-	Arbitrary<StringAndInt> stringAndInt() {
-		return SUT.giveMeArbitrary(StringAndInt.class);
+		IntValue value2;
 	}
 
 	@Data
-	public static class NestedStringWithNotBlankList {
-		private List<StringWithNotBlank> values;
-	}
-
-	@Provide
-	Arbitrary<NestedStringWithNotBlankList> nestedStringWithNotBlankList() {
-		return SUT.giveMeArbitrary(NestedStringWithNotBlankList.class);
+	public static class StringPair {
+		private String value1;
+		private String value2;
 	}
 
 	@Data
-	public static class ListWithAnnotation {
-		@NotEmpty
-		private List<@NotBlank String> values;
-	}
-
-	@Provide
-	Arbitrary<ListWithAnnotation> listWithAnnotation() {
-		return SUT.giveMeArbitrary(ListWithAnnotation.class);
+	public static class ListStringObject {
+		private List<String> values;
 	}
 
 	@Data
-	public static class StringQueue {
-		private Queue<String> values;
-	}
-
-	@Provide
-	Arbitrary<StringQueue> stringQueue() {
-		return SUT.giveMeArbitrary(StringQueue.class);
+	public static class NestedStringList {
+		private List<StringValue> values;
 	}
 
 	@Data
-	public static class NestedStringQueue {
-		private Queue<StringQueue> values;
-	}
-
-	@Provide
-	Arbitrary<NestedStringQueue> nestedStringQueue() {
-		return SUT.giveMeArbitrary(NestedStringQueue.class);
+	public static class StaticFieldObject {
+		public static final StaticFieldObject CONSTANT = new StaticFieldObject();
 	}
 
 	@Data
-	public static class IntegerListAnnotatedBySizeWithoutMax {
-		@Size(min = 1)
-		private List<Integer> values;
+	public static class NullableObject {
+		@Nullable
+		List<String> values;
 	}
 
-	@Provide
-	Arbitrary<IntegerListAnnotatedBySizeWithoutMax> integerListAnnotatedBySizeWithoutMax() {
-		return SUT.giveMeArbitrary(IntegerListAnnotatedBySizeWithoutMax.class);
+	public interface Interface {
 	}
 
-	public static class DefaultArbitraryGroup {
-		public DefaultArbitraryGroup() {
-		}
-
-		public ArbitraryBuilder<StringWithNotBlank> string(FixtureMonkey fixture) {
-			return fixture.giveMeBuilder(StringWithNotBlank.class)
-				.set("value", "definition");
-		}
+	@Data
+	public static class InterfaceImplementation implements Interface {
+		private String value;
 	}
 
-	public static class DefaultArbitraryGroup2 {
-		public DefaultArbitraryGroup2() {
-		}
-
-		public ArbitraryBuilder<StringWithNotBlank> string(FixtureMonkey fixture) {
-			return fixture.giveMeBuilder(StringWithNotBlank.class)
-				.set("value", "definition");
-		}
+	@Data
+	public static class InterfaceFieldValue {
+		Interface value;
 	}
 
-	public static class DuplicateArbitraryGroup {
-		public DuplicateArbitraryGroup() {
-		}
+	@Data
+	public static class InterfaceFieldImplementationValue {
+		InterfaceImplementation value;
+	}
 
-		public ArbitraryBuilder<StringWithNotBlank> string(FixtureMonkey fixture) {
-			return fixture.giveMeBuilder(StringWithNotBlank.class)
-				.set("value", "definition");
-		}
+	public enum TwoEnum {
+		ONE, TWO
+	}
 
-		public ArbitraryBuilder<StringWithNotBlank> string2(FixtureMonkey fixture) {
-			return fixture.giveMeBuilder(StringWithNotBlank.class)
-				.set("value", "error");
-		}
+	public enum EnumObject {
+		ONE,
+		TWO,
+		THREE
+	}
+
+	public static class CustomContainer extends ArrayList<String> {
+	}
+
+	@Data
+	public static class CustomContainerFieldObject {
+		CustomContainer value;
+	}
+
+	@Data
+	public static class SelfRecursiveObject {
+		String value;
+
+		SelfRecursiveObject recursive;
+	}
+
+	@Data
+	public static class SelfRecursiveListObject {
+		String value;
+
+		List<SelfRecursiveObject> recursives;
+	}
+
+	@Data
+	public static class RecursiveLeftObject {
+		String value;
+
+		RecursiveRightObject recursive;
+	}
+
+	@Data
+	public static class RecursiveRightObject {
+		int value;
+
+		RecursiveLeftObject recursive;
+	}
+
+	@Setter
+	@Getter
+	public static class GenericValue<T> {
+		T value;
+	}
+
+	@Setter
+	@Getter
+	public static class GenericStringWrapperValue {
+		GenericValue<String> value;
+	}
+
+	@Setter
+	@Getter
+	public static class GenericWrapperValue<T> {
+		GenericValue<T> value;
+	}
+
+	@Setter
+	@Getter
+	public static class GenericChildValue extends GenericValue<String> {
+	}
+
+	@Setter
+	@Getter
+	public static class GenericTwoValue<T, U> {
+		T value;
+
+		U value2;
+	}
+
+	@Setter
+	@Getter
+	public static class GenericChildTwoValue extends GenericTwoValue<String, Integer> {
+	}
+
+	@Setter
+	@Getter
+	public static class ObjectValue {
+		Object value;
+	}
+
+	@Setter
+	@Getter
+	public static class ParentValue {
+		String parentValue;
+	}
+
+	@Setter
+	@Getter
+	public static class ChildValue extends ParentValue {
+		String childValue;
 	}
 }

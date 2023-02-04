@@ -32,8 +32,6 @@ import java.util.stream.Collectors;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
-import com.navercorp.fixturemonkey.api.generator.ObjectProperty;
 import com.navercorp.fixturemonkey.expression.MonkeyExpression;
 import com.navercorp.fixturemonkey.resolver.CompositeNodeResolver;
 import com.navercorp.fixturemonkey.resolver.ContainerElementPredicate;
@@ -145,17 +143,6 @@ public final class ArbitraryExpression implements MonkeyExpression, Comparable<A
 		return nodeResolver;
 	}
 
-	/**
-	 * use {@link com.navercorp.fixturemonkey.resolver.NodeResolver} instead
-	 */
-	@Deprecated
-	public List<Cursor> toCursors() {
-		return this.expList.stream()
-			.flatMap(it -> it.toCursors().stream())
-			.filter(Cursor::isNotHeadName)
-			.collect(toList());
-	}
-
 	private static final class ExpIndex implements Comparable<ExpIndex> {
 		public static final ExpIndex ALL_INDEX_EXP_INDEX = new ExpIndex(NO_OR_ALL_INDEX_INTEGER_VALUE);
 
@@ -238,16 +225,6 @@ public final class ArbitraryExpression implements MonkeyExpression, Comparable<A
 			}
 		}
 
-		public List<Cursor> toCursors() {
-			List<Cursor> steps = new ArrayList<>();
-			String expName = this.getName();
-			steps.add(new ExpNameCursor(expName));
-			steps.addAll(this.getIndices().stream()
-				.map(it -> new ExpIndexCursor(expName, it.getIndex()))
-				.collect(toList()));
-			return steps;
-		}
-
 		public NodeResolver toNodeResolver() {
 			NodeResolver nodeResolver = IdentityNodeResolver.INSTANCE;
 
@@ -318,92 +295,4 @@ public final class ArbitraryExpression implements MonkeyExpression, Comparable<A
 			return Objects.hash(name, indices);
 		}
 	}
-
-	/**
-	 * use {@link com.navercorp.fixturemonkey.resolver.NodeResolver} instead
-	 */
-	@Deprecated
-	public abstract static class Cursor {
-		private final String name;
-		private final int index;
-
-		public Cursor(String name, int index) {
-			this.name = name;
-			this.index = index;
-		}
-
-		public boolean match(ArbitraryProperty arbitraryProperty) {
-			ObjectProperty objectProperty = arbitraryProperty.getObjectProperty();
-			String resolvePropertyName = objectProperty.getResolvedPropertyName();
-			boolean samePropertyName;
-			if (resolvePropertyName == null) {
-				samePropertyName = true; // ignore property name equivalence.
-			} else {
-				samePropertyName = nameEquals(resolvePropertyName);
-			}
-
-			boolean sameIndex = true;
-			if (objectProperty.getElementIndex() != null) {
-				sameIndex = indexEquals(objectProperty.getElementIndex()); // notNull
-			}
-			return samePropertyName && sameIndex;
-		}
-
-		public boolean isNotHeadName() {
-			return !(this instanceof ExpNameCursor) || !HEAD_NAME.equals(this.getName());
-		}
-
-		private boolean indexEquals(int index) {
-			return this.index == index
-				|| index == NO_OR_ALL_INDEX_INTEGER_VALUE
-				|| this.index == NO_OR_ALL_INDEX_INTEGER_VALUE;
-		}
-
-		private boolean nameEquals(String name) {
-			return this.name.equals(name)
-				|| ALL_INDEX_STRING.equals(name)
-				|| ALL_INDEX_STRING.equals(this.name);
-		}
-
-		public String getName() {
-			return name;
-		}
-
-		public int getIndex() {
-			return index;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj) {
-				return true;
-			}
-			if (!(obj instanceof Cursor)) {
-				return false;
-			}
-			Cursor cursor = (Cursor)obj;
-
-			boolean indexEqual = indexEquals(cursor.getIndex());
-			boolean nameEqual = nameEquals(cursor.getName());
-			return nameEqual && indexEqual;
-		}
-
-		@Override
-		public int hashCode() {
-			return Objects.hash(name);
-		}
-	}
-
-	static final class ExpIndexCursor extends Cursor {
-		ExpIndexCursor(String name, int index) {
-			super(name, index);
-		}
-	}
-
-	public static final class ExpNameCursor extends Cursor {
-		ExpNameCursor(String name) {
-			super(name, NO_OR_ALL_INDEX_INTEGER_VALUE);
-		}
-	}
-
 }

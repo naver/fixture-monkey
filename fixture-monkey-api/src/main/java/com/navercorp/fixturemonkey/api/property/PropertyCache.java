@@ -161,33 +161,6 @@ public final class PropertyCache {
 		});
 	}
 
-	@Deprecated
-	public static List<Property> getFactoryProperties(AnnotatedType annotatedType) {
-		List<Property> properties = new ArrayList<>();
-		Class<?> actualType = Types.getActualType(annotatedType);
-		Map<String, Field> fieldsByName = getFields(actualType);
-		Map<Method, Parameter[]> parametersByFactoryMethods = getParametersByFactoryMethods(actualType);
-
-		for (Entry<Method, Parameter[]> parametersByFactoryMethod : parametersByFactoryMethods.entrySet()) {
-			Method method = parametersByFactoryMethod.getKey();
-			Parameter[] parameters = parametersByFactoryMethod.getValue();
-			for (Parameter parameter : parameters) {
-				Field field = fieldsByName.get(parameter.getName());
-				FieldProperty fieldProperty = field != null ? new FieldProperty(field) : null;
-				properties.add(
-					new FactoryMethodProperty(
-						parameter.getAnnotatedType(),
-						method,
-						parameter.getName(),
-						fieldProperty
-					)
-				);
-			}
-			return properties;
-		}
-		return properties;
-	}
-
 	public static Map<Method, Parameter[]> getParametersByFactoryMethods(Class<?> clazz) {
 		return PARAMETER_BY_FACTORY_METHOD.computeIfAbsent(clazz, type -> {
 			Map<Method, Parameter[]> result = new ConcurrentHashMap<>();

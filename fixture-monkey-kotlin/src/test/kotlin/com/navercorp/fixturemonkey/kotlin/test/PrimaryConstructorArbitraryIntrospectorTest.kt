@@ -19,7 +19,6 @@
 package com.navercorp.fixturemonkey.kotlin.test
 
 import com.navercorp.fixturemonkey.FixtureMonkey
-import com.navercorp.fixturemonkey.LabMonkey
 import com.navercorp.fixturemonkey.kotlin.KotlinPlugin
 import com.navercorp.fixturemonkey.kotlin.giveMeOne
 import net.jqwik.api.Property
@@ -27,7 +26,7 @@ import org.assertj.core.api.BDDAssertions.then
 import org.assertj.core.api.BDDAssertions.thenNoException
 
 class PrimaryConstructorArbitraryIntrospectorTest {
-    private val sut: LabMonkey = FixtureMonkey.labMonkeyBuilder()
+    private val sut: FixtureMonkey = FixtureMonkey.builder()
         .plugin(KotlinPlugin())
         .build()
 

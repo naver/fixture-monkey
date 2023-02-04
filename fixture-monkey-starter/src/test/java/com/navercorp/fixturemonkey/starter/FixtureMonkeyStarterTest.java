@@ -79,9 +79,6 @@ class FixtureMonkeyStarterTest {
 		Order actual = sut.giveMeOne(Order.class);
 
 		// then
-		then(actual.getId()).isNotNull();
-		then(actual.getOrderNo()).isNotBlank();
-		then(actual.getQuantity()).isBetween(1, 100);
-		then(actual.getPrice()).isGreaterThanOrEqualTo(0L);
+		then(actual).isNotNull();
 	}
 }

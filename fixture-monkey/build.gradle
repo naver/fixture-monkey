@@ -13,7 +13,6 @@ dependencies {
     api(project(":fixture-monkey-api"))
 
     api("net.jqwik:jqwik:${JQWIK_VERSION}")
-    api("javax.validation:validation-api:2.0.1.Final")
     api("com.github.mifmif:generex:1.0.2")
 
     testRuntimeOnly(project(":fixture-monkey-engine"))

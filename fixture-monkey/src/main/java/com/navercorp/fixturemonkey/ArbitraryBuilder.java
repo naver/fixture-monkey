@@ -39,16 +39,10 @@ import net.jqwik.api.Combinators.F4;
 import com.navercorp.fixturemonkey.api.customizer.FixtureCustomizer;
 import com.navercorp.fixturemonkey.api.expression.ExpressionGenerator;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
-import com.navercorp.fixturemonkey.customizer.ArbitraryCustomizer;
-import com.navercorp.fixturemonkey.customizer.ExpressionSpec;
 import com.navercorp.fixturemonkey.customizer.InnerSpec;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public interface ArbitraryBuilder<T> {
-	ArbitraryBuilder<T> spec(ExpressionSpec expressionSpec);
-
-	ArbitraryBuilder<T> specAny(ExpressionSpec... specs);
-
 	ArbitraryBuilder<T> set(String expression, @Nullable Object value);
 
 	ArbitraryBuilder<T> set(String expression, @Nullable Object value, int limit);
@@ -144,9 +138,6 @@ public interface ArbitraryBuilder<T> {
 		List<ArbitraryBuilder<?>> other,
 		Function<List<?>, R> combinator
 	);
-
-	@Deprecated
-	ArbitraryBuilder<T> customize(Class<T> type, ArbitraryCustomizer<T> customizer);
 
 	ArbitraryBuilder<T> customize(MatcherOperator<FixtureCustomizer<T>> customizer);
 

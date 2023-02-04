@@ -4,13 +4,13 @@ import static org.assertj.core.api.BDDAssertions.then;
 
 import net.jqwik.api.Property;
 
-import com.navercorp.fixturemonkey.LabMonkey;
+import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.test.ExpressionGeneratorTestSpecs.MapKeyIntegerValueInteger;
 import com.navercorp.fixturemonkey.test.ExpressionGeneratorTestSpecs.StringList;
 import com.navercorp.fixturemonkey.test.ExpressionGeneratorTestSpecs.StringValue;
 
 public class ExpressionGeneratorTest {
-	private static final LabMonkey SUT = LabMonkey.labMonkey();
+	private static final FixtureMonkey SUT = FixtureMonkey.create();
 
 	@Property
 	void setWithExpressionGenerator() {
@@ -31,8 +31,7 @@ public class ExpressionGeneratorTest {
 		then(actual.getValues().size()).isEqualTo(3);
 	}
 
-	// TODO: Remove 'tries' after preventing the generation of duplicate map keys with Unique operation
-	@Property(tries = 1)
+	@Property
 	void sizeMapWithExpressionGenerator() {
 		// when
 		MapKeyIntegerValueInteger actual = SUT.giveMeBuilder(MapKeyIntegerValueInteger.class)

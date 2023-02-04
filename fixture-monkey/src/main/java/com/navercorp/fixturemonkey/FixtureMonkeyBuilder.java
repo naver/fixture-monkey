@@ -18,171 +18,533 @@
 
 package com.navercorp.fixturemonkey;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.Map.Entry;
 import java.util.function.Function;
 
-import javax.annotation.Nonnull;
+import org.apiguardian.api.API;
+import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.ArbitraryOption.FixtureOptionsBuilder;
-import com.navercorp.fixturemonkey.arbitrary.ContainerArbitraryNodeGenerator;
-import com.navercorp.fixturemonkey.arbitrary.InterfaceSupplier;
-import com.navercorp.fixturemonkey.arbitrary.NullableArbitraryEvaluator;
-import com.navercorp.fixturemonkey.customizer.ArbitraryCustomizer;
-import com.navercorp.fixturemonkey.customizer.ArbitraryCustomizers;
-import com.navercorp.fixturemonkey.generator.AnnotatedArbitraryGenerator;
-import com.navercorp.fixturemonkey.generator.ArbitraryGenerator;
-import com.navercorp.fixturemonkey.generator.BeanArbitraryGenerator;
-import com.navercorp.fixturemonkey.validator.ArbitraryValidator;
-import com.navercorp.fixturemonkey.validator.CompositeArbitraryValidator;
+import com.navercorp.fixturemonkey.api.context.MonkeyContext;
+import com.navercorp.fixturemonkey.api.customizer.FixtureCustomizer;
+import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
+import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfoGenerator;
+import com.navercorp.fixturemonkey.api.generator.ContainerPropertyGenerator;
+import com.navercorp.fixturemonkey.api.generator.InterfaceObjectPropertyGenerator;
+import com.navercorp.fixturemonkey.api.generator.NullInjectGenerator;
+import com.navercorp.fixturemonkey.api.generator.NullObjectPropertyGenerator;
+import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGenerator;
+import com.navercorp.fixturemonkey.api.generator.PropertyGenerator;
+import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
+import com.navercorp.fixturemonkey.api.introspector.CompositeArbitraryIntrospector;
+import com.navercorp.fixturemonkey.api.introspector.JavaArbitraryResolver;
+import com.navercorp.fixturemonkey.api.introspector.JavaTimeArbitraryResolver;
+import com.navercorp.fixturemonkey.api.introspector.JavaTimeTypeArbitraryGenerator;
+import com.navercorp.fixturemonkey.api.introspector.JavaTypeArbitraryGenerator;
+import com.navercorp.fixturemonkey.api.matcher.AssignableTypeMatcher;
+import com.navercorp.fixturemonkey.api.matcher.ExactTypeMatcher;
+import com.navercorp.fixturemonkey.api.matcher.Matcher;
+import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
+import com.navercorp.fixturemonkey.api.option.GenerateOptions;
+import com.navercorp.fixturemonkey.api.option.GenerateOptionsBuilder;
+import com.navercorp.fixturemonkey.api.plugin.Plugin;
+import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
+import com.navercorp.fixturemonkey.api.type.Types;
+import com.navercorp.fixturemonkey.api.validator.ArbitraryValidator;
+import com.navercorp.fixturemonkey.expression.MonkeyExpressionFactory;
+import com.navercorp.fixturemonkey.resolver.ArbitraryTraverser;
+import com.navercorp.fixturemonkey.resolver.DecomposableContainerValue;
+import com.navercorp.fixturemonkey.resolver.DecomposedContainerValueFactory;
+import com.navercorp.fixturemonkey.resolver.ManipulateOptions;
+import com.navercorp.fixturemonkey.resolver.ManipulateOptionsBuilder;
+import com.navercorp.fixturemonkey.resolver.ManipulatorOptimizer;
+import com.navercorp.fixturemonkey.resolver.NoneManipulatorOptimizer;
 
+@API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public class FixtureMonkeyBuilder {
-	private ArbitraryGenerator defaultGenerator = new BeanArbitraryGenerator();
-	private Map<Class<?>, ArbitraryGenerator> generatorMap = new HashMap<>();
-	private Map<Class<?>, ArbitraryCustomizer<?>> customizerMap = new HashMap<>();
-	@SuppressWarnings("rawtypes")
-	private ArbitraryValidator validator = new CompositeArbitraryValidator();
-	private ArbitraryCustomizers arbitraryCustomizers = new ArbitraryCustomizers();
-	private ArbitraryOption options;
-	private final FixtureOptionsBuilder optionsBuilder = ArbitraryOption.builder();
+	private final GenerateOptionsBuilder generateOptionsBuilder = GenerateOptions.builder();
+	private final ManipulateOptionsBuilder manipulateOptionsBuilder = ManipulateOptions.builder();
+	private ManipulatorOptimizer manipulatorOptimizer = new NoneManipulatorOptimizer();
+	private DecomposedContainerValueFactory defaultDecomposedContainerValueFactory = (obj) -> {
+		throw new IllegalArgumentException("given type is not supported container : " + obj.getClass().getTypeName());
+	};
+	private final Map<Class<?>, DecomposedContainerValueFactory> decomposableContainerFactoryMap = new HashMap<>();
 
-	public FixtureMonkeyBuilder defaultGenerator(ArbitraryGenerator defaultCombiner) {
-		this.defaultGenerator = defaultCombiner;
+	public FixtureMonkeyBuilder pushPropertyGenerator(MatcherOperator<PropertyGenerator> propertyGenerator) {
+		generateOptionsBuilder.insertFirstPropertyGenerator(propertyGenerator);
 		return this;
 	}
 
-	public FixtureMonkeyBuilder generatorMap(Map<Class<?>, ArbitraryGenerator> combinerMap) {
-		this.generatorMap = combinerMap;
-		return this;
-	}
-
-	public FixtureMonkeyBuilder putGenerator(Class<?> type, ArbitraryGenerator generator) {
-		this.generatorMap.put(type, generator);
-		return this;
-	}
-
-	public FixtureMonkeyBuilder customizers(Map<Class<?>, ArbitraryCustomizer<?>> customizer) {
-		this.customizerMap = customizer;
-		return this;
-	}
-
-	public FixtureMonkeyBuilder customizers(ArbitraryCustomizers arbitraryCustomizers) {
-		this.arbitraryCustomizers = arbitraryCustomizers;
-		return this;
-	}
-
-	public <T> FixtureMonkeyBuilder addCustomizer(Class<T> type, ArbitraryCustomizer<T> customizer) {
-		this.customizerMap.put(type, customizer);
-		return this;
-	}
-
-	public FixtureMonkeyBuilder nullableArbitraryEvaluator(
-		NullableArbitraryEvaluator nullableArbitraryEvaluator
+	public FixtureMonkeyBuilder pushAssignableTypePropertyGenerator(
+		Class<?> type,
+		PropertyGenerator propertyGenerator
 	) {
-		this.optionsBuilder.nullableArbitraryEvaluator(nullableArbitraryEvaluator);
+		generateOptionsBuilder.insertFirstPropertyGenerator(type, propertyGenerator);
 		return this;
 	}
 
-	public FixtureMonkeyBuilder nullInject(double nullInject) {
-		this.optionsBuilder.nullInject(nullInject);
+	public FixtureMonkeyBuilder pushExactTypePropertyGenerator(Class<?> type, PropertyGenerator propertyGenerator) {
+		generateOptionsBuilder.insertFirstPropertyGenerator(
+			MatcherOperator.assignableTypeMatchOperator(type, propertyGenerator)
+		);
+		return this;
+	}
+
+	public FixtureMonkeyBuilder manipulatorOptimizer(ManipulatorOptimizer manipulatorOptimizer) {
+		this.manipulatorOptimizer = manipulatorOptimizer;
+		return this;
+	}
+
+	public FixtureMonkeyBuilder monkeyExpressionFactory(MonkeyExpressionFactory monkeyExpressionFactory) {
+		manipulateOptionsBuilder.monkeyExpressionFactory(monkeyExpressionFactory);
+		return this;
+	}
+
+	public FixtureMonkeyBuilder defaultObjectPropertyGenerator(
+		ObjectPropertyGenerator objectPropertyGenerator
+	) {
+		generateOptionsBuilder.defaultObjectPropertyGenerator(objectPropertyGenerator);
+		return this;
+	}
+
+	public FixtureMonkeyBuilder pushAssignableTypeObjectPropertyGenerator(
+		Class<?> type,
+		ObjectPropertyGenerator objectPropertyGenerator
+	) {
+		generateOptionsBuilder.insertFirstArbitraryObjectPropertyGenerator(type, objectPropertyGenerator);
+		return this;
+	}
+
+	public FixtureMonkeyBuilder pushExactTypeObjectPropertyGenerator(
+		Class<?> type,
+		ObjectPropertyGenerator objectPropertyGenerator
+	) {
+		generateOptionsBuilder.insertFirstArbitraryObjectPropertyGenerator(
+			MatcherOperator.exactTypeMatchOperator(type, objectPropertyGenerator)
+		);
+		return this;
+	}
+
+	public FixtureMonkeyBuilder pushObjectPropertyGenerator(
+		MatcherOperator<ObjectPropertyGenerator> objectPropertyGenerator
+	) {
+		generateOptionsBuilder.insertFirstArbitraryObjectPropertyGenerator(objectPropertyGenerator);
+		return this;
+	}
+
+	public FixtureMonkeyBuilder pushAssignableTypeContainerPropertyGenerator(
+		Class<?> type,
+		ContainerPropertyGenerator containerPropertyGenerator
+	) {
+		generateOptionsBuilder.insertFirstArbitraryContainerPropertyGenerator(type, containerPropertyGenerator);
+		return this;
+	}
+
+	public FixtureMonkeyBuilder pushExactTypeContainerPropertyGenerator(
+		Class<?> type,
+		ContainerPropertyGenerator containerPropertyGenerator
+	) {
+		generateOptionsBuilder.insertFirstArbitraryContainerPropertyGenerator(
+			MatcherOperator.exactTypeMatchOperator(type, containerPropertyGenerator)
+		);
+		return this;
+	}
+
+	public FixtureMonkeyBuilder pushContainerPropertyGenerator(
+		MatcherOperator<ContainerPropertyGenerator> containerPropertyGenerator
+	) {
+		generateOptionsBuilder.insertFirstArbitraryContainerPropertyGenerator(containerPropertyGenerator);
+		return this;
+	}
+
+	public FixtureMonkeyBuilder pushAssignableTypePropertyNameResolver(
+		Class<?> type,
+		PropertyNameResolver propertyNameResolver
+	) {
+		generateOptionsBuilder.insertFirstPropertyNameResolver(type, propertyNameResolver);
+		return this;
+	}
+
+	public FixtureMonkeyBuilder pushExactTypePropertyNameResolver(
+		Class<?> type,
+		PropertyNameResolver propertyNameResolver
+	) {
+		generateOptionsBuilder.insertFirstPropertyNameResolver(
+			MatcherOperator.exactTypeMatchOperator(type, propertyNameResolver)
+		);
+		return this;
+	}
+
+	public FixtureMonkeyBuilder pushPropertyNameResolver(
+		MatcherOperator<PropertyNameResolver> propertyNameResolver
+	) {
+		generateOptionsBuilder.insertFirstPropertyNameResolver(propertyNameResolver);
+		return this;
+	}
+
+	public FixtureMonkeyBuilder defaultPropertyNameResolver(PropertyNameResolver propertyNameResolver) {
+		generateOptionsBuilder.defaultPropertyNameResolver(propertyNameResolver);
+		return this;
+	}
+
+	public FixtureMonkeyBuilder pushExactTypeNullInjectGenerator(
+		Class<?> type,
+		NullInjectGenerator nullInjectGenerator
+	) {
+		generateOptionsBuilder.insertFirstNullInjectGenerators(
+			MatcherOperator.exactTypeMatchOperator(type, nullInjectGenerator)
+		);
+		return this;
+	}
+
+	public FixtureMonkeyBuilder pushAssignableTypeNullInjectGenerator(
+		Class<?> type,
+		NullInjectGenerator nullInjectGenerator
+	) {
+		generateOptionsBuilder.insertFirstNullInjectGenerators(type, nullInjectGenerator);
+		return this;
+	}
+
+	public FixtureMonkeyBuilder pushNullInjectGenerator(MatcherOperator<NullInjectGenerator> nullInjectGenerator) {
+		generateOptionsBuilder.insertFirstNullInjectGenerators(nullInjectGenerator);
+		return this;
+	}
+
+	public FixtureMonkeyBuilder defaultNullInjectGenerator(NullInjectGenerator nullInjectGenerator) {
+		generateOptionsBuilder.defaultNullInjectGenerator(nullInjectGenerator);
+		return this;
+	}
+
+	public FixtureMonkeyBuilder pushArbitraryContainerInfoGenerator(
+		MatcherOperator<ArbitraryContainerInfoGenerator> arbitraryContainerInfoGenerator
+	) {
+		generateOptionsBuilder.insertFirstArbitraryContainerInfoGenerator(arbitraryContainerInfoGenerator);
+		return this;
+	}
+
+	public FixtureMonkeyBuilder defaultArbitraryContainerMaxSize(int defaultArbitraryContainerMaxSize) {
+		generateOptionsBuilder.defaultArbitraryContainerMaxSize(defaultArbitraryContainerMaxSize);
+		return this;
+	}
+
+	public FixtureMonkeyBuilder defaultArbitraryContainerInfo(ArbitraryContainerInfo defaultArbitraryContainerInfo) {
+		generateOptionsBuilder.defaultArbitraryContainerInfo(defaultArbitraryContainerInfo);
+		return this;
+	}
+
+	public FixtureMonkeyBuilder pushAssignableTypeArbitraryIntrospector(
+		Class<?> type,
+		ArbitraryIntrospector arbitraryIntrospector
+	) {
+		generateOptionsBuilder.insertFirstArbitraryIntrospector(type, arbitraryIntrospector);
+		return this;
+	}
+
+	public FixtureMonkeyBuilder pushExactTypeArbitraryIntrospector(
+		Class<?> type,
+		ArbitraryIntrospector arbitraryIntrospector
+	) {
+		generateOptionsBuilder.insertFirstArbitraryIntrospector(
+			MatcherOperator.exactTypeMatchOperator(type, arbitraryIntrospector)
+		);
+		return this;
+	}
+
+	public FixtureMonkeyBuilder pushArbitraryIntrospector(
+		MatcherOperator<ArbitraryIntrospector> arbitraryIntrospector
+	) {
+		generateOptionsBuilder.insertFirstArbitraryIntrospector(arbitraryIntrospector);
+		return this;
+	}
+
+	public FixtureMonkeyBuilder objectIntrospector(ArbitraryIntrospector objectIntrospector) {
+		this.generateOptionsBuilder.objectIntrospector(it -> objectIntrospector);
+		return this;
+	}
+
+	public FixtureMonkeyBuilder javaTypeArbitraryGenerator(
+		JavaTypeArbitraryGenerator javaTypeArbitraryGenerator
+	) {
+		generateOptionsBuilder.javaTypeArbitraryGenerator(javaTypeArbitraryGenerator);
+		return this;
+	}
+
+	public FixtureMonkeyBuilder javaArbitraryResolver(JavaArbitraryResolver javaArbitraryResolver) {
+		generateOptionsBuilder.javaArbitraryResolver(javaArbitraryResolver);
+		return this;
+	}
+
+	public FixtureMonkeyBuilder javaTimeTypeArbitraryGenerator(
+		JavaTimeTypeArbitraryGenerator javaTimeTypeArbitraryGenerator
+	) {
+		generateOptionsBuilder.javaTimeTypeArbitraryGenerator(javaTimeTypeArbitraryGenerator);
+		return this;
+	}
+
+	public FixtureMonkeyBuilder javaTimeArbitraryResolver(JavaTimeArbitraryResolver javaTimeArbitraryResolver) {
+		generateOptionsBuilder.javaTimeArbitraryResolver(javaTimeArbitraryResolver);
+		return this;
+	}
+
+	public FixtureMonkeyBuilder arbitraryValidator(ArbitraryValidator arbitraryValidator) {
+		this.generateOptionsBuilder.defaultArbitraryValidator(arbitraryValidator);
+		return this;
+	}
+
+	public FixtureMonkeyBuilder pushExceptGenerateType(Matcher matcher) {
+		generateOptionsBuilder.insertFirstArbitraryObjectPropertyGenerator(
+			new MatcherOperator<>(
+				matcher,
+				NullObjectPropertyGenerator.INSTANCE
+			)
+		);
+		return this;
+	}
+
+	public FixtureMonkeyBuilder addExceptGenerateClass(Class<?> type) {
+		return pushExceptGenerateType(new AssignableTypeMatcher(type));
+	}
+
+	public FixtureMonkeyBuilder addExceptGenerateClasses(Class<?>... types) {
+		for (Class<?> type : types) {
+			addExceptGenerateClass(type);
+		}
 		return this;
 	}
 
 	public FixtureMonkeyBuilder addExceptGeneratePackage(String exceptGeneratePackage) {
-		this.optionsBuilder.addExceptGeneratePackage(exceptGeneratePackage);
-		return this;
+		return pushExceptGenerateType(
+			property -> Types.primitiveToWrapper(Types.getActualType(property.getType()))
+				.getPackage()
+				.getName()
+				.startsWith(exceptGeneratePackage)
+		);
 	}
 
-	public <T> FixtureMonkeyBuilder addExceptGenerateClass(Class<T> clazz) {
-		this.optionsBuilder.addExceptGenerateClass(clazz);
-		return this;
-	}
-
-	public FixtureMonkeyBuilder exceptGeneratePackages(Set<String> exceptGeneratePackages) {
-		this.optionsBuilder.exceptGeneratePackages(exceptGeneratePackages);
-		return this;
-	}
-
-	public FixtureMonkeyBuilder addExceptGenerateClasses(Set<Class<?>> classes) {
-		this.optionsBuilder.exceptGenerateClasses(classes);
-		return this;
-	}
-
-	public FixtureMonkeyBuilder nullableContainer(boolean nullableContainer) {
-		this.optionsBuilder.nullableContainer(nullableContainer);
-		return this;
-	}
-
-	public <T> FixtureMonkeyBuilder defaultInterfaceSupplier(InterfaceSupplier<T> interfaceSupplier) {
-		this.optionsBuilder.defaultInterfaceSupplier(interfaceSupplier);
-		return this;
-	}
-
-	public <T> FixtureMonkeyBuilder addInterfaceSupplier(Class<T> clazz, InterfaceSupplier<T> interfaceSupplier) {
-		this.optionsBuilder.addInterfaceSupplier(clazz, interfaceSupplier);
-		return this;
-	}
-
-	public FixtureMonkeyBuilder options(ArbitraryOption options) {
-		this.options = options;
-		return this;
-	}
-
-	public <T> FixtureMonkeyBuilder addAnnotatedArbitraryGenerator(
-		Class<T> clazz,
-		AnnotatedArbitraryGenerator<T> generator
-	) {
-		this.optionsBuilder.addAnnotatedArbitraryGenerator(clazz, generator);
-		return this;
-	}
-
-	@SuppressWarnings("rawtypes")
-	public FixtureMonkeyBuilder validator(ArbitraryValidator validator) {
-		this.validator = validator;
-		return this;
-	}
-
-	public FixtureMonkeyBuilder defaultNotNull(boolean defaultNotNull) {
-		this.optionsBuilder.defaultNotNull(defaultNotNull);
+	public FixtureMonkeyBuilder addExceptGeneratePackages(String... exceptGeneratePackages) {
+		for (String exceptGeneratePackage : exceptGeneratePackages) {
+			addExceptGeneratePackage(exceptGeneratePackage);
+		}
 		return this;
 	}
 
 	public FixtureMonkeyBuilder register(
-		Class<?> clazz,
-		Function<FixtureMonkey, ArbitraryBuilder<?>> arbitraryBuildingSupplier
+		Class<?> type,
+		Function<FixtureMonkey, ? extends ArbitraryBuilder<?>> registeredArbitraryBuilder
 	) {
-		this.optionsBuilder.register(clazz, arbitraryBuildingSupplier);
+		manipulateOptionsBuilder.register(
+			MatcherOperator.assignableTypeMatchOperator(type, registeredArbitraryBuilder)
+		);
+		return this;
+	}
+
+	public FixtureMonkeyBuilder registerExactType(
+		Class<?> type,
+		Function<FixtureMonkey, ? extends ArbitraryBuilder<?>> registeredArbitraryBuilder
+	) {
+		manipulateOptionsBuilder.register(MatcherOperator.exactTypeMatchOperator(type, registeredArbitraryBuilder));
+		return this;
+	}
+
+	public FixtureMonkeyBuilder registerAssignableType(
+		Class<?> type,
+		Function<FixtureMonkey, ? extends ArbitraryBuilder<?>> registeredArbitraryBuilder
+	) {
+		manipulateOptionsBuilder.register(
+			MatcherOperator.assignableTypeMatchOperator(type, registeredArbitraryBuilder)
+		);
+		return this;
+	}
+
+	public FixtureMonkeyBuilder register(
+		MatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>> registeredArbitraryBuilder
+	) {
+		manipulateOptionsBuilder.register(registeredArbitraryBuilder);
 		return this;
 	}
 
 	public FixtureMonkeyBuilder registerGroup(Class<?>... arbitraryBuilderGroups) {
 		for (Class<?> arbitraryBuilderGroup : arbitraryBuilderGroups) {
-			this.optionsBuilder.registerGroup(arbitraryBuilderGroup);
+			Method[] methods = arbitraryBuilderGroup.getMethods();
+			for (Method method : methods) {
+				int paramCount = method.getParameterCount();
+				Class<?> returnType = method.getReturnType();
+				if (paramCount != 1 || !ArbitraryBuilder.class.isAssignableFrom(returnType)) {
+					continue;
+				}
+				try {
+					Class<?> actualType = Types.getActualType(
+						Types.getGenericsTypes(method.getAnnotatedReturnType()).get(0)
+					);
+					Object noArgsInstance = arbitraryBuilderGroup.getDeclaredConstructor().newInstance();
+					Function<FixtureMonkey, ? extends ArbitraryBuilder<?>> registerArbitraryBuilder =
+						(fixtureMonkey) -> {
+							try {
+								return (ArbitraryBuilder<?>)method.invoke(noArgsInstance, fixtureMonkey);
+							} catch (IllegalAccessException | InvocationTargetException e) {
+								e.printStackTrace();
+								throw new RuntimeException(e);
+							}
+						};
+					this.register(actualType, registerArbitraryBuilder);
+				} catch (InvocationTargetException
+						| InstantiationException
+						| IllegalAccessException
+						| NoSuchMethodException e) {
+					// ignored
+				}
+			}
 		}
 		return this;
 	}
 
-	public FixtureMonkeyBuilder putContainerArbitraryNodeGenerator(
-		Class<?> clazz,
-		ContainerArbitraryNodeGenerator containerArbitraryNodeGenerator
+	@SuppressWarnings("rawtypes")
+	public FixtureMonkeyBuilder pushFixtureCustomizer(MatcherOperator<FixtureCustomizer> arbitraryCustomizer) {
+		generateOptionsBuilder.insertFirstFixtureCustomizer(arbitraryCustomizer);
+		return this;
+	}
+
+	public <T> FixtureMonkeyBuilder pushAssignableTypeFixtureCustomizer(
+		Class<T> type,
+		FixtureCustomizer<? extends T> fixtureCustomizer
 	) {
-		this.optionsBuilder.putContainerArbitraryNodeGenerator(clazz, containerArbitraryNodeGenerator);
+		generateOptionsBuilder.insertFirstFixtureCustomizer(type, fixtureCustomizer);
 		return this;
 	}
 
-	@Nonnull
-	public FixtureMonkey build() {
-		if (options == null) {
-			this.options = optionsBuilder.build();
+	public <T> FixtureMonkeyBuilder pushExactTypeFixtureCustomizer(
+		Class<T> type,
+		FixtureCustomizer<T> fixtureCustomizer
+	) {
+		generateOptionsBuilder.insertFirstFixtureCustomizer(
+			MatcherOperator.exactTypeMatchOperator(type, fixtureCustomizer)
+		);
+		return this;
+	}
+
+	public FixtureMonkeyBuilder plugin(Plugin plugin) {
+		generateOptionsBuilder.plugin(plugin);
+		return this;
+	}
+
+	public FixtureMonkeyBuilder defaultDecomposedContainerValueFactory(
+		DecomposedContainerValueFactory defaultDecomposedContainerValueFactory
+	) {
+		this.defaultDecomposedContainerValueFactory = defaultDecomposedContainerValueFactory;
+		return this;
+	}
+
+	public FixtureMonkeyBuilder pushContainerIntrospector(ArbitraryIntrospector containerIntrospector) {
+		this.generateOptionsBuilder.containerIntrospector(it ->
+			new CompositeArbitraryIntrospector(
+				Arrays.asList(
+					containerIntrospector,
+					it
+				)
+			)
+		);
+		return this;
+	}
+
+	public FixtureMonkeyBuilder addContainerType(
+		Class<?> type,
+		ContainerPropertyGenerator containerObjectPropertyGenerator,
+		ArbitraryIntrospector containerArbitraryIntrospector,
+		DecomposedContainerValueFactory decomposedContainerValueFactory
+	) {
+		this.pushAssignableTypeContainerPropertyGenerator(type, containerObjectPropertyGenerator);
+		this.pushContainerIntrospector(containerArbitraryIntrospector);
+		decomposableContainerFactoryMap.put(type, decomposedContainerValueFactory);
+		return this;
+	}
+
+	public FixtureMonkeyBuilder defaultPropertyGenerator(PropertyGenerator propertyGenerator) {
+		this.generateOptionsBuilder.defaultPropertyGenerator(propertyGenerator);
+		return this;
+	}
+
+	public FixtureMonkeyBuilder defaultNotNull(boolean defaultNotNull) {
+		this.generateOptionsBuilder.defaultNotNull(defaultNotNull);
+		return this;
+	}
+
+	public FixtureMonkeyBuilder nullableContainer(boolean nullableContainer) {
+		this.generateOptionsBuilder.nullableContainer(nullableContainer);
+		return this;
+	}
+
+	public FixtureMonkeyBuilder nullableElement(boolean nullableElement) {
+		this.generateOptionsBuilder.nullableElement(nullableElement);
+		return this;
+	}
+
+	public <T> FixtureMonkeyBuilder interfaceImplements(
+		Matcher matcher,
+		List<Class<? extends T>> implementations
+	) {
+		this.pushObjectPropertyGenerator(
+			new MatcherOperator<>(
+				matcher,
+				new InterfaceObjectPropertyGenerator(implementations)
+			)
+		);
+		return this;
+	}
+
+	public <T> FixtureMonkeyBuilder interfaceImplements(
+		Class<T> interfaceClass,
+		List<Class<? extends T>> implementations
+	) {
+		if (!Modifier.isAbstract(interfaceClass.getModifiers())) {
+			throw new IllegalArgumentException(
+				"interfaceImplements option first parameter should be interface or abstract class. "
+					+ interfaceClass.getTypeName()
+			);
 		}
+
+		return this.interfaceImplements(new ExactTypeMatcher(interfaceClass), implementations);
+	}
+
+	public FixtureMonkey build() {
+		manipulateOptionsBuilder.additionalDecomposedContainerValueFactory(
+			obj -> {
+				Class<?> actualType = obj.getClass();
+				for (
+					Entry<Class<?>, DecomposedContainerValueFactory> entry :
+					this.decomposableContainerFactoryMap.entrySet()
+				) {
+					Class<?> type = entry.getKey();
+					DecomposableContainerValue decomposedValue = entry.getValue().from(obj);
+
+					if (actualType.isAssignableFrom(type)) {
+						return decomposedValue;
+					}
+				}
+				return this.defaultDecomposedContainerValueFactory.from(obj);
+			}
+		);
+
+		GenerateOptions generateOptions = generateOptionsBuilder.build();
+		ArbitraryTraverser traverser = new ArbitraryTraverser(generateOptions);
 
 		return new FixtureMonkey(
-			this.options,
-			defaultGenerator,
-			validator,
-			generatorMap,
-			this.arbitraryCustomizers.mergeWith(this.customizerMap)
+			generateOptions,
+			manipulateOptionsBuilder,
+			traverser,
+			manipulatorOptimizer,
+			generateOptions.getDefaultArbitraryValidator(),
+			MonkeyContext.builder().build()
 		);
+	}
+
+	public FixtureMonkeyBuilder useExpressionStrictMode() {
+		this.manipulateOptionsBuilder.expressionStrictMode(true);
+		return this;
 	}
 }
