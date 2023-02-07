@@ -117,7 +117,6 @@ class InnerSpecTest {
 		then(actual.getStrMap().containsValue(null)).isTrue();
 	}
 
-	@SuppressWarnings("ConstantConditions")
 	@Property
 	void keyNullThrows() {
 		thenThrownBy(() ->
@@ -638,10 +637,10 @@ class InnerSpecTest {
 		SimpleObject actual = SUT.giveMeBuilder(SimpleObject.class)
 			.setInner(
 				new InnerSpec()
-				.property(
-					"str",
-					inner -> inner.postCondition(String.class, it -> it.length() > 5)
-				)
+					.property(
+						"str",
+						inner -> inner.postCondition(String.class, it -> it.length() > 5)
+					)
 			)
 			.sample();
 
@@ -668,5 +667,22 @@ class InnerSpecTest {
 			.sample();
 
 		then(actual.getValue().getStr()).isEqualTo("test");
+	}
+
+	@Property
+	void listElementInMaxSize() {
+		String expected = "expected";
+
+		List<String> actual = SUT.giveMeBuilder(new TypeReference<List<String>>() {
+			})
+			.setInner(
+				new InnerSpec()
+					.maxSize(2)
+					.listElement(0, expected)
+					.listElement(1, expected)
+			)
+			.sample();
+
+		then(actual).allMatch(expected::equals);
 	}
 }
