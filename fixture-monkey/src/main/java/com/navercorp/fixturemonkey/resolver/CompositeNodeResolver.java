@@ -20,6 +20,7 @@ package com.navercorp.fixturemonkey.resolver;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -71,7 +72,7 @@ public final class CompositeNodeResolver implements NodeResolver {
 
 	private List<NodeResolver> distinct(List<NodeResolver> resolvers) {
 		if (resolvers.isEmpty()) {
-			return resolvers;
+			return Collections.emptyList();
 		}
 
 		int length = resolvers.size();

@@ -30,7 +30,6 @@ import net.jqwik.api.Arbitrary;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
-import com.navercorp.fixturemonkey.builder.DefaultArbitraryBuilder;
 import com.navercorp.fixturemonkey.customizer.InnerSpecState.ContainerInfoHolder;
 import com.navercorp.fixturemonkey.customizer.InnerSpecState.FilterHolder;
 import com.navercorp.fixturemonkey.customizer.InnerSpecState.NodeResolverObjectHolder;
@@ -39,6 +38,7 @@ import com.navercorp.fixturemonkey.resolver.ApplyNodeCountManipulator;
 import com.navercorp.fixturemonkey.resolver.ArbitraryManipulator;
 import com.navercorp.fixturemonkey.resolver.ArbitraryTraverser;
 import com.navercorp.fixturemonkey.resolver.ContainerInfoManipulator;
+import com.navercorp.fixturemonkey.resolver.DefaultArbitraryBuilder;
 import com.navercorp.fixturemonkey.resolver.ManipulateOptions;
 import com.navercorp.fixturemonkey.resolver.NodeFilterManipulator;
 import com.navercorp.fixturemonkey.resolver.NodeManipulator;
@@ -103,7 +103,7 @@ public final class MonkeyManipulatorFactory {
 
 	public ContainerInfoManipulator newContainerInfoManipulator(ContainerInfoHolder containerInfoHolder) {
 		return new ContainerInfoManipulator(
-			containerInfoHolder.getNodeResolver(),
+			containerInfoHolder.getNodeResolver().toNextNodePredicate(),
 			containerInfoHolder.getContainerInfo()
 		);
 	}
@@ -137,7 +137,7 @@ public final class MonkeyManipulatorFactory {
 		int max
 	) {
 		return new ContainerInfoManipulator(
-			monkeyExpressionFactory.from(expression).toNodeResolver(),
+			monkeyExpressionFactory.from(expression).toNodeResolver().toNextNodePredicate(),
 			new ArbitraryContainerInfo(
 				min,
 				max,
