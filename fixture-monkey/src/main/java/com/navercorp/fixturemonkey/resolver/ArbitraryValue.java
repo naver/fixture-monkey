@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.builder;
+package com.navercorp.fixturemonkey.resolver;
 
 import java.util.Map;
 import java.util.Random;

@@ -31,6 +31,7 @@ import javax.annotation.Nullable;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.generator.ContainerProperty;
@@ -40,6 +41,7 @@ import com.navercorp.fixturemonkey.api.generator.ObjectProperty;
 import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.SingleValueObjectPropertyGenerator;
+import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.option.GenerateOptions;
 import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
@@ -54,7 +56,8 @@ public final class ArbitraryTraverser {
 
 	public ArbitraryNode traverse(
 		Property property,
-		List<ContainerInfoManipulator> containerInfoManipulators
+		List<ContainerInfoManipulator> containerInfoManipulators,
+		List<MatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuilders
 	) {
 		ContainerPropertyGenerator containerPropertyGenerator =
 			this.generateOptions.getContainerPropertyGenerator(property);
@@ -109,7 +112,8 @@ public final class ArbitraryTraverser {
 			new TraverseContext(
 				arbitraryProperty,
 				parentArbitraryProperties,
-				containerInfoManipulators
+				containerInfoManipulators,
+				registeredArbitraryBuilders
 			)
 		);
 	}

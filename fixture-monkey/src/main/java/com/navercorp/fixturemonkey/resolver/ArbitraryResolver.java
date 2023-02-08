@@ -34,7 +34,6 @@ import net.jqwik.api.Arbitrary;
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.api.context.MonkeyContext;
 import com.navercorp.fixturemonkey.api.customizer.FixtureCustomizer;
-import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.option.GenerateOptions;
 import com.navercorp.fixturemonkey.api.property.Property;
@@ -72,15 +71,15 @@ public final class ArbitraryResolver {
 	) {
 		ArbitraryTree arbitraryTree = new ArbitraryTree(
 			rootProperty,
-			this.traverser.traverse(rootProperty, containerInfoManipulators),
+			this.traverser.traverse(
+				rootProperty,
+				containerInfoManipulators,
+				manipulateOptions.getRegisteredArbitraryBuilders()
+			),
 			generateOptions,
 			monkeyContext,
 			customizers
 		);
-
-		containerInfoManipulators.stream()
-			.flatMap(it -> it.getNodeResolver().resolve(arbitraryTree.findRoot()).stream())
-			.forEach(it -> it.setManipulated(true));
 
 		List<ArbitraryManipulator> registeredManipulators = getRegisteredToManipulators(
 			manipulateOptions,
@@ -115,47 +114,42 @@ public final class ArbitraryResolver {
 			Property property = nodeByType.getKey();
 			List<ArbitraryNode> arbitraryNodes = nodeByType.getValue();
 
-			ArbitraryBuilder<?> registeredArbitraryBuilder = registeredArbitraryBuilders.stream()
-				.filter(it -> it.match(property))
-				.findFirst()
-				.map(MatcherOperator::getOperator)
-				.orElse(null);
+			DefaultArbitraryBuilder<?> registeredArbitraryBuilder =
+				(DefaultArbitraryBuilder<?>)registeredArbitraryBuilders.stream()
+					.filter(it -> it.match(property))
+					.findFirst()
+					.map(MatcherOperator::getOperator)
+					.filter(it -> it instanceof DefaultArbitraryBuilder<?>)
+					.orElse(null);
 
 			if (registeredArbitraryBuilder == null) {
 				continue;
 			}
 
-			LazyArbitrary<?> lazyArbitrary = LazyArbitrary.lazy(registeredArbitraryBuilder::sample);
+			ArbitraryBuilderContext context = registeredArbitraryBuilder.getContext();
+			List<ArbitraryManipulator> arbitraryManipulators = context.getManipulators().stream()
+				.map(it -> it.withPrependNodeResolver(prependPropertyNodeResolver(property, arbitraryNodes)))
+				.collect(Collectors.toList());
 
-			NodeManipulator nodeManipulator = new NodeSetLazyManipulator<>(
-				traverser,
-				manipulateOptions,
-				lazyArbitrary,
-				false
-			);
-			manipulators.add(
-				new ArbitraryManipulator(
-					new NodeResolver() {
-						@Override
-						public List<ArbitraryNode> resolve(ArbitraryNode arbitraryNode) {
-							for (ArbitraryNode node : arbitraryNodes) {
-								node.setManipulated(true);
-							}
-							return arbitraryNodes;
-						}
-
-						@Override
-						public List<NextNodePredicate> toNextNodePredicate() {
-							return Collections.emptyList(); // Do not need node predicate since it is SetLazyManipulator
-						}
-					},
-					arbitraryNode -> {
-						nodeManipulator.manipulate(arbitraryNode);
-						lazyArbitrary.clear();
-					}
-				)
-			);
+			manipulators.addAll(arbitraryManipulators);
 		}
 		return manipulators;
+	}
+
+	private static NodeResolver prependPropertyNodeResolver(Property property, List<ArbitraryNode> arbitraryNodes) {
+		return new NodeResolver() {
+			@Override
+			public List<ArbitraryNode> resolve(ArbitraryNode arbitraryNode) {
+				for (ArbitraryNode node : arbitraryNodes) {
+					node.setManipulated(true);
+				}
+				return arbitraryNodes;
+			}
+
+			@Override
+			public List<NextNodePredicate> toNextNodePredicate() {
+				return Collections.singletonList(new PropertyPredicate(property));
+			}
+		};
 	}
 }

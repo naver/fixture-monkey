@@ -1652,4 +1652,18 @@ class FixtureMonkeyTest {
 			.isThrownBy(() -> SUT.giveMeOne(new TypeReference<List<? extends SimpleObject>>() {
 			}));
 	}
+
+	@Property
+	void nestedSize() {
+		// when
+		List<List<String>> actual = SUT.giveMeBuilder(new TypeReference<List<List<String>>>() {
+			})
+			.size("$[0]", 10)
+			.size("$", 2)
+			.sample();
+
+		// then
+		then(actual).hasSize(2);
+		then(actual.get(0)).hasSize(10);
+	}
 }

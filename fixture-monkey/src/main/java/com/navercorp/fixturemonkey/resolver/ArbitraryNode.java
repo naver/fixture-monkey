@@ -104,7 +104,10 @@ final class ArbitraryNode {
 	}
 
 	public boolean isNotManipulated() {
-		return !manipulated;
+		boolean sized = arbitraryProperty.getContainerProperty() != null
+			&& arbitraryProperty.getContainerProperty().getContainerInfo().isManipulated();
+
+		return !manipulated && !sized;
 	}
 
 	public void setManipulated(boolean manipulated) {

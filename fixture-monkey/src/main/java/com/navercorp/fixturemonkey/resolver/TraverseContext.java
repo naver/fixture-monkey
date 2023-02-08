@@ -19,12 +19,16 @@
 package com.navercorp.fixturemonkey.resolver;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
+import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 
@@ -33,15 +37,18 @@ final class TraverseContext {
 	private final ArbitraryProperty rootArbitraryProperty;
 	private final List<ArbitraryProperty> arbitraryProperties;
 	private final List<ContainerInfoManipulator> containerInfoManipulators;
+	private final List<MatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuilders;
 
 	public TraverseContext(
 		ArbitraryProperty rootArbitraryProperty,
 		List<ArbitraryProperty> arbitraryProperties,
-		List<ContainerInfoManipulator> containerInfoManipulators
+		List<ContainerInfoManipulator> containerInfoManipulators,
+		List<MatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuilders
 	) {
 		this.rootArbitraryProperty = rootArbitraryProperty;
 		this.arbitraryProperties = arbitraryProperties;
 		this.containerInfoManipulators = containerInfoManipulators;
+		this.registeredArbitraryBuilders = registeredArbitraryBuilders;
 	}
 
 	public ArbitraryProperty getRootArbitraryProperty() {
@@ -61,7 +68,31 @@ final class TraverseContext {
 	) {
 		List<ArbitraryProperty> arbitraryProperties = new ArrayList<>(this.arbitraryProperties);
 		arbitraryProperties.add(arbitraryProperty);
-		return new TraverseContext(rootArbitraryProperty, arbitraryProperties, containerInfoManipulators);
+
+		List<ContainerInfoManipulator> registeredContainerManipulators = this.registeredArbitraryBuilders.stream()
+			.filter(it -> it.match(arbitraryProperty.getObjectProperty().getProperty()))
+			.map(MatcherOperator::getOperator)
+			.filter(it -> it instanceof DefaultArbitraryBuilder<?>)
+			.map(it -> (DefaultArbitraryBuilder<?>)it)
+			.findFirst()
+			.map(it -> it.getContext().getContainerInfoManipulators())
+			.orElse(Collections.emptyList());
+
+		List<ContainerInfoManipulator> concatRegisteredContainerManipulator = registeredContainerManipulators.stream()
+			.map(it -> it.withPrependNextNodePredicate(
+				new PropertyPredicate(arbitraryProperty.getObjectProperty().getProperty())
+			))
+			.collect(Collectors.toList());
+
+		List<ContainerInfoManipulator> concat = new ArrayList<>();
+		concat.addAll(concatRegisteredContainerManipulator);
+		concat.addAll(containerInfoManipulators);
+		return new TraverseContext(
+			rootArbitraryProperty,
+			arbitraryProperties,
+			concat,
+			this.registeredArbitraryBuilders
+		);
 	}
 
 	public boolean isTraversed(Property property) {
