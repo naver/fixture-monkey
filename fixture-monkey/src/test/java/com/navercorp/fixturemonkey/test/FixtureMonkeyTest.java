@@ -1666,4 +1666,11 @@ class FixtureMonkeyTest {
 		then(actual).hasSize(2);
 		then(actual.get(0)).hasSize(10);
 	}
+
+	@Property
+	void sampleMapValueWildcardListString() {
+		thenNoException()
+			.isThrownBy(() -> SUT.giveMeOne(new TypeReference<Map<String, ? extends List<String>>>() {
+			}));
+	}
 }
