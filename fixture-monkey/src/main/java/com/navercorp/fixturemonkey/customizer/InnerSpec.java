@@ -519,7 +519,9 @@ public final class InnerSpec {
 		List<ContainerInfoManipulator> containerInfoManipulators = new ArrayList<>();
 		List<ArbitraryManipulator> postConditionManipulators = new ArrayList<>();
 
-		NodeResolver nextNodeResolver = new CompositeNodeResolver(
+		NodeResolver nextNodeResolver = nodeResolver == IdentityNodeResolver.INSTANCE
+			? innerSpec.treePathResolver
+			: new CompositeNodeResolver(
 			nodeResolver,
 			innerSpec.treePathResolver
 		);

@@ -638,10 +638,10 @@ class InnerSpecTest {
 		SimpleObject actual = SUT.giveMeBuilder(SimpleObject.class)
 			.setInner(
 				new InnerSpec()
-				.property(
-					"str",
-					inner -> inner.postCondition(String.class, it -> it.length() > 5)
-				)
+					.property(
+						"str",
+						inner -> inner.postCondition(String.class, it -> it.length() > 5)
+					)
 			)
 			.sample();
 
@@ -668,5 +668,29 @@ class InnerSpecTest {
 			.sample();
 
 		then(actual.getValue().getStr()).isEqualTo("test");
+	}
+
+	@Property
+	void size() {
+		List<String> actual = SUT.giveMeBuilder(new TypeReference<List<String>>() {
+			})
+			.setInner(new InnerSpec().size(5))
+			.sample();
+
+		then(actual).hasSize(5);
+	}
+
+	@Property
+	void nestedSize() {
+		List<String> actual = SUT.giveMeBuilder(new TypeReference<List<List<String>>>() {
+			})
+			.setInner(
+				new InnerSpec().size(1)
+					.listElement(0, l -> l.size(5))
+			)
+			.sample()
+			.get(0);
+
+		then(actual).hasSize(5);
 	}
 }
