@@ -122,7 +122,7 @@ class FixtureMonkeyOptionsAdditionalTestSpecs {
 
 			return new ContainerProperty(
 				elementProperties,
-				new ArbitraryContainerInfo(1, 1, false)
+				new ArbitraryContainerInfo(1, 1)
 			);
 		}
 	}

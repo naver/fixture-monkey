@@ -23,36 +23,27 @@ import java.util.List;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.customizer.InnerSpecState.ContainerInfoHolder;
-import com.navercorp.fixturemonkey.customizer.InnerSpecState.FilterHolder;
-import com.navercorp.fixturemonkey.customizer.InnerSpecState.NodeResolverObjectHolder;
+import com.navercorp.fixturemonkey.resolver.ArbitraryManipulator;
+import com.navercorp.fixturemonkey.resolver.ContainerInfoManipulator;
 
-@API(since = "0.4.10", status = Status.EXPERIMENTAL)
+@API(since = "0.5.0", status = Status.EXPERIMENTAL)
 public final class ManipulatorSet {
-	private final List<NodeResolverObjectHolder> nodeResolverObjectHolders;
-	private final List<ContainerInfoHolder> containerInfoManipulators;
-	private final List<FilterHolder> postConditionManipulators;
+	private final List<ArbitraryManipulator> arbitraryManipulators;
+	private final List<ContainerInfoManipulator> containerInfoManipulators;
 
 	public ManipulatorSet(
-		List<NodeResolverObjectHolder> nodeResolverObjectHolders,
-		List<ContainerInfoHolder> containerInfoManipulators,
-		List<FilterHolder> postConditionManipulators
+		List<ArbitraryManipulator> arbitraryManipulators,
+		List<ContainerInfoManipulator> containerInfoManipulators
 	) {
-		this.nodeResolverObjectHolders = nodeResolverObjectHolders;
+		this.arbitraryManipulators = arbitraryManipulators;
 		this.containerInfoManipulators = containerInfoManipulators;
-		this.postConditionManipulators = postConditionManipulators;
 	}
 
-	public List<NodeResolverObjectHolder> getNodeResolverObjectHolders() {
-		return nodeResolverObjectHolders;
+	public List<ArbitraryManipulator> getArbitraryManipulators() {
+		return arbitraryManipulators;
 	}
 
-	public List<ContainerInfoHolder> getContainerInfoManipulators() {
+	public List<ContainerInfoManipulator> getContainerInfoManipulators() {
 		return containerInfoManipulators;
 	}
-
-	public List<FilterHolder> getPostConditionManipulators() {
-		return postConditionManipulators;
-	}
-
 }

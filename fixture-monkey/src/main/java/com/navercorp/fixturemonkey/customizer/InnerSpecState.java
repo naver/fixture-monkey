@@ -18,6 +18,7 @@
 
 package com.navercorp.fixturemonkey.customizer;
 
+import java.util.List;
 import java.util.function.Predicate;
 
 import javax.annotation.Nullable;
@@ -25,7 +26,6 @@ import javax.annotation.Nullable;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.resolver.CompositeNodeResolver;
 import com.navercorp.fixturemonkey.resolver.NodeResolver;
 
@@ -121,8 +121,12 @@ final class InnerSpecState {
 			return nodeResolver;
 		}
 
-		ArbitraryContainerInfo getContainerInfo() {
-			return new ArbitraryContainerInfo(elementMinSize, elementMaxSize, true);
+		int getElementMinSize() {
+			return elementMinSize;
+		}
+
+		int getElementMaxSize() {
+			return elementMaxSize;
 		}
 	}
 
@@ -179,4 +183,33 @@ final class InnerSpecState {
 			return sequence;
 		}
 	}
+
+	static final class ManipulatorHolderSet {
+		private final List<NodeResolverObjectHolder> nodeResolverObjectHolders;
+		private final List<ContainerInfoHolder> containerInfoManipulators;
+		private final List<FilterHolder> postConditionManipulators;
+
+		public ManipulatorHolderSet(
+			List<NodeResolverObjectHolder> nodeResolverObjectHolders,
+			List<ContainerInfoHolder> containerInfoManipulators,
+			List<FilterHolder> postConditionManipulators
+		) {
+			this.nodeResolverObjectHolders = nodeResolverObjectHolders;
+			this.containerInfoManipulators = containerInfoManipulators;
+			this.postConditionManipulators = postConditionManipulators;
+		}
+
+		public List<NodeResolverObjectHolder> getNodeResolverObjectHolders() {
+			return nodeResolverObjectHolders;
+		}
+
+		public List<ContainerInfoHolder> getContainerInfoManipulators() {
+			return containerInfoManipulators;
+		}
+
+		public List<FilterHolder> getPostConditionManipulators() {
+			return postConditionManipulators;
+		}
+	}
+
 }

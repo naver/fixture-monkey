@@ -31,7 +31,7 @@ public final class MapEntryElementContainerPropertyGenerator implements Containe
 	public static final MapEntryElementContainerPropertyGenerator INSTANCE =
 		new MapEntryElementContainerPropertyGenerator();
 
-	private static final ArbitraryContainerInfo CONTAINER_INFO = new ArbitraryContainerInfo(1, 1, false);
+	private static final ArbitraryContainerInfo CONTAINER_INFO = new ArbitraryContainerInfo(1, 1);
 
 	@Override
 	public ContainerProperty generate(ContainerPropertyGeneratorContext context) {

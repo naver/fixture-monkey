@@ -80,6 +80,6 @@ public final class JavaxValidationArbitraryContainerInfoGenerator implements Arb
 			max = min + defaultArbitraryContainerSize;
 		}
 
-		return new ArbitraryContainerInfo(min, max, false);
+		return new ArbitraryContainerInfo(min, max);
 	}
 }

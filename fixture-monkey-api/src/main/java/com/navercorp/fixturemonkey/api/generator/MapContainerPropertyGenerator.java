@@ -64,8 +64,7 @@ public final class MapContainerPropertyGenerator implements ContainerPropertyGen
 				int enumSize = EnumSet.allOf((Class<? extends Enum>)actualKeyType).size();
 				containerInfo = new ArbitraryContainerInfo(
 					Math.min(containerInfo.getElementMinSize(), enumSize),
-					Math.min(containerInfo.getElementMaxSize(), enumSize),
-					false
+					Math.min(containerInfo.getElementMaxSize(), enumSize)
 				);
 			}
 		}

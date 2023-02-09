@@ -21,6 +21,7 @@ package com.navercorp.fixturemonkey.test;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.assertj.core.api.BDDAssertions.thenThrownBy;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +39,7 @@ import com.navercorp.fixturemonkey.customizer.InnerSpec;
 import com.navercorp.fixturemonkey.test.InnerSpecTestSpecs.ComplexObject;
 import com.navercorp.fixturemonkey.test.InnerSpecTestSpecs.ComplexObjectObject;
 import com.navercorp.fixturemonkey.test.InnerSpecTestSpecs.IntegerMapObject;
+import com.navercorp.fixturemonkey.test.InnerSpecTestSpecs.ListStringObject;
 import com.navercorp.fixturemonkey.test.InnerSpecTestSpecs.MapObject;
 import com.navercorp.fixturemonkey.test.InnerSpecTestSpecs.NestedKeyMapObject;
 import com.navercorp.fixturemonkey.test.InnerSpecTestSpecs.NestedListStringObject;
@@ -133,7 +135,7 @@ class InnerSpecTest {
 	@Property
 	void keyInKey() {
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.defaultArbitraryContainerInfo(new ArbitraryContainerInfo(1, 3, false))
+			.defaultArbitraryContainerInfo(new ArbitraryContainerInfo(1, 3))
 			.build();
 
 		NestedKeyMapObject actual = sut.giveMeBuilder(NestedKeyMapObject.class)
@@ -151,7 +153,7 @@ class InnerSpecTest {
 	@Property
 	void valueInKey() {
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.defaultArbitraryContainerInfo(new ArbitraryContainerInfo(1, 3, false))
+			.defaultArbitraryContainerInfo(new ArbitraryContainerInfo(1, 3))
 			.build();
 
 		NestedKeyMapObject actual = sut.giveMeBuilder(NestedKeyMapObject.class)
@@ -268,7 +270,7 @@ class InnerSpecTest {
 	void entryInEntryKey() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.defaultArbitraryContainerInfo(new ArbitraryContainerInfo(1, 3, false))
+			.defaultArbitraryContainerInfo(new ArbitraryContainerInfo(1, 3))
 			.build();
 
 		// when
@@ -684,5 +686,84 @@ class InnerSpecTest {
 			.sample();
 
 		then(actual).allMatch(expected::equals);
+	}
+
+	@Property
+	void setAfterSizeReturnsSet() {
+		List<String> actual = SUT.giveMeBuilder(ListStringObject.class)
+			.setInner(
+				new InnerSpec()
+					.property("values", it -> it.size(2))
+					.property("values", new ArrayList<>())
+			)
+			.sample()
+			.getValues();
+
+		then(actual).isEmpty();
+	}
+
+	@Property
+	void sizeAfterSetReturnsSize() {
+		List<String> actual = SUT.giveMeBuilder(ListStringObject.class)
+			.setInner(
+				new InnerSpec()
+					.property("values", new ArrayList<>())
+					.property("values", it -> it.size(2))
+			)
+			.sample()
+			.getValues();
+
+		then(actual).hasSize(2);
+	}
+
+	@Property
+	void sizeAfterSetWithSeparateInnerSpecReturnsSize() {
+		List<String> actual = SUT.giveMeBuilder(ListStringObject.class)
+			.setInner(
+				new InnerSpec()
+					.property("values", new ArrayList<>())
+			)
+			.setInner(
+				new InnerSpec()
+					.property("values", it -> it.size(2))
+			)
+			.sample()
+			.getValues();
+
+		then(actual).hasSize(2);
+	}
+
+	@Property
+	void setAfterSetWithSeparateInnerSpecReturnsSet() {
+		List<String> actual = SUT.giveMeBuilder(ListStringObject.class)
+			.setInner(
+				new InnerSpec()
+					.property("values", it -> it.size(2))
+			)
+			.setInner(
+				new InnerSpec()
+					.property("values", new ArrayList<>())
+			)
+			.sample()
+			.getValues();
+
+		then(actual).isEmpty();
+	}
+
+
+	@Property
+	void innerSpecIncrementsSequence() {
+		List<String> actual = SUT.giveMeBuilder(ListStringObject.class)
+			.setInner(
+				new InnerSpec()
+					.property("values", it -> it.size(1))
+					.property("values", it -> it.size(2))
+					.property("values", it -> it.size(3))
+			)
+			.size("values", 5)
+			.sample()
+			.getValues();
+
+		then(actual).hasSize(5);
 	}
 }

@@ -40,6 +40,11 @@ class InnerSpecTestSpecs {
 	}
 
 	@Data
+	public static class ListStringObject {
+		private List<String> values;
+	}
+
+	@Data
 	public static class NestedListStringObject {
 		private List<List<String>> values;
 	}

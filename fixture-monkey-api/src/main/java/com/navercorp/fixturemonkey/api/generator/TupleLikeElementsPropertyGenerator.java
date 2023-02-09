@@ -29,7 +29,7 @@ public final class TupleLikeElementsPropertyGenerator implements ContainerProper
 	public static final TupleLikeElementsPropertyGenerator INSTANCE =
 		new TupleLikeElementsPropertyGenerator();
 
-	private static final ArbitraryContainerInfo CONTAINER_INFO = new ArbitraryContainerInfo(1, 1, false);
+	private static final ArbitraryContainerInfo CONTAINER_INFO = new ArbitraryContainerInfo(1, 1);
 
 	@Override
 	public ContainerProperty generate(ContainerPropertyGeneratorContext context) {

@@ -36,6 +36,7 @@ import org.apiguardian.api.API.Status;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.customizer.InnerSpecState.ContainerInfoHolder;
 import com.navercorp.fixturemonkey.customizer.InnerSpecState.FilterHolder;
+import com.navercorp.fixturemonkey.customizer.InnerSpecState.ManipulatorHolderSet;
 import com.navercorp.fixturemonkey.customizer.InnerSpecState.NodeResolverObjectHolder;
 import com.navercorp.fixturemonkey.resolver.CompositeNodeResolver;
 import com.navercorp.fixturemonkey.resolver.ContainerElementPredicate;
@@ -50,6 +51,9 @@ import com.navercorp.fixturemonkey.resolver.PropertyNameNodePredicate;
 @SuppressWarnings("UnusedReturnValue")
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class InnerSpec {
+	private static final int FIRST_MANIPULATOR_SEQUENCE = 0;
+
+	private final int sequence;
 	private final NodeResolver treePathResolver;
 	private final InnerSpecState state;
 	private final List<InnerSpec> innerSpecs;
@@ -58,10 +62,11 @@ public final class InnerSpec {
 	private int manipulateSize = 0;
 
 	public InnerSpec() {
-		this(IdentityNodeResolver.INSTANCE, new InnerSpecState(), new ArrayList<>());
+		this(FIRST_MANIPULATOR_SEQUENCE, IdentityNodeResolver.INSTANCE, new InnerSpecState(), new ArrayList<>());
 	}
 
-	private InnerSpec(NodeResolver treePathResolver, InnerSpecState state, List<InnerSpec> innerSpecs) {
+	private InnerSpec(int sequence, NodeResolver treePathResolver, InnerSpecState state, List<InnerSpec> innerSpecs) {
+		this.sequence = sequence;
 		this.treePathResolver = treePathResolver;
 		this.state = state;
 		this.innerSpecs = innerSpecs;
@@ -78,7 +83,10 @@ public final class InnerSpec {
 			throw new IllegalArgumentException("should be min > max, min : " + min + " max : " + max);
 		}
 
-		this.state.setContainerInfoHolder(new ContainerInfoHolder(manipulateSize++, this.treePathResolver, min, max));
+		this.state.setContainerInfoHolder(
+			new ContainerInfoHolder(this.sequence + manipulateSize, this.treePathResolver, min, max)
+		);
+		manipulateSize++;
 		return this;
 	}
 
@@ -230,12 +238,14 @@ public final class InnerSpec {
 		return this;
 	}
 
-	public ManipulatorSet getMergedManipulatorSet() {
-		return traverse(this);
+	public ManipulatorSet getManipulatorSet(MonkeyManipulatorFactory monkeyManipulatorFactory) {
+		ManipulatorHolderSet manipulatorHolderSet = traverse(this);
+		return monkeyManipulatorFactory.newManipulatorSet(manipulatorHolderSet);
 	}
 
 	private InnerSpec newAppendNodeResolver(InnerSpec innerSpec, NodeResolver nodeResolver) {
 		InnerSpec newSpec = new InnerSpec(
+			innerSpec.sequence,
 			innerSpec.treePathResolver,
 			innerSpec.state.withPrefix(nodeResolver),
 			new ArrayList<>()
@@ -324,32 +334,54 @@ public final class InnerSpec {
 
 	@SuppressWarnings("unchecked")
 	private void setValue(NodeResolver nextNodeResolver, @Nullable Object nextValue) {
+		int nextSequence = this.sequence + manipulateSize;
+
 		if (nextValue instanceof InnerSpec) {
-			InnerSpec prefix = new InnerSpec(nextNodeResolver, new InnerSpecState(), new ArrayList<>());
+			InnerSpec prefix = new InnerSpec(
+				nextSequence,
+				nextNodeResolver,
+				new InnerSpecState(),
+				new ArrayList<>()
+			);
 			this.innerSpecs.add(prefix.inner((InnerSpec)nextValue));
+			manipulateSize++;
 			return;
 		}
 
 		if (nextValue instanceof Consumer) {
 			Consumer<InnerSpec> consumer = (Consumer<InnerSpec>)nextValue;
-			InnerSpec mapInnerSpec = new InnerSpec(nextNodeResolver, new InnerSpecState(), new ArrayList<>());
-			consumer.accept(mapInnerSpec);
-			this.innerSpecs.add(mapInnerSpec);
+			InnerSpec nextInnerSpec = new InnerSpec(
+				nextSequence,
+				nextNodeResolver,
+				new InnerSpecState(),
+				new ArrayList<>()
+			);
+			consumer.accept(nextInnerSpec);
+			this.innerSpecs.add(nextInnerSpec);
+			manipulateSize++;
 			return;
 		}
 
-		InnerSpec nextInnerSpec = new InnerSpec(nextNodeResolver, new InnerSpecState(), new ArrayList<>());
-		nextInnerSpec.state.setObjectHolder(
+		InnerSpecState nextInnerSpecState = new InnerSpecState();
+		nextInnerSpecState.setObjectHolder(
 			new NodeResolverObjectHolder(
-				manipulateSize++,
+				nextSequence,
 				nextNodeResolver,
 				nextValue
 			)
 		);
+
+		InnerSpec nextInnerSpec = new InnerSpec(
+			nextSequence,
+			nextNodeResolver,
+			nextInnerSpecState,
+			new ArrayList<>()
+		);
 		this.innerSpecs.add(nextInnerSpec);
+		manipulateSize++;
 	}
 
-	private ManipulatorSet traverse(InnerSpec innerSpec) {
+	private ManipulatorHolderSet traverse(InnerSpec innerSpec) {
 		List<NodeResolverObjectHolder> nodeResolverObjectHolders = new ArrayList<>();
 		List<ContainerInfoHolder> containerInfoManipulators = new ArrayList<>();
 		List<FilterHolder> postConditionManipulators = new ArrayList<>();
@@ -367,11 +399,16 @@ public final class InnerSpec {
 		}
 
 		for (InnerSpec spec : innerSpec.innerSpecs) {
-			nodeResolverObjectHolders.addAll(traverse(spec).getNodeResolverObjectHolders());
-			containerInfoManipulators.addAll(traverse(spec).getContainerInfoManipulators());
-			postConditionManipulators.addAll(traverse(spec).getPostConditionManipulators());
+			ManipulatorHolderSet traversed = traverse(spec);
+			nodeResolverObjectHolders.addAll(traversed.getNodeResolverObjectHolders());
+			containerInfoManipulators.addAll(traversed.getContainerInfoManipulators());
+			postConditionManipulators.addAll(traversed.getPostConditionManipulators());
 		}
 
-		return new ManipulatorSet(nodeResolverObjectHolders, containerInfoManipulators, postConditionManipulators);
+		return new ManipulatorHolderSet(
+			nodeResolverObjectHolders,
+			containerInfoManipulators,
+			postConditionManipulators
+		);
 	}
 }

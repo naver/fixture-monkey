@@ -58,11 +58,7 @@ public final class ArbitraryBuilderContext {
 
 	public ArbitraryBuilderContext copy() {
 		List<ContainerInfoManipulator> copiedContainerInfoManipulators = this.containerInfoManipulators.stream()
-			.map(it -> new ContainerInfoManipulator(
-					it.getNextNodePredicates(),
-					it.getContainerInfo()
-				)
-			)
+			.map(ContainerInfoManipulator::copy)
 			.collect(Collectors.toList());
 
 		return new ArbitraryBuilderContext(

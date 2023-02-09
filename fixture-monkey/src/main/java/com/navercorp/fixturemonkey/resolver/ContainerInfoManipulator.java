@@ -34,9 +34,23 @@ public final class ContainerInfoManipulator {
 	private final List<NextNodePredicate> nextNodePredicates;
 	private ArbitraryContainerInfo containerInfo;
 
-	public ContainerInfoManipulator(List<NextNodePredicate> nextNodePredicates, ArbitraryContainerInfo containerInfo) {
+	public ContainerInfoManipulator(
+		List<NextNodePredicate> nextNodePredicates,
+		ArbitraryContainerInfo containerInfo
+	) {
 		this.nextNodePredicates = nextNodePredicates;
 		this.containerInfo = containerInfo;
+	}
+
+	public ContainerInfoManipulator copy() {
+		return new ContainerInfoManipulator(
+			this.getNextNodePredicates(),
+			new ArbitraryContainerInfo(
+				containerInfo.getElementMinSize(),
+				containerInfo.getElementMaxSize(),
+				containerInfo.getManipulatingSequence()
+			)
+		);
 	}
 
 	public List<NextNodePredicate> getNextNodePredicates() {
@@ -68,7 +82,7 @@ public final class ContainerInfoManipulator {
 		this.containerInfo = new ArbitraryContainerInfo(
 			fixedSize,
 			fixedSize,
-			true
+			containerInfo.getManipulatingSequence()
 		);
 	}
 

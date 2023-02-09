@@ -38,16 +38,15 @@ import com.navercorp.fixturemonkey.api.property.RootProperty;
 import com.navercorp.fixturemonkey.api.type.LazyAnnotatedType;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.api.validator.ArbitraryValidator;
+import com.navercorp.fixturemonkey.customizer.MonkeyManipulatorFactory;
 import com.navercorp.fixturemonkey.resolver.ArbitraryBuilderContext;
 import com.navercorp.fixturemonkey.resolver.ArbitraryManipulator;
 import com.navercorp.fixturemonkey.resolver.ArbitraryResolver;
 import com.navercorp.fixturemonkey.resolver.ArbitraryTraverser;
 import com.navercorp.fixturemonkey.resolver.DefaultArbitraryBuilder;
-import com.navercorp.fixturemonkey.resolver.IdentityNodeResolver;
 import com.navercorp.fixturemonkey.resolver.ManipulateOptions;
 import com.navercorp.fixturemonkey.resolver.ManipulateOptionsBuilder;
 import com.navercorp.fixturemonkey.resolver.ManipulatorOptimizer;
-import com.navercorp.fixturemonkey.resolver.NodeSetDecomposedValueManipulator;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public class FixtureMonkey {
@@ -114,6 +113,7 @@ public class FixtureMonkey {
 			),
 			traverser,
 			this.validator,
+			new MonkeyManipulatorFactory(traverser, manipulateOptions),
 			new ArbitraryBuilderContext()
 		);
 
@@ -126,13 +126,12 @@ public class FixtureMonkey {
 
 	public <T> DefaultArbitraryBuilder<T> giveMeBuilder(T value) {
 		ManipulateOptions manipulateOptions = manipulateOptionsBuilder.build();
+		MonkeyManipulatorFactory monkeyManipulatorFactory = new MonkeyManipulatorFactory(traverser, manipulateOptions);
 		ArbitraryBuilderContext context = new ArbitraryBuilderContext();
-		context.addManipulator(
-			new ArbitraryManipulator(
-				IdentityNodeResolver.INSTANCE,
-				new NodeSetDecomposedValueManipulator<>(traverser, manipulateOptions, value, true)
-			)
-		);
+
+		ArbitraryManipulator arbitraryManipulator =
+			monkeyManipulatorFactory.newArbitraryManipulator("$", value);
+		context.addManipulator(arbitraryManipulator);
 
 		return new DefaultArbitraryBuilder<>(
 			manipulateOptions,
@@ -146,6 +145,7 @@ public class FixtureMonkey {
 			),
 			traverser,
 			this.validator,
+			monkeyManipulatorFactory,
 			context
 		);
 	}

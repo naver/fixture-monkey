@@ -18,6 +18,8 @@
 
 package com.navercorp.fixturemonkey.api.generator;
 
+import javax.annotation.Nullable;
+
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
@@ -27,16 +29,40 @@ import com.navercorp.fixturemonkey.api.random.Randoms;
 public final class ArbitraryContainerInfo {
 	private final int elementMinSize;
 	private final int elementMaxSize;
-	private final boolean manipulated;
 
+	/**
+	 * The sequence of a size manipulation.
+	 * It may dismiss if a sequence of set is bigger.
+	 */
+	@Nullable
+	private final Integer manipulatingSequence;
+
+	/**
+	 * Constructs an object represents a size of container.
+	 * It may be manipulated or not manipulated depends on existence of manipulatedSequence.
+	 *
+	 * @param elementMinSize      the min size of the container
+	 * @param elementMaxSize      the max size of the container
+	 * @param manipulatingSequence the sequence of a size manipulation
+	 */
 	public ArbitraryContainerInfo(
 		int elementMinSize,
 		int elementMaxSize,
-		boolean manipulated
+		@Nullable Integer manipulatingSequence
 	) {
 		this.elementMinSize = elementMinSize;
 		this.elementMaxSize = elementMaxSize;
-		this.manipulated = manipulated;
+		this.manipulatingSequence = manipulatingSequence;
+	}
+
+	/**
+	 * Constructs an object represents a size of container which is not manipulated.
+	 *
+	 * @param elementMinSize the min size of the container
+	 * @param elementMaxSize the max size of the container
+	 */
+	public ArbitraryContainerInfo(int elementMinSize, int elementMaxSize) {
+		this(elementMinSize, elementMaxSize, null);
 	}
 
 	public int getElementMinSize() {
@@ -48,7 +74,12 @@ public final class ArbitraryContainerInfo {
 	}
 
 	public boolean isManipulated() {
-		return manipulated;
+		return manipulatingSequence != null;
+	}
+
+	@Nullable
+	public Integer getManipulatingSequence() {
+		return manipulatingSequence;
 	}
 
 	public int getRandomSize() {
