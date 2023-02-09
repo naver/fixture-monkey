@@ -20,6 +20,7 @@ package com.navercorp.fixturemonkey.resolver;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -33,11 +34,11 @@ public final class CompositeNodeResolver implements NodeResolver {
 	private final List<NodeResolver> nodeResolvers;
 
 	public CompositeNodeResolver(NodeResolver... nodeResolvers) {
-		this.nodeResolvers = Arrays.asList(nodeResolvers);
+		this(Arrays.asList(nodeResolvers));
 	}
 
 	public CompositeNodeResolver(List<NodeResolver> nodeResolvers) {
-		this.nodeResolvers = nodeResolvers;
+		this.nodeResolvers = distinct(nodeResolvers);
 	}
 
 	@Override
@@ -67,6 +68,31 @@ public final class CompositeNodeResolver implements NodeResolver {
 		}
 
 		return flatten;
+	}
+
+	private List<NodeResolver> distinct(List<NodeResolver> resolvers) {
+		if (resolvers.isEmpty()) {
+			return Collections.emptyList();
+		}
+
+		int length = resolvers.size();
+		List<NodeResolver> result = new ArrayList<>();
+		result.add(resolvers.get(0));
+
+		for (int i = 1; i < length; i++) {
+			NodeResolver resolver = resolvers.get(i);
+			if (resolver instanceof CompositeNodeResolver) {
+				CompositeNodeResolver compositeNodeResolver = (CompositeNodeResolver)resolver;
+				List<NodeResolver> componentNodeResolvers = compositeNodeResolver.nodeResolvers.stream()
+					.filter(it -> !(it instanceof IdentityNodeResolver))
+					.collect(Collectors.toList());
+
+				result.add(new CompositeNodeResolver(componentNodeResolvers));
+			} else {
+				result.add(resolver);
+			}
+		}
+		return result;
 	}
 
 	@Override

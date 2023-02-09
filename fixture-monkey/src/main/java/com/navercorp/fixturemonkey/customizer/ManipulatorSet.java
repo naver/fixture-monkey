@@ -16,28 +16,27 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.builder;
+package com.navercorp.fixturemonkey.customizer;
 
 import java.util.List;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.MonkeyManipulatorFactory;
-import com.navercorp.fixturemonkey.resolver.ArbitraryManipulator;
-import com.navercorp.fixturemonkey.resolver.ContainerInfoManipulator;
-import com.navercorp.fixturemonkey.resolver.NodeResolver;
+import com.navercorp.fixturemonkey.customizer.InnerSpecState.ContainerInfoHolder;
+import com.navercorp.fixturemonkey.customizer.InnerSpecState.FilterHolder;
+import com.navercorp.fixturemonkey.customizer.InnerSpecState.NodeResolverObjectHolder;
 
 @API(since = "0.4.10", status = Status.EXPERIMENTAL)
 public final class ManipulatorSet {
 	private final List<NodeResolverObjectHolder> nodeResolverObjectHolders;
-	private final List<ContainerInfoManipulator> containerInfoManipulators;
-	private final List<ArbitraryManipulator> postConditionManipulators;
+	private final List<ContainerInfoHolder> containerInfoManipulators;
+	private final List<FilterHolder> postConditionManipulators;
 
 	public ManipulatorSet(
 		List<NodeResolverObjectHolder> nodeResolverObjectHolders,
-		List<ContainerInfoManipulator> containerInfoManipulators,
-		List<ArbitraryManipulator> postConditionManipulators
+		List<ContainerInfoHolder> containerInfoManipulators,
+		List<FilterHolder> postConditionManipulators
 	) {
 		this.nodeResolverObjectHolders = nodeResolverObjectHolders;
 		this.containerInfoManipulators = containerInfoManipulators;
@@ -48,28 +47,12 @@ public final class ManipulatorSet {
 		return nodeResolverObjectHolders;
 	}
 
-	public List<ContainerInfoManipulator> getContainerInfoManipulators() {
+	public List<ContainerInfoHolder> getContainerInfoManipulators() {
 		return containerInfoManipulators;
 	}
 
-	public List<ArbitraryManipulator> getPostConditionManipulators() {
+	public List<FilterHolder> getPostConditionManipulators() {
 		return postConditionManipulators;
 	}
 
-	public static class NodeResolverObjectHolder {
-		private final NodeResolver nodeResolver;
-		private final Object value;
-
-		public NodeResolverObjectHolder(NodeResolver nodeResolver, Object value) {
-			this.nodeResolver = nodeResolver;
-			this.value = value;
-		}
-
-		public ArbitraryManipulator convert(MonkeyManipulatorFactory monkeyManipulatorFactory) {
-			return new ArbitraryManipulator(
-				nodeResolver,
-				monkeyManipulatorFactory.convertToNodeManipulator(this.value, false)
-			);
-		}
-	}
 }
