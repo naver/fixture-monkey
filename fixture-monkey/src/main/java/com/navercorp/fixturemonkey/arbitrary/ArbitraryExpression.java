@@ -136,7 +136,7 @@ public final class ArbitraryExpression implements MonkeyExpression, Comparable<A
 		NodeResolver nodeResolver = null;
 
 		for (Exp exp : expList) {
-			if (nodeResolver == null) {
+			if (nodeResolver == null || nodeResolver == IdentityNodeResolver.INSTANCE) {
 				nodeResolver = exp.toNodeResolver();
 			} else {
 				nodeResolver = new CompositeNodeResolver(nodeResolver, exp.toNodeResolver());
@@ -146,8 +146,8 @@ public final class ArbitraryExpression implements MonkeyExpression, Comparable<A
 	}
 
 	/**
-	 *  use {@link com.navercorp.fixturemonkey.resolver.NodeResolver} instead
-	 *  */
+	 * use {@link com.navercorp.fixturemonkey.resolver.NodeResolver} instead
+	 */
 	@Deprecated
 	public List<Cursor> toCursors() {
 		return this.expList.stream()
@@ -249,20 +249,21 @@ public final class ArbitraryExpression implements MonkeyExpression, Comparable<A
 		}
 
 		public NodeResolver toNodeResolver() {
-			NodeResolver nodeResolver;
-
-			if (HEAD_NAME.equals(name)) {
-				nodeResolver = IdentityNodeResolver.INSTANCE;
-			} else {
-				nodeResolver = new DefaultNodeResolver(new PropertyNameNodePredicate(name));
-			}
+			NodeResolver nodeResolver = HEAD_NAME.equals(name)
+				? IdentityNodeResolver.INSTANCE
+				: new DefaultNodeResolver(new PropertyNameNodePredicate(name));
 
 			for (ExpIndex index : indices) {
-				nodeResolver = new CompositeNodeResolver(
-					nodeResolver,
-					new DefaultNodeResolver(new ContainerElementPredicate(index.getIndex()))
-				);
+				if (nodeResolver == IdentityNodeResolver.INSTANCE) {
+					nodeResolver = new DefaultNodeResolver(new ContainerElementPredicate(index.getIndex()));
+				} else {
+					nodeResolver = new CompositeNodeResolver(
+						nodeResolver,
+						new DefaultNodeResolver(new ContainerElementPredicate(index.getIndex()))
+					);
+				}
 			}
+
 			return nodeResolver;
 		}
 
@@ -319,8 +320,8 @@ public final class ArbitraryExpression implements MonkeyExpression, Comparable<A
 	}
 
 	/**
-	 *  use {@link com.navercorp.fixturemonkey.resolver.NodeResolver} instead
-	 *  */
+	 * use {@link com.navercorp.fixturemonkey.resolver.NodeResolver} instead
+	 */
 	@Deprecated
 	public abstract static class Cursor {
 		private final String name;
