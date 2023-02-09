@@ -49,7 +49,7 @@ public final class ContainerInfoManipulator {
 
 	ContainerInfoManipulator withPrependNextNodePredicate(NextNodePredicate nextNodePredicate) {
 		List<NextNodePredicate> nodePredicatesWithoutRoot = this.nextNodePredicates.stream()
-			.filter(it -> it instanceof RootPredicate)
+			.filter(it -> !(it instanceof RootPredicate))
 			.collect(Collectors.toList());
 
 		List<NextNodePredicate> newNextNodePredicates = new ArrayList<>();
