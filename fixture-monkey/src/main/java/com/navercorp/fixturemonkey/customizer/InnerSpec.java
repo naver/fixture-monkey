@@ -519,12 +519,17 @@ public final class InnerSpec {
 		List<ContainerInfoManipulator> containerInfoManipulators = new ArrayList<>();
 		List<ArbitraryManipulator> postConditionManipulators = new ArrayList<>();
 
-		NodeResolver nextNodeResolver = nodeResolver == IdentityNodeResolver.INSTANCE
-			? innerSpec.treePathResolver
-			: new CompositeNodeResolver(
-			nodeResolver,
-			innerSpec.treePathResolver
-		);
+		NodeResolver nextNodeResolver;
+		if (nodeResolver == IdentityNodeResolver.INSTANCE) {
+			nextNodeResolver = innerSpec.treePathResolver;
+		} else if (innerSpec.treePathResolver == IdentityNodeResolver.INSTANCE) {
+			nextNodeResolver = nodeResolver;
+		} else {
+			nextNodeResolver = new CompositeNodeResolver(
+				nodeResolver,
+				innerSpec.treePathResolver
+			);
+		}
 
 		if (innerSpec.value != UNINITIALIZED_VALUE) {
 			nodeResolverObjectHolders.add(
