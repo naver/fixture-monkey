@@ -114,7 +114,7 @@ public class Types {
 		}
 
 		if (AnnotatedWildcardType.class.isAssignableFrom(annotatedType.getClass())) {
-			AnnotatedWildcardType wildcardType = (AnnotatedWildcardType)type;
+			AnnotatedWildcardType wildcardType = (AnnotatedWildcardType)annotatedType;
 			return getGenericsTypes(wildcardType.getAnnotatedUpperBounds()[0]);
 		}
 

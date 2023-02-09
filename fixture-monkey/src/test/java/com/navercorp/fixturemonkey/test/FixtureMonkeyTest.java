@@ -1131,4 +1131,11 @@ class FixtureMonkeyTest {
 	void giveMeListAnnotatedBySizeWithoutMax(@ForAll IntegerListAnnotatedBySizeWithoutMax actual) {
 		then(actual.getValues()).hasSizeBetween(1, 1 + DEFAULT_ELEMENT_MAX_SIZE);
 	}
+
+	@Property
+	void sampleMapValueWildcardListString() {
+		thenNoException()
+			.isThrownBy(() -> SUT.giveMeOne(new TypeReference<Map<String, ? extends List<String>>>() {
+			}));
+	}
 }
