@@ -83,7 +83,7 @@ public final class CompositeNodeResolver implements NodeResolver {
 			NodeResolver resolver = resolvers.get(i);
 			if (resolver instanceof CompositeNodeResolver) {
 				CompositeNodeResolver compositeNodeResolver = (CompositeNodeResolver)resolver;
-				List<NodeResolver> componentNodeResolvers = compositeNodeResolver.nodeResolvers.stream()
+				List<NodeResolver> componentNodeResolvers = compositeNodeResolver.flatten().stream()
 					.filter(it -> !(it instanceof IdentityNodeResolver))
 					.collect(Collectors.toList());
 

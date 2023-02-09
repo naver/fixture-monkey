@@ -81,6 +81,7 @@ import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.SimpleObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.StaticFieldObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.StringAndInt;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.StringPair;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.ThirdNestedListStringObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.TwoEnum;
 
 class FixtureMonkeyTest {
@@ -1680,5 +1681,21 @@ class FixtureMonkeyTest {
 		thenNoException()
 			.isThrownBy(() -> SUT.giveMeOne(new TypeReference<GenericSimpleObject>() {
 			}));
+	}
+
+	@Property
+	void sizeThirdNestedNested() {
+		List<String> actual = SUT.giveMeBuilder(ThirdNestedListStringObject.class)
+			.size("values", 1)
+			.size("values[0].values", 1)
+			.size("values[0].values[0].values", 1)
+			.sample()
+			.getValues()
+			.get(0)
+			.getValues()
+			.get(0)
+			.getValues();
+
+		then(actual).hasSize(1);
 	}
 }

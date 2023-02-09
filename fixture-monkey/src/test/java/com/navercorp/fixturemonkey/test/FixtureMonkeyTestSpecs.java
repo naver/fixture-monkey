@@ -283,4 +283,16 @@ class FixtureMonkeyTestSpecs {
 	public static class GenericSimpleObject extends GenericValue<SimpleObject> {
 		String childValue;
 	}
+
+	@Setter
+	@Getter
+	public static class NestedListStringObject {
+		List<ListStringObject> values;
+	}
+
+	@Setter
+	@Getter
+	public static class ThirdNestedListStringObject {
+		List<NestedListStringObject> values;
+	}
 }
