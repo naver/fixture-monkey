@@ -66,6 +66,7 @@ import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.ComplexObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.EnumObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.GenericChildTwoValue;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.GenericChildValue;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.GenericSimpleObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.GenericStringWrapperValue;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.GenericValue;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyV04TestSpecs.GenericWrapperValue;
@@ -1663,6 +1664,13 @@ class FixtureMonkeyV04Test {
 	void sampleWildcard() {
 		thenNoException()
 			.isThrownBy(() -> SUT.giveMeOne(new TypeReference<List<? extends SimpleObject>>() {
+			}));
+	}
+
+	@Property
+	void sampleGenericSimpleObject() {
+		thenNoException()
+			.isThrownBy(() -> SUT.giveMeOne(new TypeReference<GenericSimpleObject>() {
 			}));
 	}
 }
