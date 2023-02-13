@@ -3,6 +3,9 @@
 title: "Release Notes"
 weight: 6
 ---
+### 0.4.14
+* generic을 가지는 타입을 상속할 때 generic 타입이 아닌 필드도 생성할 수 있습니다.
+
 ### 0.4.13
 * wildcard를 상속하는 타입을 생성할 수 있습니다.
 * InnerSpec에서 연산을 정의할 때 root에 size 연산을 적용할 수 있습니다. 
