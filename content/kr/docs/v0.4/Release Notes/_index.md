@@ -3,6 +3,10 @@
 title: "Release Notes"
 weight: 6
 ---
+### 0.4.13
+* wildcard를 상속하는 타입을 생성할 수 있습니다.
+* InnerSpec에서 연산을 정의할 때 root에 size 연산을 적용할 수 있습니다. 
+
 ### 0.4.12
 * generic을 가지고 있는 다양한 복잡한 타입을 생성할 수 있습니다.
 * `javax-validation`, `jakarta-validation` 모듈을 사용하면 control block에 속하는 문자를 생성하지 않습니다.
