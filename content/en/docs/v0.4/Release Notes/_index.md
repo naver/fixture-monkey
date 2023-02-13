@@ -3,6 +3,9 @@
 title: "Release Notes"
 weight: 6
 ---
+### 0.4.14
+* Fix generating fields in child class with generic
+
 ### 0.4.13
 * Fix generating AnnotatedWildcard type
 * Fix size root with InnerSpec
