@@ -277,4 +277,10 @@ class FixtureMonkeyTestSpecs {
 	public static class ChildValue extends ParentValue {
 		String childValue;
 	}
+
+	@Setter
+	@Getter
+	public static class GenericSimpleObject extends GenericValue<SimpleObject> {
+		String childValue;
+	}
 }
