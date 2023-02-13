@@ -164,31 +164,34 @@ public class Types {
 					ParameterizedType parameterizedType = (ParameterizedType)annotatedSuperClassType.getType();
 					Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
 
-					Type actualType = getTypeVariableIndex((TypeVariable<?>)field.getGenericType())
-						.map(index -> actualTypeArguments[index])
-						.orElse(Object.class);
+					Type genericType = field.getGenericType();
+					if (genericType instanceof TypeVariable) {
+						Type actualType = getTypeVariableIndex((TypeVariable<?>)genericType)
+							.map(index -> actualTypeArguments[index])
+							.orElse(Object.class);
 
-					return new AnnotatedType() {
-						@Override
-						public Type getType() {
-							return actualType;
-						}
+						return new AnnotatedType() {
+							@Override
+							public Type getType() {
+								return actualType;
+							}
 
-						@Override
-						public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
-							return fieldAnnotatedType.getAnnotation(annotationClass);
-						}
+							@Override
+							public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
+								return fieldAnnotatedType.getAnnotation(annotationClass);
+							}
 
-						@Override
-						public Annotation[] getAnnotations() {
-							return fieldAnnotatedType.getAnnotations();
-						}
+							@Override
+							public Annotation[] getAnnotations() {
+								return fieldAnnotatedType.getAnnotations();
+							}
 
-						@Override
-						public Annotation[] getDeclaredAnnotations() {
-							return fieldAnnotatedType.getDeclaredAnnotations();
-						}
-					};
+							@Override
+							public Annotation[] getDeclaredAnnotations() {
+								return fieldAnnotatedType.getDeclaredAnnotations();
+							}
+						};
+					}
 				}
 			}
 			return fieldAnnotatedType;
