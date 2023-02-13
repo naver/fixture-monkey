@@ -3,6 +3,10 @@
 title: "Release Notes"
 weight: 6
 ---
+### 0.4.13
+* Fix generating AnnotatedWildcard type
+* Fix size root with InnerSpec
+
 ### 0.4.12
 * Add supporting complex generic types
 * Add a condition to not include control characters when creating String values when importing `javax-validation`, `jakarta-validation` module 
