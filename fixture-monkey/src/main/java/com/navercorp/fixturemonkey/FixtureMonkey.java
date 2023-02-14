@@ -130,7 +130,7 @@ public class FixtureMonkey {
 		context.addManipulator(
 			new ArbitraryManipulator(
 				IdentityNodeResolver.INSTANCE,
-				new NodeSetDecomposedValueManipulator<>(traverser, manipulateOptions, value, true)
+				new NodeSetDecomposedValueManipulator<>(traverser, value, true)
 			)
 		);
 

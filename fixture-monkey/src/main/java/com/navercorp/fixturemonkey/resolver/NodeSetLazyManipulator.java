@@ -28,18 +28,15 @@ import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class NodeSetLazyManipulator<T> implements NodeManipulator {
 	private final ArbitraryTraverser traverser;
-	private final ManipulateOptions manipulateOptions;
 	private final LazyArbitrary<T> lazyArbitrary;
 	private final boolean forced;
 
 	public NodeSetLazyManipulator(
 		ArbitraryTraverser traverser,
-		ManipulateOptions manipulateOptions,
 		LazyArbitrary<T> lazyArbitrary,
 		boolean forced
 	) {
 		this.traverser = traverser;
-		this.manipulateOptions = manipulateOptions;
 		this.lazyArbitrary = lazyArbitrary;
 		this.forced = forced;
 	}
@@ -60,7 +57,7 @@ public final class NodeSetLazyManipulator<T> implements NodeManipulator {
 		}
 
 		NodeSetDecomposedValueManipulator<T> nodeSetDecomposedValueManipulator =
-			new NodeSetDecomposedValueManipulator<>(traverser, manipulateOptions, value, forced);
+			new NodeSetDecomposedValueManipulator<>(traverser, value, forced);
 		nodeSetDecomposedValueManipulator.manipulate(arbitraryNode);
 		lazyArbitrary.clear();
 	}

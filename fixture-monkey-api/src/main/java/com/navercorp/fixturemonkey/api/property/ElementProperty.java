@@ -138,7 +138,9 @@ public final class ElementProperty implements Property {
 			return list.get(sequence);
 		}
 
-		throw new IllegalArgumentException("given element value has no match sequence : " + sequence);
+		Property property = PropertyCache.getProperties(this.containerProperty.getAnnotatedType())
+			.get(sequence);
+		return property.getValue(obj);
 	}
 
 	@Override

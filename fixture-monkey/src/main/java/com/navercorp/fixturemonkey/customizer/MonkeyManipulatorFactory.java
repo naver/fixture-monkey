@@ -50,7 +50,6 @@ import com.navercorp.fixturemonkey.resolver.NodeSetLazyManipulator;
 public final class MonkeyManipulatorFactory {
 	private final MonkeyExpressionFactory monkeyExpressionFactory;
 	private final ArbitraryTraverser traverser;
-	private final ManipulateOptions manipulateOptions;
 
 	public MonkeyManipulatorFactory(
 		ArbitraryTraverser traverser,
@@ -58,7 +57,6 @@ public final class MonkeyManipulatorFactory {
 	) {
 		this.monkeyExpressionFactory = manipulateOptions.getDefaultMonkeyExpressionFactory();
 		this.traverser = traverser;
-		this.manipulateOptions = manipulateOptions;
 	}
 
 	public ArbitraryManipulator newArbitraryManipulator(
@@ -157,35 +155,30 @@ public final class MonkeyManipulatorFactory {
 		} else if (value instanceof Arbitrary) {
 			return new NodeSetLazyManipulator<>(
 				traverser,
-				manipulateOptions,
 				LazyArbitrary.lazy(() -> ((Arbitrary<?>)value).sample()),
 				forced
 			);
 		} else if (value instanceof DefaultArbitraryBuilder) {
 			return new NodeSetLazyManipulator<>(
 				traverser,
-				manipulateOptions,
 				LazyArbitrary.lazy(() -> ((DefaultArbitraryBuilder<?>)value).sample()),
 				forced
 			);
 		} else if (value instanceof Supplier) {
 			return new NodeSetLazyManipulator<>(
 				traverser,
-				manipulateOptions,
 				LazyArbitrary.lazy((Supplier<?>)value),
 				forced
 			);
 		} else if (value instanceof LazyArbitrary) {
 			return new NodeSetLazyManipulator<>(
 				traverser,
-				manipulateOptions,
 				(LazyArbitrary<?>)value,
 				forced
 			);
 		} else {
 			return new NodeSetDecomposedValueManipulator<>(
 				traverser,
-				manipulateOptions,
 				value,
 				forced
 			);

@@ -67,7 +67,6 @@ import com.navercorp.fixturemonkey.api.matcher.ExactTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.api.type.Types;
-import com.navercorp.fixturemonkey.resolver.DecomposableContainerValue;
 import com.navercorp.fixturemonkey.resolver.IdentityNodeResolver;
 import com.navercorp.fixturemonkey.test.ExpressionGeneratorTestSpecs.StringValue;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.AbstractNoneConcreteIntValue;
@@ -866,20 +865,6 @@ class FixtureMonkeyOptionsTest {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.pushAssignableTypeContainerPropertyGenerator(Pair.class, new PairContainerPropertyGenerator())
 			.pushContainerIntrospector(new PairIntrospector())
-			.defaultDecomposedContainerValueFactory(
-				(obj) -> {
-					if (obj instanceof Pair) {
-						Pair<?, ?> pair = (Pair<?, ?>)obj;
-						List<Object> list = new ArrayList<>();
-						list.add(pair.getFirst());
-						list.add(pair.getSecond());
-						return new DecomposableContainerValue(list, 2);
-					}
-					throw new IllegalArgumentException(
-						"given type is not supported container : " + obj.getClass().getTypeName()
-					);
-				}
-			)
 			.build();
 		ArbitraryBuilder<Pair<String, String>> builder = sut.giveMeBuilder(new TypeReference<Pair<String, String>>() {
 			})
@@ -897,14 +882,7 @@ class FixtureMonkeyOptionsTest {
 			.addContainerType(
 				Pair.class,
 				new PairContainerPropertyGenerator(),
-				new PairIntrospector(),
-				(obj) -> {
-					Pair<?, ?> pair = (Pair<?, ?>)obj;
-					List<Object> list = new ArrayList<>();
-					list.add(pair.getFirst());
-					list.add(pair.getSecond());
-					return new DecomposableContainerValue(list, 2);
-				}
+				new PairIntrospector()
 			)
 			.build();
 		ArbitraryBuilder<Pair<String, String>> builder = sut.giveMeBuilder(new TypeReference<Pair<String, String>>() {

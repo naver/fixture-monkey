@@ -47,8 +47,6 @@ public final class ManipulateOptionsBuilder {
 
 	private List<MatcherOperator<? extends ArbitraryBuilder<?>>> registeredSampledArbitraryBuilders = new ArrayList<>();
 
-	private DecomposedContainerValueFactory additionalDecomposedContainerValueFactory = null;
-
 	private List<MatcherOperator<PropertyNameResolver>> propertyNameResolvers;
 
 	private PropertyNameResolver defaultPropertyNameResolver;
@@ -70,13 +68,6 @@ public final class ManipulateOptionsBuilder {
 		MatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>> arbitraryBuilderSupplier
 	) {
 		registeredArbitraryBuilders = insertFirst(registeredArbitraryBuilders, arbitraryBuilderSupplier);
-		return this;
-	}
-
-	public ManipulateOptionsBuilder additionalDecomposedContainerValueFactory(
-		DecomposedContainerValueFactory additionalDecomposedContainerValueFactory
-	) {
-		this.additionalDecomposedContainerValueFactory = additionalDecomposedContainerValueFactory;
 		return this;
 	}
 
@@ -104,14 +95,9 @@ public final class ManipulateOptionsBuilder {
 				() -> new ApplyStrictModeResolver(currentMonkeyExpressionFactory.from(expression).toNodeResolver());
 		}
 
-		DecomposedContainerValueFactory decomposedContainerValueFactory = new DefaultDecomposedContainerValueFactory(
-			additionalDecomposedContainerValueFactory
-		);
-
 		return new ManipulateOptions(
 			defaultMonkeyExpressionFactory,
 			registeredSampledArbitraryBuilders,
-			decomposedContainerValueFactory,
 			propertyNameResolvers,
 			defaultPropertyNameResolver
 		);

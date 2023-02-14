@@ -22,10 +22,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.function.Function;
 
 import org.apiguardian.api.API;
@@ -59,8 +56,6 @@ import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.api.validator.ArbitraryValidator;
 import com.navercorp.fixturemonkey.expression.MonkeyExpressionFactory;
 import com.navercorp.fixturemonkey.resolver.ArbitraryTraverser;
-import com.navercorp.fixturemonkey.resolver.DecomposableContainerValue;
-import com.navercorp.fixturemonkey.resolver.DecomposedContainerValueFactory;
 import com.navercorp.fixturemonkey.resolver.ManipulateOptions;
 import com.navercorp.fixturemonkey.resolver.ManipulateOptionsBuilder;
 import com.navercorp.fixturemonkey.resolver.ManipulatorOptimizer;
@@ -71,10 +66,6 @@ public class FixtureMonkeyBuilder {
 	private final GenerateOptionsBuilder generateOptionsBuilder = GenerateOptions.builder();
 	private final ManipulateOptionsBuilder manipulateOptionsBuilder = ManipulateOptions.builder();
 	private ManipulatorOptimizer manipulatorOptimizer = new NoneManipulatorOptimizer();
-	private DecomposedContainerValueFactory defaultDecomposedContainerValueFactory = (obj) -> {
-		throw new IllegalArgumentException("given type is not supported container : " + obj.getClass().getTypeName());
-	};
-	private final Map<Class<?>, DecomposedContainerValueFactory> decomposableContainerFactoryMap = new HashMap<>();
 
 	public FixtureMonkeyBuilder pushPropertyGenerator(MatcherOperator<PropertyGenerator> propertyGenerator) {
 		generateOptionsBuilder.insertFirstPropertyGenerator(propertyGenerator);
@@ -433,13 +424,6 @@ public class FixtureMonkeyBuilder {
 		return this;
 	}
 
-	public FixtureMonkeyBuilder defaultDecomposedContainerValueFactory(
-		DecomposedContainerValueFactory defaultDecomposedContainerValueFactory
-	) {
-		this.defaultDecomposedContainerValueFactory = defaultDecomposedContainerValueFactory;
-		return this;
-	}
-
 	public FixtureMonkeyBuilder pushContainerIntrospector(ArbitraryIntrospector containerIntrospector) {
 		this.generateOptionsBuilder.containerIntrospector(it ->
 			new CompositeArbitraryIntrospector(
@@ -455,12 +439,10 @@ public class FixtureMonkeyBuilder {
 	public FixtureMonkeyBuilder addContainerType(
 		Class<?> type,
 		ContainerPropertyGenerator containerObjectPropertyGenerator,
-		ArbitraryIntrospector containerArbitraryIntrospector,
-		DecomposedContainerValueFactory decomposedContainerValueFactory
+		ArbitraryIntrospector containerArbitraryIntrospector
 	) {
 		this.pushAssignableTypeContainerPropertyGenerator(type, containerObjectPropertyGenerator);
 		this.pushContainerIntrospector(containerArbitraryIntrospector);
-		decomposableContainerFactoryMap.put(type, decomposedContainerValueFactory);
 		return this;
 	}
 
@@ -512,24 +494,6 @@ public class FixtureMonkeyBuilder {
 	}
 
 	public FixtureMonkey build() {
-		manipulateOptionsBuilder.additionalDecomposedContainerValueFactory(
-			obj -> {
-				Class<?> actualType = obj.getClass();
-				for (
-					Entry<Class<?>, DecomposedContainerValueFactory> entry :
-					this.decomposableContainerFactoryMap.entrySet()
-				) {
-					Class<?> type = entry.getKey();
-					DecomposableContainerValue decomposedValue = entry.getValue().from(obj);
-
-					if (actualType.isAssignableFrom(type)) {
-						return decomposedValue;
-					}
-				}
-				return this.defaultDecomposedContainerValueFactory.from(obj);
-			}
-		);
-
 		GenerateOptions generateOptions = generateOptionsBuilder.build();
 		ArbitraryTraverser traverser = new ArbitraryTraverser(generateOptions);
 

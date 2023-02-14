@@ -467,7 +467,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T> {
 		context.addManipulator(
 			new ArbitraryManipulator(
 				IdentityNodeResolver.INSTANCE,
-				new NodeSetLazyManipulator<>(traverser, manipulateOptions, lazyArbitrary, true)
+				new NodeSetLazyManipulator<>(traverser, lazyArbitrary, true)
 			)
 		);
 
