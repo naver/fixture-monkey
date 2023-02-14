@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 
@@ -83,7 +84,7 @@ public final class ArbitraryTraverser {
 		ContainerProperty containerProperty = null;
 		if (container) {
 			ArbitraryContainerInfo containerInfo = containerInfoManipulators.stream()
-				.filter(it -> it.isMatch(Collections.emptyList(), objectProperty))
+				.filter(it -> it.isMatch(Collections.singletonList(objectProperty)))
 				.findFirst()
 				.map(ContainerInfoManipulator::getContainerInfo)
 				.orElse(null);
@@ -208,12 +209,14 @@ public final class ArbitraryTraverser {
 
 			ContainerProperty childContainerProperty = null;
 			if (childContainer) {
+				List<ObjectProperty> objectProperties =
+					context.getArbitraryProperties().stream()
+						.map(ArbitraryProperty::getObjectProperty).collect(Collectors.toList());
+				objectProperties.add(childObjectProperty);
+
 				ArbitraryContainerInfo containerInfo = null;
 				for (ContainerInfoManipulator containerInfoManipulator : containerInfoManipulators) {
-					if (containerInfoManipulator.isMatch(
-						context.getArbitraryProperties(),
-						childObjectProperty
-					)) {
+					if (containerInfoManipulator.isMatch(objectProperties)) {
 						containerInfo = containerInfoManipulator.getContainerInfo();
 					}
 				}

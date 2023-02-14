@@ -18,43 +18,23 @@
 
 package com.navercorp.fixturemonkey.resolver;
 
-import static com.navercorp.fixturemonkey.Constants.ALL_INDEX_STRING;
-
-import java.util.Objects;
-
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.generator.ObjectProperty;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public final class PropertyNameNodePredicate implements NextNodePredicate {
-	private final String propertyName;
+public final class StartNodePredicate implements NextNodePredicate {
+	public static final StartNodePredicate INSTANCE = new StartNodePredicate();
 
-	public PropertyNameNodePredicate(String propertyName) {
-		this.propertyName = propertyName;
-	}
-
+	/**
+	 * It determines if given objectProperty is a first node.
+	 *
+	 * @param currentObjectProperty property to determines
+	 * @return true
+	 */
 	@Override
 	public boolean test(ObjectProperty currentObjectProperty) {
-		String nodePropertyName = currentObjectProperty.getResolvedPropertyName();
-		return ALL_INDEX_STRING.equals(propertyName) || propertyName.equals(nodePropertyName);
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null || getClass() != obj.getClass()) {
-			return false;
-		}
-		PropertyNameNodePredicate that = (PropertyNameNodePredicate)obj;
-		return propertyName.equals(that.propertyName);
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(propertyName);
+		return true; // always returns true since the first node has no constraint
 	}
 }

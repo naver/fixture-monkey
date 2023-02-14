@@ -20,13 +20,9 @@ package com.navercorp.fixturemonkey.resolver;
 
 import static com.navercorp.fixturemonkey.Constants.NO_OR_ALL_INDEX_INTEGER_VALUE;
 
-import javax.annotation.Nullable;
-
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
-import com.navercorp.fixturemonkey.api.generator.ContainerProperty;
 import com.navercorp.fixturemonkey.api.generator.ObjectProperty;
 import com.navercorp.fixturemonkey.api.property.ElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
@@ -40,11 +36,7 @@ public final class ContainerElementPredicate implements NextNodePredicate {
 	}
 
 	@Override
-	public boolean test(
-		@Nullable ArbitraryProperty parentArbitraryProperty,
-		ObjectProperty currentObjectProperty,
-		@Nullable ContainerProperty currentContainerProperty
-	) {
+	public boolean test(ObjectProperty currentObjectProperty) {
 		Property property = currentObjectProperty.getProperty();
 		if (!(property instanceof ElementProperty)) {
 			throw new IllegalArgumentException("Resolved node is not element type. : " + property);

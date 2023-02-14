@@ -38,11 +38,7 @@ public class DefaultNodeResolver implements NodeResolver {
 	@Override
 	public List<ArbitraryNode> resolve(ArbitraryNode arbitraryNode) {
 		List<ArbitraryNode> resolved = arbitraryNode.getChildren().stream()
-			.filter(it -> nextNodePredicate.test(
-				arbitraryNode.getArbitraryProperty(),
-				it.getArbitraryProperty().getObjectProperty(),
-				it.getArbitraryProperty().getContainerProperty()
-			))
+			.filter(it -> nextNodePredicate.test(it.getArbitraryProperty().getObjectProperty()))
 			.collect(Collectors.toList());
 
 		arbitraryNode.setManipulated(true);
