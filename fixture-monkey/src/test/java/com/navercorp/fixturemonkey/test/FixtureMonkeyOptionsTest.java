@@ -69,6 +69,7 @@ import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.resolver.DecomposableContainerValue;
 import com.navercorp.fixturemonkey.resolver.IdentityNodeResolver;
+import com.navercorp.fixturemonkey.test.ExpressionGeneratorTestSpecs.StringValue;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.AbstractNoneConcreteIntValue;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.AbstractNoneConcreteStringValue;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.AbstractNoneValue;
@@ -86,6 +87,7 @@ import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.
 import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.GetIntegerFixedValue;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.GetIntegerFixedValueChild;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.GetStringFixedValue;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.NestedListStringObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.Pair;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.PairContainerPropertyGenerator;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.PairIntrospector;
@@ -100,6 +102,7 @@ import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.Interface;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.InterfaceFieldImplementationValue;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.InterfaceImplementation;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.ListStringObject;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.NestedStringList;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.NullableObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.SimpleObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.TwoEnum;
@@ -1018,6 +1021,33 @@ class FixtureMonkeyOptionsTest {
 			.getStrList();
 
 		then(actual).hasSize(1);
+	}
+
+	@Property
+	void registerFieldSet() {
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.register(StringValue.class, fixture -> fixture.giveMeBuilder(StringValue.class).set("value", "test"))
+			.build();
+
+		List<StringValue> actual = sut.giveMeOne(NestedStringList.class)
+			.getValues();
+
+		then(actual).allMatch(it -> "test".equals(it.getValue()));
+	}
+
+	@Property
+	void registerFieldSize() {
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.register(
+				ListStringObject.class,
+				fixture -> fixture.giveMeBuilder(ListStringObject.class).size("values", 1)
+			)
+			.build();
+
+		List<ListStringObject> actual = sut.giveMeOne(NestedListStringObject.class)
+			.getValues();
+
+		then(actual).allMatch(it -> it.getValues().size() == 1);
 	}
 
 	@Property
