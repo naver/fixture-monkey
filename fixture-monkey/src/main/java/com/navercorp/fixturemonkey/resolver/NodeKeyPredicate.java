@@ -18,25 +18,19 @@
 
 package com.navercorp.fixturemonkey.resolver;
 
-import javax.annotation.Nullable;
-
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
-import com.navercorp.fixturemonkey.api.generator.ContainerProperty;
 import com.navercorp.fixturemonkey.api.generator.ObjectProperty;
+import com.navercorp.fixturemonkey.api.property.MapKeyElementProperty;
+import com.navercorp.fixturemonkey.api.property.Property;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public final class RootPredicate implements NextNodePredicate {
-	public static final RootPredicate INSTANCE = new RootPredicate();
-
+public final class NodeKeyPredicate implements NextNodePredicate {
 	@Override
-	public boolean test(
-		@Nullable ArbitraryProperty parentArbitraryProperty,
-		ObjectProperty currentObjectProperty,
-		@Nullable ContainerProperty currentContainerProperty
-	) {
-		return parentArbitraryProperty == null;
+	public boolean test(ObjectProperty currentObjectProperty) {
+		Property property = currentObjectProperty.getProperty();
+
+		return property instanceof MapKeyElementProperty;
 	}
 }

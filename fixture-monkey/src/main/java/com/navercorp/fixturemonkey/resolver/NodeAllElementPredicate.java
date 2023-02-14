@@ -18,40 +18,24 @@
 
 package com.navercorp.fixturemonkey.resolver;
 
-import javax.annotation.Nullable;
-
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
-import com.navercorp.fixturemonkey.api.generator.ContainerProperty;
 import com.navercorp.fixturemonkey.api.generator.ObjectProperty;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
-public final class NodeEntryPredicate implements NextNodePredicate {
-	private final int index;
-
-	public NodeEntryPredicate(int index) {
-		this.index = index;
-	}
+public final class NodeAllElementPredicate implements NextNodePredicate {
 
 	@Override
-	public boolean test(
-		@Nullable ArbitraryProperty parentArbitraryProperty,
-		ObjectProperty currentObjectProperty,
-		@Nullable ContainerProperty currentContainerProperty
-	) {
-		if (parentArbitraryProperty == null
-			|| parentArbitraryProperty.getContainerProperty() == null
-			|| currentObjectProperty.getElementIndex() == null) {
+	public boolean test(ObjectProperty currentObjectProperty) {
+		if (currentObjectProperty.getElementIndex() == null) {
 			throw new IllegalArgumentException(
-				"Only Map.Entry could be selected. now type : " + currentObjectProperty.getProperty()
+				"It is not an element property. now type : " + currentObjectProperty.getProperty()
 					.getType()
 					.getTypeName()
 			);
 		}
 
-		int elementIndex = currentObjectProperty.getElementIndex();
-		return elementIndex == index;
+		return true;
 	}
 }

@@ -18,13 +18,9 @@
 
 package com.navercorp.fixturemonkey.resolver;
 
-import javax.annotation.Nullable;
-
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
-import com.navercorp.fixturemonkey.api.generator.ContainerProperty;
 import com.navercorp.fixturemonkey.api.generator.ObjectProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 
@@ -37,11 +33,7 @@ public final class PropertyPredicate implements NextNodePredicate {
 	}
 
 	@Override
-	public boolean test(
-		@Nullable ArbitraryProperty parentArbitraryProperty,
-		ObjectProperty currentObjectProperty,
-		@Nullable ContainerProperty currentContainerProperty
-	) {
+	public boolean test(ObjectProperty currentObjectProperty) {
 		return property.equals(currentObjectProperty.getProperty());
 	}
 }

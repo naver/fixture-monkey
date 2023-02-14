@@ -41,10 +41,11 @@ import com.navercorp.fixturemonkey.resolver.CompositeNodeResolver;
 import com.navercorp.fixturemonkey.resolver.ContainerElementPredicate;
 import com.navercorp.fixturemonkey.resolver.DefaultNodeResolver;
 import com.navercorp.fixturemonkey.resolver.IdentityNodeResolver;
-import com.navercorp.fixturemonkey.resolver.NodeAllEntryPredicate;
-import com.navercorp.fixturemonkey.resolver.NodeEntryPredicate;
-import com.navercorp.fixturemonkey.resolver.NodeKeyValuePredicate;
+import com.navercorp.fixturemonkey.resolver.NodeAllElementPredicate;
+import com.navercorp.fixturemonkey.resolver.NodeElementPredicate;
+import com.navercorp.fixturemonkey.resolver.NodeKeyPredicate;
 import com.navercorp.fixturemonkey.resolver.NodeResolver;
+import com.navercorp.fixturemonkey.resolver.NodeValuePredicate;
 import com.navercorp.fixturemonkey.resolver.PropertyNameNodePredicate;
 
 @SuppressWarnings("UnusedReturnValue")
@@ -256,8 +257,8 @@ public final class InnerSpec {
 
 		NodeResolver nextKeyNodeResolver = new CompositeNodeResolver(
 			this.treePathResolver,
-			new DefaultNodeResolver(new NodeEntryPredicate(entrySize - 1)),
-			new DefaultNodeResolver(new NodeKeyValuePredicate(true))
+			new DefaultNodeResolver(new NodeElementPredicate(entrySize - 1)),
+			new DefaultNodeResolver(new NodeKeyPredicate())
 		);
 
 		setValue(nextKeyNodeResolver, mapKey);
@@ -272,8 +273,8 @@ public final class InnerSpec {
 
 		NodeResolver nextKeyNodeResolver = new CompositeNodeResolver(
 			this.treePathResolver,
-			new DefaultNodeResolver(new NodeAllEntryPredicate()),
-			new DefaultNodeResolver(new NodeKeyValuePredicate(true))
+			new DefaultNodeResolver(new NodeAllElementPredicate()),
+			new DefaultNodeResolver(new NodeKeyPredicate())
 		);
 
 		setValue(nextKeyNodeResolver, mapKey);
@@ -282,8 +283,8 @@ public final class InnerSpec {
 	private void setMapValue(@Nullable Object mapValue) {
 		NodeResolver nextValueNodeResolver = new CompositeNodeResolver(
 			this.treePathResolver,
-			new DefaultNodeResolver(new NodeEntryPredicate(entrySize - 1)),
-			new DefaultNodeResolver(new NodeKeyValuePredicate(false))
+			new DefaultNodeResolver(new NodeElementPredicate(entrySize - 1)),
+			new DefaultNodeResolver(new NodeValuePredicate())
 		);
 
 		setValue(nextValueNodeResolver, mapValue);
@@ -292,8 +293,8 @@ public final class InnerSpec {
 	private void setMapAllValue(@Nullable Object mapValue) {
 		NodeResolver nextValueNodeResolver = new CompositeNodeResolver(
 			this.treePathResolver,
-			new DefaultNodeResolver(new NodeAllEntryPredicate()),
-			new DefaultNodeResolver(new NodeKeyValuePredicate(false))
+			new DefaultNodeResolver(new NodeAllElementPredicate()),
+			new DefaultNodeResolver(new NodeValuePredicate())
 		);
 
 		setValue(nextValueNodeResolver, mapValue);

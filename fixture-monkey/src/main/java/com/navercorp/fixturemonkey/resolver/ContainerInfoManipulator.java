@@ -26,7 +26,6 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
-import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.generator.ObjectProperty;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
@@ -49,7 +48,7 @@ public final class ContainerInfoManipulator {
 
 	ContainerInfoManipulator withPrependNextNodePredicate(NextNodePredicate nextNodePredicate) {
 		List<NextNodePredicate> nodePredicatesWithoutRoot = this.nextNodePredicates.stream()
-			.filter(it -> !(it instanceof RootPredicate))
+			.filter(it -> !(it instanceof StartNodePredicate))
 			.collect(Collectors.toList());
 
 		List<NextNodePredicate> newNextNodePredicates = new ArrayList<>();
@@ -72,45 +71,23 @@ public final class ContainerInfoManipulator {
 		);
 	}
 
-	public boolean isMatch(
-		List<ArbitraryProperty> parentArbitraryProperties,
-		ObjectProperty currentObjectProperty
-	) {
-		int parentArbitraryPropertySize = parentArbitraryProperties.size();
+	public boolean isMatch(List<ObjectProperty> objectProperties) {
+		int objectPropertiesSize = objectProperties.size();
 		int nextNodePredicateSize = nextNodePredicates.size();
 
 		boolean registered = nextNodePredicates.get(0) instanceof PropertyPredicate;
-		if (!registered && nextNodePredicateSize != parentArbitraryPropertySize + 1) {
+		if (!registered && nextNodePredicateSize != objectPropertiesSize) {
 			return false;
 		}
 
 		for (int i = 0; i < nextNodePredicateSize; i++) {
 			int reversedNextNodePredicateIndex = nextNodePredicateSize - 1 - i;
-			int reversedCurrentArbitraryPropertyIndex = parentArbitraryPropertySize - i;
+			int reversedCurrentObjectPropertyIndex = objectPropertiesSize - 1 - i;
 			NextNodePredicate nextNodePredicate = nextNodePredicates.get(reversedNextNodePredicateIndex);
-			ArbitraryProperty parentArbitraryProperty = reversedCurrentArbitraryPropertyIndex == 0
-				? null
-				: parentArbitraryProperties.get(reversedCurrentArbitraryPropertyIndex - 1);
+			ObjectProperty objectProperty = objectProperties.get(reversedCurrentObjectPropertyIndex);
 
-			if (reversedCurrentArbitraryPropertyIndex == parentArbitraryPropertySize) {
-				if (!nextNodePredicate.test(
-					parentArbitraryProperty,
-					currentObjectProperty,
-					null
-				)) {
-					return false;
-				}
-			} else {
-				ArbitraryProperty currentArbitraryProperty =
-					parentArbitraryProperties.get(reversedCurrentArbitraryPropertyIndex);
-
-				if (!nextNodePredicate.test(
-					parentArbitraryProperty,
-					currentArbitraryProperty.getObjectProperty(),
-					currentArbitraryProperty.getContainerProperty()
-				)) {
-					return false;
-				}
+			if (!nextNodePredicate.test(objectProperty)) {
+				return false;
 			}
 		}
 		return true;
