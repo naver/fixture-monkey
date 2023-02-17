@@ -80,6 +80,6 @@ public final class JakartaValidationArbitraryContainerInfoGenerator implements A
 			max = min + defaultArbitraryContainerSize;
 		}
 
-		return new ArbitraryContainerInfo(min, max, false);
+		return new ArbitraryContainerInfo(min, max);
 	}
 }

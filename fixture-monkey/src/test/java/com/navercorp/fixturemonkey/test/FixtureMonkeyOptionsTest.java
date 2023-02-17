@@ -408,7 +408,7 @@ class FixtureMonkeyOptionsTest {
 						Class<?> type = Types.getActualType(elementType);
 						return type.isAssignableFrom(String.class);
 					},
-					(context) -> new ArbitraryContainerInfo(5, 5, false)
+					(context) -> new ArbitraryContainerInfo(5, 5)
 				)
 			)
 			.build();
@@ -433,7 +433,7 @@ class FixtureMonkeyOptionsTest {
 						Class<?> type = Types.getActualType(elementType);
 						return type.isAssignableFrom(String.class);
 					},
-					(context) -> new ArbitraryContainerInfo(5, 5, false)
+					(context) -> new ArbitraryContainerInfo(5, 5)
 				)
 			)
 			.build();
@@ -459,7 +459,7 @@ class FixtureMonkeyOptionsTest {
 	@Property
 	void defaultArbitraryContainerInfo() {
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.defaultArbitraryContainerInfo(new ArbitraryContainerInfo(3, 3, false))
+			.defaultArbitraryContainerInfo(new ArbitraryContainerInfo(3, 3))
 			.build();
 
 		List<SimpleObject> actual = sut.giveMeOne(ComplexObject.class)
@@ -1230,7 +1230,7 @@ class FixtureMonkeyOptionsTest {
 	@Property
 	void sampleEnumMapWithEnumSizeIsLessThanContainerInfoMinSize() {
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.defaultArbitraryContainerInfo(new ArbitraryContainerInfo(3, 5, false))
+			.defaultArbitraryContainerInfo(new ArbitraryContainerInfo(3, 5))
 			.build();
 
 		Map<TwoEnum, String> values = sut.giveMeOne(new TypeReference<Map<TwoEnum, String>>() {
@@ -1242,7 +1242,7 @@ class FixtureMonkeyOptionsTest {
 	@Property
 	void sampleEnumSetWithEnumSizeIsLessThanContainerInfoMinSize() {
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.defaultArbitraryContainerInfo(new ArbitraryContainerInfo(3, 5, false))
+			.defaultArbitraryContainerInfo(new ArbitraryContainerInfo(3, 5))
 			.build();
 
 		Set<TwoEnum> values = sut.giveMeOne(new TypeReference<Set<TwoEnum>>() {

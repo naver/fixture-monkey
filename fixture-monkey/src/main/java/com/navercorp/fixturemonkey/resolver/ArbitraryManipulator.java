@@ -28,10 +28,7 @@ public final class ArbitraryManipulator {
 	private final NodeResolver nodeResolver;
 	private final NodeManipulator nodeManipulator;
 
-	public ArbitraryManipulator(
-		NodeResolver nodeResolver,
-		NodeManipulator nodeManipulator
-	) {
+	public ArbitraryManipulator(NodeResolver nodeResolver, NodeManipulator nodeManipulator) { // TODO: remove public
 		this.nodeResolver = nodeResolver;
 		this.nodeManipulator = nodeManipulator;
 	}

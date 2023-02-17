@@ -61,8 +61,7 @@ public final class SetContainerPropertyGenerator implements ContainerPropertyGen
 				int enumSize = EnumSet.allOf((Class<? extends Enum>)actualElementType).size();
 				containerInfo = new ArbitraryContainerInfo(
 					Math.min(containerInfo.getElementMinSize(), enumSize),
-					Math.min(containerInfo.getElementMaxSize(), enumSize),
-					false
+					Math.min(containerInfo.getElementMaxSize(), enumSize)
 				);
 			}
 		}

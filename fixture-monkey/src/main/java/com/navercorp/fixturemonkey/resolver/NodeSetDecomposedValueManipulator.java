@@ -41,22 +41,22 @@ import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class NodeSetDecomposedValueManipulator<T> implements NodeManipulator {
+	private final int sequence;
 	private final ArbitraryTraverser traverser;
 	private final ManipulateOptions manipulateOptions;
 	@Nullable
 	private final T value;
-	private final boolean forced;
 
 	public NodeSetDecomposedValueManipulator(
+		int sequence,
 		ArbitraryTraverser traverser,
 		ManipulateOptions manipulateOptions,
-		@Nullable T value,
-		boolean forced
+		@Nullable T value
 	) {
+		this.sequence = sequence;
 		this.traverser = traverser;
 		this.manipulateOptions = manipulateOptions;
 		this.value = value;
-		this.forced = forced;
 	}
 
 	@Override
@@ -90,10 +90,12 @@ public final class NodeSetDecomposedValueManipulator<T> implements NodeManipulat
 			Object containerValue = decomposableContainerValue.getContainer();
 			int decomposedContainerSize = decomposableContainerValue.getSize();
 
-			if (forced || !containerProperty.getContainerInfo().isManipulated()) {
+			boolean forced = containerProperty.getContainerInfo().getManipulatingSequence() == null
+				|| sequence > containerProperty.getContainerInfo().getManipulatingSequence();
+			if (forced) {
 				ContainerInfoManipulator containerInfoManipulator = new ContainerInfoManipulator(
 					IdentityNodeResolver.INSTANCE.toNextNodePredicate(),
-					new ArbitraryContainerInfo(decomposedContainerSize, decomposedContainerSize, false)
+					new ArbitraryContainerInfo(decomposedContainerSize, decomposedContainerSize)
 				);
 
 				ArbitraryNode newNode = traverser.traverse(

@@ -18,8 +18,12 @@
 
 package com.navercorp.fixturemonkey.customizer;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 
@@ -30,9 +34,7 @@ import net.jqwik.api.Arbitrary;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
-import com.navercorp.fixturemonkey.customizer.InnerSpecState.ContainerInfoHolder;
-import com.navercorp.fixturemonkey.customizer.InnerSpecState.FilterHolder;
-import com.navercorp.fixturemonkey.customizer.InnerSpecState.NodeResolverObjectHolder;
+import com.navercorp.fixturemonkey.customizer.InnerSpecState.ManipulatorHolderSet;
 import com.navercorp.fixturemonkey.expression.MonkeyExpressionFactory;
 import com.navercorp.fixturemonkey.resolver.ApplyNodeCountManipulator;
 import com.navercorp.fixturemonkey.resolver.ArbitraryManipulator;
@@ -48,6 +50,7 @@ import com.navercorp.fixturemonkey.resolver.NodeSetLazyManipulator;
 
 @API(since = "0.4.10", status = Status.EXPERIMENTAL)
 public final class MonkeyManipulatorFactory {
+	private final AtomicInteger sequence = new AtomicInteger();
 	private final MonkeyExpressionFactory monkeyExpressionFactory;
 	private final ArbitraryTraverser traverser;
 	private final ManipulateOptions manipulateOptions;
@@ -64,47 +67,21 @@ public final class MonkeyManipulatorFactory {
 	public ArbitraryManipulator newArbitraryManipulator(
 		String expression,
 		@Nullable Object value,
-		boolean forced,
 		int limit
 	) {
 		return new ArbitraryManipulator(
 			monkeyExpressionFactory.from(expression).toNodeResolver(),
-			convertToNodeManipulator(value, forced, limit)
+			convertToNodeManipulator(value, limit)
 		);
 	}
 
 	public ArbitraryManipulator newArbitraryManipulator(
 		String expression,
-		@Nullable Object value,
-		boolean forced
+		@Nullable Object value
 	) {
 		return new ArbitraryManipulator(
 			monkeyExpressionFactory.from(expression).toNodeResolver(),
-			convertToNodeManipulator(value, forced)
-		);
-	}
-
-	public ArbitraryManipulator newArbitraryManipulator(NodeResolverObjectHolder objectHolder) {
-		return new ArbitraryManipulator(
-			objectHolder.getNodeResolver(),
-			convertToNodeManipulator(objectHolder.getValue(), false)
-		);
-	}
-
-	public ArbitraryManipulator newArbitraryManipulator(FilterHolder filterHolder) {
-		return new ArbitraryManipulator(
-			filterHolder.getNodeResolver(),
-			new NodeFilterManipulator(
-				filterHolder.getType(),
-				filterHolder.getPredicate()
-			)
-		);
-	}
-
-	public ContainerInfoManipulator newContainerInfoManipulator(ContainerInfoHolder containerInfoHolder) {
-		return new ContainerInfoManipulator(
-			containerInfoHolder.getNodeResolver().toNextNodePredicate(),
-			containerInfoHolder.getContainerInfo()
+			convertToNodeManipulator(sequence.getAndIncrement(), value)
 		);
 	}
 
@@ -136,58 +113,103 @@ public final class MonkeyManipulatorFactory {
 		int min,
 		int max
 	) {
+		int newSequence = sequence.getAndIncrement();
+
 		return new ContainerInfoManipulator(
 			monkeyExpressionFactory.from(expression).toNodeResolver().toNextNodePredicate(),
 			new ArbitraryContainerInfo(
 				min,
 				max,
-				true
+				newSequence
 			)
 		);
 	}
 
-	private NodeManipulator convertToNodeManipulator(@Nullable Object value, boolean forced, int limit) {
-		NodeManipulator nodeManipulator = convertToNodeManipulator(value, forced);
+	ManipulatorSet newManipulatorSet(ManipulatorHolderSet manipulatorHolderSet) {
+		int baseSequence = sequence.getAndIncrement();
+
+		List<ArbitraryManipulator> arbitraryManipulators = new ArrayList<>();
+
+		List<ArbitraryManipulator> setArbitraryManipulators = manipulatorHolderSet.getNodeResolverObjectHolders()
+			.stream()
+			.map(it -> new ArbitraryManipulator(
+					it.getNodeResolver(),
+					convertToNodeManipulator(baseSequence + it.getSequence(), it.getValue())
+				)
+			)
+			.collect(Collectors.toList());
+
+		List<ArbitraryManipulator> filterArbitraryManipulators = manipulatorHolderSet.getPostConditionManipulators()
+			.stream()
+			.map(it -> new ArbitraryManipulator(
+				it.getNodeResolver(),
+				new NodeFilterManipulator(it.getType(), it.getPredicate())
+			))
+			.collect(Collectors.toList());
+		arbitraryManipulators.addAll(setArbitraryManipulators);
+		arbitraryManipulators.addAll(filterArbitraryManipulators);
+
+		List<ContainerInfoManipulator> containerInfoManipulators = manipulatorHolderSet.getContainerInfoManipulators()
+			.stream()
+			.map(it -> new ContainerInfoManipulator(
+				it.getNodeResolver().toNextNodePredicate(),
+				new ArbitraryContainerInfo(
+					it.getElementMinSize(),
+					it.getElementMaxSize(),
+					baseSequence + it.getSequence()
+				)
+			))
+			.collect(Collectors.toList());
+
+		sequence.set(sequence.get() + containerInfoManipulators.size() + arbitraryManipulators.size());
+		return new ManipulatorSet(
+			arbitraryManipulators,
+			containerInfoManipulators
+		);
+	}
+
+	private NodeManipulator convertToNodeManipulator(@Nullable Object value, int limit) {
+		NodeManipulator nodeManipulator = convertToNodeManipulator(sequence.getAndIncrement(), value);
 		return new ApplyNodeCountManipulator(nodeManipulator, limit);
 	}
 
-	private NodeManipulator convertToNodeManipulator(@Nullable Object value, boolean forced) {
+	private NodeManipulator convertToNodeManipulator(int sequence, @Nullable Object value) {
 		if (value == null) {
 			return new NodeNullityManipulator(true);
 		} else if (value instanceof Arbitrary) {
 			return new NodeSetLazyManipulator<>(
+				sequence,
 				traverser,
 				manipulateOptions,
-				LazyArbitrary.lazy(() -> ((Arbitrary<?>)value).sample()),
-				forced
+				LazyArbitrary.lazy(() -> ((Arbitrary<?>)value).sample())
 			);
 		} else if (value instanceof DefaultArbitraryBuilder) {
 			return new NodeSetLazyManipulator<>(
+				sequence,
 				traverser,
 				manipulateOptions,
-				LazyArbitrary.lazy(() -> ((DefaultArbitraryBuilder<?>)value).sample()),
-				forced
+				LazyArbitrary.lazy(() -> ((DefaultArbitraryBuilder<?>)value).sample())
 			);
 		} else if (value instanceof Supplier) {
 			return new NodeSetLazyManipulator<>(
+				sequence,
 				traverser,
 				manipulateOptions,
-				LazyArbitrary.lazy((Supplier<?>)value),
-				forced
+				LazyArbitrary.lazy((Supplier<?>)value)
 			);
 		} else if (value instanceof LazyArbitrary) {
 			return new NodeSetLazyManipulator<>(
+				sequence,
 				traverser,
 				manipulateOptions,
-				(LazyArbitrary<?>)value,
-				forced
+				(LazyArbitrary<?>)value
 			);
 		} else {
 			return new NodeSetDecomposedValueManipulator<>(
+				sequence,
 				traverser,
 				manipulateOptions,
-				value,
-				forced
+				value
 			);
 		}
 	}

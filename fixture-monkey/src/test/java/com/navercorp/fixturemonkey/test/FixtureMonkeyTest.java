@@ -1457,7 +1457,7 @@ class FixtureMonkeyTest {
 			.sample()
 			.getStrList();
 
-		then(actual).hasSize(1);
+		then(actual).isEmpty();
 	}
 
 	@Property
@@ -1697,5 +1697,63 @@ class FixtureMonkeyTest {
 			.getValues();
 
 		then(actual).hasSize(1);
+	}
+
+	@Property
+	void sizeAfterSetReturnsSet() {
+		List<String> actual = SUT.giveMeBuilder(new TypeReference<List<String>>() {
+			})
+			.size("$", 3)
+			.set("$", new ArrayList<>())
+			.sample();
+
+		then(actual).isEmpty();
+	}
+
+	@Property
+	void sizeAfterSetEmptyListReturnsSized() {
+		List<String> actual = SUT.giveMeBuilder(new TypeReference<List<String>>() {
+			})
+			.set("$", new ArrayList<>())
+			.size("$", 3)
+			.sample();
+
+		then(actual).hasSize(3);
+	}
+
+	@Property
+	void greaterSizeAfterSetReturnsSizeRemainsSet() {
+		List<String> set = new ArrayList<>();
+		set.add("1");
+
+		List<String> actual = SUT.giveMeBuilder(new TypeReference<List<String>>() {
+			})
+			.set("$", set)
+			.size("$", 3)
+			.sample();
+
+		then(actual).hasSize(3);
+		then(actual.get(0)).isEqualTo("1");
+	}
+
+	@Property
+	void smallerSizeAfterSetReturnsSizeRemainsSet() {
+		List<String> set = new ArrayList<>();
+		set.add("1");
+		set.add("2");
+		set.add("3");
+		set.add("4");
+		set.add("5");
+
+		List<String> actual = SUT.giveMeBuilder(new TypeReference<List<String>>() {
+			})
+			.set("$", set)
+			.size("$", 3)
+			.sample();
+
+		then(actual).hasSize(3);
+		then(actual.get(0)).isEqualTo("1");
+		then(actual.get(1)).isEqualTo("2");
+		then(actual.get(2)).isEqualTo("3");
 	}
 }
