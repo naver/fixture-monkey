@@ -63,6 +63,9 @@ public final class ArbitraryGeneratorContext {
 
 	private final LazyArbitrary<PropertyPath> pathProperty = LazyArbitrary.lazy(this::initPathProperty);
 
+	private final LazyArbitrary<ChildArbitraryContext> childArbitraryContext =
+		LazyArbitrary.lazy(this::initChildArbitraryContext);
+
 	@SuppressWarnings("rawtypes")
 	public ArbitraryGeneratorContext(
 		Property resolvedProperty,
@@ -106,25 +109,16 @@ public final class ArbitraryGeneratorContext {
 		return Collections.unmodifiableList(this.children);
 	}
 
-	public ChildArbitraryContext getChildrenArbitraryContexts() {
-		Map<ArbitraryProperty, Arbitrary<?>> childrenValues = new LinkedHashMap<>();
-		for (ArbitraryProperty child : this.getChildren()) {
-			Arbitrary<Object> arbitrary = this.resolveArbitrary.apply(this, child);
-			childrenValues.put(child, arbitrary);
-		}
+	public Map<String, LazyArbitrary<Arbitrary<?>>> getArbitrariesByResolvedName() {
+		return childArbitraryContext.getValue().getArbitrariesByResolvedName();
+	}
 
-		ChildArbitraryContext childArbitraryContext = new ChildArbitraryContext(
-			property.getObjectProperty().getProperty(),
-			childrenValues
-		);
+	public Map<String, LazyArbitrary<Arbitrary<?>>> getArbitrariesByPropertyName() {
+		return childArbitraryContext.getValue().getArbitrariesByPropertyName();
+	}
 
-		fixtureCustomizers.stream()
-			.filter(it -> it.match(property.getObjectProperty().getProperty()))
-			.map(MatcherOperator::getOperator)
-			.findFirst()
-			.ifPresent(customizer -> customizer.customizeProperties(childArbitraryContext));
-
-		return childArbitraryContext;
+	public List<Arbitrary<?>> getArbitraries() {
+		return childArbitraryContext.getValue().getArbitraries();
 	}
 
 	@Nullable
@@ -164,6 +158,26 @@ public final class ArbitraryGeneratorContext {
 			parentPropertyPath,
 			parentPropertyPath.getDepth() + 1
 		);
+	}
+
+	private ChildArbitraryContext initChildArbitraryContext() {
+		Map<ArbitraryProperty, LazyArbitrary<Arbitrary<?>>> childrenValues = new LinkedHashMap<>();
+		for (ArbitraryProperty child : this.getChildren()) {
+			childrenValues.put(child, LazyArbitrary.lazy(() -> this.resolveArbitrary.apply(this, child)));
+		}
+
+		ChildArbitraryContext childArbitraryContext = new ChildArbitraryContext(
+			property.getObjectProperty().getProperty(),
+			childrenValues
+		);
+
+		fixtureCustomizers.stream()
+			.filter(it -> it.match(property.getObjectProperty().getProperty()))
+			.map(MatcherOperator::getOperator)
+			.findFirst()
+			.ifPresent(customizer -> customizer.customizeProperties(childArbitraryContext));
+
+		return childArbitraryContext;
 	}
 
 	public static class PropertyPath implements Comparable<PropertyPath> {

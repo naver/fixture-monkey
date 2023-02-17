@@ -41,6 +41,7 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult;
+import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.jackson.FixtureMonkeyJackson;
@@ -63,17 +64,18 @@ public final class JacksonArbitraryIntrospector implements ArbitraryIntrospector
 		Class<?> type = Types.getActualType(property.getType());
 
 		List<ArbitraryProperty> childrenProperties = context.getChildren();
-		Map<String, Arbitrary<?>> childrenArbitraries = context.getChildrenArbitraryContexts()
-			.getArbitrariesByResolvedName();
+		Map<String, LazyArbitrary<Arbitrary<?>>> childrenArbitraries = context.getArbitrariesByResolvedName();
 
 		BuilderCombinator<Map<String, Object>> builderCombinator = Builders.withBuilder(() -> initializeMap(property));
 
 		for (ArbitraryProperty arbitraryProperty : childrenProperties) {
 			String resolvePropertyName = arbitraryProperty.getObjectProperty().getResolvedPropertyName();
 			Arbitrary<?> propertyArbitrary = childrenArbitraries.getOrDefault(
-				resolvePropertyName,
-				Arbitraries.just(null)
-			);
+					resolvePropertyName,
+					LazyArbitrary.lazy(() -> Arbitraries.just(null))
+				)
+				.getValue();
+
 			builderCombinator = builderCombinator.use(propertyArbitrary).in((map, value) -> {
 				if (value != null) {
 					Object jsonFormatted = arbitraryProperty.getObjectProperty()

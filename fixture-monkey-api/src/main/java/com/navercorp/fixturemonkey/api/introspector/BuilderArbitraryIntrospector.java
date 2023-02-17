@@ -28,12 +28,14 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apiguardian.api.API;
 import org.junit.platform.commons.util.ReflectionUtils;
 
+import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
 import net.jqwik.api.Builders;
 import net.jqwik.api.Builders.BuilderCombinator;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
+import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.api.property.CompositeProperty;
 import com.navercorp.fixturemonkey.api.property.FieldProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
@@ -68,8 +70,7 @@ public final class BuilderArbitraryIntrospector
 		}
 
 		List<ArbitraryProperty> childrenProperties = context.getChildren();
-		Map<String, Arbitrary<?>> childrenArbitraries = context.getChildrenArbitraryContexts()
-			.getArbitrariesByResolvedName();
+		Map<String, LazyArbitrary<Arbitrary<?>>> childrenArbitraries = context.getArbitrariesByResolvedName();
 
 		Class<?> builderType = this.getBuilderType(type);
 		Method builderMethod = BUILDER_CACHE.get(type);
@@ -82,7 +83,11 @@ public final class BuilderArbitraryIntrospector
 			String buildFieldMethodName = builderType.getName() + "#" + methodName;
 
 			String resolvePropertyName = arbitraryProperty.getObjectProperty().getResolvedPropertyName();
-			Arbitrary<?> arbitrary = childrenArbitraries.get(resolvePropertyName);
+			Arbitrary<?> arbitrary = childrenArbitraries.getOrDefault(
+					resolvePropertyName,
+					LazyArbitrary.lazy(() -> Arbitraries.just(null))
+				)
+				.getValue();
 
 			Method method = BUILD_FIELD_METHOD_CACHE.computeIfAbsent(buildFieldMethodName, f -> {
 				Method buildFieldMethod = ReflectionUtils.findMethods(builderType, m -> m.getName().equals(

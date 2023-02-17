@@ -31,10 +31,12 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 import org.junit.platform.commons.util.ReflectionUtils;
 
+import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
 import net.jqwik.api.Builders;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
+import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.type.Types;
 
@@ -51,8 +53,7 @@ public final class ConstructorPropertiesArbitraryIntrospector implements Arbitra
 			return ArbitraryIntrospectorResult.EMPTY;
 		}
 
-		Map<String, Arbitrary<?>> childrenArbitraries = context.getChildrenArbitraryContexts()
-			.getArbitrariesByResolvedName();
+		Map<String, LazyArbitrary<Arbitrary<?>>> childrenArbitraries = context.getArbitrariesByResolvedName();
 
 		Entry<Constructor<?>, String[]> parameterNamesByConstructor = getParameterNamesByConstructor(type);
 		if (parameterNamesByConstructor == null) {
@@ -66,7 +67,11 @@ public final class ConstructorPropertiesArbitraryIntrospector implements Arbitra
 			Builders.withBuilder(() -> new ArrayList<>(parameterSize));
 
 		for (String parameterName : parameterNames) {
-			Arbitrary<?> arbitrary = childrenArbitraries.get(parameterName);
+			Arbitrary<?> arbitrary = childrenArbitraries.getOrDefault(
+					parameterName,
+					LazyArbitrary.lazy(() -> Arbitraries.just(null))
+				)
+				.getValue();
 
 			builderCombinator = builderCombinator.use(arbitrary).in((list, value) -> {
 				list.add(value);
