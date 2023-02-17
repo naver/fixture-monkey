@@ -7,11 +7,15 @@ plugins {
     id "checkstyle"
 }
 
+ext {
+    JACKSON_VERSION = "2.14.2"
+}
+
 dependencies {
     api(project(":fixture-monkey"))
-    api('com.fasterxml.jackson.core:jackson-databind:2.14.1')
-    api("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.14.1")
-    api("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.14.1")
+    api("com.fasterxml.jackson.core:jackson-databind:${JACKSON_VERSION}")
+    api("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:${JACKSON_VERSION}")
+    api("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${JACKSON_VERSION}")
 
     testRuntimeOnly(project(":fixture-monkey-engine"))
     testImplementation("org.junit.jupiter:junit-jupiter-engine:${JUNIT_JUPITER_VERSION}")
