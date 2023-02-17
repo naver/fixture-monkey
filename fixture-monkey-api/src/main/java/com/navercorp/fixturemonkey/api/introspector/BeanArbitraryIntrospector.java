@@ -31,12 +31,14 @@ import org.junit.platform.commons.util.ReflectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
 import net.jqwik.api.Builders;
 import net.jqwik.api.Builders.BuilderCombinator;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
+import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.PropertyCache;
 import com.navercorp.fixturemonkey.api.type.Types;
@@ -55,8 +57,7 @@ public final class BeanArbitraryIntrospector implements ArbitraryIntrospector {
 		}
 
 		List<ArbitraryProperty> childrenProperties = context.getChildren();
-		Map<String, Arbitrary<?>> childrenArbitraries = context.getChildrenArbitraryContexts()
-			.getArbitrariesByResolvedName();
+		Map<String, LazyArbitrary<Arbitrary<?>>> childrenArbitraries = context.getArbitrariesByResolvedName();
 		Map<String, PropertyDescriptor> propertyDescriptors = PropertyCache.getPropertyDescriptors(type);
 		BuilderCombinator<?> builderCombinator = Builders.withBuilder(() -> ReflectionUtils.newInstance(type));
 		for (ArbitraryProperty arbitraryProperty : childrenProperties) {
@@ -68,7 +69,11 @@ public final class BeanArbitraryIntrospector implements ArbitraryIntrospector {
 			}
 
 			String resolvePropertyName = arbitraryProperty.getObjectProperty().getResolvedPropertyName();
-			Arbitrary<?> arbitrary = childrenArbitraries.get(resolvePropertyName);
+			Arbitrary<?> arbitrary = childrenArbitraries.getOrDefault(
+					resolvePropertyName,
+					LazyArbitrary.lazy(() -> Arbitraries.just(null))
+				)
+				.getValue();
 			if (arbitrary != null) {
 				builderCombinator = builderCombinator.use(arbitrary).in((b, v) -> {
 					try {

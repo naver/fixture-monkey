@@ -23,6 +23,7 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult
 import com.navercorp.fixturemonkey.api.type.Types
+import net.jqwik.api.Arbitraries
 import net.jqwik.api.Builders
 import org.apiguardian.api.API
 import org.apiguardian.api.API.Status.EXPERIMENTAL
@@ -46,7 +47,7 @@ class PrimaryConstructorArbitraryIntrospector : ArbitraryIntrospector {
             return ArbitraryIntrospectorResult.EMPTY
         }
 
-        val arbitrariesByPropertyName = context.childrenArbitraryContexts.arbitrariesByPropertyName
+        val arbitrariesByPropertyName = context.arbitrariesByPropertyName
 
         val kotlinClass = Reflection.createKotlinClass(type) as KClass<*>
         val constructor = CONSTRUCTOR_CACHE.computeIfAbsent(type) {
@@ -55,7 +56,7 @@ class PrimaryConstructorArbitraryIntrospector : ArbitraryIntrospector {
 
         var builderCombinator = Builders.withBuilder { mutableMapOf<KParameter, Any?>() }
         for (parameter in constructor.parameters) {
-            val parameterArbitrary = arbitrariesByPropertyName[parameter.name]
+            val parameterArbitrary = arbitrariesByPropertyName[parameter.name]?.value ?: Arbitraries.just(null)
             builderCombinator = builderCombinator.use(parameterArbitrary).`in` { map, value ->
                 map.apply {
                     this[parameter] = value

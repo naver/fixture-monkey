@@ -58,7 +58,7 @@ public final class ArrayIntrospector implements ArbitraryIntrospector, Matcher {
 			return ArbitraryIntrospectorResult.EMPTY;
 		}
 
-		List<Arbitrary<?>> childrenArbitraries = context.getChildrenArbitraryContexts().getArbitraries();
+		List<Arbitrary<?>> childrenArbitraries = context.getArbitraries();
 		BuilderCombinator<ArrayBuilder> builderCombinator = Builders.withBuilder(() ->
 			new ArrayBuilder(
 				Types.getArrayComponentType(property.getObjectProperty().getProperty().getAnnotatedType()),
