@@ -18,6 +18,7 @@
 
 package com.navercorp.fixturemonkey.test;
 
+import static com.navercorp.fixturemonkey.customizer.MonkeyManipulatorFactory.NOT_NULL;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.assertj.core.api.BDDAssertions.thenThrownBy;
 
@@ -750,7 +751,6 @@ class InnerSpecTest {
 		then(actual).isEmpty();
 	}
 
-
 	@Property
 	void innerSpecIncrementsSequence() {
 		List<String> actual = SUT.giveMeBuilder(ListStringObject.class)
@@ -765,5 +765,15 @@ class InnerSpecTest {
 			.getValues();
 
 		then(actual).hasSize(5);
+	}
+
+	@Property
+	void setNotNull() {
+		String actual = SUT.giveMeBuilder(SimpleObject.class)
+			.setInner(new InnerSpec().property("str", NOT_NULL))
+			.sample()
+			.getStr();
+
+		then(actual).isNotNull();
 	}
 }

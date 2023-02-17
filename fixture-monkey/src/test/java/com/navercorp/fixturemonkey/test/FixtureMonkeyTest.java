@@ -18,6 +18,7 @@
 
 package com.navercorp.fixturemonkey.test;
 
+import static com.navercorp.fixturemonkey.customizer.MonkeyManipulatorFactory.NOT_NULL;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.assertj.core.api.BDDAssertions.thenNoException;
 import static org.assertj.core.api.BDDAssertions.thenThrownBy;
@@ -1755,5 +1756,15 @@ class FixtureMonkeyTest {
 		then(actual.get(0)).isEqualTo("1");
 		then(actual.get(1)).isEqualTo("2");
 		then(actual.get(2)).isEqualTo("3");
+	}
+
+	@Property
+	void setNotNull() {
+		String actual = SUT.giveMeBuilder(SimpleObject.class)
+			.set("str", NOT_NULL)
+			.sample()
+			.getStr();
+
+		then(actual).isNotNull();
 	}
 }
