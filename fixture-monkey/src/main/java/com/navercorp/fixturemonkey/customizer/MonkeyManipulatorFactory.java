@@ -50,6 +50,8 @@ import com.navercorp.fixturemonkey.resolver.NodeSetLazyManipulator;
 
 @API(since = "0.4.10", status = Status.EXPERIMENTAL)
 public final class MonkeyManipulatorFactory {
+	public static final Object NOT_NULL = new Object();
+
 	private final AtomicInteger sequence = new AtomicInteger();
 	private final MonkeyExpressionFactory monkeyExpressionFactory;
 	private final ArbitraryTraverser traverser;
@@ -176,6 +178,8 @@ public final class MonkeyManipulatorFactory {
 	private NodeManipulator convertToNodeManipulator(int sequence, @Nullable Object value) {
 		if (value == null) {
 			return new NodeNullityManipulator(true);
+		} else if (value == NOT_NULL) {
+			return new NodeNullityManipulator(false);
 		} else if (value instanceof Arbitrary) {
 			return new NodeSetLazyManipulator<>(
 				sequence,
