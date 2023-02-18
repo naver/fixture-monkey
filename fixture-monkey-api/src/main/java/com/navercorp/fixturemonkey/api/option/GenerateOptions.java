@@ -41,7 +41,6 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.customizer.FixtureCustomizer;
-import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfoGenerator;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.generator.ArrayContainerPropertyGenerator;
@@ -106,8 +105,7 @@ public final class GenerateOptions {
 	private final List<MatcherOperator<NullInjectGenerator>> nullInjectGenerators;
 	private final NullInjectGenerator defaultNullInjectGenerator;
 	private final List<MatcherOperator<ArbitraryContainerInfoGenerator>> arbitraryContainerInfoGenerators;
-	private final int defaultArbitraryContainerSize;
-	private final ArbitraryContainerInfo defaultArbitraryContainerInfo;
+	private final ArbitraryContainerInfoGenerator defaultArbitraryContainerInfoGenerator;
 	private final List<MatcherOperator<ArbitraryGenerator>> arbitraryGenerators;
 	private final ArbitraryGenerator defaultArbitraryGenerator;
 
@@ -127,7 +125,7 @@ public final class GenerateOptions {
 		List<MatcherOperator<NullInjectGenerator>> nullInjectGenerators,
 		NullInjectGenerator defaultNullInjectGenerator,
 		List<MatcherOperator<ArbitraryContainerInfoGenerator>> arbitraryContainerInfoGenerators,
-		int defaultArbitraryContainerSize, ArbitraryContainerInfo defaultArbitraryContainerInfo,
+		ArbitraryContainerInfoGenerator defaultArbitraryContainerInfoGenerator,
 		List<MatcherOperator<ArbitraryGenerator>> arbitraryGenerators,
 		ArbitraryGenerator defaultArbitraryGenerator,
 		List<MatcherOperator<FixtureCustomizer>> arbitraryCustomizers,
@@ -143,8 +141,7 @@ public final class GenerateOptions {
 		this.nullInjectGenerators = nullInjectGenerators;
 		this.defaultNullInjectGenerator = defaultNullInjectGenerator;
 		this.arbitraryContainerInfoGenerators = arbitraryContainerInfoGenerators;
-		this.defaultArbitraryContainerSize = defaultArbitraryContainerSize;
-		this.defaultArbitraryContainerInfo = defaultArbitraryContainerInfo;
+		this.defaultArbitraryContainerInfoGenerator = defaultArbitraryContainerInfoGenerator;
 		this.arbitraryGenerators = arbitraryGenerators;
 		this.defaultArbitraryGenerator = defaultArbitraryGenerator;
 		this.arbitraryCustomizers = arbitraryCustomizers;
@@ -241,15 +238,11 @@ public final class GenerateOptions {
 			.filter(it -> it.match(property))
 			.map(MatcherOperator::getOperator)
 			.findFirst()
-			.orElse(context -> this.getDefaultArbitraryContainerInfo());
+			.orElse(this.getDefaultArbitraryContainerInfoGenerator());
 	}
 
-	public int getDefaultArbitraryContainerSize() {
-		return this.defaultArbitraryContainerSize;
-	}
-
-	public ArbitraryContainerInfo getDefaultArbitraryContainerInfo() {
-		return this.defaultArbitraryContainerInfo;
+	public ArbitraryContainerInfoGenerator getDefaultArbitraryContainerInfoGenerator() {
+		return this.defaultArbitraryContainerInfoGenerator;
 	}
 
 	public List<MatcherOperator<ArbitraryGenerator>> getArbitraryGenerators() {
@@ -288,8 +281,7 @@ public final class GenerateOptions {
 			.nullInjectGenerators(new ArrayList<>(this.nullInjectGenerators))
 			.defaultNullInjectGenerator(this.defaultNullInjectGenerator)
 			.arbitraryContainerInfoGenerators(new ArrayList<>(this.arbitraryContainerInfoGenerators))
-			.defaultArbitraryContainerMaxSize(this.defaultArbitraryContainerSize)
-			.defaultArbitraryContainerInfo(this.defaultArbitraryContainerInfo)
+			.defaultArbitraryContainerInfoGenerator(this.defaultArbitraryContainerInfoGenerator)
 			.arbitraryGenerators(new ArrayList<>(this.arbitraryGenerators))
 			.defaultArbitraryGenerator(this.defaultArbitraryGenerator)
 			.defaultArbitraryValidator(defaultArbitraryValidator);

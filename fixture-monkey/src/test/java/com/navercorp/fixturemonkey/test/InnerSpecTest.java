@@ -34,7 +34,7 @@ import net.jqwik.api.Property;
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.FixtureMonkey;
-import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
+import com.navercorp.fixturemonkey.api.generator.ContainerPropertyGeneratorContext;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.customizer.InnerSpec;
 import com.navercorp.fixturemonkey.test.InnerSpecTestSpecs.ComplexObject;
@@ -136,7 +136,7 @@ class InnerSpecTest {
 	@Property
 	void keyInKey() {
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.defaultArbitraryContainerInfo(new ArbitraryContainerInfo(1, 3))
+			.defaultArbitraryContainerInfoGenerator(ContainerPropertyGeneratorContext::getContainerInfo)
 			.build();
 
 		NestedKeyMapObject actual = sut.giveMeBuilder(NestedKeyMapObject.class)
@@ -154,7 +154,7 @@ class InnerSpecTest {
 	@Property
 	void valueInKey() {
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.defaultArbitraryContainerInfo(new ArbitraryContainerInfo(1, 3))
+			.defaultArbitraryContainerInfoGenerator(ContainerPropertyGeneratorContext::getContainerInfo)
 			.build();
 
 		NestedKeyMapObject actual = sut.giveMeBuilder(NestedKeyMapObject.class)
@@ -271,7 +271,7 @@ class InnerSpecTest {
 	void entryInEntryKey() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.defaultArbitraryContainerInfo(new ArbitraryContainerInfo(1, 3))
+			.defaultArbitraryContainerInfoGenerator(ContainerPropertyGeneratorContext::getContainerInfo)
 			.build();
 
 		// when
