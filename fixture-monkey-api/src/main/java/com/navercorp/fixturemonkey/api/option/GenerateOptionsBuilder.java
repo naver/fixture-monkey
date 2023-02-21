@@ -34,6 +34,7 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.customizer.FixtureCustomizer;
+import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfoGenerator;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.generator.ContainerPropertyGenerator;
@@ -523,8 +524,10 @@ public final class GenerateOptionsBuilder {
 			defaultNullInjectGenerator = defaultNullInjectGeneratorOperator.apply(defaultNullInjectGenerator);
 		}
 
-		ArbitraryContainerInfoGenerator defaultArbitraryContainerInfoGenerator =
-			this.defaultArbitraryContainerInfoGenerator;
+		ArbitraryContainerInfoGenerator defaultArbitraryContainerInfoGenerator = defaultIfNull(
+			this.defaultArbitraryContainerInfoGenerator,
+			() -> context -> new ArbitraryContainerInfo(0, 3)
+		);
 		ArbitraryGenerator defaultArbitraryGenerator =
 			defaultIfNull(this.defaultArbitraryGenerator, this.javaDefaultArbitraryGeneratorBuilder::build);
 

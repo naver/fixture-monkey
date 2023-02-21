@@ -52,7 +52,6 @@ import com.navercorp.fixturemonkey.api.customizer.FixtureCustomizer;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ChildArbitraryContext;
-import com.navercorp.fixturemonkey.api.generator.ContainerPropertyGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator;
 import com.navercorp.fixturemonkey.api.generator.DefaultObjectPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGenerator;
@@ -448,7 +447,7 @@ class FixtureMonkeyOptionsTest {
 	@Property
 	void defaultArbitraryContainerMaxSize() {
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.defaultArbitraryContainerInfoGenerator(ContainerPropertyGeneratorContext::getContainerInfo)
+			.defaultArbitraryContainerInfoGenerator(context -> new ArbitraryContainerInfo(0, 1))
 			.build();
 
 		List<SimpleObject> actual = sut.giveMeOne(ComplexObject.class)
@@ -460,7 +459,7 @@ class FixtureMonkeyOptionsTest {
 	@Property
 	void defaultArbitraryContainerInfo() {
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.defaultArbitraryContainerInfoGenerator(ContainerPropertyGeneratorContext::getContainerInfo)
+			.defaultArbitraryContainerInfoGenerator(context -> new ArbitraryContainerInfo(3, 3))
 			.build();
 
 		List<SimpleObject> actual = sut.giveMeOne(ComplexObject.class)
@@ -1219,7 +1218,7 @@ class FixtureMonkeyOptionsTest {
 	@Property
 	void sampleEnumMapWithEnumSizeIsLessThanContainerInfoMaxSize() {
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.defaultArbitraryContainerInfoGenerator(ContainerPropertyGeneratorContext::getContainerInfo)
+			.defaultArbitraryContainerInfoGenerator(context -> new ArbitraryContainerInfo(0, 5))
 			.build();
 
 		Map<TwoEnum, String> values = sut.giveMeOne(new TypeReference<Map<TwoEnum, String>>() {
@@ -1231,7 +1230,7 @@ class FixtureMonkeyOptionsTest {
 	@Property
 	void sampleEnumMapWithEnumSizeIsLessThanContainerInfoMinSize() {
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.defaultArbitraryContainerInfoGenerator(ContainerPropertyGeneratorContext::getContainerInfo)
+			.defaultArbitraryContainerInfoGenerator(context -> new ArbitraryContainerInfo(3, 5))
 			.build();
 
 		Map<TwoEnum, String> values = sut.giveMeOne(new TypeReference<Map<TwoEnum, String>>() {
@@ -1243,7 +1242,7 @@ class FixtureMonkeyOptionsTest {
 	@Property
 	void sampleEnumSetWithEnumSizeIsLessThanContainerInfoMinSize() {
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.defaultArbitraryContainerInfoGenerator(ContainerPropertyGeneratorContext::getContainerInfo)
+			.defaultArbitraryContainerInfoGenerator(context -> new ArbitraryContainerInfo(3, 5))
 			.build();
 
 		Set<TwoEnum> values = sut.giveMeOne(new TypeReference<Set<TwoEnum>>() {
