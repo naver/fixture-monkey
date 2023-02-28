@@ -91,7 +91,7 @@ fun getAnnotatedType(ownerType: AnnotatedType, kProperty: KProperty<*>): Annotat
 
         override fun getRawType(): Type = type.rawType
 
-        override fun getOwnerType(): Type = type.ownerType
+        override fun getOwnerType(): Type? = type.ownerType
     }
 
     val resolvedGenericsTypesArray = resolvedGenericsTypes.toTypedArray()
