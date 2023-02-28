@@ -33,7 +33,6 @@ import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.context.MonkeyContext;
 import com.navercorp.fixturemonkey.api.customizer.FixtureCustomizer;
-import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfoGenerator;
 import com.navercorp.fixturemonkey.api.generator.ContainerPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.InterfaceObjectPropertyGenerator;
@@ -228,13 +227,9 @@ public class FixtureMonkeyBuilder {
 		return this;
 	}
 
-	public FixtureMonkeyBuilder defaultArbitraryContainerMaxSize(int defaultArbitraryContainerMaxSize) {
-		generateOptionsBuilder.defaultArbitraryContainerMaxSize(defaultArbitraryContainerMaxSize);
-		return this;
-	}
-
-	public FixtureMonkeyBuilder defaultArbitraryContainerInfo(ArbitraryContainerInfo defaultArbitraryContainerInfo) {
-		generateOptionsBuilder.defaultArbitraryContainerInfo(defaultArbitraryContainerInfo);
+	public FixtureMonkeyBuilder defaultArbitraryContainerInfoGenerator(
+		ArbitraryContainerInfoGenerator defaultArbitraryContainerInfoGenerator) {
+		generateOptionsBuilder.defaultArbitraryContainerInfoGenerator(defaultArbitraryContainerInfoGenerator);
 		return this;
 	}
 

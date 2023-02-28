@@ -447,7 +447,7 @@ class FixtureMonkeyOptionsTest {
 	@Property
 	void defaultArbitraryContainerMaxSize() {
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.defaultArbitraryContainerMaxSize(1)
+			.defaultArbitraryContainerInfoGenerator(context -> new ArbitraryContainerInfo(0, 1))
 			.build();
 
 		List<SimpleObject> actual = sut.giveMeOne(ComplexObject.class)
@@ -459,7 +459,7 @@ class FixtureMonkeyOptionsTest {
 	@Property
 	void defaultArbitraryContainerInfo() {
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.defaultArbitraryContainerInfo(new ArbitraryContainerInfo(3, 3))
+			.defaultArbitraryContainerInfoGenerator(context -> new ArbitraryContainerInfo(3, 3))
 			.build();
 
 		List<SimpleObject> actual = sut.giveMeOne(ComplexObject.class)
@@ -1218,7 +1218,7 @@ class FixtureMonkeyOptionsTest {
 	@Property
 	void sampleEnumMapWithEnumSizeIsLessThanContainerInfoMaxSize() {
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.defaultArbitraryContainerMaxSize(5)
+			.defaultArbitraryContainerInfoGenerator(context -> new ArbitraryContainerInfo(0, 5))
 			.build();
 
 		Map<TwoEnum, String> values = sut.giveMeOne(new TypeReference<Map<TwoEnum, String>>() {
@@ -1230,7 +1230,7 @@ class FixtureMonkeyOptionsTest {
 	@Property
 	void sampleEnumMapWithEnumSizeIsLessThanContainerInfoMinSize() {
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.defaultArbitraryContainerInfo(new ArbitraryContainerInfo(3, 5))
+			.defaultArbitraryContainerInfoGenerator(context -> new ArbitraryContainerInfo(3, 5))
 			.build();
 
 		Map<TwoEnum, String> values = sut.giveMeOne(new TypeReference<Map<TwoEnum, String>>() {
@@ -1242,7 +1242,7 @@ class FixtureMonkeyOptionsTest {
 	@Property
 	void sampleEnumSetWithEnumSizeIsLessThanContainerInfoMinSize() {
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.defaultArbitraryContainerInfo(new ArbitraryContainerInfo(3, 5))
+			.defaultArbitraryContainerInfoGenerator(context -> new ArbitraryContainerInfo(3, 5))
 			.build();
 
 		Set<TwoEnum> values = sut.giveMeOne(new TypeReference<Set<TwoEnum>>() {

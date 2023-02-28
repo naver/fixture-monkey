@@ -71,8 +71,7 @@ public final class GenerateOptionsBuilder {
 	private List<MatcherOperator<NullInjectGenerator>> nullInjectGenerators = new ArrayList<>();
 	private NullInjectGenerator defaultNullInjectGenerator;
 	private List<MatcherOperator<ArbitraryContainerInfoGenerator>> arbitraryContainerInfoGenerators = new ArrayList<>();
-	private Integer defaultArbitraryContainerMaxSize;
-	private ArbitraryContainerInfo defaultArbitraryContainerInfo;
+	private ArbitraryContainerInfoGenerator defaultArbitraryContainerInfoGenerator;
 	private List<MatcherOperator<ArbitraryGenerator>> arbitraryGenerators = new ArrayList<>();
 	private ArbitraryGenerator defaultArbitraryGenerator;
 
@@ -311,13 +310,9 @@ public final class GenerateOptionsBuilder {
 		);
 	}
 
-	public GenerateOptionsBuilder defaultArbitraryContainerMaxSize(int defaultArbitraryContainerMaxSize) {
-		this.defaultArbitraryContainerMaxSize = defaultArbitraryContainerMaxSize;
-		return this;
-	}
-
-	public GenerateOptionsBuilder defaultArbitraryContainerInfo(ArbitraryContainerInfo defaultArbitraryContainerInfo) {
-		this.defaultArbitraryContainerInfo = defaultArbitraryContainerInfo;
+	public GenerateOptionsBuilder defaultArbitraryContainerInfoGenerator(
+		ArbitraryContainerInfoGenerator defaultArbitraryContainerInfoGenerator) {
+		this.defaultArbitraryContainerInfoGenerator = defaultArbitraryContainerInfoGenerator;
 		return this;
 	}
 
@@ -529,15 +524,10 @@ public final class GenerateOptionsBuilder {
 			defaultNullInjectGenerator = defaultNullInjectGeneratorOperator.apply(defaultNullInjectGenerator);
 		}
 
-		int defaultArbitraryContainerMaxSize = defaultIfNull(
-			this.defaultArbitraryContainerMaxSize,
-			() -> GenerateOptions.DEFAULT_ARBITRARY_CONTAINER_MAX_SIZE
+		ArbitraryContainerInfoGenerator defaultArbitraryContainerInfoGenerator = defaultIfNull(
+			this.defaultArbitraryContainerInfoGenerator,
+			() -> context -> new ArbitraryContainerInfo(0, GenerateOptions.DEFAULT_ARBITRARY_CONTAINER_MAX_SIZE)
 		);
-		ArbitraryContainerInfo defaultArbitraryContainerInfo =
-			defaultIfNull(
-				this.defaultArbitraryContainerInfo,
-				() -> new ArbitraryContainerInfo(0, defaultArbitraryContainerMaxSize)
-			);
 		ArbitraryGenerator defaultArbitraryGenerator =
 			defaultIfNull(this.defaultArbitraryGenerator, this.javaDefaultArbitraryGeneratorBuilder::build);
 
@@ -552,8 +542,7 @@ public final class GenerateOptionsBuilder {
 			this.nullInjectGenerators,
 			defaultNullInjectGenerator,
 			this.arbitraryContainerInfoGenerators,
-			defaultArbitraryContainerMaxSize,
-			defaultArbitraryContainerInfo,
+			defaultArbitraryContainerInfoGenerator,
 			this.arbitraryGenerators,
 			defaultArbitraryGenerator,
 			this.arbitraryCustomizers,

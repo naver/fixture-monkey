@@ -136,7 +136,7 @@ class InnerSpecTest {
 	@Property
 	void keyInKey() {
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.defaultArbitraryContainerInfo(new ArbitraryContainerInfo(1, 3))
+			.defaultArbitraryContainerInfoGenerator(context -> new ArbitraryContainerInfo(1, 3))
 			.build();
 
 		NestedKeyMapObject actual = sut.giveMeBuilder(NestedKeyMapObject.class)
@@ -154,7 +154,7 @@ class InnerSpecTest {
 	@Property
 	void valueInKey() {
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.defaultArbitraryContainerInfo(new ArbitraryContainerInfo(1, 3))
+			.defaultArbitraryContainerInfoGenerator(context -> new ArbitraryContainerInfo(1, 3))
 			.build();
 
 		NestedKeyMapObject actual = sut.giveMeBuilder(NestedKeyMapObject.class)
@@ -271,7 +271,7 @@ class InnerSpecTest {
 	void entryInEntryKey() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.defaultArbitraryContainerInfo(new ArbitraryContainerInfo(1, 3))
+			.defaultArbitraryContainerInfoGenerator(context -> new ArbitraryContainerInfo(1, 3))
 			.build();
 
 		// when
