@@ -21,6 +21,7 @@ package com.navercorp.fixturemonkey;
 import static java.util.stream.Collectors.toList;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
 import org.apiguardian.api.API;
@@ -91,6 +92,7 @@ public class FixtureMonkey {
 		return giveMeBuilder(typeReference);
 	}
 
+	@SuppressWarnings("unchecked")
 	public <T> DefaultArbitraryBuilder<T> giveMeBuilder(TypeReference<T> type) {
 		ManipulateOptions manipulateOptions = manipulateOptionsBuilder.build();
 		RootProperty rootProperty = new RootProperty(type.getAnnotatedType());
@@ -101,7 +103,11 @@ public class FixtureMonkey {
 			.findAny()
 			.orElse(null);
 
-		DefaultArbitraryBuilder<T> arbitraryBuilder = new DefaultArbitraryBuilder<>(
+		if (registered != null) {
+			return (DefaultArbitraryBuilder<T>)registered.copy();
+		}
+
+		return new DefaultArbitraryBuilder<>(
 			manipulateOptions,
 			rootProperty,
 			new ArbitraryResolver(
@@ -113,20 +119,18 @@ public class FixtureMonkey {
 			),
 			traverser,
 			this.validator,
-			new MonkeyManipulatorFactory(traverser, manipulateOptions),
+			new MonkeyManipulatorFactory(new AtomicInteger(), traverser, manipulateOptions),
 			new ArbitraryBuilderContext()
 		);
-
-		if (registered != null) {
-			arbitraryBuilder.setLazy("$", registered::sample);
-		}
-
-		return arbitraryBuilder;
 	}
 
 	public <T> DefaultArbitraryBuilder<T> giveMeBuilder(T value) {
 		ManipulateOptions manipulateOptions = manipulateOptionsBuilder.build();
-		MonkeyManipulatorFactory monkeyManipulatorFactory = new MonkeyManipulatorFactory(traverser, manipulateOptions);
+		MonkeyManipulatorFactory monkeyManipulatorFactory = new MonkeyManipulatorFactory(
+			new AtomicInteger(),
+			traverser,
+			manipulateOptions
+		);
 		ArbitraryBuilderContext context = new ArbitraryBuilderContext();
 
 		ArbitraryManipulator arbitraryManipulator =

@@ -1465,4 +1465,23 @@ class FixtureMonkeyOptionsTest {
 
 		then(actual).isNotNull();
 	}
+
+	@Property
+	void sizeElementWhenRegisteredSize() {
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.register(
+				NestedListStringObject.class,
+				fixture -> fixture.giveMeBuilder(new TypeReference<NestedListStringObject>() {
+					})
+					.size("values", 5)
+			)
+			.build();
+
+		List<ListStringObject> actual = sut.giveMeBuilder(NestedListStringObject.class)
+			.size("values[*].values", 3, 5)
+			.sample()
+			.getValues();
+
+		then(actual).allMatch(it -> it.getValues().size() >= 3 && it.getValues().size() <= 5);
+	}
 }

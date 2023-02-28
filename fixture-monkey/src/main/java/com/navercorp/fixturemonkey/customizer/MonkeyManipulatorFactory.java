@@ -52,15 +52,17 @@ import com.navercorp.fixturemonkey.resolver.NodeSetLazyManipulator;
 public final class MonkeyManipulatorFactory {
 	public static final Object NOT_NULL = new Object();
 
-	private final AtomicInteger sequence = new AtomicInteger();
+	private final AtomicInteger sequence;
 	private final MonkeyExpressionFactory monkeyExpressionFactory;
 	private final ArbitraryTraverser traverser;
 	private final ManipulateOptions manipulateOptions;
 
 	public MonkeyManipulatorFactory(
+		AtomicInteger sequence,
 		ArbitraryTraverser traverser,
 		ManipulateOptions manipulateOptions
 	) {
+		this.sequence = sequence;
 		this.monkeyExpressionFactory = manipulateOptions.getDefaultMonkeyExpressionFactory();
 		this.traverser = traverser;
 		this.manipulateOptions = manipulateOptions;
@@ -124,6 +126,14 @@ public final class MonkeyManipulatorFactory {
 				max,
 				newSequence
 			)
+		);
+	}
+
+	public MonkeyManipulatorFactory copy() {
+		return new MonkeyManipulatorFactory(
+			new AtomicInteger(sequence.get()),
+			traverser,
+			manipulateOptions
 		);
 	}
 
