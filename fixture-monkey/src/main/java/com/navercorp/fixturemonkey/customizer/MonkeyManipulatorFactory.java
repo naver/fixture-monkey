@@ -35,6 +35,7 @@ import net.jqwik.api.Arbitrary;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.customizer.InnerSpecState.ManipulatorHolderSet;
+import com.navercorp.fixturemonkey.customizer.Values.Just;
 import com.navercorp.fixturemonkey.expression.MonkeyExpressionFactory;
 import com.navercorp.fixturemonkey.resolver.ApplyNodeCountManipulator;
 import com.navercorp.fixturemonkey.resolver.ArbitraryManipulator;
@@ -46,10 +47,15 @@ import com.navercorp.fixturemonkey.resolver.NodeFilterManipulator;
 import com.navercorp.fixturemonkey.resolver.NodeManipulator;
 import com.navercorp.fixturemonkey.resolver.NodeNullityManipulator;
 import com.navercorp.fixturemonkey.resolver.NodeSetDecomposedValueManipulator;
+import com.navercorp.fixturemonkey.resolver.NodeSetJustManipulator;
 import com.navercorp.fixturemonkey.resolver.NodeSetLazyManipulator;
 
 @API(since = "0.4.10", status = Status.EXPERIMENTAL)
 public final class MonkeyManipulatorFactory {
+	/**
+	 * Deprecated using {@link com.navercorp.fixturemonkey.customizer.Values#NOT_NULL} instead.
+	 */
+	@Deprecated
 	public static final Object NOT_NULL = new Object();
 
 	private final AtomicInteger sequence;
@@ -188,8 +194,10 @@ public final class MonkeyManipulatorFactory {
 	private NodeManipulator convertToNodeManipulator(int sequence, @Nullable Object value) {
 		if (value == null) {
 			return new NodeNullityManipulator(true);
-		} else if (value == NOT_NULL) {
+		} else if (value == Values.NOT_NULL || value == MonkeyManipulatorFactory.NOT_NULL) {
 			return new NodeNullityManipulator(false);
+		} else if (value instanceof Just) {
+			return new NodeSetJustManipulator((Just)value);
 		} else if (value instanceof Arbitrary) {
 			return new NodeSetLazyManipulator<>(
 				sequence,
