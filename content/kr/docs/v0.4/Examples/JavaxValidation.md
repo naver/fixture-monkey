@@ -10,14 +10,14 @@ weight: 1
 
 ## 1. 의존성 추가
 ```groovy
-testImplementation("com.navercorp.fixturemonkey:fixture-monkey-javax-validation:{{< param version >}}")
+testImplementation("com.navercorp.fixturemonkey:fixture-monkey-javax-validation:0.4.14")
 ```
 
 ```xml
 <dependency>
   <groupId>com.navercorp.fixturemonkey</groupId>
   <artifactId>fixture-monkey-javax-validation</artifactId>
-  <version>{{< param version >}}</version>
+  <version>0.4.14</version>
   <scope>test</scope>
 </dependency>
 ```

@@ -9,14 +9,14 @@ Generating an object validated by [Jakarta Bean Validation 3.0](https://jakarta.
 ## How-to
 ### 1. Adding dependency
 ```groovy
-testImplementation("com.navercorp.fixturemonkey:fixture-monkey-jakarta-validation:{{< param version >}}")
+testImplementation("com.navercorp.fixturemonkey:fixture-monkey-jakarta-validation:0.4.14")
 ```
 
 ```xml
 <dependency>
   <groupId>com.navercorp.fixturemonkey</groupId>
   <artifactId>fixture-monkey-jakarta-validation</artifactId>
-  <version>{{< param version >}}</version>
+  <version>0.4.14</version>
   <scope>test</scope>
 </dependency>
 ```

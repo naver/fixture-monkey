@@ -1,6 +1,7 @@
 ---
 title: "Hello, Fixture Monkey"
 weight: 1
+toc_hide: true
 ---
 
 <img src="../../images/fixture-monkey.png" width="15%"/>

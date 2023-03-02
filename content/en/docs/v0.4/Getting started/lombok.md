@@ -29,14 +29,14 @@ This practice should add extra module because it depends on third-party library 
 
 #### 1. Adding dependency
 ```groovy
-testImplementation("com.navercorp.fixturemonkey:fixture-monkey-jackson:{{< param version >}}")
+testImplementation("com.navercorp.fixturemonkey:fixture-monkey-jackson:0.4.14")
 ```
 
 ```xml
 <dependency>
   <groupId>com.navercorp.fixturemonkey</groupId>
   <artifactId>fixture-monkey-jackson</artifactId>
-  <version>{{< param version >}}</version>
+  <version>0.4.14</version>
   <scope>test</scope>
 </dependency>
 ```

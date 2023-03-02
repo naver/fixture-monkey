@@ -27,14 +27,14 @@ type-safe한 표현식을 만들어주는 코틀린 DSL입니다.
 ## 설정
 ### 1. 의존성 추가
 ```groovy
-testImplementation("com.navercorp.fixturemonkey:fixture-monkey-kotlin:{{< param version >}}")
+testImplementation("com.navercorp.fixturemonkey:fixture-monkey-kotlin:0.4.14")
 ```
 
 ```xml
 <dependency>
   <groupId>com.navercorp.fixturemonkey</groupId>
   <artifactId>fixture-monkey-kotlin</artifactId>
-  <version>{{< param version >}}</version>
+  <version>0.4.14</version>
   <scope>test</scope>
 </dependency>
 ```

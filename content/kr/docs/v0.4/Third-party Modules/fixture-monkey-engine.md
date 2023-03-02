@@ -12,14 +12,14 @@ JUnit Jupiter 테스트에서 사용할 수 있는 `FixtureMonkeySessionExtensio
 ## 설정
 ### 1. 의존성 추가
 ```groovy
-testImplementation("com.navercorp.fixturemonkey:fixture-monkey-engine:{{< param version >}}")
+testImplementation("com.navercorp.fixturemonkey:fixture-monkey-engine:0.4.14")
 ```
 
 ```xml
 <dependency>
   <groupId>com.navercorp.fixturemonkey</groupId>
   <artifactId>fixture-monkey-engine</artifactId>
-  <version>{{< param version >}}</version>
+  <version>0.4.14</version>
   <scope>test</scope>
 </dependency>
 ```
