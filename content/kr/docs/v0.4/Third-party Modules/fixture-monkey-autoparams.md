@@ -17,7 +17,7 @@ testImplementation("com.navercorp.fixturemonkey:fixture-monkey-autoparams:0.4.3"
 <dependency>
   <groupId>com.navercorp.fixturemonkey</groupId>
   <artifactId>fixture-monkey-autoparams</artifactId>
-  <version>{{< param version >}}</version>
+  <version>0.4.14</version>
   <scope>test</scope>
 </dependency>
 ```
