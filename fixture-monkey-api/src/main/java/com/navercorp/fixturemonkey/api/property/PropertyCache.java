@@ -23,6 +23,7 @@ import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.AnnotatedType;
+import java.lang.reflect.AnnotatedTypeVariable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -54,6 +55,7 @@ import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class PropertyCache {
+	private static final String ERASURE_TYPE_NAME = "T";
 	private static final Logger LOGGER = LoggerFactory.getLogger(PropertyCache.class);
 
 	private static final Map<Class<?>, Map<String, PropertyDescriptor>> PROPERTY_DESCRIPTORS =
@@ -69,7 +71,7 @@ public final class PropertyCache {
 
 		Class<?> actualType = Types.getActualType(annotatedType.getType());
 
-		Map<String, Property> constructorProperties = getConstructorProperties(actualType);
+		Map<String, Property> constructorProperties = getConstructorProperties(annotatedType);
 		for (Entry<String, Property> entry : constructorProperties.entrySet()) {
 			List<Property> properties = propertiesMap.computeIfAbsent(
 				entry.getKey(), name -> new ArrayList<>()
@@ -175,7 +177,9 @@ public final class PropertyCache {
 		});
 	}
 
-	public static Map<String, Property> getConstructorProperties(Class<?> clazz) {
+	public static Map<String, Property> getConstructorProperties(AnnotatedType annotatedType) {
+		Class<?> clazz = Types.getActualType(annotatedType.getType());
+
 		Map<String, Property> constructorPropertiesByName = new HashMap<>();
 		Map.Entry<Constructor<?>, String[]> parameterNamesByConstructor = getParameterNamesByConstructor(clazz);
 		if (parameterNamesByConstructor == null) {
@@ -192,16 +196,31 @@ public final class PropertyCache {
 			AnnotatedType annotatedParameterType = annotatedParameterTypes[i];
 			String parameterName = parameterNames[i];
 			Field field = fieldsByName.get(parameterName);
-			Property fieldProperty = field != null ? new FieldProperty(field) : null;
-			constructorPropertiesByName.put(
-				parameterName,
-				new ConstructorProperty(
-					annotatedParameterType,
-					primaryConstructor,
+			Property fieldProperty = field != null
+				? new FieldProperty(Types.resolveWithTypeReferenceGenerics(annotatedType, field), field)
+				: null;
+
+			if (isTypeErased(annotatedParameterType) && fieldProperty != null) {
+				constructorPropertiesByName.put(
 					parameterName,
-					fieldProperty
-				)
-			);
+					new ConstructorProperty(
+						fieldProperty.getAnnotatedType(),
+						primaryConstructor,
+						parameterName,
+						fieldProperty
+					)
+				);
+			} else {
+				constructorPropertiesByName.put(
+					parameterName,
+					new ConstructorProperty(
+						annotatedParameterType,
+						primaryConstructor,
+						parameterName,
+						fieldProperty
+					)
+				);
+			}
 		}
 		return Collections.unmodifiableMap(constructorPropertiesByName);
 	}
@@ -286,5 +305,14 @@ public final class PropertyCache {
 				constructor.getAnnotation(ConstructorProperties.class);
 			return constructorPropertiesAnnotation.value();
 		}
+	}
+
+	private static boolean isTypeErased(AnnotatedType annotatedParameterType) {
+		if (!(annotatedParameterType instanceof AnnotatedTypeVariable)) {
+			return false;
+		}
+
+		AnnotatedTypeVariable typeVariable = (AnnotatedTypeVariable)annotatedParameterType;
+		return ERASURE_TYPE_NAME.equals(typeVariable.getType().getTypeName());
 	}
 }
