@@ -71,7 +71,6 @@ testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter-kotlin:0.
 #### Java
 
 ```java
-
 @Value
 public class Order {
     Long id;
@@ -92,7 +91,7 @@ public class Order {
 @Test
 void sampleOrder() {
     // given
-    LabMonkey sut = LabMonkey.labMonkeyBuilder()
+    FixtureMonkey sut = FixtureMonkey.builder()
             .objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)
             .build();
 
@@ -113,27 +112,26 @@ void sampleOrder() {
 #### Kotlin
 
 ```kotlin
-
 data class Order (
     val id: Long,
-    
+
     val orderNo: String,
-    
+
     val productName: String,
-    
+
     val quantity: Int,
-    
+
     val price: Long,
-    
+
     val items: List<String>,
-    
+
     val orderedAt: Instant
 )
 
 @Test
 fun sampleOrder() {
-    //given
-    val sut = LabMonkey.labMonkeyBuilder()
+    // given
+    val sut = FixtureMonkey.builder()
             .plugin(KotlinPlugin())
             .build()
 
