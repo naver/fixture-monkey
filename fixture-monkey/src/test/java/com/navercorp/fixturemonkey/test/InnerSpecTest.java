@@ -18,7 +18,7 @@
 
 package com.navercorp.fixturemonkey.test;
 
-import static com.navercorp.fixturemonkey.customizer.MonkeyManipulatorFactory.NOT_NULL;
+import static com.navercorp.fixturemonkey.customizer.Values.NOT_NULL;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.assertj.core.api.BDDAssertions.thenThrownBy;
 

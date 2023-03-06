@@ -18,7 +18,7 @@
 
 package com.navercorp.fixturemonkey.test;
 
-import static com.navercorp.fixturemonkey.customizer.MonkeyManipulatorFactory.NOT_NULL;
+import static com.navercorp.fixturemonkey.customizer.Values.NOT_NULL;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.assertj.core.api.BDDAssertions.thenNoException;
 import static org.assertj.core.api.BDDAssertions.thenThrownBy;
@@ -57,6 +57,7 @@ import com.navercorp.fixturemonkey.api.generator.ChildArbitraryContext;
 import com.navercorp.fixturemonkey.api.matcher.ExactTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
+import com.navercorp.fixturemonkey.customizer.Values;
 import com.navercorp.fixturemonkey.test.ExpressionGeneratorTestSpecs.StringValue;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.ChildValue;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.ComplexObject;
@@ -1766,5 +1767,29 @@ class FixtureMonkeyTest {
 			.getStr();
 
 		then(actual).isNotNull();
+	}
+
+	@Property
+	void setJust() {
+		SimpleObject expected = new SimpleObject();
+
+		SimpleObject actual = SUT.giveMeBuilder(SimpleObject.class)
+			.set("$", Values.just(expected))
+			.sample();
+
+		then(actual).isSameAs(expected);
+	}
+
+	@Property
+	void setJustSubPropertyNotChanged() {
+		String notExpected = "test";
+
+		String actual = SUT.giveMeBuilder(SimpleObject.class)
+			.set("$", Values.just(new SimpleObject()))
+			.set("str", notExpected)
+			.sample()
+			.getStr();
+
+		then(actual).isNotEqualTo(notExpected);
 	}
 }
