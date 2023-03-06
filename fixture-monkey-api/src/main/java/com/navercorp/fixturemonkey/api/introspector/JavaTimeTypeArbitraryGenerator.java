@@ -50,7 +50,7 @@ import net.jqwik.time.api.arbitraries.YearMonthArbitrary;
 import net.jqwik.time.api.arbitraries.ZoneOffsetArbitrary;
 import net.jqwik.time.api.arbitraries.ZonedDateTimeArbitrary;
 
-@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+@API(since = "0.4.0", status = Status.MAINTAINED)
 public interface JavaTimeTypeArbitraryGenerator {
 
 	default CalendarArbitrary calendars() {

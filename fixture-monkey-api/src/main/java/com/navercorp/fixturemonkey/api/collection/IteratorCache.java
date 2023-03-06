@@ -25,7 +25,7 @@ import java.util.List;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+@API(since = "0.4.0", status = Status.MAINTAINED)
 public final class IteratorCache {
 	private static final LruCache<Iterator<?>, List<?>> ITERATOR_TO_LIST = new LruCache<>(2000);
 

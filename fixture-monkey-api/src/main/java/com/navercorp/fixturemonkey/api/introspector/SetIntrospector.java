@@ -37,7 +37,7 @@ import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.unique.FilteredMonkeyArbitrary;
 
-@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+@API(since = "0.4.0", status = Status.MAINTAINED)
 public final class SetIntrospector implements ArbitraryIntrospector, Matcher {
 	private static final Matcher MATCHER = new AssignableTypeMatcher(Set.class);
 	private static final int MAX_TRIES = 10000;

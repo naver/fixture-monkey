@@ -23,7 +23,7 @@ import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.generator.ObjectProperty;
 
-@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+@API(since = "0.4.0", status = Status.MAINTAINED)
 public final class NodeAllElementPredicate implements NextNodePredicate {
 
 	@Override

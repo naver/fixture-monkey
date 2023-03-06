@@ -37,7 +37,7 @@ import com.navercorp.fixturemonkey.jackson.introspector.JacksonArbitraryIntrospe
 import com.navercorp.fixturemonkey.jackson.introspector.JsonNodeIntrospector;
 import com.navercorp.fixturemonkey.jackson.property.JacksonPropertyNameResolver;
 
-@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+@API(since = "0.4.0", status = Status.MAINTAINED)
 public final class JacksonPlugin implements Plugin {
 	private final ObjectMapper objectMapper;
 	private final List<Matcher> matchers = new ArrayList<>();

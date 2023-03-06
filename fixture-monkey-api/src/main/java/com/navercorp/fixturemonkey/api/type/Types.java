@@ -44,7 +44,7 @@ import org.apiguardian.api.API.Status;
 
 import sun.reflect.generics.reflectiveObjects.TypeVariableImpl;
 
-@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+@API(since = "0.4.0", status = Status.MAINTAINED)
 public class Types {
 	private static final Map<Class<?>, Class<?>> primitiveWrapperMap = new HashMap<>();
 

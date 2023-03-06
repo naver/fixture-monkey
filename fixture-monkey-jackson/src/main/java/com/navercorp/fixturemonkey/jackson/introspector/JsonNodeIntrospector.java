@@ -41,7 +41,7 @@ import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult;
 import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty.MapEntryElementType;
 import com.navercorp.fixturemonkey.jackson.FixtureMonkeyJackson;
 
-@API(since = "0.4.3", status = Status.EXPERIMENTAL)
+@API(since = "0.4.3", status = Status.MAINTAINED)
 public final class JsonNodeIntrospector implements ArbitraryIntrospector {
 	public static final JsonNodeIntrospector INSTANCE = new JsonNodeIntrospector(
 		FixtureMonkeyJackson.defaultObjectMapper()

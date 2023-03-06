@@ -41,7 +41,7 @@ import com.navercorp.fixturemonkey.api.matcher.AssignableTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.property.Property;
 
-@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+@API(since = "0.4.0", status = Status.MAINTAINED)
 public final class StreamIntrospector implements ArbitraryIntrospector, Matcher {
 	private static final List<Matcher> MATCHERS = Arrays.asList(
 		new AssignableTypeMatcher(Stream.class),

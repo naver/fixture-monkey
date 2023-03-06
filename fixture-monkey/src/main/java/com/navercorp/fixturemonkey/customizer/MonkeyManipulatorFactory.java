@@ -50,7 +50,7 @@ import com.navercorp.fixturemonkey.resolver.NodeSetDecomposedValueManipulator;
 import com.navercorp.fixturemonkey.resolver.NodeSetJustManipulator;
 import com.navercorp.fixturemonkey.resolver.NodeSetLazyManipulator;
 
-@API(since = "0.4.10", status = Status.EXPERIMENTAL)
+@API(since = "0.4.10", status = Status.MAINTAINED)
 public final class MonkeyManipulatorFactory {
 	/**
 	 * Deprecated using {@link com.navercorp.fixturemonkey.customizer.Values#NOT_NULL} instead.

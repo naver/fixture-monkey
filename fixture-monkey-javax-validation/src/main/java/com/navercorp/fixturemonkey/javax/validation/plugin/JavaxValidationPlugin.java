@@ -37,7 +37,7 @@ import com.navercorp.fixturemonkey.javax.validation.introspector.JavaxValidation
 import com.navercorp.fixturemonkey.javax.validation.introspector.JavaxValidationJavaTimeArbitraryResolver;
 import com.navercorp.fixturemonkey.javax.validation.introspector.JavaxValidationTimeConstraintGenerator;
 
-@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+@API(since = "0.4.0", status = Status.MAINTAINED)
 public final class JavaxValidationPlugin implements Plugin {
 	private JavaTypeArbitraryGenerator javaTypeArbitraryGenerator = new JavaTypeArbitraryGenerator() {
 	};

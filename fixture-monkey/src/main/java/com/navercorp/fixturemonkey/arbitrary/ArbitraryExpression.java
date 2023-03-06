@@ -67,7 +67,7 @@ public final class ArbitraryExpression implements MonkeyExpression, Comparable<A
 		return new ArbitraryExpression(newStringExpression);
 	}
 
-	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+	@API(since = "0.4.0", status = Status.MAINTAINED)
 	public ArbitraryExpression pollLast() {
 		if (expList.isEmpty()) {
 			return this;

@@ -48,7 +48,7 @@ import jakarta.validation.constraints.Pattern;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.introspector.JavaArbitraryResolver;
 
-@API(since = "0.4.10", status = Status.EXPERIMENTAL)
+@API(since = "0.4.10", status = Status.MAINTAINED)
 public final class JakartaValidationJavaArbitraryResolver implements JavaArbitraryResolver {
 	private static final RegexGenerator REGEX_GENERATOR = new RegexGenerator();
 

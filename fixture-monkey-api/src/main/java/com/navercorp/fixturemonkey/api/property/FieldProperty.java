@@ -37,7 +37,7 @@ import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.type.TypeCache;
 
-@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+@API(since = "0.4.0", status = Status.MAINTAINED)
 public final class FieldProperty implements Property {
 	private final AnnotatedType annotatedType;
 	private final Field field;

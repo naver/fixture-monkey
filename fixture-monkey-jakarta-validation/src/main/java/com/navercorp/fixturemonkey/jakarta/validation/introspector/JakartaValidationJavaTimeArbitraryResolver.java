@@ -57,7 +57,7 @@ import net.jqwik.time.api.arbitraries.ZonedDateTimeArbitrary;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.introspector.JavaTimeArbitraryResolver;
 
-@API(since = "0.4.10", status = Status.EXPERIMENTAL)
+@API(since = "0.4.10", status = Status.MAINTAINED)
 public final class JakartaValidationJavaTimeArbitraryResolver implements JavaTimeArbitraryResolver {
 	private final JakartaValidationTimeConstraintGenerator constraintGenerator;
 

@@ -25,7 +25,7 @@ import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.type.Types;
 
-@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+@API(since = "0.4.0", status = Status.MAINTAINED)
 public final class Matchers {
 
 	public static final Matcher ENUM_TYPE_MATCHER = property -> Types.getActualType(property.getType()).isEnum();

@@ -35,7 +35,7 @@ import jakarta.validation.constraints.PastOrPresent;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 
-@API(since = "0.4.10", status = Status.EXPERIMENTAL)
+@API(since = "0.4.10", status = Status.MAINTAINED)
 public class JakartaValidationTimeConstraintGenerator {
 
 	public JakartaValidationDateTimeConstraint generateDateTimeConstraint(ArbitraryGeneratorContext context) {

@@ -27,7 +27,7 @@ import java.lang.reflect.Type;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+@API(since = "0.4.0", status = Status.MAINTAINED)
 public abstract class TypeReference<T> {
 	private final AnnotatedType annotatedType;
 

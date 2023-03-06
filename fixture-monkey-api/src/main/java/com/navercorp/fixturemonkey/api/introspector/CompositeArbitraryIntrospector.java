@@ -26,7 +26,7 @@ import org.apiguardian.api.API.Status;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 
-@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+@API(since = "0.4.0", status = Status.MAINTAINED)
 public class CompositeArbitraryIntrospector implements ArbitraryIntrospector {
 	private final List<ArbitraryIntrospector> introspectors;
 

@@ -32,7 +32,7 @@ import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 
-@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+@API(since = "0.4.0", status = Status.MAINTAINED)
 final class TraverseContext {
 	private final ArbitraryProperty rootArbitraryProperty;
 	private final List<ArbitraryProperty> arbitraryProperties;

@@ -30,7 +30,7 @@ import com.navercorp.fixturemonkey.api.property.ElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.type.Types;
 
-@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+@API(since = "0.4.0", status = Status.MAINTAINED)
 public final class SetContainerPropertyGenerator implements ContainerPropertyGenerator {
 	public static final SetContainerPropertyGenerator INSTANCE = new SetContainerPropertyGenerator();
 

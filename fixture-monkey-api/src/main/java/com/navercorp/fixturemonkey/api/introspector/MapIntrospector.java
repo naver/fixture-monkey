@@ -36,7 +36,7 @@ import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty.MapEntryElementType;
 import com.navercorp.fixturemonkey.api.property.Property;
 
-@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+@API(since = "0.4.0", status = Status.MAINTAINED)
 public final class MapIntrospector implements ArbitraryIntrospector, Matcher {
 	private static final Matcher MATCHER = new AssignableTypeMatcher(Map.class);
 

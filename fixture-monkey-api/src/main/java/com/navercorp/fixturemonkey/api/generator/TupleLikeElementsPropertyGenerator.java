@@ -24,7 +24,7 @@ import org.apiguardian.api.API.Status;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.TupleLikeElementsProperty;
 
-@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+@API(since = "0.4.0", status = Status.MAINTAINED)
 public final class TupleLikeElementsPropertyGenerator implements ContainerPropertyGenerator {
 	public static final TupleLikeElementsPropertyGenerator INSTANCE =
 		new TupleLikeElementsPropertyGenerator();

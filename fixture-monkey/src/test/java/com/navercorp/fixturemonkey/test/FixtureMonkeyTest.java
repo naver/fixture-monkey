@@ -1263,7 +1263,7 @@ class FixtureMonkeyTest {
 
 		String actual = SUT.giveMeOne(
 			String.class,
-			(FixtureCustomizer<String>)str -> expected
+			str -> expected
 		);
 
 		then(actual).isEqualTo(expected);

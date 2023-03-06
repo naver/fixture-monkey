@@ -57,7 +57,7 @@ import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.api.validator.ArbitraryValidator;
 
 @SuppressWarnings("UnusedReturnValue")
-@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+@API(since = "0.4.0", status = Status.MAINTAINED)
 public final class GenerateOptionsBuilder {
 	private List<MatcherOperator<PropertyGenerator>> propertyGenerators = new ArrayList<>();
 	private PropertyGenerator defaultPropertyGenerator = new DefaultPropertyGenerator();

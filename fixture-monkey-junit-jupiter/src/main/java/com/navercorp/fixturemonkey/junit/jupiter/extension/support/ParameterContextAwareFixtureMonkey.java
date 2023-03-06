@@ -28,7 +28,7 @@ import org.junit.jupiter.api.extension.ParameterContext;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
 
-@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+@API(since = "0.4.0", status = Status.MAINTAINED)
 public interface ParameterContextAwareFixtureMonkey {
 
 	Object giveMe();

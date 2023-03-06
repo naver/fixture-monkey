@@ -34,7 +34,7 @@ import org.apiguardian.api.API.Status;
 import com.navercorp.fixturemonkey.api.collection.IteratorCache;
 import com.navercorp.fixturemonkey.api.collection.StreamCache;
 
-@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+@API(since = "0.4.0", status = Status.MAINTAINED)
 public final class DefaultDecomposedContainerValueFactory implements DecomposedContainerValueFactory {
 	private final DecomposedContainerValueFactory additionalDecomposedContainerValueFactory;
 

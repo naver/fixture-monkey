@@ -41,7 +41,7 @@ import jakarta.validation.constraints.Size;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 
-@API(since = "0.4.10", status = Status.EXPERIMENTAL)
+@API(since = "0.4.10", status = Status.MAINTAINED)
 public class JakartaValidationConstraintGenerator {
 	private static final BigInteger BIG_INTEGER_MIN_LONG = BigInteger.valueOf(Long.MIN_VALUE);
 	private static final BigInteger BIG_INTEGER_MAX_LONG = BigInteger.valueOf(Long.MAX_VALUE);

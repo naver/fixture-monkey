@@ -34,7 +34,7 @@ import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.property.Property;
 
-@API(since = "0.4.7", status = Status.EXPERIMENTAL)
+@API(since = "0.4.7", status = Status.MAINTAINED)
 public final class InterfaceObjectPropertyGenerator<T> implements ObjectPropertyGenerator {
 	private final List<Class<? extends T>> implementations;
 

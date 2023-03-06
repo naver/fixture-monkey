@@ -35,7 +35,7 @@ import javax.annotation.Nullable;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-@API(since = "0.4.2", status = Status.EXPERIMENTAL)
+@API(since = "0.4.2", status = Status.MAINTAINED)
 public final class ConstructorProperty implements Property {
 	private final AnnotatedType annotatedType;
 	private final Constructor<?> constructor;

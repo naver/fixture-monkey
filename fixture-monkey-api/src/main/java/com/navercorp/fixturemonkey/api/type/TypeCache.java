@@ -27,7 +27,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+@API(since = "0.4.0", status = Status.MAINTAINED)
 public final class TypeCache {
 	private static final Map<Field, AnnotatedType> FIELD_ANNOTATED_TYPE_MAP = new ConcurrentHashMap<>(2000);
 	private static final Map<PropertyDescriptor, AnnotatedType> PROPERTY_DESCRIPTOR_ANNOTATED_TYPE_MAP =

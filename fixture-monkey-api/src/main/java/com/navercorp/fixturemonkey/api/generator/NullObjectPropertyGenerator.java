@@ -23,7 +23,7 @@ import java.util.Collections;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+@API(since = "0.4.0", status = Status.MAINTAINED)
 public final class NullObjectPropertyGenerator implements ObjectPropertyGenerator {
 	public static final NullObjectPropertyGenerator INSTANCE = new NullObjectPropertyGenerator();
 
