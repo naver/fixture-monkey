@@ -37,4 +37,14 @@ class FixtureMonkeyConstructorPropertiesTestSpecs {
 	public static class NoParameterConstructor {
 		private final String value = "fixed";
 	}
+
+	@Getter
+	public static class GenericValue<T> {
+		private final T value;
+
+		@ConstructorProperties("value")
+		public GenericValue(T value) {
+			this.value = value;
+		}
+	}
 }

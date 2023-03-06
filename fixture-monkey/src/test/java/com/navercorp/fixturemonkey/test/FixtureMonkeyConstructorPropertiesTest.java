@@ -7,8 +7,10 @@ import net.jqwik.api.Property;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.introspector.ConstructorPropertiesArbitraryIntrospector;
+import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyConstructorPropertiesTestSpecs.ConstructorComplexObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyConstructorPropertiesTestSpecs.ConstructorSimpleObject;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyConstructorPropertiesTestSpecs.GenericValue;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyConstructorPropertiesTestSpecs.NoParameterConstructor;
 
 class FixtureMonkeyConstructorPropertiesTest {
@@ -72,5 +74,28 @@ class FixtureMonkeyConstructorPropertiesTest {
 			.getValue();
 
 		then(actual).isEqualTo("fixed");
+	}
+
+	@Property
+	void sampleGeneric() {
+		String actual = SUT.giveMeBuilder(new TypeReference<GenericValue<String>>() {
+			})
+			.setNotNull("value")
+			.sample()
+			.getValue();
+
+		then(actual).isNotNull();
+	}
+
+	@Property
+	void sampleFixedGeneric() {
+		String actual = SUT.giveMeBuilder(new TypeReference<GenericValue<String>>() {
+			})
+			.setNotNull("value")
+			.fixed()
+			.sample()
+			.getValue();
+
+		then(actual).isNotNull();
 	}
 }

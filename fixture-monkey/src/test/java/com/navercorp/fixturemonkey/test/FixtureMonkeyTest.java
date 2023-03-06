@@ -1593,16 +1593,22 @@ class FixtureMonkeyTest {
 
 	@Property
 	void sampleGeneric() {
-		GenericValue<String> actual = SUT.giveMeOne(new TypeReference<GenericValue<String>>() {
-		});
+		String actual = SUT.giveMeBuilder(new TypeReference<GenericValue<String>>() {
+			})
+			.setNotNull("value")
+			.sample()
+			.getValue();
 
 		then(actual).isNotNull();
 	}
 
 	@Property
 	void sampleGenericWildcardExtends() {
-		GenericValue<? extends String> actual = SUT.giveMeOne(new TypeReference<GenericValue<? extends String>>() {
-		});
+		String actual = SUT.giveMeBuilder(new TypeReference<GenericValue<? extends String>>() {
+			})
+			.setNotNull("value")
+			.sample()
+			.getValue();
 
 		then(actual).isNotNull();
 	}
