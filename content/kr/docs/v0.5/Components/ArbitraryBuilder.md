@@ -49,8 +49,6 @@ ArbitraryBuilder<Generate> generateBuilder = fixtureMonkey.giveMeBuilder(Generat
 #### size
 `ArbitraryBuilder`에서 생성하는 컨테이너 크기를 변경합니다.
 
-**다른 모든 연산들보다 먼저 실행됩니다.**
-
 #### fixed
 `ArbitraryBuilder`에서 반환하는 객체 값을 고정합니다.
 

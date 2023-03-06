@@ -49,8 +49,6 @@ Field would be obliged to obey postCondition
 #### size
 Altering container size
 
-**Highest priority order**
-
 #### fixed
 Fixing object built by `ArbitraryBuilder`
 
