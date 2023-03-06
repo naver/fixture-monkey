@@ -18,6 +18,8 @@
 
 package com.navercorp.fixturemonkey.resolver;
 
+import static com.navercorp.fixturemonkey.api.type.Types.isAssignable;
+
 import java.util.function.Predicate;
 
 import org.apiguardian.api.API;
@@ -39,7 +41,7 @@ public final class NodeFilterManipulator implements NodeManipulator {
 	@Override
 	public void manipulate(ArbitraryNode arbitraryNode) {
 		Class<?> actualType = Types.getActualType(arbitraryNode.getProperty().getType());
-		if (!actualType.isAssignableFrom(type)) {
+		if (!isAssignable(actualType, type)) {
 			throw new IllegalArgumentException(
 				"Wrong type filter is applied. Expected: " + type + ", Actual: " + actualType
 			);

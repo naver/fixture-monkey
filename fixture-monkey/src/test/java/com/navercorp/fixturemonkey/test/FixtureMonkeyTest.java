@@ -1798,4 +1798,14 @@ class FixtureMonkeyTest {
 
 		then(actual).isNotEqualTo(notExpected);
 	}
+
+	@Property
+	void setPostConditionPrimitiveType() {
+		int actual = SUT.giveMeBuilder(SimpleObject.class)
+			.setPostCondition("integer", Integer.class, i -> i > 0)
+			.sample()
+			.getInteger();
+
+		then(actual).isGreaterThan(0);
+	}
 }
