@@ -1,0 +1,23 @@
+allprojects {
+    tasks.generatePomFileForMavenJavaPublication.enabled = false
+    tasks.generateMetadataFileForMavenJavaPublication.enabled = false
+    tasks.publishMavenJavaPublicationToMavenLocal.enabled = false
+    tasks.jar.enabled = false
+    tasks.javadocJar.enabled = false
+    tasks.sourcesJar.enabled = false
+    tasks.publish.enabled = false
+}
+
+subprojects {
+    dependencies {
+        testImplementation(project(":fixture-monkey"))
+        testImplementation(project(":fixture-monkey-tests"))
+        testImplementation("org.junit.jupiter:junit-jupiter-api:${JUNIT_JUPITER_VERSION}")
+        testImplementation("org.junit.jupiter:junit-jupiter-engine:${JUNIT_JUPITER_VERSION}")
+        testImplementation("org.assertj:assertj-core:3.22.0")
+    }
+
+    test {
+        useJUnitPlatform()
+    }
+}
