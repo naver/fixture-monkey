@@ -30,6 +30,9 @@ import org.apiguardian.api.API.Status;
 public final class Values {
 	public static final Object NOT_NULL = new Object();
 
+	private Values() {
+	}
+
 	public static Just just(@Nullable Object value) {
 		return new Just(value);
 	}
@@ -49,7 +52,7 @@ public final class Values {
 	 * 		.set("items[0]", "0")
 	 * 		.sample();
 	 * }</pre>
-	 *
+	 * <p>
 	 * Elements of {@code items} would be "1", "2", "3".
 	 */
 	public static final class Just {
