@@ -47,4 +47,17 @@ class FixtureMonkeyConstructorPropertiesTestSpecs {
 			this.value = value;
 		}
 	}
+
+	@Getter
+	public static class PrivateConstructor {
+		private final String value;
+
+		private PrivateConstructor(String value) {
+			this.value = value;
+		}
+
+		public PrivateConstructor() {
+			this.value = "fixed";
+		}
+	}
 }

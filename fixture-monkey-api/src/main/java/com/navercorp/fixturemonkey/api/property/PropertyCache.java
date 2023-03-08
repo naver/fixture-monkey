@@ -234,6 +234,10 @@ public final class PropertyCache {
 				Constructor<?>[] constructors = clazz.getDeclaredConstructors();
 
 				for (Constructor<?> constructor : constructors) {
+					if (Modifier.isPrivate(constructor.getModifiers())) {
+						continue;
+					}
+
 					Parameter[] parameters = constructor.getParameters();
 					boolean namePresent = Arrays.stream(parameters).anyMatch(Parameter::isNamePresent);
 					boolean parameterEmpty = parameters.length == 0;

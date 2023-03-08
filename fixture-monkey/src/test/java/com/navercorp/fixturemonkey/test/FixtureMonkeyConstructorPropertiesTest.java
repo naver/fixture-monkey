@@ -12,6 +12,7 @@ import com.navercorp.fixturemonkey.test.FixtureMonkeyConstructorPropertiesTestSp
 import com.navercorp.fixturemonkey.test.FixtureMonkeyConstructorPropertiesTestSpecs.ConstructorSimpleObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyConstructorPropertiesTestSpecs.GenericValue;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyConstructorPropertiesTestSpecs.NoParameterConstructor;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyConstructorPropertiesTestSpecs.PrivateConstructor;
 
 class FixtureMonkeyConstructorPropertiesTest {
 	private static final FixtureMonkey SUT = FixtureMonkey.builder()
@@ -97,5 +98,15 @@ class FixtureMonkeyConstructorPropertiesTest {
 			.getValue();
 
 		then(actual).isNotNull();
+	}
+
+	@Property
+	void sampleWithPrivateConstructor() {
+		String actual = SUT.giveMeBuilder(PrivateConstructor.class)
+			.set("value", "changed")
+			.sample()
+			.getValue();
+
+		then(actual).isEqualTo("fixed");
 	}
 }
