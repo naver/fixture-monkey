@@ -46,6 +46,7 @@ import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.option.GenerateOptions;
 import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
+import com.navercorp.fixturemonkey.api.random.Randoms;
 
 @API(since = "0.4.0", status = Status.EXPERIMENTAL)
 public final class ArbitraryTraverser {
@@ -129,7 +130,9 @@ public final class ArbitraryTraverser {
 		ContainerProperty containerProperty = arbitraryProperty.getContainerProperty();
 		boolean container = containerProperty != null;
 
+		Property resolvedProperty;
 		if (container) {
+			resolvedProperty = objectProperty.getProperty();
 			List<Property> elementProperties = containerProperty.getElementProperties();
 			children.addAll(
 				generateChildrenNodes(
@@ -159,10 +162,14 @@ public final class ArbitraryTraverser {
 					)
 				);
 			}
+
+			resolvedProperty = new ArrayList<>(childPropertyListsByCandidateProperty.keySet())
+				.get(Randoms.nextInt(childPropertyListsByCandidateProperty.size()));
 		}
 
 		return new ArbitraryNode(
 			resolvedParentProperty,
+			resolvedProperty,
 			arbitraryProperty,
 			new ArrayList<>(children)
 		);
@@ -239,6 +246,7 @@ public final class ArbitraryTraverser {
 			if (context.isTraversed(childProperty)) {
 				childNode = new ArbitraryNode(
 					resolvedParentProperty,
+					childProperty,
 					childArbitraryProperty,
 					Collections.emptyList()
 				);

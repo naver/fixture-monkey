@@ -93,24 +93,10 @@ final class ArbitraryTree {
 		List<ArbitraryProperty> childrenProperties = new ArrayList<>();
 
 		ArbitraryProperty arbitraryProperty = arbitraryNode.getArbitraryProperty();
-		Property resolvedParentProperty;
-		List<ArbitraryNode> children;
-		if (arbitraryProperty.getContainerProperty() == null) {
-			resolvedParentProperty = arbitraryProperty.getObjectProperty()
-				.getChildPropertyListsByCandidateProperty()
-				.keySet()
-				.stream()
-				.findAny()
-				.orElseThrow(() -> new IllegalArgumentException("No resolved property is found."));
-
-			children = arbitraryNode.getChildren().stream()
-				.filter(it -> it.getResolvedParentProperty() != null
-					&& it.getResolvedParentProperty().equals(resolvedParentProperty))
-				.collect(Collectors.toList());
-		} else {
-			resolvedParentProperty = arbitraryProperty.getObjectProperty().getProperty();
-			children = arbitraryNode.getChildren();
-		}
+		Property resolvedParentProperty = arbitraryNode.getResolvedProperty();
+		List<ArbitraryNode> children = arbitraryNode.getChildren().stream()
+			.filter(it -> resolvedParentProperty.equals(it.getResolvedParentProperty()))
+			.collect(Collectors.toList());
 
 		for (ArbitraryNode childNode : children) {
 			childNodesByArbitraryProperty.put(childNode.getArbitraryProperty(), childNode);
@@ -161,7 +147,7 @@ final class ArbitraryTree {
 			if (node.isNotManipulated() && notCustomized && cached != null) {
 				generated = cached;
 			} else {
-				generated = this.generateOptions.getArbitraryGenerator(prop.getObjectProperty().getProperty())
+				generated = this.generateOptions.getArbitraryGenerator(node.getResolvedProperty())
 					.generate(childArbitraryGeneratorContext);
 
 				if (node.isNotManipulated() && notCustomized) {
