@@ -12,3 +12,9 @@ include "fixture-monkey-starter"
 include "fixture-monkey-starter-kotlin"
 include "fixture-monkey-junit-jupiter"
 include 'fixture-monkey-jakarta-validation'
+include 'fixture-monkey-tests'
+include 'fixture-monkey-tests:java-17-tests'
+findProject(':fixture-monkey-tests:java-17-tests')?.name = 'java-17-tests'
+include 'fixture-monkey-tests:kotlin-tests'
+findProject(':fixture-monkey-tests:kotlin-tests')?.name = 'kotlin-tests'
+
