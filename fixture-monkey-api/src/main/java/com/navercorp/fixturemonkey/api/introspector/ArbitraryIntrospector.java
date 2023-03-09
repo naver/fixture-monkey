@@ -23,7 +23,7 @@ import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 
-@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+@API(since = "0.4.0", status = Status.MAINTAINED)
 @FunctionalInterface
 public interface ArbitraryIntrospector {
 	ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context);

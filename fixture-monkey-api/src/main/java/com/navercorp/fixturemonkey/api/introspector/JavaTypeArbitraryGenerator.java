@@ -33,7 +33,7 @@ import net.jqwik.api.arbitraries.LongArbitrary;
 import net.jqwik.api.arbitraries.ShortArbitrary;
 import net.jqwik.api.arbitraries.StringArbitrary;
 
-@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+@API(since = "0.4.0", status = Status.MAINTAINED)
 public interface JavaTypeArbitraryGenerator {
 
 	default StringArbitrary strings() {

@@ -83,7 +83,7 @@ public final class TypeSupports {
 		return toPrimitiveClazz1 == toPrimitiveClazz2;
 	}
 
-	@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+	@API(since = "0.4.0", status = Status.MAINTAINED)
 	public static List<Field> extractFields(Class<?> clazz) {
 		if (clazz == null) {
 			return Collections.emptyList();

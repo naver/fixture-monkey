@@ -40,7 +40,7 @@ import net.jqwik.api.TooManyFilterMissesException;
 
 import com.navercorp.fixturemonkey.api.validator.ArbitraryValidator;
 
-@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+@API(since = "0.4.0", status = Status.MAINTAINED)
 final class ArbitraryValue<T> implements Arbitrary<T> {
 	private final MonkeyRandomGenerator<T> monkeyRandomGenerator;
 

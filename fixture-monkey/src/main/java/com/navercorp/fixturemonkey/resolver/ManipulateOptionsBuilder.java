@@ -36,7 +36,7 @@ import com.navercorp.fixturemonkey.arbitrary.ArbitraryExpressionFactory;
 import com.navercorp.fixturemonkey.expression.MonkeyExpressionFactory;
 
 @SuppressWarnings("UnusedReturnValue")
-@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+@API(since = "0.4.0", status = Status.MAINTAINED)
 public final class ManipulateOptionsBuilder {
 	private MonkeyExpressionFactory defaultMonkeyExpressionFactory;
 

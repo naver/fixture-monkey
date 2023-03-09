@@ -26,7 +26,6 @@ import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.AnnotatedTypeVariable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
 import java.util.AbstractMap.SimpleEntry;
@@ -39,7 +38,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 
@@ -53,7 +51,7 @@ import org.slf4j.LoggerFactory;
 import com.navercorp.fixturemonkey.api.collection.LruCache;
 import com.navercorp.fixturemonkey.api.type.Types;
 
-@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+@API(since = "0.4.0", status = Status.MAINTAINED)
 public final class PropertyCache {
 	private static final String ERASURE_TYPE_NAME = "T";
 	private static final Logger LOGGER = LoggerFactory.getLogger(PropertyCache.class);
@@ -62,8 +60,6 @@ public final class PropertyCache {
 		new LruCache<>(2000);
 	private static final Map<Class<?>, Map<String, Field>> FIELDS = new LruCache<>(2000);
 	private static final Map<Class<?>, Map.Entry<Constructor<?>, String[]>> PARAMETER_NAMES_BY_PRIMARY_CONSTRUCTOR =
-		new LruCache<>(2000);
-	private static final Map<Class<?>, Map<Method, Parameter[]>> PARAMETER_BY_FACTORY_METHOD =
 		new LruCache<>(2000);
 
 	public static List<Property> getProperties(AnnotatedType annotatedType) {
@@ -158,20 +154,6 @@ public final class PropertyCache {
 				}
 			} catch (IntrospectionException ex) {
 				LOGGER.warn("Introspect bean property is failed. type: " + clazz, ex);
-			}
-			return result;
-		});
-	}
-
-	public static Map<Method, Parameter[]> getParametersByFactoryMethods(Class<?> clazz) {
-		return PARAMETER_BY_FACTORY_METHOD.computeIfAbsent(clazz, type -> {
-			Map<Method, Parameter[]> result = new ConcurrentHashMap<>();
-			List<Method> factoryMethods = Arrays.stream(type.getDeclaredMethods())
-				.filter(it -> Modifier.isStatic(it.getModifiers()) && it.getReturnType().equals(type))
-				.collect(Collectors.toList());
-
-			for (Method factoryMethod : factoryMethods) {
-				result.put(factoryMethod, factoryMethod.getParameters());
 			}
 			return result;
 		});

@@ -29,7 +29,7 @@ import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.junit.jupiter.annotation.GiveMe;
 import com.navercorp.fixturemonkey.junit.jupiter.extension.support.ParameterContextAwareFixtureMonkey;
 
-@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+@API(since = "0.4.0", status = Status.MAINTAINED)
 public class FixtureMonkeyParameterExtension implements ParameterResolver {
 	private static FixtureMonkey GLOBAL_DEFAULT_FIXTURE_MONKEY = FixtureMonkey.create();
 

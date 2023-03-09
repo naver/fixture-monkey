@@ -27,7 +27,7 @@ import org.apiguardian.api.API.Status;
 
 import net.jqwik.api.Arbitrary;
 
-@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+@API(since = "0.4.0", status = Status.MAINTAINED)
 public final class ArbitraryIntrospectorResult {
 	public static final ArbitraryIntrospectorResult EMPTY = new ArbitraryIntrospectorResult(null);
 

@@ -30,7 +30,7 @@ import org.apiguardian.api.API.Status;
 import com.navercorp.fixturemonkey.api.customizer.FixtureCustomizer;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 
-@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+@API(since = "0.4.0", status = Status.MAINTAINED)
 public final class ArbitraryBuilderContext {
 	private final List<ArbitraryManipulator> manipulators;
 	@SuppressWarnings("rawtypes")

@@ -35,7 +35,7 @@ import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 
-@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+@API(since = "0.4.0", status = Status.MAINTAINED)
 public class JavaxValidationTimeConstraintGenerator {
 
 	public JavaxValidationDateTimeConstraint generateDateTimeConstraint(ArbitraryGeneratorContext context) {

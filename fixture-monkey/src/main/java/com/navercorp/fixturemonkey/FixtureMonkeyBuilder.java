@@ -65,7 +65,7 @@ import com.navercorp.fixturemonkey.resolver.ManipulateOptionsBuilder;
 import com.navercorp.fixturemonkey.resolver.ManipulatorOptimizer;
 import com.navercorp.fixturemonkey.resolver.NoneManipulatorOptimizer;
 
-@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+@API(since = "0.4.0", status = Status.MAINTAINED)
 public class FixtureMonkeyBuilder {
 	private final GenerateOptionsBuilder generateOptionsBuilder = GenerateOptions.builder();
 	private final ManipulateOptionsBuilder manipulateOptionsBuilder = ManipulateOptions.builder();

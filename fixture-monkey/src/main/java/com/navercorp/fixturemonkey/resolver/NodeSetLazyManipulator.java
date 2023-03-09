@@ -25,7 +25,7 @@ import net.jqwik.api.Arbitrary;
 
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 
-@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+@API(since = "0.4.0", status = Status.MAINTAINED)
 public final class NodeSetLazyManipulator<T> implements NodeManipulator {
 	private final int sequence;
 	private final ArbitraryTraverser traverser;

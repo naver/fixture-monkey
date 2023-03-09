@@ -39,7 +39,7 @@ import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.type.Types;
 
-@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+@API(since = "0.4.0", status = Status.MAINTAINED)
 public final class NodeSetDecomposedValueManipulator<T> implements NodeManipulator {
 	private final int sequence;
 	private final ArbitraryTraverser traverser;

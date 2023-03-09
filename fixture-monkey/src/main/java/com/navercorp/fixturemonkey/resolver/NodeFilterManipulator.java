@@ -28,7 +28,7 @@ import org.apiguardian.api.API.Status;
 import com.navercorp.fixturemonkey.api.type.Types;
 
 @SuppressWarnings("rawtypes")
-@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+@API(since = "0.4.0", status = Status.MAINTAINED)
 public final class NodeFilterManipulator implements NodeManipulator {
 	private final Class<?> type;
 	private final Predicate filter;

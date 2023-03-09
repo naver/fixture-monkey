@@ -41,7 +41,7 @@ import com.navercorp.fixturemonkey.api.expression.ExpressionGenerator;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.customizer.InnerSpec;
 
-@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+@API(since = "0.4.0", status = Status.MAINTAINED)
 public interface ArbitraryBuilder<T> {
 	ArbitraryBuilder<T> set(String expression, @Nullable Object value);
 

@@ -25,7 +25,7 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.property.Property;
 
-@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+@API(since = "0.4.0", status = Status.MAINTAINED)
 public class ArbitraryIntrospectDelegator implements ArbitraryIntrospector, Matcher {
 	private final Matcher matcher;
 	private final ArbitraryIntrospector delegate;

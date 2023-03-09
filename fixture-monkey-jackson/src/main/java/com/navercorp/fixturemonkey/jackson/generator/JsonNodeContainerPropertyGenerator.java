@@ -34,7 +34,7 @@ import com.navercorp.fixturemonkey.api.property.MapValueElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 
-@API(since = "0.4.3", status = Status.EXPERIMENTAL)
+@API(since = "0.4.3", status = Status.MAINTAINED)
 public final class JsonNodeContainerPropertyGenerator implements ContainerPropertyGenerator {
 	public static final JsonNodeContainerPropertyGenerator INSTANCE = new JsonNodeContainerPropertyGenerator();
 	private static final TypeReference<String> KEY_VALUE_TYPE = new TypeReference<String>() {

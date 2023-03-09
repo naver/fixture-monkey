@@ -34,7 +34,7 @@ import net.jqwik.engine.properties.arbitraries.EdgeCasesSupport;
 import net.jqwik.engine.properties.arbitraries.JustArbitrary;
 
 @SuppressWarnings("NullableProblems")
-@API(since = "0.4.3", status = Status.EXPERIMENTAL)
+@API(since = "0.4.3", status = Status.MAINTAINED)
 public final class FilteredMonkeyArbitrary<T> extends ArbitraryDelegator<T> {
 	private final Predicate<T> filterPredicate;
 	private final int maxMisses;

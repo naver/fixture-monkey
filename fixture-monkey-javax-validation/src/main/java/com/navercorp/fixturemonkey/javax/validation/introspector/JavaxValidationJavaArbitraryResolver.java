@@ -48,7 +48,7 @@ import net.jqwik.web.api.Web;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.introspector.JavaArbitraryResolver;
 
-@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+@API(since = "0.4.0", status = Status.MAINTAINED)
 public final class JavaxValidationJavaArbitraryResolver implements JavaArbitraryResolver {
 	private static final RegexGenerator REGEX_GENERATOR = new RegexGenerator();
 

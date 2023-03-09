@@ -30,7 +30,7 @@ import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.api.type.Types;
 
-@API(since = "0.4.3", status = Status.EXPERIMENTAL)
+@API(since = "0.4.3", status = Status.MAINTAINED)
 public final class DefaultSingleContainerPropertyGenerator implements ContainerPropertyGenerator {
 	public static final DefaultSingleContainerPropertyGenerator INSTANCE =
 		new DefaultSingleContainerPropertyGenerator();

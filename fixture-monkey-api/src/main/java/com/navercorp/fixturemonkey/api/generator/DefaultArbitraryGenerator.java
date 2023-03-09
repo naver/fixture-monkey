@@ -27,7 +27,7 @@ import net.jqwik.api.Arbitrary;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult;
 
-@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+@API(since = "0.4.0", status = Status.MAINTAINED)
 public class DefaultArbitraryGenerator implements ArbitraryGenerator {
 	private final ArbitraryIntrospector arbitraryIntrospector;
 

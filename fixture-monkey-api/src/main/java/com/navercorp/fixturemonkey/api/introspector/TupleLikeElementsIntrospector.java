@@ -18,7 +18,7 @@ import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.TupleLikeElementsProperty;
 import com.navercorp.fixturemonkey.api.property.TupleLikeElementsProperty.TupleLikeElementsType;
 
-@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+@API(since = "0.4.0", status = Status.MAINTAINED)
 public final class TupleLikeElementsIntrospector implements ArbitraryIntrospector, Matcher {
 	@Override
 	public boolean match(Property property) {

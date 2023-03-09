@@ -49,7 +49,7 @@ import com.navercorp.fixturemonkey.resolver.ManipulateOptions;
 import com.navercorp.fixturemonkey.resolver.ManipulateOptionsBuilder;
 import com.navercorp.fixturemonkey.resolver.ManipulatorOptimizer;
 
-@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+@API(since = "0.4.0", status = Status.MAINTAINED)
 public class FixtureMonkey {
 	private final GenerateOptions generateOptions;
 	private final ManipulateOptionsBuilder manipulateOptionsBuilder;

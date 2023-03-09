@@ -31,7 +31,7 @@ import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.type.Types;
 
-@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+@API(since = "0.4.0", status = Status.MAINTAINED)
 public final class DefaultNullInjectGenerator implements NullInjectGenerator {
 	public static final double NOT_NULL_INJECT = 0.0d;
 	public static final double DEFAULT_NULL_INJECT = 0.2d;

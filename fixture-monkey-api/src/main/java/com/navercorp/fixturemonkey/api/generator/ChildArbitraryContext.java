@@ -34,7 +34,7 @@ import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.property.Property;
 
-@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+@API(since = "0.4.0", status = Status.MAINTAINED)
 public final class ChildArbitraryContext {
 	private final Property parentProperty;
 	private final Map<ArbitraryProperty, LazyArbitrary<Arbitrary<?>>> arbitrariesByChildProperty;

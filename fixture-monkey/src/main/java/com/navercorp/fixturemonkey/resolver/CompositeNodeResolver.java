@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+@API(since = "0.4.0", status = Status.MAINTAINED)
 public final class CompositeNodeResolver implements NodeResolver {
 	private final List<NodeResolver> nodeResolvers;
 

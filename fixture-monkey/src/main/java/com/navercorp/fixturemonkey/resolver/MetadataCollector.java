@@ -30,7 +30,7 @@ import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.property.Property;
 
-@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+@API(since = "0.4.0", status = Status.MAINTAINED)
 final class MetadataCollector {
 	private final ArbitraryNode rootNode;
 	private final Map<Property, List<ArbitraryNode>> nodesByProperty;

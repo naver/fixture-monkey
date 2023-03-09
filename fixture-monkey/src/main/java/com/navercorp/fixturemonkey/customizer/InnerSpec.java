@@ -50,7 +50,7 @@ import com.navercorp.fixturemonkey.resolver.NodeValuePredicate;
 import com.navercorp.fixturemonkey.resolver.PropertyNameNodePredicate;
 
 @SuppressWarnings("UnusedReturnValue")
-@API(since = "0.4.0", status = Status.EXPERIMENTAL)
+@API(since = "0.4.0", status = Status.MAINTAINED)
 public final class InnerSpec {
 	private static final int FIRST_MANIPULATOR_SEQUENCE = 0;
 
