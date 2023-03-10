@@ -168,23 +168,24 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T> {
 	}
 
 	@Override
-	public ArbitraryBuilder<T> minSize(String expression, int min) {
-		return this.size(expression, min, min + DEFAULT_ELEMENT_MAX_SIZE);
+	public ArbitraryBuilder<T> minSize(String expression, int minSize) {
+		return this.size(expression, minSize, minSize + DEFAULT_ELEMENT_MAX_SIZE);
 	}
 
 	@Override
-	public ArbitraryBuilder<T> minSize(ExpressionGenerator expressionGenerator, int min) {
-		return this.size(resolveExpression(expressionGenerator), min, min + DEFAULT_ELEMENT_MAX_SIZE);
+	public ArbitraryBuilder<T> minSize(ExpressionGenerator expressionGenerator, int minSize) {
+		return this.size(resolveExpression(expressionGenerator), minSize, minSize + DEFAULT_ELEMENT_MAX_SIZE);
 	}
 
 	@Override
-	public ArbitraryBuilder<T> maxSize(String expression, int max) {
-		return this.size(expression, Math.max(0, max - DEFAULT_ELEMENT_MAX_SIZE), max);
+	public ArbitraryBuilder<T> maxSize(String expression, int maxSize) {
+		return this.size(expression, Math.max(0, maxSize - DEFAULT_ELEMENT_MAX_SIZE), maxSize);
 	}
 
 	@Override
-	public ArbitraryBuilder<T> maxSize(ExpressionGenerator expressionGenerator, int max) {
-		return this.size(resolveExpression(expressionGenerator), Math.max(0, max - DEFAULT_ELEMENT_MAX_SIZE), max);
+	public ArbitraryBuilder<T> maxSize(ExpressionGenerator expressionGenerator, int maxSize) {
+		return this.size(resolveExpression(expressionGenerator), Math.max(0, maxSize - DEFAULT_ELEMENT_MAX_SIZE),
+			maxSize);
 	}
 
 	@Override
@@ -198,21 +199,21 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T> {
 	}
 
 	@Override
-	public ArbitraryBuilder<T> size(String expression, int min, int max) {
-		if (min > max) {
-			throw new IllegalArgumentException("should be min > max, min : " + min + " max : " + max);
+	public ArbitraryBuilder<T> size(String expression, int minSize, int maxSize) {
+		if (minSize > maxSize) {
+			throw new IllegalArgumentException("should be min > max, min : " + minSize + " max : " + maxSize);
 		}
 
 		ContainerInfoManipulator containerInfoManipulator =
-			monkeyManipulatorFactory.newContainerInfoManipulator(expression, min, max);
+			monkeyManipulatorFactory.newContainerInfoManipulator(expression, minSize, maxSize);
 
 		this.context.addContainerInfoManipulator(containerInfoManipulator);
 		return this;
 	}
 
 	@Override
-	public ArbitraryBuilder<T> size(ExpressionGenerator expressionGenerator, int min, int max) {
-		return this.size(resolveExpression(expressionGenerator), min, max);
+	public ArbitraryBuilder<T> size(ExpressionGenerator expressionGenerator, int minSize, int maxSize) {
+		return this.size(resolveExpression(expressionGenerator), minSize, maxSize);
 	}
 
 	@Override
@@ -289,28 +290,28 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T> {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public ArbitraryBuilder<T> setPostCondition(Predicate<T> filter) {
-		return this.setPostCondition(HEAD_NAME, (Class<T>)Types.getActualType(rootProperty.getType()), filter);
+	public ArbitraryBuilder<T> setPostCondition(Predicate<T> predicate) {
+		return this.setPostCondition(HEAD_NAME, (Class<T>)Types.getActualType(rootProperty.getType()), predicate);
 	}
 
 	@Override
 	public <U> ArbitraryBuilder<T> setPostCondition(
 		String expression,
 		Class<U> type,
-		Predicate<U> filter
+		Predicate<U> predicate
 	) {
-		return this.setPostCondition(expression, type, filter, MAX_MANIPULATION_COUNT);
+		return this.setPostCondition(expression, type, predicate, MAX_MANIPULATION_COUNT);
 	}
 
 	@Override
 	public <U> ArbitraryBuilder<T> setPostCondition(
 		String expression,
 		Class<U> type,
-		Predicate<U> filter,
+		Predicate<U> predicate,
 		int limit
 	) {
 		ArbitraryManipulator arbitraryManipulator =
-			monkeyManipulatorFactory.newArbitraryManipulator(expression, type, filter, limit);
+			monkeyManipulatorFactory.newArbitraryManipulator(expression, type, predicate, limit);
 
 		this.context.addManipulator(arbitraryManipulator);
 		return this;
@@ -319,20 +320,20 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T> {
 	@Override
 	public <U> ArbitraryBuilder<T> setPostCondition(
 		ExpressionGenerator expressionGenerator,
-		Class<U> clazz,
-		Predicate<U> filter,
+		Class<U> type,
+		Predicate<U> predicate,
 		int limit
 	) {
-		return this.setPostCondition(resolveExpression(expressionGenerator), clazz, filter, limit);
+		return this.setPostCondition(resolveExpression(expressionGenerator), type, predicate, limit);
 	}
 
 	@Override
 	public <U> ArbitraryBuilder<T> setPostCondition(
 		ExpressionGenerator expressionGenerator,
-		Class<U> clazz,
-		Predicate<U> filter
+		Class<U> type,
+		Predicate<U> predicate
 	) {
-		return this.setPostCondition(resolveExpression(expressionGenerator), clazz, filter);
+		return this.setPostCondition(resolveExpression(expressionGenerator), type, predicate);
 	}
 
 	@Override
