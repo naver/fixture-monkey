@@ -4,6 +4,7 @@ import java.beans.ConstructorProperties;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Value;
 
 class FixtureMonkeyConstructorPropertiesTestSpecs {
 	@Getter
@@ -46,5 +47,14 @@ class FixtureMonkeyConstructorPropertiesTestSpecs {
 		public GenericValue(T value) {
 			this.value = value;
 		}
+	}
+
+	public interface Interface {
+	}
+
+	@Getter
+	@Value
+	public static class Implementation implements Interface {
+		String value;
 	}
 }

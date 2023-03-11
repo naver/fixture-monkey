@@ -3,6 +3,8 @@ package com.navercorp.fixturemonkey.test;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.assertj.core.api.BDDAssertions.thenNoException;
 
+import java.util.Collections;
+
 import net.jqwik.api.Property;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
@@ -11,6 +13,8 @@ import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyConstructorPropertiesTestSpecs.ConstructorComplexObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyConstructorPropertiesTestSpecs.ConstructorSimpleObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyConstructorPropertiesTestSpecs.GenericValue;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyConstructorPropertiesTestSpecs.Implementation;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyConstructorPropertiesTestSpecs.Interface;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyConstructorPropertiesTestSpecs.NoParameterConstructor;
 
 class FixtureMonkeyConstructorPropertiesTest {
@@ -95,6 +99,21 @@ class FixtureMonkeyConstructorPropertiesTest {
 			.fixed()
 			.sample()
 			.getValue();
+
+		then(actual).isNotNull();
+	}
+
+	@Property
+	void interfaceAppliesImplementationOption() {
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.pushExactTypeArbitraryIntrospector(
+				Implementation.class,
+				ConstructorPropertiesArbitraryIntrospector.INSTANCE
+			)
+			.interfaceImplements(Interface.class, Collections.singletonList(Implementation.class))
+			.build();
+
+		Interface actual = sut.giveMeOne(Interface.class);
 
 		then(actual).isNotNull();
 	}
