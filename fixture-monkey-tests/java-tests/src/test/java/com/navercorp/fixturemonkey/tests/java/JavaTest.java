@@ -26,7 +26,7 @@ class JavaTest {
 		GenericObject actual = SUT.giveMeOne(GenericObject.class);
 
 		then(actual).isNotNull();
-		then(actual.getValue()).isNull();
+		then(actual.getValue()).isInstanceOf(Object.class);
 	}
 
 	@RepeatedTest(TEST_COUNT)

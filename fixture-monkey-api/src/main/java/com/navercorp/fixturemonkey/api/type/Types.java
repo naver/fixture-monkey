@@ -87,7 +87,7 @@ public class Types {
 		if (TypeVariable.class.isAssignableFrom(type.getClass())) {
 			GenericDeclaration genericDeclaration = ((TypeVariable<?>)type).getGenericDeclaration();
 			if (genericDeclaration.getClass() == Class.class) {
-				return (Class<?>)genericDeclaration;
+				return Object.class;
 			} else {
 				// Method? Constructor?
 				throw new UnsupportedOperationException(
