@@ -20,7 +20,6 @@ package com.navercorp.fixturemonkey.resolver;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.function.Predicate;
 
 import javax.annotation.Nullable;
@@ -125,32 +124,5 @@ final class ArbitraryNode {
 
 	public void setManipulated(boolean manipulated) {
 		this.manipulated = manipulated;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null || getClass() != obj.getClass()) {
-			return false;
-		}
-		ArbitraryNode that = (ArbitraryNode)obj;
-		return Objects.equals(resolvedParentProperty, that.resolvedParentProperty)
-			&& arbitraryProperty.equals(that.arbitraryProperty)
-			&& children.equals(that.children)
-			&& Objects.equals(arbitrary, that.arbitrary)
-			&& arbitraryFilters.equals(that.arbitraryFilters);
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(
-			resolvedParentProperty,
-			arbitraryProperty,
-			children,
-			arbitrary,
-			arbitraryFilters
-		);
 	}
 }

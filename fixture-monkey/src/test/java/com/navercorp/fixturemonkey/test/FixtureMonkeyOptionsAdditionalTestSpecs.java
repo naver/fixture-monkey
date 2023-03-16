@@ -300,4 +300,18 @@ class FixtureMonkeyOptionsAdditionalTestSpecs {
 			this.value = value;
 		}
 	}
+
+	public interface GetterInterface {
+		String getValue();
+	}
+
+	@Data
+	public static class GetterInterfaceImplementation implements GetterInterface {
+		private String value;
+	}
+
+	@Data
+	public static class GetterInterfaceImplementation2 implements GetterInterface {
+		private String value;
+	}
 }

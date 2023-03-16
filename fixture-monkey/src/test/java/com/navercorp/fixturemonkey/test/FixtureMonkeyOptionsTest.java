@@ -26,6 +26,7 @@ import static org.assertj.core.api.BDDAssertions.thenThrownBy;
 import java.lang.reflect.AnnotatedType;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -87,6 +88,9 @@ import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.
 import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.GetIntegerFixedValue;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.GetIntegerFixedValueChild;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.GetStringFixedValue;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.GetterInterface;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.GetterInterfaceImplementation;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.GetterInterfaceImplementation2;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.NestedListStringObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.Pair;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.PairContainerPropertyGenerator;
@@ -1483,5 +1487,25 @@ class FixtureMonkeyOptionsTest {
 			.getValues();
 
 		then(actual).allMatch(it -> it.getValues().size() >= 3 && it.getValues().size() <= 5);
+	}
+
+	@Property
+	void samePropertyDiffImplementations() {
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.interfaceImplements(
+				GetterInterface.class,
+				Arrays.asList(
+					GetterInterfaceImplementation.class,
+					GetterInterfaceImplementation2.class
+				)
+			)
+			.build();
+
+		String actual = sut.giveMeBuilder(GetterInterface.class)
+			.set("value", "expected")
+			.sample()
+			.getValue();
+
+		then(actual).isEqualTo("expected");
 	}
 }

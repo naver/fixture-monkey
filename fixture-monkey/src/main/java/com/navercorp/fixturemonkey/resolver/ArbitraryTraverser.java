@@ -20,11 +20,9 @@ package com.navercorp.fixturemonkey.resolver;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
@@ -125,7 +123,7 @@ public final class ArbitraryTraverser {
 		@Nullable Property resolvedParentProperty,
 		TraverseContext context
 	) {
-		Set<ArbitraryNode> children = new LinkedHashSet<>();
+		List<ArbitraryNode> children = new ArrayList<>();
 		ObjectProperty objectProperty = arbitraryProperty.getObjectProperty();
 		ContainerProperty containerProperty = arbitraryProperty.getContainerProperty();
 		boolean container = containerProperty != null;
@@ -171,7 +169,7 @@ public final class ArbitraryTraverser {
 			resolvedParentProperty,
 			resolvedProperty,
 			arbitraryProperty,
-			new ArrayList<>(children)
+			children
 		);
 	}
 
@@ -181,7 +179,7 @@ public final class ArbitraryTraverser {
 		Property resolvedParentProperty,
 		TraverseContext context
 	) {
-		Set<ArbitraryNode> children = new LinkedHashSet<>();
+		List<ArbitraryNode> children = new ArrayList<>();
 		List<ContainerInfoManipulator> containerInfoManipulators = context.getContainerInfoManipulators();
 		boolean container = parentArbitraryProperty.getContainerProperty() != null;
 
@@ -259,6 +257,6 @@ public final class ArbitraryTraverser {
 			}
 			children.add(childNode);
 		}
-		return new ArrayList<>(children);
+		return children;
 	}
 }
