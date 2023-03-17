@@ -17,4 +17,6 @@ include 'fixture-monkey-tests:java-17-tests'
 findProject(':fixture-monkey-tests:java-17-tests')?.name = 'java-17-tests'
 include 'fixture-monkey-tests:kotlin-tests'
 findProject(':fixture-monkey-tests:kotlin-tests')?.name = 'kotlin-tests'
+include 'fixture-monkey-tests:java-tests'
+findProject(':fixture-monkey-tests:java-tests')?.name = 'java-tests'
 

@@ -53,7 +53,6 @@ import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class PropertyCache {
-	private static final String ERASURE_TYPE_NAME = "T";
 	private static final Logger LOGGER = LoggerFactory.getLogger(PropertyCache.class);
 
 	private static final Map<Class<?>, Map<String, PropertyDescriptor>> PROPERTY_DESCRIPTORS =
@@ -182,7 +181,7 @@ public final class PropertyCache {
 				? new FieldProperty(Types.resolveWithTypeReferenceGenerics(annotatedType, field), field)
 				: null;
 
-			if (isTypeErased(annotatedParameterType) && fieldProperty != null) {
+			if (isGenericAnnotatedType(annotatedParameterType) && fieldProperty != null) {
 				constructorPropertiesByName.put(
 					parameterName,
 					new ConstructorProperty(
@@ -289,12 +288,7 @@ public final class PropertyCache {
 		}
 	}
 
-	private static boolean isTypeErased(AnnotatedType annotatedParameterType) {
-		if (!(annotatedParameterType instanceof AnnotatedTypeVariable)) {
-			return false;
-		}
-
-		AnnotatedTypeVariable typeVariable = (AnnotatedTypeVariable)annotatedParameterType;
-		return ERASURE_TYPE_NAME.equals(typeVariable.getType().getTypeName());
+	private static boolean isGenericAnnotatedType(AnnotatedType annotatedType) {
+		return annotatedType instanceof AnnotatedTypeVariable;
 	}
 }
