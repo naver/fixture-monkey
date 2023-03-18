@@ -3,6 +3,10 @@
 title: "Release Notes"
 weight: 6
 ---
+### 0.5.2
+* Fix performance issue since 0.5.0.
+* Apply the implementation's option when generating interface.
+
 ### 0.5.1
 - Add `set` just value not decomposed value.
   - `set(expression, Values.Just(value))`
