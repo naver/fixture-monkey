@@ -3,6 +3,12 @@
 title: "Release Notes"
 weight: 6
 ---
+### 0.5.1
+- 값을 분해하지 않고 `set`하는 연산 추가. 
+  - `set(표현식, Values.Just(값))`
+- Primitive type을 `setPostCondition` 했을 때 발생하는 타입 불일치 예외를 해결합니다.
+- Generic을 가지는 `ConstructorProperty`에서 타입이 지워지는 문제를 해결합니다.
+
 ### 0.5.0
 #### Breaking changes
 - register 동작 방식 변경

@@ -3,6 +3,12 @@
 title: "Release Notes"
 weight: 6
 ---
+### 0.5.1
+- Add `set` just value not decomposed value.
+  - `set(expression, Values.Just(value))`
+- Fix `setPostCondition` with primitive type.  
+- Fix type erasure generating `ConstructorProperty`.
+
 ### 0.5.0
 #### Breaking changes
 - Refactor `register`
@@ -18,7 +24,7 @@ weight: 6
 - Remove `defaultArbitraryContainerInfo`, `defaultArbitrayContainerSize` options, add `defaultArbitraryContainerInfoGenerator` option
 
 #### New Features
-- Add an `NOT_NULL` instance 
+- Add an `NOT_NULL` instance.
   - `set("expression", NOT_NULL)` == `setNotNull("expression")`
-- Add more failed log for `set` when value type is different 
-  - Add parent property type in a log if exists
+- Add more failed log for `set` when value type is different. 
+  - Add parent property type in a log if exists.
