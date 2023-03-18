@@ -20,7 +20,6 @@ package com.navercorp.fixturemonkey.api.property;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedType;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.Arrays;
@@ -36,22 +35,18 @@ import javax.annotation.Nullable;
 import org.apiguardian.api.API;
 
 @API(since = "0.5.3", status = API.Status.EXPERIMENTAL)
-public class MethodProperty implements Property {
+public final class InterfaceJavaMethodProperty implements Property {
 	private final AnnotatedType annotatedType;
-	private final Method method;
+	private final String name;
 	private final List<Annotation> annotations;
 	private final Map<Class<? extends Annotation>, Annotation> annotationsMap;
 
-	public MethodProperty(Method method) {
+	public InterfaceJavaMethodProperty(Method method) {
 		this.annotatedType = method.getAnnotatedReturnType();
-		this.method = method;
+		this.name = method.getName();
 		this.annotations = Arrays.asList(method.getAnnotations());
 		this.annotationsMap = this.annotations.stream()
 			.collect(Collectors.toMap(Annotation::annotationType, Function.identity(), (a1, a2) -> a1));
-	}
-
-	public Method getMethod() {
-		return this.method;
 	}
 
 	@Override
@@ -66,7 +61,7 @@ public class MethodProperty implements Property {
 
 	@Override
 	public String getName() {
-		return this.method.getName();
+		return this.name;
 	}
 
 	@Override
@@ -83,11 +78,7 @@ public class MethodProperty implements Property {
 	@Nullable
 	@Override
 	public Object getValue(Object obj) {
-		try {
-			return method.invoke(obj);
-		} catch (IllegalAccessException | InvocationTargetException e) {
-			throw new RuntimeException(e);
-		}
+		throw new UnsupportedOperationException("Interface method should not be called.");
 	}
 
 	@Override
@@ -98,14 +89,13 @@ public class MethodProperty implements Property {
 		if (obj == null || getClass() != obj.getClass()) {
 			return false;
 		}
-		MethodProperty that = (MethodProperty)obj;
+		InterfaceJavaMethodProperty that = (InterfaceJavaMethodProperty)obj;
 		return Objects.equals(annotatedType, that.annotatedType)
-			&& Objects.equals(method, that.method)
 			&& Objects.equals(annotations, that.annotations);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(annotatedType, method, annotations);
+		return Objects.hash(annotatedType, annotations);
 	}
 }

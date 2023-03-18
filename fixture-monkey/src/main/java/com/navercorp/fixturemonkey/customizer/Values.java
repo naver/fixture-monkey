@@ -23,7 +23,7 @@ import javax.annotation.Nullable;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.api.customizer.MethodInterface;
+import com.navercorp.fixturemonkey.api.customizer.MethodInvocation;
 
 /**
  * Provides static methods or constants for extensions of ArbitraryBuilder {@code set}.
@@ -39,8 +39,8 @@ public final class Values {
 		return new Just(value);
 	}
 
-	public static MethodInterface method(MethodInterface methodInterface) {
-		return methodInterface;
+	public static MethodInvocation method(MethodInvocation methodInvocation) {
+		return methodInvocation;
 	}
 
 	/**

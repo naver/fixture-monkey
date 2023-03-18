@@ -30,11 +30,10 @@ import net.jqwik.api.Arbitrary;
 import net.jqwik.api.Builders;
 import net.jqwik.api.Builders.BuilderCombinator;
 
-import com.navercorp.fixturemonkey.api.customizer.MethodInterface;
+import com.navercorp.fixturemonkey.api.customizer.MethodInvocation;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
-import com.navercorp.fixturemonkey.api.property.MethodProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.type.Types;
 
@@ -58,15 +57,10 @@ public class AnonymousArbitraryIntrospector implements ArbitraryIntrospector {
 		for (ArbitraryProperty arbitraryProperty : childrenProperties) {
 			Property childProperty = arbitraryProperty.getObjectProperty().getProperty();
 
-			if (!(childProperty instanceof MethodProperty)) {
-				continue;
-			}
-			MethodProperty methodProperty = (MethodProperty)childProperty;
-
 			builderCombinator = builderCombinator
-				.use(arbitrariesByPropertyName.get(methodProperty.getName()).getValue())
+				.use(arbitrariesByPropertyName.get(childProperty.getName()).getValue())
 				.in((builder, value) -> {
-					builder.put(methodProperty.getName(), value);
+					builder.put(childProperty.getName(), value);
 					return builder;
 				});
 		}
@@ -79,23 +73,21 @@ public class AnonymousArbitraryIntrospector implements ArbitraryIntrospector {
 	}
 
 	public static class InvocationHandlerBuilder {
-		private final Map<String, Object> gettersByMethodName;
+		private final Map<String, Object> generatedValuesByMethodName;
 
-		private InvocationHandlerBuilder(Map<String, Object> gettersByMethodName) {
-			this.gettersByMethodName = gettersByMethodName;
+		private InvocationHandlerBuilder(Map<String, Object> generatedValuesByMethodName) {
+			this.generatedValuesByMethodName = generatedValuesByMethodName;
 		}
 
-		private void put(String propertyName, Object value) {
-			gettersByMethodName.put(propertyName, value);
+		private void put(String methodName, Object value) {
+			generatedValuesByMethodName.put(methodName, value);
 		}
 
 		private InvocationHandler build() {
 			return (proxy, method, args) -> {
-				Object getter = gettersByMethodName.get(method.getName());
-				if (method.isDefault() && getter == null) {
-					return method.invoke(proxy, args);
-				} else if (getter instanceof MethodInterface) {
-					return ((MethodInterface)getter).invoke(args);
+				Object getter = generatedValuesByMethodName.get(method.getName());
+				if (getter instanceof MethodInvocation) {
+					return ((MethodInvocation)getter).invoke(args);
 				}
 				return getter;
 			};

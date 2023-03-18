@@ -19,29 +19,24 @@
 package com.navercorp.fixturemonkey.kotlin.generator
 
 import com.navercorp.fixturemonkey.api.generator.PropertyGenerator
-import com.navercorp.fixturemonkey.api.property.MethodProperty
+import com.navercorp.fixturemonkey.api.property.InterfaceJavaMethodProperty
 import com.navercorp.fixturemonkey.api.property.Property
 import com.navercorp.fixturemonkey.api.type.Types
-import com.navercorp.fixturemonkey.kotlin.property.KFunctionProperty
-import com.navercorp.fixturemonkey.kotlin.property.KPropertyProperty
+import com.navercorp.fixturemonkey.kotlin.property.InterfaceKFunctionProperty
 import net.jqwik.kotlin.internal.isKotlinClass
 import org.apiguardian.api.API
 import java.lang.reflect.AnnotatedType
-import kotlin.reflect.full.declaredMemberExtensionFunctions
 import kotlin.reflect.full.declaredMemberFunctions
-import kotlin.reflect.full.memberProperties
 
 @API(since = "0.5.3", status = API.Status.EXPERIMENTAL)
-class KotlinFunctionPropertyGenerator : PropertyGenerator by KotlinPropertyGenerator(){
+class InterfaceKFunctionPropertyGenerator : PropertyGenerator by KotlinPropertyGenerator(){
     override fun generateObjectChildProperties(annotatedType: AnnotatedType): List<Property>{
         val type = Types.getActualType(annotatedType.type)
+
         if(type.isKotlinClass()){
-            val functions = type.kotlin.declaredMemberFunctions +
-                    type.kotlin.declaredMemberExtensionFunctions
-            return functions.map{ KFunctionProperty(it) } +
-                    type.kotlin.memberProperties.map { KPropertyProperty(annotatedType, it) }
+            return type.kotlin.declaredMemberFunctions.map{ InterfaceKFunctionProperty(it) }
         }
 
-        return type.methods.map{ MethodProperty(it) }
+        return type.methods.map{ InterfaceJavaMethodProperty(it) }
     }
 }

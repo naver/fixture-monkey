@@ -16,16 +16,12 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.kotlin.property
+package com.navercorp.fixturemonkey.api.customizer;
 
-import com.navercorp.fixturemonkey.api.property.MethodProperty
-import org.apiguardian.api.API
-import kotlin.reflect.KFunction
-import kotlin.reflect.jvm.javaMethod
+import org.apiguardian.api.API;
 
 @API(since = "0.5.3", status = API.Status.EXPERIMENTAL)
-data class KFunctionProperty(val function: KFunction<*>) : MethodProperty(function.javaMethod) {
-    override fun getAnnotations(): List<Annotation> = this.function.annotations
-
-    override fun isNullable(): Boolean = function.returnType.isMarkedNullable
+@FunctionalInterface
+public interface MethodInvocation {
+	Object invoke(Object... args);
 }

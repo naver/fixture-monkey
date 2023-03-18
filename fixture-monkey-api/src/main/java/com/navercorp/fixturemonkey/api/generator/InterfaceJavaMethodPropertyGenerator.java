@@ -27,13 +27,13 @@ import javax.annotation.Nullable;
 
 import org.apiguardian.api.API;
 
-import com.navercorp.fixturemonkey.api.property.MethodProperty;
+import com.navercorp.fixturemonkey.api.property.InterfaceJavaMethodProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
 import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.5.3", status = API.Status.EXPERIMENTAL)
-public class MethodPropertyGenerator implements PropertyGenerator {
+public class InterfaceJavaMethodPropertyGenerator implements PropertyGenerator {
 	@Override
 	public Property generateRootProperty(
 		AnnotatedType annotatedType
@@ -46,7 +46,7 @@ public class MethodPropertyGenerator implements PropertyGenerator {
 		AnnotatedType annotatedType
 	) {
 		return Arrays.stream(Types.getActualType(annotatedType.getType()).getMethods())
-			.map(MethodProperty::new)
+			.map(InterfaceJavaMethodProperty::new)
 			.collect(Collectors.toList());
 	}
 

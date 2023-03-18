@@ -25,12 +25,13 @@ import com.navercorp.fixturemonkey.api.type.Types
 import com.navercorp.fixturemonkey.customizer.Values
 import com.navercorp.fixturemonkey.javax.validation.plugin.JavaxValidationPlugin
 import com.navercorp.fixturemonkey.kotlin.KotlinPlugin
-import com.navercorp.fixturemonkey.kotlin.generator.KotlinFunctionPropertyGenerator
+import com.navercorp.fixturemonkey.kotlin.generator.InterfaceKFunctionPropertyGenerator
 import com.navercorp.fixturemonkey.kotlin.giveMeBuilder
 import com.navercorp.fixturemonkey.kotlin.giveMeOne
 import com.navercorp.fixturemonkey.kotlin.setExpGetter
 import com.navercorp.fixturemonkey.tests.TestEnvironment.*
 import org.assertj.core.api.BDDAssertions.then
+import org.assertj.core.api.BDDAssertions.thenNoException
 import org.junit.jupiter.api.RepeatedTest
 import java.lang.reflect.Modifier
 import javax.validation.constraints.NotEmpty
@@ -76,13 +77,6 @@ class AnonymousInstanceTest {
     }
 
     @RepeatedTest(TEST_COUNT)
-    fun sampleAnonymousConstant() {
-        val actual = SUT.giveMeOne<InterfaceWithConstant>().value
-
-        then(actual).isEqualTo("constant")
-    }
-
-    @RepeatedTest(TEST_COUNT)
     fun sampleAnonymousContainer() {
         val actual = SUT.giveMeOne<ContainerInterface>()
 
@@ -109,7 +103,6 @@ class AnonymousInstanceTest {
         then(actual).isNotEmpty
     }
 
-
     interface Interface {
         fun string(): String
         fun integer(): Int
@@ -118,11 +111,6 @@ class AnonymousInstanceTest {
     interface InterfaceWithParams {
         fun string(str: String): String
         fun integer(int: Int): Int
-    }
-
-    interface InterfaceWithConstant {
-        val value: String
-            get() = "constant"
     }
 
     interface ContainerInterface {
@@ -143,7 +131,7 @@ class AnonymousInstanceTest {
             .pushPropertyGenerator(
                 MatcherOperator(
                     { p -> Modifier.isInterface(Types.getActualType(p.type).modifiers) },
-                    KotlinFunctionPropertyGenerator()
+                    InterfaceKFunctionPropertyGenerator()
                 )
             )
             .build()
