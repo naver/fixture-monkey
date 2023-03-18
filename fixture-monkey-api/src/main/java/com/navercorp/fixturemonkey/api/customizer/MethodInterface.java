@@ -16,40 +16,11 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.tests.java;
+package com.navercorp.fixturemonkey.api.customizer;
 
-import lombok.Builder;
-import lombok.Value;
+import org.apiguardian.api.API;
 
-@SuppressWarnings("unused")
-class ImmutableGenericTypeSpecs {
-
-	public interface GenericInterface<T> {
-	}
-
-	@Value
-	@Builder
-	public static class GenericImplementationObject<T> implements GenericInterface<T> {
-		T value;
-	}
-
-	public interface TwoGenericInterface<T, U> {
-	}
-
-	@Value
-	@Builder
-	public static class TwoGenericImplementationObject<T, U> implements TwoGenericInterface<T, U> {
-		T tValue;
-
-		U uValue;
-	}
-
-	@Value
-	@Builder
-	public static class GenericObject<T> {
-		T value;
-	}
-
-	public interface Interface {
-	}
+@API(since = "0.5.3", status = API.Status.EXPERIMENTAL)
+public interface MethodInterface {
+	Object invoke(Object... args);
 }

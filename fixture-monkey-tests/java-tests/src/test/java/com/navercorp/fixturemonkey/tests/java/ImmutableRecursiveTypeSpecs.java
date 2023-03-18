@@ -1,4 +1,3 @@
-
 /*
  * Fixture Monkey
  *
@@ -16,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.navercorp.fixturemonkey.tests.java;
 
 import java.util.List;

@@ -507,6 +507,11 @@ public class FixtureMonkeyBuilder {
 		return this.interfaceImplements(new ExactTypeMatcher(interfaceClass), implementations);
 	}
 
+	public FixtureMonkeyBuilder fallbackIntrospector(ArbitraryIntrospector introspector) {
+		generateOptionsBuilder.fallbackIntrospector(it -> introspector);
+		return this;
+	}
+
 	public FixtureMonkey build() {
 		manipulateOptionsBuilder.additionalDecomposedContainerValueFactory(
 			obj -> {

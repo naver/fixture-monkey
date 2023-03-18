@@ -16,40 +16,16 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.tests.java;
+package com.navercorp.fixturemonkey.kotlin.property
 
-import lombok.Builder;
-import lombok.Value;
+import com.navercorp.fixturemonkey.api.property.MethodProperty
+import org.apiguardian.api.API
+import kotlin.reflect.KFunction
+import kotlin.reflect.jvm.javaMethod
 
-@SuppressWarnings("unused")
-class ImmutableGenericTypeSpecs {
+@API(since = "0.5.3", status = API.Status.EXPERIMENTAL)
+data class KFunctionProperty(val function: KFunction<*>) : MethodProperty(function.javaMethod) {
+    override fun getAnnotations(): List<Annotation> = this.function.annotations
 
-	public interface GenericInterface<T> {
-	}
-
-	@Value
-	@Builder
-	public static class GenericImplementationObject<T> implements GenericInterface<T> {
-		T value;
-	}
-
-	public interface TwoGenericInterface<T, U> {
-	}
-
-	@Value
-	@Builder
-	public static class TwoGenericImplementationObject<T, U> implements TwoGenericInterface<T, U> {
-		T tValue;
-
-		U uValue;
-	}
-
-	@Value
-	@Builder
-	public static class GenericObject<T> {
-		T value;
-	}
-
-	public interface Interface {
-	}
+    override fun isNullable(): Boolean = function.returnType.isMarkedNullable
 }

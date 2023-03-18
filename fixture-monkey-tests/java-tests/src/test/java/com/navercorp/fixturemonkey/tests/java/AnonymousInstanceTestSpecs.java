@@ -18,38 +18,33 @@
 
 package com.navercorp.fixturemonkey.tests.java;
 
-import lombok.Builder;
-import lombok.Value;
+import java.util.List;
+import java.util.Map;
 
-@SuppressWarnings("unused")
-class ImmutableGenericTypeSpecs {
+import javax.validation.constraints.NotEmpty;
 
-	public interface GenericInterface<T> {
-	}
-
-	@Value
-	@Builder
-	public static class GenericImplementationObject<T> implements GenericInterface<T> {
-		T value;
-	}
-
-	public interface TwoGenericInterface<T, U> {
-	}
-
-	@Value
-	@Builder
-	public static class TwoGenericImplementationObject<T, U> implements TwoGenericInterface<T, U> {
-		T tValue;
-
-		U uValue;
-	}
-
-	@Value
-	@Builder
-	public static class GenericObject<T> {
-		T value;
-	}
-
+class AnonymousInstanceTestSpecs {
 	public interface Interface {
+		String string();
+		Integer integer();
+	}
+
+	public interface InterfaceWithParams {
+		String string(String str);
+		Integer integer(Integer integer);
+	}
+
+	public interface InterfaceWithConstant {
+		String value = "constant";
+	}
+
+	public interface ContainerInterface {
+		List<String> list();
+		Map<String, Integer> map();
+	}
+
+	public interface AnnotatedInterface {
+		@NotEmpty
+		String string();
 	}
 }
