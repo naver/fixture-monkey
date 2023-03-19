@@ -29,14 +29,14 @@ import java.lang.reflect.AnnotatedType
 import kotlin.reflect.full.declaredMemberFunctions
 
 @API(since = "0.5.3", status = API.Status.EXPERIMENTAL)
-class InterfaceKFunctionPropertyGenerator : PropertyGenerator by KotlinPropertyGenerator(){
-    override fun generateObjectChildProperties(annotatedType: AnnotatedType): List<Property>{
+class InterfaceKFunctionPropertyGenerator : PropertyGenerator by KotlinPropertyGenerator() {
+    override fun generateObjectChildProperties(annotatedType: AnnotatedType): List<Property> {
         val type = Types.getActualType(annotatedType.type)
 
-        if(type.isKotlinClass()){
-            return type.kotlin.declaredMemberFunctions.map{ InterfaceKFunctionProperty(it) }
+        if (type.isKotlinClass()) {
+            return type.kotlin.declaredMemberFunctions.map { InterfaceKFunctionProperty(it) }
         }
 
-        return type.methods.map{ InterfaceJavaMethodProperty(it) }
+        return type.methods.map { InterfaceJavaMethodProperty(it) }
     }
 }

@@ -30,15 +30,15 @@ import kotlin.reflect.jvm.javaType
 data class InterfaceKFunctionProperty(private val function: KFunction<*>) : Property {
     override fun getType(): Type = function.returnType.javaType
 
-    override fun getAnnotatedType(): AnnotatedType = object : AnnotatedType{
+    override fun getAnnotatedType(): AnnotatedType = object : AnnotatedType {
         override fun getType(): Type = this@InterfaceKFunctionProperty.type
 
         override fun <T : Annotation?> getAnnotation(annotationClass: Class<T>): T =
             this@InterfaceKFunctionProperty.getAnnotation(annotationClass).orElse(null)
 
-        override fun getAnnotations(): Array<Annotation> =  this@InterfaceKFunctionProperty.annotations.toTypedArray()
+        override fun getAnnotations(): Array<Annotation> = this@InterfaceKFunctionProperty.annotations.toTypedArray()
 
-        override fun getDeclaredAnnotations(): Array<Annotation> =  annotations
+        override fun getDeclaredAnnotations(): Array<Annotation> = annotations
     }
 
     override fun getName(): String = function.name

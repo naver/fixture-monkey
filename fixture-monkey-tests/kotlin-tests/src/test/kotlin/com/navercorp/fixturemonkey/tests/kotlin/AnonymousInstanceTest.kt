@@ -69,8 +69,8 @@ class AnonymousInstanceTest {
     @RepeatedTest(TEST_COUNT)
     fun sampleAnonymousSetMethod() {
         val actual = SUT.giveMeBuilder<InterfaceWithParams>()
-                .set("string", Values.method{objects -> objects[0] as String + "$" })
-        .sample()
+            .set("string", Values.method { objects -> objects[0] as String + "$" })
+            .sample()
             .string("test")
 
         then(actual).isEqualTo("test$")
@@ -86,7 +86,7 @@ class AnonymousInstanceTest {
 
     @RepeatedTest(TEST_COUNT)
     fun sampleAnonymousContainerSetList() {
-        val actual : List <String> = SUT.giveMeBuilder<ContainerInterface>()
+        val actual: List<String> = SUT.giveMeBuilder<ContainerInterface>()
             .size("list", 3)
             .set("list[0]", "test")
             .sample()
