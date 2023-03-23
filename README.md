@@ -5,8 +5,8 @@
 [![Gitter](https://badges.gitter.im/fixture-monkey/community.svg)](https://gitter.im/fixture-monkey/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 <figure align="center">
-    <img src= "https://user-images.githubusercontent.com/10272119/132285552-3af3ef55-e211-4dff-bb47-83d563ad6046.png" width="85%"/>
-    <figcaption>Designed by <a href="https://www.behance.net/zziyeoon">Judy Kim </a> </figcaption>
+    <img src= "https://user-images.githubusercontent.com/10272119/227154042-b43ab281-ac73-4648-ba8f-7f2146cde6d5.png" width="100%"/>
+    <figcaption>Designed by <a href="https://www.behance.net/zziyeoon">SeongIn Hong</a> </figcaption>
 </figure>
 
 
