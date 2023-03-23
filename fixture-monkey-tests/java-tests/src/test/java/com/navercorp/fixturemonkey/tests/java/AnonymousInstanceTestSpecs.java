@@ -26,11 +26,13 @@ import javax.validation.constraints.NotEmpty;
 class AnonymousInstanceTestSpecs {
 	public interface Interface {
 		String string();
+
 		Integer integer();
 	}
 
 	public interface InterfaceWithParams {
 		String string(String str);
+
 		Integer integer(Integer integer);
 	}
 
@@ -40,11 +42,16 @@ class AnonymousInstanceTestSpecs {
 
 	public interface ContainerInterface {
 		List<String> list();
+
 		Map<String, Integer> map();
 	}
 
 	public interface AnnotatedInterface {
 		@NotEmpty
 		String string();
+	}
+
+	public interface GetterInterface {
+		String getValue();
 	}
 }

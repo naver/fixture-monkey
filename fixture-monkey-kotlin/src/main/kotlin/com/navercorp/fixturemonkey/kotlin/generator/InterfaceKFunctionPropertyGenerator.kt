@@ -18,14 +18,15 @@
 
 package com.navercorp.fixturemonkey.kotlin.generator
 
+import com.navercorp.fixturemonkey.api.generator.InterfaceJavaMethodPropertyGenerator
 import com.navercorp.fixturemonkey.api.generator.PropertyGenerator
-import com.navercorp.fixturemonkey.api.property.InterfaceJavaMethodProperty
 import com.navercorp.fixturemonkey.api.property.Property
 import com.navercorp.fixturemonkey.api.type.Types
 import com.navercorp.fixturemonkey.kotlin.property.InterfaceKFunctionProperty
 import net.jqwik.kotlin.internal.isKotlinClass
 import org.apiguardian.api.API
 import java.lang.reflect.AnnotatedType
+import kotlin.reflect.KParameter.Kind.INSTANCE
 import kotlin.reflect.full.declaredMemberFunctions
 
 @API(since = "0.5.3", status = API.Status.EXPERIMENTAL)
@@ -34,9 +35,15 @@ class InterfaceKFunctionPropertyGenerator : PropertyGenerator by KotlinPropertyG
         val type = Types.getActualType(annotatedType.type)
 
         if (type.isKotlinClass()) {
-            return type.kotlin.declaredMemberFunctions.map { InterfaceKFunctionProperty(it) }
+            return type.kotlin.declaredMemberFunctions
+                .filter { it.parameters.none { parameter -> parameter.kind != INSTANCE } }
+                .map { InterfaceKFunctionProperty(it) }
         }
 
-        return type.methods.map { InterfaceJavaMethodProperty(it) }
+        return JAVA_METHOD_PROPERTY_GENERATOR.generateObjectChildProperties(annotatedType)
+    }
+
+    companion object {
+        private val JAVA_METHOD_PROPERTY_GENERATOR = InterfaceJavaMethodPropertyGenerator()
     }
 }

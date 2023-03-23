@@ -16,12 +16,12 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.api.customizer;
+package com.navercorp.fixturemonkey.api.property;
 
 import org.apiguardian.api.API;
+import org.apiguardian.api.API.Status;
 
-@API(since = "0.5.3", status = API.Status.EXPERIMENTAL)
-@FunctionalInterface
-public interface MethodInvocation {
-	Object invoke(Object... args);
+@API(since = "0.5.3", status = Status.MAINTAINED)
+public interface MethodProperty extends Property {
+	String getMethodName();
 }

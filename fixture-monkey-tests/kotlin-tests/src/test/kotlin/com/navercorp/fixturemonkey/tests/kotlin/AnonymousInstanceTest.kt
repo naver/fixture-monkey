@@ -19,21 +19,14 @@
 package com.navercorp.fixturemonkey.tests.kotlin
 
 import com.navercorp.fixturemonkey.FixtureMonkey
-import com.navercorp.fixturemonkey.api.introspector.AnonymousArbitraryIntrospector
-import com.navercorp.fixturemonkey.api.matcher.MatcherOperator
-import com.navercorp.fixturemonkey.api.type.Types
-import com.navercorp.fixturemonkey.customizer.Values
 import com.navercorp.fixturemonkey.javax.validation.plugin.JavaxValidationPlugin
 import com.navercorp.fixturemonkey.kotlin.KotlinPlugin
-import com.navercorp.fixturemonkey.kotlin.generator.InterfaceKFunctionPropertyGenerator
 import com.navercorp.fixturemonkey.kotlin.giveMeBuilder
 import com.navercorp.fixturemonkey.kotlin.giveMeOne
 import com.navercorp.fixturemonkey.kotlin.setExpGetter
-import com.navercorp.fixturemonkey.tests.TestEnvironment.*
+import com.navercorp.fixturemonkey.tests.TestEnvironment.TEST_COUNT
 import org.assertj.core.api.BDDAssertions.then
-import org.assertj.core.api.BDDAssertions.thenNoException
 import org.junit.jupiter.api.RepeatedTest
-import java.lang.reflect.Modifier
 import javax.validation.constraints.NotEmpty
 
 class AnonymousInstanceTest {
@@ -62,18 +55,8 @@ class AnonymousInstanceTest {
         val actual = SUT.giveMeOne<InterfaceWithParams>()
 
         then(actual).isNotNull
-        then(actual.string("str")).isNotNull
-        then(actual.integer(1)).isNotNull
-    }
-
-    @RepeatedTest(TEST_COUNT)
-    fun sampleAnonymousSetMethod() {
-        val actual = SUT.giveMeBuilder<InterfaceWithParams>()
-            .set("string", Values.method { objects -> objects[0] as String + "$" })
-            .sample()
-            .string("test")
-
-        then(actual).isEqualTo("test$")
+        then(actual.string("str")).isNull()
+        then(actual.integer(1)).isNull()
     }
 
     @RepeatedTest(TEST_COUNT)
@@ -103,14 +86,33 @@ class AnonymousInstanceTest {
         then(actual).isNotEmpty
     }
 
+    @RepeatedTest(TEST_COUNT)
+    fun sampleGetterInterface() {
+        val actual = SUT.giveMeOne<GetterInterface>().getString()
+
+        then(actual).isNotNull
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun setGetterInterface() {
+        val expected = "test"
+
+        val actual = SUT.giveMeBuilder<GetterInterface>()
+            .set("string", expected)
+            .sample()
+            .getString()
+
+        then(actual).isEqualTo(expected)
+    }
+
     interface Interface {
         fun string(): String
         fun integer(): Int
     }
 
     interface InterfaceWithParams {
-        fun string(str: String): String
-        fun integer(int: Int): Int
+        fun string(str: String): String?
+        fun integer(int: Int): Int?
     }
 
     interface ContainerInterface {
@@ -123,17 +125,14 @@ class AnonymousInstanceTest {
         fun string(): String
     }
 
+    interface GetterInterface {
+        fun getString(): String
+    }
+
     companion object {
         val SUT: FixtureMonkey = FixtureMonkey.builder()
             .plugin(KotlinPlugin())
             .plugin(JavaxValidationPlugin())
-            .fallbackIntrospector(AnonymousArbitraryIntrospector.INSTANCE)
-            .pushPropertyGenerator(
-                MatcherOperator(
-                    { p -> Modifier.isInterface(Types.getActualType(p.type).modifiers) },
-                    InterfaceKFunctionPropertyGenerator()
-                )
-            )
             .build()
     }
 }

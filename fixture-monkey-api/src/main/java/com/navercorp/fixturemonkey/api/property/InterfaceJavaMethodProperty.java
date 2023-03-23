@@ -20,33 +20,37 @@ package com.navercorp.fixturemonkey.api.property;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedType;
-import java.lang.reflect.Method;
 import java.lang.reflect.Type;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 
 import org.apiguardian.api.API;
 
 @API(since = "0.5.3", status = API.Status.EXPERIMENTAL)
-public final class InterfaceJavaMethodProperty implements Property {
-	private final AnnotatedType annotatedType;
+public final class InterfaceJavaMethodProperty implements MethodProperty {
+	private final AnnotatedType returnAnnotatedType;
 	private final String name;
+
+	private final String methodName;
 	private final List<Annotation> annotations;
 	private final Map<Class<? extends Annotation>, Annotation> annotationsMap;
 
-	public InterfaceJavaMethodProperty(Method method) {
-		this.annotatedType = method.getAnnotatedReturnType();
-		this.name = method.getName();
-		this.annotations = Arrays.asList(method.getAnnotations());
-		this.annotationsMap = this.annotations.stream()
-			.collect(Collectors.toMap(Annotation::annotationType, Function.identity(), (a1, a2) -> a1));
+	public InterfaceJavaMethodProperty(
+		AnnotatedType returnAnnotatedType,
+		String name,
+		String methodName,
+		List<Annotation> annotations,
+		Map<Class<? extends Annotation>, Annotation> annotationsMap
+	) {
+		this.returnAnnotatedType = returnAnnotatedType;
+		this.name = name;
+		this.methodName = methodName;
+		this.annotations = annotations;
+		this.annotationsMap = annotationsMap;
 	}
 
 	@Override
@@ -56,12 +60,16 @@ public final class InterfaceJavaMethodProperty implements Property {
 
 	@Override
 	public AnnotatedType getAnnotatedType() {
-		return this.annotatedType;
+		return this.returnAnnotatedType;
 	}
 
 	@Override
 	public String getName() {
 		return this.name;
+	}
+
+	public String getMethodName() {
+		return methodName;
 	}
 
 	@Override
@@ -90,12 +98,12 @@ public final class InterfaceJavaMethodProperty implements Property {
 			return false;
 		}
 		InterfaceJavaMethodProperty that = (InterfaceJavaMethodProperty)obj;
-		return Objects.equals(annotatedType, that.annotatedType)
+		return Objects.equals(returnAnnotatedType, that.returnAnnotatedType)
 			&& Objects.equals(annotations, that.annotations);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(annotatedType, annotations);
+		return Objects.hash(returnAnnotatedType, annotations);
 	}
 }

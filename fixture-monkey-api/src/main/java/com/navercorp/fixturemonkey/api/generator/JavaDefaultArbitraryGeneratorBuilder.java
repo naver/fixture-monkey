@@ -24,8 +24,8 @@ import java.util.function.UnaryOperator;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import com.navercorp.fixturemonkey.api.introspector.AnonymousArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
-import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult;
 import com.navercorp.fixturemonkey.api.introspector.ArrayIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.BeanArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.BooleanIntrospector;
@@ -93,7 +93,7 @@ public final class JavaDefaultArbitraryGeneratorBuilder {
 		JavaDefaultArbitraryGeneratorBuilder.JAVA_CONTAINER_INTROSPECTOR;
 	private ArbitraryIntrospector objectIntrospector = BeanArbitraryIntrospector.INSTANCE;
 
-	private ArbitraryIntrospector fallbackIntrospector = (context) -> ArbitraryIntrospectorResult.EMPTY;
+	private ArbitraryIntrospector fallbackIntrospector = AnonymousArbitraryIntrospector.INSTANCE;
 
 	JavaDefaultArbitraryGeneratorBuilder() {
 	}

@@ -21,6 +21,7 @@ package com.navercorp.fixturemonkey.api.option;
 import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.DEFAULT_NOTNULL_ANNOTATION_TYPES;
 import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.DEFAULT_NULLABLE_ANNOTATION_TYPES;
 import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.DEFAULT_NULL_INJECT;
+import static com.navercorp.fixturemonkey.api.option.GenerateOptions.DEFAULT_PROPERTY_GENERATORS;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -59,7 +60,7 @@ import com.navercorp.fixturemonkey.api.validator.ArbitraryValidator;
 @SuppressWarnings("UnusedReturnValue")
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class GenerateOptionsBuilder {
-	private List<MatcherOperator<PropertyGenerator>> propertyGenerators = new ArrayList<>();
+	private List<MatcherOperator<PropertyGenerator>> propertyGenerators = new ArrayList<>(DEFAULT_PROPERTY_GENERATORS);
 	private PropertyGenerator defaultPropertyGenerator = new DefaultPropertyGenerator();
 	private List<MatcherOperator<ObjectPropertyGenerator>> arbitraryObjectPropertyGenerators =
 		new ArrayList<>(GenerateOptions.DEFAULT_OBJECT_PROPERTY_GENERATORS);

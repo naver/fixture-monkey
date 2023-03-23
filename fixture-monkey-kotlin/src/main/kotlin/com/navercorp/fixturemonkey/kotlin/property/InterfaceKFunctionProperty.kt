@@ -18,7 +18,8 @@
 
 package com.navercorp.fixturemonkey.kotlin.property
 
-import com.navercorp.fixturemonkey.api.property.Property
+import com.navercorp.fixturemonkey.api.property.MethodProperty
+import com.navercorp.fixturemonkey.kotlin.type.getPropertyName
 import org.apiguardian.api.API
 import java.lang.reflect.AnnotatedType
 import java.lang.reflect.Type
@@ -27,7 +28,7 @@ import kotlin.reflect.KFunction
 import kotlin.reflect.jvm.javaType
 
 @API(since = "0.5.3", status = API.Status.EXPERIMENTAL)
-data class InterfaceKFunctionProperty(private val function: KFunction<*>) : Property {
+data class InterfaceKFunctionProperty(private val function: KFunction<*>) : MethodProperty {
     override fun getType(): Type = function.returnType.javaType
 
     override fun getAnnotatedType(): AnnotatedType = object : AnnotatedType {
@@ -41,7 +42,9 @@ data class InterfaceKFunctionProperty(private val function: KFunction<*>) : Prop
         override fun getDeclaredAnnotations(): Array<Annotation> = annotations
     }
 
-    override fun getName(): String = function.name
+    override fun getName(): String = function.getPropertyName()
+
+    override fun getMethodName(): String = function.name
 
     override fun getAnnotations(): List<Annotation> = this.function.annotations
 

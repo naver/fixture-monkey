@@ -26,19 +26,18 @@ import java.util.Map;
 
 import org.apiguardian.api.API;
 
-import net.jqwik.api.Arbitrary;
 import net.jqwik.api.Builders;
 import net.jqwik.api.Builders.BuilderCombinator;
 
-import com.navercorp.fixturemonkey.api.customizer.MethodInvocation;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
-import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
+import com.navercorp.fixturemonkey.api.generator.CombinableArbitrary;
+import com.navercorp.fixturemonkey.api.property.MethodProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.5.3", status = API.Status.EXPERIMENTAL)
-public class AnonymousArbitraryIntrospector implements ArbitraryIntrospector {
+public final class AnonymousArbitraryIntrospector implements ArbitraryIntrospector {
 	public static final AnonymousArbitraryIntrospector INSTANCE = new AnonymousArbitraryIntrospector();
 
 	@Override
@@ -46,7 +45,8 @@ public class AnonymousArbitraryIntrospector implements ArbitraryIntrospector {
 		Property property = context.getResolvedProperty();
 		Class<?> type = Types.getActualType(property.getType());
 
-		Map<String, LazyArbitrary<Arbitrary<?>>> arbitrariesByPropertyName = context.getArbitrariesByPropertyName();
+		Map<String, CombinableArbitrary> arbitrariesByPropertyName =
+			context.getCombinableArbitrariesByPropertyName();
 
 		List<ArbitraryProperty> childrenProperties = context.getChildren();
 
@@ -57,10 +57,16 @@ public class AnonymousArbitraryIntrospector implements ArbitraryIntrospector {
 		for (ArbitraryProperty arbitraryProperty : childrenProperties) {
 			Property childProperty = arbitraryProperty.getObjectProperty().getProperty();
 
+			if (!(childProperty instanceof MethodProperty)) {
+				continue;
+			}
+
+			MethodProperty methodProperty = (MethodProperty)childProperty;
+
 			builderCombinator = builderCombinator
-				.use(arbitrariesByPropertyName.get(childProperty.getName()).getValue())
+				.use(arbitrariesByPropertyName.get(childProperty.getName()).combined())
 				.in((builder, value) -> {
-					builder.put(childProperty.getName(), value);
+					builder.put(methodProperty.getMethodName(), value);
 					return builder;
 				});
 		}
@@ -72,7 +78,7 @@ public class AnonymousArbitraryIntrospector implements ArbitraryIntrospector {
 		);
 	}
 
-	public static class InvocationHandlerBuilder {
+	private static final class InvocationHandlerBuilder {
 		private final Map<String, Object> generatedValuesByMethodName;
 
 		private InvocationHandlerBuilder(Map<String, Object> generatedValuesByMethodName) {
@@ -84,13 +90,7 @@ public class AnonymousArbitraryIntrospector implements ArbitraryIntrospector {
 		}
 
 		private InvocationHandler build() {
-			return (proxy, method, args) -> {
-				Object getter = generatedValuesByMethodName.get(method.getName());
-				if (getter instanceof MethodInvocation) {
-					return ((MethodInvocation)getter).invoke(args);
-				}
-				return getter;
-			};
+			return (proxy, method, args) -> generatedValuesByMethodName.get(method.getName());
 		}
 	}
 }

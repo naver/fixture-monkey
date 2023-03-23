@@ -27,14 +27,13 @@ import org.junit.jupiter.api.RepeatedTest;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.generator.InterfaceJavaMethodPropertyGenerator;
-import com.navercorp.fixturemonkey.api.introspector.AnonymousArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.type.Types;
-import com.navercorp.fixturemonkey.customizer.Values;
 import com.navercorp.fixturemonkey.javax.validation.plugin.JavaxValidationPlugin;
 import com.navercorp.fixturemonkey.tests.TestEnvironment;
 import com.navercorp.fixturemonkey.tests.java.AnonymousInstanceTestSpecs.AnnotatedInterface;
 import com.navercorp.fixturemonkey.tests.java.AnonymousInstanceTestSpecs.ContainerInterface;
+import com.navercorp.fixturemonkey.tests.java.AnonymousInstanceTestSpecs.GetterInterface;
 import com.navercorp.fixturemonkey.tests.java.AnonymousInstanceTestSpecs.Interface;
 import com.navercorp.fixturemonkey.tests.java.AnonymousInstanceTestSpecs.InterfaceWithConstant;
 import com.navercorp.fixturemonkey.tests.java.AnonymousInstanceTestSpecs.InterfaceWithParams;
@@ -42,7 +41,6 @@ import com.navercorp.fixturemonkey.tests.java.AnonymousInstanceTestSpecs.Interfa
 class AnonymousInstanceTest {
 	private static final FixtureMonkey SUT = FixtureMonkey.builder()
 		.defaultNotNull(true)
-		.fallbackIntrospector(AnonymousArbitraryIntrospector.INSTANCE)
 		.pushPropertyGenerator(
 			new MatcherOperator<>(
 				p -> Modifier.isInterface(Types.getActualType(p.getType()).getModifiers()),
@@ -74,30 +72,12 @@ class AnonymousInstanceTest {
 	}
 
 	@RepeatedTest(TestEnvironment.TEST_COUNT)
-	void sampleAnonymousWithParam() {
-		InterfaceWithParams actual = SUT.giveMeBuilder(InterfaceWithParams.class)
-			.sample();
+	void sampleAnonymousWithParamReturnsNullProperties() {
+		InterfaceWithParams actual = SUT.giveMeOne(InterfaceWithParams.class);
 
 		then(actual).isNotNull();
-		then(actual.string("str")).isNotNull();
-		then(actual.integer(1)).isNotNull();
-	}
-
-	@RepeatedTest(TestEnvironment.TEST_COUNT)
-	void sampleAnonymousSetMethod() {
-		String actual = SUT.giveMeBuilder(InterfaceWithParams.class)
-			.set(
-				"string",
-				Values.method(objects -> {
-						Object param = objects[0];
-						return param + "$";
-					}
-				)
-			)
-			.sample()
-			.string("test");
-
-		then(actual).isEqualTo("test$");
+		then(actual.string("str")).isNull();
+		then(actual.integer(1)).isNull();
 	}
 
 	@RepeatedTest(TestEnvironment.TEST_COUNT)
@@ -143,5 +123,29 @@ class AnonymousInstanceTest {
 			.string();
 
 		then(actual).isNotEmpty();
+	}
+
+	@RepeatedTest(TestEnvironment.TEST_COUNT)
+	void setGetterIsPropertyName() {
+		String expected = "test";
+
+		String actual = SUT.giveMeBuilder(GetterInterface.class)
+			.set("value", expected)
+			.sample()
+			.getValue();
+
+		then(actual).isEqualTo(expected);
+	}
+
+	@RepeatedTest(TestEnvironment.TEST_COUNT)
+	void setGetterIsNotMethodName() {
+		String notExpected = "test";
+
+		String actual = SUT.giveMeBuilder(GetterInterface.class)
+			.set("getValue", notExpected)
+			.sample()
+			.getValue();
+
+		then(actual).isNotEqualTo(notExpected);
 	}
 }

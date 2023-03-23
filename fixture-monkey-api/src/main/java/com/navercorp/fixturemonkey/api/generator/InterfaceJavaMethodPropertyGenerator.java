@@ -18,9 +18,18 @@
 
 package com.navercorp.fixturemonkey.api.generator;
 
+import static java.util.stream.Collectors.toMap;
+
+import java.beans.IntrospectionException;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedType;
+import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
@@ -33,7 +42,7 @@ import com.navercorp.fixturemonkey.api.property.RootProperty;
 import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.5.3", status = API.Status.EXPERIMENTAL)
-public class InterfaceJavaMethodPropertyGenerator implements PropertyGenerator {
+public final class InterfaceJavaMethodPropertyGenerator implements PropertyGenerator {
 	@Override
 	public Property generateRootProperty(
 		AnnotatedType annotatedType
@@ -45,15 +54,41 @@ public class InterfaceJavaMethodPropertyGenerator implements PropertyGenerator {
 	public List<Property> generateObjectChildProperties(
 		AnnotatedType annotatedType
 	) {
-		return Arrays.stream(Types.getActualType(annotatedType.getType()).getMethods())
-			.map(InterfaceJavaMethodProperty::new)
-			.collect(Collectors.toList());
+		Class<?> actualType = Types.getActualType(annotatedType.getType());
+		try {
+			Map<Method, String> propertyNamesByGetter =
+				Arrays.stream(Introspector.getBeanInfo(actualType).getPropertyDescriptors())
+					.collect(
+						toMap(
+							PropertyDescriptor::getReadMethod,
+							PropertyDescriptor::getName
+						)
+					);
+
+			return Arrays.stream(actualType.getMethods())
+				.filter(it -> it.getParameters().length == 0)
+				.map(it -> new InterfaceJavaMethodProperty(
+						it.getAnnotatedReturnType(),
+						propertyNamesByGetter.getOrDefault(it, it.getName()),
+						it.getName(),
+						Arrays.asList(it.getAnnotations()),
+						Arrays.stream(it.getAnnotations())
+							.collect(Collectors.toMap(Annotation::annotationType, Function.identity(), (a1, a2) -> a1))
+					)
+				)
+				.collect(Collectors.toList());
+
+		} catch (IntrospectionException e) {
+			throw new IllegalArgumentException("This type could not be introspected." + actualType.getTypeName(), e);
+		}
 	}
 
 	@Override
 	public Property generateElementProperty(
-		Property containerProperty, AnnotatedType elementType,
-		@Nullable Integer index, int sequence
+		Property containerProperty,
+		AnnotatedType elementType,
+		@Nullable Integer index,
+		int sequence
 	) {
 		throw new UnsupportedOperationException();
 	}
