@@ -19,15 +19,13 @@
 package com.navercorp.fixturemonkey.tests.kotlin
 
 import com.navercorp.fixturemonkey.FixtureMonkey
-import com.navercorp.fixturemonkey.api.generator.InterfaceObjectPropertyGenerator
-import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGenerator
-import com.navercorp.fixturemonkey.api.matcher.MatcherOperator
 import com.navercorp.fixturemonkey.kotlin.KotlinPlugin
 import com.navercorp.fixturemonkey.kotlin.giveMeOne
 import com.navercorp.fixturemonkey.tests.TestEnvironment.TEST_COUNT
 import org.assertj.core.api.BDDAssertions.then
 import org.junit.jupiter.api.RepeatedTest
 
+@Suppress("unused")
 class SealedClassTest {
     @RepeatedTest(TEST_COUNT)
     fun sampleSealedClass() {
@@ -45,6 +43,8 @@ class SealedClassTest {
 
     sealed class SealedClass
 
+    object ObjectSealedClass : SealedClass()
+
     class ImplementedSealedClass(
         val string: String,
         val integer: Int,
@@ -55,29 +55,14 @@ class SealedClassTest {
         val char: Char,
         val short: Short,
         val boolean: Boolean,
-        val enum: Enum
+        val enum: Enum,
     ) : SealedClass()
-
-    object ObjectSealedClass : SealedClass()
 
     enum class Enum { ONE, TWO, THREE }
 
     companion object {
         val SUT: FixtureMonkey = FixtureMonkey.builder()
             .plugin(KotlinPlugin())
-            .pushObjectPropertyGenerator( // TODO: move to kotlin module
-                MatcherOperator(
-                    { (it.type as Class<*>).kotlin.isSealed },
-                    ObjectPropertyGenerator { context ->
-                        InterfaceObjectPropertyGenerator(
-                            (context.property.type as Class<*>).kotlin.sealedSubclasses
-                                .filter { it.objectInstance == null }
-                                .map { it.java }
-                        )
-                            .generate(context)
-                    }
-                )
-            )
             .build()
     }
 }
