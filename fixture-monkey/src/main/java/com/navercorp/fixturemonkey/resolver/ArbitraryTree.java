@@ -38,6 +38,8 @@ import com.navercorp.fixturemonkey.api.context.MonkeyGeneratorContext;
 import com.navercorp.fixturemonkey.api.customizer.FixtureCustomizer;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
+import com.navercorp.fixturemonkey.api.generator.CombinableArbitrary;
+import com.navercorp.fixturemonkey.api.generator.FixedCombinableArbitrary;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.option.GenerateOptions;
 import com.navercorp.fixturemonkey.api.property.Property;
@@ -80,7 +82,7 @@ final class ArbitraryTree {
 
 	Arbitrary<?> generate() {
 		ArbitraryGeneratorContext context = generateContext(rootNode, customizers, null);
-		return generateArbitrary(context, rootNode);
+		return generateIntrospected(context, rootNode).combined();
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -115,10 +117,10 @@ final class ArbitraryTree {
 			(ctx, prop) -> {
 				ArbitraryNode node = childNodesByArbitraryProperty.get(prop);
 				if (node == null) {
-					return Arbitraries.just(null);
+					return new FixedCombinableArbitrary(Arbitraries.just(null));
 				}
 
-				return generateArbitrary(ctx, node);
+				return generateIntrospected(ctx, node);
 			},
 			arbitraryCustomizers,
 			monkeyGeneratorContext
@@ -126,20 +128,22 @@ final class ArbitraryTree {
 	}
 
 	@SuppressWarnings({"rawtypes", "unchecked"})
-	private Arbitrary<Object> generateArbitrary(
+	private CombinableArbitrary generateIntrospected(
 		ArbitraryGeneratorContext ctx,
 		ArbitraryNode node
 	) {
 		ArbitraryProperty prop = node.getArbitraryProperty();
 
-		Arbitrary<?> generated;
+		CombinableArbitrary generated;
 		if (node.getArbitrary() != null) {
-			generated = node.getArbitrary() // fixed
-				.injectNull(node.getArbitraryProperty().getObjectProperty().getNullInject());
+			generated = new FixedCombinableArbitrary(
+				(Arbitrary<Object>)node.getArbitrary() // fixed
+					.injectNull(node.getArbitraryProperty().getObjectProperty().getNullInject())
+			);
 		} else {
 			ArbitraryGeneratorContext childArbitraryGeneratorContext = this.generateContext(node, customizers, ctx);
 
-			Arbitrary<?> cached = monkeyContext.getCachedArbitrary(node.getProperty());
+			CombinableArbitrary cached = monkeyContext.getCachedArbitrary(node.getProperty());
 
 			boolean notCustomized = ctx.getFixtureCustomizers().stream()
 				.noneMatch(it -> it.match(node.getProperty()));

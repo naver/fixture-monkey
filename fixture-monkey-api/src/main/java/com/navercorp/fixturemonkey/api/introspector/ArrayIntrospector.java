@@ -33,6 +33,8 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.generator.ContainerProperty;
+import com.navercorp.fixturemonkey.api.generator.LazyCombinableArbitrary;
+import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.type.Types;
@@ -58,21 +60,30 @@ public final class ArrayIntrospector implements ArbitraryIntrospector, Matcher {
 			return ArbitraryIntrospectorResult.EMPTY;
 		}
 
-		List<Arbitrary<?>> childrenArbitraries = context.getArbitraries();
-		BuilderCombinator<ArrayBuilder> builderCombinator = Builders.withBuilder(() ->
-			new ArrayBuilder(
-				Types.getArrayComponentType(property.getObjectProperty().getProperty().getAnnotatedType()),
-				childrenArbitraries.size()
+		return new ArbitraryIntrospectorResult(
+			new LazyCombinableArbitrary(
+				LazyArbitrary.lazy(
+					() -> {
+						List<Arbitrary<?>> childrenArbitraries = context.getArbitraries();
+						BuilderCombinator<ArrayBuilder> builderCombinator = Builders.withBuilder(() ->
+							new ArrayBuilder(
+								Types.getArrayComponentType(
+									property.getObjectProperty().getProperty().getAnnotatedType()
+								),
+								childrenArbitraries.size()
+							)
+						);
+						for (Arbitrary<?> childArbitrary : childrenArbitraries) {
+							builderCombinator = builderCombinator.use(childArbitrary).in((list, element) -> {
+								list.add(element);
+								return list;
+							});
+						}
+						return builderCombinator.build(ArrayBuilder::build);
+					}
+				)
 			)
 		);
-		for (Arbitrary<?> childArbitrary : childrenArbitraries) {
-			builderCombinator = builderCombinator.use(childArbitrary).in((list, element) -> {
-				list.add(element);
-				return list;
-			});
-		}
-
-		return new ArbitraryIntrospectorResult(builderCombinator.build(ArrayBuilder::build));
 	}
 
 	private static final class ArrayBuilder {

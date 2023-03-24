@@ -58,6 +58,12 @@ class FixtureMonkeyJacksonTest {
 		then(actual.value).isNotNull();
 	}
 
+	@Property
+	void sampleNested() {
+		thenNoException()
+			.isThrownBy(() -> SUT.giveMeOne(NestedStringValue.class));
+	}
+
 	@Value
 	public static class JsonFormatSpec {
 		@JsonFormat(shape = Shape.NUMBER)
@@ -92,5 +98,15 @@ class FixtureMonkeyJacksonTest {
 	@Value
 	public static class JsonNodeWrapperClass {
 		JsonNode value;
+	}
+
+	@Value
+	public static class StringValue {
+		String innerValue;
+	}
+
+	@Value
+	public static class NestedStringValue {
+		StringValue value;
 	}
 }

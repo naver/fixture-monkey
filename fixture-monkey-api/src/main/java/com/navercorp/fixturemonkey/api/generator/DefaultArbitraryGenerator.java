@@ -22,7 +22,6 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import net.jqwik.api.Arbitraries;
-import net.jqwik.api.Arbitrary;
 
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult;
@@ -40,7 +39,7 @@ public class DefaultArbitraryGenerator implements ArbitraryGenerator {
 	}
 
 	@Override
-	public Arbitrary<?> generate(ArbitraryGeneratorContext context) {
+	public CombinableArbitrary generate(ArbitraryGeneratorContext context) {
 		ArbitraryIntrospectorResult result = this.arbitraryIntrospector.introspect(context);
 		if (result.getValue() != null) {
 			double nullInject = context.getArbitraryProperty().getObjectProperty().getNullInject();
@@ -48,6 +47,6 @@ public class DefaultArbitraryGenerator implements ArbitraryGenerator {
 				.injectNull(nullInject);
 		}
 
-		return Arbitraries.just(null);
+		return new FixedCombinableArbitrary(Arbitraries.just(null));
 	}
 }

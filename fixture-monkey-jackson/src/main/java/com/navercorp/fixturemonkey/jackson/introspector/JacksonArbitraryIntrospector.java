@@ -30,7 +30,6 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import net.jqwik.api.Arbitraries;
-import net.jqwik.api.Arbitrary;
 import net.jqwik.api.Builders;
 import net.jqwik.api.Builders.BuilderCombinator;
 
@@ -39,6 +38,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
+import com.navercorp.fixturemonkey.api.generator.CombinableArbitrary;
+import com.navercorp.fixturemonkey.api.generator.FixedCombinableArbitrary;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
@@ -64,34 +65,44 @@ public final class JacksonArbitraryIntrospector implements ArbitraryIntrospector
 		Class<?> type = Types.getActualType(property.getType());
 
 		List<ArbitraryProperty> childrenProperties = context.getChildren();
-		Map<String, LazyArbitrary<Arbitrary<?>>> childrenArbitraries = context.getArbitrariesByResolvedName();
-
-		BuilderCombinator<Map<String, Object>> builderCombinator = Builders.withBuilder(() -> initializeMap(property));
-
-		for (ArbitraryProperty arbitraryProperty : childrenProperties) {
-			String resolvePropertyName = arbitraryProperty.getObjectProperty().getResolvedPropertyName();
-			Arbitrary<?> propertyArbitrary = childrenArbitraries.getOrDefault(
-					resolvePropertyName,
-					LazyArbitrary.lazy(() -> Arbitraries.just(null))
-				)
-				.getValue();
-
-			builderCombinator = builderCombinator.use(propertyArbitrary).in((map, value) -> {
-				if (value != null) {
-					Object jsonFormatted = arbitraryProperty.getObjectProperty()
-						.getProperty()
-						.getAnnotation(JsonFormat.class)
-						.map(it -> format(value, it))
-						.orElse(value);
-
-					map.put(resolvePropertyName, jsonFormatted);
-				}
-				return map;
-			});
-		}
+		Map<String, CombinableArbitrary> arbitrariesByResolvedName =
+			context.getCombinableArbitrariesByResolvedName();
 
 		return new ArbitraryIntrospectorResult(
-			builderCombinator.build(map -> objectMapper.convertValue(map, type))
+			new JacksonCombinableArbitrary(
+				LazyArbitrary.lazy(
+					() -> {
+						BuilderCombinator<Map<String, Object>> builderCombinator = Builders.withBuilder(
+							() -> initializeMap(property)
+						);
+
+						for (ArbitraryProperty arbitraryProperty : childrenProperties) {
+							String resolvePropertyName = arbitraryProperty.getObjectProperty()
+								.getResolvedPropertyName();
+							CombinableArbitrary combinableArbitrary = arbitrariesByResolvedName.getOrDefault(
+								resolvePropertyName,
+								new FixedCombinableArbitrary(Arbitraries.just(null)
+								)
+							);
+							builderCombinator = builderCombinator.use(combinableArbitrary.rawValue())
+								.in((map, value) -> {
+									if (value != null) {
+										Object jsonFormatted = arbitraryProperty.getObjectProperty()
+											.getProperty()
+											.getAnnotation(JsonFormat.class)
+											.map(it -> format(value, it))
+											.orElse(value);
+
+										map.put(resolvePropertyName, jsonFormatted);
+									}
+									return map;
+								});
+						}
+						return builderCombinator.build();
+					}
+				),
+				map -> objectMapper.convertValue(map, type)
+			)
 		);
 	}
 

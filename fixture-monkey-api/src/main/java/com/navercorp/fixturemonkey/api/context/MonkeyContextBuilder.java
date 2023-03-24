@@ -21,20 +21,21 @@ package com.navercorp.fixturemonkey.api.context;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import net.jqwik.api.Arbitrary;
-
 import com.navercorp.fixturemonkey.api.collection.LruCache;
+import com.navercorp.fixturemonkey.api.generator.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class MonkeyContextBuilder {
-	private LruCache<Property, Arbitrary<?>> arbitrariesByProperty;
+	private LruCache<Property, CombinableArbitrary> arbitrariesByProperty;
 	private LruCache<RootProperty, MonkeyGeneratorContext> generatorContextByRootProperty;
 	private int cacheSize = 2000;
 	private int generatorContextSize = 1000;
 
-	public MonkeyContextBuilder arbitrariesByProperty(LruCache<Property, Arbitrary<?>> arbitrariesByProperty) {
+	public MonkeyContextBuilder arbitrariesByProperty(
+		LruCache<Property, CombinableArbitrary> arbitrariesByProperty
+	) {
 		this.arbitrariesByProperty = arbitrariesByProperty;
 		return this;
 	}

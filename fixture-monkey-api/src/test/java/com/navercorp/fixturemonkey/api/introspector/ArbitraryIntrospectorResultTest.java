@@ -22,10 +22,12 @@ import static org.assertj.core.api.BDDAssertions.then;
 
 import org.junit.jupiter.api.Test;
 
+import net.jqwik.api.Arbitrary;
+
 class ArbitraryIntrospectorResultTest {
 	@Test
 	void equalsEmptyWithNull() {
-		ArbitraryIntrospectorResult sut = new ArbitraryIntrospectorResult(null);
+		ArbitraryIntrospectorResult sut = new ArbitraryIntrospectorResult((Arbitrary<?>)null);
 		then(ArbitraryIntrospectorResult.EMPTY.equals(sut)).isTrue();
 	}
 }

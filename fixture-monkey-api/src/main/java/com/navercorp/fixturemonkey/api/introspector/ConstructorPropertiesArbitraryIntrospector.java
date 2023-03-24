@@ -34,8 +34,12 @@ import org.junit.platform.commons.util.ReflectionUtils;
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
 import net.jqwik.api.Builders;
+import net.jqwik.api.Builders.BuilderCombinator;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
+import com.navercorp.fixturemonkey.api.generator.CombinableArbitrary;
+import com.navercorp.fixturemonkey.api.generator.FixedCombinableArbitrary;
+import com.navercorp.fixturemonkey.api.generator.LazyCombinableArbitrary;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.type.Types;
@@ -53,36 +57,45 @@ public final class ConstructorPropertiesArbitraryIntrospector implements Arbitra
 			return ArbitraryIntrospectorResult.EMPTY;
 		}
 
-		Map<String, LazyArbitrary<Arbitrary<?>>> childrenArbitraries = context.getArbitrariesByResolvedName();
+		Map<String, CombinableArbitrary> arbitrariesByResolvedName =
+			context.getCombinableArbitrariesByResolvedName();
 
 		Entry<Constructor<?>, String[]> parameterNamesByConstructor = getParameterNamesByConstructor(type);
 		if (parameterNamesByConstructor == null) {
-			throw new IllegalArgumentException("Primary Constructor does not exist. type " + type.getSimpleName());
+			throw new IllegalArgumentException(
+				"Primary Constructor does not exist. type " + type.getSimpleName());
 		}
+
 		Constructor<?> primaryConstructor = parameterNamesByConstructor.getKey();
 		String[] parameterNames = parameterNamesByConstructor.getValue();
 		int parameterSize = parameterNames.length;
 
-		Builders.BuilderCombinator<List<Object>> builderCombinator =
-			Builders.withBuilder(() -> new ArrayList<>(parameterSize));
+		LazyArbitrary<Arbitrary<Object>> generateArbitrary = LazyArbitrary.lazy(
+			() -> {
+				BuilderCombinator<List<Object>> builderCombinator =
+					Builders.withBuilder(() -> new ArrayList<>(parameterSize));
 
-		for (String parameterName : parameterNames) {
-			Arbitrary<?> arbitrary = childrenArbitraries.getOrDefault(
-					parameterName,
-					LazyArbitrary.lazy(() -> Arbitraries.just(null))
-				)
-				.getValue();
+				for (String parameterName : parameterNames) {
+					CombinableArbitrary combinableArbitrary = arbitrariesByResolvedName.getOrDefault(
+						parameterName,
+						new FixedCombinableArbitrary(
+							Arbitraries.just(null)
+						)
+					);
 
-			builderCombinator = builderCombinator.use(arbitrary).in((list, value) -> {
-				list.add(value);
-				return list;
-			});
-		}
+					builderCombinator = builderCombinator.use(combinableArbitrary.combined())
+						.in((list, value) -> {
+							list.add(value);
+							return list;
+						});
+				}
 
-		return new ArbitraryIntrospectorResult(
-			builderCombinator.build(
-				list -> ReflectionUtils.newInstance(primaryConstructor, list.toArray())
-			)
+				return builderCombinator.build(
+					list -> ReflectionUtils.newInstance(primaryConstructor, list.toArray())
+				);
+			}
 		);
+
+		return new ArbitraryIntrospectorResult(new LazyCombinableArbitrary(generateArbitrary));
 	}
 }
