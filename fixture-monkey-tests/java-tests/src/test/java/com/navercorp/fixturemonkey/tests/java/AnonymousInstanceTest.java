@@ -75,9 +75,7 @@ class AnonymousInstanceTest {
 	void sampleAnonymousWithParamReturnsNullProperties() {
 		InterfaceWithParams actual = SUT.giveMeOne(InterfaceWithParams.class);
 
-		then(actual).isNotNull();
-		then(actual.string("str")).isNull();
-		then(actual.integer(1)).isNull();
+		then(actual).isNull();
 	}
 
 	@RepeatedTest(TestEnvironment.TEST_COUNT)

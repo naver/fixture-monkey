@@ -54,9 +54,7 @@ class AnonymousInstanceTest {
     fun sampleAnonymousWithParam() {
         val actual = SUT.giveMeOne<InterfaceWithParams>()
 
-        then(actual).isNotNull
-        then(actual.string("str")).isNull()
-        then(actual.integer(1)).isNull()
+        then(actual).isNull()
     }
 
     @RepeatedTest(TEST_COUNT)

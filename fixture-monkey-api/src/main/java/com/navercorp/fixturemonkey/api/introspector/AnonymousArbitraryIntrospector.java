@@ -72,8 +72,15 @@ public final class AnonymousArbitraryIntrospector implements ArbitraryIntrospect
 		}
 
 		return new ArbitraryIntrospectorResult(
-			builderCombinator.build(builder ->
-				type.cast(Proxy.newProxyInstance(type.getClassLoader(), new Class[] {type}, builder.build()))
+			builderCombinator.build(
+				builder -> {
+					if (builder.generatedValuesByMethodName.isEmpty()) {
+						return null;
+					}
+
+					return type.cast(
+						Proxy.newProxyInstance(type.getClassLoader(), new Class[] {type}, builder.build()));
+				}
 			)
 		);
 	}

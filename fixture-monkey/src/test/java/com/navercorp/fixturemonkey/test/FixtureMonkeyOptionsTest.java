@@ -344,7 +344,7 @@ class FixtureMonkeyOptionsTest {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.pushAssignableTypeArbitraryIntrospector(
 				SimpleObject.class,
-				(context) -> new ArbitraryIntrospectorResult((Arbitrary<?>)null)
+				(context) -> new ArbitraryIntrospectorResult(Arbitraries.just(null))
 			)
 			.build();
 
@@ -358,7 +358,7 @@ class FixtureMonkeyOptionsTest {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.pushExactTypeArbitraryIntrospector(
 				SimpleObjectChild.class,
-				(context) -> new ArbitraryIntrospectorResult((Arbitrary<?>)null)
+				(context) -> new ArbitraryIntrospectorResult(Arbitraries.just(null))
 			)
 			.build();
 
@@ -373,7 +373,7 @@ class FixtureMonkeyOptionsTest {
 			.pushArbitraryIntrospector(
 				MatcherOperator.exactTypeMatchOperator(
 					SimpleObjectChild.class,
-					(context) -> new ArbitraryIntrospectorResult((Arbitrary<?>)null)
+					(context) -> new ArbitraryIntrospectorResult(Arbitraries.just(null))
 				)
 			)
 			.build();
