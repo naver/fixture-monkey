@@ -18,6 +18,9 @@
 
 package com.navercorp.fixturemonkey.kotlin
 
+import com.navercorp.fixturemonkey.api.generator.InterfaceObjectPropertyGenerator
+import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGenerator
+import com.navercorp.fixturemonkey.api.matcher.MatcherOperator
 import com.navercorp.fixturemonkey.api.option.GenerateOptionsBuilder
 import com.navercorp.fixturemonkey.api.plugin.Plugin
 import com.navercorp.fixturemonkey.kotlin.generator.KotlinPropertyGenerator
@@ -29,6 +32,19 @@ import org.apiguardian.api.API.Status.EXPERIMENTAL
 class KotlinPlugin : Plugin {
     override fun accept(optionsBuilder: GenerateOptionsBuilder) {
         optionsBuilder.objectIntrospector { PrimaryConstructorArbitraryIntrospector.INSTANCE }
-        optionsBuilder.defaultPropertyGenerator(KotlinPropertyGenerator())
+            .defaultPropertyGenerator(KotlinPropertyGenerator())
+            .insertFirstArbitraryObjectPropertyGenerator(
+                MatcherOperator(
+                    { (it.type as Class<*>).kotlin.isSealed },
+                    ObjectPropertyGenerator { context ->
+                        InterfaceObjectPropertyGenerator(
+                            (context.property.type as Class<*>).kotlin.sealedSubclasses
+                                .filter { it.objectInstance == null }
+                                .map { it.java },
+                        )
+                            .generate(context)
+                    },
+                ),
+            )
     }
 }
