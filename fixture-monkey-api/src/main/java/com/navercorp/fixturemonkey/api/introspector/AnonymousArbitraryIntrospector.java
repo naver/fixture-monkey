@@ -36,10 +36,20 @@ import com.navercorp.fixturemonkey.api.property.MethodProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.type.Types;
 
+/**
+ * It generates the anonymous object of interface which has no-argument methods.
+ * It is a default fallback {@link ArbitraryIntrospector}, if set none of introspectors in the options.
+ */
 @API(since = "0.5.3", status = API.Status.EXPERIMENTAL)
 public final class AnonymousArbitraryIntrospector implements ArbitraryIntrospector {
 	public static final AnonymousArbitraryIntrospector INSTANCE = new AnonymousArbitraryIntrospector();
 
+	/**
+	 * Generates the anonymous object of interface which has no-argument methods.
+	 *
+	 * @param context introspector context
+	 * @return an anonymous object of the interface
+	 */
 	@Override
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
 		Property property = context.getResolvedProperty();

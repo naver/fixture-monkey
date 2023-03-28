@@ -41,8 +41,12 @@ import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
 import com.navercorp.fixturemonkey.api.type.Types;
 
+/**
+ * A property generator for generating no-argument Java interface method.
+ * It generates {@link InterfaceJavaMethodProperty}.
+ */
 @API(since = "0.5.3", status = API.Status.EXPERIMENTAL)
-public final class InterfaceJavaMethodPropertyGenerator implements PropertyGenerator {
+public final class NoArgumentInterfaceJavaMethodPropertyGenerator implements PropertyGenerator {
 	@Override
 	public Property generateRootProperty(
 		AnnotatedType annotatedType

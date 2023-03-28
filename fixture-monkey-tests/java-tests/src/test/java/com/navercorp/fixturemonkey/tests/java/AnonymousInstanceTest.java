@@ -26,7 +26,7 @@ import java.util.List;
 import org.junit.jupiter.api.RepeatedTest;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
-import com.navercorp.fixturemonkey.api.generator.InterfaceJavaMethodPropertyGenerator;
+import com.navercorp.fixturemonkey.api.generator.NoArgumentInterfaceJavaMethodPropertyGenerator;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.javax.validation.plugin.JavaxValidationPlugin;
@@ -44,7 +44,7 @@ class AnonymousInstanceTest {
 		.pushPropertyGenerator(
 			new MatcherOperator<>(
 				p -> Modifier.isInterface(Types.getActualType(p.getType()).getModifiers()),
-				new InterfaceJavaMethodPropertyGenerator()
+				new NoArgumentInterfaceJavaMethodPropertyGenerator()
 			)
 		)
 		.plugin(new JavaxValidationPlugin())

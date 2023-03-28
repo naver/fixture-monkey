@@ -21,7 +21,15 @@ package com.navercorp.fixturemonkey.api.property;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-@API(since = "0.5.3", status = Status.MAINTAINED)
+/**
+ * A property representing a method.
+ */
+@API(since = "0.5.3", status = Status.EXPERIMENTAL)
 public interface MethodProperty extends Property {
+	/**
+	 * Get the name of given method.
+	 *
+	 * @return the name of method
+	 */
 	String getMethodName();
 }

@@ -49,9 +49,9 @@ import com.navercorp.fixturemonkey.api.generator.ContainerPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.DefaultObjectPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.DefaultSingleContainerPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.EntryContainerPropertyGenerator;
-import com.navercorp.fixturemonkey.api.generator.InterfaceJavaMethodPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.MapContainerPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.MapEntryElementContainerPropertyGenerator;
+import com.navercorp.fixturemonkey.api.generator.NoArgumentInterfaceJavaMethodPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.NullInjectGenerator;
 import com.navercorp.fixturemonkey.api.generator.NullObjectPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGenerator;
@@ -379,7 +379,7 @@ public final class GenerateOptions {
 		return Collections.singletonList(
 			new MatcherOperator<>(
 				p -> Modifier.isInterface(Types.getActualType(p.getType()).getModifiers()),
-				new InterfaceJavaMethodPropertyGenerator()
+				new NoArgumentInterfaceJavaMethodPropertyGenerator()
 			)
 		);
 	}

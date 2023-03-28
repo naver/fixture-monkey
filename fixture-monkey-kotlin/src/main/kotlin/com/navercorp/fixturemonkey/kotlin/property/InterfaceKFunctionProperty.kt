@@ -27,6 +27,9 @@ import java.util.Optional
 import kotlin.reflect.KFunction
 import kotlin.reflect.jvm.javaType
 
+/**
+ * An interface method property for kotlin.
+ */
 @API(since = "0.5.3", status = API.Status.EXPERIMENTAL)
 data class InterfaceKFunctionProperty(private val function: KFunction<*>) : MethodProperty {
     override fun getType(): Type = function.returnType.javaType
