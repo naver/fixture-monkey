@@ -6,6 +6,7 @@ plugins {
     id "jacoco"
     id "checkstyle"
     id "me.champeau.jmh" version "0.6.6"
+    id "org.gradle.test-retry" version "1.5.2"
 }
 
 dependencies {
@@ -36,9 +37,19 @@ editorconfig {
     excludes = ["build"]
 }
 
+boolean isCiServer = System.getenv().containsKey("CI")
+
 test {
     useJUnitPlatform {
         includeEngines "jqwik"
+    }
+
+    retry {
+        if (isCiServer) {
+            maxRetries = 2
+            maxFailures = 20
+        }
+        failOnPassedAfterRetry = true
     }
 }
 

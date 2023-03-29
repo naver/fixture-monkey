@@ -25,6 +25,8 @@ jobs:
           arguments: check -x test
 
   test:
+    env:
+      CI: "Github Action"
     name: Testing on JDK ${{ matrix.java }}
     runs-on: ubuntu-latest
     strategy:
