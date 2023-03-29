@@ -53,9 +53,9 @@ public final class FieldProperty implements Property {
 	 * When the Type of Field is defined as generics, the refied type is not known.
 	 * Use this constructor when specifying a Type that provides a refied Generics type.
 	 *
+	 * @param annotatedType annotatedType of the property
+	 * @param field         field of the property
 	 * @see com.navercorp.fixturemonkey.api.type.Types
-	 * @param annotatedType
-	 * @param field
 	 */
 	public FieldProperty(AnnotatedType annotatedType, Field field) {
 		this.annotatedType = annotatedType;
@@ -116,13 +116,13 @@ public final class FieldProperty implements Property {
 
 	@Nullable
 	@Override
-	public Object getValue(Object obj) {
+	public Object getValue(Object instance) {
 		try {
 			this.field.setAccessible(true);
-			return this.field.get(obj);
+			return this.field.get(instance);
 		} catch (IllegalAccessException ex) {
 			throw new IllegalArgumentException(
-				"Can not extract value. obj: " + obj.toString() + ", fieldName: " + this.field.getName(),
+				"Can not extract value. obj: " + instance.toString() + ", fieldName: " + this.field.getName(),
 				ex
 			);
 		}

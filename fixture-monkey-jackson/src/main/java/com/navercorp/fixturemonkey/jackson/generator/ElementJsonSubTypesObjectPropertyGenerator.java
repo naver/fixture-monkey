@@ -95,8 +95,8 @@ public final class ElementJsonSubTypesObjectPropertyGenerator implements ObjectP
 
 			@Nullable
 			@Override
-			public Object getValue(Object obj) {
-				return property.getValue(obj);
+			public Object getValue(Object instance) {
+				return property.getValue(instance);
 			}
 		};
 		return new ObjectProperty(

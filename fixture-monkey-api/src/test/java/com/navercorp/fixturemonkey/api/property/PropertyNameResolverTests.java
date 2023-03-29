@@ -61,7 +61,7 @@ class PropertyNameResolverTests {
 
 			@Nullable
 			@Override
-			public Object getValue(Object obj) {
+			public Object getValue(Object instance) {
 				return null;
 			}
 		};

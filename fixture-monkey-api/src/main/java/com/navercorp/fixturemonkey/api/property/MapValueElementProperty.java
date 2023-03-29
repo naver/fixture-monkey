@@ -91,11 +91,11 @@ public final class MapValueElementProperty implements Property {
 
 	@Nullable
 	@Override
-	public Object getValue(Object obj) {
-		Class<?> actualType = Types.getActualType(obj.getClass());
+	public Object getValue(Object instance) {
+		Class<?> actualType = Types.getActualType(instance.getClass());
 
 		if (Map.class.isAssignableFrom(actualType)) {
-			Map<?, ?> map = (Map<?, ?>)obj;
+			Map<?, ?> map = (Map<?, ?>)instance;
 			Iterator<? extends Entry<?, ?>> iterator = map.entrySet().iterator();
 			int iteratorSequence = 0;
 			while (iterator.hasNext()) {
@@ -108,11 +108,11 @@ public final class MapValueElementProperty implements Property {
 		}
 
 		if (Map.Entry.class.isAssignableFrom(actualType)) {
-			Map.Entry<?, ?> entry = (Map.Entry<?, ?>)obj;
+			Map.Entry<?, ?> entry = (Map.Entry<?, ?>)instance;
 			return entry.getValue();
 		}
 
-		throw new IllegalArgumentException("given value is not Map Entry. " + obj.getClass());
+		throw new IllegalArgumentException("given value is not Map Entry. " + instance.getClass());
 	}
 
 	@Override

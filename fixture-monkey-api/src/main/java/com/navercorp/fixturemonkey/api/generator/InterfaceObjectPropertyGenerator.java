@@ -75,8 +75,8 @@ public final class InterfaceObjectPropertyGenerator<T> implements ObjectProperty
 
 				@Nullable
 				@Override
-				public Object getValue(Object obj) {
-					return interfaceProperty.getValue(obj);
+				public Object getValue(Object instance) {
+					return interfaceProperty.getValue(instance);
 				}
 			};
 

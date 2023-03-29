@@ -92,16 +92,16 @@ public final class MapEntryElementProperty implements Property {
 
 	@Nullable
 	@Override
-	public Object getValue(Object obj) {
-		if (obj == null) {
+	public Object getValue(Object instance) {
+		if (instance == null) {
 			return null;
 		}
 
-		Class<?> actualType = Types.getActualType(obj.getClass());
+		Class<?> actualType = Types.getActualType(instance.getClass());
 		if (!(Map.class.isAssignableFrom(actualType) || Map.Entry.class.isAssignableFrom(actualType))) {
 			throw new IllegalArgumentException("given value is not Map or MapEntry type " + actualType);
 		}
-		return obj;
+		return instance;
 	}
 
 	@Override
