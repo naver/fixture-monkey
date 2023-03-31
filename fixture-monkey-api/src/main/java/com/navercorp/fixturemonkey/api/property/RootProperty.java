@@ -40,13 +40,14 @@ public final class RootProperty implements Property {
 	}
 
 	@Override
-	public Object getValue(Object obj) {
-		if (Types.getActualType(this.annotatedType.getType()) == obj.getClass()) {
-			return obj;
+	public Object getValue(Object instance) {
+		if (Types.getActualType(this.annotatedType.getType()) == instance.getClass()) {
+			return instance;
 		}
 
 		throw new IllegalArgumentException(
-			"RootProperty obj is not a root type. annotatedType: " + this.annotatedType + ", objType: " + obj.getClass()
+			"RootProperty obj is not a root type. annotatedType: " + this.annotatedType + ", objType: "
+				+ instance.getClass()
 		);
 	}
 

@@ -91,7 +91,7 @@ public final class TupleLikeElementsProperty implements Property {
 
 	@Nullable
 	@Override
-	public Object getValue(Object obj) {
+	public Object getValue(Object instance) {
 		throw new UnsupportedOperationException("elementProperty getValue is not support yet.");
 	}
 

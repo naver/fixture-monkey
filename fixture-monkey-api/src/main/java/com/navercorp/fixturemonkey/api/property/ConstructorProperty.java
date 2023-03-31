@@ -118,9 +118,9 @@ public final class ConstructorProperty implements Property {
 
 	@Nullable
 	@Override
-	public Object getValue(Object obj) {
+	public Object getValue(Object instance) {
 		if (fieldProperty != null) {
-			return fieldProperty.getValue(obj);
+			return fieldProperty.getValue(instance);
 		} else {
 			return null;
 		}

@@ -29,9 +29,9 @@ infix fun <F, T : Any, R : Any> KFunction1<F, T?>.intoGetter(getter: KFunction1<
             listOf(
                 property(this),
                 DotExpressionGenerator(),
-                property(getter)
-            )
-        )
+                property(getter),
+            ),
+        ),
     )
 
 infix fun <F, T : Any, R> KFunction1<F, T?>.into(property: KProperty1<T, R?>): JoinableExpressionGenerator<T, R> =
@@ -40,9 +40,9 @@ infix fun <F, T : Any, R> KFunction1<F, T?>.into(property: KProperty1<T, R?>): J
             listOf(
                 property(this),
                 DotExpressionGenerator(),
-                property(property)
-            )
-        )
+                property(property),
+            ),
+        ),
     )
 
 infix fun <F, T : Any, R> KFunction1<F, T?>.into(expressionGenerator: JoinableExpressionGenerator<T, R>): JoinableExpressionGenerator<F, R> =
@@ -51,9 +51,9 @@ infix fun <F, T : Any, R> KFunction1<F, T?>.into(expressionGenerator: JoinableEx
             listOf(
                 property(this),
                 DotExpressionGenerator(),
-                expressionGenerator
-            )
-        )
+                expressionGenerator,
+            ),
+        ),
     )
 
 infix fun <F, T : Any, R> KFunction1<F, T?>.intoGetter(expressionGenerator: JoinableExpressionGenerator<T, R>): JoinableExpressionGenerator<F, R> =
@@ -62,9 +62,9 @@ infix fun <F, T : Any, R> KFunction1<F, T?>.intoGetter(expressionGenerator: Join
             listOf(
                 property(this),
                 DotExpressionGenerator(),
-                expressionGenerator
-            )
-        )
+                expressionGenerator,
+            ),
+        ),
     )
 
 infix fun <F, T : Any, R> KProperty1<F, T?>.into(property: KProperty1<T, R?>): JoinableExpressionGenerator<F, R> =
@@ -73,9 +73,9 @@ infix fun <F, T : Any, R> KProperty1<F, T?>.into(property: KProperty1<T, R?>): J
             listOf(
                 property(this),
                 DotExpressionGenerator(),
-                property(property)
-            )
-        )
+                property(property),
+            ),
+        ),
     )
 
 infix fun <F, T : Any, R> KProperty1<F, T?>.into(expressionGenerator: JoinableExpressionGenerator<T, R>): JoinableExpressionGenerator<F, R> =
@@ -84,9 +84,9 @@ infix fun <F, T : Any, R> KProperty1<F, T?>.into(expressionGenerator: JoinableEx
             listOf(
                 property(this),
                 DotExpressionGenerator(),
-                expressionGenerator
-            )
-        )
+                expressionGenerator,
+            ),
+        ),
     )
 
 infix fun <F, T : Any, R> KProperty1<F, T?>.intoGetter(expressionGenerator: JoinableExpressionGenerator<T, R>): JoinableExpressionGenerator<F, R> =
@@ -95,9 +95,9 @@ infix fun <F, T : Any, R> KProperty1<F, T?>.intoGetter(expressionGenerator: Join
             listOf(
                 property(this),
                 DotExpressionGenerator(),
-                expressionGenerator
-            )
-        )
+                expressionGenerator,
+            ),
+        ),
     )
 
 infix fun <F, T : Any, R> KProperty1<F, T?>.intoGetter(getter: KFunction1<T, R?>): JoinableExpressionGenerator<F, R> =
@@ -106,9 +106,9 @@ infix fun <F, T : Any, R> KProperty1<F, T?>.intoGetter(getter: KFunction1<T, R?>
             listOf(
                 property(this),
                 DotExpressionGenerator(),
-                property(getter)
-            )
-        )
+                property(getter),
+            ),
+        ),
     )
 
 infix operator fun <T, R : Collection<E>, E : Any> JoinableExpressionGenerator<T, R?>.get(index: Int): JoinableExpressionGenerator<T, E> =
@@ -116,9 +116,9 @@ infix operator fun <T, R : Collection<E>, E : Any> JoinableExpressionGenerator<T
         JoinExpressionGenerator(
             listOf(
                 this,
-                IndexExpressionGenerator(index)
-            )
-        )
+                IndexExpressionGenerator(index),
+            ),
+        ),
     )
 
 infix operator fun <T, R : Collection<E>, E : Any> JoinableExpressionGenerator<T, R?>.get(key: String): JoinableExpressionGenerator<T, E> =
@@ -126,27 +126,27 @@ infix operator fun <T, R : Collection<E>, E : Any> JoinableExpressionGenerator<T
         JoinExpressionGenerator(
             listOf(
                 this,
-                KeyExpressionGenerator(key)
-            )
-        )
+                KeyExpressionGenerator(key),
+            ),
+        ),
     )
 
 @JvmName("getNestedList")
 infix operator fun <T, R : Collection<N>, N : Collection<E>, E : Any> JoinableExpressionGenerator<T, R?>.get(
-    index: Int
+    index: Int,
 ): JoinableExpressionGenerator<T, N?> =
     DefaultJoinableExpressionGenerator(
         JoinExpressionGenerator(
             listOf(
                 this,
-                IndexExpressionGenerator(index)
-            )
-        )
+                IndexExpressionGenerator(index),
+            ),
+        ),
     )
 
 @JvmName("getNestedMap")
 infix operator fun <T, R : Collection<N>, N : Collection<E>, E : Any> JoinableExpressionGenerator<T, R?>.get(
-    key: String
+    key: String,
 ): JoinableExpressionGenerator<T, N?> =
     DefaultJoinableExpressionGenerator(JoinExpressionGenerator(listOf(this, KeyExpressionGenerator(key))))
 
@@ -158,12 +158,12 @@ infix operator fun <T, R : Collection<E>, E : Any> KProperty1<T, R?>.get(key: St
 
 @JvmName("getNestedList")
 infix operator fun <T, R : Collection<N>, N : Collection<E>, E : Any> KProperty1<T, R?>.get(
-    index: Int
+    index: Int,
 ): JoinableExpressionGenerator<T, N?> = DefaultJoinableExpressionGenerator(array(this, index))
 
 @JvmName("getNestedMap")
 infix operator fun <T, R : Collection<N>, N : Collection<E>, E : Any> KProperty1<T, R?>.get(
-    key: String
+    key: String,
 ): JoinableExpressionGenerator<T, N?> = DefaultJoinableExpressionGenerator(map(this, key))
 
 infix operator fun <T, R : Collection<E>, E : Any> KFunction1<T, R?>.get(index: Int): JoinableExpressionGenerator<T, E> =
@@ -174,16 +174,16 @@ infix operator fun <T, R : Collection<E>, E : Any> KFunction1<T, R?>.get(key: St
 
 @JvmName("getNestedList")
 infix operator fun <T, R : Collection<N>, N : Collection<E>, E : Any> KFunction1<T, R?>.get(
-    index: Int
+    index: Int,
 ): JoinableExpressionGenerator<T, N?> = DefaultJoinableExpressionGenerator(array(this, index))
 
 @JvmName("getNestedMap")
 infix operator fun <T, R : Collection<N>, N : Collection<E>, E : Any> KFunction1<T, R?>.get(
-    key: String
+    key: String,
 ): JoinableExpressionGenerator<T, N?> = DefaultJoinableExpressionGenerator(map(this, key))
 
 class DefaultJoinableExpressionGenerator<F, T>(
-    private val delegate: ExpressionGenerator
+    private val delegate: ExpressionGenerator,
 ) : JoinableExpressionGenerator<F, T> {
     override fun <R> into(property: KProperty1<T, R?>): JoinableExpressionGenerator<F, R> =
         DefaultJoinableExpressionGenerator(
@@ -191,9 +191,9 @@ class DefaultJoinableExpressionGenerator<F, T>(
                 listOf(
                     delegate,
                     DotExpressionGenerator(),
-                    property(property)
-                )
-            )
+                    property(property),
+                ),
+            ),
         )
 
     override fun <R> intoGetter(getter: KFunction1<T, R?>): JoinableExpressionGenerator<F, R> =
@@ -202,9 +202,9 @@ class DefaultJoinableExpressionGenerator<F, T>(
                 listOf(
                     delegate,
                     DotExpressionGenerator(),
-                    property(getter)
-                )
-            )
+                    property(getter),
+                ),
+            ),
         )
 
     override fun <R> into(expressionGenerator: JoinableExpressionGenerator<T, R>): JoinableExpressionGenerator<F, R> =
@@ -213,9 +213,9 @@ class DefaultJoinableExpressionGenerator<F, T>(
                 listOf(
                     delegate,
                     DotExpressionGenerator(),
-                    expressionGenerator
-                )
-            )
+                    expressionGenerator,
+                ),
+            ),
         )
 
     override fun <R> intoGetter(expressionGenerator: JoinableExpressionGenerator<T, R>): JoinableExpressionGenerator<F, R> =
@@ -224,16 +224,16 @@ class DefaultJoinableExpressionGenerator<F, T>(
                 listOf(
                     delegate,
                     DotExpressionGenerator(),
-                    expressionGenerator
-                )
-            )
+                    expressionGenerator,
+                ),
+            ),
         )
 
     override fun generate(propertyNameResolver: PropertyNameResolver?): String = delegate.generate(propertyNameResolver)
 }
 
 private class JoinExpressionGenerator(
-    private val expressionGenerators: List<ExpressionGenerator>
+    private val expressionGenerators: List<ExpressionGenerator>,
 ) : ExpressionGenerator {
     override fun generate(propertyNameResolver: PropertyNameResolver): String =
         expressionGenerators.joinToString(separator = "") { expressionGenerator ->
@@ -248,7 +248,7 @@ private class IndexExpressionGenerator(private val index: Int) : ExpressionGener
 
 private class ArrayExpressionGenerator(
     private val property: Property,
-    private val index: Int
+    private val index: Int,
 ) : ExpressionGenerator {
     override fun generate(propertyNameResolver: PropertyNameResolver): String =
         "${propertyNameResolver.resolve(property)}[$index]"
@@ -256,7 +256,7 @@ private class ArrayExpressionGenerator(
 
 private class MapExpressionGenerator(
     private val property: Property,
-    private val key: String
+    private val key: String,
 ) : ExpressionGenerator {
     override fun generate(propertyNameResolver: PropertyNameResolver): String =
         "${propertyNameResolver.resolve(property)}[$key]"
@@ -316,7 +316,7 @@ private class KotlinProperty<V, R>(private val property: KProperty1<V, R>) : Pro
         (propertyAnnotations + getterAnnotations + fieldAnnotations).distinct()
 
     @Suppress("UNCHECKED_CAST")
-    override fun getValue(obj: Any): Any? = property.get(obj as V)
+    override fun getValue(instance: Any): Any? = property.get(instance as V)
 
     override fun isNullable(): Boolean = property.returnType.isMarkedNullable
 }
@@ -369,7 +369,7 @@ private class KotlinGetterProperty<V, R>(private val getter: KFunction1<V, R>) :
         (propertyAnnotations + getterAnnotations + fieldAnnotations).distinct()
 
     @Suppress("UNCHECKED_CAST")
-    override fun getValue(obj: Any?): Any? = getter.invoke(obj as V)
+    override fun getValue(instance: Any?): Any? = getter.invoke(instance as V)
 
     override fun isNullable(): Boolean = getter.returnType.isMarkedNullable
 }

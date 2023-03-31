@@ -55,9 +55,9 @@ public final class PropertyDescriptorProperty implements Property {
 	 * When the Type of PropertyDescriptor is defined as generics, the refied type is not known.
 	 * Use this constructor when specifying a Type that provides a refied Generics type.
 	 *
+	 * @param annotatedType      annotatedType of the property
+	 * @param propertyDescriptor propertyDescriptor of the property
 	 * @see com.navercorp.fixturemonkey.api.type.Types
-	 * @param annotatedType
-	 * @param propertyDescriptor
 	 */
 	public PropertyDescriptorProperty(AnnotatedType annotatedType, PropertyDescriptor propertyDescriptor) {
 		this.annotatedType = annotatedType;
@@ -99,12 +99,13 @@ public final class PropertyDescriptorProperty implements Property {
 
 	@Nullable
 	@Override
-	public Object getValue(Object obj) {
+	public Object getValue(Object instance) {
 		try {
-			return this.propertyDescriptor.getReadMethod().invoke(obj);
+			return this.propertyDescriptor.getReadMethod().invoke(instance);
 		} catch (InvocationTargetException | IllegalAccessException ex) {
 			throw new IllegalArgumentException(
-				"Can not invoke value. obj: " + obj.toString() + ", propertyName: " + this.propertyDescriptor.getName(),
+				"Can not invoke value. obj: " + instance.toString() + ", propertyName: "
+					+ this.propertyDescriptor.getName(),
 				ex
 			);
 		}

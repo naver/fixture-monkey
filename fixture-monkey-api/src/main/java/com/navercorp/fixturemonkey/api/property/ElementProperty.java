@@ -116,22 +116,22 @@ public final class ElementProperty implements Property {
 
 	@Nullable
 	@Override
-	public Object getValue(Object obj) {
-		Class<?> actualType = Types.getActualType(obj.getClass());
+	public Object getValue(Object instance) {
+		Class<?> actualType = Types.getActualType(instance.getClass());
 		if (isOptional(actualType)) {
-			return getOptionalValue(obj);
+			return getOptionalValue(instance);
 		}
 
 		if (actualType.isArray()) {
-			if (Array.getLength(obj) == 0) {
+			if (Array.getLength(instance) == 0) {
 				return null;
 			}
 
-			return Array.get(obj, sequence);
+			return Array.get(instance, sequence);
 		}
 
 		if (List.class.isAssignableFrom(actualType)) {
-			List<?> list = (List<?>)obj;
+			List<?> list = (List<?>)instance;
 			if (list.isEmpty()) {
 				return null;
 			}
