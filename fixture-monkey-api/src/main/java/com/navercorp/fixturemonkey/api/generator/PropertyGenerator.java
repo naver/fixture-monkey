@@ -29,27 +29,44 @@ import org.apiguardian.api.API.Status;
 import com.navercorp.fixturemonkey.api.property.Property;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
+@FunctionalInterface
 public interface PropertyGenerator {
-	Property generateRootProperty(AnnotatedType annotatedType);
+	@Deprecated // It would be removed in 0.6.0
+	default Property generateRootProperty(AnnotatedType annotatedType) {
+		throw new UnsupportedOperationException();
+	}
 
-	List<Property> generateObjectChildProperties(AnnotatedType annotatedType);
+	default List<Property> generateObjectChildProperties(AnnotatedType annotatedType) {
+		return generateProperties(annotatedType);
+	}
 
-	Property generateElementProperty(
+	List<Property> generateProperties(AnnotatedType annotatedType);
+
+	@Deprecated // It would be removed in 0.6.0
+	default Property generateElementProperty(
 		Property containerProperty,
 		AnnotatedType elementType,
 		@Nullable Integer index,
 		int sequence
-	);
+	) {
+		throw new UnsupportedOperationException();
+	}
 
-	Property generateMapEntryElementProperty(
+	@Deprecated // It would be removed in 0.6.0
+	default Property generateMapEntryElementProperty(
 		Property containerProperty,
 		Property keyProperty,
 		Property valueProperty
-	);
+	) {
+		throw new UnsupportedOperationException();
+	}
 
-	Property generateTupleLikeElementsProperty(
+	@Deprecated // It would be removed in 0.6.0
+	default Property generateTupleLikeElementsProperty(
 		Property containerProperty,
 		List<Property> childProperties,
 		@Nullable Integer index
-	);
+	) {
+		throw new UnsupportedOperationException();
+	}
 }

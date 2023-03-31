@@ -21,55 +21,16 @@ package com.navercorp.fixturemonkey.api.generator;
 import java.lang.reflect.AnnotatedType;
 import java.util.List;
 
-import javax.annotation.Nullable;
-
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.api.property.ElementProperty;
-import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.PropertyCache;
-import com.navercorp.fixturemonkey.api.property.RootProperty;
-import com.navercorp.fixturemonkey.api.property.TupleLikeElementsProperty;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class DefaultPropertyGenerator implements PropertyGenerator {
 	@Override
-	public Property generateRootProperty(AnnotatedType annotatedType) {
-		return new RootProperty(annotatedType);
-	}
-
-	@Override
-	public List<Property> generateObjectChildProperties(AnnotatedType annotatedType) {
+	public List<Property> generateProperties(AnnotatedType annotatedType) {
 		return PropertyCache.getProperties(annotatedType);
-	}
-
-	@Override
-	public Property generateElementProperty(
-		Property containerProperty,
-		AnnotatedType elementType,
-		@Nullable Integer index,
-		int sequence
-	) {
-		return new ElementProperty(containerProperty, elementType, index, sequence);
-	}
-
-	@Override
-	public Property generateMapEntryElementProperty(
-		Property containerProperty,
-		Property keyProperty,
-		Property valueProperty
-	) {
-		return new MapEntryElementProperty(containerProperty, keyProperty, valueProperty);
-	}
-
-	@Override
-	public Property generateTupleLikeElementsProperty(
-		Property containerProperty,
-		List<Property> childProperties,
-		@Nullable Integer index
-	) {
-		return new TupleLikeElementsProperty(containerProperty, childProperties, index);
 	}
 }

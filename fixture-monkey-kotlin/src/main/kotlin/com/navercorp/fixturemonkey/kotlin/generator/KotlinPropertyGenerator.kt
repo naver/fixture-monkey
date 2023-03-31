@@ -21,12 +21,8 @@ package com.navercorp.fixturemonkey.kotlin.generator
 import com.navercorp.fixturemonkey.api.collection.LruCache
 import com.navercorp.fixturemonkey.api.generator.PropertyGenerator
 import com.navercorp.fixturemonkey.api.property.CompositeProperty
-import com.navercorp.fixturemonkey.api.property.ElementProperty
-import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty
 import com.navercorp.fixturemonkey.api.property.Property
 import com.navercorp.fixturemonkey.api.property.PropertyCache
-import com.navercorp.fixturemonkey.api.property.RootProperty
-import com.navercorp.fixturemonkey.api.property.TupleLikeElementsProperty
 import com.navercorp.fixturemonkey.api.type.Types
 import com.navercorp.fixturemonkey.kotlin.property.getMemberProperties
 import org.apiguardian.api.API
@@ -34,10 +30,9 @@ import java.lang.reflect.AnnotatedType
 
 @API(since = "0.4.0", status = API.Status.EXPERIMENTAL)
 class KotlinPropertyGenerator : PropertyGenerator {
-    private val objectChildPropertiesCache = LruCache<Class<*>, List<Property>> (2000)
-    override fun generateRootProperty(annotatedType: AnnotatedType): Property = RootProperty(annotatedType)
+    private val objectChildPropertiesCache = LruCache<Class<*>, List<Property>>(2000)
 
-    override fun generateObjectChildProperties(annotatedType: AnnotatedType): List<Property> =
+    override fun generateProperties(annotatedType: AnnotatedType): List<Property> =
         objectChildPropertiesCache.computeIfAbsent(Types.getActualType(annotatedType.type)) {
             val javaProperties = PropertyCache.getProperties(annotatedType)
                 .filter { it.name != null }
@@ -59,26 +54,9 @@ class KotlinPropertyGenerator : PropertyGenerator {
                 val javaProperty: Property? = javaProperties[it]
                 if (kotlinProperty != null && javaProperty != null) {
                     CompositeProperty(kotlinProperty, javaProperty)
-                } else kotlinProperty ?: javaProperty
+                } else {
+                    kotlinProperty ?: javaProperty
+                }
             }
         }
-
-    override fun generateElementProperty(
-        containerProperty: Property,
-        elementType: AnnotatedType,
-        index: Int?,
-        sequence: Int
-    ): Property = ElementProperty(containerProperty, elementType, index, sequence)
-
-    override fun generateMapEntryElementProperty(
-        containerProperty: Property,
-        keyProperty: Property,
-        valueProperty: Property
-    ): Property = MapEntryElementProperty(containerProperty, keyProperty, valueProperty)
-
-    override fun generateTupleLikeElementsProperty(
-        containerProperty: Property,
-        childProperties: MutableList<Property>,
-        index: Int?
-    ): Property = TupleLikeElementsProperty(containerProperty, childProperties, index)
 }
