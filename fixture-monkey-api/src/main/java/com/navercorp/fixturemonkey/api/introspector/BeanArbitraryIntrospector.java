@@ -60,7 +60,9 @@ public final class BeanArbitraryIntrospector implements ArbitraryIntrospector {
 		List<ArbitraryProperty> childrenProperties = context.getChildren();
 		Map<String, CombinableArbitrary> arbitrariesByResolvedName =
 			context.getCombinableArbitrariesByResolvedName();
-		Map<String, PropertyDescriptor> propertyDescriptors = PropertyCache.getPropertyDescriptors(type);
+		Map<String, PropertyDescriptor> propertyDescriptors = PropertyCache.getPropertyDescriptorsByPropertyName(
+			property.getAnnotatedType()
+		);
 
 		LazyArbitrary<Arbitrary<Object>> generateArbitrary = LazyArbitrary.lazy(() -> {
 			BuilderCombinator<Object> builderCombinator = Builders.withBuilder(

@@ -18,19 +18,84 @@
 
 package com.navercorp.fixturemonkey.api.generator;
 
+import java.beans.PropertyDescriptor;
 import java.lang.reflect.AnnotatedType;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import com.navercorp.fixturemonkey.api.property.CompositeProperty;
+import com.navercorp.fixturemonkey.api.property.FieldProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.PropertyCache;
+import com.navercorp.fixturemonkey.api.property.PropertyDescriptorProperty;
+import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class DefaultPropertyGenerator implements PropertyGenerator {
-	@Override
 	public List<Property> generateProperties(AnnotatedType annotatedType) {
-		return PropertyCache.getProperties(annotatedType);
+		Map<String, List<Property>> propertiesMap = new HashMap<>();
+
+		Map<String, Property> constructorProperties =
+			PropertyCache.getConstructorParameterPropertiesByParameterName(annotatedType);
+		for (Entry<String, Property> entry : constructorProperties.entrySet()) {
+			List<Property> properties = propertiesMap.computeIfAbsent(
+				entry.getKey(), name -> new ArrayList<>()
+			);
+			properties.add(entry.getValue());
+		}
+
+		Map<String, Field> fieldMap = PropertyCache.getFieldsByName(annotatedType);
+		for (Entry<String, Field> entry : fieldMap.entrySet()) {
+			List<Property> properties = propertiesMap.computeIfAbsent(
+				entry.getKey(), name -> new ArrayList<>()
+			);
+			properties.add(
+				new FieldProperty(
+					Types.resolveWithTypeReferenceGenerics(annotatedType, entry.getValue()),
+					entry.getValue()
+				)
+			);
+		}
+
+		Map<String, PropertyDescriptor> propertyDescriptorMap =
+			PropertyCache.getPropertyDescriptorsByPropertyName(annotatedType);
+		for (Entry<String, PropertyDescriptor> entry : propertyDescriptorMap.entrySet()) {
+			List<Property> properties = propertiesMap.computeIfAbsent(
+				entry.getValue().getName(), name -> new ArrayList<>()
+			);
+
+			PropertyDescriptor propertyDescriptor = entry.getValue();
+			if (propertyDescriptor.getReadMethod() != null && propertyDescriptor.getWriteMethod() != null) {
+				properties.add(
+					new PropertyDescriptorProperty(
+						Types.resolveWithTypeReferenceGenerics(annotatedType, entry.getValue()),
+						entry.getValue()
+					)
+				);
+			}
+		}
+
+		List<Property> result = new ArrayList<>();
+		for (List<Property> properties : propertiesMap.values()) {
+			if (properties.isEmpty()) {
+				continue;
+			}
+
+			if (properties.size() == 1) {
+				result.add(properties.get(0));
+			} else {
+				result.add(new CompositeProperty(properties.get(0), properties.get(1)));
+			}
+		}
+
+		return Collections.unmodifiableList(result);
 	}
 }

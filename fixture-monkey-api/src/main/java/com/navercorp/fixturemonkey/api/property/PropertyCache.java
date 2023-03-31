@@ -49,6 +49,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.navercorp.fixturemonkey.api.collection.LruCache;
+import com.navercorp.fixturemonkey.api.generator.DefaultPropertyGenerator;
 import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
@@ -61,72 +62,29 @@ public final class PropertyCache {
 	private static final Map<Class<?>, Map.Entry<Constructor<?>, String[]>> PARAMETER_NAMES_BY_PRIMARY_CONSTRUCTOR =
 		new LruCache<>(2000);
 
+	@Deprecated // It would be removed when getProperties is removed.
+	private static final DefaultPropertyGenerator DEFAULT_PROPERTY_GENERATOR = new DefaultPropertyGenerator();
+
+	@Deprecated // It would be removed in 0.6.0
 	public static List<Property> getProperties(AnnotatedType annotatedType) {
-		Map<String, List<Property>> propertiesMap = new HashMap<>();
-
-		Class<?> actualType = Types.getActualType(annotatedType.getType());
-
-		Map<String, Property> constructorProperties = getConstructorProperties(annotatedType);
-		for (Entry<String, Property> entry : constructorProperties.entrySet()) {
-			List<Property> properties = propertiesMap.computeIfAbsent(
-				entry.getKey(), name -> new ArrayList<>()
-			);
-			properties.add(entry.getValue());
-		}
-
-		Map<String, Field> fieldMap = getFields(actualType);
-		for (Entry<String, Field> entry : fieldMap.entrySet()) {
-			List<Property> properties = propertiesMap.computeIfAbsent(
-				entry.getKey(), name -> new ArrayList<>()
-			);
-			properties.add(
-				new FieldProperty(
-					Types.resolveWithTypeReferenceGenerics(annotatedType, entry.getValue()),
-					entry.getValue()
-				)
-			);
-		}
-
-		Map<String, PropertyDescriptor> propertyDescriptorMap = getPropertyDescriptors(actualType);
-		for (Entry<String, PropertyDescriptor> entry : propertyDescriptorMap.entrySet()) {
-			List<Property> properties = propertiesMap.computeIfAbsent(
-				entry.getValue().getName(), name -> new ArrayList<>()
-			);
-
-			PropertyDescriptor propertyDescriptor = entry.getValue();
-			if (propertyDescriptor.getReadMethod() != null && propertyDescriptor.getWriteMethod() != null) {
-				properties.add(
-					new PropertyDescriptorProperty(
-						Types.resolveWithTypeReferenceGenerics(annotatedType, entry.getValue()),
-						entry.getValue()
-					)
-				);
-			}
-		}
-
-		List<Property> result = new ArrayList<>();
-		for (List<Property> properties : propertiesMap.values()) {
-			if (properties.isEmpty()) {
-				continue;
-			}
-
-			if (properties.size() == 1) {
-				result.add(properties.get(0));
-			} else {
-				result.add(new CompositeProperty(properties.get(0), properties.get(1)));
-			}
-		}
-
-		return Collections.unmodifiableList(result);
+		return DEFAULT_PROPERTY_GENERATOR.generateObjectChildProperties(annotatedType);
 	}
 
+	@Deprecated // It would be removed in 0.6.0
 	public static Optional<Property> getProperty(AnnotatedType annotatedType, String name) {
 		return getProperties(annotatedType).stream()
 			.filter(it -> name.equals(it.getName()))
 			.findFirst();
 	}
 
+	@Deprecated // It would be removed in 0.6.0
 	public static Map<String, Field> getFields(Class<?> clazz) {
+		return getFieldsByName(Types.generateAnnotatedTypeWithoutAnnotation(clazz));
+	}
+
+	public static Map<String, Field> getFieldsByName(AnnotatedType annotatedType) {
+		Class<?> clazz = Types.getActualType(annotatedType.getType());
+
 		return FIELDS.computeIfAbsent(clazz, type -> {
 			Map<String, Field> result = new ConcurrentHashMap<>();
 			List<Field> fields = ReflectionUtils.findFields(
@@ -139,7 +97,14 @@ public final class PropertyCache {
 		});
 	}
 
+	@Deprecated // It would be removed in 0.6.0
 	public static Map<String, PropertyDescriptor> getPropertyDescriptors(Class<?> clazz) {
+		return getPropertyDescriptorsByPropertyName(Types.generateAnnotatedTypeWithoutAnnotation(clazz));
+	}
+
+	public static Map<String, PropertyDescriptor> getPropertyDescriptorsByPropertyName(AnnotatedType annotatedType) {
+		Class<?> clazz = Types.getActualType(annotatedType.getType());
+
 		return PROPERTY_DESCRIPTORS.computeIfAbsent(clazz, type -> {
 			Map<String, PropertyDescriptor> result = new ConcurrentHashMap<>();
 			try {
@@ -158,7 +123,12 @@ public final class PropertyCache {
 		});
 	}
 
+	@Deprecated // It would be removed in 0.6.0
 	public static Map<String, Property> getConstructorProperties(AnnotatedType annotatedType) {
+		return getConstructorParameterPropertiesByParameterName(annotatedType);
+	}
+
+	public static Map<String, Property> getConstructorParameterPropertiesByParameterName(AnnotatedType annotatedType) {
 		Class<?> clazz = Types.getActualType(annotatedType.getType());
 
 		Map<String, Property> constructorPropertiesByName = new HashMap<>();
@@ -171,7 +141,7 @@ public final class PropertyCache {
 		String[] parameterNames = parameterNamesByConstructor.getValue();
 		AnnotatedType[] annotatedParameterTypes = primaryConstructor.getAnnotatedParameterTypes();
 
-		Map<String, Field> fieldsByName = getFields(clazz);
+		Map<String, Field> fieldsByName = getFieldsByName(annotatedType);
 		int parameterSize = parameterNames.length;
 		for (int i = 0; i < parameterSize; i++) {
 			AnnotatedType annotatedParameterType = annotatedParameterTypes[i];
@@ -264,6 +234,7 @@ public final class PropertyCache {
 	}
 
 	public static void clearCache() {
+		PARAMETER_NAMES_BY_PRIMARY_CONSTRUCTOR.clear();
 		PROPERTY_DESCRIPTORS.clear();
 		FIELDS.clear();
 	}
