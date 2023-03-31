@@ -103,6 +103,26 @@ class AnonymousInstanceTest {
         then(actual).isEqualTo(expected)
     }
 
+    @RepeatedTest(TEST_COUNT)
+    fun samplePropertyInterface() {
+        val actual = SUT.giveMeOne<PropertyInterface>()
+
+        then(actual.string).isNotNull
+        then(actual.int).isNotNull
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun setPropertyInterface() {
+        val expected = "expected"
+
+        val actual = SUT.giveMeBuilder<PropertyInterface>()
+            .set("string", expected)
+            .sample()
+            .string
+
+        then(actual).isEqualTo(expected)
+    }
+
     interface Interface {
         fun string(): String
         fun integer(): Int
@@ -125,6 +145,12 @@ class AnonymousInstanceTest {
 
     interface GetterInterface {
         fun getString(): String
+    }
+
+    interface PropertyInterface {
+        val string: String
+
+        val int: Int
     }
 
     companion object {

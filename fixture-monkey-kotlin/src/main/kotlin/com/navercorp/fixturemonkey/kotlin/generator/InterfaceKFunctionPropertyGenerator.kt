@@ -24,11 +24,14 @@ import com.navercorp.fixturemonkey.api.property.InterfaceJavaMethodProperty
 import com.navercorp.fixturemonkey.api.property.Property
 import com.navercorp.fixturemonkey.api.type.Types
 import com.navercorp.fixturemonkey.kotlin.property.InterfaceKFunctionProperty
+import com.navercorp.fixturemonkey.kotlin.type.getPropertyName
 import net.jqwik.kotlin.internal.isKotlinClass
 import org.apiguardian.api.API
 import java.lang.reflect.AnnotatedType
 import kotlin.reflect.KParameter.Kind.INSTANCE
 import kotlin.reflect.full.declaredMemberFunctions
+import kotlin.reflect.full.declaredMemberProperties
+import kotlin.reflect.jvm.javaMethod
 
 /**
  * A property generator for generating no-argument Kotlin interface method.
@@ -40,9 +43,27 @@ class InterfaceKFunctionPropertyGenerator : PropertyGenerator by KotlinPropertyG
         val type = Types.getActualType(annotatedType.type)
 
         if (type.isKotlinClass()) {
-            return type.kotlin.declaredMemberFunctions
+            val methods = type.kotlin.declaredMemberFunctions
                 .filter { it.parameters.none { parameter -> parameter.kind != INSTANCE } }
-                .map { InterfaceKFunctionProperty(it) }
+                .map {
+                    InterfaceKFunctionProperty(
+                        it.returnType,
+                        it.getPropertyName(),
+                        it.name,
+                        it.annotations,
+                    )
+                }
+
+            val properties = type.kotlin.declaredMemberProperties
+                .map {
+                    InterfaceKFunctionProperty(
+                        type = it.returnType,
+                        propertyName = it.name,
+                        methodName = it.getter.javaMethod!!.name,
+                        annotations = it.annotations,
+                    )
+                }
+            return methods + properties
         }
 
         return JAVA_METHOD_PROPERTY_GENERATOR.generateObjectChildProperties(annotatedType)

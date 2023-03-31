@@ -19,23 +19,27 @@
 package com.navercorp.fixturemonkey.kotlin.property
 
 import com.navercorp.fixturemonkey.api.property.MethodProperty
-import com.navercorp.fixturemonkey.kotlin.type.getPropertyName
 import org.apiguardian.api.API
 import java.lang.reflect.AnnotatedType
 import java.lang.reflect.Type
 import java.util.Optional
-import kotlin.reflect.KFunction
+import kotlin.reflect.KType
 import kotlin.reflect.jvm.javaType
 
 /**
  * An interface method property for kotlin.
  */
 @API(since = "0.5.3", status = API.Status.EXPERIMENTAL)
-data class InterfaceKFunctionProperty(private val function: KFunction<*>) : MethodProperty {
-    override fun getType(): Type = function.returnType.javaType
+data class InterfaceKFunctionProperty(
+    private val type: KType,
+    private val propertyName: String,
+    private val methodName: String,
+    private val annotations: List<Annotation>,
+) : MethodProperty {
+    override fun getType(): Type = type.javaType
 
     override fun getAnnotatedType(): AnnotatedType = object : AnnotatedType {
-        override fun getType(): Type = this@InterfaceKFunctionProperty.type
+        override fun getType(): Type = this@InterfaceKFunctionProperty.getType()
 
         override fun <T : Annotation?> getAnnotation(annotationClass: Class<T>): T =
             this@InterfaceKFunctionProperty.getAnnotation(annotationClass).orElse(null)
@@ -45,11 +49,11 @@ data class InterfaceKFunctionProperty(private val function: KFunction<*>) : Meth
         override fun getDeclaredAnnotations(): Array<Annotation> = annotations
     }
 
-    override fun getName(): String = function.getPropertyName()
+    override fun getName(): String = propertyName
 
-    override fun getMethodName(): String = function.name
+    override fun getMethodName(): String = methodName
 
-    override fun getAnnotations(): List<Annotation> = this.function.annotations
+    override fun getAnnotations(): List<Annotation> = annotations
 
     override fun getValue(obj: Any?): Any? {
         throw UnsupportedOperationException("Interface method should not be called.")
@@ -59,5 +63,5 @@ data class InterfaceKFunctionProperty(private val function: KFunction<*>) : Meth
         return super.getAnnotation(annotationClass)
     }
 
-    override fun isNullable(): Boolean = function.returnType.isMarkedNullable
+    override fun isNullable(): Boolean = type.isMarkedNullable
 }
