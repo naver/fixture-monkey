@@ -57,7 +57,7 @@ public final class FieldReflectionArbitraryIntrospector implements ArbitraryIntr
 		List<ArbitraryProperty> childrenProperties = context.getChildren();
 		Map<String, CombinableArbitrary> arbitrariesByResolvedName
 			= context.getCombinableArbitrariesByResolvedName();
-		Map<String, Field> fields = PropertyCache.getFields(type);
+		Map<String, Field> fields = PropertyCache.getFieldsByName(property.getAnnotatedType());
 
 		LazyArbitrary<Arbitrary<Object>> generateArbitrary = LazyArbitrary.lazy(
 			() -> {

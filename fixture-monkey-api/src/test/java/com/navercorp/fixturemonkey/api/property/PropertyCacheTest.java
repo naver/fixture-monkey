@@ -32,7 +32,9 @@ import java.util.Optional;
 import org.junit.jupiter.api.Test;
 
 import com.navercorp.fixturemonkey.api.type.TypeReference;
+import com.navercorp.fixturemonkey.api.type.Types;
 
+@SuppressWarnings("unused")
 class PropertyCacheTest {
 
 	@Test
@@ -156,7 +158,9 @@ class PropertyCacheTest {
 
 	@Test
 	void getFields() {
-		Map<String, Field> actual = PropertyCache.getFields(PropertyValue.class);
+		Map<String, Field> actual = PropertyCache.getFieldsByName(
+			Types.generateAnnotatedTypeWithoutAnnotation(PropertyValue.class)
+		);
 		then(actual).hasSize(1);
 		then(actual.get("name")).isNotNull();
 		then(actual.get("name").getName()).isEqualTo("name");
@@ -164,7 +168,9 @@ class PropertyCacheTest {
 
 	@Test
 	void getPropertyDescriptors() {
-		Map<String, PropertyDescriptor> actual = PropertyCache.getPropertyDescriptors(PropertyValue.class);
+		Map<String, PropertyDescriptor> actual = PropertyCache.getPropertyDescriptorsByPropertyName(
+			Types.generateAnnotatedTypeWithoutAnnotation(PropertyValue.class)
+		);
 		then(actual).hasSize(1);
 
 		then(actual.get("name")).isNotNull();
