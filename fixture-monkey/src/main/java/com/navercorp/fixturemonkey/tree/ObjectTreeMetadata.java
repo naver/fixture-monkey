@@ -16,17 +16,25 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.resolver;
+package com.navercorp.fixturemonkey.tree;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.customizer.ArbitraryManipulator;
+import com.navercorp.fixturemonkey.api.property.Property;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
-@FunctionalInterface
-public interface ManipulatorOptimizer {
-	OptimizedManipulatorResult optimize(List<ArbitraryManipulator> manipulators);
+public class ObjectTreeMetadata {
+	private final Map<Property, List<ObjectNode>> nodesByProperty; // matchOperator
+
+	public ObjectTreeMetadata(Map<Property, List<ObjectNode>> nodesByProperty) {
+		this.nodesByProperty = nodesByProperty;
+	}
+
+	public Map<Property, List<ObjectNode>> getNodesByProperty() {
+		return nodesByProperty;
+	}
 }

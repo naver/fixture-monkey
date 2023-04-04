@@ -23,9 +23,6 @@ import java.util.List;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.resolver.ArbitraryManipulator;
-import com.navercorp.fixturemonkey.resolver.ContainerInfoManipulator;
-
 @API(since = "0.5.0", status = Status.EXPERIMENTAL)
 public final class ManipulatorSet {
 	private final List<ArbitraryManipulator> arbitraryManipulators;

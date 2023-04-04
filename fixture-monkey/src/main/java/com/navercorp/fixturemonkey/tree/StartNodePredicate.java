@@ -16,17 +16,25 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.resolver;
-
-import java.util.List;
+package com.navercorp.fixturemonkey.tree;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.customizer.ArbitraryManipulator;
+import com.navercorp.fixturemonkey.api.generator.ObjectProperty;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
-@FunctionalInterface
-public interface ManipulatorOptimizer {
-	OptimizedManipulatorResult optimize(List<ArbitraryManipulator> manipulators);
+public final class StartNodePredicate implements NextNodePredicate {
+	public static final StartNodePredicate INSTANCE = new StartNodePredicate();
+
+	/**
+	 * It determines if given objectProperty is a first node.
+	 *
+	 * @param currentObjectProperty property to determines
+	 * @return true
+	 */
+	@Override
+	public boolean test(ObjectProperty currentObjectProperty) {
+		return true; // always returns true since the first node has no constraint
+	}
 }

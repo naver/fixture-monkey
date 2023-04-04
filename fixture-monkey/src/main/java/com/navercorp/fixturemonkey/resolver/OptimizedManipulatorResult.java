@@ -23,6 +23,8 @@ import java.util.List;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import com.navercorp.fixturemonkey.customizer.ArbitraryManipulator;
+
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class OptimizedManipulatorResult {
 	private final List<ArbitraryManipulator> manipulators;
