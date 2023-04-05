@@ -44,8 +44,8 @@ import com.navercorp.fixturemonkey.customizer.InnerSpecState.ManipulatorHolderSe
 import com.navercorp.fixturemonkey.customizer.Values.Just;
 import com.navercorp.fixturemonkey.expression.MonkeyExpressionFactory;
 import com.navercorp.fixturemonkey.resolver.ArbitraryBuilderContext;
+import com.navercorp.fixturemonkey.resolver.DecomposedContainerValueFactory;
 import com.navercorp.fixturemonkey.resolver.DefaultArbitraryBuilder;
-import com.navercorp.fixturemonkey.resolver.ManipulateOptions;
 import com.navercorp.fixturemonkey.tree.ArbitraryTraverser;
 import com.navercorp.fixturemonkey.tree.NextNodePredicate;
 import com.navercorp.fixturemonkey.tree.NodeResolver;
@@ -63,17 +63,18 @@ public final class MonkeyManipulatorFactory {
 	private final AtomicInteger sequence;
 	private final MonkeyExpressionFactory monkeyExpressionFactory;
 	private final ArbitraryTraverser traverser;
-	private final ManipulateOptions manipulateOptions;
+	private final DecomposedContainerValueFactory decomposedContainerValueFactory;
 
 	public MonkeyManipulatorFactory(
 		AtomicInteger sequence,
+		MonkeyExpressionFactory monkeyExpressionFactory,
 		ArbitraryTraverser traverser,
-		ManipulateOptions manipulateOptions
+		DecomposedContainerValueFactory decomposedContainerValueFactory
 	) {
 		this.sequence = sequence;
-		this.monkeyExpressionFactory = manipulateOptions.getDefaultMonkeyExpressionFactory();
+		this.monkeyExpressionFactory = monkeyExpressionFactory;
 		this.traverser = traverser;
-		this.manipulateOptions = manipulateOptions;
+		this.decomposedContainerValueFactory = decomposedContainerValueFactory;
 	}
 
 	public ArbitraryManipulator newArbitraryManipulator(
@@ -215,8 +216,9 @@ public final class MonkeyManipulatorFactory {
 	public MonkeyManipulatorFactory copy() {
 		return new MonkeyManipulatorFactory(
 			new AtomicInteger(sequence.get()),
+			monkeyExpressionFactory,
 			traverser,
-			manipulateOptions
+			decomposedContainerValueFactory
 		);
 	}
 
@@ -236,35 +238,35 @@ public final class MonkeyManipulatorFactory {
 			return new NodeSetLazyManipulator<>(
 				sequence,
 				traverser,
-				manipulateOptions,
+				decomposedContainerValueFactory,
 				LazyArbitrary.lazy(() -> ((Arbitrary<?>)value).sample())
 			);
 		} else if (value instanceof DefaultArbitraryBuilder) {
 			return new NodeSetLazyManipulator<>(
 				sequence,
 				traverser,
-				manipulateOptions,
+				decomposedContainerValueFactory,
 				LazyArbitrary.lazy(() -> ((DefaultArbitraryBuilder<?>)value).sample())
 			);
 		} else if (value instanceof Supplier) {
 			return new NodeSetLazyManipulator<>(
 				sequence,
 				traverser,
-				manipulateOptions,
+				decomposedContainerValueFactory,
 				LazyArbitrary.lazy((Supplier<?>)value)
 			);
 		} else if (value instanceof LazyArbitrary) {
 			return new NodeSetLazyManipulator<>(
 				sequence,
 				traverser,
-				manipulateOptions,
+				decomposedContainerValueFactory,
 				(LazyArbitrary<?>)value
 			);
 		} else {
 			return new NodeSetDecomposedValueManipulator<>(
 				sequence,
 				traverser,
-				manipulateOptions,
+				decomposedContainerValueFactory,
 				value
 			);
 		}
