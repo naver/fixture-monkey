@@ -61,6 +61,7 @@ public final class ManipulateOptionsBuilder {
 		return this;
 	}
 
+	@Deprecated // would be removed in Fixture Monkey 0.6.0
 	public ManipulateOptionsBuilder monkeyExpressionFactory(MonkeyExpressionFactory monkeyExpressionFactory) {
 		this.defaultMonkeyExpressionFactory = monkeyExpressionFactory;
 		return this;

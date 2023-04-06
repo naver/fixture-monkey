@@ -100,6 +100,7 @@ public class FixtureMonkeyBuilder {
 		return this;
 	}
 
+	@Deprecated
 	public FixtureMonkeyBuilder monkeyExpressionFactory(MonkeyExpressionFactory monkeyExpressionFactory) {
 		manipulateOptionsBuilder.monkeyExpressionFactory(monkeyExpressionFactory);
 		return this;
