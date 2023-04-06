@@ -26,8 +26,8 @@ import javax.annotation.Nullable;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.resolver.CompositeNodeResolver;
-import com.navercorp.fixturemonkey.resolver.NodeResolver;
+import com.navercorp.fixturemonkey.tree.CompositeNodeResolver;
+import com.navercorp.fixturemonkey.tree.NodeResolver;
 
 @API(since = "0.5.0", status = Status.EXPERIMENTAL)
 final class InnerSpecState {

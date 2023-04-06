@@ -29,8 +29,6 @@ import org.apiguardian.api.API.Status;
 
 import net.jqwik.api.Arbitrary;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-
 import com.navercorp.fixturemonkey.api.context.MonkeyContext;
 import com.navercorp.fixturemonkey.api.customizer.FixtureCustomizer;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
@@ -39,15 +37,15 @@ import com.navercorp.fixturemonkey.api.property.RootProperty;
 import com.navercorp.fixturemonkey.api.type.LazyAnnotatedType;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.api.validator.ArbitraryValidator;
+import com.navercorp.fixturemonkey.customizer.ArbitraryManipulator;
 import com.navercorp.fixturemonkey.customizer.MonkeyManipulatorFactory;
 import com.navercorp.fixturemonkey.resolver.ArbitraryBuilderContext;
-import com.navercorp.fixturemonkey.resolver.ArbitraryManipulator;
 import com.navercorp.fixturemonkey.resolver.ArbitraryResolver;
-import com.navercorp.fixturemonkey.resolver.ArbitraryTraverser;
 import com.navercorp.fixturemonkey.resolver.DefaultArbitraryBuilder;
 import com.navercorp.fixturemonkey.resolver.ManipulateOptions;
 import com.navercorp.fixturemonkey.resolver.ManipulateOptionsBuilder;
 import com.navercorp.fixturemonkey.resolver.ManipulatorOptimizer;
+import com.navercorp.fixturemonkey.tree.ArbitraryTraverser;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public class FixtureMonkey {
@@ -58,7 +56,6 @@ public class FixtureMonkey {
 	private final ArbitraryValidator validator;
 	private final MonkeyContext monkeyContext;
 
-	@SuppressFBWarnings("NP_NULL_PARAM_DEREF_NONVIRTUAL")
 	public FixtureMonkey(
 		GenerateOptions generateOptions,
 		ManipulateOptionsBuilder manipulateOptionsBuilder,
@@ -107,19 +104,22 @@ public class FixtureMonkey {
 			return (DefaultArbitraryBuilder<T>)registered.copy();
 		}
 
+		MonkeyManipulatorFactory monkeyManipulatorFactory =
+			new MonkeyManipulatorFactory(new AtomicInteger(), traverser, manipulateOptions);
 		return new DefaultArbitraryBuilder<>(
 			manipulateOptions,
 			rootProperty,
 			new ArbitraryResolver(
 				traverser,
 				manipulatorOptimizer,
+				monkeyManipulatorFactory,
 				generateOptions,
 				manipulateOptions,
 				monkeyContext
 			),
 			traverser,
 			this.validator,
-			new MonkeyManipulatorFactory(new AtomicInteger(), traverser, manipulateOptions),
+			monkeyManipulatorFactory,
 			new ArbitraryBuilderContext()
 		);
 	}
@@ -143,6 +143,7 @@ public class FixtureMonkey {
 			new ArbitraryResolver(
 				traverser,
 				manipulatorOptimizer,
+				monkeyManipulatorFactory,
 				generateOptions,
 				manipulateOptions,
 				monkeyContext

@@ -53,7 +53,7 @@ public interface Property {
 	/**
 	 * Returns the property name.
 	 * It should be unique in properties comprise an instance.
-	 * It might be used for referencing {@code ArbitraryNode}.
+	 * It might be used for referencing {@code ObjectNode}.
 	 *
 	 * @return name of the property
 	 */

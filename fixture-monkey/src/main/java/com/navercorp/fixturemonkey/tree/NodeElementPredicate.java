@@ -16,17 +16,32 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.resolver;
-
-import java.util.List;
+package com.navercorp.fixturemonkey.tree;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.customizer.ArbitraryManipulator;
+import com.navercorp.fixturemonkey.api.generator.ObjectProperty;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
-@FunctionalInterface
-public interface ManipulatorOptimizer {
-	OptimizedManipulatorResult optimize(List<ArbitraryManipulator> manipulators);
+public final class NodeElementPredicate implements NextNodePredicate {
+	private final int index;
+
+	public NodeElementPredicate(int index) {
+		this.index = index;
+	}
+
+	@Override
+	public boolean test(ObjectProperty currentObjectProperty) {
+		if (currentObjectProperty.getElementIndex() == null) {
+			throw new IllegalArgumentException(
+				"It is not an element property. now type : " + currentObjectProperty.getProperty()
+					.getType()
+					.getTypeName()
+			);
+		}
+
+		int elementIndex = currentObjectProperty.getElementIndex();
+		return elementIndex == index;
+	}
 }

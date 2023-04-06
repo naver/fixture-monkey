@@ -38,16 +38,16 @@ import com.navercorp.fixturemonkey.customizer.InnerSpecState.ContainerInfoHolder
 import com.navercorp.fixturemonkey.customizer.InnerSpecState.FilterHolder;
 import com.navercorp.fixturemonkey.customizer.InnerSpecState.ManipulatorHolderSet;
 import com.navercorp.fixturemonkey.customizer.InnerSpecState.NodeResolverObjectHolder;
-import com.navercorp.fixturemonkey.resolver.CompositeNodeResolver;
-import com.navercorp.fixturemonkey.resolver.ContainerElementPredicate;
-import com.navercorp.fixturemonkey.resolver.DefaultNodeResolver;
-import com.navercorp.fixturemonkey.resolver.IdentityNodeResolver;
-import com.navercorp.fixturemonkey.resolver.NodeAllElementPredicate;
-import com.navercorp.fixturemonkey.resolver.NodeElementPredicate;
-import com.navercorp.fixturemonkey.resolver.NodeKeyPredicate;
-import com.navercorp.fixturemonkey.resolver.NodeResolver;
-import com.navercorp.fixturemonkey.resolver.NodeValuePredicate;
-import com.navercorp.fixturemonkey.resolver.PropertyNameNodePredicate;
+import com.navercorp.fixturemonkey.tree.CompositeNodeResolver;
+import com.navercorp.fixturemonkey.tree.ContainerElementPredicate;
+import com.navercorp.fixturemonkey.tree.DefaultNodeResolver;
+import com.navercorp.fixturemonkey.tree.IdentityNodeResolver;
+import com.navercorp.fixturemonkey.tree.NodeAllElementPredicate;
+import com.navercorp.fixturemonkey.tree.NodeElementPredicate;
+import com.navercorp.fixturemonkey.tree.NodeKeyPredicate;
+import com.navercorp.fixturemonkey.tree.NodeResolver;
+import com.navercorp.fixturemonkey.tree.NodeValuePredicate;
+import com.navercorp.fixturemonkey.tree.PropertyNameNodePredicate;
 
 @SuppressWarnings("UnusedReturnValue")
 @API(since = "0.4.0", status = Status.MAINTAINED)

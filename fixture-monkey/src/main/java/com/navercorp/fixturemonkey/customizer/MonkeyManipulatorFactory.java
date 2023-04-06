@@ -19,7 +19,10 @@
 package com.navercorp.fixturemonkey.customizer;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -32,23 +35,22 @@ import org.apiguardian.api.API.Status;
 
 import net.jqwik.api.Arbitrary;
 
+import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
+import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
+import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.customizer.InnerSpecState.ManipulatorHolderSet;
 import com.navercorp.fixturemonkey.customizer.Values.Just;
 import com.navercorp.fixturemonkey.expression.MonkeyExpressionFactory;
-import com.navercorp.fixturemonkey.resolver.ApplyNodeCountManipulator;
-import com.navercorp.fixturemonkey.resolver.ArbitraryManipulator;
-import com.navercorp.fixturemonkey.resolver.ArbitraryTraverser;
-import com.navercorp.fixturemonkey.resolver.ContainerInfoManipulator;
+import com.navercorp.fixturemonkey.resolver.ArbitraryBuilderContext;
 import com.navercorp.fixturemonkey.resolver.DefaultArbitraryBuilder;
 import com.navercorp.fixturemonkey.resolver.ManipulateOptions;
-import com.navercorp.fixturemonkey.resolver.NodeFilterManipulator;
-import com.navercorp.fixturemonkey.resolver.NodeManipulator;
-import com.navercorp.fixturemonkey.resolver.NodeNullityManipulator;
-import com.navercorp.fixturemonkey.resolver.NodeSetDecomposedValueManipulator;
-import com.navercorp.fixturemonkey.resolver.NodeSetJustManipulator;
-import com.navercorp.fixturemonkey.resolver.NodeSetLazyManipulator;
+import com.navercorp.fixturemonkey.tree.ArbitraryTraverser;
+import com.navercorp.fixturemonkey.tree.NextNodePredicate;
+import com.navercorp.fixturemonkey.tree.NodeResolver;
+import com.navercorp.fixturemonkey.tree.ObjectNode;
+import com.navercorp.fixturemonkey.tree.PropertyPredicate;
 
 @API(since = "0.4.10", status = Status.MAINTAINED)
 public final class MonkeyManipulatorFactory {
@@ -135,15 +137,39 @@ public final class MonkeyManipulatorFactory {
 		);
 	}
 
-	public MonkeyManipulatorFactory copy() {
-		return new MonkeyManipulatorFactory(
-			new AtomicInteger(sequence.get()),
-			traverser,
-			manipulateOptions
-		);
+	public List<ArbitraryManipulator> newRegisteredArbitraryManipulators(
+		List<MatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuilders,
+		Map<Property, List<ObjectNode>> nodesByType
+	) {
+		List<ArbitraryManipulator> manipulators = new ArrayList<>();
+
+		for (Entry<Property, List<ObjectNode>> nodeByType : nodesByType.entrySet()) {
+			Property property = nodeByType.getKey();
+			List<ObjectNode> objectNodes = nodeByType.getValue();
+
+			DefaultArbitraryBuilder<?> registeredArbitraryBuilder =
+				(DefaultArbitraryBuilder<?>)registeredArbitraryBuilders.stream()
+					.filter(it -> it.match(property))
+					.findFirst()
+					.map(MatcherOperator::getOperator)
+					.filter(it -> it instanceof DefaultArbitraryBuilder<?>)
+					.orElse(null);
+
+			if (registeredArbitraryBuilder == null) {
+				continue;
+			}
+
+			ArbitraryBuilderContext context = registeredArbitraryBuilder.getContext();
+			List<ArbitraryManipulator> arbitraryManipulators = context.getManipulators().stream()
+				.map(it -> it.withPrependNodeResolver(prependPropertyNodeResolver(property, objectNodes)))
+				.collect(Collectors.toList());
+
+			manipulators.addAll(arbitraryManipulators);
+		}
+		return manipulators;
 	}
 
-	ManipulatorSet newManipulatorSet(ManipulatorHolderSet manipulatorHolderSet) {
+	public ManipulatorSet newManipulatorSet(ManipulatorHolderSet manipulatorHolderSet) {
 		int baseSequence = sequence.getAndIncrement();
 
 		List<ArbitraryManipulator> arbitraryManipulators = new ArrayList<>();
@@ -183,6 +209,14 @@ public final class MonkeyManipulatorFactory {
 		return new ManipulatorSet(
 			arbitraryManipulators,
 			containerInfoManipulators
+		);
+	}
+
+	public MonkeyManipulatorFactory copy() {
+		return new MonkeyManipulatorFactory(
+			new AtomicInteger(sequence.get()),
+			traverser,
+			manipulateOptions
 		);
 	}
 
@@ -234,5 +268,22 @@ public final class MonkeyManipulatorFactory {
 				value
 			);
 		}
+	}
+
+	private NodeResolver prependPropertyNodeResolver(Property property, List<ObjectNode> objectNodes) {
+		return new NodeResolver() {
+			@Override
+			public List<ObjectNode> resolve(ObjectNode objectNode) {
+				for (ObjectNode node : objectNodes) {
+					node.setManipulated(true);
+				}
+				return objectNodes;
+			}
+
+			@Override
+			public List<NextNodePredicate> toNextNodePredicate() {
+				return Collections.singletonList(new PropertyPredicate(property));
+			}
+		};
 	}
 }

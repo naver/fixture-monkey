@@ -18,11 +18,7 @@
 
 package com.navercorp.fixturemonkey.resolver;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -31,19 +27,22 @@ import org.apiguardian.api.API.Status;
 
 import net.jqwik.api.Arbitrary;
 
-import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.api.context.MonkeyContext;
 import com.navercorp.fixturemonkey.api.customizer.FixtureCustomizer;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.option.GenerateOptions;
-import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
+import com.navercorp.fixturemonkey.customizer.ArbitraryManipulator;
+import com.navercorp.fixturemonkey.customizer.ContainerInfoManipulator;
+import com.navercorp.fixturemonkey.customizer.MonkeyManipulatorFactory;
+import com.navercorp.fixturemonkey.tree.ArbitraryTraverser;
+import com.navercorp.fixturemonkey.tree.ObjectTree;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class ArbitraryResolver {
 	private final ArbitraryTraverser traverser;
 	private final ManipulatorOptimizer manipulatorOptimizer;
-
+	private final MonkeyManipulatorFactory monkeyManipulatorFactory;
 	private final GenerateOptions generateOptions;
 	private final ManipulateOptions manipulateOptions;
 	private final MonkeyContext monkeyContext;
@@ -51,12 +50,14 @@ public final class ArbitraryResolver {
 	public ArbitraryResolver(
 		ArbitraryTraverser traverser,
 		ManipulatorOptimizer manipulatorOptimizer,
+		MonkeyManipulatorFactory monkeyManipulatorFactory,
 		GenerateOptions generateOptions,
 		ManipulateOptions manipulateOptions,
 		MonkeyContext monkeyContext
 	) {
 		this.traverser = traverser;
 		this.manipulatorOptimizer = manipulatorOptimizer;
+		this.monkeyManipulatorFactory = monkeyManipulatorFactory;
 		this.generateOptions = generateOptions;
 		this.manipulateOptions = manipulateOptions;
 		this.monkeyContext = monkeyContext;
@@ -69,21 +70,30 @@ public final class ArbitraryResolver {
 		List<MatcherOperator<? extends FixtureCustomizer>> customizers,
 		List<ContainerInfoManipulator> containerInfoManipulators
 	) {
-		ArbitraryTree arbitraryTree = new ArbitraryTree(
+		List<MatcherOperator<List<ContainerInfoManipulator>>> registeredContainerInfoManipulators =
+			manipulateOptions.getRegisteredArbitraryBuilders()
+				.stream()
+				.map(it -> new MatcherOperator<>(
+					it.getMatcher(),
+					((DefaultArbitraryBuilder<?>)it.getOperator()).getContext().getContainerInfoManipulators()
+				))
+				.collect(Collectors.toList());
+
+		ObjectTree objectTree = new ObjectTree(
 			rootProperty,
 			this.traverser.traverse(
 				rootProperty,
 				containerInfoManipulators,
-				manipulateOptions.getRegisteredArbitraryBuilders()
+				registeredContainerInfoManipulators
 			),
 			generateOptions,
 			monkeyContext,
 			customizers
 		);
 
-		List<ArbitraryManipulator> registeredManipulators = getRegisteredToManipulators(
-			manipulateOptions,
-			arbitraryTree.getMetadata()
+		List<ArbitraryManipulator> registeredManipulators = monkeyManipulatorFactory.newRegisteredArbitraryManipulators(
+			manipulateOptions.getRegisteredArbitraryBuilders(),
+			objectTree.getMetadata().getNodesByProperty()
 		);
 
 		List<ArbitraryManipulator> joinedManipulators =
@@ -95,61 +105,9 @@ public final class ArbitraryResolver {
 			.getManipulators();
 
 		for (ArbitraryManipulator manipulator : optimizedManipulator) {
-			manipulator.manipulate(arbitraryTree);
+			manipulator.manipulate(objectTree);
 		}
 
-		return arbitraryTree.generate();
-	}
-
-	private List<ArbitraryManipulator> getRegisteredToManipulators(
-		ManipulateOptions manipulateOptions,
-		ArbitraryTreeMetadata metadata
-	) {
-		List<ArbitraryManipulator> manipulators = new ArrayList<>();
-		Map<Property, List<ArbitraryNode>> nodesByType = metadata.getNodesByProperty();
-		List<MatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuilders =
-			manipulateOptions.getRegisteredArbitraryBuilders();
-
-		for (Entry<Property, List<ArbitraryNode>> nodeByType : nodesByType.entrySet()) {
-			Property property = nodeByType.getKey();
-			List<ArbitraryNode> arbitraryNodes = nodeByType.getValue();
-
-			DefaultArbitraryBuilder<?> registeredArbitraryBuilder =
-				(DefaultArbitraryBuilder<?>)registeredArbitraryBuilders.stream()
-					.filter(it -> it.match(property))
-					.findFirst()
-					.map(MatcherOperator::getOperator)
-					.filter(it -> it instanceof DefaultArbitraryBuilder<?>)
-					.orElse(null);
-
-			if (registeredArbitraryBuilder == null) {
-				continue;
-			}
-
-			ArbitraryBuilderContext context = registeredArbitraryBuilder.getContext();
-			List<ArbitraryManipulator> arbitraryManipulators = context.getManipulators().stream()
-				.map(it -> it.withPrependNodeResolver(prependPropertyNodeResolver(property, arbitraryNodes)))
-				.collect(Collectors.toList());
-
-			manipulators.addAll(arbitraryManipulators);
-		}
-		return manipulators;
-	}
-
-	private static NodeResolver prependPropertyNodeResolver(Property property, List<ArbitraryNode> arbitraryNodes) {
-		return new NodeResolver() {
-			@Override
-			public List<ArbitraryNode> resolve(ArbitraryNode arbitraryNode) {
-				for (ArbitraryNode node : arbitraryNodes) {
-					node.setManipulated(true);
-				}
-				return arbitraryNodes;
-			}
-
-			@Override
-			public List<NextNodePredicate> toNextNodePredicate() {
-				return Collections.singletonList(new PropertyPredicate(property));
-			}
-		};
+		return objectTree.generate();
 	}
 }

@@ -39,7 +39,7 @@ public final class Values {
 
 	/**
 	 * An instance wrapped by {@code Just} represents setting value directly instead of decomposing
-	 * {@link com.navercorp.fixturemonkey.resolver.NodeSetDecomposedValueManipulator}.
+	 * {@link NodeSetDecomposedValueManipulator}.
 	 * Setting a property in ArbitraryBuilder does not use an instance of given value, it performs a deep copy.
 	 * If you would like to set an instance of value, use {@code set("expression", Values.just(value))}
 	 * Most common example would be setting a property to a mock instance when using mocking framework.

@@ -16,17 +16,33 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.resolver;
+package com.navercorp.fixturemonkey.tree;
 
 import java.util.List;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.customizer.ArbitraryManipulator;
-
 @API(since = "0.4.0", status = Status.MAINTAINED)
-@FunctionalInterface
-public interface ManipulatorOptimizer {
-	OptimizedManipulatorResult optimize(List<ArbitraryManipulator> manipulators);
+public final class ApplyStrictModeResolver implements NodeResolver {
+	private final NodeResolver nodeResolver;
+
+	public ApplyStrictModeResolver(NodeResolver nodeResolver) {
+		this.nodeResolver = nodeResolver;
+	}
+
+	@Override
+	public List<ObjectNode> resolve(ObjectNode objectNode) {
+		List<ObjectNode> selectedNodes = nodeResolver.resolve(objectNode);
+
+		if (selectedNodes.isEmpty()) {
+			throw new IllegalArgumentException("No matching results for given NodeResolvers.");
+		}
+		return selectedNodes;
+	}
+
+	@Override
+	public List<NextNodePredicate> toNextNodePredicate() {
+		return nodeResolver.toNextNodePredicate();
+	}
 }

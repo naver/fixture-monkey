@@ -21,7 +21,7 @@ package com.navercorp.fixturemonkey.expression;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.resolver.NodeResolver;
+import com.navercorp.fixturemonkey.tree.NodeResolver;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 @FunctionalInterface

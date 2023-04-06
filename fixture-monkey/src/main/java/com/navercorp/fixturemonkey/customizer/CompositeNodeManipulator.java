@@ -16,17 +16,24 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.resolver;
+package com.navercorp.fixturemonkey.customizer;
 
+import java.util.Arrays;
 import java.util.List;
 
-import org.apiguardian.api.API;
-import org.apiguardian.api.API.Status;
+import com.navercorp.fixturemonkey.tree.ObjectNode;
 
-import com.navercorp.fixturemonkey.customizer.ArbitraryManipulator;
+public final class CompositeNodeManipulator implements NodeManipulator {
+	private final List<NodeManipulator> manipulators;
 
-@API(since = "0.4.0", status = Status.MAINTAINED)
-@FunctionalInterface
-public interface ManipulatorOptimizer {
-	OptimizedManipulatorResult optimize(List<ArbitraryManipulator> manipulators);
+	public CompositeNodeManipulator(NodeManipulator... manipulators) {
+		this.manipulators = Arrays.asList(manipulators);
+	}
+
+	@Override
+	public void manipulate(ObjectNode objectNode) {
+		for (NodeManipulator manipulator : manipulators) {
+			manipulator.manipulate(objectNode);
+		}
+	}
 }

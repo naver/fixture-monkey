@@ -16,17 +16,32 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.resolver;
+package com.navercorp.fixturemonkey.tree;
 
+import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.NOT_NULL_INJECT;
+
+import java.util.Collections;
 import java.util.List;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.customizer.ArbitraryManipulator;
-
 @API(since = "0.4.0", status = Status.MAINTAINED)
-@FunctionalInterface
-public interface ManipulatorOptimizer {
-	OptimizedManipulatorResult optimize(List<ArbitraryManipulator> manipulators);
+public final class IdentityNodeResolver implements NodeResolver {
+	public static final IdentityNodeResolver INSTANCE = new IdentityNodeResolver();
+
+	private IdentityNodeResolver() {
+	}
+
+	@Override
+	public List<ObjectNode> resolve(ObjectNode objectNode) {
+		objectNode.setManipulated(true);
+		objectNode.setArbitraryProperty(objectNode.getArbitraryProperty().withNullInject(NOT_NULL_INJECT));
+		return Collections.singletonList(objectNode);
+	}
+
+	@Override
+	public List<NextNodePredicate> toNextNodePredicate() {
+		return Collections.singletonList(StartNodePredicate.INSTANCE);
+	}
 }
