@@ -54,4 +54,18 @@ class AnonymousInstanceTestSpecs {
 	public interface GetterInterface {
 		String getValue();
 	}
+
+	public interface ExtendsInterface extends Interface {
+		String value();
+	}
+
+	public interface ExtendsInterfaceWithSameNameMethod extends Interface {
+		String string();
+	}
+
+	public interface ExtendsTwoInterface extends Interface, ContainerInterface {
+	}
+
+	public interface NestedExtendsInterface extends ExtendsInterfaceWithSameNameMethod, Interface {
+	}
 }

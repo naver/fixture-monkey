@@ -123,6 +123,110 @@ class AnonymousInstanceTest {
         then(actual).isEqualTo(expected)
     }
 
+    @RepeatedTest(TEST_COUNT)
+    fun sampleExtendedInterface() {
+        val actual = SUT.giveMeOne<ExtendsInterface>()
+
+        then(actual.value()).isNotNull
+        then(actual.string()).isNotNull
+        then(actual.integer()).isNotNull
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun setExtendedInterface() {
+        val expected = "test"
+
+        val actual = SUT.giveMeBuilder<ExtendsInterface>()
+            .set("value", expected)
+            .sample()
+            .value()
+
+        then(actual).isEqualTo(expected)
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun sampleExtendsInterfaceWithOverrideMethod() {
+        val actual = SUT.giveMeOne<ExtendsInterfaceWithOverrideMethod>().string()
+
+        then(actual).isNotNull
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun setExtendsInterfaceWithOverrideMethod() {
+        val expected = "test"
+
+        val actual = SUT.giveMeBuilder<ExtendsInterfaceWithOverrideMethod>()
+            .set("string", expected)
+            .sample()
+            .string()
+
+        then(actual).isEqualTo(expected)
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun sampleExtendsTwoInterface() {
+        val actual = SUT.giveMeOne<ExtendsTwoInterface>().string()
+
+        then(actual).isNotNull
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun sampleNestedExtendsInterface() {
+        val actual = SUT.giveMeOne<NestedExtendsInterface>().string()
+
+        then(actual).isNotNull
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun setNestedExtendsInterface() {
+        val expected = "test"
+
+        val actual = SUT.giveMeBuilder<NestedExtendsInterface>()
+            .set("string", expected)
+            .sample()
+            .string()
+
+        then(actual).isEqualTo(expected)
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun sampleExtendsPropertyInterface() {
+        val actual = SUT.giveMeOne<ExtendsPropertyInterface>().string
+
+        then(actual).isNotNull
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun setExtendsPropertyInterface() {
+        val expected = "test"
+
+        val actual = SUT.giveMeBuilder<ExtendsPropertyInterface>()
+            .set("string", expected)
+            .sample()
+            .string
+
+        then(actual).isEqualTo(expected)
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun sampleNestedExtendsPropertyInterface() {
+        val actual = SUT.giveMeOne<NestedExtendsPropertyInterface>().string
+
+        then(actual).isNotNull
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun setNestedExtendsPropertyInterface() {
+        val expected = "test"
+
+        val actual = SUT.giveMeBuilder<NestedExtendsPropertyInterface>()
+            .set("string", expected)
+            .sample()
+            .string
+
+        then(actual).isEqualTo(expected)
+    }
+
     interface Interface {
         fun string(): String
         fun integer(): Int
@@ -152,6 +256,24 @@ class AnonymousInstanceTest {
 
         val int: Int
     }
+
+    interface ExtendsInterface : Interface {
+        fun value(): String
+    }
+
+    interface ExtendsInterfaceWithOverrideMethod : Interface {
+        override fun string(): String
+    }
+
+    interface ExtendsTwoInterface : Interface, ContainerInterface
+
+    interface NestedExtendsInterface : ExtendsInterfaceWithOverrideMethod, Interface
+
+    interface ExtendsPropertyInterface : PropertyInterface {
+        override val string: String
+    }
+
+    interface NestedExtendsPropertyInterface : ExtendsPropertyInterface, PropertyInterface
 
     companion object {
         val SUT: FixtureMonkey = FixtureMonkey.builder()

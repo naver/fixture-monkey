@@ -33,12 +33,10 @@ import org.apiguardian.api.API;
 /**
  * An interface method property for Java.
  */
-@API(since = "0.5.3", status = API.Status.EXPERIMENTAL)
+@API(since = "0.5.5", status = API.Status.EXPERIMENTAL)
 public final class InterfaceJavaMethodProperty implements MethodProperty {
 	private final AnnotatedType returnAnnotatedType;
-
 	private final String name;
-
 	private final String methodName;
 	private final List<Annotation> annotations;
 	private final Map<Class<? extends Annotation>, Annotation> annotationsMap;
@@ -102,12 +100,12 @@ public final class InterfaceJavaMethodProperty implements MethodProperty {
 			return false;
 		}
 		InterfaceJavaMethodProperty that = (InterfaceJavaMethodProperty)obj;
-		return Objects.equals(returnAnnotatedType, that.returnAnnotatedType)
+		return returnAnnotatedType.getType().equals(that.returnAnnotatedType.getType())
 			&& Objects.equals(annotations, that.annotations);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(returnAnnotatedType, annotations);
+		return Objects.hash(returnAnnotatedType.getType(), annotations);
 	}
 }

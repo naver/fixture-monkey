@@ -82,7 +82,6 @@ public final class GenerateOptions {
 		DefaultObjectPropertyGenerator.INSTANCE;
 	public static final PropertyNameResolver DEFAULT_PROPERTY_NAME_RESOLVER = PropertyNameResolver.IDENTITY;
 	public static final int DEFAULT_ARBITRARY_CONTAINER_MAX_SIZE = 3;
-
 	public static final List<MatcherOperator<PropertyGenerator>> DEFAULT_PROPERTY_GENERATORS =
 		getDefaultPropertyGenerators();
 	public static final GenerateOptions DEFAULT_GENERATE_OPTIONS = GenerateOptions.builder().build();

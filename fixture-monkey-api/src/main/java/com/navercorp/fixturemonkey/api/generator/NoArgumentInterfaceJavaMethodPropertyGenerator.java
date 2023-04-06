@@ -20,8 +20,6 @@ package com.navercorp.fixturemonkey.api.generator;
 
 import static java.util.stream.Collectors.toMap;
 
-import java.beans.IntrospectionException;
-import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedType;
@@ -32,85 +30,45 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import javax.annotation.Nullable;
-
 import org.apiguardian.api.API;
 
 import com.navercorp.fixturemonkey.api.property.InterfaceJavaMethodProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
-import com.navercorp.fixturemonkey.api.property.RootProperty;
+import com.navercorp.fixturemonkey.api.property.PropertyCache;
+import com.navercorp.fixturemonkey.api.property.PropertyGenerator;
 import com.navercorp.fixturemonkey.api.type.Types;
 
 /**
  * A property generator for generating no-argument Java interface method.
  * It generates {@link InterfaceJavaMethodProperty}.
  */
-@API(since = "0.5.3", status = API.Status.EXPERIMENTAL)
+@API(since = "0.5.5", status = API.Status.EXPERIMENTAL)
 public final class NoArgumentInterfaceJavaMethodPropertyGenerator implements PropertyGenerator {
 	@Override
-	public Property generateRootProperty(
-		AnnotatedType annotatedType
-	) {
-		return new RootProperty(annotatedType);
-	}
-
-	@Override
-	public List<Property> generateObjectChildProperties(
+	public List<Property> generateChildProperties(
 		AnnotatedType annotatedType
 	) {
 		Class<?> actualType = Types.getActualType(annotatedType.getType());
-		try {
-			Map<Method, String> propertyNamesByGetter =
-				Arrays.stream(Introspector.getBeanInfo(actualType).getPropertyDescriptors())
-					.collect(
-						toMap(
-							PropertyDescriptor::getReadMethod,
-							PropertyDescriptor::getName
-						)
-					);
-
-			return Arrays.stream(actualType.getMethods())
-				.filter(it -> it.getParameters().length == 0)
-				.map(it -> new InterfaceJavaMethodProperty(
-						it.getAnnotatedReturnType(),
-						propertyNamesByGetter.getOrDefault(it, it.getName()),
-						it.getName(),
-						Arrays.asList(it.getAnnotations()),
-						Arrays.stream(it.getAnnotations())
-							.collect(Collectors.toMap(Annotation::annotationType, Function.identity(), (a1, a2) -> a1))
+		Map<Method, String> propertyNamesByGetter =
+			PropertyCache.getPropertyDescriptorsByPropertyName(annotatedType).values().stream()
+				.collect(
+					toMap(
+						PropertyDescriptor::getReadMethod,
+						PropertyDescriptor::getName
 					)
+				);
+
+		return Arrays.stream(actualType.getMethods())
+			.filter(it -> it.getParameters().length == 0)
+			.map(it -> new InterfaceJavaMethodProperty(
+					it.getAnnotatedReturnType(),
+					propertyNamesByGetter.getOrDefault(it, it.getName()),
+					it.getName(),
+					Arrays.asList(it.getAnnotations()),
+					Arrays.stream(it.getAnnotations())
+						.collect(Collectors.toMap(Annotation::annotationType, Function.identity(), (a1, a2) -> a1))
 				)
-				.collect(Collectors.toList());
-
-		} catch (IntrospectionException e) {
-			throw new IllegalArgumentException("This type could not be introspected." + actualType.getTypeName(), e);
-		}
-	}
-
-	@Override
-	public Property generateElementProperty(
-		Property containerProperty,
-		AnnotatedType elementType,
-		@Nullable Integer index,
-		int sequence
-	) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public Property generateMapEntryElementProperty(
-		Property containerProperty,
-		Property keyProperty,
-		Property valueProperty
-	) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public Property generateTupleLikeElementsProperty(
-		Property containerProperty,
-		List<Property> childProperties, @Nullable Integer index
-	) {
-		throw new UnsupportedOperationException();
+			)
+			.collect(Collectors.toList());
 	}
 }

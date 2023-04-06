@@ -19,32 +19,33 @@
 package com.navercorp.fixturemonkey.kotlin.generator
 
 import com.navercorp.fixturemonkey.api.generator.NoArgumentInterfaceJavaMethodPropertyGenerator
-import com.navercorp.fixturemonkey.api.generator.PropertyGenerator
 import com.navercorp.fixturemonkey.api.property.InterfaceJavaMethodProperty
 import com.navercorp.fixturemonkey.api.property.Property
+import com.navercorp.fixturemonkey.api.property.PropertyGenerator
 import com.navercorp.fixturemonkey.api.type.Types
 import com.navercorp.fixturemonkey.kotlin.property.InterfaceKFunctionProperty
 import com.navercorp.fixturemonkey.kotlin.type.getPropertyName
+import java.lang.reflect.AnnotatedType
 import net.jqwik.kotlin.internal.isKotlinClass
 import org.apiguardian.api.API
-import java.lang.reflect.AnnotatedType
 import kotlin.reflect.KParameter.Kind.INSTANCE
-import kotlin.reflect.full.declaredMemberFunctions
-import kotlin.reflect.full.declaredMemberProperties
+import kotlin.reflect.full.memberFunctions
+import kotlin.reflect.full.memberProperties
 import kotlin.reflect.jvm.javaMethod
 
 /**
  * A property generator for generating no-argument Kotlin interface method.
  * It generates [InterfaceKFunctionProperty] if Kotlin and [InterfaceJavaMethodProperty] if Java.
  */
-@API(since = "0.5.3", status = API.Status.EXPERIMENTAL)
-class InterfaceKFunctionPropertyGenerator : PropertyGenerator by KotlinPropertyGenerator() {
-    override fun generateObjectChildProperties(annotatedType: AnnotatedType): List<Property> {
+@API(since = "0.5.5", status = API.Status.EXPERIMENTAL)
+class InterfaceKFunctionPropertyGenerator : PropertyGenerator {
+    override fun generateChildProperties(annotatedType: AnnotatedType): List<Property> {
         val type = Types.getActualType(annotatedType.type)
 
         if (type.isKotlinClass()) {
-            val methods = type.kotlin.declaredMemberFunctions
+            val methods = type.kotlin.memberFunctions
                 .filter { it.parameters.none { parameter -> parameter.kind != INSTANCE } }
+                .filter { !DATA_CLASS_METHOD_NAMES.contains(it.name) }
                 .map {
                     InterfaceKFunctionProperty(
                         it.returnType,
@@ -54,7 +55,7 @@ class InterfaceKFunctionPropertyGenerator : PropertyGenerator by KotlinPropertyG
                     )
                 }
 
-            val properties = type.kotlin.declaredMemberProperties
+            val properties = type.kotlin.memberProperties
                 .map {
                     InterfaceKFunctionProperty(
                         type = it.returnType,
@@ -72,5 +73,7 @@ class InterfaceKFunctionPropertyGenerator : PropertyGenerator by KotlinPropertyG
     companion object {
         private val JAVA_METHOD_PROPERTY_GENERATOR =
             NoArgumentInterfaceJavaMethodPropertyGenerator()
+
+        private val DATA_CLASS_METHOD_NAMES = setOf("toString", "hashCode")
     }
 }

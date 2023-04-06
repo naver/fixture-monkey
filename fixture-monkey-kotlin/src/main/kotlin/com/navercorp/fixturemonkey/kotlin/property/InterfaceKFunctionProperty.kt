@@ -29,7 +29,7 @@ import kotlin.reflect.jvm.javaType
 /**
  * An interface method property for kotlin.
  */
-@API(since = "0.5.3", status = API.Status.EXPERIMENTAL)
+@API(since = "0.5.5", status = API.Status.EXPERIMENTAL)
 data class InterfaceKFunctionProperty(
     private val type: KType,
     private val propertyName: String,
