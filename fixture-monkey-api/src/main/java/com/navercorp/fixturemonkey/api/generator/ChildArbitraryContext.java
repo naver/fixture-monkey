@@ -81,7 +81,7 @@ public final class ChildArbitraryContext {
 
 	public List<Arbitrary<?>> getArbitraries() {
 		return arbitrariesByChildProperty.values().stream()
-			.map(CombinableArbitrary::combined)
+			.map(CombinableArbitrary::rawValue)
 			.collect(Collectors.toList());
 	}
 }

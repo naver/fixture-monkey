@@ -18,6 +18,8 @@
 
 package com.navercorp.fixturemonkey.jackson.introspector;
 
+import static com.navercorp.fixturemonkey.jackson.property.JacksonAnnotations.getJacksonAnnotation;
+
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAccessor;
@@ -34,6 +36,10 @@ import net.jqwik.api.Builders;
 import net.jqwik.api.Builders.BuilderCombinator;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
+import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
@@ -59,9 +65,10 @@ public final class JacksonArbitraryIntrospector implements ArbitraryIntrospector
 		this.objectMapper = objectMapper;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
-		Property property = context.getResolvedProperty();
+		Property property = context.getArbitraryProperty().getObjectProperty().getProperty();
 		Class<?> type = Types.getActualType(property.getType());
 
 		List<ArbitraryProperty> childrenProperties = context.getChildren();
@@ -93,7 +100,22 @@ public final class JacksonArbitraryIntrospector implements ArbitraryIntrospector
 											.map(it -> format(value, it))
 											.orElse(value);
 
-										map.put(resolvePropertyName, jsonFormatted);
+										JsonTypeInfo jsonTypeInfo = getJacksonAnnotation(property, JsonTypeInfo.class);
+										if (jsonTypeInfo == null) {
+											map.put(resolvePropertyName, jsonFormatted);
+										} else {
+											if (jsonTypeInfo.include() == As.WRAPPER_OBJECT) {
+												String typeIdentifier = getJsonTypeInfoIdentifier(
+													jsonTypeInfo,
+													property
+												);
+
+												Map<String, Object> typeJson = (Map<String, Object>)
+													map.getOrDefault(typeIdentifier, new HashMap<>());
+												typeJson.put(resolvePropertyName, jsonFormatted);
+												map.put(typeIdentifier, typeJson);
+											}
+										}
 									}
 									return map;
 								});
@@ -107,7 +129,50 @@ public final class JacksonArbitraryIntrospector implements ArbitraryIntrospector
 	}
 
 	private Map<String, Object> initializeMap(Property property) {
-		return new HashMap<>();
+		Map<String, Object> defaultMap = new HashMap<>();
+
+		JsonTypeInfo jsonTypeInfo = getJacksonAnnotation(property, JsonTypeInfo.class);
+		if (jsonTypeInfo == null || jsonTypeInfo.include() == As.WRAPPER_OBJECT) {
+			return defaultMap;
+		}
+
+		String jsonTypeInfoValue = getJsonTypeInfoIdentifier(jsonTypeInfo, property);
+		String jsonTypeInfoPropertyName = getJsonTypeInfoPropertyName(jsonTypeInfo);
+
+		defaultMap.put(jsonTypeInfoPropertyName, jsonTypeInfoValue);
+		return defaultMap;
+	}
+
+	private String getJsonTypeInfoPropertyName(JsonTypeInfo jsonTypeInfo) {
+		return "".equals(jsonTypeInfo.property())
+			? jsonTypeInfo.use().getDefaultPropertyName()
+			: jsonTypeInfo.property();
+	}
+
+	private String getJsonTypeInfoIdentifier(
+		JsonTypeInfo jsonTypeInfo,
+		Property property
+	) {
+		JsonTypeName jsonTypeName = getJacksonAnnotation(property, JsonTypeName.class);
+		Class<?> type = Types.getActualType(property.getType());
+
+		Id id = jsonTypeInfo.use();
+		String jsonTypeInfoValue;
+		switch (id) {
+			case NAME:
+				if (jsonTypeName != null) {
+					jsonTypeInfoValue = jsonTypeName.value();
+				} else {
+					jsonTypeInfoValue = type.getSimpleName();
+				}
+				break;
+			case CLASS:
+				jsonTypeInfoValue = type.getName();
+				break;
+			default:
+				throw new IllegalArgumentException("Unsupported JsonTypeInfo Id : " + id.name());
+		}
+		return jsonTypeInfoValue;
 	}
 
 	private Object format(Object object, JsonFormat jsonFormat) {
