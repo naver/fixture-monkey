@@ -20,6 +20,7 @@ package com.navercorp.fixturemonkey.tests.kotlin
 
 import com.navercorp.fixturemonkey.FixtureMonkey
 import com.navercorp.fixturemonkey.kotlin.KotlinPlugin
+import com.navercorp.fixturemonkey.kotlin.giveMeBuilder
 import com.navercorp.fixturemonkey.kotlin.giveMeOne
 import com.navercorp.fixturemonkey.tests.TestEnvironment.TEST_COUNT
 import org.assertj.core.api.BDDAssertions.then
@@ -35,8 +36,26 @@ class SealedClassTest {
     }
 
     @RepeatedTest(TEST_COUNT)
+    fun fixedSealedClass() {
+        val actual = SUT.giveMeBuilder<SealedClass>()
+            .fixed()
+            .sample()
+
+        then(actual).isNotNull
+    }
+
+    @RepeatedTest(TEST_COUNT)
     fun sampleImplementedSealedClass() {
         val actual = SUT.giveMeOne<ImplementedSealedClass>()
+
+        then(actual).isNotNull
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun fixedImplementedSealedClass() {
+        val actual = SUT.giveMeBuilder<ImplementedSealedClass>()
+            .fixed()
+            .sample()
 
         then(actual).isNotNull
     }

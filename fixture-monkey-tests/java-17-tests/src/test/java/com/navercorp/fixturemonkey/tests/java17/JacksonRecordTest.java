@@ -42,6 +42,15 @@ class JacksonRecordTest {
 	}
 
 	@RepeatedTest(TEST_COUNT)
+	void fixedJavaType() {
+		JavaTypeRecord actual = SUT.giveMeBuilder(JavaTypeRecord.class)
+			.fixed()
+			.sample();
+
+		then(actual).isNotNull();
+	}
+
+	@RepeatedTest(TEST_COUNT)
 	void sampleDateTime() {
 		DateTimeRecord actual = SUT.giveMeOne(DateTimeRecord.class);
 
@@ -49,8 +58,26 @@ class JacksonRecordTest {
 	}
 
 	@RepeatedTest(TEST_COUNT)
+	void fixedDateTime() {
+		DateTimeRecord actual = SUT.giveMeBuilder(DateTimeRecord.class)
+			.fixed()
+			.sample();
+
+		then(actual).isNotNull();
+	}
+
+	@RepeatedTest(TEST_COUNT)
 	void sampleContainer() {
 		ContainerRecord actual = SUT.giveMeOne(ContainerRecord.class);
+
+		then(actual).isNotNull();
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void fixedContainer() {
+		ContainerRecord actual = SUT.giveMeBuilder(ContainerRecord.class)
+			.fixed()
+			.sample();
 
 		then(actual).isNotNull();
 	}
