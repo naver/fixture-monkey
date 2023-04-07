@@ -16,40 +16,32 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.api.generator;
+package com.navercorp.fixturemonkey.api.property;
 
-import java.beans.PropertyDescriptor;
 import java.lang.reflect.AnnotatedType;
 import java.util.List;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
-import com.navercorp.fixturemonkey.api.property.Property;
-import com.navercorp.fixturemonkey.api.property.PropertyCache;
-import com.navercorp.fixturemonkey.api.property.PropertyDescriptorProperty;
 
+/**
+ * Generates properties representing constructor parameters.
+ * It might be a field as well.
+ */
 @API(since = "0.5.3", status = Status.EXPERIMENTAL)
-public final class JavaBeansPropertyGenerator implements PropertyGenerator {
-	private final Predicate<PropertyDescriptor> propertyDescriptorPredicate;
+public final class ConstructorParameterPropertyGenerator implements PropertyGenerator {
 	private final Matcher matcher;
 
-	public JavaBeansPropertyGenerator(
-		Predicate<PropertyDescriptor> propertyDescriptorPredicate,
-		Matcher matcher
-	) {
-		this.propertyDescriptorPredicate = propertyDescriptorPredicate;
+	public ConstructorParameterPropertyGenerator(Matcher matcher) {
 		this.matcher = matcher;
 	}
 
 	@Override
-	public List<Property> generateProperties(AnnotatedType annotatedType) {
-		return PropertyCache.getPropertyDescriptorsByPropertyName(annotatedType).values().stream()
-			.filter(propertyDescriptorPredicate)
-			.map(PropertyDescriptorProperty::new)
+	public List<Property> generateChildProperties(AnnotatedType annotatedType) {
+		return PropertyCache.getConstructorParameterPropertiesByParameterName(annotatedType).values().stream()
 			.filter(matcher::match)
 			.collect(Collectors.toList());
 	}

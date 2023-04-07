@@ -28,6 +28,11 @@ import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.property.Property;
 
+/**
+ * It is deprecated.
+ * Use {@link com.navercorp.fixturemonkey.api.property.PropertyGenerator} instead.
+ */
+@Deprecated // It would be removed in 0.6.0
 @API(since = "0.4.0", status = Status.MAINTAINED)
 @FunctionalInterface
 public interface PropertyGenerator {
@@ -37,10 +42,10 @@ public interface PropertyGenerator {
 	}
 
 	default List<Property> generateObjectChildProperties(AnnotatedType annotatedType) {
-		return generateProperties(annotatedType);
+		return generateChildProperties(annotatedType);
 	}
 
-	List<Property> generateProperties(AnnotatedType annotatedType);
+	List<Property> generateChildProperties(AnnotatedType annotatedType);
 
 	@Deprecated // It would be removed in 0.6.0
 	default Property generateElementProperty(
