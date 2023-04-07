@@ -43,7 +43,7 @@ public final class FilteredCombinableArbitrary implements CombinableArbitrary {
 
 	@Override
 	public Arbitrary<Object> rawValue() {
-		return combinableArbitrary.rawValue();
+		return combinableArbitrary.rawValue().filter(predicate);
 	}
 
 	@Override
