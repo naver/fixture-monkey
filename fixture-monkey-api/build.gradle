@@ -24,6 +24,11 @@ dependencies {
     testAnnotationProcessor("org.projectlombok:lombok:1.18.24")
 }
 
+configurations.compileOnly {
+    //noinspection GroovyAssignabilityCheck
+    exclude group: 'org.junit.platform', module: 'junit-platform-commons'
+}
+
 editorconfig {
     excludes = ["build"]
 }

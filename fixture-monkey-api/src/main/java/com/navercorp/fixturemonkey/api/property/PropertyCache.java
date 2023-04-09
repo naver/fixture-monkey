@@ -26,7 +26,6 @@ import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.AnnotatedTypeVariable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
@@ -43,13 +42,12 @@ import javax.annotation.Nullable;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
-import org.junit.platform.commons.util.ReflectionUtils;
-import org.junit.platform.commons.util.ReflectionUtils.HierarchyTraversalMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.navercorp.fixturemonkey.api.collection.LruCache;
 import com.navercorp.fixturemonkey.api.generator.DefaultPropertyGenerator;
+import com.navercorp.fixturemonkey.api.type.Reflections;
 import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
@@ -87,8 +85,7 @@ public final class PropertyCache {
 
 		return FIELDS.computeIfAbsent(clazz, type -> {
 			Map<String, Field> result = new ConcurrentHashMap<>();
-			List<Field> fields = ReflectionUtils.findFields(
-				clazz, field -> !Modifier.isStatic(field.getModifiers()), HierarchyTraversalMode.TOP_DOWN);
+			List<Field> fields = Reflections.findFieldsExceptStatic(clazz);
 			for (Field field : fields) {
 				field.setAccessible(true);
 				result.put(field.getName(), field);
