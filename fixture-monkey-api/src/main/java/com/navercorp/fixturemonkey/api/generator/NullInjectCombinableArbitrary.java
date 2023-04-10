@@ -43,7 +43,7 @@ public final class NullInjectCombinableArbitrary implements CombinableArbitrary 
 
 	@Override
 	public Arbitrary<Object> rawValue() {
-		return combinableArbitrary.rawValue();
+		return combinableArbitrary.rawValue().injectNull(nullProbability);
 	}
 
 	@Override

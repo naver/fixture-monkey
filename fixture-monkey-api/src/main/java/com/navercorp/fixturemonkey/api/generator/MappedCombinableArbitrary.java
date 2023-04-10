@@ -43,7 +43,7 @@ public final class MappedCombinableArbitrary implements CombinableArbitrary {
 
 	@Override
 	public Arbitrary<Object> rawValue() {
-		return combinableArbitrary.rawValue();
+		return combinableArbitrary.rawValue().map(mapper);
 	}
 
 	@Override
