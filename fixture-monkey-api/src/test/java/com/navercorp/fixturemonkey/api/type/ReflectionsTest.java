@@ -1,3 +1,21 @@
+/*
+ * Fixture Monkey
+ *
+ * Copyright (c) 2021-present NAVER Corp.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.navercorp.fixturemonkey.api.type;
 
 import static org.assertj.core.api.BDDAssertions.then;
@@ -168,22 +186,7 @@ class ReflectionsTest {
 	}
 
 	@Test
-	void findAllFieldsExceptStatic() {
-		// given
-		Class<?> clazz = LeafChild.class;
-
-		// when
-		List<Field> actual = Reflections.findFieldsExceptStatic(clazz);
-
-		then(actual)
-			.hasSize(3)
-			.map(Field::getName)
-			.contains("parentName", "firstChildName", "leafChildName")
-			.doesNotContain("isAnimal");
-	}
-
-	@Test
-	void findAllFieldsIncludingStatic() {
+	void findAllFields() {
 		// given
 		Class<?> clazz = LeafChild.class;
 
@@ -196,11 +199,11 @@ class ReflectionsTest {
 			.contains("parentName", "firstChildName", "leafChildName", "isAnimal");
 	}
 
-	interface Person {
+	private interface Person {
 		boolean isAnimal = false;
 	}
 
-	static class TestTarget {
+	private static class TestTarget {
 		@Getter
 		private String name;
 		private int number;
@@ -209,7 +212,7 @@ class ReflectionsTest {
 		}
 
 		@Builder
-		TestTarget(String name) {
+		private TestTarget(String name) {
 			this.name = name;
 		}
 
@@ -222,16 +225,16 @@ class ReflectionsTest {
 		}
 	}
 
-	static class LeafChild extends FirstChild {
+	private static class LeafChild extends FirstChild {
 		private int firstChildName; // duplicate
 		private int leafChildName;
 	}
 
-	static class FirstChild extends Parent {
+	private static class FirstChild extends Parent {
 		private int firstChildName;
 	}
 
-	abstract static class Parent implements Person {
+	private abstract static class Parent implements Person {
 		private int parentName;
 	}
 }
