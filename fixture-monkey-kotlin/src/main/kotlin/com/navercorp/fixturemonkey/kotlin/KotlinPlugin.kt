@@ -23,6 +23,7 @@ import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGenerator
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator
 import com.navercorp.fixturemonkey.api.option.GenerateOptionsBuilder
 import com.navercorp.fixturemonkey.api.plugin.Plugin
+import com.navercorp.fixturemonkey.api.type.Types
 import com.navercorp.fixturemonkey.kotlin.generator.KotlinPropertyGenerator
 import com.navercorp.fixturemonkey.kotlin.introspector.PrimaryConstructorArbitraryIntrospector
 import org.apiguardian.api.API
@@ -35,10 +36,10 @@ class KotlinPlugin : Plugin {
             .defaultPropertyGenerator(KotlinPropertyGenerator())
             .insertFirstArbitraryObjectPropertyGenerator(
                 MatcherOperator(
-                    { (it.type as Class<*>).kotlin.isSealed },
+                    { (Types.getActualType(it.type) as Class<*>).kotlin.isSealed },
                     ObjectPropertyGenerator { context ->
                         InterfaceObjectPropertyGenerator(
-                            (context.property.type as Class<*>).kotlin.sealedSubclasses
+                            (Types.getActualType(context.property.type) as Class<*>).kotlin.sealedSubclasses
                                 .filter { it.objectInstance == null }
                                 .map { it.java },
                         )
