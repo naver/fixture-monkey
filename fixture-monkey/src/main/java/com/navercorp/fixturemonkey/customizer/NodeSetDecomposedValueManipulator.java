@@ -39,7 +39,7 @@ import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.resolver.DecomposableContainerValue;
-import com.navercorp.fixturemonkey.resolver.ManipulateOptions;
+import com.navercorp.fixturemonkey.resolver.DecomposedContainerValueFactory;
 import com.navercorp.fixturemonkey.tree.ArbitraryTraverser;
 import com.navercorp.fixturemonkey.tree.IdentityNodeResolver;
 import com.navercorp.fixturemonkey.tree.ObjectNode;
@@ -48,19 +48,19 @@ import com.navercorp.fixturemonkey.tree.ObjectNode;
 public final class NodeSetDecomposedValueManipulator<T> implements NodeManipulator {
 	private final int sequence;
 	private final ArbitraryTraverser traverser;
-	private final ManipulateOptions manipulateOptions;
+	private final DecomposedContainerValueFactory decomposedContainerValueFactory;
 	@Nullable
 	private final T value;
 
 	public NodeSetDecomposedValueManipulator(
 		int sequence,
 		ArbitraryTraverser traverser,
-		ManipulateOptions manipulateOptions,
+		DecomposedContainerValueFactory decomposedContainerValueFactory,
 		@Nullable T value
 	) {
 		this.sequence = sequence;
 		this.traverser = traverser;
-		this.manipulateOptions = manipulateOptions;
+		this.decomposedContainerValueFactory = decomposedContainerValueFactory;
 		this.value = value;
 	}
 
@@ -100,8 +100,7 @@ public final class NodeSetDecomposedValueManipulator<T> implements NodeManipulat
 
 		ContainerProperty containerProperty = objectNode.getArbitraryProperty().getContainerProperty();
 		if (containerProperty != null) {
-			DecomposableContainerValue decomposableContainerValue =
-				manipulateOptions.getDecomposedContainerValueFactory().from(value);
+			DecomposableContainerValue decomposableContainerValue = decomposedContainerValueFactory.from(value);
 			Object containerValue = decomposableContainerValue.getContainer();
 			int decomposedContainerSize = decomposableContainerValue.getSize();
 

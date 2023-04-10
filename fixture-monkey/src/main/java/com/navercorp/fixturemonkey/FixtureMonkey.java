@@ -104,8 +104,12 @@ public class FixtureMonkey {
 			return (DefaultArbitraryBuilder<T>)registered.copy();
 		}
 
-		MonkeyManipulatorFactory monkeyManipulatorFactory =
-			new MonkeyManipulatorFactory(new AtomicInteger(), traverser, manipulateOptions);
+		MonkeyManipulatorFactory monkeyManipulatorFactory = new MonkeyManipulatorFactory(
+			new AtomicInteger(),
+			manipulateOptions.getDefaultMonkeyExpressionFactory(),
+			traverser,
+			manipulateOptions.getDecomposedContainerValueFactory()
+		);
 		return new DefaultArbitraryBuilder<>(
 			manipulateOptions,
 			rootProperty,
@@ -128,8 +132,9 @@ public class FixtureMonkey {
 		ManipulateOptions manipulateOptions = manipulateOptionsBuilder.build();
 		MonkeyManipulatorFactory monkeyManipulatorFactory = new MonkeyManipulatorFactory(
 			new AtomicInteger(),
+			manipulateOptions.getDefaultMonkeyExpressionFactory(),
 			traverser,
-			manipulateOptions
+			manipulateOptions.getDecomposedContainerValueFactory()
 		);
 		ArbitraryBuilderContext context = new ArbitraryBuilderContext();
 
