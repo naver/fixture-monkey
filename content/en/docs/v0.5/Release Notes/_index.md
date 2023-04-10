@@ -3,6 +3,18 @@
 title: "Release Notes"
 weight: 6
 ---
+### 0.5.3
+#### New Features
+* Supports generating sealed class in Kotlin.
+* Supports generating interface or abstract class specified by `@JsonTypeInfo` and `@JsonSubTypes` in Jackson module.
+* Add implementations of `PropertyGenerator`, it helps to specify which properties are going to use.
+  * ConstructorParameterPropertyGenerator
+  * FieldPropertyGenerator
+  * JavaBeansPropertyGenerator
+
+#### Deprecated
+* MonkeyExpressionFactory option is deprecated.
+
 ### 0.5.2
 * Fix performance issue since 0.5.0.
 * Apply the implementation's option when generating interface.

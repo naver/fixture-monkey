@@ -3,6 +3,18 @@
 title: "Release Notes"
 weight: 6
 ---
+### 0.5.3
+#### New Feature
+* Koltin에서 Sealed class 생성을 지원합니다.
+* Jackson을 사용할 때, `@JsonTypeInfo` 와 `@JsonSubTypes`가 있는 Property 생성을 지원합니다.
+* `PropertyGenerator` 구현체들을 추가합니다. 원하는 Property 생성 방식으로 쉽게 변경할 수 있습니다.
+  * ConstructorParameterPropertyGenerator
+  * FieldPropertyGenerator
+  * JavaBeansPropertyGenerator
+
+#### Deprecated
+* MonkeyExpressionFactory 옵션을 제거합니다.
+
 ### 0.5.2
 * 0.5.0부터 발생한 성능 저하 이슈를 해결합니다.
 * 인터페이스를 생성할 때 실제 생성하는 구현체의 옵션을 적용합니다.
