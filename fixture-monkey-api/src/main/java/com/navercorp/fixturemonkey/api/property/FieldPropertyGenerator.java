@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.api.generator;
+package com.navercorp.fixturemonkey.api.property;
 
 import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Field;
@@ -28,10 +28,11 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
-import com.navercorp.fixturemonkey.api.property.FieldProperty;
-import com.navercorp.fixturemonkey.api.property.Property;
-import com.navercorp.fixturemonkey.api.property.PropertyCache;
+import com.navercorp.fixturemonkey.api.type.Types;
 
+/**
+ * Generates field properties including not only declared fields but also super class fields and interface fields.
+ */
 @API(since = "0.5.3", status = Status.EXPERIMENTAL)
 public final class FieldPropertyGenerator implements PropertyGenerator {
 	private final Predicate<Field> fieldPredicate;
@@ -43,10 +44,13 @@ public final class FieldPropertyGenerator implements PropertyGenerator {
 	}
 
 	@Override
-	public List<Property> generateProperties(AnnotatedType annotatedType) {
+	public List<Property> generateChildProperties(AnnotatedType annotatedType) {
 		return PropertyCache.getFieldsByName(annotatedType).values().stream()
 			.filter(fieldPredicate)
-			.map(FieldProperty::new)
+			.map(field -> new FieldProperty(
+				Types.resolveWithTypeReferenceGenerics(annotatedType, field),
+				field
+			))
 			.filter(matcher::match)
 			.collect(Collectors.toList());
 	}

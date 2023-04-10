@@ -16,27 +16,30 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.api.generator;
+package com.navercorp.fixturemonkey.api.property;
 
 import java.lang.reflect.AnnotatedType;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.api.property.Property;
-
-/**
- * It is deprecated.
- * Use {@link com.navercorp.fixturemonkey.api.property.DefaultPropertyGenerator} instead.
- */
-@Deprecated
-@API(since = "0.4.0", status = Status.DEPRECATED)
+@API(since = "0.5.3", status = Status.EXPERIMENTAL)
 public final class DefaultPropertyGenerator implements PropertyGenerator {
-	private static final PropertyGenerator DEFAULT_PROPERTY_GENERATOR =
-		new com.navercorp.fixturemonkey.api.property.DefaultPropertyGenerator();
+	private static final CompositePropertyGenerator COMPOSITE_PROPERTY_GENERATOR =
+		new CompositePropertyGenerator(
+			Arrays.asList(
+				new ConstructorParameterPropertyGenerator(it -> true),
+				new FieldPropertyGenerator(it -> true, it -> true),
+				new JavaBeansPropertyGenerator(
+					it -> it.getReadMethod() != null && it.getWriteMethod() != null,
+					it -> true
+				)
+			)
+		);
 
 	public List<Property> generateChildProperties(AnnotatedType annotatedType) {
-		return DEFAULT_PROPERTY_GENERATOR.generateChildProperties(annotatedType);
+		return COMPOSITE_PROPERTY_GENERATOR.generateChildProperties(annotatedType);
 	}
 }

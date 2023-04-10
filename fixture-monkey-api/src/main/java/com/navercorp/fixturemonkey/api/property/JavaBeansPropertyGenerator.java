@@ -16,30 +16,41 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.api.generator;
+package com.navercorp.fixturemonkey.api.property;
 
+import java.beans.PropertyDescriptor;
 import java.lang.reflect.AnnotatedType;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
-import com.navercorp.fixturemonkey.api.property.Property;
-import com.navercorp.fixturemonkey.api.property.PropertyCache;
 
+/**
+ * Generates JavaBeans properties which have getter method.
+ */
 @API(since = "0.5.3", status = Status.EXPERIMENTAL)
-public final class ConstructorParameterPropertyGenerator implements PropertyGenerator {
+public final class JavaBeansPropertyGenerator implements PropertyGenerator {
+	private final Predicate<PropertyDescriptor> propertyDescriptorPredicate;
 	private final Matcher matcher;
 
-	public ConstructorParameterPropertyGenerator(Matcher matcher) {
+	public JavaBeansPropertyGenerator(
+		Predicate<PropertyDescriptor> propertyDescriptorPredicate,
+		Matcher matcher
+	) {
+		this.propertyDescriptorPredicate = propertyDescriptorPredicate;
 		this.matcher = matcher;
 	}
 
 	@Override
-	public List<Property> generateProperties(AnnotatedType annotatedType) {
-		return PropertyCache.getConstructorParameterPropertiesByParameterName(annotatedType).values().stream()
+	public List<Property> generateChildProperties(AnnotatedType annotatedType) {
+		return PropertyCache.getPropertyDescriptorsByPropertyName(annotatedType).values().stream()
+			.filter(it -> it.getReadMethod() != null)
+			.filter(propertyDescriptorPredicate)
+			.map(PropertyDescriptorProperty::new)
 			.filter(matcher::match)
 			.collect(Collectors.toList());
 	}

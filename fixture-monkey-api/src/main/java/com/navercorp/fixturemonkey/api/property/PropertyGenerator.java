@@ -16,16 +16,17 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.kotlin.generator
+package com.navercorp.fixturemonkey.api.property;
 
-import com.navercorp.fixturemonkey.api.generator.PropertyGenerator
-import com.navercorp.fixturemonkey.kotlin.property.KotlinPropertyGenerator
-import org.apiguardian.api.API
+import org.apiguardian.api.API;
+import org.apiguardian.api.API.Status;
 
 /**
- * It is deprecated.
- * Use [KotlinPropertyGenerator] instead.
+ * It generates child properties of the given {@link java.lang.reflect.AnnotatedType}.
+ * Property could be field or JavaBeans property or method or constructor parameter.
+ * It should generate properties whose name is unique.
  */
-@Deprecated("It would be removed in 0.6.0")
-@API(since = "0.4.0", status = API.Status.DEPRECATED)
-class KotlinPropertyGenerator : PropertyGenerator by KotlinPropertyGenerator()
+@API(since = "0.5.3", status = Status.EXPERIMENTAL)
+@FunctionalInterface
+public interface PropertyGenerator extends com.navercorp.fixturemonkey.api.generator.PropertyGenerator {
+}

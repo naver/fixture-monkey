@@ -31,6 +31,7 @@ import org.apiguardian.api.API.Status;
 
 /**
  * Specifies actual property comprise an instance.
+ * It should have a unique name.
  * <p>
  * Implementation should override {@code equals(Object)} and {@code hashCode())} as well.
  */
