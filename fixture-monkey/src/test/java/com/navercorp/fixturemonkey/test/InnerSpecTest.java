@@ -24,10 +24,12 @@ import static org.assertj.core.api.BDDAssertions.thenThrownBy;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Property;
@@ -52,14 +54,15 @@ class InnerSpecTest {
 	@Property
 	void key() {
 		// when
-		MapObject actual = SUT.giveMeBuilder(MapObject.class)
+		Map<String, String> actual = SUT.giveMeBuilder(MapObject.class)
 			.setInner(
 				new InnerSpec()
 					.property("strMap", m -> m.minSize(1).key("key"))
 			)
-			.sample();
+			.sample()
+			.getStrMap();
 
-		then(actual.getStrMap().containsKey("key")).isTrue();
+		then(actual.keySet()).contains("key");
 	}
 
 	@Property
@@ -79,14 +82,62 @@ class InnerSpecTest {
 	@Property
 	void entry() {
 		// when
-		MapObject actual = SUT.giveMeBuilder(MapObject.class)
+		Map<String, String> actual = SUT.giveMeBuilder(MapObject.class)
 			.setInner(
 				new InnerSpec()
 					.property("strMap", m -> m.minSize(1).entry("key", "value"))
 			)
-			.sample();
+			.sample()
+			.getStrMap();
 
-		then(actual.getStrMap().get("key")).isEqualTo("value");
+		then(actual.get("key")).isEqualTo("value");
+	}
+
+	@Property
+	void keys() {
+		// when
+		Map<String, String> actual = SUT.giveMeBuilder(MapObject.class)
+			.setInner(
+				new InnerSpec()
+					.property("strMap", m -> m.minSize(3).keys("key1", "key2", "key3"))
+			)
+			.sample()
+			.getStrMap();
+
+		then(actual.keySet()).containsAll(
+			Stream.of("key1", "key2", "key3").collect(Collectors.toCollection(HashSet::new))
+		);
+	}
+
+	@Property
+	void values() {
+		// when
+		Map<String, String> actual = SUT.giveMeBuilder(MapObject.class)
+			.setInner(
+				new InnerSpec()
+					.property("strMap", m -> m.minSize(3).values("value1", "value2", "value3"))
+			)
+			.sample()
+			.getStrMap();
+
+		then(actual.values()).containsAll(
+			Stream.of("value1", "value2", "value3").collect(Collectors.toCollection(HashSet::new))
+		);
+	}
+
+	@Property
+	void entries() {
+		// when
+		Map<String, String> actual = SUT.giveMeBuilder(MapObject.class)
+			.setInner(
+				new InnerSpec()
+					.property("strMap", m -> m.minSize(2).entries("key1", "value1", "key2", "value2"))
+			)
+			.sample()
+			.getStrMap();
+
+		then(actual.get("key1")).isEqualTo("value1");
+		then(actual.get("key2")).isEqualTo("value2");
 	}
 
 	@Property

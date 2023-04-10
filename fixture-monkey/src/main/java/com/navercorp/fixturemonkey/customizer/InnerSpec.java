@@ -23,10 +23,12 @@ import static com.navercorp.fixturemonkey.Constants.DEFAULT_ELEMENT_MIN_SIZE;
 import static com.navercorp.fixturemonkey.Constants.NO_OR_ALL_INDEX_INTEGER_VALUE;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.stream.IntStream;
 
 import javax.annotation.Nullable;
 
@@ -109,6 +111,11 @@ public final class InnerSpec {
 		return this;
 	}
 
+	public InnerSpec keys(Object... keys) {
+		Arrays.stream(keys).forEach(this::key);
+		return this;
+	}
+
 	public InnerSpec key(Consumer<InnerSpec> consumer) {
 		entrySize++;
 		setMapKey(consumer);
@@ -121,6 +128,11 @@ public final class InnerSpec {
 		return this;
 	}
 
+	public InnerSpec values(Object... values) {
+		Arrays.stream(values).forEach(this::value);
+		return this;
+	}
+
 	public InnerSpec value(Consumer<InnerSpec> consumer) {
 		entrySize++;
 		setMapValue(consumer);
@@ -130,6 +142,20 @@ public final class InnerSpec {
 	public InnerSpec entry(Object key, @Nullable Object value) {
 		entrySize++;
 		setMapEntry(key, value);
+		return this;
+	}
+
+	public InnerSpec entries(Object... entries) {
+		if (entries.length % 2 != 0) {
+			throw new IllegalArgumentException("key-value pairs for the Map should be entered");
+		}
+
+		IntStream.range(0, entries.length)
+			.filter(i -> i % 2 == 0)
+			.forEach(i -> {
+				entry(entries[i], entries[i + 1]);
+			});
+
 		return this;
 	}
 
