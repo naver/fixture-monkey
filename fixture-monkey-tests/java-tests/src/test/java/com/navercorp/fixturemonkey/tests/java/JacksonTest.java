@@ -1,11 +1,16 @@
 package com.navercorp.fixturemonkey.tests.java;
 
 import static com.navercorp.fixturemonkey.tests.TestEnvironment.TEST_COUNT;
+import static org.assertj.core.api.BDDAssertions.then;
 import static org.assertj.core.api.BDDAssertions.thenNoException;
+
+import java.util.List;
+import java.util.Objects;
 
 import org.junit.jupiter.api.RepeatedTest;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
+import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.jackson.plugin.JacksonPlugin;
 import com.navercorp.fixturemonkey.tests.java.JacksonSpecs.JsonTypeInfoIdClass;
 import com.navercorp.fixturemonkey.tests.java.JacksonSpecs.JsonTypeInfoIdName;
@@ -66,5 +71,15 @@ class JacksonTest {
 	@RepeatedTest(TEST_COUNT)
 	void jsonTypeWithAnnotationsIncludeWrapperObjectList() {
 		thenNoException().isThrownBy(() -> SUT.giveMeOne(TypeWithAnnotationsIncludeWrapperObjectList.class));
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void sampleListType() {
+		List<TypeWithAnnotationsValue> actual = SUT.giveMeOne(
+			new TypeReference<List<TypeWithAnnotationsValue>>() {
+			}
+		);
+
+		then(actual).allMatch(Objects::nonNull);
 	}
 }

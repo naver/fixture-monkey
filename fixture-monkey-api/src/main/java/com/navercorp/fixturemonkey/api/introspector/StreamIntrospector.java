@@ -69,7 +69,7 @@ public final class StreamIntrospector implements ArbitraryIntrospector, Matcher 
 			return ArbitraryIntrospectorResult.EMPTY;
 		}
 
-		List<Arbitrary<?>> childrenArbitraries = context.getArbitraries();
+		List<Arbitrary<?>> childrenArbitraries = context.getElementArbitraries();
 
 		BuilderCombinator<Builder<Object>> builderCombinator = Builders.withBuilder(Stream::builder);
 		for (Arbitrary<?> childArbitrary : childrenArbitraries) {

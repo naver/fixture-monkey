@@ -56,7 +56,7 @@ public final class EntryIntrospector implements ArbitraryIntrospector, Matcher {
 			);
 		}
 		ArbitraryContainerInfo containerInfo = containerProperty.getContainerInfo();
-		List<Arbitrary<?>> childrenArbitraries = context.getArbitraries();
+		List<Arbitrary<?>> childrenArbitraries = context.getElementArbitraries();
 
 		if (containerInfo == null) {
 			return ArbitraryIntrospectorResult.EMPTY;

@@ -60,7 +60,7 @@ public final class QueueIntrospector implements ArbitraryIntrospector, Matcher {
 			return ArbitraryIntrospectorResult.EMPTY;
 		}
 
-		List<Arbitrary<?>> childrenArbitraries = context.getArbitraries();
+		List<Arbitrary<?>> childrenArbitraries = context.getElementArbitraries();
 
 		BuilderCombinator<Queue<Object>> builderCombinator = Builders.withBuilder(LinkedList::new);
 		for (Arbitrary<?> childArbitrary : childrenArbitraries) {

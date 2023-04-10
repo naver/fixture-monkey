@@ -65,7 +65,7 @@ public final class ArrayIntrospector implements ArbitraryIntrospector, Matcher {
 			new LazyCombinableArbitrary(
 				LazyArbitrary.lazy(
 					() -> {
-						List<Arbitrary<?>> childrenArbitraries = context.getArbitraries();
+						List<Arbitrary<?>> childrenArbitraries = context.getElementArbitraries();
 						BuilderCombinator<ArrayBuilder> builderCombinator = Builders.withBuilder(() ->
 							new ArrayBuilder(
 								Types.getArrayComponentType(

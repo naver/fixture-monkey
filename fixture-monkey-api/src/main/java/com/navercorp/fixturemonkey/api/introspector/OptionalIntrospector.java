@@ -72,7 +72,7 @@ public final class OptionalIntrospector implements ArbitraryIntrospector, Matche
 		}
 
 		Class<?> type = Types.getActualType(property.getObjectProperty().getProperty().getType());
-		List<Arbitrary<?>> childArbitraries = context.getArbitraries();
+		List<Arbitrary<?>> childArbitraries = context.getElementArbitraries();
 		Arbitrary<?> elementArbitrary = childArbitraries.get(0)
 			.optional(presenceProbability)
 			.map(it -> {

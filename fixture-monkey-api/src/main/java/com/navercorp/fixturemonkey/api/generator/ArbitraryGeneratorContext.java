@@ -117,8 +117,8 @@ public final class ArbitraryGeneratorContext {
 		return childArbitraryContext.getValue().getCombinableArbitraryByPropertyName();
 	}
 
-	public List<Arbitrary<?>> getArbitraries() {
-		return childArbitraryContext.getValue().getArbitraries();
+	public List<Arbitrary<?>> getElementArbitraries() {
+		return childArbitraryContext.getValue().getElementArbitraries();
 	}
 
 	@Nullable

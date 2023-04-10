@@ -39,7 +39,7 @@ public final class TupleLikeElementsIntrospector implements ArbitraryIntrospecto
 			return ArbitraryIntrospectorResult.EMPTY;
 		}
 
-		List<Arbitrary<?>> childrenArbitraries = context.getArbitraries();
+		List<Arbitrary<?>> childrenArbitraries = context.getElementArbitraries();
 		BuilderCombinator<TupleLikeElementsType> builderCombinator = Builders.withBuilder(TupleLikeElementsType::new);
 		for (Arbitrary<?> child : childrenArbitraries) {
 			builderCombinator = builderCombinator.use(child).in((elements, value) -> {
