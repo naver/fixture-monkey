@@ -21,7 +21,6 @@ package com.navercorp.fixturemonkey.api.introspector;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -91,10 +90,6 @@ public final class ArrayIntrospector implements ArbitraryIntrospector, Matcher {
 		private final List<Object> array;
 		private final Class<?> componentType;
 		private final int size;
-		/**
-		 * It is used for specifying {@code JacksonCombinableArbitrary} raw value.
-		 */
-		private boolean combined = true;
 
 		public ArrayBuilder(Class<?> componentType, int size) {
 			this.array = new ArrayList<>();
@@ -108,22 +103,13 @@ public final class ArrayIntrospector implements ArbitraryIntrospector, Matcher {
 				return this;
 			}
 
-			if (value instanceof Map) {
-				combined = false;
-			}
-
 			array.add(value);
 			return this;
 		}
 
 		// cast to Object for preventing ClassCastException when primitive type
 		Object build() {
-			Object array;
-			if (combined) {
-				array = Array.newInstance(componentType, size);
-			} else {
-				array = Array.newInstance(Object.class, size);
-			}
+			Object array = Array.newInstance(componentType, size);
 
 			for (int i = 0; i < this.array.size(); i++) {
 				Array.set(array, i, this.array.get(i));

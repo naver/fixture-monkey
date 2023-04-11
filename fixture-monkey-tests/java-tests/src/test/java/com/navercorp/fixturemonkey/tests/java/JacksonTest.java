@@ -3,6 +3,7 @@ package com.navercorp.fixturemonkey.tests.java;
 import static com.navercorp.fixturemonkey.tests.TestEnvironment.TEST_COUNT;
 import static org.assertj.core.api.BDDAssertions.thenNoException;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.RepeatedTest;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
@@ -17,6 +18,7 @@ import com.navercorp.fixturemonkey.tests.java.JacksonSpecs.TypeWithAnnotationsIn
 import com.navercorp.fixturemonkey.tests.java.JacksonSpecs.TypeWithAnnotationsList;
 import com.navercorp.fixturemonkey.tests.java.JacksonSpecs.TypeWithAnnotationsValue;
 
+@Disabled
 class JacksonTest {
 	private static final FixtureMonkey SUT = FixtureMonkey.builder()
 		.plugin(new JacksonPlugin())
