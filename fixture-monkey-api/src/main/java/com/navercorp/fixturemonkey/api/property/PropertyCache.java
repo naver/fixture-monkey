@@ -18,6 +18,8 @@
 
 package com.navercorp.fixturemonkey.api.property;
 
+import static java.util.stream.Collectors.toList;
+
 import java.beans.ConstructorProperties;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
@@ -43,13 +45,12 @@ import javax.annotation.Nullable;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
-import org.junit.platform.commons.util.ReflectionUtils;
-import org.junit.platform.commons.util.ReflectionUtils.HierarchyTraversalMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.navercorp.fixturemonkey.api.collection.LruCache;
 import com.navercorp.fixturemonkey.api.generator.DefaultPropertyGenerator;
+import com.navercorp.fixturemonkey.api.type.Reflections;
 import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
@@ -87,8 +88,10 @@ public final class PropertyCache {
 
 		return FIELDS.computeIfAbsent(clazz, type -> {
 			Map<String, Field> result = new ConcurrentHashMap<>();
-			List<Field> fields = ReflectionUtils.findFields(
-				clazz, field -> !Modifier.isStatic(field.getModifiers()), HierarchyTraversalMode.TOP_DOWN);
+			List<Field> fields = Reflections.findFields(clazz)
+				.stream()
+				.filter(it -> !Modifier.isStatic(it.getModifiers()))
+				.collect(toList());
 			for (Field field : fields) {
 				field.setAccessible(true);
 				result.put(field.getName(), field);

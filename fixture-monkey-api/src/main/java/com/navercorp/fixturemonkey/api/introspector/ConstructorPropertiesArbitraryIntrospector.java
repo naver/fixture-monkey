@@ -29,7 +29,6 @@ import java.util.Map.Entry;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
-import org.junit.platform.commons.util.ReflectionUtils;
 
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
@@ -42,6 +41,7 @@ import com.navercorp.fixturemonkey.api.generator.FixedCombinableArbitrary;
 import com.navercorp.fixturemonkey.api.generator.LazyCombinableArbitrary;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.api.property.Property;
+import com.navercorp.fixturemonkey.api.type.Reflections;
 import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.4.2", status = Status.MAINTAINED)
@@ -91,7 +91,7 @@ public final class ConstructorPropertiesArbitraryIntrospector implements Arbitra
 				}
 
 				return builderCombinator.build(
-					list -> ReflectionUtils.newInstance(primaryConstructor, list.toArray())
+					list -> Reflections.newInstance(primaryConstructor, list.toArray())
 				);
 			}
 		);

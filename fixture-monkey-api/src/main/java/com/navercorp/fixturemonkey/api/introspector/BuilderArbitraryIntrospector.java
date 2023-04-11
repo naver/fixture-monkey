@@ -22,11 +22,9 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apiguardian.api.API;
-import org.junit.platform.commons.util.ReflectionUtils;
 
 import net.jqwik.api.Arbitrary;
 import net.jqwik.api.Builders;
@@ -40,6 +38,7 @@ import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.api.property.CompositeProperty;
 import com.navercorp.fixturemonkey.api.property.FieldProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
+import com.navercorp.fixturemonkey.api.type.Reflections;
 import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.4.0", status = API.Status.EXPERIMENTAL)
@@ -50,10 +49,10 @@ public final class BuilderArbitraryIntrospector implements ArbitraryIntrospector
 	private static final Map<Class<?>, Method> BUILD_METHOD_CACHE = new ConcurrentHashMap<>(2000);
 	private static final Map<Class<?>, Class<?>> BUILDER_TYPE_CACHE = new ConcurrentHashMap<>(2000);
 
-	private String defaultBuildMethodName = "build";
-	private String defaultBuilderMethodName = "builder";
 	private final Map<Class<?>, String> typedBuilderMethodName = new ConcurrentHashMap<>(2000);
 	private final Map<Class<?>, String> typedBuildMethodName = new ConcurrentHashMap<>(2000);
+	private String defaultBuildMethodName = "build";
+	private String defaultBuilderMethodName = "builder";
 
 	private static void clearMethodCache() {
 		BUILDER_CACHE.clear();
@@ -79,10 +78,11 @@ public final class BuilderArbitraryIntrospector implements ArbitraryIntrospector
 				Method builderMethod = BUILDER_CACHE.get(type);
 
 				BuilderCombinator<Object> builderCombinator = Builders.withBuilder(() ->
-					ReflectionUtils.invokeMethod(builderMethod, null));
+					Reflections.invokeMethod(builderMethod, null));
 
 				for (ArbitraryProperty arbitraryProperty : childrenProperties) {
 					String methodName = getFieldName(arbitraryProperty.getObjectProperty().getProperty());
+					Class<?> actualType = getActualType(arbitraryProperty.getObjectProperty().getProperty());
 					String buildFieldMethodName = builderType.getName() + "#" + methodName;
 
 					String resolvePropertyName =
@@ -91,13 +91,7 @@ public final class BuilderArbitraryIntrospector implements ArbitraryIntrospector
 						arbitrariesByResolvedName.get(resolvePropertyName);
 
 					Method method = BUILD_FIELD_METHOD_CACHE.computeIfAbsent(buildFieldMethodName, f -> {
-						Method buildFieldMethod = ReflectionUtils.findMethods(builderType, m -> m.getName().equals(
-								methodName))
-							.stream()
-							.filter(Objects::nonNull)
-							.filter(m -> m.getParameterCount() == 1)
-							.findFirst()
-							.orElse(null);
+						Method buildFieldMethod = Reflections.findMethod(builderType, methodName, actualType);
 						if (buildFieldMethod != null) {
 							buildFieldMethod.setAccessible(true);
 						}
@@ -105,16 +99,18 @@ public final class BuilderArbitraryIntrospector implements ArbitraryIntrospector
 					});
 					if (method != null) {
 						builderCombinator = builderCombinator.use(combinableArbitrary.combined())
-							.in((b, v) -> v != null ? ReflectionUtils.invokeMethod(method, b, v) : b);
+							.in((b, v) -> v != null ? Reflections.invokeMethod(method, b, v) : b);
 					}
 				}
 
 				Method buildMethod = BUILD_METHOD_CACHE.computeIfAbsent(builderType, t -> {
 					String buildMethodName = typedBuildMethodName.getOrDefault(t, defaultBuildMethodName);
-					Method method = ReflectionUtils.findMethod(builderType, buildMethodName)
-						.orElseThrow(() -> new IllegalStateException(
-							"Can not find BuilderCombiner build method for clazz. clazz: " + type)
+					Method method = Reflections.findMethod(builderType, buildMethodName);
+					if (method == null) {
+						throw new IllegalStateException(
+							"Can not find BuilderCombiner build method for clazz. clazz: " + type
 						);
+					}
 					method.setAccessible(true);
 					return method;
 				});
@@ -122,7 +118,7 @@ public final class BuilderArbitraryIntrospector implements ArbitraryIntrospector
 					if (b == null) {
 						return null;
 					}
-					return ReflectionUtils.invokeMethod(buildMethod, b);
+					return Reflections.invokeMethod(buildMethod, b);
 				});
 			}
 		);
@@ -152,7 +148,7 @@ public final class BuilderArbitraryIntrospector implements ArbitraryIntrospector
 	private Class<?> getBuilderType(Class<?> objectType) {
 		Method builderMethod = BUILDER_CACHE.computeIfAbsent(objectType, t -> {
 			String builderMethodName = typedBuilderMethodName.getOrDefault(t, defaultBuilderMethodName);
-			Method method = ReflectionUtils.findMethod(t, builderMethodName).orElse(null);
+			Method method = Reflections.findMethod(t, builderMethodName);
 			if (method != null) {
 				method.setAccessible(true);
 			}
@@ -164,20 +160,28 @@ public final class BuilderArbitraryIntrospector implements ArbitraryIntrospector
 		}
 
 		return BUILDER_TYPE_CACHE.computeIfAbsent(objectType, t -> {
-			Object builder = ReflectionUtils.invokeMethod(builderMethod, null);
+			Object builder = Reflections.invokeMethod(builderMethod, null);
 			return builder.getClass();
 		});
 	}
 
 	private String getFieldName(Property property) {
+		return getActualProperty(property).getName();
+	}
+
+	private Class<?> getActualType(Property property) {
+		return Types.getActualType(getActualProperty(property).getType());
+	}
+
+	private Property getActualProperty(Property property) {
 		if (property instanceof CompositeProperty) {
 			CompositeProperty compositeProperty = (CompositeProperty)property;
 			if (compositeProperty.getPrimaryProperty() instanceof FieldProperty) {
-				return ((CompositeProperty)property).getPrimaryProperty().getName();
+				return ((CompositeProperty)property).getPrimaryProperty();
 			} else if (compositeProperty.getSecondaryProperty() instanceof FieldProperty) {
-				return ((CompositeProperty)property).getSecondaryProperty().getName();
+				return ((CompositeProperty)property).getSecondaryProperty();
 			}
 		}
-		return property.getName();
+		return property;
 	}
 }

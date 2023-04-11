@@ -27,7 +27,6 @@ import java.util.Map;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
-import org.junit.platform.commons.util.ReflectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,6 +41,7 @@ import com.navercorp.fixturemonkey.api.generator.LazyCombinableArbitrary;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.PropertyCache;
+import com.navercorp.fixturemonkey.api.type.Reflections;
 import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
@@ -66,7 +66,7 @@ public final class BeanArbitraryIntrospector implements ArbitraryIntrospector {
 
 		LazyArbitrary<Arbitrary<Object>> generateArbitrary = LazyArbitrary.lazy(() -> {
 			BuilderCombinator<Object> builderCombinator = Builders.withBuilder(
-				() -> ReflectionUtils.newInstance(type)
+				() -> Reflections.newInstance(type)
 			);
 
 			for (ArbitraryProperty arbitraryProperty : childrenProperties) {
