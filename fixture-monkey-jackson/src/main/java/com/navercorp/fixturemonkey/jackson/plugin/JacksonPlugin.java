@@ -18,15 +18,12 @@
 
 package com.navercorp.fixturemonkey.jackson.plugin;
 
-import static com.navercorp.fixturemonkey.jackson.property.JacksonAnnotations.getJacksonAnnotation;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -34,11 +31,8 @@ import com.navercorp.fixturemonkey.api.matcher.AssignableTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.option.GenerateOptionsBuilder;
 import com.navercorp.fixturemonkey.api.plugin.Plugin;
-import com.navercorp.fixturemonkey.api.property.ElementProperty;
 import com.navercorp.fixturemonkey.jackson.FixtureMonkeyJackson;
-import com.navercorp.fixturemonkey.jackson.generator.ElementJsonSubTypesObjectPropertyGenerator;
 import com.navercorp.fixturemonkey.jackson.generator.JsonNodeContainerPropertyGenerator;
-import com.navercorp.fixturemonkey.jackson.generator.PropertyJsonSubTypesObjectPropertyGenerator;
 import com.navercorp.fixturemonkey.jackson.introspector.JacksonArbitraryIntrospector;
 import com.navercorp.fixturemonkey.jackson.introspector.JsonNodeIntrospector;
 import com.navercorp.fixturemonkey.jackson.property.JacksonPropertyNameResolver;
@@ -85,19 +79,7 @@ public final class JacksonPlugin implements Plugin {
 		if (this.defaultOptions) {
 			optionsBuilder
 				.objectIntrospector(it -> new JacksonArbitraryIntrospector(objectMapper))
-				.defaultPropertyNameResolver(new JacksonPropertyNameResolver())
-				.insertFirstArbitraryObjectPropertyGenerator(
-					property -> getJacksonAnnotation(property, JsonSubTypes.class) != null,
-					PropertyJsonSubTypesObjectPropertyGenerator.INSTANCE
-				)
-				.insertFirstArbitraryObjectPropertyGenerator(
-					property -> property instanceof ElementProperty
-						&& getJacksonAnnotation(
-						((ElementProperty)property).getContainerProperty(),
-						JsonSubTypes.class
-					) != null,
-					ElementJsonSubTypesObjectPropertyGenerator.INSTANCE
-				);
+				.defaultPropertyNameResolver(new JacksonPropertyNameResolver());
 		}
 
 		optionsBuilder
