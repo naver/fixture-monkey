@@ -30,6 +30,16 @@ class JavaTest {
 	}
 
 	@RepeatedTest(TEST_COUNT)
+	void fixedGenericObjectWithoutGeneric() {
+		GenericObject actual = SUT.giveMeBuilder(GenericObject.class)
+			.fixed()
+			.sample();
+
+		then(actual).isNotNull();
+		then(actual.getValue()).isInstanceOf(Object.class);
+	}
+
+	@RepeatedTest(TEST_COUNT)
 	void sampleGenericObject() {
 		String actual = SUT.giveMeOne(new TypeReference<GenericObject<String>>() {
 			})
@@ -39,8 +49,28 @@ class JavaTest {
 	}
 
 	@RepeatedTest(TEST_COUNT)
+	void fixedGenericObject() {
+		String actual = SUT.giveMeBuilder(new TypeReference<GenericObject<String>>() {
+			})
+			.fixed()
+			.sample()
+			.getValue();
+
+		then(actual).isNotNull();
+	}
+
+	@RepeatedTest(TEST_COUNT)
 	void sampleGenericImplementationObjectWithoutGeneric() {
 		GenericImplementationObject actual = SUT.giveMeOne(GenericImplementationObject.class);
+
+		then(actual).isNotNull();
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void fixedGenericImplementationObjectWithoutGeneric() {
+		GenericImplementationObject actual = SUT.giveMeBuilder(GenericImplementationObject.class)
+			.fixed()
+			.sample();
 
 		then(actual).isNotNull();
 	}
@@ -55,8 +85,28 @@ class JavaTest {
 	}
 
 	@RepeatedTest(TEST_COUNT)
+	void fixedGenericImplementationObject() {
+		String actual = SUT.giveMeBuilder(new TypeReference<GenericImplementationObject<String>>() {
+			})
+			.fixed()
+			.sample()
+			.getValue();
+
+		then(actual).isNotNull();
+	}
+
+	@RepeatedTest(TEST_COUNT)
 	void sampleTwoGenericImplementationObjectWithoutGeneric() {
 		TwoGenericImplementationObject actual = SUT.giveMeOne(TwoGenericImplementationObject.class);
+
+		then(actual).isNotNull();
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void fixedTwoGenericImplementationObjectWithoutGeneric() {
+		TwoGenericImplementationObject actual = SUT.giveMeBuilder(TwoGenericImplementationObject.class)
+			.fixed()
+			.sample();
 
 		then(actual).isNotNull();
 	}
@@ -73,6 +123,19 @@ class JavaTest {
 	}
 
 	@RepeatedTest(TEST_COUNT)
+	void fixedTwoGenericImplementationObject() {
+		TwoGenericImplementationObject<String, Integer> actual = SUT.giveMeBuilder(
+				new TypeReference<TwoGenericImplementationObject<String, Integer>>() {
+				}
+			)
+			.fixed()
+			.sample();
+
+		then(actual.getUValue()).isNotNull();
+		then(actual.getTValue()).isNotNull();
+	}
+
+	@RepeatedTest(TEST_COUNT)
 	void sampleSelfRecursiveObject() {
 		SelfRecursiveObject actual = SUT.giveMeOne(SelfRecursiveObject.class);
 
@@ -81,8 +144,28 @@ class JavaTest {
 	}
 
 	@RepeatedTest(TEST_COUNT)
+	void fixedSelfRecursiveObject() {
+		SelfRecursiveObject actual = SUT.giveMeBuilder(SelfRecursiveObject.class)
+			.fixed()
+			.sample();
+
+		then(actual.getValue()).isNotNull();
+		then(actual.getSelfRecursiveObject()).isNotNull();
+	}
+
+	@RepeatedTest(TEST_COUNT)
 	void sampleSelfRecursiveListObject() {
 		SelfRecursiveListObject actual = SUT.giveMeOne(SelfRecursiveListObject.class);
+
+		then(actual.getValue()).isNotNull();
+		then(actual.getSelfRecursiveListObjects()).isNotNull();
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void fixedSelfRecursiveListObject() {
+		SelfRecursiveListObject actual = SUT.giveMeBuilder(SelfRecursiveListObject.class)
+			.fixed()
+			.sample();
 
 		then(actual.getValue()).isNotNull();
 		then(actual.getSelfRecursiveListObjects()).isNotNull();

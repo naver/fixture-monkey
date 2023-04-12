@@ -25,9 +25,9 @@ import org.junit.jupiter.api.RepeatedTest;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.introspector.ConstructorPropertiesArbitraryIntrospector;
+import com.navercorp.fixturemonkey.tests.java17.RecordTestSpecs.ComplexContainerRecord;
 import com.navercorp.fixturemonkey.tests.java17.RecordTestSpecs.ContainerRecord;
 import com.navercorp.fixturemonkey.tests.java17.RecordTestSpecs.DateTimeRecord;
-import com.navercorp.fixturemonkey.tests.java17.RecordTestSpecs.ComplexContainerRecord;
 import com.navercorp.fixturemonkey.tests.java17.RecordTestSpecs.JavaTypeRecord;
 
 class ConstructorPropertiesRecordTest {
@@ -43,8 +43,26 @@ class ConstructorPropertiesRecordTest {
 	}
 
 	@RepeatedTest(TEST_COUNT)
+	void fixedJavaType() {
+		JavaTypeRecord actual = SUT.giveMeBuilder(JavaTypeRecord.class)
+			.fixed()
+			.sample();
+
+		then(actual).isNotNull();
+	}
+
+	@RepeatedTest(TEST_COUNT)
 	void sampleDateTime() {
 		DateTimeRecord actual = SUT.giveMeOne(DateTimeRecord.class);
+
+		then(actual).isNotNull();
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void fixedDateTime() {
+		DateTimeRecord actual = SUT.giveMeBuilder(DateTimeRecord.class)
+			.fixed()
+			.sample();
 
 		then(actual).isNotNull();
 	}
@@ -57,8 +75,26 @@ class ConstructorPropertiesRecordTest {
 	}
 
 	@RepeatedTest(TEST_COUNT)
+	void fixedContainer() {
+		ContainerRecord actual = SUT.giveMeBuilder(ContainerRecord.class)
+			.fixed()
+			.sample();
+
+		then(actual).isNotNull();
+	}
+
+	@RepeatedTest(TEST_COUNT)
 	void sampleInterfaceContainer() {
 		ComplexContainerRecord actual = SUT.giveMeOne(ComplexContainerRecord.class);
+
+		then(actual).isNotNull();
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void fixedInterfaceContainer() {
+		ComplexContainerRecord actual = SUT.giveMeBuilder(ComplexContainerRecord.class)
+			.fixed()
+			.sample();
 
 		then(actual).isNotNull();
 	}
