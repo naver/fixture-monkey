@@ -1,6 +1,7 @@
 package com.navercorp.fixturemonkey.api.introspector;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -12,6 +13,7 @@ import net.jqwik.api.Builders.BuilderCombinator;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
+import com.navercorp.fixturemonkey.api.generator.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.generator.ContainerProperty;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.property.Property;
@@ -39,7 +41,9 @@ public final class TupleLikeElementsIntrospector implements ArbitraryIntrospecto
 			return ArbitraryIntrospectorResult.EMPTY;
 		}
 
-		List<Arbitrary<?>> childrenArbitraries = context.getArbitraries();
+		List<Arbitrary<?>> childrenArbitraries = context.getElementArbitraries().stream()
+			.map(CombinableArbitrary::combined)
+			.collect(Collectors.toList());
 		BuilderCombinator<TupleLikeElementsType> builderCombinator = Builders.withBuilder(TupleLikeElementsType::new);
 		for (Arbitrary<?> child : childrenArbitraries) {
 			builderCombinator = builderCombinator.use(child).in((elements, value) -> {

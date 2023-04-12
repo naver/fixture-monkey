@@ -24,14 +24,14 @@ import static org.assertj.core.api.BDDAssertions.then;
 import org.junit.jupiter.api.RepeatedTest;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
-import com.navercorp.fixturemonkey.jackson.introspector.JacksonArbitraryIntrospector;
+import com.navercorp.fixturemonkey.jackson.introspector.JacksonObjectArbitraryIntrospector;
 import com.navercorp.fixturemonkey.tests.java17.RecordTestSpecs.ContainerRecord;
 import com.navercorp.fixturemonkey.tests.java17.RecordTestSpecs.DateTimeRecord;
 import com.navercorp.fixturemonkey.tests.java17.RecordTestSpecs.JavaTypeRecord;
 
 class JacksonRecordTest {
 	private static final FixtureMonkey SUT = FixtureMonkey.builder()
-		.objectIntrospector(JacksonArbitraryIntrospector.INSTANCE)
+		.objectIntrospector(JacksonObjectArbitraryIntrospector.INSTANCE)
 		.build();
 
 	@RepeatedTest(TEST_COUNT)

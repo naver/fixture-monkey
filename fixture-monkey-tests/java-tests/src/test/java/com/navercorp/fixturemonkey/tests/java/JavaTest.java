@@ -21,6 +21,11 @@ package com.navercorp.fixturemonkey.tests.java;
 import static com.navercorp.fixturemonkey.tests.TestEnvironment.TEST_COUNT;
 import static org.assertj.core.api.BDDAssertions.then;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+
 import org.junit.jupiter.api.RepeatedTest;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
@@ -29,6 +34,8 @@ import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.tests.java.ImmutableGenericTypeSpecs.GenericImplementationObject;
 import com.navercorp.fixturemonkey.tests.java.ImmutableGenericTypeSpecs.GenericObject;
 import com.navercorp.fixturemonkey.tests.java.ImmutableGenericTypeSpecs.TwoGenericImplementationObject;
+import com.navercorp.fixturemonkey.tests.java.ImmutableJavaTestSpecs.ContainerObject;
+import com.navercorp.fixturemonkey.tests.java.ImmutableJavaTestSpecs.JavaTypeObject;
 import com.navercorp.fixturemonkey.tests.java.ImmutableRecursiveTypeSpecs.SelfRecursiveListObject;
 import com.navercorp.fixturemonkey.tests.java.ImmutableRecursiveTypeSpecs.SelfRecursiveObject;
 
@@ -187,5 +194,136 @@ class JavaTest {
 
 		then(actual.getValue()).isNotNull();
 		then(actual.getSelfRecursiveListObjects()).isNotNull();
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void sampleContainerType() {
+		ContainerObject actual = SUT.giveMeOne(ContainerObject.class);
+
+		then(actual.getPrimitiveArray()).isNotNull();
+		then(actual.getArray()).isNotNull();
+		then(actual.getComplexArray()).isNotNull();
+		then(actual.getList()).isNotNull();
+		then(actual.getComplexList()).isNotNull();
+		then(actual.getSet()).isNotNull();
+		then(actual.getComplexSet()).isNotNull();
+		then(actual.getMap()).isNotNull();
+		then(actual.getComplexMap()).isNotNull();
+		then(actual.getMapEntry()).isNotNull();
+		then(actual.getComplexMapEntry()).isNotNull();
+		then(actual.getOptional()).isNotNull();
+		then(actual.getOptionalInt()).isNotNull();
+		then(actual.getOptionalLong()).isNotNull();
+		then(actual.getOptionalDouble()).isNotNull();
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void sampleListType() {
+		List<JavaTypeObject> actual = SUT.giveMeOne(new TypeReference<List<JavaTypeObject>>() {
+		});
+
+		then(actual).isNotNull();
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void fixedListType() {
+		List<JavaTypeObject> actual = SUT.giveMeBuilder(new TypeReference<List<JavaTypeObject>>() {
+			})
+			.fixed()
+			.sample();
+
+		then(actual).isNotNull();
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void sampleSetType() {
+		Set<JavaTypeObject> actual = SUT.giveMeOne(new TypeReference<Set<JavaTypeObject>>() {
+		});
+
+		then(actual).isNotNull();
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void fixedSetType() {
+		Set<JavaTypeObject> actual = SUT.giveMeBuilder(new TypeReference<Set<JavaTypeObject>>() {
+			})
+			.fixed()
+			.sample();
+
+		then(actual).isNotNull();
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void sampleArrayType() {
+		JavaTypeObject[] actual = SUT.giveMeOne(new TypeReference<JavaTypeObject[]>() {
+		});
+
+		then(actual).isNotNull();
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void fixedArrayType() {
+		JavaTypeObject[] actual = SUT.giveMeBuilder(new TypeReference<JavaTypeObject[]>() {
+			})
+			.fixed()
+			.sample();
+
+		then(actual).isNotNull();
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void sampleOptionalType() {
+		Optional<JavaTypeObject> actual = SUT.giveMeOne(new TypeReference<Optional<JavaTypeObject>>() {
+		});
+
+		then(actual).isNotNull();
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void fixedOptionalType() {
+		Optional<JavaTypeObject> actual = SUT.giveMeBuilder(new TypeReference<Optional<JavaTypeObject>>() {
+			})
+			.fixed()
+			.sample();
+
+		then(actual).isNotNull();
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void sampleMapType() {
+		Map<String, JavaTypeObject> actual = SUT.giveMeOne(new TypeReference<Map<String, JavaTypeObject>>() {
+		});
+
+		then(actual).isNotNull();
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void fixedMapType() {
+		Map<String, JavaTypeObject> actual = SUT.giveMeBuilder(new TypeReference<Map<String, JavaTypeObject>>() {
+			})
+			.fixed()
+			.sample();
+
+		then(actual).isNotNull();
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void sampleMapEntryType() {
+		Map.Entry<String, JavaTypeObject> actual = SUT.giveMeOne(
+			new TypeReference<Map.Entry<String, JavaTypeObject>>() {
+			});
+
+		then(actual).isNotNull();
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void fixedMapEntryType() {
+		Map.Entry<String, JavaTypeObject> actual = SUT.giveMeBuilder(
+				new TypeReference<Map.Entry<String, JavaTypeObject>>() {
+				})
+			.fixed()
+			.sample();
+
+		then(actual).isNotNull();
 	}
 }

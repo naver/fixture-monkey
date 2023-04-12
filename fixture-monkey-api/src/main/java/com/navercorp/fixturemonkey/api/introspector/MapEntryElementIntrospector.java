@@ -20,6 +20,7 @@ package com.navercorp.fixturemonkey.api.introspector;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -30,6 +31,7 @@ import net.jqwik.api.Builders;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
+import com.navercorp.fixturemonkey.api.generator.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.generator.ContainerProperty;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty;
@@ -61,7 +63,9 @@ public final class MapEntryElementIntrospector implements ArbitraryIntrospector,
 			return ArbitraryIntrospectorResult.EMPTY;
 		}
 
-		List<Arbitrary<?>> arbitraries = context.getArbitraries();
+		List<Arbitrary<?>> arbitraries = context.getElementArbitraries().stream()
+			.map(CombinableArbitrary::combined)
+			.collect(Collectors.toList());
 
 		if (arbitraries.size() != 2) {
 			throw new IllegalArgumentException("Key and Value should be exist for MapEntryElementType.");
