@@ -25,6 +25,16 @@ import com.navercorp.fixturemonkey.kotlin.giveMeBuilder
 import com.navercorp.fixturemonkey.kotlin.giveMeOne
 import com.navercorp.fixturemonkey.kotlin.setExpGetter
 import com.navercorp.fixturemonkey.tests.TestEnvironment.TEST_COUNT
+import com.navercorp.fixturemonkey.tests.kotlin.JavaAnonymousInstanceTestSpecs.InheritedJavaInterface
+import com.navercorp.fixturemonkey.tests.kotlin.JavaAnonymousInstanceTestSpecs.InheritedJavaInterfaceWithSameNameMethod
+import com.navercorp.fixturemonkey.tests.kotlin.JavaAnonymousInstanceTestSpecs.InheritedTwoJavaInterface
+import com.navercorp.fixturemonkey.tests.kotlin.JavaAnonymousInstanceTestSpecs.JavaAnnotatedInterface
+import com.navercorp.fixturemonkey.tests.kotlin.JavaAnonymousInstanceTestSpecs.JavaContainerInterface
+import com.navercorp.fixturemonkey.tests.kotlin.JavaAnonymousInstanceTestSpecs.JavaGetterInterface
+import com.navercorp.fixturemonkey.tests.kotlin.JavaAnonymousInstanceTestSpecs.JavaInterface
+import com.navercorp.fixturemonkey.tests.kotlin.JavaAnonymousInstanceTestSpecs.JavaInterfaceWithConstant
+import com.navercorp.fixturemonkey.tests.kotlin.JavaAnonymousInstanceTestSpecs.JavaInterfaceWithParams
+import com.navercorp.fixturemonkey.tests.kotlin.JavaAnonymousInstanceTestSpecs.NestedInheritedJavaInterface
 import org.assertj.core.api.BDDAssertions.then
 import org.junit.jupiter.api.RepeatedTest
 import javax.validation.constraints.NotEmpty
@@ -227,6 +237,161 @@ class AnonymousInstanceTest {
         then(actual).isEqualTo(expected)
     }
 
+    @RepeatedTest(TEST_COUNT)
+    fun sampleJavaInterface() {
+        val actual = SUT.giveMeOne<JavaInterface>()
+
+        then(actual).isNotNull
+        then(actual.string()).isNotNull
+        then(actual.integer()).isNotNull
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun setJavaInterface() {
+        val expected = "test"
+
+        val actual = SUT.giveMeBuilder<JavaInterface>()
+            .set("string", expected)
+            .sample()
+            .string()
+
+        then(actual).isEqualTo(expected)
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun sampleJavaInterfaceWithParamReturnsNullProperties() {
+        val actual = SUT.giveMeOne<JavaInterfaceWithParams>()
+
+        then(actual).isNull()
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun sampleJavaInterfaceWithConstantIsNull() {
+        val actual = SUT.giveMeOne<JavaInterfaceWithConstant>()
+
+        then(actual).isNull()
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun sampleJavaContainerInterface() {
+        val actual = SUT.giveMeOne<JavaContainerInterface>()
+
+        then(actual.list()).isNotNull
+        then(actual.map()).isNotNull
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun setJavaContainerInterfaceList() {
+        val actual = SUT.giveMeBuilder<JavaContainerInterface>()
+            .size("list", 3)
+            .set("list[0]", "test")
+            .sample()
+            .list()
+
+        then(actual).hasSize(3)
+        then(actual[0]).isEqualTo("test")
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun sampleJavaAnnotatedInterface() {
+        val actual = SUT.giveMeOne<JavaAnnotatedInterface>().string()
+
+        then(actual).isNotEmpty
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun setJavaGetterInterfacePropertyName() {
+        val expected = "test"
+
+        val actual = SUT.giveMeBuilder<JavaGetterInterface>()
+            .set("value", expected)
+            .sample()
+            .value
+
+        then(actual).isEqualTo(expected)
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun setJavaGetterInterfaceMethodNameNotWorks() {
+        val notExpected = "test"
+
+        val actual = SUT.giveMeBuilder<JavaGetterInterface>()
+            .set("getValue", notExpected)
+            .sample()
+            .value
+
+        then(actual).isNotEqualTo(notExpected)
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun sampleInheritedJavaInterface() {
+        val actual = SUT.giveMeOne<InheritedJavaInterface>()
+
+        then(actual.value()).isNotNull
+        then(actual.string()).isNotNull
+        then(actual.integer()).isNotNull
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun setInheritedJavaInterface() {
+        val expected = "test"
+
+        val actual = SUT.giveMeBuilder<InheritedJavaInterface>()
+            .set("value", expected)
+            .sample()
+            .value()
+
+        then(actual).isEqualTo(expected)
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun sampleInheritedJavaInterfaceWithSameMethodName() {
+        val actual = SUT.giveMeOne<InheritedJavaInterfaceWithSameNameMethod>().string()
+
+        then(actual).isNotNull
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun setInheritedJavaInterfaceWithSameMethodName() {
+        val expected = "test"
+
+        val actual = SUT.giveMeBuilder<InheritedJavaInterfaceWithSameNameMethod>()
+            .set("string", expected)
+            .sample()
+            .string()
+
+        then(actual).isEqualTo(expected)
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun sampleInheritedTwoJavaInterface() {
+        val actual = SUT.giveMeOne<InheritedTwoJavaInterface>()
+
+        then(actual.integer()).isNotNull
+        then(actual.string()).isNotNull
+        then(actual.list()).isNotNull
+        then(actual.map()).isNotNull
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun sampleNestedInheritedJavaInterface() {
+        val actual = SUT.giveMeOne<NestedInheritedJavaInterface>().string()
+
+        then(actual).isNotNull
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun setNestedInheritedJavaInterface() {
+        val expected = "test"
+
+        val actual = SUT.giveMeBuilder<NestedInheritedJavaInterface>()
+            .set("string", expected)
+            .sample()
+            .string()
+
+        then(actual).isEqualTo(expected)
+    }
+
     interface Interface {
         fun string(): String
         fun integer(): Int
@@ -279,6 +444,7 @@ class AnonymousInstanceTest {
         val SUT: FixtureMonkey = FixtureMonkey.builder()
             .plugin(KotlinPlugin())
             .plugin(JavaxValidationPlugin())
+            .defaultNotNull(true)
             .build()
     }
 }

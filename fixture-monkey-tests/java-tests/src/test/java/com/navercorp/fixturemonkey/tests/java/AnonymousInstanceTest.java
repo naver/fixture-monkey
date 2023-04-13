@@ -73,7 +73,7 @@ class AnonymousInstanceTest {
 	}
 
 	@RepeatedTest(TEST_COUNT)
-	void sampleAnonymousConstant() {
+	void sampleInterfaceWithConstant() {
 		String actual = SUT.giveMeOne(InterfaceWithConstant.class).value;
 
 		then(actual).isEqualTo("constant");
@@ -207,6 +207,6 @@ class AnonymousInstanceTest {
 			.sample()
 			.string();
 
-		then(actual).isNotNull();
+		then(actual).isEqualTo(expected);
 	}
 }
