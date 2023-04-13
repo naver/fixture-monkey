@@ -21,41 +21,31 @@ package com.navercorp.fixturemonkey.tests.java;
 import static com.navercorp.fixturemonkey.tests.TestEnvironment.TEST_COUNT;
 import static org.assertj.core.api.BDDAssertions.then;
 
-import java.lang.reflect.Modifier;
 import java.util.List;
 
 import org.junit.jupiter.api.RepeatedTest;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
-import com.navercorp.fixturemonkey.api.generator.NoArgumentInterfaceJavaMethodPropertyGenerator;
-import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
-import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.javax.validation.plugin.JavaxValidationPlugin;
 import com.navercorp.fixturemonkey.tests.java.AnonymousInstanceTestSpecs.AnnotatedInterface;
 import com.navercorp.fixturemonkey.tests.java.AnonymousInstanceTestSpecs.ContainerInterface;
-import com.navercorp.fixturemonkey.tests.java.AnonymousInstanceTestSpecs.ExtendsInterface;
-import com.navercorp.fixturemonkey.tests.java.AnonymousInstanceTestSpecs.ExtendsInterfaceWithSameNameMethod;
-import com.navercorp.fixturemonkey.tests.java.AnonymousInstanceTestSpecs.ExtendsTwoInterface;
 import com.navercorp.fixturemonkey.tests.java.AnonymousInstanceTestSpecs.GetterInterface;
+import com.navercorp.fixturemonkey.tests.java.AnonymousInstanceTestSpecs.InheritedInterface;
+import com.navercorp.fixturemonkey.tests.java.AnonymousInstanceTestSpecs.InheritedInterfaceWithSameNameMethod;
+import com.navercorp.fixturemonkey.tests.java.AnonymousInstanceTestSpecs.InheritedTwoInterface;
 import com.navercorp.fixturemonkey.tests.java.AnonymousInstanceTestSpecs.Interface;
 import com.navercorp.fixturemonkey.tests.java.AnonymousInstanceTestSpecs.InterfaceWithConstant;
 import com.navercorp.fixturemonkey.tests.java.AnonymousInstanceTestSpecs.InterfaceWithParams;
-import com.navercorp.fixturemonkey.tests.java.AnonymousInstanceTestSpecs.NestedExtendsInterface;
+import com.navercorp.fixturemonkey.tests.java.AnonymousInstanceTestSpecs.NestedInheritedInterface;
 
 class AnonymousInstanceTest {
 	private static final FixtureMonkey SUT = FixtureMonkey.builder()
 		.defaultNotNull(true)
-		.pushPropertyGenerator(
-			new MatcherOperator<>(
-				p -> Modifier.isInterface(Types.getActualType(p.getType()).getModifiers()),
-				new NoArgumentInterfaceJavaMethodPropertyGenerator()
-			)
-		)
 		.plugin(new JavaxValidationPlugin())
 		.build();
 
 	@RepeatedTest(TEST_COUNT)
-	void sampleAnonymous() {
+	void sampleInterface() {
 		Interface actual = SUT.giveMeOne(Interface.class);
 
 		then(actual).isNotNull();
@@ -64,7 +54,7 @@ class AnonymousInstanceTest {
 	}
 
 	@RepeatedTest(TEST_COUNT)
-	void sampleAnonymousSetValue() {
+	void setInterface() {
 		String expected = "test";
 
 		String actual = SUT.giveMeBuilder(Interface.class)
@@ -76,7 +66,7 @@ class AnonymousInstanceTest {
 	}
 
 	@RepeatedTest(TEST_COUNT)
-	void sampleAnonymousWithParamReturnsNullProperties() {
+	void sampleInterfaceWithParamReturnsNullProperties() {
 		InterfaceWithParams actual = SUT.giveMeOne(InterfaceWithParams.class);
 
 		then(actual).isNull();
@@ -90,7 +80,7 @@ class AnonymousInstanceTest {
 	}
 
 	@RepeatedTest(TEST_COUNT)
-	void sampleAnonymousConstantSetNotWorks() {
+	void setConstantNotWorks() {
 		String actual = SUT.giveMeBuilder(InterfaceWithConstant.class)
 			.set("value", "changed")
 			.sample()
@@ -100,7 +90,7 @@ class AnonymousInstanceTest {
 	}
 
 	@RepeatedTest(TEST_COUNT)
-	void sampleAnonymousContainer() {
+	void sampleContainerInterface() {
 		ContainerInterface actual = SUT.giveMeOne(ContainerInterface.class);
 
 		then(actual.list()).isNotNull();
@@ -108,7 +98,7 @@ class AnonymousInstanceTest {
 	}
 
 	@RepeatedTest(TEST_COUNT)
-	void sampleAnonymousContainerSetList() {
+	void setContainerInterfaceList() {
 		List<String> actual = SUT.giveMeBuilder(ContainerInterface.class)
 			.size("list", 3)
 			.set("list[0]", "test")
@@ -120,7 +110,7 @@ class AnonymousInstanceTest {
 	}
 
 	@RepeatedTest(TEST_COUNT)
-	void sampleAnonymousAnnotatedInterface() {
+	void sampleAnnotatedInterface() {
 		String actual = SUT.giveMeOne(AnnotatedInterface.class)
 			.string();
 
@@ -128,7 +118,7 @@ class AnonymousInstanceTest {
 	}
 
 	@RepeatedTest(TEST_COUNT)
-	void setGetterIsPropertyName() {
+	void setPropertyName() {
 		String expected = "test";
 
 		String actual = SUT.giveMeBuilder(GetterInterface.class)
@@ -140,7 +130,7 @@ class AnonymousInstanceTest {
 	}
 
 	@RepeatedTest(TEST_COUNT)
-	void setGetterIsNotMethodName() {
+	void setMethodNameNotWorks() {
 		String notExpected = "test";
 
 		String actual = SUT.giveMeBuilder(GetterInterface.class)
@@ -152,8 +142,8 @@ class AnonymousInstanceTest {
 	}
 
 	@RepeatedTest(TEST_COUNT)
-	void sampleExtendedInterface() {
-		ExtendsInterface actual = SUT.giveMeOne(ExtendsInterface.class);
+	void sampleInheritedInterface() {
+		InheritedInterface actual = SUT.giveMeOne(InheritedInterface.class);
 
 		then(actual.value()).isNotNull();
 		then(actual.string()).isNotNull();
@@ -161,10 +151,10 @@ class AnonymousInstanceTest {
 	}
 
 	@RepeatedTest(TEST_COUNT)
-	void setExtendedInterface() {
+	void setInheritedInterface() {
 		String expected = "test";
 
-		String actual = SUT.giveMeBuilder(ExtendsInterface.class)
+		String actual = SUT.giveMeBuilder(InheritedInterface.class)
 			.set("value", expected)
 			.sample()
 			.value();
@@ -173,17 +163,17 @@ class AnonymousInstanceTest {
 	}
 
 	@RepeatedTest(TEST_COUNT)
-	void sampleExtendsInterfaceWithSameNameMethod() {
-		String actual = SUT.giveMeOne(ExtendsInterfaceWithSameNameMethod.class).string();
+	void sampleInheritedInterfaceWithSameNameMethod() {
+		String actual = SUT.giveMeOne(InheritedInterfaceWithSameNameMethod.class).string();
 
 		then(actual).isNotNull();
 	}
 
 	@RepeatedTest(TEST_COUNT)
-	void setExtendsInterfaceWithSameNameMethod() {
+	void setInheritedInterfaceWithSameNameMethod() {
 		String expected = "test";
 
-		String actual = SUT.giveMeBuilder(ExtendsInterfaceWithSameNameMethod.class)
+		String actual = SUT.giveMeBuilder(InheritedInterfaceWithSameNameMethod.class)
 			.set("string", expected)
 			.sample()
 			.string();
@@ -192,8 +182,8 @@ class AnonymousInstanceTest {
 	}
 
 	@RepeatedTest(TEST_COUNT)
-	void sampleExtendsTwoInterface() {
-		ExtendsTwoInterface actual = SUT.giveMeOne(ExtendsTwoInterface.class);
+	void sampleInheritedTwoInterface() {
+		InheritedTwoInterface actual = SUT.giveMeOne(InheritedTwoInterface.class);
 
 		then(actual.integer()).isNotNull();
 		then(actual.string()).isNotNull();
@@ -202,17 +192,17 @@ class AnonymousInstanceTest {
 	}
 
 	@RepeatedTest(TEST_COUNT)
-	void sampleNestedExtendsInterface() {
-		String actual = SUT.giveMeOne(NestedExtendsInterface.class).string();
+	void sampleNestedInheritedInterface() {
+		String actual = SUT.giveMeOne(NestedInheritedInterface.class).string();
 
 		then(actual).isNotNull();
 	}
 
 	@RepeatedTest(TEST_COUNT)
-	void setNestedExtendsInterface() {
+	void setNestedInheritedInterface() {
 		String expected = "test";
 
-		String actual = SUT.giveMeBuilder(NestedExtendsInterface.class)
+		String actual = SUT.giveMeBuilder(NestedInheritedInterface.class)
 			.set("string", expected)
 			.sample()
 			.string();
