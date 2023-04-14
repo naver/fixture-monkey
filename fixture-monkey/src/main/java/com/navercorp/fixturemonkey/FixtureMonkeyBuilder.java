@@ -65,6 +65,7 @@ import com.navercorp.fixturemonkey.resolver.ManipulatorOptimizer;
 import com.navercorp.fixturemonkey.resolver.NoneManipulatorOptimizer;
 import com.navercorp.fixturemonkey.tree.ArbitraryTraverser;
 
+@SuppressWarnings("unused")
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public class FixtureMonkeyBuilder {
 	private final GenerateOptionsBuilder generateOptionsBuilder = GenerateOptions.builder();
@@ -487,7 +488,7 @@ public class FixtureMonkeyBuilder {
 		this.pushObjectPropertyGenerator(
 			new MatcherOperator<>(
 				matcher,
-				new InterfaceObjectPropertyGenerator(implementations)
+				new InterfaceObjectPropertyGenerator<>(implementations)
 			)
 		);
 		return this;

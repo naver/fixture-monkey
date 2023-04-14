@@ -25,7 +25,6 @@ import javax.annotation.Nullable;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
 
 import com.navercorp.fixturemonkey.api.generator.CombinableArbitrary;
@@ -39,11 +38,7 @@ public final class ArbitraryIntrospectorResult {
 
 	@SuppressWarnings("unchecked")
 	public ArbitraryIntrospectorResult(@Nullable Arbitrary<?> value) {
-		if (value == null) {
-			this.value = new FixedCombinableArbitrary(Arbitraries.just(null));
-		} else {
-			this.value = new FixedCombinableArbitrary((Arbitrary<Object>)value);
-		}
+		this.value = new FixedCombinableArbitrary((Arbitrary<Object>)value);
 	}
 
 	public ArbitraryIntrospectorResult(CombinableArbitrary value) {

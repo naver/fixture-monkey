@@ -16,40 +16,20 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.tests.java;
+package com.navercorp.fixturemonkey.api.property;
 
-import lombok.Builder;
-import lombok.Value;
+import org.apiguardian.api.API;
+import org.apiguardian.api.API.Status;
 
-@SuppressWarnings("unused")
-class ImmutableGenericTypeSpecs {
-
-	public interface GenericInterface<T> {
-	}
-
-	@Value
-	@Builder
-	public static class GenericImplementationObject<T> implements GenericInterface<T> {
-		T value;
-	}
-
-	public interface TwoGenericInterface<T, U> {
-	}
-
-	@Value
-	@Builder
-	public static class TwoGenericImplementationObject<T, U> implements TwoGenericInterface<T, U> {
-		T tValue;
-
-		U uValue;
-	}
-
-	@Value
-	@Builder
-	public static class GenericObject<T> {
-		T value;
-	}
-
-	public interface Interface {
-	}
+/**
+ * A property representing a method.
+ */
+@API(since = "0.5.5", status = Status.EXPERIMENTAL)
+public interface MethodProperty extends Property {
+	/**
+	 * Get the name of given method.
+	 *
+	 * @return the name of method
+	 */
+	String getMethodName();
 }

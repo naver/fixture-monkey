@@ -76,6 +76,6 @@ class PrimaryConstructorArbitraryIntrospectorTest {
         // when
         val actual = sut.giveMeOne<InterfaceClass>()
 
-        then(actual).isNull()
+        then(actual).isNotNull
     }
 }

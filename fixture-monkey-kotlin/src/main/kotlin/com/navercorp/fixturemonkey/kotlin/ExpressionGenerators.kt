@@ -3,6 +3,7 @@ package com.navercorp.fixturemonkey.kotlin
 import com.navercorp.fixturemonkey.api.expression.ExpressionGenerator
 import com.navercorp.fixturemonkey.api.property.Property
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver
+import com.navercorp.fixturemonkey.kotlin.type.getPropertyName
 import java.lang.reflect.AnnotatedType
 import java.lang.reflect.Field
 import java.lang.reflect.ParameterizedType
@@ -331,16 +332,7 @@ private class KotlinGetterProperty<V, R>(private val getter: KFunction1<V, R>) :
     }
     private val propertyName: String = resolvePropertyName()
 
-    private fun resolvePropertyName(): String =
-        if (getter.name.startsWith("get")) {
-            getter.name.substringAfter("get")
-                .replaceFirstChar { it.lowercaseChar() }
-        } else if (getter.returnType.javaType == Boolean::class.java && getter.name.startsWith("is")) {
-            getter.name.substringAfter("is")
-                .replaceFirstChar { it.lowercaseChar() }
-        } else {
-            getter.name
-        }
+    private fun resolvePropertyName(): String = getter.getPropertyName()
 
     private val property: KProperty<*>? = try {
         callerType.getDeclaredField(name).kotlinProperty

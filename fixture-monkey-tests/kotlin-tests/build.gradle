@@ -7,4 +7,5 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect:1.6.21")
 
     testImplementation(project(":fixture-monkey-kotlin"))
+    testImplementation(project(":fixture-monkey-javax-validation"))
 }

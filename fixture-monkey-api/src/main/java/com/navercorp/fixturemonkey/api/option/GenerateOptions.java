@@ -18,6 +18,7 @@
 
 package com.navercorp.fixturemonkey.api.option;
 
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -50,6 +51,7 @@ import com.navercorp.fixturemonkey.api.generator.DefaultSingleContainerPropertyG
 import com.navercorp.fixturemonkey.api.generator.EntryContainerPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.MapContainerPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.MapEntryElementContainerPropertyGenerator;
+import com.navercorp.fixturemonkey.api.generator.NoArgumentInterfaceJavaMethodPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.NullInjectGenerator;
 import com.navercorp.fixturemonkey.api.generator.NullObjectPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGenerator;
@@ -80,6 +82,8 @@ public final class GenerateOptions {
 		DefaultObjectPropertyGenerator.INSTANCE;
 	public static final PropertyNameResolver DEFAULT_PROPERTY_NAME_RESOLVER = PropertyNameResolver.IDENTITY;
 	public static final int DEFAULT_ARBITRARY_CONTAINER_MAX_SIZE = 3;
+	public static final List<MatcherOperator<PropertyGenerator>> DEFAULT_PROPERTY_GENERATORS =
+		getDefaultPropertyGenerators();
 	public static final GenerateOptions DEFAULT_GENERATE_OPTIONS = GenerateOptions.builder().build();
 
 	static {
@@ -366,6 +370,15 @@ public final class GenerateOptions {
 			new MatcherOperator<>(
 				property -> property.getClass() == TupleLikeElementsProperty.class,
 				TupleLikeElementsPropertyGenerator.INSTANCE
+			)
+		);
+	}
+
+	private static List<MatcherOperator<PropertyGenerator>> getDefaultPropertyGenerators() {
+		return Collections.singletonList(
+			new MatcherOperator<>(
+				p -> Modifier.isInterface(Types.getActualType(p.getType()).getModifiers()),
+				new NoArgumentInterfaceJavaMethodPropertyGenerator()
 			)
 		);
 	}

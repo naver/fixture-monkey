@@ -1,4 +1,5 @@
 dependencies {
+    testImplementation(project(":fixture-monkey-javax-validation"))
     testImplementation("org.projectlombok:lombok:1.18.24")
     testImplementation(project(":fixture-monkey-jackson"))
     testAnnotationProcessor("org.projectlombok:lombok:1.18.24")

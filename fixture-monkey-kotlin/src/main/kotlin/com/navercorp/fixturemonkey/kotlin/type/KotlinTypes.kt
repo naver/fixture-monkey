@@ -25,6 +25,7 @@ import java.lang.reflect.AnnotatedType
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 import java.lang.reflect.TypeVariable
+import kotlin.reflect.KFunction
 import kotlin.reflect.KProperty
 import kotlin.reflect.full.findAnnotations
 import kotlin.reflect.jvm.javaField
@@ -114,7 +115,7 @@ fun getAnnotatedType(ownerType: AnnotatedType, kProperty: KProperty<*>): Annotat
 
 internal class KotlinAnnotatedType(
     private val _type: Type,
-    private val _annotations: Array<Annotation>
+    private val _annotations: Array<Annotation>,
 ) : AnnotatedType {
     override fun getType(): Type = this._type
 
@@ -127,4 +128,16 @@ internal class KotlinAnnotatedType(
     override fun getAnnotations(): Array<Annotation> = this._annotations
 
     override fun getDeclaredAnnotations(): Array<Annotation> = this._annotations
+}
+
+fun KFunction<*>.getPropertyName(): String {
+    return if (this.name.startsWith("get")) {
+        this.name.substringAfter("get")
+            .replaceFirstChar { it.lowercaseChar() }
+    } else if (this.returnType.javaType == kotlin.Boolean::class.java && this.name.startsWith("is")) {
+        this.name.substringAfter("is")
+            .replaceFirstChar { it.lowercaseChar() }
+    } else {
+        this.name
+    }
 }
