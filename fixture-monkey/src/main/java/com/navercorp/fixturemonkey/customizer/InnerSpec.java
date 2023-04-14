@@ -78,7 +78,7 @@ public final class InnerSpec {
 	 * Can be further configured using methods provided by the class.
 	 * </p>
 	 */
-	 public InnerSpec() {
+	public InnerSpec() {
 		this(FIRST_MANIPULATOR_SEQUENCE, IdentityNodeResolver.INSTANCE, new InnerSpecState(), new ArrayList<>());
 	}
 
@@ -293,7 +293,8 @@ public final class InnerSpec {
 	}
 
 	/**
-	 * Sets an entry in the currently referred map property with a key and value obtained lazily from the given suppliers.
+	 * Sets an entry in the currently referred map property with a key and value
+	 * obtained lazily from the given suppliers.
 	 *
 	 * @param keySupplier a supplier function that provides the value of the map key to set.
 	 * @param valueSupplier a function that provides the value of the map value to set.
@@ -362,9 +363,9 @@ public final class InnerSpec {
 		return this;
 	}
 
-
 	/**
-	 * Sets every entry in the currently referred map property with a key obtained lazily from the given supplier and a specified value.
+	 * Sets every entry in the currently referred map property with a key
+	 * obtained lazily from the given supplier and a specified value.
 	 *
 	 * @param keySupplier a supplier function that provides the value of the map keys to set.
 	 * @param value    value of the value to set
@@ -378,7 +379,8 @@ public final class InnerSpec {
 	}
 
 	/**
-	 * Sets every entry in the currently referred map property with a key and value obtained lazily from the given suppliers.
+	 * Sets every entry in the currently referred map property with a key and value
+	 * obtained lazily from the given suppliers.
 	 *
 	 * @param keySupplier   a supplier function that provides the value of the map keys to set.
 	 * @param valueSupplier a supplier function that provides the value of the map values to set.
@@ -399,7 +401,8 @@ public final class InnerSpec {
 	}
 
 	/**
-	 * Sets an element at the specified index within the currently referred container property using a consumer function.
+	 * Sets an element at the specified index within the currently referred container property
+	 * using a consumer function.
 	 *
 	 * @param index    index of the element to set
 	 * @param consumer a consumer function that takes an {@code InnerSpec} instance as an argument and configures
