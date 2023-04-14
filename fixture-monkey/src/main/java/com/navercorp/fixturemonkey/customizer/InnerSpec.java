@@ -55,8 +55,11 @@ import com.navercorp.fixturemonkey.tree.PropertyNameNodePredicate;
 /**
  * A type-independent specification for configuring nested properties.
  * <p>
- * Provides methods for setting configuration specifically for nested properties, and can be particularly
+ * Provides methods for setting configuration for nested properties, and can be particularly
  * useful for configuring map-type properties.
+ * </p>
+ * <p>
+ * Instances of this class can be reused to consistently and easily configure nested properties.
  * </p>
  */
 @SuppressWarnings("UnusedReturnValue")
@@ -99,16 +102,16 @@ public final class InnerSpec {
 	 * Sets the size of the currently referred container property.
 	 * {@code minSize} should be less than or equal to {@code maxSize}.
 	 *
-	 * @param min minimum size of the container to generate
-	 * @param max maximum size of the container to generate
+	 * @param minSize minimum size of the container to generate
+	 * @param maxSize maximum size of the container to generate
 	 */
-	public InnerSpec size(int min, int max) {
-		if (min > max) {
-			throw new IllegalArgumentException("should be min > max, min : " + min + " max : " + max);
+	public InnerSpec size(int minSize, int maxSize) {
+		if (minSize > maxSize) {
+			throw new IllegalArgumentException("should be min > max, min : " + minSize + " max : " + maxSize);
 		}
 
 		this.state.setContainerInfoHolder(
-			new ContainerInfoHolder(this.sequence + manipulateSize, this.treePathResolver, min, max)
+			new ContainerInfoHolder(this.sequence + manipulateSize, this.treePathResolver, minSize, maxSize)
 		);
 		manipulateSize++;
 		return this;
@@ -128,10 +131,10 @@ public final class InnerSpec {
 	 * The size of container property would be between {@code minSize} and
 	 * {@code minSize} + {@link Constants#DEFAULT_ELEMENT_MAX_SIZE}
 	 *
-	 * @param min minimum size of the container to generate
+	 * @param minSize minimum size of the container to generate
 	 */
-	public InnerSpec minSize(int min) {
-		return this.size(min, min + DEFAULT_ELEMENT_MAX_SIZE);
+	public InnerSpec minSize(int minSize) {
+		return this.size(minSize, minSize + DEFAULT_ELEMENT_MAX_SIZE);
 	}
 
 	/**
@@ -139,16 +142,16 @@ public final class InnerSpec {
 	 * The size of container property would be between
 	 * max(0, {@code maxSize} - {@link Constants#DEFAULT_ELEMENT_MAX_SIZE}) and {@code maxSize}
 	 *
-	 * @param max maximum size of the container to generate
+	 * @param maxSize maximum size of the container to generate
 	 */
-	public InnerSpec maxSize(int max) {
-		return this.size(Math.max(DEFAULT_ELEMENT_MIN_SIZE, max - DEFAULT_ELEMENT_MAX_SIZE), max);
+	public InnerSpec maxSize(int maxSize) {
+		return this.size(Math.max(DEFAULT_ELEMENT_MIN_SIZE, maxSize - DEFAULT_ELEMENT_MAX_SIZE), maxSize);
 	}
 
 	/**
 	 * Sets a key in the currently referred map property.
 	 *
-	 * @param key value of the key to set
+	 * @param key value of the map key to set
 	 */
 	public InnerSpec key(Object key) {
 		entrySize++;
@@ -181,7 +184,7 @@ public final class InnerSpec {
 	/**
 	 * Sets a value in the currently referred map property.
 	 *
-	 * @param value value of the value to set
+	 * @param value value of the map value to set
 	 */
 	public InnerSpec value(Object value) {
 		entrySize++;
@@ -246,7 +249,7 @@ public final class InnerSpec {
 	 * Sets an entry with a specified key within the currently referred map property,
 	 * and applies a consumer function to configure the value.
 	 *
-	 * @param key      value of the key to set
+	 * @param key      value of the map key to set
 	 * @param consumer a consumer function that takes an {@code InnerSpec} instance as an argument and configures
 	 *                 the nested map value
 	 */
@@ -262,7 +265,7 @@ public final class InnerSpec {
 	 *
 	 * @param consumer a consumer function that takes an {@code InnerSpec} instance as an argument and configures
 	 *                 the nested map key
-	 * @param value    value of the value to set
+	 * @param value    value of the map value to set
 	 */
 	public InnerSpec entry(Consumer<InnerSpec> consumer, @Nullable Object value) {
 		entrySize++;
@@ -334,7 +337,7 @@ public final class InnerSpec {
 	/**
 	 * Sets every value in the currently referred map property.
 	 *
-	 * @param value value of the value to set
+	 * @param value value of the map value to set
 	 */
 	public InnerSpec allValue(@Nullable Object value) {
 		setMapAllValue(value);
@@ -368,7 +371,7 @@ public final class InnerSpec {
 	 * obtained lazily from the given supplier and a specified value.
 	 *
 	 * @param keySupplier a supplier function that provides the value of the map keys to set.
-	 * @param value    value of the value to set
+	 * @param value       the value to set
 	 */
 	public InnerSpec allEntry(Supplier<?> keySupplier, Object value) {
 		LazyArbitrary<?> keyLazyArbitrary = LazyArbitrary.lazy(keySupplier);
@@ -436,6 +439,7 @@ public final class InnerSpec {
 	 * Sets a property within the currently referred property.
 	 *
 	 * @param propertyName name of the property to set
+	 *                     (only string-formatted property names are allowed, and expressions are not supported)
 	 * @param value        value of the property to set
 	 */
 	public InnerSpec property(String propertyName, @Nullable Object value) {
@@ -447,6 +451,7 @@ public final class InnerSpec {
 	 * Sets a property within the currently referred property using a consumer function.
 	 *
 	 * @param propertyName name of the property to set
+	 *                     (only string-formatted property names are allowed, and expressions are not supported)
 	 * @param consumer     a consumer function that takes an {@code InnerSpec} instance as an argument and configures
 	 *                     the nested property.
 	 */
