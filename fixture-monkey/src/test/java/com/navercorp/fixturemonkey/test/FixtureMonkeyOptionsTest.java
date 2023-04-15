@@ -76,6 +76,7 @@ import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.
 import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.AbstractSamePropertyValue;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.AbstractValue;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.BuilderInteger;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.ChildBuilderGroup;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.ConcreteIntValue;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.ConcreteSamePropertyValue;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.ConcreteStringValue;
@@ -748,8 +749,31 @@ class FixtureMonkeyOptionsTest {
 
 		String actual = sut.giveMeOne(SimpleObject.class)
 			.getStr();
+		List<String> actual2 = sut.giveMeOne(new TypeReference<List<String>>() {
+		});
+		ConcreteIntValue actual3 = sut.giveMeOne(ConcreteIntValue.class);
 
-		then(actual).isEqualTo("test");
+		then(actual).hasSizeBetween(1, 3);
+		then(actual2).hasSizeLessThan(5);
+		then(actual3).isEqualTo(RegisterGroup.FIXED_INT_VALUE);
+
+	}
+
+	@Property
+	void registerBuilderGroup() {
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.registerGroup(new ChildBuilderGroup())
+			.build();
+
+		String actual = sut.giveMeOne(SimpleObject.class)
+			.getStr();
+		List<String> actual2 = sut.giveMeOne(new TypeReference<List<String>>() {
+		});
+		ConcreteIntValue actual3 = sut.giveMeOne(ConcreteIntValue.class);
+
+		then(actual).hasSizeBetween(1, 3);
+		then(actual2).hasSizeLessThan(5);
+		then(actual3).isEqualTo(ChildBuilderGroup.FIXED_INT_VALUE);
 	}
 
 	@Property

@@ -24,6 +24,7 @@ import java.lang.reflect.AnnotatedType;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
 import net.jqwik.api.Builders;
 import net.jqwik.api.Builders.BuilderCombinator;
@@ -48,7 +49,11 @@ import com.navercorp.fixturemonkey.api.matcher.AssignableTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.property.ElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
+import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.api.type.Types;
+import com.navercorp.fixturemonkey.buildergroup.ArbitraryBuilderGroup;
+import com.navercorp.fixturemonkey.customizer.InnerSpec;
+import com.navercorp.fixturemonkey.resolver.ArbitraryBuilderSpecs;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.ListStringObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.SimpleObject;
 
@@ -62,8 +67,47 @@ class FixtureMonkeyOptionsAdditionalTestSpecs {
 	}
 
 	public static class RegisterGroup {
+		public static final ConcreteIntValue FIXED_INT_VALUE = new ConcreteIntValue();
+
 		public ArbitraryBuilder<String> string(FixtureMonkey fixtureMonkey) {
-			return fixtureMonkey.giveMeBuilder("test");
+			return fixtureMonkey.giveMeBuilder(String.class)
+				.set(Arbitraries.strings().numeric().ofMinLength(1).ofMaxLength(3));
+		}
+
+		public ArbitraryBuilder<List<String>> stringList(FixtureMonkey fixtureMonkey) {
+			return fixtureMonkey.giveMeBuilder(new TypeReference<List<String>>() {
+				})
+				.setInner(
+					new InnerSpec()
+						.maxSize(2)
+				);
+		}
+
+		public ArbitraryBuilder<ConcreteIntValue> concreteIntValue(FixtureMonkey fixtureMonkey) {
+			return fixtureMonkey.giveMeBuilder(FIXED_INT_VALUE);
+		}
+	}
+
+	public static class ChildBuilderGroup implements ArbitraryBuilderGroup {
+		public static final ConcreteIntValue FIXED_INT_VALUE = new ConcreteIntValue();
+
+		@Override
+		public ArbitraryBuilderSpecs addSpecs(ArbitraryBuilderSpecs specs) {
+			return specs
+				.of(String.class)
+				.registerBuilder(
+					ab -> ab.set(Arbitraries.strings().numeric().ofMinLength(1).ofMaxLength(3))
+				)
+				.of(new TypeReference<List<String>>() {
+				})
+				.registerBuilder(
+					builder -> builder.setInner(
+						new InnerSpec()
+							.maxSize(2)
+					)
+				)
+				.of(ConcreteIntValue.class)
+				.registerValue(FIXED_INT_VALUE);
 		}
 	}
 

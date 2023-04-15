@@ -56,6 +56,8 @@ import com.navercorp.fixturemonkey.api.plugin.Plugin;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.api.validator.ArbitraryValidator;
+import com.navercorp.fixturemonkey.buildergroup.ArbitraryBuilderCandidate;
+import com.navercorp.fixturemonkey.buildergroup.ArbitraryBuilderGroup;
 import com.navercorp.fixturemonkey.expression.MonkeyExpressionFactory;
 import com.navercorp.fixturemonkey.resolver.DecomposableContainerValue;
 import com.navercorp.fixturemonkey.resolver.DecomposedContainerValueFactory;
@@ -70,11 +72,11 @@ import com.navercorp.fixturemonkey.tree.ArbitraryTraverser;
 public class FixtureMonkeyBuilder {
 	private final GenerateOptionsBuilder generateOptionsBuilder = GenerateOptions.builder();
 	private final ManipulateOptionsBuilder manipulateOptionsBuilder = ManipulateOptions.builder();
+	private final Map<Class<?>, DecomposedContainerValueFactory> decomposableContainerFactoryMap = new HashMap<>();
 	private ManipulatorOptimizer manipulatorOptimizer = new NoneManipulatorOptimizer();
 	private DecomposedContainerValueFactory defaultDecomposedContainerValueFactory = (obj) -> {
 		throw new IllegalArgumentException("given type is not supported container : " + obj.getClass().getTypeName());
 	};
-	private final Map<Class<?>, DecomposedContainerValueFactory> decomposableContainerFactoryMap = new HashMap<>();
 
 	public FixtureMonkeyBuilder pushPropertyGenerator(MatcherOperator<PropertyGenerator> propertyGenerator) {
 		generateOptionsBuilder.insertFirstPropertyGenerator(propertyGenerator);
@@ -396,6 +398,20 @@ public class FixtureMonkeyBuilder {
 						| NoSuchMethodException e) {
 					// ignored
 				}
+			}
+		}
+		return this;
+	}
+
+	public FixtureMonkeyBuilder registerGroup(ArbitraryBuilderGroup... arbitraryBuilderGroups) {
+		for (ArbitraryBuilderGroup arbitraryBuilderGroup : arbitraryBuilderGroups) {
+			List<ArbitraryBuilderCandidate<?>> candidates = arbitraryBuilderGroup.getArbitraryBuilderCandidates();
+
+			for (ArbitraryBuilderCandidate<?> candidate : candidates) {
+				this.register(
+					candidate.getClassType(),
+					candidate.getArbitraryBuilderRegisterer()
+				);
 			}
 		}
 		return this;
