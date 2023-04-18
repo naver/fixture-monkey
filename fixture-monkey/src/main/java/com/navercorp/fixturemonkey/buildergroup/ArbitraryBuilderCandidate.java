@@ -20,9 +20,13 @@ package com.navercorp.fixturemonkey.buildergroup;
 
 import java.util.function.Function;
 
+import org.apiguardian.api.API;
+import org.apiguardian.api.API.Status;
+
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.FixtureMonkey;
 
+@API(since = "0.5.6", status = Status.EXPERIMENTAL)
 public interface ArbitraryBuilderCandidate<T> {
 
 	Class<?> getClassType();

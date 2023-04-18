@@ -23,11 +23,15 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.UnaryOperator;
 
+import org.apiguardian.api.API;
+import org.apiguardian.api.API.Status;
+
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.buildergroup.ArbitraryBuilderCandidate;
 
-public class ArbitraryBuilderSpecs {
+@API(since = "0.5.6", status = Status.EXPERIMENTAL)
+public final class ArbitraryBuilderSpecs {
 
 	private final List<ArbitraryBuilderCandidate<?>> candidates = new ArrayList<>();
 
