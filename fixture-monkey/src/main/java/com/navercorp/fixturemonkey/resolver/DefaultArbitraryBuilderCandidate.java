@@ -23,8 +23,6 @@ import static java.util.Objects.requireNonNull;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
-import javax.annotation.Nullable;
-
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
@@ -33,20 +31,14 @@ import com.navercorp.fixturemonkey.buildergroup.ArbitraryBuilderCandidate;
 
 class DefaultArbitraryBuilderCandidate<T> implements ArbitraryBuilderCandidate<T> {
 
-	@Nullable
-	private final Class<T> classType;
-
-	@Nullable
 	private final TypeReference<T> typeReference;
 
 	private final Function<FixtureMonkey, ArbitraryBuilder<T>> arbitraryBuilderRegisterer;
 
 	private DefaultArbitraryBuilderCandidate(
-		@Nullable Class<T> classType,
-		@Nullable TypeReference<T> typeReference,
+		TypeReference<T> typeReference,
 		Function<FixtureMonkey, ArbitraryBuilder<T>> arbitraryBuilderRegisterer
 	) {
-		this.classType = classType;
 		this.typeReference = typeReference;
 		this.arbitraryBuilderRegisterer = arbitraryBuilderRegisterer;
 	}
@@ -63,13 +55,9 @@ class DefaultArbitraryBuilderCandidate<T> implements ArbitraryBuilderCandidate<T
 
 	@Override
 	public Class<?> getClassType() {
-		if (classType == null) {
-			return Types.getActualType(
-				requireNonNull(this.typeReference).getAnnotatedType()
-			);
-		}
-
-		return classType;
+		return Types.getActualType(
+			requireNonNull(this.typeReference).getAnnotatedType()
+		);
 	}
 
 	@Override
@@ -78,8 +66,6 @@ class DefaultArbitraryBuilderCandidate<T> implements ArbitraryBuilderCandidate<T
 	}
 
 	static class Builder<T> {
-		private Class<T> classType;
-
 		private TypeReference<T> typeReference;
 
 		private UnaryOperator<ArbitraryBuilder<T>> builderSpec;
@@ -90,45 +76,35 @@ class DefaultArbitraryBuilderCandidate<T> implements ArbitraryBuilderCandidate<T
 		}
 
 		public DefaultArbitraryBuilderCandidate<T> buildWithFixedValue(T value) {
-			if (classType == null) {
-				throw new IllegalArgumentException("classType must exist for fixed value");
+			if (typeReference == null) {
+				throw new IllegalArgumentException("typeReference must exist for fixed value");
 			}
 
 			return new DefaultArbitraryBuilderCandidate<>(
-				classType,
 				typeReference,
 				(fixtureMonkey) -> fixtureMonkey.giveMeBuilder(value)
 			);
 		}
 
 		public DefaultArbitraryBuilderCandidate<T> build() {
-			if (classType == null && typeReference == null) {
-				throw new IllegalArgumentException("Either classType or typeReference must exist.");
-			}
-
-			if (classType != null && typeReference != null) {
-				throw new IllegalArgumentException("Cannot declare classType and typeReference at the same time");
+			if (typeReference == null) {
+				throw new IllegalArgumentException("typeReference must exist.");
 			}
 
 			if (builderSpec == null) {
 				throw new IllegalArgumentException("builderSpec must be registered.");
 			}
 
-			Function<FixtureMonkey, ArbitraryBuilder<T>> registerer;
-
-			if (classType != null) {
-				registerer = (fixtureMonkey) ->
-					builderSpec.apply(fixtureMonkey.giveMeBuilder(classType));
-			} else {
-				registerer = (fixtureMonkey) ->
+			Function<FixtureMonkey, ArbitraryBuilder<T>> registerer =
+				(fixtureMonkey) ->
 					builderSpec.apply(fixtureMonkey.giveMeBuilder(typeReference));
-			}
 
-			return new DefaultArbitraryBuilderCandidate<>(classType, typeReference, registerer);
+			return new DefaultArbitraryBuilderCandidate<>(typeReference, registerer);
 		}
 
 		private Builder<T> classType(Class<T> classType) {
-			this.classType = classType;
+			this.typeReference = new TypeReference<T>(classType) {
+			};
 			return this;
 		}
 
