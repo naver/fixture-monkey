@@ -173,13 +173,19 @@ public final class ObjectTree {
 			generated = generated.filter(predicate);
 		}
 
-		return generated.map(
-			object -> ctx.getFixtureCustomizers().stream()
-				.filter(it -> it.match(node.getProperty()))
-				.map(MatcherOperator::getOperator)
-				.findFirst()
-				.map(it -> it.customizeFixture(object))
-				.orElse(object)
-		);
+		FixtureCustomizer customizer = ctx.getFixtureCustomizers().stream()
+			.filter(it -> it.match(node.getProperty()))
+			.map(MatcherOperator::getOperator)
+			.findFirst()
+			.orElse(null);
+
+		CombinableArbitrary arbitrary = generated;
+		if (customizer != null) {
+			arbitrary = new FixedCombinableArbitrary(
+				generated.combined().map(obj -> customizer.customizeFixture(obj))
+			);
+		}
+
+		return arbitrary;
 	}
 }
