@@ -23,14 +23,14 @@ import java.util.List;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.resolver.ArbitraryBuilderSpecs;
+import com.navercorp.fixturemonkey.resolver.ArbitraryBuilderSpecList;
 
 @API(since = "0.5.6", status = Status.EXPERIMENTAL)
 public interface ArbitraryBuilderGroup {
 
 	default List<ArbitraryBuilderCandidate<?>> getArbitraryBuilderCandidates() {
-		return addSpecs(ArbitraryBuilderSpecs.newInstance()).getCandidates();
+		return addSpecs(ArbitraryBuilderSpecList.newInstance()).getCandidates();
 	}
 
-	ArbitraryBuilderSpecs addSpecs(ArbitraryBuilderSpecs specs);
+	ArbitraryBuilderSpecList addSpecs(ArbitraryBuilderSpecList specs);
 }

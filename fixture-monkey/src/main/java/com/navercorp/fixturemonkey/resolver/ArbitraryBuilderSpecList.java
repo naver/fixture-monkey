@@ -31,15 +31,15 @@ import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.buildergroup.ArbitraryBuilderCandidate;
 
 @API(since = "0.5.6", status = Status.EXPERIMENTAL)
-public final class ArbitraryBuilderSpecs {
+public final class ArbitraryBuilderSpecList {
 
 	private final List<ArbitraryBuilderCandidate<?>> candidates = new ArrayList<>();
 
-	private ArbitraryBuilderSpecs() {
+	private ArbitraryBuilderSpecList() {
 	}
 
-	public static ArbitraryBuilderSpecs newInstance() {
-		return new ArbitraryBuilderSpecs();
+	public static ArbitraryBuilderSpecList newInstance() {
+		return new ArbitraryBuilderSpecList();
 	}
 
 	public <T> SpecBuilder<T> of(Class<T> classType) {
@@ -60,24 +60,24 @@ public final class ArbitraryBuilderSpecs {
 
 	public static class SpecBuilder<T> {
 		private final DefaultArbitraryBuilderCandidate.Builder<T> builder;
-		private final ArbitraryBuilderSpecs parent;
+		private final ArbitraryBuilderSpecList parent;
 
 		private SpecBuilder(
 			DefaultArbitraryBuilderCandidate.Builder<T> builder,
-			ArbitraryBuilderSpecs parent
+			ArbitraryBuilderSpecList parent
 		) {
 			this.builder = builder;
 			this.parent = parent;
 		}
 
-		public ArbitraryBuilderSpecs registerValue(T value) {
+		public ArbitraryBuilderSpecList registerValue(T value) {
 			parent.addCandidate(
 				builder.buildWithFixedValue(value)
 			);
 			return parent;
 		}
 
-		public ArbitraryBuilderSpecs registerBuilder(UnaryOperator<ArbitraryBuilder<T>> builderSpec) {
+		public ArbitraryBuilderSpecList registerBuilder(UnaryOperator<ArbitraryBuilder<T>> builderSpec) {
 			parent.addCandidate(
 				builder.register(builderSpec)
 					.build()

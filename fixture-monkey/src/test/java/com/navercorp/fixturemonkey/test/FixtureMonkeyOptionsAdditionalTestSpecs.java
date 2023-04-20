@@ -53,11 +53,22 @@ import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.buildergroup.ArbitraryBuilderGroup;
 import com.navercorp.fixturemonkey.customizer.InnerSpec;
-import com.navercorp.fixturemonkey.resolver.ArbitraryBuilderSpecs;
+import com.navercorp.fixturemonkey.resolver.ArbitraryBuilderSpecList;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.ListStringObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.SimpleObject;
 
 class FixtureMonkeyOptionsAdditionalTestSpecs {
+	public interface GetFixedValue {
+		Object get();
+	}
+
+	public interface GetFixedValueChild extends GetFixedValue {
+	}
+
+	public interface GetterInterface {
+		String getValue();
+	}
+
 	public static class SimpleObjectChild extends SimpleObject {
 	}
 
@@ -92,7 +103,7 @@ class FixtureMonkeyOptionsAdditionalTestSpecs {
 		public static final ConcreteIntValue FIXED_INT_VALUE = new ConcreteIntValue();
 
 		@Override
-		public ArbitraryBuilderSpecs addSpecs(ArbitraryBuilderSpecs specs) {
+		public ArbitraryBuilderSpecList addSpecs(ArbitraryBuilderSpecList specs) {
 			return specs
 				.of(String.class)
 				.registerBuilder(
@@ -232,10 +243,6 @@ class FixtureMonkeyOptionsAdditionalTestSpecs {
 		}
 	}
 
-	public interface GetFixedValue {
-		Object get();
-	}
-
 	public static class GetIntegerFixedValue implements GetFixedValue {
 		@Override
 		public Object get() {
@@ -248,9 +255,6 @@ class FixtureMonkeyOptionsAdditionalTestSpecs {
 		public Object get() {
 			return "fixed";
 		}
-	}
-
-	public interface GetFixedValueChild extends GetFixedValue {
 	}
 
 	public static class GetIntegerFixedValueChild implements GetFixedValueChild {
@@ -343,10 +347,6 @@ class FixtureMonkeyOptionsAdditionalTestSpecs {
 			super(recursives);
 			this.value = value;
 		}
-	}
-
-	public interface GetterInterface {
-		String getValue();
 	}
 
 	@Data
