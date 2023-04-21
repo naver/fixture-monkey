@@ -22,4 +22,4 @@ import com.navercorp.fixturemonkey.api.type.TypeReference
 import com.navercorp.fixturemonkey.resolver.ArbitraryBuilderSpecList
 
 inline fun <reified T : Any?> ArbitraryBuilderSpecList.of(): ArbitraryBuilderSpecList.SpecBuilder<T> =
-        this.of(object : TypeReference<T>() {})
+    this.of(object : TypeReference<T>() {})
