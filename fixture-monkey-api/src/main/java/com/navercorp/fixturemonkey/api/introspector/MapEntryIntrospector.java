@@ -37,9 +37,8 @@ import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty.MapEntryElementType;
 import com.navercorp.fixturemonkey.api.property.Property;
 
-@Deprecated
-@API(since = "0.4.0", status = Status.MAINTAINED)
-public final class EntryIntrospector implements ArbitraryIntrospector, Matcher {
+@API(since = "0.5.6", status = Status.MAINTAINED)
+public final class MapEntryIntrospector implements ArbitraryIntrospector, Matcher {
 	private static final Matcher MATCHER = new AssignableTypeMatcher(Entry.class);
 
 	@Override

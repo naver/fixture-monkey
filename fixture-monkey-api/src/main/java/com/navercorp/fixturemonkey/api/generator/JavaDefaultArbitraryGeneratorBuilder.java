@@ -31,7 +31,6 @@ import com.navercorp.fixturemonkey.api.introspector.ArrayIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.BeanArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.BooleanIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.CompositeArbitraryIntrospector;
-import com.navercorp.fixturemonkey.api.introspector.EntryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.EnumIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.IterableIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.IteratorIntrospector;
@@ -43,6 +42,7 @@ import com.navercorp.fixturemonkey.api.introspector.JavaTimeTypeArbitraryGenerat
 import com.navercorp.fixturemonkey.api.introspector.JavaTypeArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.introspector.ListIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.MapEntryElementIntrospector;
+import com.navercorp.fixturemonkey.api.introspector.MapEntryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.MapIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.OptionalIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.QueueIntrospector;
@@ -71,7 +71,7 @@ public final class JavaDefaultArbitraryGeneratorBuilder {
 			new IterableIntrospector(),
 			new IteratorIntrospector(),
 			new MapIntrospector(),
-			new EntryIntrospector(),
+			new MapEntryIntrospector(),
 			new MapEntryElementIntrospector(),
 			new TupleLikeElementsIntrospector(),
 			new ArrayIntrospector()
