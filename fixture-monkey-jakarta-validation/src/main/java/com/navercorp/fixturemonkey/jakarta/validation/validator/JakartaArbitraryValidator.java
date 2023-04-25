@@ -16,23 +16,25 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.api.validator;
+package com.navercorp.fixturemonkey.jakarta.validation.validator;
 
 import java.util.Set;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
-import javax.validation.Validation;
-import javax.validation.Validator;
+import org.apiguardian.api.API;
+import org.apiguardian.api.API.Status;
 
-/**
- * Use {@code JavaxArbitraryValidator} instead.
- */
-@Deprecated // would be removed in 0.6.0
-public final class DefaultArbitraryValidator implements ArbitraryValidator {
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+
+import com.navercorp.fixturemonkey.api.validator.ArbitraryValidator;
+
+@API(since = "0.5.6", status = Status.EXPERIMENTAL)
+public final class JakartaArbitraryValidator implements ArbitraryValidator {
 	private Validator validator;
 
-	public DefaultArbitraryValidator() {
+	public JakartaArbitraryValidator() {
 		try {
 			this.validator = Validation.buildDefaultValidatorFactory().getValidator();
 		} catch (Exception e) {

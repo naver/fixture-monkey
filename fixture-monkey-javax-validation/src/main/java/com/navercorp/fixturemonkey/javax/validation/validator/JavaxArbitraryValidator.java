@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.api.validator;
+package com.navercorp.fixturemonkey.javax.validation.validator;
 
 import java.util.Set;
 
@@ -25,14 +25,16 @@ import javax.validation.ConstraintViolationException;
 import javax.validation.Validation;
 import javax.validation.Validator;
 
-/**
- * Use {@code JavaxArbitraryValidator} instead.
- */
-@Deprecated // would be removed in 0.6.0
-public final class DefaultArbitraryValidator implements ArbitraryValidator {
+import org.apiguardian.api.API;
+import org.apiguardian.api.API.Status;
+
+import com.navercorp.fixturemonkey.api.validator.ArbitraryValidator;
+
+@API(since = "0.5.6", status = Status.EXPERIMENTAL)
+public final class JavaxArbitraryValidator implements ArbitraryValidator {
 	private Validator validator;
 
-	public DefaultArbitraryValidator() {
+	public JavaxArbitraryValidator() {
 		try {
 			this.validator = Validation.buildDefaultValidatorFactory().getValidator();
 		} catch (Exception e) {

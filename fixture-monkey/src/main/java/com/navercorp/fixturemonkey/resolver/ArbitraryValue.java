@@ -125,14 +125,17 @@ final class ArbitraryValue<T> implements Arbitrary<T> {
 				try {
 					this.validator.validate(fixture);
 					return true;
-				} catch (ConstraintViolationException ex) {
-					ex.getConstraintViolations().forEach(violation ->
-						this.violations.put(
-							violation.getRootBeanClass().getName() + violation.getPropertyPath(),
-							violation
-						)
-					);
-					this.lastException = ex;
+				} catch (ConstraintViolationException | jakarta.validation.ConstraintViolationException ex) {
+					if (ex instanceof ConstraintViolationException) {
+						((ConstraintViolationException)ex).getConstraintViolations().forEach(violation ->
+							this.violations.put(
+								violation.getRootBeanClass().getName() + violation.getPropertyPath(),
+								violation
+							)
+						);
+						this.lastException = ex;
+					}
+					// TODO: Jakarta exceptions would be omitted. It would be fixed.
 				}
 				return false;
 			};
