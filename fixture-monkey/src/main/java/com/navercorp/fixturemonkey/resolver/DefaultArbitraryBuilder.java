@@ -396,7 +396,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T> {
 	}
 
 	@Override
-	public ArbitraryBuilder<T> customize(MatcherOperator<FixtureCustomizer<T>> fixtureCustomizer) {
+	public ArbitraryBuilder<T> customize(MatcherOperator<FixtureCustomizer<?>> fixtureCustomizer) {
 		this.context.addCustomizer(fixtureCustomizer);
 		return this;
 	}

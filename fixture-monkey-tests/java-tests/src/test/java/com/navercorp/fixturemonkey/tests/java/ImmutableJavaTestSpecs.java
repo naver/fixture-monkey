@@ -109,6 +109,12 @@ class ImmutableJavaTestSpecs {
 		OptionalDouble optionalDouble;
 	}
 
+	@Value
+	@Builder
+	public static class RootJavaTypeObject {
+		JavaTypeObject value;
+	}
+
 	public enum Enum {
 		ONE,
 		TWO,

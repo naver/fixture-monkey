@@ -498,7 +498,7 @@ public interface ArbitraryBuilder<T> {
 		Function<List<?>, R> combinator
 	);
 
-	ArbitraryBuilder<T> customize(MatcherOperator<FixtureCustomizer<T>> customizer);
+	ArbitraryBuilder<T> customize(MatcherOperator<FixtureCustomizer<?>> customizer);
 
 	/**
 	 * Build {@link ArbitraryBuilder} into {@link Arbitrary} for using various support methods
