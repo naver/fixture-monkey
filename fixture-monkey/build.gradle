@@ -15,6 +15,7 @@ dependencies {
 
     api("net.jqwik:jqwik:${JQWIK_VERSION}")
     api("com.github.mifmif:generex:1.0.2")
+    api("jakarta.validation:jakarta.validation-api:3.0.2")
 
     testRuntimeOnly(project(":fixture-monkey-engine"))
     testImplementation("org.junit.jupiter:junit-jupiter-engine:${JUNIT_JUPITER_VERSION}")

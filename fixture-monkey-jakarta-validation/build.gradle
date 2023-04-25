@@ -17,8 +17,8 @@ dependencies {
 
     testRuntimeOnly(project(":fixture-monkey-engine"))
     testImplementation(project(":fixture-monkey"))
-    testImplementation("org.hibernate.validator:hibernate-validator:8.0.0.Final")
-    testImplementation("org.glassfish:jakarta.el:3.0.4")
+    testImplementation("org.hibernate.validator:hibernate-validator:7.0.5.Final")
+    testImplementation("org.glassfish:jakarta.el:4.0.2")
     testImplementation("org.junit.jupiter:junit-jupiter-engine:${JUNIT_JUPITER_VERSION}")
     testImplementation("org.junit.platform:junit-platform-engine:${JUNIT_ENGINE_VERSION}")
     testImplementation("org.assertj:assertj-core:3.22.0")
