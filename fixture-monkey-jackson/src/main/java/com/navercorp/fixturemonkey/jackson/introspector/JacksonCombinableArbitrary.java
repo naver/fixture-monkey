@@ -18,7 +18,6 @@
 
 package com.navercorp.fixturemonkey.jackson.introspector;
 
-import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -34,13 +33,13 @@ import com.navercorp.fixturemonkey.api.generator.NullInjectCombinableArbitrary;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 
 @API(since = "0.5.0", status = Status.EXPERIMENTAL)
-public final class JacksonCombinableArbitrary implements CombinableArbitrary {
-	private final LazyArbitrary<Arbitrary<Map<String, Object>>> arbitrary;
-	private final Function<Map<String, Object>, Object> deserializer;
+public final class JacksonCombinableArbitrary<C> implements CombinableArbitrary {
+	private final LazyArbitrary<Arbitrary<C>> arbitrary;
+	private final Function<C, Object> deserializer;
 
 	public JacksonCombinableArbitrary(
-		LazyArbitrary<Arbitrary<Map<String, Object>>> arbitrary,
-		Function<Map<String, Object>, Object> deserializer
+		LazyArbitrary<Arbitrary<C>> arbitrary,
+		Function<C, Object> deserializer
 	) {
 		this.arbitrary = arbitrary;
 		this.deserializer = deserializer;

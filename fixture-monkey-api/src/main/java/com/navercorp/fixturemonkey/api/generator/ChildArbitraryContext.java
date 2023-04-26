@@ -20,10 +20,10 @@ package com.navercorp.fixturemonkey.api.generator;
 
 import static java.util.stream.Collectors.toMap;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.stream.Collectors;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -79,9 +79,7 @@ public final class ChildArbitraryContext {
 			.collect(toMap(it -> it.getKey().getObjectProperty().getProperty().getName(), Entry::getValue));
 	}
 
-	public List<Arbitrary<?>> getArbitraries() {
-		return arbitrariesByChildProperty.values().stream()
-			.map(CombinableArbitrary::combined)
-			.collect(Collectors.toList());
+	public List<CombinableArbitrary> getElementArbitraries() {
+		return new ArrayList<>(arbitrariesByChildProperty.values());
 	}
 }

@@ -19,6 +19,7 @@
 package com.navercorp.fixturemonkey.jackson.plugin;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apiguardian.api.API;
@@ -27,13 +28,17 @@ import org.apiguardian.api.API.Status;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import com.navercorp.fixturemonkey.api.introspector.CompositeArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.matcher.AssignableTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.option.GenerateOptionsBuilder;
 import com.navercorp.fixturemonkey.api.plugin.Plugin;
 import com.navercorp.fixturemonkey.jackson.FixtureMonkeyJackson;
 import com.navercorp.fixturemonkey.jackson.generator.JsonNodeContainerPropertyGenerator;
-import com.navercorp.fixturemonkey.jackson.introspector.JacksonArbitraryIntrospector;
+import com.navercorp.fixturemonkey.jackson.introspector.JacksonArrayArbitraryIntrospector;
+import com.navercorp.fixturemonkey.jackson.introspector.JacksonCollectionArbitraryIntrospector;
+import com.navercorp.fixturemonkey.jackson.introspector.JacksonMapArbitraryIntrospector;
+import com.navercorp.fixturemonkey.jackson.introspector.JacksonObjectArbitraryIntrospector;
 import com.navercorp.fixturemonkey.jackson.introspector.JsonNodeIntrospector;
 import com.navercorp.fixturemonkey.jackson.property.JacksonPropertyNameResolver;
 
@@ -72,14 +77,22 @@ public final class JacksonPlugin implements Plugin {
 			Matcher matcher = property -> matchers.stream().anyMatch(it -> it.match(property));
 
 			optionsBuilder
-				.insertFirstArbitraryIntrospector(matcher, new JacksonArbitraryIntrospector(objectMapper))
+				.insertFirstArbitraryIntrospector(matcher, new JacksonObjectArbitraryIntrospector(objectMapper))
 				.insertFirstPropertyNameResolver(matcher, new JacksonPropertyNameResolver());
 		}
 
 		if (this.defaultOptions) {
 			optionsBuilder
-				.objectIntrospector(it -> new JacksonArbitraryIntrospector(objectMapper))
-				.defaultPropertyNameResolver(new JacksonPropertyNameResolver());
+				.objectIntrospector(it -> new JacksonObjectArbitraryIntrospector(objectMapper))
+				.defaultPropertyNameResolver(new JacksonPropertyNameResolver())
+				.containerIntrospector(container -> new CompositeArbitraryIntrospector(
+					Arrays.asList(
+						new JacksonCollectionArbitraryIntrospector(objectMapper),
+						new JacksonArrayArbitraryIntrospector(objectMapper),
+						new JacksonMapArbitraryIntrospector(objectMapper),
+						container
+					)
+				));
 		}
 
 		optionsBuilder

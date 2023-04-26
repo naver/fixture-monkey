@@ -47,7 +47,7 @@ import net.jqwik.engine.properties.shrinking.CombinedShrinkable;
 // TODO: move package when unique manipulation works for any type
 @SuppressWarnings("NullableProblems")
 @API(since = "0.4.6", status = Status.EXPERIMENTAL)
-final class MonkeyCombineArbitrary implements Arbitrary<Object> {
+public final class MonkeyCombineArbitrary implements Arbitrary<Object> {
 	private final Function<List<Object>, Object> combinator;
 	private final Runnable combinationCallback;
 	private final List<Arbitrary<Object>> arbitraries;

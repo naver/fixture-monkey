@@ -35,8 +35,6 @@ import javax.annotation.Nullable;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import net.jqwik.api.Arbitrary;
-
 import com.navercorp.fixturemonkey.api.context.MonkeyGeneratorContext;
 import com.navercorp.fixturemonkey.api.customizer.FixtureCustomizer;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
@@ -117,8 +115,8 @@ public final class ArbitraryGeneratorContext {
 		return childArbitraryContext.getValue().getCombinableArbitraryByPropertyName();
 	}
 
-	public List<Arbitrary<?>> getArbitraries() {
-		return childArbitraryContext.getValue().getArbitraries();
+	public List<CombinableArbitrary> getElementArbitraries() {
+		return childArbitraryContext.getValue().getElementArbitraries();
 	}
 
 	@Nullable

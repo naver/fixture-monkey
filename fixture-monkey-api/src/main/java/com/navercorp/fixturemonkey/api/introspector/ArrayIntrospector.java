@@ -21,6 +21,7 @@ package com.navercorp.fixturemonkey.api.introspector;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -32,6 +33,7 @@ import net.jqwik.api.Builders.BuilderCombinator;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
+import com.navercorp.fixturemonkey.api.generator.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.generator.ContainerProperty;
 import com.navercorp.fixturemonkey.api.generator.LazyCombinableArbitrary;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
@@ -64,7 +66,9 @@ public final class ArrayIntrospector implements ArbitraryIntrospector, Matcher {
 			new LazyCombinableArbitrary(
 				LazyArbitrary.lazy(
 					() -> {
-						List<Arbitrary<?>> childrenArbitraries = context.getArbitraries();
+						List<Arbitrary<?>> childrenArbitraries = context.getElementArbitraries().stream()
+							.map(CombinableArbitrary::combined)
+							.collect(Collectors.toList());
 						BuilderCombinator<ArrayBuilder> builderCombinator = Builders.withBuilder(() ->
 							new ArrayBuilder(
 								Types.getArrayComponentType(

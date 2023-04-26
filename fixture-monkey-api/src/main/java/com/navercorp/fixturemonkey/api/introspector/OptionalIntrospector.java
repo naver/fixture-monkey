@@ -23,6 +23,7 @@ import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.OptionalInt;
 import java.util.OptionalLong;
+import java.util.stream.Collectors;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -32,6 +33,7 @@ import net.jqwik.api.Arbitrary;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
+import com.navercorp.fixturemonkey.api.generator.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.generator.ContainerProperty;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.property.Property;
@@ -72,7 +74,9 @@ public final class OptionalIntrospector implements ArbitraryIntrospector, Matche
 		}
 
 		Class<?> type = Types.getActualType(property.getObjectProperty().getProperty().getType());
-		List<Arbitrary<?>> childArbitraries = context.getArbitraries();
+		List<Arbitrary<?>> childArbitraries = context.getElementArbitraries().stream()
+			.map(CombinableArbitrary::combined)
+			.collect(Collectors.toList());
 		Arbitrary<?> elementArbitrary = childArbitraries.get(0)
 			.optional(presenceProbability)
 			.map(it -> {

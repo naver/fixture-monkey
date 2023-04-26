@@ -23,6 +23,7 @@ import java.beans.ConstructorProperties;
 import java.lang.reflect.AnnotatedType;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import net.jqwik.api.Arbitrary;
 import net.jqwik.api.Builders;
@@ -39,6 +40,7 @@ import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
+import com.navercorp.fixturemonkey.api.generator.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.generator.ContainerProperty;
 import com.navercorp.fixturemonkey.api.generator.ContainerPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.ContainerPropertyGeneratorContext;
@@ -144,7 +146,9 @@ class FixtureMonkeyOptionsAdditionalTestSpecs {
 				return ArbitraryIntrospectorResult.EMPTY;
 			}
 
-			List<Arbitrary<?>> childrenArbitraries = context.getArbitraries();
+			List<Arbitrary<?>> childrenArbitraries = context.getElementArbitraries().stream()
+				.map(CombinableArbitrary::combined)
+				.collect(Collectors.toList());
 			BuilderCombinator<List<Object>> builderCombinator = Builders.withBuilder(ArrayList::new);
 			for (Arbitrary<?> childArbitrary : childrenArbitraries) {
 				builderCombinator = builderCombinator.use(childArbitrary).in((list, element) -> {
