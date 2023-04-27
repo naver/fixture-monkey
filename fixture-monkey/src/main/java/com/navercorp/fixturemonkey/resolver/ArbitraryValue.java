@@ -125,7 +125,9 @@ final class ArbitraryValue<T> implements Arbitrary<T> {
 				try {
 					this.validator.validate(fixture);
 					return true;
-				} catch (ConstraintViolationException | jakarta.validation.ConstraintViolationException ex) {
+				} catch (Exception ex) {
+					// It uses Exception for preventing to fail
+					// due to conflict caused by client hibernate-validator version.
 					if (ex instanceof ConstraintViolationException) {
 						((ConstraintViolationException)ex).getConstraintViolations().forEach(violation ->
 							this.violations.put(
