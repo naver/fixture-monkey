@@ -15,15 +15,12 @@ dependencies {
 
     api("net.jqwik:jqwik:${JQWIK_VERSION}")
     api("com.github.mifmif:generex:1.0.2")
-    api("jakarta.validation:jakarta.validation-api:3.0.2")
 
     testRuntimeOnly(project(":fixture-monkey-engine"))
     testImplementation("org.junit.jupiter:junit-jupiter-engine:${JUNIT_JUPITER_VERSION}")
     testImplementation("org.junit.platform:junit-platform-engine:${JUNIT_ENGINE_VERSION}")
     testImplementation("org.assertj:assertj-core:3.22.0")
     testImplementation("org.projectlombok:lombok:1.18.24")
-    testImplementation("org.hibernate.validator:hibernate-validator:6.2.0.Final")
-    testImplementation('org.glassfish:jakarta.el:3.0.4')
     testAnnotationProcessor("org.projectlombok:lombok:1.18.24")
 
     jmhImplementation("org.openjdk.jmh:jmh-core:1.35")
