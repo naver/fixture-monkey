@@ -42,8 +42,6 @@ import java.util.stream.Collectors;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import sun.reflect.generics.reflectiveObjects.TypeVariableImpl;
-
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public class Types {
 	private static final Map<Class<?>, Class<?>> primitiveWrapperMap = new HashMap<>();
@@ -558,8 +556,9 @@ public class Types {
 
 	/**
 	 * @return index
-	 * @see TypeVariableImpl#typeVarIndex()
+	 * @see sun.reflect.generics.reflectiveObjects.TypeVariableImpl#typeVarIndex()
 	 */
+	@SuppressWarnings("JavadocReference")
 	private static Optional<Integer> getTypeVariableIndex(TypeVariable<?> typeVariable) {
 		TypeVariable<?>[] tVars = typeVariable.getGenericDeclaration().getTypeParameters();
 		int index = -1;
