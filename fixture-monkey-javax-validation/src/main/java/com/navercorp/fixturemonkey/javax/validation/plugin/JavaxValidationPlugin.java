@@ -86,9 +86,7 @@ public final class JavaxValidationPlugin implements Plugin {
 				new JavaxValidationArbitraryContainerInfoGenerator()
 			)
 			.javaTypeArbitraryGenerator(javaTypeArbitraryGenerator)
-			.javaArbitraryResolver(
-				new JavaxValidationJavaArbitraryResolver(this.javaxValidationConstraintGenerator)
-			)
+			.javaArbitraryResolver(new JavaxValidationJavaArbitraryResolver(this.javaxValidationConstraintGenerator))
 			.javaTimeTypeArbitraryGenerator(javaTimeTypeArbitraryGenerator)
 			.javaTimeArbitraryResolver(
 				new JavaxValidationJavaTimeArbitraryResolver(

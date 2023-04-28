@@ -1,6 +1,8 @@
 dependencies {
     testImplementation(project(":fixture-monkey-javax-validation"))
+    testImplementation(project(":fixture-monkey-jakarta-validation"))
     testImplementation("org.projectlombok:lombok:1.18.24")
     testImplementation(project(":fixture-monkey-jackson"))
+    testImplementation("org.assertj:assertj-core:3.22.0")
     testAnnotationProcessor("org.projectlombok:lombok:1.18.24")
 }

@@ -51,9 +51,13 @@ import net.jqwik.time.api.arbitraries.ZonedDateTimeArbitrary;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.introspector.JavaTimeArbitraryResolver;
+import com.navercorp.fixturemonkey.api.matcher.AnnotationPackageNameMatcher;
+import com.navercorp.fixturemonkey.api.matcher.Matcher;
+import com.navercorp.fixturemonkey.api.property.Property;
 
 @API(since = "0.4.10", status = Status.MAINTAINED)
-public final class JakartaValidationJavaTimeArbitraryResolver implements JavaTimeArbitraryResolver {
+public final class JakartaValidationJavaTimeArbitraryResolver implements JavaTimeArbitraryResolver, Matcher {
+	private static final Matcher MATCHER = new AnnotationPackageNameMatcher("jakarta.validation.constraints");
 	private final JakartaValidationTimeConstraintGenerator constraintGenerator;
 
 	public JakartaValidationJavaTimeArbitraryResolver() {
@@ -62,6 +66,11 @@ public final class JakartaValidationJavaTimeArbitraryResolver implements JavaTim
 
 	public JakartaValidationJavaTimeArbitraryResolver(JakartaValidationTimeConstraintGenerator constraintGenerator) {
 		this.constraintGenerator = constraintGenerator;
+	}
+
+	@Override
+	public boolean match(Property property) {
+		return MATCHER.match(property);
 	}
 
 	@Override

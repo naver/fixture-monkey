@@ -47,9 +47,13 @@ import jakarta.validation.constraints.Pattern;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.introspector.JavaArbitraryResolver;
+import com.navercorp.fixturemonkey.api.matcher.AnnotationPackageNameMatcher;
+import com.navercorp.fixturemonkey.api.matcher.Matcher;
+import com.navercorp.fixturemonkey.api.property.Property;
 
 @API(since = "0.4.10", status = Status.MAINTAINED)
-public final class JakartaValidationJavaArbitraryResolver implements JavaArbitraryResolver {
+public final class JakartaValidationJavaArbitraryResolver implements JavaArbitraryResolver, Matcher {
+	private static final Matcher MATCHER = new AnnotationPackageNameMatcher("jakarta.validation.constraints");
 	private static final RegexGenerator REGEX_GENERATOR = new RegexGenerator();
 
 	private final JakartaValidationConstraintGenerator constraintGenerator;
@@ -60,6 +64,11 @@ public final class JakartaValidationJavaArbitraryResolver implements JavaArbitra
 
 	public JakartaValidationJavaArbitraryResolver(JakartaValidationConstraintGenerator constraintGenerator) {
 		this.constraintGenerator = constraintGenerator;
+	}
+
+	@Override
+	public boolean match(Property property) {
+		return MATCHER.match(property);
 	}
 
 	@Override
