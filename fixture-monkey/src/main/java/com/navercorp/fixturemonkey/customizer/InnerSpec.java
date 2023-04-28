@@ -92,6 +92,13 @@ public final class InnerSpec {
 		this.innerSpecs = innerSpecs;
 	}
 
+	/**
+	 * Configures the currently referred property further
+	 * with the specifications provided inside the given {@link InnerSpec} object
+	 *
+	 * @param innerSpec An instance of {@link InnerSpec} containing the specifications
+	 *                  to be applied to the currently referred property.
+	 */
 	public InnerSpec inner(InnerSpec innerSpec) {
 		InnerSpec appendInnerSpec = newAppendNodeResolver(innerSpec, this.treePathResolver);
 		this.innerSpecs.add(appendInnerSpec);
