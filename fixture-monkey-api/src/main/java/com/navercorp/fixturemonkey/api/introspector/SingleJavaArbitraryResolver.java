@@ -39,11 +39,13 @@ import net.jqwik.api.arbitraries.StringArbitrary;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
+import com.navercorp.fixturemonkey.api.property.Property;
 
-@API(since = "0.5.6", status = Status.EXPERIMENTAL)
+@API(since = "0.5.7", status = Status.EXPERIMENTAL)
 public final class SingleJavaArbitraryResolver implements JavaArbitraryResolver {
 	private static final JavaArbitraryResolver DEFAULT_NONE_JAVA_ARBITRARY_RESOLVER = new JavaArbitraryResolver() {
 	};
+
 	private final List<JavaArbitraryResolver> javaArbitraryResolvers;
 
 	public SingleJavaArbitraryResolver(List<JavaArbitraryResolver> javaArbitraryResolvers) {
@@ -52,42 +54,42 @@ public final class SingleJavaArbitraryResolver implements JavaArbitraryResolver 
 
 	@Override
 	public Arbitrary<String> strings(StringArbitrary stringArbitrary, ArbitraryGeneratorContext context) {
-		return selectResolver(context).strings(stringArbitrary, context);
+		return resolve(context.getResolvedProperty()).strings(stringArbitrary, context);
 	}
 
 	@Override
 	public Arbitrary<Character> characters(CharacterArbitrary characterArbitrary, ArbitraryGeneratorContext context) {
-		return selectResolver(context).characters(characterArbitrary, context);
+		return resolve(context.getResolvedProperty()).characters(characterArbitrary, context);
 	}
 
 	@Override
 	public Arbitrary<Short> shorts(ShortArbitrary shortArbitrary, ArbitraryGeneratorContext context) {
-		return selectResolver(context).shorts(shortArbitrary, context);
+		return resolve(context.getResolvedProperty()).shorts(shortArbitrary, context);
 	}
 
 	@Override
 	public Arbitrary<Byte> bytes(ByteArbitrary byteArbitrary, ArbitraryGeneratorContext context) {
-		return selectResolver(context).bytes(byteArbitrary, context);
+		return resolve(context.getResolvedProperty()).bytes(byteArbitrary, context);
 	}
 
 	@Override
 	public Arbitrary<Double> doubles(DoubleArbitrary doubleArbitrary, ArbitraryGeneratorContext context) {
-		return selectResolver(context).doubles(doubleArbitrary, context);
+		return resolve(context.getResolvedProperty()).doubles(doubleArbitrary, context);
 	}
 
 	@Override
 	public Arbitrary<Float> floats(FloatArbitrary floatArbitrary, ArbitraryGeneratorContext context) {
-		return selectResolver(context).floats(floatArbitrary, context);
+		return resolve(context.getResolvedProperty()).floats(floatArbitrary, context);
 	}
 
 	@Override
 	public Arbitrary<Integer> integers(IntegerArbitrary integerArbitrary, ArbitraryGeneratorContext context) {
-		return selectResolver(context).integers(integerArbitrary, context);
+		return resolve(context.getResolvedProperty()).integers(integerArbitrary, context);
 	}
 
 	@Override
 	public Arbitrary<Long> longs(LongArbitrary longArbitrary, ArbitraryGeneratorContext context) {
-		return selectResolver(context).longs(longArbitrary, context);
+		return resolve(context.getResolvedProperty()).longs(longArbitrary, context);
 	}
 
 	@Override
@@ -95,7 +97,7 @@ public final class SingleJavaArbitraryResolver implements JavaArbitraryResolver 
 		BigIntegerArbitrary bigIntegerArbitrary,
 		ArbitraryGeneratorContext context
 	) {
-		return selectResolver(context).bigIntegers(bigIntegerArbitrary, context);
+		return resolve(context.getResolvedProperty()).bigIntegers(bigIntegerArbitrary, context);
 	}
 
 	@Override
@@ -103,15 +105,15 @@ public final class SingleJavaArbitraryResolver implements JavaArbitraryResolver 
 		BigDecimalArbitrary bigDecimalArbitrary,
 		ArbitraryGeneratorContext context
 	) {
-		return selectResolver(context).bigDecimals(bigDecimalArbitrary, context);
+		return resolve(context.getResolvedProperty()).bigDecimals(bigDecimalArbitrary, context);
 	}
 
-	private JavaArbitraryResolver selectResolver(
-		ArbitraryGeneratorContext context
+	private JavaArbitraryResolver resolve(
+		Property property
 	) {
 		for (JavaArbitraryResolver resolver : this.javaArbitraryResolvers) {
 			if (resolver instanceof Matcher) {
-				if (((Matcher)resolver).match(context.getResolvedProperty())) {
+				if (((Matcher)resolver).match(property)) {
 					return resolver;
 				}
 			}

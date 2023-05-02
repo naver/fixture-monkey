@@ -57,8 +57,9 @@ import net.jqwik.time.api.arbitraries.ZonedDateTimeArbitrary;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
+import com.navercorp.fixturemonkey.api.property.Property;
 
-@API(since = "0.5.6", status = Status.EXPERIMENTAL)
+@API(since = "0.5.7", status = Status.EXPERIMENTAL)
 public final class SingleJavaTimeArbitraryResolver implements JavaTimeArbitraryResolver {
 	private static final JavaTimeArbitraryResolver DEFAULT_NONE_JAVA_TIME_ARBITRARY_RESOLVER =
 		new JavaTimeArbitraryResolver() {
@@ -72,22 +73,22 @@ public final class SingleJavaTimeArbitraryResolver implements JavaTimeArbitraryR
 
 	@Override
 	public Arbitrary<Calendar> calendars(CalendarArbitrary calendarArbitrary, ArbitraryGeneratorContext context) {
-		return selectResolver(context).calendars(calendarArbitrary, context);
+		return resolve(context.getResolvedProperty()).calendars(calendarArbitrary, context);
 	}
 
 	@Override
 	public Arbitrary<Date> dates(DateArbitrary dateArbitrary, ArbitraryGeneratorContext context) {
-		return selectResolver(context).dates(dateArbitrary, context);
+		return resolve(context.getResolvedProperty()).dates(dateArbitrary, context);
 	}
 
 	@Override
 	public Arbitrary<Instant> instants(InstantArbitrary instantArbitrary, ArbitraryGeneratorContext context) {
-		return selectResolver(context).instants(instantArbitrary, context);
+		return resolve(context.getResolvedProperty()).instants(instantArbitrary, context);
 	}
 
 	@Override
 	public Arbitrary<LocalDate> localDates(LocalDateArbitrary localDateArbitrary, ArbitraryGeneratorContext context) {
-		return selectResolver(context).localDates(localDateArbitrary, context);
+		return resolve(context.getResolvedProperty()).localDates(localDateArbitrary, context);
 	}
 
 	@Override
@@ -95,12 +96,12 @@ public final class SingleJavaTimeArbitraryResolver implements JavaTimeArbitraryR
 		LocalDateTimeArbitrary localDateTimeArbitrary,
 		ArbitraryGeneratorContext context
 	) {
-		return selectResolver(context).localDateTimes(localDateTimeArbitrary, context);
+		return resolve(context.getResolvedProperty()).localDateTimes(localDateTimeArbitrary, context);
 	}
 
 	@Override
 	public Arbitrary<LocalTime> localTimes(LocalTimeArbitrary localTimeArbitrary, ArbitraryGeneratorContext context) {
-		return selectResolver(context).localTimes(localTimeArbitrary, context);
+		return resolve(context.getResolvedProperty()).localTimes(localTimeArbitrary, context);
 	}
 
 	@Override
@@ -108,19 +109,19 @@ public final class SingleJavaTimeArbitraryResolver implements JavaTimeArbitraryR
 		ZonedDateTimeArbitrary zonedDateTimeArbitrary,
 		ArbitraryGeneratorContext context
 	) {
-		return selectResolver(context).zonedDateTimes(zonedDateTimeArbitrary, context);
+		return resolve(context.getResolvedProperty()).zonedDateTimes(zonedDateTimeArbitrary, context);
 	}
 
 	@Override
 	public Arbitrary<MonthDay> monthDays(MonthDayArbitrary monthDayArbitrary, ArbitraryGeneratorContext context) {
-		return selectResolver(context).monthDays(monthDayArbitrary, context);
+		return resolve(context.getResolvedProperty()).monthDays(monthDayArbitrary, context);
 	}
 
 	@Override
 	public Arbitrary<OffsetDateTime> offsetDateTimes(OffsetDateTimeArbitrary offsetDateTimeArbitrary,
 		ArbitraryGeneratorContext context
 	) {
-		return selectResolver(context).offsetDateTimes(offsetDateTimeArbitrary, context);
+		return resolve(context.getResolvedProperty()).offsetDateTimes(offsetDateTimeArbitrary, context);
 	}
 
 	@Override
@@ -128,27 +129,27 @@ public final class SingleJavaTimeArbitraryResolver implements JavaTimeArbitraryR
 		OffsetTimeArbitrary offsetTimeArbitrary,
 		ArbitraryGeneratorContext context
 	) {
-		return selectResolver(context).offsetTimes(offsetTimeArbitrary, context);
+		return resolve(context.getResolvedProperty()).offsetTimes(offsetTimeArbitrary, context);
 	}
 
 	@Override
 	public Arbitrary<Period> periods(PeriodArbitrary periodArbitrary, ArbitraryGeneratorContext context) {
-		return selectResolver(context).periods(periodArbitrary, context);
+		return resolve(context.getResolvedProperty()).periods(periodArbitrary, context);
 	}
 
 	@Override
 	public Arbitrary<Duration> durations(DurationArbitrary durationArbitrary, ArbitraryGeneratorContext context) {
-		return selectResolver(context).durations(durationArbitrary, context);
+		return resolve(context.getResolvedProperty()).durations(durationArbitrary, context);
 	}
 
 	@Override
 	public Arbitrary<Year> years(YearArbitrary yearArbitrary, ArbitraryGeneratorContext context) {
-		return selectResolver(context).years(yearArbitrary, context);
+		return resolve(context.getResolvedProperty()).years(yearArbitrary, context);
 	}
 
 	@Override
 	public Arbitrary<YearMonth> yearMonths(YearMonthArbitrary yearMonthArbitrary, ArbitraryGeneratorContext context) {
-		return selectResolver(context).yearMonths(yearMonthArbitrary, context);
+		return resolve(context.getResolvedProperty()).yearMonths(yearMonthArbitrary, context);
 	}
 
 	@Override
@@ -156,15 +157,15 @@ public final class SingleJavaTimeArbitraryResolver implements JavaTimeArbitraryR
 		ZoneOffsetArbitrary zoneOffsetArbitrary,
 		ArbitraryGeneratorContext context
 	) {
-		return selectResolver(context).zoneOffsets(zoneOffsetArbitrary, context);
+		return resolve(context.getResolvedProperty()).zoneOffsets(zoneOffsetArbitrary, context);
 	}
 
-	private JavaTimeArbitraryResolver selectResolver(
-		ArbitraryGeneratorContext context
+	private JavaTimeArbitraryResolver resolve(
+		Property property
 	) {
 		for (JavaTimeArbitraryResolver resolver : this.javaTimeArbitraryResolvers) {
 			if (resolver instanceof Matcher) {
-				if (((Matcher)resolver).match(context.getResolvedProperty())) {
+				if (((Matcher)resolver).match(property)) {
 					return resolver;
 				}
 			}

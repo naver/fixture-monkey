@@ -18,12 +18,14 @@
 
 package com.navercorp.fixturemonkey.api.matcher;
 
+import java.util.Objects;
+
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.property.Property;
 
-@API(since = "0.5.6", status = Status.EXPERIMENTAL)
+@API(since = "0.5.7", status = Status.EXPERIMENTAL)
 public final class AnnotationPackageNameMatcher implements Matcher {
 	private final String packageName;
 
@@ -35,8 +37,8 @@ public final class AnnotationPackageNameMatcher implements Matcher {
 	public boolean match(Property property) {
 		return property.getAnnotations()
 			.stream()
-			.anyMatch(
-				it -> it.annotationType().getPackage().getName().equals(packageName)
-			);
+			.map(it -> it.annotationType().getPackage())
+			.filter(Objects::nonNull)
+			.anyMatch(it -> it.getName().equals(packageName));
 	}
 }
