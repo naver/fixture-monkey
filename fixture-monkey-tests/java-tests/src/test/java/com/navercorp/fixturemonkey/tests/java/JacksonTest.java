@@ -37,55 +37,46 @@ class JacksonTest {
 		.defaultNotNull(true)
 		.build();
 
-	@Disabled
 	@RepeatedTest(TEST_COUNT)
 	void jsonTypeInfoName() {
 		thenNoException().isThrownBy(() -> SUT.giveMeOne(JsonTypeInfoIdName.class));
 	}
 
-	@Disabled
 	@RepeatedTest(TEST_COUNT)
 	void jsonTypeInfoList() {
 		thenNoException().isThrownBy(() -> SUT.giveMeOne(JsonTypeInfoList.class));
 	}
 
-	@Disabled
 	@RepeatedTest(TEST_COUNT)
 	void jsonTypeInfoIdClass() {
 		thenNoException().isThrownBy(() -> SUT.giveMeOne(JsonTypeInfoIdClass.class));
 	}
 
-	@Disabled
 	@RepeatedTest(TEST_COUNT)
 	void jsonTypeWithAnnotations() {
 		thenNoException().isThrownBy(() -> SUT.giveMeOne(TypeWithAnnotationsValue.class));
 	}
 
-	@Disabled
 	@RepeatedTest(TEST_COUNT)
 	void jsonTypeWithAnnotationsList() {
 		thenNoException().isThrownBy(() -> SUT.giveMeOne(TypeWithAnnotationsList.class));
 	}
 
-	@Disabled
 	@RepeatedTest(TEST_COUNT)
 	void jsonTypeInfoListInSetter() {
 		thenNoException().isThrownBy(() -> SUT.giveMeOne(JsonTypeInfoListInSetter.class));
 	}
 
-	@Disabled
 	@RepeatedTest(TEST_COUNT)
 	void jsonTypeInfoListIncludeWrapperObject() {
 		thenNoException().isThrownBy(() -> SUT.giveMeOne(JsonTypeInfoListIncludeWrapperObject.class));
 	}
 
-	@Disabled
 	@RepeatedTest(TEST_COUNT)
 	void jsonTypeInfoListInSetterIncludeWrapperObject() {
 		thenNoException().isThrownBy(() -> SUT.giveMeOne(JsonTypeInfoListInSetterIncludeWrapperObject.class));
 	}
 
-	@Disabled
 	@RepeatedTest(TEST_COUNT)
 	void jsonTypeWithAnnotationsIncludeWrapperObjectList() {
 		thenNoException().isThrownBy(() -> SUT.giveMeOne(TypeWithAnnotationsIncludeWrapperObjectList.class));
