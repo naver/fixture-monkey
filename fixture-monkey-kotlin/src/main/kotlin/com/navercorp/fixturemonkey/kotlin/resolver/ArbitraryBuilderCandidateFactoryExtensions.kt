@@ -21,6 +21,6 @@ package com.navercorp.fixturemonkey.kotlin.resolver
 import com.navercorp.fixturemonkey.api.type.TypeReference
 import com.navercorp.fixturemonkey.resolver.ArbitraryBuilderCandidateFactory
 
-inline fun <reified T : Any?> ArbitraryBuilderCandidateFactory.of()
-    : ArbitraryBuilderCandidateFactory.CandidateBuilder<T> =
+inline fun <reified T : Any?> ArbitraryBuilderCandidateFactory.of():
+    ArbitraryBuilderCandidateFactory.CandidateBuilder<T> =
     ArbitraryBuilderCandidateFactory.of(object : TypeReference<T>() {})
