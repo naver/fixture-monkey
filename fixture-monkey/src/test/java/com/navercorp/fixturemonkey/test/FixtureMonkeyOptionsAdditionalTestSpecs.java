@@ -53,7 +53,8 @@ import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.buildergroup.ArbitraryBuilderGroup;
 import com.navercorp.fixturemonkey.customizer.InnerSpec;
-import com.navercorp.fixturemonkey.resolver.ArbitraryBuilderSpecList;
+import com.navercorp.fixturemonkey.resolver.ArbitraryBuilderCandidateFactory;
+import com.navercorp.fixturemonkey.resolver.ArbitraryBuilderCandidateList;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.ListStringObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.SimpleObject;
 
@@ -103,22 +104,35 @@ class FixtureMonkeyOptionsAdditionalTestSpecs {
 		public static final ConcreteIntValue FIXED_INT_VALUE = new ConcreteIntValue();
 
 		@Override
-		public ArbitraryBuilderSpecList addSpecs(ArbitraryBuilderSpecList specs) {
-			return specs
-				.of(String.class)
-				.registerBuilder(
-					ab -> ab.set(Arbitraries.strings().numeric().ofMinLength(1).ofMaxLength(3))
+		public ArbitraryBuilderCandidateList addCandidates(ArbitraryBuilderCandidateList candidateList) {
+			return candidateList
+				.add(
+					ArbitraryBuilderCandidateFactory
+						.of(String.class)
+						.builder(
+							arbitraryBuilder -> arbitraryBuilder.set(Arbitraries.strings()
+								.numeric()
+								.ofMinLength(1)
+								.ofMaxLength(3)
+							)
+						)
 				)
-				.of(new TypeReference<List<String>>() {
-				})
-				.registerBuilder(
-					builder -> builder.setInner(
-						new InnerSpec()
-							.maxSize(2)
-					)
+				.add(
+					ArbitraryBuilderCandidateFactory
+						.of(new TypeReference<List<String>>() {
+						})
+						.builder(
+							builder -> builder.setInner(
+								new InnerSpec()
+									.maxSize(2)
+							)
+						)
 				)
-				.of(ConcreteIntValue.class)
-				.registerValue(FIXED_INT_VALUE);
+				.add(
+					ArbitraryBuilderCandidateFactory
+						.of(ConcreteIntValue.class)
+						.value(FIXED_INT_VALUE)
+				);
 		}
 	}
 

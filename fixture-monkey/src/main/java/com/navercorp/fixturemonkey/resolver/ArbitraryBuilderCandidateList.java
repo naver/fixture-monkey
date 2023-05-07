@@ -16,21 +16,35 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.buildergroup;
+package com.navercorp.fixturemonkey.resolver;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.resolver.ArbitraryBuilderCandidateList;
+import com.navercorp.fixturemonkey.buildergroup.ArbitraryBuilderCandidate;
 
 @API(since = "0.5.7", status = Status.EXPERIMENTAL)
-public interface ArbitraryBuilderGroup {
+public final class ArbitraryBuilderCandidateList {
 
-	default List<ArbitraryBuilderCandidate<?>> getArbitraryBuilderCandidates() {
-		return addCandidates(ArbitraryBuilderCandidateList.newInstance()).getCandidates();
+	private final List<ArbitraryBuilderCandidate<?>> candidates = new ArrayList<>();
+
+	private ArbitraryBuilderCandidateList() {
 	}
 
-	ArbitraryBuilderCandidateList addCandidates(ArbitraryBuilderCandidateList candidateList);
+	public static ArbitraryBuilderCandidateList newInstance() {
+		return new ArbitraryBuilderCandidateList();
+	}
+
+	public ArbitraryBuilderCandidateList add(ArbitraryBuilderCandidate<?> candidate) {
+		candidates.add(candidate);
+		return this;
+	}
+
+	public List<ArbitraryBuilderCandidate<?>> getCandidates() {
+		return Collections.unmodifiableList(candidates);
+	}
 }
