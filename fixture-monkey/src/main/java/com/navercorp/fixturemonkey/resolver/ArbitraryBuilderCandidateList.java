@@ -35,7 +35,7 @@ public final class ArbitraryBuilderCandidateList {
 	private ArbitraryBuilderCandidateList() {
 	}
 
-	public static ArbitraryBuilderCandidateList newInstance() {
+	public static ArbitraryBuilderCandidateList create() {
 		return new ArbitraryBuilderCandidateList();
 	}
 

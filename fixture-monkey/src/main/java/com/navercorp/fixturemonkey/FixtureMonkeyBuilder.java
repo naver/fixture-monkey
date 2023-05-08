@@ -59,6 +59,7 @@ import com.navercorp.fixturemonkey.api.validator.ArbitraryValidator;
 import com.navercorp.fixturemonkey.buildergroup.ArbitraryBuilderCandidate;
 import com.navercorp.fixturemonkey.buildergroup.ArbitraryBuilderGroup;
 import com.navercorp.fixturemonkey.expression.MonkeyExpressionFactory;
+import com.navercorp.fixturemonkey.resolver.ArbitraryBuilderCandidateList;
 import com.navercorp.fixturemonkey.resolver.DecomposableContainerValue;
 import com.navercorp.fixturemonkey.resolver.DecomposedContainerValueFactory;
 import com.navercorp.fixturemonkey.resolver.ManipulateOptions;
@@ -405,7 +406,9 @@ public class FixtureMonkeyBuilder {
 
 	public FixtureMonkeyBuilder registerGroup(ArbitraryBuilderGroup... arbitraryBuilderGroups) {
 		for (ArbitraryBuilderGroup arbitraryBuilderGroup : arbitraryBuilderGroups) {
-			List<ArbitraryBuilderCandidate<?>> candidates = arbitraryBuilderGroup.getArbitraryBuilderCandidates();
+			List<ArbitraryBuilderCandidate<?>> candidates = arbitraryBuilderGroup.generateCandidateList(
+				ArbitraryBuilderCandidateList.create()
+			).getCandidates();
 
 			for (ArbitraryBuilderCandidate<?> candidate : candidates) {
 				this.register(

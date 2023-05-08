@@ -18,8 +18,6 @@
 
 package com.navercorp.fixturemonkey.buildergroup;
 
-import java.util.List;
-
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
@@ -28,9 +26,5 @@ import com.navercorp.fixturemonkey.resolver.ArbitraryBuilderCandidateList;
 @API(since = "0.5.7", status = Status.EXPERIMENTAL)
 public interface ArbitraryBuilderGroup {
 
-	default List<ArbitraryBuilderCandidate<?>> getArbitraryBuilderCandidates() {
-		return addCandidates(ArbitraryBuilderCandidateList.newInstance()).getCandidates();
-	}
-
-	ArbitraryBuilderCandidateList addCandidates(ArbitraryBuilderCandidateList candidateList);
+	ArbitraryBuilderCandidateList generateCandidateList(ArbitraryBuilderCandidateList candidateList);
 }
