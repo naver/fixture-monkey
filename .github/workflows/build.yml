@@ -38,7 +38,7 @@ jobs:
           java-version: ${{ matrix.Java }}
           cache: 'gradle'
       - name: Execute tests
-        uses: gradle/gradle-build-action@v2.2.1
+        uses: gradle/gradle-build-action@v2.4.2
         with:
           arguments: test
         env:
