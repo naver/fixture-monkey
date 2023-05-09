@@ -26,5 +26,5 @@ import com.navercorp.fixturemonkey.resolver.ArbitraryBuilderCandidateList;
 @API(since = "0.5.7", status = Status.EXPERIMENTAL)
 public interface ArbitraryBuilderGroup {
 
-	ArbitraryBuilderCandidateList generateCandidateList(ArbitraryBuilderCandidateList candidateList);
+	ArbitraryBuilderCandidateList generateCandidateList();
 }

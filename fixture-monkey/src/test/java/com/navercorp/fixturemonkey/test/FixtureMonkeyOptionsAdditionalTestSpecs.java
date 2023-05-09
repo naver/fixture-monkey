@@ -104,16 +104,17 @@ class FixtureMonkeyOptionsAdditionalTestSpecs {
 		public static final ConcreteIntValue FIXED_INT_VALUE = new ConcreteIntValue();
 
 		@Override
-		public ArbitraryBuilderCandidateList generateCandidateList(ArbitraryBuilderCandidateList candidateList) {
-			return candidateList
+		public ArbitraryBuilderCandidateList generateCandidateList() {
+			return ArbitraryBuilderCandidateList.create()
 				.add(
 					ArbitraryBuilderCandidateFactory
 						.of(String.class)
 						.builder(
-							arbitraryBuilder -> arbitraryBuilder.set(Arbitraries.strings()
-								.numeric()
-								.ofMinLength(1)
-								.ofMaxLength(3)
+							arbitraryBuilder -> arbitraryBuilder.set(
+								Arbitraries.strings()
+									.numeric()
+									.ofMinLength(1)
+									.ofMaxLength(3)
 							)
 						)
 				)
