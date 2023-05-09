@@ -29,7 +29,7 @@ import com.navercorp.fixturemonkey.javax.validation.plugin.JavaxValidationPlugin
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
 @State(Scope.Benchmark)
-public class BenchmarkTest {
+public class ObjectGenerationBenchmark {
 	private static final int COUNT = 500;
 	private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper()
 		.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
@@ -42,7 +42,9 @@ public class BenchmarkTest {
 
 	@Benchmark
 	public void beanGenerateOrderSheetWithFixtureMonkey(Blackhole blackhole) throws Exception {
-		FixtureMonkey fixtureMonkey = FixtureMonkey.create();
+		FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+			.plugin(new JavaxValidationPlugin())
+			.build();
 		blackhole.consume(generateOrderSheet(fixtureMonkey));
 	}
 

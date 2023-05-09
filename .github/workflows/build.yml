@@ -1,4 +1,4 @@
-name: Gradle check
+name: Run tests
 
 on:
   push:
@@ -23,7 +23,6 @@ jobs:
         uses: gradle/gradle-build-action@v2.2.1
         with:
           arguments: check -x test
-
   test:
     name: Testing on JDK ${{ matrix.java }}
     runs-on: ubuntu-latest

@@ -1,0 +1,24 @@
+name: Run benchmark
+
+on:
+  push:
+    branches: [ main, '[0-9]*.[0-9]*.x' ]
+  pull_request:
+    branches: [ main, '[0-9]*.[0-9]*.x' ]
+  workflow_dispatch:
+
+jobs:
+  jmh:
+    name: Run benchmark
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Execute benchmark
+        uses: gradle/gradle-build-action@v2.2.1
+        with:
+          arguments: jmh
+      - name: Read file contents
+        id: read_file
+        uses: andstor/file-reader-action@v1
+        with:
+          path: "./fixture-monkey/build/results/jmh/results.txt"
