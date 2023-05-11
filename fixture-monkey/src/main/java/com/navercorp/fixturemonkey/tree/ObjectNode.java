@@ -41,6 +41,9 @@ public final class ObjectNode {
 
 	private ArbitraryProperty arbitraryProperty;
 
+	@Nullable
+	private ObjectNode parent = null;
+
 	private List<ObjectNode> children;
 
 	@Nullable
@@ -60,7 +63,7 @@ public final class ObjectNode {
 		this.resolvedParentProperty = resolvedParentProperty;
 		this.resolvedProperty = resolvedProperty;
 		this.arbitraryProperty = arbitraryProperty;
-		this.children = children;
+		this.setChildren(children);
 	}
 
 	public void setArbitraryProperty(ArbitraryProperty arbitraryProperty) {
@@ -69,6 +72,9 @@ public final class ObjectNode {
 
 	public void setChildren(List<ObjectNode> children) {
 		this.children = children;
+		for (ObjectNode child : children) {
+			child.parent = this;
+		}
 	}
 
 	public void setResolvedProperty(Property resolvedProperty) {
@@ -90,6 +96,10 @@ public final class ObjectNode {
 
 	public List<ObjectNode> getChildren() {
 		return this.children;
+	}
+
+	public ObjectNode getParent() {
+		return parent;
 	}
 
 	@Nullable

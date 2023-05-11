@@ -277,6 +277,14 @@ public final class MonkeyManipulatorFactory {
 			@Override
 			public List<ObjectNode> resolve(ObjectNode objectNode) {
 				for (ObjectNode node : objectNodes) {
+					ObjectNode parent = node.getParent();
+					while (parent != null) {
+						if (!parent.isNotManipulated()) {
+							break;
+						}
+						parent.setManipulated(true);
+						parent = parent.getParent();
+					}
 					node.setManipulated(true);
 				}
 				return objectNodes;
