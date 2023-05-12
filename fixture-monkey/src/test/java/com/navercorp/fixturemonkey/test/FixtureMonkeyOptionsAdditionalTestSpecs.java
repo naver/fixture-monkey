@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
 import net.jqwik.api.Builders;
 import net.jqwik.api.Builders.BuilderCombinator;
@@ -50,11 +51,27 @@ import com.navercorp.fixturemonkey.api.matcher.AssignableTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.property.ElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
+import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.api.type.Types;
+import com.navercorp.fixturemonkey.buildergroup.ArbitraryBuilderGroup;
+import com.navercorp.fixturemonkey.customizer.InnerSpec;
+import com.navercorp.fixturemonkey.resolver.ArbitraryBuilderCandidateFactory;
+import com.navercorp.fixturemonkey.resolver.ArbitraryBuilderCandidateList;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.ListStringObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.SimpleObject;
 
 class FixtureMonkeyOptionsAdditionalTestSpecs {
+	public interface GetFixedValue {
+		Object get();
+	}
+
+	public interface GetFixedValueChild extends GetFixedValue {
+	}
+
+	public interface GetterInterface {
+		String getValue();
+	}
+
 	public static class SimpleObjectChild extends SimpleObject {
 	}
 
@@ -64,8 +81,61 @@ class FixtureMonkeyOptionsAdditionalTestSpecs {
 	}
 
 	public static class RegisterGroup {
+		public static final ConcreteIntValue FIXED_INT_VALUE = new ConcreteIntValue();
+
 		public ArbitraryBuilder<String> string(FixtureMonkey fixtureMonkey) {
-			return fixtureMonkey.giveMeBuilder("test");
+			return fixtureMonkey.giveMeBuilder(String.class)
+				.set(Arbitraries.strings().numeric().ofMinLength(1).ofMaxLength(3));
+		}
+
+		public ArbitraryBuilder<List<String>> stringList(FixtureMonkey fixtureMonkey) {
+			return fixtureMonkey.giveMeBuilder(new TypeReference<List<String>>() {
+				})
+				.setInner(
+					new InnerSpec()
+						.maxSize(2)
+				);
+		}
+
+		public ArbitraryBuilder<ConcreteIntValue> concreteIntValue(FixtureMonkey fixtureMonkey) {
+			return fixtureMonkey.giveMeBuilder(FIXED_INT_VALUE);
+		}
+	}
+
+	public static class ChildBuilderGroup implements ArbitraryBuilderGroup {
+		public static final ConcreteIntValue FIXED_INT_VALUE = new ConcreteIntValue();
+
+		@Override
+		public ArbitraryBuilderCandidateList generateCandidateList() {
+			return ArbitraryBuilderCandidateList.create()
+				.add(
+					ArbitraryBuilderCandidateFactory
+						.of(String.class)
+						.builder(
+							arbitraryBuilder -> arbitraryBuilder.set(
+								Arbitraries.strings()
+									.numeric()
+									.ofMinLength(1)
+									.ofMaxLength(3)
+							)
+						)
+				)
+				.add(
+					ArbitraryBuilderCandidateFactory
+						.of(new TypeReference<List<String>>() {
+						})
+						.builder(
+							builder -> builder.setInner(
+								new InnerSpec()
+									.maxSize(2)
+							)
+						)
+				)
+				.add(
+					ArbitraryBuilderCandidateFactory
+						.of(ConcreteIntValue.class)
+						.value(FIXED_INT_VALUE)
+				);
 		}
 	}
 
@@ -192,10 +262,6 @@ class FixtureMonkeyOptionsAdditionalTestSpecs {
 		}
 	}
 
-	public interface GetFixedValue {
-		Object get();
-	}
-
 	public static class GetIntegerFixedValue implements GetFixedValue {
 		@Override
 		public Object get() {
@@ -208,9 +274,6 @@ class FixtureMonkeyOptionsAdditionalTestSpecs {
 		public Object get() {
 			return "fixed";
 		}
-	}
-
-	public interface GetFixedValueChild extends GetFixedValue {
 	}
 
 	public static class GetIntegerFixedValueChild implements GetFixedValueChild {
@@ -303,10 +366,6 @@ class FixtureMonkeyOptionsAdditionalTestSpecs {
 			super(recursives);
 			this.value = value;
 		}
-	}
-
-	public interface GetterInterface {
-		String getValue();
 	}
 
 	@Data
