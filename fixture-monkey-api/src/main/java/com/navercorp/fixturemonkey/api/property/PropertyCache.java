@@ -88,13 +88,17 @@ public final class PropertyCache {
 
 		return FIELDS.computeIfAbsent(clazz, type -> {
 			Map<String, Field> result = new ConcurrentHashMap<>();
-			List<Field> fields = Reflections.findFields(clazz)
-				.stream()
-				.filter(it -> !Modifier.isStatic(it.getModifiers()))
-				.collect(toList());
-			for (Field field : fields) {
-				field.setAccessible(true);
-				result.put(field.getName(), field);
+			try {
+				List<Field> fields = Reflections.findFields(clazz)
+					.stream()
+					.filter(it -> !Modifier.isStatic(it.getModifiers()))
+					.collect(toList());
+				for (Field field : fields) {
+					field.setAccessible(true);
+					result.put(field.getName(), field);
+				}
+			} catch (Exception e) {
+				LOGGER.warn("Failed to create fields in type {}.", clazz.getName());
 			}
 			return result;
 		});
