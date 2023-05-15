@@ -49,7 +49,7 @@ subprojects {
         }
     }
 
-    if (!name.endsWith("tests")) {
+    if (!name.endsWith("tests") && name != "fixture-monkey-spring") {
         tasks.withType<Test> {
             useJUnitPlatform {
                 includeEngines("jqwik")

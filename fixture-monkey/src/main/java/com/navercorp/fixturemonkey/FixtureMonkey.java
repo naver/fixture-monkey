@@ -159,6 +159,10 @@ public final class FixtureMonkey {
 		);
 	}
 
+	public <T> ExperimentalArbitraryBuilder<T> giveMeExperimentalBuilder(T value) {
+		return (ExperimentalArbitraryBuilder<T>)giveMeBuilder(value);
+	}
+
 	public <T> ExperimentalArbitraryBuilder<T> giveMeExperimentalBuilder(Class<T> type) {
 		return (ExperimentalArbitraryBuilder<T>)giveMeBuilder(type);
 	}
