@@ -36,6 +36,7 @@ import com.navercorp.fixturemonkey.tests.java.ImmutableGenericTypeSpecs.GenericO
 import com.navercorp.fixturemonkey.tests.java.ImmutableGenericTypeSpecs.TwoGenericImplementationObject;
 import com.navercorp.fixturemonkey.tests.java.ImmutableJavaTestSpecs.ContainerObject;
 import com.navercorp.fixturemonkey.tests.java.ImmutableJavaTestSpecs.JavaTypeObject;
+import com.navercorp.fixturemonkey.tests.java.ImmutableJavaTestSpecs.SetImplementationWithoutGeneric;
 import com.navercorp.fixturemonkey.tests.java.ImmutableRecursiveTypeSpecs.SelfRecursiveListObject;
 import com.navercorp.fixturemonkey.tests.java.ImmutableRecursiveTypeSpecs.SelfRecursiveObject;
 
@@ -323,6 +324,24 @@ class JavaTest {
 				})
 			.fixed()
 			.sample();
+
+		then(actual).isNotNull();
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void sampleSetImplementationWithoutGeneric() {
+		String actual = SUT.giveMeOne(SetImplementationWithoutGeneric.class)
+			.getValue();
+
+		then(actual).isNotNull();
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void fixedSetImplementationWithoutGeneric() {
+		String actual = SUT.giveMeBuilder(SetImplementationWithoutGeneric.class)
+			.fixed()
+			.sample()
+			.getValue();
 
 		then(actual).isNotNull();
 	}
