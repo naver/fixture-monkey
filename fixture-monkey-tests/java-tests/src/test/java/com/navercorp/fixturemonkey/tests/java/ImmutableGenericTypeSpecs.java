@@ -50,6 +50,27 @@ class ImmutableGenericTypeSpecs {
 		T value;
 	}
 
+	@Value
+	@Builder
+	public static class GenericArrayObject<T> {
+		GenericImplementationObject<T>[] values;
+	}
+
+	@Value
+	@Builder
+	public static class TwoGenericObject<T, U> {
+		T value1;
+		U value2;
+	}
+
+	@Value
+	@Builder
+	public static class ThreeGenericObject<T, U, V> {
+		T value1;
+		U value2;
+		V value3;
+	}
+
 	public interface Interface {
 	}
 }

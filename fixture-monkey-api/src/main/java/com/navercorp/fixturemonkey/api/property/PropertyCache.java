@@ -24,6 +24,7 @@ import java.beans.ConstructorProperties;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
+import java.lang.reflect.AnnotatedArrayType;
 import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.AnnotatedTypeVariable;
 import java.lang.reflect.Constructor;
@@ -155,7 +156,10 @@ public final class PropertyCache {
 			String parameterName = parameterNames[i];
 			Field field = fieldsByName.get(parameterName);
 			Property fieldProperty = field != null
-				? new FieldProperty(Types.resolveWithTypeReferenceGenerics(annotatedType, field), field)
+				? new FieldProperty(
+				Types.resolveWithTypeReferenceGenerics(annotatedType, field.getAnnotatedType()),
+				field
+			)
 				: null;
 
 			if (isGenericAnnotatedType(annotatedParameterType) && fieldProperty != null) {
@@ -267,6 +271,6 @@ public final class PropertyCache {
 	}
 
 	private static boolean isGenericAnnotatedType(AnnotatedType annotatedType) {
-		return annotatedType instanceof AnnotatedTypeVariable;
+		return annotatedType instanceof AnnotatedTypeVariable || annotatedType instanceof AnnotatedArrayType;
 	}
 }
