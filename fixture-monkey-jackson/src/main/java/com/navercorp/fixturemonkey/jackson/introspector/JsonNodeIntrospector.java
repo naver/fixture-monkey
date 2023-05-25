@@ -33,7 +33,6 @@ import net.jqwik.api.Builders.BuilderCombinator;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.generator.CombinableArbitrary;
@@ -59,19 +58,13 @@ public final class JsonNodeIntrospector implements ArbitraryIntrospector {
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
 		ArbitraryProperty property = context.getArbitraryProperty();
 		ContainerProperty containerProperty = property.getContainerProperty();
-		if (containerProperty == null) {
-			throw new IllegalArgumentException(
-				"container property should not null. type : " + property.getObjectProperty().getProperty().getName()
-			);
-		}
-		ArbitraryContainerInfo containerInfo = containerProperty.getContainerInfo();
-		if (containerInfo == null) {
+		if (containerProperty == null || containerProperty.getContainerInfo() == null) {
 			return ArbitraryIntrospectorResult.EMPTY;
 		}
 
 		List<Arbitrary<?>> childrenArbitraries = context.getElementArbitraries().stream()
-				.map(CombinableArbitrary::combined)
-				.collect(Collectors.toList());
+			.map(CombinableArbitrary::combined)
+			.collect(Collectors.toList());
 
 		BuilderCombinator<Map<Object, Object>> builderCombinator = Builders.withBuilder(HashMap::new);
 		for (Arbitrary<?> child : childrenArbitraries) {

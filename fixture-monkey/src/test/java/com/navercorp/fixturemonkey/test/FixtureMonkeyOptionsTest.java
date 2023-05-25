@@ -63,7 +63,6 @@ import com.navercorp.fixturemonkey.api.introspector.JavaArbitraryResolver;
 import com.navercorp.fixturemonkey.api.introspector.JavaTimeArbitraryResolver;
 import com.navercorp.fixturemonkey.api.introspector.JavaTimeTypeArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.introspector.JavaTypeArbitraryGenerator;
-import com.navercorp.fixturemonkey.api.introspector.ListIntrospector;
 import com.navercorp.fixturemonkey.api.matcher.ExactTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
@@ -100,8 +99,6 @@ import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.
 import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.SelfRecursiveImplementationValue;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.SimpleObjectChild;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.ComplexObject;
-import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.CustomContainer;
-import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.CustomContainerFieldObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.Interface;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.InterfaceFieldImplementationValue;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.InterfaceImplementation;
@@ -1157,29 +1154,6 @@ class FixtureMonkeyOptionsTest {
 			.getValues();
 
 		then(values).isNull();
-	}
-
-	@Property
-	void defaultContainerElementDefaultTypeString() {
-		// when
-		FixtureMonkey sut = FixtureMonkey.builder()
-			.pushExactTypeArbitraryIntrospector(
-				CustomContainer.class,
-				context -> new ArbitraryIntrospectorResult(
-					new ListIntrospector().introspect(context).getValue()
-						.map(it -> {
-							CustomContainer result = new CustomContainer();
-							result.addAll((List<String>)it);
-							return result;
-						})
-				)
-			)
-			.build();
-
-		CustomContainerFieldObject actual = sut.giveMeOne(CustomContainerFieldObject.class);
-
-		then(actual).isNotNull();
-		then(actual.getValue()).isNotNull();
 	}
 
 	@Property

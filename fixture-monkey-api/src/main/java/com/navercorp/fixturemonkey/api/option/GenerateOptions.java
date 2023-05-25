@@ -61,8 +61,11 @@ import com.navercorp.fixturemonkey.api.generator.SetContainerPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.SingleValueObjectPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.StreamContainerPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.TupleLikeElementsPropertyGenerator;
+import com.navercorp.fixturemonkey.api.matcher.AssignableTypeMatcher;
+import com.navercorp.fixturemonkey.api.matcher.DoubleGenericTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.matcher.Matchers;
+import com.navercorp.fixturemonkey.api.matcher.SingleGenericTypeMatcher;
 import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
@@ -313,10 +316,12 @@ public final class GenerateOptions {
 
 	private static List<MatcherOperator<ContainerPropertyGenerator>> getDefaultContainerPropertyGenerators() {
 		return Arrays.asList(
-			MatcherOperator.exactTypeMatchOperator(
-				Optional.class,
+			new MatcherOperator<>(
+				property -> new AssignableTypeMatcher(Optional.class).match(property)
+					&& new SingleGenericTypeMatcher().match(property),
 				OptionalContainerPropertyGenerator.INSTANCE
 			),
+
 			MatcherOperator.exactTypeMatchOperator(
 				OptionalInt.class,
 				OptionalContainerPropertyGenerator.INSTANCE
@@ -329,8 +334,9 @@ public final class GenerateOptions {
 				OptionalDouble.class,
 				OptionalContainerPropertyGenerator.INSTANCE
 			),
-			MatcherOperator.assignableTypeMatchOperator(
-				Stream.class,
+			new MatcherOperator<>(
+				property -> new AssignableTypeMatcher(Stream.class).match(property)
+					&& new SingleGenericTypeMatcher().match(property),
 				StreamContainerPropertyGenerator.INSTANCE
 			),
 			MatcherOperator.assignableTypeMatchOperator(
@@ -345,20 +351,31 @@ public final class GenerateOptions {
 				DoubleStream.class,
 				StreamContainerPropertyGenerator.INSTANCE
 			),
-			MatcherOperator.assignableTypeMatchOperator(
-				Set.class,
+			new MatcherOperator<>(
+				property -> new AssignableTypeMatcher(Set.class).match(property)
+					&& new SingleGenericTypeMatcher().match(property),
 				SetContainerPropertyGenerator.INSTANCE
 			),
-			MatcherOperator.assignableTypeMatchOperator(
-				Iterable.class,
+			new MatcherOperator<>(
+				property -> new AssignableTypeMatcher(Iterable.class).match(property)
+					&& new SingleGenericTypeMatcher().match(property),
 				DefaultSingleContainerPropertyGenerator.INSTANCE
 			),
-			MatcherOperator.assignableTypeMatchOperator(
-				Iterator.class,
+			new MatcherOperator<>(
+				property -> new AssignableTypeMatcher(Iterator.class).match(property)
+					&& new SingleGenericTypeMatcher().match(property),
 				DefaultSingleContainerPropertyGenerator.INSTANCE
 			),
-			MatcherOperator.assignableTypeMatchOperator(Map.class, MapContainerPropertyGenerator.INSTANCE),
-			MatcherOperator.assignableTypeMatchOperator(Entry.class, EntryContainerPropertyGenerator.INSTANCE),
+			new MatcherOperator<>(
+				property -> new AssignableTypeMatcher(Map.class).match(property)
+					&& new DoubleGenericTypeMatcher().match(property),
+				MapContainerPropertyGenerator.INSTANCE
+			),
+			new MatcherOperator<>(
+				property -> new AssignableTypeMatcher(Entry.class).match(property)
+					&& new DoubleGenericTypeMatcher().match(property),
+				EntryContainerPropertyGenerator.INSTANCE
+			),
 			new MatcherOperator<>(
 				property -> Types.getActualType(property.getType()).isArray(),
 				ArrayContainerPropertyGenerator.INSTANCE
