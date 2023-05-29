@@ -52,7 +52,6 @@ LabMonkey labMonkey = LabMonkey.labMonkeyBuilder()
 ### registerGroup
 #### registerGroup 정의
 ```java
-// reflection 이용 시
 public class GenerateGroup {
 	public ArbitraryBuilder<GenerateString> generateString(FixtureMonkey fixtureMonkey){
 		return fixtureMonkey.giveMeBuilder(GenerateString.class)
@@ -64,40 +63,12 @@ public class GenerateGroup {
 			.set("value", Arbitraries.integers().between(1, 100));
     }
 }
-
-// ArbitraryBuilderGroup 인터페이스 이용 시
-public class GenerateBuilderGroup implements ArbitraryBuilderGroup {
-	@Override
-	public ArbitraryBuilderCandidateList generateCandidateList() {
-		ArbitraryBuilderCandidateList.create()
-			.add(
-				ArbitraryBuilderCandidateFactory.of(GenerateString.class)
-					.builder(
-						arbitraryBuilder -> arbitraryBuilder
-							.set("value", Arbitraries.strings().numeric())
-					)
-			)
-			.add(
-				ArbitraryBuilderCandidateFactory.of(GenerateInt.class)
-					.builder(
-						builder -> builder
-							.set("value", Arbitraries.integers().between(1, 100))
-					)
-			);
-	}
-}
 ```
 
 #### 옵션 추가
 ```java
-// reflection 이용 시
 LabMonkey labMonkey = LabMonkey.labMonkeyBuilder()
     .registerGroup(GenerateGroup.class)
-	.build();
-
-// ArbitraryBuilderGroup 인터페이스 이용 시
-LabMonkey labMonkey = LabMonkey.labMonkeyBuilder()
-	.registerGroup(new GenerateBuilderGroup())
 	.build();
 ```
 
