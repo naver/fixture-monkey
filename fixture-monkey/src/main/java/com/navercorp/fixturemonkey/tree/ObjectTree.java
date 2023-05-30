@@ -62,13 +62,16 @@ public final class ObjectTree {
 		ObjectNode rootNode,
 		GenerateOptions generateOptions,
 		MonkeyContext monkeyContext,
-		List<MatcherOperator<? extends FixtureCustomizer>> customizers
+		List<MatcherOperator<? extends FixtureCustomizer>> builderCustomizer
 	) {
 		this.rootProperty = rootProperty;
 		this.rootNode = rootNode;
 		this.generateOptions = generateOptions;
 		this.monkeyContext = monkeyContext;
-		this.customizers = customizers;
+		List<MatcherOperator<? extends FixtureCustomizer>> concat = new ArrayList<>();
+		concat.addAll(generateOptions.getArbitraryCustomizers());
+		concat.addAll(builderCustomizer);
+		this.customizers = concat;
 		MetadataCollector metadataCollector = new MetadataCollector(rootNode);
 		this.metadata = metadataCollector.collect();
 	}
@@ -86,14 +89,12 @@ public final class ObjectTree {
 	}
 
 	public Arbitrary<?> generate() {
-		ArbitraryGeneratorContext context = generateContext(rootNode, customizers, null);
+		ArbitraryGeneratorContext context = generateContext(rootNode, null);
 		return generateIntrospected(context, rootNode).combined();
 	}
 
-	@SuppressWarnings("rawtypes")
 	private ArbitraryGeneratorContext generateContext(
 		ObjectNode objectNode,
-		List<MatcherOperator<? extends FixtureCustomizer>> customizers,
 		@Nullable ArbitraryGeneratorContext parentContext
 	) {
 		Map<ArbitraryProperty, ObjectNode> childNodesByArbitraryProperty = new HashMap<>();
@@ -109,9 +110,6 @@ public final class ObjectTree {
 			childNodesByArbitraryProperty.put(childNode.getArbitraryProperty(), childNode);
 			childrenProperties.add(childNode.getArbitraryProperty());
 		}
-		List<MatcherOperator<? extends FixtureCustomizer>> arbitraryCustomizers = new ArrayList<>();
-		arbitraryCustomizers.addAll(generateOptions.getArbitraryCustomizers());
-		arbitraryCustomizers.addAll(customizers);
 
 		MonkeyGeneratorContext monkeyGeneratorContext = monkeyContext.retrieveGeneratorContext(rootProperty);
 		return new ArbitraryGeneratorContext(
@@ -127,7 +125,7 @@ public final class ObjectTree {
 
 				return generateIntrospected(ctx, node);
 			},
-			arbitraryCustomizers,
+			customizers,
 			monkeyGeneratorContext
 		);
 	}
@@ -146,7 +144,7 @@ public final class ObjectTree {
 					.injectNull(node.getArbitraryProperty().getObjectProperty().getNullInject())
 			);
 		} else {
-			ArbitraryGeneratorContext childArbitraryGeneratorContext = this.generateContext(node, customizers, ctx);
+			ArbitraryGeneratorContext childArbitraryGeneratorContext = this.generateContext(node, ctx);
 
 			CombinableArbitrary cached = monkeyContext.getCachedArbitrary(node.getProperty());
 
