@@ -437,7 +437,7 @@ public class FixtureMonkeyBuilder {
 	) {
 		this.pushAssignableTypeContainerPropertyGenerator(type, containerObjectPropertyGenerator);
 		this.pushContainerIntrospector(containerArbitraryIntrospector);
-		decomposableContainerFactoryMap.put(type, decomposedContainerValueFactory);
+		this.fixtureMonkeyOptionsBuilder.addDecomposedContainerValueFactory(type, decomposedContainerValueFactory);
 		return this;
 	}
 

@@ -215,7 +215,7 @@ class JacksonTest {
 	void sampleEnumKeyMap() {
 		thenNoException()
 			.isThrownBy(() -> SUT.giveMeBuilder(new TypeReference<List<Map<Enum, String>>>() {
-					})
+				})
 					.size("$", 2)
 					.sample()
 			);

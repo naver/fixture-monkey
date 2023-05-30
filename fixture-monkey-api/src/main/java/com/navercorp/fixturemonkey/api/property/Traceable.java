@@ -21,6 +21,8 @@ package com.navercorp.fixturemonkey.api.property;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import com.navercorp.fixturemonkey.api.property.PropertyPath;
+
 /**
  * An interface for finding the location of given property resides.
  */
