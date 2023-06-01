@@ -419,11 +419,13 @@ public class FixtureMonkeyBuilder {
 	}
 
 	@SuppressWarnings("rawtypes")
+	@Deprecated // It would be removed in 0.6.0
 	public FixtureMonkeyBuilder pushFixtureCustomizer(MatcherOperator<FixtureCustomizer> arbitraryCustomizer) {
 		generateOptionsBuilder.insertFirstFixtureCustomizer(arbitraryCustomizer);
 		return this;
 	}
 
+	@Deprecated // It would be removed in 0.6.0
 	public <T> FixtureMonkeyBuilder pushAssignableTypeFixtureCustomizer(
 		Class<T> type,
 		FixtureCustomizer<? extends T> fixtureCustomizer
@@ -432,6 +434,7 @@ public class FixtureMonkeyBuilder {
 		return this;
 	}
 
+	@Deprecated // It would be removed in 0.6.0
 	public <T> FixtureMonkeyBuilder pushExactTypeFixtureCustomizer(
 		Class<T> type,
 		FixtureCustomizer<T> fixtureCustomizer

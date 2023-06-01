@@ -27,6 +27,7 @@ import com.navercorp.fixturemonkey.api.generator.ChildArbitraryContext;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 @FunctionalInterface
+@Deprecated // It would be removed in 0.6.0
 public interface FixtureCustomizer<T> {
 	default void customizeProperties(ChildArbitraryContext childArbitraryContext) {
 	}

@@ -498,6 +498,7 @@ public interface ArbitraryBuilder<T> {
 		Function<List<?>, R> combinator
 	);
 
+	@Deprecated // It would be removed in 0.6.0
 	ArbitraryBuilder<T> customize(MatcherOperator<FixtureCustomizer<?>> customizer);
 
 	/**
