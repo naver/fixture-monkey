@@ -19,9 +19,9 @@
 package com.navercorp.fixturemonkey.kotlin.property
 
 import com.navercorp.fixturemonkey.api.collection.LruCache
+import com.navercorp.fixturemonkey.api.generator.DefaultPropertyGenerator
 import com.navercorp.fixturemonkey.api.property.CompositeProperty
 import com.navercorp.fixturemonkey.api.property.Property
-import com.navercorp.fixturemonkey.api.property.PropertyCache
 import com.navercorp.fixturemonkey.api.property.PropertyGenerator
 import com.navercorp.fixturemonkey.api.type.Types
 import org.apiguardian.api.API
@@ -33,12 +33,15 @@ import java.lang.reflect.AnnotatedType
  * Kotlin property would be primary, Java property would be secondary.
  */
 @API(since = "0.5.3", status = API.Status.EXPERIMENTAL)
-class KotlinPropertyGenerator : PropertyGenerator {
+class KotlinPropertyGenerator(
+    private val javaDelegatePropertyGenerator: com.navercorp.fixturemonkey.api.generator.PropertyGenerator =
+        DefaultPropertyGenerator(),
+) : PropertyGenerator {
     private val objectChildPropertiesCache = LruCache<Class<*>, List<Property>>(2000)
 
     override fun generateChildProperties(annotatedType: AnnotatedType): List<Property> =
         objectChildPropertiesCache.computeIfAbsent(Types.getActualType(annotatedType.type)) {
-            val javaProperties = PropertyCache.getProperties(annotatedType)
+            val javaProperties = javaDelegatePropertyGenerator.generateChildProperties(annotatedType)
                 .filter { it.name != null }
                 .associateBy { it.name!! }
             val kotlinProperties = getMemberProperties(annotatedType)
