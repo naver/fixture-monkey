@@ -52,6 +52,7 @@ FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
 ### registerGroup
 #### Defining registerGroup
 ```java
+// using reflection
 public class GenerateGroup {
 	public ArbitraryBuilder<GenerateString> generateString(FixtureMonkey fixtureMonkey){
 		return fixtureMonkey.giveMeBuilder(GenerateString.class)
@@ -63,12 +64,40 @@ public class GenerateGroup {
 			.set("value", Arbitraries.integers().between(1, 100));
     }
 }
+
+// using ArbitraryBuilderGroup interface
+public class GenerateBuilderGroup implements ArbitraryBuilderGroup {
+	@Override
+	public ArbitraryBuilderCandidateList generateCandidateList() {
+		ArbitraryBuilderCandidateList.create()
+			.add(
+				ArbitraryBuilderCandidateFactory.of(GenerateString.class)
+					.builder(
+						arbitraryBuilder -> arbitraryBuilder
+							.set("value", Arbitraries.strings().numeric())
+					)
+			)
+			.add(
+				ArbitraryBuilderCandidateFactory.of(GenerateInt.class)
+					.builder(
+						builder -> builder
+							.set("value", Arbitraries.integers().between(1, 100))
+					)
+			);
+	}
+}
 ```
 
 #### Add `registerGroup` option
 ```java
+// using reflection
 FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
     .registerGroup(GenerateGroup.class)
+	.build();
+
+// using ArbitraryBuilderGroup interface
+FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+	.registerGroup(new GenerateBuilderGroup())
 	.build();
 ```
 
