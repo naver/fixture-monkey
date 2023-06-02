@@ -243,7 +243,10 @@ class TypesTest {
 		Field field = fields.get("name");
 
 		// when
-		AnnotatedType actual = Types.resolveWithTypeReferenceGenerics(typeReference.getAnnotatedType(), field);
+		AnnotatedType actual = Types.resolveWithTypeReferenceGenerics(
+			typeReference.getAnnotatedType(),
+			field.getAnnotatedType()
+		);
 
 		then(actual.getType()).isEqualTo(String.class);
 	}
@@ -259,7 +262,9 @@ class TypesTest {
 		Field field = fields.get("sample2");
 
 		// when
-		AnnotatedType actual = Types.resolveWithTypeReferenceGenerics(typeReference.getAnnotatedType(), field);
+		AnnotatedType actual = Types.resolveWithTypeReferenceGenerics(
+			typeReference.getAnnotatedType(),
+			field.getAnnotatedType());
 
 		then(actual).isInstanceOf(AnnotatedParameterizedType.class);
 		then(actual.getType()).isInstanceOf(ParameterizedType.class);
@@ -281,7 +286,9 @@ class TypesTest {
 		Field field = fields.get("list");
 
 		// when
-		AnnotatedType actual = Types.resolveWithTypeReferenceGenerics(typeReference.getAnnotatedType(), field);
+		AnnotatedType actual = Types.resolveWithTypeReferenceGenerics(
+			typeReference.getAnnotatedType(),
+			field.getAnnotatedType());
 
 		then(actual).isInstanceOf(AnnotatedParameterizedType.class);
 		then(actual.getType()).isInstanceOf(ParameterizedType.class);
@@ -303,7 +310,9 @@ class TypesTest {
 		Field field = fields.get("samples");
 
 		// when
-		AnnotatedType actual = Types.resolveWithTypeReferenceGenerics(typeReference.getAnnotatedType(), field);
+		AnnotatedType actual = Types.resolveWithTypeReferenceGenerics(
+			typeReference.getAnnotatedType(),
+			field.getAnnotatedType());
 
 		then(actual).isInstanceOf(AnnotatedParameterizedType.class);
 		then(actual.getType()).isInstanceOf(ParameterizedType.class);
@@ -326,7 +335,9 @@ class TypesTest {
 		Field field = fields.get("name");
 
 		// when
-		AnnotatedType actual = Types.resolveWithTypeReferenceGenerics(typeReference.getAnnotatedType(), field);
+		AnnotatedType actual = Types.resolveWithTypeReferenceGenerics(
+			typeReference.getAnnotatedType(),
+			field.getAnnotatedType());
 
 		then(actual.getType()).isEqualTo(String.class);
 	}
@@ -342,7 +353,9 @@ class TypesTest {
 		Field field = fields.get("name");
 
 		// when
-		AnnotatedType actual = Types.resolveWithTypeReferenceGenerics(typeReference.getAnnotatedType(), field);
+		AnnotatedType actual = Types.resolveWithTypeReferenceGenerics(
+			typeReference.getAnnotatedType(),
+			field.getAnnotatedType());
 
 		then(actual).isInstanceOf(AnnotatedWildcardType.class);
 		then(actual.getType()).isInstanceOf(WildcardType.class);
@@ -360,7 +373,9 @@ class TypesTest {
 		Field field = fields.get("name");
 
 		// when
-		AnnotatedType actual = Types.resolveWithTypeReferenceGenerics(typeReference.getAnnotatedType(), field);
+		AnnotatedType actual = Types.resolveWithTypeReferenceGenerics(
+			typeReference.getAnnotatedType(),
+			field.getAnnotatedType());
 
 		then(actual.getType()).isInstanceOf(Object.class);
 	}
@@ -378,7 +393,9 @@ class TypesTest {
 		Field field = fields.get("name");
 
 		// when
-		AnnotatedType actual = Types.resolveWithTypeReferenceGenerics(typeReference.getAnnotatedType(), field);
+		AnnotatedType actual = Types.resolveWithTypeReferenceGenerics(
+			typeReference.getAnnotatedType(),
+			field.getAnnotatedType());
 
 		then(actual.getType()).isEqualTo(Integer.class);
 	}
@@ -396,7 +413,9 @@ class TypesTest {
 		Field field = fields.get("address");
 
 		// when
-		AnnotatedType actual = Types.resolveWithTypeReferenceGenerics(typeReference.getAnnotatedType(), field);
+		AnnotatedType actual = Types.resolveWithTypeReferenceGenerics(
+			typeReference.getAnnotatedType(),
+			field.getAnnotatedType());
 
 		then(actual.getType()).isEqualTo(String.class);
 	}
@@ -414,7 +433,9 @@ class TypesTest {
 		Field field = fields.get("sample2");
 
 		// when
-		AnnotatedType actual = Types.resolveWithTypeReferenceGenerics(typeReference.getAnnotatedType(), field);
+		AnnotatedType actual = Types.resolveWithTypeReferenceGenerics(
+			typeReference.getAnnotatedType(),
+			field.getAnnotatedType());
 
 		then(actual).isInstanceOf(AnnotatedParameterizedType.class);
 		then(actual.getType()).isInstanceOf(ParameterizedType.class);
@@ -439,7 +460,9 @@ class TypesTest {
 		Field field = fields.get("sample2");
 
 		// when
-		AnnotatedType actual = Types.resolveWithTypeReferenceGenerics(typeReference.getAnnotatedType(), field);
+		AnnotatedType actual = Types.resolveWithTypeReferenceGenerics(
+			typeReference.getAnnotatedType(),
+			field.getAnnotatedType());
 
 		then(actual).isInstanceOf(AnnotatedParameterizedType.class);
 		then(actual.getType()).isInstanceOf(ParameterizedType.class);

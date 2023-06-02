@@ -19,6 +19,7 @@
 package com.navercorp.fixturemonkey.api.introspector;
 
 import java.lang.reflect.Array;
+import java.lang.reflect.GenericArrayType;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -44,7 +45,8 @@ import com.navercorp.fixturemonkey.api.type.Types;
 public final class ArrayIntrospector implements ArbitraryIntrospector, Matcher {
 	@Override
 	public boolean match(Property property) {
-		return Types.getActualType(property.getType()).isArray();
+		return Types.getActualType(property.getType()).isArray()
+			|| GenericArrayType.class.isAssignableFrom(property.getType().getClass());
 	}
 
 	@Override

@@ -23,10 +23,10 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedArrayType;
 import java.lang.reflect.AnnotatedParameterizedType;
 import java.lang.reflect.AnnotatedType;
+import java.lang.reflect.AnnotatedTypeVariable;
 import java.lang.reflect.AnnotatedWildcardType;
-import java.lang.reflect.Field;
+import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.GenericDeclaration;
-import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
@@ -36,8 +36,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
+
+import javax.annotation.Nullable;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -74,6 +75,11 @@ public class Types {
 	public static Class<?> getActualType(Type type) {
 		if (type.getClass() == Class.class) {
 			return (Class<?>)type;
+		}
+
+		if (GenericArrayType.class.isAssignableFrom(type.getClass())) {
+			GenericArrayType genericArrayType = (GenericArrayType)type;
+			return getActualType(genericArrayType.getGenericComponentType());
 		}
 
 		if (WildcardType.class.isAssignableFrom(type.getClass())) {
@@ -151,71 +157,108 @@ public class Types {
 		);
 	}
 
-	public static AnnotatedType resolveWithTypeReferenceGenerics(AnnotatedType ownerType, Field field) {
-		if (!(ownerType instanceof AnnotatedParameterizedType)) {
-			AnnotatedType fieldAnnotatedType = field.getAnnotatedType();
+	public static AnnotatedType resolveWithTypeReferenceGenerics(
+		AnnotatedType parentAnnotatedType,
+		AnnotatedType currentAnnotatedType
+	) {
+		Type genericType = currentAnnotatedType.getType();
+		if (!(genericType instanceof TypeVariable
+			|| genericType instanceof GenericArrayType
+			|| genericType instanceof AnnotatedParameterizedType
+			|| genericType instanceof ParameterizedType)) {
+			return currentAnnotatedType; // If mo generics
+		}
 
-			Class<?> actualOwnerType = Types.getActualType(ownerType.getType());
-			AnnotatedType annotatedSuperClassType = actualOwnerType.getAnnotatedSuperclass();
-			if (annotatedSuperClassType != null) {
-				if (ParameterizedType.class.isAssignableFrom(annotatedSuperClassType.getType().getClass())) {
-					ParameterizedType parameterizedType = (ParameterizedType)annotatedSuperClassType.getType();
-					Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
+		AnnotatedType ownerTypeGenerics = resolvesParentTypeGenerics(parentAnnotatedType, currentAnnotatedType);
+		if (ownerTypeGenerics != null) {
+			return ownerTypeGenerics;
+		}
 
-					Type genericType = field.getGenericType();
-					if (genericType instanceof TypeVariable) {
-						Type actualType = getTypeVariableIndex((TypeVariable<?>)genericType)
-							.map(index -> actualTypeArguments[index])
-							.orElse(Object.class);
+		Class<?> actualOwnerType = Types.getActualType(parentAnnotatedType.getType());
+		AnnotatedType annotatedSuperClassType = actualOwnerType.getAnnotatedSuperclass();
+		if (annotatedSuperClassType != null
+			&& ParameterizedType.class.isAssignableFrom(annotatedSuperClassType.getType().getClass())) {
+			return resolvesParentTypeGenerics(
+				Types.getActualType(parentAnnotatedType.getType()).getAnnotatedSuperclass(),
+				currentAnnotatedType
+			);
+		}
 
-						return new AnnotatedType() {
-							@Override
-							public Type getType() {
-								return actualType;
-							}
-
-							@Override
-							public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
-								return fieldAnnotatedType.getAnnotation(annotationClass);
-							}
-
-							@Override
-							public Annotation[] getAnnotations() {
-								return fieldAnnotatedType.getAnnotations();
-							}
-
-							@Override
-							public Annotation[] getDeclaredAnnotations() {
-								return fieldAnnotatedType.getDeclaredAnnotations();
-							}
-						};
-					}
-				}
+		List<AnnotatedType> genericsTypes = Types.getGenericsTypes(parentAnnotatedType);
+		if (genericsTypes.isEmpty()) {
+			if (currentAnnotatedType instanceof AnnotatedTypeVariable) {
+				return generateAnnotatedTypeWithoutAnnotation(Object.class);
 			}
-			return fieldAnnotatedType;
+
+			return currentAnnotatedType;
 		}
 
-		AnnotatedParameterizedType ownerAnnotatedParameterizedType = (AnnotatedParameterizedType)ownerType;
-		AnnotatedType[] ownerGenericsTypes = ownerAnnotatedParameterizedType.getAnnotatedActualTypeArguments();
-		if (ownerGenericsTypes == null || ownerGenericsTypes.length == 0) {
-			return field.getAnnotatedType();
+		return new AnnotatedTypeVariable() {
+			@Override
+			public AnnotatedType[] getAnnotatedBounds() {
+				AnnotatedType[] annotatedTypes = new AnnotatedType[1];
+				annotatedTypes[0] = genericsTypes.get(0);
+				return annotatedTypes;
+			}
+
+			@SuppressWarnings("Since15")
+			public AnnotatedType getAnnotatedOwnerType() {
+				// TODO: Return annotatedType.getAnnotatedOwnerType() as soon as Java >= 9 is being used
+				return null;
+			}
+
+			@Override
+			public Type getType() {
+				return genericsTypes.get(0).getType();
+			}
+
+			@Override
+			public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
+				return currentAnnotatedType.getAnnotation(annotationClass);
+			}
+
+			@Override
+			public Annotation[] getAnnotations() {
+				return currentAnnotatedType.getAnnotations();
+			}
+
+			@Override
+			public Annotation[] getDeclaredAnnotations() {
+				return currentAnnotatedType.getDeclaredAnnotations();
+			}
+		};
+	}
+
+	@Nullable
+	private static AnnotatedType resolvesParentTypeGenerics(
+		AnnotatedType parentAnnotatedType,
+		AnnotatedType currentAnnotatedType
+	) {
+		if (!(parentAnnotatedType instanceof AnnotatedParameterizedType)) {
+			return null;
 		}
 
-		ParameterizedType parameterizedType = (ParameterizedType)ownerAnnotatedParameterizedType.getType();
-		Class<?> ownerActualType = Types.getActualType(parameterizedType.getRawType());
-		List<Type> ownerTypeVariableParameters = Arrays.asList(ownerActualType.getTypeParameters());
-
-		Type fieldGenericsType = field.getGenericType();
-		if (TypeVariable.class.isAssignableFrom(fieldGenericsType.getClass())) {
-			int index = ownerTypeVariableParameters.indexOf(fieldGenericsType);
-			return ownerGenericsTypes[index];
+		AnnotatedParameterizedType parentAnnotatedParameterizedType = (AnnotatedParameterizedType)parentAnnotatedType;
+		AnnotatedType[] parentGenericsTypes = parentAnnotatedParameterizedType.getAnnotatedActualTypeArguments();
+		if (parentGenericsTypes == null || parentGenericsTypes.length == 0) {
+			return currentAnnotatedType;
 		}
 
-		if (!(fieldGenericsType instanceof ParameterizedType)) {
-			return field.getAnnotatedType();
+		ParameterizedType parentParameterizedType = (ParameterizedType)parentAnnotatedParameterizedType.getType();
+		Class<?> parentActualType = Types.getActualType(parentParameterizedType.getRawType());
+		List<Type> parentTypeVariableParameters = Arrays.asList(parentActualType.getTypeParameters());
+
+		Type genericType = currentAnnotatedType.getType();
+		if (TypeVariable.class.isAssignableFrom(genericType.getClass())) {
+			int index = parentTypeVariableParameters.indexOf(genericType);
+			return parentGenericsTypes[index];
 		}
 
-		AnnotatedParameterizedType fieldParameterizedType = (AnnotatedParameterizedType)field.getAnnotatedType();
+		if (genericType instanceof GenericArrayType) {
+			return resolveGenericsArrayType(currentAnnotatedType, parentGenericsTypes);
+		}
+
+		AnnotatedParameterizedType fieldParameterizedType = (AnnotatedParameterizedType)currentAnnotatedType;
 		AnnotatedType[] fieldGenericsTypes = fieldParameterizedType.getAnnotatedActualTypeArguments();
 		if (fieldGenericsTypes == null || fieldGenericsTypes.length == 0) {
 			return fieldParameterizedType;
@@ -233,8 +276,8 @@ public class Types {
 
 			if (TypeVariable.class.isAssignableFrom(generics.getType().getClass())) {
 				TypeVariable<?> typeVariable = (TypeVariable<?>)generics.getType();
-				int index = ownerTypeVariableParameters.indexOf(typeVariable);
-				generics = ownerGenericsTypes[index];
+				int index = parentTypeVariableParameters.indexOf(typeVariable);
+				generics = parentGenericsTypes[index];
 				resolvedGenericsTypes[i] = generics;
 				resolvedTypes[i] = generics.getType();
 			}
@@ -294,112 +337,43 @@ public class Types {
 		};
 	}
 
-	public static AnnotatedType resolveWithTypeReferenceGenerics(
-		AnnotatedType ownerType,
-		PropertyDescriptor propertyDescriptor
+	private static AnnotatedArrayType resolveGenericsArrayType(
+		AnnotatedType currentAnnotatedType,
+		AnnotatedType[] ownerGenericsTypes
 	) {
-		if (!(ownerType instanceof AnnotatedParameterizedType)) {
-			AnnotatedType propertyAnnotatedType = TypeCache.getAnnotatedType(propertyDescriptor);
-			if (TypeVariable.class.isAssignableFrom(propertyAnnotatedType.getType().getClass())) {
-				return new AnnotatedType() {
-					@Override
-					public Type getType() {
-						return Object.class;
-					}
+		GenericArrayType genericArrayType = (GenericArrayType)currentAnnotatedType.getType();
+		ParameterizedType genericComponentType = (ParameterizedType)genericArrayType.getGenericComponentType();
 
-					@Override
-					public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
-						return propertyAnnotatedType.getAnnotation(annotationClass);
-					}
-
-					@Override
-					public Annotation[] getAnnotations() {
-						return propertyAnnotatedType.getAnnotations();
-					}
-
-					@Override
-					public Annotation[] getDeclaredAnnotations() {
-						return propertyAnnotatedType.getDeclaredAnnotations();
-					}
-				};
-			} else {
-				return propertyAnnotatedType;
-			}
+		Type[] types = new Type[genericComponentType.getActualTypeArguments().length];
+		for (int i = 0; i < ownerGenericsTypes.length; i++) {
+			types[i] = ownerGenericsTypes[i].getType();
 		}
 
-		AnnotatedParameterizedType ownerAnnotatedParameterizedType = (AnnotatedParameterizedType)ownerType;
-		AnnotatedType[] ownerGenericsTypes = ownerAnnotatedParameterizedType.getAnnotatedActualTypeArguments();
-		if (ownerGenericsTypes == null || ownerGenericsTypes.length == 0) {
-			return TypeCache.getAnnotatedType(propertyDescriptor);
-		}
-
-		ParameterizedType parameterizedType = (ParameterizedType)ownerAnnotatedParameterizedType.getType();
-		Class<?> ownerActualType = Types.getActualType(parameterizedType.getRawType());
-		List<Type> ownerTypeVariableParameters = Arrays.asList(ownerActualType.getTypeParameters());
-
-		Method readMethod = propertyDescriptor.getReadMethod();
-		Type methodGenericsType = readMethod.getGenericReturnType();
-		if (TypeVariable.class.isAssignableFrom(methodGenericsType.getClass())) {
-			int index = ownerTypeVariableParameters.indexOf(methodGenericsType);
-			return ownerGenericsTypes[index];
-		}
-
-		if (!(methodGenericsType instanceof ParameterizedType)) {
-			return TypeCache.getAnnotatedType(propertyDescriptor);
-		}
-
-		AnnotatedParameterizedType propertyParameterizedType =
-			(AnnotatedParameterizedType)TypeCache.getAnnotatedType(propertyDescriptor);
-		AnnotatedType[] propertyGenericsTypes = propertyParameterizedType.getAnnotatedActualTypeArguments();
-		if (propertyGenericsTypes == null || propertyGenericsTypes.length == 0) {
-			return propertyParameterizedType;
-		}
-
-		AnnotatedType[] resolvedGenericsTypes = new AnnotatedType[propertyGenericsTypes.length];
-		Type[] resolvedTypes = new Type[propertyGenericsTypes.length];
-		for (int i = 0; i < propertyGenericsTypes.length; i++) {
-			AnnotatedType generics = propertyGenericsTypes[i];
-			if (generics instanceof AnnotatedParameterizedType || generics.getType().getClass() == Class.class) {
-				resolvedGenericsTypes[i] = generics;
-				resolvedTypes[i] = generics.getType();
-				continue;
-			}
-
-			if (TypeVariable.class.isAssignableFrom(generics.getType().getClass())) {
-				TypeVariable<?> typeVariable = (TypeVariable<?>)generics.getType();
-				int index = ownerTypeVariableParameters.indexOf(typeVariable);
-				generics = ownerGenericsTypes[index];
-				resolvedGenericsTypes[i] = generics;
-				resolvedTypes[i] = generics.getType();
-			}
-		}
-
-		ParameterizedType type = (ParameterizedType)propertyParameterizedType.getType();
-		Type resolveType = new ParameterizedType() {
+		ParameterizedType genericComponentTypeWithGeneric = new ParameterizedType() {
 			@Override
 			public Type[] getActualTypeArguments() {
-				return resolvedTypes;
+				return types;
 			}
 
 			@Override
 			public Type getRawType() {
-				return type.getRawType();
+				return genericComponentType.getRawType();
 			}
 
 			@Override
 			public Type getOwnerType() {
-				return type.getOwnerType();
+				return genericComponentType.getOwnerType();
 			}
 		};
 
-		return new AnnotatedParameterizedType() {
+		Type resolveType = (GenericArrayType)() -> genericComponentTypeWithGeneric;
+
+		return new AnnotatedArrayType() {
 			@Override
-			public AnnotatedType[] getAnnotatedActualTypeArguments() {
-				return resolvedGenericsTypes;
+			public AnnotatedType getAnnotatedGenericComponentType() {
+				return Types.generateAnnotatedTypeWithoutAnnotation(genericComponentTypeWithGeneric);
 			}
 
-			// For compatibility with JDK >= 9. A breaking change in the JDK :-(
-			// @Override
 			@SuppressWarnings("Since15")
 			public AnnotatedType getAnnotatedOwnerType() {
 				// TODO: Return annotatedType.getAnnotatedOwnerType() as soon as Java >= 9 is being used
@@ -413,19 +387,26 @@ public class Types {
 
 			@Override
 			public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
-				return propertyParameterizedType.getAnnotation(annotationClass);
+				return currentAnnotatedType.getAnnotation(annotationClass);
 			}
 
 			@Override
 			public Annotation[] getAnnotations() {
-				return propertyParameterizedType.getAnnotations();
+				return currentAnnotatedType.getAnnotations();
 			}
 
 			@Override
 			public Annotation[] getDeclaredAnnotations() {
-				return propertyParameterizedType.getDeclaredAnnotations();
+				return currentAnnotatedType.getDeclaredAnnotations();
 			}
 		};
+	}
+
+	public static AnnotatedType resolveWithTypeReferenceGenerics(
+		AnnotatedType parentType,
+		PropertyDescriptor propertyDescriptor
+	) {
+		return resolveWithTypeReferenceGenerics(parentType, TypeCache.getAnnotatedType(propertyDescriptor));
 	}
 
 	public static AnnotatedType getArrayComponentAnnotatedType(AnnotatedType annotatedType) {
@@ -554,20 +535,7 @@ public class Types {
 		return toClass.isAssignableFrom(cls);
 	}
 
-	/**
-	 * @return index
-	 * @see sun.reflect.generics.reflectiveObjects.TypeVariableImpl#typeVarIndex()
-	 */
-	@SuppressWarnings("JavadocReference")
-	private static Optional<Integer> getTypeVariableIndex(TypeVariable<?> typeVariable) {
-		TypeVariable<?>[] tVars = typeVariable.getGenericDeclaration().getTypeParameters();
-		int index = -1;
-		for (TypeVariable<?> v : tVars) {
-			index++;
-			if (typeVariable.equals(v)) {
-				return Optional.of(index);
-			}
-		}
-		return Optional.empty();
+	public static List<Type> getGenericsTypes(ParameterizedType parameterizedType) {
+		return Arrays.asList(parameterizedType.getActualTypeArguments());
 	}
 }
