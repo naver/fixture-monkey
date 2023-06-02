@@ -118,6 +118,7 @@ public final class GenerateOptions {
 	private final ArbitraryGenerator defaultArbitraryGenerator;
 
 	@SuppressWarnings("rawtypes")
+	@Deprecated // It would be removed in 0.6.0
 	private final List<MatcherOperator<FixtureCustomizer>> arbitraryCustomizers;
 	private final ArbitraryValidator defaultArbitraryValidator;
 
@@ -270,6 +271,7 @@ public final class GenerateOptions {
 	}
 
 	@SuppressWarnings("rawtypes")
+	@Deprecated // It would be removed in 0.6.0
 	public List<MatcherOperator<FixtureCustomizer>> getArbitraryCustomizers() {
 		return arbitraryCustomizers;
 	}

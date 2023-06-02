@@ -77,6 +77,7 @@ public final class GenerateOptionsBuilder {
 	private ArbitraryGenerator defaultArbitraryGenerator;
 
 	@SuppressWarnings("rawtypes")
+	@Deprecated // It would be removed in 0.6.0
 	private List<MatcherOperator<FixtureCustomizer>> arbitraryCustomizers = new ArrayList<>();
 	private final JavaDefaultArbitraryGeneratorBuilder javaDefaultArbitraryGeneratorBuilder =
 		DefaultArbitraryGenerator.javaBuilder();
@@ -445,6 +446,7 @@ public final class GenerateOptionsBuilder {
 	}
 
 	@SuppressWarnings("rawtypes")
+	@Deprecated // It would be removed in 0.6.0
 	public GenerateOptionsBuilder arbitraryCustomizers(
 		List<MatcherOperator<FixtureCustomizer>> arbitraryCustomizers
 	) {
@@ -453,6 +455,7 @@ public final class GenerateOptionsBuilder {
 	}
 
 	@SuppressWarnings("rawtypes")
+	@Deprecated // It would be removed in 0.6.0
 	public GenerateOptionsBuilder insertFirstFixtureCustomizer(
 		MatcherOperator<FixtureCustomizer> arbitraryCustomizer
 	) {
@@ -461,6 +464,7 @@ public final class GenerateOptionsBuilder {
 		return arbitraryCustomizers(result);
 	}
 
+	@Deprecated // It would be removed in 0.6.0
 	public GenerateOptionsBuilder insertFirstFixtureCustomizer(
 		Matcher matcher,
 		FixtureCustomizer<?> fixtureCustomizer
@@ -470,6 +474,7 @@ public final class GenerateOptionsBuilder {
 		);
 	}
 
+	@Deprecated // It would be removed in 0.6.0
 	public <T> GenerateOptionsBuilder insertFirstFixtureCustomizer(
 		Class<T> type,
 		FixtureCustomizer<? extends T> fixtureCustomizer

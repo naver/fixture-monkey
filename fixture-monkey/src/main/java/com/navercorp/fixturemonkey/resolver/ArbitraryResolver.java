@@ -67,7 +67,7 @@ public final class ArbitraryResolver {
 	public Arbitrary<?> resolve(
 		RootProperty rootProperty,
 		List<ArbitraryManipulator> manipulators,
-		List<MatcherOperator<? extends FixtureCustomizer>> customizers,
+		List<MatcherOperator<? extends FixtureCustomizer>> builderCustomizers,
 		List<ContainerInfoManipulator> containerInfoManipulators
 	) {
 		List<MatcherOperator<List<ContainerInfoManipulator>>> registeredContainerInfoManipulators =
@@ -88,7 +88,7 @@ public final class ArbitraryResolver {
 			),
 			generateOptions,
 			monkeyContext,
-			customizers
+			builderCustomizers
 		);
 
 		List<ArbitraryManipulator> registeredManipulators = monkeyManipulatorFactory.newRegisteredArbitraryManipulators(
