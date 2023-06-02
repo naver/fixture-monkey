@@ -44,16 +44,19 @@ data class KPropertyProperty(
     override fun getAnnotations(): List<Annotation> = this.annotatedType.annotations.toList()
 
     override fun getValue(instance: Any): Any? {
-        val getter = this.kProperty.getter
-        if (getter.javaMethod != null && Modifier.isPublic(getter.javaMethod!!.modifiers)) {
+        val javaMethod = this.kProperty.getter.javaMethod
+
+        if (javaMethod != null && Modifier.isPublic(javaMethod.modifiers)) {
             return this.kProperty.getter.call(instance)
-        } else if (this.kProperty.javaField != null) {
-            val javaField = this.kProperty.javaField!!
+        }
+
+        val javaField = this.kProperty.javaField
+        if (javaField != null) {
             javaField.isAccessible = true
             return javaField.get(instance)
-        } else {
-            LOGGER.warn("Failed to get value of property {} in instance {}.", this.kProperty.name, instance);
         }
+
+        LOGGER.warn("Failed to get value of property {} in instance {}.", this.kProperty.name, instance)
         return null
     }
 
