@@ -59,7 +59,7 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.property.Property;
 
-@API(since = "0.5.7", status = Status.EXPERIMENTAL)
+@API(since = "0.6.0", status = Status.EXPERIMENTAL)
 public final class SingleJavaTimeArbitraryResolver implements JavaTimeArbitraryResolver {
 	private static final JavaTimeArbitraryResolver DEFAULT_NONE_JAVA_TIME_ARBITRARY_RESOLVER =
 		new JavaTimeArbitraryResolver() {

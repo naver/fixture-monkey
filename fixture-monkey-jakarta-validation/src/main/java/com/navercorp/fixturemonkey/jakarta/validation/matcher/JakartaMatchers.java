@@ -23,7 +23,7 @@ import org.apiguardian.api.API;
 import com.navercorp.fixturemonkey.api.matcher.AnnotationPackageNameMatcher;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 
-@API(since = "0.5.7", status = API.Status.MAINTAINED)
+@API(since = "0.6.0", status = API.Status.MAINTAINED)
 public final class JakartaMatchers {
 	public static final Matcher JAKARTA_PACKAGE_MATCHER = property ->
 		new AnnotationPackageNameMatcher("jakarta.validation.constraints").match(property);

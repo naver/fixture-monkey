@@ -41,7 +41,7 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.property.Property;
 
-@API(since = "0.5.7", status = Status.EXPERIMENTAL)
+@API(since = "0.6.0", status = Status.EXPERIMENTAL)
 public final class SingleJavaArbitraryResolver implements JavaArbitraryResolver {
 	private static final JavaArbitraryResolver DEFAULT_NONE_JAVA_ARBITRARY_RESOLVER = new JavaArbitraryResolver() {
 	};
