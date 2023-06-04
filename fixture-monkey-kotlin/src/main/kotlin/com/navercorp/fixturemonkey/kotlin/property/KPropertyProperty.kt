@@ -33,8 +33,6 @@ data class KPropertyProperty(
     private val annotatedType: AnnotatedType,
     val kProperty: KProperty<*>,
 ) : Property {
-    private val LOGGER = LoggerFactory.getLogger(KPropertyProperty::class.java)
-
     override fun getType(): Type = this.annotatedType.type
 
     override fun getAnnotatedType(): AnnotatedType = this.annotatedType
@@ -61,4 +59,8 @@ data class KPropertyProperty(
     }
 
     override fun isNullable(): Boolean = this.kProperty.returnType.isMarkedNullable
+
+    companion object {
+        private val LOGGER = LoggerFactory.getLogger(KPropertyProperty::class.java)
+    }
 }
