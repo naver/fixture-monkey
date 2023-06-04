@@ -18,6 +18,8 @@
 
 package com.navercorp.fixturemonkey.jakarta.validation.plugin;
 
+import static com.navercorp.fixturemonkey.jakarta.validation.matcher.JakartaMatchers.JAKARTA_PACKAGE_MATCHER;
+
 import java.util.Arrays;
 
 import org.apiguardian.api.API;
@@ -82,7 +84,7 @@ public final class JakartaValidationPlugin implements Plugin {
 		optionsBuilder
 			.defaultNullInjectGeneratorOperator(JakartaValidationNullInjectGenerator::new)
 			.insertFirstArbitraryContainerInfoGenerator(
-				prop -> true,
+				JAKARTA_PACKAGE_MATCHER,
 				new JakartaValidationArbitraryContainerInfoGenerator()
 			)
 			.javaTypeArbitraryGenerator(javaTypeArbitraryGenerator)

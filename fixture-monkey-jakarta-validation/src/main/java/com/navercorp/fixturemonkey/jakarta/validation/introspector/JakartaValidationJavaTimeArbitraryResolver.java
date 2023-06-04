@@ -18,6 +18,8 @@
 
 package com.navercorp.fixturemonkey.jakarta.validation.introspector;
 
+import static com.navercorp.fixturemonkey.jakarta.validation.matcher.JakartaMatchers.JAKARTA_PACKAGE_MATCHER;
+
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -57,7 +59,6 @@ import com.navercorp.fixturemonkey.api.property.Property;
 
 @API(since = "0.4.10", status = Status.MAINTAINED)
 public final class JakartaValidationJavaTimeArbitraryResolver implements JavaTimeArbitraryResolver, Matcher {
-	private static final Matcher MATCHER = new AnnotationPackageNameMatcher("jakarta.validation.constraints");
 	private final JakartaValidationTimeConstraintGenerator constraintGenerator;
 
 	public JakartaValidationJavaTimeArbitraryResolver() {
@@ -70,7 +71,7 @@ public final class JakartaValidationJavaTimeArbitraryResolver implements JavaTim
 
 	@Override
 	public boolean match(Property property) {
-		return MATCHER.match(property);
+		return JAKARTA_PACKAGE_MATCHER.match(property);
 	}
 
 	@Override

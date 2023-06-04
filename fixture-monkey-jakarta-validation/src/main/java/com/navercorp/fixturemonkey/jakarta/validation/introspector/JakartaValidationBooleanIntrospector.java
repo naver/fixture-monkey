@@ -18,6 +18,8 @@
 
 package com.navercorp.fixturemonkey.jakarta.validation.introspector;
 
+import static com.navercorp.fixturemonkey.jakarta.validation.matcher.JakartaMatchers.JAKARTA_PACKAGE_MATCHER;
+
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
@@ -30,12 +32,16 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectDelegator;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult;
 import com.navercorp.fixturemonkey.api.introspector.BooleanIntrospector;
+import com.navercorp.fixturemonkey.api.matcher.AnnotationPackageNameMatcher;
 import com.navercorp.fixturemonkey.api.matcher.Matchers;
 
 @API(since = "0.4.10", status = Status.MAINTAINED)
 public final class JakartaValidationBooleanIntrospector extends ArbitraryIntrospectDelegator {
 	public JakartaValidationBooleanIntrospector() {
-		super(Matchers.BOOLEAN_TYPE_MATCHER, new BooleanIntrospector());
+		super(
+			property -> JAKARTA_PACKAGE_MATCHER.match(property) && Matchers.BOOLEAN_TYPE_MATCHER.match(property),
+			new BooleanIntrospector()
+		);
 	}
 
 	@Override

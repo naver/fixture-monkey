@@ -16,36 +16,15 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.tests.java;
+package com.navercorp.fixturemonkey.jakarta.validation.matcher;
 
-import java.util.Date;
+import org.apiguardian.api.API;
 
-import javax.validation.constraints.Min;
-import javax.validation.constraints.Past;
+import com.navercorp.fixturemonkey.api.matcher.AnnotationPackageNameMatcher;
+import com.navercorp.fixturemonkey.api.matcher.Matcher;
 
-import jakarta.validation.constraints.Future;
-import jakarta.validation.constraints.Max;
-import lombok.Getter;
-import lombok.Setter;
-
-class SingleJavaArbitraryResolverTestSpecs {
-	@Getter
-	@Setter
-	public static class IntObject {
-		@Min(100)
-		private int javaxMinValue;
-
-		@Max(100)
-		private int jakartaMaxValue;
-	}
-
-	@Getter
-	@Setter
-	public static class DateObject {
-		@Past
-		private Date javaxDatePast;
-
-		@Future
-		private Date jakartaDateFuture;
-	}
+@API(since = "0.5.7", status = API.Status.MAINTAINED)
+public final class JakartaMatchers {
+	public static final Matcher JAKARTA_PACKAGE_MATCHER = property ->
+		new AnnotationPackageNameMatcher("jakarta.validation.constraints").match(property);
 }

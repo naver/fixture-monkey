@@ -18,6 +18,8 @@
 
 package com.navercorp.fixturemonkey.javax.validation.introspector;
 
+import static com.navercorp.fixturemonkey.javax.validation.matcher.JavaxMatchers.JAVAX_PACKAGE_MATCHER;
+
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -57,7 +59,6 @@ import com.navercorp.fixturemonkey.api.property.Property;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class JavaxValidationJavaTimeArbitraryResolver implements JavaTimeArbitraryResolver, Matcher {
-	private static final Matcher MATCHER = new AnnotationPackageNameMatcher("javax.validation.constraints");
 	private final JavaxValidationTimeConstraintGenerator constraintGenerator;
 
 	public JavaxValidationJavaTimeArbitraryResolver() {
@@ -70,7 +71,7 @@ public final class JavaxValidationJavaTimeArbitraryResolver implements JavaTimeA
 
 	@Override
 	public boolean match(Property property) {
-		return MATCHER.match(property);
+		return JAVAX_PACKAGE_MATCHER.match(property);
 	}
 
 	@Override

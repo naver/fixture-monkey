@@ -18,6 +18,7 @@
 
 package com.navercorp.fixturemonkey.jakarta.validation.introspector;
 
+import static com.navercorp.fixturemonkey.jakarta.validation.matcher.JakartaMatchers.JAKARTA_PACKAGE_MATCHER;
 import static java.util.stream.Collectors.toList;
 
 import java.math.BigDecimal;
@@ -53,7 +54,6 @@ import com.navercorp.fixturemonkey.api.property.Property;
 
 @API(since = "0.4.10", status = Status.MAINTAINED)
 public final class JakartaValidationJavaArbitraryResolver implements JavaArbitraryResolver, Matcher {
-	private static final Matcher MATCHER = new AnnotationPackageNameMatcher("jakarta.validation.constraints");
 	private static final RegexGenerator REGEX_GENERATOR = new RegexGenerator();
 
 	private final JakartaValidationConstraintGenerator constraintGenerator;
@@ -68,7 +68,7 @@ public final class JakartaValidationJavaArbitraryResolver implements JavaArbitra
 
 	@Override
 	public boolean match(Property property) {
-		return MATCHER.match(property);
+		return JAKARTA_PACKAGE_MATCHER.match(property);
 	}
 
 	@Override

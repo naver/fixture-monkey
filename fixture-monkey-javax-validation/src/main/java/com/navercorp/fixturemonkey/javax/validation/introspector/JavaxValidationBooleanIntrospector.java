@@ -18,6 +18,8 @@
 
 package com.navercorp.fixturemonkey.javax.validation.introspector;
 
+import static com.navercorp.fixturemonkey.javax.validation.matcher.JavaxMatchers.JAVAX_PACKAGE_MATCHER;
+
 import javax.validation.constraints.AssertFalse;
 import javax.validation.constraints.AssertTrue;
 
@@ -30,12 +32,16 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectDelegator;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult;
 import com.navercorp.fixturemonkey.api.introspector.BooleanIntrospector;
+import com.navercorp.fixturemonkey.api.matcher.AnnotationPackageNameMatcher;
 import com.navercorp.fixturemonkey.api.matcher.Matchers;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class JavaxValidationBooleanIntrospector extends ArbitraryIntrospectDelegator {
 	public JavaxValidationBooleanIntrospector() {
-		super(Matchers.BOOLEAN_TYPE_MATCHER, new BooleanIntrospector());
+		super(
+			property -> JAVAX_PACKAGE_MATCHER.match(property) && Matchers.BOOLEAN_TYPE_MATCHER.match(property),
+			new BooleanIntrospector()
+		);
 	}
 
 	@Override
