@@ -48,7 +48,6 @@ import jakarta.validation.constraints.Pattern;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.introspector.JavaArbitraryResolver;
-import com.navercorp.fixturemonkey.api.matcher.AnnotationPackageNameMatcher;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.property.Property;
 

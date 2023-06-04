@@ -53,7 +53,6 @@ import net.jqwik.time.api.arbitraries.ZonedDateTimeArbitrary;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.introspector.JavaTimeArbitraryResolver;
-import com.navercorp.fixturemonkey.api.matcher.AnnotationPackageNameMatcher;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.property.Property;
 

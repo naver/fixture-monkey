@@ -32,7 +32,6 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectDelegator;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult;
 import com.navercorp.fixturemonkey.api.introspector.BooleanIntrospector;
-import com.navercorp.fixturemonkey.api.matcher.AnnotationPackageNameMatcher;
 import com.navercorp.fixturemonkey.api.matcher.Matchers;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
