@@ -62,6 +62,21 @@ class KPropertyPropertyTest {
         then(actual["instant"]!!.annotations).hasSize(1)
         then(actual["instant"]!!.annotations[0].annotationClass).isEqualTo(PastOrPresent::class)
     }
+
+    @Test
+    fun getValueOfPropertyWithoutBackingField() {
+        // given
+        val typeReference = object : TypeReference<PropertyWithoutBackingFieldClass>() {}
+        val property = PropertyWithoutBackingFieldClass::class.memberProperties.first()
+        val kPropertyProperty = KPropertyProperty(getAnnotatedType(typeReference.annotatedType, property), property)
+        val propertyWithoutBackingFieldClass = PropertyWithoutBackingFieldClass()
+
+        // when
+        val actual = kPropertyProperty.getValue(propertyWithoutBackingFieldClass)
+
+        // then
+        then(actual).isEqualTo("test")
+    }
 }
 
 data class PropertySample(
@@ -79,4 +94,9 @@ data class PropertySample(
 ) {
     @PastOrPresent
     val instant: Instant = Instant.now()
+}
+
+class PropertyWithoutBackingFieldClass {
+    val str: String
+        get() = "test"
 }

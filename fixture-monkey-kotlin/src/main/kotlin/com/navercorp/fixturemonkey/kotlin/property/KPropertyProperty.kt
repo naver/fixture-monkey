@@ -20,18 +20,19 @@ package com.navercorp.fixturemonkey.kotlin.property
 
 import com.navercorp.fixturemonkey.api.property.Property
 import org.apiguardian.api.API
+import org.slf4j.LoggerFactory
 import java.lang.reflect.AnnotatedType
+import java.lang.reflect.Modifier
 import java.lang.reflect.Type
 import kotlin.reflect.KProperty
-import kotlin.reflect.jvm.isAccessible
 import kotlin.reflect.jvm.javaField
+import kotlin.reflect.jvm.javaMethod
 
 @API(since = "0.4.0", status = API.Status.EXPERIMENTAL)
 data class KPropertyProperty(
     private val annotatedType: AnnotatedType,
     val kProperty: KProperty<*>,
 ) : Property {
-
     override fun getType(): Type = this.annotatedType.type
 
     override fun getAnnotatedType(): AnnotatedType = this.annotatedType
@@ -40,14 +41,26 @@ data class KPropertyProperty(
 
     override fun getAnnotations(): List<Annotation> = this.annotatedType.annotations.toList()
 
-    override fun getValue(instance: Any): Any? =
-        if (this.kProperty.isAccessible) {
-            this.kProperty.getter.call(instance)
-        } else {
-            val javaField = this.kProperty.javaField!!
-            javaField.isAccessible = true
-            javaField.get(instance)
+    override fun getValue(instance: Any): Any? {
+        val javaMethod = this.kProperty.getter.javaMethod
+
+        if (javaMethod != null && Modifier.isPublic(javaMethod.modifiers)) {
+            return this.kProperty.getter.call(instance)
         }
 
+        val javaField = this.kProperty.javaField
+        if (javaField != null) {
+            javaField.isAccessible = true
+            return javaField.get(instance)
+        }
+
+        LOGGER.warn("Failed to get value of property {} in instance {}.", this.kProperty.name, instance)
+        return null
+    }
+
     override fun isNullable(): Boolean = this.kProperty.returnType.isMarkedNullable
+
+    companion object {
+        private val LOGGER = LoggerFactory.getLogger(KPropertyProperty::class.java)
+    }
 }
