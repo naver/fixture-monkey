@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.RepeatedTest;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
@@ -21,6 +20,7 @@ import com.navercorp.fixturemonkey.tests.java.ImmutableJavaTestSpecs.ContainerOb
 import com.navercorp.fixturemonkey.tests.java.ImmutableJavaTestSpecs.Enum;
 import com.navercorp.fixturemonkey.tests.java.ImmutableJavaTestSpecs.JavaTypeObject;
 import com.navercorp.fixturemonkey.tests.java.ImmutableJavaTestSpecs.RootJavaTypeObject;
+import com.navercorp.fixturemonkey.tests.java.JacksonSpecs.ConstructorObject;
 import com.navercorp.fixturemonkey.tests.java.JacksonSpecs.JsonTypeInfoIdClass;
 import com.navercorp.fixturemonkey.tests.java.JacksonSpecs.JsonTypeInfoIdName;
 import com.navercorp.fixturemonkey.tests.java.JacksonSpecs.JsonTypeInfoList;
@@ -249,5 +249,12 @@ class JacksonTest {
 					.size("$", 2)
 					.sample()
 			);
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void sampleConstructorObject() {
+		ConstructorObject actual = SUT.giveMeOne(ConstructorObject.class);
+
+		then(actual).isNotNull();
 	}
 }
