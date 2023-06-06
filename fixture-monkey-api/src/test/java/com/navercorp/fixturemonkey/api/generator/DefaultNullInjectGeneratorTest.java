@@ -24,6 +24,7 @@ import java.util.Optional;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import jakarta.validation.constraints.NotNull;
 
 import org.junit.jupiter.api.Test;
 
@@ -74,6 +75,27 @@ class DefaultNullInjectGeneratorTest {
 		double actual = sut.generate(context);
 
 		then(actual).isEqualTo(0.0d);
+	}
+
+	@Test
+	void generateNotNull() {
+		// given
+		DefaultNullInjectGenerator sut = new DefaultNullInjectGenerator();
+		TypeReference<SampleWithAnnotation> typeReference = new TypeReference<SampleWithAnnotation>() {
+		};
+		Property property = PropertyCache.getProperty(typeReference.getAnnotatedType(), "notNull").get();
+		ObjectPropertyGeneratorContext context = new ObjectPropertyGeneratorContext(
+			property,
+			null,
+			null,
+			false,
+			GenerateOptions.DEFAULT_GENERATE_OPTIONS
+		);
+
+		// when
+		double actual = sut.generate(context);
+
+		then(actual).isEqualTo(DefaultNullInjectGenerator.NOT_NULL_INJECT);
 	}
 
 	@Test
