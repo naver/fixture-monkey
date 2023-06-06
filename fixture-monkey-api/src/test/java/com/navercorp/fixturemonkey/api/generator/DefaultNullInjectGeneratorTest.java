@@ -53,7 +53,7 @@ class DefaultNullInjectGeneratorTest {
 		// when
 		double actual = sut.generate(context);
 
-		then(actual).isEqualTo(0.2d);
+		then(actual).isEqualTo(DefaultNullInjectGenerator.DEFAULT_NULL_INJECT);
 	}
 
 	@Test
@@ -74,7 +74,7 @@ class DefaultNullInjectGeneratorTest {
 		// when
 		double actual = sut.generate(context);
 
-		then(actual).isEqualTo(0.0d);
+		then(actual).isEqualTo(DefaultNullInjectGenerator.NOT_NULL_INJECT);
 	}
 
 	@Test
@@ -123,14 +123,14 @@ class DefaultNullInjectGeneratorTest {
 		// when
 		double actual = sut.generate(context);
 
-		then(actual).isEqualTo(0.2d);
+		then(actual).isEqualTo(DefaultNullInjectGenerator.DEFAULT_NULL_INJECT);
 	}
 
 	@Test
 	void generateDefaultNotNullTrue() {
 		// given
 		DefaultNullInjectGenerator sut = new DefaultNullInjectGenerator(
-			0.2,
+			DefaultNullInjectGenerator.DEFAULT_NULL_INJECT,
 			false,
 			true,
 			false,
@@ -151,7 +151,7 @@ class DefaultNullInjectGeneratorTest {
 		// when
 		double actual = sut.generate(context);
 
-		then(actual).isEqualTo(0.0d);
+		then(actual).isEqualTo(DefaultNullInjectGenerator.NOT_NULL_INJECT);
 	}
 
 	@Test
@@ -172,14 +172,14 @@ class DefaultNullInjectGeneratorTest {
 		// when
 		double actual = sut.generate(context);
 
-		then(actual).isEqualTo(0.0d);
+		then(actual).isEqualTo(DefaultNullInjectGenerator.NOT_NULL_INJECT);
 	}
 
 	@Test
 	void generateContainer() {
 		// given
 		DefaultNullInjectGenerator sut = new DefaultNullInjectGenerator(
-			0.2,
+			DefaultNullInjectGenerator.DEFAULT_NULL_INJECT,
 			false,
 			true,
 			false,
@@ -200,14 +200,14 @@ class DefaultNullInjectGeneratorTest {
 		// when
 		double actual = sut.generate(context);
 
-		then(actual).isEqualTo(0.0d);
+		then(actual).isEqualTo(DefaultNullInjectGenerator.NOT_NULL_INJECT);
 	}
 
 	@Test
 	void generateNullableContainer() {
 		// given
 		DefaultNullInjectGenerator sut = new DefaultNullInjectGenerator(
-			0.2,
+			DefaultNullInjectGenerator.DEFAULT_NULL_INJECT,
 			true,
 			true,
 			false,
@@ -228,7 +228,7 @@ class DefaultNullInjectGeneratorTest {
 		// when
 		double actual = sut.generate(context);
 
-		then(actual).isEqualTo(0.2d);
+		then(actual).isEqualTo(DefaultNullInjectGenerator.DEFAULT_NULL_INJECT);
 	}
 
 	static class SampleWithAnnotation {
@@ -237,6 +237,9 @@ class DefaultNullInjectGeneratorTest {
 
 		@Nonnull
 		private String nonnull;
+
+		@NotNull
+		private String notNull;
 
 		private String defaultValue;
 
