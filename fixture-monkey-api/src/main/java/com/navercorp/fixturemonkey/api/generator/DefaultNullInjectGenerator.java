@@ -39,14 +39,9 @@ public final class DefaultNullInjectGenerator implements NullInjectGenerator {
 	public static final List<String> DEFAULT_NULLABLE_ANNOTATION_TYPES = Collections.unmodifiableList(
 		Arrays.asList(
 			"javax.annotation.Nullable",
+			"jakarta.annotation.Nullable",
 			"org.springframework.lang.Nullable",
-			"edu.umd.cs.findbugs.annotations.Nullable",
-			"org.jetbrains.annotations.Nullable",
-			"com.sun.istack.internal.Nullable",
-			"androidx.annotation.Nullable",
-			"android.support.annotation.Nullable",
 			"org.checkerframework.checker.nullness.qual.Nullable",
-			"org.eclipse.jdt.annotation.Nullable",
 			"org.eclipse.jgit.annotations.Nullable",
 			"org.jmlspecs.annotation.Nullable"
 		)
@@ -55,19 +50,13 @@ public final class DefaultNullInjectGenerator implements NullInjectGenerator {
 	public static final List<String> DEFAULT_NOTNULL_ANNOTATION_TYPES = Collections.unmodifiableList(
 		Arrays.asList(
 			"javax.annotation.Nonnull",
-			"org.springframework.lang.NonNull",
-			"edu.umd.cs.findbugs.annotations.NonNull",
-			"org.jetbrains.annotations.NotNull",
-			"com.sun.istack.internal.NotNull",
-			"androidx.annotation.NonNull",
-			"android.support.annotation.NonNull",
+			"jakarta.annotation.Nonnull",
 			"javax.validation.constraints.NotNull",
+			"jakarta.validation.constraints.NotNull",
+			"org.springframework.lang.NonNull",
 			"lombok.NonNull",
 			"org.checkerframework.checker.nullness.qual.NonNull",
-			"org.eclipse.jdt.annotation.NonNull",
-			"org.eclipse.jgit.annotations.NonNull",
-			"org.jmlspecs.annotation.NonNull",
-			"org.netbeans.api.annotations.common.NonNull"
+			"org.jmlspecs.annotation.NonNull"
 		)
 	);
 
