@@ -54,7 +54,6 @@ public final class DefaultNullInjectGenerator implements NullInjectGenerator {
 			"javax.validation.constraints.NotNull",
 			"jakarta.validation.constraints.NotNull",
 			"org.springframework.lang.NonNull",
-			"lombok.NonNull",
 			"org.checkerframework.checker.nullness.qual.NonNull",
 			"org.jmlspecs.annotation.NonNull"
 		)
