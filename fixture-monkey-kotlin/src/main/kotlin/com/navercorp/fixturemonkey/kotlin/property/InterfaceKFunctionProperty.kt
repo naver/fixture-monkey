@@ -20,6 +20,7 @@ package com.navercorp.fixturemonkey.kotlin.property
 
 import com.navercorp.fixturemonkey.api.property.MethodProperty
 import org.apiguardian.api.API
+import org.apiguardian.api.API.Status
 import java.lang.reflect.AnnotatedType
 import java.lang.reflect.Type
 import java.util.Optional
@@ -29,7 +30,7 @@ import kotlin.reflect.jvm.javaType
 /**
  * An interface method property for kotlin.
  */
-@API(since = "0.5.5", status = API.Status.EXPERIMENTAL)
+@API(since = "0.5.5", status = Status.MAINTAINED)
 data class InterfaceKFunctionProperty(
     private val type: KType,
     private val propertyName: String,

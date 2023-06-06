@@ -43,7 +43,7 @@ import org.apiguardian.api.API.Status;
  * The primary property of generated {@link CompositeProperty} would be {@link FieldProperty}.
  * The secondary property would be {@link PropertyDescriptorProperty}.
  */
-@API(since = "0.5.3", status = Status.EXPERIMENTAL)
+@API(since = "0.5.3", status = Status.MAINTAINED)
 public final class CompositePropertyGenerator implements PropertyGenerator {
 	private final List<PropertyGenerator> propertyGenerators;
 

@@ -28,11 +28,14 @@ import lombok.Value;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.expression.ExpressionGenerator;
-import com.navercorp.fixturemonkey.api.property.PropertyCache;
+import com.navercorp.fixturemonkey.api.property.DefaultPropertyGenerator;
+import com.navercorp.fixturemonkey.api.property.PropertyGenerator;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.jackson.plugin.JacksonPlugin;
 
 public class FixtureMonkeyExpressionGeneratorTest {
+	private static final PropertyGenerator DEFAULT_PROPERTY_GENERATOR = new DefaultPropertyGenerator();
+
 	@SuppressWarnings("OptionalGetWithoutIsPresent")
 	@Property
 	void setJsonPropertyWithExpressionGenerator() {
@@ -44,7 +47,11 @@ public class FixtureMonkeyExpressionGeneratorTest {
 		};
 		ExpressionGenerator expressionGenerator = resolver -> {
 			com.navercorp.fixturemonkey.api.property.Property property =
-				PropertyCache.getProperty(typeReference.getAnnotatedType(), "value").get();
+				DEFAULT_PROPERTY_GENERATOR.generateChildProperties(typeReference.getAnnotatedType())
+					.stream()
+					.filter(it -> "value".equals(it.getName()))
+					.findFirst()
+					.get();
 			return resolver.resolve(property);
 		};
 

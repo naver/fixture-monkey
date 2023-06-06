@@ -29,19 +29,28 @@ import javax.validation.constraints.NotNull;
 import org.junit.jupiter.api.Test;
 
 import com.navercorp.fixturemonkey.api.option.GenerateOptions;
+import com.navercorp.fixturemonkey.api.property.DefaultPropertyGenerator;
 import com.navercorp.fixturemonkey.api.property.Property;
-import com.navercorp.fixturemonkey.api.property.PropertyCache;
+import com.navercorp.fixturemonkey.api.property.PropertyGenerator;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 
 @SuppressWarnings("OptionalGetWithoutIsPresent")
 class DefaultNullInjectGeneratorTest {
+	private static final PropertyGenerator DEFAULT_PROPERTY_GENERATOR = new DefaultPropertyGenerator();
+
 	@Test
 	void generateNullable() {
 		// given
 		DefaultNullInjectGenerator sut = new DefaultNullInjectGenerator();
 		TypeReference<SampleWithAnnotation> typeReference = new TypeReference<SampleWithAnnotation>() {
 		};
-		Property property = PropertyCache.getProperty(typeReference.getAnnotatedType(), "nullable").get();
+		Property property = DEFAULT_PROPERTY_GENERATOR.generateChildProperties(
+				typeReference.getAnnotatedType()
+			)
+			.stream()
+			.filter(it -> "nullable".equals(it.getName()))
+			.findFirst()
+			.get();
 		ObjectPropertyGeneratorContext context = new ObjectPropertyGeneratorContext(
 			property,
 			null,
@@ -62,7 +71,13 @@ class DefaultNullInjectGeneratorTest {
 		DefaultNullInjectGenerator sut = new DefaultNullInjectGenerator();
 		TypeReference<SampleWithAnnotation> typeReference = new TypeReference<SampleWithAnnotation>() {
 		};
-		Property property = PropertyCache.getProperty(typeReference.getAnnotatedType(), "nonnull").get();
+		Property property = DEFAULT_PROPERTY_GENERATOR.generateChildProperties(
+				typeReference.getAnnotatedType()
+			)
+			.stream()
+			.filter(it -> "nonnull".equals(it.getName()))
+			.findFirst()
+			.get();
 		ObjectPropertyGeneratorContext context = new ObjectPropertyGeneratorContext(
 			property,
 			null,
@@ -83,7 +98,13 @@ class DefaultNullInjectGeneratorTest {
 		DefaultNullInjectGenerator sut = new DefaultNullInjectGenerator();
 		TypeReference<SampleWithAnnotation> typeReference = new TypeReference<SampleWithAnnotation>() {
 		};
-		Property property = PropertyCache.getProperty(typeReference.getAnnotatedType(), "notNull").get();
+		Property property = DEFAULT_PROPERTY_GENERATOR.generateChildProperties(
+				typeReference.getAnnotatedType()
+			)
+			.stream()
+			.filter(it -> "notNull".equals(it.getName()))
+			.findFirst()
+			.get();
 		ObjectPropertyGeneratorContext context = new ObjectPropertyGeneratorContext(
 			property,
 			null,
@@ -111,7 +132,13 @@ class DefaultNullInjectGeneratorTest {
 		);
 		TypeReference<SampleWithAnnotation> typeReference = new TypeReference<SampleWithAnnotation>() {
 		};
-		Property property = PropertyCache.getProperty(typeReference.getAnnotatedType(), "defaultValue").get();
+		Property property = DEFAULT_PROPERTY_GENERATOR.generateChildProperties(
+				typeReference.getAnnotatedType()
+			)
+			.stream()
+			.filter(it -> "defaultValue".equals(it.getName()))
+			.findFirst()
+			.get();
 		ObjectPropertyGeneratorContext context = new ObjectPropertyGeneratorContext(
 			property,
 			null,
@@ -139,7 +166,13 @@ class DefaultNullInjectGeneratorTest {
 		);
 		TypeReference<SampleWithAnnotation> typeReference = new TypeReference<SampleWithAnnotation>() {
 		};
-		Property property = PropertyCache.getProperty(typeReference.getAnnotatedType(), "defaultValue").get();
+		Property property = DEFAULT_PROPERTY_GENERATOR.generateChildProperties(
+				typeReference.getAnnotatedType()
+			)
+			.stream()
+			.filter(it -> "defaultValue".equals(it.getName()))
+			.findFirst()
+			.get();
 		ObjectPropertyGeneratorContext context = new ObjectPropertyGeneratorContext(
 			property,
 			null,
@@ -160,7 +193,13 @@ class DefaultNullInjectGeneratorTest {
 		DefaultNullInjectGenerator sut = new DefaultNullInjectGenerator();
 		TypeReference<SampleWithAnnotation> typeReference = new TypeReference<SampleWithAnnotation>() {
 		};
-		Property property = PropertyCache.getProperty(typeReference.getAnnotatedType(), "primitive").get();
+		Property property = DEFAULT_PROPERTY_GENERATOR.generateChildProperties(
+				typeReference.getAnnotatedType()
+			)
+			.stream()
+			.filter(it -> "primitive".equals(it.getName()))
+			.findFirst()
+			.get();
 		ObjectPropertyGeneratorContext context = new ObjectPropertyGeneratorContext(
 			property,
 			null,
@@ -188,7 +227,13 @@ class DefaultNullInjectGeneratorTest {
 		);
 		TypeReference<SampleWithAnnotation> typeReference = new TypeReference<SampleWithAnnotation>() {
 		};
-		Property property = PropertyCache.getProperty(typeReference.getAnnotatedType(), "container").get();
+		Property property = DEFAULT_PROPERTY_GENERATOR.generateChildProperties(
+				typeReference.getAnnotatedType()
+			)
+			.stream()
+			.filter(it -> "container".equals(it.getName()))
+			.findFirst()
+			.get();
 		ObjectPropertyGeneratorContext context = new ObjectPropertyGeneratorContext(
 			property,
 			null,
@@ -216,7 +261,13 @@ class DefaultNullInjectGeneratorTest {
 		);
 		TypeReference<SampleWithAnnotation> typeReference = new TypeReference<SampleWithAnnotation>() {
 		};
-		Property property = PropertyCache.getProperty(typeReference.getAnnotatedType(), "container").get();
+		Property property = DEFAULT_PROPERTY_GENERATOR.generateChildProperties(
+				typeReference.getAnnotatedType()
+			)
+			.stream()
+			.filter(it -> "container".equals(it.getName()))
+			.findFirst()
+			.get();
 		ObjectPropertyGeneratorContext context = new ObjectPropertyGeneratorContext(
 			property,
 			null,

@@ -25,13 +25,13 @@ import com.navercorp.fixturemonkey.api.option.GenerateOptionsBuilder
 import com.navercorp.fixturemonkey.api.plugin.Plugin
 import com.navercorp.fixturemonkey.api.type.Types
 import com.navercorp.fixturemonkey.kotlin.generator.InterfaceKFunctionPropertyGenerator
-import com.navercorp.fixturemonkey.kotlin.generator.KotlinPropertyGenerator
 import com.navercorp.fixturemonkey.kotlin.introspector.PrimaryConstructorArbitraryIntrospector
-import java.lang.reflect.Modifier
+import com.navercorp.fixturemonkey.kotlin.property.KotlinPropertyGenerator
 import org.apiguardian.api.API
-import org.apiguardian.api.API.Status.EXPERIMENTAL
+import org.apiguardian.api.API.Status.MAINTAINED
+import java.lang.reflect.Modifier
 
-@API(since = "0.4.0", status = EXPERIMENTAL)
+@API(since = "0.4.0", status = MAINTAINED)
 class KotlinPlugin : Plugin {
     override fun accept(optionsBuilder: GenerateOptionsBuilder) {
         optionsBuilder.objectIntrospector { PrimaryConstructorArbitraryIntrospector.INSTANCE }

@@ -12,8 +12,6 @@ import java.util.Set;
 import org.junit.jupiter.api.RepeatedTest;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
-import com.navercorp.fixturemonkey.api.matcher.AssignableTypeMatcher;
-import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.jackson.plugin.JacksonPlugin;
 import com.navercorp.fixturemonkey.tests.java.ImmutableJavaTestSpecs.ContainerObject;
@@ -80,34 +78,6 @@ class JacksonTest {
 	@RepeatedTest(TEST_COUNT)
 	void jsonTypeWithAnnotationsIncludeWrapperObjectList() {
 		thenNoException().isThrownBy(() -> SUT.giveMeOne(TypeWithAnnotationsIncludeWrapperObjectList.class));
-	}
-
-	@RepeatedTest(TEST_COUNT)
-	void customizedByOption() {
-		FixtureMonkey sut = FixtureMonkey.builder()
-			.plugin(new JacksonPlugin())
-			.pushAssignableTypeFixtureCustomizer(JavaTypeObject.class, value -> value)
-			.defaultNotNull(true)
-			.build();
-
-		JavaTypeObject actual = sut.giveMeOne(RootJavaTypeObject.class).getValue();
-
-		then(actual).isNotNull();
-	}
-
-	@RepeatedTest(TEST_COUNT)
-	void customized() {
-		JavaTypeObject actual = SUT.giveMeBuilder(RootJavaTypeObject.class)
-			.customize(
-				new MatcherOperator<>(
-					new AssignableTypeMatcher(JavaTypeObject.class),
-					obj -> obj
-				)
-			)
-			.sample()
-			.getValue();
-
-		then(actual).isNotNull();
 	}
 
 	@RepeatedTest(TEST_COUNT)

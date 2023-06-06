@@ -18,8 +18,6 @@
 
 package com.navercorp.fixturemonkey.api.introspector;
 
-import static com.navercorp.fixturemonkey.api.property.PropertyCache.getParameterNamesByConstructor;
-
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -35,6 +33,7 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ObjectCombinableArbitrary;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.type.Reflections;
+import com.navercorp.fixturemonkey.api.type.TypeCache;
 import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.4.2", status = Status.MAINTAINED)
@@ -50,7 +49,7 @@ public final class ConstructorPropertiesArbitraryIntrospector implements Arbitra
 			return ArbitraryIntrospectorResult.EMPTY;
 		}
 
-		Entry<Constructor<?>, String[]> parameterNamesByConstructor = getParameterNamesByConstructor(type);
+		Entry<Constructor<?>, String[]> parameterNamesByConstructor = TypeCache.getParameterNamesByConstructor(type);
 		if (parameterNamesByConstructor == null) {
 			throw new IllegalArgumentException(
 				"Primary Constructor does not exist. type " + type.getSimpleName());

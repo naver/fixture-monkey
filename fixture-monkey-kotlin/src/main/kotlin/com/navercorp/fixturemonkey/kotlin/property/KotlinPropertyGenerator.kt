@@ -19,11 +19,12 @@
 package com.navercorp.fixturemonkey.kotlin.property
 
 import com.navercorp.fixturemonkey.api.collection.LruCache
-import com.navercorp.fixturemonkey.api.generator.DefaultPropertyGenerator
 import com.navercorp.fixturemonkey.api.property.CompositeProperty
+import com.navercorp.fixturemonkey.api.property.DefaultPropertyGenerator
 import com.navercorp.fixturemonkey.api.property.Property
 import com.navercorp.fixturemonkey.api.property.PropertyGenerator
 import org.apiguardian.api.API
+import org.apiguardian.api.API.Status
 import java.lang.reflect.AnnotatedType
 
 /**
@@ -31,10 +32,9 @@ import java.lang.reflect.AnnotatedType
  * If both properties exist, it generates [CompositeProperty].
  * Kotlin property would be primary, Java property would be secondary.
  */
-@API(since = "0.5.3", status = API.Status.EXPERIMENTAL)
+@API(since = "0.5.3", status = Status.MAINTAINED)
 class KotlinPropertyGenerator(
-    private val javaDelegatePropertyGenerator: com.navercorp.fixturemonkey.api.generator.PropertyGenerator =
-        DefaultPropertyGenerator(),
+    private val javaDelegatePropertyGenerator: PropertyGenerator = DefaultPropertyGenerator(),
 ) : PropertyGenerator {
     private val objectChildPropertiesCache = LruCache<AnnotatedType, List<Property>>(2048)
 

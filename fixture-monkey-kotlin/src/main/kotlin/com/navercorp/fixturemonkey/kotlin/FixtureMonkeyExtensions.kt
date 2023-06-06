@@ -20,7 +20,6 @@ package com.navercorp.fixturemonkey.kotlin
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder
 import com.navercorp.fixturemonkey.FixtureMonkey
-import com.navercorp.fixturemonkey.api.customizer.FixtureCustomizer
 import com.navercorp.fixturemonkey.api.type.TypeReference
 import net.jqwik.api.Arbitrary
 import kotlin.streams.asSequence
@@ -31,16 +30,7 @@ inline fun <reified T : Any?> FixtureMonkey.giveMe(): Sequence<T> =
 inline fun <reified T : Any?> FixtureMonkey.giveMe(size: Int): List<T> =
     this.giveMe(object : TypeReference<T>() {}, size)
 
-inline fun <reified T : Any> FixtureMonkey.giveMe(
-    size: Int,
-    customizer: FixtureCustomizer<T>
-): List<T> = this.giveMe(T::class.java, size, customizer)
-
 inline fun <reified T : Any?> FixtureMonkey.giveMeOne(): T = this.giveMeOne(object : TypeReference<T>() {})
-
-inline fun <reified T : Any> FixtureMonkey.giveMeOne(
-    customizer: FixtureCustomizer<T>
-): T = this.giveMeOne(T::class.java, customizer)
 
 inline fun <reified T : Any?> FixtureMonkey.giveMeArbitrary(): Arbitrary<T> =
     this.giveMeArbitrary(object : TypeReference<T>() {})

@@ -54,12 +54,6 @@ import com.navercorp.fixturemonkey.tree.PropertyPredicate;
 
 @API(since = "0.4.10", status = Status.MAINTAINED)
 public final class MonkeyManipulatorFactory {
-	/**
-	 * Deprecated using {@link com.navercorp.fixturemonkey.customizer.Values#NOT_NULL} instead.
-	 */
-	@Deprecated
-	public static final Object NOT_NULL = new Object();
-
 	private final AtomicInteger sequence;
 	private final MonkeyExpressionFactory monkeyExpressionFactory;
 	private final ArbitraryTraverser traverser;
@@ -230,7 +224,7 @@ public final class MonkeyManipulatorFactory {
 	private NodeManipulator convertToNodeManipulator(int sequence, @Nullable Object value) {
 		if (value == null) {
 			return new NodeNullityManipulator(true);
-		} else if (value == Values.NOT_NULL || value == MonkeyManipulatorFactory.NOT_NULL) {
+		} else if (value == Values.NOT_NULL) {
 			return new NodeNullityManipulator(false);
 		} else if (value instanceof Just) {
 			return new NodeSetJustManipulator((Just)value);

@@ -37,7 +37,7 @@ import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.type.Reflections;
 import com.navercorp.fixturemonkey.api.type.Types;
 
-@API(since = "0.4.0", status = API.Status.EXPERIMENTAL)
+@API(since = "0.4.0", status = API.Status.MAINTAINED)
 public final class BuilderArbitraryIntrospector implements ArbitraryIntrospector {
 	public static final BuilderArbitraryIntrospector INSTANCE = new BuilderArbitraryIntrospector();
 	private static final Map<Class<?>, Method> BUILDER_CACHE = new ConcurrentHashMap<>(2048);

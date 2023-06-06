@@ -27,7 +27,7 @@ import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.buildergroup.ArbitraryBuilderCandidate;
 
-@API(since = "0.5.7", status = Status.EXPERIMENTAL)
+@API(since = "0.5.7", status = Status.MAINTAINED)
 public final class ArbitraryBuilderCandidateFactory {
 	public static <T> CandidateBuilder<T> of(Class<T> classType) {
 		return new CandidateBuilder<>(DefaultArbitraryBuilderCandidate.of(classType));

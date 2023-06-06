@@ -28,7 +28,7 @@ import com.navercorp.fixturemonkey.api.generator.CombinableArbitrary;
 /**
  * It is a {@link CombinableArbitrary} for Jackson library.
  */
-@API(since = "0.5.0", status = Status.EXPERIMENTAL)
+@API(since = "0.5.0", status = Status.MAINTAINED)
 public final class JacksonCombinableArbitrary implements CombinableArbitrary {
 	private final CombinableArbitrary jsonValue;
 	private final Function<Object, Object> deserializer;

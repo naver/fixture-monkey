@@ -29,7 +29,7 @@ import org.apiguardian.api.API.Status;
 import com.navercorp.fixturemonkey.tree.CompositeNodeResolver;
 import com.navercorp.fixturemonkey.tree.NodeResolver;
 
-@API(since = "0.5.0", status = Status.EXPERIMENTAL)
+@API(since = "0.5.0", status = Status.MAINTAINED)
 final class InnerSpecState {
 	@Nullable
 	private NodeResolverObjectHolder objectHolder;

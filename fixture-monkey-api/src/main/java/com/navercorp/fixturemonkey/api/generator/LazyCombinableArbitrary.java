@@ -27,7 +27,7 @@ import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
  * It would generate an arbitrary object.
  * A generated object would be changed when {@link #combined()} and {@link #rawValue()} is called.
  */
-@API(since = "0.5.0", status = Status.EXPERIMENTAL)
+@API(since = "0.5.0", status = Status.MAINTAINED)
 public final class LazyCombinableArbitrary implements CombinableArbitrary {
 	private final LazyArbitrary<Object> introspected;
 

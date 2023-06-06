@@ -18,7 +18,6 @@
 
 package com.navercorp.fixturemonkey.javax.validation.introspector;
 
-import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -26,7 +25,6 @@ import java.time.LocalTime;
 import java.time.MonthDay;
 import java.time.OffsetDateTime;
 import java.time.OffsetTime;
-import java.time.Period;
 import java.time.Year;
 import java.time.YearMonth;
 import java.time.ZoneOffset;
@@ -40,7 +38,6 @@ import org.apiguardian.api.API.Status;
 import net.jqwik.api.Arbitrary;
 import net.jqwik.time.api.arbitraries.CalendarArbitrary;
 import net.jqwik.time.api.arbitraries.DateArbitrary;
-import net.jqwik.time.api.arbitraries.DurationArbitrary;
 import net.jqwik.time.api.arbitraries.InstantArbitrary;
 import net.jqwik.time.api.arbitraries.LocalDateArbitrary;
 import net.jqwik.time.api.arbitraries.LocalDateTimeArbitrary;
@@ -48,10 +45,8 @@ import net.jqwik.time.api.arbitraries.LocalTimeArbitrary;
 import net.jqwik.time.api.arbitraries.MonthDayArbitrary;
 import net.jqwik.time.api.arbitraries.OffsetDateTimeArbitrary;
 import net.jqwik.time.api.arbitraries.OffsetTimeArbitrary;
-import net.jqwik.time.api.arbitraries.PeriodArbitrary;
 import net.jqwik.time.api.arbitraries.YearArbitrary;
 import net.jqwik.time.api.arbitraries.YearMonthArbitrary;
-import net.jqwik.time.api.arbitraries.ZoneOffsetArbitrary;
 import net.jqwik.time.api.arbitraries.ZonedDateTimeArbitrary;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
@@ -309,29 +304,5 @@ public final class JavaxValidationJavaTimeArbitraryResolver implements JavaTimeA
 		}
 
 		return yearMonthArbitrary;
-	}
-
-	@Override
-	public Arbitrary<Period> periods(
-		PeriodArbitrary periodArbitrary,
-		ArbitraryGeneratorContext context
-	) {
-		return periodArbitrary;
-	}
-
-	@Override
-	public Arbitrary<Duration> durations(
-		DurationArbitrary durationArbitrary,
-		ArbitraryGeneratorContext context
-	) {
-		return durationArbitrary;
-	}
-
-	@Override
-	public Arbitrary<ZoneOffset> zoneOffsets(
-		ZoneOffsetArbitrary zoneOffsetArbitrary,
-		ArbitraryGeneratorContext context
-	) {
-		return zoneOffsetArbitrary;
 	}
 }

@@ -25,7 +25,7 @@ import com.navercorp.fixturemonkey.api.generator.FixedCombinableArbitrary;
 import com.navercorp.fixturemonkey.customizer.Values.Just;
 import com.navercorp.fixturemonkey.tree.ObjectNode;
 
-@API(since = "0.5.1", status = Status.EXPERIMENTAL)
+@API(since = "0.5.1", status = Status.MAINTAINED)
 public final class NodeSetJustManipulator implements NodeManipulator {
 	private final Just value;
 

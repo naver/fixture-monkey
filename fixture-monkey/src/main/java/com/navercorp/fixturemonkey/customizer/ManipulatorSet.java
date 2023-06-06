@@ -23,7 +23,7 @@ import java.util.List;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-@API(since = "0.5.0", status = Status.EXPERIMENTAL)
+@API(since = "0.5.0", status = Status.MAINTAINED)
 public final class ManipulatorSet {
 	private final List<ArbitraryManipulator> arbitraryManipulators;
 	private final List<ContainerInfoManipulator> containerInfoManipulators;

@@ -25,9 +25,10 @@ import com.navercorp.fixturemonkey.api.property.PropertyGenerator
 import com.navercorp.fixturemonkey.api.type.Types
 import com.navercorp.fixturemonkey.kotlin.property.InterfaceKFunctionProperty
 import com.navercorp.fixturemonkey.kotlin.type.getPropertyName
-import java.lang.reflect.AnnotatedType
 import net.jqwik.kotlin.internal.isKotlinClass
 import org.apiguardian.api.API
+import org.apiguardian.api.API.Status
+import java.lang.reflect.AnnotatedType
 import kotlin.reflect.KParameter.Kind.INSTANCE
 import kotlin.reflect.full.memberFunctions
 import kotlin.reflect.full.memberProperties
@@ -38,7 +39,7 @@ import kotlin.reflect.jvm.javaType
  * A property generator for generating no-argument Kotlin interface method.
  * It generates [InterfaceKFunctionProperty] if Kotlin and [InterfaceJavaMethodProperty] if Java.
  */
-@API(since = "0.5.5", status = API.Status.EXPERIMENTAL)
+@API(since = "0.5.5", status = Status.MAINTAINED)
 class InterfaceKFunctionPropertyGenerator : PropertyGenerator {
     override fun generateChildProperties(annotatedType: AnnotatedType): List<Property> {
         val type = Types.getActualType(annotatedType.type)
@@ -69,7 +70,7 @@ class InterfaceKFunctionPropertyGenerator : PropertyGenerator {
             return methods + properties
         }
 
-        return JAVA_METHOD_PROPERTY_GENERATOR.generateObjectChildProperties(annotatedType)
+        return JAVA_METHOD_PROPERTY_GENERATOR.generateChildProperties(annotatedType)
     }
 
     companion object {

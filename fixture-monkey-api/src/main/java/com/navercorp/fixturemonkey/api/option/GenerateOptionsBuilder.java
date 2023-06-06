@@ -34,18 +34,15 @@ import javax.annotation.Nullable;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.api.customizer.FixtureCustomizer;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfoGenerator;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.generator.ContainerPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.DefaultArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator;
-import com.navercorp.fixturemonkey.api.generator.DefaultPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.JavaDefaultArbitraryGeneratorBuilder;
 import com.navercorp.fixturemonkey.api.generator.NullInjectGenerator;
 import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGenerator;
-import com.navercorp.fixturemonkey.api.generator.PropertyGenerator;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.JavaArbitraryResolver;
 import com.navercorp.fixturemonkey.api.introspector.JavaTimeArbitraryResolver;
@@ -54,6 +51,8 @@ import com.navercorp.fixturemonkey.api.introspector.JavaTypeArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.plugin.Plugin;
+import com.navercorp.fixturemonkey.api.property.DefaultPropertyGenerator;
+import com.navercorp.fixturemonkey.api.property.PropertyGenerator;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.api.validator.ArbitraryValidator;
 
@@ -76,9 +75,6 @@ public final class GenerateOptionsBuilder {
 	private List<MatcherOperator<ArbitraryGenerator>> arbitraryGenerators = new ArrayList<>();
 	private ArbitraryGenerator defaultArbitraryGenerator;
 
-	@SuppressWarnings("rawtypes")
-	@Deprecated // It would be removed in 0.6.0
-	private List<MatcherOperator<FixtureCustomizer>> arbitraryCustomizers = new ArrayList<>();
 	private final JavaDefaultArbitraryGeneratorBuilder javaDefaultArbitraryGeneratorBuilder =
 		DefaultArbitraryGenerator.javaBuilder();
 	private boolean defaultNotNull = false;
@@ -445,45 +441,6 @@ public final class GenerateOptionsBuilder {
 		return this;
 	}
 
-	@SuppressWarnings("rawtypes")
-	@Deprecated // It would be removed in 0.6.0
-	public GenerateOptionsBuilder arbitraryCustomizers(
-		List<MatcherOperator<FixtureCustomizer>> arbitraryCustomizers
-	) {
-		this.arbitraryCustomizers = arbitraryCustomizers;
-		return this;
-	}
-
-	@SuppressWarnings("rawtypes")
-	@Deprecated // It would be removed in 0.6.0
-	public GenerateOptionsBuilder insertFirstFixtureCustomizer(
-		MatcherOperator<FixtureCustomizer> arbitraryCustomizer
-	) {
-		List<MatcherOperator<FixtureCustomizer>> result =
-			insertFirst(this.arbitraryCustomizers, arbitraryCustomizer);
-		return arbitraryCustomizers(result);
-	}
-
-	@Deprecated // It would be removed in 0.6.0
-	public GenerateOptionsBuilder insertFirstFixtureCustomizer(
-		Matcher matcher,
-		FixtureCustomizer<?> fixtureCustomizer
-	) {
-		return this.insertFirstFixtureCustomizer(
-			new MatcherOperator<>(matcher, fixtureCustomizer)
-		);
-	}
-
-	@Deprecated // It would be removed in 0.6.0
-	public <T> GenerateOptionsBuilder insertFirstFixtureCustomizer(
-		Class<T> type,
-		FixtureCustomizer<? extends T> fixtureCustomizer
-	) {
-		return this.insertFirstFixtureCustomizer(
-			MatcherOperator.assignableTypeMatchOperator(type, fixtureCustomizer)
-		);
-	}
-
 	public GenerateOptionsBuilder defaultNotNull(boolean defaultNotNull) {
 		this.defaultNotNull = defaultNotNull;
 		return this;
@@ -551,7 +508,6 @@ public final class GenerateOptionsBuilder {
 			defaultArbitraryContainerInfoGenerator,
 			this.arbitraryGenerators,
 			defaultArbitraryGenerator,
-			this.arbitraryCustomizers,
 			this.defaultArbitraryValidator
 		);
 	}

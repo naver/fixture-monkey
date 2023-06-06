@@ -36,9 +36,7 @@ import net.jqwik.api.Arbitrary;
 import net.jqwik.api.Combinators.F3;
 import net.jqwik.api.Combinators.F4;
 
-import com.navercorp.fixturemonkey.api.customizer.FixtureCustomizer;
 import com.navercorp.fixturemonkey.api.expression.ExpressionGenerator;
-import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.validator.ArbitraryValidator;
 import com.navercorp.fixturemonkey.customizer.InnerSpec;
 
@@ -497,9 +495,6 @@ public interface ArbitraryBuilder<T> {
 		List<ArbitraryBuilder<?>> others,
 		Function<List<?>, R> combinator
 	);
-
-	@Deprecated // It would be removed in 0.6.0
-	ArbitraryBuilder<T> customize(MatcherOperator<FixtureCustomizer<?>> customizer);
 
 	/**
 	 * Build {@link ArbitraryBuilder} into {@link Arbitrary} for using various support methods

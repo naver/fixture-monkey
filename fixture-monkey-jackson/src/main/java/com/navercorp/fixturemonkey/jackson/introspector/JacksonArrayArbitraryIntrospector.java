@@ -34,7 +34,7 @@ import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.jackson.FixtureMonkeyJackson;
 
-@API(since = "0.5.5", status = Status.EXPERIMENTAL)
+@API(since = "0.5.5", status = Status.MAINTAINED)
 public final class JacksonArrayArbitraryIntrospector implements ArbitraryIntrospector, Matcher {
 	public static final JacksonArrayArbitraryIntrospector INSTANCE = new JacksonArrayArbitraryIntrospector(
 		FixtureMonkeyJackson.defaultObjectMapper()

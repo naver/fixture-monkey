@@ -28,12 +28,13 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
+import com.navercorp.fixturemonkey.api.type.TypeCache;
 import com.navercorp.fixturemonkey.api.type.Types;
 
 /**
  * Generates field properties including not only declared fields but also super class fields and interface fields.
  */
-@API(since = "0.5.3", status = Status.EXPERIMENTAL)
+@API(since = "0.5.3", status = Status.MAINTAINED)
 public final class FieldPropertyGenerator implements PropertyGenerator {
 	private final Predicate<Field> fieldPredicate;
 	private final Matcher matcher;
@@ -45,7 +46,7 @@ public final class FieldPropertyGenerator implements PropertyGenerator {
 
 	@Override
 	public List<Property> generateChildProperties(AnnotatedType annotatedType) {
-		return PropertyCache.getFieldsByName(annotatedType).values().stream()
+		return TypeCache.getFieldsByName(Types.getActualType(annotatedType.getType())).values().stream()
 			.filter(fieldPredicate)
 			.map(field -> new FieldProperty(
 				Types.resolveWithTypeReferenceGenerics(annotatedType, field.getAnnotatedType()),
