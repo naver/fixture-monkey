@@ -56,7 +56,8 @@ import com.navercorp.fixturemonkey.javax.validation.spec.LongIntrospectorSpec;
 import com.navercorp.fixturemonkey.javax.validation.spec.NullAnnotationIntrospectorSpec;
 import com.navercorp.fixturemonkey.javax.validation.spec.ShortIntrospectorSpec;
 import com.navercorp.fixturemonkey.javax.validation.spec.StringIntrospectorSpec;
-import com.navercorp.fixturemonkey.javax.validation.spec.TimeIntrospectorSpec;
+import com.navercorp.fixturemonkey.javax.validation.spec.TimeFutureIntrospectorSpec;
+import com.navercorp.fixturemonkey.javax.validation.spec.TimePastIntrospectorSpec;
 
 class JavaxValidationFixtureMonkeyTest {
 	private static final FixtureMonkey SUT = FixtureMonkey.builder()
@@ -230,134 +231,221 @@ class JavaxValidationFixtureMonkeyTest {
 	}
 
 	@Property(tries = 100)
-	void sampleCalendar() {
-		TimeIntrospectorSpec actual = SUT.giveMeOne(TimeIntrospectorSpec.class);
+	void samplePastCalendar() {
+		TimePastIntrospectorSpec actual = SUT.giveMeOne(TimePastIntrospectorSpec.class);
 
 		Calendar now = Calendar.getInstance();
 		then(actual.getCalendarPast().toInstant().toEpochMilli()).isLessThan(now.toInstant().toEpochMilli());
 		then(actual.getCalendarPastOrPresent().getTimeInMillis()).isLessThanOrEqualTo(now.toInstant().toEpochMilli());
+	}
+
+	@Property(tries = 100)
+	void sampleFutureCalendar() {
+		Calendar now = Calendar.getInstance();
+		TimeFutureIntrospectorSpec actual = SUT.giveMeOne(TimeFutureIntrospectorSpec.class);
+
 		then(actual.getCalendarFuture().getTimeInMillis()).isGreaterThan(now.toInstant().toEpochMilli());
 		then(actual.getCalendarFutureOrPresent().getTimeInMillis())
 			.isGreaterThanOrEqualTo(now.toInstant().toEpochMilli());
 	}
 
 	@Property(tries = 100)
-	void sampleDate() {
-		TimeIntrospectorSpec actual = SUT.giveMeOne(TimeIntrospectorSpec.class);
+	void samplePastDate() {
+		TimePastIntrospectorSpec actual = SUT.giveMeOne(TimePastIntrospectorSpec.class);
 
 		Date now = new Date();
 		then(actual.getDatePast().getTime()).isLessThan(now.getTime());
 		then(actual.getDatePastOrPresent().getTime()).isLessThanOrEqualTo(now.getTime());
+	}
+
+	@Property(tries = 100)
+	void sampleFutureDate() {
+		Date now = new Date();
+		TimeFutureIntrospectorSpec actual = SUT.giveMeOne(TimeFutureIntrospectorSpec.class);
+
 		then(actual.getDateFuture().getTime()).isGreaterThan(now.getTime());
 		then(actual.getDateFutureOrPresent().getTime()).isGreaterThanOrEqualTo(now.getTime());
 	}
 
 	@Property(tries = 100)
-	void sampleInstant() {
-		TimeIntrospectorSpec actual = SUT.giveMeOne(TimeIntrospectorSpec.class);
+	void samplePastInstant() {
+		TimePastIntrospectorSpec actual = SUT.giveMeOne(TimePastIntrospectorSpec.class);
 
 		Instant now = Instant.now();
 		then(actual.getInstantPast()).isBefore(now);
 		then(actual.getInstantPastOrPresent()).isBeforeOrEqualTo(now);
+	}
+
+	@Property(tries = 100)
+	void sampleFutureInstant() {
+		Instant now = Instant.now();
+		TimeFutureIntrospectorSpec actual = SUT.giveMeOne(TimeFutureIntrospectorSpec.class);
+
 		then(actual.getInstantFuture()).isAfter(now);
 		then(actual.getInstantFutureOrPresent()).isAfterOrEqualTo(now);
 	}
 
 	@Property(tries = 100)
-	void sampleLocalDate() {
-		TimeIntrospectorSpec actual = SUT.giveMeOne(TimeIntrospectorSpec.class);
+	void samplePastLocalDate() {
+		TimePastIntrospectorSpec actual = SUT.giveMeOne(TimePastIntrospectorSpec.class);
 
 		LocalDate now = LocalDate.now();
 		then(actual.getLocalDatePast()).isBefore(now);
 		then(actual.getLocalDatePastOrPresent()).isBeforeOrEqualTo(now);
+	}
+
+	@Property(tries = 100)
+	void sampleFutureLocalDate() {
+		LocalDate now = LocalDate.now();
+		TimeFutureIntrospectorSpec actual = SUT.giveMeOne(TimeFutureIntrospectorSpec.class);
+
 		then(actual.getLocalDateFuture()).isAfter(now);
 		then(actual.getLocalDateFutureOrPresent()).isAfterOrEqualTo(now);
 	}
 
 	@Property(tries = 100)
-	void sampleLocalDateTime() {
-		TimeIntrospectorSpec actual = SUT.giveMeOne(TimeIntrospectorSpec.class);
+	void samplePastLocalDateTime() {
+		TimePastIntrospectorSpec actual = SUT.giveMeOne(TimePastIntrospectorSpec.class);
 
 		LocalDateTime now = LocalDateTime.now();
 		then(actual.getLocalDateTimePast()).isBefore(now);
 		then(actual.getLocalDateTimePastOrPresent()).isBeforeOrEqualTo(now);
+	}
+
+	@Property(tries = 100)
+	void sampleFutureLocalDateTime() {
+		LocalDateTime now = LocalDateTime.now();
+		TimeFutureIntrospectorSpec actual = SUT.giveMeOne(TimeFutureIntrospectorSpec.class);
+
 		then(actual.getLocalDateTimeFuture()).isAfter(now);
 		then(actual.getLocalDateTimeFutureOrPresent()).isAfterOrEqualTo(now);
 	}
 
 	@Property(tries = 100)
-	void sampleLocalTime() {
-		LocalTime now = LocalTime.now(); // to fix @Future latency
-		TimeIntrospectorSpec actual = SUT.giveMeOne(TimeIntrospectorSpec.class);
+	void samplePastLocalTime() {
+		TimePastIntrospectorSpec actual = SUT.giveMeOne(TimePastIntrospectorSpec.class);
 
+		LocalTime now = LocalTime.now();
 		then(actual.getLocalTimePast()).isBefore(now);
 		then(actual.getLocalTimePastOrPresent()).isBeforeOrEqualTo(now);
+	}
+
+	@Property(tries = 100)
+	void sampleFutureLocalTime() {
+		LocalTime now = LocalTime.now();
+		TimeFutureIntrospectorSpec actual = SUT.giveMeOne(TimeFutureIntrospectorSpec.class);
+
 		then(actual.getLocalTimeFuture()).isAfter(now);
 		then(actual.getLocalTimeFutureOrPresent()).isAfterOrEqualTo(now);
 	}
 
 	@Property(tries = 100)
-	void sampleZonedDateTime() {
-		TimeIntrospectorSpec actual = SUT.giveMeOne(TimeIntrospectorSpec.class);
+	void samplePastZonedDateTime() {
+		TimePastIntrospectorSpec actual = SUT.giveMeOne(TimePastIntrospectorSpec.class);
 
 		ZonedDateTime now = ZonedDateTime.now().withZoneSameLocal(ZONED_ID);
 		then(actual.getZonedDateTimePast().withZoneSameLocal(ZONED_ID)).isBefore(now);
 		then(actual.getZonedDateTimePastOrPresent().withZoneSameLocal(ZONED_ID)).isBeforeOrEqualTo(now);
+	}
+
+	@Property(tries = 100)
+	void sampleFutureZonedDateTime() {
+		ZonedDateTime now = ZonedDateTime.now().withZoneSameLocal(ZONED_ID);
+		TimeFutureIntrospectorSpec actual = SUT.giveMeOne(TimeFutureIntrospectorSpec.class);
+
 		then(actual.getZonedDateTimeFuture().withZoneSameLocal(ZONED_ID)).isAfter(now);
 		then(actual.getZonedDateTimeFutureOrPresent().withZoneSameLocal(ZONED_ID)).isAfterOrEqualTo(now);
 	}
 
 	@Property(tries = 100)
-	void sampleMonthDay() {
-		TimeIntrospectorSpec actual = SUT.giveMeOne(TimeIntrospectorSpec.class);
+	void samplePastMonthDay() {
+		TimePastIntrospectorSpec actual = SUT.giveMeOne(TimePastIntrospectorSpec.class);
 
 		MonthDay now = MonthDay.now();
 		then(actual.getMonthDayPast()).isLessThan(now);
 		then(actual.getMonthDayPastOrPresent()).isLessThanOrEqualTo(now);
+	}
+
+	@Property(tries = 100)
+	void sampleFutureMonthDay() {
+		MonthDay now = MonthDay.now();
+		TimeFutureIntrospectorSpec actual = SUT.giveMeOne(TimeFutureIntrospectorSpec.class);
+
 		then(actual.getMonthDayFuture()).isGreaterThan(now);
 		then(actual.getMonthDayFutureOrPresent()).isGreaterThanOrEqualTo(now);
 	}
 
 	@Property(tries = 100)
-	void sampleOffsetDateTime() {
-		TimeIntrospectorSpec actual = SUT.giveMeOne(TimeIntrospectorSpec.class);
+	void samplePastOffsetDateTime() {
+		TimePastIntrospectorSpec actual = SUT.giveMeOne(TimePastIntrospectorSpec.class);
 
 		OffsetDateTime now = OffsetDateTime.now().withOffsetSameLocal(ZONE_OFFSET);
 		then(actual.getOffsetDateTimePast().withOffsetSameLocal(ZONE_OFFSET)).isBefore(now);
 		then(actual.getOffsetDateTimePastOrPresent().withOffsetSameLocal(ZONE_OFFSET)).isBeforeOrEqualTo(now);
+	}
+
+	@Property(tries = 100)
+	void sampleFutureOffsetDateTime() {
+		OffsetDateTime now = OffsetDateTime.now().withOffsetSameLocal(ZONE_OFFSET);
+
+		TimeFutureIntrospectorSpec actual = SUT.giveMeOne(TimeFutureIntrospectorSpec.class);
+
 		then(actual.getOffsetDateTimeFuture().withOffsetSameLocal(ZONE_OFFSET)).isAfter(now);
 		then(actual.getOffsetDateTimeFutureOrPresent().withOffsetSameLocal(ZONE_OFFSET)).isAfterOrEqualTo(now);
 	}
 
 	@Property(tries = 100)
-	void sampleOffsetTime() {
-		TimeIntrospectorSpec actual = SUT.giveMeOne(TimeIntrospectorSpec.class);
+	void samplePastOffsetTime() {
+		TimePastIntrospectorSpec actual = SUT.giveMeOne(TimePastIntrospectorSpec.class);
 
 		OffsetTime now = OffsetTime.now().withOffsetSameLocal(ZONE_OFFSET);
 		then(actual.getOffsetTimePast().withOffsetSameLocal(ZONE_OFFSET)).isBefore(now);
 		then(actual.getOffsetTimePastOrPresent().withOffsetSameLocal(ZONE_OFFSET)).isBeforeOrEqualTo(now);
+	}
+
+	@Property(tries = 100)
+	void sampleFutureOffsetTime() {
+		OffsetTime now = OffsetTime.now().withOffsetSameLocal(ZONE_OFFSET);
+
+		TimeFutureIntrospectorSpec actual = SUT.giveMeOne(TimeFutureIntrospectorSpec.class);
+
 		then(actual.getOffsetTimeFuture().withOffsetSameLocal(ZONE_OFFSET)).isAfter(now);
 		then(actual.getOffsetTimeFutureOrPresent().withOffsetSameLocal(ZONE_OFFSET)).isAfterOrEqualTo(now);
 	}
 
 	@Property(tries = 100)
-	void sampleYear() {
-		TimeIntrospectorSpec actual = SUT.giveMeOne(TimeIntrospectorSpec.class);
+	void samplePastYear() {
+		TimePastIntrospectorSpec actual = SUT.giveMeOne(TimePastIntrospectorSpec.class);
 
 		Year now = Year.now();
 		then(actual.getYearPast()).isLessThan(now);
 		then(actual.getYearPastOrPresent()).isLessThanOrEqualTo(now);
+	}
+
+	@Property(tries = 100)
+	void sampleFutureYear() {
+		Year now = Year.now();
+		TimeFutureIntrospectorSpec actual = SUT.giveMeOne(TimeFutureIntrospectorSpec.class);
+
 		then(actual.getYearFuture()).isGreaterThan(now);
 		then(actual.getYearFutureOrPresent()).isGreaterThanOrEqualTo(now);
 	}
 
 	@Property(tries = 100)
-	void sampleYearMonth() {
-		TimeIntrospectorSpec actual = SUT.giveMeOne(TimeIntrospectorSpec.class);
+	void samplePastYearMonth() {
+		TimePastIntrospectorSpec actual = SUT.giveMeOne(TimePastIntrospectorSpec.class);
 
 		YearMonth now = YearMonth.now();
 		then(actual.getYearMonthPast()).isLessThan(now);
 		then(actual.getYearMonthPastOrPresent()).isLessThanOrEqualTo(now);
+	}
+
+	@Property(tries = 100)
+	void sampleFutureYearMonth() {
+		YearMonth now = YearMonth.now();
+
+		TimeFutureIntrospectorSpec actual = SUT.giveMeOne(TimeFutureIntrospectorSpec.class);
+
 		then(actual.getYearMonthFuture()).isGreaterThan(now);
 		then(actual.getYearMonthFutureOrPresent()).isGreaterThanOrEqualTo(now);
 	}
