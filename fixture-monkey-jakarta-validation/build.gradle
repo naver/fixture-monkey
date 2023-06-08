@@ -14,6 +14,7 @@ dependencies {
     api("net.jqwik:jqwik-time:${JQWIK_VERSION}")
     api("com.github.mifmif:generex:1.0.2")
     api("org.hibernate.validator:hibernate-validator:7.0.5.Final")
+    api("jakarta.validation:jakarta.validation-api:3.0.2")
 
     testRuntimeOnly(project(":fixture-monkey-engine"))
     testImplementation(project(":fixture-monkey"))
