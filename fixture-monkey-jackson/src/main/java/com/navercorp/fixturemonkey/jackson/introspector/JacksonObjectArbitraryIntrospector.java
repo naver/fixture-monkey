@@ -49,7 +49,11 @@ import com.navercorp.fixturemonkey.api.generator.FixedCombinableArbitrary;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
+import com.navercorp.fixturemonkey.api.property.CompositeProperty;
+import com.navercorp.fixturemonkey.api.property.ConstructorProperty;
+import com.navercorp.fixturemonkey.api.property.FieldProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
+import com.navercorp.fixturemonkey.api.property.PropertyDescriptorProperty;
 import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.jackson.FixtureMonkeyJackson;
 
@@ -84,6 +88,10 @@ public final class JacksonObjectArbitraryIntrospector implements ArbitraryIntros
 						);
 
 						for (ArbitraryProperty arbitraryProperty : childrenProperties) {
+							if (!isJacksonSerializableProperty(arbitraryProperty.getObjectProperty().getProperty())) {
+								continue;
+							}
+
 							String resolvePropertyName = arbitraryProperty.getObjectProperty()
 								.getResolvedPropertyName();
 							CombinableArbitrary combinableArbitrary = arbitrariesByResolvedName.getOrDefault(
@@ -192,5 +200,17 @@ public final class JacksonObjectArbitraryIntrospector implements ArbitraryIntros
 		} else {
 			return object;
 		}
+	}
+
+	private boolean isJacksonSerializableProperty(Property property) {
+		if (property instanceof CompositeProperty) {
+			CompositeProperty compositeProperty = (CompositeProperty)property;
+			return isJacksonSerializableProperty(compositeProperty.getPrimaryProperty())
+				|| isJacksonSerializableProperty(compositeProperty.getSecondaryProperty());
+		}
+
+		return property instanceof FieldProperty
+			|| property instanceof PropertyDescriptorProperty
+			|| property instanceof ConstructorProperty;
 	}
 }

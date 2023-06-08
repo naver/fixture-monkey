@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Value;
 
@@ -152,5 +153,11 @@ public class JacksonSpecs {
 	@Value
 	public static class TypeWithAnnotationsIncludeWrapperObjectList {
 		List<TypeWithAnnotationsIncludeWrapperObject> types;
+	}
+
+	@AllArgsConstructor
+	public static class ConstructorObject {
+		private final String value1;
+		private final int value2;
 	}
 }
