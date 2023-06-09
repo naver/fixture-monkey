@@ -276,8 +276,13 @@ public class Types {
 
 			if (TypeVariable.class.isAssignableFrom(generics.getType().getClass())) {
 				TypeVariable<?> typeVariable = (TypeVariable<?>)generics.getType();
-				int index = parentTypeVariableParameters.indexOf(typeVariable);
-				generics = parentGenericsTypes[index];
+				for (int t = 0; t < parentTypeVariableParameters.size(); t++) {
+					Type parentTypeVariable = parentTypeVariableParameters.get(t);
+					if (parentTypeVariable.getTypeName().equals(typeVariable.getTypeName())) {
+						generics = parentGenericsTypes[t];
+						break;
+					}
+				}
 				resolvedGenericsTypes[i] = generics;
 				resolvedTypes[i] = generics.getType();
 			}
