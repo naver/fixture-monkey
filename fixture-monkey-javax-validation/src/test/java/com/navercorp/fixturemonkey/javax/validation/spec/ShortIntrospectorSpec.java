@@ -68,7 +68,4 @@ public class ShortIntrospectorSpec {
 
 	@PositiveOrZero
 	private short positiveOrZero;
-
-	@Digits(integer = 20, fraction = 0)
-	private short overflow;
 }

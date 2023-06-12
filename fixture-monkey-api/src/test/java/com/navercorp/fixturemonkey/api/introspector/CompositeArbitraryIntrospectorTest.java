@@ -25,7 +25,6 @@ import java.util.Arrays;
 import org.junit.jupiter.api.Test;
 
 import net.jqwik.api.Arbitraries;
-import net.jqwik.api.Arbitrary;
 
 class CompositeArbitraryIntrospectorTest {
 	@Test
@@ -34,7 +33,6 @@ class CompositeArbitraryIntrospectorTest {
 		CompositeArbitraryIntrospector sut = new CompositeArbitraryIntrospector(
 			Arrays.asList(
 				(context) -> ArbitraryIntrospectorResult.EMPTY,
-				(context) -> new ArbitraryIntrospectorResult((Arbitrary<?>)null),
 				(context) -> new ArbitraryIntrospectorResult(Arbitraries.strings()),
 				(context) -> new ArbitraryIntrospectorResult(Arbitraries.integers())
 			)
@@ -45,6 +43,6 @@ class CompositeArbitraryIntrospectorTest {
 
 		then(actual).isNotEqualTo(ArbitraryIntrospectorResult.EMPTY);
 		then(actual.getValue()).isNotNull();
-		then(actual.getValue().combined().sample()).isExactlyInstanceOf(String.class);
+		then(actual.getValue().combined()).isExactlyInstanceOf(String.class);
 	}
 }

@@ -26,10 +26,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apiguardian.api.API;
 
-import net.jqwik.api.Arbitrary;
-import net.jqwik.api.Builders;
-import net.jqwik.api.Builders.BuilderCombinator;
-
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.generator.CombinableArbitrary;
@@ -72,13 +68,12 @@ public final class BuilderArbitraryIntrospector implements ArbitraryIntrospector
 		Map<String, CombinableArbitrary> arbitrariesByResolvedName =
 			context.getCombinableArbitrariesByResolvedName();
 
-		LazyArbitrary<Arbitrary<Object>> generateArbitrary = LazyArbitrary.lazy(
+		LazyArbitrary<Object> generateArbitrary = LazyArbitrary.lazy(
 			() -> {
 				Class<?> builderType = this.getBuilderType(type);
 				Method builderMethod = BUILDER_CACHE.get(type);
 
-				BuilderCombinator<Object> builderCombinator = Builders.withBuilder(() ->
-					Reflections.invokeMethod(builderMethod, null));
+				Object builder = Reflections.invokeMethod(builderMethod, null);
 
 				for (ArbitraryProperty arbitraryProperty : childrenProperties) {
 					String methodName = getFieldName(arbitraryProperty.getObjectProperty().getProperty());
@@ -98,8 +93,10 @@ public final class BuilderArbitraryIntrospector implements ArbitraryIntrospector
 						return buildFieldMethod;
 					});
 					if (method != null) {
-						builderCombinator = builderCombinator.use(combinableArbitrary.combined())
-							.in((b, v) -> v != null ? Reflections.invokeMethod(method, b, v) : b);
+						Object child = combinableArbitrary.combined();
+						if (child != null) {
+							Reflections.invokeMethod(method, builder, child);
+						}
 					}
 				}
 
@@ -114,12 +111,8 @@ public final class BuilderArbitraryIntrospector implements ArbitraryIntrospector
 					method.setAccessible(true);
 					return method;
 				});
-				return builderCombinator.build(b -> {
-					if (b == null) {
-						return null;
-					}
-					return Reflections.invokeMethod(buildMethod, b);
-				});
+
+				return Reflections.invokeMethod(buildMethod, builder);
 			}
 		);
 		return new ArbitraryIntrospectorResult(new LazyCombinableArbitrary(generateArbitrary));

@@ -32,6 +32,7 @@ import kotlin.reflect.KParameter.Kind.INSTANCE
 import kotlin.reflect.full.memberFunctions
 import kotlin.reflect.full.memberProperties
 import kotlin.reflect.jvm.javaMethod
+import kotlin.reflect.jvm.javaType
 
 /**
  * A property generator for generating no-argument Kotlin interface method.
@@ -46,6 +47,7 @@ class InterfaceKFunctionPropertyGenerator : PropertyGenerator {
             val methods = type.kotlin.memberFunctions
                 .filter { it.parameters.none { parameter -> parameter.kind != INSTANCE } }
                 .filter { !DATA_CLASS_METHOD_NAMES.contains(it.name) }
+                .filter { it.returnType.javaType != Void.TYPE }
                 .map {
                     InterfaceKFunctionProperty(
                         it.returnType,

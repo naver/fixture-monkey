@@ -21,16 +21,14 @@ package com.navercorp.fixturemonkey.api.introspector;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import net.jqwik.api.Arbitrary;
-
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.generator.CombinableArbitrary;
+import com.navercorp.fixturemonkey.api.generator.ContainerCombinableArbitrary;
 import com.navercorp.fixturemonkey.api.generator.ContainerProperty;
 import com.navercorp.fixturemonkey.api.matcher.AssignableTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
@@ -54,29 +52,27 @@ public final class MapIntrospector implements ArbitraryIntrospector, Matcher {
 			return ArbitraryIntrospectorResult.EMPTY;
 		}
 
-		List<Arbitrary<?>> childrenArbitraries = context.getElementArbitraries().stream()
-			.map(CombinableArbitrary::combined)
-			.collect(Collectors.toList());
+		List<CombinableArbitrary> elementCombinableArbitraryList = context.getElementCombinableArbitraryList();
 
-		Arbitrary<?> mapArbitrary = new MonkeyCombineArbitrary(
-			list -> {
-				Map<Object, Object> map = new HashMap<>();
-				for (Object obj : list) {
-					MapEntryElementType mapEntryElement = (MapEntryElementType)obj;
-					if (mapEntryElement.getKey() == null) {
-						throw new IllegalArgumentException("Map key cannot be null.");
+		return new ArbitraryIntrospectorResult(
+			new ContainerCombinableArbitrary(
+				elementCombinableArbitraryList,
+				elements -> {
+					Map<Object, Object> map = new HashMap<>();
+					for (Object element : elements) {
+						MapEntryElementType mapEntryElement = (MapEntryElementType)element;
+						if (mapEntryElement.getKey() == null) {
+							throw new IllegalArgumentException("Map key cannot be null.");
+						}
+						map.put(
+							mapEntryElement.getKey(),
+							mapEntryElement.getValue()
+						);
 					}
-					map.put(
-						mapEntryElement.getKey(),
-						mapEntryElement.getValue()
-					);
+					context.evictUnique(context.getPathProperty());
+					return map;
 				}
-				return map;
-			},
-			() -> context.evictUnique(context.getPathProperty()),
-			childrenArbitraries
+			)
 		);
-
-		return new ArbitraryIntrospectorResult(mapArbitrary);
 	}
 }

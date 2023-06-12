@@ -25,15 +25,10 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAccessor;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
-
-import net.jqwik.api.Arbitraries;
-import net.jqwik.api.Builders;
-import net.jqwik.api.Builders.BuilderCombinator;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -44,11 +39,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
-import com.navercorp.fixturemonkey.api.generator.CombinableArbitrary;
-import com.navercorp.fixturemonkey.api.generator.FixedCombinableArbitrary;
+import com.navercorp.fixturemonkey.api.generator.ObjectCombinableArbitrary;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult;
-import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.api.property.CompositeProperty;
 import com.navercorp.fixturemonkey.api.property.ConstructorProperty;
 import com.navercorp.fixturemonkey.api.property.FieldProperty;
@@ -75,32 +68,24 @@ public final class JacksonObjectArbitraryIntrospector implements ArbitraryIntros
 		Property property = context.getResolvedProperty();
 		Class<?> type = Types.getActualType(property.getType());
 
-		List<ArbitraryProperty> childrenProperties = context.getChildren();
-		Map<String, CombinableArbitrary> arbitrariesByResolvedName =
-			context.getCombinableArbitrariesByResolvedName();
-
 		return new ArbitraryIntrospectorResult(
-			new JacksonCombinableArbitrary<>(
-				LazyArbitrary.lazy(
-					() -> {
-						BuilderCombinator<Map<String, Object>> builderCombinator = Builders.withBuilder(
-							() -> initializeMap(property)
-						);
+			new JacksonCombinableArbitrary(
+				new ObjectCombinableArbitrary(
+					context.getCombinableArbitrariesByArbitraryProperty(),
+					propertyValuesByArbitraryProperty -> {
+						Map<String, Object> map = initializeMap(property);
 
-						for (ArbitraryProperty arbitraryProperty : childrenProperties) {
-							if (!isJacksonSerializableProperty(arbitraryProperty.getObjectProperty().getProperty())) {
-								continue;
-							}
+						propertyValuesByArbitraryProperty.entrySet()
+							.stream()
+							.filter(it -> isJacksonSerializableProperty(it.getKey().getObjectProperty().getProperty()))
+							.forEach(
+								entry -> {
+									ArbitraryProperty arbitraryProperty = entry.getKey();
+									Object value = entry.getValue();
 
-							String resolvePropertyName = arbitraryProperty.getObjectProperty()
-								.getResolvedPropertyName();
-							CombinableArbitrary combinableArbitrary = arbitrariesByResolvedName.getOrDefault(
-								resolvePropertyName,
-								new FixedCombinableArbitrary(Arbitraries.just(null)
-								)
-							);
-							builderCombinator = builderCombinator.use(combinableArbitrary.rawValue())
-								.in((map, value) -> {
+									String resolvePropertyName = arbitraryProperty.getObjectProperty()
+										.getResolvedPropertyName();
+
 									if (value != null) {
 										Object jsonFormatted = arbitraryProperty.getObjectProperty()
 											.getProperty()
@@ -125,10 +110,9 @@ public final class JacksonObjectArbitraryIntrospector implements ArbitraryIntros
 											}
 										}
 									}
-									return map;
-								});
-						}
-						return builderCombinator.build();
+								}
+							);
+						return map;
 					}
 				),
 				map -> objectMapper.convertValue(map, type)

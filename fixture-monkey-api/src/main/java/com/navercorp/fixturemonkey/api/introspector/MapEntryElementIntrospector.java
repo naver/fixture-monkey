@@ -18,31 +18,26 @@
 
 package com.navercorp.fixturemonkey.api.introspector;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.Objects;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import net.jqwik.api.Arbitrary;
-import net.jqwik.api.Builders;
-
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.generator.CombinableArbitrary;
+import com.navercorp.fixturemonkey.api.generator.ContainerCombinableArbitrary;
 import com.navercorp.fixturemonkey.api.generator.ContainerProperty;
+import com.navercorp.fixturemonkey.api.generator.FixedCombinableArbitrary;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty;
 import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty.MapEntryElementType;
 import com.navercorp.fixturemonkey.api.property.Property;
-import com.navercorp.fixturemonkey.api.type.Types;
-import com.navercorp.fixturemonkey.api.unique.FilteredMonkeyArbitrary;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class MapEntryElementIntrospector implements ArbitraryIntrospector, Matcher {
-	private static final int MAX_TRIES = 10000;
-
 	@Override
 	public boolean match(Property property) {
 		return property.getClass() == MapEntryElementProperty.class;
@@ -56,41 +51,36 @@ public final class MapEntryElementIntrospector implements ArbitraryIntrospector,
 			return ArbitraryIntrospectorResult.EMPTY;
 		}
 
-		List<Arbitrary<?>> arbitraries = context.getElementArbitraries().stream()
-			.map(CombinableArbitrary::combined)
-			.collect(Collectors.toList());
+		List<CombinableArbitrary> elementCombinableArbitraryList = context.getElementCombinableArbitraryList();
 
-		if (arbitraries.size() != 2) {
+		if (elementCombinableArbitraryList.size() != 2) {
 			throw new IllegalArgumentException("Key and Value should be exist for MapEntryElementType.");
 		}
 
-		Property mapEntryProperty =
-			((MapEntryElementProperty)property.getObjectProperty().getProperty()).getMapEntryProperty();
-
-		if (Types.getActualType(mapEntryProperty.getType()) != Map.Entry.class) {
-			arbitraries.set(
-				0,
-				new FilteredMonkeyArbitrary<>(
-					arbitraries.get(0),
-					it -> context.isUniqueAndCheck(
-						context.getOwnerContext().getPathProperty(),
-						it
-					),
-					MAX_TRIES
+		List<CombinableArbitrary> entryCombinableArbitraryList = new ArrayList<>();
+		CombinableArbitrary keyCombinableArbitrary = elementCombinableArbitraryList.get(0);
+		if (!(elementCombinableArbitraryList.get(0) instanceof FixedCombinableArbitrary)) {
+			keyCombinableArbitrary = keyCombinableArbitrary.filter(
+				obj -> context.isUniqueAndCheck(
+					Objects.requireNonNull(context.getOwnerContext()).getPathProperty(),
+					obj
 				)
 			);
 		}
+		CombinableArbitrary valueCombinableArbitrary = elementCombinableArbitraryList.get(1);
+		entryCombinableArbitraryList.add(keyCombinableArbitrary);
+		entryCombinableArbitraryList.add(valueCombinableArbitrary);
 
-		Arbitrary<MapEntryElementType> arbitrary = Builders.withBuilder(MapEntryElementType::new)
-			.use(arbitraries.get(0)).in((element, key) -> {
-				element.setKey(key);
-				return element;
-			})
-			.use(arbitraries.get(1)).in((element, value) -> {
-				element.setValue(value);
-				return element;
-			})
-			.build();
-		return new ArbitraryIntrospectorResult(arbitrary);
+		return new ArbitraryIntrospectorResult(
+			new ContainerCombinableArbitrary(
+				entryCombinableArbitraryList,
+				elements -> {
+					MapEntryElementType elementType = new MapEntryElementType();
+					elementType.setKey(elements.get(0));
+					elementType.setValue(elements.get(1));
+					return elementType;
+				}
+			)
+		);
 	}
 }

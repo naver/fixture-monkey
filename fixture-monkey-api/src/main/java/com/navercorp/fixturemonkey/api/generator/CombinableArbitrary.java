@@ -24,32 +24,79 @@ import java.util.function.Predicate;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import net.jqwik.api.Arbitrary;
+import com.navercorp.fixturemonkey.api.exception.FilterMissException;
 
 /**
  * An arbitrary instance for combining arbitraries in order to generate an instance of specific class.
  */
 @API(since = "0.6.0", status = Status.EXPERIMENTAL)
 public interface CombinableArbitrary {
-	/**
-	 * Retrieves a combined arbitrary.
-	 *
-	 * @return a combined arbitrary
-	 */
-	Arbitrary<Object> combined();
+	int MAX_TRIES = 1_000;
 
 	/**
-	 * Retrieves an arbitrary to combine.
+	 * Retrieves a combined object.
+	 *
+	 * @return a combined object
+	 */
+	Object combined();
+
+	/**
+	 * Retrieves a raw object.
 	 * For example, a map whose keys are property names and values are property values.
 	 * Caller determines how the map is converted to an instance of class.
 	 *
-	 * @return an arbitrary to combine
+	 * @return an raw object
 	 */
-	Arbitrary<Object> rawValue();
+	Object rawValue();
 
-	CombinableArbitrary filter(Predicate<Object> predicate);
+	/**
+	 * Applies a given {@code predicate} as a constraint.
+	 * It would repeat generation {@link #MAX_TRIES} times to satisfy the constraint.
+	 * It would throw {@link FilterMissException} If repeated over {@link #MAX_TRIES} times.
+	 * @param predicate a constraint to satisfy
+	 * @return A filtered {@link CombinableArbitrary}.
+	 */
+	default CombinableArbitrary filter(Predicate<Object> predicate) {
+		return new FilteredCombinableArbitrary(
+			MAX_TRIES,
+			this,
+			predicate
+		);
+	}
 
-	CombinableArbitrary map(Function<Object, Object> mapper);
+	/**
+	 * Transforms a generated object into a new object.
+	 * @param mapper a way of transforming
+	 * @return A mapped {@link CombinableArbitrary}
+	 */
+	default CombinableArbitrary map(Function<Object, Object> mapper) {
+		return new MappedCombinableArbitrary(
+			this,
+			mapper
+		);
+	}
 
-	CombinableArbitrary injectNull(double nullProbability);
+	/**
+	 * Makes it return {@code null} with a {@code nullProbability}% chance.
+	 * @param nullProbability a probability to be {@code null}
+	 * @return A {@link CombinableArbitrary} may return {@code null}
+	 */
+	default CombinableArbitrary injectNull(double nullProbability) {
+		return new NullInjectCombinableArbitrary(
+			this,
+			nullProbability
+		);
+	}
+
+	/**
+	 * Forces it to generate a new populated object.
+	 */
+	void clear();
+
+	/**
+	 * Checks if it is a fixed object.
+	 * If true, {@link #clear()}} would make no change.
+	 * @return fixed
+	 */
+	boolean fixed();
 }

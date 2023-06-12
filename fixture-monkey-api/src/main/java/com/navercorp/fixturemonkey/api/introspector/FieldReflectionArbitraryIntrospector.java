@@ -27,10 +27,6 @@ import org.apiguardian.api.API.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import net.jqwik.api.Arbitrary;
-import net.jqwik.api.Builders;
-import net.jqwik.api.Builders.BuilderCombinator;
-
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.generator.CombinableArbitrary;
@@ -59,11 +55,10 @@ public final class FieldReflectionArbitraryIntrospector implements ArbitraryIntr
 			= context.getCombinableArbitrariesByResolvedName();
 		Map<String, Field> fields = PropertyCache.getFieldsByName(property.getAnnotatedType());
 
-		LazyArbitrary<Arbitrary<Object>> generateArbitrary = LazyArbitrary.lazy(
+		LazyArbitrary<Object> generateArbitrary = LazyArbitrary.lazy(
 			() -> {
-				BuilderCombinator<Object> builderCombinator = Builders.withBuilder(
-					() -> Reflections.newInstance(type)
-				);
+				Object instance = Reflections.newInstance(type);
+
 				for (ArbitraryProperty arbitraryProperty : childrenProperties) {
 					String originPropertyName = arbitraryProperty.getObjectProperty().getProperty().getName();
 					Field field = fields.get(originPropertyName);
@@ -78,22 +73,22 @@ public final class FieldReflectionArbitraryIntrospector implements ArbitraryIntr
 						arbitraryProperty.getObjectProperty().getResolvedPropertyName();
 					CombinableArbitrary combinableArbitrary =
 						arbitrariesByResolvedName.get(resolvePropertyName);
-					builderCombinator = builderCombinator.use(combinableArbitrary.combined())
-						.in((object, value) -> {
-							try {
-								if (value != null) {
-									field.set(object, value);
-								}
-							} catch (IllegalAccessException e) {
-								log.warn("set field by reflection is failed. field: {} value: {}",
-									resolvePropertyName,
-									value, e);
-							}
-							return object;
-						});
+
+					Object fieldValue = combinableArbitrary.combined();
+					try {
+						if (fieldValue != null) {
+							field.set(instance, fieldValue);
+						}
+					} catch (IllegalAccessException ex) {
+						log.warn("set field by reflection is failed. field: {} value: {}",
+							resolvePropertyName,
+							fieldValue,
+							ex
+						);
+					}
 				}
 
-				return builderCombinator.build();
+				return instance;
 			}
 		);
 		return new ArbitraryIntrospectorResult(new LazyCombinableArbitrary(generateArbitrary));

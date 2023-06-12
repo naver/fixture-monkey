@@ -20,16 +20,21 @@ package com.navercorp.fixturemonkey.tests.java;
 
 import static com.navercorp.fixturemonkey.tests.TestEnvironment.TEST_COUNT;
 import static org.assertj.core.api.BDDAssertions.then;
+import static org.assertj.core.api.BDDAssertions.thenThrownBy;
 
 import java.time.Instant;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
 import org.junit.jupiter.api.RepeatedTest;
+import org.junit.jupiter.api.Test;
 
+import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.FixtureMonkey;
+import com.navercorp.fixturemonkey.api.exception.FilterMissException;
 import com.navercorp.fixturemonkey.api.introspector.ConstructorPropertiesArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.tests.java.ImmutableGenericTypeSpecs.GenericArrayObject;
@@ -39,6 +44,7 @@ import com.navercorp.fixturemonkey.tests.java.ImmutableGenericTypeSpecs.ThreeGen
 import com.navercorp.fixturemonkey.tests.java.ImmutableGenericTypeSpecs.TwoGenericImplementationObject;
 import com.navercorp.fixturemonkey.tests.java.ImmutableGenericTypeSpecs.TwoGenericObject;
 import com.navercorp.fixturemonkey.tests.java.ImmutableJavaTestSpecs.ContainerObject;
+import com.navercorp.fixturemonkey.tests.java.ImmutableJavaTestSpecs.Enum;
 import com.navercorp.fixturemonkey.tests.java.ImmutableJavaTestSpecs.JavaTypeObject;
 import com.navercorp.fixturemonkey.tests.java.ImmutableJavaTestSpecs.SetImplementationWithoutGeneric;
 import com.navercorp.fixturemonkey.tests.java.ImmutableRecursiveTypeSpecs.SelfRecursiveListObject;
@@ -438,5 +444,49 @@ class JavaTest {
 		then(actual.getValue1()).isNotNull();
 		then(actual.getValue2()).isNotNull();
 		then(actual.getValue3()).isNotNull();
+	}
+
+	@Test
+	void sampleUniqueSet() {
+		Set<String> actual = SUT.giveMeBuilder(new TypeReference<Set<String>>() {
+			})
+			.size("$", 200)
+			.sample();
+
+		then(actual).hasSize(200);
+	}
+
+	@Test
+	void sampleJavaTypeReturnsDiff() {
+		ArbitraryBuilder<String> builder = SUT.giveMeBuilder(String.class);
+
+		String actual = builder.sample();
+
+		String notExpected = builder.sample();
+		then(actual).isNotEqualTo(notExpected);
+	}
+
+	@Test
+	void setPostConditionFailed() {
+		thenThrownBy(
+			() -> SUT.giveMeBuilder(String.class)
+				.setPostCondition(it -> it.equals("test"))
+				.sample()
+		).isExactlyInstanceOf(FilterMissException.class);
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void setEnumSet() {
+		Set<Enum> set = new HashSet<>();
+		set.add(Enum.ONE);
+		set.add(Enum.TWO);
+		set.add(Enum.THREE);
+
+		Set<Enum> actual = SUT.giveMeBuilder(new TypeReference<Set<Enum>>() {
+			})
+			.set("$", set)
+			.sample();
+
+		then(actual).hasSize(3);
 	}
 }

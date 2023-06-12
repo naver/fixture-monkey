@@ -61,7 +61,6 @@ import com.navercorp.fixturemonkey.api.generator.PropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.SetContainerPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.SingleValueObjectPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.StreamContainerPropertyGenerator;
-import com.navercorp.fixturemonkey.api.generator.TupleLikeElementsPropertyGenerator;
 import com.navercorp.fixturemonkey.api.matcher.AssignableTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.DoubleGenericTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
@@ -70,7 +69,6 @@ import com.navercorp.fixturemonkey.api.matcher.SingleGenericTypeMatcher;
 import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
-import com.navercorp.fixturemonkey.api.property.TupleLikeElementsProperty;
 import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.api.type.Types.UnidentifiableType;
 import com.navercorp.fixturemonkey.api.validator.ArbitraryValidator;
@@ -324,7 +322,6 @@ public final class GenerateOptions {
 					&& new SingleGenericTypeMatcher().match(property),
 				OptionalContainerPropertyGenerator.INSTANCE
 			),
-
 			MatcherOperator.exactTypeMatchOperator(
 				OptionalInt.class,
 				OptionalContainerPropertyGenerator.INSTANCE
@@ -387,10 +384,6 @@ public final class GenerateOptions {
 			new MatcherOperator<>(
 				property -> property.getClass() == MapEntryElementProperty.class,
 				MapEntryElementContainerPropertyGenerator.INSTANCE
-			),
-			new MatcherOperator<>(
-				property -> property.getClass() == TupleLikeElementsProperty.class,
-				TupleLikeElementsPropertyGenerator.INSTANCE
 			)
 		);
 	}

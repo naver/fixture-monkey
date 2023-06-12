@@ -16,18 +16,18 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.api.introspector;
+package com.navercorp.fixturemonkey.api.exception;
 
-import static org.assertj.core.api.BDDAssertions.then;
+import org.apiguardian.api.API;
+import org.apiguardian.api.API.Status;
 
-import org.junit.jupiter.api.Test;
-
-import net.jqwik.api.Arbitrary;
-
-class ArbitraryIntrospectorResultTest {
-	@Test
-	void equalsEmptyWithNull() {
-		ArbitraryIntrospectorResult sut = new ArbitraryIntrospectorResult((Arbitrary<?>)null);
-		then(ArbitraryIntrospectorResult.EMPTY.equals(sut)).isTrue();
+/**
+ * It is thrown when {@code filter} is failed.
+ * A new populated object would be generated when this exception is thrown.
+ */
+@API(since = "0.6.0", status = Status.EXPERIMENTAL)
+public final class FilterMissException extends RuntimeException {
+	public FilterMissException(Throwable cause) {
+		super(cause);
 	}
 }

@@ -19,13 +19,13 @@
 package com.navercorp.fixturemonkey.api.generator;
 
 import java.util.function.Function;
-import java.util.function.Predicate;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import net.jqwik.api.Arbitrary;
-
+/**
+ * It would transform a generated object into a new object.
+ */
 @API(since = "0.5.0", status = Status.EXPERIMENTAL)
 public final class MappedCombinableArbitrary implements CombinableArbitrary {
 	private final CombinableArbitrary combinableArbitrary;
@@ -37,27 +37,22 @@ public final class MappedCombinableArbitrary implements CombinableArbitrary {
 	}
 
 	@Override
-	public Arbitrary<Object> combined() {
-		return combinableArbitrary.combined().map(mapper);
+	public Object combined() {
+		return mapper.apply(combinableArbitrary.combined());
 	}
 
 	@Override
-	public Arbitrary<Object> rawValue() {
-		return combinableArbitrary.rawValue().map(mapper);
+	public Object rawValue() {
+		return mapper.apply(combinableArbitrary.rawValue());
 	}
 
 	@Override
-	public CombinableArbitrary filter(Predicate<Object> predicate) {
-		return new FilteredCombinableArbitrary(this, predicate);
+	public void clear() {
+		combinableArbitrary.clear();
 	}
 
 	@Override
-	public CombinableArbitrary map(Function<Object, Object> mapper) {
-		return new MappedCombinableArbitrary(this, mapper);
-	}
-
-	@Override
-	public CombinableArbitrary injectNull(double nullProbability) {
-		return new NullInjectCombinableArbitrary(this, nullProbability);
+	public boolean fixed() {
+		return combinableArbitrary.fixed();
 	}
 }

@@ -107,6 +107,10 @@ public final class ArbitraryGeneratorContext {
 		return Collections.unmodifiableList(this.children);
 	}
 
+	public Map<ArbitraryProperty, CombinableArbitrary> getCombinableArbitrariesByArbitraryProperty() {
+		return childArbitraryContext.getValue().getCombinableArbitrariesByArbitraryProperty();
+	}
+
 	public Map<String, CombinableArbitrary> getCombinableArbitrariesByResolvedName() {
 		return childArbitraryContext.getValue().getCombinableArbitrariesByResolvedName();
 	}
@@ -115,8 +119,13 @@ public final class ArbitraryGeneratorContext {
 		return childArbitraryContext.getValue().getCombinableArbitraryByPropertyName();
 	}
 
-	public List<CombinableArbitrary> getElementArbitraries() {
-		return childArbitraryContext.getValue().getElementArbitraries();
+	public List<CombinableArbitrary> getElementCombinableArbitraryList() {
+		return childArbitraryContext.getValue().getElementCombinableArbitraryList();
+	}
+
+	@Deprecated // would be removed in 0.6.0
+	public List<Object> getArbitraries() {
+		return childArbitraryContext.getValue().getArbitraries();
 	}
 
 	@Nullable

@@ -23,17 +23,16 @@ import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.OptionalInt;
 import java.util.OptionalLong;
-import java.util.stream.Collectors;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import net.jqwik.api.Arbitrary;
+import net.jqwik.api.Arbitraries;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
-import com.navercorp.fixturemonkey.api.generator.CombinableArbitrary;
+import com.navercorp.fixturemonkey.api.generator.ContainerCombinableArbitrary;
 import com.navercorp.fixturemonkey.api.generator.ContainerProperty;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.property.Property;
@@ -74,26 +73,34 @@ public final class OptionalIntrospector implements ArbitraryIntrospector, Matche
 		}
 
 		Class<?> type = Types.getActualType(property.getObjectProperty().getProperty().getType());
-		List<Arbitrary<?>> childArbitraries = context.getElementArbitraries().stream()
-			.map(CombinableArbitrary::combined)
-			.collect(Collectors.toList());
-		Arbitrary<?> elementArbitrary = childArbitraries.get(0)
-			.optional(presenceProbability)
-			.map(it -> {
-				if (type == OptionalInt.class) {
-					return it.map(o -> OptionalInt.of((Integer)o))
-						.orElseGet(OptionalInt::empty);
-				} else if (type == OptionalLong.class) {
-					return it.map(o -> OptionalLong.of((Long)o))
-						.orElseGet(OptionalLong::empty);
-				} else if (type == OptionalDouble.class) {
-					return it.map(o -> OptionalDouble.of((Double)o))
-						.orElseGet(OptionalDouble::empty);
-				} else {
-					return it;
-				}
-			});
+		double optionalProbability = presenceProbability;
 
-		return new ArbitraryIntrospectorResult(elementArbitrary);
+		return new ArbitraryIntrospectorResult(
+			new ContainerCombinableArbitrary(
+				context.getElementCombinableArbitraryList(),
+				elements -> {
+					Object element = elements.get(0);
+
+					return Arbitraries.just(element)
+						.optional(optionalProbability)
+						.map(it -> {
+							if (type == OptionalInt.class) {
+								return it.map(o -> OptionalInt.of((Integer)o))
+									.orElseGet(OptionalInt::empty);
+							} else if (type == OptionalLong.class) {
+								return it.map(o -> OptionalLong.of((Long)o))
+									.orElseGet(OptionalLong::empty);
+							} else if (type == OptionalDouble.class) {
+								return it.map(o -> OptionalDouble.of((Double)o))
+									.orElseGet(OptionalDouble::empty);
+							} else {
+								return it;
+							}
+						})
+						.sample();
+				}
+			)
+
+		);
 	}
 }

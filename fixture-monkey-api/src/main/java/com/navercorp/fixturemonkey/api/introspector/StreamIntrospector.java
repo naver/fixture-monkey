@@ -20,7 +20,6 @@ package com.navercorp.fixturemonkey.api.introspector;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
@@ -30,13 +29,9 @@ import java.util.stream.Stream.Builder;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import net.jqwik.api.Arbitrary;
-import net.jqwik.api.Builders;
-import net.jqwik.api.Builders.BuilderCombinator;
-
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
-import com.navercorp.fixturemonkey.api.generator.CombinableArbitrary;
+import com.navercorp.fixturemonkey.api.generator.ContainerCombinableArbitrary;
 import com.navercorp.fixturemonkey.api.generator.ContainerProperty;
 import com.navercorp.fixturemonkey.api.matcher.AssignableTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
@@ -64,15 +59,17 @@ public final class StreamIntrospector implements ArbitraryIntrospector, Matcher 
 			return ArbitraryIntrospectorResult.EMPTY;
 		}
 
-		List<Arbitrary<?>> childrenArbitraries = context.getElementArbitraries().stream()
-			.map(CombinableArbitrary::combined)
-			.collect(Collectors.toList());
-
-		BuilderCombinator<Builder<Object>> builderCombinator = Builders.withBuilder(Stream::builder);
-		for (Arbitrary<?> childArbitrary : childrenArbitraries) {
-			builderCombinator = builderCombinator.use(childArbitrary).in(Stream.Builder::add);
-		}
-
-		return new ArbitraryIntrospectorResult(builderCombinator.build(Stream.Builder::build));
+		return new ArbitraryIntrospectorResult(
+			new ContainerCombinableArbitrary(
+				context.getElementCombinableArbitraryList(),
+				elements -> {
+					Builder<Object> builder = Stream.builder();
+					for (Object element : elements) {
+						builder = builder.add(element);
+					}
+					return builder.build();
+				}
+			)
+		);
 	}
 }

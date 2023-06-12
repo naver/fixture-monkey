@@ -52,6 +52,7 @@ public final class MapContainerPropertyGenerator implements ContainerPropertyGen
 
 		AnnotatedType keyType = genericsTypes.get(0);
 		AnnotatedType valueType = genericsTypes.get(1);
+		Class<?> actualKeyType = Types.getActualType(keyType);
 
 		ArbitraryContainerInfo containerInfo = context.getContainerInfo();
 		if (containerInfo == null) {
@@ -59,13 +60,21 @@ public final class MapContainerPropertyGenerator implements ContainerPropertyGen
 				.getArbitraryContainerInfoGenerator(property)
 				.generate(context);
 
-			Class<?> actualKeyType = Types.getActualType(keyType);
 			if (actualKeyType.isEnum()) {
 				int enumSize = EnumSet.allOf((Class<? extends Enum>)actualKeyType).size();
 				containerInfo = new ArbitraryContainerInfo(
 					Math.min(containerInfo.getElementMinSize(), enumSize),
 					Math.min(containerInfo.getElementMaxSize(), enumSize)
 				);
+			}
+		} else {
+			if (actualKeyType.isEnum()) {
+				int enumSize = EnumSet.allOf((Class<? extends Enum>)actualKeyType).size();
+				if (containerInfo.getElementMaxSize() > enumSize) {
+					throw new IllegalArgumentException(
+						"Map key enum should not be bigger than enum size."
+					);
+				}
 			}
 		}
 

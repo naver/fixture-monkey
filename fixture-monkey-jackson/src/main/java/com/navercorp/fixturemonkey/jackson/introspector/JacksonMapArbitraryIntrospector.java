@@ -18,28 +18,20 @@
 
 package com.navercorp.fixturemonkey.jackson.introspector;
 
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
-
-import net.jqwik.api.Arbitrary;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.MapLikeType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
-import com.navercorp.fixturemonkey.api.generator.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult;
-import com.navercorp.fixturemonkey.api.introspector.MonkeyCombineArbitrary;
-import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
+import com.navercorp.fixturemonkey.api.introspector.MapIntrospector;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
-import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty.MapEntryElementType;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.jackson.FixtureMonkeyJackson;
@@ -49,6 +41,7 @@ public final class JacksonMapArbitraryIntrospector implements ArbitraryIntrospec
 	public static final JacksonMapArbitraryIntrospector INSTANCE = new JacksonMapArbitraryIntrospector(
 		FixtureMonkeyJackson.defaultObjectMapper()
 	);
+	private static final ArbitraryIntrospector DELEGATOR = new MapIntrospector();
 
 	private final ObjectMapper objectMapper;
 
@@ -73,31 +66,8 @@ public final class JacksonMapArbitraryIntrospector implements ArbitraryIntrospec
 			.constructMapType(containerType, keyType, valueType);
 
 		return new ArbitraryIntrospectorResult(
-			new JacksonCombinableArbitrary<>(
-				LazyArbitrary.lazy(() -> {
-					List<Arbitrary<Object>> arbitraries = context.getElementArbitraries().stream()
-						.map(CombinableArbitrary::rawValue)
-						.collect(Collectors.toList());
-
-					return new MonkeyCombineArbitrary(
-						list -> {
-							Map<Object, Object> map = new HashMap<>();
-							for (Object obj : list) {
-								MapEntryElementType mapEntryElement = (MapEntryElementType)obj;
-								if (mapEntryElement.getKey() == null) {
-									throw new IllegalArgumentException("Map key cannot be null.");
-								}
-								map.put(
-									mapEntryElement.getKey(),
-									mapEntryElement.getValue()
-								);
-							}
-							return map;
-						},
-						() -> context.evictUnique(context.getPathProperty()),
-						arbitraries
-					);
-				}),
+			new JacksonCombinableArbitrary(
+				DELEGATOR.introspect(context).getValue(),
 				list -> objectMapper.convertValue(list, mapType)
 			)
 		);

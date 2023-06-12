@@ -23,6 +23,7 @@ import static com.navercorp.fixturemonkey.api.property.PropertyCache.getParamete
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -30,16 +31,8 @@ import java.util.Map.Entry;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import net.jqwik.api.Arbitraries;
-import net.jqwik.api.Arbitrary;
-import net.jqwik.api.Builders;
-import net.jqwik.api.Builders.BuilderCombinator;
-
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
-import com.navercorp.fixturemonkey.api.generator.CombinableArbitrary;
-import com.navercorp.fixturemonkey.api.generator.FixedCombinableArbitrary;
-import com.navercorp.fixturemonkey.api.generator.LazyCombinableArbitrary;
-import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
+import com.navercorp.fixturemonkey.api.generator.ObjectCombinableArbitrary;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.type.Reflections;
 import com.navercorp.fixturemonkey.api.type.Types;
@@ -57,9 +50,6 @@ public final class ConstructorPropertiesArbitraryIntrospector implements Arbitra
 			return ArbitraryIntrospectorResult.EMPTY;
 		}
 
-		Map<String, CombinableArbitrary> arbitrariesByResolvedName =
-			context.getCombinableArbitrariesByResolvedName();
-
 		Entry<Constructor<?>, String[]> parameterNamesByConstructor = getParameterNamesByConstructor(type);
 		if (parameterNamesByConstructor == null) {
 			throw new IllegalArgumentException(
@@ -70,32 +60,31 @@ public final class ConstructorPropertiesArbitraryIntrospector implements Arbitra
 		String[] parameterNames = parameterNamesByConstructor.getValue();
 		int parameterSize = parameterNames.length;
 
-		LazyArbitrary<Arbitrary<Object>> generateArbitrary = LazyArbitrary.lazy(
-			() -> {
-				BuilderCombinator<List<Object>> builderCombinator =
-					Builders.withBuilder(() -> new ArrayList<>(parameterSize));
+		return new ArbitraryIntrospectorResult(
+			new ObjectCombinableArbitrary(
+				context.getCombinableArbitrariesByArbitraryProperty(),
+				propertyValuesByArbitraryProperty -> {
+					Map<String, Object> valuesByResolvedName = new HashMap<>();
 
-				for (String parameterName : parameterNames) {
-					CombinableArbitrary combinableArbitrary = arbitrariesByResolvedName.getOrDefault(
-						parameterName,
-						new FixedCombinableArbitrary(
-							Arbitraries.just(null)
-						)
+					propertyValuesByArbitraryProperty.forEach(
+						(key, value) -> valuesByResolvedName.put(
+							key.getObjectProperty().getResolvedPropertyName(),
+							value)
 					);
 
-					builderCombinator = builderCombinator.use(combinableArbitrary.combined())
-						.in((list, value) -> {
-							list.add(value);
-							return list;
-						});
+					List<Object> list = new ArrayList<>(parameterSize);
+
+					for (String parameterName : parameterNames) {
+						Object combined = valuesByResolvedName.getOrDefault(
+							parameterName,
+							null
+						);
+
+						list.add(combined);
+					}
+					return Reflections.newInstance(primaryConstructor, list.toArray());
 				}
-
-				return builderCombinator.build(
-					list -> Reflections.newInstance(primaryConstructor, list.toArray())
-				);
-			}
+			)
 		);
-
-		return new ArbitraryIntrospectorResult(new LazyCombinableArbitrary(generateArbitrary));
 	}
 }

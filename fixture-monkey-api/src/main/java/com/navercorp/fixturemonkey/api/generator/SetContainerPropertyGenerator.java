@@ -50,19 +50,28 @@ public final class SetContainerPropertyGenerator implements ContainerPropertyGen
 
 		AnnotatedType elementType = elementTypes.get(0);
 		ArbitraryContainerInfo containerInfo = context.getContainerInfo();
+		Class<?> actualElementType = Types.getActualType(elementType.getType());
 
 		if (containerInfo == null) {
 			containerInfo = context.getGenerateOptions()
 				.getArbitraryContainerInfoGenerator(property)
 				.generate(context);
 
-			Class<?> actualElementType = Types.getActualType(elementType.getType());
 			if (actualElementType.isEnum()) {
 				int enumSize = EnumSet.allOf((Class<? extends Enum>)actualElementType).size();
 				containerInfo = new ArbitraryContainerInfo(
 					Math.min(containerInfo.getElementMinSize(), enumSize),
 					Math.min(containerInfo.getElementMaxSize(), enumSize)
 				);
+			}
+		} else {
+			if (actualElementType.isEnum()) {
+				int enumSize = EnumSet.allOf((Class<? extends Enum>)actualElementType).size();
+				if (containerInfo.getElementMaxSize() > enumSize) {
+					throw new IllegalArgumentException(
+						"Set of enum should not be bigger than enum size."
+					);
+				}
 			}
 		}
 
