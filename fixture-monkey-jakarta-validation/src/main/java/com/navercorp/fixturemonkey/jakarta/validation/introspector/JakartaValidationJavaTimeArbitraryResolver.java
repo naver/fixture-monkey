@@ -59,6 +59,8 @@ import com.navercorp.fixturemonkey.api.introspector.JavaTimeArbitraryResolver;
 
 @API(since = "0.4.10", status = Status.MAINTAINED)
 public final class JakartaValidationJavaTimeArbitraryResolver implements JavaTimeArbitraryResolver {
+	private static final ZoneOffset DEFAULT_ZONE_OFFSET = OffsetDateTime.now().getOffset();
+
 	private final JakartaValidationTimeConstraintGenerator constraintGenerator;
 
 	public JakartaValidationJavaTimeArbitraryResolver() {
@@ -251,7 +253,7 @@ public final class JakartaValidationJavaTimeArbitraryResolver implements JavaTim
 			offsetDateTimeArbitrary = offsetDateTimeArbitrary.atTheLatest(max);
 		}
 
-		return offsetDateTimeArbitrary;
+		return offsetDateTimeArbitrary.map(it -> it.withOffsetSameLocal(DEFAULT_ZONE_OFFSET));
 	}
 
 	@Override
@@ -270,7 +272,7 @@ public final class JakartaValidationJavaTimeArbitraryResolver implements JavaTim
 			offsetTimeArbitrary = offsetTimeArbitrary.atTheLatest(max);
 		}
 
-		return offsetTimeArbitrary;
+		return offsetTimeArbitrary.map(it -> it.withOffsetSameLocal(DEFAULT_ZONE_OFFSET));
 	}
 
 	@Override
