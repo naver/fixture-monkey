@@ -1,10 +1,10 @@
 plugins {
-    id "org.jetbrains.kotlin.jvm" version "1.6.21"
+    id "org.jetbrains.kotlin.jvm" version "${KOTLIN_VERSION}"
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.6.21")
-    implementation("org.jetbrains.kotlin:kotlin-reflect:1.6.21")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:${KOTLIN_VERSION}")
+    implementation("org.jetbrains.kotlin:kotlin-reflect:${KOTLIN_VERSION}")
 
     testImplementation(project(":fixture-monkey-kotlin"))
     testImplementation(project(":fixture-monkey-javax-validation"))
