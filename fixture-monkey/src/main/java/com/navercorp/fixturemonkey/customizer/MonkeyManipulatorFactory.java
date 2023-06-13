@@ -279,9 +279,6 @@ public final class MonkeyManipulatorFactory {
 				for (ObjectNode node : objectNodes) {
 					ObjectNode parent = node.getParent();
 					while (parent != null) {
-						if (!parent.isNotManipulated()) {
-							break;
-						}
 						parent.setManipulated(true);
 						parent = parent.getParent();
 					}
