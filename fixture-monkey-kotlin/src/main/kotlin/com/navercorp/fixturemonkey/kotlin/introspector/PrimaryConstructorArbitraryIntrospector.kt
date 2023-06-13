@@ -20,11 +20,10 @@ package com.navercorp.fixturemonkey.kotlin.introspector
 
 import com.navercorp.fixturemonkey.api.collection.LruCache
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext
+import com.navercorp.fixturemonkey.api.generator.ObjectCombinableArbitrary
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult
 import com.navercorp.fixturemonkey.api.type.Types
-import net.jqwik.api.Arbitraries
-import net.jqwik.api.Builders
 import org.apiguardian.api.API
 import org.apiguardian.api.API.Status.EXPERIMENTAL
 import java.lang.reflect.Modifier
@@ -47,25 +46,20 @@ class PrimaryConstructorArbitraryIntrospector : ArbitraryIntrospector {
             return ArbitraryIntrospectorResult.EMPTY
         }
 
-        val arbitrariesByPropertyName = context.combinableArbitrariesByPropertyName.mapValues { it.value.combined() }
-
         val kotlinClass = Reflection.createKotlinClass(type) as KClass<*>
         val constructor = CONSTRUCTOR_CACHE.computeIfAbsent(type) {
             requireNotNull(kotlinClass.primaryConstructor) { "No kotlin primary constructor provided for $kotlinClass" }
         }
 
-        var builderCombinator = Builders.withBuilder { mutableMapOf<KParameter, Any?>() }
-        for (parameter in constructor.parameters) {
-            val parameterArbitrary = arbitrariesByPropertyName[parameter.name] ?: Arbitraries.just(null)
-            builderCombinator = builderCombinator.use(parameterArbitrary).`in` { map, value ->
-                map.apply {
-                    this[parameter] = value
-                }
-            }
-        }
         return ArbitraryIntrospectorResult(
-            builderCombinator.build {
-                constructor.callBy(it)
+            ObjectCombinableArbitrary(context.combinableArbitrariesByArbitraryProperty) {
+                val arbitrariesByPropertyName = it.mapKeys { map -> map.key.objectProperty.property.name }
+
+                val map = mutableMapOf<KParameter, Any?>()
+                for (parameter in constructor.parameters) {
+                    map[parameter] = arbitrariesByPropertyName[parameter.name]
+                }
+                constructor.callBy(map)
             },
         )
     }

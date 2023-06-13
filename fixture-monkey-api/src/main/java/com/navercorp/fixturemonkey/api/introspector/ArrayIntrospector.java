@@ -22,21 +22,14 @@ import java.lang.reflect.Array;
 import java.lang.reflect.GenericArrayType;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import net.jqwik.api.Arbitrary;
-import net.jqwik.api.Builders;
-import net.jqwik.api.Builders.BuilderCombinator;
-
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
-import com.navercorp.fixturemonkey.api.generator.CombinableArbitrary;
+import com.navercorp.fixturemonkey.api.generator.ContainerCombinableArbitrary;
 import com.navercorp.fixturemonkey.api.generator.ContainerProperty;
-import com.navercorp.fixturemonkey.api.generator.LazyCombinableArbitrary;
-import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.type.Types;
@@ -58,29 +51,21 @@ public final class ArrayIntrospector implements ArbitraryIntrospector, Matcher {
 		}
 
 		return new ArbitraryIntrospectorResult(
-			new LazyCombinableArbitrary(
-				LazyArbitrary.lazy(
-					() -> {
-						List<Arbitrary<?>> childrenArbitraries = context.getElementArbitraries().stream()
-							.map(CombinableArbitrary::combined)
-							.collect(Collectors.toList());
-						BuilderCombinator<ArrayBuilder> builderCombinator = Builders.withBuilder(() ->
-							new ArrayBuilder(
-								Types.getArrayComponentType(
-									property.getObjectProperty().getProperty().getAnnotatedType()
-								),
-								childrenArbitraries.size()
-							)
-						);
-						for (Arbitrary<?> childArbitrary : childrenArbitraries) {
-							builderCombinator = builderCombinator.use(childArbitrary).in((list, element) -> {
-								list.add(element);
-								return list;
-							});
-						}
-						return builderCombinator.build(ArrayBuilder::build);
+			new ContainerCombinableArbitrary(
+				context.getElementCombinableArbitraryList(),
+				elements -> {
+					ArrayBuilder arrayBuilder = new ArrayBuilder(
+						Types.getArrayComponentType(
+							property.getObjectProperty().getProperty().getAnnotatedType()
+						),
+						elements.size()
+					);
+					for (Object element : elements) {
+						arrayBuilder.add(element);
 					}
-				)
+
+					return arrayBuilder.build();
+				}
 			)
 		);
 	}

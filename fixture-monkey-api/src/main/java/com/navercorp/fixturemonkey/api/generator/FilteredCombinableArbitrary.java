@@ -18,46 +18,102 @@
 
 package com.navercorp.fixturemonkey.api.generator;
 
-import java.util.function.Function;
 import java.util.function.Predicate;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import net.jqwik.api.Arbitrary;
+import net.jqwik.api.TooManyFilterMissesException;
 
+import com.navercorp.fixturemonkey.api.exception.FilterMissException;
+import com.navercorp.fixturemonkey.api.exception.ValidationFailedException;
+
+/**
+ * It would generate an object satisfied given {@code predicate}.
+ * It would try {@code maxMisses} times, {@code maxMisses} is 1000 in default.
+ * It would try {@link #FAILED_THRESHOLD} times when the parent {@link CombinableArbitrary} make it regenerate.
+ */
 @API(since = "0.5.0", status = Status.EXPERIMENTAL)
 public final class FilteredCombinableArbitrary implements CombinableArbitrary {
+	private static final int FAILED_THRESHOLD = 3;
+
+	private final int maxMisses;
 	private final CombinableArbitrary combinableArbitrary;
 	private final Predicate<Object> predicate;
 
-	public FilteredCombinableArbitrary(CombinableArbitrary combinableArbitrary, Predicate<Object> predicate) {
+	private Exception lastException;
+	private int failureCount = 0;
+
+	public FilteredCombinableArbitrary(
+		int maxMisses,
+		CombinableArbitrary combinableArbitrary,
+		Predicate<Object> predicate
+	) {
+		this.maxMisses = maxMisses;
 		this.combinableArbitrary = combinableArbitrary;
 		this.predicate = predicate;
 	}
 
 	@Override
-	public Arbitrary<Object> combined() {
-		return combinableArbitrary.combined().filter(predicate);
+	public Object combined() {
+		if (failureCount == FAILED_THRESHOLD) {
+			throw new FilterMissException(lastException);
+		}
+
+		Object returned;
+		for (int i = 0; i < maxMisses; i++) {
+			try {
+				returned = combinableArbitrary.combined();
+				if (predicate.test(returned)) {
+					return returned;
+				}
+			} catch (TooManyFilterMissesException | ValidationFailedException | FilterMissException ex) {
+				if (combinableArbitrary.fixed()) {
+					break;
+				}
+				lastException = ex;
+				combinableArbitrary.clear();
+			}
+		}
+		failureCount++;
+		throw new FilterMissException(lastException);
 	}
 
 	@Override
-	public Arbitrary<Object> rawValue() {
-		return combinableArbitrary.rawValue().filter(predicate);
+	public Object rawValue() {
+		if (failureCount == FAILED_THRESHOLD) {
+			throw new FilterMissException(lastException);
+		}
+
+		Object returned;
+		for (int i = 0; i < maxMisses; i++) {
+			try {
+				returned = combinableArbitrary.rawValue();
+				if (predicate.test(returned)) {
+					return returned;
+				}
+			} catch (TooManyFilterMissesException | ValidationFailedException | FilterMissException ex) {
+				if (combinableArbitrary.fixed()) {
+					break;
+				}
+				lastException = ex;
+				combinableArbitrary.clear();
+			}
+		}
+		failureCount++;
+		throw new FilterMissException(lastException);
 	}
 
 	@Override
-	public CombinableArbitrary filter(Predicate<Object> predicate) {
-		return new FilteredCombinableArbitrary(this, predicate);
+	public void clear() {
+		if (failureCount == FAILED_THRESHOLD) {
+			return;
+		}
+		combinableArbitrary.clear();
 	}
 
 	@Override
-	public CombinableArbitrary map(Function<Object, Object> mapper) {
-		return new MappedCombinableArbitrary(this, mapper);
-	}
-
-	@Override
-	public CombinableArbitrary injectNull(double nullProbability) {
-		return new NullInjectCombinableArbitrary(this, nullProbability);
+	public boolean fixed() {
+		return failureCount == FAILED_THRESHOLD || combinableArbitrary.fixed();
 	}
 }

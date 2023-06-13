@@ -21,18 +21,15 @@ package com.navercorp.fixturemonkey.api.introspector;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
-
-import net.jqwik.api.Arbitrary;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.generator.CombinableArbitrary;
+import com.navercorp.fixturemonkey.api.generator.ContainerCombinableArbitrary;
 import com.navercorp.fixturemonkey.api.generator.ContainerProperty;
 import com.navercorp.fixturemonkey.api.matcher.AssignableTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
@@ -58,25 +55,26 @@ public final class MapEntryIntrospector implements ArbitraryIntrospector, Matche
 			);
 		}
 		ArbitraryContainerInfo containerInfo = containerProperty.getContainerInfo();
-		List<Arbitrary<?>> childrenArbitraries = context.getElementArbitraries().stream()
-			.map(CombinableArbitrary::combined)
-			.collect(Collectors.toList());
-
 		if (containerInfo == null) {
 			return ArbitraryIntrospectorResult.EMPTY;
 		}
 
-		if (childrenArbitraries.size() != 1) {
+		List<CombinableArbitrary> elementCombinableArbitraryList = context.getElementCombinableArbitraryList();
+		if (elementCombinableArbitraryList.size() != 1) {
 			throw new IllegalArgumentException(
-				"Map entry node should have only one child, current : " + childrenArbitraries.size()
+				"Map entry node should have only one child, current : " + elementCombinableArbitraryList.size()
 			);
 		}
 
-		Arbitrary<Entry<?, ?>> arbitrary = childrenArbitraries.get(0)
-			.map(it -> (MapEntryElementType)it)
-			.filter(Objects::nonNull)
-			.map(it -> new SimpleEntry<>(it.getKey(), it.getValue()));
-
-		return new ArbitraryIntrospectorResult(arbitrary);
+		return new ArbitraryIntrospectorResult(
+			new ContainerCombinableArbitrary(
+				elementCombinableArbitraryList,
+				elements -> {
+					MapEntryElementType mapEntryElementType = (MapEntryElementType)elements.get(0);
+					context.evictUnique(context.getPathProperty());
+					return new SimpleEntry<>(mapEntryElementType.getKey(), mapEntryElementType.getValue());
+				}
+			)
+		);
 	}
 }

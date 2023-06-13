@@ -30,9 +30,6 @@ import javax.annotation.Nullable;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import net.jqwik.api.Arbitraries;
-import net.jqwik.api.Arbitrary;
-
 import com.navercorp.fixturemonkey.api.context.MonkeyContext;
 import com.navercorp.fixturemonkey.api.context.MonkeyGeneratorContext;
 import com.navercorp.fixturemonkey.api.customizer.FixtureCustomizer;
@@ -88,9 +85,9 @@ public final class ObjectTree {
 		}
 	}
 
-	public Arbitrary<?> generate() {
+	public CombinableArbitrary generate() {
 		ArbitraryGeneratorContext context = generateContext(rootNode, null);
-		return generateIntrospected(context, rootNode).combined();
+		return generateIntrospected(context, rootNode);
 	}
 
 	private ArbitraryGeneratorContext generateContext(
@@ -120,7 +117,7 @@ public final class ObjectTree {
 			(ctx, prop) -> {
 				ObjectNode node = childNodesByArbitraryProperty.get(prop);
 				if (node == null) {
-					return new FixedCombinableArbitrary(Arbitraries.just(null));
+					return new FixedCombinableArbitrary(null);
 				}
 
 				return generateIntrospected(ctx, node);
@@ -135,14 +132,10 @@ public final class ObjectTree {
 		ArbitraryGeneratorContext ctx,
 		ObjectNode node
 	) {
-		ArbitraryProperty prop = node.getArbitraryProperty();
-
 		CombinableArbitrary generated;
 		if (node.getArbitrary() != null) {
-			generated = new FixedCombinableArbitrary(
-				(Arbitrary<Object>)node.getArbitrary() // fixed
-					.injectNull(node.getArbitraryProperty().getObjectProperty().getNullInject())
-			);
+			generated = node.getArbitrary()
+				.injectNull(node.getArbitraryProperty().getObjectProperty().getNullInject());
 		} else {
 			ArbitraryGeneratorContext childArbitraryGeneratorContext = this.generateContext(node, ctx);
 
@@ -180,7 +173,7 @@ public final class ObjectTree {
 		CombinableArbitrary arbitrary = generated;
 		if (customizer != null) {
 			arbitrary = new FixedCombinableArbitrary(
-				generated.combined().map(obj -> customizer.customizeFixture(obj))
+				generated.map(obj -> customizer.customizeFixture(obj)).combined()
 			);
 		}
 

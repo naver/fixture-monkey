@@ -29,16 +29,27 @@ import net.jqwik.api.Arbitrary;
 
 import com.navercorp.fixturemonkey.api.generator.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.generator.FixedCombinableArbitrary;
+import com.navercorp.fixturemonkey.api.generator.LazyCombinableArbitrary;
+import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class ArbitraryIntrospectorResult {
-	public static final ArbitraryIntrospectorResult EMPTY = new ArbitraryIntrospectorResult((Arbitrary<?>)null);
+	public static final ArbitraryIntrospectorResult EMPTY = new ArbitraryIntrospectorResult(
+		new FixedCombinableArbitrary(new Object())
+	);
 
 	private final CombinableArbitrary value;
 
 	@SuppressWarnings("unchecked")
 	public ArbitraryIntrospectorResult(@Nullable Arbitrary<?> value) {
-		this.value = new FixedCombinableArbitrary((Arbitrary<Object>)value);
+		this.value = new LazyCombinableArbitrary(LazyArbitrary.lazy(
+			() -> {
+				if (value != null) {
+					return value.sample();
+				}
+				return null;
+			}
+		));
 	}
 
 	public ArbitraryIntrospectorResult(CombinableArbitrary value) {

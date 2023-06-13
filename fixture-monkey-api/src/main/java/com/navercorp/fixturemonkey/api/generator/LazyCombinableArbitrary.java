@@ -18,46 +18,44 @@
 
 package com.navercorp.fixturemonkey.api.generator;
 
-import java.util.function.Function;
-import java.util.function.Predicate;
-
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import net.jqwik.api.Arbitrary;
-
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 
+/**
+ * It would generate an arbitrary object.
+ * A generated object would be changed when {@link #combined()} and {@link #rawValue()} is called.
+ */
 @API(since = "0.5.0", status = Status.EXPERIMENTAL)
 public final class LazyCombinableArbitrary implements CombinableArbitrary {
-	private final LazyArbitrary<Arbitrary<Object>> introspected;
+	private final LazyArbitrary<Object> introspected;
 
-	public LazyCombinableArbitrary(LazyArbitrary<Arbitrary<Object>> introspected) {
+	public LazyCombinableArbitrary(LazyArbitrary<Object> introspected) {
 		this.introspected = introspected;
 	}
 
 	@Override
-	public Arbitrary<Object> combined() {
-		return introspected.getValue();
+	public Object combined() {
+		Object combined = introspected.getValue();
+		introspected.clear();
+		return combined;
 	}
 
 	@Override
-	public Arbitrary<Object> rawValue() {
-		return introspected.getValue();
+	public Object rawValue() {
+		Object rawValue = introspected.getValue();
+		introspected.clear();
+		return rawValue;
 	}
 
 	@Override
-	public CombinableArbitrary filter(Predicate<Object> predicate) {
-		return new FilteredCombinableArbitrary(this, predicate);
+	public void clear() {
+		introspected.clear();
 	}
 
 	@Override
-	public CombinableArbitrary map(Function<Object, Object> mapper) {
-		return new MappedCombinableArbitrary(this, mapper);
-	}
-
-	@Override
-	public CombinableArbitrary injectNull(double nullProbability) {
-		return new NullInjectCombinableArbitrary(this, nullProbability);
+	public boolean fixed() {
+		return false;
 	}
 }

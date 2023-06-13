@@ -19,20 +19,14 @@
 package com.navercorp.fixturemonkey.api.introspector;
 
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Queue;
-import java.util.stream.Collectors;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import net.jqwik.api.Arbitrary;
-import net.jqwik.api.Builders;
-import net.jqwik.api.Builders.BuilderCombinator;
-
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
-import com.navercorp.fixturemonkey.api.generator.CombinableArbitrary;
+import com.navercorp.fixturemonkey.api.generator.ContainerCombinableArbitrary;
 import com.navercorp.fixturemonkey.api.generator.ContainerProperty;
 import com.navercorp.fixturemonkey.api.matcher.AssignableTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
@@ -55,18 +49,11 @@ public final class QueueIntrospector implements ArbitraryIntrospector, Matcher {
 			return ArbitraryIntrospectorResult.EMPTY;
 		}
 
-		List<Arbitrary<?>> childrenArbitraries = context.getElementArbitraries().stream()
-			.map(CombinableArbitrary::combined)
-			.collect(Collectors.toList());
-
-		BuilderCombinator<Queue<Object>> builderCombinator = Builders.withBuilder(LinkedList::new);
-		for (Arbitrary<?> childArbitrary : childrenArbitraries) {
-			builderCombinator = builderCombinator.use(childArbitrary).in((list, element) -> {
-				list.add(element);
-				return list;
-			});
-		}
-
-		return new ArbitraryIntrospectorResult(builderCombinator.build());
+		return new ArbitraryIntrospectorResult(
+			new ContainerCombinableArbitrary(
+				context.getElementCombinableArbitraryList(),
+				LinkedList::new
+			)
+		);
 	}
 }

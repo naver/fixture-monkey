@@ -379,38 +379,38 @@ class JavaxValidationFixtureMonkeyTest {
 	void samplePastOffsetDateTime() {
 		TimePastIntrospectorSpec actual = SUT.giveMeOne(TimePastIntrospectorSpec.class);
 
-		OffsetDateTime now = OffsetDateTime.now().withOffsetSameLocal(ZONE_OFFSET);
-		then(actual.getOffsetDateTimePast().withOffsetSameLocal(ZONE_OFFSET)).isBefore(now);
-		then(actual.getOffsetDateTimePastOrPresent().withOffsetSameLocal(ZONE_OFFSET)).isBeforeOrEqualTo(now);
+		OffsetDateTime now = OffsetDateTime.now();
+		then(actual.getOffsetDateTimePast()).isBefore(now);
+		then(actual.getOffsetDateTimePastOrPresent()).isBeforeOrEqualTo(now);
 	}
 
 	@Property(tries = 100)
 	void sampleFutureOffsetDateTime() {
-		OffsetDateTime now = OffsetDateTime.now().withOffsetSameLocal(ZONE_OFFSET);
+		OffsetDateTime now = OffsetDateTime.now();
 
 		TimeFutureIntrospectorSpec actual = SUT.giveMeOne(TimeFutureIntrospectorSpec.class);
 
-		then(actual.getOffsetDateTimeFuture().withOffsetSameLocal(ZONE_OFFSET)).isAfter(now);
-		then(actual.getOffsetDateTimeFutureOrPresent().withOffsetSameLocal(ZONE_OFFSET)).isAfterOrEqualTo(now);
+		then(actual.getOffsetDateTimeFuture()).isAfter(now);
+		then(actual.getOffsetDateTimeFutureOrPresent()).isAfterOrEqualTo(now);
 	}
 
 	@Property(tries = 100)
 	void samplePastOffsetTime() {
 		TimePastIntrospectorSpec actual = SUT.giveMeOne(TimePastIntrospectorSpec.class);
 
-		OffsetTime now = OffsetTime.now().withOffsetSameLocal(ZONE_OFFSET);
-		then(actual.getOffsetTimePast().withOffsetSameLocal(ZONE_OFFSET)).isBefore(now);
-		then(actual.getOffsetTimePastOrPresent().withOffsetSameLocal(ZONE_OFFSET)).isBeforeOrEqualTo(now);
+		OffsetTime now = OffsetTime.now();
+		then(actual.getOffsetTimePast().isBefore(now));
+		then(actual.getOffsetTimePastOrPresent()).isBeforeOrEqualTo(now);
 	}
 
 	@Property(tries = 100)
 	void sampleFutureOffsetTime() {
-		OffsetTime now = OffsetTime.now().withOffsetSameLocal(ZONE_OFFSET);
+		OffsetTime now = OffsetTime.now();
 
 		TimeFutureIntrospectorSpec actual = SUT.giveMeOne(TimeFutureIntrospectorSpec.class);
 
-		then(actual.getOffsetTimeFuture().withOffsetSameLocal(ZONE_OFFSET)).isAfter(now);
-		then(actual.getOffsetTimeFutureOrPresent().withOffsetSameLocal(ZONE_OFFSET)).isAfterOrEqualTo(now);
+		then(actual.getOffsetTimeFuture()).isAfter(now);
+		then(actual.getOffsetTimeFutureOrPresent()).isAfterOrEqualTo(now);
 	}
 
 	@Property(tries = 100)

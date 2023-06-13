@@ -19,23 +19,17 @@
 package com.navercorp.fixturemonkey.jackson.introspector;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
-
-import net.jqwik.api.Arbitrary;
-import net.jqwik.api.Builders;
-import net.jqwik.api.Builders.BuilderCombinator;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
-import com.navercorp.fixturemonkey.api.generator.CombinableArbitrary;
+import com.navercorp.fixturemonkey.api.generator.ContainerCombinableArbitrary;
 import com.navercorp.fixturemonkey.api.generator.ContainerProperty;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult;
@@ -62,27 +56,22 @@ public final class JsonNodeIntrospector implements ArbitraryIntrospector {
 			return ArbitraryIntrospectorResult.EMPTY;
 		}
 
-		List<Arbitrary<?>> childrenArbitraries = context.getElementArbitraries().stream()
-			.map(CombinableArbitrary::combined)
-			.collect(Collectors.toList());
-
-		BuilderCombinator<Map<Object, Object>> builderCombinator = Builders.withBuilder(HashMap::new);
-		for (Arbitrary<?> child : childrenArbitraries) {
-			builderCombinator = builderCombinator
-				.use(child).in((map, value) -> {
-					MapEntryElementType entryElement = (MapEntryElementType)value;
-					if (entryElement.getKey() == null) {
-						throw new IllegalArgumentException("Map key cannot be null.");
-					}
-					map.put(entryElement.getKey(), entryElement.getValue());
-					return map;
-				});
-		}
-
 		return new ArbitraryIntrospectorResult(
-			builderCombinator.build()
-				.filter(it -> it.size() == childrenArbitraries.size())
-				.map(it -> objectMapper.convertValue(it, JsonNode.class))
+			new ContainerCombinableArbitrary(
+				context.getElementCombinableArbitraryList(),
+				elements -> {
+					Map<Object, Object> map = new HashMap<>();
+					for (Object element : elements) {
+						MapEntryElementType mapEntryElementType = (MapEntryElementType)element;
+						if (mapEntryElementType.getKey() == null) {
+							throw new IllegalArgumentException("Map key cannot be null.");
+						}
+						map.put(mapEntryElementType.getKey(), mapEntryElementType.getValue());
+					}
+
+					return objectMapper.convertValue(map, JsonNode.class);
+				}
+			)
 		);
 	}
 }

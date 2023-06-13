@@ -21,26 +21,22 @@ package com.navercorp.fixturemonkey.api.introspector;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
-
-import net.jqwik.api.Arbitrary;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.generator.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.generator.ContainerProperty;
+import com.navercorp.fixturemonkey.api.generator.UniqueContainerCombinableArbitrary;
 import com.navercorp.fixturemonkey.api.matcher.AssignableTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.property.Property;
-import com.navercorp.fixturemonkey.api.unique.FilteredMonkeyArbitrary;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class SetIntrospector implements ArbitraryIntrospector, Matcher {
 	private static final Matcher MATCHER = new AssignableTypeMatcher(Set.class);
-	private static final int MAX_TRIES = 10000;
 
 	@Override
 	public boolean match(Property property) {
@@ -55,26 +51,18 @@ public final class SetIntrospector implements ArbitraryIntrospector, Matcher {
 			return ArbitraryIntrospectorResult.EMPTY;
 		}
 
-		List<Arbitrary<?>> childrenArbitraries = context.getElementArbitraries().stream()
-			.map(CombinableArbitrary::combined)
-			.map(arbitrary ->
-				new FilteredMonkeyArbitrary<>(
-					arbitrary,
-					it -> context.isUniqueAndCheck(
-						context.getPathProperty(),
-						it
-					),
-					MAX_TRIES
-				)
+		List<CombinableArbitrary> elementArbitraryList = context.getElementCombinableArbitraryList();
+
+		return new ArbitraryIntrospectorResult(
+			new UniqueContainerCombinableArbitrary(
+				elementArbitraryList,
+				it -> context.isUniqueAndCheck(
+					context.getPathProperty(),
+					it
+				),
+				() -> context.evictUnique(context.getPathProperty()),
+				HashSet::new
 			)
-			.collect(Collectors.toList());
-
-		MonkeyCombineArbitrary monkeyCombineArbitrary = new MonkeyCombineArbitrary(
-			HashSet::new,
-			() -> context.evictUnique(context.getPathProperty()),
-			childrenArbitraries
 		);
-
-		return new ArbitraryIntrospectorResult(monkeyCombineArbitrary);
 	}
 }

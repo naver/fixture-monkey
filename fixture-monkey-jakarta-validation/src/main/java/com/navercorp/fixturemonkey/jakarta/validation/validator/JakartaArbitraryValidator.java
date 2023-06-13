@@ -19,15 +19,16 @@
 package com.navercorp.fixturemonkey.jakarta.validation.validator;
 
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import jakarta.validation.ConstraintViolation;
-import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 
+import com.navercorp.fixturemonkey.api.exception.ValidationFailedException;
 import com.navercorp.fixturemonkey.api.validator.ArbitraryValidator;
 
 @API(since = "0.5.6", status = Status.EXPERIMENTAL)
@@ -46,9 +47,15 @@ public final class JakartaArbitraryValidator implements ArbitraryValidator {
 	public void validate(Object arbitrary) {
 		if (this.validator != null) {
 			Set<ConstraintViolation<Object>> violations = this.validator.validate(arbitrary);
+
+			Set<String> validationMessages = violations.stream()
+				.map(ConstraintViolation::getMessage)
+				.collect(Collectors.toSet());
+
 			if (!violations.isEmpty()) {
-				throw new ConstraintViolationException(
-					"DefaultArbitrayValidator ConstraintViolations. type: " + arbitrary.getClass(), violations);
+				throw new ValidationFailedException(
+					"DefaultArbitrayValidator ConstraintViolations. type: " + arbitrary.getClass(), validationMessages
+				);
 			}
 		}
 	}

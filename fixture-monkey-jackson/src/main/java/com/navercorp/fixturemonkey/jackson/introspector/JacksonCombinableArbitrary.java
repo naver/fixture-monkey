@@ -19,54 +19,53 @@
 package com.navercorp.fixturemonkey.jackson.introspector;
 
 import java.util.function.Function;
-import java.util.function.Predicate;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import net.jqwik.api.Arbitrary;
-
 import com.navercorp.fixturemonkey.api.generator.CombinableArbitrary;
-import com.navercorp.fixturemonkey.api.generator.FilteredCombinableArbitrary;
-import com.navercorp.fixturemonkey.api.generator.MappedCombinableArbitrary;
-import com.navercorp.fixturemonkey.api.generator.NullInjectCombinableArbitrary;
-import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 
+/**
+ * It is a {@link CombinableArbitrary} for Jackson library.
+ */
 @API(since = "0.5.0", status = Status.EXPERIMENTAL)
-public final class JacksonCombinableArbitrary<C> implements CombinableArbitrary {
-	private final LazyArbitrary<Arbitrary<C>> arbitrary;
-	private final Function<C, Object> deserializer;
+public final class JacksonCombinableArbitrary implements CombinableArbitrary {
+	private final CombinableArbitrary jsonValue;
+	private final Function<Object, Object> deserializer;
 
 	public JacksonCombinableArbitrary(
-		LazyArbitrary<Arbitrary<C>> arbitrary,
-		Function<C, Object> deserializer
+		CombinableArbitrary jsonValue,
+		Function<Object, Object> deserializer
 	) {
-		this.arbitrary = arbitrary;
+		this.jsonValue = jsonValue;
 		this.deserializer = deserializer;
 	}
 
+	/**
+	 * It would deserialize a serialized {@code jsonValue} object into an actual object.
+	 * @return an actual object
+	 */
 	@Override
-	public Arbitrary<Object> combined() {
-		return arbitrary.getValue().map(deserializer);
+	public Object combined() {
+		return deserializer.apply(jsonValue.rawValue());
+	}
+
+	/**
+	 * It would generate a serialized object.
+	 * @return a map representing JsonObject or JsonArray
+	 */
+	@Override
+	public Object rawValue() {
+		return jsonValue.rawValue();
 	}
 
 	@Override
-	public Arbitrary<Object> rawValue() {
-		return arbitrary.getValue().asGeneric();
+	public void clear() {
+		jsonValue.clear();
 	}
 
 	@Override
-	public CombinableArbitrary filter(Predicate<Object> predicate) {
-		return new FilteredCombinableArbitrary(this, predicate);
-	}
-
-	@Override
-	public CombinableArbitrary map(Function<Object, Object> mapper) {
-		return new MappedCombinableArbitrary(this, mapper);
-	}
-
-	@Override
-	public CombinableArbitrary injectNull(double nullProbability) {
-		return new NullInjectCombinableArbitrary(this, nullProbability);
+	public boolean fixed() {
+		return false;
 	}
 }

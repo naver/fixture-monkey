@@ -22,7 +22,6 @@ import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.List;
 import java.util.Map;
 
 import org.apiguardian.api.API;
@@ -30,15 +29,10 @@ import org.apiguardian.api.API.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import net.jqwik.api.Arbitrary;
-import net.jqwik.api.Builders;
-import net.jqwik.api.Builders.BuilderCombinator;
-
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.generator.CombinableArbitrary;
-import com.navercorp.fixturemonkey.api.generator.LazyCombinableArbitrary;
-import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
+import com.navercorp.fixturemonkey.api.generator.ObjectCombinableArbitrary;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.PropertyCache;
 import com.navercorp.fixturemonkey.api.type.Reflections;
@@ -57,49 +51,38 @@ public final class BeanArbitraryIntrospector implements ArbitraryIntrospector {
 			return ArbitraryIntrospectorResult.EMPTY;
 		}
 
-		List<ArbitraryProperty> childrenProperties = context.getChildren();
-		Map<String, CombinableArbitrary> arbitrariesByResolvedName =
-			context.getCombinableArbitrariesByResolvedName();
+		Map<ArbitraryProperty, CombinableArbitrary> arbitrariesByArbitraryProperty =
+			context.getCombinableArbitrariesByArbitraryProperty();
 		Map<String, PropertyDescriptor> propertyDescriptors = PropertyCache.getPropertyDescriptorsByPropertyName(
 			property.getAnnotatedType()
 		);
 
-		LazyArbitrary<Arbitrary<Object>> generateArbitrary = LazyArbitrary.lazy(() -> {
-			BuilderCombinator<Object> builderCombinator = Builders.withBuilder(
-				() -> Reflections.newInstance(type)
-			);
-
-			for (ArbitraryProperty arbitraryProperty : childrenProperties) {
-				String originPropertyName = arbitraryProperty.getObjectProperty().getProperty().getName();
-				PropertyDescriptor propertyDescriptor = propertyDescriptors.get(originPropertyName);
-				Method writeMethod = propertyDescriptor.getWriteMethod();
-				if (writeMethod == null) {
-					continue;
-				}
-
-				String resolvePropertyName = arbitraryProperty.getObjectProperty().getResolvedPropertyName();
-				CombinableArbitrary combinableArbitrary =
-					arbitrariesByResolvedName.get(resolvePropertyName);
-				if (combinableArbitrary != null) {
-					builderCombinator = builderCombinator.use(combinableArbitrary.combined())
-						.in((b, v) -> {
+		return new ArbitraryIntrospectorResult(
+			new ObjectCombinableArbitrary(
+				arbitrariesByArbitraryProperty,
+				propertyValuesByArbitraryProperty -> {
+					Object instance = Reflections.newInstance(type);
+					propertyValuesByArbitraryProperty.forEach(
+						(arbitraryProperty, value) -> {
+							String originPropertyName = arbitraryProperty.getObjectProperty().getProperty().getName();
+							PropertyDescriptor propertyDescriptor = propertyDescriptors.get(originPropertyName);
+							Method writeMethod = propertyDescriptor.getWriteMethod();
 							try {
-								if (v != null) {
-									writeMethod.invoke(b, v);
+								if (value != null) {
+									writeMethod.invoke(instance, value);
 								}
-							} catch (IllegalAccessException | InvocationTargetException e) {
+							} catch (IllegalAccessException | InvocationTargetException ex) {
 								log.warn("set bean property is failed. name: {} value: {}",
 									writeMethod.getName(),
-									v,
-									e);
+									value,
+									ex);
 							}
-							return b;
-						});
-				}
-			}
-			return builderCombinator.build();
-		});
 
-		return new ArbitraryIntrospectorResult(new LazyCombinableArbitrary(generateArbitrary));
+						}
+					);
+					return instance;
+				}
+			)
+		);
 	}
 }

@@ -21,15 +21,18 @@ package com.navercorp.fixturemonkey.api.generator;
 import static java.util.stream.Collectors.toMap;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import net.jqwik.api.Arbitrary;
 
+import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.property.Property;
 
@@ -58,7 +61,7 @@ public final class ChildArbitraryContext {
 			if (matcher.match(objectProperty.getProperty())) {
 				arbitrariesByChildProperty.put(
 					arbitraryProperty,
-					new FixedCombinableArbitrary(arbitrary.asGeneric())
+					new LazyCombinableArbitrary(LazyArbitrary.lazy(arbitrary::sample))
 				);
 			}
 		}
@@ -67,6 +70,10 @@ public final class ChildArbitraryContext {
 	public void removeArbitrary(Matcher matcher) {
 		arbitrariesByChildProperty.entrySet()
 			.removeIf(it -> matcher.match(it.getKey().getObjectProperty().getProperty()));
+	}
+
+	public Map<ArbitraryProperty, CombinableArbitrary> getCombinableArbitrariesByArbitraryProperty() {
+		return Collections.unmodifiableMap(arbitrariesByChildProperty);
 	}
 
 	public Map<String, CombinableArbitrary> getCombinableArbitrariesByResolvedName() {
@@ -79,7 +86,14 @@ public final class ChildArbitraryContext {
 			.collect(toMap(it -> it.getKey().getObjectProperty().getProperty().getName(), Entry::getValue));
 	}
 
-	public List<CombinableArbitrary> getElementArbitraries() {
-		return new ArrayList<>(arbitrariesByChildProperty.values());
+	public List<CombinableArbitrary> getElementCombinableArbitraryList() {
+		return Collections.unmodifiableList(new ArrayList<>(arbitrariesByChildProperty.values()));
+	}
+
+	@Deprecated // would be removed in 0.6.0
+	public List<Object> getArbitraries() {
+		return arbitrariesByChildProperty.values().stream()
+			.map(CombinableArbitrary::combined)
+			.collect(Collectors.toList());
 	}
 }

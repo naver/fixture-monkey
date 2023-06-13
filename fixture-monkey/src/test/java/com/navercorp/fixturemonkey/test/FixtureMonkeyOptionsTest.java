@@ -42,7 +42,6 @@ import javax.validation.ConstraintViolationException;
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
 import net.jqwik.api.Property;
-import net.jqwik.api.TooManyFilterMissesException;
 import net.jqwik.api.arbitraries.StringArbitrary;
 import net.jqwik.time.api.DateTimes;
 import net.jqwik.time.api.arbitraries.InstantArbitrary;
@@ -50,6 +49,7 @@ import net.jqwik.time.api.arbitraries.InstantArbitrary;
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.customizer.FixtureCustomizer;
+import com.navercorp.fixturemonkey.api.exception.FilterMissException;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ChildArbitraryContext;
@@ -621,7 +621,7 @@ class FixtureMonkeyOptionsTest {
 			.build();
 
 		thenThrownBy(() -> sut.giveMeOne(String.class))
-			.isExactlyInstanceOf(TooManyFilterMissesException.class);
+			.isExactlyInstanceOf(FilterMissException.class);
 	}
 
 	@Property

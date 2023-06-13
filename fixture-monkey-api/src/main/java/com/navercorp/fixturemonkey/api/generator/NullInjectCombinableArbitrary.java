@@ -18,14 +18,18 @@
 
 package com.navercorp.fixturemonkey.api.generator;
 
-import java.util.function.Function;
-import java.util.function.Predicate;
+import java.lang.reflect.Proxy;
+
+import javax.annotation.Nullable;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import net.jqwik.api.Arbitrary;
+import com.navercorp.fixturemonkey.api.random.Randoms;
 
+/**
+ * It would generate an object may be {@code null} with a {@code nullProbability}% chance.
+ */
 @API(since = "0.5.0", status = Status.EXPERIMENTAL)
 public final class NullInjectCombinableArbitrary implements CombinableArbitrary {
 	private final CombinableArbitrary combinableArbitrary;
@@ -37,27 +41,42 @@ public final class NullInjectCombinableArbitrary implements CombinableArbitrary 
 	}
 
 	@Override
-	public Arbitrary<Object> combined() {
-		return combinableArbitrary.combined().injectNull(nullProbability);
+	public Object combined() {
+		Object combined = combinableArbitrary.combined();
+		if (combined instanceof Proxy) {
+			return combined;
+		}
+
+		return injectNull(combined);
 	}
 
 	@Override
-	public Arbitrary<Object> rawValue() {
-		return combinableArbitrary.rawValue().injectNull(nullProbability);
+	public Object rawValue() {
+		Object rawValue = combinableArbitrary.rawValue();
+		if (rawValue instanceof Proxy) {
+			return rawValue;
+		}
+
+		return injectNull(rawValue);
 	}
 
 	@Override
-	public CombinableArbitrary filter(Predicate<Object> predicate) {
-		return new FilteredCombinableArbitrary(this, predicate);
+	public void clear() {
+		combinableArbitrary.clear();
 	}
 
 	@Override
-	public CombinableArbitrary map(Function<Object, Object> mapper) {
-		return new MappedCombinableArbitrary(this, mapper);
+	public boolean fixed() {
+		return combinableArbitrary.fixed();
 	}
 
-	@Override
-	public CombinableArbitrary injectNull(double nullProbability) {
-		return new NullInjectCombinableArbitrary(this, nullProbability);
+	@Nullable
+	private Object injectNull(Object object) {
+		int frequencyNull = (int)Math.round(nullProbability * 1000);
+		if (frequencyNull <= 0) {
+			return object;
+		}
+		int currentSeed = Randoms.nextInt(1000);
+		return currentSeed < frequencyNull ? null : object;
 	}
 }

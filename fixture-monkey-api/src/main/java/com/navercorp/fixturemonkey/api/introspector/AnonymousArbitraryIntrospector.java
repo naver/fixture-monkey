@@ -26,12 +26,10 @@ import java.util.Map;
 
 import org.apiguardian.api.API;
 
-import net.jqwik.api.Builders;
-import net.jqwik.api.Builders.BuilderCombinator;
-
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.generator.CombinableArbitrary;
+import com.navercorp.fixturemonkey.api.generator.FixedCombinableArbitrary;
 import com.navercorp.fixturemonkey.api.property.MethodProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.type.Types;
@@ -60,9 +58,7 @@ public final class AnonymousArbitraryIntrospector implements ArbitraryIntrospect
 
 		List<ArbitraryProperty> childrenProperties = context.getChildren();
 
-		BuilderCombinator<InvocationHandlerBuilder> builderCombinator = Builders.withBuilder(
-			() -> new InvocationHandlerBuilder(new HashMap<>())
-		);
+		InvocationHandlerBuilder invocationHandlerBuilder = new InvocationHandlerBuilder(new HashMap<>());
 
 		for (ArbitraryProperty arbitraryProperty : childrenProperties) {
 			Property childProperty = arbitraryProperty.getObjectProperty().getProperty();
@@ -73,24 +69,19 @@ public final class AnonymousArbitraryIntrospector implements ArbitraryIntrospect
 
 			MethodProperty methodProperty = (MethodProperty)childProperty;
 
-			builderCombinator = builderCombinator
-				.use(arbitrariesByPropertyName.get(childProperty.getName()).combined())
-				.in((builder, value) -> {
-					builder.put(methodProperty.getMethodName(), value);
-					return builder;
-				});
+			Object combined = arbitrariesByPropertyName.get(childProperty.getName()).combined();
+			invocationHandlerBuilder.put(methodProperty.getMethodName(), combined);
+		}
+
+		if (invocationHandlerBuilder.generatedValuesByMethodName.isEmpty()) {
+			return new ArbitraryIntrospectorResult(new FixedCombinableArbitrary(null));
 		}
 
 		return new ArbitraryIntrospectorResult(
-			builderCombinator.build(
-				builder -> {
-					if (builder.generatedValuesByMethodName.isEmpty()) {
-						return null;
-					}
-
-					return type.cast(
-						Proxy.newProxyInstance(type.getClassLoader(), new Class[] {type}, builder.build()));
-				}
+			new FixedCombinableArbitrary(
+				type.cast(
+					Proxy.newProxyInstance(type.getClassLoader(), new Class[] {type}, invocationHandlerBuilder.build())
+				)
 			)
 		);
 	}

@@ -25,10 +25,10 @@ import java.util.stream.Stream;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import net.jqwik.api.Arbitrary;
-
 import com.navercorp.fixturemonkey.api.context.MonkeyContext;
 import com.navercorp.fixturemonkey.api.customizer.FixtureCustomizer;
+import com.navercorp.fixturemonkey.api.generator.CombinableArbitrary;
+import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.option.GenerateOptions;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
@@ -64,7 +64,7 @@ public final class ArbitraryResolver {
 	}
 
 	@SuppressWarnings("rawtypes")
-	public Arbitrary<?> resolve(
+	public CombinableArbitrary resolve(
 		RootProperty rootProperty,
 		List<ArbitraryManipulator> manipulators,
 		List<MatcherOperator<? extends FixtureCustomizer>> builderCustomizers,
@@ -104,10 +104,40 @@ public final class ArbitraryResolver {
 			.optimize(joinedManipulators)
 			.getManipulators();
 
-		for (ArbitraryManipulator manipulator : optimizedManipulator) {
-			manipulator.manipulate(objectTree);
-		}
+		return new CombinableArbitrary() {
+			private final LazyArbitrary<CombinableArbitrary> lazyArbitrary = LazyArbitrary.lazy(
+				() -> {
+					for (ArbitraryManipulator manipulator : optimizedManipulator) {
+						manipulator.manipulate(objectTree);
+					}
+					return objectTree.generate();
+				}
+			);
 
-		return objectTree.generate();
+			@Override
+			public Object combined() {
+				return lazyArbitrary.getValue().combined();
+			}
+
+			@Override
+			public Object rawValue() {
+				return lazyArbitrary.getValue().rawValue();
+			}
+
+			@Override
+			public void clear() {
+				CombinableArbitrary combinableArbitrary = lazyArbitrary.getValue();
+				if (!combinableArbitrary.fixed() && optimizedManipulator.isEmpty()) {
+					combinableArbitrary.clear();
+				} else {
+					lazyArbitrary.clear();
+				}
+			}
+
+			@Override
+			public boolean fixed() {
+				return false;
+			}
+		};
 	}
 }

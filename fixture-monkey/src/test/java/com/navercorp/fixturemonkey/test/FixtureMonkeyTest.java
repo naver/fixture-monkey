@@ -47,7 +47,6 @@ import javax.annotation.Nullable;
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
 import net.jqwik.api.Property;
-import net.jqwik.api.TooManyFilterMissesException;
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.ArbitraryBuilders;
@@ -1508,7 +1507,7 @@ class FixtureMonkeyTest {
 				})
 				.size("$", 3)
 				.sample()
-		).isExactlyInstanceOf(TooManyFilterMissesException.class);
+		).isExactlyInstanceOf(IllegalArgumentException.class);
 	}
 
 	@Property
@@ -1518,7 +1517,7 @@ class FixtureMonkeyTest {
 				})
 				.size("$", 3)
 				.sample()
-		).isExactlyInstanceOf(TooManyFilterMissesException.class);
+		).isExactlyInstanceOf(IllegalArgumentException.class);
 	}
 
 	@Property
@@ -1773,17 +1772,6 @@ class FixtureMonkeyTest {
 			.getStr();
 
 		then(actual).isNotNull();
-	}
-
-	@Property
-	void setJust() {
-		SimpleObject expected = new SimpleObject();
-
-		SimpleObject actual = SUT.giveMeBuilder(SimpleObject.class)
-			.set("$", Values.just(expected))
-			.sample();
-
-		then(actual).isSameAs(expected);
 	}
 
 	@Property
