@@ -28,6 +28,8 @@ trim_trailing_whitespace = true
 # [line-length-120]
 max_line_length = 120
 
+ij_java_align_types_in_multi_catch = true
+
 [*.{kt, kts}]
 disabled_rules = import-ordering
 
