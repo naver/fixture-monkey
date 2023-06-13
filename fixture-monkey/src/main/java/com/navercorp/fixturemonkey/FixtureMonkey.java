@@ -83,14 +83,14 @@ public class FixtureMonkey {
 		return builder().build();
 	}
 
-	public <T> DefaultArbitraryBuilder<T> giveMeBuilder(Class<T> type) {
+	public <T> ArbitraryBuilder<T> giveMeBuilder(Class<T> type) {
 		TypeReference<T> typeReference = new TypeReference<T>(type) {
 		};
 		return giveMeBuilder(typeReference);
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> DefaultArbitraryBuilder<T> giveMeBuilder(TypeReference<T> type) {
+	public <T> ArbitraryBuilder<T> giveMeBuilder(TypeReference<T> type) {
 		ManipulateOptions manipulateOptions = manipulateOptionsBuilder.build();
 		RootProperty rootProperty = new RootProperty(type.getAnnotatedType());
 
@@ -101,7 +101,7 @@ public class FixtureMonkey {
 			.orElse(null);
 
 		if (registered != null) {
-			return (DefaultArbitraryBuilder<T>)registered.copy();
+			return (ArbitraryBuilder<T>)registered.copy();
 		}
 
 		MonkeyManipulatorFactory monkeyManipulatorFactory = new MonkeyManipulatorFactory(
@@ -128,7 +128,7 @@ public class FixtureMonkey {
 		);
 	}
 
-	public <T> DefaultArbitraryBuilder<T> giveMeBuilder(T value) {
+	public <T> ArbitraryBuilder<T> giveMeBuilder(T value) {
 		ManipulateOptions manipulateOptions = manipulateOptionsBuilder.build();
 		MonkeyManipulatorFactory monkeyManipulatorFactory = new MonkeyManipulatorFactory(
 			new AtomicInteger(),
