@@ -26,10 +26,8 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
-import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
-import com.navercorp.fixturemonkey.api.generator.ContainerProperty;
 import com.navercorp.fixturemonkey.api.matcher.AssignableTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty.MapEntryElementType;
@@ -47,14 +45,7 @@ public final class MapEntryIntrospector implements ArbitraryIntrospector, Matche
 	@Override
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
 		ArbitraryProperty property = context.getArbitraryProperty();
-		ContainerProperty containerProperty = property.getContainerProperty();
-		if (containerProperty == null) {
-			throw new IllegalArgumentException(
-				"container property should not null. type : " + property.getObjectProperty().getProperty().getName()
-			);
-		}
-		ArbitraryContainerInfo containerInfo = containerProperty.getContainerInfo();
-		if (containerInfo == null) {
+		if (!property.isContainer()) {
 			return ArbitraryIntrospectorResult.NOT_INTROSPECTED;
 		}
 

@@ -18,6 +18,8 @@
 
 package com.navercorp.fixturemonkey.api.introspector;
 
+import static com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult.NOT_INTROSPECTED;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -29,7 +31,6 @@ import org.apiguardian.api.API.Status;
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
-import com.navercorp.fixturemonkey.api.generator.ContainerProperty;
 import com.navercorp.fixturemonkey.api.matcher.AssignableTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.property.Property;
@@ -46,9 +47,8 @@ public final class SetIntrospector implements ArbitraryIntrospector, Matcher {
 	@Override
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
 		ArbitraryProperty arbitraryProperty = context.getArbitraryProperty();
-		ContainerProperty containerProperty = arbitraryProperty.getContainerProperty();
-		if (containerProperty == null || containerProperty.getContainerInfo() == null) {
-			return ArbitraryIntrospectorResult.NOT_INTROSPECTED;
+		if (!arbitraryProperty.isContainer()) {
+			return NOT_INTROSPECTED;
 		}
 
 		List<CombinableArbitrary> elementArbitraryList = context.getElementCombinableArbitraryList().stream()

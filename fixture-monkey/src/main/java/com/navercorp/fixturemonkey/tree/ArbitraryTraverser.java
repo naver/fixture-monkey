@@ -81,12 +81,15 @@ public final class ArbitraryTraverser {
 		);
 
 		ContainerProperty containerProperty = null;
+		ContainerInfoManipulator containerInfoManipulator = null;
 		if (container) {
-			ArbitraryContainerInfo containerInfo = containerInfoManipulators.stream()
+			containerInfoManipulator = containerInfoManipulators.stream()
 				.filter(it -> it.isMatch(Collections.singletonList(objectProperty)))
 				.findFirst()
-				.map(ContainerInfoManipulator::getContainerInfo)
 				.orElse(null);
+			ArbitraryContainerInfo containerInfo = containerInfoManipulator == null
+				? null
+				: containerInfoManipulator.getContainerInfo();
 
 			containerProperty = containerPropertyGenerator.generate(
 				new ContainerPropertyGeneratorContext(
@@ -98,16 +101,14 @@ public final class ArbitraryTraverser {
 			);
 		}
 
-		ArbitraryProperty arbitraryProperty = new ArbitraryProperty(
-			objectProperty,
-			containerProperty
-		);
+		ArbitraryProperty arbitraryProperty = new ArbitraryProperty(objectProperty, container);
 
 		List<ArbitraryProperty> parentArbitraryProperties = new ArrayList<>();
 		parentArbitraryProperties.add(arbitraryProperty);
 
-		return this.traverse(
+		ObjectNode rootNode = this.traverse(
 			arbitraryProperty,
+			containerProperty,
 			null,
 			new TraverseContext(
 				arbitraryProperty,
@@ -116,16 +117,21 @@ public final class ArbitraryTraverser {
 				registeredContainerInfoManipulators
 			)
 		);
+
+		if (containerInfoManipulator != null) {
+			rootNode.addContainerManipulator(containerInfoManipulator);
+		}
+		return rootNode;
 	}
 
 	private ObjectNode traverse(
 		ArbitraryProperty arbitraryProperty,
+		@Nullable ContainerProperty containerProperty,
 		@Nullable Property resolvedParentProperty,
 		TraverseContext context
 	) {
 		List<ObjectNode> children = new ArrayList<>();
 		ObjectProperty objectProperty = arbitraryProperty.getObjectProperty();
-		ContainerProperty containerProperty = arbitraryProperty.getContainerProperty();
 		boolean container = containerProperty != null;
 
 		Property resolvedProperty;
@@ -136,6 +142,7 @@ public final class ArbitraryTraverser {
 				generateChildrenNodes(
 					elementProperties,
 					arbitraryProperty,
+					containerProperty,
 					objectProperty.getProperty(),
 					context
 				)
@@ -155,6 +162,7 @@ public final class ArbitraryTraverser {
 					generateChildrenNodes(
 						childProperties,
 						arbitraryProperty,
+						null,
 						candidateProperty,
 						context
 					)
@@ -176,12 +184,13 @@ public final class ArbitraryTraverser {
 	private List<ObjectNode> generateChildrenNodes(
 		List<Property> childProperties,
 		ArbitraryProperty parentArbitraryProperty,
+		@Nullable ContainerProperty parentContainerProperty,
 		Property resolvedParentProperty,
 		TraverseContext context
 	) {
 		List<ObjectNode> children = new ArrayList<>();
 		List<ContainerInfoManipulator> containerInfoManipulators = context.getContainerInfoManipulators();
-		boolean container = parentArbitraryProperty.getContainerProperty() != null;
+		boolean container = parentContainerProperty != null;
 
 		for (int sequence = 0; sequence < childProperties.size(); sequence++) {
 			Property childProperty = childProperties.get(sequence);
@@ -213,6 +222,7 @@ public final class ArbitraryTraverser {
 			);
 
 			ContainerProperty childContainerProperty = null;
+			ContainerInfoManipulator appliedContainerInfoManipulator = null;
 			if (childContainer) {
 				List<ObjectProperty> objectProperties =
 					context.getArbitraryProperties().stream()
@@ -223,6 +233,7 @@ public final class ArbitraryTraverser {
 				for (ContainerInfoManipulator containerInfoManipulator : containerInfoManipulators) {
 					if (containerInfoManipulator.isMatch(objectProperties)) {
 						containerInfo = containerInfoManipulator.getContainerInfo();
+						appliedContainerInfoManipulator = containerInfoManipulator;
 					}
 				}
 				childContainerProperty = containerPropertyGenerator.generate(
@@ -237,7 +248,7 @@ public final class ArbitraryTraverser {
 
 			ArbitraryProperty childArbitraryProperty = new ArbitraryProperty(
 				childObjectProperty,
-				childContainerProperty
+				childContainerProperty != null
 			);
 
 			ObjectNode childNode;
@@ -251,9 +262,13 @@ public final class ArbitraryTraverser {
 			} else {
 				childNode = this.traverse(
 					childArbitraryProperty,
+					childContainerProperty,
 					resolvedParentProperty,
 					context.appendArbitraryProperty(childArbitraryProperty)
 				);
+			}
+			if (appliedContainerInfoManipulator != null) {
+				childNode.addContainerManipulator(appliedContainerInfoManipulator);
 			}
 			children.add(childNode);
 		}

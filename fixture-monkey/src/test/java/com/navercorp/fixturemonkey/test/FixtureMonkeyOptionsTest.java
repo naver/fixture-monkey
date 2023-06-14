@@ -1075,7 +1075,7 @@ class FixtureMonkeyOptionsTest {
 	@Property
 	void sampleNullableContainerWhenOptionNullableContainerIsSetReturnsNull() {
 		DefaultNullInjectGenerator nullInjectGenerator = new DefaultNullInjectGenerator(
-			1.0,
+			ALWAYS_NULL_INJECT,
 			true,
 			false,
 			false,

@@ -210,8 +210,7 @@ class FixtureMonkeyOptionsAdditionalTestSpecs {
 		@Override
 		public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
 			ArbitraryProperty property = context.getArbitraryProperty();
-			ArbitraryContainerInfo containerInfo = property.getContainerProperty().getContainerInfo();
-			if (containerInfo == null) {
+			if (!property.isContainer()) {
 				return ArbitraryIntrospectorResult.NOT_INTROSPECTED;
 			}
 

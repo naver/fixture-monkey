@@ -151,7 +151,7 @@ public final class DefaultNullInjectGenerator implements NullInjectGenerator {
 			nullable = this.nullableContainer;
 		}
 
-		if (context.getOwnerProperty() != null && context.getOwnerProperty().getContainerProperty() != null) {
+		if (context.getOwnerProperty() != null && context.getOwnerProperty().isContainer()) {
 			nullable = this.nullableElement;
 		}
 

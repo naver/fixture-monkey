@@ -35,7 +35,6 @@ import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.container.DecomposableJavaContainer;
 import com.navercorp.fixturemonkey.api.container.DecomposedContainerValueFactory;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
-import com.navercorp.fixturemonkey.api.generator.ContainerProperty;
 import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.type.Types;
@@ -97,28 +96,26 @@ public final class NodeSetDecomposedValueManipulator<T> implements NodeManipulat
 			return;
 		}
 
-		ContainerProperty containerProperty = objectNode.getArbitraryProperty().getContainerProperty();
-		if (containerProperty != null) {
+		boolean container = objectNode.getArbitraryProperty().isContainer();
+		if (container) {
 			DecomposableJavaContainer decomposableJavaContainer = decomposedContainerValueFactory.from(value);
 			Object containerValue = decomposableJavaContainer.getJavaContainer();
 			int decomposedContainerSize = decomposableJavaContainer.getSize();
 
-			boolean forced = containerProperty.getContainerInfo().getManipulatingSequence() == null
-				|| sequence > containerProperty.getContainerInfo().getManipulatingSequence();
+			ContainerInfoManipulator appliedContainerInfoManipulator = objectNode.getAppliedContainerInfoManipulator();
+			boolean forced = appliedContainerInfoManipulator == null
+				|| sequence > appliedContainerInfoManipulator.getManipulatingSequence();
 			if (forced) {
 				ContainerInfoManipulator containerInfoManipulator = new ContainerInfoManipulator(
 					IdentityNodeResolver.INSTANCE.toNextNodePredicate(),
-					new ArbitraryContainerInfo(decomposedContainerSize, decomposedContainerSize)
+					new ArbitraryContainerInfo(decomposedContainerSize, decomposedContainerSize),
+					sequence
 				);
 
 				ObjectNode newNode = traverser.traverse(
 					objectNode.getProperty(),
 					Collections.singletonList(containerInfoManipulator),
 					Collections.emptyList()
-				);
-				objectNode.setArbitraryProperty(
-					objectNode.getArbitraryProperty()
-						.withContainerProperty(newNode.getArbitraryProperty().getContainerProperty())
 				);
 				objectNode.setChildren(newNode.getChildren());
 			}
