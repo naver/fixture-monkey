@@ -27,7 +27,7 @@ import org.apiguardian.api.API.Status;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class StreamCache {
-	private static final LruCache<Stream<?>, List<?>> STREAM_TO_LIST = new LruCache<>(2000);
+	private static final LruCache<Stream<?>, List<?>> STREAM_TO_LIST = new LruCache<>(2048);
 
 	public static List<?> getList(Stream<?> stream) {
 		if (STREAM_TO_LIST.containsKey(stream)) {

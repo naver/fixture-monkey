@@ -23,7 +23,6 @@ import com.navercorp.fixturemonkey.api.generator.DefaultPropertyGenerator
 import com.navercorp.fixturemonkey.api.property.CompositeProperty
 import com.navercorp.fixturemonkey.api.property.Property
 import com.navercorp.fixturemonkey.api.property.PropertyGenerator
-import com.navercorp.fixturemonkey.api.type.Types
 import org.apiguardian.api.API
 import java.lang.reflect.AnnotatedType
 
@@ -37,10 +36,10 @@ class KotlinPropertyGenerator(
     private val javaDelegatePropertyGenerator: com.navercorp.fixturemonkey.api.generator.PropertyGenerator =
         DefaultPropertyGenerator(),
 ) : PropertyGenerator {
-    private val objectChildPropertiesCache = LruCache<Class<*>, List<Property>>(2000)
+    private val objectChildPropertiesCache = LruCache<AnnotatedType, List<Property>>(2048)
 
     override fun generateChildProperties(annotatedType: AnnotatedType): List<Property> =
-        objectChildPropertiesCache.computeIfAbsent(Types.getActualType(annotatedType.type)) {
+        objectChildPropertiesCache.computeIfAbsent(annotatedType) {
             val javaProperties = javaDelegatePropertyGenerator.generateChildProperties(annotatedType)
                 .filter { it.name != null }
                 .associateBy { it.name!! }
