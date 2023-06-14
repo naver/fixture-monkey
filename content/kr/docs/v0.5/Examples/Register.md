@@ -69,7 +69,7 @@ public class GenerateGroup {
 public class GenerateBuilderGroup implements ArbitraryBuilderGroup {
 	@Override
 	public ArbitraryBuilderCandidateList generateCandidateList() {
-		ArbitraryBuilderCandidateList.create()
+		return ArbitraryBuilderCandidateList.create()
 			.add(
 				ArbitraryBuilderCandidateFactory.of(GenerateString.class)
 					.builder(
