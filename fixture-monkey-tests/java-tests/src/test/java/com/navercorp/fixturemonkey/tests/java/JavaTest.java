@@ -28,15 +28,24 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
+import net.jqwik.api.Arbitraries;
+
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.exception.FilterMissException;
 import com.navercorp.fixturemonkey.api.introspector.ConstructorPropertiesArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
+import com.navercorp.fixturemonkey.resolver.ArbitraryBuilderCandidateFactory;
+import com.navercorp.fixturemonkey.resolver.ArbitraryBuilderCandidateList;
+import com.navercorp.fixturemonkey.tests.java.ImmutableDepthTestSpecs.DepthStringValueList;
+import com.navercorp.fixturemonkey.tests.java.ImmutableDepthTestSpecs.OneDepthStringValue;
+import com.navercorp.fixturemonkey.tests.java.ImmutableDepthTestSpecs.TwoDepthStringValue;
 import com.navercorp.fixturemonkey.tests.java.ImmutableGenericTypeSpecs.GenericArrayObject;
 import com.navercorp.fixturemonkey.tests.java.ImmutableGenericTypeSpecs.GenericImplementationObject;
 import com.navercorp.fixturemonkey.tests.java.ImmutableGenericTypeSpecs.GenericObject;
@@ -488,5 +497,36 @@ class JavaTest {
 			.sample();
 
 		then(actual).hasSize(3);
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void registerListWouldNotCached() {
+		AtomicInteger sequence = new AtomicInteger();
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)
+			.registerGroup(() -> ArbitraryBuilderCandidateList.create()
+				.add(
+					ArbitraryBuilderCandidateFactory
+						.of(DepthStringValueList.class)
+						.builder(builder -> builder.size("twoDepthList", 3))
+				)
+				.add(
+					ArbitraryBuilderCandidateFactory
+						.of(OneDepthStringValue.class)
+						.builder(builder -> builder.set(
+							"value",
+							Arbitraries.ofSuppliers(() -> String.valueOf(sequence.getAndIncrement()))
+						))
+				)
+			)
+			.build();
+
+		Set<String> actual = sut.giveMe(DepthStringValueList.class, 3).stream()
+			.flatMap(it -> it.getTwoDepthList().stream())
+			.map(TwoDepthStringValue::getValue)
+			.map(OneDepthStringValue::getValue)
+			.collect(Collectors.toSet());
+
+		then(actual).hasSize(9);
 	}
 }
