@@ -171,19 +171,21 @@ public final class ObjectTree {
 			generated = generated.filter(predicate);
 		}
 
-		FixtureCustomizer customizer = ctx.getFixtureCustomizers().stream()
-			.filter(it -> it.match(node.getProperty()))
-			.map(MatcherOperator::getOperator)
-			.findFirst()
-			.orElse(null);
+		boolean hasCustomizer = ctx.getFixtureCustomizers().stream()
+			.anyMatch(it -> it.match(node.getProperty()));
 
 		CombinableArbitrary arbitrary = generated;
-		if (customizer != null) {
-			arbitrary = new FixedCombinableArbitrary(
-				generated.combined().map(obj -> customizer.customizeFixture(obj))
-			);
+		if (hasCustomizer) {
+			arbitrary = new FixedCombinableArbitrary(generated.combined());
 		}
 
-		return arbitrary;
+		return arbitrary.map(
+			object -> ctx.getFixtureCustomizers().stream()
+				.filter(it -> it.match(node.getProperty()))
+				.map(MatcherOperator::getOperator)
+				.findFirst()
+				.map(it -> it.customizeFixture(object))
+				.orElse(object)
+		);
 	}
 }
