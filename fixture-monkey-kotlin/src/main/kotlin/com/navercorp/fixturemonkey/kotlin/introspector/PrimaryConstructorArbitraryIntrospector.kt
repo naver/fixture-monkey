@@ -37,7 +37,7 @@ import kotlin.reflect.full.primaryConstructor
 class PrimaryConstructorArbitraryIntrospector : ArbitraryIntrospector {
     companion object {
         val INSTANCE = PrimaryConstructorArbitraryIntrospector()
-        private val CONSTRUCTOR_CACHE = LruCache<Class<*>, KFunction<*>>(2000)
+        private val CONSTRUCTOR_CACHE = LruCache<Class<*>, KFunction<*>>(2048)
     }
 
     override fun introspect(context: ArbitraryGeneratorContext): ArbitraryIntrospectorResult {

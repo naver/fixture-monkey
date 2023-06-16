@@ -30,7 +30,7 @@ import com.navercorp.fixturemonkey.api.property.RootProperty;
 public final class MonkeyContextBuilder {
 	private LruCache<Property, CombinableArbitrary> arbitrariesByProperty;
 	private LruCache<RootProperty, MonkeyGeneratorContext> generatorContextByRootProperty;
-	private int cacheSize = 2000;
+	private int cacheSize = 2048;
 	private int generatorContextSize = 1000;
 
 	public MonkeyContextBuilder arbitrariesByProperty(

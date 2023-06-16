@@ -27,7 +27,7 @@ import java.lang.reflect.AnnotatedType
 import kotlin.reflect.KProperty
 import kotlin.reflect.full.memberProperties
 
-private val KPROPERTY_ANNOTATED_TYPE_MAP = LruCache<Class<*>, Collection<KProperty<*>>>(2000)
+private val KPROPERTY_ANNOTATED_TYPE_MAP = LruCache<Class<*>, Collection<KProperty<*>>>(2048)
 
 @API(since = "0.4.0", status = API.Status.EXPERIMENTAL)
 fun getMemberProperties(annotatedType: AnnotatedType): List<Property> {
