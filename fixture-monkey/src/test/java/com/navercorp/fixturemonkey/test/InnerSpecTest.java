@@ -22,12 +22,7 @@ import static com.navercorp.fixturemonkey.customizer.Values.NOT_NULL;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.assertj.core.api.BDDAssertions.thenThrownBy;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -107,6 +102,24 @@ class InnerSpecTest {
 		then(actual.keySet()).containsAll(
 			Stream.of("key1", "key2", "key3").collect(Collectors.toCollection(HashSet::new))
 		);
+	}
+
+	@Property
+	void keysCollection() {
+		// Given
+		List<String> keysList = Arrays.asList("key1", "key2", "key3");
+
+		// when
+		Map<String, String> actual = SUT.giveMeBuilder(MapObject.class)
+			.setInner(
+				new InnerSpec()
+					.property("strMap", m -> m.minSize(3).keys(keysList)) // using the keys method with a collection
+			)
+			.sample()
+			.getStrMap();
+
+		// then
+		then(actual.keySet()).containsAll(keysList);
 	}
 
 	@Property
