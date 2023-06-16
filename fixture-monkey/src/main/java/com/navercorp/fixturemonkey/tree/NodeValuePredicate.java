@@ -25,7 +25,7 @@ import com.navercorp.fixturemonkey.api.generator.ObjectProperty;
 import com.navercorp.fixturemonkey.api.property.MapValueElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 
-@API(since = "0.5.0", status = Status.EXPERIMENTAL)
+@API(since = "0.5.0", status = Status.MAINTAINED)
 public final class NodeValuePredicate implements NextNodePredicate {
 	@Override
 	public boolean test(ObjectProperty currentObjectProperty) {

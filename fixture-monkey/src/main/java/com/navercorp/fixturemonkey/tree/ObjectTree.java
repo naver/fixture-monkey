@@ -32,12 +32,10 @@ import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.context.MonkeyContext;
 import com.navercorp.fixturemonkey.api.context.MonkeyGeneratorContext;
-import com.navercorp.fixturemonkey.api.customizer.FixtureCustomizer;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.generator.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.generator.FixedCombinableArbitrary;
-import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.option.GenerateOptions;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
@@ -50,25 +48,17 @@ public final class ObjectTree {
 	private final GenerateOptions generateOptions;
 	private final ObjectTreeMetadata metadata;
 	private final MonkeyContext monkeyContext;
-	@SuppressWarnings("rawtypes")
-	private final List<MatcherOperator<? extends FixtureCustomizer>> customizers;
 
-	@SuppressWarnings("rawtypes")
 	public ObjectTree(
 		RootProperty rootProperty,
 		ObjectNode rootNode,
 		GenerateOptions generateOptions,
-		MonkeyContext monkeyContext,
-		List<MatcherOperator<? extends FixtureCustomizer>> builderCustomizer
+		MonkeyContext monkeyContext
 	) {
 		this.rootProperty = rootProperty;
 		this.rootNode = rootNode;
 		this.generateOptions = generateOptions;
 		this.monkeyContext = monkeyContext;
-		List<MatcherOperator<? extends FixtureCustomizer>> concat = new ArrayList<>();
-		concat.addAll(generateOptions.getArbitraryCustomizers());
-		concat.addAll(builderCustomizer);
-		this.customizers = concat;
 		MetadataCollector metadataCollector = new MetadataCollector(rootNode);
 		this.metadata = metadataCollector.collect();
 	}
@@ -122,7 +112,6 @@ public final class ObjectTree {
 
 				return generateIntrospected(ctx, node);
 			},
-			customizers,
 			monkeyGeneratorContext
 		);
 	}
@@ -141,16 +130,13 @@ public final class ObjectTree {
 
 			CombinableArbitrary cached = monkeyContext.getCachedArbitrary(node.getProperty());
 
-			boolean notCustomized = ctx.getFixtureCustomizers().stream()
-				.noneMatch(it -> it.match(node.getProperty()));
-
-			if (node.isNotManipulated() && notCustomized && cached != null) {
+			if (node.isNotManipulated() && cached != null) {
 				generated = cached;
 			} else {
 				generated = this.generateOptions.getArbitraryGenerator(node.getResolvedProperty())
 					.generate(childArbitraryGeneratorContext);
 
-				if (node.isNotManipulated() && notCustomized) {
+				if (node.isNotManipulated()) {
 					monkeyContext.putCachedArbitrary(
 						node.getProperty(),
 						generated
@@ -164,19 +150,6 @@ public final class ObjectTree {
 			generated = generated.filter(predicate);
 		}
 
-		FixtureCustomizer customizer = ctx.getFixtureCustomizers().stream()
-			.filter(it -> it.match(node.getProperty()))
-			.map(MatcherOperator::getOperator)
-			.findFirst()
-			.orElse(null);
-
-		CombinableArbitrary arbitrary = generated;
-		if (customizer != null) {
-			arbitrary = new FixedCombinableArbitrary(
-				generated.map(obj -> customizer.customizeFixture(obj)).combined()
-			);
-		}
-
-		return arbitrary;
+		return generated;
 	}
 }

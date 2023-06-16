@@ -21,7 +21,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import com.navercorp.fixturemonkey.api.introspector.BuilderArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.FieldReflectionArbitraryIntrospector;
-import com.navercorp.fixturemonkey.api.property.PropertyCache;
+import com.navercorp.fixturemonkey.api.type.TypeCache;
 import com.navercorp.fixturemonkey.jackson.plugin.JacksonPlugin;
 import com.navercorp.fixturemonkey.javax.validation.plugin.JavaxValidationPlugin;
 
@@ -37,7 +37,7 @@ public class ObjectGenerationBenchmark {
 
 	@Setup(value = Level.Iteration)
 	public void setUp() {
-		PropertyCache.clearCache();
+		TypeCache.clearCache();
 	}
 
 	@Benchmark

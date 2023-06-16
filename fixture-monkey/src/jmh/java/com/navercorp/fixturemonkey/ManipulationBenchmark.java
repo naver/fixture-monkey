@@ -15,7 +15,7 @@ import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.infra.Blackhole;
 
-import com.navercorp.fixturemonkey.api.property.PropertyCache;
+import com.navercorp.fixturemonkey.api.type.TypeCache;
 import com.navercorp.fixturemonkey.javax.validation.plugin.JavaxValidationPlugin;
 
 @SuppressWarnings("unused")
@@ -30,7 +30,7 @@ public class ManipulationBenchmark {
 
 	@Setup(value = Level.Iteration)
 	public void setUp() {
-		PropertyCache.clearCache();
+		TypeCache.clearCache();
 	}
 
 	@Benchmark

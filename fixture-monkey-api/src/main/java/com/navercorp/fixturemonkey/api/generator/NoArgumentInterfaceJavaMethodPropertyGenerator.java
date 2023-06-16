@@ -31,18 +31,19 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apiguardian.api.API;
+import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.property.InterfaceJavaMethodProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
-import com.navercorp.fixturemonkey.api.property.PropertyCache;
 import com.navercorp.fixturemonkey.api.property.PropertyGenerator;
+import com.navercorp.fixturemonkey.api.type.TypeCache;
 import com.navercorp.fixturemonkey.api.type.Types;
 
 /**
  * A property generator for generating no-argument Java interface method.
  * It generates {@link InterfaceJavaMethodProperty}.
  */
-@API(since = "0.5.5", status = API.Status.EXPERIMENTAL)
+@API(since = "0.5.5", status = Status.MAINTAINED)
 public final class NoArgumentInterfaceJavaMethodPropertyGenerator implements PropertyGenerator {
 	@Override
 	public List<Property> generateChildProperties(
@@ -50,7 +51,7 @@ public final class NoArgumentInterfaceJavaMethodPropertyGenerator implements Pro
 	) {
 		Class<?> actualType = Types.getActualType(annotatedType.getType());
 		Map<Method, String> propertyNamesByGetter =
-			PropertyCache.getPropertyDescriptorsByPropertyName(annotatedType).values().stream()
+			TypeCache.getPropertyDescriptorsByPropertyName(actualType).values().stream()
 				.collect(
 					toMap(
 						PropertyDescriptor::getReadMethod,

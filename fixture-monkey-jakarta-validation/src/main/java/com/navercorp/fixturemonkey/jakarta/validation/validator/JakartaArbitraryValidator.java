@@ -31,7 +31,7 @@ import jakarta.validation.Validator;
 import com.navercorp.fixturemonkey.api.exception.ValidationFailedException;
 import com.navercorp.fixturemonkey.api.validator.ArbitraryValidator;
 
-@API(since = "0.5.6", status = Status.EXPERIMENTAL)
+@API(since = "0.5.6", status = Status.MAINTAINED)
 public final class JakartaArbitraryValidator implements ArbitraryValidator {
 	private Validator validator;
 

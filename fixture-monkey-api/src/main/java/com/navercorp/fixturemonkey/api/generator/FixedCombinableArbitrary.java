@@ -26,7 +26,7 @@ import org.apiguardian.api.API.Status;
 /**
  * It would generate a fixed value {@code object}.
  */
-@API(since = "0.5.0", status = Status.EXPERIMENTAL)
+@API(since = "0.5.0", status = Status.MAINTAINED)
 public final class FixedCombinableArbitrary implements CombinableArbitrary {
 	private final Object object;
 

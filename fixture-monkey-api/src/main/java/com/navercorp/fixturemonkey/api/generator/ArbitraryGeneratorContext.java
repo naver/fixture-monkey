@@ -18,6 +18,8 @@
 
 package com.navercorp.fixturemonkey.api.generator;
 
+import static java.util.stream.Collectors.toMap;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Type;
@@ -26,6 +28,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.BiFunction;
@@ -36,9 +39,7 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.context.MonkeyGeneratorContext;
-import com.navercorp.fixturemonkey.api.customizer.FixtureCustomizer;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
-import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.property.Property;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
@@ -54,24 +55,19 @@ public final class ArbitraryGeneratorContext {
 
 	private final BiFunction<ArbitraryGeneratorContext, ArbitraryProperty, CombinableArbitrary> resolveArbitrary;
 
-	@SuppressWarnings("rawtypes")
-	private final List<MatcherOperator<? extends FixtureCustomizer>> fixtureCustomizers;
-
 	private final MonkeyGeneratorContext monkeyGeneratorContext;
 
 	private final LazyArbitrary<PropertyPath> pathProperty = LazyArbitrary.lazy(this::initPathProperty);
 
-	private final LazyArbitrary<ChildArbitraryContext> childArbitraryContext =
-		LazyArbitrary.lazy(this::initChildArbitraryContext);
+	private final LazyArbitrary<Map<ArbitraryProperty, CombinableArbitrary>> arbitraryListByArbitraryProperty =
+		LazyArbitrary.lazy(this::initArbitraryListByArbitraryProperty);
 
-	@SuppressWarnings("rawtypes")
 	public ArbitraryGeneratorContext(
 		Property resolvedProperty,
 		ArbitraryProperty property,
 		List<ArbitraryProperty> children,
 		@Nullable ArbitraryGeneratorContext ownerContext,
 		BiFunction<ArbitraryGeneratorContext, ArbitraryProperty, CombinableArbitrary> resolveArbitrary,
-		List<MatcherOperator<? extends FixtureCustomizer>> fixtureCustomizers,
 		MonkeyGeneratorContext monkeyGeneratorContext
 	) {
 		this.resolvedProperty = resolvedProperty;
@@ -79,7 +75,6 @@ public final class ArbitraryGeneratorContext {
 		this.children = new ArrayList<>(children);
 		this.ownerContext = ownerContext;
 		this.resolveArbitrary = resolveArbitrary;
-		this.fixtureCustomizers = fixtureCustomizers;
 		this.monkeyGeneratorContext = monkeyGeneratorContext;
 	}
 
@@ -108,24 +103,22 @@ public final class ArbitraryGeneratorContext {
 	}
 
 	public Map<ArbitraryProperty, CombinableArbitrary> getCombinableArbitrariesByArbitraryProperty() {
-		return childArbitraryContext.getValue().getCombinableArbitrariesByArbitraryProperty();
+		return arbitraryListByArbitraryProperty.getValue().entrySet().stream()
+			.collect(toMap(Entry::getKey, Entry::getValue));
 	}
 
 	public Map<String, CombinableArbitrary> getCombinableArbitrariesByResolvedName() {
-		return childArbitraryContext.getValue().getCombinableArbitrariesByResolvedName();
+		return arbitraryListByArbitraryProperty.getValue().entrySet().stream()
+			.collect(toMap(it -> it.getKey().getObjectProperty().getResolvedPropertyName(), Entry::getValue));
 	}
 
 	public Map<String, CombinableArbitrary> getCombinableArbitrariesByPropertyName() {
-		return childArbitraryContext.getValue().getCombinableArbitraryByPropertyName();
+		return arbitraryListByArbitraryProperty.getValue().entrySet().stream()
+			.collect(toMap(it -> it.getKey().getObjectProperty().getProperty().getName(), Entry::getValue));
 	}
 
 	public List<CombinableArbitrary> getElementCombinableArbitraryList() {
-		return childArbitraryContext.getValue().getElementCombinableArbitraryList();
-	}
-
-	@Deprecated // would be removed in 0.6.0
-	public List<Object> getArbitraries() {
-		return childArbitraryContext.getValue().getArbitraries();
+		return new ArrayList<>(arbitraryListByArbitraryProperty.getValue().values());
 	}
 
 	@Nullable
@@ -135,11 +128,6 @@ public final class ArbitraryGeneratorContext {
 
 	public boolean isRootContext() {
 		return this.property.getObjectProperty().isRoot();
-	}
-
-	@SuppressWarnings("rawtypes")
-	public List<MatcherOperator<? extends FixtureCustomizer>> getFixtureCustomizers() {
-		return fixtureCustomizers;
 	}
 
 	public synchronized boolean isUniqueAndCheck(PropertyPath property, Object value) {
@@ -167,25 +155,14 @@ public final class ArbitraryGeneratorContext {
 		);
 	}
 
-	private ChildArbitraryContext initChildArbitraryContext() {
+	private Map<ArbitraryProperty, CombinableArbitrary> initArbitraryListByArbitraryProperty() {
 		Map<ArbitraryProperty, CombinableArbitrary> childrenValues = new LinkedHashMap<>();
 		for (ArbitraryProperty child : this.getChildren()) {
 			CombinableArbitrary arbitrary = this.resolveArbitrary.apply(this, child);
 			childrenValues.put(child, arbitrary);
 		}
 
-		ChildArbitraryContext childArbitraryContext = new ChildArbitraryContext(
-			property.getObjectProperty().getProperty(),
-			childrenValues
-		);
-
-		fixtureCustomizers.stream()
-			.filter(it -> it.match(property.getObjectProperty().getProperty()))
-			.map(MatcherOperator::getOperator)
-			.findFirst()
-			.ifPresent(customizer -> customizer.customizeProperties(childArbitraryContext));
-
-		return childArbitraryContext;
+		return childrenValues;
 	}
 
 	public static class PropertyPath implements Comparable<PropertyPath> {

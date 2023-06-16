@@ -33,7 +33,7 @@ import com.navercorp.fixturemonkey.api.exception.ValidationFailedException;
  * It would try {@code maxMisses} times, {@code maxMisses} is 1000 in default.
  * It would try {@link #FAILED_THRESHOLD} times when the parent {@link CombinableArbitrary} make it regenerate.
  */
-@API(since = "0.5.0", status = Status.EXPERIMENTAL)
+@API(since = "0.5.0", status = Status.MAINTAINED)
 public final class FilteredCombinableArbitrary implements CombinableArbitrary {
 	private static final int FAILED_THRESHOLD = 3;
 

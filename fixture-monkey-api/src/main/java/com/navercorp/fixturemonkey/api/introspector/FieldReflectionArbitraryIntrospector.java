@@ -33,8 +33,8 @@ import com.navercorp.fixturemonkey.api.generator.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.generator.LazyCombinableArbitrary;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.api.property.Property;
-import com.navercorp.fixturemonkey.api.property.PropertyCache;
 import com.navercorp.fixturemonkey.api.type.Reflections;
+import com.navercorp.fixturemonkey.api.type.TypeCache;
 import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
@@ -53,7 +53,7 @@ public final class FieldReflectionArbitraryIntrospector implements ArbitraryIntr
 		List<ArbitraryProperty> childrenProperties = context.getChildren();
 		Map<String, CombinableArbitrary> arbitrariesByResolvedName
 			= context.getCombinableArbitrariesByResolvedName();
-		Map<String, Field> fields = PropertyCache.getFieldsByName(property.getAnnotatedType());
+		Map<String, Field> fields = TypeCache.getFieldsByName(type);
 
 		LazyArbitrary<Object> generateArbitrary = LazyArbitrary.lazy(
 			() -> {

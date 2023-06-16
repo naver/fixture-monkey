@@ -42,7 +42,6 @@ import javax.annotation.Nullable;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.api.customizer.FixtureCustomizer;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfoGenerator;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.generator.ArrayContainerPropertyGenerator;
@@ -57,7 +56,6 @@ import com.navercorp.fixturemonkey.api.generator.NullInjectGenerator;
 import com.navercorp.fixturemonkey.api.generator.NullObjectPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.OptionalContainerPropertyGenerator;
-import com.navercorp.fixturemonkey.api.generator.PropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.SetContainerPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.SingleValueObjectPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.StreamContainerPropertyGenerator;
@@ -68,6 +66,7 @@ import com.navercorp.fixturemonkey.api.matcher.Matchers;
 import com.navercorp.fixturemonkey.api.matcher.SingleGenericTypeMatcher;
 import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
+import com.navercorp.fixturemonkey.api.property.PropertyGenerator;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.api.type.Types.UnidentifiableType;
@@ -114,10 +113,6 @@ public final class GenerateOptions {
 	private final ArbitraryContainerInfoGenerator defaultArbitraryContainerInfoGenerator;
 	private final List<MatcherOperator<ArbitraryGenerator>> arbitraryGenerators;
 	private final ArbitraryGenerator defaultArbitraryGenerator;
-
-	@SuppressWarnings("rawtypes")
-	@Deprecated // It would be removed in 0.6.0
-	private final List<MatcherOperator<FixtureCustomizer>> arbitraryCustomizers;
 	private final ArbitraryValidator defaultArbitraryValidator;
 
 	@SuppressWarnings("rawtypes")
@@ -135,7 +130,6 @@ public final class GenerateOptions {
 		ArbitraryContainerInfoGenerator defaultArbitraryContainerInfoGenerator,
 		List<MatcherOperator<ArbitraryGenerator>> arbitraryGenerators,
 		ArbitraryGenerator defaultArbitraryGenerator,
-		List<MatcherOperator<FixtureCustomizer>> arbitraryCustomizers,
 		ArbitraryValidator defaultArbitraryValidator
 	) {
 		this.propertyGenerators = propertyGenerators;
@@ -151,7 +145,6 @@ public final class GenerateOptions {
 		this.defaultArbitraryContainerInfoGenerator = defaultArbitraryContainerInfoGenerator;
 		this.arbitraryGenerators = arbitraryGenerators;
 		this.defaultArbitraryGenerator = defaultArbitraryGenerator;
-		this.arbitraryCustomizers = arbitraryCustomizers;
 		this.defaultArbitraryValidator = defaultArbitraryValidator;
 	}
 
@@ -266,12 +259,6 @@ public final class GenerateOptions {
 
 	public ArbitraryGenerator getDefaultArbitraryGenerator() {
 		return this.defaultArbitraryGenerator;
-	}
-
-	@SuppressWarnings("rawtypes")
-	@Deprecated // It would be removed in 0.6.0
-	public List<MatcherOperator<FixtureCustomizer>> getArbitraryCustomizers() {
-		return arbitraryCustomizers;
 	}
 
 	public ArbitraryValidator getDefaultArbitraryValidator() {

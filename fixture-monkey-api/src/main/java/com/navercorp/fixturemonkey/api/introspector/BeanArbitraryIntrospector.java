@@ -34,8 +34,8 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.generator.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.generator.ObjectCombinableArbitrary;
 import com.navercorp.fixturemonkey.api.property.Property;
-import com.navercorp.fixturemonkey.api.property.PropertyCache;
 import com.navercorp.fixturemonkey.api.type.Reflections;
+import com.navercorp.fixturemonkey.api.type.TypeCache;
 import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
@@ -53,9 +53,8 @@ public final class BeanArbitraryIntrospector implements ArbitraryIntrospector {
 
 		Map<ArbitraryProperty, CombinableArbitrary> arbitrariesByArbitraryProperty =
 			context.getCombinableArbitrariesByArbitraryProperty();
-		Map<String, PropertyDescriptor> propertyDescriptors = PropertyCache.getPropertyDescriptorsByPropertyName(
-			property.getAnnotatedType()
-		);
+		Map<String, PropertyDescriptor> propertyDescriptors =
+			TypeCache.getPropertyDescriptorsByPropertyName(type);
 
 		return new ArbitraryIntrospectorResult(
 			new ObjectCombinableArbitrary(

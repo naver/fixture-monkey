@@ -42,8 +42,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.annotation.Nullable;
-
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
 import net.jqwik.api.Property;
@@ -51,10 +49,6 @@ import net.jqwik.api.Property;
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.ArbitraryBuilders;
 import com.navercorp.fixturemonkey.FixtureMonkey;
-import com.navercorp.fixturemonkey.api.customizer.FixtureCustomizer;
-import com.navercorp.fixturemonkey.api.generator.ChildArbitraryContext;
-import com.navercorp.fixturemonkey.api.matcher.ExactTypeMatcher;
-import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.customizer.Values;
 import com.navercorp.fixturemonkey.test.ExpressionGeneratorTestSpecs.StringValue;
@@ -1254,81 +1248,6 @@ class FixtureMonkeyTest {
 			.getStrStream();
 
 		then(actual.collect(Collectors.toList()).get(0)).isEqualTo(expected);
-	}
-
-	@Property
-	void giveMeOneCustomizerCustomizeFixture() {
-		String expected = "test";
-
-		String actual = SUT.giveMeOne(
-			String.class,
-			str -> expected
-		);
-
-		then(actual).isEqualTo(expected);
-	}
-
-	@Property
-	void giveMeOneCustomizerCustomizeProperties() {
-		// given
-		String expected = "test";
-		FixtureCustomizer<SimpleObject> customizer = new FixtureCustomizer<SimpleObject>() {
-			@Override
-			public void customizeProperties(ChildArbitraryContext childArbitraryContext) {
-				childArbitraryContext.replaceArbitrary(
-					new ExactTypeMatcher(String.class),
-					Arbitraries.just(expected)
-				);
-			}
-
-			@Nullable
-			@Override
-			public SimpleObject customizeFixture(@Nullable SimpleObject obj) {
-				return obj;
-			}
-		};
-
-		// when
-		String actual = SUT.giveMeOne(
-				SimpleObject.class,
-				customizer)
-			.getStr();
-
-		then(actual).isEqualTo(expected);
-	}
-
-	@Property
-	void customize() {
-		String expected = "test";
-
-		String actual = SUT.giveMeBuilder(String.class)
-			.customize(MatcherOperator.exactTypeMatchOperator(String.class, it -> expected))
-			.sample();
-
-		then(actual).isEqualTo(expected);
-	}
-
-	@Property
-	void customizeRemoveArbitrary() {
-		FixtureCustomizer<SimpleObject> customizer = new FixtureCustomizer<SimpleObject>() {
-			@Override
-			public void customizeProperties(ChildArbitraryContext childArbitraryContext) {
-				childArbitraryContext.removeArbitrary(it -> "str".equals(it.getName()));
-			}
-
-			@Nullable
-			@Override
-			public SimpleObject customizeFixture(@Nullable SimpleObject obj) {
-				return obj;
-			}
-		};
-
-		String actual = SUT.giveMeBuilder(SimpleObject.class)
-			.customize(MatcherOperator.exactTypeMatchOperator(SimpleObject.class, customizer))
-			.sample()
-			.getStr();
-
-		then(actual).isNull();
 	}
 
 	@Property

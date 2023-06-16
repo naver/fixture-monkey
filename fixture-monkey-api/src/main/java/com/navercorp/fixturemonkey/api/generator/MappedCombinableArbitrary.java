@@ -26,7 +26,7 @@ import org.apiguardian.api.API.Status;
 /**
  * It would transform a generated object into a new object.
  */
-@API(since = "0.5.0", status = Status.EXPERIMENTAL)
+@API(since = "0.5.0", status = Status.MAINTAINED)
 public final class MappedCombinableArbitrary implements CombinableArbitrary {
 	private final CombinableArbitrary combinableArbitrary;
 	private final Function<Object, Object> mapper;

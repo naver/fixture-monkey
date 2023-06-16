@@ -33,7 +33,7 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
-import com.navercorp.fixturemonkey.api.property.PropertyCache;
+import com.navercorp.fixturemonkey.api.property.PropertyValue;
 
 @SuppressWarnings({"rawtypes", "unused"})
 class TypesTest {
@@ -232,14 +232,29 @@ class TypesTest {
 	}
 
 	@Test
+	void getFields() {
+		Map<String, Field> actual = TypeCache.getFieldsByName(PropertyValue.class);
+		then(actual).hasSize(1);
+		then(actual.get("name")).isNotNull();
+		then(actual.get("name").getName()).isEqualTo("name");
+	}
+
+	@Test
+	void getPropertyDescriptors() {
+		Map<String, PropertyDescriptor> actual = TypeCache.getPropertyDescriptorsByPropertyName(PropertyValue.class);
+		then(actual).hasSize(1);
+
+		then(actual.get("name")).isNotNull();
+		then(actual.get("name").getName()).isEqualTo("name");
+	}
+
+	@Test
 	void resolveWithTypeReferenceGenerics() {
 		// given
 		TypeReference<GenericSample<String>> typeReference = new TypeReference<GenericSample<String>>() {
 		};
 
-		Map<String, Field> fields = PropertyCache.getFieldsByName(
-			Types.generateAnnotatedTypeWithoutAnnotation(GenericSample.class)
-		);
+		Map<String, Field> fields = TypeCache.getFieldsByName(GenericSample.class);
 		Field field = fields.get("name");
 
 		// when
@@ -257,8 +272,7 @@ class TypesTest {
 		TypeReference<GenericSample<String>> typeReference = new TypeReference<GenericSample<String>>() {
 		};
 
-		Map<String, Field> fields = PropertyCache.getFieldsByName(
-			Types.generateAnnotatedTypeWithoutAnnotation(GenericSample.class));
+		Map<String, Field> fields = TypeCache.getFieldsByName(GenericSample.class);
 		Field field = fields.get("sample2");
 
 		// when
@@ -281,8 +295,7 @@ class TypesTest {
 		TypeReference<GenericSample<String>> typeReference = new TypeReference<GenericSample<String>>() {
 		};
 
-		Map<String, Field> fields = PropertyCache.getFieldsByName(
-			Types.generateAnnotatedTypeWithoutAnnotation(GenericSample.class));
+		Map<String, Field> fields = TypeCache.getFieldsByName(GenericSample.class);
 		Field field = fields.get("list");
 
 		// when
@@ -305,8 +318,7 @@ class TypesTest {
 		TypeReference<GenericSample<String>> typeReference = new TypeReference<GenericSample<String>>() {
 		};
 
-		Map<String, Field> fields = PropertyCache.getFieldsByName(
-			Types.generateAnnotatedTypeWithoutAnnotation(GenericSample.class));
+		Map<String, Field> fields = TypeCache.getFieldsByName(GenericSample.class);
 		Field field = fields.get("samples");
 
 		// when
@@ -329,9 +341,7 @@ class TypesTest {
 		TypeReference<Sample> typeReference = new TypeReference<Sample>() {
 		};
 
-		Map<String, Field> fields = PropertyCache.getFieldsByName(
-			Types.generateAnnotatedTypeWithoutAnnotation(Sample.class)
-		);
+		Map<String, Field> fields = TypeCache.getFieldsByName(Sample.class);
 		Field field = fields.get("name");
 
 		// when
@@ -348,8 +358,7 @@ class TypesTest {
 		TypeReference<GenericSample<?>> typeReference = new TypeReference<GenericSample<?>>() {
 		};
 
-		Map<String, Field> fields = PropertyCache.getFieldsByName(
-			Types.generateAnnotatedTypeWithoutAnnotation(GenericSample.class));
+		Map<String, Field> fields = TypeCache.getFieldsByName(GenericSample.class);
 		Field field = fields.get("name");
 
 		// when
@@ -368,8 +377,7 @@ class TypesTest {
 		TypeReference<GenericSample> typeReference = new TypeReference<GenericSample>() {
 		};
 
-		Map<String, Field> fields = PropertyCache.getFieldsByName(
-			Types.generateAnnotatedTypeWithoutAnnotation(GenericSample.class));
+		Map<String, Field> fields = TypeCache.getFieldsByName(GenericSample.class);
 		Field field = fields.get("name");
 
 		// when
@@ -387,9 +395,7 @@ class TypesTest {
 			new TypeReference<BiGenericSample<Integer, String>>() {
 			};
 
-		Map<String, Field> fields = PropertyCache.getFieldsByName(
-			Types.generateAnnotatedTypeWithoutAnnotation(BiGenericSample.class)
-		);
+		Map<String, Field> fields = TypeCache.getFieldsByName(BiGenericSample.class);
 		Field field = fields.get("name");
 
 		// when
@@ -407,9 +413,7 @@ class TypesTest {
 			new TypeReference<BiGenericSample<Integer, String>>() {
 			};
 
-		Map<String, Field> fields = PropertyCache.getFieldsByName(
-			Types.generateAnnotatedTypeWithoutAnnotation(BiGenericSample.class)
-		);
+		Map<String, Field> fields = TypeCache.getFieldsByName(BiGenericSample.class);
 		Field field = fields.get("address");
 
 		// when
@@ -427,9 +431,7 @@ class TypesTest {
 			new TypeReference<BiGenericSample<Integer, String>>() {
 			};
 
-		Map<String, Field> fields = PropertyCache.getFieldsByName(
-			Types.generateAnnotatedTypeWithoutAnnotation(BiGenericSample.class)
-		);
+		Map<String, Field> fields = TypeCache.getFieldsByName(BiGenericSample.class);
 		Field field = fields.get("sample2");
 
 		// when
@@ -454,9 +456,7 @@ class TypesTest {
 			new TypeReference<BiGenericSample<GenericSample<Integer>, BiGenericSample<Integer, String>>>() {
 			};
 
-		Map<String, Field> fields = PropertyCache.getFieldsByName(
-			Types.generateAnnotatedTypeWithoutAnnotation(BiGenericSample.class)
-		);
+		Map<String, Field> fields = TypeCache.getFieldsByName(BiGenericSample.class);
 		Field field = fields.get("sample2");
 
 		// when
@@ -495,9 +495,7 @@ class TypesTest {
 		};
 
 		Map<String, PropertyDescriptor> propertyDescriptors =
-			PropertyCache.getPropertyDescriptorsByPropertyName(
-				Types.generateAnnotatedTypeWithoutAnnotation(GenericSample.class)
-			);
+			TypeCache.getPropertyDescriptorsByPropertyName(GenericSample.class);
 		PropertyDescriptor propertyDescriptor = propertyDescriptors.get("name");
 
 		// when
@@ -514,14 +512,12 @@ class TypesTest {
 		};
 
 		Map<String, PropertyDescriptor> propertyDescriptors =
-			PropertyCache.getPropertyDescriptorsByPropertyName(
-				Types.generateAnnotatedTypeWithoutAnnotation(GenericSample.class)
-			);
+			TypeCache.getPropertyDescriptorsByPropertyName(GenericSample.class);
 		PropertyDescriptor propertyDescriptor = propertyDescriptors.get("sample2");
 
 		// when
-		AnnotatedType actual = Types.resolveWithTypeReferenceGenerics(
-			typeReference.getAnnotatedType(), propertyDescriptor);
+		AnnotatedType actual =
+			Types.resolveWithTypeReferenceGenerics(typeReference.getAnnotatedType(), propertyDescriptor);
 
 		then(actual).isInstanceOf(AnnotatedParameterizedType.class);
 		then(actual.getType()).isInstanceOf(ParameterizedType.class);
@@ -539,8 +535,7 @@ class TypesTest {
 		};
 
 		Map<String, PropertyDescriptor> propertyDescriptors =
-			PropertyCache.getPropertyDescriptorsByPropertyName(
-				Types.generateAnnotatedTypeWithoutAnnotation(GenericSample.class));
+			TypeCache.getPropertyDescriptorsByPropertyName(GenericSample.class);
 		PropertyDescriptor propertyDescriptor = propertyDescriptors.get("list");
 
 		// when
@@ -563,13 +558,12 @@ class TypesTest {
 		};
 
 		Map<String, PropertyDescriptor> propertyDescriptors =
-			PropertyCache.getPropertyDescriptorsByPropertyName(
-				Types.generateAnnotatedTypeWithoutAnnotation(GenericSample.class));
+			TypeCache.getPropertyDescriptorsByPropertyName(GenericSample.class);
 		PropertyDescriptor propertyDescriptor = propertyDescriptors.get("samples");
 
 		// when
-		AnnotatedType actual = Types.resolveWithTypeReferenceGenerics(
-			typeReference.getAnnotatedType(), propertyDescriptor);
+		AnnotatedType actual =
+			Types.resolveWithTypeReferenceGenerics(typeReference.getAnnotatedType(), propertyDescriptor);
 
 		then(actual).isInstanceOf(AnnotatedParameterizedType.class);
 		then(actual.getType()).isInstanceOf(ParameterizedType.class);
@@ -586,9 +580,8 @@ class TypesTest {
 		TypeReference<Sample> typeReference = new TypeReference<Sample>() {
 		};
 
-		Map<String, PropertyDescriptor> propertyDescriptors = PropertyCache.getPropertyDescriptorsByPropertyName(
-			Types.generateAnnotatedTypeWithoutAnnotation(Sample.class)
-		);
+		Map<String, PropertyDescriptor> propertyDescriptors =
+			TypeCache.getPropertyDescriptorsByPropertyName(Sample.class);
 		PropertyDescriptor propertyDescriptor = propertyDescriptors.get("name");
 
 		// when
@@ -605,8 +598,7 @@ class TypesTest {
 		};
 
 		Map<String, PropertyDescriptor> propertyDescriptors =
-			PropertyCache.getPropertyDescriptorsByPropertyName(
-				Types.generateAnnotatedTypeWithoutAnnotation(GenericSample.class));
+			TypeCache.getPropertyDescriptorsByPropertyName(GenericSample.class);
 		PropertyDescriptor propertyDescriptor = propertyDescriptors.get("name");
 
 		// when
@@ -625,9 +617,7 @@ class TypesTest {
 		};
 
 		Map<String, PropertyDescriptor> propertyDescriptors =
-			PropertyCache.getPropertyDescriptorsByPropertyName(
-				Types.generateAnnotatedTypeWithoutAnnotation(GenericSample.class)
-			);
+			TypeCache.getPropertyDescriptorsByPropertyName(GenericSample.class);
 		PropertyDescriptor propertyDescriptor = propertyDescriptors.get("name");
 
 		// when
@@ -644,9 +634,8 @@ class TypesTest {
 			new TypeReference<BiGenericSample<Integer, String>>() {
 			};
 
-		Map<String, PropertyDescriptor> propertyDescriptors = PropertyCache.getPropertyDescriptorsByPropertyName(
-			Types.generateAnnotatedTypeWithoutAnnotation(BiGenericSample.class)
-		);
+		Map<String, PropertyDescriptor> propertyDescriptors =
+			TypeCache.getPropertyDescriptorsByPropertyName(BiGenericSample.class);
 		PropertyDescriptor propertyDescriptor = propertyDescriptors.get("name");
 
 		// when
@@ -663,14 +652,13 @@ class TypesTest {
 			new TypeReference<BiGenericSample<Integer, String>>() {
 			};
 
-		Map<String, PropertyDescriptor> propertyDescriptors = PropertyCache.getPropertyDescriptorsByPropertyName(
-			Types.generateAnnotatedTypeWithoutAnnotation(BiGenericSample.class)
-		);
+		Map<String, PropertyDescriptor> propertyDescriptors =
+			TypeCache.getPropertyDescriptorsByPropertyName(BiGenericSample.class);
 		PropertyDescriptor propertyDescriptor = propertyDescriptors.get("address");
 
 		// when
-		AnnotatedType actual = Types.resolveWithTypeReferenceGenerics(
-			typeReference.getAnnotatedType(), propertyDescriptor);
+		AnnotatedType actual =
+			Types.resolveWithTypeReferenceGenerics(typeReference.getAnnotatedType(), propertyDescriptor);
 
 		then(actual.getType()).isEqualTo(String.class);
 	}
@@ -682,9 +670,8 @@ class TypesTest {
 			new TypeReference<BiGenericSample<Integer, String>>() {
 			};
 
-		Map<String, PropertyDescriptor> propertyDescriptors = PropertyCache.getPropertyDescriptorsByPropertyName(
-			Types.generateAnnotatedTypeWithoutAnnotation(BiGenericSample.class)
-		);
+		Map<String, PropertyDescriptor> propertyDescriptors =
+			TypeCache.getPropertyDescriptorsByPropertyName(BiGenericSample.class);
 		PropertyDescriptor propertyDescriptor = propertyDescriptors.get("sample2");
 
 		// when
@@ -708,8 +695,8 @@ class TypesTest {
 			new TypeReference<BiGenericSample<GenericSample<Integer>, BiGenericSample<Integer, String>>>() {
 			};
 
-		Map<String, PropertyDescriptor> propertyDescriptors = PropertyCache.getPropertyDescriptorsByPropertyName(
-			Types.generateAnnotatedTypeWithoutAnnotation(BiGenericSample.class)
+		Map<String, PropertyDescriptor> propertyDescriptors = TypeCache.getPropertyDescriptorsByPropertyName(
+			BiGenericSample.class
 		);
 		PropertyDescriptor propertyDescriptor = propertyDescriptors.get("sample2");
 

@@ -18,6 +18,9 @@
 
 package com.navercorp.fixturemonkey.api.property;
 
+import java.lang.reflect.AnnotatedType;
+import java.util.List;
+
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
@@ -26,7 +29,8 @@ import org.apiguardian.api.API.Status;
  * Property could be field or JavaBeans property or method or constructor parameter.
  * It should generate properties whose name is unique.
  */
-@API(since = "0.5.3", status = Status.EXPERIMENTAL)
+@API(since = "0.5.3", status = Status.MAINTAINED)
 @FunctionalInterface
-public interface PropertyGenerator extends com.navercorp.fixturemonkey.api.generator.PropertyGenerator {
+public interface PropertyGenerator {
+	List<Property> generateChildProperties(AnnotatedType annotatedType);
 }

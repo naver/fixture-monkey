@@ -32,14 +32,12 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.context.MonkeyContext;
-import com.navercorp.fixturemonkey.api.customizer.FixtureCustomizer;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfoGenerator;
 import com.navercorp.fixturemonkey.api.generator.ContainerPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.InterfaceObjectPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.NullInjectGenerator;
 import com.navercorp.fixturemonkey.api.generator.NullObjectPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGenerator;
-import com.navercorp.fixturemonkey.api.generator.PropertyGenerator;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.CompositeArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.JavaArbitraryResolver;
@@ -53,12 +51,12 @@ import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.option.GenerateOptions;
 import com.navercorp.fixturemonkey.api.option.GenerateOptionsBuilder;
 import com.navercorp.fixturemonkey.api.plugin.Plugin;
+import com.navercorp.fixturemonkey.api.property.PropertyGenerator;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.api.validator.ArbitraryValidator;
 import com.navercorp.fixturemonkey.buildergroup.ArbitraryBuilderCandidate;
 import com.navercorp.fixturemonkey.buildergroup.ArbitraryBuilderGroup;
-import com.navercorp.fixturemonkey.expression.MonkeyExpressionFactory;
 import com.navercorp.fixturemonkey.resolver.DecomposableContainerValue;
 import com.navercorp.fixturemonkey.resolver.DecomposedContainerValueFactory;
 import com.navercorp.fixturemonkey.resolver.ManipulateOptions;
@@ -100,12 +98,6 @@ public class FixtureMonkeyBuilder {
 
 	public FixtureMonkeyBuilder manipulatorOptimizer(ManipulatorOptimizer manipulatorOptimizer) {
 		this.manipulatorOptimizer = manipulatorOptimizer;
-		return this;
-	}
-
-	@Deprecated
-	public FixtureMonkeyBuilder monkeyExpressionFactory(MonkeyExpressionFactory monkeyExpressionFactory) {
-		manipulateOptionsBuilder.monkeyExpressionFactory(monkeyExpressionFactory);
 		return this;
 	}
 
@@ -393,9 +385,9 @@ public class FixtureMonkeyBuilder {
 						};
 					this.register(actualType, registerArbitraryBuilder);
 				} catch (InvocationTargetException
-						| InstantiationException
-						| IllegalAccessException
-						| NoSuchMethodException e) {
+					| InstantiationException
+					| IllegalAccessException
+					| NoSuchMethodException e) {
 					// ignored
 				}
 			}
@@ -415,33 +407,6 @@ public class FixtureMonkeyBuilder {
 				);
 			}
 		}
-		return this;
-	}
-
-	@SuppressWarnings("rawtypes")
-	@Deprecated // It would be removed in 0.6.0
-	public FixtureMonkeyBuilder pushFixtureCustomizer(MatcherOperator<FixtureCustomizer> arbitraryCustomizer) {
-		generateOptionsBuilder.insertFirstFixtureCustomizer(arbitraryCustomizer);
-		return this;
-	}
-
-	@Deprecated // It would be removed in 0.6.0
-	public <T> FixtureMonkeyBuilder pushAssignableTypeFixtureCustomizer(
-		Class<T> type,
-		FixtureCustomizer<? extends T> fixtureCustomizer
-	) {
-		generateOptionsBuilder.insertFirstFixtureCustomizer(type, fixtureCustomizer);
-		return this;
-	}
-
-	@Deprecated // It would be removed in 0.6.0
-	public <T> FixtureMonkeyBuilder pushExactTypeFixtureCustomizer(
-		Class<T> type,
-		FixtureCustomizer<T> fixtureCustomizer
-	) {
-		generateOptionsBuilder.insertFirstFixtureCustomizer(
-			MatcherOperator.exactTypeMatchOperator(type, fixtureCustomizer)
-		);
 		return this;
 	}
 

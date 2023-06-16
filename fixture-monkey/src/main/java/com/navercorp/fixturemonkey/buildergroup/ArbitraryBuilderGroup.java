@@ -23,7 +23,7 @@ import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.resolver.ArbitraryBuilderCandidateList;
 
-@API(since = "0.5.7", status = Status.EXPERIMENTAL)
+@API(since = "0.5.7", status = Status.MAINTAINED)
 public interface ArbitraryBuilderGroup {
 
 	ArbitraryBuilderCandidateList generateCandidateList();

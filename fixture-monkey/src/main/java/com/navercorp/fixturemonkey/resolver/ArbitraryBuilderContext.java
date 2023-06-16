@@ -27,35 +27,28 @@ import java.util.stream.Collectors;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.api.customizer.FixtureCustomizer;
-import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.customizer.ArbitraryManipulator;
 import com.navercorp.fixturemonkey.customizer.ContainerInfoManipulator;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class ArbitraryBuilderContext {
 	private final List<ArbitraryManipulator> manipulators;
-	@SuppressWarnings("rawtypes")
-	private final List<MatcherOperator<? extends FixtureCustomizer>> customizers;
 	private final List<ContainerInfoManipulator> containerInfoManipulators;
 
 	private boolean validOnly;
 
-	@SuppressWarnings("rawtypes")
 	public ArbitraryBuilderContext(
 		List<ArbitraryManipulator> manipulators,
-		List<MatcherOperator<? extends FixtureCustomizer>> customizers,
 		List<ContainerInfoManipulator> containerInfoManipulators,
 		boolean validOnly
 	) {
 		this.manipulators = manipulators;
-		this.customizers = customizers;
 		this.containerInfoManipulators = containerInfoManipulators;
 		this.validOnly = validOnly;
 	}
 
 	public ArbitraryBuilderContext() {
-		this(new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), true);
+		this(new ArrayList<>(), new ArrayList<>(), true);
 	}
 
 	public ArbitraryBuilderContext copy() {
@@ -65,7 +58,6 @@ public final class ArbitraryBuilderContext {
 
 		return new ArbitraryBuilderContext(
 			new ArrayList<>(this.manipulators),
-			new ArrayList<>(this.customizers),
 			copiedContainerInfoManipulators,
 			this.validOnly
 		);
@@ -81,16 +73,6 @@ public final class ArbitraryBuilderContext {
 
 	public List<ArbitraryManipulator> getManipulators() {
 		return Collections.unmodifiableList(manipulators);
-	}
-
-	@SuppressWarnings("rawtypes")
-	public void addCustomizer(MatcherOperator<? extends FixtureCustomizer> fixtureCustomizer) {
-		this.customizers.add(fixtureCustomizer);
-	}
-
-	@SuppressWarnings("rawtypes")
-	public List<MatcherOperator<? extends FixtureCustomizer>> getCustomizers() {
-		return Collections.unmodifiableList(customizers);
 	}
 
 	public void addContainerInfoManipulator(ContainerInfoManipulator containerInfo) {

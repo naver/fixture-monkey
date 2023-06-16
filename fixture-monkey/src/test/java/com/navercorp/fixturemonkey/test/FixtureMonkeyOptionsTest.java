@@ -36,7 +36,6 @@ import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import javax.annotation.Nullable;
 import javax.validation.ConstraintViolationException;
 
 import net.jqwik.api.Arbitraries;
@@ -48,11 +47,9 @@ import net.jqwik.time.api.arbitraries.InstantArbitrary;
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.FixtureMonkey;
-import com.navercorp.fixturemonkey.api.customizer.FixtureCustomizer;
 import com.navercorp.fixturemonkey.api.exception.FilterMissException;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
-import com.navercorp.fixturemonkey.api.generator.ChildArbitraryContext;
 import com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator;
 import com.navercorp.fixturemonkey.api.generator.DefaultObjectPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGenerator;
@@ -107,7 +104,6 @@ import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.NestedStringList;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.NullableObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.SimpleObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.TwoEnum;
-import com.navercorp.fixturemonkey.tree.IdentityNodeResolver;
 
 class FixtureMonkeyOptionsTest {
 	@Property
@@ -130,20 +126,6 @@ class FixtureMonkeyOptionsTest {
 			.isThrownBy(() -> sut.giveMeBuilder(String.class)
 				.set("nonExistentField", 0)
 				.sample());
-	}
-
-	@Property
-	void alterMonkeyFactory() {
-		FixtureMonkey sut = FixtureMonkey.builder()
-			.monkeyExpressionFactory((expression) -> () -> IdentityNodeResolver.INSTANCE)
-			.build();
-		String expected = "expected";
-
-		String actual = sut.giveMeBuilder(String.class)
-			.set("test", expected)
-			.sample();
-
-		then(actual).isEqualTo(expected);
 	}
 
 	@Property
@@ -796,57 +778,6 @@ class FixtureMonkeyOptionsTest {
 		String actual = sut.giveMeBuilder(String.class)
 			.set("$", expected)
 			.sample();
-
-		then(actual).isEqualTo(expected);
-	}
-
-	@Property
-	void pushArbitraryCustomizerCustomizeFixtureSetValue() {
-		String expected = "test";
-		FixtureMonkey sut = FixtureMonkey.builder()
-			.pushExactTypeFixtureCustomizer(String.class, (object) -> expected)
-			.build();
-
-		String actual = sut.giveMeOne(String.class);
-
-		then(actual).isEqualTo(expected);
-	}
-
-	@SuppressWarnings("ConstantConditions")
-	@Property
-	void pushArbitraryCustomizerCustomizeFixtureModifyValue() {
-		FixtureMonkey sut = FixtureMonkey.builder()
-			.pushExactTypeFixtureCustomizer(String.class, String::toLowerCase)
-			.build();
-
-		String actual = sut.giveMeOne(String.class);
-
-		then(actual).isLowerCase();
-	}
-
-	@Property
-	void pushArbitraryCustomizerCustomizeFields() {
-		String expected = "test";
-		FixtureMonkey sut = FixtureMonkey.builder()
-			.pushExactTypeFixtureCustomizer(SimpleObject.class, new FixtureCustomizer<SimpleObject>() {
-				@Override
-				public void customizeProperties(ChildArbitraryContext childArbitraryContext) {
-					childArbitraryContext.replaceArbitrary(
-						property -> "str".equals(property.getName()),
-						Arbitraries.just(expected)
-					);
-				}
-
-				@Nullable
-				@Override
-				public SimpleObject customizeFixture(@Nullable SimpleObject object) {
-					return object;
-				}
-			})
-			.build();
-
-		String actual = sut.giveMeOne(SimpleObject.class)
-			.getStr();
 
 		then(actual).isEqualTo(expected);
 	}

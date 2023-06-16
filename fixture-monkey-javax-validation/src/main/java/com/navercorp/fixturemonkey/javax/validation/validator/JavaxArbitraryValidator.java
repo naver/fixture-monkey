@@ -32,7 +32,7 @@ import org.apiguardian.api.API.Status;
 import com.navercorp.fixturemonkey.api.exception.ValidationFailedException;
 import com.navercorp.fixturemonkey.api.validator.ArbitraryValidator;
 
-@API(since = "0.5.6", status = Status.EXPERIMENTAL)
+@API(since = "0.5.6", status = Status.MAINTAINED)
 public final class JavaxArbitraryValidator implements ArbitraryValidator {
 	private Validator validator;
 

@@ -30,7 +30,7 @@ import com.navercorp.fixturemonkey.api.random.Randoms;
 /**
  * It would generate an object may be {@code null} with a {@code nullProbability}% chance.
  */
-@API(since = "0.5.0", status = Status.EXPERIMENTAL)
+@API(since = "0.5.0", status = Status.MAINTAINED)
 public final class NullInjectCombinableArbitrary implements CombinableArbitrary {
 	private final CombinableArbitrary combinableArbitrary;
 	private final double nullProbability;

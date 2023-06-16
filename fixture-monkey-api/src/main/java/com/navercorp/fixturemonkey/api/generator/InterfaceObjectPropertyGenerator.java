@@ -81,7 +81,7 @@ public final class InterfaceObjectPropertyGenerator<T> implements ObjectProperty
 			};
 
 			List<Property> childProperties = context.getGenerateOptions().getPropertyGenerator(property)
-				.generateObjectChildProperties(property.getAnnotatedType());
+				.generateChildProperties(property.getAnnotatedType());
 
 			childPropertiesByProperty.put(property, childProperties);
 		}

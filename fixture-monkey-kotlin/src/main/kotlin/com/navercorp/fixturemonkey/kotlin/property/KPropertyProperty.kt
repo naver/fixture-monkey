@@ -28,7 +28,7 @@ import kotlin.reflect.KProperty
 import kotlin.reflect.jvm.javaField
 import kotlin.reflect.jvm.javaMethod
 
-@API(since = "0.4.0", status = API.Status.EXPERIMENTAL)
+@API(since = "0.4.0", status = API.Status.MAINTAINED)
 data class KPropertyProperty(
     private val annotatedType: AnnotatedType,
     val kProperty: KProperty<*>,

@@ -50,11 +50,9 @@ import net.jqwik.api.Combinators.F4;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
-import com.navercorp.fixturemonkey.api.customizer.FixtureCustomizer;
 import com.navercorp.fixturemonkey.api.expression.ExpressionGenerator;
 import com.navercorp.fixturemonkey.api.generator.FilteredCombinableArbitrary;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
-import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
 import com.navercorp.fixturemonkey.api.type.LazyAnnotatedType;
@@ -405,12 +403,6 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T> {
 		return generateArbitraryBuilderLazily(lazyArbitrary);
 	}
 
-	@Override
-	public ArbitraryBuilder<T> customize(MatcherOperator<FixtureCustomizer<?>> fixtureCustomizer) {
-		this.context.addCustomizer(fixtureCustomizer);
-		return this;
-	}
-
 	@SuppressWarnings("unchecked")
 	@Override
 	public Arbitrary<T> build() {
@@ -422,7 +414,6 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T> {
 				this.resolver.resolve(
 					this.rootProperty,
 					buildManipulators,
-					context.getCustomizers(),
 					context.getContainerInfoManipulators()
 				),
 				this.validateFilter(context.isValidOnly())

@@ -25,7 +25,7 @@ import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult
 import com.navercorp.fixturemonkey.api.type.Types
 import org.apiguardian.api.API
-import org.apiguardian.api.API.Status.EXPERIMENTAL
+import org.apiguardian.api.API.Status.MAINTAINED
 import java.lang.reflect.Modifier
 import kotlin.jvm.internal.Reflection
 import kotlin.reflect.KClass
@@ -33,7 +33,7 @@ import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 import kotlin.reflect.full.primaryConstructor
 
-@API(since = "0.4.0", status = EXPERIMENTAL)
+@API(since = "0.4.0", status = MAINTAINED)
 class PrimaryConstructorArbitraryIntrospector : ArbitraryIntrospector {
     companion object {
         val INSTANCE = PrimaryConstructorArbitraryIntrospector()

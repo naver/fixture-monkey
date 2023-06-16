@@ -26,7 +26,6 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.context.MonkeyContext;
-import com.navercorp.fixturemonkey.api.customizer.FixtureCustomizer;
 import com.navercorp.fixturemonkey.api.generator.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
@@ -63,11 +62,9 @@ public final class ArbitraryResolver {
 		this.monkeyContext = monkeyContext;
 	}
 
-	@SuppressWarnings("rawtypes")
 	public CombinableArbitrary resolve(
 		RootProperty rootProperty,
 		List<ArbitraryManipulator> manipulators,
-		List<MatcherOperator<? extends FixtureCustomizer>> builderCustomizers,
 		List<ContainerInfoManipulator> containerInfoManipulators
 	) {
 		List<MatcherOperator<List<ContainerInfoManipulator>>> registeredContainerInfoManipulators =
@@ -87,8 +84,7 @@ public final class ArbitraryResolver {
 				registeredContainerInfoManipulators
 			),
 			generateOptions,
-			monkeyContext,
-			builderCustomizers
+			monkeyContext
 		);
 
 		List<ArbitraryManipulator> registeredManipulators = monkeyManipulatorFactory.newRegisteredArbitraryManipulators(

@@ -25,6 +25,7 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.property.Property;
+import com.navercorp.fixturemonkey.api.property.PropertyGenerator;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class DefaultObjectPropertyGenerator implements ObjectPropertyGenerator {
@@ -36,7 +37,7 @@ public final class DefaultObjectPropertyGenerator implements ObjectPropertyGener
 		Property property = context.getProperty();
 		PropertyGenerator propertyGenerator = context.getGenerateOptions().getPropertyGenerator(property);
 		List<Property> childProperties =
-			propertyGenerator.generateObjectChildProperties(property.getAnnotatedType());
+			propertyGenerator.generateChildProperties(property.getAnnotatedType());
 		double nullInject = context.getGenerateOptions().getNullInjectGenerator(property)
 			.generate(context);
 

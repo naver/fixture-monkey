@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apiguardian.api.API;
+import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
@@ -38,7 +39,7 @@ import com.navercorp.fixturemonkey.api.type.Types;
  * It generates the anonymous object of interface which has no-argument methods.
  * It is a default fallback {@link ArbitraryIntrospector}, if set none of introspectors in the options.
  */
-@API(since = "0.5.5", status = API.Status.EXPERIMENTAL)
+@API(since = "0.5.5", status = Status.MAINTAINED)
 public final class AnonymousArbitraryIntrospector implements ArbitraryIntrospector {
 	public static final AnonymousArbitraryIntrospector INSTANCE = new AnonymousArbitraryIntrospector();
 

@@ -29,11 +29,12 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 
 import org.apiguardian.api.API;
+import org.apiguardian.api.API.Status;
 
 /**
  * An interface method property for Java.
  */
-@API(since = "0.5.5", status = API.Status.EXPERIMENTAL)
+@API(since = "0.5.5", status = Status.MAINTAINED)
 public final class InterfaceJavaMethodProperty implements MethodProperty {
 	private final AnnotatedType returnAnnotatedType;
 	private final String name;

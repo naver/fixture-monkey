@@ -25,7 +25,7 @@ import java.util.List;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-@API(since = "0.5.3", status = Status.EXPERIMENTAL)
+@API(since = "0.5.3", status = Status.MAINTAINED)
 public final class DefaultPropertyGenerator implements PropertyGenerator {
 	private static final CompositePropertyGenerator COMPOSITE_PROPERTY_GENERATOR =
 		new CompositePropertyGenerator(

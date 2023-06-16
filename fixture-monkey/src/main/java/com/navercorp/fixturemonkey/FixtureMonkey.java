@@ -30,7 +30,6 @@ import org.apiguardian.api.API.Status;
 import net.jqwik.api.Arbitrary;
 
 import com.navercorp.fixturemonkey.api.context.MonkeyContext;
-import com.navercorp.fixturemonkey.api.customizer.FixtureCustomizer;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.option.GenerateOptions;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
@@ -190,19 +189,5 @@ public class FixtureMonkey {
 
 	public <T> Arbitrary<T> giveMeArbitrary(TypeReference<T> typeReference) {
 		return this.giveMeBuilder(typeReference).build();
-	}
-
-	public <T> Stream<T> giveMe(Class<T> type, FixtureCustomizer<T> customizer) {
-		return this.giveMeBuilder(type)
-			.customize(MatcherOperator.exactTypeMatchOperator(type, customizer))
-			.sampleStream();
-	}
-
-	public <T> List<T> giveMe(Class<T> type, int size, FixtureCustomizer<T> customizer) {
-		return this.giveMe(type, customizer).limit(size).collect(toList());
-	}
-
-	public <T> T giveMeOne(Class<T> type, FixtureCustomizer<T> customizer) {
-		return this.giveMe(type, 1, customizer).get(0);
 	}
 }

@@ -39,8 +39,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.navercorp.fixturemonkey.api.generator.ObjectProperty;
 import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGeneratorContext;
-import com.navercorp.fixturemonkey.api.generator.PropertyGenerator;
 import com.navercorp.fixturemonkey.api.property.Property;
+import com.navercorp.fixturemonkey.api.property.PropertyGenerator;
 import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.4.2", status = Status.MAINTAINED)
@@ -62,7 +62,7 @@ public final class PropertyJsonSubTypesObjectPropertyGenerator implements Object
 
 		Class<?> type = getRandomJsonSubType(jsonSubTypes);
 		AnnotatedType annotatedType = Types.generateAnnotatedTypeWithoutAnnotation(type);
-		List<Property> childProperties = defaultPropertyGenerator.generateObjectChildProperties(annotatedType);
+		List<Property> childProperties = defaultPropertyGenerator.generateChildProperties(annotatedType);
 
 		JsonTypeInfo jsonTypeInfo = getJacksonAnnotation(property, JsonTypeInfo.class);
 		List<Annotation> annotations = new ArrayList<>(property.getAnnotations());

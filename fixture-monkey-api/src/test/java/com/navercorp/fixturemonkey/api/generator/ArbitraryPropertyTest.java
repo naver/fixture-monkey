@@ -25,13 +25,16 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 
+import com.navercorp.fixturemonkey.api.property.DefaultPropertyGenerator;
 import com.navercorp.fixturemonkey.api.property.Property;
-import com.navercorp.fixturemonkey.api.property.PropertyCache;
+import com.navercorp.fixturemonkey.api.property.PropertyGenerator;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 
 class ArbitraryPropertyTest {
+	private static final PropertyGenerator DEFAULT_PROPERTY_GENERATOR = new DefaultPropertyGenerator();
+
 	@Test
 	void root() {
 		// given
@@ -59,7 +62,13 @@ class ArbitraryPropertyTest {
 		// given
 		TypeReference<GenericSample<String>> typeReference = new TypeReference<GenericSample<String>>() {
 		};
-		Optional<Property> property = PropertyCache.getProperty(typeReference.getAnnotatedType(), "name");
+
+		Optional<Property> property = DEFAULT_PROPERTY_GENERATOR.generateChildProperties(
+				typeReference.getAnnotatedType()
+			)
+			.stream()
+			.filter(it -> "name".equals(it.getName()))
+			.findFirst();
 
 		// when
 		ObjectProperty actual = new ObjectProperty(
