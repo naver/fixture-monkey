@@ -44,13 +44,13 @@ import com.navercorp.fixturemonkey.api.type.Types;
 @API(since = "0.4.0", status = API.Status.EXPERIMENTAL)
 public final class BuilderArbitraryIntrospector implements ArbitraryIntrospector {
 	public static final BuilderArbitraryIntrospector INSTANCE = new BuilderArbitraryIntrospector();
-	private static final Map<Class<?>, Method> BUILDER_CACHE = new ConcurrentHashMap<>(2000);
-	private static final Map<String, Method> BUILD_FIELD_METHOD_CACHE = new ConcurrentHashMap<>(2000);
-	private static final Map<Class<?>, Method> BUILD_METHOD_CACHE = new ConcurrentHashMap<>(2000);
-	private static final Map<Class<?>, Class<?>> BUILDER_TYPE_CACHE = new ConcurrentHashMap<>(2000);
+	private static final Map<Class<?>, Method> BUILDER_CACHE = new ConcurrentHashMap<>(2048);
+	private static final Map<String, Method> BUILD_FIELD_METHOD_CACHE = new ConcurrentHashMap<>(2048);
+	private static final Map<Class<?>, Method> BUILD_METHOD_CACHE = new ConcurrentHashMap<>(2048);
+	private static final Map<Class<?>, Class<?>> BUILDER_TYPE_CACHE = new ConcurrentHashMap<>(2048);
 
-	private final Map<Class<?>, String> typedBuilderMethodName = new ConcurrentHashMap<>(2000);
-	private final Map<Class<?>, String> typedBuildMethodName = new ConcurrentHashMap<>(2000);
+	private final Map<Class<?>, String> typedBuilderMethodName = new ConcurrentHashMap<>(2048);
+	private final Map<Class<?>, String> typedBuildMethodName = new ConcurrentHashMap<>(2048);
 	private String defaultBuildMethodName = "build";
 	private String defaultBuilderMethodName = "builder";
 

@@ -18,52 +18,30 @@
 
 package com.navercorp.fixturemonkey.api.property;
 
-import static java.util.stream.Collectors.toList;
-
-import java.beans.ConstructorProperties;
-import java.beans.IntrospectionException;
-import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.AnnotatedArrayType;
 import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.AnnotatedTypeVariable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.lang.reflect.Parameter;
-import java.util.AbstractMap.SimpleEntry;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.Nullable;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import com.navercorp.fixturemonkey.api.collection.LruCache;
 import com.navercorp.fixturemonkey.api.generator.DefaultPropertyGenerator;
-import com.navercorp.fixturemonkey.api.type.Reflections;
+import com.navercorp.fixturemonkey.api.type.TypeCache;
 import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class PropertyCache {
-	private static final Logger LOGGER = LoggerFactory.getLogger(PropertyCache.class);
-
-	private static final Map<Class<?>, Map<String, PropertyDescriptor>> PROPERTY_DESCRIPTORS =
-		new LruCache<>(2000);
-	private static final Map<Class<?>, Map<String, Field>> FIELDS = new LruCache<>(2000);
-	private static final Map<Class<?>, Map.Entry<Constructor<?>, String[]>> PARAMETER_NAMES_BY_PRIMARY_CONSTRUCTOR =
-		new LruCache<>(2000);
-
 	@Deprecated // It would be removed when getProperties is removed.
 	private static final DefaultPropertyGenerator DEFAULT_PROPERTY_GENERATOR = new DefaultPropertyGenerator();
 
@@ -84,25 +62,13 @@ public final class PropertyCache {
 		return getFieldsByName(Types.generateAnnotatedTypeWithoutAnnotation(clazz));
 	}
 
+	/**
+	 * It is Deprecated. Use {@link TypeCache#getFieldsByName(Class)} instead.
+	 */
+	@Deprecated
 	public static Map<String, Field> getFieldsByName(AnnotatedType annotatedType) {
 		Class<?> clazz = Types.getActualType(annotatedType.getType());
-
-		return FIELDS.computeIfAbsent(clazz, type -> {
-			Map<String, Field> result = new ConcurrentHashMap<>();
-			try {
-				List<Field> fields = Reflections.findFields(clazz)
-					.stream()
-					.filter(it -> !Modifier.isStatic(it.getModifiers()))
-					.collect(toList());
-				for (Field field : fields) {
-					field.setAccessible(true);
-					result.put(field.getName(), field);
-				}
-			} catch (Exception e) {
-				LOGGER.warn("Failed to create fields in type {}.", clazz.getName());
-			}
-			return result;
-		});
+		return TypeCache.getFieldsByName(clazz);
 	}
 
 	@Deprecated // It would be removed in 0.6.0
@@ -110,25 +76,13 @@ public final class PropertyCache {
 		return getPropertyDescriptorsByPropertyName(Types.generateAnnotatedTypeWithoutAnnotation(clazz));
 	}
 
+	/**
+	 * It is Deprecated. Use {@link TypeCache#getPropertyDescriptorsByPropertyName(Class)} instead.
+	 */
+	@Deprecated
 	public static Map<String, PropertyDescriptor> getPropertyDescriptorsByPropertyName(AnnotatedType annotatedType) {
 		Class<?> clazz = Types.getActualType(annotatedType.getType());
-
-		return PROPERTY_DESCRIPTORS.computeIfAbsent(clazz, type -> {
-			Map<String, PropertyDescriptor> result = new ConcurrentHashMap<>();
-			try {
-				PropertyDescriptor[] descriptors = Introspector.getBeanInfo(type)
-					.getPropertyDescriptors();
-				for (PropertyDescriptor descriptor : descriptors) {
-					if (descriptor.getName().equals("class")) {
-						continue;
-					}
-					result.put(descriptor.getName(), descriptor);
-				}
-			} catch (IntrospectionException ex) {
-				LOGGER.warn("Introspect bean property is failed. type: " + clazz, ex);
-			}
-			return result;
-		});
+		return TypeCache.getPropertyDescriptorsByPropertyName(clazz);
 	}
 
 	@Deprecated // It would be removed in 0.6.0
@@ -136,6 +90,10 @@ public final class PropertyCache {
 		return getConstructorParameterPropertiesByParameterName(annotatedType);
 	}
 
+	/**
+	 * It is Deprecated. Use {@link ConstructorParameterPropertyGenerator} instead.
+	 */
+	@Deprecated
 	public static Map<String, Property> getConstructorParameterPropertiesByParameterName(AnnotatedType annotatedType) {
 		Class<?> clazz = Types.getActualType(annotatedType.getType());
 
@@ -187,87 +145,21 @@ public final class PropertyCache {
 		return Collections.unmodifiableMap(constructorPropertiesByName);
 	}
 
+	/**
+	 * It is Deprecated. Use {@link TypeCache#getParameterNamesByConstructor(Class)}} instead.
+	 */
+	@Deprecated
 	@Nullable
 	public static Entry<Constructor<?>, String[]> getParameterNamesByConstructor(Class<?> clazz) {
-		return PARAMETER_NAMES_BY_PRIMARY_CONSTRUCTOR.computeIfAbsent(clazz,
-			type -> {
-				List<Constructor<?>> possibilities = new ArrayList<>();
-
-				Constructor<?>[] constructors = clazz.getDeclaredConstructors();
-
-				for (Constructor<?> constructor : constructors) {
-					Parameter[] parameters = constructor.getParameters();
-					boolean namePresent = Arrays.stream(parameters).anyMatch(Parameter::isNamePresent);
-					boolean parameterEmpty = parameters.length == 0;
-					if (namePresent || parameterEmpty) {
-						possibilities.add(constructor);
-					} else {
-						ConstructorProperties constructorPropertiesAnnotation =
-							constructor.getAnnotation(ConstructorProperties.class);
-
-						if (constructorPropertiesAnnotation != null) {
-							possibilities.add(constructor);
-						}
-					}
-				}
-
-				boolean constructorPropertiesPresent = possibilities.stream()
-					.anyMatch(it -> it.getAnnotation(ConstructorProperties.class) != null);
-
-				Constructor<?> primaryConstructor;
-				if (constructorPropertiesPresent) {
-					primaryConstructor = possibilities.stream()
-						.filter(it -> it.getAnnotation(ConstructorProperties.class) != null)
-						.findFirst()
-						.orElseThrow(() -> new IllegalArgumentException(
-							"Constructor should have @ConstructorProperties" + clazz.getSimpleName())
-						);
-				} else {
-					primaryConstructor = possibilities.stream()
-						.findFirst()
-						.orElse(null);
-				}
-
-				if (primaryConstructor == null) {
-					return null;
-				}
-
-				String[] parameterNames = getParameterNames(primaryConstructor);
-				AnnotatedType[] annotatedParameterTypes = primaryConstructor.getAnnotatedParameterTypes();
-
-				if (parameterNames.length != annotatedParameterTypes.length) {
-					throw new IllegalArgumentException(
-						"@ConstructorProperties values size should same as constructor parameter size"
-					);
-				}
-				return new SimpleEntry<>(primaryConstructor, parameterNames);
-			});
+		return TypeCache.getParameterNamesByConstructor(clazz);
 	}
 
+	/**
+	 * It is Deprecated. Use {@link TypeCache#clearCache()} instead.
+	 */
+	@Deprecated
 	public static void clearCache() {
-		PARAMETER_NAMES_BY_PRIMARY_CONSTRUCTOR.clear();
-		PROPERTY_DESCRIPTORS.clear();
-		FIELDS.clear();
-	}
-
-	private static String[] getParameterNames(Constructor<?> constructor) {
-		Parameter[] parameters = constructor.getParameters();
-		boolean namePresent = Arrays.stream(parameters).anyMatch(Parameter::isNamePresent);
-		boolean parameterEmpty = parameters.length == 0;
-
-		if (parameterEmpty) {
-			return new String[0];
-		}
-
-		if (namePresent) {
-			return Arrays.stream(parameters)
-				.map(Parameter::getName)
-				.toArray(String[]::new);
-		} else {
-			ConstructorProperties constructorPropertiesAnnotation =
-				constructor.getAnnotation(ConstructorProperties.class);
-			return constructorPropertiesAnnotation.value();
-		}
+		TypeCache.clearCache();
 	}
 
 	private static boolean isGenericAnnotatedType(AnnotatedType annotatedType) {
