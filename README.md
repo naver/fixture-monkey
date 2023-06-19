@@ -178,6 +178,7 @@ fun sampleOrder() {
 * @[jongwooo](https://github.com/jongwooo)
 * @[doljae](https://github.com/doljae)
 * @[jbl428](https://github.com/jbl428)
+* @[sangy515](https://github.com/sangy515)
 
 ## More about Fixture Monkey
 * [Deview 2021](https://tv.naver.com/v/23650158)
