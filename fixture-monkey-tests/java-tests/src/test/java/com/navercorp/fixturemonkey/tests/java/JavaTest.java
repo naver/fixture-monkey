@@ -20,9 +20,11 @@ package com.navercorp.fixturemonkey.tests.java;
 
 import static com.navercorp.fixturemonkey.tests.TestEnvironment.TEST_COUNT;
 import static org.assertj.core.api.BDDAssertions.then;
+import static org.assertj.core.api.BDDAssertions.thenNoException;
 import static org.assertj.core.api.BDDAssertions.thenThrownBy;
 
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -34,12 +36,14 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 
-import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import net.jqwik.api.Arbitraries;
 
+import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.exception.FilterMissException;
 import com.navercorp.fixturemonkey.api.introspector.ConstructorPropertiesArbitraryIntrospector;
+import com.navercorp.fixturemonkey.api.introspector.FailoverIntrospector;
+import com.navercorp.fixturemonkey.api.introspector.FieldReflectionArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.resolver.ArbitraryBuilderCandidateFactory;
 import com.navercorp.fixturemonkey.resolver.ArbitraryBuilderCandidateList;
@@ -56,6 +60,7 @@ import com.navercorp.fixturemonkey.tests.java.ImmutableJavaTestSpecs.ContainerOb
 import com.navercorp.fixturemonkey.tests.java.ImmutableJavaTestSpecs.Enum;
 import com.navercorp.fixturemonkey.tests.java.ImmutableJavaTestSpecs.JavaTypeObject;
 import com.navercorp.fixturemonkey.tests.java.ImmutableJavaTestSpecs.SetImplementationWithoutGeneric;
+import com.navercorp.fixturemonkey.tests.java.ImmutableMixedIntrospectorsTypeSpecs.MixedJavaTypeObject;
 import com.navercorp.fixturemonkey.tests.java.ImmutableRecursiveTypeSpecs.SelfRecursiveListObject;
 import com.navercorp.fixturemonkey.tests.java.ImmutableRecursiveTypeSpecs.SelfRecursiveObject;
 
@@ -528,5 +533,36 @@ class JavaTest {
 			.collect(Collectors.toSet());
 
 		then(actual).hasSize(9);
+	}
+
+	@Test
+	void failoverIntrospector() {
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.objectIntrospector(new FailoverIntrospector(
+					Arrays.asList(
+						FieldReflectionArbitraryIntrospector.INSTANCE,
+						ConstructorPropertiesArbitraryIntrospector.INSTANCE
+					)
+				)
+			)
+			.build();
+
+		thenNoException().isThrownBy(() -> sut.giveMeOne(JavaTypeObject.class));
+	}
+
+	@Test
+	void failoverIntrospectorMixed() {
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.objectIntrospector(new FailoverIntrospector(
+					Arrays.asList(
+						FieldReflectionArbitraryIntrospector.INSTANCE,
+						ConstructorPropertiesArbitraryIntrospector.INSTANCE
+					)
+				)
+			)
+			.defaultNotNull(true)
+			.build();
+
+		thenNoException().isThrownBy(() -> sut.giveMeOne(MixedJavaTypeObject.class));
 	}
 }
