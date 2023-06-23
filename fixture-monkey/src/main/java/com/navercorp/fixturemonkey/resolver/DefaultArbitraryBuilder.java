@@ -51,7 +51,9 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.api.expression.ExpressionGenerator;
+import com.navercorp.fixturemonkey.api.generator.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.generator.FilteredCombinableArbitrary;
+import com.navercorp.fixturemonkey.api.generator.FixedCombinableArbitrary;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
@@ -68,6 +70,8 @@ import com.navercorp.fixturemonkey.tree.ArbitraryTraverser;
 @SuppressFBWarnings("NM_SAME_SIMPLE_NAME_AS_SUPERCLASS")
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T> {
+	private static final int GENERATION_COUNT = 500;
+
 	private final ManipulateOptions manipulateOptions;
 	private final RootProperty rootProperty;
 	private final ArbitraryResolver resolver;
@@ -231,9 +235,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T> {
 	public ArbitraryBuilder<T> fixed() {
 		this.context.getContainerInfoManipulators().forEach(ContainerInfoManipulator::fixed);
 
-		ArbitraryManipulator arbitraryManipulator =
-			monkeyManipulatorFactory.newArbitraryManipulator(HEAD_NAME, this.sample());
-		this.context.addManipulator(arbitraryManipulator);
+		this.context.markFixed();
 		return this;
 	}
 
@@ -406,25 +408,15 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T> {
 	@SuppressWarnings("unchecked")
 	@Override
 	public Arbitrary<T> build() {
-		List<ArbitraryManipulator> buildManipulators = new ArrayList<>(this.context.getManipulators());
+		ArbitraryBuilderContext buildContext = context.copy();
 
-		return Arbitraries.ofSuppliers(
-			() -> (T)new FilteredCombinableArbitrary(
-				500,
-				this.resolver.resolve(
-					this.rootProperty,
-					buildManipulators,
-					context.getContainerInfoManipulators()
-				),
-				this.validateFilter(context.isValidOnly())
-			)
-				.combined()
-		);
+		return Arbitraries.ofSuppliers(() -> (T)resolveArbitrary(buildContext).combined());
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public T sample() {
-		return build().sample();
+		return (T)resolveArbitrary(context).combined();
 	}
 
 	@Override
@@ -452,6 +444,40 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T> {
 
 	public ArbitraryBuilderContext getContext() {
 		return this.context;
+	}
+
+	@SuppressWarnings("unchecked")
+	private CombinableArbitrary resolveArbitrary(ArbitraryBuilderContext context) {
+		List<ArbitraryManipulator> manipulators = new ArrayList<>(context.getManipulators());
+		List<ContainerInfoManipulator> containerInfoManipulators =
+			new ArrayList<>(context.getContainerInfoManipulators());
+
+		if (context.isFixed()) {
+			if (context.getFixedCombinableArbitrary() == null || context.fixedExpired()) {
+				Object fixed = new FilteredCombinableArbitrary(
+					GENERATION_COUNT,
+					resolver.resolve(
+						rootProperty,
+						manipulators,
+						containerInfoManipulators
+					),
+					validateFilter(context.isValidOnly())
+				).combined();
+				context.addManipulator(monkeyManipulatorFactory.newArbitraryManipulator("$", fixed));
+				context.renewFixed(new FixedCombinableArbitrary(fixed));
+			}
+			return context.getFixedCombinableArbitrary();
+		}
+
+		return new FilteredCombinableArbitrary(
+			GENERATION_COUNT,
+			this.resolver.resolve(
+				this.rootProperty,
+				manipulators,
+				containerInfoManipulators
+			),
+			this.validateFilter(context.isValidOnly())
+		);
 	}
 
 	private String resolveExpression(ExpressionGenerator expressionGenerator) {
