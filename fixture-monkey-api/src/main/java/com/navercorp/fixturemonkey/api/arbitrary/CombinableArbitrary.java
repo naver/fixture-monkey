@@ -20,6 +20,7 @@ package com.navercorp.fixturemonkey.api.arbitrary;
 
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -39,16 +40,38 @@ public interface CombinableArbitrary {
 	/**
 	 * Generates a proper {@link CombinableArbitrary}.
 	 *
+	 * @param object to be converted into {@link CombinableArbitrary}.
+	 *               Specific types such as {@link Supplier}, {@link Arbitrary}, {@link LazyArbitrary} is supported.
 	 * @return a {@link CombinableArbitrary}
 	 */
 	@SuppressWarnings("unchecked")
 	static CombinableArbitrary from(Object object) {
-		if (object instanceof Arbitrary) {
+		if (object instanceof Supplier) {
+			return new LazyCombinableArbitrary(LazyArbitrary.lazy((Supplier<Object>)object));
+		} else if (object instanceof Arbitrary) {
 			return new LazyCombinableArbitrary(LazyArbitrary.lazy(() -> ((Arbitrary<?>)object).sample()));
 		} else if (object instanceof LazyArbitrary) {
 			return new LazyCombinableArbitrary((LazyArbitrary<Object>)object);
 		}
 		return new FixedCombinableArbitrary(object);
+	}
+
+	/**
+	 * Generates a builder for generating {@link ObjectCombinableArbitrary}.
+	 *
+	 * @return an {@link ObjectCombinableArbitrary} builder
+	 */
+	static ObjectCombineArbitraryBuilder objectBuilder() {
+		return new ObjectCombineArbitraryBuilder();
+	}
+
+	/**
+	 * Generates a builder for generating {@link ContainerCombinableArbitrary}.
+	 *
+	 * @return a {@link ContainerCombinableArbitrary} builder
+	 */
+	static ContainerCombineArbitraryBuilder containerBuilder() {
+		return new ContainerCombineArbitraryBuilder();
 	}
 
 	/**

@@ -35,7 +35,6 @@ import lombok.Setter;
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
-import com.navercorp.fixturemonkey.api.arbitrary.ContainerCombinableArbitrary;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
@@ -216,10 +215,9 @@ class FixtureMonkeyOptionsAdditionalTestSpecs {
 			List<CombinableArbitrary> elementCombinableArbitraryList = context.getElementCombinableArbitraryList();
 
 			return new ArbitraryIntrospectorResult(
-				new ContainerCombinableArbitrary(
-					elementCombinableArbitraryList,
-					elements -> new Pair<>(elements.get(0), elements.get(1))
-				)
+				CombinableArbitrary.containerBuilder()
+					.elements(elementCombinableArbitraryList)
+					.build(elements -> new Pair<>(elements.get(0), elements.get(1)))
 			);
 		}
 

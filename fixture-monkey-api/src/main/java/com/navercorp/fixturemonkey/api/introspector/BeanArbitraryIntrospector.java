@@ -23,6 +23,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Map;
+import java.util.function.Function;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -30,7 +31,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
-import com.navercorp.fixturemonkey.api.arbitrary.ObjectCombinableArbitrary;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
@@ -53,35 +53,41 @@ public final class BeanArbitraryIntrospector implements ArbitraryIntrospector {
 
 		Map<ArbitraryProperty, CombinableArbitrary> arbitrariesByArbitraryProperty =
 			context.getCombinableArbitrariesByArbitraryProperty();
+
+		return new ArbitraryIntrospectorResult(
+			CombinableArbitrary.objectBuilder()
+				.properties(arbitrariesByArbitraryProperty)
+				.build(combine(type))
+		);
+	}
+
+	private Function<Map<ArbitraryProperty, Object>, Object> combine(Class<?> type) {
 		Map<String, PropertyDescriptor> propertyDescriptors =
 			TypeCache.getPropertyDescriptorsByPropertyName(type);
 
-		return new ArbitraryIntrospectorResult(
-			new ObjectCombinableArbitrary(
-				arbitrariesByArbitraryProperty,
-				propertyValuesByArbitraryProperty -> {
-					Object instance = Reflections.newInstance(type);
-					propertyValuesByArbitraryProperty.forEach(
-						(arbitraryProperty, value) -> {
-							String originPropertyName = arbitraryProperty.getObjectProperty().getProperty().getName();
-							PropertyDescriptor propertyDescriptor = propertyDescriptors.get(originPropertyName);
-							Method writeMethod = propertyDescriptor.getWriteMethod();
-							try {
-								if (value != null) {
-									writeMethod.invoke(instance, value);
-								}
-							} catch (IllegalAccessException | InvocationTargetException ex) {
-								log.warn("set bean property is failed. name: {} value: {}",
-									writeMethod.getName(),
-									value,
-									ex);
-							}
-
+		return propertyValuesByArbitraryProperty -> {
+			Object instance = Reflections.newInstance(type);
+			propertyValuesByArbitraryProperty.forEach(
+				(arbitraryProperty, value) -> {
+					String originPropertyName = arbitraryProperty.getObjectProperty()
+						.getProperty()
+						.getName();
+					PropertyDescriptor propertyDescriptor = propertyDescriptors.get(originPropertyName);
+					Method writeMethod = propertyDescriptor.getWriteMethod();
+					try {
+						if (value != null) {
+							writeMethod.invoke(instance, value);
 						}
-					);
-					return instance;
+					} catch (IllegalAccessException | InvocationTargetException ex) {
+						log.warn("set bean property is failed. name: {} value: {}",
+							writeMethod.getName(),
+							value,
+							ex);
+					}
+
 				}
-			)
-		);
+			);
+			return instance;
+		};
 	}
 }

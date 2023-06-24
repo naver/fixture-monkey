@@ -26,7 +26,6 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
-import com.navercorp.fixturemonkey.api.arbitrary.ContainerCombinableArbitrary;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.generator.ContainerProperty;
@@ -71,15 +70,16 @@ public final class MapEntryElementIntrospector implements ArbitraryIntrospector,
 		entryCombinableArbitraryList.add(valueCombinableArbitrary);
 
 		return new ArbitraryIntrospectorResult(
-			new ContainerCombinableArbitrary(
-				entryCombinableArbitraryList,
-				elements -> {
-					MapEntryElementType elementType = new MapEntryElementType();
-					elementType.setKey(elements.get(0));
-					elementType.setValue(elements.get(1));
-					return elementType;
-				}
-			)
+			CombinableArbitrary.containerBuilder()
+				.elements(entryCombinableArbitraryList)
+				.build(this::combine)
 		);
+	}
+
+	private Object combine(List<Object> elements) {
+		MapEntryElementType elementType = new MapEntryElementType();
+		elementType.setKey(elements.get(0));
+		elementType.setValue(elements.get(1));
+		return elementType;
 	}
 }

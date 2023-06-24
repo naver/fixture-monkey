@@ -21,12 +21,12 @@ package com.navercorp.fixturemonkey.api.introspector;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
-import com.navercorp.fixturemonkey.api.arbitrary.ContainerCombinableArbitrary;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.generator.ContainerProperty;
@@ -55,24 +55,27 @@ public final class MapIntrospector implements ArbitraryIntrospector, Matcher {
 		List<CombinableArbitrary> elementCombinableArbitraryList = context.getElementCombinableArbitraryList();
 
 		return new ArbitraryIntrospectorResult(
-			new ContainerCombinableArbitrary(
-				elementCombinableArbitraryList,
-				elements -> {
-					Map<Object, Object> map = new HashMap<>();
-					for (Object element : elements) {
-						MapEntryElementType mapEntryElement = (MapEntryElementType)element;
-						if (mapEntryElement.getKey() == null) {
-							throw new IllegalArgumentException("Map key cannot be null.");
-						}
-						map.put(
-							mapEntryElement.getKey(),
-							mapEntryElement.getValue()
-						);
-					}
-					context.evictUnique(context.getPathProperty());
-					return map;
-				}
-			)
+			CombinableArbitrary.containerBuilder()
+				.elements(elementCombinableArbitraryList)
+				.build(combine(context))
 		);
+	}
+
+	private static Function<List<Object>, Object> combine(ArbitraryGeneratorContext context) {
+		return elements -> {
+			Map<Object, Object> map = new HashMap<>();
+			for (Object element : elements) {
+				MapEntryElementType mapEntryElement = (MapEntryElementType)element;
+				if (mapEntryElement.getKey() == null) {
+					throw new IllegalArgumentException("Map key cannot be null.");
+				}
+				map.put(
+					mapEntryElement.getKey(),
+					mapEntryElement.getValue()
+				);
+			}
+			context.evictUnique(context.getPathProperty());
+			return map;
+		};
 	}
 }

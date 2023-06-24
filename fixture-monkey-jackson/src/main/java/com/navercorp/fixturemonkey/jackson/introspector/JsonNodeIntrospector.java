@@ -27,7 +27,7 @@ import org.apiguardian.api.API.Status;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import com.navercorp.fixturemonkey.api.arbitrary.ContainerCombinableArbitrary;
+import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.generator.ContainerProperty;
@@ -57,21 +57,22 @@ public final class JsonNodeIntrospector implements ArbitraryIntrospector {
 		}
 
 		return new ArbitraryIntrospectorResult(
-			new ContainerCombinableArbitrary(
-				context.getElementCombinableArbitraryList(),
-				elements -> {
-					Map<Object, Object> map = new HashMap<>();
-					for (Object element : elements) {
-						MapEntryElementType mapEntryElementType = (MapEntryElementType)element;
-						if (mapEntryElementType.getKey() == null) {
-							throw new IllegalArgumentException("Map key cannot be null.");
+			CombinableArbitrary.containerBuilder()
+				.elements(context.getElementCombinableArbitraryList())
+				.build(
+					elements -> {
+						Map<Object, Object> map = new HashMap<>();
+						for (Object element : elements) {
+							MapEntryElementType mapEntryElementType = (MapEntryElementType)element;
+							if (mapEntryElementType.getKey() == null) {
+								throw new IllegalArgumentException("Map key cannot be null.");
+							}
+							map.put(mapEntryElementType.getKey(), mapEntryElementType.getValue());
 						}
-						map.put(mapEntryElementType.getKey(), mapEntryElementType.getValue());
-					}
 
-					return objectMapper.convertValue(map, JsonNode.class);
-				}
-			)
+						return objectMapper.convertValue(map, JsonNode.class);
+					}
+				)
 		);
 	}
 }
