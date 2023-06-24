@@ -1,17 +1,21 @@
 package com.navercorp.fixturemonkey.kotlin.introspector
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext
+import com.navercorp.fixturemonkey.api.generator.ContainerCombinableArbitrary
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult
 import com.navercorp.fixturemonkey.api.matcher.AssignableTypeMatcher
 import com.navercorp.fixturemonkey.api.matcher.Matcher
+import com.navercorp.fixturemonkey.api.matcher.TripleGenericTypeMatcher
 import com.navercorp.fixturemonkey.api.property.Property
-import net.jqwik.api.Combinators
 import org.apiguardian.api.API
+import org.apiguardian.api.API.Status
 
-@API(since = "0.6.0", status = API.Status.EXPERIMENTAL)
+@API(since = "0.6.0", status = Status.EXPERIMENTAL)
 class TripleIntrospector : ArbitraryIntrospector, Matcher {
-    private val MATCHER = AssignableTypeMatcher(Triple::class.java)
+    private val MATCHER = Matcher { property ->
+        AssignableTypeMatcher(Triple::class.java).match(property) && TripleGenericTypeMatcher().match(property)
+    }
 
     override fun match(property: Property?): Boolean { return MATCHER.match(property) }
 
@@ -26,15 +30,16 @@ class TripleIntrospector : ArbitraryIntrospector, Matcher {
             return ArbitraryIntrospectorResult.EMPTY
         }
 
-        val childrenArbitraries = context.elementArbitraries.map { it.combined() }
+        val elementCombinableArbitraryList = context.elementCombinableArbitraryList
 
-        if (childrenArbitraries.size != 3) {
+        if (elementCombinableArbitraryList.size != 3) {
             throw IllegalArgumentException("First, second, and third value should exist for TripleType.")
         }
 
         return ArbitraryIntrospectorResult(
-            Combinators.combine(childrenArbitraries[0], childrenArbitraries[1], childrenArbitraries[2])
-                .`as` { t1, t2, t3 -> Triple(t1, t2, t3) }
+            ContainerCombinableArbitrary(
+                elementCombinableArbitraryList
+            ) { elements -> Triple(elements[0], elements[1], elements[2]) }
         )
     }
 }

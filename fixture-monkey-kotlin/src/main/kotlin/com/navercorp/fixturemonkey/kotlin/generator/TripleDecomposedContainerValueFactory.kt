@@ -21,8 +21,9 @@ package com.navercorp.fixturemonkey.kotlin.generator
 import com.navercorp.fixturemonkey.api.container.DecomposableJavaContainer
 import com.navercorp.fixturemonkey.api.container.DecomposedContainerValueFactory
 import org.apiguardian.api.API
+import org.apiguardian.api.API.Status
 
-@API(since = "0.6.0", status = API.Status.EXPERIMENTAL)
+@API(since = "0.6.0", status = Status.EXPERIMENTAL)
 class TripleDecomposedContainerValueFactory : DecomposedContainerValueFactory {
     override fun from(obj: Any): DecomposableJavaContainer {
         return when (obj) {
