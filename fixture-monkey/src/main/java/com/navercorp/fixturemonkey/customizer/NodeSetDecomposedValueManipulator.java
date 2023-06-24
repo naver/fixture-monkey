@@ -31,9 +31,9 @@ import javax.annotation.Nullable;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ContainerProperty;
-import com.navercorp.fixturemonkey.api.generator.FixedCombinableArbitrary;
 import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.type.Types;
@@ -143,7 +143,7 @@ public final class NodeSetDecomposedValueManipulator<T> implements NodeManipulat
 
 		List<ObjectNode> children = objectNode.getChildren();
 		if (children.isEmpty() || Types.getActualType(objectNode.getProperty().getType()).isInterface()) {
-			objectNode.setArbitrary(new FixedCombinableArbitrary(value));
+			objectNode.setArbitrary(CombinableArbitrary.from(value));
 			return;
 		}
 

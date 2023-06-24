@@ -50,10 +50,8 @@ import net.jqwik.api.Combinators.F4;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
+import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.expression.ExpressionGenerator;
-import com.navercorp.fixturemonkey.api.generator.CombinableArbitrary;
-import com.navercorp.fixturemonkey.api.generator.FilteredCombinableArbitrary;
-import com.navercorp.fixturemonkey.api.generator.FixedCombinableArbitrary;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
@@ -454,30 +452,25 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T> {
 
 		if (context.isFixed()) {
 			if (context.getFixedCombinableArbitrary() == null || context.fixedExpired()) {
-				Object fixed = new FilteredCombinableArbitrary(
-					GENERATION_COUNT,
-					resolver.resolve(
+				Object fixed = resolver.resolve(
 						rootProperty,
 						manipulators,
 						containerInfoManipulators
-					),
-					validateFilter(context.isValidOnly())
-				).combined();
+					)
+					.filter(GENERATION_COUNT, validateFilter(context.isValidOnly()))
+					.combined();
 				context.addManipulator(monkeyManipulatorFactory.newArbitraryManipulator("$", fixed));
-				context.renewFixed(new FixedCombinableArbitrary(fixed));
+				context.renewFixed(CombinableArbitrary.from(fixed));
 			}
 			return context.getFixedCombinableArbitrary();
 		}
 
-		return new FilteredCombinableArbitrary(
-			GENERATION_COUNT,
-			this.resolver.resolve(
-				this.rootProperty,
+		return resolver.resolve(
+				rootProperty,
 				manipulators,
 				containerInfoManipulators
-			),
-			this.validateFilter(context.isValidOnly())
-		);
+			)
+			.filter(GENERATION_COUNT, validateFilter(context.isValidOnly()));
 	}
 
 	private String resolveExpression(ExpressionGenerator expressionGenerator) {

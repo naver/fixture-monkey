@@ -21,12 +21,12 @@ package com.navercorp.fixturemonkey.customizer;
 import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.ALWAYS_NULL_INJECT;
 import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.NOT_NULL_INJECT;
 
+import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
-import com.navercorp.fixturemonkey.api.generator.FixedCombinableArbitrary;
 import com.navercorp.fixturemonkey.tree.ObjectNode;
 
 public class NodeNullityManipulator implements NodeManipulator {
-	private static final FixedCombinableArbitrary FIXED_AS_NULL = new FixedCombinableArbitrary(null);
+	private static final CombinableArbitrary FIXED_AS_NULL = CombinableArbitrary.from(null);
 
 	private final boolean toNull;
 

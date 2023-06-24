@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.api.generator;
+package com.navercorp.fixturemonkey.api.arbitrary;
 
 import java.util.function.Predicate;
 
@@ -34,7 +34,7 @@ import com.navercorp.fixturemonkey.api.exception.ValidationFailedException;
  * It would try {@link #FAILED_THRESHOLD} times when the parent {@link CombinableArbitrary} make it regenerate.
  */
 @API(since = "0.5.0", status = Status.MAINTAINED)
-public final class FilteredCombinableArbitrary implements CombinableArbitrary {
+final class FilteredCombinableArbitrary implements CombinableArbitrary {
 	private static final int FAILED_THRESHOLD = 3;
 
 	private final int maxMisses;
@@ -44,7 +44,7 @@ public final class FilteredCombinableArbitrary implements CombinableArbitrary {
 	private Exception lastException;
 	private int failureCount = 0;
 
-	public FilteredCombinableArbitrary(
+	FilteredCombinableArbitrary(
 		int maxMisses,
 		CombinableArbitrary combinableArbitrary,
 		Predicate<Object> predicate

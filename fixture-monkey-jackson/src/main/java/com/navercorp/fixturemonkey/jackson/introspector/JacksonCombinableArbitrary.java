@@ -23,7 +23,7 @@ import java.util.function.Function;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.api.generator.CombinableArbitrary;
+import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 
 /**
  * It is a {@link CombinableArbitrary} for Jackson library.

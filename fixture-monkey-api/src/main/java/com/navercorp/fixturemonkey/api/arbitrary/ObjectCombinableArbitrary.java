@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.api.generator;
+package com.navercorp.fixturemonkey.api.arbitrary;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -24,6 +24,8 @@ import java.util.function.Function;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
+
+import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 
 /**
  * It combines given {@link CombinableArbitrary} list into an object type {@link CombinableArbitrary}.

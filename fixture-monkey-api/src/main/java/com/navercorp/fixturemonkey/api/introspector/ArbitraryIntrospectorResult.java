@@ -27,22 +27,19 @@ import org.apiguardian.api.API.Status;
 
 import net.jqwik.api.Arbitrary;
 
-import com.navercorp.fixturemonkey.api.generator.CombinableArbitrary;
-import com.navercorp.fixturemonkey.api.generator.FixedCombinableArbitrary;
-import com.navercorp.fixturemonkey.api.generator.LazyCombinableArbitrary;
+import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class ArbitraryIntrospectorResult {
 	public static final ArbitraryIntrospectorResult EMPTY = new ArbitraryIntrospectorResult(
-		new FixedCombinableArbitrary(new Object())
+		CombinableArbitrary.from(new Object())
 	);
 
 	private final CombinableArbitrary value;
 
-	@SuppressWarnings("unchecked")
 	public ArbitraryIntrospectorResult(@Nullable Arbitrary<?> value) {
-		this.value = new LazyCombinableArbitrary(LazyArbitrary.lazy(
+		this.value = CombinableArbitrary.from(LazyArbitrary.lazy(
 			() -> {
 				if (value != null) {
 					return value.sample();

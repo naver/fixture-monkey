@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.api.generator;
+package com.navercorp.fixturemonkey.api.arbitrary;
 
 import java.util.Objects;
 
@@ -26,11 +26,11 @@ import org.apiguardian.api.API.Status;
 /**
  * It would generate a fixed value {@code object}.
  */
-@API(since = "0.5.0", status = Status.MAINTAINED)
-public final class FixedCombinableArbitrary implements CombinableArbitrary {
+@API(since = "0.6.0", status = Status.MAINTAINED)
+final class FixedCombinableArbitrary implements CombinableArbitrary {
 	private final Object object;
 
-	public FixedCombinableArbitrary(Object object) {
+	FixedCombinableArbitrary(Object object) {
 		this.object = object;
 	}
 

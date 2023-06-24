@@ -16,46 +16,43 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.api.generator;
+package com.navercorp.fixturemonkey.api.arbitrary;
+
+import java.util.function.Function;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
-
 /**
- * It would generate an arbitrary object.
- * A generated object would be changed when {@link #combined()} and {@link #rawValue()} is called.
+ * It would transform a generated object into a new object.
  */
 @API(since = "0.5.0", status = Status.MAINTAINED)
-public final class LazyCombinableArbitrary implements CombinableArbitrary {
-	private final LazyArbitrary<Object> introspected;
+final class MappedCombinableArbitrary implements CombinableArbitrary {
+	private final CombinableArbitrary combinableArbitrary;
+	private final Function<Object, Object> mapper;
 
-	public LazyCombinableArbitrary(LazyArbitrary<Object> introspected) {
-		this.introspected = introspected;
+	MappedCombinableArbitrary(CombinableArbitrary combinableArbitrary, Function<Object, Object> mapper) {
+		this.combinableArbitrary = combinableArbitrary;
+		this.mapper = mapper;
 	}
 
 	@Override
 	public Object combined() {
-		Object combined = introspected.getValue();
-		introspected.clear();
-		return combined;
+		return mapper.apply(combinableArbitrary.combined());
 	}
 
 	@Override
 	public Object rawValue() {
-		Object rawValue = introspected.getValue();
-		introspected.clear();
-		return rawValue;
+		return mapper.apply(combinableArbitrary.rawValue());
 	}
 
 	@Override
 	public void clear() {
-		introspected.clear();
+		combinableArbitrary.clear();
 	}
 
 	@Override
 	public boolean fixed() {
-		return false;
+		return combinableArbitrary.fixed();
 	}
 }
