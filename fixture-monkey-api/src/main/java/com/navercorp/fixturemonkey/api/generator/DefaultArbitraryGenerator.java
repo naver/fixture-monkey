@@ -18,11 +18,16 @@
 
 package com.navercorp.fixturemonkey.api.generator;
 
+import java.util.function.Predicate;
+
+import javax.validation.ConstraintViolationException;
+
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult;
+import com.navercorp.fixturemonkey.api.validator.ArbitraryValidator;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public class DefaultArbitraryGenerator implements ArbitraryGenerator {
@@ -36,15 +41,40 @@ public class DefaultArbitraryGenerator implements ArbitraryGenerator {
 		return new JavaDefaultArbitraryGeneratorBuilder();
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public CombinableArbitrary generate(ArbitraryGeneratorContext context) {
 		ArbitraryIntrospectorResult result = this.arbitraryIntrospector.introspect(context);
 		if (result.getValue() != null) {
 			double nullInject = context.getArbitraryProperty().getObjectProperty().getNullInject();
+			ArbitraryValidator arbitraryValidator = context.getArbitraryValidator();
+
 			return result.getValue()
-				.injectNull(nullInject);
+				.injectNull(nullInject)
+				.filter(this.validateFilter(arbitraryValidator, context.isValidOnly()));
 		}
 
 		return new FixedCombinableArbitrary(null);
+	}
+
+	@SuppressWarnings("rawtypes")
+	private Predicate validateFilter(ArbitraryValidator validator, boolean validOnly) {
+		return fixture -> {
+			if (!validOnly) {
+				return true;
+			}
+
+			if (fixture == null) {
+				return true;
+			}
+
+			try {
+				validator.validate(fixture);
+				return true;
+			} catch (ConstraintViolationException ex) {
+				// dismiss
+			}
+			return false;
+		};
 	}
 }

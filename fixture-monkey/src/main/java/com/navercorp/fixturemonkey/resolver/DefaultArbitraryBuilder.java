@@ -25,8 +25,6 @@ import static java.util.stream.Collectors.toList;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -36,8 +34,6 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -52,14 +48,12 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.api.expression.ExpressionGenerator;
 import com.navercorp.fixturemonkey.api.generator.CombinableArbitrary;
-import com.navercorp.fixturemonkey.api.generator.FilteredCombinableArbitrary;
 import com.navercorp.fixturemonkey.api.generator.FixedCombinableArbitrary;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
 import com.navercorp.fixturemonkey.api.type.LazyAnnotatedType;
 import com.navercorp.fixturemonkey.api.type.Types;
-import com.navercorp.fixturemonkey.api.validator.ArbitraryValidator;
 import com.navercorp.fixturemonkey.customizer.ArbitraryManipulator;
 import com.navercorp.fixturemonkey.customizer.ContainerInfoManipulator;
 import com.navercorp.fixturemonkey.customizer.InnerSpec;
@@ -70,26 +64,18 @@ import com.navercorp.fixturemonkey.tree.ArbitraryTraverser;
 @SuppressFBWarnings("NM_SAME_SIMPLE_NAME_AS_SUPERCLASS")
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T> {
-	private static final int GENERATION_COUNT = 500;
-
 	private final ManipulateOptions manipulateOptions;
 	private final RootProperty rootProperty;
 	private final ArbitraryResolver resolver;
 	private final ArbitraryTraverser traverser;
-	private final ArbitraryValidator validator;
 	private final MonkeyManipulatorFactory monkeyManipulatorFactory;
 	private final ArbitraryBuilderContext context;
-
-	@SuppressWarnings("rawtypes")
-	private final Map<String, ConstraintViolation> violations = new ConcurrentHashMap<>();
-	private Exception lastException;
 
 	public DefaultArbitraryBuilder(
 		ManipulateOptions manipulateOptions,
 		RootProperty rootProperty,
 		ArbitraryResolver resolver,
 		ArbitraryTraverser traverser,
-		ArbitraryValidator validator,
 		MonkeyManipulatorFactory monkeyManipulatorFactory,
 		ArbitraryBuilderContext context
 	) {
@@ -98,7 +84,6 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T> {
 		this.rootProperty = rootProperty;
 		this.resolver = resolver;
 		this.traverser = traverser;
-		this.validator = validator;
 		this.context = context;
 		this.monkeyManipulatorFactory = monkeyManipulatorFactory;
 	}
@@ -436,7 +421,6 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T> {
 			rootProperty,
 			resolver,
 			traverser,
-			validator,
 			monkeyManipulatorFactory,
 			context.copy()
 		);
@@ -446,7 +430,6 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T> {
 		return this.context;
 	}
 
-	@SuppressWarnings("unchecked")
 	private CombinableArbitrary resolveArbitrary(ArbitraryBuilderContext context) {
 		List<ArbitraryManipulator> manipulators = new ArrayList<>(context.getManipulators());
 		List<ContainerInfoManipulator> containerInfoManipulators =
@@ -454,30 +437,26 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T> {
 
 		if (context.isFixed()) {
 			if (context.getFixedCombinableArbitrary() == null || context.fixedExpired()) {
-				Object fixed = new FilteredCombinableArbitrary(
-					GENERATION_COUNT,
-					resolver.resolve(
+				Object fixed = resolver.resolve(
 						rootProperty,
 						manipulators,
-						containerInfoManipulators
-					),
-					validateFilter(context.isValidOnly())
-				).combined();
+						containerInfoManipulators,
+						context.isValidOnly()
+					)
+					.filter((obj) -> true) // TODO: temporary for setArbitrary
+					.combined();
 				context.addManipulator(monkeyManipulatorFactory.newArbitraryManipulator("$", fixed));
 				context.renewFixed(new FixedCombinableArbitrary(fixed));
 			}
 			return context.getFixedCombinableArbitrary();
 		}
 
-		return new FilteredCombinableArbitrary(
-			GENERATION_COUNT,
-			this.resolver.resolve(
-				this.rootProperty,
-				manipulators,
-				containerInfoManipulators
-			),
-			this.validateFilter(context.isValidOnly())
-		);
+		return this.resolver.resolve(
+			this.rootProperty,
+			manipulators,
+			containerInfoManipulators,
+			context.isValidOnly()
+		).filter((obj) -> true); // TODO: temporary for setArbitrary
 	}
 
 	private String resolveExpression(ExpressionGenerator expressionGenerator) {
@@ -498,36 +477,8 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T> {
 			new RootProperty(new LazyAnnotatedType<>(lazyArbitrary::getValue)),
 			resolver,
 			traverser,
-			validator,
 			monkeyManipulatorFactory,
 			context
 		);
-	}
-
-	@SuppressWarnings("rawtypes")
-	private Predicate validateFilter(boolean validOnly) {
-		return fixture -> {
-			if (!validOnly) {
-				return true;
-			}
-
-			if (fixture == null) {
-				return true;
-			}
-
-			try {
-				this.validator.validate(fixture);
-				return true;
-			} catch (ConstraintViolationException ex) {
-				ex.getConstraintViolations().forEach(violation ->
-					this.violations.put(
-						violation.getRootBeanClass().getName() + violation.getPropertyPath(),
-						violation
-					)
-				);
-				this.lastException = ex;
-			}
-			return false;
-		};
 	}
 }

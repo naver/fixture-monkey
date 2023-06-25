@@ -35,7 +35,6 @@ import com.navercorp.fixturemonkey.api.option.GenerateOptions;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
 import com.navercorp.fixturemonkey.api.type.LazyAnnotatedType;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
-import com.navercorp.fixturemonkey.api.validator.ArbitraryValidator;
 import com.navercorp.fixturemonkey.customizer.ArbitraryManipulator;
 import com.navercorp.fixturemonkey.customizer.MonkeyManipulatorFactory;
 import com.navercorp.fixturemonkey.resolver.ArbitraryBuilderContext;
@@ -52,7 +51,6 @@ public class FixtureMonkey {
 	private final ManipulateOptionsBuilder manipulateOptionsBuilder;
 	private final ArbitraryTraverser traverser;
 	private final ManipulatorOptimizer manipulatorOptimizer;
-	private final ArbitraryValidator validator;
 	private final MonkeyContext monkeyContext;
 
 	public FixtureMonkey(
@@ -60,14 +58,12 @@ public class FixtureMonkey {
 		ManipulateOptionsBuilder manipulateOptionsBuilder,
 		ArbitraryTraverser traverser,
 		ManipulatorOptimizer manipulatorOptimizer,
-		ArbitraryValidator validator,
 		MonkeyContext monkeyContext
 	) {
 		this.generateOptions = generateOptions;
 		this.manipulateOptionsBuilder = manipulateOptionsBuilder;
 		this.traverser = traverser;
 		this.manipulatorOptimizer = manipulatorOptimizer;
-		this.validator = validator;
 		this.monkeyContext = monkeyContext;
 		manipulateOptionsBuilder.propertyNameResolvers(generateOptions.getPropertyNameResolvers());
 		manipulateOptionsBuilder.defaultPropertyNameResolver(generateOptions.getDefaultPropertyNameResolver());
@@ -121,7 +117,6 @@ public class FixtureMonkey {
 				monkeyContext
 			),
 			traverser,
-			this.validator,
 			monkeyManipulatorFactory,
 			new ArbitraryBuilderContext()
 		);
@@ -153,7 +148,6 @@ public class FixtureMonkey {
 				monkeyContext
 			),
 			traverser,
-			this.validator,
 			monkeyManipulatorFactory,
 			context
 		);

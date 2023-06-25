@@ -41,6 +41,7 @@ import org.apiguardian.api.API.Status;
 import com.navercorp.fixturemonkey.api.context.MonkeyGeneratorContext;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.api.property.Property;
+import com.navercorp.fixturemonkey.api.validator.ArbitraryValidator;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class ArbitraryGeneratorContext {
@@ -49,6 +50,10 @@ public final class ArbitraryGeneratorContext {
 	private final ArbitraryProperty property;
 
 	private final List<ArbitraryProperty> children;
+
+	private final ArbitraryValidator arbitraryValidator;
+
+	private final boolean validOnly;
 
 	@Nullable
 	private final ArbitraryGeneratorContext ownerContext;
@@ -66,6 +71,8 @@ public final class ArbitraryGeneratorContext {
 		Property resolvedProperty,
 		ArbitraryProperty property,
 		List<ArbitraryProperty> children,
+		ArbitraryValidator arbitraryValidator,
+		boolean validOnly,
 		@Nullable ArbitraryGeneratorContext ownerContext,
 		BiFunction<ArbitraryGeneratorContext, ArbitraryProperty, CombinableArbitrary> resolveArbitrary,
 		MonkeyGeneratorContext monkeyGeneratorContext
@@ -73,6 +80,8 @@ public final class ArbitraryGeneratorContext {
 		this.resolvedProperty = resolvedProperty;
 		this.property = property;
 		this.children = new ArrayList<>(children);
+		this.arbitraryValidator = arbitraryValidator;
+		this.validOnly = validOnly;
 		this.ownerContext = ownerContext;
 		this.resolveArbitrary = resolveArbitrary;
 		this.monkeyGeneratorContext = monkeyGeneratorContext;
@@ -124,6 +133,14 @@ public final class ArbitraryGeneratorContext {
 	@Nullable
 	public ArbitraryGeneratorContext getOwnerContext() {
 		return this.ownerContext;
+	}
+
+	public ArbitraryValidator getArbitraryValidator() {
+		return arbitraryValidator;
+	}
+
+	public boolean isValidOnly() {
+		return validOnly;
 	}
 
 	public boolean isRootContext() {

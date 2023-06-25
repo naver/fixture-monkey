@@ -65,7 +65,8 @@ public final class ArbitraryResolver {
 	public CombinableArbitrary resolve(
 		RootProperty rootProperty,
 		List<ArbitraryManipulator> manipulators,
-		List<ContainerInfoManipulator> containerInfoManipulators
+		List<ContainerInfoManipulator> containerInfoManipulators,
+		boolean validOnly
 	) {
 		List<MatcherOperator<List<ContainerInfoManipulator>>> registeredContainerInfoManipulators =
 			manipulateOptions.getRegisteredArbitraryBuilders()
@@ -106,7 +107,7 @@ public final class ArbitraryResolver {
 					for (ArbitraryManipulator manipulator : optimizedManipulator) {
 						manipulator.manipulate(objectTree);
 					}
-					return objectTree.generate();
+					return objectTree.generate(validOnly);
 				}
 			);
 

@@ -75,14 +75,15 @@ public final class ObjectTree {
 		}
 	}
 
-	public CombinableArbitrary generate() {
-		ArbitraryGeneratorContext context = generateContext(rootNode, null);
+	public CombinableArbitrary generate(boolean validOnly) {
+		ArbitraryGeneratorContext context = generateContext(rootNode, null, validOnly);
 		return generateIntrospected(context, rootNode);
 	}
 
 	private ArbitraryGeneratorContext generateContext(
 		ObjectNode objectNode,
-		@Nullable ArbitraryGeneratorContext parentContext
+		@Nullable ArbitraryGeneratorContext parentContext,
+		boolean validOnly
 	) {
 		Map<ArbitraryProperty, ObjectNode> childNodesByArbitraryProperty = new HashMap<>();
 		List<ArbitraryProperty> childrenProperties = new ArrayList<>();
@@ -103,6 +104,8 @@ public final class ObjectTree {
 			resolvedParentProperty,
 			arbitraryProperty,
 			childrenProperties,
+			generateOptions.getDefaultArbitraryValidator(),
+			validOnly,
 			parentContext,
 			(ctx, prop) -> {
 				ObjectNode node = childNodesByArbitraryProperty.get(prop);
@@ -126,7 +129,11 @@ public final class ObjectTree {
 			generated = node.getArbitrary()
 				.injectNull(node.getArbitraryProperty().getObjectProperty().getNullInject());
 		} else {
-			ArbitraryGeneratorContext childArbitraryGeneratorContext = this.generateContext(node, ctx);
+			ArbitraryGeneratorContext childArbitraryGeneratorContext = this.generateContext(
+				node,
+				ctx,
+				ctx.isValidOnly()
+			);
 
 			CombinableArbitrary cached = monkeyContext.getCachedArbitrary(node.getProperty());
 
