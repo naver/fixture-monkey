@@ -16,29 +16,20 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.api.exception;
-
-import java.util.Set;
+package com.navercorp.fixturemonkey.api.property;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.api.validator.ArbitraryValidator;
-
 /**
- * It is thrown when validated by {@link ArbitraryValidator}.
- * A new populated object would be generated when this exception is thrown.
+ * An interface for finding the location of given property resides.
  */
 @API(since = "0.6.0", status = Status.EXPERIMENTAL)
-public final class ValidationFailedException extends RuntimeException {
-	private final Set<String> constraintViolationPropertyNames;
-
-	public ValidationFailedException(String message, Set<String> constraintViolationPropertyNames) {
-		super(message);
-		this.constraintViolationPropertyNames = constraintViolationPropertyNames;
-	}
-
-	public Set<String> getConstraintViolationPropertyNames() {
-		return constraintViolationPropertyNames;
-	}
+@FunctionalInterface
+public interface Traceable {
+	/**
+	 * retrieves a PropertyPath to find the location.
+	 * @return a PropertyPath
+	 */
+	PropertyPath getPropertyPath();
 }

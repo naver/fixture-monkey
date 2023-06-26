@@ -25,6 +25,7 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Path;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 
@@ -48,13 +49,15 @@ public final class JakartaArbitraryValidator implements ArbitraryValidator {
 		if (this.validator != null) {
 			Set<ConstraintViolation<Object>> violations = this.validator.validate(arbitrary);
 
-			Set<String> validationMessages = violations.stream()
-				.map(ConstraintViolation::getMessage)
+			Set<String> constraintViolationPropertyNames = violations.stream()
+				.map(ConstraintViolation::getPropertyPath)
+				.map(Path::toString)
 				.collect(Collectors.toSet());
 
 			if (!violations.isEmpty()) {
 				throw new ValidationFailedException(
-					"DefaultArbitrayValidator ConstraintViolations. type: " + arbitrary.getClass(), validationMessages
+					"DefaultArbitrayValidator ConstraintViolations. type: " + arbitrary.getClass(),
+					constraintViolationPropertyNames
 				);
 			}
 		}

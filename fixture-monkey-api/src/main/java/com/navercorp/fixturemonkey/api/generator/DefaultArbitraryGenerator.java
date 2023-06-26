@@ -22,6 +22,7 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
+import com.navercorp.fixturemonkey.api.arbitrary.TraceableCombinableArbitrary;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult;
 
@@ -42,8 +43,11 @@ public class DefaultArbitraryGenerator implements ArbitraryGenerator {
 		ArbitraryIntrospectorResult result = this.arbitraryIntrospector.introspect(context);
 		if (result.getValue() != null) {
 			double nullInject = context.getArbitraryProperty().getObjectProperty().getNullInject();
-			return result.getValue()
-				.injectNull(nullInject);
+			return new TraceableCombinableArbitrary(
+				result.getValue()
+					.injectNull(nullInject),
+				context.getPropertyPath()
+			);
 		}
 
 		return CombinableArbitrary.from(null);

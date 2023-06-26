@@ -45,6 +45,7 @@ import com.navercorp.fixturemonkey.api.introspector.ConstructorPropertiesArbitra
 import com.navercorp.fixturemonkey.api.introspector.FailoverIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.FieldReflectionArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
+import com.navercorp.fixturemonkey.customizer.InnerSpec;
 import com.navercorp.fixturemonkey.resolver.ArbitraryBuilderCandidateFactory;
 import com.navercorp.fixturemonkey.resolver.ArbitraryBuilderCandidateList;
 import com.navercorp.fixturemonkey.tests.java.ImmutableDepthTestSpecs.DepthStringValueList;
@@ -59,6 +60,7 @@ import com.navercorp.fixturemonkey.tests.java.ImmutableGenericTypeSpecs.TwoGener
 import com.navercorp.fixturemonkey.tests.java.ImmutableJavaTestSpecs.ContainerObject;
 import com.navercorp.fixturemonkey.tests.java.ImmutableJavaTestSpecs.Enum;
 import com.navercorp.fixturemonkey.tests.java.ImmutableJavaTestSpecs.JavaTypeObject;
+import com.navercorp.fixturemonkey.tests.java.ImmutableJavaTestSpecs.RootJavaTypeObject;
 import com.navercorp.fixturemonkey.tests.java.ImmutableJavaTestSpecs.SetImplementationWithoutGeneric;
 import com.navercorp.fixturemonkey.tests.java.ImmutableMixedIntrospectorsTypeSpecs.MixedJavaTypeObject;
 import com.navercorp.fixturemonkey.tests.java.ImmutableRecursiveTypeSpecs.SelfRecursiveListObject;
@@ -564,5 +566,100 @@ class JavaTest {
 			.build();
 
 		thenNoException().isThrownBy(() -> sut.giveMeOne(MixedJavaTypeObject.class));
+	}
+
+	@Test
+	void logRoot() {
+		thenThrownBy(
+			() -> SUT.giveMeBuilder(String.class)
+				.setPostCondition(it -> it.equals("test"))
+				.sample()
+		)
+			.hasMessageContaining("\"$\"");
+	}
+
+	@Test
+	void logProperty() {
+		thenThrownBy(
+			() -> SUT.giveMeBuilder(JavaTypeObject.class)
+				.setPostCondition("string", String.class, it -> it.equals("test"))
+				.sample()
+		)
+			.hasMessageContaining("\"string\"");
+	}
+
+	@Test
+	void logNestedProperty() {
+		thenThrownBy(
+			() -> SUT.giveMeBuilder(RootJavaTypeObject.class)
+				.setPostCondition("value.string", String.class, it -> it.equals("test"))
+				.sample()
+		)
+			.hasMessageContaining("\"value.string\"");
+	}
+
+	@Test
+	void logArrayElement() {
+		thenThrownBy(
+			() -> SUT.giveMeBuilder(ContainerObject.class)
+				.size("array", 1)
+				.setPostCondition("array[0]", String.class, it -> it.equals("test"))
+				.sample()
+		)
+			.hasMessageContaining("\"array[0]\"");
+	}
+
+	@Test
+	void logListElement() {
+		thenThrownBy(
+			() -> SUT.giveMeBuilder(ContainerObject.class)
+				.size("list", 1)
+				.setPostCondition("list[0]", String.class, it -> it.equals("test"))
+				.sample()
+		)
+			.hasMessageContaining("\"list[0]\"");
+	}
+
+	@Test
+	void logListElementProperty() {
+		thenThrownBy(
+			() -> SUT.giveMeBuilder(ContainerObject.class)
+				.size("complexList", 1)
+				.setPostCondition("complexList[0].string", String.class, it -> it.equals("test"))
+				.sample()
+		)
+			.hasMessageContaining("\"complexList[0].string\"");
+	}
+
+	@Test
+	void logMapElementKeyProperty() {
+		thenThrownBy(
+			() -> SUT.giveMeBuilder(ContainerObject.class)
+				.setInner(
+					new InnerSpec()
+						.property("map", m ->
+							m.size(1)
+								.key(v -> v.postCondition(String.class, it -> it.equals("test")))
+						)
+				)
+				.sample()
+		)
+			.hasMessageContaining("\"map{key}\"");
+	}
+
+	@Test
+	void logMapElementValueProperty() {
+		thenThrownBy(
+			() -> SUT.giveMeBuilder(ContainerObject.class)
+				.setInner(
+					new InnerSpec()
+						.property("map", m ->
+							m.size(1)
+								.value(v -> v.postCondition(Integer.class, it -> it == -987654321))
+						)
+				)
+				.sample()
+		)
+			.hasMessageContaining("\"map{value}\"");
 	}
 }

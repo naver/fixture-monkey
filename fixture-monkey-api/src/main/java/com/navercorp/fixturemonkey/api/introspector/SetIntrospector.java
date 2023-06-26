@@ -57,7 +57,7 @@ public final class SetIntrospector implements ArbitraryIntrospector, Matcher {
 			.map(it -> it.filter(
 					DEFAULT_MAX_UNIQUE_GENERATION_COUNT,
 					element -> context.isUniqueAndCheck(
-						context.getPathProperty(),
+						context.getPropertyPath(),
 						element
 					)
 				)
@@ -67,7 +67,7 @@ public final class SetIntrospector implements ArbitraryIntrospector, Matcher {
 		return new ArbitraryIntrospectorResult(
 			CombinableArbitrary.containerBuilder()
 				.elements(elementArbitraryList)
-				.postBuild(() -> context.evictUnique(context.getPathProperty()))
+				.postBuild(() -> context.evictUnique(context.getPropertyPath()))
 				.build(HashSet::new)
 		);
 	}

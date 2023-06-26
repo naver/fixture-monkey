@@ -68,7 +68,7 @@ public final class MapEntryIntrospector implements ArbitraryIntrospector, Matche
 		return new ArbitraryIntrospectorResult(
 			CombinableArbitrary.containerBuilder()
 				.elements(elementCombinableArbitraryList)
-				.postBuild(() -> context.evictUnique(context.getPathProperty()))
+				.postBuild(() -> context.evictUnique(context.getPropertyPath()))
 				.build(MapEntryIntrospector::combine)
 		);
 	}

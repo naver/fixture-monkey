@@ -60,7 +60,7 @@ public final class MapEntryElementIntrospector implements ArbitraryIntrospector,
 		if (!elementCombinableArbitraryList.get(0).fixed()) {
 			keyCombinableArbitrary = keyCombinableArbitrary.filter(
 				obj -> context.isUniqueAndCheck(
-					Objects.requireNonNull(context.getOwnerContext()).getPathProperty(),
+					Objects.requireNonNull(context.getOwnerContext()).getPropertyPath(),
 					obj
 				)
 			);

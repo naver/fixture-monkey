@@ -27,6 +27,10 @@ import org.apiguardian.api.API.Status;
  */
 @API(since = "0.6.0", status = Status.EXPERIMENTAL)
 public final class FilterMissException extends RuntimeException {
+	public FilterMissException(String message, Throwable cause) {
+		super(message, cause);
+	}
+
 	public FilterMissException(Throwable cause) {
 		super(cause);
 	}
