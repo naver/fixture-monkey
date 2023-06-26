@@ -28,8 +28,8 @@ import org.apiguardian.api.API.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
-import com.navercorp.fixturemonkey.api.generator.CombinableArbitrary;
 
 @API(since = "0.6.0", status = Status.EXPERIMENTAL)
 public final class FailoverIntrospector implements ArbitraryIntrospector {

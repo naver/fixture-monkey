@@ -27,10 +27,9 @@ import java.util.Map;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
-import com.navercorp.fixturemonkey.api.generator.CombinableArbitrary;
-import com.navercorp.fixturemonkey.api.generator.FixedCombinableArbitrary;
 import com.navercorp.fixturemonkey.api.property.MethodProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.type.Types;
@@ -75,11 +74,11 @@ public final class AnonymousArbitraryIntrospector implements ArbitraryIntrospect
 		}
 
 		if (invocationHandlerBuilder.generatedValuesByMethodName.isEmpty()) {
-			return new ArbitraryIntrospectorResult(new FixedCombinableArbitrary(null));
+			return new ArbitraryIntrospectorResult(CombinableArbitrary.from(null));
 		}
 
 		return new ArbitraryIntrospectorResult(
-			new FixedCombinableArbitrary(
+			CombinableArbitrary.from(
 				type.cast(
 					Proxy.newProxyInstance(type.getClassLoader(), new Class[] {type}, invocationHandlerBuilder.build())
 				)

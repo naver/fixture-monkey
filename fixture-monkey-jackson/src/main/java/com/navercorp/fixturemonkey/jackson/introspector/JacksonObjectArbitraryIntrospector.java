@@ -26,6 +26,7 @@ import java.time.temporal.TemporalAccessor;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -37,9 +38,9 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
-import com.navercorp.fixturemonkey.api.generator.ObjectCombinableArbitrary;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult;
 import com.navercorp.fixturemonkey.api.property.CompositeProperty;
@@ -62,7 +63,6 @@ public final class JacksonObjectArbitraryIntrospector implements ArbitraryIntros
 		this.objectMapper = objectMapper;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
 		Property property = context.getResolvedProperty();
@@ -70,54 +70,59 @@ public final class JacksonObjectArbitraryIntrospector implements ArbitraryIntros
 
 		return new ArbitraryIntrospectorResult(
 			new JacksonCombinableArbitrary(
-				new ObjectCombinableArbitrary(
-					context.getCombinableArbitrariesByArbitraryProperty(),
-					propertyValuesByArbitraryProperty -> {
-						Map<String, Object> map = initializeMap(property);
-
-						propertyValuesByArbitraryProperty.entrySet()
-							.stream()
-							.filter(it -> isJacksonSerializableProperty(it.getKey().getObjectProperty().getProperty()))
-							.forEach(
-								entry -> {
-									ArbitraryProperty arbitraryProperty = entry.getKey();
-									Object value = entry.getValue();
-
-									String resolvePropertyName = arbitraryProperty.getObjectProperty()
-										.getResolvedPropertyName();
-
-									if (value != null) {
-										Object jsonFormatted = arbitraryProperty.getObjectProperty()
-											.getProperty()
-											.getAnnotation(JsonFormat.class)
-											.map(it -> format(value, it))
-											.orElse(value);
-
-										JsonTypeInfo jsonTypeInfo = getJacksonAnnotation(property, JsonTypeInfo.class);
-										if (jsonTypeInfo == null) {
-											map.put(resolvePropertyName, jsonFormatted);
-										} else {
-											if (jsonTypeInfo.include() == As.WRAPPER_OBJECT) {
-												String typeIdentifier = getJsonTypeInfoIdentifier(
-													jsonTypeInfo,
-													property
-												);
-
-												Map<String, Object> typeJson = (Map<String, Object>)
-													map.getOrDefault(typeIdentifier, new HashMap<>());
-												typeJson.put(resolvePropertyName, jsonFormatted);
-												map.put(typeIdentifier, typeJson);
-											}
-										}
-									}
-								}
-							);
-						return map;
-					}
-				),
+				CombinableArbitrary.objectBuilder()
+					.properties(context.getCombinableArbitrariesByArbitraryProperty())
+					.build(combineAsJson(property)),
 				map -> objectMapper.convertValue(map, type)
 			)
 		);
+	}
+
+	@SuppressWarnings("unchecked")
+	private Function<Map<ArbitraryProperty, Object>, Object> combineAsJson(Property property) {
+		return propertyValuesByArbitraryProperty -> {
+			Map<String, Object> map = initializeMap(property);
+
+			propertyValuesByArbitraryProperty.entrySet()
+				.stream()
+				.filter(it -> isJacksonSerializableProperty(it.getKey().getObjectProperty().getProperty()))
+				.forEach(
+					entry -> {
+						ArbitraryProperty arbitraryProperty = entry.getKey();
+						Object value = entry.getValue();
+
+						String resolvePropertyName = arbitraryProperty.getObjectProperty()
+							.getResolvedPropertyName();
+
+						if (value != null) {
+							Object jsonFormatted = arbitraryProperty.getObjectProperty()
+								.getProperty()
+								.getAnnotation(JsonFormat.class)
+								.map(it -> format(value, it))
+								.orElse(value);
+
+							JsonTypeInfo jsonTypeInfo = getJacksonAnnotation(property,
+								JsonTypeInfo.class);
+							if (jsonTypeInfo == null) {
+								map.put(resolvePropertyName, jsonFormatted);
+							} else {
+								if (jsonTypeInfo.include() == As.WRAPPER_OBJECT) {
+									String typeIdentifier = getJsonTypeInfoIdentifier(
+										jsonTypeInfo,
+										property
+									);
+
+									Map<String, Object> typeJson =
+										(Map<String, Object>)map.getOrDefault(typeIdentifier, new HashMap<>());
+									typeJson.put(resolvePropertyName, jsonFormatted);
+									map.put(typeIdentifier, typeJson);
+								}
+							}
+						}
+					}
+				);
+			return map;
+		};
 	}
 
 	private Map<String, Object> initializeMap(Property property) {

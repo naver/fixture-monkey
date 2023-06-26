@@ -18,9 +18,9 @@
 
 package com.navercorp.fixturemonkey.kotlin.introspector
 
+import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary
 import com.navercorp.fixturemonkey.api.collection.LruCache
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext
-import com.navercorp.fixturemonkey.api.generator.ObjectCombinableArbitrary
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult
 import com.navercorp.fixturemonkey.api.type.Types
@@ -52,15 +52,17 @@ class PrimaryConstructorArbitraryIntrospector : ArbitraryIntrospector {
         }
 
         return ArbitraryIntrospectorResult(
-            ObjectCombinableArbitrary(context.combinableArbitrariesByArbitraryProperty) {
-                val arbitrariesByPropertyName = it.mapKeys { map -> map.key.objectProperty.property.name }
+            CombinableArbitrary.objectBuilder()
+                .properties(context.combinableArbitrariesByArbitraryProperty)
+                .build {
+                    val arbitrariesByPropertyName = it.mapKeys { map -> map.key.objectProperty.property.name }
 
-                val map = mutableMapOf<KParameter, Any?>()
-                for (parameter in constructor.parameters) {
-                    map[parameter] = arbitrariesByPropertyName[parameter.name]
-                }
-                constructor.callBy(map)
-            },
+                    val map = mutableMapOf<KParameter, Any?>()
+                    for (parameter in constructor.parameters) {
+                        map[parameter] = arbitrariesByPropertyName[parameter.name]
+                    }
+                    constructor.callBy(map)
+                },
         )
     }
 }

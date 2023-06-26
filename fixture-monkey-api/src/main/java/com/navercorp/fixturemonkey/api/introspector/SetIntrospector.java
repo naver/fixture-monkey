@@ -18,18 +18,20 @@
 
 package com.navercorp.fixturemonkey.api.introspector;
 
+import static com.navercorp.fixturemonkey.api.arbitrary.ContainerCombineArbitraryBuilder.DEFAULT_MAX_UNIQUE_GENERATION_COUNT;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
-import com.navercorp.fixturemonkey.api.generator.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.generator.ContainerProperty;
-import com.navercorp.fixturemonkey.api.generator.UniqueContainerCombinableArbitrary;
 import com.navercorp.fixturemonkey.api.matcher.AssignableTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.property.Property;
@@ -51,18 +53,22 @@ public final class SetIntrospector implements ArbitraryIntrospector, Matcher {
 			return ArbitraryIntrospectorResult.EMPTY;
 		}
 
-		List<CombinableArbitrary> elementArbitraryList = context.getElementCombinableArbitraryList();
+		List<CombinableArbitrary> elementArbitraryList = context.getElementCombinableArbitraryList().stream()
+			.map(it -> it.filter(
+					DEFAULT_MAX_UNIQUE_GENERATION_COUNT,
+					element -> context.isUniqueAndCheck(
+						context.getPathProperty(),
+						element
+					)
+				)
+			)
+			.collect(Collectors.toList());
 
 		return new ArbitraryIntrospectorResult(
-			new UniqueContainerCombinableArbitrary(
-				elementArbitraryList,
-				it -> context.isUniqueAndCheck(
-					context.getPathProperty(),
-					it
-				),
-				() -> context.evictUnique(context.getPathProperty()),
-				HashSet::new
-			)
+			CombinableArbitrary.containerBuilder()
+				.elements(elementArbitraryList)
+				.postBuild(() -> context.evictUnique(context.getPathProperty()))
+				.build(HashSet::new)
 		);
 	}
 }

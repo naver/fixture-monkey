@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.api.generator;
+package com.navercorp.fixturemonkey.api.arbitrary;
 
 import java.lang.reflect.Proxy;
 
@@ -31,11 +31,11 @@ import com.navercorp.fixturemonkey.api.random.Randoms;
  * It would generate an object may be {@code null} with a {@code nullProbability}% chance.
  */
 @API(since = "0.5.0", status = Status.MAINTAINED)
-public final class NullInjectCombinableArbitrary implements CombinableArbitrary {
+final class NullInjectCombinableArbitrary implements CombinableArbitrary {
 	private final CombinableArbitrary combinableArbitrary;
 	private final double nullProbability;
 
-	public NullInjectCombinableArbitrary(CombinableArbitrary combinableArbitrary, double nullProbability) {
+	NullInjectCombinableArbitrary(CombinableArbitrary combinableArbitrary, double nullProbability) {
 		this.combinableArbitrary = combinableArbitrary;
 		this.nullProbability = nullProbability;
 	}

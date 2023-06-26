@@ -29,10 +29,10 @@ import org.apiguardian.api.API.Status;
 
 import net.jqwik.api.Arbitraries;
 
+import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
-import com.navercorp.fixturemonkey.api.generator.ContainerCombinableArbitrary;
 import com.navercorp.fixturemonkey.api.generator.ContainerProperty;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.property.Property;
@@ -76,30 +76,31 @@ public final class OptionalIntrospector implements ArbitraryIntrospector, Matche
 		double optionalProbability = presenceProbability;
 
 		return new ArbitraryIntrospectorResult(
-			new ContainerCombinableArbitrary(
-				context.getElementCombinableArbitraryList(),
-				elements -> {
-					Object element = elements.get(0);
+			CombinableArbitrary.containerBuilder()
+				.elements(context.getElementCombinableArbitraryList())
+				.build(
+					elements -> {
+						Object element = elements.get(0);
 
-					return Arbitraries.just(element)
-						.optional(optionalProbability)
-						.map(it -> {
-							if (type == OptionalInt.class) {
-								return it.map(o -> OptionalInt.of((Integer)o))
-									.orElseGet(OptionalInt::empty);
-							} else if (type == OptionalLong.class) {
-								return it.map(o -> OptionalLong.of((Long)o))
-									.orElseGet(OptionalLong::empty);
-							} else if (type == OptionalDouble.class) {
-								return it.map(o -> OptionalDouble.of((Double)o))
-									.orElseGet(OptionalDouble::empty);
-							} else {
-								return it;
-							}
-						})
-						.sample();
-				}
-			)
+						return Arbitraries.just(element)
+							.optional(optionalProbability)
+							.map(it -> {
+								if (type == OptionalInt.class) {
+									return it.map(o -> OptionalInt.of((Integer)o))
+										.orElseGet(OptionalInt::empty);
+								} else if (type == OptionalLong.class) {
+									return it.map(o -> OptionalLong.of((Long)o))
+										.orElseGet(OptionalLong::empty);
+								} else if (type == OptionalDouble.class) {
+									return it.map(o -> OptionalDouble.of((Double)o))
+										.orElseGet(OptionalDouble::empty);
+								} else {
+									return it;
+								}
+							})
+							.sample();
+					}
+				)
 
 		);
 	}

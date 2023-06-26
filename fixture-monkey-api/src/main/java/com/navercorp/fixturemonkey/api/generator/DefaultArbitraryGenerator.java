@@ -21,6 +21,7 @@ package com.navercorp.fixturemonkey.api.generator;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult;
 
@@ -45,6 +46,6 @@ public class DefaultArbitraryGenerator implements ArbitraryGenerator {
 				.injectNull(nullInject);
 		}
 
-		return new FixedCombinableArbitrary(null);
+		return CombinableArbitrary.from(null);
 	}
 }
