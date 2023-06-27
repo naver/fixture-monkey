@@ -25,8 +25,6 @@ import static java.util.stream.Collectors.toList;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -36,8 +34,6 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -77,10 +73,6 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T> {
 	private final ArbitraryValidator validator;
 	private final MonkeyManipulatorFactory monkeyManipulatorFactory;
 	private final ArbitraryBuilderContext context;
-
-	@SuppressWarnings("rawtypes")
-	private final Map<String, ConstraintViolation> violations = new ConcurrentHashMap<>();
-	private Exception lastException;
 
 	public DefaultArbitraryBuilder(
 		ManipulateOptions manipulateOptions,
@@ -508,19 +500,8 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T> {
 				return true;
 			}
 
-			try {
-				this.validator.validate(fixture);
-				return true;
-			} catch (ConstraintViolationException ex) {
-				ex.getConstraintViolations().forEach(violation ->
-					this.violations.put(
-						violation.getRootBeanClass().getName() + violation.getPropertyPath(),
-						violation
-					)
-				);
-				this.lastException = ex;
-			}
-			return false;
+			this.validator.validate(fixture);
+			return true;
 		};
 	}
 }
