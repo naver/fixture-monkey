@@ -29,7 +29,6 @@ import net.jqwik.engine.properties.arbitraries.DefaultStringArbitrary;
 
 @API(since = "0.6.0", status = Status.EXPERIMENTAL)
 public final class MonkeyStringArbitrary implements StringArbitrary {
-
 	private final StringArbitrary delegate = new DefaultStringArbitrary();
 
 	@Override
