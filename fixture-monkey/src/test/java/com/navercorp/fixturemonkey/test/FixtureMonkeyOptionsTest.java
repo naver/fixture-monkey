@@ -47,6 +47,7 @@ import net.jqwik.time.api.arbitraries.InstantArbitrary;
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.FixtureMonkey;
+import com.navercorp.fixturemonkey.api.arbitrary.MonkeyStringArbitrary;
 import com.navercorp.fixturemonkey.api.exception.FilterMissException;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
@@ -1436,5 +1437,23 @@ class FixtureMonkeyOptionsTest {
 			.getValue();
 
 		then(actual).isEqualTo("expected");
+	}
+
+	@Property
+	void sampleWithMonkeyStringArbitrary() {
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.javaTypeArbitraryGenerator(
+				new JavaTypeArbitraryGenerator() {
+					@Override
+					public StringArbitrary strings() {
+						return new MonkeyStringArbitrary();
+					}
+				}
+			)
+			.build();
+
+		String actual = sut.giveMeOne(String.class);
+
+		then(actual).isNotNull();
 	}
 }
