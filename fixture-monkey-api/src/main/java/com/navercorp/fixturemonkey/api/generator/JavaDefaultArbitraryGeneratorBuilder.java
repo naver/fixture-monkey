@@ -18,9 +18,9 @@
 
 package com.navercorp.fixturemonkey.api.generator;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.function.UnaryOperator;
 
 import org.apiguardian.api.API;
@@ -82,11 +82,12 @@ public final class JavaDefaultArbitraryGeneratorBuilder {
 	public static final ArbitraryIntrospector DEFAULT_FALLBACK_INTROSPECTOR =
 		(context) -> ArbitraryIntrospectorResult.NOT_INTROSPECTED;
 
-	private final List<JavaArbitraryResolver> javaArbitraryResolvers = new ArrayList<>();
-	private final List<JavaTimeArbitraryResolver> javaTimeArbitraryResolvers = new ArrayList<>();
+	private final Set<JavaArbitraryResolver> javaArbitraryResolvers = new HashSet<>();
 
 	private JavaTypeArbitraryGenerator javaTypeArbitraryGenerator = new JavaTypeArbitraryGenerator() {
 	};
+
+	private final Set<JavaTimeArbitraryResolver> javaTimeArbitraryResolvers = new HashSet<>();
 
 	private JavaTimeTypeArbitraryGenerator javaTimeTypeArbitraryGenerator = new JavaTimeTypeArbitraryGenerator() {
 	};
@@ -97,6 +98,10 @@ public final class JavaDefaultArbitraryGeneratorBuilder {
 	private ArbitraryIntrospector objectIntrospector = BeanArbitraryIntrospector.INSTANCE;
 
 	private ArbitraryIntrospector fallbackIntrospector = DEFAULT_FALLBACK_INTROSPECTOR;
+	private JavaArbitraryResolver customJavaArbitraryResolver = new JavaArbitraryResolver() {
+	};
+	private JavaTimeArbitraryResolver customJavaTimeArbitraryResolver = new JavaTimeArbitraryResolver() {
+	};
 
 	JavaDefaultArbitraryGeneratorBuilder() {
 	}
@@ -156,7 +161,14 @@ public final class JavaDefaultArbitraryGeneratorBuilder {
 		return this;
 	}
 
-	public JavaDefaultArbitraryGeneratorBuilder javaArbitraryResolver(
+	public JavaDefaultArbitraryGeneratorBuilder customJavaArbitraryResolver(
+		JavaArbitraryResolver customJavaArbitraryResolver
+	) {
+		this.customJavaArbitraryResolver = customJavaArbitraryResolver;
+		return this;
+	}
+
+	public JavaDefaultArbitraryGeneratorBuilder addJavaArbitraryResolver(
 		JavaArbitraryResolver javaArbitraryResolver
 	) {
 		this.javaArbitraryResolvers.add(javaArbitraryResolver);
@@ -170,7 +182,14 @@ public final class JavaDefaultArbitraryGeneratorBuilder {
 		return this;
 	}
 
-	public JavaDefaultArbitraryGeneratorBuilder javaTimeArbitraryResolver(
+	public JavaDefaultArbitraryGeneratorBuilder customJavaTimeArbitraryResolver(
+		JavaTimeArbitraryResolver customJavaTimeArbitraryResolver
+	) {
+		this.customJavaTimeArbitraryResolver = customJavaTimeArbitraryResolver;
+		return this;
+	}
+
+	public JavaDefaultArbitraryGeneratorBuilder addJavaTimeArbitraryResolver(
 		JavaTimeArbitraryResolver javaTimeArbitraryResolver
 	) {
 		this.javaTimeArbitraryResolvers.add(javaTimeArbitraryResolver);
@@ -181,9 +200,13 @@ public final class JavaDefaultArbitraryGeneratorBuilder {
 		if (this.fallbackIntrospector == DEFAULT_FALLBACK_INTROSPECTOR) {
 			this.fallbackIntrospector = AnonymousArbitraryIntrospector.INSTANCE;
 		}
-		JavaArbitraryResolver javaArbitraryResolver = new SingleJavaArbitraryResolver(javaArbitraryResolvers);
+		JavaArbitraryResolver javaArbitraryResolver = new SingleJavaArbitraryResolver(
+			javaArbitraryResolvers,
+			customJavaArbitraryResolver
+		);
 		JavaTimeArbitraryResolver javaTimeArbitraryResolver = new SingleJavaTimeArbitraryResolver(
-			javaTimeArbitraryResolvers
+			javaTimeArbitraryResolvers,
+			customJavaTimeArbitraryResolver
 		);
 		return new IntrospectedArbitraryGenerator(
 			new CompositeArbitraryIntrospector(

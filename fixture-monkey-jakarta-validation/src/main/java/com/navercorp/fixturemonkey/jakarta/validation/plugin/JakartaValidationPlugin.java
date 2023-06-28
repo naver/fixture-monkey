@@ -88,11 +88,11 @@ public final class JakartaValidationPlugin implements Plugin {
 				new JakartaValidationArbitraryContainerInfoGenerator()
 			)
 			.javaTypeArbitraryGenerator(javaTypeArbitraryGenerator)
-			.javaArbitraryResolver(
+			.addJavaArbitraryResolver(
 				new JakartaValidationJavaArbitraryResolver(this.jakartaValidationConstraintGenerator)
 			)
 			.javaTimeTypeArbitraryGenerator(javaTimeTypeArbitraryGenerator)
-			.javaTimeArbitraryResolver(
+			.addJavaTimeArbitraryResolver(
 				new JakartaValidationJavaTimeArbitraryResolver(
 					this.jakartaValidationTimeConstraintGenerator
 				)

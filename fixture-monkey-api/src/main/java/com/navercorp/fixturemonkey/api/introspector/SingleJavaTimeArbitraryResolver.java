@@ -33,7 +33,7 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
+import java.util.Set;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -61,14 +61,15 @@ import com.navercorp.fixturemonkey.api.property.Property;
 
 @API(since = "0.6.0", status = Status.EXPERIMENTAL)
 public final class SingleJavaTimeArbitraryResolver implements JavaTimeArbitraryResolver {
-	private static final JavaTimeArbitraryResolver DEFAULT_NONE_JAVA_TIME_ARBITRARY_RESOLVER =
-		new JavaTimeArbitraryResolver() {
-		};
+	private final Set<JavaTimeArbitraryResolver> javaTimeArbitraryResolvers;
+	private final JavaTimeArbitraryResolver customJavaTimeArbitraryResolver;
 
-	private final List<JavaTimeArbitraryResolver> javaTimeArbitraryResolvers;
-
-	public SingleJavaTimeArbitraryResolver(List<JavaTimeArbitraryResolver> javaTimeArbitraryResolvers) {
+	public SingleJavaTimeArbitraryResolver(
+		Set<JavaTimeArbitraryResolver> javaTimeArbitraryResolvers,
+		JavaTimeArbitraryResolver customJavaTimeArbitraryResolver
+	) {
 		this.javaTimeArbitraryResolvers = javaTimeArbitraryResolvers;
+		this.customJavaTimeArbitraryResolver = customJavaTimeArbitraryResolver;
 	}
 
 	@Override
@@ -160,9 +161,7 @@ public final class SingleJavaTimeArbitraryResolver implements JavaTimeArbitraryR
 		return resolve(context.getResolvedProperty()).zoneOffsets(zoneOffsetArbitrary, context);
 	}
 
-	private JavaTimeArbitraryResolver resolve(
-		Property property
-	) {
+	private JavaTimeArbitraryResolver resolve(Property property) {
 		for (JavaTimeArbitraryResolver resolver : this.javaTimeArbitraryResolvers) {
 			if (resolver instanceof Matcher) {
 				if (((Matcher)resolver).match(property)) {
@@ -170,7 +169,7 @@ public final class SingleJavaTimeArbitraryResolver implements JavaTimeArbitraryR
 				}
 			}
 		}
-		return javaTimeArbitraryResolvers.isEmpty()
-			? DEFAULT_NONE_JAVA_TIME_ARBITRARY_RESOLVER : javaTimeArbitraryResolvers.get(0);
+
+		return customJavaTimeArbitraryResolver;
 	}
 }

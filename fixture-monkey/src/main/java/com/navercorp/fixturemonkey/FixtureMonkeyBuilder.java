@@ -267,7 +267,7 @@ public class FixtureMonkeyBuilder {
 	}
 
 	public FixtureMonkeyBuilder javaArbitraryResolver(JavaArbitraryResolver javaArbitraryResolver) {
-		fixtureMonkeyOptionsBuilder.javaArbitraryResolver(javaArbitraryResolver);
+		fixtureMonkeyOptionsBuilder.customjavaArbitraryResolver(javaArbitraryResolver);
 		return this;
 	}
 
@@ -279,7 +279,7 @@ public class FixtureMonkeyBuilder {
 	}
 
 	public FixtureMonkeyBuilder javaTimeArbitraryResolver(JavaTimeArbitraryResolver javaTimeArbitraryResolver) {
-		fixtureMonkeyOptionsBuilder.javaTimeArbitraryResolver(javaTimeArbitraryResolver);
+		fixtureMonkeyOptionsBuilder.customJavaTimeArbitraryResolver(javaTimeArbitraryResolver);
 		return this;
 	}
 

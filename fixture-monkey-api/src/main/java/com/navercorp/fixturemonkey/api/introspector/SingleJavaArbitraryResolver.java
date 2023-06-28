@@ -20,7 +20,7 @@ package com.navercorp.fixturemonkey.api.introspector;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.List;
+import java.util.Set;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -43,13 +43,15 @@ import com.navercorp.fixturemonkey.api.property.Property;
 
 @API(since = "0.6.0", status = Status.EXPERIMENTAL)
 public final class SingleJavaArbitraryResolver implements JavaArbitraryResolver {
-	private static final JavaArbitraryResolver DEFAULT_NONE_JAVA_ARBITRARY_RESOLVER = new JavaArbitraryResolver() {
-	};
+	private final Set<JavaArbitraryResolver> javaArbitraryResolvers;
+	private final JavaArbitraryResolver customJavaArbitraryResolver;
 
-	private final List<JavaArbitraryResolver> javaArbitraryResolvers;
-
-	public SingleJavaArbitraryResolver(List<JavaArbitraryResolver> javaArbitraryResolvers) {
+	public SingleJavaArbitraryResolver(
+		Set<JavaArbitraryResolver> javaArbitraryResolvers,
+		JavaArbitraryResolver customJavaArbitraryResolver
+	) {
 		this.javaArbitraryResolvers = javaArbitraryResolvers;
+		this.customJavaArbitraryResolver = customJavaArbitraryResolver;
 	}
 
 	@Override
@@ -108,9 +110,7 @@ public final class SingleJavaArbitraryResolver implements JavaArbitraryResolver 
 		return resolve(context.getResolvedProperty()).bigDecimals(bigDecimalArbitrary, context);
 	}
 
-	private JavaArbitraryResolver resolve(
-		Property property
-	) {
+	private JavaArbitraryResolver resolve(Property property) {
 		for (JavaArbitraryResolver resolver : this.javaArbitraryResolvers) {
 			if (resolver instanceof Matcher) {
 				if (((Matcher)resolver).match(property)) {
@@ -118,6 +118,7 @@ public final class SingleJavaArbitraryResolver implements JavaArbitraryResolver 
 				}
 			}
 		}
-		return javaArbitraryResolvers.isEmpty() ? DEFAULT_NONE_JAVA_ARBITRARY_RESOLVER : javaArbitraryResolvers.get(0);
+
+		return customJavaArbitraryResolver;
 	}
 }

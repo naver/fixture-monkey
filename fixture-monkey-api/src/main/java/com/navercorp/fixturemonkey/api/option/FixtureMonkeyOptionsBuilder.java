@@ -451,10 +451,17 @@ public final class FixtureMonkeyOptionsBuilder {
 		return this;
 	}
 
-	public FixtureMonkeyOptionsBuilder javaArbitraryResolver(
+	public FixtureMonkeyOptionsBuilder customjavaArbitraryResolver(
 		JavaArbitraryResolver javaArbitraryResolver
 	) {
-		this.javaDefaultArbitraryGeneratorBuilder.javaArbitraryResolver(javaArbitraryResolver);
+		this.javaDefaultArbitraryGeneratorBuilder.customJavaArbitraryResolver(javaArbitraryResolver);
+		return this;
+	}
+
+	public FixtureMonkeyOptionsBuilder addJavaArbitraryResolver(
+		JavaArbitraryResolver javaArbitraryResolver
+	) {
+		this.javaDefaultArbitraryGeneratorBuilder.addJavaArbitraryResolver(javaArbitraryResolver);
 		return this;
 	}
 
@@ -465,10 +472,17 @@ public final class FixtureMonkeyOptionsBuilder {
 		return this;
 	}
 
-	public FixtureMonkeyOptionsBuilder javaTimeArbitraryResolver(
+	public FixtureMonkeyOptionsBuilder customJavaTimeArbitraryResolver(
 		JavaTimeArbitraryResolver javaTimeArbitraryResolver
 	) {
-		this.javaDefaultArbitraryGeneratorBuilder.javaTimeArbitraryResolver(javaTimeArbitraryResolver);
+		this.javaDefaultArbitraryGeneratorBuilder.customJavaTimeArbitraryResolver(javaTimeArbitraryResolver);
+		return this;
+	}
+
+	public FixtureMonkeyOptionsBuilder addJavaTimeArbitraryResolver(
+		JavaTimeArbitraryResolver javaTimeArbitraryResolver
+	) {
+		this.javaDefaultArbitraryGeneratorBuilder.addJavaTimeArbitraryResolver(javaTimeArbitraryResolver);
 		return this;
 	}
 
