@@ -107,14 +107,6 @@ public final class MonkeyManipulatorFactory {
 		);
 	}
 
-	// TODO: temporary use
-	public ArbitraryManipulator newNotNullArbitraryManipulator(String expression) {
-		return new ArbitraryManipulator(
-			monkeyExpressionFactory.from(expression).toNodeResolver(),
-			new NodeNullityManipulator(false)
-		);
-	}
-
 	public ContainerInfoManipulator newContainerInfoManipulator(
 		String expression,
 		int min,

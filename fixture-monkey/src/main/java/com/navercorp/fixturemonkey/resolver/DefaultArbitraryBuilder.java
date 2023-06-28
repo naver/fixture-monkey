@@ -21,6 +21,7 @@ package com.navercorp.fixturemonkey.resolver;
 import static com.navercorp.fixturemonkey.Constants.DEFAULT_ELEMENT_MAX_SIZE;
 import static com.navercorp.fixturemonkey.Constants.HEAD_NAME;
 import static com.navercorp.fixturemonkey.Constants.MAX_MANIPULATION_COUNT;
+import static com.navercorp.fixturemonkey.customizer.Values.NOT_NULL;
 import static java.util.stream.Collectors.toList;
 
 import java.util.ArrayList;
@@ -288,7 +289,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T> {
 	@Override
 	public ArbitraryBuilder<T> setNotNull(String expression) {
 		ArbitraryManipulator arbitraryManipulator =
-			monkeyManipulatorFactory.newNotNullArbitraryManipulator(expression);
+			monkeyManipulatorFactory.newArbitraryManipulator(expression, NOT_NULL);
 
 		this.context.addManipulator(arbitraryManipulator);
 		return this;
