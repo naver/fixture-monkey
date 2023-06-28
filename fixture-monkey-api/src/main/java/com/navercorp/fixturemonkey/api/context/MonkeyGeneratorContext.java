@@ -25,7 +25,7 @@ import java.util.SortedMap;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext.PropertyPath;
+import com.navercorp.fixturemonkey.api.property.PropertyPath;
 
 @API(since = "0.4.3", status = Status.MAINTAINED)
 public final class MonkeyGeneratorContext {

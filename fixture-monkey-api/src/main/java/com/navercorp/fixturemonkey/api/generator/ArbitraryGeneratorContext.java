@@ -29,7 +29,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.function.BiFunction;
 
@@ -42,9 +41,11 @@ import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.context.MonkeyGeneratorContext;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.api.property.Property;
+import com.navercorp.fixturemonkey.api.property.PropertyPath;
+import com.navercorp.fixturemonkey.api.property.Traceable;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
-public final class ArbitraryGeneratorContext {
+public final class ArbitraryGeneratorContext implements Traceable {
 	private final Property resolvedProperty;
 
 	private final ArbitraryProperty property;
@@ -139,7 +140,7 @@ public final class ArbitraryGeneratorContext {
 		monkeyGeneratorContext.evictUnique(propertyPath);
 	}
 
-	public PropertyPath getPathProperty() {
+	public PropertyPath getPropertyPath() {
 		return pathProperty.getValue();
 	}
 
@@ -148,7 +149,7 @@ public final class ArbitraryGeneratorContext {
 			return new PropertyPath(property.getObjectProperty().getProperty(), null, 1);
 		}
 
-		PropertyPath parentPropertyPath = ownerContext.getPathProperty();
+		PropertyPath parentPropertyPath = ownerContext.getPropertyPath();
 		return new PropertyPath(
 			property.getObjectProperty().getProperty(),
 			parentPropertyPath,
@@ -164,51 +165,5 @@ public final class ArbitraryGeneratorContext {
 		}
 
 		return childrenValues;
-	}
-
-	public static class PropertyPath implements Comparable<PropertyPath> {
-		private final Property property;
-
-		@Nullable
-		private final PropertyPath parentPropertyPath;
-		private final int depth;
-
-		public PropertyPath(Property property, @Nullable PropertyPath parentPropertyPath, int depth) {
-			this.property = property;
-			this.parentPropertyPath = parentPropertyPath;
-			this.depth = depth;
-		}
-
-		public Property getProperty() {
-			return property;
-		}
-
-		public int getDepth() {
-			return depth;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj) {
-				return true;
-			}
-			if (obj == null || getClass() != obj.getClass()) {
-				return false;
-			}
-			PropertyPath that = (PropertyPath)obj;
-			return depth == that.depth
-				&& property.equals(that.property)
-				&& Objects.equals(parentPropertyPath, that.parentPropertyPath);
-		}
-
-		@Override
-		public int hashCode() {
-			return Objects.hash(property, parentPropertyPath, depth);
-		}
-
-		@Override
-		public int compareTo(PropertyPath obj) {
-			return Integer.compare(obj.depth, this.depth);
-		}
 	}
 }

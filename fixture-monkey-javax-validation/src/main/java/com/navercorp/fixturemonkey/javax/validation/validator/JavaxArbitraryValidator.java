@@ -22,6 +22,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.validation.ConstraintViolation;
+import javax.validation.Path;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
@@ -49,13 +50,15 @@ public final class JavaxArbitraryValidator implements ArbitraryValidator {
 		if (this.validator != null) {
 			Set<ConstraintViolation<Object>> violations = this.validator.validate(arbitrary);
 
-			Set<String> validationMessages = violations.stream()
-				.map(ConstraintViolation::getMessage)
+			Set<String> constraintViolationPropertyNames = violations.stream()
+				.map(ConstraintViolation::getPropertyPath)
+				.map(Path::toString)
 				.collect(Collectors.toSet());
 
 			if (!violations.isEmpty()) {
 				throw new ValidationFailedException(
-					"DefaultArbitraryValidator ConstraintViolations. type: " + arbitrary.getClass(), validationMessages
+					"DefaultArbitraryValidator ConstraintViolations. type: " + arbitrary.getClass(),
+					constraintViolationPropertyNames
 				);
 			}
 		}
