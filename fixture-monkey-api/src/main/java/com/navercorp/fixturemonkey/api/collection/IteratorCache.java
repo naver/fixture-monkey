@@ -18,31 +18,20 @@
 
 package com.navercorp.fixturemonkey.api.collection;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+/**
+ * It is deprecated.
+ * Use {@link com.navercorp.fixturemonkey.api.container.IteratorCache} instead.
+ */
+@Deprecated
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class IteratorCache {
-	private static final LruCache<Iterator<?>, List<?>> ITERATOR_TO_LIST = new LruCache<>(2048);
-
 	public static List<?> getList(Iterator<?> iterator) {
-		if (ITERATOR_TO_LIST.containsKey(iterator)) {
-			return ITERATOR_TO_LIST.get(iterator);
-		}
-		List<?> list = toList(iterator);
-		ITERATOR_TO_LIST.put(iterator, list);
-		return list;
-	}
-
-	private static <T> List<T> toList(Iterator<T> iterator) {
-		List<T> list = new ArrayList<>();
-		while (iterator.hasNext()) {
-			list.add(iterator.next());
-		}
-		return list;
+		return com.navercorp.fixturemonkey.api.container.IteratorCache.getList(iterator);
 	}
 }
