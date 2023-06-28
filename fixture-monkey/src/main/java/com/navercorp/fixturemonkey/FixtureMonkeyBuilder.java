@@ -529,7 +529,7 @@ public class FixtureMonkeyBuilder {
 	}
 
 	public FixtureMonkey build() {
-		manipulateOptionsBuilder.additionalDecomposedContainerValueFactory(
+		generateOptionsBuilder.additionalDecomposedContainerValueFactory(
 			obj -> {
 				Class<?> actualType = obj.getClass();
 				for (

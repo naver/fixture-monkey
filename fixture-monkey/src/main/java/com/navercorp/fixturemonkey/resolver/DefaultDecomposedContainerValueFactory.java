@@ -18,65 +18,26 @@
 
 package com.navercorp.fixturemonkey.resolver;
 
-import java.lang.reflect.Array;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.OptionalDouble;
-import java.util.OptionalInt;
-import java.util.OptionalLong;
-import java.util.stream.Stream;
-
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.api.collection.IteratorCache;
-import com.navercorp.fixturemonkey.api.collection.StreamCache;
+import com.navercorp.fixturemonkey.api.container.DecomposableJavaContainer;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class DefaultDecomposedContainerValueFactory implements DecomposedContainerValueFactory {
-	private final DecomposedContainerValueFactory additionalDecomposedContainerValueFactory;
+	private final com.navercorp.fixturemonkey.api.container.DefaultDecomposedContainerValueFactory delegate;
 
 	public DefaultDecomposedContainerValueFactory(
 		DecomposedContainerValueFactory additionalDecomposedContainerValueFactory
 	) {
-		this.additionalDecomposedContainerValueFactory = additionalDecomposedContainerValueFactory;
+		this.delegate = new com.navercorp.fixturemonkey.api.container.DefaultDecomposedContainerValueFactory(
+			additionalDecomposedContainerValueFactory
+		);
 	}
 
 	@Override
-	public DecomposableContainerValue from(Object value) {
-		Class<?> actualType = value.getClass();
-
-		if (Iterable.class.isAssignableFrom(actualType)) {
-			Iterator<?> iterator = ((Iterable<?>)value).iterator();
-			List<?> list = IteratorCache.getList(iterator);
-			return new DecomposableContainerValue(list, list.size());
-		} else if (Iterator.class.isAssignableFrom(actualType)) {
-			Iterator<?> iterator = ((Iterator<?>)value);
-			List<?> list = IteratorCache.getList(iterator);
-			return new DecomposableContainerValue(list, list.size());
-		} else if (Stream.class.isAssignableFrom(actualType)) {
-			List<?> container = StreamCache.getList((Stream<?>)value);
-			return new DecomposableContainerValue(container, container.size());
-		} else if (actualType.isArray()) {
-			return new DecomposableContainerValue(value, Array.getLength(value));
-		} else if (Map.class.isAssignableFrom(actualType)) {
-			Map<?, ?> map = (Map<?, ?>)value;
-			return new DecomposableContainerValue(value, map.size());
-		} else if (Map.Entry.class.isAssignableFrom(actualType)) {
-			return new DecomposableContainerValue(value, 1);
-		} else if (isOptional(actualType)) {
-			return new DecomposableContainerValue(value, 1);
-		}
-
-		return additionalDecomposedContainerValueFactory.from(value);
-	}
-
-	private boolean isOptional(Class<?> type) {
-		return Optional.class.isAssignableFrom(type)
-			|| OptionalInt.class.isAssignableFrom(type)
-			|| OptionalLong.class.isAssignableFrom(type)
-			|| OptionalDouble.class.isAssignableFrom(type);
+	public DecomposableContainerValue from(Object container) {
+		DecomposableJavaContainer decomposed = delegate.from(container);
+		return new DecomposableContainerValue(decomposed.getJavaContainer(), decomposed.getSize());
 	}
 }

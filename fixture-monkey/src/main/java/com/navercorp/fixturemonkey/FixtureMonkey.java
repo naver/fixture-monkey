@@ -108,10 +108,10 @@ public class FixtureMonkey {
 			new AtomicInteger(),
 			manipulateOptions.getDefaultMonkeyExpressionFactory(),
 			traverser,
-			manipulateOptions.getDecomposedContainerValueFactory()
+			generateOptions.getDecomposedContainerValueFactory()
 		);
 		return new DefaultArbitraryBuilder<>(
-			manipulateOptions,
+			generateOptions,
 			rootProperty,
 			new ArbitraryResolver(
 				traverser,
@@ -134,7 +134,7 @@ public class FixtureMonkey {
 			new AtomicInteger(),
 			manipulateOptions.getDefaultMonkeyExpressionFactory(),
 			traverser,
-			manipulateOptions.getDecomposedContainerValueFactory()
+			generateOptions.getDecomposedContainerValueFactory()
 		);
 		ArbitraryBuilderContext context = new ArbitraryBuilderContext();
 
@@ -143,7 +143,7 @@ public class FixtureMonkey {
 		context.addManipulator(arbitraryManipulator);
 
 		return new DefaultArbitraryBuilder<>(
-			manipulateOptions,
+			generateOptions,
 			new RootProperty(new LazyAnnotatedType<>(() -> value)),
 			new ArbitraryResolver(
 				traverser,

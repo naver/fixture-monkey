@@ -34,8 +34,6 @@ public final class ManipulateOptions {
 	private final MonkeyExpressionFactory defaultMonkeyExpressionFactory;
 
 	private final List<MatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuilders;
-	private final DecomposedContainerValueFactory decomposedContainerValueFactory;
-
 	private final List<MatcherOperator<PropertyNameResolver>> propertyNameResolvers;
 
 	private final PropertyNameResolver defaultPropertyNameResolver;
@@ -43,13 +41,11 @@ public final class ManipulateOptions {
 	public ManipulateOptions(
 		MonkeyExpressionFactory defaultMonkeyExpressionFactory,
 		List<MatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuilders,
-		DecomposedContainerValueFactory decomposedContainerValueFactory,
 		List<MatcherOperator<PropertyNameResolver>> propertyNameResolvers,
 		PropertyNameResolver defaultPropertyNameResolver
 	) {
 		this.defaultMonkeyExpressionFactory = defaultMonkeyExpressionFactory;
 		this.registeredArbitraryBuilders = registeredArbitraryBuilders;
-		this.decomposedContainerValueFactory = decomposedContainerValueFactory;
 		this.propertyNameResolvers = propertyNameResolvers;
 		this.defaultPropertyNameResolver = defaultPropertyNameResolver;
 	}
@@ -60,10 +56,6 @@ public final class ManipulateOptions {
 
 	public List<MatcherOperator<? extends ArbitraryBuilder<?>>> getRegisteredArbitraryBuilders() {
 		return registeredArbitraryBuilders;
-	}
-
-	public DecomposedContainerValueFactory getDecomposedContainerValueFactory() {
-		return decomposedContainerValueFactory;
 	}
 
 	public PropertyNameResolver getPropertyNameResolver(Property property) {
