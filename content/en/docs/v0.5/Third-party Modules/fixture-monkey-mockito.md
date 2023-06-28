@@ -20,7 +20,7 @@ testImplementation("com.navercorp.fixturemonkey:fixture-monkey-mockito:{{< param
 </dependency>
 ```
 
-### 2. Adding option `plguin`
+### 2. Adding option `plugin`
 ```java
 FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
     .plugin(new MockitoPlugin())
