@@ -50,6 +50,7 @@ import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.expression.ExpressionGenerator;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
+import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.option.GenerateOptions;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
@@ -75,6 +76,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T> {
 	private final ArbitraryValidator validator;
 	private final MonkeyManipulatorFactory monkeyManipulatorFactory;
 	private final ArbitraryBuilderContext context;
+	private final List<MatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuilders;
 
 	public DefaultArbitraryBuilder(
 		GenerateOptions generateOptions,
@@ -83,9 +85,9 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T> {
 		ArbitraryTraverser traverser,
 		ArbitraryValidator validator,
 		MonkeyManipulatorFactory monkeyManipulatorFactory,
-		ArbitraryBuilderContext context
+		ArbitraryBuilderContext context,
+		List<MatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuilders
 	) {
-		super();
 		this.generateOptions = generateOptions;
 		this.rootProperty = rootProperty;
 		this.resolver = resolver;
@@ -93,6 +95,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T> {
 		this.validator = validator;
 		this.context = context;
 		this.monkeyManipulatorFactory = monkeyManipulatorFactory;
+		this.registeredArbitraryBuilders = registeredArbitraryBuilders;
 	}
 
 	@Override
@@ -430,7 +433,8 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T> {
 			traverser,
 			validator,
 			monkeyManipulatorFactory,
-			context.copy()
+			context.copy(),
+			registeredArbitraryBuilders
 		);
 	}
 
@@ -487,7 +491,8 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T> {
 			traverser,
 			validator,
 			monkeyManipulatorFactory,
-			context
+			context,
+			registeredArbitraryBuilders
 		);
 	}
 
