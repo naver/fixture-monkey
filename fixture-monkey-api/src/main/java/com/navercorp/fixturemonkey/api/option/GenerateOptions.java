@@ -42,6 +42,7 @@ import javax.annotation.Nullable;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import com.navercorp.fixturemonkey.api.container.DecomposedContainerValueFactory;
 import com.navercorp.fixturemonkey.api.customizer.FixtureCustomizer;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfoGenerator;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGenerator;
@@ -121,6 +122,7 @@ public final class GenerateOptions {
 	@Deprecated // It would be removed in 0.6.0
 	private final List<MatcherOperator<FixtureCustomizer>> arbitraryCustomizers;
 	private final ArbitraryValidator defaultArbitraryValidator;
+	private final DecomposedContainerValueFactory decomposedContainerValueFactory;
 
 	@SuppressWarnings("rawtypes")
 	public GenerateOptions(
@@ -138,7 +140,8 @@ public final class GenerateOptions {
 		List<MatcherOperator<ArbitraryGenerator>> arbitraryGenerators,
 		ArbitraryGenerator defaultArbitraryGenerator,
 		List<MatcherOperator<FixtureCustomizer>> arbitraryCustomizers,
-		ArbitraryValidator defaultArbitraryValidator
+		ArbitraryValidator defaultArbitraryValidator,
+		DecomposedContainerValueFactory decomposedContainerValueFactory
 	) {
 		this.propertyGenerators = propertyGenerators;
 		this.defaultPropertyGenerator = defaultPropertyGenerator;
@@ -155,6 +158,7 @@ public final class GenerateOptions {
 		this.defaultArbitraryGenerator = defaultArbitraryGenerator;
 		this.arbitraryCustomizers = arbitraryCustomizers;
 		this.defaultArbitraryValidator = defaultArbitraryValidator;
+		this.decomposedContainerValueFactory = decomposedContainerValueFactory;
 	}
 
 	public static GenerateOptionsBuilder builder() {
@@ -280,6 +284,10 @@ public final class GenerateOptions {
 		return defaultArbitraryValidator;
 	}
 
+	public DecomposedContainerValueFactory getDecomposedContainerValueFactory() {
+		return decomposedContainerValueFactory;
+	}
+
 	public GenerateOptionsBuilder toBuilder() {
 		return builder()
 			.defaultPropertyGenerator(defaultPropertyGenerator)
@@ -324,7 +332,6 @@ public final class GenerateOptions {
 					&& new SingleGenericTypeMatcher().match(property),
 				OptionalContainerPropertyGenerator.INSTANCE
 			),
-
 			MatcherOperator.exactTypeMatchOperator(
 				OptionalInt.class,
 				OptionalContainerPropertyGenerator.INSTANCE

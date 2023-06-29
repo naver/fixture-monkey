@@ -21,8 +21,15 @@ package com.navercorp.fixturemonkey.resolver;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+/**
+ * It is deprecated.
+ * Use {@link com.navercorp.fixturemonkey.api.container.DecomposedContainerValueFactory} instead.
+ */
 @API(since = "0.4.0", status = Status.MAINTAINED)
 @FunctionalInterface
-public interface DecomposedContainerValueFactory {
-	DecomposableContainerValue from(Object object);
+@Deprecated
+public interface DecomposedContainerValueFactory
+	extends com.navercorp.fixturemonkey.api.container.DecomposedContainerValueFactory {
+	@Override
+	DecomposableContainerValue from(Object container);
 }

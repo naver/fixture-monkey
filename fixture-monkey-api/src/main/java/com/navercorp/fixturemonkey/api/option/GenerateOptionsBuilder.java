@@ -34,6 +34,8 @@ import javax.annotation.Nullable;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import com.navercorp.fixturemonkey.api.container.DecomposedContainerValueFactory;
+import com.navercorp.fixturemonkey.api.container.DefaultDecomposedContainerValueFactory;
 import com.navercorp.fixturemonkey.api.customizer.FixtureCustomizer;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfoGenerator;
@@ -87,6 +89,7 @@ public final class GenerateOptionsBuilder {
 	private UnaryOperator<NullInjectGenerator> defaultNullInjectGeneratorOperator = it -> it;
 	private ArbitraryValidator defaultArbitraryValidator = (obj) -> {
 	};
+	private DecomposedContainerValueFactory additionalDecomposedContainerValueFactory = null;
 
 	GenerateOptionsBuilder() {
 	}
@@ -504,6 +507,13 @@ public final class GenerateOptionsBuilder {
 		return this;
 	}
 
+	public GenerateOptionsBuilder additionalDecomposedContainerValueFactory(
+		DecomposedContainerValueFactory additionalDecomposedContainerValueFactory
+	) {
+		this.additionalDecomposedContainerValueFactory = additionalDecomposedContainerValueFactory;
+		return this;
+	}
+
 	public GenerateOptions build() {
 		ObjectPropertyGenerator defaultObjectPropertyGenerator = defaultIfNull(
 			this.defaultObjectPropertyGenerator,
@@ -537,6 +547,10 @@ public final class GenerateOptionsBuilder {
 		ArbitraryGenerator defaultArbitraryGenerator =
 			defaultIfNull(this.defaultArbitraryGenerator, this.javaDefaultArbitraryGeneratorBuilder::build);
 
+		DecomposedContainerValueFactory decomposedContainerValueFactory = new DefaultDecomposedContainerValueFactory(
+			additionalDecomposedContainerValueFactory
+		);
+
 		return new GenerateOptions(
 			this.propertyGenerators,
 			this.defaultPropertyGenerator,
@@ -552,7 +566,8 @@ public final class GenerateOptionsBuilder {
 			this.arbitraryGenerators,
 			defaultArbitraryGenerator,
 			this.arbitraryCustomizers,
-			this.defaultArbitraryValidator
+			this.defaultArbitraryValidator,
+			decomposedContainerValueFactory
 		);
 	}
 
