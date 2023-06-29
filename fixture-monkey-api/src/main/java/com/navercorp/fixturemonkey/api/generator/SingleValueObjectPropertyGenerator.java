@@ -32,7 +32,7 @@ public final class SingleValueObjectPropertyGenerator implements ObjectPropertyG
 	@Override
 	public ObjectProperty generate(ObjectPropertyGeneratorContext context) {
 		Property property = context.getProperty();
-		double nullInject = context.getGenerateOptions().getNullInjectGenerator(property)
+		double nullInject = context.getFixtureMonkeyOptions().getNullInjectGenerator(property)
 			.generate(context);
 
 		return new ObjectProperty(

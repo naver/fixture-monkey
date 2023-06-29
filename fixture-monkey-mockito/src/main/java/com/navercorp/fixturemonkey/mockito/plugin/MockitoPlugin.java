@@ -24,14 +24,14 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.introspector.CompositeArbitraryIntrospector;
-import com.navercorp.fixturemonkey.api.option.GenerateOptionsBuilder;
+import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptionsBuilder;
 import com.navercorp.fixturemonkey.api.plugin.Plugin;
 import com.navercorp.fixturemonkey.mockito.introspector.MockitoIntrospector;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class MockitoPlugin implements Plugin {
 	@Override
-	public void accept(GenerateOptionsBuilder optionsBuilder) {
+	public void accept(FixtureMonkeyOptionsBuilder optionsBuilder) {
 		optionsBuilder.fallbackIntrospector(it -> new CompositeArbitraryIntrospector(
 			Arrays.asList(it, MockitoIntrospector.INSTANCE))
 		);

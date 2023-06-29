@@ -30,7 +30,7 @@ import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.context.MonkeyContext;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
-import com.navercorp.fixturemonkey.api.option.GenerateOptions;
+import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
 import com.navercorp.fixturemonkey.customizer.ArbitraryManipulator;
 import com.navercorp.fixturemonkey.customizer.ContainerInfoManipulator;
@@ -43,7 +43,7 @@ public final class ArbitraryResolver {
 	private final ArbitraryTraverser traverser;
 	private final ManipulatorOptimizer manipulatorOptimizer;
 	private final MonkeyManipulatorFactory monkeyManipulatorFactory;
-	private final GenerateOptions generateOptions;
+	private final FixtureMonkeyOptions fixtureMonkeyOptions;
 	private final MonkeyContext monkeyContext;
 	private final List<MatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuilders;
 
@@ -51,14 +51,14 @@ public final class ArbitraryResolver {
 		ArbitraryTraverser traverser,
 		ManipulatorOptimizer manipulatorOptimizer,
 		MonkeyManipulatorFactory monkeyManipulatorFactory,
-		GenerateOptions generateOptions,
+		FixtureMonkeyOptions fixtureMonkeyOptions,
 		MonkeyContext monkeyContext,
 		List<MatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuilders
 	) {
 		this.traverser = traverser;
 		this.manipulatorOptimizer = manipulatorOptimizer;
 		this.monkeyManipulatorFactory = monkeyManipulatorFactory;
-		this.generateOptions = generateOptions;
+		this.fixtureMonkeyOptions = fixtureMonkeyOptions;
 		this.monkeyContext = monkeyContext;
 		this.registeredArbitraryBuilders = registeredArbitraryBuilders;
 	}
@@ -83,7 +83,7 @@ public final class ArbitraryResolver {
 				containerInfoManipulators,
 				registeredContainerInfoManipulators
 			),
-			generateOptions,
+			fixtureMonkeyOptions,
 			monkeyContext
 		);
 

@@ -34,7 +34,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.navercorp.fixturemonkey.api.introspector.CompositeArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.matcher.AssignableTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
-import com.navercorp.fixturemonkey.api.option.GenerateOptionsBuilder;
+import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptionsBuilder;
 import com.navercorp.fixturemonkey.api.plugin.Plugin;
 import com.navercorp.fixturemonkey.api.property.ElementProperty;
 import com.navercorp.fixturemonkey.jackson.FixtureMonkeyJackson;
@@ -78,7 +78,7 @@ public final class JacksonPlugin implements Plugin {
 	}
 
 	@Override
-	public void accept(GenerateOptionsBuilder optionsBuilder) {
+	public void accept(FixtureMonkeyOptionsBuilder optionsBuilder) {
 		if (!this.matchers.isEmpty()) {
 			Matcher matcher = property -> matchers.stream().anyMatch(it -> it.match(property));
 

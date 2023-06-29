@@ -35,7 +35,7 @@ import com.navercorp.fixturemonkey.api.context.MonkeyContext;
 import com.navercorp.fixturemonkey.api.context.MonkeyGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
-import com.navercorp.fixturemonkey.api.option.GenerateOptions;
+import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
 import com.navercorp.fixturemonkey.customizer.NodeManipulator;
@@ -44,19 +44,19 @@ import com.navercorp.fixturemonkey.customizer.NodeManipulator;
 public final class ObjectTree {
 	private final RootProperty rootProperty;
 	private final ObjectNode rootNode;
-	private final GenerateOptions generateOptions;
+	private final FixtureMonkeyOptions fixtureMonkeyOptions;
 	private final ObjectTreeMetadata metadata;
 	private final MonkeyContext monkeyContext;
 
 	public ObjectTree(
 		RootProperty rootProperty,
 		ObjectNode rootNode,
-		GenerateOptions generateOptions,
+		FixtureMonkeyOptions fixtureMonkeyOptions,
 		MonkeyContext monkeyContext
 	) {
 		this.rootProperty = rootProperty;
 		this.rootNode = rootNode;
-		this.generateOptions = generateOptions;
+		this.fixtureMonkeyOptions = fixtureMonkeyOptions;
 		this.monkeyContext = monkeyContext;
 		MetadataCollector metadataCollector = new MetadataCollector(rootNode);
 		this.metadata = metadataCollector.collect();
@@ -131,7 +131,7 @@ public final class ObjectTree {
 			if (node.isNotManipulated() && cached != null) {
 				generated = cached;
 			} else {
-				generated = this.generateOptions.getArbitraryGenerator(node.getResolvedProperty())
+				generated = this.fixtureMonkeyOptions.getArbitraryGenerator(node.getResolvedProperty())
 					.generate(childArbitraryGeneratorContext);
 
 				if (node.isNotManipulated()) {
