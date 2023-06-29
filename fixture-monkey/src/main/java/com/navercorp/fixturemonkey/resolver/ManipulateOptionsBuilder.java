@@ -18,9 +18,7 @@
 
 package com.navercorp.fixturemonkey.resolver;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 import javax.annotation.Nullable;
@@ -28,8 +26,6 @@ import javax.annotation.Nullable;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.ArbitraryBuilder;
-import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.expression.ArbitraryExpressionFactory;
@@ -43,11 +39,6 @@ public final class ManipulateOptionsBuilder {
 
 	private boolean expressionStrictMode = false;
 
-	private List<MatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>>>
-		registeredArbitraryBuilders = new ArrayList<>();
-
-	private List<MatcherOperator<? extends ArbitraryBuilder<?>>> registeredSampledArbitraryBuilders = new ArrayList<>();
-
 	private List<MatcherOperator<PropertyNameResolver>> propertyNameResolvers;
 
 	private PropertyNameResolver defaultPropertyNameResolver;
@@ -57,13 +48,6 @@ public final class ManipulateOptionsBuilder {
 
 	public ManipulateOptionsBuilder expressionStrictMode(boolean expressionStrictMode) {
 		this.expressionStrictMode = expressionStrictMode;
-		return this;
-	}
-
-	public ManipulateOptionsBuilder register(
-		MatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>> arbitraryBuilderSupplier
-	) {
-		registeredArbitraryBuilders = insertFirst(registeredArbitraryBuilders, arbitraryBuilderSupplier);
 		return this;
 	}
 
@@ -93,32 +77,12 @@ public final class ManipulateOptionsBuilder {
 
 		return new ManipulateOptions(
 			defaultMonkeyExpressionFactory,
-			registeredSampledArbitraryBuilders,
 			propertyNameResolvers,
 			defaultPropertyNameResolver
 		);
 	}
 
-	public void sampleRegisteredArbitraryBuilder(FixtureMonkey fixtureMonkey) {
-		for (MatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>> registeredArbitraryBuilder
-			: registeredArbitraryBuilders) {
-			registeredSampledArbitraryBuilders.add(
-				new MatcherOperator<>(
-					registeredArbitraryBuilder.getMatcher(),
-					registeredArbitraryBuilder.getOperator().apply(fixtureMonkey)
-				)
-			);
-		}
-	}
-
 	private static <T> T defaultIfNull(@Nullable T obj, Supplier<T> defaultValue) {
 		return obj != null ? obj : defaultValue.get();
-	}
-
-	private static <T> List<T> insertFirst(List<T> list, T value) {
-		List<T> result = new ArrayList<>();
-		result.add(value);
-		result.addAll(list);
-		return result;
 	}
 }

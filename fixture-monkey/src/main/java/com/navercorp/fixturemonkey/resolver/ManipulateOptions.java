@@ -23,7 +23,6 @@ import java.util.List;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
@@ -32,30 +31,22 @@ import com.navercorp.fixturemonkey.expression.MonkeyExpressionFactory;
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class ManipulateOptions {
 	private final MonkeyExpressionFactory defaultMonkeyExpressionFactory;
-
-	private final List<MatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuilders;
 	private final List<MatcherOperator<PropertyNameResolver>> propertyNameResolvers;
 
 	private final PropertyNameResolver defaultPropertyNameResolver;
 
 	public ManipulateOptions(
 		MonkeyExpressionFactory defaultMonkeyExpressionFactory,
-		List<MatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuilders,
 		List<MatcherOperator<PropertyNameResolver>> propertyNameResolvers,
 		PropertyNameResolver defaultPropertyNameResolver
 	) {
 		this.defaultMonkeyExpressionFactory = defaultMonkeyExpressionFactory;
-		this.registeredArbitraryBuilders = registeredArbitraryBuilders;
 		this.propertyNameResolvers = propertyNameResolvers;
 		this.defaultPropertyNameResolver = defaultPropertyNameResolver;
 	}
 
 	public MonkeyExpressionFactory getDefaultMonkeyExpressionFactory() {
 		return defaultMonkeyExpressionFactory;
-	}
-
-	public List<MatcherOperator<? extends ArbitraryBuilder<?>>> getRegisteredArbitraryBuilders() {
-		return registeredArbitraryBuilders;
 	}
 
 	public PropertyNameResolver getPropertyNameResolver(Property property) {

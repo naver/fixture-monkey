@@ -21,6 +21,7 @@ package com.navercorp.fixturemonkey;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -71,6 +72,8 @@ public class FixtureMonkeyBuilder {
 	private final GenerateOptionsBuilder generateOptionsBuilder = GenerateOptions.builder();
 	private final ManipulateOptionsBuilder manipulateOptionsBuilder = ManipulateOptions.builder();
 	private final Map<Class<?>, DecomposedContainerValueFactory> decomposableContainerFactoryMap = new HashMap<>();
+	private final List<MatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>>>
+		registeredArbitraryBuilders = new ArrayList<>();
 	private ManipulatorOptimizer manipulatorOptimizer = new NoneManipulatorOptimizer();
 	private DecomposedContainerValueFactory defaultDecomposedContainerValueFactory = (obj) -> {
 		throw new IllegalArgumentException("given type is not supported container : " + obj.getClass().getTypeName());
@@ -329,34 +332,27 @@ public class FixtureMonkeyBuilder {
 		Class<?> type,
 		Function<FixtureMonkey, ? extends ArbitraryBuilder<?>> registeredArbitraryBuilder
 	) {
-		manipulateOptionsBuilder.register(
-			MatcherOperator.assignableTypeMatchOperator(type, registeredArbitraryBuilder)
-		);
-		return this;
+		return this.register(MatcherOperator.assignableTypeMatchOperator(type, registeredArbitraryBuilder));
 	}
 
 	public FixtureMonkeyBuilder registerExactType(
 		Class<?> type,
 		Function<FixtureMonkey, ? extends ArbitraryBuilder<?>> registeredArbitraryBuilder
 	) {
-		manipulateOptionsBuilder.register(MatcherOperator.exactTypeMatchOperator(type, registeredArbitraryBuilder));
-		return this;
+		return this.register(MatcherOperator.exactTypeMatchOperator(type, registeredArbitraryBuilder));
 	}
 
 	public FixtureMonkeyBuilder registerAssignableType(
 		Class<?> type,
 		Function<FixtureMonkey, ? extends ArbitraryBuilder<?>> registeredArbitraryBuilder
 	) {
-		manipulateOptionsBuilder.register(
-			MatcherOperator.assignableTypeMatchOperator(type, registeredArbitraryBuilder)
-		);
-		return this;
+		return this.register(MatcherOperator.assignableTypeMatchOperator(type, registeredArbitraryBuilder));
 	}
 
 	public FixtureMonkeyBuilder register(
 		MatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>> registeredArbitraryBuilder
 	) {
-		manipulateOptionsBuilder.register(registeredArbitraryBuilder);
+		this.registeredArbitraryBuilders.add(registeredArbitraryBuilder);
 		return this;
 	}
 
@@ -515,13 +511,18 @@ public class FixtureMonkeyBuilder {
 		GenerateOptions generateOptions = generateOptionsBuilder.build();
 		ArbitraryTraverser traverser = new ArbitraryTraverser(generateOptions);
 
+		manipulateOptionsBuilder.propertyNameResolvers(generateOptions.getPropertyNameResolvers());
+		manipulateOptionsBuilder.defaultPropertyNameResolver(generateOptions.getDefaultPropertyNameResolver());
+		ManipulateOptions manipulateOptions = manipulateOptionsBuilder.build();
+
 		return new FixtureMonkey(
 			generateOptions,
-			manipulateOptionsBuilder,
+			manipulateOptions,
 			traverser,
 			manipulatorOptimizer,
 			generateOptions.getDefaultArbitraryValidator(),
-			MonkeyContext.builder().build()
+			MonkeyContext.builder().build(),
+			registeredArbitraryBuilders
 		);
 	}
 
