@@ -16,22 +16,36 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.api.collection;
+package com.navercorp.fixturemonkey.api.container;
 
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 /**
- * It is deprecated.
- * Use {@link com.navercorp.fixturemonkey.api.container.StreamCache} instead.
+ * It is used for caching {@link Stream}.
+ * It is necessary for using the elements of {@link Stream} because {@link Stream} could only be retrieved once.
  */
-@API(since = "0.4.0", status = Status.MAINTAINED)
-@Deprecated
+@API(since = "0.6.0", status = Status.EXPERIMENTAL)
 public final class StreamCache {
+	private static final LruCache<Stream<?>, List<?>> STREAM_TO_LIST = new LruCache<>(2048);
+
+	/**
+	 * Gets the elements of {@link Stream} in an idempotent manner.
+	 *
+	 * @param stream whose elements are needed
+	 * @return the elements of {@link Stream}
+	 */
 	public static List<?> getList(Stream<?> stream) {
-		return com.navercorp.fixturemonkey.api.container.StreamCache.getList(stream);
+		if (STREAM_TO_LIST.containsKey(stream)) {
+			return STREAM_TO_LIST.get(stream);
+		}
+		List<?> list = stream.collect(Collectors.toList());
+		STREAM_TO_LIST.put(stream, list);
+		return list;
 	}
+
 }
