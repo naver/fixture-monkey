@@ -60,17 +60,17 @@ import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.api.validator.ArbitraryValidator;
 import com.navercorp.fixturemonkey.buildergroup.ArbitraryBuilderCandidate;
 import com.navercorp.fixturemonkey.buildergroup.ArbitraryBuilderGroup;
-import com.navercorp.fixturemonkey.resolver.ManipulateOptions;
-import com.navercorp.fixturemonkey.resolver.ManipulateOptionsBuilder;
+import com.navercorp.fixturemonkey.expression.ArbitraryExpressionFactory;
+import com.navercorp.fixturemonkey.expression.MonkeyExpressionFactory;
 import com.navercorp.fixturemonkey.resolver.ManipulatorOptimizer;
 import com.navercorp.fixturemonkey.resolver.NoneManipulatorOptimizer;
+import com.navercorp.fixturemonkey.tree.ApplyStrictModeResolver;
 import com.navercorp.fixturemonkey.tree.ArbitraryTraverser;
 
 @SuppressWarnings("unused")
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public class FixtureMonkeyBuilder {
 	private final GenerateOptionsBuilder generateOptionsBuilder = GenerateOptions.builder();
-	private final ManipulateOptionsBuilder manipulateOptionsBuilder = ManipulateOptions.builder();
 	private final Map<Class<?>, DecomposedContainerValueFactory> decomposableContainerFactoryMap = new HashMap<>();
 	private final List<MatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>>>
 		registeredArbitraryBuilders = new ArrayList<>();
@@ -78,6 +78,7 @@ public class FixtureMonkeyBuilder {
 	private DecomposedContainerValueFactory defaultDecomposedContainerValueFactory = (obj) -> {
 		throw new IllegalArgumentException("given type is not supported container : " + obj.getClass().getTypeName());
 	};
+	private MonkeyExpressionFactory monkeyExpressionFactory = new ArbitraryExpressionFactory();
 
 	public FixtureMonkeyBuilder pushPropertyGenerator(MatcherOperator<PropertyGenerator> propertyGenerator) {
 		generateOptionsBuilder.insertFirstPropertyGenerator(propertyGenerator);
@@ -489,6 +490,12 @@ public class FixtureMonkeyBuilder {
 		return this.interfaceImplements(new ExactTypeMatcher(interfaceClass), implementations);
 	}
 
+	public FixtureMonkeyBuilder useExpressionStrictMode() {
+		this.monkeyExpressionFactory = expression ->
+			() -> new ApplyStrictModeResolver(new ArbitraryExpressionFactory().from(expression).toNodeResolver());
+		return this;
+	}
+
 	public FixtureMonkey build() {
 		generateOptionsBuilder.additionalDecomposedContainerValueFactory(
 			obj -> {
@@ -511,23 +518,14 @@ public class FixtureMonkeyBuilder {
 		GenerateOptions generateOptions = generateOptionsBuilder.build();
 		ArbitraryTraverser traverser = new ArbitraryTraverser(generateOptions);
 
-		manipulateOptionsBuilder.propertyNameResolvers(generateOptions.getPropertyNameResolvers());
-		manipulateOptionsBuilder.defaultPropertyNameResolver(generateOptions.getDefaultPropertyNameResolver());
-		ManipulateOptions manipulateOptions = manipulateOptionsBuilder.build();
-
 		return new FixtureMonkey(
 			generateOptions,
-			manipulateOptions,
 			traverser,
 			manipulatorOptimizer,
 			generateOptions.getDefaultArbitraryValidator(),
 			MonkeyContext.builder().build(),
-			registeredArbitraryBuilders
+			registeredArbitraryBuilders,
+			monkeyExpressionFactory
 		);
-	}
-
-	public FixtureMonkeyBuilder useExpressionStrictMode() {
-		this.manipulateOptionsBuilder.expressionStrictMode(true);
-		return this;
 	}
 }

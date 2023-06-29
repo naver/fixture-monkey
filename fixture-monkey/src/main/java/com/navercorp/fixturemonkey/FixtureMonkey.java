@@ -40,38 +40,38 @@ import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.api.validator.ArbitraryValidator;
 import com.navercorp.fixturemonkey.customizer.ArbitraryManipulator;
 import com.navercorp.fixturemonkey.customizer.MonkeyManipulatorFactory;
+import com.navercorp.fixturemonkey.expression.MonkeyExpressionFactory;
 import com.navercorp.fixturemonkey.resolver.ArbitraryBuilderContext;
 import com.navercorp.fixturemonkey.resolver.ArbitraryResolver;
 import com.navercorp.fixturemonkey.resolver.DefaultArbitraryBuilder;
-import com.navercorp.fixturemonkey.resolver.ManipulateOptions;
 import com.navercorp.fixturemonkey.resolver.ManipulatorOptimizer;
 import com.navercorp.fixturemonkey.tree.ArbitraryTraverser;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public class FixtureMonkey {
 	private final GenerateOptions generateOptions;
-	private final ManipulateOptions manipulateOptions;
 	private final ArbitraryTraverser traverser;
 	private final ManipulatorOptimizer manipulatorOptimizer;
 	private final ArbitraryValidator validator;
 	private final MonkeyContext monkeyContext;
 	private final List<MatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuilders = new ArrayList<>();
+	private final MonkeyExpressionFactory monkeyExpressionFactory;
 
 	public FixtureMonkey(
 		GenerateOptions generateOptions,
-		ManipulateOptions manipulateOptions,
 		ArbitraryTraverser traverser,
 		ManipulatorOptimizer manipulatorOptimizer,
 		ArbitraryValidator validator,
 		MonkeyContext monkeyContext,
-		List<MatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>>> registeredArbitraryBuilders
+		List<MatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>>> registeredArbitraryBuilders,
+		MonkeyExpressionFactory monkeyExpressionFactory
 	) {
 		this.generateOptions = generateOptions;
-		this.manipulateOptions = manipulateOptions;
 		this.traverser = traverser;
 		this.manipulatorOptimizer = manipulatorOptimizer;
 		this.validator = validator;
 		this.monkeyContext = monkeyContext;
+		this.monkeyExpressionFactory = monkeyExpressionFactory;
 		initializeRegisteredArbitraryBuilders(registeredArbitraryBuilders);
 	}
 
@@ -105,7 +105,7 @@ public class FixtureMonkey {
 
 		MonkeyManipulatorFactory monkeyManipulatorFactory = new MonkeyManipulatorFactory(
 			new AtomicInteger(),
-			manipulateOptions.getDefaultMonkeyExpressionFactory(),
+			monkeyExpressionFactory,
 			traverser,
 			generateOptions.getDecomposedContainerValueFactory()
 		);
@@ -131,7 +131,7 @@ public class FixtureMonkey {
 	public <T> ArbitraryBuilder<T> giveMeBuilder(T value) {
 		MonkeyManipulatorFactory monkeyManipulatorFactory = new MonkeyManipulatorFactory(
 			new AtomicInteger(),
-			manipulateOptions.getDefaultMonkeyExpressionFactory(),
+			monkeyExpressionFactory,
 			traverser,
 			generateOptions.getDecomposedContainerValueFactory()
 		);
