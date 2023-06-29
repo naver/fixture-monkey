@@ -19,7 +19,7 @@
 package com.navercorp.fixturemonkey.kotlin.introspector
 
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary
-import com.navercorp.fixturemonkey.api.collection.LruCache
+import com.navercorp.fixturemonkey.api.container.LruCache
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult

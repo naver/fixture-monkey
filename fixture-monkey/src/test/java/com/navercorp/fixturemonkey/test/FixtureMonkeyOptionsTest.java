@@ -46,6 +46,7 @@ import net.jqwik.time.api.arbitraries.InstantArbitrary;
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.arbitrary.MonkeyStringArbitrary;
+import com.navercorp.fixturemonkey.api.container.DecomposableJavaContainer;
 import com.navercorp.fixturemonkey.api.exception.FilterMissException;
 import com.navercorp.fixturemonkey.api.exception.ValidationFailedException;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
@@ -64,7 +65,6 @@ import com.navercorp.fixturemonkey.api.matcher.ExactTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.api.type.Types;
-import com.navercorp.fixturemonkey.resolver.DecomposableContainerValue;
 import com.navercorp.fixturemonkey.test.ExpressionGeneratorTestSpecs.StringValue;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.AbstractNoneConcreteIntValue;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.AbstractNoneConcreteStringValue;
@@ -829,7 +829,7 @@ class FixtureMonkeyOptionsTest {
 						List<Object> list = new ArrayList<>();
 						list.add(pair.getFirst());
 						list.add(pair.getSecond());
-						return new DecomposableContainerValue(list, 2);
+						return new DecomposableJavaContainer(list, 2);
 					}
 					throw new IllegalArgumentException(
 						"given type is not supported container : " + obj.getClass().getTypeName()
@@ -859,7 +859,7 @@ class FixtureMonkeyOptionsTest {
 					List<Object> list = new ArrayList<>();
 					list.add(pair.getFirst());
 					list.add(pair.getSecond());
-					return new DecomposableContainerValue(list, 2);
+					return new DecomposableJavaContainer(list, 2);
 				}
 			)
 			.build();

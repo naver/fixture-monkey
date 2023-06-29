@@ -31,6 +31,8 @@ import java.util.function.Function;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import com.navercorp.fixturemonkey.api.container.DecomposableJavaContainer;
+import com.navercorp.fixturemonkey.api.container.DecomposedContainerValueFactory;
 import com.navercorp.fixturemonkey.api.context.MonkeyContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfoGenerator;
 import com.navercorp.fixturemonkey.api.generator.ContainerPropertyGenerator;
@@ -57,8 +59,6 @@ import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.api.validator.ArbitraryValidator;
 import com.navercorp.fixturemonkey.buildergroup.ArbitraryBuilderCandidate;
 import com.navercorp.fixturemonkey.buildergroup.ArbitraryBuilderGroup;
-import com.navercorp.fixturemonkey.resolver.DecomposableContainerValue;
-import com.navercorp.fixturemonkey.resolver.DecomposedContainerValueFactory;
 import com.navercorp.fixturemonkey.resolver.ManipulateOptions;
 import com.navercorp.fixturemonkey.resolver.ManipulateOptionsBuilder;
 import com.navercorp.fixturemonkey.resolver.ManipulatorOptimizer;
@@ -385,9 +385,9 @@ public class FixtureMonkeyBuilder {
 						};
 					this.register(actualType, registerArbitraryBuilder);
 				} catch (InvocationTargetException
-					| InstantiationException
-					| IllegalAccessException
-					| NoSuchMethodException e) {
+						| InstantiationException
+						| IllegalAccessException
+						| NoSuchMethodException e) {
 					// ignored
 				}
 			}
@@ -494,7 +494,7 @@ public class FixtureMonkeyBuilder {
 	}
 
 	public FixtureMonkey build() {
-		manipulateOptionsBuilder.additionalDecomposedContainerValueFactory(
+		generateOptionsBuilder.additionalDecomposedContainerValueFactory(
 			obj -> {
 				Class<?> actualType = obj.getClass();
 				for (
@@ -502,7 +502,7 @@ public class FixtureMonkeyBuilder {
 					this.decomposableContainerFactoryMap.entrySet()
 				) {
 					Class<?> type = entry.getKey();
-					DecomposableContainerValue decomposedValue = entry.getValue().from(obj);
+					DecomposableJavaContainer decomposedValue = entry.getValue().from(obj);
 
 					if (actualType.isAssignableFrom(type)) {
 						return decomposedValue;

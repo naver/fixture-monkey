@@ -44,7 +44,7 @@ import org.apiguardian.api.API.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.navercorp.fixturemonkey.api.collection.LruCache;
+import com.navercorp.fixturemonkey.api.container.LruCache;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class TypeCache {

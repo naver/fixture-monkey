@@ -42,6 +42,7 @@ import javax.annotation.Nullable;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import com.navercorp.fixturemonkey.api.container.DecomposedContainerValueFactory;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfoGenerator;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.generator.ArrayContainerPropertyGenerator;
@@ -114,6 +115,7 @@ public final class GenerateOptions {
 	private final List<MatcherOperator<ArbitraryGenerator>> arbitraryGenerators;
 	private final ArbitraryGenerator defaultArbitraryGenerator;
 	private final ArbitraryValidator defaultArbitraryValidator;
+	private final DecomposedContainerValueFactory decomposedContainerValueFactory;
 
 	@SuppressWarnings("rawtypes")
 	public GenerateOptions(
@@ -130,7 +132,8 @@ public final class GenerateOptions {
 		ArbitraryContainerInfoGenerator defaultArbitraryContainerInfoGenerator,
 		List<MatcherOperator<ArbitraryGenerator>> arbitraryGenerators,
 		ArbitraryGenerator defaultArbitraryGenerator,
-		ArbitraryValidator defaultArbitraryValidator
+		ArbitraryValidator defaultArbitraryValidator,
+		DecomposedContainerValueFactory decomposedContainerValueFactory
 	) {
 		this.propertyGenerators = propertyGenerators;
 		this.defaultPropertyGenerator = defaultPropertyGenerator;
@@ -146,6 +149,7 @@ public final class GenerateOptions {
 		this.arbitraryGenerators = arbitraryGenerators;
 		this.defaultArbitraryGenerator = defaultArbitraryGenerator;
 		this.defaultArbitraryValidator = defaultArbitraryValidator;
+		this.decomposedContainerValueFactory = decomposedContainerValueFactory;
 	}
 
 	public static GenerateOptionsBuilder builder() {
@@ -263,6 +267,10 @@ public final class GenerateOptions {
 
 	public ArbitraryValidator getDefaultArbitraryValidator() {
 		return defaultArbitraryValidator;
+	}
+
+	public DecomposedContainerValueFactory getDecomposedContainerValueFactory() {
+		return decomposedContainerValueFactory;
 	}
 
 	public GenerateOptionsBuilder toBuilder() {

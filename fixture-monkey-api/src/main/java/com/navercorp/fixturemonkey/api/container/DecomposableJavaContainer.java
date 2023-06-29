@@ -16,23 +16,34 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.resolver;
+package com.navercorp.fixturemonkey.api.container;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-@API(since = "0.4.0", status = Status.MAINTAINED)
-public final class DecomposableContainerValue {
-	private final Object container;
+/**
+ * It is used for decomposing the custom container.
+ */
+@API(since = "0.6.0", status = Status.EXPERIMENTAL)
+public class DecomposableJavaContainer {
+	/**
+	 * It should be one of these Java Container type.
+	 * For example, the implementations of {@link Iterable}, {@link java.util.List}, {@link java.util.Set}, etc.
+	 * {@link Iterable}, {@link java.util.Map}, {@link java.util.Map.Entry}, {@link java.util.Optional}, Array as well.
+	 */
+	private final Object javaContainer;
+	/**
+	 * It is a size of {@link #javaContainer}.
+	 */
 	private final int size;
 
-	public DecomposableContainerValue(Object container, int size) {
-		this.container = container;
+	public DecomposableJavaContainer(Object javaContainer, int size) {
+		this.javaContainer = javaContainer;
 		this.size = size;
 	}
 
-	public Object getContainer() {
-		return container;
+	public Object getJavaContainer() {
+		return javaContainer;
 	}
 
 	public int getSize() {

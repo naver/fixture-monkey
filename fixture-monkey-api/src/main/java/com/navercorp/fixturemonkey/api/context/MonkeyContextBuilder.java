@@ -22,7 +22,7 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
-import com.navercorp.fixturemonkey.api.collection.LruCache;
+import com.navercorp.fixturemonkey.api.container.LruCache;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
 

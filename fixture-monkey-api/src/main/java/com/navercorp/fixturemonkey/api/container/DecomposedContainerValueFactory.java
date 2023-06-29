@@ -16,22 +16,21 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.api.collection;
-
-import java.util.Iterator;
-import java.util.List;
+package com.navercorp.fixturemonkey.api.container;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 /**
- * It is deprecated.
- * Use {@link com.navercorp.fixturemonkey.api.container.IteratorCache} instead.
+ * Generate a {@link DecomposableJavaContainer} from the container.
  */
-@Deprecated
-@API(since = "0.4.0", status = Status.MAINTAINED)
-public final class IteratorCache {
-	public static List<?> getList(Iterator<?> iterator) {
-		return com.navercorp.fixturemonkey.api.container.IteratorCache.getList(iterator);
-	}
+@API(since = "0.6.0", status = Status.EXPERIMENTAL)
+@FunctionalInterface
+public interface DecomposedContainerValueFactory {
+	/**
+	 * Generates a {@link DecomposableJavaContainer} from the {@code container}.
+	 * @param container to be converted into {@link DecomposableJavaContainer}
+	 * @return DecomposableJavaContainer
+	 */
+	DecomposableJavaContainer from(Object container);
 }
