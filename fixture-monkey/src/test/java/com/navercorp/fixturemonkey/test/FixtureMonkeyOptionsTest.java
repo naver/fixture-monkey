@@ -36,8 +36,6 @@ import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import javax.validation.ConstraintViolationException;
-
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
 import net.jqwik.api.Property;
@@ -49,6 +47,7 @@ import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.arbitrary.MonkeyStringArbitrary;
 import com.navercorp.fixturemonkey.api.exception.FilterMissException;
+import com.navercorp.fixturemonkey.api.exception.ValidationFailedException;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator;
@@ -599,7 +598,7 @@ class FixtureMonkeyOptionsTest {
 	void alterArbitraryValidator() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.arbitraryValidator(obj -> {
-				throw new ConstraintViolationException("thrown by test ArbitraryValidator", new HashSet<>());
+				throw new ValidationFailedException("thrown by test ArbitraryValidator", new HashSet<>());
 			})
 			.build();
 
