@@ -51,7 +51,7 @@ import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.expression.ExpressionGenerator;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
-import com.navercorp.fixturemonkey.api.option.GenerateOptions;
+import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
 import com.navercorp.fixturemonkey.api.type.LazyAnnotatedType;
@@ -69,7 +69,7 @@ import com.navercorp.fixturemonkey.tree.ArbitraryTraverser;
 public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T> {
 	private static final int GENERATION_COUNT = 500;
 
-	private final GenerateOptions generateOptions;
+	private final FixtureMonkeyOptions fixtureMonkeyOptions;
 	private final RootProperty rootProperty;
 	private final ArbitraryResolver resolver;
 	private final ArbitraryTraverser traverser;
@@ -79,7 +79,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T> {
 	private final List<MatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuilders;
 
 	public DefaultArbitraryBuilder(
-		GenerateOptions generateOptions,
+		FixtureMonkeyOptions fixtureMonkeyOptions,
 		RootProperty rootProperty,
 		ArbitraryResolver resolver,
 		ArbitraryTraverser traverser,
@@ -88,7 +88,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T> {
 		ArbitraryBuilderContext context,
 		List<MatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuilders
 	) {
-		this.generateOptions = generateOptions;
+		this.fixtureMonkeyOptions = fixtureMonkeyOptions;
 		this.rootProperty = rootProperty;
 		this.resolver = resolver;
 		this.traverser = traverser;
@@ -427,7 +427,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T> {
 	@Override
 	public ArbitraryBuilder<T> copy() {
 		return new DefaultArbitraryBuilder<>(
-			generateOptions,
+			fixtureMonkeyOptions,
 			rootProperty,
 			resolver,
 			traverser,
@@ -473,7 +473,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T> {
 
 	private String resolveExpression(ExpressionGenerator expressionGenerator) {
 		return expressionGenerator.generate(property -> {
-			PropertyNameResolver propertyNameResolver = generateOptions.getPropertyNameResolver(property);
+			PropertyNameResolver propertyNameResolver = fixtureMonkeyOptions.getPropertyNameResolver(property);
 			return propertyNameResolver.resolve(property);
 		});
 	}
@@ -485,7 +485,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T> {
 		context.addManipulator(arbitraryManipulator);
 
 		return new DefaultArbitraryBuilder<>(
-			generateOptions,
+			fixtureMonkeyOptions,
 			new RootProperty(new LazyAnnotatedType<>(lazyArbitrary::getValue)),
 			resolver,
 			traverser,

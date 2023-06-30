@@ -21,7 +21,7 @@ package com.navercorp.fixturemonkey.kotlin
 import com.navercorp.fixturemonkey.api.generator.InterfaceObjectPropertyGenerator
 import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGenerator
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator
-import com.navercorp.fixturemonkey.api.option.GenerateOptionsBuilder
+import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptionsBuilder
 import com.navercorp.fixturemonkey.api.plugin.Plugin
 import com.navercorp.fixturemonkey.api.type.Types
 import com.navercorp.fixturemonkey.kotlin.generator.InterfaceKFunctionPropertyGenerator
@@ -33,7 +33,7 @@ import java.lang.reflect.Modifier
 
 @API(since = "0.4.0", status = MAINTAINED)
 class KotlinPlugin : Plugin {
-    override fun accept(optionsBuilder: GenerateOptionsBuilder) {
+    override fun accept(optionsBuilder: FixtureMonkeyOptionsBuilder) {
         optionsBuilder.objectIntrospector { PrimaryConstructorArbitraryIntrospector.INSTANCE }
             .defaultPropertyGenerator(KotlinPropertyGenerator())
             .insertFirstArbitraryObjectPropertyGenerator(

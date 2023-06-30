@@ -73,8 +73,8 @@ import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.api.type.Types.UnidentifiableType;
 import com.navercorp.fixturemonkey.api.validator.ArbitraryValidator;
 
-@API(since = "0.4.0", status = Status.MAINTAINED)
-public final class GenerateOptions {
+@API(since = "0.6.0", status = Status.EXPERIMENTAL)
+public final class FixtureMonkeyOptions {
 	private static final List<String> DEFAULT_JAVA_PACKAGES;
 	public static final List<MatcherOperator<ObjectPropertyGenerator>> DEFAULT_OBJECT_PROPERTY_GENERATORS =
 		getDefaultObjectPropertyGenerators();
@@ -86,7 +86,7 @@ public final class GenerateOptions {
 	public static final int DEFAULT_ARBITRARY_CONTAINER_MAX_SIZE = 3;
 	public static final List<MatcherOperator<PropertyGenerator>> DEFAULT_PROPERTY_GENERATORS =
 		getDefaultPropertyGenerators();
-	public static final GenerateOptions DEFAULT_GENERATE_OPTIONS = GenerateOptions.builder().build();
+	public static final FixtureMonkeyOptions DEFAULT_GENERATE_OPTIONS = FixtureMonkeyOptions.builder().build();
 
 	static {
 		List<String> defaultJavaPackages = new ArrayList<>();
@@ -118,7 +118,7 @@ public final class GenerateOptions {
 	private final DecomposedContainerValueFactory decomposedContainerValueFactory;
 
 	@SuppressWarnings("rawtypes")
-	public GenerateOptions(
+	public FixtureMonkeyOptions(
 		List<MatcherOperator<PropertyGenerator>> propertyGenerators,
 		PropertyGenerator defaultPropertyGenerator,
 		List<MatcherOperator<ObjectPropertyGenerator>> objectPropertyGenerators,
@@ -152,8 +152,8 @@ public final class GenerateOptions {
 		this.decomposedContainerValueFactory = decomposedContainerValueFactory;
 	}
 
-	public static GenerateOptionsBuilder builder() {
-		return new GenerateOptionsBuilder();
+	public static FixtureMonkeyOptionsBuilder builder() {
+		return new FixtureMonkeyOptionsBuilder();
 	}
 
 	public List<MatcherOperator<PropertyGenerator>> getPropertyGenerators() {
@@ -273,7 +273,7 @@ public final class GenerateOptions {
 		return decomposedContainerValueFactory;
 	}
 
-	public GenerateOptionsBuilder toBuilder() {
+	public FixtureMonkeyOptionsBuilder toBuilder() {
 		return builder()
 			.defaultPropertyGenerator(defaultPropertyGenerator)
 			.arbitraryObjectPropertyGenerators(objectPropertyGenerators)
@@ -287,7 +287,8 @@ public final class GenerateOptions {
 			.defaultArbitraryContainerInfoGenerator(this.defaultArbitraryContainerInfoGenerator)
 			.arbitraryGenerators(new ArrayList<>(this.arbitraryGenerators))
 			.defaultArbitraryGenerator(this.defaultArbitraryGenerator)
-			.defaultArbitraryValidator(defaultArbitraryValidator);
+			.defaultArbitraryValidator(defaultArbitraryValidator)
+			.decomposedContainerValueFactory(decomposedContainerValueFactory);
 	}
 
 	private static List<MatcherOperator<ObjectPropertyGenerator>> getDefaultObjectPropertyGenerators(

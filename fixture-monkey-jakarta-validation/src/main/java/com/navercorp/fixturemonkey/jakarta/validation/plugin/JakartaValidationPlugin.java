@@ -26,7 +26,7 @@ import org.apiguardian.api.API.Status;
 import com.navercorp.fixturemonkey.api.introspector.CompositeArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.JavaTimeTypeArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.introspector.JavaTypeArbitraryGenerator;
-import com.navercorp.fixturemonkey.api.option.GenerateOptionsBuilder;
+import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptionsBuilder;
 import com.navercorp.fixturemonkey.api.plugin.Plugin;
 import com.navercorp.fixturemonkey.jakarta.validation.generator.JakartaValidationArbitraryContainerInfoGenerator;
 import com.navercorp.fixturemonkey.jakarta.validation.generator.JakartaValidationNullInjectGenerator;
@@ -78,7 +78,7 @@ public final class JakartaValidationPlugin implements Plugin {
 	}
 
 	@Override
-	public void accept(GenerateOptionsBuilder optionsBuilder) {
+	public void accept(FixtureMonkeyOptionsBuilder optionsBuilder) {
 		optionsBuilder
 			.defaultNullInjectGeneratorOperator(JakartaValidationNullInjectGenerator::new)
 			.insertFirstArbitraryContainerInfoGenerator(
