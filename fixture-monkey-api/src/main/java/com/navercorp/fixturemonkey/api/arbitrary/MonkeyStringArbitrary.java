@@ -42,13 +42,15 @@ import net.jqwik.api.arbitraries.CharacterArbitrary;
 import net.jqwik.api.arbitraries.StringArbitrary;
 import net.jqwik.api.support.HashCodeSupport;
 import net.jqwik.engine.properties.arbitraries.DefaultCharacterArbitrary;
-import net.jqwik.engine.properties.arbitraries.DefaultStringArbitrary;
 import net.jqwik.engine.properties.arbitraries.EdgeCasesSupport;
-import net.jqwik.engine.properties.arbitraries.TypedCloneable;
 import net.jqwik.engine.properties.arbitraries.exhaustive.ExhaustiveGenerators;
 import net.jqwik.engine.properties.arbitraries.randomized.RandomGenerators;
 import net.jqwik.engine.properties.shrinking.ShrinkableString;
 
+/**
+ * A StringArbitrary instance which supports filtering with a predicate
+ * Same implementation as DefaultStringArbitrary
+ */
 @API(since = "0.6.0", status = Status.EXPERIMENTAL)
 public final class MonkeyStringArbitrary implements StringArbitrary {
 	private CharacterArbitrary characterArbitrary = new DefaultCharacterArbitrary();
@@ -229,16 +231,30 @@ public final class MonkeyStringArbitrary implements StringArbitrary {
 	}
 
 	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null || getClass() != obj.getClass()) {
+			return false;
+		}
 
-		MonkeyStringArbitrary that = (MonkeyStringArbitrary) o;
-		if (minLength != that.minLength) return false;
-		if (!Objects.equals(maxLength, that.maxLength)) return false;
-		if (Double.compare(that.repeatChars, repeatChars) != 0) return false;
-		if (!characterArbitrary.equals(that.characterArbitrary)) return false;
-		if (!filter.equals(that.filter)) return false;
+		MonkeyStringArbitrary that = (MonkeyStringArbitrary) obj;
+		if (minLength != that.minLength) {
+			return false;
+		}
+		if (!Objects.equals(maxLength, that.maxLength)) {
+			return false;
+		}
+		if (Double.compare(that.repeatChars, repeatChars) != 0) {
+			return false;
+		}
+		if (!characterArbitrary.equals(that.characterArbitrary)) {
+			return false;
+		}
+		if (!filter.equals(that.filter)) {
+			return false;
+		}
 		return Objects.equals(lengthDistribution, that.lengthDistribution);
 	}
 
@@ -250,6 +266,7 @@ public final class MonkeyStringArbitrary implements StringArbitrary {
 	public StringArbitrary filterCharacter(Predicate<Character> predicate) {
 		this.filter = this.filter.and(predicate);
 		return this;
+
 	}
 
 	private RandomGenerator<Character> randomCharacterGenerator() {
@@ -263,8 +280,7 @@ public final class MonkeyStringArbitrary implements StringArbitrary {
 
 	private Arbitrary<Character> effectiveCharacterArbitrary() {
 		Arbitrary<Character> characterArbitrary = this.characterArbitrary;
-		characterArbitrary = characterArbitrary.filter(this.filter);
-		return characterArbitrary;
+		return characterArbitrary.filter(this.filter);
 	}
 
 }
