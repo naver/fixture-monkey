@@ -33,6 +33,8 @@ import com.navercorp.fixturemonkey.kotlin.generator.TripleDecomposedContainerVal
 import com.navercorp.fixturemonkey.kotlin.introspector.PairIntrospector
 import com.navercorp.fixturemonkey.kotlin.introspector.PrimaryConstructorArbitraryIntrospector
 import com.navercorp.fixturemonkey.kotlin.introspector.TripleIntrospector
+import com.navercorp.fixturemonkey.kotlin.matcher.Matchers.PAIR_TYPE_MATCHER
+import com.navercorp.fixturemonkey.kotlin.matcher.Matchers.TRIPLE_TYPE_MATCHER
 import com.navercorp.fixturemonkey.kotlin.property.KotlinPropertyGenerator
 import org.apiguardian.api.API
 import org.apiguardian.api.API.Status.MAINTAINED
@@ -63,11 +65,11 @@ class KotlinPlugin : Plugin {
                 ),
             )
             .insertFirstArbitraryContainerPropertyGenerator(
-                Pair::class.java,
+                PAIR_TYPE_MATCHER,
                 PairContainerPropertyGenerator()
             )
             .insertFirstArbitraryContainerPropertyGenerator(
-                Triple::class.java,
+                TRIPLE_TYPE_MATCHER,
                 TripleContainerPropertyGenerator()
             )
             .containerIntrospector {

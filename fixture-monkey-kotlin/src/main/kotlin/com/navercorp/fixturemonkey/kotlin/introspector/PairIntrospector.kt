@@ -22,18 +22,15 @@ import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult
-import com.navercorp.fixturemonkey.api.matcher.AssignableTypeMatcher
-import com.navercorp.fixturemonkey.api.matcher.DoubleGenericTypeMatcher
 import com.navercorp.fixturemonkey.api.matcher.Matcher
 import com.navercorp.fixturemonkey.api.property.Property
+import com.navercorp.fixturemonkey.kotlin.matcher.Matchers.PAIR_TYPE_MATCHER
 import org.apiguardian.api.API
 import org.apiguardian.api.API.Status
 
 @API(since = "0.6.0", status = Status.EXPERIMENTAL)
 class PairIntrospector : ArbitraryIntrospector, Matcher {
-    private val MATCHER = Matcher { property ->
-        AssignableTypeMatcher(Pair::class.java).match(property) && DoubleGenericTypeMatcher().match(property)
-    }
+    private val MATCHER = PAIR_TYPE_MATCHER
 
     override fun match(property: Property?): Boolean {
         return MATCHER.match(property)
