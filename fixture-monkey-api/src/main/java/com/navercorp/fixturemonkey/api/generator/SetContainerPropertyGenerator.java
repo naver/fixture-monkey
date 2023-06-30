@@ -52,7 +52,7 @@ public final class SetContainerPropertyGenerator implements ContainerPropertyGen
 		ArbitraryContainerInfo containerInfo = context.getContainerInfo();
 
 		if (containerInfo == null) {
-			containerInfo = context.getGenerateOptions()
+			containerInfo = context.getFixtureMonkeyOptions()
 				.getArbitraryContainerInfoGenerator(property)
 				.generate(context);
 

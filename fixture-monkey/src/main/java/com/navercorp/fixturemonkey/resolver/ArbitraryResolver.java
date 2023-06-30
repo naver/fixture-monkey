@@ -30,7 +30,7 @@ import net.jqwik.api.Arbitrary;
 import com.navercorp.fixturemonkey.api.context.MonkeyContext;
 import com.navercorp.fixturemonkey.api.customizer.FixtureCustomizer;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
-import com.navercorp.fixturemonkey.api.option.GenerateOptions;
+import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
 import com.navercorp.fixturemonkey.customizer.ArbitraryManipulator;
 import com.navercorp.fixturemonkey.customizer.ContainerInfoManipulator;
@@ -43,7 +43,7 @@ public final class ArbitraryResolver {
 	private final ArbitraryTraverser traverser;
 	private final ManipulatorOptimizer manipulatorOptimizer;
 	private final MonkeyManipulatorFactory monkeyManipulatorFactory;
-	private final GenerateOptions generateOptions;
+	private final FixtureMonkeyOptions fixtureMonkeyOptions;
 	private final ManipulateOptions manipulateOptions;
 	private final MonkeyContext monkeyContext;
 
@@ -51,14 +51,14 @@ public final class ArbitraryResolver {
 		ArbitraryTraverser traverser,
 		ManipulatorOptimizer manipulatorOptimizer,
 		MonkeyManipulatorFactory monkeyManipulatorFactory,
-		GenerateOptions generateOptions,
+		FixtureMonkeyOptions fixtureMonkeyOptions,
 		ManipulateOptions manipulateOptions,
 		MonkeyContext monkeyContext
 	) {
 		this.traverser = traverser;
 		this.manipulatorOptimizer = manipulatorOptimizer;
 		this.monkeyManipulatorFactory = monkeyManipulatorFactory;
-		this.generateOptions = generateOptions;
+		this.fixtureMonkeyOptions = fixtureMonkeyOptions;
 		this.manipulateOptions = manipulateOptions;
 		this.monkeyContext = monkeyContext;
 	}
@@ -86,7 +86,7 @@ public final class ArbitraryResolver {
 				containerInfoManipulators,
 				registeredContainerInfoManipulators
 			),
-			generateOptions,
+			fixtureMonkeyOptions,
 			monkeyContext,
 			builderCustomizers
 		);

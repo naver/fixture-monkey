@@ -32,7 +32,7 @@ import net.jqwik.api.Arbitrary;
 import com.navercorp.fixturemonkey.api.context.MonkeyContext;
 import com.navercorp.fixturemonkey.api.customizer.FixtureCustomizer;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
-import com.navercorp.fixturemonkey.api.option.GenerateOptions;
+import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
 import com.navercorp.fixturemonkey.api.type.LazyAnnotatedType;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
@@ -49,7 +49,7 @@ import com.navercorp.fixturemonkey.tree.ArbitraryTraverser;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public class FixtureMonkey {
-	private final GenerateOptions generateOptions;
+	private final FixtureMonkeyOptions fixtureMonkeyOptions;
 	private final ManipulateOptionsBuilder manipulateOptionsBuilder;
 	private final ArbitraryTraverser traverser;
 	private final ManipulatorOptimizer manipulatorOptimizer;
@@ -57,21 +57,21 @@ public class FixtureMonkey {
 	private final MonkeyContext monkeyContext;
 
 	public FixtureMonkey(
-		GenerateOptions generateOptions,
+		FixtureMonkeyOptions fixtureMonkeyOptions,
 		ManipulateOptionsBuilder manipulateOptionsBuilder,
 		ArbitraryTraverser traverser,
 		ManipulatorOptimizer manipulatorOptimizer,
 		ArbitraryValidator validator,
 		MonkeyContext monkeyContext
 	) {
-		this.generateOptions = generateOptions;
+		this.fixtureMonkeyOptions = fixtureMonkeyOptions;
 		this.manipulateOptionsBuilder = manipulateOptionsBuilder;
 		this.traverser = traverser;
 		this.manipulatorOptimizer = manipulatorOptimizer;
 		this.validator = validator;
 		this.monkeyContext = monkeyContext;
-		manipulateOptionsBuilder.propertyNameResolvers(generateOptions.getPropertyNameResolvers());
-		manipulateOptionsBuilder.defaultPropertyNameResolver(generateOptions.getDefaultPropertyNameResolver());
+		manipulateOptionsBuilder.propertyNameResolvers(fixtureMonkeyOptions.getPropertyNameResolvers());
+		manipulateOptionsBuilder.defaultPropertyNameResolver(fixtureMonkeyOptions.getDefaultPropertyNameResolver());
 		manipulateOptionsBuilder.sampleRegisteredArbitraryBuilder(this);
 	}
 
@@ -108,16 +108,16 @@ public class FixtureMonkey {
 			new AtomicInteger(),
 			manipulateOptions.getDefaultMonkeyExpressionFactory(),
 			traverser,
-			generateOptions.getDecomposedContainerValueFactory()
+			fixtureMonkeyOptions.getDecomposedContainerValueFactory()
 		);
 		return new DefaultArbitraryBuilder<>(
-			generateOptions,
+			fixtureMonkeyOptions,
 			rootProperty,
 			new ArbitraryResolver(
 				traverser,
 				manipulatorOptimizer,
 				monkeyManipulatorFactory,
-				generateOptions,
+				fixtureMonkeyOptions,
 				manipulateOptions,
 				monkeyContext
 			),
@@ -134,7 +134,7 @@ public class FixtureMonkey {
 			new AtomicInteger(),
 			manipulateOptions.getDefaultMonkeyExpressionFactory(),
 			traverser,
-			generateOptions.getDecomposedContainerValueFactory()
+			fixtureMonkeyOptions.getDecomposedContainerValueFactory()
 		);
 		ArbitraryBuilderContext context = new ArbitraryBuilderContext();
 
@@ -143,13 +143,13 @@ public class FixtureMonkey {
 		context.addManipulator(arbitraryManipulator);
 
 		return new DefaultArbitraryBuilder<>(
-			generateOptions,
+			fixtureMonkeyOptions,
 			new RootProperty(new LazyAnnotatedType<>(() -> value)),
 			new ArbitraryResolver(
 				traverser,
 				manipulatorOptimizer,
 				monkeyManipulatorFactory,
-				generateOptions,
+				fixtureMonkeyOptions,
 				manipulateOptions,
 				monkeyContext
 			),

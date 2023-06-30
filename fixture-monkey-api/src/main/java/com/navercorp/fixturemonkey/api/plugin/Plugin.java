@@ -21,10 +21,16 @@ package com.navercorp.fixturemonkey.api.plugin;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptionsBuilder;
 import com.navercorp.fixturemonkey.api.option.GenerateOptionsBuilder;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 @FunctionalInterface
 public interface Plugin {
+	@Deprecated
 	void accept(GenerateOptionsBuilder optionsBuilder);
+
+	default void accept(FixtureMonkeyOptionsBuilder fixtureMonkeyOptionsBuilder) {
+		accept((GenerateOptionsBuilder)fixtureMonkeyOptionsBuilder);
+	}
 }

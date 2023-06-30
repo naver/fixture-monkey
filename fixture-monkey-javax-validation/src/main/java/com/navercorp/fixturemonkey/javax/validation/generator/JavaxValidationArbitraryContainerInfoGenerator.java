@@ -33,7 +33,7 @@ import org.apiguardian.api.API.Status;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfoGenerator;
 import com.navercorp.fixturemonkey.api.generator.ContainerPropertyGeneratorContext;
-import com.navercorp.fixturemonkey.api.option.GenerateOptions;
+import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class JavaxValidationArbitraryContainerInfoGenerator implements ArbitraryContainerInfoGenerator {
@@ -57,7 +57,7 @@ public final class JavaxValidationArbitraryContainerInfoGenerator implements Arb
 			if (size.max() != Integer.MAX_VALUE) {    // not initialized for preventing OOM
 				max = size.max();
 			} else {
-				max = min + GenerateOptions.DEFAULT_ARBITRARY_CONTAINER_MAX_SIZE;
+				max = min + FixtureMonkeyOptions.DEFAULT_ARBITRARY_CONTAINER_MAX_SIZE;
 			}
 		}
 
@@ -74,7 +74,7 @@ public final class JavaxValidationArbitraryContainerInfoGenerator implements Arb
 		}
 
 		if (max == null) {
-			max = min + GenerateOptions.DEFAULT_ARBITRARY_CONTAINER_MAX_SIZE;
+			max = min + FixtureMonkeyOptions.DEFAULT_ARBITRARY_CONTAINER_MAX_SIZE;
 		}
 
 		return new ArbitraryContainerInfo(min, max);

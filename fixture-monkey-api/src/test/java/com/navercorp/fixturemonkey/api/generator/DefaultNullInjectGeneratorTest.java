@@ -28,7 +28,7 @@ import javax.validation.constraints.NotNull;
 
 import org.junit.jupiter.api.Test;
 
-import com.navercorp.fixturemonkey.api.option.GenerateOptions;
+import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.PropertyCache;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
@@ -47,7 +47,7 @@ class DefaultNullInjectGeneratorTest {
 			null,
 			null,
 			false,
-			GenerateOptions.DEFAULT_GENERATE_OPTIONS
+			FixtureMonkeyOptions.DEFAULT_GENERATE_OPTIONS
 		);
 
 		// when
@@ -68,7 +68,7 @@ class DefaultNullInjectGeneratorTest {
 			null,
 			null,
 			false,
-			GenerateOptions.DEFAULT_GENERATE_OPTIONS
+			FixtureMonkeyOptions.DEFAULT_GENERATE_OPTIONS
 		);
 
 		// when
@@ -89,7 +89,7 @@ class DefaultNullInjectGeneratorTest {
 			null,
 			null,
 			false,
-			GenerateOptions.DEFAULT_GENERATE_OPTIONS
+			FixtureMonkeyOptions.DEFAULT_GENERATE_OPTIONS
 		);
 
 		// when
@@ -117,7 +117,7 @@ class DefaultNullInjectGeneratorTest {
 			null,
 			null,
 			false,
-			GenerateOptions.DEFAULT_GENERATE_OPTIONS
+			FixtureMonkeyOptions.DEFAULT_GENERATE_OPTIONS
 		);
 
 		// when
@@ -145,7 +145,7 @@ class DefaultNullInjectGeneratorTest {
 			null,
 			null,
 			false,
-			GenerateOptions.DEFAULT_GENERATE_OPTIONS
+			FixtureMonkeyOptions.DEFAULT_GENERATE_OPTIONS
 		);
 
 		// when
@@ -166,7 +166,7 @@ class DefaultNullInjectGeneratorTest {
 			null,
 			null,
 			false,
-			GenerateOptions.DEFAULT_GENERATE_OPTIONS
+			FixtureMonkeyOptions.DEFAULT_GENERATE_OPTIONS
 		);
 
 		// when
@@ -194,7 +194,7 @@ class DefaultNullInjectGeneratorTest {
 			null,
 			null,
 			true,
-			GenerateOptions.DEFAULT_GENERATE_OPTIONS
+			FixtureMonkeyOptions.DEFAULT_GENERATE_OPTIONS
 		);
 
 		// when
@@ -222,7 +222,7 @@ class DefaultNullInjectGeneratorTest {
 			null,
 			null,
 			true,
-			GenerateOptions.DEFAULT_GENERATE_OPTIONS
+			FixtureMonkeyOptions.DEFAULT_GENERATE_OPTIONS
 		);
 
 		// when

@@ -40,7 +40,7 @@ import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.SingleValueObjectPropertyGenerator;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
-import com.navercorp.fixturemonkey.api.option.GenerateOptions;
+import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
 import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.random.Randoms;
@@ -48,10 +48,10 @@ import com.navercorp.fixturemonkey.customizer.ContainerInfoManipulator;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class ArbitraryTraverser {
-	private final GenerateOptions generateOptions;
+	private final FixtureMonkeyOptions fixtureMonkeyOptions;
 
-	public ArbitraryTraverser(GenerateOptions generateOptions) {
-		this.generateOptions = generateOptions;
+	public ArbitraryTraverser(FixtureMonkeyOptions fixtureMonkeyOptions) {
+		this.fixtureMonkeyOptions = fixtureMonkeyOptions;
 	}
 
 	public ObjectNode traverse(
@@ -60,14 +60,14 @@ public final class ArbitraryTraverser {
 		List<MatcherOperator<List<ContainerInfoManipulator>>> registeredContainerInfoManipulators
 	) {
 		ContainerPropertyGenerator containerPropertyGenerator =
-			this.generateOptions.getContainerPropertyGenerator(property);
+			this.fixtureMonkeyOptions.getContainerPropertyGenerator(property);
 		boolean container = containerPropertyGenerator != null;
 
 		ObjectPropertyGenerator objectPropertyGenerator;
 		if (container) {
 			objectPropertyGenerator = SingleValueObjectPropertyGenerator.INSTANCE;
 		} else {
-			objectPropertyGenerator = this.generateOptions.getObjectPropertyGenerator(property);
+			objectPropertyGenerator = this.fixtureMonkeyOptions.getObjectPropertyGenerator(property);
 		}
 
 		ObjectProperty objectProperty = objectPropertyGenerator.generate(
@@ -76,7 +76,7 @@ public final class ArbitraryTraverser {
 				null,
 				null,
 				container,
-				this.generateOptions
+				this.fixtureMonkeyOptions
 			)
 		);
 
@@ -93,7 +93,7 @@ public final class ArbitraryTraverser {
 					property,
 					null,
 					containerInfo,
-					generateOptions
+					fixtureMonkeyOptions
 				)
 			);
 		}
@@ -187,14 +187,14 @@ public final class ArbitraryTraverser {
 			Property childProperty = childProperties.get(sequence);
 
 			ContainerPropertyGenerator containerPropertyGenerator =
-				this.generateOptions.getContainerPropertyGenerator(childProperty);
+				this.fixtureMonkeyOptions.getContainerPropertyGenerator(childProperty);
 			boolean childContainer = containerPropertyGenerator != null;
 
 			ObjectPropertyGenerator objectPropertyGenerator;
 			if (childContainer) {
 				objectPropertyGenerator = SingleValueObjectPropertyGenerator.INSTANCE;
 			} else {
-				objectPropertyGenerator = this.generateOptions.getObjectPropertyGenerator(childProperty);
+				objectPropertyGenerator = this.fixtureMonkeyOptions.getObjectPropertyGenerator(childProperty);
 			}
 
 			int index = sequence;
@@ -208,7 +208,7 @@ public final class ArbitraryTraverser {
 					container ? index : null,
 					parentArbitraryProperty,
 					childContainer,
-					this.generateOptions
+					this.fixtureMonkeyOptions
 				)
 			);
 
@@ -230,7 +230,7 @@ public final class ArbitraryTraverser {
 						childProperty,
 						container ? index : null,
 						containerInfo,
-						generateOptions
+						fixtureMonkeyOptions
 					)
 				);
 			}

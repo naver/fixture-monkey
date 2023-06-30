@@ -23,7 +23,7 @@ import javax.annotation.Nullable;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.api.option.GenerateOptions;
+import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
 
@@ -37,18 +37,18 @@ public final class ContainerPropertyGeneratorContext {
 	@Nullable
 	private final ArbitraryContainerInfo containerInfo;
 
-	private final GenerateOptions generateOptions;
+	private final FixtureMonkeyOptions fixtureMonkeyOptions;
 
 	public ContainerPropertyGeneratorContext(
 		Property property,
 		@Nullable Integer elementIndex,
 		@Nullable ArbitraryContainerInfo containerInfo,
-		GenerateOptions generateOptions
+		FixtureMonkeyOptions fixtureMonkeyOptions
 	) {
 		this.property = property;
 		this.elementIndex = elementIndex;
 		this.containerInfo = containerInfo;
-		this.generateOptions = generateOptions;
+		this.fixtureMonkeyOptions = fixtureMonkeyOptions;
 	}
 
 	public Property getProperty() {
@@ -60,8 +60,8 @@ public final class ContainerPropertyGeneratorContext {
 		return elementIndex;
 	}
 
-	public GenerateOptions getGenerateOptions() {
-		return generateOptions;
+	public FixtureMonkeyOptions getFixtureMonkeyOptions() {
+		return fixtureMonkeyOptions;
 	}
 
 	@Nullable
