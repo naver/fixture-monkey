@@ -23,18 +23,13 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.function.Function;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.api.container.DecomposableJavaContainer;
 import com.navercorp.fixturemonkey.api.container.DecomposedContainerValueFactory;
-import com.navercorp.fixturemonkey.api.container.DefaultDecomposedContainerValueFactory;
 import com.navercorp.fixturemonkey.api.context.MonkeyContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfoGenerator;
 import com.navercorp.fixturemonkey.api.generator.ContainerPropertyGenerator;
@@ -72,7 +67,6 @@ import com.navercorp.fixturemonkey.tree.ArbitraryTraverser;
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public class FixtureMonkeyBuilder {
 	private final FixtureMonkeyOptionsBuilder fixtureMonkeyOptionsBuilder = FixtureMonkeyOptions.builder();
-	private final Map<Class<?>, DecomposedContainerValueFactory> decomposableContainerFactoryMap = new HashMap<>();
 	private final List<MatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>>>
 		registeredArbitraryBuilders = new ArrayList<>();
 	private ManipulatorOptimizer manipulatorOptimizer = new NoneManipulatorOptimizer();
@@ -495,28 +489,6 @@ public class FixtureMonkeyBuilder {
 	}
 
 	public FixtureMonkey build() {
-		fixtureMonkeyOptionsBuilder.decomposedContainerValueFactory(
-			new DefaultDecomposedContainerValueFactory(
-				obj -> {
-					Class<?> actualType = obj.getClass();
-					for (
-						Entry<Class<?>, DecomposedContainerValueFactory> entry :
-						this.decomposableContainerFactoryMap.entrySet()
-					) {
-						Class<?> type = entry.getKey();
-						DecomposableJavaContainer decomposedValue = entry.getValue().from(obj);
-
-						if (actualType.isAssignableFrom(type)) {
-							return decomposedValue;
-						}
-					}
-					throw new IllegalArgumentException(
-						"given type is not supported container : " + obj.getClass().getTypeName()
-					);
-				}
-			)
-		);
-
 		FixtureMonkeyOptions fixtureMonkeyOptions = fixtureMonkeyOptionsBuilder.build();
 		ArbitraryTraverser traverser = new ArbitraryTraverser(fixtureMonkeyOptions);
 

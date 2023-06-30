@@ -18,8 +18,8 @@
 
 package com.navercorp.fixturemonkey.kotlin.introspector
 
+import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext
-import com.navercorp.fixturemonkey.api.generator.ContainerCombinableArbitrary
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult
 import com.navercorp.fixturemonkey.api.matcher.AssignableTypeMatcher
@@ -57,9 +57,9 @@ class PairIntrospector : ArbitraryIntrospector, Matcher {
         }
 
         return ArbitraryIntrospectorResult(
-            ContainerCombinableArbitrary(
-                elementCombinableArbitraryList
-            ) { elements -> Pair(elements[0], elements[1]) }
+            CombinableArbitrary.containerBuilder()
+                .elements(elementCombinableArbitraryList)
+                .build { Pair(it[0], it[1]) }
         )
     }
 }

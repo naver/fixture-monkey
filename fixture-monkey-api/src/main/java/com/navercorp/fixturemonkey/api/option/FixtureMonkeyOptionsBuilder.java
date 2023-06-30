@@ -475,6 +475,13 @@ public final class FixtureMonkeyOptionsBuilder {
 	}
 
 	public FixtureMonkeyOptionsBuilder decomposedContainerValueFactory(
+		DecomposedContainerValueFactory decomposedContainerValueFactory
+	) {
+		this.decomposedContainerValueFactory = decomposedContainerValueFactory;
+		return this;
+	}
+
+	public FixtureMonkeyOptionsBuilder addDecomposedContainerValueFactory(
 		Class<?> type,
 		DecomposedContainerValueFactory additionalDecomposedContainerValueFactory
 	) {
@@ -529,7 +536,7 @@ public final class FixtureMonkeyOptionsBuilder {
 							return decomposedValue;
 						}
 					}
-					return this.defaultDecomposedContainerValueFactory.from(obj);
+					return this.decomposedContainerValueFactory.from(obj);
 				}
 		);
 
@@ -548,7 +555,7 @@ public final class FixtureMonkeyOptionsBuilder {
 			this.arbitraryGenerators,
 			defaultArbitraryGenerator,
 			this.defaultArbitraryValidator,
-			this.decomposedContainerValueFactory
+			decomposedContainerValueFactory
 		);
 	}
 

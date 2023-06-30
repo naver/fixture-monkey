@@ -1,7 +1,7 @@
 package com.navercorp.fixturemonkey.kotlin.introspector
 
+import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext
-import com.navercorp.fixturemonkey.api.generator.ContainerCombinableArbitrary
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult
 import com.navercorp.fixturemonkey.api.matcher.AssignableTypeMatcher
@@ -17,7 +17,9 @@ class TripleIntrospector : ArbitraryIntrospector, Matcher {
         AssignableTypeMatcher(Triple::class.java).match(property) && TripleGenericTypeMatcher().match(property)
     }
 
-    override fun match(property: Property?): Boolean { return MATCHER.match(property) }
+    override fun match(property: Property?): Boolean {
+        return MATCHER.match(property)
+    }
 
     override fun introspect(context: ArbitraryGeneratorContext): ArbitraryIntrospectorResult {
         val property = context.arbitraryProperty
@@ -37,9 +39,9 @@ class TripleIntrospector : ArbitraryIntrospector, Matcher {
         }
 
         return ArbitraryIntrospectorResult(
-            ContainerCombinableArbitrary(
-                elementCombinableArbitraryList
-            ) { elements -> Triple(elements[0], elements[1], elements[2]) }
+            CombinableArbitrary.containerBuilder()
+                .elements(elementCombinableArbitraryList)
+                .build { Triple(it[0], it[1], it[2]) }
         )
     }
 }
