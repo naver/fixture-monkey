@@ -25,11 +25,12 @@ import java.util.stream.Stream;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import com.navercorp.fixturemonkey.ArbitraryBuilder;
+import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.context.MonkeyContext;
-import com.navercorp.fixturemonkey.api.generator.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
-import com.navercorp.fixturemonkey.api.option.GenerateOptions;
+import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
 import com.navercorp.fixturemonkey.customizer.ArbitraryManipulator;
 import com.navercorp.fixturemonkey.customizer.ContainerInfoManipulator;
@@ -42,24 +43,24 @@ public final class ArbitraryResolver {
 	private final ArbitraryTraverser traverser;
 	private final ManipulatorOptimizer manipulatorOptimizer;
 	private final MonkeyManipulatorFactory monkeyManipulatorFactory;
-	private final GenerateOptions generateOptions;
-	private final ManipulateOptions manipulateOptions;
+	private final FixtureMonkeyOptions fixtureMonkeyOptions;
 	private final MonkeyContext monkeyContext;
+	private final List<MatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuilders;
 
 	public ArbitraryResolver(
 		ArbitraryTraverser traverser,
 		ManipulatorOptimizer manipulatorOptimizer,
 		MonkeyManipulatorFactory monkeyManipulatorFactory,
-		GenerateOptions generateOptions,
-		ManipulateOptions manipulateOptions,
-		MonkeyContext monkeyContext
+		FixtureMonkeyOptions fixtureMonkeyOptions,
+		MonkeyContext monkeyContext,
+		List<MatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuilders
 	) {
 		this.traverser = traverser;
 		this.manipulatorOptimizer = manipulatorOptimizer;
 		this.monkeyManipulatorFactory = monkeyManipulatorFactory;
-		this.generateOptions = generateOptions;
-		this.manipulateOptions = manipulateOptions;
+		this.fixtureMonkeyOptions = fixtureMonkeyOptions;
 		this.monkeyContext = monkeyContext;
+		this.registeredArbitraryBuilders = registeredArbitraryBuilders;
 	}
 
 	public CombinableArbitrary resolve(
@@ -68,8 +69,7 @@ public final class ArbitraryResolver {
 		List<ContainerInfoManipulator> containerInfoManipulators
 	) {
 		List<MatcherOperator<List<ContainerInfoManipulator>>> registeredContainerInfoManipulators =
-			manipulateOptions.getRegisteredArbitraryBuilders()
-				.stream()
+			registeredArbitraryBuilders.stream()
 				.map(it -> new MatcherOperator<>(
 					it.getMatcher(),
 					((DefaultArbitraryBuilder<?>)it.getOperator()).getContext().getContainerInfoManipulators()
@@ -83,12 +83,12 @@ public final class ArbitraryResolver {
 				containerInfoManipulators,
 				registeredContainerInfoManipulators
 			),
-			generateOptions,
+			fixtureMonkeyOptions,
 			monkeyContext
 		);
 
 		List<ArbitraryManipulator> registeredManipulators = monkeyManipulatorFactory.newRegisteredArbitraryManipulators(
-			manipulateOptions.getRegisteredArbitraryBuilders(),
+			registeredArbitraryBuilders,
 			objectTree.getMetadata().getNodesByProperty()
 		);
 

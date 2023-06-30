@@ -25,12 +25,10 @@ import java.util.Objects;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
-import com.navercorp.fixturemonkey.api.generator.CombinableArbitrary;
-import com.navercorp.fixturemonkey.api.generator.ContainerCombinableArbitrary;
 import com.navercorp.fixturemonkey.api.generator.ContainerProperty;
-import com.navercorp.fixturemonkey.api.generator.FixedCombinableArbitrary;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty;
 import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty.MapEntryElementType;
@@ -59,10 +57,10 @@ public final class MapEntryElementIntrospector implements ArbitraryIntrospector,
 
 		List<CombinableArbitrary> entryCombinableArbitraryList = new ArrayList<>();
 		CombinableArbitrary keyCombinableArbitrary = elementCombinableArbitraryList.get(0);
-		if (!(elementCombinableArbitraryList.get(0) instanceof FixedCombinableArbitrary)) {
+		if (!elementCombinableArbitraryList.get(0).fixed()) {
 			keyCombinableArbitrary = keyCombinableArbitrary.filter(
 				obj -> context.isUniqueAndCheck(
-					Objects.requireNonNull(context.getOwnerContext()).getPathProperty(),
+					Objects.requireNonNull(context.getOwnerContext()).getPropertyPath(),
 					obj
 				)
 			);
@@ -72,15 +70,16 @@ public final class MapEntryElementIntrospector implements ArbitraryIntrospector,
 		entryCombinableArbitraryList.add(valueCombinableArbitrary);
 
 		return new ArbitraryIntrospectorResult(
-			new ContainerCombinableArbitrary(
-				entryCombinableArbitraryList,
-				elements -> {
-					MapEntryElementType elementType = new MapEntryElementType();
-					elementType.setKey(elements.get(0));
-					elementType.setValue(elements.get(1));
-					return elementType;
-				}
-			)
+			CombinableArbitrary.containerBuilder()
+				.elements(entryCombinableArbitraryList)
+				.build(this::combine)
 		);
+	}
+
+	private Object combine(List<Object> elements) {
+		MapEntryElementType elementType = new MapEntryElementType();
+		elementType.setKey(elements.get(0));
+		elementType.setValue(elements.get(1));
+		return elementType;
 	}
 }

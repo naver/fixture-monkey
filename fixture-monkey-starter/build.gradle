@@ -10,6 +10,7 @@ plugins {
 dependencies {
     api(project(":fixture-monkey"))
     api(project(":fixture-monkey-engine"))
+    api(project(":fixture-monkey-jakarta-validation"))
     api("ch.qos.logback:logback-classic:1.2.9")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:${JUNIT_JUPITER_VERSION}")

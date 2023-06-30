@@ -16,15 +16,15 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.api.plugin;
+package com.navercorp.fixturemonkey.tests.java;
 
-import org.apiguardian.api.API;
-import org.apiguardian.api.API.Status;
+import lombok.Value;
 
-import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptionsBuilder;
+class ImmutableMixedIntrospectorsTypeSpecs {
+	@Value
+	public static class MixedJavaTypeObject {
+		ImmutableJavaTestSpecs.JavaTypeObject object;
+		NoArgsConstructorJavaTestSpecs.JavaTypeObject object2;
 
-@API(since = "0.4.0", status = Status.MAINTAINED)
-@FunctionalInterface
-public interface Plugin {
-	void accept(FixtureMonkeyOptionsBuilder optionsBuilder);
+	}
 }

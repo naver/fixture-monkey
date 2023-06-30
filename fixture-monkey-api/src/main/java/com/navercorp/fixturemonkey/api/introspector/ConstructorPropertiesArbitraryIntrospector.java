@@ -25,12 +25,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.function.Function;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
-import com.navercorp.fixturemonkey.api.generator.ObjectCombinableArbitrary;
+import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.type.Reflections;
 import com.navercorp.fixturemonkey.api.type.TypeCache;
@@ -57,33 +59,40 @@ public final class ConstructorPropertiesArbitraryIntrospector implements Arbitra
 
 		Constructor<?> primaryConstructor = parameterNamesByConstructor.getKey();
 		String[] parameterNames = parameterNamesByConstructor.getValue();
-		int parameterSize = parameterNames.length;
 
 		return new ArbitraryIntrospectorResult(
-			new ObjectCombinableArbitrary(
-				context.getCombinableArbitrariesByArbitraryProperty(),
-				propertyValuesByArbitraryProperty -> {
-					Map<String, Object> valuesByResolvedName = new HashMap<>();
-
-					propertyValuesByArbitraryProperty.forEach(
-						(key, value) -> valuesByResolvedName.put(
-							key.getObjectProperty().getResolvedPropertyName(),
-							value)
-					);
-
-					List<Object> list = new ArrayList<>(parameterSize);
-
-					for (String parameterName : parameterNames) {
-						Object combined = valuesByResolvedName.getOrDefault(
-							parameterName,
-							null
-						);
-
-						list.add(combined);
-					}
-					return Reflections.newInstance(primaryConstructor, list.toArray());
-				}
-			)
+			CombinableArbitrary.objectBuilder()
+				.properties(context.getCombinableArbitrariesByArbitraryProperty())
+				.build(combine(primaryConstructor, parameterNames))
 		);
+	}
+
+	private static Function<Map<ArbitraryProperty, Object>, Object> combine(
+		Constructor<?> primaryConstructor,
+		String[] parameterNames
+	) {
+		int parameterSize = parameterNames.length;
+
+		return propertyValuesByArbitraryProperty -> {
+			Map<String, Object> valuesByResolvedName = new HashMap<>();
+
+			propertyValuesByArbitraryProperty.forEach(
+				(key, value) -> valuesByResolvedName.put(
+					key.getObjectProperty().getResolvedPropertyName(),
+					value)
+			);
+
+			List<Object> list = new ArrayList<>(parameterSize);
+
+			for (String parameterName : parameterNames) {
+				Object combined = valuesByResolvedName.getOrDefault(
+					parameterName,
+					null
+				);
+
+				list.add(combined);
+			}
+			return Reflections.newInstance(primaryConstructor, list.toArray());
+		};
 	}
 }

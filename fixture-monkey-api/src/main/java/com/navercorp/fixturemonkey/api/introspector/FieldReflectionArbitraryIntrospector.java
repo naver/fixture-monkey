@@ -27,10 +27,9 @@ import org.apiguardian.api.API.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
-import com.navercorp.fixturemonkey.api.generator.CombinableArbitrary;
-import com.navercorp.fixturemonkey.api.generator.LazyCombinableArbitrary;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.type.Reflections;
@@ -91,6 +90,6 @@ public final class FieldReflectionArbitraryIntrospector implements ArbitraryIntr
 				return instance;
 			}
 		);
-		return new ArbitraryIntrospectorResult(new LazyCombinableArbitrary(generateArbitrary));
+		return new ArbitraryIntrospectorResult(CombinableArbitrary.from(generateArbitrary));
 	}
 }

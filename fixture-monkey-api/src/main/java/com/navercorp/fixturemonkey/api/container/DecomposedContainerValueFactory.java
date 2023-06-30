@@ -16,13 +16,21 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.resolver;
+package com.navercorp.fixturemonkey.api.container;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-@API(since = "0.4.0", status = Status.MAINTAINED)
+/**
+ * Generate a {@link DecomposableJavaContainer} from the container.
+ */
+@API(since = "0.6.0", status = Status.EXPERIMENTAL)
 @FunctionalInterface
 public interface DecomposedContainerValueFactory {
-	DecomposableContainerValue from(Object object);
+	/**
+	 * Generates a {@link DecomposableJavaContainer} from the {@code container}.
+	 * @param container to be converted into {@link DecomposableJavaContainer}
+	 * @return DecomposableJavaContainer
+	 */
+	DecomposableJavaContainer from(Object container);
 }

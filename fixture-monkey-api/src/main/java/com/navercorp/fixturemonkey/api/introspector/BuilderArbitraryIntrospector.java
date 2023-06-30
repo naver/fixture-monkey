@@ -26,10 +26,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apiguardian.api.API;
 
+import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
-import com.navercorp.fixturemonkey.api.generator.CombinableArbitrary;
-import com.navercorp.fixturemonkey.api.generator.LazyCombinableArbitrary;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.api.property.CompositeProperty;
 import com.navercorp.fixturemonkey.api.property.FieldProperty;
@@ -115,7 +114,7 @@ public final class BuilderArbitraryIntrospector implements ArbitraryIntrospector
 				return Reflections.invokeMethod(buildMethod, builder);
 			}
 		);
-		return new ArbitraryIntrospectorResult(new LazyCombinableArbitrary(generateArbitrary));
+		return new ArbitraryIntrospectorResult(CombinableArbitrary.from(generateArbitrary));
 	}
 
 	public void setDefaultBuilderMethodName(String defaultBuilderMethodName) {

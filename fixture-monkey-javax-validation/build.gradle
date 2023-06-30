@@ -15,10 +15,10 @@ dependencies {
     api("net.jqwik:jqwik-time:${JQWIK_VERSION}")
     api("com.github.mifmif:generex:1.0.2")
     api("org.hibernate.validator:hibernate-validator:6.2.1.Final")
+    api("org.glassfish:jakarta.el:3.0.4")
 
     testRuntimeOnly(project(":fixture-monkey-engine"))
     testImplementation(project(":fixture-monkey"))
-    testImplementation("org.glassfish:jakarta.el:3.0.4")
     testImplementation("org.junit.jupiter:junit-jupiter-engine:${JUNIT_JUPITER_VERSION}")
     testImplementation("org.junit.platform:junit-platform-engine:${JUNIT_ENGINE_VERSION}")
     testImplementation("org.assertj:assertj-core:3.22.0")

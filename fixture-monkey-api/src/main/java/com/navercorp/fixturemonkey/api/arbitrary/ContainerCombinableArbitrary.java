@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.api.generator;
+package com.navercorp.fixturemonkey.api.arbitrary;
 
 import java.util.List;
 import java.util.function.Function;
@@ -29,11 +29,11 @@ import org.apiguardian.api.API.Status;
  * It combines given element {@link CombinableArbitrary} list into a container type {@link CombinableArbitrary}.
  */
 @API(since = "0.6.0", status = Status.EXPERIMENTAL)
-public final class ContainerCombinableArbitrary implements CombinableArbitrary {
+final class ContainerCombinableArbitrary implements CombinableArbitrary {
 	private final List<CombinableArbitrary> combinableArbitraryList;
 	private final Function<List<Object>, Object> combinator;
 
-	public ContainerCombinableArbitrary(
+	ContainerCombinableArbitrary(
 		List<CombinableArbitrary> combinableArbitraryList,
 		Function<List<Object>, Object> combinator
 	) {

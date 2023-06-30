@@ -16,26 +16,20 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.api.collection;
-
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+package com.navercorp.fixturemonkey.api.property;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-@API(since = "0.4.0", status = Status.MAINTAINED)
-public final class StreamCache {
-	private static final LruCache<Stream<?>, List<?>> STREAM_TO_LIST = new LruCache<>(2048);
-
-	public static List<?> getList(Stream<?> stream) {
-		if (STREAM_TO_LIST.containsKey(stream)) {
-			return STREAM_TO_LIST.get(stream);
-		}
-		List<?> list = stream.collect(Collectors.toList());
-		STREAM_TO_LIST.put(stream, list);
-		return list;
-	}
-
+/**
+ * An interface for finding the location of given property resides.
+ */
+@API(since = "0.6.0", status = Status.EXPERIMENTAL)
+@FunctionalInterface
+public interface Traceable {
+	/**
+	 * retrieves a PropertyPath to find the location.
+	 * @return a PropertyPath
+	 */
+	PropertyPath getPropertyPath();
 }

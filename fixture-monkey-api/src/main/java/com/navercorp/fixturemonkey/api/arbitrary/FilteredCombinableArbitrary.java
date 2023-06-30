@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.api.generator;
+package com.navercorp.fixturemonkey.api.arbitrary;
 
 import java.util.function.Predicate;
 
@@ -27,6 +27,8 @@ import net.jqwik.api.TooManyFilterMissesException;
 
 import com.navercorp.fixturemonkey.api.exception.FilterMissException;
 import com.navercorp.fixturemonkey.api.exception.ValidationFailedException;
+import com.navercorp.fixturemonkey.api.property.PropertyPath;
+import com.navercorp.fixturemonkey.api.property.Traceable;
 
 /**
  * It would generate an object satisfied given {@code predicate}.
@@ -34,7 +36,7 @@ import com.navercorp.fixturemonkey.api.exception.ValidationFailedException;
  * It would try {@link #FAILED_THRESHOLD} times when the parent {@link CombinableArbitrary} make it regenerate.
  */
 @API(since = "0.5.0", status = Status.MAINTAINED)
-public final class FilteredCombinableArbitrary implements CombinableArbitrary {
+final class FilteredCombinableArbitrary implements CombinableArbitrary {
 	private static final int FAILED_THRESHOLD = 3;
 
 	private final int maxMisses;
@@ -44,7 +46,7 @@ public final class FilteredCombinableArbitrary implements CombinableArbitrary {
 	private Exception lastException;
 	private int failureCount = 0;
 
-	public FilteredCombinableArbitrary(
+	FilteredCombinableArbitrary(
 		int maxMisses,
 		CombinableArbitrary combinableArbitrary,
 		Predicate<Object> predicate
@@ -76,6 +78,38 @@ public final class FilteredCombinableArbitrary implements CombinableArbitrary {
 			}
 		}
 		failureCount++;
+
+		if (lastException == null && combinableArbitrary instanceof FilteredCombinableArbitrary) {
+			lastException = ((FilteredCombinableArbitrary)combinableArbitrary).lastException;
+		}
+
+		if (lastException instanceof ValidationFailedException) {
+			String failedConcatProperties = String.join(", ",
+				((ValidationFailedException)lastException).getConstraintViolationPropertyNames());
+
+			throw new FilterMissException(
+				String.format("Given properties \"%s\" is not validated by annotations.", failedConcatProperties),
+				lastException
+			);
+		}
+
+		if (combinableArbitrary instanceof Traceable) {
+			PropertyPath propertyPath = ((Traceable)combinableArbitrary).getPropertyPath();
+			String generateType = propertyPath.getProperty().getType().getTypeName();
+			String expression = "".equals(propertyPath.getExpression())
+				? "$"
+				: propertyPath.getExpression();
+
+			throw new FilterMissException(
+				String.format(
+					"Generate type \"%s\" is failed due to property \"%s\".",
+					generateType,
+					expression
+				),
+				lastException
+			);
+		}
+
 		throw new FilterMissException(lastException);
 	}
 

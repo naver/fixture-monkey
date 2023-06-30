@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.api.collection;
+package com.navercorp.fixturemonkey.api.container;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -25,10 +25,20 @@ import java.util.List;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-@API(since = "0.4.0", status = Status.MAINTAINED)
+/**
+ * It is used for caching {@link Iterator}.
+ * It is necessary for using the elements of {@link Iterator} because {@link Iterator} could only be retrieved once.
+ */
+@API(since = "0.6.0", status = Status.EXPERIMENTAL)
 public final class IteratorCache {
 	private static final LruCache<Iterator<?>, List<?>> ITERATOR_TO_LIST = new LruCache<>(2048);
 
+	/**
+	 * Gets the elements of {@link Iterator} in an idempotent manner.
+	 *
+	 * @param iterator whose elements are needed
+	 * @return the elements of {@link Iterator}
+	 */
 	public static List<?> getList(Iterator<?> iterator) {
 		if (ITERATOR_TO_LIST.containsKey(iterator)) {
 			return ITERATOR_TO_LIST.get(iterator);

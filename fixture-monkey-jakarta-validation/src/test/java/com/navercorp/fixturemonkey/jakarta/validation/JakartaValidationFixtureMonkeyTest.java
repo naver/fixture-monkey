@@ -20,6 +20,7 @@ package com.navercorp.fixturemonkey.jakarta.validation;
 
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.assertj.core.api.BDDAssertions.thenNoException;
+import static org.assertj.core.api.BDDAssertions.thenThrownBy;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -42,6 +43,7 @@ import java.util.regex.Pattern;
 import net.jqwik.api.Property;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
+import com.navercorp.fixturemonkey.api.exception.FilterMissException;
 import com.navercorp.fixturemonkey.jakarta.validation.plugin.JakartaValidationPlugin;
 import com.navercorp.fixturemonkey.jakarta.validation.spec.BigDecimalIntrospectorSpec;
 import com.navercorp.fixturemonkey.jakarta.validation.spec.BigIntegerIntrospectorSpec;
@@ -471,5 +473,17 @@ class JakartaValidationFixtureMonkeyTest {
 		then(actual.getMaxSizeContainer()).hasSizeLessThanOrEqualTo(5);
 		then(actual.getNotEmptyContainer()).isNotEmpty();
 		then(actual.getNotEmptyAndMaxSizeContainer()).hasSizeBetween(1, 5);
+	}
+
+	@Property(tries = 1)
+	void logFailedProperties() {
+		thenThrownBy(
+			() -> SUT.giveMeBuilder(NullAnnotationIntrospectorSpec.class)
+				.setNull("notNull")
+				.setNull("notBlank")
+				.sample()
+		)
+			.isExactlyInstanceOf(FilterMissException.class)
+			.hasMessageContainingAll("notBlank", "notNull");
 	}
 }

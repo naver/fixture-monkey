@@ -29,9 +29,9 @@ import java.util.stream.Stream.Builder;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
-import com.navercorp.fixturemonkey.api.generator.ContainerCombinableArbitrary;
 import com.navercorp.fixturemonkey.api.generator.ContainerProperty;
 import com.navercorp.fixturemonkey.api.matcher.AssignableTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
@@ -60,16 +60,17 @@ public final class StreamIntrospector implements ArbitraryIntrospector, Matcher 
 		}
 
 		return new ArbitraryIntrospectorResult(
-			new ContainerCombinableArbitrary(
-				context.getElementCombinableArbitraryList(),
-				elements -> {
-					Builder<Object> builder = Stream.builder();
-					for (Object element : elements) {
-						builder = builder.add(element);
-					}
-					return builder.build();
-				}
-			)
+			CombinableArbitrary.containerBuilder()
+				.elements(context.getElementCombinableArbitraryList())
+				.build(this::combine)
 		);
+	}
+
+	private Object combine(List<Object> elements) {
+		Builder<Object> builder = Stream.builder();
+		for (Object element : elements) {
+			builder = builder.add(element);
+		}
+		return builder.build();
 	}
 }

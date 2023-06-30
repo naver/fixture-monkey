@@ -22,11 +22,15 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
+
+import javax.annotation.Nullable;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.customizer.ArbitraryManipulator;
 import com.navercorp.fixturemonkey.customizer.ContainerInfoManipulator;
 
@@ -37,18 +41,27 @@ public final class ArbitraryBuilderContext {
 
 	private boolean validOnly;
 
+	@Nullable
+	private FixedState fixedState = null;
+	@Nullable
+	private CombinableArbitrary fixedCombinableArbitrary;
+
 	public ArbitraryBuilderContext(
 		List<ArbitraryManipulator> manipulators,
 		List<ContainerInfoManipulator> containerInfoManipulators,
-		boolean validOnly
+		boolean validOnly,
+		@Nullable FixedState fixedState,
+		@Nullable CombinableArbitrary fixedCombinableArbitrary
 	) {
 		this.manipulators = manipulators;
 		this.containerInfoManipulators = containerInfoManipulators;
 		this.validOnly = validOnly;
+		this.fixedState = fixedState;
+		this.fixedCombinableArbitrary = fixedCombinableArbitrary;
 	}
 
 	public ArbitraryBuilderContext() {
-		this(new ArrayList<>(), new ArrayList<>(), true);
+		this(new ArrayList<>(), new ArrayList<>(), true, null, null);
 	}
 
 	public ArbitraryBuilderContext copy() {
@@ -59,7 +72,9 @@ public final class ArbitraryBuilderContext {
 		return new ArbitraryBuilderContext(
 			new ArrayList<>(this.manipulators),
 			copiedContainerInfoManipulators,
-			this.validOnly
+			this.validOnly,
+			fixedState,
+			fixedCombinableArbitrary
 		);
 	}
 
@@ -93,5 +108,53 @@ public final class ArbitraryBuilderContext {
 
 	public boolean isValidOnly() {
 		return validOnly;
+	}
+
+	public void markFixed() {
+		if (fixedState != null
+			&& fixedState.getFixedManipulateSize() == this.manipulators.size()
+			&& fixedState.getFixedContainerManipulatorSize() == this.containerInfoManipulators.size()) {
+			return;
+		}
+
+		fixedState = new FixedState(this.manipulators.size(), this.containerInfoManipulators.size());
+		fixedCombinableArbitrary = null;
+	}
+
+	public boolean isFixed() {
+		return fixedState != null;
+	}
+
+	public boolean fixedExpired() {
+		return manipulators.size() > Objects.requireNonNull(fixedState).getFixedManipulateSize()
+			|| containerInfoManipulators.size() > fixedState.getFixedContainerManipulatorSize();
+	}
+
+	public void renewFixed(CombinableArbitrary fixedCombinableArbitrary) {
+		this.markFixed();
+		this.fixedCombinableArbitrary = fixedCombinableArbitrary;
+	}
+
+	@Nullable
+	public CombinableArbitrary getFixedCombinableArbitrary() {
+		return fixedCombinableArbitrary;
+	}
+
+	private static class FixedState {
+		private final int fixedManipulateSize;
+		private final int fixedContainerManipulatorSize;
+
+		public FixedState(int fixedManipulateSize, int fixedContainerManipulatorSize) {
+			this.fixedManipulateSize = fixedManipulateSize;
+			this.fixedContainerManipulatorSize = fixedContainerManipulatorSize;
+		}
+
+		public int getFixedManipulateSize() {
+			return fixedManipulateSize;
+		}
+
+		public int getFixedContainerManipulatorSize() {
+			return fixedContainerManipulatorSize;
+		}
 	}
 }

@@ -23,7 +23,7 @@ import javax.annotation.Nullable;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.api.option.GenerateOptions;
+import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
@@ -40,20 +40,20 @@ public final class ObjectPropertyGeneratorContext {
 
 	private final boolean container;
 
-	private final GenerateOptions generateOptions;
+	private final FixtureMonkeyOptions fixtureMonkeyOptions;
 
 	public ObjectPropertyGeneratorContext(
 		Property property,
 		@Nullable Integer elementIndex,
 		@Nullable ArbitraryProperty ownerProperty,
 		boolean container,
-		GenerateOptions generateOptions
+		FixtureMonkeyOptions fixtureMonkeyOptions
 	) {
 		this.property = property;
 		this.elementIndex = elementIndex;
 		this.ownerProperty = ownerProperty;
 		this.container = container;
-		this.generateOptions = generateOptions;
+		this.fixtureMonkeyOptions = fixtureMonkeyOptions;
 	}
 
 	public Property getProperty() {
@@ -74,12 +74,12 @@ public final class ObjectPropertyGeneratorContext {
 		return this.container;
 	}
 
-	public GenerateOptions getGenerateOptions() {
-		return this.generateOptions;
+	public FixtureMonkeyOptions getFixtureMonkeyOptions() {
+		return fixtureMonkeyOptions;
 	}
 
 	public PropertyNameResolver getPropertyNameResolver() {
-		return this.generateOptions.getPropertyNameResolver(property);
+		return this.fixtureMonkeyOptions.getPropertyNameResolver(property);
 	}
 
 	public boolean isRootContext() {

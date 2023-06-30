@@ -31,14 +31,14 @@ import com.navercorp.fixturemonkey.api.validator.ArbitraryValidator;
  */
 @API(since = "0.6.0", status = Status.EXPERIMENTAL)
 public final class ValidationFailedException extends RuntimeException {
-	private final Set<String> constraintViolationMessages;
+	private final Set<String> constraintViolationPropertyNames;
 
-	public ValidationFailedException(String message, Set<String> constraintViolationMessages) {
+	public ValidationFailedException(String message, Set<String> constraintViolationPropertyNames) {
 		super(message);
-		this.constraintViolationMessages = constraintViolationMessages;
+		this.constraintViolationPropertyNames = constraintViolationPropertyNames;
 	}
 
-	public Set<String> getConstraintViolationMessages() {
-		return constraintViolationMessages;
+	public Set<String> getConstraintViolationPropertyNames() {
+		return constraintViolationPropertyNames;
 	}
 }

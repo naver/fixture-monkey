@@ -53,7 +53,7 @@ public final class SetContainerPropertyGenerator implements ContainerPropertyGen
 		Class<?> actualElementType = Types.getActualType(elementType.getType());
 
 		if (containerInfo == null) {
-			containerInfo = context.getGenerateOptions()
+			containerInfo = context.getFixtureMonkeyOptions()
 				.getArbitraryContainerInfoGenerator(property)
 				.generate(context);
 

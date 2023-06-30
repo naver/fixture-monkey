@@ -24,10 +24,9 @@ import java.util.List;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
-import com.navercorp.fixturemonkey.api.generator.CombinableArbitrary;
-import com.navercorp.fixturemonkey.api.generator.ContainerCombinableArbitrary;
 import com.navercorp.fixturemonkey.api.generator.ContainerProperty;
 import com.navercorp.fixturemonkey.api.matcher.AssignableTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
@@ -52,7 +51,9 @@ public final class ListIntrospector implements ArbitraryIntrospector, Matcher {
 
 		List<CombinableArbitrary> elementCombinableArbitraryList = context.getElementCombinableArbitraryList();
 		return new ArbitraryIntrospectorResult(
-			new ContainerCombinableArbitrary(elementCombinableArbitraryList, ArrayList::new)
+			CombinableArbitrary.containerBuilder()
+				.elements(elementCombinableArbitraryList)
+				.build(ArrayList::new)
 		);
 	}
 }

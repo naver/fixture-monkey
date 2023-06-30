@@ -31,14 +31,14 @@ import javax.annotation.Nullable;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
+import com.navercorp.fixturemonkey.api.container.DecomposableJavaContainer;
+import com.navercorp.fixturemonkey.api.container.DecomposedContainerValueFactory;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ContainerProperty;
-import com.navercorp.fixturemonkey.api.generator.FixedCombinableArbitrary;
 import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.type.Types;
-import com.navercorp.fixturemonkey.resolver.DecomposableContainerValue;
-import com.navercorp.fixturemonkey.resolver.DecomposedContainerValueFactory;
 import com.navercorp.fixturemonkey.tree.ArbitraryTraverser;
 import com.navercorp.fixturemonkey.tree.IdentityNodeResolver;
 import com.navercorp.fixturemonkey.tree.ObjectNode;
@@ -99,9 +99,9 @@ public final class NodeSetDecomposedValueManipulator<T> implements NodeManipulat
 
 		ContainerProperty containerProperty = objectNode.getArbitraryProperty().getContainerProperty();
 		if (containerProperty != null) {
-			DecomposableContainerValue decomposableContainerValue = decomposedContainerValueFactory.from(value);
-			Object containerValue = decomposableContainerValue.getContainer();
-			int decomposedContainerSize = decomposableContainerValue.getSize();
+			DecomposableJavaContainer decomposableJavaContainer = decomposedContainerValueFactory.from(value);
+			Object containerValue = decomposableJavaContainer.getJavaContainer();
+			int decomposedContainerSize = decomposableJavaContainer.getSize();
 
 			boolean forced = containerProperty.getContainerInfo().getManipulatingSequence() == null
 				|| sequence > containerProperty.getContainerInfo().getManipulatingSequence();
@@ -143,7 +143,7 @@ public final class NodeSetDecomposedValueManipulator<T> implements NodeManipulat
 
 		List<ObjectNode> children = objectNode.getChildren();
 		if (children.isEmpty() || Types.getActualType(objectNode.getProperty().getType()).isInterface()) {
-			objectNode.setArbitrary(new FixedCombinableArbitrary(value));
+			objectNode.setArbitrary(CombinableArbitrary.from(value));
 			return;
 		}
 

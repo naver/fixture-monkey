@@ -18,50 +18,43 @@
 
 package com.navercorp.fixturemonkey.kotlin.test
 
-import javax.validation.constraints.NotBlank
-import javax.validation.constraints.Positive
-
 class PrimaryConstructor(
     val intValue: Int,
-    @field:NotBlank
-    val stringValue: String
+    val stringValue: String,
 )
 
 class IntValue(
-    @field:Positive
-    val intValue: Int
+    val intValue: Int,
 )
 
 class Nested(
-    val nested: IntValue
+    val nested: IntValue,
 )
 
 data class DataValue(
     val intValue: Int,
-    val stringValue: String
+    val stringValue: String,
 )
 
 class VarValue(
     var intValue: Int,
-    var stringValue: String
+    var stringValue: String,
 )
 
 class NullableValue(
     val intValue: Int,
-    val stringValue: String?
+    val stringValue: String?,
 )
 
 class DefaultValue(
     val intValue: Int,
-    val stringValue: String = "default_value"
+    val stringValue: String = "default_value",
 )
 
 class SecondaryConstructor(
     val intValue: Int,
-    val stringValue: String
-) {
-    constructor(another: String) : this(0, "default_value")
-}
+    val stringValue: String,
+)
 
 interface InterfaceClass {
     fun test()

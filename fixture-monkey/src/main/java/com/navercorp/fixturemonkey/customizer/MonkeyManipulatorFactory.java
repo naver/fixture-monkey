@@ -36,6 +36,7 @@ import org.apiguardian.api.API.Status;
 import net.jqwik.api.Arbitrary;
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
+import com.navercorp.fixturemonkey.api.container.DecomposedContainerValueFactory;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
@@ -44,7 +45,6 @@ import com.navercorp.fixturemonkey.customizer.InnerSpecState.ManipulatorHolderSe
 import com.navercorp.fixturemonkey.customizer.Values.Just;
 import com.navercorp.fixturemonkey.expression.MonkeyExpressionFactory;
 import com.navercorp.fixturemonkey.resolver.ArbitraryBuilderContext;
-import com.navercorp.fixturemonkey.resolver.DecomposedContainerValueFactory;
 import com.navercorp.fixturemonkey.resolver.DefaultArbitraryBuilder;
 import com.navercorp.fixturemonkey.tree.ArbitraryTraverser;
 import com.navercorp.fixturemonkey.tree.NextNodePredicate;
@@ -104,14 +104,6 @@ public final class MonkeyManipulatorFactory {
 				new NodeFilterManipulator(type, filter),
 				limit
 			)
-		);
-	}
-
-	// TODO: temporary use
-	public ArbitraryManipulator newNotNullArbitraryManipulator(String expression) {
-		return new ArbitraryManipulator(
-			monkeyExpressionFactory.from(expression).toNodeResolver(),
-			new NodeNullityManipulator(false)
 		);
 	}
 

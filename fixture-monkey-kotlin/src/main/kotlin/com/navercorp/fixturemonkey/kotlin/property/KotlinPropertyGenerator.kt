@@ -18,7 +18,7 @@
 
 package com.navercorp.fixturemonkey.kotlin.property
 
-import com.navercorp.fixturemonkey.api.collection.LruCache
+import com.navercorp.fixturemonkey.api.container.LruCache
 import com.navercorp.fixturemonkey.api.property.CompositeProperty
 import com.navercorp.fixturemonkey.api.property.DefaultPropertyGenerator
 import com.navercorp.fixturemonkey.api.property.Property
