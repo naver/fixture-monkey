@@ -20,12 +20,21 @@ package com.navercorp.fixturemonkey.kotlin
 
 import com.navercorp.fixturemonkey.api.generator.InterfaceObjectPropertyGenerator
 import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGenerator
+import com.navercorp.fixturemonkey.api.introspector.CompositeArbitraryIntrospector
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator
 import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptionsBuilder
 import com.navercorp.fixturemonkey.api.plugin.Plugin
 import com.navercorp.fixturemonkey.api.type.Types
 import com.navercorp.fixturemonkey.kotlin.generator.InterfaceKFunctionPropertyGenerator
+import com.navercorp.fixturemonkey.kotlin.generator.PairContainerPropertyGenerator
+import com.navercorp.fixturemonkey.kotlin.generator.PairDecomposedContainerValueFactory
+import com.navercorp.fixturemonkey.kotlin.generator.TripleContainerPropertyGenerator
+import com.navercorp.fixturemonkey.kotlin.generator.TripleDecomposedContainerValueFactory
+import com.navercorp.fixturemonkey.kotlin.introspector.PairIntrospector
 import com.navercorp.fixturemonkey.kotlin.introspector.PrimaryConstructorArbitraryIntrospector
+import com.navercorp.fixturemonkey.kotlin.introspector.TripleIntrospector
+import com.navercorp.fixturemonkey.kotlin.matcher.Matchers.PAIR_TYPE_MATCHER
+import com.navercorp.fixturemonkey.kotlin.matcher.Matchers.TRIPLE_TYPE_MATCHER
 import com.navercorp.fixturemonkey.kotlin.property.KotlinPropertyGenerator
 import org.apiguardian.api.API
 import org.apiguardian.api.API.Status.MAINTAINED
@@ -54,6 +63,31 @@ class KotlinPlugin : Plugin {
                     { p -> Modifier.isInterface(Types.getActualType(p.type).modifiers) },
                     InterfaceKFunctionPropertyGenerator(),
                 ),
+            )
+            .insertFirstArbitraryContainerPropertyGenerator(
+                PAIR_TYPE_MATCHER,
+                PairContainerPropertyGenerator()
+            )
+            .insertFirstArbitraryContainerPropertyGenerator(
+                TRIPLE_TYPE_MATCHER,
+                TripleContainerPropertyGenerator()
+            )
+            .containerIntrospector {
+                CompositeArbitraryIntrospector(
+                    listOf(
+                        PairIntrospector(),
+                        TripleIntrospector(),
+                        it
+                    )
+                )
+            }
+            .addDecomposedContainerValueFactory(
+                Pair::class.java,
+                PairDecomposedContainerValueFactory()
+            )
+            .addDecomposedContainerValueFactory(
+                Triple::class.java,
+                TripleDecomposedContainerValueFactory()
             )
     }
 }

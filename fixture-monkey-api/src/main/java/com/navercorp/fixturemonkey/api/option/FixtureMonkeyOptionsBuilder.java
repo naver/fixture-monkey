@@ -23,8 +23,10 @@ import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerat
 import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.DEFAULT_NULL_INJECT;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
@@ -33,6 +35,7 @@ import javax.annotation.Nullable;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import com.navercorp.fixturemonkey.api.container.DecomposableJavaContainer;
 import com.navercorp.fixturemonkey.api.container.DecomposedContainerValueFactory;
 import com.navercorp.fixturemonkey.api.container.DefaultDecomposedContainerValueFactory;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
@@ -92,6 +95,7 @@ public final class FixtureMonkeyOptionsBuilder {
 					"given type is not supported container : " + obj.getClass().getTypeName());
 			}
 		);
+	private final Map<Class<?>, DecomposedContainerValueFactory> decomposableContainerFactoryMap = new HashMap<>();
 
 	FixtureMonkeyOptionsBuilder() {
 	}
@@ -477,6 +481,14 @@ public final class FixtureMonkeyOptionsBuilder {
 		return this;
 	}
 
+	public FixtureMonkeyOptionsBuilder addDecomposedContainerValueFactory(
+		Class<?> type,
+		DecomposedContainerValueFactory additionalDecomposedContainerValueFactory
+	) {
+		decomposableContainerFactoryMap.put(type, additionalDecomposedContainerValueFactory);
+		return this;
+	}
+
 	public FixtureMonkeyOptions build() {
 		ObjectPropertyGenerator defaultObjectPropertyGenerator = defaultIfNull(
 			this.defaultObjectPropertyGenerator,
@@ -510,6 +522,24 @@ public final class FixtureMonkeyOptionsBuilder {
 		ArbitraryGenerator defaultArbitraryGenerator =
 			defaultIfNull(this.defaultArbitraryGenerator, this.javaDefaultArbitraryGeneratorBuilder::build);
 
+		DecomposedContainerValueFactory decomposedContainerValueFactory = new DefaultDecomposedContainerValueFactory(
+				obj -> {
+					Class<?> actualType = obj.getClass();
+					for (
+						Map.Entry<Class<?>, DecomposedContainerValueFactory> entry :
+						this.decomposableContainerFactoryMap.entrySet()
+					) {
+						Class<?> type = entry.getKey();
+						DecomposableJavaContainer decomposedValue = entry.getValue().from(obj);
+
+						if (actualType.isAssignableFrom(type)) {
+							return decomposedValue;
+						}
+					}
+					return this.decomposedContainerValueFactory.from(obj);
+				}
+		);
+
 		return new FixtureMonkeyOptions(
 			this.propertyGenerators,
 			this.defaultPropertyGenerator,
@@ -525,7 +555,7 @@ public final class FixtureMonkeyOptionsBuilder {
 			this.arbitraryGenerators,
 			defaultArbitraryGenerator,
 			this.defaultArbitraryValidator,
-			this.decomposedContainerValueFactory
+			decomposedContainerValueFactory
 		);
 	}
 
