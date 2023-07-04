@@ -31,7 +31,7 @@ import org.apiguardian.api.API.Status;
  */
 @API(since = "0.6.0", status = Status.EXPERIMENTAL)
 public final class IteratorCache {
-	private static final LruCache<Iterator<?>, List<?>> ITERATOR_TO_LIST = new LruCache<>(2048);
+	private static final ConcurrentLruCache<Iterator<?>, List<?>> ITERATOR_TO_LIST = new ConcurrentLruCache<>(2048);
 
 	/**
 	 * Gets the elements of {@link Iterator} in an idempotent manner.
