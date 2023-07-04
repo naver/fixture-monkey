@@ -63,7 +63,10 @@ public final class MonkeyStringArbitrary implements StringArbitrary {
 
 	@Override
 	public RandomGenerator<String> generator(int genSize) {
-		long maxUniqueChars = characterArbitrary.exhaustive(maxLength()).map(ExhaustiveGenerator::maxCount).orElse((long) maxLength());
+		long maxUniqueChars = characterArbitrary
+			.exhaustive(maxLength())
+			.map(ExhaustiveGenerator::maxCount)
+			.orElse((long)maxLength());
 		return RandomGenerators.strings(
 			randomCharacterGenerator(),
 			minLength, maxLength(), maxUniqueChars,
@@ -104,7 +107,8 @@ public final class MonkeyStringArbitrary implements StringArbitrary {
 		EdgeCases<String> fixedSizeEdgeCases =
 			hasMultiCharEdgeCases() ? fixedSizedEdgeCases(minLength, effectiveMaxEdgeCases) : EdgeCases.none();
 
-		return EdgeCasesSupport.concat(asList(singleCharEdgeCases, emptyStringEdgeCases, fixedSizeEdgeCases), maxEdgeCases);
+		return EdgeCasesSupport.concat(asList(singleCharEdgeCases, emptyStringEdgeCases, fixedSizeEdgeCases),
+			maxEdgeCases);
 	}
 
 	private boolean hasEmptyStringEdgeCase() {
@@ -120,14 +124,16 @@ public final class MonkeyStringArbitrary implements StringArbitrary {
 	}
 
 	private EdgeCases<String> emptyStringEdgeCase() {
-		return EdgeCases.fromSupplier(() -> new ShrinkableString(Collections.emptyList(), minLength, maxLength(), characterArbitrary));
+		return EdgeCases.fromSupplier(
+			() -> new ShrinkableString(Collections.emptyList(), minLength, maxLength(), characterArbitrary));
 	}
 
 	private EdgeCases<String> fixedSizedEdgeCases(int fixedSize, int maxEdgeCases) {
 		return EdgeCasesSupport.mapShrinkable(
 			effectiveCharacterArbitrary().edgeCases(maxEdgeCases),
 			shrinkableChar -> {
-				List<Shrinkable<Character>> shrinkableChars = new ArrayList<>(Collections.nCopies(fixedSize, shrinkableChar));
+				List<Shrinkable<Character>> shrinkableChars = new ArrayList<>(
+					Collections.nCopies(fixedSize, shrinkableChar));
 				return new ShrinkableString(shrinkableChars, minLength, maxLength(), characterArbitrary);
 			}
 		);
@@ -150,7 +156,8 @@ public final class MonkeyStringArbitrary implements StringArbitrary {
 			throw new IllegalArgumentException(message);
 		}
 		if (maxLength < minLength) {
-			String message = String.format("minLength (%s) must not be larger than maxLength (%s)", minLength, maxLength);
+			String message = String.format("minLength (%s) must not be larger than maxLength (%s)", minLength,
+				maxLength);
 			throw new IllegalArgumentException(message);
 		}
 
@@ -239,7 +246,7 @@ public final class MonkeyStringArbitrary implements StringArbitrary {
 			return false;
 		}
 
-		MonkeyStringArbitrary that = (MonkeyStringArbitrary) obj;
+		MonkeyStringArbitrary that = (MonkeyStringArbitrary)obj;
 		if (minLength != that.minLength) {
 			return false;
 		}
