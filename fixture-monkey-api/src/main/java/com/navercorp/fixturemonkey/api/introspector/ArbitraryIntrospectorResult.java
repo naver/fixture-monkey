@@ -32,6 +32,7 @@ import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class ArbitraryIntrospectorResult {
+	private static final Object LOCK = new Object();
 	public static final ArbitraryIntrospectorResult EMPTY = new ArbitraryIntrospectorResult(
 		CombinableArbitrary.from(new Object())
 	);
@@ -42,7 +43,9 @@ public final class ArbitraryIntrospectorResult {
 		this.value = CombinableArbitrary.from(LazyArbitrary.lazy(
 			() -> {
 				if (value != null) {
-					return value.sample();
+					synchronized (LOCK) {
+						return value.sample();
+					}
 				}
 				return null;
 			}
