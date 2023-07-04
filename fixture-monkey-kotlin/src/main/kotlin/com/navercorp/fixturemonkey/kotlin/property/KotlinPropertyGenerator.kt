@@ -18,7 +18,7 @@
 
 package com.navercorp.fixturemonkey.kotlin.property
 
-import com.navercorp.fixturemonkey.api.collection.LruCache
+import com.navercorp.fixturemonkey.api.container.ConcurrentLruCache
 import com.navercorp.fixturemonkey.api.generator.DefaultPropertyGenerator
 import com.navercorp.fixturemonkey.api.property.CompositeProperty
 import com.navercorp.fixturemonkey.api.property.Property
@@ -36,7 +36,7 @@ class KotlinPropertyGenerator(
     private val javaDelegatePropertyGenerator: com.navercorp.fixturemonkey.api.generator.PropertyGenerator =
         DefaultPropertyGenerator(),
 ) : PropertyGenerator {
-    private val objectChildPropertiesCache = LruCache<AnnotatedType, List<Property>>(2048)
+    private val objectChildPropertiesCache = ConcurrentLruCache<AnnotatedType, List<Property>>(2048)
 
     override fun generateChildProperties(annotatedType: AnnotatedType): List<Property> =
         objectChildPropertiesCache.computeIfAbsent(annotatedType) {

@@ -23,19 +23,19 @@ import java.util.TreeMap;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.api.collection.LruCache;
+import com.navercorp.fixturemonkey.api.container.ConcurrentLruCache;
 import com.navercorp.fixturemonkey.api.generator.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class MonkeyContext {
-	private final LruCache<Property, CombinableArbitrary> arbitrariesByProperty;
-	private final LruCache<RootProperty, MonkeyGeneratorContext> generatorContextByRootProperty;
+	private final ConcurrentLruCache<Property, CombinableArbitrary> arbitrariesByProperty;
+	private final ConcurrentLruCache<RootProperty, MonkeyGeneratorContext> generatorContextByRootProperty;
 
 	public MonkeyContext(
-		LruCache<Property, CombinableArbitrary> arbitrariesByProperty,
-		LruCache<RootProperty, MonkeyGeneratorContext> generatorContextByRootProperty
+		ConcurrentLruCache<Property, CombinableArbitrary> arbitrariesByProperty,
+		ConcurrentLruCache<RootProperty, MonkeyGeneratorContext> generatorContextByRootProperty
 	) {
 		this.arbitrariesByProperty = arbitrariesByProperty;
 		this.generatorContextByRootProperty = generatorContextByRootProperty;
