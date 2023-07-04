@@ -210,6 +210,7 @@ public final class MonkeyStringArbitrary implements StringArbitrary {
 	}
 
 	@Override
+	public StringArbitrary whitespace() {
 		this.characterArbitrary = this.characterArbitrary.whitespace();
 		return this;
 	}
