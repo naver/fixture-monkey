@@ -1455,4 +1455,22 @@ class FixtureMonkeyOptionsTest {
 
 		then(actual).isNotNull();
 	}
+
+	@Property
+	void filterWithMonkeyStringArbitrary() {
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.javaTypeArbitraryGenerator(
+				new JavaTypeArbitraryGenerator() {
+					@Override
+					public StringArbitrary strings() {
+						return new MonkeyStringArbitrary().filterCharacter(c -> Character.isUpperCase(c));
+					}
+				}
+			)
+			.build();
+
+		String actual = sut.giveMeOne(String.class);
+
+		then(actual).isUpperCase();
+	}
 }
