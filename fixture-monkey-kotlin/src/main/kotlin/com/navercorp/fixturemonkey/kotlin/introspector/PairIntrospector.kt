@@ -40,11 +40,11 @@ class PairIntrospector : ArbitraryIntrospector, Matcher {
         val property = context.arbitraryProperty
         val containerProperty = property.containerProperty
             ?: throw IllegalArgumentException(
-                "container property should not null. type: ${property.objectProperty.property.name}"
+                "container property should not null. type: ${property.objectProperty.property.name}",
             )
 
         if (containerProperty.containerInfo == null) {
-            return ArbitraryIntrospectorResult.EMPTY
+            return ArbitraryIntrospectorResult.NOT_INTROSPECTED
         }
 
         val elementCombinableArbitraryList = context.elementCombinableArbitraryList
@@ -56,7 +56,7 @@ class PairIntrospector : ArbitraryIntrospector, Matcher {
         return ArbitraryIntrospectorResult(
             CombinableArbitrary.containerBuilder()
                 .elements(elementCombinableArbitraryList)
-                .build { Pair(it[0], it[1]) }
+                .build { Pair(it[0], it[1]) },
         )
     }
 }

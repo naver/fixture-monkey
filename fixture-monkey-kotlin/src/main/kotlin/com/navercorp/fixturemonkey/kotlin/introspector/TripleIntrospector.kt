@@ -22,11 +22,11 @@ class TripleIntrospector : ArbitraryIntrospector, Matcher {
         val property = context.arbitraryProperty
         val containerProperty = property.containerProperty
             ?: throw IllegalArgumentException(
-                "container property should not null. type: ${property.objectProperty.property.name}"
+                "container property should not null. type: ${property.objectProperty.property.name}",
             )
 
         if (containerProperty.containerInfo == null) {
-            return ArbitraryIntrospectorResult.EMPTY
+            return ArbitraryIntrospectorResult.NOT_INTROSPECTED
         }
 
         val elementCombinableArbitraryList = context.elementCombinableArbitraryList
@@ -38,7 +38,7 @@ class TripleIntrospector : ArbitraryIntrospector, Matcher {
         return ArbitraryIntrospectorResult(
             CombinableArbitrary.containerBuilder()
                 .elements(elementCombinableArbitraryList)
-                .build { Triple(it[0], it[1], it[2]) }
+                .build { Triple(it[0], it[1], it[2]) },
         )
     }
 }

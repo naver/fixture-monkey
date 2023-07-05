@@ -35,6 +35,7 @@ import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
  */
 @API(since = "0.6.0", status = Status.EXPERIMENTAL)
 public interface CombinableArbitrary {
+	CombinableArbitrary NOT_GENERATED = CombinableArbitrary.from(null);
 	int MAX_TRIES = 1_000;
 
 	/**

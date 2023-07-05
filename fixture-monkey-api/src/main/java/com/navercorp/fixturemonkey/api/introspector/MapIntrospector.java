@@ -49,7 +49,7 @@ public final class MapIntrospector implements ArbitraryIntrospector, Matcher {
 		ArbitraryProperty arbitraryProperty = context.getArbitraryProperty();
 		ContainerProperty containerProperty = arbitraryProperty.getContainerProperty();
 		if (containerProperty == null || containerProperty.getContainerInfo() == null) {
-			return ArbitraryIntrospectorResult.EMPTY;
+			return ArbitraryIntrospectorResult.NOT_INTROSPECTED;
 		}
 
 		List<CombinableArbitrary> elementCombinableArbitraryList = context.getElementCombinableArbitraryList();

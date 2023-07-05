@@ -61,7 +61,7 @@ public final class OptionalIntrospector implements ArbitraryIntrospector, Matche
 		ArbitraryContainerInfo containerInfo = containerProperty.getContainerInfo();
 		List<ArbitraryProperty> children = context.getChildren();
 		if (containerInfo == null || children.size() != 1) {
-			return ArbitraryIntrospectorResult.EMPTY;
+			return ArbitraryIntrospectorResult.NOT_INTROSPECTED;
 		}
 
 		ArbitraryProperty valueProperty = children.get(0);

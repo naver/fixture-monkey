@@ -50,7 +50,7 @@ public final class SetIntrospector implements ArbitraryIntrospector, Matcher {
 		ArbitraryProperty arbitraryProperty = context.getArbitraryProperty();
 		ContainerProperty containerProperty = arbitraryProperty.getContainerProperty();
 		if (containerProperty == null || containerProperty.getContainerInfo() == null) {
-			return ArbitraryIntrospectorResult.EMPTY;
+			return ArbitraryIntrospectorResult.NOT_INTROSPECTED;
 		}
 
 		List<CombinableArbitrary> elementArbitraryList = context.getElementCombinableArbitraryList().stream()
