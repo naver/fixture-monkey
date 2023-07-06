@@ -110,7 +110,8 @@ public final class ObjectTree {
 
 				return generateIntrospected(node, currentContext);
 			},
-			monkeyGeneratorContext
+			monkeyGeneratorContext,
+			fixtureMonkeyOptions.getGenerateUniqueMaxTries()
 		);
 	}
 
@@ -145,7 +146,7 @@ public final class ObjectTree {
 
 		List<Predicate> arbitraryFilters = node.getArbitraryFilters();
 		for (Predicate predicate : arbitraryFilters) {
-			generated = generated.filter(predicate);
+			generated = generated.filter(fixtureMonkeyOptions.getGenerateMaxTries(), predicate);
 		}
 
 		return generated;

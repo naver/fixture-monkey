@@ -36,7 +36,9 @@ import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 @API(since = "0.6.0", status = Status.EXPERIMENTAL)
 public interface CombinableArbitrary {
 	CombinableArbitrary NOT_GENERATED = CombinableArbitrary.from(null);
+	@Deprecated
 	int MAX_TRIES = 1_000;
+	int DEFAULT_MAX_TRIES = MAX_TRIES;
 
 	/**
 	 * Generates a proper {@link CombinableArbitrary}.
@@ -100,7 +102,7 @@ public interface CombinableArbitrary {
 	 * @return A filtered {@link CombinableArbitrary}.
 	 */
 	default CombinableArbitrary filter(Predicate<Object> predicate) {
-		return filter(MAX_TRIES, predicate);
+		return filter(DEFAULT_MAX_TRIES, predicate);
 	}
 
 	/**

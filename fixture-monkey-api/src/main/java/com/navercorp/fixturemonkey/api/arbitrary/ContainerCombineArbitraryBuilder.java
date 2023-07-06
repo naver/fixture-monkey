@@ -27,6 +27,11 @@ import org.apiguardian.api.API.Status;
 
 @API(since = "0.6.0", status = Status.EXPERIMENTAL)
 public final class ContainerCombineArbitraryBuilder {
+	/**
+	 * Deprecated.
+	 * Use {@code FixtureMonkeyOptions.DEFAULT_MAX_UNIQUE_GENERATION_COUNT} instead.
+	 */
+	@Deprecated
 	public static final int DEFAULT_MAX_UNIQUE_GENERATION_COUNT = 1_000;
 
 	private final List<CombinableArbitrary> elementArbitraryList;
