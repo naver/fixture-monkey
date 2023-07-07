@@ -45,8 +45,10 @@ import net.jqwik.api.arbitraries.ShortArbitrary;
 import net.jqwik.api.arbitraries.StringArbitrary;
 import net.jqwik.web.api.Web;
 
+import com.navercorp.fixturemonkey.api.arbitrary.MonkeyStringArbitrary;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.introspector.JavaArbitraryResolver;
+import com.navercorp.fixturemonkey.api.introspector.JavaTypeArbitraryGenerator;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class JavaxValidationJavaArbitraryResolver implements JavaArbitraryResolver {
@@ -87,7 +89,12 @@ public final class JavaxValidationJavaArbitraryResolver implements JavaArbitrary
 			return Arbitraries.of(values);
 		}
 
-		Arbitrary<String> arbitrary;
+		JavaTypeArbitraryGenerator arbitraryGenerator = new JavaTypeArbitraryGenerator() {
+		};
+
+		Arbitrary<String> arbitrary = arbitraryGenerator.monkeyStrings()
+			.filterCharacter(c -> Character.isISOControl(c));
+
 		if (context.findAnnotation(Email.class).isPresent()) {
 			arbitrary = Web.emails().allowIpv4Host();
 			if (min != null) {

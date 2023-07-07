@@ -33,11 +33,17 @@ import net.jqwik.api.arbitraries.LongArbitrary;
 import net.jqwik.api.arbitraries.ShortArbitrary;
 import net.jqwik.api.arbitraries.StringArbitrary;
 
+import com.navercorp.fixturemonkey.api.arbitrary.MonkeyStringArbitrary;
+
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public interface JavaTypeArbitraryGenerator {
 
 	default StringArbitrary strings() {
-		return Arbitraries.strings();
+		return monkeyStrings();
+	}
+
+	default MonkeyStringArbitrary monkeyStrings() {
+		return new MonkeyStringArbitrary();
 	}
 
 	default CharacterArbitrary characters() {
