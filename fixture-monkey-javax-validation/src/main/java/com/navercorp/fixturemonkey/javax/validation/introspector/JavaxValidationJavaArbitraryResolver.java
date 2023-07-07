@@ -20,6 +20,7 @@ package com.navercorp.fixturemonkey.javax.validation.introspector;
 
 import static java.util.stream.Collectors.toList;
 
+import java.io.CharConversionException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.List;
@@ -45,6 +46,7 @@ import net.jqwik.api.arbitraries.ShortArbitrary;
 import net.jqwik.api.arbitraries.StringArbitrary;
 import net.jqwik.web.api.Web;
 
+import com.navercorp.fixturemonkey.api.arbitrary.MonkeyStringArbitrary;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.introspector.JavaArbitraryResolver;
 
@@ -87,7 +89,11 @@ public final class JavaxValidationJavaArbitraryResolver implements JavaArbitrary
 			return Arbitraries.of(values);
 		}
 
-		Arbitrary<String> arbitrary;
+		MonkeyStringArbitrary monkeyStringArbitrary = (MonkeyStringArbitrary)stringArbitrary;
+		monkeyStringArbitrary = (MonkeyStringArbitrary)monkeyStringArbitrary.filterCharacter(
+			c -> !Character.isISOControl(c));
+
+		Arbitrary<String> arbitrary = monkeyStringArbitrary;
 		if (context.findAnnotation(Email.class).isPresent()) {
 			arbitrary = Web.emails().allowIpv4Host();
 			if (min != null) {
@@ -118,8 +124,6 @@ public final class JavaxValidationJavaArbitraryResolver implements JavaArbitrary
 				if (!notBlank) {
 					if (it == null) {
 						return true;
-					} else {
-						return !containsControlCharacters(it);
 					}
 				}
 
@@ -127,7 +131,7 @@ public final class JavaxValidationJavaArbitraryResolver implements JavaArbitrary
 					return false;
 				}
 
-				return !containsControlCharacters(it);
+				return true;
 			});
 	}
 
