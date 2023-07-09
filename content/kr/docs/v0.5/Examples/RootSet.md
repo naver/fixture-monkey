@@ -29,9 +29,9 @@ Generate generateObject = new Generate("test");
 
 
 
-{{< tabpane lang="java" >}}
+{{< tabpane >}}
 
-{{< tab header="일반 표현식" >}}
+{{< tab header="일반 표현식" lang="java" >}}
 
 
 generateBuilder.set(generateObject);
@@ -39,7 +39,7 @@ generateBuilder.set(generateObject);
 
 {{< /tab>}}
 
-{{< tab header="Kotlin Exp" >}}
+{{< tab header="Kotlin Exp" lang="kotlin" >}}
 
 
 generateBuilder.set(generateObject);
@@ -47,12 +47,12 @@ generateBuilder.set(generateObject);
 
 {{< /tab >}}
 
-{{< /tabpane>}}
+{{< /tabpane >}}
 
 
-{{< tabpane lang="java" >}}
+{{< tabpane >}}
 
-{{< tab header="일반 표현식" >}}
+{{< tab header="일반 표현식" lang="java" >}}
 
 
 generateBuilder.set("$", generateObject);
@@ -60,7 +60,7 @@ generateBuilder.set("$", generateObject);
 
 {{< /tab>}}
 
-{{< tab header="Kotlin Exp" >}}
+{{< tab header="Kotlin Exp" lang="kotlin" >}}
 
 
 미지원
@@ -68,4 +68,4 @@ generateBuilder.set("$", generateObject);
 
 {{< /tab >}}
 
-{{< /tabpane>}}
+{{< /tabpane >}}

@@ -33,7 +33,7 @@ generateBuilder.setInner(
 );
 
 {{< /tab >}}
-{{< /tabpane>}}
+{{< /tabpane >}}
 
 If setting value given key, check out `entry` just as shown below
 
@@ -52,7 +52,7 @@ generateBuilder.setInner(
 );
 
 {{< /tab >}}
-{{< /tabpane>}}
+{{< /tabpane >}}
 
 ### Setting nested map value
 {{< tabpane persistLang=false >}}
@@ -70,7 +70,7 @@ generateBuilder.setInner(
 );
 
 {{< /tab >}}
-{{< /tabpane>}}
+{{< /tabpane >}}
 
 If setting key given value, check out `entry` just as shown below
 
@@ -89,4 +89,4 @@ generateBuilder.setInner(
 );
 
 {{< /tab >}}
-{{< /tabpane>}}
+{{< /tabpane >}}

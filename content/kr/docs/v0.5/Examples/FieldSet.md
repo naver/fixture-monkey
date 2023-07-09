@@ -25,26 +25,26 @@ ArbitraryBuilder<Generate> generateBuilder = fixtureMonkey.giveMeBuilder(Generat
 
 ## 2. 값 설정
 ### 필드 값 설정
-{{< tabpane lang = "java" >}}
-{{< tab header ="일반 표현식" >}}
+{{< tabpane >}}
+{{< tab header="일반 표현식" lang="java" >}}
 
 generateBuilder.set("value", "test");
 
 {{< /tab >}}
-{{< tab header= "Kotlin Exp" >}}
+{{< tab header="Kotlin Exp" lang="kotlin" >}}
 
 generateBuilder.setExp(Generatevalue, "test");
 
 {{< /tab >}}
-{{< /tabpane>}}
+{{< /tabpane >}}
 
 
 ### 필드 n번째 요소 값 설정
 
 
-{{< tabpane lang = "java" >}}
+{{< tabpane >}}
 
-{{< tab header ="일반 표현식" >}}
+{{< tab header="일반 표현식" lang="java" >}}
 
 
 generateBuilder.set("values[n]", "test");
@@ -52,7 +52,7 @@ generateBuilder.set("values[n]", "test");
 
 {{< /tab>}}
 
-{{< tab header= "Kotlin Exp" >}}
+{{< tab header="Kotlin Exp" lang="kotlin" >}}
 
 
 generateBuilder.setExp(Generate::values[n], "test");
@@ -60,15 +60,15 @@ generateBuilder.setExp(Generate::values[n], "test");
 
 {{< /tab >}}
 
-{{< /tabpane>}}
+{{< /tabpane >}}
 
 
 ### 필드 모든 요소 값 설정
 
 
-{{< tabpane lang = "java">}}
+{{< tabpane >}}
 
-{{< tab header ="일반 표현식">}}
+{{< tab header="일반 표현식" lang="java" >}}
 
 
 generateBuilder.set("values[*]", "test");
@@ -76,7 +76,7 @@ generateBuilder.set("values[*]", "test");
 
 {{< /tab>}}
 
-{{< tab header="Kotlin Exp" >}}
+{{< tab header="Kotlin Exp" lang="kotlin" >}}
 
 
 generateBuilder.setExp(Generate::values["*"], "test");
@@ -84,15 +84,15 @@ generateBuilder.setExp(Generate::values["*"], "test");
 
 {{< /tab >}}
 
-{{< /tabpane>}}
+{{< /tabpane >}}
 
 
 ### 임의의 필드 값 설정
 
 
-{{< tabpane lang="java" >}}
+{{< tabpane >}}
 
-{{< tab header="일반 표현식">}}
+{{< tab header="일반 표현식" lang="java" >}}
 
 
 generateBuilder.set("value", Arbitraries.strings());
@@ -100,7 +100,7 @@ generateBuilder.set("value", Arbitraries.strings());
 
 {{< /tab>}}
 
-{{< tab header="Kotlin Exp" >}}
+{{< tab header="Kotlin Exp" lang="kotlin" >}}
 
 
 generateBuilder.setExp(Generatevalue, Arbitraries.strings());
@@ -108,22 +108,22 @@ generateBuilder.setExp(Generatevalue, Arbitraries.strings());
 
 {{< /tab >}}
 
-{{< /tabpane>}}
+{{< /tabpane >}}
 
 
 ### 임의의 필드 n번째 요소 값 설정
 
 
-{{< tabpane lang="java" >}}
+{{< tabpane >}}
 
-{{<tab header="일반 표현식" >}}
+{{<tab header="일반 표현식" lang="java" >}}
 
 
 generateBuilder.set("values[n]", Arbitraries.strings());
 
 {{< /tab >}}
 
-{{< tab header="Kotlin Exp" >}}
+{{< tab header="Kotlin Exp" lang="kotlin" >}}
 
 
 generateBuilder.setExp(Generate::values[n], Arbitraries.strings());
@@ -131,15 +131,15 @@ generateBuilder.setExp(Generate::values[n], Arbitraries.strings());
 
 {{< /tab >}}
 
-{{< /tabpane>}}
+{{< /tabpane >}}
 
 
 ### 임의의 필드 모든 요소 값 설정
 
 
-{{< tabpane lang="java" >}}
+{{< tabpane >}}
 
-{{< tab header="일반 표현식" >}}
+{{< tab header="일반 표현식" lang="java" >}}
 
 
 generateBuilder.set("values[*]", Arbitraries.strings());
@@ -147,7 +147,7 @@ generateBuilder.set("values[*]", Arbitraries.strings());
 
 {{< /tab >}}
 
-{{< tab header="Kotlin Exp" >}}
+{{< tab header="Kotlin Exp" lang="kotlin" >}}
 
 
 generateBuilder.setExp(Generate::values["*"], Arbitraries.strings());
@@ -155,4 +155,4 @@ generateBuilder.setExp(Generate::values["*"], Arbitraries.strings());
 
 {{< /tab >}}
 
-{{< /tabpane>}}
+{{< /tabpane >}}

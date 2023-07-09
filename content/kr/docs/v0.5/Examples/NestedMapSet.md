@@ -33,7 +33,7 @@ generateBuilder.setInner(
 );
 
 {{< /tab >}}
-{{< /tabpane>}}
+{{< /tabpane >}}
 
 만약, 해당 key에 대응하는 value값도 함께 설정해주고 싶다면 다음 연산을 사용할 수 있습니다.
 
@@ -52,7 +52,7 @@ generateBuilder.setInner(
 );
 
 {{< /tab >}}
-{{< /tabpane>}}
+{{< /tabpane >}}
 
 ### map 타입 value 설정
 value의 entry를 설정합니다.
@@ -70,7 +70,7 @@ generateBuilder.setInner(
     InnerSpec().property("stringByMap") { m -> m.value { v -> v.entry("key", "value") } }
 );
 {{< /tab >}}
-{{< /tabpane>}}
+{{< /tabpane >}}
 
 만약, 해당 value에 대응하는 key값도 함께 설정해주고 싶다면 다음 연산을 사용할 수 있습니다.
 
@@ -89,4 +89,4 @@ InnerSpec().property("stringByMap") { m -> m.entry("key") {v -> v.entry("innerKe
 );
 
 {{< /tab >}}
-{{< /tabpane>}}
+{{< /tabpane >}}

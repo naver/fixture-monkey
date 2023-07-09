@@ -60,7 +60,7 @@ generateBuilder.setInner(
     InnerSpec().property("namesById") { m -> m.entry("key", "value") }
 )
 {{< /tab >}}
-{{< /tabpane>}}
+{{< /tabpane >}}
 
 ### key 설정
 entry의 key 값만 설정합니다.
@@ -79,7 +79,7 @@ generateBuilder.setInner(
 )
 
 {{< /tab >}}
-{{< /tabpane>}}
+{{< /tabpane >}}
 
 ### value 설정
 entry의 value 값만 설정합니다.
@@ -98,4 +98,4 @@ generateBuilder.setInner(
 )
 
 {{< /tab >}}
-{{< /tabpane>}}
+{{< /tabpane >}}

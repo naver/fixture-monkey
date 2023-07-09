@@ -25,26 +25,26 @@ ArbitraryBuilder<Generate> generateBuilder = fixtureMonkey.giveMeBuilder(Generat
 
 ## 2. Setting value
 ### Setting field
-{{< tabpane lang = "java" >}}
-{{< tab header ="general expression" >}}
+{{< tabpane >}}
+{{< tab header="general expression" lang="java" >}}
 
 generateBuilder.set("value", "test");
 
 {{< /tab >}}
-{{< tab header= "Kotlin Exp" >}}
+{{< tab header="Kotlin Exp" lang="kotlin" >}}
 
 generateBuilder.setExp(Generate::value, "test");
 
 {{< /tab >}}
-{{< /tabpane>}}
+{{< /tabpane >}}
 
 
 ### Setting field n-th element
 
 
-{{< tabpane lang = "java" >}}
+{{< tabpane >}}
 
-{{< tab header ="general expression" >}}
+{{< tab header="general expression" lang="java" >}}
 
 
 generateBuilder.set("values[n]", "test");
@@ -52,7 +52,7 @@ generateBuilder.set("values[n]", "test");
 
 {{< /tab>}}
 
-{{< tab header= "Kotlin Exp" >}}
+{{< tab header="Kotlin Exp" lang="kotlin" >}}
 
 
 generateBuilder.setExp(Generate::values[n], "test");
@@ -60,15 +60,15 @@ generateBuilder.setExp(Generate::values[n], "test");
 
 {{< /tab >}}
 
-{{< /tabpane>}}
+{{< /tabpane >}}
 
 
 ### Setting field all elements
 
 
-{{< tabpane lang = "java">}}
+{{< tabpane >}}
 
-{{< tab header ="general expression">}}
+{{< tab header="general expression" lang="java" >}}
 
 
 generateBuilder.set("values[*]", "test");
@@ -76,7 +76,7 @@ generateBuilder.set("values[*]", "test");
 
 {{< /tab>}}
 
-{{< tab header="Kotlin Exp" >}}
+{{< tab header="Kotlin Exp" lang="kotlin" >}}
 
 
 generateBuilder.setExp(Generate::values["*"], "test");
@@ -84,15 +84,15 @@ generateBuilder.setExp(Generate::values["*"], "test");
 
 {{< /tab >}}
 
-{{< /tabpane>}}
+{{< /tabpane >}}
 
 
 ### Setting field to arbitrary value
 
 
-{{< tabpane lang="java" >}}
+{{< tabpane >}}
 
-{{< tab header="general expression">}}
+{{< tab header="general expression" lang="java" >}}
 
 
 generateBuilder.set("value", Arbitraries.strings());
@@ -100,7 +100,7 @@ generateBuilder.set("value", Arbitraries.strings());
 
 {{< /tab>}}
 
-{{< tab header="Kotlin Exp" >}}
+{{< tab header="Kotlin Exp" lang="kotlin" >}}
 
 
 generateBuilder.setExp(Generate::value, Arbitraries.strings());
@@ -108,22 +108,22 @@ generateBuilder.setExp(Generate::value, Arbitraries.strings());
 
 {{< /tab >}}
 
-{{< /tabpane>}}
+{{< /tabpane >}}
 
 
 ### Setting field n-th element to arbitrary value
 
 
-{{< tabpane lang="java" >}}
+{{< tabpane >}}
 
-{{<tab header="general expression" >}}
+{{<tab header="general expression" lang="java" >}}
 
 
 generateBuilder.set("values[n]", Arbitraries.strings());
 
 {{< /tab >}}
 
-{{< tab header="Kotlin Exp" >}}
+{{< tab header="Kotlin Exp" lang="kotlin" >}}
 
 
 generateBuilder.setExp(Generate::values[n], Arbitraries.strings());
@@ -131,15 +131,15 @@ generateBuilder.setExp(Generate::values[n], Arbitraries.strings());
 
 {{< /tab >}}
 
-{{< /tabpane>}}
+{{< /tabpane >}}
 
 
 ### Setting field all elements to arbitrary value
 
 
-{{< tabpane lang="java" >}}
+{{< tabpane >}}
 
-{{< tab header="general expression" >}}
+{{< tab header="general expression" lang="java" >}}
 
 
 generateBuilder.set("values[*]", Arbitraries.strings());
@@ -147,7 +147,7 @@ generateBuilder.set("values[*]", Arbitraries.strings());
 
 {{< /tab >}}
 
-{{< tab header="Kotlin Exp" >}}
+{{< tab header="Kotlin Exp" lang="kotlin" >}}
 
 
 generateBuilder.setExp(Generate::values["*"], Arbitraries.strings());
@@ -155,4 +155,4 @@ generateBuilder.setExp(Generate::values["*"], Arbitraries.strings());
 
 {{< /tab >}}
 
-{{< /tabpane>}}
+{{< /tabpane >}}

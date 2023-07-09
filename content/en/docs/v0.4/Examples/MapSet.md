@@ -43,7 +43,7 @@ generateBuilder.setInner(
 )
 
 {{< /tab >}}
-{{< /tabpane>}}
+{{< /tabpane >}}
 
 ## 3. Setting field
 ### Setting entry
@@ -62,7 +62,7 @@ generateBuilder.setInner(
 )
 
 {{< /tab >}}
-{{< /tabpane>}}
+{{< /tabpane >}}
 
 ### Setting map key
 Setting Map key
@@ -81,7 +81,7 @@ generateBuilder.setInner(
 )
 
 {{< /tab >}}
-{{< /tabpane>}}
+{{< /tabpane >}}
 
 ### Setting map value 
 Setting Map value
@@ -100,4 +100,4 @@ generateBuilder.setInner(
 )
 
 {{< /tab >}}
-{{< /tabpane>}}
+{{< /tabpane >}}

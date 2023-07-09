@@ -35,46 +35,46 @@ ArbitraryBuilder<Generate> generateBuilder = fixtureMonkey.giveMeBuilder(Generat
 
 ## 2-1. Alter field size
 
-{{< tabpane lang = "java" >}}
-{{< tab header ="general expression" >}}
+{{< tabpane >}}
+{{< tab header="general expression" lang="java" >}}
 
 generateBuilder.size("values", 5);
 
 {{< /tab >}}
-{{< tab header= "Kotlin Exp" >}}
+{{< tab header="Kotlin Exp" lang="kotlin" >}}
 
 generateBuilder.sizeExp(Generate::values, 5);
 
 {{< /tab >}}
-{{< /tabpane>}}
+{{< /tabpane >}}
 
 
 ## 2-2. Alter field n-th element size
 
-{{< tabpane lang = "java" >}}
-{{< tab header ="general expression" >}}
+{{< tabpane >}}
+{{< tab header="general expression" lang="java" >}}
 
 generateBuilder.size("values[n]", 5);
 
 {{< /tab >}}
-{{< tab header= "Kotlin Exp" >}}
+{{< tab header="Kotlin Exp" lang="kotlin" >}}
 
 generateBuilder.sizeExp(Generate::values[n], 5);
 
 {{< /tab >}}
-{{< /tabpane>}}
+{{< /tabpane >}}
 
 ## 2-3. Alter field all elements size
 
-{{< tabpane lang = "java" >}}
-{{< tab header ="general expression" >}}
+{{< tabpane >}}
+{{< tab header="general expression" lang="java" >}}
 
 generateBuilder.size("values[*]", 5);
 
 {{< /tab >}}
-{{< tab header= "Kotlin Exp" >}}
+{{< tab header="Kotlin Exp" lang="kotlin" >}}
 
 generateBuilder.sizeExp(Generate::values["*"], 5);
 
 {{< /tab >}}
-{{< /tabpane>}}
+{{< /tabpane >}}
