@@ -3,4 +3,6 @@ resources/
 node_modules/
 blog/
 commnuity/
-public/
+# Hugo
+.hugo_build.lock
+/public

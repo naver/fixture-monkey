@@ -3,26 +3,24 @@ title = "Fixture Monkey"
 +++
 
 {{< blocks/cover title="Fixture Monkey" image_anchor="center" color="primary" >}}
-<div class="mx-auto">
-    <a class="btn btn-lg btn-primary mr-3 mb-4" href="{{< relref "/docs" >}}">
-    Get Started <i class="fas fa-arrow-alt-circle-right ml-2"></i>
-    </a>
-    <a class="btn btn-lg btn-secondary mr-3 mb-4" href="https://github.com/naver/fixture-monkey">
-        Contribute <i class="fab fa-github ml-2 "></i>
-    </a>
-    <p class="lead mt-4">The easiest way to generate controllable arbitrary test objects</p>
-</div>
+<a class="btn btn-lg btn-primary me-3 mb-4" href="/fixture-monkey/docs">
+    Get Started <i class="fas fa-arrow-alt-circle-right ms-2"></i>
+</a>
+<a class="btn btn-lg btn-secondary me-3 mb-4" href="https://github.com/naver/fixture-monkey">
+    Contribute <i class="fab fa-github ms-2 "></i>
+</a>
+<p class="lead mt-5">The easiest way to generate controllable arbitrary test objects</p>
 {{< blocks/link-down color="info" >}}
 {{< /blocks/cover >}}
 
 
 {{% blocks/lead color="primary" %}}
-Fixture Monkey is a Java library for <p>automatically generating **reusable and controllable,
-    arbitrary test fixtures**</p>
+Fixture Monkey is a Java library for <p></p>
+automatically generating <strong>reusable and controllable, arbitrary test fixtures</strong>
 
 {{% /blocks/lead %}}
 
-{{< blocks/section color="dark" >}}
+{{% blocks/section color="dark" type="row" %}}
 {{% blocks/feature icon="fas fa-recycle" title="Reusability" %}}
 Reuse test instances which follows complex specification you defined
 
@@ -39,4 +37,4 @@ Repeat your tests countless times with different test object every time
 Instantiating complex test object using Builder Pattern
 {{% /blocks/feature %}}
 
-{{< /blocks/section >}}
+{{% /blocks/section %}}
