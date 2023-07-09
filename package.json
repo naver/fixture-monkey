@@ -16,11 +16,9 @@
     "url": "https://github.com/naver/fixture-monkey/issues"
   },
   "homepage": "https://github.com/naver/fixture-monkey#readme",
-  "dependencies": {
-    "postcss": "^8.3.6"
-  },
   "devDependencies": {
-    "autoprefixer": "^10.3.4",
-    "postcss-cli": "^8.3.1"
+    "autoprefixer": "^10.4.14",
+    "postcss": "^8.4.25",
+    "postcss-cli": "^10.1.0"
   }
 }
