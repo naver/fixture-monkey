@@ -88,11 +88,7 @@ public final class JavaxValidationJavaArbitraryResolver implements JavaArbitrary
 			return Arbitraries.of(values);
 		}
 
-		MonkeyStringArbitrary monkeyStringArbitrary = (MonkeyStringArbitrary)stringArbitrary;
-		monkeyStringArbitrary = (MonkeyStringArbitrary)monkeyStringArbitrary.filterCharacter(
-			c -> !Character.isISOControl(c));
-
-		Arbitrary<String> arbitrary = monkeyStringArbitrary;
+		Arbitrary<String> arbitrary = stringArbitrary;
 		if (context.findAnnotation(Email.class).isPresent()) {
 			arbitrary = Web.emails().allowIpv4Host();
 			if (min != null) {
