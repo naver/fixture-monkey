@@ -1478,10 +1478,10 @@ class FixtureMonkeyOptionsTest {
 
 		then(actual).matches(value -> {
 			for (char c : value.toCharArray()) {
-			if (Character.isISOControl(c)) {
-				return false;
+				if (Character.isISOControl(c)) {
+					return false;
+				}
 			}
-		}
 			return true;
 		});
 	}
