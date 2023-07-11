@@ -42,7 +42,7 @@ public interface JavaTypeArbitraryGenerator {
 		return monkeyStrings();
 	}
 
-	default StringArbitrary monkeyStrings() {
+	default MonkeyStringArbitrary monkeyStrings() {
 		return new MonkeyStringArbitrary().filterCharacter(c -> !Character.isISOControl(c));
 	}
 
