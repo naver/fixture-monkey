@@ -19,7 +19,7 @@
 package com.navercorp.fixturemonkey.kotlin.introspector
 
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary
-import com.navercorp.fixturemonkey.api.container.LruCache
+import com.navercorp.fixturemonkey.api.container.ConcurrentLruCache
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult
@@ -37,7 +37,7 @@ import kotlin.reflect.full.primaryConstructor
 class PrimaryConstructorArbitraryIntrospector : ArbitraryIntrospector {
     companion object {
         val INSTANCE = PrimaryConstructorArbitraryIntrospector()
-        private val CONSTRUCTOR_CACHE = LruCache<Class<*>, KFunction<*>>(2048)
+        private val CONSTRUCTOR_CACHE = ConcurrentLruCache<Class<*>, KFunction<*>>(2048)
     }
 
     override fun introspect(context: ArbitraryGeneratorContext): ArbitraryIntrospectorResult {

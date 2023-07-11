@@ -18,7 +18,7 @@
 
 package com.navercorp.fixturemonkey.kotlin.property
 
-import com.navercorp.fixturemonkey.api.container.LruCache
+import com.navercorp.fixturemonkey.api.container.ConcurrentLruCache
 import com.navercorp.fixturemonkey.api.property.Property
 import com.navercorp.fixturemonkey.api.type.Types
 import com.navercorp.fixturemonkey.kotlin.type.getAnnotatedType
@@ -27,7 +27,7 @@ import java.lang.reflect.AnnotatedType
 import kotlin.reflect.KProperty
 import kotlin.reflect.full.memberProperties
 
-private val KPROPERTY_ANNOTATED_TYPE_MAP = LruCache<Class<*>, Collection<KProperty<*>>>(2048)
+private val KPROPERTY_ANNOTATED_TYPE_MAP = ConcurrentLruCache<Class<*>, Collection<KProperty<*>>>(2048)
 
 @API(since = "0.4.0", status = API.Status.MAINTAINED)
 fun getMemberProperties(annotatedType: AnnotatedType): List<Property> {

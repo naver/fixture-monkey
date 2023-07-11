@@ -1464,6 +1464,7 @@ class FixtureMonkeyOptionsTest {
 					@Override
 					public StringArbitrary strings() {
 						return new MonkeyStringArbitrary().filterCharacter(Character::isUpperCase);
+
 					}
 				}
 			)

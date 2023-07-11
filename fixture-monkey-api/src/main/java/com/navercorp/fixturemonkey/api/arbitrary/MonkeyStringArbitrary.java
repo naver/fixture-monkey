@@ -270,6 +270,7 @@ public final class MonkeyStringArbitrary implements StringArbitrary {
 		return HashCodeSupport.hash(characterArbitrary, minLength, maxLength, repeatChars, filter, lengthDistribution);
 	}
 
+
 	public MonkeyStringArbitrary filterCharacter(Predicate<Character> predicate) {
 		this.filter = this.filter.and(predicate);
 		return this;

@@ -22,26 +22,26 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
-import com.navercorp.fixturemonkey.api.container.LruCache;
+import com.navercorp.fixturemonkey.api.container.ConcurrentLruCache;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class MonkeyContextBuilder {
-	private LruCache<Property, CombinableArbitrary> arbitrariesByProperty;
-	private LruCache<RootProperty, MonkeyGeneratorContext> generatorContextByRootProperty;
+	private ConcurrentLruCache<Property, CombinableArbitrary> arbitrariesByProperty;
+	private ConcurrentLruCache<RootProperty, MonkeyGeneratorContext> generatorContextByRootProperty;
 	private int cacheSize = 2048;
 	private int generatorContextSize = 1000;
 
 	public MonkeyContextBuilder arbitrariesByProperty(
-		LruCache<Property, CombinableArbitrary> arbitrariesByProperty
+		ConcurrentLruCache<Property, CombinableArbitrary> arbitrariesByProperty
 	) {
 		this.arbitrariesByProperty = arbitrariesByProperty;
 		return this;
 	}
 
 	public MonkeyContextBuilder generatorContextByRootProperty(
-		LruCache<RootProperty, MonkeyGeneratorContext> generatorContextByRootProperty
+		ConcurrentLruCache<RootProperty, MonkeyGeneratorContext> generatorContextByRootProperty
 	) {
 		this.generatorContextByRootProperty = generatorContextByRootProperty;
 		return this;
@@ -59,11 +59,11 @@ public final class MonkeyContextBuilder {
 
 	public MonkeyContext build() {
 		if (arbitrariesByProperty == null) {
-			arbitrariesByProperty = new LruCache<>(cacheSize);
+			arbitrariesByProperty = new ConcurrentLruCache<>(cacheSize);
 		}
 
 		if (generatorContextByRootProperty == null) {
-			generatorContextByRootProperty = new LruCache<>(generatorContextSize);
+			generatorContextByRootProperty = new ConcurrentLruCache<>(generatorContextSize);
 		}
 
 		return new MonkeyContext(arbitrariesByProperty, generatorContextByRootProperty);
