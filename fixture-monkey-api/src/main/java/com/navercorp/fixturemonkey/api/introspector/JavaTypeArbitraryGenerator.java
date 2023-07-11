@@ -42,6 +42,11 @@ public interface JavaTypeArbitraryGenerator {
 		return monkeyStrings();
 	}
 
+	/**
+	 * Generate a MonkeyStringArbitrary object filtered so that it doesn't contain a ISOControl character
+	 *
+	 * @return the filtered MonkeyStringArbitrary object
+	 */
 	default MonkeyStringArbitrary monkeyStrings() {
 		return new MonkeyStringArbitrary().filterCharacter(c -> !Character.isISOControl(c));
 	}
