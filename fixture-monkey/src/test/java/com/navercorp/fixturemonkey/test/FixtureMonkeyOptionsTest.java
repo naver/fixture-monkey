@@ -1471,7 +1471,7 @@ class FixtureMonkeyOptionsTest {
 	}
 
 	@Property
-	void filterISOControlWithMonkeyStringArbitrary() {
+	void filterIsoControlCharacterWithMonkeyStringArbitrary() {
 		FixtureMonkey sut = FixtureMonkey.builder().build();
 
 		String actual = sut.giveMeOne(String.class);
