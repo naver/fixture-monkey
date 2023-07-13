@@ -40,12 +40,15 @@ import net.jqwik.api.Arbitraries;
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.FixtureMonkey;
+import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.exception.FilterMissException;
 import com.navercorp.fixturemonkey.api.introspector.ConstructorPropertiesArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.FailoverIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.FieldReflectionArbitraryIntrospector;
+import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.customizer.InnerSpec;
+import com.navercorp.fixturemonkey.customizer.Values;
 import com.navercorp.fixturemonkey.resolver.ArbitraryBuilderCandidateFactory;
 import com.navercorp.fixturemonkey.resolver.ArbitraryBuilderCandidateList;
 import com.navercorp.fixturemonkey.tests.java.ImmutableDepthTestSpecs.DepthStringValueList;
@@ -661,5 +664,20 @@ class JavaTest {
 				.sample()
 		)
 			.hasMessageContaining("\"map{value}\"");
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void sampleUniqueList() {
+		List<String> actual = SUT.giveMeBuilder(new TypeReference<List<String>>() {
+			})
+			.size("$", 100)
+			.set(
+				"$[*]",
+				Values.just(CombinableArbitrary.from(LazyArbitrary.lazy(() -> Arbitraries.strings().sample())).unique())
+			)
+			.sample();
+
+		Set<String> expected = new HashSet<>(actual);
+		then(actual).hasSameSizeAs(expected);
 	}
 }
