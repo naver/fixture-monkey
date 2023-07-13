@@ -18,40 +18,32 @@
 
 package com.navercorp.fixturemonkey.api.introspector;
 
-import java.util.List;
-
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
+import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
+import com.navercorp.fixturemonkey.api.property.Property;
 
-@API(since = "0.4.0", status = Status.MAINTAINED)
-public class CompositeArbitraryIntrospector implements ArbitraryIntrospector {
-	private final List<ArbitraryIntrospector> introspectors;
+/**
+ * Introspects specific properties matched by {@link Matcher}.
+ */
+@API(since = "0.6.2", status = Status.EXPERIMENTAL)
+public final class TypedArbitraryIntrospector implements ArbitraryIntrospector, Matcher {
+	private final MatcherOperator<ArbitraryIntrospector> arbitraryIntrospector;
 
-	public CompositeArbitraryIntrospector(List<ArbitraryIntrospector> introspectors) {
-		this.introspectors = introspectors;
+	public TypedArbitraryIntrospector(MatcherOperator<ArbitraryIntrospector> arbitraryIntrospector) {
+		this.arbitraryIntrospector = arbitraryIntrospector;
 	}
 
 	@Override
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
-		for (ArbitraryIntrospector introspector : this.introspectors) {
-			if (introspector instanceof Matcher) {
-				if (((Matcher)introspector).match(context.getResolvedProperty())) {
-					ArbitraryIntrospectorResult result = introspector.introspect(context);
-					if (!ArbitraryIntrospectorResult.EMPTY.equals(result)) {
-						return result;
-					}
-				}
-			} else {
-				ArbitraryIntrospectorResult result = introspector.introspect(context);
-				if (!ArbitraryIntrospectorResult.EMPTY.equals(result)) {
-					return result;
-				}
-			}
-		}
+		return arbitraryIntrospector.getOperator().introspect(context);
+	}
 
-		return ArbitraryIntrospectorResult.NOT_INTROSPECTED;
+	@Override
+	public boolean match(Property property) {
+		return arbitraryIntrospector.match(property);
 	}
 }

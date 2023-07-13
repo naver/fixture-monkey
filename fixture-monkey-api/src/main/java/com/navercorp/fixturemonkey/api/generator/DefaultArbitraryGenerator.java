@@ -18,6 +18,8 @@
 
 package com.navercorp.fixturemonkey.api.generator;
 
+import static com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary.NOT_GENERATED;
+
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
@@ -26,7 +28,12 @@ import com.navercorp.fixturemonkey.api.arbitrary.TraceableCombinableArbitrary;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult;
 
+/**
+ * It is deprecated.
+ * Use {@link IntrospectedArbitraryGenerator} instead.
+ */
 @API(since = "0.4.0", status = Status.MAINTAINED)
+@Deprecated
 public class DefaultArbitraryGenerator implements ArbitraryGenerator {
 	private final ArbitraryIntrospector arbitraryIntrospector;
 
@@ -38,10 +45,18 @@ public class DefaultArbitraryGenerator implements ArbitraryGenerator {
 		return new JavaDefaultArbitraryGeneratorBuilder();
 	}
 
+	/**
+	 * Generates a {@link CombinableArbitrary} by given {@link ArbitraryIntrospector}.
+	 *
+	 * @param context generator context
+	 * @return generated {@link CombinableArbitrary}.
+	 * Returns {@code DefaultArbitraryGenerator.NOT_GENERATED}
+	 * if given {@link ArbitraryGenerator} could not generate a {@link CombinableArbitrary}
+	 */
 	@Override
 	public CombinableArbitrary generate(ArbitraryGeneratorContext context) {
 		ArbitraryIntrospectorResult result = this.arbitraryIntrospector.introspect(context);
-		if (result.getValue() != null) {
+		if (result != ArbitraryIntrospectorResult.EMPTY && result.getValue() != null) {
 			double nullInject = context.getArbitraryProperty().getObjectProperty().getNullInject();
 			return new TraceableCombinableArbitrary(
 				result.getValue()
@@ -50,6 +65,6 @@ public class DefaultArbitraryGenerator implements ArbitraryGenerator {
 			);
 		}
 
-		return CombinableArbitrary.from(null);
+		return NOT_GENERATED;
 	}
 }

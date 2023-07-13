@@ -18,6 +18,7 @@
 
 package com.navercorp.fixturemonkey.test;
 
+import static com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary.NOT_GENERATED;
 import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.ALWAYS_NULL_INJECT;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.assertj.core.api.BDDAssertions.thenNoException;
@@ -45,14 +46,17 @@ import net.jqwik.time.api.arbitraries.InstantArbitrary;
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.FixtureMonkey;
+import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.arbitrary.MonkeyStringArbitrary;
 import com.navercorp.fixturemonkey.api.container.DecomposableJavaContainer;
 import com.navercorp.fixturemonkey.api.exception.FilterMissException;
 import com.navercorp.fixturemonkey.api.exception.ValidationFailedException;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
+import com.navercorp.fixturemonkey.api.generator.CompositeArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator;
 import com.navercorp.fixturemonkey.api.generator.DefaultObjectPropertyGenerator;
+import com.navercorp.fixturemonkey.api.generator.IntrospectedArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGenerator;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult;
 import com.navercorp.fixturemonkey.api.introspector.BuilderArbitraryIntrospector;
@@ -95,6 +99,7 @@ import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.
 import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.SelfRecursiveAbstractValue;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.SelfRecursiveImplementationValue;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.SimpleObjectChild;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.UniqueArbitraryGenerator;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.ComplexObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.Interface;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.InterfaceFieldImplementationValue;
@@ -1510,5 +1515,70 @@ class FixtureMonkeyOptionsTest {
 			}
 			return true;
 		});
+	}
+
+	@Property
+	void alterDefaultArbitraryGenerator() {
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.defaultArbitraryGenerator(generator -> new CompositeArbitraryGenerator(
+				Arrays.asList(
+					new IntrospectedArbitraryGenerator(context ->
+						new ArbitraryIntrospectorResult(CombinableArbitrary.from(null))
+					),
+					generator
+				)
+			))
+			.build();
+
+		String actual = sut.giveMeOne(String.class);
+
+		then(actual).isNull();
+	}
+
+	@Property
+	void skipArbitraryGenerator() {
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.defaultArbitraryGenerator(generator -> new CompositeArbitraryGenerator(
+				Arrays.asList(
+					context -> NOT_GENERATED,
+					generator
+				)
+			))
+			.defaultNotNull(true)
+			.build();
+
+		String actual = sut.giveMeOne(String.class);
+
+		then(actual).isNotNull();
+	}
+
+	@Property
+	void uniqueArbitraryGenerator() {
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.defaultArbitraryGenerator(UniqueArbitraryGenerator::new)
+			.build();
+
+		List<String> actual = sut.giveMe(String.class, 100);
+
+		Set<String> expected = new HashSet<>(actual);
+		then(actual).hasSameSizeAs(expected);
+	}
+
+	@Property
+	void allArbitraryGeneratorSkipReturnsNull() {
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.defaultArbitraryGenerator(generator -> (
+				new CompositeArbitraryGenerator(
+					Arrays.asList(
+						context -> NOT_GENERATED,
+						context -> NOT_GENERATED
+					)
+				)
+			))
+			.build();
+
+		String actual = sut.giveMeOne(String.class);
+
+		then(actual).isNull();
 	}
 }

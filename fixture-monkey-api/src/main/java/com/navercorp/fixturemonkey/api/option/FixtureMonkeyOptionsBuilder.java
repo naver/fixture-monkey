@@ -23,12 +23,14 @@ import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerat
 import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.DEFAULT_NULL_INJECT;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 
@@ -41,17 +43,20 @@ import com.navercorp.fixturemonkey.api.container.DefaultDecomposedContainerValue
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfoGenerator;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGenerator;
+import com.navercorp.fixturemonkey.api.generator.CompositeArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.generator.ContainerPropertyGenerator;
-import com.navercorp.fixturemonkey.api.generator.DefaultArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator;
+import com.navercorp.fixturemonkey.api.generator.IntrospectedArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.generator.JavaDefaultArbitraryGeneratorBuilder;
 import com.navercorp.fixturemonkey.api.generator.NullInjectGenerator;
 import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGenerator;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
+import com.navercorp.fixturemonkey.api.introspector.CompositeArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.JavaArbitraryResolver;
 import com.navercorp.fixturemonkey.api.introspector.JavaTimeArbitraryResolver;
 import com.navercorp.fixturemonkey.api.introspector.JavaTimeTypeArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.introspector.JavaTypeArbitraryGenerator;
+import com.navercorp.fixturemonkey.api.introspector.TypedArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.plugin.Plugin;
@@ -77,11 +82,13 @@ public final class FixtureMonkeyOptionsBuilder {
 	private NullInjectGenerator defaultNullInjectGenerator;
 	private List<MatcherOperator<ArbitraryContainerInfoGenerator>> arbitraryContainerInfoGenerators = new ArrayList<>();
 	private ArbitraryContainerInfoGenerator defaultArbitraryContainerInfoGenerator;
+	@Deprecated
 	private List<MatcherOperator<ArbitraryGenerator>> arbitraryGenerators = new ArrayList<>();
 	private ArbitraryGenerator defaultArbitraryGenerator;
-
+	private UnaryOperator<ArbitraryGenerator> defaultArbitraryGeneratorOperator = it -> it;
+	private final List<MatcherOperator<ArbitraryIntrospector>> arbitraryIntrospectors = new ArrayList<>();
 	private final JavaDefaultArbitraryGeneratorBuilder javaDefaultArbitraryGeneratorBuilder =
-		DefaultArbitraryGenerator.javaBuilder();
+		IntrospectedArbitraryGenerator.javaBuilder();
 	private boolean defaultNotNull = false;
 	private boolean nullableContainer = false;
 	private boolean nullableElement = false;
@@ -327,6 +334,7 @@ public final class FixtureMonkeyOptionsBuilder {
 		return this;
 	}
 
+	@Deprecated
 	public FixtureMonkeyOptionsBuilder arbitraryGenerators(
 		List<MatcherOperator<ArbitraryGenerator>> arbitraryGenerators
 	) {
@@ -334,6 +342,7 @@ public final class FixtureMonkeyOptionsBuilder {
 		return this;
 	}
 
+	@Deprecated
 	public FixtureMonkeyOptionsBuilder insertFirstArbitraryGenerator(
 		MatcherOperator<ArbitraryGenerator> arbitraryGenerator
 	) {
@@ -342,6 +351,7 @@ public final class FixtureMonkeyOptionsBuilder {
 		return this.arbitraryGenerators(result);
 	}
 
+	@Deprecated
 	public FixtureMonkeyOptionsBuilder insertFirstArbitraryGenerator(
 		Matcher matcher,
 		ArbitraryGenerator arbitraryGenerator
@@ -351,6 +361,7 @@ public final class FixtureMonkeyOptionsBuilder {
 		);
 	}
 
+	@Deprecated
 	public FixtureMonkeyOptionsBuilder insertFirstArbitraryGenerator(
 		Class<?> type,
 		ArbitraryGenerator arbitraryGenerator
@@ -363,19 +374,19 @@ public final class FixtureMonkeyOptionsBuilder {
 	public FixtureMonkeyOptionsBuilder insertFirstArbitraryIntrospector(
 		MatcherOperator<ArbitraryIntrospector> arbitraryIntrospector
 	) {
-		return this.insertFirstArbitraryIntrospector(
-			arbitraryIntrospector.getMatcher(),
-			arbitraryIntrospector.getOperator()
-		);
+		this.arbitraryIntrospectors.add(arbitraryIntrospector);
+		return this;
 	}
 
 	public FixtureMonkeyOptionsBuilder insertFirstArbitraryIntrospector(
 		Matcher matcher,
 		ArbitraryIntrospector arbitraryIntrospector
 	) {
-		return this.insertFirstArbitraryGenerator(
-			matcher,
-			new DefaultArbitraryGenerator(arbitraryIntrospector)
+		return this.insertFirstArbitraryIntrospector(
+			new MatcherOperator<>(
+				matcher,
+				arbitraryIntrospector
+			)
 		);
 	}
 
@@ -383,13 +394,21 @@ public final class FixtureMonkeyOptionsBuilder {
 		Class<?> type,
 		ArbitraryIntrospector arbitraryIntrospector
 	) {
-		return this.insertFirstArbitraryGenerator(
-			MatcherOperator.assignableTypeMatchOperator(type, new DefaultArbitraryGenerator(arbitraryIntrospector))
+		return this.insertFirstArbitraryIntrospector(
+			MatcherOperator.assignableTypeMatchOperator(type, arbitraryIntrospector)
 		);
 	}
 
+	@Deprecated
 	public FixtureMonkeyOptionsBuilder defaultArbitraryGenerator(ArbitraryGenerator defaultArbitraryGenerator) {
 		this.defaultArbitraryGenerator = defaultArbitraryGenerator;
+		return this;
+	}
+
+	public FixtureMonkeyOptionsBuilder defaultArbitraryGenerator(
+		UnaryOperator<ArbitraryGenerator> defaultArbitraryGeneratorOperator
+	) {
+		this.defaultArbitraryGeneratorOperator = defaultArbitraryGeneratorOperator;
 		return this;
 	}
 
@@ -522,23 +541,36 @@ public final class FixtureMonkeyOptionsBuilder {
 		ArbitraryGenerator defaultArbitraryGenerator =
 			defaultIfNull(this.defaultArbitraryGenerator, this.javaDefaultArbitraryGeneratorBuilder::build);
 
-		DecomposedContainerValueFactory decomposedContainerValueFactory = new DefaultDecomposedContainerValueFactory(
-				obj -> {
-					Class<?> actualType = obj.getClass();
-					for (
-						Map.Entry<Class<?>, DecomposedContainerValueFactory> entry :
-						this.decomposableContainerFactoryMap.entrySet()
-					) {
-						Class<?> type = entry.getKey();
-						DecomposableJavaContainer decomposedValue = entry.getValue().from(obj);
+		List<ArbitraryIntrospector> typedArbitraryIntrospectors = arbitraryIntrospectors.stream()
+			.map(TypedArbitraryIntrospector::new)
+			.collect(Collectors.toList());
 
-						if (actualType.isAssignableFrom(type)) {
-							return decomposedValue;
-						}
-					}
-					return this.decomposedContainerValueFactory.from(obj);
-				}
+		ArbitraryGenerator introspectedGenerator =
+			new IntrospectedArbitraryGenerator(new CompositeArbitraryIntrospector(typedArbitraryIntrospectors));
+
+		defaultArbitraryGenerator = new CompositeArbitraryGenerator(
+			Arrays.asList(introspectedGenerator, defaultArbitraryGenerator)
 		);
+
+		DecomposedContainerValueFactory decomposedContainerValueFactory = new DefaultDecomposedContainerValueFactory(
+			obj -> {
+				Class<?> actualType = obj.getClass();
+				for (
+					Map.Entry<Class<?>, DecomposedContainerValueFactory> entry :
+					this.decomposableContainerFactoryMap.entrySet()
+				) {
+					Class<?> type = entry.getKey();
+					DecomposableJavaContainer decomposedValue = entry.getValue().from(obj);
+
+					if (actualType.isAssignableFrom(type)) {
+						return decomposedValue;
+					}
+				}
+				return this.decomposedContainerValueFactory.from(obj);
+			}
+		);
+
+		defaultArbitraryGenerator = defaultArbitraryGeneratorOperator.apply(defaultArbitraryGenerator);
 
 		return new FixtureMonkeyOptions(
 			this.propertyGenerators,

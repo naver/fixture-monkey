@@ -76,7 +76,7 @@ public final class JavaDefaultArbitraryGeneratorBuilder {
 		)
 	);
 	public static final ArbitraryIntrospector DEFAULT_FALLBACK_INTROSPECTOR =
-		(context) -> ArbitraryIntrospectorResult.EMPTY;
+		(context) -> ArbitraryIntrospectorResult.NOT_INTROSPECTED;
 
 	private JavaTypeArbitraryGenerator javaTypeArbitraryGenerator = new JavaTypeArbitraryGenerator() {
 	};
@@ -178,7 +178,7 @@ public final class JavaDefaultArbitraryGeneratorBuilder {
 			this.fallbackIntrospector = AnonymousArbitraryIntrospector.INSTANCE;
 		}
 
-		return new DefaultArbitraryGenerator(
+		return new IntrospectedArbitraryGenerator(
 			new CompositeArbitraryIntrospector(
 				Arrays.asList(
 					new JavaArbitraryIntrospector(javaTypeArbitraryGenerator, javaArbitraryResolver),

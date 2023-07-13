@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -32,6 +33,7 @@ import org.apiguardian.api.API.Status;
 import com.navercorp.fixturemonkey.api.container.DecomposedContainerValueFactory;
 import com.navercorp.fixturemonkey.api.context.MonkeyContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfoGenerator;
+import com.navercorp.fixturemonkey.api.generator.ArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.generator.ContainerPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.InterfaceObjectPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.NullInjectGenerator;
@@ -485,6 +487,13 @@ public class FixtureMonkeyBuilder {
 	public FixtureMonkeyBuilder useExpressionStrictMode() {
 		this.monkeyExpressionFactory = expression ->
 			() -> new ApplyStrictModeResolver(new ArbitraryExpressionFactory().from(expression).toNodeResolver());
+		return this;
+	}
+
+	public FixtureMonkeyBuilder defaultArbitraryGenerator(
+		UnaryOperator<ArbitraryGenerator> arbitraryGeneratorUnaryOperator
+	) {
+		this.fixtureMonkeyOptionsBuilder.defaultArbitraryGenerator(arbitraryGeneratorUnaryOperator);
 		return this;
 	}
 

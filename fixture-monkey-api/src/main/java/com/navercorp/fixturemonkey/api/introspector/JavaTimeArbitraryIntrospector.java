@@ -76,9 +76,9 @@ public final class JavaTimeArbitraryIntrospector implements ArbitraryIntrospecto
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
 		Class<?> type = Types.getActualType(context.getResolvedType());
 		return this.introspector.getOrDefault(
-			type,
-			ctx -> ArbitraryIntrospectorResult.EMPTY
-		)
+				type,
+				ctx -> ArbitraryIntrospectorResult.NOT_INTROSPECTED
+			)
 			.apply(context);
 	}
 

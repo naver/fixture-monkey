@@ -46,7 +46,7 @@ public final class FieldReflectionArbitraryIntrospector implements ArbitraryIntr
 		Property property = context.getResolvedProperty();
 		Class<?> type = Types.getActualType(property.getType());
 		if (Modifier.isAbstract(type.getModifiers())) {
-			return ArbitraryIntrospectorResult.EMPTY;
+			return ArbitraryIntrospectorResult.NOT_INTROSPECTED;
 		}
 
 		List<ArbitraryProperty> childrenProperties = context.getChildren();

@@ -22,7 +22,9 @@ package com.navercorp.fixturemonkey.test;
 import java.beans.ConstructorProperties;
 import java.lang.reflect.AnnotatedType;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import net.jqwik.api.Arbitraries;
 
@@ -36,6 +38,7 @@ import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
+import com.navercorp.fixturemonkey.api.generator.ArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.generator.ContainerProperty;
@@ -209,7 +212,7 @@ class FixtureMonkeyOptionsAdditionalTestSpecs {
 			ArbitraryProperty property = context.getArbitraryProperty();
 			ArbitraryContainerInfo containerInfo = property.getContainerProperty().getContainerInfo();
 			if (containerInfo == null) {
-				return ArbitraryIntrospectorResult.EMPTY;
+				return ArbitraryIntrospectorResult.NOT_INTROSPECTED;
 			}
 
 			List<CombinableArbitrary> elementCombinableArbitraryList = context.getElementCombinableArbitraryList();
@@ -365,5 +368,29 @@ class FixtureMonkeyOptionsAdditionalTestSpecs {
 	@Data
 	public static class GetterInterfaceImplementation2 implements GetterInterface {
 		private String value;
+	}
+
+	public static class UniqueArbitraryGenerator implements ArbitraryGenerator {
+		private static final Set<Object> UNIQUE = new HashSet<>();
+
+		private final ArbitraryGenerator delegate;
+
+		public UniqueArbitraryGenerator(ArbitraryGenerator delegate) {
+			this.delegate = delegate;
+		}
+
+		@Override
+		public CombinableArbitrary generate(ArbitraryGeneratorContext context) {
+			return delegate.generate(context)
+				.filter(
+					obj -> {
+						if (!UNIQUE.contains(obj)) {
+							UNIQUE.add(obj);
+							return true;
+						}
+						return false;
+					}
+				);
+		}
 	}
 }
