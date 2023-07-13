@@ -18,8 +18,6 @@
 
 package com.navercorp.fixturemonkey.api.introspector;
 
-import static com.navercorp.fixturemonkey.api.arbitrary.ContainerCombineArbitraryBuilder.DEFAULT_MAX_UNIQUE_GENERATION_COUNT;
-
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -55,7 +53,7 @@ public final class SetIntrospector implements ArbitraryIntrospector, Matcher {
 
 		List<CombinableArbitrary> elementArbitraryList = context.getElementCombinableArbitraryList().stream()
 			.map(it -> it.filter(
-					DEFAULT_MAX_UNIQUE_GENERATION_COUNT,
+					context.getGenerateUniqueMaxTries(),
 					element -> context.isUniqueAndCheck(
 						context.getPropertyPath(),
 						element

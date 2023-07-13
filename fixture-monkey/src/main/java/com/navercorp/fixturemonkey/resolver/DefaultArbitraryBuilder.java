@@ -48,6 +48,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
+import com.navercorp.fixturemonkey.api.context.MonkeyContext;
 import com.navercorp.fixturemonkey.api.expression.ExpressionGenerator;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
@@ -67,8 +68,6 @@ import com.navercorp.fixturemonkey.tree.ArbitraryTraverser;
 @SuppressFBWarnings("NM_SAME_SIMPLE_NAME_AS_SUPERCLASS")
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T> {
-	private static final int GENERATION_COUNT = 500;
-
 	private final FixtureMonkeyOptions fixtureMonkeyOptions;
 	private final RootProperty rootProperty;
 	private final ArbitraryResolver resolver;
@@ -77,6 +76,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T> {
 	private final MonkeyManipulatorFactory monkeyManipulatorFactory;
 	private final ArbitraryBuilderContext context;
 	private final List<MatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuilders;
+	private final MonkeyContext monkeyContext;
 
 	public DefaultArbitraryBuilder(
 		FixtureMonkeyOptions fixtureMonkeyOptions,
@@ -86,7 +86,8 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T> {
 		ArbitraryValidator validator,
 		MonkeyManipulatorFactory monkeyManipulatorFactory,
 		ArbitraryBuilderContext context,
-		List<MatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuilders
+		List<MatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuilders,
+		MonkeyContext monkeyContext
 	) {
 		this.fixtureMonkeyOptions = fixtureMonkeyOptions;
 		this.rootProperty = rootProperty;
@@ -96,6 +97,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T> {
 		this.context = context;
 		this.monkeyManipulatorFactory = monkeyManipulatorFactory;
 		this.registeredArbitraryBuilders = registeredArbitraryBuilders;
+		this.monkeyContext = monkeyContext;
 	}
 
 	@Override
@@ -434,7 +436,8 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T> {
 			validator,
 			monkeyManipulatorFactory,
 			context.copy(),
-			registeredArbitraryBuilders
+			registeredArbitraryBuilders,
+			monkeyContext
 		);
 	}
 
@@ -455,7 +458,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T> {
 						manipulators,
 						containerInfoManipulators
 					)
-					.filter(GENERATION_COUNT, validateFilter(context.isValidOnly()))
+					.filter(fixtureMonkeyOptions.getGenerateMaxTries(), validateFilter(context.isValidOnly()))
 					.combined();
 				context.addManipulator(monkeyManipulatorFactory.newArbitraryManipulator("$", fixed));
 				context.renewFixed(CombinableArbitrary.from(fixed));
@@ -468,7 +471,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T> {
 				manipulators,
 				containerInfoManipulators
 			)
-			.filter(GENERATION_COUNT, validateFilter(context.isValidOnly()));
+			.filter(fixtureMonkeyOptions.getGenerateMaxTries(), validateFilter(context.isValidOnly()));
 	}
 
 	private String resolveExpression(ExpressionGenerator expressionGenerator) {
@@ -492,7 +495,8 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T> {
 			validator,
 			monkeyManipulatorFactory,
 			context,
-			registeredArbitraryBuilders
+			registeredArbitraryBuilders,
+			monkeyContext
 		);
 	}
 

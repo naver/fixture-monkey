@@ -64,13 +64,16 @@ public final class ArbitraryGeneratorContext implements Traceable {
 	private final LazyArbitrary<Map<ArbitraryProperty, CombinableArbitrary>> arbitraryListByArbitraryProperty =
 		LazyArbitrary.lazy(this::initArbitraryListByArbitraryProperty);
 
+	private final int generateUniqueMaxTries;
+
 	public ArbitraryGeneratorContext(
 		Property resolvedProperty,
 		ArbitraryProperty property,
 		List<ArbitraryProperty> children,
 		@Nullable ArbitraryGeneratorContext ownerContext,
 		BiFunction<ArbitraryGeneratorContext, ArbitraryProperty, CombinableArbitrary> resolveArbitrary,
-		MonkeyGeneratorContext monkeyGeneratorContext
+		MonkeyGeneratorContext monkeyGeneratorContext,
+		int generateUniqueMaxTries
 	) {
 		this.resolvedProperty = resolvedProperty;
 		this.property = property;
@@ -78,6 +81,7 @@ public final class ArbitraryGeneratorContext implements Traceable {
 		this.ownerContext = ownerContext;
 		this.resolveArbitrary = resolveArbitrary;
 		this.monkeyGeneratorContext = monkeyGeneratorContext;
+		this.generateUniqueMaxTries = generateUniqueMaxTries;
 	}
 
 	public ArbitraryProperty getArbitraryProperty() {
@@ -142,6 +146,10 @@ public final class ArbitraryGeneratorContext implements Traceable {
 
 	public PropertyPath getPropertyPath() {
 		return pathProperty.getValue();
+	}
+
+	public int getGenerateUniqueMaxTries() {
+		return generateUniqueMaxTries;
 	}
 
 	private PropertyPath initPathProperty() {

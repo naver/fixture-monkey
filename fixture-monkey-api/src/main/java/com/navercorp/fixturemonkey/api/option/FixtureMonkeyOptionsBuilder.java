@@ -21,6 +21,7 @@ package com.navercorp.fixturemonkey.api.option;
 import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.DEFAULT_NOTNULL_ANNOTATION_TYPES;
 import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.DEFAULT_NULLABLE_ANNOTATION_TYPES;
 import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.DEFAULT_NULL_INJECT;
+import static com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions.DEFAULT_MAX_UNIQUE_GENERATION_COUNT;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,6 +38,7 @@ import javax.annotation.Nullable;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.container.DecomposableJavaContainer;
 import com.navercorp.fixturemonkey.api.container.DecomposedContainerValueFactory;
 import com.navercorp.fixturemonkey.api.container.DefaultDecomposedContainerValueFactory;
@@ -103,6 +105,8 @@ public final class FixtureMonkeyOptionsBuilder {
 			}
 		);
 	private final Map<Class<?>, DecomposedContainerValueFactory> decomposableContainerFactoryMap = new HashMap<>();
+	private int generateMaxTries = CombinableArbitrary.DEFAULT_MAX_TRIES;
+	private int generateUniqueMaxTries = DEFAULT_MAX_UNIQUE_GENERATION_COUNT;
 
 	FixtureMonkeyOptionsBuilder() {
 	}
@@ -508,6 +512,16 @@ public final class FixtureMonkeyOptionsBuilder {
 		return this;
 	}
 
+	public FixtureMonkeyOptionsBuilder generateMaxTries(int generateMaxCount) {
+		this.generateMaxTries = generateMaxCount;
+		return this;
+	}
+
+	public FixtureMonkeyOptionsBuilder generateUniqueMaxTries(int generateUniqueMaxTries) {
+		this.generateUniqueMaxTries = generateUniqueMaxTries;
+		return this;
+	}
+
 	public FixtureMonkeyOptions build() {
 		ObjectPropertyGenerator defaultObjectPropertyGenerator = defaultIfNull(
 			this.defaultObjectPropertyGenerator,
@@ -587,7 +601,9 @@ public final class FixtureMonkeyOptionsBuilder {
 			this.arbitraryGenerators,
 			defaultArbitraryGenerator,
 			this.defaultArbitraryValidator,
-			decomposedContainerValueFactory
+			decomposedContainerValueFactory,
+			this.generateMaxTries,
+			this.generateUniqueMaxTries
 		);
 	}
 

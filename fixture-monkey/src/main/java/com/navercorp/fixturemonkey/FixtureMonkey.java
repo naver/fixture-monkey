@@ -124,7 +124,8 @@ public class FixtureMonkey {
 			this.validator,
 			monkeyManipulatorFactory,
 			new ArbitraryBuilderContext(),
-			registeredArbitraryBuilders
+			registeredArbitraryBuilders,
+			monkeyContext
 		);
 	}
 
@@ -156,7 +157,8 @@ public class FixtureMonkey {
 			this.validator,
 			monkeyManipulatorFactory,
 			context,
-			registeredArbitraryBuilders
+			registeredArbitraryBuilders,
+			monkeyContext
 		);
 	}
 
