@@ -87,7 +87,7 @@ public final class JavaxValidationJavaArbitraryResolver implements JavaArbitrary
 			return Arbitraries.of(values);
 		}
 
-		Arbitrary<String> arbitrary;
+		Arbitrary<String> arbitrary = stringArbitrary;
 		if (context.findAnnotation(Email.class).isPresent()) {
 			arbitrary = Web.emails().allowIpv4Host();
 			if (min != null) {
@@ -118,8 +118,6 @@ public final class JavaxValidationJavaArbitraryResolver implements JavaArbitrary
 				if (!notBlank) {
 					if (it == null) {
 						return true;
-					} else {
-						return !containsControlCharacters(it);
 					}
 				}
 
@@ -127,7 +125,7 @@ public final class JavaxValidationJavaArbitraryResolver implements JavaArbitrary
 					return false;
 				}
 
-				return !containsControlCharacters(it);
+				return true;
 			});
 	}
 

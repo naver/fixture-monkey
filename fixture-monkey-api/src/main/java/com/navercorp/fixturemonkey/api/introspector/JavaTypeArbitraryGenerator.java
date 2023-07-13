@@ -33,11 +33,22 @@ import net.jqwik.api.arbitraries.LongArbitrary;
 import net.jqwik.api.arbitraries.ShortArbitrary;
 import net.jqwik.api.arbitraries.StringArbitrary;
 
+import com.navercorp.fixturemonkey.api.arbitrary.MonkeyStringArbitrary;
+
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public interface JavaTypeArbitraryGenerator {
 
 	default StringArbitrary strings() {
-		return Arbitraries.strings();
+		return monkeyStrings();
+	}
+
+	/**
+	 * Generate a MonkeyStringArbitrary object filtered so that it doesn't contain a ISOControl character
+	 *
+	 * @return the filtered MonkeyStringArbitrary object
+	 */
+	default MonkeyStringArbitrary monkeyStrings() {
+		return new MonkeyStringArbitrary().filterCharacter(c -> !Character.isISOControl(c));
 	}
 
 	default CharacterArbitrary characters() {

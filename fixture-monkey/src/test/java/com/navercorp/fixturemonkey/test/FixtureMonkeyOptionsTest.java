@@ -1458,12 +1458,43 @@ class FixtureMonkeyOptionsTest {
 
 	@Property
 	void filterWithMonkeyStringArbitrary() {
+		FixtureMonkey sut = FixtureMonkey.builder().javaTypeArbitraryGenerator(new JavaTypeArbitraryGenerator() {
+			@Override
+			public StringArbitrary strings() {
+				return new MonkeyStringArbitrary().filterCharacter(Character::isUpperCase);
+			}
+		}).build();
+
+		String actual = sut.giveMeOne(String.class);
+
+		then(actual).isUpperCase();
+	}
+
+	@Property
+	void filterIsoControlCharacterWithMonkeyStringArbitrary() {
+		FixtureMonkey sut = FixtureMonkey.builder().build();
+
+		String actual = sut.giveMeOne(String.class);
+
+		then(actual).matches(value -> {
+			for (char c : value.toCharArray()) {
+				if (Character.isISOControl(c)) {
+					return false;
+				}
+			}
+			return true;
+		});
+	}
+
+	@Property
+	void multipleFiltersWithMonkeyStringArbitrary() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.javaTypeArbitraryGenerator(
 				new JavaTypeArbitraryGenerator() {
 					@Override
-					public StringArbitrary strings() {
-						return new MonkeyStringArbitrary().filterCharacter(c -> Character.isUpperCase(c));
+					public MonkeyStringArbitrary monkeyStrings() {
+						return new MonkeyStringArbitrary().filterCharacter(c -> !Character.isISOControl(c))
+							.filterCharacter(Character::isUpperCase);
 					}
 				}
 			)
@@ -1471,6 +1502,13 @@ class FixtureMonkeyOptionsTest {
 
 		String actual = sut.giveMeOne(String.class);
 
-		then(actual).isUpperCase();
+		then(actual).matches(value -> {
+			for (char c : value.toCharArray()) {
+				if (Character.isISOControl(c) || !Character.isUpperCase(c)) {
+					return false;
+				}
+			}
+			return true;
+		});
 	}
 }
