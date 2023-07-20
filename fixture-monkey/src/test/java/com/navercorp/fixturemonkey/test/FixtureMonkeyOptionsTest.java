@@ -1563,4 +1563,112 @@ class FixtureMonkeyOptionsTest {
 
 		then(actual).matches("(a|b){2,3}");
 	}
+
+	@Property
+	void letterifyExpressionFakerOption() {
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.javaTypeArbitraryGenerator(
+				new JavaTypeArbitraryGenerator() {
+					@Override
+					public MonkeyStringArbitrary monkeyStrings() {
+						return new MonkeyStringArbitrary().addFakerExpression("#{letterify 'test????test'}");
+					}
+				}
+			)
+			.build();
+
+		String actual = sut.giveMeOne(String.class);
+
+		then(actual).matches("test[a-zA-Z]{4}test");
+	}
+
+	@Property
+	void numerifyExpressionFakerOption() {
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.javaTypeArbitraryGenerator(
+				new JavaTypeArbitraryGenerator() {
+					@Override
+					public MonkeyStringArbitrary monkeyStrings() {
+						return new MonkeyStringArbitrary().addFakerExpression("#{numerify '####'}");
+					}
+				}
+			)
+			.build();
+
+		String actual = sut.giveMeOne(String.class);
+
+		then(actual).matches("[0-9]{4}");
+	}
+
+	@Property
+	void bothifyExpressionFakerOption() {
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.javaTypeArbitraryGenerator(
+				new JavaTypeArbitraryGenerator() {
+					@Override
+					public MonkeyStringArbitrary monkeyStrings() {
+						return new MonkeyStringArbitrary().addFakerExpression("#{bothify '?#?#?#?#'}");
+					}
+				}
+			)
+			.build();
+
+		String actual = sut.giveMeOne(String.class);
+
+		then(actual).matches("([a-zA-Z][0-9]){4}");
+	}
+
+	@Property
+	void templatifyExpressionFakerOption() {
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.javaTypeArbitraryGenerator(
+				new JavaTypeArbitraryGenerator() {
+					@Override
+					public MonkeyStringArbitrary monkeyStrings() {
+						return new MonkeyStringArbitrary().addFakerExpression("#{templatify 'test','t','q','@'}");
+					}
+				}
+			)
+			.build();
+
+		String actual = sut.giveMeOne(String.class);
+
+		then(actual).matches("[@q]es[@q]");
+	}
+
+	@Property
+	void examplifyExpressionFakerOption() {
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.javaTypeArbitraryGenerator(
+				new JavaTypeArbitraryGenerator() {
+					@Override
+					public MonkeyStringArbitrary monkeyStrings() {
+						return new MonkeyStringArbitrary().addFakerExpression("#{examplify 'ABC'}");
+					}
+				}
+			)
+			.build();
+
+		String actual = sut.giveMeOne(String.class);
+
+		then(actual).matches("[A-Z]{3}");
+	}
+
+	@Property
+	void regexifyExpressionFakerOption() {
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.javaTypeArbitraryGenerator(
+				new JavaTypeArbitraryGenerator() {
+					@Override
+					public MonkeyStringArbitrary monkeyStrings() {
+						return new MonkeyStringArbitrary().addFakerExpression("#{regexify '(a|b){2,3}'}");
+					}
+				}
+			)
+			.build();
+
+		String actual = sut.giveMeOne(String.class);
+
+		then(actual).matches("(a|b){2,3}");
+	}
 }
