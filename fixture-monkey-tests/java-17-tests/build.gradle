@@ -3,5 +3,8 @@ java {
 }
 
 dependencies {
+    implementation project(path: ':fixture-monkey-api')
     testImplementation(project(":fixture-monkey-jackson"))
+
+    implementation("net.datafaker:datafaker:2.0.1")
 }

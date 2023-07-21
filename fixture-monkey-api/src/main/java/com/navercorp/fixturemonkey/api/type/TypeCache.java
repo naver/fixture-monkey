@@ -44,7 +44,7 @@ import org.apiguardian.api.API.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.navercorp.fixturemonkey.api.container.LruCache;
+import com.navercorp.fixturemonkey.api.container.ConcurrentLruCache;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class TypeCache {
@@ -53,10 +53,10 @@ public final class TypeCache {
 	private static final Map<PropertyDescriptor, AnnotatedType> PROPERTY_DESCRIPTOR_ANNOTATED_TYPE_MAP =
 		new ConcurrentHashMap<>(2048);
 	private static final Map<Class<?>, Map<String, PropertyDescriptor>> PROPERTY_DESCRIPTORS =
-		new LruCache<>(2048);
-	private static final Map<Class<?>, Map<String, Field>> FIELDS = new LruCache<>(2048);
+		new ConcurrentLruCache<>(2048);
+	private static final Map<Class<?>, Map<String, Field>> FIELDS = new ConcurrentLruCache<>(2048);
 	private static final Map<Class<?>, Map.Entry<Constructor<?>, String[]>> PARAMETER_NAMES_BY_PRIMARY_CONSTRUCTOR =
-		new LruCache<>(2048);
+		new ConcurrentLruCache<>(2048);
 
 	public static AnnotatedType getAnnotatedType(Field field) {
 		return FIELD_ANNOTATED_TYPE_MAP.computeIfAbsent(field, Field::getAnnotatedType);

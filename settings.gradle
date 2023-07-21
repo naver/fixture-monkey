@@ -19,4 +19,7 @@ include 'fixture-monkey-tests:kotlin-tests'
 findProject(':fixture-monkey-tests:kotlin-tests')?.name = 'kotlin-tests'
 include 'fixture-monkey-tests:java-tests'
 findProject(':fixture-monkey-tests:java-tests')?.name = 'java-tests'
+include 'fixture-monkey-tests:java-concurrent-tests'
+findProject(':fixture-monkey-tests:java-concurrent-tests')?.name = 'java-concurrent-tests'
+include 'practicemodule'
 

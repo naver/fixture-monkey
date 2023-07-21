@@ -161,11 +161,11 @@ public class FixtureMonkey {
 	}
 
 	public <T> Stream<T> giveMe(Class<T> type) {
-		return this.giveMeBuilder(type).build().sampleStream();
+		return Stream.generate(() -> this.giveMeBuilder(type).sample());
 	}
 
 	public <T> Stream<T> giveMe(TypeReference<T> typeReference) {
-		return this.giveMeBuilder(typeReference).build().sampleStream();
+		return Stream.generate(() -> this.giveMeBuilder(typeReference).sample());
 	}
 
 	public <T> List<T> giveMe(Class<T> type, int size) {

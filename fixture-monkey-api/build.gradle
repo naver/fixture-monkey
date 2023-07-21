@@ -21,6 +21,8 @@ dependencies {
     testImplementation("org.assertj:assertj-core:3.22.0")
     testImplementation("net.jqwik:jqwik-time:${JQWIK_VERSION}")
     testAnnotationProcessor("org.projectlombok:lombok:1.18.24")
+
+    implementation("net.datafaker:datafaker:2.0.1")
 }
 
 configurations.compileOnly {
