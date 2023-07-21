@@ -55,7 +55,7 @@ public final class MapEntryIntrospector implements ArbitraryIntrospector, Matche
 		}
 		ArbitraryContainerInfo containerInfo = containerProperty.getContainerInfo();
 		if (containerInfo == null) {
-			return ArbitraryIntrospectorResult.EMPTY;
+			return ArbitraryIntrospectorResult.NOT_INTROSPECTED;
 		}
 
 		List<CombinableArbitrary> elementCombinableArbitraryList = context.getElementCombinableArbitraryList();

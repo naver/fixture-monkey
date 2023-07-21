@@ -48,7 +48,7 @@ public final class BeanArbitraryIntrospector implements ArbitraryIntrospector {
 		Property property = context.getResolvedProperty();
 		Class<?> type = Types.getActualType(property.getType());
 		if (Modifier.isAbstract(type.getModifiers())) {
-			return ArbitraryIntrospectorResult.EMPTY;
+			return ArbitraryIntrospectorResult.NOT_INTROSPECTED;
 		}
 
 		Map<ArbitraryProperty, CombinableArbitrary> arbitrariesByArbitraryProperty =

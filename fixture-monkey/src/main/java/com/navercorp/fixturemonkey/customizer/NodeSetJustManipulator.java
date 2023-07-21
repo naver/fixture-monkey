@@ -35,6 +35,11 @@ public final class NodeSetJustManipulator implements NodeManipulator {
 
 	@Override
 	public void manipulate(ObjectNode objectNode) {
-		objectNode.setArbitrary(CombinableArbitrary.from(value.getValue()));
+		Object exactValue = value.getValue();
+		if (exactValue instanceof CombinableArbitrary) {
+			objectNode.setArbitrary((CombinableArbitrary)exactValue);
+		} else {
+			objectNode.setArbitrary(CombinableArbitrary.from(exactValue));
+		}
 	}
 }

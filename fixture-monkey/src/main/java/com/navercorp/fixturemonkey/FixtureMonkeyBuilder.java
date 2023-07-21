@@ -25,13 +25,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.container.DecomposedContainerValueFactory;
 import com.navercorp.fixturemonkey.api.context.MonkeyContext;
+import com.navercorp.fixturemonkey.api.context.MonkeyContextBuilder;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfoGenerator;
+import com.navercorp.fixturemonkey.api.generator.ArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.generator.ContainerPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.InterfaceObjectPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.NullInjectGenerator;
@@ -71,6 +74,7 @@ public class FixtureMonkeyBuilder {
 		registeredArbitraryBuilders = new ArrayList<>();
 	private ManipulatorOptimizer manipulatorOptimizer = new NoneManipulatorOptimizer();
 	private MonkeyExpressionFactory monkeyExpressionFactory = new ArbitraryExpressionFactory();
+	private final MonkeyContextBuilder monkeyContextBuilder = MonkeyContext.builder();
 
 	public FixtureMonkeyBuilder pushPropertyGenerator(MatcherOperator<PropertyGenerator> propertyGenerator) {
 		fixtureMonkeyOptionsBuilder.insertFirstPropertyGenerator(propertyGenerator);
@@ -488,16 +492,34 @@ public class FixtureMonkeyBuilder {
 		return this;
 	}
 
+	public FixtureMonkeyBuilder defaultArbitraryGenerator(
+		UnaryOperator<ArbitraryGenerator> arbitraryGeneratorUnaryOperator
+	) {
+		this.fixtureMonkeyOptionsBuilder.defaultArbitraryGenerator(arbitraryGeneratorUnaryOperator);
+		return this;
+	}
+
+	public FixtureMonkeyBuilder generateMaxTries(int generateMaxTries) {
+		fixtureMonkeyOptionsBuilder.generateMaxTries(generateMaxTries);
+		return this;
+	}
+
+	public FixtureMonkeyBuilder generateUniqueMaxTries(int generateUniqueMaxTries) {
+		fixtureMonkeyOptionsBuilder.generateUniqueMaxTries(generateUniqueMaxTries);
+		return this;
+	}
+
 	public FixtureMonkey build() {
 		FixtureMonkeyOptions fixtureMonkeyOptions = fixtureMonkeyOptionsBuilder.build();
 		ArbitraryTraverser traverser = new ArbitraryTraverser(fixtureMonkeyOptions);
 
+		MonkeyContext monkeyContext = monkeyContextBuilder.build();
 		return new FixtureMonkey(
 			fixtureMonkeyOptions,
 			traverser,
 			manipulatorOptimizer,
 			fixtureMonkeyOptions.getDefaultArbitraryValidator(),
-			MonkeyContext.builder().build(),
+			monkeyContext,
 			registeredArbitraryBuilders,
 			monkeyExpressionFactory
 		);

@@ -53,7 +53,7 @@ public final class JsonNodeIntrospector implements ArbitraryIntrospector {
 		ArbitraryProperty property = context.getArbitraryProperty();
 		ContainerProperty containerProperty = property.getContainerProperty();
 		if (containerProperty == null || containerProperty.getContainerInfo() == null) {
-			return ArbitraryIntrospectorResult.EMPTY;
+			return ArbitraryIntrospectorResult.NOT_INTROSPECTED;
 		}
 
 		return new ArbitraryIntrospectorResult(

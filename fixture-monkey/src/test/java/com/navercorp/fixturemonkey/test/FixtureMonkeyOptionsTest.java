@@ -18,6 +18,7 @@
 
 package com.navercorp.fixturemonkey.test;
 
+import static com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary.NOT_GENERATED;
 import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.ALWAYS_NULL_INJECT;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.assertj.core.api.BDDAssertions.thenNoException;
@@ -45,14 +46,17 @@ import net.jqwik.time.api.arbitraries.InstantArbitrary;
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.FixtureMonkey;
+import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.arbitrary.MonkeyStringArbitrary;
 import com.navercorp.fixturemonkey.api.container.DecomposableJavaContainer;
 import com.navercorp.fixturemonkey.api.exception.FilterMissException;
 import com.navercorp.fixturemonkey.api.exception.ValidationFailedException;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
+import com.navercorp.fixturemonkey.api.generator.CompositeArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator;
 import com.navercorp.fixturemonkey.api.generator.DefaultObjectPropertyGenerator;
+import com.navercorp.fixturemonkey.api.generator.IntrospectedArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGenerator;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult;
 import com.navercorp.fixturemonkey.api.introspector.BuilderArbitraryIntrospector;
@@ -95,6 +99,7 @@ import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.
 import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.SelfRecursiveAbstractValue;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.SelfRecursiveImplementationValue;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.SimpleObjectChild;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.UniqueArbitraryGenerator;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.ComplexObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.Interface;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.InterfaceFieldImplementationValue;
@@ -110,31 +115,22 @@ class FixtureMonkeyOptionsTest {
 	void strictModeSetWrongExpressionThrows() {
 		FixtureMonkey sut = FixtureMonkey.builder().useExpressionStrictMode().build();
 
-		thenThrownBy(
-			() -> sut.giveMeBuilder(String.class)
-				.set("nonExistentField", 0)
-				.sample()
-		).isExactlyInstanceOf(IllegalArgumentException.class)
-			.hasMessageContaining("No matching results for given NodeResolvers.");
+		thenThrownBy(() -> sut.giveMeBuilder(String.class).set("nonExistentField", 0).sample()).isExactlyInstanceOf(
+			IllegalArgumentException.class).hasMessageContaining("No matching results for given NodeResolvers.");
 	}
 
 	@Property
 	void notStrictModeSetWrongExpressionDoesNotThrows() {
 		FixtureMonkey sut = FixtureMonkey.builder().build();
 
-		thenNoException()
-			.isThrownBy(() -> sut.giveMeBuilder(String.class)
-				.set("nonExistentField", 0)
-				.sample());
+		thenNoException().isThrownBy(() -> sut.giveMeBuilder(String.class).set("nonExistentField", 0).sample());
 	}
 
 	@Property
 	void alterDefaultArbitraryPropertyGenerator() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.defaultObjectPropertyGenerator(
-				(context) -> DefaultObjectPropertyGenerator.INSTANCE.generate(context)
-					.withNullInject(1.0)
-			)
+				(context) -> DefaultObjectPropertyGenerator.INSTANCE.generate(context).withNullInject(1.0))
 			.build();
 
 		ComplexObject actual = sut.giveMeOne(ComplexObject.class);
@@ -145,11 +141,8 @@ class FixtureMonkeyOptionsTest {
 	@Property
 	void pushAssignableTypeArbitraryPropertyGenerator() {
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.pushAssignableTypeObjectPropertyGenerator(
-				SimpleObject.class,
-				(context) -> DefaultObjectPropertyGenerator.INSTANCE.generate(context)
-					.withNullInject(1.0)
-			)
+			.pushAssignableTypeObjectPropertyGenerator(SimpleObject.class,
+				(context) -> DefaultObjectPropertyGenerator.INSTANCE.generate(context).withNullInject(1.0))
 			.build();
 
 		SimpleObjectChild actual = sut.giveMeOne(SimpleObjectChild.class);
@@ -160,11 +153,8 @@ class FixtureMonkeyOptionsTest {
 	@Property
 	void pushExactTypeArbitraryPropertyGenerator() {
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.pushExactTypeObjectPropertyGenerator(
-				SimpleObjectChild.class,
-				(context) -> DefaultObjectPropertyGenerator.INSTANCE.generate(context)
-					.withNullInject(1.0)
-			)
+			.pushExactTypeObjectPropertyGenerator(SimpleObjectChild.class,
+				(context) -> DefaultObjectPropertyGenerator.INSTANCE.generate(context).withNullInject(1.0))
 			.build();
 
 		SimpleObjectChild actual = sut.giveMeOne(SimpleObjectChild.class);
@@ -175,11 +165,8 @@ class FixtureMonkeyOptionsTest {
 	@Property
 	void pushExactTypeArbitraryPropertyGeneratorNotAffectsAssignable() {
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.pushExactTypeObjectPropertyGenerator(
-				SimpleObject.class,
-				(context) -> DefaultObjectPropertyGenerator.INSTANCE.generate(context)
-					.withNullInject(1.0)
-			)
+			.pushExactTypeObjectPropertyGenerator(SimpleObject.class,
+				(context) -> DefaultObjectPropertyGenerator.INSTANCE.generate(context).withNullInject(1.0))
 			.build();
 
 		SimpleObjectChild actual = sut.giveMeOne(SimpleObjectChild.class);
@@ -189,16 +176,11 @@ class FixtureMonkeyOptionsTest {
 
 	@Property
 	void pushObjectPropertyGenerator() {
-		ObjectPropertyGenerator arbitraryPropertyGenerator = (context) ->
-			DefaultObjectPropertyGenerator.INSTANCE.generate(context)
-				.withNullInject(1.0);
+		ObjectPropertyGenerator arbitraryPropertyGenerator = (context) -> DefaultObjectPropertyGenerator.INSTANCE.generate(
+			context).withNullInject(1.0);
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.pushObjectPropertyGenerator(
-				MatcherOperator.exactTypeMatchOperator(
-					SimpleObject.class,
-					arbitraryPropertyGenerator
-				)
-			)
+				MatcherOperator.exactTypeMatchOperator(SimpleObject.class, arbitraryPropertyGenerator))
 			.build();
 
 		SimpleObject actual = sut.giveMeOne(SimpleObject.class);
@@ -209,10 +191,7 @@ class FixtureMonkeyOptionsTest {
 	@Property
 	void pushAssignableTypeNullInjectGenerator() {
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.pushAssignableTypeNullInjectGenerator(
-				SimpleObject.class,
-				(context) -> 1.0d
-			)
+			.pushAssignableTypeNullInjectGenerator(SimpleObject.class, (context) -> 1.0d)
 			.build();
 
 		SimpleObjectChild actual = sut.giveMeOne(SimpleObjectChild.class);
@@ -223,10 +202,7 @@ class FixtureMonkeyOptionsTest {
 	@Property
 	void pushExactTypeNullInjectGenerator() {
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.pushExactTypeNullInjectGenerator(
-				SimpleObject.class,
-				(context) -> 1.0d
-			)
+			.pushExactTypeNullInjectGenerator(SimpleObject.class, (context) -> 1.0d)
 			.build();
 
 		SimpleObject actual = sut.giveMeOne(SimpleObject.class);
@@ -237,9 +213,7 @@ class FixtureMonkeyOptionsTest {
 	@Property
 	void pushNullInjectGenerator() {
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.pushNullInjectGenerator(
-				MatcherOperator.exactTypeMatchOperator(SimpleObject.class, (context) -> 1.0d)
-			)
+			.pushNullInjectGenerator(MatcherOperator.exactTypeMatchOperator(SimpleObject.class, (context) -> 1.0d))
 			.build();
 
 		SimpleObject actual = sut.giveMeOne(SimpleObject.class);
@@ -249,9 +223,7 @@ class FixtureMonkeyOptionsTest {
 
 	@Property
 	void defaultNullInjectGenerator() {
-		FixtureMonkey sut = FixtureMonkey.builder()
-			.defaultNullInjectGenerator((context) -> 1.0d)
-			.build();
+		FixtureMonkey sut = FixtureMonkey.builder().defaultNullInjectGenerator((context) -> 1.0d).build();
 
 		SimpleObject actual = sut.giveMeOne(SimpleObject.class);
 
@@ -265,10 +237,7 @@ class FixtureMonkeyOptionsTest {
 			.build();
 		String expected = "test";
 
-		String actual = sut.giveMeBuilder(SimpleObject.class)
-			.set("string", expected)
-			.sample()
-			.getStr();
+		String actual = sut.giveMeBuilder(SimpleObject.class).set("string", expected).sample().getStr();
 
 		then(actual).isEqualTo(expected);
 	}
@@ -296,10 +265,7 @@ class FixtureMonkeyOptionsTest {
 			.build();
 		String expected = "test";
 
-		String actual = sut.giveMeBuilder(SimpleObject.class)
-			.set("string", expected)
-			.sample()
-			.getStr();
+		String actual = sut.giveMeBuilder(SimpleObject.class).set("string", expected).sample().getStr();
 
 		then(actual).isEqualTo(expected);
 	}
@@ -311,10 +277,7 @@ class FixtureMonkeyOptionsTest {
 			.build();
 		String expected = "test";
 
-		String actual = sut.giveMeBuilder(SimpleObject.class)
-			.set("'str'", expected)
-			.sample()
-			.getStr();
+		String actual = sut.giveMeBuilder(SimpleObject.class).set("'str'", expected).sample().getStr();
 
 		then(actual).isEqualTo(expected);
 	}
@@ -322,10 +285,8 @@ class FixtureMonkeyOptionsTest {
 	@Property
 	void pushAssignableTypeArbitraryIntrospector() {
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.pushAssignableTypeArbitraryIntrospector(
-				SimpleObject.class,
-				(context) -> new ArbitraryIntrospectorResult(Arbitraries.just(null))
-			)
+			.pushAssignableTypeArbitraryIntrospector(SimpleObject.class,
+				(context) -> new ArbitraryIntrospectorResult(Arbitraries.just(null)))
 			.build();
 
 		SimpleObjectChild actual = sut.giveMeOne(SimpleObjectChild.class);
@@ -336,10 +297,8 @@ class FixtureMonkeyOptionsTest {
 	@Property
 	void pushExactTypeArbitraryIntrospector() {
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.pushExactTypeArbitraryIntrospector(
-				SimpleObjectChild.class,
-				(context) -> new ArbitraryIntrospectorResult(Arbitraries.just(null))
-			)
+			.pushExactTypeArbitraryIntrospector(SimpleObjectChild.class,
+				(context) -> new ArbitraryIntrospectorResult(Arbitraries.just(null)))
 			.build();
 
 		SimpleObjectChild actual = sut.giveMeOne(SimpleObjectChild.class);
@@ -350,12 +309,8 @@ class FixtureMonkeyOptionsTest {
 	@Property
 	void pushArbitraryIntrospector() {
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.pushArbitraryIntrospector(
-				MatcherOperator.exactTypeMatchOperator(
-					SimpleObjectChild.class,
-					(context) -> new ArbitraryIntrospectorResult(Arbitraries.just(null))
-				)
-			)
+			.pushArbitraryIntrospector(MatcherOperator.exactTypeMatchOperator(SimpleObjectChild.class,
+				(context) -> new ArbitraryIntrospectorResult(Arbitraries.just(null))))
 			.build();
 
 		SimpleObjectChild actual = sut.giveMeOne(SimpleObjectChild.class);
@@ -366,9 +321,7 @@ class FixtureMonkeyOptionsTest {
 	@Property
 	void objectIntrospector() {
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.objectIntrospector(
-				(context) -> new ArbitraryIntrospectorResult(Arbitraries.just(null))
-			)
+			.objectIntrospector((context) -> new ArbitraryIntrospectorResult(Arbitraries.just(null)))
 			.build();
 
 		SimpleObject simpleObject = sut.giveMeOne(SimpleObject.class);
@@ -381,24 +334,18 @@ class FixtureMonkeyOptionsTest {
 	@Property
 	void pushArbitraryContainerInfoGenerator() {
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.pushArbitraryContainerInfoGenerator(
-				new MatcherOperator<>(
-					(property) -> {
-						if (Types.getActualType(property.getType()).isArray()) {
-							return false;
-						}
+			.pushArbitraryContainerInfoGenerator(new MatcherOperator<>((property) -> {
+				if (Types.getActualType(property.getType()).isArray()) {
+					return false;
+				}
 
-						AnnotatedType elementType = Types.getGenericsTypes(property.getAnnotatedType()).get(0);
-						Class<?> type = Types.getActualType(elementType);
-						return type.isAssignableFrom(String.class);
-					},
-					(context) -> new ArbitraryContainerInfo(5, 5)
-				)
-			)
+				AnnotatedType elementType = Types.getGenericsTypes(property.getAnnotatedType()).get(0);
+				Class<?> type = Types.getActualType(elementType);
+				return type.isAssignableFrom(String.class);
+			}, (context) -> new ArbitraryContainerInfo(5, 5)))
 			.build();
 
-		List<String> actual = sut.giveMeOne(ComplexObject.class)
-			.getStrList();
+		List<String> actual = sut.giveMeOne(ComplexObject.class).getStrList();
 
 		then(actual).hasSize(5);
 	}
@@ -406,24 +353,18 @@ class FixtureMonkeyOptionsTest {
 	@Property
 	void pushArbitraryContainerInfoGeneratorNotMatching() {
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.pushArbitraryContainerInfoGenerator(
-				new MatcherOperator<>(
-					(property) -> {
-						if (Types.getActualType(property.getType()).isArray()) {
-							return false;
-						}
+			.pushArbitraryContainerInfoGenerator(new MatcherOperator<>((property) -> {
+				if (Types.getActualType(property.getType()).isArray()) {
+					return false;
+				}
 
-						AnnotatedType elementType = Types.getGenericsTypes(property.getAnnotatedType()).get(0);
-						Class<?> type = Types.getActualType(elementType);
-						return type.isAssignableFrom(String.class);
-					},
-					(context) -> new ArbitraryContainerInfo(5, 5)
-				)
-			)
+				AnnotatedType elementType = Types.getGenericsTypes(property.getAnnotatedType()).get(0);
+				Class<?> type = Types.getActualType(elementType);
+				return type.isAssignableFrom(String.class);
+			}, (context) -> new ArbitraryContainerInfo(5, 5)))
 			.build();
 
-		List<SimpleObject> actual = sut.giveMeOne(ComplexObject.class)
-			.getList();
+		List<SimpleObject> actual = sut.giveMeOne(ComplexObject.class).getList();
 
 		then(actual).hasSizeBetween(0, 3);
 	}
@@ -434,8 +375,7 @@ class FixtureMonkeyOptionsTest {
 			.defaultArbitraryContainerInfoGenerator(context -> new ArbitraryContainerInfo(0, 1))
 			.build();
 
-		List<SimpleObject> actual = sut.giveMeOne(ComplexObject.class)
-			.getList();
+		List<SimpleObject> actual = sut.giveMeOne(ComplexObject.class).getList();
 
 		then(actual).hasSizeLessThanOrEqualTo(1);
 	}
@@ -446,22 +386,19 @@ class FixtureMonkeyOptionsTest {
 			.defaultArbitraryContainerInfoGenerator(context -> new ArbitraryContainerInfo(3, 3))
 			.build();
 
-		List<SimpleObject> actual = sut.giveMeOne(ComplexObject.class)
-			.getList();
+		List<SimpleObject> actual = sut.giveMeOne(ComplexObject.class).getList();
 
 		then(actual).hasSize(3);
 	}
 
 	@Property
 	void javaTypeArbitraryGenerator() {
-		FixtureMonkey sut = FixtureMonkey.builder()
-			.javaTypeArbitraryGenerator(new JavaTypeArbitraryGenerator() {
-				@Override
-				public StringArbitrary strings() {
-					return Arbitraries.strings().numeric();
-				}
-			})
-			.build();
+		FixtureMonkey sut = FixtureMonkey.builder().javaTypeArbitraryGenerator(new JavaTypeArbitraryGenerator() {
+			@Override
+			public StringArbitrary strings() {
+				return Arbitraries.strings().numeric();
+			}
+		}).build();
 
 		String actual = sut.giveMeOne(String.class);
 
@@ -470,31 +407,26 @@ class FixtureMonkeyOptionsTest {
 
 	@Property
 	void javaTypeArbitraryGeneratorAffectsField() {
-		FixtureMonkey sut = FixtureMonkey.builder()
-			.javaTypeArbitraryGenerator(new JavaTypeArbitraryGenerator() {
-				@Override
-				public StringArbitrary strings() {
-					return Arbitraries.strings().numeric();
-				}
-			})
-			.build();
+		FixtureMonkey sut = FixtureMonkey.builder().javaTypeArbitraryGenerator(new JavaTypeArbitraryGenerator() {
+			@Override
+			public StringArbitrary strings() {
+				return Arbitraries.strings().numeric();
+			}
+		}).build();
 
-		String actual = sut.giveMeOne(SimpleObject.class)
-			.getStr();
+		String actual = sut.giveMeOne(SimpleObject.class).getStr();
 
 		then(actual).matches(it -> it == null || Pattern.compile("\\d*").matcher(it).matches());
 	}
 
 	@Property
 	void javaArbitraryResolver() {
-		FixtureMonkey sut = FixtureMonkey.builder()
-			.javaArbitraryResolver(new JavaArbitraryResolver() {
-				@Override
-				public Arbitrary<String> strings(StringArbitrary stringArbitrary, ArbitraryGeneratorContext context) {
-					return Arbitraries.just("test");
-				}
-			})
-			.build();
+		FixtureMonkey sut = FixtureMonkey.builder().javaArbitraryResolver(new JavaArbitraryResolver() {
+			@Override
+			public Arbitrary<String> strings(StringArbitrary stringArbitrary, ArbitraryGeneratorContext context) {
+				return Arbitraries.just("test");
+			}
+		}).build();
 
 		String actual = sut.giveMeOne(String.class);
 
@@ -503,17 +435,14 @@ class FixtureMonkeyOptionsTest {
 
 	@Property
 	void javaArbitraryResolverAffectsField() {
-		FixtureMonkey sut = FixtureMonkey.builder()
-			.javaArbitraryResolver(new JavaArbitraryResolver() {
-				@Override
-				public Arbitrary<String> strings(StringArbitrary stringArbitrary, ArbitraryGeneratorContext context) {
-					return Arbitraries.just("test");
-				}
-			})
-			.build();
+		FixtureMonkey sut = FixtureMonkey.builder().javaArbitraryResolver(new JavaArbitraryResolver() {
+			@Override
+			public Arbitrary<String> strings(StringArbitrary stringArbitrary, ArbitraryGeneratorContext context) {
+				return Arbitraries.just("test");
+			}
+		}).build();
 
-		String actual = sut.giveMeOne(SimpleObject.class)
-			.getStr();
+		String actual = sut.giveMeOne(SimpleObject.class).getStr();
 
 		then(actual).isIn("test", null);
 	}
@@ -547,8 +476,7 @@ class FixtureMonkeyOptionsTest {
 			})
 			.build();
 
-		Instant actual = sut.giveMeOne(SimpleObject.class)
-			.getInstant();
+		Instant actual = sut.giveMeOne(SimpleObject.class).getInstant();
 
 		then(actual).isIn(null, expected);
 	}
@@ -556,17 +484,12 @@ class FixtureMonkeyOptionsTest {
 	@Property
 	void javaTimeArbitraryResolver() {
 		Instant expected = Instant.now();
-		FixtureMonkey sut = FixtureMonkey.builder()
-			.javaTimeArbitraryResolver(new JavaTimeArbitraryResolver() {
-				@Override
-				public Arbitrary<Instant> instants(
-					InstantArbitrary instantArbitrary,
-					ArbitraryGeneratorContext context
-				) {
-					return Arbitraries.just(expected);
-				}
-			})
-			.build();
+		FixtureMonkey sut = FixtureMonkey.builder().javaTimeArbitraryResolver(new JavaTimeArbitraryResolver() {
+			@Override
+			public Arbitrary<Instant> instants(InstantArbitrary instantArbitrary, ArbitraryGeneratorContext context) {
+				return Arbitraries.just(expected);
+			}
+		}).build();
 
 		Instant actual = sut.giveMeOne(Instant.class);
 
@@ -576,44 +499,32 @@ class FixtureMonkeyOptionsTest {
 	@Property
 	void javaTimeArbitraryResolverAffectsField() {
 		Instant expected = Instant.now();
-		FixtureMonkey sut = FixtureMonkey.builder()
-			.javaTimeArbitraryResolver(new JavaTimeArbitraryResolver() {
-				@Override
-				public Arbitrary<Instant> instants(
-					InstantArbitrary instantArbitrary,
-					ArbitraryGeneratorContext context
-				) {
-					return Arbitraries.just(expected);
-				}
-			})
-			.build();
+		FixtureMonkey sut = FixtureMonkey.builder().javaTimeArbitraryResolver(new JavaTimeArbitraryResolver() {
+			@Override
+			public Arbitrary<Instant> instants(InstantArbitrary instantArbitrary, ArbitraryGeneratorContext context) {
+				return Arbitraries.just(expected);
+			}
+		}).build();
 
-		Instant actual = sut.giveMeOne(SimpleObject.class)
-			.getInstant();
+		Instant actual = sut.giveMeOne(SimpleObject.class).getInstant();
 
 		then(actual).isIn(expected, null);
 	}
 
 	@Property(tries = 1)
 	void alterArbitraryValidator() {
-		FixtureMonkey sut = FixtureMonkey.builder()
-			.arbitraryValidator(obj -> {
-				throw new ValidationFailedException("thrown by test ArbitraryValidator", new HashSet<>());
-			})
-			.build();
+		FixtureMonkey sut = FixtureMonkey.builder().arbitraryValidator(obj -> {
+			throw new ValidationFailedException("thrown by test ArbitraryValidator", new HashSet<>());
+		}).build();
 
-		thenThrownBy(() -> sut.giveMeOne(String.class))
-			.isExactlyInstanceOf(FilterMissException.class);
+		thenThrownBy(() -> sut.giveMeOne(String.class)).isExactlyInstanceOf(FilterMissException.class);
 	}
 
 	@Property
 	void defaultNotNull() {
-		FixtureMonkey sut = FixtureMonkey.builder()
-			.defaultNotNull(true)
-			.build();
+		FixtureMonkey sut = FixtureMonkey.builder().defaultNotNull(true).build();
 
-		String actual = sut.giveMeOne(SimpleObject.class)
-			.getStr();
+		String actual = sut.giveMeOne(SimpleObject.class).getStr();
 
 		then(actual).isNotNull();
 	}
@@ -622,29 +533,19 @@ class FixtureMonkeyOptionsTest {
 	void defaultNotNullNotWorksWhenSetDefaultNullInjectGenerator() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.defaultNullInjectGenerator(
-				new DefaultNullInjectGenerator(
-					ALWAYS_NULL_INJECT,
-					false,
-					false,
-					false,
-					Collections.emptySet(),
-					Collections.emptySet()
-				)
-			)
+				new DefaultNullInjectGenerator(ALWAYS_NULL_INJECT, false, false, false, Collections.emptySet(),
+					Collections.emptySet()))
 			.defaultNotNull(true)
 			.build();
 
-		String actual = sut.giveMeOne(SimpleObject.class)
-			.getStr();
+		String actual = sut.giveMeOne(SimpleObject.class).getStr();
 
 		then(actual).isNull();
 	}
 
 	@Property
 	void pushExceptGenerateType() {
-		FixtureMonkey sut = FixtureMonkey.builder()
-			.pushExceptGenerateType(new ExactTypeMatcher(String.class))
-			.build();
+		FixtureMonkey sut = FixtureMonkey.builder().pushExceptGenerateType(new ExactTypeMatcher(String.class)).build();
 
 		String actual = sut.giveMeOne(String.class);
 
@@ -653,9 +554,7 @@ class FixtureMonkeyOptionsTest {
 
 	@Property
 	void addExceptGenerateClass() {
-		FixtureMonkey sut = FixtureMonkey.builder()
-			.addExceptGenerateClass(String.class)
-			.build();
+		FixtureMonkey sut = FixtureMonkey.builder().addExceptGenerateClass(String.class).build();
 
 		String actual = sut.giveMeOne(String.class);
 
@@ -664,21 +563,16 @@ class FixtureMonkeyOptionsTest {
 
 	@Property
 	void addExceptGenerateClassNotGenerateField() {
-		FixtureMonkey sut = FixtureMonkey.builder()
-			.addExceptGenerateClass(String.class)
-			.build();
+		FixtureMonkey sut = FixtureMonkey.builder().addExceptGenerateClass(String.class).build();
 
-		String actual = sut.giveMeOne(SimpleObject.class)
-			.getStr();
+		String actual = sut.giveMeOne(SimpleObject.class).getStr();
 
 		then(actual).isNull();
 	}
 
 	@Property
 	void addExceptGeneratePackage() {
-		FixtureMonkey sut = FixtureMonkey.builder()
-			.addExceptGeneratePackage("java.lang")
-			.build();
+		FixtureMonkey sut = FixtureMonkey.builder().addExceptGeneratePackage("java.lang").build();
 
 		String actual = sut.giveMeOne(String.class);
 
@@ -687,12 +581,9 @@ class FixtureMonkeyOptionsTest {
 
 	@Property
 	void addExceptGeneratePackageNotGenerateField() {
-		FixtureMonkey sut = FixtureMonkey.builder()
-			.addExceptGeneratePackage("java.lang")
-			.build();
+		FixtureMonkey sut = FixtureMonkey.builder().addExceptGeneratePackage("java.lang").build();
 
-		String actual = sut.giveMeOne(SimpleObject.class)
-			.getStr();
+		String actual = sut.giveMeOne(SimpleObject.class).getStr();
 
 		then(actual).isNull();
 	}
@@ -714,20 +605,16 @@ class FixtureMonkeyOptionsTest {
 			.register(String.class, monkey -> monkey.giveMeBuilder("test"))
 			.build();
 
-		String actual = sut.giveMeOne(SimpleObject.class)
-			.getStr();
+		String actual = sut.giveMeOne(SimpleObject.class).getStr();
 
 		then(actual).isEqualTo("test");
 	}
 
 	@Property
 	void registerGroup() {
-		FixtureMonkey sut = FixtureMonkey.builder()
-			.registerGroup(RegisterGroup.class)
-			.build();
+		FixtureMonkey sut = FixtureMonkey.builder().registerGroup(RegisterGroup.class).build();
 
-		String actual = sut.giveMeOne(SimpleObject.class)
-			.getStr();
+		String actual = sut.giveMeOne(SimpleObject.class).getStr();
 		List<String> actual2 = sut.giveMeOne(new TypeReference<List<String>>() {
 		});
 		ConcreteIntValue actual3 = sut.giveMeOne(ConcreteIntValue.class);
@@ -740,12 +627,9 @@ class FixtureMonkeyOptionsTest {
 
 	@Property
 	void registerBuilderGroup() {
-		FixtureMonkey sut = FixtureMonkey.builder()
-			.registerGroup(new ChildBuilderGroup())
-			.build();
+		FixtureMonkey sut = FixtureMonkey.builder().registerGroup(new ChildBuilderGroup()).build();
 
-		String actual = sut.giveMeOne(SimpleObject.class)
-			.getStr();
+		String actual = sut.giveMeOne(SimpleObject.class).getStr();
 		List<String> actual2 = sut.giveMeOne(new TypeReference<List<String>>() {
 		});
 		ConcreteIntValue actual3 = sut.giveMeOne(ConcreteIntValue.class);
@@ -762,8 +646,7 @@ class FixtureMonkeyOptionsTest {
 			.register(String.class, monkey -> monkey.giveMeBuilder("test2"))
 			.build();
 
-		String actual = sut.giveMeOne(SimpleObject.class)
-			.getStr();
+		String actual = sut.giveMeOne(SimpleObject.class).getStr();
 
 		then(actual).isEqualTo("test2");
 	}
@@ -775,9 +658,7 @@ class FixtureMonkeyOptionsTest {
 			.register(String.class, monkey -> monkey.giveMeBuilder("test"))
 			.build();
 
-		String actual = sut.giveMeBuilder(String.class)
-			.set("$", expected)
-			.sample();
+		String actual = sut.giveMeBuilder(String.class).set("$", expected).sample();
 
 		then(actual).isEqualTo(expected);
 	}
@@ -785,16 +666,8 @@ class FixtureMonkeyOptionsTest {
 	@Property
 	void nullableElement() {
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.defaultNullInjectGenerator(
-				new DefaultNullInjectGenerator(
-					1.0d,
-					false,
-					false,
-					true,
-					Collections.emptySet(),
-					Collections.emptySet()
-				)
-			)
+			.defaultNullInjectGenerator(new DefaultNullInjectGenerator(1.0d, false, false, true, Collections.emptySet(),
+				Collections.emptySet()))
 			.build();
 
 		List<String> actual = sut.giveMeOne(new TypeReference<List<String>>() {
@@ -811,8 +684,7 @@ class FixtureMonkeyOptionsTest {
 			.build();
 
 		Pair<String, String> pair = sut.giveMeBuilder(new TypeReference<Pair<String, String>>() {
-			})
-			.sample();
+		}).sample();
 
 		then(pair).isNotNull();
 	}
@@ -822,24 +694,20 @@ class FixtureMonkeyOptionsTest {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.pushAssignableTypeContainerPropertyGenerator(Pair.class, new PairContainerPropertyGenerator())
 			.pushContainerIntrospector(new PairIntrospector())
-			.defaultDecomposedContainerValueFactory(
-				(obj) -> {
-					if (obj instanceof Pair) {
-						Pair<?, ?> pair = (Pair<?, ?>)obj;
-						List<Object> list = new ArrayList<>();
-						list.add(pair.getFirst());
-						list.add(pair.getSecond());
-						return new DecomposableJavaContainer(list, 2);
-					}
-					throw new IllegalArgumentException(
-						"given type is not supported container : " + obj.getClass().getTypeName()
-					);
+			.defaultDecomposedContainerValueFactory((obj) -> {
+				if (obj instanceof Pair) {
+					Pair<?, ?> pair = (Pair<?, ?>)obj;
+					List<Object> list = new ArrayList<>();
+					list.add(pair.getFirst());
+					list.add(pair.getSecond());
+					return new DecomposableJavaContainer(list, 2);
 				}
-			)
+				throw new IllegalArgumentException(
+					"given type is not supported container : " + obj.getClass().getTypeName());
+			})
 			.build();
 		ArbitraryBuilder<Pair<String, String>> builder = sut.giveMeBuilder(new TypeReference<Pair<String, String>>() {
-			})
-			.fixed();
+		}).fixed();
 
 		Pair<String, String> actual1 = builder.sample();
 		Pair<String, String> actual2 = builder.sample();
@@ -850,22 +718,16 @@ class FixtureMonkeyOptionsTest {
 	@Property
 	void decomposeNewContainerByAddContainerType() {
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.addContainerType(
-				Pair.class,
-				new PairContainerPropertyGenerator(),
-				new PairIntrospector(),
-				(obj) -> {
-					Pair<?, ?> pair = (Pair<?, ?>)obj;
-					List<Object> list = new ArrayList<>();
-					list.add(pair.getFirst());
-					list.add(pair.getSecond());
-					return new DecomposableJavaContainer(list, 2);
-				}
-			)
+			.addContainerType(Pair.class, new PairContainerPropertyGenerator(), new PairIntrospector(), (obj) -> {
+				Pair<?, ?> pair = (Pair<?, ?>)obj;
+				List<Object> list = new ArrayList<>();
+				list.add(pair.getFirst());
+				list.add(pair.getSecond());
+				return new DecomposableJavaContainer(list, 2);
+			})
 			.build();
 		ArbitraryBuilder<Pair<String, String>> builder = sut.giveMeBuilder(new TypeReference<Pair<String, String>>() {
-			})
-			.fixed();
+		}).fixed();
 
 		Pair<String, String> actual1 = builder.sample();
 		Pair<String, String> actual2 = builder.sample();
@@ -879,9 +741,7 @@ class FixtureMonkeyOptionsTest {
 			.plugin((optionsBuilder) -> optionsBuilder.insertFirstNullInjectGenerators(String.class, (context) -> 1.0d))
 			.build();
 
-		String actual = sut.giveMeBuilder(SimpleObject.class)
-			.sample()
-			.getStr();
+		String actual = sut.giveMeBuilder(SimpleObject.class).sample().getStr();
 
 		then(actual).isEqualTo(null);
 	}
@@ -894,10 +754,7 @@ class FixtureMonkeyOptionsTest {
 			.register(SimpleObject.class, fixture -> fixture.giveMeBuilder(SimpleObject.class).set("integer", 1))
 			.build();
 
-		String actual = sut.giveMeBuilder(SimpleObject.class)
-			.setNotNull("str")
-			.sample()
-			.getStr();
+		String actual = sut.giveMeBuilder(SimpleObject.class).setNotNull("str").sample().getStr();
 
 		then(actual).isEqualTo(expected);
 	}
@@ -960,7 +817,8 @@ class FixtureMonkeyOptionsTest {
 		List<String> actual = sut.giveMeBuilder(ComplexObject.class)
 			.size("map", 1)
 			.sample()
-			.getList().stream()
+			.getList()
+			.stream()
 			.map(SimpleObject::getStr)
 			.collect(Collectors.toList());
 
@@ -973,8 +831,7 @@ class FixtureMonkeyOptionsTest {
 			.register(ComplexObject.class, fixture -> fixture.giveMeBuilder(ComplexObject.class).size("strList", 1))
 			.build();
 
-		List<String> actual = sut.giveMeOne(ComplexObject.class)
-			.getStrList();
+		List<String> actual = sut.giveMeOne(ComplexObject.class).getStrList();
 
 		then(actual).hasSize(1);
 	}
@@ -985,8 +842,7 @@ class FixtureMonkeyOptionsTest {
 			.register(StringValue.class, fixture -> fixture.giveMeBuilder(StringValue.class).set("value", "test"))
 			.build();
 
-		List<StringValue> actual = sut.giveMeOne(NestedStringList.class)
-			.getValues();
+		List<StringValue> actual = sut.giveMeOne(NestedStringList.class).getValues();
 
 		then(actual).allMatch(it -> "test".equals(it.getValue()));
 	}
@@ -994,14 +850,11 @@ class FixtureMonkeyOptionsTest {
 	@Property
 	void registerFieldSize() {
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.register(
-				ListStringObject.class,
-				fixture -> fixture.giveMeBuilder(ListStringObject.class).size("values", 1)
-			)
+			.register(ListStringObject.class,
+				fixture -> fixture.giveMeBuilder(ListStringObject.class).size("values", 1))
 			.build();
 
-		List<ListStringObject> actual = sut.giveMeOne(NestedListStringObject.class)
-			.getValues();
+		List<ListStringObject> actual = sut.giveMeOne(NestedListStringObject.class).getValues();
 
 		then(actual).allMatch(it -> it.getValues().size() == 1);
 	}
@@ -1013,10 +866,7 @@ class FixtureMonkeyOptionsTest {
 			.register(String.class, fixture -> fixture.giveMeBuilder(String.class).set(expected))
 			.build();
 
-		List<String> actual = sut.giveMeBuilder(ListStringObject.class)
-			.size("values", 5)
-			.sample()
-			.getValues();
+		List<String> actual = sut.giveMeBuilder(ListStringObject.class).size("values", 5).sample().getValues();
 
 		then(actual).allMatch(expected::equals);
 	}
@@ -1027,10 +877,7 @@ class FixtureMonkeyOptionsTest {
 			.register(ComplexObject.class, fixture -> fixture.giveMeBuilder(ComplexObject.class).size("strList", 3))
 			.build();
 
-		List<String> actual = sut.giveMeBuilder(ComplexObject.class)
-			.size("strList", 10)
-			.sample()
-			.getStrList();
+		List<String> actual = sut.giveMeBuilder(ComplexObject.class).size("strList", 10).sample().getStrList();
 
 		then(actual).hasSize(10);
 	}
@@ -1042,9 +889,7 @@ class FixtureMonkeyOptionsTest {
 			.build();
 
 		List<String> sampled = sut.giveMeBuilder(new TypeReference<List<String>>() {
-			})
-			.minSize("$", 3)
-			.sample();
+		}).minSize("$", 3).sample();
 
 		Set<String> actual = new HashSet<>(sampled);
 		then(actual).hasSizeGreaterThan(1);
@@ -1058,31 +903,18 @@ class FixtureMonkeyOptionsTest {
 			.build();
 
 		SimpleObject actual = sut.giveMeBuilder(new TypeReference<List<ComplexObject>>() {
-			})
-			.size("$", 1)
-			.sample()
-			.get(0)
-			.getObject();
+		}).size("$", 1).sample().get(0).getObject();
 
 		then(actual).isNull();
 	}
 
 	@Property
 	void sampleNullableContainerWhenOptionNullableContainerIsSetReturnsNull() {
-		DefaultNullInjectGenerator nullInjectGenerator = new DefaultNullInjectGenerator(
-			1.0,
-			true,
-			false,
-			false,
-			Collections.emptySet(),
-			Collections.emptySet()
-		);
-		FixtureMonkey sut = FixtureMonkey.builder()
-			.defaultNullInjectGenerator(nullInjectGenerator)
-			.build();
+		DefaultNullInjectGenerator nullInjectGenerator = new DefaultNullInjectGenerator(1.0, true, false, false,
+			Collections.emptySet(), Collections.emptySet());
+		FixtureMonkey sut = FixtureMonkey.builder().defaultNullInjectGenerator(nullInjectGenerator).build();
 
-		List<String> values = sut.giveMeOne(NullableObject.class)
-			.getValues();
+		List<String> values = sut.giveMeOne(NullableObject.class).getValues();
 
 		then(values).isNull();
 	}
@@ -1091,10 +923,8 @@ class FixtureMonkeyOptionsTest {
 	void applySizeWhenRegisteredWithSize() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.register(
-				ListStringObject.class,
-				fixture -> fixture.giveMeBuilder(ListStringObject.class).size("values", 5)
-			)
+			.register(ListStringObject.class,
+				fixture -> fixture.giveMeBuilder(ListStringObject.class).size("values", 5))
 			.build();
 
 		// when
@@ -1110,18 +940,12 @@ class FixtureMonkeyOptionsTest {
 	void sizeWhenRegisterSizeInApply() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.register(
-				ListStringObject.class,
-				fixture -> fixture.giveMeBuilder(ListStringObject.class)
-					.apply((it, builder) -> builder.size("values", 1))
-			)
+			.register(ListStringObject.class, fixture -> fixture.giveMeBuilder(ListStringObject.class)
+				.apply((it, builder) -> builder.size("values", 1)))
 			.build();
 
 		// when
-		List<String> actual = sut.giveMeBuilder(ListStringObject.class)
-			.size("values", 2)
-			.sample()
-			.getValues();
+		List<String> actual = sut.giveMeBuilder(ListStringObject.class).size("values", 2).sample().getValues();
 
 		then(actual).hasSize(2);
 	}
@@ -1130,20 +954,13 @@ class FixtureMonkeyOptionsTest {
 	void sizeWhenRegisterApply() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.register(
-				ListStringObject.class,
-				fixture -> fixture.giveMeBuilder(ListStringObject.class)
-					.size("values", 1)
-					.apply((it, builder) -> {
-					})
-			)
+			.register(ListStringObject.class,
+				fixture -> fixture.giveMeBuilder(ListStringObject.class).size("values", 1).apply((it, builder) -> {
+				}))
 			.build();
 
 		// when
-		List<String> actual = sut.giveMeBuilder(ListStringObject.class)
-			.size("values", 2)
-			.sample()
-			.getValues();
+		List<String> actual = sut.giveMeBuilder(ListStringObject.class).size("values", 2).sample().getValues();
 
 		then(actual).hasSize(2);
 	}
@@ -1191,9 +1008,7 @@ class FixtureMonkeyOptionsTest {
 		implementations.add(GetIntegerFixedValue.class);
 		implementations.add(GetStringFixedValue.class);
 
-		FixtureMonkey sut = FixtureMonkey.builder()
-			.interfaceImplements(GetFixedValue.class, implementations)
-			.build();
+		FixtureMonkey sut = FixtureMonkey.builder().interfaceImplements(GetFixedValue.class, implementations).build();
 
 		// when
 		Object actual = sut.giveMeOne(GetFixedValue.class).get();
@@ -1208,17 +1023,11 @@ class FixtureMonkeyOptionsTest {
 		implementations.add(GetIntegerFixedValue.class);
 		implementations.add(GetStringFixedValue.class);
 
-		FixtureMonkey sut = FixtureMonkey.builder()
-			.interfaceImplements(GetFixedValue.class, implementations)
-			.build();
+		FixtureMonkey sut = FixtureMonkey.builder().interfaceImplements(GetFixedValue.class, implementations).build();
 
 		// when
 		Object actual = sut.giveMeBuilder(new TypeReference<GenericGetFixedValue<GetFixedValue>>() {
-			})
-			.setNotNull("value")
-			.sample()
-			.getValue()
-			.get();
+		}).setNotNull("value").sample().getValue().get();
 
 		then(actual).isIn(1, "fixed");
 	}
@@ -1230,9 +1039,7 @@ class FixtureMonkeyOptionsTest {
 		implementations.add(GetIntegerFixedValue.class);
 		implementations.add(GetStringFixedValue.class);
 
-		FixtureMonkey sut = FixtureMonkey.builder()
-			.interfaceImplements(GetFixedValue.class, implementations)
-			.build();
+		FixtureMonkey sut = FixtureMonkey.builder().interfaceImplements(GetFixedValue.class, implementations).build();
 
 		// when
 		Set<Class<? extends GetFixedValue>> actual = sut.giveMeBuilder(
@@ -1264,8 +1071,7 @@ class FixtureMonkeyOptionsTest {
 			.build();
 
 		Object actual = sut.giveMeOne(new TypeReference<GetFixedValueChild>() {
-			})
-			.get();
+		}).get();
 
 		then(actual).isEqualTo(2);
 	}
@@ -1273,10 +1079,8 @@ class FixtureMonkeyOptionsTest {
 	@Property
 	void sampleConcreteWhenHasSameNameProperty() {
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.interfaceImplements(
-				AbstractSamePropertyValue.class,
-				Collections.singletonList(ConcreteSamePropertyValue.class)
-			)
+			.interfaceImplements(AbstractSamePropertyValue.class,
+				Collections.singletonList(ConcreteSamePropertyValue.class))
 			.objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)
 			.build();
 
@@ -1306,9 +1110,7 @@ class FixtureMonkeyOptionsTest {
 
 		// when
 		List<AbstractNoneValue> actual = sut.giveMeBuilder(new TypeReference<List<AbstractNoneValue>>() {
-			})
-			.set(expected)
-			.sample();
+		}).set(expected).sample();
 
 		then(actual).isEqualTo(expected);
 	}
@@ -1325,9 +1127,7 @@ class FixtureMonkeyOptionsTest {
 
 		// when
 		AbstractValue actual = sut.giveMeBuilder(new TypeReference<AbstractValue>() {
-			})
-			.set(expected)
-			.sample();
+		}).set(expected).sample();
 
 		then(actual).isEqualTo(expected);
 	}
@@ -1336,10 +1136,8 @@ class FixtureMonkeyOptionsTest {
 	void setConcreteClassWhenHasNoParentValue() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.interfaceImplements(
-				AbstractNoneValue.class,
-				Collections.singletonList(AbstractNoneConcreteStringValue.class)
-			)
+			.interfaceImplements(AbstractNoneValue.class,
+				Collections.singletonList(AbstractNoneConcreteStringValue.class))
 			.build();
 
 		AbstractNoneConcreteStringValue expected = new AbstractNoneConcreteStringValue();
@@ -1347,9 +1145,7 @@ class FixtureMonkeyOptionsTest {
 
 		// when
 		AbstractNoneValue actual = sut.giveMeBuilder(new TypeReference<AbstractNoneValue>() {
-			})
-			.set(expected)
-			.sample();
+		}).set(expected).sample();
 
 		then(actual).isEqualTo(expected);
 	}
@@ -1361,9 +1157,7 @@ class FixtureMonkeyOptionsTest {
 		implementations.add(ConcreteStringValue.class);
 		implementations.add(ConcreteIntValue.class);
 
-		FixtureMonkey sut = FixtureMonkey.builder()
-			.interfaceImplements(AbstractValue.class, implementations)
-			.build();
+		FixtureMonkey sut = FixtureMonkey.builder().interfaceImplements(AbstractValue.class, implementations).build();
 
 		ConcreteStringValue concreteStringValue = new ConcreteStringValue();
 		concreteStringValue.setValue("stringValue");
@@ -1377,9 +1171,7 @@ class FixtureMonkeyOptionsTest {
 
 		// when
 		List<AbstractValue> actual = sut.giveMeBuilder(new TypeReference<List<AbstractValue>>() {
-			})
-			.set(expected)
-			.sample();
+		}).set(expected).sample();
 
 		then(actual).isEqualTo(expected);
 	}
@@ -1387,10 +1179,8 @@ class FixtureMonkeyOptionsTest {
 	@Property
 	void sampleSelfRecursiveAbstract() {
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.interfaceImplements(
-				SelfRecursiveAbstractValue.class,
-				Collections.singletonList(SelfRecursiveImplementationValue.class)
-			)
+			.interfaceImplements(SelfRecursiveAbstractValue.class,
+				Collections.singletonList(SelfRecursiveImplementationValue.class))
 			.objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)
 			.build();
 
@@ -1402,12 +1192,9 @@ class FixtureMonkeyOptionsTest {
 	@Property
 	void sizeElementWhenRegisteredSize() {
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.register(
-				NestedListStringObject.class,
+			.register(NestedListStringObject.class,
 				fixture -> fixture.giveMeBuilder(new TypeReference<NestedListStringObject>() {
-					})
-					.size("values", 5)
-			)
+				}).size("values", 5))
 			.build();
 
 		List<ListStringObject> actual = sut.giveMeBuilder(NestedListStringObject.class)
@@ -1421,31 +1208,89 @@ class FixtureMonkeyOptionsTest {
 	@Property
 	void samePropertyDiffImplementations() {
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.interfaceImplements(
-				GetterInterface.class,
-				Arrays.asList(
-					GetterInterfaceImplementation.class,
-					GetterInterfaceImplementation2.class
-				)
-			)
+			.interfaceImplements(GetterInterface.class,
+				Arrays.asList(GetterInterfaceImplementation.class, GetterInterfaceImplementation2.class))
 			.build();
 
-		String actual = sut.giveMeBuilder(GetterInterface.class)
-			.set("value", "expected")
-			.sample()
-			.getValue();
+		String actual = sut.giveMeBuilder(GetterInterface.class).set("value", "expected").sample().getValue();
 
 		then(actual).isEqualTo("expected");
 	}
 
 	@Property
 	void sampleWithMonkeyStringArbitrary() {
+		FixtureMonkey sut = FixtureMonkey.builder().javaTypeArbitraryGenerator(new JavaTypeArbitraryGenerator() {
+			@Override
+			public StringArbitrary strings() {
+				return new MonkeyStringArbitrary();
+			}
+		}).build();
+
+		String actual = sut.giveMeOne(String.class);
+
+		then(actual).isNotNull();
+	}
+
+	@Property
+	void filterWithMonkeyStringArbitrary() {
+		FixtureMonkey sut = FixtureMonkey.builder().javaTypeArbitraryGenerator(new JavaTypeArbitraryGenerator() {
+			@Override
+			public StringArbitrary strings() {
+				return new MonkeyStringArbitrary().filterCharacter(Character::isUpperCase);
+			}
+		}).build();
+
+		String actual = sut.giveMeOne(String.class);
+
+		then(actual).isUpperCase();
+	}
+
+	@Property
+	void filterIsoControlCharacterWithMonkeyStringArbitrary() {
+		FixtureMonkey sut = FixtureMonkey.builder().build();
+
+		String actual = sut.giveMeOne(String.class);
+
+		then(actual).matches(value -> {
+			for (char c : value.toCharArray()) {
+				if (Character.isISOControl(c)) {
+					return false;
+				}
+			}
+			return true;
+		});
+	}
+
+	@Property
+	void multipleFiltersWithMonkeyStringArbitrary() {
+		FixtureMonkey sut = FixtureMonkey.builder().javaTypeArbitraryGenerator(new JavaTypeArbitraryGenerator() {
+			@Override
+			public MonkeyStringArbitrary monkeyStrings() {
+				return new MonkeyStringArbitrary().filterCharacter(c -> !Character.isISOControl(c))
+					.filterCharacter(Character::isUpperCase);
+			}
+		}).build();
+
+		String actual = sut.giveMeOne(String.class);
+
+		then(actual).matches(value -> {
+			for (char c : value.toCharArray()) {
+				if (Character.isISOControl(c) || !Character.isUpperCase(c)) {
+					return false;
+				}
+			}
+			return true;
+		});
+	}
+
+	@Property
+	void letterifyExpressionFakerOption() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.javaTypeArbitraryGenerator(
 				new JavaTypeArbitraryGenerator() {
 					@Override
-					public StringArbitrary strings() {
-						return new MonkeyStringArbitrary();
+					public MonkeyStringArbitrary monkeyStrings() {
+						return new MonkeyStringArbitrary().addFakerExpression("#{letterify 'test????test'}");
 					}
 				}
 			)
@@ -1453,7 +1298,97 @@ class FixtureMonkeyOptionsTest {
 
 		String actual = sut.giveMeOne(String.class);
 
-		then(actual).isNotNull();
+		then(actual).matches("test[a-zA-Z]{4}test");
+	}
+
+	@Property
+	void numerifyExpressionFakerOption() {
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.javaTypeArbitraryGenerator(
+				new JavaTypeArbitraryGenerator() {
+					@Override
+					public MonkeyStringArbitrary monkeyStrings() {
+						return new MonkeyStringArbitrary().addFakerExpression("#{numerify '####'}");
+					}
+				}
+			)
+			.build();
+
+		String actual = sut.giveMeOne(String.class);
+
+		then(actual).matches("[0-9]{4}");
+	}
+
+	@Property
+	void bothifyExpressionFakerOption() {
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.javaTypeArbitraryGenerator(
+				new JavaTypeArbitraryGenerator() {
+					@Override
+					public MonkeyStringArbitrary monkeyStrings() {
+						return new MonkeyStringArbitrary().addFakerExpression("#{bothify '?#?#?#?#'}");
+					}
+				}
+			)
+			.build();
+
+		String actual = sut.giveMeOne(String.class);
+
+		then(actual).matches("([a-zA-Z][0-9]){4}");
+	}
+
+	@Property
+	void templatifyExpressionFakerOption() {
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.javaTypeArbitraryGenerator(
+				new JavaTypeArbitraryGenerator() {
+					@Override
+					public MonkeyStringArbitrary monkeyStrings() {
+						return new MonkeyStringArbitrary().addFakerExpression("#{templatify 'test','t','q','@'}");
+					}
+				}
+			)
+			.build();
+
+		String actual = sut.giveMeOne(String.class);
+
+		then(actual).matches("[@q]es[@q]");
+	}
+
+	@Property
+	void examplifyExpressionFakerOption() {
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.javaTypeArbitraryGenerator(
+				new JavaTypeArbitraryGenerator() {
+					@Override
+					public MonkeyStringArbitrary monkeyStrings() {
+						return new MonkeyStringArbitrary().addFakerExpression("#{examplify 'ABC'}");
+					}
+				}
+			)
+			.build();
+
+		String actual = sut.giveMeOne(String.class);
+
+		then(actual).matches("[A-Z]{3}");
+	}
+
+	@Property
+	void regexifyExpressionFakerOption() {
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.javaTypeArbitraryGenerator(
+				new JavaTypeArbitraryGenerator() {
+					@Override
+					public MonkeyStringArbitrary monkeyStrings() {
+						return new MonkeyStringArbitrary().addFakerExpression("#{regexify '(a|b){2,3}'}");
+					}
+				}
+			)
+			.build();
+
+		String actual = sut.giveMeOne(String.class);
+
+		then(actual).matches("(a|b){2,3}");
 	}
 
 	@Property
@@ -1510,5 +1445,70 @@ class FixtureMonkeyOptionsTest {
 			}
 			return true;
 		});
+	}
+
+	@Property
+	void alterDefaultArbitraryGenerator() {
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.defaultArbitraryGenerator(generator -> new CompositeArbitraryGenerator(
+				Arrays.asList(
+					new IntrospectedArbitraryGenerator(context ->
+						new ArbitraryIntrospectorResult(CombinableArbitrary.from(null))
+					),
+					generator
+				)
+			))
+			.build();
+
+		String actual = sut.giveMeOne(String.class);
+
+		then(actual).isNull();
+	}
+
+	@Property
+	void skipArbitraryGenerator() {
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.defaultArbitraryGenerator(generator -> new CompositeArbitraryGenerator(
+				Arrays.asList(
+					context -> NOT_GENERATED,
+					generator
+				)
+			))
+			.defaultNotNull(true)
+			.build();
+
+		String actual = sut.giveMeOne(String.class);
+
+		then(actual).isNotNull();
+	}
+
+	@Property
+	void uniqueArbitraryGenerator() {
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.defaultArbitraryGenerator(UniqueArbitraryGenerator::new)
+			.build();
+
+		List<String> actual = sut.giveMe(String.class, 100);
+
+		Set<String> expected = new HashSet<>(actual);
+		then(actual).hasSameSizeAs(expected);
+	}
+
+	@Property
+	void allArbitraryGeneratorSkipReturnsNull() {
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.defaultArbitraryGenerator(generator -> (
+				new CompositeArbitraryGenerator(
+					Arrays.asList(
+						context -> NOT_GENERATED,
+						context -> NOT_GENERATED
+					)
+				)
+			))
+			.build();
+
+		String actual = sut.giveMeOne(String.class);
+
+		then(actual).isNull();
 	}
 }

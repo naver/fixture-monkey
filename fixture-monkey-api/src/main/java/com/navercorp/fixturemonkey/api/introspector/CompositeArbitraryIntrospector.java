@@ -52,6 +52,6 @@ public class CompositeArbitraryIntrospector implements ArbitraryIntrospector {
 			}
 		}
 
-		return ArbitraryIntrospectorResult.EMPTY;
+		return ArbitraryIntrospectorResult.NOT_INTROSPECTED;
 	}
 }

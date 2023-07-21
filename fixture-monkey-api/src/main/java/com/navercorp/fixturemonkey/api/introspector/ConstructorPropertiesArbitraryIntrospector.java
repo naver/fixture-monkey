@@ -48,7 +48,7 @@ public final class ConstructorPropertiesArbitraryIntrospector implements Arbitra
 		Property property = context.getResolvedProperty();
 		Class<?> type = Types.getActualType(property.getType());
 		if (Modifier.isAbstract(type.getModifiers())) {
-			return ArbitraryIntrospectorResult.EMPTY;
+			return ArbitraryIntrospectorResult.NOT_INTROSPECTED;
 		}
 
 		Entry<Constructor<?>, String[]> parameterNamesByConstructor = TypeCache.getParameterNamesByConstructor(type);

@@ -87,6 +87,7 @@ public final class FixtureMonkeyOptions {
 	public static final List<MatcherOperator<PropertyGenerator>> DEFAULT_PROPERTY_GENERATORS =
 		getDefaultPropertyGenerators();
 	public static final FixtureMonkeyOptions DEFAULT_GENERATE_OPTIONS = FixtureMonkeyOptions.builder().build();
+	public static final int DEFAULT_MAX_UNIQUE_GENERATION_COUNT = 1_000;
 
 	static {
 		List<String> defaultJavaPackages = new ArrayList<>();
@@ -116,8 +117,9 @@ public final class FixtureMonkeyOptions {
 	private final ArbitraryGenerator defaultArbitraryGenerator;
 	private final ArbitraryValidator defaultArbitraryValidator;
 	private final DecomposedContainerValueFactory decomposedContainerValueFactory;
+	private final int generateMaxTries;
+	private final int generateUniqueMaxTries;
 
-	@SuppressWarnings("rawtypes")
 	public FixtureMonkeyOptions(
 		List<MatcherOperator<PropertyGenerator>> propertyGenerators,
 		PropertyGenerator defaultPropertyGenerator,
@@ -133,7 +135,9 @@ public final class FixtureMonkeyOptions {
 		List<MatcherOperator<ArbitraryGenerator>> arbitraryGenerators,
 		ArbitraryGenerator defaultArbitraryGenerator,
 		ArbitraryValidator defaultArbitraryValidator,
-		DecomposedContainerValueFactory decomposedContainerValueFactory
+		DecomposedContainerValueFactory decomposedContainerValueFactory,
+		int generateMaxTries,
+		int generateUniqueMaxTries
 	) {
 		this.propertyGenerators = propertyGenerators;
 		this.defaultPropertyGenerator = defaultPropertyGenerator;
@@ -150,6 +154,8 @@ public final class FixtureMonkeyOptions {
 		this.defaultArbitraryGenerator = defaultArbitraryGenerator;
 		this.defaultArbitraryValidator = defaultArbitraryValidator;
 		this.decomposedContainerValueFactory = decomposedContainerValueFactory;
+		this.generateMaxTries = generateMaxTries;
+		this.generateUniqueMaxTries = generateUniqueMaxTries;
 	}
 
 	public static FixtureMonkeyOptionsBuilder builder() {
@@ -271,6 +277,14 @@ public final class FixtureMonkeyOptions {
 
 	public DecomposedContainerValueFactory getDecomposedContainerValueFactory() {
 		return decomposedContainerValueFactory;
+	}
+
+	public int getGenerateMaxTries() {
+		return generateMaxTries;
+	}
+
+	public int getGenerateUniqueMaxTries() {
+		return generateUniqueMaxTries;
 	}
 
 	public FixtureMonkeyOptionsBuilder toBuilder() {
