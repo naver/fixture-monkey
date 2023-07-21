@@ -64,7 +64,7 @@ public final class JavaArbitraryIntrospector implements ArbitraryIntrospector, M
 		Class<?> type = Types.getActualType(context.getResolvedType());
 		return this.introspector.getOrDefault(
 				type,
-				ctx -> ArbitraryIntrospectorResult.EMPTY
+				ctx -> ArbitraryIntrospectorResult.NOT_INTROSPECTED
 			)
 			.apply(context);
 	}

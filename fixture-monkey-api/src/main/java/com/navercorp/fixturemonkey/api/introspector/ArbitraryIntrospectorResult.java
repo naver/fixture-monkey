@@ -32,10 +32,14 @@ import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class ArbitraryIntrospectorResult {
-	private static final Object LOCK = new Object();
+	@Deprecated
 	public static final ArbitraryIntrospectorResult EMPTY = new ArbitraryIntrospectorResult(
 		CombinableArbitrary.from(new Object())
 	);
+
+	public static final ArbitraryIntrospectorResult NOT_INTROSPECTED = EMPTY;
+
+	private static final Object LOCK = new Object();
 
 	private final CombinableArbitrary value;
 

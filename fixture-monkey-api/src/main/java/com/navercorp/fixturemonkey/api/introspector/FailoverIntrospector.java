@@ -51,7 +51,7 @@ public final class FailoverIntrospector implements ArbitraryIntrospector {
 			}
 		}
 		if (results.isEmpty()) {
-			return ArbitraryIntrospectorResult.EMPTY;
+			return ArbitraryIntrospectorResult.NOT_INTROSPECTED;
 		}
 
 		return new ArbitraryIntrospectorResult(

@@ -31,7 +31,6 @@ allprojects {
     }
 
     group = "com.navercorp.fixturemonkey"
-    version = "0.6.2-SNASPHOT"
 }
 
 subprojects {

@@ -16,30 +16,20 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.customizer;
+package com.navercorp.fixturemonkey.api.generator;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
-import com.navercorp.fixturemonkey.customizer.Values.Just;
-import com.navercorp.fixturemonkey.tree.ObjectNode;
+import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
 
-@API(since = "0.5.1", status = Status.MAINTAINED)
-public final class NodeSetJustManipulator implements NodeManipulator {
-	private final Just value;
-
-	public NodeSetJustManipulator(Just value) {
-		this.value = value;
-	}
-
-	@Override
-	public void manipulate(ObjectNode objectNode) {
-		Object exactValue = value.getValue();
-		if (exactValue instanceof CombinableArbitrary) {
-			objectNode.setArbitrary((CombinableArbitrary)exactValue);
-		} else {
-			objectNode.setArbitrary(CombinableArbitrary.from(exactValue));
-		}
+/**
+ * Generates a {@link CombinableArbitrary} by {@link ArbitraryIntrospector}.
+ */
+@API(since = "0.6.2", status = Status.EXPERIMENTAL)
+public final class IntrospectedArbitraryGenerator extends DefaultArbitraryGenerator {
+	public IntrospectedArbitraryGenerator(ArbitraryIntrospector arbitraryIntrospector) {
+		super(arbitraryIntrospector);
 	}
 }

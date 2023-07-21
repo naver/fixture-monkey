@@ -66,6 +66,9 @@ public final class MonkeyContextBuilder {
 			generatorContextByRootProperty = new ConcurrentLruCache<>(generatorContextSize);
 		}
 
-		return new MonkeyContext(arbitrariesByProperty, generatorContextByRootProperty);
+		return new MonkeyContext(
+			arbitrariesByProperty,
+			generatorContextByRootProperty
+		);
 	}
 }
