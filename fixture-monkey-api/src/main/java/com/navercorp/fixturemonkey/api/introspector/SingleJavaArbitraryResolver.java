@@ -41,8 +41,10 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.property.Property;
 
-@API(since = "0.6.0", status = Status.EXPERIMENTAL)
+@API(since = "0.6.3", status = Status.EXPERIMENTAL)
 public final class SingleJavaArbitraryResolver implements JavaArbitraryResolver {
+	private static final JavaArbitraryResolver DEFAULT_RESOLVER = new DefaultJavaArbitraryResolver();
+
 	private final Set<JavaArbitraryResolver> javaArbitraryResolvers;
 	private final JavaArbitraryResolver customJavaArbitraryResolver;
 
@@ -111,6 +113,9 @@ public final class SingleJavaArbitraryResolver implements JavaArbitraryResolver 
 	}
 
 	private JavaArbitraryResolver resolve(Property property) {
+		if (customJavaArbitraryResolver != null) {
+			return customJavaArbitraryResolver;
+		}
 		for (JavaArbitraryResolver resolver : this.javaArbitraryResolvers) {
 			if (resolver instanceof Matcher) {
 				if (((Matcher)resolver).match(property)) {
@@ -119,6 +124,6 @@ public final class SingleJavaArbitraryResolver implements JavaArbitraryResolver 
 			}
 		}
 
-		return customJavaArbitraryResolver;
+		return DEFAULT_RESOLVER;
 	}
 }

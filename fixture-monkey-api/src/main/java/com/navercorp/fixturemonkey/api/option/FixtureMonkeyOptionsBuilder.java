@@ -451,7 +451,7 @@ public final class FixtureMonkeyOptionsBuilder {
 		return this;
 	}
 
-	public FixtureMonkeyOptionsBuilder customjavaArbitraryResolver(
+	public FixtureMonkeyOptionsBuilder customJavaArbitraryResolver(
 		JavaArbitraryResolver javaArbitraryResolver
 	) {
 		this.javaDefaultArbitraryGeneratorBuilder.customJavaArbitraryResolver(javaArbitraryResolver);

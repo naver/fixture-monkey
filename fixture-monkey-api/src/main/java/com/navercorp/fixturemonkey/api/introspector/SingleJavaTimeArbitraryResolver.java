@@ -59,8 +59,11 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.property.Property;
 
-@API(since = "0.6.0", status = Status.EXPERIMENTAL)
+@API(since = "0.6.3", status = Status.EXPERIMENTAL)
 public final class SingleJavaTimeArbitraryResolver implements JavaTimeArbitraryResolver {
+	private static final JavaTimeArbitraryResolver DEFAULT_RESOLVER = new JavaTimeArbitraryResolver() {
+	};
+
 	private final Set<JavaTimeArbitraryResolver> javaTimeArbitraryResolvers;
 	private final JavaTimeArbitraryResolver customJavaTimeArbitraryResolver;
 
@@ -162,6 +165,9 @@ public final class SingleJavaTimeArbitraryResolver implements JavaTimeArbitraryR
 	}
 
 	private JavaTimeArbitraryResolver resolve(Property property) {
+		if (customJavaTimeArbitraryResolver != null) {
+			return customJavaTimeArbitraryResolver;
+		}
 		for (JavaTimeArbitraryResolver resolver : this.javaTimeArbitraryResolvers) {
 			if (resolver instanceof Matcher) {
 				if (((Matcher)resolver).match(property)) {
@@ -170,6 +176,6 @@ public final class SingleJavaTimeArbitraryResolver implements JavaTimeArbitraryR
 			}
 		}
 
-		return customJavaTimeArbitraryResolver;
+		return DEFAULT_RESOLVER;
 	}
 }

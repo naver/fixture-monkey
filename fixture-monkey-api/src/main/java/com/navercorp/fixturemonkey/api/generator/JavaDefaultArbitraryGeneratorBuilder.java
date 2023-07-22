@@ -98,10 +98,8 @@ public final class JavaDefaultArbitraryGeneratorBuilder {
 	private ArbitraryIntrospector objectIntrospector = BeanArbitraryIntrospector.INSTANCE;
 
 	private ArbitraryIntrospector fallbackIntrospector = DEFAULT_FALLBACK_INTROSPECTOR;
-	private JavaArbitraryResolver customJavaArbitraryResolver = new JavaArbitraryResolver() {
-	};
-	private JavaTimeArbitraryResolver customJavaTimeArbitraryResolver = new JavaTimeArbitraryResolver() {
-	};
+	private JavaArbitraryResolver customJavaArbitraryResolver = null;
+	private JavaTimeArbitraryResolver customJavaTimeArbitraryResolver = null;
 
 	JavaDefaultArbitraryGeneratorBuilder() {
 	}

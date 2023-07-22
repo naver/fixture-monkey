@@ -25,7 +25,7 @@ import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.property.Property;
 
-@API(since = "0.6.0", status = Status.EXPERIMENTAL)
+@API(since = "0.6.3", status = Status.EXPERIMENTAL)
 public final class AnnotationPackageNameMatcher implements Matcher {
 	private final String packageName;
 

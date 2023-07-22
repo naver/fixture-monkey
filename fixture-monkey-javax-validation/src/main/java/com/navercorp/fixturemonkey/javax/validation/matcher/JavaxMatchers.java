@@ -23,7 +23,7 @@ import org.apiguardian.api.API;
 import com.navercorp.fixturemonkey.api.matcher.AnnotationPackageNameMatcher;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 
-@API(since = "0.6.0", status = API.Status.MAINTAINED)
+@API(since = "0.6.3", status = API.Status.MAINTAINED)
 public final class JavaxMatchers {
 	public static final Matcher JAVAX_PACKAGE_MATCHER = property ->
 		new AnnotationPackageNameMatcher("javax.validation.constraints").match(property);
