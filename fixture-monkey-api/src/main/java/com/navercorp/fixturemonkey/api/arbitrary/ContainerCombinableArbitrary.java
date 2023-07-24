@@ -29,20 +29,20 @@ import org.apiguardian.api.API.Status;
  * It combines given element {@link CombinableArbitrary} list into a container type {@link CombinableArbitrary}.
  */
 @API(since = "0.6.0", status = Status.EXPERIMENTAL)
-final class ContainerCombinableArbitrary implements CombinableArbitrary {
-	private final List<CombinableArbitrary> combinableArbitraryList;
-	private final Function<List<Object>, Object> combinator;
+final class ContainerCombinableArbitrary<T> implements CombinableArbitrary<T> {
+	private final List<CombinableArbitrary<?>> combinableArbitraryList;
+	private final Function<List<Object>, T> combinator;
 
 	ContainerCombinableArbitrary(
-		List<CombinableArbitrary> combinableArbitraryList,
-		Function<List<Object>, Object> combinator
+		List<CombinableArbitrary<?>> combinableArbitraryList,
+		Function<List<Object>, T> combinator
 	) {
 		this.combinableArbitraryList = combinableArbitraryList;
 		this.combinator = combinator;
 	}
 
 	@Override
-	public Object combined() {
+	public T combined() {
 		List<Object> combinedList = combinableArbitraryList.stream()
 			.map(CombinableArbitrary::combined)
 			.collect(Collectors.toList());

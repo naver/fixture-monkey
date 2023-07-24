@@ -49,14 +49,14 @@ public final class MapEntryElementIntrospector implements ArbitraryIntrospector,
 			return ArbitraryIntrospectorResult.NOT_INTROSPECTED;
 		}
 
-		List<CombinableArbitrary> elementCombinableArbitraryList = context.getElementCombinableArbitraryList();
+		List<CombinableArbitrary<?>> elementCombinableArbitraryList = context.getElementCombinableArbitraryList();
 
 		if (elementCombinableArbitraryList.size() != 2) {
 			throw new IllegalArgumentException("Key and Value should be exist for MapEntryElementType.");
 		}
 
-		List<CombinableArbitrary> entryCombinableArbitraryList = new ArrayList<>();
-		CombinableArbitrary keyCombinableArbitrary = elementCombinableArbitraryList.get(0);
+		List<CombinableArbitrary<?>> entryCombinableArbitraryList = new ArrayList<>();
+		CombinableArbitrary<?> keyCombinableArbitrary = elementCombinableArbitraryList.get(0);
 		if (!elementCombinableArbitraryList.get(0).fixed()) {
 			keyCombinableArbitrary = keyCombinableArbitrary.filter(
 				context.getGenerateUniqueMaxTries(),
@@ -66,7 +66,7 @@ public final class MapEntryElementIntrospector implements ArbitraryIntrospector,
 				)
 			);
 		}
-		CombinableArbitrary valueCombinableArbitrary = elementCombinableArbitraryList.get(1);
+		CombinableArbitrary<?> valueCombinableArbitrary = elementCombinableArbitraryList.get(1);
 		entryCombinableArbitraryList.add(keyCombinableArbitrary);
 		entryCombinableArbitraryList.add(valueCombinableArbitrary);
 

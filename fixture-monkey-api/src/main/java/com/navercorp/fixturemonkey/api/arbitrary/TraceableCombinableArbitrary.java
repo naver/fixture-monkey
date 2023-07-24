@@ -28,17 +28,17 @@ import com.navercorp.fixturemonkey.api.property.Traceable;
  * It is a delegate implementation of CombinableArbitrary for logging.
  */
 @API(since = "0.6.0", status = Status.EXPERIMENTAL)
-public final class TraceableCombinableArbitrary implements CombinableArbitrary, Traceable {
-	private final CombinableArbitrary combinableArbitrary;
+public final class TraceableCombinableArbitrary<T> implements CombinableArbitrary<T>, Traceable {
+	private final CombinableArbitrary<T> combinableArbitrary;
 	private final PropertyPath propertyPath;
 
-	public TraceableCombinableArbitrary(CombinableArbitrary combinableArbitrary, PropertyPath propertyPath) {
+	public TraceableCombinableArbitrary(CombinableArbitrary<T> combinableArbitrary, PropertyPath propertyPath) {
 		this.combinableArbitrary = combinableArbitrary;
 		this.propertyPath = propertyPath;
 	}
 
 	@Override
-	public Object combined() {
+	public T combined() {
 		return combinableArbitrary.combined();
 	}
 

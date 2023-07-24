@@ -50,7 +50,7 @@ public final class FieldReflectionArbitraryIntrospector implements ArbitraryIntr
 		}
 
 		List<ArbitraryProperty> childrenProperties = context.getChildren();
-		Map<String, CombinableArbitrary> arbitrariesByResolvedName
+		Map<String, CombinableArbitrary<?>> arbitrariesByResolvedName
 			= context.getCombinableArbitrariesByResolvedName();
 		Map<String, Field> fields = TypeCache.getFieldsByName(type);
 
@@ -70,7 +70,7 @@ public final class FieldReflectionArbitraryIntrospector implements ArbitraryIntr
 
 					String resolvePropertyName =
 						arbitraryProperty.getObjectProperty().getResolvedPropertyName();
-					CombinableArbitrary combinableArbitrary =
+					CombinableArbitrary<?> combinableArbitrary =
 						arbitrariesByResolvedName.get(resolvePropertyName);
 
 					Object fieldValue = combinableArbitrary.combined();

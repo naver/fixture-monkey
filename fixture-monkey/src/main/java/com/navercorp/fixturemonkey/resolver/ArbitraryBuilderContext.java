@@ -44,14 +44,14 @@ public final class ArbitraryBuilderContext {
 	@Nullable
 	private FixedState fixedState = null;
 	@Nullable
-	private CombinableArbitrary fixedCombinableArbitrary;
+	private CombinableArbitrary<?> fixedCombinableArbitrary;
 
 	public ArbitraryBuilderContext(
 		List<ArbitraryManipulator> manipulators,
 		List<ContainerInfoManipulator> containerInfoManipulators,
 		boolean validOnly,
 		@Nullable FixedState fixedState,
-		@Nullable CombinableArbitrary fixedCombinableArbitrary
+		@Nullable CombinableArbitrary<?> fixedCombinableArbitrary
 	) {
 		this.manipulators = manipulators;
 		this.containerInfoManipulators = containerInfoManipulators;
@@ -130,13 +130,13 @@ public final class ArbitraryBuilderContext {
 			|| containerInfoManipulators.size() > fixedState.getFixedContainerManipulatorSize();
 	}
 
-	public void renewFixed(CombinableArbitrary fixedCombinableArbitrary) {
+	public void renewFixed(CombinableArbitrary<?> fixedCombinableArbitrary) {
 		this.markFixed();
 		this.fixedCombinableArbitrary = fixedCombinableArbitrary;
 	}
 
 	@Nullable
-	public CombinableArbitrary getFixedCombinableArbitrary() {
+	public CombinableArbitrary<?> getFixedCombinableArbitrary() {
 		return fixedCombinableArbitrary;
 	}
 

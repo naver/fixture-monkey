@@ -27,20 +27,20 @@ import org.apiguardian.api.API.Status;
  * It would generate a fixed value {@code object}.
  */
 @API(since = "0.6.0", status = Status.MAINTAINED)
-final class FixedCombinableArbitrary implements CombinableArbitrary {
-	private final Object object;
+final class FixedCombinableArbitrary<T> implements CombinableArbitrary<T> {
+	private final T object;
 
-	FixedCombinableArbitrary(Object object) {
+	FixedCombinableArbitrary(T object) {
 		this.object = object;
 	}
 
 	@Override
-	public Object combined() {
+	public T combined() {
 		return object;
 	}
 
 	@Override
-	public Object rawValue() {
+	public T rawValue() {
 		return object;
 	}
 
@@ -61,7 +61,7 @@ final class FixedCombinableArbitrary implements CombinableArbitrary {
 		if (obj == null || getClass() != obj.getClass()) {
 			return false;
 		}
-		FixedCombinableArbitrary that = (FixedCombinableArbitrary)obj;
+		FixedCombinableArbitrary<?> that = (FixedCombinableArbitrary<?>)obj;
 		return Objects.equals(object, that.object);
 	}
 

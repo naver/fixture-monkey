@@ -36,20 +36,20 @@ import com.navercorp.fixturemonkey.api.property.Traceable;
  * It would try {@link #FAILED_THRESHOLD} times when the parent {@link CombinableArbitrary} make it regenerate.
  */
 @API(since = "0.5.0", status = Status.MAINTAINED)
-final class FilteredCombinableArbitrary implements CombinableArbitrary {
+final class FilteredCombinableArbitrary<T> implements CombinableArbitrary<T> {
 	private static final int FAILED_THRESHOLD = 3;
 
 	private final int maxMisses;
-	private final CombinableArbitrary combinableArbitrary;
-	private final Predicate<Object> predicate;
+	private final CombinableArbitrary<T> combinableArbitrary;
+	private final Predicate<T> predicate;
 
 	private Exception lastException;
 	private int failureCount = 0;
 
 	FilteredCombinableArbitrary(
 		int maxMisses,
-		CombinableArbitrary combinableArbitrary,
-		Predicate<Object> predicate
+		CombinableArbitrary<T> combinableArbitrary,
+		Predicate<T> predicate
 	) {
 		this.maxMisses = maxMisses;
 		this.combinableArbitrary = combinableArbitrary;
@@ -57,12 +57,12 @@ final class FilteredCombinableArbitrary implements CombinableArbitrary {
 	}
 
 	@Override
-	public Object combined() {
+	public T combined() {
 		if (failureCount == FAILED_THRESHOLD) {
 			throw new FilterMissException(lastException);
 		}
 
-		Object returned;
+		T returned;
 		for (int i = 0; i < maxMisses; i++) {
 			try {
 				returned = combinableArbitrary.combined();
@@ -80,7 +80,7 @@ final class FilteredCombinableArbitrary implements CombinableArbitrary {
 		failureCount++;
 
 		if (lastException == null && combinableArbitrary instanceof FilteredCombinableArbitrary) {
-			lastException = ((FilteredCombinableArbitrary)combinableArbitrary).lastException;
+			lastException = ((FilteredCombinableArbitrary<T>)combinableArbitrary).lastException;
 		}
 
 		if (lastException instanceof ValidationFailedException) {
@@ -113,16 +113,17 @@ final class FilteredCombinableArbitrary implements CombinableArbitrary {
 		throw new FilterMissException(lastException);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public Object rawValue() {
+	public T rawValue() {
 		if (failureCount == FAILED_THRESHOLD) {
 			throw new FilterMissException(lastException);
 		}
 
-		Object returned;
+		T returned;
 		for (int i = 0; i < maxMisses; i++) {
 			try {
-				returned = combinableArbitrary.rawValue();
+				returned = (T)combinableArbitrary.rawValue();
 				if (predicate.test(returned)) {
 					return returned;
 				}
@@ -132,6 +133,16 @@ final class FilteredCombinableArbitrary implements CombinableArbitrary {
 				}
 				lastException = ex;
 				combinableArbitrary.clear();
+			} catch (ClassCastException ex) {
+				if (combinableArbitrary instanceof Traceable) {
+					throw new ClassCastException(
+						String.format(
+							"Given property '%s' could not use filter. Check out if using the proper introspector.",
+							((Traceable)combinableArbitrary).getPropertyPath().getExpression()
+						)
+					);
+				}
+				throw new ClassCastException("Could not use filter. Check out if using the proper introspector.");
 			}
 		}
 		failureCount++;

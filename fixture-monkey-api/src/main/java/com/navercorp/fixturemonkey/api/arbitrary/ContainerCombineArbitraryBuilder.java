@@ -34,7 +34,7 @@ public final class ContainerCombineArbitraryBuilder {
 	@Deprecated
 	public static final int DEFAULT_MAX_UNIQUE_GENERATION_COUNT = 1_000;
 
-	private final List<CombinableArbitrary> elementArbitraryList;
+	private final List<CombinableArbitrary<?>> elementArbitraryList;
 	private Runnable postBuild = () -> {
 	};
 
@@ -42,12 +42,12 @@ public final class ContainerCombineArbitraryBuilder {
 		elementArbitraryList = new ArrayList<>();
 	}
 
-	public ContainerCombineArbitraryBuilder element(CombinableArbitrary arbitrary) {
+	public ContainerCombineArbitraryBuilder element(CombinableArbitrary<?> arbitrary) {
 		elementArbitraryList.add(arbitrary);
 		return this;
 	}
 
-	public ContainerCombineArbitraryBuilder elements(List<CombinableArbitrary> arbitraryList) {
+	public ContainerCombineArbitraryBuilder elements(List<CombinableArbitrary<?>> arbitraryList) {
 		elementArbitraryList.addAll(arbitraryList);
 		return this;
 	}
@@ -57,11 +57,11 @@ public final class ContainerCombineArbitraryBuilder {
 		return this;
 	}
 
-	public CombinableArbitrary build(Function<List<Object>, Object> combinator) {
-		return new ContainerCombinableArbitrary(
+	public <T> CombinableArbitrary<T> build(Function<List<Object>, T> combinator) {
+		return new ContainerCombinableArbitrary<>(
 			elementArbitraryList,
 			elements -> {
-				Object container = combinator.apply(elements);
+				T container = combinator.apply(elements);
 				postBuild.run();
 				return container;
 			}

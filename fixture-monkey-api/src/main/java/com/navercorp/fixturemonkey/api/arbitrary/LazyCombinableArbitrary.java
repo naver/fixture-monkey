@@ -28,16 +28,16 @@ import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
  * A generated object would be changed when {@link #combined()} and {@link #rawValue()} is called.
  */
 @API(since = "0.5.0", status = Status.MAINTAINED)
-final class LazyCombinableArbitrary implements CombinableArbitrary {
-	private final LazyArbitrary<Object> introspected;
+final class LazyCombinableArbitrary<T> implements CombinableArbitrary<T> {
+	private final LazyArbitrary<T> introspected;
 
-	LazyCombinableArbitrary(LazyArbitrary<Object> introspected) {
+	LazyCombinableArbitrary(LazyArbitrary<T> introspected) {
 		this.introspected = introspected;
 	}
 
 	@Override
-	public Object combined() {
-		Object combined = introspected.getValue();
+	public T combined() {
+		T combined = introspected.getValue();
 		introspected.clear();
 		return combined;
 	}

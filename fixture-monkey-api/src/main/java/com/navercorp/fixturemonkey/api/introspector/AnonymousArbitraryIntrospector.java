@@ -53,7 +53,7 @@ public final class AnonymousArbitraryIntrospector implements ArbitraryIntrospect
 		Property property = context.getResolvedProperty();
 		Class<?> type = Types.getActualType(property.getType());
 
-		Map<String, CombinableArbitrary> arbitrariesByPropertyName =
+		Map<String, CombinableArbitrary<?>> arbitrariesByPropertyName =
 			context.getCombinableArbitrariesByPropertyName();
 
 		List<ArbitraryProperty> childrenProperties = context.getChildren();

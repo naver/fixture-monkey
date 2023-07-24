@@ -55,13 +55,13 @@ public final class ArbitraryGeneratorContext implements Traceable {
 	@Nullable
 	private final ArbitraryGeneratorContext ownerContext;
 
-	private final BiFunction<ArbitraryGeneratorContext, ArbitraryProperty, CombinableArbitrary> resolveArbitrary;
+	private final BiFunction<ArbitraryGeneratorContext, ArbitraryProperty, CombinableArbitrary<?>> resolveArbitrary;
 
 	private final MonkeyGeneratorContext monkeyGeneratorContext;
 
 	private final LazyArbitrary<PropertyPath> pathProperty = LazyArbitrary.lazy(this::initPathProperty);
 
-	private final LazyArbitrary<Map<ArbitraryProperty, CombinableArbitrary>> arbitraryListByArbitraryProperty =
+	private final LazyArbitrary<Map<ArbitraryProperty, CombinableArbitrary<?>>> arbitraryListByArbitraryProperty =
 		LazyArbitrary.lazy(this::initArbitraryListByArbitraryProperty);
 
 	private final int generateUniqueMaxTries;
@@ -71,7 +71,7 @@ public final class ArbitraryGeneratorContext implements Traceable {
 		ArbitraryProperty property,
 		List<ArbitraryProperty> children,
 		@Nullable ArbitraryGeneratorContext ownerContext,
-		BiFunction<ArbitraryGeneratorContext, ArbitraryProperty, CombinableArbitrary> resolveArbitrary,
+		BiFunction<ArbitraryGeneratorContext, ArbitraryProperty, CombinableArbitrary<?>> resolveArbitrary,
 		MonkeyGeneratorContext monkeyGeneratorContext,
 		int generateUniqueMaxTries
 	) {
@@ -108,22 +108,22 @@ public final class ArbitraryGeneratorContext implements Traceable {
 		return Collections.unmodifiableList(this.children);
 	}
 
-	public Map<ArbitraryProperty, CombinableArbitrary> getCombinableArbitrariesByArbitraryProperty() {
+	public Map<ArbitraryProperty, CombinableArbitrary<?>> getCombinableArbitrariesByArbitraryProperty() {
 		return arbitraryListByArbitraryProperty.getValue().entrySet().stream()
 			.collect(toMap(Entry::getKey, Entry::getValue));
 	}
 
-	public Map<String, CombinableArbitrary> getCombinableArbitrariesByResolvedName() {
+	public Map<String, CombinableArbitrary<?>> getCombinableArbitrariesByResolvedName() {
 		return arbitraryListByArbitraryProperty.getValue().entrySet().stream()
 			.collect(toMap(it -> it.getKey().getObjectProperty().getResolvedPropertyName(), Entry::getValue));
 	}
 
-	public Map<String, CombinableArbitrary> getCombinableArbitrariesByPropertyName() {
+	public Map<String, CombinableArbitrary<?>> getCombinableArbitrariesByPropertyName() {
 		return arbitraryListByArbitraryProperty.getValue().entrySet().stream()
 			.collect(toMap(it -> it.getKey().getObjectProperty().getProperty().getName(), Entry::getValue));
 	}
 
-	public List<CombinableArbitrary> getElementCombinableArbitraryList() {
+	public List<CombinableArbitrary<?>> getElementCombinableArbitraryList() {
 		return new ArrayList<>(arbitraryListByArbitraryProperty.getValue().values());
 	}
 
@@ -165,10 +165,10 @@ public final class ArbitraryGeneratorContext implements Traceable {
 		);
 	}
 
-	private Map<ArbitraryProperty, CombinableArbitrary> initArbitraryListByArbitraryProperty() {
-		Map<ArbitraryProperty, CombinableArbitrary> childrenValues = new LinkedHashMap<>();
+	private Map<ArbitraryProperty, CombinableArbitrary<?>> initArbitraryListByArbitraryProperty() {
+		Map<ArbitraryProperty, CombinableArbitrary<?>> childrenValues = new LinkedHashMap<>();
 		for (ArbitraryProperty child : this.getChildren()) {
-			CombinableArbitrary arbitrary = this.resolveArbitrary.apply(this, child);
+			CombinableArbitrary<?> arbitrary = this.resolveArbitrary.apply(this, child);
 			childrenValues.put(child, arbitrary);
 		}
 

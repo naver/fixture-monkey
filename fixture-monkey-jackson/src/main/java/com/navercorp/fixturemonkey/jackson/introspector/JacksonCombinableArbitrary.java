@@ -29,13 +29,13 @@ import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
  * It is a {@link CombinableArbitrary} for Jackson library.
  */
 @API(since = "0.5.0", status = Status.MAINTAINED)
-public final class JacksonCombinableArbitrary implements CombinableArbitrary {
-	private final CombinableArbitrary jsonValue;
-	private final Function<Object, Object> deserializer;
+public final class JacksonCombinableArbitrary<T> implements CombinableArbitrary<T> {
+	private final CombinableArbitrary<T> jsonValue;
+	private final Function<Object, T> deserializer;
 
 	public JacksonCombinableArbitrary(
-		CombinableArbitrary jsonValue,
-		Function<Object, Object> deserializer
+		CombinableArbitrary<T> jsonValue,
+		Function<Object, T> deserializer
 	) {
 		this.jsonValue = jsonValue;
 		this.deserializer = deserializer;
@@ -46,7 +46,7 @@ public final class JacksonCombinableArbitrary implements CombinableArbitrary {
 	 * @return an actual object
 	 */
 	@Override
-	public Object combined() {
+	public T combined() {
 		return deserializer.apply(jsonValue.rawValue());
 	}
 

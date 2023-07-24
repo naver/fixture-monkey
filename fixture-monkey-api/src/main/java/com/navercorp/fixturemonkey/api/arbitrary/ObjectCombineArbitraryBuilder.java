@@ -29,26 +29,26 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 
 @API(since = "0.6.0", status = Status.EXPERIMENTAL)
 public final class ObjectCombineArbitraryBuilder {
-	private final Map<ArbitraryProperty, CombinableArbitrary> arbitraryListByArbitraryProperty;
+	private final Map<ArbitraryProperty, CombinableArbitrary<?>> arbitraryListByArbitraryProperty;
 
 	ObjectCombineArbitraryBuilder() {
 		this.arbitraryListByArbitraryProperty = new HashMap<>();
 	}
 
-	public ObjectCombineArbitraryBuilder property(ArbitraryProperty property, CombinableArbitrary arbitrary) {
+	public ObjectCombineArbitraryBuilder property(ArbitraryProperty property, CombinableArbitrary<?> arbitrary) {
 		arbitraryListByArbitraryProperty.put(property, arbitrary);
 		return this;
 	}
 
 	public ObjectCombineArbitraryBuilder properties(
-		Map<ArbitraryProperty, CombinableArbitrary> arbitraryListByArbitraryProperty
+		Map<ArbitraryProperty, CombinableArbitrary<?>> arbitraryListByArbitraryProperty
 	) {
 		this.arbitraryListByArbitraryProperty.putAll(arbitraryListByArbitraryProperty);
 		return this;
 	}
 
-	public CombinableArbitrary build(Function<Map<ArbitraryProperty, Object>, Object> combinator) {
-		return new ObjectCombinableArbitrary(
+	public <T> CombinableArbitrary<T> build(Function<Map<ArbitraryProperty, Object>, T> combinator) {
+		return new ObjectCombinableArbitrary<>(
 			arbitraryListByArbitraryProperty,
 			combinator
 		);

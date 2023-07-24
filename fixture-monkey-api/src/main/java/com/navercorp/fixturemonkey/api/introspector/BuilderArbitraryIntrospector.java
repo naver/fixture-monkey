@@ -64,7 +64,7 @@ public final class BuilderArbitraryIntrospector implements ArbitraryIntrospector
 		}
 
 		List<ArbitraryProperty> childrenProperties = context.getChildren();
-		Map<String, CombinableArbitrary> arbitrariesByResolvedName =
+		Map<String, CombinableArbitrary<?>> arbitrariesByResolvedName =
 			context.getCombinableArbitrariesByResolvedName();
 
 		LazyArbitrary<Object> generateArbitrary = LazyArbitrary.lazy(
@@ -81,7 +81,7 @@ public final class BuilderArbitraryIntrospector implements ArbitraryIntrospector
 
 					String resolvePropertyName =
 						arbitraryProperty.getObjectProperty().getResolvedPropertyName();
-					CombinableArbitrary combinableArbitrary =
+					CombinableArbitrary<?> combinableArbitrary =
 						arbitrariesByResolvedName.get(resolvePropertyName);
 
 					Method method = BUILD_FIELD_METHOD_CACHE.computeIfAbsent(buildFieldMethodName, f -> {
