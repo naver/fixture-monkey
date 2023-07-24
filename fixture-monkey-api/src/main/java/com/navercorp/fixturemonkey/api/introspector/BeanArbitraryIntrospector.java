@@ -51,7 +51,7 @@ public final class BeanArbitraryIntrospector implements ArbitraryIntrospector {
 			return ArbitraryIntrospectorResult.NOT_INTROSPECTED;
 		}
 
-		Map<ArbitraryProperty, CombinableArbitrary> arbitrariesByArbitraryProperty =
+		Map<ArbitraryProperty, CombinableArbitrary<?>> arbitrariesByArbitraryProperty =
 			context.getCombinableArbitrariesByArbitraryProperty();
 
 		return new ArbitraryIntrospectorResult(

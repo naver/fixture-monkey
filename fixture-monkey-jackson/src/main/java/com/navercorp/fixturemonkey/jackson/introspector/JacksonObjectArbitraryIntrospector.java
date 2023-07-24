@@ -69,7 +69,7 @@ public final class JacksonObjectArbitraryIntrospector implements ArbitraryIntros
 		Class<?> type = Types.getActualType(property.getType());
 
 		return new ArbitraryIntrospectorResult(
-			new JacksonCombinableArbitrary(
+			new JacksonCombinableArbitrary<>(
 				CombinableArbitrary.objectBuilder()
 					.properties(context.getCombinableArbitrariesByArbitraryProperty())
 					.build(combineAsJson(property)),

@@ -52,6 +52,7 @@ public final class JacksonArrayArbitraryIntrospector implements ArbitraryIntrosp
 		return Types.getActualType(property.getType()).isArray();
 	}
 
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Override
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
 		Property property = context.getResolvedProperty();
@@ -61,7 +62,7 @@ public final class JacksonArrayArbitraryIntrospector implements ArbitraryIntrosp
 			.constructArrayType(elementType);
 
 		return new ArbitraryIntrospectorResult(
-			new JacksonCombinableArbitrary(
+			new JacksonCombinableArbitrary<>(
 				DELEGATOR.introspect(context).getValue(),
 				list -> objectMapper.convertValue(list, arrayType)
 			)

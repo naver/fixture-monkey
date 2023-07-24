@@ -51,7 +51,7 @@ public final class SetIntrospector implements ArbitraryIntrospector, Matcher {
 			return NOT_INTROSPECTED;
 		}
 
-		List<CombinableArbitrary> elementArbitraryList = context.getElementCombinableArbitraryList().stream()
+		List<CombinableArbitrary<?>> elementArbitraryList = context.getElementCombinableArbitraryList().stream()
 			.map(it -> it.filter(
 					context.getGenerateUniqueMaxTries(),
 					element -> context.isUniqueAndCheck(

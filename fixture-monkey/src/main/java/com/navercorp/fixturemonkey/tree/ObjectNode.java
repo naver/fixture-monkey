@@ -48,7 +48,7 @@ public final class ObjectNode {
 	private List<ObjectNode> children;
 
 	@Nullable
-	private CombinableArbitrary arbitrary;
+	private CombinableArbitrary<?> arbitrary;
 
 	private boolean manipulated = false;
 
@@ -104,11 +104,11 @@ public final class ObjectNode {
 	}
 
 	@Nullable
-	public CombinableArbitrary getArbitrary() {
+	public CombinableArbitrary<?> getArbitrary() {
 		return this.arbitrary;
 	}
 
-	public void setArbitrary(@Nullable CombinableArbitrary arbitrary) {
+	public void setArbitrary(@Nullable CombinableArbitrary<?> arbitrary) {
 		this.arbitrary = arbitrary;
 	}
 

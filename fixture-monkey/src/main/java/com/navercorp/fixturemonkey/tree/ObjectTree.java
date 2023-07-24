@@ -75,7 +75,7 @@ public final class ObjectTree {
 		}
 	}
 
-	public CombinableArbitrary generate() {
+	public CombinableArbitrary<?> generate() {
 		return generateIntrospected(rootNode, null);
 	}
 
@@ -117,18 +117,18 @@ public final class ObjectTree {
 	}
 
 	@SuppressWarnings({"rawtypes", "unchecked"})
-	private CombinableArbitrary generateIntrospected(
+	private CombinableArbitrary<?> generateIntrospected(
 		ObjectNode node,
 		@Nullable ArbitraryGeneratorContext currentContext
 	) {
-		CombinableArbitrary generated;
+		CombinableArbitrary<?> generated;
 		if (node.getArbitrary() != null) {
 			generated = node.getArbitrary()
 				.injectNull(node.getArbitraryProperty().getObjectProperty().getNullInject());
 		} else {
 			ArbitraryGeneratorContext childArbitraryGeneratorContext = this.generateContext(node, currentContext);
 
-			CombinableArbitrary cached = monkeyContext.getCachedArbitrary(node.getProperty());
+			CombinableArbitrary<?> cached = monkeyContext.getCachedArbitrary(node.getProperty());
 
 			if (node.isNotManipulated() && cached != null) {
 				generated = cached;

@@ -50,7 +50,7 @@ public final class MapIntrospector implements ArbitraryIntrospector, Matcher {
 			return ArbitraryIntrospectorResult.NOT_INTROSPECTED;
 		}
 
-		List<CombinableArbitrary> elementCombinableArbitraryList = context.getElementCombinableArbitraryList();
+		List<CombinableArbitrary<?>> elementCombinableArbitraryList = context.getElementCombinableArbitraryList();
 
 		return new ArbitraryIntrospectorResult(
 			CombinableArbitrary.containerBuilder()

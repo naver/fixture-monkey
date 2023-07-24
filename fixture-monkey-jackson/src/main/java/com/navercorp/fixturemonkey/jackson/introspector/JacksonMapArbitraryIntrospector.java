@@ -54,7 +54,7 @@ public final class JacksonMapArbitraryIntrospector implements ArbitraryIntrospec
 		return Map.class.isAssignableFrom(Types.getActualType(property.getType()));
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Override
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
 		Property property = context.getResolvedProperty();
@@ -66,7 +66,7 @@ public final class JacksonMapArbitraryIntrospector implements ArbitraryIntrospec
 			.constructMapType(containerType, keyType, valueType);
 
 		return new ArbitraryIntrospectorResult(
-			new JacksonCombinableArbitrary(
+			new JacksonCombinableArbitrary<>(
 				DELEGATOR.introspect(context).getValue(),
 				list -> objectMapper.convertValue(list, mapType)
 			)

@@ -31,23 +31,24 @@ import com.navercorp.fixturemonkey.api.random.Randoms;
  * It would generate an object may be {@code null} with a {@code nullProbability}% chance.
  */
 @API(since = "0.5.0", status = Status.MAINTAINED)
-final class NullInjectCombinableArbitrary implements CombinableArbitrary {
-	private final CombinableArbitrary combinableArbitrary;
+final class NullInjectCombinableArbitrary<T> implements CombinableArbitrary<T> {
+	private final CombinableArbitrary<T> combinableArbitrary;
 	private final double nullProbability;
 
-	NullInjectCombinableArbitrary(CombinableArbitrary combinableArbitrary, double nullProbability) {
+	NullInjectCombinableArbitrary(CombinableArbitrary<T> combinableArbitrary, double nullProbability) {
 		this.combinableArbitrary = combinableArbitrary;
 		this.nullProbability = nullProbability;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public Object combined() {
-		Object combined = combinableArbitrary.combined();
+	public T combined() {
+		T combined = combinableArbitrary.combined();
 		if (combined instanceof Proxy) {
 			return combined;
 		}
 
-		return injectNull(combined);
+		return (T)injectNull(combined);
 	}
 
 	@Override

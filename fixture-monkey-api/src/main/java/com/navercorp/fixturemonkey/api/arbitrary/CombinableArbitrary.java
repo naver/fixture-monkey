@@ -33,10 +33,11 @@ import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 
 /**
  * An arbitrary instance for combining arbitraries in order to generate an instance of specific class.
+ * @param <T> type to generate
  */
 @API(since = "0.6.0", status = Status.EXPERIMENTAL)
-public interface CombinableArbitrary {
-	CombinableArbitrary NOT_GENERATED = CombinableArbitrary.from(null);
+public interface CombinableArbitrary<T> {
+	CombinableArbitrary<?> NOT_GENERATED = CombinableArbitrary.from(null);
 	@Deprecated
 	int MAX_TRIES = 1_000;
 	int DEFAULT_MAX_TRIES = MAX_TRIES;
@@ -49,15 +50,15 @@ public interface CombinableArbitrary {
 	 * @return a {@link CombinableArbitrary}
 	 */
 	@SuppressWarnings("unchecked")
-	static CombinableArbitrary from(Object object) {
+	static CombinableArbitrary<?> from(Object object) {
 		if (object instanceof Supplier) {
-			return new LazyCombinableArbitrary(LazyArbitrary.lazy((Supplier<Object>)object));
+			return new LazyCombinableArbitrary<>(LazyArbitrary.lazy((Supplier<Object>)object));
 		} else if (object instanceof Arbitrary) {
-			return new LazyCombinableArbitrary(LazyArbitrary.lazy(() -> ((Arbitrary<?>)object).sample()));
+			return new LazyCombinableArbitrary<>(LazyArbitrary.lazy(() -> ((Arbitrary<?>)object).sample()));
 		} else if (object instanceof LazyArbitrary) {
-			return new LazyCombinableArbitrary((LazyArbitrary<Object>)object);
+			return new LazyCombinableArbitrary<>((LazyArbitrary<Object>)object);
 		}
-		return new FixedCombinableArbitrary(object);
+		return new FixedCombinableArbitrary<>(object);
 	}
 
 	/**
@@ -83,7 +84,7 @@ public interface CombinableArbitrary {
 	 *
 	 * @return a combined object
 	 */
-	Object combined();
+	T combined();
 
 	/**
 	 * Retrieves a raw object.
@@ -102,7 +103,7 @@ public interface CombinableArbitrary {
 	 * @param predicate a constraint to satisfy
 	 * @return A filtered {@link CombinableArbitrary}.
 	 */
-	default CombinableArbitrary filter(Predicate<Object> predicate) {
+	default CombinableArbitrary<T> filter(Predicate<T> predicate) {
 		return filter(DEFAULT_MAX_TRIES, predicate);
 	}
 
@@ -114,8 +115,8 @@ public interface CombinableArbitrary {
 	 * @param predicate a constraint to satisfy
 	 * @return A filtered {@link CombinableArbitrary}.
 	 */
-	default CombinableArbitrary filter(int tries, Predicate<Object> predicate) {
-		return new FilteredCombinableArbitrary(
+	default CombinableArbitrary<T> filter(int tries, Predicate<T> predicate) {
+		return new FilteredCombinableArbitrary<>(
 			tries,
 			this,
 			predicate
@@ -128,8 +129,8 @@ public interface CombinableArbitrary {
 	 * @param mapper a way of transforming
 	 * @return A mapped {@link CombinableArbitrary}
 	 */
-	default CombinableArbitrary map(Function<Object, Object> mapper) {
-		return new MappedCombinableArbitrary(
+	default <R> CombinableArbitrary<R> map(Function<T, R> mapper) {
+		return new MappedCombinableArbitrary<>(
 			this,
 			mapper
 		);
@@ -141,8 +142,8 @@ public interface CombinableArbitrary {
 	 * @param nullProbability a probability to be {@code null}
 	 * @return A {@link CombinableArbitrary} may return {@code null}
 	 */
-	default CombinableArbitrary injectNull(double nullProbability) {
-		return new NullInjectCombinableArbitrary(
+	default CombinableArbitrary<T> injectNull(double nullProbability) {
+		return new NullInjectCombinableArbitrary<>(
 			this,
 			nullProbability
 		);
@@ -154,8 +155,8 @@ public interface CombinableArbitrary {
 	 *
 	 * @return A {@link CombinableArbitrary} returns a unique value
 	 */
-	default CombinableArbitrary unique() {
-		return new UniqueCombinableArbitrary(this, new ConcurrentHashMap<>());
+	default CombinableArbitrary<T> unique() {
+		return new UniqueCombinableArbitrary<>(this, new ConcurrentHashMap<>());
 	}
 
 	/**

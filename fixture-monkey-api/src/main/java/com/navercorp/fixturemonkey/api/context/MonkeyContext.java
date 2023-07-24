@@ -30,11 +30,11 @@ import com.navercorp.fixturemonkey.api.property.RootProperty;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class MonkeyContext {
-	private final ConcurrentLruCache<Property, CombinableArbitrary> arbitrariesByProperty;
+	private final ConcurrentLruCache<Property, CombinableArbitrary<?>> arbitrariesByProperty;
 	private final ConcurrentLruCache<RootProperty, MonkeyGeneratorContext> generatorContextByRootProperty;
 
 	public MonkeyContext(
-		ConcurrentLruCache<Property, CombinableArbitrary> arbitrariesByProperty,
+		ConcurrentLruCache<Property, CombinableArbitrary<?>> arbitrariesByProperty,
 		ConcurrentLruCache<RootProperty, MonkeyGeneratorContext> generatorContextByRootProperty
 	) {
 		this.arbitrariesByProperty = arbitrariesByProperty;
@@ -45,11 +45,11 @@ public final class MonkeyContext {
 		return new MonkeyContextBuilder();
 	}
 
-	public CombinableArbitrary getCachedArbitrary(Property property) {
+	public CombinableArbitrary<?> getCachedArbitrary(Property property) {
 		return arbitrariesByProperty.get(property);
 	}
 
-	public void putCachedArbitrary(Property property, CombinableArbitrary combinableArbitrary) {
+	public void putCachedArbitrary(Property property, CombinableArbitrary<?> combinableArbitrary) {
 		arbitrariesByProperty.put(property, combinableArbitrary);
 	}
 

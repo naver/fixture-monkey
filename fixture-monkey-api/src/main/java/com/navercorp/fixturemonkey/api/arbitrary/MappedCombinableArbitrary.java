@@ -23,27 +23,42 @@ import java.util.function.Function;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import com.navercorp.fixturemonkey.api.property.Traceable;
+
 /**
  * It would transform a generated object into a new object.
  */
 @API(since = "0.5.0", status = Status.MAINTAINED)
-final class MappedCombinableArbitrary implements CombinableArbitrary {
-	private final CombinableArbitrary combinableArbitrary;
-	private final Function<Object, Object> mapper;
+final class MappedCombinableArbitrary<T, U> implements CombinableArbitrary<U> {
+	private final CombinableArbitrary<T> combinableArbitrary;
+	private final Function<T, U> mapper;
 
-	MappedCombinableArbitrary(CombinableArbitrary combinableArbitrary, Function<Object, Object> mapper) {
+	MappedCombinableArbitrary(CombinableArbitrary<T> combinableArbitrary, Function<T, U> mapper) {
 		this.combinableArbitrary = combinableArbitrary;
 		this.mapper = mapper;
 	}
 
 	@Override
-	public Object combined() {
+	public U combined() {
 		return mapper.apply(combinableArbitrary.combined());
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public Object rawValue() {
-		return mapper.apply(combinableArbitrary.rawValue());
+	public U rawValue() {
+		try {
+			return mapper.apply((T)combinableArbitrary.rawValue());
+		} catch (ClassCastException ex) {
+			if (combinableArbitrary instanceof Traceable) {
+				throw new ClassCastException(
+					String.format(
+						"Given property '%s' could not use mapper. Check out if using the proper introspector.",
+						((Traceable)combinableArbitrary).getPropertyPath().getExpression()
+					)
+				);
+			}
+			throw new ClassCastException("Could not use mapper. Check out if using the proper introspector.");
+		}
 	}
 
 	@Override

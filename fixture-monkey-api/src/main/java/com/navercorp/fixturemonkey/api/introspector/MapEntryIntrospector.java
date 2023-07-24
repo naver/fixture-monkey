@@ -49,7 +49,7 @@ public final class MapEntryIntrospector implements ArbitraryIntrospector, Matche
 			return ArbitraryIntrospectorResult.NOT_INTROSPECTED;
 		}
 
-		List<CombinableArbitrary> elementCombinableArbitraryList = context.getElementCombinableArbitraryList();
+		List<CombinableArbitrary<?>> elementCombinableArbitraryList = context.getElementCombinableArbitraryList();
 		if (elementCombinableArbitraryList.size() != 1) {
 			throw new IllegalArgumentException(
 				"Map entry node should have only one child, current : " + elementCombinableArbitraryList.size()
