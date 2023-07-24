@@ -41,6 +41,7 @@ public interface CombinableArbitrary<T> {
 	@Deprecated
 	int MAX_TRIES = 1_000;
 	int DEFAULT_MAX_TRIES = MAX_TRIES;
+	Object LOCK = new Object();
 
 	/**
 	 * Generates a {@link FixedCombinableArbitrary} which returns always same value.
@@ -58,7 +59,14 @@ public interface CombinableArbitrary<T> {
 	 * @return a {@link FixedCombinableArbitrary}
 	 */
 	static <U> CombinableArbitrary<U> from(Arbitrary<U> arbitrary) {
-		return from(LazyArbitrary.lazy(arbitrary::sample));
+		return from(LazyArbitrary.lazy(() -> {
+			if (arbitrary != null) {
+				synchronized (LOCK) {
+					return arbitrary.sample();
+				}
+			}
+			return null;
+		}));
 	}
 
 	/**
