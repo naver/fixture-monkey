@@ -22,8 +22,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import javax.annotation.Nullable;
-
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
@@ -32,39 +30,23 @@ import com.navercorp.fixturemonkey.api.property.Property;
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class ArbitraryProperty {
 	private final ObjectProperty objectProperty;
+	private final boolean container;
 
-	@Nullable
-	private final ContainerProperty containerProperty;
-
-	public ArbitraryProperty(
-		ObjectProperty objectProperty,
-		@Nullable ContainerProperty containerProperty
-	) {
+	public ArbitraryProperty(ObjectProperty objectProperty, boolean container) {
 		this.objectProperty = objectProperty;
-		this.containerProperty = containerProperty;
+		this.container = container;
 	}
 
 	public ObjectProperty getObjectProperty() {
 		return objectProperty;
 	}
 
-	@Nullable
-	public ContainerProperty getContainerProperty() {
-		return containerProperty;
+	public boolean isContainer() {
+		return container;
 	}
 
 	public ArbitraryProperty withNullInject(double nullInject) {
-		return new ArbitraryProperty(
-			this.objectProperty.withNullInject(nullInject),
-			this.containerProperty
-		);
-	}
-
-	public ArbitraryProperty withElementProperties(List<Property> elementProperties) {
-		return new ArbitraryProperty(
-			this.objectProperty,
-			this.containerProperty.withElementProperties(elementProperties)
-		);
+		return new ArbitraryProperty(this.objectProperty.withNullInject(nullInject), this.container);
 	}
 
 	public ArbitraryProperty withChildPropertyListsByCandidateProperty(
@@ -72,21 +54,7 @@ public final class ArbitraryProperty {
 	) {
 		return new ArbitraryProperty(
 			this.objectProperty.withChildPropertyListsByCandidateProperty(childPropertyListsByCandidateProperty),
-			this.containerProperty
-		);
-	}
-
-	public ArbitraryProperty withContainerInfo(ArbitraryContainerInfo containerInfo) {
-		return new ArbitraryProperty(
-			this.objectProperty,
-			this.containerProperty.withContainerInfo(containerInfo)
-		);
-	}
-
-	public ArbitraryProperty withContainerProperty(ContainerProperty containerProperty) {
-		return new ArbitraryProperty(
-			this.objectProperty,
-			containerProperty
+			this.container
 		);
 	}
 
@@ -99,12 +67,11 @@ public final class ArbitraryProperty {
 			return false;
 		}
 		ArbitraryProperty that = (ArbitraryProperty)obj;
-		return objectProperty.equals(that.objectProperty)
-			&& Objects.equals(containerProperty, that.containerProperty);
+		return objectProperty.equals(that.objectProperty) && container == that.container;
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(objectProperty, containerProperty);
+		return Objects.hash(objectProperty, container);
 	}
 }

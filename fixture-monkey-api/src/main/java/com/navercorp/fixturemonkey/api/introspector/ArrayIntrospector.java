@@ -29,7 +29,6 @@ import org.apiguardian.api.API.Status;
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
-import com.navercorp.fixturemonkey.api.generator.ContainerProperty;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.type.Types;
@@ -45,8 +44,7 @@ public final class ArrayIntrospector implements ArbitraryIntrospector, Matcher {
 	@Override
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
 		ArbitraryProperty property = context.getArbitraryProperty();
-		ContainerProperty containerProperty = property.getContainerProperty();
-		if (containerProperty == null || containerProperty.getContainerInfo() == null) {
+		if (!property.isContainer()) {
 			return ArbitraryIntrospectorResult.NOT_INTROSPECTED;
 		}
 
@@ -64,7 +62,6 @@ public final class ArrayIntrospector implements ArbitraryIntrospector, Matcher {
 						for (Object element : elements) {
 							arrayBuilder.add(element);
 						}
-
 						return arrayBuilder.build();
 					}
 				)

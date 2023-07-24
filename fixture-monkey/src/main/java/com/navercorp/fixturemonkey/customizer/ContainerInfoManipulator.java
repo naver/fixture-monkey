@@ -35,13 +35,20 @@ import com.navercorp.fixturemonkey.tree.StartNodePredicate;
 public final class ContainerInfoManipulator {
 	private final List<NextNodePredicate> nextNodePredicates;
 	private ArbitraryContainerInfo containerInfo;
+	/**
+	 * The sequence of a size manipulation.
+	 * It may dismiss if a sequence of set is bigger.
+	 */
+	private final int manipulatingSequence;
 
 	public ContainerInfoManipulator(
 		List<NextNodePredicate> nextNodePredicates,
-		ArbitraryContainerInfo containerInfo
+		ArbitraryContainerInfo containerInfo,
+		int manipulatingSequence
 	) {
 		this.nextNodePredicates = nextNodePredicates;
 		this.containerInfo = containerInfo;
+		this.manipulatingSequence = manipulatingSequence;
 	}
 
 	public ContainerInfoManipulator copy() {
@@ -49,9 +56,9 @@ public final class ContainerInfoManipulator {
 			this.getNextNodePredicates(),
 			new ArbitraryContainerInfo(
 				containerInfo.getElementMinSize(),
-				containerInfo.getElementMaxSize(),
-				containerInfo.getManipulatingSequence()
-			)
+				containerInfo.getElementMaxSize()
+			),
+			manipulatingSequence
 		);
 	}
 
@@ -74,8 +81,13 @@ public final class ContainerInfoManipulator {
 
 		return new ContainerInfoManipulator(
 			newNextNodePredicates,
-			this.containerInfo
+			this.containerInfo,
+			manipulatingSequence
 		);
+	}
+
+	public int getManipulatingSequence() {
+		return manipulatingSequence;
 	}
 
 	public void fixed() {
@@ -83,8 +95,7 @@ public final class ContainerInfoManipulator {
 
 		this.containerInfo = new ArbitraryContainerInfo(
 			fixedSize,
-			fixedSize,
-			containerInfo.getManipulatingSequence()
+			fixedSize
 		);
 	}
 

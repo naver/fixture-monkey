@@ -30,6 +30,8 @@ import org.apiguardian.api.API.Status;
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
+import com.navercorp.fixturemonkey.customizer.ContainerInfoManipulator;
+import com.navercorp.fixturemonkey.customizer.NodeManipulator;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class ObjectNode {
@@ -49,6 +51,10 @@ public final class ObjectNode {
 	private CombinableArbitrary arbitrary;
 
 	private boolean manipulated = false;
+
+	private final List<NodeManipulator> manipulators = new ArrayList<>();
+
+	private final List<ContainerInfoManipulator> containerInfoManipulators = new ArrayList<>();
 
 	@SuppressWarnings("rawtypes")
 	private final List<Predicate> arbitraryFilters = new ArrayList<>();
@@ -115,14 +121,21 @@ public final class ObjectNode {
 		this.arbitraryFilters.add(filter);
 	}
 
+	public void addManipulator(NodeManipulator nodeManipulator) {
+		this.manipulators.add(nodeManipulator);
+	}
+
+	public void addContainerManipulator(ContainerInfoManipulator containerInfoManipulator) {
+		this.containerInfoManipulators.add(containerInfoManipulator);
+	}
+
 	@SuppressWarnings("rawtypes")
 	public List<Predicate> getArbitraryFilters() {
 		return arbitraryFilters;
 	}
 
 	public boolean isNotManipulated() {
-		boolean sized = arbitraryProperty.getContainerProperty() != null
-			&& arbitraryProperty.getContainerProperty().getContainerInfo().isManipulated();
+		boolean sized = !containerInfoManipulators.isEmpty();
 
 		return !manipulated && !sized;
 	}
@@ -134,5 +147,14 @@ public final class ObjectNode {
 	@Nullable
 	public ObjectNode getParent() {
 		return parent;
+	}
+
+	@Nullable
+	public ContainerInfoManipulator getAppliedContainerInfoManipulator() {
+		if (containerInfoManipulators.isEmpty()) {
+			return null;
+		}
+
+		return containerInfoManipulators.get(containerInfoManipulators.size() - 1);
 	}
 }

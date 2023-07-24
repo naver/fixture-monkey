@@ -38,12 +38,8 @@ class PairIntrospector : ArbitraryIntrospector, Matcher {
 
     override fun introspect(context: ArbitraryGeneratorContext): ArbitraryIntrospectorResult {
         val property = context.arbitraryProperty
-        val containerProperty = property.containerProperty
-            ?: throw IllegalArgumentException(
-                "container property should not null. type: ${property.objectProperty.property.name}",
-            )
 
-        if (containerProperty.containerInfo == null) {
+        if (!property.isContainer) {
             return ArbitraryIntrospectorResult.NOT_INTROSPECTED
         }
 

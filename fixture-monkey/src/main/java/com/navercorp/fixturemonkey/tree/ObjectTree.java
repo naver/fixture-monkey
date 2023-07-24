@@ -71,6 +71,7 @@ public final class ObjectTree {
 
 		for (ObjectNode node : nodes) {
 			nodeManipulator.manipulate(node);
+			node.addManipulator(nodeManipulator);
 		}
 	}
 

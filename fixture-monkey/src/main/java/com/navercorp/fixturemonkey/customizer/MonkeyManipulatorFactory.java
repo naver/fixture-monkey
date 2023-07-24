@@ -118,9 +118,9 @@ public final class MonkeyManipulatorFactory {
 			monkeyExpressionFactory.from(expression).toNodeResolver().toNextNodePredicate(),
 			new ArbitraryContainerInfo(
 				min,
-				max,
-				newSequence
-			)
+				max
+			),
+			newSequence
 		);
 	}
 
@@ -186,9 +186,9 @@ public final class MonkeyManipulatorFactory {
 				it.getNodeResolver().toNextNodePredicate(),
 				new ArbitraryContainerInfo(
 					it.getElementMinSize(),
-					it.getElementMaxSize(),
-					baseSequence + it.getSequence()
-				)
+					it.getElementMaxSize()
+				),
+				baseSequence + it.getSequence()
 			))
 			.collect(Collectors.toList());
 

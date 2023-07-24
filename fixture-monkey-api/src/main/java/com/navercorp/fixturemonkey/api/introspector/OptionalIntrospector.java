@@ -30,10 +30,8 @@ import org.apiguardian.api.API.Status;
 import net.jqwik.api.Arbitraries;
 
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
-import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
-import com.navercorp.fixturemonkey.api.generator.ContainerProperty;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.type.Types;
@@ -52,24 +50,21 @@ public final class OptionalIntrospector implements ArbitraryIntrospector, Matche
 	@Override
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
 		ArbitraryProperty property = context.getArbitraryProperty();
-		ContainerProperty containerProperty = property.getContainerProperty();
-		if (containerProperty == null) {
-			throw new IllegalArgumentException(
-				"container property should not null. type : " + property.getObjectProperty().getProperty().getName()
-			);
-		}
-		ArbitraryContainerInfo containerInfo = containerProperty.getContainerInfo();
-		List<ArbitraryProperty> children = context.getChildren();
-		if (containerInfo == null || children.size() != 1) {
+		if (!property.isContainer()) {
 			return ArbitraryIntrospectorResult.NOT_INTROSPECTED;
+		}
+		List<ArbitraryProperty> children = context.getChildren();
+
+		if (children.isEmpty()) {
+			return new ArbitraryIntrospectorResult(
+				CombinableArbitrary.from(Optional.empty())
+			);
 		}
 
 		ArbitraryProperty valueProperty = children.get(0);
 		double presenceProbability = 1 - valueProperty.getObjectProperty().getNullInject();
-		if (containerInfo.getElementMinSize() > 0) {
+		if (children.size() == 1) {
 			presenceProbability = 1.0d;
-		} else if (containerInfo.getElementMaxSize() == 0) {
-			presenceProbability = 0.0d;
 		}
 
 		Class<?> type = Types.getActualType(property.getObjectProperty().getProperty().getType());
@@ -101,7 +96,6 @@ public final class OptionalIntrospector implements ArbitraryIntrospector, Matche
 							.sample();
 					}
 				)
-
 		);
 	}
 }
