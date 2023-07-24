@@ -18,16 +18,14 @@
 
 package com.navercorp.fixturemonkey.customizer;
 
+import static com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary.NOT_GENERATED;
 import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.ALWAYS_NULL_INJECT;
 import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.NOT_NULL_INJECT;
 
-import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.tree.ObjectNode;
 
 public class NodeNullityManipulator implements NodeManipulator {
-	private static final CombinableArbitrary FIXED_AS_NULL = CombinableArbitrary.from(null);
-
 	private final boolean toNull;
 
 	public NodeNullityManipulator(boolean toNull) {
@@ -40,8 +38,8 @@ public class NodeNullityManipulator implements NodeManipulator {
 		if (toNull) {
 			objectNode.setArbitraryProperty(arbitraryProperty.withNullInject(ALWAYS_NULL_INJECT));
 		} else {
-			if (FIXED_AS_NULL.equals(objectNode.getArbitrary())) {
-				objectNode.setArbitrary(null);
+			if (NOT_GENERATED.equals(objectNode.getArbitrary())) {
+				objectNode.setArbitrary(null); // initializing for regenerate
 			}
 			objectNode.setArbitraryProperty(arbitraryProperty.withNullInject(NOT_NULL_INJECT));
 		}

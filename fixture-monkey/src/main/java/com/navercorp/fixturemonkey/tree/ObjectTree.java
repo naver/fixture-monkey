@@ -106,7 +106,7 @@ public final class ObjectTree {
 			(currentContext, prop) -> {
 				ObjectNode node = childNodesByArbitraryProperty.get(prop);
 				if (node == null) {
-					return CombinableArbitrary.from(null);
+					return CombinableArbitrary.NOT_GENERATED;
 				}
 
 				return generateIntrospected(node, currentContext);

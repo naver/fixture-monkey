@@ -74,7 +74,7 @@ public final class AnonymousArbitraryIntrospector implements ArbitraryIntrospect
 		}
 
 		if (invocationHandlerBuilder.generatedValuesByMethodName.isEmpty()) {
-			return new ArbitraryIntrospectorResult(CombinableArbitrary.from(null));
+			return new ArbitraryIntrospectorResult(CombinableArbitrary.NOT_GENERATED);
 		}
 
 		return new ArbitraryIntrospectorResult(

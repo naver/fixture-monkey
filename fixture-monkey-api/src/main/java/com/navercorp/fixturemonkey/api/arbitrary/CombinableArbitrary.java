@@ -37,28 +37,47 @@ import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
  */
 @API(since = "0.6.0", status = Status.EXPERIMENTAL)
 public interface CombinableArbitrary<T> {
-	CombinableArbitrary<?> NOT_GENERATED = CombinableArbitrary.from(null);
+	CombinableArbitrary<?> NOT_GENERATED = CombinableArbitrary.from((Object)null);
 	@Deprecated
 	int MAX_TRIES = 1_000;
 	int DEFAULT_MAX_TRIES = MAX_TRIES;
 
 	/**
-	 * Generates a proper {@link CombinableArbitrary}.
+	 * Generates a {@link FixedCombinableArbitrary} which returns always same value.
 	 *
-	 * @param object to be converted into {@link CombinableArbitrary}.
-	 *               Specific types such as {@link Supplier}, {@link Arbitrary}, {@link LazyArbitrary} is supported.
-	 * @return a {@link CombinableArbitrary}
+	 * @param object to be converted into {@link FixedCombinableArbitrary}.
+	 * @return a {@link FixedCombinableArbitrary}
 	 */
-	@SuppressWarnings("unchecked")
 	static CombinableArbitrary<?> from(Object object) {
-		if (object instanceof Supplier) {
-			return new LazyCombinableArbitrary<>(LazyArbitrary.lazy((Supplier<Object>)object));
-		} else if (object instanceof Arbitrary) {
-			return new LazyCombinableArbitrary<>(LazyArbitrary.lazy(() -> ((Arbitrary<?>)object).sample()));
-		} else if (object instanceof LazyArbitrary) {
-			return new LazyCombinableArbitrary<>((LazyArbitrary<Object>)object);
-		}
 		return new FixedCombinableArbitrary<>(object);
+	}
+
+	/**
+	 * @see #from(LazyArbitrary)
+	 * @param arbitrary to be converted into {@link LazyCombinableArbitrary}.
+	 * @return a {@link FixedCombinableArbitrary}
+	 */
+	static <U> CombinableArbitrary<U> from(Arbitrary<U> arbitrary) {
+		return from(LazyArbitrary.lazy(arbitrary::sample));
+	}
+
+	/**
+	 * @see #from(LazyArbitrary)
+	 * @param supplier to be converted into {@link LazyCombinableArbitrary}.
+	 * @return a {@link LazyCombinableArbitrary}
+	 */
+	static <U> CombinableArbitrary<U> from(Supplier<U> supplier) {
+		return from(LazyArbitrary.lazy(supplier));
+	}
+
+	/**
+	 * Generates a {@link LazyCombinableArbitrary} which returns an arbitrary object.
+	 *
+	 * @param lazyArbitrary to be converted into {@link LazyCombinableArbitrary}.
+	 * @return a {@link LazyCombinableArbitrary}
+	 */
+	static <U> CombinableArbitrary<U> from(LazyArbitrary<U> lazyArbitrary) {
+		return new LazyCombinableArbitrary<>(lazyArbitrary);
 	}
 
 	/**
