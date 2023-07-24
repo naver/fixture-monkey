@@ -41,7 +41,7 @@ public final class ArbitraryIntrospectorResult {
 
 	private static final Object LOCK = new Object();
 
-	private final CombinableArbitrary value;
+	private final CombinableArbitrary<?> value;
 
 	public ArbitraryIntrospectorResult(@Nullable Arbitrary<?> value) {
 		this.value = CombinableArbitrary.from(LazyArbitrary.lazy(
@@ -56,11 +56,11 @@ public final class ArbitraryIntrospectorResult {
 		));
 	}
 
-	public ArbitraryIntrospectorResult(CombinableArbitrary value) {
+	public ArbitraryIntrospectorResult(CombinableArbitrary<?> value) {
 		this.value = value;
 	}
 
-	public CombinableArbitrary getValue() {
+	public CombinableArbitrary<?> getValue() {
 		return this.value;
 	}
 

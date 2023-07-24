@@ -46,7 +46,6 @@ import net.jqwik.time.api.arbitraries.InstantArbitrary;
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.FixtureMonkey;
-import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.arbitrary.MonkeyStringArbitrary;
 import com.navercorp.fixturemonkey.api.container.DecomposableJavaContainer;
 import com.navercorp.fixturemonkey.api.exception.FilterMissException;
@@ -1523,7 +1522,7 @@ class FixtureMonkeyOptionsTest {
 			.defaultArbitraryGenerator(generator -> new CompositeArbitraryGenerator(
 				Arrays.asList(
 					new IntrospectedArbitraryGenerator(context ->
-						new ArbitraryIntrospectorResult(CombinableArbitrary.from(null))
+						new ArbitraryIntrospectorResult(NOT_GENERATED)
 					),
 					generator
 				)
