@@ -76,33 +76,34 @@ public final class ArbitraryResolver {
 				))
 				.collect(Collectors.toList());
 
-		ObjectTree objectTree = new ObjectTree(
-			rootProperty,
-			this.traverser.traverse(
-				rootProperty,
-				containerInfoManipulators,
-				registeredContainerInfoManipulators
-			),
-			fixtureMonkeyOptions,
-			monkeyContext
-		);
-
-		List<ArbitraryManipulator> registeredManipulators = monkeyManipulatorFactory.newRegisteredArbitraryManipulators(
-			registeredArbitraryBuilders,
-			objectTree.getMetadata().getNodesByProperty()
-		);
-
-		List<ArbitraryManipulator> joinedManipulators =
-			Stream.concat(registeredManipulators.stream(), manipulators.stream())
-				.collect(Collectors.toList());
-
-		List<ArbitraryManipulator> optimizedManipulator = manipulatorOptimizer
-			.optimize(joinedManipulators)
-			.getManipulators();
-
 		return new CombinableArbitrary() {
-			private final LazyArbitrary<CombinableArbitrary<?>> lazyArbitrary = LazyArbitrary.lazy(
+			private final LazyArbitrary<CombinableArbitrary> lazyArbitrary = LazyArbitrary.lazy(
 				() -> {
+					ObjectTree objectTree = new ObjectTree(
+						rootProperty,
+						traverser.traverse(
+							rootProperty,
+							containerInfoManipulators,
+							registeredContainerInfoManipulators
+						),
+						fixtureMonkeyOptions,
+						monkeyContext
+					);
+
+					List<ArbitraryManipulator> registeredManipulators =
+						monkeyManipulatorFactory.newRegisteredArbitraryManipulators(
+							registeredArbitraryBuilders,
+							objectTree.getMetadata().getNodesByProperty()
+						);
+
+					List<ArbitraryManipulator> joinedManipulators =
+						Stream.concat(registeredManipulators.stream(), manipulators.stream())
+							.collect(Collectors.toList());
+
+					List<ArbitraryManipulator> optimizedManipulator = manipulatorOptimizer
+						.optimize(joinedManipulators)
+						.getManipulators();
+
 					for (ArbitraryManipulator manipulator : optimizedManipulator) {
 						manipulator.manipulate(objectTree);
 					}
@@ -122,12 +123,7 @@ public final class ArbitraryResolver {
 
 			@Override
 			public void clear() {
-				CombinableArbitrary<?> combinableArbitrary = lazyArbitrary.getValue();
-				if (!combinableArbitrary.fixed() && optimizedManipulator.isEmpty()) {
-					combinableArbitrary.clear();
-				} else {
-					lazyArbitrary.clear();
-				}
+				lazyArbitrary.clear();
 			}
 
 			@Override
