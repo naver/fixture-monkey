@@ -1,0 +1,14 @@
+java {
+    toolchain { languageVersion = JavaLanguageVersion.of(17) }
+}
+
+dependencies {
+    implementation("net.datafaker:datafaker:1.8.1")
+    implementation(project(path: ":fixture-monkey-api"))
+    implementation 'net.datafaker:datafaker:2.0.1'
+
+    testImplementation("junit:junit:4.13.1")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
+    testImplementation("org.assertj:assertj-core:3.22.0")
+    testImplementation(project(path: ":fixture-monkey"))
+}
