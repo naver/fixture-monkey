@@ -21,4 +21,7 @@ include 'fixture-monkey-tests:java-tests'
 findProject(':fixture-monkey-tests:java-tests')?.name = 'java-tests'
 include 'fixture-monkey-tests:java-concurrent-tests'
 findProject(':fixture-monkey-tests:java-concurrent-tests')?.name = 'java-concurrent-tests'
+include 'fixture-monkey-faker-options'
+include 'untitled'
+include 'fixture-monkey-faker-options'
 
