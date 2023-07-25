@@ -63,7 +63,7 @@ public final class ArbitraryResolver {
 		this.registeredArbitraryBuilders = registeredArbitraryBuilders;
 	}
 
-	public CombinableArbitrary resolve(
+	public CombinableArbitrary<?> resolve(
 		RootProperty rootProperty,
 		List<ArbitraryManipulator> manipulators,
 		List<ContainerInfoManipulator> containerInfoManipulators
@@ -101,7 +101,7 @@ public final class ArbitraryResolver {
 			.getManipulators();
 
 		return new CombinableArbitrary() {
-			private final LazyArbitrary<CombinableArbitrary> lazyArbitrary = LazyArbitrary.lazy(
+			private final LazyArbitrary<CombinableArbitrary<?>> lazyArbitrary = LazyArbitrary.lazy(
 				() -> {
 					for (ArbitraryManipulator manipulator : optimizedManipulator) {
 						manipulator.manipulate(objectTree);
@@ -122,7 +122,7 @@ public final class ArbitraryResolver {
 
 			@Override
 			public void clear() {
-				CombinableArbitrary combinableArbitrary = lazyArbitrary.getValue();
+				CombinableArbitrary<?> combinableArbitrary = lazyArbitrary.getValue();
 				if (!combinableArbitrary.fixed() && optimizedManipulator.isEmpty()) {
 					combinableArbitrary.clear();
 				} else {

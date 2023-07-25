@@ -46,7 +46,7 @@ public final class IteratorIntrospector implements ArbitraryIntrospector, Matche
 			return result;
 		}
 
-		CombinableArbitrary combinableArbitrary = result.getValue();
+		CombinableArbitrary<?> combinableArbitrary = result.getValue();
 		if (combinableArbitrary == null) {
 			return result;
 		}

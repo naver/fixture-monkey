@@ -446,7 +446,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T> {
 	}
 
 	@SuppressWarnings("unchecked")
-	private CombinableArbitrary resolveArbitrary(ArbitraryBuilderContext context) {
+	private CombinableArbitrary<?> resolveArbitrary(ArbitraryBuilderContext context) {
 		List<ArbitraryManipulator> manipulators = new ArrayList<>(context.getManipulators());
 		List<ContainerInfoManipulator> containerInfoManipulators =
 			new ArrayList<>(context.getContainerInfoManipulators());

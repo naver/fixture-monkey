@@ -26,5 +26,5 @@ import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 @API(since = "0.4.0", status = Status.MAINTAINED)
 @FunctionalInterface
 public interface ArbitraryGenerator {
-	CombinableArbitrary generate(ArbitraryGeneratorContext context);
+	CombinableArbitrary<?> generate(ArbitraryGeneratorContext context);
 }

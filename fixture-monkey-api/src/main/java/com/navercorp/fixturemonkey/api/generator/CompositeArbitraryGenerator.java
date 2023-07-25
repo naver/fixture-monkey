@@ -40,9 +40,9 @@ public final class CompositeArbitraryGenerator implements ArbitraryGenerator {
 	}
 
 	@Override
-	public CombinableArbitrary generate(ArbitraryGeneratorContext context) {
+	public CombinableArbitrary<?> generate(ArbitraryGeneratorContext context) {
 		for (ArbitraryGenerator arbitraryGenerator : arbitraryGenerators) {
-			CombinableArbitrary generated = arbitraryGenerator.generate(context);
+			CombinableArbitrary<?> generated = arbitraryGenerator.generate(context);
 			if (generated != NOT_GENERATED) {
 				return generated;
 			}
