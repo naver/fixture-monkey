@@ -20,13 +20,13 @@ package com.navercorp.fixturemonkey.datafaker;
 
 import static org.assertj.core.api.BDDAssertions.then;
 
-import org.junit.jupiter.api.Test;
+import net.jqwik.api.Property;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult;
 
-public class FakerCombinableArbitraryTest {
-	@Test
+class FakerCombinableArbitraryTest {
+	@Property
 	void combinedReturnFullName() {
 		FakerCombinableArbitrary fakerCombinableArbitrary = new FakerCombinableArbitrary();
 
@@ -35,7 +35,7 @@ public class FakerCombinableArbitraryTest {
 		then(actual).matches("([\\w']+\\.?( )?){2,4}");
 	}
 
-	@Test
+	@Property
 	void rawValueReturnFullName() {
 		FakerCombinableArbitrary fakerCombinableArbitrary = new FakerCombinableArbitrary();
 
@@ -44,7 +44,7 @@ public class FakerCombinableArbitraryTest {
 		then(actual).matches("([\\w']+\\.?( )?){2,4}");
 	}
 
-	@Test
+	@Property
 	void fakerCombinableArbitraryIntrospectorOption() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.pushExactTypeArbitraryIntrospector(
@@ -56,6 +56,21 @@ public class FakerCombinableArbitraryTest {
 		String actual = sut.giveMeOne(String.class);
 
 		then(actual).matches("([\\w']+\\.?( )?){2,4}");
+	}
+
+	@Property
+	void fakerCombinableArbitraryFirstNameOption() {
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.pushExactTypeArbitraryIntrospector(
+				String.class,
+				(context) -> new ArbitraryIntrospectorResult(
+					new FakerCombinableArbitrary(faker -> faker.name().firstName()))
+			)
+			.build();
+
+		String actual = sut.giveMeOne(String.class);
+
+		then(actual).matches("\\w+");
 	}
 }
 

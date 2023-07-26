@@ -18,26 +18,39 @@
 
 package com.navercorp.fixturemonkey.datafaker;
 
+import java.util.function.Function;
+
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import net.datafaker.Faker;
+import net.datafaker.providers.base.AbstractProvider;
+import net.datafaker.providers.base.BaseProviders;
 
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 
 @API(since = "0.6.0", status = Status.EXPERIMENTAL)
 public class FakerCombinableArbitrary implements CombinableArbitrary {
 
-	private final Faker faker = new Faker();
+	final Faker faker = new Faker();
+	final Function<Faker, String> fakerFunction;
+
+	FakerCombinableArbitrary() {
+		this.fakerFunction = faker -> faker.name().fullName();
+	}
+
+	FakerCombinableArbitrary(Function<Faker, String> fakerFunction) {
+		this.fakerFunction = fakerFunction;
+	}
 
 	@Override
 	public String combined() {
-		return this.faker.name().fullName();
+		return fakerFunction.apply(faker);
 	}
 
 	@Override
 	public String rawValue() {
-		return this.faker.name().fullName();
+		return fakerFunction.apply(faker);
 	}
 
 	@Override
