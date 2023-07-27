@@ -415,7 +415,13 @@ public interface ArbitraryBuilder<T> {
 	 */
 	ArbitraryBuilder<T> maxSize(ExpressionGenerator expressionGenerator, int maxSize);
 
+	/**
+	 * It is deprecated. Use {@link #thenApply} instead.
+	 */
+	@Deprecated
 	ArbitraryBuilder<T> apply(BiConsumer<T, ArbitraryBuilder<T>> biConsumer);
+
+	ArbitraryBuilder<T> thenApply(BiConsumer<T, ArbitraryBuilder<T>> biConsumer);
 
 	ArbitraryBuilder<T> acceptIf(Predicate<T> predicate, Consumer<ArbitraryBuilder<T>> consumer);
 
