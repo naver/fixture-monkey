@@ -24,22 +24,20 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import net.datafaker.Faker;
-import net.datafaker.providers.base.AbstractProvider;
-import net.datafaker.providers.base.BaseProviders;
 
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 
-@API(since = "0.6.0", status = Status.EXPERIMENTAL)
-public class FakerCombinableArbitrary implements CombinableArbitrary {
+@API(since = "0.6.3", status = Status.EXPERIMENTAL)
+final public class FakerCombinableArbitrary implements CombinableArbitrary {
 
-	final Faker faker = new Faker();
-	final Function<Faker, String> fakerFunction;
+	private final Faker faker = new Faker();
+	private final Function<Faker, String> fakerFunction;
 
-	FakerCombinableArbitrary() {
+	public FakerCombinableArbitrary() {
 		this.fakerFunction = faker -> faker.name().fullName();
 	}
 
-	FakerCombinableArbitrary(Function<Faker, String> fakerFunction) {
+	public FakerCombinableArbitrary(Function<Faker, String> fakerFunction) {
 		this.fakerFunction = fakerFunction;
 	}
 
