@@ -19,11 +19,16 @@
 package com.navercorp.fixturemonkey.api.generator;
 
 import java.util.Arrays;
+import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
+
+import javax.annotation.Nullable;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import com.navercorp.fixturemonkey.api.arbitrary.JavaTimeArbitraryGeneratorSet;
+import com.navercorp.fixturemonkey.api.arbitrary.JavaTypeArbitraryGeneratorSet;
 import com.navercorp.fixturemonkey.api.introspector.AnonymousArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult;
@@ -49,6 +54,8 @@ import com.navercorp.fixturemonkey.api.introspector.QueueIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.SetIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.StreamIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.UuidIntrospector;
+import com.navercorp.fixturemonkey.api.jqwik.JqwikJavaTimeArbitraryGeneratorSet;
+import com.navercorp.fixturemonkey.api.jqwik.JqwikJavaTypeArbitraryGeneratorSet;
 
 @SuppressWarnings("UnusedReturnValue")
 @API(since = "0.4.0", status = Status.MAINTAINED)
@@ -95,6 +102,8 @@ public final class JavaDefaultArbitraryGeneratorBuilder {
 	private ArbitraryIntrospector objectIntrospector = BeanArbitraryIntrospector.INSTANCE;
 
 	private ArbitraryIntrospector fallbackIntrospector = DEFAULT_FALLBACK_INTROSPECTOR;
+	private JavaTypeArbitraryGeneratorSet javaTypeArbitraryGeneratorSet = null;
+	private JavaTimeArbitraryGeneratorSet javaTimeArbitraryGeneratorSet = null;
 
 	JavaDefaultArbitraryGeneratorBuilder() {
 	}
@@ -147,6 +156,7 @@ public final class JavaDefaultArbitraryGeneratorBuilder {
 		return this;
 	}
 
+	@Deprecated
 	public JavaDefaultArbitraryGeneratorBuilder javaTypeArbitraryGenerator(
 		JavaTypeArbitraryGenerator javaTypeArbitraryGenerator
 	) {
@@ -154,11 +164,13 @@ public final class JavaDefaultArbitraryGeneratorBuilder {
 		return this;
 	}
 
+	@Deprecated
 	public JavaDefaultArbitraryGeneratorBuilder javaArbitraryResolver(JavaArbitraryResolver javaArbitraryResolver) {
 		this.javaArbitraryResolver = javaArbitraryResolver;
 		return this;
 	}
 
+	@Deprecated
 	public JavaDefaultArbitraryGeneratorBuilder javaTimeTypeArbitraryGenerator(
 		JavaTimeTypeArbitraryGenerator javaTimeTypeArbitraryGenerator
 	) {
@@ -166,10 +178,25 @@ public final class JavaDefaultArbitraryGeneratorBuilder {
 		return this;
 	}
 
+	@Deprecated
 	public JavaDefaultArbitraryGeneratorBuilder javaTimeArbitraryResolver(
 		JavaTimeArbitraryResolver javaTimeArbitraryResolver
 	) {
 		this.javaTimeArbitraryResolver = javaTimeArbitraryResolver;
+		return this;
+	}
+
+	public JavaDefaultArbitraryGeneratorBuilder javaTypeArbitraryGeneratorSet(
+		JavaTypeArbitraryGeneratorSet javaTypeArbitraryGeneratorSet
+	) {
+		this.javaTypeArbitraryGeneratorSet = javaTypeArbitraryGeneratorSet;
+		return this;
+	}
+
+	public JavaDefaultArbitraryGeneratorBuilder javaTimeArbitraryGeneratorSet(
+		JavaTimeArbitraryGeneratorSet javaTimeArbitraryGeneratorSet
+	) {
+		this.javaTimeArbitraryGeneratorSet = javaTimeArbitraryGeneratorSet;
 		return this;
 	}
 
@@ -178,14 +205,27 @@ public final class JavaDefaultArbitraryGeneratorBuilder {
 			this.fallbackIntrospector = AnonymousArbitraryIntrospector.INSTANCE;
 		}
 
+		JavaTypeArbitraryGeneratorSet javaTypeArbitraryGeneratorSet = defaultIfNull(
+			this.javaTypeArbitraryGeneratorSet,
+			() -> new JqwikJavaTypeArbitraryGeneratorSet(
+				javaTypeArbitraryGenerator,
+				javaArbitraryResolver
+			)
+		);
+
+		JavaTimeArbitraryGeneratorSet javaTimeArbitraryGeneratorSet = defaultIfNull(
+			this.javaTimeArbitraryGeneratorSet,
+			() -> new JqwikJavaTimeArbitraryGeneratorSet(
+				javaTimeTypeArbitraryGenerator,
+				javaTimeArbitraryResolver
+			)
+		);
+
 		return new IntrospectedArbitraryGenerator(
 			new CompositeArbitraryIntrospector(
 				Arrays.asList(
-					new JavaArbitraryIntrospector(javaTypeArbitraryGenerator, javaArbitraryResolver),
-					new JavaTimeArbitraryIntrospector(
-						javaTimeTypeArbitraryGenerator,
-						javaTimeArbitraryResolver
-					),
+					new JavaArbitraryIntrospector(javaTypeArbitraryGeneratorSet),
+					new JavaTimeArbitraryIntrospector(javaTimeArbitraryGeneratorSet),
 					this.priorityIntrospector,
 					this.containerIntrospector,
 					this.objectIntrospector,
@@ -193,5 +233,9 @@ public final class JavaDefaultArbitraryGeneratorBuilder {
 				)
 			)
 		);
+	}
+
+	private static <T> T defaultIfNull(@Nullable T obj, Supplier<T> defaultValue) {
+		return obj != null ? obj : defaultValue.get();
 	}
 }

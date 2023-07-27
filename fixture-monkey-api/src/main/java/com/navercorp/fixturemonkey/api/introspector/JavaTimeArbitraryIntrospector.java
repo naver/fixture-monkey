@@ -41,6 +41,7 @@ import java.util.function.Function;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import com.navercorp.fixturemonkey.api.arbitrary.JavaTimeArbitraryGeneratorSet;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.property.Property;
@@ -50,20 +51,8 @@ import com.navercorp.fixturemonkey.api.type.Types;
 public final class JavaTimeArbitraryIntrospector implements ArbitraryIntrospector, Matcher {
 	private final Map<Class<?>, Function<ArbitraryGeneratorContext, ArbitraryIntrospectorResult>> introspector;
 
-	public JavaTimeArbitraryIntrospector() {
-		this(
-			new JavaTimeTypeArbitraryGenerator() {
-			},
-			new JavaTimeArbitraryResolver() {
-			}
-		);
-	}
-
-	public JavaTimeArbitraryIntrospector(
-		JavaTimeTypeArbitraryGenerator arbitraryGenerator,
-		JavaTimeArbitraryResolver arbitraryResolver
-	) {
-		this.introspector = introspectors(arbitraryGenerator, arbitraryResolver);
+	public JavaTimeArbitraryIntrospector(JavaTimeArbitraryGeneratorSet javaTimeArbitraryGeneratorSet) {
+		this.introspector = introspectors(javaTimeArbitraryGeneratorSet);
 	}
 
 	@Override
@@ -82,160 +71,84 @@ public final class JavaTimeArbitraryIntrospector implements ArbitraryIntrospecto
 			.apply(context);
 	}
 
-	private static Map<Class<?>, Function<ArbitraryGeneratorContext, ArbitraryIntrospectorResult>> introspectors(
-		JavaTimeTypeArbitraryGenerator arbitraryGenerator,
-		JavaTimeArbitraryResolver arbitraryResolver
+	private Map<Class<?>, Function<ArbitraryGeneratorContext, ArbitraryIntrospectorResult>> introspectors(
+		JavaTimeArbitraryGeneratorSet javaTimeArbitraryGeneratorSet
 	) {
 		Map<Class<?>, Function<ArbitraryGeneratorContext, ArbitraryIntrospectorResult>> introspector = new HashMap<>();
 
 		introspector.put(
 			Calendar.class,
-			ctx -> new ArbitraryIntrospectorResult(
-				arbitraryResolver.calendars(
-					arbitraryGenerator.calendars(),
-					ctx
-				)
-			)
+			ctx -> new ArbitraryIntrospectorResult(javaTimeArbitraryGeneratorSet.calendars(ctx))
 		);
 
 		introspector.put(
 			Date.class,
-			ctx -> new ArbitraryIntrospectorResult(
-				arbitraryResolver.dates(
-					arbitraryGenerator.dates(),
-					ctx
-				)
-			)
+			ctx -> new ArbitraryIntrospectorResult(javaTimeArbitraryGeneratorSet.dates(ctx))
 		);
 
 		introspector.put(
 			Instant.class,
-			ctx -> new ArbitraryIntrospectorResult(
-				arbitraryResolver.instants(
-					arbitraryGenerator.instants(),
-					ctx
-				)
-			)
+			ctx -> new ArbitraryIntrospectorResult(javaTimeArbitraryGeneratorSet.instants(ctx))
 		);
 
 		introspector.put(
 			LocalDate.class,
-			ctx -> new ArbitraryIntrospectorResult(
-				arbitraryResolver.localDates(
-					arbitraryGenerator.localDates(),
-					ctx
-				)
-			)
+			ctx -> new ArbitraryIntrospectorResult(javaTimeArbitraryGeneratorSet.localDates(ctx))
 		);
 
 		introspector.put(
 			LocalDateTime.class,
-			ctx -> new ArbitraryIntrospectorResult(
-				arbitraryResolver.localDateTimes(
-					arbitraryGenerator.localDateTimes(),
-					ctx
-				)
-			)
+			ctx -> new ArbitraryIntrospectorResult(javaTimeArbitraryGeneratorSet.localDateTimes(ctx))
 		);
 
 		introspector.put(
 			LocalTime.class,
-			ctx -> new ArbitraryIntrospectorResult(
-				arbitraryResolver.localTimes(
-					arbitraryGenerator.localTimes(),
-					ctx
-				)
-			)
+			ctx -> new ArbitraryIntrospectorResult(javaTimeArbitraryGeneratorSet.localTimes(ctx))
 		);
 
 		introspector.put(
 			ZonedDateTime.class,
-			ctx -> new ArbitraryIntrospectorResult(
-				arbitraryResolver.zonedDateTimes(
-					arbitraryGenerator.zonedDateTimes(),
-					ctx
-				)
-			)
+			ctx -> new ArbitraryIntrospectorResult(javaTimeArbitraryGeneratorSet.zonedDateTimes(ctx))
 		);
 
 		introspector.put(
 			MonthDay.class,
-			ctx -> new ArbitraryIntrospectorResult(
-				arbitraryResolver.monthDays(
-					arbitraryGenerator.monthDays(),
-					ctx
-				)
-			)
+			ctx -> new ArbitraryIntrospectorResult(javaTimeArbitraryGeneratorSet.monthDays(ctx))
 		);
 
 		introspector.put(
 			OffsetDateTime.class,
-			ctx -> new ArbitraryIntrospectorResult(
-				arbitraryResolver.offsetDateTimes(
-					arbitraryGenerator.offsetDateTimes(),
-					ctx
-				)
-			)
+			ctx -> new ArbitraryIntrospectorResult(javaTimeArbitraryGeneratorSet.offsetDateTimes(ctx))
 		);
 
 		introspector.put(
 			OffsetTime.class,
-			ctx -> new ArbitraryIntrospectorResult(
-				arbitraryResolver.offsetTimes(
-					arbitraryGenerator.offsetTimes(),
-					ctx
-				)
-			)
+			ctx -> new ArbitraryIntrospectorResult(javaTimeArbitraryGeneratorSet.offsetTimes(ctx))
 		);
 
 		introspector.put(
 			Period.class,
-			ctx -> new ArbitraryIntrospectorResult(
-				arbitraryResolver.periods(
-					arbitraryGenerator.periods(),
-					ctx
-				)
-			)
+			ctx -> new ArbitraryIntrospectorResult(javaTimeArbitraryGeneratorSet.periods(ctx))
 		);
 
 		introspector.put(
 			Duration.class,
-			ctx -> new ArbitraryIntrospectorResult(
-				arbitraryResolver.durations(
-					arbitraryGenerator.durations(),
-					ctx
-				)
-			)
+			ctx -> new ArbitraryIntrospectorResult(javaTimeArbitraryGeneratorSet.durations(ctx))
 		);
 
 		introspector.put(
 			Year.class,
-			ctx -> new ArbitraryIntrospectorResult(
-				arbitraryResolver.years(
-					arbitraryGenerator.years(),
-					ctx
-				)
-			)
+			ctx -> new ArbitraryIntrospectorResult(javaTimeArbitraryGeneratorSet.years(ctx))
 		);
 
 		introspector.put(
 			YearMonth.class,
-			ctx -> new ArbitraryIntrospectorResult(
-				arbitraryResolver.yearMonths(
-					arbitraryGenerator.yearMonths(),
-					ctx
-				)
-			)
+			ctx -> new ArbitraryIntrospectorResult(javaTimeArbitraryGeneratorSet.yearMonths(ctx))
 		);
 
 		introspector.put(
 			ZoneOffset.class,
-			ctx -> new ArbitraryIntrospectorResult(
-				arbitraryResolver.zoneOffsets(
-					arbitraryGenerator.zoneOffsets(),
-					ctx
-				)
-			)
+			ctx -> new ArbitraryIntrospectorResult(javaTimeArbitraryGeneratorSet.zoneOffsets(ctx))
 		);
 
 		return Collections.unmodifiableMap(introspector);

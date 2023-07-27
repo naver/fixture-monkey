@@ -39,6 +39,8 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
+import com.navercorp.fixturemonkey.api.arbitrary.JavaTimeArbitraryGeneratorSet;
+import com.navercorp.fixturemonkey.api.arbitrary.JavaTypeArbitraryGeneratorSet;
 import com.navercorp.fixturemonkey.api.container.DecomposableJavaContainer;
 import com.navercorp.fixturemonkey.api.container.DecomposedContainerValueFactory;
 import com.navercorp.fixturemonkey.api.container.DefaultDecomposedContainerValueFactory;
@@ -444,6 +446,7 @@ public final class FixtureMonkeyOptionsBuilder {
 		return this;
 	}
 
+	@Deprecated
 	public FixtureMonkeyOptionsBuilder javaTypeArbitraryGenerator(
 		JavaTypeArbitraryGenerator javaTypeArbitraryGenerator
 	) {
@@ -451,6 +454,7 @@ public final class FixtureMonkeyOptionsBuilder {
 		return this;
 	}
 
+	@Deprecated
 	public FixtureMonkeyOptionsBuilder javaArbitraryResolver(
 		JavaArbitraryResolver javaArbitraryResolver
 	) {
@@ -458,6 +462,7 @@ public final class FixtureMonkeyOptionsBuilder {
 		return this;
 	}
 
+	@Deprecated
 	public FixtureMonkeyOptionsBuilder javaTimeTypeArbitraryGenerator(
 		JavaTimeTypeArbitraryGenerator javaTimeTypeArbitraryGenerator
 	) {
@@ -465,10 +470,25 @@ public final class FixtureMonkeyOptionsBuilder {
 		return this;
 	}
 
+	@Deprecated
 	public FixtureMonkeyOptionsBuilder javaTimeArbitraryResolver(
 		JavaTimeArbitraryResolver javaTimeArbitraryResolver
 	) {
 		this.javaDefaultArbitraryGeneratorBuilder.javaTimeArbitraryResolver(javaTimeArbitraryResolver);
+		return this;
+	}
+
+	public FixtureMonkeyOptionsBuilder javaArbitraryGeneratorSet(
+		JavaTypeArbitraryGeneratorSet javaTypeArbitraryGeneratorSet
+	) {
+		this.javaDefaultArbitraryGeneratorBuilder.javaTypeArbitraryGeneratorSet(javaTypeArbitraryGeneratorSet);
+		return this;
+	}
+
+	public FixtureMonkeyOptionsBuilder javaTimeArbitraryGeneratorSet(
+		JavaTimeArbitraryGeneratorSet javaTimeArbitraryGeneratorSet
+	) {
+		this.javaDefaultArbitraryGeneratorBuilder.javaTimeArbitraryGeneratorSet(javaTimeArbitraryGeneratorSet);
 		return this;
 	}
 
