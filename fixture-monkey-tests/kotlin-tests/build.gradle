@@ -7,5 +7,8 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect:${KOTLIN_VERSION}")
 
     testImplementation(project(":fixture-monkey-kotlin"))
+    testImplementation(project(":fixture-monkey-kotest"))
     testImplementation(project(":fixture-monkey-javax-validation"))
+    testImplementation("io.kotest:kotest-runner-junit5:${KOTEST_VERSION}")
+    testImplementation("io.kotest:kotest-assertions-core:${KOTEST_VERSION}")
 }
