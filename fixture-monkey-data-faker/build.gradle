@@ -3,6 +3,8 @@ java {
 }
 
 dependencies {
+    api("net.jqwik:jqwik:${JQWIK_VERSION}")
+
     implementation(project(":fixture-monkey-api"))
     implementation("net.datafaker:datafaker:2.0.1")
 

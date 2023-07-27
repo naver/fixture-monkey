@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.datafaker;
+package com.navercorp.fixturemonkey.datafaker.arbitrary;
 
 import java.util.function.Function;
 
@@ -28,17 +28,17 @@ import net.datafaker.Faker;
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 
 @API(since = "0.6.3", status = Status.EXPERIMENTAL)
-final public class FakerCombinableArbitrary implements CombinableArbitrary {
+public final class FakerCombinableArbitrary implements CombinableArbitrary {
 
 	private final Faker faker = new Faker();
 	private final Function<Faker, String> fakerFunction;
 
-	public FakerCombinableArbitrary() {
-		this.fakerFunction = faker -> faker.name().fullName();
-	}
-
 	public FakerCombinableArbitrary(Function<Faker, String> fakerFunction) {
 		this.fakerFunction = fakerFunction;
+	}
+
+	public FakerCombinableArbitrary() {
+		this(faker -> faker.name().fullName());
 	}
 
 	@Override

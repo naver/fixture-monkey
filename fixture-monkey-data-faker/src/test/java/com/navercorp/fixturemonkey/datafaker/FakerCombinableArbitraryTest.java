@@ -24,6 +24,8 @@ import net.jqwik.api.Property;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult;
+import com.navercorp.fixturemonkey.datafaker.arbitrary.FakerCombinableArbitrary;
+import com.navercorp.fixturemonkey.datafaker.plugin.DataFakerPlugin;
 
 class FakerCombinableArbitraryTest {
 	@Property
@@ -66,6 +68,26 @@ class FakerCombinableArbitraryTest {
 				(context) -> new ArbitraryIntrospectorResult(
 					new FakerCombinableArbitrary(faker -> faker.name().firstName()))
 			)
+			.build();
+
+		String actual = sut.giveMeOne(String.class);
+
+		then(actual).matches("\\w+");
+	}
+
+	@Property
+	void fakerPluginFullNameGeneratorTest() {
+		FixtureMonkey sut = FixtureMonkey.builder().plugin(new DataFakerPlugin()).build();
+
+		String actual = sut.giveMeOne(String.class);
+
+		then(actual).matches("([\\w']+\\.?( )?){2,4}");
+	}
+
+	@Property
+	void fakerPluginFirstNameGeneratorTest() {
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.plugin(new DataFakerPlugin(faker -> faker.name().firstName()))
 			.build();
 
 		String actual = sut.giveMeOne(String.class);
