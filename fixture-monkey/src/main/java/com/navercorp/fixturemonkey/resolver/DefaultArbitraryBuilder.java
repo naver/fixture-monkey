@@ -236,10 +236,14 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T> {
 		return this;
 	}
 
+	@Deprecated
 	@Override
-	public ArbitraryBuilder<T> apply(
-		BiConsumer<T, ArbitraryBuilder<T>> biConsumer
-	) {
+	public ArbitraryBuilder<T> apply(BiConsumer<T, ArbitraryBuilder<T>> biConsumer) {
+		return thenApply(biConsumer);
+	}
+
+	@Override
+	public ArbitraryBuilder<T> thenApply(BiConsumer<T, ArbitraryBuilder<T>> biConsumer) {
 		this.context.getContainerInfoManipulators().forEach(ContainerInfoManipulator::fixed);
 
 		ArbitraryBuilder<T> appliedBuilder = this.copy();
@@ -264,7 +268,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T> {
 		Predicate<T> predicate,
 		Consumer<ArbitraryBuilder<T>> consumer
 	) {
-		return apply((it, builder) -> {
+		return thenApply((it, builder) -> {
 			if (predicate.test(it)) {
 				consumer.accept(builder);
 			}
