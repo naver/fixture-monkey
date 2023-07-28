@@ -22,12 +22,26 @@ import static org.assertj.core.api.BDDAssertions.then;
 
 import net.jqwik.api.Property;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
+import lombok.Data;
+
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult;
 import com.navercorp.fixturemonkey.datafaker.arbitrary.FakerCombinableArbitrary;
 import com.navercorp.fixturemonkey.datafaker.plugin.DataFakerPlugin;
+import com.navercorp.fixturemonkey.jakarta.validation.plugin.JakartaValidationPlugin;
 
 class FakerCombinableArbitraryTest {
+	@Data
+	public static class StringClass {
+		private String str;
+
+		@Size(min = 5, max = 10)
+		private String strSize;
+	}
+
 	@Property
 	void combinedReturnFullName() {
 		FakerCombinableArbitrary fakerCombinableArbitrary = new FakerCombinableArbitrary();
@@ -93,6 +107,43 @@ class FakerCombinableArbitraryTest {
 		String actual = sut.giveMeOne(String.class);
 
 		then(actual).matches("\\w+");
+	}
+
+	@Property
+	void fakerStringClassTest() {
+		FixtureMonkey sut = FixtureMonkey.builder().plugin(new DataFakerPlugin()).build();
+
+		String actual = sut.giveMeBuilder(StringClass.class).setNotNull("str").sample().getStr();
+
+		then(actual).matches("([\\w']+\\.?( )?){2,4}");
+	}
+
+	@Property
+	void fakerStringClassSetSizeTest() {
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.plugin(new JakartaValidationPlugin())
+			.plugin(new DataFakerPlugin())
+			.defaultNotNull(true)
+			.build();
+
+		String actual = sut.giveMeOne(StringClass.class).getStrSize();
+
+		then(actual).matches("([\\w']+\\.?( )?){2,4}");
+		then(actual).hasSizeBetween(5, 10);
+	}
+
+	@Property
+	void fakerStringClassSetSizeTestFirstName() {
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.plugin(new JakartaValidationPlugin())
+			.plugin(new DataFakerPlugin(faker -> faker.name().firstName()))
+			.defaultNotNull(true)
+			.build();
+
+		String actual = sut.giveMeOne(StringClass.class).getStrSize();
+
+		then(actual).matches("\\w+");
+		then(actual).hasSizeBetween(5, 10);
 	}
 }
 
