@@ -29,6 +29,7 @@ import java.time.OffsetTime;
 import java.time.Period;
 import java.time.Year;
 import java.time.YearMonth;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Calendar;
@@ -137,6 +138,13 @@ public interface JavaTimeArbitraryResolver {
 
 	default Arbitrary<ZoneOffset> zoneOffsets(
 		ZoneOffsetArbitrary zoneOffsetArbitrary,
+		ArbitraryGeneratorContext context
+	) {
+		return zoneOffsetArbitrary;
+	}
+
+	default Arbitrary<ZoneId> zoneIds(
+		Arbitrary<ZoneId> zoneOffsetArbitrary,
 		ArbitraryGeneratorContext context
 	) {
 		return zoneOffsetArbitrary;

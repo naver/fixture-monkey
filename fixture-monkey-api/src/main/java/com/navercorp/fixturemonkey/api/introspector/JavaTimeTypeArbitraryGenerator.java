@@ -24,6 +24,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Period;
 import java.time.Year;
+import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
 import java.util.Date;
@@ -31,6 +32,7 @@ import java.util.Date;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import net.jqwik.api.Arbitrary;
 import net.jqwik.time.api.DateTimes;
 import net.jqwik.time.api.Dates;
 import net.jqwik.time.api.Times;
@@ -162,5 +164,9 @@ public interface JavaTimeTypeArbitraryGenerator {
 
 	default ZoneOffsetArbitrary zoneOffsets() {
 		return Times.zoneOffsets();
+	}
+
+	default Arbitrary<ZoneId> zoneId() {
+		return Times.zoneIds();
 	}
 }

@@ -29,6 +29,7 @@ import java.time.OffsetTime;
 import java.time.Period;
 import java.time.Year;
 import java.time.YearMonth;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Calendar;
@@ -149,6 +150,11 @@ public final class JavaTimeArbitraryIntrospector implements ArbitraryIntrospecto
 		introspector.put(
 			ZoneOffset.class,
 			ctx -> new ArbitraryIntrospectorResult(javaTimeArbitraryGeneratorSet.zoneOffsets(ctx))
+		);
+
+		introspector.put(
+			ZoneId.class,
+			ctx -> new ArbitraryIntrospectorResult(javaTimeArbitraryGeneratorSet.zoneIds(ctx))
 		);
 
 		return Collections.unmodifiableMap(introspector);

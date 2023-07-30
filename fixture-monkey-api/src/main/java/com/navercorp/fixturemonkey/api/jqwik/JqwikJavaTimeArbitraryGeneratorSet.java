@@ -29,6 +29,7 @@ import java.time.OffsetTime;
 import java.time.Period;
 import java.time.Year;
 import java.time.YearMonth;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Calendar;
@@ -134,5 +135,10 @@ public final class JqwikJavaTimeArbitraryGeneratorSet implements JavaTimeArbitra
 	@Override
 	public CombinableArbitrary<ZoneOffset> zoneOffsets(ArbitraryGeneratorContext context) {
 		return CombinableArbitrary.from(arbitraryResolver.zoneOffsets(arbitraryGenerator.zoneOffsets(), context));
+	}
+
+	@Override
+	public CombinableArbitrary<ZoneId> zoneIds(ArbitraryGeneratorContext context) {
+		return CombinableArbitrary.from(arbitraryResolver.zoneIds(arbitraryGenerator.zoneId(), context));
 	}
 }
