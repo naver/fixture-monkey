@@ -54,11 +54,11 @@ public class DefaultArbitraryGenerator implements ArbitraryGenerator {
 	 * if given {@link ArbitraryGenerator} could not generate a {@link CombinableArbitrary}
 	 */
 	@Override
-	public CombinableArbitrary generate(ArbitraryGeneratorContext context) {
+	public CombinableArbitrary<?> generate(ArbitraryGeneratorContext context) {
 		ArbitraryIntrospectorResult result = this.arbitraryIntrospector.introspect(context);
 		if (result != ArbitraryIntrospectorResult.EMPTY && result.getValue() != null) {
 			double nullInject = context.getArbitraryProperty().getObjectProperty().getNullInject();
-			return new TraceableCombinableArbitrary(
+			return new TraceableCombinableArbitrary<>(
 				result.getValue()
 					.injectNull(nullInject),
 				context.getPropertyPath()
