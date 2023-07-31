@@ -25,6 +25,7 @@ import static org.assertj.core.api.BDDAssertions.thenThrownBy;
 
 import java.net.URI;
 import java.time.Instant;
+import java.time.ZoneId;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -1689,6 +1690,16 @@ class FixtureMonkeyTest {
 			.set("str", NOT_NULL)
 			.sample()
 			.getStr();
+
+		then(actual).isNotNull();
+	}
+
+	@Property
+	void setNotNullZoneId() {
+		ZoneId actual = SUT.giveMeBuilder(SimpleObject.class)
+			.setNotNull("zoneId")
+			.sample()
+			.getZoneId();
 
 		then(actual).isNotNull();
 	}

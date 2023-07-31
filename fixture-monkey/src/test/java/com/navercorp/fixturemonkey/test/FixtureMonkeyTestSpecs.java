@@ -32,6 +32,7 @@ import java.time.OffsetTime;
 import java.time.Period;
 import java.time.Year;
 import java.time.YearMonth;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Calendar;
@@ -114,6 +115,7 @@ class FixtureMonkeyTestSpecs {
 		private Year year;
 		private YearMonth yearMonth;
 		private ZoneOffset zoneOffset;
+		private ZoneId zoneId;
 		private Optional<String> optionalString;
 		private OptionalInt optionalInt;
 		private OptionalLong optionalLong;
