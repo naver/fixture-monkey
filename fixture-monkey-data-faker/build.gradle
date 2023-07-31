@@ -1,0 +1,18 @@
+java {
+    toolchain { languageVersion = JavaLanguageVersion.of(17) }
+}
+
+dependencies {
+    api("net.jqwik:jqwik:${JQWIK_VERSION}")
+
+    implementation(project(":fixture-monkey-api"))
+    implementation("net.datafaker:datafaker:2.0.1")
+
+    testImplementation("junit:junit:4.13.1")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
+    testImplementation("org.assertj:assertj-core:3.22.0")
+    testImplementation(project(":fixture-monkey"))
+    testImplementation("org.projectlombok:lombok:1.18.26")
+    testImplementation(project(":fixture-monkey-jakarta-validation"))
+    testAnnotationProcessor("org.projectlombok:lombok:1.18.24")
+}
