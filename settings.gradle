@@ -1,24 +1,22 @@
 rootProject.name = "fixture-monkey-parent"
 
-include "fixture-monkey-api"
-include "fixture-monkey-engine"
-include "fixture-monkey"
-include "fixture-monkey-javax-validation"
-include "fixture-monkey-kotlin"
-include "fixture-monkey-jackson"
-include "fixture-monkey-autoparams"
-include "fixture-monkey-mockito"
-include "fixture-monkey-starter"
-include "fixture-monkey-starter-kotlin"
-include "fixture-monkey-junit-jupiter"
-include 'fixture-monkey-jakarta-validation'
-include 'fixture-monkey-tests'
-include 'fixture-monkey-tests:java-17-tests'
-findProject(':fixture-monkey-tests:java-17-tests')?.name = 'java-17-tests'
-include 'fixture-monkey-tests:kotlin-tests'
-findProject(':fixture-monkey-tests:kotlin-tests')?.name = 'kotlin-tests'
-include 'fixture-monkey-tests:java-tests'
-findProject(':fixture-monkey-tests:java-tests')?.name = 'java-tests'
-include 'fixture-monkey-tests:java-concurrent-tests'
-findProject(':fixture-monkey-tests:java-concurrent-tests')?.name = 'java-concurrent-tests'
+include(
+        "fixture-monkey-api",
+        "fixture-monkey-engine",
+        "fixture-monkey",
+        "fixture-monkey-javax-validation",
+        "fixture-monkey-kotlin",
+        "fixture-monkey-jackson",
+        "fixture-monkey-autoparams",
+        "fixture-monkey-mockito",
+        "fixture-monkey-starter",
+        "fixture-monkey-starter-kotlin",
+        "fixture-monkey-junit-jupiter",
+        "fixture-monkey-jakarta-validation",
+        "fixture-monkey-tests",
+        "fixture-monkey-tests:java-17-tests",
+        "fixture-monkey-tests:kotlin-tests",
+        "fixture-monkey-tests:java-tests",
+        "fixture-monkey-tests:java-concurrent-tests"
+)
 
