@@ -12,6 +12,6 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
     testImplementation("org.assertj:assertj-core:3.22.0")
     testImplementation(project(":fixture-monkey"))
-    testImplementation 'org.projectlombok:lombok:1.18.26'
-    testImplementation project(path: ':fixture-monkey-jakarta-validation')
+    testImplementation("org.projectlombok:lombok:1.18.26")
+    testImplementation(project(":fixture-monkey-jakarta-validation"))
 }
