@@ -22,7 +22,9 @@ import static org.assertj.core.api.BDDAssertions.then;
 
 import net.jqwik.api.Property;
 
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -33,8 +35,7 @@ import com.navercorp.fixturemonkey.datafaker.plugin.DataFakerPlugin;
 import com.navercorp.fixturemonkey.jakarta.validation.plugin.JakartaValidationPlugin;
 
 class FakerCombinableArbitraryTest {
-	@Getter
-	@Setter
+	@Data
 	public static class StringClass {
 		private String str;
 
