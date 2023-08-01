@@ -10,28 +10,33 @@ docs:
 
 Consider a scenario where you need a test fixture for a Product class, as shown below:
 
+{{< alert icon="💡" text="lombok.anyConstructor.addConstructorProperties=true should be added in lombok.config" />}}
+
 ```java
 @Value
 public class Product {
-    private Long id;
+    long id;
 
-    private String str;
+    String productName;
 
-    private String productName;
+    long price;
 
-    private long price;
+    List<String> options;
 
-    private List<String> options;
+    Instant createdAt;
 }
 ```
+(Note that the Lombok annotation `@Value` is used to make Immutable classes. If you're working in an environment without Lombok, go to [creating test objects without lombok](/docs/get-started/creating-test-objects-without-lombok))
 
-With the Fixture Monkey library, generating an instance of Product becomes remarkably simple, requiring just two lines of code.
+With the Fixture Monkey library, generating an instance of Product becomes remarkably simple, requiring just few lines of code.
 
-```
+```java
 @Test
 void test() {
     // given
-    FixtureMonkey fixtureMonkey = FixtureMonkey.create();
+    FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+        .objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)
+        .build();
 
     // when
     Product actual = fixtureMonkey.giveMeOne(Product.class);
@@ -41,9 +46,14 @@ void test() {
 }
 ```
 
-First, create a FixtureMonkey instance that facilitates the creation of test fixtures. You can use `create()` to generate a Fixture Monkey instance with default options.
+First, create a FixtureMonkey instance that facilitates the creation of test fixtures.
+There are several custom options available in Fixture Monkey that allow you to generate instances according to your specific requirements.
 
-There are several custom options available in Fixture Monkey that allow you to generate instances according to your specific requirements. For more details about Fixture Monkey options, refer to the Fixture Monkey options document.
+Here we are configuring the `objectIntrospector` to use `ConstructorPropertiesArbitraryIntrospector`, which means that the object will be constructed using the constructor annotated with @ConstructorProperties.
+An `Introspector` defines how Fixture Monkey generates objects.
+
+For `ConstructorPropertiesArbitraryIntrospector`, the generated class should have a constructor with @ConstructorProperties or you can add `lombok.anyConstructor.addConstructorProperties=true` in the lombok.config file.
+(There are alternative Introspectors available, each with their own requirements. Check out the `Introspectors` section for more details.)
 
 Next, use the `giveMeOne()` method with the desired test class type to generate an instance of the specified type.
 

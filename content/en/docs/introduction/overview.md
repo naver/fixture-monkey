@@ -10,6 +10,7 @@ docs:
 ## Fixture Monkey
 
 Fixture Monkey is a Java & Kotlin library designed to generate controllable arbitrary test objects.
+
 It focuses on simplifying test writing, by facilitating the generation of necessary test fixtures.
 Whether you're dealing with basic or complex test fixtures, Fixture Monkey helps you to effortlessly create the test objects you need and easily customize them to match your desired configurations.
 
@@ -17,14 +18,29 @@ Whether you're dealing with basic or complex test fixtures, Fixture Monkey helps
 
 ## Why use Fixture Monkey?
 ### 1. Simplicity
+```java
+Product actual = fixtureMonkey.giveMeOne(Product.class);
+```
 Fixture Monkey makes test object generation remarkably easy. With just one line of code, you can effortlessly generate any kind of test object you desire.
 It simplifies the given section of the test, enabling you to write tests faster and more easily. You also don't need to change the production code or test environment.
 
 ### 2. Reusability
+```java
+ArbitraryBuilder<Product> actual = fixtureMonkey.giveMeBuilder(Product.class)
+    .set("id", 1000L)
+    .set("productName", "Book");
+```
 Fixture Monkey allows you to reuse configurations of instances across multiple tests, saving you time and effort.
-You only need to define complex specifications once. For more information on how to do this, check out 'Registering default ArbitraryBuilder' and 'InnerSpec'.
+Complex specifications only need to be defined once within your builder and can then be reused to obtain instances.
+
+Furthermore, there are additional features that boost reusability. For more details on these features, refer to the sections on 'Registering Default ArbitraryBuilder' and 'InnerSpec'.
 
 ### 3. Randomness
+```java
+ArbitraryBuilder<Product> actual = fixtureMonkey.giveMeBuilder(Product.class);
+
+then(actual.sample()).isNotEqualTo(actual.sample());
+```
 Fixture Monkey helps tests become more dynamic by generating test objects with random values.
 This leads to undercovering edge cases that might remain hidden when using static data.
 
