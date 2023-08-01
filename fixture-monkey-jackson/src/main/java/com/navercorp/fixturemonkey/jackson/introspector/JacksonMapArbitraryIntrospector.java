@@ -18,11 +18,14 @@
 
 package com.navercorp.fixturemonkey.jackson.introspector;
 
+import java.lang.reflect.AnnotatedType;
+import java.lang.reflect.Type;
 import java.util.Map;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.MapLikeType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
@@ -35,6 +38,7 @@ import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.jackson.FixtureMonkeyJackson;
+import com.navercorp.fixturemonkey.jackson.type.JacksonTypeReference;
 
 @API(since = "0.5.5", status = Status.MAINTAINED)
 public final class JacksonMapArbitraryIntrospector implements ArbitraryIntrospector, Matcher {
@@ -54,15 +58,31 @@ public final class JacksonMapArbitraryIntrospector implements ArbitraryIntrospec
 		return Map.class.isAssignableFrom(Types.getActualType(property.getType()));
 	}
 
-	@SuppressWarnings({"unchecked", "rawtypes"})
+	@SuppressWarnings("unchecked")
 	@Override
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
+		TypeFactory typeFactory = TypeFactory.defaultInstance();
+
 		Property property = context.getResolvedProperty();
 		Class<? extends Map<?, ?>> containerType = (Class<? extends Map<?, ?>>)Types.getActualType(property.getType());
-		Class<?> keyType = Types.getActualType(Types.getGenericsTypes(property.getAnnotatedType()).get(0));
-		Class<?> valueType = Types.getActualType(Types.getGenericsTypes(property.getAnnotatedType()).get(1));
 
-		MapLikeType mapType = TypeFactory.defaultInstance()
+		AnnotatedType keyAnnotatedType = Types.getGenericsTypes(property.getAnnotatedType()).get(0);
+		AnnotatedType valueAnnotatedType = Types.getGenericsTypes(property.getAnnotatedType()).get(1);
+		JavaType keyType = typeFactory.constructType(new JacksonTypeReference<Object>() {
+			@Override
+			public Type getType() {
+				return keyAnnotatedType.getType();
+			}
+		});
+
+		JavaType valueType = typeFactory.constructType(new JacksonTypeReference<Object>() {
+			@Override
+			public Type getType() {
+				return valueAnnotatedType.getType();
+			}
+		});
+
+		MapLikeType mapType = typeFactory
 			.constructMapType(containerType, keyType, valueType);
 
 		return new ArbitraryIntrospectorResult(

@@ -18,9 +18,12 @@
 
 package com.navercorp.fixturemonkey.jackson.introspector;
 
+import java.lang.reflect.Type;
+
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.ArrayType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
@@ -33,6 +36,7 @@ import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.jackson.FixtureMonkeyJackson;
+import com.navercorp.fixturemonkey.jackson.type.JacksonTypeReference;
 
 @API(since = "0.5.5", status = Status.MAINTAINED)
 public final class JacksonArrayArbitraryIntrospector implements ArbitraryIntrospector, Matcher {
@@ -52,11 +56,16 @@ public final class JacksonArrayArbitraryIntrospector implements ArbitraryIntrosp
 		return Types.getActualType(property.getType()).isArray();
 	}
 
-	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Override
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
 		Property property = context.getResolvedProperty();
-		Class<?> elementType = Types.getArrayComponentType(property.getAnnotatedType());
+		TypeFactory typeFactory = TypeFactory.defaultInstance();
+		JavaType elementType = typeFactory.constructType(new JacksonTypeReference<Object>() {
+			@Override
+			public Type getType() {
+				return Types.getArrayComponentAnnotatedType(property.getAnnotatedType()).getType();
+			}
+		});
 
 		ArrayType arrayType = TypeFactory.defaultInstance()
 			.constructArrayType(elementType);

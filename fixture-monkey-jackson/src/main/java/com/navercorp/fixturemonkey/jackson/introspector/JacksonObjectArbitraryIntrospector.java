@@ -20,6 +20,7 @@ package com.navercorp.fixturemonkey.jackson.introspector;
 
 import static com.navercorp.fixturemonkey.jackson.property.JacksonAnnotations.getJacksonAnnotation;
 
+import java.lang.reflect.Type;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAccessor;
@@ -36,7 +37,9 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
@@ -50,6 +53,7 @@ import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.PropertyDescriptorProperty;
 import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.jackson.FixtureMonkeyJackson;
+import com.navercorp.fixturemonkey.jackson.type.JacksonTypeReference;
 
 @API(since = "0.5.5", status = Status.MAINTAINED)
 public final class JacksonObjectArbitraryIntrospector implements ArbitraryIntrospector {
@@ -66,7 +70,13 @@ public final class JacksonObjectArbitraryIntrospector implements ArbitraryIntros
 	@Override
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
 		Property property = context.getResolvedProperty();
-		Class<?> type = Types.getActualType(property.getType());
+		TypeFactory typeFactory = TypeFactory.defaultInstance();
+		JavaType type = typeFactory.constructType(new JacksonTypeReference<Object>() {
+			@Override
+			public Type getType() {
+				return property.getType();
+			}
+		});
 
 		return new ArbitraryIntrospectorResult(
 			new JacksonCombinableArbitrary<>(
