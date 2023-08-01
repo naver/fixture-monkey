@@ -18,11 +18,14 @@
 
 package com.navercorp.fixturemonkey.jackson.introspector;
 
+import java.lang.reflect.AnnotatedType;
+import java.lang.reflect.Type;
 import java.util.Collection;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.CollectionType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
@@ -35,6 +38,7 @@ import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.jackson.FixtureMonkeyJackson;
+import com.navercorp.fixturemonkey.jackson.type.JacksonTypeReference;
 
 @API(since = "0.5.5", status = Status.MAINTAINED)
 public final class JacksonCollectionArbitraryIntrospector implements ArbitraryIntrospector, Matcher {
@@ -54,14 +58,21 @@ public final class JacksonCollectionArbitraryIntrospector implements ArbitraryIn
 		return Collection.class.isAssignableFrom(Types.getActualType(property.getType()));
 	}
 
-	@SuppressWarnings({"unchecked", "rawtypes"})
+	@SuppressWarnings("unchecked")
 	@Override
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
 		Property property = context.getResolvedProperty();
 		Class<?> containerType = Types.getActualType(property.getType());
-		Class<?> elementType = Types.getActualType(Types.getGenericsTypes(property.getAnnotatedType()).get(0));
+		TypeFactory typeFactory = TypeFactory.defaultInstance();
+		AnnotatedType elementAnnotatedType = Types.getGenericsTypes(property.getAnnotatedType()).get(0);
+		JavaType elementType = typeFactory.constructType(new JacksonTypeReference<Object>() {
+			@Override
+			public Type getType() {
+				return elementAnnotatedType.getType();
+			}
+		});
 
-		CollectionType collectionType = TypeFactory.defaultInstance()
+		CollectionType collectionType = typeFactory
 			.constructCollectionType((Class<? extends Collection<?>>)containerType, elementType);
 
 		return new ArbitraryIntrospectorResult(
