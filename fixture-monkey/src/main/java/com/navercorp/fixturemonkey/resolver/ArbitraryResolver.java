@@ -28,6 +28,7 @@ import org.apiguardian.api.API.Status;
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.context.MonkeyContext;
+import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
@@ -75,33 +76,40 @@ public final class ArbitraryResolver {
 				))
 				.collect(Collectors.toList());
 
-		ObjectTree objectTree = new ObjectTree(
-			rootProperty,
-			this.traverser.traverse(
-				rootProperty,
-				containerInfoManipulators,
-				registeredContainerInfoManipulators
-			),
-			fixtureMonkeyOptions,
-			monkeyContext
+		return CombinableArbitrary.from(
+			LazyArbitrary.lazy(
+				() -> {
+					ObjectTree objectTree = new ObjectTree(
+						rootProperty,
+						this.traverser.traverse(
+							rootProperty,
+							containerInfoManipulators,
+							registeredContainerInfoManipulators
+						),
+						fixtureMonkeyOptions,
+						monkeyContext
+					);
+
+					List<ArbitraryManipulator> registeredManipulators =
+						monkeyManipulatorFactory.newRegisteredArbitraryManipulators(
+							registeredArbitraryBuilders,
+							objectTree.getMetadata().getNodesByProperty()
+						);
+
+					List<ArbitraryManipulator> joinedManipulators =
+						Stream.concat(registeredManipulators.stream(), manipulators.stream())
+							.collect(Collectors.toList());
+
+					List<ArbitraryManipulator> optimizedManipulator = manipulatorOptimizer
+						.optimize(joinedManipulators)
+						.getManipulators();
+
+					for (ArbitraryManipulator manipulator : optimizedManipulator) {
+						manipulator.manipulate(objectTree);
+					}
+					return objectTree.generate().combined();
+				}
+			)
 		);
-
-		List<ArbitraryManipulator> registeredManipulators = monkeyManipulatorFactory.newRegisteredArbitraryManipulators(
-			registeredArbitraryBuilders,
-			objectTree.getMetadata().getNodesByProperty()
-		);
-
-		List<ArbitraryManipulator> joinedManipulators =
-			Stream.concat(registeredManipulators.stream(), manipulators.stream())
-				.collect(Collectors.toList());
-
-		List<ArbitraryManipulator> optimizedManipulator = manipulatorOptimizer
-			.optimize(joinedManipulators)
-			.getManipulators();
-
-		for (ArbitraryManipulator manipulator : optimizedManipulator) {
-			manipulator.manipulate(objectTree);
-		}
-		return objectTree.generate();
 	}
 }

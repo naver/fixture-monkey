@@ -200,7 +200,7 @@ public final class ObjectTree {
 
 			CombinableArbitrary<?> cached = monkeyContext.getCachedArbitrary(node.getProperty());
 
-			if (node.isNotManipulated() && cached != null) {
+			if (node.isNotManipulated() && cached != null && !node.getArbitraryProperty().isContainer()) {
 				generated = cached;
 			} else {
 				generated = this.fixtureMonkeyOptions.getArbitraryGenerator(node.getResolvedProperty())
