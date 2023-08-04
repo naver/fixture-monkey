@@ -23,6 +23,7 @@ import org.apiguardian.api.API.Status;
 
 import net.jqwik.api.Arbitrary;
 
+import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.container.DecomposedContainerValueFactory;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.tree.ArbitraryTraverser;
@@ -59,12 +60,13 @@ public final class NodeSetLazyManipulator<T> implements NodeManipulator {
 		}
 
 		if (value instanceof Arbitrary) {
-			value = (T)((Arbitrary<?>)value).sample();
+			objectNode.setArbitrary(CombinableArbitrary.from((Arbitrary<?>)value));
+		} else {
+			NodeSetDecomposedValueManipulator<T> nodeSetDecomposedValueManipulator =
+				new NodeSetDecomposedValueManipulator<>(sequence, traverser, decomposedContainerValueFactory, value);
+			nodeSetDecomposedValueManipulator.manipulate(objectNode);
 		}
 
-		NodeSetDecomposedValueManipulator<T> nodeSetDecomposedValueManipulator =
-			new NodeSetDecomposedValueManipulator<>(sequence, traverser, decomposedContainerValueFactory, value);
-		nodeSetDecomposedValueManipulator.manipulate(objectNode);
 		lazyArbitrary.clear();
 	}
 }

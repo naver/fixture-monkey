@@ -73,7 +73,9 @@ final class FilteredCombinableArbitrary<T> implements CombinableArbitrary<T> {
 				if (combinableArbitrary.fixed()) {
 					break;
 				}
-				lastException = ex;
+				if (lastException == null) {
+					lastException = ex;
+				}
 				combinableArbitrary.clear();
 			}
 		}
@@ -91,6 +93,10 @@ final class FilteredCombinableArbitrary<T> implements CombinableArbitrary<T> {
 				String.format("Given properties \"%s\" is not validated by annotations.", failedConcatProperties),
 				lastException
 			);
+		}
+
+		if (lastException != null) {
+			throw new FilterMissException(lastException);
 		}
 
 		if (combinableArbitrary instanceof Traceable) {

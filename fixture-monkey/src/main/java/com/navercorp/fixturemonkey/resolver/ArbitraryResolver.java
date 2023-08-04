@@ -28,7 +28,6 @@ import org.apiguardian.api.API.Status;
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.context.MonkeyContext;
-import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
@@ -100,40 +99,9 @@ public final class ArbitraryResolver {
 			.optimize(joinedManipulators)
 			.getManipulators();
 
-		return new CombinableArbitrary() {
-			private final LazyArbitrary<CombinableArbitrary<?>> lazyArbitrary = LazyArbitrary.lazy(
-				() -> {
-					for (ArbitraryManipulator manipulator : optimizedManipulator) {
-						manipulator.manipulate(objectTree);
-					}
-					return objectTree.generate();
-				}
-			);
-
-			@Override
-			public Object combined() {
-				return lazyArbitrary.getValue().combined();
-			}
-
-			@Override
-			public Object rawValue() {
-				return lazyArbitrary.getValue().rawValue();
-			}
-
-			@Override
-			public void clear() {
-				CombinableArbitrary<?> combinableArbitrary = lazyArbitrary.getValue();
-				if (!combinableArbitrary.fixed() && optimizedManipulator.isEmpty()) {
-					combinableArbitrary.clear();
-				} else {
-					lazyArbitrary.clear();
-				}
-			}
-
-			@Override
-			public boolean fixed() {
-				return false;
-			}
-		};
+		for (ArbitraryManipulator manipulator : optimizedManipulator) {
+			manipulator.manipulate(objectTree);
+		}
+		return objectTree.generate();
 	}
 }

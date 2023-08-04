@@ -1705,6 +1705,19 @@ class FixtureMonkeyTest {
 	}
 
 	@Property
+	void setSubPropertyChanged() {
+		String expected = "test";
+
+		String actual = SUT.giveMeBuilder(SimpleObject.class)
+			.set("$", new SimpleObject())
+			.set("str", expected)
+			.sample()
+			.getStr();
+
+		then(actual).isEqualTo(expected);
+	}
+
+	@Property
 	void setJustSubPropertyNotChanged() {
 		String notExpected = "test";
 
@@ -1725,5 +1738,18 @@ class FixtureMonkeyTest {
 			.getInteger();
 
 		then(actual).isGreaterThan(0);
+	}
+
+	@Property
+	void setArbitrarySubPropertyChanged() {
+		String expected = "test";
+
+		ArbitraryBuilder<SimpleObject> builder = SUT.giveMeBuilder(SimpleObject.class)
+			.set("$", Arbitraries.create(() -> SUT.giveMeOne(SimpleObject.class)))
+			.set("str", expected);
+		SimpleObject actual = builder.sample();
+
+		SimpleObject notExpected = builder.sample();
+		then(actual).isNotEqualTo(notExpected);
 	}
 }

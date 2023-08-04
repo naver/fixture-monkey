@@ -35,9 +35,11 @@ import com.navercorp.fixturemonkey.api.context.MonkeyContext;
 import com.navercorp.fixturemonkey.api.context.MonkeyGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
+import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
+import com.navercorp.fixturemonkey.arbitrary.JustCombinableArbitrary;
 import com.navercorp.fixturemonkey.customizer.NodeManipulator;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
@@ -121,11 +123,79 @@ public final class ObjectTree {
 		ObjectNode node,
 		@Nullable ArbitraryGeneratorContext currentContext
 	) {
-		CombinableArbitrary<?> generated;
+		CombinableArbitrary<?> generated = null;
+		List<ObjectNode> children = node.getChildren();
 		if (node.getArbitrary() != null) {
-			generated = node.getArbitrary()
-				.injectNull(node.getArbitraryProperty().getObjectProperty().getNullInject());
-		} else {
+			if (children.isEmpty() || node.getArbitrary() instanceof JustCombinableArbitrary) {
+				generated = node.getArbitrary()
+					.injectNull(node.getArbitraryProperty().getObjectProperty().getNullInject());
+			} else {
+				CombinableArbitrary parentCombinableArbitrary = new CombinableArbitrary() {
+					private final CombinableArbitrary<?> delegate = node.getArbitrary();
+					private final LazyArbitrary<Object> combined = LazyArbitrary.lazy(delegate::combined);
+					private final LazyArbitrary<Object> rawValue = LazyArbitrary.lazy(delegate::rawValue);
+
+					@Override
+					public Object combined() {
+						return combined.getValue();
+					}
+
+					@Override
+					public Object rawValue() {
+						return rawValue.getValue();
+					}
+
+					@Override
+					public void clear() {
+						delegate.clear();
+					}
+
+					@Override
+					public boolean fixed() {
+						return false;
+					}
+				};
+
+				for (ObjectNode child : children) {
+					if (child.getArbitrary() == null) {
+						Property resolvedProperty = child.getResolvedProperty();
+						child.setArbitrary(
+							new CombinableArbitrary<Object>() {
+								@Override
+								public Object combined() {
+									Object combined = parentCombinableArbitrary.combined();
+									if (combined != null) {
+										return resolvedProperty.getValue(combined);
+									}
+									return combined;
+								}
+
+								@Override
+								public Object rawValue() {
+									Object rawValue = parentCombinableArbitrary.rawValue();
+									if (rawValue != null) {
+										return resolvedProperty.getValue(rawValue);
+									}
+									return rawValue;
+								}
+
+								@Override
+								public void clear() {
+
+								}
+
+								@Override
+								public boolean fixed() {
+									return false;
+								}
+							}
+						);
+					}
+				}
+			}
+		}
+
+		if (generated == null) {
 			ArbitraryGeneratorContext childArbitraryGeneratorContext = this.generateContext(node, currentContext);
 
 			CombinableArbitrary<?> cached = monkeyContext.getCachedArbitrary(node.getProperty());
@@ -152,4 +222,5 @@ public final class ObjectTree {
 
 		return generated;
 	}
+
 }

@@ -673,7 +673,7 @@ class JavaTest {
 			.size("$", 100)
 			.set(
 				"$[*]",
-				Values.just(CombinableArbitrary.from(LazyArbitrary.lazy(() -> Arbitraries.strings().sample())).unique())
+				CombinableArbitrary.from(LazyArbitrary.lazy(() -> Arbitraries.strings().sample())).unique()
 			)
 			.sample();
 

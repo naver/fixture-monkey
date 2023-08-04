@@ -22,6 +22,7 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
+import com.navercorp.fixturemonkey.arbitrary.JustCombinableArbitrary;
 import com.navercorp.fixturemonkey.customizer.Values.Just;
 import com.navercorp.fixturemonkey.tree.ObjectNode;
 
@@ -36,10 +37,11 @@ public final class NodeSetJustManipulator implements NodeManipulator {
 	@Override
 	public void manipulate(ObjectNode objectNode) {
 		Object exactValue = value.getValue();
+
 		if (exactValue instanceof CombinableArbitrary) {
-			objectNode.setArbitrary((CombinableArbitrary)exactValue);
-		} else {
-			objectNode.setArbitrary(CombinableArbitrary.from(exactValue));
+			objectNode.setArbitrary((CombinableArbitrary<?>)exactValue);
+			return;
 		}
+		objectNode.setArbitrary(new JustCombinableArbitrary<>(value));
 	}
 }
