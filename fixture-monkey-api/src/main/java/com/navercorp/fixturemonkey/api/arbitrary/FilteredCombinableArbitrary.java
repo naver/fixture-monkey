@@ -18,6 +18,7 @@
 
 package com.navercorp.fixturemonkey.api.arbitrary;
 
+import java.util.Set;
 import java.util.function.Predicate;
 
 import org.apiguardian.api.API;
@@ -26,6 +27,7 @@ import org.apiguardian.api.API.Status;
 import net.jqwik.api.TooManyFilterMissesException;
 
 import com.navercorp.fixturemonkey.api.exception.FilterMissException;
+import com.navercorp.fixturemonkey.api.exception.IgnoredSizeValidationException;
 import com.navercorp.fixturemonkey.api.exception.ValidationFailedException;
 import com.navercorp.fixturemonkey.api.property.PropertyPath;
 import com.navercorp.fixturemonkey.api.property.Traceable;
@@ -64,11 +66,14 @@ final class FilteredCombinableArbitrary implements CombinableArbitrary {
 
 		Object returned;
 		for (int i = 0; i < maxMisses; i++) {
+			returned = combinableArbitrary.combined();
 			try {
-				returned = combinableArbitrary.combined();
 				if (predicate.test(returned)) {
 					return returned;
 				}
+			} catch (IgnoredSizeValidationException ex) {
+				Set<String> ignoredConastraintViolationPropertyNames = ex.getIgnoredConstraintViolationPropertyNames();
+				return returned;
 			} catch (TooManyFilterMissesException | ValidationFailedException | FilterMissException ex) {
 				if (combinableArbitrary.fixed()) {
 					break;

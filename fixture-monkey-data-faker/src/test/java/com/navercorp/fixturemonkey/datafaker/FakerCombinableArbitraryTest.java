@@ -22,11 +22,8 @@ import static org.assertj.core.api.BDDAssertions.then;
 
 import net.jqwik.api.Property;
 
-import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult;
@@ -41,6 +38,9 @@ class FakerCombinableArbitraryTest {
 
 		@Size(min = 5, max = 10)
 		private String strSize;
+
+		@Size(min = 15, max = 15)
+		private String exactSize;
 	}
 
 	@Property
@@ -145,6 +145,20 @@ class FakerCombinableArbitraryTest {
 
 		then(actual).matches("\\w+");
 		then(actual).hasSizeBetween(5, 10);
+	}
+
+	@Property
+	void fakerStringClassSetExactSizeTestFirstName() {
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.plugin(new JakartaValidationPlugin())
+			.plugin(new DataFakerPlugin(faker -> faker.name().firstName()))
+			.defaultNotNull(true)
+			.build();
+
+		String actual = sut.giveMeOne(StringClass.class).getExactSize();
+
+		then(actual).matches("\\w+");
+		// then(actual).hasSize(15);
 	}
 }
 

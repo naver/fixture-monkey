@@ -18,6 +18,10 @@
 
 package com.navercorp.fixturemonkey.jakarta.validation.validator;
 
+import java.lang.annotation.Annotation;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -28,13 +32,20 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Path;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
+import jakarta.validation.constraints.Size;
+import jakarta.validation.metadata.ConstraintDescriptor;
 
+import com.navercorp.fixturemonkey.api.exception.IgnoredSizeValidationException;
 import com.navercorp.fixturemonkey.api.exception.ValidationFailedException;
 import com.navercorp.fixturemonkey.api.validator.ArbitraryValidator;
 
 @API(since = "0.5.6", status = Status.MAINTAINED)
 public final class JakartaArbitraryValidator implements ArbitraryValidator {
+	int maxSizeFailure = 500;
 	private Validator validator;
+	private Map<Annotation, Integer> sizeFailureCount = new HashMap<>();
+
+	private Set<Annotation> ignoredAnnotations = new HashSet<>();
 
 	public JakartaArbitraryValidator() {
 		try {
@@ -54,11 +65,44 @@ public final class JakartaArbitraryValidator implements ArbitraryValidator {
 				.map(Path::toString)
 				.collect(Collectors.toSet());
 
+			Set<Annotation> constraintViolationAnnotations = violations.stream()
+				.map(ConstraintViolation::getConstraintDescriptor)
+				.map(ConstraintDescriptor::getAnnotation)
+				.filter(annotation -> !ignoredAnnotations.contains(annotation))
+				.filter(annotation -> annotation.annotationType().equals(Size.class))
+				.collect(Collectors.toSet());
+
+			constraintViolationAnnotations.forEach(annotation -> {
+				if (!sizeFailureCount.containsKey(annotation)) {
+					sizeFailureCount.put(annotation, 1);
+				} else {
+					sizeFailureCount.replace(annotation, sizeFailureCount.get(annotation) + 1);
+				}
+			});
+
+			sizeFailureCount.forEach((annotation, integer) -> {
+				if (!constraintViolationAnnotations.contains(annotation)) {
+					sizeFailureCount.replace(annotation, 0);
+				}
+				if (integer > maxSizeFailure) {
+					ignoredAnnotations.add(annotation);
+				}
+			});
+
 			if (!violations.isEmpty()) {
-				throw new ValidationFailedException(
-					"DefaultArbitrayValidator ConstraintViolations. type: " + arbitrary.getClass(),
-					constraintViolationPropertyNames
-				);
+				if (!violations.stream().allMatch(objectConstraintViolation ->
+					ignoredAnnotations.contains(objectConstraintViolation.getConstraintDescriptor().getAnnotation())
+				)) {
+					throw new ValidationFailedException(
+						"DefaultArbitrayValidator ConstraintViolations. type: " + arbitrary.getClass(),
+						constraintViolationPropertyNames
+					);
+				} else {
+					throw new IgnoredSizeValidationException(
+						"DefaultArbitrayValidator ConstraintViolations. type: " + arbitrary.getClass(),
+						constraintViolationPropertyNames
+					);
+				}
 			}
 		}
 	}
