@@ -37,7 +37,11 @@ data class Product (
 
   val options: List<String>,
 
-  val createdAt: Instant
+  val createdAt: Instant,
+
+  val productType: ProductType,
+
+  val merchantInfo: Map<Integer, String>
 )
 ```
 

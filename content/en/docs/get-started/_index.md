@@ -3,5 +3,5 @@ title: "Getting Started"
 images: []
 menu:
 docs:
-weight: 0
+weight: 20
 ---
