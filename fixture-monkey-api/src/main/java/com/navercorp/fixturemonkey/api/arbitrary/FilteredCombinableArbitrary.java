@@ -23,6 +23,8 @@ import java.util.function.Predicate;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import net.jqwik.api.TooManyFilterMissesException;
 
@@ -48,6 +50,8 @@ final class FilteredCombinableArbitrary implements CombinableArbitrary {
 	private Exception lastException;
 	private int failureCount = 0;
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(FilteredCombinableArbitrary.class);
+
 	FilteredCombinableArbitrary(
 		int maxMisses,
 		CombinableArbitrary combinableArbitrary,
@@ -72,7 +76,11 @@ final class FilteredCombinableArbitrary implements CombinableArbitrary {
 					return returned;
 				}
 			} catch (IgnoredSizeValidationException ex) {
-				Set<String> ignoredConastraintViolationPropertyNames = ex.getIgnoredConstraintViolationPropertyNames();
+				Set<String> ignoredConstraintViolationPropertyNames = ex.getIgnoredConstraintViolationPropertyNames();
+				LOGGER.warn(
+					"Fail to satisfy constraints: " + String.join(", ", ignoredConstraintViolationPropertyNames),
+					ex
+				);
 				return returned;
 			} catch (TooManyFilterMissesException | ValidationFailedException | FilterMissException ex) {
 				if (combinableArbitrary.fixed()) {
