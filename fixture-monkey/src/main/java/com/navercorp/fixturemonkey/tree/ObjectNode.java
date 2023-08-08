@@ -134,6 +134,10 @@ public final class ObjectNode {
 		return arbitraryFilters;
 	}
 
+	public List<NodeManipulator> getManipulators() {
+		return manipulators;
+	}
+
 	public boolean isNotManipulated() {
 		boolean sized = !containerInfoManipulators.isEmpty();
 

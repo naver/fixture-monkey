@@ -123,8 +123,7 @@ public final class ObjectTree {
 	) {
 		CombinableArbitrary<?> generated;
 		if (node.getArbitrary() != null) {
-			generated = node.getArbitrary()
-				.injectNull(node.getArbitraryProperty().getObjectProperty().getNullInject());
+			generated = new CombinableArbitraryWithManipulator(node);
 		} else {
 			ArbitraryGeneratorContext childArbitraryGeneratorContext = this.generateContext(node, currentContext);
 
@@ -151,5 +150,46 @@ public final class ObjectTree {
 		}
 
 		return generated;
+	}
+
+	private static class CombinableArbitraryWithManipulator<T> implements CombinableArbitrary<T> {
+		private final ObjectNode objectNode;
+
+		public CombinableArbitraryWithManipulator(ObjectNode objectNode) {
+			this.objectNode = objectNode;
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public T combined() {
+			return (T)(objectNode.getArbitrary()
+				.injectNull(objectNode.getArbitraryProperty().getObjectProperty().getNullInject())
+				.combined());
+		}
+
+		@Override
+		public Object rawValue() {
+			return objectNode.getArbitrary()
+				.injectNull(objectNode.getArbitraryProperty().getObjectProperty().getNullInject())
+				.rawValue();
+		}
+
+		@Override
+		public void clear() {
+			apply(objectNode);
+		}
+
+		@Override
+		public boolean fixed() {
+			return false;
+		}
+
+		private void apply(ObjectNode currentNode) {
+			if (currentNode.getParent() == null) {
+				return;
+			}
+			apply(currentNode.getParent());
+			currentNode.getManipulators().forEach(it -> it.manipulate(currentNode));
+		}
 	}
 }

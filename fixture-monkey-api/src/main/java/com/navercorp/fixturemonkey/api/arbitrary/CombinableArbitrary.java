@@ -33,6 +33,7 @@ import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 
 /**
  * An arbitrary instance for combining arbitraries in order to generate an instance of specific class.
+ *
  * @param <T> type to generate
  */
 @API(since = "0.6.0", status = Status.EXPERIMENTAL)
@@ -54,9 +55,9 @@ public interface CombinableArbitrary<T> {
 	}
 
 	/**
-	 * @see #from(LazyArbitrary)
 	 * @param arbitrary to be converted into {@link LazyCombinableArbitrary}.
 	 * @return a {@link FixedCombinableArbitrary}
+	 * @see #from(LazyArbitrary)
 	 */
 	static <U> CombinableArbitrary<U> from(Arbitrary<U> arbitrary) {
 		return from(LazyArbitrary.lazy(() -> {
@@ -70,9 +71,9 @@ public interface CombinableArbitrary<T> {
 	}
 
 	/**
-	 * @see #from(LazyArbitrary)
 	 * @param supplier to be converted into {@link LazyCombinableArbitrary}.
 	 * @return a {@link LazyCombinableArbitrary}
+	 * @see #from(LazyArbitrary)
 	 */
 	static <U> CombinableArbitrary<U> from(Supplier<U> supplier) {
 		return from(LazyArbitrary.lazy(supplier));
