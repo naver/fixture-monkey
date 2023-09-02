@@ -63,7 +63,7 @@ public final class FieldReflectionArbitraryIntrospector implements ArbitraryIntr
 					Field field = fields.get(originPropertyName);
 
 					if (field == null
-						|| Modifier.isFinal(field.getModifiers())
+						|| (Modifier.isFinal(field.getModifiers()) && Modifier.isStatic(field.getModifiers()))
 						|| Modifier.isTransient(field.getModifiers())) {
 						continue;
 					}
