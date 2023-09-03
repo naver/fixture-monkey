@@ -1,6 +1,6 @@
 [[main]]
 name = "Docs"
-url = "/docs/introduction/overview"
+url = "/docs/introduction/overview/"
 weight = 10
 
 [[docs]]
@@ -16,17 +16,28 @@ identifier = "get-started"
 url = "/docs/get-started/"
 
 [[docs]]
-name = "Getting Started"
+name = "Generating Objects"
 weight = 30
-identifier = "get-started"
-url = "/docs/get-started/"
+identifier = "generating-objects"
+url = "/docs/generating-objects/"
 
+[[docs]]
+name = "Customizing Objects"
+weight = 40
+identifier = "customizing-objects"
+url = "/docs/customizing-objects/"
+
+[[docs]]
+name = "Fixture Monkey Options"
+weight = 50
+identifier = "fixture-monkey-options"
+url = "/docs/fixture-monkey-options/"
 
 [[main]]
 name = "Release Notes"
 weight = 20
 identifier = "release-notes"
-url = "/release-notes"
+url = "/release-notes/"
 
 [[social]]
 name = "GitHub"

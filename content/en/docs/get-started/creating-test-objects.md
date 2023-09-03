@@ -1,6 +1,5 @@
 ---
 title: "Creating test objects"
-linkTitle: "Java"
 weight: 20
 menu:
 docs:
@@ -24,6 +23,10 @@ public class Product {
     List<String> options;
 
     Instant createdAt;
+
+    ProductType productType;
+
+    Map<Integer, String> merchantInfo;
 }
 ```
 (Note that the Lombok annotation `@Value` is used to make Immutable classes. If you're working in an environment without Lombok, go to [creating test objects without lombok](/docs/get-started/creating-test-objects-without-lombok))

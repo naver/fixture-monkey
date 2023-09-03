@@ -23,6 +23,10 @@ public class Product {
 
     private Instant createdAt;
 
+    private ProductType productType;
+
+    private Map<Integer, String> merchantInfo;
+
     public Product() {
     }
 
@@ -44,6 +48,14 @@ public class Product {
 
     public void setCreatedAt(Instant createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public void setProductType(ProductType productType) {
+      this.productType = productType;
+    }
+
+    public void setMerchantInfo(Map<Integer, String> merchantInfo) {
+      this.merchantInfo = merchantInfo;
     }
 }
 ```
