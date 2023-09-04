@@ -195,6 +195,10 @@ public final class ArbitraryTraverser {
 		for (int sequence = 0; sequence < childProperties.size(); sequence++) {
 			Property childProperty = childProperties.get(sequence);
 
+			if (context.isTraversed(childProperty)) {
+				continue;
+			}
+
 			ContainerPropertyGenerator containerPropertyGenerator =
 				this.fixtureMonkeyOptions.getContainerPropertyGenerator(childProperty);
 			boolean childContainer = containerPropertyGenerator != null;
@@ -251,22 +255,13 @@ public final class ArbitraryTraverser {
 				childContainerProperty != null
 			);
 
-			ObjectNode childNode;
-			if (context.isTraversed(childProperty)) {
-				childNode = new ObjectNode(
-					resolvedParentProperty,
-					childProperty,
-					childArbitraryProperty,
-					Collections.emptyList()
-				);
-			} else {
-				childNode = this.traverse(
-					childArbitraryProperty,
-					childContainerProperty,
-					resolvedParentProperty,
-					context.appendArbitraryProperty(childArbitraryProperty)
-				);
-			}
+			ObjectNode childNode = this.traverse(
+				childArbitraryProperty,
+				childContainerProperty,
+				resolvedParentProperty,
+				context.appendArbitraryProperty(childArbitraryProperty)
+			);
+
 			if (appliedContainerInfoManipulator != null) {
 				childNode.addContainerManipulator(appliedContainerInfoManipulator);
 			}
