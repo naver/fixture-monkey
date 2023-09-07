@@ -21,7 +21,6 @@ package com.navercorp.fixturemonkey.kotlin
 import com.navercorp.fixturemonkey.ArbitraryBuilder
 import com.navercorp.fixturemonkey.api.expression.ExpressionGenerator
 import com.navercorp.fixturemonkey.customizer.InnerSpec
-import java.util.function.Predicate
 
 /**
  * Apply manipulation to [InnerSpec][com.navercorp.fixturemonkey.customizer.InnerSpec]
@@ -31,22 +30,22 @@ fun <T> ArbitraryBuilder<T>.setInner(innerSpecConfigurer: ((InnerSpec) -> Unit))
     return this.setInner(InnerSpec().apply(innerSpecConfigurer))
 }
 
-inline fun <reified T> ArbitraryBuilder<T>.setPostCondition(expression: String, predicate: Predicate<T>) =
+inline fun <reified T> ArbitraryBuilder<T>.setPostCondition(expression: String, noinline predicate: (T) -> Boolean) =
     this.setPostCondition(expression, T::class.java, predicate)
 
 inline fun <reified T> ArbitraryBuilder<T>.setPostCondition(
     expressionGenerator: ExpressionGenerator,
-    predicate: Predicate<T>
+    noinline predicate: (T) -> Boolean
 ) = this.setPostCondition(expressionGenerator, T::class.java, predicate)
 
 inline fun <reified T> ArbitraryBuilder<T>.setPostCondition(
     expression: String,
-    predicate: Predicate<T>,
+    noinline predicate: (T) -> Boolean,
     limit: Int
 ) = this.setPostCondition(expression, T::class.java, predicate, limit)
 
 inline fun <reified T> ArbitraryBuilder<T>.setPostCondition(
     expressionGenerator: ExpressionGenerator,
-    predicate: Predicate<T>,
+    noinline predicate: (T) -> Boolean,
     limit: Int
 ) = this.setPostCondition(expressionGenerator, T::class.java, predicate, limit)
