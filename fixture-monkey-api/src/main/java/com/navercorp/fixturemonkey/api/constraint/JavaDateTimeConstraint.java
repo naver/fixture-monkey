@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.jakarta.validation.introspector;
+package com.navercorp.fixturemonkey.api.constraint;
 
 import java.time.LocalDateTime;
 
@@ -25,15 +25,15 @@ import javax.annotation.Nullable;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-@API(since = "0.4.10", status = Status.MAINTAINED)
-public final class JakartaValidationDateTimeConstraint {
+@API(since = "0.6.8", status = Status.EXPERIMENTAL)
+public final class JavaDateTimeConstraint {
 	@Nullable
 	private final LocalDateTime min;
 
 	@Nullable
 	private final LocalDateTime max;
 
-	public JakartaValidationDateTimeConstraint(@Nullable LocalDateTime min, @Nullable LocalDateTime max) {
+	public JavaDateTimeConstraint(@Nullable LocalDateTime min, @Nullable LocalDateTime max) {
 		this.min = min;
 		this.max = max;
 	}

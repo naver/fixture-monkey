@@ -16,35 +16,40 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.jakarta.validation.introspector;
-
-import java.time.Year;
+package com.navercorp.fixturemonkey.api.constraint;
 
 import javax.annotation.Nullable;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-@API(since = "0.4.10", status = Status.MAINTAINED)
-public final class JakartaValidationYearConstraint {
+@API(since = "0.6.8", status = Status.EXPERIMENTAL)
+public final class JavaContainerConstraint {
 	@Nullable
-	private final Year min;
+	private final Integer minSize;
 
 	@Nullable
-	private final Year max;
+	private final Integer maxSize;
 
-	public JakartaValidationYearConstraint(@Nullable Year min, @Nullable Year max) {
-		this.min = min;
-		this.max = max;
+	private final boolean notEmpty;
+
+	public JavaContainerConstraint(@Nullable Integer minSize, @Nullable Integer maxSize, boolean notEmpty) {
+		this.minSize = minSize;
+		this.maxSize = maxSize;
+		this.notEmpty = notEmpty;
 	}
 
 	@Nullable
-	public Year getMin() {
-		return this.min;
+	public Integer getMinSize() {
+		return minSize;
 	}
 
 	@Nullable
-	public Year getMax() {
-		return this.max;
+	public Integer getMaxSize() {
+		return maxSize;
+	}
+
+	public boolean isNotEmpty() {
+		return notEmpty;
 	}
 }
