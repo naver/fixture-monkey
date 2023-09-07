@@ -23,6 +23,7 @@ import java.util.Arrays;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import com.navercorp.fixturemonkey.api.constraint.JavaConstraintGenerator;
 import com.navercorp.fixturemonkey.api.introspector.CompositeArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.JavaTimeTypeArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.introspector.JavaTypeArbitraryGenerator;
@@ -34,20 +35,17 @@ import com.navercorp.fixturemonkey.jakarta.validation.introspector.JakartaValida
 import com.navercorp.fixturemonkey.jakarta.validation.introspector.JakartaValidationConstraintGenerator;
 import com.navercorp.fixturemonkey.jakarta.validation.introspector.JakartaValidationJavaArbitraryResolver;
 import com.navercorp.fixturemonkey.jakarta.validation.introspector.JakartaValidationJavaTimeArbitraryResolver;
-import com.navercorp.fixturemonkey.jakarta.validation.introspector.JakartaValidationTimeConstraintGenerator;
 import com.navercorp.fixturemonkey.jakarta.validation.validator.JakartaArbitraryValidator;
 
 @API(since = "0.4.10", status = Status.MAINTAINED)
 public final class JakartaValidationPlugin implements Plugin {
 	private JavaTypeArbitraryGenerator javaTypeArbitraryGenerator = new JavaTypeArbitraryGenerator() {
 	};
-	private JakartaValidationConstraintGenerator jakartaValidationConstraintGenerator =
+	private JavaConstraintGenerator jakartaValidationConstraintGenerator =
 		new JakartaValidationConstraintGenerator();
 	private JavaTimeTypeArbitraryGenerator javaTimeTypeArbitraryGenerator =
 		new JavaTimeTypeArbitraryGenerator() {
 		};
-	private JakartaValidationTimeConstraintGenerator jakartaValidationTimeConstraintGenerator =
-		new JakartaValidationTimeConstraintGenerator();
 
 	public JakartaValidationPlugin javaTypeArbitraryGenerator(
 		JavaTypeArbitraryGenerator javaTypeArbitraryGenerator
@@ -70,13 +68,6 @@ public final class JakartaValidationPlugin implements Plugin {
 		return this;
 	}
 
-	public JakartaValidationPlugin validationTimeConstraintGenerator(
-		JakartaValidationTimeConstraintGenerator jakartaValidationTimeConstraintGenerator
-	) {
-		this.jakartaValidationTimeConstraintGenerator = jakartaValidationTimeConstraintGenerator;
-		return this;
-	}
-
 	@Override
 	public void accept(FixtureMonkeyOptionsBuilder optionsBuilder) {
 		optionsBuilder
@@ -92,7 +83,7 @@ public final class JakartaValidationPlugin implements Plugin {
 			.javaTimeTypeArbitraryGenerator(javaTimeTypeArbitraryGenerator)
 			.javaTimeArbitraryResolver(
 				new JakartaValidationJavaTimeArbitraryResolver(
-					this.jakartaValidationTimeConstraintGenerator
+					this.jakartaValidationConstraintGenerator
 				)
 			)
 			.priorityIntrospector(current ->

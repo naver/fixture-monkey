@@ -27,6 +27,7 @@ import java.time.OffsetDateTime;
 import java.time.OffsetTime;
 import java.time.Year;
 import java.time.YearMonth;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Calendar;
@@ -49,18 +50,23 @@ import net.jqwik.time.api.arbitraries.YearArbitrary;
 import net.jqwik.time.api.arbitraries.YearMonthArbitrary;
 import net.jqwik.time.api.arbitraries.ZonedDateTimeArbitrary;
 
+import com.navercorp.fixturemonkey.api.constraint.JavaConstraintGenerator;
+import com.navercorp.fixturemonkey.api.constraint.JavaDateTimeConstraint;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.introspector.JavaTimeArbitraryResolver;
 
 @API(since = "0.4.10", status = Status.MAINTAINED)
 public final class JakartaValidationJavaTimeArbitraryResolver implements JavaTimeArbitraryResolver {
-	private final JakartaValidationTimeConstraintGenerator constraintGenerator;
+	private static final ZoneOffset ZONE_OFFSET = OffsetDateTime.now().getOffset();
+	private static final ZoneId ZONE_ID = ZoneId.systemDefault();
+
+	private final JavaConstraintGenerator constraintGenerator;
 
 	public JakartaValidationJavaTimeArbitraryResolver() {
-		this(new JakartaValidationTimeConstraintGenerator());
+		this(new JakartaValidationConstraintGenerator());
 	}
 
-	public JakartaValidationJavaTimeArbitraryResolver(JakartaValidationTimeConstraintGenerator constraintGenerator) {
+	public JakartaValidationJavaTimeArbitraryResolver(JavaConstraintGenerator constraintGenerator) {
 		this.constraintGenerator = constraintGenerator;
 	}
 
@@ -69,7 +75,7 @@ public final class JakartaValidationJavaTimeArbitraryResolver implements JavaTim
 		CalendarArbitrary calendarArbitrary,
 		ArbitraryGeneratorContext context
 	) {
-		JakartaValidationDateTimeConstraint constraint =
+		JavaDateTimeConstraint constraint =
 			this.constraintGenerator.generateDateTimeConstraint(context);
 		LocalDateTime min = constraint.getMin();
 		LocalDateTime max = constraint.getMax();
@@ -93,7 +99,7 @@ public final class JakartaValidationJavaTimeArbitraryResolver implements JavaTim
 		DateArbitrary dateArbitrary,
 		ArbitraryGeneratorContext context
 	) {
-		JakartaValidationDateTimeConstraint constraint =
+		JavaDateTimeConstraint constraint =
 			this.constraintGenerator.generateDateTimeConstraint(context);
 		LocalDateTime min = constraint.getMin();
 		LocalDateTime max = constraint.getMax();
@@ -117,19 +123,19 @@ public final class JakartaValidationJavaTimeArbitraryResolver implements JavaTim
 		InstantArbitrary instantArbitrary,
 		ArbitraryGeneratorContext context
 	) {
-		JakartaValidationDateTimeConstraint constraint =
+		JavaDateTimeConstraint constraint =
 			this.constraintGenerator.generateDateTimeConstraint(context);
 		LocalDateTime min = constraint.getMin();
 		LocalDateTime max = constraint.getMax();
 
 		if (min != null) {
-			instantArbitrary = instantArbitrary.atTheEarliest(min.atZone(ZoneOffset.systemDefault()).toInstant());
+			instantArbitrary = instantArbitrary.atTheEarliest(min.atZone(ZONE_ID).toInstant());
 		}
 		if (max != null) {
-			instantArbitrary = instantArbitrary.atTheLatest(max.atZone(ZoneOffset.systemDefault()).toInstant());
+			instantArbitrary = instantArbitrary.atTheLatest(max.atZone(ZONE_ID).toInstant());
 		}
 
-		return instantArbitrary;
+		return instantArbitrary.map(it -> it.atZone(ZONE_ID).toInstant());
 	}
 
 	@Override
@@ -137,15 +143,15 @@ public final class JakartaValidationJavaTimeArbitraryResolver implements JavaTim
 		LocalDateArbitrary localDateArbitrary,
 		ArbitraryGeneratorContext context
 	) {
-		JakartaValidationDateConstraint constraint = this.constraintGenerator.generateDateConstraint(context);
-		LocalDate min = constraint.getMin();
-		LocalDate max = constraint.getMax();
+		JavaDateTimeConstraint constraint = this.constraintGenerator.generateDateTimeConstraint(context);
+		LocalDateTime min = constraint.getMin();
+		LocalDateTime max = constraint.getMax();
 
 		if (min != null) {
-			localDateArbitrary = localDateArbitrary.atTheEarliest(min);
+			localDateArbitrary = localDateArbitrary.atTheEarliest(min.toLocalDate());
 		}
 		if (max != null) {
-			localDateArbitrary = localDateArbitrary.atTheLatest(max);
+			localDateArbitrary = localDateArbitrary.atTheLatest(max.toLocalDate());
 		}
 
 		return localDateArbitrary;
@@ -156,7 +162,7 @@ public final class JakartaValidationJavaTimeArbitraryResolver implements JavaTim
 		LocalDateTimeArbitrary localDateTimeArbitrary,
 		ArbitraryGeneratorContext context
 	) {
-		JakartaValidationDateTimeConstraint constraint =
+		JavaDateTimeConstraint constraint =
 			this.constraintGenerator.generateDateTimeConstraint(context);
 		LocalDateTime min = constraint.getMin();
 		LocalDateTime max = constraint.getMax();
@@ -176,15 +182,15 @@ public final class JakartaValidationJavaTimeArbitraryResolver implements JavaTim
 		LocalTimeArbitrary localTimeArbitrary,
 		ArbitraryGeneratorContext context
 	) {
-		JakartaValidationTimeConstraint constraint = this.constraintGenerator.generateTimeConstraint(context);
-		LocalTime min = constraint.getMin();
-		LocalTime max = constraint.getMax();
+		JavaDateTimeConstraint constraint = this.constraintGenerator.generateDateTimeConstraint(context);
+		LocalDateTime min = constraint.getMin();
+		LocalDateTime max = constraint.getMax();
 
 		if (min != null) {
-			localTimeArbitrary = localTimeArbitrary.atTheEarliest(min);
+			localTimeArbitrary = localTimeArbitrary.atTheEarliest(min.toLocalTime());
 		}
 		if (max != null) {
-			localTimeArbitrary = localTimeArbitrary.atTheLatest(max);
+			localTimeArbitrary = localTimeArbitrary.atTheLatest(max.toLocalTime());
 		}
 
 		return localTimeArbitrary;
@@ -195,7 +201,7 @@ public final class JakartaValidationJavaTimeArbitraryResolver implements JavaTim
 		ZonedDateTimeArbitrary zonedDateTimeArbitrary,
 		ArbitraryGeneratorContext context
 	) {
-		JakartaValidationDateTimeConstraint constraint =
+		JavaDateTimeConstraint constraint =
 			this.constraintGenerator.generateDateTimeConstraint(context);
 		LocalDateTime min = constraint.getMin();
 		LocalDateTime max = constraint.getMax();
@@ -207,7 +213,7 @@ public final class JakartaValidationJavaTimeArbitraryResolver implements JavaTim
 			zonedDateTimeArbitrary = zonedDateTimeArbitrary.atTheLatest(max);
 		}
 
-		return zonedDateTimeArbitrary;
+		return zonedDateTimeArbitrary.map(it -> it.withZoneSameLocal(ZONE_ID));
 	}
 
 	@Override
@@ -215,9 +221,9 @@ public final class JakartaValidationJavaTimeArbitraryResolver implements JavaTim
 		MonthDayArbitrary monthDayArbitrary,
 		ArbitraryGeneratorContext context
 	) {
-		JakartaValidationDateConstraint constraint = this.constraintGenerator.generateDateConstraint(context);
-		LocalDate min = constraint.getMin();
-		LocalDate max = constraint.getMax();
+		JavaDateTimeConstraint constraint = this.constraintGenerator.generateDateTimeConstraint(context);
+		LocalDateTime min = constraint.getMin();
+		LocalDateTime max = constraint.getMax();
 
 		if (min != null) {
 			monthDayArbitrary = monthDayArbitrary.atTheEarliest(MonthDay.of(min.getMonth(), min.getDayOfMonth()));
@@ -234,7 +240,7 @@ public final class JakartaValidationJavaTimeArbitraryResolver implements JavaTim
 		OffsetDateTimeArbitrary offsetDateTimeArbitrary,
 		ArbitraryGeneratorContext context
 	) {
-		JakartaValidationDateTimeConstraint constraint =
+		JavaDateTimeConstraint constraint =
 			this.constraintGenerator.generateDateTimeConstraint(context);
 		LocalDateTime min = constraint.getMin();
 		LocalDateTime max = constraint.getMax();
@@ -246,6 +252,8 @@ public final class JakartaValidationJavaTimeArbitraryResolver implements JavaTim
 			offsetDateTimeArbitrary = offsetDateTimeArbitrary.atTheLatest(max);
 		}
 
+		offsetDateTimeArbitrary = offsetDateTimeArbitrary.offsetBetween(ZONE_OFFSET, ZONE_OFFSET);
+
 		return offsetDateTimeArbitrary;
 	}
 
@@ -254,15 +262,15 @@ public final class JakartaValidationJavaTimeArbitraryResolver implements JavaTim
 		OffsetTimeArbitrary offsetTimeArbitrary,
 		ArbitraryGeneratorContext context
 	) {
-		JakartaValidationTimeConstraint constraint = this.constraintGenerator.generateTimeConstraint(context);
-		LocalTime min = constraint.getMin();
-		LocalTime max = constraint.getMax();
+		JavaDateTimeConstraint constraint = this.constraintGenerator.generateDateTimeConstraint(context);
+		LocalDateTime min = constraint.getMin();
+		LocalDateTime max = constraint.getMax();
 
 		if (min != null) {
-			offsetTimeArbitrary = offsetTimeArbitrary.atTheEarliest(min);
+			offsetTimeArbitrary = offsetTimeArbitrary.atTheEarliest(min.toLocalTime());
 		}
 		if (max != null) {
-			offsetTimeArbitrary = offsetTimeArbitrary.atTheLatest(max);
+			offsetTimeArbitrary = offsetTimeArbitrary.atTheLatest(max.toLocalTime());
 		}
 
 		return offsetTimeArbitrary;
@@ -273,15 +281,15 @@ public final class JakartaValidationJavaTimeArbitraryResolver implements JavaTim
 		YearArbitrary yearArbitrary,
 		ArbitraryGeneratorContext context
 	) {
-		JakartaValidationYearConstraint constraint = this.constraintGenerator.generateYearConstraint(context);
-		Year min = constraint.getMin();
-		Year max = constraint.getMax();
+		JavaDateTimeConstraint constraint = this.constraintGenerator.generateDateTimeConstraint(context);
+		LocalDateTime min = constraint.getMin();
+		LocalDateTime max = constraint.getMax();
 
 		if (min != null) {
-			yearArbitrary = yearArbitrary.between(min.getValue(), Year.MAX_VALUE);
+			yearArbitrary = yearArbitrary.between(min.plusYears(1).getYear(), Year.MAX_VALUE);
 		}
 		if (max != null) {
-			yearArbitrary = yearArbitrary.between(Year.MIN_VALUE, max.getValue());
+			yearArbitrary = yearArbitrary.between(Year.MIN_VALUE, max.minusYears(1).getYear());
 		}
 
 		return yearArbitrary;
@@ -292,15 +300,15 @@ public final class JakartaValidationJavaTimeArbitraryResolver implements JavaTim
 		YearMonthArbitrary yearMonthArbitrary,
 		ArbitraryGeneratorContext context
 	) {
-		JakartaValidationYearMonthConstraint constraint = this.constraintGenerator.generateYearMonthConstraint(context);
-		YearMonth min = constraint.getMin();
-		YearMonth max = constraint.getMax();
+		JavaDateTimeConstraint constraint = this.constraintGenerator.generateDateTimeConstraint(context);
+		LocalDateTime min = constraint.getMin();
+		LocalDateTime max = constraint.getMax();
 
 		if (min != null) {
-			yearMonthArbitrary = yearMonthArbitrary.atTheEarliest(min);
+			yearMonthArbitrary = yearMonthArbitrary.atTheEarliest(YearMonth.from(min.plusMonths(1)));
 		}
 		if (max != null) {
-			yearMonthArbitrary = yearMonthArbitrary.atTheLatest(max);
+			yearMonthArbitrary = yearMonthArbitrary.atTheLatest(YearMonth.from(max.minusMonths(1)));
 		}
 
 		return yearMonthArbitrary;
