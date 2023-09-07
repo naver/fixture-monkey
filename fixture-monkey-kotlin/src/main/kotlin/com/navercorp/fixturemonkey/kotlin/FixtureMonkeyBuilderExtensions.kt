@@ -26,8 +26,10 @@ import com.navercorp.fixturemonkey.api.generator.ContainerPropertyGenerator
 import com.navercorp.fixturemonkey.api.generator.NullInjectGenerator
 import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGenerator
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector
+import com.navercorp.fixturemonkey.api.matcher.Matcher
 import com.navercorp.fixturemonkey.api.property.PropertyGenerator
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver
+import kotlin.reflect.KClass
 
 inline fun <reified T> FixtureMonkeyBuilder.pushAssignableTypePropertyGenerator(propertyGenerator: PropertyGenerator) =
     this.pushAssignableTypePropertyGenerator(
@@ -90,17 +92,25 @@ inline fun <reified T> FixtureMonkeyBuilder.pushAssignableTypeNullInjectGenerato
         nullInjectGenerator
     )
 
+inline fun <reified T> FixtureMonkeyBuilder.pushAssignableTypeArbitraryIntrospector(arbitraryIntrospector: ArbitraryIntrospector) =
+    this.pushAssignableTypeArbitraryIntrospector(
+        T::class.java,
+        arbitraryIntrospector
+    )
+
 inline fun <reified T> FixtureMonkeyBuilder.pushExactTypeArbitraryIntrospector(arbitraryIntrospector: ArbitraryIntrospector) =
     this.pushExactTypeArbitraryIntrospector(
         T::class.java,
         arbitraryIntrospector
     )
 
-inline fun <reified T> FixtureMonkeyBuilder.pushAssignableTypeArbitraryIntrospector(arbitraryIntrospector: ArbitraryIntrospector) =
-    this.pushAssignableTypeArbitraryIntrospector(
-        T::class.java,
-        arbitraryIntrospector
-    )
+inline fun <reified T> FixtureMonkeyBuilder.addExceptGenerateClass(): FixtureMonkeyBuilder =
+    this.addExceptGenerateClass(T::class.java)
+
+fun FixtureMonkeyBuilder.addExceptGenerateClasses(
+    vararg kClasses: KClass<*>
+): FixtureMonkeyBuilder =
+    this.addExceptGenerateClasses(*(kClasses.map { it.java }.toTypedArray()))
 
 inline fun <reified T> FixtureMonkeyBuilder.register(
     noinline arbitraryBuilderGenerator: (fixtureMonkey: FixtureMonkey) -> ArbitraryBuilder<out T>
@@ -114,6 +124,11 @@ inline fun <reified T> FixtureMonkeyBuilder.registerAssignableType(
     noinline arbitraryBuilderGenerator: (fixtureMonkey: FixtureMonkey) -> ArbitraryBuilder<out T>
 ): FixtureMonkeyBuilder = this.registerAssignableType(T::class.java, arbitraryBuilderGenerator)
 
+fun FixtureMonkeyBuilder.registerGroup(
+    vararg kClasses: KClass<*>
+): FixtureMonkeyBuilder =
+    this.registerGroup(*(kClasses.map { it.java }.toTypedArray()))
+
 inline fun <reified T> FixtureMonkeyBuilder.addContainerType(
     containerObjectPropertyGenerator: ContainerPropertyGenerator,
     containerArbitraryIntrospector: ArbitraryIntrospector,
@@ -125,6 +140,16 @@ inline fun <reified T> FixtureMonkeyBuilder.addContainerType(
     decomposedContainerValueFactory
 )
 
-inline fun <reified T> FixtureMonkeyBuilder.interfaceImplements(
-    implementations: List<Class<out T>>
-): FixtureMonkeyBuilder = this.interfaceImplements(T::class.java, implementations)
+inline fun <reified T : Any> FixtureMonkeyBuilder.interfaceImplements(
+    matcher: Matcher,
+    implementations: List<KClass<out T>>
+): FixtureMonkeyBuilder =
+    this.interfaceImplements(matcher, implementations.map { it.java })
+
+inline fun <reified T : Any> FixtureMonkeyBuilder.interfaceImplements(
+    vararg implementations: KClass<out T>
+): FixtureMonkeyBuilder = this.interfaceImplements(T::class.java, implementations.map { it.java })
+
+inline fun <reified T : Any> FixtureMonkeyBuilder.interfaceImplements(
+    implementations: List<KClass<out T>>
+): FixtureMonkeyBuilder = this.interfaceImplements(T::class.java, implementations.map { it.java })
