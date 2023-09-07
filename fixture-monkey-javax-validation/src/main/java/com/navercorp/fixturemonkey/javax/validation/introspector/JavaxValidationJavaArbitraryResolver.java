@@ -24,7 +24,9 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Supplier;
 
+import javax.annotation.Nullable;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.Pattern;
 
@@ -36,7 +38,6 @@ import net.jqwik.api.Arbitrary;
 import net.jqwik.api.arbitraries.BigDecimalArbitrary;
 import net.jqwik.api.arbitraries.BigIntegerArbitrary;
 import net.jqwik.api.arbitraries.ByteArbitrary;
-import net.jqwik.api.arbitraries.CharacterArbitrary;
 import net.jqwik.api.arbitraries.DoubleArbitrary;
 import net.jqwik.api.arbitraries.FloatArbitrary;
 import net.jqwik.api.arbitraries.IntegerArbitrary;
@@ -45,6 +46,10 @@ import net.jqwik.api.arbitraries.ShortArbitrary;
 import net.jqwik.api.arbitraries.StringArbitrary;
 import net.jqwik.web.api.Web;
 
+import com.navercorp.fixturemonkey.api.constraint.JavaConstraintGenerator;
+import com.navercorp.fixturemonkey.api.constraint.JavaDecimalConstraint;
+import com.navercorp.fixturemonkey.api.constraint.JavaIntegerConstraint;
+import com.navercorp.fixturemonkey.api.constraint.JavaStringConstraint;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.introspector.JavaArbitraryResolver;
 
@@ -52,22 +57,21 @@ import com.navercorp.fixturemonkey.api.introspector.JavaArbitraryResolver;
 public final class JavaxValidationJavaArbitraryResolver implements JavaArbitraryResolver {
 	private static final RegexGenerator REGEX_GENERATOR = new RegexGenerator();
 
-	private final JavaxValidationConstraintGenerator constraintGenerator;
+	private final JavaConstraintGenerator constraintGenerator;
 
 	public JavaxValidationJavaArbitraryResolver() {
 		this(new JavaxValidationConstraintGenerator());
 	}
 
-	public JavaxValidationJavaArbitraryResolver(JavaxValidationConstraintGenerator constraintGenerator) {
+	public JavaxValidationJavaArbitraryResolver(JavaConstraintGenerator constraintGenerator) {
 		this.constraintGenerator = constraintGenerator;
 	}
 
-	@Override
 	public Arbitrary<String> strings(
 		StringArbitrary stringArbitrary,
 		ArbitraryGeneratorContext context
 	) {
-		JavaxValidationStringConstraint constraint = this.constraintGenerator.generateStringConstraint(context);
+		JavaStringConstraint constraint = this.constraintGenerator.generateStringConstraint(context);
 		BigInteger min = constraint.getMinSize();
 		BigInteger max = constraint.getMaxSize();
 		boolean digits = constraint.isDigits();
@@ -129,41 +133,36 @@ public final class JavaxValidationJavaArbitraryResolver implements JavaArbitrary
 			});
 	}
 
-	private static boolean containsControlCharacters(String value) {
-		for (char c : value.toCharArray()) {
-			if (Character.isISOControl(c)) {
-				return true;
-			}
-		}
-
-		return false;
-	}
-
-	@Override
-	public Arbitrary<Character> characters(
-		CharacterArbitrary characterArbitrary,
-		ArbitraryGeneratorContext context
-	) {
-		return characterArbitrary;
-	}
-
 	@Override
 	public Arbitrary<Short> shorts(
 		ShortArbitrary shortArbitrary,
 		ArbitraryGeneratorContext context
 	) {
-		JavaxValidationIntegerConstraint constraint = this.constraintGenerator.generateIntegerConstraint(context);
-		BigInteger min = constraint.getMin();
-		BigInteger max = constraint.getMax();
+		JavaIntegerConstraint constraint = this.constraintGenerator.generateIntegerConstraint(context);
+		BigInteger positiveMin = constraint.getPositiveMin();
+		BigInteger positiveMax = constraint.getPositiveMax();
+		BigInteger negativeMin = constraint.getNegativeMin();
+		BigInteger negativeMax = constraint.getNegativeMax();
 
-		if (min != null) {
-			shortArbitrary = shortArbitrary.greaterOrEqual(min.shortValueExact());
+		ShortArbitrary positiveArbitrary = null;
+		ShortArbitrary negativeArbitrary = null;
+		if (positiveMin != null) {
+			positiveArbitrary = defaultIfNull(positiveArbitrary, () -> shortArbitrary);
+			positiveArbitrary = positiveArbitrary.greaterOrEqual(positiveMin.shortValueExact());
 		}
-		if (max != null) {
-			shortArbitrary = shortArbitrary.lessOrEqual(max.shortValueExact());
+		if (positiveMax != null) {
+			positiveArbitrary = defaultIfNull(positiveArbitrary, () -> shortArbitrary);
+			positiveArbitrary = positiveArbitrary.lessOrEqual(positiveMax.shortValueExact());
 		}
-
-		return shortArbitrary;
+		if (negativeMin != null) {
+			negativeArbitrary = defaultIfNull(negativeArbitrary, () -> shortArbitrary);
+			negativeArbitrary = negativeArbitrary.greaterOrEqual(negativeMin.shortValueExact());
+		}
+		if (negativeMax != null) {
+			negativeArbitrary = defaultIfNull(negativeArbitrary, () -> shortArbitrary);
+			negativeArbitrary = negativeArbitrary.lessOrEqual(negativeMax.shortValueExact());
+		}
+		return resolveArbitrary(shortArbitrary, positiveArbitrary, negativeArbitrary);
 	}
 
 	@Override
@@ -171,18 +170,31 @@ public final class JavaxValidationJavaArbitraryResolver implements JavaArbitrary
 		ByteArbitrary byteArbitrary,
 		ArbitraryGeneratorContext context
 	) {
-		JavaxValidationIntegerConstraint constraint = this.constraintGenerator.generateIntegerConstraint(context);
-		BigInteger min = constraint.getMin();
-		BigInteger max = constraint.getMax();
+		JavaIntegerConstraint constraint = this.constraintGenerator.generateIntegerConstraint(context);
+		BigInteger positiveMin = constraint.getPositiveMin();
+		BigInteger positiveMax = constraint.getPositiveMax();
+		BigInteger negativeMin = constraint.getNegativeMin();
+		BigInteger negativeMax = constraint.getNegativeMax();
 
-		if (min != null) {
-			byteArbitrary = byteArbitrary.greaterOrEqual(min.byteValueExact());
+		ByteArbitrary positiveArbitrary = null;
+		ByteArbitrary negativeArbitrary = null;
+		if (positiveMin != null) {
+			positiveArbitrary = defaultIfNull(positiveArbitrary, () -> byteArbitrary);
+			positiveArbitrary = positiveArbitrary.greaterOrEqual(positiveMin.byteValueExact());
 		}
-		if (max != null) {
-			byteArbitrary = byteArbitrary.lessOrEqual(max.byteValueExact());
+		if (positiveMax != null) {
+			positiveArbitrary = defaultIfNull(positiveArbitrary, () -> byteArbitrary);
+			positiveArbitrary = positiveArbitrary.lessOrEqual(positiveMax.byteValueExact());
 		}
-
-		return byteArbitrary;
+		if (negativeMin != null) {
+			negativeArbitrary = defaultIfNull(negativeArbitrary, () -> byteArbitrary);
+			negativeArbitrary = negativeArbitrary.greaterOrEqual(negativeMin.byteValueExact());
+		}
+		if (negativeMax != null) {
+			negativeArbitrary = defaultIfNull(negativeArbitrary, () -> byteArbitrary);
+			negativeArbitrary = negativeArbitrary.lessOrEqual(negativeMax.byteValueExact());
+		}
+		return resolveArbitrary(byteArbitrary, positiveArbitrary, negativeArbitrary);
 	}
 
 	@Override
@@ -190,28 +202,62 @@ public final class JavaxValidationJavaArbitraryResolver implements JavaArbitrary
 		FloatArbitrary floatArbitrary,
 		ArbitraryGeneratorContext context
 	) {
-		JavaxValidationDecimalConstraint constraint = this.constraintGenerator.generateDecimalConstraint(context);
-		BigDecimal min = constraint.getMin();
-		BigDecimal max = constraint.getMax();
-		Boolean minInclusive = constraint.getMinInclusive();
-		Boolean maxInclusive = constraint.getMaxInclusive();
+		JavaDecimalConstraint constraint = this.constraintGenerator.generateDecimalConstraint(context);
+		BigDecimal positiveMin = constraint.getPositiveMin();
+		BigDecimal positiveMax = constraint.getPositiveMax();
+		Boolean positiveMinInclusive = constraint.getPositiveMinInclusive();
+		Boolean positiveMaxInclusive = constraint.getPositiveMaxInclusive();
+		BigDecimal negativeMin = constraint.getNegativeMin();
+		BigDecimal negativeMax = constraint.getNegativeMax();
+		Boolean negativeMinInclusive = constraint.getNegativeMinInclusive();
+		Boolean negativeMaxInclusive = constraint.getNegativeMaxInclusive();
+		Integer scale = constraint.getScale();
 
-		if (min != null) {
-			if (minInclusive != null && !minInclusive) {
-				floatArbitrary = floatArbitrary.greaterThan(min.floatValue());
+		FloatArbitrary positiveArbitrary = null;
+		FloatArbitrary negativeArbitrary = null;
+		if (positiveMin != null) {
+			positiveArbitrary = defaultIfNull(positiveArbitrary, () -> floatArbitrary);
+			if (positiveMinInclusive != null && positiveMinInclusive) {
+				positiveArbitrary = positiveArbitrary.greaterOrEqual(positiveMin.floatValue());
 			} else {
-				floatArbitrary = floatArbitrary.greaterOrEqual(min.floatValue());
+				positiveArbitrary = positiveArbitrary.greaterThan(positiveMin.floatValue());
 			}
 		}
-		if (max != null) {
-			if (maxInclusive != null && !maxInclusive) {
-				floatArbitrary = floatArbitrary.lessThan(max.floatValue());
+		if (positiveMax != null) {
+			positiveArbitrary = defaultIfNull(positiveArbitrary, () -> floatArbitrary);
+			if (positiveMaxInclusive != null && positiveMaxInclusive) {
+				positiveArbitrary = positiveArbitrary.lessOrEqual(positiveMax.floatValue());
 			} else {
-				floatArbitrary = floatArbitrary.lessOrEqual(max.floatValue());
+				positiveArbitrary = positiveArbitrary.lessThan(positiveMax.floatValue());
+			}
+		}
+		if (negativeMin != null) {
+			negativeArbitrary = defaultIfNull(negativeArbitrary, () -> floatArbitrary);
+			if (negativeMinInclusive != null && negativeMinInclusive) {
+				negativeArbitrary = negativeArbitrary.greaterOrEqual(negativeMin.floatValue());
+			} else {
+				negativeArbitrary = negativeArbitrary.greaterThan(negativeMin.floatValue());
+			}
+		}
+		if (negativeMax != null) {
+			negativeArbitrary = defaultIfNull(negativeArbitrary, () -> floatArbitrary);
+			if (negativeMaxInclusive != null && negativeMaxInclusive) {
+				negativeArbitrary = negativeArbitrary.lessOrEqual(negativeMax.floatValue());
+			} else {
+				negativeArbitrary = negativeArbitrary.lessThan(negativeMax.floatValue());
 			}
 		}
 
-		return floatArbitrary;
+		if (scale != null) {
+			if (positiveArbitrary != null) {
+				positiveArbitrary = positiveArbitrary.ofScale(scale);
+			}
+			if (negativeArbitrary != null) {
+				negativeArbitrary = negativeArbitrary.ofScale(scale);
+			}
+		}
+
+		return resolveArbitrary(floatArbitrary, positiveArbitrary, negativeArbitrary);
 	}
 
 	@Override
@@ -219,28 +265,62 @@ public final class JavaxValidationJavaArbitraryResolver implements JavaArbitrary
 		DoubleArbitrary doubleArbitrary,
 		ArbitraryGeneratorContext context
 	) {
-		JavaxValidationDecimalConstraint constraint = this.constraintGenerator.generateDecimalConstraint(context);
-		BigDecimal min = constraint.getMin();
-		BigDecimal max = constraint.getMax();
-		Boolean minInclusive = constraint.getMinInclusive();
-		Boolean maxInclusive = constraint.getMaxInclusive();
+		JavaDecimalConstraint constraint = this.constraintGenerator.generateDecimalConstraint(context);
+		BigDecimal positiveMin = constraint.getPositiveMin();
+		BigDecimal positiveMax = constraint.getPositiveMax();
+		Boolean positiveMinInclusive = constraint.getPositiveMinInclusive();
+		Boolean positiveMaxInclusive = constraint.getPositiveMaxInclusive();
+		BigDecimal negativeMin = constraint.getNegativeMin();
+		BigDecimal negativeMax = constraint.getNegativeMax();
+		Boolean negativeMinInclusive = constraint.getNegativeMinInclusive();
+		Boolean negativeMaxInclusive = constraint.getNegativeMaxInclusive();
+		Integer scale = constraint.getScale();
 
-		if (min != null) {
-			if (minInclusive != null && !minInclusive) {
-				doubleArbitrary = doubleArbitrary.greaterThan(min.doubleValue());
+		DoubleArbitrary positiveArbitrary = null;
+		DoubleArbitrary negativeArbitrary = null;
+		if (positiveMin != null) {
+			positiveArbitrary = defaultIfNull(positiveArbitrary, () -> doubleArbitrary);
+			if (positiveMinInclusive != null && positiveMinInclusive) {
+				positiveArbitrary = positiveArbitrary.greaterOrEqual(positiveMin.doubleValue());
 			} else {
-				doubleArbitrary = doubleArbitrary.greaterOrEqual(min.doubleValue());
+				positiveArbitrary = positiveArbitrary.greaterThan(positiveMin.doubleValue());
 			}
 		}
-		if (max != null) {
-			if (maxInclusive != null && !maxInclusive) {
-				doubleArbitrary = doubleArbitrary.lessThan(max.doubleValue());
+		if (positiveMax != null) {
+			positiveArbitrary = defaultIfNull(positiveArbitrary, () -> doubleArbitrary);
+			if (positiveMaxInclusive != null && positiveMaxInclusive) {
+				positiveArbitrary = positiveArbitrary.lessOrEqual(positiveMax.doubleValue());
 			} else {
-				doubleArbitrary = doubleArbitrary.lessOrEqual(max.doubleValue());
+				positiveArbitrary = positiveArbitrary.lessThan(positiveMax.doubleValue());
+			}
+		}
+		if (negativeMin != null) {
+			negativeArbitrary = defaultIfNull(negativeArbitrary, () -> doubleArbitrary);
+			if (negativeMinInclusive != null && negativeMinInclusive) {
+				negativeArbitrary = negativeArbitrary.greaterOrEqual(negativeMin.floatValue());
+			} else {
+				negativeArbitrary = negativeArbitrary.greaterThan(negativeMin.floatValue());
+			}
+		}
+		if (negativeMax != null) {
+			negativeArbitrary = defaultIfNull(negativeArbitrary, () -> doubleArbitrary);
+			if (negativeMaxInclusive != null && negativeMaxInclusive) {
+				negativeArbitrary = negativeArbitrary.lessOrEqual(negativeMax.doubleValue());
+			} else {
+				negativeArbitrary = negativeArbitrary.lessThan(negativeMax.doubleValue());
 			}
 		}
 
-		return doubleArbitrary;
+		if (scale != null) {
+			if (positiveArbitrary != null) {
+				positiveArbitrary = positiveArbitrary.ofScale(scale);
+			}
+			if (negativeArbitrary != null) {
+				negativeArbitrary = negativeArbitrary.ofScale(scale);
+			}
+		}
+
+		return resolveArbitrary(doubleArbitrary, positiveArbitrary, negativeArbitrary);
 	}
 
 	@Override
@@ -248,18 +328,31 @@ public final class JavaxValidationJavaArbitraryResolver implements JavaArbitrary
 		IntegerArbitrary integerArbitrary,
 		ArbitraryGeneratorContext context
 	) {
-		JavaxValidationIntegerConstraint constraint = this.constraintGenerator.generateIntegerConstraint(context);
-		BigInteger min = constraint.getMin();
-		BigInteger max = constraint.getMax();
+		JavaIntegerConstraint constraint = this.constraintGenerator.generateIntegerConstraint(context);
+		BigInteger positiveMin = constraint.getPositiveMin();
+		BigInteger positiveMax = constraint.getPositiveMax();
+		BigInteger negativeMin = constraint.getNegativeMin();
+		BigInteger negativeMax = constraint.getNegativeMax();
 
-		if (min != null) {
-			integerArbitrary = integerArbitrary.greaterOrEqual(min.intValueExact());
+		IntegerArbitrary positiveArbitrary = null;
+		IntegerArbitrary negativeArbitrary = null;
+		if (positiveMin != null) {
+			positiveArbitrary = defaultIfNull(positiveArbitrary, () -> integerArbitrary);
+			positiveArbitrary = positiveArbitrary.greaterOrEqual(positiveMin.intValueExact());
 		}
-		if (max != null) {
-			integerArbitrary = integerArbitrary.lessOrEqual(max.intValueExact());
+		if (positiveMax != null) {
+			positiveArbitrary = defaultIfNull(positiveArbitrary, () -> integerArbitrary);
+			positiveArbitrary = positiveArbitrary.lessOrEqual(positiveMax.intValueExact());
 		}
-
-		return integerArbitrary;
+		if (negativeMin != null) {
+			negativeArbitrary = defaultIfNull(negativeArbitrary, () -> integerArbitrary);
+			negativeArbitrary = negativeArbitrary.greaterOrEqual(negativeMin.intValueExact());
+		}
+		if (negativeMax != null) {
+			negativeArbitrary = defaultIfNull(negativeArbitrary, () -> integerArbitrary);
+			negativeArbitrary = negativeArbitrary.lessOrEqual(negativeMax.intValueExact());
+		}
+		return resolveArbitrary(integerArbitrary, positiveArbitrary, negativeArbitrary);
 	}
 
 	@Override
@@ -267,18 +360,31 @@ public final class JavaxValidationJavaArbitraryResolver implements JavaArbitrary
 		LongArbitrary longArbitrary,
 		ArbitraryGeneratorContext context
 	) {
-		JavaxValidationIntegerConstraint constraint = this.constraintGenerator.generateIntegerConstraint(context);
-		BigInteger min = constraint.getMin();
-		BigInteger max = constraint.getMax();
+		JavaIntegerConstraint constraint = this.constraintGenerator.generateIntegerConstraint(context);
+		BigInteger positiveMin = constraint.getPositiveMin();
+		BigInteger positiveMax = constraint.getPositiveMax();
+		BigInteger negativeMin = constraint.getNegativeMin();
+		BigInteger negativeMax = constraint.getNegativeMax();
 
-		if (min != null) {
-			longArbitrary = longArbitrary.greaterOrEqual(min.longValueExact());
+		LongArbitrary positiveArbitrary = null;
+		LongArbitrary negativeArbitrary = null;
+		if (positiveMin != null) {
+			positiveArbitrary = defaultIfNull(positiveArbitrary, () -> longArbitrary);
+			positiveArbitrary = positiveArbitrary.greaterOrEqual(positiveMin.longValueExact());
 		}
-		if (max != null) {
-			longArbitrary = longArbitrary.lessOrEqual(max.longValueExact());
+		if (positiveMax != null) {
+			positiveArbitrary = defaultIfNull(positiveArbitrary, () -> longArbitrary);
+			positiveArbitrary = positiveArbitrary.lessOrEqual(positiveMax.longValueExact());
 		}
-
-		return longArbitrary;
+		if (negativeMin != null) {
+			negativeArbitrary = defaultIfNull(negativeArbitrary, () -> longArbitrary);
+			negativeArbitrary = negativeArbitrary.greaterOrEqual(negativeMin.longValueExact());
+		}
+		if (negativeMax != null) {
+			negativeArbitrary = defaultIfNull(negativeArbitrary, () -> longArbitrary);
+			negativeArbitrary = negativeArbitrary.lessOrEqual(negativeMax.longValueExact());
+		}
+		return resolveArbitrary(longArbitrary, positiveArbitrary, negativeArbitrary);
 	}
 
 	@Override
@@ -286,18 +392,32 @@ public final class JavaxValidationJavaArbitraryResolver implements JavaArbitrary
 		BigIntegerArbitrary bigIntegerArbitrary,
 		ArbitraryGeneratorContext context
 	) {
-		JavaxValidationIntegerConstraint constraint = this.constraintGenerator.generateIntegerConstraint(context);
-		BigInteger min = constraint.getMin();
-		BigInteger max = constraint.getMax();
+		JavaIntegerConstraint constraint = this.constraintGenerator.generateIntegerConstraint(context);
+		BigInteger positiveMin = constraint.getPositiveMin();
+		BigInteger positiveMax = constraint.getPositiveMax();
+		BigInteger negativeMin = constraint.getNegativeMin();
+		BigInteger negativeMax = constraint.getNegativeMax();
 
-		if (min != null) {
-			bigIntegerArbitrary = bigIntegerArbitrary.greaterOrEqual(min);
+		BigIntegerArbitrary positiveArbitrary = null;
+		BigIntegerArbitrary negativeArbitrary = null;
+		if (positiveMin != null) {
+			positiveArbitrary = defaultIfNull(positiveArbitrary, () -> bigIntegerArbitrary);
+			positiveArbitrary = positiveArbitrary.greaterOrEqual(positiveMin);
 		}
-		if (max != null) {
-			bigIntegerArbitrary = bigIntegerArbitrary.lessOrEqual(max);
+		if (positiveMax != null) {
+			positiveArbitrary = defaultIfNull(positiveArbitrary, () -> bigIntegerArbitrary);
+			positiveArbitrary = positiveArbitrary.lessOrEqual(positiveMax);
+		}
+		if (negativeMin != null) {
+			negativeArbitrary = defaultIfNull(negativeArbitrary, () -> bigIntegerArbitrary);
+			negativeArbitrary = negativeArbitrary.greaterOrEqual(negativeMin);
+		}
+		if (negativeMax != null) {
+			negativeArbitrary = defaultIfNull(negativeArbitrary, () -> bigIntegerArbitrary);
+			negativeArbitrary = negativeArbitrary.lessOrEqual(negativeMax);
 		}
 
-		return bigIntegerArbitrary;
+		return resolveArbitrary(bigIntegerArbitrary, positiveArbitrary, negativeArbitrary);
 	}
 
 	@Override
@@ -305,32 +425,86 @@ public final class JavaxValidationJavaArbitraryResolver implements JavaArbitrary
 		BigDecimalArbitrary bigDecimalArbitrary,
 		ArbitraryGeneratorContext context
 	) {
-		JavaxValidationDecimalConstraint constraint = this.constraintGenerator.generateDecimalConstraint(context);
-		BigDecimal min = constraint.getMin();
-		BigDecimal max = constraint.getMax();
-		Boolean minInclusive = constraint.getMinInclusive();
-		Boolean maxInclusive = constraint.getMaxInclusive();
+		JavaDecimalConstraint constraint = this.constraintGenerator.generateDecimalConstraint(context);
+		BigDecimal positiveMin = constraint.getPositiveMin();
+		BigDecimal positiveMax = constraint.getPositiveMax();
+		Boolean positiveMinInclusive = constraint.getPositiveMinInclusive();
+		Boolean positiveMaxInclusive = constraint.getPositiveMaxInclusive();
+		BigDecimal negativeMin = constraint.getNegativeMin();
+		BigDecimal negativeMax = constraint.getNegativeMax();
+		Boolean negativeMinInclusive = constraint.getNegativeMinInclusive();
+		Boolean negativeMaxInclusive = constraint.getNegativeMaxInclusive();
 		Integer scale = constraint.getScale();
 
-		if (min != null) {
-			if (minInclusive != null && !minInclusive) {
-				bigDecimalArbitrary = bigDecimalArbitrary.greaterThan(min);
+		BigDecimalArbitrary positiveArbitrary = null;
+		BigDecimalArbitrary negativeArbitrary = null;
+		if (positiveMin != null) {
+			positiveArbitrary = defaultIfNull(positiveArbitrary, () -> bigDecimalArbitrary);
+			if (positiveMinInclusive != null && positiveMinInclusive) {
+				positiveArbitrary = positiveArbitrary.greaterOrEqual(positiveMin);
 			} else {
-				bigDecimalArbitrary = bigDecimalArbitrary.greaterOrEqual(min);
+				positiveArbitrary = positiveArbitrary.greaterThan(positiveMin);
 			}
 		}
-		if (max != null) {
-			if (maxInclusive != null && !maxInclusive) {
-				bigDecimalArbitrary = bigDecimalArbitrary.lessThan(max);
+		if (positiveMax != null) {
+			positiveArbitrary = defaultIfNull(positiveArbitrary, () -> bigDecimalArbitrary);
+			if (positiveMaxInclusive != null && positiveMaxInclusive) {
+				positiveArbitrary = positiveArbitrary.lessOrEqual(positiveMax);
 			} else {
-				bigDecimalArbitrary = bigDecimalArbitrary.lessOrEqual(max);
+				positiveArbitrary = positiveArbitrary.lessThan(positiveMax);
+			}
+		}
+
+		if (negativeMin != null) {
+			negativeArbitrary = defaultIfNull(negativeArbitrary, () -> bigDecimalArbitrary);
+			if (negativeMinInclusive != null && negativeMinInclusive) {
+				negativeArbitrary = negativeArbitrary.greaterOrEqual(negativeMin);
+			} else {
+				negativeArbitrary = negativeArbitrary.greaterThan(negativeMin);
+			}
+		}
+		if (negativeMax != null) {
+			negativeArbitrary = defaultIfNull(negativeArbitrary, () -> bigDecimalArbitrary);
+			if (negativeMaxInclusive != null && negativeMaxInclusive) {
+				negativeArbitrary = negativeArbitrary.lessOrEqual(negativeMax);
+			} else {
+				negativeArbitrary = negativeArbitrary.lessThan(negativeMax);
 			}
 		}
 
 		if (scale != null) {
-			bigDecimalArbitrary = bigDecimalArbitrary.ofScale(scale);
+			if (positiveArbitrary != null) {
+				positiveArbitrary = positiveArbitrary.ofScale(scale);
+			}
+			if (negativeArbitrary != null) {
+				negativeArbitrary = negativeArbitrary.ofScale(scale);
+			}
 		}
 
-		return bigDecimalArbitrary;
+		return resolveArbitrary(bigDecimalArbitrary, positiveArbitrary, negativeArbitrary);
+	}
+
+	private static <T> Arbitrary<T> resolveArbitrary(
+		Arbitrary<T> defaultArbitrary,
+		@Nullable Arbitrary<T> positiveArbitrary,
+		@Nullable Arbitrary<T> negativeArbitrary
+	) {
+		if (positiveArbitrary != null && negativeArbitrary != null) {
+			return Arbitraries.oneOf(positiveArbitrary, negativeArbitrary);
+		}
+
+		if (positiveArbitrary != null) {
+			return positiveArbitrary;
+		}
+
+		if (negativeArbitrary != null) {
+			return negativeArbitrary;
+		}
+
+		return defaultArbitrary;
+	}
+
+	private static <T> T defaultIfNull(@Nullable T obj, Supplier<T> defaultValue) {
+		return obj != null ? obj : defaultValue.get();
 	}
 }

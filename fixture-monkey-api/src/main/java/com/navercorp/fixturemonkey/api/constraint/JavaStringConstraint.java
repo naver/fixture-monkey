@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.javax.validation.introspector;
+package com.navercorp.fixturemonkey.api.constraint;
 
 import java.math.BigInteger;
 
@@ -25,8 +25,8 @@ import javax.annotation.Nullable;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-@API(since = "0.4.0", status = Status.MAINTAINED)
-public final class JavaxValidationStringConstraint {
+@API(since = "0.6.8", status = Status.EXPERIMENTAL)
+public final class JavaStringConstraint {
 	@Nullable
 	private final BigInteger minSize;
 
@@ -35,18 +35,31 @@ public final class JavaxValidationStringConstraint {
 
 	private final boolean digits;
 
+	private final boolean notNull;
+
 	private final boolean notBlank;
 
-	public JavaxValidationStringConstraint(
+	@Nullable
+	private final String pattern;
+
+	private final boolean email;
+
+	public JavaStringConstraint(
 		@Nullable BigInteger minSize,
 		@Nullable BigInteger maxSize,
 		boolean digits,
-		boolean notBlank
+		boolean notNull,
+		boolean notBlank,
+		@Nullable String pattern,
+		boolean email
 	) {
 		this.minSize = minSize;
 		this.maxSize = maxSize;
 		this.digits = digits;
+		this.notNull = notNull;
 		this.notBlank = notBlank;
+		this.pattern = pattern;
+		this.email = email;
 	}
 
 	@Nullable
@@ -63,7 +76,20 @@ public final class JavaxValidationStringConstraint {
 		return this.digits;
 	}
 
+	public boolean isNotNull() {
+		return notNull;
+	}
+
 	public boolean isNotBlank() {
 		return this.notBlank;
+	}
+
+	@Nullable
+	public String getPattern() {
+		return pattern;
+	}
+
+	public boolean isEmail() {
+		return this.email;
 	}
 }
