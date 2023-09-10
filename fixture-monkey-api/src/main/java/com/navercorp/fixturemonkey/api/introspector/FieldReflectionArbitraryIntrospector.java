@@ -78,7 +78,7 @@ public final class FieldReflectionArbitraryIntrospector implements ArbitraryIntr
 						if (fieldValue != null) {
 							field.set(instance, fieldValue);
 						}
-					} catch (IllegalAccessException ex) {
+					} catch (IllegalAccessException | IllegalArgumentException ex) {
 						log.warn("set field by reflection is failed. field: {} value: {}",
 							resolvePropertyName,
 							fieldValue,
