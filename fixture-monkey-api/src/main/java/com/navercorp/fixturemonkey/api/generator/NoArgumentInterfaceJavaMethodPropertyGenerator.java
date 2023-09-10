@@ -22,7 +22,6 @@ import static java.util.stream.Collectors.toMap;
 
 import java.beans.PropertyDescriptor;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
@@ -46,10 +45,8 @@ import com.navercorp.fixturemonkey.api.type.Types;
 @API(since = "0.5.5", status = Status.MAINTAINED)
 public final class NoArgumentInterfaceJavaMethodPropertyGenerator implements PropertyGenerator {
 	@Override
-	public List<Property> generateChildProperties(
-		AnnotatedType annotatedType
-	) {
-		Class<?> actualType = Types.getActualType(annotatedType.getType());
+	public List<Property> generateChildProperties(Property property) {
+		Class<?> actualType = Types.getActualType(property.getType());
 		Map<Method, String> propertyNamesByGetter =
 			TypeCache.getPropertyDescriptorsByPropertyName(actualType).values().stream()
 				.collect(

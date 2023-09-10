@@ -25,7 +25,6 @@ import com.navercorp.fixturemonkey.api.property.Property
 import com.navercorp.fixturemonkey.api.property.PropertyGenerator
 import org.apiguardian.api.API
 import org.apiguardian.api.API.Status
-import java.lang.reflect.AnnotatedType
 import java.lang.reflect.ParameterizedType
 
 /**
@@ -37,14 +36,14 @@ import java.lang.reflect.ParameterizedType
 class KotlinPropertyGenerator(
     private val javaDelegatePropertyGenerator: PropertyGenerator = DefaultPropertyGenerator(),
 ) : PropertyGenerator {
-    private val objectChildPropertiesCache = ConcurrentLruCache<AnnotatedType, List<Property>>(2048)
+    private val objectChildPropertiesCache = ConcurrentLruCache<Property, List<Property>>(2048)
 
-    override fun generateChildProperties(annotatedType: AnnotatedType): List<Property> =
-        objectChildPropertiesCache.computeIfAbsent(annotatedType) {
-            val javaProperties = javaDelegatePropertyGenerator.generateChildProperties(annotatedType)
+    override fun generateChildProperties(property: Property): List<Property> =
+        objectChildPropertiesCache.computeIfAbsent(property) {
+            val javaProperties = javaDelegatePropertyGenerator.generateChildProperties(property.annotatedType)
                 .filter { it.name != null }
                 .associateBy { it.name!! }
-            val kotlinProperties = getMemberProperties(annotatedType)
+            val kotlinProperties = getMemberProperties(property)
                 .filter { it.type !is ParameterizedType }
                 .filter { it.name != null }
                 .associateBy { it.name!! }

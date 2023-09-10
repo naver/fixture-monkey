@@ -25,12 +25,17 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 /**
- * It generates child properties of the given {@link java.lang.reflect.AnnotatedType}.
+ * It generates child properties of the given {@link Property}.
  * Property could be field or JavaBeans property or method or constructor parameter.
  * It should generate properties whose name is unique.
  */
 @API(since = "0.5.3", status = Status.MAINTAINED)
 @FunctionalInterface
 public interface PropertyGenerator {
-	List<Property> generateChildProperties(AnnotatedType annotatedType);
+	List<Property> generateChildProperties(Property property);
+
+	@Deprecated
+	default List<Property> generateChildProperties(AnnotatedType annotatedType) {
+		return generateChildProperties(new RootProperty(annotatedType));
+	}
 }

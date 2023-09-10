@@ -18,7 +18,6 @@
 
 package com.navercorp.fixturemonkey.api.property;
 
-import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.function.Predicate;
@@ -45,11 +44,11 @@ public final class FieldPropertyGenerator implements PropertyGenerator {
 	}
 
 	@Override
-	public List<Property> generateChildProperties(AnnotatedType annotatedType) {
-		return TypeCache.getFieldsByName(Types.getActualType(annotatedType.getType())).values().stream()
+	public List<Property> generateChildProperties(Property property) {
+		return TypeCache.getFieldsByName(Types.getActualType(property.getType())).values().stream()
 			.filter(fieldPredicate)
 			.map(field -> new FieldProperty(
-				Types.resolveWithTypeReferenceGenerics(annotatedType, field.getAnnotatedType()),
+				Types.resolveWithTypeReferenceGenerics(property.getAnnotatedType(), field.getAnnotatedType()),
 				field
 			))
 			.filter(matcher::match)

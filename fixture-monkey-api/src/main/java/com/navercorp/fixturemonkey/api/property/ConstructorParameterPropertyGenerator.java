@@ -49,8 +49,8 @@ public final class ConstructorParameterPropertyGenerator implements PropertyGene
 	}
 
 	@Override
-	public List<Property> generateChildProperties(AnnotatedType annotatedType) {
-		Class<?> clazz = Types.getActualType(annotatedType.getType());
+	public List<Property> generateChildProperties(Property property) {
+		Class<?> clazz = Types.getActualType(property.getType());
 
 		Map<String, Property> constructorPropertiesByName = new HashMap<>();
 		Map.Entry<Constructor<?>, String[]> parameterNamesByConstructor =
@@ -71,7 +71,7 @@ public final class ConstructorParameterPropertyGenerator implements PropertyGene
 			Field field = fieldsByName.get(parameterName);
 			Property fieldProperty = field != null
 				? new FieldProperty(
-				Types.resolveWithTypeReferenceGenerics(annotatedType, field.getAnnotatedType()),
+				Types.resolveWithTypeReferenceGenerics(property.getAnnotatedType(), field.getAnnotatedType()),
 				field
 			)
 				: null;

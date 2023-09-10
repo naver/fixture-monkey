@@ -18,7 +18,6 @@
 
 package com.navercorp.fixturemonkey.api.property;
 
-import java.lang.reflect.AnnotatedType;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -51,11 +50,12 @@ public final class CompositePropertyGenerator implements PropertyGenerator {
 		this.propertyGenerators = propertyGenerators;
 	}
 
-	public List<Property> generateChildProperties(AnnotatedType annotatedType) {
+	public List<Property> generateChildProperties(Property property) {
 		Map<String, List<Property>> propertyListsByPropertyName = new HashMap<>();
 
 		for (PropertyGenerator propertyGenerator : propertyGenerators) {
-			List<Property> generatedProperties = propertyGenerator.generateChildProperties(annotatedType).stream()
+			List<Property> generatedProperties = propertyGenerator.generateChildProperties(property.getAnnotatedType())
+				.stream()
 				.filter(it -> it.getName() != null)
 				.collect(Collectors.toList());
 

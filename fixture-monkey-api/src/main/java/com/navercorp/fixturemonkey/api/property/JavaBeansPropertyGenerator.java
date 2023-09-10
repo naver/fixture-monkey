@@ -19,7 +19,6 @@
 package com.navercorp.fixturemonkey.api.property;
 
 import java.beans.PropertyDescriptor;
-import java.lang.reflect.AnnotatedType;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -48,8 +47,8 @@ public final class JavaBeansPropertyGenerator implements PropertyGenerator {
 	}
 
 	@Override
-	public List<Property> generateChildProperties(AnnotatedType annotatedType) {
-		return TypeCache.getPropertyDescriptorsByPropertyName(Types.getActualType(annotatedType.getType())).values()
+	public List<Property> generateChildProperties(Property property) {
+		return TypeCache.getPropertyDescriptorsByPropertyName(Types.getActualType(property.getType())).values()
 			.stream()
 			.filter(it -> it.getReadMethod() != null)
 			.filter(propertyDescriptorPredicate)

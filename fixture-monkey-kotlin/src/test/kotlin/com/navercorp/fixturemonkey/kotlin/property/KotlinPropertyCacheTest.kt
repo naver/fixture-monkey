@@ -18,6 +18,7 @@
 
 package com.navercorp.fixturemonkey.kotlin.property
 
+import com.navercorp.fixturemonkey.api.property.RootProperty
 import com.navercorp.fixturemonkey.api.type.TypeReference
 import org.assertj.core.api.BDDAssertions.then
 import org.junit.jupiter.api.Test
@@ -32,7 +33,7 @@ class KotlinPropertyCacheTest {
         val typeReference = object : TypeReference<SampleValue>() {}
 
         // when
-        val actual = getMemberProperties(typeReference.annotatedType)
+        val actual = getMemberProperties(RootProperty(typeReference.annotatedType))
 
         then(actual).hasSize(1)
         then(actual[0].type).isEqualTo(String::class.java)
@@ -48,7 +49,7 @@ class KotlinPropertyCacheTest {
         val typeReference = object : TypeReference<GenericSample<String>>() {}
 
         // when
-        val actual = getMemberProperties(typeReference.annotatedType)
+        val actual = getMemberProperties(RootProperty(typeReference.annotatedType))
 
         then(actual).hasSize(6)
         val sorted = actual.sortedBy { it.name }
@@ -99,16 +100,16 @@ data class GenericSample<T>(
     val name: T,
     val test: SampleValue,
     val list: List<T>,
-    val samples: List<SampleValue>
+    val samples: List<SampleValue>,
 ) {
     var property: Instant? = null
 }
 
 data class GenericSample2<T>(
-    val name: T
+    val name: T,
 )
 
 data class SampleValue(
     @field:Nullable
-    val name: String?
+    val name: String?,
 )
