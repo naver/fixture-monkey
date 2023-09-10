@@ -25,7 +25,7 @@ void test() {
 The Kotlin plugin changes the default `ObjectIntrospector` to `PrimaryConstructorArbitraryIntrospector`,
 which generates Kotlin classes with their primary constructor.
 
-Suppose you have a kotlin class like this:
+Suppose you have a Kotlin class like this:
 
 ```kotlin
 data class Product (

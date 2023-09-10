@@ -45,8 +45,21 @@ Fixture Monkey helps tests become more dynamic by generating test objects with r
 This leads to undercovering edge cases that might remain hidden when using static data.
 
 ### 4. Versatility
+```java
+class Foo {
+  String foo;
+}
+
+class Bar extends Foo {
+  String bar;
+}
+
+Foo foo = FixtureMonkey.create().giveMeOne(Foo.class);
+Bar bar = FixtureMonkey.create().giveMeone(Bar.class);
+```
+
 Fixture Monkey is capable to create any kind of object you can imagine. It supports generating basic objects such as lists, nested collections, enums and generic types.
-It also handles more advanced scenarios, including circular-referenced objects and anonymous objects from interfaces.
+It also handles more advanced scenarios, including objects with inheritance relationships, circular-referenced objects, and anonymous objects that implement interfaces.
 
 ---------
 

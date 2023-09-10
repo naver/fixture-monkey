@@ -8,6 +8,8 @@ docs:
 weight: 10
 ---
 
+{{< alert icon="💡" text="Fixture Monkey is designed for test environments. It is not recommended for production use." />}}
+
 ## Prerequisites
 * Java 8 or higher
 * JUnit 5 platform
@@ -23,7 +25,7 @@ weight: 10
 | fixture-monkey-kotlin | Kotlin support |
 | fixture-monkey-starter-kotlin | Starter dependency for fixture monkey kotlin |
 
-**fixture-monkey-starter** is a starter dependency that comes with pre-configured dependencies required to use fixture monkey.
+**fixture-monkey-starter** is a starter dependency that comes with pre-configured dependencies like lombok or fixture-monkey-jakarta-validation to help you get started using Fixture Monkey.
 
 For Kotlin environments, you can use **fixture-monkey-starter-kotlin**
 
