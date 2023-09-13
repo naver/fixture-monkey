@@ -64,7 +64,7 @@ class ArbitraryPropertyTest {
 		};
 
 		Optional<Property> property = DEFAULT_PROPERTY_GENERATOR.generateChildProperties(
-				typeReference.getAnnotatedType()
+				new RootProperty(typeReference.getAnnotatedType())
 			)
 			.stream()
 			.filter(it -> "name".equals(it.getName()))

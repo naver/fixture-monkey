@@ -28,7 +28,6 @@ import com.navercorp.fixturemonkey.kotlin.type.getPropertyName
 import net.jqwik.kotlin.internal.isKotlinClass
 import org.apiguardian.api.API
 import org.apiguardian.api.API.Status
-import java.lang.reflect.AnnotatedType
 import kotlin.reflect.KParameter.Kind.INSTANCE
 import kotlin.reflect.full.memberFunctions
 import kotlin.reflect.full.memberProperties
@@ -41,8 +40,8 @@ import kotlin.reflect.jvm.javaType
  */
 @API(since = "0.5.5", status = Status.MAINTAINED)
 class InterfaceKFunctionPropertyGenerator : PropertyGenerator {
-    override fun generateChildProperties(annotatedType: AnnotatedType): List<Property> {
-        val type = Types.getActualType(annotatedType.type)
+    override fun generateChildProperties(property: Property): List<Property> {
+        val type = Types.getActualType(property.type)
 
         if (type.isKotlinClass()) {
             val methods = type.kotlin.memberFunctions
@@ -70,7 +69,7 @@ class InterfaceKFunctionPropertyGenerator : PropertyGenerator {
             return methods + properties
         }
 
-        return JAVA_METHOD_PROPERTY_GENERATOR.generateChildProperties(annotatedType)
+        return JAVA_METHOD_PROPERTY_GENERATOR.generateChildProperties(property.annotatedType)
     }
 
     companion object {

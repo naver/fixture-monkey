@@ -30,6 +30,7 @@ import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.expression.ExpressionGenerator;
 import com.navercorp.fixturemonkey.api.property.DefaultPropertyGenerator;
 import com.navercorp.fixturemonkey.api.property.PropertyGenerator;
+import com.navercorp.fixturemonkey.api.property.RootProperty;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.jackson.plugin.JacksonPlugin;
 
@@ -47,7 +48,7 @@ public class FixtureMonkeyExpressionGeneratorTest {
 		};
 		ExpressionGenerator expressionGenerator = resolver -> {
 			com.navercorp.fixturemonkey.api.property.Property property =
-				DEFAULT_PROPERTY_GENERATOR.generateChildProperties(typeReference.getAnnotatedType())
+				DEFAULT_PROPERTY_GENERATOR.generateChildProperties(new RootProperty(typeReference.getAnnotatedType()))
 					.stream()
 					.filter(it -> "value".equals(it.getName()))
 					.findFirst()

@@ -18,7 +18,6 @@
 
 package com.navercorp.fixturemonkey.api.property;
 
-import java.lang.reflect.AnnotatedType;
 import java.util.Arrays;
 import java.util.List;
 
@@ -39,7 +38,7 @@ public final class DefaultPropertyGenerator implements PropertyGenerator {
 			)
 		);
 
-	public List<Property> generateChildProperties(AnnotatedType annotatedType) {
-		return COMPOSITE_PROPERTY_GENERATOR.generateChildProperties(annotatedType);
+	public List<Property> generateChildProperties(Property property) {
+		return COMPOSITE_PROPERTY_GENERATOR.generateChildProperties(property.getAnnotatedType());
 	}
 }
