@@ -19,6 +19,7 @@
 package com.navercorp.fixturemonkey.api.container;
 
 import java.lang.reflect.Array;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +31,8 @@ import java.util.stream.Stream;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
+
+import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty.MapEntryElementType;
 
 /**
  * A default implementation of {@link DecomposedContainerValueFactory}.
@@ -68,6 +71,15 @@ public final class DefaultDecomposedContainerValueFactory implements DecomposedC
 			return new DecomposableJavaContainer(container, 1);
 		} else if (isOptional(actualType)) {
 			return new DecomposableJavaContainer(container, 1);
+		} else if (MapEntryElementType.class.isAssignableFrom(actualType)) {
+			MapEntryElementType mapEntryElementType = (MapEntryElementType)container;
+			return new DecomposableJavaContainer(
+				new SimpleEntry<>(
+					mapEntryElementType.getKey(),
+					mapEntryElementType.getValue()
+				),
+				1
+			);
 		}
 
 		return additionalDecomposedContainerValueFactory.from(container);
