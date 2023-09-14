@@ -40,7 +40,7 @@ public final class JavaStringConstraint {
 	private final boolean notBlank;
 
 	@Nullable
-	private final String pattern;
+	private final PatternConstraint pattern;
 
 	private final boolean email;
 
@@ -50,7 +50,7 @@ public final class JavaStringConstraint {
 		boolean digits,
 		boolean notNull,
 		boolean notBlank,
-		@Nullable String pattern,
+		@Nullable PatternConstraint pattern,
 		boolean email
 	) {
 		this.minSize = minSize;
@@ -85,11 +85,29 @@ public final class JavaStringConstraint {
 	}
 
 	@Nullable
-	public String getPattern() {
+	public PatternConstraint getPattern() {
 		return pattern;
 	}
 
 	public boolean isEmail() {
 		return this.email;
+	}
+
+	public static class PatternConstraint {
+		private final String regexp;
+		private final int[] flags;
+
+		public PatternConstraint(String regexp, int[] flags) {
+			this.regexp = regexp;
+			this.flags = flags;
+		}
+
+		public String getRegexp() {
+			return regexp;
+		}
+
+		public int[] getFlags() {
+			return flags;
+		}
 	}
 }

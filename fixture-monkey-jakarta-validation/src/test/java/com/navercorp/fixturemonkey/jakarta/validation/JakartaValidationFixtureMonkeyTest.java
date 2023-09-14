@@ -34,7 +34,6 @@ import java.time.OffsetTime;
 import java.time.Year;
 import java.time.YearMonth;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.Date;
@@ -68,7 +67,6 @@ class JakartaValidationFixtureMonkeyTest {
 		.build();
 
 	private static final ZoneId ZONED_ID = ZoneId.systemDefault();
-	private static final ZoneOffset ZONE_OFFSET = ZoneOffset.UTC;
 
 	@Property(tries = 100)
 	void sampleBigDecimal() {
@@ -483,7 +481,6 @@ class JakartaValidationFixtureMonkeyTest {
 				.setNull("notBlank")
 				.sample()
 		)
-			.isExactlyInstanceOf(FilterMissException.class)
-			.hasMessageContainingAll("notBlank", "notNull");
+			.isExactlyInstanceOf(FilterMissException.class);
 	}
 }

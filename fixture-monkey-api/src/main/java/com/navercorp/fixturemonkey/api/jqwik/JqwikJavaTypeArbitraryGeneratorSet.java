@@ -48,51 +48,57 @@ public final class JqwikJavaTypeArbitraryGeneratorSet implements JavaTypeArbitra
 
 	@Override
 	public CombinableArbitrary<String> strings(ArbitraryGeneratorContext context) {
-		return CombinableArbitrary.from(arbitraryResolver.strings(arbitraryGenerator.strings(), context));
+		return ArbitraryUtils.toCombinableArbitrary(arbitraryResolver.strings(arbitraryGenerator.strings(), context));
 	}
 
 	@Override
 	public CombinableArbitrary<Character> characters(ArbitraryGeneratorContext context) {
-		return CombinableArbitrary.from(arbitraryResolver.characters(arbitraryGenerator.characters(), context));
+		return ArbitraryUtils.toCombinableArbitrary(
+			arbitraryResolver.characters(arbitraryGenerator.characters(), context)
+		);
 	}
 
 	@Override
 	public CombinableArbitrary<Short> shorts(ArbitraryGeneratorContext context) {
-		return CombinableArbitrary.from(arbitraryResolver.shorts(arbitraryGenerator.shorts(), context));
+		return ArbitraryUtils.toCombinableArbitrary(arbitraryResolver.shorts(arbitraryGenerator.shorts(), context));
 	}
 
 	@Override
 	public CombinableArbitrary<Byte> bytes(ArbitraryGeneratorContext context) {
-		return CombinableArbitrary.from(arbitraryResolver.bytes(arbitraryGenerator.bytes(), context));
+		return ArbitraryUtils.toCombinableArbitrary(arbitraryResolver.bytes(arbitraryGenerator.bytes(), context));
 	}
 
 	@Override
 	public CombinableArbitrary<Double> doubles(ArbitraryGeneratorContext context) {
-		return CombinableArbitrary.from(arbitraryResolver.doubles(arbitraryGenerator.doubles(), context));
+		return ArbitraryUtils.toCombinableArbitrary(arbitraryResolver.doubles(arbitraryGenerator.doubles(), context));
 	}
 
 	@Override
 	public CombinableArbitrary<Float> floats(ArbitraryGeneratorContext context) {
-		return CombinableArbitrary.from(arbitraryResolver.floats(arbitraryGenerator.floats(), context));
+		return ArbitraryUtils.toCombinableArbitrary(arbitraryResolver.floats(arbitraryGenerator.floats(), context));
 	}
 
 	@Override
 	public CombinableArbitrary<Integer> integers(ArbitraryGeneratorContext context) {
-		return CombinableArbitrary.from(arbitraryResolver.integers(arbitraryGenerator.integers(), context));
+		return ArbitraryUtils.toCombinableArbitrary(arbitraryResolver.integers(arbitraryGenerator.integers(), context));
 	}
 
 	@Override
 	public CombinableArbitrary<Long> longs(ArbitraryGeneratorContext context) {
-		return CombinableArbitrary.from(arbitraryResolver.longs(arbitraryGenerator.longs(), context));
+		return ArbitraryUtils.toCombinableArbitrary(arbitraryResolver.longs(arbitraryGenerator.longs(), context));
 	}
 
 	@Override
 	public CombinableArbitrary<BigInteger> bigIntegers(ArbitraryGeneratorContext context) {
-		return CombinableArbitrary.from(arbitraryResolver.bigIntegers(arbitraryGenerator.bigIntegers(), context));
+		return ArbitraryUtils.toCombinableArbitrary(
+			arbitraryResolver.bigIntegers(arbitraryGenerator.bigIntegers(), context)
+		);
 	}
 
 	@Override
 	public CombinableArbitrary<BigDecimal> bigDecimals(ArbitraryGeneratorContext context) {
-		return CombinableArbitrary.from(arbitraryResolver.bigDecimals(arbitraryGenerator.bigDecimals(), context));
+		return ArbitraryUtils.toCombinableArbitrary(
+			arbitraryResolver.bigDecimals(arbitraryGenerator.bigDecimals(), context)
+		);
 	}
 }

@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.jakarta.validation.introspector;
+package com.navercorp.fixturemonkey.api.random;
 
 import static java.util.stream.Collectors.toList;
 
@@ -27,12 +27,15 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
+import org.apiguardian.api.API;
+import org.apiguardian.api.API.Status;
+
 import com.mifmif.common.regex.Generex;
 
 import dk.brics.automaton.RegExp;
-import jakarta.validation.constraints.Pattern;
 
-final class RegexGenerator {
+@API(since = "0.6.9", status = Status.EXPERIMENTAL)
+public final class RegexGenerator {
 	private static final Map<String, String> PREDEFINED_CHARACTER_CLASSES;
 
 	static {
@@ -46,24 +49,18 @@ final class RegexGenerator {
 		PREDEFINED_CHARACTER_CLASSES = Collections.unmodifiableMap(characterClasses);
 	}
 
-	public List<String> generateAll(Pattern pattern) {
-		return this.generateAll(pattern, null, null);
-	}
-
-	public List<String> generateAll(Pattern pattern, @Nullable Integer min, @Nullable Integer max) {
-		String regex = pattern.regexp();
+	public List<String> generateAll(String regex, int[] flags, @Nullable Integer min, @Nullable Integer max) {
 		for (Map.Entry<String, String> charClass : PREDEFINED_CHARACTER_CLASSES.entrySet()) {
 			regex = regex.replaceAll(charClass.getKey(), charClass.getValue());
 		}
 
 		RegExp regExp;
-		Pattern.Flag[] flags = pattern.flags();
 		if (flags.length == 0) {
 			regExp = new RegExp(regex);
 		} else {
 			int intFlag = 0;
-			for (Pattern.Flag flag : flags) {
-				intFlag = intFlag | flag.getValue();
+			for (int flag : flags) {
+				intFlag = intFlag | flag;
 			}
 			regExp = new RegExp(regex, intFlag);
 		}

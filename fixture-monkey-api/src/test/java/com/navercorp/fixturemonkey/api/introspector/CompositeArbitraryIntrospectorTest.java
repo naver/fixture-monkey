@@ -26,6 +26,8 @@ import org.junit.jupiter.api.Test;
 
 import net.jqwik.api.Arbitraries;
 
+import com.navercorp.fixturemonkey.api.jqwik.ArbitraryUtils;
+
 class CompositeArbitraryIntrospectorTest {
 	@Test
 	void introspect() {
@@ -33,8 +35,12 @@ class CompositeArbitraryIntrospectorTest {
 		CompositeArbitraryIntrospector sut = new CompositeArbitraryIntrospector(
 			Arrays.asList(
 				(context) -> ArbitraryIntrospectorResult.EMPTY,
-				(context) -> new ArbitraryIntrospectorResult(Arbitraries.strings()),
-				(context) -> new ArbitraryIntrospectorResult(Arbitraries.integers())
+				(context) -> new ArbitraryIntrospectorResult(
+					ArbitraryUtils.toCombinableArbitrary(Arbitraries.strings())
+				),
+				(context) -> new ArbitraryIntrospectorResult(
+					ArbitraryUtils.toCombinableArbitrary(Arbitraries.integers())
+				)
 			)
 		);
 

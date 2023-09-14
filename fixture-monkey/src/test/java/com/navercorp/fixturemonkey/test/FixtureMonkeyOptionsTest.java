@@ -64,6 +64,7 @@ import com.navercorp.fixturemonkey.api.introspector.JavaArbitraryResolver;
 import com.navercorp.fixturemonkey.api.introspector.JavaTimeArbitraryResolver;
 import com.navercorp.fixturemonkey.api.introspector.JavaTimeTypeArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.introspector.JavaTypeArbitraryGenerator;
+import com.navercorp.fixturemonkey.api.jqwik.ArbitraryUtils;
 import com.navercorp.fixturemonkey.api.matcher.ExactTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
@@ -328,7 +329,9 @@ class FixtureMonkeyOptionsTest {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.pushAssignableTypeArbitraryIntrospector(
 				SimpleObject.class,
-				(context) -> new ArbitraryIntrospectorResult(Arbitraries.just(null))
+				(context) -> new ArbitraryIntrospectorResult(
+					ArbitraryUtils.toCombinableArbitrary(Arbitraries.just(null))
+				)
 			)
 			.build();
 
@@ -342,7 +345,9 @@ class FixtureMonkeyOptionsTest {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.pushExactTypeArbitraryIntrospector(
 				SimpleObjectChild.class,
-				(context) -> new ArbitraryIntrospectorResult(Arbitraries.just(null))
+				(context) -> new ArbitraryIntrospectorResult(
+					ArbitraryUtils.toCombinableArbitrary(Arbitraries.just(null))
+				)
 			)
 			.build();
 
@@ -357,7 +362,9 @@ class FixtureMonkeyOptionsTest {
 			.pushArbitraryIntrospector(
 				MatcherOperator.exactTypeMatchOperator(
 					SimpleObjectChild.class,
-					(context) -> new ArbitraryIntrospectorResult(Arbitraries.just(null))
+					(context) -> new ArbitraryIntrospectorResult(
+						ArbitraryUtils.toCombinableArbitrary(Arbitraries.just(null))
+					)
 				)
 			)
 			.build();
@@ -371,7 +378,9 @@ class FixtureMonkeyOptionsTest {
 	void objectIntrospector() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.objectIntrospector(
-				(context) -> new ArbitraryIntrospectorResult(Arbitraries.just(null))
+				(context) -> new ArbitraryIntrospectorResult(
+					ArbitraryUtils.toCombinableArbitrary(Arbitraries.just(null))
+				)
 			)
 			.build();
 

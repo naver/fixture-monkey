@@ -22,6 +22,7 @@ import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Optional;
 
 import org.apiguardian.api.API;
@@ -43,6 +44,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Pattern.Flag;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
@@ -53,6 +55,7 @@ import com.navercorp.fixturemonkey.api.constraint.JavaDateTimeConstraint;
 import com.navercorp.fixturemonkey.api.constraint.JavaDecimalConstraint;
 import com.navercorp.fixturemonkey.api.constraint.JavaIntegerConstraint;
 import com.navercorp.fixturemonkey.api.constraint.JavaStringConstraint;
+import com.navercorp.fixturemonkey.api.constraint.JavaStringConstraint.PatternConstraint;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 
 @API(since = "0.4.10", status = Status.MAINTAINED)
@@ -63,8 +66,6 @@ public final class JakartaValidationConstraintGenerator implements JavaConstrain
 		boolean digits = false;
 		boolean notNull = context.findAnnotation(NotNull.class).isPresent();
 		boolean notBlank = context.findAnnotation(NotBlank.class).isPresent();
-		String pattern = context.findAnnotation(Pattern.class)
-			.map(Pattern::regexp).orElse(null);
 		boolean email = context.findAnnotation(Email.class).isPresent();
 
 		if (notBlank || context.findAnnotation(NotEmpty.class).isPresent()) {
@@ -97,7 +98,15 @@ public final class JakartaValidationConstraintGenerator implements JavaConstrain
 			}
 		}
 
-		return new JavaStringConstraint(min, max, digits, notNull, notBlank, pattern, email);
+		Optional<Pattern> patternAnnotation = context.findAnnotation(Pattern.class);
+		PatternConstraint patternConstraint = null;
+		if (patternAnnotation.isPresent()) {
+			String regexp = patternAnnotation.get().regexp();
+			int[] flags = Arrays.stream(patternAnnotation.get().flags()).mapToInt(Flag::getValue).toArray();
+			patternConstraint = new PatternConstraint(regexp, flags);
+		}
+
+		return new JavaStringConstraint(min, max, digits, notNull, notBlank, patternConstraint, email);
 	}
 
 	public JavaIntegerConstraint generateIntegerConstraint(ArbitraryGeneratorContext context) {

@@ -27,6 +27,41 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 
 @API(since = "0.6.8", status = Status.EXPERIMENTAL)
 public interface JavaConstraintGenerator {
+	JavaConstraintGenerator DEFAULT_JAVA_CONSTRAINT_GENERATOR = new JavaConstraintGenerator() {
+		@Override
+		public JavaStringConstraint generateStringConstraint(ArbitraryGeneratorContext context) {
+			return new JavaStringConstraint(
+				null,
+				null,
+				false,
+				false,
+				false,
+				null,
+				false
+			);
+		}
+
+		@Override
+		public JavaIntegerConstraint generateIntegerConstraint(ArbitraryGeneratorContext context) {
+			return new JavaIntegerConstraint(null, null, null, null);
+		}
+
+		@Override
+		public JavaDecimalConstraint generateDecimalConstraint(ArbitraryGeneratorContext context) {
+			return new JavaDecimalConstraint(null, null, null, null, null, null, null, null, null);
+		}
+
+		@Override
+		public JavaContainerConstraint generateContainerConstraint(ArbitraryGeneratorContext context) {
+			return new JavaContainerConstraint(null, null, false);
+		}
+
+		@Override
+		public JavaDateTimeConstraint generateDateTimeConstraint(ArbitraryGeneratorContext context) {
+			return new JavaDateTimeConstraint(null, null);
+		}
+	};
+
 	BigInteger BIG_INTEGER_MIN_LONG = BigInteger.valueOf(Long.MIN_VALUE);
 	BigInteger BIG_INTEGER_MAX_LONG = BigInteger.valueOf(Long.MAX_VALUE);
 	BigInteger BIG_INTEGER_MIN_INT = BigInteger.valueOf(Integer.MIN_VALUE);
