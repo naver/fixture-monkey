@@ -30,6 +30,7 @@ import java.util.function.UnaryOperator;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import com.navercorp.fixturemonkey.api.constraint.JavaConstraintGenerator;
 import com.navercorp.fixturemonkey.api.container.DecomposedContainerValueFactory;
 import com.navercorp.fixturemonkey.api.context.MonkeyContext;
 import com.navercorp.fixturemonkey.api.context.MonkeyContextBuilder;
@@ -371,16 +372,13 @@ public class FixtureMonkeyBuilder {
 						(fixtureMonkey) -> {
 							try {
 								return (ArbitraryBuilder<?>)method.invoke(noArgsInstance, fixtureMonkey);
-							} catch (IllegalAccessException | InvocationTargetException e) {
-								e.printStackTrace();
-								throw new RuntimeException(e);
+							} catch (IllegalAccessException | InvocationTargetException ex) {
+								ex.printStackTrace();
+								throw new RuntimeException(ex);
 							}
 						};
 					this.register(actualType, registerArbitraryBuilder);
-				} catch (InvocationTargetException
-						| InstantiationException
-						| IllegalAccessException
-						| NoSuchMethodException e) {
+				} catch (Exception ex) {
 					// ignored
 				}
 			}
@@ -506,6 +504,11 @@ public class FixtureMonkeyBuilder {
 
 	public FixtureMonkeyBuilder generateUniqueMaxTries(int generateUniqueMaxTries) {
 		fixtureMonkeyOptionsBuilder.generateUniqueMaxTries(generateUniqueMaxTries);
+		return this;
+	}
+
+	public FixtureMonkeyBuilder javaConstraintGenerator(JavaConstraintGenerator javaConstraintGenerator) {
+		fixtureMonkeyOptionsBuilder.javaConstraintGenerator(javaConstraintGenerator);
 		return this;
 	}
 

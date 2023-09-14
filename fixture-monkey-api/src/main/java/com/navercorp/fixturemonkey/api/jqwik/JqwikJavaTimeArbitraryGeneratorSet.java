@@ -62,83 +62,103 @@ public final class JqwikJavaTimeArbitraryGeneratorSet implements JavaTimeArbitra
 
 	@Override
 	public CombinableArbitrary<Calendar> calendars(ArbitraryGeneratorContext context) {
-		return CombinableArbitrary.from(arbitraryResolver.calendars(arbitraryGenerator.calendars(), context));
+		return ArbitraryUtils.toCombinableArbitrary(
+			arbitraryResolver.calendars(arbitraryGenerator.calendars(), context)
+		);
 	}
 
 	@Override
 	public CombinableArbitrary<Date> dates(ArbitraryGeneratorContext context) {
-		return CombinableArbitrary.from(arbitraryResolver.dates(arbitraryGenerator.dates(), context));
+		return ArbitraryUtils.toCombinableArbitrary(arbitraryResolver.dates(arbitraryGenerator.dates(), context));
 	}
 
 	@Override
 	public CombinableArbitrary<Instant> instants(ArbitraryGeneratorContext context) {
-		return CombinableArbitrary.from(arbitraryResolver.instants(arbitraryGenerator.instants(), context));
+		return ArbitraryUtils.toCombinableArbitrary(arbitraryResolver.instants(arbitraryGenerator.instants(), context));
 	}
 
 	@Override
 	public CombinableArbitrary<LocalDate> localDates(ArbitraryGeneratorContext context) {
-		return CombinableArbitrary.from(arbitraryResolver.localDates(arbitraryGenerator.localDates(), context));
+		return ArbitraryUtils.toCombinableArbitrary(
+			arbitraryResolver.localDates(arbitraryGenerator.localDates(), context)
+		);
 	}
 
 	@Override
 	public CombinableArbitrary<LocalDateTime> localDateTimes(ArbitraryGeneratorContext context) {
-		return CombinableArbitrary.from(arbitraryResolver.localDateTimes(arbitraryGenerator.localDateTimes(), context));
+		return ArbitraryUtils.toCombinableArbitrary(
+			arbitraryResolver.localDateTimes(arbitraryGenerator.localDateTimes(), context)
+		);
 	}
 
 	@Override
 	public CombinableArbitrary<LocalTime> localTimes(ArbitraryGeneratorContext context) {
-		return CombinableArbitrary.from(arbitraryResolver.localTimes(arbitraryGenerator.localTimes(), context));
+		return ArbitraryUtils.toCombinableArbitrary(
+			arbitraryResolver.localTimes(arbitraryGenerator.localTimes(), context)
+		);
 	}
 
 	@Override
 	public CombinableArbitrary<ZonedDateTime> zonedDateTimes(ArbitraryGeneratorContext context) {
-		return CombinableArbitrary.from(arbitraryResolver.zonedDateTimes(arbitraryGenerator.zonedDateTimes(), context));
+		return ArbitraryUtils.toCombinableArbitrary(
+			arbitraryResolver.zonedDateTimes(arbitraryGenerator.zonedDateTimes(), context)
+		);
 	}
 
 	@Override
 	public CombinableArbitrary<MonthDay> monthDays(ArbitraryGeneratorContext context) {
-		return CombinableArbitrary.from(arbitraryResolver.monthDays(arbitraryGenerator.monthDays(), context));
+		return ArbitraryUtils.toCombinableArbitrary(
+			arbitraryResolver.monthDays(arbitraryGenerator.monthDays(), context)
+		);
 	}
 
 	@Override
 	public CombinableArbitrary<OffsetDateTime> offsetDateTimes(ArbitraryGeneratorContext context) {
-		return CombinableArbitrary.from(
+		return ArbitraryUtils.toCombinableArbitrary(
 			arbitraryResolver.offsetDateTimes(arbitraryGenerator.offsetDateTimes(), context)
 		);
 	}
 
 	@Override
 	public CombinableArbitrary<OffsetTime> offsetTimes(ArbitraryGeneratorContext context) {
-		return CombinableArbitrary.from(arbitraryResolver.offsetTimes(arbitraryGenerator.offsetTimes(), context));
+		return ArbitraryUtils.toCombinableArbitrary(
+			arbitraryResolver.offsetTimes(arbitraryGenerator.offsetTimes(), context)
+		);
 	}
 
 	@Override
 	public CombinableArbitrary<Period> periods(ArbitraryGeneratorContext context) {
-		return CombinableArbitrary.from(arbitraryResolver.periods(arbitraryGenerator.periods(), context));
+		return ArbitraryUtils.toCombinableArbitrary(arbitraryResolver.periods(arbitraryGenerator.periods(), context));
 	}
 
 	@Override
 	public CombinableArbitrary<Duration> durations(ArbitraryGeneratorContext context) {
-		return CombinableArbitrary.from(arbitraryResolver.durations(arbitraryGenerator.durations(), context));
+		return ArbitraryUtils.toCombinableArbitrary(
+			arbitraryResolver.durations(arbitraryGenerator.durations(), context)
+		);
 	}
 
 	@Override
 	public CombinableArbitrary<Year> years(ArbitraryGeneratorContext context) {
-		return CombinableArbitrary.from(arbitraryResolver.years(arbitraryGenerator.years(), context));
+		return ArbitraryUtils.toCombinableArbitrary(arbitraryResolver.years(arbitraryGenerator.years(), context));
 	}
 
 	@Override
 	public CombinableArbitrary<YearMonth> yearMonths(ArbitraryGeneratorContext context) {
-		return CombinableArbitrary.from(arbitraryResolver.yearMonths(arbitraryGenerator.yearMonths(), context));
+		return ArbitraryUtils.toCombinableArbitrary(
+			arbitraryResolver.yearMonths(arbitraryGenerator.yearMonths(), context)
+		);
 	}
 
 	@Override
 	public CombinableArbitrary<ZoneOffset> zoneOffsets(ArbitraryGeneratorContext context) {
-		return CombinableArbitrary.from(arbitraryResolver.zoneOffsets(arbitraryGenerator.zoneOffsets(), context));
+		return ArbitraryUtils.toCombinableArbitrary(
+			arbitraryResolver.zoneOffsets(arbitraryGenerator.zoneOffsets(), context)
+		);
 	}
 
 	@Override
 	public CombinableArbitrary<ZoneId> zoneIds(ArbitraryGeneratorContext context) {
-		return CombinableArbitrary.from(arbitraryResolver.zoneIds(arbitraryGenerator.zoneId(), context));
+		return ArbitraryUtils.toCombinableArbitrary(arbitraryResolver.zoneIds(arbitraryGenerator.zoneId(), context));
 	}
 }

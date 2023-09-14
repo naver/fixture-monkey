@@ -16,14 +16,13 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.jakarta.validation.introspector;
+package com.navercorp.fixturemonkey.api.jqwik;
 
 import static java.util.stream.Collectors.toList;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Supplier;
 
 import javax.annotation.Nullable;
@@ -44,27 +43,21 @@ import net.jqwik.api.arbitraries.ShortArbitrary;
 import net.jqwik.api.arbitraries.StringArbitrary;
 import net.jqwik.web.api.Web;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Pattern;
-
 import com.navercorp.fixturemonkey.api.constraint.JavaConstraintGenerator;
 import com.navercorp.fixturemonkey.api.constraint.JavaDecimalConstraint;
 import com.navercorp.fixturemonkey.api.constraint.JavaIntegerConstraint;
 import com.navercorp.fixturemonkey.api.constraint.JavaStringConstraint;
+import com.navercorp.fixturemonkey.api.constraint.JavaStringConstraint.PatternConstraint;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.introspector.JavaArbitraryResolver;
+import com.navercorp.fixturemonkey.api.random.RegexGenerator;
 
-@API(since = "0.4.10", status = Status.MAINTAINED)
-public final class JakartaValidationJavaArbitraryResolver implements JavaArbitraryResolver {
+@API(since = "0.6.9", status = Status.EXPERIMENTAL)
+public final class JqwikJavaArbitraryResolver implements JavaArbitraryResolver {
 	private static final RegexGenerator REGEX_GENERATOR = new RegexGenerator();
-
 	private final JavaConstraintGenerator constraintGenerator;
 
-	public JakartaValidationJavaArbitraryResolver() {
-		this(new JakartaValidationConstraintGenerator());
-	}
-
-	public JakartaValidationJavaArbitraryResolver(JavaConstraintGenerator constraintGenerator) {
+	public JqwikJavaArbitraryResolver(JavaConstraintGenerator constraintGenerator) {
 		this.constraintGenerator = constraintGenerator;
 	}
 
@@ -78,12 +71,19 @@ public final class JakartaValidationJavaArbitraryResolver implements JavaArbitra
 		BigInteger max = constraint.getMaxSize();
 		boolean digits = constraint.isDigits();
 		boolean notBlank = constraint.isNotBlank();
+		boolean email = constraint.isEmail();
+		PatternConstraint pattern = constraint.getPattern();
 
-		Optional<Pattern> pattern = context.findAnnotation(Pattern.class);
-		if (pattern.isPresent()) {
+		Arbitrary<String> arbitrary = stringArbitrary;
+		if (pattern != null) {
 			Integer minValue = min != null ? min.intValue() : null;
 			Integer maxValue = max != null ? max.intValue() : null;
-			List<String> values = REGEX_GENERATOR.generateAll(pattern.get(), minValue, maxValue);
+			List<String> values = REGEX_GENERATOR.generateAll(
+				pattern.getRegexp(),
+				pattern.getFlags(),
+				minValue,
+				maxValue
+			);
 			if (notBlank) {
 				values = values.stream()
 					.filter(it -> it != null && !it.trim().isEmpty())
@@ -93,8 +93,7 @@ public final class JakartaValidationJavaArbitraryResolver implements JavaArbitra
 			return Arbitraries.of(values);
 		}
 
-		Arbitrary<String> arbitrary = stringArbitrary;
-		if (context.findAnnotation(Email.class).isPresent()) {
+		if (email) {
 			arbitrary = Web.emails().allowIpv4Host();
 			if (min != null) {
 				int emailMinLength = min.intValue();
@@ -113,8 +112,6 @@ public final class JakartaValidationJavaArbitraryResolver implements JavaArbitra
 			}
 			if (digits) {
 				stringArbitrary = stringArbitrary.numeric();
-			} else {
-				stringArbitrary = stringArbitrary.ascii();
 			}
 			arbitrary = stringArbitrary;
 		}

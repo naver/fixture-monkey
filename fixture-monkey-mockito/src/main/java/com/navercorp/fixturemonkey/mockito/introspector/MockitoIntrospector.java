@@ -29,6 +29,7 @@ import net.jqwik.api.Arbitraries;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult;
+import com.navercorp.fixturemonkey.api.jqwik.ArbitraryUtils;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.type.Types;
@@ -46,6 +47,8 @@ public final class MockitoIntrospector implements ArbitraryIntrospector, Matcher
 	@Override
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
 		Class<?> actualType = Types.getActualType(context.getResolvedType());
-		return new ArbitraryIntrospectorResult(Arbitraries.of(Mockito.mock(actualType)));
+		return new ArbitraryIntrospectorResult(
+			ArbitraryUtils.toCombinableArbitrary(Arbitraries.of(Mockito.mock(actualType)))
+		);
 	}
 }

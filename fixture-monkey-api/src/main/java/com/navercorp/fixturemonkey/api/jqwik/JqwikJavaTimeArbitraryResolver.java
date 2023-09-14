@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.jakarta.validation.introspector;
+package com.navercorp.fixturemonkey.api.jqwik;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -55,18 +55,17 @@ import com.navercorp.fixturemonkey.api.constraint.JavaDateTimeConstraint;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.introspector.JavaTimeArbitraryResolver;
 
-@API(since = "0.4.10", status = Status.MAINTAINED)
-public final class JakartaValidationJavaTimeArbitraryResolver implements JavaTimeArbitraryResolver {
+/**
+ * It would be moved into jqwik module in 0.7.0.
+ */
+@API(since = "0.6.9", status = Status.EXPERIMENTAL)
+public final class JqwikJavaTimeArbitraryResolver implements JavaTimeArbitraryResolver {
 	private static final ZoneOffset ZONE_OFFSET = OffsetDateTime.now().getOffset();
 	private static final ZoneId ZONE_ID = ZoneId.systemDefault();
 
 	private final JavaConstraintGenerator constraintGenerator;
 
-	public JakartaValidationJavaTimeArbitraryResolver() {
-		this(new JakartaValidationConstraintGenerator());
-	}
-
-	public JakartaValidationJavaTimeArbitraryResolver(JavaConstraintGenerator constraintGenerator) {
+	public JqwikJavaTimeArbitraryResolver(JavaConstraintGenerator constraintGenerator) {
 		this.constraintGenerator = constraintGenerator;
 	}
 

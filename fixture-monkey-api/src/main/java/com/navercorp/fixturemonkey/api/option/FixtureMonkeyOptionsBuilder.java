@@ -18,6 +18,7 @@
 
 package com.navercorp.fixturemonkey.api.option;
 
+import static com.navercorp.fixturemonkey.api.constraint.JavaConstraintGenerator.DEFAULT_JAVA_CONSTRAINT_GENERATOR;
 import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.DEFAULT_NOTNULL_ANNOTATION_TYPES;
 import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.DEFAULT_NULLABLE_ANNOTATION_TYPES;
 import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.DEFAULT_NULL_INJECT;
@@ -29,6 +30,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
@@ -41,6 +43,7 @@ import org.apiguardian.api.API.Status;
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.arbitrary.JavaTimeArbitraryGeneratorSet;
 import com.navercorp.fixturemonkey.api.arbitrary.JavaTypeArbitraryGeneratorSet;
+import com.navercorp.fixturemonkey.api.constraint.JavaConstraintGenerator;
 import com.navercorp.fixturemonkey.api.container.DecomposableJavaContainer;
 import com.navercorp.fixturemonkey.api.container.DecomposedContainerValueFactory;
 import com.navercorp.fixturemonkey.api.container.DefaultDecomposedContainerValueFactory;
@@ -61,6 +64,10 @@ import com.navercorp.fixturemonkey.api.introspector.JavaTimeArbitraryResolver;
 import com.navercorp.fixturemonkey.api.introspector.JavaTimeTypeArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.introspector.JavaTypeArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.introspector.TypedArbitraryIntrospector;
+import com.navercorp.fixturemonkey.api.jqwik.JqwikJavaArbitraryResolver;
+import com.navercorp.fixturemonkey.api.jqwik.JqwikJavaTimeArbitraryGeneratorSet;
+import com.navercorp.fixturemonkey.api.jqwik.JqwikJavaTimeArbitraryResolver;
+import com.navercorp.fixturemonkey.api.jqwik.JqwikJavaTypeArbitraryGeneratorSet;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.plugin.Plugin;
@@ -109,6 +116,19 @@ public final class FixtureMonkeyOptionsBuilder {
 	private final Map<Class<?>, DecomposedContainerValueFactory> decomposableContainerFactoryMap = new HashMap<>();
 	private int generateMaxTries = CombinableArbitrary.DEFAULT_MAX_TRIES;
 	private int generateUniqueMaxTries = DEFAULT_MAX_UNIQUE_GENERATION_COUNT;
+	private JavaConstraintGenerator javaConstraintGenerator = DEFAULT_JAVA_CONSTRAINT_GENERATOR;
+	private JavaTypeArbitraryGenerator javaTypeArbitraryGenerator = new JavaTypeArbitraryGenerator() {
+	};
+	@Nullable
+	private JavaArbitraryResolver javaArbitraryResolver = null;
+	private JavaTimeTypeArbitraryGenerator javaTimeTypeArbitraryGenerator = new JavaTimeTypeArbitraryGenerator() {
+	};
+	@Nullable
+	private JavaTimeArbitraryResolver javaTimeArbitraryResolver = null;
+	@Nullable
+	private Function<JavaConstraintGenerator, JavaTypeArbitraryGeneratorSet> generateJavaTypeArbitrarySet = null;
+	@Nullable
+	private Function<JavaConstraintGenerator, JavaTimeArbitraryGeneratorSet> generateJavaTimeArbitrarySet = null;
 
 	FixtureMonkeyOptionsBuilder() {
 	}
@@ -450,7 +470,7 @@ public final class FixtureMonkeyOptionsBuilder {
 	public FixtureMonkeyOptionsBuilder javaTypeArbitraryGenerator(
 		JavaTypeArbitraryGenerator javaTypeArbitraryGenerator
 	) {
-		this.javaDefaultArbitraryGeneratorBuilder.javaTypeArbitraryGenerator(javaTypeArbitraryGenerator);
+		this.javaTypeArbitraryGenerator = javaTypeArbitraryGenerator;
 		return this;
 	}
 
@@ -458,7 +478,7 @@ public final class FixtureMonkeyOptionsBuilder {
 	public FixtureMonkeyOptionsBuilder javaArbitraryResolver(
 		JavaArbitraryResolver javaArbitraryResolver
 	) {
-		this.javaDefaultArbitraryGeneratorBuilder.javaArbitraryResolver(javaArbitraryResolver);
+		this.javaArbitraryResolver = javaArbitraryResolver;
 		return this;
 	}
 
@@ -466,7 +486,7 @@ public final class FixtureMonkeyOptionsBuilder {
 	public FixtureMonkeyOptionsBuilder javaTimeTypeArbitraryGenerator(
 		JavaTimeTypeArbitraryGenerator javaTimeTypeArbitraryGenerator
 	) {
-		this.javaDefaultArbitraryGeneratorBuilder.javaTimeTypeArbitraryGenerator(javaTimeTypeArbitraryGenerator);
+		this.javaTimeTypeArbitraryGenerator = javaTimeTypeArbitraryGenerator;
 		return this;
 	}
 
@@ -474,21 +494,7 @@ public final class FixtureMonkeyOptionsBuilder {
 	public FixtureMonkeyOptionsBuilder javaTimeArbitraryResolver(
 		JavaTimeArbitraryResolver javaTimeArbitraryResolver
 	) {
-		this.javaDefaultArbitraryGeneratorBuilder.javaTimeArbitraryResolver(javaTimeArbitraryResolver);
-		return this;
-	}
-
-	public FixtureMonkeyOptionsBuilder javaArbitraryGeneratorSet(
-		JavaTypeArbitraryGeneratorSet javaTypeArbitraryGeneratorSet
-	) {
-		this.javaDefaultArbitraryGeneratorBuilder.javaTypeArbitraryGeneratorSet(javaTypeArbitraryGeneratorSet);
-		return this;
-	}
-
-	public FixtureMonkeyOptionsBuilder javaTimeArbitraryGeneratorSet(
-		JavaTimeArbitraryGeneratorSet javaTimeArbitraryGeneratorSet
-	) {
-		this.javaDefaultArbitraryGeneratorBuilder.javaTimeArbitraryGeneratorSet(javaTimeArbitraryGeneratorSet);
+		this.javaTimeArbitraryResolver = javaTimeArbitraryResolver;
 		return this;
 	}
 
@@ -542,6 +548,11 @@ public final class FixtureMonkeyOptionsBuilder {
 		return this;
 	}
 
+	public FixtureMonkeyOptionsBuilder javaConstraintGenerator(JavaConstraintGenerator javaConstraintGenerator) {
+		this.javaConstraintGenerator = javaConstraintGenerator;
+		return this;
+	}
+
 	public FixtureMonkeyOptions build() {
 		ObjectPropertyGenerator defaultObjectPropertyGenerator = defaultIfNull(
 			this.defaultObjectPropertyGenerator,
@@ -572,6 +583,43 @@ public final class FixtureMonkeyOptionsBuilder {
 			this.defaultArbitraryContainerInfoGenerator,
 			() -> context -> new ArbitraryContainerInfo(0, FixtureMonkeyOptions.DEFAULT_ARBITRARY_CONTAINER_MAX_SIZE)
 		);
+
+		JavaArbitraryResolver javaArbitraryResolver = defaultIfNull(
+			this.javaArbitraryResolver,
+			() -> new JqwikJavaArbitraryResolver(this.javaConstraintGenerator)
+		);
+
+		this.generateJavaTypeArbitrarySet = defaultIfNull(
+			this.generateJavaTypeArbitrarySet,
+			() -> constraintGenerator ->
+				new JqwikJavaTypeArbitraryGeneratorSet(
+					this.javaTypeArbitraryGenerator,
+					javaArbitraryResolver
+				)
+		);
+
+		javaDefaultArbitraryGeneratorBuilder.javaTypeArbitraryGeneratorSet(
+			generateJavaTypeArbitrarySet.apply(javaConstraintGenerator)
+		);
+
+		JavaTimeArbitraryResolver javaTimeArbitraryResolver = defaultIfNull(
+			this.javaTimeArbitraryResolver,
+			() -> new JqwikJavaTimeArbitraryResolver(javaConstraintGenerator)
+		);
+
+		this.generateJavaTimeArbitrarySet = defaultIfNull(
+			this.generateJavaTimeArbitrarySet,
+			() -> constraintGenerator ->
+				new JqwikJavaTimeArbitraryGeneratorSet(
+					this.javaTimeTypeArbitraryGenerator,
+					javaTimeArbitraryResolver
+				)
+		);
+
+		javaDefaultArbitraryGeneratorBuilder.javaTimeArbitraryGeneratorSet(
+			generateJavaTimeArbitrarySet.apply(javaConstraintGenerator)
+		);
+
 		ArbitraryGenerator defaultArbitraryGenerator =
 			defaultIfNull(this.defaultArbitraryGenerator, this.javaDefaultArbitraryGeneratorBuilder::build);
 

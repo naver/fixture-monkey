@@ -24,8 +24,7 @@ import javax.validation.constraints.AssertTrue;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import net.jqwik.api.Arbitraries;
-
+import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectDelegator;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult;
@@ -41,11 +40,11 @@ public final class JavaxValidationBooleanIntrospector extends ArbitraryIntrospec
 	@Override
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
 		if (context.findAnnotation(AssertTrue.class).isPresent()) {
-			return new ArbitraryIntrospectorResult(Arbitraries.of(true));
+			return new ArbitraryIntrospectorResult(CombinableArbitrary.from(true));
 		}
 
 		if (context.findAnnotation(AssertFalse.class).isPresent()) {
-			return new ArbitraryIntrospectorResult(Arbitraries.of(false));
+			return new ArbitraryIntrospectorResult(CombinableArbitrary.from(false));
 		}
 
 		return super.introspect(context);

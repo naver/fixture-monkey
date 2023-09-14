@@ -24,6 +24,7 @@ import org.apiguardian.api.API.Status;
 import net.jqwik.api.Arbitraries;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
+import com.navercorp.fixturemonkey.api.jqwik.ArbitraryUtils;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.matcher.Matchers;
 import com.navercorp.fixturemonkey.api.property.Property;
@@ -38,7 +39,6 @@ public final class BooleanIntrospector implements ArbitraryIntrospector, Matcher
 
 	@Override
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
-		return new ArbitraryIntrospectorResult(
-			Arbitraries.of(true, false));
+		return new ArbitraryIntrospectorResult(ArbitraryUtils.toCombinableArbitrary(Arbitraries.of(true, false)));
 	}
 }

@@ -26,8 +26,6 @@ import java.util.function.Supplier;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import net.jqwik.api.Arbitrary;
-
 import com.navercorp.fixturemonkey.api.exception.FilterMissException;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 
@@ -40,7 +38,6 @@ import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 public interface CombinableArbitrary<T> {
 	CombinableArbitrary<?> NOT_GENERATED = CombinableArbitrary.from((Object)null);
 	int DEFAULT_MAX_TRIES = 1_000;
-	Object LOCK = new Object();
 
 	/**
 	 * Generates a {@link FixedCombinableArbitrary} which returns always same value.
@@ -50,22 +47,6 @@ public interface CombinableArbitrary<T> {
 	 */
 	static CombinableArbitrary<?> from(Object object) {
 		return new FixedCombinableArbitrary<>(object);
-	}
-
-	/**
-	 * @param arbitrary to be converted into {@link LazyCombinableArbitrary}.
-	 * @return a {@link FixedCombinableArbitrary}
-	 * @see #from(LazyArbitrary)
-	 */
-	static <U> CombinableArbitrary<U> from(Arbitrary<U> arbitrary) {
-		return from(LazyArbitrary.lazy(() -> {
-			if (arbitrary != null) {
-				synchronized (LOCK) {
-					return arbitrary.sample();
-				}
-			}
-			return null;
-		}));
 	}
 
 	/**

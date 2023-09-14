@@ -25,34 +25,18 @@ import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.constraint.JavaConstraintGenerator;
 import com.navercorp.fixturemonkey.api.introspector.CompositeArbitraryIntrospector;
-import com.navercorp.fixturemonkey.api.introspector.JavaTimeTypeArbitraryGenerator;
-import com.navercorp.fixturemonkey.api.introspector.JavaTypeArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptionsBuilder;
 import com.navercorp.fixturemonkey.api.plugin.Plugin;
 import com.navercorp.fixturemonkey.javax.validation.generator.JavaxValidationArbitraryContainerInfoGenerator;
 import com.navercorp.fixturemonkey.javax.validation.generator.JavaxValidationNullInjectGenerator;
 import com.navercorp.fixturemonkey.javax.validation.introspector.JavaxValidationBooleanIntrospector;
 import com.navercorp.fixturemonkey.javax.validation.introspector.JavaxValidationConstraintGenerator;
-import com.navercorp.fixturemonkey.javax.validation.introspector.JavaxValidationJavaArbitraryResolver;
-import com.navercorp.fixturemonkey.javax.validation.introspector.JavaxValidationJavaTimeArbitraryResolver;
 import com.navercorp.fixturemonkey.javax.validation.validator.JavaxArbitraryValidator;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class JavaxValidationPlugin implements Plugin {
-	private JavaTypeArbitraryGenerator javaTypeArbitraryGenerator = new JavaTypeArbitraryGenerator() {
-	};
-	private JavaConstraintGenerator javaxValidationConstraintGenerator =
+	private final JavaConstraintGenerator javaxValidationConstraintGenerator =
 		new JavaxValidationConstraintGenerator();
-	private JavaTimeTypeArbitraryGenerator javaTimeTypeArbitraryGenerator =
-		new JavaTimeTypeArbitraryGenerator() {
-		};
-
-	public JavaxValidationPlugin validationConstraintGenerator(
-		JavaxValidationConstraintGenerator javaxValidationConstraintGenerator
-	) {
-		this.javaxValidationConstraintGenerator = javaxValidationConstraintGenerator;
-		return this;
-	}
 
 	@Override
 	public void accept(FixtureMonkeyOptionsBuilder optionsBuilder) {
@@ -62,12 +46,7 @@ public final class JavaxValidationPlugin implements Plugin {
 				prop -> true,
 				new JavaxValidationArbitraryContainerInfoGenerator()
 			)
-			.javaTypeArbitraryGenerator(javaTypeArbitraryGenerator)
-			.javaArbitraryResolver(new JavaxValidationJavaArbitraryResolver(this.javaxValidationConstraintGenerator))
-			.javaTimeTypeArbitraryGenerator(javaTimeTypeArbitraryGenerator)
-			.javaTimeArbitraryResolver(
-				new JavaxValidationJavaTimeArbitraryResolver(this.javaxValidationConstraintGenerator)
-			)
+			.javaConstraintGenerator(javaxValidationConstraintGenerator)
 			.priorityIntrospector(current ->
 				new CompositeArbitraryIntrospector(
 					Arrays.asList(

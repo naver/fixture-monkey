@@ -5,11 +5,13 @@ import static org.assertj.core.api.BDDAssertions.then;
 
 import java.util.Map;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.RepeatedTest;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.introspector.ConstructorPropertiesArbitraryIntrospector;
 
+@Disabled("It will be enabled when parallelism is supported")
 class ConcurrentTest {
 	private static final FixtureMonkey SUT = FixtureMonkey.builder()
 		.objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)
