@@ -61,7 +61,11 @@ final class ContainerCombinableArbitrary<T> implements CombinableArbitrary<T> {
 
 	@Override
 	public void clear() {
-		combinableArbitraryList.forEach(CombinableArbitrary::clear);
+		combinableArbitraryList.forEach(arbitrary -> {
+			if (!arbitrary.fixed()) {
+				arbitrary.clear();
+			}
+		});
 	}
 
 	@Override
