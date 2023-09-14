@@ -67,7 +67,11 @@ final class ObjectCombinableArbitrary<T> implements CombinableArbitrary<T> {
 
 	@Override
 	public void clear() {
-		combinableArbitrariesByArbitraryProperty.forEach((key, value) -> value.clear());
+		combinableArbitrariesByArbitraryProperty.forEach((property, arbitrary) -> {
+			if (!arbitrary.fixed()) {
+				arbitrary.clear();
+			}
+		});
 	}
 
 	@Override
