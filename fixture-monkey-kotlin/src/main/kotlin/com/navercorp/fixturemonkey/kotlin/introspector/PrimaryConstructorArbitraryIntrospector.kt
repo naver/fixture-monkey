@@ -46,15 +46,15 @@ class PrimaryConstructorArbitraryIntrospector : ArbitraryIntrospector {
             return ArbitraryIntrospectorResult.NOT_INTROSPECTED
         }
 
-        val kotlinClass = Reflection.createKotlinClass(type) as KClass<*>
-        val constructor = CONSTRUCTOR_CACHE.computeIfAbsent(type) {
-            requireNotNull(kotlinClass.primaryConstructor) { "No kotlin primary constructor provided for $kotlinClass" }
-        }
-
         return ArbitraryIntrospectorResult(
             CombinableArbitrary.objectBuilder()
                 .properties(context.combinableArbitrariesByArbitraryProperty)
                 .build {
+                    val kotlinClass = Reflection.createKotlinClass(type) as KClass<*>
+                    val constructor = CONSTRUCTOR_CACHE.computeIfAbsent(type) {
+                        requireNotNull(kotlinClass.primaryConstructor) { "No kotlin primary constructor provided for $kotlinClass" }
+                    }
+
                     val arbitrariesByPropertyName = it.mapKeys { map -> map.key.objectProperty.property.name }
 
                     val map = mutableMapOf<KParameter, Any?>()

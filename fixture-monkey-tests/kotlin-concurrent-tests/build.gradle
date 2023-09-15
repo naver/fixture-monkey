@@ -1,0 +1,10 @@
+plugins {
+    id "org.jetbrains.kotlin.jvm" version "${KOTLIN_VERSION}"
+}
+
+dependencies {
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:${KOTLIN_VERSION}")
+    implementation("org.jetbrains.kotlin:kotlin-reflect:${KOTLIN_VERSION}")
+
+    testImplementation(project(":fixture-monkey-kotlin"))
+}
