@@ -11,6 +11,7 @@ weight: 10
 To generate test fixtures, the first step is to create a `FixtureMonkey` instance, which facilitates the creation of test fixtures.
 
 You can use the `create()` method to generate a `FixtureMonkey` instance with default options.
+For Kotlin environments, add the Kotlin plugin.
 
 {{< tabpane persist=false >}}
 {{< tab header="Java" lang="java">}}
@@ -20,7 +21,9 @@ FixtureMonkey fixtureMonkey = FixtureMonkey.create();
 {{< /tab >}}
 {{< tab header="Kotlin" lang="kotlin">}}
 
-val fixtureMonkey = FixtureMonkey.create()
+val fixtureMonkey = FixtureMonkey
+  .plugin(KotlinPlugin())
+  .build()
 
 {{< /tab >}}
 {{< /tabpane>}}
@@ -136,7 +139,7 @@ ArbitraryBuilder<Product> productBuilder = fixtureMonkey.giveMeBuilder(product);
 
 val product = Product(1L, "Book", ...)
 
-ArbitraryBuilder<Product> productBuilder: ArbitraryBuilder<Product> = fixtureMonkey.giveMeBuilder(product)
+val productBuilder = fixtureMonkey.giveMeBuilder(product)
 
 {{< /tab >}}
 {{< /tabpane>}}
@@ -200,7 +203,7 @@ Arbitrary<List<String>> strListArbitrary = fixtureMonkey.giveMeArbitrary(new Typ
 
 val productArbitrary: Arbitrary<Product> = fixtureMonkey.giveMeArbitrary()
 
-val strListArbitrary: Arbitrary<List<String>> =fixtureMonkey.giveMeArbitrary()
+val strListArbitrary: Arbitrary<List<String>> = fixtureMonkey.giveMeArbitrary()
 
 {{< /tab >}}
 {{< /tabpane>}}

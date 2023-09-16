@@ -15,7 +15,7 @@ Fixture monkey supports generating valid data based on [Jakarta Bean Validation 
 ## Dependencies
 #### Gradle
 ```groovy
-testImplementation("com.navercorp.fixturemonkey:jakarta-validation-:0.6.2")
+testImplementation("com.navercorp.fixturemonkey:jakarta-validation:{{< fixture-monkey-version >}}")
 ```
 
 #### Maven
@@ -23,7 +23,7 @@ testImplementation("com.navercorp.fixturemonkey:jakarta-validation-:0.6.2")
 <dependency>
   <groupId>com.navercorp.fixturemonkey</groupId>
   <artifactId>fixture-monkey-jakarta-validation</artifactId>
-  <version>0.6.2</version>
+  <version>{{< fixture-monkey-version >}}</version>
   <scope>test</scope>
 </dependency>
 ```

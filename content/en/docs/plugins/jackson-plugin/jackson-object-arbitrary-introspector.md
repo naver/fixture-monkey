@@ -14,17 +14,17 @@ It puts the created properties of the given class into a map and deserializes th
 
 **Example Java Class :**
 ```java
-@Value // lombok getter, setter
+@Value
 public class Product {
-    private long id;
+    long id;
 
-    private String productName;
+    String productName;
 
-    private long price;
+    long price;
 
-    private List<String> options;
+    List<String> options;
 
-    private Instant createdAt;
+    Instant createdAt;
 }
 ```
 
@@ -44,7 +44,7 @@ void test() {
 {{< /tab >}}
 {{< tab header="Kotlin" lang="kotlin">}}
 
-testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter-kotlin:0.6.2")
+testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter-kotlin:{{< fixture-monkey-version >}}")
 testImplementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 
 @Test

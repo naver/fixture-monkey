@@ -25,13 +25,13 @@ weight: 10
 | fixture-monkey-kotlin | Kotlin support |
 | fixture-monkey-starter-kotlin | Starter dependency for fixture monkey kotlin |
 
-**fixture-monkey-starter** is a starter dependency that comes with pre-configured dependencies like lombok or fixture-monkey-jakarta-validation to help you get started using Fixture Monkey.
+**fixture-monkey-starter** is a starter dependency that comes with pre-configured dependencies such as fixture-monkey-jakarta-validation to help you get started using Fixture Monkey.
 
 For Kotlin environments, you can use **fixture-monkey-starter-kotlin**
 
 #### Gradle
 ```groovy
-testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter:0.6.2")
+testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter:{{< fixture-monkey-version >}}")
 ```
 
 #### Maven
@@ -39,7 +39,7 @@ testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter:0.6.2")
 <dependency>
   <groupId>com.navercorp.fixturemonkey</groupId>
   <artifactId>fixture-monkey-starter</artifactId>
-  <version>0.6.2</version>
+  <version>{{< fixture-monkey-version >}}</version>
   <scope>test</scope>
 </dependency>
 ```

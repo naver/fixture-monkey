@@ -16,7 +16,7 @@ Fixture monkey supports [Jackson](https://github.com/FasterXML/jackson) with the
 ## Dependencies
 #### Gradle
 ```groovy
-testImplementation("com.navercorp.fixturemonkey:fixture-monkey-jackson:0.6.2")
+testImplementation("com.navercorp.fixturemonkey:fixture-monkey-jackson:{{< fixture-monkey-version >}}")
 ```
 
 #### Maven
@@ -24,7 +24,7 @@ testImplementation("com.navercorp.fixturemonkey:fixture-monkey-jackson:0.6.2")
 <dependency>
   <groupId>com.navercorp.fixturemonkey</groupId>
   <artifactId>fixture-monkey-jackson</artifactId>
-  <version>0.6.2</version>
+  <version>{{< fixture-monkey-version >}}</version>
   <scope>test</scope>
 </dependency>
 ```

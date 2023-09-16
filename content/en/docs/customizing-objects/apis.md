@@ -13,7 +13,7 @@ Fixture Monkey offers a range of APIs within the ArbitraryBuilder class that ena
 ### set()
 The `set()` method is used to assign values to one or more properties referenced by the expression.
 
-Different types, including `Supplier`, [`Arbitrary`](../arbitrary), `ArbitraryBuilder`, `NOT_NULL`, or `NULL`, can be used as the value.
+Different types, including `Supplier`, [`Arbitrary`](../arbitrary), `ArbitraryBuilder`, `NOT_NULL`, `NULL`, or `Just` can be used as the value.
 Additionally, a certain instance of an object can also be used as the value.
 
 {{< tabpane persist=false >}}
@@ -31,6 +31,20 @@ fixtureMonkey.giveMeBuilder<Product>()
 {{< /tab >}}
 {{< /tabpane>}}
 
+##### Just
+> Using an instance wrapped by `Just` when using `set()` makes you set the value directly instead of decomposing.
+> Normally, when you `set()` a property in `ArbitraryBuilder` it does not use an instance of the given value, it does a deep copy instead.
+> So, if you need to set with an instance, you can use `Values.just(instance)`
+> This feature can be useful in cases where you need to set a property to a mock instance when using a mocking framework.
+
+> Note that you cannot set a child property after setting with `Just`.
+```java
+Product product = fixture.giveMeBuilder(Product.class)
+	 * 		.set("options", Values.just(List.of("red", "medium", "adult"))
+	 * 		.set("options[0]", "blue")
+	 * 		.sample();
+```
+> For example, the product instance created above, will not have the value "blue" for the first element of options. It will remain the list given with `Just`.
 
 ### size(), minSize(), maxSize()
 The `size()` method lets you specify the size of container properties.

@@ -15,7 +15,7 @@ To enable this feature, you need to add the `fixture-monkey-jakarta-validation` 
 
 ##### Gradle
 ```groovy
-testImplementation("com.navercorp.fixturemonkey:fixture-monkey-jakarta-validation:0.6.2")
+testImplementation("com.navercorp.fixturemonkey:fixture-monkey-jakarta-validation:{{< fixture-monkey-version >}}")
 ```
 
 ##### Maven
@@ -23,14 +23,14 @@ testImplementation("com.navercorp.fixturemonkey:fixture-monkey-jakarta-validatio
 <dependency>
   <groupId>com.navercorp.fixturemonkey</groupId>
   <artifactId>fixture-monkey-jakarta-validation</artifactId>
-  <version>0.6.2</version>
+  <version>{{< fixture-monkey-version >}}</version>
   <scope>test</scope>
 </dependency>
 ```
 
 Fixture Monkey provides additional features as plugins.
 
-To generate objects based on Bean Validation annotations, you need to add the `JavaxValidationPlugin` (or `JakartaValidationPlugin` if you are using `jakarta.validation.constraints`) option to FixtureMonkey as shown below.
+To generate objects based on Bean Validation annotations, you need to add the `JakartaValidationPlugin` (or `JavaxValidationPlugin` if you are using `javax.validation.constraints`) option to FixtureMonkey as shown below.
 If you've added the fixture-monkey-starter dependency, it's already in place.
 
 ```java

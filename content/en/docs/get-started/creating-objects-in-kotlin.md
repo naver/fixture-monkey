@@ -15,7 +15,7 @@ Then we can add the Kotlin Plugin, to enable additional features of fixture monk
 
 ```kotlin
 @Test
-void test() {
+fun test() {
   val fixtureMonkey = FixtureMonkey.builder()
       .plugin(KotlinPlugin())
       .build()

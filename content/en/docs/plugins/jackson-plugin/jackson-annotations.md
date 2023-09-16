@@ -22,38 +22,62 @@ The following example shows how @JsonProperty, @JsonIgnore works with Fixture Mo
 ```java
 @Value // lombok getter, setter
 public class Product {
-    private long id;
+    long id;
 
     @JsonProperty("name")
-    private String productName;
+    String productName;
 
-    private long price;
+    long price;
 
     @JsonIgnore
-    private List<String> options;
+    List<String> options;
 
-    private Instant createdAt;
+    Instant createdAt;
 }
 ```
 
-```java
+{{< tabpane persist=false >}}
+{{< tab header="Java" lang="java">}}
+
 @Test
 void test() {
-// given
-FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
-    .plugin(new JacksonPlugin())
-    .build();
+    // given
+    FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+        .plugin(new JacksonPlugin())
+        .build();
 
-// when
-Product actual = fixtureMonkey.giveMeBuilder(Product.class)
-    .set("name", "book")
-    .sample();
+    // when
+    Product actual = fixtureMonkey.giveMeBuilder(Product.class)
+        .set("name", "book")
+        .sample();
 
-// then
-then(actual.getProductName()).isEqualTo("book"); // @JsonProperty
-then(actual.getOptions()).isNull();  // @JsonIgnore
+    // then
+    then(actual.getProductName()).isEqualTo("book"); // @JsonProperty
+    then(actual.getOptions()).isNull(); // @JsonIgnore
 }
-```
+
+{{< /tab >}}
+{{< tab header="Kotlin" lang="kotlin">}}
+
+@Test
+fun test() {
+    // given
+    val fixtureMonkey = FixtureMonkey.builder()
+        .plugin(JacksonPlugin())
+        .build()
+
+    // when
+    val actual = fixtureMonkey.giveMeBuilder<Product>()
+        .set("name", "book")
+        .sample()
+
+    // then
+    then(actual.productName).isEqualTo("book") // @JsonProperty
+    then(actual.options).isNull() // @JsonIgnore
+}
+
+{{< /tab >}}
+{{< /tabpane>}}
 
 
 ### @JsonTypeInfo, @JsonSubTypes

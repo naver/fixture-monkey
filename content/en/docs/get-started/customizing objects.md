@@ -13,15 +13,15 @@ In that case, you can use Fixture Monkey to generate a builder and further custo
 ```java
 @Value
 public class Product {
-    private long id;
+    long id;
 
-    private String productName;
+    String productName;
 
-    private long price;
+    long price;
 
-    private List<String> options;
+    List<String> options;
 
-    private Instant createdAt;
+    Instant createdAt;
 }
 ```
 
