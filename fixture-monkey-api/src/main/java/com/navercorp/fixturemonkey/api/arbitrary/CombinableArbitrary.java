@@ -33,14 +33,13 @@ import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 
 /**
  * An arbitrary instance for combining arbitraries in order to generate an instance of specific class.
+ *
  * @param <T> type to generate
  */
 @API(since = "0.6.0", status = Status.EXPERIMENTAL)
 public interface CombinableArbitrary<T> {
 	CombinableArbitrary<?> NOT_GENERATED = CombinableArbitrary.from((Object)null);
-	@Deprecated
-	int MAX_TRIES = 1_000;
-	int DEFAULT_MAX_TRIES = MAX_TRIES;
+	int DEFAULT_MAX_TRIES = 1_000;
 	Object LOCK = new Object();
 
 	/**
@@ -54,9 +53,9 @@ public interface CombinableArbitrary<T> {
 	}
 
 	/**
-	 * @see #from(LazyArbitrary)
 	 * @param arbitrary to be converted into {@link LazyCombinableArbitrary}.
 	 * @return a {@link FixedCombinableArbitrary}
+	 * @see #from(LazyArbitrary)
 	 */
 	static <U> CombinableArbitrary<U> from(Arbitrary<U> arbitrary) {
 		return from(LazyArbitrary.lazy(() -> {
@@ -70,9 +69,9 @@ public interface CombinableArbitrary<T> {
 	}
 
 	/**
-	 * @see #from(LazyArbitrary)
 	 * @param supplier to be converted into {@link LazyCombinableArbitrary}.
 	 * @return a {@link LazyCombinableArbitrary}
+	 * @see #from(LazyArbitrary)
 	 */
 	static <U> CombinableArbitrary<U> from(Supplier<U> supplier) {
 		return from(LazyArbitrary.lazy(supplier));
@@ -124,8 +123,8 @@ public interface CombinableArbitrary<T> {
 
 	/**
 	 * Applies a given {@code predicate} as a constraint.
-	 * It would repeat generation {@link #MAX_TRIES} times to satisfy the constraint.
-	 * It would throw {@link FilterMissException} If repeated over {@link #MAX_TRIES} times.
+	 * It would repeat generation {@link #DEFAULT_MAX_TRIES} times to satisfy the constraint.
+	 * It would throw {@link FilterMissException} If repeated over {@link #DEFAULT_MAX_TRIES} times.
 	 *
 	 * @param predicate a constraint to satisfy
 	 * @return A filtered {@link CombinableArbitrary}.
