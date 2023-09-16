@@ -45,15 +45,49 @@ Fixture Monkey helps tests become more dynamic by generating test objects with r
 This leads to undercovering edge cases that might remain hidden when using static data.
 
 ### 4. Versatility
+```java
+// inheritance
+class Foo {
+  String foo;
+}
+
+class Bar extends Foo {
+    String bar;
+}
+
+Foo foo = FixtureMonkey.create().giveMeOne(Foo.class);
+Bar bar = FixtureMonkey.create().giveMeone(Bar.class);
+
+// circular-reference
+class Foo {
+    String value;
+
+    Foo foo;
+}
+
+Foo foo = FixtureMonkey.create().giveMeOne(Foo.class);
+
+// anonymous objects
+interface Foo {
+    Bar getBar();
+}
+
+class Bar {
+    String value;
+}
+
+Foo foo = FixtureMonkey.create().giveMeOne(Foo.class);
+```
+
 Fixture Monkey is capable to create any kind of object you can imagine. It supports generating basic objects such as lists, nested collections, enums and generic types.
-It also handles more advanced scenarios, including circular-referenced objects and anonymous objects from interfaces.
+It also handles more advanced scenarios, including objects with inheritance relationships, circular-referenced objects, and anonymous objects that implement interfaces.
 
 ---------
 
 ## Proven Effectiveness
-Fixture Monkey was originally developed as an in-house library at Naver and played a crucial role in simplifying test object generation for the Plasma project.
+Fixture Monkey was originally developed as an in-house library at [Naver](https://www.navercorp.com/en) and played a crucial role in simplifying test object generation for the Plasma project.
 The Plasma project aimed to revolutionize Naver Pay's architecture, which is the most used mobile payment service in South Korea with a daily active user count of 261,400.
 
-The project required thorough testing of complex business requirements, and with Fixture Monkey's assistance, the team efficiently wrote over 5000 tests, uncovering critical edge cases and ensuring the system's reliability.
+The project required thorough testing of complex business requirements, and with Fixture Monkey's assistance, the team efficiently wrote over 10,000 tests, uncovering critical edge cases and ensuring the system's reliability.
 Now available as an open-source library, developers worldwide can take advantage of Fixture Monkey to simplify their test codes and build robust applications with confidence.
 

@@ -33,6 +33,18 @@ weight = 50
 identifier = "fixture-monkey-options"
 url = "/docs/fixture-monkey-options/"
 
+[[docs]]
+name = "Plugins"
+weight = 60
+identifier = "plugins"
+url = "/docs/plugins/"
+
+[[docs]]
+name = "IntelliJ Plugin"
+weight = 70
+identifier = "intellij-plugin"
+url = "/docs/intellij-plugin/"
+
 [[main]]
 name = "Release Notes"
 weight = 20

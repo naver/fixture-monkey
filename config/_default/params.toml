@@ -8,6 +8,7 @@ description = ""
 
 ## Documentation
 docsVersion = "0.6.0"
+fixtureMonkeyVersion = "0.6.6"
 
 ## Open Graph
 images = ["doks.png"]

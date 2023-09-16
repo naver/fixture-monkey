@@ -15,7 +15,7 @@ Then we can add the Kotlin Plugin, to enable additional features of fixture monk
 
 ```kotlin
 @Test
-void test() {
+fun test() {
   val fixtureMonkey = FixtureMonkey.builder()
       .plugin(KotlinPlugin())
       .build()
@@ -25,7 +25,7 @@ void test() {
 The Kotlin plugin changes the default `ObjectIntrospector` to `PrimaryConstructorArbitraryIntrospector`,
 which generates Kotlin classes with their primary constructor.
 
-Suppose you have a kotlin class like this:
+Suppose you have a Kotlin class like this:
 
 ```kotlin
 data class Product (

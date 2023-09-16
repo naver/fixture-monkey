@@ -13,7 +13,7 @@ Let's consider an example object structure:
 
 ```java
 @Value
-public class Example {
+public class JavaClass {
     String field;
 
     List<String> list;
@@ -21,11 +21,11 @@ public class Example {
     Nested object;
 
     List<Nested> objectList;
-}
 
-@Value
-public class Nested {
-    String nestedField;
+    @Value
+    public static class Nested {
+        String nestedField;
+    }
 }
 ```
 
