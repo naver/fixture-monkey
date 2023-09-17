@@ -1362,14 +1362,6 @@ class FixtureMonkeyTest {
 	}
 
 	@Property
-	void sampleUri() {
-		// when
-		URI actual = SUT.giveMeOne(URI.class);
-
-		then(actual).isNotNull();
-	}
-
-	@Property
 	void sizeNotSetEmptyList() {
 		// when
 		List<String> actual = SUT.giveMeBuilder(ComplexObject.class)

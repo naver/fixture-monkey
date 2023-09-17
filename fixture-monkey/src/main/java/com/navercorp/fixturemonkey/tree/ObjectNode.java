@@ -137,7 +137,9 @@ public final class ObjectNode {
 	public boolean isNotManipulated() {
 		boolean sized = !containerInfoManipulators.isEmpty();
 
-		return !manipulated && !sized;
+		boolean parentNotManipulated = parent == null || parent.isNotManipulated();
+
+		return !manipulated && !sized && parentNotManipulated;
 	}
 
 	public void setManipulated(boolean manipulated) {

@@ -105,6 +105,8 @@ fun getAnnotatedType(ownerType: AnnotatedType, kProperty: KProperty<*>): Annotat
 
         override fun getDeclaredAnnotations(): Array<Annotation> = annotationArray
 
+        override fun getAnnotatedOwnerType(): AnnotatedType = ownerType
+
         override fun <T : Annotation?> getAnnotation(annotationClass: Class<T>): T? =
             @Suppress("UNCHECKED_CAST")
             annotations

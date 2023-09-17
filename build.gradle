@@ -58,7 +58,7 @@ subprojects {
     java {
         withJavadocJar()
         withSourcesJar()
-        toolchain {languageVersion = JavaLanguageVersion.of(8)}
+        toolchain {languageVersion = JavaLanguageVersion.of(17)}
     }
 
     publishing {

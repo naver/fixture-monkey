@@ -67,6 +67,7 @@ public final class MapIntrospector implements ArbitraryIntrospector, Matcher {
 				if (mapEntryElement.getKey() == null) {
 					throw new IllegalArgumentException("Map key cannot be null.");
 				}
+
 				map.put(
 					mapEntryElement.getKey(),
 					mapEntryElement.getValue()
