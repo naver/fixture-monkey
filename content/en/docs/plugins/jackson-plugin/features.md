@@ -5,7 +5,7 @@ menu:
 docs:
 parent: "jackson-plugin"
 identifier: "jackson-plugin-features"
-weight: 10
+weight: 71
 ---
 
 Fixture monkey supports [Jackson](https://github.com/FasterXML/jackson) with the Fixture Monkey Jackson plugin.

@@ -5,7 +5,7 @@ menu:
 docs:
 parent: "generating-objects"
 identifier: "fixturemonkey"
-weight: 10
+weight: 31
 ---
 
 To generate test fixtures, the first step is to create a `FixtureMonkey` instance, which facilitates the creation of test fixtures.

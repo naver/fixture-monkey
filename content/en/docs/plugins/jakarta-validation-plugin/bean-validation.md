@@ -5,7 +5,7 @@ menu:
 docs:
 parent: "jakarta-validation-plugin"
 identifier: "bean-validation"
-weight: 20
+weight: 82
 ---
 ## Generating valid data
 Using the Jakarta Validation plugin, we can generate valid data based on Jakarta Bean validation annotations on properties.

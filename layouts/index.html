@@ -14,32 +14,31 @@
 
 {{ define "sidebar-prefooter" }}
   {{ if eq $.Site.Language.LanguageName "English" }}
-<section class="section section-sm" style="background: url('/images/homepage.png') no-repeat center center / cover; min-height: 60vh; display: flex; flex-direction: column; justify-content: center; text-align: center; color: white;">
+<section class="section section-sm" style="background: url('/images/fixtureMonkey-resource-background.png') no-repeat center center / cover; min-height: 65vh; display: flex; flex-direction: column; justify-content: flex-end; text-align: center; color: white;">
   <div class="row justify-content-center">
-    <div class="col-lg-12">
-      <h1 class="mt-0">{{ .Title }}</h1>
+    <div class="col-lg-12" style="color:#70E386">
+<!--      <h1 class="mt-0">{{ .Title }}</h1>-->
       <h4>The easiest way to generate controllable arbitrary test objects</h4>
     </div>
     <div class="col-lg-9 col-xl-8">
       <p class="lead">{{ .Params.lead | safeHTML }}</p>
-      <a class="btn btn-primary btn-lg px-4 mb-2" href="/docs/get-started/requirements/" role="button">{{ i18n "get-started" }}</a>
+      <a class="btn btn-primary btn-lg px-4 mb-2" href="/docs/get-started/requirements/" role="button" style="background-color: #49C3FD; color: black; border-color: #49C3FD">{{ i18n "get-started" }}</a>
     </div>
   </div>
 </section>
-<section class="section section-sm" style="background-color: #244c5a; min-height: 30vh; display: flex; align-items: center; justify-content: center;">
+<section class="section section-sm" style="background-color: #0E2531; min-height: 30vh; display: flex; align-items: center; justify-content: center;">
   <div class="row justify-content-center">
-    <div class="col-lg-12 text-center" style="color: white">
-      <h3> Java & Kotlin library for automatically generating </h3>
-      <h3> reusable and controllable, arbitrary test fixtures</h3>
+    <div class="col-lg-12 text-center" style="color: #3CA0CF">
+      <h3 style="margin-bottom: 0;">Java & Kotlin library for automatically generating reusable and controllable, arbitrary test fixtures</h3>
     </div>
   </div>
 </section>
-  <section class="section section-sm" style="background-color: #5ac5c5">
+  <section class="section section-sm" style="background-color: #70E386; color: #0E2531">
     <div class="container">
       <div class="row justify-content-center text-center">
         <div class="col-lg-5">
           <h2 class="h4" icon="fas fa-recycle">Reusability</h2>
-          <p> Reuse test instances which follows complex specification you defined. DO NOT need to define complex specification each test. </p>
+          <p> Reuse test instances that follow the complex specification you defined. You do NOT need to define a complex specification for each test. </p>
         </div>
         <div class="col-lg-5">
           <h2 class="h4">Repeatability</h2>

@@ -1,6 +1,6 @@
 ---
 title: "Adding Bean Validation"
-weight: 40
+weight: 24
 menu:
 docs:
   parent: "get-started"

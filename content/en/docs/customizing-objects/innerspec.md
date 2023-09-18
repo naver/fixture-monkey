@@ -1,6 +1,6 @@
 ---
 title: "InnerSpec"
-weight: 40
+weight: 44
 menu:
 docs:
 parent: "customizing-objects"

@@ -1,7 +1,7 @@
 ---
 title: "Creating test objects without Lombok"
 linkTitle: "Java"
-weight: 30
+weight: 23
 menu:
 docs:
   parent: "get-started"
@@ -83,7 +83,7 @@ Fixture Monkey uses `BeanArbitraryIntrospector` as its default method for genera
 An `Introspector` defines how Fixture Monkey generates objects.
 
 For `BeanArbitraryIntrospector`, the class being generated needs to have a no-args constructor and setters.
-(There are alternative Introspectors available, each with their own requirements. Check out the `Introspectors` section for more details.)
+(There are alternative Introspectors available, each with their own requirements. Check out the [`Introspectors` section](../../generating-objects/introspector) for more details.)
 
 Next, use the `giveMeOne()` method with the desired test class type to generate an instance of the specified type.
 

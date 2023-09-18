@@ -5,7 +5,7 @@ menu:
 docs:
 parent: "jackson-plugin"
 identifier: "jackson-object-arbitrary-introspector"
-weight: 20
+weight: 72
 ---
 
 ## JacksonObjectArbitraryIntrospector

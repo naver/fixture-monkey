@@ -5,5 +5,5 @@ menu:
   docs:
     parent: "plugins"
     identifier: "jackson-plugin"
-weight: 40
+weight: 70
 ---

@@ -3,5 +3,5 @@ title: "Intellij Plugin"
 images: []
 menu:
 docs:
-weight: 70
+weight: 90
 ---
