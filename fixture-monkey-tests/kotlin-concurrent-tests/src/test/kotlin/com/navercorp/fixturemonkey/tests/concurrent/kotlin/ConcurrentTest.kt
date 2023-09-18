@@ -10,20 +10,20 @@ import org.junit.jupiter.api.RepeatedTest
 class ConcurrentTest {
     @RepeatedTest(TestEnvironment.TEST_COUNT)
     fun test1() {
-        val actual: KotlinObject = SUT.giveMeOne<KotlinObject>()
-        then(actual).isNotNull()
+        val actual: KotlinObject = SUT.giveMeOne()
+        then(actual).isNotNull
     }
 
     @RepeatedTest(TestEnvironment.TEST_COUNT)
     fun test2() {
-        val actual: KotlinObject = SUT.giveMeOne<KotlinObject>()
-        then(actual).isNotNull()
+        val actual: KotlinObject = SUT.giveMeOne()
+        then(actual).isNotNull
     }
 
     @RepeatedTest(TestEnvironment.TEST_COUNT)
     fun test3() {
-        val actual: KotlinObject = SUT.giveMeOne<KotlinObject>()
-        then(actual).isNotNull()
+        val actual: KotlinObject = SUT.giveMeOne()
+        then(actual).isNotNull
     }
 
     data class KotlinObject(val value: String, val map: Map<String, String>)

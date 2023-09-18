@@ -25,7 +25,7 @@ import org.apiguardian.api.API.Status;
 
 /**
  * Represents an arbitrary value with lazy initialization.
- *
+ * <p>
  * Similar to <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-lazy/">Kotlin Lazy</a>
  * But it could initialize value multiple times if call clear() method.
  * Due to supporting {@link net.jqwik.api.Arbitrary}.
@@ -41,6 +41,8 @@ public interface LazyArbitrary<T> {
 	static <T> LazyArbitrary<T> lazy(Supplier<T> initializer, boolean fixed, LazyThreadSafetyMode mode) {
 		if (mode == LazyThreadSafetyMode.NONE) {
 			return new UnSafeLazyArbitraryImpl<>(initializer, fixed);
+		} else if (mode == LazyThreadSafetyMode.SYNCHRONIZED) {
+			return new SynchronizedLazyArbitraryImpl<>(initializer, fixed);
 		}
 		throw new IllegalArgumentException("Unsupported lazy thread safety mode: " + mode);
 	}
@@ -58,6 +60,7 @@ public interface LazyArbitrary<T> {
 	}
 
 	enum LazyThreadSafetyMode {
-		NONE
+		NONE,
+		SYNCHRONIZED,
 	}
 }
