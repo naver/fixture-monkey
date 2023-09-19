@@ -54,16 +54,13 @@ public final class MapEntryElementIntrospector implements ArbitraryIntrospector,
 		}
 
 		List<CombinableArbitrary<?>> entryCombinableArbitraryList = new ArrayList<>();
-		CombinableArbitrary<?> keyCombinableArbitrary = elementCombinableArbitraryList.get(0);
-		if (!elementCombinableArbitraryList.get(0).fixed()) {
-			keyCombinableArbitrary = keyCombinableArbitrary.filter(
-				context.getGenerateUniqueMaxTries(),
-				obj -> context.isUniqueAndCheck(
-					Objects.requireNonNull(context.getOwnerContext()).getPropertyPath(),
-					obj
-				)
-			);
-		}
+		CombinableArbitrary<?> keyCombinableArbitrary = elementCombinableArbitraryList.get(0).filter(
+			context.getGenerateUniqueMaxTries(),
+			obj -> context.isUniqueAndCheck(
+				Objects.requireNonNull(context.getOwnerContext()).getPropertyPath(),
+				obj
+			)
+		);
 		CombinableArbitrary<?> valueCombinableArbitrary = elementCombinableArbitraryList.get(1);
 		entryCombinableArbitraryList.add(keyCombinableArbitrary);
 		entryCombinableArbitraryList.add(valueCombinableArbitrary);
