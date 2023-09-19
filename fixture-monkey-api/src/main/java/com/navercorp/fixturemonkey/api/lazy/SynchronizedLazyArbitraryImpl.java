@@ -18,6 +18,7 @@
 
 package com.navercorp.fixturemonkey.api.lazy;
 
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Supplier;
 
 import org.apiguardian.api.API;
@@ -29,23 +30,25 @@ public final class SynchronizedLazyArbitraryImpl<T> implements LazyArbitrary<T> 
 
 	private final Supplier<T> initializer;
 	private final boolean fixed;
+	private final ReentrantLock lock;
 
 	private volatile Object value = UNINITIALIZED_VALUE;
-	private final Object lock = this;
 
 	SynchronizedLazyArbitraryImpl(T value) {
 		this.value = value;
 		this.initializer = () -> value;
 		this.fixed = true;
+		this.lock = new ReentrantLock();
 	}
 
 	SynchronizedLazyArbitraryImpl(Supplier<T> initializer, boolean fixed) {
-		this.initializer = initializer;
-		this.fixed = fixed;
+		this(initializer, fixed, new ReentrantLock());
 	}
 
-	SynchronizedLazyArbitraryImpl(Supplier<T> initializer) {
-		this(initializer, false);
+	SynchronizedLazyArbitraryImpl(Supplier<T> initializer, boolean fixed, ReentrantLock lock) {
+		this.initializer = initializer;
+		this.fixed = fixed;
+		this.lock = lock;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -55,7 +58,8 @@ public final class SynchronizedLazyArbitraryImpl<T> implements LazyArbitrary<T> 
 			return (T)firstReturned;
 		}
 
-		synchronized (lock) {
+		lock.lock();
+		try {
 			Object secondReturned = value;
 			if (secondReturned != UNINITIALIZED_VALUE) {
 				return (T)secondReturned;
@@ -63,6 +67,8 @@ public final class SynchronizedLazyArbitraryImpl<T> implements LazyArbitrary<T> 
 			Object returned = initializer.get();
 			value = returned;
 			return (T)returned;
+		} finally {
+			lock.unlock();
 		}
 	}
 

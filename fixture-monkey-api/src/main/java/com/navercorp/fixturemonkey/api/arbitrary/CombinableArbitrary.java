@@ -19,7 +19,6 @@
 package com.navercorp.fixturemonkey.api.arbitrary;
 
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -30,6 +29,7 @@ import org.apiguardian.api.API.Status;
 import net.jqwik.api.Arbitrary;
 
 import com.navercorp.fixturemonkey.api.exception.FilterMissException;
+import com.navercorp.fixturemonkey.api.jqwik.ArbitraryUtils;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary.LazyThreadSafetyMode;
 
@@ -42,7 +42,6 @@ import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary.LazyThreadSafetyMode;
 public interface CombinableArbitrary<T> {
 	CombinableArbitrary<?> NOT_GENERATED = CombinableArbitrary.from((Object)null);
 	int DEFAULT_MAX_TRIES = 1_000;
-	ReentrantLock LOCK = new ReentrantLock();
 
 	/**
 	 * Generates a {@link FixedCombinableArbitrary} which returns always same value.
@@ -60,20 +59,7 @@ public interface CombinableArbitrary<T> {
 	 * @see #from(LazyArbitrary)
 	 */
 	static <U> CombinableArbitrary<U> from(Arbitrary<U> arbitrary) {
-		return from(LazyArbitrary.lazy(
-			() -> {
-				if (arbitrary != null) {
-					LOCK.lock();
-					try {
-						return arbitrary.sample();
-					} finally {
-						LOCK.unlock();
-					}
-				}
-				return null;
-			},
-			LazyThreadSafetyMode.SYNCHRONIZED
-		));
+		return ArbitraryUtils.toCombinableArbitrary(arbitrary);
 	}
 
 	/**

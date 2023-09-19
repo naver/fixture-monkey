@@ -18,6 +18,7 @@
 
 package com.navercorp.fixturemonkey.api.lazy;
 
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Supplier;
 
 import org.apiguardian.api.API;
@@ -49,6 +50,10 @@ public interface LazyArbitrary<T> {
 
 	static <T> LazyArbitrary<T> lazy(Supplier<T> initializer, LazyThreadSafetyMode mode) {
 		return lazy(initializer, false, mode);
+	}
+
+	static <T> LazyArbitrary<T> synchronizedLazy(Supplier<T> initializer, ReentrantLock lock) {
+		return new SynchronizedLazyArbitraryImpl<>(initializer, false, lock);
 	}
 
 	static <T> LazyArbitrary<T> lazy(Supplier<T> initializer) {

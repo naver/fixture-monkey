@@ -28,7 +28,6 @@ import org.apiguardian.api.API.Status;
 import net.jqwik.api.Arbitrary;
 
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
-import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class ArbitraryIntrospectorResult {
@@ -39,21 +38,10 @@ public final class ArbitraryIntrospectorResult {
 
 	public static final ArbitraryIntrospectorResult NOT_INTROSPECTED = EMPTY;
 
-	private static final Object LOCK = new Object();
-
 	private final CombinableArbitrary<?> value;
 
 	public ArbitraryIntrospectorResult(@Nullable Arbitrary<?> value) {
-		this.value = CombinableArbitrary.from(LazyArbitrary.lazy(
-			() -> {
-				if (value != null) {
-					synchronized (LOCK) {
-						return value.sample();
-					}
-				}
-				return null;
-			}
-		));
+		this.value = CombinableArbitrary.from(value);
 	}
 
 	public ArbitraryIntrospectorResult(CombinableArbitrary<?> value) {
