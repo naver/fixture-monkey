@@ -130,7 +130,7 @@ public final class ObjectTree {
 
 			CombinableArbitrary<?> cached = monkeyContext.getCachedArbitrary(node.getProperty());
 
-			if (node.isNotManipulated() && cached != null) {
+			if (cacheable(node) && cached != null) {
 				generated = cached;
 			} else {
 				generated = this.fixtureMonkeyOptions.getArbitraryGenerator(node.getResolvedProperty())
@@ -151,5 +151,9 @@ public final class ObjectTree {
 		}
 
 		return generated;
+	}
+
+	private boolean cacheable(ObjectNode node) {
+		return node.isNotManipulated();
 	}
 }
