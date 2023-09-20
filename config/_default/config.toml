@@ -1,5 +1,5 @@
 baseurl = "https://naver.github.io/fixture-monkey/"
-canonifyURLs = false
+canonifyURLs = true
 disableAliases = true
 disableHugoGeneratorInject = true
 enableEmoji = true
