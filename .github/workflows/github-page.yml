@@ -14,7 +14,7 @@ jobs:
         with:
           submodules: recursive  # Fetch Hugo themes (true OR recursive)
           fetch-depth: 0    # Fetch all history for .GitInfo and .Lastmod
-          ref: doc
+          ref: doc2
 
       - name: install
         run: npm install postcss postcss-cli autoprefixer
