@@ -5,7 +5,7 @@ menu:
 docs:
 parent: "kotlin-plugin"
 identifier: "kotlin-plugin-features"
-weight: 10
+weight: 62
 ---
 
 To help you take full advantage of the concise, safe, and pragmatic nature of Kotlin, Fixture Monkey provides a Kotlin plugin.

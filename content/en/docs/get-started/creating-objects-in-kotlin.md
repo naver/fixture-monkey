@@ -1,6 +1,6 @@
 ---
 title: "Creating objects in Kotlin"
-weight: 60
+weight: 26
 menu:
 docs:
 parent: "get-started"
@@ -92,4 +92,4 @@ fun test() {
 ```
 
 Using the `setExp()` method instead of the `set()` method, you can specify property assignments using Kotlin's property reference syntax
-The pages under Kotlin Plugin introduces more features that are provided by the Kotlin plugin.
+The pages under [Kotlin Plugin](../../plugins/kotlin-plugin/features) introduces more features that are provided by the Kotlin plugin.

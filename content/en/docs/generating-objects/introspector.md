@@ -5,7 +5,7 @@ menu:
 docs:
 parent: "generating-objects"
 identifier: "introspector"
-weight: 20
+weight: 32
 ---
 
 There are a number of ways to create an object. For example, you can initialize an instance of an object using its constructor, or you can use its builder.

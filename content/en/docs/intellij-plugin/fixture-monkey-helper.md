@@ -5,7 +5,7 @@ menu:
 docs:
 parent: "intellij-plugin"
 identifier: "fixture-monkey-helper"
-weight: 10
+weight: 91
 ---
 
 [Fixture Monkey Helper](https://plugins.jetbrains.com/plugin/19589-fixture-monkey-helper) is an IntelliJ plugin that helps to use Fixture Monkey on the IntelliJ IDE.
@@ -15,14 +15,14 @@ It provides some features that make using String Expressions and Kotlin DSL Expr
 ### Features
 
 - **Fixture Monkey String Expression support**
-  - Conversion of string expressions to Fixture Monkey Kotlin DSL
+  - Conversion of String Expressions to Fixture Monkey Kotlin DSL
   - Expression validation
   - Auto completion
   - Go to target field (reference)
 
 - **FixtureMonkey Kotlin DSL support**
-  - Convert Kotlin DSL to Fixture Monkey string expression
-  - Folding to Fixture Monkey string expression
+  - Convert Kotlin DSL to Fixture Monkey String Expression
+  - Folding to Fixture Monkey String Expression
   - Generate Kotlin Lambda expression that helps define Fixture specification easily
   - Convert Lambda to Fixture Monkey Kotlin DSL
 

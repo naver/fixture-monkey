@@ -1,6 +1,6 @@
 ---
 title: "Fixture Customization APIs"
-weight: 10
+weight: 41
 menu:
 docs:
   parent: "customizing-objects"

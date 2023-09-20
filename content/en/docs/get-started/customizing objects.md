@@ -1,6 +1,6 @@
 ---
 title: "Customizing objects"
-weight: 50
+weight: 25
 menu:
 docs:
 parent: "get-started"
@@ -28,7 +28,7 @@ public class Product {
 For example, for a certain test you might need a Product instance with an id of 1,000.
 
 In order to do this, you can get a type builder from fixture monkey with the `giveMeBuilder` method.
-The Builder allows chaining additional method calls to customise your fixture.
+The Builder allows chaining additional method calls to customize your fixture.
 In this case you can use the `set()` function to set the id to 1,000.
 From the Builder use `sample()` to get an instance from the builder.
 
@@ -79,4 +79,4 @@ void test() {
 You can specify the size of a certain collection (list, set, map) and set an element to a specific value using the set() function,
 and then get your instance by calling the sample() method.
 
-For more examples of how to select properties with expressions and set property values, you can check out the customizing page.
+For more examples of how to select properties with expressions and set property values, you can go to the [customizing section](../../customizing-objects/apis).

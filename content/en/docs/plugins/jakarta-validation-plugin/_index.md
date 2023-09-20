@@ -5,5 +5,5 @@ menu:
   docs:
     parent: "plugins"
     identifier: "jakarta-validation-plugin"
-weight: 70
+weight: 80
 ---

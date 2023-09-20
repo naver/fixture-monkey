@@ -1,6 +1,6 @@
 ---
 title: "Creating test objects"
-weight: 20
+weight: 22
 menu:
 docs:
   parent: "get-started"
@@ -56,7 +56,7 @@ Here we are configuring the `objectIntrospector` to use `ConstructorPropertiesAr
 An `Introspector` defines how Fixture Monkey generates objects.
 
 For `ConstructorPropertiesArbitraryIntrospector`, the generated class should have a constructor with @ConstructorProperties or you can add `lombok.anyConstructor.addConstructorProperties=true` in the lombok.config file.
-(There are alternative Introspectors available, each with their own requirements. Check out the `Introspectors` section for more details.)
+(There are alternative Introspectors available, each with their own requirements. Check out the [`Introspectors` section](../../generating-objects/introspector) for more details.)
 
 Next, use the `giveMeOne()` method with the desired test class type to generate an instance of the specified type.
 

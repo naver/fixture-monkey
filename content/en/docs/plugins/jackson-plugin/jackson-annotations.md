@@ -5,7 +5,7 @@ menu:
 docs:
 parent: "jackson-plugin"
 identifier: "jackson-annotations"
-weight: 30
+weight: 73
 ---
 
 With the Jackson plugin, some Jackson annotations are also supported.

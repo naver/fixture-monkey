@@ -5,7 +5,7 @@ menu:
 docs:
 parent: "jakarta-validation-plugin"
 identifier: "jakarta-validation-plugin-features"
-weight: 10
+weight: 81
 ---
 
 Fixture monkey supports generating valid data based on [Jakarta Bean Validation 3.0 annotations](https://beanvalidation.org/) with the Fixture Monkey Jakarta Validation Plugin.

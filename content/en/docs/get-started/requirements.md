@@ -5,7 +5,7 @@ menu:
 docs:
   parent: "get-started"
   identifier: "requirements"
-weight: 10
+weight: 21
 ---
 
 {{< alert icon="💡" text="Fixture Monkey is designed for test environments. It is not recommended for production use." />}}
