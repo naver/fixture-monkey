@@ -1,4 +1,4 @@
-baseurl = "https://doks.netlify.app/"
+baseurl = "https://naver.github.io/fixture-monkey/"
 canonifyURLs = false
 disableAliases = true
 disableHugoGeneratorInject = true
