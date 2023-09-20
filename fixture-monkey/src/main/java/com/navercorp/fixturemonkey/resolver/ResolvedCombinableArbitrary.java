@@ -26,6 +26,7 @@ import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.exception.ContainerSizeNotMatchException;
+import com.navercorp.fixturemonkey.api.exception.GenerateFixedValueException;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.tree.ObjectTree;
 
@@ -48,7 +49,7 @@ public final class ResolvedCombinableArbitrary<T> implements CombinableArbitrary
 		for (int i = 0; i < generateMaxTries; i++) {
 			try {
 				return combinableArbitrary.getValue().combined();
-			} catch (ContainerSizeNotMatchException ex) {
+			} catch (ContainerSizeNotMatchException | GenerateFixedValueException ex) {
 				combinableArbitrary.clear();
 			}
 		}

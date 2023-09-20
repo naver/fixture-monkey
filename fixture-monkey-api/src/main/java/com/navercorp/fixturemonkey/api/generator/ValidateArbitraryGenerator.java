@@ -302,14 +302,15 @@ public final class ValidateArbitraryGenerator implements ArbitraryGenerator {
 					return true;
 				}
 
-				DecomposableJavaContainer decomposableJavaContainer = decomposedContainerValueFactory.from(it);
 				if (javaContainerConstraint.isNotEmpty()) {
+					DecomposableJavaContainer decomposableJavaContainer = decomposedContainerValueFactory.from(it);
 					if (decomposableJavaContainer.getSize() == 0) {
 						throw new ContainerSizeNotMatchException("Container size is should not be 0.");
 					}
 				}
 
 				if (javaContainerConstraint.getMinSize() != null) {
+					DecomposableJavaContainer decomposableJavaContainer = decomposedContainerValueFactory.from(it);
 					if (decomposableJavaContainer.getSize() < javaContainerConstraint.getMinSize()) {
 						throw new ContainerSizeNotMatchException(
 							"Container size is should not be less than " + javaContainerConstraint.getMinSize()
@@ -318,6 +319,7 @@ public final class ValidateArbitraryGenerator implements ArbitraryGenerator {
 				}
 
 				if (javaContainerConstraint.getMaxSize() != null) {
+					DecomposableJavaContainer decomposableJavaContainer = decomposedContainerValueFactory.from(it);
 					if (decomposableJavaContainer.getSize() > javaContainerConstraint.getMaxSize()) {
 						throw new ContainerSizeNotMatchException(
 							"Container size is should not be greater than " + javaContainerConstraint.getMaxSize()

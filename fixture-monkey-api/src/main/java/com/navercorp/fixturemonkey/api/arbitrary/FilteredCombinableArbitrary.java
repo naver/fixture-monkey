@@ -26,6 +26,7 @@ import org.apiguardian.api.API.Status;
 import net.jqwik.api.TooManyFilterMissesException;
 
 import com.navercorp.fixturemonkey.api.exception.FilterMissException;
+import com.navercorp.fixturemonkey.api.exception.GenerateFixedValueException;
 import com.navercorp.fixturemonkey.api.exception.ValidationFailedException;
 import com.navercorp.fixturemonkey.api.property.PropertyPath;
 import com.navercorp.fixturemonkey.api.property.Traceable;
@@ -70,9 +71,6 @@ final class FilteredCombinableArbitrary<T> implements CombinableArbitrary<T> {
 					return returned;
 				}
 			} catch (TooManyFilterMissesException | ValidationFailedException | FilterMissException ex) {
-				if (combinableArbitrary.fixed()) {
-					break;
-				}
 				lastException = ex;
 				combinableArbitrary.clear();
 			}
@@ -108,6 +106,10 @@ final class FilteredCombinableArbitrary<T> implements CombinableArbitrary<T> {
 				),
 				lastException
 			);
+		}
+
+		if (fixed()) {
+			throw new GenerateFixedValueException("test");
 		}
 
 		throw new FilterMissException(lastException);
