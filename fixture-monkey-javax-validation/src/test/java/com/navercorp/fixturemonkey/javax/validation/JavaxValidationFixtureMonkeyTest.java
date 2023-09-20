@@ -34,7 +34,6 @@ import java.time.OffsetTime;
 import java.time.Year;
 import java.time.YearMonth;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.Date;
@@ -43,7 +42,7 @@ import java.util.regex.Pattern;
 import net.jqwik.api.Property;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
-import com.navercorp.fixturemonkey.api.exception.FilterMissException;
+import com.navercorp.fixturemonkey.api.exception.RetryableFilterMissException;
 import com.navercorp.fixturemonkey.javax.validation.plugin.JavaxValidationPlugin;
 import com.navercorp.fixturemonkey.javax.validation.spec.BigDecimalIntrospectorSpec;
 import com.navercorp.fixturemonkey.javax.validation.spec.BigIntegerIntrospectorSpec;
@@ -68,7 +67,6 @@ class JavaxValidationFixtureMonkeyTest {
 		.build();
 
 	private static final ZoneId ZONED_ID = ZoneId.systemDefault();
-	private static final ZoneOffset ZONE_OFFSET = ZoneOffset.UTC;
 
 	@Property(tries = 100)
 	void sampleBigDecimal() {
@@ -483,7 +481,6 @@ class JavaxValidationFixtureMonkeyTest {
 				.setNull("notBlank")
 				.sample()
 		)
-			.isExactlyInstanceOf(FilterMissException.class)
-			.hasMessageContainingAll("notBlank", "notNull");
+			.isExactlyInstanceOf(RetryableFilterMissException.class);
 	}
 }

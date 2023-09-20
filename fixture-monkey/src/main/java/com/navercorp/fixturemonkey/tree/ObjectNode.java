@@ -30,6 +30,7 @@ import org.apiguardian.api.API.Status;
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
+import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.customizer.ContainerInfoManipulator;
 import com.navercorp.fixturemonkey.customizer.NodeManipulator;
 
@@ -134,10 +135,12 @@ public final class ObjectNode {
 		return arbitraryFilters;
 	}
 
-	public boolean isNotManipulated() {
-		boolean sized = !containerInfoManipulators.isEmpty();
+	public boolean cacheable() {
+		Class<?> type = Types.getActualType(getProperty().getType());
+		boolean hasTimeAnnotation = (Types.isDateTimeType(type) || Types.isDateType(type) || Types.isTimeType(type))
+			&& !getProperty().getAnnotations().isEmpty();
 
-		return !manipulated && !sized;
+		return !manipulated && !arbitraryProperty.isContainer() && !hasTimeAnnotation && !children.isEmpty();
 	}
 
 	public void setManipulated(boolean manipulated) {

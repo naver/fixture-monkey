@@ -57,6 +57,7 @@ import com.navercorp.fixturemonkey.api.generator.IntrospectedArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.generator.JavaDefaultArbitraryGeneratorBuilder;
 import com.navercorp.fixturemonkey.api.generator.NullInjectGenerator;
 import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGenerator;
+import com.navercorp.fixturemonkey.api.generator.ValidateArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.CompositeArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.JavaArbitraryResolver;
@@ -650,6 +651,12 @@ public final class FixtureMonkeyOptionsBuilder {
 				}
 				return this.decomposedContainerValueFactory.from(obj);
 			}
+		);
+
+		defaultArbitraryGenerator = new ValidateArbitraryGenerator(
+			defaultArbitraryGenerator,
+			javaConstraintGenerator,
+			decomposedContainerValueFactory
 		);
 
 		defaultArbitraryGenerator = defaultArbitraryGeneratorOperator.apply(defaultArbitraryGenerator);

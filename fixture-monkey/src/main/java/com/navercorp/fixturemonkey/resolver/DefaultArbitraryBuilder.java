@@ -68,6 +68,8 @@ import com.navercorp.fixturemonkey.tree.ArbitraryTraverser;
 @SuppressFBWarnings("NM_SAME_SIMPLE_NAME_AS_SUPERCLASS")
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T> {
+	private static final int VALIDATION_ANNOTATION_FILTERING_COUNT = 1;
+
 	private final FixtureMonkeyOptions fixtureMonkeyOptions;
 	private final RootProperty rootProperty;
 	private final ArbitraryResolver resolver;
@@ -462,7 +464,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T> {
 						manipulators,
 						containerInfoManipulators
 					)
-					.filter(fixtureMonkeyOptions.getGenerateMaxTries(), validateFilter(context.isValidOnly()))
+					.filter(VALIDATION_ANNOTATION_FILTERING_COUNT, validateFilter(context.isValidOnly()))
 					.combined();
 				context.addManipulator(monkeyManipulatorFactory.newArbitraryManipulator("$", fixed));
 				context.renewFixed(CombinableArbitrary.from(fixed));
@@ -475,7 +477,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T> {
 				manipulators,
 				containerInfoManipulators
 			)
-			.filter(fixtureMonkeyOptions.getGenerateMaxTries(), validateFilter(context.isValidOnly()));
+			.filter(VALIDATION_ANNOTATION_FILTERING_COUNT, validateFilter(context.isValidOnly()));
 	}
 
 	private String resolveExpression(ExpressionGenerator expressionGenerator) {

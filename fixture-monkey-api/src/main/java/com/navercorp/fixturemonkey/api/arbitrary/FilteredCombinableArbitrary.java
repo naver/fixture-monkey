@@ -25,7 +25,8 @@ import org.apiguardian.api.API.Status;
 
 import net.jqwik.api.TooManyFilterMissesException;
 
-import com.navercorp.fixturemonkey.api.exception.FilterMissException;
+import com.navercorp.fixturemonkey.api.exception.FixedValueFilterMissException;
+import com.navercorp.fixturemonkey.api.exception.RetryableFilterMissException;
 import com.navercorp.fixturemonkey.api.exception.ValidationFailedException;
 import com.navercorp.fixturemonkey.api.property.PropertyPath;
 import com.navercorp.fixturemonkey.api.property.Traceable;
@@ -33,18 +34,14 @@ import com.navercorp.fixturemonkey.api.property.Traceable;
 /**
  * It would generate an object satisfied given {@code predicate}.
  * It would try {@code maxMisses} times, {@code maxMisses} is 1000 in default.
- * It would try {@link #FAILED_THRESHOLD} times when the parent {@link CombinableArbitrary} make it regenerate.
  */
 @API(since = "0.5.0", status = Status.MAINTAINED)
 final class FilteredCombinableArbitrary<T> implements CombinableArbitrary<T> {
-	private static final int FAILED_THRESHOLD = 3;
-
 	private final int maxMisses;
 	private final CombinableArbitrary<T> combinableArbitrary;
 	private final Predicate<T> predicate;
 
 	private Exception lastException;
-	private int failureCount = 0;
 
 	FilteredCombinableArbitrary(
 		int maxMisses,
@@ -56,12 +53,18 @@ final class FilteredCombinableArbitrary<T> implements CombinableArbitrary<T> {
 		this.predicate = predicate;
 	}
 
+	FilteredCombinableArbitrary(
+		int maxMisses,
+		FilteredCombinableArbitrary<T> filteredCombinableArbitrary,
+		Predicate<T> predicate
+	) {
+		this.maxMisses = maxMisses;
+		this.combinableArbitrary = filteredCombinableArbitrary.combinableArbitrary;
+		this.predicate = predicate.and(filteredCombinableArbitrary.predicate);
+	}
+
 	@Override
 	public T combined() {
-		if (failureCount == FAILED_THRESHOLD) {
-			throw new FilterMissException(lastException);
-		}
-
 		T returned;
 		for (int i = 0; i < maxMisses; i++) {
 			try {
@@ -69,15 +72,18 @@ final class FilteredCombinableArbitrary<T> implements CombinableArbitrary<T> {
 				if (predicate.test(returned)) {
 					return returned;
 				}
-			} catch (TooManyFilterMissesException | ValidationFailedException | FilterMissException ex) {
-				if (combinableArbitrary.fixed()) {
-					break;
+
+				if (fixed()) {
+					throw new FixedValueFilterMissException("Fixed value can not satisfy given filter.");
 				}
-				lastException = ex;
+			} catch (TooManyFilterMissesException | ValidationFailedException | RetryableFilterMissException ex) {
+				if (lastException == null || ex.getCause() != null) {
+					lastException = ex;
+				}
+
 				combinableArbitrary.clear();
 			}
 		}
-		failureCount++;
 
 		if (lastException == null && combinableArbitrary instanceof FilteredCombinableArbitrary) {
 			lastException = ((FilteredCombinableArbitrary<T>)combinableArbitrary).lastException;
@@ -87,7 +93,7 @@ final class FilteredCombinableArbitrary<T> implements CombinableArbitrary<T> {
 			String failedConcatProperties = String.join(", ",
 				((ValidationFailedException)lastException).getConstraintViolationPropertyNames());
 
-			throw new FilterMissException(
+			throw new RetryableFilterMissException(
 				String.format("Given properties \"%s\" is not validated by annotations.", failedConcatProperties),
 				lastException
 			);
@@ -100,7 +106,7 @@ final class FilteredCombinableArbitrary<T> implements CombinableArbitrary<T> {
 				? "$"
 				: propertyPath.getExpression();
 
-			throw new FilterMissException(
+			throw new RetryableFilterMissException(
 				String.format(
 					"Generate type \"%s\" is failed due to property \"%s\".",
 					generateType,
@@ -110,16 +116,12 @@ final class FilteredCombinableArbitrary<T> implements CombinableArbitrary<T> {
 			);
 		}
 
-		throw new FilterMissException(lastException);
+		throw new RetryableFilterMissException(lastException);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public T rawValue() {
-		if (failureCount == FAILED_THRESHOLD) {
-			throw new FilterMissException(lastException);
-		}
-
 		T returned;
 		for (int i = 0; i < maxMisses; i++) {
 			try {
@@ -127,38 +129,67 @@ final class FilteredCombinableArbitrary<T> implements CombinableArbitrary<T> {
 				if (predicate.test(returned)) {
 					return returned;
 				}
-			} catch (TooManyFilterMissesException | ValidationFailedException | FilterMissException ex) {
-				if (combinableArbitrary.fixed()) {
-					break;
+
+				if (fixed()) {
+					throw new FixedValueFilterMissException("Fixed value can not satisfy given filter.");
 				}
-				lastException = ex;
+			} catch (TooManyFilterMissesException | ValidationFailedException | RetryableFilterMissException ex) {
+				if (lastException == null || ex.getCause() != null) {
+					lastException = ex;
+				}
+
 				combinableArbitrary.clear();
 			} catch (ClassCastException ex) {
-				if (combinableArbitrary instanceof Traceable) {
-					throw new ClassCastException(
-						String.format(
-							"Given property '%s' could not use filter. Check out if using the proper introspector.",
-							((Traceable)combinableArbitrary).getPropertyPath().getExpression()
-						)
-					);
-				}
-				throw new ClassCastException("Could not use filter. Check out if using the proper introspector.");
+				throw new ClassCastException(
+					String.format(
+						"Filtering is failed due to %s. Please check if given value is deserialized",
+						ex.getMessage()
+					)
+				);
 			}
 		}
-		failureCount++;
-		throw new FilterMissException(lastException);
+
+		if (lastException == null && combinableArbitrary instanceof FilteredCombinableArbitrary) {
+			lastException = ((FilteredCombinableArbitrary<T>)combinableArbitrary).lastException;
+		}
+
+		if (lastException instanceof ValidationFailedException) {
+			String failedConcatProperties = String.join(", ",
+				((ValidationFailedException)lastException).getConstraintViolationPropertyNames());
+
+			throw new RetryableFilterMissException(
+				String.format("Given properties \"%s\" is not validated by annotations.", failedConcatProperties),
+				lastException
+			);
+		}
+
+		if (combinableArbitrary instanceof Traceable) {
+			PropertyPath propertyPath = ((Traceable)combinableArbitrary).getPropertyPath();
+			String generateType = propertyPath.getProperty().getType().getTypeName();
+			String expression = "".equals(propertyPath.getExpression())
+				? "$"
+				: propertyPath.getExpression();
+
+			throw new RetryableFilterMissException(
+				String.format(
+					"Generate type \"%s\" is failed due to property \"%s\".",
+					generateType,
+					expression
+				),
+				lastException
+			);
+		}
+
+		throw new RetryableFilterMissException(lastException);
 	}
 
 	@Override
 	public void clear() {
-		if (failureCount == FAILED_THRESHOLD) {
-			return;
-		}
 		combinableArbitrary.clear();
 	}
 
 	@Override
 	public boolean fixed() {
-		return failureCount == FAILED_THRESHOLD || combinableArbitrary.fixed();
+		return combinableArbitrary.fixed();
 	}
 }

@@ -28,7 +28,6 @@ import org.apiguardian.api.API.Status;
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.context.MonkeyContext;
-import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
@@ -76,64 +75,38 @@ public final class ArbitraryResolver {
 				))
 				.collect(Collectors.toList());
 
-		ObjectTree objectTree = new ObjectTree(
+		return new ResolvedCombinableArbitrary<>(
 			rootProperty,
-			this.traverser.traverse(
+			() -> new ObjectTree(
 				rootProperty,
-				containerInfoManipulators,
-				registeredContainerInfoManipulators
+				this.traverser.traverse(
+					rootProperty,
+					containerInfoManipulators,
+					registeredContainerInfoManipulators
+				),
+				fixtureMonkeyOptions,
+				monkeyContext
 			),
-			fixtureMonkeyOptions,
-			monkeyContext
-		);
+			objectTree -> {
+				List<ArbitraryManipulator> registeredManipulators =
+					monkeyManipulatorFactory.newRegisteredArbitraryManipulators(
+						registeredArbitraryBuilders,
+						objectTree.getMetadata().getNodesByProperty()
+					);
 
-		List<ArbitraryManipulator> registeredManipulators = monkeyManipulatorFactory.newRegisteredArbitraryManipulators(
-			registeredArbitraryBuilders,
-			objectTree.getMetadata().getNodesByProperty()
-		);
+				List<ArbitraryManipulator> joinedManipulators =
+					Stream.concat(registeredManipulators.stream(), manipulators.stream())
+						.collect(Collectors.toList());
 
-		List<ArbitraryManipulator> joinedManipulators =
-			Stream.concat(registeredManipulators.stream(), manipulators.stream())
-				.collect(Collectors.toList());
+				List<ArbitraryManipulator> optimizedManipulator = manipulatorOptimizer
+					.optimize(joinedManipulators)
+					.getManipulators();
 
-		List<ArbitraryManipulator> optimizedManipulator = manipulatorOptimizer
-			.optimize(joinedManipulators)
-			.getManipulators();
-
-		return new CombinableArbitrary() {
-			private final LazyArbitrary<CombinableArbitrary<?>> lazyArbitrary = LazyArbitrary.lazy(
-				() -> {
-					for (ArbitraryManipulator manipulator : optimizedManipulator) {
-						manipulator.manipulate(objectTree);
-					}
-					return objectTree.generate();
+				for (ArbitraryManipulator manipulator : optimizedManipulator) {
+					manipulator.manipulate(objectTree);
 				}
-			);
-
-			@Override
-			public Object combined() {
-				return lazyArbitrary.getValue().combined();
-			}
-
-			@Override
-			public Object rawValue() {
-				return lazyArbitrary.getValue().rawValue();
-			}
-
-			@Override
-			public void clear() {
-				CombinableArbitrary<?> combinableArbitrary = lazyArbitrary.getValue();
-				if (!combinableArbitrary.fixed() && optimizedManipulator.isEmpty()) {
-					combinableArbitrary.clear();
-				} else {
-					lazyArbitrary.clear();
-				}
-			}
-
-			@Override
-			public boolean fixed() {
-				return false;
-			}
-		};
+			},
+			fixtureMonkeyOptions.getGenerateMaxTries()
+		);
 	}
 }

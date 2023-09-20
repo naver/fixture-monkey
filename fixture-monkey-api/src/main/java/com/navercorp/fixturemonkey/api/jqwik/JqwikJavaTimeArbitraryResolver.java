@@ -76,6 +76,10 @@ public final class JqwikJavaTimeArbitraryResolver implements JavaTimeArbitraryRe
 	) {
 		JavaDateTimeConstraint constraint =
 			this.constraintGenerator.generateDateTimeConstraint(context);
+		if (constraint == null) {
+			return calendarArbitrary;
+		}
+
 		LocalDateTime min = constraint.getMin();
 		LocalDateTime max = constraint.getMax();
 
@@ -100,6 +104,10 @@ public final class JqwikJavaTimeArbitraryResolver implements JavaTimeArbitraryRe
 	) {
 		JavaDateTimeConstraint constraint =
 			this.constraintGenerator.generateDateTimeConstraint(context);
+		if (constraint == null) {
+			return dateArbitrary;
+		}
+
 		LocalDateTime min = constraint.getMin();
 		LocalDateTime max = constraint.getMax();
 
@@ -124,6 +132,10 @@ public final class JqwikJavaTimeArbitraryResolver implements JavaTimeArbitraryRe
 	) {
 		JavaDateTimeConstraint constraint =
 			this.constraintGenerator.generateDateTimeConstraint(context);
+		if (constraint == null) {
+			return instantArbitrary;
+		}
+
 		LocalDateTime min = constraint.getMin();
 		LocalDateTime max = constraint.getMax();
 
@@ -143,6 +155,10 @@ public final class JqwikJavaTimeArbitraryResolver implements JavaTimeArbitraryRe
 		ArbitraryGeneratorContext context
 	) {
 		JavaDateTimeConstraint constraint = this.constraintGenerator.generateDateTimeConstraint(context);
+		if (constraint == null) {
+			return localDateArbitrary;
+		}
+
 		LocalDateTime min = constraint.getMin();
 		LocalDateTime max = constraint.getMax();
 
@@ -163,6 +179,10 @@ public final class JqwikJavaTimeArbitraryResolver implements JavaTimeArbitraryRe
 	) {
 		JavaDateTimeConstraint constraint =
 			this.constraintGenerator.generateDateTimeConstraint(context);
+		if (constraint == null) {
+			return localDateTimeArbitrary;
+		}
+
 		LocalDateTime min = constraint.getMin();
 		LocalDateTime max = constraint.getMax();
 
@@ -182,6 +202,10 @@ public final class JqwikJavaTimeArbitraryResolver implements JavaTimeArbitraryRe
 		ArbitraryGeneratorContext context
 	) {
 		JavaDateTimeConstraint constraint = this.constraintGenerator.generateDateTimeConstraint(context);
+		if (constraint == null) {
+			return localTimeArbitrary;
+		}
+
 		LocalDateTime min = constraint.getMin();
 		LocalDateTime max = constraint.getMax();
 
@@ -202,6 +226,10 @@ public final class JqwikJavaTimeArbitraryResolver implements JavaTimeArbitraryRe
 	) {
 		JavaDateTimeConstraint constraint =
 			this.constraintGenerator.generateDateTimeConstraint(context);
+		if (constraint == null) {
+			return zonedDateTimeArbitrary;
+		}
+
 		LocalDateTime min = constraint.getMin();
 		LocalDateTime max = constraint.getMax();
 
@@ -221,6 +249,10 @@ public final class JqwikJavaTimeArbitraryResolver implements JavaTimeArbitraryRe
 		ArbitraryGeneratorContext context
 	) {
 		JavaDateTimeConstraint constraint = this.constraintGenerator.generateDateTimeConstraint(context);
+		if (constraint == null) {
+			return monthDayArbitrary;
+		}
+
 		LocalDateTime min = constraint.getMin();
 		LocalDateTime max = constraint.getMax();
 
@@ -241,6 +273,10 @@ public final class JqwikJavaTimeArbitraryResolver implements JavaTimeArbitraryRe
 	) {
 		JavaDateTimeConstraint constraint =
 			this.constraintGenerator.generateDateTimeConstraint(context);
+		if (constraint == null) {
+			return offsetDateTimeArbitrary;
+		}
+
 		LocalDateTime min = constraint.getMin();
 		LocalDateTime max = constraint.getMax();
 
@@ -262,6 +298,10 @@ public final class JqwikJavaTimeArbitraryResolver implements JavaTimeArbitraryRe
 		ArbitraryGeneratorContext context
 	) {
 		JavaDateTimeConstraint constraint = this.constraintGenerator.generateDateTimeConstraint(context);
+		if (constraint == null) {
+			return offsetTimeArbitrary;
+		}
+
 		LocalDateTime min = constraint.getMin();
 		LocalDateTime max = constraint.getMax();
 
@@ -281,6 +321,10 @@ public final class JqwikJavaTimeArbitraryResolver implements JavaTimeArbitraryRe
 		ArbitraryGeneratorContext context
 	) {
 		JavaDateTimeConstraint constraint = this.constraintGenerator.generateDateTimeConstraint(context);
+		if (constraint == null) {
+			return yearArbitrary;
+		}
+
 		LocalDateTime min = constraint.getMin();
 		LocalDateTime max = constraint.getMax();
 
@@ -300,6 +344,10 @@ public final class JqwikJavaTimeArbitraryResolver implements JavaTimeArbitraryRe
 		ArbitraryGeneratorContext context
 	) {
 		JavaDateTimeConstraint constraint = this.constraintGenerator.generateDateTimeConstraint(context);
+		if (constraint == null) {
+			return yearMonthArbitrary;
+		}
+
 		LocalDateTime min = constraint.getMin();
 		LocalDateTime max = constraint.getMax();
 

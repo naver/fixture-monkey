@@ -31,8 +31,22 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.MonthDay;
+import java.time.OffsetDateTime;
+import java.time.OffsetTime;
+import java.time.Year;
+import java.time.YearMonth;
+import java.time.ZonedDateTime;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -542,5 +556,46 @@ public class Types {
 
 	public static List<Type> getGenericsTypes(ParameterizedType parameterizedType) {
 		return Arrays.asList(parameterizedType.getActualTypeArguments());
+	}
+
+	public static boolean isIntegerType(Class<?> type) {
+		return Integer.class.isAssignableFrom(type)
+			|| int.class.isAssignableFrom(type)
+			|| Long.class.isAssignableFrom(type)
+			|| long.class.isAssignableFrom(type)
+			|| Byte.class.isAssignableFrom(type)
+			|| byte.class.isAssignableFrom(type)
+			|| Short.class.isAssignableFrom(type)
+			|| short.class.isAssignableFrom(type)
+			|| BigInteger.class.isAssignableFrom(type);
+	}
+
+	public static boolean isDecimalType(Class<?> type) {
+		return Float.class.isAssignableFrom(type)
+			|| float.class.isAssignableFrom(type)
+			|| Double.class.isAssignableFrom(type)
+			|| double.class.isAssignableFrom(type)
+			|| BigDecimal.class.isAssignableFrom(type);
+	}
+
+	public static boolean isDateTimeType(Class<?> type) {
+		return Calendar.class.isAssignableFrom(type)
+			|| Date.class.isAssignableFrom(type)
+			|| Instant.class.isAssignableFrom(type)
+			|| LocalDateTime.class.isAssignableFrom(type)
+			|| ZonedDateTime.class.isAssignableFrom(type)
+			|| OffsetDateTime.class.isAssignableFrom(type);
+	}
+
+	public static boolean isDateType(Class<?> type) {
+		return Year.class.isAssignableFrom(type)
+			|| YearMonth.class.isAssignableFrom(type)
+			|| LocalDate.class.isAssignableFrom(type)
+			|| MonthDay.class.isAssignableFrom(type);
+	}
+
+	public static boolean isTimeType(Class<?> type) {
+		return LocalTime.class.isAssignableFrom(type)
+			|| OffsetTime.class.isAssignableFrom(type);
 	}
 }

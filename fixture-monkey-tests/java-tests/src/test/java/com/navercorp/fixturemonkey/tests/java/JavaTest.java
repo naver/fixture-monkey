@@ -41,7 +41,7 @@ import net.jqwik.api.Arbitraries;
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
-import com.navercorp.fixturemonkey.api.exception.FilterMissException;
+import com.navercorp.fixturemonkey.api.exception.RetryableFilterMissException;
 import com.navercorp.fixturemonkey.api.introspector.ConstructorPropertiesArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.FailoverIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.FieldReflectionArbitraryIntrospector;
@@ -491,7 +491,7 @@ class JavaTest {
 			() -> SUT.giveMeBuilder(String.class)
 				.setPostCondition(it -> it.equals("test"))
 				.sample()
-		).isExactlyInstanceOf(FilterMissException.class);
+		).isExactlyInstanceOf(RetryableFilterMissException.class);
 	}
 
 	@RepeatedTest(TEST_COUNT)
