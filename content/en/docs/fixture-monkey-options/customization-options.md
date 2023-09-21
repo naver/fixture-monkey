@@ -396,7 +396,7 @@ val fixtureMonkey = FixtureMonkey.builder()
 {{< /tab >}}
 {{< /tabpane>}}
 
-If you want to specifically change the probability of a certain type being null, you can use `pushNullInjectGenerator'.
+If you want to specifically change the probability of a certain type being null, you can use `pushNullInjectGenerator`.
 
 {{< tabpane persist=false >}}
 {{< tab header="Java" lang="java">}}
