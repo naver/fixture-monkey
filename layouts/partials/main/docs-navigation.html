@@ -5,7 +5,7 @@
 	{{ with $pages.Next . -}}
 		<a href="{{ .RelPermalink }}">
 			<div class="card my-1">
-				<div class="card-body py-2">
+				<div class="card-body py-2" style="color: #49C3FD">
 					&larr; {{ .Title }}
 				</div>
 			</div>
@@ -14,7 +14,7 @@
 	{{ with $pages.Prev . -}}
 		<a class="ms-auto" href="{{ .RelPermalink }}">
 			<div class="card my-1">
-				<div class="card-body py-2">
+        <div class="card-body py-2" style="color: #49C3FD">
 					{{ .Title }} &rarr;
 				</div>
 			</div>

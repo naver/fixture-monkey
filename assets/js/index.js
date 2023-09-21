@@ -65,6 +65,10 @@ Source:
 
   var index = new FlexSearch.Document({
     tokenize: "forward",
+    resolution: 9,
+    minlength: 3,
+    optimize: true,
+    fastupdate: true,
     cache: 100,
     document: {
       id: 'id',
@@ -129,7 +133,8 @@ Source:
   search.addEventListener('input', show_results, true);
 
   function show_results(){
-    const maxResult = 5;
+    const maxResult = 4;
+    const documentLength = 300;
     var searchQuery = this.value;
     var results = index.search(searchQuery, {limit: maxResult, enrich: true});
 
@@ -158,7 +163,7 @@ Source:
         suggestions.appendChild(entry);
 
         const a = document.createElement('a');
-        a.href = href;
+        a.href = "/fixture-monkey" + href;
         entry.appendChild(a);
 
         const title = document.createElement('span');
@@ -167,7 +172,7 @@ Source:
         a.appendChild(title);
 
         const description = document.createElement('span');
-        description.textContent = doc.description;
+        description.textContent = doc.description.substring(0, documentLength);
         description.classList.add("suggestion__description");
         a.appendChild(description);
 
