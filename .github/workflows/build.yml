@@ -49,14 +49,36 @@ jobs:
           CI: Github Action
 
       - name: Publish test report
-        uses: mikepenz/action-junit-report@v3.0.3
+        uses: mikepenz/action-junit-report@v4
         if: always() # always run even if the previous step fails
         with:
           check_name: JUnit Test Report on JDK ${{ matrix.Java }}
           report_paths: '**/build/test-results/test/TEST-*.xml'
+          detailed_summary: true
 
       - name: Test Summary
-        uses: test-summary/action@v1
+        uses: actions/upload-artifact@v3  # upload test results
         if: always()
         with:
-          paths: '**/build/test-results/test/TEST-*.xml'
+          name: test-results
+          path: '**/build/test-results/test/TEST-*.xml'
+
+  publish-test-results:
+    name: "Publish Tests Results"
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      checks: write
+      pull-requests: write
+    if: always()
+    steps:
+      - name: Download Artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: test-results
+          path: artifacts
+      - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        with:
+          files: "artifacts/**/*.xml"
+          json_suite_details: true
