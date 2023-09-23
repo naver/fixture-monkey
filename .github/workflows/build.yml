@@ -18,7 +18,6 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: 8
-          cache: 'gradle'
       - name: Execute check without tests
         uses: gradle/gradle-build-action@v2.4.2
         with:
@@ -36,7 +35,6 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: ${{ matrix.Java }}
-          cache: 'gradle'
       - name: Build
         uses: gradle/gradle-build-action@v2.4.2
         with:
