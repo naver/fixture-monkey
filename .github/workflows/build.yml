@@ -19,10 +19,7 @@ jobs:
           distribution: 'temurin'
           java-version: 8
           cache: 'gradle'
-      - name: Execute check without tests
-        uses: gradle/gradle-build-action@v2.4.2
-        with:
-          arguments: check -x test
+      - run: ./gradlew check -x test
   test:
     name: Testing on JDK ${{ matrix.java }}
     runs-on: ubuntu-latest
@@ -37,17 +34,7 @@ jobs:
           distribution: 'temurin'
           java-version: ${{ matrix.Java }}
           cache: 'gradle'
-      - name: Build
-        uses: gradle/gradle-build-action@v2.4.2
-        with:
-          arguments: build -x test
-      - name: Execute tests
-        uses: gradle/gradle-build-action@v2.4.2
-        with:
-          arguments: test
-        env:
-          CI: Github Action
-
+      - run: ./gradlew build test
       - name: Publish test report
         uses: mikepenz/action-junit-report@v3.0.3
         if: always() # always run even if the previous step fails
