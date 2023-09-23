@@ -17,8 +17,5 @@ jobs:
         uses: gradle/gradle-build-action@v2.4.2
         with:
           arguments: jmh
-      - name: Read file contents
-        id: read_file
-        uses: andstor/file-reader-action@v1
-        with:
-          path: "./fixture-monkey/build/results/jmh/results.txt"
+      - name: Print benchmark summary
+        run: cat ./fixture-monkey/build/results/jmh/results.csv >> $GITHUB_STEP_SUMMARY
