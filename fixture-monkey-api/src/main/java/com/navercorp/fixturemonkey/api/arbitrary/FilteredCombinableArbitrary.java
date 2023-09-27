@@ -80,7 +80,6 @@ final class FilteredCombinableArbitrary<T> implements CombinableArbitrary<T> {
 				if (lastException == null || ex.getCause() != null) {
 					lastException = ex;
 				}
-
 				combinableArbitrary.clear();
 			}
 		}
@@ -137,12 +136,11 @@ final class FilteredCombinableArbitrary<T> implements CombinableArbitrary<T> {
 				if (lastException == null || ex.getCause() != null) {
 					lastException = ex;
 				}
-
 				combinableArbitrary.clear();
 			} catch (ClassCastException ex) {
 				throw new ClassCastException(
 					String.format(
-						"Filtering is failed due to %s. Please check if given value is deserialized",
+						"Filtering is failed due to %s. Please check if given value is well deserialized.",
 						ex.getMessage()
 					)
 				);

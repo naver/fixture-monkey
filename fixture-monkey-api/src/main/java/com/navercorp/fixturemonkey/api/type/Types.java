@@ -598,4 +598,9 @@ public class Types {
 		return LocalTime.class.isAssignableFrom(type)
 			|| OffsetTime.class.isAssignableFrom(type);
 	}
+
+	public static boolean isJavaType(Class<?> type) {
+		return type.isPrimitive()
+			|| (type.getPackage() != null && type.getPackage().getName().startsWith("java"));
+	}
 }

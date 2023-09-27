@@ -140,7 +140,7 @@ public final class ObjectNode {
 		boolean hasTimeAnnotation = (Types.isDateTimeType(type) || Types.isDateType(type) || Types.isTimeType(type))
 			&& !getProperty().getAnnotations().isEmpty();
 
-		return !manipulated && !arbitraryProperty.isContainer() && !hasTimeAnnotation && !children.isEmpty();
+		return !manipulated && !arbitraryProperty.isContainer() && !hasTimeAnnotation;
 	}
 
 	public void setManipulated(boolean manipulated) {

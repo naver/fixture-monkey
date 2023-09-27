@@ -126,16 +126,14 @@ public final class ObjectTree {
 			generated = node.getArbitrary()
 				.injectNull(node.getArbitraryProperty().getObjectProperty().getNullInject());
 		} else {
-			ArbitraryGeneratorContext childArbitraryGeneratorContext = this.generateContext(node, currentContext);
-
 			CombinableArbitrary<?> cached = monkeyContext.getCachedArbitrary(node.getProperty());
 
 			if (node.cacheable() && cached != null) {
 				generated = cached;
 			} else {
+				ArbitraryGeneratorContext childArbitraryGeneratorContext = this.generateContext(node, currentContext);
 				generated = this.fixtureMonkeyOptions.getArbitraryGenerator(node.getResolvedProperty())
 					.generate(childArbitraryGeneratorContext);
-
 				if (node.cacheable()) {
 					monkeyContext.putCachedArbitrary(
 						node.getProperty(),
