@@ -67,6 +67,10 @@ public final class JqwikJavaArbitraryResolver implements JavaArbitraryResolver {
 		ArbitraryGeneratorContext context
 	) {
 		JavaStringConstraint constraint = this.constraintGenerator.generateStringConstraint(context);
+		if (constraint == null) {
+			return stringArbitrary;
+		}
+
 		BigInteger min = constraint.getMinSize();
 		BigInteger max = constraint.getMaxSize();
 		boolean digits = constraint.isDigits();
@@ -138,6 +142,10 @@ public final class JqwikJavaArbitraryResolver implements JavaArbitraryResolver {
 		ArbitraryGeneratorContext context
 	) {
 		JavaIntegerConstraint constraint = this.constraintGenerator.generateIntegerConstraint(context);
+		if (constraint == null) {
+			return shortArbitrary;
+		}
+
 		BigInteger positiveMin = constraint.getPositiveMin();
 		BigInteger positiveMax = constraint.getPositiveMax();
 		BigInteger negativeMin = constraint.getNegativeMin();
@@ -170,6 +178,10 @@ public final class JqwikJavaArbitraryResolver implements JavaArbitraryResolver {
 		ArbitraryGeneratorContext context
 	) {
 		JavaIntegerConstraint constraint = this.constraintGenerator.generateIntegerConstraint(context);
+		if (constraint == null) {
+			return byteArbitrary;
+		}
+
 		BigInteger positiveMin = constraint.getPositiveMin();
 		BigInteger positiveMax = constraint.getPositiveMax();
 		BigInteger negativeMin = constraint.getNegativeMin();
@@ -202,6 +214,10 @@ public final class JqwikJavaArbitraryResolver implements JavaArbitraryResolver {
 		ArbitraryGeneratorContext context
 	) {
 		JavaDecimalConstraint constraint = this.constraintGenerator.generateDecimalConstraint(context);
+		if (constraint == null) {
+			return floatArbitrary;
+		}
+
 		BigDecimal positiveMin = constraint.getPositiveMin();
 		BigDecimal positiveMax = constraint.getPositiveMax();
 		Boolean positiveMinInclusive = constraint.getPositiveMinInclusive();
@@ -265,6 +281,10 @@ public final class JqwikJavaArbitraryResolver implements JavaArbitraryResolver {
 		ArbitraryGeneratorContext context
 	) {
 		JavaDecimalConstraint constraint = this.constraintGenerator.generateDecimalConstraint(context);
+		if (constraint == null) {
+			return doubleArbitrary;
+		}
+
 		BigDecimal positiveMin = constraint.getPositiveMin();
 		BigDecimal positiveMax = constraint.getPositiveMax();
 		Boolean positiveMinInclusive = constraint.getPositiveMinInclusive();
@@ -328,6 +348,10 @@ public final class JqwikJavaArbitraryResolver implements JavaArbitraryResolver {
 		ArbitraryGeneratorContext context
 	) {
 		JavaIntegerConstraint constraint = this.constraintGenerator.generateIntegerConstraint(context);
+		if (constraint == null) {
+			return integerArbitrary;
+		}
+
 		BigInteger positiveMin = constraint.getPositiveMin();
 		BigInteger positiveMax = constraint.getPositiveMax();
 		BigInteger negativeMin = constraint.getNegativeMin();
@@ -360,6 +384,10 @@ public final class JqwikJavaArbitraryResolver implements JavaArbitraryResolver {
 		ArbitraryGeneratorContext context
 	) {
 		JavaIntegerConstraint constraint = this.constraintGenerator.generateIntegerConstraint(context);
+		if (constraint == null) {
+			return longArbitrary;
+		}
+
 		BigInteger positiveMin = constraint.getPositiveMin();
 		BigInteger positiveMax = constraint.getPositiveMax();
 		BigInteger negativeMin = constraint.getNegativeMin();
@@ -392,6 +420,10 @@ public final class JqwikJavaArbitraryResolver implements JavaArbitraryResolver {
 		ArbitraryGeneratorContext context
 	) {
 		JavaIntegerConstraint constraint = this.constraintGenerator.generateIntegerConstraint(context);
+		if (constraint == null) {
+			return bigIntegerArbitrary;
+		}
+
 		BigInteger positiveMin = constraint.getPositiveMin();
 		BigInteger positiveMax = constraint.getPositiveMax();
 		BigInteger negativeMin = constraint.getNegativeMin();
@@ -425,6 +457,10 @@ public final class JqwikJavaArbitraryResolver implements JavaArbitraryResolver {
 		ArbitraryGeneratorContext context
 	) {
 		JavaDecimalConstraint constraint = this.constraintGenerator.generateDecimalConstraint(context);
+		if (constraint == null) {
+			return bigDecimalArbitrary;
+		}
+
 		BigDecimal positiveMin = constraint.getPositiveMin();
 		BigDecimal positiveMax = constraint.getPositiveMax();
 		Boolean positiveMinInclusive = constraint.getPositiveMinInclusive();

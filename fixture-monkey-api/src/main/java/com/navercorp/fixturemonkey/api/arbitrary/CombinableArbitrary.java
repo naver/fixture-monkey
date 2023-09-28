@@ -26,7 +26,7 @@ import java.util.function.Supplier;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.api.exception.FilterMissException;
+import com.navercorp.fixturemonkey.api.exception.RetryableFilterMissException;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 
 /**
@@ -105,7 +105,7 @@ public interface CombinableArbitrary<T> {
 	/**
 	 * Applies a given {@code predicate} as a constraint.
 	 * It would repeat generation {@link #DEFAULT_MAX_TRIES} times to satisfy the constraint.
-	 * It would throw {@link FilterMissException} If repeated over {@link #DEFAULT_MAX_TRIES} times.
+	 * It would throw {@link RetryableFilterMissException} If repeated over {@link #DEFAULT_MAX_TRIES} times.
 	 *
 	 * @param predicate a constraint to satisfy
 	 * @return A filtered {@link CombinableArbitrary}.
@@ -117,12 +117,19 @@ public interface CombinableArbitrary<T> {
 	/**
 	 * Applies a given {@code predicate} as a constraint.
 	 * It would repeat generation {@code tries} times to satisfy the constraint.
-	 * It would throw {@link FilterMissException} If repeated over {@code tries} times.
+	 * It would throw {@link RetryableFilterMissException} If repeated over {@code tries} times.
 	 *
 	 * @param predicate a constraint to satisfy
 	 * @return A filtered {@link CombinableArbitrary}.
 	 */
 	default CombinableArbitrary<T> filter(int tries, Predicate<T> predicate) {
+		if (this instanceof FilteredCombinableArbitrary) {
+			return new FilteredCombinableArbitrary<>(
+				tries,
+				(FilteredCombinableArbitrary<T>)this,
+				predicate
+			);
+		}
 		return new FilteredCombinableArbitrary<>(
 			tries,
 			this,

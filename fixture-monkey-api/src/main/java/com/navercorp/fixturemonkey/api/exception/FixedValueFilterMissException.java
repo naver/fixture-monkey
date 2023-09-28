@@ -21,17 +21,15 @@ package com.navercorp.fixturemonkey.api.exception;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-/**
- * It is thrown when {@code filter} is failed.
- * A new populated object would be generated when this exception is thrown.
- */
-@API(since = "0.6.0", status = Status.EXPERIMENTAL)
-public final class FilterMissException extends RuntimeException {
-	public FilterMissException(String message, Throwable cause) {
-		super(message, cause);
-	}
+import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 
-	public FilterMissException(Throwable cause) {
-		super(cause);
+/**
+ * It is thrown when the generated fixed value is not matched by given predicate.
+ * It causes all {@link CombinableArbitrary}s to regenerate in place.
+ */
+@API(since = "0.6.9", status = Status.EXPERIMENTAL)
+public final class FixedValueFilterMissException extends RuntimeException {
+	public FixedValueFilterMissException(String message) {
+		super(message);
 	}
 }

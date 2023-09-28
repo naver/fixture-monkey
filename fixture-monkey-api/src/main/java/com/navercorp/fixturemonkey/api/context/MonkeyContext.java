@@ -18,6 +18,8 @@
 
 package com.navercorp.fixturemonkey.api.context;
 
+import static com.navercorp.fixturemonkey.api.type.Types.isJavaType;
+
 import java.util.TreeMap;
 
 import org.apiguardian.api.API;
@@ -27,17 +29,21 @@ import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.container.ConcurrentLruCache;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
+import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class MonkeyContext {
 	private final ConcurrentLruCache<Property, CombinableArbitrary<?>> arbitrariesByProperty;
+	private final ConcurrentLruCache<Property, CombinableArbitrary<?>> javaArbitrariesByProperty;
 	private final ConcurrentLruCache<RootProperty, MonkeyGeneratorContext> generatorContextByRootProperty;
 
 	public MonkeyContext(
 		ConcurrentLruCache<Property, CombinableArbitrary<?>> arbitrariesByProperty,
+		ConcurrentLruCache<Property, CombinableArbitrary<?>> javaArbitrariesByProperty,
 		ConcurrentLruCache<RootProperty, MonkeyGeneratorContext> generatorContextByRootProperty
 	) {
 		this.arbitrariesByProperty = arbitrariesByProperty;
+		this.javaArbitrariesByProperty = javaArbitrariesByProperty;
 		this.generatorContextByRootProperty = generatorContextByRootProperty;
 	}
 
@@ -46,10 +52,20 @@ public final class MonkeyContext {
 	}
 
 	public CombinableArbitrary<?> getCachedArbitrary(Property property) {
+		CombinableArbitrary<?> javaTypeCombinableArbitrary = javaArbitrariesByProperty.get(property);
+		if (javaTypeCombinableArbitrary != null) {
+			return javaTypeCombinableArbitrary;
+		}
 		return arbitrariesByProperty.get(property);
 	}
 
 	public void putCachedArbitrary(Property property, CombinableArbitrary<?> combinableArbitrary) {
+		Class<?> type = Types.getActualType(property.getType());
+		if (isJavaType(type)) {
+			javaArbitrariesByProperty.putIfAbsent(property, combinableArbitrary);
+			return;
+		}
+
 		arbitrariesByProperty.put(property, combinableArbitrary);
 	}
 

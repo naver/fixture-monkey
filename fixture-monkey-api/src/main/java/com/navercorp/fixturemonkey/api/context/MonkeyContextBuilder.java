@@ -29,6 +29,7 @@ import com.navercorp.fixturemonkey.api.property.RootProperty;
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class MonkeyContextBuilder {
 	private ConcurrentLruCache<Property, CombinableArbitrary<?>> arbitrariesByProperty;
+	private ConcurrentLruCache<Property, CombinableArbitrary<?>> javaArbitrariesByProperty;
 	private ConcurrentLruCache<RootProperty, MonkeyGeneratorContext> generatorContextByRootProperty;
 	private int cacheSize = 2048;
 	private int generatorContextSize = 1000;
@@ -37,6 +38,13 @@ public final class MonkeyContextBuilder {
 		ConcurrentLruCache<Property, CombinableArbitrary<?>> arbitrariesByProperty
 	) {
 		this.arbitrariesByProperty = arbitrariesByProperty;
+		return this;
+	}
+
+	public MonkeyContextBuilder javaArbitrariesByClass(
+		ConcurrentLruCache<Property, CombinableArbitrary<?>> javaArbitrariesByClass
+	) {
+		this.javaArbitrariesByProperty = javaArbitrariesByClass;
 		return this;
 	}
 
@@ -62,12 +70,17 @@ public final class MonkeyContextBuilder {
 			arbitrariesByProperty = new ConcurrentLruCache<>(cacheSize);
 		}
 
+		if (javaArbitrariesByProperty == null) {
+			javaArbitrariesByProperty = new ConcurrentLruCache<>(cacheSize);
+		}
+
 		if (generatorContextByRootProperty == null) {
 			generatorContextByRootProperty = new ConcurrentLruCache<>(generatorContextSize);
 		}
 
 		return new MonkeyContext(
 			arbitrariesByProperty,
+			javaArbitrariesByProperty,
 			generatorContextByRootProperty
 		);
 	}
