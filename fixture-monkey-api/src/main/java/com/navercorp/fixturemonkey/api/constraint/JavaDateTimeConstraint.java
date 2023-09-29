@@ -19,6 +19,7 @@
 package com.navercorp.fixturemonkey.api.constraint;
 
 import java.time.LocalDateTime;
+import java.util.function.Supplier;
 
 import javax.annotation.Nullable;
 
@@ -28,23 +29,28 @@ import org.apiguardian.api.API.Status;
 @API(since = "0.6.8", status = Status.EXPERIMENTAL)
 public final class JavaDateTimeConstraint {
 	@Nullable
-	private final LocalDateTime min;
-
+	private final Supplier<LocalDateTime> min;
 	@Nullable
-	private final LocalDateTime max;
+	private final Supplier<LocalDateTime> max;
 
-	public JavaDateTimeConstraint(@Nullable LocalDateTime min, @Nullable LocalDateTime max) {
+	public JavaDateTimeConstraint(@Nullable Supplier<LocalDateTime> min, @Nullable Supplier<LocalDateTime> max) {
 		this.min = min;
 		this.max = max;
 	}
 
 	@Nullable
 	public LocalDateTime getMin() {
-		return this.min;
+		if (this.min == null) {
+			return null;
+		}
+		return this.min.get();
 	}
 
 	@Nullable
 	public LocalDateTime getMax() {
-		return this.max;
+		if (this.max == null) {
+			return null;
+		}
+		return this.max.get();
 	}
 }
