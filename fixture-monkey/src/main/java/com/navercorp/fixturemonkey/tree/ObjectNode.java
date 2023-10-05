@@ -29,6 +29,7 @@ import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
+import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.customizer.ContainerInfoManipulator;
 import com.navercorp.fixturemonkey.customizer.NodeManipulator;
@@ -50,14 +51,22 @@ public final class ObjectNode {
 	@Nullable
 	private CombinableArbitrary<?> arbitrary;
 
-	private boolean manipulated = false;
-
 	private final List<NodeManipulator> manipulators = new ArrayList<>();
 
 	private final List<ContainerInfoManipulator> containerInfoManipulators = new ArrayList<>();
 
 	@SuppressWarnings("rawtypes")
 	private final List<Predicate> arbitraryFilters = new ArrayList<>();
+
+	private final LazyArbitrary<Boolean> childNotCacheable = LazyArbitrary.lazy(() -> {
+		for (ObjectNode child : children) {
+			if (child.manipulated() || child.childNotCacheable.getValue() || child.arbitraryProperty.isContainer()) {
+				return true;
+			}
+		}
+
+		return false;
+	});
 
 	ObjectNode(
 		@Nullable Property resolvedParentProperty,
@@ -134,12 +143,12 @@ public final class ObjectNode {
 		return arbitraryFilters;
 	}
 
-	public boolean cacheable() {
-		return !manipulated && !arbitraryProperty.isContainer();
+	public boolean manipulated() {
+		return !manipulators.isEmpty() || !containerInfoManipulators.isEmpty();
 	}
 
-	public void setManipulated(boolean manipulated) {
-		this.manipulated = manipulated;
+	public boolean cacheable() {
+		return !manipulated() && !arbitraryProperty.isContainer() && !childNotCacheable.getValue();
 	}
 
 	@Nullable

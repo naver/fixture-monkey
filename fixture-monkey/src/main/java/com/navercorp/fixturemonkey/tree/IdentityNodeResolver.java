@@ -35,7 +35,6 @@ public final class IdentityNodeResolver implements NodeResolver {
 
 	@Override
 	public List<ObjectNode> resolve(ObjectNode objectNode) {
-		objectNode.setManipulated(true);
 		objectNode.setArbitraryProperty(objectNode.getArbitraryProperty().withNullInject(NOT_NULL_INJECT));
 		return Collections.singletonList(objectNode);
 	}

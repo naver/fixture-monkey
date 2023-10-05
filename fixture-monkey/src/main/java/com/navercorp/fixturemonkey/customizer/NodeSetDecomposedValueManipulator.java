@@ -89,9 +89,9 @@ public final class NodeSetDecomposedValueManipulator<T> implements NodeManipulat
 	}
 
 	private void setValue(ObjectNode objectNode, @Nullable Object value) {
-		objectNode.setManipulated(true);
 		objectNode.setArbitraryProperty(objectNode.getArbitraryProperty().withNullInject(NOT_NULL_INJECT));
 		if (value == null) {
+			objectNode.addManipulator(node -> node.setArbitrary(CombinableArbitrary.from((Object)null)));
 			objectNode.setArbitraryProperty(objectNode.getArbitraryProperty().withNullInject(ALWAYS_NULL_INJECT));
 			return;
 		}
@@ -140,7 +140,9 @@ public final class NodeSetDecomposedValueManipulator<T> implements NodeManipulat
 
 		List<ObjectNode> children = objectNode.getChildren();
 		if (children.isEmpty() || Types.getActualType(objectNode.getProperty().getType()).isInterface()) {
-			objectNode.setArbitrary(CombinableArbitrary.from(value));
+			CombinableArbitrary<?> combinableArbitrary = CombinableArbitrary.from(value);
+			objectNode.addManipulator(node -> node.setArbitrary(combinableArbitrary));
+			objectNode.setArbitrary(combinableArbitrary);
 			return;
 		}
 
