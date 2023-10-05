@@ -47,14 +47,16 @@ jobs:
           CI: Github Action
 
       - name: Publish test report
-        uses: mikepenz/action-junit-report@v3.0.3
+        uses: mikepenz/action-junit-report@v4
         if: always() # always run even if the previous step fails
         with:
           check_name: JUnit Test Report on JDK ${{ matrix.Java }}
           report_paths: '**/build/test-results/test/TEST-*.xml'
+          detailed_summary: true
 
       - name: Test Summary
-        uses: test-summary/action@v1
+        uses: actions/upload-artifact@v3  # upload test results
         if: always()
         with:
-          paths: '**/build/test-results/test/TEST-*.xml'
+          name: test-results
+          path: '**/build/test-results/test/TEST-*.xml'
