@@ -17,22 +17,15 @@ jobs:
         uses: gradle/gradle-build-action@v2.4.2
         with:
           arguments: jmh
-      #      - name: Print benchmark summary
-      #        run: cat ./fixture-monkey/build/results/jmh/results.csv >> $GITHUB_STEP_SUMMARY
-      - name: Read CSV
+      - name: Read benchmark result
         id: csv
         uses: juliangruber/read-file-action@v1
         with:
           path: ./fixture-monkey/build/results/jmh/results.csv
-      - name: Create MD
+      - name: Create Markdown table
         uses: petems/csv-to-md-table-action@master
         id: csv-table-output
         with:
           csvinput: ${{ steps.csv.outputs.content }}
-      - uses: mshick/add-pr-comment@v1
-        with:
-          message: |
-            ${{steps.csv-table-output.outputs.markdown-table}}
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          repo-token-user-login: 'github-actions[bot]' # The user.login for temporary GitHub tokens
-          allow-repeats: true
+      - name: Print benchmark summary
+        run: echo "${{steps.csv-table-output.outputs.markdown-table}}" >> $GITHUB_STEP_SUMMARY
