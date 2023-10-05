@@ -136,4 +136,5 @@ jmh {
     fork = 1
     warmupIterations = 3
     iterations = 10
+    resultFormat = "CSV"
 }
