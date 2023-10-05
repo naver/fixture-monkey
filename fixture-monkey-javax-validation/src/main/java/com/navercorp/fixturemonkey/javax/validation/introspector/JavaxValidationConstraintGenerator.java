@@ -24,6 +24,7 @@ import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 import javax.annotation.Nullable;
 import javax.validation.constraints.DecimalMax;
@@ -494,19 +495,18 @@ public final class JavaxValidationConstraintGenerator implements JavaConstraintG
 	@Override
 	@Nullable
 	public JavaDateTimeConstraint generateDateTimeConstraint(ArbitraryGeneratorContext context) {
-		LocalDateTime now = LocalDateTime.now();
-		LocalDateTime min = null;
+		Supplier<LocalDateTime> min = null;
 		if (context.findAnnotation(Future.class).isPresent()) {
-			min = now.plusSeconds(3);    // 3000 is buffer for future time
+			min = () -> LocalDateTime.now().plusSeconds(3);    // 3000 is buffer for future time
 		} else if (context.findAnnotation(FutureOrPresent.class).isPresent()) {
-			min = now.plusSeconds(2);    // 2000 is buffer for future time
+			min = () -> LocalDateTime.now().plusSeconds(2);    // 2000 is buffer for future time
 		}
 
-		LocalDateTime max = null;
+		Supplier<LocalDateTime> max = null;
 		if (context.findAnnotation(Past.class).isPresent()) {
-			max = now.minusSeconds(1);
+			max = () -> LocalDateTime.now().minusSeconds(1);
 		} else if (context.findAnnotation(PastOrPresent.class).isPresent()) {
-			max = now;
+			max = LocalDateTime::now;
 		}
 
 		if (min == null && max == null) {
