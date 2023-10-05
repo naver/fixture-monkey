@@ -130,54 +130,82 @@ public final class ArbitraryTraverser {
 		@Nullable Property resolvedParentProperty,
 		TraverseContext context
 	) {
-		List<ObjectNode> children = new ArrayList<>();
-		ObjectProperty objectProperty = arbitraryProperty.getObjectProperty();
 		boolean container = containerProperty != null;
 
-		Property resolvedProperty;
 		if (container) {
-			resolvedProperty = objectProperty.getProperty();
-			List<Property> elementProperties = containerProperty.getElementProperties();
+			return generateContainerNode(
+				arbitraryProperty,
+				containerProperty,
+				resolvedParentProperty,
+				context
+			);
+		}
+
+		return generateObjectNode(arbitraryProperty, resolvedParentProperty, context);
+	}
+
+	private ObjectNode generateObjectNode(
+		ArbitraryProperty arbitraryProperty,
+		@Nullable Property resolvedParentProperty,
+		TraverseContext context
+	) {
+		ObjectProperty objectProperty = arbitraryProperty.getObjectProperty();
+		List<ObjectNode> children = new ArrayList<>();
+
+		Map<Property, List<Property>> childPropertyListsByCandidateProperty =
+			objectProperty.getChildPropertyListsByCandidateProperty();
+
+		for (
+			Entry<Property, List<Property>> childPropertiesByCandidateProperty :
+			childPropertyListsByCandidateProperty.entrySet()
+		) {
+			List<Property> childProperties = childPropertiesByCandidateProperty.getValue();
+			Property candidateProperty = childPropertiesByCandidateProperty.getKey();
+
 			children.addAll(
 				generateChildrenNodes(
-					elementProperties,
+					childProperties,
 					arbitraryProperty,
-					containerProperty,
-					objectProperty.getProperty(),
+					null,
+					candidateProperty,
 					context
 				)
 			);
-		} else {
-			Map<Property, List<Property>> childPropertyListsByCandidateProperty =
-				objectProperty.getChildPropertyListsByCandidateProperty();
-
-			for (
-				Entry<Property, List<Property>> childPropertiesByCandidateProperty :
-				childPropertyListsByCandidateProperty.entrySet()
-			) {
-				List<Property> childProperties = childPropertiesByCandidateProperty.getValue();
-				Property candidateProperty = childPropertiesByCandidateProperty.getKey();
-
-				children.addAll(
-					generateChildrenNodes(
-						childProperties,
-						arbitraryProperty,
-						null,
-						candidateProperty,
-						context
-					)
-				);
-			}
-
-			resolvedProperty = new ArrayList<>(childPropertyListsByCandidateProperty.keySet())
-				.get(Randoms.nextInt(childPropertyListsByCandidateProperty.size()));
 		}
+
+		Property resolvedProperty = new ArrayList<>(childPropertyListsByCandidateProperty.keySet())
+			.get(Randoms.nextInt(childPropertyListsByCandidateProperty.size()));
 
 		return new ObjectNode(
 			resolvedParentProperty,
 			resolvedProperty,
 			arbitraryProperty,
 			children
+		);
+	}
+
+	private ObjectNode generateContainerNode(
+		ArbitraryProperty arbitraryProperty,
+		ContainerProperty containerProperty,
+		@Nullable Property resolvedParentProperty,
+		TraverseContext context
+	) {
+		ObjectProperty objectProperty = arbitraryProperty.getObjectProperty();
+
+		Property resolvedProperty = objectProperty.getProperty();
+		List<Property> elementProperties = containerProperty.getElementProperties();
+
+		return new ObjectNode(
+			resolvedParentProperty,
+			resolvedProperty,
+			arbitraryProperty,
+			generateChildrenNodes(
+				elementProperties,
+				arbitraryProperty,
+				containerProperty,
+				objectProperty.getProperty(),
+				context
+			)
 		);
 	}
 
