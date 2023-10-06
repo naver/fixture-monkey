@@ -5,6 +5,11 @@ plugins {
     id "com.github.spotbugs" version "4.7.6"
     id "jacoco"
     id "checkstyle"
+    id "me.champeau.mrjar" version "0.1.1"
+}
+
+multiRelease {
+    targetVersions(8, 17)
 }
 
 dependencies {
@@ -14,6 +19,8 @@ dependencies {
     compileOnly("net.jqwik:jqwik-web:${JQWIK_VERSION}")
     compileOnly("net.jqwik:jqwik-time:${JQWIK_VERSION}")
     compileOnly("com.github.mifmif:generex:1.0.2")
+
+    java17Implementation("org.apiguardian:apiguardian-api:1.1.2")
 
     testImplementation("net.jqwik:jqwik-engine:${JQWIK_VERSION}")
     testImplementation("net.jqwik:jqwik-api:${JQWIK_VERSION}")

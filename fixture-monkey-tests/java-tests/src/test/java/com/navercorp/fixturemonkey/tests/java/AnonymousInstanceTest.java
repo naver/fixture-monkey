@@ -32,6 +32,7 @@ import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.javax.validation.plugin.JavaxValidationPlugin;
 import com.navercorp.fixturemonkey.tests.java.AnonymousInstanceTestSpecs.AnnotatedInterface;
 import com.navercorp.fixturemonkey.tests.java.AnonymousInstanceTestSpecs.ContainerInterface;
+import com.navercorp.fixturemonkey.tests.java.AnonymousInstanceTestSpecs.DefaultMethodInterface;
 import com.navercorp.fixturemonkey.tests.java.AnonymousInstanceTestSpecs.GetterInterface;
 import com.navercorp.fixturemonkey.tests.java.AnonymousInstanceTestSpecs.InheritedInterface;
 import com.navercorp.fixturemonkey.tests.java.AnonymousInstanceTestSpecs.InheritedInterfaceWithSameNameMethod;

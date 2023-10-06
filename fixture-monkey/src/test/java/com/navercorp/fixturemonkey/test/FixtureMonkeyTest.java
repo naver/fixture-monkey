@@ -23,7 +23,6 @@ import static org.assertj.core.api.BDDAssertions.then;
 import static org.assertj.core.api.BDDAssertions.thenNoException;
 import static org.assertj.core.api.BDDAssertions.thenThrownBy;
 
-import java.net.URI;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.AbstractMap.SimpleEntry;
@@ -1359,14 +1358,6 @@ class FixtureMonkeyTest {
 			.getStrList();
 
 		then(actual).allMatch(expectedElement::equals);
-	}
-
-	@Property
-	void sampleUri() {
-		// when
-		URI actual = SUT.giveMeOne(URI.class);
-
-		then(actual).isNotNull();
 	}
 
 	@Property

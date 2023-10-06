@@ -18,11 +18,9 @@
 
 package com.navercorp.fixturemonkey.api.introspector;
 
-import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -76,7 +74,7 @@ public final class AnonymousArbitraryIntrospector implements ArbitraryIntrospect
 							invocationHandlerBuilder.put(methodProperty.getMethodName(), combined);
 						}
 
-						if (invocationHandlerBuilder.generatedValuesByMethodName.isEmpty()) {
+						if (invocationHandlerBuilder.isEmpty()) {
 							return null;
 						}
 
@@ -92,19 +90,4 @@ public final class AnonymousArbitraryIntrospector implements ArbitraryIntrospect
 		);
 	}
 
-	private static final class InvocationHandlerBuilder {
-		private final Map<String, Object> generatedValuesByMethodName;
-
-		private InvocationHandlerBuilder(Map<String, Object> generatedValuesByMethodName) {
-			this.generatedValuesByMethodName = generatedValuesByMethodName;
-		}
-
-		private void put(String methodName, Object value) {
-			generatedValuesByMethodName.put(methodName, value);
-		}
-
-		private InvocationHandler build() {
-			return (proxy, method, args) -> generatedValuesByMethodName.get(method.getName());
-		}
-	}
 }
