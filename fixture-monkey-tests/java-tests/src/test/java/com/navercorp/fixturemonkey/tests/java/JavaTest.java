@@ -67,6 +67,7 @@ import com.navercorp.fixturemonkey.tests.java.ImmutableJavaTestSpecs.RootJavaTyp
 import com.navercorp.fixturemonkey.tests.java.ImmutableJavaTestSpecs.SetImplementationWithoutGeneric;
 import com.navercorp.fixturemonkey.tests.java.ImmutableMixedIntrospectorsTypeSpecs.MixedJavaTypeObject;
 import com.navercorp.fixturemonkey.tests.java.ImmutableRecursiveTypeSpecs.SelfRecursiveListObject;
+import com.navercorp.fixturemonkey.tests.java.ImmutableRecursiveTypeSpecs.SelfRecursiveMapObject;
 import com.navercorp.fixturemonkey.tests.java.ImmutableRecursiveTypeSpecs.SelfRecursiveObject;
 
 @SuppressWarnings("rawtypes")
@@ -679,5 +680,25 @@ class JavaTest {
 
 		Set<String> expected = new HashSet<>(actual);
 		then(actual).hasSameSizeAs(expected);
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void sampleSelfRecursiveMapObject() {
+		Map<Integer, SelfRecursiveMapObject> actual = SUT.giveMeOne(
+			new TypeReference<Map<Integer, SelfRecursiveMapObject>>() {
+			});
+
+		then(actual).isNotNull();
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void fixedSelfRecursiveMapObject() {
+		Map<Integer, SelfRecursiveMapObject> actual = SUT.giveMeBuilder(
+				new TypeReference<Map<Integer, SelfRecursiveMapObject>>() {
+				})
+			.fixed()
+			.sample();
+
+		then(actual).isNotNull();
 	}
 }

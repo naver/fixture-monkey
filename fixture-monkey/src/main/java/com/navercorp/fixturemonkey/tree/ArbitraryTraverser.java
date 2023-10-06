@@ -223,7 +223,7 @@ public final class ArbitraryTraverser {
 		for (int sequence = 0; sequence < childProperties.size(); sequence++) {
 			Property childProperty = childProperties.get(sequence);
 
-			if (context.isTraversed(childProperty)) {
+			if (context.isTraversed(childProperty) && !(resolvedParentProperty instanceof MapEntryElementProperty)) {
 				continue;
 			}
 
