@@ -22,8 +22,11 @@ import static com.navercorp.fixturemonkey.tests.TestEnvironment.TEST_COUNT;
 import static org.assertj.core.api.BDDAssertions.then;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.RepeatedTest;
+import org.junit.jupiter.api.Test;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.javax.validation.plugin.JavaxValidationPlugin;
@@ -208,5 +211,16 @@ class AnonymousInstanceTest {
 			.string();
 
 		then(actual).isEqualTo(expected);
+	}
+
+	@Test
+	void sampleListWouldReturnDiff() {
+		Set<Integer> actual = SUT.giveMeBuilder(Interface.class)
+			.sampleList(2)
+			.stream()
+			.map(Interface::integer)
+			.collect(Collectors.toSet());
+
+		then(actual).hasSize(2);
 	}
 }
