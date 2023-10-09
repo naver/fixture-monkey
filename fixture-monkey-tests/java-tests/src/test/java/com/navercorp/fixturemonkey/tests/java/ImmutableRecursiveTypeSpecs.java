@@ -19,6 +19,7 @@
 package com.navercorp.fixturemonkey.tests.java;
 
 import java.util.List;
+import java.util.Map;
 
 import lombok.Value;
 
@@ -33,5 +34,11 @@ class ImmutableRecursiveTypeSpecs {
 	public static class SelfRecursiveListObject {
 		String value;
 		List<SelfRecursiveListObject> selfRecursiveListObjects;
+	}
+
+	@Value
+	public static class SelfRecursiveMapObject {
+		String value;
+		Map<String, SelfRecursiveMapObject> selfRecursiveMap;
 	}
 }
