@@ -132,6 +132,7 @@ public final class FixtureMonkeyOptionsBuilder {
 	@Nullable
 	private Function<JavaConstraintGenerator, JavaTimeArbitraryGeneratorSet> generateJavaTimeArbitrarySet = null;
 	private InstantiatorProcessor instantiatorProcessor = new JavaInstantiatorProcessor();
+	private boolean throwIfFailed = false;
 
 	FixtureMonkeyOptionsBuilder() {
 	}
@@ -577,6 +578,11 @@ public final class FixtureMonkeyOptionsBuilder {
 		return this;
 	}
 
+	public FixtureMonkeyOptionsBuilder throwIfFailed(boolean throwIfFailed) {
+		this.throwIfFailed = throwIfFailed;
+		return this;
+	}
+
 	public FixtureMonkeyOptions build() {
 		ObjectPropertyGenerator defaultObjectPropertyGenerator = defaultIfNull(
 			this.defaultObjectPropertyGenerator,
@@ -697,7 +703,8 @@ public final class FixtureMonkeyOptionsBuilder {
 			this.generateMaxTries,
 			this.generateUniqueMaxTries,
 			this.javaConstraintGenerator,
-			this.instantiatorProcessor
+			this.instantiatorProcessor,
+			this.throwIfFailed
 		);
 	}
 

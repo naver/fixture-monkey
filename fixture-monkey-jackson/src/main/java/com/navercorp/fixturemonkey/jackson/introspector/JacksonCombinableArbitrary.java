@@ -22,6 +22,8 @@ import java.util.function.Function;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 
@@ -30,6 +32,8 @@ import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
  */
 @API(since = "0.5.0", status = Status.MAINTAINED)
 public final class JacksonCombinableArbitrary<T> implements CombinableArbitrary<T> {
+	private final Logger log = LoggerFactory.getLogger(this.getClass());
+
 	private final CombinableArbitrary<T> jsonValue;
 	private final Function<Object, T> deserializer;
 
@@ -43,15 +47,21 @@ public final class JacksonCombinableArbitrary<T> implements CombinableArbitrary<
 
 	/**
 	 * It would deserialize a serialized {@code jsonValue} object into an actual object.
+	 *
 	 * @return an actual object
 	 */
 	@Override
 	public T combined() {
-		return deserializer.apply(jsonValue.rawValue());
+		try {
+			return deserializer.apply(jsonValue.rawValue());
+		} catch (Exception ex) {
+			throw new IllegalArgumentException("Jackson fails to deserialize the generated value.", ex);
+		}
 	}
 
 	/**
 	 * It would generate a serialized object.
+	 *
 	 * @return a map representing JsonObject or JsonArray
 	 */
 	@Override

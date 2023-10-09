@@ -29,6 +29,8 @@ import java.util.function.Function;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
@@ -40,6 +42,8 @@ import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.4.2", status = Status.MAINTAINED)
 public final class ConstructorPropertiesArbitraryIntrospector implements ArbitraryIntrospector {
+	private static final Logger LOGGER = LoggerFactory.getLogger(ConstructorPropertiesArbitraryIntrospector.class);
+
 	public static final ConstructorPropertiesArbitraryIntrospector INSTANCE =
 		new ConstructorPropertiesArbitraryIntrospector();
 
@@ -54,7 +58,8 @@ public final class ConstructorPropertiesArbitraryIntrospector implements Arbitra
 		Entry<Constructor<?>, String[]> parameterNamesByConstructor = TypeCache.getParameterNamesByConstructor(type);
 		if (parameterNamesByConstructor == null) {
 			throw new IllegalArgumentException(
-				"Primary Constructor does not exist. type " + type.getSimpleName());
+				"Primary Constructor does not exist. Please use a different ArbitraryIntrospector. type: " + type
+			);
 		}
 
 		Constructor<?> primaryConstructor = parameterNamesByConstructor.getKey();

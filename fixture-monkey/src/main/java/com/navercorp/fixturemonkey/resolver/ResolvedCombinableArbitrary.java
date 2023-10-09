@@ -24,6 +24,8 @@ import java.util.function.Supplier;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.exception.ContainerSizeFilterMissException;
@@ -36,6 +38,7 @@ import com.navercorp.fixturemonkey.tree.ObjectTree;
 
 @API(since = "0.6.9", status = Status.EXPERIMENTAL)
 final class ResolvedCombinableArbitrary<T> implements CombinableArbitrary<T> {
+	private static final Logger LOGGER = LoggerFactory.getLogger(ResolvedCombinableArbitrary.class);
 	private static final int VALIDATION_ANNOTATION_FILTERING_COUNT = 1;
 
 	private final RootProperty rootProperty;
@@ -44,6 +47,7 @@ final class ResolvedCombinableArbitrary<T> implements CombinableArbitrary<T> {
 	private final LazyArbitrary<CombinableArbitrary<T>> arbitrary;
 	private final ArbitraryValidator validator;
 	private final boolean validOnly;
+	private final boolean throwIfFailed;
 
 	private Exception lastException = null;
 
@@ -53,7 +57,8 @@ final class ResolvedCombinableArbitrary<T> implements CombinableArbitrary<T> {
 		Function<ObjectTree, CombinableArbitrary<T>> generateArbitrary,
 		int generateMaxTries,
 		ArbitraryValidator validator,
-		boolean validOnly
+		boolean validOnly,
+		boolean throwIfFailed
 	) {
 		this.rootProperty = rootProperty;
 		this.objectTree = LazyArbitrary.lazy(regenerateTree);
@@ -66,6 +71,7 @@ final class ResolvedCombinableArbitrary<T> implements CombinableArbitrary<T> {
 		);
 		this.validator = validator;
 		this.validOnly = validOnly;
+		this.throwIfFailed = throwIfFailed;
 	}
 
 	@Override
@@ -80,6 +86,16 @@ final class ResolvedCombinableArbitrary<T> implements CombinableArbitrary<T> {
 				objectTree.clear();
 			} catch (FixedValueFilterMissException | RetryableFilterMissException ex) {
 				lastException = ex;
+			} catch (Exception ex) {
+				if (throwIfFailed) {
+					throw ex;
+				}
+
+				LOGGER.warn(
+					"Failed to generate a instance of type. type: {}. Check the cause.", rootProperty.getType(),
+					ex
+				);
+				return null;
 			} finally {
 				arbitrary.clear();
 			}
@@ -103,6 +119,16 @@ final class ResolvedCombinableArbitrary<T> implements CombinableArbitrary<T> {
 				objectTree.clear();
 			} catch (FixedValueFilterMissException | RetryableFilterMissException ex) {
 				lastException = ex;
+			} catch (Exception ex) {
+				if (throwIfFailed) {
+					throw ex;
+				}
+
+				LOGGER.warn(
+					"Failed to generate a instance of type. type: {}. Check the cause.", rootProperty.getType(),
+					ex
+				);
+				return null;
 			} finally {
 				arbitrary.clear();
 			}

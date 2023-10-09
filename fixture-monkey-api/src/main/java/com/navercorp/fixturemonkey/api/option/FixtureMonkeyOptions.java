@@ -123,6 +123,7 @@ public final class FixtureMonkeyOptions {
 	private final int generateUniqueMaxTries;
 	private final JavaConstraintGenerator javaConstraintGenerator;
 	private final InstantiatorProcessor instantiatorProcessor;
+	private final boolean throwIfFailed;
 
 	public FixtureMonkeyOptions(
 		List<MatcherOperator<PropertyGenerator>> propertyGenerators,
@@ -143,7 +144,8 @@ public final class FixtureMonkeyOptions {
 		int generateMaxTries,
 		int generateUniqueMaxTries,
 		JavaConstraintGenerator javaConstraintGenerator,
-		InstantiatorProcessor instantiatorProcessor
+		InstantiatorProcessor instantiatorProcessor,
+		boolean throwIfFailed
 	) {
 		this.propertyGenerators = propertyGenerators;
 		this.defaultPropertyGenerator = defaultPropertyGenerator;
@@ -164,6 +166,7 @@ public final class FixtureMonkeyOptions {
 		this.generateUniqueMaxTries = generateUniqueMaxTries;
 		this.javaConstraintGenerator = javaConstraintGenerator;
 		this.instantiatorProcessor = instantiatorProcessor;
+		this.throwIfFailed = throwIfFailed;
 	}
 
 	public static FixtureMonkeyOptionsBuilder builder() {
@@ -303,6 +306,10 @@ public final class FixtureMonkeyOptions {
 		return instantiatorProcessor;
 	}
 
+	public boolean getThrowIfFailed() {
+		return throwIfFailed;
+	}
+
 	public FixtureMonkeyOptionsBuilder toBuilder() {
 		return builder()
 			.defaultPropertyGenerator(defaultPropertyGenerator)
@@ -320,7 +327,8 @@ public final class FixtureMonkeyOptions {
 			.defaultArbitraryValidator(defaultArbitraryValidator)
 			.decomposedContainerValueFactory(decomposedContainerValueFactory)
 			.javaConstraintGenerator(javaConstraintGenerator)
-			.instantiatorProcessor(instantiatorProcessor);
+			.instantiatorProcessor(instantiatorProcessor)
+			.throwIfFailed(throwIfFailed);
 	}
 
 	private static List<MatcherOperator<ObjectPropertyGenerator>> getDefaultObjectPropertyGenerators(

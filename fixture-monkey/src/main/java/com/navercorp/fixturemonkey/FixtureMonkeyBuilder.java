@@ -527,6 +527,11 @@ public class FixtureMonkeyBuilder {
 		return this;
 	}
 
+	public FixtureMonkeyBuilder throwIfFailed(boolean throwIfFailed) {
+		this.fixtureMonkeyOptionsBuilder.throwIfFailed(throwIfFailed);
+		return this;
+	}
+
 	public FixtureMonkey build() {
 		FixtureMonkeyOptions fixtureMonkeyOptions = fixtureMonkeyOptionsBuilder.build();
 		ArbitraryTraverser traverser = new ArbitraryTraverser(fixtureMonkeyOptions);

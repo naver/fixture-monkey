@@ -58,7 +58,13 @@ public final class BeanArbitraryIntrospector implements ArbitraryIntrospector {
 
 		CombinableArbitrary<?> generated = context.getGenerated();
 		if (generated == CombinableArbitrary.NOT_GENERATED) {
-			generated = CombinableArbitrary.from(() -> Reflections.newInstance(type));
+			try {
+				generated = CombinableArbitrary.from(Reflections.newInstance(type));
+			} catch (Exception ex) {
+				throw new IllegalArgumentException(
+					"No-args constructor is not found. Please use a different ArbitraryIntrospector type: " + type
+				);
+			}
 		}
 
 		Map<String, PropertyDescriptor> propertyDescriptorsByPropertyName =
@@ -90,7 +96,7 @@ public final class BeanArbitraryIntrospector implements ArbitraryIntrospector {
 							writeMethod.invoke(object, value);
 						}
 					} catch (IllegalAccessException | InvocationTargetException ex) {
-						log.warn("set bean property is failed. name: {} value: {}",
+						log.warn("set bean property is failed. name: {} value: {}. It would be null.",
 							writeMethod.getName(),
 							value,
 							ex);
