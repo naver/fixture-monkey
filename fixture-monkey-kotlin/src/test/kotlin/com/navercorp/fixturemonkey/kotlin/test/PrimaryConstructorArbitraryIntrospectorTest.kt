@@ -74,7 +74,7 @@ class PrimaryConstructorArbitraryIntrospectorTest {
     @Property
     fun sampleInterface() {
         // when
-        val actual = sut.giveMeOne<InterfaceClass>()
+        val actual: InterfaceClass = sut.giveMeOne()
 
         then(actual).isNull()
     }

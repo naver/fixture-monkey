@@ -53,36 +53,42 @@ public final class AnonymousArbitraryIntrospector implements ArbitraryIntrospect
 		Property property = context.getResolvedProperty();
 		Class<?> type = Types.getActualType(property.getType());
 
-		Map<String, CombinableArbitrary<?>> arbitrariesByPropertyName =
-			context.getCombinableArbitrariesByPropertyName();
-
-		List<ArbitraryProperty> childrenProperties = context.getChildren();
-
-		InvocationHandlerBuilder invocationHandlerBuilder = new InvocationHandlerBuilder(new HashMap<>());
-
-		for (ArbitraryProperty arbitraryProperty : childrenProperties) {
-			Property childProperty = arbitraryProperty.getObjectProperty().getProperty();
-
-			if (!(childProperty instanceof MethodProperty)) {
-				continue;
-			}
-
-			MethodProperty methodProperty = (MethodProperty)childProperty;
-
-			Object combined = arbitrariesByPropertyName.get(childProperty.getName()).combined();
-			invocationHandlerBuilder.put(methodProperty.getMethodName(), combined);
-		}
-
-		if (invocationHandlerBuilder.generatedValuesByMethodName.isEmpty()) {
-			return new ArbitraryIntrospectorResult(CombinableArbitrary.NOT_GENERATED);
-		}
-
 		return new ArbitraryIntrospectorResult(
-			CombinableArbitrary.from(
-				type.cast(
-					Proxy.newProxyInstance(type.getClassLoader(), new Class[] {type}, invocationHandlerBuilder.build())
+			CombinableArbitrary.objectBuilder()
+				.properties(context.getCombinableArbitrariesByArbitraryProperty())
+				.build(
+					arbitrariesByPropertyName -> {
+						List<ArbitraryProperty> childrenProperties = context.getChildren();
+
+						InvocationHandlerBuilder invocationHandlerBuilder = new InvocationHandlerBuilder(
+							new HashMap<>());
+
+						for (ArbitraryProperty arbitraryProperty : childrenProperties) {
+							Property childProperty = arbitraryProperty.getObjectProperty().getProperty();
+
+							if (!(childProperty instanceof MethodProperty)) {
+								continue;
+							}
+
+							MethodProperty methodProperty = (MethodProperty)childProperty;
+
+							Object combined = arbitrariesByPropertyName.get(arbitraryProperty);
+							invocationHandlerBuilder.put(methodProperty.getMethodName(), combined);
+						}
+
+						if (invocationHandlerBuilder.generatedValuesByMethodName.isEmpty()) {
+							return null;
+						}
+
+						return type.cast(
+							Proxy.newProxyInstance(
+								type.getClassLoader(),
+								new Class[] {type},
+								invocationHandlerBuilder.build()
+							)
+						);
+					}
 				)
-			)
 		);
 	}
 
