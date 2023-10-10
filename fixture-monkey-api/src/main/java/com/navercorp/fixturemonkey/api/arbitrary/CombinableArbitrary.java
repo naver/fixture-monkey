@@ -43,9 +43,10 @@ public interface CombinableArbitrary<T> {
 	 * Generates a {@link FixedCombinableArbitrary} which returns always same value.
 	 *
 	 * @param object to be converted into {@link FixedCombinableArbitrary}.
+	 * @param <T>    type to converted as {@link CombinableArbitrary}
 	 * @return a {@link FixedCombinableArbitrary}
 	 */
-	static CombinableArbitrary<?> from(Object object) {
+	static <T> CombinableArbitrary<T> from(T object) {
 		return new FixedCombinableArbitrary<>(object);
 	}
 
