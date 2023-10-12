@@ -5,7 +5,7 @@ plugins {
     id "com.github.spotbugs" version "4.7.6"
     id "jacoco"
     id "checkstyle"
-    id 'org.jetbrains.kotlin.jvm' version '1.6.20'
+    id 'org.jetbrains.kotlin.jvm' version "${KOTLIN_VERSION}"
 }
 
 dependencies {
@@ -16,7 +16,7 @@ dependencies {
     testImplementation(project(":fixture-monkey-javax-validation"))
     testImplementation("org.assertj:assertj-core:3.22.0")
     testImplementation("org.projectlombok:lombok:1.18.24")
-    testImplementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.6.20")
+    testImplementation("org.jetbrains.kotlin:kotlin-stdlib:${KOTLIN_VERSION}")
     testAnnotationProcessor("org.projectlombok:lombok:1.18.24")
 }
 

@@ -68,4 +68,10 @@ class AnonymousInstanceTestSpecs {
 
 	public interface NestedInheritedInterface extends InheritedInterfaceWithSameNameMethod, Interface {
 	}
+
+	public interface DefaultMethodInterface {
+		default String defaultMethod() {
+			return "test";
+		}
+	}
 }

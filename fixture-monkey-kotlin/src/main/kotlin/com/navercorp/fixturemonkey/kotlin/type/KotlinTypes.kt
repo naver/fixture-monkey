@@ -18,6 +18,7 @@
 
 package com.navercorp.fixturemonkey.kotlin.type
 
+import com.navercorp.fixturemonkey.api.type.AnnotatedTypes
 import com.navercorp.fixturemonkey.api.type.Types
 import org.apiguardian.api.API
 import java.lang.reflect.AnnotatedParameterizedType
@@ -96,21 +97,13 @@ fun getAnnotatedType(ownerType: AnnotatedType, kProperty: KProperty<*>): Annotat
     }
 
     val resolvedGenericsTypesArray = resolvedGenericsTypes.toTypedArray()
-    return object : AnnotatedParameterizedType {
-        override fun getAnnotatedActualTypeArguments(): Array<AnnotatedType> = resolvedGenericsTypesArray
-
-        override fun getType(): Type = resolveType
-
-        override fun getAnnotations(): Array<Annotation> = annotationArray
-
-        override fun getDeclaredAnnotations(): Array<Annotation> = annotationArray
-
-        override fun <T : Annotation?> getAnnotation(annotationClass: Class<T>): T? =
-            @Suppress("UNCHECKED_CAST")
-            annotations
-                .find { it.annotationClass.java == annotationClass }
-                .let { it as T }
-    }
+    return AnnotatedTypes.from(
+        resolvedGenericsTypesArray,
+        resolveType,
+        annotationArray,
+        annotationArray,
+        ownerType
+    )
 }
 
 internal class KotlinAnnotatedType(

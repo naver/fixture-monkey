@@ -269,7 +269,7 @@ public class Types {
 		}
 
 		if (genericType instanceof GenericArrayType) {
-			return resolveGenericsArrayType(currentAnnotatedType, parentGenericsTypes);
+			return resolveGenericsArrayType(parentAnnotatedType, currentAnnotatedType, parentGenericsTypes);
 		}
 
 		AnnotatedParameterizedType fieldParameterizedType = (AnnotatedParameterizedType)currentAnnotatedType;
@@ -320,43 +320,17 @@ public class Types {
 			}
 		};
 
-		return new AnnotatedParameterizedType() {
-			@Override
-			public AnnotatedType[] getAnnotatedActualTypeArguments() {
-				return resolvedGenericsTypes;
-			}
-
-			// For compatibility with JDK >= 9. A breaking change in the JDK :-(
-			// @Override
-			@SuppressWarnings("Since15")
-			public AnnotatedType getAnnotatedOwnerType() {
-				// TODO: Return annotatedType.getAnnotatedOwnerType() as soon as Java >= 9 is being used
-				return null;
-			}
-
-			@Override
-			public Type getType() {
-				return resolveType;
-			}
-
-			@Override
-			public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
-				return fieldParameterizedType.getAnnotation(annotationClass);
-			}
-
-			@Override
-			public Annotation[] getAnnotations() {
-				return fieldParameterizedType.getAnnotations();
-			}
-
-			@Override
-			public Annotation[] getDeclaredAnnotations() {
-				return fieldParameterizedType.getDeclaredAnnotations();
-			}
-		};
+		return AnnotatedTypes.from(
+			resolvedGenericsTypes,
+			resolveType,
+			fieldParameterizedType.getAnnotations(),
+			fieldParameterizedType.getDeclaredAnnotations(),
+			parentAnnotatedType
+		);
 	}
 
 	private static AnnotatedArrayType resolveGenericsArrayType(
+		AnnotatedType parentAnnotatedType,
 		AnnotatedType currentAnnotatedType,
 		AnnotatedType[] ownerGenericsTypes
 	) {
@@ -387,38 +361,13 @@ public class Types {
 
 		Type resolveType = (GenericArrayType)() -> genericComponentTypeWithGeneric;
 
-		return new AnnotatedArrayType() {
-			@Override
-			public AnnotatedType getAnnotatedGenericComponentType() {
-				return Types.generateAnnotatedTypeWithoutAnnotation(genericComponentTypeWithGeneric);
-			}
-
-			@SuppressWarnings("Since15")
-			public AnnotatedType getAnnotatedOwnerType() {
-				// TODO: Return annotatedType.getAnnotatedOwnerType() as soon as Java >= 9 is being used
-				return null;
-			}
-
-			@Override
-			public Type getType() {
-				return resolveType;
-			}
-
-			@Override
-			public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
-				return currentAnnotatedType.getAnnotation(annotationClass);
-			}
-
-			@Override
-			public Annotation[] getAnnotations() {
-				return currentAnnotatedType.getAnnotations();
-			}
-
-			@Override
-			public Annotation[] getDeclaredAnnotations() {
-				return currentAnnotatedType.getDeclaredAnnotations();
-			}
-		};
+		return AnnotatedTypes.from(
+			Types.generateAnnotatedTypeWithoutAnnotation(genericComponentTypeWithGeneric),
+			resolveType,
+			currentAnnotatedType.getAnnotations(),
+			currentAnnotatedType.getDeclaredAnnotations(),
+			parentAnnotatedType
+		);
 	}
 
 	public static AnnotatedType resolveWithTypeReferenceGenerics(
