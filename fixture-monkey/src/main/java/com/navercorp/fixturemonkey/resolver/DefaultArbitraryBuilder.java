@@ -453,16 +453,11 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T> {
 
 	@SuppressWarnings("unchecked")
 	private CombinableArbitrary<?> resolveArbitrary(ArbitraryBuilderContext context) {
-		List<ArbitraryManipulator> manipulators = new ArrayList<>(context.getManipulators());
-		List<ContainerInfoManipulator> containerInfoManipulators =
-			new ArrayList<>(context.getContainerInfoManipulators());
-
 		if (context.isFixed()) {
 			if (context.getFixedCombinableArbitrary() == null || context.fixedExpired()) {
 				Object fixed = resolver.resolve(
 						rootProperty,
-						manipulators,
-						containerInfoManipulators
+						context
 					)
 					.filter(VALIDATION_ANNOTATION_FILTERING_COUNT, validateFilter(context.isValidOnly()))
 					.combined();
@@ -474,8 +469,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T> {
 
 		return resolver.resolve(
 				rootProperty,
-				manipulators,
-				containerInfoManipulators
+				context
 			)
 			.filter(VALIDATION_ANNOTATION_FILTERING_COUNT, validateFilter(context.isValidOnly()));
 	}
