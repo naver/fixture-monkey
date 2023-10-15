@@ -46,6 +46,7 @@ import com.navercorp.fixturemonkey.api.introspector.ConstructorPropertiesArbitra
 import com.navercorp.fixturemonkey.api.introspector.FailoverIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.FieldReflectionArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
+import com.navercorp.fixturemonkey.api.property.RootProperty;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.customizer.InnerSpec;
 import com.navercorp.fixturemonkey.customizer.Values;
@@ -700,5 +701,20 @@ class JavaTest {
 			.sample();
 
 		then(actual).isNotNull();
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void properties() {
+		Enum actual = SUT.giveMeExperimentalBuilder(JavaTypeObject.class)
+			.properties(
+				property -> property instanceof RootProperty,
+				properties -> properties.stream()
+					.filter(it -> !"enumValue".equals(it.getName()))
+					.collect(Collectors.toList())
+			)
+			.sample()
+			.getEnumValue();
+
+		then(actual).isNull();
 	}
 }

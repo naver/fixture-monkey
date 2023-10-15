@@ -21,12 +21,15 @@ package com.navercorp.fixturemonkey.tree;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
+import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
@@ -38,17 +41,20 @@ final class TraverseContext {
 	private final List<ArbitraryProperty> arbitraryProperties;
 	private final List<ContainerInfoManipulator> containerInfoManipulators;
 	private final List<MatcherOperator<List<ContainerInfoManipulator>>> registeredContainerInfoManipulators;
+	private final Map<Matcher, UnaryOperator<List<Property>>> propertyConfigurers;
 
 	public TraverseContext(
 		ArbitraryProperty rootArbitraryProperty,
 		List<ArbitraryProperty> arbitraryProperties,
 		List<ContainerInfoManipulator> containerInfoManipulators,
-		List<MatcherOperator<List<ContainerInfoManipulator>>> registeredContainerInfoManipulators
+		List<MatcherOperator<List<ContainerInfoManipulator>>> registeredContainerInfoManipulators,
+		Map<Matcher, UnaryOperator<List<Property>>> propertyConfigurers
 	) {
 		this.rootArbitraryProperty = rootArbitraryProperty;
 		this.arbitraryProperties = arbitraryProperties;
 		this.containerInfoManipulators = containerInfoManipulators;
 		this.registeredContainerInfoManipulators = registeredContainerInfoManipulators;
+		this.propertyConfigurers = propertyConfigurers;
 	}
 
 	public ArbitraryProperty getRootArbitraryProperty() {
@@ -61,6 +67,10 @@ final class TraverseContext {
 
 	public List<ContainerInfoManipulator> getContainerInfoManipulators() {
 		return containerInfoManipulators;
+	}
+
+	public Map<Matcher, UnaryOperator<List<Property>>> getPropertyConfigurers() {
+		return propertyConfigurers;
 	}
 
 	public TraverseContext appendArbitraryProperty(
@@ -89,7 +99,8 @@ final class TraverseContext {
 			rootArbitraryProperty,
 			arbitraryProperties,
 			concat,
-			this.registeredContainerInfoManipulators
+			this.registeredContainerInfoManipulators,
+			propertyConfigurers
 		);
 	}
 

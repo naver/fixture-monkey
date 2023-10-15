@@ -115,7 +115,8 @@ public final class NodeSetDecomposedValueManipulator<T> implements NodeManipulat
 				ObjectNode newNode = traverser.traverse(
 					objectNode.getProperty(),
 					Collections.singletonList(containerInfoManipulator),
-					Collections.emptyList()
+					Collections.emptyList(),
+					Collections.emptyMap()
 				);
 				objectNode.setChildren(newNode.getChildren());
 			}

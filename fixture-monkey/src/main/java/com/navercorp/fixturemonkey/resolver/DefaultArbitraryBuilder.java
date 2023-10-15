@@ -32,6 +32,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
@@ -51,8 +52,10 @@ import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.context.MonkeyContext;
 import com.navercorp.fixturemonkey.api.expression.ExpressionGenerator;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
+import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
+import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
 import com.navercorp.fixturemonkey.api.type.LazyAnnotatedType;
@@ -63,11 +66,12 @@ import com.navercorp.fixturemonkey.customizer.ContainerInfoManipulator;
 import com.navercorp.fixturemonkey.customizer.InnerSpec;
 import com.navercorp.fixturemonkey.customizer.ManipulatorSet;
 import com.navercorp.fixturemonkey.customizer.MonkeyManipulatorFactory;
+import com.navercorp.fixturemonkey.experimental.ExperimentalArbitraryBuilder;
 import com.navercorp.fixturemonkey.tree.ArbitraryTraverser;
 
 @SuppressFBWarnings("NM_SAME_SIMPLE_NAME_AS_SUPERCLASS")
 @API(since = "0.4.0", status = Status.MAINTAINED)
-public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T> {
+public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, ExperimentalArbitraryBuilder<T> {
 	private static final int VALIDATION_ANNOTATION_FILTERING_COUNT = 1;
 
 	private final FixtureMonkeyOptions fixtureMonkeyOptions;
@@ -408,6 +412,15 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T> {
 		return generateArbitraryBuilderLazily(lazyArbitrary);
 	}
 
+	@Override
+	public ExperimentalArbitraryBuilder<T> properties(
+		Matcher matcher,
+		UnaryOperator<List<Property>> propertyConfigurer
+	) {
+		context.putPropertyConfigurer(matcher, propertyConfigurer);
+		return this;
+	}
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public Arbitrary<T> build() {
@@ -455,10 +468,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T> {
 	private CombinableArbitrary<?> resolveArbitrary(ArbitraryBuilderContext context) {
 		if (context.isFixed()) {
 			if (context.getFixedCombinableArbitrary() == null || context.fixedExpired()) {
-				Object fixed = resolver.resolve(
-						rootProperty,
-						context
-					)
+				Object fixed = resolver.resolve(rootProperty, context)
 					.filter(VALIDATION_ANNOTATION_FILTERING_COUNT, validateFilter(context.isValidOnly()))
 					.combined();
 				context.addManipulator(monkeyManipulatorFactory.newArbitraryManipulator("$", fixed));
@@ -467,10 +477,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T> {
 			return context.getFixedCombinableArbitrary();
 		}
 
-		return resolver.resolve(
-				rootProperty,
-				context
-			)
+		return resolver.resolve(rootProperty, context)
 			.filter(VALIDATION_ANNOTATION_FILTERING_COUNT, validateFilter(context.isValidOnly()));
 	}
 

@@ -40,6 +40,7 @@ import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.api.validator.ArbitraryValidator;
 import com.navercorp.fixturemonkey.customizer.ArbitraryManipulator;
 import com.navercorp.fixturemonkey.customizer.MonkeyManipulatorFactory;
+import com.navercorp.fixturemonkey.experimental.ExperimentalArbitraryBuilder;
 import com.navercorp.fixturemonkey.expression.MonkeyExpressionFactory;
 import com.navercorp.fixturemonkey.resolver.ArbitraryBuilderContext;
 import com.navercorp.fixturemonkey.resolver.ArbitraryResolver;
@@ -160,6 +161,14 @@ public class FixtureMonkey {
 			registeredArbitraryBuilders,
 			monkeyContext
 		);
+	}
+
+	public <T> ExperimentalArbitraryBuilder<T> giveMeExperimentalBuilder(Class<T> type) {
+		return (ExperimentalArbitraryBuilder<T>)giveMeBuilder(type);
+	}
+
+	public <T> ExperimentalArbitraryBuilder<T> giveMeExperimentalBuilder(TypeReference<T> type) {
+		return (ExperimentalArbitraryBuilder<T>)giveMeBuilder(type);
 	}
 
 	public <T> Stream<T> giveMe(Class<T> type) {

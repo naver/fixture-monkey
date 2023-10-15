@@ -19,6 +19,8 @@
 package com.navercorp.fixturemonkey.resolver;
 
 import java.util.List;
+import java.util.Map;
+import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -28,8 +30,10 @@ import org.apiguardian.api.API.Status;
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.context.MonkeyContext;
+import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
+import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
 import com.navercorp.fixturemonkey.customizer.ArbitraryManipulator;
 import com.navercorp.fixturemonkey.customizer.ContainerInfoManipulator;
@@ -68,6 +72,7 @@ public final class ArbitraryResolver {
 	) {
 		List<ArbitraryManipulator> manipulators = builderContext.getManipulators();
 		List<ContainerInfoManipulator> containerInfoManipulators = builderContext.getContainerInfoManipulators();
+		Map<Matcher, UnaryOperator<List<Property>>> propertyConfigurers = builderContext.getPropertyConfigurers();
 
 		List<MatcherOperator<List<ContainerInfoManipulator>>> registeredContainerInfoManipulators =
 			registeredArbitraryBuilders.stream()
@@ -84,7 +89,8 @@ public final class ArbitraryResolver {
 				this.traverser.traverse(
 					rootProperty,
 					containerInfoManipulators,
-					registeredContainerInfoManipulators
+					registeredContainerInfoManipulators,
+					propertyConfigurers
 				),
 				fixtureMonkeyOptions,
 				monkeyContext
