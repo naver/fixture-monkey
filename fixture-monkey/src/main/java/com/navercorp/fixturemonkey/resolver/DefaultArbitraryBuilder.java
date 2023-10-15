@@ -21,9 +21,11 @@ package com.navercorp.fixturemonkey.resolver;
 import static com.navercorp.fixturemonkey.Constants.DEFAULT_ELEMENT_MAX_SIZE;
 import static com.navercorp.fixturemonkey.Constants.HEAD_NAME;
 import static com.navercorp.fixturemonkey.Constants.MAX_MANIPULATION_COUNT;
+import static com.navercorp.fixturemonkey.api.type.Types.getDeclaredConstructor;
 import static com.navercorp.fixturemonkey.customizer.Values.NOT_NULL;
 import static java.util.stream.Collectors.toList;
 
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
@@ -50,24 +52,33 @@ import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.context.MonkeyContext;
 import com.navercorp.fixturemonkey.api.expression.ExpressionGenerator;
+import com.navercorp.fixturemonkey.api.introspector.ConstructorArbitraryIntrospector;
+import com.navercorp.fixturemonkey.api.introspector.ConstructorArbitraryIntrospector.ConstructorWithParameterNames;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
+import com.navercorp.fixturemonkey.api.property.ConstructorPropertyGeneratorContext;
+import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.api.property.PropertySelector;
+import com.navercorp.fixturemonkey.api.property.PropertyUtils;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
 import com.navercorp.fixturemonkey.api.type.LazyAnnotatedType;
+import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.customizer.ArbitraryManipulator;
 import com.navercorp.fixturemonkey.customizer.ContainerInfoManipulator;
 import com.navercorp.fixturemonkey.customizer.InnerSpec;
 import com.navercorp.fixturemonkey.customizer.ManipulatorSet;
 import com.navercorp.fixturemonkey.customizer.MonkeyManipulatorFactory;
+import com.navercorp.fixturemonkey.experimental.ConstructorInstantiator;
+import com.navercorp.fixturemonkey.experimental.InitializeArbitraryBuilder;
+import com.navercorp.fixturemonkey.experimental.Instantiator;
 import com.navercorp.fixturemonkey.tree.ArbitraryTraverser;
 
 @SuppressFBWarnings("NM_SAME_SIMPLE_NAME_AS_SUPERCLASS")
 @API(since = "0.4.0", status = Status.MAINTAINED)
-public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T> {
+public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, InitializeArbitraryBuilder<T> {
 	private final FixtureMonkeyOptions fixtureMonkeyOptions;
 	private final RootProperty rootProperty;
 	private final ArbitraryResolver resolver;
@@ -500,6 +511,59 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T> {
 			}
 		);
 		return generateArbitraryBuilderLazily(lazyArbitrary);
+	}
+
+	@SuppressWarnings({"rawtypes", "unchecked"})
+	@Override
+	public InitializeArbitraryBuilder<T> instantiate(Class<?> type, Instantiator instantiator) {
+		return instantiate(
+			new TypeReference(type) {
+			},
+			instantiator
+		);
+	}
+
+	@Override
+	public InitializeArbitraryBuilder<T> instantiate(TypeReference<?> typeReference, Instantiator instantiator) {
+		if (instantiator instanceof ConstructorInstantiator) {
+			Class<?> type = Types.getActualType(typeReference.getType());
+			ConstructorInstantiator constructorInstantiator = (ConstructorInstantiator)instantiator;
+			List<TypeReference<?>> typeReferences = constructorInstantiator.getTypes();
+
+			Class<?>[] arguments = typeReferences.stream()
+				.map(it -> Types.getActualType(it.getType()))
+				.toArray(Class[]::new);
+
+			Constructor<?> declaredConstructor = getDeclaredConstructor(type, arguments);
+			Property property = PropertyUtils.toProperty(typeReference);
+
+			List<Property> constructorParameterProperties = fixtureMonkeyOptions.getConstructorPropertyGenerator()
+				.generateParameterProperties(
+					new ConstructorPropertyGeneratorContext(
+						property,
+						declaredConstructor,
+						constructorInstantiator.getTypes(),
+						constructorInstantiator.getParameterNames()
+					)
+				);
+
+			List<String> parameterNames = constructorParameterProperties.stream()
+				.map(Property::getName)
+				.collect(toList());
+
+			context.putArbitraryIntrospector(
+				type,
+				new ConstructorArbitraryIntrospector(
+					new ConstructorWithParameterNames<>(declaredConstructor, parameterNames)
+				)
+			);
+
+			context.putPropertyConfigurer(
+				type,
+				properties -> constructorParameterProperties
+			);
+		}
+		return this;
 	}
 
 	@SuppressWarnings("unchecked")

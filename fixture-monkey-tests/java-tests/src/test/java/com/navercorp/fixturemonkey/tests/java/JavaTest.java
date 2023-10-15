@@ -18,6 +18,7 @@
 
 package com.navercorp.fixturemonkey.tests.java;
 
+import static com.navercorp.fixturemonkey.experimental.Instantiator.constructor;
 import static com.navercorp.fixturemonkey.tests.TestEnvironment.TEST_COUNT;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.assertj.core.api.BDDAssertions.thenNoException;
@@ -28,7 +29,11 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.OptionalDouble;
+import java.util.OptionalInt;
+import java.util.OptionalLong;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -42,8 +47,6 @@ import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.exception.RetryableFilterMissException;
-import com.navercorp.fixturemonkey.api.generator.CompositeArbitraryGenerator;
-import com.navercorp.fixturemonkey.api.generator.IntrospectedArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.introspector.CompositeArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.ConstructorPropertiesArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.FailoverIntrospector;
@@ -55,6 +58,7 @@ import com.navercorp.fixturemonkey.customizer.Values;
 import com.navercorp.fixturemonkey.resolver.ArbitraryBuilderCandidateFactory;
 import com.navercorp.fixturemonkey.resolver.ArbitraryBuilderCandidateList;
 import com.navercorp.fixturemonkey.tests.java.ConstructorAndPropertyTestSpecs.ConsturctorAndProperty;
+import com.navercorp.fixturemonkey.tests.java.ConstructorTestSpecs.SimpleContainerObject;
 import com.navercorp.fixturemonkey.tests.java.ImmutableDepthTestSpecs.DepthStringValueList;
 import com.navercorp.fixturemonkey.tests.java.ImmutableDepthTestSpecs.OneDepthStringValue;
 import com.navercorp.fixturemonkey.tests.java.ImmutableDepthTestSpecs.TwoDepthStringValue;
@@ -819,5 +823,184 @@ class JavaTest {
 
 		then(actual.getValue()).isNotNull();
 		then(actual.getPropertyNotInConstructor()).isNotNull();
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void instantiateParametersInOrder() {
+		String actual = SUT.giveMeExperimentalBuilder(ConstructorTestSpecs.JavaTypeObject.class)
+			.instantiate(
+				ConstructorTestSpecs.JavaTypeObject.class,
+				constructor()
+					.parameter(int.class)
+					.parameter(float.class)
+					.parameter(long.class)
+					.parameter(double.class)
+					.parameter(byte.class)
+					.parameter(char.class)
+					.parameter(short.class)
+					.parameter(boolean.class)
+			)
+			.sample()
+			.getString();
+
+		then(actual).isEqualTo("first");
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void instantiateNoArgsConstructor() {
+		String actual = SUT.giveMeExperimentalBuilder(ConstructorTestSpecs.JavaTypeObject.class)
+			.instantiate(
+				ConstructorTestSpecs.JavaTypeObject.class,
+				constructor()
+			)
+			.sample()
+			.getString();
+
+		then(actual).isEqualTo("second");
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void instantiateParameterNameHint() {
+		String actual = SUT.giveMeExperimentalBuilder(ConstructorTestSpecs.JavaTypeObject.class)
+			.instantiate(
+				ConstructorTestSpecs.JavaTypeObject.class,
+				constructor()
+					.parameter(String.class, "str")
+			)
+			.set("str", "third")
+			.sample()
+			.getString();
+
+		then(actual).isEqualTo("third");
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void instantiateConstructorContainer() {
+		List<ConstructorTestSpecs.JavaTypeObject> actual = SUT.giveMeExperimentalBuilder(SimpleContainerObject.class)
+			.instantiate(
+				SimpleContainerObject.class,
+				constructor()
+					.parameter(new TypeReference<List<ConstructorTestSpecs.JavaTypeObject>>() {
+					}, "list")
+			)
+			.instantiate(
+				ConstructorTestSpecs.JavaTypeObject.class,
+				constructor()
+					.parameter(int.class)
+					.parameter(float.class)
+					.parameter(long.class)
+					.parameter(double.class)
+					.parameter(byte.class)
+					.parameter(char.class)
+					.parameter(short.class)
+					.parameter(boolean.class)
+			)
+			.size("list", 1)
+			.sample()
+			.getList();
+
+		then(actual).hasSize(1);
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void instantiateConstructorGenericContainer() {
+		String actual = SUT.giveMeExperimentalBuilder(ConstructorTestSpecs.ContainerObject.class)
+			.instantiate(
+				ConstructorTestSpecs.ContainerObject.class,
+				constructor()
+					.parameter(new TypeReference<List<String>>() {
+					})
+					.parameter(new TypeReference<List<ConstructorTestSpecs.JavaTypeObject>>() {
+					})
+					.parameter(new TypeReference<Set<String>>() {
+					})
+					.parameter(new TypeReference<Set<ConstructorTestSpecs.JavaTypeObject>>() {
+					})
+					.parameter(new TypeReference<Map<String, Integer>>() {
+					})
+					.parameter(new TypeReference<Map<String, ConstructorTestSpecs.JavaTypeObject>>() {
+					})
+					.parameter(new TypeReference<Entry<String, Integer>>() {
+					})
+					.parameter(new TypeReference<Entry<String, ConstructorTestSpecs.JavaTypeObject>>() {
+					})
+					.parameter(new TypeReference<Optional<String>>() {
+					})
+					.parameter(new TypeReference<OptionalInt>() {
+					})
+					.parameter(new TypeReference<OptionalLong>() {
+					})
+					.parameter(new TypeReference<OptionalDouble>() {
+					})
+			)
+			.instantiate(
+				ConstructorTestSpecs.JavaTypeObject.class,
+				constructor()
+					.parameter(int.class)
+					.parameter(float.class)
+					.parameter(long.class)
+					.parameter(double.class)
+					.parameter(byte.class)
+					.parameter(char.class)
+					.parameter(short.class)
+					.parameter(boolean.class)
+			)
+			.sample()
+			.getArray()[0];
+
+		then(actual).isEqualTo("test");
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void instantiateGenericObjectByConstructor() {
+		ConstructorTestSpecs.GenericObject<String> actual = SUT.giveMeExperimentalBuilder(
+				new TypeReference<ConstructorTestSpecs.GenericObject<String>>() {
+				})
+			.instantiate(
+				new TypeReference<ConstructorTestSpecs.GenericObject<String>>() {
+				},
+				constructor()
+					.parameter(String.class)
+			)
+			.sample();
+
+		then(actual).isNotNull();
+		then(actual.getValue()).isNotNull();
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void instantiateTwoGenericObjectByConstructor() {
+		ConstructorTestSpecs.TwoGenericObject<String, Integer> actual = SUT.giveMeExperimentalBuilder(
+				new TypeReference<ConstructorTestSpecs.TwoGenericObject<String, Integer>>() {
+				})
+			.instantiate(
+				new TypeReference<ConstructorTestSpecs.TwoGenericObject<String, Integer>>() {
+				},
+				constructor()
+					.parameter(String.class)
+					.parameter(Integer.class)
+			)
+			.sample();
+
+		then(actual).isNotNull();
+		then(actual.getTValue()).isNotNull();
+		then(actual.getUValue()).isNotNull();
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void instantiateGenericObjectWithHintByConstructor() {
+		ConstructorTestSpecs.GenericObject<String> actual = SUT.giveMeExperimentalBuilder(
+				new TypeReference<ConstructorTestSpecs.GenericObject<String>>() {
+				})
+			.instantiate(
+				new TypeReference<ConstructorTestSpecs.GenericObject<String>>() {
+				},
+				constructor()
+					.parameter(String.class)
+			)
+			.sample();
+
+		then(actual).isNotNull();
+		then(actual.getValue()).isNotNull();
 	}
 }

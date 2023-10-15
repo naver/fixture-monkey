@@ -57,6 +57,7 @@ public final class TypeCache {
 	private static final Map<Class<?>, Map<String, Field>> FIELDS = new ConcurrentLruCache<>(2048);
 	private static final Map<Class<?>, Map.Entry<Constructor<?>, String[]>> PARAMETER_NAMES_BY_PRIMARY_CONSTRUCTOR =
 		new ConcurrentLruCache<>(2048);
+	private static final Map<Class<?>, List<Constructor<?>>> CONSTRUCTORS = new ConcurrentLruCache<>(2048);
 
 	public static AnnotatedType getAnnotatedType(Field field) {
 		return FIELD_ANNOTATED_TYPE_MAP.computeIfAbsent(field, Field::getAnnotatedType);
@@ -105,6 +106,10 @@ public final class TypeCache {
 			}
 			return result;
 		});
+	}
+
+	public static List<Constructor<?>> getDeclaredConstructors(Class<?> type) {
+		return CONSTRUCTORS.computeIfAbsent(type, clazz -> Arrays.asList(clazz.getDeclaredConstructors()));
 	}
 
 	@Nullable

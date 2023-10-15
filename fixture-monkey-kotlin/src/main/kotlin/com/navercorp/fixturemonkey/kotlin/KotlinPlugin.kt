@@ -35,6 +35,7 @@ import com.navercorp.fixturemonkey.kotlin.introspector.PrimaryConstructorArbitra
 import com.navercorp.fixturemonkey.kotlin.introspector.TripleIntrospector
 import com.navercorp.fixturemonkey.kotlin.matcher.Matchers.PAIR_TYPE_MATCHER
 import com.navercorp.fixturemonkey.kotlin.matcher.Matchers.TRIPLE_TYPE_MATCHER
+import com.navercorp.fixturemonkey.kotlin.property.KotlinConstructorPropertyGenerator
 import com.navercorp.fixturemonkey.kotlin.property.KotlinPropertyGenerator
 import org.apiguardian.api.API
 import org.apiguardian.api.API.Status.MAINTAINED
@@ -89,5 +90,6 @@ class KotlinPlugin : Plugin {
                 Triple::class.java,
                 TripleDecomposedContainerValueFactory()
             )
+            .constructorPropertyGenerator(KotlinConstructorPropertyGenerator.INSTANCE)
     }
 }

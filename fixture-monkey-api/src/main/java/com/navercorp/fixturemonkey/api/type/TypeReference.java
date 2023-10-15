@@ -49,6 +49,6 @@ public abstract class TypeReference<T> {
 	}
 
 	public boolean isGenericType() {
-		return !Types.getGenericsTypes(annotatedType).isEmpty();
+		return Types.getActualType(annotatedType.getType()).getTypeParameters().length != 0;
 	}
 }

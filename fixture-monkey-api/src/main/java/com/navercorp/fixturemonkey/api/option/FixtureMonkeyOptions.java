@@ -66,6 +66,7 @@ import com.navercorp.fixturemonkey.api.matcher.DoubleGenericTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.matcher.Matchers;
 import com.navercorp.fixturemonkey.api.matcher.SingleGenericTypeMatcher;
+import com.navercorp.fixturemonkey.api.property.ConstructorPropertyGenerator;
 import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.PropertyGenerator;
@@ -121,6 +122,7 @@ public final class FixtureMonkeyOptions {
 	private final int generateMaxTries;
 	private final int generateUniqueMaxTries;
 	private final JavaConstraintGenerator javaConstraintGenerator;
+	private final ConstructorPropertyGenerator constructorPropertyGenerator;
 
 	public FixtureMonkeyOptions(
 		List<MatcherOperator<PropertyGenerator>> propertyGenerators,
@@ -140,7 +142,8 @@ public final class FixtureMonkeyOptions {
 		DecomposedContainerValueFactory decomposedContainerValueFactory,
 		int generateMaxTries,
 		int generateUniqueMaxTries,
-		JavaConstraintGenerator javaConstraintGenerator
+		JavaConstraintGenerator javaConstraintGenerator,
+		ConstructorPropertyGenerator constructorPropertyGenerator
 	) {
 		this.propertyGenerators = propertyGenerators;
 		this.defaultPropertyGenerator = defaultPropertyGenerator;
@@ -160,6 +163,7 @@ public final class FixtureMonkeyOptions {
 		this.generateMaxTries = generateMaxTries;
 		this.generateUniqueMaxTries = generateUniqueMaxTries;
 		this.javaConstraintGenerator = javaConstraintGenerator;
+		this.constructorPropertyGenerator = constructorPropertyGenerator;
 	}
 
 	public static FixtureMonkeyOptionsBuilder builder() {
@@ -295,6 +299,10 @@ public final class FixtureMonkeyOptions {
 		return javaConstraintGenerator;
 	}
 
+	public ConstructorPropertyGenerator getConstructorPropertyGenerator() {
+		return constructorPropertyGenerator;
+	}
+
 	public FixtureMonkeyOptionsBuilder toBuilder() {
 		return builder()
 			.defaultPropertyGenerator(defaultPropertyGenerator)
@@ -311,7 +319,8 @@ public final class FixtureMonkeyOptions {
 			.defaultArbitraryGenerator(this.defaultArbitraryGenerator)
 			.defaultArbitraryValidator(defaultArbitraryValidator)
 			.decomposedContainerValueFactory(decomposedContainerValueFactory)
-			.javaConstraintGenerator(javaConstraintGenerator);
+			.javaConstraintGenerator(javaConstraintGenerator)
+			.constructorPropertyGenerator(constructorPropertyGenerator);
 	}
 
 	private static List<MatcherOperator<ObjectPropertyGenerator>> getDefaultObjectPropertyGenerators(

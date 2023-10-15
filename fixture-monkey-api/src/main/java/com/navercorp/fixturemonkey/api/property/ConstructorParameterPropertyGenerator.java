@@ -18,15 +18,20 @@
 
 package com.navercorp.fixturemonkey.api.property;
 
+import java.beans.ConstructorProperties;
 import java.lang.reflect.AnnotatedArrayType;
 import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.AnnotatedTypeVariable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.Parameter;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.apiguardian.api.API;
@@ -34,6 +39,7 @@ import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.type.TypeCache;
+import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.api.type.Types;
 
 /**
@@ -41,10 +47,21 @@ import com.navercorp.fixturemonkey.api.type.Types;
  * It might be a field as well.
  */
 @API(since = "0.5.3", status = Status.MAINTAINED)
-public final class ConstructorParameterPropertyGenerator implements PropertyGenerator {
+public final class ConstructorParameterPropertyGenerator implements PropertyGenerator, ConstructorPropertyGenerator {
+	private final Predicate<Constructor<?>> constructorPredicate;
 	private final Matcher matcher;
 
+	@Deprecated
 	public ConstructorParameterPropertyGenerator(Matcher matcher) {
+		this.constructorPredicate = constructor -> constructor.getAnnotation(ConstructorProperties.class) != null;
+		this.matcher = matcher;
+	}
+
+	public ConstructorParameterPropertyGenerator(
+		Predicate<Constructor<?>> constructorPredicate,
+		Matcher matcher
+	) {
+		this.constructorPredicate = constructorPredicate;
 		this.matcher = matcher;
 	}
 
@@ -52,22 +69,74 @@ public final class ConstructorParameterPropertyGenerator implements PropertyGene
 	public List<Property> generateChildProperties(Property property) {
 		Class<?> clazz = Types.getActualType(property.getType());
 
-		Map<String, Property> constructorPropertiesByName = new HashMap<>();
-		Map.Entry<Constructor<?>, String[]> parameterNamesByConstructor =
-			TypeCache.getParameterNamesByConstructor(clazz);
-		if (parameterNamesByConstructor == null) {
+		Constructor<?> declaredConstructor = Arrays.stream(clazz.getDeclaredConstructors())
+			.filter(constructorPredicate)
+			.findFirst()
+			.orElse(null);
+
+		if (declaredConstructor == null) {
 			return Collections.emptyList();
 		}
 
-		Constructor<?> primaryConstructor = parameterNamesByConstructor.getKey();
-		String[] parameterNames = parameterNamesByConstructor.getValue();
-		AnnotatedType[] annotatedParameterTypes = primaryConstructor.getAnnotatedParameterTypes();
+		return generateParameterProperties(
+			new ConstructorPropertyGeneratorContext(property, declaredConstructor)
+		);
+	}
 
-		Map<String, Field> fieldsByName = TypeCache.getFieldsByName(clazz);
-		int parameterSize = parameterNames.length;
+	private static String[] getParameterNames(Constructor<?> constructor) {
+		Parameter[] parameters = constructor.getParameters();
+		boolean parameterEmpty = parameters.length == 0;
+		if (parameterEmpty) {
+			return new String[0];
+		}
+
+		ConstructorProperties constructorPropertiesAnnotation =
+			constructor.getAnnotation(ConstructorProperties.class);
+
+		if (constructorPropertiesAnnotation != null) {
+			return constructorPropertiesAnnotation.value();
+		} else {
+			return Arrays.stream(parameters)
+				.map(Parameter::getName)
+				.toArray(String[]::new);
+		}
+	}
+
+	@Override
+	public List<Property> generateParameterProperties(ConstructorPropertyGeneratorContext context) {
+		Property property = context.getProperty();
+
+		Class<?> type = Types.getActualType(property.getType());
+		Constructor<?> constructor = context.getConstructor();
+
+		List<String> parameterNamesByConstructor = Arrays.asList(getParameterNames(constructor));
+		List<String> inputParameterNames = context.getInputParameterNames();
+
+		List<String> resolvedParameterNames = new ArrayList<>();
+		for (int i = 0; i < parameterNamesByConstructor.size(); i++) {
+			String parameterName;
+
+			if (inputParameterNames.size() > i && inputParameterNames.get(i) != null) {
+				parameterName = inputParameterNames.get(i);
+			} else {
+				parameterName = parameterNamesByConstructor.get(i);
+			}
+			resolvedParameterNames.add(parameterName);
+		}
+		List<AnnotatedType> annotatedParameterTypes = Arrays.asList(constructor.getAnnotatedParameterTypes());
+		List<AnnotatedType> userParameterTypes = context.getInputParameterTypes().stream()
+			.map(TypeReference::getAnnotatedType)
+			.collect(Collectors.toList());
+
+		Map<String, Field> fieldsByName = TypeCache.getFieldsByName(type);
+		int parameterSize = resolvedParameterNames.size();
+
+		Map<String, Property> constructorPropertiesByName = new LinkedHashMap<>();
 		for (int i = 0; i < parameterSize; i++) {
-			AnnotatedType annotatedParameterType = annotatedParameterTypes[i];
-			String parameterName = parameterNames[i];
+			AnnotatedType annotatedParameterType = userParameterTypes.size() > i
+				? userParameterTypes.get(i)
+				: annotatedParameterTypes.get(i);
+			String parameterName = resolvedParameterNames.get(i);
 			Field field = fieldsByName.get(parameterName);
 			Property fieldProperty = field != null
 				? new FieldProperty(
@@ -81,9 +150,10 @@ public final class ConstructorParameterPropertyGenerator implements PropertyGene
 					parameterName,
 					new ConstructorProperty(
 						fieldProperty.getAnnotatedType(),
-						primaryConstructor,
+						constructor,
 						parameterName,
-						fieldProperty
+						fieldProperty,
+						null
 					)
 				);
 			} else {
@@ -91,14 +161,15 @@ public final class ConstructorParameterPropertyGenerator implements PropertyGene
 					parameterName,
 					new ConstructorProperty(
 						annotatedParameterType,
-						primaryConstructor,
+						constructor,
 						parameterName,
-						fieldProperty
+						fieldProperty,
+						null
 					)
 				);
 			}
 		}
-		return Collections.unmodifiableMap(constructorPropertiesByName).values().stream()
+		return constructorPropertiesByName.values().stream()
 			.filter(matcher::match)
 			.collect(Collectors.toList());
 	}
