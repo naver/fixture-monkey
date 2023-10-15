@@ -37,6 +37,7 @@ import net.jqwik.api.Combinators.F3;
 import net.jqwik.api.Combinators.F4;
 
 import com.navercorp.fixturemonkey.api.expression.ExpressionGenerator;
+import com.navercorp.fixturemonkey.api.property.PropertySelector;
 import com.navercorp.fixturemonkey.api.validator.ArbitraryValidator;
 import com.navercorp.fixturemonkey.customizer.InnerSpec;
 
@@ -75,6 +76,8 @@ public interface ArbitraryBuilder<T> {
 	ArbitraryBuilder<T> set(String expression, @Nullable Object value, int limit);
 
 	/**
+	 * It is deprecated. Use {@link ArbitraryBuilder#set(PropertySelector, Object)} instead.
+	 * <p>
 	 * Set one or more properties referenced by expression to {@code value}.
 	 *
 	 * @param expressionGenerator it generates expression dynamically.
@@ -83,10 +86,14 @@ public interface ArbitraryBuilder<T> {
 	 * @return an {@link ArbitraryBuilder} whose properties referenced by an {@code expressionGenerator}
 	 * are set as {@code value}.
 	 * @see ArbitraryBuilder#set(String, Object)
+	 * @see ArbitraryBuilder#set(PropertySelector, Object)
 	 */
+	@Deprecated
 	ArbitraryBuilder<T> set(ExpressionGenerator expressionGenerator, @Nullable Object value);
 
 	/**
+	 * It is deprecated. Use {@link ArbitraryBuilder#set(PropertySelector, Object, int)} instead.
+	 * <p>
 	 * Set one or more properties referenced by expression to {@code value}.
 	 *
 	 * @param expressionGenerator it generates expression dynamically.
@@ -96,8 +103,35 @@ public interface ArbitraryBuilder<T> {
 	 * @return an {@link ArbitraryBuilder} whose properties referenced by an {@code expressionGenerator} are set as
 	 * {@code value}.
 	 * @see ArbitraryBuilder#set(String, Object, int)
+	 * @see ArbitraryBuilder#set(PropertySelector, Object, int)
 	 */
+	@Deprecated
 	ArbitraryBuilder<T> set(ExpressionGenerator expressionGenerator, @Nullable Object value, int limit);
+
+	/**
+	 * Set one or more properties referenced by expression to {@code value}.
+	 *
+	 * @param propertySelector it selects one or more properties.
+	 * @param value            various type of value including {@link Supplier}, {@link Arbitrary},
+	 *                         {@link ArbitraryBuilder}, {@code NOT_NULL}, {@code null}.
+	 * @return an {@link ArbitraryBuilder} whose properties referenced by an {@code propertySelector}
+	 * are set as {@code value}.
+	 * @see ArbitraryBuilder#set(String, Object)
+	 */
+	ArbitraryBuilder<T> set(PropertySelector propertySelector, @Nullable Object value);
+
+	/**
+	 * Set one or more properties referenced by expression to {@code value}.
+	 *
+	 * @param propertySelector it selects one or more properties.
+	 * @param value            various type of value including {@link Supplier}, {@link Arbitrary},
+	 *                         {@link ArbitraryBuilder}, {@code NOT_NULL}, {@code null}.
+	 * @param limit            the count of affected properties referenced by {@code expression}
+	 * @return an {@link ArbitraryBuilder} whose properties referenced by an {@code propertySelector} are set as
+	 * {@code value}.
+	 * @see ArbitraryBuilder#set(String, Object, int)
+	 */
+	ArbitraryBuilder<T> set(PropertySelector propertySelector, @Nullable Object value, int limit);
 
 	/**
 	 * Set the {@link ArbitraryBuilder} sampling given {@code value}.
@@ -126,7 +160,7 @@ public interface ArbitraryBuilder<T> {
 	 * @param expression expression similar to Java syntax, including {@code .}, {@code []}
 	 *                   common expression including {@code *} referencing properties.
 	 * @param supplier   a supplier of result. It might be a value or method.
-	 * @return an {@link ArbitraryBuilder} whose properties referenced by an {@code expressionGenerator} are set as
+	 * @return an {@link ArbitraryBuilder} whose properties referenced by an {@code propertySelector} are set as
 	 * {@code value}.
 	 * @see ArbitraryBuilder#set(String, Object, int)
 	 */
@@ -148,6 +182,8 @@ public interface ArbitraryBuilder<T> {
 	ArbitraryBuilder<T> setLazy(String expression, Supplier<?> supplier, int limit);
 
 	/**
+	 * It is deprecated. Use {@link ArbitraryBuilder#setLazy(PropertySelector, Supplier)} instead.
+	 * <p>
 	 * Set one or more properties referenced by expression to a result of {@link Supplier}.
 	 * The {@link Supplier} gets the result when manipulation is executed.
 	 * It might be used when to set the latest value or set unique id generated sequentially.
@@ -156,11 +192,28 @@ public interface ArbitraryBuilder<T> {
 	 * @param supplier            a supplier of result. It might be a value or method.
 	 * @return an {@link ArbitraryBuilder} whose properties referenced by an {@code expressionGenerator} are set as
 	 * {@code value}.
-	 * @see ArbitraryBuilder#set(String, Object, int)
+	 * @see ArbitraryBuilder#set(String, Object)
+	 * @see ArbitraryBuilder#set(PropertySelector, Object)
 	 */
+	@Deprecated
 	ArbitraryBuilder<T> setLazy(ExpressionGenerator expressionGenerator, Supplier<?> supplier);
 
 	/**
+	 * Set one or more properties referenced by expression to a result of {@link Supplier}.
+	 * The {@link Supplier} gets the result when manipulation is executed.
+	 * It might be used when to set the latest value or set unique id generated sequentially.
+	 *
+	 * @param propertySelector it selects one or more properties.
+	 * @param supplier         a supplier of result. It might be a value or method.
+	 * @return an {@link ArbitraryBuilder} whose properties referenced by an {@code propertySelector} are set as
+	 * {@code value}.
+	 * @see ArbitraryBuilder#set(String, Object)
+	 */
+	ArbitraryBuilder<T> setLazy(PropertySelector propertySelector, Supplier<?> supplier);
+
+	/**
+	 * It is deprecated. Use {@link ArbitraryBuilder#setLazy(PropertySelector, Supplier)} instead.
+	 * <p>
 	 * Set the number of {@code limit} properties referenced by expression to a result of {@link Supplier}.
 	 * The {@link Supplier} gets the result when manipulation is executed.
 	 * It might be used when to set the latest value or set unique id generated sequentially.
@@ -171,8 +224,24 @@ public interface ArbitraryBuilder<T> {
 	 * @return an {@link ArbitraryBuilder} whose properties referenced by an {@code expressionGenerator} are set as
 	 * {@code value}.
 	 * @see ArbitraryBuilder#set(String, Object, int)
+	 * @see ArbitraryBuilder#set(PropertySelector, Object, int)
 	 */
+	@Deprecated
 	ArbitraryBuilder<T> setLazy(ExpressionGenerator expressionGenerator, Supplier<?> supplier, int limit);
+
+	/**
+	 * Set the number of {@code limit} properties referenced by expression to a result of {@link Supplier}.
+	 * The {@link Supplier} gets the result when manipulation is executed.
+	 * It might be used when to set the latest value or set unique id generated sequentially.
+	 *
+	 * @param propertySelector it selects one or more properties.
+	 * @param supplier         a supplier of result. It might be a value or method.
+	 * @param limit            the count of affected properties referenced by {@code expression}
+	 * @return an {@link ArbitraryBuilder} whose properties referenced by an {@code propertySelector} are set as
+	 * {@code value}.
+	 * @see ArbitraryBuilder#set(String, Object, int)
+	 */
+	ArbitraryBuilder<T> setLazy(PropertySelector propertySelector, Supplier<?> supplier, int limit);
 
 	/**
 	 * Set one or more properties referenced by expression to null.
@@ -186,6 +255,8 @@ public interface ArbitraryBuilder<T> {
 	ArbitraryBuilder<T> setNull(String expression);
 
 	/**
+	 * It is deprecated. Use {@link ArbitraryBuilder#setNull(PropertySelector)} instead.
+	 * <p>
 	 * Set one or more properties referenced by expression to null.
 	 * If a manipulation you've already declared contains an {@code expression}, this manipulation would be omitted.
 	 * It is same as {@code set(expression, null)}.
@@ -194,7 +265,19 @@ public interface ArbitraryBuilder<T> {
 	 * @return an {@link ArbitraryBuilder} whose properties referenced by an {@code expressionGenerator}
 	 * are set as null.
 	 */
+	@Deprecated
 	ArbitraryBuilder<T> setNull(ExpressionGenerator expressionGenerator);
+
+	/**
+	 * Set one or more properties referenced by expression to null.
+	 * If a manipulation you've already declared contains an {@code expression}, this manipulation would be omitted.
+	 * It is same as {@code set(expression, null)}.
+	 *
+	 * @param propertySelector it selects one or more properties.
+	 * @return an {@link ArbitraryBuilder} whose properties referenced by an {@code propertySelector}
+	 * are set as null.
+	 */
+	ArbitraryBuilder<T> setNull(PropertySelector propertySelector);
 
 	/**
 	 * Set one or more properties referenced by expression to not null.
@@ -208,6 +291,8 @@ public interface ArbitraryBuilder<T> {
 	ArbitraryBuilder<T> setNotNull(String expression);
 
 	/**
+	 * It is deprecated. Use {@link ArbitraryBuilder#setNotNull(PropertySelector)} instead.
+	 * <p>
 	 * Set one or more properties referenced by expression to not null.
 	 * If the properties are null, they are generated randomly for their type.
 	 * It is same as {@code set(expression, NOT_NULL)}.
@@ -216,7 +301,19 @@ public interface ArbitraryBuilder<T> {
 	 * @return an {@link ArbitraryBuilder} whose properties referenced by an {@code expressionGenerator} are set as
 	 * not null.
 	 */
+	@Deprecated
 	ArbitraryBuilder<T> setNotNull(ExpressionGenerator expressionGenerator);
+
+	/**
+	 * Set one or more properties referenced by expression to not null.
+	 * If the properties are null, they are generated randomly for their type.
+	 * It is same as {@code set(expression, NOT_NULL)}.
+	 *
+	 * @param propertySelector it selects one or more properties.
+	 * @return an {@link ArbitraryBuilder} whose properties referenced by an {@code propertySelector} are set as
+	 * not null.
+	 */
+	ArbitraryBuilder<T> setNotNull(PropertySelector propertySelector);
 
 	/**
 	 * Set one or more properties referenced by expression post-condition.
@@ -232,6 +329,8 @@ public interface ArbitraryBuilder<T> {
 	<U> ArbitraryBuilder<T> setPostCondition(String expression, Class<U> type, Predicate<U> predicate);
 
 	/**
+	 * It is deprecated. Use {@link ArbitraryBuilder#setPostCondition(PropertySelector, Class, Predicate)} instead.
+	 * <p>
 	 * Set one or more properties referenced by expression post-condition.
 	 *
 	 * @param <U>                 the type of property.
@@ -241,8 +340,25 @@ public interface ArbitraryBuilder<T> {
 	 * @return an {@link ArbitraryBuilder} whose properties referenced by an {@code expressionGenerator}
 	 * satisfy the post-condition.
 	 */
+	@Deprecated
 	<U> ArbitraryBuilder<T> setPostCondition(
 		ExpressionGenerator expressionGenerator,
+		Class<U> type,
+		Predicate<U> predicate
+	);
+
+	/**
+	 * Set one or more properties referenced by expression post-condition.
+	 *
+	 * @param <U>              the type of property.
+	 * @param propertySelector it selects one or more properties.
+	 * @param type             the type of property.
+	 * @param predicate        determines the post-condition of properties.
+	 * @return an {@link ArbitraryBuilder} whose properties referenced by an {@code propertySelector}
+	 * satisfy the post-condition.
+	 */
+	<U> ArbitraryBuilder<T> setPostCondition(
+		PropertySelector propertySelector,
 		Class<U> type,
 		Predicate<U> predicate
 	);
@@ -267,6 +383,8 @@ public interface ArbitraryBuilder<T> {
 	);
 
 	/**
+	 * It is deprecated. Use {@link ArbitraryBuilder#setPostCondition(PropertySelector, Class, Predicate, int)} instead.
+	 * <p>
 	 * Set the number of {@code limit} properties referenced by expression post-condition.
 	 *
 	 * @param <U>                 the type of property.
@@ -277,8 +395,27 @@ public interface ArbitraryBuilder<T> {
 	 * @return an {@link ArbitraryBuilder} whose properties referenced by an {@code expressionGenerator}
 	 * satisfy the post-condition.
 	 */
+	@Deprecated
 	<U> ArbitraryBuilder<T> setPostCondition(
 		ExpressionGenerator expressionGenerator,
+		Class<U> type,
+		Predicate<U> predicate,
+		int limit
+	);
+
+	/**
+	 * Set the number of {@code limit} properties referenced by expression post-condition.
+	 *
+	 * @param <U>              the type of property.
+	 * @param propertySelector it selects one or more properties.
+	 * @param type             the type of property.
+	 * @param predicate        determines the post-condition of properties.
+	 * @param limit            the count of affected properties referenced by {@code propertySelector}
+	 * @return an {@link ArbitraryBuilder} whose properties referenced by an {@code propertySelector}
+	 * satisfy the post-condition.
+	 */
+	<U> ArbitraryBuilder<T> setPostCondition(
+		PropertySelector propertySelector,
 		Class<U> type,
 		Predicate<U> predicate,
 		int limit
@@ -289,7 +426,7 @@ public interface ArbitraryBuilder<T> {
 	 * It is same as {@code setPostCondition("$", Class<T>, Predicate<T>)}
 	 *
 	 * @param predicate determines the post-condition of the {@link ArbitraryBuilder}.
-	 * @return an {@link ArbitraryBuilder} whose properties referenced by an {@code expressionGenerator}
+	 * @return an {@link ArbitraryBuilder} whose properties referenced by an {@code propertySelector}
 	 * satisfy the post-condition.
 	 * @see ArbitraryBuilder#setPostCondition(String, Class, Predicate)
 	 */
@@ -307,6 +444,8 @@ public interface ArbitraryBuilder<T> {
 	ArbitraryBuilder<T> size(String expression, int size);
 
 	/**
+	 * It is deprecated. Use {@link ArbitraryBuilder#size(PropertySelector, int)} instead.
+	 * <p>
 	 * Set the {@code size} of one or more container properties referenced by expression.
 	 *
 	 * @param expressionGenerator it generates expression dynamically.
@@ -314,7 +453,18 @@ public interface ArbitraryBuilder<T> {
 	 * @return {@link ArbitraryBuilder} whose size of container properties referenced by an {@code expression} is
 	 * {@code size}
 	 */
+	@Deprecated
 	ArbitraryBuilder<T> size(ExpressionGenerator expressionGenerator, int size);
+
+	/**
+	 * Set the {@code size} of one or more container properties referenced by expression.
+	 *
+	 * @param propertySelector it selects one or more properties.
+	 * @param size             of the container to generate
+	 * @return {@link ArbitraryBuilder} whose size of container properties referenced by an {@code expression} is
+	 * {@code size}
+	 */
+	ArbitraryBuilder<T> size(PropertySelector propertySelector, int size);
 
 	/**
 	 * Set the size of one or more container properties referenced by expression.
@@ -330,6 +480,8 @@ public interface ArbitraryBuilder<T> {
 	ArbitraryBuilder<T> size(String expression, int minSize, int maxSize);
 
 	/**
+	 * It is deprecated. Use {@link ArbitraryBuilder#size(PropertySelector, int, int)} instead.
+	 * <p>
 	 * Set the size of one or more container properties referenced by expression.
 	 * {@code minSize} should be less than or equal to {@code maxSize}.
 	 *
@@ -339,7 +491,20 @@ public interface ArbitraryBuilder<T> {
 	 * @return an {@link ArbitraryBuilder} whose size of container properties referenced by an {@code expression} is
 	 * between {@code minSize} and {@code maxSize}.
 	 */
+	@Deprecated
 	ArbitraryBuilder<T> size(ExpressionGenerator expressionGenerator, int minSize, int maxSize);
+
+	/**
+	 * Set the size of one or more container properties referenced by expression.
+	 * {@code minSize} should be less than or equal to {@code maxSize}.
+	 *
+	 * @param propertySelector it selects one or more properties.
+	 * @param minSize          of the container to generate
+	 * @param maxSize          of the container to generate
+	 * @return an {@link ArbitraryBuilder} whose size of container properties referenced by an {@code expression} is
+	 * between {@code minSize} and {@code maxSize}.
+	 */
+	ArbitraryBuilder<T> size(PropertySelector propertySelector, int minSize, int maxSize);
 
 	/**
 	 * Set the size of one or more container properties referenced by expression.
@@ -360,6 +525,8 @@ public interface ArbitraryBuilder<T> {
 	ArbitraryBuilder<T> minSize(String expression, int minSize);
 
 	/**
+	 * It is deprecated. Use {@link ArbitraryBuilder#minSize(PropertySelector, int)} instead.
+	 * <p>
 	 * Set the size of one or more container properties referenced by expression.
 	 * The size of container properties would be between {@code minSize} and
 	 * {@code minSize} + {@link Constants#DEFAULT_ELEMENT_MAX_SIZE}
@@ -375,7 +542,26 @@ public interface ArbitraryBuilder<T> {
 	 * an {@code expressionGenerator} is between {@code minSize}
 	 * and {@code minSize} + {@link Constants#DEFAULT_ELEMENT_MAX_SIZE}.
 	 */
+	@Deprecated
 	ArbitraryBuilder<T> minSize(ExpressionGenerator expressionGenerator, int minSize);
+
+	/**
+	 * Set the size of one or more container properties referenced by expression.
+	 * The size of container properties would be between {@code minSize} and
+	 * {@code minSize} + {@link Constants#DEFAULT_ELEMENT_MAX_SIZE}
+	 * <p>
+	 * It would conflict with {@link ArbitraryBuilder#maxSize(String, int)}.
+	 * The last executed manipulation would set the size of properties.
+	 * <p>
+	 * It is same as {@code size(minSize, minSize + DEFAULT_ELEMENT_MAX_SIZE)}.
+	 *
+	 * @param propertySelector it selects one or more properties.
+	 * @param minSize          of the container to generate
+	 * @return an {@link ArbitraryBuilder} whose size of container properties referenced by
+	 * an {@code propertySelector} is between {@code minSize}
+	 * and {@code minSize} + {@link Constants#DEFAULT_ELEMENT_MAX_SIZE}.
+	 */
+	ArbitraryBuilder<T> minSize(PropertySelector propertySelector, int minSize);
 
 	/**
 	 * Set the size of one or more container properties referenced by expression.
@@ -398,6 +584,8 @@ public interface ArbitraryBuilder<T> {
 	ArbitraryBuilder<T> maxSize(String expression, int maxSize);
 
 	/**
+	 * It is deprecated. Use {@link ArbitraryBuilder#maxSize(PropertySelector, int)} instead.
+	 * <p>
 	 * Set the size of one or more container properties referenced by expression.
 	 * The size of container properties would be between
 	 * max(0, {@code maxSize} - {@link Constants#DEFAULT_ELEMENT_MAX_SIZE}) and {@code maxSize}
@@ -413,7 +601,26 @@ public interface ArbitraryBuilder<T> {
 	 * an {@code expressionGenerator} is max(0, {@code maxSize} - {@link Constants#DEFAULT_ELEMENT_MAX_SIZE})
 	 * and {@code maxSize}
 	 */
+	@Deprecated
 	ArbitraryBuilder<T> maxSize(ExpressionGenerator expressionGenerator, int maxSize);
+
+	/**
+	 * Set the size of one or more container properties referenced by expression.
+	 * The size of container properties would be between
+	 * max(0, {@code maxSize} - {@link Constants#DEFAULT_ELEMENT_MAX_SIZE}) and {@code maxSize}
+	 * <p>
+	 * It would conflict with {@link ArbitraryBuilder#minSize(String, int)}.
+	 * The last executed manipulation would set the size of properties.
+	 * <p>
+	 * It is same as {@code size(expression, Math.max(0, maxSize - DEFAULT_ELEMENT_MAX_SIZE), maxSize)}
+	 *
+	 * @param propertySelector it selects one or more properties.
+	 * @param maxSize          of the container to generate
+	 * @return {@link ArbitraryBuilder} whose size of container properties referenced by
+	 * an {@code propertySelector} is max(0, {@code maxSize} - {@link Constants#DEFAULT_ELEMENT_MAX_SIZE})
+	 * and {@code maxSize}
+	 */
+	ArbitraryBuilder<T> maxSize(PropertySelector propertySelector, int maxSize);
 
 	/**
 	 * It is deprecated. Use {@link #thenApply} instead.
