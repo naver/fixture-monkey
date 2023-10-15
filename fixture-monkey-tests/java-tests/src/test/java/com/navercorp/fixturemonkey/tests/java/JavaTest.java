@@ -701,4 +701,43 @@ class JavaTest {
 
 		then(actual).isNotNull();
 	}
+
+	@RepeatedTest(TEST_COUNT)
+	void setSelfRecursiveObjectList() {
+		List<SelfRecursiveListObject> expected = SUT.giveMeOne(
+			new TypeReference<List<SelfRecursiveListObject>>() {
+			});
+
+		List<SelfRecursiveListObject> actual = SUT.giveMeBuilder(new TypeReference<List<SelfRecursiveListObject>>() {
+			})
+			.size("$", 1)
+			.set("$[0].selfRecursiveListObjects", expected)
+			.sample()
+			.get(0)
+			.getSelfRecursiveListObjects();
+
+		then(actual).isEqualTo(expected);
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void setNestedSelfRecursiveObjectList() {
+		List<SelfRecursiveListObject> expected = SUT.giveMeBuilder(
+				new TypeReference<List<SelfRecursiveListObject>>() {
+				}
+			)
+			.size("$", 1)
+			.set("$[0].selfRecursiveListObjects", SUT.giveMeOne(new TypeReference<List<SelfRecursiveListObject>>() {
+			}))
+			.sample();
+
+		List<SelfRecursiveListObject> actual = SUT.giveMeBuilder(new TypeReference<List<SelfRecursiveListObject>>() {
+			})
+			.size("$", 1)
+			.set("$[0].selfRecursiveListObjects", expected)
+			.sample()
+			.get(0)
+			.getSelfRecursiveListObjects();
+
+		then(actual).isEqualTo(expected);
+	}
 }

@@ -94,8 +94,7 @@ final class TraverseContext {
 	}
 
 	public boolean isTraversed(Property property) {
-		return property.equals(rootArbitraryProperty.getObjectProperty().getProperty())
-			|| arbitraryProperties.stream()
+		return arbitraryProperties.stream()
 			.filter(it -> it != rootArbitraryProperty)
 			.anyMatch(it -> isSameType(property, it.getObjectProperty().getProperty()));
 	}
