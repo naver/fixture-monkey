@@ -64,9 +64,11 @@ public final class ArbitraryResolver {
 
 	public CombinableArbitrary<?> resolve(
 		RootProperty rootProperty,
-		List<ArbitraryManipulator> manipulators,
-		List<ContainerInfoManipulator> containerInfoManipulators
+		ArbitraryBuilderContext builderContext
 	) {
+		List<ArbitraryManipulator> manipulators = builderContext.getManipulators();
+		List<ContainerInfoManipulator> containerInfoManipulators = builderContext.getContainerInfoManipulators();
+
 		List<MatcherOperator<List<ContainerInfoManipulator>>> registeredContainerInfoManipulators =
 			registeredArbitraryBuilders.stream()
 				.map(it -> new MatcherOperator<>(
