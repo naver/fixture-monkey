@@ -108,7 +108,9 @@ public final class ArbitraryResolver {
 					manipulator.manipulate(objectTree);
 				}
 			},
-			fixtureMonkeyOptions.getGenerateMaxTries()
+			fixtureMonkeyOptions.getGenerateMaxTries(),
+			fixtureMonkeyOptions.getDefaultArbitraryValidator(),
+			builderContext.isValidOnly()
 		);
 	}
 }

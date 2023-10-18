@@ -58,7 +58,6 @@ import com.navercorp.fixturemonkey.api.property.PropertySelector;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
 import com.navercorp.fixturemonkey.api.type.LazyAnnotatedType;
 import com.navercorp.fixturemonkey.api.type.Types;
-import com.navercorp.fixturemonkey.api.validator.ArbitraryValidator;
 import com.navercorp.fixturemonkey.customizer.ArbitraryManipulator;
 import com.navercorp.fixturemonkey.customizer.ContainerInfoManipulator;
 import com.navercorp.fixturemonkey.customizer.InnerSpec;
@@ -69,13 +68,10 @@ import com.navercorp.fixturemonkey.tree.ArbitraryTraverser;
 @SuppressFBWarnings("NM_SAME_SIMPLE_NAME_AS_SUPERCLASS")
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T> {
-	private static final int VALIDATION_ANNOTATION_FILTERING_COUNT = 1;
-
 	private final FixtureMonkeyOptions fixtureMonkeyOptions;
 	private final RootProperty rootProperty;
 	private final ArbitraryResolver resolver;
 	private final ArbitraryTraverser traverser;
-	private final ArbitraryValidator validator;
 	private final MonkeyManipulatorFactory monkeyManipulatorFactory;
 	private final ArbitraryBuilderContext context;
 	private final List<MatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuilders;
@@ -86,7 +82,6 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T> {
 		RootProperty rootProperty,
 		ArbitraryResolver resolver,
 		ArbitraryTraverser traverser,
-		ArbitraryValidator validator,
 		MonkeyManipulatorFactory monkeyManipulatorFactory,
 		ArbitraryBuilderContext context,
 		List<MatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuilders,
@@ -96,7 +91,6 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T> {
 		this.rootProperty = rootProperty;
 		this.resolver = resolver;
 		this.traverser = traverser;
-		this.validator = validator;
 		this.context = context;
 		this.monkeyManipulatorFactory = monkeyManipulatorFactory;
 		this.registeredArbitraryBuilders = registeredArbitraryBuilders;
@@ -539,7 +533,6 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T> {
 			rootProperty,
 			resolver,
 			traverser,
-			validator,
 			monkeyManipulatorFactory,
 			context.copy(),
 			registeredArbitraryBuilders,
@@ -551,7 +544,6 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T> {
 		return this.context;
 	}
 
-	@SuppressWarnings("unchecked")
 	private CombinableArbitrary<?> resolveArbitrary(ArbitraryBuilderContext context) {
 		if (context.isFixed()) {
 			if (context.getFixedCombinableArbitrary() == null || context.fixedExpired()) {
@@ -559,7 +551,6 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T> {
 						rootProperty,
 						context
 					)
-					.filter(VALIDATION_ANNOTATION_FILTERING_COUNT, validateFilter(context.isValidOnly()))
 					.combined();
 				context.addManipulator(monkeyManipulatorFactory.newArbitraryManipulator("$", fixed));
 				context.renewFixed(CombinableArbitrary.from(fixed));
@@ -568,10 +559,9 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T> {
 		}
 
 		return resolver.resolve(
-				rootProperty,
-				context
-			)
-			.filter(VALIDATION_ANNOTATION_FILTERING_COUNT, validateFilter(context.isValidOnly()));
+			rootProperty,
+			context
+		);
 	}
 
 	private String resolveExpression(ExpressionGenerator expressionGenerator) {
@@ -592,28 +582,11 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T> {
 			new RootProperty(new LazyAnnotatedType<>(lazyArbitrary::getValue)),
 			resolver,
 			traverser,
-			validator,
 			monkeyManipulatorFactory,
 			context,
 			registeredArbitraryBuilders,
 			monkeyContext
 		);
-	}
-
-	@SuppressWarnings("rawtypes")
-	private Predicate validateFilter(boolean validOnly) {
-		return fixture -> {
-			if (!validOnly) {
-				return true;
-			}
-
-			if (fixture == null) {
-				return true;
-			}
-
-			this.validator.validate(fixture);
-			return true;
-		};
 	}
 
 	private ExpressionGenerator toExpressionGenerator(PropertySelector propertySelector) {

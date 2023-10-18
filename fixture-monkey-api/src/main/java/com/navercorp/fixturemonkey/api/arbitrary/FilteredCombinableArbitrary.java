@@ -98,6 +98,10 @@ final class FilteredCombinableArbitrary<T> implements CombinableArbitrary<T> {
 			);
 		}
 
+		if (lastException != null) {
+			throw new RetryableFilterMissException(lastException);
+		}
+
 		if (combinableArbitrary instanceof Traceable) {
 			PropertyPath propertyPath = ((Traceable)combinableArbitrary).getPropertyPath();
 			String generateType = propertyPath.getProperty().getType().getTypeName();
@@ -159,6 +163,10 @@ final class FilteredCombinableArbitrary<T> implements CombinableArbitrary<T> {
 				String.format("Given properties \"%s\" is not validated by annotations.", failedConcatProperties),
 				lastException
 			);
+		}
+
+		if (lastException != null) {
+			throw new RetryableFilterMissException(lastException);
 		}
 
 		if (combinableArbitrary instanceof Traceable) {

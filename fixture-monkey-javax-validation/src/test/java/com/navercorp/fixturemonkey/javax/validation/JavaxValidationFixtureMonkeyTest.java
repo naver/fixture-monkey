@@ -481,6 +481,8 @@ class JavaxValidationFixtureMonkeyTest {
 				.setNull("notBlank")
 				.sample()
 		)
-			.isExactlyInstanceOf(RetryableFilterMissException.class);
+			.getCause()
+			.isExactlyInstanceOf(RetryableFilterMissException.class)
+			.hasMessageContaining("failed due to property \"notBlank\"");
 	}
 }

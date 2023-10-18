@@ -48,7 +48,6 @@ import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.arbitrary.MonkeyStringArbitrary;
 import com.navercorp.fixturemonkey.api.container.DecomposableJavaContainer;
-import com.navercorp.fixturemonkey.api.exception.RetryableFilterMissException;
 import com.navercorp.fixturemonkey.api.exception.ValidationFailedException;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
@@ -616,7 +615,7 @@ class FixtureMonkeyOptionsTest {
 			.build();
 
 		thenThrownBy(() -> sut.giveMeOne(String.class))
-			.isExactlyInstanceOf(RetryableFilterMissException.class);
+			.isExactlyInstanceOf(IllegalArgumentException.class);
 	}
 
 	@Property
