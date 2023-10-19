@@ -54,6 +54,7 @@ import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
+import com.navercorp.fixturemonkey.api.property.PropertySelector;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
 import com.navercorp.fixturemonkey.api.type.LazyAnnotatedType;
 import com.navercorp.fixturemonkey.api.type.Types;
@@ -138,13 +139,25 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T> {
 	}
 
 	@Override
+	@Deprecated
 	public ArbitraryBuilder<T> set(ExpressionGenerator expressionGenerator, @Nullable Object value, int limit) {
 		return this.set(resolveExpression(expressionGenerator), value, limit);
 	}
 
 	@Override
+	public ArbitraryBuilder<T> set(PropertySelector propertySelector, @Nullable Object value, int limit) {
+		return this.set(resolveExpression(toExpressionGenerator(propertySelector)), value, limit);
+	}
+
+	@Override
+	@Deprecated
 	public ArbitraryBuilder<T> set(ExpressionGenerator expressionGenerator, @Nullable Object value) {
 		return this.set(resolveExpression(expressionGenerator), value);
+	}
+
+	@Override
+	public ArbitraryBuilder<T> set(PropertySelector propertySelector, @Nullable Object value) {
+		return this.set(resolveExpression(toExpressionGenerator(propertySelector)), value);
 	}
 
 	@Override
@@ -161,13 +174,27 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T> {
 	}
 
 	@Override
+	@Deprecated
 	public ArbitraryBuilder<T> setLazy(ExpressionGenerator expressionGenerator, Supplier<?> supplier, int limit) {
 		return this.setLazy(resolveExpression(expressionGenerator), supplier, limit);
 	}
 
 	@Override
+	public ArbitraryBuilder<T> setLazy(PropertySelector propertySelector, Supplier<?> supplier, int limit) {
+		return this.setLazy(resolveExpression(toExpressionGenerator(propertySelector)), supplier, limit);
+	}
+
+	@Override
+	@Deprecated
 	public ArbitraryBuilder<T> setLazy(ExpressionGenerator expressionGenerator, Supplier<?> supplier) {
 		return this.setLazy(resolveExpression(expressionGenerator), supplier, MAX_MANIPULATION_COUNT);
+	}
+
+	@Override
+	public ArbitraryBuilder<T> setLazy(PropertySelector propertySelector, Supplier<?> supplier) {
+		return this.setLazy(
+			resolveExpression(toExpressionGenerator(propertySelector)), supplier, MAX_MANIPULATION_COUNT
+		);
 	}
 
 	@Override
@@ -187,8 +214,18 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T> {
 	}
 
 	@Override
+	@Deprecated
 	public ArbitraryBuilder<T> minSize(ExpressionGenerator expressionGenerator, int minSize) {
 		return this.size(resolveExpression(expressionGenerator), minSize, minSize + DEFAULT_ELEMENT_MAX_SIZE);
+	}
+
+	@Override
+	public ArbitraryBuilder<T> minSize(PropertySelector propertySelector, int minSize) {
+		return this.size(
+			resolveExpression(toExpressionGenerator(propertySelector)),
+			minSize,
+			minSize + DEFAULT_ELEMENT_MAX_SIZE
+		);
 	}
 
 	@Override
@@ -197,9 +234,22 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T> {
 	}
 
 	@Override
+	@Deprecated
 	public ArbitraryBuilder<T> maxSize(ExpressionGenerator expressionGenerator, int maxSize) {
-		return this.size(resolveExpression(expressionGenerator), Math.max(0, maxSize - DEFAULT_ELEMENT_MAX_SIZE),
-			maxSize);
+		return this.size(
+			resolveExpression(expressionGenerator),
+			Math.max(0, maxSize - DEFAULT_ELEMENT_MAX_SIZE),
+			maxSize
+		);
+	}
+
+	@Override
+	public ArbitraryBuilder<T> maxSize(PropertySelector propertySelector, int maxSize) {
+		return this.size(
+			resolveExpression(toExpressionGenerator(propertySelector)),
+			Math.max(0, maxSize - DEFAULT_ELEMENT_MAX_SIZE),
+			maxSize
+		);
 	}
 
 	@Override
@@ -208,8 +258,14 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T> {
 	}
 
 	@Override
+	@Deprecated
 	public ArbitraryBuilder<T> size(ExpressionGenerator expressionGenerator, int size) {
 		return this.size(resolveExpression(expressionGenerator), size, size);
+	}
+
+	@Override
+	public ArbitraryBuilder<T> size(PropertySelector propertySelector, int size) {
+		return this.size(resolveExpression(toExpressionGenerator(propertySelector)), size, size);
 	}
 
 	@Override
@@ -226,8 +282,14 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T> {
 	}
 
 	@Override
+	@Deprecated
 	public ArbitraryBuilder<T> size(ExpressionGenerator expressionGenerator, int minSize, int maxSize) {
 		return this.size(resolveExpression(expressionGenerator), minSize, maxSize);
+	}
+
+	@Override
+	public ArbitraryBuilder<T> size(PropertySelector propertySelector, int minSize, int maxSize) {
+		return this.size(resolveExpression(toExpressionGenerator(propertySelector)), minSize, maxSize);
 	}
 
 	@Override
@@ -286,8 +348,14 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T> {
 	}
 
 	@Override
+	@Deprecated
 	public ArbitraryBuilder<T> setNull(ExpressionGenerator expressionGenerator) {
 		return this.setNull(resolveExpression(expressionGenerator));
+	}
+
+	@Override
+	public ArbitraryBuilder<T> setNull(PropertySelector propertySelector) {
+		return this.setNull(resolveExpression(toExpressionGenerator(propertySelector)));
 	}
 
 	@Override
@@ -300,8 +368,14 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T> {
 	}
 
 	@Override
+	@Deprecated
 	public ArbitraryBuilder<T> setNotNull(ExpressionGenerator expressionGenerator) {
 		return this.setNotNull(resolveExpression(expressionGenerator));
+	}
+
+	@Override
+	public ArbitraryBuilder<T> setNotNull(PropertySelector propertySelector) {
+		return this.setNotNull(resolveExpression(toExpressionGenerator(propertySelector)));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -334,6 +408,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T> {
 	}
 
 	@Override
+	@Deprecated
 	public <U> ArbitraryBuilder<T> setPostCondition(
 		ExpressionGenerator expressionGenerator,
 		Class<U> type,
@@ -345,11 +420,36 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T> {
 
 	@Override
 	public <U> ArbitraryBuilder<T> setPostCondition(
+		PropertySelector propertySelector,
+		Class<U> type,
+		Predicate<U> predicate,
+		int limit
+	) {
+		return this.setPostCondition(
+			resolveExpression(toExpressionGenerator(propertySelector)),
+			type,
+			predicate,
+			limit
+		);
+	}
+
+	@Override
+	@Deprecated
+	public <U> ArbitraryBuilder<T> setPostCondition(
 		ExpressionGenerator expressionGenerator,
 		Class<U> type,
 		Predicate<U> predicate
 	) {
 		return this.setPostCondition(resolveExpression(expressionGenerator), type, predicate);
+	}
+
+	@Override
+	public <U> ArbitraryBuilder<T> setPostCondition(
+		PropertySelector propertySelector,
+		Class<U> type,
+		Predicate<U> predicate
+	) {
+		return this.setPostCondition(resolveExpression(toExpressionGenerator(propertySelector)), type, predicate);
 	}
 
 	@Override
@@ -514,5 +614,14 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T> {
 			this.validator.validate(fixture);
 			return true;
 		};
+	}
+
+	private ExpressionGenerator toExpressionGenerator(PropertySelector propertySelector) {
+		if (propertySelector instanceof ExpressionGenerator) {
+			return (ExpressionGenerator)propertySelector;
+		}
+		throw new UnsupportedOperationException(
+			"Given propertySelector is not supported. type of propertySelector: " + propertySelector.getClass()
+		);
 	}
 }

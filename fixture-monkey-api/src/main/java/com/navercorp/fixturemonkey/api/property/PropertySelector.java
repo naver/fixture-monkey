@@ -16,21 +16,14 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.api.expression;
+package com.navercorp.fixturemonkey.api.property;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.api.property.Property;
-import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
-import com.navercorp.fixturemonkey.api.property.PropertySelector;
-
-@API(since = "0.4.0", status = Status.MAINTAINED)
-@FunctionalInterface
-public interface ExpressionGenerator extends PropertySelector {
-	default String generate() {
-		return this.generate(Property::getName);
-	}
-
-	String generate(PropertyNameResolver propertyNameResolver);
+/**
+ * It is a marker interface for selecting a specific property.
+ */
+@API(since = "0.6.11", status = Status.EXPERIMENTAL)
+public interface PropertySelector {
 }
