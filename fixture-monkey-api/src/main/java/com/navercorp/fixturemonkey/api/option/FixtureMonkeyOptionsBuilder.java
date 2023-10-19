@@ -554,6 +554,20 @@ public final class FixtureMonkeyOptionsBuilder {
 		return this;
 	}
 
+	public FixtureMonkeyOptionsBuilder javaTypeArbitraryGeneratorSet(
+		Function<JavaConstraintGenerator, JavaTypeArbitraryGeneratorSet> generateJavaTypeArbitrarySet
+	) {
+		this.generateJavaTypeArbitrarySet = generateJavaTypeArbitrarySet;
+		return this;
+	}
+
+	public FixtureMonkeyOptionsBuilder javaTimeArbitraryGeneratorSet(
+		Function<JavaConstraintGenerator, JavaTimeArbitraryGeneratorSet> generateJavaTimeArbitrarySet
+	) {
+		this.generateJavaTimeArbitrarySet = generateJavaTimeArbitrarySet;
+		return this;
+	}
+
 	public FixtureMonkeyOptions build() {
 		ObjectPropertyGenerator defaultObjectPropertyGenerator = defaultIfNull(
 			this.defaultObjectPropertyGenerator,

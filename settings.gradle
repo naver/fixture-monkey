@@ -18,6 +18,7 @@ include(
         "fixture-monkey-tests:kotlin-tests",
         "fixture-monkey-tests:java-tests",
         "fixture-monkey-tests:java-concurrent-tests",
-        "fixture-monkey-tests:kotlin-concurrent-tests"
+        "fixture-monkey-tests:kotlin-concurrent-tests",
+        "fixture-monkey-kotest"
 )
 
