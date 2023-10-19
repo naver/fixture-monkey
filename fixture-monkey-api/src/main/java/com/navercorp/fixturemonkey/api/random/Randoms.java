@@ -19,8 +19,6 @@
 package com.navercorp.fixturemonkey.api.random;
 
 import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.function.Supplier;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -35,10 +33,10 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  */
 @API(since = "0.4.0", status = Status.MAINTAINED)
 @SuppressFBWarnings("DMI_RANDOM_USED_ONLY_ONCE")
-public class Randoms {
+public final class Randoms {
 	private static final boolean USE_JQWIK_ENGINE;
-	private static final Supplier<Random> RNG = ThreadLocalRandom::current;
-	private static final ThreadLocal<Random> CURRENT = ThreadLocal.withInitial(Randoms::newRandom);
+	private static final ThreadLocal<Random> CURRENT = new ThreadLocal<>();
+	private static final ThreadLocal<Long> SEED = new ThreadLocal<>();
 
 	static {
 		boolean useJqwikEngine;
@@ -54,36 +52,21 @@ public class Randoms {
 	private Randoms() {
 	}
 
-	public static String createRandomSeed() {
-		return USE_JQWIK_ENGINE
-			? SourceOfRandomness.createRandomSeed()
-			: Long.toString(RNG.get().nextLong());
-	}
-
 	public static Random create(String seed) {
 		if (USE_JQWIK_ENGINE) {
+			SEED.set(Long.parseLong(seed));
 			return SourceOfRandomness.create(seed);
 		}
 
 		try {
-			Random random = newRandom(Long.parseLong(seed));
+			long actualSeed = Long.parseLong(seed);
+			Random random = newRandom(actualSeed);
 			CURRENT.set(random);
+			SEED.set(actualSeed);
 			return random;
 		} catch (NumberFormatException nfe) {
 			throw new JqwikException(String.format("[%s] is not a valid random seed.", seed));
 		}
-	}
-
-	public static Random newRandom() {
-		return USE_JQWIK_ENGINE
-			? SourceOfRandomness.newRandom()
-			: new XorShiftRandom();
-	}
-
-	public static Random newRandom(final long seed) {
-		return USE_JQWIK_ENGINE
-			? SourceOfRandomness.newRandom(seed)
-			: new XorShiftRandom(seed);
 	}
 
 	public static Random current() {
@@ -92,8 +75,18 @@ public class Randoms {
 			: CURRENT.get();
 	}
 
+	public static long currentSeed() {
+		return SEED.get();
+	}
+
 	public static int nextInt(int bound) {
 		return current().nextInt(bound);
+	}
+
+	private static Random newRandom(final long seed) {
+		return USE_JQWIK_ENGINE
+			? SourceOfRandomness.newRandom(seed)
+			: new XorShiftRandom(seed);
 	}
 
 	/**
@@ -111,10 +104,6 @@ public class Randoms {
 	 */
 	private static class XorShiftRandom extends Random {
 		private long seed;
-
-		private XorShiftRandom() {
-			this(System.nanoTime());
-		}
 
 		private XorShiftRandom(long seed) {
 			if (seed == 0L) {

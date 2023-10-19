@@ -56,6 +56,7 @@ import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptionsBuilder;
 import com.navercorp.fixturemonkey.api.plugin.Plugin;
 import com.navercorp.fixturemonkey.api.property.PropertyGenerator;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
+import com.navercorp.fixturemonkey.api.random.Randoms;
 import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.api.validator.ArbitraryValidator;
 import com.navercorp.fixturemonkey.buildergroup.ArbitraryBuilderCandidate;
@@ -76,6 +77,7 @@ public class FixtureMonkeyBuilder {
 	private ManipulatorOptimizer manipulatorOptimizer = new NoneManipulatorOptimizer();
 	private MonkeyExpressionFactory monkeyExpressionFactory = new ArbitraryExpressionFactory();
 	private final MonkeyContextBuilder monkeyContextBuilder = MonkeyContext.builder();
+	private long seed = System.nanoTime();
 
 	public FixtureMonkeyBuilder pushPropertyGenerator(MatcherOperator<PropertyGenerator> propertyGenerator) {
 		fixtureMonkeyOptionsBuilder.insertFirstPropertyGenerator(propertyGenerator);
@@ -512,11 +514,17 @@ public class FixtureMonkeyBuilder {
 		return this;
 	}
 
+	public FixtureMonkeyBuilder seed(long seed) {
+		this.seed = seed;
+		return this;
+	}
+
 	public FixtureMonkey build() {
 		FixtureMonkeyOptions fixtureMonkeyOptions = fixtureMonkeyOptionsBuilder.build();
 		ArbitraryTraverser traverser = new ArbitraryTraverser(fixtureMonkeyOptions);
 
 		MonkeyContext monkeyContext = monkeyContextBuilder.build();
+		Randoms.create(String.valueOf(seed));
 		return new FixtureMonkey(
 			fixtureMonkeyOptions,
 			traverser,
