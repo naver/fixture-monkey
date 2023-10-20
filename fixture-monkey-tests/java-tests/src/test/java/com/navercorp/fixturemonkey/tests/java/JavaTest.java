@@ -492,7 +492,9 @@ class JavaTest {
 			() -> SUT.giveMeBuilder(String.class)
 				.setPostCondition(it -> it.equals("test"))
 				.sample()
-		).isExactlyInstanceOf(RetryableFilterMissException.class);
+		)
+			.getCause()
+			.isExactlyInstanceOf(RetryableFilterMissException.class);
 	}
 
 	@RepeatedTest(TEST_COUNT)
@@ -579,6 +581,7 @@ class JavaTest {
 				.setPostCondition(it -> it.equals("test"))
 				.sample()
 		)
+			.getCause()
 			.hasMessageContaining("\"$\"");
 	}
 
@@ -589,6 +592,7 @@ class JavaTest {
 				.setPostCondition("string", String.class, it -> it.equals("test"))
 				.sample()
 		)
+			.getCause()
 			.hasMessageContaining("\"string\"");
 	}
 
@@ -599,6 +603,7 @@ class JavaTest {
 				.setPostCondition("value.string", String.class, it -> it.equals("test"))
 				.sample()
 		)
+			.getCause()
 			.hasMessageContaining("\"value.string\"");
 	}
 
@@ -610,6 +615,7 @@ class JavaTest {
 				.setPostCondition("array[0]", String.class, it -> it.equals("test"))
 				.sample()
 		)
+			.getCause()
 			.hasMessageContaining("\"array[0]\"");
 	}
 
@@ -621,6 +627,7 @@ class JavaTest {
 				.setPostCondition("list[0]", String.class, it -> it.equals("test"))
 				.sample()
 		)
+			.getCause()
 			.hasMessageContaining("\"list[0]\"");
 	}
 
@@ -632,6 +639,7 @@ class JavaTest {
 				.setPostCondition("complexList[0].string", String.class, it -> it.equals("test"))
 				.sample()
 		)
+			.getCause()
 			.hasMessageContaining("\"complexList[0].string\"");
 	}
 
@@ -648,6 +656,7 @@ class JavaTest {
 				)
 				.sample()
 		)
+			.getCause()
 			.hasMessageContaining("\"map{key}\"");
 	}
 
@@ -664,6 +673,7 @@ class JavaTest {
 				)
 				.sample()
 		)
+			.getCause()
 			.hasMessageContaining("\"map{value}\"");
 	}
 

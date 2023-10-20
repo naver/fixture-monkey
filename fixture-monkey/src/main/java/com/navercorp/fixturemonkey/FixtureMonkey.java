@@ -37,7 +37,6 @@ import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
 import com.navercorp.fixturemonkey.api.type.LazyAnnotatedType;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
-import com.navercorp.fixturemonkey.api.validator.ArbitraryValidator;
 import com.navercorp.fixturemonkey.customizer.ArbitraryManipulator;
 import com.navercorp.fixturemonkey.customizer.MonkeyManipulatorFactory;
 import com.navercorp.fixturemonkey.expression.MonkeyExpressionFactory;
@@ -52,7 +51,6 @@ public class FixtureMonkey {
 	private final FixtureMonkeyOptions fixtureMonkeyOptions;
 	private final ArbitraryTraverser traverser;
 	private final ManipulatorOptimizer manipulatorOptimizer;
-	private final ArbitraryValidator validator;
 	private final MonkeyContext monkeyContext;
 	private final List<MatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuilders = new ArrayList<>();
 	private final MonkeyExpressionFactory monkeyExpressionFactory;
@@ -61,7 +59,6 @@ public class FixtureMonkey {
 		FixtureMonkeyOptions fixtureMonkeyOptions,
 		ArbitraryTraverser traverser,
 		ManipulatorOptimizer manipulatorOptimizer,
-		ArbitraryValidator validator,
 		MonkeyContext monkeyContext,
 		List<MatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>>> registeredArbitraryBuilders,
 		MonkeyExpressionFactory monkeyExpressionFactory
@@ -69,7 +66,6 @@ public class FixtureMonkey {
 		this.fixtureMonkeyOptions = fixtureMonkeyOptions;
 		this.traverser = traverser;
 		this.manipulatorOptimizer = manipulatorOptimizer;
-		this.validator = validator;
 		this.monkeyContext = monkeyContext;
 		this.monkeyExpressionFactory = monkeyExpressionFactory;
 		initializeRegisteredArbitraryBuilders(registeredArbitraryBuilders);
@@ -121,7 +117,6 @@ public class FixtureMonkey {
 				registeredArbitraryBuilders
 			),
 			traverser,
-			this.validator,
 			monkeyManipulatorFactory,
 			new ArbitraryBuilderContext(),
 			registeredArbitraryBuilders,
@@ -154,7 +149,6 @@ public class FixtureMonkey {
 				registeredArbitraryBuilders
 			),
 			traverser,
-			this.validator,
 			monkeyManipulatorFactory,
 			context,
 			registeredArbitraryBuilders,

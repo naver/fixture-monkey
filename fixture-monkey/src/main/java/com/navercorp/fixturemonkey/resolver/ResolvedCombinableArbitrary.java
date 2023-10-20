@@ -19,6 +19,7 @@
 package com.navercorp.fixturemonkey.resolver;
 
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import org.apiguardian.api.API;
@@ -27,23 +28,33 @@ import org.apiguardian.api.API.Status;
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.exception.ContainerSizeFilterMissException;
 import com.navercorp.fixturemonkey.api.exception.FixedValueFilterMissException;
+import com.navercorp.fixturemonkey.api.exception.RetryableFilterMissException;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
+import com.navercorp.fixturemonkey.api.validator.ArbitraryValidator;
 import com.navercorp.fixturemonkey.tree.ObjectTree;
 
 @API(since = "0.6.9", status = Status.EXPERIMENTAL)
 final class ResolvedCombinableArbitrary<T> implements CombinableArbitrary<T> {
+	private static final int VALIDATION_ANNOTATION_FILTERING_COUNT = 1;
+
 	private final RootProperty rootProperty;
 	private final LazyArbitrary<ObjectTree> objectTree;
 	private final int generateMaxTries;
 	private final LazyArbitrary<CombinableArbitrary<T>> arbitrary;
+	private final ArbitraryValidator validator;
+	private final boolean validOnly;
+
+	private Exception lastException = null;
 
 	@SuppressWarnings("unchecked")
 	public ResolvedCombinableArbitrary(
 		RootProperty rootProperty,
 		Supplier<ObjectTree> regenerateTree,
 		Consumer<ObjectTree> manipulateObjectTree,
-		int generateMaxTries
+		int generateMaxTries,
+		ArbitraryValidator validator,
+		boolean validOnly
 	) {
 		this.rootProperty = rootProperty;
 		this.objectTree = LazyArbitrary.lazy(regenerateTree);
@@ -55,23 +66,30 @@ final class ResolvedCombinableArbitrary<T> implements CombinableArbitrary<T> {
 				return (CombinableArbitrary<T>)objectTree.generate();
 			}
 		);
+		this.validator = validator;
+		this.validOnly = validOnly;
 	}
 
 	@Override
 	public T combined() {
 		for (int i = 0; i < generateMaxTries; i++) {
 			try {
-				return arbitrary.getValue().combined();
+				return arbitrary.getValue()
+					.filter(VALIDATION_ANNOTATION_FILTERING_COUNT, this.validateFilter(validOnly))
+					.combined();
 			} catch (ContainerSizeFilterMissException ex) {
+				lastException = ex;
 				objectTree.clear();
-			} catch (FixedValueFilterMissException ignored) {
+			} catch (FixedValueFilterMissException | RetryableFilterMissException ex) {
+				lastException = ex;
 			} finally {
 				arbitrary.clear();
 			}
 		}
 
 		throw new IllegalArgumentException(
-			String.format("Given type %s is failed to generate.", rootProperty.getType())
+			String.format("Given type %s is failed to generate.", rootProperty.getType()),
+			lastException
 		);
 	}
 
@@ -79,17 +97,22 @@ final class ResolvedCombinableArbitrary<T> implements CombinableArbitrary<T> {
 	public Object rawValue() {
 		for (int i = 0; i < generateMaxTries; i++) {
 			try {
-				return arbitrary.getValue().rawValue();
+				return arbitrary.getValue()
+					.filter(VALIDATION_ANNOTATION_FILTERING_COUNT, this.validateFilter(validOnly))
+					.rawValue();
 			} catch (ContainerSizeFilterMissException ex) {
+				lastException = ex;
 				objectTree.clear();
-			} catch (FixedValueFilterMissException ignored) {
+			} catch (FixedValueFilterMissException | RetryableFilterMissException ex) {
+				lastException = ex;
 			} finally {
 				arbitrary.clear();
 			}
 		}
 
 		throw new IllegalArgumentException(
-			String.format("Given type %s is failed to generate.", rootProperty.getType())
+			String.format("Given type %s is failed to generate.", rootProperty.getType()),
+			lastException
 		);
 	}
 
@@ -101,5 +124,20 @@ final class ResolvedCombinableArbitrary<T> implements CombinableArbitrary<T> {
 	@Override
 	public boolean fixed() {
 		return false;
+	}
+
+	private Predicate<T> validateFilter(boolean validOnly) {
+		return fixture -> {
+			if (!validOnly) {
+				return true;
+			}
+
+			if (fixture == null) {
+				return true;
+			}
+
+			this.validator.validate(fixture);
+			return true;
+		};
 	}
 }

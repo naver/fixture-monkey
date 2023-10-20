@@ -529,7 +529,6 @@ public class FixtureMonkeyBuilder {
 			fixtureMonkeyOptions,
 			traverser,
 			manipulatorOptimizer,
-			fixtureMonkeyOptions.getDefaultArbitraryValidator(),
 			monkeyContext,
 			registeredArbitraryBuilders,
 			monkeyExpressionFactory
