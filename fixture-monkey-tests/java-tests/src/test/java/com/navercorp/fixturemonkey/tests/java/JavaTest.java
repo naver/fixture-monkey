@@ -740,4 +740,26 @@ class JavaTest {
 
 		then(actual).isEqualTo(expected);
 	}
+
+	@RepeatedTest(TEST_COUNT)
+	void thenApplyAndSizeMap() {
+		Map<String, String> actual = SUT.giveMeBuilder(new TypeReference<Map<String, Map<String, String>>>() {
+			})
+			.setInner(new InnerSpec()
+				.size(1)
+				.value(m -> m.size(0))
+			)
+			.thenApply((it, builder) ->
+				builder.setInner(new InnerSpec()
+					.size(1)
+					.value(m -> m.size(1))
+				)
+			)
+			.sample()
+			.values()
+			.stream().findFirst()
+			.orElse(null);
+
+		then(actual).hasSize(1);
+	}
 }
