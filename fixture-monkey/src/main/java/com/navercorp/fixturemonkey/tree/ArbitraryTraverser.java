@@ -83,13 +83,13 @@ public final class ArbitraryTraverser {
 		ContainerProperty containerProperty = null;
 		ContainerInfoManipulator containerInfoManipulator = null;
 		if (container) {
-			containerInfoManipulator = containerInfoManipulators.stream()
-				.filter(it -> it.isMatch(Collections.singletonList(objectProperty)))
-				.findFirst()
-				.orElse(null);
-			ArbitraryContainerInfo containerInfo = containerInfoManipulator == null
-				? null
-				: containerInfoManipulator.getContainerInfo();
+			containerInfoManipulator = resolveAppliedContainerInfoManipulator(
+				containerInfoManipulators,
+				Collections.singletonList(objectProperty)
+			);
+			ArbitraryContainerInfo containerInfo = containerInfoManipulator != null
+				? containerInfoManipulator.getContainerInfo()
+				: null;
 
 			containerProperty = containerPropertyGenerator.generate(
 				new ContainerPropertyGeneratorContext(
@@ -261,13 +261,13 @@ public final class ArbitraryTraverser {
 						.map(ArbitraryProperty::getObjectProperty).collect(Collectors.toList());
 				objectProperties.add(childObjectProperty);
 
-				ArbitraryContainerInfo containerInfo = null;
-				for (ContainerInfoManipulator containerInfoManipulator : containerInfoManipulators) {
-					if (containerInfoManipulator.isMatch(objectProperties)) {
-						containerInfo = containerInfoManipulator.getContainerInfo();
-						appliedContainerInfoManipulator = containerInfoManipulator;
-					}
-				}
+				appliedContainerInfoManipulator = resolveAppliedContainerInfoManipulator(
+					containerInfoManipulators,
+					objectProperties
+				);
+				ArbitraryContainerInfo containerInfo = appliedContainerInfoManipulator != null
+					? appliedContainerInfoManipulator.getContainerInfo()
+					: null;
 				childContainerProperty = containerPropertyGenerator.generate(
 					new ContainerPropertyGeneratorContext(
 						childProperty,
@@ -296,5 +296,19 @@ public final class ArbitraryTraverser {
 			children.add(childNode);
 		}
 		return children;
+	}
+
+	@Nullable
+	private ContainerInfoManipulator resolveAppliedContainerInfoManipulator(
+		List<ContainerInfoManipulator> containerInfoManipulators,
+		List<ObjectProperty> objectProperties
+	) {
+		ContainerInfoManipulator appliedContainerInfoManipulator = null;
+		for (ContainerInfoManipulator containerInfoManipulator : containerInfoManipulators) {
+			if (containerInfoManipulator.isMatch(objectProperties)) {
+				appliedContainerInfoManipulator = containerInfoManipulator;
+			}
+		}
+		return appliedContainerInfoManipulator;
 	}
 }

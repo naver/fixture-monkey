@@ -103,8 +103,9 @@ public final class NodeSetDecomposedValueManipulator<T> implements NodeManipulat
 			int decomposedContainerSize = decomposableJavaContainer.getSize();
 
 			ContainerInfoManipulator appliedContainerInfoManipulator = objectNode.getAppliedContainerInfoManipulator();
-			boolean forced = appliedContainerInfoManipulator == null
-				|| sequence > appliedContainerInfoManipulator.getManipulatingSequence();
+			boolean forced = !(objectNode.getProperty() instanceof MapEntryElementProperty)
+				&& (appliedContainerInfoManipulator == null
+				|| sequence > appliedContainerInfoManipulator.getManipulatingSequence());
 			if (forced) {
 				ContainerInfoManipulator containerInfoManipulator = new ContainerInfoManipulator(
 					IdentityNodeResolver.INSTANCE.toNextNodePredicate(),
