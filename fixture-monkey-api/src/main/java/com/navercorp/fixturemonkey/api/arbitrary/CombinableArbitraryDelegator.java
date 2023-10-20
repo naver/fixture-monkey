@@ -16,24 +16,36 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.mockito.plugin;
-
-import java.util.Arrays;
+package com.navercorp.fixturemonkey.api.arbitrary;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.api.introspector.MatchArbitraryIntrospector;
-import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptionsBuilder;
-import com.navercorp.fixturemonkey.api.plugin.Plugin;
-import com.navercorp.fixturemonkey.mockito.introspector.MockitoIntrospector;
+@API(since = "0.6.12", status = Status.EXPERIMENTAL)
+public final class CombinableArbitraryDelegator<T> implements CombinableArbitrary<T> {
+	private final CombinableArbitrary<T> delegated;
 
-@API(since = "0.4.0", status = Status.MAINTAINED)
-public final class MockitoPlugin implements Plugin {
+	public CombinableArbitraryDelegator(CombinableArbitrary<T> delegated) {
+		this.delegated = delegated;
+	}
+
 	@Override
-	public void accept(FixtureMonkeyOptionsBuilder optionsBuilder) {
-		optionsBuilder.fallbackIntrospector(it -> new MatchArbitraryIntrospector(
-			Arrays.asList(it, MockitoIntrospector.INSTANCE))
-		);
+	public T combined() {
+		return delegated.combined();
+	}
+
+	@Override
+	public Object rawValue() {
+		return delegated.rawValue();
+	}
+
+	@Override
+	public void clear() {
+		delegated.clear();
+	}
+
+	@Override
+	public boolean fixed() {
+		return delegated.fixed();
 	}
 }

@@ -24,6 +24,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -31,6 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
+import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitraryDelegator;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
@@ -54,29 +56,38 @@ public final class BeanArbitraryIntrospector implements ArbitraryIntrospector {
 		Map<ArbitraryProperty, CombinableArbitrary<?>> arbitrariesByArbitraryProperty =
 			context.getCombinableArbitrariesByArbitraryProperty();
 
+		CombinableArbitrary<?> generated = context.getGenerated();
+		if (generated == CombinableArbitrary.NOT_GENERATED) {
+			generated = CombinableArbitrary.from(() -> Reflections.newInstance(type));
+		}
+
+		Map<String, PropertyDescriptor> propertyDescriptorsByPropertyName =
+			TypeCache.getPropertyDescriptorsByPropertyName(type);
 		return new ArbitraryIntrospectorResult(
-			CombinableArbitrary.objectBuilder()
-				.properties(arbitrariesByArbitraryProperty)
-				.build(combine(type))
+			new CombinableArbitraryDelegator<>(
+				CombinableArbitrary.objectBuilder()
+					.properties(arbitrariesByArbitraryProperty)
+					.build(combine(generated::combined, propertyDescriptorsByPropertyName))
+			)
 		);
 	}
 
-	private Function<Map<ArbitraryProperty, Object>, Object> combine(Class<?> type) {
-		Map<String, PropertyDescriptor> propertyDescriptors =
-			TypeCache.getPropertyDescriptorsByPropertyName(type);
-
+	private Function<Map<ArbitraryProperty, Object>, Object> combine(
+		Supplier<Object> instance,
+		Map<String, PropertyDescriptor> propertyDescriptorsByPropertyName
+	) {
 		return propertyValuesByArbitraryProperty -> {
-			Object instance = Reflections.newInstance(type);
+			Object object = instance.get();
 			propertyValuesByArbitraryProperty.forEach(
 				(arbitraryProperty, value) -> {
-					String originPropertyName = arbitraryProperty.getObjectProperty()
-						.getProperty()
-						.getName();
-					PropertyDescriptor propertyDescriptor = propertyDescriptors.get(originPropertyName);
+					Property property = arbitraryProperty.getObjectProperty().getProperty();
+
+					String originPropertyName = property.getName();
+					PropertyDescriptor propertyDescriptor = propertyDescriptorsByPropertyName.get(originPropertyName);
 					Method writeMethod = propertyDescriptor.getWriteMethod();
 					try {
 						if (value != null) {
-							writeMethod.invoke(instance, value);
+							writeMethod.invoke(object, value);
 						}
 					} catch (IllegalAccessException | InvocationTargetException ex) {
 						log.warn("set bean property is failed. name: {} value: {}",
@@ -84,10 +95,9 @@ public final class BeanArbitraryIntrospector implements ArbitraryIntrospector {
 							value,
 							ex);
 					}
-
 				}
 			);
-			return instance;
+			return object;
 		};
 	}
 }

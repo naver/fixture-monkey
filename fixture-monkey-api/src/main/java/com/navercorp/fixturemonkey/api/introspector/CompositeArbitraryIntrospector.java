@@ -23,10 +23,17 @@ import java.util.List;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
-import com.navercorp.fixturemonkey.api.matcher.Matcher;
 
-@API(since = "0.4.0", status = Status.MAINTAINED)
+/**
+ * Introspects by one or more {@link ArbitraryIntrospector}.
+ * <p>
+ * All {@link ArbitraryIntrospector} are used in the declared order.
+ * A particular {@link ArbitraryIntrospector} will use the result of
+ * a previously declared {@link ArbitraryIntrospector}.
+ */
+@API(since = "0.6.12", status = Status.EXPERIMENTAL)
 public class CompositeArbitraryIntrospector implements ArbitraryIntrospector {
 	private final List<ArbitraryIntrospector> introspectors;
 
@@ -36,22 +43,10 @@ public class CompositeArbitraryIntrospector implements ArbitraryIntrospector {
 
 	@Override
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
-		for (ArbitraryIntrospector introspector : this.introspectors) {
-			if (introspector instanceof Matcher) {
-				if (((Matcher)introspector).match(context.getResolvedProperty())) {
-					ArbitraryIntrospectorResult result = introspector.introspect(context);
-					if (!ArbitraryIntrospectorResult.EMPTY.equals(result)) {
-						return result;
-					}
-				}
-			} else {
-				ArbitraryIntrospectorResult result = introspector.introspect(context);
-				if (!ArbitraryIntrospectorResult.EMPTY.equals(result)) {
-					return result;
-				}
-			}
+		for (ArbitraryIntrospector introspector : introspectors) {
+			CombinableArbitrary<?> introspected = introspector.introspect(context).getValue();
+			context.setGenerated(introspected);
 		}
-
-		return ArbitraryIntrospectorResult.NOT_INTROSPECTED;
+		return new ArbitraryIntrospectorResult(context.getGenerated());
 	}
 }

@@ -50,19 +50,19 @@ import com.navercorp.fixturemonkey.api.container.DefaultDecomposedContainerValue
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfoGenerator;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGenerator;
-import com.navercorp.fixturemonkey.api.generator.CompositeArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.generator.ContainerPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator;
 import com.navercorp.fixturemonkey.api.generator.IntrospectedArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.generator.JavaDefaultArbitraryGeneratorBuilder;
+import com.navercorp.fixturemonkey.api.generator.MatchArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.generator.NullInjectGenerator;
 import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGenerator;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
-import com.navercorp.fixturemonkey.api.introspector.CompositeArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.JavaArbitraryResolver;
 import com.navercorp.fixturemonkey.api.introspector.JavaTimeArbitraryResolver;
 import com.navercorp.fixturemonkey.api.introspector.JavaTimeTypeArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.introspector.JavaTypeArbitraryGenerator;
+import com.navercorp.fixturemonkey.api.introspector.MatchArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.TypedArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.jqwik.JqwikJavaArbitraryResolver;
 import com.navercorp.fixturemonkey.api.jqwik.JqwikJavaTimeArbitraryGeneratorSet;
@@ -642,9 +642,9 @@ public final class FixtureMonkeyOptionsBuilder {
 			.collect(Collectors.toList());
 
 		ArbitraryGenerator introspectedGenerator =
-			new IntrospectedArbitraryGenerator(new CompositeArbitraryIntrospector(typedArbitraryIntrospectors));
+			new IntrospectedArbitraryGenerator(new MatchArbitraryIntrospector(typedArbitraryIntrospectors));
 
-		defaultArbitraryGenerator = new CompositeArbitraryGenerator(
+		defaultArbitraryGenerator = new MatchArbitraryGenerator(
 			Arrays.asList(introspectedGenerator, defaultArbitraryGenerator)
 		);
 

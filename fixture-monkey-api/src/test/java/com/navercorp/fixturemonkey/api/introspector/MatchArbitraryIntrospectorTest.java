@@ -28,11 +28,11 @@ import net.jqwik.api.Arbitraries;
 
 import com.navercorp.fixturemonkey.api.jqwik.ArbitraryUtils;
 
-class CompositeArbitraryIntrospectorTest {
+class MatchArbitraryIntrospectorTest {
 	@Test
 	void introspect() {
 		// given
-		CompositeArbitraryIntrospector sut = new CompositeArbitraryIntrospector(
+		ArbitraryIntrospector sut = new MatchArbitraryIntrospector(
 			Arrays.asList(
 				(context) -> ArbitraryIntrospectorResult.EMPTY,
 				(context) -> new ArbitraryIntrospectorResult(

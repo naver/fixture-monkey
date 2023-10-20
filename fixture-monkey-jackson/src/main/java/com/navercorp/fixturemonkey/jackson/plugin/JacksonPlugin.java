@@ -31,7 +31,7 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import com.navercorp.fixturemonkey.api.introspector.CompositeArbitraryIntrospector;
+import com.navercorp.fixturemonkey.api.introspector.MatchArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.matcher.AssignableTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptionsBuilder;
@@ -91,7 +91,7 @@ public final class JacksonPlugin implements Plugin {
 			optionsBuilder
 				.objectIntrospector(it -> new JacksonObjectArbitraryIntrospector(objectMapper))
 				.defaultPropertyNameResolver(new JacksonPropertyNameResolver())
-				.containerIntrospector(container -> new CompositeArbitraryIntrospector(
+				.containerIntrospector(container -> new MatchArbitraryIntrospector(
 					Arrays.asList(
 						new JacksonCollectionArbitraryIntrospector(objectMapper),
 						new JacksonArrayArbitraryIntrospector(objectMapper),

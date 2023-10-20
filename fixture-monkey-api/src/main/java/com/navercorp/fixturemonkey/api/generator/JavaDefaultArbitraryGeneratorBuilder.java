@@ -32,7 +32,6 @@ import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult;
 import com.navercorp.fixturemonkey.api.introspector.ArrayIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.BeanArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.BooleanIntrospector;
-import com.navercorp.fixturemonkey.api.introspector.CompositeArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.EnumIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.IterableIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.IteratorIntrospector;
@@ -42,6 +41,7 @@ import com.navercorp.fixturemonkey.api.introspector.ListIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.MapEntryElementIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.MapEntryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.MapIntrospector;
+import com.navercorp.fixturemonkey.api.introspector.MatchArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.OptionalIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.QueueIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.SetIntrospector;
@@ -51,14 +51,14 @@ import com.navercorp.fixturemonkey.api.introspector.UuidIntrospector;
 @SuppressWarnings("UnusedReturnValue")
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class JavaDefaultArbitraryGeneratorBuilder {
-	public static final ArbitraryIntrospector JAVA_INTROSPECTOR = new CompositeArbitraryIntrospector(
+	public static final ArbitraryIntrospector JAVA_INTROSPECTOR = new MatchArbitraryIntrospector(
 		Arrays.asList(
 			new BooleanIntrospector(),
 			new EnumIntrospector(),
 			new UuidIntrospector()
 		)
 	);
-	public static final ArbitraryIntrospector JAVA_CONTAINER_INTROSPECTOR = new CompositeArbitraryIntrospector(
+	public static final ArbitraryIntrospector JAVA_CONTAINER_INTROSPECTOR = new MatchArbitraryIntrospector(
 		Arrays.asList(
 			new OptionalIntrospector(),
 			new ListIntrospector(),
@@ -156,7 +156,7 @@ public final class JavaDefaultArbitraryGeneratorBuilder {
 		}
 
 		return new IntrospectedArbitraryGenerator(
-			new CompositeArbitraryIntrospector(
+			new MatchArbitraryIntrospector(
 				Arrays.asList(
 					new JavaArbitraryIntrospector(this.javaTypeArbitraryGeneratorSet),
 					new JavaTimeArbitraryIntrospector(this.javaTimeArbitraryGeneratorSet),

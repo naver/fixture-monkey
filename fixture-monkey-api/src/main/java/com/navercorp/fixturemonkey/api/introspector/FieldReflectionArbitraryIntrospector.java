@@ -19,8 +19,9 @@ package com.navercorp.fixturemonkey.api.introspector;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -28,9 +29,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
+import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitraryDelegator;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
-import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.type.Reflections;
 import com.navercorp.fixturemonkey.api.type.TypeCache;
@@ -49,47 +50,59 @@ public final class FieldReflectionArbitraryIntrospector implements ArbitraryIntr
 			return ArbitraryIntrospectorResult.NOT_INTROSPECTED;
 		}
 
-		List<ArbitraryProperty> childrenProperties = context.getChildren();
-		Map<String, CombinableArbitrary<?>> arbitrariesByResolvedName
-			= context.getCombinableArbitrariesByResolvedName();
-		Map<String, Field> fields = TypeCache.getFieldsByName(type);
+		Map<ArbitraryProperty, CombinableArbitrary<?>> arbitrariesByArbitraryProperty =
+			context.getCombinableArbitrariesByArbitraryProperty();
 
-		LazyArbitrary<Object> generateArbitrary = LazyArbitrary.lazy(
-			() -> {
-				Object instance = Reflections.newInstance(type);
+		CombinableArbitrary<?> generated = context.getGenerated();
+		if (generated == CombinableArbitrary.NOT_GENERATED) {
+			generated = CombinableArbitrary.from(() -> Reflections.newInstance(type));
+		}
 
-				for (ArbitraryProperty arbitraryProperty : childrenProperties) {
-					String originPropertyName = arbitraryProperty.getObjectProperty().getProperty().getName();
-					Field field = fields.get(originPropertyName);
+		Map<String, Field> fieldsByPropertyName = TypeCache.getFieldsByName(type);
+		return new ArbitraryIntrospectorResult(
+			new CombinableArbitraryDelegator<>(
+				CombinableArbitrary.objectBuilder()
+					.properties(arbitrariesByArbitraryProperty)
+					.build(combine(generated::combined, fieldsByPropertyName))
+			)
+		);
+	}
+
+	private Function<Map<ArbitraryProperty, Object>, Object> combine(
+		Supplier<Object> instance,
+		Map<String, Field> fieldsByPropertyName
+	) {
+		return propertyValuesByArbitraryProperty -> {
+			Object object = instance.get();
+			propertyValuesByArbitraryProperty.forEach(
+				(arbitraryProperty, value) -> {
+					Property property = arbitraryProperty.getObjectProperty().getProperty();
+					String originPropertyName = property.getName();
+					Field field = fieldsByPropertyName.get(originPropertyName);
 
 					if (field == null
 						|| (Modifier.isFinal(field.getModifiers()) && Modifier.isStatic(field.getModifiers()))
 						|| Modifier.isTransient(field.getModifiers())) {
-						continue;
+						return;
 					}
 
 					String resolvePropertyName =
 						arbitraryProperty.getObjectProperty().getResolvedPropertyName();
-					CombinableArbitrary<?> combinableArbitrary =
-						arbitrariesByResolvedName.get(resolvePropertyName);
 
-					Object fieldValue = combinableArbitrary.combined();
 					try {
-						if (fieldValue != null) {
-							field.set(instance, fieldValue);
+						if (value != null) {
+							field.set(object, value);
 						}
 					} catch (IllegalAccessException | IllegalArgumentException ex) {
 						log.warn("set field by reflection is failed. field: {} value: {}",
 							resolvePropertyName,
-							fieldValue,
+							value,
 							ex
 						);
 					}
-				}
+				});
 
-				return instance;
-			}
-		);
-		return new ArbitraryIntrospectorResult(CombinableArbitrary.from(generateArbitrary));
+			return object;
+		};
 	}
 }

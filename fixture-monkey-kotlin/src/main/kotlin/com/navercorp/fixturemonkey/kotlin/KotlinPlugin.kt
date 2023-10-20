@@ -20,7 +20,7 @@ package com.navercorp.fixturemonkey.kotlin
 
 import com.navercorp.fixturemonkey.api.generator.InterfaceObjectPropertyGenerator
 import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGenerator
-import com.navercorp.fixturemonkey.api.introspector.CompositeArbitraryIntrospector
+import com.navercorp.fixturemonkey.api.introspector.MatchArbitraryIntrospector
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator
 import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptionsBuilder
 import com.navercorp.fixturemonkey.api.plugin.Plugin
@@ -73,7 +73,7 @@ class KotlinPlugin : Plugin {
                 TripleContainerPropertyGenerator()
             )
             .containerIntrospector {
-                CompositeArbitraryIntrospector(
+                MatchArbitraryIntrospector(
                     listOf(
                         PairIntrospector(),
                         TripleIntrospector(),

@@ -42,11 +42,11 @@ import com.navercorp.fixturemonkey.api.generator.NullInjectGenerator;
 import com.navercorp.fixturemonkey.api.generator.NullObjectPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGenerator;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
-import com.navercorp.fixturemonkey.api.introspector.CompositeArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.JavaArbitraryResolver;
 import com.navercorp.fixturemonkey.api.introspector.JavaTimeArbitraryResolver;
 import com.navercorp.fixturemonkey.api.introspector.JavaTimeTypeArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.introspector.JavaTypeArbitraryGenerator;
+import com.navercorp.fixturemonkey.api.introspector.MatchArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.matcher.AssignableTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.ExactTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
@@ -425,7 +425,7 @@ public class FixtureMonkeyBuilder {
 
 	public FixtureMonkeyBuilder pushContainerIntrospector(ArbitraryIntrospector containerIntrospector) {
 		this.fixtureMonkeyOptionsBuilder.containerIntrospector(it ->
-			new CompositeArbitraryIntrospector(
+			new MatchArbitraryIntrospector(
 				Arrays.asList(
 					containerIntrospector,
 					it

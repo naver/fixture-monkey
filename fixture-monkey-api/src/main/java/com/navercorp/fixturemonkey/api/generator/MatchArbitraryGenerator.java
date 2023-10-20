@@ -26,26 +26,29 @@ import org.apiguardian.api.API.Status;
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 
 /**
- * Generates a {@link CombinableArbitrary} by one or more {@link ArbitraryGenerator}.
+ * Generates a {@link CombinableArbitrary} by a matched {@link ArbitraryGenerator}.
  * <p>
- * All {@link ArbitraryGenerator} are used in the declared order.
- * A particular {@link ArbitraryGenerator} will use the result of a previously declared {@link ArbitraryGenerator}.
+ * It is different from {@link CompositeArbitraryGenerator}.
+ * A {@link ArbitraryGenerator} not matching the condition returns {@code NOT_GENERATED},
+ * the next {@link ArbitraryGenerator} will be used.
+ * If there are one or more {@link ArbitraryGenerator} that match the condition, the first one is used.
  */
-@API(since = "0.6.2", status = Status.EXPERIMENTAL)
-public final class CompositeArbitraryGenerator implements ArbitraryGenerator {
+@API(since = "0.6.12", status = Status.EXPERIMENTAL)
+public final class MatchArbitraryGenerator implements ArbitraryGenerator {
 	private final List<ArbitraryGenerator> arbitraryGenerators;
 
-	public CompositeArbitraryGenerator(List<ArbitraryGenerator> arbitraryGenerators) {
+	public MatchArbitraryGenerator(List<ArbitraryGenerator> arbitraryGenerators) {
 		this.arbitraryGenerators = arbitraryGenerators;
 	}
 
 	@Override
 	public CombinableArbitrary<?> generate(ArbitraryGeneratorContext context) {
-		CombinableArbitrary<?> generated = context.getGenerated();
 		for (ArbitraryGenerator arbitraryGenerator : arbitraryGenerators) {
-			generated = arbitraryGenerator.generate(context);
-			context.setGenerated(generated);
+			CombinableArbitrary<?> generated = arbitraryGenerator.generate(context);
+			if (generated != CombinableArbitrary.NOT_GENERATED) {
+				return generated;
+			}
 		}
-		return generated;
+		return CombinableArbitrary.NOT_GENERATED;
 	}
 }

@@ -24,7 +24,7 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.constraint.JavaConstraintGenerator;
-import com.navercorp.fixturemonkey.api.introspector.CompositeArbitraryIntrospector;
+import com.navercorp.fixturemonkey.api.introspector.MatchArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptionsBuilder;
 import com.navercorp.fixturemonkey.api.plugin.Plugin;
 import com.navercorp.fixturemonkey.javax.validation.generator.JavaxValidationArbitraryContainerInfoGenerator;
@@ -48,7 +48,7 @@ public final class JavaxValidationPlugin implements Plugin {
 			)
 			.javaConstraintGenerator(javaxValidationConstraintGenerator)
 			.priorityIntrospector(current ->
-				new CompositeArbitraryIntrospector(
+				new MatchArbitraryIntrospector(
 					Arrays.asList(
 						new JavaxValidationBooleanIntrospector(),
 						current
