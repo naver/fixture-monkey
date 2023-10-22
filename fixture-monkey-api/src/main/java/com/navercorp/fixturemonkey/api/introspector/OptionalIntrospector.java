@@ -27,8 +27,6 @@ import java.util.OptionalLong;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import net.jqwik.api.Arbitraries;
-
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
@@ -53,49 +51,38 @@ public final class OptionalIntrospector implements ArbitraryIntrospector, Matche
 		if (!property.isContainer()) {
 			return ArbitraryIntrospectorResult.NOT_INTROSPECTED;
 		}
-		List<ArbitraryProperty> children = context.getChildren();
 
+		List<ArbitraryProperty> children = context.getChildren();
 		if (children.isEmpty()) {
 			return new ArbitraryIntrospectorResult(
 				CombinableArbitrary.from(Optional.empty())
 			);
 		}
-
+		Class<?> type = Types.getActualType(property.getObjectProperty().getProperty().getType());
 		ArbitraryProperty valueProperty = children.get(0);
 		double presenceProbability = 1 - valueProperty.getObjectProperty().getNullInject();
 		if (children.size() == 1) {
 			presenceProbability = 1.0d;
 		}
 
-		Class<?> type = Types.getActualType(property.getObjectProperty().getProperty().getType());
-		double optionalProbability = presenceProbability;
-
+		CombinableArbitrary<?> elementArbitrary = context.getElementCombinableArbitraryList().get(0);
 		return new ArbitraryIntrospectorResult(
-			CombinableArbitrary.containerBuilder()
-				.elements(context.getElementCombinableArbitraryList())
-				.build(
-					elements -> {
-						Object element = elements.get(0);
-
-						return Arbitraries.just(element)
-							.optional(optionalProbability)
-							.map(it -> {
-								if (type == OptionalInt.class) {
-									return it.map(o -> OptionalInt.of((Integer)o))
-										.orElseGet(OptionalInt::empty);
-								} else if (type == OptionalLong.class) {
-									return it.map(o -> OptionalLong.of((Long)o))
-										.orElseGet(OptionalLong::empty);
-								} else if (type == OptionalDouble.class) {
-									return it.map(o -> OptionalDouble.of((Double)o))
-										.orElseGet(OptionalDouble::empty);
-								} else {
-									return it;
-								}
-							})
-							.sample();
+			elementArbitrary.injectNull(1.0 - presenceProbability)
+				.map(Optional::ofNullable)
+				.map(it -> {
+					if (type == OptionalInt.class) {
+						return it.map(o -> OptionalInt.of((Integer)o))
+							.orElseGet(OptionalInt::empty);
+					} else if (type == OptionalLong.class) {
+						return it.map(o -> OptionalLong.of((Long)o))
+							.orElseGet(OptionalLong::empty);
+					} else if (type == OptionalDouble.class) {
+						return it.map(o -> OptionalDouble.of((Double)o))
+							.orElseGet(OptionalDouble::empty);
+					} else {
+						return it;
 					}
-				)
+				})
 		);
 	}
 }

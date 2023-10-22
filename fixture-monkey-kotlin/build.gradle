@@ -18,7 +18,6 @@ repositories {
 
 dependencies {
     api(project(":fixture-monkey"))
-    api("net.jqwik:jqwik-kotlin:${JQWIK_VERSION}")
 
     implementation("org.jetbrains.kotlin:kotlin-stdlib:${KOTLIN_VERSION}")
     implementation("org.jetbrains.kotlin:kotlin-reflect:${KOTLIN_VERSION}")
