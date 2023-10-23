@@ -18,18 +18,18 @@
 
 package com.navercorp.fixturemonkey.api.introspector;
 
-import java.lang.reflect.Type;
+import java.util.Arrays;
+import java.util.List;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import net.jqwik.api.Arbitraries;
-
+import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
-import com.navercorp.fixturemonkey.api.jqwik.ArbitraryUtils;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.matcher.Matchers;
 import com.navercorp.fixturemonkey.api.property.Property;
+import com.navercorp.fixturemonkey.api.random.Randoms;
 import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
@@ -39,10 +39,16 @@ public final class EnumIntrospector implements ArbitraryIntrospector, Matcher {
 		return Matchers.ENUM_TYPE_MATCHER.match(property);
 	}
 
-	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Override
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
-		Type type = Types.getActualType(context.getResolvedType());
-		return new ArbitraryIntrospectorResult(ArbitraryUtils.toCombinableArbitrary(Arbitraries.of((Class<Enum>)type)));
+		Class<?> type = Types.getActualType(context.getResolvedType());
+		if (!type.isEnum()) {
+			throw new IllegalArgumentException("Given type is not enum. type: " + type);
+		}
+
+		List<Object> enums = Arrays.asList(type.getEnumConstants());
+		return new ArbitraryIntrospectorResult(
+			CombinableArbitrary.from(() -> enums.get(Randoms.nextInt(enums.size())))
+		);
 	}
 }

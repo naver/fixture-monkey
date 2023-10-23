@@ -18,16 +18,18 @@
 
 package com.navercorp.fixturemonkey.api.introspector;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import net.jqwik.api.Arbitraries;
-
+import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
-import com.navercorp.fixturemonkey.api.jqwik.ArbitraryUtils;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.matcher.Matchers;
 import com.navercorp.fixturemonkey.api.property.Property;
+import com.navercorp.fixturemonkey.api.random.Randoms;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class BooleanIntrospector implements ArbitraryIntrospector, Matcher {
@@ -39,6 +41,10 @@ public final class BooleanIntrospector implements ArbitraryIntrospector, Matcher
 
 	@Override
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
-		return new ArbitraryIntrospectorResult(ArbitraryUtils.toCombinableArbitrary(Arbitraries.of(true, false)));
+		List<Boolean> booleans = Arrays.asList(true, false);
+
+		return new ArbitraryIntrospectorResult(
+			CombinableArbitrary.from(() -> booleans.get(Randoms.nextInt(2)))
+		);
 	}
 }

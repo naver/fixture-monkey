@@ -25,7 +25,6 @@ import com.navercorp.fixturemonkey.api.property.PropertyGenerator
 import com.navercorp.fixturemonkey.api.type.Types
 import com.navercorp.fixturemonkey.kotlin.property.InterfaceKFunctionProperty
 import com.navercorp.fixturemonkey.kotlin.type.getPropertyName
-import net.jqwik.kotlin.internal.isKotlinClass
 import org.apiguardian.api.API
 import org.apiguardian.api.API.Status
 import kotlin.reflect.KParameter.Kind.INSTANCE
@@ -72,10 +71,15 @@ class InterfaceKFunctionPropertyGenerator : PropertyGenerator {
         return JAVA_METHOD_PROPERTY_GENERATOR.generateChildProperties(property.annotatedType)
     }
 
+    private fun Class<*>.isKotlinClass(): Boolean =
+        declaredAnnotations.any { it.annotationClass.java.name == METADATA_FQN_NAME }
+
     companion object {
         private val JAVA_METHOD_PROPERTY_GENERATOR =
             NoArgumentInterfaceJavaMethodPropertyGenerator()
 
         private val DATA_CLASS_METHOD_NAMES = setOf("toString", "hashCode")
+
+        private const val METADATA_FQN_NAME = "kotlin.Metadata"
     }
 }
