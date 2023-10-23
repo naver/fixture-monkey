@@ -25,6 +25,7 @@ import net.jqwik.api.Arbitrary;
 
 import com.navercorp.fixturemonkey.api.container.DecomposedContainerValueFactory;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
+import com.navercorp.fixturemonkey.customizer.Values.Just;
 import com.navercorp.fixturemonkey.tree.ArbitraryTraverser;
 import com.navercorp.fixturemonkey.tree.ObjectNode;
 
@@ -60,6 +61,10 @@ public final class NodeSetLazyManipulator<T> implements NodeManipulator {
 
 		if (value instanceof Arbitrary) {
 			value = (T)((Arbitrary<?>)value).sample();
+		}
+
+		if (value instanceof Just) {
+			value = (T)((Just)value).getValue();
 		}
 
 		NodeSetDecomposedValueManipulator<T> nodeSetDecomposedValueManipulator =
