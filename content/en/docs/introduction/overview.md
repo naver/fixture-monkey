@@ -14,6 +14,8 @@ Fixture Monkey is a Java & Kotlin library designed to generate controllable arbi
 It focuses on simplifying test writing, by facilitating the generation of necessary test fixtures.
 Whether you're dealing with basic or complex test fixtures, Fixture Monkey helps you to effortlessly create the test objects you need and easily customize them to match your desired configurations.
 
+Make your JVM tests more concise and safe with Fixture Monkey.
+
 ---------
 
 ## Why use Fixture Monkey?

@@ -11,9 +11,9 @@ weight: 21
 {{< alert icon="💡" text="Fixture Monkey is designed for test environments. It is not recommended for production use." />}}
 
 ## Prerequisites
-* Java 8 or higher
+* JDK 1.8 or higher (Or Kotlin 1.8 or higher)
 * JUnit 5 platform
-* jqwik 1.3.9
+* jqwik 1.7.3
 
 --------
 
