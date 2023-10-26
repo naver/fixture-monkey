@@ -772,4 +772,27 @@ class JavaTest {
 
 		then(actual).hasSize(1);
 	}
+
+	@RepeatedTest(TEST_COUNT)
+	void setLazyJust() {
+		AtomicInteger atomicInteger = new AtomicInteger();
+		ArbitraryBuilder<Integer> builder = SUT.giveMeBuilder(Integer.class)
+			.setLazy("$", () -> Values.just(atomicInteger.getAndIncrement()));
+
+		int actual = builder.sample();
+
+		int notExpected = builder.sample();
+		then(actual).isNotEqualTo(notExpected);
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void setArbitraryJust() {
+		int expected = 1;
+
+		int actual = SUT.giveMeBuilder(Integer.class)
+			.set("$", Arbitraries.just(Values.just(expected)))
+			.sample();
+
+		then(actual).isEqualTo(expected);
+	}
 }
