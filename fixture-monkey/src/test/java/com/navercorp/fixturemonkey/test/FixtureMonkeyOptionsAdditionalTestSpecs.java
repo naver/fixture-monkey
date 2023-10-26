@@ -138,8 +138,14 @@ class FixtureMonkeyOptionsAdditionalTestSpecs {
 		}
 	}
 
+	interface PairInterface<S, T> {
+		S getFirst();
+
+		T getSecond();
+	}
+
 	@EqualsAndHashCode
-	public static class Pair<S, T> {
+	public static class Pair<S, T> implements PairInterface<S, T> {
 		private final S first;
 		private final T second;
 

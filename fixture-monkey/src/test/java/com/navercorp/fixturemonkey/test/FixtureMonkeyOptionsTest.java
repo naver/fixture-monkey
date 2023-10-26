@@ -93,6 +93,7 @@ import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.
 import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.NestedListStringObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.Pair;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.PairContainerPropertyGenerator;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.PairInterface;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.PairIntrospector;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.RegisterGroup;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.SelfRecursiveAbstractValue;
@@ -883,6 +884,30 @@ class FixtureMonkeyOptionsTest {
 		Pair<String, String> actual2 = builder.sample();
 
 		then(actual1).isEqualTo(actual2);
+	}
+
+	@Property
+	void decomposeNewContainerByAddContainerTypeInterface() {
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.addContainerType(
+				PairInterface.class,
+				new PairContainerPropertyGenerator(),
+				new PairIntrospector(),
+				(obj) -> {
+					Pair<?, ?> pair = (Pair<?, ?>)obj;
+					List<Object> list = new ArrayList<>();
+					list.add(pair.getFirst());
+					list.add(pair.getSecond());
+					return new DecomposableJavaContainer(list, 2);
+				}
+			)
+			.build();
+
+		thenNoException()
+			.isThrownBy(() -> sut.giveMeBuilder(new TypeReference<Pair<String, String>>() {
+				})
+				.set(sut.giveMeOne(new TypeReference<Pair<String, String>>() {
+				})));
 	}
 
 	@Property

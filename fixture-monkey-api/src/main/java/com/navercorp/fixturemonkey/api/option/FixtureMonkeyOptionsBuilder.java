@@ -659,7 +659,7 @@ public final class FixtureMonkeyOptionsBuilder {
 					Class<?> type = entry.getKey();
 					DecomposableJavaContainer decomposedValue = entry.getValue().from(obj);
 
-					if (actualType.isAssignableFrom(type)) {
+					if (type.isAssignableFrom(actualType)) {
 						return decomposedValue;
 					}
 				}
