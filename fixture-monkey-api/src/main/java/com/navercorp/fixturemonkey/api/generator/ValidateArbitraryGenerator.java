@@ -92,6 +92,10 @@ public final class ValidateArbitraryGenerator implements ArbitraryGenerator {
 				generated = generated.filter(
 					it -> {
 						String string = (String)it;
+						if (javaStringConstraint.isNotNull() && string == null) {
+							return false;
+						}
+
 						if (javaStringConstraint.isNotBlank()) {
 							if (string == null) {
 								return false;

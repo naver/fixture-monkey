@@ -27,6 +27,7 @@ import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.introspector.ConstructorPropertiesArbitraryIntrospector;
 import com.navercorp.fixturemonkey.javax.validation.plugin.JavaxValidationPlugin;
 import com.navercorp.fixturemonkey.tests.java.ValidationAnnotationTestSpecs.CustomAnnotationStringObject;
+import com.navercorp.fixturemonkey.tests.java.ValidationAnnotationTestSpecs.StringNotNullAnnotationObject;
 
 class AnnotationTest {
 	private static final FixtureMonkey SUT = FixtureMonkey.builder()
@@ -40,5 +41,16 @@ class AnnotationTest {
 			.getNullOrLessThan5String();
 
 		then(actual).matches(it -> it == null || it.length() < 5);
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void sampleNotValidAnnotation() {
+		String actual = SUT.giveMeBuilder(StringNotNullAnnotationObject.class)
+			.set("value", null)
+			.validOnly(false)
+			.sample()
+			.getValue();
+
+		then(actual).isNull();
 	}
 }

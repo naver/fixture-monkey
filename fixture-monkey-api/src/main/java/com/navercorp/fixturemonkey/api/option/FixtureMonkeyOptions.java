@@ -42,6 +42,7 @@ import javax.annotation.Nullable;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import com.navercorp.fixturemonkey.api.constraint.JavaConstraintGenerator;
 import com.navercorp.fixturemonkey.api.container.DecomposedContainerValueFactory;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfoGenerator;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGenerator;
@@ -119,6 +120,7 @@ public final class FixtureMonkeyOptions {
 	private final DecomposedContainerValueFactory decomposedContainerValueFactory;
 	private final int generateMaxTries;
 	private final int generateUniqueMaxTries;
+	private final JavaConstraintGenerator javaConstraintGenerator;
 
 	public FixtureMonkeyOptions(
 		List<MatcherOperator<PropertyGenerator>> propertyGenerators,
@@ -137,7 +139,8 @@ public final class FixtureMonkeyOptions {
 		ArbitraryValidator defaultArbitraryValidator,
 		DecomposedContainerValueFactory decomposedContainerValueFactory,
 		int generateMaxTries,
-		int generateUniqueMaxTries
+		int generateUniqueMaxTries,
+		JavaConstraintGenerator javaConstraintGenerator
 	) {
 		this.propertyGenerators = propertyGenerators;
 		this.defaultPropertyGenerator = defaultPropertyGenerator;
@@ -156,6 +159,7 @@ public final class FixtureMonkeyOptions {
 		this.decomposedContainerValueFactory = decomposedContainerValueFactory;
 		this.generateMaxTries = generateMaxTries;
 		this.generateUniqueMaxTries = generateUniqueMaxTries;
+		this.javaConstraintGenerator = javaConstraintGenerator;
 	}
 
 	public static FixtureMonkeyOptionsBuilder builder() {
@@ -287,6 +291,10 @@ public final class FixtureMonkeyOptions {
 		return generateUniqueMaxTries;
 	}
 
+	public JavaConstraintGenerator getJavaConstraintGenerator() {
+		return javaConstraintGenerator;
+	}
+
 	public FixtureMonkeyOptionsBuilder toBuilder() {
 		return builder()
 			.defaultPropertyGenerator(defaultPropertyGenerator)
@@ -302,7 +310,8 @@ public final class FixtureMonkeyOptions {
 			.arbitraryGenerators(new ArrayList<>(this.arbitraryGenerators))
 			.defaultArbitraryGenerator(this.defaultArbitraryGenerator)
 			.defaultArbitraryValidator(defaultArbitraryValidator)
-			.decomposedContainerValueFactory(decomposedContainerValueFactory);
+			.decomposedContainerValueFactory(decomposedContainerValueFactory)
+			.javaConstraintGenerator(javaConstraintGenerator);
 	}
 
 	private static List<MatcherOperator<ObjectPropertyGenerator>> getDefaultObjectPropertyGenerators(

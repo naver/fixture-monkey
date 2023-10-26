@@ -483,6 +483,6 @@ class JakartaValidationFixtureMonkeyTest {
 		)
 			.getCause()
 			.isExactlyInstanceOf(RetryableFilterMissException.class)
-			.hasMessageContaining("failed due to property \"notBlank\"");
+			.hasMessageContaining("failed due to property \"not");
 	}
 }

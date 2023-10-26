@@ -28,6 +28,7 @@ import javax.validation.Constraint;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 import javax.validation.Payload;
+import javax.validation.constraints.NotNull;
 
 import lombok.Value;
 
@@ -38,6 +39,12 @@ class ValidationAnnotationTestSpecs {
 	@NullOrLessThan5
 	public static class CustomAnnotationStringObject {
 		String nullOrLessThan5String;
+	}
+
+	@Value
+	public static class StringNotNullAnnotationObject {
+		@NotNull
+		String value;
 	}
 
 	@Constraint(validatedBy = NullOrLess5Validator.class)

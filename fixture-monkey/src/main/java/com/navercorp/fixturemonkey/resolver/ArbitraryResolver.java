@@ -87,7 +87,8 @@ public final class ArbitraryResolver {
 					registeredContainerInfoManipulators
 				),
 				fixtureMonkeyOptions,
-				monkeyContext
+				monkeyContext,
+				builderContext.isValidOnly()
 			),
 			objectTree -> {
 				List<ArbitraryManipulator> registeredManipulators =
