@@ -415,6 +415,14 @@ public class FixtureMonkeyBuilder {
 		return this;
 	}
 
+	public FixtureMonkeyBuilder addDecomposedContainerValueFactory(
+		Class<?> type,
+		DecomposedContainerValueFactory additionalDecomposedContainerValueFactory
+	) {
+		fixtureMonkeyOptionsBuilder.addDecomposedContainerValueFactory(type, additionalDecomposedContainerValueFactory);
+		return this;
+	}
+
 	public FixtureMonkeyBuilder pushContainerIntrospector(ArbitraryIntrospector containerIntrospector) {
 		this.fixtureMonkeyOptionsBuilder.containerIntrospector(it ->
 			new CompositeArbitraryIntrospector(
