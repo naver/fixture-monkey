@@ -21,8 +21,11 @@ package com.navercorp.fixturemonkey.resolver;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
@@ -31,6 +34,8 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
+import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
+import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.customizer.ArbitraryManipulator;
 import com.navercorp.fixturemonkey.customizer.ContainerInfoManipulator;
 
@@ -38,6 +43,8 @@ import com.navercorp.fixturemonkey.customizer.ContainerInfoManipulator;
 public final class ArbitraryBuilderContext {
 	private final List<ArbitraryManipulator> manipulators;
 	private final List<ContainerInfoManipulator> containerInfoManipulators;
+	private final Map<Class<?>, UnaryOperator<List<Property>>> propertyConfigurers;
+	private final Map<Class<?>, ArbitraryIntrospector> arbitraryIntrospectorsByType;
 
 	private boolean validOnly;
 
@@ -49,19 +56,23 @@ public final class ArbitraryBuilderContext {
 	public ArbitraryBuilderContext(
 		List<ArbitraryManipulator> manipulators,
 		List<ContainerInfoManipulator> containerInfoManipulators,
+		Map<Class<?>, UnaryOperator<List<Property>>> propertyConfigurers,
+		Map<Class<?>, ArbitraryIntrospector> arbitraryIntrospectorsByType,
 		boolean validOnly,
 		@Nullable FixedState fixedState,
 		@Nullable CombinableArbitrary<?> fixedCombinableArbitrary
 	) {
 		this.manipulators = manipulators;
 		this.containerInfoManipulators = containerInfoManipulators;
+		this.propertyConfigurers = propertyConfigurers;
+		this.arbitraryIntrospectorsByType = arbitraryIntrospectorsByType;
 		this.validOnly = validOnly;
 		this.fixedState = fixedState;
 		this.fixedCombinableArbitrary = fixedCombinableArbitrary;
 	}
 
 	public ArbitraryBuilderContext() {
-		this(new ArrayList<>(), new ArrayList<>(), true, null, null);
+		this(new ArrayList<>(), new ArrayList<>(), new HashMap<>(), new HashMap<>(), true, null, null);
 	}
 
 	public ArbitraryBuilderContext copy() {
@@ -72,6 +83,8 @@ public final class ArbitraryBuilderContext {
 		return new ArbitraryBuilderContext(
 			new ArrayList<>(this.manipulators),
 			copiedContainerInfoManipulators,
+			new HashMap<>(propertyConfigurers),
+			new HashMap<>(arbitraryIntrospectorsByType),
 			this.validOnly,
 			fixedState,
 			fixedCombinableArbitrary
@@ -100,6 +113,22 @@ public final class ArbitraryBuilderContext {
 
 	public List<ContainerInfoManipulator> getContainerInfoManipulators() {
 		return Collections.unmodifiableList(containerInfoManipulators);
+	}
+
+	public void putPropertyConfigurer(Class<?> type, UnaryOperator<List<Property>> propertyConfigurer) {
+		this.propertyConfigurers.put(type, propertyConfigurer);
+	}
+
+	public void putArbitraryIntrospector(Class<?> type, ArbitraryIntrospector arbitraryIntrospector) {
+		this.arbitraryIntrospectorsByType.put(type, arbitraryIntrospector);
+	}
+
+	public Map<Class<?>, ArbitraryIntrospector> getArbitraryIntrospectorsByType() {
+		return arbitraryIntrospectorsByType;
+	}
+
+	public Map<Class<?>, UnaryOperator<List<Property>>> getPropertyConfigurers() {
+		return propertyConfigurers;
 	}
 
 	public void setValidOnly(boolean validOnly) {

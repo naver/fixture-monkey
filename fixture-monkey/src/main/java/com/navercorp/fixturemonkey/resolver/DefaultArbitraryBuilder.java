@@ -24,6 +24,8 @@ import static com.navercorp.fixturemonkey.Constants.MAX_MANIPULATION_COUNT;
 import static com.navercorp.fixturemonkey.customizer.Values.NOT_NULL;
 import static java.util.stream.Collectors.toList;
 
+import java.lang.reflect.AnnotatedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
@@ -57,17 +59,21 @@ import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.api.property.PropertySelector;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
 import com.navercorp.fixturemonkey.api.type.LazyAnnotatedType;
+import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.customizer.ArbitraryManipulator;
 import com.navercorp.fixturemonkey.customizer.ContainerInfoManipulator;
 import com.navercorp.fixturemonkey.customizer.InnerSpec;
 import com.navercorp.fixturemonkey.customizer.ManipulatorSet;
 import com.navercorp.fixturemonkey.customizer.MonkeyManipulatorFactory;
+import com.navercorp.fixturemonkey.experimental.ExperimentalArbitraryBuilder;
+import com.navercorp.fixturemonkey.experimental.Instantiator;
+import com.navercorp.fixturemonkey.experimental.InstantiatorProcessor;
 import com.navercorp.fixturemonkey.tree.ArbitraryTraverser;
 
 @SuppressFBWarnings("NM_SAME_SIMPLE_NAME_AS_SUPERCLASS")
 @API(since = "0.4.0", status = Status.MAINTAINED)
-public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T> {
+public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, ExperimentalArbitraryBuilder<T> {
 	private final FixtureMonkeyOptions fixtureMonkeyOptions;
 	private final RootProperty rootProperty;
 	private final ArbitraryResolver resolver;
@@ -76,6 +82,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T> {
 	private final ArbitraryBuilderContext context;
 	private final List<MatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuilders;
 	private final MonkeyContext monkeyContext;
+	private final InstantiatorProcessor instantiatorProcessor;
 
 	public DefaultArbitraryBuilder(
 		FixtureMonkeyOptions fixtureMonkeyOptions,
@@ -95,6 +102,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T> {
 		this.monkeyManipulatorFactory = monkeyManipulatorFactory;
 		this.registeredArbitraryBuilders = registeredArbitraryBuilders;
 		this.monkeyContext = monkeyContext;
+		this.instantiatorProcessor = new InstantiatorProcessor(fixtureMonkeyOptions, context);
 	}
 
 	@Override
@@ -500,6 +508,43 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T> {
 			}
 		);
 		return generateArbitraryBuilderLazily(lazyArbitrary);
+	}
+
+	@Override
+	public ExperimentalArbitraryBuilder<T> instantiate(Instantiator instantiator) {
+		return instantiate(
+			new TypeReference<T>() {
+				@Override
+				public Type getType() {
+					return rootProperty.getType();
+				}
+
+				@Override
+				public AnnotatedType getAnnotatedType() {
+					return rootProperty.getAnnotatedType();
+				}
+			},
+			instantiator
+		);
+	}
+
+	@SuppressWarnings({"rawtypes", "unchecked"})
+	@Override
+	public ExperimentalArbitraryBuilder<T> instantiate(Class<?> type, Instantiator instantiator) {
+		return instantiate(
+			new TypeReference(type) {
+			},
+			instantiator
+		);
+	}
+
+	@Override
+	public ExperimentalArbitraryBuilder<T> instantiate(
+		TypeReference<?> typeReference,
+		Instantiator instantiator
+	) {
+		instantiatorProcessor.process(typeReference, instantiator);
+		return this;
 	}
 
 	@SuppressWarnings("unchecked")

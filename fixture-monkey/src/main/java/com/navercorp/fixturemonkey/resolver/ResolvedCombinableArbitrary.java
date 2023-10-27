@@ -18,7 +18,7 @@
 
 package com.navercorp.fixturemonkey.resolver;
 
-import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
@@ -47,11 +47,10 @@ final class ResolvedCombinableArbitrary<T> implements CombinableArbitrary<T> {
 
 	private Exception lastException = null;
 
-	@SuppressWarnings("unchecked")
 	public ResolvedCombinableArbitrary(
 		RootProperty rootProperty,
 		Supplier<ObjectTree> regenerateTree,
-		Consumer<ObjectTree> manipulateObjectTree,
+		Function<ObjectTree, CombinableArbitrary<T>> generateArbitrary,
 		int generateMaxTries,
 		ArbitraryValidator validator,
 		boolean validOnly
@@ -62,8 +61,7 @@ final class ResolvedCombinableArbitrary<T> implements CombinableArbitrary<T> {
 		this.arbitrary = LazyArbitrary.lazy(
 			() -> {
 				ObjectTree objectTree = this.objectTree.getValue();
-				manipulateObjectTree.accept(objectTree);
-				return (CombinableArbitrary<T>)objectTree.generate();
+				return generateArbitrary.apply(objectTree);
 			}
 		);
 		this.validator = validator;

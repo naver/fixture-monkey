@@ -55,6 +55,10 @@ public class DefaultArbitraryGenerator implements ArbitraryGenerator {
 	 */
 	@Override
 	public CombinableArbitrary<?> generate(ArbitraryGeneratorContext context) {
+		if (context.getGenerated() != NOT_GENERATED) {
+			return context.getGenerated();
+		}
+
 		ArbitraryIntrospectorResult result = this.arbitraryIntrospector.introspect(context);
 		if (result != ArbitraryIntrospectorResult.EMPTY && result.getValue() != null) {
 			double nullInject = context.getArbitraryProperty().getObjectProperty().getNullInject();

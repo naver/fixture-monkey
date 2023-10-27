@@ -44,12 +44,31 @@ public final class ConstructorProperty implements Property {
 	private final Property fieldProperty;
 	private final List<Annotation> annotations;
 	private final Map<Class<? extends Annotation>, Annotation> annotationsMap;
+	@Nullable
+	private final Boolean nullable;
 
+	@Deprecated
 	public ConstructorProperty(
 		AnnotatedType annotatedType,
 		Constructor<?> constructor,
 		String parameterName,
 		@Nullable Property fieldProperty
+	) {
+		this(
+			annotatedType,
+			constructor,
+			parameterName,
+			fieldProperty,
+			null
+		);
+	}
+
+	public ConstructorProperty(
+		AnnotatedType annotatedType,
+		Constructor<?> constructor,
+		String parameterName,
+		@Nullable Property fieldProperty,
+		@Nullable Boolean nullable
 	) {
 		this.annotatedType = annotatedType;
 		this.constructor = constructor;
@@ -58,6 +77,7 @@ public final class ConstructorProperty implements Property {
 		this.annotations = Arrays.asList(annotatedType.getAnnotations());
 		this.annotationsMap = this.annotations.stream()
 			.collect(Collectors.toMap(Annotation::annotationType, Function.identity(), (a1, a2) -> a1));
+		this.nullable = nullable;
 	}
 
 	@Override
@@ -93,6 +113,12 @@ public final class ConstructorProperty implements Property {
 	public <T extends Annotation> Optional<T> getAnnotation(Class<T> annotationClass) {
 		return Optional.ofNullable(this.annotationsMap.get(annotationClass))
 			.map(annotationClass::cast);
+	}
+
+	@Nullable
+	@Override
+	public Boolean isNullable() {
+		return nullable;
 	}
 
 	@Override

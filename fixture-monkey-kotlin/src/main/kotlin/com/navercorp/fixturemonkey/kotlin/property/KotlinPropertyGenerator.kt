@@ -25,7 +25,6 @@ import com.navercorp.fixturemonkey.api.property.Property
 import com.navercorp.fixturemonkey.api.property.PropertyGenerator
 import org.apiguardian.api.API
 import org.apiguardian.api.API.Status
-import java.lang.reflect.ParameterizedType
 
 /**
  * Generates Kotlin and Java properties.
@@ -44,7 +43,6 @@ class KotlinPropertyGenerator(
                 .filter { it.name != null }
                 .associateBy { it.name!! }
             val kotlinProperties = getMemberProperties(property)
-                .filter { it.type !is ParameterizedType }
                 .filter { it.name != null }
                 .associateBy { it.name!! }
 

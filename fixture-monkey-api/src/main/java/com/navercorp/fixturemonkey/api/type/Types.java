@@ -25,6 +25,7 @@ import java.lang.reflect.AnnotatedParameterizedType;
 import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.AnnotatedTypeVariable;
 import java.lang.reflect.AnnotatedWildcardType;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.GenericDeclaration;
 import java.lang.reflect.ParameterizedType;
@@ -551,5 +552,35 @@ public class Types {
 	public static boolean isJavaType(Class<?> type) {
 		return type.isPrimitive()
 			|| (type.getPackage() != null && type.getPackage().getName().startsWith("java"));
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T> Constructor<T> getDeclaredConstructor(Class<T> type, Class<?>... arguments) {
+		Constructor<T> constructor = (Constructor<T>)Arrays.stream(type.getDeclaredConstructors())
+			.filter(it -> isAssignableTypes(arguments, it.getParameterTypes()))
+			.findAny()
+			.orElse(null);
+
+		if (constructor == null) {
+			return (Constructor<T>)type.getDeclaredConstructors()[0];
+		}
+
+		return constructor;
+	}
+
+	private static boolean isAssignableTypes(Class<?>[] froms, Class<?>[] tos) {
+		if (froms.length != tos.length) {
+			return false;
+		}
+
+		for (int i = 0; i < froms.length; i++) {
+			Class<?> from = froms[i];
+			Class<?> to = tos[i];
+
+			if (!isAssignable(from, to)) {
+				return false;
+			}
+		}
+		return true;
 	}
 }

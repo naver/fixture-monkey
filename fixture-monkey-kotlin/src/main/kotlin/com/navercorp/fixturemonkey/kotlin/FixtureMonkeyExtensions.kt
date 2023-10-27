@@ -21,6 +21,7 @@ package com.navercorp.fixturemonkey.kotlin
 import com.navercorp.fixturemonkey.ArbitraryBuilder
 import com.navercorp.fixturemonkey.FixtureMonkey
 import com.navercorp.fixturemonkey.api.type.TypeReference
+import com.navercorp.fixturemonkey.experimental.ExperimentalArbitraryBuilder
 import net.jqwik.api.Arbitrary
 import kotlin.streams.asSequence
 
@@ -37,3 +38,6 @@ inline fun <reified T : Any?> FixtureMonkey.giveMeArbitrary(): Arbitrary<T> =
 
 inline fun <reified T : Any?> FixtureMonkey.giveMeBuilder(): ArbitraryBuilder<T> =
     this.giveMeBuilder(object : TypeReference<T>() {})
+
+inline fun <reified T : Any?> FixtureMonkey.giveMeExperimentalBuilder(): ExperimentalArbitraryBuilder<T> =
+    this.giveMeExperimentalBuilder(object : TypeReference<T>() {})
