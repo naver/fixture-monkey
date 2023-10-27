@@ -52,7 +52,3 @@ inline fun <reified T> ArbitraryBuilder<T>.setPostCondition(
     noinline predicate: (T) -> Boolean,
     limit: Int
 ) = this.setPostCondition(expressionGenerator, T::class.java, predicate, limit)
-
-inline fun <T, reified U> InitializeArbitraryBuilder<T>.instantiateBy(
-    instantiator: () -> Instantiator
-) = this.instantiate(object : TypeReference<U>() {}, instantiator())

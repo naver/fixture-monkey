@@ -18,7 +18,6 @@
 
 package com.navercorp.fixturemonkey.experimental;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apiguardian.api.API;
@@ -27,48 +26,8 @@ import org.apiguardian.api.API.Status;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 
 @API(since = "0.6.12", status = Status.EXPERIMENTAL)
-public final class ConstructorInstantiator implements Instantiator {
-	private final List<TypeReference<?>> types;
-	private final List<String> parameterNames;
+public interface ConstructorInstantiator<T> extends Instantiator<T> {
+	List<TypeReference<?>> getTypes();
 
-	public ConstructorInstantiator() {
-		this.types = new ArrayList<>();
-		this.parameterNames = new ArrayList<>();
-	}
-
-	@SuppressWarnings({"rawtypes", "unchecked"})
-	public ConstructorInstantiator parameter(Class<?> type) {
-		this.types.add(new TypeReference(type) {
-		});
-		this.parameterNames.add(null);
-		return this;
-	}
-
-	@SuppressWarnings({"rawtypes", "unchecked"})
-	public ConstructorInstantiator parameter(Class<?> type, String parameterName) {
-		this.types.add(new TypeReference(type) {
-		});
-		this.parameterNames.add(parameterName);
-		return this;
-	}
-
-	public ConstructorInstantiator parameter(TypeReference<?> type) {
-		this.types.add(type);
-		this.parameterNames.add(null);
-		return this;
-	}
-
-	public ConstructorInstantiator parameter(TypeReference<?> type, String parameterName) {
-		this.types.add(type);
-		this.parameterNames.add(parameterName);
-		return this;
-	}
-
-	public List<TypeReference<?>> getTypes() {
-		return types;
-	}
-
-	public List<String> getParameterNames() {
-		return parameterNames;
-	}
+	List<String> getParameterNames();
 }

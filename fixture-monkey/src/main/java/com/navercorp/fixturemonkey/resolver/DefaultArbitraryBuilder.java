@@ -515,7 +515,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, In
 
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	@Override
-	public InitializeArbitraryBuilder<T> instantiate(Class<?> type, Instantiator instantiator) {
+	public <U> InitializeArbitraryBuilder<T> instantiate(Class<? extends U> type, Instantiator<U> instantiator) {
 		return instantiate(
 			new TypeReference(type) {
 			},
@@ -524,10 +524,13 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, In
 	}
 
 	@Override
-	public InitializeArbitraryBuilder<T> instantiate(TypeReference<?> typeReference, Instantiator instantiator) {
+	public <U> InitializeArbitraryBuilder<T> instantiate(
+		TypeReference<? extends U> typeReference,
+		Instantiator<U> instantiator
+	) {
 		if (instantiator instanceof ConstructorInstantiator) {
 			Class<?> type = Types.getActualType(typeReference.getType());
-			ConstructorInstantiator constructorInstantiator = (ConstructorInstantiator)instantiator;
+			ConstructorInstantiator<?> constructorInstantiator = (ConstructorInstantiator<?>)instantiator;
 			List<TypeReference<?>> typeReferences = constructorInstantiator.getTypes();
 
 			Class<?>[] arguments = typeReferences.stream()
