@@ -25,23 +25,29 @@ import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
 import com.navercorp.fixturemonkey.api.property.Property;
+import com.navercorp.fixturemonkey.api.property.PropertyGenerator;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class ObjectPropertyGeneratorContext {
 	private final Property property;
-
 	@Nullable
 	private final Integer elementIndex;
-
 	@Nullable
 	private final ArbitraryProperty ownerProperty;
-
 	private final boolean container;
-
+	@Deprecated
 	private final FixtureMonkeyOptions fixtureMonkeyOptions;
+	private final PropertyGenerator propertyGenerator;
+	private final PropertyNameResolver propertyNameResolver;
+	private final NullInjectGenerator nullInjectGenerator;
 
+	/**
+	 * It is deprecated. Use {@link #ObjectPropertyGeneratorContext(Property, Integer, ArbitraryProperty, boolean,
+	 * PropertyGenerator, PropertyNameResolver, NullInjectGenerator)} instead.
+	 */
+	@Deprecated
 	public ObjectPropertyGeneratorContext(
 		Property property,
 		@Nullable Integer elementIndex,
@@ -54,6 +60,28 @@ public final class ObjectPropertyGeneratorContext {
 		this.ownerProperty = ownerProperty;
 		this.container = container;
 		this.fixtureMonkeyOptions = fixtureMonkeyOptions;
+		this.propertyGenerator = fixtureMonkeyOptions.getPropertyGenerator(property);
+		this.propertyNameResolver = fixtureMonkeyOptions.getPropertyNameResolver(property);
+		this.nullInjectGenerator = fixtureMonkeyOptions.getNullInjectGenerator(property);
+	}
+
+	public ObjectPropertyGeneratorContext(
+		Property property,
+		@Nullable Integer elementIndex,
+		@Nullable ArbitraryProperty ownerProperty,
+		boolean container,
+		PropertyGenerator propertyGenerator,
+		PropertyNameResolver propertyNameResolver,
+		NullInjectGenerator nullInjectGenerator
+	) {
+		this.property = property;
+		this.elementIndex = elementIndex;
+		this.ownerProperty = ownerProperty;
+		this.container = container;
+		this.fixtureMonkeyOptions = FixtureMonkeyOptions.DEFAULT_GENERATE_OPTIONS;
+		this.propertyGenerator = propertyGenerator;
+		this.propertyNameResolver = propertyNameResolver;
+		this.nullInjectGenerator = nullInjectGenerator;
 	}
 
 	public Property getProperty() {
@@ -74,12 +102,24 @@ public final class ObjectPropertyGeneratorContext {
 		return this.container;
 	}
 
+	/**
+	 * It is deprecated. Do not use {@link FixtureMonkeyOptions} in your {@link ObjectPropertyGenerator}.
+	 */
+	@Deprecated
 	public FixtureMonkeyOptions getFixtureMonkeyOptions() {
 		return fixtureMonkeyOptions;
 	}
 
+	public PropertyGenerator getPropertyGenerator() {
+		return propertyGenerator;
+	}
+
 	public PropertyNameResolver getPropertyNameResolver() {
-		return this.fixtureMonkeyOptions.getPropertyNameResolver(property);
+		return propertyNameResolver;
+	}
+
+	public NullInjectGenerator getNullInjectGenerator() {
+		return nullInjectGenerator;
 	}
 
 	public boolean isRootContext() {

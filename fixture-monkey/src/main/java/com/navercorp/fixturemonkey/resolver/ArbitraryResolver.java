@@ -20,7 +20,6 @@ package com.navercorp.fixturemonkey.resolver;
 
 import java.util.List;
 import java.util.Map;
-import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -72,7 +71,7 @@ public final class ArbitraryResolver {
 	) {
 		List<ArbitraryManipulator> manipulators = builderContext.getManipulators();
 		List<ContainerInfoManipulator> containerInfoManipulators = builderContext.getContainerInfoManipulators();
-		Map<Class<?>, UnaryOperator<List<Property>>> propertyConfigurers = builderContext.getPropertyConfigurers();
+		Map<Class<?>, List<Property>> propertyConfigurers = builderContext.getPropertyConfigurers();
 
 		List<MatcherOperator<List<ContainerInfoManipulator>>> registeredContainerInfoManipulators =
 			registeredArbitraryBuilders.stream()

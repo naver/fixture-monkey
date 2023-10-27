@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 
 import org.apiguardian.api.API;
@@ -40,14 +39,14 @@ final class TraverseContext {
 	private final List<ArbitraryProperty> arbitraryProperties;
 	private final List<ContainerInfoManipulator> containerInfoManipulators;
 	private final List<MatcherOperator<List<ContainerInfoManipulator>>> registeredContainerInfoManipulators;
-	private final Map<Class<?>, UnaryOperator<List<Property>>> propertyConfigurers;
+	private final Map<Class<?>, List<Property>> propertyConfigurers;
 
 	public TraverseContext(
 		ArbitraryProperty rootArbitraryProperty,
 		List<ArbitraryProperty> arbitraryProperties,
 		List<ContainerInfoManipulator> containerInfoManipulators,
 		List<MatcherOperator<List<ContainerInfoManipulator>>> registeredContainerInfoManipulators,
-		Map<Class<?>, UnaryOperator<List<Property>>> propertyConfigurers
+		Map<Class<?>, List<Property>> propertyConfigurers
 	) {
 		this.rootArbitraryProperty = rootArbitraryProperty;
 		this.arbitraryProperties = arbitraryProperties;
@@ -68,7 +67,7 @@ final class TraverseContext {
 		return containerInfoManipulators;
 	}
 
-	public Map<Class<?>, UnaryOperator<List<Property>>> getPropertyConfigurers() {
+	public Map<Class<?>, List<Property>> getPropertyConfigurers() {
 		return propertyConfigurers;
 	}
 

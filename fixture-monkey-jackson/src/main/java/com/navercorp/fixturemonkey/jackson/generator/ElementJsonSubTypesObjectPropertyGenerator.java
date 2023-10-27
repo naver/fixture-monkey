@@ -52,9 +52,9 @@ public final class ElementJsonSubTypesObjectPropertyGenerator implements ObjectP
 	@Override
 	public ObjectProperty generate(ObjectPropertyGeneratorContext context) {
 		Property property = context.getProperty();
-		double nullInject = context.getFixtureMonkeyOptions().getNullInjectGenerator(property)
+		double nullInject = context.getNullInjectGenerator()
 			.generate(context);
-		PropertyGenerator defaultPropertyGenerator = context.getFixtureMonkeyOptions().getDefaultPropertyGenerator();
+		PropertyGenerator defaultPropertyGenerator = context.getPropertyGenerator();
 		Property containerProperty = ((ElementProperty)property).getContainerProperty();
 
 		JsonSubTypes jsonSubTypes = getJacksonAnnotation(containerProperty, JsonSubTypes.class);
