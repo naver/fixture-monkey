@@ -47,7 +47,7 @@ public final class InstantiatorProcessor {
 		this.context = context;
 	}
 
-	public void process(TypeReference<?> typeReference, Instantiator<?> instantiator) {
+	public void process(TypeReference<?> typeReference, Instantiator instantiator) {
 		if (instantiator instanceof ConstructorInstantiator) {
 			initializeByConstructor(typeReference, (ConstructorInstantiator<?>)instantiator);
 		}

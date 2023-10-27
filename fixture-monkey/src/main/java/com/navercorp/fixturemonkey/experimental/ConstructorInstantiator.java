@@ -26,7 +26,7 @@ import org.apiguardian.api.API.Status;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 
 @API(since = "0.6.12", status = Status.EXPERIMENTAL)
-public interface ConstructorInstantiator<T> extends Instantiator<T> {
+public interface ConstructorInstantiator<T> extends Instantiator {
 	List<TypeReference<?>> getTypes();
 
 	List<String> getParameterNames();

@@ -30,7 +30,7 @@ annotation class InstantiatorDsl
 
 @InstantiatorDsl
 class InstantiatorDslSpec {
-    val instantiators = mutableMapOf<TypeReference<*>, Instantiator<*>>()
+    val instantiators = mutableMapOf<TypeReference<*>, Instantiator>()
 
     inline fun <reified T> constructor(dsl: ConstructorInstantiatorKt<T>.() -> ConstructorInstantiatorKt<T>): ConstructorInstantiatorKt<T> =
         dsl(ConstructorInstantiatorKt()).apply {
@@ -54,7 +54,7 @@ class ConstructorInstantiatorKt<T> : ConstructorInstantiator<T> {
 }
 
 inline fun <T> InitializeArbitraryBuilder<T>.instantiateBy(
-    instantiatorDsl: InstantiatorDslSpec.() -> Unit
+    instantiatorDsl: InstantiatorDslSpec.() -> Unit,
 ): InitializeArbitraryBuilder<T> {
     val spec = InstantiatorDslSpec().apply(instantiatorDsl)
     spec.instantiators.forEach { (type, instantiator) ->

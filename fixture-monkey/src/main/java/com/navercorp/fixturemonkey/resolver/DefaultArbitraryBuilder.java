@@ -510,7 +510,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, In
 
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	@Override
-	public <U> InitializeArbitraryBuilder<T> instantiate(Class<?> type, Instantiator<U> instantiator) {
+	public InitializeArbitraryBuilder<T> instantiate(Class<?> type, Instantiator instantiator) {
 		return instantiate(
 			new TypeReference(type) {
 			},
@@ -519,9 +519,9 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, In
 	}
 
 	@Override
-	public <U> InitializeArbitraryBuilder<T> instantiate(
+	public InitializeArbitraryBuilder<T> instantiate(
 		TypeReference<?> typeReference,
-		Instantiator<U> instantiator
+		Instantiator instantiator
 	) {
 		instantiatorProcessor.process(typeReference, instantiator);
 		return this;

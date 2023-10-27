@@ -22,7 +22,7 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 @API(since = "0.6.12", status = Status.EXPERIMENTAL)
-public interface Instantiator<T> {
+public interface Instantiator {
 	static <T> ConstructorInstantiatorJava<T> constructor() {
 		return new ConstructorInstantiatorJava<>();
 	}

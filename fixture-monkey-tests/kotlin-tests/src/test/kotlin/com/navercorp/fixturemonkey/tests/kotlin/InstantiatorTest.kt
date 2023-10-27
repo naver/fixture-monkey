@@ -108,11 +108,11 @@ class InstantiatorTest {
             .sample()
             .bar
 
-        then(actual).isNotNull()
+        then(actual).isNotNull
     }
 
     @RepeatedTest(TEST_COUNT)
-    fun instantiateTwoTypes(){
+    fun instantiateByConstructorTwoTypes() {
         val actual = SUT.giveMeExperimentalBuilder<Baz>()
             .instantiateBy {
                 constructor<Foo> {
@@ -124,7 +124,7 @@ class InstantiatorTest {
             }
             .sample()
 
-        then(actual).isNotNull()
+        then(actual).isNotNull
     }
 
     class Foo(val foo: String, val bar: Int) {
