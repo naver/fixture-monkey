@@ -55,6 +55,7 @@ import com.navercorp.fixturemonkey.api.generator.CompositeArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator;
 import com.navercorp.fixturemonkey.api.generator.DefaultObjectPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.IntrospectedArbitraryGenerator;
+import com.navercorp.fixturemonkey.api.generator.MatchArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGenerator;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult;
 import com.navercorp.fixturemonkey.api.introspector.BuilderArbitraryIntrospector;
@@ -1552,7 +1553,7 @@ class FixtureMonkeyOptionsTest {
 	@Property
 	void alterDefaultArbitraryGenerator() {
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.defaultArbitraryGenerator(generator -> new CompositeArbitraryGenerator(
+			.defaultArbitraryGenerator(generator -> new MatchArbitraryGenerator(
 				Arrays.asList(
 					new IntrospectedArbitraryGenerator(context ->
 						new ArbitraryIntrospectorResult(NOT_GENERATED)

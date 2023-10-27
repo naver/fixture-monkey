@@ -42,6 +42,9 @@ import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.exception.RetryableFilterMissException;
+import com.navercorp.fixturemonkey.api.generator.CompositeArbitraryGenerator;
+import com.navercorp.fixturemonkey.api.generator.IntrospectedArbitraryGenerator;
+import com.navercorp.fixturemonkey.api.introspector.CompositeArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.ConstructorPropertiesArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.FailoverIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.FieldReflectionArbitraryIntrospector;
@@ -51,6 +54,7 @@ import com.navercorp.fixturemonkey.customizer.InnerSpec;
 import com.navercorp.fixturemonkey.customizer.Values;
 import com.navercorp.fixturemonkey.resolver.ArbitraryBuilderCandidateFactory;
 import com.navercorp.fixturemonkey.resolver.ArbitraryBuilderCandidateList;
+import com.navercorp.fixturemonkey.tests.java.ConstructorAndPropertyTestSpecs.ConsturctorAndProperty;
 import com.navercorp.fixturemonkey.tests.java.ImmutableDepthTestSpecs.DepthStringValueList;
 import com.navercorp.fixturemonkey.tests.java.ImmutableDepthTestSpecs.OneDepthStringValue;
 import com.navercorp.fixturemonkey.tests.java.ImmutableDepthTestSpecs.TwoDepthStringValue;
@@ -794,5 +798,26 @@ class JavaTest {
 			.sample();
 
 		then(actual).isEqualTo(expected);
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void compositeArbitraryIntrospector() {
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.objectIntrospector(
+				new CompositeArbitraryIntrospector(
+					Arrays.asList(
+						ConstructorPropertiesArbitraryIntrospector.INSTANCE,
+						FieldReflectionArbitraryIntrospector.INSTANCE
+					)
+				)
+			)
+			.defaultNotNull(true)
+			.build();
+
+		ConsturctorAndProperty actual =
+			sut.giveMeOne(ConsturctorAndProperty.class);
+
+		then(actual.getValue()).isNotNull();
+		then(actual.getPropertyNotInConstructor()).isNotNull();
 	}
 }

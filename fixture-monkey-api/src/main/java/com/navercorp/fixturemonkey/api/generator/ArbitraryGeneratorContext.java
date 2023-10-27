@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiFunction;
 
 import javax.annotation.Nullable;
@@ -47,24 +48,18 @@ import com.navercorp.fixturemonkey.api.property.Traceable;
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class ArbitraryGeneratorContext implements Traceable {
 	private final Property resolvedProperty;
-
 	private final ArbitraryProperty property;
-
 	private final List<ArbitraryProperty> children;
-
 	@Nullable
 	private final ArbitraryGeneratorContext ownerContext;
-
 	private final BiFunction<ArbitraryGeneratorContext, ArbitraryProperty, CombinableArbitrary<?>> resolveArbitrary;
-
 	private final MonkeyGeneratorContext monkeyGeneratorContext;
-
 	private final LazyArbitrary<PropertyPath> pathProperty = LazyArbitrary.lazy(this::initPathProperty);
-
 	private final LazyArbitrary<Map<ArbitraryProperty, CombinableArbitrary<?>>> arbitraryListByArbitraryProperty =
 		LazyArbitrary.lazy(this::initArbitraryListByArbitraryProperty);
-
 	private final int generateUniqueMaxTries;
+	private final AtomicReference<CombinableArbitrary<?>> generated =
+		new AtomicReference<>(CombinableArbitrary.NOT_GENERATED);
 
 	public ArbitraryGeneratorContext(
 		Property resolvedProperty,
@@ -150,6 +145,14 @@ public final class ArbitraryGeneratorContext implements Traceable {
 
 	public int getGenerateUniqueMaxTries() {
 		return generateUniqueMaxTries;
+	}
+
+	public CombinableArbitrary<?> getGenerated() {
+		return generated.get();
+	}
+
+	public void setGenerated(CombinableArbitrary<?> generated) {
+		this.generated.set(generated);
 	}
 
 	private PropertyPath initPathProperty() {
