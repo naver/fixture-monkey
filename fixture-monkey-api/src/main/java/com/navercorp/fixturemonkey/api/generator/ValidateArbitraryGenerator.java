@@ -61,23 +61,20 @@ import com.navercorp.fixturemonkey.api.type.Types;
 public final class ValidateArbitraryGenerator implements ArbitraryGenerator {
 	private static final ZoneOffset ZONE_OFFSET = OffsetTime.now().getOffset();
 
-	private final ArbitraryGenerator arbitraryGenerator;
 	private final JavaConstraintGenerator constraintGenerator;
 	private final DecomposedContainerValueFactory decomposedContainerValueFactory;
 
 	public ValidateArbitraryGenerator(
-		ArbitraryGenerator arbitraryGenerator,
 		JavaConstraintGenerator constraintGenerator,
 		DecomposedContainerValueFactory decomposedContainerValueFactory
 	) {
-		this.arbitraryGenerator = arbitraryGenerator;
 		this.constraintGenerator = constraintGenerator;
 		this.decomposedContainerValueFactory = decomposedContainerValueFactory;
 	}
 
 	@Override
 	public CombinableArbitrary<?> generate(ArbitraryGeneratorContext context) {
-		CombinableArbitrary<?> generated = arbitraryGenerator.generate(context);
+		CombinableArbitrary<?> generated = context.getGenerated();
 
 		if (generated == NOT_GENERATED) {
 			return NOT_GENERATED;

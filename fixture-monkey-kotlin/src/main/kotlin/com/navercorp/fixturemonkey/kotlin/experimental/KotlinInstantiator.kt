@@ -22,21 +22,30 @@ package com.navercorp.fixturemonkey.kotlin.experimental
 
 import com.navercorp.fixturemonkey.api.type.TypeReference
 import com.navercorp.fixturemonkey.experimental.ConstructorInstantiator
-import com.navercorp.fixturemonkey.experimental.InitializeArbitraryBuilder
+import com.navercorp.fixturemonkey.experimental.ExperimentalArbitraryBuilder
 import com.navercorp.fixturemonkey.experimental.Instantiator
 
 @DslMarker
 annotation class InstantiatorDsl
 
 @InstantiatorDsl
-class InstantiatorDslSpec {
+class InstantiatorDslSpec<T>(
+    val rootTypeReference: TypeReference<T>,
+) {
     val instantiators = mutableMapOf<TypeReference<*>, Instantiator>()
 
-    inline fun <reified T> constructor(dsl: ConstructorInstantiatorKt<T>.() -> ConstructorInstantiatorKt<T>): ConstructorInstantiatorKt<T> =
-        dsl(ConstructorInstantiatorKt()).apply {
-            this.also { mapOf(object : TypeReference<T>() {} to this) }
-                .also { instantiators::put }
-        }
+    @JvmName("rootConstructor")
+    inline fun constructor(dsl: ConstructorInstantiatorKt<T>.() -> ConstructorInstantiatorKt<T>): ConstructorInstantiatorKt<T> =
+        dsl(ConstructorInstantiatorKt())
+            .also {
+                instantiators[rootTypeReference] = it
+            }
+
+    inline fun <reified U> constructor(dsl: ConstructorInstantiatorKt<U>.() -> ConstructorInstantiatorKt<U>): ConstructorInstantiatorKt<U> =
+        dsl(ConstructorInstantiatorKt())
+            .also {
+                instantiators[object : TypeReference<U>() {}] = it
+            }
 }
 
 class ConstructorInstantiatorKt<T> : ConstructorInstantiator<T> {
@@ -53,10 +62,10 @@ class ConstructorInstantiatorKt<T> : ConstructorInstantiator<T> {
     override fun getParameterNames(): List<String?> = _parameterNames
 }
 
-inline fun <T> InitializeArbitraryBuilder<T>.instantiateBy(
-    instantiatorDsl: InstantiatorDslSpec.() -> Unit,
-): InitializeArbitraryBuilder<T> {
-    val spec = InstantiatorDslSpec().apply(instantiatorDsl)
+inline fun <reified T> ExperimentalArbitraryBuilder<T>.instantiateBy(
+    instantiatorDsl: InstantiatorDslSpec<T>.() -> Unit,
+): ExperimentalArbitraryBuilder<T> {
+    val spec = InstantiatorDslSpec(object : TypeReference<T>() {}).apply(instantiatorDsl)
     spec.instantiators.forEach { (type, instantiator) ->
         this.instantiate(type, instantiator)
     }

@@ -171,16 +171,7 @@ public final class ObjectTree {
 		Property property,
 		@Nullable ArbitraryIntrospector arbitraryIntrospector
 	) {
-		ArbitraryGenerator arbitraryGenerator;
-		if (!validOnly) {
-			arbitraryGenerator = this.fixtureMonkeyOptions.getArbitraryGenerator(property);
-		} else {
-			arbitraryGenerator = new ValidateArbitraryGenerator(
-				this.fixtureMonkeyOptions.getArbitraryGenerator(property),
-				this.fixtureMonkeyOptions.getJavaConstraintGenerator(),
-				this.fixtureMonkeyOptions.getDecomposedContainerValueFactory()
-			);
-		}
+		ArbitraryGenerator arbitraryGenerator = this.fixtureMonkeyOptions.getArbitraryGenerator(property);
 
 		if (arbitraryIntrospector != null) {
 			arbitraryGenerator = new CompositeArbitraryGenerator(
@@ -190,6 +181,19 @@ public final class ObjectTree {
 				)
 			);
 		}
+
+		if (validOnly) {
+			arbitraryGenerator = new CompositeArbitraryGenerator(
+				Arrays.asList(
+					arbitraryGenerator,
+					new ValidateArbitraryGenerator(
+						this.fixtureMonkeyOptions.getJavaConstraintGenerator(),
+						this.fixtureMonkeyOptions.getDecomposedContainerValueFactory()
+					)
+				)
+			);
+		}
+
 		return arbitraryGenerator;
 	}
 }

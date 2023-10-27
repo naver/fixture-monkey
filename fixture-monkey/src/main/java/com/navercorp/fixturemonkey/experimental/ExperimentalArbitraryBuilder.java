@@ -25,8 +25,10 @@ import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 
 @API(since = "0.6.12", status = Status.EXPERIMENTAL)
-public interface InitializeArbitraryBuilder<T> extends ArbitraryBuilder<T> {
-	InitializeArbitraryBuilder<T> instantiate(Class<?> type, Instantiator instantiator);
+public interface ExperimentalArbitraryBuilder<T> extends ArbitraryBuilder<T> {
+	ExperimentalArbitraryBuilder<T> instantiate(Instantiator instantiator);
 
-	InitializeArbitraryBuilder<T> instantiate(TypeReference<?> type, Instantiator instantiator);
+	ExperimentalArbitraryBuilder<T> instantiate(Class<?> type, Instantiator instantiator);
+
+	ExperimentalArbitraryBuilder<T> instantiate(TypeReference<?> type, Instantiator instantiator);
 }

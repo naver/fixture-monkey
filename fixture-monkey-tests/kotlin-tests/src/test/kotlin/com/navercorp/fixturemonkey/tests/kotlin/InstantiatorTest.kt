@@ -98,6 +98,20 @@ class InstantiatorTest {
     }
 
     @RepeatedTest(TEST_COUNT)
+    fun instantiateRootType() {
+        val actual = SUT.giveMeExperimentalBuilder<Foo>()
+            .instantiateBy {
+                constructor {
+                    parameter<String>()
+                }
+            }
+            .sample()
+            .bar
+
+        then(actual).isEqualTo(1)
+    }
+
+    @RepeatedTest(TEST_COUNT)
     fun instantiateGenericType() {
         val actual = SUT.giveMeExperimentalBuilder<Bar<String>>()
             .instantiateBy {
