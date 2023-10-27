@@ -20,10 +20,7 @@ package com.navercorp.fixturemonkey.kotlin
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder
 import com.navercorp.fixturemonkey.api.expression.ExpressionGenerator
-import com.navercorp.fixturemonkey.api.type.TypeReference
 import com.navercorp.fixturemonkey.customizer.InnerSpec
-import com.navercorp.fixturemonkey.experimental.InitializeArbitraryBuilder
-import com.navercorp.fixturemonkey.experimental.Instantiator
 
 /**
  * Apply manipulation to [InnerSpec][com.navercorp.fixturemonkey.customizer.InnerSpec]

@@ -18,6 +18,8 @@
 
 package com.navercorp.fixturemonkey.api.property;
 
+import static com.navercorp.fixturemonkey.api.property.PropertyUtils.isErasedProperty;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Type;
@@ -51,12 +53,12 @@ public final class CompositeProperty implements Property {
 
 	@Override
 	public Type getType() {
-		return this.primaryProperty.getType();
+		return getPriorityProperty().getType();
 	}
 
 	@Override
 	public AnnotatedType getAnnotatedType() {
-		return this.primaryProperty.getAnnotatedType();
+		return getPriorityProperty().getAnnotatedType();
 	}
 
 	@Override
@@ -85,7 +87,7 @@ public final class CompositeProperty implements Property {
 	@Nullable
 	@Override
 	public Object getValue(Object instance) {
-		return this.primaryProperty.getValue(instance);
+		return this.getPriorityProperty().getValue(instance);
 	}
 
 	@Override
@@ -118,5 +120,12 @@ public final class CompositeProperty implements Property {
 			+ "primaryProperty=" + primaryProperty
 			+ ", secondaryProperty=" + secondaryProperty
 			+ '}';
+	}
+
+	private Property getPriorityProperty() {
+		if (isErasedProperty(primaryProperty)) {
+			return secondaryProperty;
+		}
+		return primaryProperty;
 	}
 }

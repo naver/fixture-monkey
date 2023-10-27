@@ -26,7 +26,7 @@ import com.navercorp.fixturemonkey.api.type.TypeReference;
 
 @API(since = "0.6.12", status = Status.EXPERIMENTAL)
 public interface InitializeArbitraryBuilder<T> extends ArbitraryBuilder<T> {
-	<U> InitializeArbitraryBuilder<T> instantiate(Class<? extends U> type, Instantiator<U> instantiator);
+	<U> InitializeArbitraryBuilder<T> instantiate(Class<?> type, Instantiator<U> instantiator);
 
-	<U> InitializeArbitraryBuilder<T> instantiate(TypeReference<? extends U> type, Instantiator<U> instantiator);
+	<U> InitializeArbitraryBuilder<T> instantiate(TypeReference<?> type, Instantiator<U> instantiator);
 }

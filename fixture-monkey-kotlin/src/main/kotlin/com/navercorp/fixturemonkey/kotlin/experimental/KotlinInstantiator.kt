@@ -25,24 +25,40 @@ import com.navercorp.fixturemonkey.experimental.ConstructorInstantiator
 import com.navercorp.fixturemonkey.experimental.InitializeArbitraryBuilder
 import com.navercorp.fixturemonkey.experimental.Instantiator
 
-class ConstructorInstantiatorKotlin<T>(
-    val _types: MutableList<TypeReference<*>> = ArrayList(),
-    val _parameterNames: MutableList<String?> = ArrayList(),
-) : ConstructorInstantiator<T> {
-    inline fun <reified U> parameter(parameterName: String? = null): ConstructorInstantiatorKotlin<T> {
-        val type = object : TypeReference<U>() {}
-        this._types.add(type)
-        this._parameterNames.add(parameterName)
-        return this
-    }
+@DslMarker
+annotation class InstantiatorDsl
+
+@InstantiatorDsl
+class InstantiatorDslSpec {
+    val instantiators = mutableMapOf<TypeReference<*>, Instantiator<*>>()
+
+    inline fun <reified T> constructor(dsl: ConstructorInstantiatorKt<T>.() -> ConstructorInstantiatorKt<T>): ConstructorInstantiatorKt<T> =
+        dsl(ConstructorInstantiatorKt()).apply {
+            this.also { mapOf(object : TypeReference<T>() {} to this) }
+                .also { instantiators::put }
+        }
+}
+
+class ConstructorInstantiatorKt<T> : ConstructorInstantiator<T> {
+    val _types: MutableList<TypeReference<*>> = ArrayList()
+    val _parameterNames: MutableList<String?> = ArrayList()
+
+    inline fun <reified U> parameter(parameterName: String? = null): ConstructorInstantiatorKt<T> =
+        this.apply {
+            _types.add(object : TypeReference<U>() {})
+            _parameterNames.add(parameterName)
+        }
 
     override fun getTypes(): List<TypeReference<*>> = _types
     override fun getParameterNames(): List<String?> = _parameterNames
 }
 
-inline fun <T, reified U> InitializeArbitraryBuilder<T>.instantiateBy(
-    instantiator: () -> Instantiator<U>
-) = this.instantiate(object : TypeReference<U>() {}, instantiator())
-
-fun <T> constructor(dsl: ConstructorInstantiatorKotlin<T>.() -> ConstructorInstantiatorKotlin<T>): ConstructorInstantiatorKotlin<T> =
-    dsl(ConstructorInstantiatorKotlin())
+inline fun <T> InitializeArbitraryBuilder<T>.instantiateBy(
+    instantiatorDsl: InstantiatorDslSpec.() -> Unit
+): InitializeArbitraryBuilder<T> {
+    val spec = InstantiatorDslSpec().apply(instantiatorDsl)
+    spec.instantiators.forEach { (type, instantiator) ->
+        this.instantiate(type, instantiator)
+    }
+    return this
+}

@@ -100,4 +100,9 @@ public abstract class PropertyUtils {
 			}
 		};
 	}
+
+	public static boolean isErasedProperty(Property property) {
+		return Types.getActualType(property.getType()) == Object.class
+			|| Types.getActualType(property.getAnnotatedType()) == Object.class;
+	}
 }
