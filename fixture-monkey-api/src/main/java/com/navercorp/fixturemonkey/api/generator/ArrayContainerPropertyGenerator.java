@@ -39,11 +39,6 @@ public final class ArrayContainerPropertyGenerator implements ContainerPropertyG
 		Property property = context.getProperty();
 
 		ArbitraryContainerInfo containerInfo = context.getContainerInfo();
-		if (containerInfo == null) {
-			containerInfo = context.getFixtureMonkeyOptions()
-				.getArbitraryContainerInfoGenerator(property)
-				.generate(context);
-		}
 
 		int size = containerInfo.getRandomSize();
 		AnnotatedType elementType = Types.getArrayComponentAnnotatedType(property.getAnnotatedType());

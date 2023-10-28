@@ -50,38 +50,29 @@ public final class EntryContainerPropertyGenerator implements ContainerPropertyG
 			);
 		}
 
-		ArbitraryContainerInfo containerInfo = context.getContainerInfo();
-		if (containerInfo == null) {
-			containerInfo = CONTAINER_INFO;
-		}
-
-		int size = containerInfo.getRandomSize();
-
 		AnnotatedType keyType = genericsTypes.get(0);
 		AnnotatedType valueType = genericsTypes.get(1);
 
 		List<Property> childProperties = new ArrayList<>();
-		for (int sequence = 0; sequence < size; sequence++) {
-			childProperties.add(
-				new MapEntryElementProperty(
+		childProperties.add(
+			new MapEntryElementProperty(
+				property,
+				new MapKeyElementProperty(
 					property,
-					new MapKeyElementProperty(
-						property,
-						keyType,
-						sequence
-					),
-					new MapValueElementProperty(
-						property,
-						valueType,
-						sequence
-					)
+					keyType,
+					0
+				),
+				new MapValueElementProperty(
+					property,
+					valueType,
+					0
 				)
-			);
-		}
+			)
+		);
 
 		return new ContainerProperty(
 			childProperties,
-			containerInfo
+			CONTAINER_INFO
 		);
 	}
 }

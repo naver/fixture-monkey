@@ -25,6 +25,8 @@ import java.util.List;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty;
 import com.navercorp.fixturemonkey.api.property.MapKeyElementProperty;
@@ -35,6 +37,8 @@ import com.navercorp.fixturemonkey.api.type.Types;
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class MapContainerPropertyGenerator implements ContainerPropertyGenerator {
 	public static final MapContainerPropertyGenerator INSTANCE = new MapContainerPropertyGenerator();
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(MapContainerPropertyGenerator.class);
 
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Override
@@ -55,27 +59,15 @@ public final class MapContainerPropertyGenerator implements ContainerPropertyGen
 		Class<?> actualKeyType = Types.getActualType(keyType);
 
 		ArbitraryContainerInfo containerInfo = context.getContainerInfo();
-		if (containerInfo == null) {
-			containerInfo = context.getFixtureMonkeyOptions()
-				.getArbitraryContainerInfoGenerator(property)
-				.generate(context);
-
-			if (actualKeyType.isEnum()) {
-				int enumSize = EnumSet.allOf((Class<? extends Enum>)actualKeyType).size();
-				containerInfo = new ArbitraryContainerInfo(
-					Math.min(containerInfo.getElementMinSize(), enumSize),
-					Math.min(containerInfo.getElementMaxSize(), enumSize)
-				);
+		if (actualKeyType.isEnum()) {
+			int enumSize = EnumSet.allOf((Class<? extends Enum>)actualKeyType).size();
+			if (containerInfo.getElementMaxSize() > enumSize) {
+				LOGGER.warn("Map key enum should not be bigger than enum size. enum size : " + enumSize);
 			}
-		} else {
-			if (actualKeyType.isEnum()) {
-				int enumSize = EnumSet.allOf((Class<? extends Enum>)actualKeyType).size();
-				if (containerInfo.getElementMaxSize() > enumSize) {
-					throw new IllegalArgumentException(
-						"Map key enum should not be bigger than enum size."
-					);
-				}
-			}
+			containerInfo = new ArbitraryContainerInfo(
+				Math.min(containerInfo.getElementMinSize(), enumSize),
+				Math.min(containerInfo.getElementMaxSize(), enumSize)
+			);
 		}
 
 		int size = containerInfo.getRandomSize();

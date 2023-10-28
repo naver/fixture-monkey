@@ -50,11 +50,6 @@ public final class StreamContainerPropertyGenerator implements ContainerProperty
 		AnnotatedType elementAnnotatedType = getElementAnnotatedType(property);
 
 		ArbitraryContainerInfo containerInfo = context.getContainerInfo();
-		if (containerInfo == null) {
-			containerInfo = context.getFixtureMonkeyOptions()
-				.getArbitraryContainerInfoGenerator(property)
-				.generate(context);
-		}
 
 		int size = containerInfo.getRandomSize();
 		List<Property> childProperties = new ArrayList<>();
