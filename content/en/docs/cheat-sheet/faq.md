@@ -28,14 +28,14 @@ In these situations, you can use [`set()`](../../customizing-objects/apis/#set) 
 {{< tab header="Java" lang="java">}}
 
 Product product = sut.giveMeBuilder(Product.class)
-    .set("productType", Arbitraries.of(ProductType).filter(it -> it != CLOTHING || it != ELECTRONICS))
+    .set("productType", CombinableArbitrary.from(Arbitraries.of(ProductType)).filter(it -> it != CLOTHING || it != ELECTRONICS))
     .sample();
 
 {{< /tab >}}
 {{< tab header="Kotlin" lang="kotlin">}}
 
 val product = sut.giveMeBuilder<Product>()
-    .setExpGetter(Product::getProductType, Arbitraries.of(ProductType::class.java).filter { it != ProductType.CLOTHING || it != ProductType.ELECTRONICS })
+    .setExpGetter(Product::getProductType,  CombinableArbitrary.from(Arbitraries.of(ProductType::class.java)).filter { it != ProductType.CLOTHING && it != ProductType.ELECTRONICS })
     .sample()
 
 {{< /tab >}}
