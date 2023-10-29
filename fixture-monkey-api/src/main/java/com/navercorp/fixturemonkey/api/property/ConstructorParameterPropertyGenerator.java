@@ -18,6 +18,9 @@
 
 package com.navercorp.fixturemonkey.api.property;
 
+import static com.navercorp.fixturemonkey.api.experimental.InstantiatorUtils.resolveParameterTypes;
+import static com.navercorp.fixturemonkey.api.experimental.InstantiatorUtils.resolvedParameterNames;
+
 import java.beans.ConstructorProperties;
 import java.lang.reflect.AnnotatedArrayType;
 import java.lang.reflect.AnnotatedType;
@@ -25,7 +28,7 @@ import java.lang.reflect.AnnotatedTypeVariable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Parameter;
-import java.util.ArrayList;
+import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -47,7 +50,7 @@ import com.navercorp.fixturemonkey.api.type.Types;
  * It might be a field as well.
  */
 @API(since = "0.5.3", status = Status.MAINTAINED)
-public final class ConstructorParameterPropertyGenerator implements PropertyGenerator, ConstructorPropertyGenerator {
+public final class ConstructorParameterPropertyGenerator implements PropertyGenerator {
 	private final Predicate<Constructor<?>> constructorPredicate;
 	private final Matcher matcher;
 
@@ -102,7 +105,6 @@ public final class ConstructorParameterPropertyGenerator implements PropertyGene
 		}
 	}
 
-	@Override
 	public List<Property> generateParameterProperties(ConstructorPropertyGeneratorContext context) {
 		Property property = context.getProperty();
 
@@ -111,31 +113,19 @@ public final class ConstructorParameterPropertyGenerator implements PropertyGene
 
 		List<String> parameterNamesByConstructor = Arrays.asList(getParameterNames(constructor));
 		List<String> inputParameterNames = context.getInputParameterNames();
-
-		List<String> resolvedParameterNames = new ArrayList<>();
-		for (int i = 0; i < parameterNamesByConstructor.size(); i++) {
-			String parameterName;
-
-			if (inputParameterNames.size() > i && inputParameterNames.get(i) != null) {
-				parameterName = inputParameterNames.get(i);
-			} else {
-				parameterName = parameterNamesByConstructor.get(i);
-			}
-			resolvedParameterNames.add(parameterName);
-		}
-		List<AnnotatedType> annotatedParameterTypes = Arrays.asList(constructor.getAnnotatedParameterTypes());
-		List<AnnotatedType> userParameterTypes = context.getInputParameterTypes().stream()
-			.map(TypeReference::getAnnotatedType)
+		List<TypeReference<?>> typeReferencesByConstructor = Arrays.stream(constructor.getAnnotatedParameterTypes())
+			.map(ConstructorParameterPropertyGenerator::toTypeReference)
 			.collect(Collectors.toList());
+
+		List<String> resolvedParameterNames = resolvedParameterNames(parameterNamesByConstructor, inputParameterNames);
+		List<TypeReference<?>> resolvedTypeReferences =
+			resolveParameterTypes(typeReferencesByConstructor, context.getInputParameterTypes());
 
 		Map<String, Field> fieldsByName = TypeCache.getFieldsByName(type);
 		int parameterSize = resolvedParameterNames.size();
 
 		Map<String, Property> constructorPropertiesByName = new LinkedHashMap<>();
 		for (int i = 0; i < parameterSize; i++) {
-			AnnotatedType annotatedParameterType = userParameterTypes.size() > i
-				? userParameterTypes.get(i)
-				: annotatedParameterTypes.get(i);
 			String parameterName = resolvedParameterNames.get(i);
 			Field field = fieldsByName.get(parameterName);
 			Property fieldProperty = field != null
@@ -145,7 +135,8 @@ public final class ConstructorParameterPropertyGenerator implements PropertyGene
 			)
 				: null;
 
-			if (isGenericAnnotatedType(annotatedParameterType) && fieldProperty != null) {
+			AnnotatedType parameterAnnotatedType = resolvedTypeReferences.get(i).getAnnotatedType();
+			if (isGenericAnnotatedType(parameterAnnotatedType) && fieldProperty != null) {
 				constructorPropertiesByName.put(
 					parameterName,
 					new ConstructorProperty(
@@ -160,7 +151,7 @@ public final class ConstructorParameterPropertyGenerator implements PropertyGene
 				constructorPropertiesByName.put(
 					parameterName,
 					new ConstructorProperty(
-						annotatedParameterType,
+						parameterAnnotatedType,
 						constructor,
 						parameterName,
 						fieldProperty,
@@ -172,6 +163,20 @@ public final class ConstructorParameterPropertyGenerator implements PropertyGene
 		return constructorPropertiesByName.values().stream()
 			.filter(matcher::match)
 			.collect(Collectors.toList());
+	}
+
+	private static TypeReference<Object> toTypeReference(AnnotatedType annotatedType) {
+		return new TypeReference<Object>() {
+			@Override
+			public Type getType() {
+				return annotatedType.getType();
+			}
+
+			@Override
+			public AnnotatedType getAnnotatedType() {
+				return annotatedType;
+			}
+		};
 	}
 
 	private static boolean isGenericAnnotatedType(AnnotatedType annotatedType) {

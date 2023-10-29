@@ -1,7 +1,7 @@
 package com.navercorp.fixturemonkey.tests.kotlin
 
 import com.navercorp.fixturemonkey.FixtureMonkey
-import com.navercorp.fixturemonkey.experimental.Instantiator
+import com.navercorp.fixturemonkey.api.experimental.Instantiator
 import com.navercorp.fixturemonkey.kotlin.KotlinPlugin
 import com.navercorp.fixturemonkey.kotlin.experimental.instantiateBy
 import com.navercorp.fixturemonkey.kotlin.giveMeExperimentalBuilder

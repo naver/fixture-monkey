@@ -16,18 +16,25 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.experimental;
-
-import java.util.List;
+package com.navercorp.fixturemonkey.api.experimental;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 
+/**
+ * The {@link InstantiatorProcessor} interface represents a component responsible for processing an
+ * {@link Instantiator} DSL.
+ */
 @API(since = "0.6.12", status = Status.EXPERIMENTAL)
-public interface ConstructorInstantiator<T> extends Instantiator {
-	List<TypeReference<?>> getTypes();
-
-	List<String> getParameterNames();
+public interface InstantiatorProcessor {
+	/**
+	 * Processes an {@link Instantiator} DSL to resolve a way to instantiate to a given type.
+	 *
+	 * @param typeReference the type to be instantiated.
+	 * @param instantiator a way to creating instances of the specified type.
+	 * @return An {@link InstantiatorProcessResult} containing the result of the processing.
+	 */
+	InstantiatorProcessResult process(TypeReference<?> typeReference, Instantiator instantiator);
 }

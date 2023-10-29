@@ -16,14 +16,22 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.experimental;
+package com.navercorp.fixturemonkey.api.experimental;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+/**
+ * provides a DSL for a way of specifying the instantiation of types.
+ */
 @API(since = "0.6.12", status = Status.EXPERIMENTAL)
 public interface Instantiator {
-	static <T> ConstructorInstantiatorJava<T> constructor() {
-		return new ConstructorInstantiatorJava<>();
+	/**
+	 * Creates a DSL object for specifying a given type of constructor.
+	 * @return an {@link ConstructorInstantiator} DSL object.
+	 * @param <T> a type to instantiate.
+	 */
+	static <T> JavaConstructorInstantiator<T> constructor() {
+		return new JavaConstructorInstantiator<>();
 	}
 }

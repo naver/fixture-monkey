@@ -44,6 +44,7 @@ import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.constraint.JavaConstraintGenerator;
 import com.navercorp.fixturemonkey.api.container.DecomposedContainerValueFactory;
+import com.navercorp.fixturemonkey.api.experimental.InstantiatorProcessor;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfoGenerator;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.generator.ArrayContainerPropertyGenerator;
@@ -66,7 +67,6 @@ import com.navercorp.fixturemonkey.api.matcher.DoubleGenericTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.matcher.Matchers;
 import com.navercorp.fixturemonkey.api.matcher.SingleGenericTypeMatcher;
-import com.navercorp.fixturemonkey.api.property.ConstructorPropertyGenerator;
 import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.PropertyGenerator;
@@ -122,7 +122,7 @@ public final class FixtureMonkeyOptions {
 	private final int generateMaxTries;
 	private final int generateUniqueMaxTries;
 	private final JavaConstraintGenerator javaConstraintGenerator;
-	private final ConstructorPropertyGenerator constructorPropertyGenerator;
+	private final InstantiatorProcessor instantiatorProcessor;
 
 	public FixtureMonkeyOptions(
 		List<MatcherOperator<PropertyGenerator>> propertyGenerators,
@@ -143,7 +143,7 @@ public final class FixtureMonkeyOptions {
 		int generateMaxTries,
 		int generateUniqueMaxTries,
 		JavaConstraintGenerator javaConstraintGenerator,
-		ConstructorPropertyGenerator constructorPropertyGenerator
+		InstantiatorProcessor instantiatorProcessor
 	) {
 		this.propertyGenerators = propertyGenerators;
 		this.defaultPropertyGenerator = defaultPropertyGenerator;
@@ -163,7 +163,7 @@ public final class FixtureMonkeyOptions {
 		this.generateMaxTries = generateMaxTries;
 		this.generateUniqueMaxTries = generateUniqueMaxTries;
 		this.javaConstraintGenerator = javaConstraintGenerator;
-		this.constructorPropertyGenerator = constructorPropertyGenerator;
+		this.instantiatorProcessor = instantiatorProcessor;
 	}
 
 	public static FixtureMonkeyOptionsBuilder builder() {
@@ -299,8 +299,8 @@ public final class FixtureMonkeyOptions {
 		return javaConstraintGenerator;
 	}
 
-	public ConstructorPropertyGenerator getConstructorPropertyGenerator() {
-		return constructorPropertyGenerator;
+	public InstantiatorProcessor getInstantiatorProcessor() {
+		return instantiatorProcessor;
 	}
 
 	public FixtureMonkeyOptionsBuilder toBuilder() {
@@ -320,7 +320,7 @@ public final class FixtureMonkeyOptions {
 			.defaultArbitraryValidator(defaultArbitraryValidator)
 			.decomposedContainerValueFactory(decomposedContainerValueFactory)
 			.javaConstraintGenerator(javaConstraintGenerator)
-			.constructorPropertyGenerator(constructorPropertyGenerator);
+			.instantiatorProcessor(instantiatorProcessor);
 	}
 
 	private static List<MatcherOperator<ObjectPropertyGenerator>> getDefaultObjectPropertyGenerators(

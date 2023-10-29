@@ -18,7 +18,7 @@
 
 package com.navercorp.fixturemonkey.tests.java;
 
-import static com.navercorp.fixturemonkey.experimental.Instantiator.constructor;
+import static com.navercorp.fixturemonkey.api.experimental.Instantiator.constructor;
 import static com.navercorp.fixturemonkey.tests.TestEnvironment.TEST_COUNT;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.assertj.core.api.BDDAssertions.thenNoException;

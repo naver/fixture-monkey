@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.experimental;
+package com.navercorp.fixturemonkey.api.experimental;
 
 import static com.navercorp.fixturemonkey.api.type.Types.getDeclaredConstructor;
 import static java.util.stream.Collectors.toList;
@@ -29,33 +29,35 @@ import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.introspector.ConstructorArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.ConstructorArbitraryIntrospector.ConstructorWithParameterNames;
-import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
+import com.navercorp.fixturemonkey.api.property.ConstructorParameterPropertyGenerator;
 import com.navercorp.fixturemonkey.api.property.ConstructorPropertyGeneratorContext;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.PropertyUtils;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.api.type.Types;
-import com.navercorp.fixturemonkey.resolver.ArbitraryBuilderContext;
 
 @API(since = "0.6.12", status = Status.EXPERIMENTAL)
-public final class InstantiatorProcessor {
-	private final FixtureMonkeyOptions fixtureMonkeyOptions;
-	private final ArbitraryBuilderContext context;
+public final class JavaInstantiatorProcessor implements InstantiatorProcessor {
+	private static final ConstructorParameterPropertyGenerator JAVA_CONSTRUCTOR_PROPERTY_GENERATOR =
+		new ConstructorParameterPropertyGenerator(
+			it -> true,
+			it -> true
+		);
 
-	public InstantiatorProcessor(FixtureMonkeyOptions fixtureMonkeyOptions, ArbitraryBuilderContext context) {
-		this.fixtureMonkeyOptions = fixtureMonkeyOptions;
-		this.context = context;
-	}
-
-	public void process(TypeReference<?> typeReference, Instantiator instantiator) {
+	@Override
+	public InstantiatorProcessResult process(TypeReference<?> typeReference, Instantiator instantiator) {
 		if (instantiator instanceof ConstructorInstantiator) {
-			initializeByConstructor(typeReference, (ConstructorInstantiator<?>)instantiator);
+			return processConstructor(typeReference, (ConstructorInstantiator<?>)instantiator);
 		}
+		throw new IllegalArgumentException("Given instantiator is not valid. instantiator: " + instantiator.getClass());
 	}
 
-	private void initializeByConstructor(TypeReference<?> typeReference, ConstructorInstantiator<?> instantiator) {
+	public InstantiatorProcessResult processConstructor(
+		TypeReference<?> typeReference,
+		ConstructorInstantiator<?> instantiator
+	) {
 		Class<?> type = Types.getActualType(typeReference.getType());
-		List<TypeReference<?>> typeReferences = instantiator.getTypes();
+		List<TypeReference<?>> typeReferences = instantiator.getInputParameterTypes();
 
 		Class<?>[] arguments = typeReferences.stream()
 			.map(it -> Types.getActualType(it.getType()))
@@ -64,29 +66,23 @@ public final class InstantiatorProcessor {
 		Constructor<?> declaredConstructor = getDeclaredConstructor(type, arguments);
 		Property property = PropertyUtils.toProperty(typeReference);
 
-		List<Property> constructorParameterProperties = fixtureMonkeyOptions.getConstructorPropertyGenerator()
-			.generateParameterProperties(
-				new ConstructorPropertyGeneratorContext(
-					property,
-					declaredConstructor,
-					instantiator.getTypes(),
-					instantiator.getParameterNames()
-				)
-			);
+		List<Property> constructorParameterProperties = JAVA_CONSTRUCTOR_PROPERTY_GENERATOR.generateParameterProperties(
+			new ConstructorPropertyGeneratorContext(
+				property,
+				declaredConstructor,
+				instantiator.getInputParameterTypes(),
+				instantiator.getInputParameterNames()
+			)
+		);
 
 		List<String> parameterNames = constructorParameterProperties.stream()
 			.map(Property::getName)
 			.collect(toList());
 
-		context.putArbitraryIntrospector(
-			type,
+		return new InstantiatorProcessResult(
 			new ConstructorArbitraryIntrospector(
 				new ConstructorWithParameterNames<>(declaredConstructor, parameterNames)
-			)
-		);
-
-		context.putPropertyConfigurer(
-			type,
+			),
 			constructorParameterProperties
 		);
 	}
