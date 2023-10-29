@@ -568,7 +568,7 @@ public class Types {
 		return constructor;
 	}
 
-	private static boolean isAssignableTypes(Class<?>[] froms, Class<?>[] tos) {
+	public static boolean isAssignableTypes(Class<?>[] froms, Class<?>[] tos) {
 		if (froms.length != tos.length) {
 			return false;
 		}
@@ -582,5 +582,19 @@ public class Types {
 			}
 		}
 		return true;
+	}
+
+	public static TypeReference<?> toTypeReference(AnnotatedType annotatedType) {
+		return new TypeReference<Object>() {
+			@Override
+			public Type getType() {
+				return annotatedType.getType();
+			}
+
+			@Override
+			public AnnotatedType getAnnotatedType() {
+				return annotatedType;
+			}
+		};
 	}
 }

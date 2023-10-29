@@ -45,6 +45,12 @@ class InstantiatorDslSpec<T>(
             .also {
                 instantiators[object : TypeReference<U>() {}] = it
             }
+
+    inline fun <reified U> factory(dsl: FactoryMethodInstantiatorKt<U>.() -> FactoryMethodInstantiatorKt<U>): FactoryMethodInstantiatorKt<U> =
+        dsl(FactoryMethodInstantiatorKt())
+            .also {
+                instantiators[object : TypeReference<U>() {}] = it
+            }
 }
 
 inline fun <reified T> ExperimentalArbitraryBuilder<T>.instantiateBy(

@@ -106,6 +106,10 @@ public class ConstructorTestSpecs {
 			this.wrapperBoolean = null;
 			this.enumValue = null;
 		}
+
+		public static JavaTypeObject from(String str) {
+			return new JavaTypeObject("factory");
+		}
 	}
 
 	@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
@@ -214,7 +218,7 @@ public class ConstructorTestSpecs {
 	}
 
 	@Value
-	public static class SimpleContainerObject{
+	public static class SimpleContainerObject {
 		List<JavaTypeObject> list;
 
 		public SimpleContainerObject(List<JavaTypeObject> list) {
