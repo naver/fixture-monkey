@@ -87,7 +87,7 @@ public final class InstantiatorProcessor {
 
 		context.putPropertyConfigurer(
 			type,
-			properties -> constructorParameterProperties
+			constructorParameterProperties
 		);
 	}
 }

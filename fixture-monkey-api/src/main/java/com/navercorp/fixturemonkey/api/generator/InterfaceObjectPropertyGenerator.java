@@ -47,8 +47,7 @@ public final class InterfaceObjectPropertyGenerator<T> implements ObjectProperty
 		Map<Property, List<Property>> childPropertiesByProperty = new HashMap<>();
 
 		Property interfaceProperty = context.getProperty();
-		double nullInject = context.getFixtureMonkeyOptions().getNullInjectGenerator(interfaceProperty)
-			.generate(context);
+		double nullInject = context.getNullInjectGenerator().generate(context);
 
 		for (Class<? extends T> implementation : implementations) {
 			Property property = new Property() {
@@ -80,7 +79,7 @@ public final class InterfaceObjectPropertyGenerator<T> implements ObjectProperty
 				}
 			};
 
-			List<Property> childProperties = context.getFixtureMonkeyOptions().getPropertyGenerator(property)
+			List<Property> childProperties = context.getPropertyGenerator()
 				.generateChildProperties(property.getAnnotatedType());
 
 			childPropertiesByProperty.put(property, childProperties);

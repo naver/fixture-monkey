@@ -25,7 +25,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
@@ -43,7 +42,7 @@ import com.navercorp.fixturemonkey.customizer.ContainerInfoManipulator;
 public final class ArbitraryBuilderContext {
 	private final List<ArbitraryManipulator> manipulators;
 	private final List<ContainerInfoManipulator> containerInfoManipulators;
-	private final Map<Class<?>, UnaryOperator<List<Property>>> propertyConfigurers;
+	private final Map<Class<?>, List<Property>> propertyConfigurers;
 	private final Map<Class<?>, ArbitraryIntrospector> arbitraryIntrospectorsByType;
 
 	private boolean validOnly;
@@ -56,7 +55,7 @@ public final class ArbitraryBuilderContext {
 	public ArbitraryBuilderContext(
 		List<ArbitraryManipulator> manipulators,
 		List<ContainerInfoManipulator> containerInfoManipulators,
-		Map<Class<?>, UnaryOperator<List<Property>>> propertyConfigurers,
+		Map<Class<?>, List<Property>> propertyConfigurers,
 		Map<Class<?>, ArbitraryIntrospector> arbitraryIntrospectorsByType,
 		boolean validOnly,
 		@Nullable FixedState fixedState,
@@ -115,7 +114,7 @@ public final class ArbitraryBuilderContext {
 		return Collections.unmodifiableList(containerInfoManipulators);
 	}
 
-	public void putPropertyConfigurer(Class<?> type, UnaryOperator<List<Property>> propertyConfigurer) {
+	public void putPropertyConfigurer(Class<?> type, List<Property> propertyConfigurer) {
 		this.propertyConfigurers.put(type, propertyConfigurer);
 	}
 
@@ -127,7 +126,7 @@ public final class ArbitraryBuilderContext {
 		return arbitraryIntrospectorsByType;
 	}
 
-	public Map<Class<?>, UnaryOperator<List<Property>>> getPropertyConfigurers() {
+	public Map<Class<?>, List<Property>> getPropertyConfigurers() {
 		return propertyConfigurers;
 	}
 

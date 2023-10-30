@@ -35,10 +35,9 @@ public final class DefaultObjectPropertyGenerator implements ObjectPropertyGener
 	@Override
 	public ObjectProperty generate(ObjectPropertyGeneratorContext context) {
 		Property property = context.getProperty();
-		PropertyGenerator propertyGenerator = context.getFixtureMonkeyOptions().getPropertyGenerator(property);
+		PropertyGenerator propertyGenerator = context.getPropertyGenerator();
 		List<Property> childProperties = propertyGenerator.generateChildProperties(property.getAnnotatedType());
-		double nullInject = context.getFixtureMonkeyOptions().getNullInjectGenerator(property)
-			.generate(context);
+		double nullInject = context.getNullInjectGenerator().generate(context);
 
 		return new ObjectProperty(
 			property,
