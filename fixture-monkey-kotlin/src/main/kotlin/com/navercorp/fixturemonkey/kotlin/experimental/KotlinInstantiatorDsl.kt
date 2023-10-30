@@ -34,11 +34,22 @@ class InstantiatorDslSpec<T>(
     val instantiators = mutableMapOf<TypeReference<*>, Instantiator>()
 
     @JvmName("rootConstructor")
+    fun constructor(): InstantiatorDslSpec<T> {
+        instantiators[rootTypeReference] = KotlinConstructorInstantiator<T>()
+        return this
+    }
+
+    @JvmName("rootConstructor")
     fun constructor(dsl: KotlinConstructorInstantiator<T>.() -> KotlinConstructorInstantiator<T>): InstantiatorDslSpec<T> {
         dsl(KotlinConstructorInstantiator())
             .also {
                 instantiators[rootTypeReference] = it
             }
+        return this
+    }
+
+    inline fun <reified U> constructor(): InstantiatorDslSpec<T> {
+        instantiators[object : TypeReference<U>() {}] = KotlinConstructorInstantiator<U>()
         return this
     }
 

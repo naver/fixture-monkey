@@ -205,6 +205,41 @@ class InstantiatorTest {
         then(actual.string).isNotEqualTo("string")
     }
 
+    @RepeatedTest(TEST_COUNT)
+    fun instantiateNoArgsConstructor() {
+        class NoArgsConstructorObject() {
+            var string: String = "noArgs"
+
+            constructor(string: String) : this() {
+                this.string = string
+            }
+        }
+
+        val actual = SUT.giveMeExperimentalBuilder<NoArgsConstructorObject>()
+            .instantiateBy { constructor() }
+            .sample()
+            .string
+
+        then(actual).isEqualTo("noArgs")
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun instantiatePropertyNoArgsConstructor() {
+        class NoArgsConstructorObject {
+            var string: String = "noArgs"
+        }
+
+        class AllArgsConstructorObject(val value: NoArgsConstructorObject)
+
+        val actual = SUT.giveMeExperimentalBuilder<AllArgsConstructorObject>()
+            .instantiateBy { constructor<NoArgsConstructorObject>() }
+            .sample()
+            .value
+            .string
+
+        then(actual).isEqualTo("noArgs")
+    }
+
     class Foo(val foo: String, val bar: Int) {
         constructor(foo: String) : this(foo, 1)
 
