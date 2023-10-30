@@ -44,11 +44,6 @@ public final class JsonNodeContainerPropertyGenerator implements ContainerProper
 	public ContainerProperty generate(ContainerPropertyGeneratorContext context) {
 		Property property = context.getProperty();
 		ArbitraryContainerInfo containerInfo = context.getContainerInfo();
-		if (containerInfo == null) {
-			containerInfo = context.getFixtureMonkeyOptions()
-				.getArbitraryContainerInfoGenerator(property)
-				.generate(context);
-		}
 
 		int size = containerInfo.getRandomSize();
 

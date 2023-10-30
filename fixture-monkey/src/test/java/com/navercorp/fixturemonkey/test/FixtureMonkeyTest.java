@@ -1412,23 +1412,23 @@ class FixtureMonkeyTest {
 	}
 
 	@Property
-	void sizeEnumSetGreaterThanEnumSizeThrows() {
-		thenThrownBy(
-			() -> SUT.giveMeBuilder(new TypeReference<Set<TwoEnum>>() {
-				})
-				.size("$", 3)
-				.sample()
-		).isExactlyInstanceOf(IllegalArgumentException.class);
+	void sizeEnumSetGreaterThanEnumSizeNotThrows() {
+		Set<TwoEnum> actual = SUT.giveMeBuilder(new TypeReference<Set<TwoEnum>>() {
+			})
+			.size("$", 3)
+			.sample();
+
+		then(actual).hasSize(2);
 	}
 
 	@Property
-	void sizeEnumMapGreaterThanEnumSizeThrows() {
-		thenThrownBy(
-			() -> SUT.giveMeBuilder(new TypeReference<Map<TwoEnum, String>>() {
-				})
-				.size("$", 3)
-				.sample()
-		).isExactlyInstanceOf(IllegalArgumentException.class);
+	void sizeEnumMapGreaterThanEnumSizeNotThrows() {
+		Map<TwoEnum, String> actual = SUT.giveMeBuilder(new TypeReference<Map<TwoEnum, String>>() {
+			})
+			.size("$", 3)
+			.sample();
+
+		then(actual).hasSize(2);
 	}
 
 	@Property

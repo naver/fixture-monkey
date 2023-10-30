@@ -398,7 +398,8 @@ class FixtureMonkeyOptionsTest {
 			.pushArbitraryContainerInfoGenerator(
 				new MatcherOperator<>(
 					(property) -> {
-						if (Types.getActualType(property.getType()).isArray()) {
+						if (Types.getActualType(property.getType()).isArray()
+							|| Types.getGenericsTypes(property.getAnnotatedType()).isEmpty()) {
 							return false;
 						}
 
@@ -423,7 +424,8 @@ class FixtureMonkeyOptionsTest {
 			.pushArbitraryContainerInfoGenerator(
 				new MatcherOperator<>(
 					(property) -> {
-						if (Types.getActualType(property.getType()).isArray()) {
+						if (Types.getActualType(property.getType()).isArray()
+							|| Types.getGenericsTypes(property.getAnnotatedType()).isEmpty()) {
 							return false;
 						}
 

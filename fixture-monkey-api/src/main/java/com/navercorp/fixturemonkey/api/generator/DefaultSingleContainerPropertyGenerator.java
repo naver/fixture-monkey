@@ -56,11 +56,6 @@ public final class DefaultSingleContainerPropertyGenerator implements ContainerP
 			: elementTypes.get(0);
 
 		ArbitraryContainerInfo containerInfo = context.getContainerInfo();
-		if (containerInfo == null) {
-			containerInfo = context.getFixtureMonkeyOptions()
-				.getArbitraryContainerInfoGenerator(property)
-				.generate(context);
-		}
 
 		int size = containerInfo.getRandomSize();
 		List<Property> childProperties = new ArrayList<>();

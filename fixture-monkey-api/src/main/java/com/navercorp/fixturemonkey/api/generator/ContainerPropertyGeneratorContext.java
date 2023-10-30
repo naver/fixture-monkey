@@ -36,9 +36,16 @@ public final class ContainerPropertyGeneratorContext {
 
 	@Nullable
 	private final ArbitraryContainerInfo containerInfo;
+	private final ArbitraryContainerInfoGenerator containerInfoGenerator;
 
+	@Deprecated
 	private final FixtureMonkeyOptions fixtureMonkeyOptions;
 
+	/**
+	 * It is deprecated.
+	 * Use {@link #ContainerPropertyGeneratorContext(Property, Integer, ArbitraryContainerInfoGenerator)} instead.
+	 */
+	@Deprecated
 	public ContainerPropertyGeneratorContext(
 		Property property,
 		@Nullable Integer elementIndex,
@@ -48,7 +55,20 @@ public final class ContainerPropertyGeneratorContext {
 		this.property = property;
 		this.elementIndex = elementIndex;
 		this.containerInfo = containerInfo;
+		this.containerInfoGenerator = fixtureMonkeyOptions.getArbitraryContainerInfoGenerator(property);
 		this.fixtureMonkeyOptions = fixtureMonkeyOptions;
+	}
+
+	public ContainerPropertyGeneratorContext(
+		Property property,
+		@Nullable Integer elementIndex,
+		ArbitraryContainerInfoGenerator containerInfoGenerator
+	) {
+		this.property = property;
+		this.elementIndex = elementIndex;
+		this.containerInfoGenerator = containerInfoGenerator;
+		this.containerInfo = containerInfoGenerator.generate(this);
+		this.fixtureMonkeyOptions = FixtureMonkeyOptions.DEFAULT_GENERATE_OPTIONS;
 	}
 
 	public Property getProperty() {
@@ -60,13 +80,16 @@ public final class ContainerPropertyGeneratorContext {
 		return elementIndex;
 	}
 
+	/**
+	 * It is deprecated. Do not use {@link FixtureMonkeyOptions} in your {@link ContainerPropertyGeneratorContext}.
+	 */
+	@Deprecated
 	public FixtureMonkeyOptions getFixtureMonkeyOptions() {
 		return fixtureMonkeyOptions;
 	}
 
-	@Nullable
 	public ArbitraryContainerInfo getContainerInfo() {
-		return containerInfo;
+		return containerInfo != null ? containerInfo : containerInfoGenerator.generate(this);
 	}
 
 	public boolean isRootContext() {
