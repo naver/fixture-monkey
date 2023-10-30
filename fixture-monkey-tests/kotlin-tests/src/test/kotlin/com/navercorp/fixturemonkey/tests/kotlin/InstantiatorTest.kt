@@ -165,7 +165,6 @@ class InstantiatorTest {
                 factory<Foo> {
                     parameter<Int>()
                 }
-
             }
             .sample()
             .foo
@@ -186,6 +185,24 @@ class InstantiatorTest {
             .bar
 
         then(actual).isEqualTo(1)
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun instantiateJavaObjectByRootProperty() {
+        val actual = SUT.giveMeExperimentalBuilder<JavaConstructorTestSpecs.JavaTypeObject>()
+            .instantiateBy { property() }
+            .sample()
+
+        then(actual.string).isNotEqualTo("string")
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun instantiateJavaObjectByProperty() {
+        val actual = SUT.giveMeExperimentalBuilder<JavaConstructorTestSpecs.JavaTypeObject>()
+            .instantiateBy { property<JavaConstructorTestSpecs.JavaTypeObject>() }
+            .sample()
+
+        then(actual.string).isNotEqualTo("string")
     }
 
     class Foo(val foo: String, val bar: Int) {

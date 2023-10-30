@@ -16,34 +16,14 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.tests.kotlin;
+package com.navercorp.fixturemonkey.api.experimental;
 
-public class JavaConstructorTestSpecs {
-	public static class JavaTypeObject {
-		private final String string;
-		private final int integer;
-
-		public JavaTypeObject(String string, int integer) {
-			this.string = string;
-			this.integer = integer;
-		}
-
-		public JavaTypeObject(int integer) {
-			this.string = "second";
-			this.integer = integer;
-		}
-
-		public JavaTypeObject() {
-			this.string = "third";
-			this.integer = 3;
-		}
-
-		public String getString() {
-			return string;
-		}
-
-		public int getInteger() {
-			return integer;
-		}
-	}
+/**
+ * The {@link PropertyInstantiator} interface represents a DSL for constructing objects of type T
+ * using a no-args constructor and properties. It extends the {@link Instantiator} interface.
+ *
+ * @param <T> The type of objects that can be instantiated using the no-args constructor and properties.
+ * @see Instantiator
+ */
+public interface PropertyInstantiator<T> extends Instantiator {
 }

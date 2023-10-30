@@ -25,15 +25,21 @@ import com.navercorp.fixturemonkey.api.experimental.InstantiatorProcessResult
 import com.navercorp.fixturemonkey.api.experimental.InstantiatorProcessor
 import com.navercorp.fixturemonkey.api.experimental.InstantiatorUtils.resolveParameterTypes
 import com.navercorp.fixturemonkey.api.experimental.InstantiatorUtils.resolvedParameterNames
+import com.navercorp.fixturemonkey.api.experimental.PropertyInstantiator
+import com.navercorp.fixturemonkey.api.introspector.BeanArbitraryIntrospector
 import com.navercorp.fixturemonkey.api.introspector.ConstructorArbitraryIntrospector
 import com.navercorp.fixturemonkey.api.introspector.ConstructorArbitraryIntrospector.ConstructorWithParameterNames
+import com.navercorp.fixturemonkey.api.introspector.FailoverIntrospector
+import com.navercorp.fixturemonkey.api.introspector.FieldReflectionArbitraryIntrospector
 import com.navercorp.fixturemonkey.api.property.ConstructorProperty
 import com.navercorp.fixturemonkey.api.property.MethodParameterProperty
 import com.navercorp.fixturemonkey.api.property.Property
+import com.navercorp.fixturemonkey.api.property.PropertyUtils
 import com.navercorp.fixturemonkey.api.type.TypeReference
 import com.navercorp.fixturemonkey.api.type.Types
 import com.navercorp.fixturemonkey.api.type.Types.getDeclaredConstructor
 import com.navercorp.fixturemonkey.kotlin.introspector.CompanionObjectFactoryMethodIntrospector
+import com.navercorp.fixturemonkey.kotlin.property.KotlinPropertyGenerator
 import com.navercorp.fixturemonkey.kotlin.type.actualType
 import com.navercorp.fixturemonkey.kotlin.type.toTypeReference
 import kotlin.reflect.KFunction
@@ -48,13 +54,14 @@ class KotlinInstantiatorProcessor : InstantiatorProcessor {
         return when (instantiator) {
             is ConstructorInstantiator<*> -> processConstructor(typeReference, instantiator)
             is FactoryMethodInstantiator<*> -> processFactoryMethod(typeReference, instantiator)
+            is KotlinPropertyInstantiator<*> -> processProperty(typeReference, instantiator)
             else -> throw IllegalArgumentException("Given instantiator is not valid. instantiator: ${instantiator.javaClass}")
         }
     }
 
     private fun processConstructor(
         typeReference: TypeReference<*>,
-        instantiator: ConstructorInstantiator<*>
+        instantiator: ConstructorInstantiator<*>,
     ): InstantiatorProcessResult {
         val parameterTypes =
             instantiator.inputParameterTypes.map { it.type.actualType() }.toTypedArray()
@@ -87,16 +94,34 @@ class KotlinInstantiatorProcessor : InstantiatorProcessor {
             ConstructorArbitraryIntrospector(
                 ConstructorWithParameterNames(
                     declaredConstructor,
-                    resolveParameterName
-                )
+                    resolveParameterName,
+                ),
             ),
-            constructorParameterProperties
+            constructorParameterProperties,
+        )
+    }
+
+    private fun processProperty(
+        typeReference: TypeReference<*>,
+        instantiator: KotlinPropertyInstantiator<*>,
+    ): InstantiatorProcessResult {
+        val property = PropertyUtils.toProperty(typeReference)
+        val properties = KOTLIN_PROPERTY_GENERATOR.generateChildProperties(property)
+
+        return InstantiatorProcessResult(
+            FailoverIntrospector(
+                listOf(
+                    BeanArbitraryIntrospector.INSTANCE,
+                    FieldReflectionArbitraryIntrospector.INSTANCE,
+                ),
+            ),
+            properties,
         )
     }
 
     private fun processFactoryMethod(
         typeReference: TypeReference<*>,
-        instantiator: FactoryMethodInstantiator<*>
+        instantiator: FactoryMethodInstantiator<*>,
     ): InstantiatorProcessResult {
         val type = typeReference.type.actualType()
         val inputParameterTypes = instantiator.inputParameterTypes.map { it.type.actualType() }
@@ -118,17 +143,17 @@ class KotlinInstantiatorProcessor : InstantiatorProcessor {
 
         val properties = companionMethod.toParameterProperty(
             resolvedParameterTypes = resolvedParameterTypes,
-            resolvedParameterNames = resolvedParameterNames
+            resolvedParameterNames = resolvedParameterNames,
         )
         return InstantiatorProcessResult(
             CompanionObjectFactoryMethodIntrospector(companionMethod),
-            properties
+            properties,
         )
     }
 
     private fun KFunction<*>.toParameterProperty(
         resolvedParameterTypes: List<TypeReference<*>>,
-        resolvedParameterNames: List<String>
+        resolvedParameterNames: List<String>,
     ): List<Property> = this.parameters
         .filter { parameter -> parameter.kind != KParameter.Kind.INSTANCE }
         .mapIndexed { index, kParameter ->
@@ -148,6 +173,10 @@ class KotlinInstantiatorProcessor : InstantiatorProcessor {
                     Types.isAssignableTypes(it.toTypedArray(), inputParameterTypes)
                 }
         }
+
+    companion object {
+        val KOTLIN_PROPERTY_GENERATOR = KotlinPropertyGenerator()
+    }
 }
 
 /**
@@ -204,3 +233,5 @@ class FactoryMethodInstantiatorKt<T> : FactoryMethodInstantiator<T> {
 
     override fun getInputParameterNames(): List<String?> = _parameterNames
 }
+
+class KotlinPropertyInstantiator<T> : PropertyInstantiator<T>
