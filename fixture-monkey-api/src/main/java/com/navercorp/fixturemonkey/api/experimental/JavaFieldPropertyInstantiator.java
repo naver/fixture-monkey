@@ -18,9 +18,22 @@
 
 package com.navercorp.fixturemonkey.api.experimental;
 
+import java.lang.reflect.Field;
+import java.util.function.Predicate;
+
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 @API(since = "0.6.12", status = Status.EXPERIMENTAL)
-public final class JavaPropertyInstantiator<T> implements PropertyInstantiator<T> {
+public final class JavaFieldPropertyInstantiator<T> implements PropertyInstantiator<T> {
+	private Predicate<Field> fieldPredicate = it -> true;
+
+	public JavaFieldPropertyInstantiator<T> filter(Predicate<Field> fieldPredicate) {
+		this.fieldPredicate = fieldPredicate;
+		return this;
+	}
+
+	public Predicate<Field> getFieldPredicate() {
+		return fieldPredicate;
+	}
 }

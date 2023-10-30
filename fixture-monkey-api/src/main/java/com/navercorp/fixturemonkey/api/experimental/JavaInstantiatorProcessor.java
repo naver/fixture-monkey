@@ -24,32 +24,31 @@ import static com.navercorp.fixturemonkey.api.type.Types.getDeclaredConstructor;
 import static com.navercorp.fixturemonkey.api.type.Types.isAssignableTypes;
 import static java.util.stream.Collectors.toList;
 
+import java.beans.PropertyDescriptor;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Predicate;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.api.introspector.BeanArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.ConstructorArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.ConstructorArbitraryIntrospector.ConstructorWithParameterNames;
 import com.navercorp.fixturemonkey.api.introspector.FactoryMethodArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.FactoryMethodArbitraryIntrospector.FactoryMethodWithParameterNames;
-import com.navercorp.fixturemonkey.api.introspector.FailoverIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.FieldReflectionArbitraryIntrospector;
-import com.navercorp.fixturemonkey.api.property.CompositePropertyGenerator;
 import com.navercorp.fixturemonkey.api.property.ConstructorParameterPropertyGenerator;
 import com.navercorp.fixturemonkey.api.property.ConstructorPropertyGeneratorContext;
 import com.navercorp.fixturemonkey.api.property.FieldPropertyGenerator;
 import com.navercorp.fixturemonkey.api.property.JavaBeansPropertyGenerator;
 import com.navercorp.fixturemonkey.api.property.MethodParameterProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
-import com.navercorp.fixturemonkey.api.property.PropertyGenerator;
 import com.navercorp.fixturemonkey.api.property.PropertyUtils;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.api.type.Types;
@@ -61,12 +60,6 @@ public final class JavaInstantiatorProcessor implements InstantiatorProcessor {
 			it -> true,
 			it -> true
 		);
-	private static final PropertyGenerator JAVA_FIELD_AND_BEANS_PROPERTY_GENERATOR = new CompositePropertyGenerator(
-		Arrays.asList(
-			new FieldPropertyGenerator(it -> true, it -> true),
-			new JavaBeansPropertyGenerator(it -> it.getReadMethod() != null && it.getWriteMethod() != null, it -> true)
-		)
-	);
 
 	@Override
 	public InstantiatorProcessResult process(TypeReference<?> typeReference, Instantiator instantiator) {
@@ -74,8 +67,10 @@ public final class JavaInstantiatorProcessor implements InstantiatorProcessor {
 			return processConstructor(typeReference, (ConstructorInstantiator<?>)instantiator);
 		} else if (instantiator instanceof FactoryMethodInstantiator) {
 			return processFactoryMethod(typeReference, (FactoryMethodInstantiator<?>)instantiator);
-		} else if (instantiator instanceof PropertyInstantiator) {
-			return processProperty(typeReference, (PropertyInstantiator<?>)instantiator);
+		} else if (instantiator instanceof JavaFieldPropertyInstantiator) {
+			return processField(typeReference, (JavaFieldPropertyInstantiator<?>)instantiator);
+		} else if (instantiator instanceof JavaBeansPropertyInstantiator) {
+			return processJavaBeansProperty(typeReference, (JavaBeansPropertyInstantiator<?>)instantiator);
 		}
 		throw new IllegalArgumentException("Given instantiator is not valid. instantiator: " + instantiator.getClass());
 	}
@@ -193,21 +188,34 @@ public final class JavaInstantiatorProcessor implements InstantiatorProcessor {
 		return properties;
 	}
 
-	public InstantiatorProcessResult processProperty(
+	public InstantiatorProcessResult processField(
 		TypeReference<?> typeReference,
-		PropertyInstantiator<?> instantiator
+		JavaFieldPropertyInstantiator<?> instantiator
 	) {
 		Property property = PropertyUtils.toProperty(typeReference);
 
-		List<Property> properties = JAVA_FIELD_AND_BEANS_PROPERTY_GENERATOR.generateChildProperties(property);
+		Predicate<Field> fieldPredicate = instantiator.getFieldPredicate();
+		List<Property> properties =
+			new FieldPropertyGenerator(fieldPredicate, it -> true).generateChildProperties(property);
 
 		return new InstantiatorProcessResult(
-			new FailoverIntrospector(
-				Arrays.asList(
-					BeanArbitraryIntrospector.INSTANCE,
-					FieldReflectionArbitraryIntrospector.INSTANCE
-				)
-			),
+			FieldReflectionArbitraryIntrospector.INSTANCE,
+			properties
+		);
+	}
+
+	public InstantiatorProcessResult processJavaBeansProperty(
+		TypeReference<?> typeReference,
+		JavaBeansPropertyInstantiator<?> instantiator
+	) {
+		Property property = PropertyUtils.toProperty(typeReference);
+
+		Predicate<PropertyDescriptor> propertyDescriptorPredicate = instantiator.getPropertyDescriptorPredicate();
+		List<Property> properties = new JavaBeansPropertyGenerator(propertyDescriptorPredicate, it -> true)
+			.generateChildProperties(property);
+
+		return new InstantiatorProcessResult(
+			FieldReflectionArbitraryIntrospector.INSTANCE,
 			properties
 		);
 	}

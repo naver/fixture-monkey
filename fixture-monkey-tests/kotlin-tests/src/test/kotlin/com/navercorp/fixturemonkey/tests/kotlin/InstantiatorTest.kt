@@ -8,6 +8,7 @@ import com.navercorp.fixturemonkey.kotlin.giveMeExperimentalBuilder
 import com.navercorp.fixturemonkey.tests.TestEnvironment.TEST_COUNT
 import org.assertj.core.api.BDDAssertions.then
 import org.junit.jupiter.api.RepeatedTest
+import java.lang.reflect.Modifier
 
 class InstantiatorTest {
     @RepeatedTest(TEST_COUNT)
@@ -192,17 +193,129 @@ class InstantiatorTest {
         val actual = SUT.giveMeExperimentalBuilder<JavaConstructorTestSpecs.JavaTypeObject>()
             .instantiateBy { property() }
             .sample()
+            .string
 
-        then(actual.string).isNotEqualTo("string")
+        then(actual).isNotEqualTo("string")
     }
 
     @RepeatedTest(TEST_COUNT)
-    fun instantiateJavaObjectByProperty() {
+    fun instantiateJavaObjectByRootPropertyFilter() {
         val actual = SUT.giveMeExperimentalBuilder<JavaConstructorTestSpecs.JavaTypeObject>()
-            .instantiateBy { property<JavaConstructorTestSpecs.JavaTypeObject>() }
+            .instantiateBy {
+                property {
+                    filter { !it.isFinal }
+                }
+            }
             .sample()
+            .string
 
-        then(actual.string).isNotEqualTo("string")
+        then(actual).isEqualTo("third")
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun instantiateJavaObjectByRootField() {
+        val actual = SUT.giveMeExperimentalBuilder<JavaConstructorTestSpecs.JavaTypeObject>()
+            .instantiateBy { javaField() }
+            .sample()
+            .string
+
+        then(actual).isNotEqualTo("string")
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun instantiateJavaObjectByRootFieldFilter() {
+        val actual = SUT.giveMeExperimentalBuilder<JavaConstructorTestSpecs.JavaTypeObject>()
+            .instantiateBy {
+                javaField {
+                    filter { !Modifier.isFinal(it.modifiers) }
+                }
+            }
+            .sample()
+            .string
+
+        then(actual).isEqualTo("third")
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun instantiateJavaObjectByRootJavaBeans() {
+        val actual = SUT.giveMeExperimentalBuilder<JavaConstructorTestSpecs.JavaTypeObject>()
+            .instantiateBy { javaBeansProperty() }
+            .sample()
+            .string
+
+        then(actual).isNotEqualTo("string")
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun instantiateJavaObjectByRootFieldJavaBeans() {
+        val actual = SUT.giveMeExperimentalBuilder<JavaConstructorTestSpecs.JavaTypeObject>()
+            .instantiateBy {
+                javaBeansProperty {
+                    filter { "string" != it.name }
+                }
+            }
+            .sample()
+            .string
+
+        then(actual).isEqualTo("third")
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun instantiatePropertyByKotlinProperty() {
+        class PropertyObject {
+            var string: String = "test"
+        }
+
+        class ConstructorObject(val propertyObject: PropertyObject)
+
+        val actual = SUT.giveMeExperimentalBuilder<ConstructorObject>()
+            .instantiateBy { property<PropertyObject>() }
+            .sample()
+            .propertyObject
+            .string
+
+        then(actual).isNotEqualTo("test")
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun instantiatePropertyByKotlinPropertyFilter() {
+        class PropertyObject {
+            var string: String = "test"
+        }
+
+        class ConstructorObject(val propertyObject: PropertyObject)
+
+        val actual = SUT.giveMeExperimentalBuilder<ConstructorObject>()
+            .instantiateBy {
+                property<PropertyObject> {
+                    filter {
+                        it.name != "string"
+                    }
+                }
+            }
+            .sample()
+            .propertyObject
+            .string
+
+        then(actual).isEqualTo("test")
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun instantiatePropertyByKotlinPropertyPrivateSetter() {
+        class PropertyObject {
+            var string: String = "test"
+                private set
+        }
+
+        class ConstructorObject(val propertyObject: PropertyObject)
+
+        val actual = SUT.giveMeExperimentalBuilder<ConstructorObject>()
+            .instantiateBy { property<PropertyObject>() }
+            .sample()
+            .propertyObject
+            .string
+
+        then(actual).isEqualTo("test")
     }
 
     @RepeatedTest(TEST_COUNT)

@@ -47,12 +47,22 @@ public interface Instantiator {
 	}
 
 	/**
-	 * Creates a DSL object for specifying a given type which creating an object by properties.
+	 * Creates a DSL object for specifying a given type which creating an object by field.
 	 *
 	 * @param <T> a type to instantiate.
-	 * @return an {@link PropertyInstantiator} DSL object.
+	 * @return an {@link JavaFieldPropertyInstantiator} DSL object.
 	 */
-	static <T> JavaPropertyInstantiator<T> property() {
-		return new JavaPropertyInstantiator<>();
+	static <T> JavaFieldPropertyInstantiator<T> field() {
+		return new JavaFieldPropertyInstantiator<>();
+	}
+
+	/**
+	 * Creates a DSL object for specifying a given type which creating an object by Java Beans Property.
+	 *
+	 * @param <T> a type to instantiate.
+	 * @return an {@link JavaBeansPropertyInstantiator} DSL object.
+	 */
+	static <T> JavaBeansPropertyInstantiator<T> javaBeansProperty() {
+		return new JavaBeansPropertyInstantiator<>();
 	}
 }

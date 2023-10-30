@@ -25,6 +25,7 @@ import com.navercorp.fixturemonkey.api.property.Property
 import com.navercorp.fixturemonkey.api.property.PropertyGenerator
 import org.apiguardian.api.API
 import org.apiguardian.api.API.Status
+import kotlin.reflect.KProperty
 
 /**
  * Generates Kotlin and Java properties.
@@ -34,6 +35,7 @@ import org.apiguardian.api.API.Status
 @API(since = "0.5.3", status = Status.MAINTAINED)
 class KotlinPropertyGenerator(
     private val javaDelegatePropertyGenerator: PropertyGenerator = DefaultPropertyGenerator(),
+    private val propertyFilter: (KProperty<*>) -> Boolean = { true },
 ) : PropertyGenerator {
     private val objectChildPropertiesCache = ConcurrentLruCache<Property, List<Property>>(2048)
 
@@ -42,7 +44,7 @@ class KotlinPropertyGenerator(
             val javaProperties = javaDelegatePropertyGenerator.generateChildProperties(property.annotatedType)
                 .filter { it.name != null }
                 .associateBy { it.name!! }
-            val kotlinProperties = getMemberProperties(property)
+            val kotlinProperties = getMemberProperties(property, propertyFilter)
                 .filter { it.name != null }
                 .associateBy { it.name!! }
 
