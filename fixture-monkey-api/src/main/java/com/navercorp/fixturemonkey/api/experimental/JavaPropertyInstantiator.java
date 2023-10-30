@@ -16,34 +16,11 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.tests.kotlin;
+package com.navercorp.fixturemonkey.api.experimental;
 
-public class JavaConstructorTestSpecs {
-	public static class JavaTypeObject {
-		private final String string;
-		private final int integer;
+import org.apiguardian.api.API;
+import org.apiguardian.api.API.Status;
 
-		public JavaTypeObject(String string, int integer) {
-			this.string = string;
-			this.integer = integer;
-		}
-
-		public JavaTypeObject(int integer) {
-			this.string = "second";
-			this.integer = integer;
-		}
-
-		public JavaTypeObject() {
-			this.string = "third";
-			this.integer = 3;
-		}
-
-		public String getString() {
-			return string;
-		}
-
-		public int getInteger() {
-			return integer;
-		}
-	}
+@API(since = "0.6.12", status = Status.EXPERIMENTAL)
+public final class JavaPropertyInstantiator<T> implements PropertyInstantiator<T> {
 }

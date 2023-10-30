@@ -28,8 +28,9 @@ import org.apiguardian.api.API.Status;
 public interface Instantiator {
 	/**
 	 * Creates a DSL object for specifying a given type of constructor.
-	 * @return an {@link ConstructorInstantiator} DSL object.
+	 *
 	 * @param <T> a type to instantiate.
+	 * @return an {@link ConstructorInstantiator} DSL object.
 	 */
 	static <T> JavaConstructorInstantiator<T> constructor() {
 		return new JavaConstructorInstantiator<>();
@@ -37,10 +38,21 @@ public interface Instantiator {
 
 	/**
 	 * Creates a DSL object for specifying a given type of factory method for instantiating objects of type T.
+	 *
 	 * @param <T> The type to instantiate.
 	 * @return A {@link FactoryMethodInstantiatorJava} DSL object for configuring factory method instantiation.
 	 */
 	static <T> FactoryMethodInstantiatorJava<T> factoryMethod() {
 		return new FactoryMethodInstantiatorJava<>();
+	}
+
+	/**
+	 * Creates a DSL object for specifying a given type which creating an object by properties.
+	 *
+	 * @param <T> a type to instantiate.
+	 * @return an {@link PropertyInstantiator} DSL object.
+	 */
+	static <T> JavaPropertyInstantiator<T> property() {
+		return new JavaPropertyInstantiator<>();
 	}
 }

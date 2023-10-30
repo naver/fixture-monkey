@@ -34,23 +34,40 @@ class InstantiatorDslSpec<T>(
     val instantiators = mutableMapOf<TypeReference<*>, Instantiator>()
 
     @JvmName("rootConstructor")
-    inline fun constructor(dsl: KotlinConstructorInstantiator<T>.() -> KotlinConstructorInstantiator<T>): KotlinConstructorInstantiator<T> =
+    fun constructor(dsl: KotlinConstructorInstantiator<T>.() -> KotlinConstructorInstantiator<T>): InstantiatorDslSpec<T> {
         dsl(KotlinConstructorInstantiator())
             .also {
                 instantiators[rootTypeReference] = it
             }
+        return this
+    }
 
-    inline fun <reified U> constructor(dsl: KotlinConstructorInstantiator<U>.() -> KotlinConstructorInstantiator<U>): KotlinConstructorInstantiator<U> =
+    inline fun <reified U> constructor(dsl: KotlinConstructorInstantiator<U>.() -> KotlinConstructorInstantiator<U>): InstantiatorDslSpec<T> {
         dsl(KotlinConstructorInstantiator())
             .also {
                 instantiators[object : TypeReference<U>() {}] = it
             }
+        return this
+    }
 
-    inline fun <reified U> factory(dsl: FactoryMethodInstantiatorKt<U>.() -> FactoryMethodInstantiatorKt<U>): FactoryMethodInstantiatorKt<U> =
+    inline fun <reified U> factory(dsl: FactoryMethodInstantiatorKt<U>.() -> FactoryMethodInstantiatorKt<U>): InstantiatorDslSpec<T> {
         dsl(FactoryMethodInstantiatorKt())
             .also {
                 instantiators[object : TypeReference<U>() {}] = it
             }
+        return this
+    }
+
+    @JvmName("rootProperty")
+    fun property(): InstantiatorDslSpec<T> {
+        instantiators[rootTypeReference] = KotlinPropertyInstantiator<T>()
+        return this
+    }
+
+    inline fun <reified U> property(): InstantiatorDslSpec<T> {
+        instantiators[object : TypeReference<U>() {}] = KotlinPropertyInstantiator<U>()
+        return this
+    }
 }
 
 inline fun <reified T> ExperimentalArbitraryBuilder<T>.instantiateBy(
