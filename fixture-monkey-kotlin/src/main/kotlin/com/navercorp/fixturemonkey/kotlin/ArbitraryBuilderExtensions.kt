@@ -30,22 +30,22 @@ fun <T> ArbitraryBuilder<T>.setInner(innerSpecConfigurer: ((InnerSpec) -> Unit))
     return this.setInner(InnerSpec().apply(innerSpecConfigurer))
 }
 
-inline fun <reified T> ArbitraryBuilder<T>.setPostCondition(expression: String, noinline predicate: (T) -> Boolean) =
-    this.setPostCondition(expression, T::class.java, predicate)
+inline fun <T, reified U> ArbitraryBuilder<T>.setPostCondition(expression: String, noinline predicate: (U) -> Boolean) =
+    this.setPostCondition(expression, U::class.java, predicate)
 
-inline fun <reified T> ArbitraryBuilder<T>.setPostCondition(
+inline fun <T, reified U> ArbitraryBuilder<T>.setPostCondition(
     expressionGenerator: ExpressionGenerator,
-    noinline predicate: (T) -> Boolean
-) = this.setPostCondition(expressionGenerator, T::class.java, predicate)
+    noinline predicate: (U) -> Boolean
+) = this.setPostCondition(expressionGenerator, U::class.java, predicate)
 
-inline fun <reified T> ArbitraryBuilder<T>.setPostCondition(
+inline fun <T, reified U> ArbitraryBuilder<T>.setPostCondition(
     expression: String,
-    noinline predicate: (T) -> Boolean,
+    noinline predicate: (U) -> Boolean,
     limit: Int
-) = this.setPostCondition(expression, T::class.java, predicate, limit)
+) = this.setPostCondition(expression, U::class.java, predicate, limit)
 
-inline fun <reified T> ArbitraryBuilder<T>.setPostCondition(
+inline fun <T, reified U> ArbitraryBuilder<T>.setPostCondition(
     expressionGenerator: ExpressionGenerator,
-    noinline predicate: (T) -> Boolean,
+    noinline predicate: (U) -> Boolean,
     limit: Int
-) = this.setPostCondition(expressionGenerator, T::class.java, predicate, limit)
+) = this.setPostCondition(expressionGenerator, U::class.java, predicate, limit)
