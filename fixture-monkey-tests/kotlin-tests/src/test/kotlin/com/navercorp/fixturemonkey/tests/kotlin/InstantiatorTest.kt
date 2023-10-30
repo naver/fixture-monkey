@@ -141,8 +141,59 @@ class InstantiatorTest {
         then(actual).isNotNull
     }
 
+    @RepeatedTest(TEST_COUNT)
+    fun instantiateByMixedTwoTypes() {
+        val actual = SUT.giveMeExperimentalBuilder<Baz>()
+            .instantiateBy {
+                constructor<Bar<String>> {
+                    parameter<String>()
+                }
+                factory<Foo> {
+                    parameter<Int>()
+                }
+            }
+            .sample()
+
+        then(actual).isNotNull
+        then(actual.foo.foo).isEqualTo("factory")
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun instantiateByCompanionObjectFactoryMethod() {
+        val actual = SUT.giveMeExperimentalBuilder<Foo>()
+            .instantiateBy {
+                factory<Foo> {
+                    parameter<Int>()
+                }
+
+            }
+            .sample()
+            .foo
+
+        then(actual).isEqualTo("factory")
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun setInstantiateByCompanionObjectFactoryMethod() {
+        val actual = SUT.giveMeExperimentalBuilder<Foo>()
+            .instantiateBy {
+                factory<Foo> {
+                    parameter<Int>()
+                }
+            }
+            .set("bar", 1)
+            .sample()
+            .bar
+
+        then(actual).isEqualTo(1)
+    }
+
     class Foo(val foo: String, val bar: Int) {
         constructor(foo: String) : this(foo, 1)
+
+        companion object {
+            fun build(bar: Int): Foo = Foo("factory", bar)
+        }
     }
 
     class Bar<T>(val bar: T)

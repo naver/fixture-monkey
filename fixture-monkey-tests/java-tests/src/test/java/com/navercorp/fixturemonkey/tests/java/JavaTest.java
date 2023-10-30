@@ -19,6 +19,7 @@
 package com.navercorp.fixturemonkey.tests.java;
 
 import static com.navercorp.fixturemonkey.api.experimental.Instantiator.constructor;
+import static com.navercorp.fixturemonkey.api.experimental.Instantiator.factoryMethod;
 import static com.navercorp.fixturemonkey.tests.TestEnvironment.TEST_COUNT;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.assertj.core.api.BDDAssertions.thenNoException;
@@ -1002,5 +1003,18 @@ class JavaTest {
 
 		then(actual).isNotNull();
 		then(actual.getValue()).isNotNull();
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void instantiateByFactoryMethod() {
+		String actual = SUT.giveMeExperimentalBuilder(ConstructorTestSpecs.JavaTypeObject.class)
+			.instantiate(
+				factoryMethod()
+					.parameter(String.class)
+			)
+			.sample()
+			.getString();
+
+		then(actual).isEqualTo("factory");
 	}
 }

@@ -19,6 +19,7 @@
 package com.navercorp.fixturemonkey.kotlin.experimental
 
 import com.navercorp.fixturemonkey.api.experimental.ConstructorInstantiator
+import com.navercorp.fixturemonkey.api.experimental.FactoryMethodInstantiator
 import com.navercorp.fixturemonkey.api.experimental.Instantiator
 import com.navercorp.fixturemonkey.api.experimental.InstantiatorProcessResult
 import com.navercorp.fixturemonkey.api.experimental.InstantiatorProcessor
@@ -27,11 +28,18 @@ import com.navercorp.fixturemonkey.api.experimental.InstantiatorUtils.resolvedPa
 import com.navercorp.fixturemonkey.api.introspector.ConstructorArbitraryIntrospector
 import com.navercorp.fixturemonkey.api.introspector.ConstructorArbitraryIntrospector.ConstructorWithParameterNames
 import com.navercorp.fixturemonkey.api.property.ConstructorProperty
+import com.navercorp.fixturemonkey.api.property.MethodParameterProperty
+import com.navercorp.fixturemonkey.api.property.Property
 import com.navercorp.fixturemonkey.api.type.TypeReference
+import com.navercorp.fixturemonkey.api.type.Types
 import com.navercorp.fixturemonkey.api.type.Types.getDeclaredConstructor
+import com.navercorp.fixturemonkey.kotlin.introspector.CompanionObjectFactoryMethodIntrospector
 import com.navercorp.fixturemonkey.kotlin.type.actualType
 import com.navercorp.fixturemonkey.kotlin.type.toTypeReference
+import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
+import kotlin.reflect.full.companionObject
+import kotlin.reflect.full.memberFunctions
 import kotlin.reflect.jvm.javaType
 import kotlin.reflect.jvm.kotlinFunction
 
@@ -39,6 +47,7 @@ class KotlinInstantiatorProcessor : InstantiatorProcessor {
     override fun process(typeReference: TypeReference<*>, instantiator: Instantiator): InstantiatorProcessResult {
         return when (instantiator) {
             is ConstructorInstantiator<*> -> processConstructor(typeReference, instantiator)
+            is FactoryMethodInstantiator<*> -> processFactoryMethod(typeReference, instantiator)
             else -> throw IllegalArgumentException("Given instantiator is not valid. instantiator: ${instantiator.javaClass}")
         }
     }
@@ -84,6 +93,61 @@ class KotlinInstantiatorProcessor : InstantiatorProcessor {
             constructorParameterProperties
         )
     }
+
+    private fun processFactoryMethod(
+        typeReference: TypeReference<*>,
+        instantiator: FactoryMethodInstantiator<*>
+    ): InstantiatorProcessResult {
+        val type = typeReference.type.actualType()
+        val inputParameterTypes = instantiator.inputParameterTypes.map { it.type.actualType() }
+            .toTypedArray()
+        val kotlinType = type.kotlin
+        val companionMethod = kotlinType.companionObject?.memberFunctions
+            ?.findDeclaredMemberFunction(inputParameterTypes)
+            ?: throw IllegalArgumentException("Given type $kotlinType has no static factory method.")
+
+        val companionMethodParameters = companionMethod.parameters.filter { it.kind != KParameter.Kind.INSTANCE }
+        val methodParameterTypeReferences = companionMethodParameters.map { it.type.toTypeReference() }
+        val methodParameterNames = companionMethodParameters.map { it.name }
+        val inputParameterTypesReferences = instantiator.inputParameterTypes
+        val inputParameterNames = instantiator.inputParameterNames
+
+        val resolvedParameterTypes =
+            resolveParameterTypes(methodParameterTypeReferences, inputParameterTypesReferences)
+        val resolvedParameterNames = resolvedParameterNames(methodParameterNames, inputParameterNames)
+
+        val properties = companionMethod.toParameterProperty(
+            resolvedParameterTypes = resolvedParameterTypes,
+            resolvedParameterNames = resolvedParameterNames
+        )
+        return InstantiatorProcessResult(
+            CompanionObjectFactoryMethodIntrospector(companionMethod),
+            properties
+        )
+    }
+
+    private fun KFunction<*>.toParameterProperty(
+        resolvedParameterTypes: List<TypeReference<*>>,
+        resolvedParameterNames: List<String>
+    ): List<Property> = this.parameters
+        .filter { parameter -> parameter.kind != KParameter.Kind.INSTANCE }
+        .mapIndexed { index, kParameter ->
+            MethodParameterProperty(
+                resolvedParameterTypes[index].annotatedType,
+                resolvedParameterNames[index],
+                kParameter.type.isMarkedNullable,
+            )
+        }
+
+    private fun Collection<KFunction<*>>.findDeclaredMemberFunction(inputParameterTypes: Array<Class<*>>): KFunction<*>? =
+        this.find { function ->
+            function.parameters
+                .filter { parameter -> parameter.kind != KParameter.Kind.INSTANCE }
+                .map { parameter -> parameter.type.javaType.actualType() }
+                .let {
+                    Types.isAssignableTypes(it.toTypedArray(), inputParameterTypes)
+                }
+        }
 }
 
 /**
@@ -123,5 +187,20 @@ class KotlinConstructorInstantiator<T> : ConstructorInstantiator<T> {
      *
      * @return A list of string representing the input parameter names of the constructor.
      */
+    override fun getInputParameterNames(): List<String?> = _parameterNames
+}
+
+class FactoryMethodInstantiatorKt<T> : FactoryMethodInstantiator<T> {
+    val _types: MutableList<TypeReference<*>> = ArrayList()
+    val _parameterNames: MutableList<String?> = ArrayList()
+
+    inline fun <reified U> parameter(parameterName: String? = null): FactoryMethodInstantiatorKt<T> =
+        this.apply {
+            _types.add(object : TypeReference<U>() {})
+            _parameterNames.add(parameterName)
+        }
+
+    override fun getInputParameterTypes(): List<TypeReference<*>> = _types
+
     override fun getInputParameterNames(): List<String?> = _parameterNames
 }
