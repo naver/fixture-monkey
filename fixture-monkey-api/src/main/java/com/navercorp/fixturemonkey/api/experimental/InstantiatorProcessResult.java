@@ -16,15 +16,31 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.api.property;
+package com.navercorp.fixturemonkey.api.experimental;
 
 import java.util.List;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
+import com.navercorp.fixturemonkey.api.property.Property;
+
 @API(since = "0.6.12", status = Status.EXPERIMENTAL)
-@FunctionalInterface
-public interface ConstructorPropertyGenerator {
-	List<Property> generateParameterProperties(ConstructorPropertyGeneratorContext context);
+public final class InstantiatorProcessResult {
+	private final ArbitraryIntrospector introspector;
+	private final List<Property> properties;
+
+	public InstantiatorProcessResult(ArbitraryIntrospector introspector, List<Property> properties) {
+		this.introspector = introspector;
+		this.properties = properties;
+	}
+
+	public ArbitraryIntrospector getIntrospector() {
+		return introspector;
+	}
+
+	public List<Property> getProperties() {
+		return properties;
+	}
 }

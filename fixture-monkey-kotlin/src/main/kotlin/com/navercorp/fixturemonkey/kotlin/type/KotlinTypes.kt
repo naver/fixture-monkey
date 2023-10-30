@@ -19,6 +19,7 @@
 package com.navercorp.fixturemonkey.kotlin.type
 
 import com.navercorp.fixturemonkey.api.type.AnnotatedTypes
+import com.navercorp.fixturemonkey.api.type.TypeReference
 import com.navercorp.fixturemonkey.api.type.Types
 import org.apiguardian.api.API
 import java.lang.reflect.AnnotatedParameterizedType
@@ -132,5 +133,27 @@ fun KFunction<*>.getPropertyName(): String {
             .replaceFirstChar { it.lowercaseChar() }
     } else {
         this.name
+    }
+}
+
+fun Type.actualType(): Class<*> = Types.getActualType(this)
+
+fun <T> Class<T>.toTypeReference(): TypeReference<T> = object : TypeReference<T>() {
+    override fun getType(): Type {
+        return this@toTypeReference
+    }
+
+    override fun getAnnotatedType(): AnnotatedType {
+        return Types.generateAnnotatedTypeWithoutAnnotation(this@toTypeReference)
+    }
+}
+
+fun Type.toTypeReference(): TypeReference<*> = object : TypeReference<Any?>() {
+    override fun getType(): Type {
+        return this@toTypeReference
+    }
+
+    override fun getAnnotatedType(): AnnotatedType {
+        return Types.generateAnnotatedTypeWithoutAnnotation(this@toTypeReference)
     }
 }

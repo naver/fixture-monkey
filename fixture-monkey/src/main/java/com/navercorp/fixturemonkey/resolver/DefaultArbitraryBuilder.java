@@ -51,6 +51,9 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.context.MonkeyContext;
+import com.navercorp.fixturemonkey.api.experimental.Instantiator;
+import com.navercorp.fixturemonkey.api.experimental.InstantiatorProcessResult;
+import com.navercorp.fixturemonkey.api.experimental.InstantiatorProcessor;
 import com.navercorp.fixturemonkey.api.expression.ExpressionGenerator;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
@@ -67,8 +70,6 @@ import com.navercorp.fixturemonkey.customizer.InnerSpec;
 import com.navercorp.fixturemonkey.customizer.ManipulatorSet;
 import com.navercorp.fixturemonkey.customizer.MonkeyManipulatorFactory;
 import com.navercorp.fixturemonkey.experimental.ExperimentalArbitraryBuilder;
-import com.navercorp.fixturemonkey.experimental.Instantiator;
-import com.navercorp.fixturemonkey.experimental.InstantiatorProcessor;
 import com.navercorp.fixturemonkey.tree.ArbitraryTraverser;
 
 @SuppressFBWarnings("NM_SAME_SIMPLE_NAME_AS_SUPERCLASS")
@@ -92,7 +93,8 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 		MonkeyManipulatorFactory monkeyManipulatorFactory,
 		ArbitraryBuilderContext context,
 		List<MatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuilders,
-		MonkeyContext monkeyContext
+		MonkeyContext monkeyContext,
+		InstantiatorProcessor instantiatorProcessor
 	) {
 		this.fixtureMonkeyOptions = fixtureMonkeyOptions;
 		this.rootProperty = rootProperty;
@@ -102,7 +104,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 		this.monkeyManipulatorFactory = monkeyManipulatorFactory;
 		this.registeredArbitraryBuilders = registeredArbitraryBuilders;
 		this.monkeyContext = monkeyContext;
-		this.instantiatorProcessor = new InstantiatorProcessor(fixtureMonkeyOptions, context);
+		this.instantiatorProcessor = instantiatorProcessor;
 	}
 
 	@Override
@@ -543,7 +545,11 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 		TypeReference<?> typeReference,
 		Instantiator instantiator
 	) {
-		instantiatorProcessor.process(typeReference, instantiator);
+		InstantiatorProcessResult result = instantiatorProcessor.process(typeReference, instantiator);
+
+		Class<?> type = Types.getActualType(typeReference.getType());
+		context.putArbitraryIntrospector(type, result.getIntrospector());
+		context.putPropertyConfigurer(type, result.getProperties());
 		return this;
 	}
 
@@ -581,7 +587,8 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 			monkeyManipulatorFactory,
 			context.copy(),
 			registeredArbitraryBuilders,
-			monkeyContext
+			monkeyContext,
+			instantiatorProcessor
 		);
 	}
 
@@ -630,7 +637,8 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 			monkeyManipulatorFactory,
 			context,
 			registeredArbitraryBuilders,
-			monkeyContext
+			monkeyContext,
+			instantiatorProcessor
 		);
 	}
 

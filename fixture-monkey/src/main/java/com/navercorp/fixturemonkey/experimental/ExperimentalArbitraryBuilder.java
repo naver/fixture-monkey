@@ -22,6 +22,7 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
+import com.navercorp.fixturemonkey.api.experimental.Instantiator;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 
 @API(since = "0.6.12", status = Status.EXPERIMENTAL)

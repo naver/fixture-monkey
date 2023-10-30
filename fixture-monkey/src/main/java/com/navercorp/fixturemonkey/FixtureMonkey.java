@@ -121,7 +121,8 @@ public class FixtureMonkey {
 			monkeyManipulatorFactory,
 			new ArbitraryBuilderContext(),
 			registeredArbitraryBuilders,
-			monkeyContext
+			monkeyContext,
+			fixtureMonkeyOptions.getInstantiatorProcessor()
 		);
 	}
 
@@ -153,7 +154,8 @@ public class FixtureMonkey {
 			monkeyManipulatorFactory,
 			context,
 			registeredArbitraryBuilders,
-			monkeyContext
+			monkeyContext,
+			fixtureMonkeyOptions.getInstantiatorProcessor()
 		);
 	}
 

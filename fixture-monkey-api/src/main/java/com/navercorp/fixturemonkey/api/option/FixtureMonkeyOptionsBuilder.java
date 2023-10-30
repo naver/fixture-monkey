@@ -47,6 +47,8 @@ import com.navercorp.fixturemonkey.api.constraint.JavaConstraintGenerator;
 import com.navercorp.fixturemonkey.api.container.DecomposableJavaContainer;
 import com.navercorp.fixturemonkey.api.container.DecomposedContainerValueFactory;
 import com.navercorp.fixturemonkey.api.container.DefaultDecomposedContainerValueFactory;
+import com.navercorp.fixturemonkey.api.experimental.InstantiatorProcessor;
+import com.navercorp.fixturemonkey.api.experimental.JavaInstantiatorProcessor;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfoGenerator;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGenerator;
@@ -71,8 +73,6 @@ import com.navercorp.fixturemonkey.api.jqwik.JqwikJavaTypeArbitraryGeneratorSet;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.plugin.Plugin;
-import com.navercorp.fixturemonkey.api.property.ConstructorParameterPropertyGenerator;
-import com.navercorp.fixturemonkey.api.property.ConstructorPropertyGenerator;
 import com.navercorp.fixturemonkey.api.property.DefaultPropertyGenerator;
 import com.navercorp.fixturemonkey.api.property.PropertyGenerator;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
@@ -131,9 +131,7 @@ public final class FixtureMonkeyOptionsBuilder {
 	private Function<JavaConstraintGenerator, JavaTypeArbitraryGeneratorSet> generateJavaTypeArbitrarySet = null;
 	@Nullable
 	private Function<JavaConstraintGenerator, JavaTimeArbitraryGeneratorSet> generateJavaTimeArbitrarySet = null;
-	private ConstructorPropertyGenerator constructorPropertyGenerator = new ConstructorParameterPropertyGenerator(
-		it -> true, it -> true
-	);
+	private InstantiatorProcessor instantiatorProcessor = new JavaInstantiatorProcessor();
 
 	FixtureMonkeyOptionsBuilder() {
 	}
@@ -572,10 +570,10 @@ public final class FixtureMonkeyOptionsBuilder {
 		return this;
 	}
 
-	public FixtureMonkeyOptionsBuilder constructorPropertyGenerator(
-		ConstructorPropertyGenerator constructorPropertyGenerator
+	public FixtureMonkeyOptionsBuilder instantiatorProcessor(
+		InstantiatorProcessor instantiatorProcessor
 	) {
-		this.constructorPropertyGenerator = constructorPropertyGenerator;
+		this.instantiatorProcessor = instantiatorProcessor;
 		return this;
 	}
 
@@ -699,7 +697,7 @@ public final class FixtureMonkeyOptionsBuilder {
 			this.generateMaxTries,
 			this.generateUniqueMaxTries,
 			this.javaConstraintGenerator,
-			this.constructorPropertyGenerator
+			this.instantiatorProcessor
 		);
 	}
 
