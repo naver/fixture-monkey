@@ -20,12 +20,14 @@ package com.navercorp.fixturemonkey.tests.java;
 
 import static com.navercorp.fixturemonkey.api.experimental.Instantiator.constructor;
 import static com.navercorp.fixturemonkey.api.experimental.Instantiator.factoryMethod;
-import static com.navercorp.fixturemonkey.api.experimental.Instantiator.property;
+import static com.navercorp.fixturemonkey.api.experimental.Instantiator.field;
+import static com.navercorp.fixturemonkey.api.experimental.Instantiator.javaBeansProperty;
 import static com.navercorp.fixturemonkey.tests.TestEnvironment.TEST_COUNT;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.assertj.core.api.BDDAssertions.thenNoException;
 import static org.assertj.core.api.BDDAssertions.thenThrownBy;
 
+import java.lang.reflect.Modifier;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -1020,12 +1022,50 @@ class JavaTest {
 	}
 
 	@RepeatedTest(TEST_COUNT)
-	void instantiateProperty() {
+	void instantiateField() {
 		MutableJavaTestSpecs.JavaTypeObject actual =
 			SUT.giveMeExperimentalBuilder(MutableJavaTestSpecs.JavaTypeObject.class)
-				.instantiate(property())
+				.instantiate(field())
 				.sample();
 
 		then(actual).isNotNull();
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void instantiateJavaBeansProperty() {
+		MutableJavaTestSpecs.JavaTypeObject actual =
+			SUT.giveMeExperimentalBuilder(MutableJavaTestSpecs.JavaTypeObject.class)
+				.instantiate(javaBeansProperty())
+				.sample();
+
+		then(actual).isNotNull();
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void instantiateFieldFilter() {
+		String actual =
+			SUT.giveMeExperimentalBuilder(MutableJavaTestSpecs.JavaTypeObject.class)
+				.instantiate(
+					field()
+						.filter(field -> !Modifier.isPrivate(field.getModifiers()))
+				)
+				.sample()
+				.getString();
+
+		then(actual).isNull();
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void instantiateJavaBeansPropertyFilter() {
+		String actual =
+			SUT.giveMeExperimentalBuilder(MutableJavaTestSpecs.JavaTypeObject.class)
+				.instantiate(
+					javaBeansProperty()
+						.filter(property -> !"string".equals(property.getName()))
+				)
+				.sample()
+				.getString();
+
+		then(actual).isNull();
 	}
 }

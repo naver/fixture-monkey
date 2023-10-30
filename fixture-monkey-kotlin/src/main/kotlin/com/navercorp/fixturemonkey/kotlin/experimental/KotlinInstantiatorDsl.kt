@@ -21,6 +21,8 @@
 package com.navercorp.fixturemonkey.kotlin.experimental
 
 import com.navercorp.fixturemonkey.api.experimental.Instantiator
+import com.navercorp.fixturemonkey.api.experimental.JavaBeansPropertyInstantiator
+import com.navercorp.fixturemonkey.api.experimental.JavaFieldPropertyInstantiator
 import com.navercorp.fixturemonkey.api.type.TypeReference
 import com.navercorp.fixturemonkey.experimental.ExperimentalArbitraryBuilder
 
@@ -60,12 +62,102 @@ class InstantiatorDslSpec<T>(
 
     @JvmName("rootProperty")
     fun property(): InstantiatorDslSpec<T> {
-        instantiators[rootTypeReference] = KotlinPropertyInstantiator<T>()
+        KotlinPropertyInstantiator<T>()
+            .also {
+                instantiators[rootTypeReference] = it
+            }
         return this
     }
 
     inline fun <reified U> property(): InstantiatorDslSpec<T> {
-        instantiators[object : TypeReference<U>() {}] = KotlinPropertyInstantiator<U>()
+        KotlinPropertyInstantiator<U>()
+            .also {
+                instantiators[object : TypeReference<U>() {}] = it
+            }
+        return this
+    }
+
+    @JvmName("rootProperty")
+    fun property(dsl: KotlinPropertyInstantiator<T>.() -> KotlinPropertyInstantiator<T>): InstantiatorDslSpec<T> {
+        dsl(KotlinPropertyInstantiator())
+            .also {
+                instantiators[rootTypeReference] = it
+            }
+        return this
+    }
+
+    inline fun <reified U> property(dsl: KotlinPropertyInstantiator<U>.() -> KotlinPropertyInstantiator<U>): InstantiatorDslSpec<T> {
+        dsl(KotlinPropertyInstantiator())
+            .also {
+                instantiators[object : TypeReference<U>() {}] = it
+            }
+        return this
+    }
+
+    @JvmName("rootField")
+    fun javaField(): InstantiatorDslSpec<T> {
+        JavaFieldPropertyInstantiator<T>().also {
+            instantiators[rootTypeReference] = it
+        }
+        return this
+    }
+
+    inline fun <reified U> javaField(): InstantiatorDslSpec<T> {
+        JavaFieldPropertyInstantiator<U>()
+            .also {
+                instantiators[object : TypeReference<U>() {}] = it
+            }
+        return this
+    }
+
+    @JvmName("rootField")
+    fun javaField(dsl: JavaFieldPropertyInstantiator<T>.() -> JavaFieldPropertyInstantiator<T>): InstantiatorDslSpec<T> {
+        dsl(JavaFieldPropertyInstantiator())
+            .also {
+                instantiators[rootTypeReference] = it
+            }
+        return this
+    }
+
+    inline fun <reified U> javaField(dsl: JavaFieldPropertyInstantiator<U>.() -> JavaFieldPropertyInstantiator<U>): InstantiatorDslSpec<T> {
+        dsl(JavaFieldPropertyInstantiator())
+            .also {
+                instantiators[object : TypeReference<U>() {}] = it
+            }
+        return this
+    }
+
+    @JvmName("rootJavaBeansProperty")
+    fun javaBeansProperty(): InstantiatorDslSpec<T> {
+        JavaBeansPropertyInstantiator<T>()
+            .also {
+                instantiators[rootTypeReference] = it
+            }
+        return this
+    }
+
+    inline fun <reified U> javaBeansProperty(): InstantiatorDslSpec<T> {
+        JavaBeansPropertyInstantiator<U>()
+            .also {
+                instantiators[object : TypeReference<U>() {}] = it
+            }
+        return this
+    }
+
+    @JvmName("rootJavaBeansProperty")
+    fun javaBeansProperty(dsl: JavaBeansPropertyInstantiator<T>.() -> JavaBeansPropertyInstantiator<T>): InstantiatorDslSpec<T> {
+        dsl(JavaBeansPropertyInstantiator())
+            .also {
+                instantiators[rootTypeReference] = it
+            }
+        return this
+    }
+
+    inline fun <reified U> javaBeansProperty(dsl: JavaBeansPropertyInstantiator<U>.() -> JavaBeansPropertyInstantiator<U>): InstantiatorDslSpec<T> {
+        dsl(JavaBeansPropertyInstantiator())
+            .also {
+                instantiators[object : TypeReference<U>() {}] = it
+            }
         return this
     }
 }

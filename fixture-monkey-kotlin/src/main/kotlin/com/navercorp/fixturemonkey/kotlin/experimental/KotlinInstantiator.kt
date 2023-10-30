@@ -25,13 +25,16 @@ import com.navercorp.fixturemonkey.api.experimental.InstantiatorProcessResult
 import com.navercorp.fixturemonkey.api.experimental.InstantiatorProcessor
 import com.navercorp.fixturemonkey.api.experimental.InstantiatorUtils.resolveParameterTypes
 import com.navercorp.fixturemonkey.api.experimental.InstantiatorUtils.resolvedParameterNames
+import com.navercorp.fixturemonkey.api.experimental.JavaBeansPropertyInstantiator
+import com.navercorp.fixturemonkey.api.experimental.JavaFieldPropertyInstantiator
 import com.navercorp.fixturemonkey.api.experimental.PropertyInstantiator
 import com.navercorp.fixturemonkey.api.introspector.BeanArbitraryIntrospector
 import com.navercorp.fixturemonkey.api.introspector.ConstructorArbitraryIntrospector
 import com.navercorp.fixturemonkey.api.introspector.ConstructorArbitraryIntrospector.ConstructorWithParameterNames
-import com.navercorp.fixturemonkey.api.introspector.FailoverIntrospector
 import com.navercorp.fixturemonkey.api.introspector.FieldReflectionArbitraryIntrospector
 import com.navercorp.fixturemonkey.api.property.ConstructorProperty
+import com.navercorp.fixturemonkey.api.property.FieldPropertyGenerator
+import com.navercorp.fixturemonkey.api.property.JavaBeansPropertyGenerator
 import com.navercorp.fixturemonkey.api.property.MethodParameterProperty
 import com.navercorp.fixturemonkey.api.property.Property
 import com.navercorp.fixturemonkey.api.property.PropertyUtils
@@ -39,11 +42,13 @@ import com.navercorp.fixturemonkey.api.type.TypeReference
 import com.navercorp.fixturemonkey.api.type.Types
 import com.navercorp.fixturemonkey.api.type.Types.getDeclaredConstructor
 import com.navercorp.fixturemonkey.kotlin.introspector.CompanionObjectFactoryMethodIntrospector
+import com.navercorp.fixturemonkey.kotlin.introspector.KotlinPropertyArbitraryIntrospector
 import com.navercorp.fixturemonkey.kotlin.property.KotlinPropertyGenerator
 import com.navercorp.fixturemonkey.kotlin.type.actualType
 import com.navercorp.fixturemonkey.kotlin.type.toTypeReference
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
+import kotlin.reflect.KProperty
 import kotlin.reflect.full.companionObject
 import kotlin.reflect.full.memberFunctions
 import kotlin.reflect.jvm.javaType
@@ -55,6 +60,8 @@ class KotlinInstantiatorProcessor : InstantiatorProcessor {
             is ConstructorInstantiator<*> -> processConstructor(typeReference, instantiator)
             is FactoryMethodInstantiator<*> -> processFactoryMethod(typeReference, instantiator)
             is KotlinPropertyInstantiator<*> -> processProperty(typeReference, instantiator)
+            is JavaFieldPropertyInstantiator<*> -> processJavaField(typeReference, instantiator)
+            is JavaBeansPropertyInstantiator<*> -> processJavaBeansProperty(typeReference, instantiator)
             else -> throw IllegalArgumentException("Given instantiator is not valid. instantiator: ${instantiator.javaClass}")
         }
     }
@@ -106,15 +113,14 @@ class KotlinInstantiatorProcessor : InstantiatorProcessor {
         instantiator: KotlinPropertyInstantiator<*>,
     ): InstantiatorProcessResult {
         val property = PropertyUtils.toProperty(typeReference)
-        val properties = KOTLIN_PROPERTY_GENERATOR.generateChildProperties(property)
+        val propertyFilter = instantiator.propertyFilter
+        val properties = KotlinPropertyGenerator(
+            javaDelegatePropertyGenerator = { listOf() },
+            propertyFilter = propertyFilter,
+        ).generateChildProperties(property)
 
         return InstantiatorProcessResult(
-            FailoverIntrospector(
-                listOf(
-                    BeanArbitraryIntrospector.INSTANCE,
-                    FieldReflectionArbitraryIntrospector.INSTANCE,
-                ),
-            ),
+            KotlinPropertyArbitraryIntrospector.INSTANCE,
             properties,
         )
     }
@@ -151,6 +157,36 @@ class KotlinInstantiatorProcessor : InstantiatorProcessor {
         )
     }
 
+    private fun processJavaField(
+        typeReference: TypeReference<*>,
+        instantiator: JavaFieldPropertyInstantiator<*>,
+    ): InstantiatorProcessResult {
+        val property = PropertyUtils.toProperty(typeReference)
+        val filterPredicate = instantiator.fieldPredicate
+        val properties = FieldPropertyGenerator(filterPredicate) { true }
+            .generateChildProperties(property)
+
+        return InstantiatorProcessResult(
+            FieldReflectionArbitraryIntrospector.INSTANCE,
+            properties,
+        )
+    }
+
+    private fun processJavaBeansProperty(
+        typeReference: TypeReference<*>,
+        instantiator: JavaBeansPropertyInstantiator<*>,
+    ): InstantiatorProcessResult {
+        val property = PropertyUtils.toProperty(typeReference)
+        val propertyDescriptorPredicate = instantiator.propertyDescriptorPredicate
+        val properties = JavaBeansPropertyGenerator(propertyDescriptorPredicate) { true }
+            .generateChildProperties(property)
+
+        return InstantiatorProcessResult(
+            BeanArbitraryIntrospector.INSTANCE,
+            properties,
+        )
+    }
+
     private fun KFunction<*>.toParameterProperty(
         resolvedParameterTypes: List<TypeReference<*>>,
         resolvedParameterNames: List<String>,
@@ -173,10 +209,6 @@ class KotlinInstantiatorProcessor : InstantiatorProcessor {
                     Types.isAssignableTypes(it.toTypedArray(), inputParameterTypes)
                 }
         }
-
-    companion object {
-        val KOTLIN_PROPERTY_GENERATOR = KotlinPropertyGenerator()
-    }
 }
 
 /**
@@ -234,4 +266,11 @@ class FactoryMethodInstantiatorKt<T> : FactoryMethodInstantiator<T> {
     override fun getInputParameterNames(): List<String?> = _parameterNames
 }
 
-class KotlinPropertyInstantiator<T> : PropertyInstantiator<T>
+class KotlinPropertyInstantiator<T>(
+    internal var propertyFilter: (property: KProperty<*>) -> Boolean = { true },
+) : PropertyInstantiator<T> {
+    fun filter(propertyFilter: (KProperty<*>) -> Boolean): KotlinPropertyInstantiator<T> {
+        this.propertyFilter = propertyFilter
+        return this
+    }
+}
