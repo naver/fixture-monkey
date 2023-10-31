@@ -191,7 +191,11 @@ class InstantiatorTest {
     @RepeatedTest(TEST_COUNT)
     fun instantiateJavaObjectByRootProperty() {
         val actual = SUT.giveMeExperimentalBuilder<JavaConstructorTestSpecs.JavaTypeObject>()
-            .instantiateBy { property() }
+            .instantiateBy {
+                constructor {
+                    property()
+                }
+            }
             .sample()
             .string
 
@@ -202,8 +206,10 @@ class InstantiatorTest {
     fun instantiateJavaObjectByRootPropertyFilter() {
         val actual = SUT.giveMeExperimentalBuilder<JavaConstructorTestSpecs.JavaTypeObject>()
             .instantiateBy {
-                property {
-                    filter { !it.isFinal }
+                constructor {
+                    property {
+                        filter { !it.isFinal }
+                    }
                 }
             }
             .sample()
@@ -215,7 +221,11 @@ class InstantiatorTest {
     @RepeatedTest(TEST_COUNT)
     fun instantiateJavaObjectByRootField() {
         val actual = SUT.giveMeExperimentalBuilder<JavaConstructorTestSpecs.JavaTypeObject>()
-            .instantiateBy { javaField() }
+            .instantiateBy {
+                constructor {
+                    javaField()
+                }
+            }
             .sample()
             .string
 
@@ -226,8 +236,10 @@ class InstantiatorTest {
     fun instantiateJavaObjectByRootFieldFilter() {
         val actual = SUT.giveMeExperimentalBuilder<JavaConstructorTestSpecs.JavaTypeObject>()
             .instantiateBy {
-                javaField {
-                    filter { !Modifier.isFinal(it.modifiers) }
+                constructor {
+                    javaField {
+                        filter { !Modifier.isFinal(it.modifiers) }
+                    }
                 }
             }
             .sample()
@@ -239,7 +251,11 @@ class InstantiatorTest {
     @RepeatedTest(TEST_COUNT)
     fun instantiateJavaObjectByRootJavaBeans() {
         val actual = SUT.giveMeExperimentalBuilder<JavaConstructorTestSpecs.JavaTypeObject>()
-            .instantiateBy { javaBeansProperty() }
+            .instantiateBy {
+                constructor {
+                    javaBeansProperty()
+                }
+            }
             .sample()
             .string
 
@@ -250,8 +266,10 @@ class InstantiatorTest {
     fun instantiateJavaObjectByRootFieldJavaBeans() {
         val actual = SUT.giveMeExperimentalBuilder<JavaConstructorTestSpecs.JavaTypeObject>()
             .instantiateBy {
-                javaBeansProperty {
-                    filter { "string" != it.name }
+                constructor {
+                    javaBeansProperty {
+                        filter { "string" != it.name }
+                    }
                 }
             }
             .sample()
@@ -269,7 +287,7 @@ class InstantiatorTest {
         class ConstructorObject(val propertyObject: PropertyObject)
 
         val actual = SUT.giveMeExperimentalBuilder<ConstructorObject>()
-            .instantiateBy { property<PropertyObject>() }
+            .instantiateBy { constructor<PropertyObject> { property() } }
             .sample()
             .propertyObject
             .string
@@ -287,9 +305,11 @@ class InstantiatorTest {
 
         val actual = SUT.giveMeExperimentalBuilder<ConstructorObject>()
             .instantiateBy {
-                property<PropertyObject> {
-                    filter {
-                        it.name != "string"
+                constructor<PropertyObject> {
+                    property {
+                        filter {
+                            it.name != "string"
+                        }
                     }
                 }
             }
@@ -310,7 +330,7 @@ class InstantiatorTest {
         class ConstructorObject(val propertyObject: PropertyObject)
 
         val actual = SUT.giveMeExperimentalBuilder<ConstructorObject>()
-            .instantiateBy { property<PropertyObject>() }
+            .instantiateBy { constructor<PropertyObject> { property() } }
             .sample()
             .propertyObject
             .string
@@ -351,6 +371,26 @@ class InstantiatorTest {
             .string
 
         then(actual).isEqualTo("noArgs")
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun instantiateCompositeJavaObjectByProperty() {
+        class ConstructorAndProperty(val value: String) {
+            var propertyNotInConstructor: String? = null
+        }
+
+        val actual = SUT.giveMeExperimentalBuilder<ConstructorAndProperty>()
+            .instantiateBy {
+                constructor {
+                    parameter<String>()
+                    property()
+                }
+            }
+            .setNotNull("propertyNotInConstructor")
+            .sample()
+
+        then(actual.value).isNotNull()
+        then(actual.propertyNotInConstructor).isNotNull
     }
 
     class Foo(val foo: String, val bar: Int) {

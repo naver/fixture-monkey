@@ -29,6 +29,7 @@ import com.navercorp.fixturemonkey.api.experimental.JavaBeansPropertyInstantiato
 import com.navercorp.fixturemonkey.api.experimental.JavaFieldPropertyInstantiator
 import com.navercorp.fixturemonkey.api.experimental.PropertyInstantiator
 import com.navercorp.fixturemonkey.api.introspector.BeanArbitraryIntrospector
+import com.navercorp.fixturemonkey.api.introspector.CompositeArbitraryIntrospector
 import com.navercorp.fixturemonkey.api.introspector.ConstructorArbitraryIntrospector
 import com.navercorp.fixturemonkey.api.introspector.ConstructorArbitraryIntrospector.ConstructorWithParameterNames
 import com.navercorp.fixturemonkey.api.introspector.FieldReflectionArbitraryIntrospector
@@ -97,13 +98,29 @@ class KotlinInstantiatorProcessor : InstantiatorProcessor {
             )
         }
 
-        return InstantiatorProcessResult(
-            ConstructorArbitraryIntrospector(
-                ConstructorWithParameterNames(
-                    declaredConstructor,
-                    resolveParameterName,
-                ),
+        val constructorArbitraryIntrospector = ConstructorArbitraryIntrospector(
+            ConstructorWithParameterNames(
+                declaredConstructor,
+                resolveParameterName,
             ),
+        )
+
+        val propertyInstantiator = instantiator.propertyInstantiator
+        if (propertyInstantiator != null) {
+            val propertyInstantiatorProcessResult = this.process(typeReference, propertyInstantiator)
+            return InstantiatorProcessResult(
+                CompositeArbitraryIntrospector(
+                    listOf(
+                        constructorArbitraryIntrospector,
+                        propertyInstantiatorProcessResult.introspector
+                    )
+                ),
+                constructorParameterProperties + propertyInstantiatorProcessResult.properties
+            )
+        }
+
+        return InstantiatorProcessResult(
+            constructorArbitraryIntrospector,
             constructorParameterProperties,
         )
     }
@@ -221,6 +238,7 @@ class KotlinInstantiatorProcessor : InstantiatorProcessor {
 class KotlinConstructorInstantiator<T> : ConstructorInstantiator<T> {
     val _types: MutableList<TypeReference<*>> = ArrayList()
     val _parameterNames: MutableList<String?> = ArrayList()
+    private var _propertyInstantiator: PropertyInstantiator<T>? = null
 
     /**
      * Specifies a constructor parameter with its type inferred using reified type parameters and, optionally,
@@ -236,6 +254,33 @@ class KotlinConstructorInstantiator<T> : ConstructorInstantiator<T> {
             _parameterNames.add(parameterName)
         }
 
+    fun property(): KotlinConstructorInstantiator<T> = this.apply {
+        _propertyInstantiator = KotlinPropertyInstantiator()
+    }
+
+    fun property(dsl: KotlinPropertyInstantiator<T>.() -> KotlinPropertyInstantiator<T>): KotlinConstructorInstantiator<T> =
+        this.apply {
+            _propertyInstantiator = dsl(KotlinPropertyInstantiator())
+        }
+
+    fun javaField(): KotlinConstructorInstantiator<T> = this.apply {
+        _propertyInstantiator = JavaFieldPropertyInstantiator<T>()
+    }
+
+    fun javaField(dsl: JavaFieldPropertyInstantiator<T>.() -> JavaFieldPropertyInstantiator<T>): KotlinConstructorInstantiator<T> =
+        this.apply {
+            _propertyInstantiator = dsl(JavaFieldPropertyInstantiator())
+        }
+
+    fun javaBeansProperty(): KotlinConstructorInstantiator<T> = this.apply {
+        _propertyInstantiator = JavaBeansPropertyInstantiator<T>()
+    }
+
+    fun javaBeansProperty(dsl: JavaBeansPropertyInstantiator<T>.() -> JavaBeansPropertyInstantiator<T>): KotlinConstructorInstantiator<T> =
+        this.apply {
+            _propertyInstantiator = dsl(JavaBeansPropertyInstantiator())
+        }
+
     /**
      * Get the list of types representing the input parameter types of the constructor.
      *
@@ -249,21 +294,50 @@ class KotlinConstructorInstantiator<T> : ConstructorInstantiator<T> {
      * @return A list of string representing the input parameter names of the constructor.
      */
     override fun getInputParameterNames(): List<String?> = _parameterNames
+    override fun getPropertyInstantiator(): PropertyInstantiator<T>? = _propertyInstantiator
 }
 
-class FactoryMethodInstantiatorKt<T> : FactoryMethodInstantiator<T> {
+class KotlinFactoryMethodInstantiator<T> : FactoryMethodInstantiator<T> {
     val _types: MutableList<TypeReference<*>> = ArrayList()
     val _parameterNames: MutableList<String?> = ArrayList()
+    private var _propertyInstantiator: PropertyInstantiator<T>? = null
 
-    inline fun <reified U> parameter(parameterName: String? = null): FactoryMethodInstantiatorKt<T> =
+    inline fun <reified U> parameter(parameterName: String? = null): KotlinFactoryMethodInstantiator<T> =
         this.apply {
             _types.add(object : TypeReference<U>() {})
             _parameterNames.add(parameterName)
         }
 
-    override fun getInputParameterTypes(): List<TypeReference<*>> = _types
+    fun property(): KotlinFactoryMethodInstantiator<T> = this.apply {
+        _propertyInstantiator = KotlinPropertyInstantiator()
+    }
 
+    fun property(dsl: KotlinPropertyInstantiator<T>.() -> KotlinPropertyInstantiator<T>): KotlinFactoryMethodInstantiator<T> =
+        this.apply {
+            _propertyInstantiator = dsl(KotlinPropertyInstantiator())
+        }
+
+    fun javaField(): KotlinFactoryMethodInstantiator<T> = this.apply {
+        _propertyInstantiator = JavaFieldPropertyInstantiator<T>()
+    }
+
+    fun javaField(dsl: JavaFieldPropertyInstantiator<T>.() -> JavaFieldPropertyInstantiator<T>): KotlinFactoryMethodInstantiator<T> =
+        this.apply {
+            _propertyInstantiator = dsl(JavaFieldPropertyInstantiator())
+        }
+
+    fun javaBeansProperty(): KotlinFactoryMethodInstantiator<T> = this.apply {
+        _propertyInstantiator = JavaBeansPropertyInstantiator<T>()
+    }
+
+    fun javaBeansProperty(dsl: JavaBeansPropertyInstantiator<T>.() -> JavaBeansPropertyInstantiator<T>): KotlinFactoryMethodInstantiator<T> =
+        this.apply {
+            _propertyInstantiator = dsl(JavaBeansPropertyInstantiator())
+        }
+
+    override fun getInputParameterTypes(): List<TypeReference<*>> = _types
     override fun getInputParameterNames(): List<String?> = _parameterNames
+    override fun getPropertyInstantiator(): PropertyInstantiator<T>? = _propertyInstantiator
 }
 
 class KotlinPropertyInstantiator<T>(
