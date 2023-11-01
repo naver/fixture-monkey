@@ -20,8 +20,6 @@ package com.navercorp.fixturemonkey.tests.java;
 
 import static com.navercorp.fixturemonkey.api.experimental.Instantiator.constructor;
 import static com.navercorp.fixturemonkey.api.experimental.Instantiator.factoryMethod;
-import static com.navercorp.fixturemonkey.api.experimental.Instantiator.field;
-import static com.navercorp.fixturemonkey.api.experimental.Instantiator.javaBeansProperty;
 import static com.navercorp.fixturemonkey.tests.TestEnvironment.TEST_COUNT;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.assertj.core.api.BDDAssertions.thenNoException;
@@ -1022,50 +1020,64 @@ class JavaTest {
 	}
 
 	@RepeatedTest(TEST_COUNT)
-	void instantiateField() {
-		MutableJavaTestSpecs.JavaTypeObject actual =
-			SUT.giveMeExperimentalBuilder(MutableJavaTestSpecs.JavaTypeObject.class)
-				.instantiate(field())
-				.sample();
+	void instantiateFactoryMethodAndField() {
+		Integer actual = SUT.giveMeExperimentalBuilder(ConstructorTestSpecs.JavaTypeObject.class)
+			.instantiate(
+				factoryMethod()
+					.parameter(String.class)
+					.field()
+			)
+			.sample()
+			.getWrapperInteger();
 
 		then(actual).isNotNull();
 	}
 
 	@RepeatedTest(TEST_COUNT)
-	void instantiateJavaBeansProperty() {
-		MutableJavaTestSpecs.JavaTypeObject actual =
-			SUT.giveMeExperimentalBuilder(MutableJavaTestSpecs.JavaTypeObject.class)
-				.instantiate(javaBeansProperty())
-				.sample();
+	void instantiateConstructorField() {
+		String actual = SUT.giveMeExperimentalBuilder(MutableJavaTestSpecs.JavaTypeObject.class)
+			.instantiate(constructor().field())
+			.sample()
+			.getString();
 
 		then(actual).isNotNull();
 	}
 
 	@RepeatedTest(TEST_COUNT)
-	void instantiateFieldFilter() {
-		String actual =
-			SUT.giveMeExperimentalBuilder(MutableJavaTestSpecs.JavaTypeObject.class)
-				.instantiate(
-					field()
-						.filter(field -> !Modifier.isPrivate(field.getModifiers()))
-				)
-				.sample()
-				.getString();
+	void instantiateConstructorJavaBeansProperty() {
+		String actual = SUT.giveMeExperimentalBuilder(MutableJavaTestSpecs.JavaTypeObject.class)
+			.instantiate(constructor().javaBeansProperty())
+			.sample()
+			.getString();
 
-		then(actual).isNull();
+		then(actual).isNotNull();
 	}
 
 	@RepeatedTest(TEST_COUNT)
-	void instantiateJavaBeansPropertyFilter() {
-		String actual =
+	void instantiateConstructorFieldFilter() {
+		MutableJavaTestSpecs.JavaTypeObject actual =
 			SUT.giveMeExperimentalBuilder(MutableJavaTestSpecs.JavaTypeObject.class)
 				.instantiate(
-					javaBeansProperty()
-						.filter(property -> !"string".equals(property.getName()))
+					constructor()
+						.field(it -> it.filter(field -> !Modifier.isPrivate(field.getModifiers())))
 				)
-				.sample()
-				.getString();
+				.sample();
 
-		then(actual).isNull();
+		then(actual.getString()).isNull();
+		then(actual.getWrapperBoolean()).isNull();
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void instantiateConstructorJavaBeansPropertyFilter() {
+		MutableJavaTestSpecs.JavaTypeObject actual =
+			SUT.giveMeExperimentalBuilder(MutableJavaTestSpecs.JavaTypeObject.class)
+				.instantiate(
+					constructor()
+						.javaBeansProperty(it -> it.filter(property -> !"string".equals(property.getName())))
+				)
+				.sample();
+
+		then(actual.getString()).isNull();
+		then(actual.getWrapperBoolean()).isNotNull();
 	}
 }

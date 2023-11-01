@@ -38,6 +38,8 @@ import java.util.function.Predicate;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
+import com.navercorp.fixturemonkey.api.introspector.CompositeArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.ConstructorArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.ConstructorArbitraryIntrospector.ConstructorWithParameterNames;
 import com.navercorp.fixturemonkey.api.introspector.FactoryMethodArbitraryIntrospector;
@@ -102,10 +104,22 @@ public final class JavaInstantiatorProcessor implements InstantiatorProcessor {
 			.map(Property::getName)
 			.collect(toList());
 
+		ConstructorArbitraryIntrospector constructorArbitraryIntrospector = new ConstructorArbitraryIntrospector(
+			new ConstructorWithParameterNames<>(declaredConstructor, parameterNames)
+		);
+
+		PropertyInstantiator<?> propertyInstantiator = instantiator.getPropertyInstantiator();
+		if (propertyInstantiator != null) {
+			return processPropertyInstantiator(
+				typeReference,
+				propertyInstantiator,
+				constructorArbitraryIntrospector,
+				constructorParameterProperties
+			);
+		}
+
 		return new InstantiatorProcessResult(
-			new ConstructorArbitraryIntrospector(
-				new ConstructorWithParameterNames<>(declaredConstructor, parameterNames)
-			),
+			constructorArbitraryIntrospector,
 			constructorParameterProperties
 		);
 	}
@@ -144,11 +158,46 @@ public final class JavaInstantiatorProcessor implements InstantiatorProcessor {
 			.map(Property::getName)
 			.collect(toList());
 
+		FactoryMethodArbitraryIntrospector factoryMethodArbitraryIntrospector = new FactoryMethodArbitraryIntrospector(
+			new FactoryMethodWithParameterNames(factoryMethod, parameterNames)
+		);
+
+		PropertyInstantiator<?> propertyInstantiator = instantiator.getPropertyInstantiator();
+		if (propertyInstantiator != null) {
+			return processPropertyInstantiator(
+				typeReference,
+				propertyInstantiator,
+				factoryMethodArbitraryIntrospector,
+				properties
+			);
+		}
+
 		return new InstantiatorProcessResult(
-			new FactoryMethodArbitraryIntrospector(
-				new FactoryMethodWithParameterNames(factoryMethod, parameterNames)
-			),
+			factoryMethodArbitraryIntrospector,
 			properties
+		);
+	}
+
+	private InstantiatorProcessResult processPropertyInstantiator(
+		TypeReference<?> typeReference,
+		PropertyInstantiator<?> propertyInstantiator,
+		ArbitraryIntrospector formerArbitraryIntrospector,
+		List<Property> formerProperties
+	) {
+		InstantiatorProcessResult propertyInstantiatorProcessResult =
+			this.process(typeReference, propertyInstantiator);
+
+		List<Property> resolvedProperties = new ArrayList<>(formerProperties);
+		resolvedProperties.addAll(propertyInstantiatorProcessResult.getProperties());
+
+		return new InstantiatorProcessResult(
+			new CompositeArbitraryIntrospector(
+				Arrays.asList(
+					formerArbitraryIntrospector,
+					propertyInstantiatorProcessResult.getIntrospector()
+				)
+			),
+			resolvedProperties
 		);
 	}
 

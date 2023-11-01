@@ -20,6 +20,9 @@ package com.navercorp.fixturemonkey.api.experimental;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
+
+import javax.annotation.Nullable;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -30,6 +33,8 @@ import com.navercorp.fixturemonkey.api.type.TypeReference;
 public final class FactoryMethodInstantiatorJava<T> implements FactoryMethodInstantiator<T> {
 	private final List<TypeReference<?>> types;
 	private final List<String> parameterNames;
+	@Nullable
+	private PropertyInstantiator<T> propertyInstantiator = null;
 
 	public FactoryMethodInstantiatorJava() {
 		this.types = new ArrayList<>();
@@ -64,11 +69,40 @@ public final class FactoryMethodInstantiatorJava<T> implements FactoryMethodInst
 		return this;
 	}
 
+	public FactoryMethodInstantiator<T> field() {
+		this.propertyInstantiator = new JavaFieldPropertyInstantiator<>();
+		return this;
+	}
+
+
+	public FactoryMethodInstantiator<T> field(Consumer<JavaFieldPropertyInstantiator<T>> consumer) {
+		this.propertyInstantiator = new JavaFieldPropertyInstantiator<>();
+		consumer.accept((JavaFieldPropertyInstantiator<T>)this.propertyInstantiator);
+		return this;
+	}
+
+	public FactoryMethodInstantiator<T> javaBeansProperty() {
+		this.propertyInstantiator = new JavaBeansPropertyInstantiator<>();
+		return this;
+	}
+
+	public FactoryMethodInstantiator<T> javaBeansProperty(Consumer<JavaBeansPropertyInstantiator<T>> consumer) {
+		this.propertyInstantiator = new JavaBeansPropertyInstantiator<>();
+		consumer.accept((JavaBeansPropertyInstantiator<T>)this.propertyInstantiator);
+		return this;
+	}
+
 	public List<TypeReference<?>> getInputParameterTypes() {
 		return types;
 	}
 
 	public List<String> getInputParameterNames() {
 		return parameterNames;
+	}
+
+	@Nullable
+	@Override
+	public PropertyInstantiator<T> getPropertyInstantiator() {
+		return propertyInstantiator;
 	}
 }

@@ -20,6 +20,8 @@ package com.navercorp.fixturemonkey.api.experimental;
 
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
@@ -50,4 +52,7 @@ public interface FactoryMethodInstantiator<T> extends Instantiator {
 	 * @return A list of strings representing the input parameter names of the factory method.
 	 */
 	List<String> getInputParameterNames();
+
+	@Nullable
+	PropertyInstantiator<T> getPropertyInstantiator();
 }

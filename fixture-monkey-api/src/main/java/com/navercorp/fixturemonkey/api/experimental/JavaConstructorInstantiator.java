@@ -20,6 +20,9 @@ package com.navercorp.fixturemonkey.api.experimental;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
+
+import javax.annotation.Nullable;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -30,6 +33,8 @@ import com.navercorp.fixturemonkey.api.type.TypeReference;
 public final class JavaConstructorInstantiator<T> implements ConstructorInstantiator<T> {
 	private final List<TypeReference<?>> inputTypes;
 	private final List<String> inputParameterNames;
+	@Nullable
+	private PropertyInstantiator<T> propertyInstantiator = null;
 
 	public JavaConstructorInstantiator() {
 		this.inputTypes = new ArrayList<>();
@@ -64,11 +69,39 @@ public final class JavaConstructorInstantiator<T> implements ConstructorInstanti
 		return this;
 	}
 
+	public JavaConstructorInstantiator<T> field() {
+		this.propertyInstantiator = new JavaFieldPropertyInstantiator<>();
+		return this;
+	}
+
+	public JavaConstructorInstantiator<T> field(Consumer<JavaFieldPropertyInstantiator<T>> consumer) {
+		this.propertyInstantiator = new JavaFieldPropertyInstantiator<>();
+		consumer.accept((JavaFieldPropertyInstantiator<T>)this.propertyInstantiator);
+		return this;
+	}
+
+	public JavaConstructorInstantiator<T> javaBeansProperty() {
+		this.propertyInstantiator = new JavaBeansPropertyInstantiator<>();
+		return this;
+	}
+
+	public JavaConstructorInstantiator<T> javaBeansProperty(Consumer<JavaBeansPropertyInstantiator<T>> consumer) {
+		this.propertyInstantiator = new JavaBeansPropertyInstantiator<>();
+		consumer.accept((JavaBeansPropertyInstantiator<T>)this.propertyInstantiator);
+		return this;
+	}
+
 	public List<TypeReference<?>> getInputParameterTypes() {
 		return inputTypes;
 	}
 
 	public List<String> getInputParameterNames() {
 		return inputParameterNames;
+	}
+
+	@Nullable
+	@Override
+	public PropertyInstantiator<T> getPropertyInstantiator() {
+		return propertyInstantiator;
 	}
 }
