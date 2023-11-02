@@ -33,7 +33,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  */
 @API(since = "0.4.0", status = Status.MAINTAINED)
 @SuppressFBWarnings("DMI_RANDOM_USED_ONLY_ONCE")
-public final class Randoms {
+public abstract class Randoms {
 	private static final boolean USE_JQWIK_ENGINE;
 	private static final ThreadLocal<Random> CURRENT = new ThreadLocal<>();
 	private static final ThreadLocal<Long> SEED = new ThreadLocal<>();

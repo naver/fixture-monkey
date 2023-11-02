@@ -1,6 +1,6 @@
 package com.navercorp.fixturemonkey.util;
 
-public final class StringUtils {
+public abstract class StringUtils {
 	private StringUtils() {
 	}
 
