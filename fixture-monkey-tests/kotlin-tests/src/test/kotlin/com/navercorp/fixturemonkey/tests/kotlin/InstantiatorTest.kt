@@ -393,6 +393,20 @@ class InstantiatorTest {
         then(actual.propertyNotInConstructor).isNotNull
     }
 
+    @RepeatedTest(TEST_COUNT)
+    fun instantiatePrivateConstructor() {
+        class PrivateConstructorObject private constructor(val value: String)
+
+        val actual = SUT.giveMeExperimentalBuilder<PrivateConstructorObject>()
+            .instantiateBy {
+                constructor()
+            }
+            .sample()
+            .value
+
+        then(actual).isNotNull()
+    }
+
     class Foo(val foo: String, val bar: Int) {
         constructor(foo: String) : this(foo, 1)
 
