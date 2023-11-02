@@ -49,9 +49,6 @@ public abstract class Randoms {
 		USE_JQWIK_ENGINE = useJqwikEngine;
 	}
 
-	private Randoms() {
-	}
-
 	public static Random create(String seed) {
 		if (USE_JQWIK_ENGINE) {
 			SEED.set(Long.parseLong(seed));
