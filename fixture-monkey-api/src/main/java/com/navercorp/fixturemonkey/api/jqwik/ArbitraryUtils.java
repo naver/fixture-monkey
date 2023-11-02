@@ -27,7 +27,7 @@ import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 
 @API(since = "0.6.9", status = Status.EXPERIMENTAL)
-public final class ArbitraryUtils {
+public abstract class ArbitraryUtils {
 	public static <T> CombinableArbitrary<T> toCombinableArbitrary(Arbitrary<T> arbitrary) {
 		return CombinableArbitrary.from(LazyArbitrary.lazy(
 			() -> {

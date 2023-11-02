@@ -29,7 +29,7 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 @API(since = "0.6.10", status = Status.EXPERIMENTAL)
-public final class AnnotatedTypes {
+public abstract class AnnotatedTypes {
 	public static AnnotatedArrayType from(
 		AnnotatedType annotatedGenericComponentType,
 		Type type,

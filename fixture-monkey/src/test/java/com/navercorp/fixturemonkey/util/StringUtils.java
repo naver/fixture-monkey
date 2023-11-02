@@ -1,9 +1,6 @@
 package com.navercorp.fixturemonkey.util;
 
-public final class StringUtils {
-	private StringUtils() {
-	}
-
+public abstract class StringUtils {
 	public static boolean isBlank(String str) {
 		return str == null || str.trim().isEmpty();
 	}

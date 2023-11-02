@@ -34,7 +34,7 @@ import java.util.function.Predicate;
 
 import javax.annotation.Nullable;
 
-public final class Reflections {
+public abstract class Reflections {
 
 	public static <T> T newInstance(Class<T> clazz) {
 		try {
