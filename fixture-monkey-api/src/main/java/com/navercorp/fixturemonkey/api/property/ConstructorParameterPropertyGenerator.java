@@ -122,11 +122,29 @@ public final class ConstructorParameterPropertyGenerator implements PropertyGene
 			resolveParameterTypes(typeReferencesByConstructor, context.getInputParameterTypes());
 
 		Map<String, Field> fieldsByName = TypeCache.getFieldsByName(type);
-		int parameterSize = resolvedParameterNames.size();
+		boolean anyReceiverParameter = Arrays.stream(constructor.getAnnotatedParameterTypes())
+			.anyMatch(it -> constructor.getAnnotatedReceiverType() != null
+				&& it.getType().equals(constructor.getAnnotatedReceiverType().getType()));
+		int parameterSize = typeReferencesByConstructor.size();
 
 		Map<String, Property> constructorPropertiesByName = new LinkedHashMap<>();
-		for (int i = 0; i < parameterSize; i++) {
-			String parameterName = resolvedParameterNames.get(i);
+		if (anyReceiverParameter) {
+			Parameter receiverParameter = constructor.getParameters()[0];
+			constructorPropertiesByName.put(
+				receiverParameter.getName(),
+				new ConstructorProperty(
+					receiverParameter.getAnnotatedType(),
+					constructor,
+					receiverParameter.getName(),
+					null,
+					null
+				)
+			);
+		}
+		int parameterStartIndex = anyReceiverParameter ? 1 : 0;
+		for (int i = parameterStartIndex; i < parameterSize; i++) {
+			int parameterNameIndex = anyReceiverParameter ? i - 1 : i;
+			String parameterName = resolvedParameterNames.get(parameterNameIndex);
 			Field field = fieldsByName.get(parameterName);
 			Property fieldProperty = field != null
 				? new FieldProperty(
