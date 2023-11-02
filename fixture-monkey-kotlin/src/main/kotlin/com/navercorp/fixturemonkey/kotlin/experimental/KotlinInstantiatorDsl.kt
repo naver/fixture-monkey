@@ -61,8 +61,19 @@ class InstantiatorDslSpec<T>(
         return this
     }
 
-    inline fun <reified U> factory(dsl: KotlinFactoryMethodInstantiator<U>.() -> KotlinFactoryMethodInstantiator<U>): InstantiatorDslSpec<T> {
-        dsl(KotlinFactoryMethodInstantiator())
+    inline fun <reified U> factory(factoryMethodName: String): InstantiatorDslSpec<T> {
+        KotlinFactoryMethodInstantiator<U>(factoryMethodName)
+            .also {
+                instantiators[object : TypeReference<U>() {}] = it
+            }
+        return this
+    }
+
+    inline fun <reified U> factory(
+        factoryMethodName: String,
+        dsl: KotlinFactoryMethodInstantiator<U>.() -> KotlinFactoryMethodInstantiator<U>
+    ): InstantiatorDslSpec<T> {
+        dsl(KotlinFactoryMethodInstantiator(factoryMethodName))
             .also {
                 instantiators[object : TypeReference<U>() {}] = it
             }

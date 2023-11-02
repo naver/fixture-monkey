@@ -149,7 +149,7 @@ class InstantiatorTest {
                 constructor<Bar<String>> {
                     parameter<String>()
                 }
-                factory<Foo> {
+                factory<Foo>("build") {
                     parameter<Int>()
                 }
             }
@@ -163,7 +163,19 @@ class InstantiatorTest {
     fun instantiateByCompanionObjectFactoryMethod() {
         val actual = SUT.giveMeExperimentalBuilder<Foo>()
             .instantiateBy {
-                factory<Foo> {
+                factory<Foo>("build")
+            }
+            .sample()
+            .foo
+
+        then(actual).isEqualTo("factory")
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun instantiateByCompanionObjectFactoryMethodWithParameter() {
+        val actual = SUT.giveMeExperimentalBuilder<Foo>()
+            .instantiateBy {
+                factory<Foo>("build") {
                     parameter<Int>()
                 }
             }
@@ -174,10 +186,10 @@ class InstantiatorTest {
     }
 
     @RepeatedTest(TEST_COUNT)
-    fun setInstantiateByCompanionObjectFactoryMethod() {
+    fun setInstantiateByCompanionObjectFactoryMethodWithParameter() {
         val actual = SUT.giveMeExperimentalBuilder<Foo>()
             .instantiateBy {
-                factory<Foo> {
+                factory<Foo>("build") {
                     parameter<Int>()
                 }
             }

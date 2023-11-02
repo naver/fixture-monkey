@@ -1010,7 +1010,19 @@ class JavaTest {
 	void instantiateByFactoryMethod() {
 		String actual = SUT.giveMeExperimentalBuilder(ConstructorTestSpecs.JavaTypeObject.class)
 			.instantiate(
-				factoryMethod()
+				factoryMethod("from")
+			)
+			.sample()
+			.getString();
+
+		then(actual).isEqualTo("factory");
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void instantiateByFactoryMethodWithParameter() {
+		String actual = SUT.giveMeExperimentalBuilder(ConstructorTestSpecs.JavaTypeObject.class)
+			.instantiate(
+				factoryMethod("from")
 					.parameter(String.class)
 			)
 			.sample()
@@ -1023,7 +1035,7 @@ class JavaTest {
 	void instantiateFactoryMethodAndField() {
 		Integer actual = SUT.giveMeExperimentalBuilder(ConstructorTestSpecs.JavaTypeObject.class)
 			.instantiate(
-				factoryMethod()
+				factoryMethod("from")
 					.parameter(String.class)
 					.field()
 			)

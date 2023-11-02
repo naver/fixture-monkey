@@ -129,6 +129,7 @@ public final class JavaInstantiatorProcessor implements InstantiatorProcessor {
 		FactoryMethodInstantiator<?> instantiator
 	) {
 		Class<?> type = Types.getActualType(typeReference.getType());
+		String factoryMethodName = instantiator.getFactoryMethodName();
 		List<TypeReference<?>> inputTypeReferences = instantiator.getInputParameterTypes();
 		List<String> inputParameterNames = instantiator.getInputParameterNames();
 
@@ -137,15 +138,20 @@ public final class JavaInstantiatorProcessor implements InstantiatorProcessor {
 			.toArray(Class[]::new);
 
 		Method factoryMethod = Arrays.stream(type.getDeclaredMethods())
+			.filter(it -> it.getName().equals(factoryMethodName))
 			.filter(it -> Modifier.isStatic(it.getModifiers()))
-			.filter(it -> isAssignableTypes(inputParameterTypes, it.getParameterTypes()))
+			.filter(
+				it -> inputParameterTypes.length == 0 || isAssignableTypes(inputParameterTypes, it.getParameterTypes())
+			)
 			.findAny()
 			.orElse(null);
 
 		if (factoryMethod == null) {
 			throw new IllegalArgumentException(
-				"Given type method is not exists. type: " + type + " inputParameterTypes: "
-					+ Arrays.toString(inputParameterTypes)
+				"Given type method is not exists."
+					+ " name: " + factoryMethodName
+					+ " type: " + type
+					+ " inputParameterTypes: " + Arrays.toString(inputParameterTypes)
 			);
 		}
 
