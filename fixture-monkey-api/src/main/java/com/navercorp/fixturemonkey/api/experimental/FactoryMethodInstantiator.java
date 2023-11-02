@@ -39,6 +39,8 @@ import com.navercorp.fixturemonkey.api.type.TypeReference;
 
 @API(since = "0.6.12", status = Status.EXPERIMENTAL)
 public interface FactoryMethodInstantiator<T> extends Instantiator {
+	String getFactoryMethodName();
+
 	/**
 	 * Gets a list of types representing the input parameter types of the factory method.
 	 *

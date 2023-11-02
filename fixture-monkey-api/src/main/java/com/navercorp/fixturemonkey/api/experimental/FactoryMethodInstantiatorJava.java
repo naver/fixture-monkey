@@ -31,12 +31,14 @@ import com.navercorp.fixturemonkey.api.type.TypeReference;
 
 @API(since = "0.6.12", status = Status.EXPERIMENTAL)
 public final class FactoryMethodInstantiatorJava<T> implements FactoryMethodInstantiator<T> {
+	private final String factoryMethodName;
 	private final List<TypeReference<?>> types;
 	private final List<String> parameterNames;
 	@Nullable
 	private PropertyInstantiator<T> propertyInstantiator = null;
 
-	public FactoryMethodInstantiatorJava() {
+	public FactoryMethodInstantiatorJava(String factoryMethodName) {
+		this.factoryMethodName = factoryMethodName;
 		this.types = new ArrayList<>();
 		this.parameterNames = new ArrayList<>();
 	}
@@ -90,6 +92,11 @@ public final class FactoryMethodInstantiatorJava<T> implements FactoryMethodInst
 		this.propertyInstantiator = new JavaBeansPropertyInstantiator<>();
 		consumer.accept((JavaBeansPropertyInstantiator<T>)this.propertyInstantiator);
 		return this;
+	}
+
+	@Override
+	public String getFactoryMethodName() {
+		return factoryMethodName;
 	}
 
 	public List<TypeReference<?>> getInputParameterTypes() {

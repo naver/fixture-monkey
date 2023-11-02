@@ -39,10 +39,11 @@ public interface Instantiator {
 	/**
 	 * Creates a DSL object for specifying a given type of factory method for instantiating objects of type T.
 	 *
+	 * @param factoryMethodName the name of factory method
 	 * @param <T> The type to instantiate.
 	 * @return A {@link FactoryMethodInstantiatorJava} DSL object for configuring factory method instantiation.
 	 */
-	static <T> FactoryMethodInstantiatorJava<T> factoryMethod() {
-		return new FactoryMethodInstantiatorJava<>();
+	static <T> FactoryMethodInstantiatorJava<T> factoryMethod(String factoryMethodName) {
+		return new FactoryMethodInstantiatorJava<>(factoryMethodName);
 	}
 }

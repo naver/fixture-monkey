@@ -147,11 +147,12 @@ class KotlinInstantiatorProcessor : InstantiatorProcessor {
         instantiator: FactoryMethodInstantiator<*>,
     ): InstantiatorProcessResult {
         val type = typeReference.type.actualType()
+        val factoryMethodName = instantiator.factoryMethodName
         val inputParameterTypes = instantiator.inputParameterTypes.map { it.type.actualType() }
             .toTypedArray()
         val kotlinType = type.kotlin
         val companionMethod = kotlinType.companionObject?.memberFunctions
-            ?.findDeclaredMemberFunction(inputParameterTypes)
+            ?.findDeclaredMemberFunction(factoryMethodName, inputParameterTypes)
             ?: throw IllegalArgumentException("Given type $kotlinType has no static factory method.")
 
         val companionMethodParameters = companionMethod.parameters.filter { it.kind != KParameter.Kind.INSTANCE }
@@ -217,15 +218,21 @@ class KotlinInstantiatorProcessor : InstantiatorProcessor {
             )
         }
 
-    private fun Collection<KFunction<*>>.findDeclaredMemberFunction(inputParameterTypes: Array<Class<*>>): KFunction<*>? =
+    private fun Collection<KFunction<*>>.findDeclaredMemberFunction(
+        factoryMethodName: String,
+        inputParameterTypes: Array<Class<*>>
+    ): KFunction<*>? =
         this.find { function ->
-            function.parameters
-                .filter { parameter -> parameter.kind != KParameter.Kind.INSTANCE }
-                .map { parameter -> parameter.type.javaType.actualType() }
-                .let {
-                    Types.isAssignableTypes(it.toTypedArray(), inputParameterTypes)
-                }
+            function.name == factoryMethodName && hasAnyParameterMatchingFunction(function, inputParameterTypes)
         }
+
+    private fun hasAnyParameterMatchingFunction(function: KFunction<*>, inputParameterTypes: Array<Class<*>>): Boolean =
+        function.parameters
+            .filter { parameter -> parameter.kind != KParameter.Kind.INSTANCE }
+            .map { parameter -> parameter.type.javaType.actualType() }
+            .let {
+                inputParameterTypes.isEmpty() || Types.isAssignableTypes(it.toTypedArray(), inputParameterTypes)
+            }
 }
 
 /**
@@ -297,7 +304,7 @@ class KotlinConstructorInstantiator<T> : ConstructorInstantiator<T> {
     override fun getPropertyInstantiator(): PropertyInstantiator<T>? = _propertyInstantiator
 }
 
-class KotlinFactoryMethodInstantiator<T> : FactoryMethodInstantiator<T> {
+class KotlinFactoryMethodInstantiator<T>(private val _factoryMethodName: String) : FactoryMethodInstantiator<T> {
     val _types: MutableList<TypeReference<*>> = ArrayList()
     val _parameterNames: MutableList<String?> = ArrayList()
     private var _propertyInstantiator: PropertyInstantiator<T>? = null
@@ -335,6 +342,7 @@ class KotlinFactoryMethodInstantiator<T> : FactoryMethodInstantiator<T> {
             _propertyInstantiator = dsl(JavaBeansPropertyInstantiator())
         }
 
+    override fun getFactoryMethodName(): String = _factoryMethodName
     override fun getInputParameterTypes(): List<TypeReference<*>> = _types
     override fun getInputParameterNames(): List<String?> = _parameterNames
     override fun getPropertyInstantiator(): PropertyInstantiator<T>? = _propertyInstantiator
