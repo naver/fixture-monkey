@@ -101,7 +101,7 @@ public final class ArbitraryTraverser {
 					property,
 					null,
 					containerInfo,
-					fixtureMonkeyOptions
+					fixtureMonkeyOptions.getArbitraryContainerInfoGenerator(property)
 				)
 			);
 		}
@@ -294,7 +294,7 @@ public final class ArbitraryTraverser {
 						childProperty,
 						container ? index : null,
 						containerInfo,
-						fixtureMonkeyOptions
+						fixtureMonkeyOptions.getArbitraryContainerInfoGenerator(childProperty)
 					)
 				);
 			}

@@ -53,7 +53,6 @@ import net.jqwik.time.api.arbitraries.ZonedDateTimeArbitrary;
 import com.navercorp.fixturemonkey.api.constraint.JavaConstraintGenerator;
 import com.navercorp.fixturemonkey.api.constraint.JavaDateTimeConstraint;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
-import com.navercorp.fixturemonkey.api.introspector.JavaTimeArbitraryResolver;
 
 /**
  * It would be moved into jqwik module in 0.7.0.

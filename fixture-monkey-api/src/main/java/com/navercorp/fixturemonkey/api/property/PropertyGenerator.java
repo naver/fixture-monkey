@@ -18,7 +18,6 @@
 
 package com.navercorp.fixturemonkey.api.property;
 
-import java.lang.reflect.AnnotatedType;
 import java.util.List;
 
 import org.apiguardian.api.API;
@@ -33,9 +32,4 @@ import org.apiguardian.api.API.Status;
 @FunctionalInterface
 public interface PropertyGenerator {
 	List<Property> generateChildProperties(Property property);
-
-	@Deprecated
-	default List<Property> generateChildProperties(AnnotatedType annotatedType) {
-		return generateChildProperties(new RootProperty(annotatedType));
-	}
 }

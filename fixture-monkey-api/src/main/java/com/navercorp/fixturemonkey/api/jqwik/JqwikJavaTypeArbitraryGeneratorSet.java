@@ -27,8 +27,6 @@ import org.apiguardian.api.API.Status;
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.arbitrary.JavaTypeArbitraryGeneratorSet;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
-import com.navercorp.fixturemonkey.api.introspector.JavaArbitraryResolver;
-import com.navercorp.fixturemonkey.api.introspector.JavaTypeArbitraryGenerator;
 
 /**
  * It would be moved into jqwik module in 0.7.0.

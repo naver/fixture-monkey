@@ -60,12 +60,12 @@ import com.navercorp.fixturemonkey.api.generator.MatchArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.generator.NullInjectGenerator;
 import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGenerator;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
-import com.navercorp.fixturemonkey.api.introspector.JavaArbitraryResolver;
-import com.navercorp.fixturemonkey.api.introspector.JavaTimeArbitraryResolver;
-import com.navercorp.fixturemonkey.api.introspector.JavaTimeTypeArbitraryGenerator;
-import com.navercorp.fixturemonkey.api.introspector.JavaTypeArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.introspector.MatchArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.TypedArbitraryIntrospector;
+import com.navercorp.fixturemonkey.api.jqwik.JavaArbitraryResolver;
+import com.navercorp.fixturemonkey.api.jqwik.JavaTimeArbitraryResolver;
+import com.navercorp.fixturemonkey.api.jqwik.JavaTimeTypeArbitraryGenerator;
+import com.navercorp.fixturemonkey.api.jqwik.JavaTypeArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.jqwik.JqwikJavaArbitraryResolver;
 import com.navercorp.fixturemonkey.api.jqwik.JqwikJavaTimeArbitraryGeneratorSet;
 import com.navercorp.fixturemonkey.api.jqwik.JqwikJavaTimeArbitraryResolver;
@@ -95,8 +95,6 @@ public final class FixtureMonkeyOptionsBuilder {
 	private NullInjectGenerator defaultNullInjectGenerator;
 	private List<MatcherOperator<ArbitraryContainerInfoGenerator>> arbitraryContainerInfoGenerators = new ArrayList<>();
 	private ArbitraryContainerInfoGenerator defaultArbitraryContainerInfoGenerator;
-	@Deprecated
-	private List<MatcherOperator<ArbitraryGenerator>> arbitraryGenerators = new ArrayList<>();
 	private ArbitraryGenerator defaultArbitraryGenerator;
 	private UnaryOperator<ArbitraryGenerator> defaultArbitraryGeneratorOperator = it -> it;
 	private final List<MatcherOperator<ArbitraryIntrospector>> arbitraryIntrospectors = new ArrayList<>();
@@ -363,43 +361,6 @@ public final class FixtureMonkeyOptionsBuilder {
 		return this;
 	}
 
-	@Deprecated
-	public FixtureMonkeyOptionsBuilder arbitraryGenerators(
-		List<MatcherOperator<ArbitraryGenerator>> arbitraryGenerators
-	) {
-		this.arbitraryGenerators = arbitraryGenerators;
-		return this;
-	}
-
-	@Deprecated
-	public FixtureMonkeyOptionsBuilder insertFirstArbitraryGenerator(
-		MatcherOperator<ArbitraryGenerator> arbitraryGenerator
-	) {
-		List<MatcherOperator<ArbitraryGenerator>> result =
-			insertFirst(this.arbitraryGenerators, arbitraryGenerator);
-		return this.arbitraryGenerators(result);
-	}
-
-	@Deprecated
-	public FixtureMonkeyOptionsBuilder insertFirstArbitraryGenerator(
-		Matcher matcher,
-		ArbitraryGenerator arbitraryGenerator
-	) {
-		return this.insertFirstArbitraryGenerator(
-			new MatcherOperator<>(matcher, arbitraryGenerator)
-		);
-	}
-
-	@Deprecated
-	public FixtureMonkeyOptionsBuilder insertFirstArbitraryGenerator(
-		Class<?> type,
-		ArbitraryGenerator arbitraryGenerator
-	) {
-		return this.insertFirstArbitraryGenerator(
-			MatcherOperator.assignableTypeMatchOperator(type, arbitraryGenerator)
-		);
-	}
-
 	public FixtureMonkeyOptionsBuilder insertFirstArbitraryIntrospector(
 		MatcherOperator<ArbitraryIntrospector> arbitraryIntrospector
 	) {
@@ -426,12 +387,6 @@ public final class FixtureMonkeyOptionsBuilder {
 		return this.insertFirstArbitraryIntrospector(
 			MatcherOperator.assignableTypeMatchOperator(type, arbitraryIntrospector)
 		);
-	}
-
-	@Deprecated
-	public FixtureMonkeyOptionsBuilder defaultArbitraryGenerator(ArbitraryGenerator defaultArbitraryGenerator) {
-		this.defaultArbitraryGenerator = defaultArbitraryGenerator;
-		return this;
 	}
 
 	public FixtureMonkeyOptionsBuilder defaultArbitraryGenerator(
@@ -466,38 +421,6 @@ public final class FixtureMonkeyOptionsBuilder {
 		UnaryOperator<ArbitraryIntrospector> fallbackIntrospector
 	) {
 		this.javaDefaultArbitraryGeneratorBuilder.fallbackIntrospector(fallbackIntrospector);
-		return this;
-	}
-
-	@Deprecated
-	public FixtureMonkeyOptionsBuilder javaTypeArbitraryGenerator(
-		JavaTypeArbitraryGenerator javaTypeArbitraryGenerator
-	) {
-		this.javaTypeArbitraryGenerator = javaTypeArbitraryGenerator;
-		return this;
-	}
-
-	@Deprecated
-	public FixtureMonkeyOptionsBuilder javaArbitraryResolver(
-		JavaArbitraryResolver javaArbitraryResolver
-	) {
-		this.javaArbitraryResolver = javaArbitraryResolver;
-		return this;
-	}
-
-	@Deprecated
-	public FixtureMonkeyOptionsBuilder javaTimeTypeArbitraryGenerator(
-		JavaTimeTypeArbitraryGenerator javaTimeTypeArbitraryGenerator
-	) {
-		this.javaTimeTypeArbitraryGenerator = javaTimeTypeArbitraryGenerator;
-		return this;
-	}
-
-	@Deprecated
-	public FixtureMonkeyOptionsBuilder javaTimeArbitraryResolver(
-		JavaTimeArbitraryResolver javaTimeArbitraryResolver
-	) {
-		this.javaTimeArbitraryResolver = javaTimeArbitraryResolver;
 		return this;
 	}
 
@@ -690,7 +613,6 @@ public final class FixtureMonkeyOptionsBuilder {
 			defaultNullInjectGenerator,
 			this.arbitraryContainerInfoGenerators,
 			defaultArbitraryContainerInfoGenerator,
-			this.arbitraryGenerators,
 			defaultArbitraryGenerator,
 			this.defaultArbitraryValidator,
 			decomposedContainerValueFactory,

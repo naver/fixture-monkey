@@ -53,8 +53,6 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
-import com.navercorp.fixturemonkey.test.ExpressionGeneratorTestSpecs.StringValue;
-
 class FixtureMonkeyTestSpecs {
 	@Data
 	@EqualsAndHashCode(exclude = {"strIterator", "strStream"})
@@ -120,6 +118,11 @@ class FixtureMonkeyTestSpecs {
 		private OptionalInt optionalInt;
 		private OptionalLong optionalLong;
 		private OptionalDouble optionalDouble;
+	}
+
+	@Data
+	public static class StringValue {
+		String value;
 	}
 
 	@Data

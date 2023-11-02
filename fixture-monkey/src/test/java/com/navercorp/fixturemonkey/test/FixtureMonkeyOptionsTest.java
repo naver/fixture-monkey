@@ -60,16 +60,16 @@ import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGenerator;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult;
 import com.navercorp.fixturemonkey.api.introspector.BuilderArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.ConstructorPropertiesArbitraryIntrospector;
-import com.navercorp.fixturemonkey.api.introspector.JavaArbitraryResolver;
-import com.navercorp.fixturemonkey.api.introspector.JavaTimeArbitraryResolver;
-import com.navercorp.fixturemonkey.api.introspector.JavaTimeTypeArbitraryGenerator;
-import com.navercorp.fixturemonkey.api.introspector.JavaTypeArbitraryGenerator;
+import com.navercorp.fixturemonkey.api.jqwik.JavaArbitraryResolver;
+import com.navercorp.fixturemonkey.api.jqwik.JavaTimeArbitraryResolver;
+import com.navercorp.fixturemonkey.api.jqwik.JavaTimeTypeArbitraryGenerator;
+import com.navercorp.fixturemonkey.api.jqwik.JavaTypeArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.jqwik.ArbitraryUtils;
+import com.navercorp.fixturemonkey.api.jqwik.JqwikPlugin;
 import com.navercorp.fixturemonkey.api.matcher.ExactTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.api.type.Types;
-import com.navercorp.fixturemonkey.test.ExpressionGeneratorTestSpecs.StringValue;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.AbstractNoneConcreteIntValue;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.AbstractNoneConcreteStringValue;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.AbstractNoneValue;
@@ -109,6 +109,7 @@ import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.ListStringObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.NestedStringList;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.NullableObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.SimpleObject;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.StringValue;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.TwoEnum;
 
 class FixtureMonkeyOptionsTest {
@@ -471,12 +472,15 @@ class FixtureMonkeyOptionsTest {
 	@Property
 	void javaTypeArbitraryGenerator() {
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.javaTypeArbitraryGenerator(new JavaTypeArbitraryGenerator() {
-				@Override
-				public StringArbitrary strings() {
-					return Arbitraries.strings().numeric();
-				}
-			})
+			.plugin(
+				new JqwikPlugin()
+					.javaTypeArbitraryGenerator(new JavaTypeArbitraryGenerator() {
+						@Override
+						public StringArbitrary strings() {
+							return Arbitraries.strings().numeric();
+						}
+					})
+			)
 			.build();
 
 		String actual = sut.giveMeOne(String.class);
@@ -487,12 +491,15 @@ class FixtureMonkeyOptionsTest {
 	@Property
 	void javaTypeArbitraryGeneratorAffectsField() {
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.javaTypeArbitraryGenerator(new JavaTypeArbitraryGenerator() {
-				@Override
-				public StringArbitrary strings() {
-					return Arbitraries.strings().numeric();
-				}
-			})
+			.plugin(
+				new JqwikPlugin()
+					.javaTypeArbitraryGenerator(new JavaTypeArbitraryGenerator() {
+						@Override
+						public StringArbitrary strings() {
+							return Arbitraries.strings().numeric();
+						}
+					})
+			)
 			.build();
 
 		String actual = sut.giveMeOne(SimpleObject.class)
@@ -504,12 +511,16 @@ class FixtureMonkeyOptionsTest {
 	@Property
 	void javaArbitraryResolver() {
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.javaArbitraryResolver(new JavaArbitraryResolver() {
-				@Override
-				public Arbitrary<String> strings(StringArbitrary stringArbitrary, ArbitraryGeneratorContext context) {
-					return Arbitraries.just("test");
-				}
-			})
+			.plugin(
+				new JqwikPlugin()
+					.javaArbitraryResolver(new JavaArbitraryResolver() {
+						@Override
+						public Arbitrary<String> strings(StringArbitrary stringArbitrary,
+							ArbitraryGeneratorContext context) {
+							return Arbitraries.just("test");
+						}
+					})
+			)
 			.build();
 
 		String actual = sut.giveMeOne(String.class);
@@ -520,12 +531,16 @@ class FixtureMonkeyOptionsTest {
 	@Property
 	void javaArbitraryResolverAffectsField() {
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.javaArbitraryResolver(new JavaArbitraryResolver() {
-				@Override
-				public Arbitrary<String> strings(StringArbitrary stringArbitrary, ArbitraryGeneratorContext context) {
-					return Arbitraries.just("test");
-				}
-			})
+			.plugin(
+				new JqwikPlugin()
+					.javaArbitraryResolver(new JavaArbitraryResolver() {
+						@Override
+						public Arbitrary<String> strings(StringArbitrary stringArbitrary,
+							ArbitraryGeneratorContext context) {
+							return Arbitraries.just("test");
+						}
+					})
+			)
 			.build();
 
 		String actual = sut.giveMeOne(SimpleObject.class)
@@ -538,12 +553,15 @@ class FixtureMonkeyOptionsTest {
 	void javaTimeTypeArbitraryGenerator() {
 		Instant expected = Instant.now();
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.javaTimeTypeArbitraryGenerator(new JavaTimeTypeArbitraryGenerator() {
-				@Override
-				public InstantArbitrary instants() {
-					return DateTimes.instants().between(expected, expected);
-				}
-			})
+			.plugin(
+				new JqwikPlugin()
+					.javaTimeTypeArbitraryGenerator(new JavaTimeTypeArbitraryGenerator() {
+						@Override
+						public InstantArbitrary instants() {
+							return DateTimes.instants().between(expected, expected);
+						}
+					})
+			)
 			.build();
 
 		Instant actual = sut.giveMeOne(Instant.class);
@@ -555,12 +573,15 @@ class FixtureMonkeyOptionsTest {
 	void javaTimeTypeArbitraryGeneratorAffectsField() {
 		Instant expected = Instant.now();
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.javaTimeTypeArbitraryGenerator(new JavaTimeTypeArbitraryGenerator() {
-				@Override
-				public InstantArbitrary instants() {
-					return DateTimes.instants().between(expected, expected);
-				}
-			})
+			.plugin(
+				new JqwikPlugin()
+					.javaTimeTypeArbitraryGenerator(new JavaTimeTypeArbitraryGenerator() {
+						@Override
+						public InstantArbitrary instants() {
+							return DateTimes.instants().between(expected, expected);
+						}
+					})
+			)
 			.build();
 
 		Instant actual = sut.giveMeOne(SimpleObject.class)
@@ -573,15 +594,18 @@ class FixtureMonkeyOptionsTest {
 	void javaTimeArbitraryResolver() {
 		Instant expected = Instant.now();
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.javaTimeArbitraryResolver(new JavaTimeArbitraryResolver() {
-				@Override
-				public Arbitrary<Instant> instants(
-					InstantArbitrary instantArbitrary,
-					ArbitraryGeneratorContext context
-				) {
-					return Arbitraries.just(expected);
-				}
-			})
+			.plugin(
+				new JqwikPlugin()
+					.javaTimeArbitraryResolver(new JavaTimeArbitraryResolver() {
+						@Override
+						public Arbitrary<Instant> instants(
+							InstantArbitrary instantArbitrary,
+							ArbitraryGeneratorContext context
+						) {
+							return Arbitraries.just(expected);
+						}
+					})
+			)
 			.build();
 
 		Instant actual = sut.giveMeOne(Instant.class);
@@ -593,15 +617,18 @@ class FixtureMonkeyOptionsTest {
 	void javaTimeArbitraryResolverAffectsField() {
 		Instant expected = Instant.now();
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.javaTimeArbitraryResolver(new JavaTimeArbitraryResolver() {
-				@Override
-				public Arbitrary<Instant> instants(
-					InstantArbitrary instantArbitrary,
-					ArbitraryGeneratorContext context
-				) {
-					return Arbitraries.just(expected);
-				}
-			})
+			.plugin(
+				new JqwikPlugin()
+					.javaTimeArbitraryResolver(new JavaTimeArbitraryResolver() {
+						@Override
+						public Arbitrary<Instant> instants(
+							InstantArbitrary instantArbitrary,
+							ArbitraryGeneratorContext context
+						) {
+							return Arbitraries.just(expected);
+						}
+					})
+			)
 			.build();
 
 		Instant actual = sut.giveMeOne(SimpleObject.class)
@@ -1139,7 +1166,7 @@ class FixtureMonkeyOptionsTest {
 
 		// when
 		List<String> actual = sut.giveMeBuilder(ListStringObject.class)
-			.apply((it, builder) -> builder.size("values", 10))
+			.thenApply((it, builder) -> builder.size("values", 10))
 			.sample()
 			.getValues();
 
@@ -1153,7 +1180,7 @@ class FixtureMonkeyOptionsTest {
 			.register(
 				ListStringObject.class,
 				fixture -> fixture.giveMeBuilder(ListStringObject.class)
-					.apply((it, builder) -> builder.size("values", 1))
+					.thenApply((it, builder) -> builder.size("values", 1))
 			)
 			.build();
 
@@ -1174,7 +1201,7 @@ class FixtureMonkeyOptionsTest {
 				ListStringObject.class,
 				fixture -> fixture.giveMeBuilder(ListStringObject.class)
 					.size("values", 1)
-					.apply((it, builder) -> {
+					.thenApply((it, builder) -> {
 					})
 			)
 			.build();
@@ -1481,13 +1508,16 @@ class FixtureMonkeyOptionsTest {
 	@Property
 	void sampleWithMonkeyStringArbitrary() {
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.javaTypeArbitraryGenerator(
-				new JavaTypeArbitraryGenerator() {
-					@Override
-					public StringArbitrary strings() {
-						return new MonkeyStringArbitrary();
-					}
-				}
+			.plugin(
+				new JqwikPlugin()
+					.javaTypeArbitraryGenerator(
+						new JavaTypeArbitraryGenerator() {
+							@Override
+							public StringArbitrary strings() {
+								return new MonkeyStringArbitrary();
+							}
+						}
+					)
 			)
 			.build();
 
@@ -1498,12 +1528,17 @@ class FixtureMonkeyOptionsTest {
 
 	@Property
 	void filterWithMonkeyStringArbitrary() {
-		FixtureMonkey sut = FixtureMonkey.builder().javaTypeArbitraryGenerator(new JavaTypeArbitraryGenerator() {
-			@Override
-			public StringArbitrary strings() {
-				return new MonkeyStringArbitrary().filterCharacter(Character::isUpperCase);
-			}
-		}).build();
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.plugin(
+				new JqwikPlugin()
+					.javaTypeArbitraryGenerator(new JavaTypeArbitraryGenerator() {
+						@Override
+						public StringArbitrary strings() {
+							return new MonkeyStringArbitrary().filterCharacter(Character::isUpperCase);
+						}
+					})
+			)
+			.build();
 
 		String actual = sut.giveMeOne(String.class);
 
@@ -1529,14 +1564,17 @@ class FixtureMonkeyOptionsTest {
 	@Property
 	void multipleFiltersWithMonkeyStringArbitrary() {
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.javaTypeArbitraryGenerator(
-				new JavaTypeArbitraryGenerator() {
-					@Override
-					public MonkeyStringArbitrary monkeyStrings() {
-						return new MonkeyStringArbitrary().filterCharacter(c -> !Character.isISOControl(c))
-							.filterCharacter(Character::isUpperCase);
-					}
-				}
+			.plugin(
+				new JqwikPlugin()
+					.javaTypeArbitraryGenerator(
+						new JavaTypeArbitraryGenerator() {
+							@Override
+							public MonkeyStringArbitrary monkeyStrings() {
+								return new MonkeyStringArbitrary().filterCharacter(c -> !Character.isISOControl(c))
+									.filterCharacter(Character::isUpperCase);
+							}
+						}
+					)
 			)
 			.build();
 

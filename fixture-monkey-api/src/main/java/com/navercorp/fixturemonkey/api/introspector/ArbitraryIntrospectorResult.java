@@ -27,12 +27,9 @@ import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class ArbitraryIntrospectorResult {
-	@Deprecated
-	public static final ArbitraryIntrospectorResult EMPTY = new ArbitraryIntrospectorResult(
+	public static final ArbitraryIntrospectorResult NOT_INTROSPECTED = new ArbitraryIntrospectorResult(
 		CombinableArbitrary.from(new Object())
 	);
-
-	public static final ArbitraryIntrospectorResult NOT_INTROSPECTED = EMPTY;
 
 	private final CombinableArbitrary<?> value;
 

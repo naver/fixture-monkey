@@ -41,7 +41,7 @@ class KotlinPropertyGenerator(
 
     override fun generateChildProperties(property: Property): List<Property> =
         objectChildPropertiesCache.computeIfAbsent(property) {
-            val javaProperties = javaDelegatePropertyGenerator.generateChildProperties(property.annotatedType)
+            val javaProperties = javaDelegatePropertyGenerator.generateChildProperties(property)
                 .filter { it.name != null }
                 .associateBy { it.name!! }
             val kotlinProperties = getMemberProperties(property, propertyFilter)

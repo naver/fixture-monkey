@@ -49,7 +49,6 @@ import com.navercorp.fixturemonkey.api.constraint.JavaIntegerConstraint;
 import com.navercorp.fixturemonkey.api.constraint.JavaStringConstraint;
 import com.navercorp.fixturemonkey.api.constraint.JavaStringConstraint.PatternConstraint;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
-import com.navercorp.fixturemonkey.api.introspector.JavaArbitraryResolver;
 import com.navercorp.fixturemonkey.api.random.RegexGenerator;
 
 @API(since = "0.6.9", status = Status.EXPERIMENTAL)

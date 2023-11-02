@@ -36,7 +36,7 @@ public final class DefaultObjectPropertyGenerator implements ObjectPropertyGener
 	public ObjectProperty generate(ObjectPropertyGeneratorContext context) {
 		Property property = context.getProperty();
 		PropertyGenerator propertyGenerator = context.getPropertyGenerator();
-		List<Property> childProperties = propertyGenerator.generateChildProperties(property.getAnnotatedType());
+		List<Property> childProperties = propertyGenerator.generateChildProperties(property);
 		double nullInject = context.getNullInjectGenerator().generate(context);
 
 		return new ObjectProperty(

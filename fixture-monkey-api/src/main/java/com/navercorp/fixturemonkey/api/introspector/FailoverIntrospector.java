@@ -46,7 +46,7 @@ public final class FailoverIntrospector implements ArbitraryIntrospector {
 		List<FailoverIntrospectorResult> results = new ArrayList<>();
 		for (ArbitraryIntrospector introspector : this.introspectors) {
 			ArbitraryIntrospectorResult result = introspector.introspect(context);
-			if (!ArbitraryIntrospectorResult.EMPTY.equals(result)) {
+			if (!ArbitraryIntrospectorResult.NOT_INTROSPECTED.equals(result)) {
 				results.add(new FailoverIntrospectorResult(introspector, result));
 			}
 		}

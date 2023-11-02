@@ -68,7 +68,7 @@ class InterfaceKFunctionPropertyGenerator : PropertyGenerator {
             return methods + properties
         }
 
-        return JAVA_METHOD_PROPERTY_GENERATOR.generateChildProperties(property.annotatedType)
+        return JAVA_METHOD_PROPERTY_GENERATOR.generateChildProperties(property)
     }
 
     private fun Class<*>.isKotlinClass(): Boolean =

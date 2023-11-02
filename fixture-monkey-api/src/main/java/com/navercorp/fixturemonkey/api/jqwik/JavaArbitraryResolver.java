@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.api.introspector;
+package com.navercorp.fixturemonkey.api.jqwik;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;

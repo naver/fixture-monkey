@@ -54,12 +54,6 @@ public final class ConstructorParameterPropertyGenerator implements PropertyGene
 	private final Predicate<Constructor<?>> constructorPredicate;
 	private final Matcher matcher;
 
-	@Deprecated
-	public ConstructorParameterPropertyGenerator(Matcher matcher) {
-		this.constructorPredicate = constructor -> constructor.getAnnotation(ConstructorProperties.class) != null;
-		this.matcher = matcher;
-	}
-
 	public ConstructorParameterPropertyGenerator(
 		Predicate<Constructor<?>> constructorPredicate,
 		Matcher matcher
