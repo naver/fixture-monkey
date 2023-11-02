@@ -29,7 +29,7 @@ import org.apiguardian.api.API.Status;
  * It is used for caching {@link Stream}.
  * It is necessary for using the elements of {@link Stream} because {@link Stream} could only be retrieved once.
  */
-@API(since = "0.6.0", status = Status.EXPERIMENTAL)
+@API(since = "0.6.0", status = Status.MAINTAINED)
 public final class StreamCache {
 	private static final ConcurrentLruCache<Stream<?>, List<?>> STREAM_TO_LIST = new ConcurrentLruCache<>(2048);
 

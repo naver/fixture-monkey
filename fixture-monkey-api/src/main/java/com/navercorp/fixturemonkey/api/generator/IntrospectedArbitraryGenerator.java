@@ -31,7 +31,7 @@ import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult;
 /**
  * Generates a {@link CombinableArbitrary} by {@link ArbitraryIntrospector}.
  */
-@API(since = "0.6.2", status = Status.EXPERIMENTAL)
+@API(since = "0.6.2", status = Status.MAINTAINED)
 public final class IntrospectedArbitraryGenerator implements ArbitraryGenerator {
 	private final ArbitraryIntrospector arbitraryIntrospector;
 

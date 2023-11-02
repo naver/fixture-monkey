@@ -40,7 +40,7 @@ import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 
-@API(since = "0.6.3", status = Status.EXPERIMENTAL)
+@API(since = "0.6.3", status = Status.MAINTAINED)
 public interface JavaTimeArbitraryGeneratorSet {
 	CombinableArbitrary<Calendar> calendars(ArbitraryGeneratorContext context);
 

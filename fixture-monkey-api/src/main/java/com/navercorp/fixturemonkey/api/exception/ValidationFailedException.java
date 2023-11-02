@@ -29,7 +29,7 @@ import com.navercorp.fixturemonkey.api.validator.ArbitraryValidator;
  * It is thrown when validated by {@link ArbitraryValidator}.
  * A new populated object would be generated when this exception is thrown.
  */
-@API(since = "0.6.0", status = Status.EXPERIMENTAL)
+@API(since = "0.6.0", status = Status.MAINTAINED)
 public final class ValidationFailedException extends RuntimeException {
 	private final Set<String> constraintViolationPropertyNames;
 

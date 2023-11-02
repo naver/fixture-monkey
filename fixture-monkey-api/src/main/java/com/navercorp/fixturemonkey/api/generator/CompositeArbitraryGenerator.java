@@ -31,7 +31,7 @@ import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
  * All {@link ArbitraryGenerator} are used in the declared order.
  * A particular {@link ArbitraryGenerator} will use the result of a previously declared {@link ArbitraryGenerator}.
  */
-@API(since = "0.6.2", status = Status.EXPERIMENTAL)
+@API(since = "0.6.2", status = Status.MAINTAINED)
 public final class CompositeArbitraryGenerator implements ArbitraryGenerator {
 	private final List<ArbitraryGenerator> arbitraryGenerators;
 

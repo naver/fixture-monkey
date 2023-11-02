@@ -34,7 +34,7 @@ import com.mifmif.common.regex.Generex;
 
 import dk.brics.automaton.RegExp;
 
-@API(since = "0.6.9", status = Status.EXPERIMENTAL)
+@API(since = "0.6.9", status = Status.MAINTAINED)
 public final class RegexGenerator {
 	private static final Map<String, String> PREDEFINED_CHARACTER_CLASSES;
 

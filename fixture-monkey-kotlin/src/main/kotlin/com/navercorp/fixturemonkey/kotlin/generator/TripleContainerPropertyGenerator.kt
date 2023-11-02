@@ -27,7 +27,7 @@ import com.navercorp.fixturemonkey.api.type.Types
 import org.apiguardian.api.API
 import org.apiguardian.api.API.Status
 
-@API(since = "0.6.0", status = Status.EXPERIMENTAL)
+@API(since = "0.6.0", status = Status.MAINTAINED)
 class TripleContainerPropertyGenerator : ContainerPropertyGenerator {
     override fun generate(context: ContainerPropertyGeneratorContext): ContainerProperty {
         val property = context.property

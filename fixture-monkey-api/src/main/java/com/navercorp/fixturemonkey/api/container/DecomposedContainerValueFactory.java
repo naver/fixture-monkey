@@ -24,7 +24,7 @@ import org.apiguardian.api.API.Status;
 /**
  * Generate a {@link DecomposableJavaContainer} from the container.
  */
-@API(since = "0.6.0", status = Status.EXPERIMENTAL)
+@API(since = "0.6.0", status = Status.MAINTAINED)
 @FunctionalInterface
 public interface DecomposedContainerValueFactory {
 	/**

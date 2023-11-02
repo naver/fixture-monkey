@@ -36,7 +36,9 @@ import net.jqwik.api.Arbitrary;
 import net.jqwik.api.Combinators.F3;
 import net.jqwik.api.Combinators.F4;
 
+import com.navercorp.fixturemonkey.api.instantiator.Instantiator;
 import com.navercorp.fixturemonkey.api.property.PropertySelector;
+import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.api.validator.ArbitraryValidator;
 import com.navercorp.fixturemonkey.customizer.InnerSpec;
 
@@ -546,4 +548,10 @@ public interface ArbitraryBuilder<T> {
 	 * the {@link ArbitraryValidator}.
 	 */
 	ArbitraryBuilder<T> validOnly(boolean validOnly);
+
+	ArbitraryBuilder<T> instantiate(Instantiator instantiator);
+
+	ArbitraryBuilder<T> instantiate(Class<?> type, Instantiator instantiator);
+
+	ArbitraryBuilder<T> instantiate(TypeReference<?> type, Instantiator instantiator);
 }

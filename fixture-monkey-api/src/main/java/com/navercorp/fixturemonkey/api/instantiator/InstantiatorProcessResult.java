@@ -16,24 +16,31 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.api.experimental;
+package com.navercorp.fixturemonkey.api.instantiator;
 
-import java.lang.reflect.Field;
-import java.util.function.Predicate;
+import java.util.List;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-@API(since = "0.6.12", status = Status.EXPERIMENTAL)
-public final class JavaFieldPropertyInstantiator<T> implements PropertyInstantiator<T> {
-	private Predicate<Field> fieldPredicate = it -> true;
+import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
+import com.navercorp.fixturemonkey.api.property.Property;
 
-	public JavaFieldPropertyInstantiator<T> filter(Predicate<Field> fieldPredicate) {
-		this.fieldPredicate = fieldPredicate;
-		return this;
+@API(since = "0.6.12", status = Status.MAINTAINED)
+public final class InstantiatorProcessResult {
+	private final ArbitraryIntrospector introspector;
+	private final List<Property> properties;
+
+	public InstantiatorProcessResult(ArbitraryIntrospector introspector, List<Property> properties) {
+		this.introspector = introspector;
+		this.properties = properties;
 	}
 
-	public Predicate<Field> getFieldPredicate() {
-		return fieldPredicate;
+	public ArbitraryIntrospector getIntrospector() {
+		return introspector;
+	}
+
+	public List<Property> getProperties() {
+		return properties;
 	}
 }

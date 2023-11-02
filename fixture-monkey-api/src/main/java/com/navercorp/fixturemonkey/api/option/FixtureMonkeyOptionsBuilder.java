@@ -47,8 +47,6 @@ import com.navercorp.fixturemonkey.api.constraint.JavaConstraintGenerator;
 import com.navercorp.fixturemonkey.api.container.DecomposableJavaContainer;
 import com.navercorp.fixturemonkey.api.container.DecomposedContainerValueFactory;
 import com.navercorp.fixturemonkey.api.container.DefaultDecomposedContainerValueFactory;
-import com.navercorp.fixturemonkey.api.experimental.InstantiatorProcessor;
-import com.navercorp.fixturemonkey.api.experimental.JavaInstantiatorProcessor;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfoGenerator;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGenerator;
@@ -59,6 +57,8 @@ import com.navercorp.fixturemonkey.api.generator.JavaDefaultArbitraryGeneratorBu
 import com.navercorp.fixturemonkey.api.generator.MatchArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.generator.NullInjectGenerator;
 import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGenerator;
+import com.navercorp.fixturemonkey.api.instantiator.InstantiatorProcessor;
+import com.navercorp.fixturemonkey.api.instantiator.JavaInstantiatorProcessor;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.MatchArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.TypedArbitraryIntrospector;
@@ -79,7 +79,7 @@ import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.api.validator.ArbitraryValidator;
 
 @SuppressWarnings("UnusedReturnValue")
-@API(since = "0.6.0", status = Status.EXPERIMENTAL)
+@API(since = "0.6.0", status = Status.MAINTAINED)
 public final class FixtureMonkeyOptionsBuilder {
 	private List<MatcherOperator<PropertyGenerator>> propertyGenerators =
 		new ArrayList<>(FixtureMonkeyOptions.DEFAULT_PROPERTY_GENERATORS);

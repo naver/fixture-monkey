@@ -27,7 +27,7 @@ import org.apiguardian.api.API.Status;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.type.Types;
 
-@API(since = "0.6.0", status = Status.EXPERIMENTAL)
+@API(since = "0.6.0", status = Status.MAINTAINED)
 public final class TripleGenericTypeMatcher implements Matcher {
 	@Override
 	public boolean match(Property property) {

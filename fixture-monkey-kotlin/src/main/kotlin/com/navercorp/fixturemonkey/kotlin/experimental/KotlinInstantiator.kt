@@ -18,16 +18,16 @@
 
 package com.navercorp.fixturemonkey.kotlin.experimental
 
-import com.navercorp.fixturemonkey.api.experimental.ConstructorInstantiator
-import com.navercorp.fixturemonkey.api.experimental.FactoryMethodInstantiator
-import com.navercorp.fixturemonkey.api.experimental.Instantiator
-import com.navercorp.fixturemonkey.api.experimental.InstantiatorProcessResult
-import com.navercorp.fixturemonkey.api.experimental.InstantiatorProcessor
-import com.navercorp.fixturemonkey.api.experimental.InstantiatorUtils.resolveParameterTypes
-import com.navercorp.fixturemonkey.api.experimental.InstantiatorUtils.resolvedParameterNames
-import com.navercorp.fixturemonkey.api.experimental.JavaBeansPropertyInstantiator
-import com.navercorp.fixturemonkey.api.experimental.JavaFieldPropertyInstantiator
-import com.navercorp.fixturemonkey.api.experimental.PropertyInstantiator
+import com.navercorp.fixturemonkey.api.instantiator.ConstructorInstantiator
+import com.navercorp.fixturemonkey.api.instantiator.FactoryMethodInstantiator
+import com.navercorp.fixturemonkey.api.instantiator.Instantiator
+import com.navercorp.fixturemonkey.api.instantiator.InstantiatorProcessResult
+import com.navercorp.fixturemonkey.api.instantiator.InstantiatorProcessor
+import com.navercorp.fixturemonkey.api.instantiator.InstantiatorUtils.resolveParameterTypes
+import com.navercorp.fixturemonkey.api.instantiator.InstantiatorUtils.resolvedParameterNames
+import com.navercorp.fixturemonkey.api.instantiator.JavaBeansPropertyInstantiator
+import com.navercorp.fixturemonkey.api.instantiator.JavaFieldPropertyInstantiator
+import com.navercorp.fixturemonkey.api.instantiator.PropertyInstantiator
 import com.navercorp.fixturemonkey.api.introspector.BeanArbitraryIntrospector
 import com.navercorp.fixturemonkey.api.introspector.CompositeArbitraryIntrospector
 import com.navercorp.fixturemonkey.api.introspector.ConstructorArbitraryIntrospector
@@ -55,7 +55,8 @@ import kotlin.reflect.full.memberFunctions
 import kotlin.reflect.jvm.javaType
 import kotlin.reflect.jvm.kotlinFunction
 
-class KotlinInstantiatorProcessor : InstantiatorProcessor {
+class KotlinInstantiatorProcessor :
+    InstantiatorProcessor {
     override fun process(typeReference: TypeReference<*>, instantiator: Instantiator): InstantiatorProcessResult {
         return when (instantiator) {
             is ConstructorInstantiator<*> -> processConstructor(typeReference, instantiator)
@@ -242,7 +243,8 @@ class KotlinInstantiatorProcessor : InstantiatorProcessor {
  *
  * @param T The type of objects that can be instantiated using this [Instantiator].
  */
-class KotlinConstructorInstantiator<T> : ConstructorInstantiator<T> {
+class KotlinConstructorInstantiator<T> :
+    ConstructorInstantiator<T> {
     val _types: MutableList<TypeReference<*>> = ArrayList()
     val _parameterNames: MutableList<String?> = ArrayList()
     private var _propertyInstantiator: PropertyInstantiator<T>? = null
@@ -271,7 +273,8 @@ class KotlinConstructorInstantiator<T> : ConstructorInstantiator<T> {
         }
 
     fun javaField(): KotlinConstructorInstantiator<T> = this.apply {
-        _propertyInstantiator = JavaFieldPropertyInstantiator<T>()
+        _propertyInstantiator =
+            JavaFieldPropertyInstantiator<T>()
     }
 
     fun javaField(dsl: JavaFieldPropertyInstantiator<T>.() -> JavaFieldPropertyInstantiator<T>): KotlinConstructorInstantiator<T> =
@@ -280,7 +283,8 @@ class KotlinConstructorInstantiator<T> : ConstructorInstantiator<T> {
         }
 
     fun javaBeansProperty(): KotlinConstructorInstantiator<T> = this.apply {
-        _propertyInstantiator = JavaBeansPropertyInstantiator<T>()
+        _propertyInstantiator =
+            JavaBeansPropertyInstantiator<T>()
     }
 
     fun javaBeansProperty(dsl: JavaBeansPropertyInstantiator<T>.() -> JavaBeansPropertyInstantiator<T>): KotlinConstructorInstantiator<T> =
@@ -304,7 +308,8 @@ class KotlinConstructorInstantiator<T> : ConstructorInstantiator<T> {
     override fun getPropertyInstantiator(): PropertyInstantiator<T>? = _propertyInstantiator
 }
 
-class KotlinFactoryMethodInstantiator<T>(private val _factoryMethodName: String) : FactoryMethodInstantiator<T> {
+class KotlinFactoryMethodInstantiator<T>(private val _factoryMethodName: String) :
+    FactoryMethodInstantiator<T> {
     val _types: MutableList<TypeReference<*>> = ArrayList()
     val _parameterNames: MutableList<String?> = ArrayList()
     private var _propertyInstantiator: PropertyInstantiator<T>? = null
@@ -325,7 +330,8 @@ class KotlinFactoryMethodInstantiator<T>(private val _factoryMethodName: String)
         }
 
     fun javaField(): KotlinFactoryMethodInstantiator<T> = this.apply {
-        _propertyInstantiator = JavaFieldPropertyInstantiator<T>()
+        _propertyInstantiator =
+            JavaFieldPropertyInstantiator<T>()
     }
 
     fun javaField(dsl: JavaFieldPropertyInstantiator<T>.() -> JavaFieldPropertyInstantiator<T>): KotlinFactoryMethodInstantiator<T> =
@@ -334,7 +340,8 @@ class KotlinFactoryMethodInstantiator<T>(private val _factoryMethodName: String)
         }
 
     fun javaBeansProperty(): KotlinFactoryMethodInstantiator<T> = this.apply {
-        _propertyInstantiator = JavaBeansPropertyInstantiator<T>()
+        _propertyInstantiator =
+            JavaBeansPropertyInstantiator<T>()
     }
 
     fun javaBeansProperty(dsl: JavaBeansPropertyInstantiator<T>.() -> JavaBeansPropertyInstantiator<T>): KotlinFactoryMethodInstantiator<T> =

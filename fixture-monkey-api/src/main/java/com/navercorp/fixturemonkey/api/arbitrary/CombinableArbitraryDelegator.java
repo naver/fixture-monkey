@@ -21,7 +21,7 @@ package com.navercorp.fixturemonkey.api.arbitrary;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-@API(since = "0.6.12", status = Status.EXPERIMENTAL)
+@API(since = "0.6.12", status = Status.MAINTAINED)
 public final class CombinableArbitraryDelegator<T> implements CombinableArbitrary<T> {
 	private final CombinableArbitrary<T> delegated;
 

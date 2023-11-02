@@ -1,10 +1,10 @@
 package com.navercorp.fixturemonkey.tests.kotlin
 
 import com.navercorp.fixturemonkey.FixtureMonkey
-import com.navercorp.fixturemonkey.api.experimental.Instantiator
+import com.navercorp.fixturemonkey.api.instantiator.Instantiator
 import com.navercorp.fixturemonkey.kotlin.KotlinPlugin
 import com.navercorp.fixturemonkey.kotlin.experimental.instantiateBy
-import com.navercorp.fixturemonkey.kotlin.giveMeExperimentalBuilder
+import com.navercorp.fixturemonkey.kotlin.giveMeBuilder
 import com.navercorp.fixturemonkey.tests.TestEnvironment.TEST_COUNT
 import org.assertj.core.api.BDDAssertions.then
 import org.junit.jupiter.api.RepeatedTest
@@ -13,7 +13,7 @@ import java.lang.reflect.Modifier
 class InstantiatorTest {
     @RepeatedTest(TEST_COUNT)
     fun instantiateJavaPrimaryConstructor() {
-        val actual = SUT.giveMeExperimentalBuilder<Foo>()
+        val actual = SUT.giveMeBuilder<Foo>()
             .instantiateBy {
                 Instantiator.constructor<Foo>()
                     .parameter(String::class.java, "foo")
@@ -27,7 +27,7 @@ class InstantiatorTest {
 
     @RepeatedTest(TEST_COUNT)
     fun instantiatePrimaryConstructor() {
-        val actual = SUT.giveMeExperimentalBuilder<Foo>()
+        val actual = SUT.giveMeBuilder<Foo>()
             .instantiateBy {
                 constructor<Foo> {
                     parameter<String>("foo")
@@ -42,7 +42,7 @@ class InstantiatorTest {
 
     @RepeatedTest(TEST_COUNT)
     fun instantiateSecondaryConstructor() {
-        val actual = SUT.giveMeExperimentalBuilder<Foo>()
+        val actual = SUT.giveMeBuilder<Foo>()
             .instantiateBy {
                 constructor<Foo> {
                     parameter<String>("foo")
@@ -56,7 +56,7 @@ class InstantiatorTest {
 
     @RepeatedTest(TEST_COUNT)
     fun instantiatePrimaryConstructorWithoutParameterName() {
-        val actual = SUT.giveMeExperimentalBuilder<Foo>()
+        val actual = SUT.giveMeBuilder<Foo>()
             .instantiateBy {
                 constructor<Foo> {
                     parameter<String>()
@@ -71,7 +71,7 @@ class InstantiatorTest {
 
     @RepeatedTest(TEST_COUNT)
     fun instantiateSecondaryConstructorWithoutParameterName() {
-        val actual = SUT.giveMeExperimentalBuilder<Foo>()
+        val actual = SUT.giveMeBuilder<Foo>()
             .instantiateBy {
                 constructor<Foo> {
                     parameter<String>()
@@ -85,7 +85,7 @@ class InstantiatorTest {
 
     @RepeatedTest(TEST_COUNT)
     fun setWithInstantiate() {
-        val actual = SUT.giveMeExperimentalBuilder<Foo>()
+        val actual = SUT.giveMeBuilder<Foo>()
             .instantiateBy {
                 constructor<Foo> {
                     parameter<String>()
@@ -100,7 +100,7 @@ class InstantiatorTest {
 
     @RepeatedTest(TEST_COUNT)
     fun instantiateRootType() {
-        val actual = SUT.giveMeExperimentalBuilder<Foo>()
+        val actual = SUT.giveMeBuilder<Foo>()
             .instantiateBy {
                 constructor {
                     parameter<String>()
@@ -114,7 +114,7 @@ class InstantiatorTest {
 
     @RepeatedTest(TEST_COUNT)
     fun instantiateGenericType() {
-        val actual = SUT.giveMeExperimentalBuilder<Bar<String>>()
+        val actual = SUT.giveMeBuilder<Bar<String>>()
             .instantiateBy {
                 constructor<Bar<String>> {
                     parameter<String>()
@@ -128,7 +128,7 @@ class InstantiatorTest {
 
     @RepeatedTest(TEST_COUNT)
     fun instantiateByConstructorTwoTypes() {
-        val actual = SUT.giveMeExperimentalBuilder<Baz>()
+        val actual = SUT.giveMeBuilder<Baz>()
             .instantiateBy {
                 constructor<Foo> {
                     parameter<String>()
@@ -144,7 +144,7 @@ class InstantiatorTest {
 
     @RepeatedTest(TEST_COUNT)
     fun instantiateByMixedTwoTypes() {
-        val actual = SUT.giveMeExperimentalBuilder<Baz>()
+        val actual = SUT.giveMeBuilder<Baz>()
             .instantiateBy {
                 constructor<Bar<String>> {
                     parameter<String>()
@@ -161,7 +161,7 @@ class InstantiatorTest {
 
     @RepeatedTest(TEST_COUNT)
     fun instantiateByCompanionObjectFactoryMethod() {
-        val actual = SUT.giveMeExperimentalBuilder<Foo>()
+        val actual = SUT.giveMeBuilder<Foo>()
             .instantiateBy {
                 factory<Foo>("build")
             }
@@ -173,7 +173,7 @@ class InstantiatorTest {
 
     @RepeatedTest(TEST_COUNT)
     fun instantiateByCompanionObjectFactoryMethodWithParameter() {
-        val actual = SUT.giveMeExperimentalBuilder<Foo>()
+        val actual = SUT.giveMeBuilder<Foo>()
             .instantiateBy {
                 factory<Foo>("build") {
                     parameter<Int>()
@@ -187,7 +187,7 @@ class InstantiatorTest {
 
     @RepeatedTest(TEST_COUNT)
     fun setInstantiateByCompanionObjectFactoryMethodWithParameter() {
-        val actual = SUT.giveMeExperimentalBuilder<Foo>()
+        val actual = SUT.giveMeBuilder<Foo>()
             .instantiateBy {
                 factory<Foo>("build") {
                     parameter<Int>()
@@ -202,7 +202,7 @@ class InstantiatorTest {
 
     @RepeatedTest(TEST_COUNT)
     fun instantiateJavaObjectByRootProperty() {
-        val actual = SUT.giveMeExperimentalBuilder<JavaConstructorTestSpecs.JavaTypeObject>()
+        val actual = SUT.giveMeBuilder<JavaConstructorTestSpecs.JavaTypeObject>()
             .instantiateBy {
                 constructor {
                     property()
@@ -216,7 +216,7 @@ class InstantiatorTest {
 
     @RepeatedTest(TEST_COUNT)
     fun instantiateJavaObjectByRootPropertyFilter() {
-        val actual = SUT.giveMeExperimentalBuilder<JavaConstructorTestSpecs.JavaTypeObject>()
+        val actual = SUT.giveMeBuilder<JavaConstructorTestSpecs.JavaTypeObject>()
             .instantiateBy {
                 constructor {
                     property {
@@ -232,7 +232,7 @@ class InstantiatorTest {
 
     @RepeatedTest(TEST_COUNT)
     fun instantiateJavaObjectByRootField() {
-        val actual = SUT.giveMeExperimentalBuilder<JavaConstructorTestSpecs.JavaTypeObject>()
+        val actual = SUT.giveMeBuilder<JavaConstructorTestSpecs.JavaTypeObject>()
             .instantiateBy {
                 constructor {
                     javaField()
@@ -246,7 +246,7 @@ class InstantiatorTest {
 
     @RepeatedTest(TEST_COUNT)
     fun instantiateJavaObjectByRootFieldFilter() {
-        val actual = SUT.giveMeExperimentalBuilder<JavaConstructorTestSpecs.JavaTypeObject>()
+        val actual = SUT.giveMeBuilder<JavaConstructorTestSpecs.JavaTypeObject>()
             .instantiateBy {
                 constructor {
                     javaField {
@@ -262,7 +262,7 @@ class InstantiatorTest {
 
     @RepeatedTest(TEST_COUNT)
     fun instantiateJavaObjectByRootJavaBeans() {
-        val actual = SUT.giveMeExperimentalBuilder<JavaConstructorTestSpecs.JavaTypeObject>()
+        val actual = SUT.giveMeBuilder<JavaConstructorTestSpecs.JavaTypeObject>()
             .instantiateBy {
                 constructor {
                     javaBeansProperty()
@@ -276,7 +276,7 @@ class InstantiatorTest {
 
     @RepeatedTest(TEST_COUNT)
     fun instantiateJavaObjectByRootFieldJavaBeans() {
-        val actual = SUT.giveMeExperimentalBuilder<JavaConstructorTestSpecs.JavaTypeObject>()
+        val actual = SUT.giveMeBuilder<JavaConstructorTestSpecs.JavaTypeObject>()
             .instantiateBy {
                 constructor {
                     javaBeansProperty {
@@ -298,7 +298,7 @@ class InstantiatorTest {
 
         class ConstructorObject(val propertyObject: PropertyObject)
 
-        val actual = SUT.giveMeExperimentalBuilder<ConstructorObject>()
+        val actual = SUT.giveMeBuilder<ConstructorObject>()
             .instantiateBy { constructor<PropertyObject> { property() } }
             .sample()
             .propertyObject
@@ -315,7 +315,7 @@ class InstantiatorTest {
 
         class ConstructorObject(val propertyObject: PropertyObject)
 
-        val actual = SUT.giveMeExperimentalBuilder<ConstructorObject>()
+        val actual = SUT.giveMeBuilder<ConstructorObject>()
             .instantiateBy {
                 constructor<PropertyObject> {
                     property {
@@ -341,7 +341,7 @@ class InstantiatorTest {
 
         class ConstructorObject(val propertyObject: PropertyObject)
 
-        val actual = SUT.giveMeExperimentalBuilder<ConstructorObject>()
+        val actual = SUT.giveMeBuilder<ConstructorObject>()
             .instantiateBy { constructor<PropertyObject> { property() } }
             .sample()
             .propertyObject
@@ -360,7 +360,7 @@ class InstantiatorTest {
             }
         }
 
-        val actual = SUT.giveMeExperimentalBuilder<NoArgsConstructorObject>()
+        val actual = SUT.giveMeBuilder<NoArgsConstructorObject>()
             .instantiateBy { constructor() }
             .sample()
             .string
@@ -376,7 +376,7 @@ class InstantiatorTest {
 
         class AllArgsConstructorObject(val value: NoArgsConstructorObject)
 
-        val actual = SUT.giveMeExperimentalBuilder<AllArgsConstructorObject>()
+        val actual = SUT.giveMeBuilder<AllArgsConstructorObject>()
             .instantiateBy { constructor<NoArgsConstructorObject>() }
             .sample()
             .value
@@ -391,7 +391,7 @@ class InstantiatorTest {
             var propertyNotInConstructor: String? = null
         }
 
-        val actual = SUT.giveMeExperimentalBuilder<ConstructorAndProperty>()
+        val actual = SUT.giveMeBuilder<ConstructorAndProperty>()
             .instantiateBy {
                 constructor {
                     parameter<String>()
@@ -409,7 +409,7 @@ class InstantiatorTest {
     fun instantiatePrivateConstructor() {
         class PrivateConstructorObject private constructor(val value: String)
 
-        val actual = SUT.giveMeExperimentalBuilder<PrivateConstructorObject>()
+        val actual = SUT.giveMeBuilder<PrivateConstructorObject>()
             .instantiateBy {
                 constructor()
             }

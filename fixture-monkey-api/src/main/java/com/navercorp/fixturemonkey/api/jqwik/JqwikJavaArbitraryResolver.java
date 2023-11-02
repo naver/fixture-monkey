@@ -51,7 +51,7 @@ import com.navercorp.fixturemonkey.api.constraint.JavaStringConstraint.PatternCo
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.random.RegexGenerator;
 
-@API(since = "0.6.9", status = Status.EXPERIMENTAL)
+@API(since = "0.6.9", status = Status.MAINTAINED)
 public final class JqwikJavaArbitraryResolver implements JavaArbitraryResolver {
 	private static final RegexGenerator REGEX_GENERATOR = new RegexGenerator();
 	private final JavaConstraintGenerator constraintGenerator;

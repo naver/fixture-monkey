@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.api.experimental;
+package com.navercorp.fixturemonkey.api.instantiator;
 
 import java.beans.PropertyDescriptor;
 import java.util.function.Predicate;
@@ -24,7 +24,7 @@ import java.util.function.Predicate;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-@API(since = "0.6.12", status = Status.EXPERIMENTAL)
+@API(since = "0.6.12", status = Status.MAINTAINED)
 public final class JavaBeansPropertyInstantiator<T> implements PropertyInstantiator<T> {
 	private Predicate<PropertyDescriptor> propertyDescriptorPredicate = it ->
 		it.getReadMethod() != null && it.getWriteMethod() != null;

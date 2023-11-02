@@ -27,7 +27,7 @@ import org.apiguardian.api.API.Status;
 /**
  * A builder generates {@link InvocationHandler} for generating an anonymous instance of interface dynamically.
  */
-@API(since = "0.6.10", status = Status.EXPERIMENTAL)
+@API(since = "0.6.10", status = Status.MAINTAINED)
 final class InvocationHandlerBuilder {
 	private final Map<String, Object> generatedValuesByMethodName;
 

@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.api.experimental;
+package com.navercorp.fixturemonkey.api.instantiator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +29,7 @@ import com.navercorp.fixturemonkey.api.type.TypeReference;
 /**
  * The {@link InstantiatorUtils} class provides utility methods for instantiating objects using {@link Instantiator}.
  */
-@API(since = "0.6.12", status = Status.EXPERIMENTAL)
+@API(since = "0.6.12", status = Status.MAINTAINED)
 public abstract class InstantiatorUtils {
 	/**
 	 * Resolves and returns a list of parameter names by prioritizing input parameter names over

@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.api.experimental;
+package com.navercorp.fixturemonkey.api.instantiator;
 
 import java.util.List;
 
@@ -28,30 +28,27 @@ import org.apiguardian.api.API.Status;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 
 /**
- * The {@link FactoryMethodInstantiator} interface represents a DSL for creating objects of type T
- * using a factory method. It extends the {@link Instantiator} interface, providing methods to retrieve information
- * about the factory method's input parameter types and names.
+ * The {@link ConstructorInstantiator} interface represents a DSL for constructing objects of type T
+ * using a constructor. It extends the {@link Instantiator} interface, providing methods to retrieve information
+ * about the constructor's parameter types and names.
  *
- * @param <T> The type of objects that can be created using the factory method.
+ * @param <T> The type of objects that can be instantiated using the constructor.
  *
  * @see Instantiator
  */
-
-@API(since = "0.6.12", status = Status.EXPERIMENTAL)
-public interface FactoryMethodInstantiator<T> extends Instantiator {
-	String getFactoryMethodName();
-
+@API(since = "0.6.12", status = Status.MAINTAINED)
+public interface ConstructorInstantiator<T> extends Instantiator {
 	/**
-	 * Gets a list of types representing the input parameter types of the factory method.
+	 * Gets a list of types representing the input parameter types of the constructor.
 	 *
-	 * @return A list of types  representing the input parameter types of the factory method.
+	 * @return A list of types representing the input parameter types of the constructor.
 	 */
 	List<TypeReference<?>> getInputParameterTypes();
 
 	/**
-	 * Gets a list of strings representing the input parameter names of the factory method.
+	 * Gets a list of strings representing the input parameter names of the constructor.
 	 *
-	 * @return A list of strings representing the input parameter names of the factory method.
+	 * @return A list of strings representing the input parameter names of the constructor.
 	 */
 	List<String> getInputParameterNames();
 

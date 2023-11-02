@@ -20,9 +20,9 @@
 
 package com.navercorp.fixturemonkey.kotlin.experimental
 
-import com.navercorp.fixturemonkey.api.experimental.Instantiator
+import com.navercorp.fixturemonkey.ArbitraryBuilder
+import com.navercorp.fixturemonkey.api.instantiator.Instantiator
 import com.navercorp.fixturemonkey.api.type.TypeReference
-import com.navercorp.fixturemonkey.experimental.ExperimentalArbitraryBuilder
 
 @DslMarker
 annotation class InstantiatorDsl
@@ -81,9 +81,9 @@ class InstantiatorDslSpec<T>(
     }
 }
 
-inline fun <reified T> ExperimentalArbitraryBuilder<T>.instantiateBy(
+inline fun <reified T> ArbitraryBuilder<T>.instantiateBy(
     instantiatorDsl: InstantiatorDslSpec<T>.() -> Unit,
-): ExperimentalArbitraryBuilder<T> {
+): ArbitraryBuilder<T> {
     val spec = InstantiatorDslSpec(object : TypeReference<T>() {}).apply(instantiatorDsl)
     spec.instantiators.forEach { (type, instantiator) ->
         this.instantiate(type, instantiator)

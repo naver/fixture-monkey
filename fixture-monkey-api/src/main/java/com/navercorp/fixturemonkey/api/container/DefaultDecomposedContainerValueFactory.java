@@ -37,7 +37,7 @@ import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty.MapEntry
 /**
  * A default implementation of {@link DecomposedContainerValueFactory}.
  */
-@API(since = "0.6.0", status = Status.EXPERIMENTAL)
+@API(since = "0.6.0", status = Status.MAINTAINED)
 public final class DefaultDecomposedContainerValueFactory implements DecomposedContainerValueFactory {
 	private final DecomposedContainerValueFactory additionalDecomposedContainerValueFactory;
 

@@ -24,7 +24,7 @@ import org.apiguardian.api.API.Status;
 /**
  * It is used for decomposing the custom container.
  */
-@API(since = "0.6.0", status = Status.EXPERIMENTAL)
+@API(since = "0.6.0", status = Status.MAINTAINED)
 public class DecomposableJavaContainer {
 	/**
 	 * It should be one of these Java Container type.

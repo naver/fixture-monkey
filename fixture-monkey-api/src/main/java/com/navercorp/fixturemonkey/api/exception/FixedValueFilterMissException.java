@@ -27,7 +27,7 @@ import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
  * It is thrown when the generated fixed value is not matched by given predicate.
  * It causes all {@link CombinableArbitrary}s to regenerate in place.
  */
-@API(since = "0.6.9", status = Status.EXPERIMENTAL)
+@API(since = "0.6.9", status = Status.MAINTAINED)
 public final class FixedValueFilterMissException extends RuntimeException {
 	public FixedValueFilterMissException(String message) {
 		super(message);

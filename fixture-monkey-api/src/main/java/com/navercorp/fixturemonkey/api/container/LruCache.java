@@ -13,7 +13,7 @@ import org.apiguardian.api.API.Status;
  * @param <K> key of the cache
  * @param <V> value of the cache
  */
-@API(since = "0.6.0", status = Status.EXPERIMENTAL)
+@API(since = "0.6.0", status = Status.MAINTAINED)
 public final class LruCache<K, V> extends LinkedHashMap<K, V> {
 	private final int maxSize;
 
