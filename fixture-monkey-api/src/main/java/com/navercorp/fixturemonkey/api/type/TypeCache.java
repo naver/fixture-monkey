@@ -189,9 +189,24 @@ public final class TypeCache {
 				.map(Parameter::getName)
 				.toArray(String[]::new);
 		} else {
-			ConstructorProperties constructorPropertiesAnnotation =
-				constructor.getAnnotation(ConstructorProperties.class);
-			return constructorPropertiesAnnotation.value();
+			boolean anyReceiverParameter = Arrays.stream(constructor.getAnnotatedParameterTypes())
+				.anyMatch(it -> constructor.getAnnotatedReceiverType() != null
+					&& it.getType().equals(constructor.getAnnotatedReceiverType().getType()));
+
+			String[] constructorPropertiesNames = constructor.getAnnotation(ConstructorProperties.class).value();
+			if (!anyReceiverParameter) {
+				return constructorPropertiesNames;
+			}
+
+			String receiverParameterName = constructor.getParameters()[0].getName();
+			return concatArray(receiverParameterName, constructorPropertiesNames);
 		}
+	}
+
+	private static String[] concatArray(String single, String[] array) {
+		String[] concat = new String[1 + array.length];
+		concat[0] = single;
+		System.arraycopy(array, 0, concat, 1, array.length);
+		return concat;
 	}
 }

@@ -79,6 +79,7 @@ import com.navercorp.fixturemonkey.tests.java.ImmutableMixedIntrospectorsTypeSpe
 import com.navercorp.fixturemonkey.tests.java.ImmutableRecursiveTypeSpecs.SelfRecursiveListObject;
 import com.navercorp.fixturemonkey.tests.java.ImmutableRecursiveTypeSpecs.SelfRecursiveMapObject;
 import com.navercorp.fixturemonkey.tests.java.ImmutableRecursiveTypeSpecs.SelfRecursiveObject;
+import com.navercorp.fixturemonkey.tests.java.NestedClassTestSpecs.Inner;
 
 @SuppressWarnings("rawtypes")
 class JavaTest {
@@ -1079,5 +1080,12 @@ class JavaTest {
 
 		then(actual.getString()).isNull();
 		then(actual.getWrapperBoolean()).isNotNull();
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void nestedObject(){
+		Inner actual = SUT.giveMeOne(Inner.class);
+
+		then(actual).isNotNull();
 	}
 }
