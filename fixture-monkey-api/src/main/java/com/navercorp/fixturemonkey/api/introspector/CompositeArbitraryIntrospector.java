@@ -34,7 +34,7 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
  * a previously declared {@link ArbitraryIntrospector}.
  */
 @API(since = "0.6.12", status = Status.MAINTAINED)
-public class CompositeArbitraryIntrospector implements ArbitraryIntrospector {
+public final class CompositeArbitraryIntrospector implements ArbitraryIntrospector {
 	private final List<ArbitraryIntrospector> introspectors;
 
 	public CompositeArbitraryIntrospector(List<ArbitraryIntrospector> introspectors) {

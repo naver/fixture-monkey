@@ -48,7 +48,7 @@ import com.navercorp.fixturemonkey.resolver.ManipulatorOptimizer;
 import com.navercorp.fixturemonkey.tree.ArbitraryTraverser;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
-public class FixtureMonkey {
+public final class FixtureMonkey {
 	private final FixtureMonkeyOptions fixtureMonkeyOptions;
 	private final ArbitraryTraverser traverser;
 	private final ManipulatorOptimizer manipulatorOptimizer;

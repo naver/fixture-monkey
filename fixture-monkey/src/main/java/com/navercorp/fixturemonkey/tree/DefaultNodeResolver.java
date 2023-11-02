@@ -28,7 +28,7 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
-public class DefaultNodeResolver implements NodeResolver {
+public final class DefaultNodeResolver implements NodeResolver {
 	private final NextNodePredicate nextNodePredicate;
 
 	public DefaultNodeResolver(NextNodePredicate nextNodePredicate) {

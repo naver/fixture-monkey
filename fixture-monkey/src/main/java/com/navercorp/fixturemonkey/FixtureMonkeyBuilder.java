@@ -66,7 +66,7 @@ import com.navercorp.fixturemonkey.tree.ArbitraryTraverser;
 
 @SuppressWarnings("unused")
 @API(since = "0.4.0", status = Status.MAINTAINED)
-public class FixtureMonkeyBuilder {
+public final class FixtureMonkeyBuilder {
 	private final FixtureMonkeyOptionsBuilder fixtureMonkeyOptionsBuilder = FixtureMonkeyOptions.builder();
 	private final List<MatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>>>
 		registeredArbitraryBuilders = new ArrayList<>();

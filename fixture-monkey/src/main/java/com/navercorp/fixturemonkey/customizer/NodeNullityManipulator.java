@@ -25,7 +25,7 @@ import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerat
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.tree.ObjectNode;
 
-public class NodeNullityManipulator implements NodeManipulator {
+public final class NodeNullityManipulator implements NodeManipulator {
 	private final boolean toNull;
 
 	public NodeNullityManipulator(boolean toNull) {

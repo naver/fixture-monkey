@@ -22,7 +22,7 @@ import autoparams.customization.CompositeCustomizer;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
 
-public class FixtureMonkeyCustomizer extends CompositeCustomizer {
+public final class FixtureMonkeyCustomizer extends CompositeCustomizer {
 	private static FixtureMonkey FIXTURE_MONKEY = FixtureMonkey.create();
 
 	// call setUp @BeforeAll Lifecycle for customized FixtureMonkey object.

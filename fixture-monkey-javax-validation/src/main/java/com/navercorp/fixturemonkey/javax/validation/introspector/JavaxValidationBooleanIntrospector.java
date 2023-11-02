@@ -27,14 +27,24 @@ import org.apiguardian.api.API.Status;
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectDelegator;
+import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult;
 import com.navercorp.fixturemonkey.api.introspector.BooleanIntrospector;
+import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.matcher.Matchers;
+import com.navercorp.fixturemonkey.api.property.Property;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
-public final class JavaxValidationBooleanIntrospector extends ArbitraryIntrospectDelegator {
+public final class JavaxValidationBooleanIntrospector implements ArbitraryIntrospector, Matcher {
+	private final ArbitraryIntrospectDelegator delegator;
+
 	public JavaxValidationBooleanIntrospector() {
-		super(Matchers.BOOLEAN_TYPE_MATCHER, new BooleanIntrospector());
+		this.delegator = new ArbitraryIntrospectDelegator(Matchers.BOOLEAN_TYPE_MATCHER, new BooleanIntrospector());
+	}
+
+	@Override
+	public boolean match(Property property) {
+		return delegator.match(property);
 	}
 
 	@Override
@@ -47,6 +57,6 @@ public final class JavaxValidationBooleanIntrospector extends ArbitraryIntrospec
 			return new ArbitraryIntrospectorResult(CombinableArbitrary.from(false));
 		}
 
-		return super.introspect(context);
+		return delegator.introspect(context);
 	}
 }
