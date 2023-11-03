@@ -18,6 +18,7 @@
 
 package com.navercorp.fixturemonkey.tests.java;
 
+import static com.navercorp.fixturemonkey.api.experimental.JavaGetterMethodPropertySelector.javaGetter;
 import static com.navercorp.fixturemonkey.api.instantiator.Instantiator.constructor;
 import static com.navercorp.fixturemonkey.api.instantiator.Instantiator.factoryMethod;
 import static com.navercorp.fixturemonkey.tests.TestEnvironment.TEST_COUNT;
@@ -1099,5 +1100,54 @@ class JavaTest {
 		Inner actual = SUT.giveMeOne(Inner.class);
 
 		then(actual).isNotNull();
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void setJavaGetter() {
+		String actual = SUT.giveMeBuilder(JavaTypeObject.class)
+			.set(javaGetter(JavaTypeObject::getString), "test")
+			.sample()
+			.getString();
+
+		then(actual).isEqualTo("test");
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void setJavaGetterInto() {
+		String actual = SUT.giveMeBuilder(RootJavaTypeObject.class)
+			.set(javaGetter(RootJavaTypeObject::getValue).into(JavaTypeObject::getString), "test")
+			.sample()
+			.getValue()
+			.getString();
+
+		then(actual).isEqualTo("test");
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void setJavaGetterCollection() {
+		String actual = SUT.giveMeBuilder(ContainerObject.class)
+			.size("list", 1)
+			.set(javaGetter(ContainerObject::getList).container(String.class, 0), "test")
+			.sample()
+			.getList()
+			.get(0);
+
+		then(actual).isEqualTo("test");
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void setJavaGetterCollectionElement() {
+		String actual = SUT.giveMeBuilder(ContainerObject.class)
+			.size("complexList", 1)
+			.set(
+				javaGetter(ContainerObject::getComplexList)
+					.container(JavaTypeObject.class, 0)
+					.into(JavaTypeObject::getString), "test")
+			.sample()
+			.getComplexList()
+			.get(0)
+			.getString();
+
+		then(actual).isEqualTo("test");
 	}
 }
