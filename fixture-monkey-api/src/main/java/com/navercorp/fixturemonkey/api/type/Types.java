@@ -18,6 +18,8 @@
 
 package com.navercorp.fixturemonkey.api.type;
 
+import static com.navercorp.fixturemonkey.api.type.AnnotatedTypes.newAnnotatedTypeVariable;
+
 import java.beans.PropertyDescriptor;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedArrayType;
@@ -208,40 +210,7 @@ public abstract class Types {
 			return currentAnnotatedType;
 		}
 
-		return new AnnotatedTypeVariable() {
-			@Override
-			public AnnotatedType[] getAnnotatedBounds() {
-				AnnotatedType[] annotatedTypes = new AnnotatedType[1];
-				annotatedTypes[0] = genericsTypes.get(0);
-				return annotatedTypes;
-			}
-
-			@SuppressWarnings("Since15")
-			public AnnotatedType getAnnotatedOwnerType() {
-				// TODO: Return annotatedType.getAnnotatedOwnerType() as soon as Java >= 9 is being used
-				return null;
-			}
-
-			@Override
-			public Type getType() {
-				return genericsTypes.get(0).getType();
-			}
-
-			@Override
-			public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
-				return currentAnnotatedType.getAnnotation(annotationClass);
-			}
-
-			@Override
-			public Annotation[] getAnnotations() {
-				return currentAnnotatedType.getAnnotations();
-			}
-
-			@Override
-			public Annotation[] getDeclaredAnnotations() {
-				return currentAnnotatedType.getDeclaredAnnotations();
-			}
-		};
+		return newAnnotatedTypeVariable(currentAnnotatedType, genericsTypes);
 	}
 
 	@Nullable
@@ -321,7 +290,7 @@ public abstract class Types {
 			}
 		};
 
-		return AnnotatedTypes.from(
+		return AnnotatedTypes.newAnnotatedParameterizedType(
 			resolvedGenericsTypes,
 			resolveType,
 			fieldParameterizedType.getAnnotations(),
@@ -362,7 +331,7 @@ public abstract class Types {
 
 		Type resolveType = (GenericArrayType)() -> genericComponentTypeWithGeneric;
 
-		return AnnotatedTypes.from(
+		return AnnotatedTypes.newAnnotatedArrayType(
 			Types.generateAnnotatedTypeWithoutAnnotation(genericComponentTypeWithGeneric),
 			resolveType,
 			currentAnnotatedType.getAnnotations(),

@@ -89,7 +89,6 @@ public final class JakartaValidationConstraintGenerator implements JavaConstrain
 			max = BigInteger.valueOf(size.map(Size::max).get());
 		}
 
-		// TODO: support fraction
 		Optional<Digits> digitsAnnotation = context.findAnnotation(Digits.class);
 		if (digitsAnnotation.isPresent()) {
 			digits = true;

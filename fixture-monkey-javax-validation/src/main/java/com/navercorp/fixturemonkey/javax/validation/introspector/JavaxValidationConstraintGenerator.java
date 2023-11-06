@@ -88,7 +88,6 @@ public final class JavaxValidationConstraintGenerator implements JavaConstraintG
 			max = BigInteger.valueOf(size.map(Size::max).get());
 		}
 
-		// TODO: support fraction
 		Optional<Digits> digitsAnnotation = context.findAnnotation(Digits.class);
 		if (digitsAnnotation.isPresent()) {
 			digits = true;
