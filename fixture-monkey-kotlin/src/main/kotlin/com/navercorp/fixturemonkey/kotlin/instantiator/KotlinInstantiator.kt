@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.kotlin.experimental
+package com.navercorp.fixturemonkey.kotlin.instantiator
 
 import com.navercorp.fixturemonkey.api.instantiator.ConstructorInstantiator
 import com.navercorp.fixturemonkey.api.instantiator.FactoryMethodInstantiator
@@ -113,10 +113,10 @@ class KotlinInstantiatorProcessor :
                 CompositeArbitraryIntrospector(
                     listOf(
                         constructorArbitraryIntrospector,
-                        propertyInstantiatorProcessResult.introspector
-                    )
+                        propertyInstantiatorProcessResult.introspector,
+                    ),
                 ),
-                constructorParameterProperties + propertyInstantiatorProcessResult.properties
+                constructorParameterProperties + propertyInstantiatorProcessResult.properties,
             )
         }
 
@@ -221,7 +221,7 @@ class KotlinInstantiatorProcessor :
 
     private fun Collection<KFunction<*>>.findDeclaredMemberFunction(
         factoryMethodName: String,
-        inputParameterTypes: Array<Class<*>>
+        inputParameterTypes: Array<Class<*>>,
     ): KFunction<*>? =
         this.find { function ->
             function.name == factoryMethodName && hasAnyParameterMatchingFunction(function, inputParameterTypes)

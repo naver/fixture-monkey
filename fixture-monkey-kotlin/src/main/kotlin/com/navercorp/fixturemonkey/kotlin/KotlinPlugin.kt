@@ -25,7 +25,7 @@ import com.navercorp.fixturemonkey.api.matcher.MatcherOperator
 import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptionsBuilder
 import com.navercorp.fixturemonkey.api.plugin.Plugin
 import com.navercorp.fixturemonkey.api.type.Types
-import com.navercorp.fixturemonkey.kotlin.experimental.KotlinInstantiatorProcessor
+import com.navercorp.fixturemonkey.kotlin.instantiator.KotlinInstantiatorProcessor
 import com.navercorp.fixturemonkey.kotlin.generator.InterfaceKFunctionPropertyGenerator
 import com.navercorp.fixturemonkey.kotlin.generator.PairContainerPropertyGenerator
 import com.navercorp.fixturemonkey.kotlin.generator.PairDecomposedContainerValueFactory
@@ -67,28 +67,28 @@ class KotlinPlugin : Plugin {
             )
             .insertFirstArbitraryContainerPropertyGenerator(
                 PAIR_TYPE_MATCHER,
-                PairContainerPropertyGenerator()
+                PairContainerPropertyGenerator(),
             )
             .insertFirstArbitraryContainerPropertyGenerator(
                 TRIPLE_TYPE_MATCHER,
-                TripleContainerPropertyGenerator()
+                TripleContainerPropertyGenerator(),
             )
             .containerIntrospector {
                 MatchArbitraryIntrospector(
                     listOf(
                         PairIntrospector(),
                         TripleIntrospector(),
-                        it
-                    )
+                        it,
+                    ),
                 )
             }
             .addDecomposedContainerValueFactory(
                 Pair::class.java,
-                PairDecomposedContainerValueFactory()
+                PairDecomposedContainerValueFactory(),
             )
             .addDecomposedContainerValueFactory(
                 Triple::class.java,
-                TripleDecomposedContainerValueFactory()
+                TripleDecomposedContainerValueFactory(),
             )
             .instantiatorProcessor(KotlinInstantiatorProcessor())
     }

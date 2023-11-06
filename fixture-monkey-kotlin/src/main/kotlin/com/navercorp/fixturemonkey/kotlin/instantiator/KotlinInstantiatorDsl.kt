@@ -18,7 +18,7 @@
 
 @file:Suppress("PropertyName")
 
-package com.navercorp.fixturemonkey.kotlin.experimental
+package com.navercorp.fixturemonkey.kotlin.instantiator
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder
 import com.navercorp.fixturemonkey.api.instantiator.Instantiator
@@ -71,7 +71,7 @@ class InstantiatorDslSpec<T>(
 
     inline fun <reified U> factory(
         factoryMethodName: String,
-        dsl: KotlinFactoryMethodInstantiator<U>.() -> KotlinFactoryMethodInstantiator<U>
+        dsl: KotlinFactoryMethodInstantiator<U>.() -> KotlinFactoryMethodInstantiator<U>,
     ): InstantiatorDslSpec<T> {
         dsl(KotlinFactoryMethodInstantiator(factoryMethodName))
             .also {

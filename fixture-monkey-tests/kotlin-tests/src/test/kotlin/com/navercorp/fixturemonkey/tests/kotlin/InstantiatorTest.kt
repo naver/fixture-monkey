@@ -3,7 +3,7 @@ package com.navercorp.fixturemonkey.tests.kotlin
 import com.navercorp.fixturemonkey.FixtureMonkey
 import com.navercorp.fixturemonkey.api.instantiator.Instantiator
 import com.navercorp.fixturemonkey.kotlin.KotlinPlugin
-import com.navercorp.fixturemonkey.kotlin.experimental.instantiateBy
+import com.navercorp.fixturemonkey.kotlin.instantiator.instantiateBy
 import com.navercorp.fixturemonkey.kotlin.giveMeBuilder
 import com.navercorp.fixturemonkey.tests.TestEnvironment.TEST_COUNT
 import org.assertj.core.api.BDDAssertions.then
