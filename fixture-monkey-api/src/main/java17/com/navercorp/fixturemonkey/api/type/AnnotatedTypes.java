@@ -22,15 +22,17 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedArrayType;
 import java.lang.reflect.AnnotatedParameterizedType;
 import java.lang.reflect.AnnotatedType;
+import java.lang.reflect.AnnotatedTypeVariable;
 import java.lang.reflect.Type;
 import java.util.Arrays;
+import java.util.List;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 @API(since = "0.6.10", status = Status.MAINTAINED)
 public abstract class AnnotatedTypes {
-	public static AnnotatedArrayType from(
+	public static AnnotatedArrayType newAnnotatedArrayType(
 		AnnotatedType annotatedGenericComponentType,
 		Type type,
 		Annotation[] annotations,
@@ -74,7 +76,7 @@ public abstract class AnnotatedTypes {
 		};
 	}
 
-	public static AnnotatedParameterizedType from(
+	public static AnnotatedParameterizedType newAnnotatedParameterizedType(
 		AnnotatedType[] annotatedActualTypeArguments,
 		Type type,
 		Annotation[] annotations,
@@ -114,6 +116,45 @@ public abstract class AnnotatedTypes {
 			@Override
 			public Annotation[] getDeclaredAnnotations() {
 				return declaredAnnotations;
+			}
+		};
+	}
+
+	public static AnnotatedTypeVariable newAnnotatedTypeVariable(
+		AnnotatedType currentAnnotatedType,
+		List<AnnotatedType> genericsAnnotatedTypes
+	) {
+		return new AnnotatedTypeVariable() {
+			@Override
+			public AnnotatedType[] getAnnotatedBounds() {
+				AnnotatedType[] annotatedTypes = new AnnotatedType[1];
+				annotatedTypes[0] = genericsAnnotatedTypes.get(0);
+				return annotatedTypes;
+			}
+
+			@Override
+			public AnnotatedType getAnnotatedOwnerType() {
+				return currentAnnotatedType;
+			}
+
+			@Override
+			public Type getType() {
+				return genericsAnnotatedTypes.get(0).getType();
+			}
+
+			@Override
+			public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
+				return currentAnnotatedType.getAnnotation(annotationClass);
+			}
+
+			@Override
+			public Annotation[] getAnnotations() {
+				return currentAnnotatedType.getAnnotations();
+			}
+
+			@Override
+			public Annotation[] getDeclaredAnnotations() {
+				return currentAnnotatedType.getDeclaredAnnotations();
 			}
 		};
 	}

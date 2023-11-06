@@ -99,12 +99,12 @@ fun getAnnotatedType(ownerType: AnnotatedType, kProperty: KProperty<*>): Annotat
     }
 
     val resolvedGenericsTypesArray = resolvedGenericsTypes.toTypedArray()
-    return AnnotatedTypes.from(
+    return AnnotatedTypes.newAnnotatedParameterizedType(
         resolvedGenericsTypesArray,
         resolveType,
         annotationArray,
         annotationArray,
-        ownerType
+        ownerType,
     )
 }
 
@@ -129,7 +129,7 @@ fun KFunction<*>.getPropertyName(): String {
     return if (this.name.startsWith("get")) {
         this.name.substringAfter("get")
             .replaceFirstChar { it.lowercaseChar() }
-    } else if (this.returnType.javaType == kotlin.Boolean::class.java && this.name.startsWith("is")) {
+    } else if (this.returnType.javaType == Boolean::class.java && this.name.startsWith("is")) {
         this.name.substringAfter("is")
             .replaceFirstChar { it.lowercaseChar() }
     } else {
