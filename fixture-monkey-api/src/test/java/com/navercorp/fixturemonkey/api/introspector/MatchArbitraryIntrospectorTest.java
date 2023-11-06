@@ -34,7 +34,7 @@ class MatchArbitraryIntrospectorTest {
 		// given
 		ArbitraryIntrospector sut = new MatchArbitraryIntrospector(
 			Arrays.asList(
-				(context) -> ArbitraryIntrospectorResult.EMPTY,
+				(context) -> ArbitraryIntrospectorResult.NOT_INTROSPECTED,
 				(context) -> new ArbitraryIntrospectorResult(
 					ArbitraryUtils.toCombinableArbitrary(Arbitraries.strings())
 				),
@@ -47,7 +47,7 @@ class MatchArbitraryIntrospectorTest {
 		// when
 		ArbitraryIntrospectorResult actual = sut.introspect(null);
 
-		then(actual).isNotEqualTo(ArbitraryIntrospectorResult.EMPTY);
+		then(actual).isNotEqualTo(ArbitraryIntrospectorResult.NOT_INTROSPECTED);
 		then(actual.getValue()).isNotNull();
 		then(actual.getValue().combined()).isExactlyInstanceOf(String.class);
 	}

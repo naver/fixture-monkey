@@ -18,8 +18,8 @@
 
 package com.navercorp.fixturemonkey.api.property;
 
-import static com.navercorp.fixturemonkey.api.experimental.InstantiatorUtils.resolveParameterTypes;
-import static com.navercorp.fixturemonkey.api.experimental.InstantiatorUtils.resolvedParameterNames;
+import static com.navercorp.fixturemonkey.api.instantiator.InstantiatorUtils.resolveParameterTypes;
+import static com.navercorp.fixturemonkey.api.instantiator.InstantiatorUtils.resolvedParameterNames;
 
 import java.beans.ConstructorProperties;
 import java.lang.reflect.AnnotatedArrayType;
@@ -53,12 +53,6 @@ import com.navercorp.fixturemonkey.api.type.Types;
 public final class ConstructorParameterPropertyGenerator implements PropertyGenerator {
 	private final Predicate<Constructor<?>> constructorPredicate;
 	private final Matcher matcher;
-
-	@Deprecated
-	public ConstructorParameterPropertyGenerator(Matcher matcher) {
-		this.constructorPredicate = constructor -> constructor.getAnnotation(ConstructorProperties.class) != null;
-		this.matcher = matcher;
-	}
 
 	public ConstructorParameterPropertyGenerator(
 		Predicate<Constructor<?>> constructorPredicate,

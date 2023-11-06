@@ -27,7 +27,7 @@ import org.apiguardian.api.API.Status;
 import com.navercorp.fixturemonkey.api.property.Property;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
-public class ObjectTreeMetadata {
+public final class ObjectTreeMetadata {
 	private final Map<Property, List<ObjectNode>> nodesByProperty; // matchOperator
 
 	public ObjectTreeMetadata(Map<Property, List<ObjectNode>> nodesByProperty) {

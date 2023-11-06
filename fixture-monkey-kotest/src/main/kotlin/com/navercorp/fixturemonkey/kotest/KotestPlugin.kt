@@ -23,7 +23,7 @@ import com.navercorp.fixturemonkey.api.plugin.Plugin
 import org.apiguardian.api.API
 import org.apiguardian.api.API.Status
 
-@API(since = "0.6.11", status = Status.EXPERIMENTAL)
+@API(since = "0.6.11", status = Status.MAINTAINED)
 class KotestPlugin : Plugin {
     override fun accept(optionsBuilder: FixtureMonkeyOptionsBuilder) {
         optionsBuilder

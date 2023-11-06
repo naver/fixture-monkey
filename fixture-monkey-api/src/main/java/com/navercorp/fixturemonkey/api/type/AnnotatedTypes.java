@@ -30,7 +30,7 @@ import javax.annotation.Nullable;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-@API(since = "0.6.10", status = Status.EXPERIMENTAL)
+@API(since = "0.6.10", status = Status.MAINTAINED)
 public abstract class AnnotatedTypes {
 	public static AnnotatedArrayType from(
 		AnnotatedType annotatedGenericComponentType,

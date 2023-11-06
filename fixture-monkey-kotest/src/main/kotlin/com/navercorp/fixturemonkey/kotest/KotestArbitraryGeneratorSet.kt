@@ -50,6 +50,7 @@ import io.kotest.property.arbitrary.zoneId
 import io.kotest.property.arbitrary.zoneOffset
 import io.kotest.property.arbitrary.zonedDateTime
 import org.apiguardian.api.API
+import org.apiguardian.api.API.Status
 import java.math.BigDecimal
 import java.math.BigInteger
 import java.math.RoundingMode
@@ -74,7 +75,7 @@ import kotlin.math.floor
 import kotlin.math.pow
 import kotlin.time.toJavaDuration
 
-@API(since = "0.6.11", status = API.Status.EXPERIMENTAL)
+@API(since = "0.6.11", status = Status.MAINTAINED)
 class KotestJavaArbitraryGeneratorSet(
     private val constraintGenerator: JavaConstraintGenerator,
 ) : JavaTypeArbitraryGeneratorSet {

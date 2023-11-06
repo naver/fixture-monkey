@@ -34,9 +34,9 @@ public class ManipulationBenchmark {
 	}
 
 	@Benchmark
-	public void apply(Blackhole blackhole) throws Exception {
+	public void thenApply(Blackhole blackhole) throws Exception {
 		blackhole.consume(generateOrderSheet(fixture -> fixture.giveMeBuilder(OrderSheet.class)
-			.apply(((orderSheet, orderSheetArbitraryBuilder) -> {
+			.thenApply(((orderSheet, orderSheetArbitraryBuilder) -> {
 			}))
 			.sample()));
 	}

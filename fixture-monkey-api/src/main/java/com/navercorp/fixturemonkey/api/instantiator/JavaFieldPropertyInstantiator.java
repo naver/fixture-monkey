@@ -16,14 +16,24 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.api.experimental;
+package com.navercorp.fixturemonkey.api.instantiator;
 
-/**
- * The {@link PropertyInstantiator} interface represents a DSL for constructing objects of type T
- * using a no-args constructor and properties. It extends the {@link Instantiator} interface.
- *
- * @param <T> The type of objects that can be instantiated using the no-args constructor and properties.
- * @see Instantiator
- */
-public interface PropertyInstantiator<T> extends Instantiator {
+import java.lang.reflect.Field;
+import java.util.function.Predicate;
+
+import org.apiguardian.api.API;
+import org.apiguardian.api.API.Status;
+
+@API(since = "0.6.12", status = Status.MAINTAINED)
+public final class JavaFieldPropertyInstantiator<T> implements PropertyInstantiator<T> {
+	private Predicate<Field> fieldPredicate = it -> true;
+
+	public JavaFieldPropertyInstantiator<T> filter(Predicate<Field> fieldPredicate) {
+		this.fieldPredicate = fieldPredicate;
+		return this;
+	}
+
+	public Predicate<Field> getFieldPredicate() {
+		return fieldPredicate;
+	}
 }

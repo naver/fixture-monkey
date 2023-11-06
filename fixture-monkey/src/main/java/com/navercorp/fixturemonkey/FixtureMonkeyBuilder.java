@@ -42,10 +42,6 @@ import com.navercorp.fixturemonkey.api.generator.NullInjectGenerator;
 import com.navercorp.fixturemonkey.api.generator.NullObjectPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGenerator;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
-import com.navercorp.fixturemonkey.api.introspector.JavaArbitraryResolver;
-import com.navercorp.fixturemonkey.api.introspector.JavaTimeArbitraryResolver;
-import com.navercorp.fixturemonkey.api.introspector.JavaTimeTypeArbitraryGenerator;
-import com.navercorp.fixturemonkey.api.introspector.JavaTypeArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.introspector.MatchArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.matcher.AssignableTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.ExactTypeMatcher;
@@ -70,7 +66,7 @@ import com.navercorp.fixturemonkey.tree.ArbitraryTraverser;
 
 @SuppressWarnings("unused")
 @API(since = "0.4.0", status = Status.MAINTAINED)
-public class FixtureMonkeyBuilder {
+public final class FixtureMonkeyBuilder {
 	private final FixtureMonkeyOptionsBuilder fixtureMonkeyOptionsBuilder = FixtureMonkeyOptions.builder();
 	private final List<MatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>>>
 		registeredArbitraryBuilders = new ArrayList<>();
@@ -259,30 +255,6 @@ public class FixtureMonkeyBuilder {
 
 	public FixtureMonkeyBuilder objectIntrospector(ArbitraryIntrospector objectIntrospector) {
 		this.fixtureMonkeyOptionsBuilder.objectIntrospector(it -> objectIntrospector);
-		return this;
-	}
-
-	public FixtureMonkeyBuilder javaTypeArbitraryGenerator(
-		JavaTypeArbitraryGenerator javaTypeArbitraryGenerator
-	) {
-		fixtureMonkeyOptionsBuilder.javaTypeArbitraryGenerator(javaTypeArbitraryGenerator);
-		return this;
-	}
-
-	public FixtureMonkeyBuilder javaArbitraryResolver(JavaArbitraryResolver javaArbitraryResolver) {
-		fixtureMonkeyOptionsBuilder.javaArbitraryResolver(javaArbitraryResolver);
-		return this;
-	}
-
-	public FixtureMonkeyBuilder javaTimeTypeArbitraryGenerator(
-		JavaTimeTypeArbitraryGenerator javaTimeTypeArbitraryGenerator
-	) {
-		fixtureMonkeyOptionsBuilder.javaTimeTypeArbitraryGenerator(javaTimeTypeArbitraryGenerator);
-		return this;
-	}
-
-	public FixtureMonkeyBuilder javaTimeArbitraryResolver(JavaTimeArbitraryResolver javaTimeArbitraryResolver) {
-		fixtureMonkeyOptionsBuilder.javaTimeArbitraryResolver(javaTimeArbitraryResolver);
 		return this;
 	}
 

@@ -30,7 +30,7 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 /**
  * It combines given {@link CombinableArbitrary} list into an object type {@link CombinableArbitrary}.
  */
-@API(since = "0.6.0", status = Status.EXPERIMENTAL)
+@API(since = "0.6.0", status = Status.MAINTAINED)
 final class ObjectCombinableArbitrary<T> implements CombinableArbitrary<T> {
 	private final Map<ArbitraryProperty, CombinableArbitrary<?>> combinableArbitrariesByArbitraryProperty;
 	private final Function<Map<ArbitraryProperty, Object>, T> combinator;

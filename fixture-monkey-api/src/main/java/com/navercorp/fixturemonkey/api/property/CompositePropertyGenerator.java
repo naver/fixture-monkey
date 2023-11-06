@@ -54,7 +54,7 @@ public final class CompositePropertyGenerator implements PropertyGenerator {
 		Map<String, List<Property>> propertyListsByPropertyName = new HashMap<>();
 
 		for (PropertyGenerator propertyGenerator : propertyGenerators) {
-			List<Property> generatedProperties = propertyGenerator.generateChildProperties(property.getAnnotatedType())
+			List<Property> generatedProperties = propertyGenerator.generateChildProperties(property)
 				.stream()
 				.filter(it -> it.getName() != null)
 				.collect(Collectors.toList());

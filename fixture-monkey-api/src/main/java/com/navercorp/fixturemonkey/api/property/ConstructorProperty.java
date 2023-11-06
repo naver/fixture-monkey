@@ -47,22 +47,6 @@ public final class ConstructorProperty implements Property {
 	@Nullable
 	private final Boolean nullable;
 
-	@Deprecated
-	public ConstructorProperty(
-		AnnotatedType annotatedType,
-		Constructor<?> constructor,
-		String parameterName,
-		@Nullable Property fieldProperty
-	) {
-		this(
-			annotatedType,
-			constructor,
-			parameterName,
-			fieldProperty,
-			null
-		);
-	}
-
 	public ConstructorProperty(
 		AnnotatedType annotatedType,
 		Constructor<?> constructor,

@@ -42,7 +42,7 @@ public final class IteratorIntrospector implements ArbitraryIntrospector, Matche
 	@Override
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
 		ArbitraryIntrospectorResult result = DELEGATE.introspect(context);
-		if (result == ArbitraryIntrospectorResult.EMPTY) {
+		if (result == ArbitraryIntrospectorResult.NOT_INTROSPECTED) {
 			return result;
 		}
 

@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.api.experimental;
+package com.navercorp.fixturemonkey.api.instantiator;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -27,7 +27,7 @@ import com.navercorp.fixturemonkey.api.type.TypeReference;
  * The {@link InstantiatorProcessor} interface represents a component responsible for processing an
  * {@link Instantiator} DSL.
  */
-@API(since = "0.6.12", status = Status.EXPERIMENTAL)
+@API(since = "0.6.12", status = Status.MAINTAINED)
 public interface InstantiatorProcessor {
 	/**
 	 * Processes an {@link Instantiator} DSL to resolve a way to instantiate to a given type.

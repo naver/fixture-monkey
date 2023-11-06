@@ -16,20 +16,14 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.api.property;
-
-import org.apiguardian.api.API;
-import org.apiguardian.api.API.Status;
+package com.navercorp.fixturemonkey.api.instantiator;
 
 /**
- * An interface for finding the location of given property resides.
+ * The {@link PropertyInstantiator} interface represents a DSL for constructing objects of type T
+ * using a no-args constructor and properties. It extends the {@link Instantiator} interface.
+ *
+ * @param <T> The type of objects that can be instantiated using the no-args constructor and properties.
+ * @see Instantiator
  */
-@API(since = "0.6.0", status = Status.MAINTAINED)
-@FunctionalInterface
-public interface Traceable {
-	/**
-	 * retrieves a PropertyPath to find the location.
-	 * @return a PropertyPath
-	 */
-	PropertyPath getPropertyPath();
+public interface PropertyInstantiator<T> extends Instantiator {
 }

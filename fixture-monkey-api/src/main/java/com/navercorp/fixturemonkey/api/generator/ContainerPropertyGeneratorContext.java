@@ -23,52 +23,28 @@ import javax.annotation.Nullable;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class ContainerPropertyGeneratorContext {
 	private final Property property;
-
 	@Nullable
 	private final Integer elementIndex;
-
 	@Nullable
 	private final ArbitraryContainerInfo containerInfo;
 	private final ArbitraryContainerInfoGenerator containerInfoGenerator;
 
-	@Deprecated
-	private final FixtureMonkeyOptions fixtureMonkeyOptions;
-
-	/**
-	 * It is deprecated.
-	 * Use {@link #ContainerPropertyGeneratorContext(Property, Integer, ArbitraryContainerInfoGenerator)} instead.
-	 */
-	@Deprecated
 	public ContainerPropertyGeneratorContext(
 		Property property,
 		@Nullable Integer elementIndex,
 		@Nullable ArbitraryContainerInfo containerInfo,
-		FixtureMonkeyOptions fixtureMonkeyOptions
-	) {
-		this.property = property;
-		this.elementIndex = elementIndex;
-		this.containerInfo = containerInfo;
-		this.containerInfoGenerator = fixtureMonkeyOptions.getArbitraryContainerInfoGenerator(property);
-		this.fixtureMonkeyOptions = fixtureMonkeyOptions;
-	}
-
-	public ContainerPropertyGeneratorContext(
-		Property property,
-		@Nullable Integer elementIndex,
 		ArbitraryContainerInfoGenerator containerInfoGenerator
 	) {
 		this.property = property;
 		this.elementIndex = elementIndex;
+		this.containerInfo = containerInfo;
 		this.containerInfoGenerator = containerInfoGenerator;
-		this.containerInfo = containerInfoGenerator.generate(this);
-		this.fixtureMonkeyOptions = FixtureMonkeyOptions.DEFAULT_GENERATE_OPTIONS;
 	}
 
 	public Property getProperty() {
@@ -78,14 +54,6 @@ public final class ContainerPropertyGeneratorContext {
 	@Nullable
 	public Integer getElementIndex() {
 		return elementIndex;
-	}
-
-	/**
-	 * It is deprecated. Do not use {@link FixtureMonkeyOptions} in your {@link ContainerPropertyGeneratorContext}.
-	 */
-	@Deprecated
-	public FixtureMonkeyOptions getFixtureMonkeyOptions() {
-		return fixtureMonkeyOptions;
 	}
 
 	public ArbitraryContainerInfo getContainerInfo() {

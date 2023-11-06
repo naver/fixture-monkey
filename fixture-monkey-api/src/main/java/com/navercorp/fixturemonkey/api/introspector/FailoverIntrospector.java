@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 
-@API(since = "0.6.0", status = Status.EXPERIMENTAL)
+@API(since = "0.6.0", status = Status.MAINTAINED)
 public final class FailoverIntrospector implements ArbitraryIntrospector {
 	private static final Logger LOGGER = LoggerFactory.getLogger(FailoverIntrospector.class);
 
@@ -46,7 +46,7 @@ public final class FailoverIntrospector implements ArbitraryIntrospector {
 		List<FailoverIntrospectorResult> results = new ArrayList<>();
 		for (ArbitraryIntrospector introspector : this.introspectors) {
 			ArbitraryIntrospectorResult result = introspector.introspect(context);
-			if (!ArbitraryIntrospectorResult.EMPTY.equals(result)) {
+			if (!ArbitraryIntrospectorResult.NOT_INTROSPECTED.equals(result)) {
 				results.add(new FailoverIntrospectorResult(introspector, result));
 			}
 		}

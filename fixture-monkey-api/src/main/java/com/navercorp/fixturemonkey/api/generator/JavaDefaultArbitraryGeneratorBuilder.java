@@ -36,7 +36,6 @@ import com.navercorp.fixturemonkey.api.introspector.EnumIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.IterableIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.IteratorIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.JavaArbitraryIntrospector;
-import com.navercorp.fixturemonkey.api.introspector.JavaTimeArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.ListIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.MapEntryElementIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.MapEntryIntrospector;
@@ -47,6 +46,7 @@ import com.navercorp.fixturemonkey.api.introspector.QueueIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.SetIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.StreamIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.UuidIntrospector;
+import com.navercorp.fixturemonkey.api.jqwik.JavaTimeArbitraryIntrospector;
 
 @SuppressWarnings("UnusedReturnValue")
 @API(since = "0.4.0", status = Status.MAINTAINED)
@@ -150,7 +150,7 @@ public final class JavaDefaultArbitraryGeneratorBuilder {
 		return this;
 	}
 
-	public DefaultArbitraryGenerator build() {
+	public IntrospectedArbitraryGenerator build() {
 		if (this.fallbackIntrospector == DEFAULT_FALLBACK_INTROSPECTOR) {
 			this.fallbackIntrospector = AnonymousArbitraryIntrospector.INSTANCE;
 		}

@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.api.experimental;
+package com.navercorp.fixturemonkey.api.instantiator;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -24,7 +24,7 @@ import org.apiguardian.api.API.Status;
 /**
  * provides a DSL for a way of specifying the instantiation of types.
  */
-@API(since = "0.6.12", status = Status.EXPERIMENTAL)
+@API(since = "0.6.12", status = Status.MAINTAINED)
 public interface Instantiator {
 	/**
 	 * Creates a DSL object for specifying a given type of constructor.

@@ -33,7 +33,7 @@ import org.apiguardian.api.API.Status;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.api.type.Types;
 
-@API(since = "0.6.12", status = Status.EXPERIMENTAL)
+@API(since = "0.6.12", status = Status.MAINTAINED)
 public abstract class PropertyUtils {
 	public static Property toProperty(Class<?> type) {
 		return PropertyUtils.toProperty(Types.generateAnnotatedTypeWithoutAnnotation(type));

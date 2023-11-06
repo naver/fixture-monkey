@@ -51,7 +51,6 @@ import com.navercorp.fixturemonkey.ArbitraryBuilders;
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.customizer.Values;
-import com.navercorp.fixturemonkey.test.ExpressionGeneratorTestSpecs.StringValue;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.ChildValue;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.ComplexObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.EnumObject;
@@ -76,6 +75,7 @@ import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.SimpleObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.StaticFieldObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.StringAndInt;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.StringPair;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.StringValue;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.ThirdNestedListStringObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.TwoEnum;
 
@@ -454,7 +454,7 @@ class FixtureMonkeyTest {
 		// when
 		String actual = SUT.giveMeBuilder(ComplexObject.class)
 			.set("str", "set")
-			.apply((it, builder) ->
+			.thenApply((it, builder) ->
 				builder.size("strList", 1)
 					.set("strList[0]", it.getStr())
 			)
@@ -469,7 +469,7 @@ class FixtureMonkeyTest {
 	void applyWithoutAnyManipulators() {
 		// when
 		ComplexObject actual = SUT.giveMeBuilder(ComplexObject.class)
-			.apply((it, builder) ->
+			.thenApply((it, builder) ->
 				builder.size("strList", 1)
 					.set("strList[0]", it.getStr())
 			)
@@ -487,7 +487,7 @@ class FixtureMonkeyTest {
 		// when
 		String actual = SUT.giveMeBuilder(ComplexObject.class)
 			.set("str", "set")
-			.apply((it, builder) ->
+			.thenApply((it, builder) ->
 				builder.size("strList", 1)
 					.set("strList[0]", it.getStr())
 			)
@@ -933,7 +933,7 @@ class FixtureMonkeyTest {
 
 		// when
 		String actual = SUT.giveMeBuilder(Integer.class)
-			.zipWith(stringArbitraryBuilder, (integer, string) -> integer + "" + string)
+			.zipWith(stringArbitraryBuilder, (integer, string) -> integer + string)
 			.sample();
 
 		then(actual).isNotNull();
@@ -949,7 +949,7 @@ class FixtureMonkeyTest {
 		String actual = ArbitraryBuilders.zip(
 			stringArbitraryBuilder,
 			integerArbitraryBuilder,
-			(integer, string) -> integer + "" + string
+			(integer, string) -> integer + string
 		).sample();
 
 		then(actual).isNotNull();
@@ -965,7 +965,7 @@ class FixtureMonkeyTest {
 		Arbitrary<String> zippedArbitraryBuilder = ArbitraryBuilders.zip(
 			stringArbitraryBuilder,
 			integerArbitraryBuilder,
-			(integer, string) -> integer + "" + string
+			(integer, string) -> integer + string
 		).build();
 
 		// then
@@ -1030,7 +1030,7 @@ class FixtureMonkeyTest {
 	@Property
 	void applySetElementNull() {
 		String actual = SUT.giveMeBuilder(ComplexObject.class)
-			.apply((obj, builder) -> builder.size("strList", 1)
+			.thenApply((obj, builder) -> builder.size("strList", 1)
 				.setNull("strList[0]")
 			)
 			.sample()
@@ -1071,7 +1071,7 @@ class FixtureMonkeyTest {
 	@Property
 	void applySampleTwiceReturnsDiff() {
 		ArbitraryBuilder<SimpleObject> builder = SUT.giveMeBuilder(SimpleObject.class)
-			.apply((obj, b) -> {
+			.thenApply((obj, b) -> {
 			});
 
 		SimpleObject actual = builder.sample();
@@ -1207,7 +1207,7 @@ class FixtureMonkeyTest {
 		SimpleObject actual = SUT.giveMeBuilder(new TypeReference<List<SimpleObject>>() {
 			})
 			.size("$", 1)
-			.apply((it, builder) -> builder.set("$[0].str", it.get(0).getInteger() + ""))
+			.thenApply((it, builder) -> builder.set("$[0].str", it.get(0).getInteger() + ""))
 			.sample()
 			.get(0);
 
@@ -1353,7 +1353,7 @@ class FixtureMonkeyTest {
 
 		List<String> actual = SUT.giveMeBuilder(ComplexObject.class)
 			.minSize("strList", 1)
-			.apply((it, builder) -> builder.set("strList[*]", expectedElement))
+			.thenApply((it, builder) -> builder.set("strList[*]", expectedElement))
 			.sample()
 			.getStrList();
 

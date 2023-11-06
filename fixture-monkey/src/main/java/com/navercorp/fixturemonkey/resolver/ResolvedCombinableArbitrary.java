@@ -34,7 +34,7 @@ import com.navercorp.fixturemonkey.api.property.RootProperty;
 import com.navercorp.fixturemonkey.api.validator.ArbitraryValidator;
 import com.navercorp.fixturemonkey.tree.ObjectTree;
 
-@API(since = "0.6.9", status = Status.EXPERIMENTAL)
+@API(since = "0.6.9", status = Status.MAINTAINED)
 final class ResolvedCombinableArbitrary<T> implements CombinableArbitrary<T> {
 	private static final int VALIDATION_ANNOTATION_FILTERING_COUNT = 1;
 

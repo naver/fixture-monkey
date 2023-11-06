@@ -171,7 +171,7 @@ public final class ObjectTree {
 		Property property,
 		@Nullable ArbitraryIntrospector arbitraryIntrospector
 	) {
-		ArbitraryGenerator arbitraryGenerator = this.fixtureMonkeyOptions.getArbitraryGenerator(property);
+		ArbitraryGenerator arbitraryGenerator = this.fixtureMonkeyOptions.getDefaultArbitraryGenerator();
 
 		if (arbitraryIntrospector != null) {
 			arbitraryGenerator = new CompositeArbitraryGenerator(

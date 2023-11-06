@@ -25,7 +25,7 @@ import java.util.function.Function;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-@API(since = "0.6.0", status = Status.EXPERIMENTAL)
+@API(since = "0.6.0", status = Status.MAINTAINED)
 public final class ContainerCombineArbitraryBuilder {
 	private final List<CombinableArbitrary<?>> elementArbitraryList;
 	private Runnable postBuild = () -> {

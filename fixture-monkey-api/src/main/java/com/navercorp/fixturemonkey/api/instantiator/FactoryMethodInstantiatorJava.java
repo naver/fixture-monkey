@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.api.experimental;
+package com.navercorp.fixturemonkey.api.instantiator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +29,7 @@ import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 
-@API(since = "0.6.12", status = Status.EXPERIMENTAL)
+@API(since = "0.6.12", status = Status.MAINTAINED)
 public final class FactoryMethodInstantiatorJava<T> implements FactoryMethodInstantiator<T> {
 	private final String factoryMethodName;
 	private final List<TypeReference<?>> types;

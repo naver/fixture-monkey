@@ -18,6 +18,7 @@
 
 package com.navercorp.fixturemonkey.api.property;
 
+import java.beans.ConstructorProperties;
 import java.util.Arrays;
 import java.util.List;
 
@@ -29,7 +30,10 @@ public final class DefaultPropertyGenerator implements PropertyGenerator {
 	private static final CompositePropertyGenerator COMPOSITE_PROPERTY_GENERATOR =
 		new CompositePropertyGenerator(
 			Arrays.asList(
-				new ConstructorParameterPropertyGenerator(it -> true),
+				new ConstructorParameterPropertyGenerator(
+					it -> it.getAnnotation(ConstructorProperties.class) != null,
+					it -> true
+				),
 				new FieldPropertyGenerator(it -> true, it -> true),
 				new JavaBeansPropertyGenerator(
 					it -> it.getReadMethod() != null && it.getWriteMethod() != null,
@@ -39,6 +43,6 @@ public final class DefaultPropertyGenerator implements PropertyGenerator {
 		);
 
 	public List<Property> generateChildProperties(Property property) {
-		return COMPOSITE_PROPERTY_GENERATOR.generateChildProperties(property.getAnnotatedType());
+		return COMPOSITE_PROPERTY_GENERATOR.generateChildProperties(property);
 	}
 }

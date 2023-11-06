@@ -33,7 +33,7 @@ import org.apiguardian.api.API.Status;
  * @param <V> value of the cache
  */
 @SuppressWarnings("NullableProblems")
-@API(since = "0.5.10", status = Status.EXPERIMENTAL)
+@API(since = "0.5.10", status = Status.MAINTAINED)
 public final class ConcurrentLruCache<K, V> implements Map<K, V> {
 	private final Map<K, V> lruCache;
 

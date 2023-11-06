@@ -16,10 +16,10 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.api.experimental;
+package com.navercorp.fixturemonkey.api.instantiator;
 
-import static com.navercorp.fixturemonkey.api.experimental.InstantiatorUtils.resolveParameterTypes;
-import static com.navercorp.fixturemonkey.api.experimental.InstantiatorUtils.resolvedParameterNames;
+import static com.navercorp.fixturemonkey.api.instantiator.InstantiatorUtils.resolveParameterTypes;
+import static com.navercorp.fixturemonkey.api.instantiator.InstantiatorUtils.resolvedParameterNames;
 import static com.navercorp.fixturemonkey.api.type.Types.getDeclaredConstructor;
 import static com.navercorp.fixturemonkey.api.type.Types.isAssignableTypes;
 import static java.util.stream.Collectors.toList;
@@ -55,7 +55,7 @@ import com.navercorp.fixturemonkey.api.property.PropertyUtils;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.api.type.Types;
 
-@API(since = "0.6.12", status = Status.EXPERIMENTAL)
+@API(since = "0.6.12", status = Status.MAINTAINED)
 public final class JavaInstantiatorProcessor implements InstantiatorProcessor {
 	private static final ConstructorParameterPropertyGenerator JAVA_CONSTRUCTOR_PROPERTY_GENERATOR =
 		new ConstructorParameterPropertyGenerator(

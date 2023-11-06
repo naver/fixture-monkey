@@ -18,8 +18,8 @@
 
 package com.navercorp.fixturemonkey.tests.java;
 
-import static com.navercorp.fixturemonkey.api.experimental.Instantiator.constructor;
-import static com.navercorp.fixturemonkey.api.experimental.Instantiator.factoryMethod;
+import static com.navercorp.fixturemonkey.api.instantiator.Instantiator.constructor;
+import static com.navercorp.fixturemonkey.api.instantiator.Instantiator.factoryMethod;
 import static com.navercorp.fixturemonkey.tests.TestEnvironment.TEST_COUNT;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.assertj.core.api.BDDAssertions.thenNoException;
@@ -830,7 +830,7 @@ class JavaTest {
 
 	@RepeatedTest(TEST_COUNT)
 	void instantiateParametersInOrder() {
-		String actual = SUT.giveMeExperimentalBuilder(ConstructorTestSpecs.JavaTypeObject.class)
+		String actual = SUT.giveMeBuilder(ConstructorTestSpecs.JavaTypeObject.class)
 			.instantiate(
 				ConstructorTestSpecs.JavaTypeObject.class,
 				constructor()
@@ -851,7 +851,7 @@ class JavaTest {
 
 	@RepeatedTest(TEST_COUNT)
 	void instantiateNoArgsConstructor() {
-		String actual = SUT.giveMeExperimentalBuilder(ConstructorTestSpecs.JavaTypeObject.class)
+		String actual = SUT.giveMeBuilder(ConstructorTestSpecs.JavaTypeObject.class)
 			.instantiate(
 				ConstructorTestSpecs.JavaTypeObject.class,
 				constructor()
@@ -864,7 +864,7 @@ class JavaTest {
 
 	@RepeatedTest(TEST_COUNT)
 	void instantiateParameterNameHint() {
-		String actual = SUT.giveMeExperimentalBuilder(ConstructorTestSpecs.JavaTypeObject.class)
+		String actual = SUT.giveMeBuilder(ConstructorTestSpecs.JavaTypeObject.class)
 			.instantiate(
 				ConstructorTestSpecs.JavaTypeObject.class,
 				constructor()
@@ -879,7 +879,7 @@ class JavaTest {
 
 	@RepeatedTest(TEST_COUNT)
 	void instantiateConstructorContainer() {
-		List<ConstructorTestSpecs.JavaTypeObject> actual = SUT.giveMeExperimentalBuilder(SimpleContainerObject.class)
+		List<ConstructorTestSpecs.JavaTypeObject> actual = SUT.giveMeBuilder(SimpleContainerObject.class)
 			.instantiate(
 				SimpleContainerObject.class,
 				constructor()
@@ -907,7 +907,7 @@ class JavaTest {
 
 	@RepeatedTest(TEST_COUNT)
 	void instantiateConstructorGenericContainer() {
-		String actual = SUT.giveMeExperimentalBuilder(ConstructorTestSpecs.ContainerObject.class)
+		String actual = SUT.giveMeBuilder(ConstructorTestSpecs.ContainerObject.class)
 			.instantiate(
 				ConstructorTestSpecs.ContainerObject.class,
 				constructor()
@@ -956,7 +956,7 @@ class JavaTest {
 
 	@RepeatedTest(TEST_COUNT)
 	void instantiateGenericObjectByConstructor() {
-		ConstructorTestSpecs.GenericObject<String> actual = SUT.giveMeExperimentalBuilder(
+		ConstructorTestSpecs.GenericObject<String> actual = SUT.giveMeBuilder(
 				new TypeReference<ConstructorTestSpecs.GenericObject<String>>() {
 				})
 			.instantiate(
@@ -973,7 +973,7 @@ class JavaTest {
 
 	@RepeatedTest(TEST_COUNT)
 	void instantiateTwoGenericObjectByConstructor() {
-		ConstructorTestSpecs.TwoGenericObject<String, Integer> actual = SUT.giveMeExperimentalBuilder(
+		ConstructorTestSpecs.TwoGenericObject<String, Integer> actual = SUT.giveMeBuilder(
 				new TypeReference<ConstructorTestSpecs.TwoGenericObject<String, Integer>>() {
 				})
 			.instantiate(
@@ -992,7 +992,7 @@ class JavaTest {
 
 	@RepeatedTest(TEST_COUNT)
 	void instantiateGenericObjectWithHintByConstructor() {
-		ConstructorTestSpecs.GenericObject<String> actual = SUT.giveMeExperimentalBuilder(
+		ConstructorTestSpecs.GenericObject<String> actual = SUT.giveMeBuilder(
 				new TypeReference<ConstructorTestSpecs.GenericObject<String>>() {
 				})
 			.instantiate(
@@ -1009,7 +1009,7 @@ class JavaTest {
 
 	@RepeatedTest(TEST_COUNT)
 	void instantiateByFactoryMethod() {
-		String actual = SUT.giveMeExperimentalBuilder(ConstructorTestSpecs.JavaTypeObject.class)
+		String actual = SUT.giveMeBuilder(ConstructorTestSpecs.JavaTypeObject.class)
 			.instantiate(
 				factoryMethod("from")
 			)
@@ -1021,7 +1021,7 @@ class JavaTest {
 
 	@RepeatedTest(TEST_COUNT)
 	void instantiateByFactoryMethodWithParameter() {
-		String actual = SUT.giveMeExperimentalBuilder(ConstructorTestSpecs.JavaTypeObject.class)
+		String actual = SUT.giveMeBuilder(ConstructorTestSpecs.JavaTypeObject.class)
 			.instantiate(
 				factoryMethod("from")
 					.parameter(String.class)
@@ -1034,7 +1034,7 @@ class JavaTest {
 
 	@RepeatedTest(TEST_COUNT)
 	void instantiateFactoryMethodAndField() {
-		Integer actual = SUT.giveMeExperimentalBuilder(ConstructorTestSpecs.JavaTypeObject.class)
+		Integer actual = SUT.giveMeBuilder(ConstructorTestSpecs.JavaTypeObject.class)
 			.instantiate(
 				factoryMethod("from")
 					.parameter(String.class)
@@ -1048,7 +1048,7 @@ class JavaTest {
 
 	@RepeatedTest(TEST_COUNT)
 	void instantiateConstructorField() {
-		String actual = SUT.giveMeExperimentalBuilder(MutableJavaTestSpecs.JavaTypeObject.class)
+		String actual = SUT.giveMeBuilder(MutableJavaTestSpecs.JavaTypeObject.class)
 			.instantiate(constructor().field())
 			.sample()
 			.getString();
@@ -1058,7 +1058,7 @@ class JavaTest {
 
 	@RepeatedTest(TEST_COUNT)
 	void instantiateConstructorJavaBeansProperty() {
-		String actual = SUT.giveMeExperimentalBuilder(MutableJavaTestSpecs.JavaTypeObject.class)
+		String actual = SUT.giveMeBuilder(MutableJavaTestSpecs.JavaTypeObject.class)
 			.instantiate(constructor().javaBeansProperty())
 			.sample()
 			.getString();
@@ -1069,7 +1069,7 @@ class JavaTest {
 	@RepeatedTest(TEST_COUNT)
 	void instantiateConstructorFieldFilter() {
 		MutableJavaTestSpecs.JavaTypeObject actual =
-			SUT.giveMeExperimentalBuilder(MutableJavaTestSpecs.JavaTypeObject.class)
+			SUT.giveMeBuilder(MutableJavaTestSpecs.JavaTypeObject.class)
 				.instantiate(
 					constructor()
 						.field(it -> it.filter(field -> !Modifier.isPrivate(field.getModifiers())))
@@ -1083,7 +1083,7 @@ class JavaTest {
 	@RepeatedTest(TEST_COUNT)
 	void instantiateConstructorJavaBeansPropertyFilter() {
 		MutableJavaTestSpecs.JavaTypeObject actual =
-			SUT.giveMeExperimentalBuilder(MutableJavaTestSpecs.JavaTypeObject.class)
+			SUT.giveMeBuilder(MutableJavaTestSpecs.JavaTypeObject.class)
 				.instantiate(
 					constructor()
 						.javaBeansProperty(it -> it.filter(property -> !"string".equals(property.getName())))
@@ -1095,7 +1095,7 @@ class JavaTest {
 	}
 
 	@RepeatedTest(TEST_COUNT)
-	void nestedObject(){
+	void nestedObject() {
 		Inner actual = SUT.giveMeOne(Inner.class);
 
 		then(actual).isNotNull();

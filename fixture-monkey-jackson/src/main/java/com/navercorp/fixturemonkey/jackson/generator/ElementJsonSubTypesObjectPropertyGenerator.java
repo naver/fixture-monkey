@@ -42,6 +42,7 @@ import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGeneratorContext;
 import com.navercorp.fixturemonkey.api.property.ElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.PropertyGenerator;
+import com.navercorp.fixturemonkey.api.property.PropertyUtils;
 import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.4.2", status = Status.MAINTAINED)
@@ -54,7 +55,7 @@ public final class ElementJsonSubTypesObjectPropertyGenerator implements ObjectP
 		Property property = context.getProperty();
 		double nullInject = context.getNullInjectGenerator()
 			.generate(context);
-		PropertyGenerator defaultPropertyGenerator = context.getPropertyGenerator();
+		PropertyGenerator propertyGenerator = context.getPropertyGenerator();
 		Property containerProperty = ((ElementProperty)property).getContainerProperty();
 
 		JsonSubTypes jsonSubTypes = getJacksonAnnotation(containerProperty, JsonSubTypes.class);
@@ -65,7 +66,8 @@ public final class ElementJsonSubTypesObjectPropertyGenerator implements ObjectP
 		Class<?> type = getRandomJsonSubType(jsonSubTypes);
 		AnnotatedType annotatedType = Types.generateAnnotatedTypeWithoutAnnotation(type);
 
-		List<Property> childProperties = defaultPropertyGenerator.generateChildProperties(annotatedType);
+		List<Property> childProperties =
+			propertyGenerator.generateChildProperties(PropertyUtils.toProperty(annotatedType));
 
 		JsonTypeInfo jsonTypeInfo = getJacksonAnnotation(containerProperty, JsonTypeInfo.class);
 		List<Annotation> annotations = new ArrayList<>(property.getAnnotations());

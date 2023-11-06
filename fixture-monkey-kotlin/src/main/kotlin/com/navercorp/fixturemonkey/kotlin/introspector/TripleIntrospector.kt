@@ -10,7 +10,7 @@ import com.navercorp.fixturemonkey.kotlin.matcher.Matchers.TRIPLE_TYPE_MATCHER
 import org.apiguardian.api.API
 import org.apiguardian.api.API.Status
 
-@API(since = "0.6.0", status = Status.EXPERIMENTAL)
+@API(since = "0.6.0", status = Status.MAINTAINED)
 class TripleIntrospector : ArbitraryIntrospector, Matcher {
     private val MATCHER = TRIPLE_TYPE_MATCHER
 

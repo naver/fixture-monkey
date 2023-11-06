@@ -41,13 +41,11 @@ import org.apiguardian.api.API.Status;
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.arbitrary.JavaTimeArbitraryGeneratorSet;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
-import com.navercorp.fixturemonkey.api.introspector.JavaTimeArbitraryResolver;
-import com.navercorp.fixturemonkey.api.introspector.JavaTimeTypeArbitraryGenerator;
 
 /**
  * It would be moved into jqwik module in 0.7.0.
  */
-@API(since = "0.6.3", status = Status.EXPERIMENTAL)
+@API(since = "0.6.3", status = Status.MAINTAINED)
 public final class JqwikJavaTimeArbitraryGeneratorSet implements JavaTimeArbitraryGeneratorSet {
 	private final JavaTimeTypeArbitraryGenerator arbitraryGenerator;
 	private final JavaTimeArbitraryResolver arbitraryResolver;

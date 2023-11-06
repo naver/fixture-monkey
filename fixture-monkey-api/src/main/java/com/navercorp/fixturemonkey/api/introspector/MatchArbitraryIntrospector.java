@@ -35,8 +35,8 @@ import com.navercorp.fixturemonkey.api.matcher.Matcher;
  * the next {@link ArbitraryIntrospector} will be used.
  * If there are one or more {@link ArbitraryIntrospector} that match the condition, the first one is used.
  */
-@API(since = "0.6.12", status = Status.EXPERIMENTAL)
-public class MatchArbitraryIntrospector implements ArbitraryIntrospector {
+@API(since = "0.6.12", status = Status.MAINTAINED)
+public final class MatchArbitraryIntrospector implements ArbitraryIntrospector {
 	private final List<ArbitraryIntrospector> introspectors;
 
 	public MatchArbitraryIntrospector(List<ArbitraryIntrospector> introspectors) {

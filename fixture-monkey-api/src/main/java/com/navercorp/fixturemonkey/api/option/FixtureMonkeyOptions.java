@@ -44,7 +44,6 @@ import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.constraint.JavaConstraintGenerator;
 import com.navercorp.fixturemonkey.api.container.DecomposedContainerValueFactory;
-import com.navercorp.fixturemonkey.api.experimental.InstantiatorProcessor;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfoGenerator;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.generator.ArrayContainerPropertyGenerator;
@@ -62,6 +61,7 @@ import com.navercorp.fixturemonkey.api.generator.OptionalContainerPropertyGenera
 import com.navercorp.fixturemonkey.api.generator.SetContainerPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.SingleValueObjectPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.StreamContainerPropertyGenerator;
+import com.navercorp.fixturemonkey.api.instantiator.InstantiatorProcessor;
 import com.navercorp.fixturemonkey.api.matcher.AssignableTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.DoubleGenericTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
@@ -75,7 +75,7 @@ import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.api.type.Types.UnidentifiableType;
 import com.navercorp.fixturemonkey.api.validator.ArbitraryValidator;
 
-@API(since = "0.6.0", status = Status.EXPERIMENTAL)
+@API(since = "0.6.0", status = Status.MAINTAINED)
 public final class FixtureMonkeyOptions {
 	private static final List<String> DEFAULT_JAVA_PACKAGES;
 	public static final List<MatcherOperator<ObjectPropertyGenerator>> DEFAULT_OBJECT_PROPERTY_GENERATORS =
@@ -115,7 +115,6 @@ public final class FixtureMonkeyOptions {
 	private final NullInjectGenerator defaultNullInjectGenerator;
 	private final List<MatcherOperator<ArbitraryContainerInfoGenerator>> arbitraryContainerInfoGenerators;
 	private final ArbitraryContainerInfoGenerator defaultArbitraryContainerInfoGenerator;
-	private final List<MatcherOperator<ArbitraryGenerator>> arbitraryGenerators;
 	private final ArbitraryGenerator defaultArbitraryGenerator;
 	private final ArbitraryValidator defaultArbitraryValidator;
 	private final DecomposedContainerValueFactory decomposedContainerValueFactory;
@@ -136,7 +135,6 @@ public final class FixtureMonkeyOptions {
 		NullInjectGenerator defaultNullInjectGenerator,
 		List<MatcherOperator<ArbitraryContainerInfoGenerator>> arbitraryContainerInfoGenerators,
 		ArbitraryContainerInfoGenerator defaultArbitraryContainerInfoGenerator,
-		List<MatcherOperator<ArbitraryGenerator>> arbitraryGenerators,
 		ArbitraryGenerator defaultArbitraryGenerator,
 		ArbitraryValidator defaultArbitraryValidator,
 		DecomposedContainerValueFactory decomposedContainerValueFactory,
@@ -156,7 +154,6 @@ public final class FixtureMonkeyOptions {
 		this.defaultNullInjectGenerator = defaultNullInjectGenerator;
 		this.arbitraryContainerInfoGenerators = arbitraryContainerInfoGenerators;
 		this.defaultArbitraryContainerInfoGenerator = defaultArbitraryContainerInfoGenerator;
-		this.arbitraryGenerators = arbitraryGenerators;
 		this.defaultArbitraryGenerator = defaultArbitraryGenerator;
 		this.defaultArbitraryValidator = defaultArbitraryValidator;
 		this.decomposedContainerValueFactory = decomposedContainerValueFactory;
@@ -263,18 +260,6 @@ public final class FixtureMonkeyOptions {
 		return this.defaultArbitraryContainerInfoGenerator;
 	}
 
-	public List<MatcherOperator<ArbitraryGenerator>> getArbitraryGenerators() {
-		return this.arbitraryGenerators;
-	}
-
-	public ArbitraryGenerator getArbitraryGenerator(Property property) {
-		return this.getArbitraryGenerators().stream()
-			.filter(it -> it.match(property))
-			.map(MatcherOperator::getOperator)
-			.findFirst()
-			.orElse(this.getDefaultArbitraryGenerator());
-	}
-
 	public ArbitraryGenerator getDefaultArbitraryGenerator() {
 		return this.defaultArbitraryGenerator;
 	}
@@ -315,8 +300,6 @@ public final class FixtureMonkeyOptions {
 			.defaultNullInjectGenerator(this.defaultNullInjectGenerator)
 			.arbitraryContainerInfoGenerators(new ArrayList<>(this.arbitraryContainerInfoGenerators))
 			.defaultArbitraryContainerInfoGenerator(this.defaultArbitraryContainerInfoGenerator)
-			.arbitraryGenerators(new ArrayList<>(this.arbitraryGenerators))
-			.defaultArbitraryGenerator(this.defaultArbitraryGenerator)
 			.defaultArbitraryValidator(defaultArbitraryValidator)
 			.decomposedContainerValueFactory(decomposedContainerValueFactory)
 			.javaConstraintGenerator(javaConstraintGenerator)

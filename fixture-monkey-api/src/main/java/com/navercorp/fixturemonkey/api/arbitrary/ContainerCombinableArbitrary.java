@@ -28,7 +28,7 @@ import org.apiguardian.api.API.Status;
 /**
  * It combines given element {@link CombinableArbitrary} list into a container type {@link CombinableArbitrary}.
  */
-@API(since = "0.6.0", status = Status.EXPERIMENTAL)
+@API(since = "0.6.0", status = Status.MAINTAINED)
 final class ContainerCombinableArbitrary<T> implements CombinableArbitrary<T> {
 	private final List<CombinableArbitrary<?>> combinableArbitraryList;
 	private final Function<List<Object>, T> combinator;
