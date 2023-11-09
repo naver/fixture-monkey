@@ -11,10 +11,10 @@ docsVersion = "0.6.8"
 fixtureMonkeyVersion = "0.6.8"
 
 ## Open Graph
-images = ["doks.png"]
+images = ["fixtureMonkey.png"]
 ogLocale = "en_US"
-domainTLD = "doks.netlify.app"
-titleHome = "Doks Theme"
+domainTLD = "fixture-monkey"
+titleHome = "Fixture Monkey Document"
 
 ## Twitter Cards
 #twitterSite = "@getdoks"

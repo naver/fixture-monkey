@@ -7,6 +7,11 @@ docs:
   identifier: "creating-test-objects"
 ---
 
+> Fixture Monkey works in both Java and Kotlin.
+> We have a separate 'Getting Started' page for each environment you can use: [Java](creating-test-objects.md), [Java without Lombok](creating-test-objects-without-lombok.md), and [Kotlin](creating-objects-in-kotlin.md).
+>
+> This page explains the Java environment. Please refer to the appropriate page for your environment.
+
 Consider a scenario where you need a test fixture for a Product class, as shown below:
 
 {{< alert icon="💡" text="lombok.anyConstructor.addConstructorProperties=true should be added in lombok.config" />}}
