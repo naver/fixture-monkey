@@ -41,19 +41,19 @@ import com.navercorp.fixturemonkey.api.property.Property
 import com.navercorp.fixturemonkey.api.property.PropertyUtils
 import com.navercorp.fixturemonkey.api.type.TypeReference
 import com.navercorp.fixturemonkey.api.type.Types
-import com.navercorp.fixturemonkey.api.type.Types.getDeclaredConstructor
 import com.navercorp.fixturemonkey.kotlin.introspector.CompanionObjectFactoryMethodIntrospector
 import com.navercorp.fixturemonkey.kotlin.introspector.KotlinPropertyArbitraryIntrospector
 import com.navercorp.fixturemonkey.kotlin.property.KotlinPropertyGenerator
 import com.navercorp.fixturemonkey.kotlin.type.actualType
+import com.navercorp.fixturemonkey.kotlin.type.declaredConstructor
 import com.navercorp.fixturemonkey.kotlin.type.toTypeReference
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 import kotlin.reflect.KProperty
 import kotlin.reflect.full.companionObject
 import kotlin.reflect.full.memberFunctions
+import kotlin.reflect.jvm.javaConstructor
 import kotlin.reflect.jvm.javaType
-import kotlin.reflect.jvm.kotlinFunction
 
 class KotlinInstantiatorProcessor :
     InstantiatorProcessor {
@@ -74,8 +74,7 @@ class KotlinInstantiatorProcessor :
     ): InstantiatorProcessResult {
         val parameterTypes =
             instantiator.inputParameterTypes.map { it.type.actualType() }.toTypedArray()
-        val declaredConstructor = getDeclaredConstructor(typeReference.type.actualType(), *parameterTypes)
-        val kotlinConstructor = declaredConstructor.kotlinFunction!!
+        val kotlinConstructor: KFunction<*> = typeReference.type.actualType().declaredConstructor(*parameterTypes)
         val parameters: List<KParameter> = kotlinConstructor.parameters
 
         val inputParameterTypes = instantiator.inputParameterTypes
@@ -85,14 +84,13 @@ class KotlinInstantiatorProcessor :
 
         val resolveParameterTypes = resolveParameterTypes(parameterTypeReferences, inputParameterTypes)
         val resolveParameterName = resolvedParameterNames(parameterNames, inputParameterNames)
-
         val constructorParameterProperties = parameters.mapIndexed { index, kParameter ->
             val resolvedParameterTypeReference = resolveParameterTypes[index]
             val resolvedParameterName = resolveParameterName[index]
 
             ConstructorProperty(
                 resolvedParameterTypeReference.annotatedType,
-                declaredConstructor,
+                kotlinConstructor.javaConstructor,
                 resolvedParameterName,
                 null,
                 kParameter.type.isMarkedNullable,
@@ -101,7 +99,7 @@ class KotlinInstantiatorProcessor :
 
         val constructorArbitraryIntrospector = ConstructorArbitraryIntrospector(
             ConstructorWithParameterNames(
-                declaredConstructor,
+                kotlinConstructor.javaConstructor,
                 resolveParameterName,
             ),
         )

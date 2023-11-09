@@ -28,6 +28,7 @@ import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 import java.lang.reflect.TypeVariable
 import kotlin.reflect.KFunction
+import kotlin.reflect.KParameter
 import kotlin.reflect.KProperty
 import kotlin.reflect.KType
 import kotlin.reflect.full.findAnnotations
@@ -172,3 +173,15 @@ fun KType.toTypeReference(): TypeReference<*> = object : TypeReference<Any?>() {
         return this@toTypeReference.javaType.toAnnotatedType()
     }
 }
+
+fun Class<*>.declaredConstructor(
+    vararg arguments: Class<*>,
+): KFunction<*> = this.kotlin.constructors
+    .firstOrNull { constructor ->
+        Types.isAssignableTypes(
+            arguments,
+            constructor.parameters.filter { it.kind != KParameter.Kind.INSTANCE }
+                .map { it.type.javaType.actualType() }
+                .toTypedArray(),
+        )
+    } ?: this.kotlin.constructors.first()
