@@ -61,6 +61,27 @@ class InstantiatorDslSpec<T>(
         return this
     }
 
+    @JvmName("rootFactory")
+    fun factory(factoryMethodName: String): InstantiatorDslSpec<T> {
+        KotlinFactoryMethodInstantiator<T>(factoryMethodName)
+            .also {
+                instantiators[rootTypeReference] = it
+            }
+        return this
+    }
+
+    @JvmName("rootFactory")
+    fun factory(
+        factoryMethodName: String,
+        dsl: KotlinFactoryMethodInstantiator<T>.() -> KotlinFactoryMethodInstantiator<T>,
+    ): InstantiatorDslSpec<T> {
+        dsl(KotlinFactoryMethodInstantiator(factoryMethodName))
+            .also {
+                instantiators[rootTypeReference] = it
+            }
+        return this
+    }
+
     inline fun <reified U> factory(factoryMethodName: String): InstantiatorDslSpec<T> {
         KotlinFactoryMethodInstantiator<U>(factoryMethodName)
             .also {
