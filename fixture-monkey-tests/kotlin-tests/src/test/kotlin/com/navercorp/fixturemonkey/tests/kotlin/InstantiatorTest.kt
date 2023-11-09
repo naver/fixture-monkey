@@ -160,10 +160,36 @@ class InstantiatorTest {
     }
 
     @RepeatedTest(TEST_COUNT)
+    fun instantiateByCompanionObjectFactoryMethodWithoutType() {
+        val actual = SUT.giveMeBuilder<Foo>()
+            .instantiateBy {
+                factory("build")
+            }
+            .sample()
+            .foo
+
+        then(actual).isEqualTo("factory")
+    }
+
+    @RepeatedTest(TEST_COUNT)
     fun instantiateByCompanionObjectFactoryMethod() {
         val actual = SUT.giveMeBuilder<Foo>()
             .instantiateBy {
                 factory<Foo>("build")
+            }
+            .sample()
+            .foo
+
+        then(actual).isEqualTo("factory")
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun instantiateByCompanionObjectFactoryMethodWithoutTypeWithParameter() {
+        val actual = SUT.giveMeBuilder<Foo>()
+            .instantiateBy {
+                factory("build") {
+                    parameter<Int>()
+                }
             }
             .sample()
             .foo
