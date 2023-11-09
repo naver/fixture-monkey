@@ -2,6 +2,7 @@ package com.navercorp.fixturemonkey.tests.kotlin
 
 import com.navercorp.fixturemonkey.FixtureMonkey
 import com.navercorp.fixturemonkey.api.instantiator.Instantiator
+import com.navercorp.fixturemonkey.api.instantiator.Instantiator.constructor
 import com.navercorp.fixturemonkey.kotlin.KotlinPlugin
 import com.navercorp.fixturemonkey.kotlin.giveMeBuilder
 import com.navercorp.fixturemonkey.kotlin.instantiator.instantiateBy
@@ -454,7 +455,37 @@ class InstantiatorTest {
             .sample()
             .value
 
-        then(actual).isNotNull
+        then(actual).isNotEqualTo("default")
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun instantiateJavaConstructorWithDefaultArgument() {
+        class ConstructorObject(val value: String = "default")
+
+        val actual = SUT.giveMeBuilder<ConstructorObject>()
+            .instantiateBy{
+                Instantiator.constructor<ConstructorObject>()
+            }
+            .sample()
+            .value
+
+        then(actual).isNotEqualTo("default")
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun instantiateConstructorWithDefaultArgument() {
+        class ConstructorObject(val value: String = "default")
+
+        val actual = SUT.giveMeBuilder<ConstructorObject>()
+            .instantiateBy {
+                constructor {
+                    parameter<String>(useDefaultArgument = true)
+                }
+            }
+            .sample()
+            .value
+
+        then(actual).isEqualTo("default")
     }
 
     class Foo(val foo: String, val bar: Int) {
