@@ -18,6 +18,8 @@
 
 package com.navercorp.fixturemonkey.kotlin.instantiator
 
+import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary
+import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext
 import com.navercorp.fixturemonkey.api.instantiator.ConstructorInstantiator
 import com.navercorp.fixturemonkey.api.instantiator.FactoryMethodInstantiator
 import com.navercorp.fixturemonkey.api.instantiator.Instantiator
@@ -28,12 +30,11 @@ import com.navercorp.fixturemonkey.api.instantiator.InstantiatorUtils.resolvedPa
 import com.navercorp.fixturemonkey.api.instantiator.JavaBeansPropertyInstantiator
 import com.navercorp.fixturemonkey.api.instantiator.JavaFieldPropertyInstantiator
 import com.navercorp.fixturemonkey.api.instantiator.PropertyInstantiator
+import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector
+import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult
 import com.navercorp.fixturemonkey.api.introspector.BeanArbitraryIntrospector
 import com.navercorp.fixturemonkey.api.introspector.CompositeArbitraryIntrospector
-import com.navercorp.fixturemonkey.api.introspector.ConstructorArbitraryIntrospector
-import com.navercorp.fixturemonkey.api.introspector.ConstructorArbitraryIntrospector.ConstructorWithParameterNames
 import com.navercorp.fixturemonkey.api.introspector.FieldReflectionArbitraryIntrospector
-import com.navercorp.fixturemonkey.api.property.ConstructorProperty
 import com.navercorp.fixturemonkey.api.property.FieldPropertyGenerator
 import com.navercorp.fixturemonkey.api.property.JavaBeansPropertyGenerator
 import com.navercorp.fixturemonkey.api.property.MethodParameterProperty
@@ -47,12 +48,15 @@ import com.navercorp.fixturemonkey.kotlin.property.KotlinPropertyGenerator
 import com.navercorp.fixturemonkey.kotlin.type.actualType
 import com.navercorp.fixturemonkey.kotlin.type.declaredConstructor
 import com.navercorp.fixturemonkey.kotlin.type.toTypeReference
+import java.lang.reflect.AnnotatedType
+import java.lang.reflect.Type
+import java.util.Optional
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 import kotlin.reflect.KProperty
 import kotlin.reflect.full.companionObject
 import kotlin.reflect.full.memberFunctions
-import kotlin.reflect.jvm.javaConstructor
+import kotlin.reflect.jvm.isAccessible
 import kotlin.reflect.jvm.javaType
 
 class KotlinInstantiatorProcessor :
@@ -84,25 +88,29 @@ class KotlinInstantiatorProcessor :
 
         val resolveParameterTypes = resolveParameterTypes(parameterTypeReferences, inputParameterTypes)
         val resolveParameterName = resolvedParameterNames(parameterNames, inputParameterNames)
-        val constructorParameterProperties = parameters.mapIndexed { index, kParameter ->
-            val resolvedParameterTypeReference = resolveParameterTypes[index]
-            val resolvedParameterName = resolveParameterName[index]
-
-            ConstructorProperty(
-                resolvedParameterTypeReference.annotatedType,
-                kotlinConstructor.javaConstructor,
-                resolvedParameterName,
-                null,
-                kParameter.type.isMarkedNullable,
-            )
+        val useDefaultArguments = if (instantiator is KotlinConstructorInstantiator) {
+            instantiator.useDefaultArguments
+        } else {
+            listOf()
         }
+        val constructorParameterProperties = parameters
+            .mapIndexedNotNull { index, kParameter ->
+                val resolvedParameterTypeReference = resolveParameterTypes[index]
+                val resolvedParameterName = resolveParameterName[index]
+                val useDefaultArgument = useDefaultArguments.getOrElse(index) { false }
+                if (kParameter.isOptional && useDefaultArgument) {
+                    return@mapIndexedNotNull null
+                }
 
-        val constructorArbitraryIntrospector = ConstructorArbitraryIntrospector(
-            ConstructorWithParameterNames(
-                kotlinConstructor.javaConstructor,
-                resolveParameterName,
-            ),
-        )
+                KotlinConstructorParameterProperty(
+                    resolvedParameterTypeReference.annotatedType,
+                    kParameter,
+                    resolvedParameterName,
+                    kotlinConstructor,
+                )
+            }
+
+        val constructorArbitraryIntrospector = KotlinConstructorArbitraryIntrospector(kotlinConstructor)
 
         val propertyInstantiator = instantiator.propertyInstantiator
         if (propertyInstantiator != null) {
@@ -232,6 +240,49 @@ class KotlinInstantiatorProcessor :
             .let {
                 inputParameterTypes.isEmpty() || Types.isAssignableTypes(it.toTypedArray(), inputParameterTypes)
             }
+
+    internal data class KotlinConstructorParameterProperty(
+        private val annotatedType: AnnotatedType,
+        val kParameter: KParameter,
+        private val parameterName: String,
+        private val constructor: KFunction<*>,
+    ) : Property {
+        override fun getType(): Type = annotatedType.type
+
+        override fun getAnnotatedType(): AnnotatedType = annotatedType
+
+        override fun getName(): String = parameterName
+
+        override fun getAnnotations(): List<Annotation> = kParameter.annotations
+
+        override fun getValue(obj: Any?): Any? {
+            throw UnsupportedOperationException("Interface method should not be called.")
+        }
+
+        @Suppress("UNCHECKED_CAST")
+        override fun <T : Annotation> getAnnotation(annotationClass: Class<T>): Optional<T> = annotations
+            .find { it.annotationClass.java == annotationClass }
+            .let { Optional.of(it as T) }
+
+        override fun isNullable(): Boolean = kParameter.type.isMarkedNullable
+    }
+
+    internal class KotlinConstructorArbitraryIntrospector(private val kotlinConstructor: KFunction<*>) :
+        ArbitraryIntrospector {
+        override fun introspect(context: ArbitraryGeneratorContext): ArbitraryIntrospectorResult =
+            ArbitraryIntrospectorResult(
+                CombinableArbitrary.objectBuilder()
+                    .properties(context.combinableArbitrariesByArbitraryProperty)
+                    .build {
+                        val valuesByParameter: Map<KParameter, Any?> =
+                            it.filterKeys { key -> key.objectProperty.property is KotlinConstructorParameterProperty }
+                                .mapKeys { entry -> (entry.key.objectProperty.property as KotlinConstructorParameterProperty).kParameter }
+
+                        kotlinConstructor.isAccessible = true
+                        kotlinConstructor.callBy(valuesByParameter)
+                    },
+            )
+    }
 }
 
 /**
@@ -245,6 +296,7 @@ class KotlinConstructorInstantiator<T> :
     ConstructorInstantiator<T> {
     val _types: MutableList<TypeReference<*>> = ArrayList()
     val _parameterNames: MutableList<String?> = ArrayList()
+    val useDefaultArguments: MutableList<Boolean> = ArrayList()
     private var _propertyInstantiator: PropertyInstantiator<T>? = null
 
     /**
@@ -255,10 +307,14 @@ class KotlinConstructorInstantiator<T> :
      * @param parameterName An optional parameter name for the constructor parameter.
      * @return This [KotlinConstructorInstantiator] instance with the specified parameter added.
      */
-    inline fun <reified U> parameter(parameterName: String? = null): KotlinConstructorInstantiator<T> =
+    inline fun <reified U> parameter(
+        parameterName: String? = null,
+        useDefaultArgument: Boolean = false,
+    ): KotlinConstructorInstantiator<T> =
         this.apply {
             _types.add(object : TypeReference<U>() {})
             _parameterNames.add(parameterName)
+            useDefaultArguments.add(useDefaultArgument)
         }
 
     fun property(): KotlinConstructorInstantiator<T> = this.apply {
