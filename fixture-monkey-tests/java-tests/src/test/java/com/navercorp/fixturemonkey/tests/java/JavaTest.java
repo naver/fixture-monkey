@@ -1127,7 +1127,7 @@ class JavaTest {
 	void setJavaGetterCollection() {
 		String actual = SUT.giveMeBuilder(ContainerObject.class)
 			.size("list", 1)
-			.set(javaGetter(ContainerObject::getList).container(String.class, 0), "test")
+			.set(javaGetter(ContainerObject::getList).index(String.class, 0), "test")
 			.sample()
 			.getList()
 			.get(0);
@@ -1141,13 +1141,34 @@ class JavaTest {
 			.size("complexList", 1)
 			.set(
 				javaGetter(ContainerObject::getComplexList)
-					.container(JavaTypeObject.class, 0)
-					.into(JavaTypeObject::getString), "test")
+					.index(JavaTypeObject.class, 0)
+					.into(JavaTypeObject::getString), "test"
+			)
 			.sample()
 			.getComplexList()
 			.get(0)
 			.getString();
 
 		then(actual).isEqualTo("test");
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void setJavaGetterCollectionAllElement() {
+		String expected = "test";
+
+		List<String> actual = SUT.giveMeBuilder(ContainerObject.class)
+			.size("complexList", 3)
+			.set(
+				javaGetter(ContainerObject::getComplexList)
+					.allIndex(JavaTypeObject.class)
+					.into(JavaTypeObject::getString), expected
+			)
+			.sample()
+			.getComplexList()
+			.stream()
+			.map(JavaTypeObject::getString)
+			.collect(Collectors.toList());
+
+		then(actual).allMatch(expected::equals);
 	}
 }

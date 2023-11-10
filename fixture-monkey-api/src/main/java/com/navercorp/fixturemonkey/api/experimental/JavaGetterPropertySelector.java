@@ -41,11 +41,20 @@ interface JavaGetterPropertySelector<T, U> extends PropertySelector, ExpressionG
 		);
 	}
 
-	default <E> JoinJavaGetterPropertySelector<U, E> container(Class<E> elementType, int index) {
+	default <E> JoinJavaGetterPropertySelector<U, E> index(Class<E> elementType, int index) {
 		return new JoinJavaGetterPropertySelector<U, E>(
 			Arrays.asList(
 				this,
 				propertyNameResolver -> "[" + index + "]"
+			)
+		);
+	}
+
+	default <E> JoinJavaGetterPropertySelector<U, E> allIndex(Class<E> elementType) {
+		return new JoinJavaGetterPropertySelector<U, E>(
+			Arrays.asList(
+				this,
+				propertyNameResolver -> "[*]"
 			)
 		);
 	}
