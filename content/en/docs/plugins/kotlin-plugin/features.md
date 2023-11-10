@@ -5,13 +5,13 @@ menu:
 docs:
 parent: "kotlin-plugin"
 identifier: "kotlin-plugin-features"
-weight: 62
+weight: 61
 ---
 
 To help you take full advantage of the concise, safe, and pragmatic nature of Kotlin, Fixture Monkey provides a Kotlin plugin.
 - Using `PrimaryConstructorArbitraryIntrospector` as the default introspector to generate Kotlin classes with its primary constructor.
 - Fixture Monkey Extension Functions
-- Kotlin DSL Exp
+- Kotlin DSL Exp, Kotlin instantiateBy DSL
 
 ## Dependencies
 ##### fixture-monkey-kotlin

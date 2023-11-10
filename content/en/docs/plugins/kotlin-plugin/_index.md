@@ -5,5 +5,5 @@ menu:
   docs:
     parent: "plugins"
     identifier: "kotlin-plugin"
-weight: 61
+weight: 60
 ---

@@ -5,13 +5,13 @@ menu:
 docs:
 parent: "generating-objects"
 identifier: "introspector"
-weight: 32
+weight: 33
 ---
 
-There are a number of ways to create an object. For example, you can initialize an instance of an object using its constructor, or you can use its builder.
-Fixture Monkey lets you choose which way you want to create your object by providing different `Introspectors`.
+While you can change the way an object is created in the `ArbitraryBuilder` with [`instantiate`](../instantiate-methods), there may be cases where you want to change the way objects are created globally.
+Fixture Monkey lets you choose the way you want to create your object by providing different `Introspectors`.
 
-An `Introspector` defines how Fixture Monkey creates objects.
+An `Introspector` defines the default way of how Fixture Monkey creates objects.
 Each introspector has some kind of restrictions that the class must have in order for the introspector to generate instances of that class.
 
 You can change the introspector you use by using the `objectIntrospector` option of Fixture Monkey.

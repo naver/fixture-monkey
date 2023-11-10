@@ -5,7 +5,7 @@ menu:
 docs:
 parent: "kotlin-plugin"
 identifier: "introspectors-for-kotlin"
-weight: 63
+weight: 62
 ---
 
 Fixture Monkey provides some additional introspectors that support the generation of Kotlin classes.
