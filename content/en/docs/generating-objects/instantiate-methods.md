@@ -8,7 +8,8 @@ identifier: "instantiate-methods"
 weight: 32
 ---
 
-There are several ways of creating an object. For example, you can initialize an instance of an object using its constructor, or you can use the factory method it has.
+For each test, you may want to use a different way of creating objects.
+For example, even within the same class, one test may require initialization using the constructor, while another test may require initialization using its factory method.
 
 Fixture Monkey allows you to choose the preferred method of creating your object through the `instantiate()` method.
 {{< alert icon="💡" text="If the Kotlin Plugin is added, you can use the instantiateBy() method with a custom DSL." />}}
@@ -19,8 +20,6 @@ This doesn't mean that you have to tell the `ArbitraryBuilder` how to create an 
 If you want to set a global option as the default method for creating all objects with a Fixture Monkey instance, refer to the [Introspector](../introspector) page.
 
 The `instantiate()` method is just a convenient way to modify the generation method from the `ArbitraryBuilder`.
-
-{{< alert icon="💡" text="This feature is still experimental. Currently only constructors and factory methods can be used. More options will be added in the future." />}}
 
 ## Constuctor
 Let's say you have a custom class with a few different constructors that looks like this:
@@ -49,12 +48,12 @@ public class Product {
     }
 
     public Product(
-        String productName,
+        String str,
         long id,
         long price
     ) {
         this.id = id;
-        this.productName = productName;
+        this.productName = str;
         this.price = price;
         this.options = Collections.emptyList();
         this.createdAt = Instant.now();
@@ -91,9 +90,9 @@ class Product(
         createdAt = Instant.now()
     )
 
-    constructor(productName: String, id: Long, price: Long) : this(
+    constructor(str: String, id: Long, price: Long) : this(
         id = id,
-        productName = productName,
+        productName = str,
         price = price,
         options = emptyList(),
         createdAt = Instant.now()
@@ -244,7 +243,7 @@ void test() {
 {{< tab header="Kotlin" lang="kotlin">}}
 
 @Test
-fun instantiatePrimaryConstructor() {
+fun test() {
     val product = fixtureMonkey.giveMeBuilder<Product>()
         .instantiateBy {
             constructor<Product> {
@@ -265,8 +264,9 @@ fun instantiatePrimaryConstructor() {
 
 In this example, we provide a parameter name hint for the productName to be "str"
 This allows us to use the `set()` function to set the productName to the desired value (in this case "book").
-Note that once the name has been changed using the parameter name hint, you can no longer set it using the field name "productName".
 
+Although you can set the hint to any name, we recommend that you use the name in the constructor parameter to avoid confusion.
+Also note that once the name has been changed using the parameter name hint, you can no longer set it using the field name "productName".
 ### Generic Objects
 Generic Objects can also be instantiated in a similar way.
 Consider this sample class `GenericObject`:
@@ -415,7 +415,7 @@ fun test() {
 {{< /tab >}}
 {{< /tabpane>}}
 
-{{< alert icon="💡" text="It is also possible to mix both constructor and factory method approaches within the instantiate method." />}}
+{{< alert icon="💡" text="It is also possible to combine both constructor and factory method approaches for different properties within the instantiate method. In the above example, the ProductList can be initialized with the factory method, while the Product can be instantiated using the constructor." />}}
 
 ## Factory Method
 The second way to create an object is by using its factory method.

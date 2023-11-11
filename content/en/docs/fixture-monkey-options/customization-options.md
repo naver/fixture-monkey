@@ -257,6 +257,7 @@ fun test() {
 > `javaTypeArbitraryGenerator`, `javaTimeTypeArbitraryGenerator`
 
 You can modify the default values for Java primitive types (such as strings, integers, doubles, etc.) by implementing a custom `JavaTypeArbitraryGenerator` interface.
+This option can be applied through the `JqwikPlugin`.
 
 For example, by default, string types generated with Fixture Monkey have unreadable data because it considers edge cases such as when control blocks are contained in strings.
 
@@ -266,21 +267,27 @@ If you prefer to generate strings consisting only of alphabetic characters, you 
 {{< tab header="Java" lang="java">}}
 
 FixtureMonkey.builder()
-    .javaTypeArbitraryGenerator(new JavaTypeArbitraryGenerator() {
-        @Override
-        public StringArbitrary strings() {
-            return Arbitraries.strings().alpha();
-        }
-    })
+    .plugin(
+        new JqwikPlugin()
+              .javaTypeArbitraryGenerator(new JavaTypeArbitraryGenerator() {
+                  @Override
+                  public StringArbitrary strings() {
+                      return Arbitraries.strings().alpha();
+                  }
+              })
+    )
     .build();
 
 {{< /tab >}}
 {{< tab header="Kotlin" lang="kotlin">}}
 
 FixtureMonkey.builder()
-    .javaTypeArbitraryGenerator(object : JavaTypeArbitraryGenerator {
-        override fun strings(): StringArbitrary = Arbitraries.strings().alpha()
-    })
+    .plugin(
+        JqwikPlugin()
+            .javaTypeArbitraryGenerator(object : JavaTypeArbitraryGenerator {
+                override fun strings(): StringArbitrary = Arbitraries.strings().alpha()
+            })
+    )
     .build()
 
 {{< /tab >}}
@@ -293,6 +300,7 @@ For Java time types, you can use `javaTimeTypeArbitraryGenerator`.
 
 Similar to using the javax-validation plugin and adding constraints to your Java typed properties, you can apply constraints to Java types using annotations.
 To do this, you can implement a `JavaArbitraryResolver` interface.
+This option can be applied through the `JqwikPlugin`.
 
 For example, if you have a custom annotation named `MaxLengthOf10`, which means that the length of a property should be limited to a maximum of 10 characters, you can create a `JavaArbitraryResolver` as shown below:
 
@@ -300,29 +308,35 @@ For example, if you have a custom annotation named `MaxLengthOf10`, which means 
 {{< tab header="Java" lang="java">}}
 
 FixtureMonkey.builder()
-    .javaArbitraryResolver(new JavaArbitraryResolver() {
-        @Override
-        public Arbitrary<String> strings(StringArbitrary stringArbitrary, ArbitraryGeneratorContext context) {
-            if (context.findAnnotation(MaxLengthof10.class).isPresent()) {
-                return stringArbitrary.ofMaxLength(10);
-            }
-            return stringArbitrary;
-        }
-    })
+    .plugin(
+        new JqwikPlugin()
+            .javaArbitraryResolver(new JavaArbitraryResolver() {
+                @Override
+                public Arbitrary<String> strings(StringArbitrary stringArbitrary, ArbitraryGeneratorContext context) {
+                    if (context.findAnnotation(MaxLengthof10.class).isPresent()) {
+                        return stringArbitrary.ofMaxLength(10);
+                    }
+                    return stringArbitrary;
+                }
+            })
+    )
     .build();
 
 {{< /tab >}}
 {{< tab header="Kotlin" lang="kotlin">}}
 
 FixtureMonkey.builder()
-    .javaArbitraryResolver(object : JavaArbitraryResolver {
-        override fun strings(stringArbitrary: StringArbitrary, context: ArbitraryGeneratorContext): Arbitrary<String> {
-            if (context.findAnnotation(MaxLengthof10::class.java).isPresent) {
-                return stringArbitrary.ofMaxLength(10)
-            }
-        return stringArbitrary
-        }
-    })
+    .plugin(
+        JqwikPlugin()
+            .javaArbitraryResolver(object : JavaArbitraryResolver {
+                override fun strings(stringArbitrary: StringArbitrary, context: ArbitraryGeneratorContext): Arbitrary<String> {
+                    if (context.findAnnotation(MaxLengthof10::class.java).isPresent) {
+                        return stringArbitrary.ofMaxLength(10)
+                    }
+                return stringArbitrary
+                }
+            })
+    )
     .build()
 
 {{< /tab >}}
