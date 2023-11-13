@@ -7,8 +7,8 @@ titleAddition = ""
 description = ""
 
 ## Documentation
-docsVersion = "1.0"
-fixtureMonkeyVersion = "1.0"
+docsVersion = "1.0.0"
+fixtureMonkeyVersion = "1.0.0"
 
 ## Open Graph
 images = ["fixtureMonkey.png"]

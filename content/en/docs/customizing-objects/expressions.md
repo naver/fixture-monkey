@@ -59,6 +59,16 @@ public class JavaClass {
 "list[*]"
 ```
 
+##### Selecting the n-th element of an array:
+```java
+"array[n]"
+```
+
+##### Selecting all elements of an array:
+```java
+"array[*]"
+```
+
 ##### Combining expressions to select a nested field:
 ```java
 "objectList[0].nestedField"
@@ -84,13 +94,24 @@ javaGetter(JavaClass::getObject).into(Nested::getNestedField)
 
 ##### Selecting the n-th element of a collection:
 ```java
-javaGetter(JavaClass::getArray).index(String.class, n)
+javaGetter(JavaClass::getList).index(String.class, n)
 ```
 
 ##### Selecting all elements of a collection:
 ```java
+javaGetter(JavaClass::getList).allIndex(String.class)
+```
+
+##### Selecting the n-th element of an array:
+```java
+javaGetter(JavaClass::getArray).index(String.class, n)
+```
+
+##### Selecting all elements of an array:
+```java
 javaGetter(JavaClass::getArray).allIndex(String.class)
 ```
+
 
 ##### Combining expressions to select a nested field:
 ```java
