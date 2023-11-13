@@ -267,6 +267,27 @@ This allows us to use the `set()` function to set the productName to the desired
 
 Although you can set the hint to any name, we recommend that you use the name in the constructor parameter to avoid confusion.
 Also note that once the name has been changed using the parameter name hint, you can no longer set it using the field name "productName".
+
+### Using default arguments (Kotlin)
+In Kotlin, you have the flexibility to pass an additional value to a constructor parameter option, allowing you to decide whether to use the default argument if one is available.
+
+```kotlin
+@Test
+fun test() {
+    class Product(val productName: String = "defaultProductName")
+
+    val product = fixtureMonkey.giveMeBuilder<Product>()
+        .instantiateBy {
+            constructor {
+                parameter<String>(useDefaultArgument = true)
+            }
+        }
+        .sample()
+
+    then(product.productName).isEqualTo("defaultProductName")
+}
+```
+
 ### Generic Objects
 Generic Objects can also be instantiated in a similar way.
 Consider this sample class `GenericObject`:

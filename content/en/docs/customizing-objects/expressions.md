@@ -16,6 +16,8 @@ Let's consider an example object structure:
 public class JavaClass {
     String field;
 
+    String[] array;
+
     List<String> list;
 
     Nested object;
@@ -82,12 +84,12 @@ javaGetter(JavaClass::getObject).into(Nested::getNestedField)
 
 ##### Selecting the n-th element of a collection:
 ```java
-javaGetter(JavaClass::getList).index(String.class, n)
+javaGetter(JavaClass::getArray).index(String.class, n)
 ```
 
 ##### Selecting all elements of a collection:
 ```java
-javaGetter(JavaClass::getList).allIndex(String.class)
+javaGetter(JavaClass::getArray).allIndex(String.class)
 ```
 
 ##### Combining expressions to select a nested field:
