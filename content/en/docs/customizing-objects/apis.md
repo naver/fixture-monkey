@@ -11,7 +11,7 @@ Fixture Monkey offers a range of APIs within the ArbitraryBuilder class that ena
 
 ## Customizing Fixtures
 ### set()
-The `set()` method is used to assign values to one or more properties referenced by the expression.
+The `set()` method is used to assign values to one or more properties referenced by the [expression](../expressions).
 
 Different types, including `Supplier`, [`Arbitrary`](../arbitrary), `ArbitraryBuilder`, `NOT_NULL`, `NULL`, or `Just` can be used as the value.
 Additionally, a certain instance of an object can also be used as the value.

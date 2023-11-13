@@ -16,6 +16,8 @@ Let's consider an example object structure:
 public class JavaClass {
     String field;
 
+    String[] array;
+
     List<String> list;
 
     Nested object;
@@ -30,7 +32,7 @@ public class JavaClass {
 ```
 
 
-### Selecting Properties Using Expressions
+### Selecting Properties Using String Expressions
 
 ##### Selecting the root object:
 ```java
@@ -57,10 +59,67 @@ public class JavaClass {
 "list[*]"
 ```
 
+##### Selecting the n-th element of an array:
+```java
+"array[n]"
+```
+
+##### Selecting all elements of an array:
+```java
+"array[*]"
+```
+
 ##### Combining expressions to select a nested field:
 ```java
 "objectList[0].nestedField"
 ```
+
+### Selecting Properties Using JavaGetter Selector
+
+There is a type-safe way to select properties using a `javaGetter()` property selector.
+This selector is designed to choose and represent a property through a getter method reference in Java.
+
+##### Selecting the root object:
+- Currently Not Supported
+
+##### Selecting a specific field:
+```java
+javaGetter(JavaClass::getField)
+```
+
+##### Selecting a nested field:
+```java
+javaGetter(JavaClass::getObject).into(Nested::getNestedField)
+```
+
+##### Selecting the n-th element of a collection:
+```java
+javaGetter(JavaClass::getList).index(String.class, n)
+```
+
+##### Selecting all elements of a collection:
+```java
+javaGetter(JavaClass::getList).allIndex(String.class)
+```
+
+##### Selecting the n-th element of an array:
+```java
+javaGetter(JavaClass::getArray).index(String.class, n)
+```
+
+##### Selecting all elements of an array:
+```java
+javaGetter(JavaClass::getArray).allIndex(String.class)
+```
+
+
+##### Combining expressions to select a nested field:
+```java
+javaGetter(JavaClass::getObjectList)
+    .index(Nested.class, 0)
+    .into(Nested::getNestedField)
+```
+
 
 ### Selecting Collections
 Note that for collections, a property will only be selected if it exists within the collection size.

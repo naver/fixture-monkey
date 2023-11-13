@@ -10,7 +10,7 @@ weight: 82
 ## Generating valid data
 Using the Jakarta Validation plugin, we can generate valid data based on Jakarta Bean validation annotations on properties.
 
-For example, there can be a `Product' class annotated as follows:
+For example, there can be a `Product` class annotated as follows:
 
 ```java
 @Value
@@ -32,7 +32,7 @@ public class Product {
 }
 ```
 
-An instance of the Product class that is compliant with the annotations can be created in the following manner::
+An instance of the Product class that is compliant with the annotations can be created in the following manner:
 
 ```
 @Test

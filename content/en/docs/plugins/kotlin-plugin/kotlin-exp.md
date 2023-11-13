@@ -5,7 +5,7 @@ menu:
 docs:
 parent: "kotlin-plugin"
 identifier: "kotlin-dsl-exp"
-weight: 64
+weight: 63
 ---
 
 Fixture Monkey utilizes Kotlin's DSL feature to ensure type-safety with expressions.
