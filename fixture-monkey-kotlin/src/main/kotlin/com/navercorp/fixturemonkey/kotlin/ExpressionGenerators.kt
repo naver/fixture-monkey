@@ -112,6 +112,17 @@ infix fun <F, T : Any, R> KProperty1<F, T?>.intoGetter(getter: KFunction1<T, R?>
         ),
     )
 
+infix operator fun <T, E : Any> JoinableExpressionGenerator<T, Array<E>?>.get(index: Int): JoinableExpressionGenerator<T, E> =
+    DefaultJoinableExpressionGenerator(
+        JoinExpressionGenerator(
+            listOf(
+                this,
+                IndexExpressionGenerator(index),
+            ),
+        ),
+    )
+
+@JvmName("collection")
 infix operator fun <T, R : Collection<E>, E : Any> JoinableExpressionGenerator<T, R?>.get(index: Int): JoinableExpressionGenerator<T, E> =
     DefaultJoinableExpressionGenerator(
         JoinExpressionGenerator(
@@ -154,6 +165,10 @@ infix operator fun <T, R : Collection<N>, N : Collection<E>, E : Any> JoinableEx
 infix operator fun <T, R : Collection<E>, E : Any> KProperty1<T, R?>.get(index: Int): JoinableExpressionGenerator<T, E> =
     DefaultJoinableExpressionGenerator(array(this, index))
 
+@JvmName("array")
+infix operator fun <T, E : Any> KProperty1<T, Array<E>?>.get(index: Int): JoinableExpressionGenerator<T, E> =
+    DefaultJoinableExpressionGenerator(array(this, index))
+
 infix operator fun <T, R : Collection<E>, E : Any> KProperty1<T, R?>.get(key: String): JoinableExpressionGenerator<T, E> =
     DefaultJoinableExpressionGenerator(map(this, key))
 
@@ -168,6 +183,10 @@ infix operator fun <T, R : Collection<N>, N : Collection<E>, E : Any> KProperty1
 ): JoinableExpressionGenerator<T, N?> = DefaultJoinableExpressionGenerator(map(this, key))
 
 infix operator fun <T, R : Collection<E>, E : Any> KFunction1<T, R?>.get(index: Int): JoinableExpressionGenerator<T, E> =
+    DefaultJoinableExpressionGenerator(array(this, index))
+
+@JvmName("array")
+infix operator fun <T, E : Any> KFunction1<T, Array<E>?>.get(index: Int): JoinableExpressionGenerator<T, E> =
     DefaultJoinableExpressionGenerator(array(this, index))
 
 infix operator fun <T, R : Collection<E>, E : Any> KFunction1<T, R?>.get(key: String): JoinableExpressionGenerator<T, E> =
@@ -282,10 +301,18 @@ internal fun <R, E> property(property: KProperty1<R, E?>): ExpressionGenerator =
 internal fun <R, E> property(function: KFunction1<R, E?>): ExpressionGenerator =
     PropertyExpressionGenerator(KotlinGetterProperty(function))
 
+@JvmName("collection")
 internal fun <T, R : Collection<E>, E : Any> array(function: KFunction1<T, R?>, index: Int): ExpressionGenerator =
     ArrayExpressionGenerator(KotlinGetterProperty(function), index)
 
+internal fun <T, E : Any> array(function: KFunction1<T, Array<E>?>, index: Int): ExpressionGenerator =
+    ArrayExpressionGenerator(KotlinGetterProperty(function), index)
+
+@JvmName("collection")
 internal fun <T, R : Collection<E>, E : Any> array(property: KProperty1<T, R?>, index: Int): ExpressionGenerator =
+    ArrayExpressionGenerator(KotlinProperty(property), index)
+
+internal fun <T, E : Any> array(property: KProperty1<T, Array<E>?>, index: Int): ExpressionGenerator =
     ArrayExpressionGenerator(KotlinProperty(property), index)
 
 internal fun <T, R : Collection<E>, E : Any> map(function: KFunction1<T, R?>, key: String): ExpressionGenerator =
