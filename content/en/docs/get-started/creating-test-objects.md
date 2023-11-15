@@ -8,7 +8,7 @@ docs:
 ---
 
 > Fixture Monkey works in both Java and Kotlin.
-> We have a separate 'Getting Started' page for each environment you can use: [Java](creating-test-objects.md), [Java without Lombok](creating-test-objects-without-lombok.md), and [Kotlin](creating-objects-in-kotlin.md).
+> We have a separate 'Getting Started' page for each environment you can use: [Java](creating-test-objects), [Java without Lombok](creating-test-objects-without-lombok), and [Kotlin](creating-objects-in-kotlin).
 >
 > This page explains the Java environment. Please refer to the appropriate page for your environment.
 
