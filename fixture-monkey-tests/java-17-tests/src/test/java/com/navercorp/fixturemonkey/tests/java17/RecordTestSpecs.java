@@ -116,4 +116,15 @@ final class RecordTestSpecs {
 		Stream<String> stream
 	) {
 	}
+
+	public record NoArgsConstructorRecord() {
+	}
+
+	public record TwoConstructorsRecord(
+		String string
+	) {
+		public TwoConstructorsRecord(Integer integer) {
+			this(String.valueOf(integer));
+		}
+	}
 }

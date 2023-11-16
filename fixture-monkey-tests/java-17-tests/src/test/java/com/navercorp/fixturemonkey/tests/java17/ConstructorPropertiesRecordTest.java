@@ -29,6 +29,8 @@ import com.navercorp.fixturemonkey.tests.java17.RecordTestSpecs.ComplexContainer
 import com.navercorp.fixturemonkey.tests.java17.RecordTestSpecs.ContainerRecord;
 import com.navercorp.fixturemonkey.tests.java17.RecordTestSpecs.DateTimeRecord;
 import com.navercorp.fixturemonkey.tests.java17.RecordTestSpecs.JavaTypeRecord;
+import com.navercorp.fixturemonkey.tests.java17.RecordTestSpecs.NoArgsConstructorRecord;
+import com.navercorp.fixturemonkey.tests.java17.RecordTestSpecs.TwoConstructorsRecord;
 
 class ConstructorPropertiesRecordTest {
 	private static final FixtureMonkey SUT = FixtureMonkey.builder()
@@ -93,6 +95,43 @@ class ConstructorPropertiesRecordTest {
 	@RepeatedTest(TEST_COUNT)
 	void fixedInterfaceContainer() {
 		ComplexContainerRecord actual = SUT.giveMeBuilder(ComplexContainerRecord.class)
+			.fixed()
+			.sample();
+
+		then(actual).isNotNull();
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void sampleTwoConstructorsRecord() {
+		String actual = SUT.giveMeBuilder(TwoConstructorsRecord.class)
+			.setNotNull("string")
+			.sample()
+			.string();
+
+		then(actual).isNotNull();
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void fixedTwoConstructorsRecord() {
+		String actual = SUT.giveMeBuilder(TwoConstructorsRecord.class)
+			.setNotNull("string")
+			.fixed()
+			.sample()
+			.string();
+
+		then(actual).isNotNull();
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void sampleNoArgsConstructorRecord() {
+		NoArgsConstructorRecord actual = SUT.giveMeOne(NoArgsConstructorRecord.class);
+
+		then(actual).isNotNull();
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void fixedNoArgsConstructorRecord() {
+		NoArgsConstructorRecord actual = SUT.giveMeBuilder(NoArgsConstructorRecord.class)
 			.fixed()
 			.sample();
 
