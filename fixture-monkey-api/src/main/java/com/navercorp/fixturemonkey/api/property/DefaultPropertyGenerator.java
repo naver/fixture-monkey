@@ -19,6 +19,7 @@
 package com.navercorp.fixturemonkey.api.property;
 
 import java.beans.ConstructorProperties;
+import java.lang.reflect.Parameter;
 import java.util.Arrays;
 import java.util.List;
 
@@ -31,7 +32,9 @@ public final class DefaultPropertyGenerator implements PropertyGenerator {
 		new CompositePropertyGenerator(
 			Arrays.asList(
 				new ConstructorParameterPropertyGenerator(
-					it -> it.getAnnotation(ConstructorProperties.class) != null,
+					it -> it.getAnnotation(ConstructorProperties.class) != null
+						|| Arrays.stream(it.getParameters()).anyMatch(Parameter::isNamePresent)
+						|| it.getParameters().length == 0,
 					it -> true
 				),
 				new FieldPropertyGenerator(it -> true, it -> true),
