@@ -22,17 +22,37 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import net.jqwik.api.Arbitrary;
+import net.jqwik.api.EdgeCases;
+import net.jqwik.api.RandomGenerator;
 
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 
+@SuppressWarnings("NullableProblems")
 @API(since = "0.6.9", status = Status.MAINTAINED)
 public abstract class ArbitraryUtils {
 	public static <T> CombinableArbitrary<T> toCombinableArbitrary(Arbitrary<T> arbitrary) {
 		return CombinableArbitrary.from(LazyArbitrary.lazy(
 			() -> {
 				if (arbitrary != null) {
-					return arbitrary.sample();
+					return new Arbitrary<T>() {
+
+						@Override
+						public RandomGenerator<T> generator(int genSize) {
+							return arbitrary.generator(genSize);
+						}
+
+						// Removing a StoreRepository dependency, it is not useful without Jqwik engine.
+						@Override
+						public RandomGenerator<T> generator(int genSize, boolean withEdgeCases) {
+							return arbitrary.generator(genSize);
+						}
+
+						@Override
+						public EdgeCases<T> edgeCases(int maxEdgeCases) {
+							return arbitrary.edgeCases(maxEdgeCases);
+						}
+					}.sample();
 				}
 				return null;
 			}
