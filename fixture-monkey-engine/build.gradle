@@ -13,8 +13,8 @@ dependencies {
     api("net.jqwik:jqwik-engine:${JQWIK_VERSION}")
 
     testImplementation("org.assertj:assertj-core:3.22.0")
-    testImplementation("org.projectlombok:lombok:1.18.24")
-    testAnnotationProcessor("org.projectlombok:lombok:1.18.24")
+    testImplementation("org.projectlombok:lombok:${LOMBOK_VERSION}")
+    testAnnotationProcessor("org.projectlombok:lombok:${LOMBOK_VERSION}")
 }
 
 // editorconfig {

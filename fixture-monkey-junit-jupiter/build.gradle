@@ -15,9 +15,9 @@ dependencies {
     testImplementation(project(":fixture-monkey-engine"))
     testImplementation(project(":fixture-monkey-javax-validation"))
     testImplementation("org.assertj:assertj-core:3.22.0")
-    testImplementation("org.projectlombok:lombok:1.18.24")
+    testImplementation("org.projectlombok:lombok:${LOMBOK_VERSION}")
     testImplementation("org.jetbrains.kotlin:kotlin-stdlib:${KOTLIN_VERSION}")
-    testAnnotationProcessor("org.projectlombok:lombok:1.18.24")
+    testAnnotationProcessor("org.projectlombok:lombok:${LOMBOK_VERSION}")
 }
 
 //editorconfig {
