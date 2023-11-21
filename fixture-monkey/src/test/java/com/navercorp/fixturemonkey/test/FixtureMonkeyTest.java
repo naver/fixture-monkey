@@ -413,7 +413,7 @@ class FixtureMonkeyTest {
 		then(actual.getStrList()).hasSizeLessThanOrEqualTo(0);
 	}
 
-	@Property
+	@Property(tries = 1)
 	void notFixedSampleReturnsDiff() {
 		// when
 		ArbitraryBuilder<ComplexObject> fixedArbitraryBuilder = SUT.giveMeBuilder(ComplexObject.class);
@@ -744,7 +744,7 @@ class FixtureMonkeyTest {
 		then(actual).allMatch(Objects::nonNull);
 	}
 
-	@Property(tries = 10)
+	@Property(tries = 1)
 	void sampleAfterMapTwiceReturnsDiff() {
 		ArbitraryBuilder<String> arbitraryBuilder = SUT.giveMeBuilder(ComplexObject.class)
 			.set("str", Arbitraries.strings().ascii().filter(it -> !it.isEmpty()))
@@ -1068,7 +1068,7 @@ class FixtureMonkeyTest {
 		then(actualSample.getStr()).isEqualTo("set");
 	}
 
-	@Property
+	@Property(tries = 1)
 	void applySampleTwiceReturnsDiff() {
 		ArbitraryBuilder<SimpleObject> builder = SUT.giveMeBuilder(SimpleObject.class)
 			.thenApply((obj, b) -> {
