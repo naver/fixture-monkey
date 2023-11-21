@@ -6,7 +6,10 @@ plugins {
     id "jacoco"
     id "checkstyle"
     id "me.champeau.jmh" version "0.6.6"
-    id "org.gradle.test-retry" version "1.5.2"
+}
+
+ext {
+    JMH_VERSION = "1.37"
 }
 
 dependencies {
@@ -23,8 +26,8 @@ dependencies {
     testImplementation("org.projectlombok:lombok:${LOMBOK_VERSION}")
     testAnnotationProcessor("org.projectlombok:lombok:${LOMBOK_VERSION}")
 
-    jmhImplementation("org.openjdk.jmh:jmh-core:1.35")
-    jmhImplementation("org.openjdk.jmh:jmh-generator-annprocess:1.35")
+    jmhImplementation("org.openjdk.jmh:jmh-core:${JMH_VERSION}")
+    jmhImplementation("org.openjdk.jmh:jmh-generator-annprocess:${JMH_VERSION}")
     jmhImplementation("org.projectlombok:lombok:${LOMBOK_VERSION}")
     jmhImplementation(project(":fixture-monkey-javax-validation"))
     jmhImplementation(project(":fixture-monkey-jackson"))
