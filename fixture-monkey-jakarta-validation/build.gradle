@@ -5,7 +5,6 @@ plugins {
     id "com.github.spotbugs" version "4.7.6"
     id "jacoco"
     id "checkstyle"
-    id "org.gradle.test-retry" version "1.5.2"
 }
 
 dependencies {
@@ -30,12 +29,6 @@ dependencies {
 test {
     useJUnitPlatform {
         includeEngines "jqwik"
-    }
-
-    retry {
-        maxRetries = 2
-        maxFailures = 20
-        failOnPassedAfterRetry = true
     }
 }
 
@@ -76,8 +69,8 @@ tasks.register("printSpotbugsMain") {
 }
 tasks.getByPath("spotbugsMain").finalizedBy("printSpotbugsMain")
 
-jacoco {  
-    toolVersion = "0.8.11"  
+jacoco {
+    toolVersion = "0.8.11"
     reportsDirectory.set(file("${buildDir}/reports/jacoco"))
 }
 
@@ -86,13 +79,13 @@ jacocoTestReport {
         classDirectories.setFrom(file("${buildDir}/classes/java/main"))
     }
 
-    reports {  
-        xml.required = true  
-        xml.destination file("${buildDir}/reports/jacoco/jacoco.xml")  
-        csv.required = false  
-        html.required = true  
-        html.destination file("${buildDir}/reports/jacoco/html")  
-    } 
+    reports {
+        xml.required = true
+        xml.destination file("${buildDir}/reports/jacoco/jacoco.xml")
+        csv.required = false
+        html.required = true
+        html.destination file("${buildDir}/reports/jacoco/html")
+    }
 }
 
 jacocoTestCoverageVerification {

@@ -5,7 +5,7 @@ plugins {
     id "com.github.spotbugs" version "4.7.6"
     id "jacoco"
     id "checkstyle"
-    id "me.champeau.jmh" version "0.6.6"
+    id "me.champeau.jmh" version "0.7.2"
 }
 
 ext {
@@ -41,12 +41,6 @@ dependencies {
 test {
     useJUnitPlatform {
         includeEngines "jqwik"
-    }
-
-    retry {
-        maxRetries = 2
-        maxFailures = 20
-        failOnPassedAfterRetry = true
     }
 }
 
