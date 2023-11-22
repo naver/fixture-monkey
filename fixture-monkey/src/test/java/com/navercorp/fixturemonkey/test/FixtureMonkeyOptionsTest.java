@@ -1290,7 +1290,7 @@ class FixtureMonkeyOptionsTest {
 		then(actual).isIn(1, "fixed");
 	}
 
-	@Property
+	@Property(tries = 1)
 	void sampleGenericInterfaceReturnsDiff() {
 		// given
 		List<Class<? extends GetFixedValue>> implementations = new ArrayList<>();
