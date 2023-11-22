@@ -140,7 +140,7 @@ public final class JavaxValidationConstraintGenerator implements JavaConstraintG
 		Optional<Min> minAnnotation = context.findAnnotation(Min.class);
 		if (minAnnotation.isPresent()) {
 			BigInteger minValue = minAnnotation.map(Min::value).map(BigInteger::valueOf).get();
-			if (minValue.compareTo(BigInteger.ZERO) > 0) {
+			if (minValue.compareTo(BigInteger.ZERO) >= 0) {
 				if (positiveMin == null) {
 					positiveMin = minValue;
 				} else {
@@ -167,7 +167,7 @@ public final class JavaxValidationConstraintGenerator implements JavaConstraintG
 				decimalMin = decimalMin.add(BigInteger.ONE);
 			}
 
-			if (decimalMin.compareTo(BigInteger.ZERO) > 0) {
+			if (decimalMin.compareTo(BigInteger.ZERO) >= 0) {
 				if (positiveMin == null) {
 					positiveMin = decimalMin;
 				} else {
@@ -320,7 +320,7 @@ public final class JavaxValidationConstraintGenerator implements JavaConstraintG
 		Optional<Min> minAnnotation = context.findAnnotation(Min.class);
 		if (minAnnotation.isPresent()) {
 			BigDecimal minValue = minAnnotation.map(Min::value).map(BigDecimal::valueOf).get();
-			if (minValue.compareTo(BigDecimal.ZERO) > 0) {
+			if (minValue.compareTo(BigDecimal.ZERO) >= 0) {
 				if (positiveMin == null) {
 					positiveMin = minValue;
 				} else {
@@ -346,7 +346,7 @@ public final class JavaxValidationConstraintGenerator implements JavaConstraintG
 					.value()
 			);
 
-			if (decimalMin.compareTo(BigDecimal.ZERO) > 0) {
+			if (decimalMin.compareTo(BigDecimal.ZERO) >= 0) {
 				if (positiveMin == null) {
 					positiveMin = decimalMin;
 				} else {
