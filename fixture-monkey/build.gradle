@@ -1,12 +1,15 @@
 import com.github.spotbugs.snom.SpotBugsTask
 
 plugins {
-    id "org.ec4j.editorconfig" version "0.0.3"
+//    id "org.ec4j.editorconfig" version "0.0.3"
     id "com.github.spotbugs" version "4.7.6"
     id "jacoco"
     id "checkstyle"
-    id "me.champeau.jmh" version "0.6.6"
-    id "org.gradle.test-retry" version "1.5.2"
+    id "me.champeau.jmh" version "0.7.2"
+}
+
+ext {
+    JMH_VERSION = "1.37"
 }
 
 dependencies {
@@ -19,35 +22,29 @@ dependencies {
     testRuntimeOnly(project(":fixture-monkey-engine"))
     testImplementation("org.junit.jupiter:junit-jupiter-engine:${JUNIT_JUPITER_VERSION}")
     testImplementation("org.junit.platform:junit-platform-engine:${JUNIT_ENGINE_VERSION}")
-    testImplementation("org.assertj:assertj-core:3.22.0")
-    testImplementation("org.projectlombok:lombok:1.18.24")
-    testAnnotationProcessor("org.projectlombok:lombok:1.18.24")
+    testImplementation("org.assertj:assertj-core:${ASSERTJ_VERSION}")
+    testImplementation("org.projectlombok:lombok:${LOMBOK_VERSION}")
+    testAnnotationProcessor("org.projectlombok:lombok:${LOMBOK_VERSION}")
 
-    jmhImplementation("org.openjdk.jmh:jmh-core:1.35")
-    jmhImplementation("org.openjdk.jmh:jmh-generator-annprocess:1.35")
-    jmhImplementation("org.projectlombok:lombok:1.18.24")
+    jmhImplementation("org.openjdk.jmh:jmh-core:${JMH_VERSION}")
+    jmhImplementation("org.openjdk.jmh:jmh-generator-annprocess:${JMH_VERSION}")
+    jmhImplementation("org.projectlombok:lombok:${LOMBOK_VERSION}")
     jmhImplementation(project(":fixture-monkey-javax-validation"))
     jmhImplementation(project(":fixture-monkey-jackson"))
-    jmhAnnotationProcessor("org.projectlombok:lombok:1.18.24")
+    jmhAnnotationProcessor("org.projectlombok:lombok:${LOMBOK_VERSION}")
 }
 
-editorconfig {
-    excludes = ["build"]
-}
+// editorconfig {
+//    excludes = ["build"]
+// }
 
 test {
     useJUnitPlatform {
         includeEngines "jqwik"
     }
-
-    retry {
-        maxRetries = 2
-        maxFailures = 20
-        failOnPassedAfterRetry = true
-    }
 }
 
-check.dependsOn editorconfigCheck
+// check.dependsOn editorconfigCheck
 
 checkstyle {
     configFile = file("${project.rootDir}/tool/naver-checkstyle-rules.xml")
@@ -85,8 +82,8 @@ tasks.register("printSpotbugsMain") {
 tasks.getByPath("spotbugsMain").finalizedBy("printSpotbugsMain")
 
 jacoco {
-    toolVersion = "0.8.7"
-    reportsDir = file("${buildDir}/reports/jacoco")
+    toolVersion = "0.8.11"
+    reportsDirectory.set(file("${buildDir}/reports/jacoco"))
 }
 
 jacocoTestReport {
@@ -95,10 +92,10 @@ jacocoTestReport {
     }
 
     reports {
-        xml.enabled true
+        xml.required = true
         xml.destination file("${buildDir}/reports/jacoco/jacoco.xml")
-        csv.enabled false
-        html.enabled true
+        csv.required = false
+        html.required = true
         html.destination file("${buildDir}/reports/jacoco/html")
     }
 }

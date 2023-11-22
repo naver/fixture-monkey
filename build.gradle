@@ -45,6 +45,8 @@ subprojects {
         JQWIK_VERSION = "1.7.3"
         KOTLIN_VERSION = "1.8.0"
         KOTEST_VERSION = "5.6.2"
+        LOMBOK_VERSION = "1.18.30"
+        ASSERTJ_VERSION = "3.24.2"
     }
 
     dependencies {

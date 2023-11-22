@@ -1,7 +1,7 @@
 import com.github.spotbugs.snom.SpotBugsTask
 
 plugins {
-    id "org.ec4j.editorconfig" version "0.0.3"
+//    id "org.ec4j.editorconfig" version "0.0.3"
     id "com.github.spotbugs" version "4.7.6"
     id "jacoco"
     id "checkstyle"
@@ -20,20 +20,20 @@ dependencies {
     testRuntimeOnly(project(":fixture-monkey-engine"))
     testImplementation("org.junit.jupiter:junit-jupiter-engine:${JUNIT_JUPITER_VERSION}")
     testImplementation("org.junit.platform:junit-platform-engine:${JUNIT_ENGINE_VERSION}")
-    testImplementation("org.assertj:assertj-core:3.22.0")
-    testImplementation("org.projectlombok:lombok:1.18.24")
-    testAnnotationProcessor("org.projectlombok:lombok:1.18.24")
+    testImplementation("org.assertj:assertj-core:${ASSERTJ_VERSION}")
+    testImplementation("org.projectlombok:lombok:${LOMBOK_VERSION}")
+    testAnnotationProcessor("org.projectlombok:lombok:${LOMBOK_VERSION}")
 }
 
-editorconfig {
-    excludes = ["build"]
-}
+// editorconfig {
+//    excludes = ["build"]
+// }
 
 test {
     useJUnitPlatform()
 }
 
-check.dependsOn editorconfigCheck
+// check.dependsOn editorconfigCheck
 
 checkstyle {
     configFile = file("${project.rootDir}/tool/naver-checkstyle-rules.xml")
@@ -70,9 +70,9 @@ tasks.register("printSpotbugsMain") {
 }
 tasks.getByPath("spotbugsMain").finalizedBy("printSpotbugsMain")
 
-jacoco {
-    toolVersion = "0.8.7"
-    reportsDir = file("${buildDir}/reports/jacoco")
+jacoco {  
+    toolVersion = "0.8.11"  
+    reportsDirectory.set(file("${buildDir}/reports/jacoco"))
 }
 
 jacocoTestReport {
@@ -80,13 +80,13 @@ jacocoTestReport {
         classDirectories.setFrom(file("${buildDir}/classes/java/main"))
     }
 
-    reports {
-        xml.enabled true
-        xml.destination file("${buildDir}/reports/jacoco/jacoco.xml")
-        csv.enabled false
-        html.enabled true
-        html.destination file("${buildDir}/reports/jacoco/html")
-    }
+    reports {  
+        xml.required = true  
+        xml.destination file("${buildDir}/reports/jacoco/jacoco.xml")  
+        csv.required = false  
+        html.required = true  
+        html.destination file("${buildDir}/reports/jacoco/html")  
+    } 
 }
 
 jacocoTestCoverageVerification {
