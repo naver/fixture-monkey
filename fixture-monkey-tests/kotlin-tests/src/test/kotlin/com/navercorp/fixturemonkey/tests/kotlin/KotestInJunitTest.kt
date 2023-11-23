@@ -729,6 +729,24 @@ class KotestInJunitTest {
         then(actual).hasSizeLessThan(5)
     }
 
+    @RepeatedTest(TEST_COUNT)
+    fun sampleMinZeroInteger() {
+        class IntegerObject(@field:Min(0L) val value: Int)
+
+        val actual = SUT.giveMeOne<IntegerObject>().value
+
+        then(actual).isGreaterThanOrEqualTo(0)
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun sampleMinZeroDecimal() {
+        class DecimalObject(@field:Min(0L) val value: Double)
+
+        val actual = SUT.giveMeOne<DecimalObject>().value
+
+        then(actual).isGreaterThanOrEqualTo(0.0)
+    }
+
     companion object {
         private val SUT: FixtureMonkey = FixtureMonkey.builder()
             .plugin(JavaxValidationPlugin())
