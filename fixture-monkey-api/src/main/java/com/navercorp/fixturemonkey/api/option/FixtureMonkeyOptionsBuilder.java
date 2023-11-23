@@ -117,6 +117,7 @@ public final class FixtureMonkeyOptionsBuilder {
 	private int generateMaxTries = CombinableArbitrary.DEFAULT_MAX_TRIES;
 	private int generateUniqueMaxTries = DEFAULT_MAX_UNIQUE_GENERATION_COUNT;
 	private JavaConstraintGenerator javaConstraintGenerator = DEFAULT_JAVA_CONSTRAINT_GENERATOR;
+	private final List<UnaryOperator<JavaConstraintGenerator>> javaConstraintGeneratorCustomizers = new ArrayList<>();
 	private JavaTypeArbitraryGenerator javaTypeArbitraryGenerator = new JavaTypeArbitraryGenerator() {
 	};
 	@Nullable
@@ -479,6 +480,13 @@ public final class FixtureMonkeyOptionsBuilder {
 		return this;
 	}
 
+	public FixtureMonkeyOptionsBuilder insertFirstJavaConstraintGeneratorCustomizer(
+		UnaryOperator<JavaConstraintGenerator> javaConstraintGeneratorCustomizer
+	) {
+		this.javaConstraintGeneratorCustomizers.add(javaConstraintGeneratorCustomizer);
+		return this;
+	}
+
 	public FixtureMonkeyOptionsBuilder javaTypeArbitraryGeneratorSet(
 		Function<JavaConstraintGenerator, JavaTypeArbitraryGeneratorSet> generateJavaTypeArbitrarySet
 	) {
@@ -601,6 +609,11 @@ public final class FixtureMonkeyOptionsBuilder {
 
 		defaultArbitraryGenerator = defaultArbitraryGeneratorOperator.apply(defaultArbitraryGenerator);
 
+		JavaConstraintGenerator resolvedJavaConstraintGenerator = javaConstraintGenerator;
+		for (Function<JavaConstraintGenerator, JavaConstraintGenerator> it : javaConstraintGeneratorCustomizers) {
+			resolvedJavaConstraintGenerator = it.apply(resolvedJavaConstraintGenerator);
+		}
+
 		return new FixtureMonkeyOptions(
 			this.propertyGenerators,
 			this.defaultPropertyGenerator,
@@ -618,7 +631,7 @@ public final class FixtureMonkeyOptionsBuilder {
 			decomposedContainerValueFactory,
 			this.generateMaxTries,
 			this.generateUniqueMaxTries,
-			this.javaConstraintGenerator,
+			resolvedJavaConstraintGenerator,
 			this.instantiatorProcessor
 		);
 	}

@@ -494,6 +494,13 @@ public final class FixtureMonkeyBuilder {
 		return this;
 	}
 
+	public FixtureMonkeyBuilder pushJavaConstraintGeneratorCustomizer(
+		UnaryOperator<JavaConstraintGenerator> javaConstraintGeneratorCustomizer
+	) {
+		fixtureMonkeyOptionsBuilder.insertFirstJavaConstraintGeneratorCustomizer(javaConstraintGeneratorCustomizer);
+		return this;
+	}
+
 	public FixtureMonkeyBuilder seed(long seed) {
 		this.seed = seed;
 		return this;
