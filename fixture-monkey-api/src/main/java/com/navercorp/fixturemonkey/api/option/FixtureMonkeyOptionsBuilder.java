@@ -539,9 +539,15 @@ public final class FixtureMonkeyOptionsBuilder {
 			() -> context -> new ArbitraryContainerInfo(0, FixtureMonkeyOptions.DEFAULT_ARBITRARY_CONTAINER_MAX_SIZE)
 		);
 
+		for (Function<JavaConstraintGenerator, JavaConstraintGenerator> it : javaConstraintGeneratorCustomizers) {
+			this.javaConstraintGenerator = it.apply(this.javaConstraintGenerator);
+		}
+
+		JavaConstraintGenerator resolvedJavaConstraintGenerator = this.javaConstraintGenerator;
+
 		JavaArbitraryResolver javaArbitraryResolver = defaultIfNull(
 			this.javaArbitraryResolver,
-			() -> new JqwikJavaArbitraryResolver(this.javaConstraintGenerator)
+			() -> new JqwikJavaArbitraryResolver(resolvedJavaConstraintGenerator)
 		);
 
 		this.generateJavaTypeArbitrarySet = defaultIfNull(
@@ -554,12 +560,12 @@ public final class FixtureMonkeyOptionsBuilder {
 		);
 
 		javaDefaultArbitraryGeneratorBuilder.javaTypeArbitraryGeneratorSet(
-			generateJavaTypeArbitrarySet.apply(javaConstraintGenerator)
+			generateJavaTypeArbitrarySet.apply(resolvedJavaConstraintGenerator)
 		);
 
 		JavaTimeArbitraryResolver javaTimeArbitraryResolver = defaultIfNull(
 			this.javaTimeArbitraryResolver,
-			() -> new JqwikJavaTimeArbitraryResolver(javaConstraintGenerator)
+			() -> new JqwikJavaTimeArbitraryResolver(resolvedJavaConstraintGenerator)
 		);
 
 		this.generateJavaTimeArbitrarySet = defaultIfNull(
@@ -572,7 +578,7 @@ public final class FixtureMonkeyOptionsBuilder {
 		);
 
 		javaDefaultArbitraryGeneratorBuilder.javaTimeArbitraryGeneratorSet(
-			generateJavaTimeArbitrarySet.apply(javaConstraintGenerator)
+			generateJavaTimeArbitrarySet.apply(resolvedJavaConstraintGenerator)
 		);
 
 		ArbitraryGenerator defaultArbitraryGenerator =
@@ -608,11 +614,6 @@ public final class FixtureMonkeyOptionsBuilder {
 		);
 
 		defaultArbitraryGenerator = defaultArbitraryGeneratorOperator.apply(defaultArbitraryGenerator);
-
-		JavaConstraintGenerator resolvedJavaConstraintGenerator = javaConstraintGenerator;
-		for (Function<JavaConstraintGenerator, JavaConstraintGenerator> it : javaConstraintGeneratorCustomizers) {
-			resolvedJavaConstraintGenerator = it.apply(resolvedJavaConstraintGenerator);
-		}
 
 		return new FixtureMonkeyOptions(
 			this.propertyGenerators,
