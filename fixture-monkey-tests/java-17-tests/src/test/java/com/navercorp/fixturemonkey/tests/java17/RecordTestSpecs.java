@@ -127,4 +127,12 @@ final class RecordTestSpecs {
 			this(String.valueOf(integer));
 		}
 	}
+
+	public record CompactConstructorRecord(
+		String string
+	) {
+		public CompactConstructorRecord {
+			string = "12345";
+		}
+	}
 }

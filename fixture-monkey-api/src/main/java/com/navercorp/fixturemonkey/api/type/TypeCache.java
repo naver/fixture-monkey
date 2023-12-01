@@ -148,13 +148,12 @@ public abstract class TypeCache {
 							"Constructor should have @ConstructorProperties" + clazz.getSimpleName())
 						);
 				} else {
-					primaryConstructor = possibilities.stream()
-						.findFirst()
+					primaryConstructor = Constructors.findPrimaryConstructor(clazz, constructors)
 						.orElse(null);
-				}
 
-				if (primaryConstructor == null) {
-					return null;
+					if (primaryConstructor == null) {
+						return null;
+					}
 				}
 
 				String[] parameterNames = getParameterNames(primaryConstructor);
