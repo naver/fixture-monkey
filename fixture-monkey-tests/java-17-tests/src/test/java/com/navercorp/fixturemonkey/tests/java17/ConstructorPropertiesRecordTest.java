@@ -25,6 +25,7 @@ import org.junit.jupiter.api.RepeatedTest;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.introspector.ConstructorPropertiesArbitraryIntrospector;
+import com.navercorp.fixturemonkey.tests.java17.RecordTestSpecs.CompactConstructorRecord;
 import com.navercorp.fixturemonkey.tests.java17.RecordTestSpecs.ComplexContainerRecord;
 import com.navercorp.fixturemonkey.tests.java17.RecordTestSpecs.ContainerRecord;
 import com.navercorp.fixturemonkey.tests.java17.RecordTestSpecs.DateTimeRecord;
@@ -109,6 +110,30 @@ class ConstructorPropertiesRecordTest {
 			.string();
 
 		then(actual).isNotNull();
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void recordShouldUseCanonicalConstructor() {
+		String expected = "expected";
+
+		String actual = SUT.giveMeBuilder(TwoConstructorsRecord.class)
+			.set("string", expected)
+			.sample()
+			.string();
+
+		then(actual).isEqualTo(expected);
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void recordUseCompactConstructor() {
+		String expected = "expected";
+
+		String actual = SUT.giveMeBuilder(CompactConstructorRecord.class)
+			.set("string", expected)
+			.sample()
+			.string();
+
+		then(actual).isEqualTo("12345");
 	}
 
 	@RepeatedTest(TEST_COUNT)
