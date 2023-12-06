@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://naver.github.io/fixture-monkey/sitemap.xml
