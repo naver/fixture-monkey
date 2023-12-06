@@ -8,7 +8,7 @@ docs:
 ---
 
 > Fixture Monkey works in both Java and Kotlin.
-> We have a separate 'Getting Started' page for each environment you can use: [Java](creating-test-objects), [Java without Lombok](creating-test-objects-without-lombok), and [Kotlin](creating-objects-in-kotlin).
+> We have a separate 'Getting Started' page for each environment you can use: [Java](../creating-test-objects), [Java without Lombok](../creating-test-objects-without-lombok), and [Kotlin](../creating-objects-in-kotlin).
 >
 > This page explains the Java environment. Please refer to the appropriate page for your environment.
 
@@ -34,7 +34,7 @@ public class Product {
     Map<Integer, String> merchantInfo;
 }
 ```
-(Note that the Lombok annotation `@Value` is used to make Immutable classes. If you're working in an environment without Lombok, go to [creating test objects without lombok](/docs/get-started/creating-test-objects-without-lombok))
+(Note that the Lombok annotation `@Value` is used to make Immutable classes. If you're working in an environment without Lombok, go to [creating test objects without lombok](../creating-test-objects-without-lombok))
 
 With the Fixture Monkey library, generating an instance of Product becomes remarkably simple, requiring just few lines of code.
 
