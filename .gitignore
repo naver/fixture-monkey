@@ -28,3 +28,9 @@ out/
 
 ### Etc ###
 .DS_Store
+
+### Doc ###
+node_modules
+resources
+docs/.netlify
+.hugo_build.lock

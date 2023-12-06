@@ -1,8 +1,10 @@
-name: github page build
+name: github page
 
 on:
-  pull_request:
-    branches: [ doc ]
+  push:
+    branches: [ main ]
+    paths:
+      - 'docs/**'
 jobs:
   deploy:
     runs-on: ubuntu-20.04
@@ -14,10 +16,7 @@ jobs:
         with:
           submodules: recursive  # Fetch Hugo themes (true OR recursive)
           fetch-depth: 0    # Fetch all history for .GitInfo and .Lastmod
-          ref: doc
-
-      - name: install
-        run: npm install postcss postcss-cli autoprefixer
+          ref: main
 
       - name: Setup Hugo
         uses: peaceiris/actions-hugo@v2
@@ -26,4 +25,14 @@ jobs:
           extended: true
 
       - name: Build
-        run: hugo --minify
+        working-directory: docs
+        run: |
+          npm install postcss postcss-cli autoprefixer
+          hugo --minify
+
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        if: github.ref == 'refs/heads/main'
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public
