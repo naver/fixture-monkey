@@ -254,6 +254,41 @@ fun test() {
 {{< /tabpane>}}
 
 ## Constraining Java types
+> `pushJavaConstraintGeneratorCustomizer`
+
+You can modify the default values for Java primitive types (such as strings, integers, doubles, etc.) by implementing a custom `JavaConstraintGenerator` interface.
+
+{{< tabpane persist=false >}}
+{{< tab header="Java" lang="java">}}
+
+FixtureMonkey.builder()
+.plugin(
+new JqwikPlugin()
+.javaTypeArbitraryGenerator(new JavaTypeArbitraryGenerator() {
+@Override
+public StringArbitrary strings() {
+return Arbitraries.strings().alpha();
+}
+})
+)
+.build();
+
+{{< /tab >}}
+{{< tab header="Kotlin" lang="kotlin">}}
+
+FixtureMonkey.builder()
+.plugin(
+JqwikPlugin()
+.javaTypeArbitraryGenerator(object : JavaTypeArbitraryGenerator {
+override fun strings(): StringArbitrary = Arbitraries.strings().alpha()
+})
+)
+.build()
+
+{{< /tab >}}
+{{< /tabpane>}}
+
+## Constraining Java types
 > `javaTypeArbitraryGenerator`, `javaTimeTypeArbitraryGenerator`
 
 You can modify the default values for Java primitive types (such as strings, integers, doubles, etc.) by implementing a custom `JavaTypeArbitraryGenerator` interface.
