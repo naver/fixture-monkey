@@ -13,7 +13,7 @@ Fix generating a record instance with 2 or more constructors.
 Add Exp DSL resolving an array element of specific index.
 
 ----------
-### v1.0.0
+### v1.0.x
 Add instantiate as stable API.
 Refactor Kotlin constructor instantiate using Kotlin constructor.
 
