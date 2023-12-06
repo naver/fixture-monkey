@@ -1,0 +1,65 @@
+{{ define "main" }}
+<!--<section class="section section-sm" style="background-color: rgba(90, 197, 197, 0.7)">-->
+<!--  <div class="row justify-content-center">-->
+<!--    <div class="col-lg-12 text-center">-->
+<!--      <h1 class="mt-0">{{ .Title }}</h1>-->
+<!--    </div>-->
+<!--    <div class="col-lg-9 col-xl-8 text-center">-->
+<!--      <p class="lead">{{ .Params.lead | safeHTML }}</p>-->
+<!--      <a class="btn btn-primary btn-lg px-4 mb-2" href="/docs/{{ if .Site.Params.options.docsVersioning }}{{ .Site.Params.docsVersion }}/{{ end }}prologue/introduction/" role="button">{{ i18n "get-started" }}</a>-->
+<!--    </div>-->
+<!--  </div>-->
+<!--</section>-->
+{{ end }}
+
+{{ define "sidebar-prefooter" }}
+  {{ if eq $.Site.Language.LanguageName "English" }}
+<section class="section section-sm" style="background: url('/fixture-monkey/images/fixtureMonkey-resource-background.png') no-repeat center center / cover; min-height: 65vh; display: flex; flex-direction: column; justify-content: flex-end; text-align: center; color: white;">
+  <div class="row justify-content-center">
+    <div class="col-lg-12" style="color:#70E386">
+<!--      <h1 class="mt-0">{{ .Title }}</h1>-->
+      <h4>The easiest way to generate controllable arbitrary test objects</h4>
+    </div>
+    <div class="col-lg-9 col-xl-8">
+      <p class="lead">{{ .Params.lead | safeHTML }}</p>
+      <a class="btn btn-primary btn-lg px-4 mb-2" href="/docs/get-started/requirements/" role="button" style="background-color: #49C3FD; color: black; border-color: #49C3FD">{{ i18n "get-started" }}</a>
+    </div>
+  </div>
+</section>
+<section class="section section-sm" style="background-color: #0E2531; min-height: 30vh; display: flex; align-items: center; justify-content: center;">
+  <div class="row justify-content-center">
+    <div class="col-lg-12 text-center" style="color: #3CA0CF">
+      <h3 style="margin-bottom: 0;">Java & Kotlin library for automatically generating reusable and controllable, arbitrary test fixtures</h3>
+    </div>
+  </div>
+</section>
+  <section class="section section-sm" style="background-color: #70E386; color: #0E2531">
+    <div class="container">
+      <div class="row justify-content-center text-center">
+        <div class="col-lg-5">
+          <h2 class="h4" icon="fas fa-recycle">Reusability</h2>
+          <p> Reuse test instances that follow the complex specification you defined. You do NOT need to define a complex specification for each test. </p>
+        </div>
+        <div class="col-lg-5">
+          <h2 class="h4">Repeatability</h2>
+          <p>Repeat your tests countless times with different test object every time</a> by default.</p>
+        </div>
+        <div class="col-lg-5">
+          <h2 class="h4">Simplicity</h2>
+          <p> Instantiate complex test objects with Builder Pattern</p>
+        </div>
+      </div>
+    </div>
+  </section>
+  {{ end }}
+{{ end }}
+
+{{ define "sidebar-footer" }}
+<section class="section section-sm container-fluid">
+  <div class="row justify-content-center text-center">
+    <div class="col-lg-9">
+      {{- .Content -}}
+    </div>
+  </div>
+</section>
+{{ end }}
