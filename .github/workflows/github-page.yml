@@ -25,11 +25,10 @@ jobs:
           extended: true
 
       - name: Build
+        working-directory: docs
         run: |
-          cd docs
           npm install postcss postcss-cli autoprefixer
           hugo --minify
-          cd ..
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
