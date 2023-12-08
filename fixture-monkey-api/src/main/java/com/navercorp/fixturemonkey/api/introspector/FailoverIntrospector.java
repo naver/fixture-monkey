@@ -45,9 +45,21 @@ public final class FailoverIntrospector implements ArbitraryIntrospector {
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
 		List<FailoverIntrospectorResult> results = new ArrayList<>();
 		for (ArbitraryIntrospector introspector : this.introspectors) {
-			ArbitraryIntrospectorResult result = introspector.introspect(context);
-			if (!ArbitraryIntrospectorResult.NOT_INTROSPECTED.equals(result)) {
-				results.add(new FailoverIntrospectorResult(introspector, result));
+			try {
+				ArbitraryIntrospectorResult result = introspector.introspect(context);
+				if (!ArbitraryIntrospectorResult.NOT_INTROSPECTED.equals(result)) {
+					results.add(new FailoverIntrospectorResult(introspector, result));
+				}
+			} catch (Exception ex) {
+				LOGGER.warn(
+					String.format(
+						"\"%s\" is failed to introspect \"%s\" type.",
+						introspector.getClass().getSimpleName(),
+						((Class<?>)context.getResolvedProperty().getType()).getName()
+					),
+					ex
+				);
+				// omitted
 			}
 		}
 		if (results.isEmpty()) {
