@@ -21,6 +21,8 @@ package com.navercorp.fixturemonkey.tests.kotlin
 import com.navercorp.fixturemonkey.FixtureMonkey
 import com.navercorp.fixturemonkey.api.experimental.JavaGetterMethodPropertySelector.javaGetter
 import com.navercorp.fixturemonkey.api.introspector.ConstructorPropertiesArbitraryIntrospector
+import com.navercorp.fixturemonkey.api.introspector.FactoryMethodArbitraryIntrospector
+import com.navercorp.fixturemonkey.api.introspector.FailoverIntrospector
 import com.navercorp.fixturemonkey.kotlin.KotlinPlugin
 import com.navercorp.fixturemonkey.kotlin.get
 import com.navercorp.fixturemonkey.kotlin.giveMeBuilder
@@ -29,6 +31,7 @@ import com.navercorp.fixturemonkey.kotlin.giveMeOne
 import com.navercorp.fixturemonkey.kotlin.instantiator.instantiateBy
 import com.navercorp.fixturemonkey.kotlin.into
 import com.navercorp.fixturemonkey.kotlin.intoGetter
+import com.navercorp.fixturemonkey.kotlin.pushExactTypeArbitraryIntrospector
 import com.navercorp.fixturemonkey.kotlin.setExp
 import com.navercorp.fixturemonkey.kotlin.setExpGetter
 import com.navercorp.fixturemonkey.kotlin.sizeExp
@@ -39,6 +42,8 @@ import com.navercorp.fixturemonkey.tests.kotlin.JavaConstructorTestSpecs.JavaTyp
 import org.assertj.core.api.BDDAssertions.then
 import org.assertj.core.api.BDDAssertions.thenThrownBy
 import org.junit.jupiter.api.Test
+import java.util.UUID
+import kotlin.reflect.jvm.javaMethod
 
 class KotlinTest {
     @Test
@@ -169,6 +174,29 @@ class KotlinTest {
         // when, then
         thenThrownBy { sut.giveMeOne<ConstructorWithoutAnyAnnotations>() }
             .hasMessageContaining("Primary Constructor does not exist.")
+    }
+
+    @Test
+    fun failoverIntrospectorHandlingExceptionWhenDeclaring() {
+        val sut = FixtureMonkey.builder()
+            .pushExactTypeArbitraryIntrospector<UUID>(
+                FailoverIntrospector(
+                    listOf(
+                        ConstructorPropertiesArbitraryIntrospector.INSTANCE,
+                        FactoryMethodArbitraryIntrospector(
+                            FactoryMethodArbitraryIntrospector.FactoryMethodWithParameterNames(
+                                UUID::randomUUID.javaMethod,
+                                listOf(),
+                            ),
+                        ),
+                    ),
+                ),
+            )
+            .build()
+
+        val actual = sut.giveMeOne<UUID>()
+
+        then(actual).isNotNull
     }
 
     companion object {
