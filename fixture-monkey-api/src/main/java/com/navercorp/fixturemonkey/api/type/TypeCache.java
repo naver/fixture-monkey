@@ -148,7 +148,10 @@ public abstract class TypeCache {
 							"Constructor should have @ConstructorProperties" + clazz.getSimpleName())
 						);
 				} else {
-					primaryConstructor = Constructors.findPrimaryConstructor(clazz, constructors)
+					primaryConstructor = Constructors.findPrimaryConstructor(
+							clazz,
+							possibilities.toArray(new Constructor[] {})
+						)
 						.orElse(null);
 
 					if (primaryConstructor == null) {

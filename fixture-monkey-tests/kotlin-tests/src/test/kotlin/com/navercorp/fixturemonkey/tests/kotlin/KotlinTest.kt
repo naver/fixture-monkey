@@ -20,11 +20,12 @@ package com.navercorp.fixturemonkey.tests.kotlin
 
 import com.navercorp.fixturemonkey.FixtureMonkey
 import com.navercorp.fixturemonkey.api.experimental.JavaGetterMethodPropertySelector.javaGetter
-import com.navercorp.fixturemonkey.api.introspector.ConstructorArbitraryIntrospector
+import com.navercorp.fixturemonkey.api.introspector.ConstructorPropertiesArbitraryIntrospector
 import com.navercorp.fixturemonkey.kotlin.KotlinPlugin
 import com.navercorp.fixturemonkey.kotlin.get
 import com.navercorp.fixturemonkey.kotlin.giveMeBuilder
 import com.navercorp.fixturemonkey.kotlin.giveMeExperimentalBuilder
+import com.navercorp.fixturemonkey.kotlin.giveMeOne
 import com.navercorp.fixturemonkey.kotlin.instantiator.instantiateBy
 import com.navercorp.fixturemonkey.kotlin.into
 import com.navercorp.fixturemonkey.kotlin.intoGetter
@@ -154,6 +155,20 @@ class KotlinTest {
 
         // then
         then(actual).isEqualTo(expected)
+    }
+
+    @Test
+    fun constructorArbitraryIntrospectorWithoutPrimaryConstructor() {
+        // given
+        class ConstructorWithoutAnyAnnotations(val string: String)
+
+        val sut = FixtureMonkey.builder()
+            .objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)
+            .build()
+
+        // when, then
+        thenThrownBy { sut.giveMeOne<ConstructorWithoutAnyAnnotations>() }
+            .hasMessageContaining("Primary Constructor does not exist.")
     }
 
     companion object {
