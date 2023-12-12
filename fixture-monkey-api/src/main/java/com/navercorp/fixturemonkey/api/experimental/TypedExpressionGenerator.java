@@ -16,22 +16,21 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.experimental;
-
-import java.util.function.Function;
+package com.navercorp.fixturemonkey.api.experimental;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.ArbitraryBuilder;
-import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
-import com.navercorp.fixturemonkey.api.experimental.TypedPropertySelector;
+import com.navercorp.fixturemonkey.api.expression.ExpressionGenerator;
 
-@API(since = "0.6.12", status = Status.MAINTAINED)
-public interface ExperimentalArbitraryBuilder<T> extends ArbitraryBuilder<T> {
-	@API(since = "1.0.9", status = Status.EXPERIMENTAL)
-	<U> ArbitraryBuilder<T> customizeProperty(
-		TypedPropertySelector<U> propertySelector,
-		Function<CombinableArbitrary<? extends U>, CombinableArbitrary<? extends U>> combinableArbitraryCustomizer
-	);
+@API(since = "1.0.9", status = Status.EXPERIMENTAL)
+@FunctionalInterface
+public interface TypedExpressionGenerator<T> extends TypedPropertySelector<T>, ExpressionGenerator {
+	static <U> TypedExpressionGenerator<U> typedRoot() {
+		return propertyNameResolver -> "$";
+	}
+
+	static <U> TypedExpressionGenerator<U> typedString(String expression) {
+		return propertyNameResolver -> expression;
+	}
 }

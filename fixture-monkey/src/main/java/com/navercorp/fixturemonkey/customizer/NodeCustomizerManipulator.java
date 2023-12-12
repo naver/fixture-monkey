@@ -16,22 +16,29 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.experimental;
+package com.navercorp.fixturemonkey.customizer;
 
 import java.util.function.Function;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
-import com.navercorp.fixturemonkey.api.experimental.TypedPropertySelector;
+import com.navercorp.fixturemonkey.tree.ObjectNode;
 
-@API(since = "0.6.12", status = Status.MAINTAINED)
-public interface ExperimentalArbitraryBuilder<T> extends ArbitraryBuilder<T> {
-	@API(since = "1.0.9", status = Status.EXPERIMENTAL)
-	<U> ArbitraryBuilder<T> customizeProperty(
-		TypedPropertySelector<U> propertySelector,
-		Function<CombinableArbitrary<? extends U>, CombinableArbitrary<? extends U>> combinableArbitraryCustomizer
-	);
+@API(since = "1.0.9", status = Status.EXPERIMENTAL)
+public final class NodeCustomizerManipulator<T> implements NodeManipulator {
+	private final Function<CombinableArbitrary<? extends T>, CombinableArbitrary<? extends T>> arbitraryCustomizer;
+
+	public NodeCustomizerManipulator(
+		Function<CombinableArbitrary<? extends T>, CombinableArbitrary<? extends T>> arbitraryCustomizer
+	) {
+		this.arbitraryCustomizer = arbitraryCustomizer;
+	}
+
+	@SuppressWarnings({"rawtypes", "unchecked"})
+	@Override
+	public void manipulate(ObjectNode objectNode) {
+		objectNode.addArbitraryCustomizer((Function)arbitraryCustomizer);
+	}
 }

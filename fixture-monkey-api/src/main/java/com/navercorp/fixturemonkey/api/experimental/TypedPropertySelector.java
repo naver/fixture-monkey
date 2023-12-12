@@ -16,22 +16,16 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.experimental;
-
-import java.util.function.Function;
+package com.navercorp.fixturemonkey.api.experimental;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.ArbitraryBuilder;
-import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
-import com.navercorp.fixturemonkey.api.experimental.TypedPropertySelector;
+import com.navercorp.fixturemonkey.api.property.PropertySelector;
 
-@API(since = "0.6.12", status = Status.MAINTAINED)
-public interface ExperimentalArbitraryBuilder<T> extends ArbitraryBuilder<T> {
-	@API(since = "1.0.9", status = Status.EXPERIMENTAL)
-	<U> ArbitraryBuilder<T> customizeProperty(
-		TypedPropertySelector<U> propertySelector,
-		Function<CombinableArbitrary<? extends U>, CombinableArbitrary<? extends U>> combinableArbitraryCustomizer
-	);
+/**
+ * It is a marker interface for selecting a specific property with type.
+ */
+@API(since = "1.0.9", status = Status.EXPERIMENTAL)
+public interface TypedPropertySelector<T> extends PropertySelector {
 }

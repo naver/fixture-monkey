@@ -51,6 +51,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.context.MonkeyContext;
+import com.navercorp.fixturemonkey.api.experimental.TypedPropertySelector;
 import com.navercorp.fixturemonkey.api.expression.ExpressionGenerator;
 import com.navercorp.fixturemonkey.api.instantiator.Instantiator;
 import com.navercorp.fixturemonkey.api.instantiator.InstantiatorProcessResult;
@@ -459,6 +460,18 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 		Class<?> type = Types.getActualType(typeReference.getType());
 		context.putArbitraryIntrospector(type, result.getIntrospector());
 		context.putPropertyConfigurer(type, result.getProperties());
+		return this;
+	}
+
+	@Override
+	public <U> ArbitraryBuilder<T> customizeProperty(
+		TypedPropertySelector<U> propertySelector,
+		Function<CombinableArbitrary<? extends U>, CombinableArbitrary<? extends U>> combinableArbitraryCustomizer
+	) {
+		String expression = resolveExpression(toExpressionGenerator(propertySelector));
+		context.addManipulator(
+			monkeyManipulatorFactory.newArbitraryManipulator(expression, combinableArbitraryCustomizer)
+		);
 		return this;
 	}
 

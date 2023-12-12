@@ -20,6 +20,7 @@ package com.navercorp.fixturemonkey.tree;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 import javax.annotation.Nullable;
@@ -57,6 +58,8 @@ public final class ObjectNode {
 
 	@SuppressWarnings("rawtypes")
 	private final List<Predicate> arbitraryFilters = new ArrayList<>();
+	private final List<Function<CombinableArbitrary<?>, CombinableArbitrary<?>>> arbitraryCustomizers =
+		new ArrayList<>();
 
 	private final LazyArbitrary<Boolean> childNotCacheable = LazyArbitrary.lazy(() -> {
 		for (ObjectNode child : children) {
@@ -141,6 +144,14 @@ public final class ObjectNode {
 	@SuppressWarnings("rawtypes")
 	public List<Predicate> getArbitraryFilters() {
 		return arbitraryFilters;
+	}
+
+	public void addArbitraryCustomizer(Function<CombinableArbitrary<?>, CombinableArbitrary<?>> arbitraryCustomizer) {
+		this.arbitraryCustomizers.add(arbitraryCustomizer);
+	}
+
+	public List<Function<CombinableArbitrary<?>, CombinableArbitrary<?>>> getArbitraryCustomizers() {
+		return arbitraryCustomizers;
 	}
 
 	public boolean manipulated() {

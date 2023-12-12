@@ -20,6 +20,7 @@ package com.navercorp.fixturemonkey.tests.kotlin
 
 import com.navercorp.fixturemonkey.FixtureMonkey
 import com.navercorp.fixturemonkey.api.experimental.JavaGetterMethodPropertySelector.javaGetter
+import com.navercorp.fixturemonkey.api.experimental.TypedExpressionGenerator.typedRoot
 import com.navercorp.fixturemonkey.api.introspector.ConstructorPropertiesArbitraryIntrospector
 import com.navercorp.fixturemonkey.api.introspector.FactoryMethodArbitraryIntrospector
 import com.navercorp.fixturemonkey.api.introspector.FailoverIntrospector
@@ -36,12 +37,16 @@ import com.navercorp.fixturemonkey.kotlin.setExp
 import com.navercorp.fixturemonkey.kotlin.setExpGetter
 import com.navercorp.fixturemonkey.kotlin.sizeExp
 import com.navercorp.fixturemonkey.kotlin.sizeExpGetter
+import com.navercorp.fixturemonkey.tests.TestEnvironment.TEST_COUNT
 import com.navercorp.fixturemonkey.tests.kotlin.ImmutableJavaTestSpecs.ArrayObject
 import com.navercorp.fixturemonkey.tests.kotlin.ImmutableJavaTestSpecs.NestedArrayObject
 import com.navercorp.fixturemonkey.tests.kotlin.JavaConstructorTestSpecs.JavaTypeObject
 import org.assertj.core.api.BDDAssertions.then
 import org.assertj.core.api.BDDAssertions.thenThrownBy
+import org.junit.jupiter.api.RepeatedTest
 import org.junit.jupiter.api.Test
+import java.time.Instant
+import java.time.temporal.ChronoUnit
 import java.util.UUID
 import kotlin.reflect.jvm.javaMethod
 
@@ -210,6 +215,33 @@ class KotlinTest {
             .parent
 
         then(actual).isEqualTo("parent")
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun customizePropertySet() {
+        val actual = SUT.giveMeExperimentalBuilder<String>()
+            .customizeProperty(typedRoot<String>()) {
+                it.filter { str -> str.length > 5 }
+                    .map { str -> str.substring(0..3) }
+            }
+            .sample()
+
+        then(actual).hasSizeLessThanOrEqualTo(4)
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun customizePropertyFilter() {
+        val now = Instant.now()
+        val min = now.minus(365, ChronoUnit.DAYS)
+        val max = now.plus(365, ChronoUnit.DAYS)
+
+        val actual = SUT.giveMeExperimentalBuilder<Instant>()
+            .customizeProperty(typedRoot<Instant>()) {
+                it.filter { instant -> instant.isAfter(min) && instant.isBefore(max) }
+            }
+            .sample()
+
+        then(actual).isBetween(min, max)
     }
 
     companion object {

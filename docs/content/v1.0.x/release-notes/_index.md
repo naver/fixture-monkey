@@ -8,6 +8,9 @@ weight: 100
 ### v1.0.9
 Fix addExceptGenerateClass option affected by specific ArbitraryIntrospector
 
+##### Experimental Feature
+Add `customizeProperty` API in `ArbitraryBuilder` to customize a generated value.
+
 ----------
 
 ### v1.0.8
