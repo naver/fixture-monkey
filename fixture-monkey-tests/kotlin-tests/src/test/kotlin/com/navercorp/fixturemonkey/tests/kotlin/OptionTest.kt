@@ -22,6 +22,7 @@ import com.navercorp.fixturemonkey.FixtureMonkey
 import com.navercorp.fixturemonkey.api.constraint.JavaConstraintGenerator
 import com.navercorp.fixturemonkey.api.constraint.JavaDateTimeConstraint
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext
+import com.navercorp.fixturemonkey.api.plugin.InterfacePlugin
 import com.navercorp.fixturemonkey.javax.validation.plugin.JavaxValidationPlugin
 import com.navercorp.fixturemonkey.kotlin.KotlinPlugin
 import com.navercorp.fixturemonkey.kotlin.giveMeOne
@@ -108,5 +109,37 @@ class OptionTest {
         // then
         val nextYearInstant = nextYear.toInstant(offset)
         then(actual).isBetween(thisYearInstant, nextYearInstant)
+    }
+
+    interface Interface {
+        fun string(): String
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun anonymousArbitraryIntrospector() {
+        // given
+        val sut = FixtureMonkey.builder()
+            .plugin(KotlinPlugin())
+            .build()
+
+        // when
+        val actual = sut.giveMeOne<Interface>().string()
+
+        // then
+        then(actual).isNotNull()
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun notUseAnonymousArbitraryIntrospector() {
+        // given
+        val sut = FixtureMonkey.builder()
+            .plugin(InterfacePlugin().useAnonymousArbitraryIntrospector(false))
+            .build()
+
+        // when
+        val actual: Interface = sut.giveMeOne()
+
+        // then
+        then(actual).isNull()
     }
 }
