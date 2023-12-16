@@ -20,11 +20,14 @@ package com.navercorp.fixturemonkey.api.introspector;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Parameter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -32,12 +35,17 @@ import org.apiguardian.api.API.Status;
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
+import com.navercorp.fixturemonkey.api.property.ConstructorParameterPropertyGenerator;
+import com.navercorp.fixturemonkey.api.property.ConstructorPropertyGeneratorContext;
 import com.navercorp.fixturemonkey.api.property.Property;
+import com.navercorp.fixturemonkey.api.property.PropertyGenerator;
+import com.navercorp.fixturemonkey.api.property.PropertyGeneratorAccessor;
 import com.navercorp.fixturemonkey.api.type.Reflections;
+import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.6.12", status = Status.MAINTAINED)
-public final class ConstructorArbitraryIntrospector implements ArbitraryIntrospector {
+public final class ConstructorArbitraryIntrospector implements ArbitraryIntrospector, PropertyGeneratorAccessor {
 	private final ConstructorWithParameterNames<?> constructorWithParamNames;
 
 	public ConstructorArbitraryIntrospector(ConstructorWithParameterNames<?> constructorWithParamNames) {
@@ -48,9 +56,16 @@ public final class ConstructorArbitraryIntrospector implements ArbitraryIntrospe
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
 		Property property = context.getResolvedProperty();
 		Class<?> type = Types.getActualType(property.getType());
+
 		if (Modifier.isAbstract(type.getModifiers())) {
 			return ArbitraryIntrospectorResult.NOT_INTROSPECTED;
 		}
+
+		List<String> parameterNames = constructorWithParamNames.getParameterNames().isEmpty()
+			? Arrays.stream(constructorWithParamNames.getConstructor().getParameters())
+			.map(Parameter::getName)
+			.collect(Collectors.toList())
+			: constructorWithParamNames.getParameterNames();
 
 		return new ArbitraryIntrospectorResult(
 			CombinableArbitrary.objectBuilder()
@@ -58,9 +73,35 @@ public final class ConstructorArbitraryIntrospector implements ArbitraryIntrospe
 				.build(
 					combine(
 						constructorWithParamNames.getConstructor(),
-						constructorWithParamNames.getParameterNames()
+						parameterNames
 					)
 				)
+		);
+	}
+
+	@Override
+	public PropertyGenerator getPropertyGenerator(Property property) {
+		ConstructorParameterPropertyGenerator propertyGenerator = new ConstructorParameterPropertyGenerator(
+			it -> it.equals(constructorWithParamNames.constructor),
+			it -> true
+		);
+
+		if (constructorWithParamNames.getParameterNames().isEmpty()) {
+			return propertyGenerator;
+		}
+
+		List<TypeReference<?>> parameterTypes =
+			Arrays.stream(constructorWithParamNames.constructor.getGenericParameterTypes())
+				.map(it -> Types.toTypeReference(Types.generateAnnotatedTypeWithoutAnnotation(it)))
+				.collect(Collectors.toList());
+
+		return p -> propertyGenerator.generateParameterProperties(
+			new ConstructorPropertyGeneratorContext(
+				p,
+				constructorWithParamNames.constructor,
+				parameterTypes,
+				constructorWithParamNames.parameterNames
+			)
 		);
 	}
 

@@ -18,7 +18,10 @@
 
 package com.navercorp.fixturemonkey.api.introspector;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import javax.annotation.Nullable;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -26,6 +29,10 @@ import org.apiguardian.api.API.Status;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
+import com.navercorp.fixturemonkey.api.property.CompositePropertyGenerator;
+import com.navercorp.fixturemonkey.api.property.Property;
+import com.navercorp.fixturemonkey.api.property.PropertyGenerator;
+import com.navercorp.fixturemonkey.api.property.PropertyGeneratorAccessor;
 
 /**
  * Introspects by a matched {@link ArbitraryGenerator}.
@@ -36,7 +43,7 @@ import com.navercorp.fixturemonkey.api.matcher.Matcher;
  * If there are one or more {@link ArbitraryIntrospector} that match the condition, the first one is used.
  */
 @API(since = "0.6.12", status = Status.MAINTAINED)
-public final class MatchArbitraryIntrospector implements ArbitraryIntrospector {
+public final class MatchArbitraryIntrospector implements ArbitraryIntrospector, PropertyGeneratorAccessor {
 	private final List<ArbitraryIntrospector> introspectors;
 
 	public MatchArbitraryIntrospector(List<ArbitraryIntrospector> introspectors) {
@@ -62,5 +69,32 @@ public final class MatchArbitraryIntrospector implements ArbitraryIntrospector {
 		}
 
 		return ArbitraryIntrospectorResult.NOT_INTROSPECTED;
+	}
+
+	@Nullable
+	@Override
+	public PropertyGenerator getPropertyGenerator(Property property) {
+		List<PropertyGenerator> propertyGenerators = new ArrayList<>();
+		for (ArbitraryIntrospector introspector : this.introspectors) {
+			if (!(introspector instanceof PropertyGeneratorAccessor)) {
+				continue;
+			}
+
+			if (introspector instanceof Matcher && !((Matcher)introspector).match(property)) {
+				continue;
+			}
+
+			PropertyGeneratorAccessor propertyGeneratorAccessor = (PropertyGeneratorAccessor)introspector;
+			PropertyGenerator propertyGenerator = propertyGeneratorAccessor.getPropertyGenerator(property);
+			if (propertyGenerator != null) {
+				propertyGenerators.add(propertyGenerator);
+			}
+		}
+
+		if (propertyGenerators.isEmpty()) {
+			return null;
+		}
+
+		return new CompositePropertyGenerator(propertyGenerators);
 	}
 }

@@ -17,6 +17,8 @@
  */
 package com.navercorp.fixturemonkey.api.introspector;
 
+import static com.navercorp.fixturemonkey.api.property.DefaultPropertyGenerator.FIELD_PROPERTY_GENERATOR;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Map;
@@ -33,12 +35,14 @@ import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitraryDelegator;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
+import com.navercorp.fixturemonkey.api.property.PropertyGenerator;
+import com.navercorp.fixturemonkey.api.property.PropertyGeneratorAccessor;
 import com.navercorp.fixturemonkey.api.type.Reflections;
 import com.navercorp.fixturemonkey.api.type.TypeCache;
 import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
-public final class FieldReflectionArbitraryIntrospector implements ArbitraryIntrospector {
+public final class FieldReflectionArbitraryIntrospector implements ArbitraryIntrospector, PropertyGeneratorAccessor {
 	public static final FieldReflectionArbitraryIntrospector INSTANCE = new FieldReflectionArbitraryIntrospector();
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
@@ -104,5 +108,10 @@ public final class FieldReflectionArbitraryIntrospector implements ArbitraryIntr
 
 			return object;
 		};
+	}
+
+	@Override
+	public PropertyGenerator getPropertyGenerator(Property property) {
+		return FIELD_PROPERTY_GENERATOR;
 	}
 }

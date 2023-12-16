@@ -20,6 +20,8 @@ package com.navercorp.fixturemonkey.api.generator;
 
 import static com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary.NOT_GENERATED;
 
+import javax.annotation.Nullable;
+
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
@@ -27,12 +29,15 @@ import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.arbitrary.TraceableCombinableArbitrary;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult;
+import com.navercorp.fixturemonkey.api.property.Property;
+import com.navercorp.fixturemonkey.api.property.PropertyGenerator;
+import com.navercorp.fixturemonkey.api.property.PropertyGeneratorAccessor;
 
 /**
  * Generates a {@link CombinableArbitrary} by {@link ArbitraryIntrospector}.
  */
 @API(since = "0.6.2", status = Status.MAINTAINED)
-public final class IntrospectedArbitraryGenerator implements ArbitraryGenerator {
+public final class IntrospectedArbitraryGenerator implements ArbitraryGenerator, PropertyGeneratorAccessor {
 	private final ArbitraryIntrospector arbitraryIntrospector;
 
 	public IntrospectedArbitraryGenerator(ArbitraryIntrospector arbitraryIntrospector) {
@@ -68,5 +73,14 @@ public final class IntrospectedArbitraryGenerator implements ArbitraryGenerator 
 		}
 
 		return NOT_GENERATED;
+	}
+
+	@Nullable
+	@Override
+	public PropertyGenerator getPropertyGenerator(Property property) {
+		if (arbitraryIntrospector instanceof PropertyGeneratorAccessor) {
+			return ((PropertyGeneratorAccessor)arbitraryIntrospector).getPropertyGenerator(property);
+		}
+		return null;
 	}
 }

@@ -171,12 +171,13 @@ public final class FixtureMonkeyOptions {
 		return propertyGenerators;
 	}
 
+	@Nullable
 	public PropertyGenerator getPropertyGenerator(Property property) {
 		return this.getPropertyGenerators().stream()
 			.filter(it -> it.match(property))
 			.map(MatcherOperator::getOperator)
 			.findFirst()
-			.orElse(this.getDefaultPropertyGenerator());
+			.orElse(null);
 	}
 
 	public PropertyGenerator getDefaultPropertyGenerator() {

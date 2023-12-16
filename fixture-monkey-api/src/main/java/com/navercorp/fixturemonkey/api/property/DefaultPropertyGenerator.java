@@ -18,30 +18,34 @@
 
 package com.navercorp.fixturemonkey.api.property;
 
-import java.beans.ConstructorProperties;
-import java.lang.reflect.Parameter;
 import java.util.Arrays;
 import java.util.List;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import com.navercorp.fixturemonkey.api.introspector.ConstructorPropertiesArbitraryIntrospector;
+
 @API(since = "0.5.3", status = Status.MAINTAINED)
 public final class DefaultPropertyGenerator implements PropertyGenerator {
+	public static final PropertyGenerator FIELD_PROPERTY_GENERATOR = new CompositePropertyGenerator(
+		Arrays.asList(
+			new FieldPropertyGenerator(
+				it -> true,
+				it -> true
+			),
+			new JavaBeansPropertyGenerator(
+				it -> it.getReadMethod() != null && it.getWriteMethod() != null,
+				it -> true
+			)
+		)
+	);
+
 	private static final CompositePropertyGenerator COMPOSITE_PROPERTY_GENERATOR =
 		new CompositePropertyGenerator(
 			Arrays.asList(
-				new ConstructorParameterPropertyGenerator(
-					it -> it.getAnnotation(ConstructorProperties.class) != null
-						|| Arrays.stream(it.getParameters()).anyMatch(Parameter::isNamePresent)
-						|| it.getParameters().length == 0,
-					it -> true
-				),
-				new FieldPropertyGenerator(it -> true, it -> true),
-				new JavaBeansPropertyGenerator(
-					it -> it.getReadMethod() != null && it.getWriteMethod() != null,
-					it -> true
-				)
+				ConstructorPropertiesArbitraryIntrospector.PROPERTY_GENERATOR,
+				FIELD_PROPERTY_GENERATOR
 			)
 		);
 
