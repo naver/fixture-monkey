@@ -77,12 +77,21 @@
           {{ end -}}
         </ul>
 
-        {{- $showFlexSearch := .Site.Params.options.flexSearch }}
-        {{- if $showFlexSearch }}
-        {{- if and (isset .Site.Params.options "searchsectionsshow") (not (eq .Site.Params.options.searchSectionsShow "ALL")) }}
-        {{- $showFlexSearch = or (eq (len .Site.Params.options.searchSectionsShow) 0) (in .Site.Params.options.searchSectionsShow .Section) (and .IsHome (in .Site.Params.options.searchSectionsShow "HomePage")) }}
-        {{- end }}
-        {{- end }}
+          {{- $showFlexSearch := false -}}
+
+          {{ with .Site }}
+            {{ with .Language }}
+              {{ if and (eq .LanguageName "v1.0.x") .Params.options.flexSearch }}
+                {{ if and (isset .Params.options "searchsectionsshow") (not (eq .Params.options.searchSectionsShow "ALL")) }}
+                  {{ if or (eq (len .Params.options.searchSectionsShow) 0) (in .Params.options.searchSectionsShow .Section) (and .IsHome (in .Params.options.searchSectionsShow "HomePage")) }}
+                    {{- $showFlexSearch = true -}}
+                  {{ end }}
+                {{ else }}
+                  {{- $showFlexSearch = true -}}
+                {{ end }}
+              {{ end }}
+            {{ end }}
+          {{ end }}
 
         {{ if $showFlexSearch -}}
         <hr class="text-black-50 my-4 d-lg-none">
@@ -129,7 +138,7 @@
             {{ else -}}
               {{ range .Site.Languages -}}
                 {{ if ne $.Site.Language.Lang .Lang }}
-                  <li><a class="dropdown-item" rel="alternate" href="{{ .Lang | relLangURL }}" hreflang="{{ .Lang }}" lang="{{ .Lang }}">{{ .LanguageName }}</a></li>
+                  <li><a class="dropdown-item" rel="alternate" href="/{{ .Lang }}" hreflang="{{ .Lang }}" lang="{{ .Lang }}">{{ .LanguageName }}</a></li>
                 {{ end -}}
               {{ end -}}
             {{ end -}}
