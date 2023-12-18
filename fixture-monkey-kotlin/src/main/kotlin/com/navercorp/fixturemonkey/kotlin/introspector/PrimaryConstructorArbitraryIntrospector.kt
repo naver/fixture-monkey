@@ -32,6 +32,7 @@ import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 import kotlin.reflect.full.primaryConstructor
+import kotlin.reflect.jvm.isAccessible
 
 @API(since = "0.4.0", status = MAINTAINED)
 class PrimaryConstructorArbitraryIntrospector : ArbitraryIntrospector {
@@ -54,6 +55,7 @@ class PrimaryConstructorArbitraryIntrospector : ArbitraryIntrospector {
                     val constructor = CONSTRUCTOR_CACHE.computeIfAbsent(type) {
                         requireNotNull(kotlinClass.primaryConstructor) { "No kotlin primary constructor provided for $kotlinClass" }
                     }
+                    constructor.isAccessible = true
 
                     val arbitrariesByPropertyName = it.mapKeys { map -> map.key.objectProperty.property.name }
 
