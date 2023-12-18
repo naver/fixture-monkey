@@ -5,6 +5,7 @@ import com.navercorp.fixturemonkey.api.instantiator.Instantiator
 import com.navercorp.fixturemonkey.api.instantiator.Instantiator.constructor
 import com.navercorp.fixturemonkey.kotlin.KotlinPlugin
 import com.navercorp.fixturemonkey.kotlin.giveMeBuilder
+import com.navercorp.fixturemonkey.kotlin.giveMeOne
 import com.navercorp.fixturemonkey.kotlin.instantiator.instantiateBy
 import com.navercorp.fixturemonkey.tests.TestEnvironment.TEST_COUNT
 import org.assertj.core.api.BDDAssertions.then
@@ -450,8 +451,7 @@ class InstantiatorTest {
     fun instantiatePrivateConstructorWithoutInstantiate() {
         class PrivateConstructorObject private constructor(val value: String)
 
-        val actual = SUT.giveMeBuilder<PrivateConstructorObject>()
-            .sample()
+        val actual = SUT.giveMeOne<PrivateConstructorObject>()
             .value
 
         then(actual).isNotNull()
