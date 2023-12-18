@@ -447,6 +447,17 @@ class InstantiatorTest {
     }
 
     @RepeatedTest(TEST_COUNT)
+    fun instantiatePrivateConstructorWithoutInstantiate() {
+        class PrivateConstructorObject private constructor(val value: String)
+
+        val actual = SUT.giveMeBuilder<PrivateConstructorObject>()
+            .sample()
+            .value
+
+        then(actual).isNotNull()
+    }
+
+    @RepeatedTest(TEST_COUNT)
     fun instantiateDefaultArgumentConstructor() {
         class ConstructorObject(val value: String = "default")
 
