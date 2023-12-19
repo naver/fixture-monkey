@@ -26,7 +26,6 @@ import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.arbitrary.JavaTimeArbitraryGeneratorSet;
 import com.navercorp.fixturemonkey.api.arbitrary.JavaTypeArbitraryGeneratorSet;
-import com.navercorp.fixturemonkey.api.introspector.AnonymousArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult;
 import com.navercorp.fixturemonkey.api.introspector.ArrayIntrospector;
@@ -151,10 +150,6 @@ public final class JavaDefaultArbitraryGeneratorBuilder {
 	}
 
 	public IntrospectedArbitraryGenerator build() {
-		if (this.fallbackIntrospector == DEFAULT_FALLBACK_INTROSPECTOR) {
-			this.fallbackIntrospector = AnonymousArbitraryIntrospector.INSTANCE;
-		}
-
 		return new IntrospectedArbitraryGenerator(
 			new MatchArbitraryIntrospector(
 				Arrays.asList(
