@@ -31,13 +31,12 @@ import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.PropertyGenerator;
-import com.navercorp.fixturemonkey.api.property.PropertyGeneratorAccessor;
 
 /**
  * Generates a {@link CombinableArbitrary} by {@link ArbitraryIntrospector}.
  */
 @API(since = "0.6.2", status = Status.MAINTAINED)
-public final class IntrospectedArbitraryGenerator implements ArbitraryGenerator, PropertyGeneratorAccessor {
+public final class IntrospectedArbitraryGenerator implements ArbitraryGenerator {
 	private final ArbitraryIntrospector arbitraryIntrospector;
 
 	public IntrospectedArbitraryGenerator(ArbitraryIntrospector arbitraryIntrospector) {
@@ -77,10 +76,7 @@ public final class IntrospectedArbitraryGenerator implements ArbitraryGenerator,
 
 	@Nullable
 	@Override
-	public PropertyGenerator getPropertyGenerator(Property property) {
-		if (arbitraryIntrospector instanceof PropertyGeneratorAccessor) {
-			return ((PropertyGeneratorAccessor)arbitraryIntrospector).getPropertyGenerator(property);
-		}
-		return null;
+	public PropertyGenerator getRequiredPropertyGenerator(Property property) {
+		return arbitraryIntrospector.getRequiredPropertyGenerator(property);
 	}
 }

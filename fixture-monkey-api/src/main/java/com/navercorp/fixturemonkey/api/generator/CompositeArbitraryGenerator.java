@@ -30,7 +30,6 @@ import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.property.CompositePropertyGenerator;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.PropertyGenerator;
-import com.navercorp.fixturemonkey.api.property.PropertyGeneratorAccessor;
 
 /**
  * Generates a {@link CombinableArbitrary} by one or more {@link ArbitraryGenerator}.
@@ -39,7 +38,7 @@ import com.navercorp.fixturemonkey.api.property.PropertyGeneratorAccessor;
  * A particular {@link ArbitraryGenerator} will use the result of a previously declared {@link ArbitraryGenerator}.
  */
 @API(since = "0.6.2", status = Status.MAINTAINED)
-public final class CompositeArbitraryGenerator implements ArbitraryGenerator, PropertyGeneratorAccessor {
+public final class CompositeArbitraryGenerator implements ArbitraryGenerator {
 	private final List<ArbitraryGenerator> arbitraryGenerators;
 
 	public CompositeArbitraryGenerator(List<ArbitraryGenerator> arbitraryGenerators) {
@@ -58,15 +57,10 @@ public final class CompositeArbitraryGenerator implements ArbitraryGenerator, Pr
 
 	@Nullable
 	@Override
-	public PropertyGenerator getPropertyGenerator(Property property) {
+	public PropertyGenerator getRequiredPropertyGenerator(Property property) {
 		List<PropertyGenerator> propertyGenerators = new ArrayList<>();
 		for (ArbitraryGenerator arbitraryGenerator : arbitraryGenerators) {
-			if (!(arbitraryGenerator instanceof PropertyGeneratorAccessor)) {
-				continue;
-			}
-
-			PropertyGenerator propertyGenerator =
-				((PropertyGeneratorAccessor)arbitraryGenerator).getPropertyGenerator(property);
+			PropertyGenerator propertyGenerator = arbitraryGenerator.getRequiredPropertyGenerator(property);
 			if (propertyGenerator != null) {
 				propertyGenerators.add(propertyGenerator);
 			}

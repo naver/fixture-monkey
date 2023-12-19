@@ -39,13 +39,12 @@ import com.navercorp.fixturemonkey.api.property.ConstructorParameterPropertyGene
 import com.navercorp.fixturemonkey.api.property.ConstructorPropertyGeneratorContext;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.PropertyGenerator;
-import com.navercorp.fixturemonkey.api.property.PropertyGeneratorAccessor;
 import com.navercorp.fixturemonkey.api.type.Reflections;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.6.12", status = Status.MAINTAINED)
-public final class ConstructorArbitraryIntrospector implements ArbitraryIntrospector, PropertyGeneratorAccessor {
+public final class ConstructorArbitraryIntrospector implements ArbitraryIntrospector {
 	private final ConstructorWithParameterNames<?> constructorWithParamNames;
 
 	public ConstructorArbitraryIntrospector(ConstructorWithParameterNames<?> constructorWithParamNames) {
@@ -80,7 +79,7 @@ public final class ConstructorArbitraryIntrospector implements ArbitraryIntrospe
 	}
 
 	@Override
-	public PropertyGenerator getPropertyGenerator(Property property) {
+	public PropertyGenerator getRequiredPropertyGenerator(Property property) {
 		ConstructorParameterPropertyGenerator propertyGenerator = new ConstructorParameterPropertyGenerator(
 			it -> it.equals(constructorWithParamNames.constructor),
 			it -> true
