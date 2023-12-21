@@ -18,6 +18,8 @@
 
 package com.navercorp.fixturemonkey.api.introspector;
 
+import static com.navercorp.fixturemonkey.api.property.DefaultPropertyGenerator.FIELD_PROPERTY_GENERATOR;
+
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -36,6 +38,7 @@ import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitraryDelegator;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
+import com.navercorp.fixturemonkey.api.property.PropertyGenerator;
 import com.navercorp.fixturemonkey.api.type.Reflections;
 import com.navercorp.fixturemonkey.api.type.TypeCache;
 import com.navercorp.fixturemonkey.api.type.Types;
@@ -43,6 +46,7 @@ import com.navercorp.fixturemonkey.api.type.Types;
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class BeanArbitraryIntrospector implements ArbitraryIntrospector {
 	public static final BeanArbitraryIntrospector INSTANCE = new BeanArbitraryIntrospector();
+
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
 	@Override
@@ -99,5 +103,10 @@ public final class BeanArbitraryIntrospector implements ArbitraryIntrospector {
 			);
 			return object;
 		};
+	}
+
+	@Override
+	public PropertyGenerator getRequiredPropertyGenerator(Property property) {
+		return FIELD_PROPERTY_GENERATOR;
 	}
 }

@@ -18,9 +18,12 @@
 
 package com.navercorp.fixturemonkey.api.introspector;
 
+import java.beans.ConstructorProperties;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Parameter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,7 +36,9 @@ import org.apiguardian.api.API.Status;
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
+import com.navercorp.fixturemonkey.api.property.ConstructorParameterPropertyGenerator;
 import com.navercorp.fixturemonkey.api.property.Property;
+import com.navercorp.fixturemonkey.api.property.PropertyGenerator;
 import com.navercorp.fixturemonkey.api.type.Reflections;
 import com.navercorp.fixturemonkey.api.type.TypeCache;
 import com.navercorp.fixturemonkey.api.type.Types;
@@ -42,6 +47,12 @@ import com.navercorp.fixturemonkey.api.type.Types;
 public final class ConstructorPropertiesArbitraryIntrospector implements ArbitraryIntrospector {
 	public static final ConstructorPropertiesArbitraryIntrospector INSTANCE =
 		new ConstructorPropertiesArbitraryIntrospector();
+	public static final PropertyGenerator PROPERTY_GENERATOR = new ConstructorParameterPropertyGenerator(
+		it -> it.getAnnotation(ConstructorProperties.class) != null
+			|| Arrays.stream(it.getParameters()).anyMatch(Parameter::isNamePresent)
+			|| it.getParameters().length == 0,
+		it -> true
+	);
 
 	@Override
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
@@ -94,5 +105,10 @@ public final class ConstructorPropertiesArbitraryIntrospector implements Arbitra
 			}
 			return Reflections.newInstance(primaryConstructor, list.toArray());
 		};
+	}
+
+	@Override
+	public PropertyGenerator getRequiredPropertyGenerator(Property property) {
+		return PROPERTY_GENERATOR;
 	}
 }

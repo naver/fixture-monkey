@@ -18,13 +18,40 @@
 
 package com.navercorp.fixturemonkey.api.introspector;
 
+import javax.annotation.Nullable;
+
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
+import com.navercorp.fixturemonkey.api.property.Property;
+import com.navercorp.fixturemonkey.api.property.PropertyGenerator;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 @FunctionalInterface
 public interface ArbitraryIntrospector {
 	ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context);
+
+	/**
+	 * Retrieves a {@link PropertyGenerator} that is required for the specified property.
+	 * This default implementation returns {@code null}, indicating that no specific
+	 * PropertyGenerator is required by default.
+	 * Implementations can override this method to provide a non-null {@link PropertyGenerator} as needed.
+	 *
+	 * <p>
+	 * When this method returns a non-null value, it serves as the default PropertyGenerator for the specified property.
+	 * If a different PropertyGenerator is provided by an option, it should take precedence over the one
+	 * returned by this method.
+	 * </p>
+	 *
+	 * @param property The {@link Property} for which the PropertyGenerator is required.
+	 *                 This parameter should not be null. Implementations can choose to
+	 *                 throw an exception if null is passed.
+	 * @return A {@link PropertyGenerator} that is associated with the specified property,
+	 *         or {@code null} if no such generator is required or available.
+	 */
+	@Nullable
+	default PropertyGenerator getRequiredPropertyGenerator(Property property) {
+		return null;
+	}
 }

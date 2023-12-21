@@ -31,6 +31,7 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
+import com.navercorp.fixturemonkey.api.generator.ArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.generator.ContainerProperty;
 import com.navercorp.fixturemonkey.api.generator.ContainerPropertyGenerator;
@@ -138,8 +139,21 @@ public final class ArbitraryTraverser {
 				return propertyConfigurer;
 			}
 
-			return fixtureMonkeyOptions.getPropertyGenerator(property)
-				.generateChildProperties(property);
+			PropertyGenerator propertyGenerator = fixtureMonkeyOptions.getOptionalPropertyGenerator(property);
+			if (propertyGenerator != null) {
+				return propertyGenerator.generateChildProperties(property);
+			}
+
+			ArbitraryGenerator defaultArbitraryGenerator = fixtureMonkeyOptions.getDefaultArbitraryGenerator();
+
+			PropertyGenerator defaultArbitraryGeneratorPropertyGenerator =
+				defaultArbitraryGenerator.getRequiredPropertyGenerator(property);
+
+			if (defaultArbitraryGeneratorPropertyGenerator != null) {
+				return defaultArbitraryGeneratorPropertyGenerator.generateChildProperties(property);
+			}
+
+			return fixtureMonkeyOptions.getDefaultPropertyGenerator().generateChildProperties(property);
 		};
 	}
 

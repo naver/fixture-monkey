@@ -18,12 +18,18 @@
 
 package com.navercorp.fixturemonkey.api.generator;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import javax.annotation.Nullable;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
+import com.navercorp.fixturemonkey.api.property.CompositePropertyGenerator;
+import com.navercorp.fixturemonkey.api.property.Property;
+import com.navercorp.fixturemonkey.api.property.PropertyGenerator;
 
 /**
  * Generates a {@link CombinableArbitrary} by one or more {@link ArbitraryGenerator}.
@@ -47,5 +53,23 @@ public final class CompositeArbitraryGenerator implements ArbitraryGenerator {
 			context.setGenerated(generated);
 		}
 		return generated;
+	}
+
+	@Nullable
+	@Override
+	public PropertyGenerator getRequiredPropertyGenerator(Property property) {
+		List<PropertyGenerator> propertyGenerators = new ArrayList<>();
+		for (ArbitraryGenerator arbitraryGenerator : arbitraryGenerators) {
+			PropertyGenerator propertyGenerator = arbitraryGenerator.getRequiredPropertyGenerator(property);
+			if (propertyGenerator != null) {
+				propertyGenerators.add(propertyGenerator);
+			}
+		}
+
+		if (propertyGenerators.isEmpty()) {
+			return null;
+		}
+
+		return new CompositePropertyGenerator(propertyGenerators);
 	}
 }
