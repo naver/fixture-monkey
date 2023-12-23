@@ -424,6 +424,30 @@ class KotlinTest {
         then(actual).isNotNull
     }
 
+    @RepeatedTest(TEST_COUNT)
+    fun setPostCondition() {
+        class StringObject(val string: String)
+
+        val actual = SUT.giveMeBuilder<StringObject>()
+            .setPostCondition<String>("string") { it.length < 5 }
+            .sample()
+            .string
+
+        then(actual).hasSizeLessThan(5)
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun setPostConditionWithProperty() {
+        class StringObject(val string: String)
+
+        val actual = SUT.giveMeBuilder<StringObject>()
+            .setPostCondition<String>(StringObject::string) { it.length < 5 }
+            .sample()
+            .string
+
+        then(actual).hasSizeLessThan(5)
+    }
+
     companion object {
         private val SUT: FixtureMonkey = FixtureMonkey.builder()
             .plugin(KotlinPlugin())

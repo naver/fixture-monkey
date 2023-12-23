@@ -26,7 +26,6 @@ import com.navercorp.fixturemonkey.kotest.setArb
 import com.navercorp.fixturemonkey.kotlin.KotlinPlugin
 import com.navercorp.fixturemonkey.kotlin.giveMeBuilder
 import com.navercorp.fixturemonkey.kotlin.giveMeOne
-import com.navercorp.fixturemonkey.kotlin.setPostCondition
 import com.navercorp.fixturemonkey.tests.TestEnvironment.TEST_COUNT
 import io.kotest.property.Arb
 import io.kotest.property.arbitrary.single
@@ -725,7 +724,7 @@ class KotestInJunitTest {
         class StringObject(val string: String)
 
         val actual = SUT.giveMeBuilder<StringObject>()
-            .setPostCondition<StringObject, String>("string") {
+            .setPostCondition<String>("string") {
                 it.length < 5
             }
             .sample()

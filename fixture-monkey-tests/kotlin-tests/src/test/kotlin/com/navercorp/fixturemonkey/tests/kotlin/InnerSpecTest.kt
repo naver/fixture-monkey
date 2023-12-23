@@ -21,7 +21,6 @@ package com.navercorp.fixturemonkey.tests.kotlin
 import com.navercorp.fixturemonkey.FixtureMonkey
 import com.navercorp.fixturemonkey.kotlin.KotlinPlugin
 import com.navercorp.fixturemonkey.kotlin.giveMeBuilder
-import com.navercorp.fixturemonkey.kotlin.setInner
 import com.navercorp.fixturemonkey.tests.TestEnvironment.TEST_COUNT
 import org.assertj.core.api.BDDAssertions.then
 import org.junit.jupiter.api.RepeatedTest
@@ -32,7 +31,7 @@ class InnerSpecTest {
     fun setInnerSpecByTrailingLambda() {
         val actual = SUT.giveMeBuilder<Map<String, String>>()
             .setInner {
-                it.keys("key1", "key2")
+                keys("key1", "key2")
                     .minSize(3)
             }
             .sample()
