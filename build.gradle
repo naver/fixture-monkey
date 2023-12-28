@@ -59,6 +59,7 @@ subprojects {
     tasks.withType(Javadoc).all { enabled = false }
 
     java {
+        toolchain { languageVersion = JavaLanguageVersion.of(8) }
         withJavadocJar()
         withSourcesJar()
     }
