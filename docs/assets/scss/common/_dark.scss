@@ -14,7 +14,7 @@ $dots-dark: darken($body-color-dark, 50%);
 
 $link-color-dark: $blue-300;
 $button-color-dark: $link-color-dark;
-$focus-color-dark: lighten($link-color-dark, 2.5%);
+$focus-color-dark: #11162E;
 
 $navbar-dark-color:                 $body-color-dark;
 $navbar-dark-hover-color:           $link-color-dark;
@@ -83,7 +83,7 @@ $navbar-dark-active-color:          $link-color-dark;
 
 [data-dark-mode] body .navbar,
 [data-dark-mode] body .doks-subnavbar {
-  background-color: rgba(33, 37, 41, 0.95);
+  background-color: $fixture-monkey-dark;
   border-bottom: 1px solid $border-dark;
 }
 
@@ -249,7 +249,7 @@ $navbar-dark-active-color:          $link-color-dark;
 }
 
 [data-dark-mode] body .form-control.is-search {
-  background: $body-overlay-dark;
+  background: lighten($fixture-monkey-dark, 5%);
   border: 1px solid transparent;
   color: $gray-300;
 
@@ -310,8 +310,8 @@ $navbar-dark-active-color:          $link-color-dark;
 }
 
 [data-dark-mode] body code:not(.hljs) {
-  background: $body-overlay-dark;
-  color: $body-color-dark;
+  background: #1b1f22;
+  color: $gray-300;
 }
 
 [data-dark-mode] body pre code:hover {
@@ -579,4 +579,56 @@ $navbar-dark-active-color:          $link-color-dark;
   color: $link-color-dark;
   background: $body-overlay-dark;
   border: 1px solid $body-overlay-dark;
+}
+
+[data-dark-mode] .button-section {
+  background-color: $fixture-monkey-dark;
+}
+
+[data-dark-mode] .main-text-section {
+  background-color: $focus-color-dark;
+}
+
+[data-dark-mode] .feature-text-section {
+  background-color: $fixture-monkey-feature-dark;
+}
+
+[data-dark-mode] .footer-fluid-section {
+  background-color: $fixture-monkey-feature-dark;
+}
+
+[data-dark-mode] .sub-text {
+  color: $gray-300 !important;
+}
+
+[data-dark-mode] .main-text-container {
+  background-image: linear-gradient($fixture-monkey-dark, $fixture-monkey-dark), linear-gradient(to bottom, $fixture-monkey-green, $fixture-monkey-blue);
+}
+
+[data-dark-mode] .feature-text-container {
+  background-image: linear-gradient($fixture-monkey-dark, $fixture-monkey-dark), linear-gradient(to bottom, $fixture-monkey-green, $fixture-monkey-blue);
+}
+
+[data-dark-mode] .external-link-button {
+  background-color: white;
+}
+
+[data-dark-mode] .version-container {
+  background-color: $gray-800;
+  border-style: none;
+}
+
+[data-dark-mode] .experimental-container {
+  background-color: $gray-900;
+}
+
+[data-dark-mode] .release-note-table-of-contents-border {
+  background-color: $gray-800;
+  border-style: none !important;
+  padding: 2% 10% 10% 10%;
+}
+
+
+[data-dark-mode] .release-note-table-of-contents > nav > ul > li {
+  background-color: $gray-900;
 }

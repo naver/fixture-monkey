@@ -44,7 +44,7 @@ ArbitraryBuilder<Product> actual = fixtureMonkey.giveMeBuilder(Product.class);
 then(actual.sample()).isNotEqualTo(actual.sample());
 ```
 Fixture Monkey helps tests become more dynamic by generating test objects with random values.
-This leads to undercovering edge cases that might remain hidden when using static data.
+This leads to uncovering edge cases that might remain hidden when using static data.
 
 ### 4. Versatility
 ```java

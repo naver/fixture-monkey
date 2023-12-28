@@ -13,53 +13,85 @@
 {{ end }}
 
 {{ define "sidebar-prefooter" }}
-<section class="section section-sm" style="background: url('/fixture-monkey/images/fixtureMonkey-resource-background.png') no-repeat center center / cover; min-height: 65vh; display: flex; flex-direction: column; justify-content: flex-end; text-align: center; color: white;">
-  <div class="row justify-content-center">
-    <div class="col-lg-12" style="color:#70E386">
-<!--      <h1 class="mt-0">{{ .Title }}</h1>-->
-      <h4>The easiest way to generate controllable arbitrary test objects</h4>
-    </div>
-    <div class="col-lg-9 col-xl-8">
-      <p class="lead">{{ .Params.lead | safeHTML }}</p>
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        [data-dark-mode] body .footer {
+            background: #080B17;
+        }
+    </style>
+</head>
+<div>
+<section class="section section-sm fixture-monkey-image">
+</section>
+<section class="section section-sm button-section">
+    <div class="custom-column custom-column-md custom-column-lg custom-column-xl custom-column-xxl d-flex">
+        <a class="btn btn-primary btn-lg px-2 me-4 external-link-button" href="https://medium.com/naver-platform-labs"
+           role="button">
+            <i class="fab fa-medium fa-lg"></i>
+        </a>
+        <a class="btn btn-primary btn-lg px-2 me-2 external-link-button" href="https://github.com/naver/fixture-monkey"
+           role="button">
+            <i class="fab fa-github fa-xl"></i>
+        </a>
         {{ with .Site.Language }}
-        <a class="btn btn-primary btn-lg px-4 mb-2" href="{{ index .Params "getStartedPage" }}" role="button" style="background-color: #49C3FD; color: black; border-color: #49C3FD">{{ i18n "get-started" }}</a>
+        <a class="btn btn-primary btn-lg px-2 ms-auto fw-semibold get-started-button"
+           href="{{ index .Params " getStartedPage" }}" role="button">{{ i18n "get-started" }}</a>
         {{ end }}
     </div>
-  </div>
 </section>
-<section class="section section-sm" style="background-color: #0E2531; min-height: 30vh; display: flex; align-items: center; justify-content: center;">
-  <div class="row justify-content-center">
-    <div class="col-lg-12 text-center" style="color: #3CA0CF">
-      <h3 style="margin-bottom: 0;">Java & Kotlin library for automatically generating reusable and controllable, arbitrary test fixtures</h3>
+<section class="section section-sm main-text-section">
+    <div class="custom-column custom-column-md custom-column-lg custom-column-xl custom-column-xxl">
+        <div class="main-text-container p-5 text-left">
+            <p class="p-2 text-dark fs-2 m-0">
+                <b>The easiest way to generate controllable arbitrary test objects</b>
+            </p>
+        </div>
+        <p class="text-secondary fs-5 fw-medium mt-3 sub-text">
+            Java &amp; Kotlin library for automatically generating reusable and controllable, arbitrary test fixtures
+        </p>
     </div>
-  </div>
 </section>
-  <section class="section section-sm" style="background-color: #70E386; color: #0E2531">
-    <div class="container">
-      <div class="row justify-content-center text-center">
-        <div class="col-lg-5">
-          <h2 class="h4" icon="fas fa-recycle">Reusability</h2>
-          <p> Reuse test instances that follow the complex specification you defined. You do NOT need to define a complex specification for each test. </p>
+<section class="section section-sm feature-text-section">
+    <div class="custom-column feature-column-md feature-column-lg feature-column-xl feature-column-xxl">
+        <div class="row justify-content-center">
+            <div class="col-lg-5">
+                <div class="p-3 mt-3 feature-text-container text-center">
+                    <i class="mt-5 fa-solid fa-wand-sparkles me-2 fa-2xl"></i>
+                    <h2 class="h3">Simplicity</h2>
+                    <p> Effortlessly generate any kind of test object with just one line of code. </p>
+                    <p> Complex test objects can be easily generated with the Builder Pattern. </p>
+                </div>
+            </div>
+            <div class="col-lg-5">
+                <div class="p-3 mt-3 feature-text-container text-center">
+                    <i class="mt-5 fa-solid fa-recycle me-2 fa-2xl"></i>
+                    <h2 class="h3">Reusability</h2>
+                    <p> Define complex specifications once and reuse them! </p>
+                    <p> Configurations of instances can be reused across multiple tests. </p>
+                </div>
+            </div>
+            <div class="col-lg-5">
+                <div class="p-3 mt-3 feature-text-container text-center">
+                    <i class="mt-5 fa-solid fa-dice me-2 fa-2xl"></i>
+                    <h2 class="h3">Randomness</h2>
+                    <p> Make your tests more dynamic by randomly generating test objects. </p>
+                    <p> You can uncover edge cases that may remain hidden when using static data. </p>
+                </div>
+            </div>
         </div>
-        <div class="col-lg-5">
-          <h2 class="h4">Repeatability</h2>
-          <p>Repeat your tests countless times with different test object every time</a> by default.</p>
-        </div>
-        <div class="col-lg-5">
-          <h2 class="h4">Simplicity</h2>
-          <p> Instantiate complex test objects with Builder Pattern</p>
-        </div>
-      </div>
     </div>
-  </section>
+</section>
+</div>
 {{ end }}
 
 {{ define "sidebar-footer" }}
-<section class="section section-sm container-fluid">
-  <div class="row justify-content-center text-center">
-    <div class="col-lg-9">
-      {{- .Content -}}
+<section class="section section-sm container-fluid footer-fluid-section">
+    <div class="row justify-content-center text-center">
+        <div class="col-lg-9">
+            {{- .Content -}}
+        </div>
     </div>
-  </div>
 </section>
 {{ end }}
+

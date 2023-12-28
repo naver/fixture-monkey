@@ -40,9 +40,9 @@ fixtureMonkey.giveMeBuilder<Product>()
 > Note that you cannot set a child property after setting with `Just`.
 ```java
 Product product = fixture.giveMeBuilder(Product.class)
-	 * 		.set("options", Values.just(List.of("red", "medium", "adult"))
-	 * 		.set("options[0]", "blue")
-	 * 		.sample();
+    .set("options", Values.just(List.of("red", "medium", "adult"))
+    .set("options[0]", "blue")
+    .sample();
 ```
 > For example, the product instance created above, will not have the value "blue" for the first element of options. It will remain the list given with `Just`.
 
