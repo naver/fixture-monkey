@@ -1,6 +1,0 @@
-dependencies {
-    testImplementation(project(":fixture-monkey-javax-validation"))
-    testImplementation("org.projectlombok:lombok:${LOMBOK_VERSION}")
-    testImplementation(project(":fixture-monkey-jackson"))
-    testAnnotationProcessor("org.projectlombok:lombok:${LOMBOK_VERSION}")
-}

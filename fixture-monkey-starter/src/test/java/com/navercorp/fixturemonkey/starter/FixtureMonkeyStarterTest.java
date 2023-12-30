@@ -25,14 +25,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 
 import lombok.Data;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
-import com.navercorp.fixturemonkey.engine.jupiter.extension.FixtureMonkeySessionExtension;
 
-@ExtendWith(FixtureMonkeySessionExtension.class)
 class FixtureMonkeyStarterTest {
 	@Data   // lombok getter, setter
 	public static class Order {
