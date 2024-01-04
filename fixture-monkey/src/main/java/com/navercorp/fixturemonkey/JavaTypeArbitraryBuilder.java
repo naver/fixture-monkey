@@ -61,28 +61,6 @@ public interface JavaTypeArbitraryBuilder<T> extends ArbitraryBuilder<T> {
 	@Override
 	JavaTypeArbitraryBuilder<T> set(@Nullable Object value);
 
-	default <R> JavaTypeArbitraryBuilder<T> setExpGetter(
-		JavaGetterMethodReference<T, R> methodReference,
-		@Nullable Object value
-	) {
-		return this.set(javaGetter(methodReference), value);
-	}
-
-	default <R> JavaTypeArbitraryBuilder<T> setExpGetter(
-		PropertySelector propertySelector,
-		@Nullable Object value
-	) {
-		return this.set(propertySelector, value);
-	}
-
-	default <R> JavaTypeArbitraryBuilder<T> setExpGetter(
-		PropertySelector propertySelector,
-		@Nullable Object value,
-		int limit
-	) {
-		return this.set(propertySelector, value, limit);
-	}
-
 	@Override
 	JavaTypeArbitraryBuilder<T> setInner(InnerSpec innerSpec);
 
@@ -225,4 +203,156 @@ public interface JavaTypeArbitraryBuilder<T> extends ArbitraryBuilder<T> {
 
 	@Override
 	JavaTypeArbitraryBuilder<T> instantiate(TypeReference<?> type, Instantiator instantiator);
+
+	default <R> JavaTypeArbitraryBuilder<T> setExpGetter(
+		JavaGetterMethodReference<T, R> methodReference,
+		@Nullable Object value,
+		int limit
+	) {
+		return this.set(javaGetter(methodReference), value, limit);
+	}
+
+	default <R> JavaTypeArbitraryBuilder<T> setExpGetter(
+		JavaGetterMethodReference<T, R> methodReference,
+		@Nullable Object value
+	) {
+		return this.set(javaGetter(methodReference), value);
+	}
+
+	default <R> JavaTypeArbitraryBuilder<T> setExpGetter(
+		PropertySelector propertySelector,
+		@Nullable Object value,
+		int limit
+	) {
+		return this.set(propertySelector, value, limit);
+	}
+
+	default <R> JavaTypeArbitraryBuilder<T> setExpGetter(
+		PropertySelector propertySelector,
+		@Nullable Object value
+	) {
+		return this.set(propertySelector, value);
+	}
+
+	default <R> JavaTypeArbitraryBuilder<T> setPostConditionExpGetter(
+		JavaGetterMethodReference<T, R> methodReference,
+		Class<R> type,
+		Predicate<R> filter,
+		int limit
+	) {
+		return this.setPostCondition(javaGetter(methodReference), type, filter, limit);
+	}
+
+	default <R> JavaTypeArbitraryBuilder<T> setPostConditionExpGetter(
+		JavaGetterMethodReference<T, R> methodReference,
+		Class<R> type,
+		Predicate<R> filter
+	) {
+		return this.setPostCondition(javaGetter(methodReference), type, filter);
+	}
+
+	default <R> JavaTypeArbitraryBuilder<T> setPostConditionExpGetter(
+		PropertySelector propertySelector,
+		Class<R> type,
+		Predicate<R> filter,
+		int limit
+	) {
+		return this.setPostCondition(propertySelector, type, filter, limit);
+	}
+
+	default <R> JavaTypeArbitraryBuilder<T> setPostConditionExpGetter(
+		PropertySelector propertySelector,
+		Class<R> type,
+		Predicate<R> filter
+	) {
+		return this.setPostCondition(propertySelector, type, filter);
+	}
+
+	default <R> JavaTypeArbitraryBuilder<T> sizeExpGetter(
+		JavaGetterMethodReference<T, R> methodReference,
+		int size
+	) {
+		return this.size(javaGetter(methodReference), size);
+	}
+
+	default <R> JavaTypeArbitraryBuilder<T> sizeExpGetter(
+		JavaGetterMethodReference<T, R> methodReference,
+		int minSize,
+		int maxSize
+	) {
+		return this.size(javaGetter(methodReference), minSize, maxSize);
+	}
+
+	default <R> JavaTypeArbitraryBuilder<T> sizeExpGetter(
+		PropertySelector propertySelector,
+		int size
+	) {
+		return this.size(propertySelector, size);
+	}
+
+	default <R> JavaTypeArbitraryBuilder<T> sizeExpGetter(
+		PropertySelector propertySelector,
+		int minSize,
+		int maxSize
+	) {
+		return this.size(propertySelector, minSize, maxSize);
+	}
+
+	default <R> JavaTypeArbitraryBuilder<T> minSizeExpGetter(
+		JavaGetterMethodReference<T, R> methodReference,
+		int minSize
+	) {
+		return this.minSize(javaGetter(methodReference), minSize);
+	}
+
+	default <R> JavaTypeArbitraryBuilder<T> minSizeExpGetter(
+		PropertySelector propertySelector,
+		int minSize
+	) {
+		return this.minSize(propertySelector, minSize);
+	}
+
+	default <R> JavaTypeArbitraryBuilder<T> maxSizeExpGetter(
+		JavaGetterMethodReference<T, R> methodReference,
+		int maxSize
+	) {
+		return this.maxSize(javaGetter(methodReference), maxSize);
+	}
+
+	default <R> JavaTypeArbitraryBuilder<T> maxSizeExpGetter(
+		PropertySelector propertySelector,
+		int maxSize
+	) {
+		return this.maxSize(propertySelector, maxSize);
+	}
+
+	default <R> JavaTypeArbitraryBuilder<T> setLazyExpGetter(
+		JavaGetterMethodReference<T, R> methodReference,
+		Supplier<?> supplier,
+		int limit
+	) {
+		return this.setLazy(javaGetter(methodReference), supplier, limit);
+	}
+
+	default <R> JavaTypeArbitraryBuilder<T> setLazyExpGetter(
+		JavaGetterMethodReference<T, R> methodReference,
+		Supplier<?> supplier
+	) {
+		return this.setLazy(javaGetter(methodReference), supplier);
+	}
+
+	default <R> JavaTypeArbitraryBuilder<T> setLazyExpGetter(
+		PropertySelector propertySelector,
+		Supplier<?> supplier,
+		int limit
+	) {
+		return this.setLazy(propertySelector, supplier, limit);
+	}
+
+	default <R> JavaTypeArbitraryBuilder<T> setLazyExpGetter(
+		PropertySelector propertySelector,
+		Supplier<?> supplier
+	) {
+		return this.setLazy(propertySelector, supplier);
+	}
 }
