@@ -38,9 +38,9 @@ class SpotbugsConventionsPlugin : Plugin<Project> {
 
         project.tasks.withType<SpotBugsTask>().configureEach {
             reports {
-                register("xml") { this.isEnabled = true }
-                register("html") { this.isEnabled = false }
-                register("text") { this.isEnabled = false }
+                register("xml") { this.required.set(true) }
+                register("html") { this.required.set(false) }
+                register("text") { this.required.set(false) }
             }
         }
 
