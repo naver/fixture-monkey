@@ -20,6 +20,8 @@ package com.navercorp.fixturemonkey.api.arbitrary;
 
 import java.util.function.Predicate;
 
+import javax.annotation.Nullable;
+
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
@@ -99,7 +101,7 @@ final class FilteredCombinableArbitrary<T> implements CombinableArbitrary<T> {
 		}
 
 		if (lastException != null) {
-			throw new RetryableFilterMissException(lastException);
+			throw newRetryableFilterMissException(lastException);
 		}
 
 		if (combinableArbitrary instanceof Traceable) {
@@ -119,7 +121,7 @@ final class FilteredCombinableArbitrary<T> implements CombinableArbitrary<T> {
 			);
 		}
 
-		throw new RetryableFilterMissException(lastException);
+		throw newRetryableFilterMissException(lastException);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -166,7 +168,7 @@ final class FilteredCombinableArbitrary<T> implements CombinableArbitrary<T> {
 		}
 
 		if (lastException != null) {
-			throw new RetryableFilterMissException(lastException);
+			throw newRetryableFilterMissException(lastException);
 		}
 
 		if (combinableArbitrary instanceof Traceable) {
@@ -186,7 +188,7 @@ final class FilteredCombinableArbitrary<T> implements CombinableArbitrary<T> {
 			);
 		}
 
-		throw new RetryableFilterMissException(lastException);
+		throw newRetryableFilterMissException(lastException);
 	}
 
 	@Override
@@ -197,5 +199,13 @@ final class FilteredCombinableArbitrary<T> implements CombinableArbitrary<T> {
 	@Override
 	public boolean fixed() {
 		return combinableArbitrary.fixed();
+	}
+
+	private RetryableFilterMissException newRetryableFilterMissException(@Nullable Throwable throwable) {
+		if (!(throwable instanceof RetryableFilterMissException)) {
+			return new RetryableFilterMissException(throwable);
+		}
+
+		return (RetryableFilterMissException)throwable;
 	}
 }
