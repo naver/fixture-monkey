@@ -1,6 +1,7 @@
 plugins {
     id("me.champeau.mrjar") version "0.1.1"
     id("com.navercorp.fixturemonkey.gradle.plugin.java-conventions")
+    id("com.navercorp.fixturemonkey.gradle.plugin.maven-publish-conventions")
 }
 
 val multiReleaseVersions = intArrayOf(17)

@@ -1,8 +1,6 @@
 plugins {
     java
     `java-library`
-    `maven-publish`
-    signing
     id("io.github.gradle-nexus.publish-plugin") version "1.3.0"
 }
 
@@ -16,7 +14,6 @@ subprojects {
         plugin("java")
         plugin("java-library")
         plugin("maven-publish")
-        plugin("signing")
         plugin("com.navercorp.fixturemonkey.gradle.plugin.optional-dependencies")
     }
 
@@ -25,57 +22,6 @@ subprojects {
         implementation("com.google.code.findbugs:findbugs-annotations:${Versions.FIND_BUGS_ANNOTATIONS}")
         compileOnly("org.slf4j:slf4j-api:${Versions.SLF4J}")
         testImplementation("ch.qos.logback:logback-classic:${Versions.LOGBACK}")
-    }
-
-    publishing {
-        publications {
-            register<MavenPublication>("fixtureMonkey") {
-                from(components["java"])
-
-                pom {
-                    name = "fixture-monkey"
-                    description = "The easiest way to generate controllable arbitrary test objects"
-                    url = "http://github.com/naver/fixture-monkey"
-                    licenses {
-                        license {
-                            name = "The Apache License, Version 2.0"
-                            url = "http://www.apache.org/licenses/LICENSE-2.0.txt"
-                        }
-                    }
-                    developers {
-                        developer {
-                            id = "ah.jo"
-                            name = "SeongAh Jo"
-                            email = "ah.jo@navercorp.com"
-                        }
-                        developer {
-                            id = "mhyeon-lee"
-                            name = "Myeonghyeon Lee"
-                            email = "mheyon.lee@gmail.com"
-                        }
-                    }
-                    scm {
-                        connection = "scm:git:git://github.com/naver/fixture-monkey.git"
-                        developerConnection = "scm:git:ssh://github.com/naver/fixture-monkey.git"
-                        url = "http://github.com/naver/fixture-monkey"
-                    }
-                }
-            }
-        }
-    }
-
-    signing {
-        val signingKeyId: String? by project
-        val signingKey: String? by project
-        val signingPassword: String? by project
-
-        useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
-
-        sign(publishing.publications["fixtureMonkey"])
-    }
-
-    tasks.withType<Sign> {
-        onlyIf { (version as? String)?.endsWith("SNAPSHOT")?.not() ?: false }
     }
 
     tasks.javadoc { enabled = false }

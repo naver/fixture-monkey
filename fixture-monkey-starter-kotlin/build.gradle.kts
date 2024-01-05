@@ -1,6 +1,7 @@
 plugins {
     id("org.jetbrains.kotlin.jvm") version Versions.KOTLIN
     id("org.jlleitschuh.gradle.ktlint") version Versions.KTLINT
+    id("com.navercorp.fixturemonkey.gradle.plugin.maven-publish-conventions")
 }
 
 dependencies {

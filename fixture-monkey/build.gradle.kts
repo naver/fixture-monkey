@@ -1,6 +1,7 @@
 plugins {
     id("me.champeau.jmh") version "0.7.2"
     id("com.navercorp.fixturemonkey.gradle.plugin.java-conventions")
+    id("com.navercorp.fixturemonkey.gradle.plugin.maven-publish-conventions")
 }
 
 dependencies {
