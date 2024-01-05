@@ -5,7 +5,7 @@ plugins {
 }
 
 allprojects {
-    group = "com.navercorp.fixturemonkey"
+    group = "com.navercorp.fixturemonkey.snapshot"
     version = "1.0.8-SNAPSHOT"
 }
 
@@ -13,7 +13,6 @@ subprojects {
     apply {
         plugin("java")
         plugin("java-library")
-        plugin("maven-publish")
         plugin("com.navercorp.fixturemonkey.gradle.plugin.optional-dependencies")
     }
 
