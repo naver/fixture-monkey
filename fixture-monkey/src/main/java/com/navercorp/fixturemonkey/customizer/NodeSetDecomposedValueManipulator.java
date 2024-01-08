@@ -151,7 +151,7 @@ public final class NodeSetDecomposedValueManipulator<T> implements NodeManipulat
 		Entry<Property, List<Property>> childPropertiesByResolvedProperty = objectNode.getArbitraryProperty()
 			.getObjectProperty()
 			.getChildPropertiesByResolvedProperty(
-				property -> isAssignable(Types.getActualType(property.getType()), value.getClass())
+				property -> isAssignable(value.getClass(), Types.getActualType(property.getType()))
 			);
 
 		Property resolvedParentProperty = childPropertiesByResolvedProperty.getKey();

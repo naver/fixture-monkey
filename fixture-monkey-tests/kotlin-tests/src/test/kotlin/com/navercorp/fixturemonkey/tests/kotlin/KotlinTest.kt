@@ -199,6 +199,19 @@ class KotlinTest {
         then(actual).isNotNull
     }
 
+    @Test
+    fun setChild() {
+        open class Parent(val parent: String)
+        class Child : Parent("parent")
+
+        val actual = SUT.giveMeBuilder<Parent>()
+            .set(Child())
+            .sample()
+            .parent
+
+        then(actual).isEqualTo("parent")
+    }
+
     companion object {
         private val SUT: FixtureMonkey = FixtureMonkey.builder()
             .plugin(KotlinPlugin())
