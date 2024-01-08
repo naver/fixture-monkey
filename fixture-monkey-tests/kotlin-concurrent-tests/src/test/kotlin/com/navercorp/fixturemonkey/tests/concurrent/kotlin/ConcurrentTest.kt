@@ -5,10 +5,8 @@ import com.navercorp.fixturemonkey.kotlin.KotlinPlugin
 import com.navercorp.fixturemonkey.kotlin.giveMeOne
 import com.navercorp.fixturemonkey.tests.TestEnvironment
 import org.assertj.core.api.BDDAssertions.then
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.RepeatedTest
 
-@Disabled("It will be enabled when parallelism is supported")
 class ConcurrentTest {
     @RepeatedTest(TestEnvironment.TEST_COUNT)
     fun test1() {
