@@ -5,6 +5,48 @@ menu:
 docs:
 weight: 100
 ---
+### v1.0.8
+Add more detailed message if generation fails.
+
+Fix setting child type when generating parent type.
+
+----------
+
+### v1.0.7
+Fix fixture-monkey-kotlin module supporting Jdk 8.
+
+----------
+
+### v1.0.6
+Fixture Monkey will now infer the properties when you generate a type by specific `ArbitraryIntrospector` that needs certain type of properties.
+
+Add `InterfacePlugin` to add detailed interface options.
+
+Add generating an instance of Kotlin type with the private constructor.
+
+`interfaceImplements` option in `FixtureMonkeyBuilder` is now deprecated. It will be moved in `InterfacePlugin`.
+
+----------
+
+### v1.0.5
+Fix generating a type without lombok using `ConstructorPropertiesArbitraryIntrospector`.
+
+Fix `FailoverIntrospector` catching an exception thrown by declaring a `CombinableArbitrary`.
+
+----------
+
+### v1.0.4
+Add generating record using canonical constructor by default.
+
+----------
+
+### v1.0.3
+Fix generating decimal at least 0 with kotest-property engine.
+
+Add a new option `pushJavaConstraintGeneratorCustomizer` for customizing the `JavaConstraintGenerator` option.
+
+Add supporting parallel execution with jqwik engine.
+
 ### v1.0.2
 Fix generating a record instance with 2 or more constructors.
 
@@ -15,6 +57,7 @@ Add Exp DSL resolving an array element of specific index.
 ----------
 ### v1.0.x
 Add instantiate as stable API.
+
 Refactor Kotlin constructor instantiate using Kotlin constructor.
 
 ##### Experimental Feature
