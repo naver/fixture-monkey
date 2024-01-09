@@ -3,7 +3,7 @@
 ## Code of Conduct
 
 This project is governed by the [Code of Conduct](./CODE_OF_CONDUCT.md). By participating you are expected to uphold
-this code. Please report unacceptable behavior to [issue](https://github.com/naver/fixture-monkey/issues).
+this code. Please report unacceptable behavior as an [issue](https://github.com/naver/fixture-monkey/issues).
 
 ## Build from source
 
@@ -34,16 +34,25 @@ Install to local Maven repository.
 
 ## How to submit Pull Requests
 
-> Either an issue title or a PR title should be written in English, content could be written in Korean or English
-
-1. Fork `fixture-monkey` on your repository.
-2. Create a new branch from your fixture-monkey main branch (and be sure to be always up-to-date).
+1. Fork `fixture-monkey` to your repository.
+2. Create a new branch from your fixture-monkey main branch (and be sure to keep it up to date).
 3. Do your work.
 4. Create test code for your work.
 5. Run the test code. Make sure all tests pass.
-6. Create a new PR from your branch to the fixture-monkey/main branch.
-7. Wait for reviews. When your contribution is well enough to be accepted, then it will be merged to our branch.
-8. All done! Thank you for your contributing.
+6. Create a new PR from your branch to the `fixture-monkey/main` branch.
+7. Wait for reviews. When your contribution is good enough to be accepted, then it will be merged into our branch.
+8. All Done! Thank you for your contribution.
+
+## How to contribute to the document
+
+The Fixture Monkey documentation website is built using `Hugo`. The code for the document is maintained in the `docs` directory in the main branch.
+
+1. Fork `fixture-monkey` to your repository.
+2. Create a new branch from your fixture-monkey main branch (and be sure to keep it up to date).
+3. Contribute to the document (Write new content, Translate, Fix typos, Add examples, etc...).
+4. Create a new PR from your branch to the `fixture-monkey/main` branch.
+5. Wait for reviews. If your contribution is good enough to be accepted, it will be merged into our branch.
+6. All Done! Thank you for your contribution.
 
 ## Convention
 
