@@ -25,6 +25,7 @@ import static org.assertj.core.api.BDDAssertions.thenNoException;
 import static org.assertj.core.api.BDDAssertions.thenThrownBy;
 
 import java.lang.reflect.AnnotatedType;
+import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -697,10 +698,10 @@ class FixtureMonkeyOptionsTest {
 	@Property
 	void addExceptGenerateClass() {
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.addExceptGenerateClass(String.class)
+			.addExceptGenerateClass(Timestamp.class)
 			.build();
 
-		String actual = sut.giveMeOne(String.class);
+		Timestamp actual = sut.giveMeOne(Timestamp.class);
 
 		then(actual).isNull();
 	}
