@@ -5,6 +5,11 @@ menu:
 docs:
 weight: 100
 ---
+### v1.0.9
+Fix addExceptGenerateClass option affected by specific ArbitraryIntrospector
+
+----------
+
 ### v1.0.8
 Add more detailed message if generation fails.
 

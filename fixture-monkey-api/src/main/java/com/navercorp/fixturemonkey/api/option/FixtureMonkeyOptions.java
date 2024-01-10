@@ -55,13 +55,14 @@ import com.navercorp.fixturemonkey.api.generator.MapContainerPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.MapEntryElementContainerPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.NoArgumentInterfaceJavaMethodPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.NullInjectGenerator;
-import com.navercorp.fixturemonkey.api.generator.NullObjectPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.OptionalContainerPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.SetContainerPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.SingleValueObjectPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.StreamContainerPropertyGenerator;
 import com.navercorp.fixturemonkey.api.instantiator.InstantiatorProcessor;
+import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
+import com.navercorp.fixturemonkey.api.introspector.NullArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.matcher.AssignableTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.DoubleGenericTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
@@ -82,6 +83,10 @@ public final class FixtureMonkeyOptions {
 		getDefaultObjectPropertyGenerators();
 	public static final List<MatcherOperator<ContainerPropertyGenerator>> DEFAULT_CONTAINER_PROPERTY_GENERATORS =
 		getDefaultContainerPropertyGenerators();
+	public static final List<MatcherOperator<ArbitraryIntrospector>> DEFAULT_ARBITRARY_INTROSPECTORS =
+		Collections.singletonList(
+			MatcherOperator.exactTypeMatchOperator(UnidentifiableType.class, NullArbitraryIntrospector.INSTANCE)
+		);
 	public static final ObjectPropertyGenerator DEFAULT_OBJECT_PROPERTY_GENERATOR =
 		DefaultObjectPropertyGenerator.INSTANCE;
 	public static final PropertyNameResolver DEFAULT_PROPERTY_NAME_RESOLVER = PropertyNameResolver.IDENTITY;
@@ -332,11 +337,7 @@ public final class FixtureMonkeyOptions {
 				},
 				SingleValueObjectPropertyGenerator.INSTANCE
 			),
-			new MatcherOperator<>(Matchers.ENUM_TYPE_MATCHER, SingleValueObjectPropertyGenerator.INSTANCE),
-			MatcherOperator.exactTypeMatchOperator(
-				UnidentifiableType.class,
-				NullObjectPropertyGenerator.INSTANCE
-			)
+			new MatcherOperator<>(Matchers.ENUM_TYPE_MATCHER, SingleValueObjectPropertyGenerator.INSTANCE)
 		);
 	}
 

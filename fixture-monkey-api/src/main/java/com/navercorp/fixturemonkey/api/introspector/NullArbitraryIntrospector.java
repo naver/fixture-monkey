@@ -16,25 +16,20 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.api.generator;
-
-import java.util.Collections;
+package com.navercorp.fixturemonkey.api.introspector;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-@API(since = "0.4.0", status = Status.MAINTAINED)
-public final class NullObjectPropertyGenerator implements ObjectPropertyGenerator {
-	public static final NullObjectPropertyGenerator INSTANCE = new NullObjectPropertyGenerator();
+import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
+import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
+
+@API(since = "1.0.9", status = Status.EXPERIMENTAL)
+public final class NullArbitraryIntrospector implements ArbitraryIntrospector {
+	public static final NullArbitraryIntrospector INSTANCE = new NullArbitraryIntrospector();
 
 	@Override
-	public ObjectProperty generate(ObjectPropertyGeneratorContext context) {
-		return new ObjectProperty(
-			context.getProperty(),
-			context.getPropertyNameResolver(),
-			1.0d,
-			null,
-			Collections.singletonMap(context.getProperty(), Collections.emptyList())
-		);
+	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
+		return new ArbitraryIntrospectorResult(CombinableArbitrary.from((Object)null));
 	}
 }

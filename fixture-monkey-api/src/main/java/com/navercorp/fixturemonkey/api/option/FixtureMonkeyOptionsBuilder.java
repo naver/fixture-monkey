@@ -22,6 +22,7 @@ import static com.navercorp.fixturemonkey.api.constraint.JavaConstraintGenerator
 import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.DEFAULT_NOTNULL_ANNOTATION_TYPES;
 import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.DEFAULT_NULLABLE_ANNOTATION_TYPES;
 import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.DEFAULT_NULL_INJECT;
+import static com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions.DEFAULT_ARBITRARY_INTROSPECTORS;
 import static com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions.DEFAULT_MAX_UNIQUE_GENERATION_COUNT;
 
 import java.util.ArrayList;
@@ -97,7 +98,8 @@ public final class FixtureMonkeyOptionsBuilder {
 	private ArbitraryContainerInfoGenerator defaultArbitraryContainerInfoGenerator;
 	private ArbitraryGenerator defaultArbitraryGenerator;
 	private UnaryOperator<ArbitraryGenerator> defaultArbitraryGeneratorOperator = it -> it;
-	private final List<MatcherOperator<ArbitraryIntrospector>> arbitraryIntrospectors = new ArrayList<>();
+	private final List<MatcherOperator<ArbitraryIntrospector>> arbitraryIntrospectors =
+		new ArrayList<>(DEFAULT_ARBITRARY_INTROSPECTORS);
 	private final JavaDefaultArbitraryGeneratorBuilder javaDefaultArbitraryGeneratorBuilder =
 		IntrospectedArbitraryGenerator.javaBuilder();
 	private boolean defaultNotNull = false;

@@ -37,10 +37,10 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfoGenerator
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.generator.ContainerPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.NullInjectGenerator;
-import com.navercorp.fixturemonkey.api.generator.NullObjectPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGenerator;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.MatchArbitraryIntrospector;
+import com.navercorp.fixturemonkey.api.introspector.NullArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.matcher.AssignableTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.ExactTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
@@ -266,10 +266,10 @@ public final class FixtureMonkeyBuilder {
 	}
 
 	public FixtureMonkeyBuilder pushExceptGenerateType(Matcher matcher) {
-		fixtureMonkeyOptionsBuilder.insertFirstArbitraryObjectPropertyGenerator(
+		fixtureMonkeyOptionsBuilder.insertFirstArbitraryIntrospector(
 			new MatcherOperator<>(
 				matcher,
-				NullObjectPropertyGenerator.INSTANCE
+				NullArbitraryIntrospector.INSTANCE
 			)
 		);
 		return this;
