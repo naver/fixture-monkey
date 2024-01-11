@@ -8,6 +8,8 @@ weight: 100
 ### v1.0.9
 Fix addExceptGenerateClass option affected by specific ArbitraryIntrospector
 
+Add customizing Wildcard type in an option
+
 ##### Experimental Feature
 Add `customizeProperty` API in `ArbitraryBuilder` to customize a generated value.
 

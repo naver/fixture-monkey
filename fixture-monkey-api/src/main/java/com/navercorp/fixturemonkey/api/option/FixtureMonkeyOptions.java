@@ -42,6 +42,7 @@ import javax.annotation.Nullable;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.constraint.JavaConstraintGenerator;
 import com.navercorp.fixturemonkey.api.container.DecomposedContainerValueFactory;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfoGenerator;
@@ -62,6 +63,7 @@ import com.navercorp.fixturemonkey.api.generator.SingleValueObjectPropertyGenera
 import com.navercorp.fixturemonkey.api.generator.StreamContainerPropertyGenerator;
 import com.navercorp.fixturemonkey.api.instantiator.InstantiatorProcessor;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
+import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult;
 import com.navercorp.fixturemonkey.api.introspector.NullArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.matcher.AssignableTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.DoubleGenericTypeMatcher;
@@ -73,6 +75,7 @@ import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.PropertyGenerator;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.api.type.Types;
+import com.navercorp.fixturemonkey.api.type.Types.GeneratingWildcardType;
 import com.navercorp.fixturemonkey.api.type.Types.UnidentifiableType;
 import com.navercorp.fixturemonkey.api.validator.ArbitraryValidator;
 
@@ -84,8 +87,12 @@ public final class FixtureMonkeyOptions {
 	public static final List<MatcherOperator<ContainerPropertyGenerator>> DEFAULT_CONTAINER_PROPERTY_GENERATORS =
 		getDefaultContainerPropertyGenerators();
 	public static final List<MatcherOperator<ArbitraryIntrospector>> DEFAULT_ARBITRARY_INTROSPECTORS =
-		Collections.singletonList(
-			MatcherOperator.exactTypeMatchOperator(UnidentifiableType.class, NullArbitraryIntrospector.INSTANCE)
+		Arrays.asList(
+			MatcherOperator.exactTypeMatchOperator(UnidentifiableType.class, NullArbitraryIntrospector.INSTANCE),
+			MatcherOperator.exactTypeMatchOperator(
+				GeneratingWildcardType.class,
+				context -> new ArbitraryIntrospectorResult(CombinableArbitrary.from(new Object()))
+			)
 		);
 	public static final ObjectPropertyGenerator DEFAULT_OBJECT_PROPERTY_GENERATOR =
 		DefaultObjectPropertyGenerator.INSTANCE;

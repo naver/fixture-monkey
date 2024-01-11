@@ -19,11 +19,14 @@
 package com.navercorp.fixturemonkey.tests.kotlin
 
 import com.navercorp.fixturemonkey.FixtureMonkey
+import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary
 import com.navercorp.fixturemonkey.api.experimental.JavaGetterMethodPropertySelector.javaGetter
 import com.navercorp.fixturemonkey.api.experimental.TypedExpressionGenerator.typedRoot
+import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult
 import com.navercorp.fixturemonkey.api.introspector.ConstructorPropertiesArbitraryIntrospector
 import com.navercorp.fixturemonkey.api.introspector.FactoryMethodArbitraryIntrospector
 import com.navercorp.fixturemonkey.api.introspector.FailoverIntrospector
+import com.navercorp.fixturemonkey.api.type.Types.GeneratingWildcardType
 import com.navercorp.fixturemonkey.kotlin.KotlinPlugin
 import com.navercorp.fixturemonkey.kotlin.get
 import com.navercorp.fixturemonkey.kotlin.giveMeBuilder
@@ -242,6 +245,50 @@ class KotlinTest {
             .sample()
 
         then(actual).isBetween(min, max)
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun sampleCustomizedWildcardType() {
+        // given
+        class MapObject(val map: Map<String, *>)
+
+        val expected = "test"
+
+        val sut = FixtureMonkey.builder()
+            .plugin(KotlinPlugin())
+            .pushExactTypeArbitraryIntrospector<GeneratingWildcardType> {
+                ArbitraryIntrospectorResult(
+                    CombinableArbitrary.from(expected)
+                )
+            }
+            .build()
+
+        // when
+        val actual = sut.giveMeBuilder<MapObject>()
+            .sizeExp(MapObject::map, 1)
+            .sample()
+            .map
+            .values
+            .first()
+
+        // then
+        then(actual).isEqualTo(expected)
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun overwriteExistingType() {
+        val expected = "string"
+        val sut = FixtureMonkey.builder()
+            .pushExactTypeArbitraryIntrospector<String> {
+                ArbitraryIntrospectorResult(
+                    CombinableArbitrary.from(expected)
+                )
+            }
+            .build()
+
+        val actual: String = sut.giveMeOne()
+
+        then(actual).isEqualTo(expected)
     }
 
     companion object {
