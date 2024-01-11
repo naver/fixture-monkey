@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -36,6 +37,7 @@ import org.apiguardian.api.API.Status;
 import net.jqwik.api.Arbitrary;
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
+import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.container.DecomposedContainerValueFactory;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
@@ -104,6 +106,20 @@ public final class MonkeyManipulatorFactory {
 				new NodeFilterManipulator(type, filter),
 				limit
 			)
+		);
+	}
+
+	public <T> ArbitraryManipulator newArbitraryManipulator(
+		String expression,
+		Function<CombinableArbitrary<? extends T>, CombinableArbitrary<? extends T>> arbitraryCustomizer
+	) {
+		if (arbitraryCustomizer == null) {
+			return newArbitraryManipulator(expression, (Object)null);
+		}
+
+		return new ArbitraryManipulator(
+			monkeyExpressionFactory.from(expression).toNodeResolver(),
+			new NodeCustomizerManipulator<>(arbitraryCustomizer)
 		);
 	}
 
