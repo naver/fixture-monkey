@@ -91,6 +91,9 @@ public abstract class Types {
 
 	public static Class<?> getActualType(Type type) {
 		if (type.getClass() == Class.class) {
+			if (type == Object.class) {
+				return GeneratingWildcardType.class;
+			}
 			return (Class<?>)type;
 		}
 
@@ -394,6 +397,11 @@ public abstract class Types {
 
 	public static class UnidentifiableType {
 		private UnidentifiableType() {
+		}
+	}
+
+	public static class GeneratingWildcardType {
+		private GeneratingWildcardType() {
 		}
 	}
 

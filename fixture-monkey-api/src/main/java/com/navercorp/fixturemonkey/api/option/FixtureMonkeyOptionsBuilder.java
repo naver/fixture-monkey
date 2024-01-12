@@ -98,7 +98,7 @@ public final class FixtureMonkeyOptionsBuilder {
 	private ArbitraryContainerInfoGenerator defaultArbitraryContainerInfoGenerator;
 	private ArbitraryGenerator defaultArbitraryGenerator;
 	private UnaryOperator<ArbitraryGenerator> defaultArbitraryGeneratorOperator = it -> it;
-	private final List<MatcherOperator<ArbitraryIntrospector>> arbitraryIntrospectors =
+	private List<MatcherOperator<ArbitraryIntrospector>> arbitraryIntrospectors =
 		new ArrayList<>(DEFAULT_ARBITRARY_INTROSPECTORS);
 	private final JavaDefaultArbitraryGeneratorBuilder javaDefaultArbitraryGeneratorBuilder =
 		IntrospectedArbitraryGenerator.javaBuilder();
@@ -367,7 +367,7 @@ public final class FixtureMonkeyOptionsBuilder {
 	public FixtureMonkeyOptionsBuilder insertFirstArbitraryIntrospector(
 		MatcherOperator<ArbitraryIntrospector> arbitraryIntrospector
 	) {
-		this.arbitraryIntrospectors.add(arbitraryIntrospector);
+		this.arbitraryIntrospectors = insertFirst(this.arbitraryIntrospectors, arbitraryIntrospector);
 		return this;
 	}
 
