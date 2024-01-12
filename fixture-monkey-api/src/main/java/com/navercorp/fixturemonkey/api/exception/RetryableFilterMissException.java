@@ -26,7 +26,7 @@ import org.apiguardian.api.API.Status;
  * A new populated object would be generated when this exception is thrown.
  */
 @API(since = "0.6.0", status = Status.MAINTAINED)
-public final class RetryableFilterMissException extends RuntimeException {
+public final class RetryableFilterMissException extends RetryableException {
 	public RetryableFilterMissException(String message, Throwable cause) {
 		super(message, cause);
 	}

@@ -48,9 +48,11 @@ import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult;
 import com.navercorp.fixturemonkey.api.property.CompositeProperty;
 import com.navercorp.fixturemonkey.api.property.ConstructorProperty;
+import com.navercorp.fixturemonkey.api.property.DefaultPropertyGenerator;
 import com.navercorp.fixturemonkey.api.property.FieldProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.PropertyDescriptorProperty;
+import com.navercorp.fixturemonkey.api.property.PropertyGenerator;
 import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.jackson.FixtureMonkeyJackson;
 import com.navercorp.fixturemonkey.jackson.type.JacksonTypeReference;
@@ -211,5 +213,10 @@ public final class JacksonObjectArbitraryIntrospector implements ArbitraryIntros
 		return property instanceof FieldProperty
 			|| property instanceof PropertyDescriptorProperty
 			|| property instanceof ConstructorProperty;
+	}
+
+	@Override
+	public PropertyGenerator getRequiredPropertyGenerator(Property property) {
+		return new DefaultPropertyGenerator();
 	}
 }

@@ -19,9 +19,12 @@
 package com.navercorp.fixturemonkey.api.introspector;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
+
+import javax.annotation.Nullable;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -29,7 +32,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
+import com.navercorp.fixturemonkey.api.exception.RetryableException;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
+import com.navercorp.fixturemonkey.api.property.CompositePropertyGenerator;
+import com.navercorp.fixturemonkey.api.property.Property;
+import com.navercorp.fixturemonkey.api.property.PropertyGenerator;
 
 @API(since = "0.6.0", status = Status.MAINTAINED)
 public final class FailoverIntrospector implements ArbitraryIntrospector {
@@ -50,7 +57,7 @@ public final class FailoverIntrospector implements ArbitraryIntrospector {
 				if (!ArbitraryIntrospectorResult.NOT_INTROSPECTED.equals(result)) {
 					results.add(new FailoverIntrospectorResult(introspector, result));
 				}
-			} catch (Exception ex) {
+			} catch (RetryableException ex) {
 				LOGGER.warn(
 					String.format(
 						"\"%s\" is failed to introspect \"%s\" type.",
@@ -67,16 +74,17 @@ public final class FailoverIntrospector implements ArbitraryIntrospector {
 		}
 
 		return new ArbitraryIntrospectorResult(
-			new CombinableArbitrary() {
+			new CombinableArbitrary<Object>() {
 				@Override
 				public Object combined() {
+					Exception lastException = null;
 					Iterator<FailoverIntrospectorResult> iterator = results.iterator();
 					FailoverIntrospectorResult result = null;
 					while (iterator.hasNext()) {
 						try {
 							result = iterator.next();
 							return result.getResult().getValue().combined();
-						} catch (Exception ex) {
+						} catch (RetryableException ex) {
 							LOGGER.warn(
 								String.format(
 									"\"%s\" is failed to introspect \"%s\" type.",
@@ -85,26 +93,26 @@ public final class FailoverIntrospector implements ArbitraryIntrospector {
 								),
 								ex
 							);
-							// omitted
+							lastException = ex;
 						}
 					}
-					throw new IllegalArgumentException(
-						String.format(
-							"Failed to generate type \"%s\"",
-							((Class<?>)context.getResolvedProperty().getType()).getSimpleName()
-						)
-					);
+
+					if (lastException != null) {
+						throw new IllegalArgumentException(lastException.getMessage(), lastException.getCause());
+					}
+					return NOT_GENERATED;
 				}
 
 				@Override
 				public Object rawValue() {
 					Iterator<FailoverIntrospectorResult> iterator = results.iterator();
 					FailoverIntrospectorResult result = null;
+					Exception lastException = null;
 					while (iterator.hasNext()) {
 						try {
 							result = iterator.next();
 							return result.getResult().getValue().rawValue();
-						} catch (Exception ex) {
+						} catch (RetryableException ex) {
 							LOGGER.warn(
 								String.format(
 									"\"%s\" is failed to introspect type \"%s\"",
@@ -113,15 +121,14 @@ public final class FailoverIntrospector implements ArbitraryIntrospector {
 								),
 								ex
 							);
-							// omitted
+							lastException = ex;
 						}
 					}
-					throw new IllegalArgumentException(
-						String.format(
-							"Failed to generate type \"%s\"",
-							((Class<?>)context.getResolvedProperty().getType()).getSimpleName()
-						)
-					);
+
+					if (lastException != null) {
+						throw new IllegalArgumentException(lastException.getMessage(), lastException.getCause());
+					}
+					return NOT_GENERATED;
 				}
 
 				@Override
@@ -138,6 +145,16 @@ public final class FailoverIntrospector implements ArbitraryIntrospector {
 				}
 			}
 		);
+	}
+
+	@Nullable
+	@Override
+	public PropertyGenerator getRequiredPropertyGenerator(Property property) {
+		return introspectors.stream()
+			.map(it -> it.getRequiredPropertyGenerator(property))
+			.filter(Objects::nonNull)
+			.reduce((before, now) -> new CompositePropertyGenerator(Arrays.asList(before, now)))
+			.orElse(null);
 	}
 
 	private static class FailoverIntrospectorResult {

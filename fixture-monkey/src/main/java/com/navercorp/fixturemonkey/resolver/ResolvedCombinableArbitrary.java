@@ -28,7 +28,7 @@ import org.apiguardian.api.API.Status;
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.exception.ContainerSizeFilterMissException;
 import com.navercorp.fixturemonkey.api.exception.FixedValueFilterMissException;
-import com.navercorp.fixturemonkey.api.exception.RetryableFilterMissException;
+import com.navercorp.fixturemonkey.api.exception.RetryableException;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
 import com.navercorp.fixturemonkey.api.validator.ArbitraryValidator;
@@ -78,7 +78,7 @@ final class ResolvedCombinableArbitrary<T> implements CombinableArbitrary<T> {
 			} catch (ContainerSizeFilterMissException ex) {
 				lastException = ex;
 				objectTree.clear();
-			} catch (FixedValueFilterMissException | RetryableFilterMissException ex) {
+			} catch (FixedValueFilterMissException | RetryableException ex) {
 				lastException = ex;
 			} finally {
 				arbitrary.clear();
@@ -105,7 +105,7 @@ final class ResolvedCombinableArbitrary<T> implements CombinableArbitrary<T> {
 			} catch (ContainerSizeFilterMissException ex) {
 				lastException = ex;
 				objectTree.clear();
-			} catch (FixedValueFilterMissException | RetryableFilterMissException ex) {
+			} catch (FixedValueFilterMissException | RetryableException ex) {
 				lastException = ex;
 			} finally {
 				arbitrary.clear();

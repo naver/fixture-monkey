@@ -28,6 +28,7 @@ import org.apiguardian.api.API.Status;
 import net.jqwik.api.TooManyFilterMissesException;
 
 import com.navercorp.fixturemonkey.api.exception.FixedValueFilterMissException;
+import com.navercorp.fixturemonkey.api.exception.RetryableException;
 import com.navercorp.fixturemonkey.api.exception.RetryableFilterMissException;
 import com.navercorp.fixturemonkey.api.exception.ValidationFailedException;
 import com.navercorp.fixturemonkey.api.property.PropertyPath;
@@ -78,7 +79,7 @@ final class FilteredCombinableArbitrary<T> implements CombinableArbitrary<T> {
 				if (fixed()) {
 					throw new FixedValueFilterMissException("Fixed value can not satisfy given filter.");
 				}
-			} catch (TooManyFilterMissesException | ValidationFailedException | RetryableFilterMissException ex) {
+			} catch (TooManyFilterMissesException | RetryableException ex) {
 				if (lastException == null || ex.getCause() != null) {
 					lastException = ex;
 				}

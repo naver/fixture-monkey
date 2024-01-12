@@ -26,12 +26,14 @@ import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.arbitrary.JavaTimeArbitraryGeneratorSet;
 import com.navercorp.fixturemonkey.api.arbitrary.JavaTypeArbitraryGeneratorSet;
+import com.navercorp.fixturemonkey.api.introspector.AnonymousArgumentConstructorIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult;
 import com.navercorp.fixturemonkey.api.introspector.ArrayIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.BeanArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.BooleanIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.EnumIntrospector;
+import com.navercorp.fixturemonkey.api.introspector.FailoverIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.IterableIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.IteratorIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.JavaArbitraryIntrospector;
@@ -157,7 +159,12 @@ public final class JavaDefaultArbitraryGeneratorBuilder {
 					new JavaTimeArbitraryIntrospector(this.javaTimeArbitraryGeneratorSet),
 					this.priorityIntrospector,
 					this.containerIntrospector,
-					this.objectIntrospector,
+					new FailoverIntrospector(
+						Arrays.asList(
+							this.objectIntrospector,
+							AnonymousArgumentConstructorIntrospector.INSTANCE
+						)
+					),
 					this.fallbackIntrospector
 				)
 			)

@@ -42,7 +42,6 @@ import java.util.regex.Pattern;
 import net.jqwik.api.Property;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
-import com.navercorp.fixturemonkey.api.exception.RetryableFilterMissException;
 import com.navercorp.fixturemonkey.javax.validation.plugin.JavaxValidationPlugin;
 import com.navercorp.fixturemonkey.javax.validation.spec.BigDecimalIntrospectorSpec;
 import com.navercorp.fixturemonkey.javax.validation.spec.BigIntegerIntrospectorSpec;
@@ -481,8 +480,7 @@ class JavaxValidationFixtureMonkeyTest {
 				.setNull("notBlank")
 				.sample()
 		)
-			.getCause()
-			.isExactlyInstanceOf(RetryableFilterMissException.class)
+			.isExactlyInstanceOf(IllegalArgumentException.class)
 			.hasMessageContaining("failed due to property \"not");
 	}
 }

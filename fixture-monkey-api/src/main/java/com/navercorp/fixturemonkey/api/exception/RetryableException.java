@@ -18,27 +18,20 @@
 
 package com.navercorp.fixturemonkey.api.exception;
 
-import java.util.Set;
-
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.api.validator.ArbitraryValidator;
-
-/**
- * It is thrown when validated by {@link ArbitraryValidator}.
- * A new populated object would be generated when this exception is thrown.
- */
-@API(since = "0.6.0", status = Status.MAINTAINED)
-public final class ValidationFailedException extends RetryableException {
-	private final Set<String> constraintViolationPropertyNames;
-
-	public ValidationFailedException(String message, Set<String> constraintViolationPropertyNames) {
+@API(since = "1.0.10", status = Status.EXPERIMENTAL)
+public class RetryableException extends RuntimeException {
+	public RetryableException(String message) {
 		super(message);
-		this.constraintViolationPropertyNames = constraintViolationPropertyNames;
 	}
 
-	public Set<String> getConstraintViolationPropertyNames() {
-		return constraintViolationPropertyNames;
+	public RetryableException(String message, Throwable cause) {
+		super(message, cause);
+	}
+
+	public RetryableException(Throwable cause) {
+		super(cause);
 	}
 }

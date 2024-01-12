@@ -22,6 +22,7 @@ import com.navercorp.fixturemonkey.FixtureMonkey
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary
 import com.navercorp.fixturemonkey.api.experimental.JavaGetterMethodPropertySelector.javaGetter
 import com.navercorp.fixturemonkey.api.experimental.TypedExpressionGenerator.typedRoot
+import com.navercorp.fixturemonkey.api.introspector.AnonymousArgumentConstructorIntrospector
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult
 import com.navercorp.fixturemonkey.api.introspector.ConstructorPropertiesArbitraryIntrospector
 import com.navercorp.fixturemonkey.api.introspector.FactoryMethodArbitraryIntrospector
@@ -289,6 +290,26 @@ class KotlinTest {
         val actual: String = sut.giveMeOne()
 
         then(actual).isEqualTo(expected)
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun sampleByAnonymousArgumentConstructorIntrospector() {
+        val sut = FixtureMonkey.builder()
+            .objectIntrospector(AnonymousArgumentConstructorIntrospector.INSTANCE)
+            .build()
+
+        val actual: kotlin.time.Duration = sut.giveMeOne()
+
+        then(actual).isNotNull
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun sampleByFallbackIntrospector() {
+        class DurationObject(val duration: kotlin.time.Duration)
+
+        val actual = SUT.giveMeOne<DurationObject>().duration
+
+        then(actual).isNotNull
     }
 
     companion object {
