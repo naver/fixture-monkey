@@ -9,7 +9,7 @@ dependencies {
     api(project(":fixture-monkey-api"))
 
     api("net.jqwik:jqwik:${Versions.JQWIK}")
-    api("com.github.mifmif:generex:1.0.2")
+    api("com.github.curious-odd-man:rgxgen:1.4")
 
     testRuntimeOnly(project(":fixture-monkey-engine"))
     testImplementation("org.junit.jupiter:junit-jupiter-engine:${Versions.JUNIT_JUPITER}")

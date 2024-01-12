@@ -18,80 +18,83 @@
 
 package com.navercorp.fixturemonkey.api.random;
 
-import static java.util.stream.Collectors.toList;
-
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Spliterator;
+import java.util.Spliterators;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import javax.annotation.Nullable;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import com.mifmif.common.regex.Generex;
-
-import dk.brics.automaton.RegExp;
+import com.github.curiousoddman.rgxgen.RgxGen;
+import com.github.curiousoddman.rgxgen.config.RgxGenOption;
+import com.github.curiousoddman.rgxgen.config.RgxGenProperties;
+import com.github.curiousoddman.rgxgen.iterators.StringIterator;
 
 @API(since = "0.6.9", status = Status.MAINTAINED)
 public final class RegexGenerator {
-	private static final Map<String, String> PREDEFINED_CHARACTER_CLASSES;
-
-	static {
-		Map<String, String> characterClasses = new HashMap<>();
-		characterClasses.put("\\\\d", "[0-9]");
-		characterClasses.put("\\\\D", "[^0-9]");
-		characterClasses.put("\\\\s", "[ \t\n\f\r]");
-		characterClasses.put("\\\\S", "[^ \t\n\f\r]");
-		characterClasses.put("\\\\w", "[a-zA-Z_0-9]");
-		characterClasses.put("\\\\W", "[^a-zA-Z_0-9]");
-		PREDEFINED_CHARACTER_CLASSES = Collections.unmodifiableMap(characterClasses);
-	}
+	private static final Logger LOGGER = LoggerFactory.getLogger(RegexGenerator.class);
+	public static final int DEFAULT_REGEXP_GENERATION_TIMEOUT_SEC = 10;
+	public static final int DEFAULT_REGEXP_GENERATION_MAX_SIZE = 100;
 
 	public List<String> generateAll(String regex, int[] flags, @Nullable Integer min, @Nullable Integer max) {
-		for (Map.Entry<String, String> charClass : PREDEFINED_CHARACTER_CLASSES.entrySet()) {
-			regex = regex.replaceAll(charClass.getKey(), charClass.getValue());
-		}
+		ExecutorService executor = Executors.newSingleThreadExecutor();
 
-		RegExp regExp;
-		if (flags.length == 0) {
-			regExp = new RegExp(regex);
-		} else {
-			int intFlag = 0;
-			for (int flag : flags) {
-				intFlag = intFlag | flag;
-			}
-			regExp = new RegExp(regex, intFlag);
-		}
+		try {
+			RgxGen rgxGen = generateRgxGen(regex, flags);
 
-		Generex generex = new Generex(regExp.toAutomaton());
-		return this.generateAll(generex, min, max);
+			int minLength = min == null ? 0 : min;
+			int maxLength = max == null ? Integer.MAX_VALUE : max;
+
+			List<String> result = new ArrayList<>();
+
+			Future<?> future = executor.submit(() -> {
+				StringIterator stringIterator = rgxGen.iterateUnique();
+				Spliterator<String> spliterator =
+					Spliterators.spliteratorUnknownSize(stringIterator, Spliterator.ORDERED);
+
+				result.addAll(StreamSupport.stream(spliterator, false)
+					.filter(it -> it.length() >= minLength && it.length() <= maxLength)
+					.limit(DEFAULT_REGEXP_GENERATION_MAX_SIZE)
+					.collect(Collectors.toList()));
+			});
+
+			future.get(DEFAULT_REGEXP_GENERATION_TIMEOUT_SEC, TimeUnit.SECONDS);
+
+			Collections.shuffle(result);
+			return result;
+		} catch (Exception ex) {
+			throw new IllegalArgumentException(
+				String.format(
+					"String generation failed for the regular expression \"%s\" provided in @Pattern."
+						+ " Either the regular expression is incorrect, or it takes too much time to generate",
+					regex
+				)
+			);
+		} finally {
+			executor.shutdown();
+		}
 	}
 
-	public List<String> generateAll(String regex) {
-		return this.generateAll(regex, null, null);
-	}
-
-	public List<String> generateAll(String regex, @Nullable Integer min, @Nullable Integer max) {
-		return this.generateAll(new Generex(regex), min, max);
-	}
-
-	private List<String> generateAll(Generex generex, @Nullable Integer min, @Nullable Integer max) {
-		if (min == null) {
-			min = 0;
+	private static RgxGen generateRgxGen(String regex, int[] flags) {
+		RgxGenProperties properties = new RgxGenProperties();
+		if (Arrays.stream(flags).anyMatch(it -> it == 2)) {
+			RgxGenOption.CASE_INSENSITIVE.setInProperties(properties, true);
 		}
-
-		if (max == null) {
-			max = 255;
-		}
-
-		Integer regexMin = min;
-		Integer regexMax = max;
-		List<String> result = generex.getMatchedStrings(100).stream()
-			.filter(it -> it.length() >= regexMin && it.length() <= regexMax)
-			.collect(toList());
-		Collections.shuffle(result);
-		return result;
+		RgxGen rgxGen = new RgxGen(regex);
+		rgxGen.setProperties(properties);
+		return rgxGen;
 	}
 }

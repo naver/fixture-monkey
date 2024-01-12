@@ -28,7 +28,7 @@ dependencies {
     compileOnly("net.jqwik:jqwik-api:${Versions.JQWIK}")
     compileOnly("net.jqwik:jqwik-web:${Versions.JQWIK}")
     compileOnly("net.jqwik:jqwik-time:${Versions.JQWIK}")
-    compileOnly("com.github.mifmif:generex:1.0.2")
+    compileOnly("com.github.curious-odd-man:rgxgen:1.4")
 
     testImplementation("net.jqwik:jqwik-engine:${Versions.JQWIK}")
     testImplementation("net.jqwik:jqwik-api:${Versions.JQWIK}")
@@ -37,6 +37,7 @@ dependencies {
     testImplementation("org.projectlombok:lombok:${Versions.LOMBOK}")
     testImplementation("org.assertj:assertj-core:${Versions.ASSERTJ}")
     testImplementation("net.jqwik:jqwik-time:${Versions.JQWIK}")
+    testImplementation("com.github.curious-odd-man:rgxgen:1.4")
     testAnnotationProcessor("org.projectlombok:lombok:${Versions.LOMBOK}")
 }
 
