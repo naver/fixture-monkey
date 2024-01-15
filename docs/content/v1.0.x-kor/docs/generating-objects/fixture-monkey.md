@@ -27,7 +27,7 @@ val fixtureMonkey = FixtureMonkey
 {{< /tab >}}
 {{< /tabpane>}}
 
-테스트 픽스터를 생성하거나 커스텀하기 위해서는 FixtureMonkey 빌더를 사용하여 옵션을 추가할 수 있습니다.
+테스트 픽스처를 생성하거나 커스텀하기 위해서는 FixtureMonkey 빌더를 사용하여 옵션을 추가할 수 있습니다.
 
 {{< tabpane persist=false >}}
 {{< tab header="Java" lang="java">}}
