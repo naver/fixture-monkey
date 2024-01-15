@@ -46,11 +46,11 @@ val fixtureMonkey = FixtureMonkey.builder()
 {{< /tab >}}
 {{< /tabpane>}}
 
-어떤 옵션을 사용할 수 있는지에 대한 정보는 [Fixture Monkey Options section](../../fixture-monkey-options/options)을 참고하십시오.
+어떤 옵션을 사용할 수 있는지에 대한 정보는 [Fixture Monkey 옵션](../../fixture-monkey-options/options)을 참고하십시오.
 
 ## 인스턴스 생성
 
-`FixtureMonkey` 클래스는 테스트에 필요한 객체를 생성하는데 도움이 되는 메서드를 제공합니다.
+`FixtureMonkey` 클래스는 테스트에 필요한 객체 생성에 도움 되는 메서드를 제공합니다.
 
 ### giveMeOne()
 특정 타입의 인스턴스가 필요하다면 `giveMeOne()`을 사용할 수 있습니다. 인자로 클래스 또는 타입을 전달하십시오.
@@ -143,7 +143,7 @@ val productBuilder = fixtureMonkey.giveMeBuilder(product)
 
 `ArbitraryBuilder`는 픽스처를 커스텀하는 데 사용될 수 있습니다. 커스텀 옵션에 대한 자세한 내용은 [커스텀 객체](../../customizing-objects/apis)를 참고하십시오.
 
-`ArbitraryBuilder`에서 인스턴스를 얻으려면 `ArbitraryBuilder`의 `sample()`, `sampleList()`, `sampleStream()` 메서드를 사용할 수 있습니다.
+`ArbitraryBuilder`에서 인스턴스를 얻기 위해 `ArbitraryBuilder`의 `sample()`, `sampleList()`, `sampleStream()` 메서드를 사용할 수 있습니다.
 
 {{< tabpane persist=false >}}
 {{< tab header="Java" lang="java">}}
@@ -188,7 +188,7 @@ val productArbitrary = productBuilder.build()
 ### giveMeArbitrary()
 특정한 유형의 `Arbitrary`를 얻으려면 `giveMeArbitrary()` 메서드를 사용할 수 있습니다.
 
-{{< tabpane persist=false >}}
+{{< tabpane per휘 ㅇsist=false >}}
 {{< tab header="Java" lang="java">}}
 
 Arbitrary<Product> productArbitrary = fixtureMonkey.giveMeArbitrary(Product.class);
