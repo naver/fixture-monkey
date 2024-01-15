@@ -10,7 +10,7 @@ docs:
 > Fixture Monkey 는 Java 와 Kotlin 모두에서 사용할 수 있습니다.
 > 각 환경에 맞는 '시작하기' 페이지가 있습니다: [Java](../creating-test-objects), [Java without Lombok](../creating-test-objects-without-lombok), and [Kotlin](../creating-objects-in-kotlin).
 > 
-> 이 페이지는 Java 환경을 기준으로 설명합니다. 사용 중인 환경에 맞는 페이지를 참고하세요.
+> 이 페이지는 Java 환경을 기준으로 설명합니다. 사용 중인 환경에 맞는 페이지를 참고해주세요.
 
 아래처럼 Product 클래스를 테스트하기 위해 테스트 픽스처가 필요한 시나리오를 생각해보세요.
 
