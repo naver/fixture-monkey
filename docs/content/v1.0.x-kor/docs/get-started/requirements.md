@@ -1,5 +1,5 @@
 ---
-title: "Requirements"
+title: "요구사항"
 images: []
 menu:
 docs:
@@ -8,7 +8,7 @@ docs:
 weight: 21
 ---
 
-{{< alert icon="💡" text="Fixture Monkey 는 테스트 환경용으로 설계되었습니다. 운영 코드에는 포함되지 않도록 하는게 좋습니다." />}}
+{{< alert icon="💡" text="Fixture Monkey 는 테스트 환경용으로 설계되었습니다. 운영 코드에는 포함하지 않을 것을 권장합니다." />}}
 
 ## 전제 조건
 
@@ -27,7 +27,7 @@ weight: 21
 | fixture-monkey-kotlin         | Kotlin support                               |
 | fixture-monkey-starter-kotlin | Starter dependency for fixture monkey kotlin |
 
-**fixture-monkey-starter** 는 Fixture Monkey 를 시작하는 데 도움이 되도록 fixture-monkey-jakarta-validation과 같은 플러그인들과 함께 제공되는 스타터 패키지입니다.
+**fixture-monkey-starter** 는 Fixture Monkey 를 시작하는 데 도움이 되도록 fixture-monkey-jakarta-validation과 같은 플러그인들이 함께 제공되는 스타터 패키지입니다.
 
 Kotlin 환경에서는 **fixture-monkey-starter-kotlin** 을 대신 사용할 수 있습니다.
 
