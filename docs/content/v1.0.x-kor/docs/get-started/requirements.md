@@ -1,6 +1,6 @@
 ---
 title: "Requirements"
-images: [ ]
+images: []
 menu:
 docs:
   parent: "get-started"
