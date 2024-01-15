@@ -8,10 +8,9 @@ identifier: "fixturemonkey"
 weight: 31
 ---
 
-To generate test fixtures, the first step is to create a `FixtureMonkey` instance, which facilitates the creation of test fixtures.
+테스트 픽스처를 생성하기 위해서는 우선 `FixtureMonkey` 인스턴스를 생성해야 합니다. 해당 인스턴스는 테스트 픽스처 생성에 도움을 줍니다.
 
-You can use the `create()` method to generate a `FixtureMonkey` instance with default options.
-For Kotlin environments, add the Kotlin plugin.
+`FixtureMonkey` 인스턴스를 생성하기 위해서는 `create()` 메서드를 사용하면 됩니다. Kotlin 환경에서는 Kotlin 플러그인을 추가해야 합니다.
 
 {{< tabpane persist=false >}}
 {{< tab header="Java" lang="java">}}
@@ -28,7 +27,7 @@ val fixtureMonkey = FixtureMonkey
 {{< /tab >}}
 {{< /tabpane>}}
 
-If you want to add some options for creating or customizing the test fixtures, you can add them using the FixtureMonkey builder.
+테스트 픽스터를 생성하거나 커스텀하기 위해서는 FixtureMonkey 빌더를 사용하여 옵션을 추가할 수 있습니다.
 
 {{< tabpane persist=false >}}
 {{< tab header="Java" lang="java">}}
@@ -47,7 +46,7 @@ val fixtureMonkey = FixtureMonkey.builder()
 {{< /tab >}}
 {{< /tabpane>}}
 
-For information on what options are available, see the [Fixture Monkey Options section](../../fixture-monkey-options/options).
+어떤 옵션을 사용할 수 있는지에 대한 정보는 [Fixture Monkey Options section](../../fixture-monkey-options/options)을 참고하십시오.
 
 ## Generating instances
 
