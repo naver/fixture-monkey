@@ -291,6 +291,23 @@ class KotlinTest {
         then(actual).isEqualTo(expected)
     }
 
+    @Test
+    fun setToObject() {
+        // given
+        class Object(val obj: Any?)
+
+        val expected = "test"
+
+        // when
+        val actual = SUT.giveMeBuilder<Object>()
+            .setExp(Object::obj, expected)
+            .sample()
+            .obj
+
+        // then
+        then(actual).isEqualTo(expected)
+    }
+
     companion object {
         private val SUT: FixtureMonkey = FixtureMonkey.builder()
             .plugin(KotlinPlugin())

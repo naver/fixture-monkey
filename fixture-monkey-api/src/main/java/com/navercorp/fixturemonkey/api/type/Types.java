@@ -91,9 +91,6 @@ public abstract class Types {
 
 	public static Class<?> getActualType(Type type) {
 		if (type.getClass() == Class.class) {
-			if (type == Object.class) {
-				return GeneratingWildcardType.class;
-			}
 			return (Class<?>)type;
 		}
 
@@ -105,6 +102,9 @@ public abstract class Types {
 		if (WildcardType.class.isAssignableFrom(type.getClass())) {
 			WildcardType wildcardType = (WildcardType)type;
 			Type upperBound = wildcardType.getUpperBounds()[0];
+			if (upperBound == Object.class) {
+				return GeneratingWildcardType.class;
+			}
 			return getActualType(upperBound);
 		}
 
