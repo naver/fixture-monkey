@@ -14,57 +14,58 @@ Add customizing Wildcard type in an option
 experimentalStart
 ##### Experimental Feature
 Add `customizeProperty` API in `ArbitraryBuilder` to customize generated value
+
 experimentalEnd
 
 sectionEnd
-----------
+
 
 sectionStart
 ### v1.0.8
 Improve the error message with specific details about the failed type when generation fails
 
 Fix setting child type when generating parent type
+
 sectionEnd
-----------
 
 sectionStart
 ### v1.0.7
 Fix the fixture-monkey-kotlin module to be compatible with JDK 8
 
 sectionEnd
-----------
+
 
 sectionStart
 ### v1.0.6
 Fixture Monkey now infers properties when generating a type using a specific `ArbitraryIntrospector` that requires certain types of properties
-    - Refer to the comment in `ArbitraryGenerator#getRequiredPropertyGenerator`
-Support generating an instance of a Kotlin type with a private constructor
-Introduce `InterfacePlugin` featuring detailed interface options #845
-    - `interfaceImplements` option
-    - `useAnonymousArbitraryIntrospector` option
+(Refer to the comment in `ArbitraryGenerator#getRequiredPropertyGenerator`)
 
-The `interfaceImplements` option in `FixtureMonkeyBuilder` is now deprecated. It will be moved in `InterfacePlugin
+Support generating an instance of a Kotlin type with a private constructor
+
+Introduce `InterfacePlugin` featuring detailed interface options (`interfaceImplements`, `useAnonymousArbitraryIntrospector` option)
+
+The `interfaceImplements` option in `FixtureMonkeyBuilder` is now deprecated. It will be moved in `InterfacePlugin`
+
 sectionEnd
-----------
 
 sectionStart
 ### v1.0.5
 Fix `ConstructorPropertiesArbitraryIntrospector` to be able to generate a type that does not use Lombok
 
 Fix `FailoverIntrospector` catching an exception thrown by declaring a `CombinableArbitrary`
+
 sectionEnd
-----------
 
 sectionStart
 ### v1.0.4
 Record types are generated using the canonical constructor by default
 
 sectionEnd
-----------
 
 sectionStart
 ### v1.0.3
 Introduce a new option `pushJavaConstraintGeneratorCustomizer` to customize the `JavaConstraintGenerator` option
+
 Parallel execution is now supported with the `jqwik` engine
 
 Fix the generation of decimal values, ensuring a minimum of 0, with the kotest-property engine
