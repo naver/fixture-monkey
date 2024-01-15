@@ -18,7 +18,7 @@ weight: 21
 
 --------
 
-## Dependencies
+## 종속성
 
 | Dependency                    | Description                                  |
 |-------------------------------|----------------------------------------------|
@@ -27,7 +27,7 @@ weight: 21
 | fixture-monkey-kotlin         | Kotlin support                               |
 | fixture-monkey-starter-kotlin | Starter dependency for fixture monkey kotlin |
 
-**fixture-monkey-starter** 는 Fixture Monkey 사용을 시작하는 데 도움이 되도록 fixture-monkey-jakarta-validation과 같이 미리 구성된 종속성과 함께 제공되는 스타터 종속성입니다.
+**fixture-monkey-starter** 는 Fixture Monkey 를 시작하는 데 도움이 되도록 fixture-monkey-jakarta-validation과 같은 플러그인들과 함께 제공되는 스타터 패키지입니다.
 
 Kotlin 환경에서는 **fixture-monkey-starter-kotlin** 을 대신 사용할 수 있습니다.
 
@@ -52,7 +52,7 @@ testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter:{{< fixtu
 
 --------
 
-## Third party library support
+## 서드파티 라이브러리 지원
 
 | Dependency                        | Description                |
 |-----------------------------------|----------------------------|
