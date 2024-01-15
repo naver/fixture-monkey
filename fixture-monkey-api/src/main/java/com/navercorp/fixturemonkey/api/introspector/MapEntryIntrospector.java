@@ -24,6 +24,8 @@ import java.util.Map.Entry;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
@@ -35,6 +37,7 @@ import com.navercorp.fixturemonkey.api.property.Property;
 
 @API(since = "0.5.6", status = Status.MAINTAINED)
 public final class MapEntryIntrospector implements ArbitraryIntrospector, Matcher {
+	private static final Logger LOGGER = LoggerFactory.getLogger(MapEntryIntrospector.class);
 	private static final Matcher MATCHER = new AssignableTypeMatcher(Entry.class);
 
 	@Override
@@ -45,7 +48,8 @@ public final class MapEntryIntrospector implements ArbitraryIntrospector, Matche
 	@Override
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
 		ArbitraryProperty property = context.getArbitraryProperty();
-		if (!property.isContainer()) {
+		if (!property.isContainer() || match(context.getResolvedProperty())) {
+			LOGGER.info("Given type {} is not Map.Entry type.", context.getResolvedType());
 			return ArbitraryIntrospectorResult.NOT_INTROSPECTED;
 		}
 

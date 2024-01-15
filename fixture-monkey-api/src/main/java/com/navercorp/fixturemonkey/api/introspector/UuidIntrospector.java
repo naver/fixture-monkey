@@ -38,6 +38,10 @@ public final class UuidIntrospector implements ArbitraryIntrospector, Matcher {
 
 	@Override
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
+		if (!match(context.getResolvedProperty())) {
+			throw new IllegalArgumentException("Given type is not UUID. type: " + context.getResolvedType());
+		}
+
 		return new ArbitraryIntrospectorResult(CombinableArbitrary.from(UUID::randomUUID));
 	}
 }

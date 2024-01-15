@@ -20,6 +20,8 @@ package com.navercorp.fixturemonkey.api.introspector;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.matcher.AssignableTypeMatcher;
@@ -28,6 +30,7 @@ import com.navercorp.fixturemonkey.api.property.Property;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class IterableIntrospector implements ArbitraryIntrospector, Matcher {
+	private static final Logger LOGGER = LoggerFactory.getLogger(IterableIntrospector.class);
 	private static final Matcher MATCHER = new AssignableTypeMatcher(Iterable.class);
 	private static final ListIntrospector DELEGATE = new ListIntrospector();
 
@@ -38,6 +41,11 @@ public final class IterableIntrospector implements ArbitraryIntrospector, Matche
 
 	@Override
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
+		if (!match(context.getResolvedProperty())) {
+			LOGGER.info("Given type {} is not Iterable type.", context.getResolvedType());
+			return ArbitraryIntrospectorResult.NOT_INTROSPECTED;
+		}
+
 		return DELEGATE.introspect(context);
 	}
 }

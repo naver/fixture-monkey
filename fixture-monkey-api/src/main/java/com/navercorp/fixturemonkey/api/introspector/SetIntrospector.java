@@ -27,6 +27,8 @@ import java.util.stream.Collectors;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
@@ -37,6 +39,7 @@ import com.navercorp.fixturemonkey.api.property.Property;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class SetIntrospector implements ArbitraryIntrospector, Matcher {
+	private static final Logger LOGGER = LoggerFactory.getLogger(Set.class);
 	private static final Matcher MATCHER = new AssignableTypeMatcher(Set.class);
 
 	@Override
@@ -47,7 +50,8 @@ public final class SetIntrospector implements ArbitraryIntrospector, Matcher {
 	@Override
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
 		ArbitraryProperty arbitraryProperty = context.getArbitraryProperty();
-		if (!arbitraryProperty.isContainer()) {
+		if (!arbitraryProperty.isContainer() || !match(context.getResolvedProperty())) {
+			LOGGER.info("Given type {} is not Set type.", context.getResolvedType());
 			return NOT_INTROSPECTED;
 		}
 

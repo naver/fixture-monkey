@@ -23,6 +23,8 @@ import java.util.Queue;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
@@ -33,6 +35,7 @@ import com.navercorp.fixturemonkey.api.property.Property;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class QueueIntrospector implements ArbitraryIntrospector, Matcher {
+	private static final Logger LOGGER = LoggerFactory.getLogger(QueueIntrospector.class);
 	private static final Matcher MATCHER = new AssignableTypeMatcher(Queue.class);
 
 	@Override
@@ -43,7 +46,8 @@ public final class QueueIntrospector implements ArbitraryIntrospector, Matcher {
 	@Override
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
 		ArbitraryProperty property = context.getArbitraryProperty();
-		if (!property.isContainer()) {
+		if (!property.isContainer() || !match(context.getResolvedProperty())) {
+			LOGGER.info("Given type {} is not Queue type.", context.getResolvedType());
 			return ArbitraryIntrospectorResult.NOT_INTROSPECTED;
 		}
 
