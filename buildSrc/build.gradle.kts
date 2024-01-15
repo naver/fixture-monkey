@@ -5,7 +5,7 @@ repositories {
 }
 
 dependencies {
-    implementation("com.github.spotbugs.snom:spotbugs-gradle-plugin:4.7.6")
+    implementation("com.github.spotbugs.snom:spotbugs-gradle-plugin:5.2.5")
 }
 
 gradlePlugin {
@@ -18,7 +18,7 @@ gradlePlugin {
             id = "com.navercorp.fixturemonkey.gradle.plugin.java-conventions"
             implementationClass = "com.navercorp.fixturemonkey.gradle.plugin.JavaConventionsPlugin"
         }
-        register("mavenPublishConventionsPlugin"){
+        register("mavenPublishConventionsPlugin") {
             id = "com.navercorp.fixturemonkey.gradle.plugin.maven-publish-conventions"
             implementationClass = "com.navercorp.fixturemonkey.gradle.plugin.MavenPublishConventionsPlugin"
         }
