@@ -49,9 +49,14 @@ class RegexGeneratorTest {
 
 	@Test
 	void generateRegExpWithMinMaxLength() {
-		List<String> strings = SUT.generateAll("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$", new int[] {}, 3, 7);
+		List<String> strings = SUT.generateAll(
+			"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$",
+			new int[] {},
+			3,
+			50
+		);
 
-		then(strings).allMatch(it -> it.length() >= 3 && it.length() <= 7);
+		then(strings).allMatch(it -> it.length() >= 3 && it.length() <= 50);
 	}
 
 	@Test
@@ -67,8 +72,8 @@ class RegexGeneratorTest {
 			() -> SUT.generateAll(
 				"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$",
 				new int[] {},
-				20,
-				null
+				null,
+				3
 			)
 		).isExactlyInstanceOf(IllegalArgumentException.class);
 	}
