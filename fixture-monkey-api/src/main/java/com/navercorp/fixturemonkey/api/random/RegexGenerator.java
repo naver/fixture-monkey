@@ -35,8 +35,6 @@ import javax.annotation.Nullable;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.github.curiousoddman.rgxgen.RgxGen;
 import com.github.curiousoddman.rgxgen.config.RgxGenOption;
@@ -45,7 +43,7 @@ import com.github.curiousoddman.rgxgen.iterators.StringIterator;
 
 @API(since = "0.6.9", status = Status.MAINTAINED)
 public final class RegexGenerator {
-	private static final Logger LOGGER = LoggerFactory.getLogger(RegexGenerator.class);
+	private static final int FLAG_CASE_INSENSITIVE = 2;
 	public static final int DEFAULT_REGEXP_GENERATION_TIMEOUT_SEC = 10;
 	public static final int DEFAULT_REGEXP_GENERATION_MAX_SIZE = 100;
 
@@ -90,7 +88,7 @@ public final class RegexGenerator {
 
 	private static RgxGen generateRgxGen(String regex, int[] flags) {
 		RgxGenProperties properties = new RgxGenProperties();
-		if (Arrays.stream(flags).anyMatch(it -> it == 2)) {
+		if (Arrays.stream(flags).anyMatch(it -> it == FLAG_CASE_INSENSITIVE)) {
 			RgxGenOption.CASE_INSENSITIVE.setInProperties(properties, true);
 		}
 		RgxGen rgxGen = new RgxGen(regex);
