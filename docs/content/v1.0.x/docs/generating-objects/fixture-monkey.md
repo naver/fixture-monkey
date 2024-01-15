@@ -47,7 +47,7 @@ val fixtureMonkey = FixtureMonkey.builder()
 {{< /tab >}}
 {{< /tabpane>}}
 
-For information on what options are available, see the [Fixture Monkey Options section](../../fixture-monkey-options/options).
+For information on what options are available, see the [Fixture Monkey Options section](../../fixture-monkey-options/concepts/).
 
 ## Generating instances
 
@@ -106,7 +106,7 @@ val strListList: List<List<String>> = fixtureMonkey.giveMe(3)
 
 ### giveMeBuilder()
 If you need to further customize the instance to be created, you can use `giveMeBuilder()`. This will return an `ArbitraryBuilder` of the given type.
-An `ArbitraryBuilder` is a class in Fixture Monkey that acts as a builder for an [`Arbitrary`](../arbitrary) object of the given class.
+An `ArbitraryBuilder` is a class in Fixture Monkey that acts as a builder for an [`Arbitrary`](../../customizing-objects/arbitrary/) object of the given class.
 
 {{< tabpane persist=false >}}
 {{< tab header="Java" lang="java">}}
