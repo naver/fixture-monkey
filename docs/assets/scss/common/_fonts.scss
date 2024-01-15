@@ -1,3 +1,63 @@
+@font-face {
+  font-family: Inter;
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: // Google Fonts Inter
+          local("Inter"),
+          local("Inter-Regular"),
+          url("fonts/vendor/inter/Inter-Regular.woff2") format("woff2"),
+          url("fonts/vendor/inter/Inter-Regular.woff") format("woff"); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+}
+
+@font-face {
+  font-family: Inter;
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: // Google Fonts Inter
+          local("Inter Medium"),
+          local("Inter-Medium"),
+          url("fonts/vendor/inter/Inter-Medium.woff2") format("woff2"),
+          url("fonts/vendor/inter/Inter-Medium.woff") format("woff"); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+}
+
+@font-face {
+  font-family: Inter;
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: // Google Fonts Inter
+          local("Inter Semi Bold"),
+          local("Inter-SemiBold"),
+          url("fonts/vendor/inter/Inter-SemiBold.woff2") format("woff2"),
+          url("fonts/vendor/inter/Inter-SemiBold.woff") format("woff"); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+}
+
+@font-face {
+  font-family: Inter;
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: // Google Fonts Inter
+          local("Inter Regular Bold"),
+          local("Inter-Bold"),
+          url("fonts/vendor/inter/Inter-Bold.woff2") format("woff2"),
+          url("fonts/vendor/inter/Inter-Bold.woff") format("woff"); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+}
+
+@font-face {
+  font-family: Inter;
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: // Google Fonts Inter
+          local("Inter Black"),
+          local("Inter-Black"),
+          url("fonts/vendor/inter/Inter-Black.woff2") format("woff2"),
+          url("fonts/vendor/inter/Inter-Black.woff") format("woff"); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+}
+
 /* jost-regular - latin */
 @font-face {
   font-family: Jost;
