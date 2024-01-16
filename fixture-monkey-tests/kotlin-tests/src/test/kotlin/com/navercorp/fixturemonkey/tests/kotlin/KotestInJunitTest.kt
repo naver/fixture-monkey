@@ -21,11 +21,16 @@ package com.navercorp.fixturemonkey.tests.kotlin
 import com.navercorp.fixturemonkey.FixtureMonkey
 import com.navercorp.fixturemonkey.javax.validation.plugin.JavaxValidationPlugin
 import com.navercorp.fixturemonkey.kotest.KotestPlugin
+import com.navercorp.fixturemonkey.kotest.giveMeArb
+import com.navercorp.fixturemonkey.kotest.setArb
 import com.navercorp.fixturemonkey.kotlin.KotlinPlugin
 import com.navercorp.fixturemonkey.kotlin.giveMeBuilder
 import com.navercorp.fixturemonkey.kotlin.giveMeOne
 import com.navercorp.fixturemonkey.kotlin.setPostCondition
 import com.navercorp.fixturemonkey.tests.TestEnvironment.TEST_COUNT
+import io.kotest.property.Arb
+import io.kotest.property.arbitrary.single
+import io.kotest.property.arbs.geo.zipcodes
 import org.assertj.core.api.BDDAssertions.then
 import org.junit.jupiter.api.RepeatedTest
 import java.math.BigDecimal
@@ -745,6 +750,17 @@ class KotestInJunitTest {
         val actual = SUT.giveMeOne<DecimalObject>().value
 
         then(actual).isGreaterThanOrEqualTo(0.0)
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun sampleSetArb() {
+        class StringObject(val string: String)
+
+        val actual = SUT.giveMeArb<StringObject> { setArb(StringObject::string, Arb.zipcodes()) }
+            .single()
+            .string
+
+        then(actual).hasSize(5)
     }
 
     companion object {

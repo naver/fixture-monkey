@@ -13,6 +13,8 @@ Refactor does not throw exception when it cannot generate, the next ArbitraryInt
 
 Add handling when using an ArbitraryIntrospector that does not match the property type. Add a log entry if the property is of a container type, and throw an exception if the property is of a concrete type.
 
+Add better support Kotest by modifying `giveMeArb` more Kotlin-like, by adding `setArb` API.
+
 sectionEnd
 
 sectionStart

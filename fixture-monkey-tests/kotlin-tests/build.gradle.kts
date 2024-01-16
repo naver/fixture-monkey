@@ -10,6 +10,7 @@ dependencies {
     testImplementation(project(":fixture-monkey-javax-validation"))
     testImplementation("io.kotest:kotest-runner-junit5:${Versions.KOTEST}")
     testImplementation("io.kotest:kotest-assertions-core:${Versions.KOTEST}")
+    testImplementation("io.kotest.extensions:kotest-property-arbs:2.1.2")
     testImplementation("org.projectlombok:lombok:${Versions.LOMBOK}")
     testAnnotationProcessor("org.projectlombok:lombok:${Versions.LOMBOK}")
 }

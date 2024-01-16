@@ -22,14 +22,19 @@ package com.navercorp.fixturemonkey.kotest
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder
 import com.navercorp.fixturemonkey.FixtureMonkey
+import com.navercorp.fixturemonkey.api.property.PropertySelector
 import com.navercorp.fixturemonkey.api.type.TypeReference
 import com.navercorp.fixturemonkey.api.type.Types
 import com.navercorp.fixturemonkey.kotlin.giveMeBuilder
 import com.navercorp.fixturemonkey.kotlin.giveMeOne
+import com.navercorp.fixturemonkey.kotlin.property
 import io.kotest.property.Arb
 import io.kotest.property.arbitrary.arbitrary
+import io.kotest.property.arbitrary.single
 import java.lang.reflect.AnnotatedType
 import java.lang.reflect.Type
+import java.util.function.Supplier
+import kotlin.reflect.KProperty1
 import kotlin.reflect.full.isSubtypeOf
 import kotlin.reflect.jvm.javaType
 import kotlin.reflect.typeOf
@@ -62,7 +67,21 @@ inline fun <reified T> FixtureMonkey.giveMeArb(): Arb<T> {
     }
 }
 
-inline fun <reified T> FixtureMonkey.giveMeArb(crossinline applyBuilder: (ArbitraryBuilder<T>) -> ArbitraryBuilder<T>): Arb<T> =
+inline fun <reified T> FixtureMonkey.giveMeArb(crossinline applyBuilder: ArbitraryBuilder<T>.() -> ArbitraryBuilder<T>): Arb<T> =
     arbitrary {
         applyBuilder.invoke(this@giveMeArb.giveMeBuilder()).sample()
     }
+
+fun <T : Any?> ArbitraryBuilder<T>.setArb(expression: String, arb: Arb<Any>): ArbitraryBuilder<T> = this.set(
+    expression,
+    Supplier { arb.single() }
+)
+
+fun <T : Any?> ArbitraryBuilder<T>.setArb(propertySelector: PropertySelector, arb: Arb<Any>): ArbitraryBuilder<T> =
+    this.set(
+        propertySelector,
+        Supplier { arb.single() }
+    )
+
+fun <T : Any?> ArbitraryBuilder<T>.setArb(p: KProperty1<T, Any?>, arb: Arb<Any>): ArbitraryBuilder<T> =
+    this.set(property(p), Supplier { arb.single() })
