@@ -2,6 +2,4 @@
 v.1.0.10 # Fix setting object field by any other type.
 Refactor does not throw exception when it cannot generate, the next ArbitraryIntrospector will be used.
 Add handling when using an ArbitraryIntrospector that does not match the property type. Add a log entry if the property is of a container type, and throw an exception if the property is of a concrete type.
-sectionEnd
-sectionStart
-v1.0.9 # Fix the addExceptGenerateClass to be unaffected by the specific ArbitraryIntrospector used</description></item><item><title>Docs</title><link>https://naver.github.io/fixture-monkey/docs/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/docs/</guid><description/></item></channel></rss>
+Add better support Kotest by modifying giveMeArb more Kotlin-like, by adding setArb API.</description></item><item><title>Docs</title><link>https://naver.github.io/fixture-monkey/docs/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/docs/</guid><description/></item></channel></rss>
