@@ -47,7 +47,7 @@ import com.navercorp.fixturemonkey.api.type.Types;
 public final class BeanArbitraryIntrospector implements ArbitraryIntrospector {
 	public static final BeanArbitraryIntrospector INSTANCE = new BeanArbitraryIntrospector();
 
-	private final Logger log = LoggerFactory.getLogger(this.getClass());
+	private static final Logger LOGGER = LoggerFactory.getLogger(BeanArbitraryIntrospector.class);
 
 	@Override
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
@@ -62,7 +62,12 @@ public final class BeanArbitraryIntrospector implements ArbitraryIntrospector {
 
 		CombinableArbitrary<?> generated = context.getGenerated();
 		if (generated == CombinableArbitrary.NOT_GENERATED) {
-			generated = CombinableArbitrary.from(() -> Reflections.newInstance(type));
+			try {
+				generated = CombinableArbitrary.from(Reflections.newInstance(type));
+			} catch (Exception ex) {
+				LOGGER.warn("Given type {} is failed to generate due to the exception. It may be null.", type, ex);
+				return ArbitraryIntrospectorResult.NOT_INTROSPECTED;
+			}
 		}
 
 		Map<String, PropertyDescriptor> propertyDescriptorsByPropertyName =
@@ -94,7 +99,7 @@ public final class BeanArbitraryIntrospector implements ArbitraryIntrospector {
 							writeMethod.invoke(object, value);
 						}
 					} catch (IllegalAccessException | InvocationTargetException ex) {
-						log.warn("set bean property is failed. name: {} value: {}",
+						LOGGER.warn("set bean property is failed. name: {} value: {}",
 							writeMethod.getName(),
 							value,
 							ex);

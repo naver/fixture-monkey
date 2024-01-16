@@ -25,6 +25,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apiguardian.api.API;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
@@ -39,6 +41,8 @@ import com.navercorp.fixturemonkey.api.type.Types;
 @API(since = "0.4.0", status = API.Status.MAINTAINED)
 public final class BuilderArbitraryIntrospector implements ArbitraryIntrospector {
 	public static final BuilderArbitraryIntrospector INSTANCE = new BuilderArbitraryIntrospector();
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(BuilderArbitraryIntrospector.class);
 	private static final Map<Class<?>, Method> BUILDER_CACHE = new ConcurrentHashMap<>(2048);
 	private static final Map<String, Method> BUILD_FIELD_METHOD_CACHE = new ConcurrentHashMap<>(2048);
 	private static final Map<Class<?>, Method> BUILD_METHOD_CACHE = new ConcurrentHashMap<>(2048);
@@ -67,11 +71,32 @@ public final class BuilderArbitraryIntrospector implements ArbitraryIntrospector
 		Map<String, CombinableArbitrary<?>> arbitrariesByResolvedName =
 			context.getCombinableArbitrariesByResolvedName();
 
+		Class<?> builderType;
+		Method buildMethod;
+		try {
+			builderType = this.getBuilderType(type);
+			buildMethod = BUILD_METHOD_CACHE.computeIfAbsent(
+				builderType,
+				t -> {
+					String buildMethodName = typedBuildMethodName.getOrDefault(t, defaultBuildMethodName);
+					Method method = Reflections.findMethod(builderType, buildMethodName);
+					if (method == null) {
+						throw new IllegalStateException(
+							"Can not retrieve a build method. type: " + type + " buildMethodName: " + buildMethodName
+						);
+					}
+					method.setAccessible(true);
+					return method;
+				}
+			);
+		} catch (Exception ex) {
+			LOGGER.warn("Given type {} is failed to generate due to the exception. It may be null.", type, ex);
+			return ArbitraryIntrospectorResult.NOT_INTROSPECTED;
+		}
+		Method builderMethod = BUILDER_CACHE.get(type);
+
 		LazyArbitrary<Object> generateArbitrary = LazyArbitrary.lazy(
 			() -> {
-				Class<?> builderType = this.getBuilderType(type);
-				Method builderMethod = BUILDER_CACHE.get(type);
-
 				Object builder = Reflections.invokeMethod(builderMethod, null);
 
 				for (ArbitraryProperty arbitraryProperty : childrenProperties) {
@@ -98,18 +123,6 @@ public final class BuilderArbitraryIntrospector implements ArbitraryIntrospector
 						}
 					}
 				}
-
-				Method buildMethod = BUILD_METHOD_CACHE.computeIfAbsent(builderType, t -> {
-					String buildMethodName = typedBuildMethodName.getOrDefault(t, defaultBuildMethodName);
-					Method method = Reflections.findMethod(builderType, buildMethodName);
-					if (method == null) {
-						throw new IllegalStateException(
-							"Can not find BuilderCombiner build method for clazz. clazz: " + type
-						);
-					}
-					method.setAccessible(true);
-					return method;
-				});
 
 				return Reflections.invokeMethod(buildMethod, builder);
 			}
@@ -138,8 +151,8 @@ public final class BuilderArbitraryIntrospector implements ArbitraryIntrospector
 	}
 
 	private Class<?> getBuilderType(Class<?> objectType) {
+		String builderMethodName = typedBuilderMethodName.getOrDefault(objectType, defaultBuilderMethodName);
 		Method builderMethod = BUILDER_CACHE.computeIfAbsent(objectType, t -> {
-			String builderMethodName = typedBuilderMethodName.getOrDefault(t, defaultBuilderMethodName);
 			Method method = Reflections.findMethod(t, builderMethodName);
 			if (method != null) {
 				method.setAccessible(true);
@@ -148,7 +161,10 @@ public final class BuilderArbitraryIntrospector implements ArbitraryIntrospector
 		});
 
 		if (builderMethod == null) {
-			throw new IllegalArgumentException("Class has no builder class. " + objectType.getName());
+			throw new IllegalArgumentException(
+				"Class has no builder class. "
+					+ "type: " + objectType.getName() + " builderMethodName: " + builderMethodName
+			);
 		}
 
 		return BUILDER_TYPE_CACHE.computeIfAbsent(objectType, t -> {

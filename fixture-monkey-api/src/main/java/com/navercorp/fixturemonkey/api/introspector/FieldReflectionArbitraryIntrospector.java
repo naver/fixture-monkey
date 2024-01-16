@@ -43,7 +43,7 @@ import com.navercorp.fixturemonkey.api.type.Types;
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class FieldReflectionArbitraryIntrospector implements ArbitraryIntrospector {
 	public static final FieldReflectionArbitraryIntrospector INSTANCE = new FieldReflectionArbitraryIntrospector();
-	private final Logger log = LoggerFactory.getLogger(this.getClass());
+	private static final Logger LOGGER = LoggerFactory.getLogger(FieldReflectionArbitraryIntrospector.class);
 
 	@Override
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
@@ -58,7 +58,12 @@ public final class FieldReflectionArbitraryIntrospector implements ArbitraryIntr
 
 		CombinableArbitrary<?> generated = context.getGenerated();
 		if (generated == CombinableArbitrary.NOT_GENERATED) {
-			generated = CombinableArbitrary.from(() -> Reflections.newInstance(type));
+			try {
+				generated = CombinableArbitrary.from(Reflections.newInstance(type));
+			} catch (Exception ex) {
+				LOGGER.warn("Given type {} is failed to generate due to the exception. It may be null.", type, ex);
+				return ArbitraryIntrospectorResult.NOT_INTROSPECTED;
+			}
 		}
 
 		Map<String, Field> fieldsByPropertyName = TypeCache.getFieldsByName(type);
@@ -97,7 +102,7 @@ public final class FieldReflectionArbitraryIntrospector implements ArbitraryIntr
 							field.set(object, value);
 						}
 					} catch (IllegalAccessException | IllegalArgumentException ex) {
-						log.warn("set field by reflection is failed. field: {} value: {}",
+						LOGGER.warn("set field by reflection is failed. field: {} value: {}",
 							resolvePropertyName,
 							value,
 							ex

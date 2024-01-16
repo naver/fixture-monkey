@@ -9,6 +9,8 @@ sectionStart
 ### v.1.0.10
 Fix setting object field by any other type.
 
+Refactor does not throw exception when it cannot generate, the next ArbitraryIntrospector will be used.
+
 sectionEnd
 
 sectionStart
