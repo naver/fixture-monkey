@@ -18,18 +18,24 @@
 
 package com.navercorp.fixturemonkey.api.introspector;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
-import com.navercorp.fixturemonkey.api.matcher.AssignableTypeMatcher;
+import com.navercorp.fixturemonkey.api.matcher.ExactTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.property.Property;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class IterableIntrospector implements ArbitraryIntrospector, Matcher {
-	private static final Matcher MATCHER = new AssignableTypeMatcher(Iterable.class);
-	private static final ListIntrospector DELEGATE = new ListIntrospector();
+	private static final Logger LOGGER = LoggerFactory.getLogger(IterableIntrospector.class);
+	private static final Matcher MATCHER = p -> new ExactTypeMatcher(Iterable.class).match(p);
 
 	@Override
 	public boolean match(Property property) {
@@ -38,6 +44,16 @@ public final class IterableIntrospector implements ArbitraryIntrospector, Matche
 
 	@Override
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
-		return DELEGATE.introspect(context);
+		if (!match(context.getResolvedProperty())) {
+			LOGGER.info("Given type {} is not Iterable type.", context.getResolvedType());
+			return ArbitraryIntrospectorResult.NOT_INTROSPECTED;
+		}
+
+		List<CombinableArbitrary<?>> elementCombinableArbitraryList = context.getElementCombinableArbitraryList();
+		return new ArbitraryIntrospectorResult(
+			CombinableArbitrary.containerBuilder()
+				.elements(elementCombinableArbitraryList)
+				.build(ArrayList::new)
+		);
 	}
 }

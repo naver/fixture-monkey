@@ -11,6 +11,8 @@ Fix setting object field by any other type.
 
 Refactor does not throw exception when it cannot generate, the next ArbitraryIntrospector will be used.
 
+Add handling when using an ArbitraryIntrospector that does not match the property type. Add a log entry if the property is of a container type, and throw an exception if the property is of a concrete type.
+
 sectionEnd
 
 sectionStart

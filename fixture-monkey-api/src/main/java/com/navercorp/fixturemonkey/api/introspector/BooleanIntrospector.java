@@ -33,7 +33,6 @@ import com.navercorp.fixturemonkey.api.random.Randoms;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class BooleanIntrospector implements ArbitraryIntrospector, Matcher {
-
 	@Override
 	public boolean match(Property property) {
 		return Matchers.BOOLEAN_TYPE_MATCHER.match(property);
@@ -41,6 +40,10 @@ public final class BooleanIntrospector implements ArbitraryIntrospector, Matcher
 
 	@Override
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
+		if (!match(context.getResolvedProperty())) {
+			throw new IllegalArgumentException("Given type is not Boolean. type: " + context.getResolvedType());
+		}
+
 		List<Boolean> booleans = Arrays.asList(true, false);
 
 		return new ArbitraryIntrospectorResult(

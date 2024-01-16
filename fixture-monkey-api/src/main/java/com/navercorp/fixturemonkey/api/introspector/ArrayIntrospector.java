@@ -25,6 +25,8 @@ import java.util.List;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
@@ -35,6 +37,8 @@ import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class ArrayIntrospector implements ArbitraryIntrospector, Matcher {
+	private static final Logger LOGGER = LoggerFactory.getLogger(ArrayIntrospector.class);
+
 	@Override
 	public boolean match(Property property) {
 		return Types.getActualType(property.getType()).isArray()
@@ -44,7 +48,8 @@ public final class ArrayIntrospector implements ArbitraryIntrospector, Matcher {
 	@Override
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
 		ArbitraryProperty property = context.getArbitraryProperty();
-		if (!property.isContainer()) {
+		if (!property.isContainer() || !match(property.getObjectProperty().getProperty())) {
+			LOGGER.info("Given type {} is not array type.", context.getResolvedType());
 			return ArbitraryIntrospectorResult.NOT_INTROSPECTED;
 		}
 

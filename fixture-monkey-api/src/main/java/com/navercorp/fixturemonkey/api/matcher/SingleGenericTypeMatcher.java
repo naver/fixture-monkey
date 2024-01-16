@@ -29,6 +29,7 @@ import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.5.7", status = Status.MAINTAINED)
 public final class SingleGenericTypeMatcher implements Matcher {
+	public static final SingleGenericTypeMatcher SINGLE_GENERIC_TYPE_MATCHER = new SingleGenericTypeMatcher();
 
 	@Override
 	public boolean match(Property property) {

@@ -29,6 +29,8 @@ import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.5.7", status = Status.MAINTAINED)
 public final class DoubleGenericTypeMatcher implements Matcher {
+	public static final DoubleGenericTypeMatcher DOUBLE_GENERIC_TYPE_MATCHER = new DoubleGenericTypeMatcher();
+
 	@Override
 	public boolean match(Property property) {
 		List<AnnotatedType> genericsTypes = Types.getGenericsTypes(property.getAnnotatedType());
