@@ -45,7 +45,7 @@ testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter:{{< fixtu
 <dependency>
     <groupId>com.navercorp.fixturemonkey</groupId>
     <artifactId>fixture-monkey-starter</artifactId>
-    <version>{{< fixture-monkey-version>}}
+    <version>{{<fixture-monkey-version>}}
     </version>
     <scope>test</scope>
 </dependency>
