@@ -3,8 +3,8 @@ title: "요구사항"
 images: []
 menu:
 docs:
-  parent: "get-started"
-  identifier: "requirements"
+parent: "get-started"
+identifier: "requirements"
 weight: 21
 ---
 
@@ -20,14 +20,15 @@ weight: 21
 
 ## 종속성
 
-| Dependency                    | Description                                  |
-|-------------------------------|----------------------------------------------|
-| fixture-monkey                | Core library                                 |
-| fixture-monkey-starter        | Starter dependency for fixture monkey        |
-| fixture-monkey-kotlin         | Kotlin support                               |
-| fixture-monkey-starter-kotlin | Starter dependency for fixture monkey kotlin |
+| 종속성                           | 설명                      |
+|-------------------------------|-------------------------|
+| fixture-monkey                | fixture monkey 코어 라이브러리 |
+| fixture-monkey-starter        | fixture monkey 시작 패키지   |
+| fixture-monkey-kotlin         | Kotlin 지원               |
+| fixture-monkey-starter-kotlin | Kotlin 환경을 위한 시작 패키지    |
 
-**fixture-monkey-starter** 는 Fixture Monkey 를 시작하는 데 도움이 되도록 fixture-monkey-jakarta-validation과 같은 플러그인들이 함께 제공되는 스타터 패키지입니다.
+**fixture-monkey-starter** 는 Fixture Monkey 를 시작하는 데 도움이 되도록 fixture-monkey-jakarta-validation과 같은 플러그인들이 함께 제공되는 스타터
+패키지입니다.
 
 Kotlin 환경에서는 **fixture-monkey-starter-kotlin** 을 대신 사용할 수 있습니다.
 
@@ -44,7 +45,7 @@ testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter:{{< fixtu
 <dependency>
     <groupId>com.navercorp.fixturemonkey</groupId>
     <artifactId>fixture-monkey-starter</artifactId>
-    <version>{{< fixture-monkey-version>}}
+    <version>{{<fixture-monkey-version>}}
     </version>
     <scope>test</scope>
 </dependency>
@@ -54,10 +55,10 @@ testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter:{{< fixtu
 
 ## 서드파티 라이브러리 지원
 
-| Dependency                        | Description                |
-|-----------------------------------|----------------------------|
-| fixture-monkey-jackson            | Jackson support            |
-| fixture-monkey-jakarta-validation | Jakarta validation support |
-| fixture-monkey-javax-validation   | Javax validation support   |
-| fixture-monkey-mockito            | Mockito support            |
-| fixture-monkey-autoparams         | Autoparams support         |
+| 종속성                               | 설명                    |
+|-----------------------------------|-----------------------|
+| fixture-monkey-jackson            | Jackson 지원            |
+| fixture-monkey-jakarta-validation | Jakarta validation 지원 |
+| fixture-monkey-javax-validation   | Javax validation 지원   |
+| fixture-monkey-mockito            | Mockito 지원            |
+| fixture-monkey-autoparams         | Autoparams 지원         |
