@@ -6,6 +6,12 @@ docs:
 weight: 100
 ---
 sectionStart
+### v.1.0.10
+Fix setting object field by any other type.
+
+sectionEnd
+
+sectionStart
 ### v1.0.9
 Fix the `addExceptGenerateClass` to be unaffected by the specific `ArbitraryIntrospector` used
 

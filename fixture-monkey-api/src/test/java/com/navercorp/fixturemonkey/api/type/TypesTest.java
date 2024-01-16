@@ -728,6 +728,13 @@ class TypesTest {
 			.isEqualTo(String.class);
 	}
 
+	@Test
+	void objectType() {
+		Class<?> actual = Types.getActualType(Object.class);
+
+		then(actual).isEqualTo(Object.class);
+	}
+
 	static class Sample {
 		private String name;
 
