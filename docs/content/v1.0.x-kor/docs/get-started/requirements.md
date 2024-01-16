@@ -20,12 +20,12 @@ weight: 21
 
 ## 종속성
 
-| 종속성                           | 설명                                   |
-|-------------------------------|--------------------------------------|
-| fixture-monkey                | 코어 라이브러리                             |
-| fixture-monkey-starter        | fixture monkey starter               |
-| fixture-monkey-kotlin         | Kotlin 지원                            |
-| fixture-monkey-starter-kotlin | Kotlin 환경을 위한 fixture monkey starter |
+| 종속성                           | 설명                              |
+|-------------------------------|---------------------------------|
+| fixture-monkey                | fixture monkey 코어 라이브러리         |
+| fixture-monkey-starter        | fixture monkey 를 쉽게 시작하기 위한 패키지 |
+| fixture-monkey-kotlin         | Kotlin 지원                       |
+| fixture-monkey-starter-kotlin | Kotlin 환경을 위한 시작 패키지            |
 
 **fixture-monkey-starter** 는 Fixture Monkey 를 시작하는 데 도움이 되도록 fixture-monkey-jakarta-validation과 같은 플러그인들이 함께 제공되는 스타터
 패키지입니다.
