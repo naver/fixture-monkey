@@ -8,7 +8,7 @@ identifier: "fixturemonkey"
 weight: 31
 ---
 
-테스트 픽스처를 생성하기 위해서는 우선 `FixtureMonkey` 인스턴스를 생성해야 합니다. 해당 인스턴스는 테스트 픽스처 생성에 도움을 줍니다.
+테스트 픽스처를 생성하기 위해서는 우선 `FixtureMonkey` 인스턴스를 생성해야 합니다. 해당 인스턴스는 테스트 픽스쳐 생성을 담당합니다.
 
 `FixtureMonkey` 인스턴스를 생성하기 위해서는 `create()` 메서드를 사용하면 됩니다. Kotlin 환경에서는 Kotlin 플러그인을 추가해야 합니다.
 
