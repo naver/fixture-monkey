@@ -33,15 +33,15 @@ val fixtureMonkey = FixtureMonkey
 {{< tab header="Java" lang="java">}}
 
 FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
-+ options...
-.build();
+    + options...
+    .build();
 
 {{< /tab >}}
 {{< tab header="Kotlin" lang="kotlin">}}
 
 val fixtureMonkey = FixtureMonkey.builder()
-+ options...
-.build()
+    + options...
+    .build()
 
 {{< /tab >}}
 {{< /tabpane>}}
