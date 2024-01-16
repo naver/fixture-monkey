@@ -22,10 +22,14 @@ import com.navercorp.fixturemonkey.FixtureMonkey
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary
 import com.navercorp.fixturemonkey.api.experimental.JavaGetterMethodPropertySelector.javaGetter
 import com.navercorp.fixturemonkey.api.experimental.TypedExpressionGenerator.typedRoot
+import com.navercorp.fixturemonkey.api.introspector.AnonymousArbitraryIntrospector
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult
+import com.navercorp.fixturemonkey.api.introspector.BeanArbitraryIntrospector
+import com.navercorp.fixturemonkey.api.introspector.BuilderArbitraryIntrospector
 import com.navercorp.fixturemonkey.api.introspector.ConstructorPropertiesArbitraryIntrospector
 import com.navercorp.fixturemonkey.api.introspector.FactoryMethodArbitraryIntrospector
 import com.navercorp.fixturemonkey.api.introspector.FailoverIntrospector
+import com.navercorp.fixturemonkey.api.introspector.FieldReflectionArbitraryIntrospector
 import com.navercorp.fixturemonkey.api.type.Types.GeneratingWildcardType
 import com.navercorp.fixturemonkey.kotlin.KotlinPlugin
 import com.navercorp.fixturemonkey.kotlin.get
@@ -41,6 +45,7 @@ import com.navercorp.fixturemonkey.kotlin.setExpGetter
 import com.navercorp.fixturemonkey.kotlin.sizeExp
 import com.navercorp.fixturemonkey.kotlin.sizeExpGetter
 import com.navercorp.fixturemonkey.tests.TestEnvironment.TEST_COUNT
+import com.navercorp.fixturemonkey.tests.kotlin.BuilderJavaTestSpecs.BuilderObjectCustomBuildName
 import com.navercorp.fixturemonkey.tests.kotlin.ImmutableJavaTestSpecs.ArrayObject
 import com.navercorp.fixturemonkey.tests.kotlin.ImmutableJavaTestSpecs.NestedArrayObject
 import com.navercorp.fixturemonkey.tests.kotlin.JavaConstructorTestSpecs.JavaTypeObject
@@ -48,6 +53,7 @@ import org.assertj.core.api.BDDAssertions.then
 import org.assertj.core.api.BDDAssertions.thenThrownBy
 import org.junit.jupiter.api.RepeatedTest
 import org.junit.jupiter.api.Test
+import java.sql.Timestamp
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 import java.util.UUID
@@ -179,9 +185,11 @@ class KotlinTest {
             .objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)
             .build()
 
-        // when, then
-        thenThrownBy { sut.giveMeOne<ConstructorWithoutAnyAnnotations>() }
-            .hasMessageContaining("Primary Constructor does not exist.")
+        // when
+        val actual: ConstructorWithoutAnyAnnotations = sut.giveMeOne()
+
+        // then
+        then(actual).isNull()
     }
 
     @Test
@@ -306,6 +314,79 @@ class KotlinTest {
 
         // then
         then(actual).isEqualTo(expected)
+    }
+
+    @Test
+    fun primaryConstructorArbitraryIntrospectorNotThrows() {
+        val actual: Timestamp = SUT.giveMeOne()
+
+        then(actual).isNull()
+    }
+
+    @Test
+    fun beanArbitraryIntrospectorNotThrows() {
+        val sut = FixtureMonkey.builder()
+            .objectIntrospector(BeanArbitraryIntrospector.INSTANCE)
+            .build()
+
+        val actual: Timestamp = sut.giveMeOne()
+
+        then(actual).isNull()
+    }
+
+    @Test
+    fun fieldReflectionArbitraryIntrospectorNotThrows() {
+        val sut = FixtureMonkey.builder()
+            .objectIntrospector(FieldReflectionArbitraryIntrospector.INSTANCE)
+            .build()
+
+        val actual: Timestamp = sut.giveMeOne()
+
+        then(actual).isNull()
+    }
+
+    @Test
+    fun constructorPropertiesArbitraryIntrospectorNotThrows() {
+        val sut = FixtureMonkey.builder()
+            .objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)
+            .build()
+
+        val actual: Timestamp = sut.giveMeOne()
+
+        then(actual).isNull()
+    }
+
+    @Test
+    fun anonymousArbitraryIntrospectorNotThrows() {
+        val sut = FixtureMonkey.builder()
+            .objectIntrospector(AnonymousArbitraryIntrospector.INSTANCE)
+            .build()
+
+        val actual: Timestamp = sut.giveMeOne()
+
+        then(actual).isNull()
+    }
+
+    @Test
+    fun builderArbitraryIntrospectorNotThrows() {
+        val sut = FixtureMonkey.builder()
+            .objectIntrospector(BuilderArbitraryIntrospector.INSTANCE)
+            .build()
+
+        val actual: Timestamp = sut.giveMeOne()
+
+        then(actual).isNull()
+    }
+
+    @Test
+    fun builderArbitraryIntrospectorMissBuildMethodNotThrows() {
+        val sut = FixtureMonkey.builder()
+            .objectIntrospector(BuilderArbitraryIntrospector.INSTANCE)
+            .build()
+
+        val actual: BuilderObjectCustomBuildName = sut.giveMeOne()
+
+        then(actual).isNull()
     }
 
     companion object {

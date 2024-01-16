@@ -26,6 +26,7 @@ import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult
 import com.navercorp.fixturemonkey.api.type.Types
 import org.apiguardian.api.API
 import org.apiguardian.api.API.Status.MAINTAINED
+import org.slf4j.LoggerFactory
 import java.lang.reflect.Modifier
 import kotlin.jvm.internal.Reflection
 import kotlin.reflect.KClass
@@ -36,14 +37,19 @@ import kotlin.reflect.jvm.isAccessible
 
 @API(since = "0.4.0", status = MAINTAINED)
 class PrimaryConstructorArbitraryIntrospector : ArbitraryIntrospector {
-    companion object {
-        val INSTANCE = PrimaryConstructorArbitraryIntrospector()
-        private val CONSTRUCTOR_CACHE = ConcurrentLruCache<Class<*>, KFunction<*>>(2048)
-    }
-
     override fun introspect(context: ArbitraryGeneratorContext): ArbitraryIntrospectorResult {
         val type = Types.getActualType(context.resolvedType)
         if (Modifier.isAbstract(type.modifiers)) {
+            return ArbitraryIntrospectorResult.NOT_INTROSPECTED
+        }
+
+        val constructor = try {
+            CONSTRUCTOR_CACHE.computeIfAbsent(type) {
+                val kotlinClass = Reflection.createKotlinClass(type) as KClass<*>
+                requireNotNull(kotlinClass.primaryConstructor) { "No kotlin primary constructor provided for $kotlinClass" }
+            }.apply { isAccessible = true }
+        } catch (ex: Exception) {
+            LOGGER.warn("Given type $type is failed to generated due to the exception. It may be null.", ex)
             return ArbitraryIntrospectorResult.NOT_INTROSPECTED
         }
 
@@ -51,11 +57,6 @@ class PrimaryConstructorArbitraryIntrospector : ArbitraryIntrospector {
             CombinableArbitrary.objectBuilder()
                 .properties(context.combinableArbitrariesByArbitraryProperty)
                 .build {
-                    val kotlinClass = Reflection.createKotlinClass(type) as KClass<*>
-                    val constructor = CONSTRUCTOR_CACHE.computeIfAbsent(type) {
-                        requireNotNull(kotlinClass.primaryConstructor) { "No kotlin primary constructor provided for $kotlinClass" }
-                    }
-                    constructor.isAccessible = true
 
                     val arbitrariesByPropertyName = it.mapKeys { map -> map.key.objectProperty.property.name }
 
@@ -66,5 +67,11 @@ class PrimaryConstructorArbitraryIntrospector : ArbitraryIntrospector {
                     constructor.callBy(map)
                 },
         )
+    }
+
+    companion object {
+        val INSTANCE = PrimaryConstructorArbitraryIntrospector()
+        private val LOGGER = LoggerFactory.getLogger(PrimaryConstructorArbitraryIntrospector::class.java)
+        private val CONSTRUCTOR_CACHE = ConcurrentLruCache<Class<*>, KFunction<*>>(2048)
     }
 }
