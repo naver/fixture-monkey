@@ -295,10 +295,10 @@ private class EmptyExpressionGenerator : ExpressionGenerator {
     override fun generate(propertyNameResolver: PropertyNameResolver): String = ""
 }
 
-internal fun <R, E> property(property: KProperty1<R, E?>): ExpressionGenerator =
+fun <R, E> property(property: KProperty1<R, E?>): ExpressionGenerator =
     PropertyExpressionGenerator(KotlinProperty(property))
 
-internal fun <R, E> property(function: KFunction1<R, E?>): ExpressionGenerator =
+fun <R, E> property(function: KFunction1<R, E?>): ExpressionGenerator =
     PropertyExpressionGenerator(KotlinGetterProperty(function))
 
 @JvmName("collection")

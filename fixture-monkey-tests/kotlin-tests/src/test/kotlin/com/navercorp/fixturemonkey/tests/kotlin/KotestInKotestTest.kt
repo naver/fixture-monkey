@@ -51,7 +51,7 @@ class KotestInKotestTest : StringSpec({
         }
     }
     "forAll" {
-        forAll(SUT.giveMeArb<String> { it.set("test") }) { a ->
+        forAll(SUT.giveMeArb<String> { set("test") }) { a ->
             a == "test"
         }
     }
