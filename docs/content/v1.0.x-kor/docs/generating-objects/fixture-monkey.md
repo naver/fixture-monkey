@@ -188,7 +188,7 @@ val productArbitrary = productBuilder.build()
 ### giveMeArbitrary()
 특정한 유형의 `Arbitrary`를 얻으려면 `giveMeArbitrary()` 메서드를 사용할 수 있습니다.
 
-{{< tabpane per휘 ㅇsist=false >}}
+{{< tabpane persist=false >}}
 {{< tab header="Java" lang="java">}}
 
 Arbitrary<Product> productArbitrary = fixtureMonkey.giveMeArbitrary(Product.class);
