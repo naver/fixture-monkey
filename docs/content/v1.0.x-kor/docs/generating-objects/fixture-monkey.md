@@ -46,14 +46,14 @@ val fixtureMonkey = FixtureMonkey.builder()
 {{< /tab >}}
 {{< /tabpane>}}
 
-어떤 옵션을 사용할 수 있는지에 대한 정보는 [Fixture Monkey 옵션](../../fixture-monkey-options/options)을 참고하십시오.
+어떤 옵션을 사용할 수 있는지에 대한 정보는 [Fixture Monkey 옵션](../../fixture-monkey-options/options)을 참고해주세요.
 
 ## 인스턴스 생성
 
 `FixtureMonkey` 클래스는 테스트에 필요한 객체 생성에 도움 되는 메서드를 제공합니다.
 
 ### giveMeOne()
-특정 타입의 인스턴스가 필요하다면 `giveMeOne()`을 사용할 수 있습니다. 인자로 클래스 또는 타입을 전달하십시오.
+특정 타입의 인스턴스가 필요하다면 `giveMeOne()`을 사용할 수 있습니다. 인자로 클래스 또는 타입을 전달해주세요.
 
 {{< tabpane persist=false >}}
 {{< tab header="Java" lang="java">}}
