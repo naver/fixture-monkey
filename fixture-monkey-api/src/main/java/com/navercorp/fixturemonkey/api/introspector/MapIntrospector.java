@@ -18,6 +18,8 @@
 
 package com.navercorp.fixturemonkey.api.introspector;
 
+import static com.navercorp.fixturemonkey.api.matcher.DoubleGenericTypeMatcher.DOUBLE_GENERIC_TYPE_MATCHER;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,7 +45,7 @@ public final class MapIntrospector implements ArbitraryIntrospector, Matcher {
 
 	@Override
 	public boolean match(Property property) {
-		return MATCHER.match(property);
+		return DOUBLE_GENERIC_TYPE_MATCHER.match(property) && MATCHER.match(property);
 	}
 
 	@Override

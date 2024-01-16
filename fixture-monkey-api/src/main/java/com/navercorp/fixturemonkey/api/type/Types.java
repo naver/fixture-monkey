@@ -172,6 +172,17 @@ public abstract class Types {
 				.collect(Collectors.toList());
 		}
 
+		if (WildcardType.class.isAssignableFrom(type.getClass())) {
+			return Collections.singletonList(
+				Types.generateAnnotatedTypeWithoutAnnotation(GeneratingWildcardType.class)
+			);
+		}
+
+		if (GenericArrayType.class.isAssignableFrom(type.getClass())) {
+			Type genericComponentType = ((GenericArrayType)type).getGenericComponentType();
+			return getGenericsTypes(Types.generateAnnotatedTypeWithoutAnnotation(genericComponentType));
+		}
+
 		throw new UnsupportedOperationException(
 			"Unsupported Type to get genericsTypes. annotatedType: " + annotatedType
 		);

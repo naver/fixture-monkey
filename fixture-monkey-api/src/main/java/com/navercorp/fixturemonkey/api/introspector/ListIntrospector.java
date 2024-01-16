@@ -18,6 +18,8 @@
 
 package com.navercorp.fixturemonkey.api.introspector;
 
+import static com.navercorp.fixturemonkey.api.matcher.SingleGenericTypeMatcher.SINGLE_GENERIC_TYPE_MATCHER;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,7 +42,7 @@ public final class ListIntrospector implements ArbitraryIntrospector, Matcher {
 
 	@Override
 	public boolean match(Property property) {
-		return MATCHER.match(property);
+		return SINGLE_GENERIC_TYPE_MATCHER.match(property) && MATCHER.match(property);
 	}
 
 	@Override

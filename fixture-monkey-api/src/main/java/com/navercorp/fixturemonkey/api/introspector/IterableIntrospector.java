@@ -28,14 +28,14 @@ import org.slf4j.LoggerFactory;
 
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
-import com.navercorp.fixturemonkey.api.matcher.AssignableTypeMatcher;
+import com.navercorp.fixturemonkey.api.matcher.ExactTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.property.Property;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class IterableIntrospector implements ArbitraryIntrospector, Matcher {
 	private static final Logger LOGGER = LoggerFactory.getLogger(IterableIntrospector.class);
-	private static final Matcher MATCHER = new AssignableTypeMatcher(Iterable.class);
+	private static final Matcher MATCHER = p -> new ExactTypeMatcher(Iterable.class).match(p);
 
 	@Override
 	public boolean match(Property property) {

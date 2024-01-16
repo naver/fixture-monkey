@@ -18,6 +18,8 @@
 
 package com.navercorp.fixturemonkey.api.introspector;
 
+import static com.navercorp.fixturemonkey.api.matcher.SingleGenericTypeMatcher.SINGLE_GENERIC_TYPE_MATCHER;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -35,12 +37,12 @@ import com.navercorp.fixturemonkey.api.property.Property;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class IteratorIntrospector implements ArbitraryIntrospector, Matcher {
-	private static final Logger LOGGER = LoggerFactory.getLogger(IterableIntrospector.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(IteratorIntrospector.class);
 	private static final Matcher MATCHER = new AssignableTypeMatcher(Iterator.class);
 
 	@Override
 	public boolean match(Property property) {
-		return MATCHER.match(property);
+		return SINGLE_GENERIC_TYPE_MATCHER.match(property) && MATCHER.match(property);
 	}
 
 	@Override
