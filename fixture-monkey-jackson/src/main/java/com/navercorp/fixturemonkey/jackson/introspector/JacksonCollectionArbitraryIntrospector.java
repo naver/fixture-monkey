@@ -20,7 +20,9 @@ package com.navercorp.fixturemonkey.jackson.introspector;
 
 import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -30,6 +32,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.CollectionType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
+import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult;
@@ -45,7 +48,6 @@ public final class JacksonCollectionArbitraryIntrospector implements ArbitraryIn
 	public static final JacksonCollectionArbitraryIntrospector INSTANCE = new JacksonCollectionArbitraryIntrospector(
 		FixtureMonkeyJackson.defaultObjectMapper()
 	);
-	private static final ArbitraryIntrospector DELEGATOR = new ListIntrospector();
 
 	private final ObjectMapper objectMapper;
 
@@ -75,9 +77,15 @@ public final class JacksonCollectionArbitraryIntrospector implements ArbitraryIn
 		CollectionType collectionType = typeFactory
 			.constructCollectionType((Class<? extends Collection<?>>)containerType, elementType);
 
+		List<CombinableArbitrary<?>> elementCombinableArbitraryList = context.getElementCombinableArbitraryList();
+
+		CombinableArbitrary<?> listCombinableArbitrary = CombinableArbitrary.containerBuilder()
+			.elements(elementCombinableArbitraryList)
+			.build(ArrayList::new);
+
 		return new ArbitraryIntrospectorResult(
 			new JacksonCombinableArbitrary<>(
-				DELEGATOR.introspect(context).getValue(),
+				listCombinableArbitrary,
 				list -> objectMapper.convertValue(list, collectionType)
 			)
 		);

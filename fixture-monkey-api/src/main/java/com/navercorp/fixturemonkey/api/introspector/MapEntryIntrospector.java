@@ -48,7 +48,7 @@ public final class MapEntryIntrospector implements ArbitraryIntrospector, Matche
 	@Override
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
 		ArbitraryProperty property = context.getArbitraryProperty();
-		if (!property.isContainer() || match(context.getResolvedProperty())) {
+		if (!property.isContainer() || !match(context.getResolvedProperty())) {
 			LOGGER.info("Given type {} is not Map.Entry type.", context.getResolvedType());
 			return ArbitraryIntrospectorResult.NOT_INTROSPECTED;
 		}

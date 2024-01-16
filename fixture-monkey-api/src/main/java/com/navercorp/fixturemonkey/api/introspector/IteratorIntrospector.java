@@ -18,7 +18,9 @@
 
 package com.navercorp.fixturemonkey.api.introspector;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -35,7 +37,6 @@ import com.navercorp.fixturemonkey.api.property.Property;
 public final class IteratorIntrospector implements ArbitraryIntrospector, Matcher {
 	private static final Logger LOGGER = LoggerFactory.getLogger(IterableIntrospector.class);
 	private static final Matcher MATCHER = new AssignableTypeMatcher(Iterator.class);
-	private static final ListIntrospector DELEGATE = new ListIntrospector();
 
 	@Override
 	public boolean match(Property property) {
@@ -49,15 +50,10 @@ public final class IteratorIntrospector implements ArbitraryIntrospector, Matche
 			return ArbitraryIntrospectorResult.NOT_INTROSPECTED;
 		}
 
-		ArbitraryIntrospectorResult result = DELEGATE.introspect(context);
-		if (result == ArbitraryIntrospectorResult.NOT_INTROSPECTED) {
-			return result;
-		}
-
-		CombinableArbitrary<?> combinableArbitrary = result.getValue();
-		if (combinableArbitrary == null) {
-			return result;
-		}
+		List<CombinableArbitrary<?>> elementCombinableArbitraryList = context.getElementCombinableArbitraryList();
+		CombinableArbitrary<List<Object>> combinableArbitrary = CombinableArbitrary.containerBuilder()
+			.elements(elementCombinableArbitraryList)
+			.build(ArrayList::new);
 
 		return new ArbitraryIntrospectorResult(
 			combinableArbitrary.map(it -> {
