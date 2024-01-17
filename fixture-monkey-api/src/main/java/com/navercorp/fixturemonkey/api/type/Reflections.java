@@ -18,6 +18,7 @@
 
 package com.navercorp.fixturemonkey.api.type;
 
+import static com.navercorp.fixturemonkey.api.exception.Exceptions.throwAsUnchecked;
 import static java.util.stream.Collectors.toList;
 
 import java.lang.reflect.Constructor;
@@ -147,18 +148,6 @@ public abstract class Reflections {
 		return toUniqueFieldNameList(result);
 	}
 
-	@SuppressWarnings("UnusedReturnValue")
-	private static RuntimeException throwAsUnchecked(Throwable throwable) {
-		throwSelf(throwable);
-
-		return new RuntimeException(throwable); // prevent return nullable, but won't be reached.
-	}
-
-	@SuppressWarnings("unchecked")
-	private static <T extends Throwable> void throwSelf(Throwable throwable) throws T {
-		throw (T)throwable;
-	}
-
 	private static List<Field> toUniqueFieldNameList(List<Field> fields) {
 		return fields.stream()
 			.filter(distinctByKey(Field::getName))
@@ -169,4 +158,5 @@ public abstract class Reflections {
 		Set<Object> seen = ConcurrentHashMap.newKeySet();
 		return t -> seen.add(keyExtractor.apply(t));
 	}
+
 }

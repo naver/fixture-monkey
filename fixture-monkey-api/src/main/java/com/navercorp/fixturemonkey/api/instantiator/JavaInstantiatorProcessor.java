@@ -20,7 +20,6 @@ package com.navercorp.fixturemonkey.api.instantiator;
 
 import static com.navercorp.fixturemonkey.api.instantiator.InstantiatorUtils.resolveParameterTypes;
 import static com.navercorp.fixturemonkey.api.instantiator.InstantiatorUtils.resolvedParameterNames;
-import static com.navercorp.fixturemonkey.api.type.Types.getDeclaredConstructor;
 import static com.navercorp.fixturemonkey.api.type.Types.isAssignableTypes;
 import static java.util.stream.Collectors.toList;
 
@@ -52,6 +51,7 @@ import com.navercorp.fixturemonkey.api.property.JavaBeansPropertyGenerator;
 import com.navercorp.fixturemonkey.api.property.MethodParameterProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.PropertyUtils;
+import com.navercorp.fixturemonkey.api.type.TypeCache;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.api.type.Types;
 
@@ -88,7 +88,13 @@ public final class JavaInstantiatorProcessor implements InstantiatorProcessor {
 			.map(it -> Types.getActualType(it.getType()))
 			.toArray(Class[]::new);
 
-		Constructor<?> declaredConstructor = getDeclaredConstructor(type, arguments);
+		Constructor<?> declaredConstructor;
+		try {
+			declaredConstructor = TypeCache.getDeclaredConstructor(type, arguments);
+		} catch (IllegalArgumentException ex) {
+			declaredConstructor = TypeCache.getDeclaredConstructors(type).get(0);
+		}
+
 		Property property = PropertyUtils.toProperty(typeReference);
 
 		List<Property> constructorParameterProperties = JAVA_CONSTRUCTOR_PROPERTY_GENERATOR.generateParameterProperties(

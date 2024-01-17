@@ -66,7 +66,7 @@ public final class ConstructorParameterPropertyGenerator implements PropertyGene
 	public List<Property> generateChildProperties(Property property) {
 		Class<?> clazz = Types.getActualType(property.getType());
 
-		Constructor<?> declaredConstructor = Arrays.stream(clazz.getDeclaredConstructors())
+		Constructor<?> declaredConstructor = TypeCache.getDeclaredConstructors(clazz).stream()
 			.filter(constructorPredicate)
 			.findFirst()
 			.orElse(null);
