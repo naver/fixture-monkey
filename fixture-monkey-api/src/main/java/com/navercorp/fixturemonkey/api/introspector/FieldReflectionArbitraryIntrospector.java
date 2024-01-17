@@ -59,11 +59,12 @@ public final class FieldReflectionArbitraryIntrospector implements ArbitraryIntr
 		CombinableArbitrary<?> generated = context.getGenerated();
 		if (generated == CombinableArbitrary.NOT_GENERATED) {
 			try {
-				generated = CombinableArbitrary.from(Reflections.newInstance(type));
+				checkPrerequisite(type);
 			} catch (Exception ex) {
 				LOGGER.warn("Given type {} is failed to generate due to the exception. It may be null.", type, ex);
 				return ArbitraryIntrospectorResult.NOT_INTROSPECTED;
 			}
+			generated = CombinableArbitrary.from(() -> Reflections.newInstance(type));
 		}
 
 		Map<String, Field> fieldsByPropertyName = TypeCache.getFieldsByName(type);
@@ -74,6 +75,10 @@ public final class FieldReflectionArbitraryIntrospector implements ArbitraryIntr
 					.build(combine(generated::combined, fieldsByPropertyName))
 			)
 		);
+	}
+
+	private void checkPrerequisite(Class<?> type) {
+		Reflections.newInstance(type);
 	}
 
 	private Function<Map<ArbitraryProperty, Object>, Object> combine(

@@ -6,6 +6,12 @@ docs:
 weight: 100
 ---
 sectionStart
+### v.1.0.11
+Fix mutation of a generated object by FieldReflection, BeanArbitraryIntrospector
+
+sectionEnd
+
+sectionStart
 ### v.1.0.10
 Fix setting object field by any other type.
 

@@ -30,4 +30,18 @@ class NoArgsConstructorJavaTestSpecs {
 		private Boolean wrapperBoolean;
 		private Enum enumValue;
 	}
+
+	@NoArgsConstructor
+	@Getter
+	@Setter
+	public static class StringObject {
+		private String value;
+	}
+
+	@NoArgsConstructor
+	@Getter
+	@Setter
+	public static class NestedObject {
+		private StringObject object;
+	}
 }

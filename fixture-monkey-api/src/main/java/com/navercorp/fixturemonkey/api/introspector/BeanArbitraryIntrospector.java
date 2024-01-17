@@ -63,11 +63,12 @@ public final class BeanArbitraryIntrospector implements ArbitraryIntrospector {
 		CombinableArbitrary<?> generated = context.getGenerated();
 		if (generated == CombinableArbitrary.NOT_GENERATED) {
 			try {
-				generated = CombinableArbitrary.from(Reflections.newInstance(type));
+				checkPrerequisite(type);
 			} catch (Exception ex) {
 				LOGGER.warn("Given type {} is failed to generate due to the exception. It may be null.", type, ex);
 				return ArbitraryIntrospectorResult.NOT_INTROSPECTED;
 			}
+			generated = CombinableArbitrary.from(() -> Reflections.newInstance(type));
 		}
 
 		Map<String, PropertyDescriptor> propertyDescriptorsByPropertyName =
@@ -79,6 +80,10 @@ public final class BeanArbitraryIntrospector implements ArbitraryIntrospector {
 					.build(combine(generated::combined, propertyDescriptorsByPropertyName))
 			)
 		);
+	}
+
+	private void checkPrerequisite(Class<?> type) {
+		Reflections.newInstance(type);
 	}
 
 	private Function<Map<ArbitraryProperty, Object>, Object> combine(

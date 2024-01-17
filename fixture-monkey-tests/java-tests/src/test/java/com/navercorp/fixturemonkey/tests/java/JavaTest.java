@@ -50,6 +50,7 @@ import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.exception.RetryableFilterMissException;
+import com.navercorp.fixturemonkey.api.introspector.BeanArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.CompositeArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.ConstructorPropertiesArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.FailoverIntrospector;
@@ -81,6 +82,7 @@ import com.navercorp.fixturemonkey.tests.java.ImmutableRecursiveTypeSpecs.SelfRe
 import com.navercorp.fixturemonkey.tests.java.ImmutableRecursiveTypeSpecs.SelfRecursiveMapObject;
 import com.navercorp.fixturemonkey.tests.java.ImmutableRecursiveTypeSpecs.SelfRecursiveObject;
 import com.navercorp.fixturemonkey.tests.java.NestedClassTestSpecs.Inner;
+import com.navercorp.fixturemonkey.tests.java.NoArgsConstructorJavaTestSpecs.NestedObject;
 
 @SuppressWarnings("rawtypes")
 class JavaTest {
@@ -1170,5 +1172,41 @@ class JavaTest {
 			.collect(Collectors.toList());
 
 		then(actual).allMatch(expected::equals);
+	}
+
+	@Test
+	void beanArbitraryIntrospectorSampleTwiceResultNotMutated() {
+		// given
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.objectIntrospector(BeanArbitraryIntrospector.INSTANCE)
+			.defaultNotNull(true)
+			.build();
+		NestedObject stringObject = sut.giveMeOne(NestedObject.class);
+		String actual = stringObject.getObject().getValue();
+
+		// when
+		sut.giveMeOne(NestedObject.class);
+
+		// then
+		String expected = stringObject.getObject().getValue();
+		then(actual).isEqualTo(expected);
+	}
+
+	@Test
+	void fieldReflectionArbitraryIntrospectorSampleTwiceResultNotMutated() {
+		// given
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.objectIntrospector(FieldReflectionArbitraryIntrospector.INSTANCE)
+			.defaultNotNull(true)
+			.build();
+		NestedObject stringObject = sut.giveMeOne(NestedObject.class);
+		String actual = stringObject.getObject().getValue();
+
+		// when
+		sut.giveMeOne(NestedObject.class);
+
+		// then
+		String expected = stringObject.getObject().getValue();
+		then(actual).isEqualTo(expected);
 	}
 }
