@@ -25,10 +25,11 @@ import com.navercorp.fixturemonkey.api.property.PropertyGenerator
 import com.navercorp.fixturemonkey.api.type.Types
 import com.navercorp.fixturemonkey.kotlin.property.InterfaceKFunctionProperty
 import com.navercorp.fixturemonkey.kotlin.type.getPropertyName
+import com.navercorp.fixturemonkey.kotlin.type.isKotlinType
+import com.navercorp.fixturemonkey.kotlin.type.kotlinMemberFunctions
 import org.apiguardian.api.API
 import org.apiguardian.api.API.Status
 import kotlin.reflect.KParameter.Kind.INSTANCE
-import kotlin.reflect.full.memberFunctions
 import kotlin.reflect.full.memberProperties
 import kotlin.reflect.jvm.javaMethod
 import kotlin.reflect.jvm.javaType
@@ -42,8 +43,8 @@ class InterfaceKFunctionPropertyGenerator : PropertyGenerator {
     override fun generateChildProperties(property: Property): List<Property> {
         val type = Types.getActualType(property.type)
 
-        if (type.isKotlinClass()) {
-            val methods = type.kotlin.memberFunctions
+        if (type.isKotlinType()) {
+            val methods = type.kotlinMemberFunctions()
                 .filter { it.parameters.none { parameter -> parameter.kind != INSTANCE } }
                 .filter { !DATA_CLASS_METHOD_NAMES.contains(it.name) }
                 .filter { it.returnType.javaType != Void.TYPE }
@@ -71,15 +72,10 @@ class InterfaceKFunctionPropertyGenerator : PropertyGenerator {
         return JAVA_METHOD_PROPERTY_GENERATOR.generateChildProperties(property)
     }
 
-    private fun Class<*>.isKotlinClass(): Boolean =
-        declaredAnnotations.any { it.annotationClass.java.name == METADATA_FQN_NAME }
-
     companion object {
         private val JAVA_METHOD_PROPERTY_GENERATOR =
             NoArgumentInterfaceJavaMethodPropertyGenerator()
 
         private val DATA_CLASS_METHOD_NAMES = setOf("toString", "hashCode")
-
-        private const val METADATA_FQN_NAME = "kotlin.Metadata"
     }
 }

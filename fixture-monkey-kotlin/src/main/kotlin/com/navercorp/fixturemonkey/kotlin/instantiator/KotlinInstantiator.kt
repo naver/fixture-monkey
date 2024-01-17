@@ -46,6 +46,8 @@ import com.navercorp.fixturemonkey.kotlin.introspector.CompanionObjectFactoryMet
 import com.navercorp.fixturemonkey.kotlin.introspector.KotlinPropertyArbitraryIntrospector
 import com.navercorp.fixturemonkey.kotlin.property.KotlinPropertyGenerator
 import com.navercorp.fixturemonkey.kotlin.type.actualType
+import com.navercorp.fixturemonkey.kotlin.type.cachedKotlin
+import com.navercorp.fixturemonkey.kotlin.type.cachedMemberFunctions
 import com.navercorp.fixturemonkey.kotlin.type.declaredConstructor
 import com.navercorp.fixturemonkey.kotlin.type.toTypeReference
 import java.lang.reflect.AnnotatedType
@@ -55,7 +57,6 @@ import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 import kotlin.reflect.KProperty
 import kotlin.reflect.full.companionObject
-import kotlin.reflect.full.memberFunctions
 import kotlin.reflect.jvm.isAccessible
 import kotlin.reflect.jvm.javaType
 
@@ -157,8 +158,8 @@ class KotlinInstantiatorProcessor :
         val factoryMethodName = instantiator.factoryMethodName
         val inputParameterTypes = instantiator.inputParameterTypes.map { it.type.actualType() }
             .toTypedArray()
-        val kotlinType = type.kotlin
-        val companionMethod = kotlinType.companionObject?.memberFunctions
+        val kotlinType = type.cachedKotlin()
+        val companionMethod = kotlinType.companionObject?.cachedMemberFunctions()
             ?.findDeclaredMemberFunction(factoryMethodName, inputParameterTypes)
             ?: throw IllegalArgumentException("Given type $kotlinType has no static factory method.")
 

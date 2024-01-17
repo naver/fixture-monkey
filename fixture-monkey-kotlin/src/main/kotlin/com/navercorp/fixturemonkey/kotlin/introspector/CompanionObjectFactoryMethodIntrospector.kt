@@ -23,6 +23,7 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult
 import com.navercorp.fixturemonkey.api.type.Types
+import com.navercorp.fixturemonkey.kotlin.type.cachedKotlin
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.companionObjectInstance
 
@@ -31,7 +32,7 @@ class CompanionObjectFactoryMethodIntrospector(
 ) : ArbitraryIntrospector {
     override fun introspect(context: ArbitraryGeneratorContext): ArbitraryIntrospectorResult {
         val type = Types.getActualType(context.resolvedType)
-        val kotlinType = type.kotlin
+        val kotlinType = type.cachedKotlin()
         val propertyNames = context.children.map { it.objectProperty.property.name }
 
         return ArbitraryIntrospectorResult(

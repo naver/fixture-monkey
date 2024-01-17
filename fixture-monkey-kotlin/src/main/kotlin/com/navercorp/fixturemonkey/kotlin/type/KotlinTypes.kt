@@ -19,7 +19,6 @@
 package com.navercorp.fixturemonkey.kotlin.type
 
 import com.navercorp.fixturemonkey.api.type.AnnotatedTypes
-import com.navercorp.fixturemonkey.api.type.TypeReference
 import com.navercorp.fixturemonkey.api.type.Types
 import org.apiguardian.api.API
 import java.lang.reflect.AnnotatedParameterizedType
@@ -30,13 +29,11 @@ import java.lang.reflect.TypeVariable
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 import kotlin.reflect.KProperty
-import kotlin.reflect.KType
 import kotlin.reflect.full.findAnnotations
 import kotlin.reflect.jvm.javaField
 import kotlin.reflect.jvm.javaType
 
 @API(since = "0.4.0", status = API.Status.MAINTAINED)
-@OptIn(ExperimentalStdlibApi::class)
 fun getAnnotatedType(ownerType: AnnotatedType, kProperty: KProperty<*>): AnnotatedType {
     val type = kProperty.returnType.javaType
     val annotations = mutableSetOf<Annotation>()
@@ -138,45 +135,9 @@ fun KFunction<*>.getPropertyName(): String {
     }
 }
 
-fun Type.actualType(): Class<*> = Types.getActualType(this)
-
-fun <T> Class<T>.toAnnotatedType(): AnnotatedType = Types.generateAnnotatedTypeWithoutAnnotation(this)
-
-fun Type.toAnnotatedType(): AnnotatedType = Types.generateAnnotatedTypeWithoutAnnotation(this)
-
-fun <T> Class<T>.toTypeReference(): TypeReference<T> = object : TypeReference<T>() {
-    override fun getType(): Type {
-        return this@toTypeReference
-    }
-
-    override fun getAnnotatedType(): AnnotatedType {
-        return Types.generateAnnotatedTypeWithoutAnnotation(this@toTypeReference)
-    }
-}
-
-fun Type.toTypeReference(): TypeReference<*> = object : TypeReference<Any?>() {
-    override fun getType(): Type {
-        return this@toTypeReference
-    }
-
-    override fun getAnnotatedType(): AnnotatedType {
-        return Types.generateAnnotatedTypeWithoutAnnotation(this@toTypeReference)
-    }
-}
-
-fun KType.toTypeReference(): TypeReference<*> = object : TypeReference<Any?>() {
-    override fun getType(): Type {
-        return this@toTypeReference.javaType
-    }
-
-    override fun getAnnotatedType(): AnnotatedType {
-        return this@toTypeReference.javaType.toAnnotatedType()
-    }
-}
-
 fun Class<*>.declaredConstructor(
     vararg arguments: Class<*>,
-): KFunction<*> = this.kotlin.constructors
+): KFunction<*> = this.declaredKotlinConstructors()
     .firstOrNull { constructor ->
         Types.isAssignableTypes(
             arguments,

@@ -21,6 +21,7 @@ package com.navercorp.fixturemonkey.kotlin.property
 import com.navercorp.fixturemonkey.api.container.ConcurrentLruCache
 import com.navercorp.fixturemonkey.api.property.Property
 import com.navercorp.fixturemonkey.api.type.Types
+import com.navercorp.fixturemonkey.kotlin.type.cachedKotlin
 import com.navercorp.fixturemonkey.kotlin.type.getAnnotatedType
 import org.apiguardian.api.API
 import kotlin.reflect.KProperty
@@ -43,4 +44,4 @@ fun getMemberProperties(
 }
 
 private fun getKotlinMemberProperties(type: Class<*>): Collection<KProperty<*>> =
-    KPROPERTY_ANNOTATED_TYPE_MAP.computeIfAbsent(type) { it.kotlin.memberProperties }
+    KPROPERTY_ANNOTATED_TYPE_MAP.computeIfAbsent(type) { it.cachedKotlin().memberProperties }

@@ -24,19 +24,20 @@ import com.navercorp.fixturemonkey.api.introspector.MatchArbitraryIntrospector
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator
 import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptionsBuilder
 import com.navercorp.fixturemonkey.api.plugin.Plugin
-import com.navercorp.fixturemonkey.api.type.Types
-import com.navercorp.fixturemonkey.kotlin.instantiator.KotlinInstantiatorProcessor
 import com.navercorp.fixturemonkey.kotlin.generator.InterfaceKFunctionPropertyGenerator
 import com.navercorp.fixturemonkey.kotlin.generator.PairContainerPropertyGenerator
 import com.navercorp.fixturemonkey.kotlin.generator.PairDecomposedContainerValueFactory
 import com.navercorp.fixturemonkey.kotlin.generator.TripleContainerPropertyGenerator
 import com.navercorp.fixturemonkey.kotlin.generator.TripleDecomposedContainerValueFactory
+import com.navercorp.fixturemonkey.kotlin.instantiator.KotlinInstantiatorProcessor
 import com.navercorp.fixturemonkey.kotlin.introspector.PairIntrospector
 import com.navercorp.fixturemonkey.kotlin.introspector.PrimaryConstructorArbitraryIntrospector
 import com.navercorp.fixturemonkey.kotlin.introspector.TripleIntrospector
 import com.navercorp.fixturemonkey.kotlin.matcher.Matchers.PAIR_TYPE_MATCHER
 import com.navercorp.fixturemonkey.kotlin.matcher.Matchers.TRIPLE_TYPE_MATCHER
 import com.navercorp.fixturemonkey.kotlin.property.KotlinPropertyGenerator
+import com.navercorp.fixturemonkey.kotlin.type.actualType
+import com.navercorp.fixturemonkey.kotlin.type.cachedKotlin
 import org.apiguardian.api.API
 import org.apiguardian.api.API.Status.MAINTAINED
 import java.lang.reflect.Modifier
@@ -48,10 +49,10 @@ class KotlinPlugin : Plugin {
             .defaultPropertyGenerator(KotlinPropertyGenerator())
             .insertFirstArbitraryObjectPropertyGenerator(
                 MatcherOperator(
-                    { (Types.getActualType(it.type) as Class<*>).kotlin.isSealed },
+                    { it.type.actualType().cachedKotlin().isSealed },
                     ObjectPropertyGenerator { context ->
                         InterfaceObjectPropertyGenerator(
-                            (Types.getActualType(context.property.type) as Class<*>).kotlin.sealedSubclasses
+                            context.property.type.actualType().cachedKotlin().sealedSubclasses
                                 .filter { it.objectInstance == null }
                                 .map { it.java },
                         )
@@ -61,7 +62,7 @@ class KotlinPlugin : Plugin {
             )
             .insertFirstPropertyGenerator(
                 MatcherOperator(
-                    { p -> Modifier.isInterface(Types.getActualType(p.type).modifiers) },
+                    { p -> Modifier.isInterface(p.type.actualType().modifiers) },
                     InterfaceKFunctionPropertyGenerator(),
                 ),
             )
