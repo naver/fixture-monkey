@@ -33,6 +33,16 @@ class ValueClassTest {
         then(foo.bar).isNotNull
     }
 
+    @Test
+    fun valueClassProperty() {
+        class ValueClassObject(val foo: Foo)
+
+        val actual: ValueClassObject = SUT.giveMeOne()
+
+        then(actual).isNotNull
+        then(actual.foo).isNotNull
+    }
+
     @JvmInline
     value class Foo(
         val bar: String,

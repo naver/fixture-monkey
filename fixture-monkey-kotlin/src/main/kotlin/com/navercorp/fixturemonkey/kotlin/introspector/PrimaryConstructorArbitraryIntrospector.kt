@@ -34,6 +34,7 @@ import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 import kotlin.reflect.full.primaryConstructor
 import kotlin.reflect.jvm.isAccessible
+import kotlin.reflect.jvm.jvmErasure
 
 @API(since = "0.4.0", status = MAINTAINED)
 class PrimaryConstructorArbitraryIntrospector : ArbitraryIntrospector {
@@ -57,16 +58,34 @@ class PrimaryConstructorArbitraryIntrospector : ArbitraryIntrospector {
             CombinableArbitrary.objectBuilder()
                 .properties(context.combinableArbitrariesByArbitraryProperty)
                 .build {
+                    val arbitrariesByPropertyName: Map<String?, Any?> =
+                        it.mapKeys { map -> map.key.objectProperty.property.name }
 
-                    val arbitrariesByPropertyName = it.mapKeys { map -> map.key.objectProperty.property.name }
-
-                    val map = mutableMapOf<KParameter, Any?>()
+                    val generatedByParameters = mutableMapOf<KParameter, Any?>()
                     for (parameter in constructor.parameters) {
-                        map[parameter] = arbitrariesByPropertyName[parameter.name]
+                        val resolvedArbitrary = resolveArbitrary(parameter, arbitrariesByPropertyName)
+                        generatedByParameters[parameter] = resolvedArbitrary
                     }
-                    constructor.callBy(map)
+                    constructor.callBy(generatedByParameters)
                 },
         )
+    }
+
+    private fun resolveArbitrary(
+        parameter: KParameter,
+        arbitrariesByPropertyName: Map<String?, Any?>,
+    ): Any? {
+        try {
+            val parameterKotlinType = parameter.type.jvmErasure
+            return if (parameterKotlinType.isValue) {
+                parameterKotlinType.primaryConstructor!!.call(arbitrariesByPropertyName[parameter.name])
+            } else {
+                arbitrariesByPropertyName[parameter.name]
+            }
+        } catch (ex: Exception) {
+            // omitted
+            return arbitrariesByPropertyName[parameter.name]
+        }
     }
 
     companion object {
