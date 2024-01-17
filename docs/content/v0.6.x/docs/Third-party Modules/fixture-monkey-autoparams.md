@@ -46,7 +46,7 @@ void test(Order order, ArbitraryBuilder<Order> orderBuilder) {
     then(order).isNotNull();
 
     Order actual = orderBuilder
-        .set("name", "factory")
+        .set("productName", "factory")
         .set("quantity", Arbitraries.integers().between(5, 10))
         .sample();
 
