@@ -182,7 +182,8 @@ fun sampleOrder() {
 * @[wicksome](https://github.com/wicksome)
 * @[Wonjin Choi](https://github.com/jinia91)
 * @[songkg7](https://github.com/songkg7)
-* 
+* @[this-is-spear](https://github.com/this-is-spear)
+* @[donggyunhuh](https://github.com/donggyunhuh)
 
 ## More about Fixture Monkey
 * [Deview 2021](https://tv.naver.com/v/23650158)
