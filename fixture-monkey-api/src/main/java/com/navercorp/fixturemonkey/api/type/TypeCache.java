@@ -112,14 +112,31 @@ public abstract class TypeCache {
 		return CONSTRUCTORS.computeIfAbsent(type, clazz -> Arrays.asList(clazz.getDeclaredConstructors()));
 	}
 
+	public static Constructor<?> getDeclaredConstructor(Class<?> type, Class<?>... arguments) {
+		List<Constructor<?>> constructors = getDeclaredConstructors(type);
+
+		if (constructors.isEmpty()) {
+			throw new IllegalArgumentException("The given type " + type + " has no constructor.");
+		}
+
+		return constructors.stream()
+			.filter(it -> Types.isAssignableTypes(arguments, it.getParameterTypes()))
+			.findAny()
+			.orElseThrow(() ->
+				new IllegalArgumentException(
+					"The given type " + type + " has no matching constructor. "
+						+ "parameterTypes: " + Arrays.toString(arguments)
+				)
+			);
+	}
+
 	@Nullable
 	public static Entry<Constructor<?>, String[]> getParameterNamesByConstructor(Class<?> clazz) {
 		return PARAMETER_NAMES_BY_PRIMARY_CONSTRUCTOR.computeIfAbsent(clazz,
 			type -> {
 				List<Constructor<?>> possibilities = new ArrayList<>();
 
-				Constructor<?>[] constructors = clazz.getDeclaredConstructors();
-
+				List<Constructor<?>> constructors = getDeclaredConstructors(clazz);
 				for (Constructor<?> constructor : constructors) {
 					Parameter[] parameters = constructor.getParameters();
 					boolean namePresent = Arrays.stream(parameters).anyMatch(Parameter::isNamePresent);
@@ -172,9 +189,12 @@ public abstract class TypeCache {
 	}
 
 	public static void clearCache() {
-		PARAMETER_NAMES_BY_PRIMARY_CONSTRUCTOR.clear();
+		FIELD_ANNOTATED_TYPE_MAP.clear();
+		PROPERTY_DESCRIPTOR_ANNOTATED_TYPE_MAP.clear();
 		PROPERTY_DESCRIPTORS.clear();
 		FIELDS.clear();
+		PARAMETER_NAMES_BY_PRIMARY_CONSTRUCTOR.clear();
+		CONSTRUCTORS.clear();
 	}
 
 	private static String[] getParameterNames(Constructor<?> constructor) {

@@ -17,6 +17,7 @@
  */
 package com.navercorp.fixturemonkey.api.introspector;
 
+import static com.navercorp.fixturemonkey.api.exception.Exceptions.throwAsUnchecked;
 import static com.navercorp.fixturemonkey.api.property.DefaultPropertyGenerator.FIELD_PROPERTY_GENERATOR;
 
 import java.lang.reflect.Field;
@@ -78,7 +79,11 @@ public final class FieldReflectionArbitraryIntrospector implements ArbitraryIntr
 	}
 
 	private void checkPrerequisite(Class<?> type) {
-		Reflections.newInstance(type);
+		try {
+			TypeCache.getDeclaredConstructor(type);
+		} catch (Exception ex) {
+			throw throwAsUnchecked(ex);
+		}
 	}
 
 	private Function<Map<ArbitraryProperty, Object>, Object> combine(
