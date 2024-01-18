@@ -36,6 +36,7 @@ import com.navercorp.fixturemonkey.kotlin.KotlinPlugin
 import com.navercorp.fixturemonkey.kotlin.get
 import com.navercorp.fixturemonkey.kotlin.giveMeBuilder
 import com.navercorp.fixturemonkey.kotlin.giveMeExperimentalBuilder
+import com.navercorp.fixturemonkey.kotlin.giveMeKotlinBuilder
 import com.navercorp.fixturemonkey.kotlin.giveMeOne
 import com.navercorp.fixturemonkey.kotlin.instantiator.instantiateBy
 import com.navercorp.fixturemonkey.kotlin.into
@@ -428,7 +429,7 @@ class KotlinTest {
     fun setPostCondition() {
         class StringObject(val string: String)
 
-        val actual = SUT.giveMeBuilder<StringObject>()
+        val actual = SUT.giveMeKotlinBuilder<StringObject>()
             .setPostCondition<String>("string") { it.length < 5 }
             .sample()
             .string
@@ -440,7 +441,7 @@ class KotlinTest {
     fun setPostConditionWithProperty() {
         class StringObject(val string: String)
 
-        val actual = SUT.giveMeBuilder<StringObject>()
+        val actual = SUT.giveMeKotlinBuilder<StringObject>()
             .setPostCondition<String>(StringObject::string) { it.length < 5 }
             .sample()
             .string

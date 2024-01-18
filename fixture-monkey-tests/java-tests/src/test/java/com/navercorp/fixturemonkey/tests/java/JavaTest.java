@@ -1227,7 +1227,7 @@ class JavaTest {
 
 	@RepeatedTest(TEST_COUNT)
 	void setExp() {
-		String actual = SUT.giveMeJavaTypeBuilder(JavaTypeObject.class)
+		String actual = SUT.giveMeJavaBuilder(JavaTypeObject.class)
 			.setExpGetter(JavaTypeObject::getString, "test")
 			.sample()
 			.getString();
@@ -1237,7 +1237,7 @@ class JavaTest {
 
 	@RepeatedTest(TEST_COUNT)
 	void setExpCollectionElement() {
-		String actual = SUT.giveMeJavaTypeBuilder(ContainerObject.class)
+		String actual = SUT.giveMeJavaBuilder(ContainerObject.class)
 			.size("complexList", 1)
 			.setExpGetter(
 				javaGetter(ContainerObject::getComplexList)

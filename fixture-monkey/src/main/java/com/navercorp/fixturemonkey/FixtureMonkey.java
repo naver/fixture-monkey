@@ -168,11 +168,11 @@ public final class FixtureMonkey {
 		return (ExperimentalArbitraryBuilder<T>)giveMeBuilder(type);
 	}
 
-	public <T> JavaTypeArbitraryBuilder<T> giveMeJavaTypeBuilder(Class<T> type) {
+	public <T> JavaTypeArbitraryBuilder<T> giveMeJavaBuilder(Class<T> type) {
 		return new JavaTypeDefaultTypeArbitraryBuilder<>(this.giveMeBuilder(type));
 	}
 
-	public <T> JavaTypeArbitraryBuilder<T> giveMeJavaTypeBuilder(TypeReference<T> type) {
+	public <T> JavaTypeArbitraryBuilder<T> giveMeJavaBuilder(TypeReference<T> type) {
 		return new JavaTypeDefaultTypeArbitraryBuilder<>(this.giveMeBuilder(type));
 	}
 

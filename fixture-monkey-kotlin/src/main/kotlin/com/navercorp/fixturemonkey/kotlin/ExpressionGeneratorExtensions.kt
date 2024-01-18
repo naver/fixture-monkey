@@ -28,14 +28,14 @@ import kotlin.reflect.KFunction1
 import kotlin.reflect.KProperty1
 
 @Deprecated(
-    message = "Extension function is deprecated. Use instance method instead.",
+    message = "Extension function is deprecated. Use giveMeKotlinBuilder and instance method instead.",
     replaceWith = ReplaceWith("setExp(expressionGenerator, value)")
 )
 fun <T> ArbitraryBuilder<T>.setExp(expressionGenerator: ExpressionGenerator, value: Any?): ArbitraryBuilder<T> =
     this.set(expressionGenerator, value)
 
 @Deprecated(
-    message = "Extension function is deprecated. Use instance method instead.",
+    message = "Extension function is deprecated. Use giveMeKotlinBuilder and instance method instead.",
     replaceWith = ReplaceWith("setExp(expressionGenerator, value, limit)")
 )
 fun <T> ArbitraryBuilder<T>.setExp(
@@ -46,7 +46,7 @@ fun <T> ArbitraryBuilder<T>.setExp(
     this.set(expressionGenerator, value, limit.toInt())
 
 @Deprecated(
-    message = "Extension function is deprecated. Use instance method instead.",
+    message = "Extension function is deprecated. Use giveMeKotlinBuilder and instance method instead.",
     replaceWith = ReplaceWith("setExpGetter(expressionGenerator, value, limit)")
 )
 fun <T> ArbitraryBuilder<T>.setExpGetter(
@@ -57,42 +57,42 @@ fun <T> ArbitraryBuilder<T>.setExpGetter(
     this.set(expressionGenerator, value, limit.toInt())
 
 @Deprecated(
-    message = "Extension function is deprecated. Use instance method instead.",
+    message = "Extension function is deprecated. Use giveMeKotlinBuilder and instance method instead.",
     replaceWith = ReplaceWith("setExpGetter(expressionGenerator, value)")
 )
 fun <T> ArbitraryBuilder<T>.setExpGetter(expressionGenerator: ExpressionGenerator, value: Any?): ArbitraryBuilder<T> =
     this.set(expressionGenerator, value)
 
 @Deprecated(
-    message = "Extension function is deprecated. Use instance method instead.",
+    message = "Extension function is deprecated. Use giveMeKotlinBuilder and instance method instead.",
     replaceWith = ReplaceWith("setNullExp(expressionGenerator)")
 )
 fun <T> ArbitraryBuilder<T>.setNullExp(expressionGenerator: ExpressionGenerator): ArbitraryBuilder<T> =
     this.setNull(expressionGenerator)
 
 @Deprecated(
-    message = "Extension function is deprecated. Use instance method instead.",
+    message = "Extension function is deprecated. Use giveMeKotlinBuilder and instance method instead.",
     replaceWith = ReplaceWith("setNullExpGetter(expressionGenerator)")
 )
 fun <T> ArbitraryBuilder<T>.setNullExpGetter(expressionGenerator: ExpressionGenerator): ArbitraryBuilder<T> =
     this.setNull(expressionGenerator)
 
 @Deprecated(
-    message = "Extension function is deprecated. Use instance method instead.",
+    message = "Extension function is deprecated. Use giveMeKotlinBuilder and instance method instead.",
     replaceWith = ReplaceWith("setNotNullExp(expressionGenerator)")
 )
 fun <T> ArbitraryBuilder<T>.setNotNullExp(expressionGenerator: ExpressionGenerator): ArbitraryBuilder<T> =
     this.setNotNull(expressionGenerator)
 
 @Deprecated(
-    message = "Extension function is deprecated. Use instance method instead.",
+    message = "Extension function is deprecated. Use giveMeKotlinBuilder and instance method instead.",
     replaceWith = ReplaceWith("setNotNullExpGetter(expressionGenerator)")
 )
 fun <T> ArbitraryBuilder<T>.setNotNullExpGetter(expressionGenerator: ExpressionGenerator): ArbitraryBuilder<T> =
     this.setNotNull(expressionGenerator)
 
 @Deprecated(
-    message = "Extension function is deprecated. Use instance method instead.",
+    message = "Extension function is deprecated. Use giveMeKotlinBuilder and instance method instead.",
     replaceWith = ReplaceWith("setPostConditionExp(property, filter)")
 )
 fun <T, U> ArbitraryBuilder<T>.setPostConditionExp(
@@ -107,7 +107,7 @@ fun <T, U> ArbitraryBuilder<T>.setPostConditionExp(
     )
 
 @Deprecated(
-    message = "Extension function is deprecated. Use instance method instead.",
+    message = "Extension function is deprecated. Use giveMeKotlinBuilder and instance method instead.",
     replaceWith = ReplaceWith("setPostConditionExp(expressionGenerator, filter, limit)")
 )
 fun <T, U> ArbitraryBuilder<T>.setPostConditionExp(
@@ -124,7 +124,7 @@ fun <T, U> ArbitraryBuilder<T>.setPostConditionExp(
     )
 
 @Deprecated(
-    message = "Extension function is deprecated. Use instance method instead.",
+    message = "Extension function is deprecated. Use giveMeKotlinBuilder and instance method instead.",
     replaceWith = ReplaceWith("setPostConditionExp(expressionGenerator, filter)")
 )
 fun <T, U> ArbitraryBuilder<T>.setPostConditionExp(
@@ -139,7 +139,7 @@ fun <T, U> ArbitraryBuilder<T>.setPostConditionExp(
     )
 
 @Deprecated(
-    message = "Extension function is deprecated. Use instance method instead.",
+    message = "Extension function is deprecated. Use giveMeKotlinBuilder and instance method instead.",
     replaceWith = ReplaceWith("setPostConditionExpGetter(expressionGenerator, filter, limit)")
 )
 fun <T, U> ArbitraryBuilder<T>.setPostConditionExpGetter(
@@ -156,7 +156,7 @@ fun <T, U> ArbitraryBuilder<T>.setPostConditionExpGetter(
     )
 
 @Deprecated(
-    message = "Extension function is deprecated. Use instance method instead.",
+    message = "Extension function is deprecated. Use giveMeKotlinBuilder and instance method instead.",
     replaceWith = ReplaceWith("setPostConditionExp(expressionGenerator, filter)")
 )
 fun <T, U> ArbitraryBuilder<T>.setPostConditionExpGetter(
@@ -171,7 +171,7 @@ fun <T, U> ArbitraryBuilder<T>.setPostConditionExpGetter(
     )
 
 @Deprecated(
-    message = "Extension function is deprecated. Use instance method instead.",
+    message = "Extension function is deprecated. Use giveMeKotlinBuilder and instance method instead.",
     replaceWith = ReplaceWith("sizeExp(expressionGenerator, size)")
 )
 fun <T> ArbitraryBuilder<T>.sizeExp(
@@ -181,7 +181,7 @@ fun <T> ArbitraryBuilder<T>.sizeExp(
     this.size(expressionGenerator, size)
 
 @Deprecated(
-    message = "Extension function is deprecated. Use instance method instead.",
+    message = "Extension function is deprecated. Use giveMeKotlinBuilder and instance method instead.",
     replaceWith = ReplaceWith("sizeExpGetter(expressionGenerator, size)")
 )
 fun <T> ArbitraryBuilder<T>.sizeExpGetter(
@@ -191,7 +191,7 @@ fun <T> ArbitraryBuilder<T>.sizeExpGetter(
     this.size(expressionGenerator, size)
 
 @Deprecated(
-    message = "Extension function is deprecated. Use instance method instead.",
+    message = "Extension function is deprecated. Use giveMeKotlinBuilder and instance method instead.",
     replaceWith = ReplaceWith("sizeExp(expressionGenerator, min, max)")
 )
 fun <T> ArbitraryBuilder<T>.sizeExp(
@@ -202,7 +202,7 @@ fun <T> ArbitraryBuilder<T>.sizeExp(
     this.size(expressionGenerator, min, max)
 
 @Deprecated(
-    message = "Extension function is deprecated. Use instance method instead.",
+    message = "Extension function is deprecated. Use giveMeKotlinBuilder and instance method instead.",
     replaceWith = ReplaceWith("sizeExpGetter(expressionGenerator, min, max)")
 )
 fun <T> ArbitraryBuilder<T>.sizeExpGetter(
@@ -213,7 +213,7 @@ fun <T> ArbitraryBuilder<T>.sizeExpGetter(
     this.size(expressionGenerator, min, max)
 
 @Deprecated(
-    message = "Extension function is deprecated. Use instance method instead.",
+    message = "Extension function is deprecated. Use giveMeKotlinBuilder and instance method instead.",
     replaceWith = ReplaceWith("minSizeExp(expressionGenerator, min)")
 )
 fun <T> ArbitraryBuilder<T>.minSizeExp(
@@ -223,7 +223,7 @@ fun <T> ArbitraryBuilder<T>.minSizeExp(
     this.minSize(expressionGenerator, min)
 
 @Deprecated(
-    message = "Extension function is deprecated. Use instance method instead.",
+    message = "Extension function is deprecated. Use giveMeKotlinBuilder and instance method instead.",
     replaceWith = ReplaceWith("minSizeExpGetter(expressionGenerator, min)")
 )
 fun <T> ArbitraryBuilder<T>.minSizeExpGetter(
@@ -233,7 +233,7 @@ fun <T> ArbitraryBuilder<T>.minSizeExpGetter(
     this.minSize(expressionGenerator, min)
 
 @Deprecated(
-    message = "Extension function is deprecated. Use instance method instead.",
+    message = "Extension function is deprecated. Use giveMeKotlinBuilder and instance method instead.",
     replaceWith = ReplaceWith("maxSizeExp(expressionGenerator, max)")
 )
 fun <T> ArbitraryBuilder<T>.maxSizeExp(
@@ -243,7 +243,7 @@ fun <T> ArbitraryBuilder<T>.maxSizeExp(
     this.maxSize(expressionGenerator, max)
 
 @Deprecated(
-    message = "Extension function is deprecated. Use instance method instead.",
+    message = "Extension function is deprecated. Use giveMeKotlinBuilder and instance method instead.",
     replaceWith = ReplaceWith("maxSizeExpGetter(expressionGenerator, max)")
 )
 fun <T> ArbitraryBuilder<T>.maxSizeExpGetter(
@@ -253,7 +253,7 @@ fun <T> ArbitraryBuilder<T>.maxSizeExpGetter(
     this.maxSize(expressionGenerator, max)
 
 @Deprecated(
-    message = "Extension function is deprecated. Use instance method instead.",
+    message = "Extension function is deprecated. Use giveMeKotlinBuilder and instance method instead.",
     replaceWith = ReplaceWith("setLazyExp(expressionGenerator, supplier)")
 )
 fun <T> ArbitraryBuilder<T>.setLazyExp(
@@ -263,7 +263,7 @@ fun <T> ArbitraryBuilder<T>.setLazyExp(
     this.setLazy(expressionGenerator, supplier)
 
 @Deprecated(
-    message = "Extension function is deprecated. Use instance method instead.",
+    message = "Extension function is deprecated. Use giveMeKotlinBuilder and instance method instead.",
     replaceWith = ReplaceWith("setLazyExp(expressionGenerator, supplier, limit)")
 )
 fun <T> ArbitraryBuilder<T>.setLazyExp(
@@ -274,7 +274,7 @@ fun <T> ArbitraryBuilder<T>.setLazyExp(
     this.setLazy(expressionGenerator, supplier, limit.toInt())
 
 @Deprecated(
-    message = "Extension function is deprecated. Use instance method instead.",
+    message = "Extension function is deprecated. Use giveMeKotlinBuilder and instance method instead.",
     replaceWith = ReplaceWith("setLazyExpGetter(expressionGenerator, supplier)")
 )
 fun <T> ArbitraryBuilder<T>.setLazyExpGetter(
@@ -284,7 +284,7 @@ fun <T> ArbitraryBuilder<T>.setLazyExpGetter(
     this.setLazy(expressionGenerator, supplier)
 
 @Deprecated(
-    message = "Extension function is deprecated. Use instance method instead.",
+    message = "Extension function is deprecated. Use giveMeKotlinBuilder and instance method instead.",
     replaceWith = ReplaceWith("setLazyExpGetter(expressionGenerator, supplier, limit)")
 )
 fun <T> ArbitraryBuilder<T>.setLazyExpGetter(
@@ -295,63 +295,63 @@ fun <T> ArbitraryBuilder<T>.setLazyExpGetter(
     this.setLazy(expressionGenerator, supplier, limit.toInt())
 
 @Deprecated(
-    message = "Extension function is deprecated. Use instance method instead.",
+    message = "Extension function is deprecated. Use giveMeKotlinBuilder and instance method instead.",
     replaceWith = ReplaceWith("set(property, value)")
 )
 fun <T> ArbitraryBuilder<T>.set(property: KProperty1<T, Any?>, value: Any?): ArbitraryBuilder<T> =
     this.set(property(property), value)
 
 @Deprecated(
-    message = "Extension function is deprecated. Use instance method instead.",
+    message = "Extension function is deprecated. Use giveMeKotlinBuilder and instance method instead.",
     replaceWith = ReplaceWith("set(property, value, limit)")
 )
 fun <T> ArbitraryBuilder<T>.set(property: KProperty1<T, Any?>, value: Any?, limit: Long): ArbitraryBuilder<T> =
     this.set(property(property), value, limit.toInt())
 
 @Deprecated(
-    message = "Extension function is deprecated. Use instance method instead.",
+    message = "Extension function is deprecated. Use giveMeKotlinBuilder and instance method instead.",
     replaceWith = ReplaceWith("setExp(property, value)")
 )
 fun <T> ArbitraryBuilder<T>.setExp(property: KProperty1<T, Any?>, value: Any?): ArbitraryBuilder<T> =
     this.set(property(property), value)
 
 @Deprecated(
-    message = "Extension function is deprecated. Use instance method instead.",
+    message = "Extension function is deprecated. Use giveMeKotlinBuilder and instance method instead.",
     replaceWith = ReplaceWith("setExp(property, value, limit)")
 )
 fun <T> ArbitraryBuilder<T>.setExp(property: KProperty1<T, Any?>, value: Any?, limit: Long): ArbitraryBuilder<T> =
     this.set(property(property), value, limit.toInt())
 
 @Deprecated(
-    message = "Extension function is deprecated. Use instance method instead.",
+    message = "Extension function is deprecated. Use giveMeKotlinBuilder and instance method instead.",
     replaceWith = ReplaceWith("setNull(property)")
 )
 fun <T> ArbitraryBuilder<T>.setNull(property: KProperty1<T, *>): ArbitraryBuilder<T> =
     this.setNull(property(property))
 
 @Deprecated(
-    message = "Extension function is deprecated. Use instance method instead.",
+    message = "Extension function is deprecated. Use giveMeKotlinBuilder and instance method instead.",
     replaceWith = ReplaceWith("setNullExp(property)")
 )
 fun <T> ArbitraryBuilder<T>.setNullExp(property: KProperty1<T, *>): ArbitraryBuilder<T> =
     this.setNull(property(property))
 
 @Deprecated(
-    message = "Extension function is deprecated. Use instance method instead.",
+    message = "Extension function is deprecated. Use giveMeKotlinBuilder and instance method instead.",
     replaceWith = ReplaceWith("setNotNull(property)")
 )
 fun <T> ArbitraryBuilder<T>.setNotNull(property: KProperty1<T, *>): ArbitraryBuilder<T> =
     this.setNotNull(property(property))
 
 @Deprecated(
-    message = "Extension function is deprecated. Use instance method instead.",
+    message = "Extension function is deprecated. Use giveMeKotlinBuilder and instance method instead.",
     replaceWith = ReplaceWith("setNotNullExp(property)")
 )
 fun <T> ArbitraryBuilder<T>.setNotNullExp(property: KProperty1<T, *>): ArbitraryBuilder<T> =
     this.setNotNull(property(property))
 
 @Deprecated(
-    message = "Extension function is deprecated. Use instance method instead.",
+    message = "Extension function is deprecated. Use giveMeKotlinBuilder and instance method instead.",
     replaceWith = ReplaceWith("setPostCondition(property, filter)")
 )
 fun <T, U> ArbitraryBuilder<T>.setPostCondition(
@@ -366,7 +366,7 @@ fun <T, U> ArbitraryBuilder<T>.setPostCondition(
     )
 
 @Deprecated(
-    message = "Extension function is deprecated. Use instance method instead.",
+    message = "Extension function is deprecated. Use giveMeKotlinBuilder and instance method instead.",
     replaceWith = ReplaceWith("setPostCondition(property, filter, limit)")
 )
 fun <T, U> ArbitraryBuilder<T>.setPostCondition(
@@ -383,7 +383,7 @@ fun <T, U> ArbitraryBuilder<T>.setPostCondition(
     )
 
 @Deprecated(
-    message = "Extension function is deprecated. Use instance method instead.",
+    message = "Extension function is deprecated. Use giveMeKotlinBuilder and instance method instead.",
     replaceWith = ReplaceWith("setPostConditionExp(property, filter, limit)")
 )
 fun <T, U> ArbitraryBuilder<T>.setPostConditionExp(
@@ -400,7 +400,7 @@ fun <T, U> ArbitraryBuilder<T>.setPostConditionExp(
     )
 
 @Deprecated(
-    message = "Extension function is deprecated. Use instance method instead.",
+    message = "Extension function is deprecated. Use giveMeKotlinBuilder and instance method instead.",
     replaceWith = ReplaceWith("size(property, size)")
 )
 fun <T> ArbitraryBuilder<T>.size(
@@ -409,7 +409,7 @@ fun <T> ArbitraryBuilder<T>.size(
 ): ArbitraryBuilder<T> = this.size(property(property), size)
 
 @Deprecated(
-    message = "Extension function is deprecated. Use instance method instead.",
+    message = "Extension function is deprecated. Use giveMeKotlinBuilder and instance method instead.",
     replaceWith = ReplaceWith("size(property, min, max)")
 )
 fun <T> ArbitraryBuilder<T>.size(
@@ -419,7 +419,7 @@ fun <T> ArbitraryBuilder<T>.size(
 ): ArbitraryBuilder<T> = this.size(property(property), min, max)
 
 @Deprecated(
-    message = "Extension function is deprecated. Use instance method instead.",
+    message = "Extension function is deprecated. Use giveMeKotlinBuilder and instance method instead.",
     replaceWith = ReplaceWith("sizeExp(property, size)")
 )
 fun <T> ArbitraryBuilder<T>.sizeExp(
@@ -428,7 +428,7 @@ fun <T> ArbitraryBuilder<T>.sizeExp(
 ): ArbitraryBuilder<T> = this.size(property(property), size)
 
 @Deprecated(
-    message = "Extension function is deprecated. Use instance method instead.",
+    message = "Extension function is deprecated. Use giveMeKotlinBuilder and instance method instead.",
     replaceWith = ReplaceWith("sizeExp(property, min, max)")
 )
 fun <T> ArbitraryBuilder<T>.sizeExp(
@@ -438,7 +438,7 @@ fun <T> ArbitraryBuilder<T>.sizeExp(
 ): ArbitraryBuilder<T> = this.size(property(property), min, max)
 
 @Deprecated(
-    message = "Extension function is deprecated. Use instance method instead.",
+    message = "Extension function is deprecated. Use giveMeKotlinBuilder and instance method instead.",
     replaceWith = ReplaceWith("minSize(property, min)")
 )
 fun <T> ArbitraryBuilder<T>.minSize(
@@ -447,7 +447,7 @@ fun <T> ArbitraryBuilder<T>.minSize(
 ): ArbitraryBuilder<T> = this.minSize(property(property), min)
 
 @Deprecated(
-    message = "Extension function is deprecated. Use instance method instead.",
+    message = "Extension function is deprecated. Use giveMeKotlinBuilder and instance method instead.",
     replaceWith = ReplaceWith("minSizeExp(property, min)")
 )
 fun <T> ArbitraryBuilder<T>.minSizeExp(
@@ -456,7 +456,7 @@ fun <T> ArbitraryBuilder<T>.minSizeExp(
 ): ArbitraryBuilder<T> = this.minSize(property(property), min)
 
 @Deprecated(
-    message = "Extension function is deprecated. Use instance method instead.",
+    message = "Extension function is deprecated. Use giveMeKotlinBuilder and instance method instead.",
     replaceWith = ReplaceWith("maxSize(property, max)")
 )
 fun <T> ArbitraryBuilder<T>.maxSize(
@@ -465,7 +465,7 @@ fun <T> ArbitraryBuilder<T>.maxSize(
 ): ArbitraryBuilder<T> = this.maxSize(property(property), max)
 
 @Deprecated(
-    message = "Extension function is deprecated. Use instance method instead.",
+    message = "Extension function is deprecated. Use giveMeKotlinBuilder and instance method instead.",
     replaceWith = ReplaceWith("maxSizeExp(property, max)")
 )
 fun <T> ArbitraryBuilder<T>.maxSizeExp(
@@ -474,7 +474,7 @@ fun <T> ArbitraryBuilder<T>.maxSizeExp(
 ): ArbitraryBuilder<T> = this.maxSize(property(property), max)
 
 @Deprecated(
-    message = "Extension function is deprecated. Use instance method instead.",
+    message = "Extension function is deprecated. Use giveMeKotlinBuilder and instance method instead.",
     replaceWith = ReplaceWith("setLazyExp(property, supplier)")
 )
 fun <T> ArbitraryBuilder<T>.setLazyExp(
@@ -483,7 +483,7 @@ fun <T> ArbitraryBuilder<T>.setLazyExp(
 ): ArbitraryBuilder<T> = this.setLazy(property(property), supplier)
 
 @Deprecated(
-    message = "Extension function is deprecated. Use instance method instead.",
+    message = "Extension function is deprecated. Use giveMeKotlinBuilder and instance method instead.",
     replaceWith = ReplaceWith("setLazyExp(property, supplier, limit)")
 )
 fun <T> ArbitraryBuilder<T>.setLazyExp(
@@ -493,14 +493,14 @@ fun <T> ArbitraryBuilder<T>.setLazyExp(
 ): ArbitraryBuilder<T> = this.setLazy(property(property), supplier, limit.toInt())
 
 @Deprecated(
-    message = "Extension function is deprecated. Use instance method instead.",
+    message = "Extension function is deprecated. Use giveMeKotlinBuilder and instance method instead.",
     replaceWith = ReplaceWith("setExpGetter(property, value)")
 )
 fun <T> ArbitraryBuilder<T>.setExpGetter(property: KFunction1<T, Any?>, value: Any?): ArbitraryBuilder<T> =
     this.set(property(property), value)
 
 @Deprecated(
-    message = "Extension function is deprecated. Use instance method instead.",
+    message = "Extension function is deprecated. Use giveMeKotlinBuilder and instance method instead.",
     replaceWith = ReplaceWith("setExpGetter(property, value, limit)")
 )
 fun <T> ArbitraryBuilder<T>.setExpGetter(property: KFunction1<T, Any?>, value: Any?, limit: Long): ArbitraryBuilder<T> =
@@ -511,21 +511,21 @@ fun <T> ArbitraryBuilder<T>.setExpGetter(property: KFunction1<T, Any?>, value: A
     )
 
 @Deprecated(
-    message = "Extension function is deprecated. Use instance method instead.",
+    message = "Extension function is deprecated. Use giveMeKotlinBuilder and instance method instead.",
     replaceWith = ReplaceWith("setNullExpGetter(property)")
 )
 fun <T> ArbitraryBuilder<T>.setNullExpGetter(property: KFunction1<T, *>): ArbitraryBuilder<T> =
     this.setNull(property(property))
 
 @Deprecated(
-    message = "Extension function is deprecated. Use instance method instead.",
+    message = "Extension function is deprecated. Use giveMeKotlinBuilder and instance method instead.",
     replaceWith = ReplaceWith("setNotNullExpGetter(property)")
 )
 fun <T> ArbitraryBuilder<T>.setNotNullExpGetter(property: KFunction1<T, *>): ArbitraryBuilder<T> =
     this.setNotNull(property(property))
 
 @Deprecated(
-    message = "Extension function is deprecated. Use instance method instead.",
+    message = "Extension function is deprecated. Use giveMeKotlinBuilder and instance method instead.",
     replaceWith = ReplaceWith("setPostConditionExpGetter(property, filter, limit)")
 )
 fun <T, U> ArbitraryBuilder<T>.setPostConditionExpGetter(
@@ -542,7 +542,7 @@ fun <T, U> ArbitraryBuilder<T>.setPostConditionExpGetter(
     )
 
 @Deprecated(
-    message = "Extension function is deprecated. Use instance method instead.",
+    message = "Extension function is deprecated. Use giveMeKotlinBuilder and instance method instead.",
     replaceWith = ReplaceWith("setPostConditionExpGetter(property, filter)")
 )
 fun <T, U> ArbitraryBuilder<T>.setPostConditionExpGetter(
@@ -557,7 +557,7 @@ fun <T, U> ArbitraryBuilder<T>.setPostConditionExpGetter(
     )
 
 @Deprecated(
-    message = "Extension function is deprecated. Use instance method instead.",
+    message = "Extension function is deprecated. Use giveMeKotlinBuilder and instance method instead.",
     replaceWith = ReplaceWith("sizeExpGetter(property, size)")
 )
 fun <T> ArbitraryBuilder<T>.sizeExpGetter(
@@ -567,7 +567,7 @@ fun <T> ArbitraryBuilder<T>.sizeExpGetter(
     this.size(property(property), size)
 
 @Deprecated(
-    message = "Extension function is deprecated. Use instance method instead.",
+    message = "Extension function is deprecated. Use giveMeKotlinBuilder and instance method instead.",
     replaceWith = ReplaceWith("sizeExpGetter(property, min, max)")
 )
 fun <T> ArbitraryBuilder<T>.sizeExpGetter(
@@ -578,7 +578,7 @@ fun <T> ArbitraryBuilder<T>.sizeExpGetter(
     this.size(property(property), min, max)
 
 @Deprecated(
-    message = "Extension function is deprecated. Use instance method instead.",
+    message = "Extension function is deprecated. Use giveMeKotlinBuilder and instance method instead.",
     replaceWith = ReplaceWith("minSizeExpGetter(property, min)")
 )
 fun <T> ArbitraryBuilder<T>.minSizeExpGetter(
@@ -588,7 +588,7 @@ fun <T> ArbitraryBuilder<T>.minSizeExpGetter(
     this.minSize(property(property), min)
 
 @Deprecated(
-    message = "Extension function is deprecated. Use instance method instead.",
+    message = "Extension function is deprecated. Use giveMeKotlinBuilder and instance method instead.",
     replaceWith = ReplaceWith("maxSizeExpGetter(property, max)")
 )
 fun <T> ArbitraryBuilder<T>.maxSizeExpGetter(
@@ -598,7 +598,7 @@ fun <T> ArbitraryBuilder<T>.maxSizeExpGetter(
     this.maxSize(property(property), max)
 
 @Deprecated(
-    message = "Extension function is deprecated. Use instance method instead.",
+    message = "Extension function is deprecated. Use giveMeKotlinBuilder and instance method instead.",
     replaceWith = ReplaceWith("setLazyExpGetter(property, supplier)")
 )
 fun <T> ArbitraryBuilder<T>.setLazyExpGetter(
@@ -608,7 +608,7 @@ fun <T> ArbitraryBuilder<T>.setLazyExpGetter(
     this.setLazy(property(property), supplier)
 
 @Deprecated(
-    message = "Extension function is deprecated. Use instance method instead.",
+    message = "Extension function is deprecated. Use giveMeKotlinBuilder and instance method instead.",
     replaceWith = ReplaceWith("setLazyExpGetter(property, supplier, limit)")
 )
 fun <T> ArbitraryBuilder<T>.setLazyExpGetter(

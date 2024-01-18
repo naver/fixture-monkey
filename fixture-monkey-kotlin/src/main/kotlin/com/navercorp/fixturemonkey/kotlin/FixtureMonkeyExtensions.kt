@@ -49,8 +49,14 @@ inline fun <reified T : Any?> FixtureMonkey.giveMeOne(): T = this.giveMeOne(obje
 inline fun <reified T : Any?> FixtureMonkey.giveMeArbitrary(): Arbitrary<T> =
     this.giveMeArbitrary(object : TypeReference<T>() {})
 
-inline fun <reified T : Any?> FixtureMonkey.giveMeBuilder(): KotlinTypeDefaultArbitraryBuilder<T> =
+inline fun <reified T : Any?> FixtureMonkey.giveMeBuilder(): ArbitraryBuilder<T> =
+    this.giveMeBuilder(object : TypeReference<T>() {})
+
+inline fun <reified T : Any?> FixtureMonkey.giveMeKotlinBuilder(): KotlinTypeDefaultArbitraryBuilder<T> =
     KotlinTypeDefaultArbitraryBuilder(this.giveMeBuilder(object : TypeReference<T>() {}))
+
+inline fun <reified T : Any?> FixtureMonkey.giveMeKotlinBuilder(value: T): KotlinTypeDefaultArbitraryBuilder<T> =
+    KotlinTypeDefaultArbitraryBuilder(this.giveMeBuilder(value))
 
 inline fun <reified T : Any?> FixtureMonkey.giveMeExperimentalBuilder(): ExperimentalArbitraryBuilder<T> =
     this.giveMeExperimentalBuilder(object : TypeReference<T>() {})
@@ -274,7 +280,7 @@ class KotlinTypeDefaultArbitraryBuilder<T>(
         this.set(
             property(property),
             value,
-            limit.toInt()
+            limit.toInt(),
         )
 
     fun setExpGetter(property: KFunction1<T, Any?>, value: Any?): KotlinTypeDefaultArbitraryBuilder<T> =
@@ -310,7 +316,7 @@ class KotlinTypeDefaultArbitraryBuilder<T>(
             property(property),
             U::class.java,
             filter,
-            limit.toInt()
+            limit.toInt(),
         )
 
     inline fun <reified U> setPostCondition(
@@ -320,7 +326,7 @@ class KotlinTypeDefaultArbitraryBuilder<T>(
         this.setPostCondition(
             property(property),
             U::class.java,
-            filter
+            filter,
         )
 
     inline fun <reified U> setPostCondition(
@@ -343,7 +349,7 @@ class KotlinTypeDefaultArbitraryBuilder<T>(
             property(property),
             U::class.java,
             filter,
-            limit.toInt()
+            limit.toInt(),
         )
 
     inline fun <reified U> setPostConditionExp(
@@ -353,7 +359,7 @@ class KotlinTypeDefaultArbitraryBuilder<T>(
         this.setPostCondition(
             property(property),
             U::class.java,
-            filter
+            filter,
         )
 
     inline fun <reified U> setPostConditionExp(
@@ -365,7 +371,7 @@ class KotlinTypeDefaultArbitraryBuilder<T>(
             propertySelector,
             U::class.java,
             filter,
-            limit.toInt()
+            limit.toInt(),
         )
 
     inline fun <reified U> setPostConditionExp(
@@ -375,7 +381,7 @@ class KotlinTypeDefaultArbitraryBuilder<T>(
         this.setPostCondition(
             propertySelector,
             U::class.java,
-            filter
+            filter,
         )
 
     inline fun <reified U> setPostConditionExpGetter(
@@ -387,7 +393,7 @@ class KotlinTypeDefaultArbitraryBuilder<T>(
             propertySelector,
             U::class.java,
             filter,
-            limit.toInt()
+            limit.toInt(),
         )
 
     inline fun <reified U> setPostConditionExpGetter(
@@ -397,7 +403,7 @@ class KotlinTypeDefaultArbitraryBuilder<T>(
         this.setPostCondition(
             propertySelector,
             U::class.java,
-            filter
+            filter,
         )
 
     inline fun <reified U> setPostConditionExpGetter(
@@ -409,7 +415,7 @@ class KotlinTypeDefaultArbitraryBuilder<T>(
             property(property),
             U::class.java,
             filter,
-            limit.toInt()
+            limit.toInt(),
         )
 
     inline fun <reified U> setPostConditionExpGetter(
@@ -419,7 +425,7 @@ class KotlinTypeDefaultArbitraryBuilder<T>(
         this.setPostCondition(
             property(property),
             U::class.java,
-            filter
+            filter,
         )
 
     fun setNull(property: KProperty1<T, *>): KotlinTypeDefaultArbitraryBuilder<T> =
