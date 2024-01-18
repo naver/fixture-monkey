@@ -1261,7 +1261,10 @@ class FixtureMonkeyOptionsTest {
 		implementations.add(GetStringFixedValue.class);
 
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.interfaceImplements(GetFixedValue.class, implementations)
+			.plugin(
+				new InterfacePlugin()
+					.interfaceImplements(GetFixedValue.class, implementations)
+			)
 			.build();
 
 		// when
@@ -1278,7 +1281,10 @@ class FixtureMonkeyOptionsTest {
 		implementations.add(GetStringFixedValue.class);
 
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.interfaceImplements(GetFixedValue.class, implementations)
+			.plugin(
+				new InterfacePlugin()
+					.interfaceImplements(GetFixedValue.class, implementations)
+			)
 			.build();
 
 		// when
@@ -1300,7 +1306,10 @@ class FixtureMonkeyOptionsTest {
 		implementations.add(GetStringFixedValue.class);
 
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.interfaceImplements(GetFixedValue.class, implementations)
+			.plugin(
+				new InterfacePlugin()
+					.interfaceImplements(GetFixedValue.class, implementations)
+			)
 			.build();
 
 		// when
@@ -1328,8 +1337,11 @@ class FixtureMonkeyOptionsTest {
 
 		// when
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.interfaceImplements(GetFixedValueChild.class, childImplementations)
-			.interfaceImplements(GetFixedValue.class, implementations)
+			.plugin(
+				new InterfacePlugin()
+					.interfaceImplements(GetFixedValueChild.class, childImplementations)
+					.interfaceImplements(GetFixedValue.class, implementations)
+			)
 			.build();
 
 		Object actual = sut.giveMeOne(new TypeReference<GetFixedValueChild>() {
@@ -1508,12 +1520,15 @@ class FixtureMonkeyOptionsTest {
 	@Property
 	void samePropertyDiffImplementations() {
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.interfaceImplements(
-				GetterInterface.class,
-				Arrays.asList(
-					GetterInterfaceImplementation.class,
-					GetterInterfaceImplementation2.class
-				)
+			.plugin(
+				new InterfacePlugin()
+					.interfaceImplements(
+						GetterInterface.class,
+						Arrays.asList(
+							GetterInterfaceImplementation.class,
+							GetterInterfaceImplementation2.class
+						)
+					)
 			)
 			.build();
 

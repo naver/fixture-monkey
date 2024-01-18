@@ -36,19 +36,16 @@ import com.navercorp.fixturemonkey.api.context.MonkeyContextBuilder;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfoGenerator;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.generator.ContainerPropertyGenerator;
-import com.navercorp.fixturemonkey.api.generator.InterfaceObjectPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.NullInjectGenerator;
 import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGenerator;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.MatchArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.NullArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.matcher.AssignableTypeMatcher;
-import com.navercorp.fixturemonkey.api.matcher.ExactTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
 import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptionsBuilder;
-import com.navercorp.fixturemonkey.api.plugin.InterfacePlugin;
 import com.navercorp.fixturemonkey.api.plugin.Plugin;
 import com.navercorp.fixturemonkey.api.property.PropertyGenerator;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
@@ -74,9 +71,6 @@ public final class FixtureMonkeyBuilder {
 	private MonkeyExpressionFactory monkeyExpressionFactory = new ArbitraryExpressionFactory();
 	private final MonkeyContextBuilder monkeyContextBuilder = MonkeyContext.builder();
 	private long seed = System.nanoTime();
-
-	// The default plugins are listed below.
-	private InterfacePlugin defaultInterfacePlugin = new InterfacePlugin();
 
 	public FixtureMonkeyBuilder pushPropertyGenerator(MatcherOperator<PropertyGenerator> propertyGenerator) {
 		fixtureMonkeyOptionsBuilder.insertFirstPropertyGenerator(propertyGenerator);
@@ -379,11 +373,6 @@ public final class FixtureMonkeyBuilder {
 	}
 
 	public FixtureMonkeyBuilder plugin(Plugin plugin) {
-		if (plugin instanceof InterfacePlugin) { // TODO: Added for backward compatibility. It will be removed in 1.1.0
-			this.defaultInterfacePlugin = (InterfacePlugin)plugin;
-			return this;
-		}
-
 		fixtureMonkeyOptionsBuilder.plugin(plugin);
 		return this;
 	}
@@ -447,31 +436,6 @@ public final class FixtureMonkeyBuilder {
 		return this;
 	}
 
-	/**
-	 * It is deprecated. Please use {@link InterfacePlugin#interfaceImplements(Matcher, List)} instead.
-	 */
-	@Deprecated
-	public <T> FixtureMonkeyBuilder interfaceImplements(
-		Matcher matcher,
-		List<Class<? extends T>> implementations
-	) {
-		this.pushObjectPropertyGenerator(
-			new MatcherOperator<>(matcher, new InterfaceObjectPropertyGenerator<>(implementations))
-		);
-		return this;
-	}
-
-	/**
-	 * It is deprecated. Please use {@link InterfacePlugin#interfaceImplements(Class, List)} instead.
-	 */
-	@Deprecated
-	public <T> FixtureMonkeyBuilder interfaceImplements(
-		Class<T> interfaceClass,
-		List<Class<? extends T>> implementations
-	) {
-		return this.interfaceImplements(new ExactTypeMatcher(interfaceClass), implementations);
-	}
-
 	public FixtureMonkeyBuilder useExpressionStrictMode() {
 		this.monkeyExpressionFactory = expression ->
 			() -> new ApplyStrictModeResolver(new ArbitraryExpressionFactory().from(expression).toNodeResolver());
@@ -513,7 +477,6 @@ public final class FixtureMonkeyBuilder {
 	}
 
 	public FixtureMonkey build() {
-		defaultInterfacePlugin.accept(fixtureMonkeyOptionsBuilder);
 		FixtureMonkeyOptions fixtureMonkeyOptions = fixtureMonkeyOptionsBuilder.build();
 		ArbitraryTraverser traverser = new ArbitraryTraverser(fixtureMonkeyOptions);
 
