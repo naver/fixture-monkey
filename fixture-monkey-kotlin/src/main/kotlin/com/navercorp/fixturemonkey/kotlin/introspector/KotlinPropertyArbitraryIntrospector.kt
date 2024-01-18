@@ -22,6 +22,7 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult
 import com.navercorp.fixturemonkey.api.type.Types
+import com.navercorp.fixturemonkey.kotlin.type.cachedKotlin
 import kotlin.reflect.KMutableProperty
 import kotlin.reflect.KVisibility
 import kotlin.reflect.full.createInstance
@@ -30,7 +31,7 @@ import kotlin.reflect.full.declaredMemberProperties
 class KotlinPropertyArbitraryIntrospector : ArbitraryIntrospector {
     override fun introspect(context: ArbitraryGeneratorContext): ArbitraryIntrospectorResult {
         val type = Types.getActualType(context.resolvedType)
-        val kotlinType = type.kotlin
+        val kotlinType = type.cachedKotlin()
 
         val generated = if (context.generated != CombinableArbitrary.NOT_GENERATED) {
             context.generated
