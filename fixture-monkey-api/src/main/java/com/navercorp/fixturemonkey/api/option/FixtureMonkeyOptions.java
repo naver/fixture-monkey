@@ -67,6 +67,7 @@ import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult;
 import com.navercorp.fixturemonkey.api.introspector.NullArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.matcher.AssignableTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.DoubleGenericTypeMatcher;
+import com.navercorp.fixturemonkey.api.matcher.ExactPropertyMatcher;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.matcher.Matchers;
 import com.navercorp.fixturemonkey.api.matcher.SingleGenericTypeMatcher;
@@ -351,8 +352,7 @@ public final class FixtureMonkeyOptions {
 	private static List<MatcherOperator<ContainerPropertyGenerator>> getDefaultContainerPropertyGenerators() {
 		return Arrays.asList(
 			new MatcherOperator<>(
-				property -> new AssignableTypeMatcher(Optional.class).match(property)
-					&& new SingleGenericTypeMatcher().match(property),
+				new AssignableTypeMatcher(Optional.class).intersect(new SingleGenericTypeMatcher()),
 				OptionalContainerPropertyGenerator.INSTANCE
 			),
 			MatcherOperator.exactTypeMatchOperator(
@@ -368,8 +368,7 @@ public final class FixtureMonkeyOptions {
 				OptionalContainerPropertyGenerator.INSTANCE
 			),
 			new MatcherOperator<>(
-				property -> new AssignableTypeMatcher(Stream.class).match(property)
-					&& new SingleGenericTypeMatcher().match(property),
+				new AssignableTypeMatcher(Stream.class).intersect(new SingleGenericTypeMatcher()),
 				StreamContainerPropertyGenerator.INSTANCE
 			),
 			MatcherOperator.assignableTypeMatchOperator(
@@ -385,28 +384,23 @@ public final class FixtureMonkeyOptions {
 				StreamContainerPropertyGenerator.INSTANCE
 			),
 			new MatcherOperator<>(
-				property -> new AssignableTypeMatcher(Set.class).match(property)
-					&& new SingleGenericTypeMatcher().match(property),
+				new AssignableTypeMatcher(Set.class).intersect(new SingleGenericTypeMatcher()),
 				SetContainerPropertyGenerator.INSTANCE
 			),
 			new MatcherOperator<>(
-				property -> new AssignableTypeMatcher(Iterable.class).match(property)
-					&& new SingleGenericTypeMatcher().match(property),
+				new AssignableTypeMatcher(Iterable.class).intersect(new SingleGenericTypeMatcher()),
 				DefaultSingleContainerPropertyGenerator.INSTANCE
 			),
 			new MatcherOperator<>(
-				property -> new AssignableTypeMatcher(Iterator.class).match(property)
-					&& new SingleGenericTypeMatcher().match(property),
+				new AssignableTypeMatcher(Iterator.class).intersect(new SingleGenericTypeMatcher()),
 				DefaultSingleContainerPropertyGenerator.INSTANCE
 			),
 			new MatcherOperator<>(
-				property -> new AssignableTypeMatcher(Map.class).match(property)
-					&& new DoubleGenericTypeMatcher().match(property),
+				new AssignableTypeMatcher(Map.class).intersect(new DoubleGenericTypeMatcher()),
 				MapContainerPropertyGenerator.INSTANCE
 			),
 			new MatcherOperator<>(
-				property -> new AssignableTypeMatcher(Entry.class).match(property)
-					&& new DoubleGenericTypeMatcher().match(property),
+				new AssignableTypeMatcher(Entry.class).intersect(new DoubleGenericTypeMatcher()),
 				EntryContainerPropertyGenerator.INSTANCE
 			),
 			new MatcherOperator<>(
@@ -415,7 +409,7 @@ public final class FixtureMonkeyOptions {
 				ArrayContainerPropertyGenerator.INSTANCE
 			),
 			new MatcherOperator<>(
-				property -> property.getClass() == MapEntryElementProperty.class,
+				new ExactPropertyMatcher(MapEntryElementProperty.class),
 				MapEntryElementContainerPropertyGenerator.INSTANCE
 			)
 		);
