@@ -22,7 +22,11 @@ import java.lang.annotation.Annotation;
 
 import javax.annotation.Nullable;
 
+import org.apiguardian.api.API;
+import org.apiguardian.api.API.Status;
+
 @SuppressWarnings("unchecked")
+@API(since = "1.0.0", status = Status.INTERNAL)
 public abstract class KotlinTypeDetector {
 	@Nullable
 	private static final Class<? extends Annotation> kotlinMetadata;

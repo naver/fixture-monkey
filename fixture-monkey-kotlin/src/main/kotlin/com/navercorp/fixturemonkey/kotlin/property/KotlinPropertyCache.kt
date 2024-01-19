@@ -29,7 +29,7 @@ import kotlin.reflect.full.memberProperties
 
 private val KPROPERTY_ANNOTATED_TYPE_MAP = ConcurrentLruCache<Class<*>, Collection<KProperty<*>>>(2048)
 
-@API(since = "0.4.0", status = API.Status.MAINTAINED)
+@API(since = "0.4.0", status = API.Status.INTERNAL)
 fun getMemberProperties(
     property: Property,
     propertyFilter: (KProperty<*>) -> Boolean = { true },

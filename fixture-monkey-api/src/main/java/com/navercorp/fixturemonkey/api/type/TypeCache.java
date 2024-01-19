@@ -46,7 +46,7 @@ import org.slf4j.LoggerFactory;
 
 import com.navercorp.fixturemonkey.api.container.ConcurrentLruCache;
 
-@API(since = "0.4.0", status = Status.MAINTAINED)
+@API(since = "0.4.0", status = Status.INTERNAL)
 public abstract class TypeCache {
 	private static final Logger LOGGER = LoggerFactory.getLogger(TypeCache.class);
 	private static final Map<Field, AnnotatedType> FIELD_ANNOTATED_TYPE_MAP = new ConcurrentHashMap<>(2048);

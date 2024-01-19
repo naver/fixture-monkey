@@ -21,7 +21,7 @@ package com.navercorp.fixturemonkey.api.exception;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-@API(since = "1.0.11", status = Status.EXPERIMENTAL)
+@API(since = "1.0.11", status = Status.INTERNAL)
 public abstract class Exceptions {
 	@SuppressWarnings("UnusedReturnValue")
 	public static RuntimeException throwAsUnchecked(Throwable throwable) {
