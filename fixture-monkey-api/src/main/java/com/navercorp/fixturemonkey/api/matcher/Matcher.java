@@ -27,4 +27,34 @@ import com.navercorp.fixturemonkey.api.property.Property;
 @FunctionalInterface
 public interface Matcher {
 	boolean match(Property property);
+
+	/**
+	 * Creates and returns a new {@code Matcher} that represents the intersection
+	 * of this matcher with another specified matcher. The resulting matcher will
+	 * only match a property if both this matcher and the specified second matcher
+	 * match the property.
+	 *
+	 * @param second the second matcher to intersect with this matcher
+	 * @return a new {@code Matcher} representing the intersection of this matcher
+	 *         and the specified second matcher
+	 */
+	@API(since = "1.0.13", status = Status.EXPERIMENTAL)
+	default Matcher intersect(Matcher second) {
+		return new IntersectMatcher(this, second);
+	}
+
+	/**
+	 * Creates and returns a new {@code Matcher} that represents the union
+	 * of this matcher with another specified matcher. The resulting matcher will
+	 * match a property if either this matcher or the specified second matcher
+	 * matches the property.
+	 *
+	 * @param second the second matcher to form the union with this matcher
+	 * @return a new {@code Matcher} representing the union of this matcher
+	 *         and the specified second matcher
+	 */
+	@API(since = "1.0.13", status = Status.EXPERIMENTAL)
+	default Matcher union(Matcher second) {
+		return new UnionMatcher(this, second);
+	}
 }
