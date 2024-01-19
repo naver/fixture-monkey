@@ -6,6 +6,14 @@ docs:
 weight: 100
 ---
 sectionStart
+### v.1.0.13
+Add InterfacePlugin supports abstract classes through `abstractClassExtends` option.
+
+sectionEnd
+
+sectionStart
+
+sectionStart
 ### v.1.0.12
 Fix generating an object with the value class property.
 
