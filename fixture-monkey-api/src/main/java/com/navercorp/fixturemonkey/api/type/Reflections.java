@@ -35,6 +35,10 @@ import java.util.function.Predicate;
 
 import javax.annotation.Nullable;
 
+import org.apiguardian.api.API;
+import org.apiguardian.api.API.Status;
+
+@API(since = "0.5.4", status = Status.INTERNAL)
 public abstract class Reflections {
 
 	public static <T> T newInstance(Class<T> clazz) {

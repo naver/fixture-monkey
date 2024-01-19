@@ -29,7 +29,7 @@ import com.navercorp.fixturemonkey.api.type.TypeReference;
 /**
  * The {@link InstantiatorUtils} class provides utility methods for instantiating objects using {@link Instantiator}.
  */
-@API(since = "0.6.12", status = Status.MAINTAINED)
+@API(since = "0.6.12", status = Status.INTERNAL)
 public abstract class InstantiatorUtils {
 	/**
 	 * Resolves and returns a list of parameter names by prioritizing input parameter names over

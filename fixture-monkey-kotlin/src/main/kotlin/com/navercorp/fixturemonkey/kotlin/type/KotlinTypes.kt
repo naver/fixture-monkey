@@ -33,7 +33,7 @@ import kotlin.reflect.full.findAnnotations
 import kotlin.reflect.jvm.javaField
 import kotlin.reflect.jvm.javaType
 
-@API(since = "0.4.0", status = API.Status.MAINTAINED)
+@API(since = "0.4.0", status = API.Status.INTERNAL)
 fun getAnnotatedType(ownerType: AnnotatedType, kProperty: KProperty<*>): AnnotatedType {
     val type = kProperty.returnType.javaType
     val annotations = mutableSetOf<Annotation>()

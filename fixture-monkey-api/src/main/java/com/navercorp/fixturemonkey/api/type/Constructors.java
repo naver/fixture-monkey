@@ -22,6 +22,10 @@ import java.lang.reflect.Constructor;
 import java.util.Arrays;
 import java.util.Optional;
 
+import org.apiguardian.api.API;
+import org.apiguardian.api.API.Status;
+
+@API(since = "1.0.4", status = Status.INTERNAL)
 public abstract class Constructors {
 	public static Optional<Constructor<?>> findPrimaryConstructor(Class<?> type, Constructor<?>[] constructors) {
 		return Arrays.stream(constructors)

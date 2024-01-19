@@ -52,6 +52,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
@@ -59,7 +60,7 @@ import javax.annotation.Nullable;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-@API(since = "0.4.0", status = Status.MAINTAINED)
+@API(since = "0.4.0", status = Status.INTERNAL)
 public abstract class Types {
 	private static final Map<Class<?>, Class<?>> primitiveWrapperMap = new HashMap<>();
 
@@ -403,6 +404,10 @@ public abstract class Types {
 				return new Annotation[0];
 			}
 		};
+	}
+
+	public static <T> T defaultIfNull(@Nullable T obj, Supplier<T> defaultValue) {
+		return obj != null ? obj : defaultValue.get();
 	}
 
 	public static class UnidentifiableType {

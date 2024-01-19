@@ -23,8 +23,12 @@ import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Type;
 import java.util.function.Supplier;
 
+import org.apiguardian.api.API;
+import org.apiguardian.api.API.Status;
+
 import com.navercorp.fixturemonkey.api.type.Types.UnidentifiableType;
 
+@API(since = "0.4.0", status = Status.INTERNAL)
 public final class LazyAnnotatedType<T> implements AnnotatedType {
 	private final Supplier<T> supplier;
 

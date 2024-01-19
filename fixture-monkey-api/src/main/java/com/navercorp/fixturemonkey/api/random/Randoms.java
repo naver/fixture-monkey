@@ -31,7 +31,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 /**
  * Reference jqwik SourceOfRandomness
  */
-@API(since = "0.4.0", status = Status.MAINTAINED)
+@API(since = "0.4.0", status = Status.INTERNAL)
 @SuppressFBWarnings("DMI_RANDOM_USED_ONLY_ONCE")
 public abstract class Randoms {
 	private static final boolean USE_JQWIK_ENGINE;

@@ -23,7 +23,6 @@ import static java.util.stream.Collectors.toList;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.List;
-import java.util.function.Supplier;
 
 import javax.annotation.Nullable;
 
@@ -50,6 +49,7 @@ import com.navercorp.fixturemonkey.api.constraint.JavaStringConstraint;
 import com.navercorp.fixturemonkey.api.constraint.JavaStringConstraint.PatternConstraint;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.random.RegexGenerator;
+import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.6.9", status = Status.MAINTAINED)
 public final class JqwikJavaArbitraryResolver implements JavaArbitraryResolver {
@@ -153,19 +153,19 @@ public final class JqwikJavaArbitraryResolver implements JavaArbitraryResolver {
 		ShortArbitrary positiveArbitrary = null;
 		ShortArbitrary negativeArbitrary = null;
 		if (positiveMin != null) {
-			positiveArbitrary = defaultIfNull(positiveArbitrary, () -> shortArbitrary);
+			positiveArbitrary = Types.defaultIfNull(positiveArbitrary, () -> shortArbitrary);
 			positiveArbitrary = positiveArbitrary.greaterOrEqual(positiveMin.shortValueExact());
 		}
 		if (positiveMax != null) {
-			positiveArbitrary = defaultIfNull(positiveArbitrary, () -> shortArbitrary);
+			positiveArbitrary = Types.defaultIfNull(positiveArbitrary, () -> shortArbitrary);
 			positiveArbitrary = positiveArbitrary.lessOrEqual(positiveMax.shortValueExact());
 		}
 		if (negativeMin != null) {
-			negativeArbitrary = defaultIfNull(negativeArbitrary, () -> shortArbitrary);
+			negativeArbitrary = Types.defaultIfNull(negativeArbitrary, () -> shortArbitrary);
 			negativeArbitrary = negativeArbitrary.greaterOrEqual(negativeMin.shortValueExact());
 		}
 		if (negativeMax != null) {
-			negativeArbitrary = defaultIfNull(negativeArbitrary, () -> shortArbitrary);
+			negativeArbitrary = Types.defaultIfNull(negativeArbitrary, () -> shortArbitrary);
 			negativeArbitrary = negativeArbitrary.lessOrEqual(negativeMax.shortValueExact());
 		}
 		return resolveArbitrary(shortArbitrary, positiveArbitrary, negativeArbitrary);
@@ -189,19 +189,19 @@ public final class JqwikJavaArbitraryResolver implements JavaArbitraryResolver {
 		ByteArbitrary positiveArbitrary = null;
 		ByteArbitrary negativeArbitrary = null;
 		if (positiveMin != null) {
-			positiveArbitrary = defaultIfNull(positiveArbitrary, () -> byteArbitrary);
+			positiveArbitrary = Types.defaultIfNull(positiveArbitrary, () -> byteArbitrary);
 			positiveArbitrary = positiveArbitrary.greaterOrEqual(positiveMin.byteValueExact());
 		}
 		if (positiveMax != null) {
-			positiveArbitrary = defaultIfNull(positiveArbitrary, () -> byteArbitrary);
+			positiveArbitrary = Types.defaultIfNull(positiveArbitrary, () -> byteArbitrary);
 			positiveArbitrary = positiveArbitrary.lessOrEqual(positiveMax.byteValueExact());
 		}
 		if (negativeMin != null) {
-			negativeArbitrary = defaultIfNull(negativeArbitrary, () -> byteArbitrary);
+			negativeArbitrary = Types.defaultIfNull(negativeArbitrary, () -> byteArbitrary);
 			negativeArbitrary = negativeArbitrary.greaterOrEqual(negativeMin.byteValueExact());
 		}
 		if (negativeMax != null) {
-			negativeArbitrary = defaultIfNull(negativeArbitrary, () -> byteArbitrary);
+			negativeArbitrary = Types.defaultIfNull(negativeArbitrary, () -> byteArbitrary);
 			negativeArbitrary = negativeArbitrary.lessOrEqual(negativeMax.byteValueExact());
 		}
 		return resolveArbitrary(byteArbitrary, positiveArbitrary, negativeArbitrary);
@@ -230,7 +230,7 @@ public final class JqwikJavaArbitraryResolver implements JavaArbitraryResolver {
 		FloatArbitrary positiveArbitrary = null;
 		FloatArbitrary negativeArbitrary = null;
 		if (positiveMin != null) {
-			positiveArbitrary = defaultIfNull(positiveArbitrary, () -> floatArbitrary);
+			positiveArbitrary = Types.defaultIfNull(positiveArbitrary, () -> floatArbitrary);
 			if (positiveMinInclusive != null && positiveMinInclusive) {
 				positiveArbitrary = positiveArbitrary.greaterOrEqual(positiveMin.floatValue());
 			} else {
@@ -238,7 +238,7 @@ public final class JqwikJavaArbitraryResolver implements JavaArbitraryResolver {
 			}
 		}
 		if (positiveMax != null) {
-			positiveArbitrary = defaultIfNull(positiveArbitrary, () -> floatArbitrary);
+			positiveArbitrary = Types.defaultIfNull(positiveArbitrary, () -> floatArbitrary);
 			if (positiveMaxInclusive != null && positiveMaxInclusive) {
 				positiveArbitrary = positiveArbitrary.lessOrEqual(positiveMax.floatValue());
 			} else {
@@ -246,7 +246,7 @@ public final class JqwikJavaArbitraryResolver implements JavaArbitraryResolver {
 			}
 		}
 		if (negativeMin != null) {
-			negativeArbitrary = defaultIfNull(negativeArbitrary, () -> floatArbitrary);
+			negativeArbitrary = Types.defaultIfNull(negativeArbitrary, () -> floatArbitrary);
 			if (negativeMinInclusive != null && negativeMinInclusive) {
 				negativeArbitrary = negativeArbitrary.greaterOrEqual(negativeMin.floatValue());
 			} else {
@@ -254,7 +254,7 @@ public final class JqwikJavaArbitraryResolver implements JavaArbitraryResolver {
 			}
 		}
 		if (negativeMax != null) {
-			negativeArbitrary = defaultIfNull(negativeArbitrary, () -> floatArbitrary);
+			negativeArbitrary = Types.defaultIfNull(negativeArbitrary, () -> floatArbitrary);
 			if (negativeMaxInclusive != null && negativeMaxInclusive) {
 				negativeArbitrary = negativeArbitrary.lessOrEqual(negativeMax.floatValue());
 			} else {
@@ -297,7 +297,7 @@ public final class JqwikJavaArbitraryResolver implements JavaArbitraryResolver {
 		DoubleArbitrary positiveArbitrary = null;
 		DoubleArbitrary negativeArbitrary = null;
 		if (positiveMin != null) {
-			positiveArbitrary = defaultIfNull(positiveArbitrary, () -> doubleArbitrary);
+			positiveArbitrary = Types.defaultIfNull(positiveArbitrary, () -> doubleArbitrary);
 			if (positiveMinInclusive != null && positiveMinInclusive) {
 				positiveArbitrary = positiveArbitrary.greaterOrEqual(positiveMin.doubleValue());
 			} else {
@@ -305,7 +305,7 @@ public final class JqwikJavaArbitraryResolver implements JavaArbitraryResolver {
 			}
 		}
 		if (positiveMax != null) {
-			positiveArbitrary = defaultIfNull(positiveArbitrary, () -> doubleArbitrary);
+			positiveArbitrary = Types.defaultIfNull(positiveArbitrary, () -> doubleArbitrary);
 			if (positiveMaxInclusive != null && positiveMaxInclusive) {
 				positiveArbitrary = positiveArbitrary.lessOrEqual(positiveMax.doubleValue());
 			} else {
@@ -313,7 +313,7 @@ public final class JqwikJavaArbitraryResolver implements JavaArbitraryResolver {
 			}
 		}
 		if (negativeMin != null) {
-			negativeArbitrary = defaultIfNull(negativeArbitrary, () -> doubleArbitrary);
+			negativeArbitrary = Types.defaultIfNull(negativeArbitrary, () -> doubleArbitrary);
 			if (negativeMinInclusive != null && negativeMinInclusive) {
 				negativeArbitrary = negativeArbitrary.greaterOrEqual(negativeMin.floatValue());
 			} else {
@@ -321,7 +321,7 @@ public final class JqwikJavaArbitraryResolver implements JavaArbitraryResolver {
 			}
 		}
 		if (negativeMax != null) {
-			negativeArbitrary = defaultIfNull(negativeArbitrary, () -> doubleArbitrary);
+			negativeArbitrary = Types.defaultIfNull(negativeArbitrary, () -> doubleArbitrary);
 			if (negativeMaxInclusive != null && negativeMaxInclusive) {
 				negativeArbitrary = negativeArbitrary.lessOrEqual(negativeMax.doubleValue());
 			} else {
@@ -359,19 +359,19 @@ public final class JqwikJavaArbitraryResolver implements JavaArbitraryResolver {
 		IntegerArbitrary positiveArbitrary = null;
 		IntegerArbitrary negativeArbitrary = null;
 		if (positiveMin != null) {
-			positiveArbitrary = defaultIfNull(positiveArbitrary, () -> integerArbitrary);
+			positiveArbitrary = Types.defaultIfNull(positiveArbitrary, () -> integerArbitrary);
 			positiveArbitrary = positiveArbitrary.greaterOrEqual(positiveMin.intValueExact());
 		}
 		if (positiveMax != null) {
-			positiveArbitrary = defaultIfNull(positiveArbitrary, () -> integerArbitrary);
+			positiveArbitrary = Types.defaultIfNull(positiveArbitrary, () -> integerArbitrary);
 			positiveArbitrary = positiveArbitrary.lessOrEqual(positiveMax.intValueExact());
 		}
 		if (negativeMin != null) {
-			negativeArbitrary = defaultIfNull(negativeArbitrary, () -> integerArbitrary);
+			negativeArbitrary = Types.defaultIfNull(negativeArbitrary, () -> integerArbitrary);
 			negativeArbitrary = negativeArbitrary.greaterOrEqual(negativeMin.intValueExact());
 		}
 		if (negativeMax != null) {
-			negativeArbitrary = defaultIfNull(negativeArbitrary, () -> integerArbitrary);
+			negativeArbitrary = Types.defaultIfNull(negativeArbitrary, () -> integerArbitrary);
 			negativeArbitrary = negativeArbitrary.lessOrEqual(negativeMax.intValueExact());
 		}
 		return resolveArbitrary(integerArbitrary, positiveArbitrary, negativeArbitrary);
@@ -395,19 +395,19 @@ public final class JqwikJavaArbitraryResolver implements JavaArbitraryResolver {
 		LongArbitrary positiveArbitrary = null;
 		LongArbitrary negativeArbitrary = null;
 		if (positiveMin != null) {
-			positiveArbitrary = defaultIfNull(positiveArbitrary, () -> longArbitrary);
+			positiveArbitrary = Types.defaultIfNull(positiveArbitrary, () -> longArbitrary);
 			positiveArbitrary = positiveArbitrary.greaterOrEqual(positiveMin.longValueExact());
 		}
 		if (positiveMax != null) {
-			positiveArbitrary = defaultIfNull(positiveArbitrary, () -> longArbitrary);
+			positiveArbitrary = Types.defaultIfNull(positiveArbitrary, () -> longArbitrary);
 			positiveArbitrary = positiveArbitrary.lessOrEqual(positiveMax.longValueExact());
 		}
 		if (negativeMin != null) {
-			negativeArbitrary = defaultIfNull(negativeArbitrary, () -> longArbitrary);
+			negativeArbitrary = Types.defaultIfNull(negativeArbitrary, () -> longArbitrary);
 			negativeArbitrary = negativeArbitrary.greaterOrEqual(negativeMin.longValueExact());
 		}
 		if (negativeMax != null) {
-			negativeArbitrary = defaultIfNull(negativeArbitrary, () -> longArbitrary);
+			negativeArbitrary = Types.defaultIfNull(negativeArbitrary, () -> longArbitrary);
 			negativeArbitrary = negativeArbitrary.lessOrEqual(negativeMax.longValueExact());
 		}
 		return resolveArbitrary(longArbitrary, positiveArbitrary, negativeArbitrary);
@@ -431,19 +431,19 @@ public final class JqwikJavaArbitraryResolver implements JavaArbitraryResolver {
 		BigIntegerArbitrary positiveArbitrary = null;
 		BigIntegerArbitrary negativeArbitrary = null;
 		if (positiveMin != null) {
-			positiveArbitrary = defaultIfNull(positiveArbitrary, () -> bigIntegerArbitrary);
+			positiveArbitrary = Types.defaultIfNull(positiveArbitrary, () -> bigIntegerArbitrary);
 			positiveArbitrary = positiveArbitrary.greaterOrEqual(positiveMin);
 		}
 		if (positiveMax != null) {
-			positiveArbitrary = defaultIfNull(positiveArbitrary, () -> bigIntegerArbitrary);
+			positiveArbitrary = Types.defaultIfNull(positiveArbitrary, () -> bigIntegerArbitrary);
 			positiveArbitrary = positiveArbitrary.lessOrEqual(positiveMax);
 		}
 		if (negativeMin != null) {
-			negativeArbitrary = defaultIfNull(negativeArbitrary, () -> bigIntegerArbitrary);
+			negativeArbitrary = Types.defaultIfNull(negativeArbitrary, () -> bigIntegerArbitrary);
 			negativeArbitrary = negativeArbitrary.greaterOrEqual(negativeMin);
 		}
 		if (negativeMax != null) {
-			negativeArbitrary = defaultIfNull(negativeArbitrary, () -> bigIntegerArbitrary);
+			negativeArbitrary = Types.defaultIfNull(negativeArbitrary, () -> bigIntegerArbitrary);
 			negativeArbitrary = negativeArbitrary.lessOrEqual(negativeMax);
 		}
 
@@ -473,7 +473,7 @@ public final class JqwikJavaArbitraryResolver implements JavaArbitraryResolver {
 		BigDecimalArbitrary positiveArbitrary = null;
 		BigDecimalArbitrary negativeArbitrary = null;
 		if (positiveMin != null) {
-			positiveArbitrary = defaultIfNull(positiveArbitrary, () -> bigDecimalArbitrary);
+			positiveArbitrary = Types.defaultIfNull(positiveArbitrary, () -> bigDecimalArbitrary);
 			if (positiveMinInclusive != null && positiveMinInclusive) {
 				positiveArbitrary = positiveArbitrary.greaterOrEqual(positiveMin);
 			} else {
@@ -481,7 +481,7 @@ public final class JqwikJavaArbitraryResolver implements JavaArbitraryResolver {
 			}
 		}
 		if (positiveMax != null) {
-			positiveArbitrary = defaultIfNull(positiveArbitrary, () -> bigDecimalArbitrary);
+			positiveArbitrary = Types.defaultIfNull(positiveArbitrary, () -> bigDecimalArbitrary);
 			if (positiveMaxInclusive != null && positiveMaxInclusive) {
 				positiveArbitrary = positiveArbitrary.lessOrEqual(positiveMax);
 			} else {
@@ -490,7 +490,7 @@ public final class JqwikJavaArbitraryResolver implements JavaArbitraryResolver {
 		}
 
 		if (negativeMin != null) {
-			negativeArbitrary = defaultIfNull(negativeArbitrary, () -> bigDecimalArbitrary);
+			negativeArbitrary = Types.defaultIfNull(negativeArbitrary, () -> bigDecimalArbitrary);
 			if (negativeMinInclusive != null && negativeMinInclusive) {
 				negativeArbitrary = negativeArbitrary.greaterOrEqual(negativeMin);
 			} else {
@@ -498,7 +498,7 @@ public final class JqwikJavaArbitraryResolver implements JavaArbitraryResolver {
 			}
 		}
 		if (negativeMax != null) {
-			negativeArbitrary = defaultIfNull(negativeArbitrary, () -> bigDecimalArbitrary);
+			negativeArbitrary = Types.defaultIfNull(negativeArbitrary, () -> bigDecimalArbitrary);
 			if (negativeMaxInclusive != null && negativeMaxInclusive) {
 				negativeArbitrary = negativeArbitrary.lessOrEqual(negativeMax);
 			} else {
@@ -536,9 +536,5 @@ public final class JqwikJavaArbitraryResolver implements JavaArbitraryResolver {
 		}
 
 		return defaultArbitrary;
-	}
-
-	private static <T> T defaultIfNull(@Nullable T obj, Supplier<T> defaultValue) {
-		return obj != null ? obj : defaultValue.get();
 	}
 }
