@@ -8,9 +8,9 @@ identifier: "generating-complex-types"
 weight: 32
 ---
 
-Fixture Monkey is capable of generating complex objects that are difficult to create as test fixtures.
+Fixture Monkey는 생성하기 어려운 객체를 테스트 픽스처로 쉽게 생성할 수 있습니다.
 
-This page contains examples of the various types of objects that can be generated.
+이 페이지는 생성할 수 있는 다양한 타입의 객체를 보여줍니다.
 
 ## Java
 ### Generic Objects
