@@ -9,7 +9,7 @@ identifier: "creating-objects-in-kotlin"
 
 Fixture Monkey also supports generating classes written in Kotlin code.
 
-In order to do this, first make sure you added the `fixture-monkey-kotlin-starter` dependency.
+In order to do this, first make sure you added the `fixture-monkey-starter-kotlin` dependency.
 
 Then we can add the Kotlin Plugin, to enable additional features of fixture monkey that support using Kotlin.
 
