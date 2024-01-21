@@ -32,7 +32,7 @@ testImplementation("com.navercorp.fixturemonkey:fixture-monkey-kotlin:{{< fixtur
 
 ##### fixture-monkey-starter-kotlin
 
-To help you get started using Fixture Monkey in a Kotlin environment, there is also a starter dependency **fixture-monkey-kotlin-starter** that comes with pre-configured dependencies such as **fixture-monkey-starter** or **fixture-monkey-jakarta-validation**.
+To help you get started using Fixture Monkey in a Kotlin environment, there is also a starter dependency **fixture-monkey-starter-kotlin** that comes with pre-configured dependencies such as **fixture-monkey-starter** or **fixture-monkey-jakarta-validation**.
 
 #### Gradle
 ```groovy
