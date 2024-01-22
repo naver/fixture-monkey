@@ -61,7 +61,7 @@ public class Product {
 }
 ```
 
-Fixture Monkey 를 사용하면 단 몇 줄의 코드로 Product 인스턴스를 생성할 수 있습니다.
+Fixture Monkey 를 사용하면, 단 몇 줄의 코드만으로도 Product 인스턴스를 생성할 수 있습니다.
 
 ```java
 
@@ -89,4 +89,4 @@ Fixture Monkey 는 객체를 생성하기 위한 기본 방법으로 `BeanArbitr
 
 다음으로, `giveMeOne()` 메서드를 사용하여 지정된 타입의 인스턴스를 생성합니다.
 
-then 절에서 알 수 있듯이, Product 클래스의 인스턴스가 생성됩니다.
+then 절에서 확인할 수 있듯이, Product 클래스의 인스턴스가 생성됩니다.
