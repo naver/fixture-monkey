@@ -64,7 +64,6 @@ public class Product {
 Fixture Monkey 를 사용하면, 단 몇 줄의 코드만으로도 Product 인스턴스를 생성할 수 있습니다.
 
 ```java
-
 @Test
 void test() {
     // given
