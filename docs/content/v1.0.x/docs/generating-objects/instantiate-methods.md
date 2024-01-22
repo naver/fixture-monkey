@@ -326,9 +326,10 @@ void test() {
         )
         .sample();
 
-		then(genericObject).isNotNull();
-		then(genericObject.getValue()).isNotNull();
-	}
+    then(genericObject).isNotNull();
+    then(genericObject.getValue()).isNotNull();
+}
+
 
 {{< /tab >}}
 {{< tab header="Kotlin" lang="kotlin">}}
