@@ -8,18 +8,18 @@ identifier: "instantiate-methods"
 weight: 32
 ---
 
-For each test, you may want to use a different way of creating objects.
-For example, even within the same class, one test may require initialization using the constructor, while another test may require initialization using its factory method.
+각 테스트마다 객체 생성을 다르게 하고 싶을 수 있습니다.
+예를 들어, 같은 클래스에서도 첫 테스트는 생성자로 초기화하고, 다른 테스트는 팩토리 메서드로 초기화를 할 수 있습니다.
 
-Fixture Monkey allows you to choose the preferred method of creating your object through the `instantiate()` method.
-{{< alert icon="💡" text="If the Kotlin Plugin is added, you can use the instantiateBy() method with a custom DSL." />}}
+Fixture Monkey는 `instantiate()` 메서드를 통해 객체 생성 방법을 선택할 수 있습니다.
+{{< alert icon="💡" text="만약 Kotlin Plugin을 추가한다면 커스텀 DSL에서 instantiateBy() 메서드를 사용할 수 있습니다." />}}
 
-From the `ArbitraryBuilder`, you can determine how the object is created by specifying the preferred instantiation method (constructor or factory method).
+`ArbitraryBuilder`에서 원하는 인스턴스 생성 방법(생성자 또는 팩토리 메서드)으로 객체를 생성할 수 있습니다.
 
-This doesn't mean that you have to tell the `ArbitraryBuilder` how to create an object every time you use it.
-If you want to set a global option as the default method for creating all objects with a Fixture Monkey instance, refer to the [Introspector](../introspector) page.
+그러나 `ArbitraryBuilder`를 사용할 때마다 매번 객체 생성 방법을 지정해야 하는 것은 아닙니다.
+Fixture Monkey 인스턴스에서 모든 객체 생성마다 추가되는 기본 메서드로 지정하고 싶다면 [Introspector](../introspector) 페이지를 참고해주세요.
 
-The `instantiate()` method is just a convenient way to modify the generation method from the `ArbitraryBuilder`.
+`instantiate()` 메서드는 `ArbitraryBuilder`를 사용할 때 객체를 편리하게 생성할 수 있도록 도와주는 메서드일 뿐입니다.
 
 ## Constuctor
 Let's say you have a custom class with a few different constructors that looks like this:
