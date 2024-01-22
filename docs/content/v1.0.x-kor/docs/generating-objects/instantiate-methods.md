@@ -21,8 +21,8 @@ Fixture Monkey 인스턴스에서 모든 객체 생성마다 추가되는 기본
 
 `instantiate()` 메서드는 `ArbitraryBuilder`를 사용할 때 객체를 편리하게 생성할 수 있도록 도와주는 메서드일 뿐입니다.
 
-## Constuctor
-Let's say you have a custom class with a few different constructors that looks like this:
+## Constructor
+몇몇 다른 생성자를 가진 커스텀 클래스가 있다고 가정해봅시다.
 
 {{< tabpane persist=false >}}
 {{< tab header="Java" lang="java">}}
@@ -114,7 +114,7 @@ class Product(
 {{< /tab >}}
 {{< /tabpane>}}
 
-Fixture Monkey allows you to select the exact constructor you'd like to use to create the object.
+Fixture Monkey는 객체를 생성하기 위한 생성자를 선택할 수 있습니다.
 
 ### NoArgsConstructor, DefaultConstructor
 The most basic way to use `instantiate` to tell the `ArbitraryBuilder` to create an object with its constructor is as follows:
