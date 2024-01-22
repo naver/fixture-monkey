@@ -218,7 +218,7 @@ constructor<Product> {
 참고로 private 생성자를 사용하는 것도 가능합니다.
 
 ### Constructor Parameter Hints
-In cases where you want to pass a specific value to the constructor, you can add a parameter name hint.
+생성자에 특정 값을 전달하려는 경우 매개변수 이름으로 힌트를 추가할 수 있습니다.
 
 {{< tabpane persist=false >}}
 {{< tab header="Java" lang="java">}}
@@ -262,11 +262,11 @@ fun test() {
 {{< /tab >}}
 {{< /tabpane>}}
 
-In this example, we provide a parameter name hint for the productName to be "str"
-This allows us to use the `set()` function to set the productName to the desired value (in this case "book").
+이 예제에서는 제품 이름에 대한 매개 변수 이름 힌트를 "str"으로 제공합니다.
+이를 통해 `set()` 함수를 사용하여 제품 이름을 원하는 값(이 경우 "책"을 의미)으로 설정할 수 있습니다.
 
-Although you can set the hint to any name, we recommend that you use the name in the constructor parameter to avoid confusion.
-Also note that once the name has been changed using the parameter name hint, you can no longer set it using the field name "productName".
+힌트를 어떤 이름으로든 설정할 수 있지만, 혼동을 피하기 위해 생성자 매개변수에 이름을 사용하는 것이 좋습니다.
+또한 매개변수 이름 힌트를 사용하여 이름을 변경한 후에는 더 이상 필드 이름 "productName"을 사용하여 설정할 수 없습니다.
 
 ### Using default arguments (Kotlin)
 In Kotlin, you have the flexibility to pass an additional value to a constructor parameter option, allowing you to decide whether to use the default argument if one is available.
