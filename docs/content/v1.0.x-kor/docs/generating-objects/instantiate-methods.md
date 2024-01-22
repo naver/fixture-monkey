@@ -151,10 +151,10 @@ fun test() {
 만약 NoArgsConstructor가 있다면 해당 생성자를 사용하고, 없다면 첫 번째로 작성된 생성자를 사용합니다.
 
 ### Specifying a Constructor
-If a class has multiple constructors, you can specify the desired constructor by providing the necessary parameter information.
-For instance, consider the Product class with two constructors requiring different parameters.
+클래스가 두 개 이상의 생성자를 가진다면 필요한 파라미터 정보를 제공하여 원하는 생성자를 지정할 수 있습니다.
+다음 두 개의 생성자를 가진 Product 클래스를 살펴봅시다.
 
-To use the constructor that creates instances with empty options, specify the paramters as follows:
+빈 옵션과 함께 생성자를 사용하려면 다음과 같이 매개 변수를 지정합니다.
 
 {{< tabpane persist=false >}}
 {{< tab header="Java" lang="java">}}
@@ -194,7 +194,7 @@ fun test() {
 {{< /tab >}}
 {{< /tabpane>}}
 
-If you want to use the other constructor that makes a `Product` with productName as "defaultProductName", you can specify it by just changing the parameter information:
+productName을 "defaultProductName"으로 하는 다른 생성자를 사용하려면 다음처럼 매개 변수 정보만 변경하면 됩니다.
 {{< tabpane persist=false >}}
 {{< tab header="Java" lang="java">}}
 
@@ -215,7 +215,7 @@ constructor<Product> {
 {{< /tab >}}
 {{< /tabpane>}}
 
-Note that using private constructors is also possible.
+참고로 private 생성자를 사용하는 것도 가능합니다.
 
 ### Constructor Parameter Hints
 In cases where you want to pass a specific value to the constructor, you can add a parameter name hint.
