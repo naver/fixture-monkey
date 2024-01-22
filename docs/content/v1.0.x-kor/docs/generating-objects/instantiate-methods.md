@@ -117,7 +117,7 @@ class Product(
 Fixture Monkey는 객체를 생성하기 위한 생성자를 선택할 수 있습니다.
 
 ### NoArgsConstructor, DefaultConstructor
-The most basic way to use `instantiate` to tell the `ArbitraryBuilder` to create an object with its constructor is as follows:
+`instantiate` 메서드를 사용하여 생성자에게 객체를 생성할 수 있도록 `ArbitraryBuilder`에 지시하는 기본적인 방법은 다음과 같습니다.
 
 {{< tabpane persist=false >}}
 {{< tab header="Java" lang="java">}}
@@ -147,8 +147,8 @@ fun test() {
 
 {{< /tab >}}
 {{< /tabpane>}}
-You can specify to use the constructor method by passing the `constructor()` option.
-If there is a NoArgsConstructor, it will be used to create the object. If not, the first written constructor is used.
+생성자 메서드를 사용하도록 지정하려면 `constructor()` 옵션을 전달하면 됩니다.
+만약 NoArgsConstructor가 있다면 해당 생성자를 사용하고, 없다면 첫 번째로 작성된 생성자를 사용합니다.
 
 ### Specifying a Constructor
 If a class has multiple constructors, you can specify the desired constructor by providing the necessary parameter information.
