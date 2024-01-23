@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Fixture Monkey on</title><link>https://naver.github.io/fixture-monkey/</link><description>Recent content in Fixture Monkey on</description><generator>Hugo -- gohugo.io</generator><language>en-US</language><copyright>Copyright (c) 2020-2021 Henk Verlinde</copyright><lastBuildDate>Tue, 06 Oct 2020 08:47:36 +0000</lastBuildDate><atom:link href="https://naver.github.io/fixture-monkey/index.xml" rel="self" type="application/rss+xml"/><item><title>Release Notes</title><link>https://naver.github.io/fixture-monkey/release-notes/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/release-notes/</guid><description>sectionStart
+v.1.0.13 # Add InterfacePlugin supports abstract classes through abstractClassExtends option.
+sectionEnd
+sectionStart
+sectionStart
 v.1.0.12 # Fix generating an object with the value class property.
 sectionEnd
 sectionStart
@@ -7,4 +11,4 @@ sectionEnd
 sectionStart
 v.1.0.10 # Fix setting object field by any other type.
 Refactor does not throw exception when it cannot generate, the next ArbitraryIntrospector will be used.
-Add handling when using an ArbitraryIntrospector that does not match the property type. Add a log entry if the property is of a container type, and throw an exception if the property is of a concrete type.</description></item><item><title>Docs</title><link>https://naver.github.io/fixture-monkey/docs/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/docs/</guid><description/></item></channel></rss>
+Add handling when using an ArbitraryIntrospector that does not match the property type.</description></item><item><title>Docs</title><link>https://naver.github.io/fixture-monkey/docs/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/docs/</guid><description/></item></channel></rss>
