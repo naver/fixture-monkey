@@ -1,17 +1,20 @@
 ---
-title: "Adding Bean Validation"
+title: "빈 유효성 검사 추가"
 weight: 24
 menu:
 docs:
-  parent: "get-started"
-  identifier: "adding-bean-validation"
+parent: "get-started"
+identifier: "adding-bean-validation"
 ---
 
-Sometimes, you might want to create a valid test object that adheres to the constraints specified by the Bean Validation annotations on your class.
+때로는 클래스의 Bean 유효성 검사 어노테이션에 지정된 제약조건을 준수하는 유효한 테스트 객체를 생성하고 싶을 수 있습니다.
 
-Fixture Monkey supports constraint annotations from the `jakarta.validation.constraints` and `javax.validation.constraints` packages.
+Fixture Monkey는 `jakarta.validation.constraints` 및 `javax.validation.constraints` 패키지의 제약 어노테이션을 지원합니다.
 
-To enable this feature, you need to add the `fixture-monkey-jakarta-validation` dependency (or `fixture-monkey-javax-validation` if you are using javax.validation.constraints) to your project as follows:
+이 기능을 사용하려면 다음과 같이 프로젝트에 `fixture-monkey-jakarta-validation` 종속성을 추가해야 합니다.
+<br/>
+
+javax.validation.constraints를 사용하는 경우 `fixture-monkey-javax-validation`을 추가해야 합니다.
 
 ##### Gradle
 ```groovy
@@ -27,11 +30,10 @@ testImplementation("com.navercorp.fixturemonkey:fixture-monkey-jakarta-validatio
   <scope>test</scope>
 </dependency>
 ```
+Bean 유효성 검사 어노테이션을 기반으로 객체를 생성하려면 아래 그림과 같이 FixtureMonkey에 `JakartaValidationPlugin` (`javax.validation.constraints`를 사용하는 경우 `JavaxValidationPlugin`) 옵션을 추가해야 합니다.
+<br />
 
-Fixture Monkey provides additional features as plugins.
-
-To generate objects based on Bean Validation annotations, you need to add the `JakartaValidationPlugin` (or `JavaxValidationPlugin` if you are using `javax.validation.constraints`) option to FixtureMonkey as shown below.
-If you've added the fixture-monkey-starter dependency, it's already in place.
+`fixture-monkey-starter` 종속성(dependency)을 추가했다면 이미 설치되어 있을 것입니다.
 
 ```java
 FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
@@ -39,7 +41,7 @@ FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
     .build();
 ```
 
-Let's assume that we have added several validation annotations to the previous `Product` class.
+이전 `Product`클래스에 몇 가지 유효성 검사 어노테이션을 추가했다고 가정해 보겠습니다.
 
 ```java
 @Value
@@ -61,7 +63,7 @@ public class Product {
 }
 ```
 
-With the FixtureMonkey instance we created earlier, we can now generate valid objects:
+앞서 생성한 FixtureMonkey 인스턴스로 이제 유효한 객체를 생성할 수 있습니다.
 
 ```
 @Test
@@ -86,4 +88,4 @@ void test() {
 }
 ```
 
-From the assertions, it's clear that the object created with FixtureMonkey meets all the validation annotation requirements.
+Assertions에서 `FixtureMonkey`로 생성된 객체가 모든 유효성 검사 어노테이션 요구 사항을 충족한다는 것을 알 수 있습니다.
