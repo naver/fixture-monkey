@@ -34,6 +34,7 @@ import com.navercorp.fixturemonkey.api.matcher.ExactTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptionsBuilder;
+import com.navercorp.fixturemonkey.api.type.Types;
 
 /**
  * This plugin is used to extend an interface.
@@ -44,48 +45,101 @@ public final class InterfacePlugin implements Plugin {
 	private boolean useAnonymousArbitraryIntrospector = true;
 
 	/**
-	 * Registers an interface implementation with a specified matcher.
-	 * This method facilitates adding custom implementations for interfaces using a matcher.
-	 *
-	 * @param <T> the type parameter of the interface
-	 * @param matcher the matcher to be used for matching interfaces
-	 * @param implementations a list of classes implementing the interface
-	 * @return the InterfacePlugin instance for fluent chaining
-	 */
-	public <T> InterfacePlugin interfaceImplements(
-		Matcher matcher,
-		List<Class<? extends T>> implementations
-	) {
-		return interfaceImplements(
-			new MatcherOperator<>(
-				matcher,
-				new InterfaceObjectPropertyGenerator<>(implementations))
-		);
-	}
-
-	/**
 	 * Registers implementations for a given interface.
 	 * This method validates that the provided class is an interface.
 	 * It throws an IllegalArgumentException if the validation fails.
 	 *
-	 * @param <T> the type parameter of the interface
-	 * @param interfaceClass the interface class to be implemented
+	 * @param <T>             the type parameter of the interface
+	 * @param interfaceType   the interface class to be implemented
 	 * @param implementations a list of classes implementing the interface
 	 * @return the InterfacePlugin instance for fluent chaining
 	 * @throws IllegalArgumentException if the first parameter is not an interface
 	 */
 	public <T> InterfacePlugin interfaceImplements(
-		Class<T> interfaceClass,
+		Class<T> interfaceType,
 		List<Class<? extends T>> implementations
 	) {
-		if (!Modifier.isInterface(interfaceClass.getModifiers())) {
+		if (!Modifier.isInterface(interfaceType.getModifiers())) {
 			throw new IllegalArgumentException(
 				"interfaceImplements option first parameter should be interface. "
-					+ interfaceClass.getTypeName()
+					+ interfaceType.getTypeName()
 			);
 		}
 
-		return interfaceImplements(new ExactTypeMatcher(interfaceClass), implementations);
+		return interfaceImplements(new ExactTypeMatcher(interfaceType), implementations);
+	}
+
+	/**
+	 * Registers an interface implementation with a specified matcher.
+	 * This method facilitates adding custom implementations for interfaces using a matcher.
+	 *
+	 * @param <T>             the type parameter of the interface
+	 * @param matcher         the matcher to be used for matching interfaces
+	 * @param implementations a list of classes implementing the interface
+	 * @return the InterfacePlugin instance for fluent chaining
+	 * @throws IllegalArgumentException if the first parameter is not an interface
+	 */
+	public <T> InterfacePlugin interfaceImplements(
+		Matcher matcher,
+		List<Class<? extends T>> implementations
+	) {
+		this.objectPropertyGenerators.add(
+			new MatcherOperator<>(
+				matcher.intersect(p -> Modifier.isInterface(Types.getActualType(p.getType()).getModifiers())),
+				new InterfaceObjectPropertyGenerator<>(implementations)
+			)
+		);
+
+		return this;
+	}
+
+	/**
+	 * Registers implementations for a given abstract class.
+	 * This method validates that the provided class is an abstract class.
+	 * It throws an IllegalArgumentException if the validation fails.
+	 *
+	 * @param <T>               the type parameter of the interface
+	 * @param abstractClassType the abstract class type to be implemented
+	 * @param implementations   a list of classes implementing the abstract class
+	 * @return the InterfacePlugin instance for fluent chaining
+	 * @throws IllegalArgumentException if the first parameter is not an abstract class
+	 */
+	public <T> InterfacePlugin abstractClassExtends(
+		Class<T> abstractClassType,
+		List<Class<? extends T>> implementations
+	) {
+		if (!Modifier.isAbstract(abstractClassType.getModifiers())) {
+			throw new IllegalArgumentException(
+				"abstractClassExtends option first parameter should be abstract class. "
+					+ abstractClassType.getTypeName()
+			);
+		}
+
+		return abstractClassExtends(new ExactTypeMatcher(abstractClassType), implementations);
+	}
+
+	/**
+	 * Registers an abstract class implementation with a specified matcher.
+	 * This method facilitates adding custom implementations for interfaces using a matcher.
+	 *
+	 * @param <T>             the type parameter of the abstract class
+	 * @param matcher         the matcher to be used for matching abstract class
+	 * @param implementations a list of classes implementing the abstract class
+	 * @return the InterfacePlugin instance for fluent chaining
+	 * @throws IllegalArgumentException if the first parameter is not an abstract class
+	 */
+	public <T> InterfacePlugin abstractClassExtends(
+		Matcher matcher,
+		List<Class<? extends T>> implementations
+	) {
+		this.objectPropertyGenerators.add(
+			new MatcherOperator<>(
+				matcher.intersect(p -> Modifier.isAbstract(Types.getActualType(p.getType()).getModifiers())),
+				new InterfaceObjectPropertyGenerator<>(implementations)
+			)
+		);
+
+		return this;
 	}
 
 	/**
@@ -95,6 +149,7 @@ public final class InterfacePlugin implements Plugin {
 	 * @param objectPropertyGenerator the object property generator to add
 	 * @return the InterfacePlugin instance for fluent chaining
 	 */
+	@Deprecated
 	public InterfacePlugin interfaceImplements(MatcherOperator<ObjectPropertyGenerator> objectPropertyGenerator) {
 		this.objectPropertyGenerators.add(objectPropertyGenerator);
 		return this;
@@ -106,7 +161,7 @@ public final class InterfacePlugin implements Plugin {
 	 * When enabled, it uses an instance of {@link AnonymousArbitraryIntrospector} as the fallback introspector.
 	 *
 	 * @param useAnonymousArbitraryIntrospector a boolean flag to enable (true) or disable (false)
-	 *        the anonymous arbitrary introspector. Default value is true.
+	 *                                          the anonymous arbitrary introspector. Default value is true.
 	 * @return the InterfacePlugin instance for fluent chaining
 	 */
 	public InterfacePlugin useAnonymousArbitraryIntrospector(boolean useAnonymousArbitraryIntrospector) {

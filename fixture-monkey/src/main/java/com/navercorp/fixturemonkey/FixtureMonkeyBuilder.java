@@ -36,6 +36,7 @@ import com.navercorp.fixturemonkey.api.context.MonkeyContextBuilder;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfoGenerator;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.generator.ContainerPropertyGenerator;
+import com.navercorp.fixturemonkey.api.generator.InterfaceObjectPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.NullInjectGenerator;
 import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGenerator;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
@@ -454,7 +455,9 @@ public final class FixtureMonkeyBuilder {
 		Matcher matcher,
 		List<Class<? extends T>> implementations
 	) {
-		defaultInterfacePlugin.interfaceImplements(matcher, implementations);
+		this.pushObjectPropertyGenerator(
+			new MatcherOperator<>(matcher, new InterfaceObjectPropertyGenerator<>(implementations))
+		);
 		return this;
 	}
 

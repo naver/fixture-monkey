@@ -69,6 +69,7 @@ import com.navercorp.fixturemonkey.api.jqwik.JavaTypeArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.jqwik.JqwikPlugin;
 import com.navercorp.fixturemonkey.api.matcher.ExactTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
+import com.navercorp.fixturemonkey.api.plugin.InterfacePlugin;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.AbstractNoneConcreteIntValue;
@@ -1341,9 +1342,12 @@ class FixtureMonkeyOptionsTest {
 	@Property
 	void sampleConcreteWhenHasSameNameProperty() {
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.interfaceImplements(
-				AbstractSamePropertyValue.class,
-				Collections.singletonList(ConcreteSamePropertyValue.class)
+			.plugin(
+				new InterfacePlugin()
+					.abstractClassExtends(
+						AbstractSamePropertyValue.class,
+						Collections.singletonList(ConcreteSamePropertyValue.class)
+					)
 			)
 			.objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)
 			.build();
@@ -1361,7 +1365,10 @@ class FixtureMonkeyOptionsTest {
 		implementations.add(AbstractNoneConcreteIntValue.class);
 
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.interfaceImplements(AbstractNoneValue.class, implementations)
+			.plugin(
+				new InterfacePlugin()
+					.abstractClassExtends(AbstractNoneValue.class, implementations)
+			)
 			.build();
 
 		AbstractNoneConcreteStringValue abstractNoneConcreteStringValue = new AbstractNoneConcreteStringValue();
@@ -1385,7 +1392,10 @@ class FixtureMonkeyOptionsTest {
 	void setConcreteClassWhenHasParentValue() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.interfaceImplements(AbstractValue.class, Collections.singletonList(ConcreteStringValue.class))
+			.plugin(
+				new InterfacePlugin()
+					.abstractClassExtends(AbstractValue.class, Collections.singletonList(ConcreteStringValue.class))
+			)
 			.build();
 
 		ConcreteStringValue expected = new ConcreteStringValue();
@@ -1404,9 +1414,12 @@ class FixtureMonkeyOptionsTest {
 	void setConcreteClassWhenHasNoParentValue() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.interfaceImplements(
-				AbstractNoneValue.class,
-				Collections.singletonList(AbstractNoneConcreteStringValue.class)
+			.plugin(
+				new InterfacePlugin()
+					.abstractClassExtends(
+						AbstractNoneValue.class,
+						Collections.singletonList(AbstractNoneConcreteStringValue.class)
+					)
 			)
 			.build();
 
@@ -1430,7 +1443,10 @@ class FixtureMonkeyOptionsTest {
 		implementations.add(ConcreteIntValue.class);
 
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.interfaceImplements(AbstractValue.class, implementations)
+			.plugin(
+				new InterfacePlugin()
+					.abstractClassExtends(AbstractValue.class, implementations)
+			)
 			.build();
 
 		ConcreteStringValue concreteStringValue = new ConcreteStringValue();
@@ -1455,9 +1471,12 @@ class FixtureMonkeyOptionsTest {
 	@Property
 	void sampleSelfRecursiveAbstract() {
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.interfaceImplements(
-				SelfRecursiveAbstractValue.class,
-				Collections.singletonList(SelfRecursiveImplementationValue.class)
+			.plugin(
+				new InterfacePlugin()
+					.abstractClassExtends(
+						SelfRecursiveAbstractValue.class,
+						Collections.singletonList(SelfRecursiveImplementationValue.class)
+					)
 			)
 			.objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)
 			.build();
