@@ -18,11 +18,8 @@
 
 package com.navercorp.fixturemonkey.api.jqwik;
 
-import static java.util.stream.Collectors.toList;
-
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.List;
 
 import javax.annotation.Nullable;
 
@@ -81,19 +78,14 @@ public final class JqwikJavaArbitraryResolver implements JavaArbitraryResolver {
 		if (pattern != null) {
 			Integer minValue = min != null ? min.intValue() : null;
 			Integer maxValue = max != null ? max.intValue() : null;
-			List<String> values = REGEX_GENERATOR.generateAll(
+
+			return Arbitraries.ofSuppliers(() -> REGEX_GENERATOR.generate(
 				pattern.getRegexp(),
 				pattern.getFlags(),
 				minValue,
-				maxValue
-			);
-			if (notBlank) {
-				values = values.stream()
-					.filter(it -> it != null && !it.trim().isEmpty())
-					.collect(toList());
-			}
-
-			return Arbitraries.of(values);
+				maxValue,
+				notBlank
+			));
 		}
 
 		if (email) {

@@ -18,19 +18,21 @@
 
 package com.navercorp.fixturemonkey.api.random;
 
-import java.util.ArrayList;
+import static java.util.stream.Collectors.toList;
+
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
+import javax.annotation.PreDestroy;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -38,16 +40,31 @@ import org.apiguardian.api.API.Status;
 import com.github.curiousoddman.rgxgen.RgxGen;
 import com.github.curiousoddman.rgxgen.config.RgxGenOption;
 import com.github.curiousoddman.rgxgen.config.RgxGenProperties;
+import com.mifmif.common.regex.Generex;
+
+import dk.brics.automaton.RegExp;
 
 @API(since = "0.6.9", status = Status.MAINTAINED)
 public final class RegexGenerator {
+	private static final Map<String, String> PREDEFINED_CHARACTER_CLASSES;
+	private static final int DEFAULT_REGEXP_GENERATION_TIMEOUT_SEC = 10;
+	private static final int DEFAULT_REGEXP_GENERATION_MAX_SIZE = 100;
 	private static final int FLAG_CASE_INSENSITIVE = 2;
-	public static final int DEFAULT_REGEXP_GENERATION_TIMEOUT_SEC = 10;
-	public static final int DEFAULT_REGEXP_GENERATION_MAX_SIZE = 100;
+	private static final ExecutorService executor = Executors.newSingleThreadExecutor();
 
-	public List<String> generateAll(String regex, int[] flags, @Nullable Integer min, @Nullable Integer max) {
+	static {
+		Map<String, String> characterClasses = new HashMap<>();
+		characterClasses.put("\\\\d", "[0-9]");
+		characterClasses.put("\\\\D", "[^0-9]");
+		characterClasses.put("\\\\s", "[ \t\n\f\r]");
+		characterClasses.put("\\\\S", "[^ \t\n\f\r]");
+		characterClasses.put("\\\\w", "[a-zA-Z_0-9]");
+		characterClasses.put("\\\\W", "[^a-zA-Z_0-9]");
+		PREDEFINED_CHARACTER_CLASSES = Collections.unmodifiableMap(characterClasses);
+	}
+
+	public String generate(String regex, int[] flags, @Nullable Integer min, @Nullable Integer max, boolean notBlank) {
 		boolean caseSensitive = Arrays.stream(flags).noneMatch(it -> it == FLAG_CASE_INSENSITIVE);
-		ExecutorService executor = Executors.newSingleThreadExecutor();
 
 		try {
 			RgxGen rgxGen = generateRgxGen(regex, caseSensitive);
@@ -55,21 +72,15 @@ public final class RegexGenerator {
 			int minLength = min == null ? 0 : min;
 			int maxLength = max == null ? Integer.MAX_VALUE : max;
 
-			List<String> result = new ArrayList<>();
+			String result = executor.submit(() ->
+				rgxGen.stream()
+					.filter(it -> it.length() >= minLength && it.length() <= maxLength)
+					.filter(it -> !(notBlank && it.trim().isEmpty()))
+					.limit(DEFAULT_REGEXP_GENERATION_MAX_SIZE)
+					.findFirst()
+			).get(DEFAULT_REGEXP_GENERATION_TIMEOUT_SEC, TimeUnit.SECONDS).orElse(null);
 
-			Future<?> future = executor.submit(() -> {
-				result.addAll(
-					rgxGen.stream()
-						.filter(it -> it.length() >= minLength && it.length() <= maxLength)
-						.limit(DEFAULT_REGEXP_GENERATION_MAX_SIZE)
-						.collect(Collectors.toList())
-				);
-			});
-
-			future.get(DEFAULT_REGEXP_GENERATION_TIMEOUT_SEC, TimeUnit.SECONDS);
-
-			List<String> validResults = getValidResults(regex, result, caseSensitive);
-			Collections.shuffle(validResults);
+			checkValidity(regex, result, caseSensitive);
 			return result;
 		} catch (Exception ex) {
 			throw new IllegalArgumentException(
@@ -80,9 +91,56 @@ public final class RegexGenerator {
 					regex
 				)
 			);
-		} finally {
-			executor.shutdown();
 		}
+	}
+
+	@Deprecated
+	public List<String> generateAll(String regex, int[] flags, @Nullable Integer min, @Nullable Integer max) {
+		for (Map.Entry<String, String> charClass : PREDEFINED_CHARACTER_CLASSES.entrySet()) {
+			regex = regex.replaceAll(charClass.getKey(), charClass.getValue());
+		}
+
+		RegExp regExp;
+		if (flags.length == 0) {
+			regExp = new RegExp(regex);
+		} else {
+			int intFlag = 0;
+			for (int flag : flags) {
+				intFlag = intFlag | flag;
+			}
+			regExp = new RegExp(regex, intFlag);
+		}
+
+		Generex generex = new Generex(regExp.toAutomaton());
+		return this.generateAll(generex, min, max);
+	}
+
+	@Deprecated
+	public List<String> generateAll(String regex) {
+		return this.generateAll(regex, null, null);
+	}
+
+	@Deprecated
+	public List<String> generateAll(String regex, @Nullable Integer min, @Nullable Integer max) {
+		return this.generateAll(new Generex(regex), min, max);
+	}
+
+	private List<String> generateAll(Generex generex, @Nullable Integer min, @Nullable Integer max) {
+		if (min == null) {
+			min = 0;
+		}
+
+		if (max == null) {
+			max = 255;
+		}
+
+		Integer regexMin = min;
+		Integer regexMax = max;
+		List<String> result = generex.getMatchedStrings(100).stream()
+			.filter(it -> it.length() >= regexMin && it.length() <= regexMax)
+			.collect(toList());
+		Collections.shuffle(result);
+		return result;
 	}
 
 	private static RgxGen generateRgxGen(String regex, boolean caseSensitive) {
@@ -95,20 +153,21 @@ public final class RegexGenerator {
 		return rgxGen;
 	}
 
-	private static List<String> getValidResults(String regex, List<String> result, boolean caseSensitive) {
+	private static void checkValidity(String regex, String result, boolean caseSensitive) {
 		Pattern pattern;
 		if (caseSensitive) {
 			pattern = Pattern.compile(regex);
 		} else {
 			pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
 		}
-		List<String> validResults = result.stream()
-			.filter(it -> pattern.matcher(it).matches())
-			.collect(Collectors.toList());
 
-		if (validResults.isEmpty()) {
+		if (!pattern.matcher(result).matches()) {
 			throw new NoSuchElementException();
 		}
-		return validResults;
+	}
+
+	@PreDestroy
+	public void terminateExecutor() {
+		executor.shutdown();
 	}
 }

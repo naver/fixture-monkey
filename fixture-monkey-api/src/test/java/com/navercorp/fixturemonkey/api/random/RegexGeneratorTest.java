@@ -21,7 +21,6 @@ package com.navercorp.fixturemonkey.api.random;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.assertj.core.api.BDDAssertions.thenThrownBy;
 
-import java.util.List;
 import java.util.regex.Pattern;
 
 import org.junit.jupiter.api.Test;
@@ -33,47 +32,48 @@ class RegexGeneratorTest {
 	@Test
 	void regExpGenerationSuccess() {
 		String emailRegex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
-		List<String> strings = SUT.generateAll(emailRegex, new int[] {}, null, null);
+		String result = SUT.generate(emailRegex, new int[] {}, null, null, false);
 
 		Pattern pattern = Pattern.compile(emailRegex);
-		then(strings).allMatch(it -> pattern.matcher(it).matches());
+		then(pattern.matcher(result).matches()).isTrue();
 	}
 
 	@Test
 	void generateRegExpWithCaseInsensitiveFlag() {
-		List<String> strings = SUT.generateAll("a", new int[] {FLAG_CASE_INSENSITIVE}, null, null);
+		String result = SUT.generate("a", new int[] {FLAG_CASE_INSENSITIVE}, null, null, false);
 
-		then("a").isIn(strings);
-		then("A").isIn(strings);
+		then(result).isIn("a", "A");
 	}
 
 	@Test
 	void generateRegExpWithMinMaxLength() {
-		List<String> strings = SUT.generateAll(
+		String result = SUT.generate(
 			"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$",
 			new int[] {},
 			3,
-			50
+			50,
+			false
 		);
 
-		then(strings).allMatch(it -> it.length() >= 3 && it.length() <= 50);
+		then(result.length()).isBetween(3, 50);
 	}
 
 	@Test
 	void generateInvalidRegExpThrows() {
 		thenThrownBy(
-			() -> SUT.generateAll("^^a", new int[] {}, null, null)
+			() -> SUT.generate("^^a", new int[] {}, null, null, false)
 		).isExactlyInstanceOf(IllegalArgumentException.class);
 	}
 
 	@Test
 	void generateIncalculableRegExpThrows() {
 		thenThrownBy(
-			() -> SUT.generateAll(
+			() -> SUT.generate(
 				"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$",
 				new int[] {},
 				null,
-				3
+				3,
+				false
 			)
 		).isExactlyInstanceOf(IllegalArgumentException.class);
 	}

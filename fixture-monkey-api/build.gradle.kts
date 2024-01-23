@@ -29,6 +29,7 @@ dependencies {
     compileOnly("net.jqwik:jqwik-web:${Versions.JQWIK}")
     compileOnly("net.jqwik:jqwik-time:${Versions.JQWIK}")
     compileOnly("com.github.curious-odd-man:rgxgen:1.4")
+    compileOnly("com.github.mifmif:generex:1.0.2")
 
     testImplementation("net.jqwik:jqwik-engine:${Versions.JQWIK}")
     testImplementation("net.jqwik:jqwik-api:${Versions.JQWIK}")
