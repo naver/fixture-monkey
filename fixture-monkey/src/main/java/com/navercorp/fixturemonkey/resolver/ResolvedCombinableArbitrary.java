@@ -88,7 +88,7 @@ final class ResolvedCombinableArbitrary<T> implements CombinableArbitrary<T> {
 		throw new IllegalArgumentException(
 			String.format(
 				"Given type %s could not be generated."
-					+ "Check the ArbitraryIntrospector used or the APIs used in the ArbitraryBuilder..",
+					+ " Check the ArbitraryIntrospector used or the APIs used in the ArbitraryBuilder.",
 				rootProperty.getType()
 			),
 			lastException
@@ -115,7 +115,7 @@ final class ResolvedCombinableArbitrary<T> implements CombinableArbitrary<T> {
 		throw new IllegalArgumentException(
 			String.format(
 				"Given type %s could not be generated."
-					+ "Check the ArbitraryIntrospector used or the APIs used in the ArbitraryBuilder.",
+					+ " Check the ArbitraryIntrospector used or the APIs used in the ArbitraryBuilder.",
 				rootProperty.getType()
 			),
 			lastException
