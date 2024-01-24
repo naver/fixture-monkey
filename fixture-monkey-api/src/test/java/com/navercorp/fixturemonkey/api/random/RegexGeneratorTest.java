@@ -32,7 +32,7 @@ class RegexGeneratorTest {
 	@Test
 	void regExpGenerationSuccess() {
 		String emailRegex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
-		String result = SUT.generate(emailRegex, new int[] {}, null, null, false);
+		String result = SUT.generate(emailRegex, new int[] {}, it -> true);
 
 		Pattern pattern = Pattern.compile(emailRegex);
 		then(pattern.matcher(result).matches()).isTrue();
@@ -40,19 +40,17 @@ class RegexGeneratorTest {
 
 	@Test
 	void generateRegExpWithCaseInsensitiveFlag() {
-		String result = SUT.generate("a", new int[] {FLAG_CASE_INSENSITIVE}, null, null, false);
+		String result = SUT.generate("a", new int[] {FLAG_CASE_INSENSITIVE}, it -> true);
 
 		then(result).isIn("a", "A");
 	}
 
 	@Test
-	void generateRegExpWithMinMaxLength() {
+	void generateRegExpWithPredicate() {
 		String result = SUT.generate(
 			"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$",
 			new int[] {},
-			3,
-			50,
-			false
+			it -> it.length() >= 3 && it.length() <= 50
 		);
 
 		then(result.length()).isBetween(3, 50);
@@ -61,7 +59,11 @@ class RegexGeneratorTest {
 	@Test
 	void generateInvalidRegExpThrows() {
 		thenThrownBy(
-			() -> SUT.generate("^^a", new int[] {}, null, null, false)
+			() -> SUT.generate(
+				"^^a",
+				new int[] {},
+				it -> true
+			)
 		).isExactlyInstanceOf(IllegalArgumentException.class);
 	}
 
@@ -71,9 +73,7 @@ class RegexGeneratorTest {
 			() -> SUT.generate(
 				"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$",
 				new int[] {},
-				null,
-				3,
-				false
+				it -> it.length() <= 3
 			)
 		).isExactlyInstanceOf(IllegalArgumentException.class);
 	}

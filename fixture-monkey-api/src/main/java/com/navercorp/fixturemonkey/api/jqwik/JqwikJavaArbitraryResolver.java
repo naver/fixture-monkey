@@ -20,6 +20,7 @@ package com.navercorp.fixturemonkey.api.jqwik;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.function.Predicate;
 
 import javax.annotation.Nullable;
 
@@ -76,15 +77,16 @@ public final class JqwikJavaArbitraryResolver implements JavaArbitraryResolver {
 
 		Arbitrary<String> arbitrary = stringArbitrary;
 		if (pattern != null) {
-			Integer minValue = min != null ? min.intValue() : null;
-			Integer maxValue = max != null ? max.intValue() : null;
+			int minLength = min == null ? 0 : min.intValue();
+			int maxLength = max == null ? Integer.MAX_VALUE : max.intValue();
+
+			Predicate<String> lengthCondition = it -> it.length() >= minLength && it.length() <= maxLength;
+			Predicate<String> notBlankCondition = it -> !(notBlank && it.trim().isEmpty());
 
 			return Arbitraries.ofSuppliers(() -> REGEX_GENERATOR.generate(
 				pattern.getRegexp(),
 				pattern.getFlags(),
-				minValue,
-				maxValue,
-				notBlank
+				lengthCondition.and(notBlankCondition)
 			));
 		}
 

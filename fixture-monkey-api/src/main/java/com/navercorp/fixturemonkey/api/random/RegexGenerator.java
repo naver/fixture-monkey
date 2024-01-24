@@ -29,6 +29,7 @@ import java.util.NoSuchElementException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
@@ -48,7 +49,6 @@ import dk.brics.automaton.RegExp;
 public final class RegexGenerator {
 	private static final Map<String, String> PREDEFINED_CHARACTER_CLASSES;
 	private static final int DEFAULT_REGEXP_GENERATION_TIMEOUT_SEC = 10;
-	private static final int DEFAULT_REGEXP_GENERATION_MAX_SIZE = 100;
 	private static final int FLAG_CASE_INSENSITIVE = 2;
 	private static final ExecutorService executor = Executors.newSingleThreadExecutor();
 
@@ -63,20 +63,15 @@ public final class RegexGenerator {
 		PREDEFINED_CHARACTER_CLASSES = Collections.unmodifiableMap(characterClasses);
 	}
 
-	public String generate(String regex, int[] flags, @Nullable Integer min, @Nullable Integer max, boolean notBlank) {
+	public String generate(String regex, int[] flags, Predicate<String> stringCondition) {
 		boolean caseSensitive = Arrays.stream(flags).noneMatch(it -> it == FLAG_CASE_INSENSITIVE);
 
 		try {
 			RgxGen rgxGen = generateRgxGen(regex, caseSensitive);
 
-			int minLength = min == null ? 0 : min;
-			int maxLength = max == null ? Integer.MAX_VALUE : max;
-
 			String result = executor.submit(() ->
 				rgxGen.stream()
-					.filter(it -> it.length() >= minLength && it.length() <= maxLength)
-					.filter(it -> !(notBlank && it.trim().isEmpty()))
-					.limit(DEFAULT_REGEXP_GENERATION_MAX_SIZE)
+					.filter(stringCondition)
 					.findFirst()
 			).get(DEFAULT_REGEXP_GENERATION_TIMEOUT_SEC, TimeUnit.SECONDS).orElse(null);
 
@@ -85,7 +80,7 @@ public final class RegexGenerator {
 		} catch (Exception ex) {
 			throw new IllegalArgumentException(
 				String.format(
-					"String generation failed for the regular expression \"%s\" provided in @Pattern."
+					"String generation failed for the regular expression \"%s\"."
 						+ " Either the regular expression is incorrect,"
 						+ " or cannot produce a string that matches the regular expression.",
 					regex
