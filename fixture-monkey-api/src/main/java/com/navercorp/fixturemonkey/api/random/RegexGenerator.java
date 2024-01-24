@@ -64,10 +64,10 @@ public final class RegexGenerator {
 	}
 
 	public String generate(String regex, int[] flags, Predicate<String> stringCondition) {
-		boolean caseSensitive = Arrays.stream(flags).noneMatch(it -> it == FLAG_CASE_INSENSITIVE);
+		boolean caseInSensitive = Arrays.stream(flags).anyMatch(it -> it == FLAG_CASE_INSENSITIVE);
 
 		try {
-			RgxGen rgxGen = generateRgxGen(regex, caseSensitive);
+			RgxGen rgxGen = generateRgxGen(regex, caseInSensitive);
 
 			String result = executor.submit(() ->
 				rgxGen.stream()
@@ -75,7 +75,7 @@ public final class RegexGenerator {
 					.findFirst()
 			).get(DEFAULT_REGEXP_GENERATION_TIMEOUT_SEC, TimeUnit.SECONDS).orElse(null);
 
-			checkValidity(regex, result, caseSensitive);
+			checkValidity(regex, result, caseInSensitive);
 			return result;
 		} catch (Exception ex) {
 			throw new IllegalArgumentException(
@@ -138,9 +138,9 @@ public final class RegexGenerator {
 		return result;
 	}
 
-	private static RgxGen generateRgxGen(String regex, boolean caseSensitive) {
+	private static RgxGen generateRgxGen(String regex, boolean caseInSensitive) {
 		RgxGenProperties properties = new RgxGenProperties();
-		if (!caseSensitive) {
+		if (caseInSensitive) {
 			RgxGenOption.CASE_INSENSITIVE.setInProperties(properties, true);
 		}
 		RgxGen rgxGen = new RgxGen(regex);
@@ -148,12 +148,12 @@ public final class RegexGenerator {
 		return rgxGen;
 	}
 
-	private static void checkValidity(String regex, String result, boolean caseSensitive) {
+	private static void checkValidity(String regex, String result, boolean caseInSensitive) {
 		Pattern pattern;
-		if (caseSensitive) {
-			pattern = Pattern.compile(regex);
-		} else {
+		if (caseInSensitive) {
 			pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
+		} else {
+			pattern = Pattern.compile(regex);
 		}
 
 		if (!pattern.matcher(result).matches()) {
