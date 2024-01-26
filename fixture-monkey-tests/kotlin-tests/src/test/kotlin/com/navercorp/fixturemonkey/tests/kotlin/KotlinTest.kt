@@ -31,6 +31,7 @@ import com.navercorp.fixturemonkey.api.introspector.FactoryMethodArbitraryIntros
 import com.navercorp.fixturemonkey.api.introspector.FailoverIntrospector
 import com.navercorp.fixturemonkey.api.introspector.FieldReflectionArbitraryIntrospector
 import com.navercorp.fixturemonkey.api.type.Types.GeneratingWildcardType
+import com.navercorp.fixturemonkey.customizer.Values
 import com.navercorp.fixturemonkey.kotlin.KotlinPlugin
 import com.navercorp.fixturemonkey.kotlin.get
 import com.navercorp.fixturemonkey.kotlin.giveMeBuilder
@@ -387,6 +388,23 @@ class KotlinTest {
         val actual: BuilderObjectCustomBuildName = sut.giveMeOne()
 
         then(actual).isNull()
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun setLazyJustNotChanged() {
+        // given
+        class StringObject(val string: String)
+
+        val expected = StringObject("test")
+
+        // when
+        val actual = SUT.giveMeBuilder<StringObject>()
+            .setLazy("$") { Values.just(expected) }
+            .setExp(StringObject::string, "notTest")
+            .sample()
+
+        // then
+        then(actual).isEqualTo(expected)
     }
 
     companion object {
