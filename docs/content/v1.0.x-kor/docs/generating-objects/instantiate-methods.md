@@ -352,10 +352,10 @@ fun test() {
 
 제네릭 객체로 작업할 때 생성자를 실제 타입으로 사용하도록 지정할 수 있습니다.
 
-### Using Constructors with Nested Objects
-In scenarios involving nested objects, where you wish to specify the creation of both objects using their constructors, you can designate each type and specify the constructor to be used.
+### 중첩된 객체가 포함된 생성자
+중첩된 객체와 관련된 시나리오에서 생성자를 사용하여 두 객체 생성하는 경우 각 타입을 지정하거나 사용할 생성자를 지정할 수 있습니다.
 
-For example, consider the `ProductList` class that uses the `Product` class:
+예를 들어 `Product` 클래스를 사용하는 `ProductList` 클래스를 생각해 보겠습니다.
 
 {{< tabpane persist=false >}}
 {{< tab header="Java" lang="java">}}
@@ -381,7 +381,7 @@ class ProductList(val listName: String, val list: List<Product>) {
 {{< /tab >}}
 {{< /tabpane>}}
 
-You can specify to use a certain constructor for both `ProductList` and `Product` with their constructors like the following:
+다음과 같이 생성자와 함께 `ProductList`와 `Product` 모두에 특정 생성자를 사용하도록 지정할 수 있습니다.
 
 {{< tabpane persist=false >}}
 {{< tab header="Java" lang="java">}}
@@ -436,7 +436,7 @@ fun test() {
 {{< /tab >}}
 {{< /tabpane>}}
 
-{{< alert icon="💡" text="It is also possible to combine both constructor and factory method approaches for different properties within the instantiate method. In the above example, the ProductList can be initialized with the factory method, while the Product can be instantiated using the constructor." />}}
+{{< alert icon="💡" text="instantiate 메서드 내에서 서로 다른 프로퍼티에 대해 생성자 메서드와 팩토리 메서드 접근 방식을 모두 결합할 수도 있습니다. 위의 예제에서 ProductList는 팩토리 메서드를 사용하여 초기화할 수 있고, Product는 생성자를 사용하여 인스턴스화할 수 있습니다." />}}
 
 ## Factory Method
 The second way to create an object is by using its factory method.
