@@ -217,7 +217,7 @@ constructor<Product> {
 
 참고로 private 생성자를 사용하는 것도 가능합니다.
 
-### 매개변수에 힌트 제공
+### 매개변수 이름으로 힌트 제공
 생성자에 특정 값을 전달하려는 경우 매개변수 이름으로 힌트를 추가할 수 있습니다.
 
 {{< tabpane persist=false >}}
@@ -438,10 +438,10 @@ fun test() {
 
 {{< alert icon="💡" text="instantiate 메서드 내에서 서로 다른 프로퍼티에 대해 생성자 메서드와 팩토리 메서드 접근 방식을 모두 결합할 수도 있습니다. 위의 예제에서 ProductList는 팩토리 메서드를 사용하여 초기화할 수 있고, Product는 생성자를 사용하여 인스턴스화할 수 있습니다." />}}
 
-## Factory Method
-The second way to create an object is by using its factory method.
+## 팩토리 메서드
+객체를 생성하는 두 번째 방법은 팩토리 메서드를 사용하는 것입니다.
 
-Consider the same Product class above, which now includes a factory method called `from`.
+'from'이라는 팩토리 메서드가 포함된 위의 동일한 Product 클래스를 생각해 보겠습니다.
 
 {{< tabpane persist=false >}}
 {{< tab header="Java" lang="java">}}
@@ -496,8 +496,8 @@ class Product(
 {{< /tabpane>}}
 
 
-### Specifying Factory Method
-You can specify the factory method to be used by providing its name.
+### 특정 팩토리 메서드 사용
+메서드 이름을 제공하여 사용할 팩토리 메서드를 지정할 수 있습니다.
 
 {{< tabpane persist=false >}}
 {{< tab header="Java" lang="java">}}
@@ -530,7 +530,7 @@ fun test() {
 {{< /tab >}}
 {{< /tabpane>}}
 
-If there are multiple factory methods with the same name, you can differentiate them by specifying parameter type information, similar to how it's done in the `constructor()` method.
+이름이 같은 팩토리 메서드가 여러 개 있는 경우 `constructor()` 메서드에서와 마찬가지로 매개변수 유형 정보로 메서드를 구분할 수 있습니다.
 
 {{< tabpane persist=false >}}
 {{< tab header="Java" lang="java">}}
@@ -550,8 +550,8 @@ factory<Product>("from") {
 {{< /tab >}}
 {{< /tabpane>}}
 
-### Factory Method Parameter Hints
-Parameter name hints can also be added when using `factory()`, and it works the same as the parameter name hint of `constructor()`.
+### 팩토리 메서드에서 매개변수 이름으로 힌트 제공
+매개변수 이름으로 힌트를 제공하는 방법은 `factory()`를 사용할 때도 추가할 수 있으며, `constructor()`에서 매개변수 이름으로 힌트 제공하는 방법과 동일하게 동작합니다.
 
 {{< tabpane persist=false >}}
 {{< tab header="Java" lang="java">}}
