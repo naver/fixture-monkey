@@ -119,8 +119,8 @@ fixtureMonkey.giveMeBuilder<Product>()
 
 ### setInner()
 
-`setInner()`를 사용하면 `InnerSpec` 인스턴스 내에 정의된 사용자 정의를 빌더에 적용할 수 있습니다.
-`InnerSpec` 은 적용할 사용자 정의에 대한 타입-독립적 명세입니다.
+`setInner()`를 사용하면 `InnerSpec` 인스턴스에 정의된 커스텀을 빌더에 적용할 수 있습니다.
+`InnerSpec` 은 적용할 커스텀에 대한 타입-독립적 명세입니다.
 
 `InnerSpec` 인스턴스를 재사용하여 중첩 프로퍼티를 일관되고 쉽게 구성할 수 있습니다.
 특히 Map의 속성을 커스텀할 때 유용합니다.
@@ -226,8 +226,8 @@ fixtureMonkey.giveMeBuilder<Product>()
 
 ### limit
 
-`set()`, `setLazy()`, 및 `setPostCondition()` 메서드는 추가 매개변수를 통해 사용자 정의를 적용할 횟수를 제한할 수 있습니다.
-이것은 표현식이 여러 속성을 참조하는 경우에 유용합니다.
+`set()`, `setLazy()`, 및 `setPostCondition()` 메서드는 추가 매개변수를 통해 커스텀을 적용할 횟수를 제한할 수 있습니다.
+이것은 표현식이 여러 프로퍼티를 참조하는 경우에 유용합니다.
 
 {{< tabpane persist=false >}}
 {{< tab header="Java" lang="java">}}
