@@ -21,8 +21,8 @@ Fixture Monkey 인스턴스에서 모든 객체 생성마다 추가되는 기본
 
 `instantiate()` 메서드는 `ArbitraryBuilder`를 사용할 때 객체를 편리하게 생성할 수 있도록 도와주는 메서드일 뿐입니다.
 
-## Constructor
-몇몇 다른 생성자를 가진 커스텀 클래스가 있다고 가정해봅시다.
+## 생성자
+몇몇 다른 생성자를 가진 커스텀 클래스가 있다고 가정해보겠습니다.
 
 {{< tabpane persist=false >}}
 {{< tab header="Java" lang="java">}}
@@ -116,7 +116,7 @@ class Product(
 
 Fixture Monkey는 객체를 생성하기 위한 생성자를 선택할 수 있습니다.
 
-### NoArgsConstructor, DefaultConstructor
+### 인자가 없는 생성자 또는 기본 생성자
 `instantiate` 메서드를 사용하여 생성자에게 객체를 생성할 수 있도록 `ArbitraryBuilder`에 지시하는 기본적인 방법은 다음과 같습니다.
 
 {{< tabpane persist=false >}}
@@ -150,7 +150,7 @@ fun test() {
 생성자 메서드를 사용하도록 지정하려면 `constructor()` 옵션을 전달하면 됩니다.
 만약 NoArgsConstructor가 있다면 해당 생성자를 사용하고, 없다면 첫 번째로 작성된 생성자를 사용합니다.
 
-### Specifying a Constructor
+### 특정 생성자 지정
 클래스가 두 개 이상의 생성자를 가진다면 필요한 파라미터 정보를 제공하여 원하는 생성자를 지정할 수 있습니다.
 다음 두 개의 생성자를 가진 Product 클래스를 살펴봅시다.
 
@@ -217,7 +217,7 @@ constructor<Product> {
 
 참고로 private 생성자를 사용하는 것도 가능합니다.
 
-### Constructor Parameter Hints
+### 매개변수에 힌트 제공
 생성자에 특정 값을 전달하려는 경우 매개변수 이름으로 힌트를 추가할 수 있습니다.
 
 {{< tabpane persist=false >}}
@@ -268,8 +268,8 @@ fun test() {
 힌트를 어떤 이름으로든 설정할 수 있지만, 혼동을 피하기 위해 생성자 매개변수에 이름을 사용하는 것이 좋습니다.
 또한 매개변수 이름 힌트를 사용하여 이름을 변경한 후에는 더 이상 필드 이름 "productName"을 사용하여 설정할 수 없습니다.
 
-### Using default arguments (Kotlin)
-In Kotlin, you have the flexibility to pass an additional value to a constructor parameter option, allowing you to decide whether to use the default argument if one is available.
+### 기본 인자 설정 (Kotlin)
+Kotlin에서는 생성자 매개 변수 옵션에 추가 값을 전달할 수 있는 유연성이 있어 기본 인수를 사용할 경우 사용 여부를 결정할 수 있습니다.
 
 ```kotlin
 @Test
@@ -288,9 +288,9 @@ fun test() {
 }
 ```
 
-### Generic Objects
-Generic Objects can also be instantiated in a similar way.
-Consider this sample class `GenericObject`:
+### 제네릭 객체
+제네릭 객체도 비슷한 방식으로 인스턴스화할 수 있습니다.
+샘플 클래스 `GenericObject`를 살펴보겠습니다.
 
 {{< tabpane persist=false >}}
 {{< tab header="Java" lang="java">}}
@@ -350,7 +350,7 @@ fun test() {
 {{< /tab >}}
 {{< /tabpane>}}
 
-You can specify to use the constructor with the actual type when working with generic objects.
+제네릭 객체로 작업할 때 생성자를 실제 타입으로 사용하도록 지정할 수 있습니다.
 
 ### Using Constructors with Nested Objects
 In scenarios involving nested objects, where you wish to specify the creation of both objects using their constructors, you can designate each type and specify the constructor to be used.
