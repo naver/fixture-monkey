@@ -436,7 +436,7 @@ fun test() {
 {{< /tab >}}
 {{< /tabpane>}}
 
-{{< alert icon="💡" text="instantiate 메서드 내에서 서로 다른 프로퍼티에 대해 생성자 메서드와 팩토리 메서드 접근 방식을 모두 결합할 수도 있습니다. 위의 예제에서 ProductList는 팩토리 메서드를 사용하여 초기화할 수 있고, Product는 생성자를 사용하여 인스턴스화할 수 있습니다." />}}
+{{< alert icon="💡" text="인스턴스화를 진행하는 메서드 내에서 서로 다른 프로퍼티에 대해 생성자 메서드와 팩토리 메서드 접근 방식을 모두 결합할 수도 있습니다. 위의 예제에서 ProductList는 팩토리 메서드를 사용하여 초기화할 수 있고, Product는 생성자를 사용하여 인스턴스화할 수 있습니다." />}}
 
 ## 팩토리 메서드
 객체를 생성하는 두 번째 방법은 팩토리 메서드를 사용하는 것입니다.
@@ -593,8 +593,8 @@ fun test() {
 {{< /tab >}}
 {{< /tabpane>}}
 
-## Field & JavaBeansProperty
-For each instantiation method (constructor() and factory()), you can choose whether to generate properties based on the fields or the JavaBeans Property (getter & setter).
+## 필드와 자바 빈 프로퍼티
+각 인스턴스화를 진행하는 메서드(`constructor()`와 `factory()`)에서 필드 또는 자바 빈 프로퍼티(getter & setter) 기반 중 하나의 방법으로 프로퍼티 생성 여부를 선택할 수 있습니다.
 
 {{< tabpane persist=false >}}
 {{< tab header="Java" lang="java">}}
@@ -621,11 +621,11 @@ For each instantiation method (constructor() and factory()), you can choose whet
 {{< /tab >}}
 {{< /tabpane>}}
 
-If you use field, the value for the fields will be generated.
-If you use javaBeans Property, having a getter and setter in your class is sufficient, and a random value will be generated.
+필드를 사용하는 경우 필드에 대한 값이 생성됩니다.
+자바 빈 프로퍼티를 사용하는 경우 클래스에 게터와 세터가 있으면 충분하며, 임의 값이 생성됩니다.
 
-### Excluding properties
-To exclude some properties from being generated, you can use the `filter()` method.
+### 프로퍼티 제외
+일부 프로퍼티가 생성되지 않도록 제외하기 위해 `filter()` 메서드를 사용할 수 있습니다.
 
 {{< tabpane persist=false >}}
 {{< tab header="Java" lang="java">}}
@@ -662,4 +662,4 @@ To exclude some properties from being generated, you can use the `filter()` meth
 {{< /tab >}}
 {{< /tabpane>}}
 
-For example, you can exclude private fields from being generated as shown in the first example, or you can filter out certain properties by name, as demonstrated in the second example.
+예를 들어 첫 번째 예시와 같이 private 필드가 생성되지 않도록 제외하거나 두 번째 예시와 같이 특정 속성을 이름별로 필터링할 수 있습니다.
