@@ -9,7 +9,7 @@ weight: 33
 ---
 
 [`instantiate`](../instantiate-methods)를 사용하여 `ArbitraryBuilder`에서 객체를 생성하는 방법을 변경할 수 있지만, 전역적으로 객체를 생성하는 방법을 변경하고 싶은 경우가 있을 수 있습니다.
-Fixture Monkey는 다양한 `Introspector`를 제공한 객체 생성 방법을 제공합니다.
+Fixture Monkey는 다양한 `Introspector`를 제공하는 객체 생성 방법을 제공합니다.
 
 `Introspector`는 Fixture Monkey가 객체를 생성하는 기본 방법을 정의합니다.
 각 introspector는 클래스의 인스턴스를 생성할 수 있는 몇 가지 제약 조건이 있습니다.
@@ -17,8 +17,8 @@ Fixture Monkey는 다양한 `Introspector`를 제공한 객체 생성 방법을 
 사용하려는 introspector를 `FixtureMonkey`의 `objectIntrospector` 옵션을 사용하여 변경할 수 있습니다.
 
 ## BeanArbitraryIntrospector
-The `BeanArbitraryIntrospector` is the default introspector that fixture monkey uses for object creation.
-It creates new instances using reflection and the setter method, so the class it creates must have a no-args constructor and setters.
+`BeanArbitraryIntrospector`는 Fixture Monkey가 객체 생성에 사용하는 기본 introspector입니다.
+리플렉션과 setter 메서드를 사용하여 새 인스턴스를 생성하므로 생성할 클래스에는 인자가 없는 생성자(또는 기본생성자)와 setter가 있어야 합니다.
 
 ```java
 FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
