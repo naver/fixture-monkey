@@ -61,9 +61,9 @@ FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
 ```
 
 ## FailoverArbitraryIntrospector
-Sometimes your production code may contain several classes with different configurations, making it difficult to generate all objects with a single introspector.
-In this case, you can use the `FailoverArbitraryIntrospector`.
-This introspector allows you to use multiple introspectors, and it will continue the introspection even if one of the introspectors fails to generate.
+프로덕션 코드에서 다수의 클래스가 있을 때 각 클래스마다 다른 설정을 가진다면 하나의 introspector로 모든 객체를 생성하기 어려울 수 있습니다.
+이 경우 `FailoverArbitraryIntrospector`를 사용할 수 있습니다.
+`FailoverArbitraryIntrospector`를 사용하면 두 개 이상의 introspector를 사용할 수 있으며, introspector 중 하나가 생성에 실패하더라도 `FailoverArbitraryIntrospector`는 계속 introspector를 생성합니다.
 
 ```java
 FixtureMonkey sut = FixtureMonkey.builder()
