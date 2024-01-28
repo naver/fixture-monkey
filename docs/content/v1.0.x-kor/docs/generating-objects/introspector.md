@@ -78,5 +78,4 @@ FixtureMonkey sut = FixtureMonkey.builder()
 
 ----------------
 
-Additional introspectors have been introduced inside plugins, such as [`JacksonObjectArbitraryIntrospector`](../../plugins/jackson-plugin/jackson-object-arbitrary-introspector) or
-[`PrimaryConstructorArbitraryIntrospector`](../../plugins/kotlin-plugin/introspectors-for-kotlin)
+최근 [`JacksonObjectArbitraryIntrospector`](../../plugins/jackson-plugin/jackson-object-arbitrary-introspector)와 [`PrimaryConstructorArbitraryIntrospector`](../../plugins/kotlin-plugin/introspectors-for-kotlin) 같은 introspector도 플러그인 내부에 추가 됐습니다.
