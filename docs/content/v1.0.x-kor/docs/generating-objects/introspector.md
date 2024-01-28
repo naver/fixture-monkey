@@ -29,7 +29,7 @@ FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
 ## ConstructorPropertiesArbitraryIntrospector
 주어진 생성자로 객체를 생성하려면 `ConstructorPropertiesArbitraryIntrospector`를 사용해야 합니다.
 
-`ConstructorPropertiesArbitraryIntrospector`안 경우 클래스 생성자에 `@ConstructorProperties`가 있거나 없으면 클래스가 레코드 타입이어야 합니다.
+`ConstructorPropertiesArbitraryIntrospector`인 경우 클래스 생성자에 `@ConstructorProperties`가 있거나 없으면 클래스가 레코드 타입이어야 합니다.
 (또는 Lombok을 사용하는 경우 lombok.config 파일에 `lombok.anyConstructor.addConstructorProperties=true`를 추가할 수 있습니다.)
 
 레코드 클래스를 생성할 때 여러 생성자를 가질 경우 `@ConstructorProperties` 주석이 있는 생성자가 우선 선택됩니다.
