@@ -8,13 +8,13 @@ identifier: "introspector"
 weight: 33
 ---
 
-While you can change the way an object is created in the `ArbitraryBuilder` with [`instantiate`](../instantiate-methods), there may be cases where you want to change the way objects are created globally.
-Fixture Monkey lets you choose the way you want to create your object by providing different `Introspectors`.
+[`instantiate`](../instantiate-methods)를 사용하여 `ArbitraryBuilder`에서 객체를 생성하는 방법을 변경할 수 있지만, 전역적으로 객체를 생성하는 방법을 변경하고 싶은 경우가 있을 수 있습니다.
+Fixture Monkey는 다양한 `Introspector`를 제공한 객체 생성 방법을 제공합니다.
 
-An `Introspector` defines the default way of how Fixture Monkey creates objects.
-Each introspector has some kind of restrictions that the class must have in order for the introspector to generate instances of that class.
+`Introspector`는 Fixture Monkey가 객체를 생성하는 기본 방법을 정의합니다.
+각 introspector는 클래스의 인스턴스를 생성할 수 있는 몇 가지 제약 조건이 있습니다.
 
-You can change the introspector you use by using the `objectIntrospector` option of Fixture Monkey.
+사용하려는 introspector를 `FixtureMonkey`의 `objectIntrospector` 옵션을 사용하여 변경할 수 있습니다.
 
 ## BeanArbitraryIntrospector
 The `BeanArbitraryIntrospector` is the default introspector that fixture monkey uses for object creation.
