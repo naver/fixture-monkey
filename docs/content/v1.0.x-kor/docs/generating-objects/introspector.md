@@ -51,8 +51,8 @@ FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
 ```
 
 ## BuilderArbitraryIntrospector
-To generate a class using the class's builder, you can use `BuilderArbitraryIntrospector`.
-It requires that the class has a builder.
+클래스 빌더를 사용하여 클래스를 생성하려면 `BuilderArbitraryIntrospector`를 사용할 수 있습니다.
+이런 경우 클래스에 빌더가 있어야 합니다.
 
 ```java
 FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
