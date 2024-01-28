@@ -41,8 +41,8 @@ FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
 ```
 
 ## FieldReflectionArbitraryIntrospector
-`FieldReflectionArbitraryIntrospector` creates new instances with reflection and also sets the fields with reflection.
-So the class to be generated must have a no-args constructor and one of the getters or setters.
+`FieldReflectionArbitraryIntrospector`는 리플렉션을 사용하여 새 인스턴스를 생성하고 필드를 설정합니다.
+따라서 생성할 클래스는 인자가 없는 생성자(또는 기본 생성자)와 getter 또는 setter 중 하나를 가져야 합니다.
 
 ```java
 FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
