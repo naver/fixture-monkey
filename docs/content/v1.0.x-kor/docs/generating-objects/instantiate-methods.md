@@ -17,7 +17,7 @@ Fixture Monkey는 `instantiate()` 메서드를 통해 객체 생성 방법을 �
 `ArbitraryBuilder`에서 원하는 인스턴스 생성 방법(생성자 또는 팩토리 메서드)으로 객체를 생성할 수 있습니다.
 
 그러나 `ArbitraryBuilder`를 사용할 때마다 매번 객체 생성 방법을 지정해야 하는 것은 아닙니다.
-Fixture Monkey 인스턴스에서 모든 객체 생성마다 추가되는 기본 메서드로 지정하고 싶다면 [Introspector](../introspector) 페이지를 참고해주세요.
+전역 옵션으로 FixtureMonkey 인스턴스에서 객체 생성 방식을 지정해주고 싶다면, [Introspector](../introspector) 페이지를 참고해주세요.
 
 `instantiate()` 메서드는 `ArbitraryBuilder`를 사용할 때 객체를 편리하게 생성할 수 있도록 도와주는 메서드일 뿐입니다.
 
@@ -289,7 +289,7 @@ fun test() {
 ```
 
 ### 제네릭 객체
-제네릭 객체도 비슷한 방식으로 인스턴스화할 수 있습니다.
+제네릭 객체도 비슷한 방식으로 객체를 생성할 수 있습니다.
 샘플 클래스 `GenericObject`를 살펴보겠습니다.
 
 {{< tabpane persist=false >}}
@@ -436,7 +436,7 @@ fun test() {
 {{< /tab >}}
 {{< /tabpane>}}
 
-{{< alert icon="💡" text="인스턴스화를 진행하는 메서드 내에서 서로 다른 프로퍼티에 대해 생성자 메서드와 팩토리 메서드 접근 방식을 모두 결합할 수도 있습니다. 위의 예제에서 ProductList는 팩토리 메서드를 사용하여 초기화할 수 있고, Product는 생성자를 사용하여 인스턴스화할 수 있습니다." />}}
+{{< alert icon="💡" text="객체를 생성하는 메서드 내에서 서로 다른 프로퍼티에 대해 생성자 메서드와 팩토리 메서드 접근 방식을 모두 결합할 수도 있습니다. 위의 예제에서 ProductList는 팩토리 메서드를 사용하여 초기화할 수 있고, Product는 생성자를 사용하여 인스턴스화할 수 있습니다." />}}
 
 ## 팩토리 메서드
 객체를 생성하는 두 번째 방법은 팩토리 메서드를 사용하는 것입니다.
@@ -594,7 +594,7 @@ fun test() {
 {{< /tabpane>}}
 
 ## 필드와 자바 빈 프로퍼티
-각 인스턴스화를 진행하는 메서드(`constructor()`와 `factory()`)에서 필드 또는 자바 빈 프로퍼티(getter & setter) 기반 중 하나의 방법으로 프로퍼티 생성 여부를 선택할 수 있습니다.
+각 객체를 생성하는 메서드(`constructor()`와 `factory()`)에서 필드 또는 자바 빈 프로퍼티(getter & setter) 기반 중 하나의 방법으로 프로퍼티 생성 여부를 선택할 수 있습니다.
 
 {{< tabpane persist=false >}}
 {{< tab header="Java" lang="java">}}
