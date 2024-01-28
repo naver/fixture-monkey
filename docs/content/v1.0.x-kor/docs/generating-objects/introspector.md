@@ -9,7 +9,7 @@ weight: 33
 ---
 
 [`instantiate`](../instantiate-methods)를 사용하여 `ArbitraryBuilder`에서 객체를 생성하는 방법을 변경할 수 있지만, 전역적으로 객체를 생성하는 방법을 변경하고 싶은 경우가 있을 수 있습니다.
-Fixture Monkey는 다양한 `Introspector`를 제공하는 객체 생성 방법을 제공합니다.
+Fixture Monkey는 다양한 `Introspector`로 객체를 생성하는 방법을 제공합니다.
 
 `Introspector`는 Fixture Monkey가 객체를 생성하는 기본 방법을 정의합니다.
 각 introspector는 클래스의 인스턴스를 생성할 수 있는 몇 가지 제약 조건이 있습니다.
@@ -27,12 +27,12 @@ FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
 ```
 
 ## ConstructorPropertiesArbitraryIntrospector
-To generate an object with its given constructor, you can use `ConstructorPropertiesArbitraryIntrospector`.
+주어진 생성자로 객체를 생성하려면 `ConstructorPropertiesArbitraryIntrospector`를 사용해야 합니다.
 
-For `ConstructorPropertiesArbitraryIntrospector`, the generated class should have a constructor with `@ConstructorProperties` or the class should be a record type.
-(Or, if you are using Lombok, you can add `lombok.anyConstructor.addConstructorProperties=true` to the lombok.config file.)
+`ConstructorPropertiesArbitraryIntrospector`안 경우 클래스 생성자에 `@ConstructorProperties`가 있거나 없으면 클래스가 레코드 타입이어야 합니다.
+(또는 Lombok을 사용하는 경우 lombok.config 파일에 `lombok.anyConstructor.addConstructorProperties=true`를 추가할 수 있습니다.)
 
-When you create a record class and have multiple constructors, the constructor with the `@ConstructorProperties` annotation has priority.
+레코드 클래스를 생성할 때 여러 생성자를 가질 경우 `@ConstructorProperties` 주석이 있는 생성자가 우선 선택됩니다.
 
 ```java
 FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
