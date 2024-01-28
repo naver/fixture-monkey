@@ -1,5 +1,5 @@
 ---
-title: "인스턴스화에 필요한 메서드"
+title: "객체 생성 방법 지정하기"
 images: []
 menu:
 docs:
