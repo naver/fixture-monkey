@@ -44,9 +44,9 @@ fixtureMonkey.giveMeBuilder<Product>()
 
 ```java
 Product product = fixture.giveMeBuilder(Product.class)
-	 * 		.set("options", Values.just(List.of("red", "medium", "adult"))
-	 * 		.set("options[0]", "blue")
-	 * 		.sample();
+	  		  .set("options", Values.just(List.of("red", "medium", "adult"))
+	  		  .set("options[0]", "blue")
+	    		  .sample();
 ```
 
 > 예를 들어, 위에서 생성된 Product 인스턴스의 options[0] 값은 "blue" 가 아닌 `Just`로 설정된 리스트로 유지됩니다.
@@ -120,7 +120,7 @@ fixtureMonkey.giveMeBuilder<Product>()
 ### setInner()
 
 `setInner()`를 사용하면 `InnerSpec` 인스턴스에 정의된 커스텀을 빌더에 적용할 수 있습니다.
-`InnerSpec` 은 적용할 커스텀에 대한 타입-독립적 명세입니다.
+`InnerSpec` 은 타입에 독립적으로 사용 가능한 커스텀 명세입니다.
 
 `InnerSpec` 인스턴스를 재사용하여 중첩 프로퍼티를 일관되고 쉽게 구성할 수 있습니다.
 특히 Map의 속성을 커스텀할 때 유용합니다.
@@ -207,7 +207,7 @@ fixtureMonkey.giveMeBuilder(Product::class.java)
 
 ### fixed()
 
-`fixed()` 는 임의의 빌더가 샘플링될 때마다 동일한 값의 인스턴스를 일관되게 반환하도록 할 때 사용합니다.
+`fixed()` 는 ArbitraryBuilder가 샘플링될 때마다 동일한 값의 인스턴스를 일관되게 반환하도록 할 때 사용합니다.
 
 {{< tabpane persist=false >}}
 {{< tab header="Java" lang="java">}}
@@ -233,13 +233,13 @@ fixtureMonkey.giveMeBuilder<Product>()
 {{< tab header="Java" lang="java">}}
 
 fixtureMonkey.giveMeBuilder(Product.class)
-  .set("options[*]", "red", 2); // up to 2 elements in options will be set to "red"
+  .set("options[*]", "red", 2); // options에 "red"는 2개까지만 설정될 수 있습니다.
 
 {{< /tab >}}
 {{< tab header="Kotlin" lang="kotlin">}}
 
 fixtureMonkey.giveMeBuilder<Product>()
-    .set("options[*]", "red", 2) // up to 2 elements in options will be set to "red"
+    .set("options[*]", "red", 2) // options에 "red"는 2개까지만 설정될 수 있습니다.
 
 {{< /tab >}}
 {{< /tabpane>}}
