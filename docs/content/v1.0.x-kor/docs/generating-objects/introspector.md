@@ -63,7 +63,7 @@ FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
 ## FailoverArbitraryIntrospector
 프로덕션 코드에서 다수의 클래스가 있을 때 각 클래스마다 다른 설정을 가진다면 하나의 introspector로 모든 객체를 생성하기 어려울 수 있습니다.
 이 경우 `FailoverArbitraryIntrospector`를 사용할 수 있습니다.
-`FailoverArbitraryIntrospector`를 사용하면 두 개 이상의 introspector를 사용할 수 있으며, introspector 중 하나가 생성에 실패하더라도 `FailoverArbitraryIntrospec속tor`는 계속 다음 introspector로 객체 생성을 시도합니다
+`FailoverArbitraryIntrospector`를 사용하면 두 개 이상의 introspector를 사용할 수 있으며, introspector 중 하나가 생성에 실패하더라도 `FailoverArbitraryIntrospec속tor`는 계속 다음 introspector로 객체 생성을 시도합니다.
 
 ```java
 FixtureMonkey sut = FixtureMonkey.builder()
@@ -78,4 +78,4 @@ FixtureMonkey sut = FixtureMonkey.builder()
 
 ----------------
 
-최근 [`JacksonObjectArbitraryIntrospector`](../../plugins/jackson-plugin/jackson-object-arbitrary-introspector)와 [`PrimaryConstructorArbitraryIntrospector`](../../plugins/kotlin-plugin/introspectors-for-kotlin) 같은 introspector도 플러그인 내부에 추가 됐습니다.
+플러그인 별로 관련된 introspector도 존재합니다. 예를들어 [`JacksonObjectArbitraryIntrospector`](../../plugins/jackson-plugin/jackson-object-arbitrary-introspector)와 [`PrimaryConstructorArbitraryIntrospector`](../../plugins/kotlin-plugin/introspectors-for-kotlin)가 존재합니다.
