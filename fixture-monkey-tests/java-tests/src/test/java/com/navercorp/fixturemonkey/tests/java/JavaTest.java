@@ -62,6 +62,7 @@ import com.navercorp.fixturemonkey.customizer.Values;
 import com.navercorp.fixturemonkey.resolver.ArbitraryBuilderCandidateFactory;
 import com.navercorp.fixturemonkey.resolver.ArbitraryBuilderCandidateList;
 import com.navercorp.fixturemonkey.tests.java.ConstructorAndPropertyTestSpecs.ConsturctorAndProperty;
+import com.navercorp.fixturemonkey.tests.java.ConstructorTestSpecs.FieldAndConstructorParameterMismatchObject;
 import com.navercorp.fixturemonkey.tests.java.ConstructorTestSpecs.SimpleContainerObject;
 import com.navercorp.fixturemonkey.tests.java.ImmutableDepthTestSpecs.DepthStringValueList;
 import com.navercorp.fixturemonkey.tests.java.ImmutableDepthTestSpecs.OneDepthStringValue;
@@ -1208,5 +1209,19 @@ class JavaTest {
 		// then
 		String expected = stringObject.getObject().getValue();
 		then(actual).isEqualTo(expected);
+	}
+
+	@Test
+	void fieldAndConstructorParameterMismatch() {
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.pushExactTypeArbitraryIntrospector(
+				FieldAndConstructorParameterMismatchObject.class,
+				ConstructorPropertiesArbitraryIntrospector.INSTANCE
+			)
+			.build();
+
+		String actual = sut.giveMeOne(FieldAndConstructorParameterMismatchObject.class).getValue();
+
+		then(actual).isNotNull();
 	}
 }

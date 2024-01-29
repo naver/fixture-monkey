@@ -18,6 +18,8 @@
 
 package com.navercorp.fixturemonkey.api.introspector;
 
+import javax.annotation.Nullable;
+
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
@@ -25,6 +27,7 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.property.Property;
+import com.navercorp.fixturemonkey.api.property.PropertyGenerator;
 
 /**
  * Introspects specific properties matched by {@link Matcher}.
@@ -45,5 +48,15 @@ public final class TypedArbitraryIntrospector implements ArbitraryIntrospector, 
 	@Override
 	public boolean match(Property property) {
 		return arbitraryIntrospector.match(property);
+	}
+
+	@Nullable
+	@Override
+	public PropertyGenerator getRequiredPropertyGenerator(Property property) {
+		if (arbitraryIntrospector.match(property)) {
+			return arbitraryIntrospector.getOperator().getRequiredPropertyGenerator(property);
+		}
+
+		return null;
 	}
 }
