@@ -134,8 +134,14 @@ public class JacksonSpecs {
 
 	@JsonTypeInfo(use = Id.NAME, include = As.WRAPPER_OBJECT)
 	@JsonSubTypes({
-		@JsonSubTypes.Type(value = TypeAWithAnnotationsIncludeWrapperObject.class, name = "TypeAWithAnnotationsIncludeWrapperObject"),
-		@JsonSubTypes.Type(value = TypeBWithAnnotationsIncludeWrapperObject.class, name = "TypeBWithAnnotationsIncludeWrapperObject")
+		@JsonSubTypes.Type(
+			value = TypeAWithAnnotationsIncludeWrapperObject.class,
+			name = "TypeAWithAnnotationsIncludeWrapperObject"
+			),
+		@JsonSubTypes.Type(
+			value = TypeBWithAnnotationsIncludeWrapperObject.class,
+			name = "TypeBWithAnnotationsIncludeWrapperObject"
+			)
 	})
 	public interface TypeWithAnnotationsIncludeWrapperObject {
 	}

@@ -24,7 +24,6 @@ import static org.assertj.core.api.BDDAssertions.then;
 import org.junit.jupiter.api.RepeatedTest;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
-import com.navercorp.fixturemonkey.jackson.introspector.JacksonObjectArbitraryIntrospector;
 import com.navercorp.fixturemonkey.jackson.plugin.JacksonPlugin;
 import com.navercorp.fixturemonkey.tests.java17.RecordTestSpecs.ContainerRecord;
 import com.navercorp.fixturemonkey.tests.java17.RecordTestSpecs.DateTimeRecord;

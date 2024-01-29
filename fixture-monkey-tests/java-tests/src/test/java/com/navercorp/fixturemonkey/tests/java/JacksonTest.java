@@ -17,7 +17,6 @@ import com.navercorp.fixturemonkey.jackson.plugin.JacksonPlugin;
 import com.navercorp.fixturemonkey.tests.java.ImmutableJavaTestSpecs.ContainerObject;
 import com.navercorp.fixturemonkey.tests.java.ImmutableJavaTestSpecs.Enum;
 import com.navercorp.fixturemonkey.tests.java.ImmutableJavaTestSpecs.JavaTypeObject;
-import com.navercorp.fixturemonkey.tests.java.ImmutableJavaTestSpecs.RootJavaTypeObject;
 import com.navercorp.fixturemonkey.tests.java.JacksonSpecs.ConstructorObject;
 import com.navercorp.fixturemonkey.tests.java.JacksonSpecs.JsonTypeInfoIdClass;
 import com.navercorp.fixturemonkey.tests.java.JacksonSpecs.JsonTypeInfoIdName;
@@ -214,8 +213,10 @@ class JacksonTest {
 	@RepeatedTest(TEST_COUNT)
 	void sampleEnumKeyMap() {
 		thenNoException()
-			.isThrownBy(() -> SUT.giveMeBuilder(new TypeReference<List<Map<Enum, String>>>() {
-					})
+			.isThrownBy(() -> SUT.giveMeBuilder(
+						new TypeReference<List<Map<Enum, String>>>() {
+						}
+					)
 					.size("$", 2)
 					.sample()
 			);
