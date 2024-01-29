@@ -12,8 +12,6 @@ Add InterfacePlugin supports abstract classes through `abstractClassExtends` opt
 sectionEnd
 
 sectionStart
-
-sectionStart
 ### v.1.0.12
 Fix generating an object with the value class property.
 
