@@ -139,7 +139,7 @@ class ImmutableJavaTestSpecs {
 		}
 
 		@Override
-		public boolean contains(Object o) {
+		public boolean contains(Object object) {
 			return false;
 		}
 
@@ -154,37 +154,37 @@ class ImmutableJavaTestSpecs {
 		}
 
 		@Override
-		public <T> T[] toArray(T[] a) {
+		public <T> T[] toArray(T[] array) {
 			return null;
 		}
 
 		@Override
-		public boolean add(String s) {
+		public boolean add(String str) {
 			return false;
 		}
 
 		@Override
-		public boolean remove(Object o) {
+		public boolean remove(Object object) {
 			return false;
 		}
 
 		@Override
-		public boolean containsAll(Collection<?> c) {
+		public boolean containsAll(Collection<?> collection) {
 			return false;
 		}
 
 		@Override
-		public boolean addAll(Collection<? extends String> c) {
+		public boolean addAll(Collection<? extends String> collection) {
 			return false;
 		}
 
 		@Override
-		public boolean retainAll(Collection<?> c) {
+		public boolean retainAll(Collection<?> collection) {
 			return false;
 		}
 
 		@Override
-		public boolean removeAll(Collection<?> c) {
+		public boolean removeAll(Collection<?> collection) {
 			return false;
 		}
 

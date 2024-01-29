@@ -8,7 +8,7 @@ import org.junit.jupiter.api.RepeatedTest;
 import com.navercorp.fixturemonkey.FixtureMonkey;
 
 class InterfaceDefaultMethodTest {
-	private final static FixtureMonkey SUT = FixtureMonkey.create();
+	private static final FixtureMonkey SUT = FixtureMonkey.create();
 
 	@RepeatedTest(TEST_COUNT)
 	void defaultMethod() {
