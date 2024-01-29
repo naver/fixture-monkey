@@ -23,6 +23,7 @@ import org.apiguardian.api.API.Status;
 
 import net.jqwik.api.Arbitrary;
 
+import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.container.DecomposedContainerValueFactory;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.customizer.Values.Just;
@@ -64,7 +65,10 @@ public final class NodeSetLazyManipulator<T> implements NodeManipulator {
 		}
 
 		if (value instanceof Just) {
-			value = (T)((Just)value).getValue();
+			Just just = (Just)value;
+			objectNode.setArbitrary(CombinableArbitrary.from(just::getValue));
+			lazyArbitrary.clear();
+			return;
 		}
 
 		NodeSetDecomposedValueManipulator<T> nodeSetDecomposedValueManipulator =

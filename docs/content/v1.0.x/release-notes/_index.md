@@ -9,6 +9,8 @@ sectionStart
 ### v.1.0.13
 Add InterfacePlugin supports abstract classes through `abstractClassExtends` option.
 
+Fix setLazy with value wrapped by Just would not be manipulated
+
 sectionEnd
 
 sectionStart
