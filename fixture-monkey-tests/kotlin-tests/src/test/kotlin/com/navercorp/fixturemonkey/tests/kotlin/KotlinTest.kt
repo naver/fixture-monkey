@@ -40,6 +40,7 @@ import com.navercorp.fixturemonkey.kotlin.giveMeOne
 import com.navercorp.fixturemonkey.kotlin.instantiator.instantiateBy
 import com.navercorp.fixturemonkey.kotlin.into
 import com.navercorp.fixturemonkey.kotlin.intoGetter
+import com.navercorp.fixturemonkey.kotlin.introspector.PrimaryConstructorArbitraryIntrospector
 import com.navercorp.fixturemonkey.kotlin.pushExactTypeArbitraryIntrospector
 import com.navercorp.fixturemonkey.kotlin.setExp
 import com.navercorp.fixturemonkey.kotlin.setExpGetter
@@ -405,6 +406,22 @@ class KotlinTest {
 
         // then
         then(actual).isEqualTo(expected)
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun pushPrimaryConstructorIntrospector() {
+        // given
+        class StringObject(val string: String)
+
+        val sut = FixtureMonkey.builder()
+            .pushExactTypeArbitraryIntrospector<StringObject>(PrimaryConstructorArbitraryIntrospector.INSTANCE)
+            .build()
+
+        // when
+        val actual = sut.giveMeOne<StringObject>().string
+
+        // then
+        then(actual).isNotNull
     }
 
     companion object {

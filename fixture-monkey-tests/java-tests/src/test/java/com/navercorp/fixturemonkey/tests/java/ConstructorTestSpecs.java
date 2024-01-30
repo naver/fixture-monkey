@@ -1,5 +1,6 @@
 package com.navercorp.fixturemonkey.tests.java;
 
+import java.beans.ConstructorProperties;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -223,6 +224,19 @@ public class ConstructorTestSpecs {
 
 		public SimpleContainerObject(List<JavaTypeObject> list) {
 			this.list = list;
+		}
+	}
+
+	public static class FieldAndConstructorParameterMismatchObject {
+		private final String value;
+
+		@ConstructorProperties("integer")
+		public FieldAndConstructorParameterMismatchObject(int integer) {
+			this.value = String.valueOf(integer);
+		}
+
+		public String getValue() {
+			return value;
 		}
 	}
 }

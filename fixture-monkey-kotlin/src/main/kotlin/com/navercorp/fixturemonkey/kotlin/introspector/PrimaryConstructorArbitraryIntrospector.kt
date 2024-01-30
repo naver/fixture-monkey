@@ -23,7 +23,10 @@ import com.navercorp.fixturemonkey.api.container.ConcurrentLruCache
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult
+import com.navercorp.fixturemonkey.api.property.Property
+import com.navercorp.fixturemonkey.api.property.PropertyGenerator
 import com.navercorp.fixturemonkey.api.type.Types
+import com.navercorp.fixturemonkey.kotlin.property.KotlinPropertyGenerator
 import org.apiguardian.api.API
 import org.apiguardian.api.API.Status.MAINTAINED
 import org.slf4j.LoggerFactory
@@ -71,6 +74,8 @@ class PrimaryConstructorArbitraryIntrospector : ArbitraryIntrospector {
         )
     }
 
+    override fun getRequiredPropertyGenerator(property: Property): PropertyGenerator = KOTLIN_PROPERTY_GENERATOR
+
     private fun resolveArbitrary(
         parameter: KParameter,
         arbitrariesByPropertyName: Map<String?, Any?>,
@@ -91,6 +96,7 @@ class PrimaryConstructorArbitraryIntrospector : ArbitraryIntrospector {
     companion object {
         val INSTANCE = PrimaryConstructorArbitraryIntrospector()
         private val LOGGER = LoggerFactory.getLogger(PrimaryConstructorArbitraryIntrospector::class.java)
+        private val KOTLIN_PROPERTY_GENERATOR = KotlinPropertyGenerator()
         private val CONSTRUCTOR_CACHE = ConcurrentLruCache<Class<*>, KFunction<*>>(2048)
     }
 }
