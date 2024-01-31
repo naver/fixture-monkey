@@ -9,7 +9,7 @@ identifier: "creating-objects-in-kotlin"
 
 Fixture Monkey 는 Kotlin 으로 작성된 클래스를 생성하는 것도 지원합니다.
 
-먼저 `fixture-monkey-starter-kotlin` 의존성을 추가했는지 확인하세요.
+먼저 `fixture-monkey-starter-kotlin` 종속성을 추가했는지 확인하세요.
 
 그런 다음 Kotlin 플러그인을 추가하여, Fixture Monkey 의 Kotlin 지원 기능을 활성화 할 수 있습니다.
 
