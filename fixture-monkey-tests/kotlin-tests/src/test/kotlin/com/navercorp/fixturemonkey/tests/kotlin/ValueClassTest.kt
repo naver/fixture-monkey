@@ -56,9 +56,36 @@ class ValueClassTest {
         then(actual.foo).isNotNull
     }
 
+    @Test
+    fun privateConstructorValueClassProperty() {
+        class ValueClassObject(val foo: FooWithPrivateConstructor)
+
+        val actual: ValueClassObject = SUT.giveMeOne()
+
+        then(actual).isNotNull
+        then(actual.foo).isNotNull
+    }
+
+    @Test
+    fun privateConstructorValueClassPropertyFixed() {
+        class ValueClassObject(val foo: FooWithPrivateConstructor)
+
+        val actual: ValueClassObject = SUT.giveMeBuilder<ValueClassObject>()
+            .fixed()
+            .sample()
+
+        then(actual).isNotNull
+        then(actual.foo).isNotNull
+    }
+
     @JvmInline
     value class Foo(
         val bar: String,
+    )
+
+    @JvmInline
+    value class FooWithPrivateConstructor private constructor(
+        val bar: String
     )
 
     companion object {
