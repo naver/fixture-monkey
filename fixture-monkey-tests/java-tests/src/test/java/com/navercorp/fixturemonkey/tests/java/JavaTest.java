@@ -1334,4 +1334,32 @@ class JavaTest {
 
 		then(actual).isEqualTo("test");
 	}
+
+	@RepeatedTest(TEST_COUNT)
+	void setExp() {
+		String actual = SUT.giveMeJavaBuilder(JavaTypeObject.class)
+			.setExpGetter(JavaTypeObject::getString, "test")
+			.sample()
+			.getString();
+
+		then(actual).isEqualTo("test");
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void setExpCollectionElement() {
+		String actual = SUT.giveMeJavaBuilder(ContainerObject.class)
+			.size("complexList", 1)
+			.setExpGetter(
+				javaGetter(ContainerObject::getComplexList)
+					.index(JavaTypeObject.class, 0)
+					.into(JavaTypeObject::getString),
+				"test"
+			)
+			.sample()
+			.getComplexList()
+			.get(0)
+			.getString();
+
+		then(actual).isEqualTo("test");
+	}
 }
