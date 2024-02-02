@@ -219,19 +219,6 @@ public final class FixtureMonkeyOptions {
 		return propertyGenerators;
 	}
 
-	/**
-	 * It is deprecated. Use {@link #getOptionalPropertyGenerator(Property)} or
-	 * {@link #getDefaultPropertyGenerator()} instead, depending on your purpose.
-	 */
-	@Deprecated
-	public PropertyGenerator getPropertyGenerator(Property property) {
-		return this.getPropertyGenerators().stream()
-			.filter(it -> it.match(property))
-			.map(MatcherOperator::getOperator)
-			.findFirst()
-			.orElse(this.getDefaultPropertyGenerator());
-	}
-
 	@Nullable
 	public PropertyGenerator getOptionalPropertyGenerator(Property property) {
 		return this.getPropertyGenerators().stream()

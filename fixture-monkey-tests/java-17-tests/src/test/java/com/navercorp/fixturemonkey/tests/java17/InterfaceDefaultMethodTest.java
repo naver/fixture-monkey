@@ -6,9 +6,12 @@ import static org.assertj.core.api.BDDAssertions.then;
 import org.junit.jupiter.api.RepeatedTest;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
+import com.navercorp.fixturemonkey.api.plugin.InterfacePlugin;
 
 class InterfaceDefaultMethodTest {
-	private static final FixtureMonkey SUT = FixtureMonkey.create();
+	private static final FixtureMonkey SUT = FixtureMonkey.builder()
+		.plugin(new InterfacePlugin())
+		.build();
 
 	@RepeatedTest(TEST_COUNT)
 	void defaultMethod() {

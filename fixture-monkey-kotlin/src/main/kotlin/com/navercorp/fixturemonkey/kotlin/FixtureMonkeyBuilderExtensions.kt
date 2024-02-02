@@ -27,6 +27,7 @@ import com.navercorp.fixturemonkey.api.generator.NullInjectGenerator
 import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGenerator
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector
 import com.navercorp.fixturemonkey.api.matcher.Matcher
+import com.navercorp.fixturemonkey.api.plugin.InterfacePlugin
 import com.navercorp.fixturemonkey.api.property.PropertyGenerator
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver
 import kotlin.reflect.KClass
@@ -140,16 +141,16 @@ inline fun <reified T> FixtureMonkeyBuilder.addContainerType(
     decomposedContainerValueFactory
 )
 
-inline fun <reified T : Any> FixtureMonkeyBuilder.interfaceImplements(
+inline fun <reified T : Any> InterfacePlugin.interfaceImplements(
     matcher: Matcher,
     implementations: List<KClass<out T>>
-): FixtureMonkeyBuilder =
+): InterfacePlugin =
     this.interfaceImplements(matcher, implementations.map { it.java })
 
-inline fun <reified T : Any> FixtureMonkeyBuilder.interfaceImplements(
+inline fun <reified T : Any> InterfacePlugin.interfaceImplements(
     vararg implementations: KClass<out T>
-): FixtureMonkeyBuilder = this.interfaceImplements(T::class.java, implementations.map { it.java })
+): InterfacePlugin = this.interfaceImplements(T::class.java, implementations.map { it.java })
 
-inline fun <reified T : Any> FixtureMonkeyBuilder.interfaceImplements(
+inline fun <reified T : Any> InterfacePlugin.interfaceImplements(
     implementations: List<KClass<out T>>
-): FixtureMonkeyBuilder = this.interfaceImplements(T::class.java, implementations.map { it.java })
+): InterfacePlugin = this.interfaceImplements(T::class.java, implementations.map { it.java })

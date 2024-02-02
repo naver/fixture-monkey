@@ -124,6 +124,7 @@ class OptionTest {
         // given
         val sut = FixtureMonkey.builder()
             .plugin(KotlinPlugin())
+            .plugin(InterfacePlugin())
             .build()
 
         // when
