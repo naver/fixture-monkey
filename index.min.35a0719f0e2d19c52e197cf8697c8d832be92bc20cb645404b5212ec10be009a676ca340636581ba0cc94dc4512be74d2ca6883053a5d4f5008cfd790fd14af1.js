@@ -62,7 +62,7 @@ In order to do this, first make sure you added the fixture-monkey-starter-kotlin
 Then we can add the Kotlin Plugin, to enable additional features of fixture monkey that support using Kotlin.
 @Test fun test() { val fixtureMonkey = FixtureMonkey.builder() .plugin(KotlinPlugin()) .build() } The Kotlin plugin changes the default ObjectIntrospector to PrimaryConstructorArbitraryIntrospector, which generates Kotlin classes with their primary constructor.
 Suppose you have a Kotlin class like this:
-data class Product ( val id: Long, val productName: String, val price: Long, val options: List&lt;String&gt;, val createdAt: Instant, val productType: ProductType, val merchantInfo: Map&lt;Integer, String&gt; ) You can generate your Kotlin class just like when you did in Java.
+data class Product ( val id: Long, val productName: String, val price: Long, val options: List&lt;String&gt;, val createdAt: Instant, val productType: ProductType, val merchantInfo: Map&lt;Int, String&gt; ) You can generate your Kotlin class just like when you did in Java.
 If you are writing your test code in Kotlin, one difference is that you can use giveMeOne() without writing the class name, unlike java when you had to write Product.class.
 The following code shows how to generate objects in kotlin:
 @Test fun test() { // given val fixtureMonkey = FixtureMonkey.builder() .plugin(KotlinPlugin()) .build() // when val actual: Product = fixtureMonkey.giveMeOne() // then then(actual).isNotNull } The Kotlin plugin also lets you use a new way to reference the property to customize.
