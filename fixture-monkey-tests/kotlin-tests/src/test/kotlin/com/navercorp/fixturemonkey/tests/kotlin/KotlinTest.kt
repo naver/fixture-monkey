@@ -45,6 +45,7 @@ import com.navercorp.fixturemonkey.kotlin.expression.root
 import com.navercorp.fixturemonkey.kotlin.get
 import com.navercorp.fixturemonkey.kotlin.giveMeBuilder
 import com.navercorp.fixturemonkey.kotlin.giveMeExperimentalBuilder
+import com.navercorp.fixturemonkey.kotlin.giveMeKotlinBuilder
 import com.navercorp.fixturemonkey.kotlin.giveMeOne
 import com.navercorp.fixturemonkey.kotlin.instantiator.instantiateBy
 import com.navercorp.fixturemonkey.kotlin.into
@@ -969,6 +970,30 @@ class KotlinTest {
         val actual: SecondAbstractClass = sut.giveMeOne()
 
         then(actual).isInstanceOf(SecondConcreteClass::class.java)
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun setPostCondition() {
+        class StringObject(val string: String)
+
+        val actual = SUT.giveMeKotlinBuilder<StringObject>()
+            .setPostCondition<String>("string") { it.length < 5 }
+            .sample()
+            .string
+
+        then(actual).hasSizeLessThan(5)
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun setPostConditionWithProperty() {
+        class StringObject(val string: String)
+
+        val actual = SUT.giveMeKotlinBuilder<StringObject>()
+            .setPostCondition<String>(StringObject::string) { it.length < 5 }
+            .sample()
+            .string
+
+        then(actual).hasSizeLessThan(5)
     }
 
     companion object {

@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.resolver;
+package com.navercorp.fixturemonkey.builder;
 
 import static com.navercorp.fixturemonkey.Constants.DEFAULT_ELEMENT_MAX_SIZE;
 import static com.navercorp.fixturemonkey.Constants.HEAD_NAME;
@@ -71,6 +71,7 @@ import com.navercorp.fixturemonkey.customizer.InnerSpec;
 import com.navercorp.fixturemonkey.customizer.ManipulatorSet;
 import com.navercorp.fixturemonkey.customizer.MonkeyManipulatorFactory;
 import com.navercorp.fixturemonkey.experimental.ExperimentalArbitraryBuilder;
+import com.navercorp.fixturemonkey.resolver.ArbitraryResolver;
 import com.navercorp.fixturemonkey.tree.ArbitraryTraverser;
 
 @SuppressFBWarnings("NM_SAME_SIMPLE_NAME_AS_SUPERCLASS")
