@@ -7,7 +7,7 @@ parent: "get-started"
 identifier: "creating-objects-in-kotlin"
 ---
 
-Fixture Monkey 는 Kotlin 으로 작성된 클래스를 생성하는 것도 지원합니다.
+Fixture Monkey 는 Kotlin 으로 작성한 클래스 생성을 지원합니다.
 
 먼저 `fixture-monkey-starter-kotlin` 종속성을 추가했는지 확인하세요.
 
