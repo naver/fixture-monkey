@@ -20,11 +20,9 @@ package com.navercorp.fixturemonkey.tree;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
 
@@ -41,7 +39,6 @@ import com.navercorp.fixturemonkey.api.generator.ContainerPropertyGeneratorConte
 import com.navercorp.fixturemonkey.api.generator.ObjectProperty;
 import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGeneratorContext;
-import com.navercorp.fixturemonkey.api.generator.SingleValueObjectPropertyGenerator;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
 import com.navercorp.fixturemonkey.api.property.CandidateConcretePropertyResolver;
@@ -95,12 +92,8 @@ public final class ArbitraryTraverser {
 			this.fixtureMonkeyOptions.getContainerPropertyGenerator(property);
 		boolean container = containerPropertyGenerator != null;
 
-		ObjectPropertyGenerator objectPropertyGenerator;
-		if (container) {
-			objectPropertyGenerator = SingleValueObjectPropertyGenerator.INSTANCE;
-		} else {
-			objectPropertyGenerator = this.fixtureMonkeyOptions.getObjectPropertyGenerator(property);
-		}
+		ObjectPropertyGenerator objectPropertyGenerator =
+			this.fixtureMonkeyOptions.getObjectPropertyGenerator(property);
 
 		ArbitraryProperty parentArbitraryProperty = context.getLastArbitraryProperty();
 		Integer index = null;
@@ -113,9 +106,7 @@ public final class ArbitraryTraverser {
 			index,
 			parentArbitraryProperty,
 			container,
-			getPropertyGenerator(context.getPropertyConfigurers()),
-			fixtureMonkeyOptions.getPropertyNameResolver(property),
-			fixtureMonkeyOptions.getNullInjectGenerator(property)
+			fixtureMonkeyOptions.getPropertyNameResolver(property)
 		);
 
 		ObjectProperty objectProperty = objectPropertyGenerator.generate(objectPropertyGeneratorContext);
@@ -150,40 +141,18 @@ public final class ArbitraryTraverser {
 				.map(it -> new ConcreteTypeDefinition(it, childContainerProperty.getElementProperties()))
 				.collect(Collectors.toList());
 		} else {
-			List<ConcreteTypeDefinition> objectPropertyCandidateTypeDefinitions =
-				objectProperty.getChildPropertyListsByCandidateProperty().entrySet().stream()
-					.map(it -> new ConcreteTypeDefinition(it.getKey(), it.getValue()))
-					.collect(Collectors.toList());
-
-			CandidateConcretePropertyResolver candidateConcretePropertyResolver =
-				fixtureMonkeyOptions.getCandidateConcretePropertyResolver(property);
-
-			// TODO: It is there for compatibility. It will be removed in 1.1.0.
-			if (candidateConcretePropertyResolver == null && objectPropertyCandidateTypeDefinitions.isEmpty()) {
-				candidateConcretePropertyResolver = DefaultCandidateConcretePropertyResolver.INSTANCE;
-			}
-
-			List<ConcreteTypeDefinition> optionCandidateTypeDefinitions = Collections.emptyList();
-			if (candidateConcretePropertyResolver != null) {
-				List<Property> candidateProperties = candidateConcretePropertyResolver.resolve(property);
-				optionCandidateTypeDefinitions = candidateProperties.stream()
-					.map(it ->
-						new ConcreteTypeDefinition(
-							it,
-							getPropertyGenerator(context.getPropertyConfigurers()).generateChildProperties(it)
-						)
+			List<Property> candidateProperties = resolveCandidateProperties(property);
+			concreteTypeDefinitions = candidateProperties.stream()
+				.map(it -> new ConcreteTypeDefinition(
+						it,
+						getPropertyGenerator(context.getPropertyConfigurers()).generateChildProperties(it)
 					)
-					.collect(Collectors.toList());
-			}
-
-			concreteTypeDefinitions =
-				Stream.concat(objectPropertyCandidateTypeDefinitions.stream(), optionCandidateTypeDefinitions.stream())
-					.collect(Collectors.toList());
+				)
+				.collect(Collectors.toList());
 		}
 
-		double nullInject = objectProperty.getNullInject() != null
-			? objectProperty.getNullInject()
-			: fixtureMonkeyOptions.getNullInjectGenerator(property).generate(objectPropertyGeneratorContext);
+		double nullInject = fixtureMonkeyOptions.getNullInjectGenerator(property)
+			.generate(objectPropertyGeneratorContext);
 
 		ArbitraryProperty arbitraryProperty = new ArbitraryProperty(
 			objectProperty,
@@ -332,7 +301,7 @@ public final class ArbitraryTraverser {
 						Types.getActualType(p.getType())
 					);
 					// if (p.getType().equals(candidateType) || !assignableType) {
-					if (p.getType().equals(candidateType) ) {
+					if (p.getType().equals(candidateType)) {
 						// prevents infinite recursion
 						resolvedCandidateProperties.addAll(
 							DefaultCandidateConcretePropertyResolver.INSTANCE.resolve(p)
