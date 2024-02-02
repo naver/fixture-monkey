@@ -19,6 +19,7 @@
 package com.navercorp.fixturemonkey.tests.kotlin
 
 import com.navercorp.fixturemonkey.FixtureMonkey
+import com.navercorp.fixturemonkey.api.plugin.InterfacePlugin
 import com.navercorp.fixturemonkey.javax.validation.plugin.JavaxValidationPlugin
 import com.navercorp.fixturemonkey.kotlin.KotlinPlugin
 import com.navercorp.fixturemonkey.kotlin.giveMeBuilder
@@ -444,6 +445,7 @@ class AnonymousInstanceTest {
         val SUT: FixtureMonkey = FixtureMonkey.builder()
             .plugin(KotlinPlugin())
             .plugin(JavaxValidationPlugin())
+            .plugin(InterfacePlugin())
             .defaultNotNull(true)
             .build()
     }

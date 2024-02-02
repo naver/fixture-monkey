@@ -63,7 +63,10 @@ class MockitoPluginTest {
 	void interfaceImplementsAndMockitoInterface() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.plugin(new MockitoPlugin())
-			.interfaceImplements(InterfaceSample.class, Collections.singletonList(InterfaceSampleImpl.class))
+			.plugin(
+				new InterfacePlugin()
+					.interfaceImplements(InterfaceSample.class, Collections.singletonList(InterfaceSampleImpl.class))
+			)
 			.defaultNullInjectGenerator(context -> 0)
 			.build();
 
