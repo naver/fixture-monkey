@@ -78,9 +78,12 @@ class MavenPublishConventionsPlugin : Plugin<Project> {
             val signingKeyId: String? by project
             val signingKey: String? by project
             val signingPassword: String? by project
+            val runningTaskNames = project.gradle.startParameter.taskNames
 
             useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
-            if ((project.version as? String)?.endsWith("SNAPSHOT") == false) {
+            if ((project.version as? String)?.endsWith("SNAPSHOT") == false &&
+                !runningTaskNames.contains("publishToMavenLocal")
+            ) {
                 sign(project.extensions.getByType<PublishingExtension>().publications["fixtureMonkey"])
             }
         }
