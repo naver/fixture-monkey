@@ -36,12 +36,13 @@ import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
 import com.navercorp.fixturemonkey.api.type.LazyAnnotatedType;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
+import com.navercorp.fixturemonkey.builder.ArbitraryBuilderContext;
+import com.navercorp.fixturemonkey.builder.DefaultArbitraryBuilder;
+import com.navercorp.fixturemonkey.builder.JavaTypeDefaultTypeArbitraryBuilder;
 import com.navercorp.fixturemonkey.customizer.ArbitraryManipulator;
 import com.navercorp.fixturemonkey.customizer.MonkeyManipulatorFactory;
 import com.navercorp.fixturemonkey.experimental.ExperimentalArbitraryBuilder;
-import com.navercorp.fixturemonkey.resolver.ArbitraryBuilderContext;
 import com.navercorp.fixturemonkey.resolver.ArbitraryResolver;
-import com.navercorp.fixturemonkey.resolver.DefaultArbitraryBuilder;
 import com.navercorp.fixturemonkey.resolver.ManipulatorOptimizer;
 import com.navercorp.fixturemonkey.tree.ArbitraryTraverser;
 
@@ -148,6 +149,14 @@ public final class FixtureMonkey {
 
 	public <T> ExperimentalArbitraryBuilder<T> giveMeExperimentalBuilder(TypeReference<T> type) {
 		return (ExperimentalArbitraryBuilder<T>)giveMeBuilder(type);
+	}
+
+	public <T> JavaTypeArbitraryBuilder<T> giveMeJavaBuilder(Class<T> type) {
+		return new JavaTypeDefaultTypeArbitraryBuilder<>(this.giveMeBuilder(type));
+	}
+
+	public <T> JavaTypeArbitraryBuilder<T> giveMeJavaBuilder(TypeReference<T> type) {
+		return new JavaTypeDefaultTypeArbitraryBuilder<>(this.giveMeBuilder(type));
 	}
 
 	public <T> Stream<T> giveMe(Class<T> type) {

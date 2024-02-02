@@ -30,20 +30,36 @@ fun <T> ArbitraryBuilder<T>.setInner(innerSpecConfigurer: ((InnerSpec) -> Unit))
     return this.setInner(InnerSpec().apply(innerSpecConfigurer))
 }
 
+@Deprecated(
+    message = "Extension function is deprecated. Use giveMeKotlinBuilder and instance method instead.",
+    replaceWith = ReplaceWith("setPostCondition(expression, predicate)")
+)
 inline fun <T, reified U> ArbitraryBuilder<T>.setPostCondition(expression: String, noinline predicate: (U) -> Boolean) =
     this.setPostCondition(expression, U::class.java, predicate)
 
+@Deprecated(
+    message = "Extension function is deprecated. Use giveMeKotlinBuilder and instance method instead.",
+    replaceWith = ReplaceWith("setPostCondition(expressionGenerator, predicate)")
+)
 inline fun <T, reified U> ArbitraryBuilder<T>.setPostCondition(
     expressionGenerator: ExpressionGenerator,
     noinline predicate: (U) -> Boolean
 ) = this.setPostCondition(expressionGenerator, U::class.java, predicate)
 
+@Deprecated(
+    message = "Extension function is deprecated. Use giveMeKotlinBuilder and instance method instead.",
+    replaceWith = ReplaceWith("setPostCondition(expression, predicate, limit)")
+)
 inline fun <T, reified U> ArbitraryBuilder<T>.setPostCondition(
     expression: String,
     noinline predicate: (U) -> Boolean,
     limit: Int
 ) = this.setPostCondition(expression, U::class.java, predicate, limit)
 
+@Deprecated(
+    message = "Extension function is deprecated. Use giveMeKotlinBuilder and instance method instead.",
+    replaceWith = ReplaceWith("setPostCondition(expressionGenerator, predicate, limit)")
+)
 inline fun <T, reified U> ArbitraryBuilder<T>.setPostCondition(
     expressionGenerator: ExpressionGenerator,
     noinline predicate: (U) -> Boolean,
