@@ -41,7 +41,7 @@ data class Product (
 
   val productType: ProductType,
 
-  val merchantInfo: Map<Integer, String>
+  val merchantInfo: Map<Int, String>
 )
 ```
 
