@@ -29,6 +29,7 @@ import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
+import com.navercorp.fixturemonkey.api.plugin.InterfacePlugin;
 import com.navercorp.fixturemonkey.javax.validation.plugin.JavaxValidationPlugin;
 import com.navercorp.fixturemonkey.tests.java.AnonymousInstanceTestSpecs.AnnotatedInterface;
 import com.navercorp.fixturemonkey.tests.java.AnonymousInstanceTestSpecs.ContainerInterface;
@@ -46,6 +47,10 @@ class AnonymousInstanceTest {
 	private static final FixtureMonkey SUT = FixtureMonkey.builder()
 		.defaultNotNull(true)
 		.plugin(new JavaxValidationPlugin())
+		.plugin(
+			new InterfacePlugin()
+				.useAnonymousArbitraryIntrospector(true)
+		)
 		.build();
 
 	@RepeatedTest(TEST_COUNT)
