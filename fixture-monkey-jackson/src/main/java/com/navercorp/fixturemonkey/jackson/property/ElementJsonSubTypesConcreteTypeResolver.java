@@ -19,31 +19,41 @@
 package com.navercorp.fixturemonkey.jackson.property;
 
 import static com.navercorp.fixturemonkey.jackson.property.JacksonAnnotations.getJacksonAnnotation;
-import static com.navercorp.fixturemonkey.jackson.property.JacksonAnnotations.getRandomJsonSubType;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedType;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import javax.annotation.Nullable;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 import com.navercorp.fixturemonkey.api.property.CandidateConcretePropertyResolver;
 import com.navercorp.fixturemonkey.api.property.ElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
+<<<<<<<< HEAD:fixture-monkey-jackson/src/main/java/com/navercorp/fixturemonkey/jackson/generator/ElementJsonSubTypesObjectPropertyGenerator.java
+import com.navercorp.fixturemonkey.api.property.PropertyGenerator;
+import com.navercorp.fixturemonkey.jackson.property.ElementJsonSubTypesConcreteTypeResolver;
+
+/**
+ * It is deprecated.
+ * Use {@link ElementJsonSubTypesConcreteTypeResolver} instaed.
+ */
+@API(since = "0.4.2", status = Status.MAINTAINED)
+@Deprecated
+public final class ElementJsonSubTypesObjectPropertyGenerator implements ObjectPropertyGenerator {
+	public static final ElementJsonSubTypesObjectPropertyGenerator INSTANCE =
+		new ElementJsonSubTypesObjectPropertyGenerator();
+========
 import com.navercorp.fixturemonkey.api.type.Types;
 
-@API(since = "1.0.24", status = Status.EXPERIMENTAL)
+@API(since = "1.1.0", status = Status.EXPERIMENTAL)
 public final class ElementJsonSubTypesConcreteTypeResolver implements CandidateConcretePropertyResolver {
 	public static final CandidateConcretePropertyResolver INSTANCE = new ElementJsonSubTypesConcreteTypeResolver();
+>>>>>>>> a83036ca (Remove all deprecated in 1.0.x):fixture-monkey-jackson/src/main/java/com/navercorp/fixturemonkey/jackson/property/ElementJsonSubTypesConcreteTypeResolver.java
+
+	private static final ElementJsonSubTypesConcreteTypeResolver DELEGATE =
+		new ElementJsonSubTypesConcreteTypeResolver();
 
 	@Override
 	public List<Property> resolve(Property property) {
@@ -54,6 +64,18 @@ public final class ElementJsonSubTypesConcreteTypeResolver implements CandidateC
 			throw new IllegalArgumentException("@JsonSubTypes is not found " + property.getType().getTypeName());
 		}
 
+<<<<<<<< HEAD:fixture-monkey-jackson/src/main/java/com/navercorp/fixturemonkey/jackson/generator/ElementJsonSubTypesObjectPropertyGenerator.java
+		Property actualConcreteProperty = DELEGATE.resolve(property).get(0);
+		List<Property> childProperties =
+			propertyGenerator.generateChildProperties(actualConcreteProperty);
+		return new ObjectProperty(
+			actualConcreteProperty,
+			context.getPropertyNameResolver(),
+			nullInject,
+			context.getElementIndex(),
+			Collections.singletonMap(actualConcreteProperty, childProperties)
+		);
+========
 		Class<?> type = getRandomJsonSubType(jsonSubTypes);
 		AnnotatedType annotatedType = Types.generateAnnotatedTypeWithoutAnnotation(type);
 
@@ -91,5 +113,6 @@ public final class ElementJsonSubTypesConcreteTypeResolver implements CandidateC
 		};
 
 		return Collections.singletonList(actualProperty);
+>>>>>>>> a83036ca (Remove all deprecated in 1.0.x):fixture-monkey-jackson/src/main/java/com/navercorp/fixturemonkey/jackson/property/ElementJsonSubTypesConcreteTypeResolver.java
 	}
 }

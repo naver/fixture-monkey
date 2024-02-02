@@ -87,7 +87,7 @@ public final class FixtureMonkeyOptionsBuilder {
 		new ArrayList<>(FixtureMonkeyOptions.DEFAULT_PROPERTY_GENERATORS);
 	private PropertyGenerator defaultPropertyGenerator = new DefaultPropertyGenerator();
 	private List<MatcherOperator<ObjectPropertyGenerator>> arbitraryObjectPropertyGenerators =
-		new ArrayList<>(FixtureMonkeyOptions.DEFAULT_OBJECT_PROPERTY_GENERATORS);
+		new ArrayList<>();
 	private List<MatcherOperator<ContainerPropertyGenerator>> containerPropertyGenerators =
 		new ArrayList<>(FixtureMonkeyOptions.DEFAULT_CONTAINER_PROPERTY_GENERATORS);
 	private ObjectPropertyGenerator defaultObjectPropertyGenerator;

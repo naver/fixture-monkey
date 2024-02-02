@@ -22,9 +22,7 @@ import static java.util.stream.Collectors.toList;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -43,25 +41,11 @@ import com.github.curiousoddman.rgxgen.config.RgxGenOption;
 import com.github.curiousoddman.rgxgen.config.RgxGenProperties;
 import com.mifmif.common.regex.Generex;
 
-import dk.brics.automaton.RegExp;
-
 @API(since = "0.6.9", status = Status.MAINTAINED)
 public final class RegexGenerator {
-	private static final Map<String, String> PREDEFINED_CHARACTER_CLASSES;
 	private static final int DEFAULT_REGEXP_GENERATION_TIMEOUT_SEC = 10;
 	private static final int FLAG_CASE_INSENSITIVE = 2;
 	private static final ExecutorService executor = Executors.newSingleThreadExecutor();
-
-	static {
-		Map<String, String> characterClasses = new HashMap<>();
-		characterClasses.put("\\\\d", "[0-9]");
-		characterClasses.put("\\\\D", "[^0-9]");
-		characterClasses.put("\\\\s", "[ \t\n\f\r]");
-		characterClasses.put("\\\\S", "[^ \t\n\f\r]");
-		characterClasses.put("\\\\w", "[a-zA-Z_0-9]");
-		characterClasses.put("\\\\W", "[^a-zA-Z_0-9]");
-		PREDEFINED_CHARACTER_CLASSES = Collections.unmodifiableMap(characterClasses);
-	}
 
 	public String generate(String regex, int[] flags, Predicate<String> stringCondition) {
 		boolean caseInSensitive = Arrays.stream(flags).anyMatch(it -> it == FLAG_CASE_INSENSITIVE);
@@ -87,37 +71,6 @@ public final class RegexGenerator {
 				)
 			);
 		}
-	}
-
-	@Deprecated
-	public List<String> generateAll(String regex, int[] flags, @Nullable Integer min, @Nullable Integer max) {
-		for (Map.Entry<String, String> charClass : PREDEFINED_CHARACTER_CLASSES.entrySet()) {
-			regex = regex.replaceAll(charClass.getKey(), charClass.getValue());
-		}
-
-		RegExp regExp;
-		if (flags.length == 0) {
-			regExp = new RegExp(regex);
-		} else {
-			int intFlag = 0;
-			for (int flag : flags) {
-				intFlag = intFlag | flag;
-			}
-			regExp = new RegExp(regex, intFlag);
-		}
-
-		Generex generex = new Generex(regExp.toAutomaton());
-		return this.generateAll(generex, min, max);
-	}
-
-	@Deprecated
-	public List<String> generateAll(String regex) {
-		return this.generateAll(regex, null, null);
-	}
-
-	@Deprecated
-	public List<String> generateAll(String regex, @Nullable Integer min, @Nullable Integer max) {
-		return this.generateAll(new Generex(regex), min, max);
 	}
 
 	private List<String> generateAll(Generex generex, @Nullable Integer min, @Nullable Integer max) {

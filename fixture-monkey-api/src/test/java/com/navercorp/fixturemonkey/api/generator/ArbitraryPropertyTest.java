@@ -20,7 +20,6 @@ package com.navercorp.fixturemonkey.api.generator;
 
 import static org.assertj.core.api.BDDAssertions.then;
 
-import java.util.Collections;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
@@ -46,14 +45,11 @@ class ArbitraryPropertyTest {
 		ObjectProperty actual = new ObjectProperty(
 			rootProperty,
 			PropertyNameResolver.IDENTITY,
-			0.0D,
-			null,
-			Collections.emptyMap()
+			null
 		);
 
 		then(actual.isRoot()).isTrue();
 		then(actual.getProperty()).isEqualTo(rootProperty);
-		then(actual.getNullInject()).isEqualTo(0.0D);
 	}
 
 	@SuppressWarnings("OptionalGetWithoutIsPresent")
@@ -74,9 +70,7 @@ class ArbitraryPropertyTest {
 		ObjectProperty actual = new ObjectProperty(
 			property.get(),
 			prop -> "x_" + prop.getName(),
-			0.0D,
-			null,
-			Collections.emptyMap()
+			null
 		);
 
 		then(actual.getResolvedPropertyName()).isEqualTo("x_name");
