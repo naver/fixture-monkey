@@ -54,10 +54,8 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.CompositeArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator;
-import com.navercorp.fixturemonkey.api.generator.DefaultObjectPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.IntrospectedArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.generator.MatchArbitraryGenerator;
-import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGenerator;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult;
 import com.navercorp.fixturemonkey.api.introspector.BuilderArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.ConstructorPropertiesArbitraryIntrospector;
@@ -135,84 +133,6 @@ class FixtureMonkeyOptionsTest {
 			.isThrownBy(() -> sut.giveMeBuilder(String.class)
 				.set("nonExistentField", 0)
 				.sample());
-	}
-
-	@Property
-	void alterDefaultArbitraryPropertyGenerator() {
-		FixtureMonkey sut = FixtureMonkey.builder()
-			.defaultObjectPropertyGenerator(
-				(context) -> DefaultObjectPropertyGenerator.INSTANCE.generate(context)
-					.withNullInject(1.0)
-			)
-			.build();
-
-		ComplexObject actual = sut.giveMeOne(ComplexObject.class);
-
-		then(actual).isNull();
-	}
-
-	@Property
-	void pushAssignableTypeArbitraryPropertyGenerator() {
-		FixtureMonkey sut = FixtureMonkey.builder()
-			.pushAssignableTypeObjectPropertyGenerator(
-				SimpleObject.class,
-				(context) -> DefaultObjectPropertyGenerator.INSTANCE.generate(context)
-					.withNullInject(1.0)
-			)
-			.build();
-
-		SimpleObjectChild actual = sut.giveMeOne(SimpleObjectChild.class);
-
-		then(actual).isNull();
-	}
-
-	@Property
-	void pushExactTypeArbitraryPropertyGenerator() {
-		FixtureMonkey sut = FixtureMonkey.builder()
-			.pushExactTypeObjectPropertyGenerator(
-				SimpleObjectChild.class,
-				(context) -> DefaultObjectPropertyGenerator.INSTANCE.generate(context)
-					.withNullInject(1.0)
-			)
-			.build();
-
-		SimpleObjectChild actual = sut.giveMeOne(SimpleObjectChild.class);
-
-		then(actual).isNull();
-	}
-
-	@Property
-	void pushExactTypeArbitraryPropertyGeneratorNotAffectsAssignable() {
-		FixtureMonkey sut = FixtureMonkey.builder()
-			.pushExactTypeObjectPropertyGenerator(
-				SimpleObject.class,
-				(context) -> DefaultObjectPropertyGenerator.INSTANCE.generate(context)
-					.withNullInject(1.0)
-			)
-			.build();
-
-		SimpleObjectChild actual = sut.giveMeOne(SimpleObjectChild.class);
-
-		then(actual).isNotNull();
-	}
-
-	@Property
-	void pushObjectPropertyGenerator() {
-		ObjectPropertyGenerator arbitraryPropertyGenerator = (context) ->
-			DefaultObjectPropertyGenerator.INSTANCE.generate(context)
-				.withNullInject(1.0);
-		FixtureMonkey sut = FixtureMonkey.builder()
-			.pushObjectPropertyGenerator(
-				MatcherOperator.exactTypeMatchOperator(
-					SimpleObject.class,
-					arbitraryPropertyGenerator
-				)
-			)
-			.build();
-
-		SimpleObject actual = sut.giveMeOne(SimpleObject.class);
-
-		then(actual).isNull();
 	}
 
 	@Property
@@ -1261,7 +1181,10 @@ class FixtureMonkeyOptionsTest {
 		implementations.add(GetStringFixedValue.class);
 
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.interfaceImplements(GetFixedValue.class, implementations)
+			.plugin(
+				new InterfacePlugin()
+					.interfaceImplements(GetFixedValue.class, implementations)
+			)
 			.build();
 
 		// when
@@ -1278,7 +1201,10 @@ class FixtureMonkeyOptionsTest {
 		implementations.add(GetStringFixedValue.class);
 
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.interfaceImplements(GetFixedValue.class, implementations)
+			.plugin(
+				new InterfacePlugin()
+					.interfaceImplements(GetFixedValue.class, implementations)
+			)
 			.build();
 
 		// when
@@ -1300,7 +1226,10 @@ class FixtureMonkeyOptionsTest {
 		implementations.add(GetStringFixedValue.class);
 
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.interfaceImplements(GetFixedValue.class, implementations)
+			.plugin(
+				new InterfacePlugin()
+					.interfaceImplements(GetFixedValue.class, implementations)
+			)
 			.build();
 
 		// when
@@ -1328,8 +1257,11 @@ class FixtureMonkeyOptionsTest {
 
 		// when
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.interfaceImplements(GetFixedValueChild.class, childImplementations)
-			.interfaceImplements(GetFixedValue.class, implementations)
+			.plugin(
+				new InterfacePlugin()
+					.interfaceImplements(GetFixedValueChild.class, childImplementations)
+					.interfaceImplements(GetFixedValue.class, implementations)
+			)
 			.build();
 
 		Object actual = sut.giveMeOne(new TypeReference<GetFixedValueChild>() {
@@ -1508,12 +1440,15 @@ class FixtureMonkeyOptionsTest {
 	@Property
 	void samePropertyDiffImplementations() {
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.interfaceImplements(
-				GetterInterface.class,
-				Arrays.asList(
-					GetterInterfaceImplementation.class,
-					GetterInterfaceImplementation2.class
-				)
+			.plugin(
+				new InterfacePlugin()
+					.interfaceImplements(
+						GetterInterface.class,
+						Arrays.asList(
+							GetterInterfaceImplementation.class,
+							GetterInterfaceImplementation2.class
+						)
+					)
 			)
 			.build();
 

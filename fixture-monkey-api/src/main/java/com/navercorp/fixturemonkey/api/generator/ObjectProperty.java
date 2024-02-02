@@ -18,10 +18,6 @@
 
 package com.navercorp.fixturemonkey.api.generator;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Objects;
 
 import javax.annotation.Nullable;
@@ -29,7 +25,6 @@ import javax.annotation.Nullable;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
@@ -40,32 +35,8 @@ public final class ObjectProperty {
 
 	private final PropertyNameResolver propertyNameResolver;
 
-	@Deprecated
-	private final Double nullInject;
-
 	@Nullable
 	private final Integer elementIndex;
-
-	@Deprecated
-	private final Map<Property, List<Property>> childPropertyListsByCandidateProperty;
-
-	/**
-	 * Use {@link ObjectProperty(Property, PropertyNameResolver, Integer)} instead.
-	 */
-	@Deprecated
-	public ObjectProperty(
-		Property property,
-		PropertyNameResolver propertyNameResolver,
-		double nullInject,
-		@Nullable Integer elementIndex,
-		Map<Property, List<Property>> childPropertyListsByCandidateProperty
-	) {
-		this.property = property;
-		this.propertyNameResolver = propertyNameResolver;
-		this.nullInject = nullInject;
-		this.elementIndex = elementIndex;
-		this.childPropertyListsByCandidateProperty = childPropertyListsByCandidateProperty;
-	}
 
 	public ObjectProperty(
 		Property property,
@@ -75,8 +46,6 @@ public final class ObjectProperty {
 		this.property = property;
 		this.propertyNameResolver = propertyNameResolver;
 		this.elementIndex = elementIndex;
-		this.nullInject = null;
-		this.childPropertyListsByCandidateProperty = Collections.emptyMap();
 	}
 
 	public Property getProperty() {
@@ -91,62 +60,13 @@ public final class ObjectProperty {
 		return this.getPropertyNameResolver().resolve(this.property);
 	}
 
-	@Deprecated
-	@Nullable
-	public Double getNullInject() {
-		return this.nullInject;
-	}
-
 	@Nullable
 	public Integer getElementIndex() {
 		return this.elementIndex;
 	}
 
-	@Deprecated
-	public Map.Entry<Property, List<Property>> getChildPropertiesByResolvedProperty(Matcher matcher) {
-		for (
-			Entry<Property, List<Property>> childPropertyListByPossibleProperty :
-			childPropertyListsByCandidateProperty.entrySet()
-		) {
-			Property property = childPropertyListByPossibleProperty.getKey();
-			if (matcher.match(property)) {
-				return childPropertyListByPossibleProperty;
-			}
-		}
-		throw new IllegalArgumentException("No resolved property is found.");
-	}
-
-	@Deprecated
-	public Map<Property, List<Property>> getChildPropertyListsByCandidateProperty() {
-		return childPropertyListsByCandidateProperty;
-	}
-
 	public boolean isRoot() {
 		return this.property instanceof RootProperty;
-	}
-
-	@Deprecated
-	public ObjectProperty withNullInject(double nullInject) {
-		return new ObjectProperty(
-			this.property,
-			this.propertyNameResolver,
-			nullInject,
-			this.elementIndex,
-			this.childPropertyListsByCandidateProperty
-		);
-	}
-
-	@Deprecated
-	public ObjectProperty withChildPropertyListsByCandidateProperty(
-		Map<Property, List<Property>> childPropertyListsByCandidateProperty
-	) {
-		return new ObjectProperty(
-			this.property,
-			this.propertyNameResolver,
-			this.nullInject,
-			this.elementIndex,
-			childPropertyListsByCandidateProperty
-		);
 	}
 
 	@Override
@@ -160,9 +80,7 @@ public final class ObjectProperty {
 		ObjectProperty that = (ObjectProperty)obj;
 		return property.equals(that.property)
 			&& Objects.equals(getResolvedPropertyName(), that.getResolvedPropertyName())
-			&& Double.compare(that.nullInject, nullInject) == 0
-			&& Objects.equals(elementIndex, that.elementIndex)
-			&& childPropertyListsByCandidateProperty.equals(that.childPropertyListsByCandidateProperty);
+			&& Objects.equals(elementIndex, that.elementIndex);
 	}
 
 	@Override
@@ -170,9 +88,7 @@ public final class ObjectProperty {
 		return Objects.hash(
 			property,
 			getResolvedPropertyName(),
-			nullInject,
-			elementIndex,
-			childPropertyListsByCandidateProperty
+			elementIndex
 		);
 	}
 }
