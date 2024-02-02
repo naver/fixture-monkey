@@ -83,6 +83,7 @@ class PrimaryConstructorArbitraryIntrospector : ArbitraryIntrospector {
         try {
             val parameterKotlinType = parameter.type.jvmErasure
             return if (parameterKotlinType.isValue) {
+                parameterKotlinType.primaryConstructor!!.isAccessible = true
                 parameterKotlinType.primaryConstructor!!.call(arbitrariesByPropertyName[parameter.name])
             } else {
                 arbitrariesByPropertyName[parameter.name]
