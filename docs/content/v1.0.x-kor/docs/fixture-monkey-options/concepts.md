@@ -54,7 +54,7 @@ private final Property property;
 컨테이너 타입의 프로퍼티는 불변 컨테이너 정보를 나타내는 `컨테이너 프로퍼티`로 다음을 포함합니다:
 
 - **elementProperties**: 모든 요소 프로퍼티들을 담은 리스트.
-- **containerInfo**: 컨테이너의 크기를 결정하는 `ObjectPropertyGenerator`.
+- **containerInfo**: 컨테이너의 크기를 결정하는 `ArbitraryContainerInfo`.
 
 ```java
 public final class ContainerProperty {
