@@ -6,7 +6,7 @@ plugins {
 
 allprojects {
     group = "com.navercorp.fixturemonkey.snasphot"
-    version = "1.0.14-spring"
+    version = "1.0.14-spring-1"
 }
 
 subprojects {
