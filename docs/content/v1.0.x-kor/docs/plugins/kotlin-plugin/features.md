@@ -1,5 +1,5 @@
 ---
-title: "Features"
+title: "특징"
 images: []
 menu:
 docs:
