@@ -12,20 +12,15 @@ Fixture Monkey는 원하는 설정과 일치하는 복합 객체를 생성하기
 
 이러한 옵션은 `FixtureMonkeyBuilder` 를 통해 접근할 수 있습니다.
 
-## Property Generation
+## 프로퍼티 생성
 ### PropertyGenerator
 > `defaultPropertyGenerator`, `pushPropertyGenerator`, `pushAssignableTypePropertyGenerator`, `pushExactTypePropertyGenerator`
 
-`PropertyGenerator` creates child properties of the given `ObjectProperty`.
-`PropertyGenerator` 는 주어진 `ObjectProperty` 의 자식 프로퍼티를 생성합니다. 
-The child property can be a field, JavaBeans property, method or constructor parameter within the parent `ObjectProperty`.
+`PropertyGenerator` 는 주어진 `ObjectProperty` 의 자식 프로퍼티를 생성합니다.
 자식 프로퍼티는 부모 `ObjectProperty` 내의 필드, JavaBeans 프로퍼티, 메서드, 생성자 패러미터가 될 수 있습니다. 
-There are scenarios where you might want to customize how these child properties are generated.
-자식 프로퍼티들이 생성되는 방식을 사용자 정의하고자 하는 시나리오들이 있습니다.
+이러한 자식 프로퍼티가 생성되는 방식을 사용자 정의하는 몇 가지 방법이 있습니다.
 
-The `PropertyGenerator` options allow you to specify how child properties of each type are generated.
-`PropertyGenerator` 옵션으로 각 타입의 자식 프로퍼티가 어떻게 생성되는지 지정할 수 있습니다.
-This option is mainly used when you want to exclude generating some properties when the parent property has abnormal child properties.
+`PropertyGenerator` 옵션은 각 타입의 자식 프로퍼티가 생성되는 방식을 지정할 수 있습니다.
 이 옵션은 주로 부모 프로퍼티가 비정상적인 자식 프로퍼티를 가질 때 일부 프로퍼티 생성을 제외하고자 할 때 사용됩니다.
 
 {{< alert icon="📖" text="Notable implementations: 'FieldPropertyGenerator', 'JavaBeansPropertyGenerator'" />}}
@@ -33,65 +28,56 @@ This option is mainly used when you want to exclude generating some properties w
 ### ObjectPropertyGenerator
 > `defaultObjectPropertyGenerator`, `pushObjectPropertyGenerator`, `pushAssignableTypeObjectPropertyGenerator`, `pushExactTypeObjectPropertyGenerator`
 
-`ObjectPropertyGenerator` generates the [`ObjectProperty`](../concepts/#objectProperty) based on a given context.
 `ObjectPropertyGenerator` 는 주어진 컨텍스트에 기반하여 [`ObjectProperty`](../concepts/#objectProperty)를 생성합니다.
-With options related to `ObjectPropertyGenerator` you can customize how the `ObjectProperty` is generated.
 `ObjectPropertyGenerator` 관련 옵션을 사용하면 `ObjectProperty` 가 생성되는 방식을 사용자 정의할 수 있습니다.
+
 {{< alert icon="📖" text="Notable implementations: 'DefaultObjectPropertyGenerator'" />}}
 
 ### ContainerPropertyGenerator
 > `pushContainerPropertyGenerator`, `pushAssignableTypeContainerPropertyGenerator`, `pushExactTypeContainerPropertyGenerator`
 
-The `ContainerPropertyGenerator` determines how to generate [`ContainerProperty`](../concepts/#containerProperty) within a given context.
 `ContainerPropertyGenerator` 는 주어진 컨텍스트에서 [`ContainerProperty`](../concepts/#containerProperty) 를 생성하는 방법을 결정합니다.
-With options related to `ContainerPropertyGenerator` you can customize how the `ContainerProperty` is generated.
 `ContainerPropertyGenerator` 관련 옵션을 사용하면 `ContainerProperty` 가 생성되는 방식을 사용자 정의할 수 있습니다.
+
 {{< alert icon="📖" text="Notable implementations: 'ArrayContainerPropertyGenerator', 'MapContainerPropertyGenerator'" />}}
 
 -----------------
 
-## Arbitrary Generation
-An `Introspector` determines how Fixture Monkey creates objects by selecting the appropriate arbitrary generation strategy based on the provided context(which includes information about generated properties).
-`Introspector` 는 생성된 프로퍼티에 대한 정보를 포함한 컨텍스트를 기반으로 적절한 임의 생성 전략을 선택하여 Fixture Monkey가 객체를 생성하는 방법을 결정합니다.
-The object is then generated based on this arbitrary generated.
-이후 이 객체는 임의 생성된 기반으로 생성됩니다.
-You have the flexibility to create a custom `Introspector` by implementing your own `ArbitraryIntrospector`.
+## 임의적인 생성
+`Introspector` 는 생성된 프로퍼티에 대한 정보를 포함한 컨텍스트를 기반으로 임의 생성 전략을 선택하여 Fixture Monkey가 객체를 생성하는 방법을 결정합니다.
+그런 다음 임의적으로 생성된 것을 기반으로 객체가 생성됩니다.
+사용자는 직접 `ArbitraryIntrospector` 를 구현하여 사용자 정의 `Introspector` 를 생성할 수 있는 유연성을 가지게 됩니다.
 
 ### ObjectIntrospector
 > `objectIntrospcetor`
 
-The `objectIntrospector` option allows you to specify the default behavior when generating an object.
-객체 생성 시 기본 동작을 지정하는 `objectIntrospector` 관련 옵션을 사용하면 객체를 생성할 때 기본 동작을 지정할 수 있습니다.
-As discussed in the [introspector section](../../generating-objects/introspector), you can alter the default introspector to use predefined introspectors provided by Fixture Monkey or create your own custom introspector.
-[introspector section](../../generating-objects/introspector)에서 설명한 대로 기본 introspector를 변경하여 Fixture Monkey에서 제공하는 미리 정의된 introspector를 사용하거나 사용자 정의 introspector를 만들 수 있습니다.
+`objectIntrospector` 관련 옵션을 사용하면 객체 생성 시 기본 동작을 지정할 수 있습니다.
+[introspector section](../../generating-objects/introspector)에서 언급한 대로 기본 introspector를 변경하여 Fixture Monkey에서 제공하는 미리 정의된 introspector를 사용하거나 사용자 정의 introspector를 만들 수 있습니다.
+
 {{< alert icon="📖" text="Notable implementations: 'BeanArbitraryIntrospector', 'BuilderArbitraryIntrospector'" />}}
 
 ### ArbitraryIntrospector
 > `pushArbitraryIntrospector`, `pushAssignableTypeArbitraryIntrospector`, `pushExactTypeArbitraryIntrospector`
 
-If you need to change the `ArbitraryIntrospector` for a specific type you can use the above options.
-특정 유형에 대한 `ArbitraryIntrospector` 를 변경해야 하는 경우 위의 옵션을 사용할 수 있습니다.
+특정 타입에 대한 `ArbitraryIntrospector` 를 변경해야 하는 경우 위의 옵션을 사용할 수 있습니다.
+
 {{< alert icon="📖" text="Notable implementations: 'BooleanIntrospector', 'EnumIntrospector'" />}}
 
 ### ContainerIntrospector
 > pushContainerIntrospector
 
-Especially for container types, you can change the `ArbitraryIntrospector` using the `pushContainerIntrospector` option.
 특히 컨테이너 타입의 경우, `pushContainerIntrospector` 옵션을 사용하여 `ArbitraryIntrospector` 를 변경할 수 있습니다.
+
 {{< alert icon="📖" text="Notable implementations: 'ListIntrospector', 'MapIntrospector'" />}}
 
 -----------------
 
-## Arbitrary Generation
-The `ArbitraryIntrospector` is responsible for defining how Fixture Monkey creates objects by selecting the appropriate arbitrary generation strategy and generating an arbitrary.
-`ArbitraryIntrospector` 는 적절한 임의 생성 전략을 선택하고 임의의 개체를 생성하여 Fixture Monkey가 개체를 생성하는 방법을 정의하는 역할을 담당합니다.
-The actual creation of the final arbitrary(`CombinableArbitrary`) from the arbitrary is done by the `ArbitraryGenerator`, which handles the request by delegating to the `ArbitraryIntrospcetor`.
-임의 객체에서 최종 임의 객체(`CombinableArbitrary`)를 실제로 생성하는 것은 `ArbitraryGenerator`에 의해 이루어지며, 이 객체는 `ArbitraryIntrospcetor`에 요청을 위임하여 요청을 처리합니다.
-By using the `defaultArbitraryGenerator` option, you have the capability to customize the behavior of the `ArbitraryGenerator`.
-`defaultArbitraryGenerator` 옵션을 사용하면 `ArbitraryGenerator` 의 동작을 커스터마이징할 수 있습니다.
+## 임의적인 생성
+`ArbitraryIntrospector` 는 적절한 임의 생성 전략을 선택하고 임의의 객체를 생성하여 Fixture Monkey가 객체를 생성하는 방법을 정의하는 역할을 합니다.
+임의 객체에서 최종 임의 객체(`CombinableArbitrary`)를 실제로 생성하는 것은 `ArbitraryGenerator` 에 의해 이루어지며, 이 객체는 `ArbitraryIntrospcetor` 에 요청을 위임하여 요청을 처리합니다.
+`defaultArbitraryGenerator` 옵션을 사용하면 `ArbitraryGenerator` 의 동작을 사용자 정의 할 수 있습니다.
 
-For instance, you can create an arbitrary generator that produces unique values, as shown in the example below:
-예를 들어 예시와 같이 고유한 값을 생성하는 임의의 생성기를 만들 수 있습니다:
+예를 들어, 아래의 예시와 같이 고유한 값을 생성하는 arbitrary generator를 만들 수 있습니다:
 
 {{< tabpane persist=false >}}
 {{< tab header="Java" lang="java">}}
@@ -156,11 +142,10 @@ val fixtureMonkey = FixtureMonkey.builder()
 
 -----------------
 
-## Excluding Classes or Packages from Generation
+## 클래스, 패키지 생성 제외 옵션
 > `pushExceptGenerateType`, `addExceptGenerateClass`, `addExceptGenerateClasses`, `addExceptGeneratePackage`, `addExceptGeneratePackages`
 
-If you want to exclude the generation of certain types or packages, you can use these options.
-특정 유형이나 패키지의 생성을 제외하려면 다음 옵션을 사용할 수 있습니다.
+특정 타입이나 패키지의 생성을 제외하려면 다음 옵션을 사용할 수 있습니다.
 
 {{< tabpane persist=false >}}
 {{< tab header="Java" lang="java">}}
@@ -219,17 +204,14 @@ val fixtureMonkey = FixtureMonkey.builder()
 
 -----------------
 
-## Container options
+## 컨테이너 옵션
 
 ### Container Size
 > `defaultArbitraryContainerInfoGenerator`, `pushArbitraryContainerInfoGenerator`
 
-`ArbitraryContainerInfo` holds information about the minimum and maximum sizes of a Container type.
-`ArbitraryContainerInfo`은 컨테이너 타입의 최소 및 최대 크기에 대한 정보를 보유합니다.
-You can change the behavior by modifying the `ArbitraryContainerInfoGenerator` using related options.
-관련 옵션을 사용하여 `ArbitraryContainerInfoGenerator` 를 수정하여 동작을 변경할 수 있습니다.
-The following example demonstrates how to customize `ArbitraryContainerInfo` to set the size of all container types to 3.
-다음 예는 모든 컨테이너 타입의 크기를 3으로 설정하도록 `ArbitraryContainerInfo`를 사용자 정의하는 방법을 보여줍니다.
+`ArbitraryContainerInfo` 는 컨테이너 타입의 최소, 최대 크기에 대한 정보를 가집니다.
+관련 옵션을 사용하여 `ArbitraryContainerInfoGenerator` 를 수정함으로써 동작 방식을 변경할 수 있습니다.
+다음 예시는 `ArbitraryContainerInfo` 의 모든 컨테이너 타입의 크기를 3으로 설정하도록 사용자 정의하는 방법을 설명합니다.
 
 {{< tabpane persist=false >}}
 {{< tab header="Java" lang="java">}}
@@ -262,17 +244,14 @@ val fixtureMonkey = FixtureMonkey.builder()
 {{< /tab >}}
 {{< /tabpane>}}
 
-### Adding Container type
+### 컨테이너 타입 추가
 > `addContainerType`
 
-You can add a new custom Container type using the `addContainerType` option.
-`addContainerType` 옵션을 사용하여 새 사용자 정의 컨테이너 타입을 추가할 수 있습니다.
+`addContainerType` 옵션을 사용하여 새로운 사용자 정의 컨테이너 타입을 추가할 수 있습니다.
 
-Let's say you made a new custom Pair class in Java.
-Java에서 새로운 사용자 지정 Pair 클래스를 만들었다고 가정해 보겠습니다.
+Java에서 새로운 사용자 정의 Pair 클래스를 만든다고 가정해 보겠습니다.
 
-You can use this container type by implementing a custom `ContainerPropertyGenerator`, `Introspector` and `DecomposedContainerValueFactory`.
-이 컨테이너 타입은 커스텀 `ContainerPropertyGenerator`, `Introspector` 및 `DecomposedContainerValueFactory`를 구현하여 사용할 수 있습니다.
+이 컨테이너 타입은 커스텀 `ContainerPropertyGenerator`, `Introspector`, `DecomposedContainerValueFactory` 를 구현하여 사용할 수 있습니다.
 
 ```java
 FixtureMonkey fixtureMonkey=FixtureMonkey.builder()
@@ -379,13 +358,12 @@ public class PairDecomposedContainerValueFactory implements DecomposedContainerV
 
 -----------------
 
-## Validating Arbitraries
+## 임의성 유효성 검증
 > `arbitraryValidator`
 
-The `arbitraryValidator` option allows you to replace the default `arbitraryValidator` with your own custom arbitrary validator.
-
-When an instance is `sampled`, the `arbitraryValidator` validates the arbitrary, and if it is invalid, it throws an exception.
-This process is repeated 1,000 times, and if the instance is still invalid, a `TooManyFilterMissesException` would be thrown.
+`arbitraryValidator` 옵션을 사용하면 기본 `arbitraryValidator` 를 사용자 정의 임의의 유효성 검사기로 대체할 수 있습니다.
+인스턴스가 `sampled` 되면 `arbitraryValidator` 는 임의의 유효성을 검사하고 유효하지 않은 경우 예외를 던집니다.
+이 프로세스는 1,000회 반복되며, 인스턴스가 여전히 유효하지 않다면 `TooManyFilterMissesException` 예외를 던질 것입니다.
 
 {{< alert icon="📖" text="Notable implementations: 'JakartaArbitraryValidator', 'JavaxArbitraryValidator'" />}}
 
@@ -418,14 +396,14 @@ assertThatThrownBy { fixtureMonkey.giveMeOne<String>() }
 
 -----------------
 
-## Arbitrary Generation Retry Limits
+## 임의적인 생성 재시도 제한
 > `generateMaxTries`, `generateUniqueMaxTries`
 
-The `generateMaxTries` option allows you to control the maximum number of attempts to generate a valid object from an arbitrary.
-If an object cannot be generated successfully after exceeding this limit (default is 1,000 attempts), a `TooManyFilterMissesException` will be thrown.
+`generateMaxTries` 옵션을 사용하면 임의의 객체에서 유효한 객체를 생성하기 위한 최대 시도 횟수를 제한할 수 있습니다.
+제한(기본값 1,000회)을 초과하여 객체를 성공적으로 생성할 수 없는 경우, `TooManyFilterMissesException` 예외를 던질 것입니다.
 
-Additionally, Fixture Monkey ensures the generation of unique values for map keys and set elements.
-The `generateUniqueMaxTries` option allows you to specify the maximum number of attempts (also defaults to 1,000) that will be made to generate this unique value.
+추가적으로, Fixture Monkey는 Map의 키(key)와 Set의 요소(element)에 대한 고유한 값 생성을 보장합니다.
+`generateUniqueMaxTries` 옵션을 사용하면 이 고유한 값을 생성하기 위해 시도 최대 횟수(기본값 1,000회)를 지정할 수 있습니다.
 
 {{< tabpane persist=false >}}
 {{< tab header="Java" lang="java">}}
@@ -448,13 +426,13 @@ val fixtureMonkey = FixtureMonkey.builder()
 
 -----------------
 
-## Interface Implementations
+## 인터페이스 구현
 > `interfaceImplements`
 
-`interfaceImplements` is an option used to specify the available implementations for an interface.
+`interfaceImplements` 은 인터페이스에 사용 가능한 구현체를 지정할 때 사용되는 옵션입니다.
 
-When you don't specify this option, an ArbitraryBuilder for an interface will always result in a null value when sampled.
-However, when you do specify this option, Fixture Monkey will randomly generate one of the specified implementations whenever an ArbitraryBuilder for the interface is sampled.
+이 옵션을 지정하지 않으면, 인터페이스에 대한 ArbitraryBuilder가 샘플링될 때 항상 null 값을 반환합니다.
+하지만 이 옵션을 지정하면 Fixture Monkey는 인터페이스에 대한 ArbitraryBuilder를 샘플링할 때마다 지정된 구현체 중 하나를 임의로 생성합니다.
 
 {{< tabpane persist=false >}}
 {{< tab header="Java" lang="java">}}
