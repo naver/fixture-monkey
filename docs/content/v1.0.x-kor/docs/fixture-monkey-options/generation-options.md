@@ -206,7 +206,7 @@ val fixtureMonkey = FixtureMonkey.builder()
 
 ## 컨테이너 옵션
 
-### Container Size
+### 컨테이너 크기
 > `defaultArbitraryContainerInfoGenerator`, `pushArbitraryContainerInfoGenerator`
 
 `ArbitraryContainerInfo` 는 컨테이너 타입의 최소, 최대 크기에 대한 정보를 가집니다.
