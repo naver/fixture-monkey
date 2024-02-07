@@ -45,7 +45,7 @@ Fixture Monkey는 원하는 설정과 일치하는 복합 객체를 생성하기
 
 ## 임의적인 생성
 `Introspector` 는 생성된 프로퍼티에 대한 정보를 포함한 컨텍스트를 기반으로 임의 생성 전략을 선택하여 Fixture Monkey가 객체를 생성하는 방법을 결정합니다.
-그런 다음 임의적으로 생성된 것을 기반으로 객체가 생성됩니다.
+그 다음에 임의 생성 전략을 기반으로 객체가 생성됩니다.
 사용자는 직접 `ArbitraryIntrospector` 를 구현하여 사용자 정의 `Introspector` 를 생성할 수 있는 유연성을 가지게 됩니다.
 
 ### ObjectIntrospector
@@ -251,7 +251,7 @@ val fixtureMonkey = FixtureMonkey.builder()
 
 Java에서 새로운 사용자 정의 Pair 클래스를 만든다고 가정해 보겠습니다.
 
-이 컨테이너 타입은 커스텀 `ContainerPropertyGenerator`, `Introspector`, `DecomposedContainerValueFactory` 를 구현하여 사용할 수 있습니다.
+이 컨테이너 타입은 사용자 정의 `ContainerPropertyGenerator`, `Introspector`, `DecomposedContainerValueFactory` 를 구현하여 사용할 수 있습니다.
 
 ```java
 FixtureMonkey fixtureMonkey=FixtureMonkey.builder()

@@ -10,7 +10,7 @@ weight: 53
 
 Fixture Monkey는 `FixtureMonkeyBuilder` 를 통해 원하는 값을 가지도록 객체를 사용자 정의하거나 사용자 정의 프로퍼티 명을 사용할 수 있는 옵션도 제공합니다.
 
-## 프로퍼티 네임 리졸버
+## 프로퍼티네임 리졸버
 > `defaultPropertyNameResolver`, `pushPropertyNameResolver`, `pushAssignableTypePropertyNameResolver`, `pushExactTypePropertyNameResolver`
 
 `PropertyNameResolver` 관련 옵션을 사용하면 프로퍼티를 참조하는 방법을 사용자 정의할 수 있습니다.
@@ -80,7 +80,7 @@ val expected = "test"
 일반적으로, 프로퍼티 명은 원래 프로퍼티 명인 "productName" 으로 해석됩니다.
 그러나 `pushPropertyNameResolver` 를 사용하면 String 타입의 프로퍼티는 이제 "string"이라는 이름으로 참조됩니다.
 
-## 레지스터 옵션
+## 등록 옵션
 > `register`, `registerGroup`, `registerExactType`, `registerAssignableType`
 
 때로 클래스가 특정 제약 조건과 일관되게 일치해야 할 수 있습니다.
@@ -90,7 +90,7 @@ val expected = "test"
 `register` 옵션은 특정 유형에 대한 `ArbitraryBuilder` 를 등록하는 것을 돕습니다.
 
 For example, the following code demonstrates how to register an `ArbitraryBuilder` for a Product class.
-예시의 다음 코드는 Product 클래스에 대한 `ArbitraryBuilder` 를 등록하는 방법을 보여줍니다.
+예시의 다음 코드는 Product 클래스에 대한 `ArbitraryBuilder` 를 등록하는 방법을 보여줍니다.-
 이를 등록함으로써 `FixtureMonkey` 에 의해 생성된 모든 Product 인스턴스는 "0"보다 크거나 같은 id 값을 가질 것입니다.
 
 {{< tabpane persist=false >}}
@@ -219,7 +219,7 @@ FixtureMonkey.builder()
 ## 표현식 엄격 모드
 > `useExpressionStrictMode`
 
-표현식(특히 문자열 표현식)을 사용할 때 작성한 표현식이 일치하는 프로퍼티를 가지고 있는지, 그리고 프로퍼티가 올바르게 적용되었는지를 파악하기 어려울 수 있습니다.
+표현식(특히 문자열 표현식)을 사용할 때 작성한 표현식이 일치하는 프로퍼티를 가지는지, 프로퍼티가 올바르게 적용되었는지를 파악하기 어려울 수 있습니다.
 `useExpressionStrictMode` 옵션을 사용하면 작성한 표현식이 일치하는 프로퍼티를 가지고 있지 않으면 IllegalArgumentException 예외를 던질 것입니다.
 
 {{< tabpane persist=false >}}
@@ -392,7 +392,7 @@ val fixtureMonkey = FixtureMonkey.builder().nullableElement(true).build()
 
 항상 null이 되길 원한다면 `1.0d` 로 설정할 수 있습니다. DefaultNullInjectGenerator에는 `NOT_NULL_INJECT(0.0d)` 와 `ALWAYS_NULL_INJECT(1.0d)` 와 같은 미리 정의된 값이 있습니다. 이를 가져와서 사용할 수 있습니다.
 
-보다 사용자 정의된 동작을 원하는 경우, 자체적으로 NullInjectGenerator를 구현할 수도 있습니다.
+사용자 정의된 동작을 더 추가하길 원하는 경우, 자체적으로 NullInjectGenerator를 구현할 수도 있습니다.
 
 {{< tabpane persist=false >}}
 {{< tab header="Java" lang="java">}}
