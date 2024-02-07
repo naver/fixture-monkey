@@ -1,5 +1,5 @@
 ---
-title: "KOTLIN 플러그인"
+title: "Kotlin 플러그인"
 images: []
 menu:
   docs:

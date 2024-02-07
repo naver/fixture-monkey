@@ -1,5 +1,5 @@
 ---
-title: "특징"
+title: "기능"
 images: []
 menu:
 docs:
@@ -8,8 +8,8 @@ identifier: "kotlin-plugin-features"
 weight: 61
 ---
 
-Kotlin 의 간결하고 안전하며 실용적인 면을 최대한 잘 활용할 수 있도록 Fixture Monkey 는 Kotlin 플러그인을 제공합니다.
-- `PrimaryConstructorArbitraryIntrospector` 를 기본 Introspector 로 적용하여 기본생성자로 Kotlin 클래스를 생성
+Kotlin 의 간결하고 안전하며 실용적인 면을 최대한 활용할 수 있도록 Fixture Monkey 는 Kotlin 플러그인을 제공합니다.
+- `PrimaryConstructorArbitraryIntrospector` 를 기본 Introspector 로 적용하여 Kotlin 클래스를 주 생성자로 생성
 - Fixture Monkey 의 Kotlin 확장 함수 제공
 - Kotlin DSL 표현식 및 instantiateBy DSL 제공
 
