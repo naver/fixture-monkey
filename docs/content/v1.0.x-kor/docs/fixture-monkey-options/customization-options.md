@@ -90,7 +90,7 @@ val expected = "test"
 `register` 옵션은 특정 유형에 대한 `ArbitraryBuilder` 를 등록하는 것을 돕습니다.
 
 For example, the following code demonstrates how to register an `ArbitraryBuilder` for a Product class.
-예시의 다음 코드는 Product 클래스에 대한 `ArbitraryBuilder` 를 등록하는 방법을 보여줍니다.-
+예시의 다음 코드는 Product 클래스에 대한 `ArbitraryBuilder` 를 등록하는 방법을 보여줍니다.
 이를 등록함으로써 `FixtureMonkey` 에 의해 생성된 모든 Product 인스턴스는 "0"보다 크거나 같은 id 값을 가질 것입니다.
 
 {{< tabpane persist=false >}}
@@ -412,7 +412,7 @@ val fixtureMonkey = FixtureMonkey.builder()
 {{< /tab >}}
 {{< /tabpane>}}
 
-If you want to specifically change the probability of a certain type being null, you can use `pushNullInjectGenerator`.
+특정 타입이 null이 될 확률을 구체적으로 변경하려면 `pushNullInjectGenerator` 를 사용하면 됩니다.
 
 {{< tabpane persist=false >}}
 {{< tab header="Java" lang="java">}}
@@ -436,4 +436,4 @@ NullInjectGenerator { context -> NOT_NULL_INJECT }
 {{< /tab >}}
 {{< /tabpane>}}
 
-Registering an `ArbitraryBuilder` of a specific class with `register` that has the `.setNotNull("*")` setting will have the same effect.
+특정 클래스의 `ArbitraryBuilder` 를 `register` 로 등록하면 `.setNotNull("*")` 설정과 동일한 결과를 얻을 수 있습니다.
