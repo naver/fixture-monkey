@@ -34,6 +34,7 @@ import com.navercorp.fixturemonkey.api.plugin.InterfacePlugin
 import com.navercorp.fixturemonkey.api.type.Types.GeneratingWildcardType
 import com.navercorp.fixturemonkey.customizer.Values
 import com.navercorp.fixturemonkey.kotlin.KotlinPlugin
+import com.navercorp.fixturemonkey.kotlin.expression.root
 import com.navercorp.fixturemonkey.kotlin.get
 import com.navercorp.fixturemonkey.kotlin.giveMeBuilder
 import com.navercorp.fixturemonkey.kotlin.giveMeExperimentalBuilder
@@ -42,9 +43,17 @@ import com.navercorp.fixturemonkey.kotlin.instantiator.instantiateBy
 import com.navercorp.fixturemonkey.kotlin.into
 import com.navercorp.fixturemonkey.kotlin.intoGetter
 import com.navercorp.fixturemonkey.kotlin.introspector.PrimaryConstructorArbitraryIntrospector
+import com.navercorp.fixturemonkey.kotlin.maxSize
+import com.navercorp.fixturemonkey.kotlin.minSize
 import com.navercorp.fixturemonkey.kotlin.pushExactTypeArbitraryIntrospector
+import com.navercorp.fixturemonkey.kotlin.set
 import com.navercorp.fixturemonkey.kotlin.setExp
 import com.navercorp.fixturemonkey.kotlin.setExpGetter
+import com.navercorp.fixturemonkey.kotlin.setLazy
+import com.navercorp.fixturemonkey.kotlin.setNotNull
+import com.navercorp.fixturemonkey.kotlin.setNull
+import com.navercorp.fixturemonkey.kotlin.setPostCondition
+import com.navercorp.fixturemonkey.kotlin.size
 import com.navercorp.fixturemonkey.kotlin.sizeExp
 import com.navercorp.fixturemonkey.kotlin.sizeExpGetter
 import com.navercorp.fixturemonkey.tests.TestEnvironment.TEST_COUNT
@@ -449,6 +458,192 @@ class KotlinTest {
             .sample()
 
         then(actual).isExactlyInstanceOf(ConcreteTypeChild::class.java)
+    }
+
+    @Test
+    fun setRootExp() {
+        val expected = "test"
+
+        val actual = SUT.giveMeBuilder<String>()
+            .set(String::root, expected)
+            .sample()
+
+        then(actual).isEqualTo(expected)
+    }
+
+    @Test
+    fun setLazyRootExp() {
+        val expected = "test"
+
+        val actual = SUT.giveMeBuilder<String>()
+            .setLazy(String::root) { expected }
+            .sample()
+
+        then(actual).isEqualTo(expected)
+    }
+
+    @Test
+    fun setNullRootExp() {
+        val actual = SUT.giveMeBuilder<String?>()
+            .setNull(String::root)
+            .sample()
+
+        then(actual).isNull()
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun setNotNullRootExp() {
+        val actual = SUT.giveMeBuilder<String?>()
+            .setNotNull(String::root)
+            .sample()
+
+        then(actual).isNotNull()
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun sizeRootExp() {
+        val actual = SUT.giveMeBuilder<List<String>>()
+            .size(List<String>::root, 1)
+            .sample()
+
+        then(actual).hasSize(1)
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun sizeRangeRootExp() {
+        val actual = SUT.giveMeBuilder<List<String>>()
+            .size(List<String>::root, 1, 3)
+            .sample()
+
+        then(actual).hasSizeBetween(1, 3)
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun minSizeRootExp() {
+        val actual = SUT.giveMeBuilder<List<String>>()
+            .minSize(List<String>::root, 1)
+            .sample()
+
+        then(actual).hasSizeGreaterThanOrEqualTo(1)
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun maxSizeRootExp() {
+        val actual = SUT.giveMeBuilder<List<String>>()
+            .maxSize(List<String>::root, 1)
+            .sample()
+
+        then(actual).hasSizeLessThanOrEqualTo(1)
+    }
+
+    @Test
+    fun setPostConditionRootExp() {
+        val actual = SUT.giveMeBuilder<String>()
+            .setPostCondition(String::root) { it.length < 5 }
+            .sample()
+
+        then(actual).hasSizeLessThan(5)
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun setRootElementExp() {
+        val expected = "test"
+
+        val actual = SUT.giveMeBuilder<List<String>>()
+            .size(List<String>::root, 1)
+            .set(List<String>::root[0], expected)
+            .sample()
+
+        then(actual[0]).isEqualTo(expected)
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun setRootArrayElementExp() {
+        val expected = "test"
+
+        val actual = SUT.giveMeBuilder<Array<String>>()
+            .size(Array<String>::root, 1)
+            .set(Array<String>::root[0], expected)
+            .sample()
+
+        then(actual[0]).isEqualTo(expected)
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun setRootAllElementExp() {
+        val expected = "test"
+
+        val actual = SUT.giveMeBuilder<List<String>>()
+            .size(List<String>::root, 3)
+            .set(List<String>::root["*"], expected)
+            .sample()
+
+        then(actual).allMatch { it == expected }
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun setRootArrayAllElementExp() {
+        val expected = "test"
+
+        val actual = SUT.giveMeBuilder<Array<String>>()
+            .size(Array<String>::root, 3)
+            .set(Array<String>::root["*"], expected)
+            .sample()
+
+        then(actual).allMatch { it == expected }
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun setRootNestedListElementExp() {
+        val expected = "test"
+
+        val actual = SUT.giveMeBuilder<List<List<String>>>()
+            .size(List<List<String>>::root, 1)
+            .size(List<List<String>>::root[0], 1)
+            .set(List<List<String>>::root[0][0], expected)
+            .sample()[0][0]
+
+        then(actual).isEqualTo(expected)
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun setRootNestedListAllElementExp() {
+        val expected = "test"
+
+        val actual = SUT.giveMeBuilder<List<List<String>>>()
+            .size(List<List<String>>::root, 3)
+            .size(List<List<String>>::root["*"], 3)
+            .set(List<List<String>>::root["*"]["*"], expected)
+            .sample()
+
+        then(actual).allMatch { list -> list.all { it == expected } }
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun setRootNestedArrayElementExp() {
+        val expected = "test"
+
+        val actual = SUT.giveMeBuilder<Array<Array<String>>>()
+            .size(Array<Array<String>>::root, 1)
+            .size(Array<Array<String>>::root[0], 1)
+            .set(Array<Array<String>>::root[0][0], expected)
+            .sample()[0][0]
+
+        then(actual).isEqualTo(expected)
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun setRootNestedArrayAllElementExp() {
+        val expected = "test"
+
+        val actual = SUT.giveMeBuilder<Array<Array<String>>>()
+            .size(Array<Array<String>>::root, 3)
+            .size(Array<Array<String>>::root["*"], 3)
+            .set(Array<Array<String>>::root["*"]["*"], expected)
+            .sample()
+            .flatten()
+
+        then(actual).allMatch { it == expected }
     }
 
     companion object {
