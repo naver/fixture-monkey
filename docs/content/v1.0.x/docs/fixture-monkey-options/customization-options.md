@@ -10,7 +10,7 @@ weight: 53
 
 Fixture Monkey also provides options through the `FixtureMonkeyBuilder` to customize objects to have the desired values or to use custom property names.
 
-## PropertyNameResolver
+## Change how property names are resolved
 > `defaultPropertyNameResolver`, `pushPropertyNameResolver`, `pushAssignableTypePropertyNameResolver`, `pushExactTypePropertyNameResolver`
 
 Options related to the `PropertyNameResolver` allow you to customize how you refer to your properties.
@@ -79,7 +79,7 @@ fun test() {
 Normally, the property name will resolve to the original property name "productName".
 However, with `pushPropertyNameResolver` the String type properties are now referred to by the name "string".
 
-## Register
+## Register a default ArbitraryBuilder for a given type
 > `register`, `registerGroup`, `registerExactType`, `registerAssignableType`
 
 Sometimes your class may need to consistently match certain constraints.
@@ -214,7 +214,7 @@ FixtureMonkey.builder()
 {{< /tab >}}
 {{< /tabpane>}}
 
-## Expression Strict Mode
+## Use expression strict mode
 > `useExpressionStrictMode`
 
 When using expressions (especially String Expressions), it's hard to know if the expression you've written has a matching property, and the property is correctly adjusted.
@@ -253,7 +253,7 @@ fun test() {
 {{< /tab >}}
 {{< /tabpane>}}
 
-## Constraining Java types
+## Constrain Java types
 > `javaTypeArbitraryGenerator`, `javaTimeTypeArbitraryGenerator`
 
 You can modify the default values for Java primitive types (such as strings, integers, doubles, etc.) by implementing a custom `JavaTypeArbitraryGenerator` interface.
@@ -295,7 +295,7 @@ FixtureMonkey.builder()
 
 For Java time types, you can use `javaTimeTypeArbitraryGenerator`.
 
-## Constraining Java types with annotations
+## Constrain Java types with annotations
 > `javaArbitraryResolver`, `javaTimeArbitraryResolver`
 
 Similar to using the javax-validation plugin and adding constraints to your Java typed properties, you can apply constraints to Java types using annotations.
@@ -342,7 +342,7 @@ FixtureMonkey.builder()
 {{< /tab >}}
 {{< /tabpane>}}
 
-## Null Options
+## Change Nullability
 ### defaultNotNull
 > `defaultNotNull`, `nullableContainer`, `nullableElement`
 

@@ -12,7 +12,7 @@ To create a complex object that matches your desired configurations, Fixture Mon
 
 These options are accessible through the `FixtureMonkeyBuilder`.
 
-## Object Generation
+## Implement your own Object Generator
 ### ObjectIntrospector
 > `objectIntrospcetor`
 
@@ -21,9 +21,6 @@ As discussed in the [introspector section](../../generating-objects/introspector
 
 {{< alert icon="📖" text="Notable implementations: 'BeanArbitraryIntrospector', 'BuilderArbitraryIntrospector'" />}}
 
----------------------
-
-## Arbitrary Generation
 ### ArbitraryIntrospector
 The `ArbitraryIntrospector` is responsible for defining how Fixture Monkey chooses the appropriate arbitrary generation strategy and generates an arbitrary. 
 The object is then generated based on the generated arbitrary.
@@ -114,7 +111,7 @@ val fixtureMonkey = FixtureMonkey.builder()
 
 -----------------
 
-## Property Generation
+## Implement your own Property
 ### PropertyGenerator
 > `defaultPropertyGenerator`, `pushPropertyGenerator`, `pushAssignableTypePropertyGenerator`, `pushExactTypePropertyGenerator`
 
@@ -145,7 +142,7 @@ With options related to `ContainerPropertyGenerator` you can customize how the `
 
 -----------------
 
-## Excluding Classes or Packages from Generation
+## Exclude Classes or Packages from Generation
 > `pushExceptGenerateType`, `addExceptGenerateClass`, `addExceptGenerateClasses`, `addExceptGeneratePackage`, `addExceptGeneratePackages`
 
 If you want to exclude the generation of certain types or packages, you can use these options.
@@ -207,7 +204,7 @@ fun testExcludePackage() {
 
 -----------------
 
-## Container options
+## Modify Containers
 
 ### Container Size
 > `defaultArbitraryContainerInfoGenerator`, `pushArbitraryContainerInfoGenerator`
@@ -361,7 +358,7 @@ public class PairDecomposedContainerValueFactory implements DecomposedContainerV
 
 -----------------
 
-## Validating Arbitraries
+## Customize Arbitrary Validation
 > `arbitraryValidator`
 
 The `arbitraryValidator` option allows you to replace the default `arbitraryValidator` with your own custom arbitrary validator.
@@ -400,7 +397,7 @@ assertThatThrownBy { fixtureMonkey.giveMeOne<String>() }
 
 -----------------
 
-## Arbitrary Generation Retry Limits
+## Modify Arbitrary Generation Retry Limits
 > `generateMaxTries`, `generateUniqueMaxTries`
 
 The `generateMaxTries` option allows you to control the maximum number of attempts to generate a valid object from an arbitrary.
@@ -430,7 +427,7 @@ val fixtureMonkey = FixtureMonkey.builder()
 
 -----------------
 
-## Interface Implementations
+## Implement Interfaces
 > `interfaceImplements`
 
 `interfaceImplements` is an option used to specify the available implementations for an interface.
