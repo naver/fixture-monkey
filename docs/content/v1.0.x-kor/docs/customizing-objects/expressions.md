@@ -7,7 +7,7 @@ parent: "customizing-objects"
 identifier: "expressions"
 ---
 
-Fixture Monkey를 사용할 때, Fixture Monkey 표현식을 사용하여 오브젝트의 속성을 하나 이상 유연하게 선택할 수 있습니다.
+Fixture Monkey를 사용할 때, Fixture Monkey 표현식을 사용하여 오브젝트의 프로퍼티를 하나 이상 유연하게 선택할 수 있습니다.
 
 예제 오브젝트 구조는 아래와 같습니다:
 
@@ -74,14 +74,14 @@ public class JavaClass {
 "objectList[0].nestedField"
 ```
 
-### JavaGetter Selector을 통해 속성 선택하기
+### JavaGetter Selector를 통해 속성 선택하기
 
 `javaGetter()` property selector를 사용하여 type-safe하게 속성을 선택할 수 있습니다.
 이 selector는 Java의 getter 메서드 참조를 통해 프로퍼티를 선택하고 표시하도록 설계되었습니다.
 
 
 ##### root object 선택:
-- 현재는 지원되지 않습니다.
+- 현재는 지원하지 않습니다.
 
 ##### 특정 필드 선택:
 ```java
@@ -124,9 +124,11 @@ javaGetter(JavaClass::getObjectList)
 
 ### 컬렉션 선택하기 
 
-컬렉션의 경우 속성은 컬렉션 크기 내에 존재하는 경우에만 선택됩니다. 예를 들어, 목록의 크기가 2이지만 표현식이 목록의 범위를 벗어난 `"list[3]"`을 참조하는 경우 선택되지 않습니다.
+컬렉션의 경우 속성은 컬렉션 크기 내에 존재하는 경우에만 선택됩니다. 예를 들어, 리스트의 크기가 2이지만 표현식이 목록의 범위를 벗어난 `"list[3]"`을 참조하는 경우 선택되지 않습니다.
 
-Fixture Monkey는 리스트와 세트에서 요소를 선택하는 기능을 지원하지만, 현재 맵의 요소를 직접 설정하는 전용 표현식은 없습니다. 그러나 맵을 커스터마이즈해야 하는 경우 [InnerSpec](../innerspec) 메서드를 사용하는 것을 고려할 수 있습니다.
+Fixture Monkey 표현식은 리스트와 세트에서 요소를 선택하는 기능을 지원하지만, 맵의 요소를 직접 선택할 수는 없습니다. 대신, 맵을 커스터마이즈해야 하는 경우에는 InnerSpec을 사용할 수 있습니다.
+
+
 
 ### Expression Strict Mode
 
@@ -135,4 +137,4 @@ Fixture Monkey는 리스트와 세트에서 요소를 선택하는 기능을 지
 
 ### Kotlin EXP
 
-Kotlin 플러그인을 추가하면 Kotlin의 속성 참조 구문을 사용하여 속성을 선택할 수 있습니다. Fixture Monkey에서는 이 기능을 `Kotlin EXP` 또는 `Fixture Monkey Kotlin DSL`이라고 합니다. 사용법에 대한 자세한 내용은 [Kotlin DSL Exp page](../../plugins/kotlin-plugin/kotlin-exp)를 참조하세요
+Kotlin 플러그인을 추가하면 Kotlin의 속성 참조 구문을 사용하여 속성을 선택할 수 있습니다. Fixture Monkey에서는 이 기능을 `Kotlin EXP` 또는 `Fixture Monkey Kotlin DSL`이라고 합니다. 사용법에 대한 자세한 내용은 [Kotlin DSL Exp page](../../plugins/kotlin-plugin/kotlin-exp)를 참조하세요.
