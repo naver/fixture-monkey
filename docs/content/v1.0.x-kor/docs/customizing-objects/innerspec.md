@@ -160,8 +160,8 @@ InnerSpec()
 
 ### listElement()
 
-Individual elements within lists can be selected using `listElement()`.
-This is equivalent to referencing elements with "[n]" using `expressions`.
+목록 내의 개별 요소는 `listElement()`를 사용하여 선택할 수 있습니다.
+이는 `expression`을 사용하여 "[n]"으로 요소를 참조하는 것과 동일합니다.
 
 {{< tabpane persist=false >}}
 {{< tab header="Java" lang="java">}}
@@ -180,8 +180,8 @@ val innerSpec = InnerSpec()
 
 ### allListElement()
 
-If you wish to set all elements of the list simultaneously, you can use `allListElement()`.
-This is equivalent to referencing elements with "[*]" using `expressions`.
+만약 목록의 모든 요소를 동시에 설정하려면 `allListElement()`를 사용할 수 있습니다.
+이는 `expressions`를 사용하여 "[*]"로 요소를 참조하는 것과 동일합니다.
 
 {{< tabpane persist=false >}}
 {{< tab header="Java" lang="java">}}
@@ -200,16 +200,16 @@ val innerSpec = InnerSpec()
 
 ## Customizing map properties
 
-InnerSpec provides special methods for customizing map property entries.
+InnerSpec은 맵 프로퍼티 엔트리를 커스터마이징하기 위해 특별한 메소드를 제공합니다.
 
 {{< alert icon="🚨" text="Similar to lists, setting a map entry without specifying the size first might lead to no change. Prior to setting a value, ensure that the map property has the intended size." />}}
 
 ### key(), value(), entry()
 
-You can customize map property entries using `key()`, `value()`, and `entry()` methods.
-Using `key()` assigns a specified value to the key of a map entry, while the entry's value remains randomized.
-Similarly, `value()` assigns a specified value to the map entry's value, while the key becomes randomized.
-If you want to specify both the key and value at once, you can use `entry()`.
+`key()`, `value()`, `entry()` 메소드를 사용하여 맵 프로퍼티 엔트리를 커스터마이징할 수 있습니다.
+`key()`를 사용하면 맵 엔트리의 키에 지정된 값을 할당하고, 엔트리의 값은 무작위로 설정됩니다.
+마찬가지로, `value()`를 사용하면 맵 엔트리의 값에 지정된 값을 할당하고, 키는 무작위로 설정됩니다.
+키와 값을 동시에 지정하려면 `entry()`를 사용할 수 있습니다.
 
 {{< tabpane persist=false >}}
 {{< tab header="Java" lang="java">}}
@@ -240,7 +240,7 @@ val innerSpec = InnerSpec()
 
 ### keys(), values(), entries()
 
-When setting multiple entries within a map, you can use `keys()`, `values()`, and `entries()` to pass multiple values.
+맵 내의 여러 개의 엔트리를 설정할 때 `keys()`, `values()`, `entries()`를 사용하여 여러 값을 전달할 수 있습니다.
 
 {{< tabpane persist=false >}}
 {{< tab header="Java" lang="java">}}
@@ -271,7 +271,7 @@ val innerSpec = InnerSpec()
 
 ### allKey(), allValue(), allEntry()
 
-Similar to `allListElement()`, it is possible to set every entry within the map to the specified value with `allKey()`, `allValue()`, and `allEntry()`.
+`allListElement()`와 유사하게, `allKey()`, `allValue()`, `allEntry()`를 사용하여 맵 내의 모든 엔트리를 지정된 값으로 설정할 수 있습니다.
 
 {{< tabpane persist=false >}}
 {{< tab header="Java" lang="java">}}
@@ -302,8 +302,8 @@ val innerSpec = InnerSpec()
 
 ### keyLazy(), valueLazy(), entryLazy()
 
-Similar to the `setLazy()` method in ArbitraryBuilder, you can pass a Supplier to assign the value.
-The Supplier will run every time the ArbitraryBuilder with the `InnerSpec` applied is sampled.
+ArbitraryBuilder의 `setLazy()` 메소드와 유사하게, Supplier를 전달하여 값을 할당할 수 있습니다.
+Supplier는 `InnerSpec`이 적용된 ArbitraryBuilder가 샘플링될 때마다 실행됩니다.
 
 {{< tabpane persist=false >}}
 {{< tab header="Java" lang="java">}}
