@@ -16,7 +16,7 @@ Fixture Monkey는 `FixtureMonkeyBuilder` 를 통해 원하는 값을 가지도�
 `PropertyNameResolver` 관련 옵션을 사용하면 프로퍼티를 참조하는 방법을 사용자 정의할 수 있습니다.
 
 `defaultPropertyNameResolver` 옵션은 모든 타입에 대해 프로퍼티 명을 알아내는 방식을 변경하는 데 사용됩니다.
-만약 특정 타입에 대해 특정한 변경을 수행하려면 `pushPropertyNameResolver` , `pushAssignableTypePropertyNameResolver` 또는 `pushExactTypePropertyNameResolver` 를 사용할 수 있습니다.
+만약 특정 타입에 대해 변경을 수행하려면 `pushPropertyNameResolver` , `pushAssignableTypePropertyNameResolver` 또는 `pushExactTypePropertyNameResolver` 를 사용할 수 있습니다.
 
 기본적으로 프로퍼티는 원래 이름으로 참조됩니다. 다음 예시를 통해 프로퍼티 명을 사용자 정의하는 방법을 살펴봅시다:
 
@@ -25,7 +25,7 @@ Fixture Monkey는 `FixtureMonkeyBuilder` 를 통해 원하는 값을 가지도�
 
 @Data // getter, setter
 public class Product {
-String productName;
+    String productName;
 }
 
 @Test
@@ -77,19 +77,18 @@ val expected = "test"
 {{< /tab >}}
 {{< /tabpane>}}
 
-일반적으로, 프로퍼티 명은 원래 프로퍼티 명인 "productName" 으로 해석됩니다.
+일반적으로, 프로퍼티 명은 기존 프로퍼티 명인 "productName" 으로 해석됩니다.
 그러나 `pushPropertyNameResolver` 를 사용하면 String 타입의 프로퍼티는 이제 "string"이라는 이름으로 참조됩니다.
 
 ## 등록 옵션
 > `register`, `registerGroup`, `registerExactType`, `registerAssignableType`
 
-때로 클래스가 특정 제약 조건과 일관되게 일치해야 할 수 있습니다.
+때로는 클래스가 특정 제약 조건을 항상 지켜야할 수 있습니다.
 사용자 정의 API를 사용해 항상 `ArbitraryBuilder` 를 수정해야 한다면 번거로울 수 있고 코드가 길어질 수 있습니다.
-이 경우, 모든 기본 제약 조건을 충족하는 클래스에 대해 기본 `ArbitraryBuilder` 를 설정할 수 있습니다.
+이 경우, 기본 제약 조건을 충족하는 클래스들에 대해서 기본 `ArbitraryBuilder` 를 설정할 수 있습니다.
 
-`register` 옵션은 특정 유형에 대한 `ArbitraryBuilder` 를 등록하는 것을 돕습니다.
+`register` 옵션은 특정 타입에 대한 `ArbitraryBuilder` 를 등록하는 것을 돕습니다.
 
-For example, the following code demonstrates how to register an `ArbitraryBuilder` for a Product class.
 예시의 다음 코드는 Product 클래스에 대한 `ArbitraryBuilder` 를 등록하는 방법을 보여줍니다.
 이를 등록함으로써 `FixtureMonkey` 에 의해 생성된 모든 Product 인스턴스는 "0"보다 크거나 같은 id 값을 가질 것입니다.
 
@@ -117,10 +116,10 @@ it.giveMeBuilder<Product>()
 {{< /tab >}}
 {{< /tabpane>}}
 
-여러 ArbitraryBuilders를 한 번에 등록하려면 `registerGroup` 옵션을 사용할 수 있습니다.
+ArbitraryBuilders들을 한 번에 등록하려면 `registerGroup` 옵션을 사용할 수 있습니다.
 이 작업은 리플렉션 또는 `ArbitraryBuilderGroup` 인터페이스를 사용하여 수행할 수 있습니다.
 
-**Using reflection:**
+**리플렉션 사용:**
 {{< tabpane persist=false >}}
 {{< tab header="Java" lang="java">}}
 
@@ -162,7 +161,7 @@ FixtureMonkey.builder()
 {{< /tab >}}
 {{< /tabpane>}}
 
-**Using ArbitraryBuilderGroup interface:**
+**ArbitraryBuilderGroup 인터페이스 사용:**
 
 {{< tabpane persist=false >}}
 {{< tab header="Java" lang="java">}}
@@ -219,8 +218,8 @@ FixtureMonkey.builder()
 ## 표현식 엄격 모드
 > `useExpressionStrictMode`
 
-표현식(특히 문자열 표현식)을 사용할 때 작성한 표현식이 일치하는 프로퍼티를 가지는지, 프로퍼티가 올바르게 적용되었는지를 파악하기 어려울 수 있습니다.
-`useExpressionStrictMode` 옵션을 사용하면 작성한 표현식이 일치하는 프로퍼티를 가지고 있지 않으면 IllegalArgumentException 예외를 던질 것입니다.
+표현식(특히 문자열 표현식)을 사용할 때 작성한 표현식이 일치하는 프로퍼티를 가지는지, 프로퍼티가 올바르게 선택되었는지를 파악하기 어려울 수 있습니다.
+`useExpressionStrictMode` 옵션을 사용하면 작성한 표현식이 일치하는 프로퍼티를 가지고 있지 않으면 IllegalArgumentException 예외를 던집니다.
 
 {{< tabpane persist=false >}}
 {{< tab header="Java" lang="java">}}
@@ -261,7 +260,7 @@ val fixtureMonkey = FixtureMonkey.builder().useExpressionStrictMode().build()
 사용자 정의 `JavaTypeArbitraryGenerator` 인터페이스를 구현하여 Java 기본 타입(string, integer, double 등)의 기본값을 수정할 수 있습니다.
 이 옵션은 `JqwikPlugin` 을 통해 적용할 수 있습니다.
 
-예를 들어, Fixture Monkey로 생성된 string 타입은 기본적으로 제어 블록이 문자열에 포함되어 있는 극단적인 경우를 고려하기 때문에 읽기 어렵습니다.
+예를 들어, Fixture Monkey로 생성된 string 타입은 기본적으로 제어 블록이 문자열에 포함되어 있는 극단적인 경우를 고려하여 생성하기 때문에 읽기 어렵습니다.
 
 알파벳 문자로만 구성된 문자열을 생성하려면 아래 예시처럼 `JavaTypeArbitraryGenerator` 를 재정의하면 됩니다:
 
@@ -295,16 +294,16 @@ override fun strings(): StringArbitrary = Arbitraries.strings().alpha()
 {{< /tab >}}
 {{< /tabpane>}}
 
-For Java time types, you can use `javaTimeTypeArbitraryGenerator`.
+Java time 타입의 경우, `javaTimeTypeArbitraryGenerator` 를 사용할 수 있습니다.
 
-## 애노테이션을 사용한 Java 타입 제한
+## 어노테이션을 사용한 Java 타입 제한
 > `javaArbitraryResolver`, `javaTimeArbitraryResolver`
 
-javax-validation 플러그인을 사용하여 Java 타입 프로퍼티에 제약 조건을 추가하는 것과 유사하게, 애노테이션을 사용하여 Java 타입에 제약 조건을 적용할 수 있습니다.
+javax-validation 플러그인을 사용하여 Java 타입 프로퍼티에 제약 조건을 추가하는 것과 유사하게, 어노테이션을 사용하여 Java 타입에 제약 조건을 적용할 수 있습니다.
 이는 `JavaArbitraryResolver` 인터페이스를 구현하면 됩니다.
 이 옵션은 `JqwikPlugin` 을 통해 적용할 수 있습니다.
 
-예를 들어, 프로퍼티의 길이를 최대 10자로 제한해야 한다는 의미의 `MaxLengthOf10` 이라는 사용자 지정 애노테이션이 있는 경우 아래와 같이 `JavaArbitraryResolver` 를 생성할 수 있습니다:
+예를 들어, 프로퍼티의 길이를 최대 10자로 제한해야 한다는 의미의 `MaxLengthOf10` 이라는 사용자 지정 어노테이션이 있는 경우 아래와 같이 `JavaArbitraryResolver` 를 생성할 수 있습니다:
 
 {{< tabpane persist=false >}}
 {{< tab header="Java" lang="java">}}
@@ -398,7 +397,7 @@ val fixtureMonkey = FixtureMonkey.builder().nullableElement(true).build()
 {{< tab header="Java" lang="java">}}
 
 FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
-.defaultNullInjectGenerator((context) -> NOT_NULL_INJECT) // you can use NOT_NULL_INJECT or write your probability as 0.4
+.defaultNullInjectGenerator((context) -> NOT_NULL_INJECT) // NOT_NULL_INJECT를 사용하거나 확률을 0.4로 설정할 수 있습니다.
 .build()
 
 {{< /tab >}}
@@ -406,7 +405,7 @@ FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
 
 val fixtureMonkey = FixtureMonkey.builder()
 .plugin(KotlinPlugin())
-.defaultNullInjectGenerator { NOT_NULL_INJECT } // you can use NOT_NULL_INJECT or write your probability as 0.4
+.defaultNullInjectGenerator { NOT_NULL_INJECT } // NOT_NULL_INJECT를 사용하거나 확률을 0.4로 설정할 수 있습니다.
 .build()
 
 {{< /tab >}}
