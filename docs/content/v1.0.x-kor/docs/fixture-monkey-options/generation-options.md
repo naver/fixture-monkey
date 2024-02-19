@@ -8,7 +8,7 @@ identifier: "options"
 weight: 52
 ---
 
-Fixture Monkey는 원하는 설정과 일치하는 복합 객체를 생성하기 위한 다양한 옵션을 제공합니다.
+Fixture Monkey는 원하는 설정과 일치하는 복잡한 객체를 생성하기 위한 다양한 옵션을 제공합니다.
 
 이러한 옵션은 `FixtureMonkeyBuilder` 를 통해 접근할 수 있습니다.
 
@@ -17,7 +17,7 @@ Fixture Monkey는 원하는 설정과 일치하는 복합 객체를 생성하기
 > `defaultPropertyGenerator`, `pushPropertyGenerator`, `pushAssignableTypePropertyGenerator`, `pushExactTypePropertyGenerator`
 
 `PropertyGenerator` 는 주어진 `ObjectProperty` 의 자식 프로퍼티를 생성합니다.
-자식 프로퍼티는 부모 `ObjectProperty` 내의 필드, JavaBeans 프로퍼티, 메서드, 생성자 패러미터가 될 수 있습니다. 
+자식 프로퍼티는 부모 `ObjectProperty` 내의 필드, JavaBeans 프로퍼티, 메서드, 생성자 파라미터가 될 수 있습니다. 
 이러한 자식 프로퍼티가 생성되는 방식을 사용자 정의하는 몇 가지 방법이 있습니다.
 
 `PropertyGenerator` 옵션은 각 타입의 자식 프로퍼티가 생성되는 방식을 지정할 수 있습니다.
@@ -43,9 +43,9 @@ Fixture Monkey는 원하는 설정과 일치하는 복합 객체를 생성하기
 
 -----------------
 
-## 임의적인 생성
-`Introspector` 는 생성된 프로퍼티에 대한 정보를 포함한 컨텍스트를 기반으로 임의 생성 전략을 선택하여 Fixture Monkey가 객체를 생성하는 방법을 결정합니다.
-그 다음에 임의 생성 전략을 기반으로 객체가 생성됩니다.
+## Arbitrary 생성
+`Introspector` 는 생성된 프로퍼티에 대한 정보를 포함한 컨텍스트를 기반으로 Arbitrary 생성 전략을 선택하여 Fixture Monkey가 객체를 생성하는 방법을 결정합니다.
+그 다음에 Arbitrary 생성 전략을 기반으로 객체가 생성됩니다.
 사용자는 직접 `ArbitraryIntrospector` 를 구현하여 사용자 정의 `Introspector` 를 생성할 수 있는 유연성을 가지게 됩니다.
 
 ### ObjectIntrospector
@@ -72,9 +72,9 @@ Fixture Monkey는 원하는 설정과 일치하는 복합 객체를 생성하기
 
 -----------------
 
-## 임의적인 생성
-`ArbitraryIntrospector` 는 적절한 임의 생성 전략을 선택하고 임의의 객체를 생성하여 Fixture Monkey가 객체를 생성하는 방법을 정의하는 역할을 합니다.
-임의 객체에서 최종 임의 객체(`CombinableArbitrary`)를 실제로 생성하는 것은 `ArbitraryGenerator` 에 의해 이루어지며, 이 객체는 `ArbitraryIntrospcetor` 에 요청을 위임하여 요청을 처리합니다.
+## Arbitrary 생성
+`ArbitraryIntrospector` 는 적절한 Arbitrary 생성 전략을 선택하고 Arbitrary를 생성하여 Fixture Monkey가 객체를 생성하는 방법을 정의하는 역할을 합니다.
+Arbitrary 객체에서 최종 Arbitrary 객체(`CombinableArbitrary`)를 실제로 생성하는 것은 `ArbitraryGenerator` 에 의해 이루어지며, 이 객체는 `ArbitraryIntrospcetor` 에 요청을 위임하여 요청을 처리합니다.
 `defaultArbitraryGenerator` 옵션을 사용하면 `ArbitraryGenerator` 의 동작을 사용자 정의 할 수 있습니다.
 
 예를 들어, 아래의 예시와 같이 고유한 값을 생성하는 arbitrary generator를 만들 수 있습니다:
@@ -264,7 +264,7 @@ FixtureMonkey fixtureMonkey=FixtureMonkey.builder()
 	.build();
 ```
 
-**custom Introspector:**
+**사용자 정의 Introspector:**
 ```java
 public class PairIntrospector implements ArbitraryIntrospector, Matcher {
 	private static final Matcher MATCHER = new AssignableTypeMatcher(Pair.class);
@@ -298,7 +298,7 @@ public class PairIntrospector implements ArbitraryIntrospector, Matcher {
 }
 ```
 
-**custom `ContainerPropertyGenerator`:**
+**사용자 정의 `ContainerPropertyGenerator`:**
 ```java
 public class PairContainerPropertyGenerator implements ContainerPropertyGenerator {
 	@Override
@@ -342,7 +342,7 @@ public class PairContainerPropertyGenerator implements ContainerPropertyGenerato
 }
 ```
 
-**custom `DecomposedContainerValueFactory`:**
+**사용자 정의 `DecomposedContainerValueFactory`:**
 ```java
 public class PairDecomposedContainerValueFactory implements DecomposedContainerValueFactory {
 	@Override
@@ -358,11 +358,11 @@ public class PairDecomposedContainerValueFactory implements DecomposedContainerV
 
 -----------------
 
-## 임의성 유효성 검증
+## Arbitraries 유효성 검증
 > `arbitraryValidator`
 
-`arbitraryValidator` 옵션을 사용하면 기본 `arbitraryValidator` 를 사용자 정의 임의의 유효성 검사기로 대체할 수 있습니다.
-인스턴스가 `sampled` 되면 `arbitraryValidator` 는 임의의 유효성을 검사하고 유효하지 않은 경우 예외를 던집니다.
+`arbitraryValidator` 옵션을 사용하면 기본 `arbitraryValidator` 를 사용자 정의 Arbitrary 유효성 검사기로 대체할 수 있습니다.
+인스턴스가 `sampled` 되면 `arbitraryValidator` 는 Arbitrary의 유효성을 검사하고 유효하지 않은 경우 예외를 던집니다.
 이 프로세스는 1,000회 반복되며, 인스턴스가 여전히 유효하지 않다면 `TooManyFilterMissesException` 예외를 던질 것입니다.
 
 {{< alert icon="📖" text="Notable implementations: 'JakartaArbitraryValidator', 'JavaxArbitraryValidator'" />}}
@@ -396,10 +396,10 @@ assertThatThrownBy { fixtureMonkey.giveMeOne<String>() }
 
 -----------------
 
-## 임의적인 생성 재시도 제한
+## Arbitrary 생성 재시도 제한
 > `generateMaxTries`, `generateUniqueMaxTries`
 
-`generateMaxTries` 옵션을 사용하면 임의의 객체에서 유효한 객체를 생성하기 위한 최대 시도 횟수를 제한할 수 있습니다.
+`generateMaxTries` 옵션을 사용하면 Arbitrary 객체에서 유효한 객체를 생성하기 위한 최대 시도 횟수를 제한할 수 있습니다.
 제한(기본값 1,000회)을 초과하여 객체를 성공적으로 생성할 수 없는 경우, `TooManyFilterMissesException` 예외를 던질 것입니다.
 
 추가적으로, Fixture Monkey는 Map의 키(key)와 Set의 요소(element)에 대한 고유한 값 생성을 보장합니다.
