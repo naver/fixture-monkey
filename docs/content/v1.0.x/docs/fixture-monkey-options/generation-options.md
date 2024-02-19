@@ -12,70 +12,38 @@ To create a complex object that matches your desired configurations, Fixture Mon
 
 These options are accessible through the `FixtureMonkeyBuilder`.
 
-## Property Generation
-### PropertyGenerator
-> `defaultPropertyGenerator`, `pushPropertyGenerator`, `pushAssignableTypePropertyGenerator`, `pushExactTypePropertyGenerator`
-
-`PropertyGenerator` creates child properties of the given `ObjectProperty`.
-The child property can be a field, JavaBeans property, method or constructor parameter within the parent `ObjectProperty`.
-There are scenarios where you might want to customize how these child properties are generated.
-
-The `PropertyGenerator` options allow you to specify how child properties of each type are generated.
-This option is mainly used when you want to exclude generating some properties when the parent property has abnormal child properties.
-
-{{< alert icon="📖" text="Notable implementations: 'FieldPropertyGenerator', 'JavaBeansPropertyGenerator'" />}}
-
-### ObjectPropertyGenerator
-> `defaultObjectPropertyGenerator`, `pushObjectPropertyGenerator`, `pushAssignableTypeObjectPropertyGenerator`, `pushExactTypeObjectPropertyGenerator`
-
-`ObjectPropertyGenerator` generates the [`ObjectProperty`](../concepts/#objectProperty) based on a given context.
-With options related to `ObjectPropertyGenerator` you can customize how the `ObjectProperty` is generated.
-
-{{< alert icon="📖" text="Notable implementations: 'DefaultObjectPropertyGenerator'" />}}
-
-### ContainerPropertyGenerator
-> `pushContainerPropertyGenerator`, `pushAssignableTypeContainerPropertyGenerator`, `pushExactTypeContainerPropertyGenerator`
-
-The `ContainerPropertyGenerator` determines how to generate [`ContainerProperty`](../concepts/#containerProperty) within a given context.
-With options related to `ContainerPropertyGenerator` you can customize how the `ContainerProperty` is generated.
-
-{{< alert icon="📖" text="Notable implementations: 'ArrayContainerPropertyGenerator', 'MapContainerPropertyGenerator'" />}}
-
------------------
-
-## Arbitrary Generation
-An `Introspector` determines how Fixture Monkey creates objects by selecting the appropriate arbitrary generation strategy based on the provided context(which includes information about generated properties).
-The object is then generated based on this arbitrary generated.
-
-You have the flexibility to create a custom `Introspector` by implementing your own `ArbitraryIntrospector`.
-
+## Implement your own Object Generator
 ### ObjectIntrospector
 > `objectIntrospcetor`
 
-The `objectIntrospector` option allows you to specify the default behavior when generating an object.
-As discussed in the [introspector section](../../generating-objects/introspector), you can alter the default introspector to use predefined introspectors provided by Fixture Monkey or create your own custom introspector.
+An `ObjectIntrospector` determines how Fixture Monkey creates objects. The `objectIntrospector` option allows you to specify the default behavior when generating an object.  
+As discussed in the [introspector section](../../generating-objects/introspector), you can use predefined introspectors provided by Fixture Monkey or create your own custom introspector.
 
 {{< alert icon="📖" text="Notable implementations: 'BeanArbitraryIntrospector', 'BuilderArbitraryIntrospector'" />}}
 
 ### ArbitraryIntrospector
+The `ArbitraryIntrospector` is responsible for defining how Fixture Monkey chooses the appropriate arbitrary generation strategy and generates an arbitrary. 
+The object is then generated based on the generated arbitrary.
+You have the flexibility to create a custom introspector by implementing your own `ArbitraryIntrospector`.
+
 > `pushArbitraryIntrospector`, `pushAssignableTypeArbitraryIntrospector`, `pushExactTypeArbitraryIntrospector`
 
-If you need to change the `ArbitraryIntrospector` for a specific type you can use the above options.
+If you need to change the `ArbitraryIntrospector` for a specific type, you can use the above options.
 
 {{< alert icon="📖" text="Notable implementations: 'BooleanIntrospector', 'EnumIntrospector'" />}}
 
 ### ContainerIntrospector
-> pushContainerIntrospector
+> `pushContainerIntrospector`
 
 Especially for container types, you can change the `ArbitraryIntrospector` using the `pushContainerIntrospector` option.
 
 {{< alert icon="📖" text="Notable implementations: 'ListIntrospector', 'MapIntrospector'" />}}
 
------------------
+### ArbitraryGenerator
+> `defaultArbitraryGenerator`
 
-## Arbitrary Generation
-The `ArbitraryIntrospector` is responsible for defining how Fixture Monkey creates objects by selecting the appropriate arbitrary generation strategy and generating an arbitrary.
-The actual creation of the final arbitrary(`CombinableArbitrary`) from the arbitrary is done by the `ArbitraryGenerator`, which handles the request by delegating to the `ArbitraryIntrospcetor`.
+Although the `ArbitraryIntrospector` determines the appropriate arbitrary generation strategy, the actual creation of the final arbitrary(`CombinableArbitrary`) is done by the `ArbitraryGenerator`.
+It handles the request by delegating to the `ArbitraryIntrospector`.
 By using the `defaultArbitraryGenerator` option, you have the capability to customize the behavior of the `ArbitraryGenerator`.
 
 For instance, you can create an arbitrary generator that produces unique values, as shown in the example below:
@@ -116,7 +84,7 @@ FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
 
 class UniqueArbitraryGenerator(private val delegate: ArbitraryGenerator) : ArbitraryGenerator {
     companion object {
-    private val UNIQUE = HashSet<Any>()
+        private val UNIQUE = HashSet<Any>()
     }
 
     override fun generate(context: ArbitraryGeneratorContext): CombinableArbitrary {
@@ -143,7 +111,38 @@ val fixtureMonkey = FixtureMonkey.builder()
 
 -----------------
 
-## Excluding Classes or Packages from Generation
+## Implement your own Property
+### PropertyGenerator
+> `defaultPropertyGenerator`, `pushPropertyGenerator`, `pushAssignableTypePropertyGenerator`, `pushExactTypePropertyGenerator`
+
+`PropertyGenerator` creates child properties of the given `ObjectProperty`.
+The child property can be a field, JavaBeans property, method or constructor parameter within the parent `ObjectProperty`.
+There are scenarios where you might want to customize how these child properties are generated.
+
+The `PropertyGenerator` options allow you to specify how child properties of each type are generated.
+This option is mainly used when you want to exclude generating some properties when the parent property has abnormal child properties.
+
+{{< alert icon="📖" text="Notable implementations: 'FieldPropertyGenerator', 'JavaBeansPropertyGenerator'" />}}
+
+### ObjectPropertyGenerator
+> `defaultObjectPropertyGenerator`, `pushObjectPropertyGenerator`, `pushAssignableTypeObjectPropertyGenerator`, `pushExactTypeObjectPropertyGenerator`
+
+`ObjectPropertyGenerator` generates the [`ObjectProperty`](../concepts/#objectProperty) based on a given context.
+With options related to `ObjectPropertyGenerator` you can customize how the `ObjectProperty` is generated.
+
+{{< alert icon="📖" text="Notable implementations: 'DefaultObjectPropertyGenerator'" />}}
+
+### ContainerPropertyGenerator
+> `pushContainerPropertyGenerator`, `pushAssignableTypeContainerPropertyGenerator`, `pushExactTypeContainerPropertyGenerator`
+
+The `ContainerPropertyGenerator` determines how to generate [`ContainerProperty`](../concepts/#containerProperty) within a given context.
+With options related to `ContainerPropertyGenerator` you can customize how the `ContainerProperty` is generated.
+
+{{< alert icon="📖" text="Notable implementations: 'ArrayContainerPropertyGenerator', 'MapContainerPropertyGenerator'" />}}
+
+-----------------
+
+## Exclude Classes or Packages from Generation
 > `pushExceptGenerateType`, `addExceptGenerateClass`, `addExceptGenerateClasses`, `addExceptGeneratePackage`, `addExceptGeneratePackages`
 
 If you want to exclude the generation of certain types or packages, you can use these options.
@@ -205,7 +204,7 @@ fun testExcludePackage() {
 
 -----------------
 
-## Container options
+## Modify Containers
 
 ### Container Size
 > `defaultArbitraryContainerInfoGenerator`, `pushArbitraryContainerInfoGenerator`
@@ -359,7 +358,7 @@ public class PairDecomposedContainerValueFactory implements DecomposedContainerV
 
 -----------------
 
-## Validating Arbitraries
+## Customize Arbitrary Validation
 > `arbitraryValidator`
 
 The `arbitraryValidator` option allows you to replace the default `arbitraryValidator` with your own custom arbitrary validator.
@@ -398,7 +397,7 @@ assertThatThrownBy { fixtureMonkey.giveMeOne<String>() }
 
 -----------------
 
-## Arbitrary Generation Retry Limits
+## Modify Arbitrary Generation Retry Limits
 > `generateMaxTries`, `generateUniqueMaxTries`
 
 The `generateMaxTries` option allows you to control the maximum number of attempts to generate a valid object from an arbitrary.
@@ -428,7 +427,7 @@ val fixtureMonkey = FixtureMonkey.builder()
 
 -----------------
 
-## Interface Implementations
+## Implement Interfaces
 > `interfaceImplements`
 
 `interfaceImplements` is an option used to specify the available implementations for an interface.
