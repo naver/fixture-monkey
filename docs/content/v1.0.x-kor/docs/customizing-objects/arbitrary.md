@@ -7,7 +7,7 @@ parent: "customizing-objects"
 identifier: "arbitrary"
 ---
 
-`Jqwik`은 JVM 환경에서 사용할 수 있는 속성 기반 테스트 라이브러리입니다.
+`Jqwik`은 JVM 환경에서 사용할 수 있는 프로퍼티 기반 테스트 라이브러리입니다.
 Fixture Monkey는 문자, 문자열, 정수 등의 기본 타입에 대한 랜덤 값을 생성하기 위해 Jqwik의 [`Arbitrary`](https://jqwik.net/docs/1.2.1/javadoc/net/jqwik/api/Arbitrary.html)를 사용합니다.
 
 Jqwik에서 `Arbitrary`는 생성 및 축소할 수 있는 객체를 나타내는 핵심 인터페이스입니다.
