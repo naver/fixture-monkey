@@ -24,12 +24,9 @@ import com.navercorp.fixturemonkey.api.introspector.MatchArbitraryIntrospector
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator
 import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptionsBuilder
 import com.navercorp.fixturemonkey.api.plugin.Plugin
-import com.navercorp.fixturemonkey.kotlin.generator.InterfaceKFunctionPropertyGenerator
-import com.navercorp.fixturemonkey.kotlin.generator.PairContainerPropertyGenerator
-import com.navercorp.fixturemonkey.kotlin.generator.PairDecomposedContainerValueFactory
-import com.navercorp.fixturemonkey.kotlin.generator.TripleContainerPropertyGenerator
-import com.navercorp.fixturemonkey.kotlin.generator.TripleDecomposedContainerValueFactory
+import com.navercorp.fixturemonkey.kotlin.generator.*
 import com.navercorp.fixturemonkey.kotlin.instantiator.KotlinInstantiatorProcessor
+import com.navercorp.fixturemonkey.kotlin.introspector.DurationIntrospector
 import com.navercorp.fixturemonkey.kotlin.introspector.PairIntrospector
 import com.navercorp.fixturemonkey.kotlin.introspector.PrimaryConstructorArbitraryIntrospector
 import com.navercorp.fixturemonkey.kotlin.introspector.TripleIntrospector
@@ -74,6 +71,9 @@ class KotlinPlugin : Plugin {
                 TRIPLE_TYPE_MATCHER,
                 TripleContainerPropertyGenerator(),
             )
+            .objectIntrospector {
+                DurationIntrospector()
+            }
             .containerIntrospector {
                 MatchArbitraryIntrospector(
                     listOf(
