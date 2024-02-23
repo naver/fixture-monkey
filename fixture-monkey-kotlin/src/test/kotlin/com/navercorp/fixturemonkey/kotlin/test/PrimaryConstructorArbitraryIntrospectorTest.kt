@@ -24,6 +24,7 @@ import com.navercorp.fixturemonkey.kotlin.giveMeOne
 import net.jqwik.api.Property
 import org.assertj.core.api.BDDAssertions.then
 import org.assertj.core.api.BDDAssertions.thenNoException
+import kotlin.time.Duration
 
 class PrimaryConstructorArbitraryIntrospectorTest {
     private val sut: FixtureMonkey = FixtureMonkey.builder()
@@ -61,6 +62,16 @@ class PrimaryConstructorArbitraryIntrospectorTest {
         val actual = sut.giveMeOne<DefaultValue>().stringValue
 
         then(actual).isNotEqualTo("default_value")
+    }
+
+    @Property
+    fun sampleDuration() {
+        thenNoException().isThrownBy { sut.giveMeOne<Duration>() }
+    }
+
+    @Property
+    fun sampleDurationValue() {
+        thenNoException().isThrownBy { sut.giveMeOne<DurationValue>() }
     }
 
     @Property
