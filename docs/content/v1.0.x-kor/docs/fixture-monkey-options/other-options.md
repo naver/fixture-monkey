@@ -22,15 +22,15 @@ Fixture Monkey는 플러그인을 통한 타사 라이브러리 지원 등 몇 �
 {{< tab header="Java" lang="java">}}
 
 FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
-.plugin(new JacksonPlugin())
-.build();
+    .plugin(new JacksonPlugin())
+    .build();
 
 {{< /tab >}}
 {{< tab header="Kotlin" lang="kotlin">}}
 
 val fixtureMonkey = FixtureMonkey.builder()
-.plugin(JacksonPlugin())
-.build()
+    .plugin(JacksonPlugin())
+    .build()
 
 {{< /tab >}}
 {{< /tabpane>}}

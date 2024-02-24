@@ -83,7 +83,7 @@ Arbitrary 객체에서 최종 Arbitrary 객체(`CombinableArbitrary`)를 실제�
 {{< tab header="Java" lang="java">}}
 
 public static class UniqueArbitraryGenerator implements ArbitraryGenerator {
-private static final Set<Object> UNIQUE = new HashSet<>();
+    private static final Set<Object> UNIQUE = new HashSet<>();
 
     private final ArbitraryGenerator delegate;
 
@@ -107,16 +107,16 @@ private static final Set<Object> UNIQUE = new HashSet<>();
 }
 
 FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
-.defaultArbitraryGenerator(UniqueArbitraryGenerator::new)
-.build();
+    .defaultArbitraryGenerator(UniqueArbitraryGenerator::new)
+    .build();
 
 {{< /tab >}}
 {{< tab header="Kotlin" lang="kotlin">}}
 
 class UniqueArbitraryGenerator(private val delegate: ArbitraryGenerator) : ArbitraryGenerator {
-companion object {
-private val UNIQUE = HashSet<Any>()
-}
+    companion object {
+    private val UNIQUE = HashSet<Any>()
+    }
 
     override fun generate(context: ArbitraryGeneratorContext): CombinableArbitrary {
         return delegate.generate(context)
@@ -132,8 +132,8 @@ private val UNIQUE = HashSet<Any>()
 }
 
 val fixtureMonkey = FixtureMonkey.builder()
-.defaultArbitraryGenerator { UniqueArbitraryGenerator(it) }
-.build()
+    .defaultArbitraryGenerator { UniqueArbitraryGenerator(it) }
+    .build()
 
 {{< /tab >}}
 {{< /tabpane>}}
@@ -152,9 +152,9 @@ val fixtureMonkey = FixtureMonkey.builder()
 
 @Test
 void testExcludeClass() {
-FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
-.addExceptGenerateClass(String.class)
-.build();
+    FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+        .addExceptGenerateClass(String.class)
+        .build();
 
     String actual = sut.giveMeOne(Product.class)
       .getProductName();
@@ -164,9 +164,9 @@ FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
 
 @Test
 void testExcludePackage() {
-FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
-.addExceptGeneratePackage("java.lang")
-.build();
+    FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+        .addExceptGeneratePackage("java.lang")
+        .build();
 
     String actual = sut.giveMeOne(String.class);
 
@@ -178,9 +178,9 @@ FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
 
 @Test
 fun testExcludeClass() {
-val fixtureMonkey = FixtureMonkey.builder()
-.addExceptGenerateClass(String::class.java)
-.build()
+    val fixtureMonkey = FixtureMonkey.builder()
+        .addExceptGenerateClass(String::class.java)
+        .build()
 
     val actual = fixtureMonkey.giveMeOne<Product>()
         .productName
@@ -190,9 +190,9 @@ val fixtureMonkey = FixtureMonkey.builder()
 
 @Test
 fun testExcludePackage() {
-val fixtureMonkey = FixtureMonkey.builder()
-.addExceptGeneratePackage("java.lang")
-.build()
+    val fixtureMonkey = FixtureMonkey.builder()
+        .addExceptGeneratePackage("java.lang")
+        .build()
 
     val actual = fixtureMonkey.giveMeOne<String>()
 
@@ -218,9 +218,9 @@ val fixtureMonkey = FixtureMonkey.builder()
 
 @Test
 void test() {
-FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
-.defaultArbitraryContainerInfoGenerator(context -> new ArbitraryContainerInfo(3, 3))
-.build();
+    FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+        .defaultArbitraryContainerInfoGenerator(context -> new ArbitraryContainerInfo(3, 3))
+        .build();
 
     List<String> actual = fixtureMonkey.giveMeOne();
 
@@ -232,9 +232,9 @@ FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
 
 @Test
 fun test() {
-val fixtureMonkey = FixtureMonkey.builder()
-.defaultArbitraryContainerInfoGenerator { context -> ArbitraryContainerInfo(3, 3) }
-.build()
+    val fixtureMonkey = FixtureMonkey.builder()
+        .defaultArbitraryContainerInfoGenerator { context -> ArbitraryContainerInfo(3, 3) }
+        .build()
 
     val actual: List<String> = fixtureMonkey.giveMeOne()
 
@@ -252,7 +252,6 @@ val fixtureMonkey = FixtureMonkey.builder()
 Java에서 새로운 사용자 정의 Pair 클래스를 만든다고 가정해 보겠습니다.
 
 이 컨테이너 타입은 사용자 정의 `ContainerPropertyGenerator`, `Introspector`, `DecomposedContainerValueFactory` 를 구현하여 사용할 수 있습니다.
-
 ```java
 FixtureMonkey fixtureMonkey=FixtureMonkey.builder()
     .addContainerType(
@@ -371,25 +370,25 @@ public class PairDecomposedContainerValueFactory implements DecomposedContainerV
 {{< tab header="Java" lang="java">}}
 
 FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
-.arbitraryValidator(obj -> {
-throw new ValidationFailedException("thrown by custom ArbitraryValidator", new HashSet<>());
-})
-.build();
+    .arbitraryValidator(obj -> {
+        throw new ValidationFailedException("thrown by custom ArbitraryValidator", new HashSet<>());
+    })
+    .build();
 
 thenThrownBy(() -> fixtureMonkey.giveMeOne(String.class))
-.isExactlyInstanceOf(FilterMissException.class);
+    .isExactlyInstanceOf(FilterMissException.class);
 
 {{< /tab >}}
 {{< tab header="Kotlin" lang="kotlin">}}
 
 val fixtureMonkey = FixtureMonkey.builder()
-.arbitraryValidator { obj ->
-throw ValidationFailedException("thrown by custom ArbitraryValidator", HashSet())
-}
-.build()
+    .arbitraryValidator { obj ->
+        throw ValidationFailedException("thrown by custom ArbitraryValidator", HashSet())
+    }
+    .build()
 
 assertThatThrownBy { fixtureMonkey.giveMeOne<String>() }
-.isExactlyInstanceOf(FilterMissException::class.java)
+    .isExactlyInstanceOf(FilterMissException::class.java)
 
 {{< /tab >}}
 {{< /tabpane>}}
@@ -409,17 +408,17 @@ assertThatThrownBy { fixtureMonkey.giveMeOne<String>() }
 {{< tab header="Java" lang="java">}}
 
 FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
-.generateMaxTries(100)
-.generateUniqueMaxTries(100)
-.build();
+    .generateMaxTries(100)
+    .generateUniqueMaxTries(100)
+    .build();
 
 {{< /tab >}}
 {{< tab header="Kotlin" lang="kotlin">}}
 
 val fixtureMonkey = FixtureMonkey.builder()
-.generateMaxTries(100)
-.generateUniqueMaxTries(100)
-.build()
+    .generateMaxTries(100)
+    .generateUniqueMaxTries(100)
+    .build()
 
 {{< /tab >}}
 {{< /tabpane>}}
@@ -437,33 +436,33 @@ val fixtureMonkey = FixtureMonkey.builder()
 {{< tabpane persist=false >}}
 {{< tab header="Java" lang="java">}}
 interface FixedValue {
-Object get();
+    Object get();
 }
 
 class IntegerFixedValue implements FixedValue {
-@Override
-public Object get() {
-return 1;
-}
+    @Override
+    public Object get() {
+        return 1;
+    }
 }
 
 class StringFixedValue implements FixedValue {
-@Override
-public Object get() {
-return "fixed";
-}
+    @Override
+    public Object get() {
+        return "fixed";
+    }
 }
 
 class GenericFixedValue<T> {
-T value;
+    T value;
 }
 
 @Test
 void sampleGenericInterface() {
-// given
-List<Class<? extends FixedValue>> implementations = new ArrayList<>();
-implementations.add(IntegerFixedValue.class);
-implementations.add(StringFixedValue.class);
+    // given
+    List<Class<? extends FixedValue>> implementations = new ArrayList<>();
+    implementations.add(IntegerFixedValue.class);
+    implementations.add(StringFixedValue.class);
 
     FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
         .interfaceImplements(FixedValue.class, implementations)
@@ -484,29 +483,29 @@ implementations.add(StringFixedValue.class);
 {{< tab header="Kotlin" lang="kotlin">}}
 
 interface FixedValue {
-fun get(): Any
+    fun get(): Any
 }
 
 class IntegerFixedValue : FixedValue {
-override fun get(): Any {
-return 1
-}
+    override fun get(): Any { 
+        return 1
+    }
 }
 
 class StringFixedValue : FixedValue {
-override fun get(): Any {
-return "fixed"
-}
+    override fun get(): Any {
+        return "fixed"
+    }
 }
 
 class GenericFixedValue<T> {
-val value: T
+    val value: T
 }
 
 @Test
 fun sampleGenericInterface() {
-// given
-val implementations: MutableList<Class<out FixedValue>> = List.of(IntegerFixedValue::class.java, StringFixedValue::class.java)
+    // given
+    val implementations: MutableList<Class<out FixedValue>> = List.of(IntegerFixedValue::class.java, StringFixedValue::class.java)
 
     val fixtureMonkey = FixtureMonkey.builder()
         .interfaceImplements(FixedValue::class.java, implementations)

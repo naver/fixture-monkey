@@ -30,11 +30,11 @@ public class Product {
 
 @Test
 void test() {
-// given
-FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
-.pushPropertyNameResolver(MatcherOperator.exactTypeMatchOperator(String.class, (property) -> "string"))
-.build();
-String expected = "test";
+    // given
+    FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+        .pushPropertyNameResolver(MatcherOperator.exactTypeMatchOperator(String.class, (property) -> "string"))
+        .build();
+    String expected = "test";
 
     // when
     String actual = fixtureMonkey.giveMeBuilder(Product.class)
@@ -96,22 +96,22 @@ val expected = "test"
 {{< tab header="Java" lang="java">}}
 
 FixtureMonkey.builder()
-.register(
-Product.class,
-fixture -> fixture.giveMeBuilder(Product.class)
-.set("id", Arbitraries.longs().greaterOrEqual(0))
-)
-.build();
+    .register(
+        Product.class,
+        fixture -> fixture.giveMeBuilder(Product.class)
+            .set("id", Arbitraries.longs().greaterOrEqual(0))
+    )
+    .build();
 
 {{< /tab >}}
 {{< tab header="Kotlin" lang="kotlin">}}
 
 FixtureMonkey.builder()
-.register(Product::class.java) {
-it.giveMeBuilder<Product>()
-.set("id", Arbitraries.longs().greaterOrEqual(0))
-}
-.build()
+    .register(Product::class.java) {
+        it.giveMeBuilder<Product>()
+            .set("id", Arbitraries.longs().greaterOrEqual(0))
+    }
+    .build()
 
 {{< /tab >}}
 {{< /tabpane>}}
@@ -124,9 +124,9 @@ ArbitraryBuilders들을 한 번에 등록하려면 `registerGroup` 옵션을 사
 {{< tab header="Java" lang="java">}}
 
 public class GenerateGroup {
-public ArbitraryBuilder<GenerateString> generateString(FixtureMonkey fixtureMonkey) {
-return fixtureMonkey.giveMeBuilder(GenerateString.class)
-.set("value", Arbitraries.strings().numeric());
+    public ArbitraryBuilder<GenerateString> generateString(FixtureMonkey fixtureMonkey) {
+        return fixtureMonkey.giveMeBuilder(GenerateString.class)
+            .set("value", Arbitraries.strings().numeric());
 }
 
     public ArbitraryBuilder<GenerateInt> generateInt(FixtureMonkey fixtureMonkey) {
@@ -136,17 +136,17 @@ return fixtureMonkey.giveMeBuilder(GenerateString.class)
 }
 
 FixtureMonkey.builder()
-.registerGroup(GenerateGroup.class)
-.build();
+    .registerGroup(GenerateGroup.class)
+    .build();
 
 {{< /tab >}}
 {{< tab header="Kotlin" lang="kotlin">}}
 
 class GenerateGroup {
-fun generateString(fixtureMonkey: FixtureMonkey): ArbitraryBuilder<GenerateString> {
-return fixtureMonkey.giveMeBuilder<GenerateString>()
-.set("value", Arbitraries.strings().numeric())
-}
+    fun generateString(fixtureMonkey: FixtureMonkey): ArbitraryBuilder<GenerateString> {
+        return fixtureMonkey.giveMeBuilder<GenerateString>()
+            .set("value", Arbitraries.strings().numeric())
+    }
 
     fun generateInt(fixtureMonkey: FixtureMonkey): ArbitraryBuilder<GenerateInt> {
         return fixtureMonkey.giveMeBuilder<GenerateInt>()
@@ -155,8 +155,8 @@ return fixtureMonkey.giveMeBuilder<GenerateString>()
 }
 
 FixtureMonkey.builder()
-.registerGroup(GenerateGroup::class.java)
-.build()
+    .registerGroup(GenerateGroup::class.java)
+    .build()
 
 {{< /tab >}}
 {{< /tabpane>}}
@@ -167,50 +167,50 @@ FixtureMonkey.builder()
 {{< tab header="Java" lang="java">}}
 
 public class GenerateBuilderGroup implements ArbitraryBuilderGroup {
-@Override
-public ArbitraryBuilderCandidateList generateCandidateList() {
-return ArbitraryBuilderCandidateList.create()
-.add(
-ArbitraryBuilderCandidateFactory.of(GenerateString.class)
-.builder(
-arbitraryBuilder -> arbitraryBuilder
-.set("value", Arbitraries.strings().numeric())
-)
-)
-.add(
-ArbitraryBuilderCandidateFactory.of(GenerateInt.class)
-.builder(
-builder -> builder
-.set("value", Arbitraries.integers().between(1, 100))
-)
-);
-}
+    @Override
+    public ArbitraryBuilderCandidateList generateCandidateList() {
+        return ArbitraryBuilderCandidateList.create()
+            .add(
+                ArbitraryBuilderCandidateFactory.of(GenerateString.class)
+                    .builder(
+                        arbitraryBuilder -> arbitraryBuilder
+                            .set("value", Arbitraries.strings().numeric())
+                    )
+            )
+            .add(
+                ArbitraryBuilderCandidateFactory.of(GenerateInt.class)
+                    .builder(
+                        builder -> builder
+                            .set("value", Arbitraries.integers().between(1, 100))
+                        )
+            );
+    }
 }
 
 FixtureMonkey.builder()
-.registerGroup(new GenerateBuilderGroup())
-.build();
+    .registerGroup(new GenerateBuilderGroup())
+    .build();
 
 {{< /tab >}}
 {{< tab header="Kotlin" lang="kotlin">}}
 
 class GenerateBuilderGroup : ArbitraryBuilderGroup {
-override fun generateCandidateList(): ArbitraryBuilderCandidateList {
-return ArbitraryBuilderCandidateList.create()
-.add(
-ArbitraryBuilderCandidateFactory.of(GenerateString::class.java)
-.builder { it.set("value", Arbitraries.strings().numeric()) }
-)
-.add(
-ArbitraryBuilderCandidateFactory.of(GenerateInt::class.java)
-.builder { it.set("value", Arbitraries.integers().between(1, 100)) }
-)
-}
+    override fun generateCandidateList(): ArbitraryBuilderCandidateList {
+        return ArbitraryBuilderCandidateList.create()
+            .add(
+                ArbitraryBuilderCandidateFactory.of(GenerateString::class.java)
+                    .builder { it.set("value", Arbitraries.strings().numeric()) }
+            )
+            .add(
+                ArbitraryBuilderCandidateFactory.of(GenerateInt::class.java)
+                    .builder { it.set("value", Arbitraries.integers().between(1, 100)) }
+            )
+    }
 }
 
 FixtureMonkey.builder()
-.registerGroup(GenerateBuilderGroup())
-.build()
+    .registerGroup(GenerateBuilderGroup())
+    .build()
 
 {{< /tab >}}
 {{< /tabpane>}}
@@ -226,7 +226,7 @@ FixtureMonkey.builder()
 
 @Test
 void test() {
-FixtureMonkey fixtureMonkey = FixtureMonkey.builder().useExpressionStrictMode().build();
+    FixtureMonkey fixtureMonkey = FixtureMonkey.builder().useExpressionStrictMode().build();
 
     thenThrownBy(
         () -> fixtureMonkey.giveMeBuilder(String.class)
@@ -241,7 +241,7 @@ FixtureMonkey fixtureMonkey = FixtureMonkey.builder().useExpressionStrictMode().
 
 @Test
 fun test() {
-val fixtureMonkey = FixtureMonkey.builder().useExpressionStrictMode().build()
+    val fixtureMonkey = FixtureMonkey.builder().useExpressionStrictMode().build()
 
     assertThatThrownBy {
         fixtureMonkey.giveMeBuilder<String>()
@@ -268,28 +268,28 @@ val fixtureMonkey = FixtureMonkey.builder().useExpressionStrictMode().build()
 {{< tab header="Java" lang="java">}}
 
 FixtureMonkey.builder()
-.plugin(
-new JqwikPlugin()
-.javaTypeArbitraryGenerator(new JavaTypeArbitraryGenerator() {
-@Override
-public StringArbitrary strings() {
-return Arbitraries.strings().alpha();
-}
-})
-)
-.build();
+    .plugin(
+        new JqwikPlugin()
+            .javaTypeArbitraryGenerator(new JavaTypeArbitraryGenerator() {
+                @Override
+                public StringArbitrary strings() {
+                    return Arbitraries.strings().alpha();
+                }
+            })
+    )
+    .build();
 
 {{< /tab >}}
 {{< tab header="Kotlin" lang="kotlin">}}
 
 FixtureMonkey.builder()
-.plugin(
-JqwikPlugin()
-.javaTypeArbitraryGenerator(object : JavaTypeArbitraryGenerator {
-override fun strings(): StringArbitrary = Arbitraries.strings().alpha()
-})
-)
-.build()
+    .plugin(
+        JqwikPlugin()
+            .javaTypeArbitraryGenerator(object : JavaTypeArbitraryGenerator {
+                override fun strings(): StringArbitrary = Arbitraries.strings().alpha()
+            })
+    )
+    .build()
 
 {{< /tab >}}
 {{< /tabpane>}}
@@ -309,36 +309,36 @@ javax-validation 플러그인을 사용하여 Java 타입 프로퍼티에 제약
 {{< tab header="Java" lang="java">}}
 
 FixtureMonkey.builder()
-.plugin(
-new JqwikPlugin()
-.javaArbitraryResolver(new JavaArbitraryResolver() {
-@Override
-public Arbitrary<String> strings(StringArbitrary stringArbitrary, ArbitraryGeneratorContext context) {
-if (context.findAnnotation(MaxLengthof10.class).isPresent()) {
-return stringArbitrary.ofMaxLength(10);
-}
-return stringArbitrary;
-}
-})
-)
-.build();
+    .plugin(
+        new JqwikPlugin()
+            .javaArbitraryResolver(new JavaArbitraryResolver() {
+            @Override
+            public Arbitrary<String> strings(StringArbitrary stringArbitrary, ArbitraryGeneratorContext context) {
+                if (context.findAnnotation(MaxLengthof10.class).isPresent()) {
+                    return stringArbitrary.ofMaxLength(10);
+                }
+                return stringArbitrary;
+            }
+        })
+    )
+    .build();
 
 {{< /tab >}}
 {{< tab header="Kotlin" lang="kotlin">}}
 
 FixtureMonkey.builder()
-.plugin(
-JqwikPlugin()
-.javaArbitraryResolver(object : JavaArbitraryResolver {
-override fun strings(stringArbitrary: StringArbitrary, context: ArbitraryGeneratorContext): Arbitrary<String> {
-if (context.findAnnotation(MaxLengthof10::class.java).isPresent) {
-return stringArbitrary.ofMaxLength(10)
-}
-return stringArbitrary
-}
-})
-)
-.build()
+    .plugin(
+        JqwikPlugin()
+            .javaArbitraryResolver(object : JavaArbitraryResolver {
+                override fun strings(stringArbitrary: StringArbitrary, context: ArbitraryGeneratorContext): Arbitrary<String> {
+                    if (context.findAnnotation(MaxLengthof10::class.java).isPresent) {
+                        return stringArbitrary.ofMaxLength(10)
+                    }
+                return stringArbitrary
+                }
+            })
+    )
+    .build()
 
 {{< /tab >}}
 {{< /tabpane>}}
@@ -397,16 +397,16 @@ val fixtureMonkey = FixtureMonkey.builder().nullableElement(true).build()
 {{< tab header="Java" lang="java">}}
 
 FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
-.defaultNullInjectGenerator((context) -> NOT_NULL_INJECT) // NOT_NULL_INJECT를 사용하거나 확률을 0.4로 설정할 수 있습니다.
-.build()
+    .defaultNullInjectGenerator((context) -> NOT_NULL_INJECT) // NOT_NULL_INJECT를 사용하거나 확률을 0.4로 설정할 수 있습니다.
+    .build()
 
 {{< /tab >}}
 {{< tab header="Kotlin" lang="kotlin">}}
 
 val fixtureMonkey = FixtureMonkey.builder()
-.plugin(KotlinPlugin())
-.defaultNullInjectGenerator { NOT_NULL_INJECT } // NOT_NULL_INJECT를 사용하거나 확률을 0.4로 설정할 수 있습니다.
-.build()
+    .plugin(KotlinPlugin())
+    .defaultNullInjectGenerator { NOT_NULL_INJECT } // NOT_NULL_INJECT를 사용하거나 확률을 0.4로 설정할 수 있습니다.
+    .build()
 
 {{< /tab >}}
 {{< /tabpane>}}
@@ -417,20 +417,20 @@ val fixtureMonkey = FixtureMonkey.builder()
 {{< tab header="Java" lang="java">}}
 
 FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
-.pushNullInjectGenerator(MatcherOperator.exactTypeMatchOperator(SimpleObject.class, (context) -> NOT_NULL_INJECT))
-.build();
+    .pushNullInjectGenerator(MatcherOperator.exactTypeMatchOperator(SimpleObject.class, (context) -> NOT_NULL_INJECT))
+    .build();
 
 {{< /tab >}}
 {{< tab header="Kotlin" lang="kotlin">}}
 
 val fixtureMonkey = FixtureMonkey.builder()
-.pushNullInjectGenerator(
-exactTypeMatchOperator(
-Product::class.java,
-NullInjectGenerator { context -> NOT_NULL_INJECT }
-)
-)
-.build()
+    .pushNullInjectGenerator(
+        exactTypeMatchOperator(
+            Product::class.java,
+            NullInjectGenerator { context -> NOT_NULL_INJECT }
+        )
+    )
+    .build()
 
 {{< /tab >}}
 {{< /tabpane>}}
