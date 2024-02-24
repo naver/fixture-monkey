@@ -75,21 +75,21 @@
 
 {{ if eq (hugo.Environment) "development" -}}
   {{ if .Site.Params.options.bootStrapJs -}}
-    <script src="{{ $bs.RelPermalink }}" defer></script>
+    <script src="{{ $bs.Permalink }}" defer></script>
   {{ end -}}
   {{ if .Site.Params.options.highLight -}}
-    <script src="{{ $highlight.RelPermalink }}" defer></script>
+    <script src="{{ $highlight.Permalink }}" defer></script>
   {{ end -}}
   {{ if .Site.Params.options.kaTex -}}
-    <script src="{{ $katex.RelPermalink }}" defer></script>
-    <script src="{{ $katexAutoRender.RelPermalink }}" onload="renderMathInElement(document.body);" defer></script>
+    <script src="{{ $katex.Permalink }}" defer></script>
+    <script src="{{ $katexAutoRender.Permalink }}" onload="renderMathInElement(document.body);" defer></script>
   {{ end -}}
-  <script src="{{ $js.RelPermalink }}" defer></script>
+  <script src="{{ $js.Permalink }}" defer></script>
   {{ with .Params.mermaid -}}
-    <script src="{{ $mermaid.RelPermalink }}" defer></script>
+    <script src="{{ $mermaid.Permalink }}" defer></script>
   {{ end -}}
   {{ if $showFlexSearch -}}
-    <script src="{{ $index.RelPermalink }}" defer></script>
+    <script src="{{ $index.Permalink }}" defer></script>
   {{ end -}}
 {{ else -}}
   {{ $js := $js | minify | fingerprint "sha512" -}}
@@ -100,18 +100,18 @@
   {{ $katexAutoRender := $katexAutoRender | minify | fingerprint "sha512" -}}
   {{ $mermaid := $mermaid | minify | fingerprint "sha512" -}}
   {{ if .Site.Params.options.bootStrapJs -}}
-    <script src="{{ $bs.RelPermalink }}" integrity="{{ $bs.Data.Integrity }}" crossorigin="anonymous" defer></script>
+    <script src="{{ $bs.Permalink }}" integrity="{{ $bs.Data.Integrity }}" crossorigin="anonymous" defer></script>
   {{ end -}}
   {{ if .Site.Params.options.highLight -}}
-    <script src="{{ $highlight.RelPermalink }}" integrity="{{ $highlight.Data.Integrity }}" crossorigin="anonymous" defer></script>
+    <script src="{{ $highlight.Permalink }}" integrity="{{ $highlight.Data.Integrity }}" crossorigin="anonymous" defer></script>
   {{ end -}}
   {{ if .Site.Params.options.kaTex -}}
-    <script src="{{ $katex.RelPermalink }}" integrity="{{ $katex.Data.Integrity }}" crossorigin="anonymous" defer></script>
-    <script src="{{ $katexAutoRender.RelPermalink }}" integrity="{{ $katexAutoRender.Data.Integrity }}" crossorigin="anonymous" defer></script>
+    <script src="{{ $katex.Permalink }}" integrity="{{ $katex.Data.Integrity }}" crossorigin="anonymous" defer></script>
+    <script src="{{ $katexAutoRender.Permalink }}" integrity="{{ $katexAutoRender.Data.Integrity }}" crossorigin="anonymous" defer></script>
   {{ end -}}
-  <script src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}" crossorigin="anonymous" defer></script>
+  <script src="{{ $js.Permalink }}" integrity="{{ $js.Data.Integrity }}" crossorigin="anonymous" defer></script>
   {{ with .Params.mermaid -}}
-    <script src="{{ $mermaid.RelPermalink }}" integrity="{{ $mermaid.Data.Integrity }}" crossorigin="anonymous" defer></script>
+    <script src="{{ $mermaid.Permalink }}" integrity="{{ $mermaid.Data.Integrity }}" crossorigin="anonymous" defer></script>
   {{ end -}}
   {{ if $showFlexSearch -}}
     <script src="{{ $index.Permalink }}" integrity="{{ $index.Data.Integrity }}" crossorigin="anonymous" defer></script>
