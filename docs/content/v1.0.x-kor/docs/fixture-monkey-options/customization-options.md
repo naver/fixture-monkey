@@ -50,19 +50,19 @@ void test() {
 {{< tab header="Kotlin" lang="kotlin">}}
 
 data class Product (
-val productName: String
+    val productName: String
 )
 
 @Test
 fun test() {
-// given
-val fixtureMonkey = FixtureMonkey.builder()
-.plugin(KotlinPlugin())
-.pushPropertyNameResolver(
-MatcherOperator.exactTypeMatchOperator(String::class.java, PropertyNameResolver { "string" })
-)
-.build()
-val expected = "test"
+    // given
+    val fixtureMonkey = FixtureMonkey.builder()
+        .plugin(KotlinPlugin())
+        .pushPropertyNameResolver(
+            MatcherOperator.exactTypeMatchOperator(String::class.java, PropertyNameResolver { "string" })
+        )
+        .build()
+        val expected = "test"
 
     // when
     val actual: String = fixtureMonkey.giveMeBuilder<Product>()
