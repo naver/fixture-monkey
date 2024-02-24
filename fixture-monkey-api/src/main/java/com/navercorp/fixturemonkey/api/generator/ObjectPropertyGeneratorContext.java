@@ -36,10 +36,13 @@ public final class ObjectPropertyGeneratorContext {
 	@Nullable
 	private final ArbitraryProperty ownerProperty;
 	private final boolean container;
+	@Deprecated
 	private final PropertyGenerator propertyGenerator;
 	private final PropertyNameResolver propertyNameResolver;
+	@Deprecated
 	private final NullInjectGenerator nullInjectGenerator;
 
+	@Deprecated
 	public ObjectPropertyGeneratorContext(
 		Property property,
 		@Nullable Integer elementIndex,
@@ -76,6 +79,7 @@ public final class ObjectPropertyGeneratorContext {
 		return this.container;
 	}
 
+	@Deprecated
 	public PropertyGenerator getPropertyGenerator() {
 		return propertyGenerator;
 	}
@@ -84,6 +88,7 @@ public final class ObjectPropertyGeneratorContext {
 		return propertyNameResolver;
 	}
 
+	@Deprecated
 	public NullInjectGenerator getNullInjectGenerator() {
 		return nullInjectGenerator;
 	}
