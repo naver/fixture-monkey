@@ -44,7 +44,7 @@ class DurationIntrospector : ArbitraryIntrospector, Matcher {
             return ArbitraryIntrospectorResult.NOT_INTROSPECTED
         }
 
-        require(match(context.resolvedProperty)) { "Given type is not Boolean. type: " + context.resolvedType }
+        require(match(context.resolvedProperty)) { "Given type is not Duration type: " + context.resolvedType }
 
         return ArbitraryIntrospectorResult(
             CombinableArbitrary.from { Random(SEED).nextLong().toDuration(DurationUnit.NANOSECONDS) }

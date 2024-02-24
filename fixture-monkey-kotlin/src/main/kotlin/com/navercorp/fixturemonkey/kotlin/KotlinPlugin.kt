@@ -20,6 +20,7 @@ package com.navercorp.fixturemonkey.kotlin
 
 import com.navercorp.fixturemonkey.api.generator.InterfaceObjectPropertyGenerator
 import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGenerator
+import com.navercorp.fixturemonkey.api.introspector.FailoverIntrospector
 import com.navercorp.fixturemonkey.api.introspector.MatchArbitraryIntrospector
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator
 import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptionsBuilder
@@ -31,6 +32,7 @@ import com.navercorp.fixturemonkey.kotlin.generator.TripleContainerPropertyGener
 import com.navercorp.fixturemonkey.kotlin.generator.TripleDecomposedContainerValueFactory
 import com.navercorp.fixturemonkey.kotlin.instantiator.KotlinInstantiatorProcessor
 import com.navercorp.fixturemonkey.kotlin.introspector.DurationIntrospector
+import com.navercorp.fixturemonkey.kotlin.introspector.KotlinDefaultIntrospector
 import com.navercorp.fixturemonkey.kotlin.introspector.PairIntrospector
 import com.navercorp.fixturemonkey.kotlin.introspector.PrimaryConstructorArbitraryIntrospector
 import com.navercorp.fixturemonkey.kotlin.introspector.TripleIntrospector
@@ -42,6 +44,7 @@ import com.navercorp.fixturemonkey.kotlin.type.cachedKotlin
 import org.apiguardian.api.API
 import org.apiguardian.api.API.Status.MAINTAINED
 import java.lang.reflect.Modifier
+import kotlin.time.Duration
 
 @API(since = "0.4.0", status = MAINTAINED)
 class KotlinPlugin : Plugin {
@@ -75,9 +78,6 @@ class KotlinPlugin : Plugin {
                 TRIPLE_TYPE_MATCHER,
                 TripleContainerPropertyGenerator(),
             )
-            .objectIntrospector {
-                DurationIntrospector()
-            }
             .containerIntrospector {
                 MatchArbitraryIntrospector(
                     listOf(
