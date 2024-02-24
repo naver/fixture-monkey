@@ -127,7 +127,7 @@ public class GenerateGroup {
     public ArbitraryBuilder<GenerateString> generateString(FixtureMonkey fixtureMonkey) {
         return fixtureMonkey.giveMeBuilder(GenerateString.class)
             .set("value", Arbitraries.strings().numeric());
-}
+    }
 
     public ArbitraryBuilder<GenerateInt> generateInt(FixtureMonkey fixtureMonkey) {
         return fixtureMonkey.giveMeBuilder(GenerateInt.class)
