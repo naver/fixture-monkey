@@ -125,6 +125,7 @@ public final class ObjectTree {
 
 				return generateIntrospected(node, currentContext);
 			},
+			objectNode.getLazyPropertyPath(),
 			monkeyGeneratorContext,
 			fixtureMonkeyOptions.getGenerateUniqueMaxTries()
 		);
