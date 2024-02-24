@@ -13,7 +13,7 @@ Fixture Monkey는 문자, 문자열, 정수 등의 기본 타입에 대한 랜�
 Jqwik에서 `Arbitrary`는 생성(Generating) 및 축소(Shrinking)할 수 있는 객체를 나타내는 핵심 인터페이스입니다.
 때때로 픽스처 프로퍼티가 특정 제약 조건을 준수하면서 랜덤 값을 가지도록 원할 수 있습니다.
 
-이러한 경우에는 Fixture Monkey의 `set()` 메서드로 프로퍼티의 값을 `Arbitrary로` 할당하여 랜덤 값을 가지도록 할 수 있습니다.
+이러한 경우에는 Fixture Monkey의 `set()` 메서드로 프로퍼티의 값을 `Arbitrary`로 할당하여 랜덤 값을 가지도록 할 수 있습니다.
 Jqwik의 [Arbitraries class](https://jqwik.net/docs/current/user-guide.html#static-arbitraries-methods)의 정적 메서드를 호출하여 특정 조건을 충족하는 `Arbitrary`를 생성할 수 있습니다.
 
 다음 코드 예제는 `Arbitrary`를 사용하여 `set()`을 통해 랜덤 값을 커스터마이징하는 방법을 보여줍니다:
