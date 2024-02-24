@@ -133,6 +133,7 @@ public final class FixtureMonkeyOptionsBuilder {
 	@Nullable
 	private Function<JavaConstraintGenerator, JavaTimeArbitraryGeneratorSet> generateJavaTimeArbitrarySet = null;
 	private InstantiatorProcessor instantiatorProcessor = new JavaInstantiatorProcessor();
+	private final JdkVariantOptions jdkVariantOptions = new JdkVariantOptions();
 
 	FixtureMonkeyOptionsBuilder() {
 	}
@@ -511,6 +512,8 @@ public final class FixtureMonkeyOptionsBuilder {
 	}
 
 	public FixtureMonkeyOptions build() {
+		jdkVariantOptions.apply(this);
+
 		ObjectPropertyGenerator defaultObjectPropertyGenerator = defaultIfNull(
 			this.defaultObjectPropertyGenerator,
 			() -> FixtureMonkeyOptions.DEFAULT_OBJECT_PROPERTY_GENERATOR
