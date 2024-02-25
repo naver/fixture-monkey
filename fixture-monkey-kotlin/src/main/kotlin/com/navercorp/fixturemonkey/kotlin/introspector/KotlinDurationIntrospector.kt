@@ -51,7 +51,7 @@ class KotlinDurationIntrospector : ArbitraryIntrospector {
     }
 }
 
-fun randomizeDurationUnit() : DurationUnit {
+fun randomizeDurationUnit(): DurationUnit {
     val durationUnitList = DurationUnit.values().toList()
     val randomIndex = Random(SEED).nextInt(durationUnitList.size)
     return durationUnitList[randomIndex]
