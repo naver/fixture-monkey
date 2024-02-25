@@ -57,8 +57,8 @@ class KotestInKotestTest : StringSpec({
 ## CheckAll
 Fixture Monkey는 Kotest의 `checkAll`과 유사한 확장 함수 `checkAll`을 제공합니다.
 
-### 원시 타입 입력
-checkAll을 사용하면 아래 예제와 같이 원시적인 데이터 타입에 대한 테스트를 검증할 수 있습니다.
+### 기본 타입 입력
+checkAll을 사용하면 아래 예제와 같이 기본 데이터 타입에 대한 테스트를 검증할 수 있습니다.
 
 ```kotlin
 class Test : StringSpec({
@@ -72,7 +72,7 @@ class Test : StringSpec({
 ```
 
 ### 커스텀 타입 입력
-Fixture Monkey의 `checkAll` 확장 함수는 원시 타입을 사용하는 것 외에도 커스텀 타입을 사용할 수 있습니다. 
+Fixture Monkey의 `checkAll` 확장 함수는 기본 타입을 사용하는 것 외에도 커스텀 타입을 사용할 수 있습니다. 
 또한 Fixture Monkey로 생성된 커스텀 타입은 입력 데이터로도 사용할 수 있습니다.
 
 ```kotlin
