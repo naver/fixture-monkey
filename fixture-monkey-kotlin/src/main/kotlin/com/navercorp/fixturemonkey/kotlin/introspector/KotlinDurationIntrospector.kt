@@ -39,12 +39,20 @@ class KotlinDurationIntrospector : ArbitraryIntrospector {
 
         require(DURATION_TYPE_MATCHER.match(context.resolvedProperty)) { "Given type is not Duration type: " + context.resolvedType }
 
+        val durationUnit = randomizeDurationUnit()
+        val durationValue = Random(SEED).nextLong()
         return ArbitraryIntrospectorResult(
-            CombinableArbitrary.from { Random(SEED).nextLong().toDuration(DurationUnit.NANOSECONDS) }
+            CombinableArbitrary.from { durationValue.toDuration(durationUnit) }
         )
     }
 
     companion object {
         val INSTANCE = KotlinDurationIntrospector()
     }
+}
+
+fun randomizeDurationUnit() : DurationUnit {
+    val durationUnitList = DurationUnit.values().toList()
+    val randomIndex = Random(SEED).nextInt(durationUnitList.size)
+    return durationUnitList[randomIndex]
 }
