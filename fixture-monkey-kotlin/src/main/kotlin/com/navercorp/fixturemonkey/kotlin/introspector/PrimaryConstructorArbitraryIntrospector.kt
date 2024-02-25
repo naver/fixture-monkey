@@ -50,6 +50,10 @@ class PrimaryConstructorArbitraryIntrospector : ArbitraryIntrospector {
             return ArbitraryIntrospectorResult.NOT_INTROSPECTED
         }
 
+        if (type.isAssignableFrom(Duration::class.java)) {
+            return KotlinDurationIntrospector.INSTANCE.introspect(context)
+        }
+
         val constructor = try {
             CONSTRUCTOR_CACHE.computeIfAbsent(type) {
                 val kotlinClass = Reflection.createKotlinClass(type) as KClass<*>
@@ -75,9 +79,10 @@ class PrimaryConstructorArbitraryIntrospector : ArbitraryIntrospector {
                             if (resolvedArbitrary is Long) {
                                 generatedByParameters[parameter] =
                                     resolvedArbitrary.toDuration(DurationUnit.MILLISECONDS)
-                            } else {
-                                generatedByParameters[parameter] = Duration.ZERO
+                                continue
                             }
+                            generatedByParameters[parameter] = Duration.ZERO
+                            continue
                         }
 
                         generatedByParameters[parameter] = resolvedArbitrary

@@ -21,10 +21,13 @@ package com.navercorp.fixturemonkey.kotlin.test
 import com.navercorp.fixturemonkey.FixtureMonkey
 import com.navercorp.fixturemonkey.kotlin.KotlinPlugin
 import com.navercorp.fixturemonkey.kotlin.giveMeOne
+import net.jqwik.api.Example
 import net.jqwik.api.Property
 import org.assertj.core.api.BDDAssertions.then
 import org.assertj.core.api.BDDAssertions.thenNoException
 import kotlin.time.Duration
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
 
 class PrimaryConstructorArbitraryIntrospectorTest {
     private val sut: FixtureMonkey = FixtureMonkey.builder()
@@ -64,7 +67,7 @@ class PrimaryConstructorArbitraryIntrospectorTest {
         then(actual).isNotEqualTo("default_value")
     }
 
-    @Property
+    @Example
     fun sampleDuration() {
         thenNoException().isThrownBy { sut.giveMeOne<Duration>() }
     }
