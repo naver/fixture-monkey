@@ -10,5 +10,5 @@ object Matchers {
 
     val TRIPLE_TYPE_MATCHER = AssignableTypeMatcher(Triple::class.java).intersect(TripleGenericTypeMatcher())
 
-    val DURATION_TYPE_MATCHER =  AssignableTypeMatcher(Duration::class.java).intersect(DurationKTypeMatcher())
+    val DURATION_TYPE_MATCHER = AssignableTypeMatcher(Duration::class.java).intersect(DurationKTypeMatcher())
 }
