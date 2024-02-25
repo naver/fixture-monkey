@@ -7,11 +7,11 @@ parent: "customizing-objects"
 identifier: "innerspec"
 ---
 
-InnerSpec 은 적용하고자 하는 커스터마이징에 대한 타입에 독립적인 명세입니다.
-ArbitraryBuilder 내부의 `setInner()` 메서드를 사용하여 `InnerSpec` 인스턴스 내에 정의된 커스터마이징을 빌더에 적용할 수 있습니다.
+InnerSpec은 적용하려는 커스터마이징에 대한 타입 독립적인 사양입니다.
+ArbitraryBuilder 내의 `setInner()` 메서드를 사용하면 `InnerSpec` 인스턴스에 정의된 커스터마이징을 빌더에 적용할 수 있습니다.
 
-`InnerSpec` 에는 커스터마이징 세부사항이 포함되어 있으며, 재사용이 가능합니다.
-ArbitraryBuilder 에서 사용하는 `expressions` 과 달리, `InnerSpec` 은 더 중첩된 구조적 접근을 가능하게 합니다.
+`InnerSpec` 에는 커스터마이징 세부 정보가 저장되며 ArbitraryBuilder에서 재사용할 수 있습니다.
+ArbitraryBuilder에서 사용되는 `expression`을 사용하는 것과 달리 `InnerSpec`은 보다 중첩되고 구조화된 접근 방식을 가능하게 합니다.
 
 `InnerSpec` 의 또 다른 장점은 일반적인 표현식과 달리 맵 프로퍼티를 커스터마이징할 수 있다는 점입니다.
 
@@ -27,7 +27,7 @@ ArbitraryBuilder 에서 사용하는 `expressions` 과 달리, `InnerSpec` 은 �
 InnerSpec innerSpec = new InnerSpec().property("id", 1000);
 
 fixtureMonkey.giveMeBuilder(Product.class)
-.setInner(innerSpec);
+    .setInner(innerSpec);
 
 {{< /tab >}}
 {{< tab header="Kotlin" lang="kotlin">}}
@@ -35,7 +35,7 @@ fixtureMonkey.giveMeBuilder(Product.class)
 val innerSpec = InnerSpec().property("id", 1000)
 
 fixtureMonkey.giveMeBuilder<Product>()
-.setInner(innerSpec)
+    .setInner(innerSpec)
 
 {{< /tab >}}
 {{< /tabpane>}}
@@ -52,13 +52,13 @@ ArbitraryBuilder 의 `set()` 메서드와 유사하게, 프로퍼티 이름과 �
 {{< tab header="Java" lang="java">}}
 
 InnerSpec innerSpec = new InnerSpec()
-.property("id", 1000);
+    .property("id", 1000);
 
 {{< /tab >}}
 {{< tab header="Kotlin" lang="kotlin">}}
 
 val innerSpec = InnerSpec()
-.property("id", 1000)
+    .property("id", 1000)
 
 {{< /tab >}}
 {{< /tabpane>}}
@@ -74,31 +74,31 @@ val innerSpec = InnerSpec()
 {{< tab header="Java" lang="java">}}
 
 InnerSpec innerSpec = new InnerSpec()
-.property("options", options -> options.size(5)); // size:5
+    .property("options", options -> options.size(5)); // size:5
 
 InnerSpec innerSpec = new InnerSpec()
-.property("options", options -> options.size(3, 5)); // minSize:3, maxSize:5
+    .property("options", options -> options.size(3, 5)); // minSize:3, maxSize:5
 
 InnerSpec innerSpec = new InnerSpec()
-.property("options", options -> options.minSize(3)); // minSize:3
+    .property("options", options -> options.minSize(3)); // minSize:3
 
 InnerSpec innerSpec = new InnerSpec()
-.property("options", options -> options.maxSize(5)); // maxSize:5
+    .property("options", options -> options.maxSize(5)); // maxSize:5
 
 {{< /tab >}}
 {{< tab header="Kotlin" lang="kotlin">}}
 
 val innerSpec = InnerSpec()
-.property("options") { it.size(5) } // size:5
+    .property("options") { it.size(5) } // size:5
 
 val innerSpec = InnerSpec()
-.property("options") { it.size(3, 5) } // minSize:3, maxSize:5
+    .property("options") { it.size(3, 5) } // minSize:3, maxSize:5
 
 val innerSpec = InnerSpec()
-.property("options") { it.minSize(3) } // minSize:3
+    .property("options") { it.minSize(3) } // minSize:3
 
 val innerSpec = InnerSpec()
-.property("options") { it.maxSize(5) } // maxSize:5
+    .property("options") { it.maxSize(5) } // maxSize:5
 
 {{< /tab >}}
 {{< /tabpane>}}
@@ -113,13 +113,13 @@ val innerSpec = InnerSpec()
 {{< tab header="Java" lang="java">}}
 
 InnerSpec innerSpec = new InnerSpec()
-.property("id", id -> id.postCondition(Long.class, it -> it > 0));
+    .property("id", id -> id.postCondition(Long.class, it -> it > 0));
 
 {{< /tab >}}
 {{< tab header="Kotlin" lang="kotlin">}}
 
 val innerSpec = InnerSpec()
-.property("id") { it.postCondition(Long::class.java) { it > 0 }}
+    .property("id") { it.postCondition(Long::class.java) { it > 0 }}
 
 {{< /tab >}}
 {{< /tabpane>}}
@@ -133,25 +133,25 @@ You can also customize a property using another pre-defined InnerSpec with the h
 {{< tab header="Java" lang="java">}}
 
 InnerSpec innerSpec = new InnerSpec()
-.property("id", 1000L);
+    .property("id", 1000L);
 
 fixtureMonkey.giveMeBuilder(Product.class)
-.setInner(
-new InnerSpec()
-.property("nestedObject", nestedObject -> nestedObject.inner(innerSpec))
-);
+    .setInner(
+        new InnerSpec()
+            .property("nestedObject", nestedObject -> nestedObject.inner(innerSpec))
+    );
 
 {{< /tab >}}
 {{< tab header="Kotlin" lang="kotlin">}}
 
 val innerSpec = InnerSpec()
-.property("id", 1000L)
+    .property("id", 1000L)
 
 fixtureMonkey.giveMeBuilder<Product>()
-.setInner(
-InnerSpec()
-.property("nestedObject") { it.inner(innerSpec) }
-)
+    .setInner(
+        InnerSpec()
+            .property("nestedObject") { it.inner(innerSpec) }
+    )
 
 {{< /tab >}}
 {{< /tabpane>}}
@@ -167,13 +167,13 @@ InnerSpec()
 {{< tab header="Java" lang="java">}}
 
 InnerSpec innerSpec = new InnerSpec()
-.property("options", options -> options.listElement(0, "red"));
+    .property("options", options -> options.listElement(0, "red"));
 
 {{< /tab >}}
 {{< tab header="Kotlin" lang="kotlin">}}
 
 val innerSpec = InnerSpec()
-.property("options") { it.listElement(0, "red") }
+    .property("options") { it.listElement(0, "red") }
 
 {{< /tab >}}
 {{< /tabpane>}}
@@ -187,13 +187,13 @@ val innerSpec = InnerSpec()
 {{< tab header="Java" lang="java">}}
 
 InnerSpec innerSpec = new InnerSpec()
-.property("options", options -> options.allListElement("red"));
+    .property("options", options -> options.allListElement("red"));
 
 {{< /tab >}}
 {{< tab header="Kotlin" lang="kotlin">}}
 
 val innerSpec = InnerSpec()
-.property("options") { it.allListElement("red") }
+    .property("options") { it.allListElement("red") }
 
 {{< /tab >}}
 {{< /tabpane>}}
@@ -202,7 +202,7 @@ val innerSpec = InnerSpec()
 
 InnerSpec은 맵 프로퍼티 엔트리를 커스터마이징하기 위해 특별한 메소드를 제공합니다.
 
-{{< alert icon="🚨" text="Similar to lists, setting a map entry without specifying the size first might lead to no change. Prior to setting a value, ensure that the map property has the intended size." />}}
+{{< alert icon="🚨" text="맵 프로퍼티의 크기를 먼저 지정하지 않고 맵 엔트리를 설정하면 변경이 없을 수 있습니다. 값을 설정하기 전에 맵 프로퍼티가 의도한 크기인지 확인해주세요." />}}
 
 ### key(), value(), entry()
 
@@ -215,25 +215,25 @@ InnerSpec은 맵 프로퍼티 엔트리를 커스터마이징하기 위해 특�
 {{< tab header="Java" lang="java">}}
 
 InnerSpec innerSpec = new InnerSpec()
-.property("merchantInfo", merchantInfo -> merchantInfo.key(1000));
+    .property("merchantInfo", merchantInfo -> merchantInfo.key(1000));
 
 InnerSpec innerSpec = new InnerSpec()
-.property("merchantInfo", merchantInfo -> merchantInfo.value("ABC Store"));
+    .property("merchantInfo", merchantInfo -> merchantInfo.value("ABC Store"));
 
 InnerSpec innerSpec = new InnerSpec()
-.property("merchantInfo", merchantInfo -> merchantInfo.entry(1000, "ABC Store"));
+    .property("merchantInfo", merchantInfo -> merchantInfo.entry(1000, "ABC Store"));
 
 {{< /tab >}}
 {{< tab header="Kotlin" lang="kotlin">}}
 
 val innerSpec = InnerSpec()
-.property("merchantInfo") { it.key(1000) }
+    .property("merchantInfo") { it.key(1000) }
 
 val innerSpec = InnerSpec()
-.property("merchantInfo") { it.value("ABC Store") }
+    .property("merchantInfo") { it.value("ABC Store") }
 
 val innerSpec = InnerSpec()
-.property("merchantInfo") { it.entry(1000, "ABC Store") }
+    .property("merchantInfo") { it.entry(1000, "ABC Store") }
 
 {{< /tab >}}
 {{< /tabpane>}}
@@ -246,25 +246,25 @@ val innerSpec = InnerSpec()
 {{< tab header="Java" lang="java">}}
 
 InnerSpec innerSpec = new InnerSpec()
-.property("merchantInfo", merchantInfo -> merchantInfo.keys(1000, 1001, 1002));
+    .property("merchantInfo", merchantInfo -> merchantInfo.keys(1000, 1001, 1002));
 
 InnerSpec innerSpec = new InnerSpec()
-.property("merchantInfo", merchantInfo -> merchantInfo.values("ABC Store", "123 Convenience", "XYZ Mart"));
+    .property("merchantInfo", merchantInfo -> merchantInfo.values("ABC Store", "123 Convenience", "XYZ Mart"));
 
 InnerSpec innerSpec = new InnerSpec()
-.property("merchantInfo", merchantInfo -> merchantInfo.entries(1000, "ABC Store", 1001, "123 Convenience", 1002, "XYZ Mart"));
+    .property("merchantInfo", merchantInfo -> merchantInfo.entries(1000, "ABC Store", 1001, "123 Convenience", 1002, "XYZ Mart"));
 
 {{< /tab >}}
 {{< tab header="Kotlin" lang="kotlin">}}
 
 val innerSpec = InnerSpec()
-.property("merchantInfo") { it.keys(1000, 1001, 1002) }
+    .property("merchantInfo") { it.keys(1000, 1001, 1002) }
 
 val innerSpec = InnerSpec()
-.property("merchantInfo") { it.values("ABC Store", "123 Convenience", "XYZ Mart") }
+    .property("merchantInfo") { it.values("ABC Store", "123 Convenience", "XYZ Mart") }
 
 val innerSpec = InnerSpec()
-.property("merchantInfo") { it.entries(1000, "ABC Store", 1001, "123 Convenience", 1002, "XYZ Mart") }
+    .property("merchantInfo") { it.entries(1000, "ABC Store", 1001, "123 Convenience", 1002, "XYZ Mart") }
 
 {{< /tab >}}
 {{< /tabpane>}}
@@ -277,25 +277,25 @@ val innerSpec = InnerSpec()
 {{< tab header="Java" lang="java">}}
 
 InnerSpec innerSpec = new InnerSpec()
-.property("merchantInfo", merchantInfo -> merchantInfo.allKey(1000));
+    .property("merchantInfo", merchantInfo -> merchantInfo.allKey(1000));
 
 InnerSpec innerSpec = new InnerSpec()
-.property("merchantInfo", merchantInfo -> merchantInfo.allValue("ABC Store"));
+    .property("merchantInfo", merchantInfo -> merchantInfo.allValue("ABC Store"));
 
 InnerSpec innerSpec = new InnerSpec()
-.property("merchantInfo", merchantInfo -> merchantInfo.allEntry(1000, "ABC Store"));
+    .property("merchantInfo", merchantInfo -> merchantInfo.allEntry(1000, "ABC Store"));
 
 {{< /tab >}}
 {{< tab header="Kotlin" lang="kotlin">}}
 
 val innerSpec = InnerSpec()
-.property("merchantInfo") { it.allKey(1000) }
+    .property("merchantInfo") { it.allKey(1000) }
 
 val innerSpec = InnerSpec()
-.property("merchantInfo") { it.allValue("ABC Store") }
+    .property("merchantInfo") { it.allValue("ABC Store") }
 
 val innerSpec = InnerSpec()
-.property("merchantInfo") { it.allEntry(1000, "ABC Store") }
+    .property("merchantInfo") { it.allEntry(1000, "ABC Store") }
 
 {{< /tab >}}
 {{< /tabpane>}}
@@ -309,66 +309,66 @@ Supplier는 `InnerSpec`이 적용된 ArbitraryBuilder가 샘플링될 때마다 
 {{< tab header="Java" lang="java">}}
 
 InnerSpec innerSpec = new InnerSpec()
-.property("merchantInfo", merchantInfo -> merchantInfo.keyLazy(this::generateMerchantKey));
+    .property("merchantInfo", merchantInfo -> merchantInfo.keyLazy(this::generateMerchantKey));
 
 InnerSpec innerSpec = new InnerSpec()
-.property("merchantInfo", merchantInfo -> merchantInfo.valueLazy(this::generateMerchantValue));
+    .property("merchantInfo", merchantInfo -> merchantInfo.valueLazy(this::generateMerchantValue));
 
 InnerSpec innerSpec = new InnerSpec()
-.property("merchantInfo", merchantInfo -> merchantInfo.entryLazy(this::generateMerchantKey, this::generateMerchantValue));
+    .property("merchantInfo", merchantInfo -> merchantInfo.entryLazy(this::generateMerchantKey, this::generateMerchantValue));
 
 {{< /tab >}}
 {{< tab header="Kotlin" lang="kotlin">}}
 
 val innerSpec = InnerSpec()
-.property("merchantInfo") { it.keyLazy(this::generateMerchantKey) }
+    .property("merchantInfo") { it.keyLazy(this::generateMerchantKey) }
 
 val innerSpec = InnerSpec()
-.property("merchantInfo") { it.valueLazy(this::generateMerchantValue) }
+    .property("merchantInfo") { it.valueLazy(this::generateMerchantValue) }
 
 val innerSpec = InnerSpec()
-.property("merchantInfo") { it.entryLazy(this::generateMerchantKey, this::generateMerchantValue) }
+    .property("merchantInfo") { it.entryLazy(this::generateMerchantKey, this::generateMerchantValue) }
 
 {{< /tab >}}
 {{< /tabpane>}}
 
 ### allKeyLazy(), allValueLazy(), allEntryLazy()
 
-Just as with the `allKey()` method, you can use `allKeyLazy()` to apply `keyLazy()` to every entry within the map.
-Both `allValueLazy()` and `allEntryLazy()` function similarly.
+`allKey()` 메소드와 마찬가지로, `allKeyLazy()`를 사용하여 맵 내의 모든 엔트리에 `keyLazy()`를 적용할 수 있습니다.
+`allValueLazy()`와 `allEntryLazy()`도 유사하게 작동합니다.
 
 {{< tabpane persist=false >}}
 {{< tab header="Java" lang="java">}}
 
 InnerSpec innerSpec = new InnerSpec()
-.property("merchantInfo", merchantInfo -> merchantInfo.allKeyLazy(this::generateMerchantKey));
+    .property("merchantInfo", merchantInfo -> merchantInfo.allKeyLazy(this::generateMerchantKey));
 
 InnerSpec innerSpec = new InnerSpec()
-.property("merchantInfo", merchantInfo -> merchantInfo.allValueLazy(this::generateMerchantValue));
+    .property("merchantInfo", merchantInfo -> merchantInfo.allValueLazy(this::generateMerchantValue));
 
 InnerSpec innerSpec = new InnerSpec()
-.property("merchantInfo", merchantInfo -> merchantInfo.allEntryLazy(this::generateMerchantKey, this::generateMerchantValue));
+    .property("merchantInfo", merchantInfo -> merchantInfo.allEntryLazy(this::generateMerchantKey, this::generateMerchantValue));
 
 {{< /tab >}}
 {{< tab header="Kotlin" lang="kotlin">}}
 
 val innerSpec = InnerSpec()
-.property("merchantInfo") { it.allKeyLazy(this::generateMerchantKey) }
+    .property("merchantInfo") { it.allKeyLazy(this::generateMerchantKey) }
 
 val innerSpec = InnerSpec()
-.property("merchantInfo") { it.allValueLazy(this::generateMerchantValue) }
+    .property("merchantInfo") { it.allValueLazy(this::generateMerchantValue) }
 
 val innerSpec = InnerSpec()
-.property("merchantInfo") { it.allEntryLazy(this::generateMerchantKey, this::generateMerchantValue) }
+    .property("merchantInfo") { it.allEntryLazy(this::generateMerchantKey, this::generateMerchantValue) }
 
 {{< /tab >}}
 {{< /tabpane>}}
 
-## Customizing nested Maps
+## 중첩된 맵 커스터마이징
 
-By combining methods within InnerSpec, you can effectively customize maps with map-type keys, map-type values, or both.
+메서드를 조합하여 InnerSpec 내에서 맵의 키, 값 또는 둘 다를 효과적으로 커스터마이징할 수 있습니다.
 
-Consider the scenario of a nested map structure like the following:
+다음과 같이 중첩된 맵 구조의 시나리오를 고려해보겠습니다.
 
 ```java
 public class Example {
@@ -377,8 +377,9 @@ public class Example {
 }
 ```
 
-### Setting map-type key
-To set a map with a map-type key, you can access the map key using `key()`, and then further customize it.
+### 맵 타입의 키 설정
+
+맵 타입의 키를 설정하려면 `key()`를 사용하여 맵 키에 접근한 다음, 해당 키를 추가로 커스터마이징할 수 있습니다.
 
 {{< tabpane persistLang=false >}}
 {{< tab header="general expression" lang="java">}}
@@ -393,7 +394,7 @@ InnerSpec().property("mapByString") { m -> m.key { k -> k.entry("key", "value") 
 {{< /tab >}}
 {{< /tabpane>}}
 
-If you need to set the entry itself, access the entry with `entry()` and further customize the key using InnerSpec, then set the specific value.
+만약 엔트리 자체를 설정해야 하는 경우, `entry()`로 엔트리에 접근하고 InnerSpec을 사용하여 키를 추가로 커스터마이징한 다음, 특정 값을 설정합니다.
 
 {{< tabpane persistLang=false >}}
 {{< tab header="general expression" lang="java">}}
@@ -408,8 +409,9 @@ InnerSpec().property("mapByString") { m -> m.entry({ k -> k.entry("innerKey", "i
 {{< /tab >}}
 {{< /tabpane>}}
 
-### Setting map-type value
-For a map with a map-type value, access the map value using `value()`, and then further customize it.
+### 맵 타입의 값 설정
+
+map 타입의 값이 있는 맵의 경우, `value()`를 사용하여 맵 값을 접근한 다음, 해당 값을 추가로 커스터마이징할 수 있습니다.
 
 {{< tabpane persistLang=false >}}
 {{< tab header="general expression" lang="java">}}
@@ -424,7 +426,7 @@ InnerSpec().property("stringByMap") { m -> m.value { v -> v.entry("key", "value"
 {{< /tab >}}
 {{< /tabpane>}}
 
-If you need to set the entry itself, access the entry with `entry()` and further customize the value using InnerSpec, then set the specific key.
+만약 엔트리 자체를 설정해야 하는 경우, `entry()`로 엔트리에 접근하고 InnerSpec을 사용하여 키를 추가로 커스터마이징한 다음, 특정 값을 설정합니다.
 
 {{< tabpane persistLang=false >}}
 {{< tab header="general expression" lang="java">}}
