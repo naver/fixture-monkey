@@ -126,7 +126,6 @@ val innerSpec = InnerSpec()
 
 ### inner()
 
-You can also customize a property using another pre-defined InnerSpec with the help of `inner()`.
 또한 `inner()` 를 사용하여 미리 정의된 InnerSpec 을 사용하여 프로퍼티를 커스터마이징할 수 있습니다.
 
 {{< tabpane persist=false >}}
@@ -156,7 +155,7 @@ fixtureMonkey.giveMeBuilder<Product>()
 {{< /tab >}}
 {{< /tabpane>}}
 
-## Customizing list properties
+## 리스트 프로퍼티 커스터마이징
 
 ### listElement()
 
@@ -198,7 +197,7 @@ val innerSpec = InnerSpec()
 {{< /tab >}}
 {{< /tabpane>}}
 
-## Customizing map properties
+## 맵 프로퍼티 커스터마이징
 
 InnerSpec은 맵 프로퍼티 엔트리를 커스터마이징하기 위해 특별한 메소드를 제공합니다.
 
