@@ -46,7 +46,7 @@ fixtureMonkey.giveMeBuilder<Product>()
 
 ArbitraryBuilder 의 `set()` 메서드와 유사하게, 프로퍼티 이름과 원하는 값을 지정하여 프로퍼티를 커스터마이징할 수 있습니다.
 
-{{< alert icon="🚨" text="원소(`[]`) 또는 중첩 필드(`.`)를 참조하는 Fixture Monkey 표현식은 프로퍼티 이름으로 사용할 수 없습니다. 프로퍼티 이름 자체만 사용할 수 있습니다." />}}
+{{< alert icon="🚨" text="요소(`[]`) 또는 중첩 필드(`.`)를 참조하는 Fixture Monkey 표현식은 프로퍼티 이름으로 사용할 수 없습니다. 프로퍼티 이름 자체만 사용할 수 있습니다." />}}
 
 {{< tabpane persist=false >}}
 {{< tab header="Java" lang="java">}}
