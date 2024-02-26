@@ -40,7 +40,7 @@ fixtureMonkey.giveMeBuilder<Product>()
 {{< /tab >}}
 {{< /tabpane>}}
 
-## 프로퍼티 사용자 정의하기
+## 프로퍼티 커스터마이징하기
 
 ### property()
 
