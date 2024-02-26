@@ -24,6 +24,7 @@ import static com.navercorp.fixturemonkey.Constants.NO_OR_ALL_INDEX_INTEGER_VALU
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -167,6 +168,16 @@ public final class InnerSpec {
 	}
 
 	/**
+	 * Sets multiple keys in the currently referred map property from a Collection.
+	 *
+	 * @param keys The Collection of keys to set in the map. Can be empty.
+	 */
+	public InnerSpec keys(Collection<?> keys) {
+		keys.forEach(this::key);
+		return this;
+	}
+
+	/**
 	 * Sets multiple keys in the currently referred map property.
 	 *
 	 * @param keys The keys to set in the map. Can be empty.
@@ -185,6 +196,16 @@ public final class InnerSpec {
 	public InnerSpec key(Consumer<InnerSpec> consumer) {
 		entrySize++;
 		setMapKey(consumer);
+		return this;
+	}
+
+	/**
+	 * Sets a value in the currently referred map property from a Collection.
+	 *
+	 * @param values The Collection of values to set in the map. Can be empty.
+	 */
+	public InnerSpec values(Collection<?> values) {
+		values.forEach(this::value);
 		return this;
 	}
 
@@ -234,6 +255,23 @@ public final class InnerSpec {
 	}
 
 	/**
+	 * Sets multiple key-value pairs in the map from a Collection.
+	 *
+	 * @param entries The entries to be added to the map. Should be entered in key, value order. Can be empty.
+	 */
+	public InnerSpec entries(Collection<?> entries) {
+		if (entries.size() % 2 != 0) {
+			throw new IllegalArgumentException("key-value pairs for the Map should be entered");
+		}
+
+		IntStream.range(0, entries.size())
+			.filter(i -> i % 2 == 0)
+			.forEach(i -> entry(entries.toArray()[i], entries.toArray()[i + 1]));
+
+		return this;
+	}
+
+	/**
 	 * Sets multiple key-value pairs in the map.
 	 *
 	 * @param entries The entries to be added to the map. Should be entered in key, value order. Can be empty.
@@ -245,9 +283,7 @@ public final class InnerSpec {
 
 		IntStream.range(0, entries.length)
 			.filter(i -> i % 2 == 0)
-			.forEach(i -> {
-				entry(entries[i], entries[i + 1]);
-			});
+			.forEach(i -> entry(entries[i], entries[i + 1]));
 
 		return this;
 	}

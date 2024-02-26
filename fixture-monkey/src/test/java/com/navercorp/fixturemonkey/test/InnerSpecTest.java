@@ -23,6 +23,7 @@ import static org.assertj.core.api.BDDAssertions.then;
 import static org.assertj.core.api.BDDAssertions.thenThrownBy;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -826,5 +827,51 @@ class InnerSpecTest {
 			.getStr();
 
 		then(actual).isNotNull();
+	}
+
+	@Property
+	void keysForCollection() {
+		List<String> keyList = Arrays.asList("key1", "key2", "key3");
+
+		Map<String, String> actual = SUT.giveMeBuilder(MapObject.class)
+			.setInner(
+				new InnerSpec()
+					.property("strMap", it -> it.keys(keyList).size(3))
+			)
+			.sample()
+			.getStrMap();
+
+		then(actual.keySet()).containsAll(keyList);
+	}
+
+	@Property
+	void valuesForCollection() {
+		List<String> valueList = Arrays.asList("value1", "value2", "value3");
+
+		Map<String, String> actual = SUT.giveMeBuilder(MapObject.class)
+			.setInner(
+				new InnerSpec()
+					.property("strMap", it -> it.values(valueList).size(3))
+			)
+			.sample()
+			.getStrMap();
+
+		then(actual.values()).containsAll(valueList);
+	}
+
+	@Property
+	void entriesForCollection() {
+		List<String> entries = Arrays.asList("key1", "value1", "key2", "value2");
+
+		Map<String, String> actual = SUT.giveMeBuilder(MapObject.class)
+			.setInner(
+				new InnerSpec()
+					.property("strMap", it -> it.entries(entries).size(2))
+			)
+			.sample()
+			.getStrMap();
+
+		then(actual.get("key1")).isEqualTo("value1");
+		then(actual.get("key2")).isEqualTo("value2");
 	}
 }
