@@ -34,15 +34,15 @@ testImplementation("com.navercorp.fixturemonkey:fixture-monkey-jackson:{{< fixtu
 {{< tab header="Java" lang="java">}}
 
 FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
-.plugin(new JacksonPlugin())
-.build();
+    .plugin(new JacksonPlugin())
+    .build();
 
 {{< /tab >}}
 {{< tab header="Kotlin" lang="kotlin">}}
 
 val fixtureMonkey = FixtureMonkey.builder()
-.plugin(JacksonPlugin())
-.build()
+    .plugin(JacksonPlugin())
+    .build()
 
 {{< /tab >}}
 {{< /tabpane>}}
@@ -52,22 +52,22 @@ JacksonPlugin을 사용할 때 사용자 정의 객체 매퍼와 함께 Jackson�
 {{< tabpane persist=false >}}
 {{< tab header="Java" lang="java">}}
 ObjectMapper objectMapper = JsonMapper.builder()
-.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
-.build()
+    .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+    .build()
 
 FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
-.plugin(new JacksonPlugin(objectMapper))
-.build();
+    .plugin(new JacksonPlugin(objectMapper))
+    .build();
 
 {{< /tab >}}
 {{< tab header="Kotlin" lang="kotlin">}}
 val objectMapper = JsonMapper.builder()
-.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
-.build()
+    .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+    .build()
 
 val fixtureMonkey = FixtureMonkey.builder()
-.plugin(JacksonPlugin(objectMapper))
-.build()
+    .plugin(JacksonPlugin(objectMapper))
+    .build()
 
 {{< /tab >}}
 {{< /tabpane>}}
