@@ -34,9 +34,9 @@ public class Product {
 
 @Test
 void test() {
-FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
-.plugin(new JacksonPlugin())
-.build();
+    FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+        .plugin(new JacksonPlugin())
+        .build();
 
     Product product = fixtureMonkey.giveMeOne(Product.class);
 }
@@ -49,10 +49,10 @@ testImplementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 
 @Test
 fun test() {
-FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
-.plugin(KotlinPlugin())
-.plugin(JacksonPlugin())
-.build();
+    FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+        .plugin(KotlinPlugin())
+        .plugin(JacksonPlugin())
+        .build();
 
     val product: Product = fixtureMonkey.giveMeOne()
 }
