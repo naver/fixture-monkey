@@ -168,7 +168,7 @@ public final class InnerSpec {
 	}
 
 	/**
-	 * Sets Collection of keys in the currently referred map property.
+	 * Sets multiple keys in the currently referred map property from a Collection.
 	 *
 	 * @param keys The Collection of keys to set in the map. Can be empty.
 	 */
