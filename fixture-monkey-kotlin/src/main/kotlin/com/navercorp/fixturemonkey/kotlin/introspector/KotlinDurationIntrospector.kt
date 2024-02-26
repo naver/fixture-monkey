@@ -21,6 +21,8 @@ import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult
+import com.navercorp.fixturemonkey.api.matcher.Matcher
+import com.navercorp.fixturemonkey.api.property.Property
 import com.navercorp.fixturemonkey.kotlin.matcher.Matchers.DURATION_TYPE_MATCHER
 import kotlin.random.Random
 import kotlin.time.DurationUnit
@@ -28,7 +30,8 @@ import kotlin.time.toDuration
 
 private const val SEED = 234L
 
-class KotlinDurationIntrospector : ArbitraryIntrospector {
+class KotlinDurationIntrospector : ArbitraryIntrospector, Matcher {
+    override fun match(property: Property) = DURATION_TYPE_MATCHER.match(property)
 
     override fun introspect(context: ArbitraryGeneratorContext): ArbitraryIntrospectorResult {
         val property = context.arbitraryProperty
@@ -37,7 +40,7 @@ class KotlinDurationIntrospector : ArbitraryIntrospector {
             return ArbitraryIntrospectorResult.NOT_INTROSPECTED
         }
 
-        require(DURATION_TYPE_MATCHER.match(context.resolvedProperty)) { "Given type is not Duration type: " + context.resolvedType }
+        require(match(context.resolvedProperty)) { "Given type is not Duration type: " + context.resolvedType }
 
         val durationUnit = randomizeDurationUnit()
         val durationValue = Random(SEED).nextLong()
