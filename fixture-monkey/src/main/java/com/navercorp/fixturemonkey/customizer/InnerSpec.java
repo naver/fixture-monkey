@@ -24,6 +24,7 @@ import static com.navercorp.fixturemonkey.Constants.NO_OR_ALL_INDEX_INTEGER_VALU
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -163,6 +164,16 @@ public final class InnerSpec {
 	public InnerSpec key(Object key) {
 		entrySize++;
 		setMapKey(key);
+		return this;
+	}
+
+	/**
+	 * Sets Collection of keys in the currently referred map property.
+	 *
+	 * @param keys The Collection of keys to set in the map. Can be empty.
+	 */
+	public InnerSpec keys(Collection<?> keys) {
+		keys.forEach(this::key);
 		return this;
 	}
 

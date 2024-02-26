@@ -23,6 +23,7 @@ import static org.assertj.core.api.BDDAssertions.then;
 import static org.assertj.core.api.BDDAssertions.thenThrownBy;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -826,5 +827,19 @@ class InnerSpecTest {
 			.getStr();
 
 		then(actual).isNotNull();
+	}
+
+	@Property
+	void keysForCollection() {
+		List<String> keyList = Arrays.asList("key1", "key2", "key3");
+		Map<String, String> actual = SUT.giveMeBuilder(MapObject.class)
+			.setInner(
+				new InnerSpec()
+					.property("strMap", it -> it.keys(keyList).size(3))
+			)
+			.sample()
+			.getStrMap();
+
+		then(actual.keySet()).contains("key1", "key2", "key3");
 	}
 }
