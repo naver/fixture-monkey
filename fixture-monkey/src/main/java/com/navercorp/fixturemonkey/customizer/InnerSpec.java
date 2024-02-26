@@ -200,6 +200,16 @@ public final class InnerSpec {
 	}
 
 	/**
+	 * Sets a value in the currently referred map property from a Collection.
+	 *
+	 * @param values The Collection of values to set in the map. Can be empty.
+	 */
+	public InnerSpec values(Collection<?> values) {
+		values.forEach(this::value);
+		return this;
+	}
+
+	/**
 	 * Sets a value in the currently referred map property.
 	 *
 	 * @param value value of the map value to set
@@ -245,6 +255,23 @@ public final class InnerSpec {
 	}
 
 	/**
+	 * Sets multiple key-value pairs in the map from a Collection.
+	 *
+	 * @param entries The entries to be added to the map. Should be entered in key, value order. Can be empty.
+	 */
+	public InnerSpec entries(Collection<?> entries) {
+		if (entries.size() % 2 != 0) {
+			throw new IllegalArgumentException("key-value pairs for the Map should be entered");
+		}
+
+		IntStream.range(0, entries.size())
+			.filter(i -> i % 2 == 0)
+			.forEach(i -> entry(entries.toArray()[i], entries.toArray()[i + 1]));
+
+		return this;
+	}
+
+	/**
 	 * Sets multiple key-value pairs in the map.
 	 *
 	 * @param entries The entries to be added to the map. Should be entered in key, value order. Can be empty.
@@ -256,9 +283,7 @@ public final class InnerSpec {
 
 		IntStream.range(0, entries.length)
 			.filter(i -> i % 2 == 0)
-			.forEach(i -> {
-				entry(entries[i], entries[i + 1]);
-			});
+			.forEach(i -> entry(entries[i], entries[i + 1]));
 
 		return this;
 	}

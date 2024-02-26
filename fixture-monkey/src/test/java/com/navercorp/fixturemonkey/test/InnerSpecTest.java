@@ -832,6 +832,7 @@ class InnerSpecTest {
 	@Property
 	void keysForCollection() {
 		List<String> keyList = Arrays.asList("key1", "key2", "key3");
+
 		Map<String, String> actual = SUT.giveMeBuilder(MapObject.class)
 			.setInner(
 				new InnerSpec()
@@ -840,6 +841,49 @@ class InnerSpecTest {
 			.sample()
 			.getStrMap();
 
-		then(actual.keySet()).contains("key1", "key2", "key3");
+		then(actual.keySet()).containsAll(keyList);
+	}
+
+	@Property
+	void valuesForCollection() {
+		List<String> valueList = Arrays.asList("value1", "value2", "value3");
+
+		Map<String, String> actual = SUT.giveMeBuilder(MapObject.class)
+			.setInner(
+				new InnerSpec()
+					.property("strMap", it -> it.values(valueList).size(3))
+			)
+			.sample()
+			.getStrMap();
+
+		then(actual.values()).containsAll(valueList);
+	}
+
+	@Property
+	void entriesForCollection() {
+		List<String> entries = Arrays.asList("key1", "value1", "key2", "value2");
+
+		Map<String, String> actual = SUT.giveMeBuilder(MapObject.class)
+			.setInner(
+				new InnerSpec()
+					.property("strMap", it -> it.entries(entries).size(2))
+			)
+			.sample()
+			.getStrMap();
+
+		then(actual.get("key1")).isEqualTo("value1");
+		then(actual.get("key2")).isEqualTo("value2");
+	}
+
+	@Property
+	void entriesForCollectionWithOddSizeThrows() {
+		thenThrownBy(() ->
+			SUT.giveMeBuilder(MapObject.class)
+				.setInner(
+					new InnerSpec()
+						.property("strMap", it -> it.entries("key1", "value1", "key2"))
+				)
+				.sample()
+		).isExactlyInstanceOf(IllegalArgumentException.class);
 	}
 }
