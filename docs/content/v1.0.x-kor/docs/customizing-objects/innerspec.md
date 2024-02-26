@@ -11,7 +11,7 @@ InnerSpec은 적용하려는 커스터마이징에 대한 타입 독립적인 �
 ArbitraryBuilder 내의 `setInner()` 메서드를 사용하면 `InnerSpec` 인스턴스에 정의된 커스터마이징을 빌더에 적용할 수 있습니다.
 
 `InnerSpec` 에는 커스터마이징 세부 정보가 저장되며 ArbitraryBuilder에서 재사용할 수 있습니다.
-ArbitraryBuilder에서 사용되는 `expression`을 사용하는 것과 달리 `InnerSpec`은 보다 중첩되고 구조화된 접근 방식을 가능하게 합니다.
+ArbitraryBuilder에서 사용되는 `expression`을 사용하는 것과 달리 `InnerSpec`은 중첩된 구조를 사용해 프로퍼티에 접근이 가능합니다.
 
 `InnerSpec` 의 또 다른 장점은 일반적인 표현식과 달리 맵 프로퍼티를 커스터마이징할 수 있다는 점입니다.
 
