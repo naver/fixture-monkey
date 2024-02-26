@@ -83,4 +83,4 @@ fun test() {
 ### @JsonTypeInfo, @JsonSubTypes
 Fixture Monkey는 @JsonTypeInfo 및 @JsonSubTypes와 같은 Jackson의 다형성 타입을 처리할 수 있는 애노테이션도 지원합니다.
 
-FixtureMonkey를 활용하여 상속-구현 관계의 객체를 생성할 수 있습니다.
+이를 활용하여 상속-구현 관계의 객체를 생성할 수 있습니다.
