@@ -60,7 +60,7 @@ public final class OptionalIntrospector implements ArbitraryIntrospector, Matche
 		}
 		Class<?> type = Types.getActualType(property.getObjectProperty().getProperty().getType());
 		ArbitraryProperty valueProperty = children.get(0);
-		double presenceProbability = 1 - valueProperty.getObjectProperty().getNullInject();
+		double presenceProbability = 1 - valueProperty.getNullInject();
 		if (children.size() == 1) {
 			presenceProbability = 1.0d;
 		}

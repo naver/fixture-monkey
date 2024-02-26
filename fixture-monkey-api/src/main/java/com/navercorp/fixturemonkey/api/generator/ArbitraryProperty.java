@@ -20,21 +20,40 @@ package com.navercorp.fixturemonkey.api.generator;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.property.Property;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class ArbitraryProperty {
 	private final ObjectProperty objectProperty;
 	private final boolean container;
+	private final double nullInject;
+	private final Map<Property, List<Property>> childPropertyListsByCandidateProperty;
 
+	@Deprecated
 	public ArbitraryProperty(ObjectProperty objectProperty, boolean container) {
 		this.objectProperty = objectProperty;
 		this.container = container;
+		this.nullInject = objectProperty.getNullInject();
+		this.childPropertyListsByCandidateProperty = objectProperty.getChildPropertyListsByCandidateProperty();
+	}
+
+	public ArbitraryProperty(
+		ObjectProperty objectProperty,
+		boolean container,
+		double nullInject,
+		Map<Property, List<Property>> childPropertyListsByCandidateProperty
+	) {
+		this.objectProperty = objectProperty;
+		this.container = container;
+		this.nullInject = nullInject;
+		this.childPropertyListsByCandidateProperty = childPropertyListsByCandidateProperty;
 	}
 
 	public ObjectProperty getObjectProperty() {
@@ -49,13 +68,25 @@ public final class ArbitraryProperty {
 		return new ArbitraryProperty(this.objectProperty.withNullInject(nullInject), this.container);
 	}
 
-	public ArbitraryProperty withChildPropertyListsByCandidateProperty(
-		Map<Property, List<Property>> childPropertyListsByCandidateProperty
-	) {
-		return new ArbitraryProperty(
-			this.objectProperty.withChildPropertyListsByCandidateProperty(childPropertyListsByCandidateProperty),
-			this.container
-		);
+	public double getNullInject() {
+		return nullInject;
+	}
+
+	public Map<Property, List<Property>> getChildPropertyListsByCandidateProperty() {
+		return childPropertyListsByCandidateProperty;
+	}
+
+	public Map.Entry<Property, List<Property>> getChildPropertiesByResolvedProperty(Matcher matcher) {
+		for (
+			Entry<Property, List<Property>> childPropertyListByPossibleProperty :
+			childPropertyListsByCandidateProperty.entrySet()
+		) {
+			Property property = childPropertyListByPossibleProperty.getKey();
+			if (matcher.match(property)) {
+				return childPropertyListByPossibleProperty;
+			}
+		}
+		throw new IllegalArgumentException("No resolved property is found.");
 	}
 
 	@Override

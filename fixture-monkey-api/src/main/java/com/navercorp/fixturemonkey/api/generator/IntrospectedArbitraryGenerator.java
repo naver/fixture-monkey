@@ -63,7 +63,7 @@ public final class IntrospectedArbitraryGenerator implements ArbitraryGenerator 
 
 		ArbitraryIntrospectorResult result = this.arbitraryIntrospector.introspect(context);
 		if (result != ArbitraryIntrospectorResult.NOT_INTROSPECTED && result.getValue() != null) {
-			double nullInject = context.getArbitraryProperty().getObjectProperty().getNullInject();
+			double nullInject = context.getArbitraryProperty().getNullInject();
 			return new TraceableCombinableArbitrary<>(
 				result.getValue()
 					.injectNull(nullInject),

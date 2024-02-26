@@ -9,6 +9,8 @@ sectionStart
 ### v.1.0.14
 Add supporting for sealed class and sealed interface.
 
+Deprecate `nullInject` and `childPropertyListsByCandidateProperty` properties in `ObjectNode`. They would be moved to `ArbitraryProperty`. 
+
 sectionEnd
 
 sectionStart

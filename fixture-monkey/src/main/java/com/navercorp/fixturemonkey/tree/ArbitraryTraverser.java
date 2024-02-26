@@ -107,7 +107,12 @@ public final class ArbitraryTraverser {
 			);
 		}
 
-		ArbitraryProperty arbitraryProperty = new ArbitraryProperty(objectProperty, container);
+		ArbitraryProperty arbitraryProperty = new ArbitraryProperty(
+			objectProperty,
+			container,
+			objectProperty.getNullInject(),
+			objectProperty.getChildPropertyListsByCandidateProperty()
+		);
 
 		List<ArbitraryProperty> parentArbitraryProperties = new ArrayList<>();
 		parentArbitraryProperties.add(arbitraryProperty);
@@ -182,11 +187,10 @@ public final class ArbitraryTraverser {
 		@Nullable Property resolvedParentProperty,
 		TraverseContext context
 	) {
-		ObjectProperty objectProperty = arbitraryProperty.getObjectProperty();
 		List<ObjectNode> children = new ArrayList<>();
 
 		Map<Property, List<Property>> childPropertyListsByCandidateProperty =
-			objectProperty.getChildPropertyListsByCandidateProperty();
+			arbitraryProperty.getChildPropertyListsByCandidateProperty();
 
 		for (
 			Entry<Property, List<Property>> childPropertiesByCandidateProperty :
@@ -315,7 +319,9 @@ public final class ArbitraryTraverser {
 
 			ArbitraryProperty childArbitraryProperty = new ArbitraryProperty(
 				childObjectProperty,
-				childContainerProperty != null
+				childContainer,
+				childObjectProperty.getNullInject(),
+				childObjectProperty.getChildPropertyListsByCandidateProperty()
 			);
 
 			ObjectNode childNode = this.traverse(
