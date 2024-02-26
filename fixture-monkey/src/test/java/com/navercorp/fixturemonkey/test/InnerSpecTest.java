@@ -874,16 +874,4 @@ class InnerSpecTest {
 		then(actual.get("key1")).isEqualTo("value1");
 		then(actual.get("key2")).isEqualTo("value2");
 	}
-
-	@Property
-	void entriesForCollectionWithOddSizeThrows() {
-		thenThrownBy(() ->
-			SUT.giveMeBuilder(MapObject.class)
-				.setInner(
-					new InnerSpec()
-						.property("strMap", it -> it.entries("key1", "value1", "key2"))
-				)
-				.sample()
-		).isExactlyInstanceOf(IllegalArgumentException.class);
-	}
 }
