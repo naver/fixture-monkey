@@ -8,7 +8,7 @@ identifier: "bean-validation"
 weight: 82
 ---
 
-## Bean Validation
+## Bean 유효성 검사
 ### 유효한 데이터 생성하기
 
 Jakarta Validation 플러그인을 사용하여 프로퍼티에 있는 Jakarta Bean Validation 어노테이션들을 기반으로 유효한 데이터를 생성할 수 있습니다.
