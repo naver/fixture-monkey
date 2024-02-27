@@ -160,7 +160,7 @@ fixtureMonkey.giveMeBuilder<Product>()
 ### listElement()
 
 목록 내의 개별 요소는 `listElement()`를 사용하여 선택할 수 있습니다.
-이는 `expression`을 사용하여 "[n]"으로 요소를 참조하는 것과 동일합니다.
+이는 픽스처 몽키 표현식을 사용하여 "[n]"으로 요소를 참조하는 것과 동일합니다.
 
 {{< tabpane persist=false >}}
 {{< tab header="Java" lang="java">}}
@@ -180,7 +180,7 @@ val innerSpec = InnerSpec()
 ### allListElement()
 
 만약 목록의 모든 요소를 동시에 설정하려면 `allListElement()`를 사용할 수 있습니다.
-이는 `expressions`를 사용하여 "[*]"로 요소를 참조하는 것과 동일합니다.
+이는 픽스처 몽키 표현식을 사용하여 "[*]"로 요소를 참조하는 것과 동일합니다.
 
 {{< tabpane persist=false >}}
 {{< tab header="Java" lang="java">}}
