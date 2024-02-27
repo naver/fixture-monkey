@@ -1,5 +1,5 @@
 ---
-title: "Introduction"
+title: "소개"
 images: []
 menu:
 docs:
