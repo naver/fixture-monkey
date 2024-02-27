@@ -27,7 +27,7 @@ testImplementation("com.navercorp.fixturemonkey:jakarta-validation:1.0.0")
 <scope>test</scope>
 </dependency>
 ```
-Jakarta Validation API와 Hibernate Validator는 이미 dependency 중 일부로 제공됩니다.
+Jakarta Validation API와 Hibernate Validator는 이미 의존성의 일부로 제공됩니다.
 
 ### Plugin
 - Java

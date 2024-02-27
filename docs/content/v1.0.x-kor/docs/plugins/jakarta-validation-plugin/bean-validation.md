@@ -37,11 +37,11 @@ long id;
 ```
 @Test
 void test() {
-// given
-FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
-.objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)
-.plugin(new JakartaValidationPlugin())
-.build();
+    // given
+    FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+        .objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)
+        .plugin(new JakartaValidationPlugin())
+        .build();
 
     // when
     Product actual = fixtureMonkey.giveMeOne(Product.class);
@@ -61,9 +61,9 @@ FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
 다른 타입들은 다른 어노테이션 제약들을 지원합니다.
 
 #### Numeric 타입
-지원되는 타입들: ```BigDecimal```, ```BigInteger```, ```byte```, ```double```, ```float```, ```int```, ```long```, ```short```
+지원되는 타입들: ```BigDecimal, BigInteger, byte, double, float, int, long, short```
 
-- @Digits (fraction is currently not supported)
+- @Digits (소수 자리수는 현재 지원되지 않음)
 - @Max
 - @Min
 - @Negative
@@ -88,7 +88,7 @@ FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
 - @Email
 
 #### Time 타입
-Supported Types: ```Calendar```, ```Date```, ```Instant```, ```LocalDate```, ```LocalDateTime```, ```LocalTime```, ```ZonedDateTime```, ```Year```, ```YearMonth```, ```MonthDay```, ```OffsetDateTime```, ```OffsetTime```
+Supported Types: ```Calendar, Date, Instant, LocalDate, LocalDateTime, LocalTime, ZonedDateTime, Year, YearMonth, MonthDay, OffsetDateTime, OffsetTime```
 
 - @Past
 - @PastOrPresent
