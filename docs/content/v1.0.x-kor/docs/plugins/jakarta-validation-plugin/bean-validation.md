@@ -61,7 +61,7 @@ void test() {
 다른 타입들은 다른 어노테이션 제약들을 지원합니다.
 
 #### Numeric 타입
-지원되는 타입들: ```BigDecimal, BigInteger, byte, double, float, int, long, short```
+지원되는 타입들: `BigDecimal`, `BigInteger`, `byte`, `double`, `float`, `int`, `long`, `short`
 
 - @Digits (소수 자리수는 현재 지원되지 않음)
 - @Max
@@ -88,7 +88,7 @@ void test() {
 - @Email
 
 #### Time 타입
-Supported Types: ```Calendar, Date, Instant, LocalDate, LocalDateTime, LocalTime, ZonedDateTime, Year, YearMonth, MonthDay, OffsetDateTime, OffsetTime```
+Supported Types: `Calendar`, `Date`, `Instant`, `LocalDate`, `LocalDateTime`, `LocalTime`, `ZonedDateTime`, `Year`, `YearMonth`, `MonthDay`, `OffsetDateTime`, `OffsetTime`
 
 - @Past
 - @PastOrPresent
