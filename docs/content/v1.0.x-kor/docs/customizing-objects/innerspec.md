@@ -7,15 +7,15 @@ parent: "customizing-objects"
 identifier: "innerspec"
 ---
 
-InnerSpec은 적용하려는 커스터마이징에 대한 타입 독립적인 사양입니다.
-ArbitraryBuilder 내의 `setInner()` 메서드를 사용하면 `InnerSpec` 인스턴스에 정의된 커스터마이징을 빌더에 적용할 수 있습니다.
+InnerSpec은 적용하려는 커스터마이징에 대한 타입 독립적인 명세입니다.
+ArbitraryBuilder 내의 `setInner()` 메서드를 사용하면 `InnerSpec` 인스턴스에 정의된 명세를 빌더에 적용할 수 있습니다.
 
 `InnerSpec` 에는 커스터마이징 세부 정보가 저장되며 ArbitraryBuilder에서 재사용할 수 있습니다.
-ArbitraryBuilder에서 사용되는 `expression`을 사용하는 것과 달리 `InnerSpec`은 중첩된 구조를 사용해 프로퍼티에 접근이 가능합니다.
+ArbitraryBuilder에서 픽스처 몽키 표현식을 사용하는 방식과 달리 `InnerSpec`은 중첩된 구조를 사용해 프로퍼티에 접근이 가능합니다.
 
 `InnerSpec` 의 또 다른 장점은 일반적인 표현식과 달리 맵 프로퍼티를 커스터마이징할 수 있다는 점입니다.
 
-{{< alert icon="💡" text="Kotlin EXP 는 InnerSpec 에서 지원하지 않습니다. InnerSpec 은 타입에 독립적으로 설계되었기 때문에, 프로퍼티 이름을 통해 접근해야 합니다." />}}
+{{< alert icon="💡" text="Kotlin EXP 는 InnerSpec 에서 지원하지 않습니다. InnerSpec 은 타입 독립적으로 설계되었기 때문에, 프로퍼티 이름을 통해 접근해야 합니다." />}}
 
 ## ArbitraryBuilder 에 InnerSpec 적용하기
 
@@ -67,7 +67,7 @@ val innerSpec = InnerSpec()
 
 `size()`, `minSize()`, 그리고 `maxSize()` 는 프로퍼티의 크기를 지정하는 데 사용할 수 있습니다.
 
-앞서 언급했듯이, InnerSpec 은 중첩된 방식으로 커스터마이징을 정의합니다.
+앞서 언급했듯이, InnerSpec 은 중첩된 방식으로 명세을 정의합니다.
 `property()` 를 사용하여 컨테이너 프로퍼티를 먼저 선택한 다음, 내부에 정의된 `innerSpec` 컨슈머를 사용하여 크기를 설정할 수 있습니다.
 
 {{< tabpane persist=false >}}
@@ -201,7 +201,7 @@ val innerSpec = InnerSpec()
 
 InnerSpec은 맵 프로퍼티 엔트리를 커스터마이징하기 위해 특별한 메소드를 제공합니다.
 
-{{< alert icon="🚨" text="맵 프로퍼티의 크기를 먼저 지정하지 않고 맵 엔트리를 설정하면 변경이 없을 수 있습니다. 값을 설정하기 전에 맵 프로퍼티가 의도한 크기인지 확인해주세요." />}}
+{{< alert icon="🚨" text="맵 프로퍼티의 크기를 먼저 지정하지 않고 맵 엔트리를 설정하면 변경이 일어나지 않을 수 있습니다. 값을 설정하기 전에 맵 프로퍼티가 의도한 크기인지 확인해주세요." />}}
 
 ### key(), value(), entry()
 
