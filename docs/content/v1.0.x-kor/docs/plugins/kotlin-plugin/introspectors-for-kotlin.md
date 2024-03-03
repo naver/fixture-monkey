@@ -1,5 +1,5 @@
 ---
-title: "Kotlin 을 위한 Introspector"
+title: "Kotlin 지원 Introspector"
 images: []
 menu:
 docs:
