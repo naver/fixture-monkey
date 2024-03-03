@@ -49,10 +49,6 @@ class PrimaryConstructorArbitraryIntrospector : ArbitraryIntrospector {
             return ArbitraryIntrospectorResult.NOT_INTROSPECTED
         }
 
-        if (type.isAssignableFrom(Duration::class.java)) {
-            return KotlinDurationIntrospector.INSTANCE.introspect(context)
-        }
-
         val constructor = try {
             CONSTRUCTOR_CACHE.computeIfAbsent(type) {
                 val kotlinClass = Reflection.createKotlinClass(type) as KClass<*>

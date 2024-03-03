@@ -36,7 +36,7 @@ class KotlinDurationIntrospector : ArbitraryIntrospector, Matcher {
     override fun introspect(context: ArbitraryGeneratorContext): ArbitraryIntrospectorResult {
         val property = context.arbitraryProperty
 
-        if (!property.isContainer) {
+        if (property.isContainer) {
             return ArbitraryIntrospectorResult.NOT_INTROSPECTED
         }
 
@@ -47,10 +47,6 @@ class KotlinDurationIntrospector : ArbitraryIntrospector, Matcher {
         return ArbitraryIntrospectorResult(
             CombinableArbitrary.from { durationValue.toDuration(durationUnit) }
         )
-    }
-
-    companion object {
-        val INSTANCE = KotlinDurationIntrospector()
     }
 }
 

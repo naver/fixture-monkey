@@ -30,9 +30,11 @@ import com.navercorp.fixturemonkey.kotlin.generator.PairDecomposedContainerValue
 import com.navercorp.fixturemonkey.kotlin.generator.TripleContainerPropertyGenerator
 import com.navercorp.fixturemonkey.kotlin.generator.TripleDecomposedContainerValueFactory
 import com.navercorp.fixturemonkey.kotlin.instantiator.KotlinInstantiatorProcessor
+import com.navercorp.fixturemonkey.kotlin.introspector.KotlinDurationIntrospector
 import com.navercorp.fixturemonkey.kotlin.introspector.PairIntrospector
 import com.navercorp.fixturemonkey.kotlin.introspector.PrimaryConstructorArbitraryIntrospector
 import com.navercorp.fixturemonkey.kotlin.introspector.TripleIntrospector
+import com.navercorp.fixturemonkey.kotlin.matcher.Matchers.DURATION_TYPE_MATCHER
 import com.navercorp.fixturemonkey.kotlin.matcher.Matchers.PAIR_TYPE_MATCHER
 import com.navercorp.fixturemonkey.kotlin.matcher.Matchers.TRIPLE_TYPE_MATCHER
 import com.navercorp.fixturemonkey.kotlin.property.KotlinPropertyGenerator
@@ -65,6 +67,10 @@ class KotlinPlugin : Plugin {
                     { p -> Modifier.isInterface(p.type.actualType().modifiers) },
                     InterfaceKFunctionPropertyGenerator(),
                 ),
+            )
+            .insertFirstArbitraryIntrospector(
+                DURATION_TYPE_MATCHER,
+                KotlinDurationIntrospector(),
             )
             .insertFirstArbitraryContainerPropertyGenerator(
                 PAIR_TYPE_MATCHER,
