@@ -5,6 +5,13 @@ menu:
 docs:
 weight: 100
 ---
+
+sectionStart
+### v.1.0.15
+Add `ConcreteTypeDefinition` in `ArbitraryProperty`, deprecate `getChildPropertiesByResolvedProperty` and `getChildPropertyListsByCandidateProperty` which is added in 1.0.14.
+
+sectionEnd
+
 sectionStart
 ### v.1.0.14
 Add supporting value class with the private constructor.
