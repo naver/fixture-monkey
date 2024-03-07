@@ -1,5 +1,5 @@
 ---
-title: "Adding Bean Validation"
+title: "Bean 유효성 검사 추가하기"
 weight: 24
 menu:
 docs:
@@ -88,5 +88,5 @@ void test() {
 }
 ```
 
-Assertions에서 `FixtureMonkey`로 생성된 객체가 모든 유효성 검사 어노테이션 요구 사항을 충족한다는 것을 알 수 있습니다.
+검증문을 통해 `FixtureMonkey`로 생성된 객체가 모든 유효성 검사 어노테이션 요구 사항을 충족한다는 것을 알 수 있습니다.
 

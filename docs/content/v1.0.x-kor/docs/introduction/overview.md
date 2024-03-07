@@ -18,13 +18,13 @@ Fixture Monkey를 활용하여 JVM 테스트를 간결하고 안전하게 수행
 
 ---------
 
-## Fixture Monkey를 사용하는 이유는 무엇인가요?
+## Fixture Monkey를 왜 사용해야 하나요?
 ### 1. 간결함
 ```java
 Product actual = fixtureMonkey.giveMeOne(Product.class);
 ```
-Fixture Monkey를 사용하면 테스트 객체 생성이 놀랍게 간단해집니다. 한 줄의 코드로 원하는 어떤 종류의 테스트 객체든 손쉽게 생성할 수 있습니다.
-이는 테스트의 준비 단계를 간소화하여 테스트를 빠르고 쉽게 작성할 수 있도록 해줍니다. 뿐만 아니라, 프로덕션 코드나 테스트 환경을 변경할 필요가 없습니다.
+Fixture Monkey를 사용하면 테스트 객체 생성이 놀랍게 간단해집니다. 한 줄의 코드로 어떤 종류의 테스트 객체든 손쉽게 생성할 수 있습니다.
+이는 테스트의 준비 단계를 간소화하여 테스트를 빠르고 쉽게 작성할 수 있도록 해줍니다. 뿐만 아니라, 프로덕션 코드나 테스트 환경을 변경할 필요도 없습니다.
 
 ### 2. 재사용성
 ```java
@@ -32,10 +32,10 @@ ArbitraryBuilder<Product> actual = fixtureMonkey.giveMeBuilder(Product.class)
     .set("id", 1000L)
     .set("productName", "Book");
 ```
-Fixture Monkey를 활용하면 여러 테스트에서 인스턴스 구성을 재사용하여 시간과 노력을 절약할 수 있습니다.
+Fixture Monkey를 활용하면 여러 테스트에서 인스턴스 명세를 재사용할 수 있어 시간과 노력을 절약할 수 있습니다.
 복잡한 명세는 빌더에서 한 번 정의된 후, 이후에 해당 인스턴스를 얻기 위해 재사용될 수 있습니다.
 
-더불어, 재사용성을 높이는 추가 기능들이 있습니다. 이러한 기능에 대한 자세한 내용은 '기본 ArbitraryBuilder 등록' 및 'InnerSpec' 섹션을 참조하세요.
+더불어, 재사용성을 높이는 추가 기능들이 있습니다. 이러한 기능에 대한 자세한 내용은 ['기본 ArbitraryBuilder 등록'](../..//fixture-monkey-options/customization-options/#register-a-default-arbitrarybuilder-for-a-given-type) 및 ['InnerSpec'](../..//customizing-objects/innerspec/) 섹션을 참조하세요.
 
 ### 3. 랜덤성
 ```java
@@ -81,7 +81,7 @@ class Bar {
 Foo foo = FixtureMonkey.create().giveMeOne(Foo.class);
 ```
 
-Fixture Monkey는 상상할 수 있는 모든 종류의 객체를 생성할 수 있습니다. 리스트, 중첩된 컬렉션, 열거형 및 제네릭 타입과 같은 기본 객체를 생성하는 데도 지원합니다.
+Fixture Monkey는 상상할 수 있는 모든 종류의 객체를 생성할 수 있습니다. 리스트, 중첩된 컬렉션, 열거형 및 제네릭 타입과 같은 기본 객체의 생성이 가능합니다.
 뿐만 아니라 상속 관계, 순환 참조 객체, 인터페이스를 구현하는 익명 객체와 같은 더 복잡한 시나리오도 처리할 수 있습니다.
 
 ---------
