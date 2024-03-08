@@ -41,7 +41,7 @@ FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
     .build();
 ```
 
-이전 `Product`클래스에 몇 가지 유효성 검사 어노테이션을 추가했다고 가정해 보겠습니다.
+이전 `Product`클래스에 몇 가지 유효성 검사 어노테이션을 추가했다고 가정해보겠습니다.
 
 ```java
 @Value

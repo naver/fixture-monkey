@@ -1,5 +1,5 @@
 ---
-title: "Generation Options"
+title: "생성 옵션"
 images: []
 menu:
 docs:
@@ -249,7 +249,7 @@ fun test() {
 
 `addContainerType` 옵션을 사용하여 새로운 사용자 정의 컨테이너 타입을 추가할 수 있습니다.
 
-Java에서 새로운 사용자 정의 Pair 클래스를 만든다고 가정해 보겠습니다.
+Java에서 새로운 사용자 정의 Pair 클래스를 만든다고 가정해보겠습니다.
 
 이 컨테이너 타입은 사용자 정의 `ContainerPropertyGenerator`, `Introspector`, `DecomposedContainerValueFactory` 를 구현하여 사용할 수 있습니다.
 ```java

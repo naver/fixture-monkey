@@ -1,5 +1,5 @@
 ---
-title: "Fixture Customization APIs"
+title: "커스터마이징 API"
 weight: 41
 menu:
 docs:
@@ -9,7 +9,7 @@ docs:
 
 Fixture Monkey는 ArbitraryBuilder를 통해 생성된 객체를 커스텀할 수 있는 다양한 API를 제공합니다.
 
-## Customizing Fixtures
+## 픽스쳐 커스터마이징하기
 
 ### set()
 
@@ -36,7 +36,7 @@ fixtureMonkey.giveMeBuilder<Product>()
 ##### Just
 
 > `set()`을 사용할 때 `Just`로 래핑된 객체를 사용하면 인스턴스를 분해하지 않고 값을 직접 설정할 수 있습니다.
-> 일반적으로 `ArbitraryBuilder`에서 프로퍼티를 `set()`하면 주어진 인스턴스를 사용하지 않고 깊은 복사를 수행합니다.
+> 일반적으로 `ArbitraryBuilder`에서 프로퍼티를 `set()`하면 주어진 인스턴스를 그대로 사용하지 않고 깊은 복사를 수행합니다.
 > 따라서 인스턴스로 설정해야 하는 경우 `Values.just(instance)`를 사용해야 합니다.
 > 이 기능은 Mocking 프레임워크를 사용할 때 Mock 인스턴스에 프로퍼티를 설정해야 하는 경우 유용합니다.
 
@@ -93,7 +93,7 @@ fixtureMonkey.giveMeBuilder<Product>()
 
 ### setNull(), setNotNull()
 
-때로는 속성을 항상 null로 설정하거나 항상 값이 있도록 보장하고 싶을 수 있습니다.
+때로는 속성을 항상 null로 설정하거나 항상 값이 존재하도록 보장하고 싶을 수 있습니다.
 이러한 상황에서는 `setNull()` 또는 `setNotNull()`을 사용할 수 있습니다.
 
 {{< tabpane persist=false >}}
@@ -154,7 +154,7 @@ fixtureMonkey.giveMeBuilder(Product.class)
 The `setLazy()` 함수는 Supplier에서 얻은 값을 프로퍼티에 할당합니다.
 이 Supplier은 ArbitraryBuilder가 샘플링(`sample()`)될 때마다 실행됩니다.
 
-이 함수는 고유한 순차 ID를 생성하거나 가장 최근 값을 설정해야 할 때 특히 유용합니다.
+이 함수는 고유한 순차 ID를 생성하거나 가장 최근 값으로 설정해야 할 때 특히 유용합니다.
 
 
 {{< tabpane persist=false >}}
@@ -207,7 +207,7 @@ fixtureMonkey.giveMeBuilder(Product::class.java)
 
 ### fixed()
 
-`fixed()` 는 ArbitraryBuilder가 샘플링될 때마다 동일한 값의 인스턴스를 일관되게 반환하도록 할 때 사용합니다.
+`fixed()` 를 사용하면, ArbitraryBuilder가 샘플링될 때마다 동일한 값을 가진 인스턴스를 반환합니다.
 
 {{< tabpane persist=false >}}
 {{< tab header="Java" lang="java">}}
@@ -227,7 +227,7 @@ fixtureMonkey.giveMeBuilder<Product>()
 ### limit
 
 `set()`, `setLazy()`, 및 `setPostCondition()` 메서드는 추가 매개변수를 통해 커스텀을 적용할 횟수를 제한할 수 있습니다.
-이것은 표현식이 여러 프로퍼티를 참조하는 경우에 유용합니다.
+표현식이 여러 프로퍼티를 참조하는 경우에 특히 유용합니다.
 
 {{< tabpane persist=false >}}
 {{< tab header="Java" lang="java">}}
@@ -245,7 +245,7 @@ fixtureMonkey.giveMeBuilder<Product>()
 {{< /tabpane>}}
 
 
-## Expanding Customization using Sampled Results
+## 샘플링 결과를 활용해 추가 커스터마이징하기
 
 ### thenApply()
 
@@ -294,7 +294,7 @@ fixtureMonkey.giveMeBuilder<Product>()
 {{< /tab >}}
 {{< /tabpane>}}
 
-## Transforming the Type of ArbitraryBuilder 
+## ArbitraryBuilder 타입 변환하기
 
 ### map()
 
@@ -305,13 +305,13 @@ fixtureMonkey.giveMeBuilder<Product>()
 {{< tab header="Java" lang="java">}}
 
 fixtureMonkey.giveMeBuilder(Product.class)
-    .map(Product::getId); // transforms to ArbitraryBuilder<Long>
+    .map(Product::getId); // ArbitraryBuilder<Long> 타입으로 변환
 
 {{< /tab >}}
 {{< tab header="Kotlin" lang="kotlin">}}
 
 fixtureMonkey.giveMeBuilder(Product::class.java)
-    .map(Product::id) // transforms to ArbitraryBuilder<Long>
+    .map(Product::id) // ArbitraryBuilder<Long> 타입으로 변환
 
 {{< /tab >}}
 {{< /tabpane>}}

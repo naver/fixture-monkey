@@ -1,5 +1,5 @@
 ---
-title: "Other Options"
+title: "기타 옵션"
 images: []
 menu:
 docs:
@@ -12,7 +12,7 @@ weight: 53
 
 ### plugin
 
-Fixture Monkey는 플러그인을 통한 타사 라이브러리 지원 등 몇 가지 추가 기능을 제공합니다.
+Fixture Monkey는 플러그인을 통한 서드파티 라이브러리 지원 등 몇 가지 추가 기능을 제공합니다.
 플러그인 옵션을 사용하여 이 추가 기능을 사용할 수 있습니다.
 
 예시로 아래와 같이 Jackson 플러그인을 추가할 수 있습니다.

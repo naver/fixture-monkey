@@ -1,5 +1,5 @@
 ---
-title: "Customization Options"
+title: "커스터마이징 옵션"
 images: []
 menu:
 docs:

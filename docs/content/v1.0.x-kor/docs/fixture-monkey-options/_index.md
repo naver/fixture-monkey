@@ -1,5 +1,5 @@
 ---
-title: "Fixture Monkey 옵션"
+title: "옵션"
 images: []
 menu:
 docs:
