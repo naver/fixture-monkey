@@ -7,8 +7,6 @@ parent: "jakarta-validation-plugin"
 identifier: "bean-validation"
 weight: 82
 ---
-
-## Bean 유효성 검사
 ### 유효한 데이터 생성하기
 
 Jakarta Validation 플러그인을 사용하여 프로퍼티에 있는 Jakarta Bean Validation 어노테이션들을 기반으로 유효한 데이터를 생성할 수 있습니다.
@@ -58,7 +56,7 @@ void test() {
 ```
 ### 지원하는 어노테이션들
 ```jakarta.validation.constraints package``` 의 모든 어노테이션들을 지원합니다. 
-다른 타입들은 다른 어노테이션 제약들을 지원합니다.
+각 타입별로 알맞은 어노테이션 제약들을 지원합니다.
 
 #### Numeric 타입
 지원되는 타입들: `BigDecimal`, `BigInteger`, `byte`, `double`, `float`, `int`, `long`, `short`

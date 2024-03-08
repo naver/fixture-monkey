@@ -10,9 +10,9 @@ weight: 91
 
 [Fixture Monkey Helper](https://plugins.jetbrains.com/plugin/19589-fixture-monkey-helper)는 IntelliJ IDE에서 Fixture Monkey를 사용할 수 있도록 도와주는 IntelliJ 플러그인입니다.
 
-문자열 표현식 및 Kotlin DSL 표현식을 더 쉽게 사용할 수 있는 몇 가지 기능을 제공하며, 어색한 코드를 감지하고 수정하기 위한 일부 IntelliJ 검사 기능도 추가되었습니다.
+문자열 표현식 및 Kotlin DSL 표현식을 더 쉽게 사용할 수 있는 몇 가지 기능을 제공하며, 어색한 코드를 감지하고 수정하기 위한 일부 IntelliJ 검사 기능도 제공합니다.
 
-{{< alert icon="🚨" text="이 플러그인은 현재 Java 소스 코드 및 Kotlin 테스트 코드 내에서만 작동합니다. 확장 계획은 진행 중입니다." />}}
+{{< alert icon="🚨" text="이 플러그인은 현재 Java 소스 코드 및 Kotlin 테스트 코드 내에서만 작동합니다. 기능 확장이 진행 중입니다." />}}
 
 ### 기능
 
@@ -22,7 +22,7 @@ weight: 91
     - 직관적인 자동 완성: 입력시 관련된 자동 완성 제안을 통해 코딩 속도를 높입니다.
     - 간편한 탐색: 코드베이스 내의 필드 참조로 바로 이동합니다.
 
-- **Fixture Monkey Kotlin DSL 개선사항**
+- **Fixture Monkey Kotlin DSL 기능 향상**
     - 양방향 변환: Kotlin DSL과 Fixture Monkey 문자열 표현식 간에 쉽게 전환합니다.
         - 실시간 양방향 변환 지원 (Beta)
     - 코드 접기: DSL 표현식을 한 줄로 축소하여 뷰를 간소화합니다.

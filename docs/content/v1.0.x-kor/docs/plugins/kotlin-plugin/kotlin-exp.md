@@ -49,7 +49,7 @@ data class KotlinClass(
 }
 ```
 
-코틀린 표현식을 사용해 프로퍼티를 참조하기 위해서는 일반 [Fixture Customization APIs]((../../customizing-objects/apis) 에 `Exp` 나 `ExpGetter` 접미사를 사용합니다.
+코틀린 표현식을 사용해 프로퍼티를 참조하기 위해서는 일반 [Fixture Customization APIs](../../customizing-objects/apis) 에 `Exp` 나 `ExpGetter` 접미사를 사용합니다.
 
 `setExp()` 와 `setExpGetter()` 를 사용해 코틀린 표현식으로 프로퍼티를 커스텀하는 예를 살펴보겠습니다.
 
