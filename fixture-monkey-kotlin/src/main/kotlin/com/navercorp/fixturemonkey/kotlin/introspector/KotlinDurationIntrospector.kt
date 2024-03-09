@@ -24,7 +24,6 @@ import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult
 import com.navercorp.fixturemonkey.api.matcher.Matcher
 import com.navercorp.fixturemonkey.api.property.Property
 import com.navercorp.fixturemonkey.kotlin.matcher.Matchers.DURATION_TYPE_MATCHER
-import kotlin.random.Random
 import kotlin.reflect.full.primaryConstructor
 import kotlin.time.Duration
 import kotlin.time.DurationUnit
@@ -51,21 +50,12 @@ class KotlinDurationIntrospector : ArbitraryIntrospector, Matcher {
                 .build {
                     val parameterValue = it.mapKeys { map -> map.key.objectProperty.property.name }[parameterName]
                     if (parameterValue is Long) {
-                        parameterValue.toDuration(randomizeDurationUnit())
+                        parameterValue.toDuration(DurationUnit.values().random())
                     } else {
-                        randomizeLong().toDuration(randomizeDurationUnit())
+                        Duration.ZERO
                     }
                 }
         )
     }
 }
 
-fun randomizeLong(): Long {
-    return Random(SEED).nextLong()
-}
-
-fun randomizeDurationUnit(): DurationUnit {
-    val durationUnitList = DurationUnit.values().toList()
-    val randomIndex = Random(SEED).nextInt(durationUnitList.size)
-    return durationUnitList[randomIndex]
-}
