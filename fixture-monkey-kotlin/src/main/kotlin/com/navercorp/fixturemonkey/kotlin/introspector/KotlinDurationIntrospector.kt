@@ -25,6 +25,8 @@ import com.navercorp.fixturemonkey.api.matcher.Matcher
 import com.navercorp.fixturemonkey.api.property.Property
 import com.navercorp.fixturemonkey.kotlin.matcher.Matchers.DURATION_TYPE_MATCHER
 import kotlin.random.Random
+import kotlin.reflect.full.primaryConstructor
+import kotlin.time.Duration
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
@@ -34,20 +36,31 @@ class KotlinDurationIntrospector : ArbitraryIntrospector, Matcher {
     override fun match(property: Property) = DURATION_TYPE_MATCHER.match(property)
 
     override fun introspect(context: ArbitraryGeneratorContext): ArbitraryIntrospectorResult {
-        val property = context.arbitraryProperty
-
-        if (property.isContainer) {
-            return ArbitraryIntrospectorResult.NOT_INTROSPECTED
-        }
+        val kClass = Duration::class
+        val primaryConstructor = kClass.primaryConstructor
 
         require(match(context.resolvedProperty)) { "Given type is not Duration type: " + context.resolvedType }
+        require(primaryConstructor != null) { "Duration class must have primary constructor" }
+        require(primaryConstructor.parameters.size == 1) { "Duration class must have only one parameter" }
 
-        val durationUnit = randomizeDurationUnit()
-        val durationValue = Random(SEED).nextLong()
+        val parameterName = primaryConstructor.parameters[0].name
+
         return ArbitraryIntrospectorResult(
-            CombinableArbitrary.from { durationValue.toDuration(durationUnit) }
+            CombinableArbitrary.objectBuilder()
+                .properties(context.combinableArbitrariesByArbitraryProperty)
+                .build {
+                    val parameterValue = it.mapKeys { map -> map.key.objectProperty.property.name }[parameterName]
+                    if (parameterValue is Long) {
+                        parameterValue.toDuration(randomizeDurationUnit())
+                    }
+                    randomizeLong().toDuration(randomizeDurationUnit())
+                }
         )
     }
+}
+
+fun randomizeLong(): Long {
+    return Random(SEED).nextLong()
 }
 
 fun randomizeDurationUnit(): DurationUnit {
