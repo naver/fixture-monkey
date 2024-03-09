@@ -29,8 +29,6 @@ import kotlin.time.Duration
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
-private const val SEED = 234L
-
 class KotlinDurationIntrospector : ArbitraryIntrospector, Matcher {
     override fun match(property: Property) = DURATION_TYPE_MATCHER.match(property)
 
