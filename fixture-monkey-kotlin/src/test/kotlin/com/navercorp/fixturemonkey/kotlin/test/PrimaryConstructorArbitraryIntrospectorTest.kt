@@ -25,6 +25,8 @@ import net.jqwik.api.Property
 import org.assertj.core.api.BDDAssertions.then
 import org.assertj.core.api.BDDAssertions.thenNoException
 import kotlin.time.Duration
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
 
 class PrimaryConstructorArbitraryIntrospectorTest {
     private val sut: FixtureMonkey = FixtureMonkey.builder()
@@ -66,12 +68,18 @@ class PrimaryConstructorArbitraryIntrospectorTest {
 
     @Property
     fun sampleDuration() {
-        thenNoException().isThrownBy { sut.giveMeOne<Duration>() }
+        // when
+        val duration = sut.giveMeOne<Duration>()
+
+        then(duration).isNotEqualTo(Duration.INFINITE)
     }
 
     @Property
     fun sampleDurationValue() {
-        thenNoException().isThrownBy { sut.giveMeOne<DurationValue>() }
+        // when
+        val one = sut.giveMeOne<DurationValue>()
+
+        then(one.duration).isNotEqualTo(Duration.INFINITE)
     }
 
     @Property

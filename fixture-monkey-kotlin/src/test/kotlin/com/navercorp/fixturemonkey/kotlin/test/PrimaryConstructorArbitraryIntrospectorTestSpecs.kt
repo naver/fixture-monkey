@@ -63,5 +63,5 @@ interface InterfaceClass {
 }
 
 class DurationValue(
-    val duration: Duration
+    val duration: Duration = Duration.INFINITE,
 )
