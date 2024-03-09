@@ -52,8 +52,9 @@ class KotlinDurationIntrospector : ArbitraryIntrospector, Matcher {
                     val parameterValue = it.mapKeys { map -> map.key.objectProperty.property.name }[parameterName]
                     if (parameterValue is Long) {
                         parameterValue.toDuration(randomizeDurationUnit())
+                    } else {
+                        randomizeLong().toDuration(randomizeDurationUnit())
                     }
-                    randomizeLong().toDuration(randomizeDurationUnit())
                 }
         )
     }
