@@ -20,10 +20,14 @@ package com.navercorp.fixturemonkey.kotlin.test
 
 import com.navercorp.fixturemonkey.FixtureMonkey
 import com.navercorp.fixturemonkey.kotlin.KotlinPlugin
+import com.navercorp.fixturemonkey.kotlin.giveMeBuilder
 import com.navercorp.fixturemonkey.kotlin.giveMeOne
+import com.navercorp.fixturemonkey.kotlin.set
+import net.jqwik.api.Arbitraries
 import net.jqwik.api.Property
 import org.assertj.core.api.BDDAssertions.then
 import org.assertj.core.api.BDDAssertions.thenNoException
+import org.junit.jupiter.api.assertAll
 import kotlin.time.Duration
 
 class PrimaryConstructorArbitraryIntrospectorTest {
@@ -72,11 +76,24 @@ class PrimaryConstructorArbitraryIntrospectorTest {
     }
 
     @Property
-    fun sampleDurationValue() {
+    fun sampleDurationInContainer() {
         // when
-        val one = sut.giveMeOne<DurationValue>()
+        val one = sut.giveMeBuilder<DurationValue>()
+            .set(DurationValue::duration, Arbitraries.longs().between(Long.MIN_VALUE, 0))
+            .sample()
 
-        then(one.duration).isNotNull()
+        then(one.duration).isNotEqualTo(Duration.INFINITE)
+    }
+
+    @Property
+    fun sampleGenericDuration() {
+        // when
+        val one = sut.giveMeOne<List<Duration>>()
+
+        assertAll(
+            { one.forEach { then(it).isNotNull() } },
+            { then(one.size).isGreaterThanOrEqualTo(0) }
+        )
     }
 
     @Property
