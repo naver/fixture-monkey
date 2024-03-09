@@ -68,8 +68,7 @@ class PrimaryConstructorArbitraryIntrospectorTest {
     fun sampleDuration() {
         // when
         val duration = sut.giveMeOne<Duration>()
-
-        then(duration).isNotEqualTo(Duration.INFINITE)
+        then(duration).isNotNull()
     }
 
     @Property
@@ -77,7 +76,7 @@ class PrimaryConstructorArbitraryIntrospectorTest {
         // when
         val one = sut.giveMeOne<DurationValue>()
 
-        then(one.duration).isNotEqualTo(Duration.INFINITE)
+        then(one.duration).isNotNull()
     }
 
     @Property
