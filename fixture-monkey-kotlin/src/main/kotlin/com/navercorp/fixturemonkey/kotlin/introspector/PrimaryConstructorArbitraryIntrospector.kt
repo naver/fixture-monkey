@@ -87,13 +87,12 @@ class PrimaryConstructorArbitraryIntrospector : ArbitraryIntrospector {
     ): Any? {
         try {
             val parameterType = parameter.type.jvmErasure
-            return if(parameterType.isJavaReferenceTypeClass()) {
+            return if (parameterType.isJavaReferenceTypeClass()) {
                 val javaClass = parameterType.java
                 val constructor = javaClass.constructors.firstOrNull()
                 constructor?.isAccessible = true
                 return constructor?.newInstance()
-            }
-            else if (parameterType.isValue) {
+            } else if (parameterType.isValue) {
                 parameterType.primaryConstructor!!.isAccessible = true
                 parameterType.primaryConstructor!!.call(arbitrariesByPropertyName[parameter.name])
             } else {
@@ -114,4 +113,4 @@ class PrimaryConstructorArbitraryIntrospector : ArbitraryIntrospector {
 }
 
 private fun KClass<*>.isJavaReferenceTypeClass(): Boolean =
-     !this.java.isPrimitive && this.java.annotations.none { it.annotationClass.simpleName == "Metadata" }
+    !this.java.isPrimitive && this.java.annotations.none { it.annotationClass.simpleName == "Metadata" }
