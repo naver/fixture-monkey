@@ -99,6 +99,7 @@ class PrimaryConstructorArbitraryIntrospector : ArbitraryIntrospector {
             return arbitrariesByPropertyName[parameter.name]
         }
     }
+
     companion object {
         val INSTANCE = PrimaryConstructorArbitraryIntrospector()
         private val LOGGER = LoggerFactory.getLogger(PrimaryConstructorArbitraryIntrospector::class.java)
