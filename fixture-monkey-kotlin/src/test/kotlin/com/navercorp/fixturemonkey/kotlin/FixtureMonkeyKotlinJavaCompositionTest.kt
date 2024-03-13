@@ -38,5 +38,7 @@ class FixtureMonkeyKotlinJavaCompositionTest {
         val actual = sut.giveMeOne<KotlinObjectWithJavaObject>()
 
         then(actual).isNotNull
+        then(actual.javaObject).isNotNull
+        then(actual.javaObject.value).isNotNull
     }
 }
