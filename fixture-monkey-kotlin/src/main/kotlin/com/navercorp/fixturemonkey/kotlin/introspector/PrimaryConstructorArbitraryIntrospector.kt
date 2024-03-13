@@ -81,10 +81,16 @@ class PrimaryConstructorArbitraryIntrospector : ArbitraryIntrospector {
         arbitrariesByPropertyName: Map<String?, Any?>,
     ): Any? {
         try {
-            val parameterKotlinType = parameter.type.jvmErasure
-            return if (parameterKotlinType.isValue) {
-                parameterKotlinType.primaryConstructor!!.isAccessible = true
-                parameterKotlinType.primaryConstructor!!.call(arbitrariesByPropertyName[parameter.name])
+            val parameterType = parameter.type.jvmErasure
+            return if(parameterType.isJavaReferenceTypeClass()) {
+                val javaClass = parameterType.java
+                val constructor = javaClass.constructors.firstOrNull()
+                constructor?.isAccessible = true
+                return constructor?.newInstance()
+            }
+            else if (parameterType.isValue) {
+                parameterType.primaryConstructor!!.isAccessible = true
+                parameterType.primaryConstructor!!.call(arbitrariesByPropertyName[parameter.name])
             } else {
                 arbitrariesByPropertyName[parameter.name]
             }
@@ -93,7 +99,6 @@ class PrimaryConstructorArbitraryIntrospector : ArbitraryIntrospector {
             return arbitrariesByPropertyName[parameter.name]
         }
     }
-
     companion object {
         val INSTANCE = PrimaryConstructorArbitraryIntrospector()
         private val LOGGER = LoggerFactory.getLogger(PrimaryConstructorArbitraryIntrospector::class.java)
@@ -101,3 +106,6 @@ class PrimaryConstructorArbitraryIntrospector : ArbitraryIntrospector {
         private val CONSTRUCTOR_CACHE = ConcurrentLruCache<Class<*>, KFunction<*>>(2048)
     }
 }
+
+private fun KClass<*>.isJavaReferenceTypeClass(): Boolean =
+     !this.java.isPrimitive && this.java.annotations.none { it.annotationClass.simpleName == "Metadata" }
