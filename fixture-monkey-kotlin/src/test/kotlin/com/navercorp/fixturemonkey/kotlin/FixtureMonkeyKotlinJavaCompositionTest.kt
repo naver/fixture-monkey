@@ -19,9 +19,7 @@
 package com.navercorp.fixturemonkey.kotlin
 
 import com.navercorp.fixturemonkey.FixtureMonkey
-import com.navercorp.fixturemonkey.api.introspector.BeanArbitraryIntrospector
 import com.navercorp.fixturemonkey.kotlin.spec.JavaObject
-import net.jqwik.api.Property
 import org.assertj.core.api.BDDAssertions.then
 import org.junit.jupiter.api.Test
 
@@ -31,11 +29,12 @@ class FixtureMonkeyKotlinJavaCompositionTest {
     fun KotlinObjectWithJavaObject() {
         // given
         val sut: FixtureMonkey = FixtureMonkey.builder()
-        .plugin(KotlinPlugin())
-        .build()
+            .plugin(KotlinPlugin())
+            .build()
 
         // when
         class KotlinObjectWithJavaObject(val javaObject: JavaObject)
+
         val actual = sut.giveMeOne<KotlinObjectWithJavaObject>()
 
         then(actual).isNotNull
