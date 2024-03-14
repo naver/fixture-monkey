@@ -55,9 +55,7 @@ class KotlinPlugin : Plugin {
                 )
             )
         }
-            .defaultPropertyGenerator(
-                KotlinPropertyGenerator()
-            )
+            .defaultPropertyGenerator(KotlinPropertyGenerator())
             .insertFirstArbitraryObjectPropertyGenerator(
                 MatcherOperator(
                     { it.type.actualType().cachedKotlin().isSealed },
