@@ -18,44 +18,8 @@
 
 package com.navercorp.fixturemonkey.kotlin.test
 
-class PrimaryConstructor(
-    val intValue: Int,
-    val stringValue: String,
-)
+import com.navercorp.fixturemonkey.kotlin.spec.JavaObject
 
-class IntValue(
-    val intValue: Int,
-)
+class KotlinClassWithJavaClass(val javaObject: JavaObject)
 
-class Nested(
-    val nested: IntValue,
-)
-
-data class DataValue(
-    val intValue: Int,
-    val stringValue: String,
-)
-
-class VarValue(
-    var intValue: Int,
-    var stringValue: String,
-)
-
-class NullableValue(
-    val intValue: Int,
-    val stringValue: String?,
-)
-
-class DefaultValue(
-    val intValue: Int,
-    val stringValue: String = "default_value",
-)
-
-class SecondaryConstructor(
-    val intValue: Int,
-    val stringValue: String,
-)
-
-interface InterfaceClass {
-    fun test()
-}
+class MapValue(val map: Map<String, String>)
