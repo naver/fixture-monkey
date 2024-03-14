@@ -34,9 +34,8 @@ class KotlinDurationIntrospector : ArbitraryIntrospector, Matcher {
 
     override fun introspect(context: ArbitraryGeneratorContext): ArbitraryIntrospectorResult {
         val kClass = Duration::class
-        val primaryConstructor = kClass.primaryConstructor
+        val primaryConstructor = kClass.primaryConstructor!!
 
-        require(primaryConstructor != null) { "Duration class must have primary constructor" }
         require(primaryConstructor.parameters.size == 1) { "Duration class must have only one parameter" }
 
         val parameterName = primaryConstructor.parameters[0].name
