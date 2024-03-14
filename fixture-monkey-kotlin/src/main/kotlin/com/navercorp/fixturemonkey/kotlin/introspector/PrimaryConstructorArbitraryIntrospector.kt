@@ -27,7 +27,6 @@ import com.navercorp.fixturemonkey.api.property.Property
 import com.navercorp.fixturemonkey.api.property.PropertyGenerator
 import com.navercorp.fixturemonkey.api.type.Types
 import com.navercorp.fixturemonkey.kotlin.property.KotlinPropertyGenerator
-import com.navercorp.fixturemonkey.kotlin.type.isKotlinType
 import org.apiguardian.api.API
 import org.apiguardian.api.API.Status.MAINTAINED
 import org.slf4j.LoggerFactory
@@ -44,10 +43,6 @@ import kotlin.reflect.jvm.jvmErasure
 class PrimaryConstructorArbitraryIntrospector : ArbitraryIntrospector {
     override fun introspect(context: ArbitraryGeneratorContext): ArbitraryIntrospectorResult {
         val type = Types.getActualType(context.resolvedType)
-        if (!type.isKotlinType()) {
-            return ArbitraryIntrospectorResult.NOT_INTROSPECTED
-        }
-
         if (Modifier.isAbstract(type.modifiers)) {
             return ArbitraryIntrospectorResult.NOT_INTROSPECTED
         }

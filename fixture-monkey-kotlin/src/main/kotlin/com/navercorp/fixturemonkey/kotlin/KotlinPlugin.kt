@@ -22,13 +22,10 @@ import com.navercorp.fixturemonkey.api.generator.InterfaceObjectPropertyGenerato
 import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGenerator
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector
 import com.navercorp.fixturemonkey.api.introspector.BeanArbitraryIntrospector
-import com.navercorp.fixturemonkey.api.introspector.CompositeArbitraryIntrospector
-import com.navercorp.fixturemonkey.api.introspector.FailoverIntrospector
 import com.navercorp.fixturemonkey.api.introspector.MatchArbitraryIntrospector
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator
 import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptionsBuilder
 import com.navercorp.fixturemonkey.api.plugin.Plugin
-import com.navercorp.fixturemonkey.api.property.JavaBeansPropertyGenerator
 import com.navercorp.fixturemonkey.kotlin.generator.InterfaceKFunctionPropertyGenerator
 import com.navercorp.fixturemonkey.kotlin.generator.PairContainerPropertyGenerator
 import com.navercorp.fixturemonkey.kotlin.generator.PairDecomposedContainerValueFactory

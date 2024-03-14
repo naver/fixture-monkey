@@ -11,7 +11,6 @@ class KotlinAndJavaCompositeArbitraryIntrospector(
     private val kotlinIntrospector: ArbitraryIntrospector,
     private val javaIntrospector: ArbitraryIntrospector,
 ) : ArbitraryIntrospector {
-
     override fun introspect(context: ArbitraryGeneratorContext): ArbitraryIntrospectorResult {
         val type = Types.getActualType(context.resolvedType)
         try {
