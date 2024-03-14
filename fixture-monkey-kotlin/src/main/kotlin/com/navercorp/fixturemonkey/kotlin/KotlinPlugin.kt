@@ -20,6 +20,9 @@ package com.navercorp.fixturemonkey.kotlin
 
 import com.navercorp.fixturemonkey.api.generator.InterfaceObjectPropertyGenerator
 import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGenerator
+import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector
+import com.navercorp.fixturemonkey.api.introspector.BeanArbitraryIntrospector
+import com.navercorp.fixturemonkey.api.introspector.FailoverIntrospector
 import com.navercorp.fixturemonkey.api.introspector.MatchArbitraryIntrospector
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator
 import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptionsBuilder
@@ -38,15 +41,23 @@ import com.navercorp.fixturemonkey.kotlin.matcher.Matchers.TRIPLE_TYPE_MATCHER
 import com.navercorp.fixturemonkey.kotlin.property.KotlinPropertyGenerator
 import com.navercorp.fixturemonkey.kotlin.type.actualType
 import com.navercorp.fixturemonkey.kotlin.type.cachedKotlin
+import java.lang.reflect.Modifier
 import org.apiguardian.api.API
 import org.apiguardian.api.API.Status.MAINTAINED
-import java.lang.reflect.Modifier
 
 @API(since = "0.4.0", status = MAINTAINED)
 class KotlinPlugin : Plugin {
     override fun accept(optionsBuilder: FixtureMonkeyOptionsBuilder) {
-        optionsBuilder.objectIntrospector { PrimaryConstructorArbitraryIntrospector.INSTANCE }
-            .defaultPropertyGenerator(KotlinPropertyGenerator())
+        optionsBuilder.objectIntrospector {
+            FailoverIntrospector(
+                listOf<ArbitraryIntrospector>(
+                    PrimaryConstructorArbitraryIntrospector.INSTANCE, BeanArbitraryIntrospector.INSTANCE
+                )
+            )
+        }
+            .defaultPropertyGenerator(
+                KotlinPropertyGenerator()
+            )
             .insertFirstArbitraryObjectPropertyGenerator(
                 MatcherOperator(
                     { it.type.actualType().cachedKotlin().isSealed },

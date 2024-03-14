@@ -19,11 +19,15 @@
 package com.navercorp.fixturemonkey.kotlin.test
 
 import com.navercorp.fixturemonkey.FixtureMonkey
+import com.navercorp.fixturemonkey.api.introspector.BeanArbitraryIntrospector
+import com.navercorp.fixturemonkey.api.introspector.ConstructorPropertiesArbitraryIntrospector
 import com.navercorp.fixturemonkey.kotlin.KotlinPlugin
 import com.navercorp.fixturemonkey.kotlin.giveMeOne
+import com.navercorp.fixturemonkey.kotlin.introspector.PrimaryConstructorArbitraryIntrospector
 import net.jqwik.api.Property
 import org.assertj.core.api.BDDAssertions.then
 import org.assertj.core.api.BDDAssertions.thenNoException
+import org.junit.jupiter.api.Test
 
 class PrimaryConstructorArbitraryIntrospectorTest {
     private val sut: FixtureMonkey = FixtureMonkey.builder()

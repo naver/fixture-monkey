@@ -18,6 +18,8 @@
 
 package com.navercorp.fixturemonkey.kotlin.test
 
+import com.navercorp.fixturemonkey.kotlin.spec.JavaObject
+
 class PrimaryConstructor(
     val intValue: Int,
     val stringValue: String,
@@ -59,3 +61,7 @@ class SecondaryConstructor(
 interface InterfaceClass {
     fun test()
 }
+
+class KotlinClassWithJavaClass(val javaObject: JavaObject)
+
+class MapValue(val map: Map<String, String>)
