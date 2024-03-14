@@ -65,7 +65,7 @@ class KotlinAndJavaCompositeArbitraryIntrospectorTest {
         then(actual.javaObject).isNotNull
     }
 
-    @Test
+    @Property
     fun sampleMapValue() {
         // given
         val sut: FixtureMonkey = FixtureMonkey.builder()
