@@ -38,12 +38,11 @@ class KotlinDurationIntrospector : ArbitraryIntrospector, Matcher {
 
         require(primaryConstructor.parameters.size == 1) { "Duration class must have only one parameter" }
 
-        val parameterName = primaryConstructor.parameters[0].name
-
         return ArbitraryIntrospectorResult(
             CombinableArbitrary.objectBuilder()
                 .properties(context.combinableArbitrariesByArbitraryProperty)
                 .build {
+                    val parameterName = primaryConstructor.parameters[0].name
                     val parameterValue = it.mapKeys { map -> map.key.objectProperty.property.name }[parameterName] as Long
                     parameterValue.toDuration(DurationUnit.values().random())
                 }
