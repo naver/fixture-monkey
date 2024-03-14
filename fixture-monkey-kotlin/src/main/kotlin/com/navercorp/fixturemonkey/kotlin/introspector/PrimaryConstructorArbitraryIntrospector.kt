@@ -75,10 +75,8 @@ class PrimaryConstructorArbitraryIntrospector : ArbitraryIntrospector {
                             if (parameter.type.jvmErasure != Duration::class) {
                                 resolvedArbitrary
                             } else {
-                                if (resolvedArbitrary is Long) resolvedArbitrary.toDuration(
-                                    DurationUnit.values().random()
-                                )
-                                else Duration.ZERO
+                                resolvedArbitrary as Long
+                                resolvedArbitrary.toDuration(DurationUnit.values().random())
                             }
                     }
                     constructor.callBy(generatedByParameters)
