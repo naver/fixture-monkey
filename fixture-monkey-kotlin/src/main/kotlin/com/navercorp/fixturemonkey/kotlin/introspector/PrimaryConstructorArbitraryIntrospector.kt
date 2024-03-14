@@ -90,9 +90,9 @@ class PrimaryConstructorArbitraryIntrospector : ArbitraryIntrospector {
         parameter: KParameter,
         arbitrariesByPropertyName: Map<String?, Any?>,
     ): Any? {
-        try {
+        return try {
             val parameterKotlinType = parameter.type.jvmErasure
-            return if (parameterKotlinType.isValue) {
+            if (parameterKotlinType.isValue) {
                 parameterKotlinType.primaryConstructor!!.isAccessible = true
                 parameterKotlinType.primaryConstructor!!.call(arbitrariesByPropertyName[parameter.name])
             } else {
@@ -100,7 +100,7 @@ class PrimaryConstructorArbitraryIntrospector : ArbitraryIntrospector {
             }
         } catch (ex: Exception) {
             // omitted
-            return arbitrariesByPropertyName[parameter.name]
+            arbitrariesByPropertyName[parameter.name]
         }
     }
 
