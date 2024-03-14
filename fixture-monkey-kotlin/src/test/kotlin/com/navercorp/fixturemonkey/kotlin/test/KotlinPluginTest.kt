@@ -21,7 +21,7 @@ package com.navercorp.fixturemonkey.kotlin.test
 import com.navercorp.fixturemonkey.FixtureMonkey
 import com.navercorp.fixturemonkey.kotlin.KotlinPlugin
 import com.navercorp.fixturemonkey.kotlin.giveMeOne
-import org.assertj.core.api.BDDAssertions
+import org.assertj.core.api.BDDAssertions.then
 import org.junit.jupiter.api.Test
 
 /**
@@ -48,8 +48,8 @@ class KotlinPluginTest {
         // when
         val actual = sut.giveMeOne<KotlinClassWithJavaClass>()
 
-        BDDAssertions.then(actual).isNotNull
-        BDDAssertions.then(actual.javaObject).isNotNull
+        then(actual).isNotNull
+        then(actual.javaObject).isNotNull
     }
 
     @Test
@@ -57,7 +57,7 @@ class KotlinPluginTest {
         // when
         val actual = sut.giveMeOne<MapValue>()
 
-        BDDAssertions.then(actual).isNotNull
-        BDDAssertions.then(actual.map).isNotNull
+        then(actual).isNotNull
+        then(actual.map).isNotNull
     }
 }
