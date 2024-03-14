@@ -24,7 +24,6 @@ import com.navercorp.fixturemonkey.kotlin.KotlinPlugin
 import com.navercorp.fixturemonkey.kotlin.giveMeOne
 import net.jqwik.api.Property
 import org.assertj.core.api.BDDAssertions.then
-import org.junit.jupiter.api.Test
 
 /**
  *
