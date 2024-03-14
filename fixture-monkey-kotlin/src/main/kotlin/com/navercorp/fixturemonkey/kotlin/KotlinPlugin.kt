@@ -22,17 +22,20 @@ import com.navercorp.fixturemonkey.api.generator.InterfaceObjectPropertyGenerato
 import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGenerator
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector
 import com.navercorp.fixturemonkey.api.introspector.BeanArbitraryIntrospector
+import com.navercorp.fixturemonkey.api.introspector.CompositeArbitraryIntrospector
 import com.navercorp.fixturemonkey.api.introspector.FailoverIntrospector
 import com.navercorp.fixturemonkey.api.introspector.MatchArbitraryIntrospector
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator
 import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptionsBuilder
 import com.navercorp.fixturemonkey.api.plugin.Plugin
+import com.navercorp.fixturemonkey.api.property.JavaBeansPropertyGenerator
 import com.navercorp.fixturemonkey.kotlin.generator.InterfaceKFunctionPropertyGenerator
 import com.navercorp.fixturemonkey.kotlin.generator.PairContainerPropertyGenerator
 import com.navercorp.fixturemonkey.kotlin.generator.PairDecomposedContainerValueFactory
 import com.navercorp.fixturemonkey.kotlin.generator.TripleContainerPropertyGenerator
 import com.navercorp.fixturemonkey.kotlin.generator.TripleDecomposedContainerValueFactory
 import com.navercorp.fixturemonkey.kotlin.instantiator.KotlinInstantiatorProcessor
+import com.navercorp.fixturemonkey.kotlin.introspector.KotlinAndJavaCompositeArbitraryIntrospector
 import com.navercorp.fixturemonkey.kotlin.introspector.PairIntrospector
 import com.navercorp.fixturemonkey.kotlin.introspector.PrimaryConstructorArbitraryIntrospector
 import com.navercorp.fixturemonkey.kotlin.introspector.TripleIntrospector
@@ -46,13 +49,15 @@ import org.apiguardian.api.API
 import org.apiguardian.api.API.Status.MAINTAINED
 
 @API(since = "0.4.0", status = MAINTAINED)
-class KotlinPlugin : Plugin {
+class KotlinPlugin(
+    private val kotlinIntrospector: ArbitraryIntrospector = PrimaryConstructorArbitraryIntrospector.INSTANCE,
+    private val javaIntrospector: ArbitraryIntrospector = BeanArbitraryIntrospector.INSTANCE,
+) : Plugin {
     override fun accept(optionsBuilder: FixtureMonkeyOptionsBuilder) {
         optionsBuilder.objectIntrospector {
-            FailoverIntrospector(
-                listOf<ArbitraryIntrospector>(
-                    PrimaryConstructorArbitraryIntrospector.INSTANCE, BeanArbitraryIntrospector.INSTANCE
-                )
+            KotlinAndJavaCompositeArbitraryIntrospector(
+                kotlinIntrospector = kotlinIntrospector,
+                javaIntrospector = javaIntrospector
             )
         }
             .defaultPropertyGenerator(KotlinPropertyGenerator())

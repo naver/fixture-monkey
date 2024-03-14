@@ -19,32 +19,44 @@
 package com.navercorp.fixturemonkey.kotlin.test
 
 import com.navercorp.fixturemonkey.FixtureMonkey
+import com.navercorp.fixturemonkey.api.introspector.ConstructorPropertiesArbitraryIntrospector
 import com.navercorp.fixturemonkey.kotlin.KotlinPlugin
 import com.navercorp.fixturemonkey.kotlin.giveMeOne
 import org.assertj.core.api.BDDAssertions.then
 import org.junit.jupiter.api.Test
 
 /**
- * Kotlin plugin test
  *
- * test for behavior of default introspector using failover introspector
+ * test for behavior of default Kotlin Plugin introspector using kotlin and java composite arbitrary introspector
  *
- * - default introspector is PrimaryConstructorArbitraryIntrospector
- * - if it fails, it uses BeanArbitraryIntrospector
+ * - default kotlin introspector is PrimaryConstructorArbitraryIntrospector
+ * - default java introspector is BeanArbitraryIntrospector
  *
- * this action is for supporting instantiating java class
  */
-class KotlinPluginTest {
-    private val sut: FixtureMonkey = FixtureMonkey.builder()
-        .plugin(KotlinPlugin())
-        .build()
-
+class KotlinAndJavaCompositeArbitraryIntrospectorTest {
     @Test
     fun kotlinClassWithJavaClass() {
-
+        // given
         val sut: FixtureMonkey = FixtureMonkey.builder()
             .plugin(KotlinPlugin())
             .build()
+
+        // when
+        val actual = sut.giveMeOne<KotlinClassWithJavaClass>()
+
+        then(actual).isNotNull
+        then(actual.javaObject).isNotNull
+    }
+
+    @Test
+    fun kotlinClassWithJavaClassUsingOtherIntrospector() {
+        // given
+        val sut: FixtureMonkey = FixtureMonkey.builder()
+            .plugin(
+                KotlinPlugin(javaIntrospector = ConstructorPropertiesArbitraryIntrospector.INSTANCE)
+            )
+            .build()
+
         // when
         val actual = sut.giveMeOne<KotlinClassWithJavaClass>()
 
@@ -54,6 +66,11 @@ class KotlinPluginTest {
 
     @Test
     fun sampleMapValue() {
+        // given
+        val sut: FixtureMonkey = FixtureMonkey.builder()
+            .plugin(KotlinPlugin())
+            .build()
+
         // when
         val actual = sut.giveMeOne<MapValue>()
 
