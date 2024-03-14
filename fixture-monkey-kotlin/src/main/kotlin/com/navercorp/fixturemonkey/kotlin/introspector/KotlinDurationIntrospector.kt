@@ -36,7 +36,6 @@ class KotlinDurationIntrospector : ArbitraryIntrospector, Matcher {
         val kClass = Duration::class
         val primaryConstructor = kClass.primaryConstructor
 
-        require(match(context.resolvedProperty)) { "Given type is not Duration type: " + context.resolvedType }
         require(primaryConstructor != null) { "Duration class must have primary constructor" }
         require(primaryConstructor.parameters.size == 1) { "Duration class must have only one parameter" }
 
