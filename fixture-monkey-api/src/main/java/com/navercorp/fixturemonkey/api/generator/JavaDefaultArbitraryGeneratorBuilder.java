@@ -45,6 +45,7 @@ import com.navercorp.fixturemonkey.api.introspector.QueueIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.SetIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.StreamIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.UuidIntrospector;
+import com.navercorp.fixturemonkey.api.introspector.SupplierIntrospector;
 import com.navercorp.fixturemonkey.api.jqwik.JavaTimeArbitraryIntrospector;
 
 @SuppressWarnings("UnusedReturnValue")
@@ -69,7 +70,8 @@ public final class JavaDefaultArbitraryGeneratorBuilder {
 			new MapIntrospector(),
 			new MapEntryIntrospector(),
 			new MapEntryElementIntrospector(),
-			new ArrayIntrospector()
+			new ArrayIntrospector(),
+			new SupplierIntrospector()
 		)
 	);
 	public static final ArbitraryIntrospector DEFAULT_FALLBACK_INTROSPECTOR =

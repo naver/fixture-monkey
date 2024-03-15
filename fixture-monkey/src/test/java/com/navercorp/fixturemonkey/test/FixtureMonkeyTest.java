@@ -39,6 +39,7 @@ import java.util.OptionalDouble;
 import java.util.OptionalInt;
 import java.util.OptionalLong;
 import java.util.Set;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -70,6 +71,7 @@ import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.NullableObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.ObjectValue;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.RecursiveLeftObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.SelfRecursiveListObject;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.SelfRecursiveSupplierObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.SelfRecursiveObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.SimpleObject;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyTestSpecs.StaticFieldObject;
@@ -312,6 +314,34 @@ class FixtureMonkeyTest {
 			.getOptionalDouble();
 
 		then(actual).isEqualTo(expected);
+	}
+
+	@Property
+	void setDecomposedSupplier() {
+		// given
+		Supplier<String> expected = () -> "test";
+
+		// when
+		Supplier<String> actual = SUT.giveMeBuilder(ComplexObject.class)
+			.set("strSupplier", expected)
+			.sample()
+			.getStrSupplier();
+
+		then(actual.get()).isEqualTo(expected.get());
+	}
+
+	@Property
+	void setDecomposedNestedStrSupplier() {
+		// given
+		Supplier<Supplier<String>> expected = () -> () -> "test";
+
+		// when
+		Supplier<Supplier<String>> actual = SUT.giveMeBuilder(ComplexObject.class)
+			.set("nestedStrSupplier", expected)
+			.sample()
+			.getNestedStrSupplier();
+
+		then(actual.get()).isEqualTo(expected.get());
 	}
 
 	@Property
@@ -620,6 +650,18 @@ class FixtureMonkeyTest {
 	}
 
 	@Property
+	void setNullSupplier() {
+		// when
+		Supplier<String> actual = SUT.giveMeBuilder(ComplexObject.class)
+			.setNull("strSupplier")
+			.sample()
+			.getStrSupplier();
+
+		// then
+		then(actual).isNull();
+	}
+
+	@Property
 	void setNotNullString() {
 		// when
 		String actual = SUT.giveMeBuilder(ComplexObject.class)
@@ -662,6 +704,18 @@ class FixtureMonkeyTest {
 			.setNotNull("mapEntry")
 			.sample()
 			.getMapEntry();
+
+		// then
+		then(actual).isNotNull();
+	}
+
+	@Property
+	void setNotNullSupplier() {
+		// when
+		Supplier<String> actual = SUT.giveMeBuilder(ComplexObject.class)
+			.setNotNull("strSupplier")
+			.sample()
+			.getStrSupplier();
 
 		// then
 		then(actual).isNotNull();
@@ -971,6 +1025,22 @@ class FixtureMonkeyTest {
 		// then
 		String result1 = zippedArbitraryBuilder.sample();
 		String result2 = zippedArbitraryBuilder.sample();
+		then(result1).isNotEqualTo(result2);
+	}
+
+	@Property
+	void supplierReturnsNew() {
+		// given
+		TypeReference<Supplier<String>> supplierTypeReference = new TypeReference<Supplier<String>>() {
+		};
+		ArbitraryBuilder<Supplier<String>> supplierArbitraryBuilder = SUT.giveMeBuilder(supplierTypeReference);
+
+		// when
+		Arbitrary<Supplier<String>> supplierArbitrary = supplierArbitraryBuilder.build();
+
+		// then
+		Supplier<String> result1 = supplierArbitrary.sample();
+		Supplier<String> result2 = supplierArbitrary.sample();
 		then(result1).isNotEqualTo(result2);
 	}
 
@@ -1464,6 +1534,27 @@ class FixtureMonkeyTest {
 	}
 
 	@Property
+	void sampleSupplier() {
+		Supplier<String> actual = SUT.giveMeBuilder(new TypeReference<Supplier<String>>() {
+			})
+			.sample();
+
+		then(actual).isNotNull();
+		then(actual.get()).isNotNull();
+	}
+
+	@Property
+	void sampleNestedStrSupplier() {
+		Supplier<Supplier<String>> actual = SUT.giveMeBuilder(new TypeReference<Supplier<Supplier<String>>>() {
+			})
+			.sample();
+
+		then(actual).isNotNull();
+		then(actual.get()).isNotNull();
+		then(actual.get().get()).isNotNull();
+	}
+
+	@Property
 	void sampleSelfRecursiveObject() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.defaultNotNull(true)
@@ -1486,6 +1577,19 @@ class FixtureMonkeyTest {
 
 		then(actual.getValue()).isNotNull();
 		then(actual.getRecursives()).isNotNull();
+	}
+
+	@Property
+	void sampleRecursiveSupplier() {
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.defaultNotNull(true)
+			.build();
+
+		SelfRecursiveSupplierObject actual = sut.giveMeOne(SelfRecursiveSupplierObject.class);
+
+		then(actual.getValue()).isNotNull();
+		then(actual.getRecursive()).isNotNull();
+		then(actual.getRecursive().get()).isNotNull();
 	}
 
 	@Property
