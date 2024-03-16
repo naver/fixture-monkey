@@ -20,10 +20,11 @@ jobs:
       - name: Merge benchmark results
         id: merge
         run: |
-          cat ./fixture-monkey/build/results/jmh/results.csv > merged_results.csv
-          echo "" >> merged_results.csv
-          cat ./fixture-monkey-kotlin/build/results/jmh/results.csv >> merged_results.csv
-          echo "merged_results.csv content:"
+          echo "" > merged_results.csv
+          find ./fixture-monkey-benchmarks -name 'results.csv' | while read line; do
+            cat "$line" >> merged_results.csv
+            echo "" >> merged_results.csv
+          done
           cat merged_results.csv
       - name: Read merged benchmark result
         id: csv

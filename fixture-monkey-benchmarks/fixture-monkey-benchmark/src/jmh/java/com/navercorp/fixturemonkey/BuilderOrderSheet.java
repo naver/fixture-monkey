@@ -7,14 +7,10 @@ import java.util.Map;
 
 import javax.validation.constraints.Size;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import lombok.Builder;
 
-@Data
-@EqualsAndHashCode(of = "id", callSuper = false)
-@ToString
-public class OrderSheet {
+@Builder
+public class BuilderOrderSheet {
 	private String id;
 
 	private String backUrl;
@@ -30,9 +26,7 @@ public class OrderSheet {
 	@Size(min = 1, max = 1)
 	private Map<String, OrderSheetBundleDeliveryFee> bundleDeliveryFeesByDeliveryGroupKey;
 
-	@Data
-	@EqualsAndHashCode(of = "id", callSuper = false)
-	@ToString
+	@Builder
 	public static class OrderSheetProduct {
 		String id;
 
@@ -60,10 +54,7 @@ public class OrderSheet {
 		OrderSheetRewardPointPolicy rewardPointPolicy;
 	}
 
-	@Data
-	@EqualsAndHashCode(of = "id", callSuper = false)
-	@ToString
-	// @Builder
+	@Builder
 	public static class OrderSheetItem {
 
 		String id;
@@ -80,8 +71,9 @@ public class OrderSheet {
 		List<OrderSheetElement> elements;
 	}
 
-	@Data
+	@Builder
 	public static class OrderSheetElement {
+
 		String id;
 
 		ElementType elementType;
@@ -96,8 +88,9 @@ public class OrderSheet {
 		List<String> texts;
 	}
 
-	@Data
+	@Builder
 	public static class OrderSheetMerchant {
+
 		String talkInterlockAccountId;
 
 		String logeyeRequestId;
@@ -107,9 +100,9 @@ public class OrderSheet {
 		Boolean logeyePayAccumulation;
 	}
 
-	@Data
-	@ToString
+	@Builder
 	public static class OrderSheetDeliveryPolicy {
+
 		DeliveryMethodType deliveryMethodType;
 
 		DeliveryFeeClassType deliveryFeeClassType;
@@ -123,28 +116,29 @@ public class OrderSheet {
 		BigDecimal freeConditionalAmount;
 	}
 
-	@Data
+	@Builder
 	public static class OrderSheetDeliveryBundlePolicy {
+
 		String bundleGroupId;
 	}
 
-	@Data
-	@ToString
+	@Builder
 	public static class OrderSheetDeliveryFee {
+
 		BigDecimal deliveryFee;
 
 		String deliveryGroupKey;
 	}
 
-	@Data
+	@Builder
 	public static class OrderSheetBundleDeliveryFee {
+
 		BigDecimal deliveryFee;
 
 		BundleType type;
 	}
 
-	@Data
-	@ToString
+	@Builder
 	public static class OrderSheetRewardPointPolicy {
 		Long purchasePolicyNo;
 
@@ -180,4 +174,3 @@ public class OrderSheet {
 		IDENTICAL_PRODUCT
 	}
 }
-

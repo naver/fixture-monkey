@@ -1,8 +1,6 @@
 plugins {
-    id("me.champeau.jmh") version "0.7.2"
     id("com.navercorp.fixturemonkey.gradle.plugin.java-conventions")
     id("com.navercorp.fixturemonkey.gradle.plugin.maven-publish-conventions")
-    `java-test-fixtures`
 }
 
 dependencies {
@@ -19,24 +17,4 @@ dependencies {
     testImplementation("org.assertj:assertj-core:${Versions.ASSERTJ}")
     testImplementation("org.projectlombok:lombok:${Versions.LOMBOK}")
     testAnnotationProcessor("org.projectlombok:lombok:${Versions.LOMBOK}")
-
-    jmhImplementation(project(":fixture-monkey-javax-validation"))
-    jmhImplementation(project(":fixture-monkey-jackson"))
-    jmhImplementation("org.openjdk.jmh:jmh-core:${Versions.JMH}")
-    jmhImplementation("org.openjdk.jmh:jmh-generator-annprocess:${Versions.JMH}")
-    jmhImplementation("org.projectlombok:lombok:${Versions.LOMBOK}")
-    jmhAnnotationProcessor("org.projectlombok:lombok:${Versions.LOMBOK}")
-
-    testFixturesApi(project(":fixture-monkey-javax-validation"))
-    testFixturesApi("org.openjdk.jmh:jmh-core:${Versions.JMH}")
-    testFixturesApi("org.openjdk.jmh:jmh-generator-annprocess:${Versions.JMH}")
-    testFixturesApi("org.projectlombok:lombok:${Versions.LOMBOK}")
-    testFixturesAnnotationProcessor("org.projectlombok:lombok:${Versions.LOMBOK}")
-}
-
-jmh {
-    fork = 1
-    warmupIterations = 3
-    iterations = 10
-    resultFormat = "CSV"
 }

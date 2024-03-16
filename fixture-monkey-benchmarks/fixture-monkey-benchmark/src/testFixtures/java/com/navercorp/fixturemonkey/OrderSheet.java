@@ -7,10 +7,14 @@ import java.util.Map;
 
 import javax.validation.constraints.Size;
 
-import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
-@Builder
-public class BuilderOrderSheet {
+@Data
+@EqualsAndHashCode(of = "id", callSuper = false)
+@ToString
+public class OrderSheet {
 	private String id;
 
 	private String backUrl;
@@ -26,7 +30,9 @@ public class BuilderOrderSheet {
 	@Size(min = 1, max = 1)
 	private Map<String, OrderSheetBundleDeliveryFee> bundleDeliveryFeesByDeliveryGroupKey;
 
-	@Builder
+	@Data
+	@EqualsAndHashCode(of = "id", callSuper = false)
+	@ToString
 	public static class OrderSheetProduct {
 		String id;
 
@@ -54,7 +60,10 @@ public class BuilderOrderSheet {
 		OrderSheetRewardPointPolicy rewardPointPolicy;
 	}
 
-	@Builder
+	@Data
+	@EqualsAndHashCode(of = "id", callSuper = false)
+	@ToString
+	// @Builder
 	public static class OrderSheetItem {
 
 		String id;
@@ -71,9 +80,8 @@ public class BuilderOrderSheet {
 		List<OrderSheetElement> elements;
 	}
 
-	@Builder
+	@Data
 	public static class OrderSheetElement {
-
 		String id;
 
 		ElementType elementType;
@@ -88,9 +96,8 @@ public class BuilderOrderSheet {
 		List<String> texts;
 	}
 
-	@Builder
+	@Data
 	public static class OrderSheetMerchant {
-
 		String talkInterlockAccountId;
 
 		String logeyeRequestId;
@@ -100,9 +107,9 @@ public class BuilderOrderSheet {
 		Boolean logeyePayAccumulation;
 	}
 
-	@Builder
+	@Data
+	@ToString
 	public static class OrderSheetDeliveryPolicy {
-
 		DeliveryMethodType deliveryMethodType;
 
 		DeliveryFeeClassType deliveryFeeClassType;
@@ -116,29 +123,28 @@ public class BuilderOrderSheet {
 		BigDecimal freeConditionalAmount;
 	}
 
-	@Builder
+	@Data
 	public static class OrderSheetDeliveryBundlePolicy {
-
 		String bundleGroupId;
 	}
 
-	@Builder
+	@Data
+	@ToString
 	public static class OrderSheetDeliveryFee {
-
 		BigDecimal deliveryFee;
 
 		String deliveryGroupKey;
 	}
 
-	@Builder
+	@Data
 	public static class OrderSheetBundleDeliveryFee {
-
 		BigDecimal deliveryFee;
 
 		BundleType type;
 	}
 
-	@Builder
+	@Data
+	@ToString
 	public static class OrderSheetRewardPointPolicy {
 		Long purchasePolicyNo;
 
@@ -174,4 +180,3 @@ public class BuilderOrderSheet {
 		IDENTICAL_PRODUCT
 	}
 }
-

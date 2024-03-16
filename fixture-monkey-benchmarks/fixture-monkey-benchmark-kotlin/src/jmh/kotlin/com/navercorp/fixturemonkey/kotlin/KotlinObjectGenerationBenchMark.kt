@@ -1,7 +1,7 @@
 package com.navercorp.fixturemonkey.kotlin
 
-import com.navercorp.fixturemonkey.FixtureMonkey
 import com.navercorp.fixturemonkey.OrderSheet
+import com.navercorp.fixturemonkey.FixtureMonkey
 import com.navercorp.fixturemonkey.api.introspector.BeanArbitraryIntrospector
 import com.navercorp.fixturemonkey.api.type.TypeCache
 import java.util.concurrent.TimeUnit
