@@ -1,5 +1,5 @@
 ---
-title: "Jackson Plugin"
+title: "Jackson 플러그인"
 images: []
 menu:
   docs:
