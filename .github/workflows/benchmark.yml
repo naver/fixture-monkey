@@ -22,7 +22,7 @@ jobs:
         uses: juliangruber/read-file-action@v1
         with:
           path: |
-            ./fixture-monkey/build/results/jmh/results.csv
+            ./fixture-monkey/build/results/jmh/results.csv,
             ./fixture-monkey-kotlin/build/results/jmh/results.csv
       - name: Create Markdown table
         uses: petems/csv-to-md-table-action@master
