@@ -26,14 +26,6 @@ import com.navercorp.fixturemonkey.kotlin.introspector.KotlinAndJavaCompositeArb
 import net.jqwik.api.Property
 import org.assertj.core.api.BDDAssertions.then
 
-/**
- *
- * test for behavior of default Kotlin Plugin introspector using kotlin and java composite arbitrary introspector
- *
- * - default kotlin introspector is PrimaryConstructorArbitraryIntrospector
- * - default java introspector is BeanArbitraryIntrospector
- *
- */
 class KotlinAndJavaCompositeArbitraryIntrospectorTest {
     @Property
     fun kotlinClassWithJavaClass() {
