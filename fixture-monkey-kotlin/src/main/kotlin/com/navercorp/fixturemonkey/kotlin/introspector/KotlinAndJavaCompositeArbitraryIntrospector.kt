@@ -21,21 +21,21 @@ package com.navercorp.fixturemonkey.kotlin.introspector
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult
-import com.navercorp.fixturemonkey.api.type.Types
+import com.navercorp.fixturemonkey.kotlin.type.actualType
 import com.navercorp.fixturemonkey.kotlin.type.isKotlinType
 import org.slf4j.LoggerFactory
 
 class KotlinAndJavaCompositeArbitraryIntrospector(
-    private val kotlinIntrospector: ArbitraryIntrospector,
-    private val javaIntrospector: ArbitraryIntrospector,
+    private val kotlinArbitraryIntrospector: ArbitraryIntrospector,
+    private val javaArbitraryIntrospector: ArbitraryIntrospector,
 ) : ArbitraryIntrospector {
     override fun introspect(context: ArbitraryGeneratorContext): ArbitraryIntrospectorResult {
-        val type = Types.getActualType(context.resolvedType)
+        val type = context.resolvedType.actualType()
         try {
             return if (type.isKotlinType()) {
-                kotlinIntrospector.introspect(context)
+                kotlinArbitraryIntrospector.introspect(context)
             } else {
-                javaIntrospector.introspect(context)
+                javaArbitraryIntrospector.introspect(context)
             }
         } catch (e: Exception) {
             LOGGER.warn("Given type $type is failed to generated due to the exception.", e)

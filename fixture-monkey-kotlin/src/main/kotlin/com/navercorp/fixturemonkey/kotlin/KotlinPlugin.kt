@@ -53,8 +53,8 @@ class KotlinPlugin(
     override fun accept(optionsBuilder: FixtureMonkeyOptionsBuilder) {
         optionsBuilder.objectIntrospector {
             KotlinAndJavaCompositeArbitraryIntrospector(
-                kotlinIntrospector = kotlinIntrospector,
-                javaIntrospector = javaIntrospector
+                kotlinArbitraryIntrospector = kotlinIntrospector,
+                javaArbitraryIntrospector = javaIntrospector
             )
         }
             .defaultPropertyGenerator(KotlinPropertyGenerator())
