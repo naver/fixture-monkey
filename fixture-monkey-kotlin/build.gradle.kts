@@ -18,7 +18,6 @@ dependencies {
     testImplementation("org.assertj:assertj-core:${Versions.ASSERTJ}")
 
     jmhImplementation(project(":fixture-monkey-jackson"))
-    jmhImplementation(project(":fixture-monkey-javax-validation"))
     jmhImplementation(testFixtures(project(":fixture-monkey")))
     jmhImplementation("org.openjdk.jmh:jmh-core:${Versions.JMH}")
     jmhImplementation("org.openjdk.jmh:jmh-generator-annprocess:${Versions.JMH}")
