@@ -7,6 +7,10 @@ tasks.jmh{
     enabled = false
 }
 
+tasks.jmhJar{
+    enabled = false
+}
+
 subprojects {
     tasks.filter { it.name != "jmh" && !it.name.startsWith("compile") }
         .forEach { it.enabled = false }
