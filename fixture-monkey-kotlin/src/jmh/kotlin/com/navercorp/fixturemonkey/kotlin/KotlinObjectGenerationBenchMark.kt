@@ -27,14 +27,26 @@ open class KotlinObjectGenerationBenchMark {
     }
 
     @Benchmark
-    fun beanGenerateOrderSheetWithFixtureMonkey(blackhole: Blackhole) {
+    fun beanGenerateJavaOrderSheetWithFixtureMonkey(blackhole: Blackhole) {
         val fixtureMonkey = FixtureMonkey.builder()
             .plugin(KotlinPlugin())
             .objectIntrospector(BeanArbitraryIntrospector.INSTANCE)
             .build()
-        blackhole.consume(generateOrderSheet(fixtureMonkey))
+        blackhole.consume(generateJavaOrderSheet(fixtureMonkey))
     }
 
-    private fun generateOrderSheet(fixtureMonkey: FixtureMonkey): List<OrderSheet> =
+    private fun generateJavaOrderSheet(fixtureMonkey: FixtureMonkey): List<OrderSheet> =
         List(COUNT) { fixtureMonkey.giveMeOne(OrderSheet::class.java) }
+
+    @Benchmark
+    fun beanGenerateKotlinOrderSheetWithFixtureMonkey(blackhole: Blackhole) {
+        val fixtureMonkey = FixtureMonkey.builder()
+            .plugin(KotlinPlugin())
+            .build()
+        blackhole.consume(generateKotlinOrderSheet(fixtureMonkey))
+    }
+
+    private fun generateKotlinOrderSheet(fixtureMonkey: FixtureMonkey): List<KotlinOrderSheet> =
+        List(COUNT) { fixtureMonkey.giveMeOne(KotlinOrderSheet::class.java) }
+
 }
