@@ -31,7 +31,7 @@ testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter:{{< param
 ```java
 @Data
 @EqualsAndHashCode(of = "id", callSuper = false)
-public class com.navercorp.fixturemonkey.OrderSheet {
+public class OrderSheet {
 	private String id;
 
 	private String backUrl;
@@ -199,6 +199,6 @@ FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
 	.plugin(new JavaxValidationPlugin())
     .build();
 
-com.navercorp.fixturemonkey.OrderSheet orderSheet = fixtureMonkey.giveMeOne(com.navercorp.fixturemonkey.OrderSheet.class);
+OrderSheet orderSheet = fixtureMonkey.giveMeOne(OrderSheet.class);
 ```
 
