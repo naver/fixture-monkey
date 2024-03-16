@@ -8,7 +8,7 @@ tasks.jmh{
 }
 
 subprojects {
-    tasks.filter { it.name != "jmh" && !it.name.startsWith("compile") }
+    tasks.filter { it.name != "jmh" && !it.name.startsWith("compile") && it.name != "jar" }
         .forEach { it.enabled = false }
 
     plugins.apply("me.champeau.jmh")
