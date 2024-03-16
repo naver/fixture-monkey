@@ -16,7 +16,7 @@ jobs:
       - name: Execute benchmark
         uses: gradle/gradle-build-action@v2.4.2
         with:
-          arguments: jmh
+          arguments: clean jmh
       - name: Merge benchmark results
         id: merge
         run: |
