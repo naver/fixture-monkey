@@ -22,6 +22,7 @@ import com.navercorp.fixturemonkey.FixtureMonkey
 import com.navercorp.fixturemonkey.api.introspector.ConstructorPropertiesArbitraryIntrospector
 import com.navercorp.fixturemonkey.kotlin.KotlinPlugin
 import com.navercorp.fixturemonkey.kotlin.giveMeOne
+import com.navercorp.fixturemonkey.kotlin.introspector.KotlinAndJavaCompositeArbitraryIntrospector
 import net.jqwik.api.Property
 import org.assertj.core.api.BDDAssertions.then
 
@@ -39,6 +40,7 @@ class KotlinAndJavaCompositeArbitraryIntrospectorTest {
         // given
         val sut: FixtureMonkey = FixtureMonkey.builder()
             .plugin(KotlinPlugin())
+            .objectIntrospector(KotlinAndJavaCompositeArbitraryIntrospector())
             .build()
 
         // when
@@ -52,8 +54,11 @@ class KotlinAndJavaCompositeArbitraryIntrospectorTest {
     fun kotlinClassWithJavaClassUsingOtherIntrospector() {
         // given
         val sut: FixtureMonkey = FixtureMonkey.builder()
-            .plugin(
-                KotlinPlugin(javaIntrospector = ConstructorPropertiesArbitraryIntrospector.INSTANCE)
+            .plugin(KotlinPlugin())
+            .objectIntrospector(
+                KotlinAndJavaCompositeArbitraryIntrospector(
+                    javaArbitraryIntrospector = ConstructorPropertiesArbitraryIntrospector.INSTANCE
+                )
             )
             .build()
 
@@ -69,6 +74,7 @@ class KotlinAndJavaCompositeArbitraryIntrospectorTest {
         // given
         val sut: FixtureMonkey = FixtureMonkey.builder()
             .plugin(KotlinPlugin())
+            .objectIntrospector(KotlinAndJavaCompositeArbitraryIntrospector())
             .build()
 
         // when

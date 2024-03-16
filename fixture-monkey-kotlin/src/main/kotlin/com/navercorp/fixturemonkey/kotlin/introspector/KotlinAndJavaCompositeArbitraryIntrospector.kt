@@ -21,13 +21,14 @@ package com.navercorp.fixturemonkey.kotlin.introspector
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult
+import com.navercorp.fixturemonkey.api.introspector.BeanArbitraryIntrospector
 import com.navercorp.fixturemonkey.kotlin.type.actualType
 import com.navercorp.fixturemonkey.kotlin.type.isKotlinType
 import org.slf4j.LoggerFactory
 
 class KotlinAndJavaCompositeArbitraryIntrospector(
-    private val kotlinArbitraryIntrospector: ArbitraryIntrospector,
-    private val javaArbitraryIntrospector: ArbitraryIntrospector,
+    private val kotlinArbitraryIntrospector: ArbitraryIntrospector = PrimaryConstructorArbitraryIntrospector.INSTANCE,
+    private val javaArbitraryIntrospector: ArbitraryIntrospector = BeanArbitraryIntrospector.INSTANCE,
 ) : ArbitraryIntrospector {
     override fun introspect(context: ArbitraryGeneratorContext): ArbitraryIntrospectorResult {
         val type = context.resolvedType.actualType()
