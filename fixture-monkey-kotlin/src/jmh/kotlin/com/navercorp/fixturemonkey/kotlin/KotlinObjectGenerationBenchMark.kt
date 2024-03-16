@@ -48,5 +48,4 @@ open class KotlinObjectGenerationBenchMark {
 
     private fun generateKotlinOrderSheet(fixtureMonkey: FixtureMonkey): List<KotlinOrderSheet> =
         List(COUNT) { fixtureMonkey.giveMeOne(KotlinOrderSheet::class.java) }
-
 }
