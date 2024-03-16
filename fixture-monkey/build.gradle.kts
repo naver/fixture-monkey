@@ -2,6 +2,7 @@ plugins {
     id("me.champeau.jmh") version "0.7.2"
     id("com.navercorp.fixturemonkey.gradle.plugin.java-conventions")
     id("com.navercorp.fixturemonkey.gradle.plugin.maven-publish-conventions")
+    `java-test-fixtures`
 }
 
 dependencies {
@@ -25,6 +26,12 @@ dependencies {
     jmhImplementation("org.openjdk.jmh:jmh-generator-annprocess:${Versions.JMH}")
     jmhImplementation("org.projectlombok:lombok:${Versions.LOMBOK}")
     jmhAnnotationProcessor("org.projectlombok:lombok:${Versions.LOMBOK}")
+
+    testFixturesApi(project(":fixture-monkey-javax-validation"))
+    testFixturesApi("org.openjdk.jmh:jmh-core:${Versions.JMH}")
+    testFixturesApi("org.openjdk.jmh:jmh-generator-annprocess:${Versions.JMH}")
+    testFixturesApi("org.projectlombok:lombok:${Versions.LOMBOK}")
+    testFixturesAnnotationProcessor("org.projectlombok:lombok:${Versions.LOMBOK}")
 }
 
 jmh {

@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.kotlin;
+package com.navercorp.fixturemonkey.kotlin.spec;
 
 import java.util.List;
 
