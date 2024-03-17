@@ -38,9 +38,6 @@ import kotlin.reflect.KParameter
 import kotlin.reflect.full.primaryConstructor
 import kotlin.reflect.jvm.isAccessible
 import kotlin.reflect.jvm.jvmErasure
-import kotlin.time.Duration
-import kotlin.time.DurationUnit
-import kotlin.time.toDuration
 
 @API(since = "0.4.0", status = MAINTAINED)
 class PrimaryConstructorArbitraryIntrospector : ArbitraryIntrospector {
@@ -70,17 +67,7 @@ class PrimaryConstructorArbitraryIntrospector : ArbitraryIntrospector {
                     val generatedByParameters = mutableMapOf<KParameter, Any?>()
                     for (parameter in constructor.parameters) {
                         val resolvedArbitrary = resolveArbitrary(parameter, arbitrariesByPropertyName)
-
-                        generatedByParameters[parameter] =
-                            if (parameter.type.jvmErasure != Duration::class) {
-                                resolvedArbitrary
-                            } else {
-                                if (resolvedArbitrary is Long) {
-                                    resolvedArbitrary.toDuration(DurationUnit.values().random())
-                                } else {
-                                    Duration.ZERO
-                                }
-                            }
+                        generatedByParameters[parameter] = resolvedArbitrary
                     }
                     constructor.callBy(generatedByParameters)
                 },
@@ -103,7 +90,7 @@ class PrimaryConstructorArbitraryIntrospector : ArbitraryIntrospector {
             }
         } catch (ex: Exception) {
             // omitted
-            arbitrariesByPropertyName[parameter.name]
+            null
         }
     }
 
