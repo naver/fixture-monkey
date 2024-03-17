@@ -44,8 +44,8 @@ import com.navercorp.fixturemonkey.api.introspector.OptionalIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.QueueIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.SetIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.StreamIntrospector;
-import com.navercorp.fixturemonkey.api.introspector.UuidIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.SupplierIntrospector;
+import com.navercorp.fixturemonkey.api.introspector.UuidIntrospector;
 import com.navercorp.fixturemonkey.api.jqwik.JavaTimeArbitraryIntrospector;
 
 @SuppressWarnings("UnusedReturnValue")

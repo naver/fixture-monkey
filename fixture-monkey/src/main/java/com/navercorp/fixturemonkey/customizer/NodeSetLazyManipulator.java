@@ -18,7 +18,8 @@
 
 package com.navercorp.fixturemonkey.customizer;
 
-import com.navercorp.fixturemonkey.api.type.Types;
+import java.util.function.Supplier;
+
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
@@ -27,12 +28,10 @@ import net.jqwik.api.Arbitrary;
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.container.DecomposedContainerValueFactory;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
+import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.customizer.Values.Just;
 import com.navercorp.fixturemonkey.tree.ArbitraryTraverser;
 import com.navercorp.fixturemonkey.tree.ObjectNode;
-
-import java.lang.reflect.Type;
-import java.util.function.Supplier;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class NodeSetLazyManipulator<T> implements NodeManipulator {

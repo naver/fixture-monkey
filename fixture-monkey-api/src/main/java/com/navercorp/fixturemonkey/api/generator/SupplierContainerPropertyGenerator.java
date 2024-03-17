@@ -18,13 +18,14 @@
 
 package com.navercorp.fixturemonkey.api.generator;
 
+import java.lang.reflect.AnnotatedType;
+import java.util.Collections;
+import java.util.List;
+import java.util.function.Supplier;
+
 import com.navercorp.fixturemonkey.api.property.ElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.type.Types;
-
-import java.lang.reflect.AnnotatedType;
-import java.util.*;
-import java.util.function.Supplier;
 
 public final class SupplierContainerPropertyGenerator implements ContainerPropertyGenerator {
 	public static final SupplierContainerPropertyGenerator INSTANCE = new SupplierContainerPropertyGenerator();
