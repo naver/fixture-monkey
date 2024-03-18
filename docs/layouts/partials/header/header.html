@@ -146,7 +146,7 @@
             <span class="dropdown-caret"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-down"><polyline points="6 9 12 15 18 9"></polyline></svg></span>
           </button>
           <ul class="dropdown-menu dropdown-menu-lg-end me-lg-2 shadow rounded border-0" aria-labelledby="doks-versions">
-            <li><a class="dropdown-item current" aria-current="true" href="{{ .RelPermalink }}">{{ .Site.Params.languageCode }}</a></li>
+            <li><a class="dropdown-item current" aria-current="true" href="{{ .Permalink }}">{{ .Site.Params.languageCode }}</a></li>
             <li><hr class="dropdown-divider"></li>
               {{ range .Site.Languages -}}
                 {{ if and (eq $.Site.Language.LanguageName .LanguageName) (ne $.Lang .Lang) }}
