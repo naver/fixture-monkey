@@ -1,5 +1,5 @@
 ---
-title: "Concepts"
+title: "컨셉"
 images: []
 menu:
 docs:
@@ -22,7 +22,7 @@ Fixture Monkey의 초기 구조는 주로 필드에 기반하고 있었으며, �
 Fixture Monkey의 `프로퍼티`는 클래스 내에서 기본 컴포넌트로 작동하며 `필드`, `메서드` 또는 Kotlin `프로퍼티`를 나타낼 수 있습니다.
 프로퍼티는 해당 `타입`, 명시된 `어노테이션` 그리고 `이름` 에 관한 정보가 포함되어 있습니다.
 
-게다가, Fixture Monkey에서는 `객체`와 `컨테이너`의 특성도 `프로퍼티` 컨셉을 통해 표현합니다.
+Fixture Monkey에서는 `객체`와 `컨테이너`의 특성도 `프로퍼티` 컨셉을 통해 표현합니다.
 
 ### 객체 프로퍼티
 
@@ -64,7 +64,7 @@ private final List<Property> elementProperties;
 }
 ```
 
-## 옵션들
+## 옵션 특성
 
 Fixture Monkey의 여러 옵션들은 공통적인 특성을 공유합니다.
 예를 들어, `ObjectPropertyGenerator` 를 수정하는 옵션들을 살펴보겠습니다.

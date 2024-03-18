@@ -10,12 +10,12 @@ identifier: "innerspec"
 InnerSpec은 적용하려는 커스터마이징에 대한 타입 독립적인 명세입니다.
 ArbitraryBuilder 내의 `setInner()` 메서드를 사용하면 `InnerSpec` 인스턴스에 정의된 명세를 빌더에 적용할 수 있습니다.
 
-`InnerSpec` 에는 커스터마이징 세부 정보가 저장되며 ArbitraryBuilder에서 재사용할 수 있습니다.
+`InnerSpec` 에는 커스터마이징 세부 정보가 저장되며 여러 ArbitraryBuilder에서 재사용할 수 있습니다.
 ArbitraryBuilder에서 픽스처 몽키 표현식을 사용하는 방식과 달리 `InnerSpec`은 중첩된 구조를 사용해 프로퍼티에 접근이 가능합니다.
 
 `InnerSpec` 의 또 다른 장점은 일반적인 표현식과 달리 맵 프로퍼티를 커스터마이징할 수 있다는 점입니다.
 
-{{< alert icon="💡" text="Kotlin EXP 는 InnerSpec 에서 지원하지 않습니다. InnerSpec 은 타입 독립적으로 설계되었기 때문에, 프로퍼티 이름을 통해 접근해야 합니다." />}}
+{{< alert icon="💡" text="Kotlin EXP 는 InnerSpec에서 지원하지 않습니다. InnerSpec은 타입 독립적으로 설계되었기 때문에, 프로퍼티 이름을 통해 프로퍼티를 접근해야 합니다." />}}
 
 ## ArbitraryBuilder 에 InnerSpec 적용하기
 
@@ -155,7 +155,7 @@ fixtureMonkey.giveMeBuilder<Product>()
 {{< /tab >}}
 {{< /tabpane>}}
 
-## 리스트 프로퍼티 커스터마이징
+## 리스트 커스터마이징하기
 
 ### listElement()
 
@@ -197,7 +197,7 @@ val innerSpec = InnerSpec()
 {{< /tab >}}
 {{< /tabpane>}}
 
-## 맵 프로퍼티 커스터마이징
+## 맵 커스터마이징하기
 
 InnerSpec은 맵 프로퍼티 엔트리를 커스터마이징하기 위해 특별한 메소드를 제공합니다.
 
@@ -363,7 +363,7 @@ val innerSpec = InnerSpec()
 {{< /tab >}}
 {{< /tabpane>}}
 
-## 중첩된 맵 커스터마이징
+## 중첩된 맵 커스터마이징하기
 
 메서드를 조합하여 InnerSpec 내에서 맵의 키, 값 또는 둘 다를 효과적으로 커스터마이징할 수 있습니다.
 

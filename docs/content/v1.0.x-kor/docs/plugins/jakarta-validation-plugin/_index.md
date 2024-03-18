@@ -1,5 +1,5 @@
 ---
-title: "Jakarta Validation Plugin"
+title: "Jakarta Validation 플러그인"
 images: []
 menu:
   docs:

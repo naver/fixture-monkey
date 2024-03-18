@@ -11,7 +11,7 @@ weight: 71
 Fixture monkey는 Fixture Monkey Jackson 플러그인을 사용하여 [Jackson](https://github.com/FasterXML/jackson)를 지원합니다.
 
 - `JacksonObjectArbitraryIntrospector`를 기본 introspector로 사용하여 Jackson 객체 매퍼를 통해 객체를 생성하는 기능을 지원합니다.
-- `@JsonIgnore`, `@JsonProperty`와 같은 Jackson 애노테이션을 지원합니다.
+- `@JsonIgnore`, `@JsonProperty`와 같은 Jackson 어노테이션을 지원합니다.
 
 ## 의존성
 #### Gradle
@@ -47,7 +47,7 @@ val fixtureMonkey = FixtureMonkey.builder()
 {{< /tab >}}
 {{< /tabpane>}}
 
-JacksonPlugin을 사용할 때 사용자 정의 객체 매퍼와 함께 Jackson을 사용하려면 JacksonPlugin 생성자에 objectMapper를 사용해야 합니다.
+JacksonPlugin을 사용할 때 사용자 정의 객체 매퍼를 사용하고싶다면 JacksonPlugin 생성자에 objectMapper를 전달해줄 수 있습니다.
 
 {{< tabpane persist=false >}}
 {{< tab header="Java" lang="java">}}

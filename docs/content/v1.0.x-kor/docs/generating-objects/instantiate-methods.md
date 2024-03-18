@@ -11,18 +11,18 @@ weight: 32
 각 테스트마다 객체 생성을 다르게 하고 싶을 수 있습니다.
 예를 들어, 같은 클래스에서도 첫 테스트에서는 생성자로 객체를 생성하고, 다른 테스트에서는 팩터리 메서드로 객체를 생성하고 싶을 수 있습니다
 
-Fixture Monkey는 `instantiate()` 메서드를 통해 객체 생성 방법을 선택할 수 있습니다.
+Fixture Monkey는 `instantiate()` 메서드를 제공해 객체 생성 방법을 선택할 수 있게 합니다.
 {{< alert icon="💡" text="Kotlin Plugin을 추가한다면 커스텀 DSL에서 instantiateBy() 메서드를 사용할 수 있습니다." />}}
 
 `ArbitraryBuilder`에서 원하는 인스턴스 생성 방법(생성자 또는 팩토리 메서드)으로 객체를 생성할 수 있습니다.
 
-그러나 `ArbitraryBuilder`를 사용할 때마다 매번 객체 생성 방법을 지정해야 하는 것은 아닙니다.
+`ArbitraryBuilder`를 사용할 때마다 매번 객체 생성 방법을 지정해야 하는 것은 아닙니다.
 전역 옵션으로 FixtureMonkey 인스턴스에서 객체 생성 방식을 지정해주고 싶다면, [Introspector](../introspector) 페이지를 참고해주세요.
 
 `instantiate()` 메서드는 `ArbitraryBuilder`를 사용할 때 객체를 편리하게 생성할 수 있도록 도와주는 메서드일 뿐입니다.
 
 ## 생성자
-몇몇 다른 생성자를 가진 커스텀 클래스가 있다고 가정해보겠습니다.
+여러 개의 생성자를 가진 커스텀 클래스가 있다고 가정해보겠습니다.
 
 {{< tabpane persist=false >}}
 {{< tab header="Java" lang="java">}}
@@ -263,7 +263,7 @@ fun test() {
 {{< /tabpane>}}
 
 이 예제에서는 제품 이름에 대한 매개 변수 이름 힌트를 "str"으로 제공합니다.
-이를 통해 `set()` 함수를 사용하여 제품 이름을 원하는 값(이 경우 "책"을 의미합니다.)으로 설정할 수 있습니다.
+이를 통해 `set()` 함수를 사용하여 제품 이름을 원하는 값(이 경우 "book"을 의미합니다.)으로 설정할 수 있습니다.
 
 힌트를 어떤 이름으로든 설정할 수 있지만, 혼동을 피하기 위해 생성자 매개변수에 이름을 사용하는 것이 좋습니다.
 또한 매개변수 이름 힌트를 사용하여 이름을 변경한 후에는 더 이상 필드 이름 "productName"을 사용하여 설정할 수 없습니다.
@@ -353,9 +353,9 @@ fun test() {
 제네릭 객체로 작업할 때 생성자를 실제 타입으로 사용하도록 지정할 수 있습니다.
 
 ### 중첩된 객체가 포함된 생성자
-중첩된 객체와 관련된 시나리오에서 생성자를 사용하여 두 객체 생성하는 경우 각 타입을 지정하거나 사용할 생성자를 지정할 수 있습니다.
+중첩된 객체가 존재하는 시나리오에서 각 객체의 생성이 생성자를 통해 이루어지도록 하고싶은 경우, 각 타입별로 사용할 생성자를 지정해줄 수 있습니다.
 
-예를 들어 `Product` 클래스를 사용하는 `ProductList` 클래스를 생각해 보겠습니다.
+예를 들어 `Product` 클래스를 사용하는 `ProductList` 클래스를 가정해보겠습니다.
 
 {{< tabpane persist=false >}}
 {{< tab header="Java" lang="java">}}
@@ -436,7 +436,7 @@ fun test() {
 {{< /tab >}}
 {{< /tabpane>}}
 
-{{< alert icon="💡" text="객체를 생성하는 메서드 내에서 서로 다른 프로퍼티에 대해 생성자 메서드와 팩토리 메서드 접근 방식을 모두 결합할 수도 있습니다. 위의 예제에서 ProductList는 팩토리 메서드를 사용하여 초기화할 수 있고, Product는 생성자를 사용하여 인스턴스화할 수 있습니다." />}}
+{{< alert icon="💡" text="객체를 생성하는 메서드 내에서 서로 다른 프로퍼티에 대해 생성자 메서드와 팩토리 메서드 접근 방식을 결합하여 사용할 수도 있습니다. 위의 예제에서 ProductList는 팩토리 메서드를 사용하여 초기화할 수 있고, Product는 생성자를 사용하여 인스턴스화할 수 있습니다." />}}
 
 ## 팩토리 메서드
 객체를 생성하는 두 번째 방법은 팩토리 메서드를 사용하는 것입니다.
@@ -599,9 +599,9 @@ fun test() {
 {{< tabpane persist=false >}}
 {{< tab header="Java" lang="java">}}
 
-.instantiate(constructor().field()) // generate based on fields
+.instantiate(constructor().field()) // 필드에 기반하여 생성
 
-.instantiate(constructor().javaBeansProperty()) // generate based on JavaBeans Property
+.instantiate(constructor().javaBeansProperty()) // 자바 빈 프로퍼티에 기반하여 생성
 
 {{< /tab >}}
 {{< tab header="Kotlin" lang="kotlin">}}

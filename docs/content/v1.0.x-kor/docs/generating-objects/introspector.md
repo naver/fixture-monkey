@@ -8,7 +8,7 @@ identifier: "introspector"
 weight: 33
 ---
 
-[`instantiate`](../instantiate-methods)를 사용하여 `ArbitraryBuilder`에서 객체를 생성하는 방법을 변경할 수 있지만, 전역적으로 객체를 생성하는 방법을 변경하고 싶은 경우가 있을 수 있습니다.
+[`instantiate`](../instantiate-methods)를 사용하여 `ArbitraryBuilder`에서 객체를 생성하는 방법을 변경할 수 있지만, 옵션을 통해 전역적으로도 객체 생성 방법을 지정할 수 있습니다.
 Fixture Monkey는 다양한 `Introspector`로 객체를 생성하는 방법을 제공합니다.
 
 `Introspector`는 Fixture Monkey가 객체를 생성하는 기본 방법을 정의합니다.

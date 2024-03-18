@@ -13,7 +13,7 @@ Fixture Monkey 는 코틀린의 DSL 기능을 이용해 표현식과 함께 타�
 
 ### 프로퍼티 참조
 
-앞서 설명한 것과 비슷한 객체 구조를 자바와 코틀린으로 모두 작성했다고 가정해봅니다.
+앞서 설명한 것과 비슷한 객체 구조를 자바와 코틀린으로 모두 작성했다고 가정해보겠습니다.
 
 ```java
 @Value
@@ -49,7 +49,7 @@ data class KotlinClass(
 }
 ```
 
-코틀린 표현식을 사용해 프로퍼티를 참조하기 위해서는 일반 [Fixture Customization APIs]((../../customizing-objects/apis) 에 `Exp` 나 `ExpGetter` 접미사를 사용합니다.
+코틀린 표현식을 사용해 프로퍼티를 참조하기 위해서는 일반 [Fixture Customization APIs](../../customizing-objects/apis) 에 `Exp` 나 `ExpGetter` 접미사를 사용합니다.
 
 `setExp()` 와 `setExpGetter()` 를 사용해 코틀린 표현식으로 프로퍼티를 커스텀하는 예를 살펴보겠습니다.
 
