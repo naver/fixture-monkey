@@ -180,7 +180,7 @@ fun sampleOrder() {
 * @[sangy515](https://github.com/sangy515)
 * @[yunseok-jeong0](https://github.com/yunseok-jeong0)
 * @[wicksome](https://github.com/wicksome)
-* @[Wonjin Choi](https://github.com/jinia91)
+* @[jinia91](https://github.com/jinia91)
 * @[songkg7](https://github.com/songkg7)
 * @[this-is-spear](https://github.com/this-is-spear)
 * @[donggyunhuh](https://github.com/donggyunhuh)
