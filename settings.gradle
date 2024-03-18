@@ -32,6 +32,9 @@ include(
         "fixture-monkey-tests:java-tests",
         "fixture-monkey-tests:java-concurrent-tests",
         "fixture-monkey-tests:kotlin-concurrent-tests",
-        "fixture-monkey-kotest"
+        "fixture-monkey-kotest",
+        "fixture-monkey-benchmarks",
+        "fixture-monkey-benchmarks:fixture-monkey-benchmark",
+        "fixture-monkey-benchmarks:fixture-monkey-benchmark-kotlin",
 )
 
