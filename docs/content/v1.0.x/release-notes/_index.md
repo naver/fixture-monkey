@@ -5,6 +5,13 @@ menu:
 docs:
 weight: 100
 ---
+
+sectionStart
+### v.1.0.15
+Add "KotlinDurationIntrospector" supporting generating a Duration type in Kotlin.
+
+sectionEnd
+
 sectionStart
 ### v.1.0.13
 Add InterfacePlugin supports abstract classes through `abstractClassExtends` option.
