@@ -14,7 +14,7 @@ These options are accessible through the `FixtureMonkeyBuilder`.
 
 ## Implement your own Object Generator
 ### ObjectIntrospector
-> `objectIntrospcetor`
+> `objectIntrospector`
 
 An `ObjectIntrospector` determines how Fixture Monkey creates objects. The `objectIntrospector` option allows you to specify the default behavior when generating an object.  
 As discussed in the [introspector section](../../generating-objects/introspector), you can use predefined introspectors provided by Fixture Monkey or create your own custom introspector.
@@ -22,11 +22,10 @@ As discussed in the [introspector section](../../generating-objects/introspector
 {{< alert icon="📖" text="Notable implementations: 'BeanArbitraryIntrospector', 'BuilderArbitraryIntrospector'" />}}
 
 ### ArbitraryIntrospector
+> `pushArbitraryIntrospector`, `pushAssignableTypeArbitraryIntrospector`, `pushExactTypeArbitraryIntrospector`
 The `ArbitraryIntrospector` is responsible for defining how Fixture Monkey chooses the appropriate arbitrary generation strategy and generates an arbitrary. 
 The object is then generated based on the generated arbitrary.
 You have the flexibility to create a custom introspector by implementing your own `ArbitraryIntrospector`.
-
-> `pushArbitraryIntrospector`, `pushAssignableTypeArbitraryIntrospector`, `pushExactTypeArbitraryIntrospector`
 
 If you need to change the `ArbitraryIntrospector` for a specific type, you can use the above options.
 
