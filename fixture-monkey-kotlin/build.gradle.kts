@@ -10,6 +10,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect:${Versions.KOTLIN}")
 
     testImplementation(project(":fixture-monkey-jackson"))
+    testImplementation(project(":fixture-monkey-javax-validation"))
     testImplementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     testImplementation("org.junit.jupiter:junit-jupiter-engine:${Versions.JUNIT_JUPITER}")
     testImplementation("org.junit.platform:junit-platform-engine:${Versions.JUNIT_ENGINE}")
