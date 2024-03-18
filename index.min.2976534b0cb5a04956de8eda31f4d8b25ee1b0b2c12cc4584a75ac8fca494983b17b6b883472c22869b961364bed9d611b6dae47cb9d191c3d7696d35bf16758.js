@@ -207,15 +207,14 @@ However, if you need to apply specific options for a particular type, you can ma
 push~ : Accepts a MatcherOperator as a parameter. pushAssignableType~: This option applies the specified setting to every property type for which the given type (associated with the option) is assignable. This means that the option is applied not only to the exact given type but also to any type that can be assigned to the property type, including superclasses or superinterfaces. pushExactType~: This option limits the setting to properties with the exact same type. It does not impact properties with subtype or supertype relationships. It&rsquo;s important to note that options set using the push variants take precedence over the default options. This means that when a push option is defined for a specific type, it will override any corresponding default option for that type.
 `}),e.add({id:21,href:"/docs/fixture-monkey-options/generation-options/",title:"Generation Options",description:`To create a complex object that matches your desired configurations, Fixture Monkey provides a variety of options for creating objects.
 These options are accessible through the FixtureMonkeyBuilder.
-Implement your own Object Generator # ObjectIntrospector # objectIntrospcetor
+Implement your own Object Generator # ObjectIntrospector # objectIntrospector
 An ObjectIntrospector determines how Fixture Monkey creates objects. The objectIntrospector option allows you to specify the default behavior when generating an object.
 As discussed in the introspector section, you can use predefined introspectors provided by Fixture Monkey or create your own custom introspector.`,content:`To create a complex object that matches your desired configurations, Fixture Monkey provides a variety of options for creating objects.
 These options are accessible through the FixtureMonkeyBuilder.
-Implement your own Object Generator # ObjectIntrospector # objectIntrospcetor
+Implement your own Object Generator # ObjectIntrospector # objectIntrospector
 An ObjectIntrospector determines how Fixture Monkey creates objects. The objectIntrospector option allows you to specify the default behavior when generating an object.
 As discussed in the introspector section, you can use predefined introspectors provided by Fixture Monkey or create your own custom introspector.
-📖 Notable implementations: 'BeanArbitraryIntrospector', 'BuilderArbitraryIntrospector' ArbitraryIntrospector # The ArbitraryIntrospector is responsible for defining how Fixture Monkey chooses the appropriate arbitrary generation strategy and generates an arbitrary. The object is then generated based on the generated arbitrary. You have the flexibility to create a custom introspector by implementing your own ArbitraryIntrospector.
-pushArbitraryIntrospector, pushAssignableTypeArbitraryIntrospector, pushExactTypeArbitraryIntrospector
+📖 Notable implementations: 'BeanArbitraryIntrospector', 'BuilderArbitraryIntrospector' ArbitraryIntrospector # pushArbitraryIntrospector, pushAssignableTypeArbitraryIntrospector, pushExactTypeArbitraryIntrospector The ArbitraryIntrospector is responsible for defining how Fixture Monkey chooses the appropriate arbitrary generation strategy and generates an arbitrary. The object is then generated based on the generated arbitrary. You have the flexibility to create a custom introspector by implementing your own ArbitraryIntrospector.
 If you need to change the ArbitraryIntrospector for a specific type, you can use the above options.
 📖 Notable implementations: 'BooleanIntrospector', 'EnumIntrospector' ContainerIntrospector # pushContainerIntrospector
 Especially for container types, you can change the ArbitraryIntrospector using the pushContainerIntrospector option.
