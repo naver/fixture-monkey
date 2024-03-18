@@ -1,5 +1,5 @@
 ---
-title: "Expressions"
+title: "표현식"
 weight: 42
 menu:
 docs:
@@ -9,7 +9,7 @@ identifier: "expressions"
 
 Fixture Monkey를 사용할 때, Fixture Monkey 표현식을 사용하여 오브젝트의 프로퍼티를 하나 이상 유연하게 선택할 수 있습니다.
 
-예제 오브젝트 구조는 아래와 같습니다:
+아래와 같은 예제 오브젝트가 있다고 가정해보겠습니다.
 
 ```java
 @Value
@@ -30,7 +30,6 @@ public class JavaClass {
     }
 }
 ```
-
 
 ### String Expressions을 통해 프로퍼티 선택하기
 
@@ -126,15 +125,13 @@ javaGetter(JavaClass::getObjectList)
 
 컬렉션의 경우 프로퍼티는 컬렉션 크기 내에 존재하는 경우에만 선택됩니다. 예를 들어, 리스트의 크기가 2이지만 표현식이 목록의 범위를 벗어난 `"list[3]"`을 참조하는 경우 선택되지 않습니다.
 
-Fixture Monkey 표현식은 리스트와 세트에서 요소를 선택하는 기능을 지원하지만, 맵의 요소를 직접 선택할 수는 없습니다. 대신, 맵을 커스터마이즈해야 하는 경우에는 InnerSpec을 사용할 수 있습니다.
-
+Fixture Monkey 표현식은 리스트와 세트에서 요소를 선택하는 기능을 지원하지만, 맵의 요소를 직접 선택할 수는 없습니다. 대신, 맵을 커스터마이징해야 하는 경우에는 InnerSpec을 사용할 수 있습니다.
 
 
 ### Expression Strict Mode
 
 이 [옵션](../../fixture-monkey-options/customization-options/#expression-strict-mode)을 켜면 적용된 표현식이 구조와 정확하게 일치하는지 확인할 수 있습니다. 표현식의 일부가 범위를 벗어나거나 유효하지 않은 경우 Fixture Monkey는 예외를 발생시킵니다.
 
-
 ### Kotlin EXP
 
-Kotlin 플러그인을 추가하면 Kotlin의 프로퍼티 참조 구문을 사용하여 프로퍼티를 선택할 수 있습니다. Fixture Monkey에서는 이 기능을 `Kotlin EXP` 또는 `Fixture Monkey Kotlin DSL`이라고 합니다. 사용법에 대한 자세한 내용은 [Kotlin DSL Exp page](../../plugins/kotlin-plugin/kotlin-exp)를 참조하세요.
+Kotlin 플러그인을 추가하면 Kotlin의 프로퍼티 참조 구문을 사용하여 프로퍼티를 선택할 수 있습니다. Fixture Monkey에서는 이 기능을 `Kotlin EXP` 또는 `Fixture Monkey Kotlin DSL`이라고 합니다. 사용법에 대한 자세한 내용은 [Kotlin DSL Exp](../../plugins/kotlin-plugin/kotlin-exp)를 참조하세요.

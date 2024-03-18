@@ -86,11 +86,11 @@ fun test() {
       .sample()
 
   // then
-  then (actual.id).isEqualTo(1000L)
-  then (actual.options).hasSize(3)
-  then (actual.options[1]).isEqualTo("red")
+  then(actual.id).isEqualTo(1000L)
+  then(actual.options).hasSize(3)
+  then(actual.options[1]).isEqualTo("red")
 }
 ```
 
 `set()` 메서드 대신 `setExp()` 메서드를 사용하면 Kotlin 의 프로퍼티 레퍼런스 구문을 사용하여 프로퍼티 할당을 지정할 수 있습니다.
-[Kotlin Plugin](../../plugins/kotlin-plugin/features) 페이지에서 Kotlin 플러그인이 제공하는 기능에 대해 자세히 알아볼 수 있습니다.
+[Kotlin 플러그인](../../plugins/kotlin-plugin/features) 페이지에서 Kotlin 플러그인이 제공하는 기능에 대해 자세히 알아볼 수 있습니다.

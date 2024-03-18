@@ -78,13 +78,13 @@ void test() {
 ```
 
 먼저, 테스트 픽스처를 쉽게 만들 수 있는 FixtureMonkey 인스턴스를 생성합니다.
-Fixture Monkey 에는 여러 사용자 정의 옵션이 있어서 특정 요구 사항에 따라 인스턴스를 생성할 수 있습니다.
+Fixture Monkey 에는 여러 사용자 정의 옵션이 있어서 특정 요구 사항을 만족하는 인스턴스를 생성할 수 있습니다.
 
 Fixture Monkey 는 객체를 생성하기 위한 기본 방법으로 `BeanArbitraryIntrospector` 를 사용합니다.
 `Introspector` 는 Fixture Monkey 가 객체를 생성하는 방법을 정의합니다.
 
 `BeanArbitraryIntrospector` 를 사용하려면, 생성될 클래스에는 no-args 생성자와 setter 가 있어야 합니다.
-(다른 Introspector 도 사용할 수 있습니다. 각각의 요구 사항은 [`Introspectors` section](../../generating-objects/introspector) 을 참고하세요.)
+(다른 Introspector를 사용할 수도 있습니다. 각각의 요구 사항은 [`Introspectors` section](../../generating-objects/introspector) 을 참고하세요.)
 
 다음으로, `giveMeOne()` 메서드를 사용하여 지정된 타입의 인스턴스를 생성합니다.
 

@@ -1,5 +1,5 @@
 ---
-title: "Generating Complex Types"
+title: "복잡한 객체 생성하기"
 images: []
 menu:
 docs:

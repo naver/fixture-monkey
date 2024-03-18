@@ -60,6 +60,6 @@ val product = sut.giveMeBuilder<Product>()
 
 `setPostCondition()`을 사용하면 Product 인스턴스가 생성된 후 필터링되므로 제한적인 조건에서 더 높은 비용이 발생할 수 있습니다. 이러한 경우 `set()`을 대신 사용하는 것이 권장됩니다.
 
-### 내 필드 중 하나는 다른 필드의 값에 의존하고 있습니다. 이러한 픽스처를 커스터마이징 하려면 어떻게 해야 하나요?
+### 필드 중 하나가 다른 필드의 값에 의존하고 있습니다. 이러한 픽스처를 커스터마이징 하려면 어떻게 해야 하나요?
 
-`thenApply()` 메서드는 다른 필드에 의존하는 필드를 커스터마이징 할 때 유용합니다. 자세한 내용은 [`thenApply()` 항목](../../customizing-objects/apis/#thenapply)을 확인해주세요.
+`thenApply()` 메서드는 다른 필드에 의존하는 필드를 커스터마이징 할 때 유용합니다. 자세한 내용은 [`thenApply()`](../../customizing-objects/apis/#thenapply)을 확인해주세요.

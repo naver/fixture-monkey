@@ -50,7 +50,7 @@ val fixtureMonkey = FixtureMonkey.builder()
 
 ## 인스턴스 생성
 
-`FixtureMonkey` 클래스는 테스트에 필요한 객체 생성에 도움 되는 메서드를 제공합니다.
+`FixtureMonkey` 클래스는 테스트에 필요한 객체 생성을 도와주는 API들을 제공합니다.
 
 ### giveMeOne()
 특정 타입의 인스턴스가 필요하다면 `giveMeOne()`을 사용할 수 있습니다. 인자로 클래스 또는 타입을 전달해주세요.
@@ -141,7 +141,7 @@ val productBuilder = fixtureMonkey.giveMeBuilder(product)
 {{< /tab >}}
 {{< /tabpane>}}
 
-`ArbitraryBuilder`는 픽스처를 커스텀하는 데 사용될 수 있습니다. 커스텀 옵션에 대한 자세한 내용은 [커스텀 객체](../../customizing-objects/apis)를 참고하십시오.
+`ArbitraryBuilder`는 픽스처를 커스텀하는 데 사용될 수 있습니다. 커스터마이징 방법에 대한 자세한 내용은 [객체 커스터마이징 항목](../../customizing-objects/apis)를 참고하십시오.
 
 `ArbitraryBuilder`에서 인스턴스를 얻기 위해 `ArbitraryBuilder`의 `sample()`, `sampleList()`, `sampleStream()` 메서드를 사용할 수 있습니다.
 
