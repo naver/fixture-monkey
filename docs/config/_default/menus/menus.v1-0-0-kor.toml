@@ -3,48 +3,6 @@ name = "Docs"
 url = "/docs/introduction/overview/"
 weight = 10
 
-[[docs]]
-name = "Introduction"
-weight = 10
-identifier = "get-started"
-url = "/docs/introduction/"
-
-[[docs]]
-name = "Getting Started"
-weight = 20
-identifier = "get-started"
-url = "/docs/get-started/"
-
-[[docs]]
-name = "Generating Objects"
-weight = 30
-identifier = "generating-objects"
-url = "/docs/generating-objects/"
-
-[[docs]]
-name = "Customizing Objects"
-weight = 40
-identifier = "customizing-objects"
-url = "/docs/customizing-objects/"
-
-[[docs]]
-name = "Fixture Monkey Options"
-weight = 50
-identifier = "fixture-monkey-options"
-url = "/docs/fixture-monkey-options/"
-
-[[docs]]
-name = "Plugins"
-weight = 60
-identifier = "plugins"
-url = "/docs/plugins/"
-
-[[docs]]
-name = "IntelliJ Plugin"
-weight = 70
-identifier = "intellij-plugin"
-url = "/docs/intellij-plugin/"
-
 [[main]]
 name = "Release Notes"
 weight = 20
