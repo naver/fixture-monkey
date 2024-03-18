@@ -102,13 +102,13 @@ If changes are desired, these can be injected as arguments.
 
 ```kotlin
     // given
-        val sut: FixtureMonkey = FixtureMonkey.builder()
-            .plugin(KotlinPlugin())
-            .objectIntrospector(
-                KotlinAndJavaCompositeArbitraryIntrospector(
-                    kotlinArbitraryIntrospector = PrimaryConstructorArbitraryIntrospector.INSTANCE,
-                    javaArbitraryIntrospector = ConstructorPropertiesArbitraryIntrospector.INSTANCE
-                )
+    val sut: FixtureMonkey = FixtureMonkey.builder()
+        .plugin(KotlinPlugin())
+        .objectIntrospector(
+            KotlinAndJavaCompositeArbitraryIntrospector(
+                kotlinArbitraryIntrospector = PrimaryConstructorArbitraryIntrospector.INSTANCE,
+                javaArbitraryIntrospector = ConstructorPropertiesArbitraryIntrospector.INSTANCE
             )
-            .build()
+        )
+        .build()
 ```

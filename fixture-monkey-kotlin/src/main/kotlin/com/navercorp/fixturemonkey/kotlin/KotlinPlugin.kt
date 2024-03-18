@@ -38,9 +38,9 @@ import com.navercorp.fixturemonkey.kotlin.matcher.Matchers.TRIPLE_TYPE_MATCHER
 import com.navercorp.fixturemonkey.kotlin.property.KotlinPropertyGenerator
 import com.navercorp.fixturemonkey.kotlin.type.actualType
 import com.navercorp.fixturemonkey.kotlin.type.cachedKotlin
-import java.lang.reflect.Modifier
 import org.apiguardian.api.API
 import org.apiguardian.api.API.Status.MAINTAINED
+import java.lang.reflect.Modifier
 
 @API(since = "0.4.0", status = MAINTAINED)
 class KotlinPlugin : Plugin {
