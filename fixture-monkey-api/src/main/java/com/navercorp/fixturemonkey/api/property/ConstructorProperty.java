@@ -114,7 +114,7 @@ public final class ConstructorProperty implements Property {
 			return false;
 		}
 		ConstructorProperty that = (ConstructorProperty)obj;
-		return annotatedType.equals(that.annotatedType)
+		return annotatedType.getType().equals(that.annotatedType.getType())
 			&& constructor.equals(that.constructor)
 			&& parameterName.equals(that.parameterName)
 			&& Objects.equals(fieldProperty, that.fieldProperty)
@@ -123,7 +123,7 @@ public final class ConstructorProperty implements Property {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(annotatedType, constructor, parameterName, fieldProperty, annotations);
+		return Objects.hash(annotatedType.getType(), constructor, parameterName, fieldProperty, annotations);
 	}
 
 	@Nullable

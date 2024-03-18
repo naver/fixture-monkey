@@ -8,7 +8,19 @@ weight: 100
 
 sectionStart
 ### v.1.0.15
+Add `ConcreteTypeDefinition` in `ArbitraryProperty`, deprecate `getChildPropertiesByResolvedProperty` and `getChildPropertyListsByCandidateProperty` which is added in 1.0.14.
+
 Add "KotlinDurationIntrospector" supporting generating a Duration type in Kotlin.
+
+sectionEnd
+
+sectionStart
+### v.1.0.14
+Add supporting value class with the private constructor.
+
+Add supporting for sealed class and sealed interface.
+
+Deprecate `nullInject` and `childPropertyListsByCandidateProperty` properties in `ObjectNode`. They would be moved to `ArbitraryProperty`. 
 
 sectionEnd
 

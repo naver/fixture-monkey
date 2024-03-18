@@ -39,11 +39,13 @@ public final class ObjectProperty {
 
 	private final PropertyNameResolver propertyNameResolver;
 
+	@Deprecated
 	private final double nullInject;
 
 	@Nullable
 	private final Integer elementIndex;
 
+	@Deprecated
 	private final Map<Property, List<Property>> childPropertyListsByCandidateProperty;
 
 	public ObjectProperty(
@@ -72,6 +74,7 @@ public final class ObjectProperty {
 		return this.getPropertyNameResolver().resolve(this.property);
 	}
 
+	@Deprecated
 	public double getNullInject() {
 		return this.nullInject;
 	}
@@ -81,6 +84,7 @@ public final class ObjectProperty {
 		return this.elementIndex;
 	}
 
+	@Deprecated
 	public Map.Entry<Property, List<Property>> getChildPropertiesByResolvedProperty(Matcher matcher) {
 		for (
 			Entry<Property, List<Property>> childPropertyListByPossibleProperty :
@@ -94,6 +98,7 @@ public final class ObjectProperty {
 		throw new IllegalArgumentException("No resolved property is found.");
 	}
 
+	@Deprecated
 	public Map<Property, List<Property>> getChildPropertyListsByCandidateProperty() {
 		return childPropertyListsByCandidateProperty;
 	}
@@ -102,6 +107,7 @@ public final class ObjectProperty {
 		return this.property instanceof RootProperty;
 	}
 
+	@Deprecated
 	public ObjectProperty withNullInject(double nullInject) {
 		return new ObjectProperty(
 			this.property,
@@ -112,6 +118,7 @@ public final class ObjectProperty {
 		);
 	}
 
+	@Deprecated
 	public ObjectProperty withChildPropertyListsByCandidateProperty(
 		Map<Property, List<Property>> childPropertyListsByCandidateProperty
 	) {

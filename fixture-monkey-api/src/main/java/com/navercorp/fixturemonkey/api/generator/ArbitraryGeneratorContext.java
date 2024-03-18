@@ -54,7 +54,7 @@ public final class ArbitraryGeneratorContext implements Traceable {
 	private final ArbitraryGeneratorContext ownerContext;
 	private final BiFunction<ArbitraryGeneratorContext, ArbitraryProperty, CombinableArbitrary<?>> resolveArbitrary;
 	private final MonkeyGeneratorContext monkeyGeneratorContext;
-	private final LazyArbitrary<PropertyPath> pathProperty = LazyArbitrary.lazy(this::initPathProperty);
+	private final LazyArbitrary<PropertyPath> lazyPropertyPath;
 	private final LazyArbitrary<Map<ArbitraryProperty, CombinableArbitrary<?>>> arbitraryListByArbitraryProperty =
 		LazyArbitrary.lazy(this::initArbitraryListByArbitraryProperty);
 	private final int generateUniqueMaxTries;
@@ -67,6 +67,7 @@ public final class ArbitraryGeneratorContext implements Traceable {
 		List<ArbitraryProperty> children,
 		@Nullable ArbitraryGeneratorContext ownerContext,
 		BiFunction<ArbitraryGeneratorContext, ArbitraryProperty, CombinableArbitrary<?>> resolveArbitrary,
+		LazyArbitrary<PropertyPath> lazyPropertyPath,
 		MonkeyGeneratorContext monkeyGeneratorContext,
 		int generateUniqueMaxTries
 	) {
@@ -75,6 +76,7 @@ public final class ArbitraryGeneratorContext implements Traceable {
 		this.children = new ArrayList<>(children);
 		this.ownerContext = ownerContext;
 		this.resolveArbitrary = resolveArbitrary;
+		this.lazyPropertyPath = lazyPropertyPath;
 		this.monkeyGeneratorContext = monkeyGeneratorContext;
 		this.generateUniqueMaxTries = generateUniqueMaxTries;
 	}
@@ -140,7 +142,7 @@ public final class ArbitraryGeneratorContext implements Traceable {
 	}
 
 	public PropertyPath getPropertyPath() {
-		return pathProperty.getValue();
+		return lazyPropertyPath.getValue();
 	}
 
 	public int getGenerateUniqueMaxTries() {
@@ -153,19 +155,6 @@ public final class ArbitraryGeneratorContext implements Traceable {
 
 	public void setGenerated(CombinableArbitrary<?> generated) {
 		this.generated.set(generated);
-	}
-
-	private PropertyPath initPathProperty() {
-		if (ownerContext == null) {
-			return new PropertyPath(property.getObjectProperty().getProperty(), null, 1);
-		}
-
-		PropertyPath parentPropertyPath = ownerContext.getPropertyPath();
-		return new PropertyPath(
-			property.getObjectProperty().getProperty(),
-			parentPropertyPath,
-			parentPropertyPath.getDepth() + 1
-		);
 	}
 
 	private Map<ArbitraryProperty, CombinableArbitrary<?>> initArbitraryListByArbitraryProperty() {

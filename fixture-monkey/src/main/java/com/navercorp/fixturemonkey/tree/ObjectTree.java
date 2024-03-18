@@ -125,6 +125,7 @@ public final class ObjectTree {
 
 				return generateIntrospected(node, currentContext);
 			},
+			objectNode.getLazyPropertyPath(),
 			monkeyGeneratorContext,
 			fixtureMonkeyOptions.getGenerateUniqueMaxTries()
 		);
@@ -138,7 +139,7 @@ public final class ObjectTree {
 		CombinableArbitrary<?> generated;
 		if (node.getArbitrary() != null) {
 			generated = node.getArbitrary()
-				.injectNull(node.getArbitraryProperty().getObjectProperty().getNullInject());
+				.injectNull(node.getArbitraryProperty().getNullInject());
 		} else {
 			CombinableArbitrary<?> cached = monkeyContext.getCachedArbitrary(node.getProperty());
 

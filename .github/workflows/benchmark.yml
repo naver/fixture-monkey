@@ -17,11 +17,20 @@ jobs:
         uses: gradle/gradle-build-action@v2.4.2
         with:
           arguments: jmh
-      - name: Read benchmark result
+      - name: Merge benchmark results
+        id: merge
+        run: |
+          echo "" > merged_results.csv
+          find ./fixture-monkey-benchmarks -name 'results.csv' | while read line; do
+            cat "$line" >> merged_results.csv
+            echo "" >> merged_results.csv
+          done
+          cat merged_results.csv
+      - name: Read merged benchmark result
         id: csv
         uses: juliangruber/read-file-action@v1
         with:
-          path: ./fixture-monkey/build/results/jmh/results.csv
+          path: merged_results.csv
       - name: Create Markdown table
         uses: petems/csv-to-md-table-action@master
         id: csv-table-output

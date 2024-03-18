@@ -32,6 +32,7 @@ import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.api.property.Property;
+import com.navercorp.fixturemonkey.api.property.PropertyPath;
 import com.navercorp.fixturemonkey.customizer.ContainerInfoManipulator;
 import com.navercorp.fixturemonkey.customizer.NodeManipulator;
 
@@ -69,6 +70,19 @@ public final class ObjectNode {
 		}
 
 		return false;
+	});
+
+	private final LazyArbitrary<PropertyPath> lazyPropertyPath = LazyArbitrary.lazy(() -> {
+		if (parent == null) {
+			return new PropertyPath(resolvedProperty, null, 1);
+		}
+
+		PropertyPath parentPropertyPath = parent.getLazyPropertyPath().getValue();
+		return new PropertyPath(
+			resolvedProperty,
+			parentPropertyPath,
+			parentPropertyPath.getDepth() + 1
+		);
 	});
 
 	ObjectNode(
@@ -174,5 +188,9 @@ public final class ObjectNode {
 		}
 
 		return containerInfoManipulators.get(containerInfoManipulators.size() - 1);
+	}
+
+	public LazyArbitrary<PropertyPath> getLazyPropertyPath() {
+		return lazyPropertyPath;
 	}
 }
