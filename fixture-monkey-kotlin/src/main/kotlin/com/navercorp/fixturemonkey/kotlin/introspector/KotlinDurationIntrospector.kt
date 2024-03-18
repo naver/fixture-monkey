@@ -25,11 +25,13 @@ import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult
 import com.navercorp.fixturemonkey.api.matcher.Matcher
 import com.navercorp.fixturemonkey.api.property.Property
 import com.navercorp.fixturemonkey.kotlin.matcher.Matchers.DURATION_TYPE_MATCHER
+import org.apiguardian.api.API
 import kotlin.reflect.full.primaryConstructor
 import kotlin.time.Duration
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
+@API(since = "1.0.15", status = API.Status.EXPERIMENTAL)
 class KotlinDurationIntrospector : ArbitraryIntrospector, Matcher {
     override fun match(property: Property) = DURATION_TYPE_MATCHER.match(property)
 
