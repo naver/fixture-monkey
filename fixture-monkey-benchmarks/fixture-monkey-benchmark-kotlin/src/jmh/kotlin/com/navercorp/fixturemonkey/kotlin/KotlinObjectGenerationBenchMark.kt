@@ -4,6 +4,7 @@ import com.navercorp.fixturemonkey.OrderSheet
 import com.navercorp.fixturemonkey.FixtureMonkey
 import com.navercorp.fixturemonkey.api.introspector.BeanArbitraryIntrospector
 import com.navercorp.fixturemonkey.api.type.TypeCache
+import com.navercorp.fixturemonkey.kotlin.introspector.KotlinAndJavaCompositeArbitraryIntrospector
 import java.util.concurrent.TimeUnit
 import org.openjdk.jmh.annotations.Benchmark
 import org.openjdk.jmh.annotations.BenchmarkMode
@@ -48,4 +49,16 @@ open class KotlinObjectGenerationBenchMark {
 
     private fun generateKotlinOrderSheet(fixtureMonkey: FixtureMonkey): List<KotlinOrderSheet> =
         List(COUNT) { fixtureMonkey.giveMeOne(KotlinOrderSheet::class.java) }
+
+    @Benchmark
+    fun beanGenerateKotlinJavaCompositeOrderSheetWithFixtureMonkey(blackhole: Blackhole) {
+        val fixtureMonkey = FixtureMonkey.builder()
+            .plugin(KotlinPlugin())
+            .objectIntrospector(KotlinAndJavaCompositeArbitraryIntrospector())
+            .build()
+        blackhole.consume(generateKotlinJavaCompositeOrderSheet(fixtureMonkey))
+    }
+
+    private fun generateKotlinJavaCompositeOrderSheet(fixtureMonkey: FixtureMonkey): List<KotlinJavaCompositeOrderSheet> =
+        List(COUNT) { fixtureMonkey.giveMeOne(KotlinJavaCompositeOrderSheet::class.java) }
 }
