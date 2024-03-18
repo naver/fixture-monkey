@@ -24,7 +24,6 @@ import static com.navercorp.fixturemonkey.api.type.Types.isAssignable;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Map.Entry;
 
 import javax.annotation.Nullable;
 
@@ -35,6 +34,7 @@ import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.container.DecomposableJavaContainer;
 import com.navercorp.fixturemonkey.api.container.DecomposedContainerValueFactory;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
+import com.navercorp.fixturemonkey.api.property.ConcreteTypeDefinition;
 import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.type.Types;
@@ -148,14 +148,16 @@ public final class NodeSetDecomposedValueManipulator<T> implements NodeManipulat
 			return;
 		}
 
-		Entry<Property, List<Property>> childPropertiesByResolvedProperty = objectNode.getArbitraryProperty()
-			.getChildPropertiesByResolvedProperty(
-				property -> isAssignable(value.getClass(), Types.getActualType(property.getType()))
-			);
+		ConcreteTypeDefinition concreteTypeDefinition = objectNode.getArbitraryProperty()
+			.getConcreteTypeDefinitions()
+			.stream()
+			.filter(it -> isAssignable(value.getClass(), Types.getActualType(it.getConcreteProperty().getType())))
+			.findFirst()
+			.orElseThrow(() -> new IllegalArgumentException("No resolved property is found."));
 
-		Property resolvedParentProperty = childPropertiesByResolvedProperty.getKey();
+		Property resolvedParentProperty = concreteTypeDefinition.getConcreteProperty();
 		objectNode.setResolvedProperty(resolvedParentProperty);
-		List<Property> childProperties = childPropertiesByResolvedProperty.getValue();
+		List<Property> childProperties = concreteTypeDefinition.getChildPropertyLists();
 		for (ObjectNode child : children) {
 			if (childProperties.contains(child.getProperty())
 				&& resolvedParentProperty.equals(child.getResolvedParentProperty())) {
