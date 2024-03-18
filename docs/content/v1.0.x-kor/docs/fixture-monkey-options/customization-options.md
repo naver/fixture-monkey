@@ -10,15 +10,15 @@ weight: 53
 
 Fixture Monkey는 `FixtureMonkeyBuilder` 를 통해 원하는 값을 가지도록 객체를 사용자 정의하거나 사용자 정의 프로퍼티 명을 사용할 수 있는 옵션도 제공합니다.
 
-## 프로퍼티네임 리졸버
+## 프로퍼티명 참조 방법 변경하기
 > `defaultPropertyNameResolver`, `pushPropertyNameResolver`, `pushAssignableTypePropertyNameResolver`, `pushExactTypePropertyNameResolver`
 
-`PropertyNameResolver` 관련 옵션을 사용하면 프로퍼티를 참조하는 방법을 사용자 정의할 수 있습니다.
+`PropertyNameResolver` 관련 옵션을 사용하면 프로퍼티명을 참조하는 방법을 사용자 정의할 수 있습니다.
 
-`defaultPropertyNameResolver` 옵션은 모든 타입에 대해 프로퍼티 명을 알아내는 방식을 변경하는 데 사용됩니다.
+`defaultPropertyNameResolver` 옵션은 모든 타입에 대해 프로퍼티명을 알아내는 방식을 변경하는 데 사용됩니다.
 만약 특정 타입에 대해 변경을 수행하려면 `pushPropertyNameResolver` , `pushAssignableTypePropertyNameResolver` 또는 `pushExactTypePropertyNameResolver` 를 사용할 수 있습니다.
 
-기본적으로 프로퍼티는 원래 이름으로 참조됩니다. 다음 예시를 통해 프로퍼티 명을 사용자 정의하는 방법을 살펴봅시다:
+기본적으로 프로퍼티는 원래 이름으로 참조됩니다. 다음 예시를 통해 프로퍼티명을 사용자 정의하는 방법을 살펴봅시다:
 
 {{< tabpane persist=false >}}
 {{< tab header="Java" lang="java">}}
@@ -80,7 +80,7 @@ fun test() {
 일반적으로, 프로퍼티 명은 기존 프로퍼티 명인 "productName" 으로 해석됩니다.
 그러나 `pushPropertyNameResolver` 를 사용하면 String 타입의 프로퍼티는 이제 "string"이라는 이름으로 참조됩니다.
 
-## 등록 옵션
+## 특정 타입에 기본 ArbitraryBuilder 등록하기
 > `register`, `registerGroup`, `registerExactType`, `registerAssignableType`
 
 때로는 클래스가 특정 제약 조건을 항상 지켜야할 수 있습니다.
@@ -215,7 +215,7 @@ FixtureMonkey.builder()
 {{< /tab >}}
 {{< /tabpane>}}
 
-## 표현식 엄격 모드
+## 표현식 엄격 모드 사용하기
 > `useExpressionStrictMode`
 
 표현식(특히 문자열 표현식)을 사용할 때 작성한 표현식이 일치하는 프로퍼티를 가지는지, 프로퍼티가 올바르게 선택되었는지를 파악하기 어려울 수 있습니다.
@@ -254,7 +254,7 @@ fun test() {
 {{< /tab >}}
 {{< /tabpane>}}
 
-## Java 타입 제한
+## Java 기본 타입 제약 추가하기
 > `javaTypeArbitraryGenerator`, `javaTimeTypeArbitraryGenerator`
 
 사용자 정의 `JavaTypeArbitraryGenerator` 인터페이스를 구현하여 Java 기본 타입(string, integer, double 등)의 기본값을 수정할 수 있습니다.
@@ -296,7 +296,7 @@ FixtureMonkey.builder()
 
 Java time 타입의 경우, `javaTimeTypeArbitraryGenerator` 를 사용할 수 있습니다.
 
-## 어노테이션을 사용한 Java 타입 제한
+## 어노테이션을 사용해 Java 기본 타입 제약 추가하기
 > `javaArbitraryResolver`, `javaTimeArbitraryResolver`
 
 javax-validation 플러그인을 사용하여 Java 타입 프로퍼티에 제약 조건을 추가하는 것과 유사하게, 어노테이션을 사용하여 Java 타입에 제약 조건을 적용할 수 있습니다.
@@ -343,7 +343,7 @@ FixtureMonkey.builder()
 {{< /tab >}}
 {{< /tabpane>}}
 
-## Null 옵션
+## Nullability 변경하기
 ### defaultNotNull
 > `defaultNotNull`, `nullableContainer`, `nullableElement`
 
