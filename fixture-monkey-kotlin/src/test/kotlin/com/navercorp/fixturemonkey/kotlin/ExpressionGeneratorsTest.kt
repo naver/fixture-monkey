@@ -18,8 +18,8 @@
 
 package com.navercorp.fixturemonkey.kotlin
 
-import com.navercorp.fixturemonkey.kotlin.spec.ExpressionGeneratorJavaTestSpecs.DogJava
-import com.navercorp.fixturemonkey.kotlin.spec.ExpressionGeneratorJavaTestSpecs.PersonJava
+import com.navercorp.fixturemonkey.kotlin.ExpressionGeneratorJavaTestSpecs.DogJava
+import com.navercorp.fixturemonkey.kotlin.ExpressionGeneratorJavaTestSpecs.PersonJava
 import org.assertj.core.api.BDDAssertions.then
 import org.junit.jupiter.api.Test
 
