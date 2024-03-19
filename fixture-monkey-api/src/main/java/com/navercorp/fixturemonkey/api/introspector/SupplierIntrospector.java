@@ -34,7 +34,7 @@ public final class SupplierIntrospector implements ArbitraryIntrospector, Matche
 
 	@Override
 	public boolean match(Property property) {
-		return SINGLE_GENERIC_TYPE_MATCHER.match(property) && MATCHER.match(property);
+		return MATCHER.intersect(SINGLE_GENERIC_TYPE_MATCHER).match(property);
 	}
 
 	@Override
