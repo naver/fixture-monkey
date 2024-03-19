@@ -1821,4 +1821,52 @@ class FixtureMonkeyTest {
 
 		then(actual).isGreaterThan(0);
 	}
+
+	@Property
+	void setSupplierObjectField() {
+		String actual = SUT.giveMeBuilder(new TypeReference<Supplier<SimpleObject>>() {
+			})
+			.set("str", "expected")
+			.sample()
+			.get()
+			.getStr();
+
+		then(actual).isEqualTo("expected");
+	}
+
+	@Property
+	void setSupplierObjectFieldUsingRootExp() {
+		String actual = SUT.giveMeBuilder(new TypeReference<Supplier<SimpleObject>>() {
+			})
+			.set("$.str", "expected")
+			.sample()
+			.get()
+			.getStr();
+
+		then(actual).isEqualTo("expected");
+	}
+
+	@Property
+	void setOptionalObjectField() {
+		String actual = SUT.giveMeBuilder(new TypeReference<Optional<SimpleObject>>() {
+			})
+			.set("str", "expected")
+			.sample()
+			.get()
+			.getStr();
+
+		then(actual).isEqualTo("expected");
+	}
+
+	@Property
+	void setOptionalObjectFieldUsingRootExp() {
+		String actual = SUT.giveMeBuilder(new TypeReference<Optional<SimpleObject>>() {
+			})
+			.set("$.str", "expected")
+			.sample()
+			.get()
+			.getStr();
+
+		then(actual).isEqualTo("expected");
+	}
 }
