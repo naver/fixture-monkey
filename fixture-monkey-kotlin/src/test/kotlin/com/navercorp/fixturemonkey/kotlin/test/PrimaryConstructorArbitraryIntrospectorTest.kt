@@ -20,10 +20,15 @@ package com.navercorp.fixturemonkey.kotlin.test
 
 import com.navercorp.fixturemonkey.FixtureMonkey
 import com.navercorp.fixturemonkey.kotlin.KotlinPlugin
+import com.navercorp.fixturemonkey.kotlin.giveMeBuilder
 import com.navercorp.fixturemonkey.kotlin.giveMeOne
+import com.navercorp.fixturemonkey.kotlin.set
+import net.jqwik.api.Arbitraries
 import net.jqwik.api.Property
 import org.assertj.core.api.BDDAssertions.then
 import org.assertj.core.api.BDDAssertions.thenNoException
+import org.junit.jupiter.api.assertAll
+import kotlin.time.Duration
 
 class PrimaryConstructorArbitraryIntrospectorTest {
     private val sut: FixtureMonkey = FixtureMonkey.builder()
@@ -61,6 +66,34 @@ class PrimaryConstructorArbitraryIntrospectorTest {
         val actual = sut.giveMeOne<DefaultValue>().stringValue
 
         then(actual).isNotEqualTo("default_value")
+    }
+
+    @Property
+    fun sampleDuration() {
+        // when
+        val duration = sut.giveMeOne<Duration>()
+        then(duration).isNotNull()
+    }
+
+    @Property
+    fun sampleDurationInContainer() {
+        // when
+        val one = sut.giveMeBuilder<DurationValue>()
+            .set(DurationValue::duration, Arbitraries.longs().between(Long.MIN_VALUE, 0))
+            .sample()
+
+        then(one.duration).isNotEqualTo(Duration.INFINITE)
+    }
+
+    @Property
+    fun sampleGenericDuration() {
+        // when
+        val one = sut.giveMeOne<List<Duration>>()
+
+        assertAll(
+            { one.forEach { then(it).isNotNull() } },
+            { then(one.size).isGreaterThanOrEqualTo(0) }
+        )
     }
 
     @Property
