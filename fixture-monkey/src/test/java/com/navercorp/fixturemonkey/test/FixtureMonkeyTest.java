@@ -323,7 +323,7 @@ class FixtureMonkeyTest {
 
 		// when
 		Supplier<String> actual = SUT.giveMeBuilder(ComplexObject.class)
-			.set("strSupplier", expected)
+			.set("strSupplier", Values.just(expected))
 			.sample()
 			.getStrSupplier();
 
@@ -337,7 +337,7 @@ class FixtureMonkeyTest {
 
 		// when
 		Supplier<Supplier<String>> actual = SUT.giveMeBuilder(ComplexObject.class)
-			.set("nestedStrSupplier", expected)
+			.set("nestedStrSupplier", Values.just(expected))
 			.sample()
 			.getNestedStrSupplier();
 
