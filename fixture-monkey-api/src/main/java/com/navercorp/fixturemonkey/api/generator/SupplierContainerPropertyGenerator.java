@@ -49,19 +49,19 @@ public final class SupplierContainerPropertyGenerator implements ContainerProper
 		);
 	}
 
-	private AnnotatedType getValueAnnotatedType(Property optionalProperty) {
-		Class<?> type = Types.getActualType(optionalProperty.getType());
+	private AnnotatedType getValueAnnotatedType(Property supplierProperty) {
+		Class<?> type = Types.getActualType(supplierProperty.getType());
 		if (type != Supplier.class) {
 			throw new IllegalArgumentException(
 				"type is not Supplier type. propertyType: " + type
 			);
 		}
 
-		List<AnnotatedType> genericsTypes = Types.getGenericsTypes(optionalProperty.getAnnotatedType());
+		List<AnnotatedType> genericsTypes = Types.getGenericsTypes(supplierProperty.getAnnotatedType());
 		if (genericsTypes.size() != 1) {
 			throw new IllegalArgumentException(
 				"Supplier genericTypes must be have 1 generics type for value. "
-					+ "propertyType: " + optionalProperty.getType()
+					+ "propertyType: " + supplierProperty.getType()
 					+ ", genericsTypes: " + genericsTypes
 			);
 		}
