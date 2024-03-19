@@ -18,6 +18,8 @@
 
 package com.navercorp.fixturemonkey.kotlin.test
 
+import kotlin.time.Duration
+
 class PrimaryConstructor(
     val intValue: Int,
     val stringValue: String,
@@ -59,3 +61,7 @@ class SecondaryConstructor(
 interface InterfaceClass {
     fun test()
 }
+
+class DurationValue(
+    val duration: Duration = Duration.INFINITE,
+)
