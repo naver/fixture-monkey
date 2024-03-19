@@ -880,17 +880,20 @@ class InnerSpecTest {
 
 	@Property
 	void supportSupplierWrapping() {
+		String expected = "test";
+
 		// when
-		SimpleObject actual = SUT.giveMeBuilder(new TypeReference<Supplier<SimpleObject>>() {
+		String actual = SUT.giveMeBuilder(new TypeReference<Supplier<SimpleObject>>() {
 			})
 			.setInner(
 				new InnerSpec()
-					.property("str", "test")
+					.property("str", expected)
 			)
 			.sample()
-			.get();
+			.get()
+			.getStr();
 
-		then(actual.getStr()).isEqualTo("test");
+		then(actual).isEqualTo(expected);
 	}
 
 	@Property
