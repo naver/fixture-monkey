@@ -148,21 +148,32 @@ public final class NodeSetDecomposedValueManipulator<T> implements NodeManipulat
 			return;
 		}
 
-		ConcreteTypeDefinition concreteTypeDefinition = objectNode.getArbitraryProperty()
-			.getConcreteTypeDefinitions()
-			.stream()
-			.filter(it -> isAssignable(value.getClass(), Types.getActualType(it.getConcreteProperty().getType())))
-			.findFirst()
-			.orElseThrow(() -> new IllegalArgumentException("No resolved property is found."));
+		List<ConcreteTypeDefinition> concreteTypeDefinitions = objectNode.getArbitraryProperty()
+			.getConcreteTypeDefinitions();
 
-		Property resolvedParentProperty = concreteTypeDefinition.getConcreteProperty();
-		objectNode.setResolvedProperty(resolvedParentProperty);
-		List<Property> childProperties = concreteTypeDefinition.getChildPropertyLists();
-		for (ObjectNode child : children) {
-			if (childProperties.contains(child.getProperty())
-				&& resolvedParentProperty.equals(child.getResolvedParentProperty())) {
-				Property childProperty = child.getProperty();
-				setValue(child, childProperty.getValue(value));
+		for (ConcreteTypeDefinition concreteTypeDefinition : concreteTypeDefinitions) {
+			Class<?> actualConcreteType = Types.getActualType(concreteTypeDefinition.getConcreteProperty().getType());
+			if (isAssignable(
+				value.getClass(),
+				actualConcreteType
+			)) {
+				Property resolvedParentProperty = concreteTypeDefinition.getConcreteProperty();
+
+				if (isAssignable(
+					actualConcreteType,
+					value.getClass()
+				)) {
+					objectNode.setResolvedProperty(resolvedParentProperty);
+				}
+
+				List<Property> childProperties = concreteTypeDefinition.getChildPropertyLists();
+				for (ObjectNode child : children) {
+					if (childProperties.contains(child.getProperty())
+						&& resolvedParentProperty.equals(child.getResolvedParentProperty())) {
+						Property childProperty = child.getProperty();
+						setValue(child, childProperty.getValue(value));
+					}
+				}
 			}
 		}
 	}
