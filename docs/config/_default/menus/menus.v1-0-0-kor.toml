@@ -1,10 +1,10 @@
 [[main]]
-name = "Docs"
+name = "문서"
 url = "/docs/introduction/overview/"
 weight = 10
 
 [[main]]
-name = "Release Notes"
+name = "릴리즈 노트"
 weight = 20
 identifier = "release-notes"
 url = "/release-notes/"

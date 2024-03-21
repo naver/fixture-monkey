@@ -1,5 +1,5 @@
 ---
-title: "Kotest Plugin"
+title: "Kotest 플러그인"
 images: []
 menu:
   docs:

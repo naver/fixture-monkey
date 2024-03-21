@@ -148,9 +148,13 @@
           <ul class="dropdown-menu dropdown-menu-lg-end me-lg-2 shadow rounded border-0" aria-labelledby="doks-versions">
             <li><a class="dropdown-item current" aria-current="true" href="{{ .RelPermalink }}">{{ .Site.Params.languageISO }}</a></li>
             <li><hr class="dropdown-divider"></li>
+              {{ $currentLink := .RelPermalink }}
               {{ range .Site.Languages -}}
                 {{ if and (eq $.Site.Language.LanguageName .LanguageName) (ne $.Lang .Lang) }}
-                  <li><a class="dropdown-item" rel="alternate" href="/{{ .Lang }}" hreflang="{{ .Lang }}" lang="{{ .Lang }}">{{ .Params.languageISO }}</a></li>
+                  {{ $currentLang := printf "/%s/" $.Lang }}
+                  {{ $selectedLang := printf "/%s/" .Lang }}
+                  {{ $newPermalink := replace $currentLink $currentLang $selectedLang}}
+                  <li><a class="dropdown-item" rel="alternate" href="{{ $newPermalink }}" hreflang="{{ .Lang }}" lang="{{ .Lang }}">{{ .Params.languageISO }}</a></li>
                 {{ end -}}
               {{ end -}}
           </ul>
