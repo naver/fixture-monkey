@@ -21,7 +21,6 @@ package com.navercorp.fixturemonkey.api.property;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Type;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -40,34 +39,7 @@ public abstract class PropertyUtils {
 	}
 
 	public static Property toProperty(AnnotatedType annotatedType) {
-		return new Property() {
-			@Override
-			public Type getType() {
-				return annotatedType.getType();
-			}
-
-			@Override
-			public AnnotatedType getAnnotatedType() {
-				return annotatedType;
-			}
-
-			@Nullable
-			@Override
-			public String getName() {
-				return null;
-			}
-
-			@Override
-			public List<Annotation> getAnnotations() {
-				return Arrays.asList(annotatedType.getAnnotations());
-			}
-
-			@Nullable
-			@Override
-			public Object getValue(Object instance) {
-				throw new UnsupportedOperationException();
-			}
-		};
+		return toProperty(Types.toTypeReference(annotatedType));
 	}
 
 	public static Property toProperty(TypeReference<?> typeReference) {
@@ -97,6 +69,24 @@ public abstract class PropertyUtils {
 			@Override
 			public Object getValue(Object instance) {
 				throw new UnsupportedOperationException();
+			}
+
+			@Override
+			public int hashCode() {
+				return getType().hashCode();
+			}
+
+			@Override
+			public boolean equals(Object obj) {
+				if (this == obj) {
+					return true;
+				}
+				if (obj == null || getClass() == obj.getClass()) {
+					return false;
+				}
+
+				Property that = (Property)obj;
+				return getType().equals(that.getType());
 			}
 		};
 	}
