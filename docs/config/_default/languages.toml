@@ -6,7 +6,7 @@
   [v1-0-0.params]
     languageISO = "ENG"
     languageTag = "en-US"
-    getStartedPage = "/docs/get-started/requirements/"
+    getStartedPage = "/v1-0-0/docs/get-started/requirements/"
 
 [v0-6-0]
   languageName = "v0.6.x"
