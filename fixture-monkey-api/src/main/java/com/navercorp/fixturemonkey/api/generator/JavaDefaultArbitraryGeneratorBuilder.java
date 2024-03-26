@@ -31,6 +31,7 @@ import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult;
 import com.navercorp.fixturemonkey.api.introspector.ArrayIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.BeanArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.BooleanIntrospector;
+import com.navercorp.fixturemonkey.api.introspector.CollectionIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.EnumIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.IterableIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.IteratorIntrospector;
@@ -69,7 +70,8 @@ public final class JavaDefaultArbitraryGeneratorBuilder {
 			new MapIntrospector(),
 			new MapEntryIntrospector(),
 			new MapEntryElementIntrospector(),
-			new ArrayIntrospector()
+			new ArrayIntrospector(),
+			new CollectionIntrospector()
 		)
 	);
 	public static final ArbitraryIntrospector DEFAULT_FALLBACK_INTROSPECTOR =
