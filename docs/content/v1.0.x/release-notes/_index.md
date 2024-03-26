@@ -10,6 +10,8 @@ sectionStart
 ### v.1.0.15
 Add `ConcreteTypeDefinition` in `ArbitraryProperty`, deprecate `getChildPropertiesByResolvedProperty` and `getChildPropertyListsByCandidateProperty` which is added in 1.0.14.
 
+Fix setting a child of a concrete type to an abstract type.
+
 sectionEnd
 
 sectionStart

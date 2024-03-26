@@ -30,6 +30,7 @@ import com.navercorp.fixturemonkey.api.introspector.ConstructorPropertiesArbitra
 import com.navercorp.fixturemonkey.api.introspector.FactoryMethodArbitraryIntrospector
 import com.navercorp.fixturemonkey.api.introspector.FailoverIntrospector
 import com.navercorp.fixturemonkey.api.introspector.FieldReflectionArbitraryIntrospector
+import com.navercorp.fixturemonkey.api.plugin.InterfacePlugin
 import com.navercorp.fixturemonkey.api.type.Types.GeneratingWildcardType
 import com.navercorp.fixturemonkey.customizer.Values
 import com.navercorp.fixturemonkey.kotlin.KotlinPlugin
@@ -422,6 +423,32 @@ class KotlinTest {
 
         // then
         then(actual).isNotNull
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun setConcreteTypeChildReturnsExactlyConcreteTypeChildType() {
+        // given
+        abstract class AbstractClass
+        open class ConcreteType(val parentValue: String) : AbstractClass()
+        class ConcreteTypeChild(val childValue: String) : ConcreteType("parent")
+
+        val sut = FixtureMonkey.builder()
+            .plugin(KotlinPlugin())
+            .plugin(
+                InterfacePlugin()
+                    .abstractClassExtends(
+                        AbstractClass::class.java,
+                        listOf(ConcreteType::class.java, ConcreteTypeChild::class.java)
+                    )
+            )
+            .build()
+
+        // when
+        val actual = sut.giveMeBuilder<AbstractClass>()
+            .set("$", ConcreteTypeChild(""))
+            .sample()
+
+        then(actual).isExactlyInstanceOf(ConcreteTypeChild::class.java)
     }
 
     companion object {
