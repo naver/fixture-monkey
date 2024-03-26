@@ -12,6 +12,8 @@ Add `ConcreteTypeDefinition` in `ArbitraryProperty`, deprecate `getChildProperti
 
 Add "KotlinDurationIntrospector" supporting generating a Duration type in Kotlin.
 
+Fix setting a child of a concrete type to an abstract type.
+
 sectionEnd
 
 sectionStart
