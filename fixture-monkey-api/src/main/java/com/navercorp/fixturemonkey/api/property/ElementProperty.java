@@ -31,6 +31,7 @@ import java.util.OptionalDouble;
 import java.util.OptionalInt;
 import java.util.OptionalLong;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
@@ -136,6 +137,10 @@ public final class ElementProperty implements Property {
 				return null;
 			}
 			return list.get(sequence);
+		}
+
+		if (Supplier.class.isAssignableFrom(actualType)) {
+			return instance;
 		}
 
 		throw new IllegalArgumentException("given element value has no match sequence : " + sequence);

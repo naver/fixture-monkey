@@ -20,6 +20,7 @@ package com.navercorp.fixturemonkey.test;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 import lombok.Data;
 
@@ -47,6 +48,11 @@ class InnerSpecTestSpecs {
 	@Data
 	public static class NestedListStringObject {
 		private List<List<String>> values;
+	}
+
+	@Data
+	public static class SupplierStringObject {
+		private Supplier<String> value;
 	}
 
 	@Data

@@ -22,9 +22,13 @@ import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerat
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Supplier;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
+
+import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class IdentityNodeResolver implements NodeResolver {
@@ -35,8 +39,13 @@ public final class IdentityNodeResolver implements NodeResolver {
 
 	@Override
 	public List<ObjectNode> resolve(ObjectNode objectNode) {
-		objectNode.setArbitraryProperty(objectNode.getArbitraryProperty().withNullInject(NOT_NULL_INJECT));
-		return Collections.singletonList(objectNode);
+		Class<?> actualType = Types.getActualType(objectNode.getResolvedProperty().getType());
+		boolean isObjectWrapperType = actualType == Supplier.class || actualType == Optional.class;
+
+		ObjectNode resolvedNode = isObjectWrapperType ? objectNode.getChildren().get(0) : objectNode;
+
+		resolvedNode.setArbitraryProperty(resolvedNode.getArbitraryProperty().withNullInject(NOT_NULL_INJECT));
+		return Collections.singletonList(resolvedNode);
 	}
 
 	@Override

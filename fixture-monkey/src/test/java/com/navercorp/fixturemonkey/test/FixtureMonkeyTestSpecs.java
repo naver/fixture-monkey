@@ -44,6 +44,7 @@ import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.OptionalInt;
 import java.util.OptionalLong;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
@@ -70,6 +71,8 @@ class FixtureMonkeyTestSpecs {
 		private Iterable<String> strIterable;
 		private Iterator<String> strIterator;
 		private Stream<String> strStream;
+		private Supplier<String> strSupplier;
+		private Supplier<Supplier<String>> nestedStrSupplier;
 	}
 
 	public enum SimpleEnum {
@@ -204,6 +207,13 @@ class FixtureMonkeyTestSpecs {
 		String value;
 
 		List<SelfRecursiveObject> recursives;
+	}
+
+	@Data
+	public static class SelfRecursiveSupplierObject {
+		String value;
+
+		Supplier<SelfRecursiveObject> recursive;
 	}
 
 	@Data
