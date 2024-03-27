@@ -646,6 +646,19 @@ class KotlinTest {
         then(actual).allMatch { it == expected }
     }
 
+    @Test
+    fun setRootPropertyExp() {
+        val expected = "expected"
+        class StringObject(val string: String)
+
+        val actual = SUT.giveMeBuilder<StringObject>()
+            .set(StringObject::root into StringObject::string, expected)
+            .sample()
+            .string
+
+        then(actual).isEqualTo(expected)
+    }
+
     companion object {
         private val SUT: FixtureMonkey = FixtureMonkey.builder()
             .plugin(KotlinPlugin())
