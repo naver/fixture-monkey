@@ -3,14 +3,16 @@ plugins {
     `java-test-fixtures`
 }
 
-tasks.jmh{
+tasks.jmh {
     enabled = false
 }
 
-subprojects {
-    tasks.filter { it.name != "jmh" && !it.name.startsWith("compile") && it.name != "jar" }
+allprojects {
+    tasks.filter { it.name != "jmh" && !it.name.startsWith("compile") && !it.name.startsWith("jar") }
         .forEach { it.enabled = false }
+}
 
+subprojects {
     plugins.apply("me.champeau.jmh")
     plugins.apply("java-test-fixtures")
 
