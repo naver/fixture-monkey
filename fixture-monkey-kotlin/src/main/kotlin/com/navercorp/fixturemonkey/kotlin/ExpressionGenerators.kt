@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package com.navercorp.fixturemonkey.kotlin
 
 import com.navercorp.fixturemonkey.api.expression.ExpressionGenerator
@@ -14,67 +16,25 @@ import kotlin.reflect.jvm.javaField
 import kotlin.reflect.jvm.javaType
 import kotlin.reflect.jvm.kotlinProperty
 
-interface JoinableExpressionGenerator<F, T> : ExpressionGenerator {
-    infix fun <R> into(property: KProperty1<T, R?>): JoinableExpressionGenerator<F, R>
-
-    infix fun <R> intoGetter(getter: KFunction1<T, R?>): JoinableExpressionGenerator<F, R>
-
-    infix fun <R> into(expressionGenerator: JoinableExpressionGenerator<T, R>): JoinableExpressionGenerator<F, R>
-
-    infix fun <R> intoGetter(expressionGenerator: JoinableExpressionGenerator<T, R>): JoinableExpressionGenerator<F, R>
-}
-
-infix fun <F, T : Any, R : Any> KFunction1<F, T?>.intoGetter(getter: KFunction1<T, R?>): JoinableExpressionGenerator<T, R> =
-    DefaultJoinableExpressionGenerator(
-        JoinExpressionGenerator(
-            listOf(
-                property(this),
-                DotExpressionGenerator(),
-                property(getter),
-            ),
-        ),
-    )
-
-infix fun <F, T : Any, R> KFunction1<F, T?>.into(property: KProperty1<T, R?>): JoinableExpressionGenerator<T, R> =
-    DefaultJoinableExpressionGenerator(
-        JoinExpressionGenerator(
-            listOf(
-                property(this),
-                DotExpressionGenerator(),
-                property(property),
-            ),
-        ),
-    )
-
-infix fun <F, T : Any, R> KFunction1<F, T?>.into(expressionGenerator: JoinableExpressionGenerator<T, R>): JoinableExpressionGenerator<F, R> =
-    DefaultJoinableExpressionGenerator(
-        JoinExpressionGenerator(
-            listOf(
-                property(this),
-                DotExpressionGenerator(),
-                expressionGenerator,
-            ),
-        ),
-    )
-
-infix fun <F, T : Any, R> KFunction1<F, T?>.intoGetter(expressionGenerator: JoinableExpressionGenerator<T, R>): JoinableExpressionGenerator<F, R> =
-    DefaultJoinableExpressionGenerator(
-        JoinExpressionGenerator(
-            listOf(
-                property(this),
-                DotExpressionGenerator(),
-                expressionGenerator,
-            ),
-        ),
-    )
-
+// property
 infix fun <F, T : Any, R> KProperty1<F, T?>.into(property: KProperty1<T, R?>): JoinableExpressionGenerator<F, R> =
     DefaultJoinableExpressionGenerator(
         JoinExpressionGenerator(
             listOf(
-                property(this),
+                propertyExpressionGenerator(this),
                 DotExpressionGenerator(),
-                property(property),
+                propertyExpressionGenerator(property),
+            ),
+        ),
+    )
+
+infix fun <F, T : Any, R> KProperty1<F, T?>.intoGetter(getter: KFunction1<T, R?>): JoinableExpressionGenerator<F, R> =
+    DefaultJoinableExpressionGenerator(
+        JoinExpressionGenerator(
+            listOf(
+                propertyExpressionGenerator(this),
+                DotExpressionGenerator(),
+                propertyExpressionGenerator(getter),
             ),
         ),
     )
@@ -83,7 +43,7 @@ infix fun <F, T : Any, R> KProperty1<F, T?>.into(expressionGenerator: JoinableEx
     DefaultJoinableExpressionGenerator(
         JoinExpressionGenerator(
             listOf(
-                property(this),
+                propertyExpressionGenerator(this),
                 DotExpressionGenerator(),
                 expressionGenerator,
             ),
@@ -94,35 +54,126 @@ infix fun <F, T : Any, R> KProperty1<F, T?>.intoGetter(expressionGenerator: Join
     DefaultJoinableExpressionGenerator(
         JoinExpressionGenerator(
             listOf(
-                property(this),
+                propertyExpressionGenerator(this),
                 DotExpressionGenerator(),
                 expressionGenerator,
             ),
         ),
     )
 
-infix fun <F, T : Any, R> KProperty1<F, T?>.intoGetter(getter: KFunction1<T, R?>): JoinableExpressionGenerator<F, R> =
+// rootProperty
+@JvmName("rootInto")
+infix fun <F, T : Any, R> KProperty1<F, Class<T>>.into(property: KProperty1<T, R?>): JoinableExpressionGenerator<F, R> =
+    DefaultJoinableExpressionGenerator(propertyExpressionGenerator(property))
+
+@JvmName("rootIntoGetter")
+infix fun <F, T : Any, R> KProperty1<F, Class<T>>.intoGetter(getter: KFunction1<T, R?>): JoinableExpressionGenerator<F, R> =
+    DefaultJoinableExpressionGenerator(propertyExpressionGenerator(getter))
+
+@JvmName("rootInto")
+infix fun <F, T : Any, R> KProperty1<F, Class<T>>.into(expressionGenerator: JoinableExpressionGenerator<T, R>): JoinableExpressionGenerator<F, R> =
     DefaultJoinableExpressionGenerator(
         JoinExpressionGenerator(
             listOf(
-                property(this),
+                propertyExpressionGenerator(this),
                 DotExpressionGenerator(),
-                property(getter),
+                expressionGenerator,
             ),
         ),
     )
 
-infix operator fun <T, E : Any> JoinableExpressionGenerator<T, Array<E>?>.get(index: Int): JoinableExpressionGenerator<T, E> =
+@JvmName("rootIntoGetter")
+infix fun <F, T : Any, R> KProperty1<F, Class<T>>.intoGetter(expressionGenerator: JoinableExpressionGenerator<T, R>): JoinableExpressionGenerator<F, R> =
     DefaultJoinableExpressionGenerator(
         JoinExpressionGenerator(
             listOf(
-                this,
-                IndexExpressionGenerator(index),
+                propertyExpressionGenerator(this),
+                DotExpressionGenerator(),
+                expressionGenerator,
             ),
         ),
     )
 
-@JvmName("collection")
+// function
+infix fun <F, T : Any, R> KFunction1<F, T?>.into(property: KProperty1<T, R?>): JoinableExpressionGenerator<T, R> =
+    DefaultJoinableExpressionGenerator(
+        JoinExpressionGenerator(
+            listOf(
+                propertyExpressionGenerator(this),
+                DotExpressionGenerator(),
+                propertyExpressionGenerator(property),
+            ),
+        ),
+    )
+
+infix fun <F, T : Any, R : Any> KFunction1<F, T?>.intoGetter(getter: KFunction1<T, R?>): JoinableExpressionGenerator<T, R> =
+    DefaultJoinableExpressionGenerator(
+        JoinExpressionGenerator(
+            listOf(
+                propertyExpressionGenerator(this),
+                DotExpressionGenerator(),
+                propertyExpressionGenerator(getter),
+            ),
+        ),
+    )
+
+infix fun <F, T : Any, R> KFunction1<F, T?>.into(expressionGenerator: JoinableExpressionGenerator<T, R>): JoinableExpressionGenerator<F, R> =
+    DefaultJoinableExpressionGenerator(
+        JoinExpressionGenerator(
+            listOf(
+                propertyExpressionGenerator(this),
+                DotExpressionGenerator(),
+                expressionGenerator,
+            ),
+        ),
+    )
+
+infix fun <F, T : Any, R> KFunction1<F, T?>.intoGetter(expressionGenerator: JoinableExpressionGenerator<T, R>): JoinableExpressionGenerator<F, R> =
+    DefaultJoinableExpressionGenerator(
+        JoinExpressionGenerator(
+            listOf(
+                propertyExpressionGenerator(this),
+                DotExpressionGenerator(),
+                expressionGenerator,
+            ),
+        ),
+    )
+
+// rootFunction
+@JvmName("root")
+infix fun <F, T : Any, R> KFunction1<F, Class<T>>.into(property: KProperty1<T, R?>): JoinableExpressionGenerator<F, R> =
+    DefaultJoinableExpressionGenerator(propertyExpressionGenerator(property))
+
+@JvmName("root")
+infix fun <F, T : Any, R> KFunction1<F, Class<T>>.intoGetter(getter: KFunction1<T, R?>): JoinableExpressionGenerator<F, R> =
+    DefaultJoinableExpressionGenerator(propertyExpressionGenerator(getter))
+
+@JvmName("rootInto")
+infix fun <F, T : Any, R> KFunction1<F, Class<T>>.into(expressionGenerator: JoinableExpressionGenerator<T, R>): JoinableExpressionGenerator<F, R> =
+    DefaultJoinableExpressionGenerator(
+        JoinExpressionGenerator(
+            listOf(
+                propertyExpressionGenerator(this),
+                DotExpressionGenerator(),
+                expressionGenerator,
+            ),
+        ),
+    )
+
+@JvmName("rootIntoGetter")
+infix fun <F, T : Any, R> KFunction1<F, Class<T>>.intoGetter(expressionGenerator: JoinableExpressionGenerator<T, R>): JoinableExpressionGenerator<F, R> =
+    DefaultJoinableExpressionGenerator(
+        JoinExpressionGenerator(
+            listOf(
+                propertyExpressionGenerator(this),
+                DotExpressionGenerator(),
+                expressionGenerator,
+            ),
+        ),
+    )
+
+// ExpressionGenerator Index
+@JvmName("index")
 infix operator fun <T, R : Collection<E>, E : Any> JoinableExpressionGenerator<T, R?>.get(index: Int): JoinableExpressionGenerator<T, E> =
     DefaultJoinableExpressionGenerator(
         JoinExpressionGenerator(
@@ -133,17 +184,7 @@ infix operator fun <T, R : Collection<E>, E : Any> JoinableExpressionGenerator<T
         ),
     )
 
-infix operator fun <T, R : Collection<E>, E : Any> JoinableExpressionGenerator<T, R?>.get(key: String): JoinableExpressionGenerator<T, E> =
-    DefaultJoinableExpressionGenerator(
-        JoinExpressionGenerator(
-            listOf(
-                this,
-                KeyExpressionGenerator(key),
-            ),
-        ),
-    )
-
-@JvmName("getNestedList")
+@JvmName("nestedIndex")
 infix operator fun <T, R : Collection<N>, N : Collection<E>, E : Any> JoinableExpressionGenerator<T, R?>.get(
     index: Int,
 ): JoinableExpressionGenerator<T, N?> =
@@ -156,51 +197,179 @@ infix operator fun <T, R : Collection<N>, N : Collection<E>, E : Any> JoinableEx
         ),
     )
 
-@JvmName("getNestedMap")
+@JvmName("allIndex")
+infix operator fun <T, R : Collection<E>, E : Any> JoinableExpressionGenerator<T, R?>.get(allIndex: String): JoinableExpressionGenerator<T, E> =
+    DefaultJoinableExpressionGenerator(
+        JoinExpressionGenerator(
+            listOf(
+                this,
+                AllIndexExpressionGenerator(allIndex),
+            ),
+        ),
+    )
+
+@JvmName("nestedAllIndex")
 infix operator fun <T, R : Collection<N>, N : Collection<E>, E : Any> JoinableExpressionGenerator<T, R?>.get(
-    key: String,
+    allIndex: String,
 ): JoinableExpressionGenerator<T, N?> =
-    DefaultJoinableExpressionGenerator(JoinExpressionGenerator(listOf(this, KeyExpressionGenerator(key))))
-
-infix operator fun <T, R : Collection<E>, E : Any> KProperty1<T, R?>.get(index: Int): JoinableExpressionGenerator<T, E> =
-    DefaultJoinableExpressionGenerator(array(this, index))
+    DefaultJoinableExpressionGenerator(JoinExpressionGenerator(listOf(this, AllIndexExpressionGenerator(allIndex))))
 
 @JvmName("array")
-infix operator fun <T, E : Any> KProperty1<T, Array<E>?>.get(index: Int): JoinableExpressionGenerator<T, E> =
-    DefaultJoinableExpressionGenerator(array(this, index))
+infix operator fun <T, E : Any> JoinableExpressionGenerator<T, Array<E>>.get(index: Int): JoinableExpressionGenerator<T, E> =
+    DefaultJoinableExpressionGenerator(
+        JoinExpressionGenerator(
+            listOf(
+                this,
+                IndexExpressionGenerator(index),
+            ),
+        ),
+    )
 
-infix operator fun <T, R : Collection<E>, E : Any> KProperty1<T, R?>.get(key: String): JoinableExpressionGenerator<T, E> =
-    DefaultJoinableExpressionGenerator(map(this, key))
+@JvmName("nestedArray")
+infix operator fun <T, E : Any> JoinableExpressionGenerator<T, Array<Array<E>>>.get(index: Int): JoinableExpressionGenerator<T, Array<E>> =
+    DefaultJoinableExpressionGenerator(
+        JoinExpressionGenerator(
+            listOf(
+                this,
+                IndexExpressionGenerator(index),
+            ),
+        ),
+    )
 
-@JvmName("getNestedList")
-infix operator fun <T, R : Collection<N>, N : Collection<E>, E : Any> KProperty1<T, R?>.get(
-    index: Int,
-): JoinableExpressionGenerator<T, N?> = DefaultJoinableExpressionGenerator(array(this, index))
+@JvmName("arrayAllIndex")
+infix operator fun <T, E : Any> JoinableExpressionGenerator<T, Array<E>>.get(key: String): JoinableExpressionGenerator<T, E> =
+    DefaultJoinableExpressionGenerator(
+        JoinExpressionGenerator(
+            listOf(
+                this,
+                AllIndexExpressionGenerator(key),
+            ),
+        ),
+    )
 
-@JvmName("getNestedMap")
-infix operator fun <T, R : Collection<N>, N : Collection<E>, E : Any> KProperty1<T, R?>.get(
-    key: String,
-): JoinableExpressionGenerator<T, N?> = DefaultJoinableExpressionGenerator(map(this, key))
+@JvmName("nestedArrayAllIndex")
+infix operator fun <T, E : Any> JoinableExpressionGenerator<T, Array<Array<E>>>.get(key: String): JoinableExpressionGenerator<T, Array<E>> =
+    DefaultJoinableExpressionGenerator(
+        JoinExpressionGenerator(
+            listOf(
+                this,
+                AllIndexExpressionGenerator(key),
+            ),
+        ),
+    )
 
-infix operator fun <T, R : Collection<E>, E : Any> KFunction1<T, R?>.get(index: Int): JoinableExpressionGenerator<T, E> =
-    DefaultJoinableExpressionGenerator(array(this, index))
+// ExpressionGenerator factory
+fun <R, E> propertyExpressionGenerator(property: KProperty1<R, E?>): ExpressionGenerator =
+    PropertyExpressionGenerator(KotlinProperty(property))
 
-@JvmName("array")
-infix operator fun <T, E : Any> KFunction1<T, Array<E>?>.get(index: Int): JoinableExpressionGenerator<T, E> =
-    DefaultJoinableExpressionGenerator(array(this, index))
+fun <R, E> propertyExpressionGenerator(function: KFunction1<R, E?>): ExpressionGenerator =
+    PropertyExpressionGenerator(KotlinGetterProperty(function))
 
-infix operator fun <T, R : Collection<E>, E : Any> KFunction1<T, R?>.get(key: String): JoinableExpressionGenerator<T, E> =
-    DefaultJoinableExpressionGenerator(map(this, key))
+@JvmName("propertyIndexExpressionGenerator")
+internal fun <T, R : Collection<E>, E : Any> indexExpressionGenerator(
+    property: KProperty1<T, R?>,
+    index: Int
+): ExpressionGenerator =
+    ElementIndexExpressionGenerator(KotlinProperty(property), index)
 
-@JvmName("getNestedList")
-infix operator fun <T, R : Collection<N>, N : Collection<E>, E : Any> KFunction1<T, R?>.get(
-    index: Int,
-): JoinableExpressionGenerator<T, N?> = DefaultJoinableExpressionGenerator(array(this, index))
+@JvmName("getterIndexExpressionGenerator")
+internal fun <T, R : Collection<E>, E : Any> indexExpressionGenerator(
+    function: KFunction1<T, R?>,
+    index: Int
+): ExpressionGenerator =
+    ElementIndexExpressionGenerator(KotlinGetterProperty(function), index)
 
-@JvmName("getNestedMap")
-infix operator fun <T, R : Collection<N>, N : Collection<E>, E : Any> KFunction1<T, R?>.get(
-    key: String,
-): JoinableExpressionGenerator<T, N?> = DefaultJoinableExpressionGenerator(map(this, key))
+internal fun <T, E : Any> indexExpressionGenerator(
+    function: KFunction1<T, Array<E>?>,
+    index: Int
+): ExpressionGenerator =
+    ElementIndexExpressionGenerator(KotlinGetterProperty(function), index)
+
+@JvmName("rootIndexExpressionGenerator")
+internal fun <T> indexExpressionGenerator(property: KProperty1<T, Class<T>>, index: Int): ExpressionGenerator =
+    ElementIndexExpressionGenerator(
+        object : Property by KotlinProperty(property) {
+            override fun getName(): String = "$"
+        },
+        index
+    )
+
+@JvmName("rootArrayExpressionGenerator")
+internal fun <T> indexExpressionGenerator(property: KFunction1<T, Class<T>>, index: Int): ExpressionGenerator =
+    ElementIndexExpressionGenerator(
+        object : Property by KotlinGetterProperty(property) {
+            override fun getName(): String = "$"
+        },
+        index
+    )
+
+internal fun <T, E : Any> indexExpressionGenerator(
+    property: KProperty1<T, Array<E>?>,
+    index: Int
+): ExpressionGenerator =
+    ElementIndexExpressionGenerator(KotlinProperty(property), index)
+
+@JvmName("propertyAllIndexExpressionGenerator")
+internal fun <T, R : Collection<E>, E : Any> allIndexExpressionGenerator(
+    property: KProperty1<T, R?>,
+    key: String
+): ExpressionGenerator =
+    MapExpressionGenerator(KotlinProperty(property), key)
+
+@JvmName("propertyArrayAllIndexExpressionGenerator")
+internal fun <T, E : Any> allIndexExpressionGenerator(
+    property: KProperty1<T, Array<E>?>,
+    key: String
+): ExpressionGenerator =
+    MapExpressionGenerator(KotlinProperty(property), key)
+
+@JvmName("getterAllIndexExpressionGenerator")
+internal fun <T, R : Collection<E>, E : Any> allIndexExpressionGenerator(
+    function: KFunction1<T, R?>,
+    key: String
+): ExpressionGenerator =
+    MapExpressionGenerator(KotlinGetterProperty(function), key)
+
+@JvmName("getterArrayAllIndexExpressionGenerator")
+internal fun <T, E : Any> allIndexExpressionGenerator(
+    property: KFunction1<T, Array<E>?>,
+    key: String
+): ExpressionGenerator =
+    MapExpressionGenerator(KotlinGetterProperty(property), key)
+
+@JvmName("rootAllIndexExpressionGenerator")
+internal fun <T> allIndexExpressionGenerator(property: KProperty1<T, Class<T>>, key: String): ExpressionGenerator =
+    MapExpressionGenerator(
+        object : Property by KotlinProperty(property) {
+            override fun getName(): String = "$"
+        },
+        key
+    )
+
+@JvmName("rootAllIndexExpressionGenerator")
+internal fun <T> allIndexExpressionGenerator(property: KFunction1<T, Class<T>>, key: String): ExpressionGenerator =
+    MapExpressionGenerator(
+        object : Property by KotlinGetterProperty(property) {
+            override fun getName(): String = "$"
+        },
+        key
+    )
+
+private class PropertyExpressionGenerator(private val property: Property) : ExpressionGenerator {
+    override fun generate(propertyNameResolver: PropertyNameResolver): String =
+        propertyNameResolver.resolve(property)
+}
+
+// ExpressionGenerator
+interface JoinableExpressionGenerator<F, T> : ExpressionGenerator {
+    infix fun <R> into(property: KProperty1<T, R?>): JoinableExpressionGenerator<F, R>
+
+    infix fun <R> intoGetter(getter: KFunction1<T, R?>): JoinableExpressionGenerator<F, R>
+
+    infix fun <R> into(expressionGenerator: JoinableExpressionGenerator<T, R>): JoinableExpressionGenerator<F, R>
+
+    infix fun <R> intoGetter(expressionGenerator: JoinableExpressionGenerator<T, R>): JoinableExpressionGenerator<F, R>
+}
 
 class DefaultJoinableExpressionGenerator<F, T>(
     private val delegate: ExpressionGenerator,
@@ -211,7 +380,7 @@ class DefaultJoinableExpressionGenerator<F, T>(
                 listOf(
                     delegate,
                     DotExpressionGenerator(),
-                    property(property),
+                    propertyExpressionGenerator(property),
                 ),
             ),
         )
@@ -222,7 +391,7 @@ class DefaultJoinableExpressionGenerator<F, T>(
                 listOf(
                     delegate,
                     DotExpressionGenerator(),
-                    property(getter),
+                    propertyExpressionGenerator(getter),
                 ),
             ),
         )
@@ -266,7 +435,7 @@ private class IndexExpressionGenerator(private val index: Int) : ExpressionGener
         "[$index]"
 }
 
-private class ArrayExpressionGenerator(
+private class ElementIndexExpressionGenerator(
     private val property: Property,
     private val index: Int,
 ) : ExpressionGenerator {
@@ -282,7 +451,7 @@ private class MapExpressionGenerator(
         "${propertyNameResolver.resolve(property)}[$key]"
 }
 
-private class KeyExpressionGenerator(private val key: String) : ExpressionGenerator {
+private class AllIndexExpressionGenerator(private val key: String) : ExpressionGenerator {
     override fun generate(propertyNameResolver: PropertyNameResolver): String =
         "[$key]"
 }
@@ -293,37 +462,6 @@ private class DotExpressionGenerator : ExpressionGenerator {
 
 private class EmptyExpressionGenerator : ExpressionGenerator {
     override fun generate(propertyNameResolver: PropertyNameResolver): String = ""
-}
-
-fun <R, E> property(property: KProperty1<R, E?>): ExpressionGenerator =
-    PropertyExpressionGenerator(KotlinProperty(property))
-
-fun <R, E> property(function: KFunction1<R, E?>): ExpressionGenerator =
-    PropertyExpressionGenerator(KotlinGetterProperty(function))
-
-@JvmName("collection")
-internal fun <T, R : Collection<E>, E : Any> array(function: KFunction1<T, R?>, index: Int): ExpressionGenerator =
-    ArrayExpressionGenerator(KotlinGetterProperty(function), index)
-
-internal fun <T, E : Any> array(function: KFunction1<T, Array<E>?>, index: Int): ExpressionGenerator =
-    ArrayExpressionGenerator(KotlinGetterProperty(function), index)
-
-@JvmName("collection")
-internal fun <T, R : Collection<E>, E : Any> array(property: KProperty1<T, R?>, index: Int): ExpressionGenerator =
-    ArrayExpressionGenerator(KotlinProperty(property), index)
-
-internal fun <T, E : Any> array(property: KProperty1<T, Array<E>?>, index: Int): ExpressionGenerator =
-    ArrayExpressionGenerator(KotlinProperty(property), index)
-
-internal fun <T, R : Collection<E>, E : Any> map(function: KFunction1<T, R?>, key: String): ExpressionGenerator =
-    MapExpressionGenerator(KotlinGetterProperty(function), key)
-
-internal fun <T, R : Collection<E>, E : Any> map(property: KProperty1<T, R?>, key: String): ExpressionGenerator =
-    MapExpressionGenerator(KotlinProperty(property), key)
-
-private class PropertyExpressionGenerator(private val property: Property) : ExpressionGenerator {
-    override fun generate(propertyNameResolver: PropertyNameResolver): String =
-        propertyNameResolver.resolve(property)
 }
 
 private class KotlinProperty<V, R>(private val property: KProperty1<V, R>) : Property {
