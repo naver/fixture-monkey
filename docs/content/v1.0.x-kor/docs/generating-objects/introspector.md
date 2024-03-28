@@ -60,6 +60,8 @@ FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
     .build();
 ```
 
+{{< alert icon="💡" text="만약 final이 아닌 변수가 선언되어 있다면 getter 또는 setter 없이도 사용 가능합니다." />}}
+
 ## FailoverArbitraryIntrospector
 프로덕션 코드에서 다수의 클래스가 있을 때 각 클래스마다 다른 설정을 가진다면 하나의 introspector로 모든 객체를 생성하기 어려울 수 있습니다.
 이 경우 `FailoverArbitraryIntrospector`를 사용할 수 있습니다.
