@@ -50,6 +50,8 @@ FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
     .build();
 ```
 
+{{< alert icon="💡" text="If there are non-final variables declared, they can be instantiated without the need for getters or setters." />}}
+
 ## BuilderArbitraryIntrospector
 To generate a class using the class's builder, you can use `BuilderArbitraryIntrospector`.
 It requires that the class has a builder.
