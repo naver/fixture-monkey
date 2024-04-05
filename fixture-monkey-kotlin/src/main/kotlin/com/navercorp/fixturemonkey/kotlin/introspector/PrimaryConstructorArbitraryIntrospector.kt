@@ -38,6 +38,7 @@ import kotlin.reflect.KParameter
 import kotlin.reflect.full.primaryConstructor
 import kotlin.reflect.jvm.isAccessible
 import kotlin.reflect.jvm.jvmErasure
+import kotlin.time.Duration
 
 @API(since = "0.4.0", status = MAINTAINED)
 class PrimaryConstructorArbitraryIntrospector : ArbitraryIntrospector {
@@ -82,7 +83,9 @@ class PrimaryConstructorArbitraryIntrospector : ArbitraryIntrospector {
     ): Any? {
         return try {
             val parameterKotlinType = parameter.type.jvmErasure
-            if (parameterKotlinType.isValue) {
+            if (arbitrariesByPropertyName[parameter.name] is Duration) {
+                arbitrariesByPropertyName[parameter.name]
+            } else if (parameterKotlinType.isValue) {
                 parameterKotlinType.primaryConstructor!!.isAccessible = true
                 parameterKotlinType.primaryConstructor!!.call(arbitrariesByPropertyName[parameter.name])
             } else {
