@@ -62,12 +62,12 @@ class PrimaryConstructorArbitraryIntrospector : ArbitraryIntrospector {
                 .build {
                     val arbitrariesByPropertyName: Map<String?, Any?> =
                         it.mapKeys { map -> map.key.objectProperty.property.name }
-
                     val generatedByParameters = mutableMapOf<KParameter, Any?>()
+
                     for (parameter in constructor.parameters) {
-                        val resolvedArbitrary = arbitrariesByPropertyName[parameter.name]
-                        generatedByParameters[parameter] = resolvedArbitrary
+                        generatedByParameters[parameter] = arbitrariesByPropertyName[parameter.name]
                     }
+
                     constructor.callBy(generatedByParameters)
                 },
         )
