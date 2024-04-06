@@ -78,7 +78,7 @@ class PrimaryConstructorArbitraryIntrospectorTest {
     }
 
     @Property
-    fun sampleDurationInContainer() {
+    fun setDuratioValue() {
         // given
         val duration = Random().nextLong().toDuration(DurationUnit.values().random())
 
@@ -89,6 +89,30 @@ class PrimaryConstructorArbitraryIntrospectorTest {
 
         // the
         then(one.duration).isEqualTo(duration)
+    }
+
+    @Property
+    fun setJvmInlineValue() {
+        // given
+        val value = Random().nextInt()
+
+        // when
+        val one = sut.giveMeBuilder<JvmInlineValue>()
+            .set(JvmInlineValue::intValue, value)
+            .sample()
+
+        // the
+        then(one.intValue).isEqualTo(value)
+    }
+
+    @Property
+    fun sampleJvmInlineValue() {
+        // when
+        val one = sut.giveMeBuilder<JvmInlineValue>()
+            .sample()
+
+        // the
+        then(one.intValue).isNotNull()
     }
 
     @Property

@@ -65,3 +65,8 @@ interface InterfaceClass {
 class DurationValue(
     val duration: Duration = Duration.INFINITE,
 )
+
+@JvmInline
+value class JvmInlineValue(
+    val intValue: Int,
+)
