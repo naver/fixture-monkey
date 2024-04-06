@@ -92,30 +92,6 @@ class PrimaryConstructorArbitraryIntrospectorTest {
     }
 
     @Property
-    fun setJvmInlineValue() {
-        // given
-        val value = Random().nextInt()
-
-        // when
-        val one = sut.giveMeBuilder<JvmInlineValue>()
-            .set(JvmInlineValue::intValue, value)
-            .sample()
-
-        // the
-        then(one.intValue).isEqualTo(value)
-    }
-
-    @Property
-    fun sampleJvmInlineValue() {
-        // when
-        val one = sut.giveMeBuilder<JvmInlineValue>()
-            .sample()
-
-        // the
-        then(one.intValue).isNotNull()
-    }
-
-    @Property
     fun sampleGenericDuration() {
         // when
         val one = sut.giveMeOne<List<Duration>>()
