@@ -37,6 +37,7 @@ import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 import kotlin.reflect.full.primaryConstructor
 import kotlin.reflect.jvm.isAccessible
+import kotlin.reflect.jvm.jvmErasure
 
 @API(since = "0.4.0", status = MAINTAINED)
 class PrimaryConstructorArbitraryIntrospector : ArbitraryIntrospector {
@@ -65,7 +66,8 @@ class PrimaryConstructorArbitraryIntrospector : ArbitraryIntrospector {
                     val generatedByParameters = mutableMapOf<KParameter, Any?>()
 
                     for (parameter in constructor.parameters) {
-                        generatedByParameters[parameter] = arbitrariesByPropertyName[parameter.name]
+                        val resolvedArbitrary = resolveArbitrary(parameter, arbitrariesByPropertyName)
+                        generatedByParameters[parameter] = resolvedArbitrary
                     }
 
                     constructor.callBy(generatedByParameters)
@@ -74,6 +76,24 @@ class PrimaryConstructorArbitraryIntrospector : ArbitraryIntrospector {
     }
 
     override fun getRequiredPropertyGenerator(property: Property): PropertyGenerator = KOTLIN_PROPERTY_GENERATOR
+
+    private fun resolveArbitrary(
+        parameter: KParameter,
+        arbitrariesByPropertyName: Map<String?, Any?>,
+    ): Any? {
+        return try {
+            val parameterKotlinType = parameter.type.jvmErasure
+            if (parameterKotlinType.isValue) {
+                parameterKotlinType.primaryConstructor!!.isAccessible = true
+                parameterKotlinType.primaryConstructor!!.call(arbitrariesByPropertyName[parameter.name])
+            } else {
+                arbitrariesByPropertyName[parameter.name]
+            }
+        } catch (ex: Exception) {
+            // omitted
+            arbitrariesByPropertyName[parameter.name]
+        }
+    }
 
     companion object {
         val INSTANCE = PrimaryConstructorArbitraryIntrospector()
