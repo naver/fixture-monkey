@@ -81,7 +81,7 @@ class KotlinTest {
                 .set(javaGetter(KotlinObject::value), "test")
                 .sample()
                 .value
-        }.cause
+        }.cause()
             .isExactlyInstanceOf(IllegalArgumentException::class.java)
             .hasMessageContaining("Kotlin type could not resolve property name.")
     }
