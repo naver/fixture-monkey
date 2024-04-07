@@ -243,7 +243,6 @@ public final class ArbitraryExpression implements MonkeyExpression, Comparable<A
 					new DefaultNodeResolver(new ContainerElementPredicate(index.getIndex()))
 				);
 			}
-
 			return nodeResolver;
 		}
 

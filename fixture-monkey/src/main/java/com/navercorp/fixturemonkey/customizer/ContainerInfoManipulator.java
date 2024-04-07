@@ -102,14 +102,14 @@ public final class ContainerInfoManipulator {
 	}
 
 	public boolean isMatch(List<ObjectProperty> objectProperties) {
-		List<NextNodePredicate> nodePredicates = this.nextNodePredicates.stream()
+		List<NextNodePredicate> nodeMatchPredicates = this.nextNodePredicates.stream()
 			.filter(it -> !(it instanceof SingleElementPredicate))
 			.collect(Collectors.toList());
 
 		int objectPropertiesSize = objectProperties.size();
-		int nextNodePredicateSize = nodePredicates.size();
+		int nextNodePredicateSize = nodeMatchPredicates.size();
 
-		boolean registered = nodePredicates.get(0) instanceof PropertyPredicate;
+		boolean registered = nodeMatchPredicates.get(0) instanceof PropertyPredicate;
 		if (!registered && nextNodePredicateSize != objectPropertiesSize) {
 			return false;
 		}
@@ -117,7 +117,7 @@ public final class ContainerInfoManipulator {
 		for (int i = 0; i < nextNodePredicateSize; i++) {
 			int reversedNextNodePredicateIndex = nextNodePredicateSize - 1 - i;
 			int reversedCurrentObjectPropertyIndex = objectPropertiesSize - 1 - i;
-			NextNodePredicate nextNodePredicate = nodePredicates.get(reversedNextNodePredicateIndex);
+			NextNodePredicate nextNodePredicate = nodeMatchPredicates.get(reversedNextNodePredicateIndex);
 			ObjectProperty objectProperty = objectProperties.get(reversedCurrentObjectPropertyIndex);
 
 			if (!nextNodePredicate.test(objectProperty)) {
