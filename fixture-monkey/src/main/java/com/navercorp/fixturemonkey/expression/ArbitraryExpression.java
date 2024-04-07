@@ -35,11 +35,11 @@ import org.apiguardian.api.API.Status;
 import com.navercorp.fixturemonkey.tree.CompositeNodeResolver;
 import com.navercorp.fixturemonkey.tree.ContainerElementPredicate;
 import com.navercorp.fixturemonkey.tree.DefaultNodeResolver;
-import com.navercorp.fixturemonkey.tree.WrappedNodeResolver;
 import com.navercorp.fixturemonkey.tree.IdentityNodeResolver;
 import com.navercorp.fixturemonkey.tree.NodeResolver;
 import com.navercorp.fixturemonkey.tree.PropertyNameNodePredicate;
 import com.navercorp.fixturemonkey.tree.SingleElementPredicate;
+import com.navercorp.fixturemonkey.tree.WrappedNodeResolver;
 
 public final class ArbitraryExpression implements MonkeyExpression, Comparable<ArbitraryExpression> {
 	private final List<Exp> expList;

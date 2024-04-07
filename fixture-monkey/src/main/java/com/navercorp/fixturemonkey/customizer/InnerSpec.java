@@ -45,7 +45,6 @@ import com.navercorp.fixturemonkey.customizer.InnerSpecState.NodeResolverObjectH
 import com.navercorp.fixturemonkey.tree.CompositeNodeResolver;
 import com.navercorp.fixturemonkey.tree.ContainerElementPredicate;
 import com.navercorp.fixturemonkey.tree.DefaultNodeResolver;
-import com.navercorp.fixturemonkey.tree.WrappedNodeResolver;
 import com.navercorp.fixturemonkey.tree.IdentityNodeResolver;
 import com.navercorp.fixturemonkey.tree.NodeAllElementPredicate;
 import com.navercorp.fixturemonkey.tree.NodeElementPredicate;
@@ -54,6 +53,7 @@ import com.navercorp.fixturemonkey.tree.NodeResolver;
 import com.navercorp.fixturemonkey.tree.NodeValuePredicate;
 import com.navercorp.fixturemonkey.tree.PropertyNameNodePredicate;
 import com.navercorp.fixturemonkey.tree.SingleElementPredicate;
+import com.navercorp.fixturemonkey.tree.WrappedNodeResolver;
 
 /**
  * A type-independent specification for configuring nested properties.
