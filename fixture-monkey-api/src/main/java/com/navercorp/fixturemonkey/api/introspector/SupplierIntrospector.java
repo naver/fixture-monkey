@@ -24,7 +24,6 @@ import java.util.function.Supplier;
 
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
-import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.matcher.AssignableTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.property.Property;
@@ -39,16 +38,11 @@ public final class SupplierIntrospector implements ArbitraryIntrospector, Matche
 
 	@Override
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
-		ArbitraryProperty property = context.getArbitraryProperty();
-		if (!property.isContainer()) {
-			return ArbitraryIntrospectorResult.NOT_INTROSPECTED;
-		}
-
-		CombinableArbitrary<?> elementArbitrary = context.getElementCombinableArbitraryList()
+		CombinableArbitrary<?> result = context.getElementCombinableArbitraryList()
 			.get(0)
 			.map(this::toSupplier);
 
-		return new ArbitraryIntrospectorResult(elementArbitrary);
+		return new ArbitraryIntrospectorResult(result);
 	}
 
 	private <T> Supplier<T> toSupplier(T value) {

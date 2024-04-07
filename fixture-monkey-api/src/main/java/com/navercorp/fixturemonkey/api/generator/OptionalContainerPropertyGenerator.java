@@ -20,7 +20,10 @@ package com.navercorp.fixturemonkey.api.generator;
 
 import static com.navercorp.fixturemonkey.api.type.Types.generateAnnotatedTypeWithoutAnnotation;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedType;
+import java.lang.reflect.Type;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -28,11 +31,13 @@ import java.util.OptionalDouble;
 import java.util.OptionalInt;
 import java.util.OptionalLong;
 
+import javax.annotation.Nullable;
+
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.api.property.ElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
+import com.navercorp.fixturemonkey.api.property.SingleElementProperty;
 import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
@@ -49,15 +54,42 @@ public final class OptionalContainerPropertyGenerator implements ContainerProper
 		Property property = context.getProperty();
 
 		AnnotatedType valueAnnotatedType = getValueAnnotatedType(property);
-		Property valueProperty = new ElementProperty(
-			property,
-			valueAnnotatedType,
-			0,
-			0
-		);
+		Type childType = valueAnnotatedType.getType();
+		AnnotatedType childAnnotatedType = Types.generateAnnotatedTypeWithoutAnnotation(childType);
+
+		Property childProperty = new Property() {
+			@Override
+			public Type getType() {
+				return childType;
+			}
+
+			@Override
+			public AnnotatedType getAnnotatedType() {
+				return childAnnotatedType;
+			}
+
+			@Nullable
+			@Override
+			public String getName() {
+				return null;
+			}
+
+			@Override
+			public List<Annotation> getAnnotations() {
+				return Arrays.asList(childAnnotatedType.getAnnotations());
+			}
+
+			@Nullable
+			@Override
+			public Object getValue(Object instance) {
+				return instance;
+			}
+		};
+
+		SingleElementProperty singleElementProperty = new SingleElementProperty(childProperty, valueAnnotatedType);
 
 		return new ContainerProperty(
-			Collections.singletonList(valueProperty),
+			Collections.singletonList(singleElementProperty),
 			CONTAINER_INFO
 		);
 	}

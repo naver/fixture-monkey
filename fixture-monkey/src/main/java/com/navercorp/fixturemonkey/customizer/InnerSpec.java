@@ -45,6 +45,7 @@ import com.navercorp.fixturemonkey.customizer.InnerSpecState.NodeResolverObjectH
 import com.navercorp.fixturemonkey.tree.CompositeNodeResolver;
 import com.navercorp.fixturemonkey.tree.ContainerElementPredicate;
 import com.navercorp.fixturemonkey.tree.DefaultNodeResolver;
+import com.navercorp.fixturemonkey.tree.WrappedNodeResolver;
 import com.navercorp.fixturemonkey.tree.IdentityNodeResolver;
 import com.navercorp.fixturemonkey.tree.NodeAllElementPredicate;
 import com.navercorp.fixturemonkey.tree.NodeElementPredicate;
@@ -52,6 +53,7 @@ import com.navercorp.fixturemonkey.tree.NodeKeyPredicate;
 import com.navercorp.fixturemonkey.tree.NodeResolver;
 import com.navercorp.fixturemonkey.tree.NodeValuePredicate;
 import com.navercorp.fixturemonkey.tree.PropertyNameNodePredicate;
+import com.navercorp.fixturemonkey.tree.SingleElementPredicate;
 
 /**
  * A type-independent specification for configuring nested properties.
@@ -593,6 +595,7 @@ public final class InnerSpec {
 	private void setPropertyValue(String propertyName, @Nullable Object value) {
 		CompositeNodeResolver nextNodeResolver = new CompositeNodeResolver(
 			this.treePathResolver,
+			new WrappedNodeResolver(new SingleElementPredicate()),
 			new DefaultNodeResolver(new PropertyNameNodePredicate(propertyName))
 		);
 

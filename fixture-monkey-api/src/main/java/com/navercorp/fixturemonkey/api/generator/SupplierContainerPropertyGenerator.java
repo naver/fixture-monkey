@@ -18,13 +18,18 @@
 
 package com.navercorp.fixturemonkey.api.generator;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedType;
+import java.lang.reflect.Type;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
 
-import com.navercorp.fixturemonkey.api.property.ElementProperty;
+import javax.annotation.Nullable;
+
 import com.navercorp.fixturemonkey.api.property.Property;
+import com.navercorp.fixturemonkey.api.property.SingleElementProperty;
 import com.navercorp.fixturemonkey.api.type.Types;
 
 public final class SupplierContainerPropertyGenerator implements ContainerPropertyGenerator {
@@ -36,15 +41,42 @@ public final class SupplierContainerPropertyGenerator implements ContainerProper
 		Property property = context.getProperty();
 
 		AnnotatedType valueAnnotatedType = getValueAnnotatedType(property);
-		Property valueProperty = new ElementProperty(
-			property,
-			valueAnnotatedType,
-			0,
-			0
-		);
+		Type childType = valueAnnotatedType.getType();
+		AnnotatedType childAnnotatedType = Types.generateAnnotatedTypeWithoutAnnotation(childType);
+
+		Property childProperty = new Property() {
+			@Override
+			public Type getType() {
+				return childType;
+			}
+
+			@Override
+			public AnnotatedType getAnnotatedType() {
+				return childAnnotatedType;
+			}
+
+			@Nullable
+			@Override
+			public String getName() {
+				return null;
+			}
+
+			@Override
+			public List<Annotation> getAnnotations() {
+				return Arrays.asList(childAnnotatedType.getAnnotations());
+			}
+
+			@Nullable
+			@Override
+			public Object getValue(Object instance) {
+				return instance;
+			}
+		};
+
+		SingleElementProperty singleElementProperty = new SingleElementProperty(childProperty, valueAnnotatedType);
 
 		return new ContainerProperty(
-			Collections.singletonList(valueProperty),
+			Collections.singletonList(singleElementProperty),
 			CONTAINER_INFO
 		);
 	}

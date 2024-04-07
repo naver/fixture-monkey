@@ -60,6 +60,7 @@ public final class JavaDefaultArbitraryGeneratorBuilder {
 	);
 	public static final ArbitraryIntrospector JAVA_CONTAINER_INTROSPECTOR = new MatchArbitraryIntrospector(
 		Arrays.asList(
+			new SupplierIntrospector(),
 			new OptionalIntrospector(),
 			new ListIntrospector(),
 			new SetIntrospector(),
@@ -70,8 +71,7 @@ public final class JavaDefaultArbitraryGeneratorBuilder {
 			new MapIntrospector(),
 			new MapEntryIntrospector(),
 			new MapEntryElementIntrospector(),
-			new ArrayIntrospector(),
-			new SupplierIntrospector()
+			new ArrayIntrospector()
 		)
 	);
 	public static final ArbitraryIntrospector DEFAULT_FALLBACK_INTROSPECTOR =
