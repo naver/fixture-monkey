@@ -19,11 +19,10 @@
 package com.navercorp.fixturemonkey.tree;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
@@ -69,6 +68,27 @@ public final class ArbitraryTraverser {
 		List<MatcherOperator<List<ContainerInfoManipulator>>> registeredContainerInfoManipulators,
 		Map<Class<?>, List<Property>> propertyConfigurers
 	) {
+		TraverseContext traverseContext = new TraverseContext(
+			new ArrayList<>(),
+			containerInfoManipulators,
+			registeredContainerInfoManipulators,
+			propertyConfigurers
+		);
+
+		return generateObjectNode(
+			null,
+			property,
+			null,
+			traverseContext
+		);
+	}
+
+	private ObjectNode generateObjectNode(
+		@Nullable Property resolvedParentProperty,
+		Property property,
+		@Nullable Integer propertySequence,
+		TraverseContext context
+	) {
 		ContainerPropertyGenerator containerPropertyGenerator =
 			this.fixtureMonkeyOptions.getContainerPropertyGenerator(property);
 		boolean container = containerPropertyGenerator != null;
@@ -80,79 +100,159 @@ public final class ArbitraryTraverser {
 			objectPropertyGenerator = this.fixtureMonkeyOptions.getObjectPropertyGenerator(property);
 		}
 
+		ArbitraryProperty parentArbitraryProperty = context.getLastArbitraryProperty();
+		Integer index = null;
+		if (resolvedParentProperty != null && parentArbitraryProperty != null) {
+			index = getIndex(resolvedParentProperty, parentArbitraryProperty, propertySequence);
+		}
+
 		ObjectProperty objectProperty = objectPropertyGenerator.generate(
 			new ObjectPropertyGeneratorContext(
 				property,
-				null,
-				null,
+				index,
+				parentArbitraryProperty,
 				container,
-				getPropertyGenerator(propertyConfigurers),
+				getPropertyGenerator(context.getPropertyConfigurers()),
 				fixtureMonkeyOptions.getPropertyNameResolver(property),
 				fixtureMonkeyOptions.getNullInjectGenerator(property)
 			)
 		);
 
-		ContainerProperty containerProperty = null;
-		ContainerInfoManipulator containerInfoManipulator = null;
+		Map<Property, List<Property>> childPropertyListsByCandidateProperty;
+		ContainerInfoManipulator appliedContainerInfoManipulator = null;
 		if (container) {
-			containerInfoManipulator = resolveAppliedContainerInfoManipulator(
-				containerInfoManipulators,
-				Collections.singletonList(objectProperty)
-			);
-			ArbitraryContainerInfo containerInfo = containerInfoManipulator != null
-				? containerInfoManipulator.getContainerInfo()
-				: null;
+			List<ObjectProperty> objectProperties =
+				context.getArbitraryProperties().stream()
+					.map(ArbitraryProperty::getObjectProperty).collect(Collectors.toList());
+			objectProperties.add(objectProperty);
 
-			containerProperty = containerPropertyGenerator.generate(
+			appliedContainerInfoManipulator = resolveAppliedContainerInfoManipulator(
+				context.getContainerInfoManipulators(),
+				objectProperties
+			);
+
+			ArbitraryContainerInfo containerInfo = appliedContainerInfoManipulator != null
+				? appliedContainerInfoManipulator.getContainerInfo()
+				: null;
+			ContainerProperty childContainerProperty = containerPropertyGenerator.generate(
 				new ContainerPropertyGeneratorContext(
 					property,
-					null,
+					index,
 					containerInfo,
 					fixtureMonkeyOptions.getArbitraryContainerInfoGenerator(property)
 				)
 			);
-		}
-		List<Property> candidateProperties = resolveCandidateProperties(property);
 
-		Map<Property, List<Property>> childPropertyListsByCandidateProperty = new HashMap<>();
-		if (container) {
-			for (Property candidateProperty : candidateProperties) {
-				childPropertyListsByCandidateProperty.put(
-					candidateProperty,
-					containerProperty.getElementProperties()
+			List<Property> candidateProperties = resolveCandidateProperties(property);
+			childPropertyListsByCandidateProperty = candidateProperties.stream()
+				.collect(
+					Collectors.toMap(
+						Function.identity(),
+						it -> childContainerProperty.getElementProperties()
+					)
 				);
-			}
 		} else {
-			childPropertyListsByCandidateProperty.putAll(objectProperty.getChildPropertyListsByCandidateProperty());
+			childPropertyListsByCandidateProperty = objectProperty.getChildPropertyListsByCandidateProperty();
 		}
 
 		ArbitraryProperty arbitraryProperty = new ArbitraryProperty(
 			objectProperty,
 			container,
 			objectProperty.getNullInject(),
-			Collections.unmodifiableMap(childPropertyListsByCandidateProperty)
+			childPropertyListsByCandidateProperty
 		);
+		TraverseContext nextTraverseContext = context.appendArbitraryProperty(arbitraryProperty);
 
-		List<ArbitraryProperty> parentArbitraryProperties = new ArrayList<>();
-		parentArbitraryProperties.add(arbitraryProperty);
+		List<ObjectNode> children = new ArrayList<>();
+		for (
+			Entry<Property, List<Property>> childPropertiesByCandidateProperty :
+			childPropertyListsByCandidateProperty.entrySet()
+		) {
+			List<Property> childProperties = childPropertiesByCandidateProperty.getValue();
+			Property candidateProperty = childPropertiesByCandidateProperty.getKey();
 
-		ObjectNode rootNode = generateObjectNode(
-			arbitraryProperty,
-			null,
-			container,
-			new TraverseContext(
-				arbitraryProperty,
-				parentArbitraryProperties,
-				containerInfoManipulators,
-				registeredContainerInfoManipulators,
-				propertyConfigurers
-			)
-		);
-
-		if (containerInfoManipulator != null) {
-			rootNode.addContainerManipulator(containerInfoManipulator);
+			children.addAll(
+				generateChildrenNodes(
+					candidateProperty,
+					childProperties,
+					nextTraverseContext
+				)
+			);
 		}
-		return rootNode;
+
+		Property resolvedProperty = new ArrayList<>(childPropertyListsByCandidateProperty.keySet())
+			.get(Randoms.nextInt(childPropertyListsByCandidateProperty.size()));
+
+		ObjectNode objectNode = new ObjectNode(
+			resolvedParentProperty,
+			resolvedProperty,
+			arbitraryProperty,
+			children
+		);
+
+		if (appliedContainerInfoManipulator != null) {
+			objectNode.addContainerManipulator(appliedContainerInfoManipulator);
+		}
+		return objectNode;
+	}
+
+	@Nullable
+	private Integer getIndex(
+		Property resolvedParentProperty,
+		ArbitraryProperty parentArbitraryProperty,
+		Integer propertySequence
+	) {
+		boolean parentContainer =
+			fixtureMonkeyOptions.getContainerPropertyGenerator(resolvedParentProperty) != null;
+		if (!parentContainer) {
+			return null;
+		}
+
+		int index = propertySequence;
+		if (parentArbitraryProperty.getObjectProperty().getProperty() instanceof MapEntryElementProperty) {
+			index /= 2;
+		}
+		return index;
+	}
+
+	private List<ObjectNode> generateChildrenNodes(
+		Property resolvedParentProperty,
+		List<Property> childProperties,
+		TraverseContext context
+	) {
+		List<ObjectNode> children = new ArrayList<>();
+
+		for (int sequence = 0; sequence < childProperties.size(); sequence++) {
+			Property childProperty = childProperties.get(sequence);
+
+			if (context.isTraversed(childProperty)
+				&& !(resolvedParentProperty instanceof MapEntryElementProperty)) {
+				continue;
+			}
+
+			ObjectNode childNode = generateObjectNode(
+				resolvedParentProperty,
+				childProperty,
+				sequence,
+				context
+			);
+			children.add(childNode);
+		}
+		return children;
+	}
+
+	@Nullable
+	private ContainerInfoManipulator resolveAppliedContainerInfoManipulator(
+		List<ContainerInfoManipulator> containerInfoManipulators,
+		List<ObjectProperty> objectProperties
+	) {
+		ContainerInfoManipulator appliedContainerInfoManipulator = null;
+		for (ContainerInfoManipulator containerInfoManipulator : containerInfoManipulators) {
+			if (containerInfoManipulator.isMatch(objectProperties)) {
+				appliedContainerInfoManipulator = containerInfoManipulator;
+			}
+		}
+		return appliedContainerInfoManipulator;
 	}
 
 	private PropertyGenerator getPropertyGenerator(Map<Class<?>, List<Property>> propertyConfigurers) {
@@ -179,166 +279,6 @@ public final class ArbitraryTraverser {
 
 			return fixtureMonkeyOptions.getDefaultPropertyGenerator().generateChildProperties(property);
 		};
-	}
-
-	private ObjectNode generateObjectNode(
-		ArbitraryProperty arbitraryProperty,
-		@Nullable Property resolvedParentProperty,
-		boolean container,
-		TraverseContext context
-	) {
-		List<ObjectNode> children = new ArrayList<>();
-
-		Map<Property, List<Property>> childPropertyListsByCandidateProperty =
-			arbitraryProperty.getChildPropertyListsByCandidateProperty();
-
-		for (
-			Entry<Property, List<Property>> childPropertiesByCandidateProperty :
-			childPropertyListsByCandidateProperty.entrySet()
-		) {
-			List<Property> childProperties = childPropertiesByCandidateProperty.getValue();
-			Property candidateProperty = childPropertiesByCandidateProperty.getKey();
-
-			children.addAll(
-				generateChildrenNodes(
-					childProperties,
-					arbitraryProperty,
-					container,
-					candidateProperty,
-					context
-				)
-			);
-		}
-
-		Property resolvedProperty = new ArrayList<>(childPropertyListsByCandidateProperty.keySet())
-			.get(Randoms.nextInt(childPropertyListsByCandidateProperty.size()));
-
-		return new ObjectNode(
-			resolvedParentProperty,
-			resolvedProperty,
-			arbitraryProperty,
-			children
-		);
-	}
-
-	private List<ObjectNode> generateChildrenNodes(
-		List<Property> childProperties,
-		ArbitraryProperty parentArbitraryProperty,
-		boolean parentContainer,
-		Property resolvedParentProperty,
-		TraverseContext context
-	) {
-		List<ObjectNode> children = new ArrayList<>();
-		List<ContainerInfoManipulator> containerInfoManipulators = context.getContainerInfoManipulators();
-
-		for (int sequence = 0; sequence < childProperties.size(); sequence++) {
-			Property childProperty = childProperties.get(sequence);
-
-			if (context.isTraversed(childProperty) && !(resolvedParentProperty instanceof MapEntryElementProperty)) {
-				continue;
-			}
-
-			ContainerPropertyGenerator containerPropertyGenerator =
-				this.fixtureMonkeyOptions.getContainerPropertyGenerator(childProperty);
-			boolean childContainer = containerPropertyGenerator != null;
-
-			ObjectPropertyGenerator objectPropertyGenerator;
-			if (childContainer) {
-				objectPropertyGenerator = SingleValueObjectPropertyGenerator.INSTANCE;
-			} else {
-				objectPropertyGenerator = this.fixtureMonkeyOptions.getObjectPropertyGenerator(childProperty);
-			}
-
-			int index = sequence;
-			if (parentArbitraryProperty.getObjectProperty().getProperty() instanceof MapEntryElementProperty) {
-				index /= 2;
-			}
-
-			ObjectProperty childObjectProperty = objectPropertyGenerator.generate(
-				new ObjectPropertyGeneratorContext(
-					childProperty,
-					parentContainer ? index : null,
-					parentArbitraryProperty,
-					childContainer,
-					getPropertyGenerator(context.getPropertyConfigurers()),
-					fixtureMonkeyOptions.getPropertyNameResolver(childProperty),
-					fixtureMonkeyOptions.getNullInjectGenerator(childProperty)
-				)
-			);
-
-			Map<Property, List<Property>> childPropertyListsByCandidateProperty = new HashMap<>();
-			List<Property> candidateProperties = resolveCandidateProperties(childProperty);
-
-			ContainerProperty childContainerProperty = null;
-			ContainerInfoManipulator appliedContainerInfoManipulator = null;
-			if (childContainer) {
-				List<ObjectProperty> objectProperties =
-					context.getArbitraryProperties().stream()
-						.map(ArbitraryProperty::getObjectProperty).collect(Collectors.toList());
-				objectProperties.add(childObjectProperty);
-
-				appliedContainerInfoManipulator = resolveAppliedContainerInfoManipulator(
-					containerInfoManipulators,
-					objectProperties
-				);
-				ArbitraryContainerInfo containerInfo = appliedContainerInfoManipulator != null
-					? appliedContainerInfoManipulator.getContainerInfo()
-					: null;
-				childContainerProperty = containerPropertyGenerator.generate(
-					new ContainerPropertyGeneratorContext(
-						childProperty,
-						parentContainer ? index : null,
-						containerInfo,
-						fixtureMonkeyOptions.getArbitraryContainerInfoGenerator(childProperty)
-					)
-				);
-
-				for (Property candidateProperty : candidateProperties) {
-					childPropertyListsByCandidateProperty.put(
-						candidateProperty,
-						childContainerProperty.getElementProperties()
-					);
-				}
-			} else {
-				childPropertyListsByCandidateProperty.putAll(
-					childObjectProperty.getChildPropertyListsByCandidateProperty()
-				);
-			}
-
-			ArbitraryProperty childArbitraryProperty = new ArbitraryProperty(
-				childObjectProperty,
-				childContainer,
-				childObjectProperty.getNullInject(),
-				childPropertyListsByCandidateProperty
-			);
-
-			ObjectNode childNode = generateObjectNode(
-				childArbitraryProperty,
-				resolvedParentProperty,
-				childContainer,
-				context.appendArbitraryProperty(childArbitraryProperty)
-			);
-
-			if (appliedContainerInfoManipulator != null) {
-				childNode.addContainerManipulator(appliedContainerInfoManipulator);
-			}
-			children.add(childNode);
-		}
-		return children;
-	}
-
-	@Nullable
-	private ContainerInfoManipulator resolveAppliedContainerInfoManipulator(
-		List<ContainerInfoManipulator> containerInfoManipulators,
-		List<ObjectProperty> objectProperties
-	) {
-		ContainerInfoManipulator appliedContainerInfoManipulator = null;
-		for (ContainerInfoManipulator containerInfoManipulator : containerInfoManipulators) {
-			if (containerInfoManipulator.isMatch(objectProperties)) {
-				appliedContainerInfoManipulator = containerInfoManipulator;
-			}
-		}
-		return appliedContainerInfoManipulator;
 	}
 
 	private List<Property> resolveCandidateProperties(Property property) {
