@@ -19,6 +19,8 @@
 package com.navercorp.fixturemonkey.tree;
 
 import com.navercorp.fixturemonkey.api.generator.ObjectProperty;
+import com.navercorp.fixturemonkey.api.property.Property;
+import com.navercorp.fixturemonkey.api.property.SingleElementProperty;
 
 public final class SingleElementPredicate implements NextNodePredicate {
 
@@ -27,6 +29,8 @@ public final class SingleElementPredicate implements NextNodePredicate {
 
 	@Override
 	public boolean test(ObjectProperty currentObjectProperty) {
-		return true;
+		Property property = currentObjectProperty.getProperty();
+
+		return property instanceof SingleElementProperty;
 	}
 }

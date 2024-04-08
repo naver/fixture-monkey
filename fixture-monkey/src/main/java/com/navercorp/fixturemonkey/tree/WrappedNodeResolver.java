@@ -24,10 +24,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import com.navercorp.fixturemonkey.api.generator.ObjectProperty;
-import com.navercorp.fixturemonkey.api.property.Property;
-import com.navercorp.fixturemonkey.api.property.SingleElementProperty;
-
 public final class WrappedNodeResolver implements NodeResolver {
 	private final NextNodePredicate nextNodePredicate;
 
@@ -38,11 +34,8 @@ public final class WrappedNodeResolver implements NodeResolver {
 	@Override
 	public List<ObjectNode> resolve(ObjectNode objectNode) {
 		List<ObjectNode> resolved = objectNode.getChildren().stream()
-			.filter(it -> isSingleValueProperty(it.getArbitraryProperty().getObjectProperty()))
-			.map(it -> {
-				it.setArbitraryProperty(it.getArbitraryProperty().withNullInject(NOT_NULL_INJECT));
-				return it;
-			})
+			.filter(it -> nextNodePredicate.test(it.getArbitraryProperty().getObjectProperty()))
+			.peek(it -> it.setArbitraryProperty(it.getArbitraryProperty().withNullInject(NOT_NULL_INJECT)))
 			.collect(Collectors.toList());
 
 		if (resolved.isEmpty()) {
@@ -51,12 +44,6 @@ public final class WrappedNodeResolver implements NodeResolver {
 		}
 
 		return resolved;
-	}
-
-	private boolean isSingleValueProperty(ObjectProperty currentObjectProperty) {
-		Property property = currentObjectProperty.getProperty();
-
-		return property instanceof SingleElementProperty;
 	}
 
 	@Override
