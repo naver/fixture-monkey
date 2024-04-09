@@ -26,6 +26,8 @@ import java.util.List;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import com.navercorp.fixturemonkey.api.property.SingleElementProperty;
+
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class IdentityNodeResolver implements NodeResolver {
 	public static final IdentityNodeResolver INSTANCE = new IdentityNodeResolver();
@@ -35,8 +37,26 @@ public final class IdentityNodeResolver implements NodeResolver {
 
 	@Override
 	public List<ObjectNode> resolve(ObjectNode objectNode) {
-		objectNode.setArbitraryProperty(objectNode.getArbitraryProperty().withNullInject(NOT_NULL_INJECT));
-		return Collections.singletonList(objectNode);
+		ObjectNode resultNode = getChildNodeIfWrapped(objectNode);
+		resultNode.setArbitraryProperty(objectNode.getArbitraryProperty().withNullInject(NOT_NULL_INJECT));
+
+		return Collections.singletonList(resultNode);
+	}
+
+	private ObjectNode getChildNodeIfWrapped(ObjectNode objectNode) {
+		ObjectNode searchNode = objectNode;
+
+		while (isWrappedNode(searchNode)) {
+			searchNode = searchNode.getChildren().get(0);
+		}
+
+		return searchNode;
+	}
+
+	private boolean isWrappedNode(ObjectNode searchNode) {
+		List<ObjectNode> children = searchNode.getChildren();
+
+		return children.size() == 1 && children.get(0).getResolvedProperty() instanceof SingleElementProperty;
 	}
 
 	@Override

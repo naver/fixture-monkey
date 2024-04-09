@@ -29,7 +29,6 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ObjectProperty;
 import com.navercorp.fixturemonkey.tree.NextNodePredicate;
 import com.navercorp.fixturemonkey.tree.PropertyPredicate;
-import com.navercorp.fixturemonkey.tree.SingleElementPredicate;
 import com.navercorp.fixturemonkey.tree.StartNodePredicate;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
@@ -74,7 +73,6 @@ public final class ContainerInfoManipulator {
 	public ContainerInfoManipulator withPrependNextNodePredicate(NextNodePredicate nextNodePredicate) {
 		List<NextNodePredicate> nodePredicatesWithoutRoot = this.nextNodePredicates.stream()
 			.filter(it -> !(it instanceof StartNodePredicate))
-			.filter(it -> !(it instanceof SingleElementPredicate))
 			.collect(Collectors.toList());
 
 		List<NextNodePredicate> newNextNodePredicates = new ArrayList<>();
@@ -102,14 +100,10 @@ public final class ContainerInfoManipulator {
 	}
 
 	public boolean isMatch(List<ObjectProperty> objectProperties) {
-		List<NextNodePredicate> nodeMatchPredicates = this.nextNodePredicates.stream()
-			.filter(it -> !(it instanceof SingleElementPredicate))
-			.collect(Collectors.toList());
-
 		int objectPropertiesSize = objectProperties.size();
-		int nextNodePredicateSize = nodeMatchPredicates.size();
+		int nextNodePredicateSize = nextNodePredicates.size();
 
-		boolean registered = nodeMatchPredicates.get(0) instanceof PropertyPredicate;
+		boolean registered = nextNodePredicates.get(0) instanceof PropertyPredicate;
 		if (!registered && nextNodePredicateSize != objectPropertiesSize) {
 			return false;
 		}
@@ -117,7 +111,7 @@ public final class ContainerInfoManipulator {
 		for (int i = 0; i < nextNodePredicateSize; i++) {
 			int reversedNextNodePredicateIndex = nextNodePredicateSize - 1 - i;
 			int reversedCurrentObjectPropertyIndex = objectPropertiesSize - 1 - i;
-			NextNodePredicate nextNodePredicate = nodeMatchPredicates.get(reversedNextNodePredicateIndex);
+			NextNodePredicate nextNodePredicate = nextNodePredicates.get(reversedNextNodePredicateIndex);
 			ObjectProperty objectProperty = objectProperties.get(reversedCurrentObjectPropertyIndex);
 
 			if (!nextNodePredicate.test(objectProperty)) {

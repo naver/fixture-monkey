@@ -1835,6 +1835,19 @@ class FixtureMonkeyTest {
 	}
 
 	@Property
+	void setNestedSupplierObjectField() {
+		String actual = SUT.giveMeBuilder(new TypeReference<Supplier<Supplier<SimpleObject>>>() {
+			})
+			.set("str", "expected")
+			.sample()
+			.get()
+			.get()
+			.getStr();
+
+		then(actual).isEqualTo("expected");
+	}
+
+	@Property
 	void setSupplierObjectFieldUsingRootExp() {
 		String actual = SUT.giveMeBuilder(new TypeReference<Supplier<SimpleObject>>() {
 			})
