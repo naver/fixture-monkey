@@ -35,8 +35,11 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 
+import org.apiguardian.api.API;
+
 import com.navercorp.fixturemonkey.api.type.Types;
 
+@API(since = "1.0.16", status = API.Status.EXPERIMENTAL)
 public final class SingleElementProperty implements Property {
 
 	private final Property property;
