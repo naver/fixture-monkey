@@ -28,10 +28,13 @@ import java.util.function.Supplier;
 
 import javax.annotation.Nullable;
 
+import org.apiguardian.api.API;
+
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.SingleElementProperty;
 import com.navercorp.fixturemonkey.api.type.Types;
 
+@API(since = "1.0.16", status = API.Status.EXPERIMENTAL)
 public final class SupplierContainerPropertyGenerator implements ContainerPropertyGenerator {
 	public static final SupplierContainerPropertyGenerator INSTANCE = new SupplierContainerPropertyGenerator();
 	private static final ArbitraryContainerInfo CONTAINER_INFO = new ArbitraryContainerInfo(1, 1);

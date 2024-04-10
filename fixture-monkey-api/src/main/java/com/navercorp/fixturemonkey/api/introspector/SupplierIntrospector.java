@@ -22,6 +22,8 @@ import static com.navercorp.fixturemonkey.api.matcher.SingleGenericTypeMatcher.S
 
 import java.util.function.Supplier;
 
+import org.apiguardian.api.API;
+
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
@@ -29,6 +31,7 @@ import com.navercorp.fixturemonkey.api.matcher.AssignableTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.property.Property;
 
+@API(since = "1.0.16", status = API.Status.EXPERIMENTAL)
 public final class SupplierIntrospector implements ArbitraryIntrospector, Matcher {
 	private static final Matcher MATCHER = new AssignableTypeMatcher(Supplier.class);
 
