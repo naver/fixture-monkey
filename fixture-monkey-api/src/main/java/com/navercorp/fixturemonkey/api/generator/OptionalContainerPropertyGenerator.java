@@ -50,12 +50,11 @@ public final class OptionalContainerPropertyGenerator implements ContainerProper
 	public ContainerProperty generate(ContainerPropertyGeneratorContext context) {
 		Property property = context.getProperty();
 
-		AnnotatedType valueAnnotatedType = getValueAnnotatedType(property);
-		Type childType = valueAnnotatedType.getType();
-		AnnotatedType childAnnotatedType = Types.generateAnnotatedTypeWithoutAnnotation(childType);
+		AnnotatedType childAnnotatedType = getChildAnnotatedType(property);
+		Type childType = childAnnotatedType.getType();
 
 		Property childProperty = new OptionalProperty(childType, childAnnotatedType);
-		SingleElementProperty singleElementProperty = new SingleElementProperty(childProperty, valueAnnotatedType);
+		SingleElementProperty singleElementProperty = new SingleElementProperty(childProperty, childAnnotatedType);
 
 		return new ContainerProperty(
 			Collections.singletonList(singleElementProperty),
@@ -63,7 +62,7 @@ public final class OptionalContainerPropertyGenerator implements ContainerProper
 		);
 	}
 
-	private AnnotatedType getValueAnnotatedType(Property optionalProperty) {
+	private AnnotatedType getChildAnnotatedType(Property optionalProperty) {
 		Class<?> type = Types.getActualType(optionalProperty.getType());
 		if (type == OptionalInt.class) {
 			return INTEGER_TYPE;

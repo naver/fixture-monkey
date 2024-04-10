@@ -40,12 +40,11 @@ public final class SupplierContainerPropertyGenerator implements ContainerProper
 	public ContainerProperty generate(ContainerPropertyGeneratorContext context) {
 		Property property = context.getProperty();
 
-		AnnotatedType valueAnnotatedType = getValueAnnotatedType(property);
-		Type childType = valueAnnotatedType.getType();
-		AnnotatedType childAnnotatedType = Types.generateAnnotatedTypeWithoutAnnotation(childType);
+		AnnotatedType childAnnotatedType = getChildAnnotatedType(property);
+		Type childType = childAnnotatedType.getType();
 
 		Property childProperty = new SupplierProperty(childType, childAnnotatedType);
-		SingleElementProperty singleElementProperty = new SingleElementProperty(childProperty, valueAnnotatedType);
+		SingleElementProperty singleElementProperty = new SingleElementProperty(childProperty, childAnnotatedType);
 
 		return new ContainerProperty(
 			Collections.singletonList(singleElementProperty),
@@ -53,7 +52,7 @@ public final class SupplierContainerPropertyGenerator implements ContainerProper
 		);
 	}
 
-	private AnnotatedType getValueAnnotatedType(Property supplierProperty) {
+	private AnnotatedType getChildAnnotatedType(Property supplierProperty) {
 		Class<?> type = Types.getActualType(supplierProperty.getType());
 		if (type != Supplier.class) {
 			throw new IllegalArgumentException(
