@@ -18,20 +18,17 @@
 
 package com.navercorp.fixturemonkey.api.generator;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Type;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
-
-import javax.annotation.Nullable;
 
 import org.apiguardian.api.API;
 
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.SingleElementProperty;
+import com.navercorp.fixturemonkey.api.property.SupplierProperty;
 import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "1.0.16", status = API.Status.EXPERIMENTAL)
@@ -47,40 +44,7 @@ public final class SupplierContainerPropertyGenerator implements ContainerProper
 		Type childType = valueAnnotatedType.getType();
 		AnnotatedType childAnnotatedType = Types.generateAnnotatedTypeWithoutAnnotation(childType);
 
-		Property childProperty = new Property() {
-			@Override
-			public Type getType() {
-				return childType;
-			}
-
-			@Override
-			public AnnotatedType getAnnotatedType() {
-				return childAnnotatedType;
-			}
-
-			@Nullable
-			@Override
-			public String getName() {
-				return null;
-			}
-
-			@Override
-			public List<Annotation> getAnnotations() {
-				return Arrays.asList(childAnnotatedType.getAnnotations());
-			}
-
-			@Override
-			public Object getValue(Object instance) {
-				Class<?> actualType = Types.getActualType(instance.getClass());
-
-				if (Supplier.class.isAssignableFrom(actualType)) {
-					return instance;
-				}
-
-				throw new IllegalArgumentException("given value has no match");
-			}
-		};
-
+		Property childProperty = new SupplierProperty(childType, childAnnotatedType);
 		SingleElementProperty singleElementProperty = new SingleElementProperty(childProperty, valueAnnotatedType);
 
 		return new ContainerProperty(
