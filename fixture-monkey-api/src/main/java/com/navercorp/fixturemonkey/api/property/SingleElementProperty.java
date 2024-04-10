@@ -26,18 +26,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.OptionalDouble;
-import java.util.OptionalInt;
-import java.util.OptionalLong;
 import java.util.function.Function;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 
 import org.apiguardian.api.API;
-
-import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "1.0.16", status = API.Status.EXPERIMENTAL)
 public final class SingleElementProperty implements Property {
@@ -96,16 +90,7 @@ public final class SingleElementProperty implements Property {
 	@Nullable
 	@Override
 	public Object getValue(Object instance) {
-		Class<?> actualType = Types.getActualType(instance.getClass());
-		if (isOptional(actualType)) {
-			return getOptionalValue(instance);
-		}
-
-		if (Supplier.class.isAssignableFrom(actualType)) {
-			return instance;
-		}
-
-		throw new IllegalArgumentException("given value has no match");
+		return property.getValue(instance);
 	}
 
 	@Override
@@ -125,34 +110,5 @@ public final class SingleElementProperty implements Property {
 	@Override
 	public int hashCode() {
 		return Objects.hash(property, elementType, annotations);
-	}
-
-	private boolean isOptional(Class<?> type) {
-		return Optional.class.isAssignableFrom(type)
-			|| OptionalInt.class.isAssignableFrom(type)
-			|| OptionalLong.class.isAssignableFrom(type)
-			|| OptionalDouble.class.isAssignableFrom(type);
-	}
-
-	@Nullable
-	private Object getOptionalValue(Object obj) {
-		Class<?> actualType = Types.getActualType(obj.getClass());
-		if (Optional.class.isAssignableFrom(actualType)) {
-			return ((Optional<?>)obj).orElse(null);
-		}
-
-		if (OptionalInt.class.isAssignableFrom(actualType)) {
-			return ((OptionalInt)obj).orElse(0);
-		}
-
-		if (OptionalLong.class.isAssignableFrom(actualType)) {
-			return ((OptionalLong)obj).orElse(0L);
-		}
-
-		if (OptionalDouble.class.isAssignableFrom(actualType)) {
-			return ((OptionalDouble)obj).orElse(Double.NaN);
-		}
-
-		throw new IllegalArgumentException("given value is not optional, actual type : " + actualType);
 	}
 }

@@ -66,10 +66,15 @@ public final class SupplierContainerPropertyGenerator implements ContainerProper
 				return Arrays.asList(childAnnotatedType.getAnnotations());
 			}
 
-			@Nullable
 			@Override
 			public Object getValue(Object instance) {
-				return instance;
+				Class<?> actualType = Types.getActualType(instance.getClass());
+
+				if (Supplier.class.isAssignableFrom(actualType)) {
+					return instance;
+				}
+
+				throw new IllegalArgumentException("given value has no match");
 			}
 		};
 

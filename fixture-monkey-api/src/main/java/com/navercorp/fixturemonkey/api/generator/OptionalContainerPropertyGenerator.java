@@ -82,7 +82,12 @@ public final class OptionalContainerPropertyGenerator implements ContainerProper
 			@Nullable
 			@Override
 			public Object getValue(Object instance) {
-				return instance;
+				Class<?> actualType = Types.getActualType(instance.getClass());
+				if (isOptional(actualType)) {
+					return getOptionalValue(instance);
+				}
+
+				throw new IllegalArgumentException("given value has no match");
 			}
 		};
 
@@ -124,5 +129,34 @@ public final class OptionalContainerPropertyGenerator implements ContainerProper
 		}
 
 		return genericsTypes.get(0);
+	}
+
+	private boolean isOptional(Class<?> type) {
+		return Optional.class.isAssignableFrom(type)
+			|| OptionalInt.class.isAssignableFrom(type)
+			|| OptionalLong.class.isAssignableFrom(type)
+			|| OptionalDouble.class.isAssignableFrom(type);
+	}
+
+	@Nullable
+	private Object getOptionalValue(Object obj) {
+		Class<?> actualType = Types.getActualType(obj.getClass());
+		if (Optional.class.isAssignableFrom(actualType)) {
+			return ((Optional<?>)obj).orElse(null);
+		}
+
+		if (OptionalInt.class.isAssignableFrom(actualType)) {
+			return ((OptionalInt)obj).orElse(0);
+		}
+
+		if (OptionalLong.class.isAssignableFrom(actualType)) {
+			return ((OptionalLong)obj).orElse(0L);
+		}
+
+		if (OptionalDouble.class.isAssignableFrom(actualType)) {
+			return ((OptionalDouble)obj).orElse(Double.NaN);
+		}
+
+		throw new IllegalArgumentException("given value is not optional, actual type : " + actualType);
 	}
 }
