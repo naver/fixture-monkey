@@ -23,6 +23,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
@@ -58,6 +59,7 @@ import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.api.validator.ArbitraryValidator;
 import com.navercorp.fixturemonkey.buildergroup.ArbitraryBuilderCandidate;
 import com.navercorp.fixturemonkey.buildergroup.ArbitraryBuilderGroup;
+import com.navercorp.fixturemonkey.customizer.MonkeyManipulatorFactory;
 import com.navercorp.fixturemonkey.expression.ArbitraryExpressionFactory;
 import com.navercorp.fixturemonkey.expression.MonkeyExpressionFactory;
 import com.navercorp.fixturemonkey.resolver.ManipulatorOptimizer;
@@ -530,6 +532,12 @@ public final class FixtureMonkeyBuilder {
 		defaultInterfacePlugin.accept(fixtureMonkeyOptionsBuilder);
 		FixtureMonkeyOptions fixtureMonkeyOptions = fixtureMonkeyOptionsBuilder.build();
 		ArbitraryTraverser traverser = new ArbitraryTraverser(fixtureMonkeyOptions);
+		MonkeyManipulatorFactory monkeyManipulatorFactory = new MonkeyManipulatorFactory(
+			new AtomicInteger(),
+			monkeyExpressionFactory,
+			traverser,
+			fixtureMonkeyOptions.getDecomposedContainerValueFactory()
+		);
 
 		MonkeyContext monkeyContext = monkeyContextBuilder.build();
 		Randoms.create(String.valueOf(seed));
@@ -539,7 +547,7 @@ public final class FixtureMonkeyBuilder {
 			manipulatorOptimizer,
 			monkeyContext,
 			registeredArbitraryBuilders,
-			monkeyExpressionFactory
+			monkeyManipulatorFactory
 		);
 	}
 }

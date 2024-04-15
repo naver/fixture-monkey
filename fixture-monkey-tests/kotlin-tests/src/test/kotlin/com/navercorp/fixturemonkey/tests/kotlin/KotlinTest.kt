@@ -48,6 +48,7 @@ import com.navercorp.fixturemonkey.kotlin.introspector.PrimaryConstructorArbitra
 import com.navercorp.fixturemonkey.kotlin.maxSize
 import com.navercorp.fixturemonkey.kotlin.minSize
 import com.navercorp.fixturemonkey.kotlin.pushExactTypeArbitraryIntrospector
+import com.navercorp.fixturemonkey.kotlin.register
 import com.navercorp.fixturemonkey.kotlin.set
 import com.navercorp.fixturemonkey.kotlin.setExp
 import com.navercorp.fixturemonkey.kotlin.setExpGetter
@@ -661,6 +662,29 @@ class KotlinTest {
             .sample()
             .string
 
+        then(actual).isEqualTo(expected)
+    }
+
+    @Test
+    fun registerAssignableType() {
+        // given
+        open class Parent(val parent: String)
+
+        class Child(parent: String) : Parent(parent)
+
+        val expected = "registered"
+        val sut = FixtureMonkey.builder()
+            .plugin(KotlinPlugin())
+            .register {
+                it.giveMeBuilder<Parent>()
+                    .setExp(Parent::parent, expected)
+            }
+            .build()
+
+        // when
+        val actual = sut.giveMeOne<Child>().parent
+
+        // then
         then(actual).isEqualTo(expected)
     }
 

@@ -10,6 +10,8 @@ sectionStart
 ### v.1.0.16
 Add resolve the candidate concrete type of container type.
 
+Fix register working on assignable type.
+
 sectionEnd
 
 sectionStart
