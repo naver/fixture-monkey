@@ -19,29 +19,25 @@
 package com.navercorp.fixturemonkey.api.property;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-/**
- * Represents a concrete type definition with a resolved concrete property and a list of child properties.
- * Instances of this class are immutable once created.
- */
 @API(since = "1.0.16", status = Status.EXPERIMENTAL)
-public final class ConcreteTypeDefinition {
-	private final Property concreteProperty;
-	private final List<Property> childPropertyLists;
+public final class CompositeCandidateConcretePropertyResolver implements CandidateConcretePropertyResolver {
+	private final List<CandidateConcretePropertyResolver> candidateConcretePropertyResolvers;
 
-	public ConcreteTypeDefinition(Property concreteProperty, List<Property> childPropertyLists) {
-		this.concreteProperty = concreteProperty;
-		this.childPropertyLists = childPropertyLists;
+	public CompositeCandidateConcretePropertyResolver(
+		List<CandidateConcretePropertyResolver> candidateConcretePropertyResolvers
+	) {
+		this.candidateConcretePropertyResolvers = candidateConcretePropertyResolvers;
 	}
 
-	public Property getConcreteProperty() {
-		return concreteProperty;
-	}
-
-	public List<Property> getChildPropertyLists() {
-		return childPropertyLists;
+	@Override
+	public List<Property> resolve(Property property) {
+		return candidateConcretePropertyResolvers.stream()
+			.flatMap(it -> it.resolve(property).stream())
+			.collect(Collectors.toList());
 	}
 }

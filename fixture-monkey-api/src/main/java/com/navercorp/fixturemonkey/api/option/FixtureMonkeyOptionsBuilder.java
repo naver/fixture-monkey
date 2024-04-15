@@ -74,6 +74,7 @@ import com.navercorp.fixturemonkey.api.jqwik.JqwikJavaTypeArbitraryGeneratorSet;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.plugin.Plugin;
+import com.navercorp.fixturemonkey.api.property.CandidateConcretePropertyResolver;
 import com.navercorp.fixturemonkey.api.property.DefaultPropertyGenerator;
 import com.navercorp.fixturemonkey.api.property.PropertyGenerator;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
@@ -134,6 +135,8 @@ public final class FixtureMonkeyOptionsBuilder {
 	private Function<JavaConstraintGenerator, JavaTimeArbitraryGeneratorSet> generateJavaTimeArbitrarySet = null;
 	private InstantiatorProcessor instantiatorProcessor = new JavaInstantiatorProcessor();
 	private final JdkVariantOptions jdkVariantOptions = new JdkVariantOptions();
+	private List<MatcherOperator<CandidateConcretePropertyResolver>> candidateConcretePropertyResolvers =
+		new ArrayList<>(FixtureMonkeyOptions.DEFAULT_CANDIDATE_CONCRETE_PROPERTY_RESOLVERS);
 
 	FixtureMonkeyOptionsBuilder() {
 	}
@@ -511,6 +514,20 @@ public final class FixtureMonkeyOptionsBuilder {
 		return this;
 	}
 
+	public FixtureMonkeyOptionsBuilder candidateConcretePropertyResolvers(
+		List<MatcherOperator<CandidateConcretePropertyResolver>> candidateConcretePropertyResolvers
+	) {
+		this.candidateConcretePropertyResolvers = candidateConcretePropertyResolvers;
+		return this;
+	}
+
+	public FixtureMonkeyOptionsBuilder insertFirstCandidateConcretePropertyResolvers(
+		MatcherOperator<CandidateConcretePropertyResolver> candidateConcretePropertyResolvers
+	) {
+		this.candidateConcretePropertyResolvers.add(candidateConcretePropertyResolvers);
+		return this;
+	}
+
 	public FixtureMonkeyOptions build() {
 		jdkVariantOptions.apply(this);
 
@@ -638,7 +655,8 @@ public final class FixtureMonkeyOptionsBuilder {
 			this.generateMaxTries,
 			this.generateUniqueMaxTries,
 			resolvedJavaConstraintGenerator,
-			this.instantiatorProcessor
+			this.instantiatorProcessor,
+			this.candidateConcretePropertyResolvers
 		);
 	}
 

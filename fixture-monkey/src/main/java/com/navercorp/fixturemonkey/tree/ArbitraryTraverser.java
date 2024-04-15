@@ -20,6 +20,7 @@ package com.navercorp.fixturemonkey.tree;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -30,6 +31,7 @@ import javax.annotation.Nullable;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import com.navercorp.fixturemonkey.api.container.ConcurrentLruCache;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
@@ -42,6 +44,8 @@ import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.SingleValueObjectPropertyGenerator;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
+import com.navercorp.fixturemonkey.api.property.CandidateConcretePropertyResolver;
+import com.navercorp.fixturemonkey.api.property.DefaultCandidateConcretePropertyResolver;
 import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.PropertyGenerator;
@@ -52,9 +56,11 @@ import com.navercorp.fixturemonkey.customizer.ContainerInfoManipulator;
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class ArbitraryTraverser {
 	private final FixtureMonkeyOptions fixtureMonkeyOptions;
+	private final ConcurrentLruCache<Property, List<Property>> candidateConcretePropertiesByProperty;
 
 	public ArbitraryTraverser(FixtureMonkeyOptions fixtureMonkeyOptions) {
 		this.fixtureMonkeyOptions = fixtureMonkeyOptions;
+		this.candidateConcretePropertiesByProperty = new ConcurrentLruCache<>(1024);
 	}
 
 	public ObjectNode traverse(
@@ -106,22 +112,25 @@ public final class ArbitraryTraverser {
 				)
 			);
 		}
+		List<Property> candidateProperties = resolveCandidateProperties(property);
 
-		Map<Property, List<Property>> childPropertyListsByCandidateProperty;
+		Map<Property, List<Property>> childPropertyListsByCandidateProperty = new HashMap<>();
 		if (container) {
-			childPropertyListsByCandidateProperty = Collections.singletonMap(
-				property,
-				containerProperty.getElementProperties()
-			);
+			for (Property candidateProperty : candidateProperties) {
+				childPropertyListsByCandidateProperty.put(
+					candidateProperty,
+					containerProperty.getElementProperties()
+				);
+			}
 		} else {
-			childPropertyListsByCandidateProperty = objectProperty.getChildPropertyListsByCandidateProperty();
+			childPropertyListsByCandidateProperty.putAll(objectProperty.getChildPropertyListsByCandidateProperty());
 		}
 
 		ArbitraryProperty arbitraryProperty = new ArbitraryProperty(
 			objectProperty,
 			container,
 			objectProperty.getNullInject(),
-			childPropertyListsByCandidateProperty
+			Collections.unmodifiableMap(childPropertyListsByCandidateProperty)
 		);
 
 		List<ArbitraryProperty> parentArbitraryProperties = new ArrayList<>();
@@ -257,7 +266,8 @@ public final class ArbitraryTraverser {
 				)
 			);
 
-			Map<Property, List<Property>> childPropertyListsByCandidateProperty;
+			Map<Property, List<Property>> childPropertyListsByCandidateProperty = new HashMap<>();
+			List<Property> candidateProperties = resolveCandidateProperties(childProperty);
 
 			ContainerProperty childContainerProperty = null;
 			ContainerInfoManipulator appliedContainerInfoManipulator = null;
@@ -282,12 +292,17 @@ public final class ArbitraryTraverser {
 						fixtureMonkeyOptions.getArbitraryContainerInfoGenerator(childProperty)
 					)
 				);
-				childPropertyListsByCandidateProperty = Collections.singletonMap(
-					childProperty,
-					childContainerProperty.getElementProperties()
-				);
+
+				for (Property candidateProperty : candidateProperties) {
+					childPropertyListsByCandidateProperty.put(
+						candidateProperty,
+						childContainerProperty.getElementProperties()
+					);
+				}
 			} else {
-				childPropertyListsByCandidateProperty = childObjectProperty.getChildPropertyListsByCandidateProperty();
+				childPropertyListsByCandidateProperty.putAll(
+					childObjectProperty.getChildPropertyListsByCandidateProperty()
+				);
 			}
 
 			ArbitraryProperty childArbitraryProperty = new ArbitraryProperty(
@@ -324,5 +339,26 @@ public final class ArbitraryTraverser {
 			}
 		}
 		return appliedContainerInfoManipulator;
+	}
+
+	private List<Property> resolveCandidateProperties(Property property) {
+		CandidateConcretePropertyResolver candidateConcretePropertyResolver =
+			fixtureMonkeyOptions.getCandidateConcretePropertyResolver(property);
+
+		if (candidateConcretePropertyResolver == null) {
+			return DefaultCandidateConcretePropertyResolver.INSTANCE.resolve(property);
+		}
+
+		return candidateConcretePropertiesByProperty.computeIfAbsent(
+			property,
+			p -> {
+				List<Property> resolvedCandidateProperties = new ArrayList<>();
+				List<Property> candidateProperties = candidateConcretePropertyResolver.resolve(p);
+				for (Property candidateProperty : candidateProperties) {
+					resolvedCandidateProperties.addAll(resolveCandidateProperties(candidateProperty));
+				}
+				return resolvedCandidateProperties;
+			}
+		);
 	}
 }

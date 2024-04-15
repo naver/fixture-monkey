@@ -50,6 +50,7 @@ import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
 import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptionsBuilder;
 import com.navercorp.fixturemonkey.api.plugin.InterfacePlugin;
 import com.navercorp.fixturemonkey.api.plugin.Plugin;
+import com.navercorp.fixturemonkey.api.property.CandidateConcretePropertyResolver;
 import com.navercorp.fixturemonkey.api.property.PropertyGenerator;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.api.random.Randoms;
@@ -509,6 +510,19 @@ public final class FixtureMonkeyBuilder {
 
 	public FixtureMonkeyBuilder seed(long seed) {
 		this.seed = seed;
+		return this;
+	}
+
+	public FixtureMonkeyBuilder pushExactTypePropertyCandidateResolver(
+		Class<?> type,
+		CandidateConcretePropertyResolver candidateConcretePropertyResolver
+	) {
+		fixtureMonkeyOptionsBuilder.insertFirstCandidateConcretePropertyResolvers(
+			new MatcherOperator<>(
+				new ExactTypeMatcher(type),
+				candidateConcretePropertyResolver
+			)
+		);
 		return this;
 	}
 
