@@ -780,6 +780,21 @@ class KotlinTest {
         then(actual).isInstanceOf(TreeSet::class.java)
     }
 
+    @RepeatedTest(TEST_COUNT)
+    fun pushExactTypePropertyCandidateResolver() {
+        val sut = FixtureMonkey.builder()
+            .plugin(KotlinPlugin())
+            .pushExactTypePropertyCandidateResolver(
+                Collection::class.java,
+                ConcreteTypeCandidateConcretePropertyResolver(listOf(Set::class.java))
+            )
+            .build()
+
+        val actual: Collection<String> = sut.giveMeOne()
+
+        then(actual).isInstanceOf(HashSet::class.java)
+    }
+
     companion object {
         private val SUT: FixtureMonkey = FixtureMonkey.builder()
             .plugin(KotlinPlugin())
