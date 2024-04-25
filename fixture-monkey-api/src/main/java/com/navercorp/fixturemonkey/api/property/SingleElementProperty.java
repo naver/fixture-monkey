@@ -44,9 +44,9 @@ public final class SingleElementProperty implements Property {
 
 	private final Map<Class<? extends Annotation>, Annotation> annotationsMap;
 
-	public SingleElementProperty(Property property, AnnotatedType elementType) {
+	public SingleElementProperty(Property property) {
 		this.property = property;
-		this.elementType = elementType;
+		this.elementType = property.getAnnotatedType();
 		this.annotations = Arrays.asList(this.elementType.getAnnotations());
 		this.annotationsMap = this.annotations.stream()
 			.collect(Collectors.toMap(Annotation::annotationType, Function.identity(), (a1, a2) -> a1));
