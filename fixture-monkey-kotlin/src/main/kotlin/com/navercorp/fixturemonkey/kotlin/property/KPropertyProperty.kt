@@ -58,6 +58,20 @@ data class KPropertyProperty(
         return null
     }
 
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+        if (other == null || javaClass == other.javaClass) {
+            return false
+        }
+
+        val that = other as Property
+        return type == that.type
+    }
+
+    override fun hashCode(): Int = type.hashCode()
+
     override fun isNullable(): Boolean = this.kProperty.returnType.isMarkedNullable
 
     companion object {

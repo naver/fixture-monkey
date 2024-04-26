@@ -21,7 +21,8 @@ package com.navercorp.fixturemonkey.api.introspector;
 import static com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult.NOT_INTROSPECTED;
 import static com.navercorp.fixturemonkey.api.matcher.SingleGenericTypeMatcher.SINGLE_GENERIC_TYPE_MATCHER;
 
-import java.util.HashSet;
+import java.lang.reflect.Constructor;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -37,6 +38,9 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.matcher.AssignableTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.property.Property;
+import com.navercorp.fixturemonkey.api.type.Reflections;
+import com.navercorp.fixturemonkey.api.type.TypeCache;
+import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class SetIntrospector implements ArbitraryIntrospector, Matcher {
@@ -67,11 +71,13 @@ public final class SetIntrospector implements ArbitraryIntrospector, Matcher {
 			)
 			.collect(Collectors.toList());
 
+		Class<?> type = Types.getActualType(context.getResolvedType());
+		Constructor<?> declaredConstructor = TypeCache.getDeclaredConstructor(type, Collection.class);
 		return new ArbitraryIntrospectorResult(
 			CombinableArbitrary.containerBuilder()
 				.elements(elementArbitraryList)
 				.postBuild(() -> context.evictUnique(context.getPropertyPath()))
-				.build(HashSet::new)
+				.build(elements -> Reflections.newInstance(declaredConstructor, elements))
 		);
 	}
 }

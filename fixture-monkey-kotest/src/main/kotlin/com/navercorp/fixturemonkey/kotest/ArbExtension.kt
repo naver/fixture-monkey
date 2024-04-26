@@ -27,7 +27,7 @@ import com.navercorp.fixturemonkey.api.type.TypeReference
 import com.navercorp.fixturemonkey.api.type.Types
 import com.navercorp.fixturemonkey.kotlin.giveMeBuilder
 import com.navercorp.fixturemonkey.kotlin.giveMeOne
-import com.navercorp.fixturemonkey.kotlin.property
+import com.navercorp.fixturemonkey.kotlin.propertyExpressionGenerator
 import io.kotest.property.Arb
 import io.kotest.property.arbitrary.arbitrary
 import io.kotest.property.arbitrary.single
@@ -84,4 +84,4 @@ fun <T : Any?> ArbitraryBuilder<T>.setArb(propertySelector: PropertySelector, ar
     )
 
 fun <T : Any?> ArbitraryBuilder<T>.setArb(p: KProperty1<T, Any?>, arb: Arb<Any>): ArbitraryBuilder<T> =
-    this.set(property(p), Supplier { arb.single() })
+    this.set(propertyExpressionGenerator(p), Supplier { arb.single() })

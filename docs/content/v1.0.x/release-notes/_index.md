@@ -5,6 +5,25 @@ menu:
 docs:
 weight: 100
 ---
+
+sectionStart
+### v.1.0.16
+Add resolve the candidate concrete type of container type.
+
+Fix register working on assignable type.
+
+sectionEnd
+
+sectionStart
+### v.1.0.15
+Add `ConcreteTypeDefinition` in `ArbitraryProperty`, deprecate `getChildPropertiesByResolvedProperty` and `getChildPropertyListsByCandidateProperty` which is added in 1.0.14.
+
+Fix setting a child of a concrete type to an abstract type.
+
+Add a new Kotlin Exp expression for referencing root. ex. `set(String::root, "expected")`
+
+sectionEnd
+
 sectionStart
 ### v.1.0.14
 Add supporting value class with the private constructor.

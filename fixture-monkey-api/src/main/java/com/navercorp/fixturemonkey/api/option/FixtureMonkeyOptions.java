@@ -23,6 +23,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +34,7 @@ import java.util.OptionalInt;
 import java.util.OptionalLong;
 import java.util.Set;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
@@ -73,6 +75,9 @@ import com.navercorp.fixturemonkey.api.matcher.ExactPropertyMatcher;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.matcher.Matchers;
 import com.navercorp.fixturemonkey.api.matcher.SingleGenericTypeMatcher;
+import com.navercorp.fixturemonkey.api.property.CandidateConcretePropertyResolver;
+import com.navercorp.fixturemonkey.api.property.CompositeCandidateConcretePropertyResolver;
+import com.navercorp.fixturemonkey.api.property.ConcreteTypeCandidateConcretePropertyResolver;
 import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.PropertyGenerator;
@@ -103,6 +108,17 @@ public final class FixtureMonkeyOptions {
 	public static final int DEFAULT_ARBITRARY_CONTAINER_MAX_SIZE = 3;
 	public static final List<MatcherOperator<PropertyGenerator>> DEFAULT_PROPERTY_GENERATORS =
 		getDefaultPropertyGenerators();
+	public static final List<MatcherOperator<CandidateConcretePropertyResolver>>
+		DEFAULT_CANDIDATE_CONCRETE_PROPERTY_RESOLVERS = Arrays.asList(
+		MatcherOperator.exactTypeMatchOperator(
+			List.class,
+			new ConcreteTypeCandidateConcretePropertyResolver<>(Collections.singletonList(ArrayList.class))
+		),
+		MatcherOperator.exactTypeMatchOperator(
+			Set.class,
+			new ConcreteTypeCandidateConcretePropertyResolver<>(Collections.singletonList(HashSet.class))
+		)
+	);
 	public static final FixtureMonkeyOptions DEFAULT_GENERATE_OPTIONS = FixtureMonkeyOptions.builder().build();
 	public static final int DEFAULT_MAX_UNIQUE_GENERATION_COUNT = 1_000;
 
@@ -137,6 +153,7 @@ public final class FixtureMonkeyOptions {
 	private final int generateUniqueMaxTries;
 	private final JavaConstraintGenerator javaConstraintGenerator;
 	private final InstantiatorProcessor instantiatorProcessor;
+	private final List<MatcherOperator<CandidateConcretePropertyResolver>> candidateConcretePropertyResolvers;
 
 	public FixtureMonkeyOptions(
 		List<MatcherOperator<PropertyGenerator>> propertyGenerators,
@@ -156,7 +173,8 @@ public final class FixtureMonkeyOptions {
 		int generateMaxTries,
 		int generateUniqueMaxTries,
 		JavaConstraintGenerator javaConstraintGenerator,
-		InstantiatorProcessor instantiatorProcessor
+		InstantiatorProcessor instantiatorProcessor,
+		List<MatcherOperator<CandidateConcretePropertyResolver>> candidateConcretePropertyResolvers
 	) {
 		this.propertyGenerators = propertyGenerators;
 		this.defaultPropertyGenerator = defaultPropertyGenerator;
@@ -176,6 +194,7 @@ public final class FixtureMonkeyOptions {
 		this.generateUniqueMaxTries = generateUniqueMaxTries;
 		this.javaConstraintGenerator = javaConstraintGenerator;
 		this.instantiatorProcessor = instantiatorProcessor;
+		this.candidateConcretePropertyResolvers = candidateConcretePropertyResolvers;
 	}
 
 	public static FixtureMonkeyOptionsBuilder builder() {
@@ -317,6 +336,21 @@ public final class FixtureMonkeyOptions {
 		return instantiatorProcessor;
 	}
 
+	@Nullable
+	public CandidateConcretePropertyResolver getCandidateConcretePropertyResolver(Property property) {
+		List<CandidateConcretePropertyResolver> candidateConcretePropertyResolverList =
+			this.candidateConcretePropertyResolvers.stream()
+				.filter(it -> it.match(property))
+				.map(MatcherOperator::getOperator)
+				.collect(Collectors.toList());
+
+		if (candidateConcretePropertyResolverList.isEmpty()) {
+			return null;
+		}
+
+		return new CompositeCandidateConcretePropertyResolver(candidateConcretePropertyResolverList);
+	}
+
 	public FixtureMonkeyOptionsBuilder toBuilder() {
 		return builder()
 			.defaultPropertyGenerator(defaultPropertyGenerator)
@@ -332,7 +366,8 @@ public final class FixtureMonkeyOptions {
 			.defaultArbitraryValidator(defaultArbitraryValidator)
 			.decomposedContainerValueFactory(decomposedContainerValueFactory)
 			.javaConstraintGenerator(javaConstraintGenerator)
-			.instantiatorProcessor(instantiatorProcessor);
+			.instantiatorProcessor(instantiatorProcessor)
+			.candidateConcretePropertyResolvers(candidateConcretePropertyResolvers);
 	}
 
 	private static List<MatcherOperator<ObjectPropertyGenerator>> getDefaultObjectPropertyGenerators(

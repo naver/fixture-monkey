@@ -35,7 +35,6 @@ import com.navercorp.fixturemonkey.api.introspector.EnumIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.IterableIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.IteratorIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.JavaArbitraryIntrospector;
-import com.navercorp.fixturemonkey.api.introspector.ListIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.MapEntryElementIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.MapEntryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.MapIntrospector;
@@ -43,6 +42,7 @@ import com.navercorp.fixturemonkey.api.introspector.MatchArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.OptionalIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.QueueIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.SetIntrospector;
+import com.navercorp.fixturemonkey.api.introspector.SingleGenericCollectionIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.StreamIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.SupplierIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.UuidIntrospector;
@@ -62,7 +62,6 @@ public final class JavaDefaultArbitraryGeneratorBuilder {
 		Arrays.asList(
 			new SupplierIntrospector(),
 			new OptionalIntrospector(),
-			new ListIntrospector(),
 			new SetIntrospector(),
 			new QueueIntrospector(),
 			new StreamIntrospector(),
@@ -71,7 +70,8 @@ public final class JavaDefaultArbitraryGeneratorBuilder {
 			new MapIntrospector(),
 			new MapEntryIntrospector(),
 			new MapEntryElementIntrospector(),
-			new ArrayIntrospector()
+			new ArrayIntrospector(),
+			new SingleGenericCollectionIntrospector()
 		)
 	);
 	public static final ArbitraryIntrospector DEFAULT_FALLBACK_INTROSPECTOR =

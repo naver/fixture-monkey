@@ -22,7 +22,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Type;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import javax.annotation.Nullable;
@@ -37,6 +36,10 @@ import com.navercorp.fixturemonkey.api.type.Types;
 public abstract class PropertyUtils {
 	public static Property toProperty(Class<?> type) {
 		return PropertyUtils.toProperty(Types.generateAnnotatedTypeWithoutAnnotation(type));
+	}
+
+	public static Property toProperty(TypeReference<?> typeReference) {
+		return toProperty(typeReference.getAnnotatedType());
 	}
 
 	public static Property toProperty(AnnotatedType annotatedType) {
@@ -67,36 +70,23 @@ public abstract class PropertyUtils {
 			public Object getValue(Object instance) {
 				throw new UnsupportedOperationException();
 			}
-		};
-	}
 
-	public static Property toProperty(TypeReference<?> typeReference) {
-		return new Property() {
 			@Override
-			public Type getType() {
-				return typeReference.getType();
+			public int hashCode() {
+				return getType().hashCode();
 			}
 
 			@Override
-			public AnnotatedType getAnnotatedType() {
-				return typeReference.getAnnotatedType();
-			}
+			public boolean equals(Object obj) {
+				if (this == obj) {
+					return true;
+				}
+				if (obj == null || getClass() == obj.getClass()) {
+					return false;
+				}
 
-			@Nullable
-			@Override
-			public String getName() {
-				return null;
-			}
-
-			@Override
-			public List<Annotation> getAnnotations() {
-				return Collections.emptyList();
-			}
-
-			@Nullable
-			@Override
-			public Object getValue(Object instance) {
-				throw new UnsupportedOperationException();
+				Property that = (Property)obj;
+				return getType().equals(that.getType());
 			}
 		};
 	}

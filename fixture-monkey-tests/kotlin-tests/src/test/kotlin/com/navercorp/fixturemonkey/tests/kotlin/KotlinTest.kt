@@ -30,9 +30,13 @@ import com.navercorp.fixturemonkey.api.introspector.ConstructorPropertiesArbitra
 import com.navercorp.fixturemonkey.api.introspector.FactoryMethodArbitraryIntrospector
 import com.navercorp.fixturemonkey.api.introspector.FailoverIntrospector
 import com.navercorp.fixturemonkey.api.introspector.FieldReflectionArbitraryIntrospector
+import com.navercorp.fixturemonkey.api.matcher.MatcherOperator
+import com.navercorp.fixturemonkey.api.plugin.InterfacePlugin
+import com.navercorp.fixturemonkey.api.property.ConcreteTypeCandidateConcretePropertyResolver
 import com.navercorp.fixturemonkey.api.type.Types.GeneratingWildcardType
 import com.navercorp.fixturemonkey.customizer.Values
 import com.navercorp.fixturemonkey.kotlin.KotlinPlugin
+import com.navercorp.fixturemonkey.kotlin.expression.root
 import com.navercorp.fixturemonkey.kotlin.get
 import com.navercorp.fixturemonkey.kotlin.giveMeBuilder
 import com.navercorp.fixturemonkey.kotlin.giveMeExperimentalBuilder
@@ -41,9 +45,18 @@ import com.navercorp.fixturemonkey.kotlin.instantiator.instantiateBy
 import com.navercorp.fixturemonkey.kotlin.into
 import com.navercorp.fixturemonkey.kotlin.intoGetter
 import com.navercorp.fixturemonkey.kotlin.introspector.PrimaryConstructorArbitraryIntrospector
+import com.navercorp.fixturemonkey.kotlin.maxSize
+import com.navercorp.fixturemonkey.kotlin.minSize
 import com.navercorp.fixturemonkey.kotlin.pushExactTypeArbitraryIntrospector
+import com.navercorp.fixturemonkey.kotlin.register
+import com.navercorp.fixturemonkey.kotlin.set
 import com.navercorp.fixturemonkey.kotlin.setExp
 import com.navercorp.fixturemonkey.kotlin.setExpGetter
+import com.navercorp.fixturemonkey.kotlin.setLazy
+import com.navercorp.fixturemonkey.kotlin.setNotNull
+import com.navercorp.fixturemonkey.kotlin.setNull
+import com.navercorp.fixturemonkey.kotlin.setPostCondition
+import com.navercorp.fixturemonkey.kotlin.size
 import com.navercorp.fixturemonkey.kotlin.sizeExp
 import com.navercorp.fixturemonkey.kotlin.sizeExpGetter
 import com.navercorp.fixturemonkey.tests.TestEnvironment.TEST_COUNT
@@ -58,6 +71,8 @@ import org.junit.jupiter.api.Test
 import java.sql.Timestamp
 import java.time.Instant
 import java.time.temporal.ChronoUnit
+import java.util.LinkedList
+import java.util.TreeSet
 import java.util.UUID
 import kotlin.reflect.jvm.javaMethod
 
@@ -71,7 +86,7 @@ class KotlinTest {
                 .set(javaGetter(KotlinObject::value), "test")
                 .sample()
                 .value
-        }.cause
+        }.cause()
             .isExactlyInstanceOf(IllegalArgumentException::class.java)
             .hasMessageContaining("Kotlin type could not resolve property name.")
     }
@@ -422,6 +437,347 @@ class KotlinTest {
 
         // then
         then(actual).isNotNull
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun setConcreteTypeChildReturnsExactlyConcreteTypeChildType() {
+        // given
+        abstract class AbstractClass
+        open class ConcreteType(val parentValue: String) : AbstractClass()
+        class ConcreteTypeChild(val childValue: String) : ConcreteType("parent")
+
+        val sut = FixtureMonkey.builder()
+            .plugin(KotlinPlugin())
+            .plugin(
+                InterfacePlugin()
+                    .abstractClassExtends(
+                        AbstractClass::class.java,
+                        listOf(ConcreteType::class.java, ConcreteTypeChild::class.java)
+                    )
+            )
+            .build()
+
+        // when
+        val actual = sut.giveMeBuilder<AbstractClass>()
+            .set("$", ConcreteTypeChild(""))
+            .sample()
+
+        then(actual).isExactlyInstanceOf(ConcreteTypeChild::class.java)
+    }
+
+    @Test
+    fun setRootExp() {
+        val expected = "test"
+
+        val actual = SUT.giveMeBuilder<String>()
+            .set(String::root, expected)
+            .sample()
+
+        then(actual).isEqualTo(expected)
+    }
+
+    @Test
+    fun setLazyRootExp() {
+        val expected = "test"
+
+        val actual = SUT.giveMeBuilder<String>()
+            .setLazy(String::root) { expected }
+            .sample()
+
+        then(actual).isEqualTo(expected)
+    }
+
+    @Test
+    fun setNullRootExp() {
+        val actual = SUT.giveMeBuilder<String?>()
+            .setNull(String::root)
+            .sample()
+
+        then(actual).isNull()
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun setNotNullRootExp() {
+        val actual = SUT.giveMeBuilder<String?>()
+            .setNotNull(String::root)
+            .sample()
+
+        then(actual).isNotNull()
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun sizeRootExp() {
+        val actual = SUT.giveMeBuilder<List<String>>()
+            .size(List<String>::root, 1)
+            .sample()
+
+        then(actual).hasSize(1)
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun sizeRangeRootExp() {
+        val actual = SUT.giveMeBuilder<List<String>>()
+            .size(List<String>::root, 1, 3)
+            .sample()
+
+        then(actual).hasSizeBetween(1, 3)
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun minSizeRootExp() {
+        val actual = SUT.giveMeBuilder<List<String>>()
+            .minSize(List<String>::root, 1)
+            .sample()
+
+        then(actual).hasSizeGreaterThanOrEqualTo(1)
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun maxSizeRootExp() {
+        val actual = SUT.giveMeBuilder<List<String>>()
+            .maxSize(List<String>::root, 1)
+            .sample()
+
+        then(actual).hasSizeLessThanOrEqualTo(1)
+    }
+
+    @Test
+    fun setPostConditionRootExp() {
+        val actual = SUT.giveMeBuilder<String>()
+            .setPostCondition(String::root) { it.length < 5 }
+            .sample()
+
+        then(actual).hasSizeLessThan(5)
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun setRootElementExp() {
+        val expected = "test"
+
+        val actual = SUT.giveMeBuilder<List<String>>()
+            .size(List<String>::root, 1)
+            .set(List<String>::root[0], expected)
+            .sample()
+
+        then(actual[0]).isEqualTo(expected)
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun setRootArrayElementExp() {
+        val expected = "test"
+
+        val actual = SUT.giveMeBuilder<Array<String>>()
+            .size(Array<String>::root, 1)
+            .set(Array<String>::root[0], expected)
+            .sample()
+
+        then(actual[0]).isEqualTo(expected)
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun setRootAllElementExp() {
+        val expected = "test"
+
+        val actual = SUT.giveMeBuilder<List<String>>()
+            .size(List<String>::root, 3)
+            .set(List<String>::root["*"], expected)
+            .sample()
+
+        then(actual).allMatch { it == expected }
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun setRootArrayAllElementExp() {
+        val expected = "test"
+
+        val actual = SUT.giveMeBuilder<Array<String>>()
+            .size(Array<String>::root, 3)
+            .set(Array<String>::root["*"], expected)
+            .sample()
+
+        then(actual).allMatch { it == expected }
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun setRootNestedListElementExp() {
+        val expected = "test"
+
+        val actual = SUT.giveMeBuilder<List<List<String>>>()
+            .size(List<List<String>>::root, 1)
+            .size(List<List<String>>::root[0], 1)
+            .set(List<List<String>>::root[0][0], expected)
+            .sample()[0][0]
+
+        then(actual).isEqualTo(expected)
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun setRootNestedListAllElementExp() {
+        val expected = "test"
+
+        val actual = SUT.giveMeBuilder<List<List<String>>>()
+            .size(List<List<String>>::root, 3)
+            .size(List<List<String>>::root["*"], 3)
+            .set(List<List<String>>::root["*"]["*"], expected)
+            .sample()
+
+        then(actual).allMatch { list -> list.all { it == expected } }
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun setRootNestedArrayElementExp() {
+        val expected = "test"
+
+        val actual = SUT.giveMeBuilder<Array<Array<String>>>()
+            .size(Array<Array<String>>::root, 1)
+            .size(Array<Array<String>>::root[0], 1)
+            .set(Array<Array<String>>::root[0][0], expected)
+            .sample()[0][0]
+
+        then(actual).isEqualTo(expected)
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun setRootNestedArrayAllElementExp() {
+        val expected = "test"
+
+        val actual = SUT.giveMeBuilder<Array<Array<String>>>()
+            .size(Array<Array<String>>::root, 3)
+            .size(Array<Array<String>>::root["*"], 3)
+            .set(Array<Array<String>>::root["*"]["*"], expected)
+            .sample()
+            .flatten()
+
+        then(actual).allMatch { it == expected }
+    }
+
+    @Test
+    fun setRootPropertyExp() {
+        val expected = "expected"
+
+        class StringObject(val string: String)
+
+        val actual = SUT.giveMeBuilder<StringObject>()
+            .set(StringObject::root into StringObject::string, expected)
+            .sample()
+            .string
+
+        then(actual).isEqualTo(expected)
+    }
+
+    @Test
+    fun registerAssignableType() {
+        // given
+        open class Parent(val parent: String)
+
+        class Child(parent: String) : Parent(parent)
+
+        val expected = "registered"
+        val sut = FixtureMonkey.builder()
+            .plugin(KotlinPlugin())
+            .register {
+                it.giveMeBuilder<Parent>()
+                    .setExp(Parent::parent, expected)
+            }
+            .build()
+
+        // when
+        val actual = sut.giveMeOne<Child>().parent
+
+        // then
+        then(actual).isEqualTo(expected)
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun propertyCandidateResolverReturnsConcreteListType() {
+        val sut = FixtureMonkey.builder()
+            .plugin(KotlinPlugin())
+            .plugin {
+                it.candidateConcretePropertyResolvers(
+                    listOf(
+                        MatcherOperator.exactTypeMatchOperator(
+                            List::class.java,
+                            ConcreteTypeCandidateConcretePropertyResolver(listOf(LinkedList::class.java))
+                        )
+                    )
+                )
+            }
+            .build()
+
+        val actual: List<String> = sut.giveMeOne()
+
+        then(actual).isInstanceOf(LinkedList::class.java)
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun nestedPropertyCandidateResolverReturnsConcreteListType() {
+        val sut = FixtureMonkey.builder()
+            .plugin(KotlinPlugin())
+            .plugin {
+                it.candidateConcretePropertyResolvers(
+                    listOf(
+                        MatcherOperator.exactTypeMatchOperator(
+                            Collection::class.java,
+                            ConcreteTypeCandidateConcretePropertyResolver(listOf(List::class.java))
+                        ),
+                        MatcherOperator.exactTypeMatchOperator(
+                            List::class.java,
+                            ConcreteTypeCandidateConcretePropertyResolver(listOf(LinkedList::class.java))
+                        )
+                    )
+                )
+            }
+            .build()
+
+        val actual: Collection<String> = sut.giveMeOne()
+
+        then(actual).isInstanceOf(LinkedList::class.java)
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun propertyCandidateResolverReturnsConcreteSetType() {
+        val sut = FixtureMonkey.builder()
+            .plugin(KotlinPlugin())
+            .plugin {
+                it.candidateConcretePropertyResolvers(
+                    listOf(
+                        MatcherOperator.exactTypeMatchOperator(
+                            Set::class.java,
+                            ConcreteTypeCandidateConcretePropertyResolver(listOf(TreeSet::class.java))
+                        )
+                    )
+                )
+            }
+            .build()
+
+        val actual: Set<String> = sut.giveMeOne()
+
+        then(actual).isInstanceOf(TreeSet::class.java)
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun nestedPropertyCandidateResolverReturnsConcreteSetType() {
+        val sut = FixtureMonkey.builder()
+            .plugin(KotlinPlugin())
+            .plugin {
+                it.candidateConcretePropertyResolvers(
+                    listOf(
+                        MatcherOperator.exactTypeMatchOperator(
+                            Collection::class.java,
+                            ConcreteTypeCandidateConcretePropertyResolver(listOf(Set::class.java))
+                        ),
+                        MatcherOperator.exactTypeMatchOperator(
+                            Set::class.java,
+                            ConcreteTypeCandidateConcretePropertyResolver(listOf(TreeSet::class.java))
+                        )
+                    )
+                )
+            }
+            .build()
+
+        val actual: Collection<String> = sut.giveMeOne()
+
+        then(actual).isInstanceOf(TreeSet::class.java)
     }
 
     companion object {
