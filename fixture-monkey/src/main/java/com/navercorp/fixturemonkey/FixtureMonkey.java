@@ -22,7 +22,6 @@ import static java.util.stream.Collectors.toList;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -40,7 +39,6 @@ import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.customizer.ArbitraryManipulator;
 import com.navercorp.fixturemonkey.customizer.MonkeyManipulatorFactory;
 import com.navercorp.fixturemonkey.experimental.ExperimentalArbitraryBuilder;
-import com.navercorp.fixturemonkey.expression.MonkeyExpressionFactory;
 import com.navercorp.fixturemonkey.resolver.ArbitraryBuilderContext;
 import com.navercorp.fixturemonkey.resolver.ArbitraryResolver;
 import com.navercorp.fixturemonkey.resolver.DefaultArbitraryBuilder;
@@ -54,7 +52,7 @@ public final class FixtureMonkey {
 	private final ManipulatorOptimizer manipulatorOptimizer;
 	private final MonkeyContext monkeyContext;
 	private final List<MatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuilders = new ArrayList<>();
-	private final MonkeyExpressionFactory monkeyExpressionFactory;
+	private final MonkeyManipulatorFactory monkeyManipulatorFactory;
 
 	public FixtureMonkey(
 		FixtureMonkeyOptions fixtureMonkeyOptions,
@@ -62,13 +60,13 @@ public final class FixtureMonkey {
 		ManipulatorOptimizer manipulatorOptimizer,
 		MonkeyContext monkeyContext,
 		List<MatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>>> registeredArbitraryBuilders,
-		MonkeyExpressionFactory monkeyExpressionFactory
+		MonkeyManipulatorFactory monkeyManipulatorFactory
 	) {
 		this.fixtureMonkeyOptions = fixtureMonkeyOptions;
 		this.traverser = traverser;
 		this.manipulatorOptimizer = manipulatorOptimizer;
 		this.monkeyContext = monkeyContext;
-		this.monkeyExpressionFactory = monkeyExpressionFactory;
+		this.monkeyManipulatorFactory = monkeyManipulatorFactory;
 		initializeRegisteredArbitraryBuilders(registeredArbitraryBuilders);
 	}
 
@@ -86,26 +84,17 @@ public final class FixtureMonkey {
 		return giveMeBuilder(typeReference);
 	}
 
-	@SuppressWarnings("unchecked")
 	public <T> ArbitraryBuilder<T> giveMeBuilder(TypeReference<T> type) {
 		RootProperty rootProperty = new RootProperty(type.getAnnotatedType());
 
-		ArbitraryBuilder<?> registered = registeredArbitraryBuilders.stream()
+		ArbitraryBuilderContext builderContext = registeredArbitraryBuilders.stream()
 			.filter(it -> it.match(rootProperty))
 			.map(MatcherOperator::getOperator)
 			.findAny()
-			.orElse(null);
+			.map(DefaultArbitraryBuilder.class::cast)
+			.map(DefaultArbitraryBuilder::getContext)
+			.orElse(new ArbitraryBuilderContext());
 
-		if (registered != null) {
-			return (ArbitraryBuilder<T>)registered.copy();
-		}
-
-		MonkeyManipulatorFactory monkeyManipulatorFactory = new MonkeyManipulatorFactory(
-			new AtomicInteger(),
-			monkeyExpressionFactory,
-			traverser,
-			fixtureMonkeyOptions.getDecomposedContainerValueFactory()
-		);
 		return new DefaultArbitraryBuilder<>(
 			fixtureMonkeyOptions,
 			rootProperty,
@@ -119,7 +108,7 @@ public final class FixtureMonkey {
 			),
 			traverser,
 			monkeyManipulatorFactory,
-			new ArbitraryBuilderContext(),
+			builderContext.copy(),
 			registeredArbitraryBuilders,
 			monkeyContext,
 			fixtureMonkeyOptions.getInstantiatorProcessor()
@@ -127,12 +116,6 @@ public final class FixtureMonkey {
 	}
 
 	public <T> ArbitraryBuilder<T> giveMeBuilder(T value) {
-		MonkeyManipulatorFactory monkeyManipulatorFactory = new MonkeyManipulatorFactory(
-			new AtomicInteger(),
-			monkeyExpressionFactory,
-			traverser,
-			fixtureMonkeyOptions.getDecomposedContainerValueFactory()
-		);
 		ArbitraryBuilderContext context = new ArbitraryBuilderContext();
 
 		ArbitraryManipulator arbitraryManipulator =

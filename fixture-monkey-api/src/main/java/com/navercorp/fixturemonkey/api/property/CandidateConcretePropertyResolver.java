@@ -24,24 +24,17 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 /**
- * Represents a concrete type definition with a resolved concrete property and a list of child properties.
- * Instances of this class are immutable once created.
+ * It resolves the concrete type {@link Property} of the given {@link Property}.
  */
+@FunctionalInterface
 @API(since = "1.0.16", status = Status.EXPERIMENTAL)
-public final class ConcreteTypeDefinition {
-	private final Property concreteProperty;
-	private final List<Property> childPropertyLists;
-
-	public ConcreteTypeDefinition(Property concreteProperty, List<Property> childPropertyLists) {
-		this.concreteProperty = concreteProperty;
-		this.childPropertyLists = childPropertyLists;
-	}
-
-	public Property getConcreteProperty() {
-		return concreteProperty;
-	}
-
-	public List<Property> getChildPropertyLists() {
-		return childPropertyLists;
-	}
+public interface CandidateConcretePropertyResolver {
+	/**
+	 * resolves the candidate concrete type properties for the given property.
+	 *
+	 * @param property it could be a property of concrete type or an abstract class or interface.
+	 * @return the resolved property that is actually generated type of property.
+	 * It will return property if property is a property of concrete type.
+	 */
+	List<Property> resolve(Property property);
 }

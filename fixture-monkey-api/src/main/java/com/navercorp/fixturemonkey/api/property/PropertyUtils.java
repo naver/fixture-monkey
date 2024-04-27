@@ -21,7 +21,7 @@ package com.navercorp.fixturemonkey.api.property;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Type;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.annotation.Nullable;
@@ -38,20 +38,20 @@ public abstract class PropertyUtils {
 		return PropertyUtils.toProperty(Types.generateAnnotatedTypeWithoutAnnotation(type));
 	}
 
-	public static Property toProperty(AnnotatedType annotatedType) {
-		return toProperty(Types.toTypeReference(annotatedType));
+	public static Property toProperty(TypeReference<?> typeReference) {
+		return toProperty(typeReference.getAnnotatedType());
 	}
 
-	public static Property toProperty(TypeReference<?> typeReference) {
+	public static Property toProperty(AnnotatedType annotatedType) {
 		return new Property() {
 			@Override
 			public Type getType() {
-				return typeReference.getType();
+				return annotatedType.getType();
 			}
 
 			@Override
 			public AnnotatedType getAnnotatedType() {
-				return typeReference.getAnnotatedType();
+				return annotatedType;
 			}
 
 			@Nullable
@@ -62,7 +62,7 @@ public abstract class PropertyUtils {
 
 			@Override
 			public List<Annotation> getAnnotations() {
-				return Collections.emptyList();
+				return Arrays.asList(annotatedType.getAnnotations());
 			}
 
 			@Nullable

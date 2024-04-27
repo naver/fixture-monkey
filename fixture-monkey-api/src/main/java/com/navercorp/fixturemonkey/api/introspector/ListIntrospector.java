@@ -20,7 +20,8 @@ package com.navercorp.fixturemonkey.api.introspector;
 
 import static com.navercorp.fixturemonkey.api.matcher.SingleGenericTypeMatcher.SINGLE_GENERIC_TYPE_MATCHER;
 
-import java.util.ArrayList;
+import java.lang.reflect.Constructor;
+import java.util.Collection;
 import java.util.List;
 
 import org.apiguardian.api.API;
@@ -34,8 +35,15 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.matcher.AssignableTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.property.Property;
+import com.navercorp.fixturemonkey.api.type.Reflections;
+import com.navercorp.fixturemonkey.api.type.TypeCache;
+import com.navercorp.fixturemonkey.api.type.Types;
 
+/**
+ * It is deprecated since 1.0.16. Use {@link SingleGenericCollectionIntrospector} instead.
+ */
 @API(since = "0.4.0", status = Status.MAINTAINED)
+@Deprecated
 public final class ListIntrospector implements ArbitraryIntrospector, Matcher {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ListIntrospector.class);
 	private static final Matcher MATCHER = new AssignableTypeMatcher(List.class);
@@ -54,10 +62,13 @@ public final class ListIntrospector implements ArbitraryIntrospector, Matcher {
 		}
 
 		List<CombinableArbitrary<?>> elementCombinableArbitraryList = context.getElementCombinableArbitraryList();
+
+		Class<?> type = Types.getActualType(context.getResolvedType());
+		Constructor<?> declaredConstructor = TypeCache.getDeclaredConstructor(type, Collection.class);
 		return new ArbitraryIntrospectorResult(
 			CombinableArbitrary.containerBuilder()
 				.elements(elementCombinableArbitraryList)
-				.build(ArrayList::new)
+				.build(list -> Reflections.newInstance(declaredConstructor, list))
 		);
 	}
 }

@@ -24,6 +24,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.annotation.Nullable;
+
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
@@ -33,30 +35,28 @@ import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.customizer.ContainerInfoManipulator;
 
-@API(since = "0.4.0", status = Status.MAINTAINED)
+@API(since = "0.4.0", status = Status.INTERNAL)
 final class TraverseContext {
-	private final ArbitraryProperty rootArbitraryProperty;
 	private final List<ArbitraryProperty> arbitraryProperties;
 	private final List<ContainerInfoManipulator> containerInfoManipulators;
 	private final List<MatcherOperator<List<ContainerInfoManipulator>>> registeredContainerInfoManipulators;
 	private final Map<Class<?>, List<Property>> propertyConfigurers;
 
-	public TraverseContext(
-		ArbitraryProperty rootArbitraryProperty,
+	TraverseContext(
 		List<ArbitraryProperty> arbitraryProperties,
 		List<ContainerInfoManipulator> containerInfoManipulators,
 		List<MatcherOperator<List<ContainerInfoManipulator>>> registeredContainerInfoManipulators,
 		Map<Class<?>, List<Property>> propertyConfigurers
 	) {
-		this.rootArbitraryProperty = rootArbitraryProperty;
 		this.arbitraryProperties = arbitraryProperties;
 		this.containerInfoManipulators = containerInfoManipulators;
 		this.registeredContainerInfoManipulators = registeredContainerInfoManipulators;
 		this.propertyConfigurers = propertyConfigurers;
 	}
 
+	@Nullable
 	public ArbitraryProperty getRootArbitraryProperty() {
-		return rootArbitraryProperty;
+		return arbitraryProperties.get(0);
 	}
 
 	public List<ArbitraryProperty> getArbitraryProperties() {
@@ -94,7 +94,6 @@ final class TraverseContext {
 		concat.addAll(concatRegisteredContainerManipulator);
 		concat.addAll(containerInfoManipulators);
 		return new TraverseContext(
-			rootArbitraryProperty,
 			arbitraryProperties,
 			concat,
 			this.registeredContainerInfoManipulators,
@@ -104,8 +103,16 @@ final class TraverseContext {
 
 	public boolean isTraversed(Property property) {
 		return arbitraryProperties.stream()
-			.filter(it -> it != rootArbitraryProperty)
+			.skip(1)
 			.anyMatch(it -> isSameType(property, it.getObjectProperty().getProperty()));
+	}
+
+	@Nullable
+	public ArbitraryProperty getLastArbitraryProperty() {
+		if (this.arbitraryProperties.isEmpty()) {
+			return null;
+		}
+		return this.arbitraryProperties.get(this.arbitraryProperties.size() - 1);
 	}
 
 	private static boolean isSameType(Property p1, Property p2) {

@@ -18,14 +18,11 @@
 
 package com.navercorp.fixturemonkey.api.introspector;
 
-import static com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult.NOT_INTROSPECTED;
 import static com.navercorp.fixturemonkey.api.matcher.SingleGenericTypeMatcher.SINGLE_GENERIC_TYPE_MATCHER;
 
 import java.lang.reflect.Constructor;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -42,10 +39,10 @@ import com.navercorp.fixturemonkey.api.type.Reflections;
 import com.navercorp.fixturemonkey.api.type.TypeCache;
 import com.navercorp.fixturemonkey.api.type.Types;
 
-@API(since = "0.4.0", status = Status.MAINTAINED)
-public final class SetIntrospector implements ArbitraryIntrospector, Matcher {
-	private static final Logger LOGGER = LoggerFactory.getLogger(SetIntrospector.class);
-	private static final Matcher MATCHER = new AssignableTypeMatcher(Set.class);
+@API(since = "1.0.16", status = Status.EXPERIMENTAL)
+public final class SingleGenericCollectionIntrospector implements ArbitraryIntrospector, Matcher {
+	private static final Logger LOGGER = LoggerFactory.getLogger(SingleGenericCollectionIntrospector.class);
+	private static final Matcher MATCHER = new AssignableTypeMatcher(Collection.class);
 
 	@Override
 	public boolean match(Property property) {
@@ -54,30 +51,20 @@ public final class SetIntrospector implements ArbitraryIntrospector, Matcher {
 
 	@Override
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
-		ArbitraryProperty arbitraryProperty = context.getArbitraryProperty();
-		if (!arbitraryProperty.isContainer() || !match(context.getResolvedProperty())) {
-			LOGGER.info("Given type {} is not Set type.", context.getResolvedType());
-			return NOT_INTROSPECTED;
+		ArbitraryProperty property = context.getArbitraryProperty();
+		if (!property.isContainer() || !match(context.getResolvedProperty())) {
+			LOGGER.info("Given type {} is not List type.", context.getResolvedType());
+			return ArbitraryIntrospectorResult.NOT_INTROSPECTED;
 		}
 
-		List<CombinableArbitrary<?>> elementArbitraryList = context.getElementCombinableArbitraryList().stream()
-			.map(it -> it.filter(
-					context.getGenerateUniqueMaxTries(),
-					element -> context.isUniqueAndCheck(
-						context.getPropertyPath(),
-						element
-					)
-				)
-			)
-			.collect(Collectors.toList());
+		List<CombinableArbitrary<?>> elementCombinableArbitraryList = context.getElementCombinableArbitraryList();
 
 		Class<?> type = Types.getActualType(context.getResolvedType());
 		Constructor<?> declaredConstructor = TypeCache.getDeclaredConstructor(type, Collection.class);
 		return new ArbitraryIntrospectorResult(
 			CombinableArbitrary.containerBuilder()
-				.elements(elementArbitraryList)
-				.postBuild(() -> context.evictUnique(context.getPropertyPath()))
-				.build(elements -> Reflections.newInstance(declaredConstructor, elements))
+				.elements(elementCombinableArbitraryList)
+				.build(list -> Reflections.newInstance(declaredConstructor, list))
 		);
 	}
 }

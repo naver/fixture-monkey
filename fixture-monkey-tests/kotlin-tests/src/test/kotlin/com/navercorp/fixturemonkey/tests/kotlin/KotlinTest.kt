@@ -30,7 +30,9 @@ import com.navercorp.fixturemonkey.api.introspector.ConstructorPropertiesArbitra
 import com.navercorp.fixturemonkey.api.introspector.FactoryMethodArbitraryIntrospector
 import com.navercorp.fixturemonkey.api.introspector.FailoverIntrospector
 import com.navercorp.fixturemonkey.api.introspector.FieldReflectionArbitraryIntrospector
+import com.navercorp.fixturemonkey.api.matcher.MatcherOperator
 import com.navercorp.fixturemonkey.api.plugin.InterfacePlugin
+import com.navercorp.fixturemonkey.api.property.ConcreteTypeCandidateConcretePropertyResolver
 import com.navercorp.fixturemonkey.api.type.Types.GeneratingWildcardType
 import com.navercorp.fixturemonkey.customizer.Values
 import com.navercorp.fixturemonkey.kotlin.KotlinPlugin
@@ -46,6 +48,7 @@ import com.navercorp.fixturemonkey.kotlin.introspector.PrimaryConstructorArbitra
 import com.navercorp.fixturemonkey.kotlin.maxSize
 import com.navercorp.fixturemonkey.kotlin.minSize
 import com.navercorp.fixturemonkey.kotlin.pushExactTypeArbitraryIntrospector
+import com.navercorp.fixturemonkey.kotlin.register
 import com.navercorp.fixturemonkey.kotlin.set
 import com.navercorp.fixturemonkey.kotlin.setExp
 import com.navercorp.fixturemonkey.kotlin.setExpGetter
@@ -68,6 +71,8 @@ import org.junit.jupiter.api.Test
 import java.sql.Timestamp
 import java.time.Instant
 import java.time.temporal.ChronoUnit
+import java.util.LinkedList
+import java.util.TreeSet
 import java.util.UUID
 import kotlin.reflect.jvm.javaMethod
 
@@ -81,7 +86,7 @@ class KotlinTest {
                 .set(javaGetter(KotlinObject::value), "test")
                 .sample()
                 .value
-        }.cause
+        }.cause()
             .isExactlyInstanceOf(IllegalArgumentException::class.java)
             .hasMessageContaining("Kotlin type could not resolve property name.")
     }
@@ -649,6 +654,7 @@ class KotlinTest {
     @Test
     fun setRootPropertyExp() {
         val expected = "expected"
+
         class StringObject(val string: String)
 
         val actual = SUT.giveMeBuilder<StringObject>()
@@ -657,6 +663,121 @@ class KotlinTest {
             .string
 
         then(actual).isEqualTo(expected)
+    }
+
+    @Test
+    fun registerAssignableType() {
+        // given
+        open class Parent(val parent: String)
+
+        class Child(parent: String) : Parent(parent)
+
+        val expected = "registered"
+        val sut = FixtureMonkey.builder()
+            .plugin(KotlinPlugin())
+            .register {
+                it.giveMeBuilder<Parent>()
+                    .setExp(Parent::parent, expected)
+            }
+            .build()
+
+        // when
+        val actual = sut.giveMeOne<Child>().parent
+
+        // then
+        then(actual).isEqualTo(expected)
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun propertyCandidateResolverReturnsConcreteListType() {
+        val sut = FixtureMonkey.builder()
+            .plugin(KotlinPlugin())
+            .plugin {
+                it.candidateConcretePropertyResolvers(
+                    listOf(
+                        MatcherOperator.exactTypeMatchOperator(
+                            List::class.java,
+                            ConcreteTypeCandidateConcretePropertyResolver(listOf(LinkedList::class.java))
+                        )
+                    )
+                )
+            }
+            .build()
+
+        val actual: List<String> = sut.giveMeOne()
+
+        then(actual).isInstanceOf(LinkedList::class.java)
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun nestedPropertyCandidateResolverReturnsConcreteListType() {
+        val sut = FixtureMonkey.builder()
+            .plugin(KotlinPlugin())
+            .plugin {
+                it.candidateConcretePropertyResolvers(
+                    listOf(
+                        MatcherOperator.exactTypeMatchOperator(
+                            Collection::class.java,
+                            ConcreteTypeCandidateConcretePropertyResolver(listOf(List::class.java))
+                        ),
+                        MatcherOperator.exactTypeMatchOperator(
+                            List::class.java,
+                            ConcreteTypeCandidateConcretePropertyResolver(listOf(LinkedList::class.java))
+                        )
+                    )
+                )
+            }
+            .build()
+
+        val actual: Collection<String> = sut.giveMeOne()
+
+        then(actual).isInstanceOf(LinkedList::class.java)
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun propertyCandidateResolverReturnsConcreteSetType() {
+        val sut = FixtureMonkey.builder()
+            .plugin(KotlinPlugin())
+            .plugin {
+                it.candidateConcretePropertyResolvers(
+                    listOf(
+                        MatcherOperator.exactTypeMatchOperator(
+                            Set::class.java,
+                            ConcreteTypeCandidateConcretePropertyResolver(listOf(TreeSet::class.java))
+                        )
+                    )
+                )
+            }
+            .build()
+
+        val actual: Set<String> = sut.giveMeOne()
+
+        then(actual).isInstanceOf(TreeSet::class.java)
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun nestedPropertyCandidateResolverReturnsConcreteSetType() {
+        val sut = FixtureMonkey.builder()
+            .plugin(KotlinPlugin())
+            .plugin {
+                it.candidateConcretePropertyResolvers(
+                    listOf(
+                        MatcherOperator.exactTypeMatchOperator(
+                            Collection::class.java,
+                            ConcreteTypeCandidateConcretePropertyResolver(listOf(Set::class.java))
+                        ),
+                        MatcherOperator.exactTypeMatchOperator(
+                            Set::class.java,
+                            ConcreteTypeCandidateConcretePropertyResolver(listOf(TreeSet::class.java))
+                        )
+                    )
+                )
+            }
+            .build()
+
+        val actual: Collection<String> = sut.giveMeOne()
+
+        then(actual).isInstanceOf(TreeSet::class.java)
     }
 
     companion object {
