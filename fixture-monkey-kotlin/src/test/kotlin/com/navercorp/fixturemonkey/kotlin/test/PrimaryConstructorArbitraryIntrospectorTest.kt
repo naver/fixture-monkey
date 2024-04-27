@@ -78,7 +78,14 @@ class PrimaryConstructorArbitraryIntrospectorTest {
     }
 
     @Property
-    fun setDuratioValue() {
+    fun sampleDurationValue() {
+        // when
+        sut.giveMeBuilder<DurationValue>()
+            .sample()
+    }
+
+    @Property
+    fun setDurationValue() {
         // given
         val duration = Random().nextLong().toDuration(DurationUnit.values().random())
 
@@ -87,7 +94,7 @@ class PrimaryConstructorArbitraryIntrospectorTest {
             .set(DurationValue::duration, duration)
             .sample()
 
-        // the
+        // then
         then(one.duration).isEqualTo(duration)
     }
 
