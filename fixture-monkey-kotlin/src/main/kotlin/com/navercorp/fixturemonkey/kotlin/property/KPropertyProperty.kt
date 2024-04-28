@@ -22,7 +22,6 @@ import com.navercorp.fixturemonkey.api.property.Property
 import org.apiguardian.api.API
 import org.slf4j.LoggerFactory
 import java.lang.reflect.AnnotatedType
-import java.lang.reflect.Modifier
 import java.lang.reflect.Type
 import kotlin.reflect.KProperty
 import kotlin.reflect.jvm.isAccessible

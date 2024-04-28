@@ -26,14 +26,10 @@ import com.navercorp.fixturemonkey.api.matcher.Matcher
 import com.navercorp.fixturemonkey.api.property.Property
 import com.navercorp.fixturemonkey.kotlin.matcher.Matchers.DURATION_TYPE_MATCHER
 import org.apiguardian.api.API
-import kotlin.reflect.KMutableProperty
-import kotlin.reflect.KProperty1
-import kotlin.reflect.full.memberProperties
 import kotlin.reflect.full.primaryConstructor
-import kotlin.reflect.jvm.isAccessible
 import kotlin.time.Duration
 import kotlin.time.DurationUnit
-import kotlin.time.DurationUnit.*
+import kotlin.time.DurationUnit.NANOSECONDS
 import kotlin.time.toDuration
 
 private const val STORAGE_UNIT = "storageUnit"
@@ -57,7 +53,7 @@ class KotlinDurationIntrospector : ArbitraryIntrospector, Matcher {
                     val arbitrariesByPropertyName = it.mapKeys { map -> map.key.objectProperty.property.name }
                     val durationUnit = arbitrariesByPropertyName[STORAGE_UNIT] as DurationUnit
 
-                    val value = when(durationUnit) {
+                    val value = when (durationUnit) {
                         NANOSECONDS -> arbitrariesByPropertyName[IN_WHOLE_NANOSECONDS] as Long
                         else -> arbitrariesByPropertyName[IN_WHOLE_MILLISECONDS] as Long
                     }
