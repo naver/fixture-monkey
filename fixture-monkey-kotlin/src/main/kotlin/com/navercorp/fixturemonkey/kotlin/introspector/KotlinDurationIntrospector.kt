@@ -26,10 +26,19 @@ import com.navercorp.fixturemonkey.api.matcher.Matcher
 import com.navercorp.fixturemonkey.api.property.Property
 import com.navercorp.fixturemonkey.kotlin.matcher.Matchers.DURATION_TYPE_MATCHER
 import org.apiguardian.api.API
+import kotlin.reflect.KMutableProperty
+import kotlin.reflect.KProperty1
+import kotlin.reflect.full.memberProperties
 import kotlin.reflect.full.primaryConstructor
+import kotlin.reflect.jvm.isAccessible
 import kotlin.time.Duration
 import kotlin.time.DurationUnit
+import kotlin.time.DurationUnit.*
 import kotlin.time.toDuration
+
+private const val STORAGE_UNIT = "storageUnit"
+private const val IN_WHOLE_NANOSECONDS = "inWholeNanoseconds"
+private const val IN_WHOLE_MILLISECONDS = "inWholeMilliseconds"
 
 @API(since = "1.0.15", status = API.Status.EXPERIMENTAL)
 class KotlinDurationIntrospector : ArbitraryIntrospector, Matcher {
@@ -45,9 +54,15 @@ class KotlinDurationIntrospector : ArbitraryIntrospector, Matcher {
             CombinableArbitrary.objectBuilder()
                 .properties(context.combinableArbitrariesByArbitraryProperty)
                 .build {
-                    val parameterName = "inWholeMilliseconds"
-                    val parameterValue = it.mapKeys { map -> map.key.objectProperty.property.name }[parameterName] as Long
-                    parameterValue.toDuration(DurationUnit.MILLISECONDS)
+                    val arbitrariesByPropertyName = it.mapKeys { map -> map.key.objectProperty.property.name }
+                    val durationUnit = arbitrariesByPropertyName[STORAGE_UNIT] as DurationUnit
+
+                    val value = when(durationUnit) {
+                        NANOSECONDS -> arbitrariesByPropertyName[IN_WHOLE_NANOSECONDS] as Long
+                        else -> arbitrariesByPropertyName[IN_WHOLE_MILLISECONDS] as Long
+                    }
+
+                    value.toDuration(durationUnit)
                 }
         )
     }
