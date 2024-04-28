@@ -45,9 +45,9 @@ class KotlinDurationIntrospector : ArbitraryIntrospector, Matcher {
             CombinableArbitrary.objectBuilder()
                 .properties(context.combinableArbitrariesByArbitraryProperty)
                 .build {
-                    val parameterName = primaryConstructor.parameters[0].name
+                    val parameterName = "inWholeMilliseconds"
                     val parameterValue = it.mapKeys { map -> map.key.objectProperty.property.name }[parameterName] as Long
-                    parameterValue.toDuration(DurationUnit.values().random())
+                    parameterValue.toDuration(DurationUnit.MILLISECONDS)
                 }
         )
     }

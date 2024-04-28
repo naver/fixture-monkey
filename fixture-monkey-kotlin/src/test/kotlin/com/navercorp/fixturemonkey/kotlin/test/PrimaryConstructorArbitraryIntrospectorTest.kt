@@ -80,8 +80,10 @@ class PrimaryConstructorArbitraryIntrospectorTest {
     @Property
     fun sampleDurationValue() {
         // when
-        sut.giveMeBuilder<DurationValue>()
+        val durationValue = sut.giveMeBuilder<DurationValue>()
             .sample()
+
+        then(durationValue.duration).isNotNull()
     }
 
     @Property
