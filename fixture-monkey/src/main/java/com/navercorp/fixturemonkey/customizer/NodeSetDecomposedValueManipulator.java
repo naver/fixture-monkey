@@ -18,19 +18,6 @@
 
 package com.navercorp.fixturemonkey.customizer;
 
-import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.ALWAYS_NULL_INJECT;
-import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.NOT_NULL_INJECT;
-import static com.navercorp.fixturemonkey.api.type.Types.isAssignable;
-
-import java.time.Duration;
-import java.util.Collections;
-import java.util.List;
-
-import javax.annotation.Nullable;
-
-import org.apiguardian.api.API;
-import org.apiguardian.api.API.Status;
-
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.container.DecomposableJavaContainer;
 import com.navercorp.fixturemonkey.api.container.DecomposedContainerValueFactory;
@@ -38,11 +25,20 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.property.ConcreteTypeDefinition;
 import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
-import com.navercorp.fixturemonkey.api.type.KotlinTypeDetector;
 import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.tree.ArbitraryTraverser;
 import com.navercorp.fixturemonkey.tree.IdentityNodeResolver;
 import com.navercorp.fixturemonkey.tree.ObjectNode;
+import org.apiguardian.api.API;
+import org.apiguardian.api.API.Status;
+
+import javax.annotation.Nullable;
+import java.util.Collections;
+import java.util.List;
+
+import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.ALWAYS_NULL_INJECT;
+import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.NOT_NULL_INJECT;
+import static com.navercorp.fixturemonkey.api.type.Types.isAssignable;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class NodeSetDecomposedValueManipulator<T> implements NodeManipulator {
@@ -68,12 +64,6 @@ public final class NodeSetDecomposedValueManipulator<T> implements NodeManipulat
 	public void manipulate(ObjectNode objectNode) {
 		Class<?> actualType = Types.getActualType(objectNode.getProperty().getType());
 		if (value != null && !isAssignable(value.getClass(), actualType)) {
-			if (KotlinTypeDetector.isKotlinType(value.getClass())
-				&& Duration.class.getSimpleName().equals(value.getClass().getSimpleName())) {
-				setValue(objectNode, value);
-				return;
-			}
-
 			String parentNodeLogMessage = objectNode.getResolvedParentProperty() != null
 				? String.format(
 				"parent node type : %s",
