@@ -29,6 +29,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -40,6 +41,7 @@ import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.customizer.InnerSpec;
+import com.navercorp.fixturemonkey.customizer.Values;
 import com.navercorp.fixturemonkey.test.InnerSpecTestSpecs.ComplexObject;
 import com.navercorp.fixturemonkey.test.InnerSpecTestSpecs.ComplexObjectObject;
 import com.navercorp.fixturemonkey.test.InnerSpecTestSpecs.IntegerMapObject;
@@ -48,6 +50,7 @@ import com.navercorp.fixturemonkey.test.InnerSpecTestSpecs.MapObject;
 import com.navercorp.fixturemonkey.test.InnerSpecTestSpecs.NestedKeyMapObject;
 import com.navercorp.fixturemonkey.test.InnerSpecTestSpecs.NestedListStringObject;
 import com.navercorp.fixturemonkey.test.InnerSpecTestSpecs.SimpleObject;
+import com.navercorp.fixturemonkey.test.InnerSpecTestSpecs.SupplierStringObject;
 
 class InnerSpecTest {
 	private static final FixtureMonkey SUT = FixtureMonkey.create();
@@ -873,5 +876,40 @@ class InnerSpecTest {
 
 		then(actual.get("key1")).isEqualTo("value1");
 		then(actual.get("key2")).isEqualTo("value2");
+	}
+
+	@Property
+	void supportSupplierWrapping() {
+		String expected = "test";
+
+		// when
+		String actual = SUT.giveMeBuilder(new TypeReference<Supplier<SimpleObject>>() {
+			})
+			.setInner(
+				new InnerSpec()
+					.property("str", expected)
+			)
+			.sample()
+			.get()
+			.getStr();
+
+		then(actual).isEqualTo(expected);
+	}
+
+	@Property
+	void supportSupplierObjectField() {
+		Supplier<String> expected = () -> "test";
+
+		// when
+		Supplier<String> actual = SUT.giveMeBuilder(new TypeReference<SupplierStringObject>() {
+			})
+			.setInner(
+				new InnerSpec()
+					.property("value", Values.just(expected))
+			)
+			.sample()
+			.getValue();
+
+		then(actual).isEqualTo(expected);
 	}
 }
