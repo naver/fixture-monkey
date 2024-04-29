@@ -36,7 +36,13 @@ import kotlin.reflect.jvm.javaType
 
 @API(since = "0.4.0", status = API.Status.INTERNAL)
 fun getAnnotatedType(ownerType: AnnotatedType, kProperty: KProperty<*>): AnnotatedType {
-    val type = kProperty.getValueClassType()
+    val kClassifier = kProperty.returnType.classifier
+    val type = if (kClassifier is KClass<*> && kClassifier.isValue) {
+        kClassifier.java
+    } else {
+        kProperty.returnType.javaType
+    }
+
     val annotations = mutableSetOf<Annotation>()
     annotations.addAll(kProperty.findAnnotations())
     annotations.addAll(kProperty.javaField?.annotations?.toList() ?: listOf())
@@ -147,12 +153,3 @@ fun Class<*>.declaredConstructor(
                 .toTypedArray(),
         )
     } ?: this.kotlin.constructors.first()
-
-fun KProperty<*>.getValueClassType(): Type {
-    val classifier = returnType.classifier
-    return if (classifier is KClass<*> && classifier.isValue) {
-        classifier.java
-    } else {
-        returnType.javaType
-    }
-}
