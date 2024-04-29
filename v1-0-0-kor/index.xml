@@ -6,7 +6,6 @@ sectionStart
 v.1.0.15 # Add ConcreteTypeDefinition in ArbitraryProperty, deprecate getChildPropertiesByResolvedProperty and getChildPropertyListsByCandidateProperty which is added in 1.0.14.
 Add &amp;ldquo;KotlinDurationIntrospector&amp;rdquo; supporting generating a Duration type in Kotlin.
 Fix setting a child of a concrete type to an abstract type.
+Add a new Kotlin Exp expression for referencing root. ex. set(String::root, &amp;quot;expected&amp;quot;)
 sectionEnd
-sectionStart
-v.1.0.14 # Add supporting value class with the private constructor.
-Add supporting for sealed class and sealed interface.</description></item><item><title>Docs</title><link>https://naver.github.io/fixture-monkey/v1-0-0-kor/docs/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v1-0-0-kor/docs/</guid><description/></item></channel></rss>
+sectionStart</description></item><item><title>Docs</title><link>https://naver.github.io/fixture-monkey/v1-0-0-kor/docs/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v1-0-0-kor/docs/</guid><description/></item></channel></rss>
