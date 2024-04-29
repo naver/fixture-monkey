@@ -27,6 +27,7 @@ import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.OptionalInt;
 import java.util.OptionalLong;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import org.apiguardian.api.API;
@@ -80,6 +81,8 @@ public final class DefaultDecomposedContainerValueFactory implements DecomposedC
 				),
 				1
 			);
+		} else if (Supplier.class.isAssignableFrom(actualType)) {
+			return new DecomposableJavaContainer(container, 1);
 		}
 
 		return additionalDecomposedContainerValueFactory.from(container);
