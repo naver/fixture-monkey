@@ -8,7 +8,7 @@ weight: 100
 
 sectionStart
 ### v.1.0.17
-Fix to allow use of Duration type when using the set function
+Modify the way a value class is used to output arbitrary value
 
 sectionEnd
 
