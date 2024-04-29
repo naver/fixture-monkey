@@ -7,6 +7,12 @@ weight: 100
 ---
 
 sectionStart
+### v.1.0.17
+Fix to allow use of Duration type when using the set function
+
+sectionEnd
+
+sectionStart
 ### v.1.0.16
 Add resolve the candidate concrete type of container type.
 
