@@ -89,7 +89,7 @@ class PrimaryConstructorArbitraryIntrospectorTest {
     @Property
     fun setDurationValue() {
         // given
-        val duration = Random().nextLong().toDuration(DurationUnit.MILLISECONDS)
+        val duration = Random().nextLong().toDuration(DurationUnit.values().random())
 
         // when
         val one = sut.giveMeBuilder<DurationValue>()
