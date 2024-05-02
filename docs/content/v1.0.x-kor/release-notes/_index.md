@@ -7,6 +7,12 @@ weight: 100
 ---
 
 sectionStart
+### v.1.0.17
+Modify the way a value class is used to output arbitrary value
+
+sectionEnd
+
+sectionStart
 ### v.1.0.16
 Add resolve the candidate concrete type of container type.
 

@@ -22,6 +22,7 @@ import com.navercorp.fixturemonkey.FixtureMonkey
 import com.navercorp.fixturemonkey.kotlin.KotlinPlugin
 import com.navercorp.fixturemonkey.kotlin.giveMeBuilder
 import com.navercorp.fixturemonkey.kotlin.giveMeOne
+import com.navercorp.fixturemonkey.kotlin.set
 import org.assertj.core.api.BDDAssertions.then
 import org.junit.jupiter.api.Test
 
@@ -42,6 +43,18 @@ class ValueClassTest {
 
         then(actual).isNotNull
         then(actual.foo).isNotNull
+    }
+
+    @Test
+    fun setValueClassProperty() {
+        class ValueClassObject(val foo: Foo)
+        val settingFoo = Foo("hello")
+
+        val actual: ValueClassObject = SUT.giveMeBuilder<ValueClassObject>()
+            .set(ValueClassObject::foo, settingFoo)
+            .sample()
+
+        then(actual.foo).isEqualTo(settingFoo)
     }
 
     @Test

@@ -29,7 +29,12 @@ import org.apiguardian.api.API
 import kotlin.reflect.full.primaryConstructor
 import kotlin.time.Duration
 import kotlin.time.DurationUnit
+import kotlin.time.DurationUnit.NANOSECONDS
 import kotlin.time.toDuration
+
+private const val STORAGE_UNIT = "storageUnit"
+private const val IN_WHOLE_NANOSECONDS = "inWholeNanoseconds"
+private const val IN_WHOLE_MILLISECONDS = "inWholeMilliseconds"
 
 @API(since = "1.0.15", status = API.Status.EXPERIMENTAL)
 class KotlinDurationIntrospector : ArbitraryIntrospector, Matcher {
@@ -45,9 +50,15 @@ class KotlinDurationIntrospector : ArbitraryIntrospector, Matcher {
             CombinableArbitrary.objectBuilder()
                 .properties(context.combinableArbitrariesByArbitraryProperty)
                 .build {
-                    val parameterName = primaryConstructor.parameters[0].name
-                    val parameterValue = it.mapKeys { map -> map.key.objectProperty.property.name }[parameterName] as Long
-                    parameterValue.toDuration(DurationUnit.values().random())
+                    val arbitrariesByPropertyName = it.mapKeys { map -> map.key.objectProperty.property.name }
+                    val durationUnit = arbitrariesByPropertyName[STORAGE_UNIT] as DurationUnit
+
+                    val value = when (durationUnit) {
+                        NANOSECONDS -> arbitrariesByPropertyName[IN_WHOLE_NANOSECONDS] as Long
+                        else -> arbitrariesByPropertyName[IN_WHOLE_MILLISECONDS] as Long
+                    }
+
+                    value.toDuration(durationUnit)
                 }
         )
     }

@@ -26,6 +26,7 @@ import java.lang.reflect.AnnotatedType
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 import java.lang.reflect.TypeVariable
+import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 import kotlin.reflect.KProperty
@@ -35,7 +36,13 @@ import kotlin.reflect.jvm.javaType
 
 @API(since = "0.4.0", status = API.Status.INTERNAL)
 fun getAnnotatedType(ownerType: AnnotatedType, kProperty: KProperty<*>): AnnotatedType {
-    val type = kProperty.returnType.javaType
+    val kClassifier = kProperty.returnType.classifier
+    val type = if (kClassifier is KClass<*> && kClassifier.isValue) {
+        kClassifier.java
+    } else {
+        kProperty.returnType.javaType
+    }
+
     val annotations = mutableSetOf<Annotation>()
     annotations.addAll(kProperty.findAnnotations())
     annotations.addAll(kProperty.javaField?.annotations?.toList() ?: listOf())

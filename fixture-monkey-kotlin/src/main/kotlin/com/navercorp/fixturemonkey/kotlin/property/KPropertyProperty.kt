@@ -22,9 +22,9 @@ import com.navercorp.fixturemonkey.api.property.Property
 import org.apiguardian.api.API
 import org.slf4j.LoggerFactory
 import java.lang.reflect.AnnotatedType
-import java.lang.reflect.Modifier
 import java.lang.reflect.Type
 import kotlin.reflect.KProperty
+import kotlin.reflect.jvm.isAccessible
 import kotlin.reflect.jvm.javaField
 import kotlin.reflect.jvm.javaMethod
 
@@ -44,7 +44,8 @@ data class KPropertyProperty(
     override fun getValue(instance: Any): Any? {
         val javaMethod = this.kProperty.getter.javaMethod
 
-        if (javaMethod != null && Modifier.isPublic(javaMethod.modifiers)) {
+        if (javaMethod != null) {
+            this.kProperty.isAccessible = true
             return this.kProperty.getter.call(instance)
         }
 
