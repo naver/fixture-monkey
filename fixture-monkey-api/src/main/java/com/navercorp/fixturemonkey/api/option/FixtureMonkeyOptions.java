@@ -18,6 +18,8 @@
 
 package com.navercorp.fixturemonkey.api.option;
 
+import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.NOT_NULL_INJECT;
+
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -68,6 +70,7 @@ import com.navercorp.fixturemonkey.api.generator.SupplierContainerPropertyGenera
 import com.navercorp.fixturemonkey.api.instantiator.InstantiatorProcessor;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult;
+import com.navercorp.fixturemonkey.api.introspector.ConstantIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.NullArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.matcher.AssignableTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.DoubleGenericTypeMatcher;
@@ -97,6 +100,10 @@ public final class FixtureMonkeyOptions {
 	public static final List<MatcherOperator<ArbitraryIntrospector>> DEFAULT_ARBITRARY_INTROSPECTORS =
 		Arrays.asList(
 			MatcherOperator.exactTypeMatchOperator(UnidentifiableType.class, NullArbitraryIntrospector.INSTANCE),
+			new MatcherOperator<>(
+				ConstantIntrospector.INSTANCE,
+				ConstantIntrospector.INSTANCE
+			),
 			MatcherOperator.exactTypeMatchOperator(
 				GeneratingWildcardType.class,
 				context -> new ArbitraryIntrospectorResult(CombinableArbitrary.from(new Object()))
@@ -119,8 +126,15 @@ public final class FixtureMonkeyOptions {
 			new ConcreteTypeCandidateConcretePropertyResolver<>(Collections.singletonList(HashSet.class))
 		)
 	);
-	public static final FixtureMonkeyOptions DEFAULT_GENERATE_OPTIONS = FixtureMonkeyOptions.builder().build();
 	public static final int DEFAULT_MAX_UNIQUE_GENERATION_COUNT = 1_000;
+	public static final List<MatcherOperator<NullInjectGenerator>> DEFAULT_NULL_INJECT_GENERATORS =
+		Collections.singletonList(
+			new MatcherOperator<>(
+				ConstantIntrospector.INSTANCE,
+				context -> NOT_NULL_INJECT
+			)
+		);
+	public static final FixtureMonkeyOptions DEFAULT_GENERATE_OPTIONS = FixtureMonkeyOptions.builder().build();
 
 	static {
 		List<String> defaultJavaPackages = new ArrayList<>();
@@ -373,6 +387,7 @@ public final class FixtureMonkeyOptions {
 	private static List<MatcherOperator<ObjectPropertyGenerator>> getDefaultObjectPropertyGenerators(
 	) {
 		return Arrays.asList(
+			new MatcherOperator<>(ConstantIntrospector.INSTANCE, SingleValueObjectPropertyGenerator.INSTANCE),
 			new MatcherOperator<>(
 				property -> {
 					Class<?> actualType = Types.getActualType(property.getType());

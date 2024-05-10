@@ -82,6 +82,7 @@ import com.navercorp.fixturemonkey.tests.java.ImmutableMixedIntrospectorsTypeSpe
 import com.navercorp.fixturemonkey.tests.java.ImmutableRecursiveTypeSpecs.SelfRecursiveListObject;
 import com.navercorp.fixturemonkey.tests.java.ImmutableRecursiveTypeSpecs.SelfRecursiveMapObject;
 import com.navercorp.fixturemonkey.tests.java.ImmutableRecursiveTypeSpecs.SelfRecursiveObject;
+import com.navercorp.fixturemonkey.tests.java.MutableJavaTestSpecs.ConstantObject;
 import com.navercorp.fixturemonkey.tests.java.NestedClassTestSpecs.Inner;
 import com.navercorp.fixturemonkey.tests.java.NoArgsConstructorJavaTestSpecs.NestedObject;
 
@@ -1223,5 +1224,12 @@ class JavaTest {
 		String actual = sut.giveMeOne(FieldAndConstructorParameterMismatchObject.class).getValue();
 
 		then(actual).isNotNull();
+	}
+
+	@Test
+	void constant() {
+		thenNoException().isThrownBy(
+			() -> SUT.giveMeOne(ConstantObject.class)
+		);
 	}
 }

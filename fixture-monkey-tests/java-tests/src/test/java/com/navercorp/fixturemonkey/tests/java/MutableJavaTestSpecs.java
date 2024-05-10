@@ -105,6 +105,12 @@ class MutableJavaTestSpecs {
 		private OptionalDouble optionalDouble;
 	}
 
+	@Data
+	public static class ConstantObject {
+		public static final String PUBLIC_CONSTANT = "public";
+		private static final String PRIVATE_CONSTANT = "private";
+	}
+
 	public enum Enum {
 		ONE,
 		TWO,
