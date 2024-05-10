@@ -8,7 +8,9 @@ weight: 100
 
 sectionStart
 ### v.1.0.17
-Modify the way a value class is used to output arbitrary value
+Modify the way a value class is used to output arbitrary value.
+
+Fix `sealedInterface` set not working after thenApply.
 
 sectionEnd
 

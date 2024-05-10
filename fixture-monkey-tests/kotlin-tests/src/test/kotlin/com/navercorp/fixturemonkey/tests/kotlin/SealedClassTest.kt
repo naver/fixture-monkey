@@ -60,6 +60,15 @@ class SealedClassTest {
         then(actual).isNotNull
     }
 
+    @RepeatedTest(TEST_COUNT)
+    fun sealedInterfaceApplySet() {
+        val actual = SUT.giveMeBuilder<SealedInterface>()
+            .thenApply { _, builder -> builder.set("stringObject.string", "expected") }
+            .sample()
+
+        then((actual as SealedInterfaceImplementation).stringObject.string).isEqualTo("expected")
+    }
+
     sealed class SealedClass
 
     object ObjectSealedClass : SealedClass()
@@ -78,6 +87,12 @@ class SealedClassTest {
     ) : SealedClass()
 
     enum class Enum { ONE, TWO, THREE }
+
+    sealed interface SealedInterface
+
+    class SealedInterfaceImplementation(val stringObject: StringObject) : SealedInterface
+
+    class StringObject(val string: String)
 
     companion object {
         val SUT: FixtureMonkey = FixtureMonkey.builder()
