@@ -1,5 +1,5 @@
 plugins {
-    id("org.jetbrains.kotlin.jvm") version Versions.KOTLIN
+    id("org.jetbrains.kotlin.jvm") 
     id("com.navercorp.fixturemonkey.gradle.plugin.java-conventions")
     id("com.navercorp.fixturemonkey.gradle.plugin.maven-publish-conventions")
 }
