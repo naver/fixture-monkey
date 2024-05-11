@@ -524,9 +524,12 @@ public final class FixtureMonkeyOptionsBuilder {
 	}
 
 	public FixtureMonkeyOptionsBuilder insertFirstCandidateConcretePropertyResolvers(
-		MatcherOperator<CandidateConcretePropertyResolver> candidateConcretePropertyResolvers
+		MatcherOperator<CandidateConcretePropertyResolver> candidateConcretePropertyResolver
 	) {
-		this.candidateConcretePropertyResolvers.add(candidateConcretePropertyResolvers);
+		this.candidateConcretePropertyResolvers = insertFirst(
+			this.candidateConcretePropertyResolvers,
+			candidateConcretePropertyResolver
+		);
 		return this;
 	}
 
