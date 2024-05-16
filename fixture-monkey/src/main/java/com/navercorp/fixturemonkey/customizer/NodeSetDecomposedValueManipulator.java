@@ -141,7 +141,7 @@ public final class NodeSetDecomposedValueManipulator<T> implements NodeManipulat
 		}
 
 		List<ObjectNode> children = objectNode.getChildren();
-		if (children.isEmpty() || Types.getActualType(objectNode.getProperty().getType()).isInterface()) {
+		if (children.isEmpty() || Types.getActualType(objectNode.getResolvedProperty().getType()).isInterface()) {
 			CombinableArbitrary<?> combinableArbitrary = CombinableArbitrary.from(value);
 			objectNode.addManipulator(node -> node.setArbitrary(combinableArbitrary));
 			objectNode.setArbitrary(combinableArbitrary);
