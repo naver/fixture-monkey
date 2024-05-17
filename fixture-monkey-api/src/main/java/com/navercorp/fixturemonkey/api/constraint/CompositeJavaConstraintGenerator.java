@@ -22,8 +22,12 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
+import org.apiguardian.api.API;
+import org.apiguardian.api.API.Status;
+
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 
+@API(since = "1.0.17", status = Status.EXPERIMENTAL)
 public final class CompositeJavaConstraintGenerator implements JavaConstraintGenerator {
 	private final List<JavaConstraintGenerator> javaConstraintGenerators;
 
