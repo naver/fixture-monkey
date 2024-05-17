@@ -20,12 +20,16 @@ package com.navercorp.fixturemonkey.tests.kotlin
 
 import com.navercorp.fixturemonkey.FixtureMonkey
 import com.navercorp.fixturemonkey.api.plugin.SimpleValueJqwikPlugin
+import com.navercorp.fixturemonkey.javax.validation.plugin.JavaxValidationPlugin
+import com.navercorp.fixturemonkey.kotlin.KotlinPlugin
 import com.navercorp.fixturemonkey.kotlin.giveMeOne
 import com.navercorp.fixturemonkey.tests.TestEnvironment.TEST_COUNT
 import org.assertj.core.api.BDDAssertions.then
 import org.junit.jupiter.api.RepeatedTest
 import java.time.Instant
 import java.time.temporal.ChronoUnit
+import javax.validation.constraints.Max
+import javax.validation.constraints.Min
 
 class SimpleValueJqwikPluginTest {
     @RepeatedTest(TEST_COUNT)
@@ -113,5 +117,26 @@ class SimpleValueJqwikPluginTest {
 
         val tomorrow = Instant.now().plus(1, ChronoUnit.DAYS)
         then(actual).isBetween(yesterday, tomorrow)
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun withValidationPlugin() {
+        // given
+        class JavaxValidationAnnotationValue(
+            @field:Min(20) @field:Max(30) val annotatedInt: Int,
+            val notAnnotatedInt: Int
+        )
+
+        val sut = FixtureMonkey.builder()
+            .plugin(KotlinPlugin())
+            .plugin(JavaxValidationPlugin())
+            .plugin(SimpleValueJqwikPlugin())
+            .build()
+
+        // when
+        val actual: JavaxValidationAnnotationValue = sut.giveMeOne()
+
+        then(actual.annotatedInt).isBetween(20, 30)
+        then(actual.notAnnotatedInt).isBetween(-10000, 10000)
     }
 }
