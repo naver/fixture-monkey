@@ -33,7 +33,7 @@ import javax.annotation.Nullable;
 
 import org.apiguardian.api.API;
 
-@API(since = "1.0.16", status = API.Status.EXPERIMENTAL)
+@API(since = "1.0.17", status = API.Status.EXPERIMENTAL)
 public final class SingleElementProperty implements Property {
 
 	private final Property property;

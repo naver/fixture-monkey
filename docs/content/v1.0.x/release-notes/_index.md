@@ -12,6 +12,8 @@ Modify the way a value class is used to output arbitrary value.
 
 Fix `sealedInterface` set not working after thenApply.
 
+Add supporting `Supplier` type.
+
 Add a new Plugin `SimpleValueJqwikPlugin` for beginners, it provides a readable String, limited scope of Number and
 Date. It can customize them as well.
 
