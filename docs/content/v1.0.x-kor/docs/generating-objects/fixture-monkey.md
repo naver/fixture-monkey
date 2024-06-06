@@ -46,7 +46,7 @@ val fixtureMonkey = FixtureMonkey.builder()
 {{< /tab >}}
 {{< /tabpane>}}
 
-어떤 옵션을 사용할 수 있는지에 대한 정보는 [Fixture Monkey 옵션](../../fixture-monkey-options/options)을 참고해주세요.
+어떤 옵션을 사용할 수 있는지에 대한 정보는 [Fixture Monkey 옵션 항목](../../fixture-monkey-options/concepts/)을 참고해주세요.
 
 ## 인스턴스 생성
 
