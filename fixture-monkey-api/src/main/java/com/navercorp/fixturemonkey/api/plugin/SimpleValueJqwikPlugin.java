@@ -141,10 +141,10 @@ public final class SimpleValueJqwikPlugin implements Plugin {
 							new SimpleJavaConstraintGenerator(
 								this.minStringLength,
 								this.maxStringLength,
-								this.positiveMinNumberValue,
-								this.positiveMaxNumberValue,
 								this.negativeMinNumberValue,
 								this.negativeMaxNumberValue,
+								this.positiveMinNumberValue,
+								this.positiveMaxNumberValue,
 								this.minContainerSize,
 								this.maxContainerSize,
 								this.minusDaysFromToday,
