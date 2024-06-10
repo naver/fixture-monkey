@@ -141,10 +141,10 @@ public final class SimpleValueJqwikPlugin implements Plugin {
 							new SimpleJavaConstraintGenerator(
 								this.minStringLength,
 								this.maxStringLength,
-								this.negativeMinNumberValue,
-								this.negativeMaxNumberValue,
 								this.positiveMinNumberValue,
 								this.positiveMaxNumberValue,
+								this.negativeMinNumberValue,
+								this.negativeMaxNumberValue,
 								this.minContainerSize,
 								this.maxContainerSize,
 								this.minusDaysFromToday,
@@ -170,10 +170,10 @@ public final class SimpleValueJqwikPlugin implements Plugin {
 	private static class SimpleJavaConstraintGenerator implements JavaConstraintGenerator {
 		private final long stringMinLength;
 		private final long stringMaxLength;
-		private final long negativeMinNumberValue;
-		private final long negativeMaxNumberValue;
 		private final long positiveMinNumberValue;
 		private final long positiveMaxNumberValue;
+		private final long negativeMinNumberValue;
+		private final long negativeMaxNumberValue;
 		private final int minContainerSize;
 		private final int maxContainerSize;
 		private final long minusDaysFromToday;
@@ -182,10 +182,10 @@ public final class SimpleValueJqwikPlugin implements Plugin {
 		public SimpleJavaConstraintGenerator(
 			long stringMinLength,
 			long stringMaxLength,
-			long negativeMinNumberValue,
-			long negativeMaxNumberValue,
 			long positiveMinNumberValue,
 			long positiveMaxNumberValue,
+			long negativeMinNumberValue,
+			long negativeMaxNumberValue,
 			int minContainerSize,
 			int maxContainerSize,
 			long minusDaysFromToday,
@@ -193,10 +193,10 @@ public final class SimpleValueJqwikPlugin implements Plugin {
 		) {
 			this.stringMinLength = stringMinLength;
 			this.stringMaxLength = stringMaxLength;
-			this.negativeMinNumberValue = negativeMinNumberValue;
-			this.negativeMaxNumberValue = negativeMaxNumberValue;
 			this.positiveMinNumberValue = positiveMinNumberValue;
 			this.positiveMaxNumberValue = positiveMaxNumberValue;
+			this.negativeMinNumberValue = negativeMinNumberValue;
+			this.negativeMaxNumberValue = negativeMaxNumberValue;
 			this.minContainerSize = minContainerSize;
 			this.maxContainerSize = maxContainerSize;
 			this.minusDaysFromToday = minusDaysFromToday;
