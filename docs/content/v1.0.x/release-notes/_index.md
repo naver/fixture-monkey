@@ -7,6 +7,12 @@ weight: 100
 ---
 
 sectionStart
+### v.1.0.18
+Fix SimpleValueJqwikPlugin mismatching order with constructor and field.
+
+sectionEnd
+
+sectionStart
 ### v.1.0.17
 Modify the way a value class is used to output arbitrary value.
 
