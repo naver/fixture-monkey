@@ -139,4 +139,22 @@ class SimpleValueJqwikPluginTest {
         then(actual.annotatedInt).isBetween(20, 30)
         then(actual.notAnnotatedInt).isBetween(-10000, 10000)
     }
+
+    @RepeatedTest(TEST_COUNT)
+    fun sampleSetObject() {
+        class SetObject (val integers: Set<Integer>)
+
+        val sut = FixtureMonkey.builder()
+            .plugin(KotlinPlugin())
+            .plugin(SimpleValueJqwikPlugin())
+            .build()
+
+        val setObject = sut.giveMeBuilder(SetObject::class.java)
+            .size("integers", 3)
+            .sample()
+
+
+        then(setObject).isNotNull
+        then(setObject.integers).hasSize(3)
+    }
 }
