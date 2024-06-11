@@ -18,6 +18,7 @@
 
 package com.navercorp.fixturemonkey.api.plugin;
 
+import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
@@ -218,12 +219,19 @@ public final class SimpleValueJqwikPlugin implements Plugin {
 
 		@Override
 		public JavaIntegerConstraint generateIntegerConstraint(ArbitraryGeneratorContext context) {
-			return new JavaIntegerConstraint(
-				BigInteger.valueOf(this.positiveMinNumberValue),
-				BigInteger.valueOf(this.positiveMaxNumberValue),
-				BigInteger.valueOf(this.negativeMinNumberValue),
-				BigInteger.valueOf(this.negativeMaxNumberValue)
-			);
+			BigInteger positiveMin = BigInteger.valueOf(this.positiveMinNumberValue);
+			BigInteger positiveMax = BigInteger.valueOf(this.positiveMaxNumberValue);
+			BigInteger negativeMax = BigInteger.valueOf(this.negativeMinNumberValue);
+			BigInteger negativeMin = BigInteger.valueOf(this.negativeMaxNumberValue);
+
+			Type type = context.getResolvedType();
+
+			if ((type == Byte.class || type == byte.class)) {
+				positiveMax = BIG_INTEGER_MAX_BYTE;
+				negativeMax = BIG_INTEGER_MIN_BYTE;
+			}
+
+			return new JavaIntegerConstraint(positiveMin, positiveMax, negativeMax, negativeMin);
 		}
 
 		@Override

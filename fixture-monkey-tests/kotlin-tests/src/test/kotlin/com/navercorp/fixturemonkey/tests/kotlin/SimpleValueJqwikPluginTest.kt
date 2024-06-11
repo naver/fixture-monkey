@@ -157,4 +157,16 @@ class SimpleValueJqwikPluginTest {
         then(setObject).isNotNull
         then(setObject.integers).hasSize(3)
     }
+
+    @RepeatedTest(TEST_COUNT)
+    fun sampleByte() {
+        val sut = FixtureMonkey.builder()
+            .plugin(KotlinPlugin())
+            .plugin(SimpleValueJqwikPlugin())
+            .build()
+
+        val actual = sut.giveMeOne(Byte::class.java)
+
+        then(actual).isBetween(Byte.MIN_VALUE, Byte.MAX_VALUE)
+    }
 }
