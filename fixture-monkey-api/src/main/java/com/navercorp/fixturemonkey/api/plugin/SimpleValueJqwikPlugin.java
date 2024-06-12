@@ -221,17 +221,17 @@ public final class SimpleValueJqwikPlugin implements Plugin {
 		public JavaIntegerConstraint generateIntegerConstraint(ArbitraryGeneratorContext context) {
 			BigInteger positiveMin = BigInteger.valueOf(this.positiveMinNumberValue);
 			BigInteger positiveMax = BigInteger.valueOf(this.positiveMaxNumberValue);
-			BigInteger negativeMax = BigInteger.valueOf(this.negativeMinNumberValue);
-			BigInteger negativeMin = BigInteger.valueOf(this.negativeMaxNumberValue);
+			BigInteger negativeMin = BigInteger.valueOf(this.negativeMinNumberValue);
+			BigInteger negativeMax = BigInteger.valueOf(this.negativeMaxNumberValue);
 
 			Type type = context.getResolvedType();
 
-			if ((type == Byte.class || type == byte.class)) {
-				positiveMax = BIG_INTEGER_MAX_BYTE;
-				negativeMax = BIG_INTEGER_MIN_BYTE;
+			if (type == Byte.class || type == byte.class) {
+				positiveMax = positiveMax.min(BIG_INTEGER_MAX_BYTE);
+				negativeMin = negativeMin.max(BIG_INTEGER_MIN_BYTE);
 			}
 
-			return new JavaIntegerConstraint(positiveMin, positiveMax, negativeMax, negativeMin);
+			return new JavaIntegerConstraint(positiveMin, positiveMax, negativeMin, negativeMax);
 		}
 
 		@Override
