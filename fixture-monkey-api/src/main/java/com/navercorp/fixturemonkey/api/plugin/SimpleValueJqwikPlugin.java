@@ -18,7 +18,7 @@
 
 package com.navercorp.fixturemonkey.api.plugin;
 
-import java.lang.reflect.Type;
+import com.navercorp.fixturemonkey.api.type.Types;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
@@ -224,7 +224,7 @@ public final class SimpleValueJqwikPlugin implements Plugin {
 			BigInteger negativeMin = BigInteger.valueOf(this.negativeMinNumberValue);
 			BigInteger negativeMax = BigInteger.valueOf(this.negativeMaxNumberValue);
 
-			Type type = context.getResolvedType();
+			Class<?> type = Types.getActualType(context.getResolvedType());
 
 			if (type == Byte.class || type == byte.class) {
 				positiveMax = positiveMax.min(BIG_INTEGER_MAX_BYTE);
