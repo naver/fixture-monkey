@@ -18,7 +18,6 @@
 
 package com.navercorp.fixturemonkey.api.plugin;
 
-import com.navercorp.fixturemonkey.api.type.Types;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
@@ -45,6 +44,7 @@ import com.navercorp.fixturemonkey.api.jqwik.JavaTypeArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.jqwik.JqwikJavaArbitraryResolver;
 import com.navercorp.fixturemonkey.api.jqwik.JqwikJavaTypeArbitraryGeneratorSet;
 import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptionsBuilder;
+import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "1.0.17", status = Status.EXPERIMENTAL)
 public final class SimpleValueJqwikPlugin implements Plugin {
