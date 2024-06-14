@@ -157,4 +157,49 @@ class SimpleValueJqwikPluginTest {
         then(setObject).isNotNull
         then(setObject.integers).hasSize(3)
     }
+
+    @RepeatedTest(TEST_COUNT)
+    fun sampleByte() {
+        val sut = FixtureMonkey.builder()
+            .plugin(KotlinPlugin())
+            .plugin(SimpleValueJqwikPlugin())
+            .build()
+
+        val actual: Byte = sut.giveMeOne()
+
+        then(actual).isBetween(Byte.MIN_VALUE, Byte.MAX_VALUE)
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun modifyNumberValueByte() {
+        val sut = FixtureMonkey.builder()
+            .plugin(KotlinPlugin())
+            .plugin(
+                SimpleValueJqwikPlugin()
+                    .minNumberValue(-1)
+                    .maxNumberValue(1)
+            )
+            .build()
+
+        val actual: Byte = sut.giveMeOne()
+
+        then(actual).isBetween(-1, 1)
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun modifyOutOfRangeNumberValueByte() {
+        val sut = FixtureMonkey.builder()
+            .plugin(KotlinPlugin())
+            .plugin(
+                SimpleValueJqwikPlugin()
+                    .minNumberValue(-129)
+                    .maxNumberValue(129)
+            )
+            .build()
+
+        val actual: Byte = sut.giveMeOne()
+
+        then(actual).isBetween(Byte.MIN_VALUE, Byte.MAX_VALUE)
+    }
+
 }

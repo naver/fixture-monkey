@@ -44,6 +44,7 @@ import com.navercorp.fixturemonkey.api.jqwik.JavaTypeArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.jqwik.JqwikJavaArbitraryResolver;
 import com.navercorp.fixturemonkey.api.jqwik.JqwikJavaTypeArbitraryGeneratorSet;
 import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptionsBuilder;
+import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "1.0.17", status = Status.EXPERIMENTAL)
 public final class SimpleValueJqwikPlugin implements Plugin {
@@ -218,12 +219,19 @@ public final class SimpleValueJqwikPlugin implements Plugin {
 
 		@Override
 		public JavaIntegerConstraint generateIntegerConstraint(ArbitraryGeneratorContext context) {
-			return new JavaIntegerConstraint(
-				BigInteger.valueOf(this.positiveMinNumberValue),
-				BigInteger.valueOf(this.positiveMaxNumberValue),
-				BigInteger.valueOf(this.negativeMinNumberValue),
-				BigInteger.valueOf(this.negativeMaxNumberValue)
-			);
+			BigInteger positiveMin = BigInteger.valueOf(this.positiveMinNumberValue);
+			BigInteger positiveMax = BigInteger.valueOf(this.positiveMaxNumberValue);
+			BigInteger negativeMin = BigInteger.valueOf(this.negativeMinNumberValue);
+			BigInteger negativeMax = BigInteger.valueOf(this.negativeMaxNumberValue);
+
+			Class<?> type = Types.getActualType(context.getResolvedType());
+
+			if (type == Byte.class || type == byte.class) {
+				positiveMax = positiveMax.min(BIG_INTEGER_MAX_BYTE);
+				negativeMin = negativeMin.max(BIG_INTEGER_MIN_BYTE);
+			}
+
+			return new JavaIntegerConstraint(positiveMin, positiveMax, negativeMin, negativeMax);
 		}
 
 		@Override
