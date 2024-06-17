@@ -19,10 +19,10 @@
 package com.navercorp.fixturemonkey.api.generator;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.Set;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -40,7 +40,7 @@ public final class SealedTypeObjectPropertyGenerator implements ObjectPropertyGe
 		double nullInject = context.getNullInjectGenerator().generate(context);
 
 		Map<Property, List<Property>> childPropertiesByProperty = new HashMap<>();
-		for (Class<?> subClass : collectPermittedSubclasses(actualType).collect(Collectors.toSet())) {
+		for (Class<?> subClass : collectPermittedSubclasses(actualType)) {
 			Property subProperty = PropertyUtils.toProperty(subClass);
 
 			List<Property> subPropertyChildProperties = context.getPropertyGenerator()
@@ -58,12 +58,19 @@ public final class SealedTypeObjectPropertyGenerator implements ObjectPropertyGe
 		);
 	}
 
-	private static Stream<Class<?>> collectPermittedSubclasses(Class<?> type) {
+	private static Set<Class<?>> collectPermittedSubclasses(Class<?> type) {
+		Set<Class<?>> subclasses = new HashSet<>();
+		collectPermittedSubclasses(type, subclasses);
+		return subclasses;
+	}
+
+	private static void collectPermittedSubclasses(Class<?> type, Set<Class<?>> subclasses) {
 		if (type.isSealed()) {
-			return Stream.of(type.getPermittedSubclasses())
-				.flatMap(SealedTypeObjectPropertyGenerator::collectPermittedSubclasses);
+			for (Class<?> subclass : type.getPermittedSubclasses()) {
+				collectPermittedSubclasses(subclass, subclasses);
+			}
 		} else {
-			return Stream.of(type);
+			subclasses.add(type);
 		}
 	}
 }
