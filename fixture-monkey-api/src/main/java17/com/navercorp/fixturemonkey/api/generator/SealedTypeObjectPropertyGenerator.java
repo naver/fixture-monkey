@@ -21,6 +21,8 @@ package com.navercorp.fixturemonkey.api.generator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -38,7 +40,7 @@ public final class SealedTypeObjectPropertyGenerator implements ObjectPropertyGe
 		double nullInject = context.getNullInjectGenerator().generate(context);
 
 		Map<Property, List<Property>> childPropertiesByProperty = new HashMap<>();
-		for (Class<?> subClass : actualType.getPermittedSubclasses()) {
+		for (Class<?> subClass : collectPermittedSubclasses(actualType).collect(Collectors.toSet())) {
 			Property subProperty = PropertyUtils.toProperty(subClass);
 
 			List<Property> subPropertyChildProperties = context.getPropertyGenerator()
@@ -54,5 +56,14 @@ public final class SealedTypeObjectPropertyGenerator implements ObjectPropertyGe
 			context.getElementIndex(),
 			childPropertiesByProperty
 		);
+	}
+
+	private static Stream<Class<?>> collectPermittedSubclasses(Class<?> type) {
+		if (type.isSealed()) {
+			return Stream.of(type.getPermittedSubclasses())
+				.flatMap(SealedTypeObjectPropertyGenerator::collectPermittedSubclasses);
+		} else {
+			return Stream.of(type);
+		}
 	}
 }
