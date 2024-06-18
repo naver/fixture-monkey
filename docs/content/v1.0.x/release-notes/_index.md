@@ -10,6 +10,8 @@ sectionStart
 ### v.1.0.20
 Fix generation of enum implementations as a sealed class in JDK17.
 
+Add support for multi-level inheritance of sealed class and sealed interface.
+
 sectionEnd
 
 sectionStart
