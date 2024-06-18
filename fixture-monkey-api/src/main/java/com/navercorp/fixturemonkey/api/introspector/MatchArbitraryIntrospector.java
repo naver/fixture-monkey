@@ -19,14 +19,12 @@
 package com.navercorp.fixturemonkey.api.introspector;
 
 import java.util.List;
-import java.util.Map;
 
 import javax.annotation.Nullable;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.api.container.ConcurrentLruCache;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
@@ -44,8 +42,6 @@ import com.navercorp.fixturemonkey.api.property.PropertyGenerator;
 @API(since = "0.6.12", status = Status.MAINTAINED)
 public final class MatchArbitraryIntrospector implements ArbitraryIntrospector {
 	private final List<ArbitraryIntrospector> introspectors;
-	private final Map<Property, PropertyGenerator> propertyGeneratorsByProperty =
-		new ConcurrentLruCache<>(512);
 
 	public MatchArbitraryIntrospector(List<ArbitraryIntrospector> introspectors) {
 		this.introspectors = introspectors;
@@ -72,21 +68,16 @@ public final class MatchArbitraryIntrospector implements ArbitraryIntrospector {
 	@Nullable
 	@Override
 	public PropertyGenerator getRequiredPropertyGenerator(Property property) {
-		return propertyGeneratorsByProperty.computeIfAbsent(
-			property,
-			p -> {
-				for (ArbitraryIntrospector introspector : this.introspectors) {
-					if (introspector instanceof Matcher && !((Matcher)introspector).match(p)) {
-						continue;
-					}
-
-					PropertyGenerator propertyGenerator = introspector.getRequiredPropertyGenerator(p);
-					if (propertyGenerator != null) {
-						return propertyGenerator;
-					}
-				}
-				return null;
+		for (ArbitraryIntrospector introspector : this.introspectors) {
+			if (introspector instanceof Matcher && !((Matcher)introspector).match(property)) {
+				continue;
 			}
-		);
+
+			PropertyGenerator propertyGenerator = introspector.getRequiredPropertyGenerator(property);
+			if (propertyGenerator != null) {
+				return propertyGenerator;
+			}
+		}
+		return null;
 	}
 }
