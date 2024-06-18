@@ -20,15 +20,15 @@ class JdkVariantOptionsTest {
 	void sampleSealedClass() {
 		// given
 		FixtureMonkey sut = FixtureMonkey.builder()
-		.objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)
-		.defaultNotNull(true)
-		.pushAssignableTypeObjectPropertyGenerator(
-			BaseSealedClass.class,
-			new InterfaceObjectPropertyGenerator<>(
-				List.of(SealedClass.class)
-			)
-		)
-		.build();
+		    .objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)
+		    .defaultNotNull(true)
+		    .pushAssignableTypeObjectPropertyGenerator(
+			    BaseSealedClass.class,
+			    new InterfaceObjectPropertyGenerator<>(
+			    	List.of(SealedClass.class)
+			    )
+		    )
+		    .build();
 		
 		// when
 		BaseSealedClass actual = sut.giveMeOne(BaseSealedClass.class);
