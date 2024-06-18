@@ -32,7 +32,7 @@ public final class JdkVariantOptions {
 
 	public void apply(FixtureMonkeyOptionsBuilder optionsBuilder) {
 		optionsBuilder.insertFirstArbitraryObjectPropertyGenerator(
-			p -> Types.getActualType(p.getType()).isSealed(),
+			p -> Types.getActualType(p.getType()).isSealed() && !Types.getActualType(p.getType()).isEnum(),
 			SEALED_TYPE_OBJECT_PROPERTY_GENERATOR
 		);
 	}

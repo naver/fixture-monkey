@@ -5,6 +5,11 @@ menu:
 docs:
 weight: 100
 ---
+sectionStart
+### v.1.0.20
+Fix generation of enum implementations as a sealed class in JDK17.
+
+sectionEnd
 
 sectionStart
 ### v.1.0.19
