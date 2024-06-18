@@ -15,7 +15,11 @@ import com.navercorp.fixturemonkey.tests.java17.SealedClassTestSpecs.BaseSealedC
 import com.navercorp.fixturemonkey.tests.java17.SealedClassTestSpecs.SealedClass;
 
 class JdkVariantOptionsTest {
-	private static final FixtureMonkey SUT = FixtureMonkey.builder()
+    @RepeatedTest(TEST_COUNT)
+	@DisplayName("User-added ObjectPropertyGenerators have a higher priority.")
+	void sampleSealedClass() {
+		// given
+		FixtureMonkey sut = FixtureMonkey.builder()
 		.objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)
 		.defaultNotNull(true)
 		.pushAssignableTypeObjectPropertyGenerator(
@@ -25,12 +29,9 @@ class JdkVariantOptionsTest {
 			)
 		)
 		.build();
-
-	@RepeatedTest(TEST_COUNT)
-	@DisplayName("User-added ObjectPropertyGenerators have a higher priority.")
-	void sampleSealedClass() {
+		
 		// when
-		BaseSealedClass actual = SUT.giveMeOne(BaseSealedClass.class);
+		BaseSealedClass actual = sut.giveMeOne(BaseSealedClass.class);
 
 		then(actual).isInstanceOf(SealedClass.class);
 	}
