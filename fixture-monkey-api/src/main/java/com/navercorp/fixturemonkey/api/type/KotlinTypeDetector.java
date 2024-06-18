@@ -25,11 +25,14 @@ import javax.annotation.Nullable;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import com.navercorp.fixturemonkey.api.container.ConcurrentLruCache;
+
 @SuppressWarnings("unchecked")
 @API(since = "1.0.0", status = Status.INTERNAL)
 public abstract class KotlinTypeDetector {
 	@Nullable
 	private static final Class<? extends Annotation> kotlinMetadata;
+	private static final ConcurrentLruCache<Class<?>, Boolean> IS_KOTLIN_TYPE = new ConcurrentLruCache<>(2048);
 
 	static {
 		Class<?> metadata;
@@ -44,6 +47,9 @@ public abstract class KotlinTypeDetector {
 	}
 
 	public static boolean isKotlinType(Class<?> clazz) {
-		return (kotlinMetadata != null && clazz.getDeclaredAnnotation(kotlinMetadata) != null);
+		return IS_KOTLIN_TYPE.computeIfAbsent(
+			clazz,
+			type -> kotlinMetadata != null && type.getDeclaredAnnotation(kotlinMetadata) != null
+		);
 	}
 }

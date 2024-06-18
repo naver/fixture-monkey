@@ -23,10 +23,13 @@ import com.navercorp.fixturemonkey.api.container.ConcurrentLruCache
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult
+import com.navercorp.fixturemonkey.api.matcher.Matcher
 import com.navercorp.fixturemonkey.api.property.Property
 import com.navercorp.fixturemonkey.api.property.PropertyGenerator
 import com.navercorp.fixturemonkey.api.type.Types
 import com.navercorp.fixturemonkey.kotlin.property.KotlinPropertyGenerator
+import com.navercorp.fixturemonkey.kotlin.type.actualType
+import com.navercorp.fixturemonkey.kotlin.type.isKotlinType
 import org.apiguardian.api.API
 import org.apiguardian.api.API.Status.MAINTAINED
 import org.slf4j.LoggerFactory
@@ -39,7 +42,9 @@ import kotlin.reflect.full.primaryConstructor
 import kotlin.reflect.jvm.isAccessible
 
 @API(since = "0.4.0", status = MAINTAINED)
-class PrimaryConstructorArbitraryIntrospector : ArbitraryIntrospector {
+class PrimaryConstructorArbitraryIntrospector : ArbitraryIntrospector, Matcher {
+    override fun match(property: Property): Boolean = property.type.actualType().isKotlinType()
+
     override fun introspect(context: ArbitraryGeneratorContext): ArbitraryIntrospectorResult {
         val type = Types.getActualType(context.resolvedType)
         if (Modifier.isAbstract(type.modifiers)) {
