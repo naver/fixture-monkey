@@ -20,6 +20,7 @@ package com.navercorp.fixturemonkey.tests.java17;
 
 import static com.navercorp.fixturemonkey.tests.TestEnvironment.TEST_COUNT;
 import static org.assertj.core.api.BDDAssertions.then;
+import static org.assertj.core.api.BDDAssertions.thenNoException;
 
 import org.junit.jupiter.api.RepeatedTest;
 
@@ -27,6 +28,7 @@ import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.jackson.plugin.JacksonPlugin;
 import com.navercorp.fixturemonkey.tests.java17.RecordTestSpecs.ContainerRecord;
 import com.navercorp.fixturemonkey.tests.java17.RecordTestSpecs.DateTimeRecord;
+import com.navercorp.fixturemonkey.tests.java17.RecordTestSpecs.EnumClass;
 import com.navercorp.fixturemonkey.tests.java17.RecordTestSpecs.JavaTypeRecord;
 
 class JacksonRecordTest {
@@ -80,5 +82,10 @@ class JacksonRecordTest {
 			.sample();
 
 		then(actual).isNotNull();
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void sampleEnum() {
+		thenNoException().isThrownBy(() -> SUT.giveMeOne(EnumClass.class));
 	}
 }

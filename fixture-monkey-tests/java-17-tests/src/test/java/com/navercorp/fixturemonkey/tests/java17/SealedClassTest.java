@@ -20,6 +20,7 @@ package com.navercorp.fixturemonkey.tests.java17;
 
 import static com.navercorp.fixturemonkey.tests.TestEnvironment.TEST_COUNT;
 import static org.assertj.core.api.BDDAssertions.then;
+import static org.assertj.core.api.BDDAssertions.thenNoException;
 
 import java.beans.ConstructorProperties;
 
@@ -27,6 +28,7 @@ import org.junit.jupiter.api.RepeatedTest;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.introspector.ConstructorPropertiesArbitraryIntrospector;
+import com.navercorp.fixturemonkey.tests.java17.RecordTestSpecs.EnumClass;
 
 class SealedClassTest {
 	private static final FixtureMonkey SUT = FixtureMonkey.builder()
@@ -96,5 +98,10 @@ class SealedClassTest {
 
 		then(actual.sealedInterface()).isInstanceOf(SealedInterfaceImpl.class);
 		then(actual.sealedClass()).isInstanceOf(SealedClassImpl.class);
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void sampleEnum() {
+		thenNoException().isThrownBy(() -> SUT.giveMeOne(EnumClass.class));
 	}
 }

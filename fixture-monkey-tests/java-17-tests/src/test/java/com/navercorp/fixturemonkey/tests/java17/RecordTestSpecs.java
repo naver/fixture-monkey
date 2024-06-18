@@ -135,4 +135,21 @@ final class RecordTestSpecs {
 			string = "12345";
 		}
 	}
+
+	public enum EnumClass {
+		ENUM_A {
+			@Override
+			public String getString() {
+				return "a";
+			}
+		},
+		ENUM_B {
+			@Override
+			public String getString() {
+				return "b";
+			}
+		};
+
+		public abstract String getString();
+	}
 }

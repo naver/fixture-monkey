@@ -7,6 +7,12 @@ weight: 100
 ---
 
 sectionStart
+### v.1.0.20
+Fix generation of enum implementations as a sealed class in JDK17.
+
+sectionEnd
+
+sectionStart
 ### v.1.0.19
 Fix a SimpleValuePlugin "out of byte range" error when generate Byte.
 
