@@ -28,9 +28,9 @@ import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.introspector.ConstructorPropertiesArbitraryIntrospector;
 import com.navercorp.fixturemonkey.tests.java17.RecordTestSpecs.EnumClass;
 import com.navercorp.fixturemonkey.tests.java17.SealedClassTestSpecs.SealedClass;
+import com.navercorp.fixturemonkey.tests.java17.SealedClassTestSpecs.SealedClassImpl;
 import com.navercorp.fixturemonkey.tests.java17.SealedClassTestSpecs.SealedClassProperty;
 import com.navercorp.fixturemonkey.tests.java17.SealedClassTestSpecs.SealedInterface;
-import com.navercorp.fixturemonkey.tests.java17.SealedClassTestSpecs.SealedClassImpl;
 import com.navercorp.fixturemonkey.tests.java17.SealedClassTestSpecs.SealedInterfaceImpl;
 
 class SealedClassTest {

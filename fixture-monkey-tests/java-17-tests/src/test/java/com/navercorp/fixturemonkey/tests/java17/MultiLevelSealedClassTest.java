@@ -26,9 +26,9 @@ import org.junit.jupiter.api.RepeatedTest;
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.introspector.ConstructorPropertiesArbitraryIntrospector;
 import com.navercorp.fixturemonkey.tests.java17.SealedClassTestSpecs.BaseSealedClass;
-import com.navercorp.fixturemonkey.tests.java17.SealedClassTestSpecs.SealedClassImpl;
 import com.navercorp.fixturemonkey.tests.java17.SealedClassTestSpecs.BaseSealedClassProperty;
 import com.navercorp.fixturemonkey.tests.java17.SealedClassTestSpecs.BaseSealedInterface;
+import com.navercorp.fixturemonkey.tests.java17.SealedClassTestSpecs.SealedClassImpl;
 import com.navercorp.fixturemonkey.tests.java17.SealedClassTestSpecs.SealedInterfaceImpl;
 
 class MultiLevelSealedClassTest {
