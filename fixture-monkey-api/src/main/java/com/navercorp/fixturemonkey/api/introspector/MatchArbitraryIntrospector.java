@@ -18,7 +18,6 @@
 
 package com.navercorp.fixturemonkey.api.introspector;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Nullable;
@@ -29,7 +28,6 @@ import org.apiguardian.api.API.Status;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
-import com.navercorp.fixturemonkey.api.property.CompositePropertyGenerator;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.PropertyGenerator;
 
@@ -53,17 +51,14 @@ public final class MatchArbitraryIntrospector implements ArbitraryIntrospector {
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
 		for (ArbitraryIntrospector introspector : this.introspectors) {
 			if (introspector instanceof Matcher) {
-				if (((Matcher)introspector).match(context.getResolvedProperty())) {
-					ArbitraryIntrospectorResult result = introspector.introspect(context);
-					if (!ArbitraryIntrospectorResult.NOT_INTROSPECTED.equals(result)) {
-						return result;
-					}
+				if (!((Matcher)introspector).match(context.getResolvedProperty())) {
+					continue;
 				}
-			} else {
-				ArbitraryIntrospectorResult result = introspector.introspect(context);
-				if (!ArbitraryIntrospectorResult.NOT_INTROSPECTED.equals(result)) {
-					return result;
-				}
+			}
+
+			ArbitraryIntrospectorResult result = introspector.introspect(context);
+			if (!ArbitraryIntrospectorResult.NOT_INTROSPECTED.equals(result)) {
+				return result;
 			}
 		}
 
@@ -73,7 +68,6 @@ public final class MatchArbitraryIntrospector implements ArbitraryIntrospector {
 	@Nullable
 	@Override
 	public PropertyGenerator getRequiredPropertyGenerator(Property property) {
-		List<PropertyGenerator> propertyGenerators = new ArrayList<>();
 		for (ArbitraryIntrospector introspector : this.introspectors) {
 			if (introspector instanceof Matcher && !((Matcher)introspector).match(property)) {
 				continue;
@@ -81,14 +75,9 @@ public final class MatchArbitraryIntrospector implements ArbitraryIntrospector {
 
 			PropertyGenerator propertyGenerator = introspector.getRequiredPropertyGenerator(property);
 			if (propertyGenerator != null) {
-				propertyGenerators.add(propertyGenerator);
+				return propertyGenerator;
 			}
 		}
-
-		if (propertyGenerators.isEmpty()) {
-			return null;
-		}
-
-		return new CompositePropertyGenerator(propertyGenerators);
+		return null;
 	}
 }
