@@ -38,9 +38,10 @@ public final class SealedTypeObjectPropertyGenerator implements ObjectPropertyGe
 		Property sealedTypeProperty = context.getProperty();
 		Class<?> actualType = Types.getActualType(sealedTypeProperty.getType());
 		double nullInject = context.getNullInjectGenerator().generate(context);
+		Set<Class<?>> permittedSubclasses = collectPermittedSubclasses(actualType);
 
 		Map<Property, List<Property>> childPropertiesByProperty = new HashMap<>();
-		for (Class<?> subClass : collectPermittedSubclasses(actualType)) {
+		for (Class<?> subClass : permittedSubclasses) {
 			Property subProperty = PropertyUtils.toProperty(subClass);
 
 			List<Property> subPropertyChildProperties = context.getPropertyGenerator()
@@ -60,14 +61,14 @@ public final class SealedTypeObjectPropertyGenerator implements ObjectPropertyGe
 
 	private static Set<Class<?>> collectPermittedSubclasses(Class<?> type) {
 		Set<Class<?>> subclasses = new HashSet<>();
-		collectPermittedSubclasses(type, subclasses);
+		doCollectPermittedSubclasses(type, subclasses);
 		return subclasses;
 	}
 
-	private static void collectPermittedSubclasses(Class<?> type, Set<Class<?>> subclasses) {
+	private static void doCollectPermittedSubclasses(Class<?> type, Set<Class<?>> subclasses) {
 		if (type.isSealed()) {
 			for (Class<?> subclass : type.getPermittedSubclasses()) {
-				collectPermittedSubclasses(subclass, subclasses);
+				doCollectPermittedSubclasses(subclass, subclasses);
 			}
 		} else {
 			subclasses.add(type);
