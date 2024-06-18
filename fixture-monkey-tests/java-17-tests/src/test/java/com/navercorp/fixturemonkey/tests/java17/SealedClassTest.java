@@ -22,35 +22,22 @@ import static com.navercorp.fixturemonkey.tests.TestEnvironment.TEST_COUNT;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.assertj.core.api.BDDAssertions.thenNoException;
 
-import java.beans.ConstructorProperties;
-
 import org.junit.jupiter.api.RepeatedTest;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.introspector.ConstructorPropertiesArbitraryIntrospector;
 import com.navercorp.fixturemonkey.tests.java17.RecordTestSpecs.EnumClass;
+import com.navercorp.fixturemonkey.tests.java17.SealedClassTestSpecs.SealedClass;
+import com.navercorp.fixturemonkey.tests.java17.SealedClassTestSpecs.SealedClassProperty;
+import com.navercorp.fixturemonkey.tests.java17.SealedClassTestSpecs.SealedInterface;
+import com.navercorp.fixturemonkey.tests.java17.SealedClassTestSpecs.SealedClassImpl;
+import com.navercorp.fixturemonkey.tests.java17.SealedClassTestSpecs.SealedInterfaceImpl;
 
 class SealedClassTest {
 	private static final FixtureMonkey SUT = FixtureMonkey.builder()
 		.objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)
 		.defaultNotNull(true)
 		.build();
-
-	private static sealed class SealedClass permits SealedClassImpl {
-	}
-
-	private static final class SealedClassImpl extends SealedClass {
-		private final String value;
-
-		@ConstructorProperties("value")
-		public SealedClassImpl(String value) {
-			this.value = value;
-		}
-
-		public String getValue() {
-			return value;
-		}
-	}
 
 	@RepeatedTest(TEST_COUNT)
 	void sampleSealedClass() {
@@ -60,24 +47,12 @@ class SealedClassTest {
 		then(actual).isInstanceOf(SealedClassImpl.class);
 	}
 
-	private sealed interface SealedInterface permits SealedInterfaceImpl {
-	}
-
-	private record SealedInterfaceImpl(String value) implements SealedInterface {
-	}
-
 	@RepeatedTest(TEST_COUNT)
 	void sampleSealedInterface() {
 		// when
 		SealedInterface actual = SUT.giveMeOne(SealedInterface.class);
 
-		then(actual).isInstanceOf(SealedInterface.class);
-	}
-
-	private record SealedClassProperty(
-		SealedClass sealedClass,
-		SealedInterface sealedInterface
-	) {
+		then(actual).isInstanceOf(SealedInterfaceImpl.class);
 	}
 
 	@RepeatedTest(TEST_COUNT)

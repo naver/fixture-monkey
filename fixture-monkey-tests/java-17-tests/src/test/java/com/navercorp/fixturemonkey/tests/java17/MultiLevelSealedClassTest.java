@@ -21,12 +21,15 @@ package com.navercorp.fixturemonkey.tests.java17;
 import static com.navercorp.fixturemonkey.tests.TestEnvironment.TEST_COUNT;
 import static org.assertj.core.api.BDDAssertions.then;
 
-import java.beans.ConstructorProperties;
-
 import org.junit.jupiter.api.RepeatedTest;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.introspector.ConstructorPropertiesArbitraryIntrospector;
+import com.navercorp.fixturemonkey.tests.java17.SealedClassTestSpecs.BaseSealedClass;
+import com.navercorp.fixturemonkey.tests.java17.SealedClassTestSpecs.SealedClassImpl;
+import com.navercorp.fixturemonkey.tests.java17.SealedClassTestSpecs.BaseSealedClassProperty;
+import com.navercorp.fixturemonkey.tests.java17.SealedClassTestSpecs.BaseSealedInterface;
+import com.navercorp.fixturemonkey.tests.java17.SealedClassTestSpecs.SealedInterfaceImpl;
 
 class MultiLevelSealedClassTest {
 	private static final FixtureMonkey SUT = FixtureMonkey.builder()
@@ -34,60 +37,26 @@ class MultiLevelSealedClassTest {
 		.defaultNotNull(true)
 		.build();
 
-	private static sealed class SealedClass permits IntermediateSealedClass {
-	}
-
-	private static sealed class IntermediateSealedClass extends SealedClass permits SealedClassImpl {
-	}
-
-	private static final class SealedClassImpl extends IntermediateSealedClass {
-		private final String value;
-
-		@ConstructorProperties("value")
-		public SealedClassImpl(String value) {
-			this.value = value;
-		}
-
-		public String getValue() {
-			return value;
-		}
-	}
-
 	@RepeatedTest(TEST_COUNT)
 	void sampleSealedClass() {
 		// when
-		SealedClass actual = SUT.giveMeOne(SealedClass.class);
+		BaseSealedClass actual = SUT.giveMeOne(BaseSealedClass.class);
 
 		then(actual).isInstanceOf(SealedClassImpl.class);
-	}
-
-	private sealed interface SealedInterface permits IntermediateSealedInterface {
-	}
-
-	private sealed interface IntermediateSealedInterface extends SealedInterface permits SealedInterfaceImpl {
-	}
-
-	private record SealedInterfaceImpl(String value) implements IntermediateSealedInterface {
 	}
 
 	@RepeatedTest(TEST_COUNT)
 	void sampleSealedInterface() {
 		// when
-		SealedInterface actual = SUT.giveMeOne(SealedInterface.class);
+		BaseSealedInterface actual = SUT.giveMeOne(BaseSealedInterface.class);
 
-		then(actual).isInstanceOf(SealedInterface.class);
-	}
-
-	private record SealedClassProperty(
-		SealedClass sealedClass,
-		SealedInterface sealedInterface
-	) {
+		then(actual).isInstanceOf(BaseSealedInterface.class);
 	}
 
 	@RepeatedTest(TEST_COUNT)
 	void sampleSealedClassProperty() {
 		// when
-		SealedClassProperty actual = SUT.giveMeOne(SealedClassProperty.class);
+		BaseSealedClassProperty actual = SUT.giveMeOne(BaseSealedClassProperty.class);
 
 		then(actual.sealedInterface()).isInstanceOf(SealedInterfaceImpl.class);
 		then(actual.sealedClass()).isInstanceOf(SealedClassImpl.class);
@@ -96,7 +65,7 @@ class MultiLevelSealedClassTest {
 	@RepeatedTest(TEST_COUNT)
 	void fixedSealedClassProperty() {
 		// when
-		SealedClassProperty actual = SUT.giveMeBuilder(SealedClassProperty.class)
+		BaseSealedClassProperty actual = SUT.giveMeBuilder(BaseSealedClassProperty.class)
 			.fixed()
 			.sample();
 
