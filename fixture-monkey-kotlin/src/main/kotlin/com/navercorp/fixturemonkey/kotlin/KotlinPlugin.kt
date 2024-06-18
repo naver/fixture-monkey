@@ -50,7 +50,14 @@ import java.lang.reflect.Modifier
 @API(since = "0.4.0", status = MAINTAINED)
 class KotlinPlugin : Plugin {
     override fun accept(optionsBuilder: FixtureMonkeyOptionsBuilder) {
-        optionsBuilder.objectIntrospector { PrimaryConstructorArbitraryIntrospector.INSTANCE }
+        optionsBuilder.objectIntrospector {
+            MatchArbitraryIntrospector(
+                listOf(
+                    PrimaryConstructorArbitraryIntrospector.INSTANCE,
+                    it
+                )
+            )
+        }
             .defaultPropertyGenerator(KotlinPropertyGenerator())
             .insertFirstArbitraryContainerPropertyGenerator(
                 { property -> property.type.actualType().cachedKotlin().isKotlinLambda() }
