@@ -33,6 +33,9 @@ jobs:
           echo "${GRADLE_PROPERTIES}" > gradle.properties
       - name: Publish package
         uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
+        env:
+          OSSRH_USERNAME_TOKEN: ${{ secrets.OSSRHUSERNAME }}
+          OSSRH_PASSWORD_TOKEN: ${{ secrets.OSSRHPASSWORD }}
         with:
           arguments: publishToSonatype closeAndReleaseSonatypeStagingRepository
       - name: Close milestone

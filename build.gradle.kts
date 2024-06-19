@@ -62,13 +62,13 @@ subprojects {
 nexusPublishing {
     repositories {
         sonatype { // only for users registered in Sonatype after 24 Feb 2021
-            val ossrhUsername: String? by project
-            val ossrhPassword: String? by project
+            val ossrhUsernameToken: String = System.getenv("OSSRH_USERNAME_TOKEN") ?: ""
+            val ossrhPasswordToken: String = System.getenv("OSSRH_PASSWORD_TOKEN") ?: ""
 
             nexusUrl = uri("https://oss.sonatype.org/service/local/")
             snapshotRepositoryUrl = uri("https://oss.sonatype.org/content/repositories/snapshots/")
-            username = if (ossrhUsername != null) ossrhUsername else ""
-            password = if (ossrhPassword != null) ossrhPassword else ""
+            username = ossrhUsernameToken
+            password = ossrhPasswordToken
         }
     }
 }
