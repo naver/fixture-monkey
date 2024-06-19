@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Fixture Monkey on</title><link>https://naver.github.io/fixture-monkey/v1-0-0-kor/</link><description>Recent content in Fixture Monkey on</description><generator>Hugo -- gohugo.io</generator><language>ko-KR</language><copyright>Copyright (c) 2020-2021 Henk Verlinde</copyright><lastBuildDate>Tue, 06 Oct 2020 08:47:36 +0000</lastBuildDate><atom:link href="https://naver.github.io/fixture-monkey/v1-0-0-kor/index.xml" rel="self" type="application/rss+xml"/><item><title>Release Notes</title><link>https://naver.github.io/fixture-monkey/v1-0-0-kor/release-notes/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v1-0-0-kor/release-notes/</guid><description>sectionStart
 v.1.0.20 # Fix generation of enum implementations as a sealed class in JDK17.
 Add support for multi-level inheritance of sealed class and sealed interface.
+Fix JdkVariantOptions having higher priority than custom options.
 sectionEnd
 sectionStart
 v.1.0.19 # Fix a SimpleValuePlugin &amp;ldquo;out of byte range&amp;rdquo; error when generate Byte.
@@ -9,5 +10,4 @@ sectionStart
 v.1.0.18 # Fix SimpleValueJqwikPlugin mismatching order with constructor and field.
 sectionEnd
 sectionStart
-v.1.0.17 # Modify the way a value class is used to output arbitrary value.
-Fix sealedInterface set not working after thenApply.</description></item><item><title>Docs</title><link>https://naver.github.io/fixture-monkey/v1-0-0-kor/docs/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v1-0-0-kor/docs/</guid><description/></item></channel></rss>
+v.1.0.17 # Modify the way a value class is used to output arbitrary value.</description></item><item><title>Docs</title><link>https://naver.github.io/fixture-monkey/v1-0-0-kor/docs/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v1-0-0-kor/docs/</guid><description/></item></channel></rss>
