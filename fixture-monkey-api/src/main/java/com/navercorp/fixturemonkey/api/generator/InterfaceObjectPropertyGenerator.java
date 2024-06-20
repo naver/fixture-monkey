@@ -18,72 +18,46 @@
 
 package com.navercorp.fixturemonkey.api.generator;
 
-import static com.navercorp.fixturemonkey.api.type.Types.generateAnnotatedTypeWithoutAnnotation;
+import static java.util.stream.Collectors.toMap;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedType;
-import java.lang.reflect.Type;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.annotation.Nullable;
+import java.util.function.Function;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import com.navercorp.fixturemonkey.api.property.CandidateConcretePropertyResolver;
+import com.navercorp.fixturemonkey.api.property.InterfaceCandidateConcretePropertyResolver;
 import com.navercorp.fixturemonkey.api.property.Property;
+import com.navercorp.fixturemonkey.api.property.PropertyGenerator;
 
+/**
+ * It is deprecated. Use {@link InterfaceCandidateConcretePropertyResolver} instead.
+ */
 @API(since = "0.4.7", status = Status.MAINTAINED)
+@Deprecated
 public final class InterfaceObjectPropertyGenerator<T> implements ObjectPropertyGenerator {
-	private final List<Class<? extends T>> implementations;
+	private final CandidateConcretePropertyResolver delegate;
 
 	public InterfaceObjectPropertyGenerator(List<Class<? extends T>> implementations) {
-		this.implementations = implementations;
+		this.delegate = new InterfaceCandidateConcretePropertyResolver<>(implementations);
 	}
 
 	@Override
 	public ObjectProperty generate(ObjectPropertyGeneratorContext context) {
-		Map<Property, List<Property>> childPropertiesByProperty = new HashMap<>();
-
 		Property interfaceProperty = context.getProperty();
 		double nullInject = context.getNullInjectGenerator().generate(context);
 
-		for (Class<? extends T> implementation : implementations) {
-			Property property = new Property() {
-				@Override
-				public Type getType() {
-					return implementation;
-				}
+		PropertyGenerator propertyGenerator = context.getPropertyGenerator();
 
-				@Override
-				public AnnotatedType getAnnotatedType() {
-					return generateAnnotatedTypeWithoutAnnotation(implementation);
-				}
-
-				@Nullable
-				@Override
-				public String getName() {
-					return interfaceProperty.getName();
-				}
-
-				@Override
-				public List<Annotation> getAnnotations() {
-					return interfaceProperty.getAnnotations();
-				}
-
-				@Nullable
-				@Override
-				public Object getValue(Object instance) {
-					return interfaceProperty.getValue(instance);
-				}
-			};
-
-			List<Property> childProperties = context.getPropertyGenerator()
-				.generateChildProperties(property);
-
-			childPropertiesByProperty.put(property, childProperties);
-		}
+		Map<Property, List<Property>> childPropertiesByProperty = delegate.resolve(interfaceProperty).stream()
+			.collect(
+				toMap(
+					Function.identity(),
+					propertyGenerator::generateChildProperties
+				)
+			);
 
 		return new ObjectProperty(
 			interfaceProperty,
@@ -93,4 +67,5 @@ public final class InterfaceObjectPropertyGenerator<T> implements ObjectProperty
 			childPropertiesByProperty
 		);
 	}
+
 }

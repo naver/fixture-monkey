@@ -18,37 +18,41 @@
 
 package com.navercorp.fixturemonkey.api.generator;
 
-import java.util.HashMap;
-import java.util.HashSet;
+import static java.util.stream.Collectors.toUnmodifiableMap;
+
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.function.Function;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import com.navercorp.fixturemonkey.api.property.CandidateConcretePropertyResolver;
 import com.navercorp.fixturemonkey.api.property.Property;
-import com.navercorp.fixturemonkey.api.property.PropertyUtils;
-import com.navercorp.fixturemonkey.api.type.Types;
+import com.navercorp.fixturemonkey.api.property.SealedTypeCandidateConcretePropertyResolver;
 
+/**
+ * It is deprecated. Use {@link SealedTypeCandidateConcretePropertyResolver} instead.
+ */
 @API(since = "1.0.14", status = Status.EXPERIMENTAL)
+@Deprecated
 public final class SealedTypeObjectPropertyGenerator implements ObjectPropertyGenerator {
+	private static final CandidateConcretePropertyResolver DELEGATE =
+		new SealedTypeCandidateConcretePropertyResolver();
+
 	@Override
 	public ObjectProperty generate(ObjectPropertyGeneratorContext context) {
 		Property sealedTypeProperty = context.getProperty();
-		Class<?> actualType = Types.getActualType(sealedTypeProperty.getType());
 		double nullInject = context.getNullInjectGenerator().generate(context);
-		Set<Class<?>> permittedSubclasses = collectPermittedSubclasses(actualType);
 
-		Map<Property, List<Property>> childPropertiesByProperty = new HashMap<>();
-		for (Class<?> subClass : permittedSubclasses) {
-			Property subProperty = PropertyUtils.toProperty(subClass);
-
-			List<Property> subPropertyChildProperties = context.getPropertyGenerator()
-				.generateChildProperties(subProperty);
-
-			childPropertiesByProperty.put(subProperty, subPropertyChildProperties);
-		}
+		Map<Property, List<Property>> childPropertiesByProperty =
+			DELEGATE.resolve(sealedTypeProperty).stream()
+				.collect(
+					toUnmodifiableMap(
+						Function.identity(),
+						it -> context.getPropertyGenerator().generateChildProperties(it)
+					)
+				);
 
 		return new ObjectProperty(
 			sealedTypeProperty,
@@ -59,19 +63,4 @@ public final class SealedTypeObjectPropertyGenerator implements ObjectPropertyGe
 		);
 	}
 
-	private static Set<Class<?>> collectPermittedSubclasses(Class<?> type) {
-		Set<Class<?>> subclasses = new HashSet<>();
-		doCollectPermittedSubclasses(type, subclasses);
-		return subclasses;
-	}
-
-	private static void doCollectPermittedSubclasses(Class<?> type, Set<Class<?>> subclasses) {
-		if (type.isSealed()) {
-			for (Class<?> subclass : type.getPermittedSubclasses()) {
-				doCollectPermittedSubclasses(subclass, subclasses);
-			}
-		} else {
-			subclasses.add(type);
-		}
-	}
 }
