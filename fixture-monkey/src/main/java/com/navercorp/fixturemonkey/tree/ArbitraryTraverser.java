@@ -106,17 +106,17 @@ public final class ArbitraryTraverser {
 			index = getIndex(resolvedParentProperty, parentArbitraryProperty, propertySequence);
 		}
 
-		ObjectProperty objectProperty = objectPropertyGenerator.generate(
-			new ObjectPropertyGeneratorContext(
-				property,
-				index,
-				parentArbitraryProperty,
-				container,
-				getPropertyGenerator(context.getPropertyConfigurers()),
-				fixtureMonkeyOptions.getPropertyNameResolver(property),
-				fixtureMonkeyOptions.getNullInjectGenerator(property)
-			)
+		ObjectPropertyGeneratorContext objectPropertyGeneratorContext = new ObjectPropertyGeneratorContext(
+			property,
+			index,
+			parentArbitraryProperty,
+			container,
+			getPropertyGenerator(context.getPropertyConfigurers()),
+			fixtureMonkeyOptions.getPropertyNameResolver(property),
+			fixtureMonkeyOptions.getNullInjectGenerator(property)
 		);
+
+		ObjectProperty objectProperty = objectPropertyGenerator.generate(objectPropertyGeneratorContext);
 
 		Map<Property, List<Property>> childPropertyListsByCandidateProperty;
 		ContainerInfoManipulator appliedContainerInfoManipulator = null;

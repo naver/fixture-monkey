@@ -61,6 +61,23 @@ public final class ObjectPropertyGeneratorContext {
 		this.nullInjectGenerator = nullInjectGenerator;
 	}
 
+	// Please use since 1.1.0
+	public ObjectPropertyGeneratorContext(
+		Property property,
+		@Nullable Integer elementIndex,
+		@Nullable ArbitraryProperty ownerProperty,
+		boolean container,
+		PropertyNameResolver propertyNameResolver
+	) {
+		this.property = property;
+		this.elementIndex = elementIndex;
+		this.ownerProperty = ownerProperty;
+		this.container = container;
+		this.propertyNameResolver = propertyNameResolver;
+		this.propertyGenerator = null;
+		this.nullInjectGenerator = null;
+	}
+
 	public Property getProperty() {
 		return this.property;
 	}

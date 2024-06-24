@@ -25,7 +25,11 @@ import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.property.Property;
 
+/**
+ * It is deprecated. Use {@link DefaultObjectPropertyGenerator} since 1.1.0.
+ */
 @API(since = "0.4.0", status = Status.MAINTAINED)
+@Deprecated
 public final class SingleValueObjectPropertyGenerator implements ObjectPropertyGenerator {
 	public static final SingleValueObjectPropertyGenerator INSTANCE = new SingleValueObjectPropertyGenerator();
 
