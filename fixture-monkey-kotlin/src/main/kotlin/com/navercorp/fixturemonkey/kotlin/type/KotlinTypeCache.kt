@@ -21,6 +21,7 @@ package com.navercorp.fixturemonkey.kotlin.type
 import com.navercorp.fixturemonkey.api.container.ConcurrentLruCache
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
+import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.full.memberFunctions
 
 private val CONSTRUCTORS = ConcurrentLruCache<KClass<*>, Collection<KFunction<*>>>(2048)
@@ -36,3 +37,5 @@ fun Class<*>.kotlinMemberFunctions(): Collection<KFunction<*>> =
 
 fun KClass<*>.cachedMemberFunctions(): Collection<KFunction<*>> =
     MEMBER_FUNCTIONS.computeIfAbsent(this) { this.memberFunctions }
+
+fun KClass<*>.isKotlinLambda(): Boolean = this.isSubclassOf(Function::class)

@@ -35,6 +35,7 @@ import java.util.OptionalDouble;
 import java.util.OptionalInt;
 import java.util.OptionalLong;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
@@ -57,6 +58,7 @@ import com.navercorp.fixturemonkey.api.generator.ContainerPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.DefaultObjectPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.DefaultSingleContainerPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.EntryContainerPropertyGenerator;
+import com.navercorp.fixturemonkey.api.generator.FunctionalInterfaceContainerPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.MapContainerPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.MapEntryElementContainerPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.NoArgumentInterfaceJavaMethodPropertyGenerator;
@@ -66,7 +68,6 @@ import com.navercorp.fixturemonkey.api.generator.OptionalContainerPropertyGenera
 import com.navercorp.fixturemonkey.api.generator.SetContainerPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.SingleValueObjectPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.StreamContainerPropertyGenerator;
-import com.navercorp.fixturemonkey.api.generator.SupplierContainerPropertyGenerator;
 import com.navercorp.fixturemonkey.api.instantiator.InstantiatorProcessor;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult;
@@ -404,8 +405,9 @@ public final class FixtureMonkeyOptions {
 	private static List<MatcherOperator<ContainerPropertyGenerator>> getDefaultContainerPropertyGenerators() {
 		return Arrays.asList(
 			new MatcherOperator<>(
-				new AssignableTypeMatcher(Supplier.class).intersect(new SingleGenericTypeMatcher()),
-				SupplierContainerPropertyGenerator.INSTANCE
+				new AssignableTypeMatcher(Supplier.class).intersect(new SingleGenericTypeMatcher())
+					.union(new AssignableTypeMatcher(Function.class).intersect(new DoubleGenericTypeMatcher())),
+				FunctionalInterfaceContainerPropertyGenerator.INSTANCE
 			),
 			new MatcherOperator<>(
 				new AssignableTypeMatcher(Optional.class).intersect(new SingleGenericTypeMatcher()),

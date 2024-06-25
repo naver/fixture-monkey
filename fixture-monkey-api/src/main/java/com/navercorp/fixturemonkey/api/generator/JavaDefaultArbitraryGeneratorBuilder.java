@@ -18,7 +18,12 @@
 
 package com.navercorp.fixturemonkey.api.generator;
 
+import static com.navercorp.fixturemonkey.api.matcher.DoubleGenericTypeMatcher.DOUBLE_GENERIC_TYPE_MATCHER;
+import static com.navercorp.fixturemonkey.api.matcher.SingleGenericTypeMatcher.SINGLE_GENERIC_TYPE_MATCHER;
+
 import java.util.Arrays;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
 import org.apiguardian.api.API;
@@ -32,6 +37,7 @@ import com.navercorp.fixturemonkey.api.introspector.ArrayIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.BeanArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.BooleanIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.EnumIntrospector;
+import com.navercorp.fixturemonkey.api.introspector.FunctionalInterfaceArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.IterableIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.IteratorIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.JavaArbitraryIntrospector;
@@ -44,9 +50,11 @@ import com.navercorp.fixturemonkey.api.introspector.QueueIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.SetIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.SingleGenericCollectionIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.StreamIntrospector;
-import com.navercorp.fixturemonkey.api.introspector.SupplierIntrospector;
+import com.navercorp.fixturemonkey.api.introspector.TypedArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.UuidIntrospector;
 import com.navercorp.fixturemonkey.api.jqwik.JavaTimeArbitraryIntrospector;
+import com.navercorp.fixturemonkey.api.matcher.AssignableTypeMatcher;
+import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 
 @SuppressWarnings("UnusedReturnValue")
 @API(since = "0.4.0", status = Status.MAINTAINED)
@@ -60,7 +68,13 @@ public final class JavaDefaultArbitraryGeneratorBuilder {
 	);
 	public static final ArbitraryIntrospector JAVA_CONTAINER_INTROSPECTOR = new MatchArbitraryIntrospector(
 		Arrays.asList(
-			new SupplierIntrospector(),
+			new TypedArbitraryIntrospector(
+				new MatcherOperator<>(
+					new AssignableTypeMatcher(Supplier.class).intersect(SINGLE_GENERIC_TYPE_MATCHER)
+						.union(new AssignableTypeMatcher(Function.class).intersect(DOUBLE_GENERIC_TYPE_MATCHER)),
+					new FunctionalInterfaceArbitraryIntrospector()
+				)
+			),
 			new OptionalIntrospector(),
 			new SetIntrospector(),
 			new QueueIntrospector(),
