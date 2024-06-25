@@ -40,6 +40,7 @@ import java.util.OptionalInt;
 import java.util.OptionalLong;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.RepeatedTest;
@@ -1240,5 +1241,24 @@ class JavaTest {
 			() -> SUT.giveMeOne(new TypeReference<Collection<String>>() {
 			})
 		);
+	}
+
+	@Test
+	void sampleFunction() {
+		Function<Integer, String> actual = SUT.giveMeBuilder(new TypeReference<Function<Integer, String>>() {
+			})
+			.sample();
+
+		then(actual.apply(1)).isNotNull();
+	}
+
+	@Test
+	void decomposeFunction() {
+		Function<Integer, String> actual = SUT.giveMeBuilder(new TypeReference<Function<Integer, String>>() {
+			})
+			.fixed()
+			.sample();
+
+		then(actual.apply(1)).isNotNull();
 	}
 }
