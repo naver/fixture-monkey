@@ -18,6 +18,9 @@
 
 package com.navercorp.fixturemonkey.api.option;
 
+import java.time.ZoneId;
+import java.util.List;
+
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
@@ -34,6 +37,7 @@ public final class JdkVariantOptions {
 		optionsBuilder.insertFirstArbitraryObjectPropertyGenerator(
 			p -> Types.getActualType(p.getType()).isSealed() && !Types.getActualType(p.getType()).isEnum(),
 			SEALED_TYPE_OBJECT_PROPERTY_GENERATOR
-		);
+		)
+			.insertFirstPropertyGenerator(ZoneId.class, property -> List.of());
 	}
 }
