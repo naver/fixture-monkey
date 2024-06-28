@@ -60,7 +60,17 @@ public final class SingleGenericCollectionIntrospector implements ArbitraryIntro
 		List<CombinableArbitrary<?>> elementCombinableArbitraryList = context.getElementCombinableArbitraryList();
 
 		Class<?> type = Types.getActualType(context.getResolvedType());
-		Constructor<?> declaredConstructor = TypeCache.getDeclaredConstructor(type, Collection.class);
+		Constructor<?> declaredConstructor;
+		try {
+			declaredConstructor = TypeCache.getDeclaredConstructor(type, Collection.class);
+		} catch (Exception ex) {
+			LOGGER.warn(
+				"The collection interface is not resolved by the ConcretePropertyCandidateResolver. Generated as null.",
+				ex
+			);
+			return ArbitraryIntrospectorResult.NOT_INTROSPECTED;
+		}
+
 		return new ArbitraryIntrospectorResult(
 			CombinableArbitrary.containerBuilder()
 				.elements(elementCombinableArbitraryList)

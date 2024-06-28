@@ -29,6 +29,7 @@ import static org.assertj.core.api.BDDAssertions.thenThrownBy;
 import java.lang.reflect.Modifier;
 import java.time.Instant;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -1230,6 +1231,14 @@ class JavaTest {
 	void constant() {
 		thenNoException().isThrownBy(
 			() -> SUT.giveMeOne(ConstantObject.class)
+		);
+	}
+
+	@Test
+	void collectionNotThrows() {
+		thenNoException().isThrownBy(
+			() -> SUT.giveMeOne(new TypeReference<Collection<String>>() {
+			})
 		);
 	}
 }
