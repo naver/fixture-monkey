@@ -34,31 +34,29 @@ import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.SingleElementProperty;
 import com.navercorp.fixturemonkey.api.type.Types;
 
-/**
- * It is deprecated. Use {@link FunctionalInterfaceContainerPropertyGenerator} instead.
- */
-@API(since = "1.0.17", status = API.Status.EXPERIMENTAL)
-@Deprecated
-public final class SupplierContainerPropertyGenerator implements ContainerPropertyGenerator {
-	public static final SupplierContainerPropertyGenerator INSTANCE = new SupplierContainerPropertyGenerator();
+@API(since = "1.0.21", status = API.Status.EXPERIMENTAL)
+public final class FunctionalInterfaceContainerPropertyGenerator implements ContainerPropertyGenerator {
+	public static final FunctionalInterfaceContainerPropertyGenerator INSTANCE =
+		new FunctionalInterfaceContainerPropertyGenerator();
+
 	private static final ArbitraryContainerInfo CONTAINER_INFO = new ArbitraryContainerInfo(1, 1);
 
 	@Override
 	public ContainerProperty generate(ContainerPropertyGeneratorContext context) {
 		Property property = context.getProperty();
 
-		AnnotatedType valueAnnotatedType = getSupplierValueAnnotatedType(property);
-		Type valueType = valueAnnotatedType.getType();
+		AnnotatedType lambdaReturnAnnotatedType = getLambdaReturnAnnotatedType(property);
+		Type lambdaReturnType = lambdaReturnAnnotatedType.getType();
 
-		Property childProperty = new Property() {
+		Property returnProperty = new Property() {
 			@Override
 			public Type getType() {
-				return valueType;
+				return lambdaReturnType;
 			}
 
 			@Override
 			public AnnotatedType getAnnotatedType() {
-				return valueAnnotatedType;
+				return lambdaReturnAnnotatedType;
 			}
 
 			@Nullable
@@ -69,7 +67,7 @@ public final class SupplierContainerPropertyGenerator implements ContainerProper
 
 			@Override
 			public List<Annotation> getAnnotations() {
-				return Arrays.asList(valueAnnotatedType.getAnnotations());
+				return Arrays.asList(lambdaReturnAnnotatedType.getAnnotations());
 			}
 
 			@Override
@@ -84,7 +82,7 @@ public final class SupplierContainerPropertyGenerator implements ContainerProper
 			}
 		};
 
-		SingleElementProperty singleElementProperty = new SingleElementProperty(childProperty);
+		SingleElementProperty singleElementProperty = new SingleElementProperty(returnProperty);
 
 		return new ContainerProperty(
 			Collections.singletonList(singleElementProperty),
@@ -92,23 +90,8 @@ public final class SupplierContainerPropertyGenerator implements ContainerProper
 		);
 	}
 
-	private AnnotatedType getSupplierValueAnnotatedType(Property supplierProperty) {
-		Class<?> type = Types.getActualType(supplierProperty.getType());
-		if (type != Supplier.class) {
-			throw new IllegalArgumentException(
-				"type is not Supplier type. propertyType: " + type
-			);
-		}
-
-		List<AnnotatedType> genericsTypes = Types.getGenericsTypes(supplierProperty.getAnnotatedType());
-		if (genericsTypes.size() != 1) {
-			throw new IllegalArgumentException(
-				"Supplier genericTypes must be have 1 generics type for value. "
-					+ "propertyType: " + supplierProperty.getType()
-					+ ", genericsTypes: " + genericsTypes
-			);
-		}
-
-		return genericsTypes.get(0);
+	private AnnotatedType getLambdaReturnAnnotatedType(Property lambdaProperty) {
+		List<AnnotatedType> genericsTypes = Types.getGenericsTypes(lambdaProperty.getAnnotatedType());
+		return genericsTypes.get(genericsTypes.size() - 1);
 	}
 }

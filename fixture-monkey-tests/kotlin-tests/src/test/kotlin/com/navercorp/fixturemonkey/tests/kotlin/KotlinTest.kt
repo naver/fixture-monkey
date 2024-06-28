@@ -795,6 +795,54 @@ class KotlinTest {
         then(actual).isInstanceOf(HashSet::class.java)
     }
 
+    @Test
+    fun kotlinLambda() {
+        // given
+        class KotlinLambdaValue(val lambda: (String, String, String) -> Unit)
+
+        // when
+        val actual: KotlinLambdaValue = SUT.giveMeOne()
+
+        then(actual.lambda).isNotNull
+    }
+
+    @Test
+    fun kotlinLambdaOnlyReturnType() {
+        // given
+        class KotlinLambdaValue(val lambda: () -> String)
+
+        // when
+        val actual: KotlinLambdaValue = SUT.giveMeOne()
+
+        then(actual.lambda.invoke()).isNotNull
+    }
+
+    @Test
+    fun kotlinLambdaReturnType() {
+        // given
+        class KotlinLambdaValue(val lambda: (String) -> String)
+
+        // when
+        val actual: KotlinLambdaValue = SUT.giveMeOne()
+
+        then(actual.lambda.invoke("test")).isNotNull
+    }
+
+    @Test
+    fun setJustKotlinLambda() {
+        // given
+        class KotlinLambdaValue(val lambda: (String, String, String) -> Unit)
+
+        val expected: (String, String, String) -> Unit = { _, _, _ -> }
+
+        // when
+        val actual = SUT.giveMeBuilder<KotlinLambdaValue>()
+            .setExp(KotlinLambdaValue::lambda, Values.just(expected))
+            .sample()
+
+        then(actual.lambda).isNotNull
+    }
+
     companion object {
         private val SUT: FixtureMonkey = FixtureMonkey.builder()
             .plugin(KotlinPlugin())

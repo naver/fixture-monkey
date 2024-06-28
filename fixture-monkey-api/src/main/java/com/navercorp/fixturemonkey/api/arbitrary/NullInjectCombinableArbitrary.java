@@ -44,7 +44,7 @@ final class NullInjectCombinableArbitrary<T> implements CombinableArbitrary<T> {
 	@Override
 	public T combined() {
 		T combined = combinableArbitrary.combined();
-		if (combined instanceof Proxy) {
+		if (this.nullProbability != 1.0d && combined instanceof Proxy) {
 			return combined;
 		}
 
@@ -54,7 +54,7 @@ final class NullInjectCombinableArbitrary<T> implements CombinableArbitrary<T> {
 	@Override
 	public Object rawValue() {
 		Object rawValue = combinableArbitrary.rawValue();
-		if (rawValue instanceof Proxy) {
+		if (this.nullProbability != 1.0d && rawValue instanceof Proxy) {
 			return rawValue;
 		}
 
