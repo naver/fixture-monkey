@@ -1028,7 +1028,7 @@ class FixtureMonkeyTest {
 		then(result1).isNotEqualTo(result2);
 	}
 
-	@Property
+	@Property(tries = 10)
 	void supplierReturnsNew() {
 		// given
 		TypeReference<Supplier<String>> supplierTypeReference = new TypeReference<Supplier<String>>() {

@@ -19,7 +19,9 @@
 package com.navercorp.fixturemonkey.kotlin
 
 import com.navercorp.fixturemonkey.api.generator.InterfaceObjectPropertyGenerator
+import com.navercorp.fixturemonkey.api.generator.FunctionalInterfaceContainerPropertyGenerator
 import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGenerator
+import com.navercorp.fixturemonkey.api.introspector.FunctionalInterfaceArbitraryIntrospector
 import com.navercorp.fixturemonkey.api.introspector.MatchArbitraryIntrospector
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator
 import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptionsBuilder
@@ -40,6 +42,7 @@ import com.navercorp.fixturemonkey.kotlin.matcher.Matchers.TRIPLE_TYPE_MATCHER
 import com.navercorp.fixturemonkey.kotlin.property.KotlinPropertyGenerator
 import com.navercorp.fixturemonkey.kotlin.type.actualType
 import com.navercorp.fixturemonkey.kotlin.type.cachedKotlin
+import com.navercorp.fixturemonkey.kotlin.type.isKotlinLambda
 import org.apiguardian.api.API
 import org.apiguardian.api.API.Status.MAINTAINED
 import java.lang.reflect.Modifier
@@ -49,6 +52,13 @@ class KotlinPlugin : Plugin {
     override fun accept(optionsBuilder: FixtureMonkeyOptionsBuilder) {
         optionsBuilder.objectIntrospector { PrimaryConstructorArbitraryIntrospector.INSTANCE }
             .defaultPropertyGenerator(KotlinPropertyGenerator())
+            .insertFirstArbitraryContainerPropertyGenerator(
+                { property -> property.type.actualType().cachedKotlin().isKotlinLambda() }
+            ) { FunctionalInterfaceContainerPropertyGenerator.INSTANCE.generate(it) }
+            .insertFirstArbitraryIntrospector(
+                { property -> property.type.actualType().cachedKotlin().isKotlinLambda() },
+                FunctionalInterfaceArbitraryIntrospector()
+            )
             .insertFirstArbitraryObjectPropertyGenerator(
                 MatcherOperator(
                     { it.type.actualType().cachedKotlin().isSealed },
