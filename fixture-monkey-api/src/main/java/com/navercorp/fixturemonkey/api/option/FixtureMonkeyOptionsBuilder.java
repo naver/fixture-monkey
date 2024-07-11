@@ -628,7 +628,12 @@ public final class FixtureMonkeyOptionsBuilder {
 					this.decomposableContainerFactoryMap.entrySet()
 				) {
 					Class<?> type = entry.getKey();
-					DecomposableJavaContainer decomposedValue = entry.getValue().from(obj);
+					DecomposableJavaContainer decomposedValue;
+					try {
+						decomposedValue = entry.getValue().from(obj);
+					} catch (IllegalArgumentException ex) {
+						continue;
+					}
 
 					if (type.isAssignableFrom(actualType)) {
 						return decomposedValue;

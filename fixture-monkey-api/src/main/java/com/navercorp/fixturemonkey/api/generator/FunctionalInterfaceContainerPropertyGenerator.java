@@ -24,7 +24,6 @@ import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Supplier;
 
 import javax.annotation.Nullable;
 
@@ -72,13 +71,7 @@ public final class FunctionalInterfaceContainerPropertyGenerator implements Cont
 
 			@Override
 			public Object getValue(Object instance) {
-				Class<?> actualType = Types.getActualType(instance.getClass());
-
-				if (Supplier.class.isAssignableFrom(actualType)) {
-					return instance;
-				}
-
-				throw new IllegalArgumentException("given value has no match");
+				return instance;
 			}
 		};
 

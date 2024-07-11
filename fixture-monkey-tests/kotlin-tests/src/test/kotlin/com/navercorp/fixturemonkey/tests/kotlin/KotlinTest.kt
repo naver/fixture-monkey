@@ -818,12 +818,38 @@ class KotlinTest {
     }
 
     @Test
+    fun decomposeKotlinLambdaOnlyReturnType() {
+        // given
+        class KotlinLambdaValue(val lambda: () -> String)
+
+        // when
+        val actual = SUT.giveMeBuilder<KotlinLambdaValue>()
+            .thenApply { _, _ -> }
+            .sample()
+
+        then(actual.lambda.invoke()).isNotNull
+    }
+
+    @Test
     fun kotlinLambdaReturnType() {
         // given
         class KotlinLambdaValue(val lambda: (String) -> String)
 
         // when
         val actual: KotlinLambdaValue = SUT.giveMeOne()
+
+        then(actual.lambda.invoke("test")).isNotNull
+    }
+
+    @Test
+    fun decomposeKotlinLambdaReturnType() {
+        // given
+        class KotlinLambdaValue(val lambda: (String) -> String)
+
+        // when
+        val actual = SUT.giveMeBuilder<KotlinLambdaValue>()
+            .thenApply { _, _ -> }
+            .sample()
 
         then(actual.lambda.invoke("test")).isNotNull
     }

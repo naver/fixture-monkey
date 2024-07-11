@@ -18,8 +18,8 @@
 
 package com.navercorp.fixturemonkey.kotlin
 
-import com.navercorp.fixturemonkey.api.generator.InterfaceObjectPropertyGenerator
 import com.navercorp.fixturemonkey.api.generator.FunctionalInterfaceContainerPropertyGenerator
+import com.navercorp.fixturemonkey.api.generator.InterfaceObjectPropertyGenerator
 import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGenerator
 import com.navercorp.fixturemonkey.api.introspector.FunctionalInterfaceArbitraryIntrospector
 import com.navercorp.fixturemonkey.api.introspector.MatchArbitraryIntrospector
