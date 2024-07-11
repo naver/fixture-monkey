@@ -18,6 +18,8 @@
 
 package com.navercorp.fixturemonkey.customizer;
 
+import java.util.function.Supplier;
+
 import javax.annotation.Nullable;
 
 import org.apiguardian.api.API;
@@ -35,6 +37,10 @@ public final class Values {
 
 	public static Just just(@Nullable Object value) {
 		return new Just(value);
+	}
+
+	public static Unique unique(Supplier<Object> valueSupplier) {
+		return new Unique(valueSupplier);
 	}
 
 	/**
@@ -66,6 +72,18 @@ public final class Values {
 		@Nullable
 		public Object getValue() {
 			return value;
+		}
+	}
+
+	public static final class Unique {
+		private final Supplier<Object> valueSupplier;
+
+		private Unique(Supplier<Object> valueSupplier) {
+			this.valueSupplier = valueSupplier;
+		}
+
+		public Supplier<Object> getValueSupplier() {
+			return valueSupplier;
 		}
 	}
 }

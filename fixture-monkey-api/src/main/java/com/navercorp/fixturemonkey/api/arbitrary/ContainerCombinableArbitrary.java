@@ -19,6 +19,7 @@
 package com.navercorp.fixturemonkey.api.arbitrary;
 
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -30,15 +31,20 @@ import org.apiguardian.api.API.Status;
  */
 @API(since = "0.6.0", status = Status.MAINTAINED)
 final class ContainerCombinableArbitrary<T> implements CombinableArbitrary<T> {
+	private static final Object EXISTED = new Object();
+
 	private final List<CombinableArbitrary<?>> combinableArbitraryList;
 	private final Function<List<Object>, T> combinator;
+	private final Map<Object, Object> generatedMap;
 
 	ContainerCombinableArbitrary(
 		List<CombinableArbitrary<?>> combinableArbitraryList,
-		Function<List<Object>, T> combinator
+		Function<List<Object>, T> combinator,
+		Map<Object, Object> generatedMap
 	) {
 		this.combinableArbitraryList = combinableArbitraryList;
 		this.combinator = combinator;
+		this.generatedMap = generatedMap;
 	}
 
 	@Override
@@ -76,5 +82,22 @@ final class ContainerCombinableArbitrary<T> implements CombinableArbitrary<T> {
 
 		return combinableArbitraryList.stream()
 			.allMatch(CombinableArbitrary::fixed);
+	}
+
+	@Override
+	public CombinableArbitrary<T> unique() {
+		List<CombinableArbitrary<?>> uniqueCombinableArbitraryList = this.combinableArbitraryList.stream()
+			.map(arbitrary -> arbitrary.filter(it -> {
+				if (!generatedMap.containsKey(it)) {
+					generatedMap.put(it, EXISTED);
+					return true;
+				}
+				return false;
+			}))
+			.collect(Collectors.toList());
+
+		return CombinableArbitrary.containerBuilder()
+			.elements(uniqueCombinableArbitraryList)
+			.build(this.combinator);
 	}
 }

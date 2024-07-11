@@ -58,6 +58,11 @@ public final class TraceableCombinableArbitrary<T> implements CombinableArbitrar
 	}
 
 	@Override
+	public CombinableArbitrary<T> unique() {
+		return combinableArbitrary.unique();
+	}
+
+	@Override
 	public PropertyPath getPropertyPath() {
 		return propertyPath;
 	}

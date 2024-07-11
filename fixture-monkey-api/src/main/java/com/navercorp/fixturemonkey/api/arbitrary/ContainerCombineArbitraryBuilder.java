@@ -20,6 +20,7 @@ package com.navercorp.fixturemonkey.api.arbitrary;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
 import org.apiguardian.api.API;
@@ -57,7 +58,8 @@ public final class ContainerCombineArbitraryBuilder {
 				T container = combinator.apply(elements);
 				postBuild.run();
 				return container;
-			}
+			},
+			new ConcurrentHashMap<>()
 		);
 	}
 }
