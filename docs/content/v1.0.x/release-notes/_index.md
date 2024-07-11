@@ -5,6 +5,19 @@ menu:
 docs:
 weight: 100
 ---
+sectionStart
+### v.1.0.21
+Deprecate the ObjectPropertyGenerator that modify child properties listed below.
+For example, `InterfaceObjectPropertyGenerator`, `SealedTypeObjectPropertyGenerator`, `SingleValueObjectPropertyGenerator`
+Use `InterfaceCandidateConcretePropertyResolver`, `SealedTypeCandidateConcretePropertyResolver` instead.
+
+Fix set `ZoneId` in Kotlin JDK21.
+
+Fix collection generation not throw exception.
+
+Fix decompose Java Kotlin functional interface.
+
+sectionEnd
 
 sectionStart
 ### v.1.0.20
