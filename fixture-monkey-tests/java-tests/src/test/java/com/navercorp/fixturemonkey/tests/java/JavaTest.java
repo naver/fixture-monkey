@@ -19,6 +19,8 @@
 package com.navercorp.fixturemonkey.tests.java;
 
 import static com.navercorp.fixturemonkey.api.experimental.JavaGetterMethodPropertySelector.javaGetter;
+import static com.navercorp.fixturemonkey.api.experimental.TypedExpressionGenerator.typedRoot;
+import static com.navercorp.fixturemonkey.api.experimental.TypedExpressionGenerator.typedString;
 import static com.navercorp.fixturemonkey.api.instantiator.Instantiator.constructor;
 import static com.navercorp.fixturemonkey.api.instantiator.Instantiator.factoryMethod;
 import static com.navercorp.fixturemonkey.tests.TestEnvironment.TEST_COUNT;
@@ -1260,5 +1262,33 @@ class JavaTest {
 			.sample();
 
 		then(actual.apply(1)).isNotNull();
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void unique() {
+		List<Integer> actual = SUT.giveMeBuilder(new TypeReference<List<Integer>>() {
+			})
+			.size("$", 3)
+			.set("$[*]", Values.unique(() -> Arbitraries.integers().between(0, 3).sample()))
+			.sample();
+
+		Set<Integer> expected = new HashSet<>(actual);
+		then(actual).hasSize(expected.size());
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void customizePropertyUnique() {
+		List<Integer> actual = SUT.giveMeExperimentalBuilder(new TypeReference<List<Integer>>() {
+			})
+			.<Integer>customizeProperty(
+				typedString("$[*]"),
+				it -> it.filter(integer -> 0 <= integer && integer < 4)
+			)
+			.<List<Integer>>customizeProperty(typedRoot(), CombinableArbitrary::unique)
+			.size("$", 3)
+			.sample();
+
+		Set<Integer> expected = new HashSet<>(actual);
+		then(actual).hasSize(expected.size());
 	}
 }

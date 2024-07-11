@@ -18,6 +18,8 @@
 
 package com.navercorp.fixturemonkey.api.arbitrary;
 
+import java.util.Map;
+
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
@@ -37,6 +39,11 @@ public final class CombinableArbitraryDelegator<T> implements CombinableArbitrar
 	@Override
 	public Object rawValue() {
 		return delegated.rawValue();
+	}
+
+	@Override
+	public CombinableArbitrary<T> unique(Map<Object, Object> uniqueMap) {
+		return delegated.unique(uniqueMap);
 	}
 
 	@Override

@@ -18,6 +18,8 @@
 
 package com.navercorp.fixturemonkey.api.arbitrary;
 
+import java.util.Map;
+
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
@@ -60,5 +62,10 @@ public final class TraceableCombinableArbitrary<T> implements CombinableArbitrar
 	@Override
 	public PropertyPath getPropertyPath() {
 		return propertyPath;
+	}
+
+	@Override
+	public CombinableArbitrary<T> unique(Map<Object, Object> uniqueMap) {
+		return this.combinableArbitrary.unique(uniqueMap);
 	}
 }

@@ -18,8 +18,11 @@
 
 package com.navercorp.fixturemonkey.api.arbitrary;
 
+import static java.util.stream.Collectors.toMap;
+
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.function.Function;
 
 import org.apiguardian.api.API;
@@ -77,5 +80,16 @@ final class ObjectCombinableArbitrary<T> implements CombinableArbitrary<T> {
 	@Override
 	public boolean fixed() {
 		return combinableArbitrariesByArbitraryProperty.values().stream().allMatch(CombinableArbitrary::fixed);
+	}
+
+	@Override
+	public CombinableArbitrary<T> unique(Map<Object, Object> uniqueMap) {
+		Map<ArbitraryProperty, CombinableArbitrary<?>> uniqueCombinableArbitraryListByArbitraryProperty =
+			this.combinableArbitrariesByArbitraryProperty.entrySet().stream()
+				.collect(toMap(Entry::getKey, it -> it.getValue().unique(uniqueMap)));
+
+		return CombinableArbitrary.objectBuilder()
+			.properties(uniqueCombinableArbitraryListByArbitraryProperty)
+			.build(this.combinator);
 	}
 }

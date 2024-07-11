@@ -18,6 +18,7 @@
 
 package com.navercorp.fixturemonkey.api.arbitrary;
 
+import java.util.Map;
 import java.util.function.Predicate;
 
 import javax.annotation.Nullable;
@@ -189,6 +190,11 @@ final class FilteredCombinableArbitrary<T> implements CombinableArbitrary<T> {
 		}
 
 		throw newRetryableFilterMissException(lastException);
+	}
+
+	@Override
+	public CombinableArbitrary<T> unique(Map<Object, Object> uniqueMap) {
+		return this.combinableArbitrary.unique(uniqueMap);
 	}
 
 	@Override

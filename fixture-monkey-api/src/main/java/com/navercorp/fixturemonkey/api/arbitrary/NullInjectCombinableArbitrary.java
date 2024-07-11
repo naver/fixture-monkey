@@ -19,6 +19,7 @@
 package com.navercorp.fixturemonkey.api.arbitrary;
 
 import java.lang.reflect.Proxy;
+import java.util.Map;
 
 import javax.annotation.Nullable;
 
@@ -79,5 +80,10 @@ final class NullInjectCombinableArbitrary<T> implements CombinableArbitrary<T> {
 		}
 		int currentSeed = Randoms.nextInt(1000);
 		return currentSeed < frequencyNull ? null : object;
+	}
+
+	@Override
+	public CombinableArbitrary<T> unique(Map<Object, Object> uniqueMap) {
+		return this.combinableArbitrary.unique(uniqueMap);
 	}
 }

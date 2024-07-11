@@ -18,6 +18,7 @@
 
 package com.navercorp.fixturemonkey.resolver;
 
+import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -120,6 +121,11 @@ final class ResolvedCombinableArbitrary<T> implements CombinableArbitrary<T> {
 			),
 			lastException
 		);
+	}
+
+	@Override
+	public CombinableArbitrary<T> unique(Map<Object, Object> uniqueMap) {
+		return this.arbitrary.getValue().unique(uniqueMap);
 	}
 
 	@Override

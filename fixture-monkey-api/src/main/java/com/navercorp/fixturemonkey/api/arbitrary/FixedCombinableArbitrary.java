@@ -18,6 +18,7 @@
 
 package com.navercorp.fixturemonkey.api.arbitrary;
 
+import java.util.Map;
 import java.util.Objects;
 
 import org.apiguardian.api.API;
@@ -42,6 +43,11 @@ final class FixedCombinableArbitrary<T> implements CombinableArbitrary<T> {
 	@Override
 	public T rawValue() {
 		return object;
+	}
+
+	@Override
+	public CombinableArbitrary<T> unique(Map<Object, Object> uniqueMap) {
+		return this;
 	}
 
 	@Override

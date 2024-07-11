@@ -30,7 +30,7 @@ import com.navercorp.fixturemonkey.api.experimental.TypedPropertySelector;
 @API(since = "0.6.12", status = Status.MAINTAINED)
 public interface ExperimentalArbitraryBuilder<T> extends ArbitraryBuilder<T> {
 	@API(since = "1.0.9", status = Status.EXPERIMENTAL)
-	<U> ArbitraryBuilder<T> customizeProperty(
+	<U> ExperimentalArbitraryBuilder<T> customizeProperty(
 		TypedPropertySelector<U> propertySelector,
 		Function<CombinableArbitrary<? extends U>, CombinableArbitrary<? extends U>> combinableArbitraryCustomizer
 	);

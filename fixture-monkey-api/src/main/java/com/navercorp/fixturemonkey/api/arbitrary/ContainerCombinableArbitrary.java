@@ -18,12 +18,20 @@
 
 package com.navercorp.fixturemonkey.api.arbitrary;
 
+import static java.util.stream.Collectors.toMap;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
+
+import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 
 /**
  * It combines given element {@link CombinableArbitrary} list into a container type {@link CombinableArbitrary}.
@@ -72,5 +80,16 @@ final class ContainerCombinableArbitrary<T> implements CombinableArbitrary<T> {
 	public boolean fixed() {
 		return combinableArbitraryList.stream()
 			.allMatch(CombinableArbitrary::fixed);
+	}
+
+	@Override
+	public CombinableArbitrary<T> unique(Map<Object, Object> uniqueMap) {
+		List<CombinableArbitrary<?>> uniqueCombinableArbitraryList = this.combinableArbitraryList.stream()
+			.map(it -> it.unique(uniqueMap))
+			.collect(Collectors.toList());
+
+		return CombinableArbitrary.containerBuilder()
+			.elements(uniqueCombinableArbitraryList)
+			.build(this.combinator);
 	}
 }

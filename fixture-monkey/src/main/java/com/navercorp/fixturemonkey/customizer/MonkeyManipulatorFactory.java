@@ -45,6 +45,7 @@ import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.customizer.InnerSpecState.ManipulatorHolderSet;
 import com.navercorp.fixturemonkey.customizer.Values.Just;
+import com.navercorp.fixturemonkey.customizer.Values.Unique;
 import com.navercorp.fixturemonkey.expression.MonkeyExpressionFactory;
 import com.navercorp.fixturemonkey.resolver.ArbitraryBuilderContext;
 import com.navercorp.fixturemonkey.resolver.DefaultArbitraryBuilder;
@@ -263,6 +264,10 @@ public final class MonkeyManipulatorFactory {
 				traverser,
 				decomposedContainerValueFactory,
 				(LazyArbitrary<?>)value
+			);
+		} else if (value instanceof Unique) {
+			return new NodeSetJustManipulator(
+				Values.just(CombinableArbitrary.from(((Unique)value).getValueSupplier()).unique())
 			);
 		} else {
 			return new NodeSetDecomposedValueManipulator<>(

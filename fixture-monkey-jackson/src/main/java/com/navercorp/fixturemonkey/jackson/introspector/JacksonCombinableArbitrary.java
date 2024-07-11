@@ -18,6 +18,7 @@
 
 package com.navercorp.fixturemonkey.jackson.introspector;
 
+import java.util.Map;
 import java.util.function.Function;
 
 import org.apiguardian.api.API;
@@ -57,6 +58,11 @@ public final class JacksonCombinableArbitrary<T> implements CombinableArbitrary<
 	@Override
 	public Object rawValue() {
 		return jsonValue.rawValue();
+	}
+
+	@Override
+	public CombinableArbitrary<T> unique(Map<Object, Object> uniqueMap) {
+		return this.jsonValue.unique(uniqueMap);
 	}
 
 	@Override

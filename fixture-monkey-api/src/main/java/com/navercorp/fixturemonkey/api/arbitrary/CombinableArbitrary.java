@@ -18,6 +18,7 @@
 
 package com.navercorp.fixturemonkey.api.arbitrary;
 
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -171,7 +172,11 @@ public interface CombinableArbitrary<T> {
 	 * @return A {@link CombinableArbitrary} returns a unique value
 	 */
 	default CombinableArbitrary<T> unique() {
-		return new UniqueCombinableArbitrary<>(this, new ConcurrentHashMap<>());
+		return unique(new ConcurrentHashMap<>());
+	}
+
+	default CombinableArbitrary<T> unique(Map<Object, Object> uniqueMap) {
+		return new UniqueCombinableArbitrary<>(this, uniqueMap);
 	}
 
 	/**

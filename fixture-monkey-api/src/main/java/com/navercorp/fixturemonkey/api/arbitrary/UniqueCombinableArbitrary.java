@@ -66,6 +66,11 @@ final class UniqueCombinableArbitrary<T> implements CombinableArbitrary<T> {
 	}
 
 	@Override
+	public CombinableArbitrary<T> unique(Map<Object, Object> uniqueMap) {
+		return this;
+	}
+
+	@Override
 	public void clear() {
 		combinableArbitrary.clear();
 	}
