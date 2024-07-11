@@ -41,6 +41,7 @@ import java.util.OptionalLong;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.RepeatedTest;
@@ -69,6 +70,8 @@ import com.navercorp.fixturemonkey.tests.java.ConstructorTestSpecs.SimpleContain
 import com.navercorp.fixturemonkey.tests.java.ImmutableDepthTestSpecs.DepthStringValueList;
 import com.navercorp.fixturemonkey.tests.java.ImmutableDepthTestSpecs.OneDepthStringValue;
 import com.navercorp.fixturemonkey.tests.java.ImmutableDepthTestSpecs.TwoDepthStringValue;
+import com.navercorp.fixturemonkey.tests.java.ImmutableFunctionalInterfaceSpecs.FunctionObject;
+import com.navercorp.fixturemonkey.tests.java.ImmutableFunctionalInterfaceSpecs.SupplierObject;
 import com.navercorp.fixturemonkey.tests.java.ImmutableGenericTypeSpecs.GenericArrayObject;
 import com.navercorp.fixturemonkey.tests.java.ImmutableGenericTypeSpecs.GenericImplementationObject;
 import com.navercorp.fixturemonkey.tests.java.ImmutableGenericTypeSpecs.GenericObject;
@@ -1253,12 +1256,24 @@ class JavaTest {
 	}
 
 	@Test
-	void decomposeFunction() {
-		Function<Integer, String> actual = SUT.giveMeBuilder(new TypeReference<Function<Integer, String>>() {
+	void decomposeFunctionObject() {
+		Function<Integer, String> actual = SUT.giveMeBuilder(FunctionObject.class)
+			.thenApply((function, builder) -> {
 			})
-			.fixed()
-			.sample();
+			.sample()
+			.getValue();
 
 		then(actual.apply(1)).isNotNull();
+	}
+
+	@Test
+	void decomposeSupplierObject() {
+		Supplier<String> actual = SUT.giveMeBuilder(SupplierObject.class)
+			.thenApply((function, builder) -> {
+			})
+			.sample()
+			.getValue();
+
+		then(actual.get()).isNotNull();
 	}
 }

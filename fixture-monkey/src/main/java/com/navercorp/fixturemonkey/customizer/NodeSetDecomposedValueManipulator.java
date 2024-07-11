@@ -24,6 +24,7 @@ import static com.navercorp.fixturemonkey.api.type.Types.isAssignable;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
 
 import javax.annotation.Nullable;
 
@@ -98,6 +99,11 @@ public final class NodeSetDecomposedValueManipulator<T> implements NodeManipulat
 
 		boolean container = objectNode.getArbitraryProperty().isContainer();
 		if (container) {
+			if (Types.getActualType(objectNode.getResolvedProperty().getType()) == Function.class) {
+				objectNode.setArbitrary(CombinableArbitrary.from(value));
+				return;
+			}
+
 			DecomposableJavaContainer decomposableJavaContainer = decomposedContainerValueFactory.from(value);
 			Object containerValue = decomposableJavaContainer.getJavaContainer();
 			int decomposedContainerSize = decomposableJavaContainer.getSize();

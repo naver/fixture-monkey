@@ -19,6 +19,7 @@
 package com.navercorp.fixturemonkey.api.container;
 
 import java.lang.reflect.Array;
+import java.lang.reflect.Proxy;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.Iterator;
 import java.util.List;
@@ -82,7 +83,16 @@ public final class DefaultDecomposedContainerValueFactory implements DecomposedC
 				1
 			);
 		} else if (Supplier.class.isAssignableFrom(actualType)) {
-			return new DecomposableJavaContainer(container, 1);
+			return new DecomposableJavaContainer(((Supplier<?>)container).get(), 1);
+		} else if (container instanceof Proxy) {
+			try {
+				return new DecomposableJavaContainer(
+					Proxy.getInvocationHandler(container).invoke(container, null, null),
+					1
+				);
+			} catch (Throwable e) {
+				// ignored
+			}
 		}
 
 		return additionalDecomposedContainerValueFactory.from(container);

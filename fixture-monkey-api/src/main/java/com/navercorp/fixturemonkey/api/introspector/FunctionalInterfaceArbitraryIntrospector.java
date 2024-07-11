@@ -53,7 +53,7 @@ public final class FunctionalInterfaceArbitraryIntrospector implements Arbitrary
 			type.getClassLoader(),
 			new Class[] {type},
 			(proxy, method, args) -> {
-				if ("equals".equals(method.getName())) {
+				if (method != null && "equals".equals(method.getName())) {
 					return Objects.equals(args[0], value);
 				}
 
