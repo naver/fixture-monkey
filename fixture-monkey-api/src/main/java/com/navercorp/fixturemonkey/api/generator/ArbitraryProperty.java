@@ -18,20 +18,13 @@
 
 package com.navercorp.fixturemonkey.api.generator;
 
-import static java.util.stream.Collectors.toMap;
-
-import java.util.AbstractMap.SimpleEntry;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.property.ConcreteTypeDefinition;
-import com.navercorp.fixturemonkey.api.property.Property;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class ArbitraryProperty {
@@ -39,15 +32,6 @@ public final class ArbitraryProperty {
 	private final boolean container;
 	private final double nullInject;
 	private final List<ConcreteTypeDefinition> concreteTypeDefinitions;
-
-	@Deprecated
-	public ArbitraryProperty(ObjectProperty objectProperty, boolean container) {
-		this.objectProperty = objectProperty;
-		this.container = container;
-		this.nullInject = objectProperty.getNullInject();
-		this.concreteTypeDefinitions =
-			toConcreteTypeDefinition(objectProperty.getChildPropertyListsByCandidateProperty());
-	}
 
 	public ArbitraryProperty(
 		ObjectProperty objectProperty,
@@ -86,27 +70,6 @@ public final class ArbitraryProperty {
 		return concreteTypeDefinitions;
 	}
 
-	/**
-	 * It is deprecated. Use {@link #getConcreteTypeDefinitions()} instead.
-	 */
-	@Deprecated
-	public Map<Property, List<Property>> getChildPropertyListsByCandidateProperty() {
-		return concreteTypeDefinitions.stream()
-			.collect(toMap(ConcreteTypeDefinition::getConcreteProperty, ConcreteTypeDefinition::getChildPropertyLists));
-	}
-
-	/**
-	 * It is deprecated. Use {@link #getConcreteTypeDefinitions()} instead.
-	 */
-	@Deprecated
-	public Map.Entry<Property, List<Property>> getChildPropertiesByResolvedProperty(Matcher matcher) {
-		return concreteTypeDefinitions.stream()
-			.filter(it -> matcher.match(it.getConcreteProperty()))
-			.findFirst()
-			.map(it -> new SimpleEntry<>(it.getConcreteProperty(), it.getChildPropertyLists()))
-			.orElseThrow(() -> new IllegalArgumentException("No resolved property is found."));
-	}
-
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
@@ -122,13 +85,5 @@ public final class ArbitraryProperty {
 	@Override
 	public int hashCode() {
 		return Objects.hash(objectProperty, container);
-	}
-
-	private static List<ConcreteTypeDefinition> toConcreteTypeDefinition(
-		Map<Property, List<Property>> childPropertyListsByCandidateProperty
-	) {
-		return childPropertyListsByCandidateProperty.entrySet().stream()
-			.map(entry -> new ConcreteTypeDefinition(entry.getKey(), entry.getValue()))
-			.collect(Collectors.toList());
 	}
 }
