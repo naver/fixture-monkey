@@ -66,7 +66,6 @@ import com.navercorp.fixturemonkey.api.generator.NullInjectGenerator;
 import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.OptionalContainerPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.SetContainerPropertyGenerator;
-import com.navercorp.fixturemonkey.api.generator.SingleValueObjectPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.StreamContainerPropertyGenerator;
 import com.navercorp.fixturemonkey.api.instantiator.InstantiatorProcessor;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
@@ -94,8 +93,6 @@ import com.navercorp.fixturemonkey.api.validator.ArbitraryValidator;
 @API(since = "0.6.0", status = Status.MAINTAINED)
 public final class FixtureMonkeyOptions {
 	private static final List<String> DEFAULT_JAVA_PACKAGES;
-	public static final List<MatcherOperator<ObjectPropertyGenerator>> DEFAULT_OBJECT_PROPERTY_GENERATORS =
-		getDefaultObjectPropertyGenerators();
 	public static final List<MatcherOperator<ContainerPropertyGenerator>> DEFAULT_CONTAINER_PROPERTY_GENERATORS =
 		getDefaultContainerPropertyGenerators();
 	public static final List<MatcherOperator<ArbitraryIntrospector>> DEFAULT_ARBITRARY_INTROSPECTORS =
@@ -372,23 +369,6 @@ public final class FixtureMonkeyOptions {
 			.candidateConcretePropertyResolvers(candidateConcretePropertyResolvers);
 	}
 
-	private static List<MatcherOperator<ObjectPropertyGenerator>> getDefaultObjectPropertyGenerators(
-	) {
-		return Arrays.asList(
-			new MatcherOperator<>(ConstantIntrospector.INSTANCE, SingleValueObjectPropertyGenerator.INSTANCE),
-			new MatcherOperator<>(
-				property -> {
-					Class<?> actualType = Types.getActualType(property.getType());
-					return actualType.isPrimitive()
-						|| DEFAULT_JAVA_PACKAGES.stream()
-						.anyMatch(actualType.getPackage().getName()::startsWith);
-				},
-				SingleValueObjectPropertyGenerator.INSTANCE
-			),
-			new MatcherOperator<>(Matchers.ENUM_TYPE_MATCHER, SingleValueObjectPropertyGenerator.INSTANCE)
-		);
-	}
-
 	private static List<MatcherOperator<ContainerPropertyGenerator>> getDefaultContainerPropertyGenerators() {
 		return Arrays.asList(
 			new MatcherOperator<>(
@@ -461,11 +441,31 @@ public final class FixtureMonkeyOptions {
 	}
 
 	private static List<MatcherOperator<PropertyGenerator>> getDefaultPropertyGenerators() {
-		return Collections.singletonList(
+		return Arrays.asList(
+			new MatcherOperator<>(ConstantIntrospector.INSTANCE, EmptyPropertyGenerator.INSTANCE),
+			new MatcherOperator<>(
+				property -> {
+					Class<?> actualType = Types.getActualType(property.getType());
+					return actualType.isPrimitive()
+						|| DEFAULT_JAVA_PACKAGES.stream()
+						.anyMatch(actualType.getPackage().getName()::startsWith);
+				},
+				EmptyPropertyGenerator.INSTANCE
+			),
+			new MatcherOperator<>(Matchers.ENUM_TYPE_MATCHER, EmptyPropertyGenerator.INSTANCE),
 			new MatcherOperator<>(
 				p -> Modifier.isInterface(Types.getActualType(p.getType()).getModifiers()),
 				new NoArgumentInterfaceJavaMethodPropertyGenerator()
 			)
 		);
+	}
+
+	private static class EmptyPropertyGenerator implements PropertyGenerator {
+		private static final PropertyGenerator INSTANCE = new EmptyPropertyGenerator();
+
+		@Override
+		public List<Property> generateChildProperties(Property property) {
+			return Collections.emptyList();
+		}
 	}
 }

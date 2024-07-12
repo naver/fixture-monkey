@@ -26,14 +26,14 @@ import java.util.List;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.api.generator.InterfaceObjectPropertyGenerator;
-import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGenerator;
 import com.navercorp.fixturemonkey.api.introspector.AnonymousArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.MatchArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.matcher.ExactTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptionsBuilder;
+import com.navercorp.fixturemonkey.api.property.CandidateConcretePropertyResolver;
+import com.navercorp.fixturemonkey.api.property.ConcreteTypeCandidateConcretePropertyResolver;
 import com.navercorp.fixturemonkey.api.type.Types;
 
 /**
@@ -41,7 +41,8 @@ import com.navercorp.fixturemonkey.api.type.Types;
  */
 @API(since = "1.0.6", status = Status.EXPERIMENTAL)
 public final class InterfacePlugin implements Plugin {
-	private final List<MatcherOperator<ObjectPropertyGenerator>> objectPropertyGenerators = new ArrayList<>();
+	private final List<MatcherOperator<CandidateConcretePropertyResolver>> candidateConcretePropertyResolvers =
+		new ArrayList<>();
 	private boolean useAnonymousArbitraryIntrospector = true;
 
 	/**
@@ -83,10 +84,10 @@ public final class InterfacePlugin implements Plugin {
 		Matcher matcher,
 		List<Class<? extends T>> implementations
 	) {
-		this.objectPropertyGenerators.add(
+		this.candidateConcretePropertyResolvers.add(
 			new MatcherOperator<>(
 				matcher.intersect(p -> Modifier.isInterface(Types.getActualType(p.getType()).getModifiers())),
-				new InterfaceObjectPropertyGenerator<>(implementations)
+				new ConcreteTypeCandidateConcretePropertyResolver<>(implementations)
 			)
 		);
 
@@ -132,26 +133,13 @@ public final class InterfacePlugin implements Plugin {
 		Matcher matcher,
 		List<Class<? extends T>> implementations
 	) {
-		this.objectPropertyGenerators.add(
+		this.candidateConcretePropertyResolvers.add(
 			new MatcherOperator<>(
 				matcher.intersect(p -> Modifier.isAbstract(Types.getActualType(p.getType()).getModifiers())),
-				new InterfaceObjectPropertyGenerator<>(implementations)
+				new ConcreteTypeCandidateConcretePropertyResolver<>(implementations)
 			)
 		);
 
-		return this;
-	}
-
-	/**
-	 * Registers an interface implementation with a specified matcher.
-	 * This method facilitates adding custom implementations for interfaces using a matcher.
-	 *
-	 * @param objectPropertyGenerator the object property generator to add
-	 * @return the InterfacePlugin instance for fluent chaining
-	 */
-	@Deprecated
-	public InterfacePlugin interfaceImplements(MatcherOperator<ObjectPropertyGenerator> objectPropertyGenerator) {
-		this.objectPropertyGenerators.add(objectPropertyGenerator);
 		return this;
 	}
 
@@ -171,8 +159,8 @@ public final class InterfacePlugin implements Plugin {
 
 	@Override
 	public void accept(FixtureMonkeyOptionsBuilder optionsBuilder) {
-		for (MatcherOperator<ObjectPropertyGenerator> objectPropertyGenerator : objectPropertyGenerators) {
-			optionsBuilder.insertFirstArbitraryObjectPropertyGenerator(objectPropertyGenerator);
+		for (MatcherOperator<CandidateConcretePropertyResolver> resolver : candidateConcretePropertyResolvers) {
+			optionsBuilder.insertFirstCandidateConcretePropertyResolvers(resolver);
 		}
 
 		if (useAnonymousArbitraryIntrospector) {

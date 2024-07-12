@@ -24,7 +24,6 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.property.Property;
-import com.navercorp.fixturemonkey.api.property.PropertyGenerator;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
 
@@ -36,32 +35,8 @@ public final class ObjectPropertyGeneratorContext {
 	@Nullable
 	private final ArbitraryProperty ownerProperty;
 	private final boolean container;
-	@Deprecated
-	private final PropertyGenerator propertyGenerator;
 	private final PropertyNameResolver propertyNameResolver;
-	@Deprecated
-	private final NullInjectGenerator nullInjectGenerator;
 
-	@Deprecated
-	public ObjectPropertyGeneratorContext(
-		Property property,
-		@Nullable Integer elementIndex,
-		@Nullable ArbitraryProperty ownerProperty,
-		boolean container,
-		PropertyGenerator propertyGenerator,
-		PropertyNameResolver propertyNameResolver,
-		NullInjectGenerator nullInjectGenerator
-	) {
-		this.property = property;
-		this.elementIndex = elementIndex;
-		this.ownerProperty = ownerProperty;
-		this.container = container;
-		this.propertyGenerator = propertyGenerator;
-		this.propertyNameResolver = propertyNameResolver;
-		this.nullInjectGenerator = nullInjectGenerator;
-	}
-
-	// Please use since 1.1.0
 	public ObjectPropertyGeneratorContext(
 		Property property,
 		@Nullable Integer elementIndex,
@@ -74,8 +49,6 @@ public final class ObjectPropertyGeneratorContext {
 		this.ownerProperty = ownerProperty;
 		this.container = container;
 		this.propertyNameResolver = propertyNameResolver;
-		this.propertyGenerator = null;
-		this.nullInjectGenerator = null;
 	}
 
 	public Property getProperty() {
@@ -96,18 +69,8 @@ public final class ObjectPropertyGeneratorContext {
 		return this.container;
 	}
 
-	@Deprecated
-	public PropertyGenerator getPropertyGenerator() {
-		return propertyGenerator;
-	}
-
 	public PropertyNameResolver getPropertyNameResolver() {
 		return propertyNameResolver;
-	}
-
-	@Deprecated
-	public NullInjectGenerator getNullInjectGenerator() {
-		return nullInjectGenerator;
 	}
 
 	public boolean isRootContext() {
