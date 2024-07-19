@@ -70,6 +70,10 @@ final class ContainerCombinableArbitrary<T> implements CombinableArbitrary<T> {
 
 	@Override
 	public boolean fixed() {
+		if (combinableArbitraryList.isEmpty()) {
+			return false;
+		}
+
 		return combinableArbitraryList.stream()
 			.allMatch(CombinableArbitrary::fixed);
 	}
