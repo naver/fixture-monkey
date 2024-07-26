@@ -18,6 +18,7 @@
 
 package com.navercorp.fixturemonkey.tree;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -323,6 +324,21 @@ public final class ArbitraryTraverser {
 				List<Property> resolvedCandidateProperties = new ArrayList<>();
 				List<Property> candidateProperties = candidateConcretePropertyResolver.resolve(p);
 				for (Property candidateProperty : candidateProperties) {
+					// compares by type until a specific property implementation is created for the generic type.
+					Type candidateType = candidateProperty.getType();
+
+					boolean assignableType = Types.isAssignable(
+						Types.getActualType(candidateType),
+						Types.getActualType(p.getType())
+					);
+					// if (p.getType().equals(candidateType) || !assignableType) {
+					if (p.getType().equals(candidateType) ) {
+						// prevents infinite recursion
+						resolvedCandidateProperties.addAll(
+							DefaultCandidateConcretePropertyResolver.INSTANCE.resolve(p)
+						);
+						continue;
+					}
 					resolvedCandidateProperties.addAll(resolveCandidateProperties(candidateProperty));
 				}
 				return resolvedCandidateProperties;

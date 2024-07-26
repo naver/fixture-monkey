@@ -287,22 +287,7 @@ public abstract class Types {
 		}
 
 		ParameterizedType type = (ParameterizedType)fieldParameterizedType.getType();
-		Type resolveType = new ParameterizedType() {
-			@Override
-			public Type[] getActualTypeArguments() {
-				return resolvedTypes;
-			}
-
-			@Override
-			public Type getRawType() {
-				return type.getRawType();
-			}
-
-			@Override
-			public Type getOwnerType() {
-				return type.getOwnerType();
-			}
-		};
+		Type resolveType = new GenericType(type.getRawType(), resolvedTypes, type.getOwnerType());
 
 		return AnnotatedTypes.newAnnotatedParameterizedType(
 			resolvedGenericsTypes,
@@ -326,22 +311,11 @@ public abstract class Types {
 			types[i] = ownerGenericsTypes[i].getType();
 		}
 
-		ParameterizedType genericComponentTypeWithGeneric = new ParameterizedType() {
-			@Override
-			public Type[] getActualTypeArguments() {
-				return types;
-			}
-
-			@Override
-			public Type getRawType() {
-				return genericComponentType.getRawType();
-			}
-
-			@Override
-			public Type getOwnerType() {
-				return genericComponentType.getOwnerType();
-			}
-		};
+		ParameterizedType genericComponentTypeWithGeneric = new GenericType(
+			genericComponentType.getRawType(),
+			types,
+			genericComponentType.getOwnerType()
+		);
 
 		Type resolveType = (GenericArrayType)() -> genericComponentTypeWithGeneric;
 
@@ -432,6 +406,9 @@ public abstract class Types {
 		return wrapperPrimitiveMap.get(cls);
 	}
 
+	/**
+	 * It is same as {@code toClass.isAssignableFrom(cls)}.
+	 */
 	public static boolean isAssignable(Class<?> cls, Class<?> toClass) {
 		return isAssignable(cls, toClass, true);
 	}

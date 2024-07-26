@@ -20,7 +20,6 @@ package com.navercorp.fixturemonkey.api.property;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedType;
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.List;
@@ -32,6 +31,7 @@ import javax.annotation.Nullable;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import com.navercorp.fixturemonkey.api.type.GenericType;
 import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "1.0.16", status = Status.EXPERIMENTAL)
@@ -53,23 +53,7 @@ public final class ConcreteTypeCandidateConcretePropertyResolver<T> implements C
 
 			return concreteTypes.stream()
 				.map(it -> {
-					Type concreteGenericType = new ParameterizedType() {
-
-						@Override
-						public Type[] getActualTypeArguments() {
-							return typeArguments;
-						}
-
-						@Override
-						public Type getRawType() {
-							return it;
-						}
-
-						@Override
-						public Type getOwnerType() {
-							return null;
-						}
-					};
+					Type concreteGenericType = new GenericType(it, typeArguments, null);
 
 					AnnotatedType genericAnnotatedType = new AnnotatedType() {
 						@Override
@@ -124,24 +108,6 @@ public final class ConcreteTypeCandidateConcretePropertyResolver<T> implements C
 						@Override
 						public Object getValue(Object instance) {
 							return property.getValue(instance);
-						}
-
-						@Override
-						public int hashCode() {
-							return getType().hashCode();
-						}
-
-						@Override
-						public boolean equals(Object obj) {
-							if (this == obj) {
-								return true;
-							}
-							if (obj == null || getClass() == obj.getClass()) {
-								return false;
-							}
-
-							Property that = (Property)obj;
-							return getType().equals(that.getType());
 						}
 					};
 				})
