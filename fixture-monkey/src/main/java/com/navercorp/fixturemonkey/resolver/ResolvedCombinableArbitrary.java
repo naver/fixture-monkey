@@ -75,10 +75,10 @@ final class ResolvedCombinableArbitrary<T> implements CombinableArbitrary<T> {
 				return arbitrary.getValue()
 					.filter(VALIDATION_ANNOTATION_FILTERING_COUNT, this.validateFilter(validOnly))
 					.combined();
-			} catch (ContainerSizeFilterMissException ex) {
+			} catch (ContainerSizeFilterMissException | RetryableFilterMissException ex) {
 				lastException = ex;
 				objectTree.clear();
-			} catch (FixedValueFilterMissException | RetryableFilterMissException ex) {
+			} catch (FixedValueFilterMissException ex) {
 				lastException = ex;
 			} finally {
 				arbitrary.clear();
@@ -102,10 +102,10 @@ final class ResolvedCombinableArbitrary<T> implements CombinableArbitrary<T> {
 				return arbitrary.getValue()
 					.filter(VALIDATION_ANNOTATION_FILTERING_COUNT, this.validateFilter(validOnly))
 					.rawValue();
-			} catch (ContainerSizeFilterMissException ex) {
+			} catch (ContainerSizeFilterMissException | RetryableFilterMissException ex) {
 				lastException = ex;
 				objectTree.clear();
-			} catch (FixedValueFilterMissException | RetryableFilterMissException ex) {
+			} catch (FixedValueFilterMissException ex) {
 				lastException = ex;
 			} finally {
 				arbitrary.clear();

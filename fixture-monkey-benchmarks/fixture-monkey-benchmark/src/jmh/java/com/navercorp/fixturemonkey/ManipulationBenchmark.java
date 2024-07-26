@@ -15,6 +15,9 @@ import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.infra.Blackhole;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import com.navercorp.fixturemonkey.api.type.TypeCache;
 import com.navercorp.fixturemonkey.javax.validation.plugin.JavaxValidationPlugin;
 
@@ -35,7 +38,7 @@ public class ManipulationBenchmark {
 
 	@Benchmark
 	public void thenApply(Blackhole blackhole) throws Exception {
-		blackhole.consume(generateOrderSheet(fixture -> fixture.giveMeBuilder(OrderSheet.class)
+		blackhole.consume(generateObject(fixture -> fixture.giveMeBuilder(OrderSheet.class)
 			.thenApply(((orderSheet, orderSheetArbitraryBuilder) -> {
 			}))
 			.sample()));
@@ -43,16 +46,42 @@ public class ManipulationBenchmark {
 
 	@Benchmark
 	public void fixed(Blackhole blackhole) throws Exception {
-		blackhole.consume(generateOrderSheet(fixture -> fixture.giveMeBuilder(OrderSheet.class).fixed().sample()));
+		blackhole.consume(generateObject(fixture -> fixture.giveMeBuilder(OrderSheet.class).fixed().sample()));
 	}
 
-	private List<OrderSheet> generateOrderSheet(
-		Function<FixtureMonkey, OrderSheet> manipulation
+	@Benchmark
+	public void setValuePostCondition(Blackhole blackhole) throws Exception {
+		blackhole.consume(generateObject(fixture -> fixture.giveMeBuilder(SetValuePostConditionObject.class)
+			.setPostCondition(object -> object.getValue() > 0)
+			.sample()));
+	}
+
+	@Benchmark
+	public void setNodePostCondition(Blackhole blackhole) throws Exception {
+		blackhole.consume(generateObject(fixture -> fixture.giveMeBuilder(SetNodePostConditionObject.class)
+			.setPostCondition(object -> object.getValue().size() == 2)
+			.sample()));
+	}
+
+	private <T> List<T> generateObject(
+		Function<FixtureMonkey, T> manipulation
 	) {
-		List<OrderSheet> result = new ArrayList<>();
+		List<T> result = new ArrayList<>();
 		for (int i = 0; i < COUNT; i++) {
 			result.add(manipulation.apply(SUT));
 		}
 		return result;
+	}
+
+	@Setter
+	@Getter
+	public static class SetValuePostConditionObject {
+		private int value;
+	}
+
+	@Setter
+	@Getter
+	public static class SetNodePostConditionObject {
+		private List<Integer> value;
 	}
 }
