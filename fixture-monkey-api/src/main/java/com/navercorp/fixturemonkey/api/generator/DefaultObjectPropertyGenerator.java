@@ -18,14 +18,10 @@
 
 package com.navercorp.fixturemonkey.api.generator;
 
-import java.util.Collections;
-import java.util.List;
-
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.property.Property;
-import com.navercorp.fixturemonkey.api.property.PropertyGenerator;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class DefaultObjectPropertyGenerator implements ObjectPropertyGenerator {
@@ -35,16 +31,11 @@ public final class DefaultObjectPropertyGenerator implements ObjectPropertyGener
 	@Override
 	public ObjectProperty generate(ObjectPropertyGeneratorContext context) {
 		Property property = context.getProperty();
-		PropertyGenerator propertyGenerator = context.getPropertyGenerator();
-		List<Property> childProperties = propertyGenerator.generateChildProperties(property);
-		double nullInject = context.getNullInjectGenerator().generate(context);
 
 		return new ObjectProperty(
 			property,
 			context.getPropertyNameResolver(),
-			nullInject,
-			context.getElementIndex(),
-			Collections.singletonMap(property, childProperties)
+			context.getElementIndex()
 		);
 	}
 }

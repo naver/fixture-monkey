@@ -18,6 +18,7 @@
 
 package com.navercorp.fixturemonkey.api.generator;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -40,7 +41,7 @@ public final class ObjectProperty {
 	private final PropertyNameResolver propertyNameResolver;
 
 	@Deprecated
-	private final double nullInject;
+	private final Double nullInject;
 
 	@Nullable
 	private final Integer elementIndex;
@@ -48,6 +49,10 @@ public final class ObjectProperty {
 	@Deprecated
 	private final Map<Property, List<Property>> childPropertyListsByCandidateProperty;
 
+	/**
+	 * Use {@link ObjectProperty(Property, PropertyNameResolver, Integer)} instead.
+	 */
+	@Deprecated
 	public ObjectProperty(
 		Property property,
 		PropertyNameResolver propertyNameResolver,
@@ -60,6 +65,18 @@ public final class ObjectProperty {
 		this.nullInject = nullInject;
 		this.elementIndex = elementIndex;
 		this.childPropertyListsByCandidateProperty = childPropertyListsByCandidateProperty;
+	}
+
+	public ObjectProperty(
+		Property property,
+		PropertyNameResolver propertyNameResolver,
+		@Nullable Integer elementIndex
+	) {
+		this.property = property;
+		this.propertyNameResolver = propertyNameResolver;
+		this.elementIndex = elementIndex;
+		this.nullInject = null;
+		this.childPropertyListsByCandidateProperty = Collections.emptyMap();
 	}
 
 	public Property getProperty() {
@@ -75,7 +92,8 @@ public final class ObjectProperty {
 	}
 
 	@Deprecated
-	public double getNullInject() {
+	@Nullable
+	public Double getNullInject() {
 		return this.nullInject;
 	}
 

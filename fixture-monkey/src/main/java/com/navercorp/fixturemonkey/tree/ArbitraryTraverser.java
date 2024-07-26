@@ -19,11 +19,11 @@
 package com.navercorp.fixturemonkey.tree;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
 
@@ -44,6 +44,7 @@ import com.navercorp.fixturemonkey.api.generator.SingleValueObjectPropertyGenera
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
 import com.navercorp.fixturemonkey.api.property.CandidateConcretePropertyResolver;
+import com.navercorp.fixturemonkey.api.property.ConcreteTypeDefinition;
 import com.navercorp.fixturemonkey.api.property.DefaultCandidateConcretePropertyResolver;
 import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
@@ -118,7 +119,7 @@ public final class ArbitraryTraverser {
 
 		ObjectProperty objectProperty = objectPropertyGenerator.generate(objectPropertyGeneratorContext);
 
-		Map<Property, List<Property>> childPropertyListsByCandidateProperty;
+		List<ConcreteTypeDefinition> concreteTypeDefinitions;
 		ContainerInfoManipulator appliedContainerInfoManipulator = null;
 		if (container) {
 			List<ObjectProperty> objectProperties =
@@ -144,32 +145,58 @@ public final class ArbitraryTraverser {
 			);
 
 			List<Property> candidateProperties = resolveCandidateProperties(property);
-			childPropertyListsByCandidateProperty = candidateProperties.stream()
-				.collect(
-					Collectors.toMap(
-						Function.identity(),
-						it -> childContainerProperty.getElementProperties()
-					)
-				);
+			concreteTypeDefinitions = candidateProperties.stream()
+				.map(it -> new ConcreteTypeDefinition(it, childContainerProperty.getElementProperties()))
+				.collect(Collectors.toList());
 		} else {
-			childPropertyListsByCandidateProperty = objectProperty.getChildPropertyListsByCandidateProperty();
+			List<ConcreteTypeDefinition> objectPropertyCandidateTypeDefinitions =
+				objectProperty.getChildPropertyListsByCandidateProperty().entrySet().stream()
+					.map(it -> new ConcreteTypeDefinition(it.getKey(), it.getValue()))
+					.collect(Collectors.toList());
+
+			CandidateConcretePropertyResolver candidateConcretePropertyResolver =
+				fixtureMonkeyOptions.getCandidateConcretePropertyResolver(property);
+
+			// TODO: It is there for compatibility. It will be removed in 1.1.0.
+			if (candidateConcretePropertyResolver == null && objectPropertyCandidateTypeDefinitions.isEmpty()) {
+				candidateConcretePropertyResolver = DefaultCandidateConcretePropertyResolver.INSTANCE;
+			}
+
+			List<ConcreteTypeDefinition> optionCandidateTypeDefinitions = Collections.emptyList();
+			if (candidateConcretePropertyResolver != null) {
+				List<Property> candidateProperties = candidateConcretePropertyResolver.resolve(property);
+				optionCandidateTypeDefinitions = candidateProperties.stream()
+					.map(it ->
+						new ConcreteTypeDefinition(
+							it,
+							getPropertyGenerator(context.getPropertyConfigurers()).generateChildProperties(it)
+						)
+					)
+					.collect(Collectors.toList());
+			}
+
+			concreteTypeDefinitions =
+				Stream.concat(objectPropertyCandidateTypeDefinitions.stream(), optionCandidateTypeDefinitions.stream())
+					.collect(Collectors.toList());
 		}
+
+		double nullInject = objectProperty.getNullInject() != null
+			? objectProperty.getNullInject()
+			: fixtureMonkeyOptions.getNullInjectGenerator(property).generate(objectPropertyGeneratorContext);
 
 		ArbitraryProperty arbitraryProperty = new ArbitraryProperty(
 			objectProperty,
 			container,
-			objectProperty.getNullInject(),
-			childPropertyListsByCandidateProperty
+			nullInject,
+			concreteTypeDefinitions
 		);
+
 		TraverseContext nextTraverseContext = context.appendArbitraryProperty(arbitraryProperty);
 
 		List<ObjectNode> children = new ArrayList<>();
-		for (
-			Entry<Property, List<Property>> childPropertiesByCandidateProperty :
-			childPropertyListsByCandidateProperty.entrySet()
-		) {
-			List<Property> childProperties = childPropertiesByCandidateProperty.getValue();
-			Property candidateProperty = childPropertiesByCandidateProperty.getKey();
+		for (ConcreteTypeDefinition concreteTypeDefinition : concreteTypeDefinitions) {
+			List<Property> childProperties = concreteTypeDefinition.getChildPropertyLists();
+			Property candidateProperty = concreteTypeDefinition.getConcreteProperty();
 
 			children.addAll(
 				generateChildrenNodes(
@@ -180,8 +207,9 @@ public final class ArbitraryTraverser {
 			);
 		}
 
-		Property resolvedProperty = new ArrayList<>(childPropertyListsByCandidateProperty.keySet())
-			.get(Randoms.nextInt(childPropertyListsByCandidateProperty.size()));
+		Property resolvedProperty = concreteTypeDefinitions
+			.get(Randoms.nextInt(concreteTypeDefinitions.size()))
+			.getConcreteProperty();
 
 		ObjectNode objectNode = new ObjectNode(
 			resolvedParentProperty,
