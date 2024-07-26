@@ -160,11 +160,13 @@ public final class ObjectNode {
 		return arbitraryFilters;
 	}
 
-	public void addArbitraryCustomizer(Function<CombinableArbitrary<?>, CombinableArbitrary<?>> arbitraryCustomizer) {
+	public void addGeneratedArbitraryCustomizer(
+		Function<CombinableArbitrary<?>, CombinableArbitrary<?>> arbitraryCustomizer
+	) {
 		this.arbitraryCustomizers.add(arbitraryCustomizer);
 	}
 
-	public List<Function<CombinableArbitrary<?>, CombinableArbitrary<?>>> getArbitraryCustomizers() {
+	public List<Function<CombinableArbitrary<?>, CombinableArbitrary<?>>> getGeneratedArbitraryCustomizers() {
 		return arbitraryCustomizers;
 	}
 
