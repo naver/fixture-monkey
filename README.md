@@ -151,6 +151,7 @@ fun sampleOrder() {
 
 ## Documentation
 * [English](https://naver.github.io/fixture-monkey)
+* [Korean](https://naver.github.io/fixture-monkey/v1-0-0-kor/)
 
 ## [Third-party Modules](https://naver.github.io/fixture-monkey/docs/plugins/)
 
@@ -183,8 +184,10 @@ Thanks to all [contributors](https://github.com/naver/fixture-monkey/graphs/cont
 * [Simplify Unit Testing with Fixture Monkey](https://medium.com/naver-platform-labs/simplify-unit-testing-with-fixture-monkey-a-concise-pragmatic-and-interoperable-fixture-library-3bf0206258d4)
 * [Getting Started Easy Test Fixture Customization with Fixture Monkey](https://medium.com/naver-platform-labs/easy-test-fixture-customization-with-fixture-monkey-4114c6b4b1ef)
 * [[Fixture Monkey] 픽스쳐 몽키로 테스트 코드 작성하기 (Java Spring)](https://sunshower99.tistory.com/33)
+* [TestFixture를 쉽게 생성해 주는 라이브러리가 있다?](https://oliveyoung.tech/blog/2024-04-01/testcode-use-fixture-monkey/)
 
 Welcome to write articles about Fixture Monkey!
+Please let us know if you'd like to share your post.
 
 ## License
 
