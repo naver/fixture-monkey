@@ -53,12 +53,12 @@ public final class ArbitraryProperty {
 		ObjectProperty objectProperty,
 		boolean container,
 		double nullInject,
-		Map<Property, List<Property>> childPropertyListsByCandidateProperty
+		List<ConcreteTypeDefinition> concreteTypeDefinitions
 	) {
 		this.objectProperty = objectProperty;
 		this.container = container;
 		this.nullInject = nullInject;
-		this.concreteTypeDefinitions = toConcreteTypeDefinition(childPropertyListsByCandidateProperty);
+		this.concreteTypeDefinitions = concreteTypeDefinitions;
 	}
 
 	public ObjectProperty getObjectProperty() {
@@ -70,7 +70,12 @@ public final class ArbitraryProperty {
 	}
 
 	public ArbitraryProperty withNullInject(double nullInject) {
-		return new ArbitraryProperty(this.objectProperty.withNullInject(nullInject), this.container);
+		return new ArbitraryProperty(
+			this.objectProperty,
+			this.container,
+			nullInject,
+			this.concreteTypeDefinitions
+		);
 	}
 
 	public double getNullInject() {

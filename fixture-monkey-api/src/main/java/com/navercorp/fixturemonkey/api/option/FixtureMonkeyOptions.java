@@ -474,11 +474,31 @@ public final class FixtureMonkeyOptions {
 	}
 
 	private static List<MatcherOperator<PropertyGenerator>> getDefaultPropertyGenerators() {
-		return Collections.singletonList(
+		return Arrays.asList(
+			new MatcherOperator<>(ConstantIntrospector.INSTANCE, EmptyPropertyGenerator.INSTANCE),
+			new MatcherOperator<>(
+				property -> {
+					Class<?> actualType = Types.getActualType(property.getType());
+					return actualType.isPrimitive()
+						|| DEFAULT_JAVA_PACKAGES.stream()
+						.anyMatch(actualType.getPackage().getName()::startsWith);
+				},
+				EmptyPropertyGenerator.INSTANCE
+			),
+			new MatcherOperator<>(Matchers.ENUM_TYPE_MATCHER, EmptyPropertyGenerator.INSTANCE),
 			new MatcherOperator<>(
 				p -> Modifier.isInterface(Types.getActualType(p.getType()).getModifiers()),
 				new NoArgumentInterfaceJavaMethodPropertyGenerator()
 			)
 		);
+	}
+
+	private static class EmptyPropertyGenerator implements PropertyGenerator {
+		private static final PropertyGenerator INSTANCE = new EmptyPropertyGenerator();
+
+		@Override
+		public List<Property> generateChildProperties(Property property) {
+			return Collections.emptyList();
+		}
 	}
 }
