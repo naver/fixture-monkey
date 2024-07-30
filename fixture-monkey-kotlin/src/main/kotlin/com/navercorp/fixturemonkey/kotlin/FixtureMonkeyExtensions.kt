@@ -20,6 +20,8 @@ package com.navercorp.fixturemonkey.kotlin
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder
 import com.navercorp.fixturemonkey.FixtureMonkey
+import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary
+import com.navercorp.fixturemonkey.api.experimental.TypedPropertySelector
 import com.navercorp.fixturemonkey.api.instantiator.Instantiator
 import com.navercorp.fixturemonkey.api.property.PropertySelector
 import com.navercorp.fixturemonkey.api.type.TypeReference
@@ -228,6 +230,11 @@ class KotlinTypeDefaultArbitraryBuilder<T>(
         instantiator: Instantiator?,
     ): KotlinTypeDefaultArbitraryBuilder<T> =
         this.apply { delegate.instantiate(type, instantiator) }
+
+    override fun <U : Any?> customizeProperty(
+        propertySelector: TypedPropertySelector<U>,
+        combinableArbitraryCustomizer: Function<CombinableArbitrary<out U>, CombinableArbitrary<out U>>
+    ): ArbitraryBuilder<T> = this.apply { delegate.customizeProperty(propertySelector, combinableArbitraryCustomizer) }
 
     override fun build(): Arbitrary<T> = delegate.build()
 
