@@ -211,7 +211,13 @@ public final class ObjectNode implements ObjectTreeNode {
 		this.arbitraryFilters.add(filter);
 	}
 
-	public List<Function<CombinableArbitrary<?>, CombinableArbitrary<?>>> getArbitraryCustomizers() {
+	public void addGeneratedArbitraryCustomizer(
+		Function<CombinableArbitrary<?>, CombinableArbitrary<?>> arbitraryCustomizer
+	) {
+		this.arbitraryCustomizers.add(arbitraryCustomizer);
+	}
+
+	public List<Function<CombinableArbitrary<?>, CombinableArbitrary<?>>> getGeneratedArbitraryCustomizers() {
 		return arbitraryCustomizers;
 	}
 
