@@ -18,20 +18,11 @@
 
 package com.navercorp.fixturemonkey.experimental;
 
-import java.util.function.Function;
-
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
-import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
-import com.navercorp.fixturemonkey.api.experimental.TypedPropertySelector;
 
 @API(since = "0.6.12", status = Status.MAINTAINED)
 public interface ExperimentalArbitraryBuilder<T> extends ArbitraryBuilder<T> {
-	@API(since = "1.0.9", status = Status.EXPERIMENTAL)
-	<U> ExperimentalArbitraryBuilder<T> customizeProperty(
-		TypedPropertySelector<U> propertySelector,
-		Function<CombinableArbitrary<? extends U>, CombinableArbitrary<? extends U>> combinableArbitraryCustomizer
-	);
 }
