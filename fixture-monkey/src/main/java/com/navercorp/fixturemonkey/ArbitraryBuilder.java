@@ -36,6 +36,8 @@ import net.jqwik.api.Arbitrary;
 import net.jqwik.api.Combinators.F3;
 import net.jqwik.api.Combinators.F4;
 
+import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
+import com.navercorp.fixturemonkey.api.experimental.TypedPropertySelector;
 import com.navercorp.fixturemonkey.api.instantiator.Instantiator;
 import com.navercorp.fixturemonkey.api.property.PropertySelector;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
@@ -554,4 +556,10 @@ public interface ArbitraryBuilder<T> {
 	ArbitraryBuilder<T> instantiate(Class<?> type, Instantiator instantiator);
 
 	ArbitraryBuilder<T> instantiate(TypeReference<?> type, Instantiator instantiator);
+
+	@API(since = "1.0.9", status = Status.MAINTAINED)
+	<U> ArbitraryBuilder<T> customizeProperty(
+		TypedPropertySelector<U> propertySelector,
+		Function<CombinableArbitrary<? extends U>, CombinableArbitrary<? extends U>> combinableArbitraryCustomizer
+	);
 }

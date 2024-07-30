@@ -39,6 +39,12 @@ public final class NodeCustomizerManipulator<T> implements NodeManipulator {
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	@Override
 	public void manipulate(ObjectNode objectNode) {
-		objectNode.addArbitraryCustomizer((Function)arbitraryCustomizer);
+		if (objectNode.getArbitrary() != null) {
+			CombinableArbitrary<? extends T> customized = arbitraryCustomizer.apply(
+				(CombinableArbitrary<? extends T>)objectNode.getArbitrary());
+			objectNode.setArbitrary(customized);
+		} else {
+			objectNode.addGeneratedArbitraryCustomizer((Function)arbitraryCustomizer);
+		}
 	}
 }

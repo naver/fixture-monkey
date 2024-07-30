@@ -22,6 +22,7 @@ import com.navercorp.fixturemonkey.FixtureMonkey
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary
 import com.navercorp.fixturemonkey.api.experimental.JavaGetterMethodPropertySelector.javaGetter
 import com.navercorp.fixturemonkey.api.experimental.TypedExpressionGenerator.typedRoot
+import com.navercorp.fixturemonkey.api.experimental.TypedExpressionGenerator.typedString
 import com.navercorp.fixturemonkey.api.introspector.AnonymousArbitraryIntrospector
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult
 import com.navercorp.fixturemonkey.api.introspector.BeanArbitraryIntrospector
@@ -994,6 +995,46 @@ class KotlinTest {
             .string
 
         then(actual).hasSizeLessThan(5)
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun customizePropertyAfterSet() {
+        // given
+        class StringValue(val value: String)
+
+        val expected = "abc"
+
+        // when
+        val actual = SUT.giveMeKotlinBuilder<StringValue>()
+            .setExp(StringValue::value, "abcdef")
+            .customizeProperty(typedString<String>("value")) {
+                it.map { str -> str.substring(0..2) }
+            }
+            .sample()
+            .value
+
+        //then
+        then(actual).isEqualTo(expected)
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun customizePropertyIgnoredIfSet() {
+        // given
+        class StringValue(val value: String)
+
+        val expected = "fixed"
+
+        // when
+        val actual = SUT.giveMeKotlinBuilder<StringValue>()
+            .customizeProperty(typedString<String>("value")) {
+                it.filter { value -> value.length > 5 }
+            }
+            .setExp(StringValue::value, expected)
+            .sample()
+            .value
+
+        //then
+        then(actual).isEqualTo(expected)
     }
 
     companion object {
