@@ -515,6 +515,11 @@ public final class FixtureMonkeyBuilder {
 		return this;
 	}
 
+	/**
+	 * Use {@link InterfacePlugin#interfaceImplements(Class, List)}
+	 * or {@link InterfacePlugin#abstractClassExtends(Class, List)} instead.
+	 */
+	@Deprecated
 	public FixtureMonkeyBuilder pushExactTypePropertyCandidateResolver(
 		Class<?> type,
 		CandidateConcretePropertyResolver candidateConcretePropertyResolver

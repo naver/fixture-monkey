@@ -30,6 +30,7 @@ import com.navercorp.fixturemonkey.api.introspector.ConstructorPropertiesArbitra
 import com.navercorp.fixturemonkey.api.introspector.FactoryMethodArbitraryIntrospector
 import com.navercorp.fixturemonkey.api.introspector.FailoverIntrospector
 import com.navercorp.fixturemonkey.api.introspector.FieldReflectionArbitraryIntrospector
+import com.navercorp.fixturemonkey.api.matcher.AssignableTypeMatcher
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator
 import com.navercorp.fixturemonkey.api.plugin.InterfacePlugin
 import com.navercorp.fixturemonkey.api.property.ConcreteTypeCandidateConcretePropertyResolver
@@ -781,12 +782,12 @@ class KotlinTest {
     }
 
     @RepeatedTest(TEST_COUNT)
-    fun pushExactTypePropertyCandidateResolver() {
+    fun interfaceImplementsExtendsInterface() {
         val sut = FixtureMonkey.builder()
             .plugin(KotlinPlugin())
-            .pushExactTypePropertyCandidateResolver(
-                Collection::class.java,
-                ConcreteTypeCandidateConcretePropertyResolver(listOf(Set::class.java))
+            .plugin(
+                InterfacePlugin()
+                    .interfaceImplements(Collection::class.java, listOf(Set::class.java))
             )
             .build()
 
@@ -867,6 +868,25 @@ class KotlinTest {
             .sample()
 
         then(actual.lambda).isNotNull
+    }
+
+    @Test
+    fun interfaceImplementsAssignableTypeGeneratesConcreteTypeNotThrows() {
+        val sut = FixtureMonkey.builder()
+            .plugin(KotlinPlugin())
+            .plugin(
+                InterfacePlugin()
+                    .interfaceImplements(
+                        AssignableTypeMatcher(Collection::class.java),
+                        listOf(LinkedList::class.java)
+                    )
+
+            )
+            .build()
+
+        val actual: ArrayList<String> = sut.giveMeOne()
+
+        then(actual).isInstanceOf(ArrayList::class.java)
     }
 
     companion object {
