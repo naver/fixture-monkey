@@ -171,6 +171,14 @@ public final class ObjectTree {
 				);
 				generated = getArbitraryGenerator(arbitraryIntrospector)
 					.generate(childArbitraryGeneratorContext);
+
+				List<Function<CombinableArbitrary<?>, CombinableArbitrary<?>>> customizers =
+					node.getGeneratedArbitraryCustomizers();
+
+				for (Function<CombinableArbitrary<?>, CombinableArbitrary<?>> customizer : customizers) {
+					generated = customizer.apply(generated);
+				}
+
 				if (node.cacheable()) {
 					monkeyContext.putCachedArbitrary(
 						node.getOriginalProperty(),
@@ -178,13 +186,6 @@ public final class ObjectTree {
 					);
 				}
 			}
-		}
-
-		List<Function<CombinableArbitrary<?>, CombinableArbitrary<?>>> arbitraryCustomizers =
-			node.getArbitraryCustomizers();
-
-		for (Function<CombinableArbitrary<?>, CombinableArbitrary<?>> arbitraryCustomizer : arbitraryCustomizers) {
-			generated = arbitraryCustomizer.apply(generated);
 		}
 
 		List<Predicate> arbitraryFilters = node.getArbitraryFilters();
