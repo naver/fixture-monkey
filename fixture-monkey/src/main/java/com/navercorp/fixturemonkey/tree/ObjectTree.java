@@ -150,7 +150,7 @@ public final class ObjectTree {
 				ArbitraryIntrospector arbitraryIntrospector = arbitraryIntrospectorConfigurer.get(
 					Types.getActualType(node.getProperty().getType())
 				);
-				generated = getArbitraryGenerator(node.getResolvedProperty(), arbitraryIntrospector)
+				generated = getArbitraryGenerator(arbitraryIntrospector)
 					.generate(childArbitraryGeneratorContext);
 
 				List<Function<CombinableArbitrary<?>, CombinableArbitrary<?>>> customizers =
@@ -177,10 +177,7 @@ public final class ObjectTree {
 		return generated;
 	}
 
-	private ArbitraryGenerator getArbitraryGenerator(
-		Property property,
-		@Nullable ArbitraryIntrospector arbitraryIntrospector
-	) {
+	private ArbitraryGenerator getArbitraryGenerator(@Nullable ArbitraryIntrospector arbitraryIntrospector) {
 		ArbitraryGenerator arbitraryGenerator = this.fixtureMonkeyOptions.getDefaultArbitraryGenerator();
 
 		if (arbitraryIntrospector != null) {

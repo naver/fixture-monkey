@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.jackson.generator;
+package com.navercorp.fixturemonkey.jackson.property;
 
 import static com.navercorp.fixturemonkey.jackson.property.JacksonAnnotations.getJacksonAnnotation;
 import static com.navercorp.fixturemonkey.jackson.property.JacksonAnnotations.getRandomJsonSubType;
@@ -36,37 +36,28 @@ import org.apiguardian.api.API.Status;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
-import com.navercorp.fixturemonkey.api.generator.ObjectProperty;
-import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGenerator;
-import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGeneratorContext;
+import com.navercorp.fixturemonkey.api.property.CandidateConcretePropertyResolver;
+import com.navercorp.fixturemonkey.api.property.ElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
-import com.navercorp.fixturemonkey.api.property.PropertyGenerator;
-import com.navercorp.fixturemonkey.api.property.PropertyUtils;
 import com.navercorp.fixturemonkey.api.type.Types;
 
-@API(since = "0.4.2", status = Status.MAINTAINED)
-public final class PropertyJsonSubTypesObjectPropertyGenerator implements ObjectPropertyGenerator {
-	public static final PropertyJsonSubTypesObjectPropertyGenerator INSTANCE =
-		new PropertyJsonSubTypesObjectPropertyGenerator();
+@API(since = "1.1.0", status = Status.EXPERIMENTAL)
+public final class ElementJsonSubTypesConcreteTypeResolver implements CandidateConcretePropertyResolver {
+	public static final CandidateConcretePropertyResolver INSTANCE = new ElementJsonSubTypesConcreteTypeResolver();
 
 	@Override
-	public ObjectProperty generate(ObjectPropertyGeneratorContext context) {
-		Property property = context.getProperty();
-		double nullInject = context.getNullInjectGenerator()
-			.generate(context);
-		PropertyGenerator propertyGenerator = context.getPropertyGenerator();
+	public List<Property> resolve(Property property) {
+		Property containerProperty = ((ElementProperty)property).getContainerProperty();
 
-		JsonSubTypes jsonSubTypes = getJacksonAnnotation(property, JsonSubTypes.class);
+		JsonSubTypes jsonSubTypes = getJacksonAnnotation(containerProperty, JsonSubTypes.class);
 		if (jsonSubTypes == null) {
 			throw new IllegalArgumentException("@JsonSubTypes is not found " + property.getType().getTypeName());
 		}
 
 		Class<?> type = getRandomJsonSubType(jsonSubTypes);
 		AnnotatedType annotatedType = Types.generateAnnotatedTypeWithoutAnnotation(type);
-		List<Property> childProperties =
-			propertyGenerator.generateChildProperties(PropertyUtils.toProperty(annotatedType));
 
-		JsonTypeInfo jsonTypeInfo = getJacksonAnnotation(property, JsonTypeInfo.class);
+		JsonTypeInfo jsonTypeInfo = getJacksonAnnotation(containerProperty, JsonTypeInfo.class);
 		List<Annotation> annotations = new ArrayList<>(property.getAnnotations());
 		annotations.add(jsonTypeInfo);
 
@@ -98,12 +89,7 @@ public final class PropertyJsonSubTypesObjectPropertyGenerator implements Object
 				return property.getValue(instance);
 			}
 		};
-		return new ObjectProperty(
-			actualProperty,
-			context.getPropertyNameResolver(),
-			nullInject,
-			context.getElementIndex(),
-			Collections.singletonMap(actualProperty, childProperties)
-		);
+
+		return Collections.singletonList(actualProperty);
 	}
 }

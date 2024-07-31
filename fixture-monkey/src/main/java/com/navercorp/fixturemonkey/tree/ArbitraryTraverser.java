@@ -40,10 +40,10 @@ import com.navercorp.fixturemonkey.api.generator.ContainerPropertyGeneratorConte
 import com.navercorp.fixturemonkey.api.generator.ObjectProperty;
 import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGeneratorContext;
-import com.navercorp.fixturemonkey.api.generator.SingleValueObjectPropertyGenerator;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
 import com.navercorp.fixturemonkey.api.property.CandidateConcretePropertyResolver;
+import com.navercorp.fixturemonkey.api.property.ConcreteTypeDefinition;
 import com.navercorp.fixturemonkey.api.property.DefaultCandidateConcretePropertyResolver;
 import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
@@ -93,12 +93,8 @@ public final class ArbitraryTraverser {
 			this.fixtureMonkeyOptions.getContainerPropertyGenerator(property);
 		boolean container = containerPropertyGenerator != null;
 
-		ObjectPropertyGenerator objectPropertyGenerator;
-		if (container) {
-			objectPropertyGenerator = SingleValueObjectPropertyGenerator.INSTANCE;
-		} else {
-			objectPropertyGenerator = this.fixtureMonkeyOptions.getObjectPropertyGenerator(property);
-		}
+		ObjectPropertyGenerator objectPropertyGenerator =
+			this.fixtureMonkeyOptions.getObjectPropertyGenerator(property);
 
 		ArbitraryProperty parentArbitraryProperty = context.getLastArbitraryProperty();
 		Integer index = null;
@@ -111,9 +107,7 @@ public final class ArbitraryTraverser {
 			index,
 			parentArbitraryProperty,
 			container,
-			getPropertyGenerator(context.getPropertyConfigurers()),
-			fixtureMonkeyOptions.getPropertyNameResolver(property),
-			fixtureMonkeyOptions.getNullInjectGenerator(property)
+			fixtureMonkeyOptions.getPropertyNameResolver(property)
 		);
 
 		ObjectProperty objectProperty = objectPropertyGenerator.generate(objectPropertyGeneratorContext);
@@ -152,14 +146,24 @@ public final class ArbitraryTraverser {
 					)
 				);
 		} else {
-			childPropertyListsByCandidateProperty = objectProperty.getChildPropertyListsByCandidateProperty();
+			List<Property> candidateProperties = resolveCandidateProperties(property);
+			childPropertyListsByCandidateProperty = candidateProperties.stream()
+				.collect(
+					Collectors.toMap(
+						Function.identity(),
+						it -> getPropertyGenerator(context.getPropertyConfigurers()).generateChildProperties(it)
+					)
+				);
 		}
+
+		double nullInject = fixtureMonkeyOptions.getNullInjectGenerator(property)
+			.generate(objectPropertyGeneratorContext);
 
 		ArbitraryProperty arbitraryProperty = new ArbitraryProperty(
 			objectProperty,
 			container,
-			objectProperty.getNullInject(),
-			childPropertyListsByCandidateProperty
+			nullInject,
+			toConcreteTypeDefinition(childPropertyListsByCandidateProperty)
 		);
 		TraverseContext nextTraverseContext = context.appendArbitraryProperty(arbitraryProperty);
 
@@ -300,5 +304,13 @@ public final class ArbitraryTraverser {
 				return resolvedCandidateProperties;
 			}
 		);
+	}
+
+	private static List<ConcreteTypeDefinition> toConcreteTypeDefinition(
+		Map<Property, List<Property>> childPropertyListsByCandidateProperty
+	) {
+		return childPropertyListsByCandidateProperty.entrySet().stream()
+			.map(entry -> new ConcreteTypeDefinition(entry.getKey(), entry.getValue()))
+			.collect(Collectors.toList());
 	}
 }

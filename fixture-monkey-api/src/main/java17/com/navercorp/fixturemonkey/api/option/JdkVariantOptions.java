@@ -24,20 +24,23 @@ import java.util.List;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGenerator;
-import com.navercorp.fixturemonkey.api.generator.SealedTypeObjectPropertyGenerator;
+import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
+import com.navercorp.fixturemonkey.api.property.CandidateConcretePropertyResolver;
+import com.navercorp.fixturemonkey.api.property.SealedTypeCandidateConcretePropertyResolver;
 import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "1.0.14", status = Status.INTERNAL)
 public final class JdkVariantOptions {
-	private static final ObjectPropertyGenerator SEALED_TYPE_OBJECT_PROPERTY_GENERATOR =
-		new SealedTypeObjectPropertyGenerator();
+	private static final CandidateConcretePropertyResolver SEALED_TYPE_CANDIDATE_CONCRETE_PROPERTY_RESOLVER =
+		new SealedTypeCandidateConcretePropertyResolver();
 
 	public void apply(FixtureMonkeyOptionsBuilder optionsBuilder) {
-		optionsBuilder.insertFirstArbitraryObjectPropertyGenerator(
-			p -> Types.getActualType(p.getType()).isSealed() && !Types.getActualType(p.getType()).isEnum(),
-			SEALED_TYPE_OBJECT_PROPERTY_GENERATOR
-		)
+		optionsBuilder.insertFirstCandidateConcretePropertyResolvers(
+				new MatcherOperator<>(
+					p -> Types.getActualType(p.getType()).isSealed() && !Types.getActualType(p.getType()).isEnum(),
+					SEALED_TYPE_CANDIDATE_CONCRETE_PROPERTY_RESOLVER
+				)
+			)
 			.insertFirstPropertyGenerator(ZoneId.class, property -> List.of());
 	}
 }

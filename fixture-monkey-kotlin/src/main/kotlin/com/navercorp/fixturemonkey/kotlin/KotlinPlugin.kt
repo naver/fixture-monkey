@@ -19,13 +19,13 @@
 package com.navercorp.fixturemonkey.kotlin
 
 import com.navercorp.fixturemonkey.api.generator.FunctionalInterfaceContainerPropertyGenerator
-import com.navercorp.fixturemonkey.api.generator.InterfaceObjectPropertyGenerator
-import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGenerator
 import com.navercorp.fixturemonkey.api.introspector.FunctionalInterfaceArbitraryIntrospector
 import com.navercorp.fixturemonkey.api.introspector.MatchArbitraryIntrospector
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator
 import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptionsBuilder
 import com.navercorp.fixturemonkey.api.plugin.Plugin
+import com.navercorp.fixturemonkey.api.property.CandidateConcretePropertyResolver
+import com.navercorp.fixturemonkey.api.property.ConcreteTypeCandidateConcretePropertyResolver
 import com.navercorp.fixturemonkey.kotlin.generator.InterfaceKFunctionPropertyGenerator
 import com.navercorp.fixturemonkey.kotlin.generator.PairContainerPropertyGenerator
 import com.navercorp.fixturemonkey.kotlin.generator.PairDecomposedContainerValueFactory
@@ -66,17 +66,17 @@ class KotlinPlugin : Plugin {
                 { property -> property.type.actualType().cachedKotlin().isKotlinLambda() },
                 FunctionalInterfaceArbitraryIntrospector()
             )
-            .insertFirstArbitraryObjectPropertyGenerator(
+            .insertFirstCandidateConcretePropertyResolvers(
                 MatcherOperator(
                     { it.type.actualType().cachedKotlin().isSealed },
-                    ObjectPropertyGenerator { context ->
-                        InterfaceObjectPropertyGenerator(
-                            context.property.type.actualType().cachedKotlin().sealedSubclasses
+                    CandidateConcretePropertyResolver { property ->
+                        ConcreteTypeCandidateConcretePropertyResolver(
+                            property.type.actualType().cachedKotlin().sealedSubclasses
                                 .filter { it.objectInstance == null }
-                                .map { it.java },
+                                .map { it.java }
                         )
-                            .generate(context)
-                    },
+                            .resolve(property)
+                    }
                 ),
             )
             .insertFirstPropertyGenerator(
