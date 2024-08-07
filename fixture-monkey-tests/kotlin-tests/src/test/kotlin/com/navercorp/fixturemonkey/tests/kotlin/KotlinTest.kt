@@ -889,6 +889,20 @@ class KotlinTest {
         then(actual).isInstanceOf(ArrayList::class.java)
     }
 
+    @RepeatedTest(TEST_COUNT)
+    fun circularReferenceDefaultArgument() {
+        val actual = SUT.giveMeOne<CircularReferenceDefaultArgument>().value
+
+        then(actual).isNotNull()
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun circularReferenceNullable() {
+        val actual: CircularReferenceValueNullable = SUT.giveMeOne()
+
+        then(actual).isNotNull()
+    }
+
     companion object {
         private val SUT: FixtureMonkey = FixtureMonkey.builder()
             .plugin(KotlinPlugin())

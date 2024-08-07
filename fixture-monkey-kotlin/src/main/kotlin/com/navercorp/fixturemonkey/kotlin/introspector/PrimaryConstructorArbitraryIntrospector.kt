@@ -66,7 +66,9 @@ class PrimaryConstructorArbitraryIntrospector : ArbitraryIntrospector {
 
                     for (parameter in constructor.parameters) {
                         val resolvedArbitrary = arbitrariesByPropertyName[parameter.name]
-                        generatedByParameters[parameter] = resolvedArbitrary
+                        if (resolvedArbitrary != null || !parameter.isOptional || parameter.type.isMarkedNullable) {
+                            generatedByParameters[parameter] = resolvedArbitrary
+                        }
                     }
 
                     constructor.callBy(generatedByParameters)
