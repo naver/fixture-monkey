@@ -26,7 +26,7 @@ import java.lang.reflect.Method;
 import java.util.Random;
 
 import com.navercorp.fixturemonkey.api.random.Randoms;
-import com.navercorp.fixturemonkey.junit.jupiter.annotation.Seed;
+import com.navercorp.fixturemonkey.junit.jupiter.annotation.ShowMeLog;
 
 public final class FixtureMonkeySeedExtension implements AfterTestExecutionCallback {
 	private static final ThreadLocal<Long> SEED_HOLDER = new ThreadLocal<>();
@@ -50,13 +50,15 @@ public final class FixtureMonkeySeedExtension implements AfterTestExecutionCallb
 	}
 
 	/**
-	 * Sets the seed from the @Seed annotation or generates a new random seed.
+	 * Sets the seed for the random generator based on the presence of the @Seed annotation.
+	 * If the @Seed annotation is present, it uses the current seed from Randoms.
+	 * Otherwise, it generates a new random seed.
 	 *
 	 * @param context the current extension context
 	 */
 	private void setSeedFromAnnotationOrRandom(ExtensionContext context) {
-		Seed seedAnnotation = context.getRequiredTestMethod().getAnnotation(Seed.class);
-		long seed = (seedAnnotation != null) ? Randoms.currentSeed() : new Random().nextLong();
+		ShowMeLog showMeLogAnnotation = context.getRequiredTestMethod().getAnnotation(ShowMeLog.class);
+		long seed = (showMeLogAnnotation != null) ? Randoms.currentSeed() : new Random().nextLong();
 		setSeed(seed);
 	}
 
