@@ -25,17 +25,20 @@ import com.navercorp.fixturemonkey.junit.jupiter.annotation.Seed;
 @ExtendWith(FixtureMonkeySeedExtension.class)
 public class FixtureMonkeySeedExtensionTest {
 	private static FixtureMonkey fixtureMonkey;
+	private static ArbitraryBuilder<Product> actual;
 
 	@BeforeAll
 	public static void setup() {
 		fixtureMonkey = FixtureMonkey.create();
+
+		actual = fixtureMonkey.giveMeBuilder(Product.class)
+			.set("id", 1000L)
+			.set("productName", "Book");
 	}
+
 	@Test
 	@Seed
 	void testFailWithSeed() {
-		ArbitraryBuilder<Product> actual = fixtureMonkey.giveMeBuilder(Product.class)
-			.set("id", 1000L)
-			.set("productName", "Book");
 
 		Product product = actual.sample();
 		assertNotNull(product);
@@ -45,10 +48,6 @@ public class FixtureMonkeySeedExtensionTest {
 
 	@Test
 	void testFailWithoutSeed() {
-		ArbitraryBuilder<Product> actual = fixtureMonkey.giveMeBuilder(Product.class)
-			.set("id", 1000L)
-			.set("productName", "Book");
-
 		Product product = actual.sample();
 		assertNotNull(product);
 		assertTrue(product.getId().equals(1000L));
