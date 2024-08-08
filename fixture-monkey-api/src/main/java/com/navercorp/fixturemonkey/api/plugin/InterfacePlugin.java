@@ -84,10 +84,26 @@ public final class InterfacePlugin implements Plugin {
 		Matcher matcher,
 		List<Class<? extends T>> implementations
 	) {
+		return this.interfaceImplements(matcher, new ConcreteTypeCandidateConcretePropertyResolver<>(implementations));
+	}
+
+	/**
+	 * Registers an interface implementation with a specified matcher.
+	 * This method facilitates adding custom implementations for interfaces using a matcher.
+	 *
+	 * @param matcher                  the matcher to be used for matching interfaces
+	 * @param concretePropertyResolver the resolver to resolve the concrete properties
+	 * @return the InterfacePlugin instance for fluent chaining
+	 * @throws IllegalArgumentException if the first parameter is not an interface
+	 */
+	public InterfacePlugin interfaceImplements(
+		Matcher matcher,
+		CandidateConcretePropertyResolver concretePropertyResolver
+	) {
 		this.candidateConcretePropertyResolvers.add(
 			new MatcherOperator<>(
 				matcher.intersect(p -> Modifier.isInterface(Types.getActualType(p.getType()).getModifiers())),
-				new ConcreteTypeCandidateConcretePropertyResolver<>(implementations)
+				concretePropertyResolver
 			)
 		);
 
@@ -133,10 +149,26 @@ public final class InterfacePlugin implements Plugin {
 		Matcher matcher,
 		List<Class<? extends T>> implementations
 	) {
+		return this.abstractClassExtends(matcher, new ConcreteTypeCandidateConcretePropertyResolver<>(implementations));
+	}
+
+	/**
+	 * Registers an abstract class implementation with a specified matcher.
+	 * This method facilitates adding custom implementations for interfaces using a matcher.
+	 *
+	 * @param matcher                  the matcher to be used for matching abstract class
+	 * @param concretePropertyResolver the resolver to resolve the concrete properties
+	 * @return the InterfacePlugin instance for fluent chaining
+	 * @throws IllegalArgumentException if the first parameter is not an abstract class
+	 */
+	public InterfacePlugin abstractClassExtends(
+		Matcher matcher,
+		CandidateConcretePropertyResolver concretePropertyResolver
+	) {
 		this.candidateConcretePropertyResolvers.add(
 			new MatcherOperator<>(
 				matcher.intersect(p -> Modifier.isAbstract(Types.getActualType(p.getType()).getModifiers())),
-				new ConcreteTypeCandidateConcretePropertyResolver<>(implementations)
+				concretePropertyResolver
 			)
 		);
 

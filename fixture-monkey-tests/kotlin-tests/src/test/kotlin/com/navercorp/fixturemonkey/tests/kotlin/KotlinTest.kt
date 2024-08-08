@@ -33,7 +33,11 @@ import com.navercorp.fixturemonkey.api.introspector.FieldReflectionArbitraryIntr
 import com.navercorp.fixturemonkey.api.matcher.AssignableTypeMatcher
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator
 import com.navercorp.fixturemonkey.api.plugin.InterfacePlugin
+import com.navercorp.fixturemonkey.api.property.CandidateConcretePropertyResolver
 import com.navercorp.fixturemonkey.api.property.ConcreteTypeCandidateConcretePropertyResolver
+import com.navercorp.fixturemonkey.api.property.Property
+import com.navercorp.fixturemonkey.api.property.PropertyUtils
+import com.navercorp.fixturemonkey.api.type.Types
 import com.navercorp.fixturemonkey.api.type.Types.GeneratingWildcardType
 import com.navercorp.fixturemonkey.customizer.Values
 import com.navercorp.fixturemonkey.kotlin.KotlinPlugin
@@ -901,6 +905,70 @@ class KotlinTest {
         val actual: CircularReferenceValueNullable = SUT.giveMeOne()
 
         then(actual).isNotNull()
+    }
+
+    @Test
+    fun complexAbstractExtendsReturnsFirst() {
+        abstract class ParentAbstractClass
+
+        abstract class FirstAbstractClass : ParentAbstractClass()
+        abstract class SecondAbstractClass : ParentAbstractClass()
+
+        class FirstConcreteClass : FirstAbstractClass()
+        class SecondConcreteClass : SecondAbstractClass()
+
+        val sut = FixtureMonkey.builder()
+            .plugin(KotlinPlugin())
+            .plugin(
+                InterfacePlugin()
+                    .abstractClassExtends(
+                        AssignableTypeMatcher(ParentAbstractClass::class.java)
+                    ) { property ->
+                        when (property.type) {
+                            FirstAbstractClass::class.java -> listOf(PropertyUtils.toProperty(FirstConcreteClass::class.java))
+                            SecondAbstractClass::class.java -> listOf(PropertyUtils.toProperty(SecondConcreteClass::class.java))
+                            else -> throw NotImplementedError()
+                        }
+                    }
+
+            )
+            .build()
+
+        val actual: FirstAbstractClass = sut.giveMeOne()
+
+        then(actual).isInstanceOf(FirstConcreteClass::class.java)
+    }
+
+    @Test
+    fun complexAbstractExtendsReturnsSecond() {
+        abstract class ParentAbstractClass
+
+        abstract class FirstAbstractClass : ParentAbstractClass()
+        abstract class SecondAbstractClass : ParentAbstractClass()
+
+        class FirstConcreteClass : FirstAbstractClass()
+        class SecondConcreteClass : SecondAbstractClass()
+
+        val sut = FixtureMonkey.builder()
+            .plugin(KotlinPlugin())
+            .plugin(
+                InterfacePlugin()
+                    .abstractClassExtends(
+                        AssignableTypeMatcher(ParentAbstractClass::class.java)
+                    ) { property ->
+                        when (property.type) {
+                            FirstAbstractClass::class.java -> listOf(PropertyUtils.toProperty(FirstConcreteClass::class.java))
+                            SecondAbstractClass::class.java -> listOf(PropertyUtils.toProperty(SecondConcreteClass::class.java))
+                            else -> throw NotImplementedError()
+                        }
+                    }
+
+            )
+            .build()
+
+        val actual: SecondAbstractClass = sut.giveMeOne()
+
+        then(actual).isInstanceOf(SecondConcreteClass::class.java)
     }
 
     companion object {
