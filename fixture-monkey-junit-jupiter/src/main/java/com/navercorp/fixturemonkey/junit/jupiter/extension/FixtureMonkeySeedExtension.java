@@ -18,39 +18,46 @@
 package com.navercorp.fixturemonkey.junit.jupiter.extension;
 
 import org.junit.jupiter.api.extension.AfterTestExecutionCallback;
-import org.junit.jupiter.api.extension.BeforeTestExecutionCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
-import org.junit.platform.commons.logging.Logger;
-import org.junit.platform.commons.logging.LoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
+import java.util.Random;
 
 import com.navercorp.fixturemonkey.api.random.Randoms;
 import com.navercorp.fixturemonkey.junit.jupiter.annotation.Seed;
 
-public final class FixtureMonkeySeedExtension implements BeforeTestExecutionCallback, AfterTestExecutionCallback {
+public final class FixtureMonkeySeedExtension implements AfterTestExecutionCallback {
 	private static final ThreadLocal<Long> SEED_HOLDER = new ThreadLocal<>();
 
 	private static final Logger logger = LoggerFactory.getLogger(FixtureMonkeySeedExtension.class);
 
+	/**
+	 * Logs the seed used for the test if the test fails.
+	 *
+	 * @param context the current extension context
+	 * @throws Exception if any error occurs during logging
+	 */
+	@Override
+	public void afterTestExecution(ExtensionContext context) throws Exception {
+		setSeedFromAnnotationOrRandom(context);
+
+		Long seed = SEED_HOLDER.get();
+		if (context.getExecutionException().isPresent()) {
+			logSeedIfTestFailed(context, seed);
+		}
+	}
 
 	/**
-	 * Sets the seed for Fixture Monkey before the test execution.
-	 * If a method is annotated with @Seed, it uses the specified seed.
-	 * Otherwise, it generates a new random seed.
+	 * Sets the seed from the @Seed annotation or generates a new random seed.
 	 *
 	 * @param context the current extension context
 	 */
-	@Override
-	public void beforeTestExecution(ExtensionContext context) throws Exception {
+	private void setSeedFromAnnotationOrRandom(ExtensionContext context) {
 		Seed seedAnnotation = context.getRequiredTestMethod().getAnnotation(Seed.class);
-		if (seedAnnotation != null) {
-			long seed = seedAnnotation.value();
-			setSeed(seed);
-		} else {
-			long seed = Randoms.currentSeed();
-			setSeed(seed);
-		}
+		long seed = (seedAnnotation != null) ? Randoms.currentSeed() : new Random().nextLong();
+		setSeed(seed);
 	}
 
 	/**
@@ -62,21 +69,12 @@ public final class FixtureMonkeySeedExtension implements BeforeTestExecutionCall
 	}
 
 	/**
-	 * Logs the seed used for the test if the test fails.
+	 * Logs the seed if the test failed.
 	 *
 	 * @param context the current extension context
-	 * @throws Exception if any error occurs during logging
 	 */
-	@Override
-	public void afterTestExecution(ExtensionContext context) throws Exception {
-		Long seed = SEED_HOLDER.get();
-		if (context.getExecutionException().isPresent()) {
-			Method testMethod = context.getRequiredTestMethod();
-			if (seed != null) {
-				logger.error(() -> String.format("Test Method [%s] failed with seed: %d", testMethod.getName(), seed));
-			} else {
-				logger.error(() -> String.format("Test Method [%s] failed, but no seed was set.", testMethod.getName()));
-			}
-		}
+	private void logSeedIfTestFailed(ExtensionContext context, long seed) {
+		Method testMethod = context.getRequiredTestMethod();
+		logger.error(String.format("Test Method [%s] failed with seed: %d", testMethod.getName(), seed));
 	}
 }
