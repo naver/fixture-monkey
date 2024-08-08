@@ -23,7 +23,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
-import java.util.Random;
 
 import com.navercorp.fixturemonkey.api.random.Randoms;
 import com.navercorp.fixturemonkey.junit.jupiter.annotation.ShowMeLog;
@@ -35,46 +34,25 @@ public final class FixtureMonkeySeedExtension implements AfterTestExecutionCallb
 
 	/**
 	 * Logs the seed used for the test if the test fails.
-	 *
-	 * @param context the current extension context
-	 * @throws Exception if any error occurs during logging
-	 */
+	 * If the @ShowMeLog annotation is present on the test method,
+	 * it shows log of the current seed if the test fails.
+	 **/
 	@Override
 	public void afterTestExecution(ExtensionContext context) throws Exception {
-		setSeedFromAnnotationOrRandom(context);
-
-		Long seed = SEED_HOLDER.get();
-		if (context.getExecutionException().isPresent()) {
-			logSeedIfTestFailed(context, seed);
+		ShowMeLog showMeLog = context.getRequiredTestMethod().getAnnotation(ShowMeLog.class);
+		if (showMeLog != null) {
+			SEED_HOLDER.set(Randoms.currentSeed());
+			Long seed = SEED_HOLDER.get();
+			if (context.getExecutionException().isPresent()) {
+				logSeedIfTestFailed(context, seed);
+			}
 		}
 	}
 
 	/**
-	 * Sets the seed for the random generator based on the presence of the @Seed annotation.
-	 * If the @Seed annotation is present, it uses the current seed from Randoms.
-	 * Otherwise, it generates a new random seed.
-	 *
-	 * @param context the current extension context
-	 */
-	private void setSeedFromAnnotationOrRandom(ExtensionContext context) {
-		ShowMeLog showMeLogAnnotation = context.getRequiredTestMethod().getAnnotation(ShowMeLog.class);
-		long seed = (showMeLogAnnotation != null) ? Randoms.currentSeed() : new Random().nextLong();
-		setSeed(seed);
-	}
-
-	/**
-	 * Store the seed in the SEED_HOLDER before test execution.
-	 * @param seed the seed to be stored
-	 */
-	private void setSeed(long seed) {
-		SEED_HOLDER.set(seed);
-	}
-
-	/**
 	 * Logs the seed if the test failed.
-	 *
-	 * @param context the current extension context
-	 */
+	 *	This method is called when a test method execution fails.
+	 **/
 	private void logSeedIfTestFailed(ExtensionContext context, long seed) {
 		Method testMethod = context.getRequiredTestMethod();
 		logger.error(String.format("Test Method [%s] failed with seed: %d", testMethod.getName(), seed));
