@@ -34,7 +34,15 @@ Kotlin 환경에서는 **fixture-monkey-starter-kotlin** 을 대신 사용할 �
 
 #### Gradle
 
+`junit-platform-launcher` 런타임 의존성을 추가하셔야 합니다.
+Gradle 9 이전은 런타임 의존성이 없어도 동작하나 Gradle 9부터 필수가 될 예정입니다.
+
+
+[📔 Gradle 공식문서](https://docs.gradle.org/current/userguide/upgrading_version_8.html#test_suites)
+[⚠️ 이슈](https://github.com/gradle/gradle/issues/26114#issuecomment-1729133753)
+
 ```groovy
+testRuntimeOnly("org.junit.platform:junit-platform-launcher:{version}")
 testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter:{{< fixture-monkey-version >}}")
 ```
 
