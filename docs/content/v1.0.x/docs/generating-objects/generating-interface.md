@@ -138,6 +138,74 @@ ArrayList<String> collection = (ArrayList<String>)fixture.giveMeOne(new TypeRefe
 // collection will be an instance of ArrayList
 ```
 
+You can use this option below if there are too many implementations to add using the options, but they have a similar pattern.
+
+```java
+interface ObjectValueSupplier {
+    Object getValue();
+}
+
+interface StringValueSupplier extends ObjectValueSupplier {
+    String getValue();
+}
+
+public class DefaultStringValueSupplier implements StringValueSupplier {
+    private final String value;
+
+    @ConstructorProperties("value") // It is not needed if you are using Lombok.
+    public DefaultStringValueSupplier(String value) {
+        this.value = value;
+    }
+
+    @Override
+    public String getValue() {
+        return this.value;
+    }
+}
+
+interface IntegerValueSupplier extends ObjectValueSupplier {
+    Integer getValue();
+}
+
+public class DefaultIntegerValueSupplier implements IntegerValueSupplier {
+    private final Integer value;
+
+    @ConstructorProperties("value") // It is not needed if you are using Lombok.
+    public DefaultIntegerValueSupplier(Integer value) {
+        this.value = value;
+    }
+
+    @Override
+    public Integer getValue() {
+        return this.value;
+    }
+}
+
+FixtureMonkey fixture = FixtureMonkey.builder()
+	.objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE) // used for instantiate implementations of ObjectValueSupplier
+	.plugin(
+		new InterfacePlugin()
+			.interfaceImplements(
+				new AssignableTypeMatcher(ObjectValueSupplier.class),
+				property -> {
+					Class<?> actualType = Types.getActualType(property.getType());
+					if (StringValueSupplier.class.isAssignableFrom(actualType)) {
+						return List.of(PropertyUtils.toProperty(DefaultStringValueSupplier.class));
+					}
+
+					if (IntegerValueSupplier.class.isAssignableFrom(actualType)) {
+						return List.of(PropertyUtils.toProperty(DefaultIntegerValueSupplier.class));
+					}
+					return List.of();
+				}
+			)
+	)
+	.build();
+
+DefaultStringValueSupplier stringValueSupplier = (DefaultStringValueSupplier)fixture.giveMeOne(StringValueSupplier.class);
+DefaultIntegerValueSupplier integerValueSupplier = (DefaultIntegerValueSupplier)fixture.giveMeOne(IntegerValueSupplier.class);
+```
+
 ### Generic Interfaces
 
 What if we need to generate some complex generic interface? All you have to do is do what you did with the simple

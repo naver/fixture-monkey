@@ -5,6 +5,15 @@ menu:
 docs:
 weight: 100
 ---
+
+sectionStart
+### v.1.0.23
+Add the flexible option for complex usage in InterfacePlugin.
+
+Fix for generating Kotlin self-reference with default arguments.
+
+sectionEnd
+
 sectionStart
 ### v.1.0.22
 Add compatibility with ObjectPropertyGenerator and CandidateConcretePropertyResolver.
