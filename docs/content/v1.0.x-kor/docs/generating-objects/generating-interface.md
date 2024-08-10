@@ -29,7 +29,7 @@ public interface StringSupplier {
 public class DefaultStringSupplier implements StringSupplier {
 	private final String value;
 
-	@ConstructorProperties("value") // It is not needed if you are using Lombok.
+	@ConstructorProperties("value") // 롬복을 사용하면 추가하지 않아도 됩니다.
 	public DefaultStringSupplier(String value) {
 		this.value = value;
 	}
@@ -121,6 +121,75 @@ List<String> list = fixture.giveMeOne(new TypeReference<List<String>>() {
 아무런 설정이 없다면 `Collection` 인터페이스는 구현체를 생성하지 않습니다. 다음과 같이 `Collection` 인터페이스를 `List` 인터페이스를 생성하도록 확장해보겠습니다.
 이렇게 설정하면 `List` 인터페이스의 설정이 `Collection` 인터페이스에 영향을 줍니다. 
 구체적으로 이야기하면 `List` 인터페이스는 기본 설정으로 구현체 `ArrayList`를 생성하므로 `Collection` 인터페이스는 `ArrayList`를 생성합니다. 
+
+
+추가할 인터페이스 구현체들이 많은데 일정한 패턴을 가지고 있다면 다음과 같이 사용하면 편하게 처리할 수 있습니다.
+
+```java
+interface ObjectValueSupplier {
+    Object getValue();
+}
+
+interface StringValueSupplier extends ObjectValueSupplier {
+    String getValue();
+}
+
+public class DefaultStringValueSupplier implements StringValueSupplier {
+    private final String value;
+
+    @ConstructorProperties("value") // 롬복을 사용하면 추가하지 않아도 됩니다.
+    public DefaultStringValueSupplier(String value) {
+        this.value = value;
+    }
+
+    @Override
+    public String getValue() {
+        return this.value;
+    }
+}
+
+interface IntegerValueSupplier extends ObjectValueSupplier {
+    Integer getValue();
+}
+
+public class DefaultIntegerValueSupplier implements IntegerValueSupplier {
+    private final Integer value;
+
+    @ConstructorProperties("value") // 롬복을 사용하면 추가하지 않아도 됩니다.
+    public DefaultIntegerValueSupplier(Integer value) {
+        this.value = value;
+    }
+
+    @Override
+    public Integer getValue() {
+        return this.value;
+    }
+}
+
+FixtureMonkey fixture = FixtureMonkey.builder()
+	.objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)
+	.plugin(
+		new InterfacePlugin()
+			.interfaceImplements(
+				new AssignableTypeMatcher(ObjectValueSupplier.class),
+				property -> {
+					Class<?> actualType = Types.getActualType(property.getType());
+					if (StringValueSupplier.class.isAssignableFrom(actualType)) {
+						return List.of(PropertyUtils.toProperty(DefaultStringValueSupplier.class));
+					}
+
+					if (IntegerValueSupplier.class.isAssignableFrom(actualType)) {
+						return List.of(PropertyUtils.toProperty(DefaultIntegerValueSupplier.class));
+					}
+					return List.of();
+				}
+			)
+	)
+	.build();
+
+DefaultStringValueSupplier stringValueSupplier = (DefaultStringValueSupplier)fixture.giveMeOne(StringValueSupplier.class);
+DefaultIntegerValueSupplier integerValueSupplier = (DefaultIntegerValueSupplier)fixture.giveMeOne(IntegerValueSupplier.class);
+```
 
 ```java
 FixtureMonkey fixture = FixtureMonkey.builder()
