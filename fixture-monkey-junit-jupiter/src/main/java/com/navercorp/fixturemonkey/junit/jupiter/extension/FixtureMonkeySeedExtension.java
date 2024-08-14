@@ -17,12 +17,12 @@
  */
 package com.navercorp.fixturemonkey.junit.jupiter.extension;
 
+import java.lang.reflect.Method;
+
 import org.junit.jupiter.api.extension.AfterTestExecutionCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.lang.reflect.Method;
 
 import com.navercorp.fixturemonkey.api.random.Randoms;
 import com.navercorp.fixturemonkey.junit.jupiter.annotation.ShowMeLog;
@@ -51,7 +51,7 @@ public final class FixtureMonkeySeedExtension implements AfterTestExecutionCallb
 
 	/**
 	 * Logs the seed if the test failed.
-	 *	This method is called when a test method execution fails.
+	 * This method is called when a test method execution fails.
 	 **/
 	private void logSeedIfTestFailed(ExtensionContext context, long seed) {
 		Method testMethod = context.getRequiredTestMethod();
