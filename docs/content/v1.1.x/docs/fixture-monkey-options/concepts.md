@@ -28,22 +28,16 @@ An `ObjectProperty` is a property that represents immutable object information. 
 
 - **property**: The property of the object itself.
 - **propertyNameResolver**: Determines how the property name is resolved.
-- **nullInject**: The probability of injecting null value.
 - **elementIndex**: If the object is an element of a Container, it indicates the index.
-- **childPropertyListsByCandidateProperty**: A map that holds information about child properties grouped by candidate property.
 
 ```java
 public final class ObjectProperty {
     private final Property property;
 
     private final PropertyNameResolver propertyNameResolver;
-
-    private final double nullInject;
-
+	
     @Nullable
     private final Integer elementIndex;
-
-    private final Map<Property, List<Property>> childPropertyListsByCandidateProperty;
 }
 ```
 

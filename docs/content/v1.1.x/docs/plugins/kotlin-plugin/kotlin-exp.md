@@ -49,7 +49,7 @@ data class KotlinClass(
 }
 ```
 
-To use Kotlin Exp to reference a property, you need to use the `Exp` or `ExpGetter` suffix to the normal [Fixture Customization APIs]((../../customizing-objects/apis).
+To use Kotlin Exp to reference a property, you need to use the `Exp` or `ExpGetter` suffix to the normal [Fixture Customization APIs](../../../customizing-objects/apis).
 
 Let's look at the example of customizing properties with Kotlin Exp using `setExp()` and `setExpGetter()`.
 

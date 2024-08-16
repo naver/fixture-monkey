@@ -21,7 +21,7 @@ If you want to set a global option as the default method for creating all object
 
 The `instantiate()` method is just a convenient way to modify the generation method from the `ArbitraryBuilder`.
 
-## Constuctor
+## Constructor
 Let's say you have a custom class with a few different constructors that looks like this:
 
 {{< tabpane persist=false >}}
@@ -326,9 +326,10 @@ void test() {
         )
         .sample();
 
-		then(genericObject).isNotNull();
-		then(genericObject.getValue()).isNotNull();
-	}
+    then(genericObject).isNotNull();
+    then(genericObject.getValue()).isNotNull();
+}
+
 
 {{< /tab >}}
 {{< tab header="Kotlin" lang="kotlin">}}
