@@ -30,7 +30,14 @@ weight: 21
 For Kotlin environments, you can use **fixture-monkey-starter-kotlin**
 
 #### Gradle
+Add `junit-platform-launcher` as a runtime dependency.
+The dependency is optional below Gradle 9, but it will be mandatory from Gradle 9 onwards.
+
+[📔 Gradle Offical Documentation](https://docs.gradle.org/current/userguide/upgrading_version_8.html#test_suites)
+[⚠️ Issue](https://github.com/gradle/gradle/issues/26114#issuecomment-1729133753)
+
 ```groovy
+testRuntimeOnly("org.junit.platform:junit-platform-launcher:{version}")
 testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter:{{< fixture-monkey-version >}}")
 ```
 
