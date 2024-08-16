@@ -25,7 +25,7 @@ String result = fixture.giveMeBuilder(StringSupplier.class)
 ```
 
 The properties of the interface in `ArbitraryBuilder` differ in the implementation.
-Unfortunately, there is currently no ArbitraryBuilder API that resolves the implementation of the interface. 
+Unfortunately, there is currently no `ArbitraryBuilder` API that resolves the implementation of the interface. 
 Unless the interface has only one implementation, you can customize the properties of the interface, not the implementation.
 
 You cannot generate the randomly populated intended implementation, but you can generate the fixed implementation by using the `set` API.

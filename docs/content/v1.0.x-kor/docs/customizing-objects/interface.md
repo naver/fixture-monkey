@@ -26,7 +26,7 @@ String result = fixture.giveMeBuilder(StringSupplier.class)
 ```
 
 인터페이스를 생성하는 `ArbitraryBuilder`가 제어할 수 있는 프로퍼티는 실제로 생성한 구현체마다 다릅니다.
-하지만 아직은 구현체를 선택할 수 있는 `ArbitraryBulder` API가 존재하지 않습니다. 
+하지만 아직은 구현체를 선택할 수 있는 `ArbitraryBuilder` API가 존재하지 않습니다. 
 인터페이스가 하나의 구현체를 가지고 있다면 구현체 프로퍼티도 제어가 가능합니다. 하지만 구현체가 두 개 이상이라면 인터페이스의 프로퍼티만 제어가 가능합니다. 
 
 
