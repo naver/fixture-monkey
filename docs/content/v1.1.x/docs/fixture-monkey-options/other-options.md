@@ -10,7 +10,7 @@ weight: 53
 
 This section explains some additional options that the `FixtureMonkeyBuilder` provide.
 
-### plugin
+### Add plugins
 
 Fixture Monkey offers several additional features, including support for third-party libraries through plugins.
 You can use the plugin option to use these additional features.

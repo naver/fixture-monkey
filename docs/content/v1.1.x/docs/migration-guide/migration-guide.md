@@ -1,5 +1,5 @@
 ---
-title: "1.0.x"
+title: "From 1.0.x"
 weight: 11
 menu:
 docs:
@@ -7,89 +7,109 @@ docs:
   identifier: "1.0.x"
 ---
 
-## ArbitraryBuilder APIs
+## Create an instance of the Kotlin type
+In 1.0.x, when you apply the `KotlinPlugin`, Java and Kotlin types are created by the `PrimaryConstructorArbitraryIntrospector`, which uses the Kotlin primary constructor by default.
+Creating a Java type with it causes the exception.
 
-Fixture Monkey is a Java & Kotlin library designed to generate controllable arbitrary test objects.
+As of 1.1.x, when you apply the `KotlinPlugin`, Java types are created by the `BeanArbitraryIntrospector`, Kotlin types are created by the `PrimaryConstructorArbitraryIntrospector`.
 
-It focuses on simplifying test writing, by facilitating the generation of necessary test fixtures.
-Whether you're dealing with basic or complex test fixtures, Fixture Monkey helps you to effortlessly create the test objects you need and easily customize them to match your desired configurations.
+## Different ArbitraryBuilder APIs between Java and Kotlin
 
-Make your JVM tests more concise and safe with Fixture Monkey.
+In 1.0.x, Java and Kotlin use the same API in ArbitraryBuilder.
 
----------
+As of 1.1.x, Fixture Monkey provides both Java-specific ArbitraryBuilder APIs and Kotlin-specific ArbitraryBuilder APIs. Of course, you can use the
+Java-specific APIs when creating a Kotlin type, and vice versa.
 
-## Why use Fixture Monkey?
-### 1. Simplicity
+### How to use Java ArbitraryBuilder APIs
+To use Java-specific APIs, use `FixtureMonkey.giveMeBuilder(Class)` or `FixtureMonkey.giveMeJavaBuilder(Class)`.
+
+### How to use Kotlin ArbitraryBuilder APIs
+To use Kotlin-specific APIs, use the extension function `FixtureMonkey.giveMeBuilder<Class>()`.
+
+## Resolves the implementation of the abstract type
+
+In 1.0.x, You must use the `ObjectPropertyGenerator` option in order to resolve the actual type of abstract class or
+interface.
+
+As of 1.1.x, all you have to do is use the `CandidateConcretePropertyResolver` option. It is much easier.
+
+Let's take the sealed type as an example.
+To create an instance of a sealed class in JDK 17, you have to use the `SealedTypeObjectPropertyGenerator`, which is used by default.
+It forces you to know the properties of `ObjectProperty`, most of which are not your concern.
+
 ```java
-Product actual = fixtureMonkey.giveMeOne(Product.class);
-```
-Fixture Monkey makes test object generation remarkably easy. With just one line of code, you can effortlessly generate any kind of test object you desire.
-It simplifies the given section of the test, enabling you to write tests faster and more easily. You also don't need to change the production code or test environment.
+public final class SealedTypeObjectPropertyGenerator implements ObjectPropertyGenerator {
+	@Override
+	public ObjectProperty generate(ObjectPropertyGeneratorContext context) {
+		Property sealedTypeProperty = context.getProperty();
+		double nullInject = context.getNullInjectGenerator().generate(context);
+		Class<?> actualType = Types.getActualType(sealedTypeProperty.getType());
+		Set<Class<?>> permittedSubclasses = collectPermittedSubclasses(actualType);
 
-### 2. Reusability
+		Map<Property, List<Property>> childPropertiesByProperty =
+			permittedSubclasses.stream()
+				.collect(
+					toUnmodifiableMap(
+						Function.identity(),
+						it -> context.getPropertyGenerator().generateChildProperties(it)
+					)
+				);
+
+		return new ObjectProperty(
+			sealedTypeProperty,
+			context.getPropertyNameResolver(),
+			nullInject,
+			context.getElementIndex(),
+			childPropertiesByProperty
+		);
+	}
+
+	private static Set<Class<?>> collectPermittedSubclasses(Class<?> type) {
+		Set<Class<?>> subclasses = new HashSet<>();
+		doCollectPermittedSubclasses(type, subclasses);
+		return subclasses;
+	}
+
+	private static void doCollectPermittedSubclasses(Class<?> type, Set<Class<?>> subclasses) {
+		if (type.isSealed()) {
+			for (Class<?> subclass : type.getPermittedSubclasses()) {
+				doCollectPermittedSubclasses(subclass, subclasses);
+			}
+		} else {
+			subclasses.add(type);
+		}
+	}
+}
+```
+
+As of 1.1.x, you can only focus on the resolved implementation types.
+
 ```java
-ArbitraryBuilder<Product> actual = fixtureMonkey.giveMeBuilder(Product.class)
-    .set("id", 1000L)
-    .set("productName", "Book");
+public final class SealedTypeCandidateConcretePropertyResolver implements CandidateConcretePropertyResolver {
+	@Override
+	public List<Property> resolve(Property property) {
+		Class<?> actualType = Types.getActualType(property.getType());
+		Set<Class<?>> permittedSubclasses = collectPermittedSubclasses(actualType);
+
+		return permittedSubclasses.stream()
+			.map(PropertyUtils::toProperty)
+			.toList();
+	}
+
+	private static Set<Class<?>> collectPermittedSubclasses(Class<?> type) {
+		Set<Class<?>> subclasses = new HashSet<>();
+		doCollectPermittedSubclasses(type, subclasses);
+		return subclasses;
+	}
+
+	private static void doCollectPermittedSubclasses(Class<?> type, Set<Class<?>> subclasses) {
+		if (type.isSealed()) {
+			for (Class<?> subclass : type.getPermittedSubclasses()) {
+				doCollectPermittedSubclasses(subclass, subclasses);
+			}
+		} else {
+			subclasses.add(type);
+		}
+	}
+}
 ```
-Fixture Monkey allows you to reuse configurations of instances across multiple tests, saving you time and effort.
-Complex specifications only need to be defined once within your builder and can then be reused to obtain instances.
-
-Furthermore, there are additional features that boost reusability. For more details on these features, refer to the sections on 'Registering Default ArbitraryBuilder' and 'InnerSpec'.
-
-### 3. Randomness
-```java
-ArbitraryBuilder<Product> actual = fixtureMonkey.giveMeBuilder(Product.class);
-
-then(actual.sample()).isNotEqualTo(actual.sample());
-```
-Fixture Monkey helps tests become more dynamic by generating test objects with random values.
-This leads to uncovering edge cases that might remain hidden when using static data.
-
-### 4. Versatility
-```java
-// inheritance
-class Foo {
-  String foo;
-}
-
-class Bar extends Foo {
-    String bar;
-}
-
-Foo foo = FixtureMonkey.create().giveMeOne(Foo.class);
-Bar bar = FixtureMonkey.create().giveMeone(Bar.class);
-
-// circular-reference
-class Foo {
-    String value;
-
-    Foo foo;
-}
-
-Foo foo = FixtureMonkey.create().giveMeOne(Foo.class);
-
-// anonymous objects
-interface Foo {
-    Bar getBar();
-}
-
-class Bar {
-    String value;
-}
-
-Foo foo = FixtureMonkey.create().giveMeOne(Foo.class);
-```
-
-Fixture Monkey is capable to create any kind of object you can imagine. It supports generating basic objects such as lists, nested collections, enums and generic types.
-It also handles more advanced scenarios, including objects with inheritance relationships, circular-referenced objects, and anonymous objects that implement interfaces.
-
----------
-
-## Proven Effectiveness
-Fixture Monkey was originally developed as an in-house library at [Naver](https://www.navercorp.com/en) and played a crucial role in simplifying test object generation for the Plasma project.
-The Plasma project aimed to revolutionize Naver Pay's architecture, which is the most used mobile payment service in South Korea with a daily active user count of 261,400.
-
-The project required thorough testing of complex business requirements, and with Fixture Monkey's assistance, the team efficiently wrote over 10,000 tests, uncovering critical edge cases and ensuring the system's reliability.
-Now available as an open-source library, developers worldwide can take advantage of Fixture Monkey to simplify their test codes and build robust applications with confidence.
-

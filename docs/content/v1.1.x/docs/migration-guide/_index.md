@@ -1,5 +1,5 @@
 ---
-title: "Migration guide from 1.0.x"
+title: "Migration guide"
 images: []
 menu:
 docs:

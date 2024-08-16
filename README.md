@@ -151,7 +151,7 @@ fun sampleOrder() {
 
 ## Documentation
 * [English](https://naver.github.io/fixture-monkey)
-* [Korean](https://naver.github.io/fixture-monkey/v1-0-0-kor/)
+* [Korean](https://naver.github.io/fixture-monkey/v1-1-0-kor/)
 
 ## [FAQ](https://naver.github.io/fixture-monkey/v1-0-0/docs/cheat-sheet/faq/)
 
