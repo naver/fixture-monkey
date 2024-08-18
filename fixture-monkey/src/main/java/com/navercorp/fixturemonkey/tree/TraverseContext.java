@@ -29,38 +29,38 @@ import javax.annotation.Nullable;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
+import com.navercorp.fixturemonkey.api.tree.TreeProperty;
 import com.navercorp.fixturemonkey.customizer.ContainerInfoManipulator;
 
 @API(since = "0.4.0", status = Status.INTERNAL)
 final class TraverseContext {
-	private final List<ArbitraryProperty> arbitraryProperties;
+	private final List<TreeProperty> treeProperties;
 	private final List<ContainerInfoManipulator> containerInfoManipulators;
 	private final List<MatcherOperator<List<ContainerInfoManipulator>>> registeredContainerInfoManipulators;
 	private final Map<Class<?>, List<Property>> propertyConfigurers;
 
 	TraverseContext(
-		List<ArbitraryProperty> arbitraryProperties,
+		List<TreeProperty> treeProperties,
 		List<ContainerInfoManipulator> containerInfoManipulators,
 		List<MatcherOperator<List<ContainerInfoManipulator>>> registeredContainerInfoManipulators,
 		Map<Class<?>, List<Property>> propertyConfigurers
 	) {
-		this.arbitraryProperties = arbitraryProperties;
+		this.treeProperties = treeProperties;
 		this.containerInfoManipulators = containerInfoManipulators;
 		this.registeredContainerInfoManipulators = registeredContainerInfoManipulators;
 		this.propertyConfigurers = propertyConfigurers;
 	}
 
 	@Nullable
-	public ArbitraryProperty getRootArbitraryProperty() {
-		return arbitraryProperties.get(0);
+	public TreeProperty getRootTreeProperty() {
+		return treeProperties.get(0);
 	}
 
-	public List<ArbitraryProperty> getArbitraryProperties() {
-		return arbitraryProperties;
+	public List<TreeProperty> getTreeProperties() {
+		return treeProperties;
 	}
 
 	public List<ContainerInfoManipulator> getContainerInfoManipulators() {
@@ -72,21 +72,21 @@ final class TraverseContext {
 	}
 
 	public TraverseContext appendArbitraryProperty(
-		ArbitraryProperty arbitraryProperty
+		TreeProperty treeProperty
 	) {
-		List<ArbitraryProperty> arbitraryProperties = new ArrayList<>(this.arbitraryProperties);
-		arbitraryProperties.add(arbitraryProperty);
+		List<TreeProperty> treeProperties = new ArrayList<>(this.treeProperties);
+		treeProperties.add(treeProperty);
 
 		List<ContainerInfoManipulator> registeredContainerManipulators =
 			this.registeredContainerInfoManipulators.stream()
-				.filter(it -> it.match(arbitraryProperty.getObjectProperty().getProperty()))
+				.filter(it -> it.match(treeProperty.getObjectProperty().getProperty()))
 				.map(MatcherOperator::getOperator)
 				.findFirst()
 				.orElse(Collections.emptyList());
 
 		List<ContainerInfoManipulator> concatRegisteredContainerManipulator = registeredContainerManipulators.stream()
 			.map(it -> it.withPrependNextNodePredicate(
-				new PropertyPredicate(arbitraryProperty.getObjectProperty().getProperty())
+				new PropertyPredicate(treeProperty.getObjectProperty().getProperty())
 			))
 			.collect(Collectors.toList());
 
@@ -94,7 +94,7 @@ final class TraverseContext {
 		concat.addAll(concatRegisteredContainerManipulator);
 		concat.addAll(containerInfoManipulators);
 		return new TraverseContext(
-			arbitraryProperties,
+			treeProperties,
 			concat,
 			this.registeredContainerInfoManipulators,
 			propertyConfigurers
@@ -102,17 +102,37 @@ final class TraverseContext {
 	}
 
 	public boolean isTraversed(Property property) {
-		return arbitraryProperties.stream()
+		return treeProperties.stream()
 			.skip(1)
 			.anyMatch(it -> isSameType(property, it.getObjectProperty().getProperty()));
 	}
 
+	public void addContainerInfoManipulator(ContainerInfoManipulator containerInfoManipulator) {
+		if (!this.containerInfoManipulators.contains(containerInfoManipulator)) {
+			this.containerInfoManipulators.add(containerInfoManipulator);
+		}
+	}
+
 	@Nullable
-	public ArbitraryProperty getLastArbitraryProperty() {
-		if (this.arbitraryProperties.isEmpty()) {
+	public TreeProperty getLastTreeProperty() {
+		if (this.treeProperties.isEmpty()) {
 			return null;
 		}
-		return this.arbitraryProperties.get(this.arbitraryProperties.size() - 1);
+		return this.treeProperties.get(this.treeProperties.size() - 1);
+	}
+
+	public TraverseContext withRootTreeProperty() {
+		List<TreeProperty> newArbitraryPropertyList = new ArrayList<>();
+		if (this.getRootTreeProperty() != null) {
+			newArbitraryPropertyList.add(this.getRootTreeProperty());
+		}
+
+		return new TraverseContext(
+			newArbitraryPropertyList,
+			new ArrayList<>(this.containerInfoManipulators),
+			this.registeredContainerInfoManipulators,
+			this.propertyConfigurers
+		);
 	}
 
 	private static boolean isSameType(Property p1, Property p2) {

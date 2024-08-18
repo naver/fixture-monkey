@@ -61,7 +61,6 @@ import com.navercorp.fixturemonkey.expression.MonkeyExpressionFactory;
 import com.navercorp.fixturemonkey.resolver.ManipulatorOptimizer;
 import com.navercorp.fixturemonkey.resolver.NoneManipulatorOptimizer;
 import com.navercorp.fixturemonkey.tree.ApplyStrictModeResolver;
-import com.navercorp.fixturemonkey.tree.ArbitraryTraverser;
 
 @SuppressWarnings("unused")
 @API(since = "0.4.0", status = Status.MAINTAINED)
@@ -480,11 +479,9 @@ public final class FixtureMonkeyBuilder {
 
 	public FixtureMonkey build() {
 		FixtureMonkeyOptions fixtureMonkeyOptions = fixtureMonkeyOptionsBuilder.build();
-		ArbitraryTraverser traverser = new ArbitraryTraverser(fixtureMonkeyOptions);
 		MonkeyManipulatorFactory monkeyManipulatorFactory = new MonkeyManipulatorFactory(
 			new AtomicInteger(),
 			monkeyExpressionFactory,
-			traverser,
 			fixtureMonkeyOptions.getDecomposedContainerValueFactory()
 		);
 
@@ -492,7 +489,6 @@ public final class FixtureMonkeyBuilder {
 		Randoms.create(String.valueOf(seed));
 		return new FixtureMonkey(
 			fixtureMonkeyOptions,
-			traverser,
 			manipulatorOptimizer,
 			monkeyContext,
 			registeredArbitraryBuilders,
