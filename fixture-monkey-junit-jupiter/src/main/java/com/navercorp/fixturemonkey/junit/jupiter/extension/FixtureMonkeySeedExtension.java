@@ -18,6 +18,7 @@
 package com.navercorp.fixturemonkey.junit.jupiter.extension;
 
 import java.lang.reflect.Method;
+import java.util.Random;
 
 import org.junit.jupiter.api.extension.AfterTestExecutionCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -28,7 +29,7 @@ import com.navercorp.fixturemonkey.api.random.Randoms;
 import com.navercorp.fixturemonkey.junit.jupiter.annotation.ShowMeLog;
 
 public final class FixtureMonkeySeedExtension implements AfterTestExecutionCallback {
-	private static final ThreadLocal<Long> SEED_HOLDER = new ThreadLocal<>();
+	private static final ThreadLocal<Random> SEED_HOLDER = new ThreadLocal<>();
 
 	private static final Logger logger = LoggerFactory.getLogger(FixtureMonkeySeedExtension.class);
 
@@ -41,10 +42,9 @@ public final class FixtureMonkeySeedExtension implements AfterTestExecutionCallb
 	public void afterTestExecution(ExtensionContext context) throws Exception {
 		ShowMeLog showMeLog = context.getRequiredTestMethod().getAnnotation(ShowMeLog.class);
 		if (showMeLog != null) {
-			SEED_HOLDER.set(Randoms.currentSeed());
-			Long seed = SEED_HOLDER.get();
+			SEED_HOLDER.set(Randoms.create(showMeLog.value()));
 			if (context.getExecutionException().isPresent()) {
-				logSeedIfTestFailed(context, seed);
+				logSeedIfTestFailed(context, SEED_HOLDER.get());
 			}
 		}
 	}
@@ -53,7 +53,7 @@ public final class FixtureMonkeySeedExtension implements AfterTestExecutionCallb
 	 * Logs the seed if the test failed.
 	 * This method is called when a test method execution fails.
 	 **/
-	private void logSeedIfTestFailed(ExtensionContext context, long seed) {
+	private void logSeedIfTestFailed(ExtensionContext context, Random seed) {
 		Method testMethod = context.getRequiredTestMethod();
 		logger.error(String.format("Test Method [%s] failed with seed: %d", testMethod.getName(), seed));
 	}
