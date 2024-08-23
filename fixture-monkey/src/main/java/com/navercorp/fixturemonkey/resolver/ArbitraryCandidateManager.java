@@ -24,18 +24,18 @@ import java.util.Map;
 
 import com.navercorp.fixturemonkey.buildergroup.ArbitraryBuilderCandidate;
 
-public final class ArbitraryManagerCandidateList {
+public final class ArbitraryCandidateManager {
 
 	private final Map<String, ArbitraryBuilderCandidate<?>> candidateMap = new HashMap<>();
 
-	private ArbitraryManagerCandidateList() {
+	private ArbitraryCandidateManager() {
 	}
 
-	public static ArbitraryManagerCandidateList create() {
-		return new ArbitraryManagerCandidateList();
+	public static ArbitraryCandidateManager create() {
+		return new ArbitraryCandidateManager();
 	}
 
-	public ArbitraryManagerCandidateList add(String arbitraryBuilderName, ArbitraryBuilderCandidate<?> candidate) {
+	public ArbitraryCandidateManager add(String arbitraryBuilderName, ArbitraryBuilderCandidate<?> candidate) {
 		checkNull(arbitraryBuilderName);
 		checkDuplicate(arbitraryBuilderName);
 		candidateMap.put(arbitraryBuilderName, candidate);

@@ -18,9 +18,9 @@
 
 package com.navercorp.fixturemonkey.buildergroup;
 
-import com.navercorp.fixturemonkey.resolver.ArbitraryManagerCandidateList;
+import com.navercorp.fixturemonkey.resolver.ArbitraryCandidateManager;
 
 public interface ArbitraryManagerGroup {
 
-	ArbitraryManagerCandidateList generateCandidateList();
+	ArbitraryCandidateManager generateCandidateList();
 }
