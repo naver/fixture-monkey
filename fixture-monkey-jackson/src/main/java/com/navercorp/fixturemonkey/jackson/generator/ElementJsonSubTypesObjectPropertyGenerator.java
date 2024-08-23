@@ -19,22 +19,14 @@
 package com.navercorp.fixturemonkey.jackson.generator;
 
 import static com.navercorp.fixturemonkey.jackson.property.JacksonAnnotations.getJacksonAnnotation;
-import static com.navercorp.fixturemonkey.jackson.property.JacksonAnnotations.getRandomJsonSubType;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedType;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import javax.annotation.Nullable;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 import com.navercorp.fixturemonkey.api.generator.ObjectProperty;
 import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGenerator;
@@ -42,13 +34,20 @@ import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGeneratorContext;
 import com.navercorp.fixturemonkey.api.property.ElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.PropertyGenerator;
-import com.navercorp.fixturemonkey.api.property.PropertyUtils;
-import com.navercorp.fixturemonkey.api.type.Types;
+import com.navercorp.fixturemonkey.jackson.property.ElementJsonSubTypesConcreteTypeResolver;
 
+/**
+ * It is deprecated.
+ * Use {@link ElementJsonSubTypesConcreteTypeResolver} instaed.
+ */
 @API(since = "0.4.2", status = Status.MAINTAINED)
+@Deprecated
 public final class ElementJsonSubTypesObjectPropertyGenerator implements ObjectPropertyGenerator {
 	public static final ElementJsonSubTypesObjectPropertyGenerator INSTANCE =
 		new ElementJsonSubTypesObjectPropertyGenerator();
+
+	private static final ElementJsonSubTypesConcreteTypeResolver DELEGATE =
+		new ElementJsonSubTypesConcreteTypeResolver();
 
 	@Override
 	public ObjectProperty generate(ObjectPropertyGeneratorContext context) {
@@ -63,50 +62,15 @@ public final class ElementJsonSubTypesObjectPropertyGenerator implements ObjectP
 			throw new IllegalArgumentException("@JsonSubTypes is not found " + property.getType().getTypeName());
 		}
 
-		Class<?> type = getRandomJsonSubType(jsonSubTypes);
-		AnnotatedType annotatedType = Types.generateAnnotatedTypeWithoutAnnotation(type);
-
+		Property actualConcreteProperty = DELEGATE.resolve(property).get(0);
 		List<Property> childProperties =
-			propertyGenerator.generateChildProperties(PropertyUtils.toProperty(annotatedType));
-
-		JsonTypeInfo jsonTypeInfo = getJacksonAnnotation(containerProperty, JsonTypeInfo.class);
-		List<Annotation> annotations = new ArrayList<>(property.getAnnotations());
-		annotations.add(jsonTypeInfo);
-
-		Property actualProperty = new Property() {
-			@Override
-			public Type getType() {
-				return type;
-			}
-
-			@Override
-			public AnnotatedType getAnnotatedType() {
-				return annotatedType;
-			}
-
-			@Nullable
-			@Override
-			public String getName() {
-				return property.getName();
-			}
-
-			@Override
-			public List<Annotation> getAnnotations() {
-				return Collections.unmodifiableList(annotations);
-			}
-
-			@Nullable
-			@Override
-			public Object getValue(Object instance) {
-				return property.getValue(instance);
-			}
-		};
+			propertyGenerator.generateChildProperties(actualConcreteProperty);
 		return new ObjectProperty(
-			actualProperty,
+			actualConcreteProperty,
 			context.getPropertyNameResolver(),
 			nullInject,
 			context.getElementIndex(),
-			Collections.singletonMap(actualProperty, childProperties)
+			Collections.singletonMap(actualConcreteProperty, childProperties)
 		);
 	}
 }
