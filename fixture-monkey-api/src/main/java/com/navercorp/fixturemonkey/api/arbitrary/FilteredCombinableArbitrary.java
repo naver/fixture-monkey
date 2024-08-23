@@ -201,6 +201,11 @@ final class FilteredCombinableArbitrary<T> implements CombinableArbitrary<T> {
 		return combinableArbitrary.fixed();
 	}
 
+	@Override
+	public CombinableArbitrary<T> unique() {
+		return combinableArbitrary.unique();
+	}
+
 	private RetryableFilterMissException newRetryableFilterMissException(@Nullable Throwable throwable) {
 		if (!(throwable instanceof RetryableFilterMissException)) {
 			return new RetryableFilterMissException(throwable);

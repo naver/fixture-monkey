@@ -71,6 +71,11 @@ final class NullInjectCombinableArbitrary<T> implements CombinableArbitrary<T> {
 		return combinableArbitrary.fixed();
 	}
 
+	@Override
+	public CombinableArbitrary<T> unique() {
+		return combinableArbitrary.unique();
+	}
+
 	@Nullable
 	private Object injectNull(Object object) {
 		int frequencyNull = (int)Math.round(nullProbability * 1000);

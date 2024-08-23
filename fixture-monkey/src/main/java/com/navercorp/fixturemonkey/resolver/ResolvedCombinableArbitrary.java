@@ -128,6 +128,11 @@ final class ResolvedCombinableArbitrary<T> implements CombinableArbitrary<T> {
 	}
 
 	@Override
+	public CombinableArbitrary<T> unique() {
+		return arbitrary.getValue().unique();
+	}
+
+	@Override
 	public boolean fixed() {
 		return false;
 	}

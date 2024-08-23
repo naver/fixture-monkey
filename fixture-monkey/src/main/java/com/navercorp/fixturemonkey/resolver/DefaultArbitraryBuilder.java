@@ -464,7 +464,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 	}
 
 	@Override
-	public <U> ArbitraryBuilder<T> customizeProperty(
+	public <U> ExperimentalArbitraryBuilder<T> customizeProperty(
 		TypedPropertySelector<U> propertySelector,
 		Function<CombinableArbitrary<? extends U>, CombinableArbitrary<? extends U>> combinableArbitraryCustomizer
 	) {
