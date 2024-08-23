@@ -22,6 +22,7 @@ import static java.util.stream.Collectors.toList;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -36,7 +37,9 @@ import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
 import com.navercorp.fixturemonkey.api.type.LazyAnnotatedType;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
+import com.navercorp.fixturemonkey.buildergroup.ArbitraryBuilderCandidate;
 import com.navercorp.fixturemonkey.customizer.ArbitraryManipulator;
+import com.navercorp.fixturemonkey.customizer.ArbitraryManagerFactory;
 import com.navercorp.fixturemonkey.customizer.MonkeyManipulatorFactory;
 import com.navercorp.fixturemonkey.experimental.ExperimentalArbitraryBuilder;
 import com.navercorp.fixturemonkey.resolver.ArbitraryBuilderContext;
@@ -53,6 +56,7 @@ public final class FixtureMonkey {
 	private final MonkeyContext monkeyContext;
 	private final List<MatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuilders = new ArrayList<>();
 	private final MonkeyManipulatorFactory monkeyManipulatorFactory;
+	private final ArbitraryManagerFactory arbitraryManagerFactory;
 
 	public FixtureMonkey(
 		FixtureMonkeyOptions fixtureMonkeyOptions,
@@ -60,7 +64,8 @@ public final class FixtureMonkey {
 		ManipulatorOptimizer manipulatorOptimizer,
 		MonkeyContext monkeyContext,
 		List<MatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>>> registeredArbitraryBuilders,
-		MonkeyManipulatorFactory monkeyManipulatorFactory
+		MonkeyManipulatorFactory monkeyManipulatorFactory,
+		Map<String, ArbitraryBuilderCandidate<?>> arbitraryBuilderCandidateMap
 	) {
 		this.fixtureMonkeyOptions = fixtureMonkeyOptions;
 		this.traverser = traverser;
@@ -68,6 +73,12 @@ public final class FixtureMonkey {
 		this.monkeyContext = monkeyContext;
 		this.monkeyManipulatorFactory = monkeyManipulatorFactory;
 		initializeRegisteredArbitraryBuilders(registeredArbitraryBuilders);
+		/*
+		ArbitraryBuilder에서 arbitaryBuilderName을 통해 선택을 한 후, 선택된 ArbitraryBuilder를 적용시킬 계획입니다.
+		위와 같이 구현을 하기 위해선, DefaultArbitraryBuilder에서 MatcherOperator을 사용해 변환을 해야 합니다.
+		이때 apply api에서 FixtureMonkey 객체를 필요로 하기 때문에 의존 객체를 생성자에 넘겨줘 인스턴스를 생성하는 방식으로 구현 했습니다.
+		 */
+		arbitraryManagerFactory = new ArbitraryManagerFactory(arbitraryBuilderCandidateMap, this);
 	}
 
 	public static FixtureMonkeyBuilder builder() {
@@ -111,7 +122,8 @@ public final class FixtureMonkey {
 			builderContext.copy(),
 			registeredArbitraryBuilders,
 			monkeyContext,
-			fixtureMonkeyOptions.getInstantiatorProcessor()
+			fixtureMonkeyOptions.getInstantiatorProcessor(),
+			arbitraryManagerFactory
 		);
 	}
 
@@ -138,7 +150,8 @@ public final class FixtureMonkey {
 			context,
 			registeredArbitraryBuilders,
 			monkeyContext,
-			fixtureMonkeyOptions.getInstantiatorProcessor()
+			fixtureMonkeyOptions.getInstantiatorProcessor(),
+			arbitraryManagerFactory
 		);
 	}
 

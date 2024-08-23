@@ -22,7 +22,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
@@ -59,6 +61,7 @@ import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.api.validator.ArbitraryValidator;
 import com.navercorp.fixturemonkey.buildergroup.ArbitraryBuilderCandidate;
 import com.navercorp.fixturemonkey.buildergroup.ArbitraryBuilderGroup;
+import com.navercorp.fixturemonkey.buildergroup.ArbitraryManagerGroup;
 import com.navercorp.fixturemonkey.customizer.MonkeyManipulatorFactory;
 import com.navercorp.fixturemonkey.expression.ArbitraryExpressionFactory;
 import com.navercorp.fixturemonkey.expression.MonkeyExpressionFactory;
@@ -76,6 +79,7 @@ public final class FixtureMonkeyBuilder {
 	private ManipulatorOptimizer manipulatorOptimizer = new NoneManipulatorOptimizer();
 	private MonkeyExpressionFactory monkeyExpressionFactory = new ArbitraryExpressionFactory();
 	private final MonkeyContextBuilder monkeyContextBuilder = MonkeyContext.builder();
+	private final Map<String, ArbitraryBuilderCandidate<?>> arbitraryBuilderCandidateMap = new HashMap<>();
 	private long seed = System.nanoTime();
 
 	// The default plugins are listed below.
@@ -381,6 +385,13 @@ public final class FixtureMonkeyBuilder {
 		return this;
 	}
 
+	public FixtureMonkeyBuilder registerGroup(ArbitraryManagerGroup... arbitraryManagerGroups) {
+		for (ArbitraryManagerGroup arbitraryManagerGroup : arbitraryManagerGroups) {
+			this.arbitraryBuilderCandidateMap.putAll(arbitraryManagerGroup.generateCandidateList().getCandidates());
+		}
+		return this;
+	}
+
 	public FixtureMonkeyBuilder plugin(Plugin plugin) {
 		if (plugin instanceof InterfacePlugin) { // TODO: Added for backward compatibility. It will be removed in 1.1.0
 			this.defaultInterfacePlugin = (InterfacePlugin)plugin;
@@ -552,7 +563,8 @@ public final class FixtureMonkeyBuilder {
 			manipulatorOptimizer,
 			monkeyContext,
 			registeredArbitraryBuilders,
-			monkeyManipulatorFactory
+			monkeyManipulatorFactory,
+			arbitraryBuilderCandidateMap
 		);
 	}
 }

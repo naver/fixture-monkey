@@ -49,6 +49,7 @@ import net.jqwik.api.Combinators.F4;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
+import com.navercorp.fixturemonkey.customizer.ArbitraryManagerFactory;
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.context.MonkeyContext;
 import com.navercorp.fixturemonkey.api.experimental.TypedPropertySelector;
@@ -65,6 +66,7 @@ import com.navercorp.fixturemonkey.api.property.RootProperty;
 import com.navercorp.fixturemonkey.api.type.LazyAnnotatedType;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.api.type.Types;
+import com.navercorp.fixturemonkey.buildergroup.ArbitraryBuilderCandidate;
 import com.navercorp.fixturemonkey.customizer.ArbitraryManipulator;
 import com.navercorp.fixturemonkey.customizer.ContainerInfoManipulator;
 import com.navercorp.fixturemonkey.customizer.InnerSpec;
@@ -85,6 +87,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 	private final List<MatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuilders;
 	private final MonkeyContext monkeyContext;
 	private final InstantiatorProcessor instantiatorProcessor;
+	private final ArbitraryManagerFactory arbitraryManagerFactory;
 
 	public DefaultArbitraryBuilder(
 		FixtureMonkeyOptions fixtureMonkeyOptions,
@@ -95,7 +98,8 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 		ArbitraryBuilderContext context,
 		List<MatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuilders,
 		MonkeyContext monkeyContext,
-		InstantiatorProcessor instantiatorProcessor
+		InstantiatorProcessor instantiatorProcessor,
+		ArbitraryManagerFactory arbitraryManagerFactory
 	) {
 		this.fixtureMonkeyOptions = fixtureMonkeyOptions;
 		this.rootProperty = rootProperty;
@@ -106,6 +110,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 		this.registeredArbitraryBuilders = registeredArbitraryBuilders;
 		this.monkeyContext = monkeyContext;
 		this.instantiatorProcessor = instantiatorProcessor;
+		this.arbitraryManagerFactory = arbitraryManagerFactory;
 	}
 
 	@Override
@@ -177,6 +182,8 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 			resolveExpression(toExpressionGenerator(propertySelector)), supplier, MAX_MANIPULATION_COUNT
 		);
 	}
+
+	// TODO 다음 PR에서 선택 api 구현
 
 	@Override
 	public ArbitraryBuilder<T> setInner(InnerSpec innerSpec) {
@@ -510,7 +517,8 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 			context.copy(),
 			registeredArbitraryBuilders,
 			monkeyContext,
-			instantiatorProcessor
+			instantiatorProcessor,
+			arbitraryManagerFactory
 		);
 	}
 
@@ -560,7 +568,8 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 			context,
 			registeredArbitraryBuilders,
 			monkeyContext,
-			instantiatorProcessor
+			instantiatorProcessor,
+			arbitraryManagerFactory
 		);
 	}
 
