@@ -24,6 +24,7 @@ multiReleaseVersions.forEach { releaseVersion ->
 
 dependencies {
     api("org.apiguardian:apiguardian-api:1.1.2")
+
     compileOnly("net.jqwik:jqwik-engine:${Versions.JQWIK}")
     compileOnly("net.jqwik:jqwik-api:${Versions.JQWIK}")
     compileOnly("net.jqwik:jqwik-web:${Versions.JQWIK}")

@@ -6,7 +6,7 @@ plugins {
 dependencies {
     runtimeOnly(project(":fixture-monkey-engine"))
     api(project(":fixture-monkey-api"))
-
+    api("org.slf4j:slf4j-api:${Versions.SLF4J}")
     api("net.jqwik:jqwik:${Versions.JQWIK}")
     api("com.github.curious-odd-man:rgxgen:1.4")
     api("com.github.mifmif:generex:1.0.2")
