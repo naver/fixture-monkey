@@ -1,22 +1,42 @@
+/*
+ * Fixture Monkey
+ *
+ * Copyright (c) 2021-present NAVER Corp.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.navercorp.fixturemonkey.junit.jupiter.extension;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.spi.ILoggingEvent;
-import ch.qos.logback.core.AppenderBase;
+import ch.qos.logback.core.read.ListAppender;
 import lombok.Data;
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
@@ -27,7 +47,7 @@ import com.navercorp.fixturemonkey.junit.jupiter.annotation.Seed;
 public class FixtureMonkeyShowMeLogExtensionTest {
 
 	private static ArbitraryBuilder<Product> actual;
-	private TestAppender testAppender;
+	private static ListAppender<ILoggingEvent> listAppender;
 
 	@BeforeAll
 	public static void setup() {
@@ -36,41 +56,35 @@ public class FixtureMonkeyShowMeLogExtensionTest {
 			.set("id", 1000L)
 			.set("productName", "Book");
 
+		LoggerContext loggerContext = (LoggerContext)LoggerFactory.getILoggerFactory();
+
+		listAppender = new ListAppender<>();
+		listAppender.setContext(loggerContext);
+		listAppender.start();
+
+		loggerContext.getLogger(Logger.ROOT_LOGGER_NAME).addAppender(listAppender);
+		loggerContext.getLogger(Logger.ROOT_LOGGER_NAME).setLevel(Level.ERROR);
+
 	}
 
-	@BeforeEach
-	void logSetup() {
-		Logger logger = (Logger)LoggerFactory.getLogger(FixtureMonkeySeedExtension.class);
-		testAppender = new TestAppender();
-		logger.addAppender(testAppender);
-		logger.setAdditive(true);
+	@AfterEach
+	public void tearDown() {
+		listAppender.list.clear();
 	}
 
 	@Seed(1234L)
 	@Test
-	void testWithShowMeLog() throws Exception {
+	void testWithShowMeLog() {
 		boolean logFound = false;
 		try {
 			assertProductCreatedInCorrectly(actual);
 		} catch (AssertionError e) {
-			logFound = testAppender.getLogEvents().stream()
+			List<ILoggingEvent> logs = listAppender.list;
+			logFound = logs.stream()
 				.anyMatch(event -> event.getFormattedMessage()
-					.startsWith("Test Method [testMethodShouldFailAndLogSeed] failed with seed: "));
+					.contains("Test Method [testWithShowMeLog] failed with seed: "));
 		}
-		assertTrue(logFound);
-	}
-
-	private static class TestAppender extends AppenderBase<ILoggingEvent> {
-		private final List<ILoggingEvent> logEvents = new ArrayList<>();
-
-		@Override
-		protected void append(ILoggingEvent eventObject) {
-			logEvents.add(eventObject);
-		}
-
-		public List<ILoggingEvent> getLogEvents() {
-			return new ArrayList<>(logEvents);
-		}
+		assertTrue(logFound, "Expected log message found.");
 	}
 
 	private void assertProductCreatedInCorrectly(ArbitraryBuilder<Product> actual) {
