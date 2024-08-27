@@ -17,9 +17,9 @@
  */
 package com.navercorp.fixturemonkey.junit.jupiter.extension;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.List;
 
