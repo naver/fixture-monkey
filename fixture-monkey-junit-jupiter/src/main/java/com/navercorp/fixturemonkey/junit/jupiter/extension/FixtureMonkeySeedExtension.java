@@ -26,13 +26,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.navercorp.fixturemonkey.api.random.Randoms;
-import com.navercorp.fixturemonkey.junit.jupiter.annotation.ShowMeLog;
+import com.navercorp.fixturemonkey.junit.jupiter.annotation.Seed;
 
 public final class FixtureMonkeySeedExtension implements AfterTestExecutionCallback {
-	private static final ThreadLocal<Random> SEED_HOLDER = new ThreadLocal<>();
+	private static final ThreadLocal<Long> SEED_HOLDER = new ThreadLocal<>();
 
-	private static final Logger logger = LoggerFactory.getLogger(FixtureMonkeySeedExtension.class);
-
+	private static final Logger LOGGER = LoggerFactory.getLogger(FixtureMonkeySeedExtension.class);
 	/**
 	 * Logs the seed used for the test if the test fails.
 	 * If the @ShowMeLog annotation is present on the test method,
@@ -40,21 +39,26 @@ public final class FixtureMonkeySeedExtension implements AfterTestExecutionCallb
 	 **/
 	@Override
 	public void afterTestExecution(ExtensionContext context) throws Exception {
-		ShowMeLog showMeLog = context.getRequiredTestMethod().getAnnotation(ShowMeLog.class);
-		if (showMeLog != null) {
-			SEED_HOLDER.set(Randoms.create(showMeLog.value()));
-			if (context.getExecutionException().isPresent()) {
-				logSeedIfTestFailed(context, SEED_HOLDER.get());
-			}
+		Seed seed = context.getRequiredTestMethod().getAnnotation(Seed.class);
+		setSeed(seed.value());
+		if (context.getExecutionException().isPresent()) {
+			logSeedIfTestFailed(context);
 		}
+	}
+
+	/**
+	 * Sets the seed for generating random numbers.
+	 **/
+	private void setSeed(long seed) {
+		SEED_HOLDER.set(Randoms.create(String.valueOf(seed)).nextLong());
 	}
 
 	/**
 	 * Logs the seed if the test failed.
 	 * This method is called when a test method execution fails.
 	 **/
-	private void logSeedIfTestFailed(ExtensionContext context, Random seed) {
+	private void logSeedIfTestFailed(ExtensionContext context) {
 		Method testMethod = context.getRequiredTestMethod();
-		logger.error(String.format("Test Method [%s] failed with seed: %d", testMethod.getName(), seed));
+		LOGGER.error(String.format("Test Method [%s] failed with seed: %d", testMethod.getName(), SEED_HOLDER.get()));
 	}
 }
