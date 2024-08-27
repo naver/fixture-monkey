@@ -33,8 +33,8 @@ public final class FixtureMonkeySeedExtension implements AfterTestExecutionCallb
 	private static final Logger LOGGER = LoggerFactory.getLogger(FixtureMonkeySeedExtension.class);
 	/**
 	 * Logs the seed used for the test if the test fails.
-	 * If the @ShowMeLog annotation is present on the test method,
-	 * it shows log of the current seed if the test fails.
+	 * This method is called after a test method has executed.
+	 * If the test failed, it logs the seed used for the test.
 	 **/
 	@Override
 	public void afterTestExecution(ExtensionContext context) throws Exception {
@@ -54,7 +54,7 @@ public final class FixtureMonkeySeedExtension implements AfterTestExecutionCallb
 
 	/**
 	 * Logs the seed if the test failed.
-	 * This method is called when a test method execution fails.
+	 * This method logs the seed value when a test method execution fails.
 	 **/
 	private void logSeedIfTestFailed(ExtensionContext context) {
 		Method testMethod = context.getRequiredTestMethod();

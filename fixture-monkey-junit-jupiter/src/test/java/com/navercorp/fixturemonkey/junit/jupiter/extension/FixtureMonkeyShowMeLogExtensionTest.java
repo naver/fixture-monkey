@@ -44,13 +44,13 @@ import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.junit.jupiter.annotation.Seed;
 
 @ExtendWith(FixtureMonkeySeedExtension.class)
-public class FixtureMonkeyShowMeLogExtensionTest {
+class FixtureMonkeyShowMeLogExtensionTest {
 
 	private static ArbitraryBuilder<Product> actual;
 	private static ListAppender<ILoggingEvent> listAppender;
 
 	@BeforeAll
-	public static void setup() {
+	static void setup() {
 		FixtureMonkey fixtureMonkey = FixtureMonkey.create();
 		actual = fixtureMonkey.giveMeBuilder(Product.class)
 			.set("id", 1000L)
@@ -68,13 +68,13 @@ public class FixtureMonkeyShowMeLogExtensionTest {
 	}
 
 	@AfterEach
-	public void tearDown() {
+	void tearDown() {
 		listAppender.list.clear();
 	}
 
 	@Seed(1234L)
 	@Test
-	void testWithShowMeLog() {
+	void testWithSeed() {
 		boolean logFound = false;
 		try {
 			assertProductCreatedInCorrectly(actual);
@@ -82,7 +82,7 @@ public class FixtureMonkeyShowMeLogExtensionTest {
 			List<ILoggingEvent> logs = listAppender.list;
 			logFound = logs.stream()
 				.anyMatch(event -> event.getFormattedMessage()
-					.contains("Test Method [testWithShowMeLog] failed with seed: "));
+					.contains("Test Method [testWithSeed] failed with seed: "));
 		}
 		assertTrue(logFound, "Expected log message found.");
 	}
@@ -97,7 +97,7 @@ public class FixtureMonkeyShowMeLogExtensionTest {
 	}
 
 	@Data
-	public static class Product {
+	private static class Product {
 		@NotNull
 		private Long id;
 		@NotBlank
