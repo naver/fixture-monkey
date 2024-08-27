@@ -18,7 +18,6 @@
 package com.navercorp.fixturemonkey.junit.jupiter.extension;
 
 import java.lang.reflect.Method;
-import java.util.Random;
 
 import org.junit.jupiter.api.extension.AfterTestExecutionCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
