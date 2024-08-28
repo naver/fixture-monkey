@@ -28,6 +28,7 @@ import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -49,7 +50,6 @@ import net.jqwik.api.Combinators.F4;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
-import com.navercorp.fixturemonkey.customizer.ArbitraryManagerFactory;
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.context.MonkeyContext;
 import com.navercorp.fixturemonkey.api.experimental.TypedPropertySelector;
@@ -66,7 +66,6 @@ import com.navercorp.fixturemonkey.api.property.RootProperty;
 import com.navercorp.fixturemonkey.api.type.LazyAnnotatedType;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.api.type.Types;
-import com.navercorp.fixturemonkey.buildergroup.ArbitraryBuilderCandidate;
 import com.navercorp.fixturemonkey.customizer.ArbitraryManipulator;
 import com.navercorp.fixturemonkey.customizer.ContainerInfoManipulator;
 import com.navercorp.fixturemonkey.customizer.InnerSpec;
@@ -87,7 +86,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 	private final List<MatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuilders;
 	private final MonkeyContext monkeyContext;
 	private final InstantiatorProcessor instantiatorProcessor;
-	private final ArbitraryManagerFactory arbitraryManagerFactory;
+	private final Map<String, MatcherOperator<? extends ArbitraryBuilder<?>>> namedArbitraryBuilderMap;
 
 	public DefaultArbitraryBuilder(
 		FixtureMonkeyOptions fixtureMonkeyOptions,
@@ -99,7 +98,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 		List<MatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuilders,
 		MonkeyContext monkeyContext,
 		InstantiatorProcessor instantiatorProcessor,
-		ArbitraryManagerFactory arbitraryManagerFactory
+		Map<String, MatcherOperator<? extends ArbitraryBuilder<?>>> ArbitraryBuilderMapsByRegisteredName
 	) {
 		this.fixtureMonkeyOptions = fixtureMonkeyOptions;
 		this.rootProperty = rootProperty;
@@ -110,7 +109,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 		this.registeredArbitraryBuilders = registeredArbitraryBuilders;
 		this.monkeyContext = monkeyContext;
 		this.instantiatorProcessor = instantiatorProcessor;
-		this.arbitraryManagerFactory = arbitraryManagerFactory;
+		this.namedArbitraryBuilderMap = ArbitraryBuilderMapsByRegisteredName;
 	}
 
 	@Override
@@ -518,7 +517,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 			registeredArbitraryBuilders,
 			monkeyContext,
 			instantiatorProcessor,
-			arbitraryManagerFactory
+			namedArbitraryBuilderMap
 		);
 	}
 
@@ -569,7 +568,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 			registeredArbitraryBuilders,
 			monkeyContext,
 			instantiatorProcessor,
-			arbitraryManagerFactory
+			namedArbitraryBuilderMap
 		);
 	}
 

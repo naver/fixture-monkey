@@ -61,7 +61,6 @@ import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.api.validator.ArbitraryValidator;
 import com.navercorp.fixturemonkey.buildergroup.ArbitraryBuilderCandidate;
 import com.navercorp.fixturemonkey.buildergroup.ArbitraryBuilderGroup;
-import com.navercorp.fixturemonkey.buildergroup.ArbitraryManagerGroup;
 import com.navercorp.fixturemonkey.customizer.MonkeyManipulatorFactory;
 import com.navercorp.fixturemonkey.expression.ArbitraryExpressionFactory;
 import com.navercorp.fixturemonkey.expression.MonkeyExpressionFactory;
@@ -79,7 +78,8 @@ public final class FixtureMonkeyBuilder {
 	private ManipulatorOptimizer manipulatorOptimizer = new NoneManipulatorOptimizer();
 	private MonkeyExpressionFactory monkeyExpressionFactory = new ArbitraryExpressionFactory();
 	private final MonkeyContextBuilder monkeyContextBuilder = MonkeyContext.builder();
-	private final Map<String, ArbitraryBuilderCandidate<?>> arbitraryBuilderCandidateMap = new HashMap<>();
+	private final Map<String, MatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>>>
+		matcherOperatorMap = new HashMap<>();
 	private long seed = System.nanoTime();
 
 	// The default plugins are listed below.
@@ -385,10 +385,18 @@ public final class FixtureMonkeyBuilder {
 		return this;
 	}
 
-	public FixtureMonkeyBuilder registerGroup(ArbitraryManagerGroup... arbitraryManagerGroups) {
-		for (ArbitraryManagerGroup arbitraryManagerGroup : arbitraryManagerGroups) {
-			this.arbitraryBuilderCandidateMap.putAll(arbitraryManagerGroup.generateCandidateList().getCandidates());
+	public FixtureMonkeyBuilder registerArbitraryByName(
+		String arbitraryName,
+		Class<?> type,
+		Function<FixtureMonkey, ? extends ArbitraryBuilder<?>> arbitraryBuilder
+	) {
+		if (matcherOperatorMap.containsKey(arbitraryName)) {
+			throw new IllegalArgumentException("Duplicated ArbitraryBuilder name: " + arbitraryName);
 		}
+		MatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>> matcherOperator =
+			MatcherOperator.assignableTypeMatchOperator(type, arbitraryBuilder);
+
+		this.matcherOperatorMap.put(arbitraryName, matcherOperator);
 		return this;
 	}
 
@@ -564,7 +572,7 @@ public final class FixtureMonkeyBuilder {
 			monkeyContext,
 			registeredArbitraryBuilders,
 			monkeyManipulatorFactory,
-			arbitraryBuilderCandidateMap
+			matcherOperatorMap
 		);
 	}
 }
