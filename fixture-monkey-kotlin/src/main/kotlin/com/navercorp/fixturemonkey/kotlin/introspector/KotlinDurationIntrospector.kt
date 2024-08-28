@@ -24,7 +24,9 @@ import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult
 import com.navercorp.fixturemonkey.api.matcher.Matcher
 import com.navercorp.fixturemonkey.api.property.Property
+import com.navercorp.fixturemonkey.api.property.PropertyGenerator
 import com.navercorp.fixturemonkey.kotlin.matcher.Matchers.DURATION_TYPE_MATCHER
+import com.navercorp.fixturemonkey.kotlin.property.KotlinPropertyGenerator
 import org.apiguardian.api.API
 import kotlin.reflect.full.primaryConstructor
 import kotlin.time.Duration
@@ -61,5 +63,11 @@ class KotlinDurationIntrospector : ArbitraryIntrospector, Matcher {
                     value.toDuration(durationUnit)
                 }
         )
+    }
+
+    override fun getRequiredPropertyGenerator(property: Property): PropertyGenerator = PROPERTY_GENERATOR
+
+    companion object {
+        val PROPERTY_GENERATOR = KotlinPropertyGenerator()
     }
 }

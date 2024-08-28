@@ -43,6 +43,7 @@ import com.navercorp.fixturemonkey.kotlin.property.KotlinPropertyGenerator
 import com.navercorp.fixturemonkey.kotlin.type.actualType
 import com.navercorp.fixturemonkey.kotlin.type.cachedKotlin
 import com.navercorp.fixturemonkey.kotlin.type.isKotlinLambda
+import com.navercorp.fixturemonkey.kotlin.type.isKotlinType
 import org.apiguardian.api.API
 import org.apiguardian.api.API.Status.MAINTAINED
 import java.lang.reflect.Modifier
@@ -58,7 +59,10 @@ class KotlinPlugin : Plugin {
                 )
             )
         }
-            .defaultPropertyGenerator(KotlinPropertyGenerator())
+            .insertFirstPropertyGenerator(
+                { property -> property.type.actualType().isKotlinType() },
+                KotlinPropertyGenerator()
+            )
             .insertFirstArbitraryContainerPropertyGenerator(
                 { property -> property.type.actualType().cachedKotlin().isKotlinLambda() }
             ) { FunctionalInterfaceContainerPropertyGenerator.INSTANCE.generate(it) }
