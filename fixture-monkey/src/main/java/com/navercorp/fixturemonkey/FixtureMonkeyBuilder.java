@@ -79,7 +79,7 @@ public final class FixtureMonkeyBuilder {
 	private MonkeyExpressionFactory monkeyExpressionFactory = new ArbitraryExpressionFactory();
 	private final MonkeyContextBuilder monkeyContextBuilder = MonkeyContext.builder();
 	private final Map<String, MatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>>>
-		matcherOperatorMap = new HashMap<>();
+		registeredArbitraryListByRegisteredName = new HashMap<>();
 	private long seed = System.nanoTime();
 
 	// The default plugins are listed below.
@@ -385,18 +385,18 @@ public final class FixtureMonkeyBuilder {
 		return this;
 	}
 
-	public FixtureMonkeyBuilder registerArbitraryByName(
+	public FixtureMonkeyBuilder registeredName(
 		String arbitraryName,
 		Class<?> type,
 		Function<FixtureMonkey, ? extends ArbitraryBuilder<?>> arbitraryBuilder
 	) {
-		if (matcherOperatorMap.containsKey(arbitraryName)) {
+		if (registeredArbitraryListByRegisteredName.containsKey(arbitraryName)) {
 			throw new IllegalArgumentException("Duplicated ArbitraryBuilder name: " + arbitraryName);
 		}
 		MatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>> matcherOperator =
 			MatcherOperator.assignableTypeMatchOperator(type, arbitraryBuilder);
 
-		this.matcherOperatorMap.put(arbitraryName, matcherOperator);
+		this.registeredArbitraryListByRegisteredName.put(arbitraryName, matcherOperator);
 		return this;
 	}
 
@@ -572,7 +572,7 @@ public final class FixtureMonkeyBuilder {
 			monkeyContext,
 			registeredArbitraryBuilders,
 			monkeyManipulatorFactory,
-			matcherOperatorMap
+			registeredArbitraryListByRegisteredName
 		);
 	}
 }

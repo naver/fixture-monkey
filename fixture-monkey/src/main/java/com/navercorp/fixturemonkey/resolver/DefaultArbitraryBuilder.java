@@ -98,7 +98,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 		List<MatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuilders,
 		MonkeyContext monkeyContext,
 		InstantiatorProcessor instantiatorProcessor,
-		Map<String, MatcherOperator<? extends ArbitraryBuilder<?>>> ArbitraryBuilderMapsByRegisteredName
+		Map<String, MatcherOperator<? extends ArbitraryBuilder<?>>> arbitraryBuilderMapsByRegisteredName
 	) {
 		this.fixtureMonkeyOptions = fixtureMonkeyOptions;
 		this.rootProperty = rootProperty;
@@ -109,7 +109,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 		this.registeredArbitraryBuilders = registeredArbitraryBuilders;
 		this.monkeyContext = monkeyContext;
 		this.instantiatorProcessor = instantiatorProcessor;
-		this.namedArbitraryBuilderMap = ArbitraryBuilderMapsByRegisteredName;
+		this.namedArbitraryBuilderMap = arbitraryBuilderMapsByRegisteredName;
 	}
 
 	@Override

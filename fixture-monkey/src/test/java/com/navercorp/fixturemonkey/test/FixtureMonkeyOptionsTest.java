@@ -804,17 +804,17 @@ class FixtureMonkeyOptionsTest {
 	@Property
 	void registerArbitraryByName() throws NoSuchFieldException, IllegalAccessException {
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.registerArbitraryByName(
+			.registeredName(
 				"test",
 				String.class,
 				monkey -> monkey.giveMeBuilder("test")
 			)
-			.registerArbitraryByName(
+			.registeredName(
 				"test2",
 				String.class,
 				monkey -> monkey.giveMeBuilder("test2")
 			)
-			.registerArbitraryByName(
+			.registeredName(
 				"test3",
 				String.class,
 				monkey -> monkey.giveMeBuilder("test3")
@@ -834,12 +834,12 @@ class FixtureMonkeyOptionsTest {
 	@Property
 	void registerArbitraryByNameWithSameNameThrows() {
 		thenThrownBy(() -> FixtureMonkey.builder()
-			.registerArbitraryByName(
+			.registeredName(
 				"test",
 				String.class,
 				monkey -> monkey.giveMeBuilder("test")
 			)
-			.registerArbitraryByName(
+			.registeredName(
 				"test",
 				String.class,
 				monkey -> monkey.giveMeBuilder("test2")

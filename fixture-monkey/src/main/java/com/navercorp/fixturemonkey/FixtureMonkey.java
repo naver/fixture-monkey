@@ -55,7 +55,8 @@ public final class FixtureMonkey {
 	private final MonkeyContext monkeyContext;
 	private final List<MatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuilders = new ArrayList<>();
 	private final MonkeyManipulatorFactory monkeyManipulatorFactory;
-	private final Map<String, MatcherOperator<? extends ArbitraryBuilder<?>>> namedArbitraryBuilderMap = new HashMap<>();
+	private final Map<String, MatcherOperator<? extends ArbitraryBuilder<?>>>
+		namedArbitraryBuilderMap = new HashMap<>();
 
 	public FixtureMonkey(
 		FixtureMonkeyOptions fixtureMonkeyOptions,
