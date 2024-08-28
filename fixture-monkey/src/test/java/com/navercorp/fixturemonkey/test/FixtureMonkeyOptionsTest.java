@@ -25,6 +25,7 @@ import static org.assertj.core.api.BDDAssertions.thenNoException;
 import static org.assertj.core.api.BDDAssertions.thenThrownBy;
 
 import java.lang.reflect.AnnotatedType;
+import java.lang.reflect.Field;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -798,6 +799,54 @@ class FixtureMonkeyOptionsTest {
 		then(actual).hasSizeBetween(1, 3);
 		then(actual2).hasSizeLessThan(5);
 		then(actual3).isEqualTo(ChildBuilderGroup.FIXED_INT_VALUE);
+	}
+
+	@Property
+	void registerArbitraryByName() throws NoSuchFieldException, IllegalAccessException {
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.registerArbitraryByName(
+				"test",
+				String.class,
+				monkey -> monkey.giveMeBuilder("test")
+			)
+			.registerArbitraryByName(
+				"test2",
+				String.class,
+				monkey -> monkey.giveMeBuilder("test2")
+			)
+			.registerArbitraryByName(
+				"test3",
+				String.class,
+				monkey -> monkey.giveMeBuilder("test3")
+			)
+			.build();
+
+		Field matcherOperatorMapField = sut.getClass().getDeclaredField("namedArbitraryBuilderMap");
+		matcherOperatorMapField.setAccessible(true);
+		Map<String, MatcherOperator<?>> matcherOperatorMap =
+			(Map<String, MatcherOperator<?>>)matcherOperatorMapField.get(sut);
+
+		then(matcherOperatorMap)
+			.hasSize(3)
+			.containsKeys("test", "test2", "test3");
+	}
+
+	@Property
+	void registerArbitraryByNameWithSameNameThrows() {
+		thenThrownBy(() -> FixtureMonkey.builder()
+			.registerArbitraryByName(
+				"test",
+				String.class,
+				monkey -> monkey.giveMeBuilder("test")
+			)
+			.registerArbitraryByName(
+				"test",
+				String.class,
+				monkey -> monkey.giveMeBuilder("test2")
+			)
+			.build()
+		).isExactlyInstanceOf(IllegalArgumentException.class)
+			.hasMessage("Duplicated ArbitraryBuilder name: test");
 	}
 
 	@Property
