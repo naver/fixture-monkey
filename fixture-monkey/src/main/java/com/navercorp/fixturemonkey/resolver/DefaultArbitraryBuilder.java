@@ -87,6 +87,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 	private final MonkeyContext monkeyContext;
 	private final InstantiatorProcessor instantiatorProcessor;
 	private final Map<String, MatcherOperator<? extends ArbitraryBuilder<?>>> namedArbitraryBuilderMap;
+	private final List<MatcherOperator<? extends ArbitraryBuilder<?>>> selectedArbitraryBuilders = new ArrayList<>();
 
 	public DefaultArbitraryBuilder(
 		FixtureMonkeyOptions fixtureMonkeyOptions,
@@ -182,7 +183,19 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 		);
 	}
 
-	// TODO 다음 PR에서 선택 api 구현
+	@Override
+	public ArbitraryBuilder<T> selectName(String... names) {
+		for (String name : names) {
+			MatcherOperator<? extends ArbitraryBuilder<?>> namedArbitraryBuilder = namedArbitraryBuilderMap.get(name);
+
+			if (namedArbitraryBuilder == null) {
+				throw new IllegalArgumentException("Given name is not registered. name: " + name);
+			}
+			selectedArbitraryBuilders.add(namedArbitraryBuilder);
+		}
+		registeredArbitraryBuilders.addAll(selectedArbitraryBuilders);
+		return this;
+	}
 
 	@Override
 	public ArbitraryBuilder<T> setInner(InnerSpec innerSpec) {
@@ -530,7 +543,8 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 			if (context.getFixedCombinableArbitrary() == null || context.fixedExpired()) {
 				Object fixed = resolver.resolve(
 						rootProperty,
-						context
+						context,
+						selectedArbitraryBuilders
 					)
 					.combined();
 				context.addManipulator(monkeyManipulatorFactory.newArbitraryManipulator("$", fixed));
@@ -541,7 +555,8 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 
 		return resolver.resolve(
 			rootProperty,
-			context
+			context,
+			selectedArbitraryBuilders
 		);
 	}
 

@@ -25,7 +25,6 @@ import static org.assertj.core.api.BDDAssertions.thenNoException;
 import static org.assertj.core.api.BDDAssertions.thenThrownBy;
 
 import java.lang.reflect.AnnotatedType;
-import java.lang.reflect.Field;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -802,8 +801,9 @@ class FixtureMonkeyOptionsTest {
 	}
 
 	@Property
-	void registerArbitraryByName() throws NoSuchFieldException, IllegalAccessException {
+	void registeredName() {
 		FixtureMonkey sut = FixtureMonkey.builder()
+			.register(Integer.class, monkey -> monkey.giveMeBuilder(1))
 			.registeredName(
 				"test",
 				String.class,
@@ -814,25 +814,18 @@ class FixtureMonkeyOptionsTest {
 				String.class,
 				monkey -> monkey.giveMeBuilder("test2")
 			)
-			.registeredName(
-				"test3",
-				String.class,
-				monkey -> monkey.giveMeBuilder("test3")
-			)
 			.build();
 
-		Field matcherOperatorMapField = sut.getClass().getDeclaredField("namedArbitraryBuilderMap");
-		matcherOperatorMapField.setAccessible(true);
-		Map<String, MatcherOperator<?>> matcherOperatorMap =
-			(Map<String, MatcherOperator<?>>)matcherOperatorMapField.get(sut);
+		SimpleObject actual = sut.giveMeBuilder(SimpleObject.class)
+			.selectName("test")
+			.sample();
 
-		then(matcherOperatorMap)
-			.hasSize(3)
-			.containsKeys("test", "test2", "test3");
+		then(actual.getStr()).isEqualTo("test");
+		then(actual.getWrapperInteger()).isEqualTo(Integer.valueOf(1));
 	}
 
 	@Property
-	void registerArbitraryByNameWithSameNameThrows() {
+	void registeredNameWithSameNameThrows() {
 		thenThrownBy(() -> FixtureMonkey.builder()
 			.registeredName(
 				"test",
@@ -847,6 +840,56 @@ class FixtureMonkeyOptionsTest {
 			.build()
 		).isExactlyInstanceOf(IllegalArgumentException.class)
 			.hasMessage("Duplicated ArbitraryBuilder name: test");
+	}
+
+	@Property
+	void registeredNameWithUnregisteredName() {
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.registeredName(
+				"test",
+				String.class,
+				monkey -> monkey.giveMeBuilder("test")
+			)
+			.registeredName(
+				"test2",
+				String.class,
+				monkey -> monkey.giveMeBuilder("test2")
+			)
+			.build();
+
+		thenThrownBy(() -> sut.giveMeBuilder(SimpleObject.class)
+			.selectName("test3")
+			.sample()
+		).isExactlyInstanceOf(IllegalArgumentException.class)
+			.hasMessage("Given name is not registered. name: test3");
+	}
+
+	@Property
+	void selectedArbitraryBuilderCannotBeReused() {
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.registeredName(
+				"test",
+				String.class,
+				monkey -> monkey.giveMeBuilder("test")
+			)
+			.registeredName(
+				"test2",
+				String.class,
+				monkey -> monkey.giveMeBuilder("test2")
+			)
+			.build();
+
+		String actual = sut.giveMeBuilder(SimpleObject.class)
+			.selectName("test")
+			.sample()
+			.getStr();
+
+		String actual2 = sut.giveMeBuilder(SimpleObject.class)
+			.selectName("test2")
+			.sample()
+			.getStr();
+
+		then(actual2).isEqualTo("test2");
 	}
 
 	@Property
