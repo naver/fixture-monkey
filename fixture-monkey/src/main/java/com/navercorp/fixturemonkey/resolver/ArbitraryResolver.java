@@ -49,7 +49,6 @@ public final class ArbitraryResolver {
 	private final FixtureMonkeyOptions fixtureMonkeyOptions;
 	private final MonkeyContext monkeyContext;
 	private final List<MatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuilders;
-	private List<MatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuildersCopy;
 
 	public ArbitraryResolver(
 		ArbitraryTraverser traverser,
@@ -72,8 +71,9 @@ public final class ArbitraryResolver {
 		ArbitraryBuilderContext builderContext,
 		List<MatcherOperator<? extends ArbitraryBuilder<?>>> selectedArbitraryBuilders
 	) {
-		registeredArbitraryBuildersCopy = new ArrayList<>(registeredArbitraryBuilders);
-		registeredArbitraryBuilders.removeAll(selectedArbitraryBuilders);
+		List<MatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuildersCopy =
+			new ArrayList<>(registeredArbitraryBuilders);
+		registeredArbitraryBuildersCopy.addAll(selectedArbitraryBuilders);
 
 		List<ArbitraryManipulator> manipulators = builderContext.getManipulators();
 		List<ContainerInfoManipulator> containerInfoManipulators = builderContext.getContainerInfoManipulators();

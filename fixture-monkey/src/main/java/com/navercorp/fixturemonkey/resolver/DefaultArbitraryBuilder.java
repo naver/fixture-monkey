@@ -193,7 +193,6 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 			}
 			selectedArbitraryBuilders.add(namedArbitraryBuilder);
 		}
-		registeredArbitraryBuilders.addAll(selectedArbitraryBuilders);
 		return this;
 	}
 
