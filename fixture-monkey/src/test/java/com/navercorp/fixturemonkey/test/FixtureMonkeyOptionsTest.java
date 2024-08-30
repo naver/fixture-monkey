@@ -893,6 +893,29 @@ class FixtureMonkeyOptionsTest {
 	}
 
 	@Property
+	void generateSampleListWithRegisteredNames() {
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.registeredName(
+				"test",
+				String.class,
+				monkey -> monkey.giveMeBuilder("test")
+			)
+			.registeredName(
+				"test2",
+				String.class,
+				monkey -> monkey.giveMeBuilder("test2")
+			)
+			.build();
+
+		List<SimpleObject> actual = sut.giveMeBuilder(SimpleObject.class)
+			.selectName("test")
+			.sampleList(3);
+
+		then(actual).hasSize(3);
+		then(actual).allMatch(it -> it.getStr().equals("test"));
+	}
+
+	@Property
 	void registerSameInstancesTwiceWorksLast() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.register(String.class, monkey -> monkey.giveMeBuilder("test"))
