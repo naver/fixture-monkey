@@ -19,6 +19,7 @@
 package com.navercorp.fixturemonkey.kotlin
 
 import com.navercorp.fixturemonkey.api.generator.FunctionalInterfaceContainerPropertyGenerator
+import com.navercorp.fixturemonkey.api.generator.MatchPropertyGenerator
 import com.navercorp.fixturemonkey.api.introspector.FunctionalInterfaceArbitraryIntrospector
 import com.navercorp.fixturemonkey.api.introspector.MatchArbitraryIntrospector
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator
@@ -26,6 +27,7 @@ import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptionsBuilder
 import com.navercorp.fixturemonkey.api.plugin.Plugin
 import com.navercorp.fixturemonkey.api.property.CandidateConcretePropertyResolver
 import com.navercorp.fixturemonkey.api.property.ConcreteTypeCandidateConcretePropertyResolver
+import com.navercorp.fixturemonkey.api.property.DefaultPropertyGenerator
 import com.navercorp.fixturemonkey.kotlin.generator.InterfaceKFunctionPropertyGenerator
 import com.navercorp.fixturemonkey.kotlin.generator.PairContainerPropertyGenerator
 import com.navercorp.fixturemonkey.kotlin.generator.PairDecomposedContainerValueFactory
@@ -59,9 +61,16 @@ class KotlinPlugin : Plugin {
                 )
             )
         }
-            .insertFirstPropertyGenerator(
-                { property -> property.type.actualType().isKotlinType() },
-                KotlinPropertyGenerator()
+            .defaultPropertyGenerator(
+                MatchPropertyGenerator(
+                    listOf(
+                        MatcherOperator(
+                            { property -> property.type.actualType().isKotlinType() },
+                            KotlinPropertyGenerator()
+                        ),
+                        MatcherOperator({ true }, DefaultPropertyGenerator())
+                    )
+                )
             )
             .insertFirstArbitraryContainerPropertyGenerator(
                 { property -> property.type.actualType().cachedKotlin().isKotlinLambda() }
