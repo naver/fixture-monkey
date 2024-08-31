@@ -18,42 +18,32 @@
 
 package com.navercorp.fixturemonkey.api.property;
 
-import java.util.List;
-
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 /**
  * It is for internal use only. It can be changed or removed at any time.
- * <p>
- * Represents a concrete type definition with a resolved concrete property and a list of child properties.
- * Instances of this class are immutable once created.
  */
-@API(since = "1.0.16", status = Status.INTERNAL)
-public final class ConcreteTypeDefinition implements TypeDefinition {
-	private final Property concreteProperty;
-	private final List<Property> childPropertyLists;
+@API(since = "1.1.0", status = Status.INTERNAL)
+public final class DefaultTypeDefinition implements TypeDefinition {
+	private final Property containerProperty;
+	private final PropertyGenerator propertyGenerator;
 
-	public ConcreteTypeDefinition(Property concreteProperty, List<Property> childPropertyLists) {
-		this.concreteProperty = concreteProperty;
-		this.childPropertyLists = childPropertyLists;
-	}
-
-	public Property getConcreteProperty() {
-		return concreteProperty;
-	}
-
-	public List<Property> getChildPropertyLists() {
-		return childPropertyLists;
+	public DefaultTypeDefinition(
+		Property containerProperty,
+		LazyPropertyGenerator propertyGenerator
+	) {
+		this.containerProperty = containerProperty;
+		this.propertyGenerator = propertyGenerator;
 	}
 
 	@Override
 	public Property getResolvedProperty() {
-		return concreteProperty;
+		return this.containerProperty;
 	}
 
 	@Override
 	public PropertyGenerator getPropertyGenerator() {
-		return p -> childPropertyLists;
+		return this.propertyGenerator;
 	}
 }

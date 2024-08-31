@@ -41,7 +41,7 @@ public final class NodeFilterManipulator implements NodeManipulator {
 
 	@Override
 	public void manipulate(ObjectNode objectNode) {
-		Class<?> actualType = Types.getActualType(objectNode.getProperty().getType());
+		Class<?> actualType = Types.getActualType(objectNode.getOriginalProperty().getType());
 		if (!isAssignable(actualType, type)) {
 			throw new IllegalArgumentException(
 				"Wrong type filter is applied. Expected: " + type + ", Actual: " + actualType

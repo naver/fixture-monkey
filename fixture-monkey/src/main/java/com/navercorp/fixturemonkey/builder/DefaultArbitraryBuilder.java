@@ -72,7 +72,6 @@ import com.navercorp.fixturemonkey.customizer.ManipulatorSet;
 import com.navercorp.fixturemonkey.customizer.MonkeyManipulatorFactory;
 import com.navercorp.fixturemonkey.experimental.ExperimentalArbitraryBuilder;
 import com.navercorp.fixturemonkey.resolver.ArbitraryResolver;
-import com.navercorp.fixturemonkey.tree.ArbitraryTraverser;
 
 @SuppressFBWarnings("NM_SAME_SIMPLE_NAME_AS_SUPERCLASS")
 @API(since = "0.4.0", status = Status.MAINTAINED)
@@ -80,7 +79,6 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 	private final FixtureMonkeyOptions fixtureMonkeyOptions;
 	private final RootProperty rootProperty;
 	private final ArbitraryResolver resolver;
-	private final ArbitraryTraverser traverser;
 	private final MonkeyManipulatorFactory monkeyManipulatorFactory;
 	private final ArbitraryBuilderContext context;
 	private final List<MatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuilders;
@@ -91,7 +89,6 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 		FixtureMonkeyOptions fixtureMonkeyOptions,
 		RootProperty rootProperty,
 		ArbitraryResolver resolver,
-		ArbitraryTraverser traverser,
 		MonkeyManipulatorFactory monkeyManipulatorFactory,
 		ArbitraryBuilderContext context,
 		List<MatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuilders,
@@ -101,7 +98,6 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 		this.fixtureMonkeyOptions = fixtureMonkeyOptions;
 		this.rootProperty = rootProperty;
 		this.resolver = resolver;
-		this.traverser = traverser;
 		this.context = context;
 		this.monkeyManipulatorFactory = monkeyManipulatorFactory;
 		this.registeredArbitraryBuilders = registeredArbitraryBuilders;
@@ -506,7 +502,6 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 			fixtureMonkeyOptions,
 			rootProperty,
 			resolver,
-			traverser,
 			monkeyManipulatorFactory,
 			context.copy(),
 			registeredArbitraryBuilders,
@@ -556,7 +551,6 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 			fixtureMonkeyOptions,
 			new RootProperty(new LazyAnnotatedType<>(lazyArbitrary::getValue)),
 			resolver,
-			traverser,
 			monkeyManipulatorFactory,
 			context,
 			registeredArbitraryBuilders,

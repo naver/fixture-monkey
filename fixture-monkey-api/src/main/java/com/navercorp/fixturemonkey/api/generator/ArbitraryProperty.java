@@ -25,13 +25,12 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.property.ConcreteTypeDefinition;
+import com.navercorp.fixturemonkey.api.tree.TreeProperty;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
-public final class ArbitraryProperty {
-	private final ObjectProperty objectProperty;
-	private final boolean container;
-	private final double nullInject;
+public final class ArbitraryProperty extends TreeProperty {
 	private final List<ConcreteTypeDefinition> concreteTypeDefinitions;
+	private final double nullInject;
 
 	public ArbitraryProperty(
 		ObjectProperty objectProperty,
@@ -39,35 +38,26 @@ public final class ArbitraryProperty {
 		double nullInject,
 		List<ConcreteTypeDefinition> concreteTypeDefinitions
 	) {
-		this.objectProperty = objectProperty;
-		this.container = container;
-		this.nullInject = nullInject;
+		super(objectProperty, container, concreteTypeDefinitions);
 		this.concreteTypeDefinitions = concreteTypeDefinitions;
-	}
-
-	public ObjectProperty getObjectProperty() {
-		return objectProperty;
-	}
-
-	public boolean isContainer() {
-		return container;
+		this.nullInject = nullInject;
 	}
 
 	public ArbitraryProperty withNullInject(double nullInject) {
 		return new ArbitraryProperty(
-			this.objectProperty,
-			this.container,
+			this.getObjectProperty(),
+			this.isContainer(),
 			nullInject,
-			this.concreteTypeDefinitions
+			this.getConcreteTypeDefinitions()
 		);
-	}
-
-	public double getNullInject() {
-		return nullInject;
 	}
 
 	public List<ConcreteTypeDefinition> getConcreteTypeDefinitions() {
 		return concreteTypeDefinitions;
+	}
+
+	public double getNullInject() {
+		return nullInject;
 	}
 
 	@Override
@@ -79,11 +69,11 @@ public final class ArbitraryProperty {
 			return false;
 		}
 		ArbitraryProperty that = (ArbitraryProperty)obj;
-		return objectProperty.equals(that.objectProperty) && container == that.container;
+		return this.getObjectProperty().equals(that.getObjectProperty()) && this.isContainer() == that.isContainer();
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(objectProperty, container);
+		return Objects.hash(this.getObjectProperty(), this.isContainer());
 	}
 }

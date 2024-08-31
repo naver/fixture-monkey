@@ -39,12 +39,10 @@ import com.navercorp.fixturemonkey.builder.DefaultArbitraryBuilder;
 import com.navercorp.fixturemonkey.customizer.ArbitraryManipulator;
 import com.navercorp.fixturemonkey.customizer.ContainerInfoManipulator;
 import com.navercorp.fixturemonkey.customizer.MonkeyManipulatorFactory;
-import com.navercorp.fixturemonkey.tree.ArbitraryTraverser;
 import com.navercorp.fixturemonkey.tree.ObjectTree;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class ArbitraryResolver {
-	private final ArbitraryTraverser traverser;
 	private final ManipulatorOptimizer manipulatorOptimizer;
 	private final MonkeyManipulatorFactory monkeyManipulatorFactory;
 	private final FixtureMonkeyOptions fixtureMonkeyOptions;
@@ -52,14 +50,12 @@ public final class ArbitraryResolver {
 	private final List<MatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuilders;
 
 	public ArbitraryResolver(
-		ArbitraryTraverser traverser,
 		ManipulatorOptimizer manipulatorOptimizer,
 		MonkeyManipulatorFactory monkeyManipulatorFactory,
 		FixtureMonkeyOptions fixtureMonkeyOptions,
 		MonkeyContext monkeyContext,
 		List<MatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuilders
 	) {
-		this.traverser = traverser;
 		this.manipulatorOptimizer = manipulatorOptimizer;
 		this.monkeyManipulatorFactory = monkeyManipulatorFactory;
 		this.fixtureMonkeyOptions = fixtureMonkeyOptions;
@@ -90,16 +86,13 @@ public final class ArbitraryResolver {
 			rootProperty,
 			() -> new ObjectTree(
 				rootProperty,
-				this.traverser.traverse(
-					rootProperty,
-					containerInfoManipulators,
-					registeredContainerInfoManipulators,
-					propertyConfigurers
-				),
 				fixtureMonkeyOptions,
 				monkeyContext,
 				builderContext.isValidOnly(),
-				arbitraryIntrospectorConfigurers
+				arbitraryIntrospectorConfigurers,
+				containerInfoManipulators,
+				propertyConfigurers,
+				registeredContainerInfoManipulators
 			),
 			objectTree -> {
 				List<ArbitraryManipulator> registeredManipulators =

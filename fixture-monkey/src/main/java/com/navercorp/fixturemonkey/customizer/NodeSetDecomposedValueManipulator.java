@@ -22,7 +22,6 @@ import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerat
 import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.NOT_NULL_INJECT;
 import static com.navercorp.fixturemonkey.api.type.Types.isAssignable;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 
@@ -39,33 +38,29 @@ import com.navercorp.fixturemonkey.api.property.ConcreteTypeDefinition;
 import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.type.Types;
-import com.navercorp.fixturemonkey.tree.ArbitraryTraverser;
 import com.navercorp.fixturemonkey.tree.IdentityNodeResolver;
 import com.navercorp.fixturemonkey.tree.ObjectNode;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class NodeSetDecomposedValueManipulator<T> implements NodeManipulator {
 	private final int sequence;
-	private final ArbitraryTraverser traverser;
 	private final DecomposedContainerValueFactory decomposedContainerValueFactory;
 	@Nullable
 	private final T value;
 
 	public NodeSetDecomposedValueManipulator(
 		int sequence,
-		ArbitraryTraverser traverser,
 		DecomposedContainerValueFactory decomposedContainerValueFactory,
 		@Nullable T value
 	) {
 		this.sequence = sequence;
-		this.traverser = traverser;
 		this.decomposedContainerValueFactory = decomposedContainerValueFactory;
 		this.value = value;
 	}
 
 	@Override
 	public void manipulate(ObjectNode objectNode) {
-		Class<?> actualType = Types.getActualType(objectNode.getProperty().getType());
+		Class<?> actualType = Types.getActualType(objectNode.getOriginalProperty().getType());
 		if (value != null && !isAssignable(value.getClass(), actualType)) {
 			String parentNodeLogMessage = objectNode.getResolvedParentProperty() != null
 				? String.format(
@@ -81,7 +76,7 @@ public final class NodeSetDecomposedValueManipulator<T> implements NodeManipulat
 					objectNode.getArbitraryProperty()
 						.getObjectProperty()
 						.getResolvedPropertyName(),
-					objectNode.getProperty().getType().getTypeName(),
+					objectNode.getOriginalProperty().getType().getTypeName(),
 					value.getClass().getTypeName()
 				)
 			);
@@ -90,10 +85,10 @@ public final class NodeSetDecomposedValueManipulator<T> implements NodeManipulat
 	}
 
 	private void setValue(ObjectNode objectNode, @Nullable Object value) {
-		objectNode.setArbitraryProperty(objectNode.getArbitraryProperty().withNullInject(NOT_NULL_INJECT));
+		objectNode.setNullInject(NOT_NULL_INJECT);
 		if (value == null) {
 			objectNode.addManipulator(node -> node.setArbitrary(CombinableArbitrary.from((Object)null)));
-			objectNode.setArbitraryProperty(objectNode.getArbitraryProperty().withNullInject(ALWAYS_NULL_INJECT));
+			objectNode.setNullInject(ALWAYS_NULL_INJECT);
 			return;
 		}
 
@@ -109,23 +104,20 @@ public final class NodeSetDecomposedValueManipulator<T> implements NodeManipulat
 			int decomposedContainerSize = decomposableJavaContainer.getSize();
 
 			ContainerInfoManipulator appliedContainerInfoManipulator = objectNode.getAppliedContainerInfoManipulator();
-			boolean forced = !(objectNode.getProperty() instanceof MapEntryElementProperty)
+			boolean forced = !(objectNode.getOriginalProperty() instanceof MapEntryElementProperty)
 				&& (appliedContainerInfoManipulator == null
 				|| sequence > appliedContainerInfoManipulator.getManipulatingSequence());
 			if (forced) {
-				ContainerInfoManipulator containerInfoManipulator = new ContainerInfoManipulator(
-					IdentityNodeResolver.INSTANCE.toNextNodePredicate(),
-					new ArbitraryContainerInfo(decomposedContainerSize, decomposedContainerSize),
-					sequence
+				ArbitraryContainerInfo containerInfo =
+					new ArbitraryContainerInfo(decomposedContainerSize, decomposedContainerSize);
+				objectNode.addContainerManipulator(
+					new ContainerInfoManipulator(
+						IdentityNodeResolver.INSTANCE.toNextNodePredicate(),
+						containerInfo,
+						sequence
+					)
 				);
-
-				ObjectNode newNode = traverser.traverse(
-					objectNode.getProperty(),
-					Collections.singletonList(containerInfoManipulator),
-					Collections.emptyList(),
-					Collections.emptyMap()
-				);
-				objectNode.setChildren(newNode.getChildren());
+				objectNode.forceExpand();
 			}
 
 			List<ObjectNode> children = objectNode.getChildren();
@@ -140,7 +132,7 @@ public final class NodeSetDecomposedValueManipulator<T> implements NodeManipulat
 
 			for (int i = 0; i < decomposedNodeSize; i++) {
 				ObjectNode child = children.get(i);
-				Property childProperty = child.getProperty();
+				Property childProperty = child.getOriginalProperty();
 				setValue(child, childProperty.getValue(containerValue));
 			}
 			return;
@@ -174,9 +166,9 @@ public final class NodeSetDecomposedValueManipulator<T> implements NodeManipulat
 
 				List<Property> childProperties = concreteTypeDefinition.getChildPropertyLists();
 				for (ObjectNode child : children) {
-					if (childProperties.contains(child.getProperty())
+					if (childProperties.contains(child.getOriginalProperty())
 						&& resolvedParentProperty.equals(child.getResolvedParentProperty())) {
-						Property childProperty = child.getProperty();
+						Property childProperty = child.getOriginalProperty();
 						setValue(child, childProperty.getValue(value));
 					}
 				}

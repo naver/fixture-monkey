@@ -23,37 +23,34 @@ import java.util.List;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import com.navercorp.fixturemonkey.api.random.Randoms;
+
 /**
  * It is for internal use only. It can be changed or removed at any time.
  * <p>
- * Represents a concrete type definition with a resolved concrete property and a list of child properties.
- * Instances of this class are immutable once created.
+ * It is used to resolve the actual generated property when the property has one or more {@link TypeDefinition}s.
  */
-@API(since = "1.0.16", status = Status.INTERNAL)
-public final class ConcreteTypeDefinition implements TypeDefinition {
-	private final Property concreteProperty;
-	private final List<Property> childPropertyLists;
+@API(since = "1.1.0", status = Status.INTERNAL)
+public final class CompositeTypeDefinition implements TypeDefinition {
+	private final List<TypeDefinition> typeDefinitions;
+	private final TypeDefinition resolvedTypeDefinition;
 
-	public ConcreteTypeDefinition(Property concreteProperty, List<Property> childPropertyLists) {
-		this.concreteProperty = concreteProperty;
-		this.childPropertyLists = childPropertyLists;
+	public CompositeTypeDefinition(List<TypeDefinition> typeDefinitions) {
+		this.typeDefinitions = typeDefinitions;
+		this.resolvedTypeDefinition = typeDefinitions.get(Randoms.nextInt(typeDefinitions.size()));
 	}
 
-	public Property getConcreteProperty() {
-		return concreteProperty;
-	}
-
-	public List<Property> getChildPropertyLists() {
-		return childPropertyLists;
+	public List<TypeDefinition> getTypeDefinitions() {
+		return typeDefinitions;
 	}
 
 	@Override
 	public Property getResolvedProperty() {
-		return concreteProperty;
+		return resolvedTypeDefinition.getResolvedProperty();
 	}
 
 	@Override
 	public PropertyGenerator getPropertyGenerator() {
-		return p -> childPropertyLists;
+		return resolvedTypeDefinition.getPropertyGenerator();
 	}
 }
