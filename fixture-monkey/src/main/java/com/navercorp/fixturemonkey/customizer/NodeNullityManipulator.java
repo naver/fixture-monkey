@@ -22,7 +22,6 @@ import static com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary.NOT_
 import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.ALWAYS_NULL_INJECT;
 import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.NOT_NULL_INJECT;
 
-import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.tree.ObjectNode;
 
 public final class NodeNullityManipulator implements NodeManipulator {
@@ -34,14 +33,13 @@ public final class NodeNullityManipulator implements NodeManipulator {
 
 	@Override
 	public void manipulate(ObjectNode objectNode) {
-		ArbitraryProperty arbitraryProperty = objectNode.getArbitraryProperty();
 		if (toNull) {
-			objectNode.setArbitraryProperty(arbitraryProperty.withNullInject(ALWAYS_NULL_INJECT));
+			objectNode.setNullInject(ALWAYS_NULL_INJECT);
 		} else {
 			if (NOT_GENERATED.equals(objectNode.getArbitrary())) {
 				objectNode.setArbitrary(null); // initializing for regenerate
 			}
-			objectNode.setArbitraryProperty(arbitraryProperty.withNullInject(NOT_NULL_INJECT));
+			objectNode.setNullInject(NOT_NULL_INJECT);
 		}
 	}
 }
