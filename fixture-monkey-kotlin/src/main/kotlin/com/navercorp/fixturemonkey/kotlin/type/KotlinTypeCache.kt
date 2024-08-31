@@ -19,14 +19,19 @@
 package com.navercorp.fixturemonkey.kotlin.type
 
 import com.navercorp.fixturemonkey.api.container.ConcurrentLruCache
+import kotlin.jvm.internal.Reflection
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.full.memberFunctions
+import kotlin.reflect.full.primaryConstructor
+import kotlin.reflect.jvm.isAccessible
 
 private val CONSTRUCTORS = ConcurrentLruCache<KClass<*>, Collection<KFunction<*>>>(2048)
 private val KOTLIN_TYPES = ConcurrentLruCache<Class<*>, KClass<*>>(2048)
 private val MEMBER_FUNCTIONS = ConcurrentLruCache<KClass<*>, Collection<KFunction<*>>>(2048)
+private val CONSTRUCTOR_CACHE = ConcurrentLruCache<Class<*>, KFunction<*>>(2048)
+
 fun Class<*>.declaredKotlinConstructors(): Collection<KFunction<*>> =
     CONSTRUCTORS.computeIfAbsent(this.cachedKotlin()) { it.constructors }
 
@@ -39,3 +44,9 @@ fun KClass<*>.cachedMemberFunctions(): Collection<KFunction<*>> =
     MEMBER_FUNCTIONS.computeIfAbsent(this) { this.memberFunctions }
 
 fun KClass<*>.isKotlinLambda(): Boolean = this.isSubclassOf(Function::class)
+
+internal fun Class<*>.kotlinPrimaryConstructor(): KFunction<*> =
+    CONSTRUCTOR_CACHE.computeIfAbsent(this) {
+        val kotlinClass = Reflection.createKotlinClass(this) as KClass<*>
+        requireNotNull(kotlinClass.primaryConstructor) { "No kotlin primary constructor provided for $kotlinClass" }
+    }.apply { isAccessible = true }
