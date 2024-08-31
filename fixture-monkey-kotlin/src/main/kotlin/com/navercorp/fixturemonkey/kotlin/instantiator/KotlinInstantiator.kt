@@ -44,15 +44,13 @@ import com.navercorp.fixturemonkey.api.type.TypeReference
 import com.navercorp.fixturemonkey.api.type.Types
 import com.navercorp.fixturemonkey.kotlin.introspector.CompanionObjectFactoryMethodIntrospector
 import com.navercorp.fixturemonkey.kotlin.introspector.KotlinPropertyArbitraryIntrospector
+import com.navercorp.fixturemonkey.kotlin.property.KotlinConstructorParameterProperty
 import com.navercorp.fixturemonkey.kotlin.property.KotlinPropertyGenerator
 import com.navercorp.fixturemonkey.kotlin.type.actualType
 import com.navercorp.fixturemonkey.kotlin.type.cachedKotlin
 import com.navercorp.fixturemonkey.kotlin.type.cachedMemberFunctions
 import com.navercorp.fixturemonkey.kotlin.type.declaredConstructor
 import com.navercorp.fixturemonkey.kotlin.type.toTypeReference
-import java.lang.reflect.AnnotatedType
-import java.lang.reflect.Type
-import java.util.Optional
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 import kotlin.reflect.KProperty
@@ -241,32 +239,6 @@ class KotlinInstantiatorProcessor :
             .let {
                 inputParameterTypes.isEmpty() || Types.isAssignableTypes(it.toTypedArray(), inputParameterTypes)
             }
-
-    internal data class KotlinConstructorParameterProperty(
-        private val annotatedType: AnnotatedType,
-        val kParameter: KParameter,
-        private val parameterName: String,
-        private val constructor: KFunction<*>,
-    ) : Property {
-        override fun getType(): Type = annotatedType.type
-
-        override fun getAnnotatedType(): AnnotatedType = annotatedType
-
-        override fun getName(): String = parameterName
-
-        override fun getAnnotations(): List<Annotation> = kParameter.annotations
-
-        override fun getValue(obj: Any?): Any? {
-            throw UnsupportedOperationException("Interface method should not be called.")
-        }
-
-        @Suppress("UNCHECKED_CAST")
-        override fun <T : Annotation> getAnnotation(annotationClass: Class<T>): Optional<T> = annotations
-            .find { it.annotationClass.java == annotationClass }
-            .let { Optional.of(it as T) }
-
-        override fun isNullable(): Boolean = kParameter.type.isMarkedNullable
-    }
 
     internal class KotlinConstructorArbitraryIntrospector(private val kotlinConstructor: KFunction<*>) :
         ArbitraryIntrospector {
