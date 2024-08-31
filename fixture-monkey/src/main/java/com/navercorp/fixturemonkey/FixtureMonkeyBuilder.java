@@ -510,6 +510,10 @@ public final class FixtureMonkeyBuilder {
 		return this;
 	}
 
+	/**
+	 * It is deprecated. Please use {@code @Seed} in fixture-monkey-junit-jupiter module.
+	 */
+	@Deprecated
 	public FixtureMonkeyBuilder seed(long seed) {
 		this.seed = seed;
 		return this;
