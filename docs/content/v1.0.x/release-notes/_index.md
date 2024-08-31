@@ -5,6 +5,25 @@ menu:
 docs:
 weight: 100
 ---
+sectionStart
+### v.1.0.24
+Deprecate `ElementJsonSubTypesObjectPropertyGenerator`, `PropertyJsonSubTypesObjectPropertyGenerator` in `fixture-monkey-jackson` module.
+Please use the `ElementJsonSubTypesConcreteTypeResolver`, `PropertyJsonSubTypesConcreteTypeResolver` instead.
+
+Add new APIs that generates the unique value by `Values.unique(Supplier)` or `CombinableArbitrary.unique()`.
+
+Check out the examples below. 
+```java
+.set("$[*]", Values.unique(() -> Arbitraries.integers().between(0, 3).sample()))`, 
+```
+
+```java
+.<List<Integer>>customizeProperty(typedRoot(), CombinableArbitrary::unique)
+```
+
+Add `@Seed` to reproduce the randomly populated object in `fixture-monkey-junit-jupiter` module.
+
+sectionEnd
 
 sectionStart
 ### v.1.0.23
