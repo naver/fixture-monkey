@@ -22,6 +22,9 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult
 import com.navercorp.fixturemonkey.api.introspector.BeanArbitraryIntrospector
+import com.navercorp.fixturemonkey.api.property.Property
+import com.navercorp.fixturemonkey.api.property.PropertyGenerator
+import com.navercorp.fixturemonkey.kotlin.property.KotlinPropertyGenerator
 import com.navercorp.fixturemonkey.kotlin.type.actualType
 import com.navercorp.fixturemonkey.kotlin.type.isKotlinType
 import org.slf4j.LoggerFactory
@@ -44,7 +47,10 @@ class KotlinAndJavaCompositeArbitraryIntrospector(
         }
     }
 
+    override fun getRequiredPropertyGenerator(property: Property?): PropertyGenerator = PROPERTY_GENERATOR
+
     companion object {
         private val LOGGER = LoggerFactory.getLogger(KotlinAndJavaCompositeArbitraryIntrospector::class.java)
+        private val PROPERTY_GENERATOR = KotlinPropertyGenerator()
     }
 }

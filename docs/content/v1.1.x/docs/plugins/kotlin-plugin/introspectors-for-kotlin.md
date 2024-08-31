@@ -15,6 +15,13 @@ Fixture Monkey provides some additional introspectors that support the generatio
 The `PrimaryConstructorArbitraryIntrospector` becomes the default introspector when the Kotlin plugin is added.
 It creates a Kotlin class with its primary constructor.
 
+In the case of using `PrimaryConstructorArbitraryIntrospector`, it only contains the properties of the `Kotlin constructor parameter`.
+
+If you use your own `ArbitraryIntrospector` instead of `PrimaryConstructorArbitraryIntrospector`, it will contain the properties of the `Kotlin constructor parameter`, `Field`, `Getter`. So it contains the properties of the parent `Field` and `Getter`.
+You can customize the all properties by `ArbitraryBuilder` APIs.
+
+For example, if you apply the `JacksonPlugin` after applying the `KotlinPlugin`, you can generate an instance of the Kotlin type by Jackson. In this case, you can customize the parent fields.
+
 **Example Kotlin Class :**
 ```kotlin
 data class Product (

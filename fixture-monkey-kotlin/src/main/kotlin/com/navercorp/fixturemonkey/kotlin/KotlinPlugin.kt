@@ -19,6 +19,7 @@
 package com.navercorp.fixturemonkey.kotlin
 
 import com.navercorp.fixturemonkey.api.generator.FunctionalInterfaceContainerPropertyGenerator
+import com.navercorp.fixturemonkey.api.generator.MatchPropertyGenerator
 import com.navercorp.fixturemonkey.api.introspector.FunctionalInterfaceArbitraryIntrospector
 import com.navercorp.fixturemonkey.api.introspector.MatchArbitraryIntrospector
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator
@@ -26,6 +27,7 @@ import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptionsBuilder
 import com.navercorp.fixturemonkey.api.plugin.Plugin
 import com.navercorp.fixturemonkey.api.property.CandidateConcretePropertyResolver
 import com.navercorp.fixturemonkey.api.property.ConcreteTypeCandidateConcretePropertyResolver
+import com.navercorp.fixturemonkey.api.property.DefaultPropertyGenerator
 import com.navercorp.fixturemonkey.kotlin.generator.InterfaceKFunctionPropertyGenerator
 import com.navercorp.fixturemonkey.kotlin.generator.PairContainerPropertyGenerator
 import com.navercorp.fixturemonkey.kotlin.generator.PairDecomposedContainerValueFactory
@@ -43,6 +45,7 @@ import com.navercorp.fixturemonkey.kotlin.property.KotlinPropertyGenerator
 import com.navercorp.fixturemonkey.kotlin.type.actualType
 import com.navercorp.fixturemonkey.kotlin.type.cachedKotlin
 import com.navercorp.fixturemonkey.kotlin.type.isKotlinLambda
+import com.navercorp.fixturemonkey.kotlin.type.isKotlinType
 import org.apiguardian.api.API
 import org.apiguardian.api.API.Status.MAINTAINED
 import java.lang.reflect.Modifier
@@ -58,7 +61,17 @@ class KotlinPlugin : Plugin {
                 )
             )
         }
-            .defaultPropertyGenerator(KotlinPropertyGenerator())
+            .defaultPropertyGenerator(
+                MatchPropertyGenerator(
+                    listOf(
+                        MatcherOperator(
+                            { property -> property.type.actualType().isKotlinType() },
+                            KotlinPropertyGenerator()
+                        ),
+                        MatcherOperator({ true }, DefaultPropertyGenerator())
+                    )
+                )
+            )
             .insertFirstArbitraryContainerPropertyGenerator(
                 { property -> property.type.actualType().cachedKotlin().isKotlinLambda() }
             ) { FunctionalInterfaceContainerPropertyGenerator.INSTANCE.generate(it) }
