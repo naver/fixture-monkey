@@ -58,6 +58,7 @@ public final class ArbitraryGeneratorContext implements Traceable {
 	private final LazyArbitrary<Map<ArbitraryProperty, CombinableArbitrary<?>>> arbitraryListByArbitraryProperty =
 		LazyArbitrary.lazy(this::initArbitraryListByArbitraryProperty);
 	private final int generateUniqueMaxTries;
+	private final double nullInject;
 	private final AtomicReference<CombinableArbitrary<?>> generated =
 		new AtomicReference<>(CombinableArbitrary.NOT_GENERATED);
 
@@ -69,7 +70,8 @@ public final class ArbitraryGeneratorContext implements Traceable {
 		BiFunction<ArbitraryGeneratorContext, ArbitraryProperty, CombinableArbitrary<?>> resolveArbitrary,
 		LazyArbitrary<PropertyPath> lazyPropertyPath,
 		MonkeyGeneratorContext monkeyGeneratorContext,
-		int generateUniqueMaxTries
+		int generateUniqueMaxTries,
+		double nullInject
 	) {
 		this.resolvedProperty = resolvedProperty;
 		this.property = property;
@@ -79,6 +81,7 @@ public final class ArbitraryGeneratorContext implements Traceable {
 		this.lazyPropertyPath = lazyPropertyPath;
 		this.monkeyGeneratorContext = monkeyGeneratorContext;
 		this.generateUniqueMaxTries = generateUniqueMaxTries;
+		this.nullInject = nullInject;
 	}
 
 	public ArbitraryProperty getArbitraryProperty() {
@@ -103,6 +106,10 @@ public final class ArbitraryGeneratorContext implements Traceable {
 
 	public List<ArbitraryProperty> getChildren() {
 		return Collections.unmodifiableList(this.children);
+	}
+
+	public double getNullInject() {
+		return nullInject;
 	}
 
 	public Map<ArbitraryProperty, CombinableArbitrary<?>> getCombinableArbitrariesByArbitraryProperty() {

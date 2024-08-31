@@ -27,24 +27,20 @@ import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.container.DecomposedContainerValueFactory;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.customizer.Values.Just;
-import com.navercorp.fixturemonkey.tree.ArbitraryTraverser;
 import com.navercorp.fixturemonkey.tree.ObjectNode;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class NodeSetLazyManipulator<T> implements NodeManipulator {
 	private final int sequence;
-	private final ArbitraryTraverser traverser;
 	private final DecomposedContainerValueFactory decomposedContainerValueFactory;
 	private final LazyArbitrary<T> lazyArbitrary;
 
 	public NodeSetLazyManipulator(
 		int sequence,
-		ArbitraryTraverser traverser,
 		DecomposedContainerValueFactory decomposedContainerValueFactory,
 		LazyArbitrary<T> lazyArbitrary
 	) {
 		this.sequence = sequence;
-		this.traverser = traverser;
 		this.decomposedContainerValueFactory = decomposedContainerValueFactory;
 		this.lazyArbitrary = lazyArbitrary;
 	}
@@ -72,7 +68,7 @@ public final class NodeSetLazyManipulator<T> implements NodeManipulator {
 		}
 
 		NodeSetDecomposedValueManipulator<T> nodeSetDecomposedValueManipulator =
-			new NodeSetDecomposedValueManipulator<>(sequence, traverser, decomposedContainerValueFactory, value);
+			new NodeSetDecomposedValueManipulator<>(sequence, decomposedContainerValueFactory, value);
 		nodeSetDecomposedValueManipulator.manipulate(objectNode);
 		lazyArbitrary.clear();
 	}

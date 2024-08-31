@@ -48,7 +48,7 @@ final class MetadataCollector {
 	}
 
 	private void collect(ObjectNode node) {
-		Property property = node.getArbitraryProperty().getObjectProperty().getProperty();
+		Property property = node.getTreeProperty().getObjectProperty().getProperty();
 
 		List<ObjectNode> children = node.getChildren();
 		for (ObjectNode child : children) {
