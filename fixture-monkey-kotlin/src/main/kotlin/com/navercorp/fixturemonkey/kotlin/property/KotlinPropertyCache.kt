@@ -43,5 +43,5 @@ fun getMemberProperties(
         }
 }
 
-private fun getKotlinMemberProperties(type: Class<*>): Collection<KProperty<*>> =
+internal fun getKotlinMemberProperties(type: Class<*>): Collection<KProperty<*>> =
     KPROPERTY_ANNOTATED_TYPE_MAP.computeIfAbsent(type) { it.cachedKotlin().memberProperties }

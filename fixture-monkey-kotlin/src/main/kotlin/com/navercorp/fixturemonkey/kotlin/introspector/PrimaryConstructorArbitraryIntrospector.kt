@@ -19,7 +19,6 @@
 package com.navercorp.fixturemonkey.kotlin.introspector
 
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary
-import com.navercorp.fixturemonkey.api.container.ConcurrentLruCache
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult
@@ -27,23 +26,24 @@ import com.navercorp.fixturemonkey.api.matcher.Matcher
 import com.navercorp.fixturemonkey.api.property.Property
 import com.navercorp.fixturemonkey.api.property.PropertyGenerator
 import com.navercorp.fixturemonkey.api.type.Types
-import com.navercorp.fixturemonkey.kotlin.property.KotlinPropertyGenerator
+import com.navercorp.fixturemonkey.kotlin.property.KotlinConstructorParameterPropertyGenerator
 import com.navercorp.fixturemonkey.kotlin.type.actualType
+import com.navercorp.fixturemonkey.kotlin.type.cachedKotlin
+import com.navercorp.fixturemonkey.kotlin.type.isKotlinLambda
 import com.navercorp.fixturemonkey.kotlin.type.isKotlinType
+import com.navercorp.fixturemonkey.kotlin.type.kotlinPrimaryConstructor
 import org.apiguardian.api.API
 import org.apiguardian.api.API.Status.MAINTAINED
 import org.slf4j.LoggerFactory
 import java.lang.reflect.Modifier
-import kotlin.jvm.internal.Reflection
-import kotlin.reflect.KClass
-import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
-import kotlin.reflect.full.primaryConstructor
-import kotlin.reflect.jvm.isAccessible
 
 @API(since = "0.4.0", status = MAINTAINED)
 class PrimaryConstructorArbitraryIntrospector : ArbitraryIntrospector, Matcher {
-    override fun match(property: Property): Boolean = property.type.actualType().isKotlinType()
+    override fun match(property: Property): Boolean =
+        property.type.actualType().isKotlinType() &&
+            !property.type.actualType().cachedKotlin().isKotlinLambda() &&
+            property.type.actualType().cachedKotlin() != Unit::class
 
     override fun introspect(context: ArbitraryGeneratorContext): ArbitraryIntrospectorResult {
         val type = Types.getActualType(context.resolvedType)
@@ -52,10 +52,7 @@ class PrimaryConstructorArbitraryIntrospector : ArbitraryIntrospector, Matcher {
         }
 
         val constructor = try {
-            CONSTRUCTOR_CACHE.computeIfAbsent(type) {
-                val kotlinClass = Reflection.createKotlinClass(type) as KClass<*>
-                requireNotNull(kotlinClass.primaryConstructor) { "No kotlin primary constructor provided for $kotlinClass" }
-            }.apply { isAccessible = true }
+            type.kotlinPrimaryConstructor()
         } catch (ex: Exception) {
             LOGGER.warn("Given type $type is failed to generated due to the exception. It may be null.", ex)
             return ArbitraryIntrospectorResult.NOT_INTROSPECTED
@@ -81,12 +78,13 @@ class PrimaryConstructorArbitraryIntrospector : ArbitraryIntrospector, Matcher {
         )
     }
 
-    override fun getRequiredPropertyGenerator(property: Property): PropertyGenerator = KOTLIN_PROPERTY_GENERATOR
+    override fun getRequiredPropertyGenerator(p: Property): PropertyGenerator = PROPERTY_GENERATOR
 
     companion object {
         val INSTANCE = PrimaryConstructorArbitraryIntrospector()
         private val LOGGER = LoggerFactory.getLogger(PrimaryConstructorArbitraryIntrospector::class.java)
-        private val KOTLIN_PROPERTY_GENERATOR = KotlinPropertyGenerator()
-        private val CONSTRUCTOR_CACHE = ConcurrentLruCache<Class<*>, KFunction<*>>(2048)
+        internal val PROPERTY_GENERATOR = KotlinConstructorParameterPropertyGenerator({ property ->
+            property.type.actualType().kotlinPrimaryConstructor()
+        })
     }
 }
