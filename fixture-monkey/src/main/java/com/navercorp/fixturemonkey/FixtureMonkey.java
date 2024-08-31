@@ -44,12 +44,10 @@ import com.navercorp.fixturemonkey.customizer.MonkeyManipulatorFactory;
 import com.navercorp.fixturemonkey.experimental.ExperimentalArbitraryBuilder;
 import com.navercorp.fixturemonkey.resolver.ArbitraryResolver;
 import com.navercorp.fixturemonkey.resolver.ManipulatorOptimizer;
-import com.navercorp.fixturemonkey.tree.ArbitraryTraverser;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class FixtureMonkey {
 	private final FixtureMonkeyOptions fixtureMonkeyOptions;
-	private final ArbitraryTraverser traverser;
 	private final ManipulatorOptimizer manipulatorOptimizer;
 	private final MonkeyContext monkeyContext;
 	private final List<MatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuilders = new ArrayList<>();
@@ -57,14 +55,12 @@ public final class FixtureMonkey {
 
 	public FixtureMonkey(
 		FixtureMonkeyOptions fixtureMonkeyOptions,
-		ArbitraryTraverser traverser,
 		ManipulatorOptimizer manipulatorOptimizer,
 		MonkeyContext monkeyContext,
 		List<MatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>>> registeredArbitraryBuilders,
 		MonkeyManipulatorFactory monkeyManipulatorFactory
 	) {
 		this.fixtureMonkeyOptions = fixtureMonkeyOptions;
-		this.traverser = traverser;
 		this.manipulatorOptimizer = manipulatorOptimizer;
 		this.monkeyContext = monkeyContext;
 		this.monkeyManipulatorFactory = monkeyManipulatorFactory;
@@ -100,14 +96,12 @@ public final class FixtureMonkey {
 			fixtureMonkeyOptions,
 			rootProperty,
 			new ArbitraryResolver(
-				traverser,
 				manipulatorOptimizer,
 				monkeyManipulatorFactory,
 				fixtureMonkeyOptions,
 				monkeyContext,
 				registeredArbitraryBuilders
 			),
-			traverser,
 			monkeyManipulatorFactory,
 			builderContext.copy(),
 			registeredArbitraryBuilders,
@@ -127,14 +121,12 @@ public final class FixtureMonkey {
 			fixtureMonkeyOptions,
 			new RootProperty(new LazyAnnotatedType<>(() -> value)),
 			new ArbitraryResolver(
-				traverser,
 				manipulatorOptimizer,
 				monkeyManipulatorFactory,
 				fixtureMonkeyOptions,
 				monkeyContext,
 				registeredArbitraryBuilders
 			),
-			traverser,
 			monkeyManipulatorFactory,
 			context,
 			registeredArbitraryBuilders,
