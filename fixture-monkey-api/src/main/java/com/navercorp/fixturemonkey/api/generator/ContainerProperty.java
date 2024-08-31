@@ -48,20 +48,6 @@ public final class ContainerProperty {
 		return containerInfo;
 	}
 
-	public ContainerProperty withElementProperties(List<Property> elementProperties) {
-		return new ContainerProperty(
-			elementProperties,
-			this.containerInfo
-		);
-	}
-
-	public ContainerProperty withContainerInfo(ArbitraryContainerInfo containerInfo) {
-		return new ContainerProperty(
-			this.elementProperties,
-			containerInfo
-		);
-	}
-
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {

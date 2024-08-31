@@ -30,19 +30,15 @@ import com.navercorp.fixturemonkey.api.property.RootProperty;
 public final class ContainerPropertyGeneratorContext {
 	private final Property property;
 	@Nullable
-	private final Integer elementIndex;
-	@Nullable
 	private final ArbitraryContainerInfo containerInfo;
 	private final ArbitraryContainerInfoGenerator containerInfoGenerator;
 
 	public ContainerPropertyGeneratorContext(
 		Property property,
-		@Nullable Integer elementIndex,
 		@Nullable ArbitraryContainerInfo containerInfo,
 		ArbitraryContainerInfoGenerator containerInfoGenerator
 	) {
 		this.property = property;
-		this.elementIndex = elementIndex;
 		this.containerInfo = containerInfo;
 		this.containerInfoGenerator = containerInfoGenerator;
 	}
@@ -52,8 +48,9 @@ public final class ContainerPropertyGeneratorContext {
 	}
 
 	@Nullable
+	@Deprecated
 	public Integer getElementIndex() {
-		return elementIndex;
+		return null;
 	}
 
 	public ArbitraryContainerInfo getContainerInfo() {

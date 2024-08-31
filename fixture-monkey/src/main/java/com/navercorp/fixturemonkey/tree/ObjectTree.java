@@ -42,10 +42,12 @@ import com.navercorp.fixturemonkey.api.generator.CompositeArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.generator.IntrospectedArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.generator.ValidateArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
+import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
 import com.navercorp.fixturemonkey.api.type.Types;
+import com.navercorp.fixturemonkey.customizer.ContainerInfoManipulator;
 import com.navercorp.fixturemonkey.customizer.NodeManipulator;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
@@ -60,16 +62,27 @@ public final class ObjectTree {
 
 	public ObjectTree(
 		RootProperty rootProperty,
-		ObjectNode rootNode,
 		FixtureMonkeyOptions fixtureMonkeyOptions,
 		MonkeyContext monkeyContext,
 		boolean validOnly,
-		Map<Class<?>, ArbitraryIntrospector> arbitraryIntrospectorConfigurer
+		Map<Class<?>, ArbitraryIntrospector> arbitraryIntrospectorConfigurer,
+		List<ContainerInfoManipulator> containerInfoManipulators,
+		Map<Class<?>, List<Property>> propertyConfigurers,
+		List<MatcherOperator<List<ContainerInfoManipulator>>> registeredContainerInfoManipulators
 	) {
 		this.rootProperty = rootProperty;
-		this.rootNode = rootNode;
 		this.fixtureMonkeyOptions = fixtureMonkeyOptions;
 		this.monkeyContext = monkeyContext;
+		this.rootNode = ObjectNode.generateRootNode(
+			rootProperty,
+			fixtureMonkeyOptions,
+			new TraverseContext(
+				new ArrayList<>(),
+				containerInfoManipulators,
+				registeredContainerInfoManipulators,
+				propertyConfigurers
+			)
+		);
 		MetadataCollector metadataCollector = new MetadataCollector(rootNode);
 		this.metadata = metadataCollector.collect();
 		this.validOnly = validOnly;
@@ -127,7 +140,8 @@ public final class ObjectTree {
 			},
 			objectNode.getLazyPropertyPath(),
 			monkeyGeneratorContext,
-			fixtureMonkeyOptions.getGenerateUniqueMaxTries()
+			fixtureMonkeyOptions.getGenerateUniqueMaxTries(),
+			objectNode.getNullInject()
 		);
 	}
 
@@ -139,22 +153,22 @@ public final class ObjectTree {
 		CombinableArbitrary<?> generated;
 		if (node.getArbitrary() != null) {
 			generated = node.getArbitrary()
-				.injectNull(node.getArbitraryProperty().getNullInject());
+				.injectNull(node.getNullInject());
 		} else {
-			CombinableArbitrary<?> cached = monkeyContext.getCachedArbitrary(node.getProperty());
+			CombinableArbitrary<?> cached = monkeyContext.getCachedArbitrary(node.getOriginalProperty());
 
 			if (node.cacheable() && cached != null) {
 				generated = cached;
 			} else {
 				ArbitraryGeneratorContext childArbitraryGeneratorContext = this.generateContext(node, currentContext);
 				ArbitraryIntrospector arbitraryIntrospector = arbitraryIntrospectorConfigurer.get(
-					Types.getActualType(node.getProperty().getType())
+					Types.getActualType(node.getOriginalProperty().getType())
 				);
 				generated = getArbitraryGenerator(arbitraryIntrospector)
 					.generate(childArbitraryGeneratorContext);
 				if (node.cacheable()) {
 					monkeyContext.putCachedArbitrary(
-						node.getProperty(),
+						node.getOriginalProperty(),
 						generated
 					);
 				}
