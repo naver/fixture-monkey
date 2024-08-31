@@ -193,6 +193,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 			}
 			selectedArbitraryBuilders.add(namedArbitraryBuilder);
 		}
+		context.addSelectedArbitraryBuilders(selectedArbitraryBuilders);
 		return this;
 	}
 
@@ -542,8 +543,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 			if (context.getFixedCombinableArbitrary() == null || context.fixedExpired()) {
 				Object fixed = resolver.resolve(
 						rootProperty,
-						context,
-						selectedArbitraryBuilders
+						context
 					)
 					.combined();
 				context.addManipulator(monkeyManipulatorFactory.newArbitraryManipulator("$", fixed));
@@ -554,8 +554,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 
 		return resolver.resolve(
 			rootProperty,
-			context,
-			selectedArbitraryBuilders
+			context
 		);
 	}
 

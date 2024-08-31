@@ -32,8 +32,10 @@ import javax.annotation.Nullable;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
+import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.customizer.ArbitraryManipulator;
 import com.navercorp.fixturemonkey.customizer.ContainerInfoManipulator;
@@ -51,6 +53,8 @@ public final class ArbitraryBuilderContext {
 	private FixedState fixedState = null;
 	@Nullable
 	private CombinableArbitrary<?> fixedCombinableArbitrary;
+	@Nullable
+	private List<MatcherOperator<? extends ArbitraryBuilder<?>>> selectedArbitraryBuilders;
 
 	public ArbitraryBuilderContext(
 		List<ArbitraryManipulator> manipulators,
@@ -59,7 +63,8 @@ public final class ArbitraryBuilderContext {
 		Map<Class<?>, ArbitraryIntrospector> arbitraryIntrospectorsByType,
 		boolean validOnly,
 		@Nullable FixedState fixedState,
-		@Nullable CombinableArbitrary<?> fixedCombinableArbitrary
+		@Nullable CombinableArbitrary<?> fixedCombinableArbitrary,
+		@Nullable List<MatcherOperator<? extends ArbitraryBuilder<?>>> selectedArbitraryBuilders
 	) {
 		this.manipulators = manipulators;
 		this.containerInfoManipulators = containerInfoManipulators;
@@ -68,10 +73,11 @@ public final class ArbitraryBuilderContext {
 		this.validOnly = validOnly;
 		this.fixedState = fixedState;
 		this.fixedCombinableArbitrary = fixedCombinableArbitrary;
+		this.selectedArbitraryBuilders = selectedArbitraryBuilders;
 	}
 
 	public ArbitraryBuilderContext() {
-		this(new ArrayList<>(), new ArrayList<>(), new HashMap<>(), new HashMap<>(), true, null, null);
+		this(new ArrayList<>(), new ArrayList<>(), new HashMap<>(), new HashMap<>(), true, null, null, null);
 	}
 
 	public ArbitraryBuilderContext copy() {
@@ -86,7 +92,8 @@ public final class ArbitraryBuilderContext {
 			new HashMap<>(arbitraryIntrospectorsByType),
 			this.validOnly,
 			fixedState,
-			fixedCombinableArbitrary
+			fixedCombinableArbitrary,
+			selectedArbitraryBuilders
 		);
 	}
 
@@ -120,6 +127,17 @@ public final class ArbitraryBuilderContext {
 
 	public void putArbitraryIntrospector(Class<?> type, ArbitraryIntrospector arbitraryIntrospector) {
 		this.arbitraryIntrospectorsByType.put(type, arbitraryIntrospector);
+	}
+
+	public void addSelectedArbitraryBuilders(List<MatcherOperator<? extends ArbitraryBuilder<?>>> selectedArbitraryBuilders) {
+		if (this.selectedArbitraryBuilders == null) {
+			this.selectedArbitraryBuilders = new ArrayList<>();
+		}
+		this.selectedArbitraryBuilders.addAll(selectedArbitraryBuilders);
+	}
+
+	public List<MatcherOperator<? extends ArbitraryBuilder<?>>> getSelectedArbitraryBuilders() {
+		return selectedArbitraryBuilders == null ? Collections.emptyList() : selectedArbitraryBuilders;
 	}
 
 	public Map<Class<?>, ArbitraryIntrospector> getArbitraryIntrospectorsByType() {

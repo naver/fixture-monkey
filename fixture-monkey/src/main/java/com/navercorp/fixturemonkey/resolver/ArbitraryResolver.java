@@ -68,12 +68,11 @@ public final class ArbitraryResolver {
 
 	public CombinableArbitrary<?> resolve(
 		RootProperty rootProperty,
-		ArbitraryBuilderContext builderContext,
-		List<MatcherOperator<? extends ArbitraryBuilder<?>>> selectedArbitraryBuilders
+		ArbitraryBuilderContext builderContext
 	) {
 		List<MatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuildersCopy =
 			new ArrayList<>(registeredArbitraryBuilders);
-		registeredArbitraryBuildersCopy.addAll(selectedArbitraryBuilders);
+		registeredArbitraryBuildersCopy.addAll(builderContext.getSelectedArbitraryBuilders());
 
 		List<ArbitraryManipulator> manipulators = builderContext.getManipulators();
 		List<ContainerInfoManipulator> containerInfoManipulators = builderContext.getContainerInfoManipulators();
