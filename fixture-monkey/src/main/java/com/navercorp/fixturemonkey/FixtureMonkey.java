@@ -65,8 +65,7 @@ public final class FixtureMonkey {
 		MonkeyContext monkeyContext,
 		List<MatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>>> registeredArbitraryBuilders,
 		MonkeyManipulatorFactory monkeyManipulatorFactory,
-		Map<String, MatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>>>
-			matcherOperatorMapsByRegisteredName
+		Map<String, MatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>>> mapsByRegisteredName
 	) {
 		this.fixtureMonkeyOptions = fixtureMonkeyOptions;
 		this.traverser = traverser;
@@ -74,7 +73,7 @@ public final class FixtureMonkey {
 		this.monkeyContext = monkeyContext;
 		this.monkeyManipulatorFactory = monkeyManipulatorFactory;
 		initializeRegisteredArbitraryBuilders(registeredArbitraryBuilders);
-		initializeNamedArbitraryBuilderMap(matcherOperatorMapsByRegisteredName);
+		initializeNamedArbitraryBuilderMap(mapsByRegisteredName);
 	}
 
 	public static FixtureMonkeyBuilder builder() {
@@ -205,10 +204,8 @@ public final class FixtureMonkey {
 	}
 
 	private void initializeNamedArbitraryBuilderMap(
-		Map<String, MatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>>>
-			matcherOperatorMapsByRegisteredName
-	) {
-		matcherOperatorMapsByRegisteredName.forEach((name, matcherOperator) -> {
+		Map<String, MatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>>> mapsByRegisteredName) {
+		mapsByRegisteredName.forEach((name, matcherOperator) -> {
 			MatcherOperator<? extends ArbitraryBuilder<?>> newMatcherOperator =
 				new MatcherOperator<>(matcherOperator.getMatcher(), matcherOperator.getOperator().apply(this));
 			namedArbitraryBuilderMap.put(name, newMatcherOperator);
