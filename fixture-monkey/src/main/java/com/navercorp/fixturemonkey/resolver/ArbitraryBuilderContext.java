@@ -46,6 +46,7 @@ public final class ArbitraryBuilderContext {
 	private final List<ContainerInfoManipulator> containerInfoManipulators;
 	private final Map<Class<?>, List<Property>> propertyConfigurers;
 	private final Map<Class<?>, ArbitraryIntrospector> arbitraryIntrospectorsByType;
+	private final List<MatcherOperator<? extends ArbitraryBuilder<?>>> selectedArbitraryBuilders;
 
 	private boolean validOnly;
 
@@ -53,8 +54,6 @@ public final class ArbitraryBuilderContext {
 	private FixedState fixedState = null;
 	@Nullable
 	private CombinableArbitrary<?> fixedCombinableArbitrary;
-	@Nullable
-	private List<MatcherOperator<? extends ArbitraryBuilder<?>>> selectedArbitraryBuilders;
 
 	public ArbitraryBuilderContext(
 		List<ArbitraryManipulator> manipulators,
@@ -64,7 +63,7 @@ public final class ArbitraryBuilderContext {
 		boolean validOnly,
 		@Nullable FixedState fixedState,
 		@Nullable CombinableArbitrary<?> fixedCombinableArbitrary,
-		@Nullable List<MatcherOperator<? extends ArbitraryBuilder<?>>> selectedArbitraryBuilders
+		List<MatcherOperator<? extends ArbitraryBuilder<?>>> selectedArbitraryBuilders
 	) {
 		this.manipulators = manipulators;
 		this.containerInfoManipulators = containerInfoManipulators;
@@ -77,7 +76,9 @@ public final class ArbitraryBuilderContext {
 	}
 
 	public ArbitraryBuilderContext() {
-		this(new ArrayList<>(), new ArrayList<>(), new HashMap<>(), new HashMap<>(), true, null, null, null);
+		this(
+			new ArrayList<>(), new ArrayList<>(), new HashMap<>(), new HashMap<>(), true, null, null, new ArrayList<>()
+		);
 	}
 
 	public ArbitraryBuilderContext copy() {
@@ -129,15 +130,12 @@ public final class ArbitraryBuilderContext {
 		this.arbitraryIntrospectorsByType.put(type, arbitraryIntrospector);
 	}
 
-	public void addSelectedArbitraryBuilders(List<MatcherOperator<? extends ArbitraryBuilder<?>>> selectedArbitraryBuilders) {
-		if (this.selectedArbitraryBuilders == null) {
-			this.selectedArbitraryBuilders = new ArrayList<>();
-		}
-		this.selectedArbitraryBuilders.addAll(selectedArbitraryBuilders);
+	public void addSelectedArbitraryBuilders(List<MatcherOperator<? extends ArbitraryBuilder<?>>> arbitraryBuilders) {
+		this.selectedArbitraryBuilders.addAll(arbitraryBuilders);
 	}
 
 	public List<MatcherOperator<? extends ArbitraryBuilder<?>>> getSelectedArbitraryBuilders() {
-		return selectedArbitraryBuilders == null ? Collections.emptyList() : selectedArbitraryBuilders;
+		return Collections.unmodifiableList(selectedArbitraryBuilders);
 	}
 
 	public Map<Class<?>, ArbitraryIntrospector> getArbitraryIntrospectorsByType() {
