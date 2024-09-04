@@ -38,6 +38,8 @@ import net.jqwik.api.Combinators.F4;
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.JavaTypeArbitraryBuilder;
+import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
+import com.navercorp.fixturemonkey.api.experimental.TypedPropertySelector;
 import com.navercorp.fixturemonkey.api.instantiator.Instantiator;
 import com.navercorp.fixturemonkey.api.property.PropertySelector;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
@@ -333,6 +335,15 @@ public final class JavaTypeDefaultTypeArbitraryBuilder<T> implements JavaTypeArb
 	@Override
 	public JavaTypeArbitraryBuilder<T> instantiate(TypeReference<?> type, Instantiator instantiator) {
 		delegate.instantiate(type, instantiator);
+		return this;
+	}
+
+	@Override
+	public <U> JavaTypeArbitraryBuilder<T> customizeProperty(
+		TypedPropertySelector<U> propertySelector,
+		Function<CombinableArbitrary<? extends U>, CombinableArbitrary<? extends U>> combinableArbitraryCustomizer
+	) {
+		delegate.customizeProperty(propertySelector, combinableArbitraryCustomizer);
 		return this;
 	}
 }

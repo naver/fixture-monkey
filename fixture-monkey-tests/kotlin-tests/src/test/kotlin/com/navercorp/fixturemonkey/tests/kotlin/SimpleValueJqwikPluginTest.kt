@@ -60,13 +60,10 @@ class SimpleValueJqwikPluginTest {
 
     @RepeatedTest(TEST_COUNT)
     fun modifyStringLength() {
-        val sut = FixtureMonkey.builder()
-            .plugin(
-                SimpleValueJqwikPlugin()
-                    .minStringLength(2)
-                    .maxStringLength(3)
-            )
-            .build()
+        val sut =
+            FixtureMonkey.builder()
+                .plugin(SimpleValueJqwikPlugin())
+                .build()
 
         val actual: String = sut.giveMeOne()
 
@@ -142,7 +139,7 @@ class SimpleValueJqwikPluginTest {
 
     @RepeatedTest(TEST_COUNT)
     fun sampleSetObject() {
-        class SetObject (val integers: Set<Integer>)
+        class SetObject(val integers: Set<Integer>)
 
         val sut = FixtureMonkey.builder()
             .plugin(KotlinPlugin())
@@ -201,5 +198,4 @@ class SimpleValueJqwikPluginTest {
 
         then(actual).isBetween(Byte.MIN_VALUE, Byte.MAX_VALUE)
     }
-
 }
