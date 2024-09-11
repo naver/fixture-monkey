@@ -5,6 +5,11 @@ menu:
 docs:
 weight: 100
 ---
+sectionStart
+### v.1.0.25
+Fix concurrency issue with string generation
+
+sectionEnd
 
 sectionStart
 ### v.1.0.24
