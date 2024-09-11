@@ -557,6 +557,18 @@ public interface ArbitraryBuilder<T> {
 
 	ArbitraryBuilder<T> instantiate(TypeReference<?> type, Instantiator instantiator);
 
+	/**
+	 * Customizes the arbitrary value generated from selected properties.
+	 * It can be called several times and nested. It has an order dependency.
+	 * <p>
+	 * Without any set APIs, it customizes the arbitrary value.
+	 * With set APIs, it customizes the last value in set APIs.
+	 *
+	 * @param propertySelector              the property selector with type
+	 * @param combinableArbitraryCustomizer
+	 * @param <U>                           the type of the properties selected by {@code propertySelector}.
+	 * @return a customized {@link ArbitraryBuilder}
+	 */
 	@API(since = "1.0.9", status = Status.MAINTAINED)
 	<U> ArbitraryBuilder<T> customizeProperty(
 		TypedPropertySelector<U> propertySelector,
