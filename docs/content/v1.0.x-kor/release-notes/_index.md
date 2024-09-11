@@ -9,6 +9,8 @@ sectionStart
 ### v.1.0.25
 Fix concurrency issue with string generation
 
+Fix seed setting as annotated
+
 sectionEnd
 
 sectionStart
