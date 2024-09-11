@@ -29,8 +29,6 @@ import com.navercorp.fixturemonkey.api.random.Randoms;
 import com.navercorp.fixturemonkey.junit.jupiter.annotation.Seed;
 
 public final class FixtureMonkeySeedExtension implements BeforeTestExecutionCallback, AfterTestExecutionCallback {
-	private static final ThreadLocal<Long> SEED_HOLDER = new ThreadLocal<>();
-
 	private static final Logger LOGGER = LoggerFactory.getLogger(FixtureMonkeySeedExtension.class);
 
 	@Override
@@ -57,7 +55,7 @@ public final class FixtureMonkeySeedExtension implements BeforeTestExecutionCall
 	 * Sets the seed for generating random numbers.
 	 **/
 	private void setSeed(long seed) {
-		SEED_HOLDER.set(Randoms.create(String.valueOf(seed)).nextLong());
+		Randoms.create(String.valueOf(seed));
 	}
 
 	/**
@@ -66,6 +64,7 @@ public final class FixtureMonkeySeedExtension implements BeforeTestExecutionCall
 	 **/
 	private void logSeedIfTestFailed(ExtensionContext context) {
 		Method testMethod = context.getRequiredTestMethod();
-		LOGGER.error(String.format("Test Method [%s] failed with seed: %d", testMethod.getName(), SEED_HOLDER.get()));
+		LOGGER.error(
+			String.format("Test Method [%s] failed with seed: %d", testMethod.getName(), Randoms.currentSeed()));
 	}
 }
