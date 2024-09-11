@@ -1,14 +1,71 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>옵션 on</title><link>https://naver.github.io/fixture-monkey/v1-0-0-kor/docs/fixture-monkey-options/</link><description>Recent content in 옵션 on</description><generator>Hugo</generator><language>v1-0-0-kor</language><atom:link href="https://naver.github.io/fixture-monkey/v1-0-0-kor/docs/fixture-monkey-options/index.xml" rel="self" type="application/rss+xml"/><item><title>컨셉</title><link>https://naver.github.io/fixture-monkey/v1-0-0-kor/docs/fixture-monkey-options/concepts/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v1-0-0-kor/docs/fixture-monkey-options/concepts/</guid><description>Fixture Monkey가 제공하는 옵션에 대해 배우기 전에 몇 가지 알아둬야 할 사항이 있습니다.
-프로퍼티 # 문서에서는 클래스 객체의 특성을 나타낼 때, 필드 대신에 일관적으로 프로퍼티 라는 용어를 사용합니다. 이 용어는 Kotlin의 &amp;lsquo;프로퍼티&amp;rsquo;와 동일한 이름이지만, Fixture Monkey에서는 컨셉이 다릅니다.
-Fixture Monkey의 초기 구조는 주로 필드에 기반하고 있었으며, 이는 메서드와 기타 메커니즘을 통한 구성 및 제어에 제약을 가했습니다. 예를 들어, 오직 필드에만 의존할 경우 Setter 메서드에 존재하는 어노테이션에 접근할 수 없습니다. 이러한 한계점을 다루기 위해 필드를 넘어 지원을 확장하는 프로퍼티 인터페이스가 도입되었습니다.</description></item><item><title>생성 옵션</title><link>https://naver.github.io/fixture-monkey/v1-0-0-kor/docs/fixture-monkey-options/generation-options/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v1-0-0-kor/docs/fixture-monkey-options/generation-options/</guid><description>Fixture Monkey는 원하는 설정과 일치하는 복잡한 객체를 생성하기 위한 다양한 옵션을 제공합니다.
-이러한 옵션은 FixtureMonkeyBuilder 를 통해 접근할 수 있습니다.
-사용자 정의 객체 생성기 등록하기 # ObjectIntrospector # objectIntrospector
-ObjectIntrospector 은 Fixture Monkey에서 객체가 생성되는 방법을 결정합니다. objectIntrospector 옵션을 사용하면 객체 생성의 기본 동작을 지정할 수 있습니다. introspector section에서 언급한 대로 기본 introspector를 변경하여 Fixture Monkey에서 제공하는 미리 정의된 introspector를 사용하거나 사용자 정의 introspector를 만들 수 있습니다.
-📖 참고할 구현체: 'BeanArbitraryIntrospector', 'BuilderArbitraryIntrospector' ArbitraryIntrospector # pushArbitraryIntrospector, pushAssignableTypeArbitraryIntrospector, pushExactTypeArbitraryIntrospector</description></item><item><title>기타 옵션</title><link>https://naver.github.io/fixture-monkey/v1-0-0-kor/docs/fixture-monkey-options/other-options/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v1-0-0-kor/docs/fixture-monkey-options/other-options/</guid><description>이 섹션에서는 FixtureMonkeyBuilder 가 제공하는 몇 가지 추가 옵션을 설명합니다.
-플로그인 추가하기 # Fixture Monkey는 플러그인을 통한 서드파티 라이브러리 지원 등 몇 가지 추가 기능을 제공합니다. 플러그인 옵션을 사용하여 이 추가 기능을 사용할 수 있습니다.
-예시로 아래와 같이 Jackson 플러그인을 추가할 수 있습니다. 이렇게 하면 JacksonObjectArbitraryIntrospector 그리고 Jackson 어노테이션 지원과 같은 Jackson의 기능을 사용할 수 있습니다.
-Java Kotlin FixtureMonkey fixtureMonkey = FixtureMonkey.builder() .plugin(new JacksonPlugin()) .build(); val fixtureMonkey = FixtureMonkey.builder() .plugin(JacksonPlugin()) .</description></item><item><title>커스터마이징 옵션</title><link>https://naver.github.io/fixture-monkey/v1-0-0-kor/docs/fixture-monkey-options/customization-options/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v1-0-0-kor/docs/fixture-monkey-options/customization-options/</guid><description>Fixture Monkey는 FixtureMonkeyBuilder 를 통해 원하는 값을 가지도록 객체를 사용자 정의하거나 사용자 정의 프로퍼티 명을 사용할 수 있는 옵션도 제공합니다.
-프로퍼티명 참조 방법 변경하기 # defaultPropertyNameResolver, pushPropertyNameResolver, pushAssignableTypePropertyNameResolver, pushExactTypePropertyNameResolver
-PropertyNameResolver 관련 옵션을 사용하면 프로퍼티명을 참조하는 방법을 사용자 정의할 수 있습니다.
-defaultPropertyNameResolver 옵션은 모든 타입에 대해 프로퍼티명을 알아내는 방식을 변경하는 데 사용됩니다. 만약 특정 타입에 대해 변경을 수행하려면 pushPropertyNameResolver , pushAssignableTypePropertyNameResolver 또는 pushExactTypePropertyNameResolver 를 사용할 수 있습니다.
-기본적으로 프로퍼티는 원래 이름으로 참조됩니다.</description></item></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>옵션 on</title><link>https://naver.github.io/fixture-monkey/v1-0-0-kor/docs/fixture-monkey-options/</link><description>Recent content in 옵션 on</description><generator>Hugo</generator><language>v1-0-0-kor</language><atom:link href="https://naver.github.io/fixture-monkey/v1-0-0-kor/docs/fixture-monkey-options/index.xml" rel="self" type="application/rss+xml"/><item><title>컨셉</title><link>https://naver.github.io/fixture-monkey/v1-0-0-kor/docs/fixture-monkey-options/concepts/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v1-0-0-kor/docs/fixture-monkey-options/concepts/</guid><description>&lt;p>Fixture Monkey가 제공하는 옵션에 대해 배우기 전에 몇 가지 알아둬야 할 사항이 있습니다.&lt;/p>
+&lt;h2 id="프로퍼티">프로퍼티 &lt;a href="#%ed%94%84%eb%a1%9c%ed%8d%bc%ed%8b%b0" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h2>
+&lt;p>문서에서는 클래스 객체의 특성을 나타낼 때, &lt;code>필드&lt;/code> 대신에 일관적으로 &lt;code>프로퍼티&lt;/code> 라는 용어를 사용합니다.
+이 용어는 Kotlin의 &amp;lsquo;프로퍼티&amp;rsquo;와 동일한 이름이지만, Fixture Monkey에서는 컨셉이 다릅니다.&lt;/p>
+&lt;p>Fixture Monkey의 초기 구조는 주로 필드에 기반하고 있었으며, 이는 메서드와 기타 메커니즘을 통한 구성 및 제어에 제약을 가했습니다.
+예를 들어, 오직 필드에만 의존할 경우 Setter 메서드에 존재하는 어노테이션에 접근할 수 없습니다.
+이러한 한계점을 다루기 위해 필드를 넘어 지원을 확장하는 &lt;code>프로퍼티&lt;/code> 인터페이스가 도입되었습니다.&lt;/p></description></item><item><title>생성 옵션</title><link>https://naver.github.io/fixture-monkey/v1-0-0-kor/docs/fixture-monkey-options/generation-options/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v1-0-0-kor/docs/fixture-monkey-options/generation-options/</guid><description>&lt;p>Fixture Monkey는 원하는 설정과 일치하는 복잡한 객체를 생성하기 위한 다양한 옵션을 제공합니다.&lt;/p>
+&lt;p>이러한 옵션은 &lt;code>FixtureMonkeyBuilder&lt;/code> 를 통해 접근할 수 있습니다.&lt;/p>
+&lt;h2 id="사용자-정의-객체-생성기-등록하기">사용자 정의 객체 생성기 등록하기 &lt;a href="#%ec%82%ac%ec%9a%a9%ec%9e%90-%ec%a0%95%ec%9d%98-%ea%b0%9d%ec%b2%b4-%ec%83%9d%ec%84%b1%ea%b8%b0-%eb%93%b1%eb%a1%9d%ed%95%98%ea%b8%b0" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h2>
+&lt;h3 id="objectintrospector">ObjectIntrospector &lt;a href="#objectintrospector" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h3>
+&lt;blockquote>
+&lt;p>&lt;code>objectIntrospector&lt;/code>&lt;/p>
+&lt;/blockquote>
+&lt;p>&lt;code>ObjectIntrospector&lt;/code> 은 Fixture Monkey에서 객체가 생성되는 방법을 결정합니다. &lt;code>objectIntrospector&lt;/code> 옵션을 사용하면 객체 생성의 기본 동작을 지정할 수 있습니다.
+&lt;a href="../../generating-objects/introspector">introspector section&lt;/a>에서 언급한 대로 기본 introspector를 변경하여 Fixture Monkey에서 제공하는 미리 정의된 introspector를 사용하거나 사용자 정의 introspector를 만들 수 있습니다.&lt;/p>
+&lt;div class="alert alert-doks d-flex" role="alert">
+ &lt;div class="flex-shrink-1 alert-icon">📖 &lt;/div>
+ 
+ &lt;div class="w-100">참고할 구현체: 'BeanArbitraryIntrospector', 'BuilderArbitraryIntrospector' &lt;/div>
+ 
+&lt;/div>
+
+&lt;h3 id="arbitraryintrospector">ArbitraryIntrospector &lt;a href="#arbitraryintrospector" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h3>
+&lt;blockquote>
+&lt;p>&lt;code>pushArbitraryIntrospector&lt;/code>, &lt;code>pushAssignableTypeArbitraryIntrospector&lt;/code>, &lt;code>pushExactTypeArbitraryIntrospector&lt;/code>&lt;/p></description></item><item><title>기타 옵션</title><link>https://naver.github.io/fixture-monkey/v1-0-0-kor/docs/fixture-monkey-options/other-options/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v1-0-0-kor/docs/fixture-monkey-options/other-options/</guid><description>&lt;p>이 섹션에서는 &lt;code>FixtureMonkeyBuilder&lt;/code> 가 제공하는 몇 가지 추가 옵션을 설명합니다.&lt;/p>
+&lt;h3 id="플로그인-추가하기">플로그인 추가하기 &lt;a href="#%ed%94%8c%eb%a1%9c%ea%b7%b8%ec%9d%b8-%ec%b6%94%ea%b0%80%ed%95%98%ea%b8%b0" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h3>
+&lt;p>Fixture Monkey는 플러그인을 통한 서드파티 라이브러리 지원 등 몇 가지 추가 기능을 제공합니다.
+플러그인 옵션을 사용하여 이 추가 기능을 사용할 수 있습니다.&lt;/p>
+&lt;p>예시로 아래와 같이 Jackson 플러그인을 추가할 수 있습니다.
+이렇게 하면 &lt;code>JacksonObjectArbitraryIntrospector&lt;/code> 그리고 Jackson 어노테이션 지원과 같은 Jackson의 기능을 사용할 수 있습니다.&lt;/p>
+
+
+
+&lt;ul class="nav nav-tabs" id="tabs-0" role="tablist">
+ &lt;li class="nav-item">
+ &lt;button class="nav-link active"
+ id="tabs-00-00-tab" data-bs-toggle="tab" data-bs-target="#tabs-00-00" role="tab"
+ aria-controls="tabs-00-00" aria-selected="true">
+ Java
+ &lt;/button>
+ &lt;/li>&lt;li class="nav-item">
+ &lt;button class="nav-link"
+ id="tabs-00-01-tab" data-bs-toggle="tab" data-bs-target="#tabs-00-01" role="tab"
+ aria-controls="tabs-00-01" aria-selected="false">
+ Kotlin
+ &lt;/button>
+ &lt;/li>
+&lt;/ul>
+
+&lt;div class="tab-content" id="tabs-0-content">
+ &lt;div class="tab-pane fade show active"
+ id="tabs-00-00" role="tabpanel" aria-labelled-by="tabs-00-00-tab" tabindex="0">
+ &lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-java" data-lang="java">&lt;span class="line">&lt;span class="cl">&lt;span class="n">FixtureMonkey&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">fixtureMonkey&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">FixtureMonkey&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">builder&lt;/span>&lt;span class="p">()&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">plugin&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="k">new&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">JacksonPlugin&lt;/span>&lt;span class="p">())&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">build&lt;/span>&lt;span class="p">();&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>
+ &lt;/div>
+ &lt;div class="tab-pane fade"
+ id="tabs-00-01" role="tabpanel" aria-labelled-by="tabs-00-01-tab" tabindex="0">
+ &lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-kotlin" data-lang="kotlin">&lt;span class="line">&lt;span class="cl">&lt;span class="k">val&lt;/span> &lt;span class="py">fixtureMonkey&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="nc">FixtureMonkey&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">builder&lt;/span>&lt;span class="p">()&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">.&lt;/span>&lt;span class="n">plugin&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">JacksonPlugin&lt;/span>&lt;span class="p">())&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">.&lt;/span>&lt;span class="n">build&lt;/span>&lt;span class="p">()&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>
+ &lt;/div>
+&lt;/div></description></item><item><title>커스터마이징 옵션</title><link>https://naver.github.io/fixture-monkey/v1-0-0-kor/docs/fixture-monkey-options/customization-options/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v1-0-0-kor/docs/fixture-monkey-options/customization-options/</guid><description>&lt;p>Fixture Monkey는 &lt;code>FixtureMonkeyBuilder&lt;/code> 를 통해 원하는 값을 가지도록 객체를 사용자 정의하거나 사용자 정의 프로퍼티 명을 사용할 수 있는 옵션도 제공합니다.&lt;/p>
+&lt;h2 id="프로퍼티명-참조-방법-변경하기">프로퍼티명 참조 방법 변경하기 &lt;a href="#%ed%94%84%eb%a1%9c%ed%8d%bc%ed%8b%b0%eb%aa%85-%ec%b0%b8%ec%a1%b0-%eb%b0%a9%eb%b2%95-%eb%b3%80%ea%b2%bd%ed%95%98%ea%b8%b0" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h2>
+&lt;blockquote>
+&lt;p>&lt;code>defaultPropertyNameResolver&lt;/code>, &lt;code>pushPropertyNameResolver&lt;/code>, &lt;code>pushAssignableTypePropertyNameResolver&lt;/code>, &lt;code>pushExactTypePropertyNameResolver&lt;/code>&lt;/p>
+&lt;/blockquote>
+&lt;p>&lt;code>PropertyNameResolver&lt;/code> 관련 옵션을 사용하면 프로퍼티명을 참조하는 방법을 사용자 정의할 수 있습니다.&lt;/p>
+&lt;p>&lt;code>defaultPropertyNameResolver&lt;/code> 옵션은 모든 타입에 대해 프로퍼티명을 알아내는 방식을 변경하는 데 사용됩니다.
+만약 특정 타입에 대해 변경을 수행하려면 &lt;code>pushPropertyNameResolver&lt;/code> , &lt;code>pushAssignableTypePropertyNameResolver&lt;/code> 또는 &lt;code>pushExactTypePropertyNameResolver&lt;/code> 를 사용할 수 있습니다.&lt;/p>
+&lt;p>기본적으로 프로퍼티는 원래 이름으로 참조됩니다. 다음 예시를 통해 프로퍼티명을 사용자 정의하는 방법을 살펴봅시다:&lt;/p></description></item></channel></rss>

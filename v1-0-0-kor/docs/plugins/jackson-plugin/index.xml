@@ -1,9 +1,200 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Jackson 플러그인 on</title><link>https://naver.github.io/fixture-monkey/v1-0-0-kor/docs/plugins/jackson-plugin/</link><description>Recent content in Jackson 플러그인 on</description><generator>Hugo</generator><language>v1-0-0-kor</language><atom:link href="https://naver.github.io/fixture-monkey/v1-0-0-kor/docs/plugins/jackson-plugin/index.xml" rel="self" type="application/rss+xml"/><item><title>기능</title><link>https://naver.github.io/fixture-monkey/v1-0-0-kor/docs/plugins/jackson-plugin/features/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v1-0-0-kor/docs/plugins/jackson-plugin/features/</guid><description>Fixture monkey는 Fixture Monkey Jackson 플러그인을 사용하여 Jackson를 지원합니다.
-JacksonObjectArbitraryIntrospector를 기본 introspector로 사용하여 Jackson 객체 매퍼를 통해 객체를 생성하는 기능을 지원합니다. @JsonIgnore, @JsonProperty와 같은 Jackson 어노테이션을 지원합니다. 의존성 # Gradle # testImplementation(&amp;quot;com.navercorp.fixturemonkey:fixture-monkey-jackson:1.0.23&amp;quot;) Maven # &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;com.navercorp.fixturemonkey&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;fixture-monkey-jackson&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;1.0.23&amp;lt;/version&amp;gt; &amp;lt;scope&amp;gt;test&amp;lt;/scope&amp;gt; &amp;lt;/dependency&amp;gt; 플러그인 # Java Kotlin FixtureMonkey fixtureMonkey = FixtureMonkey.builder() .plugin(new JacksonPlugin()) .build(); val fixtureMonkey = FixtureMonkey.builder() .plugin(JacksonPlugin()) .build() JacksonPlugin을 사용할 때 사용자 정의 객체 매퍼를 사용하고싶다면 JacksonPlugin 생성자에 objectMapper를 전달해줄 수 있습니다.</description></item><item><title>JacksonObjectArbitraryIntrospector</title><link>https://naver.github.io/fixture-monkey/v1-0-0-kor/docs/plugins/jackson-plugin/jackson-object-arbitrary-introspector/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v1-0-0-kor/docs/plugins/jackson-plugin/jackson-object-arbitrary-introspector/</guid><description>JacksonObjectArbitraryIntrospector # Jackson 플러그인이 추가되면 JacksonObjectArbitraryIntrospector가 기본 introspector로 지정됩니다. 주어진 클래스의 프로퍼티들을 생성해 맵에 추가하고 Jackson의 객체 매퍼를 사용하여 역직렬화합니다.
-예제 자바 클래스 :
-@Value public class Product { long id; String productName; long price; List&amp;lt;String&amp;gt; options; Instant createdAt; } JacksonObjectArbitraryIntrospector 사용 : Java Kotlin @Test void test() { FixtureMonkey fixtureMonkey = FixtureMonkey.builder() .plugin(new JacksonPlugin()) .build(); Product product = fixtureMonkey.giveMeOne(Product.class); } testImplementation(&amp;#34;com.navercorp.fixturemonkey:fixture-monkey-starter-kotlin:1.0.23&amp;#34;) testImplementation(&amp;#34;com.fasterxml.jackson.module:jackson-module-kotlin&amp;#34;) @Test fun test() { FixtureMonkey fixtureMonkey = FixtureMonkey.</description></item><item><title>Jackson 어노테이션</title><link>https://naver.github.io/fixture-monkey/v1-0-0-kor/docs/plugins/jackson-plugin/jackson-annotations/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v1-0-0-kor/docs/plugins/jackson-plugin/jackson-annotations/</guid><description>Jackson 플러그인을 사용하면 일부 Jackson 어노테이션도 지원됩니다.
-@JsonProperty, @JsonIgnore # String 표현식을 사용하여 속성을 사용자 정의할 때는 @JsonProperty에서 지정한 속성 이름을 활용할 수 있습니다.
-Fixture Monkey는 객체를 생성할 때 @JsonIgnore가 지정된 속성을 null 값으로 생성합니다.
-다음 예제는 @JsonProperty와 @JsonIgnore을 Fixture Monkey에서 활용하는 방법을 보여줍니다.
-예제 자바 클래스 :
-@Value // lombok getter, setter public class Product { long id; @JsonProperty(&amp;quot;name&amp;quot;) String productName; long price; @JsonIgnore List&amp;lt;String&amp;gt; options; Instant createdAt; } Java Kotlin @Test void test() { // given FixtureMonkey fixtureMonkey = FixtureMonkey.</description></item></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Jackson 플러그인 on</title><link>https://naver.github.io/fixture-monkey/v1-0-0-kor/docs/plugins/jackson-plugin/</link><description>Recent content in Jackson 플러그인 on</description><generator>Hugo</generator><language>v1-0-0-kor</language><atom:link href="https://naver.github.io/fixture-monkey/v1-0-0-kor/docs/plugins/jackson-plugin/index.xml" rel="self" type="application/rss+xml"/><item><title>기능</title><link>https://naver.github.io/fixture-monkey/v1-0-0-kor/docs/plugins/jackson-plugin/features/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v1-0-0-kor/docs/plugins/jackson-plugin/features/</guid><description>&lt;p>Fixture monkey는 Fixture Monkey Jackson 플러그인을 사용하여 &lt;a href="https://github.com/FasterXML/jackson">Jackson&lt;/a>를 지원합니다.&lt;/p>
+&lt;ul>
+&lt;li>&lt;code>JacksonObjectArbitraryIntrospector&lt;/code>를 기본 introspector로 사용하여 Jackson 객체 매퍼를 통해 객체를 생성하는 기능을 지원합니다.&lt;/li>
+&lt;li>&lt;code>@JsonIgnore&lt;/code>, &lt;code>@JsonProperty&lt;/code>와 같은 Jackson 어노테이션을 지원합니다.&lt;/li>
+&lt;/ul>
+&lt;h2 id="의존성">의존성 &lt;a href="#%ec%9d%98%ec%a1%b4%ec%84%b1" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h2>
+&lt;h4 id="gradle">Gradle &lt;a href="#gradle" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h4>
+&lt;pre>&lt;code class="language-groovy">testImplementation(&amp;quot;com.navercorp.fixturemonkey:fixture-monkey-jackson:1.0.23&amp;quot;)
+&lt;/code>&lt;/pre>
+&lt;h4 id="maven">Maven &lt;a href="#maven" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h4>
+&lt;pre>&lt;code class="language-xml">&amp;lt;dependency&amp;gt;
+ &amp;lt;groupId&amp;gt;com.navercorp.fixturemonkey&amp;lt;/groupId&amp;gt;
+ &amp;lt;artifactId&amp;gt;fixture-monkey-jackson&amp;lt;/artifactId&amp;gt;
+ &amp;lt;version&amp;gt;1.0.23&amp;lt;/version&amp;gt;
+ &amp;lt;scope&amp;gt;test&amp;lt;/scope&amp;gt;
+&amp;lt;/dependency&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;h2 id="플러그인">플러그인 &lt;a href="#%ed%94%8c%eb%9f%ac%ea%b7%b8%ec%9d%b8" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h2>
+
+
+
+&lt;ul class="nav nav-tabs" id="tabs-2" role="tablist">
+ &lt;li class="nav-item">
+ &lt;button class="nav-link active"
+ id="tabs-02-00-tab" data-bs-toggle="tab" data-bs-target="#tabs-02-00" role="tab"
+ aria-controls="tabs-02-00" aria-selected="true">
+ Java
+ &lt;/button>
+ &lt;/li>&lt;li class="nav-item">
+ &lt;button class="nav-link"
+ id="tabs-02-01-tab" data-bs-toggle="tab" data-bs-target="#tabs-02-01" role="tab"
+ aria-controls="tabs-02-01" aria-selected="false">
+ Kotlin
+ &lt;/button>
+ &lt;/li>
+&lt;/ul>
+
+&lt;div class="tab-content" id="tabs-2-content">
+ &lt;div class="tab-pane fade show active"
+ id="tabs-02-00" role="tabpanel" aria-labelled-by="tabs-02-00-tab" tabindex="2">
+ &lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-java" data-lang="java">&lt;span class="line">&lt;span class="cl">&lt;span class="n">FixtureMonkey&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">fixtureMonkey&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">FixtureMonkey&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">builder&lt;/span>&lt;span class="p">()&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">plugin&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="k">new&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">JacksonPlugin&lt;/span>&lt;span class="p">())&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">build&lt;/span>&lt;span class="p">();&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>
+ &lt;/div>
+ &lt;div class="tab-pane fade"
+ id="tabs-02-01" role="tabpanel" aria-labelled-by="tabs-02-01-tab" tabindex="2">
+ &lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-kotlin" data-lang="kotlin">&lt;span class="line">&lt;span class="cl">&lt;span class="k">val&lt;/span> &lt;span class="py">fixtureMonkey&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="nc">FixtureMonkey&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">builder&lt;/span>&lt;span class="p">()&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">.&lt;/span>&lt;span class="n">plugin&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">JacksonPlugin&lt;/span>&lt;span class="p">())&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">.&lt;/span>&lt;span class="n">build&lt;/span>&lt;span class="p">()&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>
+ &lt;/div>
+&lt;/div>
+
+&lt;p>JacksonPlugin을 사용할 때 사용자 정의 객체 매퍼를 사용하고싶다면 JacksonPlugin 생성자에 objectMapper를 전달해줄 수 있습니다.&lt;/p></description></item><item><title>JacksonObjectArbitraryIntrospector</title><link>https://naver.github.io/fixture-monkey/v1-0-0-kor/docs/plugins/jackson-plugin/jackson-object-arbitrary-introspector/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v1-0-0-kor/docs/plugins/jackson-plugin/jackson-object-arbitrary-introspector/</guid><description>&lt;h2 id="jacksonobjectarbitraryintrospector">JacksonObjectArbitraryIntrospector &lt;a href="#jacksonobjectarbitraryintrospector" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h2>
+&lt;p>Jackson 플러그인이 추가되면 JacksonObjectArbitraryIntrospector가 기본 introspector로 지정됩니다.
+주어진 클래스의 프로퍼티들을 생성해 맵에 추가하고 Jackson의 객체 매퍼를 사용하여 역직렬화합니다.&lt;/p>
+&lt;p>&lt;strong>예제 자바 클래스 :&lt;/strong>&lt;/p>
+&lt;pre>&lt;code class="language-java">@Value
+public class Product {
+ long id;
+
+ String productName;
+
+ long price;
+
+ List&amp;lt;String&amp;gt; options;
+
+ Instant createdAt;
+}
+&lt;/code>&lt;/pre>
+&lt;p>&lt;strong>JacksonObjectArbitraryIntrospector 사용 :&lt;/strong>
+
+
+
+&lt;ul class="nav nav-tabs" id="tabs-0" role="tablist">
+ &lt;li class="nav-item">
+ &lt;button class="nav-link active"
+ id="tabs-00-00-tab" data-bs-toggle="tab" data-bs-target="#tabs-00-00" role="tab"
+ aria-controls="tabs-00-00" aria-selected="true">
+ Java
+ &lt;/button>
+ &lt;/li>&lt;li class="nav-item">
+ &lt;button class="nav-link"
+ id="tabs-00-01-tab" data-bs-toggle="tab" data-bs-target="#tabs-00-01" role="tab"
+ aria-controls="tabs-00-01" aria-selected="false">
+ Kotlin
+ &lt;/button>
+ &lt;/li>
+&lt;/ul>
+
+&lt;div class="tab-content" id="tabs-0-content">
+ &lt;div class="tab-pane fade show active"
+ id="tabs-00-00" role="tabpanel" aria-labelled-by="tabs-00-00-tab" tabindex="0">
+ &lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-java" data-lang="java">&lt;span class="line">&lt;span class="cl">&lt;span class="nd">@Test&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="kt">void&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nf">test&lt;/span>&lt;span class="p">()&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">FixtureMonkey&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">fixtureMonkey&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">FixtureMonkey&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">builder&lt;/span>&lt;span class="p">()&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">plugin&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="k">new&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">JacksonPlugin&lt;/span>&lt;span class="p">())&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">build&lt;/span>&lt;span class="p">();&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">Product&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">product&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">fixtureMonkey&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">giveMeOne&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">Product&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">class&lt;/span>&lt;span class="p">);&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="p">}&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>
+ &lt;/div>
+ &lt;div class="tab-pane fade"
+ id="tabs-00-01" role="tabpanel" aria-labelled-by="tabs-00-01-tab" tabindex="0">
+ &lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-kotlin" data-lang="kotlin">&lt;span class="line">&lt;span class="cl">&lt;span class="n">testImplementation&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s2">&amp;#34;com.navercorp.fixturemonkey:fixture-monkey-starter-kotlin:1.0.23&amp;#34;&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">testImplementation&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s2">&amp;#34;com.fasterxml.jackson.module:jackson-module-kotlin&amp;#34;&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nd">@Test&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">fun&lt;/span> &lt;span class="nf">test&lt;/span>&lt;span class="p">()&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">FixtureMonkey&lt;/span> &lt;span class="n">fixtureMonkey&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="nc">FixtureMonkey&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">builder&lt;/span>&lt;span class="p">()&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">.&lt;/span>&lt;span class="n">plugin&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">KotlinPlugin&lt;/span>&lt;span class="p">())&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">.&lt;/span>&lt;span class="n">plugin&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">JacksonPlugin&lt;/span>&lt;span class="p">())&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">.&lt;/span>&lt;span class="n">build&lt;/span>&lt;span class="p">();&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">val&lt;/span> &lt;span class="py">product&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="n">Product&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="n">fixtureMonkey&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">giveMeOne&lt;/span>&lt;span class="p">()&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>
+ &lt;/div>
+&lt;/div>
+&lt;/p></description></item><item><title>Jackson 어노테이션</title><link>https://naver.github.io/fixture-monkey/v1-0-0-kor/docs/plugins/jackson-plugin/jackson-annotations/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v1-0-0-kor/docs/plugins/jackson-plugin/jackson-annotations/</guid><description>&lt;p>Jackson 플러그인을 사용하면 일부 Jackson 어노테이션도 지원됩니다.&lt;/p>
+&lt;h3 id="jsonproperty-jsonignore">@JsonProperty, @JsonIgnore &lt;a href="#jsonproperty-jsonignore" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h3>
+&lt;p>String 표현식을 사용하여 속성을 사용자 정의할 때는 @JsonProperty에서 지정한 속성 이름을 활용할 수 있습니다.&lt;/p>
+&lt;p>Fixture Monkey는 객체를 생성할 때 @JsonIgnore가 지정된 속성을 null 값으로 생성합니다.&lt;/p>
+&lt;p>다음 예제는 @JsonProperty와 @JsonIgnore을 Fixture Monkey에서 활용하는 방법을 보여줍니다.&lt;/p>
+&lt;p>&lt;strong>예제 자바 클래스 :&lt;/strong>&lt;/p>
+&lt;pre>&lt;code class="language-java">@Value // lombok getter, setter
+public class Product {
+ long id;
+
+ @JsonProperty(&amp;quot;name&amp;quot;)
+ String productName;
+
+ long price;
+
+ @JsonIgnore
+ List&amp;lt;String&amp;gt; options;
+
+ Instant createdAt;
+}
+&lt;/code>&lt;/pre>
+
+
+
+&lt;ul class="nav nav-tabs" id="tabs-0" role="tablist">
+ &lt;li class="nav-item">
+ &lt;button class="nav-link active"
+ id="tabs-00-00-tab" data-bs-toggle="tab" data-bs-target="#tabs-00-00" role="tab"
+ aria-controls="tabs-00-00" aria-selected="true">
+ Java
+ &lt;/button>
+ &lt;/li>&lt;li class="nav-item">
+ &lt;button class="nav-link"
+ id="tabs-00-01-tab" data-bs-toggle="tab" data-bs-target="#tabs-00-01" role="tab"
+ aria-controls="tabs-00-01" aria-selected="false">
+ Kotlin
+ &lt;/button>
+ &lt;/li>
+&lt;/ul>
+
+&lt;div class="tab-content" id="tabs-0-content">
+ &lt;div class="tab-pane fade show active"
+ id="tabs-00-00" role="tabpanel" aria-labelled-by="tabs-00-00-tab" tabindex="0">
+ &lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-java" data-lang="java">&lt;span class="line">&lt;span class="cl">&lt;span class="nd">@Test&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="kt">void&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nf">test&lt;/span>&lt;span class="p">()&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="c1">// given&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">FixtureMonkey&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">fixtureMonkey&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">FixtureMonkey&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">builder&lt;/span>&lt;span class="p">()&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">plugin&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="k">new&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">JacksonPlugin&lt;/span>&lt;span class="p">())&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">build&lt;/span>&lt;span class="p">();&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="c1">// when&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">Product&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">actual&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">fixtureMonkey&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">giveMeBuilder&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">Product&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">class&lt;/span>&lt;span class="p">)&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">set&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;name&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="s">&amp;#34;book&amp;#34;&lt;/span>&lt;span class="p">)&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">sample&lt;/span>&lt;span class="p">();&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="c1">// then&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">then&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">actual&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">getProductName&lt;/span>&lt;span class="p">()).&lt;/span>&lt;span class="na">isEqualTo&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;book&amp;#34;&lt;/span>&lt;span class="p">);&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="c1">// @JsonProperty&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">then&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">actual&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">getOptions&lt;/span>&lt;span class="p">()).&lt;/span>&lt;span class="na">isNull&lt;/span>&lt;span class="p">();&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="c1">// @JsonIgnore&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="p">}&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>
+ &lt;/div>
+ &lt;div class="tab-pane fade"
+ id="tabs-00-01" role="tabpanel" aria-labelled-by="tabs-00-01-tab" tabindex="0">
+ &lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-kotlin" data-lang="kotlin">&lt;span class="line">&lt;span class="cl">&lt;span class="nd">@Test&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">fun&lt;/span> &lt;span class="nf">test&lt;/span>&lt;span class="p">()&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1">// given
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="k">val&lt;/span> &lt;span class="py">fixtureMonkey&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="nc">FixtureMonkey&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">builder&lt;/span>&lt;span class="p">()&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">.&lt;/span>&lt;span class="n">plugin&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">JacksonPlugin&lt;/span>&lt;span class="p">())&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">.&lt;/span>&lt;span class="n">build&lt;/span>&lt;span class="p">()&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1">// when
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="k">val&lt;/span> &lt;span class="py">actual&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="n">fixtureMonkey&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">giveMeBuilder&lt;/span>&lt;span class="p">&amp;lt;&lt;/span>&lt;span class="n">Product&lt;/span>&lt;span class="p">&amp;gt;()&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">.&lt;/span>&lt;span class="k">set&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s2">&amp;#34;name&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="s2">&amp;#34;book&amp;#34;&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">.&lt;/span>&lt;span class="n">sample&lt;/span>&lt;span class="p">()&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1">// then
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="n">then&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="k">actual&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">productName&lt;/span>&lt;span class="p">).&lt;/span>&lt;span class="n">isEqualTo&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s2">&amp;#34;book&amp;#34;&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="c1">// @JsonProperty
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="n">then&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="k">actual&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">options&lt;/span>&lt;span class="p">).&lt;/span>&lt;span class="n">isNull&lt;/span>&lt;span class="p">()&lt;/span> &lt;span class="c1">// @JsonIgnore
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span>&lt;span class="p">}&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>
+ &lt;/div>
+&lt;/div>
+
+&lt;h3 id="jsontypeinfo-jsonsubtypes">@JsonTypeInfo, @JsonSubTypes &lt;a href="#jsontypeinfo-jsonsubtypes" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h3>
+&lt;p>Fixture Monkey는 @JsonTypeInfo 및 @JsonSubTypes와 같은 Jackson의 다형성 타입을 처리할 수 있는 어노테이션도 지원합니다.&lt;/p></description></item></channel></rss>

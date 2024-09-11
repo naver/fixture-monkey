@@ -1,8 +1,83 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Kotlin Plugin on</title><link>https://naver.github.io/fixture-monkey/v1-0-0/docs/plugins/kotlin-plugin/</link><description>Recent content in Kotlin Plugin on</description><generator>Hugo</generator><language>v1-0-0</language><atom:link href="https://naver.github.io/fixture-monkey/v1-0-0/docs/plugins/kotlin-plugin/index.xml" rel="self" type="application/rss+xml"/><item><title>Features</title><link>https://naver.github.io/fixture-monkey/v1-0-0/docs/plugins/kotlin-plugin/features/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v1-0-0/docs/plugins/kotlin-plugin/features/</guid><description>To help you take full advantage of the concise, safe, and pragmatic nature of Kotlin, Fixture Monkey provides a Kotlin plugin.
-Using PrimaryConstructorArbitraryIntrospector as the default introspector to generate Kotlin classes with its primary constructor. Fixture Monkey Extension Functions Kotlin DSL Exp, Kotlin instantiateBy DSL Dependencies # fixture-monkey-kotlin # Gradle # testImplementation(&amp;quot;com.navercorp.fixturemonkey:fixture-monkey-kotlin:1.0.23&amp;quot;) Maven # &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;com.navercorp.fixturemonkey&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;fixture-monkey-kotlin&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;1.0.23&amp;lt;/version&amp;gt; &amp;lt;scope&amp;gt;test&amp;lt;/scope&amp;gt; &amp;lt;/dependency&amp;gt; fixture-monkey-starter-kotlin # To help you get started using Fixture Monkey in a Kotlin environment, there is also a starter dependency fixture-monkey-starter-kotlin that comes with pre-configured dependencies such as fixture-monkey-starter or fixture-monkey-jakarta-validation.</description></item><item><title>Introspectors for Kotlin</title><link>https://naver.github.io/fixture-monkey/v1-0-0/docs/plugins/kotlin-plugin/introspectors-for-kotlin/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v1-0-0/docs/plugins/kotlin-plugin/introspectors-for-kotlin/</guid><description>Fixture Monkey provides some additional introspectors that support the generation of Kotlin classes.
-PrimaryConstructorArbitraryIntrospector # The PrimaryConstructorArbitraryIntrospector becomes the default introspector when the Kotlin plugin is added. It creates a Kotlin class with its primary constructor.
-Example Kotlin Class :
-data class Product ( val id: Long?, val productName: String, val price: Long, val options: List&amp;lt;String&amp;gt;, val createdAt: Instant ) Using PrimaryConstructorArbitraryIntrospector :
-@Test fun test() { val fixtureMonkey = FixtureMonkey.</description></item><item><title>Kotlin DSL Exp</title><link>https://naver.github.io/fixture-monkey/v1-0-0/docs/plugins/kotlin-plugin/kotlin-exp/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v1-0-0/docs/plugins/kotlin-plugin/kotlin-exp/</guid><description>Fixture Monkey utilizes Kotlin&amp;rsquo;s DSL feature to ensure type-safety with expressions. Let&amp;rsquo;s explore how we can employ Kotlin Exp instead of the standard Java String Expression.
-Referencing a property # Suppose we have an object structure similar to the one described earlier, written in both Java and Kotlin:
-@Value public class JavaClass { String field; List&amp;lt;String&amp;gt; list; Nested nestedObject; List&amp;lt;Nested&amp;gt; nestedObjectList; @Value public static class Nested { String nestedField; } } data class KotlinClass( val field: String, val list: List&amp;lt;String&amp;gt;, val nestedObject: Nested, val nestedObjectList: List&amp;lt;Nested&amp;gt; ) { data class Nested( val nestedField: String ) } To use Kotlin Exp to reference a property, you need to use the Exp or ExpGetter suffix to the normal Fixture Customization APIs.</description></item></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Kotlin Plugin on</title><link>https://naver.github.io/fixture-monkey/v1-0-0/docs/plugins/kotlin-plugin/</link><description>Recent content in Kotlin Plugin on</description><generator>Hugo</generator><language>v1-0-0</language><atom:link href="https://naver.github.io/fixture-monkey/v1-0-0/docs/plugins/kotlin-plugin/index.xml" rel="self" type="application/rss+xml"/><item><title>Features</title><link>https://naver.github.io/fixture-monkey/v1-0-0/docs/plugins/kotlin-plugin/features/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v1-0-0/docs/plugins/kotlin-plugin/features/</guid><description>&lt;p>To help you take full advantage of the concise, safe, and pragmatic nature of Kotlin, Fixture Monkey provides a Kotlin plugin.&lt;/p>
+&lt;ul>
+&lt;li>Using &lt;code>PrimaryConstructorArbitraryIntrospector&lt;/code> as the default introspector to generate Kotlin classes with its primary constructor.&lt;/li>
+&lt;li>Fixture Monkey Extension Functions&lt;/li>
+&lt;li>Kotlin DSL Exp, Kotlin instantiateBy DSL&lt;/li>
+&lt;/ul>
+&lt;h2 id="dependencies">Dependencies &lt;a href="#dependencies" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h2>
+&lt;h5 id="fixture-monkey-kotlin">fixture-monkey-kotlin &lt;a href="#fixture-monkey-kotlin" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h5>
+&lt;h4 id="gradle">Gradle &lt;a href="#gradle" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h4>
+&lt;pre>&lt;code class="language-groovy">testImplementation(&amp;quot;com.navercorp.fixturemonkey:fixture-monkey-kotlin:1.0.23&amp;quot;)
+&lt;/code>&lt;/pre>
+&lt;h4 id="maven">Maven &lt;a href="#maven" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h4>
+&lt;pre>&lt;code class="language-xml">&amp;lt;dependency&amp;gt;
+ &amp;lt;groupId&amp;gt;com.navercorp.fixturemonkey&amp;lt;/groupId&amp;gt;
+ &amp;lt;artifactId&amp;gt;fixture-monkey-kotlin&amp;lt;/artifactId&amp;gt;
+ &amp;lt;version&amp;gt;1.0.23&amp;lt;/version&amp;gt;
+ &amp;lt;scope&amp;gt;test&amp;lt;/scope&amp;gt;
+&amp;lt;/dependency&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;h5 id="fixture-monkey-starter-kotlin">fixture-monkey-starter-kotlin &lt;a href="#fixture-monkey-starter-kotlin" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h5>
+&lt;p>To help you get started using Fixture Monkey in a Kotlin environment, there is also a starter dependency &lt;strong>fixture-monkey-starter-kotlin&lt;/strong> that comes with pre-configured dependencies such as &lt;strong>fixture-monkey-starter&lt;/strong> or &lt;strong>fixture-monkey-jakarta-validation&lt;/strong>.&lt;/p></description></item><item><title>Introspectors for Kotlin</title><link>https://naver.github.io/fixture-monkey/v1-0-0/docs/plugins/kotlin-plugin/introspectors-for-kotlin/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v1-0-0/docs/plugins/kotlin-plugin/introspectors-for-kotlin/</guid><description>&lt;p>Fixture Monkey provides some additional introspectors that support the generation of Kotlin classes.&lt;/p>
+&lt;h2 id="primaryconstructorarbitraryintrospector">PrimaryConstructorArbitraryIntrospector &lt;a href="#primaryconstructorarbitraryintrospector" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h2>
+&lt;p>The &lt;code>PrimaryConstructorArbitraryIntrospector&lt;/code> becomes the default introspector when the Kotlin plugin is added.
+It creates a Kotlin class with its primary constructor.&lt;/p>
+&lt;p>&lt;strong>Example Kotlin Class :&lt;/strong>&lt;/p>
+&lt;pre>&lt;code class="language-kotlin">data class Product (
+ val id: Long?,
+
+ val productName: String,
+
+ val price: Long,
+
+ val options: List&amp;lt;String&amp;gt;,
+
+ val createdAt: Instant
+)
+&lt;/code>&lt;/pre>
+&lt;p>&lt;strong>Using PrimaryConstructorArbitraryIntrospector :&lt;/strong>&lt;/p>
+&lt;pre>&lt;code class="language-kotlin">@Test
+fun test() {
+ val fixtureMonkey = FixtureMonkey.builder()
+ .plugin(KotlinPlugin())
+ .build()
+
+ val product: Product = fixtureMonkey.giveMeOne()
+}
+&lt;/code>&lt;/pre>
+&lt;h2 id="kotlinandjavacompositearbitraryintrospector">KotlinAndJavaCompositeArbitraryIntrospector &lt;a href="#kotlinandjavacompositearbitraryintrospector" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h2>
+&lt;p>The &lt;code>KotlinAndJavaCompositeArbitraryIntrospector&lt;/code> is an introspector designed to assist in the creation of Kotlin classes that reference Java classes.&lt;/p></description></item><item><title>Kotlin DSL Exp</title><link>https://naver.github.io/fixture-monkey/v1-0-0/docs/plugins/kotlin-plugin/kotlin-exp/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v1-0-0/docs/plugins/kotlin-plugin/kotlin-exp/</guid><description>&lt;p>Fixture Monkey utilizes Kotlin&amp;rsquo;s DSL feature to ensure type-safety with expressions.
+Let&amp;rsquo;s explore how we can employ Kotlin Exp instead of the standard &lt;a href="../../../customizing-objects/expressions">Java String Expression&lt;/a>.&lt;/p>
+&lt;h3 id="referencing-a-property">Referencing a property &lt;a href="#referencing-a-property" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h3>
+&lt;p>Suppose we have an object structure similar to the one described earlier, written in both Java and Kotlin:&lt;/p>
+&lt;pre>&lt;code class="language-java">@Value
+public class JavaClass {
+ String field;
+
+ List&amp;lt;String&amp;gt; list;
+
+ Nested nestedObject;
+
+ List&amp;lt;Nested&amp;gt; nestedObjectList;
+
+ @Value
+ public static class Nested {
+ String nestedField;
+ }
+}
+&lt;/code>&lt;/pre>
+&lt;pre>&lt;code class="language-kotlin">data class KotlinClass(
+ val field: String,
+
+ val list: List&amp;lt;String&amp;gt;,
+
+ val nestedObject: Nested,
+
+ val nestedObjectList: List&amp;lt;Nested&amp;gt;
+) {
+ data class Nested(
+ val nestedField: String
+ )
+}
+&lt;/code>&lt;/pre>
+&lt;p>To use Kotlin Exp to reference a property, you need to use the &lt;code>Exp&lt;/code> or &lt;code>ExpGetter&lt;/code> suffix to the normal &lt;a href="../../../customizing-objects/apis">Fixture Customization APIs&lt;/a>.&lt;/p></description></item></channel></rss>

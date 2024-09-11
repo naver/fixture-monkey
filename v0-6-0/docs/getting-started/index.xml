@@ -1,3 +1,163 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Getting Started on</title><link>https://naver.github.io/fixture-monkey/v0-6-0/docs/getting-started/</link><description>Recent content in Getting Started on</description><generator>Hugo</generator><language>v0-6-0</language><atom:link href="https://naver.github.io/fixture-monkey/v0-6-0/docs/getting-started/index.xml" rel="self" type="application/rss+xml"/><item><title>Java</title><link>https://naver.github.io/fixture-monkey/v0-6-0/docs/getting-started/java/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v0-6-0/docs/getting-started/java/</guid><description>Immutable type # ConstructorPropertiesIntrospector # 0. Prerequisites # Should satisfy one of below preconditions
-record type any constructors with @ConstructorProperties Multiple constructors with record would be instantiated by constructor with @ConstructorProperties 1. Altering objectIntrospector option # FixtureMonkey fixtureMonkey = FixtureMonkey.builder() .objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE) .build(); FactoryMethodArbitraryIntrospector # 0. Prerequisites # static factory method 1. Altering objectIntrospector option # FixtureMonkey fixtureMonkey = FixtureMonkey.builder() .objectIntrospector(FactoryMethodArbitraryIntrospector.INSTANCE) .build(); JacksonArbitraryIntrospector # This practice should add extra module because it depends on third-party library Jackson 0.</description></item><item><title>Java with lombok</title><link>https://naver.github.io/fixture-monkey/v0-6-0/docs/getting-started/lombok/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v0-6-0/docs/getting-started/lombok/</guid><description>@Value # ConstructorPropertiesIntrospector # 0. Prerequisites # Should satisfy one of below preconditions
-add lombok.anyConstructor.addConstructorProperties=true in lombok.config any constructors with @ConstructorProperties Multiple constructors with record would be instantiated by constructor with @ConstructorProperties 1. Altering objectIntrospector option # FixtureMonkey fixtureMonkey = FixtureMonkey.builder() .objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE) .build(); JacksonArbitraryIntrospector # This practice should add extra module because it depends on third-party library Jackson 1. Adding dependency # testImplementation(&amp;quot;com.navercorp.fixturemonkey:fixture-monkey-jackson:0.5.0&amp;quot;) &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;com.navercorp.fixturemonkey&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;fixture-monkey-jackson&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;0.5.0&amp;lt;/version&amp;gt; &amp;lt;scope&amp;gt;test&amp;lt;/scope&amp;gt; &amp;lt;/dependency&amp;gt; 2. Altering objectIntrospector option # If you have custom ObjectMapper # FixtureMonkey fixtureMonkey = FixtureMonkey.</description></item><item><title>Kotlin</title><link>https://naver.github.io/fixture-monkey/v0-6-0/docs/getting-started/kotlin/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v0-6-0/docs/getting-started/kotlin/</guid><description>PrimaryConstructorArbitraryIntrospector # 1. Altering objectIntrospector option # FixtureMonkey fixtureMonkey = FixtureMonkey.builder() .plugin(KotlinPlugin()) .build(); JacksonArbitraryIntrospector # This practice should add extra module because it depends on third-party library Jackson 1. Adding dependency # testImplementation(&amp;quot;com.navercorp.fixturemonkey:fixture-monkey-jackson:0.5.0&amp;quot;) &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;com.navercorp.fixturemonkey&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;fixture-monkey-jackson&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;0.5.0&amp;lt;/version&amp;gt; &amp;lt;scope&amp;gt;test&amp;lt;/scope&amp;gt; &amp;lt;/dependency&amp;gt; 2. Altering objectIntrospector option # If you have custom ObjectMapper # FixtureMonkey fixtureMonkey = FixtureMonkey.builder() .plugin(KotlinPlugin()) .plugin(JacksonPlugin(objectMapper)) .build(); If you DON&amp;rsquo;T have a custom ObjectMapper # FixtureMonkey fixtureMonkey = FixtureMonkey.builder() .plugin(KotlinPlugin()) .</description></item></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Getting Started on</title><link>https://naver.github.io/fixture-monkey/v0-6-0/docs/getting-started/</link><description>Recent content in Getting Started on</description><generator>Hugo</generator><language>v0-6-0</language><atom:link href="https://naver.github.io/fixture-monkey/v0-6-0/docs/getting-started/index.xml" rel="self" type="application/rss+xml"/><item><title>Java</title><link>https://naver.github.io/fixture-monkey/v0-6-0/docs/getting-started/java/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v0-6-0/docs/getting-started/java/</guid><description>&lt;h2 id="immutable-type">Immutable type &lt;a href="#immutable-type" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h2>
+&lt;h3 id="constructorpropertiesintrospector">ConstructorPropertiesIntrospector &lt;a href="#constructorpropertiesintrospector" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h3>
+&lt;h4 id="0-prerequisites">0. Prerequisites &lt;a href="#0-prerequisites" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h4>
+&lt;p>Should satisfy one of below preconditions&lt;/p>
+&lt;ul>
+&lt;li>record type&lt;/li>
+&lt;li>any constructors with &lt;code>@ConstructorProperties&lt;/code>&lt;/li>
+&lt;/ul>
+&lt;div class="alert alert-doks d-flex" role="alert">
+ &lt;div class="flex-shrink-1 alert-icon">&lt;/div>
+ 
+ 
+ &lt;div class="w-100"> Multiple constructors with record would be instantiated by constructor with &lt;code>@ConstructorProperties&lt;/code>&lt;/div>
+ 
+ 
+&lt;/div>
+
+&lt;h4 id="1-altering-objectintrospector-option">1. Altering &lt;code>objectIntrospector&lt;/code> option &lt;a href="#1-altering-objectintrospector-option" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h4>
+&lt;pre>&lt;code class="language-java">FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+ .objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)
+ .build();
+&lt;/code>&lt;/pre>
+&lt;h3 id="factorymethodarbitraryintrospector">FactoryMethodArbitraryIntrospector &lt;a href="#factorymethodarbitraryintrospector" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h3>
+&lt;h4 id="0-prerequisites-1">0. Prerequisites &lt;a href="#0-prerequisites-1" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h4>
+&lt;ul>
+&lt;li>static factory method&lt;/li>
+&lt;/ul>
+&lt;h4 id="1-altering-objectintrospector-option-1">1. Altering &lt;code>objectIntrospector&lt;/code> option &lt;a href="#1-altering-objectintrospector-option-1" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h4>
+&lt;pre>&lt;code class="language-java">FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+ .objectIntrospector(FactoryMethodArbitraryIntrospector.INSTANCE)
+ .build();
+&lt;/code>&lt;/pre>
+&lt;h3 id="jacksonarbitraryintrospector">JacksonArbitraryIntrospector &lt;a href="#jacksonarbitraryintrospector" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h3>
+&lt;div class="alert alert-doks d-flex" role="alert">
+ &lt;div class="flex-shrink-1 alert-icon">&lt;/div>
+ 
+ 
+ &lt;div class="w-100"> This practice should add extra module because it depends on third-party library &lt;a href="https://github.com/FasterXML/jackson">Jackson&lt;/a>&lt;/div>
+ 
+ 
+&lt;/div>
+
+&lt;h4 id="0-prerequisites-2">0. Prerequisites &lt;a href="#0-prerequisites-2" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h4>
+&lt;p>Type should be serializable/deserializable by Jackson&lt;/p></description></item><item><title>Java with lombok</title><link>https://naver.github.io/fixture-monkey/v0-6-0/docs/getting-started/lombok/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v0-6-0/docs/getting-started/lombok/</guid><description>&lt;h2 id="value">@Value &lt;a href="#value" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h2>
+&lt;h3 id="constructorpropertiesintrospector">ConstructorPropertiesIntrospector &lt;a href="#constructorpropertiesintrospector" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h3>
+&lt;h4 id="0-prerequisites">0. Prerequisites &lt;a href="#0-prerequisites" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h4>
+&lt;p>Should satisfy one of below preconditions&lt;/p>
+&lt;ul>
+&lt;li>add &lt;code>lombok.anyConstructor.addConstructorProperties=true&lt;/code> in &lt;code>lombok.config&lt;/code>&lt;/li>
+&lt;li>any constructors with &lt;code>@ConstructorProperties&lt;/code>&lt;/li>
+&lt;/ul>
+&lt;div class="alert alert-doks d-flex" role="alert">
+ &lt;div class="flex-shrink-1 alert-icon">&lt;/div>
+ 
+ 
+ &lt;div class="w-100"> Multiple constructors with record would be instantiated by constructor with &lt;code>@ConstructorProperties&lt;/code>&lt;/div>
+ 
+ 
+&lt;/div>
+
+&lt;h4 id="1-altering-objectintrospector-option">1. Altering &lt;code>objectIntrospector&lt;/code> option &lt;a href="#1-altering-objectintrospector-option" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h4>
+&lt;pre>&lt;code class="language-java">FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+ .objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)
+ .build();
+&lt;/code>&lt;/pre>
+&lt;h3 id="jacksonarbitraryintrospector">JacksonArbitraryIntrospector &lt;a href="#jacksonarbitraryintrospector" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h3>
+&lt;div class="alert alert-doks d-flex" role="alert">
+ &lt;div class="flex-shrink-1 alert-icon">&lt;/div>
+ 
+ 
+ &lt;div class="w-100"> This practice should add extra module because it depends on third-party library &lt;a href="https://github.com/FasterXML/jackson">Jackson&lt;/a>&lt;/div>
+ 
+ 
+&lt;/div>
+
+&lt;h4 id="1-adding-dependency">1. Adding dependency &lt;a href="#1-adding-dependency" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h4>
+&lt;pre>&lt;code class="language-groovy">testImplementation(&amp;quot;com.navercorp.fixturemonkey:fixture-monkey-jackson:0.5.0&amp;quot;)
+&lt;/code>&lt;/pre>
+&lt;pre>&lt;code class="language-xml">&amp;lt;dependency&amp;gt;
+ &amp;lt;groupId&amp;gt;com.navercorp.fixturemonkey&amp;lt;/groupId&amp;gt;
+ &amp;lt;artifactId&amp;gt;fixture-monkey-jackson&amp;lt;/artifactId&amp;gt;
+ &amp;lt;version&amp;gt;0.5.0&amp;lt;/version&amp;gt;
+ &amp;lt;scope&amp;gt;test&amp;lt;/scope&amp;gt;
+&amp;lt;/dependency&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;h4 id="2-altering-objectintrospector-option">2. Altering &lt;code>objectIntrospector&lt;/code> option &lt;a href="#2-altering-objectintrospector-option" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h4>
+&lt;h5 id="if-you-have-custom-objectmapper">If you have custom ObjectMapper &lt;a href="#if-you-have-custom-objectmapper" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h5>
+&lt;pre>&lt;code class="language-java">FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+ .plugin(new JacksonPlugin(objectMapper))
+ .build();
+&lt;/code>&lt;/pre>
+&lt;h5 id="if-you-dont-have-a-custom-objectmapper">If you DON&amp;rsquo;T have a custom ObjectMapper &lt;a href="#if-you-dont-have-a-custom-objectmapper" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h5>
+&lt;pre>&lt;code class="language-java">FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+	.plugin(new JacksonPlugin())
+	.build();
+&lt;/code>&lt;/pre>
+&lt;h2 id="builder">@Builder &lt;a href="#builder" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h2>
+&lt;h3 id="1-altering-objectintrospector-option-1">1. Altering &lt;code>objectIntrospector&lt;/code> option &lt;a href="#1-altering-objectintrospector-option-1" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h3>
+&lt;pre>&lt;code class="language-java">FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+ .objectIntrospector(BuilderArbitraryIntrospector.INSTANCE)
+ .build();
+&lt;/code>&lt;/pre>
+&lt;h2 id="noargsconstructor">@NoArgsConstructor &lt;a href="#noargsconstructor" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h2>
+&lt;h3 id="fieldreflectionarbitraryintrospector">FieldReflectionArbitraryIntrospector &lt;a href="#fieldreflectionarbitraryintrospector" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h3>
+&lt;h4 id="1-altering-objectintrospector-option-2">1. Altering &lt;code>objectIntrospector&lt;/code> option &lt;a href="#1-altering-objectintrospector-option-2" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h4>
+&lt;pre>&lt;code class="language-java">FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+ .objectIntrospector(FieldReflectionArbitraryIntrospector.INSTANCE)
+ .build();
+&lt;/code>&lt;/pre>
+&lt;h2 id="noargsconstructor--setter">@NoArgsConstructor + @Setter &lt;a href="#noargsconstructor--setter" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h2>
+&lt;h3 id="beanarbitraryintrospector">BeanArbitraryIntrospector &lt;a href="#beanarbitraryintrospector" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h3>
+&lt;div class="alert alert-doks d-flex" role="alert">
+ &lt;div class="flex-shrink-1 alert-icon">&lt;/div>
+ 
+ 
+ &lt;div class="w-100"> &lt;code>BeanArbitraryIntrospector&lt;/code> is default &lt;code>objectIntrospector&lt;/code>&lt;/div>
+ 
+ 
+&lt;/div>
+
+&lt;h3 id="1-altering-objectintrospector-option-3">1. Altering &lt;code>objectIntrospector&lt;/code> option &lt;a href="#1-altering-objectintrospector-option-3" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h3>
+&lt;pre>&lt;code class="language-java">FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+	.objectIntrospector(BeanArbitraryIntrospector.INSTANCE)
+	.build();
+&lt;/code>&lt;/pre></description></item><item><title>Kotlin</title><link>https://naver.github.io/fixture-monkey/v0-6-0/docs/getting-started/kotlin/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v0-6-0/docs/getting-started/kotlin/</guid><description>&lt;h2 id="primaryconstructorarbitraryintrospector">PrimaryConstructorArbitraryIntrospector &lt;a href="#primaryconstructorarbitraryintrospector" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h2>
+&lt;h3 id="1-altering-objectintrospector-option">1. Altering &lt;code>objectIntrospector&lt;/code> option &lt;a href="#1-altering-objectintrospector-option" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h3>
+&lt;pre>&lt;code class="language-java">FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+ .plugin(KotlinPlugin())
+ .build();
+&lt;/code>&lt;/pre>
+&lt;h2 id="jacksonarbitraryintrospector">JacksonArbitraryIntrospector &lt;a href="#jacksonarbitraryintrospector" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h2>
+&lt;div class="alert alert-doks d-flex" role="alert">
+ &lt;div class="flex-shrink-1 alert-icon">&lt;/div>
+ 
+ 
+ &lt;div class="w-100"> This practice should add extra module because it depends on third-party library &lt;a href="https://github.com/FasterXML/jackson">Jackson&lt;/a>&lt;/div>
+ 
+ 
+&lt;/div>
+
+&lt;h3 id="1-adding-dependency">1. Adding dependency &lt;a href="#1-adding-dependency" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h3>
+&lt;pre>&lt;code class="language-groovy">testImplementation(&amp;quot;com.navercorp.fixturemonkey:fixture-monkey-jackson:0.5.0&amp;quot;)
+&lt;/code>&lt;/pre>
+&lt;pre>&lt;code class="language-xml">&amp;lt;dependency&amp;gt;
+ &amp;lt;groupId&amp;gt;com.navercorp.fixturemonkey&amp;lt;/groupId&amp;gt;
+ &amp;lt;artifactId&amp;gt;fixture-monkey-jackson&amp;lt;/artifactId&amp;gt;
+ &amp;lt;version&amp;gt;0.5.0&amp;lt;/version&amp;gt;
+ &amp;lt;scope&amp;gt;test&amp;lt;/scope&amp;gt;
+&amp;lt;/dependency&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;h3 id="2-altering-objectintrospector-option">2. Altering &lt;code>objectIntrospector&lt;/code> option &lt;a href="#2-altering-objectintrospector-option" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h3>
+&lt;h4 id="if-you-have-custom-objectmapper">If you have custom ObjectMapper &lt;a href="#if-you-have-custom-objectmapper" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h4>
+&lt;pre>&lt;code class="language-java">FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+	.plugin(KotlinPlugin())
+ .plugin(JacksonPlugin(objectMapper))
+ .build();
+&lt;/code>&lt;/pre>
+&lt;h4 id="if-you-dont-have-a-custom-objectmapper">If you DON&amp;rsquo;T have a custom ObjectMapper &lt;a href="#if-you-dont-have-a-custom-objectmapper" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h4>
+&lt;pre>&lt;code class="language-java">FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+ .plugin(KotlinPlugin())
+ .plugin(JacksonPlugin())
+ .build();
+&lt;/code>&lt;/pre></description></item></channel></rss>

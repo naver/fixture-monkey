@@ -1,10 +1,268 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Third-party Modules on</title><link>https://naver.github.io/fixture-monkey/v0-6-0/docs/third-party-modules/</link><description>Recent content in Third-party Modules on</description><generator>Hugo</generator><language>v0-6-0</language><atom:link href="https://naver.github.io/fixture-monkey/v0-6-0/docs/third-party-modules/index.xml" rel="self" type="application/rss+xml"/><item><title>fixture-monkey-jackson</title><link>https://naver.github.io/fixture-monkey/v0-6-0/docs/third-party-modules/fixture-monkey-jackson/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v0-6-0/docs/third-party-modules/fixture-monkey-jackson/</guid><description>Features # Supporting instantiating by Jackson ObjectMapper
-supporting custom ObjectMapper supporting @JsonIgnore, @JsonProperty How-to # 1. Adding dependency # testImplementation(&amp;quot;com.navercorp.fixturemonkey:fixture-monkey-jackson:0.5.0&amp;quot;) &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;com.navercorp.fixturemonkey&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;fixture-monkey-jackson&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;0.5.0&amp;lt;/version&amp;gt; &amp;lt;scope&amp;gt;test&amp;lt;/scope&amp;gt; &amp;lt;/dependency&amp;gt; 2. Adding option plugin # FixtureMonkey fixtureMonkey = FixtureMonkey.builder() .plugin(new JacksonPlugin(objectMapper)) .build(); Usage # @Data // lombok getter, setter public class Order { @NotNull private Long id; @JsonProperty(&amp;quot;name&amp;quot;) private String productName; private int quantity; @JsonIgnore private String sample; } @Test void test() { // given FixtureMonkey sut = FixtureMonkey.</description></item><item><title>fixture-monkey-javax-validation</title><link>https://naver.github.io/fixture-monkey/v0-6-0/docs/third-party-modules/fixture-monkey-javax-validation/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v0-6-0/docs/third-party-modules/fixture-monkey-javax-validation/</guid><description>Features # Generating an object validated by JSR380: Bean Validation 2.0 annotations
-How-to # 1. Adding dependency # testImplementation(&amp;quot;com.navercorp.fixturemonkey:fixture-monkey-javax-validation:0.5.0&amp;quot;) &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;com.navercorp.fixturemonkey&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;fixture-monkey-javax-validation&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;0.5.0&amp;lt;/version&amp;gt; &amp;lt;scope&amp;gt;test&amp;lt;/scope&amp;gt; &amp;lt;/dependency&amp;gt; 2. Adding option plugin # FixtureMonkey fixtureMonkey = FixtureMonkey.builder() .plugin(new JavaxValidationPlugin()) .build();</description></item><item><title>fixture-monkey-kotlin</title><link>https://naver.github.io/fixture-monkey/v0-6-0/docs/third-party-modules/fixture-monkey-kotlin/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v0-6-0/docs/third-party-modules/fixture-monkey-kotlin/</guid><description>Features # Using objectIntrospector PrimaryConstructorArbitraryGenerator Extensions, Kotlin DSL Exp see Exp # Kotlin DSL for generating type-safe expression.
-Manipulation name has a suffix exp or expGetter Using method reference. into, intoGetter is used for referencing a field in the field. [index], [&amp;quot;*&amp;quot;] is used for referencing an element in a container. manipulation name nested field element Java Class expGetter intoGetter [index], [&amp;quot;*&amp;quot;] Kotlin Class exp into [index], [&amp;quot;*&amp;quot;] How-to # 1.</description></item><item><title>fixture-monkey-mockito</title><link>https://naver.github.io/fixture-monkey/v0-6-0/docs/third-party-modules/fixture-monkey-mockito/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v0-6-0/docs/third-party-modules/fixture-monkey-mockito/</guid><description>Features # Generating mock interafce, abstract class by Mockito
-How-to # 1. Adding dependency # testImplementation(&amp;quot;com.navercorp.fixturemonkey:fixture-monkey-mockito:0.5.0&amp;quot;) &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;com.navercorp.fixturemonkey&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;fixture-monkey-mockito&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;0.5.0&amp;lt;/version&amp;gt; &amp;lt;scope&amp;gt;test&amp;lt;/scope&amp;gt; &amp;lt;/dependency&amp;gt; 2. Adding option plugin # FixtureMonkey fixtureMonkey = FixtureMonkey.builder() .plugin(new MockitoPlugin()) .build(); Usage # @Data // lombok getter, setter public class Order { @NotNull private Long id; private String productName; private int quantity; @NotNull private Item item; } public interface Item { String getName(); } @Test void test() { // given FixtureMonkey sut = FixtureMonkey.</description></item><item><title>fixture-monkey-junit-jupiter</title><link>https://naver.github.io/fixture-monkey/v0-6-0/docs/third-party-modules/fixture-monkey-junit-jupiter/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v0-6-0/docs/third-party-modules/fixture-monkey-junit-jupiter/</guid><description>Features # Supporting junit-jupiter-api
-How-to # 1. Adding dependency # testImplementation(&amp;quot;com.navercorp.fixturemonkey:fixture-monkey-junit-jupiter:0.5.0&amp;quot;) &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;com.navercorp.fixturemonkey&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;fixture-monkey-junit-jupiter&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;0.5.0&amp;lt;/version&amp;gt; &amp;lt;scope&amp;gt;test&amp;lt;/scope&amp;gt; &amp;lt;/dependency&amp;gt;</description></item><item><title>fixture-monkey-autoparams</title><link>https://naver.github.io/fixture-monkey/v0-6-0/docs/third-party-modules/fixture-monkey-autoparams/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v0-6-0/docs/third-party-modules/fixture-monkey-autoparams/</guid><description>Featuers # Extending AutoParams ParameterizedTest
-Using @FixtureMonkeyAutoSource instead of @AutoSource in AutoParams
-How-to # 1. Adding denependcy # testImplementation(&amp;quot;com.navercorp.fixturemonkey:fixture-monkey-autoparams:0.5.0&amp;quot;) &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;com.navercorp.fixturemonkey&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;fixture-monkey-autoparams&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;0.5.0&amp;lt;/version&amp;gt; &amp;lt;scope&amp;gt;test&amp;lt;/scope&amp;gt; &amp;lt;/dependency&amp;gt; Usage # FixtureMonkeyCustomizer.setUp(FixtureMonkey.create()); @Data // lombok getter, setter public class Order { @NotNull private Long id; private String productName; private int quantity; @Nullable private String sample; } @ParameterizedTest @FixtureMonkeyAutoSource void test(Order order, ArbitraryBuilder&amp;lt;Order&amp;gt; orderBuilder) { then(order).isNotNull(); Order actual = orderBuilder .set(&amp;quot;productName&amp;quot;, &amp;quot;factory&amp;quot;) .set(&amp;quot;quantity&amp;quot;, Arbitraries.integers().between(5, 10)) .</description></item><item><title>fixture-monkey-engine</title><link>https://naver.github.io/fixture-monkey/v0-6-0/docs/third-party-modules/fixture-monkey-engine/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v0-6-0/docs/third-party-modules/fixture-monkey-engine/</guid><description>Features # FixtureMonkeySessionExtension for JUnit Jupiter
-Adding JqwikSession life cycle Clear Jqwik inner static cache, better performance How-to # 1. Adding dependency # testImplementation(&amp;quot;com.navercorp.fixturemonkey:fixture-monkey-engine:0.5.0&amp;quot;) &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;com.navercorp.fixturemonkey&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;fixture-monkey-engine&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;0.5.0&amp;lt;/version&amp;gt; &amp;lt;scope&amp;gt;test&amp;lt;/scope&amp;gt; &amp;lt;/dependency&amp;gt;</description></item><item><title>fixture-monkey-jakarta-validation</title><link>https://naver.github.io/fixture-monkey/v0-6-0/docs/third-party-modules/fixture-monkey-jakarta-validation/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v0-6-0/docs/third-party-modules/fixture-monkey-jakarta-validation/</guid><description>Features # Generating an object validated by Jakarta Bean Validation 3.0 annotations
-How-to # 1. Adding dependency # testImplementation(&amp;quot;com.navercorp.fixturemonkey:fixture-monkey-jakarta-validation:0.5.0&amp;quot;) &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;com.navercorp.fixturemonkey&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;fixture-monkey-jakarta-validation&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;0.5.0&amp;lt;/version&amp;gt; &amp;lt;scope&amp;gt;test&amp;lt;/scope&amp;gt; &amp;lt;/dependency&amp;gt; 2. Adding option plugin # FixtureMonkey fixtureMonkey = FixtureMonkey.builder() .plugin(new JakartaValidationPlugin()) .build();</description></item></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Third-party Modules on</title><link>https://naver.github.io/fixture-monkey/v0-6-0/docs/third-party-modules/</link><description>Recent content in Third-party Modules on</description><generator>Hugo</generator><language>v0-6-0</language><atom:link href="https://naver.github.io/fixture-monkey/v0-6-0/docs/third-party-modules/index.xml" rel="self" type="application/rss+xml"/><item><title>fixture-monkey-jackson</title><link>https://naver.github.io/fixture-monkey/v0-6-0/docs/third-party-modules/fixture-monkey-jackson/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v0-6-0/docs/third-party-modules/fixture-monkey-jackson/</guid><description>&lt;h2 id="features">Features &lt;a href="#features" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h2>
+&lt;p>Supporting instantiating by &lt;a href="https://github.com/FasterXML/jackson">Jackson&lt;/a> ObjectMapper&lt;/p>
+&lt;ul>
+&lt;li>supporting custom ObjectMapper&lt;/li>
+&lt;li>supporting &lt;code>@JsonIgnore&lt;/code>, &lt;code>@JsonProperty&lt;/code>&lt;/li>
+&lt;/ul>
+&lt;h2 id="how-to">How-to &lt;a href="#how-to" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h2>
+&lt;h3 id="1-adding-dependency">1. Adding dependency &lt;a href="#1-adding-dependency" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h3>
+&lt;pre>&lt;code class="language-groovy">testImplementation(&amp;quot;com.navercorp.fixturemonkey:fixture-monkey-jackson:0.5.0&amp;quot;)
+&lt;/code>&lt;/pre>
+&lt;pre>&lt;code class="language-xml">&amp;lt;dependency&amp;gt;
+ &amp;lt;groupId&amp;gt;com.navercorp.fixturemonkey&amp;lt;/groupId&amp;gt;
+ &amp;lt;artifactId&amp;gt;fixture-monkey-jackson&amp;lt;/artifactId&amp;gt;
+ &amp;lt;version&amp;gt;0.5.0&amp;lt;/version&amp;gt;
+ &amp;lt;scope&amp;gt;test&amp;lt;/scope&amp;gt;
+&amp;lt;/dependency&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;h3 id="2-adding-option-plugin">2. Adding option &lt;code>plugin&lt;/code> &lt;a href="#2-adding-option-plugin" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h3>
+&lt;pre>&lt;code class="language-java">FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+ .plugin(new JacksonPlugin(objectMapper))
+ .build();
+&lt;/code>&lt;/pre>
+&lt;h2 id="usage">Usage &lt;a href="#usage" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h2>
+&lt;pre>&lt;code class="language-java">@Data // lombok getter, setter
+public class Order {
+ @NotNull
+ private Long id;
+
+ @JsonProperty(&amp;quot;name&amp;quot;)
+ private String productName;
+
+ private int quantity;
+ 
+ @JsonIgnore
+ private String sample;
+}
+
+@Test
+void test() {
+ // given
+ FixtureMonkey sut = FixtureMonkey.builder()
+ .plugin(new JacksonPlugin(objectMapper))
+ .build();
+
+ // when
+ Order actual = sut.giveMeBuilder(Order.class)
+ .set(&amp;quot;name&amp;quot;, &amp;quot;factory&amp;quot;)
+ .set(&amp;quot;quantity&amp;quot;, Arbitraries.integers().between(5, 10))
+ .sample();
+
+ // then
+ then(actual.getId()).isNotNull(); // @NotNull
+ then(actual.getProductName()).isEqualTo(&amp;quot;factory&amp;quot;);
+ then(actual.getQuantity()).isBetween(5, 10);
+ then(actual.getSample()).isNull(); // @JsonIgnore
+}
+&lt;/code>&lt;/pre></description></item><item><title>fixture-monkey-javax-validation</title><link>https://naver.github.io/fixture-monkey/v0-6-0/docs/third-party-modules/fixture-monkey-javax-validation/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v0-6-0/docs/third-party-modules/fixture-monkey-javax-validation/</guid><description>&lt;h2 id="features">Features &lt;a href="#features" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h2>
+&lt;p>Generating an object validated by &lt;a href="https://jcp.org/en/jsr/detail?id=380">JSR380: Bean Validation 2.0&lt;/a> annotations&lt;/p>
+&lt;h2 id="how-to">How-to &lt;a href="#how-to" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h2>
+&lt;h3 id="1-adding-dependency">1. Adding dependency &lt;a href="#1-adding-dependency" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h3>
+&lt;pre>&lt;code class="language-groovy">testImplementation(&amp;quot;com.navercorp.fixturemonkey:fixture-monkey-javax-validation:0.5.0&amp;quot;)
+&lt;/code>&lt;/pre>
+&lt;pre>&lt;code class="language-xml">&amp;lt;dependency&amp;gt;
+ &amp;lt;groupId&amp;gt;com.navercorp.fixturemonkey&amp;lt;/groupId&amp;gt;
+ &amp;lt;artifactId&amp;gt;fixture-monkey-javax-validation&amp;lt;/artifactId&amp;gt;
+ &amp;lt;version&amp;gt;0.5.0&amp;lt;/version&amp;gt;
+ &amp;lt;scope&amp;gt;test&amp;lt;/scope&amp;gt;
+&amp;lt;/dependency&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;h3 id="2-adding-option-plugin">2. Adding option &lt;code>plugin&lt;/code> &lt;a href="#2-adding-option-plugin" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h3>
+&lt;pre>&lt;code class="language-java">FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+ .plugin(new JavaxValidationPlugin())
+ .build();
+&lt;/code>&lt;/pre></description></item><item><title>fixture-monkey-kotlin</title><link>https://naver.github.io/fixture-monkey/v0-6-0/docs/third-party-modules/fixture-monkey-kotlin/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v0-6-0/docs/third-party-modules/fixture-monkey-kotlin/</guid><description>&lt;h2 id="features">Features &lt;a href="#features" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h2>
+&lt;ul>
+&lt;li>Using objectIntrospector &lt;code>PrimaryConstructorArbitraryGenerator&lt;/code>&lt;/li>
+&lt;li>Extensions, Kotlin DSL Exp &lt;a href="https://github.com/naver/fixture-monkey/blob/main/fixture-monkey-kotlin/src/main/kotlin/com/navercorp/fixturemonkey/kotlin/FixtureMonkeyExtensions.kt">see&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;h3 id="exp">Exp &lt;a href="#exp" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h3>
+&lt;p>Kotlin DSL for generating type-safe expression.&lt;/p>
+&lt;ul>
+&lt;li>Manipulation name has a suffix &lt;code>exp&lt;/code> or &lt;code>expGetter&lt;/code>&lt;/li>
+&lt;li>Using method reference.&lt;/li>
+&lt;li>&lt;code>into&lt;/code>, &lt;code>intoGetter&lt;/code> is used for referencing a field in the field.&lt;/li>
+&lt;li>&lt;code>[index]&lt;/code>, &lt;code>[&amp;quot;*&amp;quot;]&lt;/code> is used for referencing an element in a container.&lt;/li>
+&lt;/ul>
+&lt;table>
+ &lt;thead>
+ &lt;tr>
+ &lt;th style="text-align: left">&lt;/th>
+ &lt;th style="text-align: left">manipulation name&lt;/th>
+ &lt;th style="text-align: left">nested field&lt;/th>
+ &lt;th style="text-align: left">element&lt;/th>
+ &lt;/tr>
+ &lt;/thead>
+ &lt;tbody>
+ &lt;tr>
+ &lt;td style="text-align: left">Java Class&lt;/td>
+ &lt;td style="text-align: left">expGetter&lt;/td>
+ &lt;td style="text-align: left">intoGetter&lt;/td>
+ &lt;td style="text-align: left">[index], [&amp;quot;*&amp;quot;]&lt;/td>
+ &lt;/tr>
+ &lt;tr>
+ &lt;td style="text-align: left">Kotlin Class&lt;/td>
+ &lt;td style="text-align: left">exp&lt;/td>
+ &lt;td style="text-align: left">into&lt;/td>
+ &lt;td style="text-align: left">[index], [&amp;quot;*&amp;quot;]&lt;/td>
+ &lt;/tr>
+ &lt;/tbody>
+&lt;/table>
+&lt;h2 id="how-to">How-to &lt;a href="#how-to" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h2>
+&lt;h3 id="1-adding-dependency">1. Adding dependency &lt;a href="#1-adding-dependency" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h3>
+&lt;pre>&lt;code class="language-groovy">testImplementation(&amp;quot;com.navercorp.fixturemonkey:fixture-monkey-kotlin:0.5.0&amp;quot;)
+&lt;/code>&lt;/pre>
+&lt;pre>&lt;code class="language-xml">&amp;lt;dependency&amp;gt;
+ &amp;lt;groupId&amp;gt;com.navercorp.fixturemonkey&amp;lt;/groupId&amp;gt;
+ &amp;lt;artifactId&amp;gt;fixture-monkey-kotlin&amp;lt;/artifactId&amp;gt;
+ &amp;lt;version&amp;gt;0.5.0&amp;lt;/version&amp;gt;
+ &amp;lt;scope&amp;gt;test&amp;lt;/scope&amp;gt;
+&amp;lt;/dependency&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;h3 id="2-adding-option-plugin">2. Adding option &lt;code>plugin&lt;/code> &lt;a href="#2-adding-option-plugin" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h3>
+&lt;pre>&lt;code class="language-java">FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+ .plugin(KotlinPlugin())
+ .build();
+&lt;/code>&lt;/pre></description></item><item><title>fixture-monkey-mockito</title><link>https://naver.github.io/fixture-monkey/v0-6-0/docs/third-party-modules/fixture-monkey-mockito/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v0-6-0/docs/third-party-modules/fixture-monkey-mockito/</guid><description>&lt;h2 id="features">Features &lt;a href="#features" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h2>
+&lt;p>Generating mock interafce, abstract class by &lt;a href="https://site.mockito.org/">Mockito&lt;/a>&lt;/p>
+&lt;h2 id="how-to">How-to &lt;a href="#how-to" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h2>
+&lt;h3 id="1-adding-dependency">1. Adding dependency &lt;a href="#1-adding-dependency" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h3>
+&lt;pre>&lt;code class="language-groovy">testImplementation(&amp;quot;com.navercorp.fixturemonkey:fixture-monkey-mockito:0.5.0&amp;quot;)
+&lt;/code>&lt;/pre>
+&lt;pre>&lt;code class="language-xml">&amp;lt;dependency&amp;gt;
+ &amp;lt;groupId&amp;gt;com.navercorp.fixturemonkey&amp;lt;/groupId&amp;gt;
+ &amp;lt;artifactId&amp;gt;fixture-monkey-mockito&amp;lt;/artifactId&amp;gt;
+ &amp;lt;version&amp;gt;0.5.0&amp;lt;/version&amp;gt;
+ &amp;lt;scope&amp;gt;test&amp;lt;/scope&amp;gt;
+&amp;lt;/dependency&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;h3 id="2-adding-option-plugin">2. Adding option &lt;code>plugin&lt;/code> &lt;a href="#2-adding-option-plugin" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h3>
+&lt;pre>&lt;code class="language-java">FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+ .plugin(new MockitoPlugin())
+ .build();
+&lt;/code>&lt;/pre>
+&lt;h2 id="usage">Usage &lt;a href="#usage" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h2>
+&lt;pre>&lt;code class="language-java">@Data // lombok getter, setter
+public class Order {
+ @NotNull
+ private Long id;
+ 
+ private String productName;
+
+ private int quantity;
+ 
+ @NotNull
+ private Item item;
+}
+
+public interface Item {
+ String getName();
+}
+
+@Test
+void test() {
+ // given
+ FixtureMonkey sut = FixtureMonkey.builder()
+ .plugin(new MockitoPlugin())
+ .build();
+
+ // when
+ Order actual = sut.giveMeOne(Order.class);
+
+ // then
+ then(actual.getItem()).isNotNull();
+ 
+ when(actual.getItem().getName()).thenReturn(&amp;quot;ring&amp;quot;);
+ then(actual.getItem().getName()).isEqualTo(&amp;quot;ring&amp;quot;);
+}
+&lt;/code>&lt;/pre></description></item><item><title>fixture-monkey-junit-jupiter</title><link>https://naver.github.io/fixture-monkey/v0-6-0/docs/third-party-modules/fixture-monkey-junit-jupiter/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v0-6-0/docs/third-party-modules/fixture-monkey-junit-jupiter/</guid><description>&lt;h2 id="features">Features &lt;a href="#features" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h2>
+&lt;p>Supporting &lt;a href="https://github.com/junit-team/junit5">junit-jupiter-api&lt;/a>&lt;/p>
+&lt;h2 id="how-to">How-to &lt;a href="#how-to" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h2>
+&lt;h3 id="1-adding-dependency">1. Adding dependency &lt;a href="#1-adding-dependency" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h3>
+&lt;pre>&lt;code class="language-groovy">testImplementation(&amp;quot;com.navercorp.fixturemonkey:fixture-monkey-junit-jupiter:0.5.0&amp;quot;)
+&lt;/code>&lt;/pre>
+&lt;pre>&lt;code class="language-xml">&amp;lt;dependency&amp;gt;
+ &amp;lt;groupId&amp;gt;com.navercorp.fixturemonkey&amp;lt;/groupId&amp;gt;
+ &amp;lt;artifactId&amp;gt;fixture-monkey-junit-jupiter&amp;lt;/artifactId&amp;gt;
+ &amp;lt;version&amp;gt;0.5.0&amp;lt;/version&amp;gt;
+ &amp;lt;scope&amp;gt;test&amp;lt;/scope&amp;gt;
+&amp;lt;/dependency&amp;gt;
+&lt;/code>&lt;/pre></description></item><item><title>fixture-monkey-autoparams</title><link>https://naver.github.io/fixture-monkey/v0-6-0/docs/third-party-modules/fixture-monkey-autoparams/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v0-6-0/docs/third-party-modules/fixture-monkey-autoparams/</guid><description>&lt;h2 id="featuers">Featuers &lt;a href="#featuers" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h2>
+&lt;p>Extending &lt;a href="https://github.com/AutoParams/AutoParams">AutoParams&lt;/a> ParameterizedTest&lt;/p>
+&lt;p>Using &lt;code>@FixtureMonkeyAutoSource&lt;/code> instead of &lt;code>@AutoSource&lt;/code> in AutoParams&lt;/p>
+&lt;h2 id="how-to">How-to &lt;a href="#how-to" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h2>
+&lt;h3 id="1-adding-denependcy">1. Adding denependcy &lt;a href="#1-adding-denependcy" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h3>
+&lt;pre>&lt;code class="language-groovy">testImplementation(&amp;quot;com.navercorp.fixturemonkey:fixture-monkey-autoparams:0.5.0&amp;quot;)
+&lt;/code>&lt;/pre>
+&lt;pre>&lt;code class="language-xml">&amp;lt;dependency&amp;gt;
+ &amp;lt;groupId&amp;gt;com.navercorp.fixturemonkey&amp;lt;/groupId&amp;gt;
+ &amp;lt;artifactId&amp;gt;fixture-monkey-autoparams&amp;lt;/artifactId&amp;gt;
+ &amp;lt;version&amp;gt;0.5.0&amp;lt;/version&amp;gt;
+ &amp;lt;scope&amp;gt;test&amp;lt;/scope&amp;gt;
+&amp;lt;/dependency&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;h2 id="usage">Usage &lt;a href="#usage" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h2>
+&lt;pre>&lt;code class="language-java">FixtureMonkeyCustomizer.setUp(FixtureMonkey.create());
+
+@Data // lombok getter, setter
+public class Order {
+ @NotNull
+ private Long id;
+
+ private String productName;
+
+ private int quantity;
+
+ @Nullable
+ private String sample;
+}
+
+@ParameterizedTest
+@FixtureMonkeyAutoSource
+void test(Order order, ArbitraryBuilder&amp;lt;Order&amp;gt; orderBuilder) {
+ then(order).isNotNull();
+
+ Order actual = orderBuilder
+ .set(&amp;quot;productName&amp;quot;, &amp;quot;factory&amp;quot;)
+ .set(&amp;quot;quantity&amp;quot;, Arbitraries.integers().between(5, 10))
+ .sample();
+
+ // then
+ then(actual.getId()).isNotNull(); // @NotNull
+ then(actual.getProductName()).isEqualTo(&amp;quot;factory&amp;quot;);
+ then(actual.getQuantity()).isBetween(5, 10);
+}
+&lt;/code>&lt;/pre></description></item><item><title>fixture-monkey-engine</title><link>https://naver.github.io/fixture-monkey/v0-6-0/docs/third-party-modules/fixture-monkey-engine/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v0-6-0/docs/third-party-modules/fixture-monkey-engine/</guid><description>&lt;h2 id="features">Features &lt;a href="#features" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h2>
+&lt;p>&lt;code>FixtureMonkeySessionExtension&lt;/code> for JUnit Jupiter&lt;/p>
+&lt;ul>
+&lt;li>Adding JqwikSession life cycle&lt;/li>
+&lt;li>Clear Jqwik inner static cache, better performance&lt;/li>
+&lt;/ul>
+&lt;h2 id="how-to">How-to &lt;a href="#how-to" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h2>
+&lt;h3 id="1-adding-dependency">1. Adding dependency &lt;a href="#1-adding-dependency" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h3>
+&lt;pre>&lt;code class="language-groovy">testImplementation(&amp;quot;com.navercorp.fixturemonkey:fixture-monkey-engine:0.5.0&amp;quot;)
+&lt;/code>&lt;/pre>
+&lt;pre>&lt;code class="language-xml">&amp;lt;dependency&amp;gt;
+ &amp;lt;groupId&amp;gt;com.navercorp.fixturemonkey&amp;lt;/groupId&amp;gt;
+ &amp;lt;artifactId&amp;gt;fixture-monkey-engine&amp;lt;/artifactId&amp;gt;
+ &amp;lt;version&amp;gt;0.5.0&amp;lt;/version&amp;gt;
+ &amp;lt;scope&amp;gt;test&amp;lt;/scope&amp;gt;
+&amp;lt;/dependency&amp;gt;
+&lt;/code>&lt;/pre></description></item><item><title>fixture-monkey-jakarta-validation</title><link>https://naver.github.io/fixture-monkey/v0-6-0/docs/third-party-modules/fixture-monkey-jakarta-validation/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v0-6-0/docs/third-party-modules/fixture-monkey-jakarta-validation/</guid><description>&lt;h2 id="features">Features &lt;a href="#features" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h2>
+&lt;p>Generating an object validated by &lt;a href="https://jakarta.ee/specifications/bean-validation/3.0/jakarta-bean-validation-spec-3.0.html">Jakarta Bean Validation 3.0&lt;/a> annotations&lt;/p>
+&lt;h2 id="how-to">How-to &lt;a href="#how-to" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h2>
+&lt;h3 id="1-adding-dependency">1. Adding dependency &lt;a href="#1-adding-dependency" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h3>
+&lt;pre>&lt;code class="language-groovy">testImplementation(&amp;quot;com.navercorp.fixturemonkey:fixture-monkey-jakarta-validation:0.5.0&amp;quot;)
+&lt;/code>&lt;/pre>
+&lt;pre>&lt;code class="language-xml">&amp;lt;dependency&amp;gt;
+ &amp;lt;groupId&amp;gt;com.navercorp.fixturemonkey&amp;lt;/groupId&amp;gt;
+ &amp;lt;artifactId&amp;gt;fixture-monkey-jakarta-validation&amp;lt;/artifactId&amp;gt;
+ &amp;lt;version&amp;gt;0.5.0&amp;lt;/version&amp;gt;
+ &amp;lt;scope&amp;gt;test&amp;lt;/scope&amp;gt;
+&amp;lt;/dependency&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;h3 id="2-adding-option-plugin">2. Adding option &lt;code>plugin&lt;/code> &lt;a href="#2-adding-option-plugin" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h3>
+&lt;pre>&lt;code class="language-java">FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+ .plugin(new JakartaValidationPlugin())
+ .build();
+&lt;/code>&lt;/pre></description></item></channel></rss>
