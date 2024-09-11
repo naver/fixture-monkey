@@ -18,6 +18,7 @@
 
 package com.navercorp.fixturemonkey.api.arbitrary;
 
+import static com.navercorp.fixturemonkey.api.jqwik.ArbitraryUtils.newThreadSafeArbitrary;
 import static java.util.Arrays.asList;
 
 import java.util.ArrayList;
@@ -71,8 +72,14 @@ public final class MonkeyStringArbitrary implements StringArbitrary {
 			randomCharacterGenerator(),
 			minLength, maxLength(), maxUniqueChars,
 			genSize, lengthDistribution,
-			characterArbitrary
+			newThreadSafeArbitrary(characterArbitrary)
 		);
+	}
+
+	// Removing a StoreRepository dependency, it is not useful without Jqwik engine.
+	@Override
+	public RandomGenerator<String> generator(int genSize, boolean withEdgeCases) {
+		return this.generator(genSize);
 	}
 
 	private int maxLength() {
@@ -270,7 +277,6 @@ public final class MonkeyStringArbitrary implements StringArbitrary {
 		return HashCodeSupport.hash(characterArbitrary, minLength, maxLength, repeatChars, filter, lengthDistribution);
 	}
 
-
 	public MonkeyStringArbitrary filterCharacter(Predicate<Character> predicate) {
 		this.filter = this.filter.and(predicate);
 		return this;
@@ -288,7 +294,6 @@ public final class MonkeyStringArbitrary implements StringArbitrary {
 
 	private Arbitrary<Character> effectiveCharacterArbitrary() {
 		Arbitrary<Character> characterArbitrary = this.characterArbitrary;
-		return characterArbitrary.filter(this.filter);
+		return newThreadSafeArbitrary(characterArbitrary.filter(this.filter));
 	}
-
 }

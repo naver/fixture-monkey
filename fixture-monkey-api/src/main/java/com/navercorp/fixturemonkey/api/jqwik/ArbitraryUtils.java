@@ -35,27 +35,30 @@ public abstract class ArbitraryUtils {
 		return CombinableArbitrary.from(LazyArbitrary.lazy(
 			() -> {
 				if (arbitrary != null) {
-					return new Arbitrary<T>() {
-
-						@Override
-						public RandomGenerator<T> generator(int genSize) {
-							return arbitrary.generator(genSize);
-						}
-
-						// Removing a StoreRepository dependency, it is not useful without Jqwik engine.
-						@Override
-						public RandomGenerator<T> generator(int genSize, boolean withEdgeCases) {
-							return arbitrary.generator(genSize);
-						}
-
-						@Override
-						public EdgeCases<T> edgeCases(int maxEdgeCases) {
-							return arbitrary.edgeCases(maxEdgeCases);
-						}
-					}.sample();
+					return newThreadSafeArbitrary(arbitrary).sample();
 				}
 				return null;
 			}
 		));
+	}
+
+	public static <T> Arbitrary<T> newThreadSafeArbitrary(Arbitrary<T> delegate) {
+		return new Arbitrary<T>() {
+			@Override
+			public RandomGenerator<T> generator(int genSize) {
+				return delegate.generator(genSize);
+			}
+
+			// Removing a StoreRepository dependency, it is not useful without Jqwik engine.
+			@Override
+			public RandomGenerator<T> generator(int genSize, boolean withEdgeCases) {
+				return delegate.generator(genSize);
+			}
+
+			@Override
+			public EdgeCases<T> edgeCases(int maxEdgeCases) {
+				return delegate.edgeCases(maxEdgeCases);
+			}
+		};
 	}
 }
