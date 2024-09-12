@@ -63,3 +63,14 @@ val product = sut.giveMeBuilder<Product>()
 ### 필드 중 하나가 다른 필드의 값에 의존하고 있습니다. 이러한 픽스처를 커스터마이징 하려면 어떻게 해야 하나요?
 
 `thenApply()` 메서드는 다른 필드에 의존하는 필드를 커스터마이징 할 때 유용합니다. 자세한 내용은 [`thenApply()`](../../customizing-objects/apis/#thenapply)을 확인해주세요.
+
+### 특정 타입을 생성할 때 예외가 발생해요
+
+먼저 [PriorityConstructorArbitraryIntrospector](../../generating-objects/introspector/#PriorityConstructorArbitraryIntrospector)를 사용해보세요. 다음과 같이 사용할 수 있습니다.
+```java
+FixtureMonkey.builder()
+    .pushExactTypeArbitraryIntrospector(ProblematicType.class, PriorityConstructorArbitraryIntrospector.INSTANCE)
+    .build();
+```
+
+위 옵션을 추가했는데도 동작하지 않는다면, `ArbitraryIntrospector`을 직접 만들거나 깃허브에 [이슈](https://github.com/naver/fixture-monkey/issues)를 만들어주시면 도움을 드리겠습니다.

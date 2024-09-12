@@ -78,6 +78,55 @@ FixtureMonkey sut = FixtureMonkey.builder()
     .build();
 ```
 
+## PriorityConstructorArbitraryIntrospector
+Types that Fixture Monkey does not support creating by default can be created using a custom `ArbitraryIntrospector`.
+However, creating your own `ArbitraryIntrospector` can be difficult if you are not familiar with Fixture Monkey.
+To solve this difficulty, we provide a `PriorityConstructorArbitraryIntrospector` that uses a constructor to create the type.
+
+```java
+Timestamp actual = FixtureMonkey.builder()
+    .objectIntrospector(PriorityConstructorArbitraryIntrospector.INSTANCE)
+    .build()
+    .giveMeOne(Timestamp.class);
+```
+
+### Differences from `ConstructorPropertiesArbitraryIntrospector`
+The `ConstructorPropertiesArbitraryIntrospector` is also an `ArbitraryIntrospector` that uses a constructor to create an object.
+The differences from `PriorityConstructorArbitraryIntrospector` are as follows.
+
+|                                             | PriorityConstructorArbitraryIntrospector       | ConstructorPropertiesArbitraryIntrospector          |
+|---------------------------------------------|------------------------------------------------|-----------------------------------------------------|
+| Need `@ConstructorProperties`               | No                                             | Yes                                                 |
+| Can customize the parameters of constructor | Optional (need `withParameterNamesResolver` )  | Yes                                                 |
+| Criteria for choosing a constructor         | By the `constructorFilter`,  `sortingCriteria` | The first constructor with `@ConstructorProperties` |
+
+### constructorFilter
+The `PriorityConstructorArbitraryIntrospector` uses the `constructorFilter` condition to determine which constructor to use for generation.
+
+The `constructorFilter` can be changed using `withConstructorFilter`.
+By default, it is `constructor -> !Modifier.isPrivate(constructor.getModifiers())`.
+
+### sortingCriteria
+If there are multiple constructors that satisfy the `constructorFilter` condition, 
+an additional `sortingCriteria` condition is used to determine the constructor.  
+Use the first constructor when sorted by `Comparator<Constructor<?>>`.
+
+The `sortingCriteria` can be changed using `withSortingCriteria`.
+The default setting is the constructor with the least number of constructors. 
+`Comparator.comparing(Constructor::getParameterCount)`
+
+### parameterNamesResolver
+Fixture Monkey cannot recognise constructor parameter names if any of the following three conditions are not met.
+- record type
+- Enable JVM option `-parameters`
+- Existence of `@ConstructorProperties` in the constructor
+
+If you do not recognise constructor parameter names, you cannot use the `ArbitraryBuilder` API to control constructor parameters.
+
+The `PriorityConstructorArbitraryIntrospector` uses the `parameterNamesResolver` to recognise parameter names.
+The `parameterNamesResolver` can be changed using `withParameterNamesResolver`.
+The entered parameter names must always be the same as the parameter order.
+
 ----------------
 
 Additional introspectors have been introduced inside plugins, such as [`JacksonObjectArbitraryIntrospector`](../../plugins/jackson-plugin/jackson-object-arbitrary-introspector) or

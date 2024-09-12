@@ -29,8 +29,10 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -105,9 +107,13 @@ public final class ConstructorParameterPropertyGenerator implements PropertyGene
 		Class<?> type = Types.getActualType(property.getType());
 		Constructor<?> constructor = context.getConstructor();
 
+		Map<String, AnnotatedType> actualGenericTypesByTypeVariable =
+			getGenericAnnotatedTypesByGenericTypeName(property);
+
 		List<String> parameterNamesByConstructor = Arrays.asList(getParameterNames(constructor));
 		List<String> inputParameterNames = context.getInputParameterNames();
 		List<TypeReference<?>> typeReferencesByConstructor = Arrays.stream(constructor.getAnnotatedParameterTypes())
+			.map(it -> actualGenericTypesByTypeVariable.getOrDefault(it.getType().getTypeName(), it))
 			.map(ConstructorParameterPropertyGenerator::toTypeReference)
 			.collect(Collectors.toList());
 
@@ -193,5 +199,25 @@ public final class ConstructorParameterPropertyGenerator implements PropertyGene
 
 	private static boolean isGenericAnnotatedType(AnnotatedType annotatedType) {
 		return annotatedType instanceof AnnotatedTypeVariable || annotatedType instanceof AnnotatedArrayType;
+	}
+
+	private static Map<String, AnnotatedType> getGenericAnnotatedTypesByGenericTypeName(Property property) {
+		Class<?> type = Types.getActualType(property.getType());
+
+		List<AnnotatedType> genericsTypes = Types.getGenericsTypes(property.getAnnotatedType());
+		List<TypeVariable<? extends Class<?>>> erasedTypeVariables = Arrays.asList(type.getTypeParameters());
+
+		if (genericsTypes.size() != erasedTypeVariables.size()) {
+			return Collections.emptyMap();
+		}
+
+		Map<String, AnnotatedType> actualGenericTypesByTypeName = new HashMap<>();
+		for (int i = 0; i < genericsTypes.size(); i++) {
+			AnnotatedType genericType = genericsTypes.get(i);
+			TypeVariable<? extends Class<?>> erasedTypeVariable = erasedTypeVariables.get(i);
+			actualGenericTypesByTypeName.put(erasedTypeVariable.getName(), genericType);
+		}
+
+		return actualGenericTypesByTypeName;
 	}
 }
