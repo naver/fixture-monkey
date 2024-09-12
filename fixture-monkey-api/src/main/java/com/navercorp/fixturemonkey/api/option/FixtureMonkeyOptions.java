@@ -21,7 +21,6 @@ package com.navercorp.fixturemonkey.api.option;
 import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.NOT_NULL_INJECT;
 
 import java.lang.reflect.GenericArrayType;
-import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -61,7 +60,6 @@ import com.navercorp.fixturemonkey.api.generator.EntryContainerPropertyGenerator
 import com.navercorp.fixturemonkey.api.generator.FunctionalInterfaceContainerPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.MapContainerPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.MapEntryElementContainerPropertyGenerator;
-import com.navercorp.fixturemonkey.api.generator.NoArgumentInterfaceJavaMethodPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.NullInjectGenerator;
 import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.OptionalContainerPropertyGenerator;
@@ -452,11 +450,7 @@ public final class FixtureMonkeyOptions {
 				},
 				EmptyPropertyGenerator.INSTANCE
 			),
-			new MatcherOperator<>(Matchers.ENUM_TYPE_MATCHER, EmptyPropertyGenerator.INSTANCE),
-			new MatcherOperator<>(
-				p -> Modifier.isInterface(Types.getActualType(p.getType()).getModifiers()),
-				new NoArgumentInterfaceJavaMethodPropertyGenerator()
-			)
+			new MatcherOperator<>(Matchers.ENUM_TYPE_MATCHER, EmptyPropertyGenerator.INSTANCE)
 		);
 	}
 

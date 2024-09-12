@@ -31,9 +31,11 @@ import org.slf4j.LoggerFactory;
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
+import com.navercorp.fixturemonkey.api.generator.NoArgumentInterfaceJavaMethodPropertyGenerator;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.property.MethodProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
+import com.navercorp.fixturemonkey.api.property.PropertyGenerator;
 import com.navercorp.fixturemonkey.api.type.Types;
 
 /**
@@ -43,6 +45,9 @@ import com.navercorp.fixturemonkey.api.type.Types;
 @API(since = "0.5.5", status = Status.MAINTAINED)
 public final class AnonymousArbitraryIntrospector implements ArbitraryIntrospector, Matcher {
 	public static final AnonymousArbitraryIntrospector INSTANCE = new AnonymousArbitraryIntrospector();
+
+	private static final PropertyGenerator REQUIRED_PROPERTY_GENERATOR =
+		new NoArgumentInterfaceJavaMethodPropertyGenerator();
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AnonymousArbitraryIntrospector.class);
 
@@ -104,5 +109,10 @@ public final class AnonymousArbitraryIntrospector implements ArbitraryIntrospect
 					}
 				)
 		);
+	}
+
+	@Override
+	public PropertyGenerator getRequiredPropertyGenerator(Property property) {
+		return REQUIRED_PROPERTY_GENERATOR;
 	}
 }
