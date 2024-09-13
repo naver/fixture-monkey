@@ -208,6 +208,12 @@ public final class FixtureMonkey {
 		mapsByRegisteredName.forEach((name, matcherOperator) -> {
 			MatcherOperator<? extends ArbitraryBuilder<?>> newMatcherOperator =
 				new MatcherOperator<>(matcherOperator.getMatcher(), matcherOperator.getOperator().apply(this));
+
+			if (matcherOperator.getMatcher().match(
+				new RootProperty(new LazyAnnotatedType<>(() -> matcherOperator.getOperator().apply(this).sample())))
+			) {
+				this.registeredArbitraryBuilders.add(newMatcherOperator);
+			}
 			namedArbitraryBuilderMap.put(name, newMatcherOperator);
 		});
 	}
