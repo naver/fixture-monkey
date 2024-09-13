@@ -803,16 +803,10 @@ class FixtureMonkeyOptionsTest {
 	@Property
 	void registeredName() {
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.register(Integer.class, monkey -> monkey.giveMeBuilder(1))
 			.registeredName(
 				"test",
 				String.class,
 				monkey -> monkey.giveMeBuilder("test")
-			)
-			.registeredName(
-				"test2",
-				String.class,
-				monkey -> monkey.giveMeBuilder("test2")
 			)
 			.build();
 
@@ -820,12 +814,16 @@ class FixtureMonkeyOptionsTest {
 			.selectName("test")
 			.sample();
 
+		String actual2 = sut.giveMeBuilder(String.class)
+			.selectName("test")
+			.sample();
+
 		then(actual.getStr()).isEqualTo("test");
-		then(actual.getWrapperInteger()).isEqualTo(Integer.valueOf(1));
+		then(actual2).isEqualTo("test");
 	}
 
 	@Property
-	void registeredNameWithSameNameThrows() {
+	void registeredNameWithSameRegisteredName() {
 		thenThrownBy(() -> FixtureMonkey.builder()
 			.registeredName(
 				"test",
@@ -845,16 +843,6 @@ class FixtureMonkeyOptionsTest {
 	@Property
 	void registeredNameWithUnregisteredName() {
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.registeredName(
-				"test",
-				String.class,
-				monkey -> monkey.giveMeBuilder("test")
-			)
-			.registeredName(
-				"test2",
-				String.class,
-				monkey -> monkey.giveMeBuilder("test2")
-			)
 			.build();
 
 		thenThrownBy(() -> sut.giveMeBuilder(SimpleObject.class)
@@ -865,45 +853,12 @@ class FixtureMonkeyOptionsTest {
 	}
 
 	@Property
-	void selectedArbitraryBuilderCannotBeReused() {
-		FixtureMonkey sut = FixtureMonkey.builder()
-			.registeredName(
-				"test",
-				String.class,
-				monkey -> monkey.giveMeBuilder("test")
-			)
-			.registeredName(
-				"test2",
-				String.class,
-				monkey -> monkey.giveMeBuilder("test2")
-			)
-			.build();
-
-		String actual = sut.giveMeBuilder(SimpleObject.class)
-			.selectName("test")
-			.sample()
-			.getStr();
-
-		String actual2 = sut.giveMeBuilder(SimpleObject.class)
-			.selectName("test2")
-			.sample()
-			.getStr();
-
-		then(actual2).isEqualTo("test2");
-	}
-
-	@Property
 	void generateSampleListWithRegisteredNames() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.registeredName(
 				"test",
 				String.class,
 				monkey -> monkey.giveMeBuilder("test")
-			)
-			.registeredName(
-				"test2",
-				String.class,
-				monkey -> monkey.giveMeBuilder("test2")
 			)
 			.build();
 
