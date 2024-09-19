@@ -1,13 +1,16 @@
 package com.navercorp.fixturemonkey.api.arbitrary;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.RepeatedTest;
+import org.junit.jupiter.api.Test;
+
 import net.jqwik.api.ForAll;
 import net.jqwik.api.Property;
 import net.jqwik.api.arbitraries.StringArbitrary;
 import net.jqwik.api.constraints.Size;
-import org.junit.jupiter.api.RepeatedTest;
-import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 public class MonkeyStringArbitraryTest {
 	StringArbitrary koreanStringArbitrary = new MonkeyStringArbitrary().korean();
