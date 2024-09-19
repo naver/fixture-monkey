@@ -43,9 +43,7 @@ public class MonkeyStringArbitraryTest {
 
 	@Test
 	void koreanShouldNotGenerateNonKoreanCharacters() {
-		StringArbitrary arbitrary = koreanStringArbitrary;
-
-		String sample = arbitrary.sample();
+		String sample = koreanStringArbitrary.sample();
 
 		assertFalse(sample.chars().anyMatch(ch -> ch < '가' || ch > '힣'));
 	}
