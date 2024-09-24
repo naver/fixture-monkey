@@ -30,7 +30,7 @@ import net.jqwik.api.Property;
 import net.jqwik.api.arbitraries.StringArbitrary;
 import net.jqwik.api.constraints.Size;
 
-public class MonkeyStringArbitraryTest {
+class MonkeyStringArbitraryTest {
 	StringArbitrary koreanStringArbitrary = new MonkeyStringArbitrary().korean();
 
 	@Test
