@@ -18,9 +18,7 @@
 
 package com.navercorp.fixturemonkey.api.arbitrary;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.BDDAssertions.then;
 
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
@@ -39,7 +37,7 @@ class MonkeyStringArbitraryTest {
 
 		String sample = arbitrary.sample();
 
-		assertTrue(sample.chars().allMatch(ch -> ch >= '가' && ch <= '힣'));
+		then(sample.chars().allMatch(ch -> ch >= '가' && ch <= '힣')).isTrue();
 	}
 
 	@Property(tries = 100)
@@ -48,7 +46,7 @@ class MonkeyStringArbitraryTest {
 	) {
 		String sample = koreanStringArbitrary.sample();
 
-		assertTrue(sample.chars().allMatch(ch -> ch >= '가' && ch <= '힣'));
+		then(sample.chars().allMatch(ch -> ch >= '가' && ch <= '힣')).isTrue();
 	}
 
 	@Test
@@ -59,14 +57,14 @@ class MonkeyStringArbitraryTest {
 
 		String sample = arbitrary.sample();
 
-		assertTrue(sample.length() >= minLength && sample.length() <= maxLength);
+		then(sample.length() >= minLength && sample.length() <= maxLength).isTrue();
 	}
 
 	@Test
 	void koreanShouldNotGenerateNonKoreanCharacters() {
 		String sample = koreanStringArbitrary.sample();
 
-		assertFalse(sample.chars().anyMatch(ch -> ch < '가' || ch > '힣'));
+		then(sample.chars().anyMatch(ch -> ch < '가' || ch > '힣')).isFalse();
 	}
 
 	@RepeatedTest(100)
@@ -76,6 +74,6 @@ class MonkeyStringArbitraryTest {
 		String firstSample = arbitrary.sample();
 		String secondSample = arbitrary.sample();
 
-		assertNotEquals(firstSample, secondSample, "Generated strings should not all be identical");
+		then(firstSample).isNotEqualTo(secondSample);
 	}
 }
