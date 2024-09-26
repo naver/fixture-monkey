@@ -18,9 +18,10 @@
 
 package com.navercorp.fixturemonkey.api.introspector;
 
+import static com.navercorp.fixturemonkey.api.type.TypeCache.getParameterNames;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
-import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -61,9 +62,7 @@ public final class ConstructorArbitraryIntrospector implements ArbitraryIntrospe
 		}
 
 		List<String> parameterNames = constructorWithParamNames.getParameterNames().isEmpty()
-			? Arrays.stream(constructorWithParamNames.getConstructor().getParameters())
-			.map(Parameter::getName)
-			.collect(Collectors.toList())
+			? Arrays.asList(getParameterNames(constructorWithParamNames.getConstructor()))
 			: constructorWithParamNames.getParameterNames();
 
 		return new ArbitraryIntrospectorResult(

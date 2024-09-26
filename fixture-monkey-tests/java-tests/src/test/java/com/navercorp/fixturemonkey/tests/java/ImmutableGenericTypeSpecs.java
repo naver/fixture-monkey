@@ -64,6 +64,28 @@ class ImmutableGenericTypeSpecs {
 	}
 
 	@Value
+	public static class TwoGenericObjectConstructorParameterOrderDiff<T, U> {
+		T value1;
+		U value2;
+
+		public TwoGenericObjectConstructorParameterOrderDiff(U value2, T value1) {
+			this.value1 = value1;
+			this.value2 = value2;
+		}
+	}
+
+	@Value
+	public static class TwoGenericObjectConstructorParameterOrderDiffNameDiff<T, U> {
+		T value1;
+		U value2;
+
+		public TwoGenericObjectConstructorParameterOrderDiffNameDiff(U value1, T value2) {
+			this.value1 = value2;
+			this.value2 = value1;
+		}
+	}
+
+	@Value
 	@Builder
 	public static class ThreeGenericObject<T, U, V> {
 		T value1;

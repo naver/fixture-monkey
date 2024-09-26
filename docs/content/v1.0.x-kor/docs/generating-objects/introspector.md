@@ -78,6 +78,53 @@ FixtureMonkey sut = FixtureMonkey.builder()
     .build();
 ```
 
+## PriorityConstructorArbitraryIntrospector
+픽스쳐 몽키에서 기본으로 생성을 지원하지 않는 타입은 사용자 정의 `ArbitraryIntrospector`를 사용하면 생성할 수 있습니다. 
+하지만 픽스쳐 몽키에 익숙하지 않다면 `ArbitraryIntrospector`를 만들기는 어렵습니다. 
+이런 어려움을 해결해주기 위해 생성자를 사용해서 타입을 생성하는 `PriorityConstructorArbitraryIntrospector`를 제공합니다.
+
+```java
+Timestamp actual = FixtureMonkey.builder()
+    .objectIntrospector(PriorityConstructorArbitraryIntrospector.INSTANCE)
+    .build()
+    .giveMeOne(Timestamp.class);
+```
+
+### `ConstructorPropertiesArbitraryIntrospector` 와의 차이점
+`ConstructorPropertiesArbitraryIntrospector`도 생성자를 사용해서 객체를 생성하는 `ArbitraryIntrospector` 입니다.
+`PriorityConstructorArbitraryIntrospector`와의 차이점은 다음과 같습니다.
+
+|                                | PriorityConstructorArbitraryIntrospector             | ConstructorPropertiesArbitraryIntrospector |
+|--------------------------------|------------------------------------------------------|--------------------------------------------|
+| `@ConstructorProperties` 필요 여부 | 필요없음                                                 | 필요함                                        |
+| 생성자의 파라미터를 제어할 수 있는지           | 조건부 (`withParameterNamesResolver`를 설정한 경우)           | 가능함                                        |
+| 생성에 사용할 생성자를 결정하는 방법           | `constructorFilter`와  `sortingCriteria` 조건을 사용해서 결정함 | `@ConstructorProperties`가 있는 첫 번째 생성자      |
+
+### constructorFilter
+`PriorityConstructorArbitraryIntrospector`는 생성에 사용할 생성자를 결정할 때 `constructorFilter` 조건을 사용합니다.
+
+`constructorFilter`는 `withConstructorFilter`를 사용해서 변경할 수 있습니다.
+기본 조건은 `constructor -> !Modifier.isPrivate(constructor.getModifiers())`입니다.
+
+### sortingCriteria
+`constructorFilter` 조건을 만족하는 생성자가 여러 개 일경우 추가적으로 `sortingCriteria` 조건을 사용해서 생성자를 결정합니다.  
+`Comparator<Constructor<?>>`로 정렬했을 때 첫 번째 생성자를 사용합니다.
+
+`sortingCriteria`는 `withSortingCriteria`를 사용해서 변경할 수 있습니다.
+기본 설정은 생성자 수가 가장 적은 생성자입니다. `Comparator.comparing(Constructor::getParameterCount)
+
+### parameterNamesResolver
+다음 세 가지 조건 중 하나도 만족하지 않으면 픽스쳐 몽키에서 생성자 파라미터 이름을 인식할 수 없습니다.
+- record 타입
+- JVM 옵션 `-parameters` 활성화
+- 생성자에 `@ConstructorProperties` 존재 
+
+생성자 파라미터 이름을 인식하지 못하면 `ArbitraryBuilder` API를 사용해 생성자 파라미터를 제어할 수 없습니다.
+
+`PriorityConstructorArbitraryIntrospector`에서 `parameterNamesResolver`를 사용해 파라미터 이름을 인식합니다.
+`parameterNamesResolver`는 `withParameterNamesResolver`를 사용해서 변경할 수 있습니다.
+입력한 파라미터 이름은 항상 파라미터 순서와 동일해야 합니다.
+
 ----------------
 
 플러그인 별로 관련된 introspector도 존재합니다. 예를들어 [`JacksonObjectArbitraryIntrospector`](../../plugins/jackson-plugin/jackson-object-arbitrary-introspector)와 [`PrimaryConstructorArbitraryIntrospector`](../../plugins/kotlin-plugin/introspectors-for-kotlin)가 존재합니다.

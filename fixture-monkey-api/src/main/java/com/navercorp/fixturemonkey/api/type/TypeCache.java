@@ -197,7 +197,7 @@ public abstract class TypeCache {
 		CONSTRUCTORS.clear();
 	}
 
-	private static String[] getParameterNames(Constructor<?> constructor) {
+	public static String[] getParameterNames(Constructor<?> constructor) {
 		Parameter[] parameters = constructor.getParameters();
 		boolean namePresent = Arrays.stream(parameters).anyMatch(Parameter::isNamePresent);
 		boolean parameterEmpty = parameters.length == 0;
@@ -214,8 +214,15 @@ public abstract class TypeCache {
 			boolean anyReceiverParameter = Arrays.stream(constructor.getAnnotatedParameterTypes())
 				.anyMatch(it -> constructor.getAnnotatedReceiverType() != null
 					&& it.getType().equals(constructor.getAnnotatedReceiverType().getType()));
+			ConstructorProperties constructorProperties = constructor.getAnnotation(ConstructorProperties.class);
 
-			String[] constructorPropertiesNames = constructor.getAnnotation(ConstructorProperties.class).value();
+			if (constructorProperties == null) {
+				return Arrays.stream(parameters)
+					.map(Parameter::getName)
+					.toArray(String[]::new);
+			}
+
+			String[] constructorPropertiesNames = constructorProperties.value();
 			if (!anyReceiverParameter) {
 				return constructorPropertiesNames;
 			}
