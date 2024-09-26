@@ -9,6 +9,8 @@ sectionStart
 ## v.1.0.26
 Add `PriorityConstructorArbitraryIntrospector`
 
+Add `korean` method in MonkeyStringArbitrary
+
 sectionEnd
 
 sectionStart
