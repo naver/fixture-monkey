@@ -217,6 +217,11 @@ public final class MonkeyStringArbitrary implements StringArbitrary {
 		return this;
 	}
 
+	public StringArbitrary korean() {
+		this.characterArbitrary = this.characterArbitrary.range('가', '힣');
+		return this;
+	}
+
 	@Override
 	public StringArbitrary numeric() {
 		this.characterArbitrary = this.characterArbitrary.numeric();
