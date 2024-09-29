@@ -117,6 +117,7 @@ public final class FixtureMonkey {
 			builderContext.copy(),
 			registeredArbitraryBuilders,
 			monkeyContext,
+			manipulatorOptimizer,
 			fixtureMonkeyOptions.getInstantiatorProcessor(),
 			namedArbitraryBuilderMap
 		);
@@ -145,6 +146,7 @@ public final class FixtureMonkey {
 			context,
 			registeredArbitraryBuilders,
 			monkeyContext,
+			manipulatorOptimizer,
 			fixtureMonkeyOptions.getInstantiatorProcessor(),
 			namedArbitraryBuilderMap
 		);
@@ -204,17 +206,12 @@ public final class FixtureMonkey {
 	}
 
 	private void initializeNamedArbitraryBuilderMap(
-		Map<String, MatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>>> mapsByRegisteredName) {
+		Map<String, MatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>>> mapsByRegisteredName
+	) {
 		mapsByRegisteredName.forEach((name, matcherOperator) -> {
-			MatcherOperator<? extends ArbitraryBuilder<?>> newMatcherOperator =
-				new MatcherOperator<>(matcherOperator.getMatcher(), matcherOperator.getOperator().apply(this));
-
-			if (matcherOperator.getMatcher().match(
-				new RootProperty(new LazyAnnotatedType<>(() -> matcherOperator.getOperator().apply(this).sample())))
-			) {
-				this.registeredArbitraryBuilders.add(newMatcherOperator);
-			}
-			namedArbitraryBuilderMap.put(name, newMatcherOperator);
+			namedArbitraryBuilderMap.put(
+				name, new MatcherOperator<>(matcherOperator.getMatcher(), matcherOperator.getOperator().apply(this))
+			);
 		});
 	}
 }

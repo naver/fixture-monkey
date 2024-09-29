@@ -84,6 +84,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 	private final MonkeyManipulatorFactory monkeyManipulatorFactory;
 	private final ArbitraryBuilderContext context;
 	private final List<MatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuilders;
+	private final ManipulatorOptimizer manipulatorOptimizer;
 	private final MonkeyContext monkeyContext;
 	private final InstantiatorProcessor instantiatorProcessor;
 	private final Map<String, MatcherOperator<? extends ArbitraryBuilder<?>>> namedArbitraryBuilderMap;
@@ -98,6 +99,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 		ArbitraryBuilderContext context,
 		List<MatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuilders,
 		MonkeyContext monkeyContext,
+		ManipulatorOptimizer manipulatorOptimizer,
 		InstantiatorProcessor instantiatorProcessor,
 		Map<String, MatcherOperator<? extends ArbitraryBuilder<?>>> arbitraryBuilderMapsByRegisteredName
 	) {
@@ -108,6 +110,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 		this.context = context;
 		this.monkeyManipulatorFactory = monkeyManipulatorFactory;
 		this.registeredArbitraryBuilders = registeredArbitraryBuilders;
+		this.manipulatorOptimizer = manipulatorOptimizer;
 		this.monkeyContext = monkeyContext;
 		this.instantiatorProcessor = instantiatorProcessor;
 		this.namedArbitraryBuilderMap = arbitraryBuilderMapsByRegisteredName;
@@ -193,8 +196,39 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 			}
 			selectedArbitraryBuilders.add(namedArbitraryBuilder);
 		}
-		context.addSelectedArbitraryBuilders(selectedArbitraryBuilders);
-		return this;
+
+		ArrayList<MatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuildersCopy =
+			new ArrayList<>(this.registeredArbitraryBuilders);
+		registeredArbitraryBuildersCopy.addAll(selectedArbitraryBuilders);
+
+		ArbitraryBuilderContext builderContext = registeredArbitraryBuildersCopy.stream()
+			.filter(it -> it.match(rootProperty))
+			.map(MatcherOperator::getOperator)
+			.findAny()
+			.map(DefaultArbitraryBuilder.class::cast)
+			.map(DefaultArbitraryBuilder::getContext)
+			.orElse(new ArbitraryBuilderContext());
+
+		return new DefaultArbitraryBuilder<>(
+			this.fixtureMonkeyOptions,
+			this.rootProperty,
+			new ArbitraryResolver(
+				this.traverser,
+				this.manipulatorOptimizer,
+				this.monkeyManipulatorFactory,
+				this.fixtureMonkeyOptions,
+				this.monkeyContext,
+				registeredArbitraryBuildersCopy
+			),
+			this.traverser,
+			this.monkeyManipulatorFactory,
+			builderContext.copy(),
+			registeredArbitraryBuildersCopy,
+			this.monkeyContext,
+			this.manipulatorOptimizer,
+			this.fixtureMonkeyOptions.getInstantiatorProcessor(),
+			this.namedArbitraryBuilderMap
+		);
 	}
 
 	@Override
@@ -529,6 +563,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 			context.copy(),
 			registeredArbitraryBuilders,
 			monkeyContext,
+			manipulatorOptimizer,
 			instantiatorProcessor,
 			namedArbitraryBuilderMap
 		);
@@ -580,6 +615,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 			context,
 			registeredArbitraryBuilders,
 			monkeyContext,
+			manipulatorOptimizer,
 			instantiatorProcessor,
 			namedArbitraryBuilderMap
 		);

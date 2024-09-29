@@ -18,7 +18,6 @@
 
 package com.navercorp.fixturemonkey.resolver;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -70,16 +69,12 @@ public final class ArbitraryResolver {
 		RootProperty rootProperty,
 		ArbitraryBuilderContext builderContext
 	) {
-		List<MatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuildersCopy =
-			new ArrayList<>(registeredArbitraryBuilders);
-		registeredArbitraryBuildersCopy.addAll(builderContext.getSelectedArbitraryBuilders());
-
 		List<ArbitraryManipulator> manipulators = builderContext.getManipulators();
 		List<ContainerInfoManipulator> containerInfoManipulators = builderContext.getContainerInfoManipulators();
 		Map<Class<?>, List<Property>> propertyConfigurers = builderContext.getPropertyConfigurers();
 
 		List<MatcherOperator<List<ContainerInfoManipulator>>> registeredContainerInfoManipulators =
-			registeredArbitraryBuildersCopy.stream()
+			registeredArbitraryBuilders.stream()
 				.map(it -> new MatcherOperator<>(
 					it.getMatcher(),
 					((DefaultArbitraryBuilder<?>)it.getOperator()).getContext().getContainerInfoManipulators()
@@ -107,7 +102,7 @@ public final class ArbitraryResolver {
 			objectTree -> {
 				List<ArbitraryManipulator> registeredManipulators =
 					monkeyManipulatorFactory.newRegisteredArbitraryManipulators(
-						registeredArbitraryBuildersCopy,
+						registeredArbitraryBuilders,
 						objectTree.getMetadata().getNodesByProperty()
 					);
 
