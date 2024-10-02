@@ -88,7 +88,6 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 	private final MonkeyContext monkeyContext;
 	private final InstantiatorProcessor instantiatorProcessor;
 	private final Map<String, MatcherOperator<? extends ArbitraryBuilder<?>>> namedArbitraryBuilderMap;
-	private final List<MatcherOperator<? extends ArbitraryBuilder<?>>> selectedArbitraryBuilders = new ArrayList<>();
 
 	public DefaultArbitraryBuilder(
 		FixtureMonkeyOptions fixtureMonkeyOptions,
@@ -188,18 +187,17 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 
 	@Override
 	public ArbitraryBuilder<T> selectName(String... names) {
+		ArrayList<MatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuildersCopy =
+			new ArrayList<>(this.registeredArbitraryBuilders);
+
 		for (String name : names) {
 			MatcherOperator<? extends ArbitraryBuilder<?>> namedArbitraryBuilder = namedArbitraryBuilderMap.get(name);
 
 			if (namedArbitraryBuilder == null) {
 				throw new IllegalArgumentException("Given name is not registered. name: " + name);
 			}
-			selectedArbitraryBuilders.add(namedArbitraryBuilder);
+			registeredArbitraryBuildersCopy.add(namedArbitraryBuilder);
 		}
-
-		ArrayList<MatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuildersCopy =
-			new ArrayList<>(this.registeredArbitraryBuilders);
-		registeredArbitraryBuildersCopy.addAll(selectedArbitraryBuilders);
 
 		ArbitraryBuilderContext builderContext = registeredArbitraryBuildersCopy.stream()
 			.filter(it -> it.match(rootProperty))
