@@ -116,10 +116,10 @@ public final class FixtureMonkey {
 			monkeyManipulatorFactory,
 			builderContext.copy(),
 			registeredArbitraryBuilders,
+			namedArbitraryBuilderMap,
 			monkeyContext,
 			manipulatorOptimizer,
-			fixtureMonkeyOptions.getInstantiatorProcessor(),
-			namedArbitraryBuilderMap
+			fixtureMonkeyOptions.getInstantiatorProcessor()
 		);
 	}
 
@@ -145,10 +145,10 @@ public final class FixtureMonkey {
 			monkeyManipulatorFactory,
 			context,
 			registeredArbitraryBuilders,
+			namedArbitraryBuilderMap,
 			monkeyContext,
 			manipulatorOptimizer,
-			fixtureMonkeyOptions.getInstantiatorProcessor(),
-			namedArbitraryBuilderMap
+			fixtureMonkeyOptions.getInstantiatorProcessor()
 		);
 	}
 

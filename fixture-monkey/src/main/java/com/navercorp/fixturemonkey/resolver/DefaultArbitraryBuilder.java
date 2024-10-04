@@ -97,10 +97,10 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 		MonkeyManipulatorFactory monkeyManipulatorFactory,
 		ArbitraryBuilderContext context,
 		List<MatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuilders,
+		Map<String, MatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuildersByRegsiteredName,
 		MonkeyContext monkeyContext,
 		ManipulatorOptimizer manipulatorOptimizer,
-		InstantiatorProcessor instantiatorProcessor,
-		Map<String, MatcherOperator<? extends ArbitraryBuilder<?>>> arbitraryBuilderMapsByRegisteredName
+		InstantiatorProcessor instantiatorProcessor
 	) {
 		this.fixtureMonkeyOptions = fixtureMonkeyOptions;
 		this.rootProperty = rootProperty;
@@ -109,10 +109,10 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 		this.context = context;
 		this.monkeyManipulatorFactory = monkeyManipulatorFactory;
 		this.registeredArbitraryBuilders = registeredArbitraryBuilders;
+		this.namedArbitraryBuilderMap = registeredArbitraryBuildersByRegsiteredName;
 		this.manipulatorOptimizer = manipulatorOptimizer;
 		this.monkeyContext = monkeyContext;
 		this.instantiatorProcessor = instantiatorProcessor;
-		this.namedArbitraryBuilderMap = arbitraryBuilderMapsByRegisteredName;
 	}
 
 	@Override
@@ -187,7 +187,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 
 	@Override
 	public ArbitraryBuilder<T> selectName(String... names) {
-		ArrayList<MatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuildersCopy =
+		List<MatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuildersCopy =
 			new ArrayList<>(this.registeredArbitraryBuilders);
 
 		for (String name : names) {
@@ -222,10 +222,10 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 			this.monkeyManipulatorFactory,
 			builderContext.copy(),
 			registeredArbitraryBuildersCopy,
+			this.namedArbitraryBuilderMap,
 			this.monkeyContext,
 			this.manipulatorOptimizer,
-			this.fixtureMonkeyOptions.getInstantiatorProcessor(),
-			this.namedArbitraryBuilderMap
+			this.fixtureMonkeyOptions.getInstantiatorProcessor()
 		);
 	}
 
@@ -560,10 +560,10 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 			monkeyManipulatorFactory,
 			context.copy(),
 			registeredArbitraryBuilders,
+			namedArbitraryBuilderMap,
 			monkeyContext,
 			manipulatorOptimizer,
-			instantiatorProcessor,
-			namedArbitraryBuilderMap
+			instantiatorProcessor
 		);
 	}
 
@@ -612,10 +612,10 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 			monkeyManipulatorFactory,
 			context,
 			registeredArbitraryBuilders,
+			namedArbitraryBuilderMap,
 			monkeyContext,
 			manipulatorOptimizer,
-			instantiatorProcessor,
-			namedArbitraryBuilderMap
+			instantiatorProcessor
 		);
 	}
 

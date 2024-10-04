@@ -386,17 +386,17 @@ public final class FixtureMonkeyBuilder {
 	}
 
 	public FixtureMonkeyBuilder registeredName(
-		String arbitraryName,
+		String registeredName,
 		Class<?> type,
 		Function<FixtureMonkey, ? extends ArbitraryBuilder<?>> arbitraryBuilder
 	) {
-		if (registeredArbitraryListByRegisteredName.containsKey(arbitraryName)) {
-			throw new IllegalArgumentException("Duplicated ArbitraryBuilder name: " + arbitraryName);
+		if (registeredArbitraryListByRegisteredName.containsKey(registeredName)) {
+			throw new IllegalArgumentException("Duplicated ArbitraryBuilder name: " + registeredName);
 		}
 		MatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>> matcherOperator =
 			MatcherOperator.assignableTypeMatchOperator(type, arbitraryBuilder);
 
-		this.registeredArbitraryListByRegisteredName.put(arbitraryName, matcherOperator);
+		this.registeredArbitraryListByRegisteredName.put(registeredName, matcherOperator);
 		return this;
 	}
 
