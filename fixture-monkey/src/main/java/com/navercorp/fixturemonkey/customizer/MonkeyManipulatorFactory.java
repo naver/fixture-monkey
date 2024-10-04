@@ -36,7 +36,7 @@ import org.apiguardian.api.API.Status;
 
 import net.jqwik.api.Arbitrary;
 
-import com.navercorp.fixturemonkey.ArbitraryBuilder;
+import com.navercorp.fixturemonkey.api.ObjectBuilder;
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.container.DecomposedContainerValueFactory;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
@@ -138,7 +138,7 @@ public final class MonkeyManipulatorFactory {
 	}
 
 	public List<ArbitraryManipulator> newRegisteredArbitraryManipulators(
-		List<MatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuilders,
+		List<MatcherOperator<? extends ObjectBuilder<?>>> registeredArbitraryBuilders,
 		Map<Property, List<ObjectNode>> nodesByType
 	) {
 		List<ArbitraryManipulator> manipulators = new ArrayList<>();

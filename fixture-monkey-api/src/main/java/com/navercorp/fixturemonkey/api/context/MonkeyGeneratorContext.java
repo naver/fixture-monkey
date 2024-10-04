@@ -25,8 +25,13 @@ import java.util.SortedMap;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.property.PropertyPath;
 
+/**
+ * It is the same context as {@code TraverseContext}, but exposed as public by {@link ArbitraryGeneratorContext}.
+ * It focuses mainly on generation.
+ */
 @API(since = "0.4.3", status = Status.MAINTAINED)
 public final class MonkeyGeneratorContext {
 	private final SortedMap<PropertyPath, Set<Object>> uniqueSetsByProperty;

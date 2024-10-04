@@ -49,6 +49,7 @@ import net.jqwik.api.Combinators.F4;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
+import com.navercorp.fixturemonkey.api.ObjectBuilder;
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.context.MonkeyContext;
 import com.navercorp.fixturemonkey.api.experimental.TypedPropertySelector;
@@ -57,8 +58,6 @@ import com.navercorp.fixturemonkey.api.instantiator.Instantiator;
 import com.navercorp.fixturemonkey.api.instantiator.InstantiatorProcessResult;
 import com.navercorp.fixturemonkey.api.instantiator.InstantiatorProcessor;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
-import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
-import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.api.property.PropertySelector;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
@@ -75,32 +74,27 @@ import com.navercorp.fixturemonkey.resolver.ArbitraryResolver;
 
 @SuppressFBWarnings("NM_SAME_SIMPLE_NAME_AS_SUPERCLASS")
 @API(since = "0.4.0", status = Status.MAINTAINED)
-public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, ExperimentalArbitraryBuilder<T> {
-	private final FixtureMonkeyOptions fixtureMonkeyOptions;
+public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, ExperimentalArbitraryBuilder<T>,
+	ObjectBuilder<T> {
 	private final RootProperty rootProperty;
 	private final ArbitraryResolver resolver;
 	private final MonkeyManipulatorFactory monkeyManipulatorFactory;
 	private final ArbitraryBuilderContext context;
-	private final List<MatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuilders;
 	private final MonkeyContext monkeyContext;
 	private final InstantiatorProcessor instantiatorProcessor;
 
 	public DefaultArbitraryBuilder(
-		FixtureMonkeyOptions fixtureMonkeyOptions,
 		RootProperty rootProperty,
 		ArbitraryResolver resolver,
 		MonkeyManipulatorFactory monkeyManipulatorFactory,
 		ArbitraryBuilderContext context,
-		List<MatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuilders,
 		MonkeyContext monkeyContext,
 		InstantiatorProcessor instantiatorProcessor
 	) {
-		this.fixtureMonkeyOptions = fixtureMonkeyOptions;
 		this.rootProperty = rootProperty;
 		this.resolver = resolver;
 		this.context = context;
 		this.monkeyManipulatorFactory = monkeyManipulatorFactory;
-		this.registeredArbitraryBuilders = registeredArbitraryBuilders;
 		this.monkeyContext = monkeyContext;
 		this.instantiatorProcessor = instantiatorProcessor;
 	}
@@ -499,12 +493,10 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 	@Override
 	public ArbitraryBuilder<T> copy() {
 		return new DefaultArbitraryBuilder<>(
-			fixtureMonkeyOptions,
 			rootProperty,
 			resolver,
 			monkeyManipulatorFactory,
 			context.copy(),
-			registeredArbitraryBuilders,
 			monkeyContext,
 			instantiatorProcessor
 		);
@@ -536,24 +528,23 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 
 	private String resolveExpression(ExpressionGenerator expressionGenerator) {
 		return expressionGenerator.generate(property -> {
-			PropertyNameResolver propertyNameResolver = fixtureMonkeyOptions.getPropertyNameResolver(property);
+			PropertyNameResolver propertyNameResolver = monkeyContext.getFixtureMonkeyOptions()
+				.getPropertyNameResolver(property);
 			return propertyNameResolver.resolve(property);
 		});
 	}
 
 	private <R> DefaultArbitraryBuilder<R> generateArbitraryBuilderLazily(LazyArbitrary<R> lazyArbitrary) {
-		ArbitraryBuilderContext context = new ArbitraryBuilderContext();
+		ArbitraryBuilderContext context = ArbitraryBuilderContext.newBuilderContext(monkeyContext);
 		ArbitraryManipulator arbitraryManipulator =
 			monkeyManipulatorFactory.newArbitraryManipulator("$", lazyArbitrary);
 		context.addManipulator(arbitraryManipulator);
 
 		return new DefaultArbitraryBuilder<>(
-			fixtureMonkeyOptions,
 			new RootProperty(new LazyAnnotatedType<>(lazyArbitrary::getValue)),
 			resolver,
 			monkeyManipulatorFactory,
 			context,
-			registeredArbitraryBuilders,
 			monkeyContext,
 			instantiatorProcessor
 		);
