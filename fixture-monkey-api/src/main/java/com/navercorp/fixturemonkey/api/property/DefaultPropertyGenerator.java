@@ -28,28 +28,43 @@ import com.navercorp.fixturemonkey.api.introspector.ConstructorPropertiesArbitra
 
 @API(since = "0.5.3", status = Status.MAINTAINED)
 public final class DefaultPropertyGenerator implements PropertyGenerator {
-	public static final PropertyGenerator FIELD_PROPERTY_GENERATOR = new CompositePropertyGenerator(
-		Arrays.asList(
-			new FieldPropertyGenerator(
-				it -> true,
-				it -> true
-			),
-			new JavaBeansPropertyGenerator(
-				it -> it.getReadMethod() != null && it.getWriteMethod() != null,
-				it -> true
+	public static final PropertyGenerator CACHED_DEFAULT_FIELD_PROPERTY_GENERATOR = new LazyPropertyGenerator(
+		new FieldPropertyGenerator(
+			it -> true,
+			it -> true
+		)
+	);
+
+	public static final PropertyGenerator CACHED_DEFAULT_JAVA_BEANS_PROPERTY_GENERATOR = new LazyPropertyGenerator(
+		new JavaBeansPropertyGenerator(
+			it -> it.getReadMethod() != null && it.getWriteMethod() != null,
+			it -> true
+		)
+	);
+
+	public static final PropertyGenerator CACHED_DEFAULT_CONSTRUCTOR_PROPERTY_GENERATOR =
+		new LazyPropertyGenerator(ConstructorPropertiesArbitraryIntrospector.PROPERTY_GENERATOR);
+
+	public static final PropertyGenerator CACHED_DEFAULT_ANNOTATED_FIELD_PROPERTY_GENERATOR = new LazyPropertyGenerator(
+		new CompositePropertyGenerator(
+			Arrays.asList(
+				CACHED_DEFAULT_FIELD_PROPERTY_GENERATOR,
+				CACHED_DEFAULT_JAVA_BEANS_PROPERTY_GENERATOR
 			)
 		)
 	);
 
-	private static final CompositePropertyGenerator COMPOSITE_PROPERTY_GENERATOR =
-		new CompositePropertyGenerator(
-			Arrays.asList(
-				ConstructorPropertiesArbitraryIntrospector.PROPERTY_GENERATOR,
-				FIELD_PROPERTY_GENERATOR
+	private static final PropertyGenerator CACHED_COMPOSITE_PROPERTY_GENERATOR =
+		new LazyPropertyGenerator(
+			new CompositePropertyGenerator(
+				Arrays.asList(
+					CACHED_DEFAULT_CONSTRUCTOR_PROPERTY_GENERATOR,
+					CACHED_DEFAULT_ANNOTATED_FIELD_PROPERTY_GENERATOR
+				)
 			)
 		);
 
 	public List<Property> generateChildProperties(Property property) {
-		return COMPOSITE_PROPERTY_GENERATOR.generateChildProperties(property);
+		return CACHED_COMPOSITE_PROPERTY_GENERATOR.generateChildProperties(property);
 	}
 }

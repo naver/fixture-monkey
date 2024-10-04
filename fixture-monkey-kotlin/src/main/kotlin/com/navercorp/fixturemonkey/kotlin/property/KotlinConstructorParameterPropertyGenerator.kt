@@ -20,7 +20,7 @@ package com.navercorp.fixturemonkey.kotlin.property
 
 import com.navercorp.fixturemonkey.api.container.ConcurrentLruCache
 import com.navercorp.fixturemonkey.api.property.CompositeProperty
-import com.navercorp.fixturemonkey.api.property.FieldPropertyGenerator
+import com.navercorp.fixturemonkey.api.property.DefaultPropertyGenerator.CACHED_DEFAULT_FIELD_PROPERTY_GENERATOR
 import com.navercorp.fixturemonkey.api.property.Property
 import com.navercorp.fixturemonkey.api.property.PropertyGenerator
 import org.apiguardian.api.API
@@ -66,6 +66,6 @@ internal class KotlinConstructorParameterPropertyGenerator(
         }
 
     companion object {
-        private val JAVA_FIELD_PROPERTY_GENERATOR = FieldPropertyGenerator({ true }) { true }
+        private val JAVA_FIELD_PROPERTY_GENERATOR = CACHED_DEFAULT_FIELD_PROPERTY_GENERATOR
     }
 }

@@ -19,7 +19,7 @@
 package com.navercorp.fixturemonkey.api.introspector;
 
 import static com.navercorp.fixturemonkey.api.exception.Exceptions.throwAsUnchecked;
-import static com.navercorp.fixturemonkey.api.property.DefaultPropertyGenerator.FIELD_PROPERTY_GENERATOR;
+import static com.navercorp.fixturemonkey.api.property.DefaultPropertyGenerator.CACHED_DEFAULT_ANNOTATED_FIELD_PROPERTY_GENERATOR;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
@@ -122,6 +122,6 @@ public final class BeanArbitraryIntrospector implements ArbitraryIntrospector {
 
 	@Override
 	public PropertyGenerator getRequiredPropertyGenerator(Property property) {
-		return FIELD_PROPERTY_GENERATOR;
+		return CACHED_DEFAULT_ANNOTATED_FIELD_PROPERTY_GENERATOR;
 	}
 }
