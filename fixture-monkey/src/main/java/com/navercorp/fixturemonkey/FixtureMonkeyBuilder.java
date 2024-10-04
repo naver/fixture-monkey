@@ -32,8 +32,6 @@ import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.constraint.JavaConstraintGenerator;
 import com.navercorp.fixturemonkey.api.container.DecomposedContainerValueFactory;
-import com.navercorp.fixturemonkey.api.context.MonkeyContext;
-import com.navercorp.fixturemonkey.api.context.MonkeyContextBuilder;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfoGenerator;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.generator.ContainerPropertyGenerator;
@@ -70,7 +68,6 @@ public final class FixtureMonkeyBuilder {
 		registeredArbitraryBuilders = new ArrayList<>();
 	private ManipulatorOptimizer manipulatorOptimizer = new NoneManipulatorOptimizer();
 	private MonkeyExpressionFactory monkeyExpressionFactory = new ArbitraryExpressionFactory();
-	private final MonkeyContextBuilder monkeyContextBuilder = MonkeyContext.builder();
 	private long seed = System.nanoTime();
 
 	public FixtureMonkeyBuilder pushPropertyGenerator(MatcherOperator<PropertyGenerator> propertyGenerator) {
@@ -489,12 +486,10 @@ public final class FixtureMonkeyBuilder {
 			fixtureMonkeyOptions.getDecomposedContainerValueFactory()
 		);
 
-		MonkeyContext monkeyContext = monkeyContextBuilder.build();
 		Randoms.create(String.valueOf(seed));
 		return new FixtureMonkey(
 			fixtureMonkeyOptions,
 			manipulatorOptimizer,
-			monkeyContext,
 			registeredArbitraryBuilders,
 			monkeyManipulatorFactory
 		);
