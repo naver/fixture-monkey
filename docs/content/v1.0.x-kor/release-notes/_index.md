@@ -6,6 +6,12 @@ docs:
 weight: 100
 ---
 sectionStart
+## v.1.0.27
+Add `enableLoggingFail` option as a constructor argument in `FailoverIntrospector`
+
+sectionEnd
+
+sectionStart
 ## v.1.0.26
 Add `PriorityConstructorArbitraryIntrospector`
 

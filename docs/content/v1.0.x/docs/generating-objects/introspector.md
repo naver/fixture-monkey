@@ -78,6 +78,12 @@ FixtureMonkey sut = FixtureMonkey.builder()
     .build();
 ```
 
+If you want to disable the fail log, you should set the constructor argument `enableLoggingFail` to false.
+
+```java
+FailoverIntrospector failoverIntrospector = new FailoverIntrospector(introspectors, false);
+```
+
 ## PriorityConstructorArbitraryIntrospector
 Types that Fixture Monkey does not support creating by default can be created using a custom `ArbitraryIntrospector`.
 However, creating your own `ArbitraryIntrospector` can be difficult if you are not familiar with Fixture Monkey.
