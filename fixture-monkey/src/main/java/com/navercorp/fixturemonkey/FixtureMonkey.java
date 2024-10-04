@@ -21,7 +21,9 @@ package com.navercorp.fixturemonkey;
 import static java.util.stream.Collectors.toList;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -53,6 +55,8 @@ public final class FixtureMonkey {
 	private final MonkeyContext monkeyContext;
 	private final List<MatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuilders = new ArrayList<>();
 	private final MonkeyManipulatorFactory monkeyManipulatorFactory;
+	private final Map<String, MatcherOperator<? extends ArbitraryBuilder<?>>>
+		namedArbitraryBuilderMap = new HashMap<>();
 
 	public FixtureMonkey(
 		FixtureMonkeyOptions fixtureMonkeyOptions,
@@ -60,7 +64,8 @@ public final class FixtureMonkey {
 		ManipulatorOptimizer manipulatorOptimizer,
 		MonkeyContext monkeyContext,
 		List<MatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>>> registeredArbitraryBuilders,
-		MonkeyManipulatorFactory monkeyManipulatorFactory
+		MonkeyManipulatorFactory monkeyManipulatorFactory,
+		Map<String, MatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>>> mapsByRegisteredName
 	) {
 		this.fixtureMonkeyOptions = fixtureMonkeyOptions;
 		this.traverser = traverser;
@@ -68,6 +73,7 @@ public final class FixtureMonkey {
 		this.monkeyContext = monkeyContext;
 		this.monkeyManipulatorFactory = monkeyManipulatorFactory;
 		initializeRegisteredArbitraryBuilders(registeredArbitraryBuilders);
+		initializeNamedArbitraryBuilderMap(mapsByRegisteredName);
 	}
 
 	public static FixtureMonkeyBuilder builder() {
@@ -110,7 +116,9 @@ public final class FixtureMonkey {
 			monkeyManipulatorFactory,
 			builderContext.copy(),
 			registeredArbitraryBuilders,
+			namedArbitraryBuilderMap,
 			monkeyContext,
+			manipulatorOptimizer,
 			fixtureMonkeyOptions.getInstantiatorProcessor()
 		);
 	}
@@ -137,7 +145,9 @@ public final class FixtureMonkey {
 			monkeyManipulatorFactory,
 			context,
 			registeredArbitraryBuilders,
+			namedArbitraryBuilderMap,
 			monkeyContext,
+			manipulatorOptimizer,
 			fixtureMonkeyOptions.getInstantiatorProcessor()
 		);
 	}
@@ -193,5 +203,15 @@ public final class FixtureMonkey {
 		for (int i = generatedRegisteredArbitraryBuilder.size() - 1; i >= 0; i--) {
 			this.registeredArbitraryBuilders.add(generatedRegisteredArbitraryBuilder.get(i));
 		}
+	}
+
+	private void initializeNamedArbitraryBuilderMap(
+		Map<String, MatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>>> mapsByRegisteredName
+	) {
+		mapsByRegisteredName.forEach((name, matcherOperator) -> {
+			namedArbitraryBuilderMap.put(
+				name, new MatcherOperator<>(matcherOperator.getMatcher(), matcherOperator.getOperator().apply(this))
+			);
+		});
 	}
 }

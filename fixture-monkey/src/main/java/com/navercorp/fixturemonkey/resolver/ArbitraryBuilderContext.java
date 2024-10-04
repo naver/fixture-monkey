@@ -44,7 +44,6 @@ public final class ArbitraryBuilderContext {
 	private final List<ContainerInfoManipulator> containerInfoManipulators;
 	private final Map<Class<?>, List<Property>> propertyConfigurers;
 	private final Map<Class<?>, ArbitraryIntrospector> arbitraryIntrospectorsByType;
-
 	private boolean validOnly;
 
 	@Nullable
@@ -71,7 +70,8 @@ public final class ArbitraryBuilderContext {
 	}
 
 	public ArbitraryBuilderContext() {
-		this(new ArrayList<>(), new ArrayList<>(), new HashMap<>(), new HashMap<>(), true, null, null);
+		this(
+			new ArrayList<>(), new ArrayList<>(), new HashMap<>(), new HashMap<>(), true, null, null);
 	}
 
 	public ArbitraryBuilderContext copy() {

@@ -22,7 +22,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
@@ -76,6 +78,8 @@ public final class FixtureMonkeyBuilder {
 	private ManipulatorOptimizer manipulatorOptimizer = new NoneManipulatorOptimizer();
 	private MonkeyExpressionFactory monkeyExpressionFactory = new ArbitraryExpressionFactory();
 	private final MonkeyContextBuilder monkeyContextBuilder = MonkeyContext.builder();
+	private final Map<String, MatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>>>
+		registeredArbitraryListByRegisteredName = new HashMap<>();
 	private long seed = System.nanoTime();
 
 	// The default plugins are listed below.
@@ -381,6 +385,21 @@ public final class FixtureMonkeyBuilder {
 		return this;
 	}
 
+	public FixtureMonkeyBuilder registeredName(
+		String registeredName,
+		Class<?> type,
+		Function<FixtureMonkey, ? extends ArbitraryBuilder<?>> arbitraryBuilder
+	) {
+		if (registeredArbitraryListByRegisteredName.containsKey(registeredName)) {
+			throw new IllegalArgumentException("Duplicated ArbitraryBuilder name: " + registeredName);
+		}
+		MatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>> matcherOperator =
+			MatcherOperator.assignableTypeMatchOperator(type, arbitraryBuilder);
+
+		this.registeredArbitraryListByRegisteredName.put(registeredName, matcherOperator);
+		return this;
+	}
+
 	public FixtureMonkeyBuilder plugin(Plugin plugin) {
 		if (plugin instanceof InterfacePlugin) { // TODO: Added for backward compatibility. It will be removed in 1.1.0
 			this.defaultInterfacePlugin = (InterfacePlugin)plugin;
@@ -552,7 +571,8 @@ public final class FixtureMonkeyBuilder {
 			manipulatorOptimizer,
 			monkeyContext,
 			registeredArbitraryBuilders,
-			monkeyManipulatorFactory
+			monkeyManipulatorFactory,
+			registeredArbitraryListByRegisteredName
 		);
 	}
 }
