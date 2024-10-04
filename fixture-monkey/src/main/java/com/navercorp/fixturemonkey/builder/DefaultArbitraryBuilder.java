@@ -28,6 +28,7 @@ import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -83,21 +84,30 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 	private final ArbitraryResolver resolver;
 	private final MonkeyManipulatorFactory monkeyManipulatorFactory;
 	private final ArbitraryBuilderContext context;
+	private final List<MatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuilders;
+	private final ManipulatorOptimizer manipulatorOptimizer;
 	private final MonkeyContext monkeyContext;
 	private final InstantiatorProcessor instantiatorProcessor;
+	private final Map<String, MatcherOperator<? extends ArbitraryBuilder<?>>> namedArbitraryBuilderMap;
 
 	public DefaultArbitraryBuilder(
 		TreeRootProperty rootProperty,
 		ArbitraryResolver resolver,
 		MonkeyManipulatorFactory monkeyManipulatorFactory,
 		ArbitraryBuilderContext context,
+		List<MatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuilders,
+		Map<String, MatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuildersByRegsiteredName,
 		MonkeyContext monkeyContext,
+		ManipulatorOptimizer manipulatorOptimizer,
 		InstantiatorProcessor instantiatorProcessor
 	) {
 		this.rootProperty = rootProperty;
 		this.resolver = resolver;
 		this.context = context;
 		this.monkeyManipulatorFactory = monkeyManipulatorFactory;
+		this.registeredArbitraryBuilders = registeredArbitraryBuilders;
+		this.namedArbitraryBuilderMap = registeredArbitraryBuildersByRegsiteredName;
+		this.manipulatorOptimizer = manipulatorOptimizer;
 		this.monkeyContext = monkeyContext;
 		this.instantiatorProcessor = instantiatorProcessor;
 	}
@@ -169,6 +179,50 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 	public ArbitraryBuilder<T> setLazy(PropertySelector propertySelector, Supplier<?> supplier) {
 		return this.setLazy(
 			resolveExpression(toExpressionGenerator(propertySelector)), supplier, MAX_MANIPULATION_COUNT
+		);
+	}
+
+	@Override
+	public ArbitraryBuilder<T> selectName(String... names) {
+		List<MatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuildersCopy =
+			new ArrayList<>(this.registeredArbitraryBuilders);
+
+		for (String name : names) {
+			MatcherOperator<? extends ArbitraryBuilder<?>> namedArbitraryBuilder = namedArbitraryBuilderMap.get(name);
+
+			if (namedArbitraryBuilder == null) {
+				throw new IllegalArgumentException("Given name is not registered. name: " + name);
+			}
+			registeredArbitraryBuildersCopy.add(namedArbitraryBuilder);
+		}
+
+		ArbitraryBuilderContext builderContext = registeredArbitraryBuildersCopy.stream()
+			.filter(it -> it.match(rootProperty))
+			.map(MatcherOperator::getOperator)
+			.findAny()
+			.map(DefaultArbitraryBuilder.class::cast)
+			.map(DefaultArbitraryBuilder::getContext)
+			.orElse(new ArbitraryBuilderContext());
+
+		return new DefaultArbitraryBuilder<>(
+			this.fixtureMonkeyOptions,
+			this.rootProperty,
+			new ArbitraryResolver(
+				this.traverser,
+				this.manipulatorOptimizer,
+				this.monkeyManipulatorFactory,
+				this.fixtureMonkeyOptions,
+				this.monkeyContext,
+				registeredArbitraryBuildersCopy
+			),
+			this.traverser,
+			this.monkeyManipulatorFactory,
+			builderContext.copy(),
+			registeredArbitraryBuildersCopy,
+			this.namedArbitraryBuilderMap,
+			this.monkeyContext,
+			this.manipulatorOptimizer,
+			this.fixtureMonkeyOptions.getInstantiatorProcessor()
 		);
 	}
 
@@ -500,7 +554,10 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 			resolver,
 			monkeyManipulatorFactory,
 			context.copy(),
+			registeredArbitraryBuilders,
+			namedArbitraryBuilderMap,
 			monkeyContext,
+			manipulatorOptimizer,
 			instantiatorProcessor
 		);
 	}
@@ -549,7 +606,10 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 			resolver,
 			monkeyManipulatorFactory,
 			context,
+			registeredArbitraryBuilders,
+			namedArbitraryBuilderMap,
 			monkeyContext,
+			manipulatorOptimizer,
 			instantiatorProcessor
 		);
 	}

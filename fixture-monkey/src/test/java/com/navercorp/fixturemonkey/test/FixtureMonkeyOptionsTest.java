@@ -721,6 +721,76 @@ class FixtureMonkeyOptionsTest {
 	}
 
 	@Property
+	void registeredName() {
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.registeredName(
+				"test",
+				String.class,
+				monkey -> monkey.giveMeBuilder("test")
+			)
+			.build();
+
+		SimpleObject actual = sut.giveMeBuilder(SimpleObject.class)
+			.selectName("test")
+			.sample();
+
+		String actual2 = sut.giveMeBuilder(String.class)
+			.selectName("test")
+			.sample();
+
+		then(actual.getStr()).isEqualTo("test");
+		then(actual2).isEqualTo("test");
+	}
+
+	@Property
+	void registeredNameWithSameRegisteredName() {
+		thenThrownBy(() -> FixtureMonkey.builder()
+			.registeredName(
+				"test",
+				String.class,
+				monkey -> monkey.giveMeBuilder("test")
+			)
+			.registeredName(
+				"test",
+				String.class,
+				monkey -> monkey.giveMeBuilder("test2")
+			)
+			.build()
+		).isExactlyInstanceOf(IllegalArgumentException.class)
+			.hasMessage("Duplicated ArbitraryBuilder name: test");
+	}
+
+	@Property
+	void registeredNameWithUnregisteredName() {
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.build();
+
+		thenThrownBy(() -> sut.giveMeBuilder(SimpleObject.class)
+			.selectName("test3")
+			.sample()
+		).isExactlyInstanceOf(IllegalArgumentException.class)
+			.hasMessage("Given name is not registered. name: test3");
+	}
+
+	@Property
+	void generateSampleListWithRegisteredNames() {
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.registeredName(
+				"test",
+				String.class,
+				monkey -> monkey.giveMeBuilder("test")
+			)
+			.build();
+
+		List<SimpleObject> actual = sut.giveMeBuilder(SimpleObject.class)
+			.selectName("test")
+			.sampleList(3);
+
+		then(actual).hasSize(3);
+		then(actual).allMatch(it -> it.getStr().equals("test"));
+	}
+
+	@Property
 	void registerSameInstancesTwiceWorksLast() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.register(String.class, monkey -> monkey.giveMeBuilder("test"))

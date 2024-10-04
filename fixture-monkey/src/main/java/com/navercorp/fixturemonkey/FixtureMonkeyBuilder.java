@@ -22,7 +22,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
@@ -74,6 +76,9 @@ public final class FixtureMonkeyBuilder {
 		registeredArbitraryBuilders = new ArrayList<>();
 	private ManipulatorOptimizer manipulatorOptimizer = new NoneManipulatorOptimizer();
 	private MonkeyExpressionFactory monkeyExpressionFactory = new ArbitraryExpressionFactory();
+	private final MonkeyContextBuilder monkeyContextBuilder = MonkeyContext.builder();
+	private final Map<String, MatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>>>
+		registeredArbitraryListByRegisteredName = new HashMap<>();
 	private long seed = System.nanoTime();
 
 	public FixtureMonkeyBuilder pushPropertyGenerator(MatcherOperator<PropertyGenerator> propertyGenerator) {
@@ -376,6 +381,21 @@ public final class FixtureMonkeyBuilder {
 		return this;
 	}
 
+	public FixtureMonkeyBuilder registeredName(
+		String registeredName,
+		Class<?> type,
+		Function<FixtureMonkey, ? extends ArbitraryBuilder<?>> arbitraryBuilder
+	) {
+		if (registeredArbitraryListByRegisteredName.containsKey(registeredName)) {
+			throw new IllegalArgumentException("Duplicated ArbitraryBuilder name: " + registeredName);
+		}
+		MatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>> matcherOperator =
+			MatcherOperator.assignableTypeMatchOperator(type, arbitraryBuilder);
+
+		this.registeredArbitraryListByRegisteredName.put(registeredName, matcherOperator);
+		return this;
+	}
+
 	public FixtureMonkeyBuilder plugin(Plugin plugin) {
 		fixtureMonkeyOptionsBuilder.plugin(plugin);
 		return this;
@@ -526,7 +546,8 @@ public final class FixtureMonkeyBuilder {
 			fixtureMonkeyOptions,
 			manipulatorOptimizer,
 			registeredArbitraryBuilders,
-			monkeyManipulatorFactory
+			monkeyManipulatorFactory,
+			registeredArbitraryListByRegisteredName
 		);
 	}
 }
