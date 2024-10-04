@@ -32,18 +32,34 @@ import javax.annotation.Nullable;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import com.navercorp.fixturemonkey.ArbitraryBuilder;
+import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
+import com.navercorp.fixturemonkey.api.context.MonkeyContext;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
+import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.customizer.ArbitraryManipulator;
 import com.navercorp.fixturemonkey.customizer.ContainerInfoManipulator;
+import com.navercorp.fixturemonkey.tree.ObjectTree;
+import com.navercorp.fixturemonkey.tree.TraverseContext;
 
-@API(since = "0.4.0", status = Status.MAINTAINED)
+/**
+ * {@link FixtureMonkey} → {@link ArbitraryBuilder} → {@link ObjectTree} → {@link CombinableArbitrary}
+ * 						1:N							1:N					1:1
+ * <p>
+ * It is a context within {@link ArbitraryBuilder}. It represents a status of the {@link ArbitraryBuilder}.
+ * The {@link ArbitraryBuilder} should be the same if the {@link ArbitraryBuilderContext} is the same.
+ * <p>
+ * It is for internal use only. It can be changed or removed at any time.
+ */
+@API(since = "0.4.0", status = Status.INTERNAL)
 public final class ArbitraryBuilderContext {
 	private final List<ArbitraryManipulator> manipulators;
 	private final List<ContainerInfoManipulator> containerInfoManipulators;
 	private final Map<Class<?>, List<Property>> propertyConfigurers;
 	private final Map<Class<?>, ArbitraryIntrospector> arbitraryIntrospectorsByType;
+	private final MonkeyContext monkeyContext;
 
 	private boolean validOnly;
 
@@ -52,14 +68,15 @@ public final class ArbitraryBuilderContext {
 	@Nullable
 	private CombinableArbitrary<?> fixedCombinableArbitrary;
 
-	public ArbitraryBuilderContext(
+	private ArbitraryBuilderContext(
 		List<ArbitraryManipulator> manipulators,
 		List<ContainerInfoManipulator> containerInfoManipulators,
 		Map<Class<?>, List<Property>> propertyConfigurers,
 		Map<Class<?>, ArbitraryIntrospector> arbitraryIntrospectorsByType,
 		boolean validOnly,
 		@Nullable FixedState fixedState,
-		@Nullable CombinableArbitrary<?> fixedCombinableArbitrary
+		@Nullable CombinableArbitrary<?> fixedCombinableArbitrary,
+		MonkeyContext monkeyContext
 	) {
 		this.manipulators = manipulators;
 		this.containerInfoManipulators = containerInfoManipulators;
@@ -68,10 +85,25 @@ public final class ArbitraryBuilderContext {
 		this.validOnly = validOnly;
 		this.fixedState = fixedState;
 		this.fixedCombinableArbitrary = fixedCombinableArbitrary;
+		this.monkeyContext = monkeyContext;
 	}
 
-	public ArbitraryBuilderContext() {
-		this(new ArrayList<>(), new ArrayList<>(), new HashMap<>(), new HashMap<>(), true, null, null);
+	/**
+	 * It is in {@link ArbitraryBuilderContext} due to MonkeyContext is in api module.
+	 * It will be removed when all related class migrate to api module.
+	 */
+	@Deprecated
+	public static ArbitraryBuilderContext newBuilderContext(MonkeyContext monkeyContext) {
+		return new ArbitraryBuilderContext(
+			new ArrayList<>(),
+			new ArrayList<>(),
+			new HashMap<>(),
+			new HashMap<>(),
+			true,
+			null,
+			null,
+			monkeyContext
+		);
 	}
 
 	public ArbitraryBuilderContext copy() {
@@ -86,7 +118,8 @@ public final class ArbitraryBuilderContext {
 			new HashMap<>(arbitraryIntrospectorsByType),
 			this.validOnly,
 			fixedState,
-			fixedCombinableArbitrary
+			fixedCombinableArbitrary,
+			monkeyContext
 		);
 	}
 
@@ -166,6 +199,27 @@ public final class ArbitraryBuilderContext {
 	@Nullable
 	public CombinableArbitrary<?> getFixedCombinableArbitrary() {
 		return fixedCombinableArbitrary;
+	}
+
+	public TraverseContext newTraverseContext() {
+		List<MatcherOperator<List<ContainerInfoManipulator>>> registeredContainerInfoManipulators =
+			monkeyContext.getRegisteredArbitraryBuilders()
+				.stream()
+				.map(it -> new MatcherOperator<>(
+					it.getMatcher(),
+					((DefaultArbitraryBuilder<?>)it.getOperator()).getContext().getContainerInfoManipulators()
+				))
+				.collect(Collectors.toList());
+
+		return new TraverseContext(
+			new ArrayList<>(),
+			this.getContainerInfoManipulators(),
+			registeredContainerInfoManipulators,
+			this.getPropertyConfigurers(),
+			this.getArbitraryIntrospectorsByType(),
+			this.isValidOnly(),
+			this.monkeyContext
+		);
 	}
 
 	private static class FixedState {
