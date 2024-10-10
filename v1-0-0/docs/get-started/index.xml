@@ -128,13 +128,13 @@ public class Product {
 &lt;p>Fixture Monkey supports constraint annotations from the &lt;code>jakarta.validation.constraints&lt;/code> and &lt;code>javax.validation.constraints&lt;/code> packages.&lt;/p>
 &lt;p>To enable this feature, you need to add the &lt;code>fixture-monkey-jakarta-validation&lt;/code> dependency (or &lt;code>fixture-monkey-javax-validation&lt;/code> if you are using javax.validation.constraints) to your project as follows:&lt;/p>
 &lt;h5 id="gradle">Gradle &lt;a href="#gradle" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h5>
-&lt;pre>&lt;code class="language-groovy">testImplementation(&amp;quot;com.navercorp.fixturemonkey:fixture-monkey-jakarta-validation:1.0.23&amp;quot;)
+&lt;pre>&lt;code class="language-groovy">testImplementation(&amp;quot;com.navercorp.fixturemonkey:fixture-monkey-jakarta-validation:1.0.27&amp;quot;)
 &lt;/code>&lt;/pre>
 &lt;h5 id="maven">Maven &lt;a href="#maven" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h5>
 &lt;pre>&lt;code class="language-xml">&amp;lt;dependency&amp;gt;
  &amp;lt;groupId&amp;gt;com.navercorp.fixturemonkey&amp;lt;/groupId&amp;gt;
  &amp;lt;artifactId&amp;gt;fixture-monkey-jakarta-validation&amp;lt;/artifactId&amp;gt;
- &amp;lt;version&amp;gt;1.0.23&amp;lt;/version&amp;gt;
+ &amp;lt;version&amp;gt;1.0.27&amp;lt;/version&amp;gt;
  &amp;lt;scope&amp;gt;test&amp;lt;/scope&amp;gt;
 &amp;lt;/dependency&amp;gt;
 &lt;/code>&lt;/pre>
