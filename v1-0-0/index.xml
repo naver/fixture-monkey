@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Fixture Monkey on</title><link>https://naver.github.io/fixture-monkey/v1-0-0/</link><description>Recent content in Fixture Monkey on</description><generator>Hugo -- gohugo.io</generator><language>en-US</language><copyright>Copyright (c) 2020-2021 Henk Verlinde</copyright><lastBuildDate>Tue, 06 Oct 2020 08:47:36 +0000</lastBuildDate><atom:link href="https://naver.github.io/fixture-monkey/v1-0-0/index.xml" rel="self" type="application/rss+xml"/><item><title>Release Notes</title><link>https://naver.github.io/fixture-monkey/v1-0-0/release-notes/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v1-0-0/release-notes/</guid><description>&lt;p>sectionStart&lt;/p>
+&lt;h2 id="v1027">v.1.0.27 &lt;a href="#v1027" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h2>
+&lt;p>Add &lt;code>enableLoggingFail&lt;/code> option as a constructor argument in &lt;code>FailoverIntrospector&lt;/code>&lt;/p>
+&lt;p>sectionEnd&lt;/p>
+&lt;p>sectionStart&lt;/p>
 &lt;h2 id="v1026">v.1.0.26 &lt;a href="#v1026" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h2>
 &lt;p>Add &lt;code>PriorityConstructorArbitraryIntrospector&lt;/code>&lt;/p>
 &lt;p>Add &lt;code>korean&lt;/code> method in MonkeyStringArbitrary&lt;/p>
@@ -13,9 +17,4 @@
 &lt;p>Deprecate &lt;code>ElementJsonSubTypesObjectPropertyGenerator&lt;/code>, &lt;code>PropertyJsonSubTypesObjectPropertyGenerator&lt;/code> in &lt;code>fixture-monkey-jackson&lt;/code> module.
 Please use the &lt;code>ElementJsonSubTypesConcreteTypeResolver&lt;/code>, &lt;code>PropertyJsonSubTypesConcreteTypeResolver&lt;/code> instead.&lt;/p>
 &lt;p>Add new APIs that generates the unique value by &lt;code>Values.unique(Supplier)&lt;/code> or &lt;code>CombinableArbitrary.unique()&lt;/code>.&lt;/p>
-&lt;p>Check out the examples below.&lt;/p>
-&lt;pre>&lt;code class="language-java">.set(&amp;quot;$[*]&amp;quot;, Values.unique(() -&amp;gt; Arbitraries.integers().between(0, 3).sample()))`,
-&lt;/code>&lt;/pre>
-&lt;pre>&lt;code class="language-java">.&amp;lt;List&amp;lt;Integer&amp;gt;&amp;gt;customizeProperty(typedRoot(), CombinableArbitrary::unique)
-&lt;/code>&lt;/pre>
-&lt;p>Add &lt;code>@Seed&lt;/code> to reproduce the randomly populated object in &lt;code>fixture-monkey-junit-jupiter&lt;/code> module.&lt;/p></description></item><item><title>Docs</title><link>https://naver.github.io/fixture-monkey/v1-0-0/docs/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v1-0-0/docs/</guid><description/></item></channel></rss>
+&lt;p>Check out the examples below.&lt;/p></description></item><item><title>Docs</title><link>https://naver.github.io/fixture-monkey/v1-0-0/docs/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v1-0-0/docs/</guid><description/></item></channel></rss>
