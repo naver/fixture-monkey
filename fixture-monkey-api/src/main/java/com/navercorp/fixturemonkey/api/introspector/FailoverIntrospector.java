@@ -36,9 +36,15 @@ public final class FailoverIntrospector implements ArbitraryIntrospector {
 	private static final Logger LOGGER = LoggerFactory.getLogger(FailoverIntrospector.class);
 
 	private final List<ArbitraryIntrospector> introspectors;
+	private final boolean enableLoggingFail;
 
 	public FailoverIntrospector(List<ArbitraryIntrospector> introspectors) {
+		this(introspectors, true);
+	}
+
+	public FailoverIntrospector(List<ArbitraryIntrospector> introspectors, boolean enableLoggingFail) {
 		this.introspectors = introspectors;
+		this.enableLoggingFail = enableLoggingFail;
 	}
 
 	@Override
@@ -51,14 +57,16 @@ public final class FailoverIntrospector implements ArbitraryIntrospector {
 					results.add(new FailoverIntrospectorResult(introspector, result));
 				}
 			} catch (Exception ex) {
-				LOGGER.warn(
-					String.format(
-						"\"%s\" is failed to introspect \"%s\" type.",
-						introspector.getClass().getSimpleName(),
-						((Class<?>)context.getResolvedProperty().getType()).getName()
-					),
-					ex
-				);
+				if (enableLoggingFail) {
+					LOGGER.warn(
+						String.format(
+							"\"%s\" is failed to introspect \"%s\" type.",
+							introspector.getClass().getSimpleName(),
+							((Class<?>)context.getResolvedProperty().getType()).getName()
+						),
+						ex
+					);
+				}
 				// omitted
 			}
 		}
@@ -77,14 +85,16 @@ public final class FailoverIntrospector implements ArbitraryIntrospector {
 							result = iterator.next();
 							return result.getResult().getValue().combined();
 						} catch (Exception ex) {
-							LOGGER.warn(
-								String.format(
-									"\"%s\" is failed to introspect \"%s\" type.",
-									Objects.requireNonNull(result).getIntrospector().getClass().getSimpleName(),
-									((Class<?>)context.getResolvedProperty().getType()).getName()
-								),
-								ex
-							);
+							if (enableLoggingFail) {
+								LOGGER.warn(
+									String.format(
+										"\"%s\" is failed to introspect \"%s\" type.",
+										Objects.requireNonNull(result).getIntrospector().getClass().getSimpleName(),
+										((Class<?>)context.getResolvedProperty().getType()).getName()
+									),
+									ex
+								);
+							}
 							// omitted
 						}
 					}
@@ -105,14 +115,16 @@ public final class FailoverIntrospector implements ArbitraryIntrospector {
 							result = iterator.next();
 							return result.getResult().getValue().rawValue();
 						} catch (Exception ex) {
-							LOGGER.warn(
-								String.format(
-									"\"%s\" is failed to introspect type \"%s\"",
-									Objects.requireNonNull(result).getIntrospector().getClass().getSimpleName(),
-									((Class<?>)context.getResolvedProperty().getType()).getName()
-								),
-								ex
-							);
+							if (enableLoggingFail) {
+								LOGGER.warn(
+									String.format(
+										"\"%s\" is failed to introspect type \"%s\"",
+										Objects.requireNonNull(result).getIntrospector().getClass().getSimpleName(),
+										((Class<?>)context.getResolvedProperty().getType()).getName()
+									),
+									ex
+								);
+							}
 							// omitted
 						}
 					}

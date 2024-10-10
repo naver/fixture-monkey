@@ -78,6 +78,12 @@ FixtureMonkey sut = FixtureMonkey.builder()
     .build();
 ```
 
+생성에 실패하면 발생하는 로그를 보고싶지 않다면 생성자 파라미터 `enableLoggingFail`를 false로 설정하면 됩니다.
+
+```java
+FailoverIntrospector failoverIntrospector = new FailoverIntrospector(introspectors, false);
+```
+
 ## PriorityConstructorArbitraryIntrospector
 픽스쳐 몽키에서 기본으로 생성을 지원하지 않는 타입은 사용자 정의 `ArbitraryIntrospector`를 사용하면 생성할 수 있습니다. 
 하지만 픽스쳐 몽키에 익숙하지 않다면 `ArbitraryIntrospector`를 만들기는 어렵습니다. 
