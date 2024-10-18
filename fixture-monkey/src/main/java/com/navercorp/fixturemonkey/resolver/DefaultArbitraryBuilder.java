@@ -27,13 +27,16 @@ import static java.util.stream.Collectors.toList;
 import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
@@ -182,23 +185,25 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 		);
 	}
 
-	@Override
 	public ArbitraryBuilder<T> selectName(String... names) {
-		for (String name : names) {
-			boolean found = registeredArbitraryBuilders.stream()
-				.filter(operator -> operator instanceof NamedMatcherOperator)
-				.map(operator -> (NamedMatcherOperator<?>) operator)
-				.filter(operator -> operator.getRegisteredName().equals(name))
-				.peek(NamedMatcherOperator::activate)
-				.findFirst()
-				.isPresent();
+		Set<String> unregisteredNames = Arrays.stream(names)
+			.filter(name -> registeredArbitraryBuilders.stream()
+				.filter(NamedMatcherOperator.class::isInstance)
+				.map(NamedMatcherOperator.class::cast)
+				.noneMatch(operator -> operator.matchRegisteredName(name)))
+			.collect(Collectors.toSet());
 
-			if (!found) {
-				throw new IllegalArgumentException("Given name is not registered. name: " + name);
-			}
+		if (!unregisteredNames.isEmpty()) {
+			throw new IllegalArgumentException("The following names are not registered: " + unregisteredNames);
 		}
 
-		ArbitraryBuilderContext builderContext = registeredArbitraryBuilders.stream()
+		List<MatcherOperator<? extends ArbitraryBuilder<?>>> selectedArbitraryBuilders =
+			registeredArbitraryBuilders.stream()
+				.filter(operator -> !(operator instanceof NamedMatcherOperator) ||
+					Arrays.stream(names).anyMatch(((NamedMatcherOperator<?>) operator)::matchRegisteredName))
+				.collect(Collectors.toList());
+
+		ArbitraryBuilderContext builderContext = selectedArbitraryBuilders.stream()
 			.filter(it -> it.match(rootProperty))
 			.map(MatcherOperator::getOperator)
 			.findAny()
@@ -215,12 +220,12 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 				this.monkeyManipulatorFactory,
 				this.fixtureMonkeyOptions,
 				this.monkeyContext,
-				registeredArbitraryBuilders
+				selectedArbitraryBuilders
 			),
 			this.traverser,
 			this.monkeyManipulatorFactory,
 			builderContext.copy(),
-			registeredArbitraryBuilders,
+			selectedArbitraryBuilders,
 			this.monkeyContext,
 			this.manipulatorOptimizer,
 			this.fixtureMonkeyOptions.getInstantiatorProcessor()

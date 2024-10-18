@@ -18,32 +18,15 @@
 
 package com.navercorp.fixturemonkey.api.matcher;
 
-import com.navercorp.fixturemonkey.api.property.Property;
-
 public final class NamedMatcherOperator<T> extends MatcherOperator<T> {
 	private final String registeredName;
-	private boolean active;
 
-	public NamedMatcherOperator(Matcher matcher, T operator, String name) {
+	public NamedMatcherOperator(Matcher matcher, T operator, String registeredName) {
 		super(matcher, operator);
-		this.registeredName = name;
-		this.active = false;
+		this.registeredName = registeredName;
 	}
 
-	public String getRegisteredName() {
-		return registeredName;
-	}
-
-	public void activate() {
-		this.active = true;
-	}
-
-	public void deactivate() {
-		this.active = false;
-	}
-
-	@Override
-	public boolean match(Property property) {
-		return active && super.match(property);
+	public boolean matchRegisteredName(String selectName) {
+		return this.registeredName.equals(selectName);
 	}
 }

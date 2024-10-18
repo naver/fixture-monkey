@@ -34,7 +34,6 @@ import net.jqwik.api.Arbitrary;
 import com.navercorp.fixturemonkey.api.context.MonkeyContext;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.matcher.NamedMatcherOperatorAdapter;
-import com.navercorp.fixturemonkey.api.matcher.NamedMatcherOperator;
 import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
 import com.navercorp.fixturemonkey.api.type.LazyAnnotatedType;
@@ -91,12 +90,6 @@ public final class FixtureMonkey {
 
 	public <T> ArbitraryBuilder<T> giveMeBuilder(TypeReference<T> type) {
 		RootProperty rootProperty = new RootProperty(type.getAnnotatedType());
-
-		for (MatcherOperator<? extends ArbitraryBuilder<?>> operator : registeredArbitraryBuilders) {
-			if (operator instanceof NamedMatcherOperator) {
-				((NamedMatcherOperator<?>)operator).deactivate();
-			}
-		}
 
 		ArbitraryBuilderContext builderContext = registeredArbitraryBuilders.stream()
 			.filter(it -> it.match(rootProperty))
@@ -211,12 +204,12 @@ public final class FixtureMonkey {
 	private void initializeNamedArbitraryBuilderMap(
 		Map<String, MatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>>> mapsByRegisteredName
 	) {
-		mapsByRegisteredName.forEach((name, matcherOperator) -> {
+		mapsByRegisteredName.forEach((registeredName, matcherOperator) -> {
 			registeredArbitraryBuilders.add(
 				NamedMatcherOperatorAdapter.adapt(
 					matcherOperator.getMatcher(),
 					matcherOperator.getOperator().apply(this),
-					name
+					registeredName
 				)
 			);
 		});

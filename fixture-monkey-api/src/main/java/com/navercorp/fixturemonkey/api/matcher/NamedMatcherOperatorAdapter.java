@@ -20,7 +20,7 @@ package com.navercorp.fixturemonkey.api.matcher;
 
 
 public final class NamedMatcherOperatorAdapter {
-	public static <T> NamedMatcherOperator<T> adapt(Matcher matcher, T operator, String name) {
-		return new NamedMatcherOperator<>(matcher, operator, name);
+	public static <T> NamedMatcherOperator<T> adapt(Matcher matcher, T operator, String registeredName) {
+		return new NamedMatcherOperator<>(matcher, operator, registeredName);
 	}
 }
