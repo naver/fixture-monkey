@@ -27,14 +27,16 @@ import static java.util.stream.Collectors.toList;
 import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
@@ -59,6 +61,7 @@ import com.navercorp.fixturemonkey.api.instantiator.InstantiatorProcessResult;
 import com.navercorp.fixturemonkey.api.instantiator.InstantiatorProcessor;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
+import com.navercorp.fixturemonkey.api.matcher.NamedMatcherOperator;
 import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.api.property.PropertySelector;
@@ -87,7 +90,6 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 	private final ManipulatorOptimizer manipulatorOptimizer;
 	private final MonkeyContext monkeyContext;
 	private final InstantiatorProcessor instantiatorProcessor;
-	private final Map<String, MatcherOperator<? extends ArbitraryBuilder<?>>> namedArbitraryBuilderMap;
 
 	public DefaultArbitraryBuilder(
 		FixtureMonkeyOptions fixtureMonkeyOptions,
@@ -97,7 +99,6 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 		MonkeyManipulatorFactory monkeyManipulatorFactory,
 		ArbitraryBuilderContext context,
 		List<MatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuilders,
-		Map<String, MatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuildersByRegsiteredName,
 		MonkeyContext monkeyContext,
 		ManipulatorOptimizer manipulatorOptimizer,
 		InstantiatorProcessor instantiatorProcessor
@@ -109,7 +110,6 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 		this.context = context;
 		this.monkeyManipulatorFactory = monkeyManipulatorFactory;
 		this.registeredArbitraryBuilders = registeredArbitraryBuilders;
-		this.namedArbitraryBuilderMap = registeredArbitraryBuildersByRegsiteredName;
 		this.manipulatorOptimizer = manipulatorOptimizer;
 		this.monkeyContext = monkeyContext;
 		this.instantiatorProcessor = instantiatorProcessor;
@@ -185,21 +185,25 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 		);
 	}
 
-	@Override
 	public ArbitraryBuilder<T> selectName(String... names) {
-		List<MatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuildersCopy =
-			new ArrayList<>(this.registeredArbitraryBuilders);
+		Set<String> unregisteredNames = Arrays.stream(names)
+			.filter(name -> registeredArbitraryBuilders.stream()
+				.filter(NamedMatcherOperator.class::isInstance)
+				.map(NamedMatcherOperator.class::cast)
+				.noneMatch(operator -> operator.matchRegisteredName(name)))
+			.collect(Collectors.toSet());
 
-		for (String name : names) {
-			MatcherOperator<? extends ArbitraryBuilder<?>> namedArbitraryBuilder = namedArbitraryBuilderMap.get(name);
-
-			if (namedArbitraryBuilder == null) {
-				throw new IllegalArgumentException("Given name is not registered. name: " + name);
-			}
-			registeredArbitraryBuildersCopy.add(namedArbitraryBuilder);
+		if (!unregisteredNames.isEmpty()) {
+			throw new IllegalArgumentException("The following names are not registered: " + unregisteredNames);
 		}
 
-		ArbitraryBuilderContext builderContext = registeredArbitraryBuildersCopy.stream()
+		List<MatcherOperator<? extends ArbitraryBuilder<?>>> selectedArbitraryBuilders =
+			registeredArbitraryBuilders.stream()
+				.filter(operator -> !(operator instanceof NamedMatcherOperator) ||
+					Arrays.stream(names).anyMatch(((NamedMatcherOperator<?>) operator)::matchRegisteredName))
+				.collect(Collectors.toList());
+
+		ArbitraryBuilderContext builderContext = selectedArbitraryBuilders.stream()
 			.filter(it -> it.match(rootProperty))
 			.map(MatcherOperator::getOperator)
 			.findAny()
@@ -216,13 +220,12 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 				this.monkeyManipulatorFactory,
 				this.fixtureMonkeyOptions,
 				this.monkeyContext,
-				registeredArbitraryBuildersCopy
+				selectedArbitraryBuilders
 			),
 			this.traverser,
 			this.monkeyManipulatorFactory,
 			builderContext.copy(),
-			registeredArbitraryBuildersCopy,
-			this.namedArbitraryBuilderMap,
+			selectedArbitraryBuilders,
 			this.monkeyContext,
 			this.manipulatorOptimizer,
 			this.fixtureMonkeyOptions.getInstantiatorProcessor()
@@ -560,7 +563,6 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 			monkeyManipulatorFactory,
 			context.copy(),
 			registeredArbitraryBuilders,
-			namedArbitraryBuilderMap,
 			monkeyContext,
 			manipulatorOptimizer,
 			instantiatorProcessor
@@ -612,7 +614,6 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 			monkeyManipulatorFactory,
 			context,
 			registeredArbitraryBuilders,
-			namedArbitraryBuilderMap,
 			monkeyContext,
 			manipulatorOptimizer,
 			instantiatorProcessor
