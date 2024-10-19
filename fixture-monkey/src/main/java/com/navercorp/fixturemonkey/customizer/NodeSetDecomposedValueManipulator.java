@@ -34,9 +34,9 @@ import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.container.DecomposableJavaContainer;
 import com.navercorp.fixturemonkey.api.container.DecomposedContainerValueFactory;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
-import com.navercorp.fixturemonkey.api.property.ConcreteTypeDefinition;
 import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
+import com.navercorp.fixturemonkey.api.property.TypeDefinition;
 import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.tree.IdentityNodeResolver;
 import com.navercorp.fixturemonkey.tree.ObjectNode;
@@ -120,7 +120,7 @@ public final class NodeSetDecomposedValueManipulator<T> implements NodeManipulat
 				objectNode.forceExpand();
 			}
 
-			List<ObjectNode> children = objectNode.getChildren();
+			List<ObjectNode> children = objectNode.resolveChildren();
 
 			if (objectNode.getArbitraryProperty()
 				.getObjectProperty()
@@ -138,7 +138,7 @@ public final class NodeSetDecomposedValueManipulator<T> implements NodeManipulat
 			return;
 		}
 
-		List<ObjectNode> children = objectNode.getChildren();
+		List<ObjectNode> children = objectNode.resolveChildren();
 		if (children.isEmpty() || Types.getActualType(objectNode.getResolvedProperty().getType()).isInterface()) {
 			CombinableArbitrary<?> combinableArbitrary = CombinableArbitrary.from(value);
 			objectNode.addManipulator(node -> node.setArbitrary(combinableArbitrary));
@@ -146,31 +146,24 @@ public final class NodeSetDecomposedValueManipulator<T> implements NodeManipulat
 			return;
 		}
 
-		List<ConcreteTypeDefinition> concreteTypeDefinitions = objectNode.getArbitraryProperty()
-			.getConcreteTypeDefinitions();
-
-		for (ConcreteTypeDefinition concreteTypeDefinition : concreteTypeDefinitions) {
-			Class<?> actualConcreteType = Types.getActualType(concreteTypeDefinition.getConcreteProperty().getType());
+		List<? extends TypeDefinition> typeDefinitions = objectNode.getTreeProperty().getTypeDefinitions();
+		for (TypeDefinition typeDefinition : typeDefinitions) {
+			Class<?> actualConcreteType = Types.getActualType(typeDefinition.getResolvedProperty().getType());
 			if (isAssignable(
 				value.getClass(),
 				actualConcreteType
 			)) {
-				Property resolvedParentProperty = concreteTypeDefinition.getConcreteProperty();
-
 				if (isAssignable(
 					actualConcreteType,
 					value.getClass()
 				)) {
-					objectNode.setResolvedProperty(resolvedParentProperty);
+					objectNode.setResolvedTypeDefinition(typeDefinition);
 				}
 
-				List<Property> childProperties = concreteTypeDefinition.getChildPropertyLists();
-				for (ObjectNode child : children) {
-					if (childProperties.contains(child.getOriginalProperty())
-						&& resolvedParentProperty.equals(child.getResolvedParentProperty())) {
-						Property childProperty = child.getOriginalProperty();
-						setValue(child, childProperty.getValue(value));
-					}
+				objectNode.forceExpand(typeDefinition);
+				for (ObjectNode child : objectNode.getChildren()) {
+					Property childProperty = child.getOriginalProperty();
+					setValue(child, childProperty.getValue(value));
 				}
 			}
 		}

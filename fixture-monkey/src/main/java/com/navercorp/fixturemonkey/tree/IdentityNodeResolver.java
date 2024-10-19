@@ -47,14 +47,14 @@ public final class IdentityNodeResolver implements NodeResolver {
 		ObjectNode searchNode = objectNode;
 
 		while (isWrappedNode(searchNode)) {
-			searchNode = searchNode.getChildren().get(0);
+			searchNode = searchNode.resolveChildren().get(0);
 		}
 
 		return searchNode;
 	}
 
 	private boolean isWrappedNode(ObjectNode searchNode) {
-		List<ObjectNode> children = searchNode.getChildren();
+		List<ObjectNode> children = searchNode.resolveChildren();
 
 		return children.size() == 1 && children.get(0).getResolvedProperty() instanceof SingleElementProperty;
 	}
