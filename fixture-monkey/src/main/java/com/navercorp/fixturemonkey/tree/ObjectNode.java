@@ -77,7 +77,8 @@ public final class ObjectNode implements ObjectTreeNode {
 	@Nullable
 	private CombinableArbitrary<?> arbitrary;
 	private double nullInject;
-	private boolean expanded = false;
+	@Nullable
+	private TypeDefinition expandedTypeDefinition = null;
 
 	private final List<NodeManipulator> manipulators = new ArrayList<>();
 	private final List<ContainerInfoManipulator> containerInfoManipulators = new ArrayList<>();
@@ -278,7 +279,7 @@ public final class ObjectNode implements ObjectTreeNode {
 	}
 
 	public void expand(TypeDefinition typeDefinition) {
-		if (this.expanded) {
+		if (this.expandedTypeDefinition == resolvedTypeDefinition) {
 			return;
 		}
 
@@ -302,12 +303,12 @@ public final class ObjectNode implements ObjectTreeNode {
 			)
 			.collect(Collectors.toList());
 		this.setChildren(newChildren);
-		this.expanded = true;
+		this.expandedTypeDefinition = resolvedTypeDefinition;
 	}
 
 	@Override
 	public void expand() {
-		if (this.expanded) {
+		if (this.expandedTypeDefinition == resolvedTypeDefinition) {
 			return;
 		}
 
@@ -330,7 +331,7 @@ public final class ObjectNode implements ObjectTreeNode {
 				)
 				.collect(Collectors.toList())
 		);
-		this.expanded = true;
+		this.expandedTypeDefinition = resolvedTypeDefinition;
 	}
 
 	public void forceExpand(TypeDefinition typeDefinition) {
@@ -354,7 +355,7 @@ public final class ObjectNode implements ObjectTreeNode {
 			).collect(Collectors.toList());
 
 		this.setChildren(newChildren);
-		this.expanded = true;
+		this.expandedTypeDefinition = resolvedTypeDefinition;
 	}
 
 	@Override
@@ -380,7 +381,7 @@ public final class ObjectNode implements ObjectTreeNode {
 			).collect(Collectors.toList());
 
 		this.setChildren(newChildren);
-		this.expanded = true;
+		this.expandedTypeDefinition = resolvedTypeDefinition;
 	}
 
 	private Stream<ObjectNode> expandContainerNode(TypeDefinition typeDefinition, TraverseContext traverseContext) {
