@@ -144,6 +144,10 @@ public final class ObjectNode implements ObjectTreeNode {
 		return this.resolvedTypeDefinition.getResolvedProperty();
 	}
 
+	public TypeDefinition getResolvedTypeDefinition() {
+		return resolvedTypeDefinition;
+	}
+
 	public void setResolvedTypeDefinition(TypeDefinition typeDefinition) {
 		this.resolvedTypeDefinition = typeDefinition;
 	}
@@ -283,25 +287,19 @@ public final class ObjectNode implements ObjectTreeNode {
 			return;
 		}
 
-		List<ObjectNode> newChildren = this.getTreeProperty().getTypeDefinitions().stream()
-			.filter(it -> it.getResolvedProperty().equals(typeDefinition.getResolvedProperty())
-				&& it.getPropertyGenerator() == typeDefinition.getPropertyGenerator())
-			.flatMap(
-				it -> {
-					if (this.getTreeProperty().isContainer()) {
-						return expandContainerNode(it, this.traverseContext);
-					}
+		List<ObjectNode> newChildren;
+		if (this.getTreeProperty().isContainer()) {
+			newChildren = expandContainerNode(typeDefinition, this.traverseContext).collect(Collectors.toList());
+		} else {
+			newChildren = this.generateChildrenNodes(
+				typeDefinition.getResolvedProperty(),
+				typeDefinition.getPropertyGenerator()
+					.generateChildProperties(typeDefinition.getResolvedProperty()),
+				this.nullInject,
+				this.traverseContext
+			);
+		}
 
-					return this.generateChildrenNodes(
-						it.getResolvedProperty(),
-						it.getPropertyGenerator()
-							.generateChildProperties(it.getResolvedProperty()),
-						this.nullInject,
-						this.traverseContext
-					).stream();
-				}
-			)
-			.collect(Collectors.toList());
 		this.setChildren(newChildren);
 		this.expandedTypeDefinition = resolvedTypeDefinition;
 	}
@@ -334,30 +332,6 @@ public final class ObjectNode implements ObjectTreeNode {
 		this.expandedTypeDefinition = resolvedTypeDefinition;
 	}
 
-	public void forceExpand(TypeDefinition typeDefinition) {
-		List<ObjectNode> newChildren = this.getTreeProperty().getTypeDefinitions().stream()
-			.filter(it -> it.getResolvedProperty().equals(typeDefinition.getResolvedProperty())
-				&& it.getPropertyGenerator() == typeDefinition.getPropertyGenerator())
-			.flatMap(
-				it -> {
-					if (this.getTreeProperty().isContainer()) {
-						return this.expandContainerNode(it, traverseContext.withNotRecursiveTreeProperties());
-					}
-
-					return this.generateChildrenNodes(
-						it.getResolvedProperty(),
-						it.getPropertyGenerator()
-							.generateChildProperties(it.getResolvedProperty()),
-						this.nullInject,
-						traverseContext.withNotRecursiveTreeProperties()
-					).stream();
-				}
-			).collect(Collectors.toList());
-
-		this.setChildren(newChildren);
-		this.expandedTypeDefinition = resolvedTypeDefinition;
-	}
-
 	@Override
 	public void forceExpand() {
 		List<ObjectNode> newChildren = this.getTreeProperty().getTypeDefinitions().stream()
@@ -366,7 +340,7 @@ public final class ObjectNode implements ObjectTreeNode {
 					if (this.getTreeProperty().isContainer()) {
 						return this.expandContainerNode(
 							typeDefinition,
-							traverseContext.withNotRecursiveTreeProperties()
+							traverseContext.withoutRecursiveTreeProperties()
 						);
 					}
 
@@ -375,7 +349,7 @@ public final class ObjectNode implements ObjectTreeNode {
 						typeDefinition.getPropertyGenerator()
 							.generateChildProperties(typeDefinition.getResolvedProperty()),
 						this.nullInject,
-						traverseContext.withNotRecursiveTreeProperties()
+						traverseContext.withoutRecursiveTreeProperties()
 					).stream();
 				}
 			).collect(Collectors.toList());

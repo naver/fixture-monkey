@@ -121,7 +121,7 @@ final class TraverseContext {
 		return this.treeProperties.get(this.treeProperties.size() - 1);
 	}
 
-	public TraverseContext withNotRecursiveTreeProperties() {
+	public TraverseContext withoutRecursiveTreeProperties() {
 		List<TreeProperty> newTreeProperties = new ArrayList<>(this.treeProperties);
 		for (int i = 1; i < this.treeProperties.size(); i++) {
 			Property rootProperty = getRootTreeProperty().getObjectProperty().getProperty();
