@@ -7,7 +7,7 @@ plugins {
 
 allprojects {
     group = "com.navercorp.fixturemonkey"
-    version = "1.1.0-SNAPSHOT"
+    version = "1.1.0-RC1"
 }
 
 subprojects {
