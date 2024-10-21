@@ -67,3 +67,14 @@ In such cases, it's recommended to use `set()` instead.
 
 The `thenApply()` method comes in handy when you need to customize a field that relies on another field.
 For more information, check the [`thenApply()` section](../../customizing-objects/apis/#thenapply)
+
+### Throws an exception when generating a certain type
+
+Use [PriorityConstructorArbitraryIntrospector](../../generating-objects/introspector/#PriorityConstructorArbitraryIntrospector) first. Apply as shown below.
+```java
+FixtureMonkey.builder()
+    .pushExactTypeArbitraryIntrospector(ProblematicType.class, PriorityConstructorArbitraryIntrospector.INSTANCE)
+    .build();
+```
+
+If it does not work, please try to make your own `ArbitraryIntrospector` or create [an issue](https://github.com/naver/fixture-monkey/issues) on github and ask for help.
