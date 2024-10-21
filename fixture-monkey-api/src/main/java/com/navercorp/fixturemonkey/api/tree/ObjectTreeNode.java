@@ -18,6 +18,8 @@
 
 package com.navercorp.fixturemonkey.api.tree;
 
+import com.navercorp.fixturemonkey.api.property.TypeDefinition;
+
 /**
  * In Fixture Monkey a generated JVM instance consists of {@link ObjectTreeNode}s.
  * The node has a vertical relationship, parent and child.
@@ -25,6 +27,8 @@ package com.navercorp.fixturemonkey.api.tree;
 public interface ObjectTreeNode {
 	/**
 	 * expands the {@link ObjectTreeNode}. In result, it generates the child {@link ObjectTreeNode}s.
+	 * It generates the child {@link ObjectTreeNode}s by all {@link TypeDefinition}s.
+	 * <p>
 	 * It can be called multiple times with metadata generated on expanding of the parent {@link ObjectTreeNode}.
 	 * <p>
 	 * The leaf {@link ObjectTreeNode} does not always generate child {@link ObjectTreeNode}s.
@@ -32,7 +36,8 @@ public interface ObjectTreeNode {
 	void expand();
 
 	/**
-	 * expands the {@link ObjectTreeNode} forcibly. In result, it always generates the child {@link ObjectTreeNode}s
+	 * expands the {@link ObjectTreeNode} forcibly. In result, it always generates the child {@link ObjectTreeNode}s.
+	 * It generates the child {@link ObjectTreeNode}s by all {@link TypeDefinition}s.
 	 * {@code Force} means that it expands as if it were a root node, even if it is not.
 	 * Unlike {@link #expand()}, it expands without metadata generated
 	 * on expanding of the parent {@link ObjectTreeNode}.

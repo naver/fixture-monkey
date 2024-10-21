@@ -18,6 +18,8 @@
 
 package com.navercorp.fixturemonkey.api.property;
 
+import java.util.Objects;
+
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
@@ -45,5 +47,23 @@ public final class DefaultTypeDefinition implements TypeDefinition {
 	@Override
 	public PropertyGenerator getPropertyGenerator() {
 		return this.propertyGenerator;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null || getClass() != obj.getClass()) {
+			return false;
+		}
+		DefaultTypeDefinition that = (DefaultTypeDefinition)obj;
+		return Objects.equals(containerProperty, that.containerProperty)
+			&& Objects.equals(propertyGenerator, that.propertyGenerator);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(containerProperty, propertyGenerator);
 	}
 }
