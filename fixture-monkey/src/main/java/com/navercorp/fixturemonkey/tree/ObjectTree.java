@@ -116,7 +116,7 @@ public final class ObjectTree {
 
 		ArbitraryProperty arbitraryProperty = objectNode.getArbitraryProperty();
 		Property resolvedParentProperty = objectNode.getResolvedProperty();
-		List<ObjectNode> children = objectNode.getChildren().stream()
+		List<ObjectNode> children = objectNode.resolveChildren().stream()
 			.filter(it -> resolvedParentProperty.equals(it.getResolvedParentProperty()))
 			.collect(Collectors.toList());
 

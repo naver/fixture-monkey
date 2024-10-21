@@ -69,7 +69,7 @@ public final class ObjectNode implements ObjectTreeNode {
 
 	@Nullable
 	private final Property resolvedParentProperty;
-	private Property resolvedProperty;
+	private TypeDefinition resolvedTypeDefinition;
 	private TreeProperty treeProperty;
 	@Nullable
 	private ObjectNode parent = null;
@@ -77,6 +77,8 @@ public final class ObjectNode implements ObjectTreeNode {
 	@Nullable
 	private CombinableArbitrary<?> arbitrary;
 	private double nullInject;
+	@Nullable
+	private TypeDefinition expandedTypeDefinition = null;
 
 	private final List<NodeManipulator> manipulators = new ArrayList<>();
 	private final List<ContainerInfoManipulator> containerInfoManipulators = new ArrayList<>();
@@ -86,7 +88,7 @@ public final class ObjectNode implements ObjectTreeNode {
 		new ArrayList<>();
 
 	private final LazyArbitrary<Boolean> childNotCacheable = LazyArbitrary.lazy(() -> {
-		for (ObjectNode child : children) {
+		for (ObjectNode child : this.resolveChildren()) {
 			if (child.manipulated() || child.childNotCacheable.getValue() || child.treeProperty.isContainer()) {
 				return true;
 			}
@@ -95,6 +97,7 @@ public final class ObjectNode implements ObjectTreeNode {
 		return false;
 	});
 	private final LazyArbitrary<PropertyPath> lazyPropertyPath = LazyArbitrary.lazy(() -> {
+		Property resolvedProperty = this.resolvedTypeDefinition.getResolvedProperty();
 		if (parent == null) {
 			return new PropertyPath(resolvedProperty, null, 1);
 		}
@@ -112,14 +115,14 @@ public final class ObjectNode implements ObjectTreeNode {
 
 	ObjectNode(
 		@Nullable Property resolvedParentProperty,
-		Property resolvedProperty,
+		TypeDefinition resolvedTypeDefinition,
 		TreeProperty treeProperty,
 		double nullInject,
 		FixtureMonkeyOptions fixtureMonkeyOptions,
 		TraverseContext traverseContext
 	) {
 		this.resolvedParentProperty = resolvedParentProperty;
-		this.resolvedProperty = resolvedProperty;
+		this.resolvedTypeDefinition = resolvedTypeDefinition;
 		this.treeProperty = treeProperty;
 		this.nullInject = nullInject;
 		this.fixtureMonkeyOptions = fixtureMonkeyOptions;
@@ -138,11 +141,15 @@ public final class ObjectNode implements ObjectTreeNode {
 	 * @return the resolvedProperty
 	 */
 	public Property getResolvedProperty() {
-		return resolvedProperty;
+		return this.resolvedTypeDefinition.getResolvedProperty();
 	}
 
-	public void setResolvedProperty(Property resolvedProperty) {
-		this.resolvedProperty = resolvedProperty;
+	public TypeDefinition getResolvedTypeDefinition() {
+		return resolvedTypeDefinition;
+	}
+
+	public void setResolvedTypeDefinition(TypeDefinition typeDefinition) {
+		this.resolvedTypeDefinition = typeDefinition;
 	}
 
 	public TreeProperty getTreeProperty() {
@@ -155,7 +162,7 @@ public final class ObjectNode implements ObjectTreeNode {
 
 	/**
 	 * The original property refers to the class-time property, which means it is the type in a class file.
-	 * It can be an abstract class or interface, unlike the {@link #resolvedProperty}
+	 * It can be an abstract class or interface, unlike the {@link #getResolvedProperty()}
 	 *
 	 * @return the original property
 	 */
@@ -163,6 +170,22 @@ public final class ObjectNode implements ObjectTreeNode {
 		return this.getTreeProperty().getObjectProperty().getProperty();
 	}
 
+	/**
+	 * expands by the resolved property and gets the expanded child nodes.
+	 * It may not return empty if {@link TypeDefinition#getPropertyGenerator()} generates the child nodes.
+	 *
+	 * @return expanded child node.
+	 */
+	public List<ObjectNode> resolveChildren() {
+		this.expand(this.resolvedTypeDefinition);
+		return this.children;
+	}
+
+	/**
+	 * Gets the expanded child nodes, it may be return empty if not expanded.
+	 *
+	 * @return already expanded child nodes
+	 */
 	public List<ObjectNode> getChildren() {
 		return this.children;
 	}
@@ -259,8 +282,34 @@ public final class ObjectNode implements ObjectTreeNode {
 		return lazyPropertyPath;
 	}
 
+	public void expand(TypeDefinition typeDefinition) {
+		if (this.expandedTypeDefinition == resolvedTypeDefinition) {
+			return;
+		}
+
+		List<ObjectNode> newChildren;
+		if (this.getTreeProperty().isContainer()) {
+			newChildren = expandContainerNode(typeDefinition, this.traverseContext).collect(Collectors.toList());
+		} else {
+			newChildren = this.generateChildrenNodes(
+				typeDefinition.getResolvedProperty(),
+				typeDefinition.getPropertyGenerator()
+					.generateChildProperties(typeDefinition.getResolvedProperty()),
+				this.nullInject,
+				this.traverseContext
+			);
+		}
+
+		this.setChildren(newChildren);
+		this.expandedTypeDefinition = resolvedTypeDefinition;
+	}
+
 	@Override
 	public void expand() {
+		if (this.expandedTypeDefinition == resolvedTypeDefinition) {
+			return;
+		}
+
 		this.setChildren(
 			this.getTreeProperty().getTypeDefinitions().stream()
 				.flatMap(
@@ -280,6 +329,7 @@ public final class ObjectNode implements ObjectTreeNode {
 				)
 				.collect(Collectors.toList())
 		);
+		this.expandedTypeDefinition = resolvedTypeDefinition;
 	}
 
 	@Override
@@ -288,7 +338,10 @@ public final class ObjectNode implements ObjectTreeNode {
 			.flatMap(
 				typeDefinition -> {
 					if (this.getTreeProperty().isContainer()) {
-						return this.expandContainerNode(typeDefinition, traverseContext.withRootTreeProperty());
+						return this.expandContainerNode(
+							typeDefinition,
+							traverseContext.withoutRecursiveTreeProperties()
+						);
 					}
 
 					return this.generateChildrenNodes(
@@ -296,12 +349,13 @@ public final class ObjectNode implements ObjectTreeNode {
 						typeDefinition.getPropertyGenerator()
 							.generateChildProperties(typeDefinition.getResolvedProperty()),
 						this.nullInject,
-						traverseContext.withRootTreeProperty()
+						traverseContext.withoutRecursiveTreeProperties()
 					).stream();
 				}
 			).collect(Collectors.toList());
 
 		this.setChildren(newChildren);
+		this.expandedTypeDefinition = resolvedTypeDefinition;
 	}
 
 	private Stream<ObjectNode> expandContainerNode(TypeDefinition typeDefinition, TraverseContext traverseContext) {
@@ -444,7 +498,7 @@ public final class ObjectNode implements ObjectTreeNode {
 
 		ObjectNode newObjectNode = new ObjectNode(
 			resolvedParentProperty,
-			new CompositeTypeDefinition(typeDefinitions).getResolvedProperty(),
+			new CompositeTypeDefinition(typeDefinitions).getResolvedTypeDefinition(),
 			treeProperty,
 			nullInject,
 			fixtureMonkeyOptions,
@@ -454,7 +508,6 @@ public final class ObjectNode implements ObjectTreeNode {
 		if (appliedContainerInfoManipulator != null) {
 			newObjectNode.addContainerManipulator(appliedContainerInfoManipulator);
 		}
-		newObjectNode.expand();
 		return newObjectNode;
 	}
 

@@ -19,6 +19,7 @@
 package com.navercorp.fixturemonkey.api.property;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -55,5 +56,23 @@ public final class ConcreteTypeDefinition implements TypeDefinition {
 	@Override
 	public PropertyGenerator getPropertyGenerator() {
 		return p -> childPropertyLists;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null || getClass() != obj.getClass()) {
+			return false;
+		}
+		ConcreteTypeDefinition that = (ConcreteTypeDefinition)obj;
+		return Objects.equals(concreteProperty, that.concreteProperty)
+			&& Objects.equals(childPropertyLists, that.childPropertyLists);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(concreteProperty, childPropertyLists);
 	}
 }

@@ -44,6 +44,10 @@ public final class CompositeTypeDefinition implements TypeDefinition {
 		return typeDefinitions;
 	}
 
+	public TypeDefinition getResolvedTypeDefinition() {
+		return resolvedTypeDefinition;
+	}
+
 	@Override
 	public Property getResolvedProperty() {
 		return resolvedTypeDefinition.getResolvedProperty();
