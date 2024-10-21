@@ -103,7 +103,7 @@ val strListList: List<List<String>> = fixtureMonkey.giveMe(3)
 
 ### giveMeBuilder()
 인스턴스를 커스텀 할 경우 `giveMeBuilder()`를 사용할 수 있습니다. 이는 주어진 타입의 `ArbitraryBuilder`를 반환합니다.
-`ArbitraryBuilder`는 주어진 클래스의 [`Arbitrary`](../arbitrary) 객체를 빌드하는 데 사용되는 Fixture Monkey의 클래스입니다.
+`ArbitraryBuilder`는 주어진 클래스의 [`Arbitrary`](../../customizing-objects/arbitrary/) 객체를 빌드하는 데 사용되는 Fixture Monkey의 클래스입니다.
 
 {{< tabpane persist=false >}}
 {{< tab header="Java" lang="java">}}
