@@ -33,6 +33,7 @@ import net.jqwik.api.Arbitrary;
 
 import com.navercorp.fixturemonkey.api.context.MonkeyContext;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
+import com.navercorp.fixturemonkey.api.matcher.NamedMatcherMetadata;
 import com.navercorp.fixturemonkey.api.matcher.NamedMatcherOperatorAdapter;
 import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
@@ -92,7 +93,7 @@ public final class FixtureMonkey {
 		RootProperty rootProperty = new RootProperty(type.getAnnotatedType());
 
 		ArbitraryBuilderContext builderContext = registeredArbitraryBuilders.stream()
-			.filter(it -> it.match(rootProperty))
+			.filter(it -> it.match(rootProperty, new NamedMatcherMetadata<>(it.getSelectName())))
 			.map(MatcherOperator::getOperator)
 			.findAny()
 			.map(DefaultArbitraryBuilder.class::cast)

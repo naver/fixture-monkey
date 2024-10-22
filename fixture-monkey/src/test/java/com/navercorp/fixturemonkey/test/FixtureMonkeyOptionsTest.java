@@ -817,7 +817,7 @@ class FixtureMonkeyOptionsTest {
 		SimpleObject actual = sut.giveMeBuilder(SimpleObject.class)
 			.sample();
 
-		then(actual.getStr()).isEqualTo("test");
+		then(actual.getStr()).isNotEqualTo("test");
 	}
 
 	@Property

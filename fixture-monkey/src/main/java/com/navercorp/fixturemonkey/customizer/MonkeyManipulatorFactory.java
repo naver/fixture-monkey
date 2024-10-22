@@ -42,6 +42,7 @@ import com.navercorp.fixturemonkey.api.container.DecomposedContainerValueFactory
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
+import com.navercorp.fixturemonkey.api.matcher.NamedMatcherMetadata;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.customizer.InnerSpecState.ManipulatorHolderSet;
 import com.navercorp.fixturemonkey.customizer.Values.Just;
@@ -152,7 +153,7 @@ public final class MonkeyManipulatorFactory {
 
 			DefaultArbitraryBuilder<?> registeredArbitraryBuilder =
 				(DefaultArbitraryBuilder<?>)registeredArbitraryBuilders.stream()
-					.filter(it -> it.match(property))
+					.filter(it -> it.match(property, new NamedMatcherMetadata<>(it.getSelectName())))
 					.findFirst()
 					.map(MatcherOperator::getOperator)
 					.filter(it -> it instanceof DefaultArbitraryBuilder<?>)
