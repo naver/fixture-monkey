@@ -40,6 +40,7 @@ import com.navercorp.fixturemonkey.tests.java.AnonymousInstanceTestSpecs.Interfa
 import com.navercorp.fixturemonkey.tests.java.AnonymousInstanceTestSpecs.InterfaceWithConstant;
 import com.navercorp.fixturemonkey.tests.java.AnonymousInstanceTestSpecs.InterfaceWithParams;
 import com.navercorp.fixturemonkey.tests.java.AnonymousInstanceTestSpecs.NestedInheritedInterface;
+import com.navercorp.fixturemonkey.tests.java.AnonymousInstanceTestSpecs.SimilarInterface;
 
 class AnonymousInstanceTest {
 	private static final FixtureMonkey SUT = FixtureMonkey.builder()
@@ -54,6 +55,29 @@ class AnonymousInstanceTest {
 		then(actual).isNotNull();
 		then(actual.string()).isNotNull();
 		then(actual.integer()).isNotNull();
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void objectBaseMethods() {
+		Interface actual = SUT.giveMeOne(Interface.class);
+
+		then(actual.hashCode()).isNotNull();
+		then(actual).isEqualTo(actual);
+		then(actual.toString()).isNotNull();
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void equalsOnSimilarInterface() {
+		Interface one = SUT.giveMeBuilder(Interface.class)
+			.set("string", "test")
+			.set("integer", 123)
+			.sample();
+		SimilarInterface another = SUT.giveMeBuilder(SimilarInterface.class)
+			.set("string", "test")
+			.set("integer", 123)
+			.sample();
+
+		then(one).isNotEqualTo(another);
 	}
 
 	@RepeatedTest(TEST_COUNT)

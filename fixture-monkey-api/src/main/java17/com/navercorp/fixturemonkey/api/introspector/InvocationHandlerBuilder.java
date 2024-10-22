@@ -19,7 +19,9 @@
 package com.navercorp.fixturemonkey.api.introspector;
 
 import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -30,9 +32,18 @@ import org.apiguardian.api.API.Status;
 @SuppressWarnings("unused")
 @API(since = "0.6.10", status = Status.MAINTAINED)
 final class InvocationHandlerBuilder {
+	private static final String HASH_CODE_METHOD = "hashCode";
+	private static final String EQUALS_METHOD = "equals";
+	private static final String TO_STRING_METHOD = "toString";
+
+	private final Class<?> type;
 	private final Map<String, Object> generatedValuesByMethodName;
 
-	InvocationHandlerBuilder(Map<String, Object> generatedValuesByMethodName) {
+	InvocationHandlerBuilder(
+		Class<?> type,
+		Map<String, Object> generatedValuesByMethodName
+	) {
+		this.type = type;
 		this.generatedValuesByMethodName = generatedValuesByMethodName;
 	}
 
@@ -45,11 +56,63 @@ final class InvocationHandlerBuilder {
 			if (method.isDefault()) {
 				return InvocationHandler.invokeDefault(proxy, method, args);
 			}
+
+			if (HASH_CODE_METHOD.equals(method.getName()) && args == null) {
+				return generatedValuesByMethodName.values().hashCode();
+			}
+
+			if (EQUALS_METHOD.equals(method.getName()) && args.length == 1) {
+				Object other = args[0];
+				return compareAllReturnValues(other);
+			}
+
+			if (TO_STRING_METHOD.equals(method.getName()) && args == null) {
+				return toString(proxy);
+			}
+
+			// check no-args
+			if (args != null) {
+				return null;
+			}
+
 			return generatedValuesByMethodName.get(method.getName());
 		};
 	}
 
 	boolean isEmpty() {
 		return generatedValuesByMethodName.isEmpty();
+	}
+
+	private boolean compareAllReturnValues(Object other) {
+		if (other == null) {
+			return false;
+		}
+
+		if (!type.isInstance(other)) {
+			return false;
+		}
+
+		for (Map.Entry<String, Object> methodNameToValue : generatedValuesByMethodName.entrySet()) {
+			String methodName = methodNameToValue.getKey();
+			Object returnValue = methodNameToValue.getValue();
+			try {
+				Method otherMethod = other.getClass().getMethod(methodName);
+				Object otherValue = otherMethod.invoke(other);
+				if (!returnValue.equals(otherValue)) {
+					return false;
+				}
+			} catch (Exception e) {
+				throw new IllegalArgumentException("Unexpected error in invoking method " + methodName, e);
+			}
+		}
+
+		return true;
+	}
+
+	private String toString(Object proxy) {
+		String joined = generatedValuesByMethodName.entrySet().stream()
+			.map(e -> e.getKey() + "=" + e.getValue())
+			.collect(Collectors.joining(", "));
+		return proxy.getClass().getName() + "{" + joined + "}";
 	}
 }

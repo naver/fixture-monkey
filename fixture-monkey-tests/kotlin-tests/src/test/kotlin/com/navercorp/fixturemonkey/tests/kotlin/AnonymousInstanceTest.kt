@@ -49,6 +49,29 @@ class AnonymousInstanceTest {
     }
 
     @RepeatedTest(TEST_COUNT)
+    fun objectBaseMethods() {
+        val actual = SUT.giveMeOne<Interface>()
+
+        then(actual.hashCode()).isNotNull
+        then(actual).isEqualTo(actual)
+        then(actual.toString()).isNotNull()
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun equalsOnSimilarInterface() {
+        val one = SUT.giveMeBuilder<Interface>()
+            .setExpGetter(Interface::string, "test")
+            .setExpGetter(Interface::integer, 123)
+            .sample()
+        val another = SUT.giveMeBuilder<SimilarInterface>()
+            .setExpGetter(SimilarInterface::string, "test")
+            .setExpGetter(SimilarInterface::integer, 123)
+            .sample()
+
+        then(one).isNotEqualTo(another)
+    }
+
+    @RepeatedTest(TEST_COUNT)
     fun setInterface() {
         val expected = "test"
 
@@ -393,6 +416,11 @@ class AnonymousInstanceTest {
     }
 
     interface Interface {
+        fun string(): String
+        fun integer(): Int
+    }
+
+    interface SimilarInterface {
         fun string(): String
         fun integer(): Int
     }

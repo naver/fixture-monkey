@@ -75,6 +75,7 @@ public final class AnonymousArbitraryIntrospector implements ArbitraryIntrospect
 						List<ArbitraryProperty> childrenProperties = context.getChildren();
 
 						InvocationHandlerBuilder invocationHandlerBuilder = new InvocationHandlerBuilder(
+							type,
 							new HashMap<>());
 
 						for (ArbitraryProperty arbitraryProperty : childrenProperties) {
