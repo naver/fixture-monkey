@@ -184,6 +184,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 		);
 	}
 
+	@SuppressWarnings("unchecked")
 	public ArbitraryBuilder<T> selectName(String... names) {
 		Stream.of(names).forEach(name -> {
 			boolean matched = registeredArbitraryBuilders.stream()

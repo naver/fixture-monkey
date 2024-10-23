@@ -27,7 +27,7 @@ import com.navercorp.fixturemonkey.api.property.Property;
 public class MatcherOperator<T> implements Matcher {
 	private final Matcher matcher;
 	private final T operator;
-	private String selectName;
+	private T selectName;
 
 	public MatcherOperator(Matcher matcher, T operator) {
 		this.matcher = matcher;
@@ -55,11 +55,11 @@ public class MatcherOperator<T> implements Matcher {
 		return this.operator;
 	}
 
-	public void updateSelectName(final String selectName) {
+	public void updateSelectName(final T selectName) {
 		this.selectName = selectName;
 	}
 
-	public String getSelectName() {
+	public T getSelectName() {
 		return this.selectName;
 	}
 }
