@@ -24,9 +24,10 @@ import org.apiguardian.api.API.Status;
 import com.navercorp.fixturemonkey.api.property.Property;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
-public final class MatcherOperator<T> implements Matcher {
+public class MatcherOperator<T> implements Matcher {
 	private final Matcher matcher;
 	private final T operator;
+	private T selectName;
 
 	public MatcherOperator(Matcher matcher, T operator) {
 		this.matcher = matcher;
@@ -52,5 +53,13 @@ public final class MatcherOperator<T> implements Matcher {
 
 	public T getOperator() {
 		return this.operator;
+	}
+
+	public void updateSelectName(final T selectName) {
+		this.selectName = selectName;
+	}
+
+	public T getSelectName() {
+		return this.selectName;
 	}
 }

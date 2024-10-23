@@ -18,6 +18,8 @@
 
 package com.navercorp.fixturemonkey.api.matcher;
 
+import javax.annotation.Nullable;
+
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
@@ -27,6 +29,10 @@ import com.navercorp.fixturemonkey.api.property.Property;
 @FunctionalInterface
 public interface Matcher {
 	boolean match(Property property);
+
+	default boolean match(Property property, @Nullable MatcherMetadata<?> matcherMetadata) {
+		return match(property);
+	}
 
 	/**
 	 * Creates and returns a new {@code Matcher} that represents the intersection
