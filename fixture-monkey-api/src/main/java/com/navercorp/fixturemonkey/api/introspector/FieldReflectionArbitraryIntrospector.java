@@ -62,7 +62,9 @@ public final class FieldReflectionArbitraryIntrospector implements ArbitraryIntr
 			try {
 				checkPrerequisite(type);
 			} catch (Exception ex) {
-				LOGGER.warn("Given type {} is failed to generate due to the exception. It may be null.", type, ex);
+				if (context.isEnableLoggingFail()) {
+					LOGGER.warn("Given type {} is failed to generate due to the exception. It may be null.", type, ex);
+				}
 				return ArbitraryIntrospectorResult.NOT_INTROSPECTED;
 			}
 			generated = CombinableArbitrary.from(() -> Reflections.newInstance(type));

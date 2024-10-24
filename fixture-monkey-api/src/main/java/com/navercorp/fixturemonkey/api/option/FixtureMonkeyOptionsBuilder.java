@@ -108,6 +108,7 @@ public final class FixtureMonkeyOptionsBuilder {
 	private boolean defaultNotNull = false;
 	private boolean nullableContainer = false;
 	private boolean nullableElement = false;
+	private boolean enableLoggingFail = true;
 	private UnaryOperator<NullInjectGenerator> defaultNullInjectGeneratorOperator = it -> it;
 	private ArbitraryValidator defaultArbitraryValidator = (obj) -> {
 	};
@@ -453,6 +454,11 @@ public final class FixtureMonkeyOptionsBuilder {
 		return this;
 	}
 
+	public FixtureMonkeyOptionsBuilder enableLoggingFail(boolean enableLoggingFail) {
+		this.enableLoggingFail = enableLoggingFail;
+		return this;
+	}
+
 	public FixtureMonkeyOptionsBuilder defaultArbitraryValidator(ArbitraryValidator arbitraryValidator) {
 		this.defaultArbitraryValidator = arbitraryValidator;
 		return this;
@@ -664,7 +670,8 @@ public final class FixtureMonkeyOptionsBuilder {
 			this.generateUniqueMaxTries,
 			resolvedJavaConstraintGenerator,
 			this.instantiatorProcessor,
-			this.candidateConcretePropertyResolvers
+			this.candidateConcretePropertyResolvers,
+			this.enableLoggingFail
 		);
 	}
 

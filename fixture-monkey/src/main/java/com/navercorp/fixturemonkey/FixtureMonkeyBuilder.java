@@ -450,6 +450,11 @@ public final class FixtureMonkeyBuilder {
 		return this;
 	}
 
+	public FixtureMonkeyBuilder enableLoggingFail(boolean enableLoggingFail) {
+		this.fixtureMonkeyOptionsBuilder.enableLoggingFail(enableLoggingFail);
+		return this;
+	}
+
 	/**
 	 * It is deprecated. Please use {@link InterfacePlugin#interfaceImplements(Matcher, List)} instead.
 	 */

@@ -57,7 +57,7 @@ public final class FailoverIntrospector implements ArbitraryIntrospector {
 					results.add(new FailoverIntrospectorResult(introspector, result));
 				}
 			} catch (Exception ex) {
-				if (enableLoggingFail) {
+				if (context.isEnableLoggingFail() || enableLoggingFail) {
 					LOGGER.warn(
 						String.format(
 							"\"%s\" is failed to introspect \"%s\" type.",
@@ -85,7 +85,7 @@ public final class FailoverIntrospector implements ArbitraryIntrospector {
 							result = iterator.next();
 							return result.getResult().getValue().combined();
 						} catch (Exception ex) {
-							if (enableLoggingFail) {
+							if (context.isEnableLoggingFail() || enableLoggingFail) {
 								LOGGER.warn(
 									String.format(
 										"\"%s\" is failed to introspect \"%s\" type.",
@@ -115,7 +115,7 @@ public final class FailoverIntrospector implements ArbitraryIntrospector {
 							result = iterator.next();
 							return result.getResult().getValue().rawValue();
 						} catch (Exception ex) {
-							if (enableLoggingFail) {
+							if (context.isEnableLoggingFail() || enableLoggingFail) {
 								LOGGER.warn(
 									String.format(
 										"\"%s\" is failed to introspect type \"%s\"",

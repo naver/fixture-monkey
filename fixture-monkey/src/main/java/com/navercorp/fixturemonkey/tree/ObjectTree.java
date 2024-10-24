@@ -127,7 +127,8 @@ public final class ObjectTree {
 			},
 			objectNode.getLazyPropertyPath(),
 			monkeyGeneratorContext,
-			fixtureMonkeyOptions.getGenerateUniqueMaxTries()
+			fixtureMonkeyOptions.getGenerateUniqueMaxTries(),
+			fixtureMonkeyOptions.isEnableLoggingFail()
 		);
 	}
 
