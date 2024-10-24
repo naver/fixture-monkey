@@ -90,7 +90,9 @@ public final class BuilderArbitraryIntrospector implements ArbitraryIntrospector
 				}
 			);
 		} catch (Exception ex) {
-			LOGGER.warn("Given type {} is failed to generate due to the exception. It may be null.", type, ex);
+			if (context.getEnableLoggingFail()) {
+				LOGGER.warn("Given type {} is failed to generate due to the exception. It may be null.", type, ex);
+			}
 			return ArbitraryIntrospectorResult.NOT_INTROSPECTED;
 		}
 		Method builderMethod = BUILDER_CACHE.get(type);

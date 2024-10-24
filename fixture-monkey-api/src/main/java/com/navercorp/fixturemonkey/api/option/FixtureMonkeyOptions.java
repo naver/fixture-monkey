@@ -169,6 +169,7 @@ public final class FixtureMonkeyOptions {
 	private final JavaConstraintGenerator javaConstraintGenerator;
 	private final InstantiatorProcessor instantiatorProcessor;
 	private final List<MatcherOperator<CandidateConcretePropertyResolver>> candidateConcretePropertyResolvers;
+	private final boolean enableLoggingFail;
 
 	public FixtureMonkeyOptions(
 		List<MatcherOperator<PropertyGenerator>> propertyGenerators,
@@ -189,7 +190,8 @@ public final class FixtureMonkeyOptions {
 		int generateUniqueMaxTries,
 		JavaConstraintGenerator javaConstraintGenerator,
 		InstantiatorProcessor instantiatorProcessor,
-		List<MatcherOperator<CandidateConcretePropertyResolver>> candidateConcretePropertyResolvers
+		List<MatcherOperator<CandidateConcretePropertyResolver>> candidateConcretePropertyResolvers,
+		boolean enableLoggingFail
 	) {
 		this.propertyGenerators = propertyGenerators;
 		this.defaultPropertyGenerator = defaultPropertyGenerator;
@@ -210,6 +212,7 @@ public final class FixtureMonkeyOptions {
 		this.javaConstraintGenerator = javaConstraintGenerator;
 		this.instantiatorProcessor = instantiatorProcessor;
 		this.candidateConcretePropertyResolvers = candidateConcretePropertyResolvers;
+		this.enableLoggingFail = enableLoggingFail;
 	}
 
 	public static FixtureMonkeyOptionsBuilder builder() {
@@ -349,6 +352,10 @@ public final class FixtureMonkeyOptions {
 
 	public InstantiatorProcessor getInstantiatorProcessor() {
 		return instantiatorProcessor;
+	}
+
+	public boolean isEnableLoggingFail() {
+		return enableLoggingFail;
 	}
 
 	@Nullable
