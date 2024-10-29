@@ -60,7 +60,7 @@ public final class ArbitraryGeneratorContext implements Traceable {
 	private final int generateUniqueMaxTries;
 	private final AtomicReference<CombinableArbitrary<?>> generated =
 		new AtomicReference<>(CombinableArbitrary.NOT_GENERATED);
-	private final boolean enableLoggingFail;
+	private final ArbitraryGeneratorLoggingContext loggingContext;
 
 	public ArbitraryGeneratorContext(
 		Property resolvedProperty,
@@ -71,7 +71,7 @@ public final class ArbitraryGeneratorContext implements Traceable {
 		LazyArbitrary<PropertyPath> lazyPropertyPath,
 		MonkeyGeneratorContext monkeyGeneratorContext,
 		int generateUniqueMaxTries,
-		boolean enableLoggingFail
+		ArbitraryGeneratorLoggingContext loggingContext
 	) {
 		this.resolvedProperty = resolvedProperty;
 		this.property = property;
@@ -81,7 +81,7 @@ public final class ArbitraryGeneratorContext implements Traceable {
 		this.lazyPropertyPath = lazyPropertyPath;
 		this.monkeyGeneratorContext = monkeyGeneratorContext;
 		this.generateUniqueMaxTries = generateUniqueMaxTries;
-		this.enableLoggingFail = enableLoggingFail;
+		this.loggingContext = loggingContext;
 	}
 
 	public ArbitraryProperty getArbitraryProperty() {
@@ -152,8 +152,8 @@ public final class ArbitraryGeneratorContext implements Traceable {
 		return generateUniqueMaxTries;
 	}
 
-	public boolean isEnableLoggingFail() {
-		return enableLoggingFail;
+	public ArbitraryGeneratorLoggingContext getLoggingContext() {
+		return loggingContext;
 	}
 
 	public CombinableArbitrary<?> getGenerated() {

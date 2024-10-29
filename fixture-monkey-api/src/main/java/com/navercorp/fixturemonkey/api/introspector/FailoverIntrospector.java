@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
 
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
+import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorLoggingContext;
 
 @API(since = "0.6.0", status = Status.MAINTAINED)
 public final class FailoverIntrospector implements ArbitraryIntrospector {
@@ -57,7 +58,8 @@ public final class FailoverIntrospector implements ArbitraryIntrospector {
 					results.add(new FailoverIntrospectorResult(introspector, result));
 				}
 			} catch (Exception ex) {
-				if (context.isEnableLoggingFail() || enableLoggingFail) {
+				ArbitraryGeneratorLoggingContext loggingContext = context.getLoggingContext();
+				if (loggingContext.isEnableLoggingFail() || enableLoggingFail) {
 					LOGGER.warn(
 						String.format(
 							"\"%s\" is failed to introspect \"%s\" type.",
@@ -85,7 +87,8 @@ public final class FailoverIntrospector implements ArbitraryIntrospector {
 							result = iterator.next();
 							return result.getResult().getValue().combined();
 						} catch (Exception ex) {
-							if (context.isEnableLoggingFail() || enableLoggingFail) {
+							ArbitraryGeneratorLoggingContext loggingContext = context.getLoggingContext();
+							if (loggingContext.isEnableLoggingFail() || enableLoggingFail) {
 								LOGGER.warn(
 									String.format(
 										"\"%s\" is failed to introspect \"%s\" type.",
@@ -115,7 +118,8 @@ public final class FailoverIntrospector implements ArbitraryIntrospector {
 							result = iterator.next();
 							return result.getResult().getValue().rawValue();
 						} catch (Exception ex) {
-							if (context.isEnableLoggingFail() || enableLoggingFail) {
+							ArbitraryGeneratorLoggingContext loggingContext = context.getLoggingContext();
+							if (loggingContext.isEnableLoggingFail() || enableLoggingFail) {
 								LOGGER.warn(
 									String.format(
 										"\"%s\" is failed to introspect type \"%s\"",
