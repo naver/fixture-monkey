@@ -143,7 +143,8 @@ public final class MonkeyManipulatorFactory {
 
 	public List<ArbitraryManipulator> newRegisteredArbitraryManipulators(
 		List<MatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuilders,
-		Map<Property, List<ObjectNode>> nodesByType
+		Map<Property, List<ObjectNode>> nodesByType,
+		ArbitraryBuilderContext builderContext
 	) {
 		List<ArbitraryManipulator> manipulators = new ArrayList<>();
 
@@ -153,7 +154,14 @@ public final class MonkeyManipulatorFactory {
 
 			DefaultArbitraryBuilder<?> registeredArbitraryBuilder =
 				(DefaultArbitraryBuilder<?>)registeredArbitraryBuilders.stream()
-					.filter(it -> it.match(property, new NamedMatcherMetadata<>(it.getSelectName())))
+					.filter(it -> {
+						if (builderContext.getSelectedNames().isEmpty()) {
+							return it.match(property, NamedMatcherMetadata::empty);
+						}
+						return builderContext.getSelectedNames().stream().anyMatch(
+							name -> it.match(property, new NamedMatcherMetadata<>(name))
+						);
+					})
 					.findFirst()
 					.map(MatcherOperator::getOperator)
 					.filter(it -> it instanceof DefaultArbitraryBuilder<?>)

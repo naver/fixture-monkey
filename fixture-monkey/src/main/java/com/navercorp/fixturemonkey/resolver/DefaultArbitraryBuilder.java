@@ -184,16 +184,12 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 		);
 	}
 
-	@SuppressWarnings("unchecked")
 	public ArbitraryBuilder<T> selectName(String... names) {
 		Stream.of(names).forEach(name -> {
 			boolean matched = registeredArbitraryBuilders.stream()
 				.filter(NamedMatcherOperator.class::isInstance)
 				.map(NamedMatcherOperator.class::cast)
-				.filter(operator -> operator.matchRegisteredName(name))
-				.peek(operator -> operator.updateSelectName(name))
-				.findAny()
-				.isPresent();
+				.anyMatch(operator -> operator.matchRegisteredName(name));
 
 			if (!matched) {
 				throw new IllegalArgumentException("Given name is not registered. name: " + name);
@@ -202,13 +198,15 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 
 		ArbitraryBuilderContext builderContext = registeredArbitraryBuilders.stream()
 			.filter(operator -> Arrays.stream(names)
-				.anyMatch(name -> operator.match(rootProperty, new NamedMatcherMetadata<>(operator.getSelectName())))
+				.anyMatch(name -> operator.match(rootProperty, new NamedMatcherMetadata<>(name)))
 			)
 			.map(MatcherOperator::getOperator)
 			.findAny()
 			.map(DefaultArbitraryBuilder.class::cast)
 			.map(DefaultArbitraryBuilder::getContext)
 			.orElse(new ArbitraryBuilderContext());
+
+		builderContext.addSelectedNames(Arrays.asList(names));
 
 		return new DefaultArbitraryBuilder<>(
 			this.fixtureMonkeyOptions,

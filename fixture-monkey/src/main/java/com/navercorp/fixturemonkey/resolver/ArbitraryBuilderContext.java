@@ -42,6 +42,7 @@ import com.navercorp.fixturemonkey.customizer.ContainerInfoManipulator;
 public final class ArbitraryBuilderContext {
 	private final List<ArbitraryManipulator> manipulators;
 	private final List<ContainerInfoManipulator> containerInfoManipulators;
+	private final List<String> selectNames;
 	private final Map<Class<?>, List<Property>> propertyConfigurers;
 	private final Map<Class<?>, ArbitraryIntrospector> arbitraryIntrospectorsByType;
 	private boolean validOnly;
@@ -54,6 +55,7 @@ public final class ArbitraryBuilderContext {
 	public ArbitraryBuilderContext(
 		List<ArbitraryManipulator> manipulators,
 		List<ContainerInfoManipulator> containerInfoManipulators,
+		List<String> selectNames,
 		Map<Class<?>, List<Property>> propertyConfigurers,
 		Map<Class<?>, ArbitraryIntrospector> arbitraryIntrospectorsByType,
 		boolean validOnly,
@@ -62,6 +64,7 @@ public final class ArbitraryBuilderContext {
 	) {
 		this.manipulators = manipulators;
 		this.containerInfoManipulators = containerInfoManipulators;
+		this.selectNames = selectNames;
 		this.propertyConfigurers = propertyConfigurers;
 		this.arbitraryIntrospectorsByType = arbitraryIntrospectorsByType;
 		this.validOnly = validOnly;
@@ -71,7 +74,8 @@ public final class ArbitraryBuilderContext {
 
 	public ArbitraryBuilderContext() {
 		this(
-			new ArrayList<>(), new ArrayList<>(), new HashMap<>(), new HashMap<>(), true, null, null);
+			new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new HashMap<>(), new HashMap<>(), true, null, null
+		);
 	}
 
 	public ArbitraryBuilderContext copy() {
@@ -82,6 +86,7 @@ public final class ArbitraryBuilderContext {
 		return new ArbitraryBuilderContext(
 			new ArrayList<>(this.manipulators),
 			copiedContainerInfoManipulators,
+			this.selectNames,
 			new HashMap<>(propertyConfigurers),
 			new HashMap<>(arbitraryIntrospectorsByType),
 			this.validOnly,
@@ -113,6 +118,15 @@ public final class ArbitraryBuilderContext {
 	public List<ContainerInfoManipulator> getContainerInfoManipulators() {
 		return Collections.unmodifiableList(containerInfoManipulators);
 	}
+
+	public void addSelectedNames(List<String> selectNames) {
+		this.selectNames.addAll(selectNames);
+	}
+
+	public List<String> getSelectedNames() {
+		return this.selectNames;
+	}
+
 
 	public void putPropertyConfigurer(Class<?> type, List<Property> propertyConfigurer) {
 		this.propertyConfigurers.put(type, propertyConfigurer);

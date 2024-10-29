@@ -800,26 +800,6 @@ class FixtureMonkeyOptionsTest {
 		then(actual3).isEqualTo(ChildBuilderGroup.FIXED_INT_VALUE);
 	}
 
-	/*
-	This test code is for better understanding of the problem.
-	will be removed after conversation.
-	 */
-	@Property
-	void registeredNameWithNoSelectName() {
-		FixtureMonkey sut = FixtureMonkey.builder()
-			.registeredName(
-				"test",
-				String.class,
-				monkey -> monkey.giveMeBuilder("test")
-			)
-			.build();
-
-		SimpleObject actual = sut.giveMeBuilder(SimpleObject.class)
-			.sample();
-
-		then(actual.getStr()).isNotEqualTo("test");
-	}
-
 	@Property
 	void registeredName() {
 		FixtureMonkey sut = FixtureMonkey.builder()

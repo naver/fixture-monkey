@@ -20,8 +20,6 @@ package com.navercorp.fixturemonkey.api.matcher;
 
 import java.util.Objects;
 
-import javax.annotation.Nullable;
-
 import com.navercorp.fixturemonkey.api.property.Property;
 
 public final class NamedMatcherOperator<T> extends MatcherOperator<T> {
@@ -37,7 +35,7 @@ public final class NamedMatcherOperator<T> extends MatcherOperator<T> {
 	}
 
 	@Override
-	public boolean match(Property property, @Nullable MatcherMetadata<?> matcherMetadata) {
+	public boolean match(Property property, MatcherMetadata<?> matcherMetadata) {
 		return super.match(property) && registeredName.equals(
 			Objects.requireNonNull(matcherMetadata).getMetadataInfo()
 		);

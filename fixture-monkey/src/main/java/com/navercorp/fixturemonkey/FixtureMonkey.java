@@ -93,7 +93,7 @@ public final class FixtureMonkey {
 		RootProperty rootProperty = new RootProperty(type.getAnnotatedType());
 
 		ArbitraryBuilderContext builderContext = registeredArbitraryBuilders.stream()
-			.filter(it -> it.match(rootProperty, new NamedMatcherMetadata<>(it.getSelectName())))
+			.filter(it -> it.match(rootProperty, NamedMatcherMetadata::empty))
 			.map(MatcherOperator::getOperator)
 			.findAny()
 			.map(DefaultArbitraryBuilder.class::cast)

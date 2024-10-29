@@ -18,11 +18,17 @@
 
 package com.navercorp.fixturemonkey.api.matcher;
 
+import javax.annotation.Nullable;
+
 public class NamedMatcherMetadata<T> implements MatcherMetadata<T> {
 	private final T medataInfo;
 
-	public NamedMatcherMetadata(T medataInfo) {
+	public NamedMatcherMetadata(@Nullable T medataInfo) {
 		this.medataInfo = medataInfo;
+	}
+
+	public static <T> NamedMatcherMetadata<T> empty() {
+		return new NamedMatcherMetadata<>(null);
 	}
 
 	@Override
