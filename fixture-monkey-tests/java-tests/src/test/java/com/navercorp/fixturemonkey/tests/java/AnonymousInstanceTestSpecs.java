@@ -30,6 +30,12 @@ class AnonymousInstanceTestSpecs {
 		Integer integer();
 	}
 
+	public interface SimilarInterface {
+		String string();
+
+		Integer integer();
+	}
+
 	public interface InterfaceWithParams {
 		String string(String str);
 
