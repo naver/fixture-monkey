@@ -26,7 +26,7 @@ object Versions {
     const val JQWIK = "1.7.3"
     const val KOTLIN = "1.8.0"
     const val KTLINT = "10.2.0"
-    const val KOTEST = "5.6.2"
+    const val KOTEST = "5.9.1"
     const val LOMBOK = "1.18.30"
     const val ASSERTJ = "3.24.2"
     const val JMH = "1.37"
