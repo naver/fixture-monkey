@@ -18,19 +18,18 @@
 
 package com.navercorp.fixturemonkey.api.experimental;
 
-import org.apiguardian.api.API;
-import org.apiguardian.api.API.Status;
-
-import com.navercorp.fixturemonkey.api.expression.ExpressionGenerator;
-
-@API(since = "1.0.9", status = Status.EXPERIMENTAL)
-@FunctionalInterface
-public interface TypedExpressionGenerator<T> extends TypedPropertySelector<T>, ExpressionGenerator {
-	static <U> TypedExpressionGenerator<U> typedRoot() {
-		return propertyNameResolver -> "$";
+/**
+ * It is deprecated. Use {@link com.navercorp.fixturemonkey.api.expression.JavaGetterMethodPropertySelector} instead.
+ */
+@Deprecated
+public interface TypedExpressionGenerator<T> {
+	@Deprecated
+	static <U> com.navercorp.fixturemonkey.api.expression.TypedExpressionGenerator<U> typedRoot() {
+		return com.navercorp.fixturemonkey.api.expression.TypedExpressionGenerator.typedRoot();
 	}
 
-	static <U> TypedExpressionGenerator<U> typedString(String expression) {
-		return propertyNameResolver -> expression;
+	@Deprecated
+	static <U> com.navercorp.fixturemonkey.api.expression.TypedExpressionGenerator<U> typedString(String expression) {
+		return com.navercorp.fixturemonkey.api.expression.TypedExpressionGenerator.typedString(expression);
 	}
 }

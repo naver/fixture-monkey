@@ -16,14 +16,13 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.api.experimental;
+package com.navercorp.fixturemonkey.api.expression;
 
 import java.util.Arrays;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.api.expression.ExpressionGenerator;
 import com.navercorp.fixturemonkey.api.property.PropertySelector;
 
 @API(since = "1.0.0", status = Status.EXPERIMENTAL)

@@ -21,7 +21,7 @@ package com.navercorp.fixturemonkey.kotlin
 import com.navercorp.fixturemonkey.ArbitraryBuilder
 import com.navercorp.fixturemonkey.FixtureMonkey
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary
-import com.navercorp.fixturemonkey.api.experimental.TypedPropertySelector
+import com.navercorp.fixturemonkey.api.expression.TypedPropertySelector
 import com.navercorp.fixturemonkey.api.instantiator.Instantiator
 import com.navercorp.fixturemonkey.api.property.PropertySelector
 import com.navercorp.fixturemonkey.api.type.TypeReference

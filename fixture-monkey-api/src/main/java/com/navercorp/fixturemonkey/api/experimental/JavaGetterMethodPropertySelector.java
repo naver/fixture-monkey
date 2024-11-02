@@ -15,43 +15,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.navercorp.fixturemonkey.api.experimental;
 
-import org.apiguardian.api.API;
-import org.apiguardian.api.API.Status;
-
-import com.navercorp.fixturemonkey.api.property.Property;
-import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
+import com.navercorp.fixturemonkey.api.expression.JavaGetterMethodReference;
 
 /**
- * It is designed to select and represent a property through a getter method reference in Java.
- *
- * @param <T> The type of the object that the getter method operates on.
- * @param <U> The type of the property that is being selected.
+ * It is deprecated. Use {@link com.navercorp.fixturemonkey.api.expression.JavaGetterMethodPropertySelector} instead.
  */
-@API(since = "1.0.0", status = Status.EXPERIMENTAL)
-public final class JavaGetterMethodPropertySelector<T, U> implements JavaGetterPropertySelector<T, U> {
-	private final Class<U> type;
-	private final Property property;
-
-	public JavaGetterMethodPropertySelector(Class<U> type, Property property) {
-		this.type = type;
-		this.property = property;
-	}
-
-	public static <T, R> JavaGetterMethodPropertySelector<T, R> javaGetter(
+@Deprecated
+public class JavaGetterMethodPropertySelector {
+	/**
+	 * It is deprecated.
+	 * Use {@link com.navercorp.fixturemonkey.api.expression.JavaGetterMethodPropertySelector} instead.
+	 */
+	@Deprecated
+	public static <T, R> com.navercorp.fixturemonkey.api.expression.JavaGetterMethodPropertySelector<T, R> javaGetter(
 		JavaGetterMethodReference<T, R> methodReference
 	) {
-		return JavaGetterPropertySelectors.resolvePropertySelector(methodReference);
-	}
-
-	public Class<U> getType() {
-		return type;
-	}
-
-	@Override
-	public String generate(PropertyNameResolver propertyNameResolver) {
-		return propertyNameResolver.resolve(property);
+		return com.navercorp.fixturemonkey.api.expression.JavaGetterMethodPropertySelector.javaGetter(methodReference);
 	}
 }

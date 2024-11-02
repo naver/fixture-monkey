@@ -38,7 +38,7 @@ import net.jqwik.api.Arbitrary;
 import net.jqwik.api.Combinators.F3;
 import net.jqwik.api.Combinators.F4;
 
-import com.navercorp.fixturemonkey.api.experimental.JavaGetterMethodReference;
+import com.navercorp.fixturemonkey.api.expression.JavaGetterMethodReference;
 import com.navercorp.fixturemonkey.api.instantiator.Instantiator;
 import com.navercorp.fixturemonkey.api.property.PropertySelector;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
