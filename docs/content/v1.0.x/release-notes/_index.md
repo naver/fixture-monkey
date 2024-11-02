@@ -6,6 +6,16 @@ docs:
 weight: 100
 ---
 sectionStart
+## v.1.0.28
+Add support for `hashCode`, `equals`, `toString` in anonymous object
+
+Add `enableLoggingFail` option to dismiss the failed logging in `FixtureMonkeyBuilder`.
+
+Add supporting for the `is` prefix boolean within `javaGetter`.
+
+sectionEnd
+
+sectionStart
 ## v.1.0.27
 Add `enableLoggingFail` option as a constructor argument in `FailoverIntrospector`
 
