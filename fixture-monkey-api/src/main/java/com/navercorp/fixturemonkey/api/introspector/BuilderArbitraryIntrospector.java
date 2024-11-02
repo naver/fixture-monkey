@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
 
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
+import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorLoggingContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.api.property.CompositeProperty;
@@ -90,7 +91,10 @@ public final class BuilderArbitraryIntrospector implements ArbitraryIntrospector
 				}
 			);
 		} catch (Exception ex) {
-			LOGGER.warn("Given type {} is failed to generate due to the exception. It may be null.", type, ex);
+			ArbitraryGeneratorLoggingContext loggingContext = context.getLoggingContext();
+			if (loggingContext.isEnableLoggingFail()) {
+				LOGGER.warn("Given type {} is failed to generate due to the exception. It may be null.", type, ex);
+			}
 			return ArbitraryIntrospectorResult.NOT_INTROSPECTED;
 		}
 		Method builderMethod = BUILDER_CACHE.get(type);

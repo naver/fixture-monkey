@@ -37,6 +37,7 @@ import com.navercorp.fixturemonkey.api.context.MonkeyContext;
 import com.navercorp.fixturemonkey.api.context.MonkeyGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
+import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorLoggingContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.generator.CompositeArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.generator.IntrospectedArbitraryGenerator;
@@ -112,6 +113,9 @@ public final class ObjectTree {
 		}
 
 		MonkeyGeneratorContext monkeyGeneratorContext = monkeyContext.retrieveGeneratorContext(rootProperty);
+		ArbitraryGeneratorLoggingContext loggingContext = new ArbitraryGeneratorLoggingContext(
+			fixtureMonkeyOptions.isEnableLoggingFail());
+
 		return new ArbitraryGeneratorContext(
 			resolvedParentProperty,
 			arbitraryProperty,
@@ -127,7 +131,8 @@ public final class ObjectTree {
 			},
 			objectNode.getLazyPropertyPath(),
 			monkeyGeneratorContext,
-			fixtureMonkeyOptions.getGenerateUniqueMaxTries()
+			fixtureMonkeyOptions.getGenerateUniqueMaxTries(),
+			loggingContext
 		);
 	}
 
