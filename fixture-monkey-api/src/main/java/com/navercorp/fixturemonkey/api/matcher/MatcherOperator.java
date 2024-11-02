@@ -42,7 +42,7 @@ public final class MatcherOperator<T> implements Matcher {
 	}
 
 	@Override
-	public boolean match(Property property, MatcherMetadata<?> matcherMetadata) {
+	public boolean match(Property property, MatcherMetadata matcherMetadata) {
 		return this.matcher.match(property, matcherMetadata);
 	}
 

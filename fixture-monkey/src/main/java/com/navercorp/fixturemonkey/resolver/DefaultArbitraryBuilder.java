@@ -199,7 +199,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 
 		ArbitraryBuilderContext builderContext = registeredArbitraryBuilders.stream()
 			.filter(operator -> Arrays.stream(names)
-				.anyMatch(name -> operator.match(rootProperty, new NamedMatcherMetadata<>(name)))
+				.anyMatch(name -> operator.match(rootProperty, new NamedMatcherMetadata(name)))
 			)
 			.map(MatcherOperator::getOperator)
 			.findAny()

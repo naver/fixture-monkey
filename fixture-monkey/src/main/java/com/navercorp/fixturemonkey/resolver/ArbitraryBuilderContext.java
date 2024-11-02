@@ -86,7 +86,7 @@ public final class ArbitraryBuilderContext {
 		return new ArbitraryBuilderContext(
 			new ArrayList<>(this.manipulators),
 			copiedContainerInfoManipulators,
-			this.selectNames,
+			new ArrayList<>(this.selectNames),
 			new HashMap<>(propertyConfigurers),
 			new HashMap<>(arbitraryIntrospectorsByType),
 			this.validOnly,

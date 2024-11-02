@@ -18,6 +18,6 @@
 
 package com.navercorp.fixturemonkey.api.matcher;
 
-public interface MatcherMetadata<T> {
-	T getMetadataInfo();
+public interface MatcherMetadata {
+	String getName();
 }

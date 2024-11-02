@@ -28,7 +28,7 @@ import com.navercorp.fixturemonkey.api.property.Property;
 public interface Matcher {
 	boolean match(Property property);
 
-	default boolean match(Property property, MatcherMetadata<?> matcherMetadata) {
+	default boolean match(Property property, MatcherMetadata matcherMetadata) {
 		return match(property);
 	}
 

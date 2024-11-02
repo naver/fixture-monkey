@@ -156,10 +156,10 @@ public final class MonkeyManipulatorFactory {
 				(DefaultArbitraryBuilder<?>)registeredArbitraryBuilders.stream()
 					.filter(it -> {
 						if (builderContext.getSelectedNames().isEmpty()) {
-							return it.match(property, NamedMatcherMetadata::empty);
+							return it.match(property);
 						}
 						return builderContext.getSelectedNames().stream().anyMatch(
-							name -> it.match(property, new NamedMatcherMetadata<>(name))
+							name -> it.match(property, new NamedMatcherMetadata(name))
 						);
 					})
 					.findFirst()
