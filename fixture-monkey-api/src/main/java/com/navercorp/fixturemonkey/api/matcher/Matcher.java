@@ -18,8 +18,6 @@
 
 package com.navercorp.fixturemonkey.api.matcher;
 
-import javax.annotation.Nullable;
-
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
@@ -30,7 +28,7 @@ import com.navercorp.fixturemonkey.api.property.Property;
 public interface Matcher {
 	boolean match(Property property);
 
-	default boolean match(Property property, @Nullable MatcherMetadata<?> matcherMetadata) {
+	default boolean match(Property property, MatcherMetadata<?> matcherMetadata) {
 		return match(property);
 	}
 

@@ -24,7 +24,7 @@ import org.apiguardian.api.API.Status;
 import com.navercorp.fixturemonkey.api.property.Property;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
-public class MatcherOperator<T> implements Matcher {
+public final class MatcherOperator<T> implements Matcher {
 	private final Matcher matcher;
 	private final T operator;
 
@@ -39,6 +39,11 @@ public class MatcherOperator<T> implements Matcher {
 
 	public static <T, C> MatcherOperator<T> assignableTypeMatchOperator(Class<C> type, T operator) {
 		return new MatcherOperator<>(new AssignableTypeMatcher(type), operator);
+	}
+
+	@Override
+	public boolean match(Property property, MatcherMetadata<?> matcherMetadata) {
+		return this.matcher.match(property, matcherMetadata);
 	}
 
 	@Override

@@ -33,8 +33,7 @@ import net.jqwik.api.Arbitrary;
 
 import com.navercorp.fixturemonkey.api.context.MonkeyContext;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
-import com.navercorp.fixturemonkey.api.matcher.NamedMatcherMetadata;
-import com.navercorp.fixturemonkey.api.matcher.NamedMatcherOperatorAdapter;
+import com.navercorp.fixturemonkey.api.matcher.NamedMatcher;
 import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
 import com.navercorp.fixturemonkey.api.type.LazyAnnotatedType;
@@ -93,7 +92,7 @@ public final class FixtureMonkey {
 		RootProperty rootProperty = new RootProperty(type.getAnnotatedType());
 
 		ArbitraryBuilderContext builderContext = registeredArbitraryBuilders.stream()
-			.filter(it -> it.match(rootProperty, NamedMatcherMetadata::empty))
+			.filter(it -> it.match(rootProperty))
 			.map(MatcherOperator::getOperator)
 			.findAny()
 			.map(DefaultArbitraryBuilder.class::cast)
@@ -207,10 +206,9 @@ public final class FixtureMonkey {
 	) {
 		mapsByRegisteredName.forEach((registeredName, matcherOperator) -> {
 			registeredArbitraryBuilders.add(
-				NamedMatcherOperatorAdapter.adapt(
-					matcherOperator.getMatcher(),
-					matcherOperator.getOperator().apply(this),
-					registeredName
+				new MatcherOperator<>(
+					new NamedMatcher(matcherOperator.getMatcher(), registeredName),
+					matcherOperator.getOperator().apply(this)
 				)
 			);
 		});
