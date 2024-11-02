@@ -87,24 +87,24 @@ void test() {
 &lt;table>
  &lt;thead>
  &lt;tr>
- &lt;th style="text-align: left">&lt;/th>
- &lt;th style="text-align: left">manipulation name&lt;/th>
- &lt;th style="text-align: left">nested field&lt;/th>
- &lt;th style="text-align: left">element&lt;/th>
+ &lt;th>&lt;/th>
+ &lt;th>manipulation name&lt;/th>
+ &lt;th>nested field&lt;/th>
+ &lt;th>element&lt;/th>
  &lt;/tr>
  &lt;/thead>
  &lt;tbody>
  &lt;tr>
- &lt;td style="text-align: left">Java Class&lt;/td>
- &lt;td style="text-align: left">expGetter&lt;/td>
- &lt;td style="text-align: left">intoGetter&lt;/td>
- &lt;td style="text-align: left">[index], [&amp;quot;*&amp;quot;]&lt;/td>
+ &lt;td>Java Class&lt;/td>
+ &lt;td>expGetter&lt;/td>
+ &lt;td>intoGetter&lt;/td>
+ &lt;td>[index], [&amp;quot;*&amp;quot;]&lt;/td>
  &lt;/tr>
  &lt;tr>
- &lt;td style="text-align: left">Kotlin Class&lt;/td>
- &lt;td style="text-align: left">exp&lt;/td>
- &lt;td style="text-align: left">into&lt;/td>
- &lt;td style="text-align: left">[index], [&amp;quot;*&amp;quot;]&lt;/td>
+ &lt;td>Kotlin Class&lt;/td>
+ &lt;td>exp&lt;/td>
+ &lt;td>into&lt;/td>
+ &lt;td>[index], [&amp;quot;*&amp;quot;]&lt;/td>
  &lt;/tr>
  &lt;/tbody>
 &lt;/table>

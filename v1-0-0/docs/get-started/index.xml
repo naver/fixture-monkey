@@ -16,26 +16,26 @@
 &lt;table>
  &lt;thead>
  &lt;tr>
- &lt;th style="text-align: left">Dependency&lt;/th>
- &lt;th style="text-align: left">Description&lt;/th>
+ &lt;th>Dependency&lt;/th>
+ &lt;th>Description&lt;/th>
  &lt;/tr>
  &lt;/thead>
  &lt;tbody>
  &lt;tr>
- &lt;td style="text-align: left">fixture-monkey&lt;/td>
- &lt;td style="text-align: left">Core library&lt;/td>
+ &lt;td>fixture-monkey&lt;/td>
+ &lt;td>Core library&lt;/td>
  &lt;/tr>
  &lt;tr>
- &lt;td style="text-align: left">fixture-monkey-starter&lt;/td>
- &lt;td style="text-align: left">Starter dependency for fixture monkey&lt;/td>
+ &lt;td>fixture-monkey-starter&lt;/td>
+ &lt;td>Starter dependency for fixture monkey&lt;/td>
  &lt;/tr>
  &lt;tr>
- &lt;td style="text-align: left">fixture-monkey-kotlin&lt;/td>
- &lt;td style="text-align: left">Kotlin support&lt;/td>
+ &lt;td>fixture-monkey-kotlin&lt;/td>
+ &lt;td>Kotlin support&lt;/td>
  &lt;/tr>
  &lt;tr>
- &lt;td style="text-align: left">fixture-monkey-starter-kotlin&lt;/td>
- &lt;td style="text-align: left">Starter dependency for fixture monkey kotlin&lt;/td>
+ &lt;td>fixture-monkey-starter-kotlin&lt;/td>
+ &lt;td>Starter dependency for fixture monkey kotlin&lt;/td>
  &lt;/tr>
  &lt;/tbody>
 &lt;/table>

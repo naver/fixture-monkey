@@ -16,26 +16,26 @@
 &lt;table>
  &lt;thead>
  &lt;tr>
- &lt;th style="text-align: left">종속성&lt;/th>
- &lt;th style="text-align: left">설명&lt;/th>
+ &lt;th>종속성&lt;/th>
+ &lt;th>설명&lt;/th>
  &lt;/tr>
  &lt;/thead>
  &lt;tbody>
  &lt;tr>
- &lt;td style="text-align: left">fixture-monkey&lt;/td>
- &lt;td style="text-align: left">fixture monkey 코어 라이브러리&lt;/td>
+ &lt;td>fixture-monkey&lt;/td>
+ &lt;td>fixture monkey 코어 라이브러리&lt;/td>
  &lt;/tr>
  &lt;tr>
- &lt;td style="text-align: left">fixture-monkey-starter&lt;/td>
- &lt;td style="text-align: left">fixture monkey 시작 패키지&lt;/td>
+ &lt;td>fixture-monkey-starter&lt;/td>
+ &lt;td>fixture monkey 시작 패키지&lt;/td>
  &lt;/tr>
  &lt;tr>
- &lt;td style="text-align: left">fixture-monkey-kotlin&lt;/td>
- &lt;td style="text-align: left">Kotlin 지원&lt;/td>
+ &lt;td>fixture-monkey-kotlin&lt;/td>
+ &lt;td>Kotlin 지원&lt;/td>
  &lt;/tr>
  &lt;tr>
- &lt;td style="text-align: left">fixture-monkey-starter-kotlin&lt;/td>
- &lt;td style="text-align: left">Kotlin 환경을 위한 시작 패키지&lt;/td>
+ &lt;td>fixture-monkey-starter-kotlin&lt;/td>
+ &lt;td>Kotlin 환경을 위한 시작 패키지&lt;/td>
  &lt;/tr>
  &lt;/tbody>
 &lt;/table>

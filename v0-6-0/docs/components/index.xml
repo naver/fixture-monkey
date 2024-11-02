@@ -12,101 +12,101 @@
 &lt;table>
  &lt;thead>
  &lt;tr>
- &lt;th style="text-align: left">Option&lt;/th>
- &lt;th style="text-align: left">Description&lt;/th>
- &lt;th style="text-align: left">Link&lt;/th>
+ &lt;th>Option&lt;/th>
+ &lt;th>Description&lt;/th>
+ &lt;th>Link&lt;/th>
  &lt;/tr>
  &lt;/thead>
  &lt;tbody>
  &lt;tr>
- &lt;td style="text-align: left">arbitraryValidator&lt;/td>
- &lt;td style="text-align: left">Arbitrary sampled value is validated by &lt;code>arbitraryValidator&lt;/code>. The default validator is &lt;code>new DefaultArbitraryValidator()&lt;/code>.&lt;/td>
- &lt;td style="text-align: left">&lt;a href="../arbitraryvalidator">ArbitraryValidator&lt;/a>&lt;/td>
+ &lt;td>arbitraryValidator&lt;/td>
+ &lt;td>Arbitrary sampled value is validated by &lt;code>arbitraryValidator&lt;/code>. The default validator is &lt;code>new DefaultArbitraryValidator()&lt;/code>.&lt;/td>
+ &lt;td>&lt;a href="../arbitraryvalidator">ArbitraryValidator&lt;/a>&lt;/td>
  &lt;/tr>
  &lt;tr>
- &lt;td style="text-align: left">defaultArbitraryContainerInfo&lt;/td>
- &lt;td style="text-align: left">Default size for a randomly generated instance of container type. The default value is &lt;code>new ArbitraryContainerInfo(0, defaultArbitraryContainerMaxSize, false)&lt;/code>.&lt;/td>
- &lt;td style="text-align: left">&lt;/td>
+ &lt;td>defaultArbitraryContainerInfo&lt;/td>
+ &lt;td>Default size for a randomly generated instance of container type. The default value is &lt;code>new ArbitraryContainerInfo(0, defaultArbitraryContainerMaxSize, false)&lt;/code>.&lt;/td>
+ &lt;td>&lt;/td>
  &lt;/tr>
  &lt;tr>
- &lt;td style="text-align: left">defaultArbitraryContainerMaxSize&lt;/td>
- &lt;td style="text-align: left">Default max size for a randomly generated instance of container type. The default value is &lt;code>3&lt;/code>.&lt;/td>
- &lt;td style="text-align: left">&lt;/td>
+ &lt;td>defaultArbitraryContainerMaxSize&lt;/td>
+ &lt;td>Default max size for a randomly generated instance of container type. The default value is &lt;code>3&lt;/code>.&lt;/td>
+ &lt;td>&lt;/td>
  &lt;/tr>
  &lt;tr>
- &lt;td style="text-align: left">defaultNullInjectGenerator&lt;/td>
- &lt;td style="text-align: left">Determines when a null instance is created. The default value is &lt;code>new DefaultNullInjectGenerator(...)&lt;/code>.&lt;/td>
- &lt;td style="text-align: left">&lt;/td>
+ &lt;td>defaultNullInjectGenerator&lt;/td>
+ &lt;td>Determines when a null instance is created. The default value is &lt;code>new DefaultNullInjectGenerator(...)&lt;/code>.&lt;/td>
+ &lt;td>&lt;/td>
  &lt;/tr>
  &lt;tr>
- &lt;td style="text-align: left">nullableContainer&lt;/td>
- &lt;td style="text-align: left">Determines whether to generate a randomly generated container instance. The default value is &lt;code>false&lt;/code>.&lt;/td>
- &lt;td style="text-align: left">&lt;/td>
+ &lt;td>nullableContainer&lt;/td>
+ &lt;td>Determines whether to generate a randomly generated container instance. The default value is &lt;code>false&lt;/code>.&lt;/td>
+ &lt;td>&lt;/td>
  &lt;/tr>
  &lt;tr>
- &lt;td style="text-align: left">nullableElement&lt;/td>
- &lt;td style="text-align: left">Determines whether to generate a randomly generated element instance. The default value is &lt;code>false&lt;/code>.&lt;/td>
- &lt;td style="text-align: left">&lt;/td>
+ &lt;td>nullableElement&lt;/td>
+ &lt;td>Determines whether to generate a randomly generated element instance. The default value is &lt;code>false&lt;/code>.&lt;/td>
+ &lt;td>&lt;/td>
  &lt;/tr>
  &lt;tr>
- &lt;td style="text-align: left">defaultNotNull&lt;/td>
- &lt;td style="text-align: left">Determines whether to generate a null instance. The default value is &lt;code>false&lt;/code>.&lt;/td>
- &lt;td style="text-align: left">&lt;/td>
+ &lt;td>defaultNotNull&lt;/td>
+ &lt;td>Determines whether to generate a null instance. The default value is &lt;code>false&lt;/code>.&lt;/td>
+ &lt;td>&lt;/td>
  &lt;/tr>
  &lt;tr>
- &lt;td style="text-align: left">defaultObjectPropertyGenerator&lt;/td>
- &lt;td style="text-align: left">Determines how to generate &lt;code>ObjectProperty&lt;/code>. The default value is &lt;code>DEFAULT_OBJECT_PROPERTY_GENERATOR&lt;/code>.&lt;/td>
- &lt;td style="text-align: left">&lt;a href="../objectproperty">ObjectProperty&lt;/a>&lt;/td>
+ &lt;td>defaultObjectPropertyGenerator&lt;/td>
+ &lt;td>Determines how to generate &lt;code>ObjectProperty&lt;/code>. The default value is &lt;code>DEFAULT_OBJECT_PROPERTY_GENERATOR&lt;/code>.&lt;/td>
+ &lt;td>&lt;a href="../objectproperty">ObjectProperty&lt;/a>&lt;/td>
  &lt;/tr>
  &lt;tr>
- &lt;td style="text-align: left">defaultPropertyGenerator&lt;/td>
- &lt;td style="text-align: left">Determines how to generate child properties. The default value is &lt;code>new DefaultPropertyGenerator()&lt;/code>.&lt;/td>
- &lt;td style="text-align: left">&lt;/td>
+ &lt;td>defaultPropertyGenerator&lt;/td>
+ &lt;td>Determines how to generate child properties. The default value is &lt;code>new DefaultPropertyGenerator()&lt;/code>.&lt;/td>
+ &lt;td>&lt;/td>
  &lt;/tr>
  &lt;tr>
- &lt;td style="text-align: left">defaultPropertyNameResolver&lt;/td>
- &lt;td style="text-align: left">Determines how property resolves name. The default value is &lt;code>DEFAULT_PROPERTY_NAME_RESOLVER&lt;/code>.&lt;/td>
- &lt;td style="text-align: left">&lt;/td>
+ &lt;td>defaultPropertyNameResolver&lt;/td>
+ &lt;td>Determines how property resolves name. The default value is &lt;code>DEFAULT_PROPERTY_NAME_RESOLVER&lt;/code>.&lt;/td>
+ &lt;td>&lt;/td>
  &lt;/tr>
  &lt;tr>
- &lt;td style="text-align: left">javaArbitraryResolver&lt;/td>
- &lt;td style="text-align: left">Resolves how annotations apply to default Java classes. The default value is &lt;code>new JavaArbitraryResolver() {}&lt;/code>.&lt;/td>
- &lt;td style="text-align: left">&lt;/td>
+ &lt;td>javaArbitraryResolver&lt;/td>
+ &lt;td>Resolves how annotations apply to default Java classes. The default value is &lt;code>new JavaArbitraryResolver() {}&lt;/code>.&lt;/td>
+ &lt;td>&lt;/td>
  &lt;/tr>
  &lt;tr>
- &lt;td style="text-align: left">javaTimeArbitraryResolver&lt;/td>
- &lt;td style="text-align: left">Resolves how annotations apply to default Java Time/Date classes. The default value is &lt;code>new JavaTimeArbitraryResolver() {}&lt;/code>.&lt;/td>
- &lt;td style="text-align: left">&lt;/td>
+ &lt;td>javaTimeArbitraryResolver&lt;/td>
+ &lt;td>Resolves how annotations apply to default Java Time/Date classes. The default value is &lt;code>new JavaTimeArbitraryResolver() {}&lt;/code>.&lt;/td>
+ &lt;td>&lt;/td>
  &lt;/tr>
  &lt;tr>
- &lt;td style="text-align: left">javaTypeArbitraryGenerator&lt;/td>
- &lt;td style="text-align: left">Determines a default value for default Java classes. The default value is &lt;code>new JavaTypeArbitraryGenerator() {}&lt;/code>.&lt;/td>
- &lt;td style="text-align: left">&lt;/td>
+ &lt;td>javaTypeArbitraryGenerator&lt;/td>
+ &lt;td>Determines a default value for default Java classes. The default value is &lt;code>new JavaTypeArbitraryGenerator() {}&lt;/code>.&lt;/td>
+ &lt;td>&lt;/td>
  &lt;/tr>
  &lt;tr>
- &lt;td style="text-align: left">javaTimeTypeArbitraryGenerator&lt;/td>
- &lt;td style="text-align: left">Determines a default value for default Java Time/Date classes. The default value is &lt;code>new JavaTimeTypeArbitraryGenerator() {}&lt;/code>.&lt;/td>
- &lt;td style="text-align: left">&lt;/td>
+ &lt;td>javaTimeTypeArbitraryGenerator&lt;/td>
+ &lt;td>Determines a default value for default Java Time/Date classes. The default value is &lt;code>new JavaTimeTypeArbitraryGenerator() {}&lt;/code>.&lt;/td>
+ &lt;td>&lt;/td>
  &lt;/tr>
  &lt;tr>
- &lt;td style="text-align: left">manipulatorOptimizer&lt;/td>
- &lt;td style="text-align: left">Determines how manipulators are optimized. The default value is &lt;code>new NoneManipulatorOptimizer()&lt;/code>.&lt;/td>
- &lt;td style="text-align: left">&lt;/td>
+ &lt;td>manipulatorOptimizer&lt;/td>
+ &lt;td>Determines how manipulators are optimized. The default value is &lt;code>new NoneManipulatorOptimizer()&lt;/code>.&lt;/td>
+ &lt;td>&lt;/td>
  &lt;/tr>
  &lt;tr>
- &lt;td style="text-align: left">monkeyExpressionFactory&lt;/td>
- &lt;td style="text-align: left">Determines general expression. The default value is &lt;code>new ArbitraryExpressionFactory()&lt;/code>.&lt;/td>
- &lt;td style="text-align: left">&lt;/td>
+ &lt;td>monkeyExpressionFactory&lt;/td>
+ &lt;td>Determines general expression. The default value is &lt;code>new ArbitraryExpressionFactory()&lt;/code>.&lt;/td>
+ &lt;td>&lt;/td>
  &lt;/tr>
  &lt;tr>
- &lt;td style="text-align: left">objectIntrospector&lt;/td>
- &lt;td style="text-align: left">Determines how to create an instance. The default value is &lt;code>BeanArbitraryIntrospector.INSTANCE&lt;/code>.&lt;/td>
- &lt;td style="text-align: left">&lt;a href="../arbitraryintrospector">ArbitraryIntrospector&lt;/a>&lt;/td>
+ &lt;td>objectIntrospector&lt;/td>
+ &lt;td>Determines how to create an instance. The default value is &lt;code>BeanArbitraryIntrospector.INSTANCE&lt;/code>.&lt;/td>
+ &lt;td>&lt;a href="../arbitraryintrospector">ArbitraryIntrospector&lt;/a>&lt;/td>
  &lt;/tr>
  &lt;tr>
- &lt;td style="text-align: left">useExpressionStrictMode&lt;/td>
- &lt;td style="text-align: left">Determines whether to throw an exception if a property referenced by a given expression does not exist. The default value is &lt;code>false&lt;/code>.&lt;/td>
- &lt;td style="text-align: left">&lt;/td>
+ &lt;td>useExpressionStrictMode&lt;/td>
+ &lt;td>Determines whether to throw an exception if a property referenced by a given expression does not exist. The default value is &lt;code>false&lt;/code>.&lt;/td>
+ &lt;td>&lt;/td>
  &lt;/tr>
  &lt;/tbody>
 &lt;/table>
@@ -114,101 +114,101 @@
 &lt;table>
  &lt;thead>
  &lt;tr>
- &lt;th style="text-align: left">Option&lt;/th>
- &lt;th style="text-align: left">Description&lt;/th>
- &lt;th style="text-align: left">Link&lt;/th>
+ &lt;th>Option&lt;/th>
+ &lt;th>Description&lt;/th>
+ &lt;th>Link&lt;/th>
  &lt;/tr>
  &lt;/thead>
  &lt;tbody>
  &lt;tr>
- &lt;td style="text-align: left">addContainerType&lt;/td>
- &lt;td style="text-align: left">Add user-defined container type&lt;/td>
- &lt;td style="text-align: left">&lt;a href="../arbitraryintrospector">ArbitraryIntrospector&lt;/a>&lt;/td>
+ &lt;td>addContainerType&lt;/td>
+ &lt;td>Add user-defined container type&lt;/td>
+ &lt;td>&lt;a href="../arbitraryintrospector">ArbitraryIntrospector&lt;/a>&lt;/td>
  &lt;/tr>
  &lt;tr>
- &lt;td style="text-align: left">addExceptGenerateClass&lt;/td>
- &lt;td style="text-align: left">Do not create an instance of the given class&lt;/td>
- &lt;td style="text-align: left">&lt;/td>
+ &lt;td>addExceptGenerateClass&lt;/td>
+ &lt;td>Do not create an instance of the given class&lt;/td>
+ &lt;td>&lt;/td>
  &lt;/tr>
  &lt;tr>
- &lt;td style="text-align: left">addExceptGenerateClasses&lt;/td>
- &lt;td style="text-align: left">Do not create an instance of the given classes&lt;/td>
- &lt;td style="text-align: left">&lt;/td>
+ &lt;td>addExceptGenerateClasses&lt;/td>
+ &lt;td>Do not create an instance of the given classes&lt;/td>
+ &lt;td>&lt;/td>
  &lt;/tr>
  &lt;tr>
- &lt;td style="text-align: left">addExceptGeneratePackage&lt;/td>
- &lt;td style="text-align: left">Do not create an instance of any classes which package starts with given package&lt;/td>
- &lt;td style="text-align: left">&lt;/td>
+ &lt;td>addExceptGeneratePackage&lt;/td>
+ &lt;td>Do not create an instance of any classes which package starts with given package&lt;/td>
+ &lt;td>&lt;/td>
  &lt;/tr>
  &lt;tr>
- &lt;td style="text-align: left">addExceptGeneratePackages&lt;/td>
- &lt;td style="text-align: left">Do not create an instance of any classes which package starts with given packages&lt;/td>
- &lt;td style="text-align: left">&lt;/td>
+ &lt;td>addExceptGeneratePackages&lt;/td>
+ &lt;td>Do not create an instance of any classes which package starts with given packages&lt;/td>
+ &lt;td>&lt;/td>
  &lt;/tr>
  &lt;tr>
- &lt;td style="text-align: left">pushExceptGenerateType&lt;/td>
- &lt;td style="text-align: left">Do not create an instance of any classes which property is matched by matcher&lt;/td>
- &lt;td style="text-align: left">&lt;/td>
+ &lt;td>pushExceptGenerateType&lt;/td>
+ &lt;td>Do not create an instance of any classes which property is matched by matcher&lt;/td>
+ &lt;td>&lt;/td>
  &lt;/tr>
  &lt;tr>
- &lt;td style="text-align: left">pushContainerIntrospector&lt;/td>
- &lt;td style="text-align: left">Determines how to create an instance of given container type&lt;/td>
- &lt;td style="text-align: left">&lt;a href="../arbitraryintrospector">ArbitraryIntrospector&lt;/a>&lt;/td>
+ &lt;td>pushContainerIntrospector&lt;/td>
+ &lt;td>Determines how to create an instance of given container type&lt;/td>
+ &lt;td>&lt;a href="../arbitraryintrospector">ArbitraryIntrospector&lt;/a>&lt;/td>
  &lt;/tr>
  &lt;tr>
- &lt;td style="text-align: left">plugin&lt;/td>
- &lt;td style="text-align: left">Add new plugin&lt;/td>
- &lt;td style="text-align: left">&lt;/td>
+ &lt;td>plugin&lt;/td>
+ &lt;td>Add new plugin&lt;/td>
+ &lt;td>&lt;/td>
  &lt;/tr>
  &lt;tr>
- &lt;td style="text-align: left">pushArbitraryContainerInfoGenerator&lt;/td>
- &lt;td style="text-align: left">Determines size for an instance of given container type&lt;/td>
- &lt;td style="text-align: left">&lt;/td>
+ &lt;td>pushArbitraryContainerInfoGenerator&lt;/td>
+ &lt;td>Determines size for an instance of given container type&lt;/td>
+ &lt;td>&lt;/td>
  &lt;/tr>
  &lt;tr>
- &lt;td style="text-align: left">pushFixtureCustomizer&lt;/td>
- &lt;td style="text-align: left">Determines how to customize composing properties and an instance of given property&lt;/td>
- &lt;td style="text-align: left">&lt;a href="../fixturecustomizer">FixtureCustomizer&lt;/a>&lt;/td>
+ &lt;td>pushFixtureCustomizer&lt;/td>
+ &lt;td>Determines how to customize composing properties and an instance of given property&lt;/td>
+ &lt;td>&lt;a href="../fixturecustomizer">FixtureCustomizer&lt;/a>&lt;/td>
  &lt;/tr>
  &lt;tr>
- &lt;td style="text-align: left">pushArbitraryIntrospector&lt;/td>
- &lt;td style="text-align: left">Determines how to create an instance of given property&lt;/td>
- &lt;td style="text-align: left">&lt;a href="../arbitraryintrospector">ArbitraryIntrospector&lt;/a>&lt;/td>
+ &lt;td>pushArbitraryIntrospector&lt;/td>
+ &lt;td>Determines how to create an instance of given property&lt;/td>
+ &lt;td>&lt;a href="../arbitraryintrospector">ArbitraryIntrospector&lt;/a>&lt;/td>
  &lt;/tr>
  &lt;tr>
- &lt;td style="text-align: left">pushObjectPropertyGenerator&lt;/td>
- &lt;td style="text-align: left">Determines how to generate &lt;code>ObjectProperty&lt;/code> for given property&lt;/td>
- &lt;td style="text-align: left">&lt;a href="../objectproperty">ObjectProperty&lt;/a>&lt;/td>
+ &lt;td>pushObjectPropertyGenerator&lt;/td>
+ &lt;td>Determines how to generate &lt;code>ObjectProperty&lt;/code> for given property&lt;/td>
+ &lt;td>&lt;a href="../objectproperty">ObjectProperty&lt;/a>&lt;/td>
  &lt;/tr>
  &lt;tr>
- &lt;td style="text-align: left">pushContainerPropertyGenerator&lt;/td>
- &lt;td style="text-align: left">Determines how to generate &lt;code>ContainerProperty&lt;/code> for given property&lt;/td>
- &lt;td style="text-align: left">&lt;a href="../containerproperty">ContainerProperty&lt;/a>&lt;/td>
+ &lt;td>pushContainerPropertyGenerator&lt;/td>
+ &lt;td>Determines how to generate &lt;code>ContainerProperty&lt;/code> for given property&lt;/td>
+ &lt;td>&lt;a href="../containerproperty">ContainerProperty&lt;/a>&lt;/td>
  &lt;/tr>
  &lt;tr>
- &lt;td style="text-align: left">pushPropertyGenerator&lt;/td>
- &lt;td style="text-align: left">Determines how to generate child properties for given property&lt;/td>
- &lt;td style="text-align: left">&lt;/td>
+ &lt;td>pushPropertyGenerator&lt;/td>
+ &lt;td>Determines how to generate child properties for given property&lt;/td>
+ &lt;td>&lt;/td>
  &lt;/tr>
  &lt;tr>
- &lt;td style="text-align: left">pushPropertyNameResolver&lt;/td>
- &lt;td style="text-align: left">Determines how property resolves name for given property&lt;/td>
- &lt;td style="text-align: left">&lt;/td>
+ &lt;td>pushPropertyNameResolver&lt;/td>
+ &lt;td>Determines how property resolves name for given property&lt;/td>
+ &lt;td>&lt;/td>
  &lt;/tr>
  &lt;tr>
- &lt;td style="text-align: left">pushNullInjectGenerator&lt;/td>
- &lt;td style="text-align: left">Determines when a null instance is created for given property&lt;/td>
- &lt;td style="text-align: left">&lt;/td>
+ &lt;td>pushNullInjectGenerator&lt;/td>
+ &lt;td>Determines when a null instance is created for given property&lt;/td>
+ &lt;td>&lt;/td>
  &lt;/tr>
  &lt;tr>
- &lt;td style="text-align: left">register&lt;/td>
- &lt;td style="text-align: left">Determines default &lt;code>ArbitraryBuilder&lt;/code> for given property&lt;/td>
- &lt;td style="text-align: left">&lt;/td>
+ &lt;td>register&lt;/td>
+ &lt;td>Determines default &lt;code>ArbitraryBuilder&lt;/code> for given property&lt;/td>
+ &lt;td>&lt;/td>
  &lt;/tr>
  &lt;tr>
- &lt;td style="text-align: left">registerGroup&lt;/td>
- &lt;td style="text-align: left">Determines default &lt;code>ArbitraryBuilder&lt;/code> for given properties in a group class&lt;/td>
- &lt;td style="text-align: left">&lt;/td>
+ &lt;td>registerGroup&lt;/td>
+ &lt;td>Determines default &lt;code>ArbitraryBuilder&lt;/code> for given properties in a group class&lt;/td>
+ &lt;td>&lt;/td>
  &lt;/tr>
  &lt;/tbody>
 &lt;/table></description></item><item><title>ArbitraryBuilder</title><link>https://naver.github.io/fixture-monkey/v0-6-0/docs/components/arbitrarybuilder/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v0-6-0/docs/components/arbitrarybuilder/</guid><description>&lt;p>&lt;code>ArbitraryBuilder&lt;/code> is a builder for arbitrary object in Fixture Monkey&lt;/p>
