@@ -34,8 +34,8 @@ import com.navercorp.fixturemonkey.api.type.KotlinTypeDetector;
 import com.navercorp.fixturemonkey.api.type.TypeCache;
 
 abstract class JavaGetterPropertySelectors {
-	private static final String GET_PREFIX = "get";
-	private static final String IS_PREFIX = "is";
+	private static final JavaGetterPropertyFieldNameResolver PROPERTY_FIELD_NAME_RESOLVER =
+		new JavaGetterPropertyFieldNameResolver();
 
 	@SuppressWarnings("unchecked")
 	static <T, R> JavaGetterMethodPropertySelector<T, R> resolvePropertySelector(
@@ -59,7 +59,7 @@ abstract class JavaGetterPropertySelectors {
 				throw new IllegalArgumentException("Kotlin type could not resolve property name. type: " + targetClass);
 			}
 
-			String fieldName = resolveFieldName(targetClass, lambda.getImplMethodName());
+			String fieldName = PROPERTY_FIELD_NAME_RESOLVER.resolveFieldName(targetClass, lambda.getImplMethodName());
 			Property fieldProperty = resolveFieldProperty(targetClass, fieldName);
 			Property propertyDescriptorProperty = resolvePropertyDescriptorProperty(targetClass, fieldName);
 
@@ -87,20 +87,6 @@ abstract class JavaGetterPropertySelectors {
 	}
 
 	@Nullable
-	private static String resolveFieldName(Class<?> targetClass, String methodName) {
-		if (hasPrefix(GET_PREFIX, methodName)) {
-			return stripPrefixPropertyName(targetClass, methodName, GET_PREFIX.length());
-		} else if (hasPrefix(IS_PREFIX, methodName)) {
-			return stripPrefixPropertyName(targetClass, methodName, IS_PREFIX.length());
-		} else if (isValidField(targetClass, methodName)) {
-			// class could be using property-style getters (e.g. java record)
-			return methodName;
-		}
-
-		return null;
-	}
-
-	@Nullable
 	private static Property resolveFieldProperty(Class<?> targetClass, String fieldName) {
 		Map<String, Field> fieldsByName = TypeCache.getFieldsByName(targetClass);
 		if (!fieldsByName.containsKey(fieldName)) {
@@ -118,20 +104,5 @@ abstract class JavaGetterPropertySelectors {
 			return null;
 		}
 		return new PropertyDescriptorProperty(propertyDescriptorsByPropertyName.get(fieldName));
-	}
-
-	private static String stripPrefixPropertyName(Class<?> targetClass, String methodName, int prefixLength) {
-		char[] ch = methodName.toCharArray();
-		ch[prefixLength] = Character.toLowerCase(ch[prefixLength]);
-		String fieldName = new String(ch, prefixLength, ch.length - prefixLength);
-		return isValidField(targetClass, fieldName) ? fieldName : null;
-	}
-
-	private static boolean hasPrefix(String prefix, String methodName) {
-		return methodName.startsWith(prefix) && methodName.length() > prefix.length();
-	}
-
-	private static boolean isValidField(Class<?> type, String fieldName) {
-		return TypeCache.getFieldsByName(type).containsKey(fieldName);
 	}
 }

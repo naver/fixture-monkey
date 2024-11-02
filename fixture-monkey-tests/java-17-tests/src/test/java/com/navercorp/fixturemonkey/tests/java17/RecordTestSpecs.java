@@ -152,4 +152,10 @@ final class RecordTestSpecs {
 
 		public abstract String getString();
 	}
+
+	public record IsPrefixBooleanRecord(boolean isPrimitive, Boolean isWrapper) {
+	}
+
+	public record BooleanRecord(boolean primitive, Boolean wrapper) {
+	}
 }

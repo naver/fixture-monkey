@@ -18,6 +18,7 @@
 
 package com.navercorp.fixturemonkey.tests.java17;
 
+import static com.navercorp.fixturemonkey.api.experimental.JavaGetterMethodPropertySelector.javaGetter;
 import static com.navercorp.fixturemonkey.tests.TestEnvironment.TEST_COUNT;
 import static org.assertj.core.api.BDDAssertions.then;
 
@@ -25,10 +26,12 @@ import org.junit.jupiter.api.RepeatedTest;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.introspector.ConstructorPropertiesArbitraryIntrospector;
+import com.navercorp.fixturemonkey.tests.java17.RecordTestSpecs.BooleanRecord;
 import com.navercorp.fixturemonkey.tests.java17.RecordTestSpecs.CompactConstructorRecord;
 import com.navercorp.fixturemonkey.tests.java17.RecordTestSpecs.ComplexContainerRecord;
 import com.navercorp.fixturemonkey.tests.java17.RecordTestSpecs.ContainerRecord;
 import com.navercorp.fixturemonkey.tests.java17.RecordTestSpecs.DateTimeRecord;
+import com.navercorp.fixturemonkey.tests.java17.RecordTestSpecs.IsPrefixBooleanRecord;
 import com.navercorp.fixturemonkey.tests.java17.RecordTestSpecs.JavaTypeRecord;
 import com.navercorp.fixturemonkey.tests.java17.RecordTestSpecs.NoArgsConstructorRecord;
 import com.navercorp.fixturemonkey.tests.java17.RecordTestSpecs.TwoConstructorsRecord;
@@ -161,5 +164,45 @@ class ConstructorPropertiesRecordTest {
 			.sample();
 
 		then(actual).isNotNull();
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void setIsPrefixPrimitiveBoolean() {
+		boolean actual = SUT.giveMeBuilder(IsPrefixBooleanRecord.class)
+			.set(javaGetter(IsPrefixBooleanRecord::isPrimitive), false)
+			.sample()
+			.isPrimitive();
+
+		then(actual).isFalse();
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void setIsPrefixWrapperBoolean() {
+		boolean actual = SUT.giveMeBuilder(IsPrefixBooleanRecord.class)
+			.set(javaGetter(IsPrefixBooleanRecord::isWrapper), false)
+			.sample()
+			.isWrapper();
+
+		then(actual).isFalse();
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void setPrimitiveBoolean() {
+		boolean actual = SUT.giveMeBuilder(BooleanRecord.class)
+			.set(javaGetter(BooleanRecord::primitive), false)
+			.sample()
+			.primitive();
+
+		then(actual).isFalse();
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void setWrapperBoolean() {
+		boolean actual = SUT.giveMeBuilder(BooleanRecord.class)
+			.set(javaGetter(BooleanRecord::wrapper), false)
+			.sample()
+			.wrapper();
+
+		then(actual).isFalse();
 	}
 }
