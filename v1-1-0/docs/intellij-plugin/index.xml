@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Intellij Plugin on</title><link>https://naver.github.io/fixture-monkey/v1-1-0/docs/intellij-plugin/</link><description>Recent content in Intellij Plugin on</description><generator>Hugo</generator><language>v1-1-0</language><atom:link href="https://naver.github.io/fixture-monkey/v1-1-0/docs/intellij-plugin/index.xml" rel="self" type="application/rss+xml"/><item><title>Fixture Monkey Helper</title><link>https://naver.github.io/fixture-monkey/v1-1-0/docs/intellij-plugin/fixture-monkey-helper/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v1-1-0/docs/intellij-plugin/fixture-monkey-helper/</guid><description>&lt;p>&lt;a href="https://plugins.jetbrains.com/plugin/19589-fixture-monkey-helper">Fixture Monkey Helper&lt;/a> is an IntelliJ plugin that helps to use Fixture Monkey on the IntelliJ IDE.&lt;/p>
+&lt;p>It provides some features that make using String Expressions and Kotlin DSL Expressions easier, and also add some IntelliJ inspections to detect and fix abnormal code.&lt;/p>
+&lt;div class="alert alert-doks d-flex" role="alert">
+ &lt;div class="flex-shrink-1 alert-icon">🚨 &lt;/div>
+ 
+ &lt;div class="w-100">This plugin currently operates only within Java source code and Kotlin test code. Plans for expansion are in progress. &lt;/div>
+ 
+&lt;/div>
+
+&lt;h3 id="features">Features &lt;a href="#features" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h3>
+&lt;ul>
+&lt;li>
+&lt;p>&lt;strong>Fixture Monkey Expression support&lt;/strong>&lt;/p></description></item></channel></rss>

@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>객체 커스터마이징 on</title><link>https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/customizing-objects/</link><description>Recent content in 객체 커스터마이징 on</description><generator>Hugo</generator><language>v1-1-0-kor</language><atom:link href="https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/customizing-objects/index.xml" rel="self" type="application/rss+xml"/><item><title>커스터마이징 API</title><link>https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/customizing-objects/apis/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/customizing-objects/apis/</guid><description>&lt;p>Fixture Monkey는 ArbitraryBuilder를 통해 생성된 객체를 커스텀할 수 있는 다양한 API를 제공합니다.&lt;/p>
+&lt;h2 id="픽스쳐-커스터마이징하기">픽스쳐 커스터마이징하기 &lt;a href="#%ed%94%bd%ec%8a%a4%ec%b3%90-%ec%bb%a4%ec%8a%a4%ed%84%b0%eb%a7%88%ec%9d%b4%ec%a7%95%ed%95%98%ea%b8%b0" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h2>
+&lt;h3 id="set">set() &lt;a href="#set" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h3>
+&lt;p>&lt;code>set()&lt;/code> 메서드는 &lt;a href="../expressions">표현식&lt;/a>에 참조된 하나 이상의 프로퍼티에 값을 설정하는 데 사용됩니다.&lt;/p>
+&lt;p>&lt;code>Supplier&lt;/code>, &lt;a href="../arbitrary">&lt;code>Arbitrary&lt;/code>&lt;/a>, &lt;code>ArbitraryBuilder&lt;/code>, &lt;code>NOT_NULL&lt;/code>, &lt;code>NULL&lt;/code>, 또는 &lt;code>Just&lt;/code> 를 포함한 다양한 타입을 값으로 설정할 수 있습니다.
+또한 객체의 특정 인스턴스를 값으로 사용할 수도 있습니다.&lt;/p>
+
+
+
+&lt;ul class="nav nav-tabs" id="tabs-0" role="tablist">
+ &lt;li class="nav-item">
+ &lt;button class="nav-link active"
+ id="tabs-00-00-tab" data-bs-toggle="tab" data-bs-target="#tabs-00-00" role="tab"
+ aria-controls="tabs-00-00" aria-selected="true">
+ Java
+ &lt;/button>
+ &lt;/li>&lt;li class="nav-item">
+ &lt;button class="nav-link"
+ id="tabs-00-01-tab" data-bs-toggle="tab" data-bs-target="#tabs-00-01" role="tab"
+ aria-controls="tabs-00-01" aria-selected="false">
+ Kotlin
+ &lt;/button>
+ &lt;/li>
+&lt;/ul>
+
+&lt;div class="tab-content" id="tabs-0-content">
+ &lt;div class="tab-pane fade show active"
+ id="tabs-00-00" role="tabpanel" aria-labelled-by="tabs-00-00-tab" tabindex="0">
+ &lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-java" data-lang="java">&lt;span class="line">&lt;span class="cl">&lt;span class="n">fixtureMonkey&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">giveMeBuilder&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">Product&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">class&lt;/span>&lt;span class="p">)&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">set&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;id&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">1000&lt;/span>&lt;span class="p">);&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>
+ &lt;/div>
+ &lt;div class="tab-pane fade"
+ id="tabs-00-01" role="tabpanel" aria-labelled-by="tabs-00-01-tab" tabindex="0">
+ &lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-kotlin" data-lang="kotlin">&lt;span class="line">&lt;span class="cl">&lt;span class="n">fixtureMonkey&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">giveMeBuilder&lt;/span>&lt;span class="p">&amp;lt;&lt;/span>&lt;span class="n">Product&lt;/span>&lt;span class="p">&amp;gt;()&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">.&lt;/span>&lt;span class="n">setExp&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">Product&lt;/span>&lt;span class="o">::&lt;/span>&lt;span class="n">id&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="m">1000&lt;/span>&lt;span class="p">)&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>
+ &lt;/div>
+&lt;/div>
+
+&lt;h5 id="just">Just &lt;a href="#just" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h5>
+&lt;blockquote>
+&lt;p>&lt;code>set()&lt;/code>을 사용할 때 &lt;code>Just&lt;/code>로 래핑된 객체를 사용하면 인스턴스를 분해하지 않고 값을 직접 설정할 수 있습니다.
+일반적으로 &lt;code>ArbitraryBuilder&lt;/code>에서 프로퍼티를 &lt;code>set()&lt;/code>하면 주어진 인스턴스를 그대로 사용하지 않고 깊은 복사를 수행합니다.
+따라서 인스턴스로 설정해야 하는 경우 &lt;code>Values.just(instance)&lt;/code>를 사용해야 합니다.
+이 기능은 Mocking 프레임워크를 사용할 때 Mock 인스턴스에 프로퍼티를 설정해야 하는 경우 유용합니다.&lt;/p></description></item><item><title>표현식</title><link>https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/customizing-objects/expressions/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/customizing-objects/expressions/</guid><description>&lt;p>Fixture Monkey를 사용할 때, Fixture Monkey 표현식을 사용하여 오브젝트의 프로퍼티를 하나 이상 유연하게 선택할 수 있습니다.&lt;/p>
+&lt;p>아래와 같은 예제 오브젝트가 있다고 가정해보겠습니다.&lt;/p>
+&lt;pre>&lt;code class="language-java">@Value
+public class JavaClass {
+ String field;
+
+ String[] array;
+
+ List&amp;lt;String&amp;gt; list;
+
+ Nested object;
+
+ List&amp;lt;Nested&amp;gt; objectList;
+
+ @Value
+ public static class Nested {
+ String nestedField;
+ }
+}
+&lt;/code>&lt;/pre>
+&lt;h3 id="string-expressions을-통해-프로퍼티-선택하기">String Expressions을 통해 프로퍼티 선택하기 &lt;a href="#string-expressions%ec%9d%84-%ed%86%b5%ed%95%b4-%ed%94%84%eb%a1%9c%ed%8d%bc%ed%8b%b0-%ec%84%a0%ed%83%9d%ed%95%98%ea%b8%b0" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h3>
+&lt;h5 id="root-object-선택">root object 선택: &lt;a href="#root-object-%ec%84%a0%ed%83%9d" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h5>
+&lt;pre>&lt;code class="language-java">&amp;quot;$&amp;quot;
+&lt;/code>&lt;/pre>
+&lt;h5 id="특정-필드-선택">특정 필드 선택: &lt;a href="#%ed%8a%b9%ec%a0%95-%ed%95%84%eb%93%9c-%ec%84%a0%ed%83%9d" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h5>
+&lt;pre>&lt;code class="language-java">&amp;quot;field&amp;quot;
+&lt;/code>&lt;/pre>
+&lt;h5 id="nested-필드-선택">nested 필드 선택: &lt;a href="#nested-%ed%95%84%eb%93%9c-%ec%84%a0%ed%83%9d" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h5>
+&lt;pre>&lt;code class="language-java">&amp;quot;object.nestedField&amp;quot;
+&lt;/code>&lt;/pre>
+&lt;h5 id="컬렉션의-n번째-요소-선택">컬렉션의 n번째 요소 선택 &lt;a href="#%ec%bb%ac%eb%a0%89%ec%85%98%ec%9d%98-n%eb%b2%88%ec%a7%b8-%ec%9a%94%ec%86%8c-%ec%84%a0%ed%83%9d" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h5>
+&lt;pre>&lt;code class="language-java">&amp;quot;list[n]&amp;quot;
+&lt;/code>&lt;/pre>
+&lt;h5 id="컬렉션의-모든-요소-선택">컬렉션의 모든 요소 선택 &lt;a href="#%ec%bb%ac%eb%a0%89%ec%85%98%ec%9d%98-%eb%aa%a8%eb%93%a0-%ec%9a%94%ec%86%8c-%ec%84%a0%ed%83%9d" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h5>
+&lt;pre>&lt;code class="language-java">&amp;quot;list[*]&amp;quot;
+&lt;/code>&lt;/pre>
+&lt;h5 id="배열의-n번째-요소-선택">배열의 n번째 요소 선택: &lt;a href="#%eb%b0%b0%ec%97%b4%ec%9d%98-n%eb%b2%88%ec%a7%b8-%ec%9a%94%ec%86%8c-%ec%84%a0%ed%83%9d" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h5>
+&lt;pre>&lt;code class="language-java">&amp;quot;array[n]&amp;quot;
+&lt;/code>&lt;/pre>
+&lt;h5 id="배열의-모든-요소-선택">배열의 모든 요소 선택: &lt;a href="#%eb%b0%b0%ec%97%b4%ec%9d%98-%eb%aa%a8%eb%93%a0-%ec%9a%94%ec%86%8c-%ec%84%a0%ed%83%9d" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h5>
+&lt;pre>&lt;code class="language-java">&amp;quot;array[*]&amp;quot;
+&lt;/code>&lt;/pre>
+&lt;h5 id="표현식을-결합하여-nested-필드-선택">표현식을 결합하여 nested 필드 선택: &lt;a href="#%ed%91%9c%ed%98%84%ec%8b%9d%ec%9d%84-%ea%b2%b0%ed%95%a9%ed%95%98%ec%97%ac-nested-%ed%95%84%eb%93%9c-%ec%84%a0%ed%83%9d" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h5>
+&lt;pre>&lt;code class="language-java">&amp;quot;objectList[0].nestedField&amp;quot;
+&lt;/code>&lt;/pre>
+&lt;h3 id="javagetter-selector를-통해-프로퍼티-선택하기">JavaGetter Selector를 통해 프로퍼티 선택하기 &lt;a href="#javagetter-selector%eb%a5%bc-%ed%86%b5%ed%95%b4-%ed%94%84%eb%a1%9c%ed%8d%bc%ed%8b%b0-%ec%84%a0%ed%83%9d%ed%95%98%ea%b8%b0" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h3>
+&lt;p>&lt;code>javaGetter()&lt;/code> property selector를 사용하여 type-safe하게 프로퍼티를 선택할 수 있습니다.
+이 selector는 Java의 getter 메서드 참조를 통해 프로퍼티를 선택하고 표시하도록 설계되었습니다.&lt;/p></description></item><item><title>Arbitrary를 활용한 커스터마이징</title><link>https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/customizing-objects/arbitrary/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/customizing-objects/arbitrary/</guid><description>&lt;p>&lt;code>Jqwik&lt;/code>은 JVM 환경에서 사용할 수 있는 프로퍼티 기반 테스트 라이브러리입니다.
+Fixture Monkey는 문자, 문자열, 정수 등의 기본 타입에 대한 랜덤 값을 생성하기 위해 Jqwik의 &lt;a href="https://jqwik.net/docs/1.2.1/javadoc/net/jqwik/api/Arbitrary.html">&lt;code>Arbitrary&lt;/code>&lt;/a>를 사용합니다.&lt;/p>
+&lt;p>Jqwik에서 &lt;code>Arbitrary&lt;/code>는 생성(Generating) 및 축소(Shrinking)할 수 있는 객체를 나타내는 핵심 인터페이스입니다.
+때때로 픽스처 프로퍼티가 특정 제약 조건을 준수하면서 랜덤 값을 가지도록 원할 수 있습니다.&lt;/p>
+&lt;p>이러한 경우에는 Fixture Monkey의 &lt;code>set()&lt;/code> 메서드로 프로퍼티의 값을 &lt;code>Arbitrary&lt;/code>로 할당하여 랜덤 값을 가지도록 할 수 있습니다.
+Jqwik의 &lt;a href="https://jqwik.net/docs/current/user-guide.html#static-arbitraries-methods">Arbitraries 클래스&lt;/a>의 정적 메서드를 호출하여 특정 조건을 충족하는 &lt;code>Arbitrary&lt;/code>를 생성할 수 있습니다.&lt;/p></description></item><item><title>InnerSpec</title><link>https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/customizing-objects/innerspec/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/customizing-objects/innerspec/</guid><description>&lt;p>InnerSpec은 적용하려는 커스터마이징에 대한 타입 독립적인 명세입니다.
+ArbitraryBuilder 내의 &lt;code>setInner()&lt;/code> 메서드를 사용하면 &lt;code>InnerSpec&lt;/code> 인스턴스에 정의된 명세를 빌더에 적용할 수 있습니다.&lt;/p>
+&lt;p>&lt;code>InnerSpec&lt;/code> 에는 커스터마이징 세부 정보가 저장되며 여러 ArbitraryBuilder에서 재사용할 수 있습니다.
+ArbitraryBuilder에서 픽스처 몽키 표현식을 사용하는 방식과 달리 &lt;code>InnerSpec&lt;/code>은 중첩된 구조를 사용해 프로퍼티에 접근이 가능합니다.&lt;/p>
+&lt;p>&lt;code>InnerSpec&lt;/code> 의 또 다른 장점은 일반적인 표현식과 달리 맵 프로퍼티를 커스터마이징할 수 있다는 점입니다.&lt;/p>
+&lt;div class="alert alert-doks d-flex" role="alert">
+ &lt;div class="flex-shrink-1 alert-icon">💡 &lt;/div>
+ 
+ &lt;div class="w-100">Kotlin EXP 는 InnerSpec에서 지원하지 않습니다. InnerSpec은 타입 독립적으로 설계되었기 때문에, 프로퍼티 이름을 통해 프로퍼티를 접근해야 합니다. &lt;/div>
+ 
+&lt;/div>
+
+&lt;h2 id="arbitrarybuilder-에-innerspec-적용하기">ArbitraryBuilder 에 InnerSpec 적용하기 &lt;a href="#arbitrarybuilder-%ec%97%90-innerspec-%ec%a0%81%ec%9a%a9%ed%95%98%ea%b8%b0" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h2>
+&lt;p>빌더에 미리 정의된 &lt;code>InnerSpec&lt;/code> 을 적용하려면 다음과 같이 &lt;code>setInner()&lt;/code> 메서드를 사용하세요.&lt;/p></description></item><item><title>인터페이스 커스터마이징</title><link>https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/customizing-objects/interface/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/customizing-objects/interface/</guid><description>&lt;p>인터페이스에서 &lt;code>ArbitraryBuilder&lt;/code>의 모든 API를 사용할 수 있습니다.
+우리는 이미 &lt;a href="../../generating-objects/generating-interface">Generating Interface Type&lt;/a> 에서 API를 사용한 예를 확인했었습니다.
+알아본 내용을 복습하면, 인터페이스의 종류에는 &lt;code>interface&lt;/code>, &lt;code>generic interface&lt;/code> ,&lt;code>selaed interface&lt;/code>이 있습니다.
+인터페이스의 종류와 상관없이 모든 인터페이스의 프로퍼티를 제어할 수 있습니다.&lt;/p>
+&lt;pre>&lt;code class="language-java">public interface StringSupplier {
+	String getValue();
+}
+
+FixtureMonkey fixture = FixtureMonkey.create();
+
+String result = fixture.giveMeBuilder(StringSupplier.class)
+	.set(&amp;quot;value&amp;quot;, &amp;quot;fix&amp;quot;)
+	.sample()
+	.getValue();
+&lt;/code>&lt;/pre>
+&lt;p>인터페이스를 생성하는 &lt;code>ArbitraryBuilder&lt;/code>가 제어할 수 있는 프로퍼티는 실제로 생성한 구현체마다 다릅니다.
+하지만 아직은 구현체를 선택할 수 있는 &lt;code>ArbitraryBuilder&lt;/code> API가 존재하지 않습니다.
+인터페이스가 하나의 구현체를 가지고 있다면 구현체 프로퍼티도 제어가 가능합니다. 하지만 구현체가 두 개 이상이라면 인터페이스의 프로퍼티만 제어가 가능합니다.&lt;/p></description></item></channel></rss>

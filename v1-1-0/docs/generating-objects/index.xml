@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Generating Objects on</title><link>https://naver.github.io/fixture-monkey/v1-1-0/docs/generating-objects/</link><description>Recent content in Generating Objects on</description><generator>Hugo</generator><language>v1-1-0</language><atom:link href="https://naver.github.io/fixture-monkey/v1-1-0/docs/generating-objects/index.xml" rel="self" type="application/rss+xml"/><item><title>FixtureMonkey</title><link>https://naver.github.io/fixture-monkey/v1-1-0/docs/generating-objects/fixture-monkey/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v1-1-0/docs/generating-objects/fixture-monkey/</guid><description>&lt;p>To generate test fixtures, the first step is to create a &lt;code>FixtureMonkey&lt;/code> instance, which facilitates the creation of test fixtures.&lt;/p>
+&lt;p>You can use the &lt;code>create()&lt;/code> method to generate a &lt;code>FixtureMonkey&lt;/code> instance with default options.
+For Kotlin environments, add the Kotlin plugin.&lt;/p>
+
+
+
+&lt;ul class="nav nav-tabs" id="tabs-0" role="tablist">
+ &lt;li class="nav-item">
+ &lt;button class="nav-link active"
+ id="tabs-00-00-tab" data-bs-toggle="tab" data-bs-target="#tabs-00-00" role="tab"
+ aria-controls="tabs-00-00" aria-selected="true">
+ Java
+ &lt;/button>
+ &lt;/li>&lt;li class="nav-item">
+ &lt;button class="nav-link"
+ id="tabs-00-01-tab" data-bs-toggle="tab" data-bs-target="#tabs-00-01" role="tab"
+ aria-controls="tabs-00-01" aria-selected="false">
+ Kotlin
+ &lt;/button>
+ &lt;/li>
+&lt;/ul>
+
+&lt;div class="tab-content" id="tabs-0-content">
+ &lt;div class="tab-pane fade show active"
+ id="tabs-00-00" role="tabpanel" aria-labelled-by="tabs-00-00-tab" tabindex="0">
+ &lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-java" data-lang="java">&lt;span class="line">&lt;span class="cl">&lt;span class="n">FixtureMonkey&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">fixtureMonkey&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">FixtureMonkey&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">create&lt;/span>&lt;span class="p">();&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>
+ &lt;/div>
+ &lt;div class="tab-pane fade"
+ id="tabs-00-01" role="tabpanel" aria-labelled-by="tabs-00-01-tab" tabindex="0">
+ &lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-kotlin" data-lang="kotlin">&lt;span class="line">&lt;span class="cl">&lt;span class="k">val&lt;/span> &lt;span class="py">fixtureMonkey&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="n">FixtureMonkey&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">.&lt;/span>&lt;span class="n">plugin&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">KotlinPlugin&lt;/span>&lt;span class="p">())&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">.&lt;/span>&lt;span class="n">build&lt;/span>&lt;span class="p">()&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>
+ &lt;/div>
+&lt;/div>
+
+&lt;p>If you want to add some options for creating or customizing the test fixtures, you can add them using the FixtureMonkey builder.&lt;/p></description></item><item><title>Generating Complex Types</title><link>https://naver.github.io/fixture-monkey/v1-1-0/docs/generating-objects/generating-complex-types/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v1-1-0/docs/generating-objects/generating-complex-types/</guid><description>&lt;p>Fixture Monkey is capable of generating complex objects that are difficult to create as test fixtures.&lt;/p>
+&lt;p>This page contains examples of the various types of objects that can be generated.&lt;/p>
+&lt;h2 id="java">Java &lt;a href="#java" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h2>
+&lt;h3 id="generic-objects">Generic Objects &lt;a href="#generic-objects" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h3>
+&lt;pre>&lt;code class="language-java">@Value
+public static class GenericObject&amp;lt;T&amp;gt; {
+ T foo;
+}
+
+@Value
+public static class GenericArrayObject&amp;lt;T&amp;gt; {
+ GenericObject&amp;lt;T&amp;gt;[] foo;
+}
+
+@Value
+public static class TwoGenericObject&amp;lt;T, U&amp;gt; {
+ T foo;
+ U bar;
+}
+
+@Value
+public static class ThreeGenericObject&amp;lt;T, U, V&amp;gt; {
+ T foo;
+ U bar;
+ V baz;
+}
+&lt;/code>&lt;/pre>
+&lt;h3 id="generic-interfaces">Generic Interfaces &lt;a href="#generic-interfaces" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h3>
+&lt;pre>&lt;code class="language-java">public interface GenericInterface&amp;lt;T&amp;gt; {
+}
+
+@Value
+public static class GenericInterfaceImpl&amp;lt;T&amp;gt; implements GenericInterface&amp;lt;T&amp;gt; {
+ T foo;
+}
+
+public interface TwoGenericInterface&amp;lt;T, U&amp;gt; {
+}
+
+@Value
+public static class TwoGenericImpl&amp;lt;T, U&amp;gt; implements TwoGenericInterface&amp;lt;T, U&amp;gt; {
+ T foo;
+
+ U bar;
+}
+&lt;/code>&lt;/pre>
+&lt;h3 id="selfreference">SelfReference &lt;a href="#selfreference" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h3>
+&lt;pre>&lt;code class="language-java">@Value
+public class SelfReference {
+ String foo;
+ SelfReference bar;
+}
+
+@Value
+public class SelfReferenceList {
+ String foo;
+ List&amp;lt;SelfReferenceList&amp;gt; bar;
+}
+&lt;/code>&lt;/pre>
+&lt;h3 id="interface">Interface &lt;a href="#interface" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h3>
+&lt;pre>&lt;code class="language-java">public interface Interface {
+ String foo();
+
+ Integer bar();
+}
+
+public interface InheritedInterface extends Interface {
+ String foo();
+}
+
+public interface InheritedInterfaceWithSameNameMethod extends Interface {
+ String foo();
+}
+
+public interface ContainerInterface {
+ List&amp;lt;String&amp;gt; baz();
+
+ Map&amp;lt;String, Integer&amp;gt; qux();
+}
+
+public interface InheritedTwoInterface extends Interface, ContainerInterface {
+}
+&lt;/code>&lt;/pre>
+&lt;h2 id="kotlin">Kotlin &lt;a href="#kotlin" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h2>
+&lt;h3 id="generic-objects-1">Generic Objects &lt;a href="#generic-objects-1" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h3>
+&lt;pre>&lt;code class="language-kotlin">class Generic&amp;lt;T&amp;gt;(val foo: T)
+
+class GenericImpl(val foo: Generic&amp;lt;String&amp;gt;)
+&lt;/code>&lt;/pre>
+&lt;h3 id="selfreference-1">SelfReference &lt;a href="#selfreference-1" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h3>
+&lt;pre>&lt;code class="language-kotlin">class SelfReference(val foo: String, val bar: SelfReference?)
+&lt;/code>&lt;/pre>
+&lt;h3 id="sealed-class-value-class">Sealed class, Value class &lt;a href="#sealed-class-value-class" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h3>
+&lt;pre>&lt;code class="language-kotlin">sealed class SealedClass
+
+object ObjectSealedClass : SealedClass()
+
+class SealedClassImpl(val foo: String) : SealedClass()
+
+@JvmInline
+value class ValueClass(val foo: String)
+&lt;/code>&lt;/pre></description></item><item><title>Instantiate Methods</title><link>https://naver.github.io/fixture-monkey/v1-1-0/docs/generating-objects/instantiate-methods/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v1-1-0/docs/generating-objects/instantiate-methods/</guid><description>&lt;p>For each test, you may want to use a different way of creating objects.
+For example, even within the same class, one test may require initialization using the constructor, while another test may require initialization using its factory method.&lt;/p>
+&lt;p>Fixture Monkey allows you to choose the preferred method of creating your object through the &lt;code>instantiate()&lt;/code> method.
+&lt;div class="alert alert-doks d-flex" role="alert">
+ &lt;div class="flex-shrink-1 alert-icon">💡 &lt;/div>
+ 
+ &lt;div class="w-100">If the Kotlin Plugin is added, you can use the instantiateBy() method with a custom DSL. &lt;/div>
+ 
+&lt;/div>
+&lt;/p></description></item><item><title>Introspector</title><link>https://naver.github.io/fixture-monkey/v1-1-0/docs/generating-objects/introspector/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v1-1-0/docs/generating-objects/introspector/</guid><description>&lt;p>While you can change the way an object is created in the &lt;code>ArbitraryBuilder&lt;/code> with &lt;a href="../instantiate-methods">&lt;code>instantiate&lt;/code>&lt;/a>, there may be cases where you want to change the way objects are created globally.
+Fixture Monkey lets you choose the way you want to create your object by providing different &lt;code>Introspectors&lt;/code>.&lt;/p>
+&lt;p>An &lt;code>Introspector&lt;/code> defines the default way of how Fixture Monkey creates objects.
+Each introspector has some kind of restrictions that the class must have in order for the introspector to generate instances of that class.&lt;/p></description></item><item><title>Generating Interface Type</title><link>https://naver.github.io/fixture-monkey/v1-1-0/docs/generating-objects/generating-interface/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v1-1-0/docs/generating-objects/generating-interface/</guid><description>&lt;p>Fixture Monkey is able to generate complex interface objects consisting
+of &lt;code>interface&lt;/code>, &lt;code>generic interface&lt;/code>, &lt;code>sealed interface&lt;/code>.&lt;/p>
+&lt;p>Fixture Monkey provides the default implementations of certain interfaces.
+For example, &lt;code>ArrayList&lt;/code> is for the &lt;code>List&lt;/code> interface, &lt;code>HashSet&lt;/code> is for the &lt;code>Set&lt;/code> interface.&lt;/p>
+&lt;p>Except in those cases, you should specify the implementations of the interface.
+If you do not, Fixture Monkey will generate an anonymous object for you.
+You do not need to specify the implementations in the case of &lt;code>sealed interface&lt;/code>.&lt;/p></description></item></channel></rss>

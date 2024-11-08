@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Customizing Objects on</title><link>https://naver.github.io/fixture-monkey/v1-1-0/docs/customizing-objects/</link><description>Recent content in Customizing Objects on</description><generator>Hugo</generator><language>v1-1-0</language><atom:link href="https://naver.github.io/fixture-monkey/v1-1-0/docs/customizing-objects/index.xml" rel="self" type="application/rss+xml"/><item><title>Fixture Customization APIs</title><link>https://naver.github.io/fixture-monkey/v1-1-0/docs/customizing-objects/apis/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v1-1-0/docs/customizing-objects/apis/</guid><description>&lt;p>Fixture Monkey offers a range of APIs within the ArbitraryBuilder class that enable customization of objects created by it.&lt;/p>
+&lt;h2 id="customizing-fixtures">Customizing Fixtures &lt;a href="#customizing-fixtures" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h2>
+&lt;h3 id="set">set() &lt;a href="#set" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h3>
+&lt;p>The &lt;code>set()&lt;/code> method is used to assign values to one or more properties referenced by the &lt;a href="../expressions">expression&lt;/a>.&lt;/p>
+&lt;p>Different types, including &lt;code>Supplier&lt;/code>, &lt;a href="../arbitrary">&lt;code>Arbitrary&lt;/code>&lt;/a>, &lt;code>ArbitraryBuilder&lt;/code>, &lt;code>NOT_NULL&lt;/code>, &lt;code>NULL&lt;/code>, or &lt;code>Just&lt;/code> can be used as the value.
+Additionally, a certain instance of an object can also be used as the value.&lt;/p>
+
+
+
+&lt;ul class="nav nav-tabs" id="tabs-0" role="tablist">
+ &lt;li class="nav-item">
+ &lt;button class="nav-link active"
+ id="tabs-00-00-tab" data-bs-toggle="tab" data-bs-target="#tabs-00-00" role="tab"
+ aria-controls="tabs-00-00" aria-selected="true">
+ Java
+ &lt;/button>
+ &lt;/li>&lt;li class="nav-item">
+ &lt;button class="nav-link"
+ id="tabs-00-01-tab" data-bs-toggle="tab" data-bs-target="#tabs-00-01" role="tab"
+ aria-controls="tabs-00-01" aria-selected="false">
+ Kotlin
+ &lt;/button>
+ &lt;/li>
+&lt;/ul>
+
+&lt;div class="tab-content" id="tabs-0-content">
+ &lt;div class="tab-pane fade show active"
+ id="tabs-00-00" role="tabpanel" aria-labelled-by="tabs-00-00-tab" tabindex="0">
+ &lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-java" data-lang="java">&lt;span class="line">&lt;span class="cl">&lt;span class="n">fixtureMonkey&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">giveMeBuilder&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">Product&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">class&lt;/span>&lt;span class="p">)&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">set&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;id&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">1000&lt;/span>&lt;span class="p">);&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>
+ &lt;/div>
+ &lt;div class="tab-pane fade"
+ id="tabs-00-01" role="tabpanel" aria-labelled-by="tabs-00-01-tab" tabindex="0">
+ &lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-kotlin" data-lang="kotlin">&lt;span class="line">&lt;span class="cl">&lt;span class="n">fixtureMonkey&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">giveMeBuilder&lt;/span>&lt;span class="p">&amp;lt;&lt;/span>&lt;span class="n">Product&lt;/span>&lt;span class="p">&amp;gt;()&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">.&lt;/span>&lt;span class="n">setExp&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">Product&lt;/span>&lt;span class="o">::&lt;/span>&lt;span class="n">id&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="m">1000&lt;/span>&lt;span class="p">)&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>
+ &lt;/div>
+&lt;/div>
+
+&lt;h5 id="just">Just &lt;a href="#just" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h5>
+&lt;blockquote>
+&lt;p>Using an instance wrapped by &lt;code>Just&lt;/code> when using &lt;code>set()&lt;/code> makes you set the value directly instead of decomposing.
+Normally, when you &lt;code>set()&lt;/code> a property in &lt;code>ArbitraryBuilder&lt;/code> it does not use an instance of the given value, it does a deep copy instead.
+So, if you need to set with an instance, you can use &lt;code>Values.just(instance)&lt;/code>
+This feature can be useful in cases where you need to set a property to a mock instance when using a mocking framework.&lt;/p></description></item><item><title>Expressions</title><link>https://naver.github.io/fixture-monkey/v1-1-0/docs/customizing-objects/expressions/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v1-1-0/docs/customizing-objects/expressions/</guid><description>&lt;p>When using Fixture Monkey, you have the flexibility to select one or more properties of an object using Fixture Monkey expressions.&lt;/p>
+&lt;p>Let&amp;rsquo;s consider an example object structure:&lt;/p>
+&lt;pre>&lt;code class="language-java">@Value
+public class JavaClass {
+ String field;
+
+ String[] array;
+
+ List&amp;lt;String&amp;gt; list;
+
+ Nested object;
+
+ List&amp;lt;Nested&amp;gt; objectList;
+
+ @Value
+ public static class Nested {
+ String nestedField;
+ }
+}
+&lt;/code>&lt;/pre>
+&lt;h3 id="selecting-properties-using-string-expressions">Selecting Properties Using String Expressions &lt;a href="#selecting-properties-using-string-expressions" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h3>
+&lt;h5 id="selecting-the-root-object">Selecting the root object: &lt;a href="#selecting-the-root-object" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h5>
+&lt;pre>&lt;code class="language-java">&amp;quot;$&amp;quot;
+&lt;/code>&lt;/pre>
+&lt;h5 id="selecting-a-specific-field">Selecting a specific field: &lt;a href="#selecting-a-specific-field" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h5>
+&lt;pre>&lt;code class="language-java">&amp;quot;field&amp;quot;
+&lt;/code>&lt;/pre>
+&lt;h5 id="selecting-a-nested-field">Selecting a nested field: &lt;a href="#selecting-a-nested-field" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h5>
+&lt;pre>&lt;code class="language-java">&amp;quot;object.nestedField&amp;quot;
+&lt;/code>&lt;/pre>
+&lt;h5 id="selecting-the-n-th-element-of-a-collection">Selecting the n-th element of a collection: &lt;a href="#selecting-the-n-th-element-of-a-collection" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h5>
+&lt;pre>&lt;code class="language-java">&amp;quot;list[n]&amp;quot;
+&lt;/code>&lt;/pre>
+&lt;h5 id="selecting-all-elements-of-a-collection">Selecting all elements of a collection: &lt;a href="#selecting-all-elements-of-a-collection" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h5>
+&lt;pre>&lt;code class="language-java">&amp;quot;list[*]&amp;quot;
+&lt;/code>&lt;/pre>
+&lt;h5 id="selecting-the-n-th-element-of-an-array">Selecting the n-th element of an array: &lt;a href="#selecting-the-n-th-element-of-an-array" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h5>
+&lt;pre>&lt;code class="language-java">&amp;quot;array[n]&amp;quot;
+&lt;/code>&lt;/pre>
+&lt;h5 id="selecting-all-elements-of-an-array">Selecting all elements of an array: &lt;a href="#selecting-all-elements-of-an-array" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h5>
+&lt;pre>&lt;code class="language-java">&amp;quot;array[*]&amp;quot;
+&lt;/code>&lt;/pre>
+&lt;h5 id="combining-expressions-to-select-a-nested-field">Combining expressions to select a nested field: &lt;a href="#combining-expressions-to-select-a-nested-field" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h5>
+&lt;pre>&lt;code class="language-java">&amp;quot;objectList[0].nestedField&amp;quot;
+&lt;/code>&lt;/pre>
+&lt;h3 id="selecting-properties-using-javagetter-selector">Selecting Properties Using JavaGetter Selector &lt;a href="#selecting-properties-using-javagetter-selector" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h3>
+&lt;p>There is a type-safe way to select properties using a &lt;code>javaGetter()&lt;/code> property selector.
+This selector is designed to choose and represent a property through a getter method reference in Java.&lt;/p></description></item><item><title>Customizing random values with Arbitrary</title><link>https://naver.github.io/fixture-monkey/v1-1-0/docs/customizing-objects/arbitrary/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v1-1-0/docs/customizing-objects/arbitrary/</guid><description>&lt;p>Jqwik is a Property-Based Testing library for the JVM environment.
+Fixture Monkey relies on Jqwik&amp;rsquo;s &lt;a href="https://jqwik.net/docs/1.2.1/javadoc/net/jqwik/api/Arbitrary.html">&lt;code>Arbitrary&lt;/code>&lt;/a> to generate random values for primitive types such as characters, strings, and integers.&lt;/p>
+&lt;p>In Jqwik, &lt;code>Arbitrary&lt;/code> is the core interface used to represent objects that can be generated and shrunk.
+At times, we might desire our fixture properties to have random values while adhering to certain constraints.&lt;/p>
+&lt;p>In such scenarios, you can achieve this by customizing properties using Fixture Monkey&amp;rsquo;s &lt;code>set()&lt;/code> method and assigning an &lt;code>Arbitrary&lt;/code> as the value.
+You can generate an &lt;code>Arbitrary&lt;/code> that matches certain conditions, simply by calling static methods in Jqwik&amp;rsquo;s &lt;a href="https://jqwik.net/docs/current/user-guide.html#static-arbitraries-methods">Arbitraries class&lt;/a>.&lt;/p></description></item><item><title>InnerSpec</title><link>https://naver.github.io/fixture-monkey/v1-1-0/docs/customizing-objects/innerspec/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v1-1-0/docs/customizing-objects/innerspec/</guid><description>&lt;p>An InnerSpec is a type-independent specification for the customizations you wish to apply.
+Using the &lt;code>setInner()&lt;/code> method within ArbitraryBuilder, you can apply customizations defined within an &lt;code>InnerSpec&lt;/code> instance into your builder.&lt;/p>
+&lt;p>&lt;code>InnerSpec&lt;/code> holds customization details and can be reused on ArbitraryBuilders.
+Unlike using &lt;code>expressions&lt;/code> used in ArbitraryBuilder, &lt;code>InnerSpec&lt;/code> enables a more nested and structured approach.&lt;/p>
+&lt;p>An added advantage of InnerSpec is its ability to customize map properties, unlike normal expressions.&lt;/p></description></item><item><title>Customizing Interface</title><link>https://naver.github.io/fixture-monkey/v1-1-0/docs/customizing-objects/interface/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v1-1-0/docs/customizing-objects/interface/</guid><description>&lt;p>The &lt;code>ArbitraryBuilder&lt;/code> API is also valid within the interface.
+You can customize the interface properties regardless of the interface type as said in &lt;a href="../../generating-objects/generating-interface">Generating Interface Type&lt;/a>
+The interface type refers to &lt;code>interface&lt;/code>, &lt;code>generic interface&lt;/code> ,&lt;code>selaed interface&lt;/code>.&lt;/p>
+&lt;pre>&lt;code class="language-java">public interface StringSupplier {
+	String getValue();
+}
+
+FixtureMonkey fixture = FixtureMonkey.create();
+
+String result = fixture.giveMeBuilder(StringSupplier.class)
+	.set(&amp;quot;value&amp;quot;, &amp;quot;fix&amp;quot;)
+	.sample()
+	.getValue();
+&lt;/code>&lt;/pre>
+&lt;p>The properties of the interface in &lt;code>ArbitraryBuilder&lt;/code> differ in the implementation.
+Unfortunately, there is currently no &lt;code>ArbitraryBuilder&lt;/code> API that resolves the implementation of the interface.
+Unless the interface has only one implementation, you can customize the properties of the interface, not the implementation.&lt;/p></description></item></channel></rss>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>소개 on</title><link>https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/introduction/</link><description>Recent content in 소개 on</description><generator>Hugo</generator><language>v1-1-0-kor</language><atom:link href="https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/introduction/index.xml" rel="self" type="application/rss+xml"/><item><title>개요</title><link>https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/introduction/overview/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/introduction/overview/</guid><description>&lt;h2 id="fixture-monkey">Fixture Monkey &lt;a href="#fixture-monkey" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h2>
+&lt;p>Fixture Monkey는 테스트 객체를 쉽게 생성하고 조작할 수 있도록 고안된 Java 및 Kotlin 라이브러리입니다.&lt;/p>
+&lt;p>이 라이브러리는 테스트 작성을 간편하게 하기 위해 필요한 테스트 픽스처를 손쉽게 생성하는 데 중점을 두고 있습니다.
+기본적이거나 복잡한 테스트 픽스처를 다루고 있더라도, Fixture Monkey는 필요한 테스트 객체를 쉽게 생성하고 원하는 구성에 맞게 손쉽게 수정할 수 있도록 도와줍니다.&lt;/p>
+&lt;p>Fixture Monkey를 활용하여 JVM 테스트를 간결하고 안전하게 수행하세요.&lt;/p>
+&lt;hr>
+&lt;h2 id="fixture-monkey를-왜-사용해야-하나요">Fixture Monkey를 왜 사용해야 하나요? &lt;a href="#fixture-monkey%eb%a5%bc-%ec%99%9c-%ec%82%ac%ec%9a%a9%ed%95%b4%ec%95%bc-%ed%95%98%eb%82%98%ec%9a%94" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h2>
+&lt;h3 id="1-간결함">1. 간결함 &lt;a href="#1-%ea%b0%84%ea%b2%b0%ed%95%a8" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h3>
+&lt;pre>&lt;code class="language-java">Product actual = fixtureMonkey.giveMeOne(Product.class);
+&lt;/code>&lt;/pre>
+&lt;p>Fixture Monkey를 사용하면 테스트 객체 생성이 놀랍게 간단해집니다. 한 줄의 코드로 어떤 종류의 테스트 객체든 손쉽게 생성할 수 있습니다.
+이는 테스트의 준비 단계를 간소화하여 테스트를 빠르고 쉽게 작성할 수 있도록 해줍니다. 뿐만 아니라, 프로덕션 코드나 테스트 환경을 변경할 필요도 없습니다.&lt;/p></description></item></channel></rss>

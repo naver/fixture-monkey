@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Intellij 플러그인 on</title><link>https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/intellij-plugin/</link><description>Recent content in Intellij 플러그인 on</description><generator>Hugo</generator><language>v1-1-0-kor</language><atom:link href="https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/intellij-plugin/index.xml" rel="self" type="application/rss+xml"/><item><title>Fixture Monkey Helper</title><link>https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/intellij-plugin/fixture-monkey-helper/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/intellij-plugin/fixture-monkey-helper/</guid><description>&lt;p>&lt;a href="https://plugins.jetbrains.com/plugin/19589-fixture-monkey-helper">Fixture Monkey Helper&lt;/a>는 IntelliJ IDE에서 Fixture Monkey를 사용할 수 있도록 도와주는 IntelliJ 플러그인입니다.&lt;/p>
+&lt;p>문자열 표현식 및 Kotlin DSL 표현식을 더 쉽게 사용할 수 있는 몇 가지 기능을 제공하며, 어색한 코드를 감지하고 수정하기 위한 일부 IntelliJ 검사 기능도 제공합니다.&lt;/p>
+&lt;div class="alert alert-doks d-flex" role="alert">
+ &lt;div class="flex-shrink-1 alert-icon">🚨 &lt;/div>
+ 
+ &lt;div class="w-100">이 플러그인은 현재 Java 소스 코드 및 Kotlin 테스트 코드 내에서만 작동합니다. 기능 확장이 진행 중입니다. &lt;/div>
+ 
+&lt;/div>
+
+&lt;h3 id="기능">기능 &lt;a href="#%ea%b8%b0%eb%8a%a5" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h3>
+&lt;ul>
+&lt;li>
+&lt;p>&lt;strong>Fixture Monkey 표현식 지원&lt;/strong>&lt;/p>
+&lt;ul>
+&lt;li>원활한 변환: 문자열 표현식을 Fixture Monkey가 제공하는 Kotlin DSL로 변환하여 ArbitraryBuilder에 사용할 수 있습니다.&lt;/li>
+&lt;li>표현식 유효성 검사: 실행 전에 문자열 표현식의 정확성을 확인합니다.&lt;/li>
+&lt;li>직관적인 자동 완성: 입력시 관련된 자동 완성 제안을 통해 코딩 속도를 높입니다.&lt;/li>
+&lt;li>간편한 탐색: 코드베이스 내의 필드 참조로 바로 이동합니다.&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>Fixture Monkey Kotlin DSL 기능 향상&lt;/strong>&lt;/p></description></item></channel></rss>

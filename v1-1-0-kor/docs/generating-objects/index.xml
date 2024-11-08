@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>객체 생성 on</title><link>https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/generating-objects/</link><description>Recent content in 객체 생성 on</description><generator>Hugo</generator><language>v1-1-0-kor</language><atom:link href="https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/generating-objects/index.xml" rel="self" type="application/rss+xml"/><item><title>FixtureMonkey</title><link>https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/generating-objects/fixture-monkey/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/generating-objects/fixture-monkey/</guid><description>&lt;p>테스트 픽스처를 생성하기 위해서는 우선 &lt;code>FixtureMonkey&lt;/code> 인스턴스를 생성해야 합니다. 해당 인스턴스는 테스트 픽스쳐 생성을 담당합니다.&lt;/p>
+&lt;p>&lt;code>FixtureMonkey&lt;/code> 인스턴스를 생성하기 위해서는 &lt;code>create()&lt;/code> 메서드를 사용하면 됩니다. Kotlin 환경에서는 Kotlin 플러그인을 추가해야 합니다.&lt;/p>
+
+
+
+&lt;ul class="nav nav-tabs" id="tabs-0" role="tablist">
+ &lt;li class="nav-item">
+ &lt;button class="nav-link active"
+ id="tabs-00-00-tab" data-bs-toggle="tab" data-bs-target="#tabs-00-00" role="tab"
+ aria-controls="tabs-00-00" aria-selected="true">
+ Java
+ &lt;/button>
+ &lt;/li>&lt;li class="nav-item">
+ &lt;button class="nav-link"
+ id="tabs-00-01-tab" data-bs-toggle="tab" data-bs-target="#tabs-00-01" role="tab"
+ aria-controls="tabs-00-01" aria-selected="false">
+ Kotlin
+ &lt;/button>
+ &lt;/li>
+&lt;/ul>
+
+&lt;div class="tab-content" id="tabs-0-content">
+ &lt;div class="tab-pane fade show active"
+ id="tabs-00-00" role="tabpanel" aria-labelled-by="tabs-00-00-tab" tabindex="0">
+ &lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-java" data-lang="java">&lt;span class="line">&lt;span class="cl">&lt;span class="n">FixtureMonkey&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">fixtureMonkey&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">FixtureMonkey&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">create&lt;/span>&lt;span class="p">();&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>
+ &lt;/div>
+ &lt;div class="tab-pane fade"
+ id="tabs-00-01" role="tabpanel" aria-labelled-by="tabs-00-01-tab" tabindex="0">
+ &lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-kotlin" data-lang="kotlin">&lt;span class="line">&lt;span class="cl">&lt;span class="k">val&lt;/span> &lt;span class="py">fixtureMonkey&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="n">FixtureMonkey&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">.&lt;/span>&lt;span class="n">plugin&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">KotlinPlugin&lt;/span>&lt;span class="p">())&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">.&lt;/span>&lt;span class="n">build&lt;/span>&lt;span class="p">()&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>
+ &lt;/div>
+&lt;/div>
+
+&lt;p>테스트 픽스처를 생성하거나 커스텀하기 위해서는 FixtureMonkey 빌더를 사용하여 옵션을 추가할 수 있습니다.&lt;/p>
+
+
+
+&lt;ul class="nav nav-tabs" id="tabs-1" role="tablist">
+ &lt;li class="nav-item">
+ &lt;button class="nav-link active"
+ id="tabs-01-00-tab" data-bs-toggle="tab" data-bs-target="#tabs-01-00" role="tab"
+ aria-controls="tabs-01-00" aria-selected="true">
+ Java
+ &lt;/button>
+ &lt;/li>&lt;li class="nav-item">
+ &lt;button class="nav-link"
+ id="tabs-01-01-tab" data-bs-toggle="tab" data-bs-target="#tabs-01-01" role="tab"
+ aria-controls="tabs-01-01" aria-selected="false">
+ Kotlin
+ &lt;/button>
+ &lt;/li>
+&lt;/ul>
+
+&lt;div class="tab-content" id="tabs-1-content">
+ &lt;div class="tab-pane fade show active"
+ id="tabs-01-00" role="tabpanel" aria-labelled-by="tabs-01-00-tab" tabindex="1">
+ &lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-java" data-lang="java">&lt;span class="line">&lt;span class="cl">&lt;span class="n">FixtureMonkey&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">fixtureMonkey&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">FixtureMonkey&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">builder&lt;/span>&lt;span class="p">()&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="o">+&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">options&lt;/span>&lt;span class="p">...&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">build&lt;/span>&lt;span class="p">();&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>
+ &lt;/div>
+ &lt;div class="tab-pane fade"
+ id="tabs-01-01" role="tabpanel" aria-labelled-by="tabs-01-01-tab" tabindex="1">
+ &lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-kotlin" data-lang="kotlin">&lt;span class="line">&lt;span class="cl">&lt;span class="k">val&lt;/span> &lt;span class="py">fixtureMonkey&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="nc">FixtureMonkey&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">builder&lt;/span>&lt;span class="p">()&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">+&lt;/span> &lt;span class="n">options&lt;/span>&lt;span class="o">..&lt;/span>&lt;span class="p">.&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">.&lt;/span>&lt;span class="n">build&lt;/span>&lt;span class="p">()&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>
+ &lt;/div>
+&lt;/div>
+
+&lt;p>어떤 옵션을 사용할 수 있는지에 대한 정보는 &lt;a href="../../fixture-monkey-options/concepts/">Fixture Monkey 옵션 항목&lt;/a>을 참고해주세요.&lt;/p></description></item><item><title>객체 생성 방법 지정하기</title><link>https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/generating-objects/instantiate-methods/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/generating-objects/instantiate-methods/</guid><description>&lt;p>각 테스트마다 객체 생성을 다르게 하고 싶을 수 있습니다.
+예를 들어, 같은 클래스에서도 첫 테스트에서는 생성자로 객체를 생성하고, 다른 테스트에서는 팩터리 메서드로 객체를 생성하고 싶을 수 있습니다&lt;/p>
+&lt;p>Fixture Monkey는 &lt;code>instantiate()&lt;/code> 메서드를 제공해 객체 생성 방법을 선택할 수 있게 합니다.
+&lt;div class="alert alert-doks d-flex" role="alert">
+ &lt;div class="flex-shrink-1 alert-icon">💡 &lt;/div>
+ 
+ &lt;div class="w-100">Kotlin Plugin을 추가한다면 커스텀 DSL에서 instantiateBy() 메서드를 사용할 수 있습니다. &lt;/div>
+ 
+&lt;/div>
+&lt;/p>
+&lt;p>&lt;code>ArbitraryBuilder&lt;/code>에서 원하는 인스턴스 생성 방법(생성자 또는 팩토리 메서드)으로 객체를 생성할 수 있습니다.&lt;/p>
+&lt;p>&lt;code>ArbitraryBuilder&lt;/code>를 사용할 때마다 매번 객체 생성 방법을 지정해야 하는 것은 아닙니다.
+전역 옵션으로 FixtureMonkey 인스턴스에서 객체 생성 방식을 지정해주고 싶다면, &lt;a href="../introspector">Introspector&lt;/a> 페이지를 참고해주세요.&lt;/p></description></item><item><title>복잡한 객체 생성하기</title><link>https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/generating-objects/generating-complex-types/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/generating-objects/generating-complex-types/</guid><description>&lt;p>Fixture Monkey는 직접 생성하기 어려운 복잡한 객체도 테스트 픽스처로 쉽게 생성할 수 있습니다.&lt;/p>
+&lt;p>이 페이지는 생성할 수 있는 다양한 타입의 객체를 보여줍니다.&lt;/p>
+&lt;h2 id="java">Java &lt;a href="#java" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h2>
+&lt;h3 id="generic-objects">Generic Objects &lt;a href="#generic-objects" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h3>
+&lt;pre>&lt;code class="language-java">@Value
+public static class GenericObject&amp;lt;T&amp;gt; {
+ T foo;
+}
+
+@Value
+public static class GenericArrayObject&amp;lt;T&amp;gt; {
+ GenericObject&amp;lt;T&amp;gt;[] foo;
+}
+
+@Value
+public static class TwoGenericObject&amp;lt;T, U&amp;gt; {
+ T foo;
+ U bar;
+}
+
+@Value
+public static class ThreeGenericObject&amp;lt;T, U, V&amp;gt; {
+ T foo;
+ U bar;
+ V baz;
+}
+&lt;/code>&lt;/pre>
+&lt;h3 id="generic-interfaces">Generic Interfaces &lt;a href="#generic-interfaces" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h3>
+&lt;pre>&lt;code class="language-java">public interface GenericInterface&amp;lt;T&amp;gt; {
+}
+
+@Value
+public static class GenericInterfaceImpl&amp;lt;T&amp;gt; implements GenericInterface&amp;lt;T&amp;gt; {
+ T foo;
+}
+
+public interface TwoGenericInterface&amp;lt;T, U&amp;gt; {
+}
+
+@Value
+public static class TwoGenericImpl&amp;lt;T, U&amp;gt; implements TwoGenericInterface&amp;lt;T, U&amp;gt; {
+ T foo;
+
+ U bar;
+}
+&lt;/code>&lt;/pre>
+&lt;h3 id="selfreference">SelfReference &lt;a href="#selfreference" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h3>
+&lt;pre>&lt;code class="language-java">@Value
+public class SelfReference {
+ String foo;
+ SelfReference bar;
+}
+
+@Value
+public class SelfReferenceList {
+ String foo;
+ List&amp;lt;SelfReferenceList&amp;gt; bar;
+}
+&lt;/code>&lt;/pre>
+&lt;h3 id="interface">Interface &lt;a href="#interface" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h3>
+&lt;pre>&lt;code class="language-java">public interface Interface {
+ String foo();
+
+ Integer bar();
+}
+
+public interface InheritedInterface extends Interface {
+ String foo();
+}
+
+public interface InheritedInterfaceWithSameNameMethod extends Interface {
+ String foo();
+}
+
+public interface ContainerInterface {
+ List&amp;lt;String&amp;gt; baz();
+
+ Map&amp;lt;String, Integer&amp;gt; qux();
+}
+
+public interface InheritedTwoInterface extends Interface, ContainerInterface {
+}
+&lt;/code>&lt;/pre>
+&lt;h2 id="kotlin">Kotlin &lt;a href="#kotlin" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h2>
+&lt;h3 id="generic-objects-1">Generic Objects &lt;a href="#generic-objects-1" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h3>
+&lt;pre>&lt;code class="language-kotlin">class Generic&amp;lt;T&amp;gt;(val foo: T)
+
+class GenericImpl(val foo: Generic&amp;lt;String&amp;gt;)
+&lt;/code>&lt;/pre>
+&lt;h3 id="selfreference-1">SelfReference &lt;a href="#selfreference-1" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h3>
+&lt;pre>&lt;code class="language-kotlin">class SelfReference(val foo: String, val bar: SelfReference?)
+&lt;/code>&lt;/pre>
+&lt;h3 id="sealed-class-value-class">Sealed class, Value class &lt;a href="#sealed-class-value-class" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h3>
+&lt;pre>&lt;code class="language-kotlin">sealed class SealedClass
+
+object ObjectSealedClass : SealedClass()
+
+class SealedClassImpl(val foo: String) : SealedClass()
+
+@JvmInline
+value class ValueClass(val foo: String)
+&lt;/code>&lt;/pre></description></item><item><title>Introspector</title><link>https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/generating-objects/introspector/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/generating-objects/introspector/</guid><description>&lt;p>&lt;a href="../instantiate-methods">&lt;code>instantiate&lt;/code>&lt;/a>를 사용하여 &lt;code>ArbitraryBuilder&lt;/code>에서 객체를 생성하는 방법을 변경할 수 있지만, 옵션을 통해 전역적으로도 객체 생성 방법을 지정할 수 있습니다.
+Fixture Monkey는 다양한 &lt;code>Introspector&lt;/code>로 객체를 생성하는 방법을 제공합니다.&lt;/p>
+&lt;p>&lt;code>Introspector&lt;/code>는 Fixture Monkey가 객체를 생성하는 기본 방법을 정의합니다.
+각 introspector는 클래스의 인스턴스를 생성할 수 있는 몇 가지 제약 조건이 있습니다.&lt;/p>
+&lt;p>사용하려는 introspector를 &lt;code>FixtureMonkey&lt;/code>의 &lt;code>objectIntrospector&lt;/code> 옵션을 사용하여 변경할 수 있습니다.&lt;/p>
+&lt;h2 id="beanarbitraryintrospector">BeanArbitraryIntrospector &lt;a href="#beanarbitraryintrospector" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h2>
+&lt;p>&lt;code>BeanArbitraryIntrospector&lt;/code>는 Fixture Monkey가 객체 생성에 사용하는 기본 introspector입니다.
+리플렉션과 setter 메서드를 사용하여 새 인스턴스를 생성하므로 생성할 클래스에는 인자가 없는 생성자(또는 기본생성자)와 setter가 있어야 합니다.&lt;/p></description></item><item><title>인터페이스 생성하기</title><link>https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/generating-objects/generating-interface/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/generating-objects/generating-interface/</guid><description>&lt;p>Fixture Monkey는 복잡한 인터페이스 객체를 생성할 수 있습니다.
+생성하는 인터페이스 종류는 다음 세 가지로 분류할 수 있습니다. &lt;code>interface&lt;/code>, &lt;code>generic interface&lt;/code>, &lt;code>sealed interface&lt;/code>.&lt;/p>
+&lt;p>Fixture Monkey에서 기본적으로 구현체를 정의해둔 인터페이스가 있습니다.
+예를 들면, &lt;code>List&lt;/code> 인터페이스는 &lt;code>ArrayList&lt;/code>, &lt;code>Set&lt;/code> 인터페이스는 &lt;code>HashSet&lt;/code> 를 생성합니다.&lt;/p>
+&lt;p>그 외의 인터페이스는 모두 구현체를 명시해주어야 합니다. 명시하지 않으면 Fixture Monkey는 인터페이스의 익명 객체를 생성합니다.
+예외적으로 &lt;code>sealed interface&lt;/code>를 생성할 때는 구현체를 명시할 필요 없습니다.&lt;/p>
+&lt;p>인터페이스를 어떻게 생성하는지 자세한 예제를 보면서 알아보겠습니다.&lt;/p></description></item></channel></rss>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Fixture Monkey Options on</title><link>https://naver.github.io/fixture-monkey/v1-1-0/docs/fixture-monkey-options/</link><description>Recent content in Fixture Monkey Options on</description><generator>Hugo</generator><language>v1-1-0</language><atom:link href="https://naver.github.io/fixture-monkey/v1-1-0/docs/fixture-monkey-options/index.xml" rel="self" type="application/rss+xml"/><item><title>Concepts</title><link>https://naver.github.io/fixture-monkey/v1-1-0/docs/fixture-monkey-options/concepts/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v1-1-0/docs/fixture-monkey-options/concepts/</guid><description>&lt;p>Before you learn about the options Fixture Monkey provides, there are a few things you need to know.&lt;/p>
+&lt;h2 id="property">Property &lt;a href="#property" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h2>
+&lt;p>In the documentation, the term &lt;code>property&lt;/code> is consistently used instead of &lt;code>field&lt;/code> when referring to the characteristics of a class&amp;rsquo;s object.
+While it has the same name as &amp;lsquo;property&amp;rsquo; in Kotlin, the concept is different in Fixture Monkey.&lt;/p>
+&lt;p>Fixture Monkey&amp;rsquo;s initial structure was primarily based on fields, which imposed limitations on configuration and control through methods and other mechanisms.
+For example, when relying solely on fields, it&amp;rsquo;s not possible to access annotations on setter methods.
+To address this limitation, the &lt;code>Property&lt;/code> interface was introduced, which extends support beyond just fields.&lt;/p></description></item><item><title>Generation Options</title><link>https://naver.github.io/fixture-monkey/v1-1-0/docs/fixture-monkey-options/generation-options/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v1-1-0/docs/fixture-monkey-options/generation-options/</guid><description>&lt;p>To create a complex object that matches your desired configurations, Fixture Monkey provides a variety of options for creating objects.&lt;/p>
+&lt;p>These options are accessible through the &lt;code>FixtureMonkeyBuilder&lt;/code>.&lt;/p>
+&lt;h2 id="implement-your-own-object-generator">Implement your own Object Generator &lt;a href="#implement-your-own-object-generator" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h2>
+&lt;h3 id="objectintrospector">ObjectIntrospector &lt;a href="#objectintrospector" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h3>
+&lt;blockquote>
+&lt;p>&lt;code>objectIntrospector&lt;/code>&lt;/p>
+&lt;/blockquote>
+&lt;p>An &lt;code>ObjectIntrospector&lt;/code> determines how Fixture Monkey creates objects. The &lt;code>objectIntrospector&lt;/code> option allows you to specify the default behavior when generating an object.&lt;br>
+As discussed in the &lt;a href="../../generating-objects/introspector">introspector section&lt;/a>, you can use predefined introspectors provided by Fixture Monkey or create your own custom introspector.&lt;/p></description></item><item><title>Customization Options</title><link>https://naver.github.io/fixture-monkey/v1-1-0/docs/fixture-monkey-options/customization-options/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v1-1-0/docs/fixture-monkey-options/customization-options/</guid><description>&lt;p>Fixture Monkey also provides options through the &lt;code>FixtureMonkeyBuilder&lt;/code> to customize objects to have the desired values or to use custom property names.&lt;/p>
+&lt;h2 id="change-how-property-names-are-resolved">Change how property names are resolved &lt;a href="#change-how-property-names-are-resolved" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h2>
+&lt;blockquote>
+&lt;p>&lt;code>defaultPropertyNameResolver&lt;/code>, &lt;code>pushPropertyNameResolver&lt;/code>, &lt;code>pushAssignableTypePropertyNameResolver&lt;/code>, &lt;code>pushExactTypePropertyNameResolver&lt;/code>&lt;/p>
+&lt;/blockquote>
+&lt;p>Options related to the &lt;code>PropertyNameResolver&lt;/code> allow you to customize how you refer to your properties.&lt;/p>
+&lt;p>The &lt;code>defaultPropertyNameResolver&lt;/code> option is used to change the way property names are figured out for all types. If you want to make specific changes for certain types, you can use &lt;code>pushPropertyNameResolver&lt;/code>, &lt;code>pushAssignableTypePropertyNameResolver&lt;/code>, or &lt;code>pushExactTypePropertyNameResolver&lt;/code>.&lt;/p></description></item><item><title>Other Options</title><link>https://naver.github.io/fixture-monkey/v1-1-0/docs/fixture-monkey-options/other-options/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v1-1-0/docs/fixture-monkey-options/other-options/</guid><description>&lt;p>This section explains some additional options that the &lt;code>FixtureMonkeyBuilder&lt;/code> provide.&lt;/p>
+&lt;h3 id="add-plugins">Add plugins &lt;a href="#add-plugins" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h3>
+&lt;p>Fixture Monkey offers several additional features, including support for third-party libraries through plugins.
+You can use the plugin option to use these additional features.&lt;/p>
+&lt;p>For example, you can add the Jackson plugin as shown below.
+This will allow you to use Jackson features such as &lt;code>JacksonObjectArbitraryIntrospector&lt;/code> and Jackson annotation support.&lt;/p>
+
+
+
+&lt;ul class="nav nav-tabs" id="tabs-0" role="tablist">
+ &lt;li class="nav-item">
+ &lt;button class="nav-link active"
+ id="tabs-00-00-tab" data-bs-toggle="tab" data-bs-target="#tabs-00-00" role="tab"
+ aria-controls="tabs-00-00" aria-selected="true">
+ Java
+ &lt;/button>
+ &lt;/li>&lt;li class="nav-item">
+ &lt;button class="nav-link"
+ id="tabs-00-01-tab" data-bs-toggle="tab" data-bs-target="#tabs-00-01" role="tab"
+ aria-controls="tabs-00-01" aria-selected="false">
+ Kotlin
+ &lt;/button>
+ &lt;/li>
+&lt;/ul>
+
+&lt;div class="tab-content" id="tabs-0-content">
+ &lt;div class="tab-pane fade show active"
+ id="tabs-00-00" role="tabpanel" aria-labelled-by="tabs-00-00-tab" tabindex="0">
+ &lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-java" data-lang="java">&lt;span class="line">&lt;span class="cl">&lt;span class="n">FixtureMonkey&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">fixtureMonkey&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">FixtureMonkey&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">builder&lt;/span>&lt;span class="p">()&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">plugin&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="k">new&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">JacksonPlugin&lt;/span>&lt;span class="p">())&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">build&lt;/span>&lt;span class="p">();&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>
+ &lt;/div>
+ &lt;div class="tab-pane fade"
+ id="tabs-00-01" role="tabpanel" aria-labelled-by="tabs-00-01-tab" tabindex="0">
+ &lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-kotlin" data-lang="kotlin">&lt;span class="line">&lt;span class="cl">&lt;span class="k">val&lt;/span> &lt;span class="py">fixtureMonkey&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="nc">FixtureMonkey&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">builder&lt;/span>&lt;span class="p">()&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">.&lt;/span>&lt;span class="n">plugin&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">JacksonPlugin&lt;/span>&lt;span class="p">())&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">.&lt;/span>&lt;span class="n">build&lt;/span>&lt;span class="p">()&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>
+ &lt;/div>
+&lt;/div></description></item></channel></rss>
