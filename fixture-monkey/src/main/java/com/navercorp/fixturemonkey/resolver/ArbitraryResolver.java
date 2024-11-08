@@ -41,15 +41,19 @@ public final class ArbitraryResolver {
 	private final ManipulatorOptimizer manipulatorOptimizer;
 	private final MonkeyManipulatorFactory monkeyManipulatorFactory;
 	private final MonkeyContext monkeyContext;
+	private final List<MatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuilders;
 
 	public ArbitraryResolver(
 		ManipulatorOptimizer manipulatorOptimizer,
 		MonkeyManipulatorFactory monkeyManipulatorFactory,
-		MonkeyContext monkeyContext
+		FixtureMonkeyOptions fixtureMonkeyOptions,
+		MonkeyContext monkeyContext,
+		List<MatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuilders
 	) {
 		this.manipulatorOptimizer = manipulatorOptimizer;
 		this.monkeyManipulatorFactory = monkeyManipulatorFactory;
 		this.monkeyContext = monkeyContext;
+		this.registeredArbitraryBuilders = registeredArbitraryBuilders;
 	}
 
 	public CombinableArbitrary<?> resolve(
@@ -82,6 +86,9 @@ public final class ArbitraryResolver {
 					monkeyManipulatorFactory.newRegisteredArbitraryManipulators(
 						monkeyContext.getRegisteredArbitraryBuilders(),
 						objectTree.getMetadata().getNodesByProperty()
+						registeredArbitraryBuilders,
+						objectTree.getMetadata().getNodesByProperty(),
+						builderContext
 					);
 
 				List<ArbitraryManipulator> joinedManipulators =

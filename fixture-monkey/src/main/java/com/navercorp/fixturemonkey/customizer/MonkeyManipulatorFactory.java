@@ -42,6 +42,7 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ContainerPropertyGenerator;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
+import com.navercorp.fixturemonkey.api.matcher.NamedMatcherMetadata;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.builder.ArbitraryBuilderContext;
 import com.navercorp.fixturemonkey.builder.ArbitraryBuilderContextProvider;
@@ -154,7 +155,14 @@ public final class MonkeyManipulatorFactory {
 
 			ArbitraryBuilderContextProvider registeredArbitraryBuilder =
 				registeredArbitraryBuilders.stream()
-					.filter(it -> it.match(property))
+					.filter(it -> {
+						if (builderContext.getSelectedNames().isEmpty()) {
+							return it.match(property);
+						}
+						return builderContext.getSelectedNames().stream().anyMatch(
+							name -> it.match(property, new NamedMatcherMetadata(name))
+						);
+					})
 					.findFirst()
 					.map(MatcherOperator::getOperator)
 					.map(ArbitraryBuilderContextProvider.class::cast)
