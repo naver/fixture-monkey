@@ -16,20 +16,19 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.api.experimental;
-
-import java.io.Serializable;
-import java.util.function.Function;
+package com.navercorp.fixturemonkey.api.expression;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-/**
- * It represents a functional interface for referencing getter methods in Java.
- *
- * @param <T> The type of the input parameter (typically the object containing the property).
- * @param <R> The return type of the getter method (the type of the property being retrieved).
- */
-@API(since = "1.0.0", status = Status.EXPERIMENTAL)
-public interface JavaGetterMethodReference<T, R> extends Function<T, R>, Serializable {
+@API(since = "1.0.9", status = Status.EXPERIMENTAL)
+@FunctionalInterface
+public interface TypedExpressionGenerator<T> extends TypedPropertySelector<T>, ExpressionGenerator {
+	static <U> TypedExpressionGenerator<U> typedRoot() {
+		return propertyNameResolver -> "$";
+	}
+
+	static <U> TypedExpressionGenerator<U> typedString(String expression) {
+		return propertyNameResolver -> expression;
+	}
 }

@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.api.experimental;
+package com.navercorp.fixturemonkey.api.expression;
 
 import java.beans.PropertyDescriptor;
 import java.lang.invoke.SerializedLambda;
@@ -37,6 +37,9 @@ abstract class JavaGetterPropertySelectors {
 	private static final JavaGetterPropertyFieldNameResolver PROPERTY_FIELD_NAME_RESOLVER =
 		new JavaGetterPropertyFieldNameResolver();
 
+	/**
+	 * It is for internal use only. It can be changed or removed at any time.
+	 **/
 	@SuppressWarnings("unchecked")
 	static <T, R> JavaGetterMethodPropertySelector<T, R> resolvePropertySelector(
 		JavaGetterMethodReference<T, R> methodRef

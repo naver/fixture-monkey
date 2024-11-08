@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.api.experimental;
+package com.navercorp.fixturemonkey.api.expression;
 
 import javax.annotation.Nullable;
 
@@ -28,12 +28,6 @@ public final class JavaGetterPropertyFieldNameResolver {
 
 	@Nullable
 	public String resolveFieldName(Class<?> targetClass, String methodName) {
-		if (targetClass.isRecord()) {
-			if (isValidField(targetClass, methodName)) {
-				return methodName;
-			}
-		}
-
 		if (hasPrefix(GET_PREFIX, methodName)) {
 			return stripPrefixPropertyName(targetClass, methodName, GET_PREFIX.length());
 		} else if (hasPrefix(IS_PREFIX, methodName)) {

@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.api.experimental;
+package com.navercorp.fixturemonkey.api.expression;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
