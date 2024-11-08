@@ -11,10 +11,6 @@ public final class NamedMatcher implements Matcher {
 		this.registeredName = registeredName;
 	}
 
-	public boolean matchRegisteredName(String registeredName) {
-		return this.registeredName.equals(registeredName);
-	}
-
 	@Override
 	public boolean match(Property property) {
 		return this.matcher.match(property);

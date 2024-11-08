@@ -841,18 +841,6 @@ class FixtureMonkeyOptionsTest {
 	}
 
 	@Property
-	void registeredNameWithUnregisteredName() {
-		FixtureMonkey sut = FixtureMonkey.builder()
-			.build();
-
-		thenThrownBy(() -> sut.giveMeBuilder(SimpleObject.class)
-			.selectName("test3")
-			.sample()
-		).isExactlyInstanceOf(IllegalArgumentException.class)
-			.hasMessage("Given name is not registered. name: test3");
-	}
-
-	@Property
 	void generateSampleListWithRegisteredNames() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.registeredName(

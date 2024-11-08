@@ -18,7 +18,7 @@
 
 package com.navercorp.fixturemonkey.api.matcher;
 
-public class NamedMatcherMetadata implements MatcherMetadata {
+public final class NamedMatcherMetadata implements MatcherMetadata {
 	private final String selectedName;
 
 	public NamedMatcherMetadata(String selectedName) {
