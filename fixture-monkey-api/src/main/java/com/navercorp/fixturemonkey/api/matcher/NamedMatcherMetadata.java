@@ -19,14 +19,14 @@
 package com.navercorp.fixturemonkey.api.matcher;
 
 public final class NamedMatcherMetadata implements MatcherMetadata {
-	private final String selectedName;
+	private final String name;
 
-	public NamedMatcherMetadata(String selectedName) {
-		this.selectedName = selectedName;
+	public NamedMatcherMetadata(String name) {
+		this.name = name;
 	}
 
 	@Override
 	public String getName() {
-		return selectedName;
+		return name;
 	}
 }
