@@ -21,7 +21,6 @@ package com.navercorp.fixturemonkey;
 import static java.util.stream.Collectors.toList;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -34,6 +33,7 @@ import net.jqwik.api.Arbitrary;
 
 import com.navercorp.fixturemonkey.api.context.MonkeyContext;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
+import com.navercorp.fixturemonkey.api.matcher.NamedMatcher;
 import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
 import com.navercorp.fixturemonkey.api.type.LazyAnnotatedType;
@@ -55,8 +55,6 @@ public final class FixtureMonkey {
 	private final MonkeyContext monkeyContext;
 	private final List<MatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuilders = new ArrayList<>();
 	private final MonkeyManipulatorFactory monkeyManipulatorFactory;
-	private final Map<String, MatcherOperator<? extends ArbitraryBuilder<?>>>
-		namedArbitraryBuilderMap = new HashMap<>();
 
 	public FixtureMonkey(
 		FixtureMonkeyOptions fixtureMonkeyOptions,
@@ -116,7 +114,6 @@ public final class FixtureMonkey {
 			monkeyManipulatorFactory,
 			builderContext.copy(),
 			registeredArbitraryBuilders,
-			namedArbitraryBuilderMap,
 			monkeyContext,
 			manipulatorOptimizer,
 			fixtureMonkeyOptions.getInstantiatorProcessor()
@@ -145,7 +142,6 @@ public final class FixtureMonkey {
 			monkeyManipulatorFactory,
 			context,
 			registeredArbitraryBuilders,
-			namedArbitraryBuilderMap,
 			monkeyContext,
 			manipulatorOptimizer,
 			fixtureMonkeyOptions.getInstantiatorProcessor()
@@ -208,9 +204,12 @@ public final class FixtureMonkey {
 	private void initializeNamedArbitraryBuilderMap(
 		Map<String, MatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>>> mapsByRegisteredName
 	) {
-		mapsByRegisteredName.forEach((name, matcherOperator) -> {
-			namedArbitraryBuilderMap.put(
-				name, new MatcherOperator<>(matcherOperator.getMatcher(), matcherOperator.getOperator().apply(this))
+		mapsByRegisteredName.forEach((registeredName, matcherOperator) -> {
+			registeredArbitraryBuilders.add(
+				new MatcherOperator<>(
+					new NamedMatcher(matcherOperator.getMatcher(), registeredName),
+					matcherOperator.getOperator().apply(this)
+				)
 			);
 		});
 	}

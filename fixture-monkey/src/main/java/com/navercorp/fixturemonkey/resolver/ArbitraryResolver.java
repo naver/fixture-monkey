@@ -103,7 +103,8 @@ public final class ArbitraryResolver {
 				List<ArbitraryManipulator> registeredManipulators =
 					monkeyManipulatorFactory.newRegisteredArbitraryManipulators(
 						registeredArbitraryBuilders,
-						objectTree.getMetadata().getNodesByProperty()
+						objectTree.getMetadata().getNodesByProperty(),
+						builderContext
 					);
 
 				List<ArbitraryManipulator> joinedManipulators =

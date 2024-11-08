@@ -42,6 +42,7 @@ import com.navercorp.fixturemonkey.api.container.DecomposedContainerValueFactory
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
+import com.navercorp.fixturemonkey.api.matcher.NamedMatcherMetadata;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.customizer.InnerSpecState.ManipulatorHolderSet;
 import com.navercorp.fixturemonkey.customizer.Values.Just;
@@ -142,7 +143,8 @@ public final class MonkeyManipulatorFactory {
 
 	public List<ArbitraryManipulator> newRegisteredArbitraryManipulators(
 		List<MatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuilders,
-		Map<Property, List<ObjectNode>> nodesByType
+		Map<Property, List<ObjectNode>> nodesByType,
+		ArbitraryBuilderContext builderContext
 	) {
 		List<ArbitraryManipulator> manipulators = new ArrayList<>();
 
@@ -152,7 +154,14 @@ public final class MonkeyManipulatorFactory {
 
 			DefaultArbitraryBuilder<?> registeredArbitraryBuilder =
 				(DefaultArbitraryBuilder<?>)registeredArbitraryBuilders.stream()
-					.filter(it -> it.match(property))
+					.filter(it -> {
+						if (builderContext.getSelectedNames().isEmpty()) {
+							return it.match(property);
+						}
+						return builderContext.getSelectedNames().stream().anyMatch(
+							name -> it.match(property, new NamedMatcherMetadata(name))
+						);
+					})
 					.findFirst()
 					.map(MatcherOperator::getOperator)
 					.filter(it -> it instanceof DefaultArbitraryBuilder<?>)
