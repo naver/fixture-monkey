@@ -7,7 +7,9 @@ weight: 100
 ---
 sectionStart
 ## v.1.1.1
-Fix set a recursive object
+Fix set a recursive object.
+
+Add a missing `giveMeJavaBuilder` with an object parameter.
 
 sectionEnd
 
