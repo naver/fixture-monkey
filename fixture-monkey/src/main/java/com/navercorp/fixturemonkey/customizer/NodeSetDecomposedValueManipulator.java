@@ -160,7 +160,7 @@ public final class NodeSetDecomposedValueManipulator<T> implements NodeManipulat
 					objectNode.setResolvedTypeDefinition(typeDefinition);
 				}
 
-				objectNode.expand(typeDefinition);
+				objectNode.forceExpand(typeDefinition);
 				for (ObjectNode child : objectNode.getChildren()) {
 					if (!typeDefinition.equals(child.getParent().getResolvedTypeDefinition())) {
 						continue;

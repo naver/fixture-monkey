@@ -775,6 +775,18 @@ class JavaTest {
 	}
 
 	@RepeatedTest(TEST_COUNT)
+	void setSelfRecursiveObject() {
+		SelfRecursiveObject actual = SUT.giveMeOne(SelfRecursiveObject.class);
+
+		SelfRecursiveObject expected = SUT.giveMeBuilder(SelfRecursiveObject.class)
+			.set("selfRecursiveObject", actual)
+			.sample()
+			.getSelfRecursiveObject();
+
+		then(actual).isEqualTo(expected);
+	}
+
+	@RepeatedTest(TEST_COUNT)
 	void thenApplyAndSizeMap() {
 		Map<String, String> actual = SUT.giveMeBuilder(new TypeReference<Map<String, Map<String, String>>>() {
 			})

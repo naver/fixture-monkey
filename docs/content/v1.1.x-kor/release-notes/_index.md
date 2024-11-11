@@ -6,6 +6,12 @@ docs:
 weight: 100
 ---
 sectionStart
+## v.1.1.1
+Fix set a recursive object
+
+sectionEnd
+
+sectionStart
 ## v.1.0.28
 Add support for `hashCode`, `equals`, `toString` in anonymous object
 
