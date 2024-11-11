@@ -358,6 +358,28 @@ public final class ObjectNode implements ObjectTreeNode {
 		this.expandedTypeDefinition = resolvedTypeDefinition;
 	}
 
+	public void forceExpand(TypeDefinition typeDefinition) {
+		List<ObjectNode> newChildren;
+		if (this.getTreeProperty().isContainer()) {
+			newChildren = expandContainerNode(
+				typeDefinition,
+				this.traverseContext.withoutRecursiveTreeProperties()
+			)
+				.collect(Collectors.toList());
+		} else {
+			newChildren = this.generateChildrenNodes(
+				typeDefinition.getResolvedProperty(),
+				typeDefinition.getPropertyGenerator()
+					.generateChildProperties(typeDefinition.getResolvedProperty()),
+				this.nullInject,
+				this.traverseContext.withoutRecursiveTreeProperties()
+			);
+		}
+
+		this.setChildren(newChildren);
+		this.expandedTypeDefinition = resolvedTypeDefinition;
+	}
+
 	private Stream<ObjectNode> expandContainerNode(TypeDefinition typeDefinition, TraverseContext traverseContext) {
 		ContainerInfoManipulator appliedContainerInfoManipulator =
 			this.getAppliedContainerInfoManipulator();
