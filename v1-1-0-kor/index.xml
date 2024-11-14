@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Fixture Monkey on</title><link>https://naver.github.io/fixture-monkey/v1-1-0-kor/</link><description>Recent content in Fixture Monkey on</description><generator>Hugo -- gohugo.io</generator><language>ko-KR</language><copyright>Copyright (c) 2020-2021 Henk Verlinde</copyright><lastBuildDate>Tue, 06 Oct 2020 08:47:36 +0000</lastBuildDate><atom:link href="https://naver.github.io/fixture-monkey/v1-1-0-kor/index.xml" rel="self" type="application/rss+xml"/><item><title>Release Notes</title><link>https://naver.github.io/fixture-monkey/v1-1-0-kor/release-notes/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v1-1-0-kor/release-notes/</guid><description>&lt;p>sectionStart&lt;/p>
 &lt;h2 id="v112">v.1.1.2 &lt;a href="#v112" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h2>
-&lt;p>Fix setting recursive implementations of self reference object&lt;/p>
+&lt;p>Fix setting recursive implementations of self reference object.&lt;/p>
+&lt;p>Fix registering JavaBuilder and KotlinBuilder.&lt;/p>
 &lt;p>sectionEnd&lt;/p>
 &lt;p>sectionStart&lt;/p>
 &lt;h2 id="v111">v.1.1.1 &lt;a href="#v111" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h2>
