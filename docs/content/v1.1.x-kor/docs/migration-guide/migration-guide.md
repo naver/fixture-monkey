@@ -23,7 +23,7 @@ docs:
 `FixtureMonkey.giveMeBuilder(Class)` 혹은 `FixtureMonkey.giveMeJavaBuilder(Class)`.
 
 ### 코틀린 ArbitraryBuilder API 사용법
-코틀린 특화된 API를 다음 코틀린 확장함수를 사용하면 됩니다. `FixtureMonkey.giveMeBuilder<Class>()`
+코틀린 특화된 API를 다음 코틀린 확장함수를 사용하면 됩니다. `FixtureMonkey.giveMeKotlinBuilder<Class>()`
 
 ## 추상 타입의 구현체 확장하는 방법
 
