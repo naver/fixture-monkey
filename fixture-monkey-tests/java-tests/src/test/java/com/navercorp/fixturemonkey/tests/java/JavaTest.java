@@ -1383,4 +1383,16 @@ class JavaTest {
 
 		then(actual.getValue()).isEqualTo(expected);
 	}
+
+	@Test
+	void registerJavaTypebuilder() {
+		String expected = "test";
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.register(String.class, it -> it.giveMeJavaBuilder(expected))
+			.build();
+
+		String actual = sut.giveMeOne(String.class);
+
+		then(actual).isEqualTo(expected);
+	}
 }

@@ -46,7 +46,8 @@ import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.customizer.InnerSpec;
 
 @API(since = "1.1.0", status = Status.EXPERIMENTAL)
-public final class JavaTypeDefaultTypeArbitraryBuilder<T> implements JavaTypeArbitraryBuilder<T> {
+public final class JavaTypeDefaultTypeArbitraryBuilder<T>
+	implements JavaTypeArbitraryBuilder<T>, ArbitraryBuilderContextProvider {
 	private final ArbitraryBuilder<T> delegate;
 
 	public JavaTypeDefaultTypeArbitraryBuilder(ArbitraryBuilder<T> delegate) {
@@ -344,5 +345,10 @@ public final class JavaTypeDefaultTypeArbitraryBuilder<T> implements JavaTypeArb
 		Function<CombinableArbitrary<? extends U>, CombinableArbitrary<? extends U>> combinableArbitraryCustomizer
 	) {
 		return delegate.customizeProperty(propertySelector, combinableArbitraryCustomizer);
+	}
+
+	@Override
+	public ArbitraryBuilderContext getContext() {
+		return ((ArbitraryBuilderContextProvider)delegate).getContext();
 	}
 }

@@ -25,6 +25,8 @@ import com.navercorp.fixturemonkey.api.expression.TypedPropertySelector
 import com.navercorp.fixturemonkey.api.instantiator.Instantiator
 import com.navercorp.fixturemonkey.api.property.PropertySelector
 import com.navercorp.fixturemonkey.api.type.TypeReference
+import com.navercorp.fixturemonkey.builder.ArbitraryBuilderContext
+import com.navercorp.fixturemonkey.builder.ArbitraryBuilderContextProvider
 import com.navercorp.fixturemonkey.customizer.InnerSpec
 import com.navercorp.fixturemonkey.experimental.ExperimentalArbitraryBuilder
 import net.jqwik.api.Arbitrary
@@ -55,17 +57,16 @@ inline fun <reified T : Any?> FixtureMonkey.giveMeBuilder(): ArbitraryBuilder<T>
     this.giveMeBuilder(object : TypeReference<T>() {})
 
 inline fun <reified T : Any?> FixtureMonkey.giveMeKotlinBuilder(): KotlinTypeDefaultArbitraryBuilder<T> =
-    KotlinTypeDefaultArbitraryBuilder(this.giveMeBuilder(object : TypeReference<T>() {}))
+    InternalKotlinTypeDefaultArbitraryBuilder(this.giveMeBuilder(object : TypeReference<T>() {}))
 
 inline fun <reified T : Any?> FixtureMonkey.giveMeKotlinBuilder(value: T): KotlinTypeDefaultArbitraryBuilder<T> =
-    KotlinTypeDefaultArbitraryBuilder(this.giveMeBuilder(value))
+    InternalKotlinTypeDefaultArbitraryBuilder(this.giveMeBuilder(value))
 
 inline fun <reified T : Any?> FixtureMonkey.giveMeExperimentalBuilder(): ExperimentalArbitraryBuilder<T> =
     this.giveMeExperimentalBuilder(object : TypeReference<T>() {})
 
-class KotlinTypeDefaultArbitraryBuilder<T>(
-    val delegate: ArbitraryBuilder<T>,
-) : ArbitraryBuilder<T> {
+open class KotlinTypeDefaultArbitraryBuilder<T> internal constructor(val delegate: ArbitraryBuilder<T>) :
+    ArbitraryBuilder<T> {
     override fun set(expression: String, value: Any?): KotlinTypeDefaultArbitraryBuilder<T> = this.apply {
         delegate.set(expression, value)
     }
@@ -192,19 +193,21 @@ class KotlinTypeDefaultArbitraryBuilder<T>(
     override fun <R> zipWith(
         others: List<ArbitraryBuilder<*>>,
         combinator: Function<List<*>, R>?,
-    ): KotlinTypeDefaultArbitraryBuilder<R> = KotlinTypeDefaultArbitraryBuilder(delegate.zipWith(others, combinator))
+    ): KotlinTypeDefaultArbitraryBuilder<R> =
+        InternalKotlinTypeDefaultArbitraryBuilder(delegate.zipWith(others, combinator))
 
     override fun <U, R> zipWith(
         other: ArbitraryBuilder<U>,
         combinator: BiFunction<T, U, R>,
-    ): KotlinTypeDefaultArbitraryBuilder<R> = KotlinTypeDefaultArbitraryBuilder(delegate.zipWith(other, combinator))
+    ): KotlinTypeDefaultArbitraryBuilder<R> =
+        InternalKotlinTypeDefaultArbitraryBuilder(delegate.zipWith(other, combinator))
 
     override fun <U, V, R> zipWith(
         other: ArbitraryBuilder<U>,
         another: ArbitraryBuilder<V>,
         combinator: Combinators.F3<T, U, V, R>,
     ): KotlinTypeDefaultArbitraryBuilder<R> =
-        KotlinTypeDefaultArbitraryBuilder(delegate.zipWith(other, another, combinator))
+        InternalKotlinTypeDefaultArbitraryBuilder(delegate.zipWith(other, another, combinator))
 
     override fun <U, V, W, R> zipWith(
         other: ArbitraryBuilder<U>,
@@ -212,7 +215,7 @@ class KotlinTypeDefaultArbitraryBuilder<T>(
         theOther: ArbitraryBuilder<W>,
         combinator: Combinators.F4<T, U, V, W, R>,
     ): KotlinTypeDefaultArbitraryBuilder<R> =
-        KotlinTypeDefaultArbitraryBuilder(delegate.zipWith(other, another, theOther, combinator))
+        InternalKotlinTypeDefaultArbitraryBuilder(delegate.zipWith(other, another, theOther, combinator))
 
     override fun sampleList(size: Int): List<T> = delegate.sampleList(size)
 
@@ -242,7 +245,8 @@ class KotlinTypeDefaultArbitraryBuilder<T>(
 
     override fun sampleStream(): Stream<T> = delegate.sampleStream()
 
-    override fun copy(): KotlinTypeDefaultArbitraryBuilder<T> = KotlinTypeDefaultArbitraryBuilder(delegate.copy())
+    override fun copy(): KotlinTypeDefaultArbitraryBuilder<T> =
+        InternalKotlinTypeDefaultArbitraryBuilder(delegate.copy())
 
     override fun thenApply(biConsumer: BiConsumer<T, ArbitraryBuilder<T>>): KotlinTypeDefaultArbitraryBuilder<T> =
         this.apply { delegate.thenApply(biConsumer) }
@@ -253,7 +257,7 @@ class KotlinTypeDefaultArbitraryBuilder<T>(
     ): KotlinTypeDefaultArbitraryBuilder<T> = this.apply { delegate.acceptIf(predicate, consumer) }
 
     override fun <U> map(mapper: Function<T, U>): KotlinTypeDefaultArbitraryBuilder<U> =
-        KotlinTypeDefaultArbitraryBuilder(delegate.map(mapper))
+        InternalKotlinTypeDefaultArbitraryBuilder(delegate.map(mapper))
 
     fun setInner(innerSpecConfigurer: (InnerSpec.() -> InnerSpec)): KotlinTypeDefaultArbitraryBuilder<T> =
         this.apply { delegate.setInner(innerSpecConfigurer(InnerSpec())) }
@@ -587,4 +591,9 @@ class KotlinTypeDefaultArbitraryBuilder<T>(
         supplier: Supplier<Any?>,
     ): KotlinTypeDefaultArbitraryBuilder<T> =
         this.setLazy(propertySelector, supplier)
+}
+
+class InternalKotlinTypeDefaultArbitraryBuilder<T>(delegate: ArbitraryBuilder<T>) :
+    KotlinTypeDefaultArbitraryBuilder<T>(delegate), ArbitraryBuilderContextProvider {
+    override fun getContext(): ArbitraryBuilderContext = (delegate as ArbitraryBuilderContextProvider).context
 }

@@ -44,6 +44,7 @@ import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.builder.ArbitraryBuilderContext;
+import com.navercorp.fixturemonkey.builder.ArbitraryBuilderContextProvider;
 import com.navercorp.fixturemonkey.builder.DefaultArbitraryBuilder;
 import com.navercorp.fixturemonkey.customizer.InnerSpecState.ManipulatorHolderSet;
 import com.navercorp.fixturemonkey.customizer.Values.Just;
@@ -147,12 +148,12 @@ public final class MonkeyManipulatorFactory {
 			Property property = nodeByType.getKey();
 			List<ObjectNode> objectNodes = nodeByType.getValue();
 
-			DefaultArbitraryBuilder<?> registeredArbitraryBuilder =
-				(DefaultArbitraryBuilder<?>)registeredArbitraryBuilders.stream()
+			ArbitraryBuilderContextProvider registeredArbitraryBuilder =
+				registeredArbitraryBuilders.stream()
 					.filter(it -> it.match(property))
 					.findFirst()
 					.map(MatcherOperator::getOperator)
-					.filter(it -> it instanceof DefaultArbitraryBuilder<?>)
+					.map(ArbitraryBuilderContextProvider.class::cast)
 					.orElse(null);
 
 			if (registeredArbitraryBuilder == null) {

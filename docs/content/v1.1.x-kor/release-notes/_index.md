@@ -7,7 +7,9 @@ weight: 100
 ---
 sectionStart
 ## v.1.1.2
-Fix setting recursive implementations of self reference object
+Fix setting recursive implementations of self reference object.
+
+Fix registering JavaBuilder and KotlinBuilder.
 
 sectionEnd
 

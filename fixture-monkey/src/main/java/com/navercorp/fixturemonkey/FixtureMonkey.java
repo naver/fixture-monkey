@@ -37,6 +37,7 @@ import com.navercorp.fixturemonkey.api.property.RootProperty;
 import com.navercorp.fixturemonkey.api.type.LazyAnnotatedType;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.builder.ArbitraryBuilderContext;
+import com.navercorp.fixturemonkey.builder.ArbitraryBuilderContextProvider;
 import com.navercorp.fixturemonkey.builder.DefaultArbitraryBuilder;
 import com.navercorp.fixturemonkey.builder.JavaTypeDefaultTypeArbitraryBuilder;
 import com.navercorp.fixturemonkey.customizer.ArbitraryManipulator;
@@ -88,8 +89,8 @@ public final class FixtureMonkey {
 			.filter(it -> it.match(rootProperty))
 			.map(MatcherOperator::getOperator)
 			.findAny()
-			.map(DefaultArbitraryBuilder.class::cast)
-			.map(DefaultArbitraryBuilder::getContext)
+			.map(ArbitraryBuilderContextProvider.class::cast)
+			.map(ArbitraryBuilderContextProvider::getContext)
 			.orElse(new ArbitraryBuilderContext());
 
 		return new DefaultArbitraryBuilder<>(

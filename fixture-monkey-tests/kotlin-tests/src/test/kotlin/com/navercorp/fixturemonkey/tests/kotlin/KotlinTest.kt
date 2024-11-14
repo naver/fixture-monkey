@@ -34,11 +34,8 @@ import com.navercorp.fixturemonkey.api.introspector.FieldReflectionArbitraryIntr
 import com.navercorp.fixturemonkey.api.matcher.AssignableTypeMatcher
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator
 import com.navercorp.fixturemonkey.api.plugin.InterfacePlugin
-import com.navercorp.fixturemonkey.api.property.CandidateConcretePropertyResolver
 import com.navercorp.fixturemonkey.api.property.ConcreteTypeCandidateConcretePropertyResolver
-import com.navercorp.fixturemonkey.api.property.Property
 import com.navercorp.fixturemonkey.api.property.PropertyUtils
-import com.navercorp.fixturemonkey.api.type.Types
 import com.navercorp.fixturemonkey.api.type.Types.GeneratingWildcardType
 import com.navercorp.fixturemonkey.customizer.Values
 import com.navercorp.fixturemonkey.kotlin.KotlinPlugin
@@ -1034,6 +1031,19 @@ class KotlinTest {
             .value
 
         //then
+        then(actual).isEqualTo(expected)
+    }
+
+    @Test
+    fun registerKotlinTypeBuilder() {
+        val expected = "test"
+        val sut = FixtureMonkey.builder()
+            .register(String::class.java) {
+                it.giveMeKotlinBuilder(expected)
+            }
+            .build()
+        val actual: String = sut.giveMeOne()
+
         then(actual).isEqualTo(expected)
     }
 
