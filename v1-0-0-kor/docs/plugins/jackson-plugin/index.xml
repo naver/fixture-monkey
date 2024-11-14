@@ -5,13 +5,13 @@
 &lt;/ul>
 &lt;h2 id="의존성">의존성 &lt;a href="#%ec%9d%98%ec%a1%b4%ec%84%b1" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h2>
 &lt;h4 id="gradle">Gradle &lt;a href="#gradle" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h4>
-&lt;pre>&lt;code class="language-groovy">testImplementation(&amp;quot;com.navercorp.fixturemonkey:fixture-monkey-jackson:1.1.1&amp;quot;)
+&lt;pre>&lt;code class="language-groovy">testImplementation(&amp;quot;com.navercorp.fixturemonkey:fixture-monkey-jackson:1.1.2&amp;quot;)
 &lt;/code>&lt;/pre>
 &lt;h4 id="maven">Maven &lt;a href="#maven" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h4>
 &lt;pre>&lt;code class="language-xml">&amp;lt;dependency&amp;gt;
  &amp;lt;groupId&amp;gt;com.navercorp.fixturemonkey&amp;lt;/groupId&amp;gt;
  &amp;lt;artifactId&amp;gt;fixture-monkey-jackson&amp;lt;/artifactId&amp;gt;
- &amp;lt;version&amp;gt;1.1.1&amp;lt;/version&amp;gt;
+ &amp;lt;version&amp;gt;1.1.2&amp;lt;/version&amp;gt;
  &amp;lt;scope&amp;gt;test&amp;lt;/scope&amp;gt;
 &amp;lt;/dependency&amp;gt;
 &lt;/code>&lt;/pre>
@@ -101,7 +101,7 @@ public class Product {
  &lt;/div>
  &lt;div class="tab-pane fade"
  id="tabs-00-01" role="tabpanel" aria-labelled-by="tabs-00-01-tab" tabindex="0">
- &lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-kotlin" data-lang="kotlin">&lt;span class="line">&lt;span class="cl">&lt;span class="n">testImplementation&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s2">&amp;#34;com.navercorp.fixturemonkey:fixture-monkey-starter-kotlin:1.1.1&amp;#34;&lt;/span>&lt;span class="p">)&lt;/span>
+ &lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-kotlin" data-lang="kotlin">&lt;span class="line">&lt;span class="cl">&lt;span class="n">testImplementation&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s2">&amp;#34;com.navercorp.fixturemonkey:fixture-monkey-starter-kotlin:1.1.2&amp;#34;&lt;/span>&lt;span class="p">)&lt;/span>
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">testImplementation&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s2">&amp;#34;com.fasterxml.jackson.module:jackson-module-kotlin&amp;#34;&lt;/span>&lt;span class="p">)&lt;/span>
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nd">@Test&lt;/span>
