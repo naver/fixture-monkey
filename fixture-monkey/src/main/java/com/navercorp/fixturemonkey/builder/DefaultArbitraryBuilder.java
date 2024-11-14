@@ -75,7 +75,8 @@ import com.navercorp.fixturemonkey.resolver.ArbitraryResolver;
 
 @SuppressFBWarnings("NM_SAME_SIMPLE_NAME_AS_SUPERCLASS")
 @API(since = "0.4.0", status = Status.MAINTAINED)
-public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, ExperimentalArbitraryBuilder<T> {
+public final class DefaultArbitraryBuilder<T>
+	implements ArbitraryBuilder<T>, ExperimentalArbitraryBuilder<T>, ArbitraryBuilderContextProvider {
 	private final FixtureMonkeyOptions fixtureMonkeyOptions;
 	private final RootProperty rootProperty;
 	private final ArbitraryResolver resolver;
@@ -510,6 +511,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 		);
 	}
 
+	@Override
 	public ArbitraryBuilderContext getContext() {
 		return this.context;
 	}

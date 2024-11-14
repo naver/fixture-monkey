@@ -35,7 +35,7 @@ import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
 import com.navercorp.fixturemonkey.builder.ArbitraryBuilderContext;
-import com.navercorp.fixturemonkey.builder.DefaultArbitraryBuilder;
+import com.navercorp.fixturemonkey.builder.ArbitraryBuilderContextProvider;
 import com.navercorp.fixturemonkey.customizer.ArbitraryManipulator;
 import com.navercorp.fixturemonkey.customizer.ContainerInfoManipulator;
 import com.navercorp.fixturemonkey.customizer.MonkeyManipulatorFactory;
@@ -75,7 +75,7 @@ public final class ArbitraryResolver {
 			registeredArbitraryBuilders.stream()
 				.map(it -> new MatcherOperator<>(
 					it.getMatcher(),
-					((DefaultArbitraryBuilder<?>)it.getOperator()).getContext().getContainerInfoManipulators()
+					((ArbitraryBuilderContextProvider)it.getOperator()).getContext().getContainerInfoManipulators()
 				))
 				.collect(Collectors.toList());
 
