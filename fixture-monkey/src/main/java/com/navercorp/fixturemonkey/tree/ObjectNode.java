@@ -340,7 +340,7 @@ public final class ObjectNode implements ObjectTreeNode {
 					if (this.getTreeProperty().isContainer()) {
 						return this.expandContainerNode(
 							typeDefinition,
-							traverseContext.withoutRecursiveTreeProperties()
+							traverseContext.withParentProperties()
 						);
 					}
 
@@ -349,7 +349,7 @@ public final class ObjectNode implements ObjectTreeNode {
 						typeDefinition.getPropertyGenerator()
 							.generateChildProperties(typeDefinition.getResolvedProperty()),
 						this.nullInject,
-						traverseContext.withoutRecursiveTreeProperties()
+						traverseContext.withParentProperties()
 					).stream();
 				}
 			).collect(Collectors.toList());
@@ -363,7 +363,7 @@ public final class ObjectNode implements ObjectTreeNode {
 		if (this.getTreeProperty().isContainer()) {
 			newChildren = expandContainerNode(
 				typeDefinition,
-				this.traverseContext.withoutRecursiveTreeProperties()
+				this.traverseContext.withParentProperties()
 			)
 				.collect(Collectors.toList());
 		} else {
@@ -372,7 +372,7 @@ public final class ObjectNode implements ObjectTreeNode {
 				typeDefinition.getPropertyGenerator()
 					.generateChildProperties(typeDefinition.getResolvedProperty()),
 				this.nullInject,
-				this.traverseContext.withoutRecursiveTreeProperties()
+				this.traverseContext.withParentProperties()
 			);
 		}
 

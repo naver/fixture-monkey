@@ -61,6 +61,7 @@ import com.navercorp.fixturemonkey.api.introspector.ConstructorPropertiesArbitra
 import com.navercorp.fixturemonkey.api.introspector.FailoverIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.FieldReflectionArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
+import com.navercorp.fixturemonkey.api.plugin.InterfacePlugin;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.customizer.InnerSpec;
 import com.navercorp.fixturemonkey.customizer.Values;
@@ -89,6 +90,11 @@ import com.navercorp.fixturemonkey.tests.java.ImmutableMixedIntrospectorsTypeSpe
 import com.navercorp.fixturemonkey.tests.java.ImmutableRecursiveTypeSpecs.SelfRecursiveListObject;
 import com.navercorp.fixturemonkey.tests.java.ImmutableRecursiveTypeSpecs.SelfRecursiveMapObject;
 import com.navercorp.fixturemonkey.tests.java.ImmutableRecursiveTypeSpecs.SelfRecursiveObject;
+import com.navercorp.fixturemonkey.tests.java.InterfaceTestSpecs.InterfaceIntegerObject;
+import com.navercorp.fixturemonkey.tests.java.InterfaceTestSpecs.InterfaceListObject;
+import com.navercorp.fixturemonkey.tests.java.InterfaceTestSpecs.InterfaceObject;
+import com.navercorp.fixturemonkey.tests.java.InterfaceTestSpecs.InterfaceStringObject;
+import com.navercorp.fixturemonkey.tests.java.InterfaceTestSpecs.InterfaceWrapperObject;
 import com.navercorp.fixturemonkey.tests.java.MutableJavaTestSpecs.ConstantObject;
 import com.navercorp.fixturemonkey.tests.java.NestedClassTestSpecs.Inner;
 import com.navercorp.fixturemonkey.tests.java.NoArgsConstructorJavaTestSpecs.NestedObject;
@@ -1345,5 +1351,36 @@ class JavaTest {
 			.getString();
 
 		then(actual).isEqualTo("test");
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void setListRecursiveImplementations() {
+		// given
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)
+			.plugin(new InterfacePlugin()
+				.interfaceImplements(
+					InterfaceObject.class,
+					Arrays.asList(
+						InterfaceStringObject.class,
+						InterfaceIntegerObject.class,
+						InterfaceListObject.class
+					)
+				)
+			)
+			.build();
+
+		List<InterfaceObject> element = sut.giveMeOne(new TypeReference<List<InterfaceStringObject>>() {
+			}).stream()
+			.map(InterfaceObject.class::cast)
+			.collect(Collectors.toList());
+		InterfaceListObject expected = new InterfaceListObject(element);
+
+		// when
+		InterfaceWrapperObject actual = sut.giveMeBuilder(InterfaceWrapperObject.class)
+			.set("value", expected)
+			.sample();
+
+		then(actual.getValue()).isEqualTo(expected);
 	}
 }

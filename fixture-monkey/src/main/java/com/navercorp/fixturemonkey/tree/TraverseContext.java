@@ -121,15 +121,11 @@ final class TraverseContext {
 		return this.treeProperties.get(this.treeProperties.size() - 1);
 	}
 
-	public TraverseContext withoutRecursiveTreeProperties() {
-		List<TreeProperty> newTreeProperties = new ArrayList<>(this.treeProperties);
-		for (int i = 1; i < this.treeProperties.size(); i++) {
-			Property rootProperty = getRootTreeProperty().getObjectProperty().getProperty();
-			TreeProperty treeProperty = treeProperties.get(i);
-			if (isSameType(rootProperty, treeProperty.getObjectProperty().getProperty())) {
-				newTreeProperties = newTreeProperties.subList(i, newTreeProperties.size());
-				break;
-			}
+	public TraverseContext withParentProperties() {
+		List<TreeProperty> newTreeProperties = new ArrayList<>();
+
+		if (!this.treeProperties.isEmpty()) {
+			newTreeProperties.add(this.treeProperties.get(this.treeProperties.size() - 1));
 		}
 
 		return new TraverseContext(

@@ -6,6 +6,12 @@ docs:
 weight: 100
 ---
 sectionStart
+## v.1.1.2
+Fix setting recursive implementations of self reference object
+
+sectionEnd
+
+sectionStart
 ## v.1.1.1
 Fix set a recursive object.
 
