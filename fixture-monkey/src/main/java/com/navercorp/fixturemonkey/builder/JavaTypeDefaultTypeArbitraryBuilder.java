@@ -38,6 +38,7 @@ import net.jqwik.api.Combinators.F4;
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.JavaTypeArbitraryBuilder;
+import com.navercorp.fixturemonkey.api.ObjectBuilder;
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.expression.TypedPropertySelector;
 import com.navercorp.fixturemonkey.api.instantiator.Instantiator;
@@ -47,7 +48,7 @@ import com.navercorp.fixturemonkey.customizer.InnerSpec;
 
 @API(since = "1.1.0", status = Status.EXPERIMENTAL)
 public final class JavaTypeDefaultTypeArbitraryBuilder<T>
-	implements JavaTypeArbitraryBuilder<T>, ArbitraryBuilderContextProvider {
+	implements JavaTypeArbitraryBuilder<T>, ArbitraryBuilderContextProvider, ObjectBuilder<T> {
 	private final ArbitraryBuilder<T> delegate;
 
 	public JavaTypeDefaultTypeArbitraryBuilder(ArbitraryBuilder<T> delegate) {

@@ -67,10 +67,14 @@ public final class ObjectNode implements ObjectTreeNode {
 	private static final ConcurrentLruCache<Property, List<Property>> CANDIDATE_CONCRETE_PROPERTIES_BY_PROPERTY =
 		new ConcurrentLruCache<>(1024);
 
+	private final RootProperty rootProperty;
+
 	@Nullable
 	private final Property resolvedParentProperty;
 	private TypeDefinition resolvedTypeDefinition;
-	private TreeProperty treeProperty;
+	private final TreeProperty treeProperty;
+	private final TraverseContext traverseContext;
+
 	@Nullable
 	private ObjectNode parent = null;
 	private List<ObjectNode> children;
@@ -110,22 +114,19 @@ public final class ObjectNode implements ObjectTreeNode {
 		);
 	});
 
-	private final FixtureMonkeyOptions fixtureMonkeyOptions;
-	private final TraverseContext traverseContext;
-
 	ObjectNode(
+		RootProperty rootProperty,
 		@Nullable Property resolvedParentProperty,
 		TypeDefinition resolvedTypeDefinition,
 		TreeProperty treeProperty,
 		double nullInject,
-		FixtureMonkeyOptions fixtureMonkeyOptions,
 		TraverseContext traverseContext
 	) {
+		this.rootProperty = rootProperty;
 		this.resolvedParentProperty = resolvedParentProperty;
 		this.resolvedTypeDefinition = resolvedTypeDefinition;
 		this.treeProperty = treeProperty;
 		this.nullInject = nullInject;
-		this.fixtureMonkeyOptions = fixtureMonkeyOptions;
 		this.traverseContext = traverseContext;
 	}
 
@@ -154,10 +155,6 @@ public final class ObjectNode implements ObjectTreeNode {
 
 	public TreeProperty getTreeProperty() {
 		return this.treeProperty;
-	}
-
-	public void setTreeProperty(TreeProperty treeProperty) {
-		this.treeProperty = treeProperty;
 	}
 
 	/**
@@ -411,27 +408,27 @@ public final class ObjectNode implements ObjectTreeNode {
 
 	static ObjectNode generateRootNode(
 		RootProperty rootProperty,
-		FixtureMonkeyOptions fixtureMonkeyOptions,
 		TraverseContext traverseContext
 	) {
 		return ObjectNode.generateObjectNode(
+			rootProperty,
 			null,
 			rootProperty,
 			null,
 			0.0d,
-			fixtureMonkeyOptions,
 			traverseContext
 		);
 	}
 
 	static ObjectNode generateObjectNode(
+		RootProperty rootProperty,
 		@Nullable Property resolvedParentProperty,
 		Property property,
 		@Nullable Integer propertySequence,
 		double parentNullInject,
-		FixtureMonkeyOptions fixtureMonkeyOptions,
 		TraverseContext context
 	) {
+		FixtureMonkeyOptions fixtureMonkeyOptions = context.getMonkeyContext().getFixtureMonkeyOptions();
 		ContainerPropertyGenerator containerPropertyGenerator =
 			fixtureMonkeyOptions.getContainerPropertyGenerator(property);
 		boolean container = containerPropertyGenerator != null;
@@ -519,11 +516,11 @@ public final class ObjectNode implements ObjectTreeNode {
 		TraverseContext nextTraverseContext = context.appendArbitraryProperty(treeProperty);
 
 		ObjectNode newObjectNode = new ObjectNode(
+			rootProperty,
 			resolvedParentProperty,
 			new CompositeTypeDefinition(typeDefinitions).getResolvedTypeDefinition(),
 			treeProperty,
 			nullInject,
-			fixtureMonkeyOptions,
 			nextTraverseContext
 		);
 
@@ -578,11 +575,11 @@ public final class ObjectNode implements ObjectTreeNode {
 			}
 
 			ObjectNode childNode = generateObjectNode(
+				rootProperty,
 				resolvedParentProperty,
 				childProperty,
 				sequence,
 				parentNullInject,
-				this.fixtureMonkeyOptions,
 				context
 			);
 			children.add(childNode);

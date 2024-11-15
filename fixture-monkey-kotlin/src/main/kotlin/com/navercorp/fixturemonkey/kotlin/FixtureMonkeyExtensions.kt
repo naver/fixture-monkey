@@ -20,6 +20,7 @@ package com.navercorp.fixturemonkey.kotlin
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder
 import com.navercorp.fixturemonkey.FixtureMonkey
+import com.navercorp.fixturemonkey.api.ObjectBuilder
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary
 import com.navercorp.fixturemonkey.api.expression.TypedPropertySelector
 import com.navercorp.fixturemonkey.api.instantiator.Instantiator
@@ -594,6 +595,6 @@ open class KotlinTypeDefaultArbitraryBuilder<T> internal constructor(val delegat
 }
 
 class InternalKotlinTypeDefaultArbitraryBuilder<T>(delegate: ArbitraryBuilder<T>) :
-    KotlinTypeDefaultArbitraryBuilder<T>(delegate), ArbitraryBuilderContextProvider {
+    KotlinTypeDefaultArbitraryBuilder<T>(delegate), ArbitraryBuilderContextProvider, ObjectBuilder<T> {
     override fun getContext(): ArbitraryBuilderContext = (delegate as ArbitraryBuilderContextProvider).context
 }

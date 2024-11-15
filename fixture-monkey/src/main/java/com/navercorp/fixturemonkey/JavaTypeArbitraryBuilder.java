@@ -18,7 +18,8 @@
 
 package com.navercorp.fixturemonkey;
 
-import static com.navercorp.fixturemonkey.api.experimental.JavaGetterMethodPropertySelector.javaGetter;
+
+import static com.navercorp.fixturemonkey.api.expression.JavaGetterMethodPropertySelector.javaGetter;
 
 import java.util.List;
 import java.util.function.BiConsumer;

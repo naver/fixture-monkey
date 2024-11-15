@@ -20,7 +20,6 @@ package com.navercorp.fixturemonkey;
 
 import static java.util.stream.Collectors.toList;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -30,6 +29,7 @@ import org.apiguardian.api.API.Status;
 
 import net.jqwik.api.Arbitrary;
 
+import com.navercorp.fixturemonkey.api.ObjectBuilder;
 import com.navercorp.fixturemonkey.api.context.MonkeyContext;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
@@ -51,19 +51,17 @@ public final class FixtureMonkey {
 	private final FixtureMonkeyOptions fixtureMonkeyOptions;
 	private final ManipulatorOptimizer manipulatorOptimizer;
 	private final MonkeyContext monkeyContext;
-	private final List<MatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuilders = new ArrayList<>();
 	private final MonkeyManipulatorFactory monkeyManipulatorFactory;
 
 	public FixtureMonkey(
 		FixtureMonkeyOptions fixtureMonkeyOptions,
 		ManipulatorOptimizer manipulatorOptimizer,
-		MonkeyContext monkeyContext,
 		List<MatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>>> registeredArbitraryBuilders,
 		MonkeyManipulatorFactory monkeyManipulatorFactory
 	) {
 		this.fixtureMonkeyOptions = fixtureMonkeyOptions;
 		this.manipulatorOptimizer = manipulatorOptimizer;
-		this.monkeyContext = monkeyContext;
+		this.monkeyContext = MonkeyContext.builder(fixtureMonkeyOptions).build();
 		this.monkeyManipulatorFactory = monkeyManipulatorFactory;
 		initializeRegisteredArbitraryBuilders(registeredArbitraryBuilders);
 	}
@@ -85,52 +83,44 @@ public final class FixtureMonkey {
 	public <T> ArbitraryBuilder<T> giveMeBuilder(TypeReference<T> type) {
 		RootProperty rootProperty = new RootProperty(type.getAnnotatedType());
 
-		ArbitraryBuilderContext builderContext = registeredArbitraryBuilders.stream()
+		ArbitraryBuilderContext builderContext = monkeyContext.getRegisteredArbitraryBuilders().stream()
 			.filter(it -> it.match(rootProperty))
 			.map(MatcherOperator::getOperator)
 			.findAny()
 			.map(ArbitraryBuilderContextProvider.class::cast)
 			.map(ArbitraryBuilderContextProvider::getContext)
-			.orElse(new ArbitraryBuilderContext());
+			.orElse(ArbitraryBuilderContext.newBuilderContext(monkeyContext));
 
 		return new DefaultArbitraryBuilder<>(
-			fixtureMonkeyOptions,
 			rootProperty,
 			new ArbitraryResolver(
 				manipulatorOptimizer,
 				monkeyManipulatorFactory,
-				fixtureMonkeyOptions,
-				monkeyContext,
-				registeredArbitraryBuilders
+				monkeyContext
 			),
 			monkeyManipulatorFactory,
 			builderContext.copy(),
-			registeredArbitraryBuilders,
 			monkeyContext,
 			fixtureMonkeyOptions.getInstantiatorProcessor()
 		);
 	}
 
 	public <T> ArbitraryBuilder<T> giveMeBuilder(T value) {
-		ArbitraryBuilderContext context = new ArbitraryBuilderContext();
+		ArbitraryBuilderContext context = ArbitraryBuilderContext.newBuilderContext(monkeyContext);
 
 		ArbitraryManipulator arbitraryManipulator =
 			monkeyManipulatorFactory.newArbitraryManipulator("$", value);
 		context.addManipulator(arbitraryManipulator);
 
 		return new DefaultArbitraryBuilder<>(
-			fixtureMonkeyOptions,
 			new RootProperty(new LazyAnnotatedType<>(() -> value)),
 			new ArbitraryResolver(
 				manipulatorOptimizer,
 				monkeyManipulatorFactory,
-				fixtureMonkeyOptions,
-				monkeyContext,
-				registeredArbitraryBuilders
+				monkeyContext
 			),
 			monkeyManipulatorFactory,
 			context,
-			registeredArbitraryBuilders,
 			monkeyContext,
 			fixtureMonkeyOptions.getInstantiatorProcessor()
 		);
@@ -191,13 +181,13 @@ public final class FixtureMonkey {
 	private void initializeRegisteredArbitraryBuilders(
 		List<MatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>>> registeredArbitraryBuilders
 	) {
-		List<? extends MatcherOperator<? extends ArbitraryBuilder<?>>> generatedRegisteredArbitraryBuilder =
+		List<? extends MatcherOperator<? extends ObjectBuilder<?>>> generatedRegisteredArbitraryBuilder =
 			registeredArbitraryBuilders.stream()
-				.map(it -> new MatcherOperator<>(it.getMatcher(), it.getOperator().apply(this)))
+				.map(it -> new MatcherOperator<>(it.getMatcher(), (ObjectBuilder<?>)(it.getOperator().apply(this))))
 				.collect(toList());
 
 		for (int i = generatedRegisteredArbitraryBuilder.size() - 1; i >= 0; i--) {
-			this.registeredArbitraryBuilders.add(generatedRegisteredArbitraryBuilder.get(i));
+			monkeyContext.getRegisteredArbitraryBuilders().add(generatedRegisteredArbitraryBuilder.get(i));
 		}
 	}
 }
