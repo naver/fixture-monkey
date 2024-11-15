@@ -24,7 +24,7 @@ Java-specific APIs when creating a Kotlin type, and vice versa.
 To use Java-specific APIs, use `FixtureMonkey.giveMeBuilder(Class)` or `FixtureMonkey.giveMeJavaBuilder(Class)`.
 
 ### How to use Kotlin ArbitraryBuilder APIs
-To use Kotlin-specific APIs, use the extension function `FixtureMonkey.giveMeBuilder<Class>()`.
+To use Kotlin-specific APIs, use the extension function `FixtureMonkey.giveMeKotlinBuilder<Class>()`.
 
 ## Resolves the implementation of the abstract type
 
