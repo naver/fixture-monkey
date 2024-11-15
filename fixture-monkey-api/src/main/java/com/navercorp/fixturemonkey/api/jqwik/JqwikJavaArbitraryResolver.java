@@ -116,16 +116,12 @@ public final class JqwikJavaArbitraryResolver implements JavaArbitraryResolver {
 		return arbitrary
 			.filter(it -> {
 				if (!notBlank) {
-					if (it == null) {
+					if (it == null || it.isEmpty()) {
 						return true;
 					}
 				}
 
-				if (it == null || it.trim().isEmpty()) {
-					return false;
-				}
-
-				return true;
+				return it != null && !it.trim().isEmpty();
 			});
 	}
 

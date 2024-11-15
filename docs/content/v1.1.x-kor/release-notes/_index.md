@@ -6,6 +6,12 @@ docs:
 weight: 100
 ---
 sectionStart
+## v.1.1.3
+Fix generating empty String with @Size annotation.
+
+sectionEnd
+
+sectionStart
 ## v.1.1.2
 Fix setting recursive implementations of self reference object.
 
@@ -18,6 +24,12 @@ sectionStart
 Fix set a recursive object.
 
 Add a missing `giveMeJavaBuilder` with an object parameter.
+
+sectionEnd
+
+sectionStart
+## v.1.0.29
+Fix generating empty String with @Size annotation.
 
 sectionEnd
 
