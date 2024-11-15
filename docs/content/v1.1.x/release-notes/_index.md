@@ -28,6 +28,12 @@ Add a missing `giveMeJavaBuilder` with an object parameter.
 sectionEnd
 
 sectionStart
+## v.1.0.29
+Fix generating empty String with @Size annotation.
+
+sectionEnd
+
+sectionStart
 ## v.1.0.28
 Add support for `hashCode`, `equals`, `toString` in anonymous object
 
