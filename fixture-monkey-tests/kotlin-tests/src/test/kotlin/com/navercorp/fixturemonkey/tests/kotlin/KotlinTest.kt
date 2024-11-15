@@ -38,6 +38,7 @@ import com.navercorp.fixturemonkey.api.property.ConcreteTypeCandidateConcretePro
 import com.navercorp.fixturemonkey.api.property.PropertyUtils
 import com.navercorp.fixturemonkey.api.type.Types.GeneratingWildcardType
 import com.navercorp.fixturemonkey.customizer.Values
+import com.navercorp.fixturemonkey.javax.validation.plugin.JavaxValidationPlugin
 import com.navercorp.fixturemonkey.kotlin.KotlinPlugin
 import com.navercorp.fixturemonkey.kotlin.expression.root
 import com.navercorp.fixturemonkey.kotlin.get
@@ -78,6 +79,7 @@ import java.time.temporal.ChronoUnit
 import java.util.LinkedList
 import java.util.TreeSet
 import java.util.UUID
+import javax.validation.constraints.Size
 import kotlin.reflect.jvm.javaMethod
 
 class KotlinTest {
@@ -1045,6 +1047,26 @@ class KotlinTest {
         val actual: String = sut.giveMeOne()
 
         then(actual).isEqualTo(expected)
+    }
+
+    @Test
+    fun sizeZero(){
+        // given
+        class StringWithSizeZero(
+            @field:Size(min = 0, max = 0)
+            val value: String,
+        )
+
+        val sut = FixtureMonkey.builder()
+            .plugin(KotlinPlugin())
+            .plugin(JavaxValidationPlugin())
+            .build()
+
+        // when
+        val actual = sut.giveMeOne<StringWithSizeZero>().value
+
+        // then
+        then(actual).isEqualTo("")
     }
 
     companion object {
