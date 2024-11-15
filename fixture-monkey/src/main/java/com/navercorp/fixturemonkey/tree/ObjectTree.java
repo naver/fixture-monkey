@@ -43,51 +43,28 @@ import com.navercorp.fixturemonkey.api.generator.CompositeArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.generator.IntrospectedArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.generator.ValidateArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
-import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
 import com.navercorp.fixturemonkey.api.type.Types;
-import com.navercorp.fixturemonkey.customizer.ContainerInfoManipulator;
 import com.navercorp.fixturemonkey.customizer.NodeManipulator;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class ObjectTree {
 	private final RootProperty rootProperty;
 	private final ObjectNode rootNode;
-	private final FixtureMonkeyOptions fixtureMonkeyOptions;
 	private final ObjectTreeMetadata metadata;
-	private final MonkeyContext monkeyContext;
-	private final boolean validOnly;
-	private final Map<Class<?>, ArbitraryIntrospector> arbitraryIntrospectorConfigurer;
+	private final TraverseContext traverseContext;
 
 	public ObjectTree(
 		RootProperty rootProperty,
-		FixtureMonkeyOptions fixtureMonkeyOptions,
-		MonkeyContext monkeyContext,
-		boolean validOnly,
-		Map<Class<?>, ArbitraryIntrospector> arbitraryIntrospectorConfigurer,
-		List<ContainerInfoManipulator> containerInfoManipulators,
-		Map<Class<?>, List<Property>> propertyConfigurers,
-		List<MatcherOperator<List<ContainerInfoManipulator>>> registeredContainerInfoManipulators
+		TraverseContext traverseContext
 	) {
 		this.rootProperty = rootProperty;
-		this.fixtureMonkeyOptions = fixtureMonkeyOptions;
-		this.monkeyContext = monkeyContext;
-		this.rootNode = ObjectNode.generateRootNode(
-			rootProperty,
-			fixtureMonkeyOptions,
-			new TraverseContext(
-				new ArrayList<>(),
-				containerInfoManipulators,
-				registeredContainerInfoManipulators,
-				propertyConfigurers
-			)
-		);
+		this.traverseContext = traverseContext;
+		this.rootNode = ObjectNode.generateRootNode(rootProperty, traverseContext);
 		MetadataCollector metadataCollector = new MetadataCollector(rootNode);
 		this.metadata = metadataCollector.collect();
-		this.validOnly = validOnly;
-		this.arbitraryIntrospectorConfigurer = arbitraryIntrospectorConfigurer;
 	}
 
 	public ObjectTreeMetadata getMetadata() {
@@ -125,7 +102,9 @@ public final class ObjectTree {
 			childrenProperties.add(childNode.getArbitraryProperty());
 		}
 
-		MonkeyGeneratorContext monkeyGeneratorContext = monkeyContext.retrieveGeneratorContext(rootProperty);
+		MonkeyContext monkeyContext = traverseContext.getMonkeyContext();
+		MonkeyGeneratorContext monkeyGeneratorContext = monkeyContext.newGeneratorContext(rootProperty);
+		FixtureMonkeyOptions fixtureMonkeyOptions = monkeyContext.getFixtureMonkeyOptions();
 		ArbitraryGeneratorLoggingContext loggingContext = new ArbitraryGeneratorLoggingContext(
 			fixtureMonkeyOptions.isEnableLoggingFail());
 
@@ -155,6 +134,11 @@ public final class ObjectTree {
 		ObjectNode node,
 		@Nullable ArbitraryGeneratorContext currentContext
 	) {
+		MonkeyContext monkeyContext = traverseContext.getMonkeyContext();
+		Map<Class<?>, ArbitraryIntrospector> arbitraryIntrospectorConfigurer =
+			traverseContext.getArbitraryIntrospectorConfigurer();
+		FixtureMonkeyOptions fixtureMonkeyOptions = monkeyContext.getFixtureMonkeyOptions();
+
 		CombinableArbitrary<?> generated;
 		if (node.getArbitrary() != null) {
 			generated = node.getArbitrary()
@@ -197,8 +181,10 @@ public final class ObjectTree {
 	}
 
 	private ArbitraryGenerator getArbitraryGenerator(@Nullable ArbitraryIntrospector arbitraryIntrospector) {
-		ArbitraryGenerator arbitraryGenerator = this.fixtureMonkeyOptions.getDefaultArbitraryGenerator();
+		FixtureMonkeyOptions fixtureMonkeyOptions = traverseContext.getMonkeyContext().getFixtureMonkeyOptions();
+		ArbitraryGenerator arbitraryGenerator = fixtureMonkeyOptions.getDefaultArbitraryGenerator();
 
+		boolean validOnly = traverseContext.isValidOnly();
 		if (arbitraryIntrospector != null) {
 			arbitraryGenerator = new CompositeArbitraryGenerator(
 				Arrays.asList(
@@ -213,8 +199,8 @@ public final class ObjectTree {
 				Arrays.asList(
 					arbitraryGenerator,
 					new ValidateArbitraryGenerator(
-						this.fixtureMonkeyOptions.getJavaConstraintGenerator(),
-						this.fixtureMonkeyOptions.getDecomposedContainerValueFactory()
+						fixtureMonkeyOptions.getJavaConstraintGenerator(),
+						fixtureMonkeyOptions.getDecomposedContainerValueFactory()
 					)
 				)
 			);

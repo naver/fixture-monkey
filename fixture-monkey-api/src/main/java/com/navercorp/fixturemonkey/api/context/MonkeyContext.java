@@ -20,35 +20,54 @@ package com.navercorp.fixturemonkey.api.context;
 
 import static com.navercorp.fixturemonkey.api.type.Types.isJavaType;
 
+import java.util.List;
 import java.util.TreeMap;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import com.navercorp.fixturemonkey.api.ObjectBuilder;
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.container.ConcurrentLruCache;
+import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
+import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
 import com.navercorp.fixturemonkey.api.type.Types;
 
-@API(since = "0.4.0", status = Status.MAINTAINED)
+/**
+ * {@code FixtureMonkey} → {@code ArbitraryBuilder} → {@code ObjectTree} → {@link CombinableArbitrary}
+ * 						1:N							1:N					1:1
+ * <p>
+ * It is a context within {@code FixtureMonkey}. It represents a status of the {@code FixtureMonkey}.
+ * The {@code FixtureMonkey} should be the same if the {@link MonkeyContext} is the same.
+ * <p>
+ * It is for internal use only. It can be changed or removed at any time.
+ */
+@API(since = "0.4.0", status = Status.INTERNAL)
 public final class MonkeyContext {
 	private final ConcurrentLruCache<Property, CombinableArbitrary<?>> arbitrariesByProperty;
 	private final ConcurrentLruCache<Property, CombinableArbitrary<?>> javaArbitrariesByProperty;
 	private final ConcurrentLruCache<RootProperty, MonkeyGeneratorContext> generatorContextByRootProperty;
+	private final List<MatcherOperator<? extends ObjectBuilder<?>>> registeredArbitraryBuilders;
+	private final FixtureMonkeyOptions fixtureMonkeyOptions;
 
 	public MonkeyContext(
 		ConcurrentLruCache<Property, CombinableArbitrary<?>> arbitrariesByProperty,
 		ConcurrentLruCache<Property, CombinableArbitrary<?>> javaArbitrariesByProperty,
-		ConcurrentLruCache<RootProperty, MonkeyGeneratorContext> generatorContextByRootProperty
+		ConcurrentLruCache<RootProperty, MonkeyGeneratorContext> generatorContextByRootProperty,
+		List<MatcherOperator<? extends ObjectBuilder<?>>> registeredArbitraryBuilders,
+		FixtureMonkeyOptions fixtureMonkeyOptions
 	) {
 		this.arbitrariesByProperty = arbitrariesByProperty;
 		this.javaArbitrariesByProperty = javaArbitrariesByProperty;
 		this.generatorContextByRootProperty = generatorContextByRootProperty;
+		this.registeredArbitraryBuilders = registeredArbitraryBuilders;
+		this.fixtureMonkeyOptions = fixtureMonkeyOptions;
 	}
 
-	public static MonkeyContextBuilder builder() {
-		return new MonkeyContextBuilder();
+	public static MonkeyContextBuilder builder(FixtureMonkeyOptions fixtureMonkeyOptions) {
+		return new MonkeyContextBuilder(fixtureMonkeyOptions);
 	}
 
 	public CombinableArbitrary<?> getCachedArbitrary(Property property) {
@@ -69,10 +88,20 @@ public final class MonkeyContext {
 		arbitrariesByProperty.put(property, combinableArbitrary);
 	}
 
-	public MonkeyGeneratorContext retrieveGeneratorContext(RootProperty rootProperty) {
+	public MonkeyGeneratorContext newGeneratorContext(
+		RootProperty rootProperty
+	) {
 		return generatorContextByRootProperty.computeIfAbsent(
 			rootProperty,
 			property -> new MonkeyGeneratorContext(new TreeMap<>())
 		);
+	}
+
+	public List<MatcherOperator<? extends ObjectBuilder<?>>> getRegisteredArbitraryBuilders() {
+		return registeredArbitraryBuilders;
+	}
+
+	public FixtureMonkeyOptions getFixtureMonkeyOptions() {
+		return fixtureMonkeyOptions;
 	}
 }

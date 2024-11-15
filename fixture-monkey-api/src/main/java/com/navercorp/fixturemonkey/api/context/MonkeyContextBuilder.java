@@ -18,21 +18,34 @@
 
 package com.navercorp.fixturemonkey.api.context;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import com.navercorp.fixturemonkey.api.ObjectBuilder;
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.container.ConcurrentLruCache;
+import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
+import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class MonkeyContextBuilder {
+	private final FixtureMonkeyOptions fixtureMonkeyOptions;
+
 	private ConcurrentLruCache<Property, CombinableArbitrary<?>> arbitrariesByProperty;
 	private ConcurrentLruCache<Property, CombinableArbitrary<?>> javaArbitrariesByProperty;
 	private ConcurrentLruCache<RootProperty, MonkeyGeneratorContext> generatorContextByRootProperty;
+	private List<MatcherOperator<? extends ObjectBuilder<?>>> registeredObjectBuilders;
 	private int cacheSize = 2048;
 	private int generatorContextSize = 1000;
+
+	public MonkeyContextBuilder(FixtureMonkeyOptions fixtureMonkeyOptions) {
+		this.fixtureMonkeyOptions = fixtureMonkeyOptions;
+	}
 
 	public MonkeyContextBuilder arbitrariesByProperty(
 		ConcurrentLruCache<Property, CombinableArbitrary<?>> arbitrariesByProperty
@@ -65,6 +78,13 @@ public final class MonkeyContextBuilder {
 		return this;
 	}
 
+	public MonkeyContextBuilder registeredObjectBuilder(
+		List<MatcherOperator<? extends ObjectBuilder<?>>> registeredObjectBuilders
+	) {
+		this.registeredObjectBuilders = registeredObjectBuilders;
+		return this;
+	}
+
 	public MonkeyContext build() {
 		if (arbitrariesByProperty == null) {
 			arbitrariesByProperty = new ConcurrentLruCache<>(cacheSize);
@@ -78,10 +98,16 @@ public final class MonkeyContextBuilder {
 			generatorContextByRootProperty = new ConcurrentLruCache<>(generatorContextSize);
 		}
 
+		if (registeredObjectBuilders == null) {
+			registeredObjectBuilders = new ArrayList<>();
+		}
+
 		return new MonkeyContext(
 			arbitrariesByProperty,
 			javaArbitrariesByProperty,
-			generatorContextByRootProperty
+			generatorContextByRootProperty,
+			registeredObjectBuilders,
+			fixtureMonkeyOptions
 		);
 	}
 }
