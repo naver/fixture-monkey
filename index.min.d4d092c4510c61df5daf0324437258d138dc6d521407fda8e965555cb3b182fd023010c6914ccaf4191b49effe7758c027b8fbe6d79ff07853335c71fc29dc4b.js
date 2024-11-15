@@ -6,7 +6,7 @@ As of 1.1.x, when you apply the KotlinPlugin, Java types are created by the Bean
 Different ArbitraryBuilder APIs between Java and Kotlin # In 1.0.x, Java and Kotlin use the same API in ArbitraryBuilder.
 As of 1.1.x, Fixture Monkey provides both Java-specific ArbitraryBuilder APIs and Kotlin-specific ArbitraryBuilder APIs. Of course, you can use the Java-specific APIs when creating a Kotlin type, and vice versa.
 How to use Java ArbitraryBuilder APIs # To use Java-specific APIs, use FixtureMonkey.giveMeBuilder(Class) or FixtureMonkey.giveMeJavaBuilder(Class).
-How to use Kotlin ArbitraryBuilder APIs # To use Kotlin-specific APIs, use the extension function FixtureMonkey.giveMeBuilder&lt;Class&gt;().
+How to use Kotlin ArbitraryBuilder APIs # To use Kotlin-specific APIs, use the extension function FixtureMonkey.giveMeKotlinBuilder&lt;Class&gt;().
 Resolves the implementation of the abstract type # In 1.0.x, You must use the ObjectPropertyGenerator option in order to resolve the actual type of abstract class or interface.
 As of 1.1.x, all you have to do is use the CandidateConcretePropertyResolver option. It is much easier.
 Let&rsquo;s take the sealed type as an example. To create an instance of a sealed class in JDK 17, you have to use the SealedTypeObjectPropertyGenerator, which is used by default. It forces you to know the properties of ObjectProperty, most of which are not your concern.
