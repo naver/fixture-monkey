@@ -19,8 +19,10 @@
 package com.navercorp.fixturemonkey.tests.kotlin
 
 import com.navercorp.fixturemonkey.FixtureMonkey
+import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary
 import com.navercorp.fixturemonkey.javax.validation.plugin.JavaxValidationPlugin
 import com.navercorp.fixturemonkey.kotest.KotestPlugin
+import com.navercorp.fixturemonkey.kotest.KotestStringCombinableArbitrary
 import com.navercorp.fixturemonkey.kotest.giveMeArb
 import com.navercorp.fixturemonkey.kotest.setArb
 import com.navercorp.fixturemonkey.kotlin.KotlinPlugin
@@ -33,6 +35,7 @@ import io.kotest.property.arbitrary.single
 import io.kotest.property.arbs.geo.zipcodes
 import org.assertj.core.api.BDDAssertions.then
 import org.junit.jupiter.api.RepeatedTest
+import org.junit.jupiter.api.Test
 import java.math.BigDecimal
 import java.math.BigInteger
 import javax.validation.constraints.DecimalMax
@@ -761,6 +764,20 @@ class KotestInJunitTest {
             .string
 
         then(actual).hasSize(5)
+    }
+
+    @Test
+    fun stringCombinableArbitrary(){
+        val actual = CombinableArbitrary.strings()
+
+        then(actual).isInstanceOf(KotestStringCombinableArbitrary::class.java)
+    }
+
+    @Test
+    fun stringCombinableArbitraryAscii(){
+        val actual = CombinableArbitrary.strings().ascii().combined()
+
+        then(actual).isInstanceOf(KotestStringCombinableArbitrary::class.java)
     }
 
     companion object {

@@ -18,6 +18,7 @@
 
 package com.navercorp.fixturemonkey.api.arbitrary;
 
+import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -37,7 +38,10 @@ import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 @API(since = "0.6.0", status = Status.MAINTAINED)
 public interface CombinableArbitrary<T> {
 	CombinableArbitrary<?> NOT_GENERATED = CombinableArbitrary.from((Object)null);
+
 	int DEFAULT_MAX_TRIES = 1_000;
+	ServiceLoader<StringCombinableArbitrary> STRING_COMBINABLE_ARBITRARY_SERVICE_LOADER =
+		ServiceLoader.load(StringCombinableArbitrary.class);
 
 	/**
 	 * Generates a {@link FixedCombinableArbitrary} which returns always same value.
@@ -186,4 +190,12 @@ public interface CombinableArbitrary<T> {
 	 * @return fixed
 	 */
 	boolean fixed();
+
+	/**
+	 * @return a {@link CombinableArbitrary} returns a randomly generated String
+	 */
+	@API(since = "1.0.4", status = Status.EXPERIMENTAL)
+	static StringCombinableArbitrary strings() {
+		return STRING_COMBINABLE_ARBITRARY_SERVICE_LOADER.iterator().next();
+	}
 }

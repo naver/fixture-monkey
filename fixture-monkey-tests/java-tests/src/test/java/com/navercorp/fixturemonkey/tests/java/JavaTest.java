@@ -54,12 +54,14 @@ import net.jqwik.api.Arbitraries;
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
+import com.navercorp.fixturemonkey.api.arbitrary.StringCombinableArbitrary;
 import com.navercorp.fixturemonkey.api.exception.RetryableFilterMissException;
 import com.navercorp.fixturemonkey.api.introspector.BeanArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.CompositeArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.ConstructorPropertiesArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.FailoverIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.FieldReflectionArbitraryIntrospector;
+import com.navercorp.fixturemonkey.api.jqwik.JqwikStringCombinableArbitrary;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.api.plugin.InterfacePlugin;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
@@ -1394,5 +1396,58 @@ class JavaTest {
 		String actual = sut.giveMeOne(String.class);
 
 		then(actual).isEqualTo(expected);
+	}
+
+	@Test
+	void stringCombinableArbitraryIsJqwik() {
+		StringCombinableArbitrary actual = CombinableArbitrary.strings();
+
+		then(actual).isInstanceOf(JqwikStringCombinableArbitrary.class);
+	}
+
+	@Test
+	void stringCombinableArbitraryInjectNull() {
+		String actual = CombinableArbitrary.strings().injectNull(1).combined();
+
+		then(actual).isNull();
+	}
+
+	@Test
+	void stringCombinableArbitraryFilter() {
+		String actual = CombinableArbitrary.strings().filter(it -> it.length() > 5).combined();
+
+		then(actual).hasSizeGreaterThan(5);
+	}
+
+	@Test
+	void stringCombinableArbitraryFilterCharacter() {
+		String actual = CombinableArbitrary.strings().filterCharacter(it -> 'a' <= it && it <= 'z').combined();
+
+		then(actual).isAlphabetic();
+	}
+
+	@Test
+	void stringCombinableArbitraryFilterCharacterAndFilter() {
+		String actual = CombinableArbitrary.strings()
+			.filterCharacter(it -> 'a' <= it && it <= 'z')
+			.filter(it -> it.length() < 5)
+			.combined();
+
+		then(actual).isAlphabetic();
+		then(actual).hasSizeLessThan(5);
+	}
+
+	@Test
+	void stringCombinableArbitraryNumeric() {
+		String actual = CombinableArbitrary.strings().numeric().combined();
+
+		then(actual).matches("[0-9]*");
+	}
+
+	@Test
+	void stringCombinableArbitraryMap() {
+		String actual = CombinableArbitrary.strings().map(it -> "prefix" + it).combined();
+
+		then(actual).startsWith("prefix");
 	}
 }
