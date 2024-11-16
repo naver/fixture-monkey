@@ -21,8 +21,9 @@ package com.navercorp.fixturemonkey.tests.kotlin
 import com.navercorp.fixturemonkey.FixtureMonkey
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary
 import com.navercorp.fixturemonkey.javax.validation.plugin.JavaxValidationPlugin
-import com.navercorp.fixturemonkey.kotest.KotestPlugin
 import com.navercorp.fixturemonkey.kotest.KotestIntegerCombinableArbitrary
+import com.navercorp.fixturemonkey.kotest.KotestPlugin
+import com.navercorp.fixturemonkey.kotest.KotestStringCombinableArbitrary
 import com.navercorp.fixturemonkey.kotest.giveMeArb
 import com.navercorp.fixturemonkey.kotest.setArb
 import com.navercorp.fixturemonkey.kotlin.KotlinPlugin
@@ -876,45 +877,59 @@ class KotestInJunitTest {
     }
 
     @Test
-    fun integerCombinableArbitrary(){
+    fun integerCombinableArbitrary() {
         val actual = CombinableArbitrary.integers()
 
         then(actual).isInstanceOf(KotestIntegerCombinableArbitrary::class.java)
     }
 
     @RepeatedTest(TEST_COUNT)
-    fun integerCombinableArbitraryPositive(){
+    fun integerCombinableArbitraryPositive() {
         val actual = CombinableArbitrary.integers().positive().combined()
 
         then(actual).isPositive()
     }
 
     @RepeatedTest(TEST_COUNT)
-    fun integerCombinableArbitraryNegative(){
+    fun integerCombinableArbitraryNegative() {
         val actual = CombinableArbitrary.integers().negative().combined()
 
         then(actual).isNegative()
     }
 
     @RepeatedTest(TEST_COUNT)
-    fun integerCombinableArbitraryEven(){
+    fun integerCombinableArbitraryEven() {
         val actual = CombinableArbitrary.integers().even().combined()
 
         then(actual).isEven()
     }
 
     @RepeatedTest(TEST_COUNT)
-    fun integerCombinableArbitraryOdd(){
+    fun integerCombinableArbitraryOdd() {
         val actual = CombinableArbitrary.integers().odd().combined()
 
         then(actual).isOdd()
     }
 
     @RepeatedTest(TEST_COUNT)
-    fun integerCombinableArbitraryWithRange(){
+    fun integerCombinableArbitraryWithRange() {
         val actual = CombinableArbitrary.integers().withRange(10, 20).combined()
 
         then(actual).isBetween(10, 20)
+    }
+
+    @Test
+    fun stringCombinableArbitrary() {
+        val actual = CombinableArbitrary.strings()
+
+        then(actual).isInstanceOf(KotestStringCombinableArbitrary::class.java)
+    }
+
+    @Test
+    fun stringCombinableArbitraryAscii() {
+        val actual = CombinableArbitrary.strings().ascii().combined()
+
+        then(actual).isInstanceOf(KotestStringCombinableArbitrary::class.java)
     }
 
     companion object {

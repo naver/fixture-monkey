@@ -55,6 +55,7 @@ import net.jqwik.api.Arbitraries;
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
+import com.navercorp.fixturemonkey.api.arbitrary.StringCombinableArbitrary;
 import com.navercorp.fixturemonkey.api.exception.RetryableFilterMissException;
 import com.navercorp.fixturemonkey.api.introspector.BeanArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.CompositeArbitraryIntrospector;
@@ -62,6 +63,7 @@ import com.navercorp.fixturemonkey.api.introspector.ConstructorPropertiesArbitra
 import com.navercorp.fixturemonkey.api.introspector.FailoverIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.FieldReflectionArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.jqwik.JqwikIntegerCombinableArbitrary;
+import com.navercorp.fixturemonkey.api.jqwik.JqwikStringCombinableArbitrary;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.plugin.InterfacePlugin;
@@ -1608,5 +1610,79 @@ class JavaTest {
 		Integer actual = CombinableArbitrary.integers().negative().withRange(100, 1000).combined();
 
 		then(actual).isBetween(100, 1000);
+	}
+
+	@Test
+	void stringCombinableArbitraryIsJqwik() {
+		StringCombinableArbitrary actual = CombinableArbitrary.strings();
+
+		then(actual).isInstanceOf(JqwikStringCombinableArbitrary.class);
+	}
+
+	@Test
+	void stringCombinableArbitraryInjectNull() {
+		String actual = CombinableArbitrary.strings().injectNull(1).combined();
+
+		then(actual).isNull();
+	}
+
+	@Test
+	void stringCombinableArbitraryFilter() {
+		String actual = CombinableArbitrary.strings().filter(it -> it.length() > 5).combined();
+
+		then(actual).hasSizeGreaterThan(5);
+	}
+
+	@Test
+	void stringCombinableArbitraryFilterCharacter() {
+		String actual = CombinableArbitrary.strings().filterCharacter(it -> 'a' <= it && it <= 'z').combined();
+
+		then(actual.chars()).allMatch(it -> 'a' <= it && it <= 'z');
+	}
+
+	@Test
+	void stringCombinableArbitraryFilterCharacterAndFilter() {
+		String actual = CombinableArbitrary.strings()
+			.filterCharacter(it -> 'a' <= it && it <= 'z')
+			.filter(it -> it.length() < 5)
+			.combined();
+
+		then(actual.chars()).allMatch(it -> 'a' <= it && it <= 'z');
+		then(actual).hasSizeLessThan(5);
+	}
+
+	@Test
+	void stringCombinableArbitraryNumeric() {
+		String actual = CombinableArbitrary.strings().numeric().combined();
+
+		then(actual).matches("[0-9]*");
+	}
+
+	@Test
+	void stringCombinableArbitraryMap() {
+		String actual = CombinableArbitrary.strings().map(it -> "prefix" + it).combined();
+
+		then(actual).startsWith("prefix");
+	}
+
+	@Test
+	void stringCombinableArbitraryKorean() {
+		String actual = CombinableArbitrary.strings().korean().combined();
+
+		then(actual.chars()).allMatch(it -> '가' <= it && it <= '힣');
+	}
+
+	@Test
+	void stringCombinableArbitraryAlphabet() {
+		String actual = CombinableArbitrary.strings().alphabetic().combined();
+
+		then(actual).isAlphabetic();
+	}
+
+	@Test
+	void stringCombinableArbitraryLatterWins() {
+		String actual = CombinableArbitrary.strings().korean().alphabetic().combined();
+
+		then(actual).isAlphabetic();
 	}
 }
