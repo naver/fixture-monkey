@@ -46,7 +46,9 @@ public final class JqwikJavaTypeArbitraryGeneratorSet implements JavaTypeArbitra
 
 	@Override
 	public CombinableArbitrary<String> strings(ArbitraryGeneratorContext context) {
-		return ArbitraryUtils.toCombinableArbitrary(arbitraryResolver.strings(arbitraryGenerator.strings(), context));
+		return ArbitraryUtils.toCombinableArbitrary(
+			arbitraryResolver.strings(arbitraryGenerator.strings(), context)
+		);
 	}
 
 	@Override
