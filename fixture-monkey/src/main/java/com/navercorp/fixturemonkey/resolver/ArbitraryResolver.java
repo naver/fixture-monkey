@@ -27,6 +27,8 @@ import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.context.MonkeyContext;
+import com.navercorp.fixturemonkey.api.matcher.DefaultTreeMatcherMetadata;
+import com.navercorp.fixturemonkey.api.matcher.TreeMatcherOperator;
 import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
 import com.navercorp.fixturemonkey.builder.ArbitraryBuilderContext;
@@ -60,10 +62,20 @@ public final class ArbitraryResolver {
 
 		return new ResolvedCombinableArbitrary<>(
 			rootProperty,
-			() -> new ObjectTree(
-				rootProperty,
-				builderContext.newTraverseContext()
-			),
+			() -> {
+				ObjectTree objectTree = new ObjectTree(
+					rootProperty,
+					builderContext.newTraverseContext()
+				);
+
+				fixtureMonkeyOptions.getBuilderContextInitializers().stream()
+					.filter(it -> it.match(new DefaultTreeMatcherMetadata(objectTree.getMetadata().getAnnotations())))
+					.findFirst()
+					.map(TreeMatcherOperator::getOperator)
+					.ifPresent(it -> builderContext.setOptionValidOnly(it.isValidOnly()));
+
+				return objectTree;
+			},
 			objectTree -> {
 				List<ArbitraryManipulator> registeredManipulators =
 					monkeyManipulatorFactory.newRegisteredArbitraryManipulators(
@@ -86,7 +98,7 @@ public final class ArbitraryResolver {
 			},
 			fixtureMonkeyOptions.getGenerateMaxTries(),
 			fixtureMonkeyOptions.getDefaultArbitraryValidator(),
-			builderContext.isValidOnly()
+			builderContext::isValidOnly
 		);
 	}
 }

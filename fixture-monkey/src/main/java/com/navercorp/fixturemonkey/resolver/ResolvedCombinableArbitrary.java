@@ -43,7 +43,7 @@ final class ResolvedCombinableArbitrary<T> implements CombinableArbitrary<T> {
 	private final int generateMaxTries;
 	private final LazyArbitrary<CombinableArbitrary<T>> arbitrary;
 	private final ArbitraryValidator validator;
-	private final boolean validOnly;
+	private final Supplier<Boolean> validOnly;
 
 	private Exception lastException = null;
 
@@ -53,7 +53,7 @@ final class ResolvedCombinableArbitrary<T> implements CombinableArbitrary<T> {
 		Function<ObjectTree, CombinableArbitrary<T>> generateArbitrary,
 		int generateMaxTries,
 		ArbitraryValidator validator,
-		boolean validOnly
+		Supplier<Boolean> validOnly
 	) {
 		this.rootProperty = rootProperty;
 		this.objectTree = LazyArbitrary.lazy(regenerateTree);
@@ -73,7 +73,7 @@ final class ResolvedCombinableArbitrary<T> implements CombinableArbitrary<T> {
 		for (int i = 0; i < generateMaxTries; i++) {
 			try {
 				return arbitrary.getValue()
-					.filter(VALIDATION_ANNOTATION_FILTERING_COUNT, this.validateFilter(validOnly))
+					.filter(VALIDATION_ANNOTATION_FILTERING_COUNT, this.validateFilter(validOnly.get()))
 					.combined();
 			} catch (ContainerSizeFilterMissException | RetryableFilterMissException ex) {
 				lastException = ex;
@@ -100,7 +100,7 @@ final class ResolvedCombinableArbitrary<T> implements CombinableArbitrary<T> {
 		for (int i = 0; i < generateMaxTries; i++) {
 			try {
 				return arbitrary.getValue()
-					.filter(VALIDATION_ANNOTATION_FILTERING_COUNT, this.validateFilter(validOnly))
+					.filter(VALIDATION_ANNOTATION_FILTERING_COUNT, this.validateFilter(validOnly.get()))
 					.rawValue();
 			} catch (ContainerSizeFilterMissException | RetryableFilterMissException ex) {
 				lastException = ex;

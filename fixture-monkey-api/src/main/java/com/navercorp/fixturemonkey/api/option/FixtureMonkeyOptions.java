@@ -78,6 +78,7 @@ import com.navercorp.fixturemonkey.api.matcher.ExactPropertyMatcher;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.matcher.Matchers;
 import com.navercorp.fixturemonkey.api.matcher.SingleGenericTypeMatcher;
+import com.navercorp.fixturemonkey.api.matcher.TreeMatcherOperator;
 import com.navercorp.fixturemonkey.api.property.CandidateConcretePropertyResolver;
 import com.navercorp.fixturemonkey.api.property.CompositeCandidateConcretePropertyResolver;
 import com.navercorp.fixturemonkey.api.property.ConcreteTypeCandidateConcretePropertyResolver;
@@ -167,6 +168,7 @@ public final class FixtureMonkeyOptions {
 	private final InstantiatorProcessor instantiatorProcessor;
 	private final List<MatcherOperator<CandidateConcretePropertyResolver>> candidateConcretePropertyResolvers;
 	private final boolean enableLoggingFail;
+	private final List<TreeMatcherOperator<BuilderContextInitializer>> builderContextInitializers;
 
 	public FixtureMonkeyOptions(
 		List<MatcherOperator<PropertyGenerator>> propertyGenerators,
@@ -188,7 +190,8 @@ public final class FixtureMonkeyOptions {
 		JavaConstraintGenerator javaConstraintGenerator,
 		InstantiatorProcessor instantiatorProcessor,
 		List<MatcherOperator<CandidateConcretePropertyResolver>> candidateConcretePropertyResolvers,
-		boolean enableLoggingFail
+		boolean enableLoggingFail,
+		List<TreeMatcherOperator<BuilderContextInitializer>> builderContextCustomizer
 	) {
 		this.propertyGenerators = propertyGenerators;
 		this.defaultPropertyGenerator = defaultPropertyGenerator;
@@ -210,6 +213,7 @@ public final class FixtureMonkeyOptions {
 		this.instantiatorProcessor = instantiatorProcessor;
 		this.candidateConcretePropertyResolvers = candidateConcretePropertyResolvers;
 		this.enableLoggingFail = enableLoggingFail;
+		this.builderContextInitializers = builderContextCustomizer;
 	}
 
 	public static FixtureMonkeyOptionsBuilder builder() {
@@ -342,6 +346,10 @@ public final class FixtureMonkeyOptions {
 		return enableLoggingFail;
 	}
 
+	public List<TreeMatcherOperator<BuilderContextInitializer>> getBuilderContextInitializers() {
+		return builderContextInitializers;
+	}
+
 	@Nullable
 	public CandidateConcretePropertyResolver getCandidateConcretePropertyResolver(Property property) {
 		List<CandidateConcretePropertyResolver> candidateConcretePropertyResolverList =
@@ -373,7 +381,8 @@ public final class FixtureMonkeyOptions {
 			.decomposedContainerValueFactory(decomposedContainerValueFactory)
 			.javaConstraintGenerator(javaConstraintGenerator)
 			.instantiatorProcessor(instantiatorProcessor)
-			.candidateConcretePropertyResolvers(candidateConcretePropertyResolvers);
+			.candidateConcretePropertyResolvers(candidateConcretePropertyResolvers)
+			.builderContextInitializers(builderContextInitializers);
 	}
 
 	private static List<MatcherOperator<ContainerPropertyGenerator>> getDefaultContainerPropertyGenerators() {

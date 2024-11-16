@@ -23,6 +23,7 @@ import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary
 import com.navercorp.fixturemonkey.api.experimental.JavaGetterMethodPropertySelector.javaGetter
 import com.navercorp.fixturemonkey.api.experimental.TypedExpressionGenerator.typedRoot
 import com.navercorp.fixturemonkey.api.experimental.TypedExpressionGenerator.typedString
+import com.navercorp.fixturemonkey.api.expression.TypedExpressionGenerator
 import com.navercorp.fixturemonkey.api.introspector.AnonymousArbitraryIntrospector
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult
 import com.navercorp.fixturemonkey.api.introspector.BeanArbitraryIntrospector
@@ -39,6 +40,7 @@ import com.navercorp.fixturemonkey.api.property.PropertyUtils
 import com.navercorp.fixturemonkey.api.type.Types.GeneratingWildcardType
 import com.navercorp.fixturemonkey.customizer.Values
 import com.navercorp.fixturemonkey.javax.validation.plugin.JavaxValidationPlugin
+import com.navercorp.fixturemonkey.javax.validation.validator.JavaxArbitraryValidator
 import com.navercorp.fixturemonkey.kotlin.KotlinPlugin
 import com.navercorp.fixturemonkey.kotlin.expression.root
 import com.navercorp.fixturemonkey.kotlin.get
@@ -79,6 +81,7 @@ import java.time.temporal.ChronoUnit
 import java.util.LinkedList
 import java.util.TreeSet
 import java.util.UUID
+import javax.validation.Valid
 import javax.validation.constraints.Size
 import kotlin.reflect.jvm.javaMethod
 
@@ -1095,6 +1098,63 @@ class KotlinTest {
         // then
         val expected = set.list
         then(actual).isEqualTo(expected)
+    }
+
+    @Test
+    fun customizerValidOnly() {
+        // given
+        class StringWithSizeZero(
+            @field:Size(min = 0, max = 0)
+            val value: String,
+        )
+
+        class Wrapper(@field:Valid val value: StringWithSizeZero)
+
+        val sut = FixtureMonkey.builder()
+            .plugin(KotlinPlugin())
+            .plugin { it.defaultArbitraryValidator(JavaxArbitraryValidator()) }
+            .pushCustomizeValidOnly(
+                { it.annotations.any { annotation -> annotation.annotationClass == Size::class } },
+                false
+            )
+            .build()
+
+        // when
+        val actual = sut.giveMeBuilder<Wrapper>()
+            .customizeProperty(TypedExpressionGenerator.typedString<String>("value.value")) { it.filter { str -> str.length > 1 } }
+            .sample()
+
+        // then
+        then(actual).isNotNull
+    }
+
+    @Test
+    fun customizerValidOnlyBuilderValidOnlyFirst() {
+        // given
+        class StringWithSizeZero(
+            @field:Size(min = 0, max = 0)
+            val value: String,
+        )
+
+        class Wrapper(@field:Valid val value: StringWithSizeZero)
+
+        val sut = FixtureMonkey.builder()
+            .plugin(KotlinPlugin())
+            .plugin { it.defaultArbitraryValidator(JavaxArbitraryValidator()) }
+            .pushCustomizeValidOnly(
+                { it.annotations.any { annotation -> annotation.annotationClass == Size::class } },
+                true
+            )
+            .build()
+
+        // when
+        val actual = sut.giveMeBuilder<Wrapper>()
+            .customizeProperty(TypedExpressionGenerator.typedString<String>("value.value")) { it.filter { str -> str.length > 1 } }
+            .validOnly(false)
+            .sample()
+
+        // then
+        then(actual).isNotNull
     }
 
     companion object {
