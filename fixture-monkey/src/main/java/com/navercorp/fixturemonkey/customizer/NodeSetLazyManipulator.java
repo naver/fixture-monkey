@@ -27,6 +27,7 @@ import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.container.DecomposedContainerValueFactory;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.customizer.Values.Just;
+import com.navercorp.fixturemonkey.tree.GenerateFixtureContext;
 import com.navercorp.fixturemonkey.tree.ObjectNode;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
@@ -62,7 +63,8 @@ public final class NodeSetLazyManipulator<T> implements NodeManipulator {
 
 		if (value instanceof Just) {
 			Just just = (Just)value;
-			objectNode.setArbitrary(CombinableArbitrary.from(just::getValue));
+			GenerateFixtureContext generateFixtureContext = objectNode.getObjectNodeContext();
+			generateFixtureContext.setArbitrary(CombinableArbitrary.from(just::getValue));
 			lazyArbitrary.clear();
 			return;
 		}

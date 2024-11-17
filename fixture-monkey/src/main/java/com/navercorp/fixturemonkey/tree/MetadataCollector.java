@@ -46,7 +46,8 @@ final class MetadataCollector {
 	}
 
 	public ObjectTreeMetadata collect() {
-		for (ObjectNode child : rootNode.resolveChildren()) {
+		List<ObjectNode> objectNodes = rootNode.resolveChildren().asList();
+		for (ObjectNode child : objectNodes) {
 			collect(child);
 		}
 		return new ObjectTreeMetadata(
@@ -59,7 +60,7 @@ final class MetadataCollector {
 		Property property = node.getTreeProperty().getObjectProperty().getProperty();
 		annotations.addAll(property.getAnnotations());
 
-		List<ObjectNode> children = node.resolveChildren();
+		List<ObjectNode> children = node.resolveChildren().asList();
 		for (ObjectNode child : children) {
 			collect(child);
 		}

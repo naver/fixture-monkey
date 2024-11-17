@@ -15,16 +15,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.navercorp.fixturemonkey.tree;
+
+package com.navercorp.fixturemonkey.api.tree;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.generator.ObjectProperty;
-import com.navercorp.fixturemonkey.api.tree.TraverseNodePredicate;
+import com.navercorp.fixturemonkey.api.property.Property;
 
-@API(since = "0.4.0", status = Status.MAINTAINED)
+@API(since = "1.1.4", status = Status.EXPERIMENTAL)
 @FunctionalInterface
-public interface NextNodePredicate extends TraverseNodePredicate {
+public interface TraverseNodePredicate {
 	boolean test(ObjectProperty currentObjectProperty);
+
+	class StartTraverseNodePredicate implements TraverseNodePredicate {
+
+		@Override
+		public boolean test(ObjectProperty currentObjectProperty) {
+			return true;
+		}
+	}
+
+	class PropertyTraverseNodePredicate implements TraverseNodePredicate {
+		private final Property property;
+
+		public PropertyTraverseNodePredicate(Property property) {
+			this.property = property;
+		}
+
+		@Override
+		public boolean test(ObjectProperty currentObjectProperty) {
+			return property.equals(currentObjectProperty.getProperty());
+		}
+	}
 }

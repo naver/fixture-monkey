@@ -38,7 +38,7 @@ public final class DefaultNodeResolver implements NodeResolver {
 	@Override
 	public List<ObjectNode> resolve(ObjectNode objectNode) {
 		objectNode.expand(objectNode.getResolvedTypeDefinition());
-		List<ObjectNode> resolved = objectNode.getChildren().stream()
+		List<ObjectNode> resolved = objectNode.getChildren().asList().stream()
 			.filter(it -> nextNodePredicate.test(it.getArbitraryProperty().getObjectProperty()))
 			.collect(Collectors.toList());
 

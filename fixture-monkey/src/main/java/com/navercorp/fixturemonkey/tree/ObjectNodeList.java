@@ -15,16 +15,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.navercorp.fixturemonkey.tree;
+
+import java.util.List;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.api.generator.ObjectProperty;
-import com.navercorp.fixturemonkey.api.tree.TraverseNodePredicate;
+import com.navercorp.fixturemonkey.api.tree.NodeList;
 
-@API(since = "0.4.0", status = Status.MAINTAINED)
-@FunctionalInterface
-public interface NextNodePredicate extends TraverseNodePredicate {
-	boolean test(ObjectProperty currentObjectProperty);
+/**
+ * The list of {@link ObjectNode}. It is just to avoid the compile error, use {@link #asList()}.
+ *
+ * @see NodeList
+ */
+@API(since = "1.1.4", status = Status.EXPERIMENTAL)
+public final class ObjectNodeList implements NodeList {
+	private final List<ObjectNode> objectNodeList;
+
+	public ObjectNodeList(List<ObjectNode> objectNodeList) {
+		this.objectNodeList = objectNodeList;
+	}
+
+	@Override
+	public List<ObjectNode> asList() {
+		return this.objectNodeList;
+	}
 }

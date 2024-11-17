@@ -18,690 +18,199 @@
 
 package com.navercorp.fixturemonkey.tree;
 
-import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
-import com.navercorp.fixturemonkey.api.container.ConcurrentLruCache;
-import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
-import com.navercorp.fixturemonkey.api.generator.ArbitraryGenerator;
-import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
-import com.navercorp.fixturemonkey.api.generator.ContainerPropertyGenerator;
-import com.navercorp.fixturemonkey.api.generator.ObjectProperty;
-import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGenerator;
-import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGeneratorContext;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
-import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
-import com.navercorp.fixturemonkey.api.property.CandidateConcretePropertyResolver;
-import com.navercorp.fixturemonkey.api.property.CompositeTypeDefinition;
-import com.navercorp.fixturemonkey.api.property.DefaultCandidateConcretePropertyResolver;
-import com.navercorp.fixturemonkey.api.property.DefaultTypeDefinition;
-import com.navercorp.fixturemonkey.api.property.ElementPropertyGenerator;
-import com.navercorp.fixturemonkey.api.property.LazyPropertyGenerator;
-import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
-import com.navercorp.fixturemonkey.api.property.PropertyGenerator;
 import com.navercorp.fixturemonkey.api.property.PropertyPath;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
 import com.navercorp.fixturemonkey.api.property.TypeDefinition;
-import com.navercorp.fixturemonkey.api.tree.ObjectTreeNode;
+import com.navercorp.fixturemonkey.api.tree.TraverseNode;
+import com.navercorp.fixturemonkey.api.tree.TraverseNodeMetadata;
+import com.navercorp.fixturemonkey.api.tree.TreeNodeManipulator;
 import com.navercorp.fixturemonkey.api.tree.TreeProperty;
-import com.navercorp.fixturemonkey.api.type.Types;
-import com.navercorp.fixturemonkey.customizer.ContainerInfoManipulator;
-import com.navercorp.fixturemonkey.customizer.NodeManipulator;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
-public final class ObjectNode implements ObjectTreeNode {
-	private static final ConcurrentLruCache<Property, List<Property>> CANDIDATE_CONCRETE_PROPERTIES_BY_PROPERTY =
-		new ConcurrentLruCache<>(1024);
-
-	private final RootProperty rootProperty;
+public final class ObjectNode implements TraverseNode, TraverseNodeMetadata {
+	private final TraverseNode traverseNode;
+	private final GenerateFixtureContext generateFixtureContext;
 
 	@Nullable
-	private final Property resolvedParentProperty;
-	private TypeDefinition resolvedTypeDefinition;
-	private final TreeProperty treeProperty;
-	private final TraverseContext traverseContext;
-
-	@Nullable
-	private ObjectNode parent = null;
+	private ObjectNode parent;
 	private List<ObjectNode> children;
-	@Nullable
-	private CombinableArbitrary<?> arbitrary;
-	private double nullInject;
-	@Nullable
-	private TypeDefinition expandedTypeDefinition = null;
 
-	private final List<NodeManipulator> manipulators = new ArrayList<>();
-	private final List<ContainerInfoManipulator> containerInfoManipulators = new ArrayList<>();
-	@SuppressWarnings("rawtypes")
-	private final List<Predicate> arbitraryFilters = new ArrayList<>();
-	private final List<Function<CombinableArbitrary<?>, CombinableArbitrary<?>>> arbitraryCustomizers =
-		new ArrayList<>();
-
-	private final LazyArbitrary<Boolean> childManipulated = LazyArbitrary.lazy(() -> {
-		for (ObjectNode child : this.resolveChildren()) {
-			if (child.manipulated() || child.childManipulated.getValue()) {
-				return true;
-			}
-		}
-
-		return false;
-	});
-
-	private final LazyArbitrary<Boolean> childNotCacheable = LazyArbitrary.lazy(() -> {
-		for (ObjectNode child : this.resolveChildren()) {
-			if (childManipulated.getValue() || child.treeProperty.isContainer()) {
-				return true;
-			}
-		}
-
-		return false;
-	});
-	private final LazyArbitrary<PropertyPath> lazyPropertyPath = LazyArbitrary.lazy(() -> {
-		Property resolvedProperty = this.resolvedTypeDefinition.getResolvedProperty();
-		if (parent == null) {
-			return new PropertyPath(resolvedProperty, null, 1);
-		}
-
-		PropertyPath parentPropertyPath = parent.getLazyPropertyPath().getValue();
-		return new PropertyPath(
-			resolvedProperty,
-			parentPropertyPath,
-			parentPropertyPath.getDepth() + 1
-		);
-	});
-
-	ObjectNode(
-		RootProperty rootProperty,
-		@Nullable Property resolvedParentProperty,
-		TypeDefinition resolvedTypeDefinition,
-		TreeProperty treeProperty,
-		double nullInject,
-		TraverseContext traverseContext
-	) {
-		this.rootProperty = rootProperty;
-		this.resolvedParentProperty = resolvedParentProperty;
-		this.resolvedTypeDefinition = resolvedTypeDefinition;
-		this.treeProperty = treeProperty;
-		this.nullInject = nullInject;
-		this.traverseContext = traverseContext;
-	}
-
-	@Nullable
-	public Property getResolvedParentProperty() {
-		return resolvedParentProperty;
-	}
-
-	/**
-	 * The resolved property refers to the concrete type of {@link #getOriginalProperty()},
-	 * it can't be an abstract class or interface unless it's an anonymous object.
-	 *
-	 * @return the resolvedProperty
-	 */
-	public Property getResolvedProperty() {
-		return this.resolvedTypeDefinition.getResolvedProperty();
-	}
-
-	public TypeDefinition getResolvedTypeDefinition() {
-		return resolvedTypeDefinition;
-	}
-
-	public void setResolvedTypeDefinition(TypeDefinition typeDefinition) {
-		this.resolvedTypeDefinition = typeDefinition;
-	}
-
-	public TreeProperty getTreeProperty() {
-		return this.treeProperty;
-	}
-
-	/**
-	 * The original property refers to the class-time property, which means it is the type in a class file.
-	 * It can be an abstract class or interface, unlike the {@link #getResolvedProperty()}
-	 *
-	 * @return the original property
-	 */
-	public Property getOriginalProperty() {
-		return this.getTreeProperty().getObjectProperty().getProperty();
-	}
-
-	/**
-	 * expands by the resolved property and gets the expanded child nodes.
-	 * It may not return empty if {@link TypeDefinition#getPropertyGenerator()} generates the child nodes.
-	 *
-	 * @return expanded child node.
-	 */
-	public List<ObjectNode> resolveChildren() {
-		this.expand(this.resolvedTypeDefinition);
-		return this.children;
-	}
-
-	/**
-	 * Gets the expanded child nodes, it may be return empty if not expanded.
-	 *
-	 * @return already expanded child nodes
-	 */
-	public List<ObjectNode> getChildren() {
-		return this.children;
+	public ObjectNode(TraverseNode traverseNode, GenerateFixtureContext generateFixtureContext) {
+		this.traverseNode = traverseNode;
+		this.generateFixtureContext = generateFixtureContext;
+		this.generateFixtureContext.setTraverseNode(this);
 	}
 
 	public void setChildren(List<ObjectNode> children) {
 		this.children = children;
 		for (ObjectNode child : this.children) {
-			child.parent = this;
+			child.setParent(this);
 		}
 	}
 
-	/**
-	 * The ArbitraryProperty remains for backward compatibility with {@link ArbitraryGeneratorContext}.
-	 *
-	 * @return the ArbitraryProperty transformed by ObjectNode's {@link #treeProperty}
-	 */
-	public ArbitraryProperty getArbitraryProperty() {
-		return this.treeProperty.toArbitraryProperty(this.nullInject);
-	}
-
-	@Nullable
-	public CombinableArbitrary<?> getArbitrary() {
-		return this.arbitrary;
-	}
-
-	public void setArbitrary(@Nullable CombinableArbitrary<?> arbitrary) {
-		this.arbitrary = arbitrary;
-	}
-
-	public void addContainerManipulator(ContainerInfoManipulator containerInfoManipulator) {
-		this.traverseContext.addContainerInfoManipulator(containerInfoManipulator);
-		this.containerInfoManipulators.add(containerInfoManipulator);
-	}
-
-	public void addManipulator(NodeManipulator nodeManipulator) {
-		this.manipulators.add(nodeManipulator);
-	}
-
-	@SuppressWarnings("rawtypes")
-	public List<Predicate> getArbitraryFilters() {
-		return arbitraryFilters;
-	}
-
-	@SuppressWarnings("rawtypes")
-	public void addArbitraryFilter(Predicate filter) {
-		this.arbitraryFilters.add(filter);
-	}
-
-	public void addGeneratedArbitraryCustomizer(
-		Function<CombinableArbitrary<?>, CombinableArbitrary<?>> arbitraryCustomizer
-	) {
-		this.arbitraryCustomizers.add(arbitraryCustomizer);
-	}
-
-	public List<Function<CombinableArbitrary<?>, CombinableArbitrary<?>>> getGeneratedArbitraryCustomizers() {
-		return arbitraryCustomizers;
-	}
-
-	public void addArbitraryCustomizer(Function<CombinableArbitrary<?>, CombinableArbitrary<?>> arbitraryCustomizer) {
-		this.arbitraryCustomizers.add(arbitraryCustomizer);
-	}
-
-	public double getNullInject() {
-		return nullInject;
-	}
-
-	public void setNullInject(double nullInject) {
-		this.nullInject = nullInject;
-	}
-
-	public boolean manipulated() {
-		return !manipulators.isEmpty() || !containerInfoManipulators.isEmpty();
-	}
-
-	public boolean childManipulated() {
-		return this.childManipulated.getValue();
-	}
-
-	public boolean cacheable() {
-		return !manipulated() && !treeProperty.isContainer() && !childNotCacheable.getValue();
-	}
-
-	@Nullable
-	public ObjectNode getParent() {
-		return parent;
-	}
-
-	@Nullable
-	public ContainerInfoManipulator getAppliedContainerInfoManipulator() {
-		if (containerInfoManipulators.isEmpty()) {
-			return null;
-		}
-
-		return containerInfoManipulators.get(containerInfoManipulators.size() - 1);
-	}
-
-	public LazyArbitrary<PropertyPath> getLazyPropertyPath() {
-		return lazyPropertyPath;
-	}
-
-	public void expand(TypeDefinition typeDefinition) {
-		if (this.expandedTypeDefinition == resolvedTypeDefinition) {
-			return;
-		}
-
-		List<ObjectNode> newChildren;
-		if (this.getTreeProperty().isContainer()) {
-			newChildren = expandContainerNode(typeDefinition, this.traverseContext).collect(Collectors.toList());
-		} else {
-			newChildren = this.generateChildrenNodes(
-				typeDefinition.getResolvedProperty(),
-				typeDefinition.getPropertyGenerator()
-					.generateChildProperties(typeDefinition.getResolvedProperty()),
-				this.nullInject,
-				false,
-				this.traverseContext
-			);
-		}
-
-		this.setChildren(newChildren);
-		this.expandedTypeDefinition = resolvedTypeDefinition;
+	public void setParent(@Nullable ObjectNode parent) {
+		this.parent = parent;
 	}
 
 	@Override
-	public void expand() {
-		if (this.expandedTypeDefinition == resolvedTypeDefinition) {
-			return;
+	public boolean expand() {
+		if (!this.traverseNode.expand()) {
+			return false;
 		}
-
 		this.setChildren(
-			this.getTreeProperty().getTypeDefinitions().stream()
-				.flatMap(
-					typeDefinition -> {
-						if (this.getTreeProperty().isContainer()) {
-							return expandContainerNode(typeDefinition, this.traverseContext);
-						}
-
-						return this.generateChildrenNodes(
-							typeDefinition.getResolvedProperty(),
-							typeDefinition.getPropertyGenerator()
-								.generateChildProperties(typeDefinition.getResolvedProperty()),
-							this.nullInject,
-							false,
-							this.traverseContext
-						).stream();
-					}
-				)
+			this.traverseNode.getChildren().asList().stream()
+				.map(it -> new ObjectNode(it, generateFixtureContext.newChildNodeContext()))
 				.collect(Collectors.toList())
 		);
-		this.expandedTypeDefinition = resolvedTypeDefinition;
+		return true;
+	}
+
+	@Override
+	public boolean expand(TypeDefinition typeDefinition) {
+		if (!this.traverseNode.expand(typeDefinition)) {
+			return false;
+		}
+		this.setChildren(
+			this.traverseNode.getChildren().asList().stream()
+				.map(it -> new ObjectNode(it, generateFixtureContext.newChildNodeContext()))
+				.collect(Collectors.toList())
+		);
+		return true;
 	}
 
 	@Override
 	public void forceExpand() {
-		List<ObjectNode> newChildren = this.getTreeProperty().getTypeDefinitions().stream()
-			.flatMap(
-				typeDefinition -> {
-					if (this.getTreeProperty().isContainer()) {
-						return this.expandContainerNode(
-							typeDefinition,
-							traverseContext.withParentProperties()
-						);
-					}
-
-					return this.generateChildrenNodes(
-						typeDefinition.getResolvedProperty(),
-						typeDefinition.getPropertyGenerator()
-							.generateChildProperties(typeDefinition.getResolvedProperty()),
-						this.nullInject,
-						false,
-						traverseContext.withParentProperties()
-					).stream();
-				}
-			).collect(Collectors.toList());
-
-		this.setChildren(newChildren);
-		this.expandedTypeDefinition = resolvedTypeDefinition;
+		this.traverseNode.forceExpand();
+		this.setChildren(
+			this.traverseNode.getChildren().asList().stream()
+				.map(it -> new ObjectNode(it, generateFixtureContext.newChildNodeContext()))
+				.collect(Collectors.toList())
+		);
 	}
 
+	@Override
 	public void forceExpand(TypeDefinition typeDefinition) {
-		List<ObjectNode> newChildren;
-		if (this.getTreeProperty().isContainer()) {
-			newChildren = expandContainerNode(
-				typeDefinition,
-				this.traverseContext.withParentProperties()
-			)
-				.collect(Collectors.toList());
-		} else {
-			newChildren = this.generateChildrenNodes(
-				typeDefinition.getResolvedProperty(),
-				typeDefinition.getPropertyGenerator()
-					.generateChildProperties(typeDefinition.getResolvedProperty()),
-				this.nullInject,
-				false,
-				this.traverseContext.withParentProperties()
+		this.traverseNode.forceExpand(typeDefinition);
+		this.setChildren(
+			this.traverseNode.getChildren().asList().stream()
+				.map(it -> new ObjectNode(it, generateFixtureContext.newChildNodeContext()))
+				.collect(Collectors.toList())
+		);
+	}
+
+	@Override
+	public TraverseNodeMetadata getMetadata() {
+		return traverseNode.getMetadata();
+	}
+
+	@Override
+	public ObjectNodeList resolveChildren() {
+		if (this.traverseNode.expand(this.traverseNode.getMetadata().getResolvedTypeDefinition())) {
+			this.setChildren(
+				this.traverseNode.getChildren().asList().stream()
+					.map(it -> new ObjectNode(it, generateFixtureContext.newChildNodeContext()))
+					.collect(Collectors.toList())
 			);
 		}
-
-		this.setChildren(newChildren);
-		this.expandedTypeDefinition = resolvedTypeDefinition;
-	}
-
-	private Stream<ObjectNode> expandContainerNode(TypeDefinition typeDefinition, TraverseContext traverseContext) {
-		ContainerInfoManipulator appliedContainerInfoManipulator =
-			this.getAppliedContainerInfoManipulator();
-
-		ArbitraryContainerInfo containerInfo = appliedContainerInfoManipulator != null
-			? appliedContainerInfoManipulator.getContainerInfo()
-			: null;
-
-		PropertyGenerator propertyGenerator = typeDefinition.getPropertyGenerator();
-		if (propertyGenerator instanceof LazyPropertyGenerator) {
-			propertyGenerator = ((LazyPropertyGenerator)propertyGenerator).getDelegate();
-		}
-
-		if (propertyGenerator instanceof ElementPropertyGenerator) {
-			((ElementPropertyGenerator)propertyGenerator).updateContainerInfo(containerInfo);
-		}
-
-		List<Property> elementProperties = propertyGenerator.generateChildProperties(
-			typeDefinition.getResolvedProperty()
-		);
-
-		return this.generateChildrenNodes(
-			typeDefinition.getResolvedProperty(),
-			elementProperties,
-			this.nullInject,
-			true,
-			traverseContext
-		).stream();
-	}
-
-	static ObjectNode generateRootNode(
-		RootProperty rootProperty,
-		TraverseContext traverseContext
-	) {
-		return ObjectNode.generateObjectNode(
-			rootProperty,
-			null,
-			rootProperty,
-			null,
-			0.0d,
-			traverseContext
-		);
-	}
-
-	static ObjectNode generateObjectNode(
-		RootProperty rootProperty,
-		@Nullable Property resolvedParentProperty,
-		Property property,
-		@Nullable Integer propertySequence,
-		double parentNullInject,
-		TraverseContext context
-	) {
-		FixtureMonkeyOptions fixtureMonkeyOptions = context.getMonkeyContext().getFixtureMonkeyOptions();
-		ContainerPropertyGenerator containerPropertyGenerator =
-			fixtureMonkeyOptions.getContainerPropertyGenerator(property);
-		boolean container = containerPropertyGenerator != null;
-
-		ObjectPropertyGenerator objectPropertyGenerator =
-			fixtureMonkeyOptions.getObjectPropertyGenerator(property);
-
-		TreeProperty parentTreeProperty = context.getLastTreeProperty();
-
-		ArbitraryProperty parentArbitraryProperty = parentTreeProperty != null
-			? parentTreeProperty.toArbitraryProperty(parentNullInject)
-			: null;
-
-		ObjectPropertyGeneratorContext objectPropertyGeneratorContext = new ObjectPropertyGeneratorContext(
-			property,
-			resolveIndex(
-				resolvedParentProperty,
-				parentTreeProperty,
-				propertySequence,
-				fixtureMonkeyOptions
-			),
-			parentArbitraryProperty,
-			container,
-			fixtureMonkeyOptions.getPropertyNameResolver(property)
-		);
-
-		ObjectProperty objectProperty = objectPropertyGenerator.generate(objectPropertyGeneratorContext);
-
-		List<Property> candidateProperties = resolveCandidateProperties(
-			property,
-			fixtureMonkeyOptions
-		);
-
-		List<ObjectProperty> objectProperties =
-			context.getTreeProperties().stream()
-				.map(TreeProperty::getObjectProperty).collect(Collectors.toList());
-		objectProperties.add(objectProperty);
-
-		ContainerInfoManipulator appliedContainerInfoManipulator = resolveAppliedContainerInfoManipulator(
-			container,
-			context.getContainerInfoManipulators(),
-			objectProperties
-		);
-
-		List<TypeDefinition> typeDefinitions = candidateProperties.stream()
-			.map(concreteProperty -> {
-				if (!container) {
-					LazyPropertyGenerator lazyPropertyGenerator =
-						new LazyPropertyGenerator(
-							getPropertyGenerator(context.getPropertyConfigurers(), fixtureMonkeyOptions)
-						);
-
-					return new DefaultTypeDefinition(
-						concreteProperty,
-						lazyPropertyGenerator
-					);
-				}
-
-				PropertyGenerator containerElementPropertyGenerator = new ElementPropertyGenerator(
-					property,
-					containerPropertyGenerator,
-					fixtureMonkeyOptions.getArbitraryContainerInfoGenerator(property),
-					null
-				);
-
-				LazyPropertyGenerator lazyPropertyGenerator =
-					new LazyPropertyGenerator(containerElementPropertyGenerator);
-
-				return new DefaultTypeDefinition(
-					concreteProperty,
-					lazyPropertyGenerator
-				);
-			})
-			.collect(Collectors.toList());
-
-		double nullInject = fixtureMonkeyOptions.getNullInjectGenerator(property)
-			.generate(objectPropertyGeneratorContext);
-
-		TreeProperty treeProperty = new TreeProperty(
-			objectProperty,
-			container,
-			typeDefinitions
-		);
-
-		TraverseContext nextTraverseContext = context.appendArbitraryProperty(treeProperty);
-
-		ObjectNode newObjectNode = new ObjectNode(
-			rootProperty,
-			resolvedParentProperty,
-			new CompositeTypeDefinition(typeDefinitions).getResolvedTypeDefinition(),
-			treeProperty,
-			nullInject,
-			nextTraverseContext
-		);
-
-		if (appliedContainerInfoManipulator != null) {
-			newObjectNode.addContainerManipulator(appliedContainerInfoManipulator);
-		}
-		return newObjectNode;
+		return new ObjectNodeList(this.getChildren().asList());
 	}
 
 	@Nullable
-	private static Integer resolveIndex(
-		@Nullable Property resolvedParentProperty,
-		@Nullable TreeProperty parentTreeProperty,
-		@Nullable Integer propertySequence,
-		FixtureMonkeyOptions fixtureMonkeyOptions
-	) {
-		if (resolvedParentProperty == null || parentTreeProperty == null) {
-			return null;
-		}
-
-		boolean parentContainer =
-			fixtureMonkeyOptions.getContainerPropertyGenerator(resolvedParentProperty) != null;
-		if (!parentContainer) {
-			return null;
-		}
-
-		if (propertySequence == null) {
-			return null;
-		}
-
-		int index = propertySequence;
-		if (parentTreeProperty.getObjectProperty().getProperty() instanceof MapEntryElementProperty) {
-			index /= 2;
-		}
-		return index;
+	@Override
+	public ObjectNode getParent() {
+		return this.parent;
 	}
 
-	private List<ObjectNode> generateChildrenNodes(
-		Property resolvedParentProperty,
-		List<Property> childProperties,
-		double parentNullInject,
-		boolean container,
-		TraverseContext context
-	) {
-		List<ObjectNode> children = new ArrayList<>();
+	public ObjectNodeList getChildren() {
+		return new ObjectNodeList(children);
+	}
 
-		for (int sequence = 0; sequence < childProperties.size(); sequence++) {
-			boolean childNodeAlreadyExists = this.children != null && this.children.size() > sequence;
-			if (container && childNodeAlreadyExists) {
-				ObjectNode currentChildNode = this.children.get(sequence);
-				if (currentChildNode.manipulated() || currentChildNode.childManipulated()) {
-					children.add(currentChildNode);
-					continue;
-				}
-			}
-			Property childProperty = childProperties.get(sequence);
+	public ArbitraryProperty getArbitraryProperty() {
+		return this.getMetadata().getTreeProperty().toArbitraryProperty(getMetadata().getNullInject());
+	}
 
-			if (context.isTraversed(childProperty)
-				&& !(resolvedParentProperty instanceof MapEntryElementProperty)) {
-				continue;
-			}
-
-			ObjectNode childNode = generateObjectNode(
-				rootProperty,
-				resolvedParentProperty,
-				childProperty,
-				sequence,
-				parentNullInject,
-				context
-			);
-			children.add(childNode);
-		}
-		return children;
+	@Override
+	public RootProperty getRootProperty() {
+		return this.getMetadata().getRootProperty();
 	}
 
 	@Nullable
-	private static ContainerInfoManipulator resolveAppliedContainerInfoManipulator(
-		boolean container,
-		List<ContainerInfoManipulator> containerInfoManipulators,
-		List<ObjectProperty> objectProperties
-	) {
-		if (!container || objectProperties.isEmpty()
-			|| !(objectProperties.get(0).getProperty() instanceof RootProperty)) {
-			return null;
-		}
-
-		ContainerInfoManipulator appliedContainerInfoManipulator = null;
-		for (ContainerInfoManipulator containerInfoManipulator : containerInfoManipulators) {
-			if (containerInfoManipulator.isMatch(objectProperties)) {
-				appliedContainerInfoManipulator = containerInfoManipulator;
-			}
-		}
-		return appliedContainerInfoManipulator;
+	@Override
+	public Property getResolvedParentProperty() {
+		return this.getMetadata().getResolvedParentProperty();
 	}
 
-	private static PropertyGenerator getPropertyGenerator(
-		Map<Class<?>, List<Property>> propertyConfigurers,
-		FixtureMonkeyOptions fixtureMonkeyOptions
-	) {
-		PropertyGenerator resolvedPropertyGenerator = property -> {
-			Class<?> type = Types.getActualType(property.getType());
-			List<Property> propertyConfigurer = propertyConfigurers.get(type);
-			if (propertyConfigurer != null) {
-				return propertyConfigurer;
-			}
-
-			PropertyGenerator propertyGenerator = fixtureMonkeyOptions.getOptionalPropertyGenerator(property);
-			if (propertyGenerator != null) {
-				return propertyGenerator.generateChildProperties(property);
-			}
-
-			ArbitraryGenerator defaultArbitraryGenerator = fixtureMonkeyOptions.getDefaultArbitraryGenerator();
-
-			PropertyGenerator defaultArbitraryGeneratorPropertyGenerator =
-				defaultArbitraryGenerator.getRequiredPropertyGenerator(property);
-
-			if (defaultArbitraryGeneratorPropertyGenerator != null) {
-				return defaultArbitraryGeneratorPropertyGenerator.generateChildProperties(property);
-			}
-
-			return fixtureMonkeyOptions.getDefaultPropertyGenerator().generateChildProperties(property);
-		};
-
-		return new LazyPropertyGenerator(resolvedPropertyGenerator);
+	public TypeDefinition getResolvedTypeDefinition() {
+		return this.getMetadata().getResolvedTypeDefinition();
 	}
 
-	private static List<Property> resolveCandidateProperties(
-		Property property,
-		FixtureMonkeyOptions fixtureMonkeyOptions
-	) {
-		CandidateConcretePropertyResolver candidateConcretePropertyResolver =
-			fixtureMonkeyOptions.getCandidateConcretePropertyResolver(property);
+	public Property getResolvedProperty() {
+		return this.getMetadata().getResolvedTypeDefinition().getResolvedProperty();
+	}
 
-		if (candidateConcretePropertyResolver == null) {
-			return DefaultCandidateConcretePropertyResolver.INSTANCE.resolve(property);
-		}
+	public Property getOriginalProperty() {
+		return this.getMetadata().getOriginalProperty();
+	}
 
-		return CANDIDATE_CONCRETE_PROPERTIES_BY_PROPERTY.computeIfAbsent(
-			property,
-			p -> {
-				List<Property> resolvedCandidateProperties = new ArrayList<>();
-				List<Property> candidateProperties = candidateConcretePropertyResolver.resolve(p);
-				for (Property candidateProperty : candidateProperties) {
-					// compares by type until a specific property implementation is created for the generic type.
-					Type candidateType = candidateProperty.getType();
+	public void setNullInject(double nullInject) {
+		this.getMetadata().setNullInject(nullInject);
+	}
 
-					if (p.getType().equals(candidateType)) {
-						// prevents infinite recursion
-						resolvedCandidateProperties.addAll(
-							DefaultCandidateConcretePropertyResolver.INSTANCE.resolve(p)
-						);
-						continue;
-					}
-					resolvedCandidateProperties.addAll(
-						resolveCandidateProperties(
-							candidateProperty,
-							fixtureMonkeyOptions
-						)
-					);
-				}
-				return resolvedCandidateProperties;
-			}
-		);
+	public TreeProperty getTreeProperty() {
+		return this.getMetadata().getTreeProperty();
+	}
+
+	@Override
+	public double getNullInject() {
+		return this.getMetadata().getNullInject();
+	}
+
+	@Override
+	public LazyArbitrary<PropertyPath> getLazyPropertyPath() {
+		return this.getMetadata().getLazyPropertyPath();
+	}
+
+	@Override
+	public LazyArbitrary<Boolean> getLazyChildManipulated() {
+		return this.getMetadata().getLazyChildManipulated();
+	}
+
+	@Override
+	public boolean manipulated() {
+		return this.getMetadata().manipulated() && getObjectNodeContext().manipulated();
+	}
+
+	@Override
+	public List<TreeNodeManipulator> getTreeNodeManipulators() {
+		return this.traverseNode.getMetadata().getTreeNodeManipulators();
+	}
+
+	@Override
+	public void addTreeNodeManipulator(TreeNodeManipulator treeNodeManipulator) {
+		this.traverseNode.getMetadata().addTreeNodeManipulator(treeNodeManipulator);
+	}
+
+	public void setResolvedTypeDefinition(TypeDefinition typeDefinition) {
+		this.traverseNode.getMetadata().setResolvedTypeDefinition(typeDefinition);
+	}
+
+	@Nullable
+	public TreeNodeManipulator getAppliedContainerInfoManipulator() {
+		return this.traverseNode.getMetadata().getAppliedContainerInfoManipulator();
+	}
+
+	public GenerateFixtureContext getObjectNodeContext() {
+		return generateFixtureContext;
 	}
 }
