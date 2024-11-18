@@ -1050,7 +1050,7 @@ class KotlinTest {
     }
 
     @Test
-    fun sizeZero(){
+    fun sizeZero() {
         // given
         class StringWithSizeZero(
             @field:Size(min = 0, max = 0)
@@ -1067,6 +1067,34 @@ class KotlinTest {
 
         // then
         then(actual).isEqualTo("")
+    }
+
+    @Test
+    fun setAndRegister() {
+        // given
+        class ListStringObject(val list: List<String>)
+        class ListStringObjectObject(val value: ListStringObject)
+
+        val sut = FixtureMonkey.builder()
+            .plugin(KotlinPlugin())
+            .register(ListStringObjectObject::class.java) {
+                it.giveMeBuilder<ListStringObjectObject>()
+                    .size("value.list", 3)
+            }
+            .build()
+
+        val set = ListStringObject(listOf("a", "b"))
+
+        // when
+        val actual = sut.giveMeBuilder<ListStringObjectObject>()
+            .set("value", set)
+            .sample()
+            .value
+            .list
+
+        // then
+        val expected = set.list
+        then(actual).isEqualTo(expected)
     }
 
     companion object {

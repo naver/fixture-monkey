@@ -6,6 +6,12 @@ docs:
 weight: 100
 ---
 sectionStart
+## v.1.1.4
+Fix not registering size API if decomposing.
+
+sectionEnd
+
+sectionStart
 ## v.1.1.3
 Fix generating empty String with @Size annotation.
 
