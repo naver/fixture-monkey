@@ -28,13 +28,14 @@ public final class JavaGetterPropertyFieldNameResolver {
 
 	@Nullable
 	public String resolveFieldName(Class<?> targetClass, String methodName) {
-		if (hasPrefix(GET_PREFIX, methodName)) {
+
+		if (isValidField(targetClass, methodName)) {
+			// class could be using property-style getters (e.g. java record)
+			return methodName;
+		} else if (hasPrefix(GET_PREFIX, methodName)) {
 			return stripPrefixPropertyName(targetClass, methodName, GET_PREFIX.length());
 		} else if (hasPrefix(IS_PREFIX, methodName)) {
 			return stripPrefixPropertyName(targetClass, methodName, IS_PREFIX.length());
-		} else if (isValidField(targetClass, methodName)) {
-			// class could be using property-style getters (e.g. java record)
-			return methodName;
 		}
 
 		return null;
