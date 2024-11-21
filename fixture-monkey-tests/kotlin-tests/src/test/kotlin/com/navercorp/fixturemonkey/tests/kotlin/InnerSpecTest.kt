@@ -32,12 +32,26 @@ class InnerSpecTest {
     fun setInnerSpecByTrailingLambda() {
         val actual = SUT.giveMeBuilder<Map<String, String>>()
             .setInner {
-                it.keys("key1", "key2")
+                keys("key1", "key2")
                     .minSize(3)
             }
             .sample()
 
         then(actual).containsKeys("key1", "key2")
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun setInnerSpecWithCustomObject() {
+        val actual = SUT.giveMeBuilder<Map<String, CustomObject>>()
+            .setInner {
+                size(1)
+                entry("key") {
+                    property("value", "expected")
+                }
+            }
+            .sample()
+
+        then(actual).isNotNull
     }
 
     companion object {
@@ -46,3 +60,5 @@ class InnerSpecTest {
             .build()
     }
 }
+
+data class CustomObject(val value: String)
