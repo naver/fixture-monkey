@@ -183,7 +183,7 @@ public final class ObjectNode implements TraverseNode, TraverseNodeMetadata {
 
 	@Override
 	public LazyArbitrary<Boolean> getLazyChildManipulated() {
-		return this.getMetadata().getLazyChildManipulated();
+		return generateFixtureContext.getChildManipulated();
 	}
 
 	@Override

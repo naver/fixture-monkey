@@ -227,7 +227,7 @@ public final class DefaultTraverseNode implements TraverseNode, TraverseNodeMeta
 
 	@Override
 	public LazyArbitrary<Boolean> getLazyChildManipulated() {
-		return null;
+		return LazyArbitrary.lazy(() -> false);
 	}
 
 	@Override
@@ -535,9 +535,8 @@ public final class DefaultTraverseNode implements TraverseNode, TraverseNodeMeta
 			boolean childNodeAlreadyExists = this.children != null && this.children.size() > sequence;
 			if (container && childNodeAlreadyExists) {
 				TraverseNode currentChildNode = this.children.get(sequence);
-				if (currentChildNode.getMetadata().manipulated() || currentChildNode.getMetadata()
-					.getLazyChildManipulated()
-					.getValue()) {
+				if (currentChildNode.getMetadata().manipulated()
+					|| currentChildNode.getMetadata().getLazyChildManipulated().getValue()) {
 					children.add(currentChildNode);
 					continue;
 				}

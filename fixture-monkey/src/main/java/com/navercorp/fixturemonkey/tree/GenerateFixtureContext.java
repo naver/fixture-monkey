@@ -278,6 +278,10 @@ public final class GenerateFixtureContext implements TraverseNodeContext {
 		this.childManipulated = LazyArbitrary.lazy(() -> initializeChildManipulated(this.objectNode));
 	}
 
+	public LazyArbitrary<Boolean> getChildManipulated() {
+		return childManipulated;
+	}
+
 	@Override
 	public GenerateFixtureContext newChildNodeContext() {
 		return new GenerateFixtureContext(
