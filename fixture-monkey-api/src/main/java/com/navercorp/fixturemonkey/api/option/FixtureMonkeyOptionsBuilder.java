@@ -73,6 +73,7 @@ import com.navercorp.fixturemonkey.api.jqwik.JqwikJavaTimeArbitraryResolver;
 import com.navercorp.fixturemonkey.api.jqwik.JqwikJavaTypeArbitraryGeneratorSet;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
+import com.navercorp.fixturemonkey.api.matcher.TreeMatcherOperator;
 import com.navercorp.fixturemonkey.api.plugin.Plugin;
 import com.navercorp.fixturemonkey.api.property.CandidateConcretePropertyResolver;
 import com.navercorp.fixturemonkey.api.property.DefaultPropertyGenerator;
@@ -139,6 +140,7 @@ public final class FixtureMonkeyOptionsBuilder {
 	private InstantiatorProcessor instantiatorProcessor = new JavaInstantiatorProcessor();
 	private List<MatcherOperator<CandidateConcretePropertyResolver>> candidateConcretePropertyResolvers =
 		new ArrayList<>(FixtureMonkeyOptions.DEFAULT_CANDIDATE_CONCRETE_PROPERTY_RESOLVERS);
+	private List<TreeMatcherOperator<BuilderContextInitializer>> builderContextInitializers = new ArrayList<>();
 
 	FixtureMonkeyOptionsBuilder() {
 		new JdkVariantOptions().apply(this);
@@ -539,6 +541,23 @@ public final class FixtureMonkeyOptionsBuilder {
 		return this;
 	}
 
+	public FixtureMonkeyOptionsBuilder builderContextInitializers(
+		List<TreeMatcherOperator<BuilderContextInitializer>> builderContextInitializers
+	) {
+		this.builderContextInitializers = builderContextInitializers;
+		return this;
+	}
+
+	public FixtureMonkeyOptionsBuilder insertFirstBuilderContextInitializer(
+		TreeMatcherOperator<BuilderContextInitializer> builderContextInitializer
+	) {
+		this.builderContextInitializers = insertFirst(
+			this.builderContextInitializers,
+			builderContextInitializer
+		);
+		return this;
+	}
+
 	public FixtureMonkeyOptions build() {
 		ObjectPropertyGenerator defaultObjectPropertyGenerator = defaultIfNull(
 			this.defaultObjectPropertyGenerator,
@@ -671,7 +690,8 @@ public final class FixtureMonkeyOptionsBuilder {
 			resolvedJavaConstraintGenerator,
 			this.instantiatorProcessor,
 			this.candidateConcretePropertyResolvers,
-			this.enableLoggingFail
+			this.enableLoggingFail,
+			this.builderContextInitializers
 		);
 	}
 

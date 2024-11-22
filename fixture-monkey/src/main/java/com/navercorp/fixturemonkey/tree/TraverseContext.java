@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
@@ -56,7 +57,7 @@ public final class TraverseContext {
 	private final List<MatcherOperator<List<ContainerInfoManipulator>>> registeredContainerInfoManipulators;
 	private final Map<Class<?>, List<Property>> propertyConfigurers;
 	private final Map<Class<?>, ArbitraryIntrospector> arbitraryIntrospectorConfigurer;
-	private final boolean validOnly;
+	private final Supplier<Boolean> validOnly;
 	private final MonkeyContext monkeyContext;
 
 	public TraverseContext(
@@ -65,7 +66,7 @@ public final class TraverseContext {
 		List<MatcherOperator<List<ContainerInfoManipulator>>> registeredContainerInfoManipulators,
 		Map<Class<?>, List<Property>> propertyConfigurers,
 		Map<Class<?>, ArbitraryIntrospector> arbitraryIntrospectorConfigurer,
-		boolean validOnly,
+		Supplier<Boolean> validOnly,
 		MonkeyContext monkeyContext
 	) {
 		this.treeProperties = treeProperties;
@@ -99,7 +100,7 @@ public final class TraverseContext {
 	}
 
 	public boolean isValidOnly() {
-		return validOnly;
+		return validOnly.get();
 	}
 
 	public MonkeyContext getMonkeyContext() {

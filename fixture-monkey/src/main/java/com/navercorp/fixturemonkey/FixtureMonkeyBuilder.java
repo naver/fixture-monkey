@@ -43,6 +43,9 @@ import com.navercorp.fixturemonkey.api.introspector.NullArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.matcher.AssignableTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
+import com.navercorp.fixturemonkey.api.matcher.TreeMatcher;
+import com.navercorp.fixturemonkey.api.matcher.TreeMatcherOperator;
+import com.navercorp.fixturemonkey.api.option.BuilderContextInitializer;
 import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
 import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptionsBuilder;
 import com.navercorp.fixturemonkey.api.plugin.Plugin;
@@ -471,6 +474,16 @@ public final class FixtureMonkeyBuilder {
 		UnaryOperator<JavaConstraintGenerator> javaConstraintGeneratorCustomizer
 	) {
 		fixtureMonkeyOptionsBuilder.insertFirstJavaConstraintGeneratorCustomizer(javaConstraintGeneratorCustomizer);
+		return this;
+	}
+
+	public FixtureMonkeyBuilder pushCustomizeValidOnly(TreeMatcher matcher, boolean validOnly) {
+		fixtureMonkeyOptionsBuilder.insertFirstBuilderContextInitializer(
+			new TreeMatcherOperator<>(
+				matcher,
+				BuilderContextInitializer.validOnly(validOnly)
+			)
+		);
 		return this;
 	}
 

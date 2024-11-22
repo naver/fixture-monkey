@@ -18,10 +18,13 @@
 
 package com.navercorp.fixturemonkey.tree;
 
+import java.lang.annotation.Annotation;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -34,21 +37,27 @@ import com.navercorp.fixturemonkey.api.property.Property;
 final class MetadataCollector {
 	private final ObjectNode rootNode;
 	private final Map<Property, List<ObjectNode>> nodesByProperty;
+	private final Set<Annotation> annotations;
 
 	public MetadataCollector(ObjectNode rootNode) {
 		this.rootNode = rootNode;
 		this.nodesByProperty = new LinkedHashMap<>();
+		this.annotations = new HashSet<>();
 	}
 
 	public ObjectTreeMetadata collect() {
 		for (ObjectNode child : rootNode.resolveChildren()) {
 			collect(child);
 		}
-		return new ObjectTreeMetadata(Collections.unmodifiableMap(nodesByProperty));
+		return new ObjectTreeMetadata(
+			Collections.unmodifiableMap(nodesByProperty),
+			Collections.unmodifiableSet(annotations)
+		);
 	}
 
 	private void collect(ObjectNode node) {
 		Property property = node.getTreeProperty().getObjectProperty().getProperty();
+		annotations.addAll(property.getAnnotations());
 
 		List<ObjectNode> children = node.resolveChildren();
 		for (ObjectNode child : children) {

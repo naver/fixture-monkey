@@ -16,33 +16,23 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.tree;
+package com.navercorp.fixturemonkey.api.matcher;
 
 import java.lang.annotation.Annotation;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.api.property.Property;
-
-@API(since = "0.4.0", status = Status.INTERNAL)
-public final class ObjectTreeMetadata {
-	private final Map<Property, List<ObjectNode>> nodesByProperty; // matchOperator
-	private final Set<Annotation> annotations;
-
-	public ObjectTreeMetadata(Map<Property, List<ObjectNode>> nodesByProperty, Set<Annotation> annotations) {
-		this.nodesByProperty = nodesByProperty;
-		this.annotations = annotations;
-	}
-
-	public Map<Property, List<ObjectNode>> getNodesByProperty() {
-		return nodesByProperty;
-	}
-
-	public Set<Annotation> getAnnotations() {
-		return annotations;
-	}
+/**
+ * It contains the metadata of the ObjectTree.
+ */
+@API(since = "1.0.4", status = Status.EXPERIMENTAL)
+public interface TreeMatcherMetadata {
+	/**
+	 * Retrieves the annotations of all nodes in the ObjectTree.
+	 *
+	 * @return the annotations of all nodes
+	 */
+	Set<Annotation> getAnnotations();
 }

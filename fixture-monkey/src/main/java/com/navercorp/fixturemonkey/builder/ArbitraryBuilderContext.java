@@ -61,7 +61,11 @@ public final class ArbitraryBuilderContext {
 	private final Map<Class<?>, ArbitraryIntrospector> arbitraryIntrospectorsByType;
 	private final MonkeyContext monkeyContext;
 
-	private boolean validOnly;
+	@Nullable
+	private Boolean optionValidOnly;
+
+	@Nullable
+	private Boolean customizedValidOnly;
 
 	@Nullable
 	private FixedState fixedState = null;
@@ -73,7 +77,6 @@ public final class ArbitraryBuilderContext {
 		List<ContainerInfoManipulator> containerInfoManipulators,
 		Map<Class<?>, List<Property>> propertyConfigurers,
 		Map<Class<?>, ArbitraryIntrospector> arbitraryIntrospectorsByType,
-		boolean validOnly,
 		@Nullable FixedState fixedState,
 		@Nullable CombinableArbitrary<?> fixedCombinableArbitrary,
 		MonkeyContext monkeyContext
@@ -82,7 +85,6 @@ public final class ArbitraryBuilderContext {
 		this.containerInfoManipulators = containerInfoManipulators;
 		this.propertyConfigurers = propertyConfigurers;
 		this.arbitraryIntrospectorsByType = arbitraryIntrospectorsByType;
-		this.validOnly = validOnly;
 		this.fixedState = fixedState;
 		this.fixedCombinableArbitrary = fixedCombinableArbitrary;
 		this.monkeyContext = monkeyContext;
@@ -99,8 +101,8 @@ public final class ArbitraryBuilderContext {
 			new ArrayList<>(),
 			new HashMap<>(),
 			new HashMap<>(),
-			true,
-			null, null,
+			null,
+			null,
 			monkeyContext
 		);
 	}
@@ -115,7 +117,6 @@ public final class ArbitraryBuilderContext {
 			copiedContainerInfoManipulators,
 			new HashMap<>(propertyConfigurers),
 			new HashMap<>(arbitraryIntrospectorsByType),
-			this.validOnly,
 			fixedState,
 			fixedCombinableArbitrary,
 			monkeyContext
@@ -162,12 +163,23 @@ public final class ArbitraryBuilderContext {
 		return propertyConfigurers;
 	}
 
-	public void setValidOnly(boolean validOnly) {
-		this.validOnly = validOnly;
+	public void setOptionValidOnly(@Nullable Boolean optionValidOnly) {
+		this.optionValidOnly = optionValidOnly;
+	}
+
+	public void setCustomizedValidOnly(@Nullable Boolean customizedValidOnly) {
+		this.customizedValidOnly = customizedValidOnly;
 	}
 
 	public boolean isValidOnly() {
-		return validOnly;
+		if (this.customizedValidOnly != null) {
+			return this.customizedValidOnly;
+		}
+
+		if (this.optionValidOnly != null) {
+			return this.optionValidOnly;
+		}
+		return true;
 	}
 
 	public void markFixed() {
@@ -216,7 +228,7 @@ public final class ArbitraryBuilderContext {
 			registeredContainerInfoManipulators,
 			this.getPropertyConfigurers(),
 			this.getArbitraryIntrospectorsByType(),
-			this.isValidOnly(),
+			this::isValidOnly,
 			this.monkeyContext
 		);
 	}

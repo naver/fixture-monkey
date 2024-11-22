@@ -101,7 +101,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 
 	@Override
 	public ArbitraryBuilder<T> validOnly(boolean validOnly) {
-		this.context.setValidOnly(validOnly);
+		this.context.setCustomizedValidOnly(validOnly);
 		return this;
 	}
 
