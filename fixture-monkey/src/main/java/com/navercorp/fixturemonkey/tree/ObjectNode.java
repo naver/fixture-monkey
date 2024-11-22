@@ -91,9 +91,19 @@ public final class ObjectNode implements ObjectTreeNode {
 	private final List<Function<CombinableArbitrary<?>, CombinableArbitrary<?>>> arbitraryCustomizers =
 		new ArrayList<>();
 
+	private final LazyArbitrary<Boolean> childManipulated = LazyArbitrary.lazy(() -> {
+		for (ObjectNode child : this.resolveChildren()) {
+			if (child.manipulated() || child.childManipulated.getValue()) {
+				return true;
+			}
+		}
+
+		return false;
+	});
+
 	private final LazyArbitrary<Boolean> childNotCacheable = LazyArbitrary.lazy(() -> {
 		for (ObjectNode child : this.resolveChildren()) {
-			if (child.manipulated() || child.childNotCacheable.getValue() || child.treeProperty.isContainer()) {
+			if (childManipulated.getValue() || child.treeProperty.isContainer()) {
 				return true;
 			}
 		}
@@ -257,6 +267,10 @@ public final class ObjectNode implements ObjectTreeNode {
 		return !manipulators.isEmpty() || !containerInfoManipulators.isEmpty();
 	}
 
+	public boolean childManipulated() {
+		return this.childManipulated.getValue();
+	}
+
 	public boolean cacheable() {
 		return !manipulated() && !treeProperty.isContainer() && !childNotCacheable.getValue();
 	}
@@ -293,6 +307,7 @@ public final class ObjectNode implements ObjectTreeNode {
 				typeDefinition.getPropertyGenerator()
 					.generateChildProperties(typeDefinition.getResolvedProperty()),
 				this.nullInject,
+				false,
 				this.traverseContext
 			);
 		}
@@ -320,6 +335,7 @@ public final class ObjectNode implements ObjectTreeNode {
 							typeDefinition.getPropertyGenerator()
 								.generateChildProperties(typeDefinition.getResolvedProperty()),
 							this.nullInject,
+							false,
 							this.traverseContext
 						).stream();
 					}
@@ -346,6 +362,7 @@ public final class ObjectNode implements ObjectTreeNode {
 						typeDefinition.getPropertyGenerator()
 							.generateChildProperties(typeDefinition.getResolvedProperty()),
 						this.nullInject,
+						false,
 						traverseContext.withParentProperties()
 					).stream();
 				}
@@ -369,6 +386,7 @@ public final class ObjectNode implements ObjectTreeNode {
 				typeDefinition.getPropertyGenerator()
 					.generateChildProperties(typeDefinition.getResolvedProperty()),
 				this.nullInject,
+				false,
 				this.traverseContext.withParentProperties()
 			);
 		}
@@ -402,6 +420,7 @@ public final class ObjectNode implements ObjectTreeNode {
 			typeDefinition.getResolvedProperty(),
 			elementProperties,
 			this.nullInject,
+			true,
 			traverseContext
 		).stream();
 	}
@@ -562,11 +581,20 @@ public final class ObjectNode implements ObjectTreeNode {
 		Property resolvedParentProperty,
 		List<Property> childProperties,
 		double parentNullInject,
+		boolean container,
 		TraverseContext context
 	) {
 		List<ObjectNode> children = new ArrayList<>();
 
 		for (int sequence = 0; sequence < childProperties.size(); sequence++) {
+			boolean childNodeAlreadyExists = this.children != null && this.children.size() > sequence;
+			if (container && childNodeAlreadyExists) {
+				ObjectNode currentChildNode = this.children.get(sequence);
+				if (currentChildNode.manipulated() || currentChildNode.childManipulated()) {
+					children.add(currentChildNode);
+					continue;
+				}
+			}
 			Property childProperty = childProperties.get(sequence);
 
 			if (context.isTraversed(childProperty)
@@ -593,7 +621,8 @@ public final class ObjectNode implements ObjectTreeNode {
 		List<ContainerInfoManipulator> containerInfoManipulators,
 		List<ObjectProperty> objectProperties
 	) {
-		if (!container) {
+		if (!container || objectProperties.isEmpty()
+			|| !(objectProperties.get(0).getProperty() instanceof RootProperty)) {
 			return null;
 		}
 
