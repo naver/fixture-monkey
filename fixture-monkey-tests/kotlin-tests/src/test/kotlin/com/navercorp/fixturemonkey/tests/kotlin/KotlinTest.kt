@@ -1157,6 +1157,155 @@ class KotlinTest {
         then(actual).isNotNull
     }
 
+    @Test
+    fun setReturnsImplementation() {
+        // given
+        abstract class ParentAbstractClass
+
+        data class FirstConcreteClass(val string: String) : ParentAbstractClass()
+        data class SecondConcreteClass(val string: String) : ParentAbstractClass()
+
+        val sut = FixtureMonkey.builder()
+            .plugin(KotlinPlugin())
+            .plugin(
+                InterfacePlugin()
+                    .abstractClassExtends(
+                        ParentAbstractClass::class.java,
+                        listOf(FirstConcreteClass::class.java, SecondConcreteClass::class.java)
+                    )
+
+            )
+            .build()
+
+        val expected = SecondConcreteClass("expected")
+
+        // when
+        val actual: SecondConcreteClass = sut.giveMeBuilder<ParentAbstractClass>()
+            .set(expected)
+            .sample() as SecondConcreteClass
+
+        then(actual).isEqualTo(expected)
+    }
+
+    @Test
+    fun setReturnsLastImplementation() {
+        // given
+        abstract class ParentAbstractClass
+
+        data class FirstConcreteClass(val string: String) : ParentAbstractClass()
+        data class SecondConcreteClass(val string: String) : ParentAbstractClass()
+
+        val sut = FixtureMonkey.builder()
+            .plugin(KotlinPlugin())
+            .plugin(
+                InterfacePlugin()
+                    .abstractClassExtends(
+                        ParentAbstractClass::class.java,
+                        listOf(FirstConcreteClass::class.java, SecondConcreteClass::class.java)
+                    )
+
+            )
+            .build()
+
+        val notExpected = FirstConcreteClass("notExpected")
+        val expected = SecondConcreteClass("expected")
+
+        // when
+        val actual: SecondConcreteClass = sut.giveMeBuilder<ParentAbstractClass>()
+            .set(notExpected)
+            .set(expected)
+            .sample() as SecondConcreteClass
+
+        then(actual).isEqualTo(expected)
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun setComplexReturnsSimple() {
+        // given
+        abstract class ParentAbstractClass
+
+        data class FirstConcreteClass(val string: String, val int: Int, val instant: Instant) : ParentAbstractClass()
+        data class SecondConcreteClass(val string: String, val long: Long) : ParentAbstractClass()
+
+        val sut = FixtureMonkey.builder()
+            .plugin(KotlinPlugin())
+            .plugin(
+                InterfacePlugin()
+                    .abstractClassExtends(
+                        ParentAbstractClass::class.java,
+                        listOf(FirstConcreteClass::class.java, SecondConcreteClass::class.java)
+                    )
+
+            )
+            .build()
+
+        val expected = FirstConcreteClass("expected", 1, Instant.now())
+        val notExpected = SecondConcreteClass("notExpected", 2L)
+
+        // when
+        val actual = sut.giveMeBuilder<ParentAbstractClass>()
+            .set(expected)
+            .set(notExpected)
+            .set(expected)
+            .sample() as FirstConcreteClass
+
+        then(actual).isEqualTo(expected)
+    }
+
+    @Test
+    fun setShrinkContainerNode() {
+        val expected = listOf("a")
+
+        val actual = SUT.giveMeBuilder<List<String>>()
+            .size("$", 3)
+            .set("$[0]", "a1")
+            .set("$[1]", "b")
+            .set("$[2]", "c")
+            .set(expected)
+            .sample()
+
+        then(actual).isEqualTo(expected)
+    }
+
+    @Test
+    fun setExpandContainerNode() {
+        val expected = listOf("a", "b", "c")
+
+        val actual = SUT.giveMeBuilder<List<String>>()
+            .size("$", 1)
+            .set(expected)
+            .sample()
+
+        then(actual).isEqualTo(expected)
+    }
+
+    @Test
+    fun register() {
+        class NestedInnerObject(val list: List<String>)
+
+        class InnerObject(val list: List<NestedInnerObject>)
+
+        class WrapperObject(val obj: InnerObject)
+
+        val sut = FixtureMonkey.builder()
+            .plugin(KotlinPlugin())
+            .register(WrapperObject::class.java) {
+                it.giveMeKotlinBuilder<WrapperObject>()
+                    .sizeExp(WrapperObject::obj into InnerObject::list, 1)
+                    .thenApply { _, _ -> }
+            }
+            .build()
+
+        val actual = sut.giveMeKotlinBuilder<WrapperObject>()
+            .sizeExp(WrapperObject::obj into InnerObject::list[0] into NestedInnerObject::list, 1)
+            .sample()
+            .obj
+            .list[0]
+            .list[0]
+
+        then(actual).isNotNull
+    }
+
     companion object {
         private val SUT: FixtureMonkey = FixtureMonkey.builder()
             .plugin(KotlinPlugin())

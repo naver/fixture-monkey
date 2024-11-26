@@ -18,6 +18,8 @@
 
 package com.navercorp.fixturemonkey.tree;
 
+import static com.navercorp.fixturemonkey.api.type.Types.nullSafe;
+
 import java.lang.annotation.Annotation;
 import java.util.Collections;
 import java.util.HashSet;
@@ -46,7 +48,9 @@ final class MetadataCollector {
 	}
 
 	public ObjectTreeMetadata collect() {
-		for (ObjectNode child : rootNode.resolveChildren()) {
+		rootNode.expand();
+		List<ObjectNode> objectNodes = nullSafe(rootNode.getChildren()).asList();
+		for (ObjectNode child : objectNodes) {
 			collect(child);
 		}
 		return new ObjectTreeMetadata(
@@ -59,7 +63,8 @@ final class MetadataCollector {
 		Property property = node.getTreeProperty().getObjectProperty().getProperty();
 		annotations.addAll(property.getAnnotations());
 
-		List<ObjectNode> children = node.resolveChildren();
+		node.expand();
+		List<ObjectNode> children = nullSafe(node.getChildren()).asList();
 		for (ObjectNode child : children) {
 			collect(child);
 		}

@@ -47,6 +47,6 @@ public final class NodeFilterManipulator implements NodeManipulator {
 				"Wrong type filter is applied. Expected: " + type + ", Actual: " + actualType
 			);
 		}
-		objectNode.addArbitraryFilter(filter);
+		objectNode.getObjectNodeContext().addArbitraryFilter(filter);
 	}
 }

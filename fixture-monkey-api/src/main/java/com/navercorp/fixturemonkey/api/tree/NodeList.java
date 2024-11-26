@@ -15,16 +15,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.navercorp.fixturemonkey.tree;
+
+package com.navercorp.fixturemonkey.api.tree;
+
+import java.util.List;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.api.generator.ObjectProperty;
-import com.navercorp.fixturemonkey.api.tree.TraverseNodePredicate;
-
-@API(since = "0.4.0", status = Status.MAINTAINED)
-@FunctionalInterface
-public interface NextNodePredicate extends TraverseNodePredicate {
-	boolean test(ObjectProperty currentObjectProperty);
+/**
+ * The interface of the list {@link TraverseNode} to avoid type-casting compile errors.
+ * <p>
+ * It should use the {@link #asList()} instead of {@link NodeList} itself.
+ */
+@API(since = "1.1.4", status = Status.EXPERIMENTAL)
+public interface NodeList {
+	/**
+	 * Retrieves the actual list of {@link TraverseNode}.
+	 *
+	 * @return the actual list of {@link TraverseNode}
+	 */
+	List<? extends TraverseNode> asList();
 }

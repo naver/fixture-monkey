@@ -19,6 +19,7 @@
 package com.navercorp.fixturemonkey.api.tree;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.apiguardian.api.API;
@@ -85,5 +86,24 @@ public class TreeProperty {
 				))
 				.collect(Collectors.toList())
 		);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null || getClass() != obj.getClass()) {
+			return false;
+		}
+		TreeProperty that = (TreeProperty)obj;
+		return container == that.container
+			&& Objects.equals(objectProperty, that.objectProperty)
+			&& Objects.equals(typeDefinitions, that.typeDefinitions);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(objectProperty, container, typeDefinitions);
 	}
 }
