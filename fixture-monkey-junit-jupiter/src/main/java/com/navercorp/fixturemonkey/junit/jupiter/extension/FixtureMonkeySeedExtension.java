@@ -19,6 +19,8 @@ package com.navercorp.fixturemonkey.junit.jupiter.extension;
 
 import java.lang.reflect.Method;
 
+import javax.annotation.Nullable;
+
 import org.junit.jupiter.api.extension.AfterTestExecutionCallback;
 import org.junit.jupiter.api.extension.BeforeTestExecutionCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -30,10 +32,12 @@ import com.navercorp.fixturemonkey.junit.jupiter.annotation.Seed;
 
 public final class FixtureMonkeySeedExtension implements BeforeTestExecutionCallback, AfterTestExecutionCallback {
 	private static final Logger LOGGER = LoggerFactory.getLogger(FixtureMonkeySeedExtension.class);
+	private final ThreadLocal<Long> previousSeed = new ThreadLocal<>();
 
 	@Override
 	public void beforeTestExecution(ExtensionContext context) throws Exception {
 		Seed seed = context.getRequiredTestMethod().getAnnotation(Seed.class);
+		previousSeed.set(Randoms.currentSeed());
 		if (seed != null) {
 			setSeed(seed.value());
 		}
@@ -49,13 +53,19 @@ public final class FixtureMonkeySeedExtension implements BeforeTestExecutionCall
 		if (context.getExecutionException().isPresent()) {
 			logSeedIfTestFailed(context);
 		}
+
+		setSeed(previousSeed.get());
 	}
 
 	/**
 	 * Sets the seed for generating random numbers.
 	 **/
-	private void setSeed(long seed) {
-		Randoms.create(String.valueOf(seed));
+	private void setSeed(@Nullable Long seed) {
+		if (seed == null) {
+			Randoms.clear();
+		} else {
+			Randoms.create(String.valueOf(seed));
+		}
 	}
 
 	/**

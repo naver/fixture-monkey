@@ -57,12 +57,13 @@ public final class FixtureMonkey {
 		FixtureMonkeyOptions fixtureMonkeyOptions,
 		ManipulatorOptimizer manipulatorOptimizer,
 		List<MatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>>> registeredArbitraryBuilders,
+		MonkeyContext monkeyContext,
 		MonkeyManipulatorFactory monkeyManipulatorFactory
 	) {
 		this.fixtureMonkeyOptions = fixtureMonkeyOptions;
 		this.manipulatorOptimizer = manipulatorOptimizer;
-		this.monkeyContext = MonkeyContext.builder(fixtureMonkeyOptions).build();
 		this.monkeyManipulatorFactory = monkeyManipulatorFactory;
+		this.monkeyContext = monkeyContext;
 		initializeRegisteredArbitraryBuilders(registeredArbitraryBuilders);
 	}
 

@@ -20,6 +20,8 @@ package com.navercorp.fixturemonkey.api.random;
 
 import java.util.Random;
 
+import javax.annotation.Nullable;
+
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
@@ -27,6 +29,8 @@ import net.jqwik.api.JqwikException;
 import net.jqwik.engine.SourceOfRandomness;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
+import com.navercorp.fixturemonkey.api.container.ConcurrentLruCache;
 
 /**
  * Reference jqwik SourceOfRandomness
@@ -37,6 +41,7 @@ public abstract class Randoms {
 	private static final boolean USE_JQWIK_ENGINE;
 	private static final ThreadLocal<Random> CURRENT = new ThreadLocal<>();
 	private static final ThreadLocal<Long> SEED = new ThreadLocal<>();
+	private static final ConcurrentLruCache<Long, Random> CACHED_SEED = new ConcurrentLruCache<>(5);
 
 	static {
 		boolean useJqwikEngine;
@@ -50,20 +55,24 @@ public abstract class Randoms {
 	}
 
 	public static Random create(String seed) {
-		if (USE_JQWIK_ENGINE) {
-			SEED.set(Long.parseLong(seed));
-			return SourceOfRandomness.create(seed);
-		}
-
+		long longSeed;
 		try {
-			long actualSeed = Long.parseLong(seed);
-			Random random = newRandom(actualSeed);
-			CURRENT.set(random);
-			SEED.set(actualSeed);
-			return random;
+			longSeed = Long.parseLong(seed);
 		} catch (NumberFormatException nfe) {
 			throw new JqwikException(String.format("[%s] is not a valid random seed.", seed));
 		}
+
+		return CACHED_SEED.computeIfAbsent(longSeed, l -> {
+			if (USE_JQWIK_ENGINE) {
+				SEED.set(longSeed);
+				return SourceOfRandomness.create(seed);
+			}
+
+			Random random = newRandom(longSeed);
+			CURRENT.set(random);
+			SEED.set(longSeed);
+			return random;
+		});
 	}
 
 	public static Random current() {
@@ -72,12 +81,18 @@ public abstract class Randoms {
 			: CURRENT.get();
 	}
 
-	public static long currentSeed() {
+	@Nullable
+	public static Long currentSeed() {
 		return SEED.get();
 	}
 
 	public static int nextInt(int bound) {
 		return current().nextInt(bound);
+	}
+
+	public static void clear() {
+		SEED.remove();
+		CURRENT.remove();
 	}
 
 	private static Random newRandom(final long seed) {

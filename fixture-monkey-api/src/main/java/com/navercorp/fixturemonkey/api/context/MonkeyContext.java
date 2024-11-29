@@ -23,6 +23,8 @@ import static com.navercorp.fixturemonkey.api.type.Types.isJavaType;
 import java.util.List;
 import java.util.TreeMap;
 
+import javax.annotation.Nullable;
+
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
@@ -50,6 +52,9 @@ public final class MonkeyContext {
 	private final ConcurrentLruCache<Property, CombinableArbitrary<?>> javaArbitrariesByProperty;
 	private final ConcurrentLruCache<RootProperty, MonkeyGeneratorContext> generatorContextByRootProperty;
 	private final List<MatcherOperator<? extends ObjectBuilder<?>>> registeredArbitraryBuilders;
+
+	@Nullable
+	private final Long seed;
 	private final FixtureMonkeyOptions fixtureMonkeyOptions;
 
 	public MonkeyContext(
@@ -57,12 +62,14 @@ public final class MonkeyContext {
 		ConcurrentLruCache<Property, CombinableArbitrary<?>> javaArbitrariesByProperty,
 		ConcurrentLruCache<RootProperty, MonkeyGeneratorContext> generatorContextByRootProperty,
 		List<MatcherOperator<? extends ObjectBuilder<?>>> registeredArbitraryBuilders,
+		@Nullable Long seed,
 		FixtureMonkeyOptions fixtureMonkeyOptions
 	) {
 		this.arbitrariesByProperty = arbitrariesByProperty;
 		this.javaArbitrariesByProperty = javaArbitrariesByProperty;
 		this.generatorContextByRootProperty = generatorContextByRootProperty;
 		this.registeredArbitraryBuilders = registeredArbitraryBuilders;
+		this.seed = seed;
 		this.fixtureMonkeyOptions = fixtureMonkeyOptions;
 	}
 
@@ -99,6 +106,11 @@ public final class MonkeyContext {
 
 	public List<MatcherOperator<? extends ObjectBuilder<?>>> getRegisteredArbitraryBuilders() {
 		return registeredArbitraryBuilders;
+	}
+
+	@Nullable
+	public Long getSeed() {
+		return seed;
 	}
 
 	public FixtureMonkeyOptions getFixtureMonkeyOptions() {

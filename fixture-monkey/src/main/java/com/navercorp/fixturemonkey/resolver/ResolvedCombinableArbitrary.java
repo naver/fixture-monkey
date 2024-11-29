@@ -18,19 +18,24 @@
 
 package com.navercorp.fixturemonkey.resolver;
 
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+
+import javax.annotation.Nullable;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
+import com.navercorp.fixturemonkey.api.context.MonkeyContext;
 import com.navercorp.fixturemonkey.api.exception.ContainerSizeFilterMissException;
 import com.navercorp.fixturemonkey.api.exception.FixedValueFilterMissException;
 import com.navercorp.fixturemonkey.api.exception.RetryableFilterMissException;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
+import com.navercorp.fixturemonkey.api.random.Randoms;
 import com.navercorp.fixturemonkey.api.validator.ArbitraryValidator;
 import com.navercorp.fixturemonkey.tree.ObjectTree;
 
@@ -44,6 +49,7 @@ final class ResolvedCombinableArbitrary<T> implements CombinableArbitrary<T> {
 	private final LazyArbitrary<CombinableArbitrary<T>> arbitrary;
 	private final ArbitraryValidator validator;
 	private final Supplier<Boolean> validOnly;
+	private final MonkeyContext monkeyContext;
 
 	private Exception lastException = null;
 
@@ -53,7 +59,8 @@ final class ResolvedCombinableArbitrary<T> implements CombinableArbitrary<T> {
 		Function<ObjectTree, CombinableArbitrary<T>> generateArbitrary,
 		int generateMaxTries,
 		ArbitraryValidator validator,
-		Supplier<Boolean> validOnly
+		Supplier<Boolean> validOnly,
+		MonkeyContext monkeyContext
 	) {
 		this.rootProperty = rootProperty;
 		this.objectTree = LazyArbitrary.lazy(regenerateTree);
@@ -66,59 +73,71 @@ final class ResolvedCombinableArbitrary<T> implements CombinableArbitrary<T> {
 		);
 		this.validator = validator;
 		this.validOnly = validOnly;
+		this.monkeyContext = monkeyContext;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public T combined() {
-		for (int i = 0; i < generateMaxTries; i++) {
-			try {
-				return arbitrary.getValue()
-					.filter(VALIDATION_ANNOTATION_FILTERING_COUNT, this.validateFilter(validOnly.get()))
-					.combined();
-			} catch (ContainerSizeFilterMissException | RetryableFilterMissException ex) {
-				lastException = ex;
-				objectTree.clear();
-			} catch (FixedValueFilterMissException ex) {
-				lastException = ex;
-			} finally {
-				arbitrary.clear();
-			}
-		}
+		return (T)runInSeedScope(
+			monkeyContext.getSeed(),
+			() -> {
+				for (int i = 0; i < generateMaxTries; i++) {
+					try {
+						return arbitrary.getValue()
+							.filter(VALIDATION_ANNOTATION_FILTERING_COUNT, this.validateFilter(validOnly.get()))
+							.combined();
+					} catch (ContainerSizeFilterMissException | RetryableFilterMissException ex) {
+						lastException = ex;
+						objectTree.clear();
+					} catch (FixedValueFilterMissException ex) {
+						lastException = ex;
+					} finally {
+						arbitrary.clear();
+					}
+				}
 
-		throw new IllegalArgumentException(
-			String.format(
-				"Given type %s could not be generated."
-					+ " Check the ArbitraryIntrospector used or the APIs used in the ArbitraryBuilder.",
-				rootProperty.getType()
-			),
-			lastException
+				throw new IllegalArgumentException(
+					String.format(
+						"Given type %s could not be generated."
+							+ " Check the ArbitraryIntrospector used or the APIs used in the ArbitraryBuilder.",
+						rootProperty.getType()
+					),
+					lastException
+				);
+			}
 		);
 	}
 
 	@Override
 	public Object rawValue() {
-		for (int i = 0; i < generateMaxTries; i++) {
-			try {
-				return arbitrary.getValue()
-					.filter(VALIDATION_ANNOTATION_FILTERING_COUNT, this.validateFilter(validOnly.get()))
-					.rawValue();
-			} catch (ContainerSizeFilterMissException | RetryableFilterMissException ex) {
-				lastException = ex;
-				objectTree.clear();
-			} catch (FixedValueFilterMissException ex) {
-				lastException = ex;
-			} finally {
-				arbitrary.clear();
-			}
-		}
+		return runInSeedScope(
+			monkeyContext.getSeed(),
+			() -> {
+				for (int i = 0; i < generateMaxTries; i++) {
+					try {
+						return arbitrary.getValue()
+							.filter(VALIDATION_ANNOTATION_FILTERING_COUNT, this.validateFilter(validOnly.get()))
+							.rawValue();
+					} catch (ContainerSizeFilterMissException | RetryableFilterMissException ex) {
+						lastException = ex;
+						objectTree.clear();
+					} catch (FixedValueFilterMissException ex) {
+						lastException = ex;
+					} finally {
+						arbitrary.clear();
+					}
+				}
 
-		throw new IllegalArgumentException(
-			String.format(
-				"Given type %s could not be generated."
-					+ " Check the ArbitraryIntrospector used or the APIs used in the ArbitraryBuilder.",
-				rootProperty.getType()
-			),
-			lastException
+				throw new IllegalArgumentException(
+					String.format(
+						"Given type %s could not be generated."
+							+ " Check the ArbitraryIntrospector used or the APIs used in the ArbitraryBuilder.",
+						rootProperty.getType()
+					),
+					lastException
+				);
+			}
 		);
 	}
 
@@ -150,5 +169,21 @@ final class ResolvedCombinableArbitrary<T> implements CombinableArbitrary<T> {
 			this.validator.validate(fixture);
 			return true;
 		};
+	}
+
+	private static Object runInSeedScope(@Nullable Long seed, Supplier<Object> supplier) {
+		Long previousSeed = Randoms.currentSeed();
+
+		if (seed != null && !Objects.equals(seed, previousSeed)) {
+			Randoms.create(String.valueOf(seed));
+		}
+
+		Object returned = supplier.get();
+
+		if (previousSeed != null && !Objects.equals(seed, previousSeed)) {
+			Randoms.create(String.valueOf(previousSeed));
+		}
+
+		return returned;
 	}
 }

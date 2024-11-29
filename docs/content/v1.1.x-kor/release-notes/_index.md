@@ -9,6 +9,8 @@ sectionStart
 ## v.1.1.4
 Fix not registering size API if decomposing.
 
+Fix the `seed` option to apply per `FixtureMonkey` instance.
+
 sectionEnd
 
 sectionStart

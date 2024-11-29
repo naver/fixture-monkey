@@ -21,6 +21,8 @@ package com.navercorp.fixturemonkey.api.context;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
@@ -42,6 +44,8 @@ public final class MonkeyContextBuilder {
 	private List<MatcherOperator<? extends ObjectBuilder<?>>> registeredObjectBuilders;
 	private int cacheSize = 2048;
 	private int generatorContextSize = 1000;
+	@Nullable
+	private Long seed = null;
 
 	public MonkeyContextBuilder(FixtureMonkeyOptions fixtureMonkeyOptions) {
 		this.fixtureMonkeyOptions = fixtureMonkeyOptions;
@@ -85,6 +89,11 @@ public final class MonkeyContextBuilder {
 		return this;
 	}
 
+	public MonkeyContextBuilder seed(@Nullable Long seed) {
+		this.seed = seed;
+		return this;
+	}
+
 	public MonkeyContext build() {
 		if (arbitrariesByProperty == null) {
 			arbitrariesByProperty = new ConcurrentLruCache<>(cacheSize);
@@ -107,6 +116,7 @@ public final class MonkeyContextBuilder {
 			javaArbitrariesByProperty,
 			generatorContextByRootProperty,
 			registeredObjectBuilders,
+			seed,
 			fixtureMonkeyOptions
 		);
 	}

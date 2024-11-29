@@ -32,6 +32,7 @@ import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.constraint.JavaConstraintGenerator;
 import com.navercorp.fixturemonkey.api.container.DecomposedContainerValueFactory;
+import com.navercorp.fixturemonkey.api.context.MonkeyContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfoGenerator;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.generator.ContainerPropertyGenerator;
@@ -51,7 +52,6 @@ import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptionsBuilder;
 import com.navercorp.fixturemonkey.api.plugin.Plugin;
 import com.navercorp.fixturemonkey.api.property.PropertyGenerator;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
-import com.navercorp.fixturemonkey.api.random.Randoms;
 import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.api.validator.ArbitraryValidator;
 import com.navercorp.fixturemonkey.buildergroup.ArbitraryBuilderCandidate;
@@ -487,10 +487,6 @@ public final class FixtureMonkeyBuilder {
 		return this;
 	}
 
-	/**
-	 * It is deprecated. Please use {@code @Seed} in fixture-monkey-junit-jupiter module.
-	 */
-	@Deprecated
 	public FixtureMonkeyBuilder seed(long seed) {
 		this.seed = seed;
 		return this;
@@ -504,11 +500,15 @@ public final class FixtureMonkeyBuilder {
 			fixtureMonkeyOptions.getDecomposedContainerValueFactory()
 		);
 
-		Randoms.create(String.valueOf(seed));
+		MonkeyContext monkeyContext = MonkeyContext.builder(fixtureMonkeyOptions)
+			.seed(seed)
+			.build();
+
 		return new FixtureMonkey(
 			fixtureMonkeyOptions,
 			manipulatorOptimizer,
 			registeredArbitraryBuilders,
+			monkeyContext,
 			monkeyManipulatorFactory
 		);
 	}

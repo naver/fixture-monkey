@@ -99,7 +99,8 @@ public final class ArbitraryResolver {
 			},
 			fixtureMonkeyOptions.getGenerateMaxTries(),
 			fixtureMonkeyOptions.getDefaultArbitraryValidator(),
-			builderContext::isValidOnly
+			builderContext::isValidOnly,
+			monkeyContext
 		);
 	}
 }
