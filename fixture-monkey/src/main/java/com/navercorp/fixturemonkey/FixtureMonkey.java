@@ -21,6 +21,7 @@ package com.navercorp.fixturemonkey;
 import static java.util.stream.Collectors.toList;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -36,6 +37,7 @@ import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.matcher.NamedMatcher;
 import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
+import com.navercorp.fixturemonkey.api.random.Randoms;
 import com.navercorp.fixturemonkey.api.type.LazyAnnotatedType;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.customizer.ArbitraryManipulator;
@@ -72,6 +74,7 @@ public final class FixtureMonkey {
 		this.monkeyManipulatorFactory = monkeyManipulatorFactory;
 		initializeRegisteredArbitraryBuilders(registeredArbitraryBuilders);
 		initializeNamedArbitraryBuilderMap(mapsByRegisteredName);
+		shuffleRegisteredArbitraryBuilders();
 	}
 
 	public static FixtureMonkeyBuilder builder() {
@@ -212,5 +215,9 @@ public final class FixtureMonkey {
 				)
 			);
 		});
+	}
+
+	private void shuffleRegisteredArbitraryBuilders() {
+		Collections.shuffle(registeredArbitraryBuilders, Randoms.current());
 	}
 }

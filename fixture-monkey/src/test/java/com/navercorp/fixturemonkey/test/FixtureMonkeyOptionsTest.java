@@ -859,19 +859,6 @@ class FixtureMonkeyOptionsTest {
 	}
 
 	@Property
-	void registerSameInstancesTwiceWorksLast() {
-		FixtureMonkey sut = FixtureMonkey.builder()
-			.register(String.class, monkey -> monkey.giveMeBuilder("test"))
-			.register(String.class, monkey -> monkey.giveMeBuilder("test2"))
-			.build();
-
-		String actual = sut.giveMeOne(SimpleObject.class)
-			.getStr();
-
-		then(actual).isEqualTo("test2");
-	}
-
-	@Property
 	void registerSetFirst() {
 		String expected = "test2";
 		FixtureMonkey sut = FixtureMonkey.builder()
