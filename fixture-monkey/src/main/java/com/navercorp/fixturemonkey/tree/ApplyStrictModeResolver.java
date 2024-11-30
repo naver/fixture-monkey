@@ -23,6 +23,9 @@ import java.util.List;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+/**
+ * A {@link NodeResolver} that applies strict mode.
+ */
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class ApplyStrictModeResolver implements NodeResolver {
 	private final NodeResolver nodeResolver;
@@ -32,17 +35,12 @@ public final class ApplyStrictModeResolver implements NodeResolver {
 	}
 
 	@Override
-	public List<ObjectNode> resolve(ObjectNode objectNode) {
-		List<ObjectNode> selectedNodes = nodeResolver.resolve(objectNode);
+	public List<ObjectNode> resolve(ObjectNode nextNode) {
+		List<ObjectNode> selectedNodes = nodeResolver.resolve(nextNode);
 
 		if (selectedNodes.isEmpty()) {
 			throw new IllegalArgumentException("No matching results for given NodeResolvers.");
 		}
 		return selectedNodes;
-	}
-
-	@Override
-	public List<NextNodePredicate> toNextNodePredicate() {
-		return nodeResolver.toNextNodePredicate();
 	}
 }

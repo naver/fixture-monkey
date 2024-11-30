@@ -18,6 +18,7 @@
 
 package com.navercorp.fixturemonkey.customizer;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -26,8 +27,7 @@ import javax.annotation.Nullable;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.tree.CompositeNodeResolver;
-import com.navercorp.fixturemonkey.tree.NodeResolver;
+import com.navercorp.fixturemonkey.tree.NextNodePredicate;
 
 @API(since = "0.5.0", status = Status.MAINTAINED)
 final class InnerSpecState {
@@ -65,33 +65,36 @@ final class InnerSpecState {
 		return filterHolder;
 	}
 
-	InnerSpecState withPrefix(NodeResolver nodeResolver) {
+	InnerSpecState withPrefix(List<NextNodePredicate> nextNodePredicates) {
 		InnerSpecState newState = new InnerSpecState();
 
 		if (this.objectHolder != null) {
+			List<NextNodePredicate> concat = new ArrayList<>(nextNodePredicates);
+			concat.addAll(this.objectHolder.nextNodePredicates);
 			newState.objectHolder = new NodeResolverObjectHolder(
 				this.objectHolder.sequence,
-				new CompositeNodeResolver(
-					nodeResolver,
-					this.objectHolder.nodeResolver
-				),
+				concat,
 				this.objectHolder.value
 			);
 		}
 
 		if (this.filterHolder != null) {
+			List<NextNodePredicate> concat = new ArrayList<>(nextNodePredicates);
+			concat.addAll(this.filterHolder.nextNodePredicates);
 			newState.filterHolder = new FilterHolder(
 				this.filterHolder.sequence,
-				new CompositeNodeResolver(nodeResolver, this.filterHolder.nodeResolver),
+				concat,
 				this.filterHolder.type,
 				this.filterHolder.predicate
 			);
 		}
 
 		if (this.containerInfoHolder != null) {
+			List<NextNodePredicate> concat = new ArrayList<>(nextNodePredicates);
+			concat.addAll(this.containerInfoHolder.nextNodePredicates);
 			newState.containerInfoHolder = new ContainerInfoHolder(
 				this.containerInfoHolder.sequence,
-				new CompositeNodeResolver(nodeResolver, this.containerInfoHolder.nodeResolver),
+				concat,
 				this.containerInfoHolder.elementMinSize,
 				this.containerInfoHolder.elementMaxSize
 			);
@@ -102,13 +105,18 @@ final class InnerSpecState {
 
 	public static class ContainerInfoHolder {
 		private final int sequence;
-		private final NodeResolver nodeResolver;
+		private final List<NextNodePredicate> nextNodePredicates;
 		private final int elementMinSize;
 		private final int elementMaxSize;
 
-		public ContainerInfoHolder(int sequence, NodeResolver nodeResolver, int elementMinSize, int elementMaxSize) {
+		public ContainerInfoHolder(
+			int sequence,
+			List<NextNodePredicate> nextNodePredicates,
+			int elementMinSize,
+			int elementMaxSize
+		) {
 			this.sequence = sequence;
-			this.nodeResolver = nodeResolver;
+			this.nextNodePredicates = nextNodePredicates;
 			this.elementMinSize = elementMinSize;
 			this.elementMaxSize = elementMaxSize;
 		}
@@ -117,8 +125,8 @@ final class InnerSpecState {
 			return sequence;
 		}
 
-		NodeResolver getNodeResolver() {
-			return nodeResolver;
+		List<NextNodePredicate> getNextNodePredicates() {
+			return this.nextNodePredicates;
 		}
 
 		int getElementMinSize() {
@@ -132,13 +140,18 @@ final class InnerSpecState {
 
 	public static class FilterHolder {
 		private final int sequence;
-		private final NodeResolver nodeResolver;
+		private final List<NextNodePredicate> nextNodePredicates;
 		private final Class<?> type;
 		private final Predicate<?> predicate;
 
-		public FilterHolder(int sequence, NodeResolver nodeResolver, Class<?> type, Predicate<?> predicate) {
+		public FilterHolder(
+			int sequence,
+			List<NextNodePredicate> nextNodePredicates,
+			Class<?> type,
+			Predicate<?> predicate
+		) {
 			this.sequence = sequence;
-			this.nodeResolver = nodeResolver;
+			this.nextNodePredicates = nextNodePredicates;
 			this.type = type;
 			this.predicate = predicate;
 		}
@@ -147,8 +160,8 @@ final class InnerSpecState {
 			return sequence;
 		}
 
-		NodeResolver getNodeResolver() {
-			return nodeResolver;
+		List<NextNodePredicate> getNextNodePredicates() {
+			return this.nextNodePredicates;
 		}
 
 		Class<?> getType() {
@@ -162,17 +175,17 @@ final class InnerSpecState {
 
 	public static class NodeResolverObjectHolder {
 		private final int sequence;
-		private final NodeResolver nodeResolver;
+		private final List<NextNodePredicate> nextNodePredicates;
 		private final Object value;
 
-		public NodeResolverObjectHolder(int sequence, NodeResolver nodeResolver, Object value) {
+		public NodeResolverObjectHolder(int sequence, List<NextNodePredicate> nextNodePredicates, Object value) {
 			this.sequence = sequence;
-			this.nodeResolver = nodeResolver;
+			this.nextNodePredicates = nextNodePredicates;
 			this.value = value;
 		}
 
-		NodeResolver getNodeResolver() {
-			return nodeResolver;
+		List<NextNodePredicate> getNextNodePredicates() {
+			return this.nextNodePredicates;
 		}
 
 		Object getValue() {

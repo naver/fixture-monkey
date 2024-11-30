@@ -19,7 +19,6 @@
 package com.navercorp.fixturemonkey.customizer;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -50,10 +49,11 @@ import com.navercorp.fixturemonkey.customizer.InnerSpecState.ManipulatorHolderSe
 import com.navercorp.fixturemonkey.customizer.Values.Just;
 import com.navercorp.fixturemonkey.customizer.Values.Unique;
 import com.navercorp.fixturemonkey.expression.MonkeyExpressionFactory;
-import com.navercorp.fixturemonkey.tree.NextNodePredicate;
+import com.navercorp.fixturemonkey.tree.CompositeNodeResolver;
+import com.navercorp.fixturemonkey.tree.NodePredicateResolver;
 import com.navercorp.fixturemonkey.tree.NodeResolver;
 import com.navercorp.fixturemonkey.tree.ObjectNode;
-import com.navercorp.fixturemonkey.tree.PropertyPredicate;
+import com.navercorp.fixturemonkey.tree.StaticNodeResolver;
 
 @API(since = "0.4.10", status = Status.MAINTAINED)
 public final class MonkeyManipulatorFactory {
@@ -129,7 +129,7 @@ public final class MonkeyManipulatorFactory {
 		int newSequence = sequence.getAndIncrement();
 
 		return new ContainerInfoManipulator(
-			monkeyExpressionFactory.from(expression).toNodeResolver().toNextNodePredicate(),
+			monkeyExpressionFactory.from(expression).toNextNodePredicate(),
 			new ArbitraryContainerInfo(
 				min,
 				max
@@ -162,7 +162,12 @@ public final class MonkeyManipulatorFactory {
 
 			ArbitraryBuilderContext context = registeredArbitraryBuilder.getContext();
 			List<ArbitraryManipulator> arbitraryManipulators = context.getManipulators().stream()
-				.map(it -> it.withPrependNodeResolver(prependPropertyNodeResolver(property, objectNodes)))
+				.map(
+					it -> new ArbitraryManipulator(
+						new CompositeNodeResolver(new StaticNodeResolver(objectNodes), it.getNodeResolver()),
+						it.getNodeManipulator()
+					)
+				)
 				.collect(Collectors.toList());
 
 			manipulators.addAll(arbitraryManipulators);
@@ -177,19 +182,36 @@ public final class MonkeyManipulatorFactory {
 
 		List<ArbitraryManipulator> setArbitraryManipulators = manipulatorHolderSet.getNodeResolverObjectHolders()
 			.stream()
-			.map(it -> new ArbitraryManipulator(
-					it.getNodeResolver(),
-					convertToNodeManipulator(baseSequence + it.getSequence(), it.getValue())
-				)
+			.map(
+				it -> {
+					List<NodeResolver> nextNodeResolvers = it.getNextNodePredicates().stream()
+						.map(NodePredicateResolver::new)
+						.collect(Collectors.toList());
+
+					CompositeNodeResolver compositeNodeResolver = new CompositeNodeResolver(nextNodeResolvers);
+					return new ArbitraryManipulator(
+						compositeNodeResolver,
+						convertToNodeManipulator(baseSequence + it.getSequence(), it.getValue())
+					);
+				}
 			)
 			.collect(Collectors.toList());
 
 		List<ArbitraryManipulator> filterArbitraryManipulators = manipulatorHolderSet.getPostConditionManipulators()
 			.stream()
-			.map(it -> new ArbitraryManipulator(
-				it.getNodeResolver(),
-				new NodeFilterManipulator(it.getType(), it.getPredicate())
-			))
+			.map(
+				it -> {
+					List<NodeResolver> nextNodeResolvers = it.getNextNodePredicates().stream()
+						.map(NodePredicateResolver::new)
+						.collect(Collectors.toList());
+
+					CompositeNodeResolver compositeNodeResolver = new CompositeNodeResolver(nextNodeResolvers);
+					return new ArbitraryManipulator(
+						compositeNodeResolver,
+						new NodeFilterManipulator(it.getType(), it.getPredicate())
+					);
+				}
+			)
 			.collect(Collectors.toList());
 		arbitraryManipulators.addAll(setArbitraryManipulators);
 		arbitraryManipulators.addAll(filterArbitraryManipulators);
@@ -197,7 +219,7 @@ public final class MonkeyManipulatorFactory {
 		List<ContainerInfoManipulator> containerInfoManipulators = manipulatorHolderSet.getContainerInfoManipulators()
 			.stream()
 			.map(it -> new ContainerInfoManipulator(
-				it.getNodeResolver().toNextNodePredicate(),
+				it.getNextNodePredicates(),
 				new ArbitraryContainerInfo(
 					it.getElementMinSize(),
 					it.getElementMaxSize()
@@ -268,25 +290,5 @@ public final class MonkeyManipulatorFactory {
 				value
 			);
 		}
-	}
-
-	private NodeResolver prependPropertyNodeResolver(Property property, List<ObjectNode> objectNodes) {
-		return new NodeResolver() {
-			@Override
-			public List<ObjectNode> resolve(ObjectNode objectNode) {
-				for (ObjectNode node : objectNodes) {
-					ObjectNode parent = node.getParent();
-					while (parent != null) {
-						parent = parent.getParent();
-					}
-				}
-				return objectNodes;
-			}
-
-			@Override
-			public List<NextNodePredicate> toNextNodePredicate() {
-				return Collections.singletonList(new PropertyPredicate(property));
-			}
-		};
 	}
 }
