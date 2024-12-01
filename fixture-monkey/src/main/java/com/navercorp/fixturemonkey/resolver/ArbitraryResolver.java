@@ -65,6 +65,7 @@ public final class ArbitraryResolver {
 			() -> {
 				ObjectTree objectTree = new ObjectTree(
 					rootProperty,
+					builderContext.newGenerateFixtureContext(),
 					builderContext.newTraverseContext()
 				);
 

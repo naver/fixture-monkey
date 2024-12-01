@@ -61,6 +61,7 @@ import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.api.property.PropertySelector;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
+import com.navercorp.fixturemonkey.api.tree.TreeNodeManipulator;
 import com.navercorp.fixturemonkey.api.type.LazyAnnotatedType;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.api.type.Types;
@@ -238,7 +239,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 
 	@Override
 	public ArbitraryBuilder<T> fixed() {
-		this.context.getContainerInfoManipulators().forEach(ContainerInfoManipulator::fixed);
+		this.context.getContainerInfoManipulators().forEach(TreeNodeManipulator::fixed);
 
 		this.context.markFixed();
 		return this;
@@ -246,7 +247,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 
 	@Override
 	public ArbitraryBuilder<T> thenApply(BiConsumer<T, ArbitraryBuilder<T>> biConsumer) {
-		this.context.getContainerInfoManipulators().forEach(ContainerInfoManipulator::fixed);
+		this.context.getContainerInfoManipulators().forEach(TreeNodeManipulator::fixed);
 
 		ArbitraryBuilder<T> appliedBuilder = this.copy();
 

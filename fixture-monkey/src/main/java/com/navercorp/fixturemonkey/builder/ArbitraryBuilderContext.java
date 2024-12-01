@@ -39,10 +39,12 @@ import com.navercorp.fixturemonkey.api.context.MonkeyContext;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.property.Property;
+import com.navercorp.fixturemonkey.api.tree.TraverseContext;
+import com.navercorp.fixturemonkey.api.tree.TreeNodeManipulator;
 import com.navercorp.fixturemonkey.customizer.ArbitraryManipulator;
 import com.navercorp.fixturemonkey.customizer.ContainerInfoManipulator;
+import com.navercorp.fixturemonkey.tree.GenerateFixtureContext;
 import com.navercorp.fixturemonkey.tree.ObjectTree;
-import com.navercorp.fixturemonkey.tree.TraverseContext;
 
 /**
  * {@link FixtureMonkey} → {@link ArbitraryBuilder} → {@link ObjectTree} → {@link CombinableArbitrary}
@@ -66,6 +68,7 @@ public final class ArbitraryBuilderContext {
 
 	@Nullable
 	private Boolean customizedValidOnly;
+
 
 	@Nullable
 	private FixedState fixedState = null;
@@ -101,8 +104,7 @@ public final class ArbitraryBuilderContext {
 			new ArrayList<>(),
 			new HashMap<>(),
 			new HashMap<>(),
-			null,
-			null,
+			null, null,
 			monkeyContext
 		);
 	}
@@ -143,7 +145,7 @@ public final class ArbitraryBuilderContext {
 		this.containerInfoManipulators.addAll(containerInfoManipulators);
 	}
 
-	public List<ContainerInfoManipulator> getContainerInfoManipulators() {
+	public List<TreeNodeManipulator> getContainerInfoManipulators() {
 		return Collections.unmodifiableList(containerInfoManipulators);
 	}
 
@@ -213,7 +215,7 @@ public final class ArbitraryBuilderContext {
 	}
 
 	public TraverseContext newTraverseContext() {
-		List<MatcherOperator<List<ContainerInfoManipulator>>> registeredContainerInfoManipulators =
+		List<MatcherOperator<List<TreeNodeManipulator>>> registeredContainerInfoManipulators =
 			monkeyContext.getRegisteredArbitraryBuilders()
 				.stream()
 				.map(it -> new MatcherOperator<>(
@@ -227,9 +229,16 @@ public final class ArbitraryBuilderContext {
 			this.getContainerInfoManipulators(),
 			registeredContainerInfoManipulators,
 			this.getPropertyConfigurers(),
-			this.getArbitraryIntrospectorsByType(),
-			this::isValidOnly,
+			this.isValidOnly(),
 			this.monkeyContext
+		);
+	}
+
+	public GenerateFixtureContext newGenerateFixtureContext() {
+		return new GenerateFixtureContext(
+			arbitraryIntrospectorsByType,
+			this::isValidOnly,
+			monkeyContext
 		);
 	}
 

@@ -552,4 +552,11 @@ public abstract class Types {
 			}
 		};
 	}
+
+	public static <T> T nullSafe(@Nullable T obj) {
+		if (obj == null) {
+			throw new IllegalArgumentException("given value should not be null");
+		}
+		return obj;
+	}
 }

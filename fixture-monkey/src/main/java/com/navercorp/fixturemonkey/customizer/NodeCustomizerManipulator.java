@@ -24,6 +24,7 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
+import com.navercorp.fixturemonkey.tree.GenerateFixtureContext;
 import com.navercorp.fixturemonkey.tree.ObjectNode;
 
 @API(since = "1.0.9", status = Status.EXPERIMENTAL)
@@ -39,12 +40,13 @@ public final class NodeCustomizerManipulator<T> implements NodeManipulator {
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	@Override
 	public void manipulate(ObjectNode objectNode) {
-		if (objectNode.getArbitrary() != null) {
+		GenerateFixtureContext generateFixtureContext = (GenerateFixtureContext)objectNode.getObjectNodeContext();
+		if (generateFixtureContext.getArbitrary() != null) {
 			CombinableArbitrary<? extends T> customized = arbitraryCustomizer.apply(
-				(CombinableArbitrary<? extends T>)objectNode.getArbitrary());
-			objectNode.setArbitrary(customized);
+				(CombinableArbitrary<? extends T>)generateFixtureContext.getArbitrary());
+			generateFixtureContext.setArbitrary(customized);
 		} else {
-			objectNode.addGeneratedArbitraryCustomizer((Function)arbitraryCustomizer);
+			generateFixtureContext.addGeneratedArbitraryCustomizer((Function)arbitraryCustomizer);
 		}
 	}
 }

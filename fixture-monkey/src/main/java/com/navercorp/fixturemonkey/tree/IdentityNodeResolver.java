@@ -19,6 +19,7 @@
 package com.navercorp.fixturemonkey.tree;
 
 import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.NOT_NULL_INJECT;
+import static com.navercorp.fixturemonkey.api.type.Types.nullSafe;
 
 import java.util.Collections;
 import java.util.List;
@@ -47,16 +48,19 @@ public final class IdentityNodeResolver implements NodeResolver {
 		ObjectNode searchNode = objectNode;
 
 		while (isWrappedNode(searchNode)) {
-			searchNode = searchNode.resolveChildren().get(0);
+			searchNode.expand();
+			searchNode = nullSafe(searchNode.getChildren()).asList().get(0);
 		}
 
 		return searchNode;
 	}
 
 	private boolean isWrappedNode(ObjectNode searchNode) {
-		List<ObjectNode> children = searchNode.resolveChildren();
+		searchNode.expand();
+		List<ObjectNode> children = nullSafe(searchNode.getChildren()).asList();
 
-		return children.size() == 1 && children.get(0).getResolvedProperty() instanceof SingleElementProperty;
+		return children.size() == 1
+			&& children.get(0).getResolvedProperty() instanceof SingleElementProperty;
 	}
 
 	@Override

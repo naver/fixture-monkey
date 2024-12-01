@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.customizer;
+package com.navercorp.fixturemonkey.api.tree;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,15 +27,12 @@ import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ObjectProperty;
-import com.navercorp.fixturemonkey.api.tree.TraverseNodePredicate;
-import com.navercorp.fixturemonkey.api.tree.TreeNodeManipulator;
-import com.navercorp.fixturemonkey.tree.NextNodePredicate;
-import com.navercorp.fixturemonkey.tree.PropertyPredicate;
-import com.navercorp.fixturemonkey.tree.StartNodePredicate;
+import com.navercorp.fixturemonkey.api.tree.TraverseNodePredicate.PropertyTraverseNodePredicate;
+import com.navercorp.fixturemonkey.api.tree.TraverseNodePredicate.StartTraverseNodePredicate;
 
-@API(since = "0.4.0", status = Status.MAINTAINED)
-public final class ContainerInfoManipulator extends TreeNodeManipulator {
-	private final List<NextNodePredicate> nextNodePredicates;
+@API(since = "1.1.4", status = Status.EXPERIMENTAL)
+public class TreeNodeManipulator {
+	private final List<TraverseNodePredicate> traverseNodePredicates;
 	private ArbitraryContainerInfo containerInfo;
 	/**
 	 * The sequence of a size manipulation.
@@ -43,22 +40,19 @@ public final class ContainerInfoManipulator extends TreeNodeManipulator {
 	 */
 	private final int manipulatingSequence;
 
-	public ContainerInfoManipulator(
-		List<NextNodePredicate> nextNodePredicates,
+	public TreeNodeManipulator(
+		List<TraverseNodePredicate> traverseNodePredicates,
 		ArbitraryContainerInfo containerInfo,
 		int manipulatingSequence
 	) {
-		super(nextNodePredicates.stream().map(TraverseNodePredicate.class::cast).collect(Collectors.toList()),
-			containerInfo,
-			manipulatingSequence);
-		this.nextNodePredicates = nextNodePredicates;
+		this.traverseNodePredicates = traverseNodePredicates;
 		this.containerInfo = containerInfo;
 		this.manipulatingSequence = manipulatingSequence;
 	}
 
-	public ContainerInfoManipulator copy() {
-		return new ContainerInfoManipulator(
-			this.getNextNodePredicates(),
+	public TreeNodeManipulator copy() {
+		return new TreeNodeManipulator(
+			this.getTraverseNodePredicates(),
 			new ArbitraryContainerInfo(
 				containerInfo.getElementMinSize(),
 				containerInfo.getElementMaxSize()
@@ -67,25 +61,25 @@ public final class ContainerInfoManipulator extends TreeNodeManipulator {
 		);
 	}
 
-	public List<NextNodePredicate> getNextNodePredicates() {
-		return nextNodePredicates;
+	public List<TraverseNodePredicate> getTraverseNodePredicates() {
+		return traverseNodePredicates;
 	}
 
 	public ArbitraryContainerInfo getContainerInfo() {
 		return containerInfo;
 	}
 
-	public ContainerInfoManipulator withPrependNextNodePredicate(NextNodePredicate nextNodePredicate) {
-		List<NextNodePredicate> nodePredicatesWithoutRoot = this.nextNodePredicates.stream()
-			.filter(it -> !(it instanceof StartNodePredicate))
+	public TreeNodeManipulator withPrependNextNodePredicate(TraverseNodePredicate nextNodePredicate) {
+		List<TraverseNodePredicate> nodePredicatesWithoutRoot = this.traverseNodePredicates.stream()
+			.filter(it -> !(it instanceof StartTraverseNodePredicate))
 			.collect(Collectors.toList());
 
-		List<NextNodePredicate> newNextNodePredicates = new ArrayList<>();
-		newNextNodePredicates.add(nextNodePredicate);
-		newNextNodePredicates.addAll(nodePredicatesWithoutRoot);
+		List<TraverseNodePredicate> newtraverseNodePredicates = new ArrayList<>();
+		newtraverseNodePredicates.add(nextNodePredicate);
+		newtraverseNodePredicates.addAll(nodePredicatesWithoutRoot);
 
-		return new ContainerInfoManipulator(
-			newNextNodePredicates,
+		return new TreeNodeManipulator(
+			newtraverseNodePredicates,
 			this.containerInfo,
 			manipulatingSequence
 		);
@@ -106,17 +100,17 @@ public final class ContainerInfoManipulator extends TreeNodeManipulator {
 
 	public boolean isMatch(List<ObjectProperty> objectProperties) {
 		int objectPropertiesSize = objectProperties.size();
-		int nextNodePredicateSize = nextNodePredicates.size();
+		int traverseNodePredicatesize = traverseNodePredicates.size();
 
-		boolean registered = nextNodePredicates.get(0) instanceof PropertyPredicate;
-		if (!registered && nextNodePredicateSize != objectPropertiesSize) {
+		boolean registered = traverseNodePredicates.get(0) instanceof PropertyTraverseNodePredicate;
+		if (!registered && traverseNodePredicatesize != objectPropertiesSize) {
 			return false;
 		}
 
-		for (int i = 0; i < nextNodePredicateSize; i++) {
-			int reversedNextNodePredicateIndex = nextNodePredicateSize - 1 - i;
+		for (int i = 0; i < traverseNodePredicatesize; i++) {
+			int reversedNextNodePredicateIndex = traverseNodePredicatesize - 1 - i;
 			int reversedCurrentObjectPropertyIndex = objectPropertiesSize - 1 - i;
-			NextNodePredicate nextNodePredicate = nextNodePredicates.get(reversedNextNodePredicateIndex);
+			TraverseNodePredicate nextNodePredicate = traverseNodePredicates.get(reversedNextNodePredicateIndex);
 			ObjectProperty objectProperty = objectProperties.get(reversedCurrentObjectPropertyIndex);
 
 			if (!nextNodePredicate.test(objectProperty)) {

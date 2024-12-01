@@ -22,9 +22,10 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.generator.ObjectProperty;
+import com.navercorp.fixturemonkey.api.tree.TraverseNodePredicate.StartTraverseNodePredicate;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
-public final class StartNodePredicate implements NextNodePredicate {
+public final class StartNodePredicate extends StartTraverseNodePredicate implements NextNodePredicate {
 	public static final StartNodePredicate INSTANCE = new StartNodePredicate();
 
 	/**

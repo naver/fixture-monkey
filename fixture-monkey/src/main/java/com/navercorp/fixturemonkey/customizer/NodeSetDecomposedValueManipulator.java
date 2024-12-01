@@ -21,6 +21,7 @@ package com.navercorp.fixturemonkey.customizer;
 import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.ALWAYS_NULL_INJECT;
 import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.NOT_NULL_INJECT;
 import static com.navercorp.fixturemonkey.api.type.Types.isAssignable;
+import static com.navercorp.fixturemonkey.api.type.Types.nullSafe;
 
 import java.util.List;
 import java.util.function.Function;
@@ -37,7 +38,9 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.TypeDefinition;
+import com.navercorp.fixturemonkey.api.tree.TreeNodeManipulator;
 import com.navercorp.fixturemonkey.api.type.Types;
+import com.navercorp.fixturemonkey.tree.GenerateFixtureContext;
 import com.navercorp.fixturemonkey.tree.IdentityNodeResolver;
 import com.navercorp.fixturemonkey.tree.ObjectNode;
 
@@ -86,8 +89,12 @@ public final class NodeSetDecomposedValueManipulator<T> implements NodeManipulat
 
 	private void setValue(ObjectNode objectNode, @Nullable Object value) {
 		objectNode.setNullInject(NOT_NULL_INJECT);
+		GenerateFixtureContext generateFixtureContext = objectNode.getObjectNodeContext();
 		if (value == null) {
-			objectNode.addManipulator(node -> node.setArbitrary(CombinableArbitrary.from((Object)null)));
+			generateFixtureContext.addManipulator(
+				node -> node.getObjectNodeContext()
+					.setArbitrary(CombinableArbitrary.from((Object)null))
+			);
 			objectNode.setNullInject(ALWAYS_NULL_INJECT);
 			return;
 		}
@@ -95,7 +102,7 @@ public final class NodeSetDecomposedValueManipulator<T> implements NodeManipulat
 		boolean container = objectNode.getArbitraryProperty().isContainer();
 		if (container) {
 			if (Types.getActualType(objectNode.getResolvedProperty().getType()) == Function.class) {
-				objectNode.setArbitrary(CombinableArbitrary.from(value));
+				generateFixtureContext.setArbitrary(CombinableArbitrary.from(value));
 				return;
 			}
 
@@ -103,14 +110,14 @@ public final class NodeSetDecomposedValueManipulator<T> implements NodeManipulat
 			Object containerValue = decomposableJavaContainer.getJavaContainer();
 			int decomposedContainerSize = decomposableJavaContainer.getSize();
 
-			ContainerInfoManipulator appliedContainerInfoManipulator = objectNode.getAppliedContainerInfoManipulator();
+			TreeNodeManipulator appliedContainerInfoManipulator = objectNode.getAppliedTreeNodeManipulator();
 			boolean forced = !(objectNode.getOriginalProperty() instanceof MapEntryElementProperty)
 				&& (appliedContainerInfoManipulator == null
 				|| sequence > appliedContainerInfoManipulator.getManipulatingSequence());
 			if (forced) {
 				ArbitraryContainerInfo containerInfo =
 					new ArbitraryContainerInfo(decomposedContainerSize, decomposedContainerSize);
-				objectNode.addContainerManipulator(
+				objectNode.addTreeNodeManipulator(
 					new ContainerInfoManipulator(
 						IdentityNodeResolver.INSTANCE.toNextNodePredicate(),
 						containerInfo,
@@ -120,7 +127,8 @@ public final class NodeSetDecomposedValueManipulator<T> implements NodeManipulat
 				objectNode.forceExpand();
 			}
 
-			List<ObjectNode> children = objectNode.resolveChildren();
+			objectNode.expand();
+			List<ObjectNode> children = nullSafe(objectNode.getChildren()).asList();
 
 			if (objectNode.getArbitraryProperty()
 				.getObjectProperty()
@@ -138,11 +146,13 @@ public final class NodeSetDecomposedValueManipulator<T> implements NodeManipulat
 			return;
 		}
 
-		List<ObjectNode> children = objectNode.resolveChildren();
+		objectNode.expand();
+		List<ObjectNode> children = nullSafe(objectNode.getChildren()).asList();
 		if (children.isEmpty() || Types.getActualType(objectNode.getResolvedProperty().getType()).isInterface()) {
 			CombinableArbitrary<?> combinableArbitrary = CombinableArbitrary.from(value);
-			objectNode.addManipulator(node -> node.setArbitrary(combinableArbitrary));
-			objectNode.setArbitrary(combinableArbitrary);
+			generateFixtureContext.addManipulator(
+				node -> node.getObjectNodeContext().setArbitrary(combinableArbitrary));
+			generateFixtureContext.setArbitrary(combinableArbitrary);
 			return;
 		}
 
@@ -160,12 +170,12 @@ public final class NodeSetDecomposedValueManipulator<T> implements NodeManipulat
 					objectNode.setResolvedTypeDefinition(typeDefinition);
 				}
 
-				objectNode.forceExpand(typeDefinition);
-				for (ObjectNode child : objectNode.getChildren()) {
-					if (!typeDefinition.equals(child.getParent().getResolvedTypeDefinition())) {
+				objectNode.forceExpand();
+				for (ObjectNode child : nullSafe(objectNode.getChildren()).asList()) {
+					if (!typeDefinition.getResolvedProperty().equals(child.getResolvedParentProperty())) {
 						continue;
 					}
-					Property childProperty = child.getOriginalProperty();
+					Property childProperty = child.getMetadata().getOriginalProperty();
 					setValue(child, childProperty.getValue(value));
 				}
 			}
