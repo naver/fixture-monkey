@@ -15,7 +15,7 @@ Fixture Monkey는 Fixture Monkey Jakarta Validation 플러그인을 사용하여
 ### Dependencies
 #### Gradle
 ```
-testImplementation("com.navercorp.fixturemonkey:jakarta-validation:1.0.0")
+testImplementation("com.navercorp.fixturemonkey:fixture-monkey-jakarta-validation:{{< fixture-monkey-version >}}")
 ```
 #### Maven
 ```
