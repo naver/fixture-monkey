@@ -23,6 +23,7 @@ import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerat
 import static com.navercorp.fixturemonkey.api.type.Types.isAssignable;
 import static com.navercorp.fixturemonkey.api.type.Types.nullSafe;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 
@@ -41,8 +42,8 @@ import com.navercorp.fixturemonkey.api.property.TypeDefinition;
 import com.navercorp.fixturemonkey.api.tree.TreeNodeManipulator;
 import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.tree.GenerateFixtureContext;
-import com.navercorp.fixturemonkey.tree.IdentityNodeResolver;
 import com.navercorp.fixturemonkey.tree.ObjectNode;
+import com.navercorp.fixturemonkey.tree.StartNodePredicate;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class NodeSetDecomposedValueManipulator<T> implements NodeManipulator {
@@ -119,7 +120,7 @@ public final class NodeSetDecomposedValueManipulator<T> implements NodeManipulat
 					new ArbitraryContainerInfo(decomposedContainerSize, decomposedContainerSize);
 				objectNode.addTreeNodeManipulator(
 					new ContainerInfoManipulator(
-						IdentityNodeResolver.INSTANCE.toNextNodePredicate(),
+						Collections.singletonList(StartNodePredicate.INSTANCE),
 						containerInfo,
 						sequence
 					)

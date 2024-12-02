@@ -24,7 +24,6 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -42,9 +41,9 @@ public final class CompositeNodeResolver implements NodeResolver {
 	}
 
 	@Override
-	public List<ObjectNode> resolve(ObjectNode objectNode) {
+	public List<ObjectNode> resolve(ObjectNode nextNode) {
 		LinkedList<ObjectNode> nextNodes = new LinkedList<>();
-		nextNodes.add(objectNode);
+		nextNodes.add(nextNode);
 		for (NodeResolver nodeResolver : nodeResolvers) {
 			List<ObjectNode> resolvedNodes = new LinkedList<>();
 			while (!nextNodes.isEmpty()) {
@@ -83,9 +82,7 @@ public final class CompositeNodeResolver implements NodeResolver {
 			NodeResolver resolver = resolvers.get(i);
 			if (resolver instanceof CompositeNodeResolver) {
 				CompositeNodeResolver compositeNodeResolver = (CompositeNodeResolver)resolver;
-				List<NodeResolver> componentNodeResolvers = compositeNodeResolver.flatten().stream()
-					.filter(it -> !(it instanceof IdentityNodeResolver))
-					.collect(Collectors.toList());
+				List<NodeResolver> componentNodeResolvers = compositeNodeResolver.flatten();
 
 				result.add(new CompositeNodeResolver(componentNodeResolvers));
 			} else {
@@ -110,13 +107,5 @@ public final class CompositeNodeResolver implements NodeResolver {
 	@Override
 	public int hashCode() {
 		return Objects.hash(nodeResolvers);
-	}
-
-	@Override
-	public List<NextNodePredicate> toNextNodePredicate() {
-		return flatten().stream()
-			.flatMap(it -> it.toNextNodePredicate().stream())
-			.filter(Objects::nonNull)
-			.collect(Collectors.toList());
 	}
 }

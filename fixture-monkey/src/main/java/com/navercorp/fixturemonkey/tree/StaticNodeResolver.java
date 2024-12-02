@@ -16,19 +16,32 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.expression;
+package com.navercorp.fixturemonkey.tree;
 
 import java.util.List;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.tree.NextNodePredicate;
-import com.navercorp.fixturemonkey.tree.NodeResolver;
+/**
+ * A {@link NodeResolver} that resolves the provided nodes statically.
+ */
+@API(since = "1.1.4", status = Status.EXPERIMENTAL)
+public final class StaticNodeResolver implements NodeResolver {
+	private final List<ObjectNode> nodes;
 
-@API(since = "0.4.0", status = Status.MAINTAINED)
-public interface MonkeyExpression {
-	NodeResolver toNodeResolver();
+	public StaticNodeResolver(List<ObjectNode> nodes) {
+		this.nodes = nodes;
+	}
 
-	List<NextNodePredicate> toNextNodePredicate();
+	/**
+	 * Resolves the next nodes statically. It always returns the provided nodes.
+	 *
+	 * @param nextNode it may be the root node or the parent node resolved by the previous {@link NodeResolver}
+	 * @return the provided nodes statically
+	 */
+	@Override
+	public List<ObjectNode> resolve(ObjectNode nextNode) {
+		return nodes;
+	}
 }

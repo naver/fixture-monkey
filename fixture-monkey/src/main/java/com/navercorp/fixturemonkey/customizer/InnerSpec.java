@@ -25,6 +25,7 @@ import static com.navercorp.fixturemonkey.Constants.NO_OR_ALL_INDEX_INTEGER_VALU
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -42,16 +43,14 @@ import com.navercorp.fixturemonkey.customizer.InnerSpecState.ContainerInfoHolder
 import com.navercorp.fixturemonkey.customizer.InnerSpecState.FilterHolder;
 import com.navercorp.fixturemonkey.customizer.InnerSpecState.ManipulatorHolderSet;
 import com.navercorp.fixturemonkey.customizer.InnerSpecState.NodeResolverObjectHolder;
-import com.navercorp.fixturemonkey.tree.CompositeNodeResolver;
 import com.navercorp.fixturemonkey.tree.ContainerElementPredicate;
-import com.navercorp.fixturemonkey.tree.DefaultNodeResolver;
-import com.navercorp.fixturemonkey.tree.IdentityNodeResolver;
+import com.navercorp.fixturemonkey.tree.NextNodePredicate;
 import com.navercorp.fixturemonkey.tree.NodeAllElementPredicate;
 import com.navercorp.fixturemonkey.tree.NodeElementPredicate;
 import com.navercorp.fixturemonkey.tree.NodeKeyPredicate;
-import com.navercorp.fixturemonkey.tree.NodeResolver;
 import com.navercorp.fixturemonkey.tree.NodeValuePredicate;
 import com.navercorp.fixturemonkey.tree.PropertyNameNodePredicate;
+import com.navercorp.fixturemonkey.tree.StartNodePredicate;
 
 /**
  * A type-independent specification for configuring nested properties.
@@ -69,7 +68,7 @@ public final class InnerSpec {
 	private static final int FIRST_MANIPULATOR_SEQUENCE = 0;
 
 	private final int sequence;
-	private final NodeResolver treePathResolver;
+	private final List<NextNodePredicate> nextNodePredicates;
 	private final InnerSpecState state;
 	private final List<InnerSpec> innerSpecs;
 
@@ -83,12 +82,22 @@ public final class InnerSpec {
 	 * </p>
 	 */
 	public InnerSpec() {
-		this(FIRST_MANIPULATOR_SEQUENCE, IdentityNodeResolver.INSTANCE, new InnerSpecState(), new ArrayList<>());
+		this(
+			FIRST_MANIPULATOR_SEQUENCE,
+			Collections.singletonList(StartNodePredicate.INSTANCE),
+			new InnerSpecState(),
+			new ArrayList<>()
+		);
 	}
 
-	private InnerSpec(int sequence, NodeResolver treePathResolver, InnerSpecState state, List<InnerSpec> innerSpecs) {
+	private InnerSpec(
+		int sequence,
+		List<NextNodePredicate> nextNodePredicates,
+		InnerSpecState state,
+		List<InnerSpec> innerSpecs
+	) {
 		this.sequence = sequence;
-		this.treePathResolver = treePathResolver;
+		this.nextNodePredicates = new ArrayList<>(nextNodePredicates);
 		this.state = state;
 		this.innerSpecs = innerSpecs;
 	}
@@ -101,7 +110,7 @@ public final class InnerSpec {
 	 *                  to be applied to the currently referred property.
 	 */
 	public InnerSpec inner(InnerSpec innerSpec) {
-		InnerSpec appendInnerSpec = newAppendNodeResolver(innerSpec, this.treePathResolver);
+		InnerSpec appendInnerSpec = newAppendNextNodePredicate(innerSpec, this.nextNodePredicates);
 		this.innerSpecs.add(appendInnerSpec);
 		return this;
 	}
@@ -119,7 +128,7 @@ public final class InnerSpec {
 		}
 
 		this.state.setContainerInfoHolder(
-			new ContainerInfoHolder(this.sequence + manipulateSize, this.treePathResolver, minSize, maxSize)
+			new ContainerInfoHolder(this.sequence + manipulateSize, this.nextNodePredicates, minSize, maxSize)
 		);
 		manipulateSize++;
 		return this;
@@ -342,7 +351,7 @@ public final class InnerSpec {
 	 * Sets an entry in the currently referred map property with a key and value
 	 * obtained lazily from the given suppliers.
 	 *
-	 * @param keySupplier a supplier function that provides the value of the map key to set.
+	 * @param keySupplier   a supplier function that provides the value of the map key to set.
 	 * @param valueSupplier a function that provides the value of the map value to set.
 	 */
 	public InnerSpec entryLazy(Supplier<?> keySupplier, Supplier<?> valueSupplier) {
@@ -462,7 +471,7 @@ public final class InnerSpec {
 	/**
 	 * Sets every element within the currently referred container property.
 	 *
-	 * @param value    value of the elements to set
+	 * @param value value of the elements to set
 	 */
 	public InnerSpec allListElement(@Nullable Object value) {
 		return listElement(NO_OR_ALL_INDEX_INTEGER_VALUE, value);
@@ -506,11 +515,11 @@ public final class InnerSpec {
 	/**
 	 * Sets the post-condition for the currently referred property.
 	 *
-	 * @param type         type of the property to set
-	 * @param filter       a predicate function that determines the post-condition of the property
+	 * @param type   type of the property to set
+	 * @param filter a predicate function that determines the post-condition of the property
 	 */
 	public <T> InnerSpec postCondition(Class<T> type, Predicate<T> filter) {
-		this.state.setFilterHolder(new FilterHolder(manipulateSize++, this.treePathResolver, type, filter));
+		this.state.setFilterHolder(new FilterHolder(manipulateSize++, this.nextNodePredicates, type, filter));
 		return this;
 	}
 
@@ -519,16 +528,16 @@ public final class InnerSpec {
 		return monkeyManipulatorFactory.newManipulatorSet(manipulatorHolderSet);
 	}
 
-	private InnerSpec newAppendNodeResolver(InnerSpec innerSpec, NodeResolver nodeResolver) {
+	private InnerSpec newAppendNextNodePredicate(InnerSpec innerSpec, List<NextNodePredicate> nextNodePredicates) {
 		InnerSpec newSpec = new InnerSpec(
 			innerSpec.sequence,
-			innerSpec.treePathResolver,
-			innerSpec.state.withPrefix(nodeResolver),
+			innerSpec.nextNodePredicates,
+			innerSpec.state.withPrefix(nextNodePredicates),
 			new ArrayList<>()
 		);
 
 		for (InnerSpec spec : innerSpec.innerSpecs) {
-			newSpec.innerSpecs.add(newAppendNodeResolver(spec, nodeResolver));
+			newSpec.innerSpecs.add(newAppendNextNodePredicate(spec, nextNodePredicates));
 		}
 		return newSpec;
 	}
@@ -540,13 +549,11 @@ public final class InnerSpec {
 			);
 		}
 
-		NodeResolver nextKeyNodeResolver = new CompositeNodeResolver(
-			this.treePathResolver,
-			new DefaultNodeResolver(new NodeElementPredicate(entrySize - 1)),
-			new DefaultNodeResolver(new NodeKeyPredicate())
-		);
+		List<NextNodePredicate> nextKeyNodeNodePredicate = new ArrayList<>(this.nextNodePredicates);
+		nextKeyNodeNodePredicate.add(new NodeElementPredicate(entrySize - 1));
+		nextKeyNodeNodePredicate.add(new NodeKeyPredicate());
 
-		setValue(nextKeyNodeResolver, mapKey);
+		setValue(nextKeyNodeNodePredicate, mapKey);
 	}
 
 	private void setMapAllKey(Object mapKey) {
@@ -556,33 +563,25 @@ public final class InnerSpec {
 			);
 		}
 
-		NodeResolver nextKeyNodeResolver = new CompositeNodeResolver(
-			this.treePathResolver,
-			new DefaultNodeResolver(new NodeAllElementPredicate()),
-			new DefaultNodeResolver(new NodeKeyPredicate())
-		);
+		List<NextNodePredicate> nextKeyNodePredicate = new ArrayList<>(this.nextNodePredicates);
+		nextKeyNodePredicate.add(new NodeAllElementPredicate());
+		nextKeyNodePredicate.add(new NodeKeyPredicate());
 
-		setValue(nextKeyNodeResolver, mapKey);
+		setValue(nextKeyNodePredicate, mapKey);
 	}
 
 	private void setMapValue(@Nullable Object mapValue) {
-		NodeResolver nextValueNodeResolver = new CompositeNodeResolver(
-			this.treePathResolver,
-			new DefaultNodeResolver(new NodeElementPredicate(entrySize - 1)),
-			new DefaultNodeResolver(new NodeValuePredicate())
-		);
-
-		setValue(nextValueNodeResolver, mapValue);
+		List<NextNodePredicate> nextValueNodePredicate = new ArrayList<>(this.nextNodePredicates);
+		nextValueNodePredicate.add(new NodeElementPredicate(entrySize - 1));
+		nextValueNodePredicate.add(new NodeValuePredicate());
+		setValue(nextValueNodePredicate, mapValue);
 	}
 
 	private void setMapAllValue(@Nullable Object mapValue) {
-		NodeResolver nextValueNodeResolver = new CompositeNodeResolver(
-			this.treePathResolver,
-			new DefaultNodeResolver(new NodeAllElementPredicate()),
-			new DefaultNodeResolver(new NodeValuePredicate())
-		);
-
-		setValue(nextValueNodeResolver, mapValue);
+		List<NextNodePredicate> nextValueNodePredicate = new ArrayList<>(this.nextNodePredicates);
+		nextValueNodePredicate.add(new NodeAllElementPredicate());
+		nextValueNodePredicate.add(new NodeValuePredicate());
+		setValue(nextValueNodePredicate, mapValue);
 	}
 
 	private void setMapEntry(Object key, @Nullable Object value) {
@@ -591,31 +590,25 @@ public final class InnerSpec {
 	}
 
 	private void setPropertyValue(String propertyName, @Nullable Object value) {
-		CompositeNodeResolver nextNodeResolver = new CompositeNodeResolver(
-			this.treePathResolver,
-			new DefaultNodeResolver(new PropertyNameNodePredicate(propertyName))
-		);
-
-		setValue(nextNodeResolver, value);
+		List<NextNodePredicate> nextNodePredicates = new ArrayList<>(this.nextNodePredicates);
+		nextNodePredicates.add(new PropertyNameNodePredicate(propertyName));
+		setValue(nextNodePredicates, value);
 	}
 
 	private void setListElement(int index, @Nullable Object value) {
-		CompositeNodeResolver nextNodeResolver = new CompositeNodeResolver(
-			this.treePathResolver,
-			new DefaultNodeResolver(new ContainerElementPredicate(index))
-		);
-
-		setValue(nextNodeResolver, value);
+		List<NextNodePredicate> nextNodePredicates = new ArrayList<>(this.nextNodePredicates);
+		nextNodePredicates.add(new ContainerElementPredicate(index));
+		setValue(nextNodePredicates, value);
 	}
 
 	@SuppressWarnings("unchecked")
-	private void setValue(NodeResolver nextNodeResolver, @Nullable Object nextValue) {
+	private void setValue(List<NextNodePredicate> nextNodePredicates, @Nullable Object nextValue) {
 		int nextSequence = this.sequence + manipulateSize;
 
 		if (nextValue instanceof InnerSpec) {
 			InnerSpec prefix = new InnerSpec(
 				nextSequence,
-				nextNodeResolver,
+				nextNodePredicates,
 				new InnerSpecState(),
 				new ArrayList<>()
 			);
@@ -628,7 +621,7 @@ public final class InnerSpec {
 			Consumer<InnerSpec> consumer = (Consumer<InnerSpec>)nextValue;
 			InnerSpec nextInnerSpec = new InnerSpec(
 				nextSequence,
-				nextNodeResolver,
+				nextNodePredicates,
 				new InnerSpecState(),
 				new ArrayList<>()
 			);
@@ -642,14 +635,14 @@ public final class InnerSpec {
 		nextInnerSpecState.setObjectHolder(
 			new NodeResolverObjectHolder(
 				nextSequence,
-				nextNodeResolver,
+				nextNodePredicates,
 				nextValue
 			)
 		);
 
 		InnerSpec nextInnerSpec = new InnerSpec(
 			nextSequence,
-			nextNodeResolver,
+			nextNodePredicates,
 			nextInnerSpecState,
 			new ArrayList<>()
 		);

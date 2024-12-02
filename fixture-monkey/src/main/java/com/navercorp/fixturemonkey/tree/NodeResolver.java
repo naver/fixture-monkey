@@ -25,7 +25,11 @@ import org.apiguardian.api.API.Status;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public interface NodeResolver {
-	List<ObjectNode> resolve(ObjectNode objectNode);
-
-	List<NextNodePredicate> toNextNodePredicate();
+	/**
+	 * Resolves the next nodes. The nextNode can be omitted if it cannot be resolved from traversal.
+	 *
+	 * @param nextNode it may be the root node or the parent node resolved by the previous {@link NodeResolver}
+	 * @return the next nodes
+	 */
+	List<ObjectNode> resolve(ObjectNode nextNode);
 }

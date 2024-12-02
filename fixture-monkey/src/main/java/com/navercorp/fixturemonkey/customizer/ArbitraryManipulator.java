@@ -21,7 +21,6 @@ package com.navercorp.fixturemonkey.customizer;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.tree.CompositeNodeResolver;
 import com.navercorp.fixturemonkey.tree.NodeResolver;
 import com.navercorp.fixturemonkey.tree.ObjectTree;
 
@@ -33,13 +32,6 @@ public final class ArbitraryManipulator {
 	ArbitraryManipulator(NodeResolver nodeResolver, NodeManipulator nodeManipulator) {
 		this.nodeResolver = nodeResolver;
 		this.nodeManipulator = nodeManipulator;
-	}
-
-	ArbitraryManipulator withPrependNodeResolver(NodeResolver nodeResolver) {
-		return new ArbitraryManipulator(
-			new CompositeNodeResolver(nodeResolver, this.nodeResolver),
-			this.nodeManipulator
-		);
 	}
 
 	public NodeResolver getNodeResolver() {

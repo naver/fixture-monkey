@@ -34,10 +34,11 @@ import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.tree.CompositeNodeResolver;
 import com.navercorp.fixturemonkey.tree.ContainerElementPredicate;
-import com.navercorp.fixturemonkey.tree.DefaultNodeResolver;
-import com.navercorp.fixturemonkey.tree.IdentityNodeResolver;
+import com.navercorp.fixturemonkey.tree.NextNodePredicate;
+import com.navercorp.fixturemonkey.tree.NodePredicateResolver;
 import com.navercorp.fixturemonkey.tree.NodeResolver;
 import com.navercorp.fixturemonkey.tree.PropertyNameNodePredicate;
+import com.navercorp.fixturemonkey.tree.StartNodePredicate;
 
 public final class ArbitraryExpression implements MonkeyExpression, Comparable<ArbitraryExpression> {
 	private final List<Exp> expList;
@@ -142,6 +143,16 @@ public final class ArbitraryExpression implements MonkeyExpression, Comparable<A
 		return nodeResolver;
 	}
 
+	@Override
+	public List<NextNodePredicate> toNextNodePredicate() {
+		List<NextNodePredicate> nextNodePredicates = new ArrayList<>();
+		nextNodePredicates.add(StartNodePredicate.INSTANCE);
+		for (Exp exp : expList) {
+			nextNodePredicates.addAll(exp.toNextNodePredicates());
+		}
+		return nextNodePredicates;
+	}
+
 	private static final class ExpIndex implements Comparable<ExpIndex> {
 		public static final ExpIndex ALL_INDEX_EXP_INDEX = new ExpIndex(NO_OR_ALL_INDEX_INTEGER_VALUE);
 
@@ -225,22 +236,34 @@ public final class ArbitraryExpression implements MonkeyExpression, Comparable<A
 		}
 
 		public NodeResolver toNodeResolver() {
-			NodeResolver nodeResolver = IdentityNodeResolver.INSTANCE;
+			NodeResolver nodeResolver = new NodePredicateResolver(StartNodePredicate.INSTANCE);
 
 			if (!HEAD_NAME.equals(name)) {
 				nodeResolver = new CompositeNodeResolver(
 					nodeResolver,
-					new DefaultNodeResolver(new PropertyNameNodePredicate(name))
+					new NodePredicateResolver(new PropertyNameNodePredicate(name))
 				);
 			}
 
 			for (ExpIndex index : indices) {
 				nodeResolver = new CompositeNodeResolver(
 					nodeResolver,
-					new DefaultNodeResolver(new ContainerElementPredicate(index.getIndex()))
+					new NodePredicateResolver(new ContainerElementPredicate(index.getIndex()))
 				);
 			}
 			return nodeResolver;
+		}
+
+		public List<NextNodePredicate> toNextNodePredicates() {
+			List<NextNodePredicate> nextNodePredicates = new ArrayList<>();
+			if (!HEAD_NAME.equals(name)) {
+				nextNodePredicates.add(new PropertyNameNodePredicate(name));
+			}
+
+			for (ExpIndex index : indices) {
+				nextNodePredicates.add(new ContainerElementPredicate(index.getIndex()));
+			}
+			return nextNodePredicates;
 		}
 
 		public String getName() {
