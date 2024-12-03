@@ -9,6 +9,8 @@ sectionStart
 ## v.1.1.4
 Fix not registering size API if decomposing.
 
+Add enrich the failed test log with seed.
+
 sectionEnd
 
 sectionStart

@@ -63,8 +63,13 @@ public final class FixtureMonkeySeedExtension implements BeforeTestExecutionCall
 	 * This method logs the seed value when a test method execution fails.
 	 **/
 	private void logSeedIfTestFailed(ExtensionContext context) {
+		Class<?> testClass = context.getRequiredTestClass();
 		Method testMethod = context.getRequiredTestMethod();
 		LOGGER.error(
-			String.format("Test Method [%s] failed with seed: %d", testMethod.getName(), Randoms.currentSeed()));
+			"Test Method [{}#{}] failed with seed: {}",
+			testClass.getSimpleName(),
+			testMethod.getName(),
+			Randoms.currentSeed()
+		);
 	}
 }
