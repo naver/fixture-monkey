@@ -350,7 +350,15 @@ public final class FixtureMonkeyOptions {
 		return builderContextInitializers;
 	}
 
+	public List<MatcherOperator<CandidateConcretePropertyResolver>> getCandidateConcretePropertyResolvers() {
+		return candidateConcretePropertyResolvers;
+	}
+
+	/**
+	 * Use {@link #getCandidateConcretePropertyResolvers()} instead.
+	 */
 	@Nullable
+	@Deprecated
 	public CandidateConcretePropertyResolver getCandidateConcretePropertyResolver(Property property) {
 		List<CandidateConcretePropertyResolver> candidateConcretePropertyResolverList =
 			this.candidateConcretePropertyResolvers.stream()
