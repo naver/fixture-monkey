@@ -37,13 +37,6 @@ public final class PriorityMatcherOperator {
 		this.priority = priority;
 	}
 
-	public PriorityMatcherOperator(
-		final MatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>> matcherOperator
-	) {
-		this.priority = Integer.MAX_VALUE;
-		this.matcherOperator = matcherOperator;
-	}
-
 	public int getPriority() {
 		return priority;
 	}
