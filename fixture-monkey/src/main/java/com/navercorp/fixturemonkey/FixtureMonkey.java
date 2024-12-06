@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -60,26 +61,25 @@ public final class FixtureMonkey {
 	private final MonkeyContext monkeyContext;
 	private final List<MatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuilders = new ArrayList<>();
 	private final MonkeyManipulatorFactory monkeyManipulatorFactory;
-	private final Map<Integer, List<MatcherOperator<? extends ArbitraryBuilder<?>>>>
-		priorityGroupedMatchers = new HashMap<>();
 
 	public FixtureMonkey(
 		FixtureMonkeyOptions fixtureMonkeyOptions,
 		ArbitraryTraverser traverser,
 		ManipulatorOptimizer manipulatorOptimizer,
 		MonkeyContext monkeyContext,
-		List<PriorityMatcherOperator> registeredArbitraryBuilders,
+		List<PriorityMatcherOperator> registeredArbitraryBuildersWithPriority,
 		MonkeyManipulatorFactory monkeyManipulatorFactory,
-		Map<String, PriorityMatcherOperator> mapsByRegisteredName
+		Map<String, PriorityMatcherOperator> registeredPriorityMatchersByName
 	) {
 		this.fixtureMonkeyOptions = fixtureMonkeyOptions;
 		this.traverser = traverser;
 		this.manipulatorOptimizer = manipulatorOptimizer;
 		this.monkeyContext = monkeyContext;
 		this.monkeyManipulatorFactory = monkeyManipulatorFactory;
-		groupMatchersByPriorityFromList(registeredArbitraryBuilders);
-		groupMatchersByPriorityFromNamedMap(mapsByRegisteredName);
-		shuffleAndRegisterByPriority(priorityGroupedMatchers);
+		Map<Integer, List<MatcherOperator<? extends ArbitraryBuilder<?>>>> registeredGroupMatchersListByPriority =
+			groupMatchersByPriority(registeredArbitraryBuildersWithPriority);
+		groupMatchersByPriorityFromNamedMap(registeredPriorityMatchersByName, registeredGroupMatchersListByPriority);
+		shuffleAndRegisterByPriority(registeredGroupMatchersListByPriority);
 	}
 
 	public static FixtureMonkeyBuilder builder() {
@@ -196,29 +196,29 @@ public final class FixtureMonkey {
 		return this.giveMeBuilder(typeReference).build();
 	}
 
-	private void groupMatchersByPriorityFromList(
-		List<PriorityMatcherOperator> registeredArbitraryBuilders
+	private Map<Integer, List<MatcherOperator<? extends ArbitraryBuilder<?>>>> groupMatchersByPriority(
+		List<PriorityMatcherOperator> registeredArbitraryBuildersWithPriority
 	) {
-		priorityGroupedMatchers.putAll(
-			registeredArbitraryBuilders
-				.stream()
-				.collect(Collectors.groupingBy(
-					PriorityMatcherOperator::getPriority,
-					Collectors.mapping(
-						it -> new MatcherOperator<>(
-							it.getMatcherOperator(), it.getMatcherOperator().getOperator().apply(this)
-						),
-						Collectors.toList()
-					)
-				))
+		return new HashMap<>(registeredArbitraryBuildersWithPriority
+			.stream()
+			.collect(Collectors.groupingBy(
+				PriorityMatcherOperator::getPriority,
+				Collectors.mapping(
+					it -> new MatcherOperator<>(
+						it.getMatcherOperator(), it.getMatcherOperator().getOperator().apply(this)
+					),
+					Collectors.toList()
+				)
+			))
 		);
 	}
 
 	private void groupMatchersByPriorityFromNamedMap(
-		Map<String, PriorityMatcherOperator> mapsByRegisteredName
+		Map<String, PriorityMatcherOperator> registeredPriorityMatchersByName,
+		Map<Integer, List<MatcherOperator<? extends ArbitraryBuilder<?>>>> registeredGroupMatchersListByPriority
 	) {
-		priorityGroupedMatchers.putAll(
-			mapsByRegisteredName.entrySet().stream()
+		registeredGroupMatchersListByPriority.putAll(
+			registeredPriorityMatchersByName.entrySet().stream()
 				.collect(Collectors.groupingBy(
 					entry -> entry.getValue().getPriority(),
 					Collectors.mapping(
@@ -233,10 +233,10 @@ public final class FixtureMonkey {
 	}
 
 	private void shuffleAndRegisterByPriority(
-		Map<Integer, List<MatcherOperator<? extends ArbitraryBuilder<?>>>> groupedByPriority
+		Map<Integer, List<MatcherOperator<? extends ArbitraryBuilder<?>>>> registeredGroupMatchersListByPriority
 	) {
-		TreeMap<Integer, List<MatcherOperator<? extends ArbitraryBuilder<?>>>> sortedGroupedByPriority =
-			new TreeMap<>(groupedByPriority);
+		SortedMap<Integer, List<MatcherOperator<? extends ArbitraryBuilder<?>>>> sortedGroupedByPriority =
+			new TreeMap<>(registeredGroupMatchersListByPriority);
 
 		sortedGroupedByPriority.forEach((priority, matcherOperators) -> {
 			Collections.shuffle(matcherOperators, Randoms.current());
