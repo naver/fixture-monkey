@@ -38,6 +38,7 @@ import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.context.MonkeyContext;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
+import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.tree.TraverseContext;
 import com.navercorp.fixturemonkey.api.tree.TreeNodeManipulator;
@@ -48,7 +49,7 @@ import com.navercorp.fixturemonkey.tree.ObjectTree;
 
 /**
  * {@link FixtureMonkey} → {@link ArbitraryBuilder} → {@link ObjectTree} → {@link CombinableArbitrary}
- * 						1:N							1:N					1:1
+ * 1:N							1:N					1:1
  * <p>
  * It is a context within {@link ArbitraryBuilder}. It represents a status of the {@link ArbitraryBuilder}.
  * The {@link ArbitraryBuilder} should be the same if the {@link ArbitraryBuilderContext} is the same.
@@ -68,7 +69,6 @@ public final class ArbitraryBuilderContext {
 
 	@Nullable
 	private Boolean customizedValidOnly;
-
 
 	@Nullable
 	private FixedState fixedState = null;
@@ -224,13 +224,26 @@ public final class ArbitraryBuilderContext {
 				))
 				.collect(Collectors.toList());
 
+		FixtureMonkeyOptions fixtureMonkeyOptions = this.monkeyContext.getFixtureMonkeyOptions();
 		return new TraverseContext(
 			new ArrayList<>(),
 			this.getContainerInfoManipulators(),
 			registeredContainerInfoManipulators,
 			this.getPropertyConfigurers(),
 			this.isValidOnly(),
-			this.monkeyContext
+			fixtureMonkeyOptions.getPropertyGenerators(),
+			fixtureMonkeyOptions.getDefaultArbitraryGenerator(),
+			fixtureMonkeyOptions.getDefaultPropertyGenerator(),
+			fixtureMonkeyOptions.getObjectPropertyGenerators(),
+			fixtureMonkeyOptions.getDefaultObjectPropertyGenerator(),
+			fixtureMonkeyOptions.getContainerPropertyGenerators(),
+			fixtureMonkeyOptions.getPropertyNameResolvers(),
+			fixtureMonkeyOptions.getDefaultPropertyNameResolver(),
+			fixtureMonkeyOptions.getCandidateConcretePropertyResolvers(),
+			fixtureMonkeyOptions.getArbitraryContainerInfoGenerators(),
+			fixtureMonkeyOptions.getDefaultArbitraryContainerInfoGenerator(),
+			fixtureMonkeyOptions.getNullInjectGenerators(),
+			fixtureMonkeyOptions.getDefaultNullInjectGenerator()
 		);
 	}
 

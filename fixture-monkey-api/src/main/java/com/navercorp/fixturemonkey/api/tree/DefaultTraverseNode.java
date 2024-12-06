@@ -20,7 +20,6 @@ package com.navercorp.fixturemonkey.api.tree;
 
 import static java.util.stream.Collectors.toMap;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -33,9 +32,7 @@ import javax.annotation.Nullable;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.api.container.ConcurrentLruCache;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
-import com.navercorp.fixturemonkey.api.generator.ArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.generator.ContainerPropertyGenerator;
@@ -43,10 +40,7 @@ import com.navercorp.fixturemonkey.api.generator.ObjectProperty;
 import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGeneratorContext;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
-import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
-import com.navercorp.fixturemonkey.api.property.CandidateConcretePropertyResolver;
 import com.navercorp.fixturemonkey.api.property.CompositeTypeDefinition;
-import com.navercorp.fixturemonkey.api.property.DefaultCandidateConcretePropertyResolver;
 import com.navercorp.fixturemonkey.api.property.DefaultTypeDefinition;
 import com.navercorp.fixturemonkey.api.property.ElementPropertyGenerator;
 import com.navercorp.fixturemonkey.api.property.LazyPropertyGenerator;
@@ -56,13 +50,9 @@ import com.navercorp.fixturemonkey.api.property.PropertyGenerator;
 import com.navercorp.fixturemonkey.api.property.PropertyPath;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
 import com.navercorp.fixturemonkey.api.property.TypeDefinition;
-import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "1.1.4", status = Status.EXPERIMENTAL)
 public final class DefaultTraverseNode implements TraverseNode, TraverseNodeMetadata {
-	private static final ConcurrentLruCache<Property, List<Property>> CANDIDATE_CONCRETE_PROPERTIES_BY_PROPERTY =
-		new ConcurrentLruCache<>(1024);
-
 	private final RootProperty rootProperty;
 
 	@Nullable
@@ -334,13 +324,10 @@ public final class DefaultTraverseNode implements TraverseNode, TraverseNodeMeta
 		double parentNullInject,
 		TraverseContext context
 	) {
-		FixtureMonkeyOptions fixtureMonkeyOptions = context.getMonkeyContext().getFixtureMonkeyOptions();
-		ContainerPropertyGenerator containerPropertyGenerator =
-			fixtureMonkeyOptions.getContainerPropertyGenerator(property);
+		ContainerPropertyGenerator containerPropertyGenerator = context.getContainerPropertyGenerator(property);
 		boolean container = containerPropertyGenerator != null;
 
-		ObjectPropertyGenerator objectPropertyGenerator =
-			fixtureMonkeyOptions.getObjectPropertyGenerator(property);
+		ObjectPropertyGenerator objectPropertyGenerator = context.getObjectPropertyGenerator(property);
 
 		TreeProperty parentTreeProperty = context.getLastTreeProperty();
 
@@ -354,19 +341,16 @@ public final class DefaultTraverseNode implements TraverseNode, TraverseNodeMeta
 				resolvedParentProperty,
 				parentTreeProperty,
 				propertySequence,
-				fixtureMonkeyOptions
+				context
 			),
 			parentArbitraryProperty,
 			container,
-			fixtureMonkeyOptions.getPropertyNameResolver(property)
+			context.getPropertyNameResolver(property)
 		);
 
 		ObjectProperty objectProperty = objectPropertyGenerator.generate(objectPropertyGeneratorContext);
 
-		List<Property> candidateProperties = resolveCandidateProperties(
-			property,
-			fixtureMonkeyOptions
-		);
+		List<Property> candidateProperties = context.resolveCandidateProperties(property);
 
 		List<ObjectProperty> objectProperties =
 			context.getTreeProperties().stream()
@@ -382,10 +366,7 @@ public final class DefaultTraverseNode implements TraverseNode, TraverseNodeMeta
 		List<TypeDefinition> typeDefinitions = candidateProperties.stream()
 			.map(concreteProperty -> {
 				if (!container) {
-					LazyPropertyGenerator lazyPropertyGenerator =
-						new LazyPropertyGenerator(
-							getPropertyGenerator(context.getPropertyConfigurers(), fixtureMonkeyOptions)
-						);
+					LazyPropertyGenerator lazyPropertyGenerator = context.getResolvedPropertyGenerator();
 
 					return new DefaultTypeDefinition(
 						concreteProperty,
@@ -396,7 +377,7 @@ public final class DefaultTraverseNode implements TraverseNode, TraverseNodeMeta
 				PropertyGenerator containerElementPropertyGenerator = new ElementPropertyGenerator(
 					property,
 					containerPropertyGenerator,
-					fixtureMonkeyOptions.getArbitraryContainerInfoGenerator(property),
+					context.getArbitraryContainerInfoGenerator(property),
 					null
 				);
 
@@ -410,7 +391,7 @@ public final class DefaultTraverseNode implements TraverseNode, TraverseNodeMeta
 			})
 			.collect(Collectors.toList());
 
-		double nullInject = fixtureMonkeyOptions.getNullInjectGenerator(property)
+		double nullInject = context.getNullInjectGenerator(property)
 			.generate(objectPropertyGeneratorContext);
 
 		TreeProperty treeProperty = new TreeProperty(
@@ -441,14 +422,14 @@ public final class DefaultTraverseNode implements TraverseNode, TraverseNodeMeta
 		@Nullable Property resolvedParentProperty,
 		@Nullable TreeProperty parentTreeProperty,
 		@Nullable Integer propertySequence,
-		FixtureMonkeyOptions fixtureMonkeyOptions
+		TraverseContext context
 	) {
 		if (resolvedParentProperty == null || parentTreeProperty == null) {
 			return null;
 		}
 
 		boolean parentContainer =
-			fixtureMonkeyOptions.getContainerPropertyGenerator(resolvedParentProperty) != null;
+			context.getContainerPropertyGenerator(resolvedParentProperty) != null;
 		if (!parentContainer) {
 			return null;
 		}
@@ -511,76 +492,6 @@ public final class DefaultTraverseNode implements TraverseNode, TraverseNodeMeta
 			}
 		}
 		return appliedContainerInfoManipulator;
-	}
-
-	private static PropertyGenerator getPropertyGenerator(
-		Map<Class<?>, List<Property>> propertyConfigurers,
-		FixtureMonkeyOptions fixtureMonkeyOptions
-	) {
-		PropertyGenerator resolvedPropertyGenerator = property -> {
-			Class<?> type = Types.getActualType(property.getType());
-			List<Property> propertyConfigurer = propertyConfigurers.get(type);
-			if (propertyConfigurer != null) {
-				return propertyConfigurer;
-			}
-
-			PropertyGenerator propertyGenerator = fixtureMonkeyOptions.getOptionalPropertyGenerator(property);
-			if (propertyGenerator != null) {
-				return propertyGenerator.generateChildProperties(property);
-			}
-
-			ArbitraryGenerator defaultArbitraryGenerator = fixtureMonkeyOptions.getDefaultArbitraryGenerator();
-
-			PropertyGenerator defaultArbitraryGeneratorPropertyGenerator =
-				defaultArbitraryGenerator.getRequiredPropertyGenerator(property);
-
-			if (defaultArbitraryGeneratorPropertyGenerator != null) {
-				return defaultArbitraryGeneratorPropertyGenerator.generateChildProperties(property);
-			}
-
-			return fixtureMonkeyOptions.getDefaultPropertyGenerator().generateChildProperties(property);
-		};
-
-		return new LazyPropertyGenerator(resolvedPropertyGenerator);
-	}
-
-	private static List<Property> resolveCandidateProperties(
-		Property property,
-		FixtureMonkeyOptions fixtureMonkeyOptions
-	) {
-		CandidateConcretePropertyResolver candidateConcretePropertyResolver =
-			fixtureMonkeyOptions.getCandidateConcretePropertyResolver(property);
-
-		if (candidateConcretePropertyResolver == null) {
-			return DefaultCandidateConcretePropertyResolver.INSTANCE.resolve(property);
-		}
-
-		return CANDIDATE_CONCRETE_PROPERTIES_BY_PROPERTY.computeIfAbsent(
-			property,
-			p -> {
-				List<Property> resolvedCandidateProperties = new ArrayList<>();
-				List<Property> candidateProperties = candidateConcretePropertyResolver.resolve(p);
-				for (Property candidateProperty : candidateProperties) {
-					// compares by type until a specific property implementation is created for the generic type.
-					Type candidateType = candidateProperty.getType();
-
-					if (p.getType().equals(candidateType)) {
-						// prevents infinite recursion
-						resolvedCandidateProperties.addAll(
-							DefaultCandidateConcretePropertyResolver.INSTANCE.resolve(p)
-						);
-						continue;
-					}
-					resolvedCandidateProperties.addAll(
-						resolveCandidateProperties(
-							candidateProperty,
-							fixtureMonkeyOptions
-						)
-					);
-				}
-				return resolvedCandidateProperties;
-			}
-		);
 	}
 
 	private List<TraverseNode> mergeWithNewChildren(List<TraverseNode> newChildren) {
