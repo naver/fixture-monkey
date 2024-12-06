@@ -156,13 +156,13 @@ public final class ElementProperty implements Property {
 		}
 		ElementProperty that = (ElementProperty)obj;
 		return containerProperty.equals(that.containerProperty)
-			&& elementType.equals(that.elementType)
+			&& elementType.getType().equals(that.elementType.getType())
 			&& annotations.equals(that.annotations);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(containerProperty, elementType, annotations);
+		return Objects.hash(containerProperty, elementType.getType(), annotations);
 	}
 
 	private boolean isOptional(Class<?> type) {

@@ -130,12 +130,12 @@ public final class MapKeyElementProperty implements Property {
 		}
 		MapKeyElementProperty that = (MapKeyElementProperty)obj;
 		return mapProperty.equals(that.mapProperty)
-			&& keyType.equals(that.keyType)
+			&& keyType.getType().equals(that.keyType.getType())
 			&& annotations.equals(that.annotations);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(mapProperty, keyType, annotations);
+		return Objects.hash(mapProperty, keyType.getType(), annotations);
 	}
 }
