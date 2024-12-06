@@ -73,14 +73,14 @@ public final class PropertyPath implements Comparable<PropertyPath> {
 			return "{key}";
 		} else if (property instanceof MapValueElementProperty) {
 			return "{value}";
-		} else if (property instanceof ElementProperty) {
-			return "[" + ((ElementProperty)property).getIndex() + "]";
+		} else if (property instanceof ContainerElementProperty) {
+			return "[" + ((ContainerElementProperty)property).getIndex() + "]";
 		}
 		return property.getName();
 	}
 
 	private String getDelimiter() {
-		if (property instanceof ElementProperty
+		if (property instanceof ContainerElementProperty
 			|| property instanceof RootProperty
 			|| property instanceof MapEntryElementProperty
 			|| property instanceof MapKeyElementProperty

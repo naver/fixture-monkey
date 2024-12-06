@@ -37,7 +37,7 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 import com.navercorp.fixturemonkey.api.property.CandidateConcretePropertyResolver;
-import com.navercorp.fixturemonkey.api.property.ElementProperty;
+import com.navercorp.fixturemonkey.api.property.ContainerElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.type.Types;
 
@@ -47,7 +47,7 @@ public final class ElementJsonSubTypesConcreteTypeResolver implements CandidateC
 
 	@Override
 	public List<Property> resolve(Property property) {
-		Property containerProperty = ((ElementProperty)property).getContainerProperty();
+		Property containerProperty = ((ContainerElementProperty)property).getContainerProperty();
 
 		JsonSubTypes jsonSubTypes = getJacksonAnnotation(containerProperty, JsonSubTypes.class);
 		if (jsonSubTypes == null) {

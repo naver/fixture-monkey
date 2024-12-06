@@ -22,7 +22,8 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo
 import com.navercorp.fixturemonkey.api.generator.ContainerProperty
 import com.navercorp.fixturemonkey.api.generator.ContainerPropertyGenerator
 import com.navercorp.fixturemonkey.api.generator.ContainerPropertyGeneratorContext
-import com.navercorp.fixturemonkey.api.property.ElementProperty
+import com.navercorp.fixturemonkey.api.property.DefaultContainerElementProperty
+import com.navercorp.fixturemonkey.api.property.TypeParameterProperty
 import com.navercorp.fixturemonkey.api.type.Types
 import org.apiguardian.api.API
 import org.apiguardian.api.API.Status
@@ -45,21 +46,21 @@ class TripleContainerPropertyGenerator : ContainerPropertyGenerator {
 
         return ContainerProperty(
             listOf(
-                ElementProperty(
+                DefaultContainerElementProperty(
                     property,
-                    firstElementType,
+                    TypeParameterProperty(firstElementType),
                     0,
                     0
                 ),
-                ElementProperty(
+                DefaultContainerElementProperty(
                     property,
-                    secondElementType,
+                    TypeParameterProperty(secondElementType),
                     1,
                     1
                 ),
-                ElementProperty(
+                DefaultContainerElementProperty(
                     property,
-                    thirdElementType,
+                    TypeParameterProperty(thirdElementType),
                     2,
                     2
                 )

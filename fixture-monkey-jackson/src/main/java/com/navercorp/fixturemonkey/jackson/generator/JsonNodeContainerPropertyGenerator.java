@@ -32,6 +32,7 @@ import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty;
 import com.navercorp.fixturemonkey.api.property.MapKeyElementProperty;
 import com.navercorp.fixturemonkey.api.property.MapValueElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
+import com.navercorp.fixturemonkey.api.property.TypeParameterProperty;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 
 @API(since = "0.4.3", status = Status.MAINTAINED)
@@ -54,12 +55,12 @@ public final class JsonNodeContainerPropertyGenerator implements ContainerProper
 					property,
 					new MapKeyElementProperty(
 						property,
-						KEY_VALUE_TYPE.getAnnotatedType(),
+						new TypeParameterProperty(KEY_VALUE_TYPE.getAnnotatedType()),
 						sequence
 					),
 					new MapValueElementProperty(
 						property,
-						KEY_VALUE_TYPE.getAnnotatedType(),
+						new TypeParameterProperty(KEY_VALUE_TYPE.getAnnotatedType()),
 						sequence
 					)
 				)

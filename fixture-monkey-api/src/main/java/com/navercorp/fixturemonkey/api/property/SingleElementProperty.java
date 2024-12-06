@@ -21,35 +21,32 @@ package com.navercorp.fixturemonkey.api.property;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Type;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 
 import org.apiguardian.api.API;
 
 @API(since = "1.0.17", status = API.Status.EXPERIMENTAL)
-public final class SingleElementProperty implements Property {
+public class SingleElementProperty implements Property, ContainerElementProperty {
+	private final Property containerProperty;
 
-	private final Property property;
+	private final Property elementProperty;
 
-	private final AnnotatedType elementType;
+	/**
+	 * It is deprecated.
+	 * Use {@link #SingleElementProperty(Property, Property)} instead.
+	 */
+	@Deprecated
+	public SingleElementProperty(Property containerProperty) {
+		this.containerProperty = containerProperty;
+		this.elementProperty = new TypeParameterProperty(containerProperty.getAnnotatedType());
+	}
 
-	private final List<Annotation> annotations;
-
-	private final Map<Class<? extends Annotation>, Annotation> annotationsMap;
-
-	public SingleElementProperty(Property property) {
-		this.property = property;
-		this.elementType = property.getAnnotatedType();
-		this.annotations = Arrays.asList(this.elementType.getAnnotations());
-		this.annotationsMap = this.annotations.stream()
-			.collect(Collectors.toMap(Annotation::annotationType, Function.identity(), (a1, a2) -> a1));
+	public SingleElementProperty(Property containerProperty, Property elementProperty) {
+		this.containerProperty = containerProperty;
+		this.elementProperty = elementProperty;
 	}
 
 	@Override
@@ -59,15 +56,7 @@ public final class SingleElementProperty implements Property {
 
 	@Override
 	public AnnotatedType getAnnotatedType() {
-		return this.elementType;
-	}
-
-	public Property getProperty() {
-		return this.property;
-	}
-
-	public AnnotatedType getElementType() {
-		return this.elementType;
+		return this.elementProperty.getAnnotatedType();
 	}
 
 	@Nullable
@@ -78,19 +67,34 @@ public final class SingleElementProperty implements Property {
 
 	@Override
 	public List<Annotation> getAnnotations() {
-		return this.annotations;
-	}
-
-	@Override
-	public <T extends Annotation> Optional<T> getAnnotation(Class<T> annotationClass) {
-		return Optional.ofNullable(this.annotationsMap.get(annotationClass))
-			.map(annotationClass::cast);
+		return this.containerProperty.getAnnotations();
 	}
 
 	@Nullable
 	@Override
 	public Object getValue(Object instance) {
-		return property.getValue(instance);
+		return containerProperty.getValue(instance);
+	}
+
+	@Override
+	public Property getContainerProperty() {
+		return this.containerProperty;
+	}
+
+	@Override
+	public Property getElementProperty() {
+		return this;
+	}
+
+	@Override
+	public int getSequence() {
+		return 0;
+	}
+
+	@Nullable
+	@Override
+	public Integer getIndex() {
+		return null;
 	}
 
 	@Override
@@ -102,13 +106,12 @@ public final class SingleElementProperty implements Property {
 			return false;
 		}
 		SingleElementProperty that = (SingleElementProperty)obj;
-		return property.equals(that.property)
-			&& elementType.equals(that.elementType)
-			&& annotations.equals(that.annotations);
+		return Objects.equals(containerProperty, that.containerProperty)
+			&& Objects.equals(elementProperty, that.elementProperty);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(property, elementType, annotations);
+		return Objects.hash(containerProperty, elementProperty);
 	}
 }
