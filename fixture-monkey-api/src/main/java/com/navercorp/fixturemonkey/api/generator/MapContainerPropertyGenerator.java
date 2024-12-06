@@ -32,6 +32,7 @@ import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty;
 import com.navercorp.fixturemonkey.api.property.MapKeyElementProperty;
 import com.navercorp.fixturemonkey.api.property.MapValueElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
+import com.navercorp.fixturemonkey.api.property.TypeParameterProperty;
 import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
@@ -79,12 +80,12 @@ public final class MapContainerPropertyGenerator implements ContainerPropertyGen
 					property,
 					new MapKeyElementProperty(
 						property,
-						keyType,
+						new TypeParameterProperty(keyType),
 						sequence
 					),
 					new MapValueElementProperty(
 						property,
-						valueType,
+						new TypeParameterProperty(valueType),
 						sequence
 					)
 				)

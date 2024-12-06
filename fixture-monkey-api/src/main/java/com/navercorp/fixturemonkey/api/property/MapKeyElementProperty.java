@@ -21,7 +21,6 @@ package com.navercorp.fixturemonkey.api.property;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Type;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -39,21 +38,26 @@ import com.navercorp.fixturemonkey.api.type.Types;
 public final class MapKeyElementProperty implements Property {
 	private final Property mapProperty;
 
-	private final AnnotatedType keyType;
+	private final Property keyProperty;
 
 	private final int sequence;
 
-	private final List<Annotation> annotations;
-
+	/**
+	 * Use {@link MapKeyElementProperty(Property, Property, int)} instead.
+	 */
+	@Deprecated
 	public MapKeyElementProperty(
 		Property mapProperty,
 		AnnotatedType keyType,
 		int sequence
 	) {
+		this(mapProperty, new TypeParameterProperty(keyType), sequence);
+	}
+
+	public MapKeyElementProperty(Property mapProperty, Property keyProperty, int sequence) {
 		this.mapProperty = mapProperty;
-		this.keyType = keyType;
+		this.keyProperty = keyProperty;
 		this.sequence = sequence;
-		this.annotations = Arrays.asList(this.keyType.getAnnotations());
 	}
 
 	@Override
@@ -63,7 +67,7 @@ public final class MapKeyElementProperty implements Property {
 
 	@Override
 	public AnnotatedType getAnnotatedType() {
-		return this.keyType;
+		return this.keyProperty.getAnnotatedType();
 	}
 
 	public Property getMapProperty() {
@@ -71,7 +75,7 @@ public final class MapKeyElementProperty implements Property {
 	}
 
 	public AnnotatedType getKeyType() {
-		return keyType;
+		return this.keyProperty.getAnnotatedType();
 	}
 
 	public int getSequence() {
@@ -86,7 +90,7 @@ public final class MapKeyElementProperty implements Property {
 
 	@Override
 	public List<Annotation> getAnnotations() {
-		return this.annotations;
+		return this.keyProperty.getAnnotations();
 	}
 
 	@Override
@@ -130,12 +134,11 @@ public final class MapKeyElementProperty implements Property {
 		}
 		MapKeyElementProperty that = (MapKeyElementProperty)obj;
 		return mapProperty.equals(that.mapProperty)
-			&& keyType.getType().equals(that.keyType.getType())
-			&& annotations.equals(that.annotations);
+			&& keyProperty.equals(that.keyProperty);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(mapProperty, keyType.getType(), annotations);
+		return Objects.hash(mapProperty, keyProperty);
 	}
 }
