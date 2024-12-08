@@ -29,6 +29,7 @@ import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty;
 import com.navercorp.fixturemonkey.api.property.MapKeyElementProperty;
 import com.navercorp.fixturemonkey.api.property.MapValueElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
+import com.navercorp.fixturemonkey.api.property.TypeParameterProperty;
 import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
@@ -59,12 +60,12 @@ public final class EntryContainerPropertyGenerator implements ContainerPropertyG
 				property,
 				new MapKeyElementProperty(
 					property,
-					keyType,
+					new TypeParameterProperty(keyType),
 					0
 				),
 				new MapValueElementProperty(
 					property,
-					valueType,
+					new TypeParameterProperty(valueType),
 					0
 				)
 			)

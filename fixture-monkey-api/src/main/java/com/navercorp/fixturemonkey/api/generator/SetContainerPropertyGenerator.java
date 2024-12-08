@@ -28,8 +28,9 @@ import org.apiguardian.api.API.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.navercorp.fixturemonkey.api.property.ElementProperty;
+import com.navercorp.fixturemonkey.api.property.DefaultContainerElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
+import com.navercorp.fixturemonkey.api.property.TypeParameterProperty;
 import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
@@ -71,9 +72,9 @@ public final class SetContainerPropertyGenerator implements ContainerPropertyGen
 		List<Property> childProperties = new ArrayList<>();
 		for (int sequence = 0; sequence < size; sequence++) {
 			childProperties.add(
-				new ElementProperty(
+				new DefaultContainerElementProperty(
 					property,
-					elementType,
+					new TypeParameterProperty(elementType),
 					null,
 					sequence
 				)

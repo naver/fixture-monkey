@@ -25,8 +25,9 @@ import java.util.List;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.api.property.ElementProperty;
+import com.navercorp.fixturemonkey.api.property.DefaultContainerElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
+import com.navercorp.fixturemonkey.api.property.TypeParameterProperty;
 import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
@@ -45,9 +46,9 @@ public final class ArrayContainerPropertyGenerator implements ContainerPropertyG
 		List<Property> childProperties = new ArrayList<>();
 		for (int sequence = 0; sequence < size; sequence++) {
 			childProperties.add(
-				new ElementProperty(
+				new DefaultContainerElementProperty(
 					property,
-					elementType,
+					new TypeParameterProperty(elementType),
 					sequence,
 					sequence
 				)

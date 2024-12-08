@@ -22,17 +22,13 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Array;
 import java.lang.reflect.Type;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.OptionalInt;
 import java.util.OptionalLong;
-import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 
@@ -41,93 +37,72 @@ import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.type.Types;
 
-/**
- * It is deprecated.
- * Use {@link DefaultContainerElementProperty} instead.
- */
-@Deprecated
-@API(since = "0.4.0", status = Status.DEPRECATED)
-public final class ElementProperty implements ContainerElementProperty {
+@API(since = "1.2.0", status = Status.EXPERIMENTAL)
+public final class DefaultContainerElementProperty implements ContainerElementProperty {
 	private final Property containerProperty;
-
-	private final AnnotatedType elementType;
-
+	private final Property elementProperty;
+	private final int sequence;
 	@Nullable
 	private final Integer index;
 
-	private final int sequence;
-
-	private final List<Annotation> annotations;
-
-	private final Map<Class<? extends Annotation>, Annotation> annotationsMap;
-
-	public ElementProperty(
+	public DefaultContainerElementProperty(
 		Property containerProperty,
-		AnnotatedType elementType,
+		Property elementProperty,
 		@Nullable Integer index,
 		int sequence
 	) {
 		this.containerProperty = containerProperty;
-		this.elementType = elementType;
+		this.elementProperty = elementProperty;
 		this.index = index;
 		this.sequence = sequence;
-		this.annotations = Arrays.asList(this.elementType.getAnnotations());
-		this.annotationsMap = this.annotations.stream()
-			.collect(Collectors.toMap(Annotation::annotationType, Function.identity(), (a1, a2) -> a1));
 	}
 
 	@Override
-	public Type getType() {
-		return this.getAnnotatedType().getType();
-	}
-
-	@Override
-	public AnnotatedType getAnnotatedType() {
-		return this.elementType;
-	}
-
 	public Property getContainerProperty() {
 		return this.containerProperty;
 	}
 
 	@Override
 	public Property getElementProperty() {
-		return this;
+		return this.elementProperty;
 	}
 
-	public AnnotatedType getElementType() {
-		return this.elementType;
+	@Override
+	public int getSequence() {
+		return this.sequence;
 	}
 
 	@Nullable
+	@Override
 	public Integer getIndex() {
 		return this.index;
 	}
 
-	public int getSequence() {
-		return sequence;
+	@Override
+	public Type getType() {
+		return this.elementProperty.getType();
 	}
 
 	@Override
+	public AnnotatedType getAnnotatedType() {
+		return this.elementProperty.getAnnotatedType();
+	}
+
 	@Nullable
+	@Override
 	public String getName() {
 		return null;
 	}
 
 	@Override
 	public List<Annotation> getAnnotations() {
-		return this.annotations;
-	}
-
-	@Override
-	public <T extends Annotation> Optional<T> getAnnotation(Class<T> annotationClass) {
-		return Optional.ofNullable(this.annotationsMap.get(annotationClass))
-			.map(annotationClass::cast);
+		return this.elementProperty.getAnnotations();
 	}
 
 	@Nullable
 	@Override
 	public Object getValue(Object instance) {
+		// TODO: should split as a implementation of ContainerElementProperty
 		Class<?> actualType = Types.getActualType(instance.getClass());
 		if (isOptional(actualType)) {
 			return getOptionalValue(instance);
@@ -154,25 +129,6 @@ public final class ElementProperty implements ContainerElementProperty {
 		}
 
 		throw new IllegalArgumentException("given element value has no match sequence : " + sequence);
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null || getClass() != obj.getClass()) {
-			return false;
-		}
-		ElementProperty that = (ElementProperty)obj;
-		return containerProperty.equals(that.containerProperty)
-			&& elementType.getType().equals(that.elementType.getType())
-			&& annotations.equals(that.annotations);
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(containerProperty, elementType.getType(), annotations);
 	}
 
 	private boolean isOptional(Class<?> type) {
@@ -202,5 +158,25 @@ public final class ElementProperty implements ContainerElementProperty {
 		}
 
 		throw new IllegalArgumentException("given value is not optional, actual type : " + actualType);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null || getClass() != obj.getClass()) {
+			return false;
+		}
+		DefaultContainerElementProperty that = (DefaultContainerElementProperty)obj;
+		return sequence == that.sequence
+			&& Objects.equals(containerProperty, that.containerProperty)
+			&& Objects.equals(elementProperty, that.elementProperty)
+			&& Objects.equals(index, that.index);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(containerProperty, elementProperty, sequence, index);
 	}
 }
