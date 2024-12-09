@@ -36,12 +36,16 @@ import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.context.MonkeyContext;
+import com.navercorp.fixturemonkey.api.generator.ArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
+import com.navercorp.fixturemonkey.api.property.LazyPropertyGenerator;
 import com.navercorp.fixturemonkey.api.property.Property;
+import com.navercorp.fixturemonkey.api.property.PropertyGenerator;
 import com.navercorp.fixturemonkey.api.tree.TraverseContext;
 import com.navercorp.fixturemonkey.api.tree.TreeNodeManipulator;
+import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.customizer.ArbitraryManipulator;
 import com.navercorp.fixturemonkey.customizer.ContainerInfoManipulator;
 import com.navercorp.fixturemonkey.tree.GenerateFixtureContext;
@@ -231,9 +235,12 @@ public final class ArbitraryBuilderContext {
 			registeredContainerInfoManipulators,
 			this.getPropertyConfigurers(),
 			this.isValidOnly(),
-			fixtureMonkeyOptions.getPropertyGenerators(),
-			fixtureMonkeyOptions.getDefaultArbitraryGenerator(),
-			fixtureMonkeyOptions.getDefaultPropertyGenerator(),
+			initializeResolvedPropertyGenerator(
+				this.getPropertyConfigurers(),
+				fixtureMonkeyOptions.getPropertyGenerators(),
+				fixtureMonkeyOptions.getDefaultArbitraryGenerator(),
+				fixtureMonkeyOptions.getDefaultPropertyGenerator()
+			),
 			fixtureMonkeyOptions.getObjectPropertyGenerators(),
 			fixtureMonkeyOptions.getDefaultObjectPropertyGenerator(),
 			fixtureMonkeyOptions.getContainerPropertyGenerators(),
@@ -271,5 +278,41 @@ public final class ArbitraryBuilderContext {
 		public int getFixedContainerManipulatorSize() {
 			return fixedContainerManipulatorSize;
 		}
+	}
+
+	private static LazyPropertyGenerator initializeResolvedPropertyGenerator(
+		Map<Class<?>, List<Property>> propertyConfigurers,
+		List<MatcherOperator<PropertyGenerator>> optionalPropertyGenerators,
+		ArbitraryGenerator defaultArbitraryGenerator,
+		PropertyGenerator defaultPropertyGenerator
+	) {
+		PropertyGenerator resolvedPropertyGenerator = property -> {
+			Class<?> type = Types.getActualType(property.getType());
+			List<Property> propertyConfigurer = propertyConfigurers.get(type);
+			if (propertyConfigurer != null) {
+				return propertyConfigurer;
+			}
+
+			PropertyGenerator propertyGenerator = optionalPropertyGenerators.stream()
+				.filter(it -> it.match(property))
+				.map(MatcherOperator::getOperator)
+				.findFirst()
+				.orElse(null);
+
+			if (propertyGenerator != null) {
+				return propertyGenerator.generateChildProperties(property);
+			}
+
+			PropertyGenerator defaultArbitraryGeneratorPropertyGenerator =
+				defaultArbitraryGenerator.getRequiredPropertyGenerator(property);
+
+			if (defaultArbitraryGeneratorPropertyGenerator != null) {
+				return defaultArbitraryGeneratorPropertyGenerator.generateChildProperties(property);
+			}
+
+			return defaultPropertyGenerator.generateChildProperties(property);
+		};
+
+		return new LazyPropertyGenerator(resolvedPropertyGenerator);
 	}
 }
