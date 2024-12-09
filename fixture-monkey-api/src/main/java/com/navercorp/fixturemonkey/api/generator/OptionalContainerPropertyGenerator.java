@@ -19,6 +19,7 @@
 package com.navercorp.fixturemonkey.api.generator;
 
 import static com.navercorp.fixturemonkey.api.type.Types.generateAnnotatedTypeWithoutAnnotation;
+import static com.navercorp.fixturemonkey.api.type.Types.toTypeReference;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedType;
@@ -26,6 +27,7 @@ import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.OptionalInt;
@@ -87,6 +89,24 @@ public final class OptionalContainerPropertyGenerator implements ContainerProper
 				}
 
 				throw new IllegalArgumentException("given value has no match");
+			}
+
+			@Override
+			public boolean equals(Object obj) {
+				if (this == obj) {
+					return true;
+				}
+				if (obj == null || getClass() != obj.getClass()) {
+					return false;
+				}
+				Property that = (Property)obj;
+				return getType().equals(that.getType())
+					&& getAnnotations().equals(that.getAnnotations());
+			}
+
+			@Override
+			public int hashCode() {
+				return Objects.hash(getType(), getAnnotations());
 			}
 		};
 

@@ -103,12 +103,12 @@ public final class SingleElementProperty implements Property {
 		}
 		SingleElementProperty that = (SingleElementProperty)obj;
 		return property.equals(that.property)
-			&& elementType.equals(that.elementType)
+			&& elementType.getType().equals(that.elementType.getType())
 			&& annotations.equals(that.annotations);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(property, elementType, annotations);
+		return Objects.hash(property, elementType.getType(), annotations);
 	}
 }
