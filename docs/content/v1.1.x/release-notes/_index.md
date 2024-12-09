@@ -6,6 +6,12 @@ docs:
 weight: 100
 ---
 sectionStart
+## v.1.1.5
+Fix keep equivalence with `ElemenetProperty` and `MapKeyElementProperty` and `MapValueElementProperty`.
+
+sectionEnd
+
+sectionStart
 ## v.1.1.4
 Fix not registering size API if decomposing.
 
