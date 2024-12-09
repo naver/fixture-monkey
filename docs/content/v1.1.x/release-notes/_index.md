@@ -6,6 +6,12 @@ docs:
 weight: 100
 ---
 sectionStart
+## v.1.1.6
+Deprecate `Randoms.create(String)`, use `Randoms.setSeed(long)` instead. 
+
+sectionEnd
+
+sectionStart
 ## v.1.1.5
 Fix keep equivalence with `ElemenetProperty` and `MapKeyElementProperty` and `MapValueElementProperty`.
 
