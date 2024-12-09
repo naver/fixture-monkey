@@ -55,7 +55,7 @@ public final class FixtureMonkeySeedExtension implements BeforeTestExecutionCall
 	 * Sets the seed for generating random numbers.
 	 **/
 	private void setSeed(long seed) {
-		Randoms.create(String.valueOf(seed));
+		Randoms.setSeed(seed);
 	}
 
 	/**

@@ -520,7 +520,7 @@ public final class FixtureMonkeyBuilder {
 			fixtureMonkeyOptions.getDecomposedContainerValueFactory()
 		);
 
-		Randoms.create(String.valueOf(seed));
+		Randoms.setSeed(seed);
 		return new FixtureMonkey(
 			fixtureMonkeyOptions,
 			manipulatorOptimizer,
