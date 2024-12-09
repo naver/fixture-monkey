@@ -32,7 +32,6 @@ import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.container.ConcurrentLruCache;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfoGenerator;
-import com.navercorp.fixturemonkey.api.generator.ArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.generator.ContainerPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.NullInjectGenerator;
 import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGenerator;
@@ -43,10 +42,8 @@ import com.navercorp.fixturemonkey.api.property.DefaultCandidateConcreteProperty
 import com.navercorp.fixturemonkey.api.property.LazyPropertyGenerator;
 import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
-import com.navercorp.fixturemonkey.api.property.PropertyGenerator;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.api.tree.TraverseNodePredicate.PropertyTraverseNodePredicate;
-import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "1.0.4", status = Status.EXPERIMENTAL)
 public final class TraverseContext {
@@ -71,49 +68,6 @@ public final class TraverseContext {
 	private final NullInjectGenerator defaultNullInjectGenerator;
 
 	public TraverseContext(
-		List<TreeProperty> treeProperties,
-		List<TreeNodeManipulator> treeManipulators,
-		List<MatcherOperator<List<TreeNodeManipulator>>> registeredTreeManipulators,
-		Map<Class<?>, List<Property>> propertyConfigurers,
-		boolean validOnly,
-		List<MatcherOperator<PropertyGenerator>> optionalPropertyGenerators,
-		ArbitraryGenerator defaultArbitraryGenerator,
-		PropertyGenerator defaultPropertyGenerator,
-		List<MatcherOperator<ObjectPropertyGenerator>> objectPropertyGenerators,
-		ObjectPropertyGenerator defaultObjectPropertyGenerator,
-		List<MatcherOperator<ContainerPropertyGenerator>> containerPropertyGenerators,
-		List<MatcherOperator<PropertyNameResolver>> propertyNameResolvers,
-		PropertyNameResolver defaultPropertyNameResolver,
-		List<MatcherOperator<CandidateConcretePropertyResolver>> candidateConcretePropertyResolvers,
-		List<MatcherOperator<ArbitraryContainerInfoGenerator>> arbitraryContainerInfoGenerators,
-		ArbitraryContainerInfoGenerator defaultArbitraryContainerInfoGenerator,
-		List<MatcherOperator<NullInjectGenerator>> nullInjectGenerators,
-		NullInjectGenerator defaultNullInjectGenerator
-	) {
-		this.treeProperties = treeProperties;
-		this.treeManipulators = treeManipulators;
-		this.registeredTreeManipulators = registeredTreeManipulators;
-		this.propertyConfigurers = propertyConfigurers;
-		this.validOnly = validOnly;
-		this.objectPropertyGenerators = objectPropertyGenerators;
-		this.resolvedPropertyGenerator = initializeResolvedPropertyGenerator(
-			propertyConfigurers,
-			optionalPropertyGenerators,
-			defaultArbitraryGenerator,
-			defaultPropertyGenerator
-		);
-		this.defaultObjectPropertyGenerator = defaultObjectPropertyGenerator;
-		this.containerPropertyGenerators = containerPropertyGenerators;
-		this.propertyNameResolvers = propertyNameResolvers;
-		this.defaultPropertyNameResolver = defaultPropertyNameResolver;
-		this.candidateConcretePropertyResolvers = candidateConcretePropertyResolvers;
-		this.arbitraryContainerInfoGenerators = arbitraryContainerInfoGenerators;
-		this.defaultArbitraryContainerInfoGenerator = defaultArbitraryContainerInfoGenerator;
-		this.nullInjectGenerators = nullInjectGenerators;
-		this.defaultNullInjectGenerator = defaultNullInjectGenerator;
-	}
-
-	private TraverseContext(
 		List<TreeProperty> treeProperties,
 		List<TreeNodeManipulator> treeManipulators,
 		List<MatcherOperator<List<TreeNodeManipulator>>> registeredTreeManipulators,
@@ -338,42 +292,6 @@ public final class TraverseContext {
 				return resolvedCandidateProperties;
 			}
 		);
-	}
-
-	private static LazyPropertyGenerator initializeResolvedPropertyGenerator(
-		Map<Class<?>, List<Property>> propertyConfigurers,
-		List<MatcherOperator<PropertyGenerator>> optionalPropertyGenerators,
-		ArbitraryGenerator defaultArbitraryGenerator,
-		PropertyGenerator defaultPropertyGenerator
-	) {
-		PropertyGenerator resolvedPropertyGenerator = property -> {
-			Class<?> type = Types.getActualType(property.getType());
-			List<Property> propertyConfigurer = propertyConfigurers.get(type);
-			if (propertyConfigurer != null) {
-				return propertyConfigurer;
-			}
-
-			PropertyGenerator propertyGenerator = optionalPropertyGenerators.stream()
-				.filter(it -> it.match(property))
-				.map(MatcherOperator::getOperator)
-				.findFirst()
-				.orElse(null);
-
-			if (propertyGenerator != null) {
-				return propertyGenerator.generateChildProperties(property);
-			}
-
-			PropertyGenerator defaultArbitraryGeneratorPropertyGenerator =
-				defaultArbitraryGenerator.getRequiredPropertyGenerator(property);
-
-			if (defaultArbitraryGeneratorPropertyGenerator != null) {
-				return defaultArbitraryGeneratorPropertyGenerator.generateChildProperties(property);
-			}
-
-			return defaultPropertyGenerator.generateChildProperties(property);
-		};
-
-		return new LazyPropertyGenerator(resolvedPropertyGenerator);
 	}
 
 	@Nullable
