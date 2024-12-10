@@ -26,7 +26,7 @@ import com.navercorp.fixturemonkey.customizer.InnerSpec
  * Apply manipulation to [InnerSpec][com.navercorp.fixturemonkey.customizer.InnerSpec]
  * and pass it to [setInner][com.navercorp.fixturemonkey.ArbitraryBuilder.setInner].
  */
-fun <T> ArbitraryBuilder<T>.setInner(innerSpecConfigurer: ((InnerSpec) -> Unit)): ArbitraryBuilder<T> {
+fun <T> ArbitraryBuilder<T>.setInner(innerSpecConfigurer: InnerSpec.() -> Unit): ArbitraryBuilder<T> {
     return this.setInner(InnerSpec().apply(innerSpecConfigurer))
 }
 
