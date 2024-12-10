@@ -21,7 +21,6 @@ package com.navercorp.fixturemonkey.api.property;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Type;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -39,21 +38,27 @@ import com.navercorp.fixturemonkey.api.type.Types;
 public final class MapValueElementProperty implements Property {
 	private final Property mapProperty;
 
-	private final AnnotatedType valueType;
+	private final Property valueProperty;
 
 	private final int sequence;
 
-	private final List<Annotation> annotations;
-
+	/**
+	 * It is deprecated;
+	 * Use {@link #MapValueElementProperty(Property, Property, int)} instead.
+	 */
+	@Deprecated
 	public MapValueElementProperty(
 		Property mapProperty,
 		AnnotatedType valueType,
 		int sequence
 	) {
+		this(mapProperty, new TypeParameterProperty(valueType), sequence);
+	}
+
+	public MapValueElementProperty(Property mapProperty, Property valueProperty, int sequence) {
 		this.mapProperty = mapProperty;
-		this.valueType = valueType;
+		this.valueProperty = valueProperty;
 		this.sequence = sequence;
-		this.annotations = Arrays.asList(this.valueType.getAnnotations());
 	}
 
 	@Override
@@ -63,7 +68,7 @@ public final class MapValueElementProperty implements Property {
 
 	@Override
 	public AnnotatedType getAnnotatedType() {
-		return this.valueType;
+		return this.valueProperty.getAnnotatedType();
 	}
 
 	public Property getMapProperty() {
@@ -71,7 +76,7 @@ public final class MapValueElementProperty implements Property {
 	}
 
 	public AnnotatedType getValueType() {
-		return valueType;
+		return valueProperty.getAnnotatedType();
 	}
 
 	public int getSequence() {
@@ -86,7 +91,7 @@ public final class MapValueElementProperty implements Property {
 
 	@Override
 	public List<Annotation> getAnnotations() {
-		return this.annotations;
+		return this.valueProperty.getAnnotations();
 	}
 
 	@Nullable
@@ -125,12 +130,11 @@ public final class MapValueElementProperty implements Property {
 		}
 		MapValueElementProperty that = (MapValueElementProperty)obj;
 		return mapProperty.equals(that.mapProperty)
-			&& valueType.getType().equals(that.valueType.getType())
-			&& annotations.equals(that.annotations);
+			&& valueProperty.equals(that.valueProperty);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(mapProperty, valueType.getType(), annotations);
+		return Objects.hash(mapProperty, valueProperty);
 	}
 }

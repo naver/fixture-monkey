@@ -39,7 +39,7 @@ import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptionsBuilder;
 import com.navercorp.fixturemonkey.api.plugin.Plugin;
-import com.navercorp.fixturemonkey.api.property.ElementProperty;
+import com.navercorp.fixturemonkey.api.property.ContainerElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.jackson.FixtureMonkeyJackson;
@@ -114,8 +114,8 @@ public final class JacksonPlugin implements Plugin {
 				)
 				.insertFirstCandidateConcretePropertyResolvers(
 					new MatcherOperator<>(
-						property -> property instanceof ElementProperty
-							&& getJacksonAnnotation(((ElementProperty)property).getContainerProperty(),
+						property -> property instanceof ContainerElementProperty
+							&& getJacksonAnnotation(((ContainerElementProperty)property).getContainerProperty(),
 							JsonSubTypes.class
 						) != null
 							&& Modifier.isAbstract(Types.getActualType(property.getType()).getModifiers()),

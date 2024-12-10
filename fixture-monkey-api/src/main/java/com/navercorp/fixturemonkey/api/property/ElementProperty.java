@@ -41,8 +41,13 @@ import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.type.Types;
 
-@API(since = "0.4.0", status = Status.MAINTAINED)
-public final class ElementProperty implements Property {
+/**
+ * It is deprecated.
+ * Use {@link DefaultContainerElementProperty}, {@link SingleElementProperty} instead.
+ */
+@Deprecated
+@API(since = "0.4.0", status = Status.DEPRECATED)
+public class ElementProperty implements ContainerElementProperty {
 	private final Property containerProperty;
 
 	private final AnnotatedType elementType;
@@ -83,6 +88,11 @@ public final class ElementProperty implements Property {
 
 	public Property getContainerProperty() {
 		return this.containerProperty;
+	}
+
+	@Override
+	public Property getElementProperty() {
+		return this;
 	}
 
 	public AnnotatedType getElementType() {

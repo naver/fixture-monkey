@@ -24,7 +24,7 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.generator.ObjectProperty;
-import com.navercorp.fixturemonkey.api.property.ElementProperty;
+import com.navercorp.fixturemonkey.api.property.ContainerElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
@@ -38,11 +38,11 @@ public final class ContainerElementPredicate implements NextNodePredicate {
 	@Override
 	public boolean test(ObjectProperty currentObjectProperty) {
 		Property property = currentObjectProperty.getProperty();
-		if (!(property instanceof ElementProperty)) {
+		if (!(property instanceof ContainerElementProperty)) {
 			throw new IllegalArgumentException("Resolved node is not element type. : " + property);
 		}
 
-		ElementProperty elementProperty = (ElementProperty)property;
+		ContainerElementProperty elementProperty = (ContainerElementProperty)property;
 		return sequence == NO_OR_ALL_INDEX_INTEGER_VALUE || sequence == elementProperty.getSequence();
 	}
 }

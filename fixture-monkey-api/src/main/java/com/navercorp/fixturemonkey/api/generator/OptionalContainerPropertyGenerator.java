@@ -20,10 +20,7 @@ package com.navercorp.fixturemonkey.api.generator;
 
 import static com.navercorp.fixturemonkey.api.type.Types.generateAnnotatedTypeWithoutAnnotation;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedType;
-import java.lang.reflect.Type;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -31,13 +28,12 @@ import java.util.OptionalDouble;
 import java.util.OptionalInt;
 import java.util.OptionalLong;
 
-import javax.annotation.Nullable;
-
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.SingleElementProperty;
+import com.navercorp.fixturemonkey.api.property.TypeParameterProperty;
 import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
@@ -54,43 +50,9 @@ public final class OptionalContainerPropertyGenerator implements ContainerProper
 		Property property = context.getProperty();
 
 		AnnotatedType valueAnnotatedType = getOptionalValueAnnotatedType(property);
-		Type valueType = valueAnnotatedType.getType();
 
-		Property childProperty = new Property() {
-			@Override
-			public Type getType() {
-				return valueType;
-			}
-
-			@Override
-			public AnnotatedType getAnnotatedType() {
-				return valueAnnotatedType;
-			}
-
-			@Nullable
-			@Override
-			public String getName() {
-				return null;
-			}
-
-			@Override
-			public List<Annotation> getAnnotations() {
-				return Arrays.asList(valueAnnotatedType.getAnnotations());
-			}
-
-			@Nullable
-			@Override
-			public Object getValue(Object instance) {
-				Class<?> actualType = Types.getActualType(instance.getClass());
-				if (isOptional(actualType)) {
-					return getOptionalValue(instance);
-				}
-
-				throw new IllegalArgumentException("given value has no match");
-			}
-		};
-
-		SingleElementProperty singleElementProperty = new SingleElementProperty(childProperty);
+		SingleElementProperty singleElementProperty =
+			new SingleElementProperty(property, new TypeParameterProperty(valueAnnotatedType));
 
 		return new ContainerProperty(
 			Collections.singletonList(singleElementProperty),
@@ -128,33 +90,5 @@ public final class OptionalContainerPropertyGenerator implements ContainerProper
 		}
 
 		return genericsTypes.get(0);
-	}
-
-	private boolean isOptional(Class<?> type) {
-		return Optional.class.isAssignableFrom(type)
-			|| OptionalInt.class.isAssignableFrom(type)
-			|| OptionalLong.class.isAssignableFrom(type)
-			|| OptionalDouble.class.isAssignableFrom(type);
-	}
-
-	private Object getOptionalValue(Object obj) {
-		Class<?> actualType = Types.getActualType(obj.getClass());
-		if (Optional.class.isAssignableFrom(actualType)) {
-			return ((Optional<?>)obj).orElse(null);
-		}
-
-		if (OptionalInt.class.isAssignableFrom(actualType)) {
-			return ((OptionalInt)obj).orElse(0);
-		}
-
-		if (OptionalLong.class.isAssignableFrom(actualType)) {
-			return ((OptionalLong)obj).orElse(0L);
-		}
-
-		if (OptionalDouble.class.isAssignableFrom(actualType)) {
-			return ((OptionalDouble)obj).orElse(Double.NaN);
-		}
-
-		throw new IllegalArgumentException("given value is not optional, actual type : " + actualType);
 	}
 }

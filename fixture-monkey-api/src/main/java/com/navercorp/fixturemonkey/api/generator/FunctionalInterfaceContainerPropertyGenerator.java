@@ -18,19 +18,15 @@
 
 package com.navercorp.fixturemonkey.api.generator;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedType;
-import java.lang.reflect.Type;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
-import javax.annotation.Nullable;
 
 import org.apiguardian.api.API;
 
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.SingleElementProperty;
+import com.navercorp.fixturemonkey.api.property.TypeParameterProperty;
 import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "1.0.21", status = API.Status.EXPERIMENTAL)
@@ -45,37 +41,9 @@ public final class FunctionalInterfaceContainerPropertyGenerator implements Cont
 		Property property = context.getProperty();
 
 		AnnotatedType lambdaReturnAnnotatedType = getLambdaReturnAnnotatedType(property);
-		Type lambdaReturnType = lambdaReturnAnnotatedType.getType();
 
-		Property returnProperty = new Property() {
-			@Override
-			public Type getType() {
-				return lambdaReturnType;
-			}
-
-			@Override
-			public AnnotatedType getAnnotatedType() {
-				return lambdaReturnAnnotatedType;
-			}
-
-			@Nullable
-			@Override
-			public String getName() {
-				return null;
-			}
-
-			@Override
-			public List<Annotation> getAnnotations() {
-				return Arrays.asList(lambdaReturnAnnotatedType.getAnnotations());
-			}
-
-			@Override
-			public Object getValue(Object instance) {
-				return instance;
-			}
-		};
-
-		SingleElementProperty singleElementProperty = new SingleElementProperty(returnProperty);
+		SingleElementProperty singleElementProperty =
+			new SingleElementProperty(property, new TypeParameterProperty(lambdaReturnAnnotatedType));
 
 		return new ContainerProperty(
 			Collections.singletonList(singleElementProperty),

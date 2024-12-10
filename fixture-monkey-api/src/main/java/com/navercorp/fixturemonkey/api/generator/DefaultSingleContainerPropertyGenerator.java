@@ -25,17 +25,15 @@ import java.util.List;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.api.property.ElementProperty;
+import com.navercorp.fixturemonkey.api.property.DefaultContainerElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
-import com.navercorp.fixturemonkey.api.type.TypeReference;
+import com.navercorp.fixturemonkey.api.property.TypeParameterProperty;
 import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.4.3", status = Status.MAINTAINED)
 public final class DefaultSingleContainerPropertyGenerator implements ContainerPropertyGenerator {
 	public static final DefaultSingleContainerPropertyGenerator INSTANCE =
 		new DefaultSingleContainerPropertyGenerator();
-	private static final TypeReference<String> DEFAULT_ELEMENT_TYPE = new TypeReference<String>() {
-	};
 
 	@Override
 	public ContainerProperty generate(ContainerPropertyGeneratorContext context) {
@@ -51,21 +49,18 @@ public final class DefaultSingleContainerPropertyGenerator implements ContainerP
 			);
 		}
 
-		AnnotatedType elementType = elementTypes.isEmpty()
-			? DEFAULT_ELEMENT_TYPE.getAnnotatedType()
-			: elementTypes.get(0);
-
 		ArbitraryContainerInfo containerInfo = context.getContainerInfo();
 
 		int size = containerInfo.getRandomSize();
 		List<Property> childProperties = new ArrayList<>();
 		for (int sequence = 0; sequence < size; sequence++) {
 			Integer elementIndex = sequence;
+			AnnotatedType elementType = elementTypes.get(0);
 
 			childProperties.add(
-				new ElementProperty(
+				new DefaultContainerElementProperty(
 					property,
-					elementType,
+					new TypeParameterProperty(elementType),
 					elementIndex,
 					sequence
 				)
