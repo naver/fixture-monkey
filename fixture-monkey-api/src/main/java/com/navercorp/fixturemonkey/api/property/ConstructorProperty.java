@@ -22,7 +22,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Type;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -37,9 +37,8 @@ import org.apiguardian.api.API.Status;
 
 @API(since = "0.4.2", status = Status.MAINTAINED)
 public final class ConstructorProperty implements Property {
-	private final AnnotatedType annotatedType;
+	private final Property parameterProperty;
 	private final Constructor<?> constructor;
-	private final String parameterName;
 	@Nullable
 	private final Property fieldProperty;
 	private final List<Annotation> annotations;
@@ -47,6 +46,11 @@ public final class ConstructorProperty implements Property {
 	@Nullable
 	private final Boolean nullable;
 
+	/**
+	 * It is deprecated.
+	 * Use {@link #ConstructorProperty(Property, Constructor, Property, Boolean)} instead.
+	 */
+	@Deprecated
 	public ConstructorProperty(
 		AnnotatedType annotatedType,
 		Constructor<?> constructor,
@@ -54,11 +58,22 @@ public final class ConstructorProperty implements Property {
 		@Nullable Property fieldProperty,
 		@Nullable Boolean nullable
 	) {
-		this.annotatedType = annotatedType;
+		this(new TypeNameProperty(annotatedType, parameterName, nullable), constructor, fieldProperty, nullable);
+	}
+
+	public ConstructorProperty(
+		Property parameterProperty,
+		Constructor<?> constructor,
+		@Nullable Property fieldProperty,
+		@Nullable Boolean nullable
+	) {
+		this.parameterProperty = parameterProperty;
 		this.constructor = constructor;
-		this.parameterName = parameterName;
 		this.fieldProperty = fieldProperty;
-		this.annotations = Arrays.asList(annotatedType.getAnnotations());
+		this.annotations = new ArrayList<>(parameterProperty.getAnnotations());
+		if (fieldProperty != null) {
+			this.annotations.addAll(fieldProperty.getAnnotations());
+		}
 		this.annotationsMap = this.annotations.stream()
 			.collect(Collectors.toMap(Annotation::annotationType, Function.identity(), (a1, a2) -> a1));
 		this.nullable = nullable;
@@ -71,7 +86,7 @@ public final class ConstructorProperty implements Property {
 
 	@Override
 	public AnnotatedType getAnnotatedType() {
-		return this.annotatedType;
+		return this.parameterProperty.getAnnotatedType();
 	}
 
 	public Constructor<?> getConstructor() {
@@ -85,7 +100,7 @@ public final class ConstructorProperty implements Property {
 
 	@Override
 	public String getName() {
-		return this.parameterName;
+		return this.parameterProperty.getName();
 	}
 
 	@Override
@@ -102,7 +117,11 @@ public final class ConstructorProperty implements Property {
 	@Nullable
 	@Override
 	public Boolean isNullable() {
-		return nullable;
+		if (nullable != null) {
+			return nullable;
+		}
+
+		return parameterProperty.isNullable();
 	}
 
 	@Override
@@ -114,16 +133,15 @@ public final class ConstructorProperty implements Property {
 			return false;
 		}
 		ConstructorProperty that = (ConstructorProperty)obj;
-		return annotatedType.getType().equals(that.annotatedType.getType())
+		return parameterProperty.equals(that.parameterProperty.getType())
 			&& constructor.equals(that.constructor)
-			&& parameterName.equals(that.parameterName)
 			&& Objects.equals(fieldProperty, that.fieldProperty)
 			&& annotations.equals(that.annotations);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(annotatedType.getType(), constructor, parameterName, fieldProperty, annotations);
+		return Objects.hash(parameterProperty, constructor, fieldProperty, annotations);
 	}
 
 	@Nullable
@@ -139,10 +157,12 @@ public final class ConstructorProperty implements Property {
 	@Override
 	public String toString() {
 		return "ConstructorProperty{"
-			+ "annotatedType=" + annotatedType
+			+ "parameterProperty=" + parameterProperty
 			+ ", constructor=" + constructor
-			+ ", parameterName='" + parameterName + '\''
 			+ ", fieldProperty=" + fieldProperty
+			+ ", annotations=" + annotations
+			+ ", annotationsMap=" + annotationsMap
+			+ ", nullable=" + nullable
 			+ '}';
 	}
 }

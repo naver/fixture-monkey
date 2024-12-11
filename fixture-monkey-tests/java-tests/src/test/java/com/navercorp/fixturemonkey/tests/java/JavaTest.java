@@ -65,10 +65,12 @@ import com.navercorp.fixturemonkey.api.plugin.InterfacePlugin;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.customizer.InnerSpec;
 import com.navercorp.fixturemonkey.customizer.Values;
+import com.navercorp.fixturemonkey.javax.validation.plugin.JavaxValidationPlugin;
 import com.navercorp.fixturemonkey.resolver.ArbitraryBuilderCandidateFactory;
 import com.navercorp.fixturemonkey.resolver.ArbitraryBuilderCandidateList;
 import com.navercorp.fixturemonkey.tests.java.ConstructorAndPropertyTestSpecs.ConsturctorAndProperty;
 import com.navercorp.fixturemonkey.tests.java.ConstructorTestSpecs.FieldAndConstructorParameterMismatchObject;
+import com.navercorp.fixturemonkey.tests.java.ConstructorTestSpecs.JavaxValidationObject;
 import com.navercorp.fixturemonkey.tests.java.ConstructorTestSpecs.SimpleContainerObject;
 import com.navercorp.fixturemonkey.tests.java.ImmutableDepthTestSpecs.DepthStringValueList;
 import com.navercorp.fixturemonkey.tests.java.ImmutableDepthTestSpecs.OneDepthStringValue;
@@ -1394,5 +1396,18 @@ class JavaTest {
 		String actual = sut.giveMeOne(String.class);
 
 		then(actual).isEqualTo(expected);
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void constructorValidator() {
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.plugin(new JavaxValidationPlugin())
+			.objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)
+			.defaultNotNull(true)
+			.build();
+
+		JavaxValidationObject actual = sut.giveMeOne(JavaxValidationObject.class);
+
+		then(actual.getValue()).isEqualTo(100);
 	}
 }
