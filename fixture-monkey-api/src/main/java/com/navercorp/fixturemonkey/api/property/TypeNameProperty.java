@@ -23,28 +23,31 @@ import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import javax.annotation.Nullable;
 
+import org.apiguardian.api.API;
+import org.apiguardian.api.API.Status;
+
 /**
- * It is deprecated.
- * Use {@link TypeNameProperty} instead.
+ * It is a property has a type name.
+ * For example, It can be used to represent a type name of a class or method.
  */
-@Deprecated
-public final class MethodParameterProperty implements Property {
+@API(since = "1.1.6", status = Status.EXPERIMENTAL)
+public final class TypeNameProperty implements Property {
 	private final AnnotatedType annotatedType;
-	@Nullable
-	private final String parameterName;
+	private final String typeName;
 	@Nullable
 	private final Boolean nullable;
 
-	public MethodParameterProperty(
+	public TypeNameProperty(
 		AnnotatedType annotatedType,
-		@Nullable String parameterName,
+		String typeName,
 		@Nullable Boolean nullable
 	) {
 		this.annotatedType = annotatedType;
-		this.parameterName = parameterName;
+		this.typeName = typeName;
 		this.nullable = nullable;
 	}
 
@@ -61,7 +64,7 @@ public final class MethodParameterProperty implements Property {
 	@Nullable
 	@Override
 	public String getName() {
-		return parameterName;
+		return typeName;
 	}
 
 	@Override
@@ -79,5 +82,24 @@ public final class MethodParameterProperty implements Property {
 	@Override
 	public Boolean isNullable() {
 		return nullable;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null || getClass() != obj.getClass()) {
+			return false;
+		}
+		TypeNameProperty that = (TypeNameProperty)obj;
+		return Objects.equals(annotatedType, that.annotatedType)
+			&& Objects.equals(typeName, that.typeName)
+			&& Objects.equals(nullable, that.nullable);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(annotatedType, typeName, nullable);
 	}
 }

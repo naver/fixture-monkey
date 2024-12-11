@@ -48,9 +48,9 @@ import com.navercorp.fixturemonkey.api.property.ConstructorParameterPropertyGene
 import com.navercorp.fixturemonkey.api.property.ConstructorPropertyGeneratorContext;
 import com.navercorp.fixturemonkey.api.property.FieldPropertyGenerator;
 import com.navercorp.fixturemonkey.api.property.JavaBeansPropertyGenerator;
-import com.navercorp.fixturemonkey.api.property.MethodParameterProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.PropertyUtils;
+import com.navercorp.fixturemonkey.api.property.TypeNameProperty;
 import com.navercorp.fixturemonkey.api.type.TypeCache;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.api.type.Types;
@@ -239,7 +239,7 @@ public final class JavaInstantiatorProcessor implements InstantiatorProcessor {
 			String resolvedParameterName = resolvedParameterNames.get(i);
 			TypeReference<?> resolvedTypeReference = resolvedParameterTypes.get(i);
 			properties.add(
-				new MethodParameterProperty(
+				new TypeNameProperty(
 					resolvedTypeReference.getAnnotatedType(),
 					resolvedParameterName,
 					null

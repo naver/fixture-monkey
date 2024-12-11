@@ -133,9 +133,8 @@ public final class ConstructorParameterPropertyGenerator implements PropertyGene
 			constructorPropertiesByName.put(
 				receiverParameter.getName(),
 				new ConstructorProperty(
-					receiverParameter.getAnnotatedType(),
+					new TypeNameProperty(receiverParameter.getAnnotatedType(), receiverParameter.getName(), null),
 					constructor,
-					receiverParameter.getName(),
 					null,
 					null
 				)
@@ -158,9 +157,8 @@ public final class ConstructorParameterPropertyGenerator implements PropertyGene
 				constructorPropertiesByName.put(
 					parameterName,
 					new ConstructorProperty(
-						fieldProperty.getAnnotatedType(),
+						fieldProperty,
 						constructor,
-						parameterName,
 						fieldProperty,
 						null
 					)
@@ -169,9 +167,8 @@ public final class ConstructorParameterPropertyGenerator implements PropertyGene
 				constructorPropertiesByName.put(
 					parameterName,
 					new ConstructorProperty(
-						parameterAnnotatedType,
+						new TypeNameProperty(parameterAnnotatedType, parameterName, null),
 						constructor,
-						parameterName,
 						fieldProperty,
 						null
 					)

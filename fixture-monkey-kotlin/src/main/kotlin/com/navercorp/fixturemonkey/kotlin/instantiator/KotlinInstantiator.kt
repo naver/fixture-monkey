@@ -37,9 +37,9 @@ import com.navercorp.fixturemonkey.api.introspector.CompositeArbitraryIntrospect
 import com.navercorp.fixturemonkey.api.introspector.FieldReflectionArbitraryIntrospector
 import com.navercorp.fixturemonkey.api.property.FieldPropertyGenerator
 import com.navercorp.fixturemonkey.api.property.JavaBeansPropertyGenerator
-import com.navercorp.fixturemonkey.api.property.MethodParameterProperty
 import com.navercorp.fixturemonkey.api.property.Property
 import com.navercorp.fixturemonkey.api.property.PropertyUtils
+import com.navercorp.fixturemonkey.api.property.TypeNameProperty
 import com.navercorp.fixturemonkey.api.type.TypeReference
 import com.navercorp.fixturemonkey.api.type.Types
 import com.navercorp.fixturemonkey.kotlin.introspector.CompanionObjectFactoryMethodIntrospector
@@ -217,7 +217,7 @@ class KotlinInstantiatorProcessor :
     ): List<Property> = this.parameters
         .filter { parameter -> parameter.kind != KParameter.Kind.INSTANCE }
         .mapIndexed { index, kParameter ->
-            MethodParameterProperty(
+            TypeNameProperty(
                 resolvedParameterTypes[index].annotatedType,
                 resolvedParameterNames[index],
                 kParameter.type.isMarkedNullable,

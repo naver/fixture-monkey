@@ -10,6 +10,11 @@ import java.util.OptionalInt;
 import java.util.OptionalLong;
 import java.util.Set;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.Value;
 
 import com.navercorp.fixturemonkey.tests.java.ImmutableJavaTestSpecs.Enum;
@@ -238,5 +243,13 @@ public class ConstructorTestSpecs {
 		public String getValue() {
 			return value;
 		}
+	}
+
+	@Getter
+	@AllArgsConstructor
+	public class JavaxValidationObject {
+		@Max(100)
+		@Min(100)
+		private int value;
 	}
 }
