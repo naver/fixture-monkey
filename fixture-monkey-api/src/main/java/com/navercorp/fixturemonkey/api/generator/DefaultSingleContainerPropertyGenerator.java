@@ -28,10 +28,15 @@ import org.apiguardian.api.API.Status;
 import com.navercorp.fixturemonkey.api.property.DefaultContainerElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.TypeParameterProperty;
+import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.4.3", status = Status.MAINTAINED)
 public final class DefaultSingleContainerPropertyGenerator implements ContainerPropertyGenerator {
+	private static final TypeReference<String> DEFAULT_ELEMENT_TYPE =
+		new TypeReference<String>() {
+		};
+
 	public static final DefaultSingleContainerPropertyGenerator INSTANCE =
 		new DefaultSingleContainerPropertyGenerator();
 
@@ -55,7 +60,9 @@ public final class DefaultSingleContainerPropertyGenerator implements ContainerP
 		List<Property> childProperties = new ArrayList<>();
 		for (int sequence = 0; sequence < size; sequence++) {
 			Integer elementIndex = sequence;
-			AnnotatedType elementType = elementTypes.get(0);
+			AnnotatedType elementType = elementTypes.isEmpty()
+				? DEFAULT_ELEMENT_TYPE.getAnnotatedType()
+				: elementTypes.get(0);
 
 			childProperties.add(
 				new DefaultContainerElementProperty(
