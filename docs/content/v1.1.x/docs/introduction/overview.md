@@ -58,7 +58,7 @@ class Bar extends Foo {
 }
 
 Foo foo = FixtureMonkey.create().giveMeOne(Foo.class);
-Bar bar = FixtureMonkey.create().giveMeone(Bar.class);
+Bar bar = FixtureMonkey.create().giveMeOne(Bar.class);
 
 // circular-reference
 class Foo {
