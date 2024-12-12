@@ -58,7 +58,7 @@ class Bar extends Foo {
 }
 
 Foo foo = FixtureMonkey.create().giveMeOne(Foo.class);
-Bar bar = FixtureMonkey.create().giveMeone(Bar.class);
+Bar bar = FixtureMonkey.create().giveMeOne(Bar.class);
 
 // circular-reference
 class Foo {
@@ -92,4 +92,3 @@ The Plasma project aimed to revolutionize Naver Pay's architecture, which is the
 
 The project required thorough testing of complex business requirements, and with Fixture Monkey's assistance, the team efficiently wrote over 10,000 tests, uncovering critical edge cases and ensuring the system's reliability.
 Now available as an open-source library, developers worldwide can take advantage of Fixture Monkey to simplify their test codes and build robust applications with confidence.
-
