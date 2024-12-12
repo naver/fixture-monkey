@@ -31,13 +31,17 @@ import org.slf4j.LoggerFactory;
 import com.navercorp.fixturemonkey.api.property.DefaultContainerElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.TypeParameterProperty;
+import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class SetContainerPropertyGenerator implements ContainerPropertyGenerator {
-	public static final SetContainerPropertyGenerator INSTANCE = new SetContainerPropertyGenerator();
-
 	private static final Logger LOGGER = LoggerFactory.getLogger(SetContainerPropertyGenerator.class);
+	private static final TypeReference<String> DEFAULT_ELEMENT_TYPE =
+		new TypeReference<String>() {
+		};
+
+	public static final SetContainerPropertyGenerator INSTANCE = new SetContainerPropertyGenerator();
 
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Override
@@ -45,15 +49,13 @@ public final class SetContainerPropertyGenerator implements ContainerPropertyGen
 		Property property = context.getProperty();
 
 		List<AnnotatedType> elementTypes = Types.getGenericsTypes(property.getAnnotatedType());
-		if (elementTypes.size() != 1) {
-			throw new IllegalArgumentException(
-				"Set elementsTypes must be have 1 generics type for element. "
-					+ "propertyType: " + property.getType()
-					+ ", elementTypes: " + elementTypes
-			);
+		AnnotatedType elementType;
+		if (elementTypes.size() == 1) {
+			elementType = elementTypes.get(0);
+		} else {
+			elementType = DEFAULT_ELEMENT_TYPE.getAnnotatedType();
 		}
 
-		AnnotatedType elementType = elementTypes.get(0);
 		ArbitraryContainerInfo containerInfo = context.getContainerInfo();
 		Class<?> actualElementType = Types.getActualType(elementType.getType());
 
