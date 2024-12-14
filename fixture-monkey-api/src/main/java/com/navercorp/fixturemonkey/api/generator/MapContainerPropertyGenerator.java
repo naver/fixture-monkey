@@ -37,9 +37,9 @@ import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class MapContainerPropertyGenerator implements ContainerPropertyGenerator {
-	public static final MapContainerPropertyGenerator INSTANCE = new MapContainerPropertyGenerator();
-
 	private static final Logger LOGGER = LoggerFactory.getLogger(MapContainerPropertyGenerator.class);
+
+	public static final MapContainerPropertyGenerator INSTANCE = new MapContainerPropertyGenerator();
 
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Override
@@ -47,16 +47,10 @@ public final class MapContainerPropertyGenerator implements ContainerPropertyGen
 		Property property = context.getProperty();
 
 		List<AnnotatedType> genericsTypes = Types.getGenericsTypes(property.getAnnotatedType());
-		if (genericsTypes.size() != 2) {
-			throw new IllegalArgumentException(
-				"Map genericsTypes must be have 2 generics type for key and value. "
-					+ "propertyType: " + property.getType()
-					+ ", genericsTypes: " + genericsTypes
-			);
-		}
-
-		AnnotatedType keyType = genericsTypes.get(0);
-		AnnotatedType valueType = genericsTypes.get(1);
+		AnnotatedType keyType =
+			!genericsTypes.isEmpty() ? genericsTypes.get(0) : DEFAULT_ELEMENT_RAW_TYPE.getAnnotatedType();
+		AnnotatedType valueType =
+			genericsTypes.size() > 1 ? genericsTypes.get(1) : DEFAULT_ELEMENT_RAW_TYPE.getAnnotatedType();
 		Class<?> actualKeyType = Types.getActualType(keyType);
 
 		ArbitraryContainerInfo containerInfo = context.getContainerInfo();

@@ -21,8 +21,14 @@ package com.navercorp.fixturemonkey.api.generator;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import com.navercorp.fixturemonkey.api.type.TypeReference;
+
 @API(since = "0.4.0", status = Status.MAINTAINED)
 @FunctionalInterface
 public interface ContainerPropertyGenerator {
+	TypeReference<String> DEFAULT_ELEMENT_RAW_TYPE =
+		new TypeReference<String>() {
+		};
+
 	ContainerProperty generate(ContainerPropertyGeneratorContext context);
 }

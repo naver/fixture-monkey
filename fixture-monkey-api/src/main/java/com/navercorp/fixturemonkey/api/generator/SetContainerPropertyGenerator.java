@@ -31,15 +31,11 @@ import org.slf4j.LoggerFactory;
 import com.navercorp.fixturemonkey.api.property.DefaultContainerElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.TypeParameterProperty;
-import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class SetContainerPropertyGenerator implements ContainerPropertyGenerator {
 	private static final Logger LOGGER = LoggerFactory.getLogger(SetContainerPropertyGenerator.class);
-	private static final TypeReference<String> DEFAULT_ELEMENT_TYPE =
-		new TypeReference<String>() {
-		};
 
 	public static final SetContainerPropertyGenerator INSTANCE = new SetContainerPropertyGenerator();
 
@@ -53,7 +49,7 @@ public final class SetContainerPropertyGenerator implements ContainerPropertyGen
 		if (elementTypes.size() == 1) {
 			elementType = elementTypes.get(0);
 		} else {
-			elementType = DEFAULT_ELEMENT_TYPE.getAnnotatedType();
+			elementType = DEFAULT_ELEMENT_RAW_TYPE.getAnnotatedType();
 		}
 
 		ArbitraryContainerInfo containerInfo = context.getContainerInfo();
