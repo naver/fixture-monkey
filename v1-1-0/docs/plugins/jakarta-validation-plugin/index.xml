@@ -8,13 +8,13 @@
 
 &lt;h2 id="dependencies">Dependencies &lt;a href="#dependencies" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h2>
 &lt;h4 id="gradle">Gradle &lt;a href="#gradle" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h4>
-&lt;pre>&lt;code class="language-groovy">testImplementation(&amp;quot;com.navercorp.fixturemonkey:fixture-monkey-jakarta-validation:1.1.6&amp;quot;)
+&lt;pre>&lt;code class="language-groovy">testImplementation(&amp;quot;com.navercorp.fixturemonkey:fixture-monkey-jakarta-validation:1.1.5&amp;quot;)
 &lt;/code>&lt;/pre>
 &lt;h4 id="maven">Maven &lt;a href="#maven" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h4>
 &lt;pre>&lt;code class="language-xml">&amp;lt;dependency&amp;gt;
  &amp;lt;groupId&amp;gt;com.navercorp.fixturemonkey&amp;lt;/groupId&amp;gt;
  &amp;lt;artifactId&amp;gt;fixture-monkey-jakarta-validation&amp;lt;/artifactId&amp;gt;
- &amp;lt;version&amp;gt;1.1.6&amp;lt;/version&amp;gt;
+ &amp;lt;version&amp;gt;1.1.5&amp;lt;/version&amp;gt;
  &amp;lt;scope&amp;gt;test&amp;lt;/scope&amp;gt;
 &amp;lt;/dependency&amp;gt;
 &lt;/code>&lt;/pre>
