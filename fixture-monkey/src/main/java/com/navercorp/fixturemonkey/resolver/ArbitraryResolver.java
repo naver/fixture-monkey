@@ -30,7 +30,7 @@ import com.navercorp.fixturemonkey.api.context.MonkeyContext;
 import com.navercorp.fixturemonkey.api.matcher.DefaultTreeMatcherMetadata;
 import com.navercorp.fixturemonkey.api.matcher.TreeMatcherOperator;
 import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
-import com.navercorp.fixturemonkey.api.property.RootProperty;
+import com.navercorp.fixturemonkey.api.property.TreeRootProperty;
 import com.navercorp.fixturemonkey.builder.ArbitraryBuilderContext;
 import com.navercorp.fixturemonkey.customizer.ArbitraryManipulator;
 import com.navercorp.fixturemonkey.customizer.MonkeyManipulatorFactory;
@@ -53,7 +53,7 @@ public final class ArbitraryResolver {
 	}
 
 	public CombinableArbitrary<?> resolve(
-		RootProperty rootProperty,
+		TreeRootProperty rootProperty,
 		ArbitraryBuilderContext builderContext
 	) {
 		FixtureMonkeyOptions fixtureMonkeyOptions = monkeyContext.getFixtureMonkeyOptions();

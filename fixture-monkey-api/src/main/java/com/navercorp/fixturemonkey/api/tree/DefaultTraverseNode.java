@@ -48,12 +48,12 @@ import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.PropertyGenerator;
 import com.navercorp.fixturemonkey.api.property.PropertyPath;
-import com.navercorp.fixturemonkey.api.property.RootProperty;
+import com.navercorp.fixturemonkey.api.property.TreeRootProperty;
 import com.navercorp.fixturemonkey.api.property.TypeDefinition;
 
 @API(since = "1.1.4", status = Status.EXPERIMENTAL)
 public final class DefaultTraverseNode implements TraverseNode, TraverseNodeMetadata {
-	private final RootProperty rootProperty;
+	private final TreeRootProperty rootProperty;
 
 	@Nullable
 	private final Property resolvedParentProperty;
@@ -85,7 +85,7 @@ public final class DefaultTraverseNode implements TraverseNode, TraverseNodeMeta
 	});
 
 	DefaultTraverseNode(
-		RootProperty rootProperty,
+		TreeRootProperty rootProperty,
 		@Nullable Property resolvedParentProperty,
 		TypeDefinition resolvedTypeDefinition,
 		TreeProperty treeProperty,
@@ -176,7 +176,7 @@ public final class DefaultTraverseNode implements TraverseNode, TraverseNodeMeta
 		return parent;
 	}
 
-	public RootProperty getRootProperty() {
+	public TreeRootProperty getRootProperty() {
 		return rootProperty;
 	}
 
@@ -303,7 +303,7 @@ public final class DefaultTraverseNode implements TraverseNode, TraverseNodeMeta
 	}
 
 	public static DefaultTraverseNode generateRootNode(
-		RootProperty rootProperty,
+		TreeRootProperty rootProperty,
 		TraverseContext traverseContext
 	) {
 		return DefaultTraverseNode.generateObjectNode(
@@ -317,7 +317,7 @@ public final class DefaultTraverseNode implements TraverseNode, TraverseNodeMeta
 	}
 
 	static DefaultTraverseNode generateObjectNode(
-		RootProperty rootProperty,
+		TreeRootProperty rootProperty,
 		@Nullable Property resolvedParentProperty,
 		Property property,
 		@Nullable Integer propertySequence,
@@ -481,7 +481,7 @@ public final class DefaultTraverseNode implements TraverseNode, TraverseNodeMeta
 		List<ObjectProperty> objectProperties
 	) {
 		if (!container || objectProperties.isEmpty()
-			|| !(objectProperties.get(0).getProperty() instanceof RootProperty)) {
+			|| !(objectProperties.get(0).getProperty() instanceof TreeRootProperty)) {
 			return null;
 		}
 

@@ -61,6 +61,8 @@ import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.api.property.PropertySelector;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
+import com.navercorp.fixturemonkey.api.property.TreeRootProperty;
+import com.navercorp.fixturemonkey.api.property.TypeParameterProperty;
 import com.navercorp.fixturemonkey.api.tree.TreeNodeManipulator;
 import com.navercorp.fixturemonkey.api.type.LazyAnnotatedType;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
@@ -77,7 +79,7 @@ import com.navercorp.fixturemonkey.resolver.ArbitraryResolver;
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, ExperimentalArbitraryBuilder<T>,
 	ObjectBuilder<T>, ArbitraryBuilderContextProvider {
-	private final RootProperty rootProperty;
+	private final TreeRootProperty rootProperty;
 	private final ArbitraryResolver resolver;
 	private final MonkeyManipulatorFactory monkeyManipulatorFactory;
 	private final ArbitraryBuilderContext context;
@@ -85,7 +87,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 	private final InstantiatorProcessor instantiatorProcessor;
 
 	public DefaultArbitraryBuilder(
-		RootProperty rootProperty,
+		TreeRootProperty rootProperty,
 		ArbitraryResolver resolver,
 		MonkeyManipulatorFactory monkeyManipulatorFactory,
 		ArbitraryBuilderContext context,
@@ -543,7 +545,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 		context.addManipulator(arbitraryManipulator);
 
 		return new DefaultArbitraryBuilder<>(
-			new RootProperty(new LazyAnnotatedType<>(lazyArbitrary::getValue)),
+			new RootProperty(new TypeParameterProperty(new LazyAnnotatedType<>(lazyArbitrary::getValue))),
 			resolver,
 			monkeyManipulatorFactory,
 			context,

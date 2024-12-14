@@ -30,7 +30,7 @@ import com.navercorp.fixturemonkey.api.exception.ContainerSizeFilterMissExceptio
 import com.navercorp.fixturemonkey.api.exception.FixedValueFilterMissException;
 import com.navercorp.fixturemonkey.api.exception.RetryableFilterMissException;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
-import com.navercorp.fixturemonkey.api.property.RootProperty;
+import com.navercorp.fixturemonkey.api.property.TreeRootProperty;
 import com.navercorp.fixturemonkey.api.validator.ArbitraryValidator;
 import com.navercorp.fixturemonkey.tree.ObjectTree;
 
@@ -38,7 +38,7 @@ import com.navercorp.fixturemonkey.tree.ObjectTree;
 final class ResolvedCombinableArbitrary<T> implements CombinableArbitrary<T> {
 	private static final int VALIDATION_ANNOTATION_FILTERING_COUNT = 1;
 
-	private final RootProperty rootProperty;
+	private final TreeRootProperty rootProperty;
 	private final LazyArbitrary<ObjectTree> objectTree;
 	private final int generateMaxTries;
 	private final LazyArbitrary<CombinableArbitrary<T>> arbitrary;
@@ -48,7 +48,7 @@ final class ResolvedCombinableArbitrary<T> implements CombinableArbitrary<T> {
 	private Exception lastException = null;
 
 	public ResolvedCombinableArbitrary(
-		RootProperty rootProperty,
+		TreeRootProperty rootProperty,
 		Supplier<ObjectTree> regenerateTree,
 		Function<ObjectTree, CombinableArbitrary<T>> generateArbitrary,
 		int generateMaxTries,

@@ -24,7 +24,7 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
-import com.navercorp.fixturemonkey.api.property.RootProperty;
+import com.navercorp.fixturemonkey.api.property.TreeRootProperty;
 import com.navercorp.fixturemonkey.api.tree.DefaultTraverseNode;
 import com.navercorp.fixturemonkey.api.tree.TraverseContext;
 import com.navercorp.fixturemonkey.customizer.NodeManipulator;
@@ -36,7 +36,7 @@ public final class ObjectTree {
 	private final GenerateFixtureContext generateFixtureContext;
 
 	public ObjectTree(
-		RootProperty rootProperty,
+		TreeRootProperty rootProperty,
 		GenerateFixtureContext generateFixtureContext,
 		TraverseContext traverseContext
 	) {

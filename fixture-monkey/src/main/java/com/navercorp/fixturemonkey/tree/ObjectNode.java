@@ -32,7 +32,7 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.PropertyPath;
-import com.navercorp.fixturemonkey.api.property.RootProperty;
+import com.navercorp.fixturemonkey.api.property.TreeRootProperty;
 import com.navercorp.fixturemonkey.api.property.TypeDefinition;
 import com.navercorp.fixturemonkey.api.tree.TraverseNode;
 import com.navercorp.fixturemonkey.api.tree.TraverseNodeMetadata;
@@ -114,7 +114,7 @@ public final class ObjectNode implements TraverseNode, TraverseNodeMetadata {
 	}
 
 	@Override
-	public RootProperty getRootProperty() {
+	public TreeRootProperty getRootProperty() {
 		return this.getMetadata().getRootProperty();
 	}
 
