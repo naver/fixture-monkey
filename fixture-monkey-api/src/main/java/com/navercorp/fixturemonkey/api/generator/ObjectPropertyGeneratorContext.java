@@ -25,7 +25,7 @@ import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
-import com.navercorp.fixturemonkey.api.property.RootProperty;
+import com.navercorp.fixturemonkey.api.property.TreeRootProperty;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class ObjectPropertyGeneratorContext {
@@ -74,6 +74,6 @@ public final class ObjectPropertyGeneratorContext {
 	}
 
 	public boolean isRootContext() {
-		return this.property instanceof RootProperty;
+		return this.property instanceof TreeRootProperty;
 	}
 }

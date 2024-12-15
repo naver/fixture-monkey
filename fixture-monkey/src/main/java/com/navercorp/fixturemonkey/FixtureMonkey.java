@@ -34,6 +34,8 @@ import com.navercorp.fixturemonkey.api.context.MonkeyContext;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
+import com.navercorp.fixturemonkey.api.property.TreeRootProperty;
+import com.navercorp.fixturemonkey.api.property.TypeParameterProperty;
 import com.navercorp.fixturemonkey.api.type.LazyAnnotatedType;
 import com.navercorp.fixturemonkey.api.type.TypeReference;
 import com.navercorp.fixturemonkey.builder.ArbitraryBuilderContext;
@@ -81,7 +83,7 @@ public final class FixtureMonkey {
 	}
 
 	public <T> ArbitraryBuilder<T> giveMeBuilder(TypeReference<T> type) {
-		RootProperty rootProperty = new RootProperty(type.getAnnotatedType());
+		TreeRootProperty rootProperty = new RootProperty(new TypeParameterProperty(type.getAnnotatedType()));
 
 		ArbitraryBuilderContext builderContext = monkeyContext.getRegisteredArbitraryBuilders().stream()
 			.filter(it -> it.match(rootProperty))
@@ -113,7 +115,7 @@ public final class FixtureMonkey {
 		context.addManipulator(arbitraryManipulator);
 
 		return new DefaultArbitraryBuilder<>(
-			new RootProperty(new LazyAnnotatedType<>(() -> value)),
+			new RootProperty(new TypeParameterProperty(new LazyAnnotatedType<>(() -> value))),
 			new ArbitraryResolver(
 				manipulatorOptimizer,
 				monkeyManipulatorFactory,

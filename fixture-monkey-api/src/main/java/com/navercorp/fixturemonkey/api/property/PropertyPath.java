@@ -67,7 +67,7 @@ public final class PropertyPath implements Comparable<PropertyPath> {
 	}
 
 	private String getCurrentPropertyExpression() {
-		if (property instanceof RootProperty || property instanceof MapEntryElementProperty) {
+		if (property instanceof TreeRootProperty || property instanceof MapEntryElementProperty) {
 			return "";
 		} else if (property instanceof MapKeyElementProperty) {
 			return "{key}";
@@ -81,7 +81,7 @@ public final class PropertyPath implements Comparable<PropertyPath> {
 
 	private String getDelimiter() {
 		if (property instanceof ContainerElementProperty
-			|| property instanceof RootProperty
+			|| property instanceof TreeRootProperty
 			|| property instanceof MapEntryElementProperty
 			|| property instanceof MapKeyElementProperty
 			|| property instanceof MapValueElementProperty

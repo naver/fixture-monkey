@@ -32,7 +32,7 @@ import com.navercorp.fixturemonkey.api.container.ConcurrentLruCache;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
 import com.navercorp.fixturemonkey.api.property.Property;
-import com.navercorp.fixturemonkey.api.property.RootProperty;
+import com.navercorp.fixturemonkey.api.property.TreeRootProperty;
 import com.navercorp.fixturemonkey.api.type.Types;
 
 /**
@@ -48,14 +48,14 @@ import com.navercorp.fixturemonkey.api.type.Types;
 public final class MonkeyContext {
 	private final ConcurrentLruCache<Property, CombinableArbitrary<?>> arbitrariesByProperty;
 	private final ConcurrentLruCache<Property, CombinableArbitrary<?>> javaArbitrariesByProperty;
-	private final ConcurrentLruCache<RootProperty, MonkeyGeneratorContext> generatorContextByRootProperty;
+	private final ConcurrentLruCache<TreeRootProperty, MonkeyGeneratorContext> generatorContextByRootProperty;
 	private final List<MatcherOperator<? extends ObjectBuilder<?>>> registeredArbitraryBuilders;
 	private final FixtureMonkeyOptions fixtureMonkeyOptions;
 
 	public MonkeyContext(
 		ConcurrentLruCache<Property, CombinableArbitrary<?>> arbitrariesByProperty,
 		ConcurrentLruCache<Property, CombinableArbitrary<?>> javaArbitrariesByProperty,
-		ConcurrentLruCache<RootProperty, MonkeyGeneratorContext> generatorContextByRootProperty,
+		ConcurrentLruCache<TreeRootProperty, MonkeyGeneratorContext> generatorContextByRootProperty,
 		List<MatcherOperator<? extends ObjectBuilder<?>>> registeredArbitraryBuilders,
 		FixtureMonkeyOptions fixtureMonkeyOptions
 	) {
@@ -89,7 +89,7 @@ public final class MonkeyContext {
 	}
 
 	public MonkeyGeneratorContext newGeneratorContext(
-		RootProperty rootProperty
+		TreeRootProperty rootProperty
 	) {
 		return generatorContextByRootProperty.computeIfAbsent(
 			rootProperty,

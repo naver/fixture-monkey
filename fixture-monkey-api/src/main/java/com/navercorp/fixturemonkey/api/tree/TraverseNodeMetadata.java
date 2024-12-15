@@ -28,12 +28,12 @@ import org.apiguardian.api.API.Status;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.PropertyPath;
-import com.navercorp.fixturemonkey.api.property.RootProperty;
+import com.navercorp.fixturemonkey.api.property.TreeRootProperty;
 import com.navercorp.fixturemonkey.api.property.TypeDefinition;
 
 @API(since = "1.1.4", status = Status.EXPERIMENTAL)
 public interface TraverseNodeMetadata {
-	RootProperty getRootProperty();
+	TreeRootProperty getRootProperty();
 
 	@Nullable
 	Property getResolvedParentProperty();
