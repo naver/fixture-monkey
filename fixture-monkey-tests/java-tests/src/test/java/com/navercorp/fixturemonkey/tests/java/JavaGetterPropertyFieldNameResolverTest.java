@@ -31,13 +31,13 @@ import com.navercorp.fixturemonkey.api.expression.JavaGetterPropertyFieldNameRes
 
 class JavaGetterPropertyFieldNameResolverTest {
 
-	private final JavaGetterPropertyFieldNameResolver resolver = new JavaGetterPropertyFieldNameResolver();
+	private final JavaGetterPropertyFieldNameResolver SUT = new JavaGetterPropertyFieldNameResolver();
 
 	@Test
 	void testNonBooleanFieldWithIsPrefix() {
 		assertDoesNotThrow(() -> {
 			Method method = TestClass.class.getDeclaredMethod("getIsStatus");
-			String fieldName = resolver.resolveFieldName(TestClass.class, method.getName());
+			String fieldName = SUT.resolveFieldName(TestClass.class, method.getName());
 			assertEquals("isStatus", fieldName,
 				"Should strip 'get' from a non-boolean getter with the 'is' prefix.");
 		}, "Method 'getIsStatus' should exist and not throw an exception.");
@@ -47,7 +47,7 @@ class JavaGetterPropertyFieldNameResolverTest {
 	void testPrimitiveTypeBooleanFieldWithIsPrefix() {
 		assertDoesNotThrow(() -> {
 			Method method = TestClass.class.getDeclaredMethod("isActive");
-			String fieldName = resolver.resolveFieldName(TestClass.class, method.getName());
+			String fieldName = SUT.resolveFieldName(TestClass.class, method.getName());
 			assertEquals("isActive", fieldName,
 				"Should not strip the 'is' prefix from a getter for a primitive boolean field.");
 		}, "Method 'isActive' should exist and not throw an exception.");
@@ -57,7 +57,7 @@ class JavaGetterPropertyFieldNameResolverTest {
 	void testBooleanFieldWithoutIsPrefix() {
 		assertDoesNotThrow(() -> {
 			Method method = TestClass.class.getDeclaredMethod("isEnabled");
-			String fieldName = resolver.resolveFieldName(TestClass.class, method.getName());
+			String fieldName = SUT.resolveFieldName(TestClass.class, method.getName());
 			assertEquals(
 				"enabled", fieldName,
 				"Should strip the 'is' prefix from "
@@ -69,7 +69,7 @@ class JavaGetterPropertyFieldNameResolverTest {
 	void testNonBooleanFieldWithoutIsPrefix() {
 		assertDoesNotThrow(() -> {
 			Method method = TestClass.class.getDeclaredMethod("getName");
-			String fieldName = resolver.resolveFieldName(TestClass.class, method.getName());
+			String fieldName = SUT.resolveFieldName(TestClass.class, method.getName());
 			assertEquals("name", fieldName,
 				"Should strip 'get' from a getter for a non-boolean field without the 'is' prefix.");
 		}, "Method 'getName' should exist and not throw an exception.");
@@ -79,7 +79,7 @@ class JavaGetterPropertyFieldNameResolverTest {
 	void testWrapperTypeBooleanFieldWithIsPrefix() {
 		assertDoesNotThrow(() -> {
 			Method method = TestClass.class.getDeclaredMethod("getIsDeleted");
-			String fieldName = resolver.resolveFieldName(TestClass.class, method.getName());
+			String fieldName = SUT.resolveFieldName(TestClass.class, method.getName());
 			assertEquals("isDeleted", fieldName,
 				"Should strip 'get' from a getter for a wrapper type Boolean field with the 'is' prefix.");
 		}, "Method 'getIsDeleted' should exist and not throw an exception.");
