@@ -30,41 +30,41 @@ import com.navercorp.fixturemonkey.api.expression.JavaGetterPropertyFieldNameRes
 
 class JavaGetterPropertyFieldNameResolverTest {
 
-	private final JavaGetterPropertyFieldNameResolver SUT = new JavaGetterPropertyFieldNameResolver();
+	private final JavaGetterPropertyFieldNameResolver sut = new JavaGetterPropertyFieldNameResolver();
 
 	@Test
 	void testNonBooleanFieldWithIsPrefix() throws NoSuchMethodException {
 		Method method = TestClass.class.getDeclaredMethod("getIsStatus");
 
-		then(SUT.resolveFieldName(TestClass.class, method.getName())).isEqualTo("isStatus");
+		then(sut.resolveFieldName(TestClass.class, method.getName())).isEqualTo("isStatus");
 	}
 
 	@Test
 	void testPrimitiveTypeBooleanFieldWithIsPrefix() throws NoSuchMethodException {
 		Method method = TestClass.class.getDeclaredMethod("isActive");
 
-		then(SUT.resolveFieldName(TestClass.class, method.getName())).isEqualTo("isActive");
+		then(sut.resolveFieldName(TestClass.class, method.getName())).isEqualTo("isActive");
 	}
 
 	@Test
 	void testBooleanFieldWithoutIsPrefix() throws NoSuchMethodException {
 		Method method = TestClass.class.getDeclaredMethod("isEnabled");
 
-		then(SUT.resolveFieldName(TestClass.class, method.getName())).isEqualTo("enabled");
+		then(sut.resolveFieldName(TestClass.class, method.getName())).isEqualTo("enabled");
 	}
 
 	@Test
 	void testNonBooleanFieldWithoutIsPrefix() throws NoSuchMethodException {
 		Method method = TestClass.class.getDeclaredMethod("getName");
 
-		then(SUT.resolveFieldName(TestClass.class, method.getName())).isEqualTo("name");
+		then(sut.resolveFieldName(TestClass.class, method.getName())).isEqualTo("name");
 	}
 
 	@Test
 	void testWrapperTypeBooleanFieldWithIsPrefix() throws NoSuchMethodException {
 		Method method = TestClass.class.getDeclaredMethod("getIsDeleted");
 
-		then(SUT.resolveFieldName(TestClass.class, method.getName())).isEqualTo("isDeleted");
+		then(sut.resolveFieldName(TestClass.class, method.getName())).isEqualTo("isDeleted");
 	}
 
 	@Getter
