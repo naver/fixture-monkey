@@ -25,7 +25,9 @@ import com.navercorp.fixturemonkey.FixtureMonkey
 import com.navercorp.fixturemonkey.api.property.PropertySelector
 import com.navercorp.fixturemonkey.api.type.TypeReference
 import com.navercorp.fixturemonkey.api.type.Types
+import com.navercorp.fixturemonkey.kotlin.KotlinTypeDefaultArbitraryBuilder
 import com.navercorp.fixturemonkey.kotlin.giveMeBuilder
+import com.navercorp.fixturemonkey.kotlin.giveMeKotlinBuilder
 import com.navercorp.fixturemonkey.kotlin.giveMeOne
 import com.navercorp.fixturemonkey.kotlin.propertyExpressionGenerator
 import io.kotest.property.Arb
@@ -67,9 +69,9 @@ inline fun <reified T> FixtureMonkey.giveMeArb(): Arb<T> {
     }
 }
 
-inline fun <reified T> FixtureMonkey.giveMeArb(crossinline applyBuilder: ArbitraryBuilder<T>.() -> ArbitraryBuilder<T>): Arb<T> =
+inline fun <reified T> FixtureMonkey.giveMeArb(crossinline applyBuilder: KotlinTypeDefaultArbitraryBuilder<T>.() -> ArbitraryBuilder<T>): Arb<T> =
     arbitrary {
-        applyBuilder.invoke(this@giveMeArb.giveMeBuilder()).sample()
+        applyBuilder.invoke(this@giveMeArb.giveMeKotlinBuilder()).sample()
     }
 
 fun <T : Any?> ArbitraryBuilder<T>.setArb(expression: String, arb: Arb<Any>): ArbitraryBuilder<T> = this.set(
