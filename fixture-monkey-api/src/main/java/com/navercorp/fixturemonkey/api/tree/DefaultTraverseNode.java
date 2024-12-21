@@ -269,6 +269,27 @@ public final class DefaultTraverseNode implements TraverseNode, TraverseNodeMeta
 	}
 
 	@Override
+	public void forceExpand(TypeDefinition typeDefinition) {
+		List<TraverseNode> children;
+		if (this.getTreeProperty().isContainer()) {
+			children = this.expandContainerNode(
+				typeDefinition,
+				traverseContext.withParentProperties()
+			).collect(Collectors.toList());
+		} else {
+			children = this.generateChildrenNodes(
+				typeDefinition.getResolvedProperty(),
+				typeDefinition.getPropertyGenerator()
+					.generateChildProperties(typeDefinition.getResolvedProperty()),
+				this.nullInject,
+				traverseContext.withParentProperties()
+			);
+		}
+		this.children = children;
+		this.expandedTypeDefinition = typeDefinition;
+	}
+
+	@Override
 	public TraverseNodeMetadata getMetadata() {
 		return this;
 	}

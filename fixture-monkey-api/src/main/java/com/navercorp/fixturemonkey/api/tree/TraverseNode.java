@@ -63,6 +63,23 @@ public interface TraverseNode {
 	void forceExpand();
 
 	/**
+	 * expands the {@link TraverseNode} forcibly. In result, it always generates the child {@link TraverseNode}s.
+	 * It generates the child {@link TraverseNode}s by given {@link TypeDefinition}.
+	 * {@code Force} means that it expands as if it were a root node, even if it is not.
+	 * Unlike {@link #expand()}, it expands without metadata generated on expanding of the parent {@link TraverseNode}.
+	 * <p>
+	 * It will always append the {@link TraverseNode} nodes,
+	 * not remove already created nodes unless it is not a container.
+	 * The container's element nodes will shrink when the node is set by the fixed container object.
+	 * <p>
+	 * The leaf {@link TraverseNode} may generate child {@link TraverseNode}s.
+	 * For example, the {@link TraverseNode} with a self-reference.
+	 *
+	 * @param typeDefinition the {@link TypeDefinition} to expand forcibly
+	 */
+	void forceExpand(TypeDefinition typeDefinition);
+
+	/**
 	 * retrieves the metadata to traverse the tree. Some of its properties can be mutated during traversal.
 	 *
 	 * @return the metadata to traverse the tree
