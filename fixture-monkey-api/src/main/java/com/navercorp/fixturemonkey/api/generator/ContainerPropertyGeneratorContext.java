@@ -31,12 +31,13 @@ public final class ContainerPropertyGeneratorContext {
 	private final Property property;
 	@Nullable
 	private final ArbitraryContainerInfo containerInfo;
+	@Nullable
 	private final ArbitraryContainerInfoGenerator containerInfoGenerator;
 
 	public ContainerPropertyGeneratorContext(
 		Property property,
 		@Nullable ArbitraryContainerInfo containerInfo,
-		ArbitraryContainerInfoGenerator containerInfoGenerator
+		@Nullable ArbitraryContainerInfoGenerator containerInfoGenerator
 	) {
 		this.property = property;
 		this.containerInfo = containerInfo;
