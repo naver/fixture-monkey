@@ -362,7 +362,7 @@ public final class JakartaValidationConstraintGenerator implements JavaConstrain
 				if (negativeMin == null) {
 					negativeMin = decimalMin;
 				} else {
-					negativeMin = negativeMin.min(negativeMin);
+					negativeMin = negativeMin.min(decimalMin);
 				}
 				if (!decimalMinAnnotation.map(DecimalMin::inclusive).get()) {
 					negativeMinInclusive = false;
