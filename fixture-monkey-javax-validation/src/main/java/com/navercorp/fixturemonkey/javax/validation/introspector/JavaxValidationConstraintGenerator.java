@@ -361,7 +361,7 @@ public final class JavaxValidationConstraintGenerator implements JavaConstraintG
 				if (negativeMin == null) {
 					negativeMin = decimalMin;
 				} else {
-					negativeMin = negativeMin.min(negativeMin);
+					negativeMin = negativeMin.min(decimalMin);
 				}
 				if (!decimalMinAnnotation.map(DecimalMin::inclusive).get()) {
 					negativeMinInclusive = false;
