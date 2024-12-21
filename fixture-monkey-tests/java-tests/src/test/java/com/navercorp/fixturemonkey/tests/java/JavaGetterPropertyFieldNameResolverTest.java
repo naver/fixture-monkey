@@ -34,41 +34,41 @@ class JavaGetterPropertyFieldNameResolverTest {
 
 	@Test
 	void testNonBooleanFieldWithIsPrefix() throws NoSuchMethodException {
-		Method method = TestClass.class.getDeclaredMethod("getIsStatus");
+		Method method = JavaGetterObject.class.getDeclaredMethod("getIsStatus");
 
-		then(sut.resolveFieldName(TestClass.class, method.getName())).isEqualTo("isStatus");
+		then(sut.resolveFieldName(JavaGetterObject.class, method.getName())).isEqualTo("isStatus");
 	}
 
 	@Test
 	void testPrimitiveTypeBooleanFieldWithIsPrefix() throws NoSuchMethodException {
-		Method method = TestClass.class.getDeclaredMethod("isActive");
+		Method method = JavaGetterObject.class.getDeclaredMethod("isActive");
 
-		then(sut.resolveFieldName(TestClass.class, method.getName())).isEqualTo("isActive");
+		then(sut.resolveFieldName(JavaGetterObject.class, method.getName())).isEqualTo("isActive");
 	}
 
 	@Test
 	void testBooleanFieldWithoutIsPrefix() throws NoSuchMethodException {
-		Method method = TestClass.class.getDeclaredMethod("isEnabled");
+		Method method = JavaGetterObject.class.getDeclaredMethod("isEnabled");
 
-		then(sut.resolveFieldName(TestClass.class, method.getName())).isEqualTo("enabled");
+		then(sut.resolveFieldName(JavaGetterObject.class, method.getName())).isEqualTo("enabled");
 	}
 
 	@Test
 	void testNonBooleanFieldWithoutIsPrefix() throws NoSuchMethodException {
-		Method method = TestClass.class.getDeclaredMethod("getName");
+		Method method = JavaGetterObject.class.getDeclaredMethod("getName");
 
-		then(sut.resolveFieldName(TestClass.class, method.getName())).isEqualTo("name");
+		then(sut.resolveFieldName(JavaGetterObject.class, method.getName())).isEqualTo("name");
 	}
 
 	@Test
 	void testWrapperTypeBooleanFieldWithIsPrefix() throws NoSuchMethodException {
-		Method method = TestClass.class.getDeclaredMethod("getIsDeleted");
+		Method method = JavaGetterObject.class.getDeclaredMethod("getIsDeleted");
 
-		then(sut.resolveFieldName(TestClass.class, method.getName())).isEqualTo("isDeleted");
+		then(sut.resolveFieldName(JavaGetterObject.class, method.getName())).isEqualTo("isDeleted");
 	}
 
 	@Getter
-	private static class TestClass {
+	private static class JavaGetterObject {
 		private String isStatus;
 		private boolean isActive;
 		private boolean enabled;
