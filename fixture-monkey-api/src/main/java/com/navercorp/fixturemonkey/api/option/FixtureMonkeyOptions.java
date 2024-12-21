@@ -133,7 +133,6 @@ public final class FixtureMonkeyOptions {
 				context -> NOT_NULL_INJECT
 			)
 		);
-	public static final FixtureMonkeyOptions DEFAULT_GENERATE_OPTIONS = FixtureMonkeyOptions.builder().build();
 
 	static {
 		List<String> defaultJavaPackages = new ArrayList<>();
