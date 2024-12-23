@@ -307,8 +307,8 @@ public final class JavaxValidationConstraintGenerator implements JavaConstraintG
 
 		for (DecimalMin decimalMin : context.findAnnotations(DecimalMin.class)) {
 			BigDecimal newMin = new BigDecimal(decimalMin.value());
-			if (min == null || newMin.compareTo(min) > 0 ||
-				(newMin.compareTo(min) == 0 && !decimalMin.inclusive() && minInclusive)) {
+			if (min == null || newMin.compareTo(min) > 0
+				|| (newMin.compareTo(min) == 0 && !decimalMin.inclusive() && minInclusive)) {
 				min = newMin;
 				minInclusive = decimalMin.inclusive();
 			}
@@ -324,16 +324,16 @@ public final class JavaxValidationConstraintGenerator implements JavaConstraintG
 
 		for (DecimalMax decimalMax : context.findAnnotations(DecimalMax.class)) {
 			BigDecimal newMax = new BigDecimal(decimalMax.value());
-			if (max == null || newMax.compareTo(max) < 0 ||
-				(newMax.compareTo(max) == 0 && !decimalMax.inclusive() && maxInclusive)) {
+			if (max == null || newMax.compareTo(max) < 0
+				|| (newMax.compareTo(max) == 0 && !decimalMax.inclusive() && maxInclusive)) {
 				max = newMax;
 				maxInclusive = decimalMax.inclusive();
 			}
 		}
 
 		if (context.findAnnotation(Positive.class).isPresent()) {
-			if (min == null || BigDecimal.ZERO.compareTo(min) > 0 ||
-				(BigDecimal.ZERO.compareTo(min) == 0 && minInclusive)) {
+			if (min == null || BigDecimal.ZERO.compareTo(min) > 0
+				|| (BigDecimal.ZERO.compareTo(min) == 0 && minInclusive)) {
 				min = BigDecimal.ZERO;
 				minInclusive = false;
 			}
@@ -347,8 +347,8 @@ public final class JavaxValidationConstraintGenerator implements JavaConstraintG
 		}
 
 		if (context.findAnnotation(Negative.class).isPresent()) {
-			if (max == null || BigDecimal.ZERO.compareTo(max) < 0 ||
-				(BigDecimal.ZERO.compareTo(max) == 0 && maxInclusive)) {
+			if (max == null || BigDecimal.ZERO.compareTo(max) < 0
+				|| (BigDecimal.ZERO.compareTo(max) == 0 && maxInclusive)) {
 				max = BigDecimal.ZERO;
 				maxInclusive = false;
 			}
