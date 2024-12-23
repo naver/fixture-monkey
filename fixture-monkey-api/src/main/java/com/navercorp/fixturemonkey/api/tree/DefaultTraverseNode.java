@@ -215,7 +215,7 @@ public final class DefaultTraverseNode implements TraverseNode, TraverseNodeMeta
 
 	@Override
 	public boolean expand() {
-		if (this.expandedTypeDefinition == resolvedTypeDefinition) {
+		if (this.expandedTypeDefinition != null) {
 			return false;
 		}
 
@@ -266,6 +266,27 @@ public final class DefaultTraverseNode implements TraverseNode, TraverseNodeMeta
 
 		this.setMergedChildren(newChildren);
 		this.expandedTypeDefinition = resolvedTypeDefinition;
+	}
+
+	@Override
+	public void forceExpand(TypeDefinition typeDefinition) {
+		List<TraverseNode> children;
+		if (this.getTreeProperty().isContainer()) {
+			children = this.expandContainerNode(
+				typeDefinition,
+				traverseContext.withParentProperties()
+			).collect(Collectors.toList());
+		} else {
+			children = this.generateChildrenNodes(
+				typeDefinition.getResolvedProperty(),
+				typeDefinition.getPropertyGenerator()
+					.generateChildProperties(typeDefinition.getResolvedProperty()),
+				this.nullInject,
+				traverseContext.withParentProperties()
+			);
+		}
+		this.setMergedChildren(children);
+		this.expandedTypeDefinition = typeDefinition;
 	}
 
 	@Override

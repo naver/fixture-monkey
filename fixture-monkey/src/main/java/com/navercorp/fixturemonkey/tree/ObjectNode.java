@@ -90,6 +90,16 @@ public final class ObjectNode implements TraverseNode, TraverseNodeMetadata {
 	}
 
 	@Override
+	public void forceExpand(TypeDefinition typeDefinition) {
+		this.traverseNode.forceExpand(typeDefinition);
+		this.setChildren(
+			nullSafe(this.traverseNode.getChildren()).asList().stream()
+				.map(it -> new ObjectNode(it, generateFixtureContext.newChildNodeContext()))
+				.collect(Collectors.toList())
+		);
+	}
+
+	@Override
 	public TraverseNodeMetadata getMetadata() {
 		return traverseNode.getMetadata();
 	}
