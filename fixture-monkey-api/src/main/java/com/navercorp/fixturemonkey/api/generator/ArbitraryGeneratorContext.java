@@ -18,12 +18,15 @@
 
 package com.navercorp.fixturemonkey.api.generator;
 
-import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.*;
 
 import java.lang.annotation.Annotation;
+import java.lang.annotation.Repeatable;
 import java.lang.reflect.AnnotatedType;
+import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -105,6 +108,30 @@ public final class ArbitraryGeneratorContext implements Traceable {
 
 	public <T extends Annotation> Optional<T> findAnnotation(Class<T> annotationClass) {
 		return this.getResolvedProperty().getAnnotation(annotationClass);
+	}
+
+	public <T extends Annotation> List<T> findAnnotations(Class<T> annotationClass) {
+		List<T> results = this.getResolvedProperty().getAnnotations().stream()
+			.filter(it -> annotationClass.isAssignableFrom(it.annotationType()))
+			.map(annotationClass::cast).collect(toList());
+
+		Repeatable repeatable = annotationClass.getAnnotation(Repeatable.class);
+		if (repeatable != null) {
+			Class<? extends Annotation> containerClass = repeatable.value();
+			this.getResolvedProperty().getAnnotations().stream()
+				.filter(it -> containerClass.isAssignableFrom(it.annotationType()))
+				.findFirst()
+				.ifPresent(container -> {
+					try {
+						Method valueMethod = container.annotationType().getDeclaredMethod("value");
+						T[] values = (T[])valueMethod.invoke(container);
+						results.addAll(Arrays.asList(values));
+					} catch (Exception ignored) {
+					}
+				});
+		}
+
+		return results;
 	}
 
 	public List<ArbitraryProperty> getChildren() {
