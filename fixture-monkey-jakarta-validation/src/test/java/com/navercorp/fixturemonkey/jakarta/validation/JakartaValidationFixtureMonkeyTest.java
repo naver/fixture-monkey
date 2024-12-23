@@ -18,7 +18,9 @@
 
 package com.navercorp.fixturemonkey.jakarta.validation;
 
-import static org.assertj.core.api.BDDAssertions.*;
+import static org.assertj.core.api.BDDAssertions.then;
+import static org.assertj.core.api.BDDAssertions.thenNoException;
+import static org.assertj.core.api.BDDAssertions.thenThrownBy;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
