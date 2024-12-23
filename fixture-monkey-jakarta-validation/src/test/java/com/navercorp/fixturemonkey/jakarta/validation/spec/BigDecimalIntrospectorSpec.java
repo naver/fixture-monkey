@@ -51,4 +51,12 @@ public class BigDecimalIntrospectorSpec {
 
 	@PositiveOrZero
 	private BigDecimal positiveOrZero;
+
+	@DecimalMin(value = "100.1")
+	@DecimalMax(value = "100.1")
+	private BigDecimal decimalEqual;
+
+	@Max(value = 100)
+	@Min(value = 100)
+	private BigDecimal integerEqual;
 }

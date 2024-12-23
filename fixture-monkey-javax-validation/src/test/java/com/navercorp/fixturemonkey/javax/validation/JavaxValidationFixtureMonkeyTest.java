@@ -18,9 +18,7 @@
 
 package com.navercorp.fixturemonkey.javax.validation;
 
-import static org.assertj.core.api.BDDAssertions.then;
-import static org.assertj.core.api.BDDAssertions.thenNoException;
-import static org.assertj.core.api.BDDAssertions.thenThrownBy;
+import static org.assertj.core.api.BDDAssertions.*;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -81,6 +79,8 @@ class JavaxValidationFixtureMonkeyTest {
 		then(actual.getNegativeOrZero()).isLessThanOrEqualTo(BigDecimal.ZERO);
 		then(actual.getPositive()).isPositive();
 		then(actual.getPositiveOrZero()).isGreaterThanOrEqualTo(BigDecimal.ZERO);
+		then(actual.getDecimalEqual()).isEqualByComparingTo(BigDecimal.valueOf(100.1));
+		then(actual.getIntegerEqual()).isEqualByComparingTo(BigDecimal.valueOf(100));
 	}
 
 	@Property(tries = 100)
