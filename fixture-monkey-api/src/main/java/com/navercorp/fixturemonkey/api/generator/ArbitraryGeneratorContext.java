@@ -18,7 +18,8 @@
 
 package com.navercorp.fixturemonkey.api.generator;
 
-import static java.util.stream.Collectors.*;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Repeatable;
