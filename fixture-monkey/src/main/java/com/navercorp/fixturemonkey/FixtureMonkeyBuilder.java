@@ -32,6 +32,7 @@ import java.util.function.UnaryOperator;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import com.navercorp.fixturemonkey.annotation.Order;
 import com.navercorp.fixturemonkey.api.constraint.JavaConstraintGenerator;
 import com.navercorp.fixturemonkey.api.container.DecomposedContainerValueFactory;
 import com.navercorp.fixturemonkey.api.context.MonkeyContext;
@@ -62,6 +63,7 @@ import com.navercorp.fixturemonkey.api.validator.ArbitraryValidator;
 import com.navercorp.fixturemonkey.buildergroup.ArbitraryBuilderCandidate;
 import com.navercorp.fixturemonkey.buildergroup.ArbitraryBuilderGroup;
 import com.navercorp.fixturemonkey.customizer.MonkeyManipulatorFactory;
+import com.navercorp.fixturemonkey.customizer.PriorityMatcherOperator;
 import com.navercorp.fixturemonkey.expression.ArbitraryExpressionFactory;
 import com.navercorp.fixturemonkey.expression.MonkeyExpressionFactory;
 import com.navercorp.fixturemonkey.resolver.ManipulatorOptimizer;
@@ -72,14 +74,16 @@ import com.navercorp.fixturemonkey.tree.ArbitraryTraverser;
 @SuppressWarnings("unused")
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class FixtureMonkeyBuilder {
+	private static final int DEFAULT_PRIORITY = Integer.MAX_VALUE;
+
 	private final FixtureMonkeyOptionsBuilder fixtureMonkeyOptionsBuilder = FixtureMonkeyOptions.builder();
-	private final List<MatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>>>
-		registeredArbitraryBuilders = new ArrayList<>();
+	private final List<PriorityMatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>>>
+		registeredArbitraryBuildersWithPriority = new ArrayList<>();
 	private ManipulatorOptimizer manipulatorOptimizer = new NoneManipulatorOptimizer();
 	private MonkeyExpressionFactory monkeyExpressionFactory = new ArbitraryExpressionFactory();
 	private final MonkeyContextBuilder monkeyContextBuilder = MonkeyContext.builder();
-	private final Map<String, MatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>>>
-		registeredArbitraryListByRegisteredName = new HashMap<>();
+	private final Map<String, PriorityMatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>>>
+		registeredPriorityMatchersByName = new HashMap<>();
 	private long seed = System.nanoTime();
 
 	// The default plugins are listed below.
@@ -314,7 +318,15 @@ public final class FixtureMonkeyBuilder {
 		Class<?> type,
 		Function<FixtureMonkey, ? extends ArbitraryBuilder<?>> registeredArbitraryBuilder
 	) {
-		return this.register(MatcherOperator.assignableTypeMatchOperator(type, registeredArbitraryBuilder));
+		return this.register(type, registeredArbitraryBuilder, DEFAULT_PRIORITY);
+	}
+
+	public FixtureMonkeyBuilder register(
+		Class<?> type,
+		Function<FixtureMonkey, ? extends ArbitraryBuilder<?>> registeredArbitraryBuilder,
+		int priority
+	) {
+		return this.register(MatcherOperator.assignableTypeMatchOperator(type, registeredArbitraryBuilder), priority);
 	}
 
 	public FixtureMonkeyBuilder registerExactType(
@@ -334,7 +346,18 @@ public final class FixtureMonkeyBuilder {
 	public FixtureMonkeyBuilder register(
 		MatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>> registeredArbitraryBuilder
 	) {
-		this.registeredArbitraryBuilders.add(registeredArbitraryBuilder);
+		return this.register(registeredArbitraryBuilder, DEFAULT_PRIORITY);
+	}
+
+	public FixtureMonkeyBuilder register(
+		MatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>> registeredArbitraryBuilder,
+		int priority
+	) {
+		this.registeredArbitraryBuildersWithPriority.add(
+			new PriorityMatcherOperator<>(
+				registeredArbitraryBuilder.getMatcher(), registeredArbitraryBuilder.getOperator(), priority
+			)
+		);
 		return this;
 	}
 
@@ -361,6 +384,11 @@ public final class FixtureMonkeyBuilder {
 								throw new RuntimeException(ex);
 							}
 						};
+
+					if (arbitraryBuilderGroup.isAnnotationPresent(Order.class)) {
+						Order order = arbitraryBuilderGroup.getAnnotation(Order.class);
+						this.register(actualType, registerArbitraryBuilder, order.value());
+					}
 					this.register(actualType, registerArbitraryBuilder);
 				} catch (Exception ex) {
 					// ignored
@@ -372,15 +400,24 @@ public final class FixtureMonkeyBuilder {
 
 	public FixtureMonkeyBuilder registerGroup(ArbitraryBuilderGroup... arbitraryBuilderGroups) {
 		for (ArbitraryBuilderGroup arbitraryBuilderGroup : arbitraryBuilderGroups) {
-			List<ArbitraryBuilderCandidate<?>> candidates = arbitraryBuilderGroup.generateCandidateList()
-				.getCandidates();
+			this.registerGroup(arbitraryBuilderGroup, DEFAULT_PRIORITY);
+		}
+		return this;
+	}
 
-			for (ArbitraryBuilderCandidate<?> candidate : candidates) {
-				this.register(
-					candidate.getClassType(),
-					candidate.getArbitraryBuilderRegisterer()
-				);
-			}
+	public FixtureMonkeyBuilder registerGroup(
+		ArbitraryBuilderGroup arbitraryBuilderGroup,
+		int priority
+	) {
+		List<ArbitraryBuilderCandidate<?>> candidates = arbitraryBuilderGroup.generateCandidateList()
+			.getCandidates();
+
+		for (ArbitraryBuilderCandidate<?> candidate : candidates) {
+			this.register(
+				candidate.getClassType(),
+				candidate.getArbitraryBuilderRegisterer(),
+				priority
+			);
 		}
 		return this;
 	}
@@ -390,13 +427,26 @@ public final class FixtureMonkeyBuilder {
 		Class<?> type,
 		Function<FixtureMonkey, ? extends ArbitraryBuilder<?>> arbitraryBuilder
 	) {
-		if (registeredArbitraryListByRegisteredName.containsKey(registeredName)) {
+		return this.registeredName(registeredName, type, arbitraryBuilder, DEFAULT_PRIORITY);
+	}
+
+	public FixtureMonkeyBuilder registeredName(
+		String registeredName,
+		Class<?> type,
+		Function<FixtureMonkey, ? extends ArbitraryBuilder<?>> arbitraryBuilder,
+		int priority
+	) {
+		if (registeredPriorityMatchersByName.containsKey(registeredName)) {
 			throw new IllegalArgumentException("Duplicated ArbitraryBuilder name: " + registeredName);
 		}
 		MatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>> matcherOperator =
 			MatcherOperator.assignableTypeMatchOperator(type, arbitraryBuilder);
 
-		this.registeredArbitraryListByRegisteredName.put(registeredName, matcherOperator);
+		this.registeredPriorityMatchersByName.put(
+			registeredName, new PriorityMatcherOperator<>(
+				matcherOperator.getMatcher(), matcherOperator.getOperator(), priority
+			)
+		);
 		return this;
 	}
 
@@ -570,9 +620,9 @@ public final class FixtureMonkeyBuilder {
 			traverser,
 			manipulatorOptimizer,
 			monkeyContext,
-			registeredArbitraryBuilders,
+			registeredArbitraryBuildersWithPriority,
 			monkeyManipulatorFactory,
-			registeredArbitraryListByRegisteredName
+			registeredPriorityMatchersByName
 		);
 	}
 }

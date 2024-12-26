@@ -142,7 +142,7 @@ public final class MonkeyManipulatorFactory {
 	}
 
 	public List<ArbitraryManipulator> newRegisteredArbitraryManipulators(
-		List<MatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuilders,
+		List<PriorityMatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuilders,
 		Map<Property, List<ObjectNode>> nodesByType,
 		ArbitraryBuilderContext builderContext
 	) {
