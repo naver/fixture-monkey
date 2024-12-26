@@ -77,11 +77,13 @@ public final class FixtureMonkeyBuilder {
 	private static final int DEFAULT_PRIORITY = Integer.MAX_VALUE;
 
 	private final FixtureMonkeyOptionsBuilder fixtureMonkeyOptionsBuilder = FixtureMonkeyOptions.builder();
-	private final List<PriorityMatcherOperator> registeredArbitraryBuildersWithPriority = new ArrayList<>();
+	private final List<PriorityMatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>>>
+		registeredArbitraryBuildersWithPriority = new ArrayList<>();
 	private ManipulatorOptimizer manipulatorOptimizer = new NoneManipulatorOptimizer();
 	private MonkeyExpressionFactory monkeyExpressionFactory = new ArbitraryExpressionFactory();
 	private final MonkeyContextBuilder monkeyContextBuilder = MonkeyContext.builder();
-	private final Map<String, PriorityMatcherOperator> registeredPriorityMatchersByName = new HashMap<>();
+	private final Map<String, PriorityMatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>>>
+		registeredPriorityMatchersByName = new HashMap<>();
 	private long seed = System.nanoTime();
 
 	// The default plugins are listed below.
@@ -352,7 +354,9 @@ public final class FixtureMonkeyBuilder {
 		int priority
 	) {
 		this.registeredArbitraryBuildersWithPriority.add(
-			new PriorityMatcherOperator(registeredArbitraryBuilder, priority)
+			new PriorityMatcherOperator<>(
+				registeredArbitraryBuilder.getMatcher(), registeredArbitraryBuilder.getOperator(), priority
+			)
 		);
 		return this;
 	}
@@ -439,7 +443,9 @@ public final class FixtureMonkeyBuilder {
 			MatcherOperator.assignableTypeMatchOperator(type, arbitraryBuilder);
 
 		this.registeredPriorityMatchersByName.put(
-			registeredName, new PriorityMatcherOperator(matcherOperator, priority)
+			registeredName, new PriorityMatcherOperator<>(
+				matcherOperator.getMatcher(), matcherOperator.getOperator(), priority
+			)
 		);
 		return this;
 	}

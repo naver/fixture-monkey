@@ -18,31 +18,24 @@
 
 package com.navercorp.fixturemonkey.customizer;
 
-import java.util.function.Function;
-
-import com.navercorp.fixturemonkey.ArbitraryBuilder;
-import com.navercorp.fixturemonkey.FixtureMonkey;
+import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 
-public final class PriorityMatcherOperator {
+public final class PriorityMatcherOperator<T> extends MatcherOperator<T> {
 	private final int priority;
-	private final MatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>> matcherOperator;
 
 	public PriorityMatcherOperator(
-		MatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>> matcherOperator,
+		Matcher matcher,
+		T operator,
 		int priority
 	) {
+		super(matcher, operator);
 		checkPriority(priority);
-		this.matcherOperator = matcherOperator;
 		this.priority = priority;
 	}
 
 	public int getPriority() {
 		return priority;
-	}
-
-	public MatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>> getMatcherOperator() {
-		return matcherOperator;
 	}
 
 	private void checkPriority(int priority) {
