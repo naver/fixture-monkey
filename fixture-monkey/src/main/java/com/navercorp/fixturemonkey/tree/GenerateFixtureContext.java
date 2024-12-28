@@ -232,7 +232,10 @@ public final class GenerateFixtureContext implements TraverseNodeContext {
 		Property resolvedParentProperty = objectNode.getMetadata().getResolvedTypeDefinition().getResolvedProperty();
 		objectNode.expand();
 		List<ObjectNode> children = nullSafe(objectNode.getChildren()).asList().stream()
-			.filter(it -> resolvedParentProperty.equals(it.getMetadata().getResolvedParentProperty()))
+			.filter(it -> Types.isAssignable(
+				Types.getActualType(resolvedParentProperty.getType()),
+				Types.getActualType(it.getMetadata().getResolvedParentProperty().getType()))
+			)
 			.collect(Collectors.toList());
 
 		for (ObjectNode childNode : children) {

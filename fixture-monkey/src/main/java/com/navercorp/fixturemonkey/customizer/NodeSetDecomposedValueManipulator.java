@@ -23,7 +23,6 @@ import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerat
 import static com.navercorp.fixturemonkey.api.type.Types.isAssignable;
 import static com.navercorp.fixturemonkey.api.type.Types.nullSafe;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 
@@ -36,6 +35,12 @@ import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.container.DecomposableJavaContainer;
 import com.navercorp.fixturemonkey.api.container.DecomposedContainerValueFactory;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
+import com.navercorp.fixturemonkey.api.generator.ContainerProperty;
+import com.navercorp.fixturemonkey.api.generator.ContainerPropertyGenerator;
+import com.navercorp.fixturemonkey.api.generator.ContainerPropertyGeneratorContext;
+import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
+import com.navercorp.fixturemonkey.api.property.DefaultTypeDefinition;
+import com.navercorp.fixturemonkey.api.property.LazyPropertyGenerator;
 import com.navercorp.fixturemonkey.api.property.MapEntryElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.TypeDefinition;
@@ -43,22 +48,24 @@ import com.navercorp.fixturemonkey.api.tree.TreeNodeManipulator;
 import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.tree.GenerateFixtureContext;
 import com.navercorp.fixturemonkey.tree.ObjectNode;
-import com.navercorp.fixturemonkey.tree.StartNodePredicate;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
 public final class NodeSetDecomposedValueManipulator<T> implements NodeManipulator {
 	private final int sequence;
 	private final DecomposedContainerValueFactory decomposedContainerValueFactory;
+	private final List<MatcherOperator<ContainerPropertyGenerator>> containerPropertyGenerators;
 	@Nullable
 	private final T value;
 
 	public NodeSetDecomposedValueManipulator(
 		int sequence,
 		DecomposedContainerValueFactory decomposedContainerValueFactory,
+		List<MatcherOperator<ContainerPropertyGenerator>> containerPropertyGenerators,
 		@Nullable T value
 	) {
 		this.sequence = sequence;
 		this.decomposedContainerValueFactory = decomposedContainerValueFactory;
+		this.containerPropertyGenerators = containerPropertyGenerators;
 		this.value = value;
 	}
 
@@ -118,17 +125,34 @@ public final class NodeSetDecomposedValueManipulator<T> implements NodeManipulat
 			if (forced) {
 				ArbitraryContainerInfo containerInfo =
 					new ArbitraryContainerInfo(decomposedContainerSize, decomposedContainerSize);
-				objectNode.addTreeNodeManipulator(
-					new ContainerInfoManipulator(
-						Collections.singletonList(StartNodePredicate.INSTANCE),
+
+				ContainerPropertyGenerator containerPropertyGenerator = containerPropertyGenerators.stream()
+					.filter(it -> it.match(objectNode.getOriginalProperty()))
+					.map(MatcherOperator::getOperator)
+					.findFirst()
+					.orElseThrow(
+						() -> new IllegalStateException(
+							"ContainerPropertyGenerator not found given property" + objectNode.getOriginalProperty()
+						)
+					);
+
+				ContainerProperty containerProperty = containerPropertyGenerator.generate(
+					new ContainerPropertyGeneratorContext(
+						objectNode.getOriginalProperty(),
 						containerInfo,
-						sequence
+						null
 					)
 				);
-				objectNode.forceExpand();
-			}
 
-			objectNode.expand();
+				objectNode.forceExpand(
+					new DefaultTypeDefinition(
+						objectNode.getOriginalProperty(),
+						new LazyPropertyGenerator(p -> containerProperty.getElementProperties())
+					)
+				);
+			} else {
+				objectNode.expand();
+			}
 			List<ObjectNode> children = nullSafe(objectNode.getChildren()).asList();
 
 			if (objectNode.getArbitraryProperty()
@@ -157,6 +181,7 @@ public final class NodeSetDecomposedValueManipulator<T> implements NodeManipulat
 			return;
 		}
 
+		objectNode.forceExpand();
 		List<? extends TypeDefinition> typeDefinitions = objectNode.getTreeProperty().getTypeDefinitions();
 		for (TypeDefinition typeDefinition : typeDefinitions) {
 			Class<?> actualConcreteType = Types.getActualType(typeDefinition.getResolvedProperty().getType());
@@ -171,7 +196,6 @@ public final class NodeSetDecomposedValueManipulator<T> implements NodeManipulat
 					objectNode.setResolvedTypeDefinition(typeDefinition);
 				}
 
-				objectNode.forceExpand();
 				for (ObjectNode child : nullSafe(objectNode.getChildren()).asList()) {
 					if (!typeDefinition.getResolvedProperty().equals(child.getResolvedParentProperty())) {
 						continue;

@@ -517,7 +517,8 @@ public final class FixtureMonkeyBuilder {
 		MonkeyManipulatorFactory monkeyManipulatorFactory = new MonkeyManipulatorFactory(
 			new AtomicInteger(),
 			monkeyExpressionFactory,
-			fixtureMonkeyOptions.getDecomposedContainerValueFactory()
+			fixtureMonkeyOptions.getDecomposedContainerValueFactory(),
+			fixtureMonkeyOptions.getContainerPropertyGenerators()
 		);
 
 		Randoms.setSeed(seed);

@@ -1279,7 +1279,7 @@ class KotlinTest {
         then(actual).isEqualTo(expected)
     }
 
-    @Test
+    @RepeatedTest(TEST_COUNT)
     fun register() {
         class NestedInnerObject(val list: List<String>)
 
