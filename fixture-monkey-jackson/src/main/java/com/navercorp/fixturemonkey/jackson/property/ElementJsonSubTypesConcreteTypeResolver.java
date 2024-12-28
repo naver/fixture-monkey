@@ -23,12 +23,9 @@ import static com.navercorp.fixturemonkey.jackson.property.JacksonAnnotations.ge
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedType;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import javax.annotation.Nullable;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -37,6 +34,7 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 import com.navercorp.fixturemonkey.api.property.CandidateConcretePropertyResolver;
+import com.navercorp.fixturemonkey.api.property.ConcreteTypeProperty;
 import com.navercorp.fixturemonkey.api.property.ContainerElementProperty;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.type.Types;
@@ -61,35 +59,7 @@ public final class ElementJsonSubTypesConcreteTypeResolver implements CandidateC
 		List<Annotation> annotations = new ArrayList<>(property.getAnnotations());
 		annotations.add(jsonTypeInfo);
 
-		Property actualProperty = new Property() {
-			@Override
-			public Type getType() {
-				return type;
-			}
-
-			@Override
-			public AnnotatedType getAnnotatedType() {
-				return annotatedType;
-			}
-
-			@Nullable
-			@Override
-			public String getName() {
-				return property.getName();
-			}
-
-			@Override
-			public List<Annotation> getAnnotations() {
-				return Collections.unmodifiableList(annotations);
-			}
-
-			@Nullable
-			@Override
-			public Object getValue(Object instance) {
-				return property.getValue(instance);
-			}
-		};
-
+		Property actualProperty = new ConcreteTypeProperty(annotatedType, property, annotations);
 		return Collections.singletonList(actualProperty);
 	}
 }
