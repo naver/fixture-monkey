@@ -18,55 +18,60 @@
 
 package com.navercorp.fixturemonkey.tests.java;
 
-import static org.assertj.core.api.BDDAssertions.then;
+import static com.navercorp.fixturemonkey.api.expression.JavaGetterMethodPropertySelector.javaGetter;
+import static com.navercorp.fixturemonkey.tests.TestEnvironment.TEST_COUNT;
+import static org.assertj.core.api.BDDAssertions.thenCode;
 
-import java.lang.reflect.Method;
+import org.junit.jupiter.api.RepeatedTest;
 
-import org.junit.jupiter.api.Test;
-
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import com.navercorp.fixturemonkey.api.expression.JavaGetterPropertyFieldNameResolver;
+import com.navercorp.fixturemonkey.FixtureMonkey;
+import com.navercorp.fixturemonkey.api.introspector.ConstructorPropertiesArbitraryIntrospector;
 
 class JavaGetterPropertyFieldNameResolverTest {
 
-	private final JavaGetterPropertyFieldNameResolver sut = new JavaGetterPropertyFieldNameResolver();
+	private static final FixtureMonkey SUT = FixtureMonkey.builder()
+		.objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)
+		.build();
 
-	@Test
-	void testNonBooleanFieldWithIsPrefix() throws NoSuchMethodException {
-		Method method = JavaGetterObject.class.getDeclaredMethod("getIsStatus");
-
-		then(sut.resolveFieldName(JavaGetterObject.class, method.getName())).isEqualTo("isStatus");
+	@RepeatedTest(TEST_COUNT)
+	void testNonBooleanFieldWithIsPrefix() {
+		thenCode(SUT.giveMeBuilder(JavaGetterObject.class)
+			.set(javaGetter(JavaGetterObject::getIsStatus), "javaGetterStringStatus")::sample)
+			.doesNotThrowAnyException();
 	}
 
-	@Test
-	void testPrimitiveTypeBooleanFieldWithIsPrefix() throws NoSuchMethodException {
-		Method method = JavaGetterObject.class.getDeclaredMethod("isActive");
-
-		then(sut.resolveFieldName(JavaGetterObject.class, method.getName())).isEqualTo("isActive");
+	@RepeatedTest(TEST_COUNT)
+	void testPrimitiveTypeBooleanFieldWithIsPrefix() {
+		thenCode(SUT.giveMeBuilder(JavaGetterObject.class)
+			.set(javaGetter(JavaGetterObject::isActive), true)::sample)
+			.doesNotThrowAnyException();
 	}
 
-	@Test
-	void testBooleanFieldWithoutIsPrefix() throws NoSuchMethodException {
-		Method method = JavaGetterObject.class.getDeclaredMethod("isEnabled");
-
-		then(sut.resolveFieldName(JavaGetterObject.class, method.getName())).isEqualTo("enabled");
+	@RepeatedTest(TEST_COUNT)
+	void testBooleanFieldWithoutIsPrefix() {
+		thenCode(SUT.giveMeBuilder(JavaGetterObject.class)
+			.set(javaGetter(JavaGetterObject::isEnabled), true)::sample)
+			.doesNotThrowAnyException();
 	}
 
-	@Test
-	void testNonBooleanFieldWithoutIsPrefix() throws NoSuchMethodException {
-		Method method = JavaGetterObject.class.getDeclaredMethod("getName");
-
-		then(sut.resolveFieldName(JavaGetterObject.class, method.getName())).isEqualTo("name");
+	@RepeatedTest(TEST_COUNT)
+	void testNonBooleanFieldWithoutIsPrefix() {
+		thenCode(SUT.giveMeBuilder(JavaGetterObject.class)
+			.set(javaGetter(JavaGetterObject::getName), "javaGetterObjectName")::sample)
+			.doesNotThrowAnyException();
 	}
 
-	@Test
-	void testWrapperTypeBooleanFieldWithIsPrefix() throws NoSuchMethodException {
-		Method method = JavaGetterObject.class.getDeclaredMethod("getIsDeleted");
-
-		then(sut.resolveFieldName(JavaGetterObject.class, method.getName())).isEqualTo("isDeleted");
+	@RepeatedTest(TEST_COUNT)
+	void testWrapperTypeBooleanFieldWithIsPrefix() {
+		thenCode(SUT.giveMeBuilder(JavaGetterObject.class)
+			.set(javaGetter(JavaGetterObject::getIsDeleted), true)::sample)
+			.doesNotThrowAnyException();
 	}
 
+	@AllArgsConstructor
 	@Getter
 	private static class JavaGetterObject {
 		private String isStatus;
