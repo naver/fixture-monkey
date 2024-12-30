@@ -6,12 +6,12 @@
 &lt;/ul>
 &lt;h2 id="how-to">How-to &lt;a href="#how-to" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h2>
 &lt;h3 id="1-adding-dependency">1. Adding dependency &lt;a href="#1-adding-dependency" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h3>
-&lt;pre>&lt;code class="language-groovy">testImplementation(&amp;quot;com.navercorp.fixturemonkey:fixture-monkey-jackson:1.1.0&amp;quot;)
+&lt;pre>&lt;code class="language-groovy">testImplementation(&amp;quot;com.navercorp.fixturemonkey:fixture-monkey-jackson:1.1.7&amp;quot;)
 &lt;/code>&lt;/pre>
 &lt;pre>&lt;code class="language-xml">&amp;lt;dependency&amp;gt;
  &amp;lt;groupId&amp;gt;com.navercorp.fixturemonkey&amp;lt;/groupId&amp;gt;
  &amp;lt;artifactId&amp;gt;fixture-monkey-jackson&amp;lt;/artifactId&amp;gt;
- &amp;lt;version&amp;gt;1.1.0&amp;lt;/version&amp;gt;
+ &amp;lt;version&amp;gt;1.1.7&amp;lt;/version&amp;gt;
  &amp;lt;scope&amp;gt;test&amp;lt;/scope&amp;gt;
 &amp;lt;/dependency&amp;gt;
 &lt;/code>&lt;/pre>
@@ -58,12 +58,12 @@ void test() {
 &lt;p>Generating an object validated by &lt;a href="https://jcp.org/en/jsr/detail?id=380">JSR380: Bean Validation 2.0&lt;/a> annotations&lt;/p>
 &lt;h2 id="how-to">How-to &lt;a href="#how-to" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h2>
 &lt;h3 id="1-adding-dependency">1. Adding dependency &lt;a href="#1-adding-dependency" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h3>
-&lt;pre>&lt;code class="language-groovy">testImplementation(&amp;quot;com.navercorp.fixturemonkey:fixture-monkey-javax-validation:1.1.0&amp;quot;)
+&lt;pre>&lt;code class="language-groovy">testImplementation(&amp;quot;com.navercorp.fixturemonkey:fixture-monkey-javax-validation:1.1.7&amp;quot;)
 &lt;/code>&lt;/pre>
 &lt;pre>&lt;code class="language-xml">&amp;lt;dependency&amp;gt;
  &amp;lt;groupId&amp;gt;com.navercorp.fixturemonkey&amp;lt;/groupId&amp;gt;
  &amp;lt;artifactId&amp;gt;fixture-monkey-javax-validation&amp;lt;/artifactId&amp;gt;
- &amp;lt;version&amp;gt;1.1.0&amp;lt;/version&amp;gt;
+ &amp;lt;version&amp;gt;1.1.7&amp;lt;/version&amp;gt;
  &amp;lt;scope&amp;gt;test&amp;lt;/scope&amp;gt;
 &amp;lt;/dependency&amp;gt;
 &lt;/code>&lt;/pre>
@@ -110,12 +110,12 @@ void test() {
 &lt;/table>
 &lt;h2 id="how-to">How-to &lt;a href="#how-to" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h2>
 &lt;h3 id="1-adding-dependency">1. Adding dependency &lt;a href="#1-adding-dependency" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h3>
-&lt;pre>&lt;code class="language-groovy">testImplementation(&amp;quot;com.navercorp.fixturemonkey:fixture-monkey-kotlin:1.1.0&amp;quot;)
+&lt;pre>&lt;code class="language-groovy">testImplementation(&amp;quot;com.navercorp.fixturemonkey:fixture-monkey-kotlin:1.1.7&amp;quot;)
 &lt;/code>&lt;/pre>
 &lt;pre>&lt;code class="language-xml">&amp;lt;dependency&amp;gt;
  &amp;lt;groupId&amp;gt;com.navercorp.fixturemonkey&amp;lt;/groupId&amp;gt;
  &amp;lt;artifactId&amp;gt;fixture-monkey-kotlin&amp;lt;/artifactId&amp;gt;
- &amp;lt;version&amp;gt;1.1.0&amp;lt;/version&amp;gt;
+ &amp;lt;version&amp;gt;1.1.7&amp;lt;/version&amp;gt;
  &amp;lt;scope&amp;gt;test&amp;lt;/scope&amp;gt;
 &amp;lt;/dependency&amp;gt;
 &lt;/code>&lt;/pre>
@@ -127,12 +127,12 @@ void test() {
 &lt;p>Generating mock interafce, abstract class by &lt;a href="https://site.mockito.org/">Mockito&lt;/a>&lt;/p>
 &lt;h2 id="how-to">How-to &lt;a href="#how-to" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h2>
 &lt;h3 id="1-adding-dependency">1. Adding dependency &lt;a href="#1-adding-dependency" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h3>
-&lt;pre>&lt;code class="language-groovy">testImplementation(&amp;quot;com.navercorp.fixturemonkey:fixture-monkey-mockito:1.1.0&amp;quot;)
+&lt;pre>&lt;code class="language-groovy">testImplementation(&amp;quot;com.navercorp.fixturemonkey:fixture-monkey-mockito:1.1.7&amp;quot;)
 &lt;/code>&lt;/pre>
 &lt;pre>&lt;code class="language-xml">&amp;lt;dependency&amp;gt;
  &amp;lt;groupId&amp;gt;com.navercorp.fixturemonkey&amp;lt;/groupId&amp;gt;
  &amp;lt;artifactId&amp;gt;fixture-monkey-mockito&amp;lt;/artifactId&amp;gt;
- &amp;lt;version&amp;gt;1.1.0&amp;lt;/version&amp;gt;
+ &amp;lt;version&amp;gt;1.1.7&amp;lt;/version&amp;gt;
  &amp;lt;scope&amp;gt;test&amp;lt;/scope&amp;gt;
 &amp;lt;/dependency&amp;gt;
 &lt;/code>&lt;/pre>
@@ -179,12 +179,12 @@ void test() {
 &lt;p>Supporting &lt;a href="https://github.com/junit-team/junit5">junit-jupiter-api&lt;/a>&lt;/p>
 &lt;h2 id="how-to">How-to &lt;a href="#how-to" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h2>
 &lt;h3 id="1-adding-dependency">1. Adding dependency &lt;a href="#1-adding-dependency" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h3>
-&lt;pre>&lt;code class="language-groovy">testImplementation(&amp;quot;com.navercorp.fixturemonkey:fixture-monkey-junit-jupiter:1.1.0&amp;quot;)
+&lt;pre>&lt;code class="language-groovy">testImplementation(&amp;quot;com.navercorp.fixturemonkey:fixture-monkey-junit-jupiter:1.1.7&amp;quot;)
 &lt;/code>&lt;/pre>
 &lt;pre>&lt;code class="language-xml">&amp;lt;dependency&amp;gt;
  &amp;lt;groupId&amp;gt;com.navercorp.fixturemonkey&amp;lt;/groupId&amp;gt;
  &amp;lt;artifactId&amp;gt;fixture-monkey-junit-jupiter&amp;lt;/artifactId&amp;gt;
- &amp;lt;version&amp;gt;1.1.0&amp;lt;/version&amp;gt;
+ &amp;lt;version&amp;gt;1.1.7&amp;lt;/version&amp;gt;
  &amp;lt;scope&amp;gt;test&amp;lt;/scope&amp;gt;
 &amp;lt;/dependency&amp;gt;
 &lt;/code>&lt;/pre></description></item><item><title>fixture-monkey-autoparams</title><link>https://naver.github.io/fixture-monkey/v0-6-0/docs/third-party-modules/fixture-monkey-autoparams/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v0-6-0/docs/third-party-modules/fixture-monkey-autoparams/</guid><description>&lt;h2 id="featuers">Featuers &lt;a href="#featuers" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h2>
@@ -192,12 +192,12 @@ void test() {
 &lt;p>Using &lt;code>@FixtureMonkeyAutoSource&lt;/code> instead of &lt;code>@AutoSource&lt;/code> in AutoParams&lt;/p>
 &lt;h2 id="how-to">How-to &lt;a href="#how-to" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h2>
 &lt;h3 id="1-adding-denependcy">1. Adding denependcy &lt;a href="#1-adding-denependcy" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h3>
-&lt;pre>&lt;code class="language-groovy">testImplementation(&amp;quot;com.navercorp.fixturemonkey:fixture-monkey-autoparams:1.1.0&amp;quot;)
+&lt;pre>&lt;code class="language-groovy">testImplementation(&amp;quot;com.navercorp.fixturemonkey:fixture-monkey-autoparams:1.1.7&amp;quot;)
 &lt;/code>&lt;/pre>
 &lt;pre>&lt;code class="language-xml">&amp;lt;dependency&amp;gt;
  &amp;lt;groupId&amp;gt;com.navercorp.fixturemonkey&amp;lt;/groupId&amp;gt;
  &amp;lt;artifactId&amp;gt;fixture-monkey-autoparams&amp;lt;/artifactId&amp;gt;
- &amp;lt;version&amp;gt;1.1.0&amp;lt;/version&amp;gt;
+ &amp;lt;version&amp;gt;1.1.7&amp;lt;/version&amp;gt;
  &amp;lt;scope&amp;gt;test&amp;lt;/scope&amp;gt;
 &amp;lt;/dependency&amp;gt;
 &lt;/code>&lt;/pre>
@@ -240,24 +240,24 @@ void test(Order order, ArbitraryBuilder&amp;lt;Order&amp;gt; orderBuilder) {
 &lt;/ul>
 &lt;h2 id="how-to">How-to &lt;a href="#how-to" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h2>
 &lt;h3 id="1-adding-dependency">1. Adding dependency &lt;a href="#1-adding-dependency" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h3>
-&lt;pre>&lt;code class="language-groovy">testImplementation(&amp;quot;com.navercorp.fixturemonkey:fixture-monkey-engine:1.1.0&amp;quot;)
+&lt;pre>&lt;code class="language-groovy">testImplementation(&amp;quot;com.navercorp.fixturemonkey:fixture-monkey-engine:1.1.7&amp;quot;)
 &lt;/code>&lt;/pre>
 &lt;pre>&lt;code class="language-xml">&amp;lt;dependency&amp;gt;
  &amp;lt;groupId&amp;gt;com.navercorp.fixturemonkey&amp;lt;/groupId&amp;gt;
  &amp;lt;artifactId&amp;gt;fixture-monkey-engine&amp;lt;/artifactId&amp;gt;
- &amp;lt;version&amp;gt;1.1.0&amp;lt;/version&amp;gt;
+ &amp;lt;version&amp;gt;1.1.7&amp;lt;/version&amp;gt;
  &amp;lt;scope&amp;gt;test&amp;lt;/scope&amp;gt;
 &amp;lt;/dependency&amp;gt;
 &lt;/code>&lt;/pre></description></item><item><title>fixture-monkey-jakarta-validation</title><link>https://naver.github.io/fixture-monkey/v0-6-0/docs/third-party-modules/fixture-monkey-jakarta-validation/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v0-6-0/docs/third-party-modules/fixture-monkey-jakarta-validation/</guid><description>&lt;h2 id="features">Features &lt;a href="#features" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h2>
 &lt;p>Generating an object validated by &lt;a href="https://jakarta.ee/specifications/bean-validation/3.0/jakarta-bean-validation-spec-3.0.html">Jakarta Bean Validation 3.0&lt;/a> annotations&lt;/p>
 &lt;h2 id="how-to">How-to &lt;a href="#how-to" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h2>
 &lt;h3 id="1-adding-dependency">1. Adding dependency &lt;a href="#1-adding-dependency" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h3>
-&lt;pre>&lt;code class="language-groovy">testImplementation(&amp;quot;com.navercorp.fixturemonkey:fixture-monkey-jakarta-validation:1.1.0&amp;quot;)
+&lt;pre>&lt;code class="language-groovy">testImplementation(&amp;quot;com.navercorp.fixturemonkey:fixture-monkey-jakarta-validation:1.1.7&amp;quot;)
 &lt;/code>&lt;/pre>
 &lt;pre>&lt;code class="language-xml">&amp;lt;dependency&amp;gt;
  &amp;lt;groupId&amp;gt;com.navercorp.fixturemonkey&amp;lt;/groupId&amp;gt;
  &amp;lt;artifactId&amp;gt;fixture-monkey-jakarta-validation&amp;lt;/artifactId&amp;gt;
- &amp;lt;version&amp;gt;1.1.0&amp;lt;/version&amp;gt;
+ &amp;lt;version&amp;gt;1.1.7&amp;lt;/version&amp;gt;
  &amp;lt;scope&amp;gt;test&amp;lt;/scope&amp;gt;
 &amp;lt;/dependency&amp;gt;
 &lt;/code>&lt;/pre>
