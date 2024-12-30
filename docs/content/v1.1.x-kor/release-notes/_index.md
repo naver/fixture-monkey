@@ -6,6 +6,14 @@ docs:
 weight: 100
 ---
 sectionStart
+## v.1.1.7
+Remove default FixtureMonkeyOptions, use `FixtureMonkeyOptions.builder().build()` instead.
+
+Refactor setting size variants of elements in container.
+
+sectionEnd
+
+sectionStart
 ## v.1.1.6
 Deprecate `Randoms.create(String)`, use `Randoms.setSeed(long)` instead.
 
