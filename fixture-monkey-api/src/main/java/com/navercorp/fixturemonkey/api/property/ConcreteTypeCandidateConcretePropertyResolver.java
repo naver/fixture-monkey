@@ -21,12 +21,8 @@ package com.navercorp.fixturemonkey.api.property;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Type;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
-
-import javax.annotation.Nullable;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -77,39 +73,7 @@ public final class ConcreteTypeCandidateConcretePropertyResolver<T> implements C
 						}
 					};
 
-					return new Property() {
-						@Override
-						public Type getType() {
-							return genericAnnotatedType.getType();
-						}
-
-						@Override
-						public AnnotatedType getAnnotatedType() {
-							return genericAnnotatedType;
-						}
-
-						@Nullable
-						@Override
-						public String getName() {
-							return property.getName();
-						}
-
-						@Override
-						public List<Annotation> getAnnotations() {
-							return Arrays.asList(genericAnnotatedType.getAnnotations());
-						}
-
-						@Override
-						public <A extends Annotation> Optional<A> getAnnotation(Class<A> annotationClass) {
-							return Optional.ofNullable(genericAnnotatedType.getAnnotation(annotationClass));
-						}
-
-						@Nullable
-						@Override
-						public Object getValue(Object instance) {
-							return property.getValue(instance);
-						}
-					};
+					return new ConcreteTypeProperty(genericAnnotatedType, property);
 				})
 				.collect(Collectors.toList());
 		}
