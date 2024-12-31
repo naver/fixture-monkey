@@ -19,8 +19,12 @@
 package com.navercorp.fixturemonkey.tree;
 
 import static com.navercorp.fixturemonkey.api.type.Types.nullSafe;
+import static java.util.stream.Collectors.toMap;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
@@ -29,6 +33,7 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.generator.ArbitraryProperty;
+import com.navercorp.fixturemonkey.api.generator.ObjectProperty;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.PropertyPath;
@@ -83,9 +88,11 @@ public final class ObjectNode implements TraverseNode, TraverseNodeMetadata {
 	public void forceExpand() {
 		this.traverseNode.forceExpand();
 		this.setChildren(
-			nullSafe(this.traverseNode.getChildren()).asList().stream()
-				.map(it -> new ObjectNode(it, generateFixtureContext.newChildNodeContext()))
-				.collect(Collectors.toList())
+			this.mergeWithNewChildren(
+				nullSafe(this.traverseNode.getChildren()).asList().stream()
+					.map(it -> new ObjectNode(it, generateFixtureContext.newChildNodeContext()))
+					.collect(Collectors.toList())
+			)
 		);
 	}
 
@@ -93,9 +100,11 @@ public final class ObjectNode implements TraverseNode, TraverseNodeMetadata {
 	public void forceExpand(TypeDefinition typeDefinition) {
 		this.traverseNode.forceExpand(typeDefinition);
 		this.setChildren(
-			nullSafe(this.traverseNode.getChildren()).asList().stream()
-				.map(it -> new ObjectNode(it, generateFixtureContext.newChildNodeContext()))
-				.collect(Collectors.toList())
+			this.mergeWithNewChildren(
+				nullSafe(this.traverseNode.getChildren()).asList().stream()
+					.map(it -> new ObjectNode(it, generateFixtureContext.newChildNodeContext()))
+					.collect(Collectors.toList())
+			)
 		);
 	}
 
@@ -190,5 +199,35 @@ public final class ObjectNode implements TraverseNode, TraverseNodeMetadata {
 
 	public GenerateFixtureContext getObjectNodeContext() {
 		return generateFixtureContext;
+	}
+
+	private List<ObjectNode> mergeWithNewChildren(List<ObjectNode> newChildren) {
+		if (this.children == null) {
+			return newChildren;
+		}
+
+		boolean shrinkChildNodes = this.children.size() > newChildren.size();
+		if (shrinkChildNodes) {
+			return this.children.subList(0, newChildren.size());
+		}
+
+		boolean expandChildNodes = this.children.size() < newChildren.size();
+		if (expandChildNodes) {
+			Map<ObjectProperty, ObjectNode> existingNodesByObjectProperty = this.children.stream()
+				.collect(toMap(it -> it.getMetadata().getTreeProperty().getObjectProperty(), Function.identity()));
+
+			List<ObjectNode> concatNewChildren = new ArrayList<>();
+			for (ObjectNode newChild : newChildren) {
+				ObjectNode existingNode =
+					existingNodesByObjectProperty.get(newChild.getMetadata().getTreeProperty().getObjectProperty());
+				if (existingNode != null) {
+					concatNewChildren.add(existingNode);
+				} else {
+					concatNewChildren.add(newChild);
+				}
+			}
+			return concatNewChildren;
+		}
+		return this.children;
 	}
 }
