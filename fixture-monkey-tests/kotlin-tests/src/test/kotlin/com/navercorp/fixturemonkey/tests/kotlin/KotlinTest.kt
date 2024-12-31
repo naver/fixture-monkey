@@ -1332,6 +1332,26 @@ class KotlinTest {
         then(actual).hasSize(5)
     }
 
+    @Test
+    fun parentRegisterThenApplyAndSizeReturnsChildRegister() {
+        data class ChildObject(val value: String)
+
+        data class ParentObject(val values: List<ChildObject>)
+
+        val sut = FixtureMonkey.builder()
+            .register { it.giveMeKotlinBuilder<ParentObject>().thenApply { _, _ -> } }
+            .register { it.giveMeKotlinBuilder<ChildObject>().set(ChildObject::value, "1") }
+            .plugin(KotlinPlugin())
+            .build()
+
+        val actual = sut.giveMeKotlinBuilder<ParentObject>()
+            .size(ParentObject::values, 10)
+            .sample()
+            .values
+
+        then(actual).allMatch { it.value == "1" }
+    }
+
     companion object {
         private val SUT: FixtureMonkey = FixtureMonkey.builder()
             .plugin(KotlinPlugin())
