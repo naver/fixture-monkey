@@ -38,6 +38,7 @@ import com.navercorp.fixturemonkey.api.plugin.InterfacePlugin
 import com.navercorp.fixturemonkey.api.property.ConcreteTypeCandidateConcretePropertyResolver
 import com.navercorp.fixturemonkey.api.property.PropertyUtils
 import com.navercorp.fixturemonkey.api.type.Types.GeneratingWildcardType
+import com.navercorp.fixturemonkey.customizer.InnerSpec
 import com.navercorp.fixturemonkey.customizer.Values
 import com.navercorp.fixturemonkey.javax.validation.plugin.JavaxValidationPlugin
 import com.navercorp.fixturemonkey.javax.validation.validator.JavaxArbitraryValidator
@@ -1304,6 +1305,31 @@ class KotlinTest {
             .list[0]
 
         then(actual).isNotNull
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun innerSpecInner() {
+        // given
+        data class ChildObject(val values: List<String>)
+
+        data class ParentObject(val list: List<ChildObject>)
+
+        // when
+        val actual = SUT.giveMeKotlinBuilder<ParentObject>()
+            .setInner {
+                property("list") { l ->
+                    l.size(1)
+                        .listElement(0) { e ->
+                            e.inner(
+                                InnerSpec()
+                                    .property("values") { v -> v.size(5) }
+                            )
+                        }
+                }
+            }.sample().list[0].values
+
+        // then
+        then(actual).hasSize(5)
     }
 
     companion object {
