@@ -6,6 +6,14 @@ docs:
 weight: 100
 ---
 sectionStart
+## v.1.1.8
+Fix not applying registered child manipulations if parent uses `thenApply`.
+
+Fix InnerSpec `inner` API.
+
+sectionEnd
+
+sectionStart
 ## v.1.1.7
 Remove default FixtureMonkeyOptions, use `FixtureMonkeyOptions.builder().build()` instead.
 
