@@ -81,6 +81,8 @@ class JavaxValidationFixtureMonkeyTest {
 		then(actual.getNegativeOrZero()).isLessThanOrEqualTo(BigDecimal.ZERO);
 		then(actual.getPositive()).isPositive();
 		then(actual.getPositiveOrZero()).isGreaterThanOrEqualTo(BigDecimal.ZERO);
+		then(actual.getDecimalEqual()).isEqualByComparingTo(BigDecimal.valueOf(100.1));
+		then(actual.getIntegerEqual()).isEqualByComparingTo(BigDecimal.valueOf(100));
 	}
 
 	@Property(tries = 100)
