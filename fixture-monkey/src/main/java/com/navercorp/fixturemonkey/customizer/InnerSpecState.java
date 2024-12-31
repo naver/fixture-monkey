@@ -21,6 +21,7 @@ package com.navercorp.fixturemonkey.customizer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 
@@ -28,6 +29,7 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.tree.NextNodePredicate;
+import com.navercorp.fixturemonkey.tree.StartNodePredicate;
 
 @API(since = "0.5.0", status = Status.MAINTAINED)
 final class InnerSpecState {
@@ -70,7 +72,10 @@ final class InnerSpecState {
 
 		if (this.objectHolder != null) {
 			List<NextNodePredicate> concat = new ArrayList<>(nextNodePredicates);
-			concat.addAll(this.objectHolder.nextNodePredicates);
+			List<NextNodePredicate> setNextNodePredicates = this.objectHolder.nextNodePredicates.stream()
+				.filter(it -> !(it instanceof StartNodePredicate))
+				.collect(Collectors.toList());
+			concat.addAll(setNextNodePredicates);
 			newState.objectHolder = new NodeResolverObjectHolder(
 				this.objectHolder.sequence,
 				concat,
@@ -80,7 +85,11 @@ final class InnerSpecState {
 
 		if (this.filterHolder != null) {
 			List<NextNodePredicate> concat = new ArrayList<>(nextNodePredicates);
-			concat.addAll(this.filterHolder.nextNodePredicates);
+			List<NextNodePredicate> setPostConditionNextNodePredicates =
+				this.filterHolder.nextNodePredicates.stream()
+					.filter(it -> !(it instanceof StartNodePredicate))
+					.collect(Collectors.toList());
+			concat.addAll(setPostConditionNextNodePredicates);
 			newState.filterHolder = new FilterHolder(
 				this.filterHolder.sequence,
 				concat,
@@ -91,7 +100,11 @@ final class InnerSpecState {
 
 		if (this.containerInfoHolder != null) {
 			List<NextNodePredicate> concat = new ArrayList<>(nextNodePredicates);
-			concat.addAll(this.containerInfoHolder.nextNodePredicates);
+			List<NextNodePredicate> containerHolderNextNodePredicates =
+				this.containerInfoHolder.nextNodePredicates.stream()
+					.filter(it -> !(it instanceof StartNodePredicate))
+					.collect(Collectors.toList());
+			concat.addAll(containerHolderNextNodePredicates);
 			newState.containerInfoHolder = new ContainerInfoHolder(
 				this.containerInfoHolder.sequence,
 				concat,
