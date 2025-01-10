@@ -26,7 +26,12 @@ import java.util.stream.Collectors;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-@API(since = "1.0.21", status = Status.EXPERIMENTAL)
+/**
+ * It is deprecated.
+ * Use {@link ConcreteTypeCandidateConcretePropertyResolver} instead.
+ */
+@API(since = "1.0.21", status = Status.DEPRECATED)
+@Deprecated
 public final class InterfaceCandidateConcretePropertyResolver<T> implements CandidateConcretePropertyResolver {
 	private final List<Class<? extends T>> implementations;
 

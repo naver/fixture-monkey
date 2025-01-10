@@ -271,5 +271,50 @@ FixtureMonkey fixture = FixtureMonkey.builder()
 SealedDefaultStringSupplier stringSupplier = (SealedDefaultStringSupplier)fixture.giveMeOne(SealedStringSupplier.class);
 ```
 
+### For advanced users
+만약 인터페이스의 구현체가 너무 많다면 프로그래밍 방식으로 (progammatic) 인터페이스 구현체를 추가할 수 있습니다.
+`CandidateConcretePropertyResolver` 인터페이스를 구현한 클래스를 만들어서 `InterfacePlugin`에 추가하면 됩니다.
+
+```java
+class YourCustomCandidateConcretePropertyResolver implements CandidateConcretePropertyResolver {
+    @Override
+    public List<Property> resolveCandidateConcreteProperties(Property property) {
+        // 구현체를 추가하는 로직을 작성하세요.
+        return List.of(...);
+    }
+}
+```
+
+만약 `List<Property>` 를 만들기 어렵다면 `Property` 생성 로직을 `ConcreteTypeCandidateConcretePropertyResolver` 에게 위임할 수 있습니다.
+`ConcreteTypeCandidateConcretePropertyResolver`는 `CandidateConcretePropertyResolver`를 구현한 클래스로 생성자로 제공된 타입들과 Property 정보를 사용해 `List<Property>`로 변환해줍니다.
+Property 정보는 타입 파라미터를 추론할 때 사용됩니다.
+
+아래와 같이 선언한 FixtureMonkey 인스턴스를 사용해서 `Collection<String>`을 생성하면 `List<String>`, `Set<String>` 중 하나로 타입이 결정됩니다.
+추가 옵션을 사용해서 구현체를 직접 결정할 수도 있고, 픽스쳐 몽키에게 위임할 수도 있습니다. 
+픽스쳐 몽키의 기본 설정은 `List<String>`을 구현체 `ArrayList<String>`로 결정하고 `Set<String>`을 `HashSet<String>`으로 결정합니다. 
+
+{{< alert icon="💡" title="notice">}}
+
+첫 번째 파라미터로 옵션을 적용할 타입 조건은 주의해서 설정해야 합니다.
+예를 들어, 아래 예시에서 `AssignableTypeMatcher`를 사용하면 구현체들도 조건을 만족하므로 무한 루프에 걸립니다.
+
+{{</ alert>}}
+
+```java
+FixtureMonkey sut = FixtureMonkey.builder()
+	.plugin(new InterfacePlugin()
+		.interfaceImplements(
+			new ExactTypeMatcher(Collection.class),
+			new ConcreteTypeCandidateConcretePropertyResolver<>(List.of(List.class, Set.class))
+		)
+	)
+	.build();
+
+Collection<String> actual = sut.giveMeOne(new TypeReference<>() {
+});
+
+then(actual).isInstanceOfAny(List.class, Set.class);
+```
+
 이번 장에서는 인터페이스 타입을 생성하는 방법을 간단한 예제를 보며 배웠습니다. 인터페이스를 생성하는 데 문제가 있다면 `InterfacePlugin` 옵션들을 살펴보세요.
 그래도 문제가 해결되지 않는다면 GitHub에 재현 가능한 예제를 포함한 이슈를 올려주세요.
