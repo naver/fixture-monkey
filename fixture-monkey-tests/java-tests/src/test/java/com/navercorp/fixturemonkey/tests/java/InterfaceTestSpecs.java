@@ -20,6 +20,7 @@ package com.navercorp.fixturemonkey.tests.java;
 
 import java.util.List;
 
+import lombok.EqualsAndHashCode;
 import lombok.Value;
 
 class InterfaceTestSpecs {
@@ -60,5 +61,15 @@ class InterfaceTestSpecs {
 	@Value
 	public static class InterfaceWrapperObject {
 		InterfaceObject value;
+	}
+
+	abstract static class AbstractClassObject {
+		abstract Object getObject();
+	}
+
+	@EqualsAndHashCode(callSuper = true)
+	@Value
+	public static class AbstractClassStringChildObject extends AbstractClassObject {
+		String object;
 	}
 }
