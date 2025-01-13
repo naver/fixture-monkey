@@ -78,7 +78,7 @@ public abstract class Randoms {
 		return current().nextInt(bound);
 	}
 
-	private static Random create(long seed) {
+	public static Random create(long seed) {
 		if (USE_JQWIK_ENGINE) {
 			SEED.set(seed);
 			return SourceOfRandomness.create(String.valueOf(seed));
