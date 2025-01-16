@@ -18,13 +18,18 @@
 
 package com.navercorp.fixturemonkey.api.plugin;
 
+import static com.navercorp.fixturemonkey.api.type.Types.defaultIfNull;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.function.Predicate;
+
+import javax.annotation.Nullable;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -69,10 +74,14 @@ public final class SimpleValueJqwikPlugin implements Plugin {
 
 	private long minStringLength = DEFAULT_MIN_STRING_LENGTH;
 	private long maxStringLength = DEFAULT_MAX_STRING_LENGTH;
-	private long positiveMinNumberValue = 0;
-	private long positiveMaxNumberValue = DEFAULT_MAX_NUMBER_VALUE;
-	private long negativeMinNumberValue = DEFAULT_MIN_NUMBER_VALUE;
-	private long negativeMaxNumberValue = -0;
+	@Nullable
+	private Long positiveMinNumberValue = null;
+	@Nullable
+	private Long positiveMaxNumberValue = null;
+	@Nullable
+	private Long negativeMinNumberValue = null;
+	@Nullable
+	private Long negativeMaxNumberValue = null;
 	private int minContainerSize = DEFAULT_MIN_CONTAINER_SIZE;
 	private int maxContainerSize = DEFAULT_MAX_CONTAINER_SIZE;
 	private long minusDaysFromToday = DEFAULT_MINUS_DAYS;
@@ -171,10 +180,14 @@ public final class SimpleValueJqwikPlugin implements Plugin {
 	private static class SimpleJavaConstraintGenerator implements JavaConstraintGenerator {
 		private final long stringMinLength;
 		private final long stringMaxLength;
-		private final long positiveMinNumberValue;
-		private final long positiveMaxNumberValue;
-		private final long negativeMinNumberValue;
-		private final long negativeMaxNumberValue;
+		@Nullable
+		private final Long positiveMinNumberValue;
+		@Nullable
+		private final Long positiveMaxNumberValue;
+		@Nullable
+		private final Long negativeMinNumberValue;
+		@Nullable
+		private final Long negativeMaxNumberValue;
 		private final int minContainerSize;
 		private final int maxContainerSize;
 		private final long minusDaysFromToday;
@@ -183,10 +196,10 @@ public final class SimpleValueJqwikPlugin implements Plugin {
 		public SimpleJavaConstraintGenerator(
 			long stringMinLength,
 			long stringMaxLength,
-			long positiveMinNumberValue,
-			long positiveMaxNumberValue,
-			long negativeMinNumberValue,
-			long negativeMaxNumberValue,
+			@Nullable Long positiveMinNumberValue,
+			@Nullable Long positiveMaxNumberValue,
+			@Nullable Long negativeMinNumberValue,
+			@Nullable Long negativeMaxNumberValue,
 			int minContainerSize,
 			int maxContainerSize,
 			long minusDaysFromToday,
@@ -219,16 +232,29 @@ public final class SimpleValueJqwikPlugin implements Plugin {
 
 		@Override
 		public JavaIntegerConstraint generateIntegerConstraint(ArbitraryGeneratorContext context) {
-			BigInteger positiveMin = BigInteger.valueOf(this.positiveMinNumberValue);
-			BigInteger positiveMax = BigInteger.valueOf(this.positiveMaxNumberValue);
-			BigInteger negativeMin = BigInteger.valueOf(this.negativeMinNumberValue);
-			BigInteger negativeMax = BigInteger.valueOf(this.negativeMaxNumberValue);
+			BigInteger positiveMin = ifNotNull(this.positiveMinNumberValue, BigInteger::valueOf);
+			BigInteger positiveMax = ifNotNull(this.positiveMaxNumberValue, BigInteger::valueOf);
+			BigInteger negativeMin = ifNotNull(this.negativeMinNumberValue, BigInteger::valueOf);
+			BigInteger negativeMax = ifNotNull(this.negativeMaxNumberValue, BigInteger::valueOf);
+
+			if (positiveMin == null) {
+				negativeMin = defaultIfNull(negativeMin, () -> BigInteger.valueOf(DEFAULT_MIN_NUMBER_VALUE));
+				negativeMax = defaultIfNull(negativeMax, () -> BigInteger.ZERO);
+			}
+
+			if (negativeMax == null) {
+				positiveMin = defaultIfNull(positiveMin, () -> BigInteger.ZERO);
+				positiveMax = defaultIfNull(positiveMax, () -> BigInteger.valueOf(DEFAULT_MAX_NUMBER_VALUE));
+			}
 
 			Class<?> type = Types.getActualType(context.getResolvedType());
-
 			if (type == Byte.class || type == byte.class) {
-				positiveMax = positiveMax.min(BIG_INTEGER_MAX_BYTE);
-				negativeMin = negativeMin.max(BIG_INTEGER_MIN_BYTE);
+				positiveMax = positiveMax != null
+					? positiveMax.min(BIG_INTEGER_MAX_BYTE)
+					: BIG_INTEGER_MAX_BYTE;
+				negativeMin = negativeMin != null
+					? negativeMin.max(BIG_INTEGER_MIN_BYTE)
+					: BIG_INTEGER_MIN_BYTE;
 			}
 
 			return new JavaIntegerConstraint(positiveMin, positiveMax, negativeMin, negativeMax);
@@ -236,14 +262,29 @@ public final class SimpleValueJqwikPlugin implements Plugin {
 
 		@Override
 		public JavaDecimalConstraint generateDecimalConstraint(ArbitraryGeneratorContext context) {
+			BigDecimal positiveMin = ifNotNull(this.positiveMinNumberValue, BigDecimal::valueOf);
+			BigDecimal positiveMax = ifNotNull(this.positiveMaxNumberValue, BigDecimal::valueOf);
+			BigDecimal negativeMin = ifNotNull(this.negativeMinNumberValue, BigDecimal::valueOf);
+			BigDecimal negativeMax = ifNotNull(this.negativeMaxNumberValue, BigDecimal::valueOf);
+
+			if (positiveMin == null) {
+				negativeMin = defaultIfNull(negativeMin, () -> BigDecimal.valueOf(DEFAULT_MIN_NUMBER_VALUE));
+				negativeMax = defaultIfNull(negativeMax, () -> BigDecimal.ZERO);
+			}
+
+			if (negativeMax == null) {
+				positiveMin = defaultIfNull(positiveMin, () -> BigDecimal.ZERO);
+				positiveMax = defaultIfNull(positiveMax, () -> BigDecimal.valueOf(DEFAULT_MAX_NUMBER_VALUE));
+			}
+
 			return new JavaDecimalConstraint(
-				BigDecimal.valueOf(this.positiveMinNumberValue),
+				positiveMin,
 				true,
-				BigDecimal.valueOf(this.positiveMaxNumberValue),
+				positiveMax,
 				true,
-				BigDecimal.valueOf(this.negativeMinNumberValue),
+				negativeMin,
 				true,
-				BigDecimal.valueOf(this.negativeMaxNumberValue),
+				negativeMax,
 				true,
 				2
 			);
@@ -265,5 +306,9 @@ public final class SimpleValueJqwikPlugin implements Plugin {
 				() -> LocalDateTime.now().plusDays(this.plusDaysFromToday)
 			);
 		}
+	}
+
+	private static <T, U> U ifNotNull(T value, Function<T, U> transformer) {
+		return value != null ? transformer.apply(value) : null;
 	}
 }
