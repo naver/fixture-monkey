@@ -125,7 +125,8 @@ public final class InterfacePlugin implements Plugin {
 		Class<T> abstractClassType,
 		List<Class<? extends T>> implementations
 	) {
-		if (!Modifier.isAbstract(abstractClassType.getModifiers())) {
+		if (!(Modifier.isAbstract(abstractClassType.getModifiers())
+			&& !Modifier.isInterface(abstractClassType.getModifiers()))) {
 			throw new IllegalArgumentException(
 				"abstractClassExtends option first parameter should be abstract class. "
 					+ abstractClassType.getTypeName()
