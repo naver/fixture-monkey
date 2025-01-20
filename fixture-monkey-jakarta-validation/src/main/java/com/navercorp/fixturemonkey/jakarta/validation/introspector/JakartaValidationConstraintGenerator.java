@@ -298,37 +298,39 @@ public final class JakartaValidationConstraintGenerator implements JavaConstrain
 		Boolean maxInclusive = null;
 		Integer scale = null;
 
-		for (Min minAnn : context.findAnnotations(Min.class)) {
-			BigDecimal newMin = BigDecimal.valueOf(minAnn.value());
-			if (min == null || newMin.compareTo(min) > 0) {
-				min = newMin;
-				minInclusive = true;
-			}
+		Optional<Min> minAnnotation = context.findAnnotation(Min.class);
+		if (minAnnotation.isPresent()) {
+			min = BigDecimal.valueOf(minAnnotation.get().value());
+			minInclusive = true;
 		}
 
-		for (DecimalMin decimalMin : context.findAnnotations(DecimalMin.class)) {
-			BigDecimal newMin = new BigDecimal(decimalMin.value());
+		Optional<DecimalMin> decimalMinAnnotation = context.findAnnotation(DecimalMin.class);
+		if (decimalMinAnnotation.isPresent()) {
+			BigDecimal newMin = new BigDecimal(decimalMinAnnotation.get().value());
+
 			if (min == null || newMin.compareTo(min) > 0
-				|| (newMin.compareTo(min) == 0 && !decimalMin.inclusive() && minInclusive)) {
+				|| (newMin.compareTo(min) == 0 && !decimalMinAnnotation.get().inclusive())) {
+
 				min = newMin;
-				minInclusive = decimalMin.inclusive();
+				minInclusive = decimalMinAnnotation.get().inclusive();
 			}
 		}
 
-		for (Max maxAnn : context.findAnnotations(Max.class)) {
-			BigDecimal newMax = BigDecimal.valueOf(maxAnn.value());
-			if (max == null || newMax.compareTo(max) < 0) {
-				max = newMax;
-				maxInclusive = true;
-			}
+		Optional<Max> maxAnnotation = context.findAnnotation(Max.class);
+		if (maxAnnotation.isPresent()) {
+			max = BigDecimal.valueOf(maxAnnotation.get().value());
+			maxInclusive = true;
 		}
 
-		for (DecimalMax decimalMax : context.findAnnotations(DecimalMax.class)) {
-			BigDecimal newMax = new BigDecimal(decimalMax.value());
+		Optional<DecimalMax> decimalMaxAnnotation = context.findAnnotation(DecimalMax.class);
+		if (decimalMaxAnnotation.isPresent()) {
+			BigDecimal newMax = new BigDecimal(decimalMaxAnnotation.get().value());
+
 			if (max == null || newMax.compareTo(max) < 0
-				|| (newMax.compareTo(max) == 0 && !decimalMax.inclusive() && maxInclusive)) {
+				|| (newMax.compareTo(max) == 0 && !decimalMaxAnnotation.get().inclusive())) {
+				
 				max = newMax;
-				maxInclusive = decimalMax.inclusive();
+				maxInclusive = decimalMaxAnnotation.get().inclusive();
 			}
 		}
 

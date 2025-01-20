@@ -111,30 +111,6 @@ public final class ArbitraryGeneratorContext implements Traceable {
 		return this.getResolvedProperty().getAnnotation(annotationClass);
 	}
 
-	public <T extends Annotation> List<T> findAnnotations(Class<T> annotationClass) {
-		List<T> results = this.getResolvedProperty().getAnnotations().stream()
-			.filter(it -> annotationClass.isAssignableFrom(it.annotationType()))
-			.map(annotationClass::cast).collect(toList());
-
-		Repeatable repeatable = annotationClass.getAnnotation(Repeatable.class);
-		if (repeatable != null) {
-			Class<? extends Annotation> containerClass = repeatable.value();
-			this.getResolvedProperty().getAnnotations().stream()
-				.filter(it -> containerClass.isAssignableFrom(it.annotationType()))
-				.findFirst()
-				.ifPresent(container -> {
-					try {
-						Method valueMethod = container.annotationType().getDeclaredMethod("value");
-						T[] values = (T[])valueMethod.invoke(container);
-						results.addAll(Arrays.asList(values));
-					} catch (Exception ignored) {
-					}
-				});
-		}
-
-		return results;
-	}
-
 	public List<ArbitraryProperty> getChildren() {
 		return Collections.unmodifiableList(this.children);
 	}
