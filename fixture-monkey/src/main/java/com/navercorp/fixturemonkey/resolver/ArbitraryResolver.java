@@ -37,6 +37,7 @@ import com.navercorp.fixturemonkey.api.property.RootProperty;
 import com.navercorp.fixturemonkey.customizer.ArbitraryManipulator;
 import com.navercorp.fixturemonkey.customizer.ContainerInfoManipulator;
 import com.navercorp.fixturemonkey.customizer.MonkeyManipulatorFactory;
+import com.navercorp.fixturemonkey.customizer.PriorityMatcherOperator;
 import com.navercorp.fixturemonkey.tree.ArbitraryTraverser;
 import com.navercorp.fixturemonkey.tree.ObjectTree;
 
@@ -47,7 +48,7 @@ public final class ArbitraryResolver {
 	private final MonkeyManipulatorFactory monkeyManipulatorFactory;
 	private final FixtureMonkeyOptions fixtureMonkeyOptions;
 	private final MonkeyContext monkeyContext;
-	private final List<MatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuilders;
+	private final List<PriorityMatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuilders;
 
 	public ArbitraryResolver(
 		ArbitraryTraverser traverser,
@@ -55,7 +56,7 @@ public final class ArbitraryResolver {
 		MonkeyManipulatorFactory monkeyManipulatorFactory,
 		FixtureMonkeyOptions fixtureMonkeyOptions,
 		MonkeyContext monkeyContext,
-		List<MatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuilders
+		List<PriorityMatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuilders
 	) {
 		this.traverser = traverser;
 		this.manipulatorOptimizer = manipulatorOptimizer;
