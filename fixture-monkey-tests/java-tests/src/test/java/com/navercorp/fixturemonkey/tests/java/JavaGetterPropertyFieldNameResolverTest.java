@@ -20,7 +20,8 @@ package com.navercorp.fixturemonkey.tests.java;
 
 import static com.navercorp.fixturemonkey.api.expression.JavaGetterMethodPropertySelector.javaGetter;
 import static com.navercorp.fixturemonkey.tests.TestEnvironment.TEST_COUNT;
-import static org.assertj.core.api.BDDAssertions.*;
+import static org.assertj.core.api.BDDAssertions.thenCode;
+import static org.assertj.core.api.BDDAssertions.then;
 
 import org.junit.jupiter.api.RepeatedTest;
 
