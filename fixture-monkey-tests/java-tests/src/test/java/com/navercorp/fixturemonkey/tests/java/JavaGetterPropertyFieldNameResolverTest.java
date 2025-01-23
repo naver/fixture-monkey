@@ -20,7 +20,7 @@ package com.navercorp.fixturemonkey.tests.java;
 
 import static com.navercorp.fixturemonkey.api.expression.JavaGetterMethodPropertySelector.javaGetter;
 import static com.navercorp.fixturemonkey.tests.TestEnvironment.TEST_COUNT;
-import static org.assertj.core.api.BDDAssertions.thenCode;
+import static org.assertj.core.api.BDDAssertions.*;
 
 import org.junit.jupiter.api.RepeatedTest;
 
@@ -38,9 +38,16 @@ class JavaGetterPropertyFieldNameResolverTest {
 
 	@RepeatedTest(TEST_COUNT)
 	void testNonBooleanFieldWithIsPrefix() {
+
 		thenCode(SUT.giveMeBuilder(JavaGetterObject.class)
 			.set(javaGetter(JavaGetterObject::getIsStatus), "javaGetterStringStatus")::sample)
 			.doesNotThrowAnyException();
+
+		JavaGetterObject actual = SUT.giveMeBuilder(JavaGetterObject.class)
+			.set(javaGetter(JavaGetterObject::getIsStatus), "javaGetterStringStatus")
+			.sample();
+
+		then(actual.getIsStatus()).isEqualTo("javaGetterStringStatus");
 	}
 
 	@RepeatedTest(TEST_COUNT)
@@ -48,6 +55,12 @@ class JavaGetterPropertyFieldNameResolverTest {
 		thenCode(SUT.giveMeBuilder(JavaGetterObject.class)
 			.set(javaGetter(JavaGetterObject::isActive), true)::sample)
 			.doesNotThrowAnyException();
+
+		JavaGetterObject actual = SUT.giveMeBuilder(JavaGetterObject.class)
+			.set(javaGetter(JavaGetterObject::isActive), true)
+			.sample();
+
+		then(actual.isActive).isTrue();
 	}
 
 	@RepeatedTest(TEST_COUNT)
@@ -55,6 +68,12 @@ class JavaGetterPropertyFieldNameResolverTest {
 		thenCode(SUT.giveMeBuilder(JavaGetterObject.class)
 			.set(javaGetter(JavaGetterObject::isEnabled), true)::sample)
 			.doesNotThrowAnyException();
+
+		JavaGetterObject actual = SUT.giveMeBuilder(JavaGetterObject.class)
+			.set(javaGetter(JavaGetterObject::isEnabled), true)
+			.sample();
+
+		then(actual.isEnabled()).isTrue();
 	}
 
 	@RepeatedTest(TEST_COUNT)
@@ -62,6 +81,12 @@ class JavaGetterPropertyFieldNameResolverTest {
 		thenCode(SUT.giveMeBuilder(JavaGetterObject.class)
 			.set(javaGetter(JavaGetterObject::getName), "javaGetterObjectName")::sample)
 			.doesNotThrowAnyException();
+
+		JavaGetterObject actual = SUT.giveMeBuilder(JavaGetterObject.class)
+			.set(javaGetter(JavaGetterObject::getName), "javaGetterObjectName")
+			.sample();
+
+		then(actual.getName()).isEqualTo("javaGetterObjectName");
 	}
 
 	@RepeatedTest(TEST_COUNT)
@@ -69,6 +94,12 @@ class JavaGetterPropertyFieldNameResolverTest {
 		thenCode(SUT.giveMeBuilder(JavaGetterObject.class)
 			.set(javaGetter(JavaGetterObject::getIsDeleted), true)::sample)
 			.doesNotThrowAnyException();
+
+		JavaGetterObject actual = SUT.giveMeBuilder(JavaGetterObject.class)
+			.set(javaGetter(JavaGetterObject::getIsDeleted), true)
+			.sample();
+
+		then(actual.isDeleted).isTrue();
 	}
 
 	@AllArgsConstructor
