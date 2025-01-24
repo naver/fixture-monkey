@@ -36,6 +36,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -53,6 +54,7 @@ import com.navercorp.fixturemonkey.api.type.Types;
  */
 @API(since = "0.5.3", status = Status.MAINTAINED)
 public final class ConstructorParameterPropertyGenerator implements PropertyGenerator {
+	private final Function<Property, List<Constructor<?>>> constructorsSupplier;
 	private final Predicate<Constructor<?>> constructorPredicate;
 	private final Matcher matcher;
 
@@ -60,15 +62,24 @@ public final class ConstructorParameterPropertyGenerator implements PropertyGene
 		Predicate<Constructor<?>> constructorPredicate,
 		Matcher matcher
 	) {
+		this.constructorsSupplier = p -> TypeCache.getDeclaredConstructors(Types.getActualType(p.getType()));
+		this.constructorPredicate = constructorPredicate;
+		this.matcher = matcher;
+	}
+
+	public ConstructorParameterPropertyGenerator(
+		Function<Property, List<Constructor<?>>> constructorsSupplier,
+		Predicate<Constructor<?>> constructorPredicate,
+		Matcher matcher
+	) {
+		this.constructorsSupplier = constructorsSupplier;
 		this.constructorPredicate = constructorPredicate;
 		this.matcher = matcher;
 	}
 
 	@Override
 	public List<Property> generateChildProperties(Property property) {
-		Class<?> clazz = Types.getActualType(property.getType());
-
-		Constructor<?> declaredConstructor = TypeCache.getDeclaredConstructors(clazz).stream()
+		Constructor<?> declaredConstructor = constructorsSupplier.apply(property).stream()
 			.filter(constructorPredicate)
 			.findFirst()
 			.orElse(null);

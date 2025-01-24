@@ -27,6 +27,7 @@ import org.junit.jupiter.api.RepeatedTest;
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.introspector.ConstructorPropertiesArbitraryIntrospector;
 import com.navercorp.fixturemonkey.tests.java17.RecordTestSpecs.BooleanRecord;
+import com.navercorp.fixturemonkey.tests.java17.RecordTestSpecs.CanonicalConstructorRecord;
 import com.navercorp.fixturemonkey.tests.java17.RecordTestSpecs.CompactConstructorRecord;
 import com.navercorp.fixturemonkey.tests.java17.RecordTestSpecs.ComplexContainerRecord;
 import com.navercorp.fixturemonkey.tests.java17.RecordTestSpecs.ContainerRecord;
@@ -39,6 +40,7 @@ import com.navercorp.fixturemonkey.tests.java17.RecordTestSpecs.TwoConstructorsR
 class ConstructorPropertiesRecordTest {
 	private static final FixtureMonkey SUT = FixtureMonkey.builder()
 		.objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)
+		.defaultNotNull(true)
 		.build();
 
 	@RepeatedTest(TEST_COUNT)
@@ -204,5 +206,12 @@ class ConstructorPropertiesRecordTest {
 			.wrapper();
 
 		then(actual).isFalse();
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void sampleCanonicalConstructorRecord() {
+		String actual = SUT.giveMeOne(CanonicalConstructorRecord.class).string();
+
+		then(actual).isNotNull();
 	}
 }
