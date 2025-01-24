@@ -30,6 +30,12 @@ import org.apiguardian.api.API.Status;
 import com.navercorp.fixturemonkey.api.type.GenericType;
 import com.navercorp.fixturemonkey.api.type.Types;
 
+/**
+ * This class is used to resolve more concrete types for a given interface.
+ * The concrete types could be an interface or a class that implements the interface.
+ *
+ * @param <T> the type parameter of the interface
+ */
 @API(since = "1.0.16", status = Status.EXPERIMENTAL)
 public final class ConcreteTypeCandidateConcretePropertyResolver<T> implements CandidateConcretePropertyResolver {
 	private final List<Class<? extends T>> concreteTypes;
@@ -38,6 +44,16 @@ public final class ConcreteTypeCandidateConcretePropertyResolver<T> implements C
 		this.concreteTypes = concreteTypes;
 	}
 
+	/**
+	 * Resolves more concrete types for a given interface.
+	 * The concrete types could be an interface or a class that implements the interface.
+	 * The provided property could be a property of concrete type or an abstract class or interface.
+	 * The type parameter of the interface is used to generate properties of concrete types.
+	 * It returns a list of properties of concrete types that implement the interface.
+	 *
+	 * @param property it could be a property of concrete type or an abstract class or interface.
+	 * @return a list of properties of concrete types that implement the interface
+	 */
 	@Override
 	public List<Property> resolve(Property property) {
 		List<AnnotatedType> genericsTypes = Types.getGenericsTypes(property.getAnnotatedType());
