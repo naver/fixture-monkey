@@ -504,9 +504,14 @@ public final class FixtureMonkeyBuilder {
 	}
 
 	/**
-	 * It is deprecated. Please use {@code @Seed} in fixture-monkey-junit-jupiter module.
+	 * sets the seed for generating random numbers.
+	 * <p>
+	 * If you use the {@code fixture-monkey-junit-jupiter} module,
+	 * the seed value can be overridden by the {@code Seed} annotation.
+	 *
+	 * @param seed seed value for generating random numbers.
+	 * @return FixtureMonkeyBuilder
 	 */
-	@Deprecated
 	public FixtureMonkeyBuilder seed(long seed) {
 		this.seed = seed;
 		return this;
