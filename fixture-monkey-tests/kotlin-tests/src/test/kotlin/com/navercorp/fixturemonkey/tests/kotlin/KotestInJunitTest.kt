@@ -306,7 +306,7 @@ class KotestInJunitTest {
 
         val actual = SUT.giveMeOne<DoubleObject>().value
 
-        then(actual).matches { it in 10.0..99.0 || it in -100.0..-10.0 }
+        then(actual).matches { it in -99.0..99.0 }
     }
 
     @RepeatedTest(TEST_COUNT)
@@ -387,7 +387,7 @@ class KotestInJunitTest {
 
         val actual = SUT.giveMeOne<FloatObject>().value
 
-        then(actual).matches { it in 10.0..99.0 || it in -100.0..-10.0 }
+        then(actual).matches { it in -99.0..99.0 }
     }
 
     @RepeatedTest(TEST_COUNT)
@@ -631,8 +631,7 @@ class KotestInJunitTest {
         val actual = SUT.giveMeOne<BigIntegerObject>().value
 
         then(actual).matches {
-            it in BigInteger.valueOf(10L)..BigInteger.valueOf(99L) ||
-                it in BigInteger.valueOf(-99L)..BigInteger.valueOf(-10L)
+            it in BigInteger.valueOf(-99L)..BigInteger.valueOf(99L)
         }
     }
 
@@ -715,8 +714,7 @@ class KotestInJunitTest {
         val actual = SUT.giveMeOne<BigDecimalObject>().value
 
         then(actual).matches {
-            it in BigDecimal.valueOf(10L)..BigDecimal.valueOf(99) ||
-                it in BigDecimal.valueOf(-100)..BigDecimal.valueOf(-10)
+            it in BigDecimal.valueOf(-99)..BigDecimal.valueOf(99)
         }
     }
 
