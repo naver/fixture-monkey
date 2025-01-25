@@ -328,7 +328,7 @@ public final class JakartaValidationConstraintGenerator implements JavaConstrain
 
 			if (max == null || newMax.compareTo(max) < 0
 				|| (newMax.compareTo(max) == 0 && !decimalMaxAnnotation.get().inclusive())) {
-				
+
 				max = newMax;
 				maxInclusive = decimalMaxAnnotation.get().inclusive();
 			}
@@ -404,18 +404,46 @@ public final class JakartaValidationConstraintGenerator implements JavaConstrain
 		boolean isNegativeMin = min != null && min.compareTo(BigDecimal.ZERO) < 0;
 		boolean isNegativeMax = max != null && max.compareTo(BigDecimal.ZERO) < 0;
 
+		if (isPositiveMax && max.equals(BigDecimal.ZERO)) {
+			return new JavaDecimalConstraint(
+				null,
+				null,
+				null,
+				null,
+				isNegativeMin ? min : null,
+				isNegativeMin ? minInclusive : null,
+				BigDecimal.ZERO,
+				isNegativeMax ? maxInclusive : null,
+				scale
+			);
+		}
+
+		if (isNegativeMin && isPositiveMax) {
+			return new JavaDecimalConstraint(
+				BigDecimal.ZERO,
+				true,
+				max,
+				maxInclusive,
+				min,
+				minInclusive,
+				BigDecimal.ZERO,
+				false,
+				scale
+			);
+		}
+
 		return new JavaDecimalConstraint(
 			isPositiveMin ? min : null,
 			isPositiveMin ? minInclusive : null,
 			isPositiveMax ? max : null,
 			isPositiveMax ? maxInclusive : null,
-
 			isNegativeMin ? min : null,
 			isNegativeMin ? minInclusive : null,
 			isNegativeMax ? max : null,
 			isNegativeMax ? maxInclusive : null,
 			scale
 		);
+
 	}
 
 	@Override
