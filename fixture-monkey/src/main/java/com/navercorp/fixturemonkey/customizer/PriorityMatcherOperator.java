@@ -18,9 +18,21 @@
 
 package com.navercorp.fixturemonkey.customizer;
 
+import static org.apiguardian.api.API.Status.EXPERIMENTAL;
+
+import org.apiguardian.api.API;
+
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 
+/**
+ * A class that represents a matcher operator with a priority.
+ * This class extends {@link MatcherOperator} and adds a priority field.
+ *
+ * @param <T> the type of the operator
+ * @since 1.1.10
+ */
+@API(since = "1.1.10", status = EXPERIMENTAL)
 public final class PriorityMatcherOperator<T> extends MatcherOperator<T> {
 	private final int priority;
 
@@ -34,10 +46,21 @@ public final class PriorityMatcherOperator<T> extends MatcherOperator<T> {
 		this.priority = priority;
 	}
 
+	/**
+	 * Returns the priority of this matcher operator.
+	 *
+	 * @return the priority of this matcher operator
+	 */
 	public int getPriority() {
 		return priority;
 	}
 
+	/**
+	 * Checks if the priority is valid.
+	 *
+	 * @param priority the priority to be checked
+	 * @throws IllegalArgumentException if the priority is less than 0
+	 */
 	private void checkPriority(int priority) {
 		if (priority < 0) {
 			throw new IllegalArgumentException("Priority must be greater than or equal to 0");

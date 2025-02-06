@@ -314,6 +314,13 @@ public final class FixtureMonkeyBuilder {
 		return this;
 	}
 
+	/**
+	 * Registers an ArbitraryBuilder with the DEFAULT priority (Integer.MAX_VALUE).
+	 *
+	 * @param registeredArbitraryBuilder the MatcherOperator containing the matcher
+	 * and the ArbitraryBuilder to be registered
+	 * @return the current instance of FixtureMonkeyBuilder for method chaining
+	 */
 	public FixtureMonkeyBuilder register(
 		Class<?> type,
 		Function<FixtureMonkey, ? extends ArbitraryBuilder<?>> registeredArbitraryBuilder
@@ -321,6 +328,17 @@ public final class FixtureMonkeyBuilder {
 		return this.register(type, registeredArbitraryBuilder, DEFAULT_PRIORITY);
 	}
 
+	/**
+	 * Registers an ArbitraryBuilder with a specified priority.
+	 *
+	 * @param registeredArbitraryBuilder the MatcherOperator containing the matcher
+	 * and the ArbitraryBuilder to be registered
+	 * @param priority the priority of the ArbitraryBuilder; higher values indicate lower priority
+	 * @return the current instance of FixtureMonkeyBuilder for method chaining
+	 * @throws IllegalArgumentException if the priority is less than 0
+	 *
+	 * If multiple ArbitraryBuilders have the same priority, one of them will be selected randomly.
+	 */
 	public FixtureMonkeyBuilder register(
 		Class<?> type,
 		Function<FixtureMonkey, ? extends ArbitraryBuilder<?>> registeredArbitraryBuilder,
