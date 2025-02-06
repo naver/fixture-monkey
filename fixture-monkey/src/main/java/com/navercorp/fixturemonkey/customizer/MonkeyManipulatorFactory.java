@@ -18,6 +18,8 @@
 
 package com.navercorp.fixturemonkey.customizer;
 
+import static java.util.stream.Collectors.toList;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -202,21 +204,8 @@ public final class MonkeyManipulatorFactory {
 			.sorted(Comparator.comparingInt(PriorityMatcherOperator::getPriority))
 			.collect(Collectors.toList());
 
-		return getHighestPriorityOperator(priorityOperators);
-	}
-
-	private DefaultArbitraryBuilder<?> getHighestPriorityOperator(
-		List<PriorityMatcherOperator<? extends ArbitraryBuilder<?>>> priorityOperators
-	) {
-		if (priorityOperators.isEmpty()) {
-			return null;
-		}
-
-		int highestPriority = priorityOperators.get(0).getPriority();
-		List<PriorityMatcherOperator<? extends ArbitraryBuilder<?>>> highestPriorityOperators = priorityOperators
-			.stream()
-			.filter(it -> it.getPriority() == highestPriority)
-			.collect(Collectors.toList());
+		List<PriorityMatcherOperator<? extends ArbitraryBuilder<?>>> highestPriorityOperators
+			= getHighestPriorityOperators(priorityOperators);
 
 		if (highestPriorityOperators.size() > 1) {
 			Collections.shuffle(highestPriorityOperators, Randoms.current());
@@ -227,6 +216,20 @@ public final class MonkeyManipulatorFactory {
 			.map(MatcherOperator::getOperator)
 			.filter(it -> it instanceof DefaultArbitraryBuilder<?>)
 			.orElse(null);
+	}
+
+	private List<PriorityMatcherOperator<? extends ArbitraryBuilder<?>>> getHighestPriorityOperators(
+		List<PriorityMatcherOperator<? extends ArbitraryBuilder<?>>> priorityOperators
+	) {
+		if (priorityOperators.isEmpty()) {
+			return priorityOperators;
+		}
+
+		int highestPriority = priorityOperators.get(0).getPriority();
+
+		return priorityOperators.stream()
+			.filter(it -> it.getPriority() == highestPriority)
+			.collect(toList());
 	}
 
 	public ManipulatorSet newManipulatorSet(ManipulatorHolderSet manipulatorHolderSet) {

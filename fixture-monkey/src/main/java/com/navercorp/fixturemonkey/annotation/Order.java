@@ -18,13 +18,18 @@
 
 package com.navercorp.fixturemonkey.annotation;
 
+import static org.apiguardian.api.API.Status.EXPERIMENTAL;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.apiguardian.api.API;
+
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
+@API(since = "1.1.10", status = EXPERIMENTAL)
 public @interface Order {
 	int value() default 0;
 }
