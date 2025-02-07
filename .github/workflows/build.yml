@@ -60,3 +60,4 @@ jobs:
         with:
           name: test-results
           path: '**/build/test-results/test/TEST-*.xml'
+          overwrite: true
