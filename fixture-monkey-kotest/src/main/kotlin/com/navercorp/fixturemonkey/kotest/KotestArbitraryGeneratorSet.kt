@@ -170,18 +170,21 @@ class KotestJavaArbitraryGeneratorSet(
                 var min = decimalConstraint.min?.toDouble() ?: -Double.MAX_VALUE
                 var max = decimalConstraint.max?.toDouble() ?: Double.MAX_VALUE
 
-                if (decimalConstraint.minInclusive == false) {
-                    min += Double.MIN_VALUE
-                }
-                if (decimalConstraint.maxInclusive ?: true) {
-                    if (max != Double.MAX_VALUE) {
-                        max += Double.MIN_VALUE
-                    }
-                }
-
-                if (min == max) {
+                if (min == max &&
+                    (decimalConstraint.minInclusive ?: true) &&
+                    (decimalConstraint.maxInclusive ?: true)
+                ) {
                     Arb.constant(min)
                 } else {
+                    if (decimalConstraint.minInclusive == false) {
+                        min += Double.MIN_VALUE
+                    }
+                    if (decimalConstraint.maxInclusive ?: true) {
+                        if (max != Double.MAX_VALUE) {
+                            max += Double.MIN_VALUE
+                        }
+                    }
+
                     Arb.double(min = min, max = max)
                 }.map { if (scale != null) it.ofScale(scale) else it }
                     .single()
@@ -200,18 +203,21 @@ class KotestJavaArbitraryGeneratorSet(
                 var min = decimalConstraint.min?.toFloat() ?: -Float.MAX_VALUE
                 var max = decimalConstraint.max?.toFloat() ?: Float.MAX_VALUE
 
-                if (decimalConstraint.minInclusive == false) {
-                    min += Float.MIN_VALUE
-                }
-                if (decimalConstraint.maxInclusive ?: true) {
-                    if (max != Float.MAX_VALUE) {
-                        max += Float.MIN_VALUE
-                    }
-                }
-
-                if (min == max) {
+                if (min == max &&
+                    (decimalConstraint.minInclusive ?: true) &&
+                    (decimalConstraint.maxInclusive ?: true)
+                ) {
                     Arb.constant(min)
                 } else {
+                    if (decimalConstraint.minInclusive == false) {
+                        min += Float.MIN_VALUE
+                    }
+                    if (decimalConstraint.maxInclusive ?: true) {
+                        if (max != Float.MAX_VALUE) {
+                            max += Float.MIN_VALUE
+                        }
+                    }
+
                     Arb.float(min = min, max = max)
                 }.map { if (scale != null) it.ofScale(scale) else it }
                     .single()
@@ -326,18 +332,21 @@ class KotestJavaArbitraryGeneratorSet(
                 var min = decimalConstraint.min ?: BigDecimal.valueOf(-Double.MAX_VALUE)
                 var max = decimalConstraint.max ?: BigDecimal.valueOf(Double.MAX_VALUE)
 
-                if (decimalConstraint.minInclusive == false) {
-                    min = min.add(BigDecimal.valueOf(Double.MIN_VALUE))
-                }
-                if (decimalConstraint.maxInclusive ?: true) {
-                    if (max != BigDecimal.valueOf(Double.MAX_VALUE)) {
-                        max += max.add(BigDecimal.valueOf(Double.MIN_VALUE))
-                    }
-                }
-
-                if (min.compareTo(max) == 0) {
+                if (min.compareTo(max) == 0 &&
+                    (decimalConstraint.minInclusive ?: true) &&
+                    (decimalConstraint.maxInclusive ?: true)
+                ) {
                     Arb.constant(min)
                 } else {
+                    if (decimalConstraint.minInclusive == false) {
+                        min = min.add(BigDecimal.valueOf(Double.MIN_VALUE))
+                    }
+                    if (decimalConstraint.maxInclusive ?: true) {
+                        if (max != BigDecimal.valueOf(Double.MAX_VALUE)) {
+                            max = max.add(BigDecimal.valueOf(Double.MIN_VALUE))
+                        }
+                    }
+
                     Arb.bigDecimal(min = min, max = max)
                 }.map { if (scale != null) it.setScale(scale, RoundingMode.DOWN) else it }
                     .single()
