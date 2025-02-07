@@ -20,18 +20,18 @@ package com.navercorp.fixturemonkey.api.property;
 
 import static com.navercorp.fixturemonkey.api.type.Types.generateAnnotatedTypeWithoutAnnotation;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedType;
-import java.lang.reflect.Type;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import javax.annotation.Nullable;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-@API(since = "1.0.21", status = Status.EXPERIMENTAL)
+/**
+ * It is deprecated.
+ * Use {@link ConcreteTypeCandidateConcretePropertyResolver} instead.
+ */
+@API(since = "1.0.21", status = Status.DEPRECATED)
+@Deprecated
 public final class InterfaceCandidateConcretePropertyResolver<T> implements CandidateConcretePropertyResolver {
 	private final List<Class<? extends T>> implementations;
 
@@ -42,34 +42,10 @@ public final class InterfaceCandidateConcretePropertyResolver<T> implements Cand
 	@Override
 	public List<Property> resolve(Property property) {
 		return implementations.stream()
-			.map(implementation -> new Property() {
-				@Override
-				public Type getType() {
-					return implementation;
-				}
-
-				@Override
-				public AnnotatedType getAnnotatedType() {
-					return generateAnnotatedTypeWithoutAnnotation(implementation);
-				}
-
-				@Nullable
-				@Override
-				public String getName() {
-					return property.getName();
-				}
-
-				@Override
-				public List<Annotation> getAnnotations() {
-					return property.getAnnotations();
-				}
-
-				@Nullable
-				@Override
-				public Object getValue(Object instance) {
-					return property.getValue(instance);
-				}
-			})
+			.map(implementation -> new ConcreteTypeProperty(
+				generateAnnotatedTypeWithoutAnnotation(implementation),
+				property
+			))
 			.collect(Collectors.toList());
 	}
 }

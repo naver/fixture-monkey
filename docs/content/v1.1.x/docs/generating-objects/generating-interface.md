@@ -273,5 +273,53 @@ FixtureMonkey fixture = FixtureMonkey.builder()
 SealedDefaultStringSupplier stringSupplier = (SealedDefaultStringSupplier)fixture.giveMeOne(SealedStringSupplier.class);
 ```
 
+### For advanced users
+If there are too many implementations of an interface, you can add interface implementations programmatically.
+All you have to do is create a class that implements the `CandidateConcretePropertyResolver` interface and add it to the `InterfacePlugin`.
+
+```java
+class YourCustomCandidateConcretePropertyResolver implements CandidateConcretePropertyResolver {
+    @Override
+    public List<Property> resolveCandidateConcreteProperties(Property property) {
+        // resolve your implementations
+        return List.of(...);
+    }
+}
+```
+
+If you have a trouble creating `List<Property>`, you can delegate the creation logic to `ConcreteTypeCandidateConcretePropertyResolver`.
+
+`ConcreteTypeCandidateConcretePropertyResolver` is a class that implements the `CandidateConcretePropertyResolver` interface.
+It converts the types and property information provided in the constructor to `List<Property>`.
+The property information is used when inferring type parameters.
+
+In the case below, the `ConcreteTypeCandidateConcretePropertyResolver` is used to resolve the implementations of `List` and `Set`.
+`Collection<String>` is resolved as either `List<String>` or `Set<String>`.
+You can resolve the actual implementations programmatically or delegate the creation logic to Fixture Monkey.
+By default, Fixture Monkey resolves `List<String>` as `ArrayList<String>` and `Set<String>` as `HashSet<String>`.
+
+{{< alert icon="💡" title="notice">}}
+
+You should be careful when setting the type condition to apply the options as the first parameter.
+For example, using `AssignableTypeMatcher` in the example below will cause an infinite loop because the implementations also satisfy the condition.
+
+{{</ alert>}}
+
+```java
+FixtureMonkey sut = FixtureMonkey.builder()
+	.plugin(new InterfacePlugin()
+		.interfaceImplements(
+			new ExactTypeMatcher(Collection.class),
+			new ConcreteTypeCandidateConcretePropertyResolver<>(List.of(List.class, Set.class))
+		)
+	)
+	.build();
+
+Collection<String> actual = sut.giveMeOne(new TypeReference<>() {
+});
+
+then(actual).isInstanceOfAny(List.class, Set.class);
+```
+
 This chapter illustrates how to create an interface type. If you get stuck, all you need to remember is the `InterfacePlugin' plugin.
 If the plugin doesn't solve your problem, please post a bug with a reproducible example.

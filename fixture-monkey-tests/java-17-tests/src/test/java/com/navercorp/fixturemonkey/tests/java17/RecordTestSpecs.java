@@ -158,4 +158,10 @@ final class RecordTestSpecs {
 
 	public record BooleanRecord(boolean primitive, Boolean wrapper) {
 	}
+
+	public record CanonicalConstructorRecord(String string) {
+		public CanonicalConstructorRecord() {
+			this(null);
+		}
+	}
 }

@@ -23,7 +23,6 @@ import java.util.Random;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import net.jqwik.api.JqwikException;
 import net.jqwik.engine.SourceOfRandomness;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -91,7 +90,7 @@ public abstract class Randoms {
 			SEED.set(seed);
 			return random;
 		} catch (NumberFormatException nfe) {
-			throw new JqwikException(String.format("[%s] is not a valid random seed.", seed));
+			throw new IllegalArgumentException(String.format("[%s] is not a valid random seed.", seed));
 		}
 	}
 

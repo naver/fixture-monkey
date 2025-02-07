@@ -18,6 +18,8 @@
 
 package com.navercorp.fixturemonkey.customizer;
 
+import java.util.List;
+
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
@@ -25,7 +27,9 @@ import net.jqwik.api.Arbitrary;
 
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.container.DecomposedContainerValueFactory;
+import com.navercorp.fixturemonkey.api.generator.ContainerPropertyGenerator;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
+import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.customizer.Values.Just;
 import com.navercorp.fixturemonkey.tree.GenerateFixtureContext;
 import com.navercorp.fixturemonkey.tree.ObjectNode;
@@ -34,15 +38,18 @@ import com.navercorp.fixturemonkey.tree.ObjectNode;
 public final class NodeSetLazyManipulator<T> implements NodeManipulator {
 	private final int sequence;
 	private final DecomposedContainerValueFactory decomposedContainerValueFactory;
+	private final List<MatcherOperator<ContainerPropertyGenerator>> containerPropertyGenerators;
 	private final LazyArbitrary<T> lazyArbitrary;
 
 	public NodeSetLazyManipulator(
 		int sequence,
 		DecomposedContainerValueFactory decomposedContainerValueFactory,
+		List<MatcherOperator<ContainerPropertyGenerator>> containerPropertyGenerators,
 		LazyArbitrary<T> lazyArbitrary
 	) {
 		this.sequence = sequence;
 		this.decomposedContainerValueFactory = decomposedContainerValueFactory;
+		this.containerPropertyGenerators = containerPropertyGenerators;
 		this.lazyArbitrary = lazyArbitrary;
 	}
 
@@ -70,7 +77,12 @@ public final class NodeSetLazyManipulator<T> implements NodeManipulator {
 		}
 
 		NodeSetDecomposedValueManipulator<T> nodeSetDecomposedValueManipulator =
-			new NodeSetDecomposedValueManipulator<>(sequence, decomposedContainerValueFactory, value);
+			new NodeSetDecomposedValueManipulator<>(
+				sequence,
+				decomposedContainerValueFactory,
+				containerPropertyGenerators,
+				value
+			);
 		nodeSetDecomposedValueManipulator.manipulate(objectNode);
 		lazyArbitrary.clear();
 	}

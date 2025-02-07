@@ -85,7 +85,7 @@ sectionStart
 ### v.1.0.21
 Deprecate the ObjectPropertyGenerator that modify child properties listed below.
 For example, `InterfaceObjectPropertyGenerator`, `SealedTypeObjectPropertyGenerator`, `SingleValueObjectPropertyGenerator`
-Use `InterfaceCandidateConcretePropertyResolver`, `SealedTypeCandidateConcretePropertyResolver` instead.
+Use `ConcreteTypeCandidateConcretePropertyResolver`, `SealedTypeCandidateConcretePropertyResolver` instead.
 
 Fix set `ZoneId` in Kotlin JDK21.
 

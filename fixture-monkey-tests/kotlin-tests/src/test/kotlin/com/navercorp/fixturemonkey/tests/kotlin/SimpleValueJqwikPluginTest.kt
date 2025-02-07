@@ -142,7 +142,7 @@ class SimpleValueJqwikPluginTest {
 
     @RepeatedTest(TEST_COUNT)
     fun sampleSetObject() {
-        class SetObject (val integers: Set<Integer>)
+        class SetObject(val integers: Set<Integer>)
 
         val sut = FixtureMonkey.builder()
             .plugin(KotlinPlugin())
@@ -202,4 +202,25 @@ class SimpleValueJqwikPluginTest {
         then(actual).isBetween(Byte.MIN_VALUE, Byte.MAX_VALUE)
     }
 
+    @RepeatedTest(TEST_COUNT)
+    fun setPositiveMinNumberReturnsPositive() {
+        val sut = FixtureMonkey.builder()
+            .plugin(SimpleValueJqwikPlugin().minNumberValue(0))
+            .build()
+
+        val actual: Long = sut.giveMeOne()
+
+        then(actual).isGreaterThanOrEqualTo(0);
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun setNegativeMaxNumberReturnsNegative() {
+        val sut = FixtureMonkey.builder()
+            .plugin(SimpleValueJqwikPlugin().maxNumberValue(-0))
+            .build()
+
+        val actual: Long = sut.giveMeOne()
+
+        then(actual).isLessThanOrEqualTo(0);
+    }
 }

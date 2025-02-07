@@ -6,6 +6,22 @@ docs:
 weight: 100
 ---
 sectionStart
+## v.1.1.8
+Fix not applying registered child manipulations if parent uses `thenApply`.
+
+Fix InnerSpec `inner` API.
+
+sectionEnd
+
+sectionStart
+## v.1.1.7
+Remove default FixtureMonkeyOptions, use `FixtureMonkeyOptions.builder().build()` instead.
+
+Refactor setting size variants of elements in container.
+
+sectionEnd
+
+sectionStart
 ## v.1.1.6
 Deprecate `Randoms.create(String)`, use `Randoms.setSeed(long)` instead.
 
@@ -131,7 +147,7 @@ sectionStart
 ### v.1.0.21
 Deprecate the ObjectPropertyGenerator that modify child properties listed below.
 For example, `InterfaceObjectPropertyGenerator`, `SealedTypeObjectPropertyGenerator`, `SingleValueObjectPropertyGenerator`
-Use `InterfaceCandidateConcretePropertyResolver`, `SealedTypeCandidateConcretePropertyResolver` instead.
+Use `ConcreteTypeCandidateConcretePropertyResolver`, `SealedTypeCandidateConcretePropertyResolver` instead.
 
 Fix set `ZoneId` in Kotlin JDK21.
 

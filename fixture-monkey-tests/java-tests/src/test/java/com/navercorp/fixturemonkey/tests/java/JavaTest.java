@@ -32,6 +32,7 @@ import java.lang.reflect.Modifier;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -92,6 +93,8 @@ import com.navercorp.fixturemonkey.tests.java.ImmutableMixedIntrospectorsTypeSpe
 import com.navercorp.fixturemonkey.tests.java.ImmutableRecursiveTypeSpecs.SelfRecursiveListObject;
 import com.navercorp.fixturemonkey.tests.java.ImmutableRecursiveTypeSpecs.SelfRecursiveMapObject;
 import com.navercorp.fixturemonkey.tests.java.ImmutableRecursiveTypeSpecs.SelfRecursiveObject;
+import com.navercorp.fixturemonkey.tests.java.InterfaceTestSpecs.AbstractClassObject;
+import com.navercorp.fixturemonkey.tests.java.InterfaceTestSpecs.AbstractClassStringChildObject;
 import com.navercorp.fixturemonkey.tests.java.InterfaceTestSpecs.InterfaceIntegerObject;
 import com.navercorp.fixturemonkey.tests.java.InterfaceTestSpecs.InterfaceListObject;
 import com.navercorp.fixturemonkey.tests.java.InterfaceTestSpecs.InterfaceObject;
@@ -1409,5 +1412,54 @@ class JavaTest {
 		JavaxValidationObject actual = sut.giveMeOne(JavaxValidationObject.class);
 
 		then(actual.getValue()).isEqualTo(100);
+	}
+
+	@RepeatedTest(TEST_COUNT)
+	void abstractClassExtends() {
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.plugin(
+				new InterfacePlugin()
+					.abstractClassExtends(
+						AbstractClassObject.class,
+						Collections.singletonList(AbstractClassStringChildObject.class))
+			)
+			.objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)
+			.build();
+
+		AbstractClassObject actual = sut.giveMeOne(AbstractClassObject.class);
+
+		then(actual).isExactlyInstanceOf(AbstractClassStringChildObject.class);
+	}
+
+	@Test
+	void abstractExtendsInterfaceThrows() {
+		thenThrownBy(
+			() -> FixtureMonkey.builder()
+				.plugin(
+					new InterfacePlugin()
+						.abstractClassExtends(
+							InterfaceObject.class,
+							Collections.singletonList(InterfaceStringObject.class))
+				)
+				.build()
+		)
+			.isExactlyInstanceOf(IllegalArgumentException.class)
+			.hasMessageContaining("should be abstract class");
+	}
+
+	@Test
+	void interfaceImplementsAbstractClassThrows() {
+		thenThrownBy(
+			() -> FixtureMonkey.builder()
+				.plugin(
+					new InterfacePlugin()
+						.interfaceImplements(
+							AbstractClassObject.class,
+							Collections.singletonList(AbstractClassStringChildObject.class))
+				)
+				.build()
+		)
+			.isExactlyInstanceOf(IllegalArgumentException.class)
+			.hasMessageContaining("should be interface");
 	}
 }

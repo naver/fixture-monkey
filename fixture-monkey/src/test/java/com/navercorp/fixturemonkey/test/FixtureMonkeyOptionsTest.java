@@ -1609,4 +1609,30 @@ class FixtureMonkeyOptionsTest {
 
 		then(actual).isNull();
 	}
+
+	@Property
+	void setConcrete() {
+		// given
+		List<Class<? extends AbstractValue>> implementations = new ArrayList<>();
+		implementations.add(ConcreteStringValue.class);
+		implementations.add(ConcreteIntValue.class);
+
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.plugin(
+				new InterfacePlugin()
+					.abstractClassExtends(AbstractValue.class, implementations)
+			)
+			.build();
+
+		ConcreteStringValue expected = new ConcreteStringValue();
+		expected.setValue("stringValue");
+		expected.setStringValue("test");
+
+		// when
+		AbstractValue actual = sut.giveMeBuilder(AbstractValue.class)
+			.set(expected)
+			.sample();
+
+		then(actual).isEqualTo(expected);
+	}
 }
