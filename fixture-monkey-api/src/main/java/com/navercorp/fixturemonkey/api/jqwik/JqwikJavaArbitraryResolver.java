@@ -207,61 +207,40 @@ public final class JqwikJavaArbitraryResolver implements JavaArbitraryResolver {
 			return floatArbitrary;
 		}
 
-		BigDecimal positiveMin = constraint.getPositiveMin();
-		BigDecimal positiveMax = constraint.getPositiveMax();
-		Boolean positiveMinInclusive = constraint.getPositiveMinInclusive();
-		Boolean positiveMaxInclusive = constraint.getPositiveMaxInclusive();
-		BigDecimal negativeMin = constraint.getNegativeMin();
-		BigDecimal negativeMax = constraint.getNegativeMax();
-		Boolean negativeMinInclusive = constraint.getNegativeMinInclusive();
-		Boolean negativeMaxInclusive = constraint.getNegativeMaxInclusive();
+		BigDecimal min = constraint.getMin();
+		Boolean minInclusive = constraint.getMinInclusive();
+		BigDecimal max = constraint.getMax();
+		Boolean maxInclusive = constraint.getMaxInclusive();
 		Integer scale = constraint.getScale();
 
-		FloatArbitrary positiveArbitrary = null;
-		FloatArbitrary negativeArbitrary = null;
-		if (positiveMin != null) {
-			positiveArbitrary = Types.defaultIfNull(positiveArbitrary, () -> floatArbitrary);
-			if (positiveMinInclusive != null && positiveMinInclusive) {
-				positiveArbitrary = positiveArbitrary.greaterOrEqual(positiveMin.floatValue());
-			} else {
-				positiveArbitrary = positiveArbitrary.greaterThan(positiveMin.floatValue());
-			}
-		}
-		if (positiveMax != null) {
-			positiveArbitrary = Types.defaultIfNull(positiveArbitrary, () -> floatArbitrary);
-			if (positiveMaxInclusive != null && positiveMaxInclusive) {
-				positiveArbitrary = positiveArbitrary.lessOrEqual(positiveMax.floatValue());
-			} else {
-				positiveArbitrary = positiveArbitrary.lessThan(positiveMax.floatValue());
-			}
-		}
-		if (negativeMin != null) {
-			negativeArbitrary = Types.defaultIfNull(negativeArbitrary, () -> floatArbitrary);
-			if (negativeMinInclusive != null && negativeMinInclusive) {
-				negativeArbitrary = negativeArbitrary.greaterOrEqual(negativeMin.floatValue());
-			} else {
-				negativeArbitrary = negativeArbitrary.greaterThan(negativeMin.floatValue());
-			}
-		}
-		if (negativeMax != null) {
-			negativeArbitrary = Types.defaultIfNull(negativeArbitrary, () -> floatArbitrary);
-			if (negativeMaxInclusive != null && negativeMaxInclusive) {
-				negativeArbitrary = negativeArbitrary.lessOrEqual(negativeMax.floatValue());
-			} else {
-				negativeArbitrary = negativeArbitrary.lessThan(negativeMax.floatValue());
-			}
-		}
+		FloatArbitrary arbitrary = null;
 
+		if (min != null) {
+			arbitrary = Types.defaultIfNull(arbitrary, () -> floatArbitrary);
+			if (minInclusive == null || minInclusive) {
+				arbitrary = arbitrary.greaterOrEqual(min.floatValue());
+			} else {
+				arbitrary = arbitrary.greaterThan(min.floatValue());
+			}
+		}
+		if (max != null) {
+			arbitrary = Types.defaultIfNull(arbitrary, () -> floatArbitrary);
+			if (maxInclusive == null || maxInclusive) {
+				arbitrary = arbitrary.lessOrEqual(max.floatValue());
+			} else {
+				arbitrary = arbitrary.lessThan(max.floatValue());
+			}
+		}
 		if (scale != null) {
-			if (positiveArbitrary != null) {
-				positiveArbitrary = positiveArbitrary.ofScale(scale);
-			}
-			if (negativeArbitrary != null) {
-				negativeArbitrary = negativeArbitrary.ofScale(scale);
+			if (arbitrary != null) {
+				arbitrary = arbitrary.ofScale(scale);
 			}
 		}
 
-		return resolveArbitrary(floatArbitrary, positiveArbitrary, negativeArbitrary);
+		if (arbitrary == null) {
+			return floatArbitrary;
+		}
+		return arbitrary;
 	}
 
 	@Override
@@ -274,61 +253,40 @@ public final class JqwikJavaArbitraryResolver implements JavaArbitraryResolver {
 			return doubleArbitrary;
 		}
 
-		BigDecimal positiveMin = constraint.getPositiveMin();
-		BigDecimal positiveMax = constraint.getPositiveMax();
-		Boolean positiveMinInclusive = constraint.getPositiveMinInclusive();
-		Boolean positiveMaxInclusive = constraint.getPositiveMaxInclusive();
-		BigDecimal negativeMin = constraint.getNegativeMin();
-		BigDecimal negativeMax = constraint.getNegativeMax();
-		Boolean negativeMinInclusive = constraint.getNegativeMinInclusive();
-		Boolean negativeMaxInclusive = constraint.getNegativeMaxInclusive();
+		BigDecimal min = constraint.getMin();
+		Boolean minInclusive = constraint.getMinInclusive();
+		BigDecimal max = constraint.getMax();
+		Boolean maxInclusive = constraint.getMaxInclusive();
 		Integer scale = constraint.getScale();
 
-		DoubleArbitrary positiveArbitrary = null;
-		DoubleArbitrary negativeArbitrary = null;
-		if (positiveMin != null) {
-			positiveArbitrary = Types.defaultIfNull(positiveArbitrary, () -> doubleArbitrary);
-			if (positiveMinInclusive != null && positiveMinInclusive) {
-				positiveArbitrary = positiveArbitrary.greaterOrEqual(positiveMin.doubleValue());
-			} else {
-				positiveArbitrary = positiveArbitrary.greaterThan(positiveMin.doubleValue());
-			}
-		}
-		if (positiveMax != null) {
-			positiveArbitrary = Types.defaultIfNull(positiveArbitrary, () -> doubleArbitrary);
-			if (positiveMaxInclusive != null && positiveMaxInclusive) {
-				positiveArbitrary = positiveArbitrary.lessOrEqual(positiveMax.doubleValue());
-			} else {
-				positiveArbitrary = positiveArbitrary.lessThan(positiveMax.doubleValue());
-			}
-		}
-		if (negativeMin != null) {
-			negativeArbitrary = Types.defaultIfNull(negativeArbitrary, () -> doubleArbitrary);
-			if (negativeMinInclusive != null && negativeMinInclusive) {
-				negativeArbitrary = negativeArbitrary.greaterOrEqual(negativeMin.floatValue());
-			} else {
-				negativeArbitrary = negativeArbitrary.greaterThan(negativeMin.floatValue());
-			}
-		}
-		if (negativeMax != null) {
-			negativeArbitrary = Types.defaultIfNull(negativeArbitrary, () -> doubleArbitrary);
-			if (negativeMaxInclusive != null && negativeMaxInclusive) {
-				negativeArbitrary = negativeArbitrary.lessOrEqual(negativeMax.doubleValue());
-			} else {
-				negativeArbitrary = negativeArbitrary.lessThan(negativeMax.doubleValue());
-			}
-		}
+		DoubleArbitrary arbitrary = null;
 
+		if (min != null) {
+			arbitrary = Types.defaultIfNull(arbitrary, () -> doubleArbitrary);
+			if (minInclusive == null || minInclusive) {
+				arbitrary = arbitrary.greaterOrEqual(min.doubleValue());
+			} else {
+				arbitrary = arbitrary.greaterThan(min.doubleValue());
+			}
+		}
+		if (max != null) {
+			arbitrary = Types.defaultIfNull(arbitrary, () -> doubleArbitrary);
+			if (maxInclusive == null || maxInclusive) {
+				arbitrary = arbitrary.lessOrEqual(max.doubleValue());
+			} else {
+				arbitrary = arbitrary.lessThan(max.doubleValue());
+			}
+		}
 		if (scale != null) {
-			if (positiveArbitrary != null) {
-				positiveArbitrary = positiveArbitrary.ofScale(scale);
-			}
-			if (negativeArbitrary != null) {
-				negativeArbitrary = negativeArbitrary.ofScale(scale);
+			if (arbitrary != null) {
+				arbitrary = arbitrary.ofScale(scale);
 			}
 		}
 
-		return resolveArbitrary(doubleArbitrary, positiveArbitrary, negativeArbitrary);
+		if (arbitrary == null) {
+			return doubleArbitrary;
+		}
+		return arbitrary;
 	}
 
 	@Override
@@ -450,62 +408,40 @@ public final class JqwikJavaArbitraryResolver implements JavaArbitraryResolver {
 			return bigDecimalArbitrary;
 		}
 
-		BigDecimal positiveMin = constraint.getPositiveMin();
-		BigDecimal positiveMax = constraint.getPositiveMax();
-		Boolean positiveMinInclusive = constraint.getPositiveMinInclusive();
-		Boolean positiveMaxInclusive = constraint.getPositiveMaxInclusive();
-		BigDecimal negativeMin = constraint.getNegativeMin();
-		BigDecimal negativeMax = constraint.getNegativeMax();
-		Boolean negativeMinInclusive = constraint.getNegativeMinInclusive();
-		Boolean negativeMaxInclusive = constraint.getNegativeMaxInclusive();
+		BigDecimal min = constraint.getMin();
+		Boolean minInclusive = constraint.getMinInclusive();
+		BigDecimal max = constraint.getMax();
+		Boolean maxInclusive = constraint.getMaxInclusive();
 		Integer scale = constraint.getScale();
 
-		BigDecimalArbitrary positiveArbitrary = null;
-		BigDecimalArbitrary negativeArbitrary = null;
-		if (positiveMin != null) {
-			positiveArbitrary = Types.defaultIfNull(positiveArbitrary, () -> bigDecimalArbitrary);
-			if (positiveMinInclusive != null && positiveMinInclusive) {
-				positiveArbitrary = positiveArbitrary.greaterOrEqual(positiveMin);
-			} else {
-				positiveArbitrary = positiveArbitrary.greaterThan(positiveMin);
-			}
-		}
-		if (positiveMax != null) {
-			positiveArbitrary = Types.defaultIfNull(positiveArbitrary, () -> bigDecimalArbitrary);
-			if (positiveMaxInclusive != null && positiveMaxInclusive) {
-				positiveArbitrary = positiveArbitrary.lessOrEqual(positiveMax);
-			} else {
-				positiveArbitrary = positiveArbitrary.lessThan(positiveMax);
-			}
-		}
+		BigDecimalArbitrary arbitrary = null;
 
-		if (negativeMin != null) {
-			negativeArbitrary = Types.defaultIfNull(negativeArbitrary, () -> bigDecimalArbitrary);
-			if (negativeMinInclusive != null && negativeMinInclusive) {
-				negativeArbitrary = negativeArbitrary.greaterOrEqual(negativeMin);
+		if (min != null) {
+			arbitrary = Types.defaultIfNull(arbitrary, () -> bigDecimalArbitrary);
+			if (minInclusive == null || minInclusive) {
+				arbitrary = arbitrary.greaterOrEqual(min);
 			} else {
-				negativeArbitrary = negativeArbitrary.greaterThan(negativeMin);
+				arbitrary = arbitrary.greaterThan(min);
 			}
 		}
-		if (negativeMax != null) {
-			negativeArbitrary = Types.defaultIfNull(negativeArbitrary, () -> bigDecimalArbitrary);
-			if (negativeMaxInclusive != null && negativeMaxInclusive) {
-				negativeArbitrary = negativeArbitrary.lessOrEqual(negativeMax);
+		if (max != null) {
+			arbitrary = Types.defaultIfNull(arbitrary, () -> bigDecimalArbitrary);
+			if (maxInclusive == null || maxInclusive) {
+				arbitrary = arbitrary.lessOrEqual(max);
 			} else {
-				negativeArbitrary = negativeArbitrary.lessThan(negativeMax);
+				arbitrary = arbitrary.lessThan(max);
 			}
 		}
-
 		if (scale != null) {
-			if (positiveArbitrary != null) {
-				positiveArbitrary = positiveArbitrary.ofScale(scale);
-			}
-			if (negativeArbitrary != null) {
-				negativeArbitrary = negativeArbitrary.ofScale(scale);
+			if (arbitrary != null) {
+				arbitrary = arbitrary.ofScale(scale);
 			}
 		}
 
-		return resolveArbitrary(bigDecimalArbitrary, positiveArbitrary, negativeArbitrary);
+		if (arbitrary == null) {
+			return bigDecimalArbitrary;
+		}
+		return arbitrary;
 	}
 
 	private static <T> Arbitrary<T> resolveArbitrary(

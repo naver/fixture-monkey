@@ -237,13 +237,9 @@ public final class SimpleValueJqwikPlugin implements Plugin {
 		@Override
 		public JavaDecimalConstraint generateDecimalConstraint(ArbitraryGeneratorContext context) {
 			return new JavaDecimalConstraint(
-				BigDecimal.valueOf(this.positiveMinNumberValue),
-				true,
-				BigDecimal.valueOf(this.positiveMaxNumberValue),
-				true,
 				BigDecimal.valueOf(this.negativeMinNumberValue),
 				true,
-				BigDecimal.valueOf(this.negativeMaxNumberValue),
+				BigDecimal.valueOf(this.positiveMaxNumberValue),
 				true,
 				2
 			);
