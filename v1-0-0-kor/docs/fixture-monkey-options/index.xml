@@ -9,8 +9,7 @@
 &lt;h2 id="사용자-정의-객체-생성기-등록하기">사용자 정의 객체 생성기 등록하기 &lt;a href="#%ec%82%ac%ec%9a%a9%ec%9e%90-%ec%a0%95%ec%9d%98-%ea%b0%9d%ec%b2%b4-%ec%83%9d%ec%84%b1%ea%b8%b0-%eb%93%b1%eb%a1%9d%ed%95%98%ea%b8%b0" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h2>
 &lt;h3 id="objectintrospector">ObjectIntrospector &lt;a href="#objectintrospector" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h3>
 &lt;blockquote>
-&lt;p>&lt;code>objectIntrospector&lt;/code>&lt;/p>
-&lt;/blockquote>
+&lt;p>&lt;code>objectIntrospector&lt;/code>&lt;/p>&lt;/blockquote>
 &lt;p>&lt;code>ObjectIntrospector&lt;/code> 은 Fixture Monkey에서 객체가 생성되는 방법을 결정합니다. &lt;code>objectIntrospector&lt;/code> 옵션을 사용하면 객체 생성의 기본 동작을 지정할 수 있습니다.
 &lt;a href="../../generating-objects/introspector">introspector section&lt;/a>에서 언급한 대로 기본 introspector를 변경하여 Fixture Monkey에서 제공하는 미리 정의된 introspector를 사용하거나 사용자 정의 introspector를 만들 수 있습니다.&lt;/p>
 &lt;div class="alert alert-doks d-flex" role="alert">
@@ -63,8 +62,7 @@
 &lt;/div></description></item><item><title>커스터마이징 옵션</title><link>https://naver.github.io/fixture-monkey/v1-0-0-kor/docs/fixture-monkey-options/customization-options/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v1-0-0-kor/docs/fixture-monkey-options/customization-options/</guid><description>&lt;p>Fixture Monkey는 &lt;code>FixtureMonkeyBuilder&lt;/code> 를 통해 원하는 값을 가지도록 객체를 사용자 정의하거나 사용자 정의 프로퍼티 명을 사용할 수 있는 옵션도 제공합니다.&lt;/p>
 &lt;h2 id="프로퍼티명-참조-방법-변경하기">프로퍼티명 참조 방법 변경하기 &lt;a href="#%ed%94%84%eb%a1%9c%ed%8d%bc%ed%8b%b0%eb%aa%85-%ec%b0%b8%ec%a1%b0-%eb%b0%a9%eb%b2%95-%eb%b3%80%ea%b2%bd%ed%95%98%ea%b8%b0" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h2>
 &lt;blockquote>
-&lt;p>&lt;code>defaultPropertyNameResolver&lt;/code>, &lt;code>pushPropertyNameResolver&lt;/code>, &lt;code>pushAssignableTypePropertyNameResolver&lt;/code>, &lt;code>pushExactTypePropertyNameResolver&lt;/code>&lt;/p>
-&lt;/blockquote>
+&lt;p>&lt;code>defaultPropertyNameResolver&lt;/code>, &lt;code>pushPropertyNameResolver&lt;/code>, &lt;code>pushAssignableTypePropertyNameResolver&lt;/code>, &lt;code>pushExactTypePropertyNameResolver&lt;/code>&lt;/p>&lt;/blockquote>
 &lt;p>&lt;code>PropertyNameResolver&lt;/code> 관련 옵션을 사용하면 프로퍼티명을 참조하는 방법을 사용자 정의할 수 있습니다.&lt;/p>
 &lt;p>&lt;code>defaultPropertyNameResolver&lt;/code> 옵션은 모든 타입에 대해 프로퍼티명을 알아내는 방식을 변경하는 데 사용됩니다.
 만약 특정 타입에 대해 변경을 수행하려면 &lt;code>pushPropertyNameResolver&lt;/code> , &lt;code>pushAssignableTypePropertyNameResolver&lt;/code> 또는 &lt;code>pushExactTypePropertyNameResolver&lt;/code> 를 사용할 수 있습니다.&lt;/p>

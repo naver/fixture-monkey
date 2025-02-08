@@ -42,8 +42,7 @@
 &lt;p>&lt;strong>fixture-monkey-starter&lt;/strong> is a starter dependency that comes with pre-configured dependencies such as fixture-monkey-jakarta-validation to help you get started using Fixture Monkey.&lt;/p></description></item><item><title>Creating test objects</title><link>https://naver.github.io/fixture-monkey/v1-1-0/docs/get-started/creating-test-objects/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v1-1-0/docs/get-started/creating-test-objects/</guid><description>&lt;blockquote>
 &lt;p>Fixture Monkey works in both Java and Kotlin.
 We have a separate &amp;lsquo;Getting Started&amp;rsquo; page for each environment you can use: &lt;a href="../creating-test-objects">Java&lt;/a>, &lt;a href="../creating-test-objects-without-lombok">Java without Lombok&lt;/a>, and &lt;a href="../creating-objects-in-kotlin">Kotlin&lt;/a>.&lt;/p>
-&lt;p>This page explains the Java environment. Please refer to the appropriate page for your environment.&lt;/p>
-&lt;/blockquote>
+&lt;p>This page explains the Java environment. Please refer to the appropriate page for your environment.&lt;/p>&lt;/blockquote>
 &lt;p>Consider a scenario where you need a test fixture for a Product class, as shown below:&lt;/p>
 &lt;div class="alert alert-doks d-flex" role="alert">
  &lt;div class="flex-shrink-1 alert-icon">💡 &lt;/div>
@@ -128,13 +127,13 @@ public class Product {
 &lt;p>Fixture Monkey supports constraint annotations from the &lt;code>jakarta.validation.constraints&lt;/code> and &lt;code>javax.validation.constraints&lt;/code> packages.&lt;/p>
 &lt;p>To enable this feature, you need to add the &lt;code>fixture-monkey-jakarta-validation&lt;/code> dependency (or &lt;code>fixture-monkey-javax-validation&lt;/code> if you are using javax.validation.constraints) to your project as follows:&lt;/p>
 &lt;h5 id="gradle">Gradle &lt;a href="#gradle" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h5>
-&lt;pre>&lt;code class="language-groovy">testImplementation(&amp;quot;com.navercorp.fixturemonkey:fixture-monkey-jakarta-validation:1.1.5&amp;quot;)
+&lt;pre>&lt;code class="language-groovy">testImplementation(&amp;quot;com.navercorp.fixturemonkey:fixture-monkey-jakarta-validation:1.1.9&amp;quot;)
 &lt;/code>&lt;/pre>
 &lt;h5 id="maven">Maven &lt;a href="#maven" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h5>
 &lt;pre>&lt;code class="language-xml">&amp;lt;dependency&amp;gt;
  &amp;lt;groupId&amp;gt;com.navercorp.fixturemonkey&amp;lt;/groupId&amp;gt;
  &amp;lt;artifactId&amp;gt;fixture-monkey-jakarta-validation&amp;lt;/artifactId&amp;gt;
- &amp;lt;version&amp;gt;1.1.5&amp;lt;/version&amp;gt;
+ &amp;lt;version&amp;gt;1.1.9&amp;lt;/version&amp;gt;
  &amp;lt;scope&amp;gt;test&amp;lt;/scope&amp;gt;
 &amp;lt;/dependency&amp;gt;
 &lt;/code>&lt;/pre>

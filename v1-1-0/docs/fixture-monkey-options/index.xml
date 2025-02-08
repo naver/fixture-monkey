@@ -9,14 +9,12 @@ To address this limitation, the &lt;code>Property&lt;/code> interface was introd
 &lt;h2 id="implement-your-own-object-generator">Implement your own Object Generator &lt;a href="#implement-your-own-object-generator" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h2>
 &lt;h3 id="objectintrospector">ObjectIntrospector &lt;a href="#objectintrospector" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h3>
 &lt;blockquote>
-&lt;p>&lt;code>objectIntrospector&lt;/code>&lt;/p>
-&lt;/blockquote>
+&lt;p>&lt;code>objectIntrospector&lt;/code>&lt;/p>&lt;/blockquote>
 &lt;p>An &lt;code>ObjectIntrospector&lt;/code> determines how Fixture Monkey creates objects. The &lt;code>objectIntrospector&lt;/code> option allows you to specify the default behavior when generating an object.&lt;br>
 As discussed in the &lt;a href="../../generating-objects/introspector">introspector section&lt;/a>, you can use predefined introspectors provided by Fixture Monkey or create your own custom introspector.&lt;/p></description></item><item><title>Customization Options</title><link>https://naver.github.io/fixture-monkey/v1-1-0/docs/fixture-monkey-options/customization-options/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v1-1-0/docs/fixture-monkey-options/customization-options/</guid><description>&lt;p>Fixture Monkey also provides options through the &lt;code>FixtureMonkeyBuilder&lt;/code> to customize objects to have the desired values or to use custom property names.&lt;/p>
 &lt;h2 id="change-how-property-names-are-resolved">Change how property names are resolved &lt;a href="#change-how-property-names-are-resolved" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h2>
 &lt;blockquote>
-&lt;p>&lt;code>defaultPropertyNameResolver&lt;/code>, &lt;code>pushPropertyNameResolver&lt;/code>, &lt;code>pushAssignableTypePropertyNameResolver&lt;/code>, &lt;code>pushExactTypePropertyNameResolver&lt;/code>&lt;/p>
-&lt;/blockquote>
+&lt;p>&lt;code>defaultPropertyNameResolver&lt;/code>, &lt;code>pushPropertyNameResolver&lt;/code>, &lt;code>pushAssignableTypePropertyNameResolver&lt;/code>, &lt;code>pushExactTypePropertyNameResolver&lt;/code>&lt;/p>&lt;/blockquote>
 &lt;p>Options related to the &lt;code>PropertyNameResolver&lt;/code> allow you to customize how you refer to your properties.&lt;/p>
 &lt;p>The &lt;code>defaultPropertyNameResolver&lt;/code> option is used to change the way property names are figured out for all types. If you want to make specific changes for certain types, you can use &lt;code>pushPropertyNameResolver&lt;/code>, &lt;code>pushAssignableTypePropertyNameResolver&lt;/code>, or &lt;code>pushExactTypePropertyNameResolver&lt;/code>.&lt;/p></description></item><item><title>Other Options</title><link>https://naver.github.io/fixture-monkey/v1-1-0/docs/fixture-monkey-options/other-options/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v1-1-0/docs/fixture-monkey-options/other-options/</guid><description>&lt;p>This section explains some additional options that the &lt;code>FixtureMonkeyBuilder&lt;/code> provide.&lt;/p>
 &lt;h3 id="add-plugins">Add plugins &lt;a href="#add-plugins" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h3>
