@@ -418,24 +418,16 @@ public final class FixtureMonkeyBuilder {
 
 	public FixtureMonkeyBuilder registerGroup(ArbitraryBuilderGroup... arbitraryBuilderGroups) {
 		for (ArbitraryBuilderGroup arbitraryBuilderGroup : arbitraryBuilderGroups) {
-			this.registerGroup(arbitraryBuilderGroup, DEFAULT_PRIORITY);
-		}
-		return this;
-	}
+			List<ArbitraryBuilderCandidate<?>> candidates = arbitraryBuilderGroup.generateCandidateList()
+				.getCandidates();
 
-	public FixtureMonkeyBuilder registerGroup(
-		ArbitraryBuilderGroup arbitraryBuilderGroup,
-		int priority
-	) {
-		List<ArbitraryBuilderCandidate<?>> candidates = arbitraryBuilderGroup.generateCandidateList()
-			.getCandidates();
-
-		for (ArbitraryBuilderCandidate<?> candidate : candidates) {
-			this.register(
-				candidate.getClassType(),
-				candidate.getArbitraryBuilderRegisterer(),
-				priority
-			);
+			for (ArbitraryBuilderCandidate<?> candidate : candidates) {
+				this.register(
+					candidate.getClassType(),
+					candidate.getArbitraryBuilderRegisterer(),
+					DEFAULT_PRIORITY
+				);
+			}
 		}
 		return this;
 	}

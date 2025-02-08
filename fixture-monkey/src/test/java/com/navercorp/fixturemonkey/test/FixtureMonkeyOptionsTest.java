@@ -927,24 +927,6 @@ class FixtureMonkeyOptionsTest {
 	}
 
 	@Property
-	void registerGroupWithPriority() {
-		FixtureMonkey sut = FixtureMonkey.builder()
-			.registerGroup(new SiblingBuilderGroup(), 1)
-			.registerGroup(new ChildBuilderGroup(), 2)
-			.build();
-
-		String actual = sut.giveMeOne(SimpleObject.class)
-			.getStr();
-		List<String> actual2 = sut.giveMeOne(new TypeReference<List<String>>() {
-		});
-		ConcreteIntValue actual3 = sut.giveMeOne(ConcreteIntValue.class);
-
-		then(actual).hasSizeBetween(4, 6);
-		then(actual2).hasSizeGreaterThan(3);
-		then(actual3).isEqualTo(ChildBuilderGroup.FIXED_INT_VALUE);
-	}
-
-	@Property
 	void registerWithPriorityLessThenZero() {
 		thenThrownBy(() -> FixtureMonkey.builder()
 			.register(String.class, monkey -> monkey.giveMeBuilder("test"), -1)
