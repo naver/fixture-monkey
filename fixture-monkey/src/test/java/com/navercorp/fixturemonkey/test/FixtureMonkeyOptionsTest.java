@@ -876,8 +876,8 @@ class FixtureMonkeyOptionsTest {
 	@Property
 	void registerWithPriority() {
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.register(String.class, monkey -> monkey.giveMeBuilder("test"), 1)
 			.register(String.class, monkey -> monkey.giveMeBuilder("test2"), 2)
+			.register(String.class, monkey -> monkey.giveMeBuilder("test"), 1)
 			.build();
 
 		String actual = sut.giveMeBuilder(String.class)
