@@ -6,6 +6,18 @@ docs:
 weight: 100
 ---
 sectionStart
+## v.1.1.9
+Fix `abstractExtends` in InterfacePlugin does not support interface, please use `interafaceImplements` instead. 
+
+Fix a record instance generates canonical constructor properties.
+
+Deprecate `InterfaceCandidateConcretePropertyResolver`, please use `ConcreteTypeCandidateConcretePropertyResolver` instead. 
+
+Fix modifying the number option in `SimpleValueJqwikPlugin`.
+
+sectionEnd
+
+sectionStart
 ## v.1.1.8
 Fix not applying registered child manipulations if parent uses `thenApply`.
 
