@@ -20,6 +20,7 @@ package com.navercorp.fixturemonkey.junit.jupiter.extension;
 import static org.assertj.core.api.BDDAssertions.then;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -59,10 +60,7 @@ class FixtureMonkeySeedExtensionTest {
 	@Seed(1)
 	@RepeatedTest(100)
 	void containerReturnsSame() {
-		List<String> expected = Arrays.asList(
-			"仛禦催ᘓ蓊類౺阹瞻塢飖獾ࠒ⒐፨婵얎⽒竻·俌欕悳잸횑ٻ킐結",
-			"塸聩ዡ㘇뵥刲禮ᣮ鎊熇捺셾壍Ꜻꌩ垅凗❉償粐믩࠱哠"
-		);
+		List<String> expected = Collections.singletonList("仛禦催ᘓ蓊類౺阹瞻塢飖獾ࠒ⒐፨婵얎⽒竻·俌欕悳잸횑ٻ킐結");
 
 		List<String> actual = SUT.giveMeOne(new TypeReference<List<String>>() {
 		});
@@ -73,9 +71,7 @@ class FixtureMonkeySeedExtensionTest {
 	@Seed(1)
 	@RepeatedTest(100)
 	void containerMattersOrder() {
-		Set<String> expected = new HashSet<>(
-			Arrays.asList("仛禦催ᘓ蓊類౺阹瞻塢飖獾ࠒ⒐፨婵얎⽒竻·俌欕悳잸횑ٻ킐結", "塸聩ዡ㘇뵥刲禮ᣮ鎊熇捺셾壍Ꜻꌩ垅凗❉償粐믩࠱哠")
-		);
+		Set<String> expected = new HashSet<>(Collections.singletonList("仛禦催ᘓ蓊類౺阹瞻塢飖獾ࠒ⒐፨婵얎⽒竻·俌欕悳잸횑ٻ킐結"));
 
 		Set<String> actual = SUT.giveMeOne(new TypeReference<Set<String>>() {
 		});
@@ -93,5 +89,23 @@ class FixtureMonkeySeedExtensionTest {
 		});
 
 		then(firstSet).isNotEqualTo(secondList);
+	}
+
+	@Seed(1)
+	@RepeatedTest(100)
+	void multipleFixtureMonkeyInstancesReturnsAsOneInstance() {
+		List<String> expected = Arrays.asList(
+			"✠섨ꝓ仛禦催ᘓ蓊類౺阹瞻塢飖獾ࠒ⒐፨",
+			"欕悳잸"
+		);
+		FixtureMonkey firstFixtureMonkey = FixtureMonkey.create();
+		FixtureMonkey secondFixtureMonkey = FixtureMonkey.create();
+
+		List<String> actual = Arrays.asList(
+			firstFixtureMonkey.giveMeOne(String.class),
+			secondFixtureMonkey.giveMeOne(String.class)
+		);
+
+		then(actual).isEqualTo(expected);
 	}
 }

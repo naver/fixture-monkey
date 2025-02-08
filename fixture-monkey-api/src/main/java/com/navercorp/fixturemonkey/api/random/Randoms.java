@@ -27,27 +27,20 @@ import net.jqwik.engine.SourceOfRandomness;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
+import com.navercorp.fixturemonkey.api.engine.EngineUtils;
+
 /**
  * Reference jqwik SourceOfRandomness
  */
 @API(since = "0.4.0", status = Status.INTERNAL)
 @SuppressFBWarnings("DMI_RANDOM_USED_ONLY_ONCE")
 public abstract class Randoms {
-	private static final boolean USE_JQWIK_ENGINE;
 	private static final ThreadLocal<Random> CURRENT;
 	private static final ThreadLocal<Long> SEED;
 
 	static {
-		boolean useJqwikEngine;
-		try {
-			Class.forName("net.jqwik.engine.SourceOfRandomness");
-			useJqwikEngine = true;
-		} catch (ClassNotFoundException e) {
-			useJqwikEngine = false;
-		}
-		USE_JQWIK_ENGINE = useJqwikEngine;
 		SEED = ThreadLocal.withInitial(System::nanoTime);
-		CURRENT = ThreadLocal.withInitial(() -> Randoms.create(SEED.get()));
+		CURRENT = ThreadLocal.withInitial(() -> Randoms.newGlobalSeed(SEED.get()));
 	}
 
 	/**
@@ -60,12 +53,32 @@ public abstract class Randoms {
 		return CURRENT.get();
 	}
 
+	/**
+	 * sets the initialized seed value.
+	 * If the seed has been initialized, it will no longer be changed.
+	 *
+	 * @param seed the seed value
+	 */
 	public static void setSeed(long seed) {
 		SEED.set(seed);
 	}
 
+	/**
+	 * Creates a new random instance with the given seed.
+	 * It affects the global seed value across multiple FixtureMonkey instances.
+	 * It is not recommended to use this method directly unless you intend to.
+	 * It is generally recommended to use {@link #setSeed(long)} instead.
+	 *
+	 * @param seed the seed value
+	 * @return a new random instance
+	 */
+	public static Random newGlobalSeed(long seed) {
+		initializeGlobalSeed(seed);
+		return CURRENT.get();
+	}
+
 	public static Random current() {
-		return USE_JQWIK_ENGINE
+		return EngineUtils.useJqwikEngine()
 			? SourceOfRandomness.current()
 			: CURRENT.get();
 	}
@@ -78,25 +91,26 @@ public abstract class Randoms {
 		return current().nextInt(bound);
 	}
 
-	private static Random create(long seed) {
-		if (USE_JQWIK_ENGINE) {
-			SEED.set(seed);
-			return SourceOfRandomness.create(String.valueOf(seed));
-		}
-
+	/**
+	 * Creates a new random instance with the given seed. It is not thread safe.
+	 * It is generally recommended to use {@link #setSeed(long)} instead.
+	 * It affects the global seed value across multiple FixtureMonkey instances.
+	 *
+	 * @param seed the seed value
+	 */
+	private static void initializeGlobalSeed(long seed) {
 		try {
 			Random random = newRandom(seed);
 			CURRENT.set(random);
 			SEED.set(seed);
-			return random;
 		} catch (NumberFormatException nfe) {
 			throw new IllegalArgumentException(String.format("[%s] is not a valid random seed.", seed));
 		}
 	}
 
 	private static Random newRandom(final long seed) {
-		return USE_JQWIK_ENGINE
-			? SourceOfRandomness.newRandom(seed)
+		return EngineUtils.useJqwikEngine()
+			? SourceOfRandomness.create(String.valueOf(seed))
 			: new XorShiftRandom(seed);
 	}
 
