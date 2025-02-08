@@ -35,6 +35,7 @@ final class InvocationHandlerBuilder {
 	private static final String HASH_CODE_METHOD = "hashCode";
 	private static final String EQUALS_METHOD = "equals";
 	private static final String TO_STRING_METHOD = "toString";
+	private static final String INVOKE_METHOD = "invoke";
 
 	private final Class<?> type;
 	private final Map<String, Object> generatedValuesByMethodName;
@@ -53,6 +54,11 @@ final class InvocationHandlerBuilder {
 
 	InvocationHandler build() {
 		return (proxy, method, args) -> {
+			if (method == null) {
+				// invoked by DecomposedContainerValueFactory to decompose the functional interface
+				return generatedValuesByMethodName.get(INVOKE_METHOD);
+			}
+
 			if (method.isDefault()) {
 				return InvocationHandler.invokeDefault(proxy, method, args);
 			}
@@ -68,11 +74,6 @@ final class InvocationHandlerBuilder {
 
 			if (TO_STRING_METHOD.equals(method.getName()) && args == null) {
 				return toString(proxy);
-			}
-
-			// check no-args
-			if (args != null) {
-				return null;
 			}
 
 			return generatedValuesByMethodName.get(method.getName());
