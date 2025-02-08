@@ -55,8 +55,9 @@ jobs:
           detailed_summary: true
 
       - name: Test Summary
-        uses: actions/upload-artifact@v3  # upload test results
+        uses: actions/upload-artifact@v4  # upload test results
         if: always()
         with:
           name: test-results
           path: '**/build/test-results/test/TEST-*.xml'
+          overwrite: true
