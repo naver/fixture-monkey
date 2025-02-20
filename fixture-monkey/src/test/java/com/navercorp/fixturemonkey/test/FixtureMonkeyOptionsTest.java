@@ -99,6 +99,7 @@ import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.
 import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.PairInterface;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.PairIntrospector;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.RegisterGroup;
+import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.RegisterGroupWithPriority;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.SelfRecursiveAbstractValue;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.SelfRecursiveImplementationValue;
 import com.navercorp.fixturemonkey.test.FixtureMonkeyOptionsAdditionalTestSpecs.SimpleObjectChild;
@@ -780,7 +781,6 @@ class FixtureMonkeyOptionsTest {
 		then(actual).hasSizeBetween(1, 3);
 		then(actual2).hasSizeLessThan(5);
 		then(actual3).isEqualTo(RegisterGroup.FIXED_INT_VALUE);
-
 	}
 
 	@Property
@@ -859,19 +859,6 @@ class FixtureMonkeyOptionsTest {
 	}
 
 	@Property
-	void registerSameInstancesTwiceWorksLast() {
-		FixtureMonkey sut = FixtureMonkey.builder()
-			.register(String.class, monkey -> monkey.giveMeBuilder("test"))
-			.register(String.class, monkey -> monkey.giveMeBuilder("test2"))
-			.build();
-
-		String actual = sut.giveMeOne(SimpleObject.class)
-			.getStr();
-
-		then(actual).isEqualTo("test2");
-	}
-
-	@Property
 	void registerSetFirst() {
 		String expected = "test2";
 		FixtureMonkey sut = FixtureMonkey.builder()
@@ -883,6 +870,68 @@ class FixtureMonkeyOptionsTest {
 			.sample();
 
 		then(actual).isEqualTo(expected);
+	}
+
+	@Property
+	void registerWithPriority() {
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.register(String.class, monkey -> monkey.giveMeBuilder("test2"), 2)
+			.register(String.class, monkey -> monkey.giveMeBuilder("test"), 1)
+			.build();
+
+		String actual = sut.giveMeBuilder(String.class)
+			.sample();
+
+		then(actual).isEqualTo("test");
+	}
+
+	@Property
+	void registeredNameWithPriority() {
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.registeredName(
+				"test",
+				String.class,
+				monkey -> monkey.giveMeBuilder("test"),
+				1
+			)
+			.registeredName(
+				"test2",
+				String.class,
+				monkey -> monkey.giveMeBuilder("test2"),
+				2
+			)
+			.build();
+
+		String actual = sut.giveMeBuilder(String.class)
+			.sample();
+
+		then(actual).isEqualTo("test");
+	}
+
+	@Property
+	void registerGroupWithPriorityAnnotation() {
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.registerGroup(RegisterGroup.class, RegisterGroupWithPriority.class)
+			.build();
+
+		String actual = sut.giveMeOne(SimpleObject.class)
+			.getStr();
+		List<String> actual2 = sut.giveMeOne(new TypeReference<List<String>>() {
+		});
+		ConcreteIntValue actual3 = sut.giveMeOne(ConcreteIntValue.class);
+
+		then(actual).hasSizeBetween(4, 6);
+		then(actual2).hasSizeGreaterThan(4);
+		then(actual3).isEqualTo(RegisterGroup.FIXED_INT_VALUE);
+	}
+
+	@Property
+	void registerWithPriorityLessThenZero() {
+		thenThrownBy(() -> FixtureMonkey.builder()
+			.register(String.class, monkey -> monkey.giveMeBuilder("test"), -1)
+			.build()
+		).isExactlyInstanceOf(IllegalArgumentException.class)
+			.hasMessage("Priority must be greater than or equal to 0");
 	}
 
 	@Property
