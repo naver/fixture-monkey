@@ -76,6 +76,7 @@ import com.navercorp.fixturemonkey.customizer.ContainerInfoManipulator;
 import com.navercorp.fixturemonkey.customizer.InnerSpec;
 import com.navercorp.fixturemonkey.customizer.ManipulatorSet;
 import com.navercorp.fixturemonkey.customizer.MonkeyManipulatorFactory;
+import com.navercorp.fixturemonkey.customizer.PriorityMatcherOperator;
 import com.navercorp.fixturemonkey.experimental.ExperimentalArbitraryBuilder;
 import com.navercorp.fixturemonkey.resolver.ArbitraryResolver;
 
@@ -87,7 +88,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 	private final ArbitraryResolver resolver;
 	private final MonkeyManipulatorFactory monkeyManipulatorFactory;
 	private final ArbitraryBuilderContext context;
-	private final List<MatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuilders;
+	private final List<PriorityMatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuilders;
 	private final ManipulatorOptimizer manipulatorOptimizer;
 	private final MonkeyContext monkeyContext;
 	private final InstantiatorProcessor instantiatorProcessor;
@@ -98,8 +99,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 		ArbitraryResolver resolver,
 		MonkeyManipulatorFactory monkeyManipulatorFactory,
 		ArbitraryBuilderContext context,
-		List<MatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuilders,
-		Map<String, MatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuildersByRegsiteredName,
+		List<PriorityMatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuilders,
 		MonkeyContext monkeyContext,
 		ManipulatorOptimizer manipulatorOptimizer,
 		InstantiatorProcessor instantiatorProcessor
@@ -185,6 +185,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 		);
 	}
 
+	@Override
 	public ArbitraryBuilder<T> selectName(String... names) {
 		ArbitraryBuilderContext builderContext = registeredArbitraryBuilders.stream()
 			.filter(operator -> Arrays.stream(names)

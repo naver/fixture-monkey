@@ -36,6 +36,7 @@ import lombok.Setter;
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.FixtureMonkey;
+import com.navercorp.fixturemonkey.annotation.Order;
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGenerator;
@@ -101,6 +102,29 @@ class FixtureMonkeyOptionsAdditionalTestSpecs {
 		}
 	}
 
+	@Order(value = 1)
+	public static class RegisterGroupWithPriority {
+		public static final ConcreteIntValue FIXED_INT_VALUE = new ConcreteIntValue();
+
+		public ArbitraryBuilder<String> string(FixtureMonkey fixtureMonkey) {
+			return fixtureMonkey.giveMeBuilder(String.class)
+				.set(Arbitraries.strings().numeric().ofMinLength(4).ofMaxLength(6));
+		}
+
+		public ArbitraryBuilder<List<String>> stringList(FixtureMonkey fixtureMonkey) {
+			return fixtureMonkey.giveMeBuilder(new TypeReference<List<String>>() {
+				})
+				.setInner(
+					new InnerSpec()
+						.minSize(5)
+				);
+		}
+
+		public ArbitraryBuilder<ConcreteIntValue> concreteIntValue(FixtureMonkey fixtureMonkey) {
+			return fixtureMonkey.giveMeBuilder(FIXED_INT_VALUE);
+		}
+	}
+
 	public static class ChildBuilderGroup implements ArbitraryBuilderGroup {
 		public static final ConcreteIntValue FIXED_INT_VALUE = new ConcreteIntValue();
 
@@ -127,6 +151,43 @@ class FixtureMonkeyOptionsAdditionalTestSpecs {
 							builder -> builder.setInner(
 								new InnerSpec()
 									.maxSize(2)
+							)
+						)
+				)
+				.add(
+					ArbitraryBuilderCandidateFactory
+						.of(ConcreteIntValue.class)
+						.value(FIXED_INT_VALUE)
+				);
+		}
+	}
+
+	public static class SiblingBuilderGroup implements ArbitraryBuilderGroup {
+		public static final ConcreteIntValue FIXED_INT_VALUE = new ConcreteIntValue();
+
+		@Override
+		public ArbitraryBuilderCandidateList generateCandidateList() {
+			return ArbitraryBuilderCandidateList.create()
+				.add(
+					ArbitraryBuilderCandidateFactory
+						.of(String.class)
+						.builder(
+							arbitraryBuilder -> arbitraryBuilder.set(
+								Arbitraries.strings()
+									.numeric()
+									.ofMinLength(4)
+									.ofMaxLength(6)
+							)
+						)
+				)
+				.add(
+					ArbitraryBuilderCandidateFactory
+						.of(new TypeReference<List<String>>() {
+						})
+						.builder(
+							builder -> builder.setInner(
+								new InnerSpec()
+									.minSize(4)
 							)
 						)
 				)

@@ -34,6 +34,8 @@ import com.navercorp.fixturemonkey.api.property.TreeRootProperty;
 import com.navercorp.fixturemonkey.builder.ArbitraryBuilderContext;
 import com.navercorp.fixturemonkey.customizer.ArbitraryManipulator;
 import com.navercorp.fixturemonkey.customizer.MonkeyManipulatorFactory;
+import com.navercorp.fixturemonkey.customizer.PriorityMatcherOperator;
+import com.navercorp.fixturemonkey.tree.ArbitraryTraverser;
 import com.navercorp.fixturemonkey.tree.ObjectTree;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
@@ -41,14 +43,14 @@ public final class ArbitraryResolver {
 	private final ManipulatorOptimizer manipulatorOptimizer;
 	private final MonkeyManipulatorFactory monkeyManipulatorFactory;
 	private final MonkeyContext monkeyContext;
-	private final List<MatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuilders;
+	private final List<PriorityMatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuilders;
 
 	public ArbitraryResolver(
 		ManipulatorOptimizer manipulatorOptimizer,
 		MonkeyManipulatorFactory monkeyManipulatorFactory,
 		FixtureMonkeyOptions fixtureMonkeyOptions,
 		MonkeyContext monkeyContext,
-		List<MatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuilders
+		List<PriorityMatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuilders
 	) {
 		this.manipulatorOptimizer = manipulatorOptimizer;
 		this.monkeyManipulatorFactory = monkeyManipulatorFactory;
@@ -63,6 +65,19 @@ public final class ArbitraryResolver {
 		FixtureMonkeyOptions fixtureMonkeyOptions = monkeyContext.getFixtureMonkeyOptions();
 
 		List<ArbitraryManipulator> manipulators = builderContext.getManipulators();
+		List<ContainerInfoManipulator> containerInfoManipulators = builderContext.getContainerInfoManipulators();
+		Map<Class<?>, List<Property>> propertyConfigurers = builderContext.getPropertyConfigurers();
+
+		List<MatcherOperator<List<ContainerInfoManipulator>>> registeredContainerInfoManipulators =
+			registeredArbitraryBuilders.stream()
+				.map(it -> new MatcherOperator<>(
+					it.getMatcher(),
+					((DefaultArbitraryBuilder<?>)it.getOperator()).getContext().getContainerInfoManipulators()
+				))
+				.collect(Collectors.toList());
+
+		Map<Class<?>, ArbitraryIntrospector> arbitraryIntrospectorConfigurers =
+			builderContext.getArbitraryIntrospectorsByType();
 
 		return new ResolvedCombinableArbitrary<>(
 			rootProperty,

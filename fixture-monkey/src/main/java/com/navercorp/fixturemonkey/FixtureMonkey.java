@@ -21,6 +21,8 @@ package com.navercorp.fixturemonkey;
 import static java.util.stream.Collectors.toList;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -37,6 +39,7 @@ import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.matcher.NamedMatcher;
 import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
+import com.navercorp.fixturemonkey.api.random.Randoms;
 import com.navercorp.fixturemonkey.api.property.TreeRootProperty;
 import com.navercorp.fixturemonkey.api.property.TypeParameterProperty;
 import com.navercorp.fixturemonkey.api.type.LazyAnnotatedType;
@@ -47,6 +50,7 @@ import com.navercorp.fixturemonkey.builder.DefaultArbitraryBuilder;
 import com.navercorp.fixturemonkey.builder.JavaTypeDefaultTypeArbitraryBuilder;
 import com.navercorp.fixturemonkey.customizer.ArbitraryManipulator;
 import com.navercorp.fixturemonkey.customizer.MonkeyManipulatorFactory;
+import com.navercorp.fixturemonkey.customizer.PriorityMatcherOperator;
 import com.navercorp.fixturemonkey.experimental.ExperimentalArbitraryBuilder;
 import com.navercorp.fixturemonkey.resolver.ArbitraryResolver;
 import com.navercorp.fixturemonkey.resolver.ManipulatorOptimizer;
@@ -56,21 +60,26 @@ public final class FixtureMonkey {
 	private final FixtureMonkeyOptions fixtureMonkeyOptions;
 	private final ManipulatorOptimizer manipulatorOptimizer;
 	private final MonkeyContext monkeyContext;
+	private final List<PriorityMatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuilders
+		= new ArrayList<>();
 	private final MonkeyManipulatorFactory monkeyManipulatorFactory;
 
 	public FixtureMonkey(
 		FixtureMonkeyOptions fixtureMonkeyOptions,
 		ManipulatorOptimizer manipulatorOptimizer,
-		List<MatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>>> registeredArbitraryBuilders,
+		MonkeyContext monkeyContext,
+		List<PriorityMatcherOperator<Function<FixtureMonkey,
+			? extends ArbitraryBuilder<?>>>> registeredArbitraryBuildersWithPriority,
 		MonkeyManipulatorFactory monkeyManipulatorFactory,
-		Map<String, MatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>>> mapsByRegisteredName
+		Map<String, PriorityMatcherOperator<Function<FixtureMonkey,
+			? extends ArbitraryBuilder<?>>>> registeredPriorityMatchersByName
 	) {
 		this.fixtureMonkeyOptions = fixtureMonkeyOptions;
 		this.manipulatorOptimizer = manipulatorOptimizer;
 		this.monkeyContext = MonkeyContext.builder(fixtureMonkeyOptions).build();
 		this.monkeyManipulatorFactory = monkeyManipulatorFactory;
-		initializeRegisteredArbitraryBuilders(registeredArbitraryBuilders);
-		initializeNamedArbitraryBuilderMap(mapsByRegisteredName);
+		initializeRegisteredArbitraryBuilders(registeredArbitraryBuildersWithPriority);
+		initializeNamedArbitraryBuilderMap(registeredPriorityMatchersByName);
 	}
 
 	public static FixtureMonkeyBuilder builder() {
@@ -90,8 +99,20 @@ public final class FixtureMonkey {
 	public <T> ArbitraryBuilder<T> giveMeBuilder(TypeReference<T> type) {
 		TreeRootProperty rootProperty = new RootProperty(new TypeParameterProperty(type.getAnnotatedType()));
 
-		ArbitraryBuilderContext builderContext = monkeyContext.getRegisteredArbitraryBuilders().stream()
+		List<PriorityMatcherOperator<? extends ArbitraryBuilder<?>>> priorityOperators = registeredArbitraryBuilders
+			.stream()
 			.filter(it -> it.match(rootProperty))
+			.sorted(Comparator.comparingInt(PriorityMatcherOperator::getPriority))
+			.collect(toList());
+
+		List<PriorityMatcherOperator<? extends ArbitraryBuilder<?>>> highestPriorityOperators
+			= getHighestPriorityOperators(priorityOperators);
+
+		if (highestPriorityOperators.size() > 1) {
+			Collections.shuffle(highestPriorityOperators, Randoms.current());
+		}
+
+		ArbitraryBuilderContext builderContext = highestPriorityOperators.stream()
 			.map(MatcherOperator::getOperator)
 			.findAny()
 			.map(ArbitraryBuilderContextProvider.class::cast)
@@ -103,7 +124,9 @@ public final class FixtureMonkey {
 			new ArbitraryResolver(
 				manipulatorOptimizer,
 				monkeyManipulatorFactory,
-				monkeyContext
+				fixtureMonkeyOptions,
+				monkeyContext,
+				registeredArbitraryBuilders
 			),
 			monkeyManipulatorFactory,
 			builderContext.copy(),
@@ -112,6 +135,20 @@ public final class FixtureMonkey {
 			manipulatorOptimizer,
 			fixtureMonkeyOptions.getInstantiatorProcessor()
 		);
+	}
+
+	private List<PriorityMatcherOperator<? extends ArbitraryBuilder<?>>> getHighestPriorityOperators(
+		List<PriorityMatcherOperator<? extends ArbitraryBuilder<?>>> priorityOperators
+	) {
+		if (priorityOperators.isEmpty()) {
+			return priorityOperators;
+		}
+
+		int highestPriority = priorityOperators.get(0).getPriority();
+
+		return priorityOperators.stream()
+			.filter(it -> it.getPriority() == highestPriority)
+			.collect(toList());
 	}
 
 	public <T> ArbitraryBuilder<T> giveMeBuilder(T value) {
@@ -126,7 +163,9 @@ public final class FixtureMonkey {
 			new ArbitraryResolver(
 				manipulatorOptimizer,
 				monkeyManipulatorFactory,
-				monkeyContext
+				fixtureMonkeyOptions,
+				monkeyContext,
+				registeredArbitraryBuilders
 			),
 			monkeyManipulatorFactory,
 			context,
@@ -190,11 +229,14 @@ public final class FixtureMonkey {
 	}
 
 	private void initializeRegisteredArbitraryBuilders(
-		List<MatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>>> registeredArbitraryBuilders
+		List<PriorityMatcherOperator<Function<FixtureMonkey,
+			? extends ArbitraryBuilder<?>>>> registeredArbitraryBuildersWithPriority
 	) {
-		List<? extends MatcherOperator<? extends ObjectBuilder<?>>> generatedRegisteredArbitraryBuilder =
-			registeredArbitraryBuilders.stream()
-				.map(it -> new MatcherOperator<>(it.getMatcher(), (ObjectBuilder<?>)(it.getOperator().apply(this))))
+		List<? extends PriorityMatcherOperator<? extends ArbitraryBuilder<?>>> generatedRegisteredArbitraryBuilder =
+			registeredArbitraryBuildersWithPriority.stream()
+				.map(it -> new PriorityMatcherOperator<>(
+					it.getMatcher(), it.getOperator().apply(this), it.getPriority())
+				)
 				.collect(toList());
 
 		for (int i = generatedRegisteredArbitraryBuilder.size() - 1; i >= 0; i--) {
@@ -203,13 +245,15 @@ public final class FixtureMonkey {
 	}
 
 	private void initializeNamedArbitraryBuilderMap(
-		Map<String, MatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>>> mapsByRegisteredName
+		Map<String, PriorityMatcherOperator<Function<FixtureMonkey,
+			? extends ArbitraryBuilder<?>>>> mapsByRegisteredName
 	) {
 		mapsByRegisteredName.forEach((registeredName, matcherOperator) -> {
 			registeredArbitraryBuilders.add(
-				new MatcherOperator<>(
+				new PriorityMatcherOperator<>(
 					new NamedMatcher(matcherOperator.getMatcher(), registeredName),
-					matcherOperator.getOperator().apply(this)
+					matcherOperator.getOperator().apply(this),
+					matcherOperator.getPriority()
 				)
 			);
 		});
