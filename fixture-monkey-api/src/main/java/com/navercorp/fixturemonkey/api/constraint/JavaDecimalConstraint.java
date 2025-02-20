@@ -28,92 +28,52 @@ import org.apiguardian.api.API.Status;
 @API(since = "0.6.8", status = Status.MAINTAINED)
 public final class JavaDecimalConstraint {
 	@Nullable
-	private final BigDecimal positiveMin;
+	private final BigDecimal min;
 
 	@Nullable
-	private final Boolean positiveMinInclusive;
+	private final Boolean minInclusive;
 
 	@Nullable
-	private final BigDecimal positiveMax;
+	private final BigDecimal max;
 
 	@Nullable
-	private final Boolean positiveMaxInclusive;
-
-	@Nullable
-	private final BigDecimal negativeMin;
-
-	@Nullable
-	private final Boolean negativeMinInclusive;
-
-	@Nullable
-	private final BigDecimal negativeMax;
-
-	@Nullable
-	private final Boolean negativeMaxInclusive;
+	private final Boolean maxInclusive;
 
 	@Nullable
 	private final Integer scale;
 
 	public JavaDecimalConstraint(
-		@Nullable BigDecimal positiveMin,
-		@Nullable Boolean positiveMinInclusive,
-		@Nullable BigDecimal positiveMax,
-		@Nullable Boolean positiveMaxInclusive,
-		@Nullable BigDecimal negativeMin,
-		@Nullable Boolean negativeMinInclusive,
-		@Nullable BigDecimal negativeMax,
-		@Nullable Boolean negativeMaxInclusive,
+		@Nullable BigDecimal min,
+		@Nullable Boolean minInclusive,
+		@Nullable BigDecimal max,
+		@Nullable Boolean maxInclusive,
 		@Nullable Integer scale
 	) {
-		this.positiveMin = positiveMin;
-		this.positiveMinInclusive = positiveMinInclusive;
-		this.positiveMax = positiveMax;
-		this.positiveMaxInclusive = positiveMaxInclusive;
-		this.negativeMin = negativeMin;
-		this.negativeMinInclusive = negativeMinInclusive;
-		this.negativeMax = negativeMax;
-		this.negativeMaxInclusive = negativeMaxInclusive;
+		this.min = min;
+		this.minInclusive = minInclusive;
+		this.max = max;
+		this.maxInclusive = maxInclusive;
 		this.scale = scale;
 	}
 
 	@Nullable
-	public BigDecimal getPositiveMin() {
-		return positiveMin;
+	public BigDecimal getMin() {
+		return min;
 	}
 
 	@Nullable
-	public Boolean getPositiveMinInclusive() {
-		return positiveMinInclusive;
+	public Boolean getMinInclusive() {
+		return minInclusive;
 	}
 
 	@Nullable
-	public BigDecimal getPositiveMax() {
-		return positiveMax;
+	public BigDecimal getMax() {
+		return max;
 	}
 
 	@Nullable
-	public Boolean getPositiveMaxInclusive() {
-		return positiveMaxInclusive;
-	}
-
-	@Nullable
-	public BigDecimal getNegativeMin() {
-		return negativeMin;
-	}
-
-	@Nullable
-	public Boolean getNegativeMinInclusive() {
-		return negativeMinInclusive;
-	}
-
-	@Nullable
-	public BigDecimal getNegativeMax() {
-		return negativeMax;
-	}
-
-	@Nullable
-	public Boolean getNegativeMaxInclusive() {
-		return negativeMaxInclusive;
+	public Boolean getMaxInclusive() {
+		return maxInclusive;
 	}
 
 	@Nullable

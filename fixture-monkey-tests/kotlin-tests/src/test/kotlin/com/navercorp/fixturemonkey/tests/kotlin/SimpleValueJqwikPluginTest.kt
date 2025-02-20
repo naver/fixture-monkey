@@ -223,4 +223,49 @@ class SimpleValueJqwikPluginTest {
 
         then(actual).isLessThanOrEqualTo(0);
     }
+
+    @RepeatedTest(TEST_COUNT)
+    fun modifyPositiveDecimalNumberRange() {
+        val sut = FixtureMonkey.builder()
+            .plugin(
+                SimpleValueJqwikPlugin()
+                    .minNumberValue(1)
+                    .maxNumberValue(10)
+            )
+            .build()
+
+        val actual: Double = sut.giveMeOne()
+
+        then(actual).isBetween(1.0, 10.0)
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun modifyNegativeDecimalNumberRange() {
+        val sut = FixtureMonkey.builder()
+            .plugin(
+                SimpleValueJqwikPlugin()
+                    .minNumberValue(-10)
+                    .maxNumberValue(-1)
+            )
+            .build()
+
+        val actual: Double = sut.giveMeOne()
+
+        then(actual).isBetween(-10.0, -1.0)
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun modifyMixedDecimalNumberRange() {
+        val sut = FixtureMonkey.builder()
+            .plugin(
+                SimpleValueJqwikPlugin()
+                    .minNumberValue(-5)
+                    .maxNumberValue(5)
+            )
+            .build()
+
+        val actual: Double = sut.giveMeOne()
+
+        then(actual).isBetween(-5.0, 5.0)
+    }
 }

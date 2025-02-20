@@ -133,52 +133,22 @@ public final class ValidateArbitraryGenerator implements ArbitraryGenerator {
 
 						BigDecimal value = toBigDecimal(it);
 
-						if (value.compareTo(BigDecimal.ZERO) < 0) {
-							if (javaDecimalConstraint.getNegativeMin() != null) {
-								if (value.compareTo(javaDecimalConstraint.getNegativeMin()) == 0
-									&& Boolean.FALSE.equals(javaDecimalConstraint.getNegativeMinInclusive())) {
-									return false;
-								}
-
-								if (value.compareTo(javaDecimalConstraint.getNegativeMin()) < 0) {
-									return false;
-								}
+						if (javaDecimalConstraint.getMin() != null) {
+							if (value.compareTo(javaDecimalConstraint.getMin()) == 0
+								&& Boolean.FALSE.equals(javaDecimalConstraint.getMinInclusive())) {
+								return false;
 							}
 
-							if (javaDecimalConstraint.getNegativeMax() != null) {
-								if (value.compareTo(javaDecimalConstraint.getNegativeMax()) == 0
-									&& Boolean.FALSE.equals(javaDecimalConstraint.getNegativeMaxInclusive())) {
-									return false;
-								}
-
-								if (value.compareTo(javaDecimalConstraint.getNegativeMax()) > 0) {
-									return false;
-								}
-							}
+							return value.compareTo(javaDecimalConstraint.getMin()) >= 0;
 						}
 
-						if (value.compareTo(BigDecimal.ZERO) > 0) {
-							if (javaDecimalConstraint.getPositiveMin() != null) {
-								if (value.compareTo(javaDecimalConstraint.getPositiveMin()) == 0
-									&& Boolean.FALSE.equals(javaDecimalConstraint.getPositiveMinInclusive())) {
-									return false;
-								}
-
-								if (value.compareTo(javaDecimalConstraint.getPositiveMin()) < 0) {
-									return false;
-								}
+						if (javaDecimalConstraint.getMax() != null) {
+							if (value.compareTo(javaDecimalConstraint.getMax()) == 0
+								&& Boolean.FALSE.equals(javaDecimalConstraint.getMaxInclusive())) {
+								return false;
 							}
 
-							if (javaDecimalConstraint.getPositiveMax() != null) {
-								if (value.compareTo(javaDecimalConstraint.getPositiveMax()) == 0
-									&& Boolean.FALSE.equals(javaDecimalConstraint.getPositiveMaxInclusive())) {
-									return false;
-								}
-
-								if (value.compareTo(javaDecimalConstraint.getPositiveMax()) > 0) {
-									return false;
-								}
-							}
+							return value.compareTo(javaDecimalConstraint.getMax()) <= 0;
 						}
 
 						return true;

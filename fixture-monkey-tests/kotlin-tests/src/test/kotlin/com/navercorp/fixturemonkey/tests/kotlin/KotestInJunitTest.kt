@@ -306,7 +306,44 @@ class KotestInJunitTest {
 
         val actual = SUT.giveMeOne<DoubleObject>().value
 
-        then(actual).matches { it in 10.0..99.0 || it in -100.0..-10.0 }
+        then(actual).matches { it in -99.0..99.0 }
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun sampleDoubleWithEqualMinMax() {
+        class DoubleObject(
+            @field:DecimalMin("10.0") @field:DecimalMax("10.0")
+            val value: Double
+        )
+
+        val actual = SUT.giveMeOne<DoubleObject>().value
+        then(actual).isEqualTo(10.0)
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun sampleDoubleWithMultipleConstraints() {
+        class DoubleObject(
+            @field:DecimalMax("11.5") @field:Max(10)
+            val value: Double
+        )
+
+        val actual = SUT.giveMeOne<DoubleObject>().value
+        then(actual).isLessThanOrEqualTo(10.0)
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun sampleDoubleWithPreciseExclusiveBounds() {
+        class DoubleObject(
+            @field:DecimalMin(value = "10.0", inclusive = false)
+            @field:DecimalMax(value = "10.1", inclusive = false)
+            val value: Double
+        )
+
+        val actual = SUT.giveMeOne<DoubleObject>().value
+
+        then(actual)
+            .isGreaterThan(10.0)
+            .isLessThan(10.1)
     }
 
     @RepeatedTest(TEST_COUNT)
@@ -387,7 +424,44 @@ class KotestInJunitTest {
 
         val actual = SUT.giveMeOne<FloatObject>().value
 
-        then(actual).matches { it in 10.0..99.0 || it in -100.0..-10.0 }
+        then(actual).matches { it in -99.0..99.0 }
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun sampleFloatWithEqualMinMax() {
+        class DoubleObject(
+            @field:DecimalMin("10.0") @field:DecimalMax("10.0")
+            val value: Double
+        )
+
+        val actual = SUT.giveMeOne<DoubleObject>().value
+        then(actual).isEqualTo(10.0)
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun sampleFloatWithMultipleConstraints() {
+        class DoubleObject(
+            @field:DecimalMax("11.5") @field:Max(10)
+            val value: Double
+        )
+
+        val actual = SUT.giveMeOne<DoubleObject>().value
+        then(actual).isLessThanOrEqualTo(10.0)
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun sampleFloatWithPreciseExclusiveBounds() {
+        class FloatObject(
+            @field:DecimalMin(value = "10.0", inclusive = false)
+            @field:DecimalMax(value = "10.1", inclusive = false)
+            val value: Float
+        )
+
+        val actual = SUT.giveMeOne<FloatObject>().value
+
+        then(actual)
+            .isGreaterThan(10.0f)
+            .isLessThan(10.1f)
     }
 
     @RepeatedTest(TEST_COUNT)
@@ -631,8 +705,7 @@ class KotestInJunitTest {
         val actual = SUT.giveMeOne<BigIntegerObject>().value
 
         then(actual).matches {
-            it in BigInteger.valueOf(10L)..BigInteger.valueOf(99L) ||
-                it in BigInteger.valueOf(-99L)..BigInteger.valueOf(-10L)
+            it in BigInteger.valueOf(-99L)..BigInteger.valueOf(99L)
         }
     }
 
@@ -715,9 +788,45 @@ class KotestInJunitTest {
         val actual = SUT.giveMeOne<BigDecimalObject>().value
 
         then(actual).matches {
-            it in BigDecimal.valueOf(10L)..BigDecimal.valueOf(99) ||
-                it in BigDecimal.valueOf(-100)..BigDecimal.valueOf(-10)
+            it in BigDecimal.valueOf(-99)..BigDecimal.valueOf(99)
         }
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun sampleBigDecimalWithEqualMinMax() {
+        class BigDecimalObject(
+            @field:DecimalMin("10.00") @field:DecimalMax("10.00")
+            val value: BigDecimal
+        )
+
+        val actual = SUT.giveMeOne<BigDecimalObject>().value
+        then(actual).isEqualByComparingTo(BigDecimal("10.00"))
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun sampleBigDecimalWithMultipleConstraints() {
+        class BigDecimalObject(
+            @field:DecimalMax("11.5") @field:Max(10)
+            val value: BigDecimal
+        )
+
+        val actual = SUT.giveMeOne<BigDecimalObject>().value
+        then(actual).isLessThanOrEqualTo(BigDecimal.valueOf(10))
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun sampleBigDecimalWithPreciseExclusiveBounds() {
+        class BigDecimalObject(
+            @field:DecimalMin(value = "10.0", inclusive = false)
+            @field:DecimalMax(value = "10.1", inclusive = false)
+            val value: BigDecimal
+        )
+
+        val actual = SUT.giveMeOne<BigDecimalObject>().value
+
+        then(actual)
+            .isGreaterThan(BigDecimal("10.0"))
+            .isLessThan(BigDecimal("10.1"))
     }
 
     @RepeatedTest(TEST_COUNT)

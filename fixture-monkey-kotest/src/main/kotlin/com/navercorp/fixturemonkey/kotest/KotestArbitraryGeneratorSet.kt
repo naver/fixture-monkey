@@ -29,6 +29,7 @@ import io.kotest.property.arbitrary.bigInt
 import io.kotest.property.arbitrary.byte
 import io.kotest.property.arbitrary.char
 import io.kotest.property.arbitrary.choice
+import io.kotest.property.arbitrary.constant
 import io.kotest.property.arbitrary.double
 import io.kotest.property.arbitrary.duration
 import io.kotest.property.arbitrary.filter
@@ -46,9 +47,9 @@ import io.kotest.property.arbitrary.short
 import io.kotest.property.arbitrary.single
 import io.kotest.property.arbitrary.string
 import io.kotest.property.arbitrary.yearMonth
+import io.kotest.property.arbitrary.zonedDateTime
 import io.kotest.property.arbitrary.zoneId
 import io.kotest.property.arbitrary.zoneOffset
-import io.kotest.property.arbitrary.zonedDateTime
 import org.apiguardian.api.API
 import org.apiguardian.api.API.Status
 import java.math.BigDecimal
@@ -166,46 +167,27 @@ class KotestJavaArbitraryGeneratorSet(
         return CombinableArbitrary.from {
             if (decimalConstraint != null) {
                 val scale = decimalConstraint.scale
-                // TODO: waits for update in Kotest
-                // val positiveMaxInclusive = decimalConstraint.positiveMaxInclusive ?: false
-                // val positiveMinInclusive = decimalConstraint.positiveMinInclusive ?: false
-                // val negativeMaxInclusive = decimalConstraint.negativeMaxInclusive ?: false
-                // val negativeMinInclusive = decimalConstraint.negativeMinInclusive ?: false
+                var min = decimalConstraint.min?.toDouble() ?: -Double.MAX_VALUE
+                var max = decimalConstraint.max?.toDouble() ?: Double.MAX_VALUE
 
-                val positiveArb = if (decimalConstraint.positiveMin != null || decimalConstraint.positiveMax != null) {
-                    val positiveMinSize =
-                        decimalConstraint.positiveMin?.toDouble() ?: 0.0
-                    val positiveMaxSize = decimalConstraint.positiveMax?.toDouble() ?: Double.MAX_VALUE
-                    Arb.double(min = positiveMinSize, max = positiveMaxSize).map {
-                        if (scale != null) {
-                            it.ofScale(scale)
-                        } else {
-                            it
+                if (min == max &&
+                    (decimalConstraint.minInclusive ?: true) &&
+                    (decimalConstraint.maxInclusive ?: true)
+                ) {
+                    Arb.constant(min)
+                } else {
+                    if (decimalConstraint.minInclusive == false) {
+                        min += Double.MIN_VALUE
+                    }
+                    if (decimalConstraint.maxInclusive ?: true) {
+                        if (max != Double.MAX_VALUE) {
+                            max += Double.MIN_VALUE
                         }
                     }
-                } else {
-                    null
-                }
 
-                val negativeArb = if (decimalConstraint.negativeMin != null || decimalConstraint.negativeMax != null) {
-                    val negativeMinSize = decimalConstraint.negativeMin?.toDouble() ?: -Double.MIN_VALUE
-                    val negativeMaxSize = decimalConstraint.negativeMax?.toDouble() ?: -0.0
-                    Arb.double(min = negativeMinSize, max = negativeMaxSize).map {
-                        if (scale != null) {
-                            it.ofScale(scale)
-                        } else {
-                            it
-                        }
-                    }
-                } else {
-                    null
-                }
-
-                if (positiveArb != null && negativeArb != null) {
-                    Arb.choice(negativeArb, positiveArb)
-                } else {
-                    negativeArb ?: positiveArb!!
-                }.single()
+                    Arb.double(min = min, max = max)
+                }.map { if (scale != null) it.ofScale(scale) else it }
+                    .single()
             } else {
                 Arb.double().single()
             }
@@ -218,46 +200,27 @@ class KotestJavaArbitraryGeneratorSet(
         return CombinableArbitrary.from {
             if (decimalConstraint != null) {
                 val scale = decimalConstraint.scale
-                // TODO: waits for update in Kotest
-                // val positiveMaxInclusive = decimalConstraint.positiveMaxInclusive ?: false
-                // val positiveMinInclusive = decimalConstraint.positiveMinInclusive ?: false
-                // val negativeMaxInclusive = decimalConstraint.negativeMaxInclusive ?: false
-                // val negativeMinInclusive = decimalConstraint.negativeMinInclusive ?: false
+                var min = decimalConstraint.min?.toFloat() ?: -Float.MAX_VALUE
+                var max = decimalConstraint.max?.toFloat() ?: Float.MAX_VALUE
 
-                val positiveArb = if (decimalConstraint.positiveMin != null || decimalConstraint.positiveMax != null) {
-                    val positiveMinSize =
-                        decimalConstraint.positiveMin?.toFloat() ?: 0.0f
-                    val positiveMaxSize = decimalConstraint.positiveMax?.toFloat() ?: Float.MAX_VALUE
-                    Arb.float(min = positiveMinSize, max = positiveMaxSize).map {
-                        if (scale != null) {
-                            it.ofScale(scale)
-                        } else {
-                            it
+                if (min == max &&
+                    (decimalConstraint.minInclusive ?: true) &&
+                    (decimalConstraint.maxInclusive ?: true)
+                ) {
+                    Arb.constant(min)
+                } else {
+                    if (decimalConstraint.minInclusive == false) {
+                        min += Float.MIN_VALUE
+                    }
+                    if (decimalConstraint.maxInclusive ?: true) {
+                        if (max != Float.MAX_VALUE) {
+                            max += Float.MIN_VALUE
                         }
                     }
-                } else {
-                    null
-                }
 
-                val negativeArb = if (decimalConstraint.negativeMin != null || decimalConstraint.negativeMax != null) {
-                    val negativeMinSize = decimalConstraint.negativeMin?.toFloat() ?: -Float.MIN_VALUE
-                    val negativeMaxSize = decimalConstraint.negativeMax?.toFloat() ?: -0.0f
-                    Arb.float(min = negativeMinSize, max = negativeMaxSize).map {
-                        if (scale != null) {
-                            it.ofScale(scale)
-                        } else {
-                            it
-                        }
-                    }
-                } else {
-                    null
-                }
-
-                if (positiveArb != null && negativeArb != null) {
-                    Arb.choice(negativeArb, positiveArb)
-                } else {
-                    negativeArb ?: positiveArb!!
-                }.single()
+                    Arb.float(min = min, max = max)
+                }.map { if (scale != null) it.ofScale(scale) else it }
+                    .single()
             } else {
                 Arb.float().single()
             }
@@ -366,46 +329,27 @@ class KotestJavaArbitraryGeneratorSet(
         return CombinableArbitrary.from {
             if (decimalConstraint != null) {
                 val scale = decimalConstraint.scale
-                // TODO: waits for update in Kotest
-                // val positiveMaxInclusive = decimalConstraint.positiveMaxInclusive ?: false
-                // val positiveMinInclusive = decimalConstraint.positiveMinInclusive ?: false
-                // val negativeMaxInclusive = decimalConstraint.negativeMaxInclusive ?: false
-                // val negativeMinInclusive = decimalConstraint.negativeMinInclusive ?: false
+                var min = decimalConstraint.min ?: BigDecimal.valueOf(-Double.MAX_VALUE)
+                var max = decimalConstraint.max ?: BigDecimal.valueOf(Double.MAX_VALUE)
 
-                val positiveArb = if (decimalConstraint.positiveMin != null || decimalConstraint.positiveMax != null) {
-                    val positiveMinSize =
-                        decimalConstraint.positiveMin ?: BigDecimal.ZERO
-                    val positiveMaxSize = decimalConstraint.positiveMax ?: BigDecimal.valueOf(Double.MAX_VALUE)
-                    Arb.bigDecimal(min = positiveMinSize, max = positiveMaxSize).map {
-                        if (scale != null) {
-                            it.setScale(scale, RoundingMode.DOWN)
-                        } else {
-                            it
+                if (min.compareTo(max) == 0 &&
+                    (decimalConstraint.minInclusive ?: true) &&
+                    (decimalConstraint.maxInclusive ?: true)
+                ) {
+                    Arb.constant(min)
+                } else {
+                    if (decimalConstraint.minInclusive == false) {
+                        min = min.add(BigDecimal.valueOf(Double.MIN_VALUE))
+                    }
+                    if (decimalConstraint.maxInclusive ?: true) {
+                        if (max != BigDecimal.valueOf(Double.MAX_VALUE)) {
+                            max = max.add(BigDecimal.valueOf(Double.MIN_VALUE))
                         }
                     }
-                } else {
-                    null
-                }
 
-                val negativeArb = if (decimalConstraint.negativeMin != null || decimalConstraint.negativeMax != null) {
-                    val negativeMinSize = decimalConstraint.negativeMin ?: -BigDecimal.valueOf(Double.MIN_VALUE)
-                    val negativeMaxSize = decimalConstraint.negativeMax ?: -BigDecimal.ZERO
-                    Arb.bigDecimal(min = negativeMinSize, max = negativeMaxSize).map {
-                        if (scale != null) {
-                            it.setScale(scale, RoundingMode.DOWN)
-                        } else {
-                            it
-                        }
-                    }
-                } else {
-                    null
-                }
-
-                if (positiveArb != null && negativeArb != null) {
-                    Arb.choice(negativeArb, positiveArb)
-                } else {
-                    negativeArb ?: positiveArb!!
-                }.single()
+                    Arb.bigDecimal(min = min, max = max)
+                }.map { if (scale != null) it.setScale(scale, RoundingMode.DOWN) else it }
+                    .single()
             } else {
                 Arb.bigDecimal().single()
             }

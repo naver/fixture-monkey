@@ -262,32 +262,15 @@ public final class SimpleValueJqwikPlugin implements Plugin {
 
 		@Override
 		public JavaDecimalConstraint generateDecimalConstraint(ArbitraryGeneratorContext context) {
-			BigDecimal positiveMin = ifNotNull(this.positiveMinNumberValue, BigDecimal::valueOf);
-			BigDecimal positiveMax = ifNotNull(this.positiveMaxNumberValue, BigDecimal::valueOf);
-			BigDecimal negativeMin = ifNotNull(this.negativeMinNumberValue, BigDecimal::valueOf);
-			BigDecimal negativeMax = ifNotNull(this.negativeMaxNumberValue, BigDecimal::valueOf);
+			BigDecimal min = negativeMinNumberValue != null
+				? BigDecimal.valueOf(negativeMinNumberValue) :
+				BigDecimal.valueOf(defaultIfNull(positiveMinNumberValue, () -> DEFAULT_MIN_NUMBER_VALUE));
 
-			if (positiveMin == null) {
-				negativeMin = defaultIfNull(negativeMin, () -> BigDecimal.valueOf(DEFAULT_MIN_NUMBER_VALUE));
-				negativeMax = defaultIfNull(negativeMax, () -> BigDecimal.ZERO);
-			}
+			BigDecimal max = positiveMaxNumberValue != null
+				? BigDecimal.valueOf(positiveMaxNumberValue) :
+				BigDecimal.valueOf(defaultIfNull(negativeMaxNumberValue, () -> DEFAULT_MAX_NUMBER_VALUE));
 
-			if (negativeMax == null) {
-				positiveMin = defaultIfNull(positiveMin, () -> BigDecimal.ZERO);
-				positiveMax = defaultIfNull(positiveMax, () -> BigDecimal.valueOf(DEFAULT_MAX_NUMBER_VALUE));
-			}
-
-			return new JavaDecimalConstraint(
-				positiveMin,
-				true,
-				positiveMax,
-				true,
-				negativeMin,
-				true,
-				negativeMax,
-				true,
-				2
-			);
+			return new JavaDecimalConstraint(min, true, max, true, 2);
 		}
 
 		@Override
