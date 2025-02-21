@@ -18,7 +18,11 @@
 
 package com.navercorp.fixturemonkey.customizer;
 
+import static java.util.stream.Collectors.toList;
+
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -42,10 +46,12 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ContainerPropertyGenerator;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
+import com.navercorp.fixturemonkey.api.matcher.NamedMatcherMetadata;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.builder.ArbitraryBuilderContext;
 import com.navercorp.fixturemonkey.builder.ArbitraryBuilderContextProvider;
 import com.navercorp.fixturemonkey.builder.DefaultArbitraryBuilder;
+import com.navercorp.fixturemonkey.api.random.Randoms;
 import com.navercorp.fixturemonkey.customizer.InnerSpecState.ManipulatorHolderSet;
 import com.navercorp.fixturemonkey.customizer.Values.Just;
 import com.navercorp.fixturemonkey.customizer.Values.Unique;
@@ -143,8 +149,9 @@ public final class MonkeyManipulatorFactory {
 	}
 
 	public List<ArbitraryManipulator> newRegisteredArbitraryManipulators(
-		List<MatcherOperator<? extends ObjectBuilder<?>>> registeredArbitraryBuilders,
-		Map<Property, List<ObjectNode>> nodesByType
+		List<PriorityMatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuilders,
+		Map<Property, List<ObjectNode>> nodesByType,
+		ArbitraryBuilderContext builderContext
 	) {
 		List<ArbitraryManipulator> manipulators = new ArrayList<>();
 
@@ -152,13 +159,9 @@ public final class MonkeyManipulatorFactory {
 			Property property = nodeByType.getKey();
 			List<ObjectNode> objectNodes = nodeByType.getValue();
 
-			ArbitraryBuilderContextProvider registeredArbitraryBuilder =
-				registeredArbitraryBuilders.stream()
-					.filter(it -> it.match(property))
-					.findFirst()
-					.map(MatcherOperator::getOperator)
-					.map(ArbitraryBuilderContextProvider.class::cast)
-					.orElse(null);
+			DefaultArbitraryBuilder<?> registeredArbitraryBuilder = findRegisteredArbitraryBuilder(
+				registeredArbitraryBuilders, property, builderContext
+			);
 
 			if (registeredArbitraryBuilder == null) {
 				continue;
@@ -166,17 +169,84 @@ public final class MonkeyManipulatorFactory {
 
 			ArbitraryBuilderContext context = registeredArbitraryBuilder.getContext();
 			List<ArbitraryManipulator> arbitraryManipulators = context.getManipulators().stream()
-				.map(
-					it -> new ArbitraryManipulator(
-						new CompositeNodeResolver(new StaticNodeResolver(objectNodes), it.getNodeResolver()),
-						it.getNodeManipulator()
-					)
-				)
+				.map(it -> it.withPrependNodeResolver(prependPropertyNodeResolver(property, objectNodes)))
 				.collect(Collectors.toList());
 
 			manipulators.addAll(arbitraryManipulators);
 		}
 		return manipulators;
+	}
+
+	private DefaultArbitraryBuilder<?> findRegisteredArbitraryBuilder(
+		List<PriorityMatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuilders,
+		Property property,
+		ArbitraryBuilderContext builderContext
+	) {
+		DefaultArbitraryBuilder<?> registeredArbitraryBuilder = (DefaultArbitraryBuilder<?>)registeredArbitraryBuilders
+			.stream()
+			.filter(it -> {
+				if (builderContext.getSelectedNames().isEmpty()) {
+					return false;
+				}
+				return builderContext.getSelectedNames().stream().anyMatch(
+					name -> it.match(property, new NamedMatcherMetadata(name))
+				);
+			})
+			.findFirst()
+			.map(MatcherOperator::getOperator)
+			.filter(it -> it instanceof DefaultArbitraryBuilder<?>)
+			.orElse(null);
+			ArbitraryBuilderContextProvider registeredArbitraryBuilder =
+				registeredArbitraryBuilders.stream()
+					.filter(it -> {
+						if (builderContext.getSelectedNames().isEmpty()) {
+							return it.match(property);
+						}
+						return builderContext.getSelectedNames().stream().anyMatch(
+							name -> it.match(property, new NamedMatcherMetadata(name))
+						);
+					})
+					.findFirst()
+					.map(MatcherOperator::getOperator)
+					.map(ArbitraryBuilderContextProvider.class::cast)
+					.orElse(null);
+
+		if (registeredArbitraryBuilder != null) {
+			return registeredArbitraryBuilder;
+		}
+
+		List<PriorityMatcherOperator<? extends ArbitraryBuilder<?>>> priorityOperators = registeredArbitraryBuilders
+			.stream()
+			.filter(it -> it.match(property))
+			.sorted(Comparator.comparingInt(PriorityMatcherOperator::getPriority))
+			.collect(Collectors.toList());
+
+		List<PriorityMatcherOperator<? extends ArbitraryBuilder<?>>> highestPriorityOperators
+			= getHighestPriorityOperators(priorityOperators);
+
+		if (highestPriorityOperators.size() > 1) {
+			Collections.shuffle(highestPriorityOperators, Randoms.current());
+		}
+
+		return (DefaultArbitraryBuilder<?>)highestPriorityOperators.stream()
+			.findFirst()
+			.map(MatcherOperator::getOperator)
+			.filter(it -> it instanceof DefaultArbitraryBuilder<?>)
+			.orElse(null);
+	}
+
+	private List<PriorityMatcherOperator<? extends ArbitraryBuilder<?>>> getHighestPriorityOperators(
+		List<PriorityMatcherOperator<? extends ArbitraryBuilder<?>>> priorityOperators
+	) {
+		if (priorityOperators.isEmpty()) {
+			return priorityOperators;
+		}
+
+		int highestPriority = priorityOperators.get(0).getPriority();
+
+		return priorityOperators.stream()
+			.filter(it -> it.getPriority() == highestPriority)
+			.collect(toList());
 	}
 
 	public ManipulatorSet newManipulatorSet(ManipulatorHolderSet manipulatorHolderSet) {
