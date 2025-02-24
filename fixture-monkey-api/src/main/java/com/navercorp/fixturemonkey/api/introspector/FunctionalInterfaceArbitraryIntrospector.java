@@ -19,8 +19,12 @@
 package com.navercorp.fixturemonkey.api.introspector;
 
 import java.lang.reflect.Proxy;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 import org.apiguardian.api.API;
 
@@ -31,6 +35,14 @@ import com.navercorp.fixturemonkey.api.type.Types;
 
 @API(since = "1.0.21", status = API.Status.EXPERIMENTAL)
 public final class FunctionalInterfaceArbitraryIntrospector implements ArbitraryIntrospector {
+	private static final Map<Class<?>, String> FUNCTIONAL_INVOKE_METHOD_NAMES_BY_ASSIGNABLE_TYPE = new HashMap<>();
+	private static final String INVOKE_METHOD_NAME = "invoke";
+
+	static {
+		FUNCTIONAL_INVOKE_METHOD_NAMES_BY_ASSIGNABLE_TYPE.put(Function.class, "apply");
+		FUNCTIONAL_INVOKE_METHOD_NAMES_BY_ASSIGNABLE_TYPE.put(Supplier.class, "get");
+	}
+
 	@Override
 	public ArbitraryIntrospectorResult introspect(ArbitraryGeneratorContext context) {
 		ArbitraryProperty property = context.getArbitraryProperty();
@@ -47,18 +59,26 @@ public final class FunctionalInterfaceArbitraryIntrospector implements Arbitrary
 		return new ArbitraryIntrospectorResult(result);
 	}
 
-	@SuppressWarnings("SuspiciousInvocationHandlerImplementation")
 	private <T> Object toFunctionalInterface(Class<?> type, T value) {
+		InvocationHandlerBuilder invocationHandlerBuilder = new InvocationHandlerBuilder(
+			type,
+			new HashMap<>()
+		);
+
+		for (Entry<Class<?>, String> entry : FUNCTIONAL_INVOKE_METHOD_NAMES_BY_ASSIGNABLE_TYPE.entrySet()) {
+			if (entry.getKey().isAssignableFrom(type)) {
+				invocationHandlerBuilder.put(entry.getValue(), value);
+			}
+		}
+
+		if (invocationHandlerBuilder.isEmpty()) {
+			invocationHandlerBuilder.put(INVOKE_METHOD_NAME, value);
+		}
+
 		return Proxy.newProxyInstance(
 			type.getClassLoader(),
 			new Class[] {type},
-			(proxy, method, args) -> {
-				if (method != null && "equals".equals(method.getName())) {
-					return Objects.equals(args[0], value);
-				}
-
-				return value;
-			}
+			invocationHandlerBuilder.build()
 		);
 	}
 }

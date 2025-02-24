@@ -73,6 +73,7 @@ import com.navercorp.fixturemonkey.tests.kotlin.ImmutableJavaTestSpecs.ArrayObje
 import com.navercorp.fixturemonkey.tests.kotlin.ImmutableJavaTestSpecs.NestedArrayObject
 import com.navercorp.fixturemonkey.tests.kotlin.JavaConstructorTestSpecs.JavaTypeObject
 import org.assertj.core.api.BDDAssertions.then
+import org.assertj.core.api.BDDAssertions.thenNoException
 import org.assertj.core.api.BDDAssertions.thenThrownBy
 import org.junit.jupiter.api.RepeatedTest
 import org.junit.jupiter.api.Test
@@ -1350,6 +1351,27 @@ class KotlinTest {
             .values
 
         then(actual).allMatch { it.value == "1" }
+    }
+
+    @Test
+    fun sampleFunctionalObject() {
+        data class FunctionObject(
+            val value: () -> Int
+        )
+
+        val actual = SUT.giveMeOne<FunctionObject>().value()
+
+        then(actual).isNotNull()
+    }
+
+    @Test
+    fun toStringFunctionalObjectNotThrows() {
+        data class FunctionObject(
+            val value: () -> Int
+        )
+
+        thenNoException()
+            .isThrownBy { SUT.giveMeOne<FunctionObject>().toString() }
     }
 
     companion object {
