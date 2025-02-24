@@ -28,15 +28,30 @@ import org.slf4j.LoggerFactory;
 import com.navercorp.fixturemonkey.api.random.Randoms;
 import com.navercorp.fixturemonkey.junit.jupiter.annotation.Seed;
 
+/**
+ * This extension sets the seed for generating random numbers before a test method is executed.
+ * It also logs the seed used for the test if the test fails.
+ * It aims to make the test deterministic and reproducible.
+ * <p>
+ * If the test method has a {@link Seed} annotation, it uses the value of the annotation as the seed.
+ * If the test method does not have a {@link Seed} annotation, it uses the hash code of the test method as the seed.
+ * <p>
+ * The {@link Seed} annotation has a higher priority than the option {@code seed} in FixtureMonkey.
+ */
 public final class FixtureMonkeySeedExtension implements BeforeTestExecutionCallback, AfterTestExecutionCallback {
 	private static final Logger LOGGER = LoggerFactory.getLogger(FixtureMonkeySeedExtension.class);
 
 	@Override
-	public void beforeTestExecution(ExtensionContext context) throws Exception {
+	public void beforeTestExecution(ExtensionContext context) {
 		Seed seed = context.getRequiredTestMethod().getAnnotation(Seed.class);
 		if (seed != null) {
 			setSeed(seed.value());
+			return;
 		}
+
+		Method testMethod = context.getRequiredTestMethod();
+		int methodHashCode = testMethod.hashCode();
+		setSeed(methodHashCode);
 	}
 
 	/**
@@ -45,7 +60,7 @@ public final class FixtureMonkeySeedExtension implements BeforeTestExecutionCall
 	 * If the test failed, it logs the seed used for the test.
 	 **/
 	@Override
-	public void afterTestExecution(ExtensionContext context) throws Exception {
+	public void afterTestExecution(ExtensionContext context) {
 		if (context.getExecutionException().isPresent()) {
 			logSeedIfTestFailed(context);
 		}
@@ -55,7 +70,7 @@ public final class FixtureMonkeySeedExtension implements BeforeTestExecutionCall
 	 * Sets the seed for generating random numbers.
 	 **/
 	private void setSeed(long seed) {
-		Randoms.setSeed(seed);
+		Randoms.newGlobalSeed(seed);
 	}
 
 	/**

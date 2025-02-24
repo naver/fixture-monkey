@@ -1,5 +1,5 @@
 plugins {
-    id("org.jetbrains.kotlin.jvm") 
+    id("org.jetbrains.kotlin.jvm")
     id("com.navercorp.fixturemonkey.gradle.plugin.java-conventions")
     id("com.navercorp.fixturemonkey.gradle.plugin.maven-publish-conventions")
 }
@@ -16,5 +16,7 @@ dependencies {
 }
 
 tasks.withType<Test> {
-    useJUnitPlatform()
+    useJUnitPlatform {
+        includeEngines("junit-jupiter")
+    }
 }
