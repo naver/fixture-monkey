@@ -292,180 +292,114 @@ public final class JakartaValidationConstraintGenerator implements JavaConstrain
 	@Override
 	@Nullable
 	public JavaDecimalConstraint generateDecimalConstraint(ArbitraryGeneratorContext context) {
-		BigDecimal positiveMin = null;
-		Boolean positiveMinInclusive = null;
-		BigDecimal positiveMax = null;
-		Boolean positiveMaxInclusive = null;
-		BigDecimal negativeMin = null;
-		Boolean negativeMinInclusive = null;
-		BigDecimal negativeMax = null;
-		boolean negativeMaxInclusive = false;
+		BigDecimal min = null;
+		Boolean minInclusive = null;
+		BigDecimal max = null;
+		Boolean maxInclusive = null;
 		Integer scale = null;
-
-		Optional<Digits> digits = context.findAnnotation(Digits.class);
-		if (digits.isPresent()) {
-			BigDecimal value = BigDecimal.ONE;
-			int integer = digits.get().integer();
-			if (integer > 1) {
-				value = BigDecimal.TEN.pow(integer - 1);
-			}
-			positiveMax = value.multiply(BigDecimal.TEN).subtract(BigDecimal.ONE);
-			positiveMin = value;
-			negativeMax = positiveMin.negate();
-			negativeMin = positiveMax.negate();
-			positiveMinInclusive = false;
-			negativeMinInclusive = false;
-			scale = digits.get().fraction();
-		}
 
 		Optional<Min> minAnnotation = context.findAnnotation(Min.class);
 		if (minAnnotation.isPresent()) {
-			BigDecimal minValue = minAnnotation.map(Min::value).map(BigDecimal::valueOf).get();
-			if (minValue.compareTo(BigDecimal.ZERO) >= 0) {
-				if (positiveMin == null) {
-					positiveMin = minValue;
-				} else {
-					positiveMin = positiveMin.min(minValue);
-				}
-				negativeMax = null;
-				negativeMin = null;
-			} else {
-				if (negativeMin == null) {
-					negativeMin = minValue;
-				} else {
-					negativeMin = negativeMin.min(minValue);
-				}
-				negativeMinInclusive = true;
-			}
+			min = BigDecimal.valueOf(minAnnotation.get().value());
+			minInclusive = true;
 		}
 
 		Optional<DecimalMin> decimalMinAnnotation = context.findAnnotation(DecimalMin.class);
 		if (decimalMinAnnotation.isPresent()) {
-			BigDecimal decimalMin = new BigDecimal(
-				decimalMinAnnotation
-					.get()
-					.value()
-			);
+			BigDecimal newMin = new BigDecimal(decimalMinAnnotation.get().value());
 
-			if (decimalMin.compareTo(BigDecimal.ZERO) >= 0) {
-				if (positiveMin == null) {
-					positiveMin = decimalMin;
-				} else {
-					positiveMin = positiveMin.min(decimalMin);
-				}
-				if (!decimalMinAnnotation.map(DecimalMin::inclusive).get()) {
-					positiveMinInclusive = false;
-				}
-				negativeMax = null;
-				negativeMin = null;
-			} else {
-				if (negativeMin == null) {
-					negativeMin = decimalMin;
-				} else {
-					negativeMin = negativeMin.min(negativeMin);
-				}
-				if (!decimalMinAnnotation.map(DecimalMin::inclusive).get()) {
-					negativeMinInclusive = false;
-				}
+			if (min == null || newMin.compareTo(min) > 0
+				|| (newMin.compareTo(min) == 0 && !decimalMinAnnotation.get().inclusive())) {
+
+				min = newMin;
+				minInclusive = decimalMinAnnotation.get().inclusive();
 			}
 		}
 
 		Optional<Max> maxAnnotation = context.findAnnotation(Max.class);
 		if (maxAnnotation.isPresent()) {
-			BigDecimal maxValue = maxAnnotation.map(Max::value).map(BigDecimal::valueOf).get();
-			if (maxValue.compareTo(BigDecimal.ZERO) > 0) {
-				if (positiveMax == null) {
-					positiveMax = maxValue;
-				} else {
-					positiveMax = positiveMax.max(maxValue);
-				}
-			} else {
-				if (negativeMax == null) {
-					negativeMax = maxValue;
-				} else {
-					negativeMax = negativeMax.max(maxValue);
-				}
-			}
+			max = BigDecimal.valueOf(maxAnnotation.get().value());
+			maxInclusive = true;
 		}
 
 		Optional<DecimalMax> decimalMaxAnnotation = context.findAnnotation(DecimalMax.class);
 		if (decimalMaxAnnotation.isPresent()) {
-			BigDecimal decimalMax = new BigDecimal(
-				decimalMaxAnnotation
-					.get()
-					.value()
-			);
+			BigDecimal newMax = new BigDecimal(decimalMaxAnnotation.get().value());
 
-			if (decimalMax.compareTo(BigDecimal.ZERO) > 0) {
-				if (positiveMax == null) {
-					positiveMax = decimalMax;
-				} else {
-					positiveMax = positiveMax.max(decimalMax);
-				}
-				positiveMaxInclusive = decimalMaxAnnotation.map(DecimalMax::inclusive).get();
-			} else {
-				if (negativeMax == null) {
-					negativeMax = decimalMax;
-				} else {
-					negativeMax = negativeMax.max(decimalMax);
-				}
-				negativeMaxInclusive = decimalMaxAnnotation.map(DecimalMax::inclusive).get();
-			}
+			if (max == null || newMax.compareTo(max) < 0
+				|| (newMax.compareTo(max) == 0 && !decimalMaxAnnotation.get().inclusive())) {
 
-			if (!decimalMaxAnnotation.map(DecimalMax::inclusive).get()) {
-				positiveMaxInclusive = false;
-			}
-
-			if (positiveMax == null) {
-				positiveMax = decimalMax;
-			} else if (positiveMax.compareTo(decimalMax) > 0) {
-				positiveMax = decimalMax;
-			}
-		}
-
-		if (context.findAnnotation(Negative.class).isPresent()) {
-			if (negativeMax == null || negativeMax.compareTo(BigDecimal.ZERO) > 0) {
-				negativeMax = BigDecimal.ZERO;
-				negativeMaxInclusive = false;
-			}
-		}
-
-		if (context.findAnnotation(NegativeOrZero.class).isPresent()) {
-			if (negativeMax == null || negativeMax.compareTo(BigDecimal.ZERO) > 0) {
-				negativeMax = BigDecimal.ZERO;
-				negativeMaxInclusive = true;
+				max = newMax;
+				maxInclusive = decimalMaxAnnotation.get().inclusive();
 			}
 		}
 
 		if (context.findAnnotation(Positive.class).isPresent()) {
-			if (positiveMin == null || positiveMin.compareTo(BigDecimal.ZERO) < 0) {
-				positiveMin = BigDecimal.ZERO;
-				positiveMinInclusive = false;
+			if (min == null || BigDecimal.ZERO.compareTo(min) > 0
+				|| (BigDecimal.ZERO.compareTo(min) == 0 && minInclusive)) {
+				min = BigDecimal.ZERO;
+				minInclusive = false;
 			}
 		}
 
 		if (context.findAnnotation(PositiveOrZero.class).isPresent()) {
-			if (positiveMin == null || positiveMin.compareTo(BigDecimal.ZERO) < 0) {
-				positiveMin = BigDecimal.ZERO;
-				positiveMinInclusive = true;
+			if (min == null || BigDecimal.ZERO.compareTo(min) > 0) {
+				min = BigDecimal.ZERO;
+				minInclusive = true;
 			}
 		}
 
-		if (positiveMin == null && positiveMax == null && negativeMin == null && negativeMax == null && scale == null) {
+		if (context.findAnnotation(Negative.class).isPresent()) {
+			if (max == null || BigDecimal.ZERO.compareTo(max) < 0
+				|| (BigDecimal.ZERO.compareTo(max) == 0 && maxInclusive)) {
+				max = BigDecimal.ZERO;
+				maxInclusive = false;
+			}
+		}
+
+		if (context.findAnnotation(NegativeOrZero.class).isPresent()) {
+			if (max == null || BigDecimal.ZERO.compareTo(max) < 0) {
+				max = BigDecimal.ZERO;
+				maxInclusive = true;
+			}
+		}
+
+		Optional<Digits> digitsAnn = context.findAnnotation(Digits.class);
+		if (digitsAnn.isPresent()) {
+			Digits digits = digitsAnn.get();
+			int integerDigits = digits.integer();
+			int fractionDigits = digits.fraction();
+
+			StringBuilder maxBuilder = new StringBuilder();
+			for (int i = 0; i < integerDigits; i++) {
+				maxBuilder.append('9');
+			}
+			if (fractionDigits > 0) {
+				maxBuilder.append('.');
+				for (int i = 0; i < fractionDigits; i++) {
+					maxBuilder.append('9');
+				}
+			}
+			BigDecimal digitsMax = new BigDecimal(maxBuilder.toString());
+			BigDecimal digitsMin = digitsMax.negate();
+
+			if (max == null || digitsMax.compareTo(max) < 0) {
+				max = digitsMax;
+				maxInclusive = true;
+			}
+			if (min == null || digitsMin.compareTo(min) > 0) {
+				min = digitsMin;
+				minInclusive = true;
+			}
+
+			scale = digits.fraction();
+		}
+
+		if (min == null && max == null) {
 			return null;
 		}
 
-		return new JavaDecimalConstraint(
-			positiveMin,
-			positiveMinInclusive,
-			positiveMax,
-			positiveMaxInclusive,
-			negativeMin,
-			negativeMinInclusive,
-			negativeMax,
-			negativeMaxInclusive,
-			scale
-		);
+		return new JavaDecimalConstraint(min, minInclusive, max, maxInclusive, scale);
 	}
 
 	@Override
