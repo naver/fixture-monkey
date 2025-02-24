@@ -49,61 +49,61 @@ import com.navercorp.fixturemonkey.builder.DefaultArbitraryBuilder;
 import com.navercorp.fixturemonkey.customizer.InnerSpecState.ManipulatorHolderSet;
 import com.navercorp.fixturemonkey.customizer.Values.Just;
 import com.navercorp.fixturemonkey.customizer.Values.Unique;
-import com.navercorp.fixturemonkey.expression.MonkeyExpressionFactory;
 import com.navercorp.fixturemonkey.tree.CompositeNodeResolver;
+import com.navercorp.fixturemonkey.tree.NextNodePredicate;
 import com.navercorp.fixturemonkey.tree.NodePredicateResolver;
 import com.navercorp.fixturemonkey.tree.NodeResolver;
 import com.navercorp.fixturemonkey.tree.ObjectNode;
 import com.navercorp.fixturemonkey.tree.StaticNodeResolver;
 
-@API(since = "0.4.10", status = Status.MAINTAINED)
+/**
+ * It is for internal use only.
+ */
+@API(since = "0.4.10", status = Status.INTERNAL)
 public final class MonkeyManipulatorFactory {
 	private final AtomicInteger sequence;
-	private final MonkeyExpressionFactory monkeyExpressionFactory;
 	private final DecomposedContainerValueFactory decomposedContainerValueFactory;
 	private final List<MatcherOperator<ContainerPropertyGenerator>> containerPropertyGenerators;
 
 	public MonkeyManipulatorFactory(
 		AtomicInteger sequence,
-		MonkeyExpressionFactory monkeyExpressionFactory,
 		DecomposedContainerValueFactory decomposedContainerValueFactory,
 		List<MatcherOperator<ContainerPropertyGenerator>> containerPropertyGenerators
 	) {
 		this.sequence = sequence;
-		this.monkeyExpressionFactory = monkeyExpressionFactory;
 		this.decomposedContainerValueFactory = decomposedContainerValueFactory;
 		this.containerPropertyGenerators = containerPropertyGenerators;
 	}
 
 	public ArbitraryManipulator newArbitraryManipulator(
-		String expression,
+		NodeResolver nodeResolver,
 		@Nullable Object value,
 		int limit
 	) {
 		return new ArbitraryManipulator(
-			monkeyExpressionFactory.from(expression).toNodeResolver(),
+			nodeResolver,
 			convertToNodeManipulator(value, limit)
 		);
 	}
 
 	public ArbitraryManipulator newArbitraryManipulator(
-		String expression,
+		NodeResolver nodeResolver,
 		@Nullable Object value
 	) {
 		return new ArbitraryManipulator(
-			monkeyExpressionFactory.from(expression).toNodeResolver(),
+			nodeResolver,
 			convertToNodeManipulator(sequence.getAndIncrement(), value)
 		);
 	}
 
 	public <T> ArbitraryManipulator newArbitraryManipulator(
-		String expression,
+		NodeResolver nodeResolver,
 		Class<T> type,
 		Predicate<T> filter,
 		int limit
 	) {
 		return new ArbitraryManipulator(
-			monkeyExpressionFactory.from(expression).toNodeResolver(),
+			nodeResolver,
 			new ApplyNodeCountManipulator(
 				new NodeFilterManipulator(type, filter),
 				limit
@@ -112,28 +112,28 @@ public final class MonkeyManipulatorFactory {
 	}
 
 	public <T> ArbitraryManipulator newArbitraryManipulator(
-		String expression,
+		NodeResolver nodeResolver,
 		Function<CombinableArbitrary<? extends T>, CombinableArbitrary<? extends T>> arbitraryCustomizer
 	) {
 		if (arbitraryCustomizer == null) {
-			return newArbitraryManipulator(expression, (Object)null);
+			return newArbitraryManipulator(nodeResolver, (Object)null);
 		}
 
 		return new ArbitraryManipulator(
-			monkeyExpressionFactory.from(expression).toNodeResolver(),
+			nodeResolver,
 			new NodeCustomizerManipulator<>(arbitraryCustomizer)
 		);
 	}
 
 	public ContainerInfoManipulator newContainerInfoManipulator(
-		String expression,
+		List<NextNodePredicate> nextNodePredicates,
 		int min,
 		int max
 	) {
 		int newSequence = sequence.getAndIncrement();
 
 		return new ContainerInfoManipulator(
-			monkeyExpressionFactory.from(expression).toNextNodePredicate(),
+			nextNodePredicates,
 			new ArbitraryContainerInfo(
 				min,
 				max
@@ -242,7 +242,6 @@ public final class MonkeyManipulatorFactory {
 	public MonkeyManipulatorFactory copy() {
 		return new MonkeyManipulatorFactory(
 			new AtomicInteger(sequence.get()),
-			monkeyExpressionFactory,
 			decomposedContainerValueFactory,
 			containerPropertyGenerators
 		);

@@ -521,7 +521,6 @@ public final class FixtureMonkeyBuilder {
 		FixtureMonkeyOptions fixtureMonkeyOptions = fixtureMonkeyOptionsBuilder.build();
 		MonkeyManipulatorFactory monkeyManipulatorFactory = new MonkeyManipulatorFactory(
 			new AtomicInteger(),
-			monkeyExpressionFactory,
 			fixtureMonkeyOptions.getDecomposedContainerValueFactory(),
 			fixtureMonkeyOptions.getContainerPropertyGenerators()
 		);
@@ -531,7 +530,8 @@ public final class FixtureMonkeyBuilder {
 			fixtureMonkeyOptions,
 			manipulatorOptimizer,
 			registeredArbitraryBuilders,
-			monkeyManipulatorFactory
+			monkeyManipulatorFactory,
+			monkeyExpressionFactory
 		);
 	}
 }
