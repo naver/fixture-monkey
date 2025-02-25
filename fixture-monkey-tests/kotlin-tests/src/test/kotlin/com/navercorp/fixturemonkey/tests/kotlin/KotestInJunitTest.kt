@@ -144,7 +144,7 @@ class KotestInJunitTest {
 
         val actual = SUT.giveMeOne<ShortObject>().value
 
-        then(actual).matches { it in 10..99 || it in -99..-10 }
+        then(actual).matches { it in -99..99 }
     }
 
     @RepeatedTest(TEST_COUNT)
@@ -225,7 +225,7 @@ class KotestInJunitTest {
 
         val actual = SUT.giveMeOne<ByteObject>().value
 
-        then(actual).matches { it in 10..99 || it in -99..-10 }
+        then(actual).matches { it in -99..99 }
     }
 
     @RepeatedTest(TEST_COUNT)
@@ -542,7 +542,7 @@ class KotestInJunitTest {
 
         val actual = SUT.giveMeOne<IntObject>().value
 
-        then(actual).matches { it in 10..99 || it in -99..-10 }
+        then(actual).matches { it in -99..99 }
     }
 
     @RepeatedTest(TEST_COUNT)
@@ -623,7 +623,7 @@ class KotestInJunitTest {
 
         val actual = SUT.giveMeOne<LongObject>().value
 
-        then(actual).matches { it in 10L..99L || it in -99L..-10L }
+        then(actual).matches { it in -99L..99L }
     }
 
     @RepeatedTest(TEST_COUNT)

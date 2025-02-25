@@ -243,33 +243,15 @@ public final class ValidateArbitraryGenerator implements ArbitraryGenerator {
 						}
 
 						BigInteger value = toBigInteger(it);
-						if (value.compareTo(BigInteger.ZERO) < 0) {
-							if (javaIntegerConstraint.getNegativeMin() != null) {
-								if (value.compareTo(javaIntegerConstraint.getNegativeMin()) < 0) {
-									return false;
-								}
-							}
 
-							if (javaIntegerConstraint.getNegativeMax() != null) {
-								if (value.compareTo(BigInteger.ZERO) < 0
-									&& value.compareTo(javaIntegerConstraint.getNegativeMax()) > 0) {
-									return false;
-								}
-							}
+						if (javaIntegerConstraint.getMin() != null
+							&& value.compareTo(javaIntegerConstraint.getMin()) < 0) {
+							return false;
 						}
 
-						if (value.compareTo(BigInteger.ZERO) > 0) {
-							if (javaIntegerConstraint.getPositiveMin() != null) {
-								if (value.compareTo(javaIntegerConstraint.getPositiveMin()) < 0) {
-									return false;
-								}
-							}
-
-							if (javaIntegerConstraint.getPositiveMax() != null) {
-								if (value.compareTo(javaIntegerConstraint.getPositiveMax()) > 0) {
-									return false;
-								}
-							}
+						if (javaIntegerConstraint.getMax() != null
+							&& value.compareTo(javaIntegerConstraint.getMax()) > 0) {
+							return false;
 						}
 
 						return true;

@@ -232,32 +232,21 @@ public final class SimpleValueJqwikPlugin implements Plugin {
 
 		@Override
 		public JavaIntegerConstraint generateIntegerConstraint(ArbitraryGeneratorContext context) {
-			BigInteger positiveMin = ifNotNull(this.positiveMinNumberValue, BigInteger::valueOf);
-			BigInteger positiveMax = ifNotNull(this.positiveMaxNumberValue, BigInteger::valueOf);
-			BigInteger negativeMin = ifNotNull(this.negativeMinNumberValue, BigInteger::valueOf);
-			BigInteger negativeMax = ifNotNull(this.negativeMaxNumberValue, BigInteger::valueOf);
+			BigInteger min = negativeMinNumberValue != null
+				? BigInteger.valueOf(negativeMinNumberValue) :
+				BigInteger.valueOf(defaultIfNull(positiveMinNumberValue, () -> DEFAULT_MIN_NUMBER_VALUE));
 
-			if (positiveMin == null) {
-				negativeMin = defaultIfNull(negativeMin, () -> BigInteger.valueOf(DEFAULT_MIN_NUMBER_VALUE));
-				negativeMax = defaultIfNull(negativeMax, () -> BigInteger.ZERO);
-			}
-
-			if (negativeMax == null) {
-				positiveMin = defaultIfNull(positiveMin, () -> BigInteger.ZERO);
-				positiveMax = defaultIfNull(positiveMax, () -> BigInteger.valueOf(DEFAULT_MAX_NUMBER_VALUE));
-			}
+			BigInteger max = positiveMaxNumberValue != null
+				? BigInteger.valueOf(positiveMaxNumberValue) :
+				BigInteger.valueOf(defaultIfNull(negativeMaxNumberValue, () -> DEFAULT_MAX_NUMBER_VALUE));
 
 			Class<?> type = Types.getActualType(context.getResolvedType());
 			if (type == Byte.class || type == byte.class) {
-				positiveMax = positiveMax != null
-					? positiveMax.min(BIG_INTEGER_MAX_BYTE)
-					: BIG_INTEGER_MAX_BYTE;
-				negativeMin = negativeMin != null
-					? negativeMin.max(BIG_INTEGER_MIN_BYTE)
-					: BIG_INTEGER_MIN_BYTE;
+				max = max.min(BIG_INTEGER_MAX_BYTE);
+				min = min.max(BIG_INTEGER_MIN_BYTE);
 			}
 
-			return new JavaIntegerConstraint(positiveMin, positiveMax, negativeMin, negativeMax);
+			return new JavaIntegerConstraint(min, max);
 		}
 
 		@Override
