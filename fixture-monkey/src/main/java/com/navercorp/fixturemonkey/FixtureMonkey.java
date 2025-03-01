@@ -45,6 +45,7 @@ import com.navercorp.fixturemonkey.builder.JavaTypeDefaultTypeArbitraryBuilder;
 import com.navercorp.fixturemonkey.customizer.ArbitraryManipulator;
 import com.navercorp.fixturemonkey.customizer.MonkeyManipulatorFactory;
 import com.navercorp.fixturemonkey.experimental.ExperimentalArbitraryBuilder;
+import com.navercorp.fixturemonkey.expression.MonkeyExpressionFactory;
 import com.navercorp.fixturemonkey.resolver.ArbitraryResolver;
 import com.navercorp.fixturemonkey.resolver.ManipulatorOptimizer;
 
@@ -54,17 +55,20 @@ public final class FixtureMonkey {
 	private final ManipulatorOptimizer manipulatorOptimizer;
 	private final MonkeyContext monkeyContext;
 	private final MonkeyManipulatorFactory monkeyManipulatorFactory;
+	private final MonkeyExpressionFactory monkeyExpressionFactory;
 
 	public FixtureMonkey(
 		FixtureMonkeyOptions fixtureMonkeyOptions,
 		ManipulatorOptimizer manipulatorOptimizer,
 		List<MatcherOperator<Function<FixtureMonkey, ? extends ArbitraryBuilder<?>>>> registeredArbitraryBuilders,
-		MonkeyManipulatorFactory monkeyManipulatorFactory
+		MonkeyManipulatorFactory monkeyManipulatorFactory,
+		MonkeyExpressionFactory monkeyExpressionFactory
 	) {
 		this.fixtureMonkeyOptions = fixtureMonkeyOptions;
 		this.manipulatorOptimizer = manipulatorOptimizer;
 		this.monkeyContext = MonkeyContext.builder(fixtureMonkeyOptions).build();
 		this.monkeyManipulatorFactory = monkeyManipulatorFactory;
+		this.monkeyExpressionFactory = monkeyExpressionFactory;
 		initializeRegisteredArbitraryBuilders(registeredArbitraryBuilders);
 	}
 
@@ -101,6 +105,7 @@ public final class FixtureMonkey {
 				monkeyContext
 			),
 			monkeyManipulatorFactory,
+			monkeyExpressionFactory,
 			builderContext.copy(),
 			monkeyContext,
 			fixtureMonkeyOptions.getInstantiatorProcessor()
@@ -111,7 +116,7 @@ public final class FixtureMonkey {
 		ArbitraryBuilderContext context = ArbitraryBuilderContext.newBuilderContext(monkeyContext);
 
 		ArbitraryManipulator arbitraryManipulator =
-			monkeyManipulatorFactory.newArbitraryManipulator("$", value);
+			monkeyManipulatorFactory.newArbitraryManipulator(monkeyExpressionFactory.from("$").toNodeResolver(), value);
 		context.addManipulator(arbitraryManipulator);
 
 		return new DefaultArbitraryBuilder<>(
@@ -122,6 +127,7 @@ public final class FixtureMonkey {
 				monkeyContext
 			),
 			monkeyManipulatorFactory,
+			monkeyExpressionFactory,
 			context,
 			monkeyContext,
 			fixtureMonkeyOptions.getInstantiatorProcessor()
