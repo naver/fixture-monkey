@@ -28,6 +28,9 @@ import com.navercorp.fixturemonkey.api.tree.TraverseNodePredicate.StartTraverseN
 public final class StartNodePredicate extends StartTraverseNodePredicate implements NextNodePredicate {
 	public static final StartNodePredicate INSTANCE = new StartNodePredicate();
 
+	private StartNodePredicate() {
+	}
+
 	/**
 	 * It determines if given objectProperty is a first node.
 	 *

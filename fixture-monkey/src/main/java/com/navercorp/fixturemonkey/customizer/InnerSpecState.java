@@ -18,118 +18,99 @@
 
 package com.navercorp.fixturemonkey.customizer;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
+import com.navercorp.fixturemonkey.expression.DefaultDeclarativeExpression;
 import com.navercorp.fixturemonkey.tree.NextNodePredicate;
-import com.navercorp.fixturemonkey.tree.StartNodePredicate;
 
 @API(since = "0.5.0", status = Status.MAINTAINED)
 final class InnerSpecState {
 	@Nullable
-	private NodeResolverObjectHolder objectHolder;
+	private NodeSetManipulatorSnapshot nodeSetManipulatorSnapshot;
 	@Nullable
-	private ContainerInfoHolder containerInfoHolder;
+	private ContainerInfoSnapshot containerInfoSnapshot;
 	@Nullable
-	private FilterHolder filterHolder;
+	private FilterSnapshot filterSnapshot;
 
-	void setObjectHolder(@Nullable NodeResolverObjectHolder objectHolder) {
-		this.objectHolder = objectHolder;
+	void setNodeManipulatorSnapshot(@Nullable NodeSetManipulatorSnapshot nodeSetManipulatorSnapshot) {
+		this.nodeSetManipulatorSnapshot = nodeSetManipulatorSnapshot;
 	}
 
-	void setContainerInfoHolder(@Nullable ContainerInfoHolder containerInfoHolder) {
-		this.containerInfoHolder = containerInfoHolder;
+	void setContainerInfoSnapshot(@Nullable ContainerInfoSnapshot containerInfoSnapshot) {
+		this.containerInfoSnapshot = containerInfoSnapshot;
 	}
 
-	void setFilterHolder(@Nullable FilterHolder filterHolder) {
-		this.filterHolder = filterHolder;
-	}
-
-	@Nullable
-	NodeResolverObjectHolder getObjectHolder() {
-		return objectHolder;
+	void setFilterSnapshot(@Nullable FilterSnapshot filterSnapshot) {
+		this.filterSnapshot = filterSnapshot;
 	}
 
 	@Nullable
-	ContainerInfoHolder getContainerInfoHolder() {
-		return containerInfoHolder;
+	NodeSetManipulatorSnapshot getNodeManipulatorSnapshot() {
+		return nodeSetManipulatorSnapshot;
 	}
 
 	@Nullable
-	FilterHolder getFilterHolder() {
-		return filterHolder;
+	ContainerInfoSnapshot getContainerInfoHolder() {
+		return containerInfoSnapshot;
 	}
 
-	InnerSpecState withPrefix(List<NextNodePredicate> nextNodePredicates) {
+	@Nullable
+	FilterSnapshot getFilterHolder() {
+		return filterSnapshot;
+	}
+
+	InnerSpecState withPrefix(DefaultDeclarativeExpression parentDeclarativeExpression) {
 		InnerSpecState newState = new InnerSpecState();
 
-		if (this.objectHolder != null) {
-			List<NextNodePredicate> concat = new ArrayList<>(nextNodePredicates);
-			List<NextNodePredicate> setNextNodePredicates = this.objectHolder.nextNodePredicates.stream()
-				.filter(it -> !(it instanceof StartNodePredicate))
-				.collect(Collectors.toList());
-			concat.addAll(setNextNodePredicates);
-			newState.objectHolder = new NodeResolverObjectHolder(
-				this.objectHolder.sequence,
-				concat,
-				this.objectHolder.value
+		if (this.nodeSetManipulatorSnapshot != null) {
+			newState.nodeSetManipulatorSnapshot = new NodeSetManipulatorSnapshot(
+				this.nodeSetManipulatorSnapshot.sequence,
+				this.nodeSetManipulatorSnapshot.declarativeExpression.prepend(parentDeclarativeExpression),
+				this.nodeSetManipulatorSnapshot.value
 			);
 		}
 
-		if (this.filterHolder != null) {
-			List<NextNodePredicate> concat = new ArrayList<>(nextNodePredicates);
-			List<NextNodePredicate> setPostConditionNextNodePredicates =
-				this.filterHolder.nextNodePredicates.stream()
-					.filter(it -> !(it instanceof StartNodePredicate))
-					.collect(Collectors.toList());
-			concat.addAll(setPostConditionNextNodePredicates);
-			newState.filterHolder = new FilterHolder(
-				this.filterHolder.sequence,
-				concat,
-				this.filterHolder.type,
-				this.filterHolder.predicate
+		if (this.filterSnapshot != null) {
+			newState.filterSnapshot = new FilterSnapshot(
+				this.filterSnapshot.sequence,
+				this.filterSnapshot.declarativeExpression.prepend(parentDeclarativeExpression),
+				this.filterSnapshot.type,
+				this.filterSnapshot.predicate
 			);
 		}
 
-		if (this.containerInfoHolder != null) {
-			List<NextNodePredicate> concat = new ArrayList<>(nextNodePredicates);
-			List<NextNodePredicate> containerHolderNextNodePredicates =
-				this.containerInfoHolder.nextNodePredicates.stream()
-					.filter(it -> !(it instanceof StartNodePredicate))
-					.collect(Collectors.toList());
-			concat.addAll(containerHolderNextNodePredicates);
-			newState.containerInfoHolder = new ContainerInfoHolder(
-				this.containerInfoHolder.sequence,
-				concat,
-				this.containerInfoHolder.elementMinSize,
-				this.containerInfoHolder.elementMaxSize
+		if (this.containerInfoSnapshot != null) {
+			newState.containerInfoSnapshot = new ContainerInfoSnapshot(
+				this.containerInfoSnapshot.sequence,
+				this.containerInfoSnapshot.declarativeExpression.prepend(parentDeclarativeExpression),
+				this.containerInfoSnapshot.elementMinSize,
+				this.containerInfoSnapshot.elementMaxSize
 			);
 		}
 
 		return newState;
 	}
 
-	public static class ContainerInfoHolder {
+	public static class ContainerInfoSnapshot {
 		private final int sequence;
-		private final List<NextNodePredicate> nextNodePredicates;
+		private final DefaultDeclarativeExpression declarativeExpression;
 		private final int elementMinSize;
 		private final int elementMaxSize;
 
-		public ContainerInfoHolder(
+		public ContainerInfoSnapshot(
 			int sequence,
-			List<NextNodePredicate> nextNodePredicates,
+			DefaultDeclarativeExpression declarativeExpression,
 			int elementMinSize,
 			int elementMaxSize
 		) {
 			this.sequence = sequence;
-			this.nextNodePredicates = nextNodePredicates;
+			this.declarativeExpression = declarativeExpression;
 			this.elementMinSize = elementMinSize;
 			this.elementMaxSize = elementMaxSize;
 		}
@@ -139,7 +120,7 @@ final class InnerSpecState {
 		}
 
 		List<NextNodePredicate> getNextNodePredicates() {
-			return this.nextNodePredicates;
+			return this.declarativeExpression.getNestedNextNodePredicates();
 		}
 
 		int getElementMinSize() {
@@ -151,20 +132,20 @@ final class InnerSpecState {
 		}
 	}
 
-	public static class FilterHolder {
+	public static class FilterSnapshot {
 		private final int sequence;
-		private final List<NextNodePredicate> nextNodePredicates;
+		private final DefaultDeclarativeExpression declarativeExpression;
 		private final Class<?> type;
 		private final Predicate<?> predicate;
 
-		public FilterHolder(
+		public FilterSnapshot(
 			int sequence,
-			List<NextNodePredicate> nextNodePredicates,
+			DefaultDeclarativeExpression declarativeExpression,
 			Class<?> type,
 			Predicate<?> predicate
 		) {
 			this.sequence = sequence;
-			this.nextNodePredicates = nextNodePredicates;
+			this.declarativeExpression = declarativeExpression;
 			this.type = type;
 			this.predicate = predicate;
 		}
@@ -174,7 +155,7 @@ final class InnerSpecState {
 		}
 
 		List<NextNodePredicate> getNextNodePredicates() {
-			return this.nextNodePredicates;
+			return this.declarativeExpression.getNestedNextNodePredicates();
 		}
 
 		Class<?> getType() {
@@ -186,19 +167,23 @@ final class InnerSpecState {
 		}
 	}
 
-	public static class NodeResolverObjectHolder {
+	public static class NodeSetManipulatorSnapshot {
 		private final int sequence;
-		private final List<NextNodePredicate> nextNodePredicates;
+		private final DefaultDeclarativeExpression declarativeExpression;
 		private final Object value;
 
-		public NodeResolverObjectHolder(int sequence, List<NextNodePredicate> nextNodePredicates, Object value) {
+		public NodeSetManipulatorSnapshot(
+			int sequence,
+			DefaultDeclarativeExpression declarativeExpression,
+			Object value
+		) {
 			this.sequence = sequence;
-			this.nextNodePredicates = nextNodePredicates;
+			this.declarativeExpression = declarativeExpression;
 			this.value = value;
 		}
 
 		List<NextNodePredicate> getNextNodePredicates() {
-			return this.nextNodePredicates;
+			return this.declarativeExpression.getNestedNextNodePredicates();
 		}
 
 		Object getValue() {
@@ -211,29 +196,29 @@ final class InnerSpecState {
 	}
 
 	static final class ManipulatorHolderSet {
-		private final List<NodeResolverObjectHolder> nodeResolverObjectHolders;
-		private final List<ContainerInfoHolder> containerInfoManipulators;
-		private final List<FilterHolder> postConditionManipulators;
+		private final List<NodeSetManipulatorSnapshot> nodeSetManipulatorSnapshots;
+		private final List<ContainerInfoSnapshot> containerInfoManipulators;
+		private final List<FilterSnapshot> postConditionManipulators;
 
 		public ManipulatorHolderSet(
-			List<NodeResolverObjectHolder> nodeResolverObjectHolders,
-			List<ContainerInfoHolder> containerInfoManipulators,
-			List<FilterHolder> postConditionManipulators
+			List<NodeSetManipulatorSnapshot> nodeSetManipulatorSnapshots,
+			List<ContainerInfoSnapshot> containerInfoManipulators,
+			List<FilterSnapshot> postConditionManipulators
 		) {
-			this.nodeResolverObjectHolders = nodeResolverObjectHolders;
+			this.nodeSetManipulatorSnapshots = nodeSetManipulatorSnapshots;
 			this.containerInfoManipulators = containerInfoManipulators;
 			this.postConditionManipulators = postConditionManipulators;
 		}
 
-		public List<NodeResolverObjectHolder> getNodeResolverObjectHolders() {
-			return nodeResolverObjectHolders;
+		public List<NodeSetManipulatorSnapshot> getNodeResolverObjectHolders() {
+			return nodeSetManipulatorSnapshots;
 		}
 
-		public List<ContainerInfoHolder> getContainerInfoManipulators() {
+		public List<ContainerInfoSnapshot> getContainerInfoManipulators() {
 			return containerInfoManipulators;
 		}
 
-		public List<FilterHolder> getPostConditionManipulators() {
+		public List<FilterSnapshot> getPostConditionManipulators() {
 			return postConditionManipulators;
 		}
 	}

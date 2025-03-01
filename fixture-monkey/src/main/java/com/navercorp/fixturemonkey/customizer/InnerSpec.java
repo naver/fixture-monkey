@@ -20,12 +20,10 @@ package com.navercorp.fixturemonkey.customizer;
 
 import static com.navercorp.fixturemonkey.Constants.DEFAULT_ELEMENT_MAX_SIZE;
 import static com.navercorp.fixturemonkey.Constants.DEFAULT_ELEMENT_MIN_SIZE;
-import static com.navercorp.fixturemonkey.Constants.NO_OR_ALL_INDEX_INTEGER_VALUE;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -39,18 +37,11 @@ import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.Constants;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
-import com.navercorp.fixturemonkey.customizer.InnerSpecState.ContainerInfoHolder;
-import com.navercorp.fixturemonkey.customizer.InnerSpecState.FilterHolder;
+import com.navercorp.fixturemonkey.customizer.InnerSpecState.ContainerInfoSnapshot;
+import com.navercorp.fixturemonkey.customizer.InnerSpecState.FilterSnapshot;
 import com.navercorp.fixturemonkey.customizer.InnerSpecState.ManipulatorHolderSet;
-import com.navercorp.fixturemonkey.customizer.InnerSpecState.NodeResolverObjectHolder;
-import com.navercorp.fixturemonkey.tree.ContainerElementPredicate;
-import com.navercorp.fixturemonkey.tree.NextNodePredicate;
-import com.navercorp.fixturemonkey.tree.NodeAllElementPredicate;
-import com.navercorp.fixturemonkey.tree.NodeElementPredicate;
-import com.navercorp.fixturemonkey.tree.NodeKeyPredicate;
-import com.navercorp.fixturemonkey.tree.NodeValuePredicate;
-import com.navercorp.fixturemonkey.tree.PropertyNameNodePredicate;
-import com.navercorp.fixturemonkey.tree.StartNodePredicate;
+import com.navercorp.fixturemonkey.customizer.InnerSpecState.NodeSetManipulatorSnapshot;
+import com.navercorp.fixturemonkey.expression.DefaultDeclarativeExpression;
 
 /**
  * A type-independent specification for configuring nested properties.
@@ -68,7 +59,7 @@ public final class InnerSpec {
 	private static final int FIRST_MANIPULATOR_SEQUENCE = 0;
 
 	private final int sequence;
-	private final List<NextNodePredicate> nextNodePredicates;
+	private final DefaultDeclarativeExpression declarativeExpression;
 	private final InnerSpecState state;
 	private final List<InnerSpec> innerSpecs;
 
@@ -84,7 +75,7 @@ public final class InnerSpec {
 	public InnerSpec() {
 		this(
 			FIRST_MANIPULATOR_SEQUENCE,
-			Collections.singletonList(StartNodePredicate.INSTANCE),
+			new DefaultDeclarativeExpression(),
 			new InnerSpecState(),
 			new ArrayList<>()
 		);
@@ -92,12 +83,12 @@ public final class InnerSpec {
 
 	private InnerSpec(
 		int sequence,
-		List<NextNodePredicate> nextNodePredicates,
+		DefaultDeclarativeExpression declarativeExpression,
 		InnerSpecState state,
 		List<InnerSpec> innerSpecs
 	) {
 		this.sequence = sequence;
-		this.nextNodePredicates = new ArrayList<>(nextNodePredicates);
+		this.declarativeExpression = declarativeExpression;
 		this.state = state;
 		this.innerSpecs = innerSpecs;
 	}
@@ -110,8 +101,8 @@ public final class InnerSpec {
 	 *                  to be applied to the currently referred property.
 	 */
 	public InnerSpec inner(InnerSpec innerSpec) {
-		InnerSpec appendInnerSpec = newAppendNextNodePredicate(innerSpec, this.nextNodePredicates);
-		this.innerSpecs.add(appendInnerSpec);
+		InnerSpec nextInnerSpec = newNextInnerSpec(innerSpec, this.declarativeExpression);
+		this.innerSpecs.add(nextInnerSpec);
 		return this;
 	}
 
@@ -127,8 +118,8 @@ public final class InnerSpec {
 			throw new IllegalArgumentException("should be min > max, min : " + minSize + " max : " + maxSize);
 		}
 
-		this.state.setContainerInfoHolder(
-			new ContainerInfoHolder(this.sequence + manipulateSize, this.nextNodePredicates, minSize, maxSize)
+		this.state.setContainerInfoSnapshot(
+			new ContainerInfoSnapshot(this.sequence + manipulateSize, this.declarativeExpression, minSize, maxSize)
 		);
 		manipulateSize++;
 		return this;
@@ -474,7 +465,8 @@ public final class InnerSpec {
 	 * @param value value of the elements to set
 	 */
 	public InnerSpec allListElement(@Nullable Object value) {
-		return listElement(NO_OR_ALL_INDEX_INTEGER_VALUE, value);
+		setListAllElements(value);
+		return this;
 	}
 
 	/**
@@ -484,7 +476,8 @@ public final class InnerSpec {
 	 *                 each element.
 	 */
 	public InnerSpec allListElement(Consumer<InnerSpec> consumer) {
-		return listElement(NO_OR_ALL_INDEX_INTEGER_VALUE, consumer);
+		setListAllElements(consumer);
+		return this;
 	}
 
 	/**
@@ -519,7 +512,7 @@ public final class InnerSpec {
 	 * @param filter a predicate function that determines the post-condition of the property
 	 */
 	public <T> InnerSpec postCondition(Class<T> type, Predicate<T> filter) {
-		this.state.setFilterHolder(new FilterHolder(manipulateSize++, this.nextNodePredicates, type, filter));
+		this.state.setFilterSnapshot(new FilterSnapshot(manipulateSize++, this.declarativeExpression, type, filter));
 		return this;
 	}
 
@@ -528,16 +521,16 @@ public final class InnerSpec {
 		return monkeyManipulatorFactory.newManipulatorSet(manipulatorHolderSet);
 	}
 
-	private InnerSpec newAppendNextNodePredicate(InnerSpec innerSpec, List<NextNodePredicate> nextNodePredicates) {
+	private InnerSpec newNextInnerSpec(InnerSpec innerSpec, DefaultDeclarativeExpression parentDeclarativeExpression) {
 		InnerSpec newSpec = new InnerSpec(
 			innerSpec.sequence,
-			innerSpec.nextNodePredicates,
-			innerSpec.state.withPrefix(nextNodePredicates),
+			innerSpec.declarativeExpression,
+			innerSpec.state.withPrefix(parentDeclarativeExpression),
 			new ArrayList<>()
 		);
 
-		for (InnerSpec spec : innerSpec.innerSpecs) {
-			newSpec.innerSpecs.add(newAppendNextNodePredicate(spec, nextNodePredicates));
+		for (InnerSpec childSpec : innerSpec.innerSpecs) {
+			newSpec.innerSpecs.add(newNextInnerSpec(childSpec, parentDeclarativeExpression));
 		}
 		return newSpec;
 	}
@@ -549,11 +542,10 @@ public final class InnerSpec {
 			);
 		}
 
-		List<NextNodePredicate> nextKeyNodeNodePredicate = new ArrayList<>(this.nextNodePredicates);
-		nextKeyNodeNodePredicate.add(new NodeElementPredicate(entrySize - 1));
-		nextKeyNodeNodePredicate.add(new NodeKeyPredicate());
-
-		setValue(nextKeyNodeNodePredicate, mapKey);
+		setValue(
+			this.declarativeExpression.element(entrySize - 1).key(),
+			mapKey
+		);
 	}
 
 	private void setMapAllKey(Object mapKey) {
@@ -563,25 +555,15 @@ public final class InnerSpec {
 			);
 		}
 
-		List<NextNodePredicate> nextKeyNodePredicate = new ArrayList<>(this.nextNodePredicates);
-		nextKeyNodePredicate.add(new NodeAllElementPredicate());
-		nextKeyNodePredicate.add(new NodeKeyPredicate());
-
-		setValue(nextKeyNodePredicate, mapKey);
+		setValue(this.declarativeExpression.allElement().key(), mapKey);
 	}
 
 	private void setMapValue(@Nullable Object mapValue) {
-		List<NextNodePredicate> nextValueNodePredicate = new ArrayList<>(this.nextNodePredicates);
-		nextValueNodePredicate.add(new NodeElementPredicate(entrySize - 1));
-		nextValueNodePredicate.add(new NodeValuePredicate());
-		setValue(nextValueNodePredicate, mapValue);
+		setValue(this.declarativeExpression.element(entrySize - 1).value(), mapValue);
 	}
 
 	private void setMapAllValue(@Nullable Object mapValue) {
-		List<NextNodePredicate> nextValueNodePredicate = new ArrayList<>(this.nextNodePredicates);
-		nextValueNodePredicate.add(new NodeAllElementPredicate());
-		nextValueNodePredicate.add(new NodeValuePredicate());
-		setValue(nextValueNodePredicate, mapValue);
+		setValue(this.declarativeExpression.allElement().value(), mapValue);
 	}
 
 	private void setMapEntry(Object key, @Nullable Object value) {
@@ -590,25 +572,25 @@ public final class InnerSpec {
 	}
 
 	private void setPropertyValue(String propertyName, @Nullable Object value) {
-		List<NextNodePredicate> nextNodePredicates = new ArrayList<>(this.nextNodePredicates);
-		nextNodePredicates.add(new PropertyNameNodePredicate(propertyName));
-		setValue(nextNodePredicates, value);
+		setValue(this.declarativeExpression.property(propertyName), value);
+	}
+
+	private void setListAllElements(@Nullable Object value) {
+		setValue(this.declarativeExpression.allElement(), value);
 	}
 
 	private void setListElement(int index, @Nullable Object value) {
-		List<NextNodePredicate> nextNodePredicates = new ArrayList<>(this.nextNodePredicates);
-		nextNodePredicates.add(new ContainerElementPredicate(index));
-		setValue(nextNodePredicates, value);
+		setValue(this.declarativeExpression.element(index), value);
 	}
 
 	@SuppressWarnings("unchecked")
-	private void setValue(List<NextNodePredicate> nextNodePredicates, @Nullable Object nextValue) {
+	private void setValue(DefaultDeclarativeExpression defaultDeclarativeExpression, @Nullable Object nextValue) {
 		int nextSequence = this.sequence + manipulateSize;
 
 		if (nextValue instanceof InnerSpec) {
 			InnerSpec prefix = new InnerSpec(
 				nextSequence,
-				nextNodePredicates,
+				defaultDeclarativeExpression,
 				new InnerSpecState(),
 				new ArrayList<>()
 			);
@@ -621,7 +603,7 @@ public final class InnerSpec {
 			Consumer<InnerSpec> consumer = (Consumer<InnerSpec>)nextValue;
 			InnerSpec nextInnerSpec = new InnerSpec(
 				nextSequence,
-				nextNodePredicates,
+				defaultDeclarativeExpression,
 				new InnerSpecState(),
 				new ArrayList<>()
 			);
@@ -632,17 +614,17 @@ public final class InnerSpec {
 		}
 
 		InnerSpecState nextInnerSpecState = new InnerSpecState();
-		nextInnerSpecState.setObjectHolder(
-			new NodeResolverObjectHolder(
+		nextInnerSpecState.setNodeManipulatorSnapshot(
+			new NodeSetManipulatorSnapshot(
 				nextSequence,
-				nextNodePredicates,
+				defaultDeclarativeExpression,
 				nextValue
 			)
 		);
 
 		InnerSpec nextInnerSpec = new InnerSpec(
 			nextSequence,
-			nextNodePredicates,
+			defaultDeclarativeExpression,
 			nextInnerSpecState,
 			new ArrayList<>()
 		);
@@ -651,12 +633,12 @@ public final class InnerSpec {
 	}
 
 	private ManipulatorHolderSet traverse(InnerSpec innerSpec) {
-		List<NodeResolverObjectHolder> nodeResolverObjectHolders = new ArrayList<>();
-		List<ContainerInfoHolder> containerInfoManipulators = new ArrayList<>();
-		List<FilterHolder> postConditionManipulators = new ArrayList<>();
+		List<NodeSetManipulatorSnapshot> nodeSetManipulatorSnapshots = new ArrayList<>();
+		List<ContainerInfoSnapshot> containerInfoManipulators = new ArrayList<>();
+		List<FilterSnapshot> postConditionManipulators = new ArrayList<>();
 
-		if (innerSpec.state.getObjectHolder() != null) {
-			nodeResolverObjectHolders.add(innerSpec.state.getObjectHolder());
+		if (innerSpec.state.getNodeManipulatorSnapshot() != null) {
+			nodeSetManipulatorSnapshots.add(innerSpec.state.getNodeManipulatorSnapshot());
 		}
 
 		if (innerSpec.state.getContainerInfoHolder() != null) {
@@ -669,13 +651,13 @@ public final class InnerSpec {
 
 		for (InnerSpec spec : innerSpec.innerSpecs) {
 			ManipulatorHolderSet traversed = traverse(spec);
-			nodeResolverObjectHolders.addAll(traversed.getNodeResolverObjectHolders());
+			nodeSetManipulatorSnapshots.addAll(traversed.getNodeResolverObjectHolders());
 			containerInfoManipulators.addAll(traversed.getContainerInfoManipulators());
 			postConditionManipulators.addAll(traversed.getPostConditionManipulators());
 		}
 
 		return new ManipulatorHolderSet(
-			nodeResolverObjectHolders,
+			nodeSetManipulatorSnapshots,
 			containerInfoManipulators,
 			postConditionManipulators
 		);
