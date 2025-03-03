@@ -201,24 +201,24 @@ public final class SimpleValueJqwikPlugin implements Plugin {
 
 		@Override
 		public JavaIntegerConstraint generateIntegerConstraint(ArbitraryGeneratorContext context) {
-			BigInteger min = BigInteger.valueOf(minNumberValue);
-			BigInteger max = BigInteger.valueOf(maxNumberValue);
+			BigInteger lowerBound = BigInteger.valueOf(minNumberValue);
+			BigInteger upperBound = BigInteger.valueOf(maxNumberValue);
 
 			Class<?> type = Types.getActualType(context.getResolvedType());
 			if (type == Byte.class || type == byte.class) {
-				max = max.min(BIG_INTEGER_MAX_BYTE);
-				min = min.max(BIG_INTEGER_MIN_BYTE);
+				upperBound = upperBound.min(BIG_INTEGER_MAX_BYTE);
+				lowerBound = lowerBound.max(BIG_INTEGER_MIN_BYTE);
 			}
 
-			return new JavaIntegerConstraint(min, max);
+			return new JavaIntegerConstraint(lowerBound, upperBound);
 		}
 
 		@Override
 		public JavaDecimalConstraint generateDecimalConstraint(ArbitraryGeneratorContext context) {
-			BigDecimal min = BigDecimal.valueOf(minNumberValue);
-			BigDecimal max = BigDecimal.valueOf(maxNumberValue);
+			BigDecimal lowerBound = BigDecimal.valueOf(minNumberValue);
+			BigDecimal upperBound = BigDecimal.valueOf(maxNumberValue);
 
-			return new JavaDecimalConstraint(min, true, max, true, 2);
+			return new JavaDecimalConstraint(lowerBound, true, upperBound, true, 2);
 		}
 
 		@Override
