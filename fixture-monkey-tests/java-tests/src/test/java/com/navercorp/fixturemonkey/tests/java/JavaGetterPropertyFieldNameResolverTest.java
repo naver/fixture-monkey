@@ -21,7 +21,6 @@ package com.navercorp.fixturemonkey.tests.java;
 import static com.navercorp.fixturemonkey.api.expression.JavaGetterMethodPropertySelector.javaGetter;
 import static com.navercorp.fixturemonkey.tests.TestEnvironment.TEST_COUNT;
 import static org.assertj.core.api.BDDAssertions.then;
-import static org.assertj.core.api.BDDAssertions.thenCode;
 
 import org.junit.jupiter.api.RepeatedTest;
 
@@ -32,18 +31,12 @@ import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.introspector.ConstructorPropertiesArbitraryIntrospector;
 
 class JavaGetterPropertyFieldNameResolverTest {
-
 	private static final FixtureMonkey SUT = FixtureMonkey.builder()
 		.objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)
 		.build();
 
 	@RepeatedTest(TEST_COUNT)
-	void testNonBooleanFieldWithIsPrefix() {
-
-		thenCode(SUT.giveMeBuilder(JavaGetterObject.class)
-			.set(javaGetter(JavaGetterObject::getIsStatus), "javaGetterStringStatus")::sample)
-			.doesNotThrowAnyException();
-
+	void nonBooleanFieldWithIsPrefixReturns() {
 		JavaGetterObject actual = SUT.giveMeBuilder(JavaGetterObject.class)
 			.set(javaGetter(JavaGetterObject::getIsStatus), "javaGetterStringStatus")
 			.sample();
@@ -52,11 +45,7 @@ class JavaGetterPropertyFieldNameResolverTest {
 	}
 
 	@RepeatedTest(TEST_COUNT)
-	void testPrimitiveTypeBooleanFieldWithIsPrefix() {
-		thenCode(SUT.giveMeBuilder(JavaGetterObject.class)
-			.set(javaGetter(JavaGetterObject::isActive), true)::sample)
-			.doesNotThrowAnyException();
-
+	void primitiveTypeBooleanFieldWithIsPrefixReturns() {
 		JavaGetterObject actual = SUT.giveMeBuilder(JavaGetterObject.class)
 			.set(javaGetter(JavaGetterObject::isActive), true)
 			.sample();
@@ -65,11 +54,7 @@ class JavaGetterPropertyFieldNameResolverTest {
 	}
 
 	@RepeatedTest(TEST_COUNT)
-	void testBooleanFieldWithoutIsPrefix() {
-		thenCode(SUT.giveMeBuilder(JavaGetterObject.class)
-			.set(javaGetter(JavaGetterObject::isEnabled), true)::sample)
-			.doesNotThrowAnyException();
-
+	void booleanFieldWithoutIsPrefixReturns() {
 		JavaGetterObject actual = SUT.giveMeBuilder(JavaGetterObject.class)
 			.set(javaGetter(JavaGetterObject::isEnabled), true)
 			.sample();
@@ -78,11 +63,7 @@ class JavaGetterPropertyFieldNameResolverTest {
 	}
 
 	@RepeatedTest(TEST_COUNT)
-	void testNonBooleanFieldWithoutIsPrefix() {
-		thenCode(SUT.giveMeBuilder(JavaGetterObject.class)
-			.set(javaGetter(JavaGetterObject::getName), "javaGetterObjectName")::sample)
-			.doesNotThrowAnyException();
-
+	void nonBooleanFieldWithoutIsPrefixReturns() {
 		JavaGetterObject actual = SUT.giveMeBuilder(JavaGetterObject.class)
 			.set(javaGetter(JavaGetterObject::getName), "javaGetterObjectName")
 			.sample();
@@ -91,11 +72,7 @@ class JavaGetterPropertyFieldNameResolverTest {
 	}
 
 	@RepeatedTest(TEST_COUNT)
-	void testWrapperTypeBooleanFieldWithIsPrefix() {
-		thenCode(SUT.giveMeBuilder(JavaGetterObject.class)
-			.set(javaGetter(JavaGetterObject::getIsDeleted), true)::sample)
-			.doesNotThrowAnyException();
-
+	void wrapperTypeBooleanFieldWithIsPrefixReturns() {
 		JavaGetterObject actual = SUT.giveMeBuilder(JavaGetterObject.class)
 			.set(javaGetter(JavaGetterObject::getIsDeleted), true)
 			.sample();
