@@ -92,6 +92,10 @@ open class KotlinTypeDefaultArbitraryBuilder<T> internal constructor(val delegat
         delegate.set(value)
     }
 
+    override fun selectName(vararg names: String?): ArbitraryBuilder<T> {
+        TODO("Not yet implemented")
+    }
+
     override fun setInner(innerSpec: InnerSpec): KotlinTypeDefaultArbitraryBuilder<T> = this.apply {
         delegate.setInner(innerSpec)
     }

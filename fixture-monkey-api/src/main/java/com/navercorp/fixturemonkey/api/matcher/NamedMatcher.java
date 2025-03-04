@@ -18,32 +18,15 @@
 
 package com.navercorp.fixturemonkey.api.matcher;
 
-import org.apiguardian.api.API;
-import org.apiguardian.api.API.Status;
-
 import com.navercorp.fixturemonkey.api.property.Property;
 
-@API(since = "0.4.0", status = Status.INTERNAL)
-public class MatcherOperator<T> implements Matcher {
+public final class NamedMatcher implements Matcher {
 	private final Matcher matcher;
-	private final T operator;
+	private final String registeredName;
 
-	public MatcherOperator(Matcher matcher, T operator) {
+	public NamedMatcher(Matcher matcher, String registeredName) {
 		this.matcher = matcher;
-		this.operator = operator;
-	}
-
-	public static <T, C> MatcherOperator<T> exactTypeMatchOperator(Class<C> type, T operator) {
-		return new MatcherOperator<>(new ExactTypeMatcher(type), operator);
-	}
-
-	public static <T, C> MatcherOperator<T> assignableTypeMatchOperator(Class<C> type, T operator) {
-		return new MatcherOperator<>(new AssignableTypeMatcher(type), operator);
-	}
-
-	@Override
-	public boolean match(Property property, MatcherMetadata matcherMetadata) {
-		return this.matcher.match(property, matcherMetadata);
+		this.registeredName = registeredName;
 	}
 
 	@Override
@@ -51,11 +34,8 @@ public class MatcherOperator<T> implements Matcher {
 		return this.matcher.match(property);
 	}
 
-	public Matcher getMatcher() {
-		return this.matcher;
-	}
-
-	public T getOperator() {
-		return this.operator;
+	@Override
+	public boolean match(Property property, MatcherMetadata matcherMetadata) {
+		return this.matcher.match(property) && registeredName.equals(matcherMetadata.getName());
 	}
 }

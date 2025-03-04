@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.builder;
+package com.navercorp.fixturemonkey.resolver;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -32,88 +32,49 @@ import javax.annotation.Nullable;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.ArbitraryBuilder;
-import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
-import com.navercorp.fixturemonkey.api.context.MonkeyContext;
-import com.navercorp.fixturemonkey.api.generator.ArbitraryGenerator;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
-import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
-import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions;
-import com.navercorp.fixturemonkey.api.property.LazyPropertyGenerator;
 import com.navercorp.fixturemonkey.api.property.Property;
-import com.navercorp.fixturemonkey.api.property.PropertyGenerator;
-import com.navercorp.fixturemonkey.api.tree.TraverseContext;
-import com.navercorp.fixturemonkey.api.tree.TreeNodeManipulator;
-import com.navercorp.fixturemonkey.api.type.Types;
 import com.navercorp.fixturemonkey.customizer.ArbitraryManipulator;
 import com.navercorp.fixturemonkey.customizer.ContainerInfoManipulator;
-import com.navercorp.fixturemonkey.tree.GenerateFixtureContext;
-import com.navercorp.fixturemonkey.tree.ObjectTree;
 
-/**
- * {@link FixtureMonkey} → {@link ArbitraryBuilder} → {@link ObjectTree} → {@link CombinableArbitrary}
- * 1:N							1:N					1:1
- * <p>
- * It is a context within {@link ArbitraryBuilder}. It represents a status of the {@link ArbitraryBuilder}.
- * The {@link ArbitraryBuilder} should be the same if the {@link ArbitraryBuilderContext} is the same.
- * <p>
- * It is for internal use only. It can be changed or removed at any time.
- */
-@API(since = "0.4.0", status = Status.INTERNAL)
+@API(since = "0.4.0", status = Status.MAINTAINED)
 public final class ArbitraryBuilderContext {
 	private final List<ArbitraryManipulator> manipulators;
 	private final List<ContainerInfoManipulator> containerInfoManipulators;
 	private final List<String> selectNames;
 	private final Map<Class<?>, List<Property>> propertyConfigurers;
 	private final Map<Class<?>, ArbitraryIntrospector> arbitraryIntrospectorsByType;
-	private final MonkeyContext monkeyContext;
-
-	@Nullable
-	private Boolean optionValidOnly;
-
-	@Nullable
-	private Boolean customizedValidOnly;
+	private boolean validOnly;
 
 	@Nullable
 	private FixedState fixedState = null;
 	@Nullable
 	private CombinableArbitrary<?> fixedCombinableArbitrary;
 
-	private ArbitraryBuilderContext(
+	public ArbitraryBuilderContext(
 		List<ArbitraryManipulator> manipulators,
 		List<ContainerInfoManipulator> containerInfoManipulators,
 		List<String> selectNames,
 		Map<Class<?>, List<Property>> propertyConfigurers,
 		Map<Class<?>, ArbitraryIntrospector> arbitraryIntrospectorsByType,
+		boolean validOnly,
 		@Nullable FixedState fixedState,
-		@Nullable CombinableArbitrary<?> fixedCombinableArbitrary,
-		MonkeyContext monkeyContext
+		@Nullable CombinableArbitrary<?> fixedCombinableArbitrary
 	) {
 		this.manipulators = manipulators;
 		this.containerInfoManipulators = containerInfoManipulators;
 		this.selectNames = selectNames;
 		this.propertyConfigurers = propertyConfigurers;
 		this.arbitraryIntrospectorsByType = arbitraryIntrospectorsByType;
+		this.validOnly = validOnly;
 		this.fixedState = fixedState;
 		this.fixedCombinableArbitrary = fixedCombinableArbitrary;
-		this.monkeyContext = monkeyContext;
 	}
 
-	/**
-	 * It is in {@link ArbitraryBuilderContext} due to MonkeyContext is in api module.
-	 * It will be removed when all related class migrate to api module.
-	 */
-	@Deprecated
-	public static ArbitraryBuilderContext newBuilderContext(MonkeyContext monkeyContext) {
-		return new ArbitraryBuilderContext(
-			new ArrayList<>(),
-			new ArrayList<>(),
-			new ArrayList<>(),
-			new HashMap<>(),
-			new HashMap<>(),
-			null, null,
-			monkeyContext
+	public ArbitraryBuilderContext() {
+		this(
+			new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new HashMap<>(), new HashMap<>(), true, null, null
 		);
 	}
 
@@ -128,9 +89,9 @@ public final class ArbitraryBuilderContext {
 			new ArrayList<>(this.selectNames),
 			new HashMap<>(propertyConfigurers),
 			new HashMap<>(arbitraryIntrospectorsByType),
+			this.validOnly,
 			fixedState,
-			fixedCombinableArbitrary,
-			monkeyContext
+			fixedCombinableArbitrary
 		);
 	}
 
@@ -154,7 +115,7 @@ public final class ArbitraryBuilderContext {
 		this.containerInfoManipulators.addAll(containerInfoManipulators);
 	}
 
-	public List<TreeNodeManipulator> getContainerInfoManipulators() {
+	public List<ContainerInfoManipulator> getContainerInfoManipulators() {
 		return Collections.unmodifiableList(containerInfoManipulators);
 	}
 
@@ -183,23 +144,12 @@ public final class ArbitraryBuilderContext {
 		return propertyConfigurers;
 	}
 
-	public void setOptionValidOnly(@Nullable Boolean optionValidOnly) {
-		this.optionValidOnly = optionValidOnly;
-	}
-
-	public void setCustomizedValidOnly(@Nullable Boolean customizedValidOnly) {
-		this.customizedValidOnly = customizedValidOnly;
+	public void setValidOnly(boolean validOnly) {
+		this.validOnly = validOnly;
 	}
 
 	public boolean isValidOnly() {
-		if (this.customizedValidOnly != null) {
-			return this.customizedValidOnly;
-		}
-
-		if (this.optionValidOnly != null) {
-			return this.optionValidOnly;
-		}
-		return true;
+		return validOnly;
 	}
 
 	public void markFixed() {
@@ -232,50 +182,6 @@ public final class ArbitraryBuilderContext {
 		return fixedCombinableArbitrary;
 	}
 
-	public TraverseContext newTraverseContext() {
-		List<MatcherOperator<List<TreeNodeManipulator>>> registeredContainerInfoManipulators =
-			monkeyContext.getRegisteredArbitraryBuilders()
-				.stream()
-				.map(it -> new MatcherOperator<>(
-					it.getMatcher(),
-					((ArbitraryBuilderContextProvider)it.getOperator()).getContext().getContainerInfoManipulators()
-				))
-				.collect(Collectors.toList());
-
-		FixtureMonkeyOptions fixtureMonkeyOptions = this.monkeyContext.getFixtureMonkeyOptions();
-		return new TraverseContext(
-			new ArrayList<>(),
-			this.getContainerInfoManipulators(),
-			registeredContainerInfoManipulators,
-			this.getPropertyConfigurers(),
-			this.isValidOnly(),
-			initializeResolvedPropertyGenerator(
-				this.getPropertyConfigurers(),
-				fixtureMonkeyOptions.getPropertyGenerators(),
-				fixtureMonkeyOptions.getDefaultArbitraryGenerator(),
-				fixtureMonkeyOptions.getDefaultPropertyGenerator()
-			),
-			fixtureMonkeyOptions.getObjectPropertyGenerators(),
-			fixtureMonkeyOptions.getDefaultObjectPropertyGenerator(),
-			fixtureMonkeyOptions.getContainerPropertyGenerators(),
-			fixtureMonkeyOptions.getPropertyNameResolvers(),
-			fixtureMonkeyOptions.getDefaultPropertyNameResolver(),
-			fixtureMonkeyOptions.getCandidateConcretePropertyResolvers(),
-			fixtureMonkeyOptions.getArbitraryContainerInfoGenerators(),
-			fixtureMonkeyOptions.getDefaultArbitraryContainerInfoGenerator(),
-			fixtureMonkeyOptions.getNullInjectGenerators(),
-			fixtureMonkeyOptions.getDefaultNullInjectGenerator()
-		);
-	}
-
-	public GenerateFixtureContext newGenerateFixtureContext() {
-		return new GenerateFixtureContext(
-			arbitraryIntrospectorsByType,
-			this::isValidOnly,
-			monkeyContext
-		);
-	}
-
 	private static class FixedState {
 		private final int fixedManipulateSize;
 		private final int fixedContainerManipulatorSize;
@@ -292,41 +198,5 @@ public final class ArbitraryBuilderContext {
 		public int getFixedContainerManipulatorSize() {
 			return fixedContainerManipulatorSize;
 		}
-	}
-
-	private static LazyPropertyGenerator initializeResolvedPropertyGenerator(
-		Map<Class<?>, List<Property>> propertyConfigurers,
-		List<MatcherOperator<PropertyGenerator>> optionalPropertyGenerators,
-		ArbitraryGenerator defaultArbitraryGenerator,
-		PropertyGenerator defaultPropertyGenerator
-	) {
-		PropertyGenerator resolvedPropertyGenerator = property -> {
-			Class<?> type = Types.getActualType(property.getType());
-			List<Property> propertyConfigurer = propertyConfigurers.get(type);
-			if (propertyConfigurer != null) {
-				return propertyConfigurer;
-			}
-
-			PropertyGenerator propertyGenerator = optionalPropertyGenerators.stream()
-				.filter(it -> it.match(property))
-				.map(MatcherOperator::getOperator)
-				.findFirst()
-				.orElse(null);
-
-			if (propertyGenerator != null) {
-				return propertyGenerator.generateChildProperties(property);
-			}
-
-			PropertyGenerator defaultArbitraryGeneratorPropertyGenerator =
-				defaultArbitraryGenerator.getRequiredPropertyGenerator(property);
-
-			if (defaultArbitraryGeneratorPropertyGenerator != null) {
-				return defaultArbitraryGeneratorPropertyGenerator.generateChildProperties(property);
-			}
-
-			return defaultPropertyGenerator.generateChildProperties(property);
-		};
-
-		return new LazyPropertyGenerator(resolvedPropertyGenerator);
 	}
 }

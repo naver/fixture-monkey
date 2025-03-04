@@ -28,6 +28,10 @@ import com.navercorp.fixturemonkey.api.property.Property;
 public interface Matcher {
 	boolean match(Property property);
 
+	default boolean match(Property property, MatcherMetadata matcherMetadata) {
+		return match(property);
+	}
+
 	/**
 	 * Creates and returns a new {@code Matcher} that represents the intersection
 	 * of this matcher with another specified matcher. The resulting matcher will

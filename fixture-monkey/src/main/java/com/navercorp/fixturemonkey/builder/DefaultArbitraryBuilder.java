@@ -27,6 +27,7 @@ import static java.util.stream.Collectors.toList;
 import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
@@ -58,6 +59,8 @@ import com.navercorp.fixturemonkey.api.instantiator.Instantiator;
 import com.navercorp.fixturemonkey.api.instantiator.InstantiatorProcessResult;
 import com.navercorp.fixturemonkey.api.instantiator.InstantiatorProcessor;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
+import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
+import com.navercorp.fixturemonkey.api.matcher.NamedMatcherMetadata;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.api.property.PropertySelector;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
@@ -72,6 +75,7 @@ import com.navercorp.fixturemonkey.customizer.ContainerInfoManipulator;
 import com.navercorp.fixturemonkey.customizer.InnerSpec;
 import com.navercorp.fixturemonkey.customizer.ManipulatorSet;
 import com.navercorp.fixturemonkey.customizer.MonkeyManipulatorFactory;
+import com.navercorp.fixturemonkey.customizer.PriorityMatcherOperator;
 import com.navercorp.fixturemonkey.experimental.ExperimentalArbitraryBuilder;
 import com.navercorp.fixturemonkey.expression.MonkeyExpression;
 import com.navercorp.fixturemonkey.expression.MonkeyExpressionFactory;
@@ -88,6 +92,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 	private final MonkeyManipulatorFactory monkeyManipulatorFactory;
 	private final MonkeyExpressionFactory monkeyExpressionFactory;
 	private final ArbitraryBuilderContext context;
+	private final List<PriorityMatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuilders;
 	private final MonkeyContext monkeyContext;
 	private final InstantiatorProcessor instantiatorProcessor;
 
@@ -97,6 +102,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 		MonkeyManipulatorFactory monkeyManipulatorFactory,
 		MonkeyExpressionFactory monkeyExpressionFactory,
 		ArbitraryBuilderContext context,
+		List<PriorityMatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuilders,
 		MonkeyContext monkeyContext,
 		InstantiatorProcessor instantiatorProcessor
 	) {
@@ -105,6 +111,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 		this.context = context;
 		this.monkeyManipulatorFactory = monkeyManipulatorFactory;
 		this.monkeyExpressionFactory = monkeyExpressionFactory;
+		this.registeredArbitraryBuilders = registeredArbitraryBuilders;
 		this.monkeyContext = monkeyContext;
 		this.instantiatorProcessor = instantiatorProcessor;
 	}
@@ -177,6 +184,32 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 	@Override
 	public ArbitraryBuilder<T> setLazy(PropertySelector propertySelector, Supplier<?> supplier) {
 		return this.setLazy(propertySelector, supplier, MAX_MANIPULATION_COUNT);
+	}
+
+	@Override
+	public ArbitraryBuilder<T> selectName(String... names) {
+		ArbitraryBuilderContext builderContext = registeredArbitraryBuilders.stream()
+			.filter(operator -> Arrays.stream(names)
+				.anyMatch(name -> operator.match(rootProperty, new NamedMatcherMetadata(name)))
+			)
+			.map(MatcherOperator::getOperator)
+			.findAny()
+			.map(DefaultArbitraryBuilder.class::cast)
+			.map(DefaultArbitraryBuilder::getContext)
+			.orElse(ArbitraryBuilderContext.newBuilderContext(monkeyContext));
+
+		builderContext.addSelectedNames(Arrays.asList(names));
+
+		return new DefaultArbitraryBuilder<>(
+			this.rootProperty,
+			this.resolver,
+			this.monkeyManipulatorFactory,
+			this.monkeyExpressionFactory,
+			builderContext.copy(),
+			registeredArbitraryBuilders,
+			this.monkeyContext,
+			this.instantiatorProcessor
+		);
 	}
 
 	@Override
@@ -505,6 +538,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 			monkeyManipulatorFactory,
 			monkeyExpressionFactory,
 			context.copy(),
+			registeredArbitraryBuilders,
 			monkeyContext,
 			instantiatorProcessor
 		);
@@ -551,6 +585,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 			monkeyManipulatorFactory,
 			monkeyExpressionFactory,
 			context,
+			registeredArbitraryBuilders,
 			monkeyContext,
 			instantiatorProcessor
 		);
