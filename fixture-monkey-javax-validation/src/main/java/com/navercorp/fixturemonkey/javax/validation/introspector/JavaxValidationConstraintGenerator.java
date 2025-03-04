@@ -194,9 +194,9 @@ public final class JavaxValidationConstraintGenerator implements JavaConstraintG
 			}
 		}
 
-		Optional<Digits> digitsAnn = context.findAnnotation(Digits.class);
-		if (digitsAnn.isPresent()) {
-			Digits digits = digitsAnn.get();
+		Optional<Digits> digitsAnnotation = context.findAnnotation(Digits.class);
+		if (digitsAnnotation.isPresent()) {
+			Digits digits = digitsAnnotation.get();
 			int integerDigits = digits.integer();
 
 			BigInteger digitsMax = BigInteger.TEN.pow(integerDigits).subtract(BigInteger.ONE);
