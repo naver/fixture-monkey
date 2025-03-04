@@ -21,7 +21,9 @@ package com.navercorp.fixturemonkey.tests.kotlin
 import com.navercorp.fixturemonkey.FixtureMonkey
 import com.navercorp.fixturemonkey.kotlin.KotlinPlugin
 import com.navercorp.fixturemonkey.kotlin.giveMeBuilder
+import com.navercorp.fixturemonkey.kotlin.giveMeKotlinBuilder
 import com.navercorp.fixturemonkey.kotlin.giveMeOne
+import com.navercorp.fixturemonkey.kotlin.instantiator.instantiateBy
 import com.navercorp.fixturemonkey.kotlin.set
 import org.assertj.core.api.BDDAssertions.then
 import org.junit.jupiter.api.Test
@@ -31,7 +33,6 @@ class ValueClassTest {
     fun foo() {
         val foo: Foo = SUT.giveMeOne()
 
-        then(foo)
         then(foo.bar).isNotNull
     }
 
@@ -48,6 +49,7 @@ class ValueClassTest {
     @Test
     fun setValueClassProperty() {
         class ValueClassObject(val foo: Foo)
+
         val settingFoo = Foo("hello")
 
         val actual: ValueClassObject = SUT.giveMeBuilder<ValueClassObject>()
@@ -91,6 +93,15 @@ class ValueClassTest {
         then(actual.foo).isNotNull
     }
 
+    @Test
+    fun factoryParameterValueClass() {
+        val actual = SUT.giveMeKotlinBuilder<ConcreteClass>()
+            .instantiateBy<ConcreteClass> { factory<ConcreteClass>("factory") }
+            .sample()
+
+        then(actual).isNotNull
+    }
+
     @JvmInline
     value class Foo(
         val bar: String,
@@ -100,6 +111,16 @@ class ValueClassTest {
     value class FooWithPrivateConstructor private constructor(
         val bar: String
     )
+
+    interface Interface {
+        val foo: Foo
+    }
+
+    class ConcreteClass private constructor(override val foo: Foo) : Interface {
+        companion object {
+            fun factory(id: Foo): ConcreteClass = ConcreteClass(id)
+        }
+    }
 
     companion object {
         private val SUT = FixtureMonkey.builder()
