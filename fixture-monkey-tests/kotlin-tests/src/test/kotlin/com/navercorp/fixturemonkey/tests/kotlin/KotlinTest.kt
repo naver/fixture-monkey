@@ -1374,6 +1374,14 @@ class KotlinTest {
             .isThrownBy { SUT.giveMeOne<FunctionObject>().toString() }
     }
 
+    @RepeatedTest(TEST_COUNT)
+    fun generateObjectInstanceThrows() {
+        // when
+        val actual: KotlinObject = SUT.giveMeOne()
+
+        then(actual).isInstanceOf(KotlinObject::class.java)
+    }
+
     companion object {
         private val SUT: FixtureMonkey = FixtureMonkey.builder()
             .plugin(KotlinPlugin())

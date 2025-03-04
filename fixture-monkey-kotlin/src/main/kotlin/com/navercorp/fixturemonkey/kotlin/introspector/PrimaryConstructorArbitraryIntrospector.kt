@@ -43,7 +43,8 @@ class PrimaryConstructorArbitraryIntrospector : ArbitraryIntrospector, Matcher {
     override fun match(property: Property): Boolean =
         property.type.actualType().isKotlinType() &&
             !property.type.actualType().cachedKotlin().isKotlinLambda() &&
-            property.type.actualType().cachedKotlin() != Unit::class
+            property.type.actualType().cachedKotlin() != Unit::class &&
+            property.type.actualType().cachedKotlin().objectInstance == null
 
     override fun introspect(context: ArbitraryGeneratorContext): ArbitraryIntrospectorResult {
         val type = Types.getActualType(context.resolvedType)

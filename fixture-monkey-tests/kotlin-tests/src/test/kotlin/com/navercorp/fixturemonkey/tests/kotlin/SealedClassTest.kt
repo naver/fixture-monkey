@@ -69,6 +69,22 @@ class SealedClassTest {
         then((actual as SealedInterfaceImplementation).stringObject.string).isEqualTo("expected")
     }
 
+    @RepeatedTest(TEST_COUNT)
+    fun sealedObject() {
+        val actual: ObjectSealedClass = SUT.giveMeOne()
+
+        then(actual).isInstanceOf(ObjectSealedClass::class.java)
+    }
+
+    @RepeatedTest(TEST_COUNT)
+    fun sealedObjectThenApply() {
+        val actual = SUT.giveMeBuilder<ObjectSealedClass>()
+            .thenApply { obj, builder ->  }
+            .sample()
+
+        then(actual).isInstanceOf(ObjectSealedClass::class.java)
+    }
+
     sealed class SealedClass
 
     object ObjectSealedClass : SealedClass()
