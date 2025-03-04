@@ -24,7 +24,10 @@ import com.navercorp.fixturemonkey.api.type.Types
 import java.lang.reflect.AnnotatedType
 import java.lang.reflect.Type
 import kotlin.reflect.KType
+import kotlin.reflect.full.createType
+import kotlin.reflect.jvm.internal.KotlinReflectionInternalError
 import kotlin.reflect.jvm.javaType
+import kotlin.reflect.jvm.jvmErasure
 
 /**
  * Provides a collection of extension functions for Type,
@@ -65,6 +68,14 @@ fun KType.toTypeReference(): TypeReference<*> = object : TypeReference<Any?>() {
     }
 
     override fun getAnnotatedType(): AnnotatedType {
+        try {
+            if (this@toTypeReference.classifier != null && this@toTypeReference.jvmErasure.isValue) { // for Kotlin value class
+                return this@toTypeReference.classifier!!.createType().javaType.toAnnotatedType()
+            }
+        } catch (ex: KotlinReflectionInternalError) {
+            // ignored
+        }
+
         return this@toTypeReference.javaType.toAnnotatedType()
     }
 }
