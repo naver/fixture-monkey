@@ -28,46 +28,26 @@ import org.apiguardian.api.API.Status;
 @API(since = "0.6.8", status = Status.MAINTAINED)
 public final class JavaIntegerConstraint {
 	@Nullable
-	private final BigInteger positiveMin;
+	private final BigInteger min;
 
 	@Nullable
-	private final BigInteger positiveMax;
-
-	@Nullable
-	private final BigInteger negativeMin;
-
-	@Nullable
-	private final BigInteger negativeMax;
+	private final BigInteger max;
 
 	public JavaIntegerConstraint(
-		@Nullable BigInteger positiveMin,
-		@Nullable BigInteger positiveMax,
-		@Nullable BigInteger negativeMin,
-		@Nullable BigInteger negativeMax
+		@Nullable BigInteger min,
+		@Nullable BigInteger max
 	) {
-		this.positiveMin = positiveMin;
-		this.positiveMax = positiveMax;
-		this.negativeMin = negativeMin;
-		this.negativeMax = negativeMax;
+		this.min = min;
+		this.max = max;
 	}
 
 	@Nullable
-	public BigInteger getPositiveMin() {
-		return positiveMin;
+	public BigInteger getMin() {
+		return min;
 	}
 
 	@Nullable
-	public BigInteger getPositiveMax() {
-		return positiveMax;
-	}
-
-	@Nullable
-	public BigInteger getNegativeMin() {
-		return negativeMin;
-	}
-
-	@Nullable
-	public BigInteger getNegativeMax() {
-		return negativeMax;
+	public BigInteger getMax() {
+		return max;
 	}
 }

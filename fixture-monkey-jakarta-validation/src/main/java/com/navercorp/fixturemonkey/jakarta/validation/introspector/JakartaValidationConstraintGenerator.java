@@ -120,40 +120,12 @@ public final class JakartaValidationConstraintGenerator implements JavaConstrain
 	@Override
 	@Nullable
 	public JavaIntegerConstraint generateIntegerConstraint(ArbitraryGeneratorContext context) {
-		BigInteger positiveMin = null;
-		BigInteger positiveMax = null;
-		BigInteger negativeMax = null;
-		BigInteger negativeMin = null;
-
-		Optional<Digits> digits = context.findAnnotation(Digits.class);
-		if (digits.isPresent()) {
-			BigInteger value = BigInteger.ONE;
-			int integer = digits.get().integer();
-			if (integer > 1) {
-				value = BigInteger.TEN.pow(integer - 1);
-			}
-			positiveMax = value.multiply(BigInteger.TEN).subtract(BigInteger.ONE);
-			positiveMin = value;
-			negativeMax = positiveMin.negate();
-			negativeMin = positiveMax.negate();
-		}
+		BigInteger min = null;
+		BigInteger max = null;
 
 		Optional<Min> minAnnotation = context.findAnnotation(Min.class);
 		if (minAnnotation.isPresent()) {
-			BigInteger minValue = minAnnotation.map(Min::value).map(BigInteger::valueOf).get();
-			if (minValue.compareTo(BigInteger.ZERO) >= 0) {
-				if (positiveMin == null) {
-					positiveMin = minValue;
-				} else {
-					positiveMin = positiveMin.min(minValue);
-				}
-			} else {
-				if (negativeMin == null) {
-					negativeMin = minValue;
-				} else {
-					negativeMin = negativeMin.min(minValue);
-				}
-			}
+			min = BigInteger.valueOf(minAnnotation.get().value());
 		}
 
 		Optional<DecimalMin> decimalMinAnnotation = context.findAnnotation(DecimalMin.class);
@@ -168,37 +140,14 @@ public final class JakartaValidationConstraintGenerator implements JavaConstrain
 				decimalMin = decimalMin.add(BigInteger.ONE);
 			}
 
-			if (decimalMin.compareTo(BigInteger.ZERO) >= 0) {
-				if (positiveMin == null) {
-					positiveMin = decimalMin;
-				} else {
-					positiveMin = positiveMin.min(decimalMin);
-				}
-			} else {
-				if (negativeMin == null) {
-					negativeMin = decimalMin;
-				} else {
-					negativeMin = negativeMin.min(decimalMin);
-				}
+			if (min == null || decimalMin.compareTo(min) > 0) {
+				min = decimalMin;
 			}
 		}
 
 		Optional<Max> maxAnnotation = context.findAnnotation(Max.class);
 		if (maxAnnotation.isPresent()) {
-			BigInteger maxValue = maxAnnotation.map(Max::value).map(BigInteger::valueOf).get();
-			if (maxValue.compareTo(BigInteger.ZERO) > 0) {
-				if (positiveMax == null) {
-					positiveMax = maxValue;
-				} else {
-					positiveMax = positiveMax.max(maxValue);
-				}
-			} else {
-				if (negativeMax == null) {
-					negativeMax = maxValue;
-				} else {
-					negativeMax = negativeMax.max(maxValue);
-				}
-			}
+			max = BigInteger.valueOf(maxAnnotation.get().value());
 		}
 
 		Optional<DecimalMax> decimalMaxAnnotation = context.findAnnotation(DecimalMax.class);
@@ -213,80 +162,91 @@ public final class JakartaValidationConstraintGenerator implements JavaConstrain
 				decimalMax = decimalMax.subtract(BigInteger.ONE);
 			}
 
-			if (decimalMax.compareTo(BigInteger.ZERO) > 0) {
-				if (positiveMax == null) {
-					positiveMax = decimalMax;
-				} else {
-					positiveMax = positiveMax.max(decimalMax);
-				}
-			} else {
-				if (negativeMax == null) {
-					negativeMax = decimalMax;
-				} else {
-					negativeMax = negativeMax.max(decimalMax);
-				}
-			}
-		}
-
-		if (context.findAnnotation(Negative.class).isPresent()) {
-			if (negativeMax == null || negativeMax.compareTo(BigInteger.ZERO) > 0) {
-				negativeMax = BigInteger.valueOf(-1);
-			}
-		}
-
-		if (context.findAnnotation(NegativeOrZero.class).isPresent()) {
-			if (negativeMax == null || negativeMax.compareTo(BigInteger.ZERO) > 0) {
-				negativeMax = BigInteger.ZERO;
+			if (max == null || decimalMax.compareTo(max) < 0) {
+				max = decimalMax;
 			}
 		}
 
 		if (context.findAnnotation(Positive.class).isPresent()) {
-			if (positiveMin == null || positiveMin.compareTo(BigInteger.ZERO) < 0) {
-				positiveMin = BigInteger.ONE;
+			BigInteger positiveMin = BigInteger.ONE;
+			if (min == null || positiveMin.compareTo(min) > 0) {
+				min = positiveMin;
 			}
 		}
 
 		if (context.findAnnotation(PositiveOrZero.class).isPresent()) {
-			if (positiveMin == null || positiveMin.compareTo(BigInteger.ZERO) < 0) {
-				positiveMin = BigInteger.ZERO;
+			BigInteger positiveOrZeroMin = BigInteger.ZERO;
+			if (min == null || positiveOrZeroMin.compareTo(min) > 0) {
+				min = positiveOrZeroMin;
+			}
+		}
+
+		if (context.findAnnotation(Negative.class).isPresent()) {
+			BigInteger negativeMax = BigInteger.valueOf(-1);
+			if (max == null || negativeMax.compareTo(max) < 0) {
+				max = negativeMax;
+			}
+		}
+
+		if (context.findAnnotation(NegativeOrZero.class).isPresent()) {
+			BigInteger negativeOrZeroMax = BigInteger.ZERO;
+			if (max == null || negativeOrZeroMax.compareTo(max) < 0) {
+				max = negativeOrZeroMax;
+			}
+		}
+
+		Optional<Digits> digitsAnnotation = context.findAnnotation(Digits.class);
+		if (digitsAnnotation.isPresent()) {
+			Digits digits = digitsAnnotation.get();
+			int integerDigits = digits.integer();
+
+			BigInteger digitsMax = BigInteger.TEN.pow(integerDigits).subtract(BigInteger.ONE);
+			BigInteger digitsMin = digitsMax.negate();
+
+			if (max == null || digitsMax.compareTo(max) < 0) {
+				max = digitsMax;
+			}
+			if (min == null || digitsMin.compareTo(min) > 0) {
+				min = digitsMin;
 			}
 		}
 
 		Type type = context.getResolvedType();
-		if (negativeMin != null) {
-			if ((type == Long.class || type == long.class) && negativeMin.compareTo(BIG_INTEGER_MIN_LONG) < 0) {
-				negativeMin = BIG_INTEGER_MIN_LONG;
+		if (min != null) {
+			if ((type == Long.class || type == long.class) && min.compareTo(BIG_INTEGER_MIN_LONG) < 0) {
+				min = BIG_INTEGER_MIN_LONG;
 			}
-			if ((type == Integer.class || type == int.class) && negativeMin.compareTo(BIG_INTEGER_MIN_INT) < 0) {
-				negativeMin = BIG_INTEGER_MIN_INT;
+			if ((type == Integer.class || type == int.class) && min.compareTo(BIG_INTEGER_MIN_INT) < 0) {
+				min = BIG_INTEGER_MIN_INT;
 			}
-			if ((type == Short.class || type == short.class) && negativeMin.compareTo(BIG_INTEGER_MIN_SHORT) < 0) {
-				negativeMin = BIG_INTEGER_MIN_SHORT;
+			if ((type == Short.class || type == short.class) && min.compareTo(BIG_INTEGER_MIN_SHORT) < 0) {
+				min = BIG_INTEGER_MIN_SHORT;
 			}
-			if ((type == Byte.class || type == byte.class) && negativeMin.compareTo(BIG_INTEGER_MIN_BYTE) < 0) {
-				negativeMin = BIG_INTEGER_MIN_BYTE;
-			}
-		}
-		if (positiveMax != null) {
-			if ((type == Long.class || type == long.class) && positiveMax.compareTo(BIG_INTEGER_MAX_LONG) > 0) {
-				positiveMax = BIG_INTEGER_MAX_LONG;
-			}
-			if ((type == Integer.class || type == int.class) && positiveMax.compareTo(BIG_INTEGER_MAX_INT) > 0) {
-				positiveMax = BIG_INTEGER_MAX_INT;
-			}
-			if ((type == Short.class || type == short.class) && positiveMax.compareTo(BIG_INTEGER_MAX_SHORT) > 0) {
-				positiveMax = BIG_INTEGER_MAX_SHORT;
-			}
-			if ((type == Byte.class || type == byte.class) && positiveMax.compareTo(BIG_INTEGER_MAX_BYTE) > 0) {
-				positiveMax = BIG_INTEGER_MAX_BYTE;
+			if ((type == Byte.class || type == byte.class) && min.compareTo(BIG_INTEGER_MIN_BYTE) < 0) {
+				min = BIG_INTEGER_MIN_BYTE;
 			}
 		}
 
-		if (positiveMin == null && positiveMax == null && negativeMin == null && negativeMax == null) {
+		if (max != null) {
+			if ((type == Long.class || type == long.class) && max.compareTo(BIG_INTEGER_MAX_LONG) > 0) {
+				max = BIG_INTEGER_MAX_LONG;
+			}
+			if ((type == Integer.class || type == int.class) && max.compareTo(BIG_INTEGER_MAX_INT) > 0) {
+				max = BIG_INTEGER_MAX_INT;
+			}
+			if ((type == Short.class || type == short.class) && max.compareTo(BIG_INTEGER_MAX_SHORT) > 0) {
+				max = BIG_INTEGER_MAX_SHORT;
+			}
+			if ((type == Byte.class || type == byte.class) && max.compareTo(BIG_INTEGER_MAX_BYTE) > 0) {
+				max = BIG_INTEGER_MAX_BYTE;
+			}
+		}
+
+		if (min == null && max == null) {
 			return null;
 		}
 
-		return new JavaIntegerConstraint(positiveMin, positiveMax, negativeMin, negativeMax);
+		return new JavaIntegerConstraint(min, max);
 	}
 
 	@Override

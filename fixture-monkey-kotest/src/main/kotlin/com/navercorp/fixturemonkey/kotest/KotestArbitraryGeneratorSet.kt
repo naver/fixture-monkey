@@ -28,7 +28,6 @@ import io.kotest.property.arbitrary.bigDecimal
 import io.kotest.property.arbitrary.bigInt
 import io.kotest.property.arbitrary.byte
 import io.kotest.property.arbitrary.char
-import io.kotest.property.arbitrary.choice
 import io.kotest.property.arbitrary.constant
 import io.kotest.property.arbitrary.double
 import io.kotest.property.arbitrary.duration
@@ -102,27 +101,10 @@ class KotestJavaArbitraryGeneratorSet(
 
         return CombinableArbitrary.from {
             if (integerConstraint != null) {
-                val negativeArb = if (integerConstraint.negativeMax != null || integerConstraint.negativeMin != null) {
-                    val negativeMinSize = integerConstraint.negativeMin?.toShort() ?: Short.MIN_VALUE
-                    val negativeMaxSize = integerConstraint.negativeMax?.toShort() ?: -1
-                    Arb.short(min = negativeMinSize, max = negativeMaxSize)
-                } else {
-                    null
-                }
+                val min = integerConstraint.min?.toShort() ?: Short.MIN_VALUE
+                val max = integerConstraint.max?.toShort() ?: Short.MAX_VALUE
 
-                val positiveArb = if (integerConstraint.positiveMin != null || integerConstraint.positiveMax != null) {
-                    val positiveMinSize = integerConstraint.positiveMin?.toShort() ?: 0
-                    val positiveMaxSize = integerConstraint.positiveMax?.toShort() ?: Short.MAX_VALUE
-                    Arb.short(min = positiveMinSize, max = positiveMaxSize)
-                } else {
-                    null
-                }
-
-                if (positiveArb != null && negativeArb != null) {
-                    Arb.choice(negativeArb, positiveArb)
-                } else {
-                    negativeArb ?: positiveArb!!
-                }.single()
+                Arb.short(min = min, max = max).single()
             } else {
                 Arb.short().single()
             }
@@ -134,27 +116,10 @@ class KotestJavaArbitraryGeneratorSet(
 
         return CombinableArbitrary.from {
             if (integerConstraint != null) {
-                val negativeArb = if (integerConstraint.negativeMax != null || integerConstraint.negativeMin != null) {
-                    val negativeMinSize = integerConstraint.negativeMin?.toByte() ?: Byte.MIN_VALUE
-                    val negativeMaxSize = integerConstraint.negativeMax?.toByte() ?: -1
-                    Arb.byte(min = negativeMinSize, max = negativeMaxSize)
-                } else {
-                    null
-                }
+                val min = integerConstraint.min?.toByte() ?: Byte.MIN_VALUE
+                val max = integerConstraint.max?.toByte() ?: Byte.MAX_VALUE
 
-                val positiveArb = if (integerConstraint.positiveMin != null || integerConstraint.positiveMax != null) {
-                    val positiveMinSize = integerConstraint.positiveMin?.toByte() ?: 0
-                    val positiveMaxSize = integerConstraint.positiveMax?.toByte() ?: Byte.MAX_VALUE
-                    Arb.byte(min = positiveMinSize, max = positiveMaxSize)
-                } else {
-                    null
-                }
-
-                if (positiveArb != null && negativeArb != null) {
-                    Arb.choice(negativeArb, positiveArb)
-                } else {
-                    negativeArb ?: positiveArb!!
-                }.single()
+                Arb.byte(min = min, max = max).single()
             } else {
                 Arb.byte().single()
             }
@@ -232,27 +197,10 @@ class KotestJavaArbitraryGeneratorSet(
 
         return CombinableArbitrary.from {
             if (integerConstraint != null) {
-                val negativeArb = if (integerConstraint.negativeMax != null || integerConstraint.negativeMin != null) {
-                    val negativeMinSize = integerConstraint.negativeMin?.toInt() ?: Int.MIN_VALUE
-                    val negativeMaxSize = integerConstraint.negativeMax?.toInt() ?: -1
-                    Arb.int(min = negativeMinSize, max = negativeMaxSize)
-                } else {
-                    null
-                }
+                val min = integerConstraint.min?.toInt() ?: Int.MIN_VALUE
+                val max = integerConstraint.max?.toInt() ?: Int.MAX_VALUE
 
-                val positiveArb = if (integerConstraint.positiveMin != null || integerConstraint.positiveMax != null) {
-                    val positiveMinSize = integerConstraint.positiveMin?.toInt() ?: 0
-                    val positiveMaxSize = integerConstraint.positiveMax?.toInt() ?: Int.MAX_VALUE
-                    Arb.int(min = positiveMinSize, max = positiveMaxSize)
-                } else {
-                    null
-                }
-
-                if (positiveArb != null && negativeArb != null) {
-                    Arb.choice(negativeArb, positiveArb)
-                } else {
-                    negativeArb ?: positiveArb!!
-                }.single()
+                Arb.int(min = min, max = max).single()
             } else {
                 Arb.int().single()
             }
@@ -264,27 +212,10 @@ class KotestJavaArbitraryGeneratorSet(
 
         return CombinableArbitrary.from {
             if (integerConstraint != null) {
-                val negativeArb = if (integerConstraint.negativeMax != null || integerConstraint.negativeMin != null) {
-                    val negativeMinSize = integerConstraint.negativeMin?.toLong() ?: Long.MIN_VALUE
-                    val negativeMaxSize = integerConstraint.negativeMax?.toLong() ?: -1
-                    Arb.long(min = negativeMinSize, max = negativeMaxSize)
-                } else {
-                    null
-                }
+                val min = integerConstraint.min?.toLong() ?: Long.MIN_VALUE
+                val max = integerConstraint.max?.toLong() ?: Long.MAX_VALUE
 
-                val positiveArb = if (integerConstraint.positiveMin != null || integerConstraint.positiveMax != null) {
-                    val positiveMinSize = integerConstraint.positiveMin?.toLong() ?: 0
-                    val positiveMaxSize = integerConstraint.positiveMax?.toLong() ?: Long.MAX_VALUE
-                    Arb.long(min = positiveMinSize, max = positiveMaxSize)
-                } else {
-                    null
-                }
-
-                if (positiveArb != null && negativeArb != null) {
-                    Arb.choice(negativeArb, positiveArb)
-                } else {
-                    negativeArb ?: positiveArb!!
-                }.single()
+                Arb.long(min = min, max = max).single()
             } else {
                 Arb.long().single()
             }
@@ -296,27 +227,10 @@ class KotestJavaArbitraryGeneratorSet(
 
         return CombinableArbitrary.from {
             if (integerConstraint != null) {
-                val negativeArb = if (integerConstraint.negativeMax != null || integerConstraint.negativeMin != null) {
-                    val negativeMinSize = integerConstraint.negativeMin?.toInt() ?: Int.MIN_VALUE
-                    val negativeMaxSize = integerConstraint.negativeMax?.toInt() ?: -1
-                    Arb.bigInt(negativeMinSize..negativeMaxSize)
-                } else {
-                    null
-                }
+                val min = integerConstraint.min?.toInt() ?: Int.MIN_VALUE
+                val max = integerConstraint.max?.toInt() ?: Int.MAX_VALUE
 
-                val positiveArb = if (integerConstraint.positiveMin != null || integerConstraint.positiveMax != null) {
-                    val positiveMinSize = integerConstraint.positiveMin?.toInt() ?: 0
-                    val positiveMaxSize = integerConstraint.positiveMax?.toInt() ?: Int.MAX_VALUE
-                    Arb.bigInt(positiveMinSize..positiveMaxSize)
-                } else {
-                    null
-                }
-
-                if (positiveArb != null && negativeArb != null) {
-                    Arb.choice(negativeArb, positiveArb)
-                } else {
-                    negativeArb ?: positiveArb!!
-                }.single()
+                Arb.bigInt(min..max).single()
             } else {
                 Arb.bigInt(maxNumBits = 21).single()
             }
