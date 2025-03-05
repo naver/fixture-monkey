@@ -149,7 +149,7 @@ fun Class<*>.declaredConstructor(
         Types.isAssignableTypes(
             arguments,
             constructor.parameters.filter { it.kind != KParameter.Kind.INSTANCE }
-                .map { it.type.javaType.actualType() }
+                .map { it.type.toTypeReference().type.actualType() }
                 .toTypedArray(),
         )
     } ?: this.kotlin.constructors.first()

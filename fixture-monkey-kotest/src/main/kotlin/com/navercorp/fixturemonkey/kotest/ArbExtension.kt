@@ -23,22 +23,17 @@ package com.navercorp.fixturemonkey.kotest
 import com.navercorp.fixturemonkey.ArbitraryBuilder
 import com.navercorp.fixturemonkey.FixtureMonkey
 import com.navercorp.fixturemonkey.api.property.PropertySelector
-import com.navercorp.fixturemonkey.api.type.TypeReference
-import com.navercorp.fixturemonkey.api.type.Types
 import com.navercorp.fixturemonkey.kotlin.KotlinTypeDefaultArbitraryBuilder
-import com.navercorp.fixturemonkey.kotlin.giveMeBuilder
 import com.navercorp.fixturemonkey.kotlin.giveMeKotlinBuilder
 import com.navercorp.fixturemonkey.kotlin.giveMeOne
 import com.navercorp.fixturemonkey.kotlin.propertyExpressionGenerator
+import com.navercorp.fixturemonkey.kotlin.type.toTypeReference
 import io.kotest.property.Arb
 import io.kotest.property.arbitrary.arbitrary
 import io.kotest.property.arbitrary.single
-import java.lang.reflect.AnnotatedType
-import java.lang.reflect.Type
 import java.util.function.Supplier
 import kotlin.reflect.KProperty1
 import kotlin.reflect.full.isSubtypeOf
-import kotlin.reflect.jvm.javaType
 import kotlin.reflect.typeOf
 
 @Suppress("UNCHECKED_CAST")
@@ -48,20 +43,7 @@ inline fun <reified T> FixtureMonkey.giveMeArb(): Arb<T> {
     return if (type.isSubtypeOf(typeOf<ArbitraryBuilder<*>>())) {
         val typeParameter = type.arguments[0]
 
-        arbitrary {
-            val javaType = typeParameter.type!!.javaType
-            giveMeBuilder(
-                object : TypeReference<T>() {
-                    override fun getType(): Type {
-                        return javaType
-                    }
-
-                    override fun getAnnotatedType(): AnnotatedType {
-                        return Types.generateAnnotatedTypeWithoutAnnotation(javaType)
-                    }
-                },
-            )
-        } as Arb<T>
+        arbitrary { giveMeBuilder(typeParameter.type!!.toTypeReference()) } as Arb<T>
     } else {
         arbitrary {
             this@giveMeArb.giveMeOne()

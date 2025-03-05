@@ -18,6 +18,7 @@
 
 package com.navercorp.fixturemonkey.kotlin.type
 
+import com.navercorp.fixturemonkey.api.container.ConcurrentLruCache
 import com.navercorp.fixturemonkey.api.type.KotlinTypeDetector
 import com.navercorp.fixturemonkey.api.type.TypeReference
 import com.navercorp.fixturemonkey.api.type.Types
@@ -62,22 +63,26 @@ fun Type.toTypeReference(): TypeReference<*> = object : TypeReference<Any?>() {
     }
 }
 
-fun KType.toTypeReference(): TypeReference<*> = object : TypeReference<Any?>() {
-    override fun getType(): Type {
-        return this@toTypeReference.javaType
-    }
-
-    override fun getAnnotatedType(): AnnotatedType {
-        try {
-            if (this@toTypeReference.classifier != null && this@toTypeReference.jvmErasure.isValue) { // for Kotlin value class
-                return this@toTypeReference.classifier!!.createType().javaType.toAnnotatedType()
-            }
-        } catch (ex: KotlinReflectionInternalError) {
-            // ignored
+fun KType.toTypeReference(): TypeReference<*> = TYPE_REFERENCES_BY_KOTLIN_TYPE.computeIfAbsent(this@toTypeReference) {
+    object : TypeReference<Any?>() {
+        override fun getType(): Type {
+            return this.annotatedType.type
         }
 
-        return this@toTypeReference.javaType.toAnnotatedType()
+        override fun getAnnotatedType(): AnnotatedType {
+            try {
+                if (this@toTypeReference.classifier != null && this@toTypeReference.jvmErasure.isValue) { // for Kotlin value class
+                    return this@toTypeReference.classifier!!.createType().javaType.toAnnotatedType()
+                }
+            } catch (ex: KotlinReflectionInternalError) {
+                // ignored
+            }
+
+            return this@toTypeReference.javaType.toAnnotatedType()
+        }
     }
 }
 
 fun Class<*>.isKotlinType(): Boolean = KotlinTypeDetector.isKotlinType(this)
+
+private val TYPE_REFERENCES_BY_KOTLIN_TYPE = ConcurrentLruCache<KType, TypeReference<*>>(1024)

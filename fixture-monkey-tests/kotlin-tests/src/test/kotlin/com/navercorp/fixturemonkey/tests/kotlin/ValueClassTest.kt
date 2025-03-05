@@ -102,6 +102,17 @@ class ValueClassTest {
         then(actual).isNotNull
     }
 
+    @Test
+    fun factoryParameterWithTypeValueClass() {
+        val actual = SUT.giveMeKotlinBuilder<ConcreteClass>()
+            .instantiateBy<ConcreteClass> { factory<ConcreteClass>("factory"){
+                parameter<Foo>("id")
+            } }
+            .sample()
+
+        then(actual).isNotNull
+    }
+
     @JvmInline
     value class Foo(
         val bar: String,

@@ -56,7 +56,6 @@ import kotlin.reflect.KParameter
 import kotlin.reflect.KProperty
 import kotlin.reflect.full.companionObject
 import kotlin.reflect.jvm.isAccessible
-import kotlin.reflect.jvm.javaType
 
 class KotlinInstantiatorProcessor :
     InstantiatorProcessor {
@@ -82,7 +81,7 @@ class KotlinInstantiatorProcessor :
 
         val inputParameterTypes = instantiator.inputParameterTypes
         val inputParameterNames = instantiator.inputParameterNames
-        val parameterTypeReferences = parameters.map { it.type.javaType.toTypeReference() }
+        val parameterTypeReferences = parameters.map { it.type.toTypeReference() }
         val parameterNames = parameters.map { it.name }
 
         val resolveParameterTypes = resolveParameterTypes(parameterTypeReferences, inputParameterTypes)
@@ -235,7 +234,7 @@ class KotlinInstantiatorProcessor :
     private fun hasAnyParameterMatchingFunction(function: KFunction<*>, inputParameterTypes: Array<Class<*>>): Boolean =
         function.parameters
             .filter { parameter -> parameter.kind != KParameter.Kind.INSTANCE }
-            .map { parameter -> parameter.type.javaType.actualType() }
+            .map { parameter -> parameter.type.toTypeReference().type.actualType() }
             .let {
                 inputParameterTypes.isEmpty() || Types.isAssignableTypes(it.toTypedArray(), inputParameterTypes)
             }

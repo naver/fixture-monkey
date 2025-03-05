@@ -5,15 +5,15 @@ package com.navercorp.fixturemonkey.kotlin
 import com.navercorp.fixturemonkey.api.expression.ExpressionGenerator
 import com.navercorp.fixturemonkey.api.property.Property
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver
+import com.navercorp.fixturemonkey.kotlin.type.actualType
 import com.navercorp.fixturemonkey.kotlin.type.getPropertyName
+import com.navercorp.fixturemonkey.kotlin.type.toTypeReference
 import java.lang.reflect.AnnotatedType
 import java.lang.reflect.Field
-import java.lang.reflect.ParameterizedType
 import kotlin.reflect.KFunction1
 import kotlin.reflect.KProperty
 import kotlin.reflect.KProperty1
 import kotlin.reflect.jvm.javaField
-import kotlin.reflect.jvm.javaType
 import kotlin.reflect.jvm.kotlinProperty
 
 // property
@@ -488,13 +488,8 @@ private class KotlinProperty<V, R>(private val property: KProperty1<V, R>) : Pro
 }
 
 private class KotlinGetterProperty<V, R>(private val getter: KFunction1<V, R>) : Property {
-    private val callerType = getter.parameters[0].type.javaType as Class<*>
-    private val returnJavaType = getter.returnType.javaType
-    private val type: Class<*> = if (returnJavaType is ParameterizedType) {
-        returnJavaType.rawType as Class<*>
-    } else {
-        returnJavaType as Class<*>
-    }
+    private val callerType = getter.parameters[0].type.toTypeReference().type.actualType()
+    private val type: Class<*> = getter.returnType.toTypeReference().type.actualType()
     private val propertyName: String = resolvePropertyName()
 
     private fun resolvePropertyName(): String = getter.getPropertyName()
