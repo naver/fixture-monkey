@@ -24,15 +24,16 @@ import com.navercorp.fixturemonkey.api.property.Property
 import com.navercorp.fixturemonkey.api.property.PropertyGenerator
 import com.navercorp.fixturemonkey.api.type.Types
 import com.navercorp.fixturemonkey.kotlin.property.InterfaceKFunctionProperty
+import com.navercorp.fixturemonkey.kotlin.type.actualType
 import com.navercorp.fixturemonkey.kotlin.type.getPropertyName
 import com.navercorp.fixturemonkey.kotlin.type.isKotlinType
 import com.navercorp.fixturemonkey.kotlin.type.kotlinMemberFunctions
+import com.navercorp.fixturemonkey.kotlin.type.toTypeReference
 import org.apiguardian.api.API
 import org.apiguardian.api.API.Status
 import kotlin.reflect.KParameter.Kind.INSTANCE
 import kotlin.reflect.full.memberProperties
 import kotlin.reflect.jvm.javaMethod
-import kotlin.reflect.jvm.javaType
 
 /**
  * A property generator for generating no-argument Kotlin interface method.
@@ -47,7 +48,7 @@ class InterfaceKFunctionPropertyGenerator : PropertyGenerator {
             val methods = type.kotlinMemberFunctions()
                 .filter { it.parameters.none { parameter -> parameter.kind != INSTANCE } }
                 .filter { !DATA_CLASS_METHOD_NAMES.contains(it.name) }
-                .filter { it.returnType.javaType != Void.TYPE }
+                .filter { it.returnType.toTypeReference().type.actualType() != Void.TYPE }
                 .map {
                     InterfaceKFunctionProperty(
                         it.returnType,
