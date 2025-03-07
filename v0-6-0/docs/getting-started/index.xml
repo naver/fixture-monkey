@@ -74,12 +74,12 @@
 &lt;/div>
 
 &lt;h4 id="1-adding-dependency">1. Adding dependency &lt;a href="#1-adding-dependency" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h4>
-&lt;pre>&lt;code class="language-groovy">testImplementation(&amp;quot;com.navercorp.fixturemonkey:fixture-monkey-jackson:1.1.8&amp;quot;)
+&lt;pre>&lt;code class="language-groovy">testImplementation(&amp;quot;com.navercorp.fixturemonkey:fixture-monkey-jackson:1.1.10&amp;quot;)
 &lt;/code>&lt;/pre>
 &lt;pre>&lt;code class="language-xml">&amp;lt;dependency&amp;gt;
  &amp;lt;groupId&amp;gt;com.navercorp.fixturemonkey&amp;lt;/groupId&amp;gt;
  &amp;lt;artifactId&amp;gt;fixture-monkey-jackson&amp;lt;/artifactId&amp;gt;
- &amp;lt;version&amp;gt;1.1.8&amp;lt;/version&amp;gt;
+ &amp;lt;version&amp;gt;1.1.10&amp;lt;/version&amp;gt;
  &amp;lt;scope&amp;gt;test&amp;lt;/scope&amp;gt;
 &amp;lt;/dependency&amp;gt;
 &lt;/code>&lt;/pre>
@@ -139,12 +139,12 @@
 &lt;/div>
 
 &lt;h3 id="1-adding-dependency">1. Adding dependency &lt;a href="#1-adding-dependency" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h3>
-&lt;pre>&lt;code class="language-groovy">testImplementation(&amp;quot;com.navercorp.fixturemonkey:fixture-monkey-jackson:1.1.8&amp;quot;)
+&lt;pre>&lt;code class="language-groovy">testImplementation(&amp;quot;com.navercorp.fixturemonkey:fixture-monkey-jackson:1.1.10&amp;quot;)
 &lt;/code>&lt;/pre>
 &lt;pre>&lt;code class="language-xml">&amp;lt;dependency&amp;gt;
  &amp;lt;groupId&amp;gt;com.navercorp.fixturemonkey&amp;lt;/groupId&amp;gt;
  &amp;lt;artifactId&amp;gt;fixture-monkey-jackson&amp;lt;/artifactId&amp;gt;
- &amp;lt;version&amp;gt;1.1.8&amp;lt;/version&amp;gt;
+ &amp;lt;version&amp;gt;1.1.10&amp;lt;/version&amp;gt;
  &amp;lt;scope&amp;gt;test&amp;lt;/scope&amp;gt;
 &amp;lt;/dependency&amp;gt;
 &lt;/code>&lt;/pre>

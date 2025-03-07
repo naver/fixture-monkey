@@ -253,8 +253,8 @@ ArbitraryBuilder&amp;lt;Generate&amp;gt; generateBuilder = fixtureMonkey.giveMeB
 	private final ContainerProperty containerProperty;
 }
 &lt;/code>&lt;/pre>
-&lt;h4 id="objectpropertyobjectproperty">&lt;a href="https://naver.github.io/fixture-monkey/ObjectProperty">ObjectProperty&lt;/a> &lt;a href="#objectpropertyobjectproperty" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h4>
-&lt;h4 id="containerpropertycontainerproperty">&lt;a href="https://naver.github.io/fixture-monkey/containerproperty">ContainerProperty&lt;/a> &lt;a href="#containerpropertycontainerproperty" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h4>
+&lt;h4 id="objectproperty">&lt;a href="https://naver.github.io/fixture-monkey/ObjectProperty">ObjectProperty&lt;/a> &lt;a href="#objectproperty" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h4>
+&lt;h4 id="containerproperty">&lt;a href="https://naver.github.io/fixture-monkey/containerproperty">ContainerProperty&lt;/a> &lt;a href="#containerproperty" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h4>
 &lt;h3 id="children">children &lt;a href="#children" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h3>
 &lt;p>arbitraryProperty children&lt;/p></description></item><item><title>ObjectProperty</title><link>https://naver.github.io/fixture-monkey/v0-6-0/docs/components/objectproperty/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v0-6-0/docs/components/objectproperty/</guid><description>&lt;p>It contains immutable object information.&lt;/p>
 &lt;h3 id="property">property &lt;a href="#property" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h3>
