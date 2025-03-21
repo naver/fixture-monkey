@@ -102,10 +102,11 @@ public final class FixtureMonkeyOptionsBuilder {
 	private ArbitraryContainerInfoGenerator defaultArbitraryContainerInfoGenerator;
 	private ArbitraryGenerator defaultArbitraryGenerator;
 	private UnaryOperator<ArbitraryGenerator> defaultArbitraryGeneratorOperator = it -> it;
-	private List<MatcherOperator<ArbitraryIntrospector>> arbitraryIntrospectors =
+	private List<MatcherOperator<ArbitraryIntrospector>> preArbitraryIntrospectors =
 		new ArrayList<>(DEFAULT_ARBITRARY_INTROSPECTORS);
 	private final JavaDefaultArbitraryGeneratorBuilder javaDefaultArbitraryGeneratorBuilder =
 		IntrospectedArbitraryGenerator.javaBuilder();
+	private List<MatcherOperator<ArbitraryIntrospector>> postArbitraryIntrospectors = new ArrayList<>();
 	private boolean defaultNotNull = false;
 	private boolean nullableContainer = false;
 	private boolean nullableElement = false;
@@ -376,7 +377,7 @@ public final class FixtureMonkeyOptionsBuilder {
 	public FixtureMonkeyOptionsBuilder insertFirstArbitraryIntrospector(
 		MatcherOperator<ArbitraryIntrospector> arbitraryIntrospector
 	) {
-		this.arbitraryIntrospectors = insertFirst(this.arbitraryIntrospectors, arbitraryIntrospector);
+		this.preArbitraryIntrospectors = insertFirst(this.preArbitraryIntrospectors, arbitraryIntrospector);
 		return this;
 	}
 
@@ -399,6 +400,13 @@ public final class FixtureMonkeyOptionsBuilder {
 		return this.insertFirstArbitraryIntrospector(
 			MatcherOperator.assignableTypeMatchOperator(type, arbitraryIntrospector)
 		);
+	}
+
+	public FixtureMonkeyOptionsBuilder insertLastArbitraryIntrospector(
+		MatcherOperator<ArbitraryIntrospector> arbitraryIntrospector
+	) {
+		this.postArbitraryIntrospectors = insertFirst(this.postArbitraryIntrospectors, arbitraryIntrospector);
+		return this;
 	}
 
 	public FixtureMonkeyOptionsBuilder defaultArbitraryGenerator(
@@ -634,15 +642,22 @@ public final class FixtureMonkeyOptionsBuilder {
 		ArbitraryGenerator defaultArbitraryGenerator =
 			defaultIfNull(this.defaultArbitraryGenerator, this.javaDefaultArbitraryGeneratorBuilder::build);
 
-		List<ArbitraryIntrospector> typedArbitraryIntrospectors = arbitraryIntrospectors.stream()
+		List<ArbitraryIntrospector> typedPreArbitraryIntrospectors = preArbitraryIntrospectors.stream()
 			.map(TypedArbitraryIntrospector::new)
 			.collect(Collectors.toList());
 
-		ArbitraryGenerator introspectedGenerator =
-			new IntrospectedArbitraryGenerator(new MatchArbitraryIntrospector(typedArbitraryIntrospectors));
+		ArbitraryGenerator preIntrospectedGenerator =
+			new IntrospectedArbitraryGenerator(new MatchArbitraryIntrospector(typedPreArbitraryIntrospectors));
+
+		List<ArbitraryIntrospector> typedPostArbitraryIntrospectors = postArbitraryIntrospectors.stream()
+			.map(TypedArbitraryIntrospector::new)
+			.collect(Collectors.toList());
+
+		ArbitraryGenerator postIntrospectedGenerator =
+			new IntrospectedArbitraryGenerator(new MatchArbitraryIntrospector(typedPostArbitraryIntrospectors));
 
 		defaultArbitraryGenerator = new MatchArbitraryGenerator(
-			Arrays.asList(introspectedGenerator, defaultArbitraryGenerator)
+			Arrays.asList(preIntrospectedGenerator, defaultArbitraryGenerator, postIntrospectedGenerator)
 		);
 
 		DecomposedContainerValueFactory decomposedContainerValueFactory = new DefaultDecomposedContainerValueFactory(
