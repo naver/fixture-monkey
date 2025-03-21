@@ -18,12 +18,9 @@
 
 package com.navercorp.fixturemonkey.mockito.plugin;
 
-import java.util.Arrays;
-
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.api.introspector.MatchArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptionsBuilder;
 import com.navercorp.fixturemonkey.api.plugin.Plugin;
 import com.navercorp.fixturemonkey.mockito.introspector.MockitoIntrospector;
@@ -32,8 +29,6 @@ import com.navercorp.fixturemonkey.mockito.introspector.MockitoIntrospector;
 public final class MockitoPlugin implements Plugin {
 	@Override
 	public void accept(FixtureMonkeyOptionsBuilder optionsBuilder) {
-		optionsBuilder.fallbackIntrospector(it -> new MatchArbitraryIntrospector(
-			Arrays.asList(it, MockitoIntrospector.INSTANCE))
-		);
+		optionsBuilder.fallbackIntrospector(it -> MockitoIntrospector.INSTANCE);
 	}
 }

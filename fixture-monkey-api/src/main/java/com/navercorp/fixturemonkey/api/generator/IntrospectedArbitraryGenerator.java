@@ -34,6 +34,7 @@ import com.navercorp.fixturemonkey.api.property.PropertyGenerator;
 
 /**
  * Generates a {@link CombinableArbitrary} by {@link ArbitraryIntrospector}.
+ * It uses the {@link PropertyGenerator} for the given {@link ArbitraryIntrospector}.
  */
 @API(since = "0.6.2", status = Status.MAINTAINED)
 public final class IntrospectedArbitraryGenerator implements ArbitraryGenerator {

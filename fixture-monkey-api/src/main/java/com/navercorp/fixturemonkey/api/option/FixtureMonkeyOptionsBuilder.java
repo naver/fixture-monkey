@@ -23,6 +23,7 @@ import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerat
 import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.DEFAULT_NULLABLE_ANNOTATION_TYPES;
 import static com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator.DEFAULT_NULL_INJECT;
 import static com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions.DEFAULT_ARBITRARY_INTROSPECTORS;
+import static com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions.DEFAULT_FALLBACK_INTROSPECTOR;
 import static com.navercorp.fixturemonkey.api.option.FixtureMonkeyOptions.DEFAULT_MAX_UNIQUE_GENERATION_COUNT;
 
 import java.util.ArrayList;
@@ -51,6 +52,7 @@ import com.navercorp.fixturemonkey.api.container.DefaultDecomposedContainerValue
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfoGenerator;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryGenerator;
+import com.navercorp.fixturemonkey.api.generator.ArbitraryGeneratorContext;
 import com.navercorp.fixturemonkey.api.generator.ContainerPropertyGenerator;
 import com.navercorp.fixturemonkey.api.generator.DefaultNullInjectGenerator;
 import com.navercorp.fixturemonkey.api.generator.IntrospectedArbitraryGenerator;
@@ -61,6 +63,7 @@ import com.navercorp.fixturemonkey.api.generator.ObjectPropertyGenerator;
 import com.navercorp.fixturemonkey.api.instantiator.InstantiatorProcessor;
 import com.navercorp.fixturemonkey.api.instantiator.JavaInstantiatorProcessor;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
+import com.navercorp.fixturemonkey.api.introspector.BeanArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.MatchArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.TypedArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.jqwik.JavaArbitraryResolver;
@@ -77,6 +80,7 @@ import com.navercorp.fixturemonkey.api.matcher.TreeMatcherOperator;
 import com.navercorp.fixturemonkey.api.plugin.Plugin;
 import com.navercorp.fixturemonkey.api.property.CandidateConcretePropertyResolver;
 import com.navercorp.fixturemonkey.api.property.DefaultPropertyGenerator;
+import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.property.PropertyGenerator;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.api.validator.ArbitraryValidator;
@@ -100,12 +104,14 @@ public final class FixtureMonkeyOptionsBuilder {
 	private NullInjectGenerator defaultNullInjectGenerator;
 	private List<MatcherOperator<ArbitraryContainerInfoGenerator>> arbitraryContainerInfoGenerators = new ArrayList<>();
 	private ArbitraryContainerInfoGenerator defaultArbitraryContainerInfoGenerator;
-	private ArbitraryGenerator defaultArbitraryGenerator;
 	private UnaryOperator<ArbitraryGenerator> defaultArbitraryGeneratorOperator = it -> it;
-	private List<MatcherOperator<ArbitraryIntrospector>> arbitraryIntrospectors =
+	private ArbitraryIntrospector defaultObjectIntrospector = BeanArbitraryIntrospector.INSTANCE;
+	private ArbitraryIntrospector fallbackIntrospector = DEFAULT_FALLBACK_INTROSPECTOR;
+	private List<MatcherOperator<ArbitraryIntrospector>> preArbitraryIntrospectors =
 		new ArrayList<>(DEFAULT_ARBITRARY_INTROSPECTORS);
 	private final JavaDefaultArbitraryGeneratorBuilder javaDefaultArbitraryGeneratorBuilder =
 		IntrospectedArbitraryGenerator.javaBuilder();
+	private List<MatcherOperator<ArbitraryIntrospector>> postArbitraryIntrospectors = new ArrayList<>();
 	private boolean defaultNotNull = false;
 	private boolean nullableContainer = false;
 	private boolean nullableElement = false;
@@ -376,7 +382,7 @@ public final class FixtureMonkeyOptionsBuilder {
 	public FixtureMonkeyOptionsBuilder insertFirstArbitraryIntrospector(
 		MatcherOperator<ArbitraryIntrospector> arbitraryIntrospector
 	) {
-		this.arbitraryIntrospectors = insertFirst(this.arbitraryIntrospectors, arbitraryIntrospector);
+		this.preArbitraryIntrospectors = insertFirst(this.preArbitraryIntrospectors, arbitraryIntrospector);
 		return this;
 	}
 
@@ -401,6 +407,13 @@ public final class FixtureMonkeyOptionsBuilder {
 		);
 	}
 
+	public FixtureMonkeyOptionsBuilder insertLastArbitraryIntrospector(
+		MatcherOperator<ArbitraryIntrospector> arbitraryIntrospector
+	) {
+		this.postArbitraryIntrospectors = insertFirst(this.postArbitraryIntrospectors, arbitraryIntrospector);
+		return this;
+	}
+
 	public FixtureMonkeyOptionsBuilder defaultArbitraryGenerator(
 		UnaryOperator<ArbitraryGenerator> defaultArbitraryGeneratorOperator
 	) {
@@ -408,10 +421,18 @@ public final class FixtureMonkeyOptionsBuilder {
 		return this;
 	}
 
+	/**
+	 * It is deprecated. It will be removed in 1.3.0.
+	 * It is only used to customize {@link Boolean} or {@link Enum} or {@link java.util.UUID}.
+	 * Further details are in {@link JavaDefaultArbitraryGeneratorBuilder#UNCONSTRAINT_JAVA_INTROSPECTOR}.
+	 * Please use {@link #insertFirstArbitraryIntrospector(MatcherOperator)}
+	 * or {@link #defaultObjectIntrospector} instead.
+	 */
+	@Deprecated
 	public FixtureMonkeyOptionsBuilder priorityIntrospector(
-		UnaryOperator<ArbitraryIntrospector> priorityIntrospector
+		UnaryOperator<ArbitraryIntrospector> priorityIntrospectorOperator
 	) {
-		this.javaDefaultArbitraryGeneratorBuilder.priorityIntrospector(priorityIntrospector);
+		this.javaDefaultArbitraryGeneratorBuilder.unconstraintJavaIntrospector(priorityIntrospectorOperator);
 		return this;
 	}
 
@@ -423,16 +444,16 @@ public final class FixtureMonkeyOptionsBuilder {
 	}
 
 	public FixtureMonkeyOptionsBuilder objectIntrospector(
-		UnaryOperator<ArbitraryIntrospector> objectIntrospector
+		UnaryOperator<ArbitraryIntrospector> objectIntrospectorOperator
 	) {
-		this.javaDefaultArbitraryGeneratorBuilder.objectIntrospector(objectIntrospector);
+		this.defaultObjectIntrospector = objectIntrospectorOperator.apply(this.defaultObjectIntrospector);
 		return this;
 	}
 
 	public FixtureMonkeyOptionsBuilder fallbackIntrospector(
-		UnaryOperator<ArbitraryIntrospector> fallbackIntrospector
+		UnaryOperator<ArbitraryIntrospector> fallbackIntrospectorOperator
 	) {
-		this.javaDefaultArbitraryGeneratorBuilder.fallbackIntrospector(fallbackIntrospector);
+		this.fallbackIntrospector = fallbackIntrospectorOperator.apply(this.fallbackIntrospector);
 		return this;
 	}
 
@@ -589,60 +610,18 @@ public final class FixtureMonkeyOptionsBuilder {
 			() -> context -> new ArbitraryContainerInfo(0, FixtureMonkeyOptions.DEFAULT_ARBITRARY_CONTAINER_MAX_SIZE)
 		);
 
+		JavaConstraintGenerator javaConstraintGenerator = this.javaConstraintGenerator;
+
 		for (Function<JavaConstraintGenerator, JavaConstraintGenerator> it : javaConstraintGeneratorCustomizers) {
-			this.javaConstraintGenerator = it.apply(this.javaConstraintGenerator);
+			javaConstraintGenerator = it.apply(javaConstraintGenerator);
 		}
 
-		JavaConstraintGenerator resolvedJavaConstraintGenerator = this.javaConstraintGenerator;
-
-		JavaArbitraryResolver javaArbitraryResolver = defaultIfNull(
-			this.javaArbitraryResolver,
-			() -> new JqwikJavaArbitraryResolver(resolvedJavaConstraintGenerator)
-		);
-
-		this.generateJavaTypeArbitrarySet = defaultIfNull(
-			this.generateJavaTypeArbitrarySet,
-			() -> constraintGenerator ->
-				new JqwikJavaTypeArbitraryGeneratorSet(
-					this.javaTypeArbitraryGenerator,
-					javaArbitraryResolver
-				)
-		);
-
-		javaDefaultArbitraryGeneratorBuilder.javaTypeArbitraryGeneratorSet(
-			generateJavaTypeArbitrarySet.apply(resolvedJavaConstraintGenerator)
-		);
-
-		JavaTimeArbitraryResolver javaTimeArbitraryResolver = defaultIfNull(
-			this.javaTimeArbitraryResolver,
-			() -> new JqwikJavaTimeArbitraryResolver(resolvedJavaConstraintGenerator)
-		);
-
-		this.generateJavaTimeArbitrarySet = defaultIfNull(
-			this.generateJavaTimeArbitrarySet,
-			() -> constraintGenerator ->
-				new JqwikJavaTimeArbitraryGeneratorSet(
-					this.javaTimeTypeArbitraryGenerator,
-					javaTimeArbitraryResolver
-				)
-		);
-
-		javaDefaultArbitraryGeneratorBuilder.javaTimeArbitraryGeneratorSet(
-			generateJavaTimeArbitrarySet.apply(resolvedJavaConstraintGenerator)
-		);
-
-		ArbitraryGenerator defaultArbitraryGenerator =
-			defaultIfNull(this.defaultArbitraryGenerator, this.javaDefaultArbitraryGeneratorBuilder::build);
-
-		List<ArbitraryIntrospector> typedArbitraryIntrospectors = arbitraryIntrospectors.stream()
-			.map(TypedArbitraryIntrospector::new)
-			.collect(Collectors.toList());
-
-		ArbitraryGenerator introspectedGenerator =
-			new IntrospectedArbitraryGenerator(new MatchArbitraryIntrospector(typedArbitraryIntrospectors));
-
-		defaultArbitraryGenerator = new MatchArbitraryGenerator(
-			Arrays.asList(introspectedGenerator, defaultArbitraryGenerator)
+		ArbitraryGenerator defaultArbitraryGenerator = new MatchArbitraryGenerator(
+			Arrays.asList(
+				newPreArbitraryGenerator(),
+				newObjectArbitraryGenerator(javaConstraintGenerator),
+				newPostArbitraryGenerator()
+			)
 		);
 
 		DecomposedContainerValueFactory decomposedContainerValueFactory = new DefaultDecomposedContainerValueFactory(
@@ -687,11 +666,115 @@ public final class FixtureMonkeyOptionsBuilder {
 			decomposedContainerValueFactory,
 			this.generateMaxTries,
 			this.generateUniqueMaxTries,
-			resolvedJavaConstraintGenerator,
+			javaConstraintGenerator,
 			this.instantiatorProcessor,
 			this.candidateConcretePropertyResolvers,
 			this.enableLoggingFail,
 			this.builderContextInitializers
+		);
+	}
+
+	/**
+	 * The arbitrary is generated in the following order:
+	 * Pre -> Object -> Post
+	 * <p>
+	 * Creates a new pre arbitrary generator.
+	 * It is used to generate arbitrary values before the main generation process.
+	 * Most user-defined {@link ArbitraryIntrospector} are added to the pre-arbitrary generator.
+	 *
+	 * @return a new pre arbitrary generator
+	 */
+	private ArbitraryGenerator newPreArbitraryGenerator() {
+		List<ArbitraryIntrospector> typedPreArbitraryIntrospectors = preArbitraryIntrospectors.stream()
+			.map(TypedArbitraryIntrospector::new)
+			.collect(Collectors.toList());
+
+		return new IntrospectedArbitraryGenerator(new MatchArbitraryIntrospector(typedPreArbitraryIntrospectors));
+	}
+
+	/**
+	 * The arbitrary is generated in the following order:
+	 * Pre -> Object -> Post
+	 * <p>
+	 * Creates a new object arbitrary generator.
+	 * It is main generator for generating arbitrary values.
+	 *
+	 * @param resolvedJavaConstraintGenerator the resolved java constraint generator
+	 * @return a new object arbitrary generator
+	 */
+	private ArbitraryGenerator newObjectArbitraryGenerator(JavaConstraintGenerator resolvedJavaConstraintGenerator) {
+		JavaArbitraryResolver javaArbitraryResolver = defaultIfNull(
+			this.javaArbitraryResolver,
+			() -> new JqwikJavaArbitraryResolver(resolvedJavaConstraintGenerator)
+		);
+
+		this.generateJavaTypeArbitrarySet = defaultIfNull(
+			this.generateJavaTypeArbitrarySet,
+			() -> constraintGenerator ->
+				new JqwikJavaTypeArbitraryGeneratorSet(
+					this.javaTypeArbitraryGenerator,
+					javaArbitraryResolver
+				)
+		);
+
+		javaDefaultArbitraryGeneratorBuilder.javaTypeArbitraryGeneratorSet(
+			generateJavaTypeArbitrarySet.apply(resolvedJavaConstraintGenerator)
+		);
+
+		JavaTimeArbitraryResolver javaTimeArbitraryResolver = defaultIfNull(
+			this.javaTimeArbitraryResolver,
+			() -> new JqwikJavaTimeArbitraryResolver(resolvedJavaConstraintGenerator)
+		);
+
+		this.generateJavaTimeArbitrarySet = defaultIfNull(
+			this.generateJavaTimeArbitrarySet,
+			() -> constraintGenerator ->
+				new JqwikJavaTimeArbitraryGeneratorSet(
+					this.javaTimeTypeArbitraryGenerator,
+					javaTimeArbitraryResolver
+				)
+		);
+
+		javaDefaultArbitraryGeneratorBuilder.javaTimeArbitraryGeneratorSet(
+			generateJavaTimeArbitrarySet.apply(resolvedJavaConstraintGenerator)
+		);
+
+		ArbitraryGenerator javaDefaultArbitraryGenerator =
+			this.javaDefaultArbitraryGeneratorBuilder.build();
+
+		return new MatchArbitraryGenerator(
+			Arrays.asList(
+				javaDefaultArbitraryGenerator,
+				new IntrospectedArbitraryGenerator(this.defaultObjectIntrospector)
+			)
+		);
+	}
+
+	/**
+	 * The arbitrary is generated in the following order:
+	 * Pre -> Object -> Post
+	 * <p>
+	 * Creates a new post arbitrary generator.
+	 * It is used to generate arbitrary values after the main generation process.
+	 * It is used when the main generation process fails to generate arbitrary values as a fallback.
+	 *
+	 * @return a new post arbitrary generator
+	 */
+	private ArbitraryGenerator newPostArbitraryGenerator() {
+		List<ArbitraryIntrospector> typedPostArbitraryIntrospectors = postArbitraryIntrospectors.stream()
+			.map(TypedArbitraryIntrospector::new)
+			.collect(Collectors.toList());
+
+		IntrospectedArbitraryGenerator postArbitraryGenerator =
+			new IntrospectedArbitraryGenerator(new MatchArbitraryIntrospector(typedPostArbitraryIntrospectors));
+
+		FallbackArbitraryGenerator fallbackArbitraryGenerator =
+			new FallbackArbitraryGenerator(this.fallbackIntrospector);
+		return new MatchArbitraryGenerator(
+			Arrays.asList(
+				postArbitraryGenerator,
+				fallbackArbitraryGenerator
+			)
 		);
 	}
 
@@ -704,5 +787,23 @@ public final class FixtureMonkeyOptionsBuilder {
 		result.add(value);
 		result.addAll(list);
 		return result;
+	}
+
+	/**
+	 * It is used for fallback. It is used temporarily.
+	 * It will be removed in further versions.
+	 * It does not use the {@link ArbitraryIntrospector#getRequiredPropertyGenerator(Property)}.
+	 */
+	private static final class FallbackArbitraryGenerator implements ArbitraryGenerator {
+		private final ArbitraryIntrospector introspector;
+
+		public FallbackArbitraryGenerator(ArbitraryIntrospector introspector) {
+			this.introspector = introspector;
+		}
+
+		@Override
+		public CombinableArbitrary<?> generate(ArbitraryGeneratorContext context) {
+			return introspector.introspect(context).getValue();
+		}
 	}
 }

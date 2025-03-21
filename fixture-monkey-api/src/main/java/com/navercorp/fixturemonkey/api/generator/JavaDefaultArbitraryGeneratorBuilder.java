@@ -32,9 +32,7 @@ import org.apiguardian.api.API.Status;
 import com.navercorp.fixturemonkey.api.arbitrary.JavaTimeArbitraryGeneratorSet;
 import com.navercorp.fixturemonkey.api.arbitrary.JavaTypeArbitraryGeneratorSet;
 import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospector;
-import com.navercorp.fixturemonkey.api.introspector.ArbitraryIntrospectorResult;
 import com.navercorp.fixturemonkey.api.introspector.ArrayIntrospector;
-import com.navercorp.fixturemonkey.api.introspector.BeanArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.BooleanIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.EnumIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.FunctionalInterfaceArbitraryIntrospector;
@@ -56,10 +54,15 @@ import com.navercorp.fixturemonkey.api.jqwik.JavaTimeArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.matcher.AssignableTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 
+/**
+ * This is a builder to generate the default {@link ArbitraryGenerator}.
+ * It is for Java types. For example, primitives, collections, maps, etc.
+ */
 @SuppressWarnings("UnusedReturnValue")
-@API(since = "0.4.0", status = Status.MAINTAINED)
+@API(since = "0.4.0", status = Status.INTERNAL)
 public final class JavaDefaultArbitraryGeneratorBuilder {
-	public static final ArbitraryIntrospector JAVA_INTROSPECTOR = new MatchArbitraryIntrospector(
+	@Deprecated
+	public static final ArbitraryIntrospector UNCONSTRAINT_JAVA_INTROSPECTOR = new MatchArbitraryIntrospector(
 		Arrays.asList(
 			new BooleanIntrospector(),
 			new EnumIntrospector(),
@@ -88,30 +91,27 @@ public final class JavaDefaultArbitraryGeneratorBuilder {
 			new SingleGenericCollectionIntrospector()
 		)
 	);
-	public static final ArbitraryIntrospector DEFAULT_FALLBACK_INTROSPECTOR =
-		(context) -> ArbitraryIntrospectorResult.NOT_INTROSPECTED;
 
-	private ArbitraryIntrospector priorityIntrospector = JavaDefaultArbitraryGeneratorBuilder.JAVA_INTROSPECTOR;
+	/**
+	 * It contains the Java type, which cannot be constrained programmatically.
+	 * It may vary from time to time.
+	 */
+	private ArbitraryIntrospector unconstraintJavaIntrospector =
+		JavaDefaultArbitraryGeneratorBuilder.UNCONSTRAINT_JAVA_INTROSPECTOR;
 	private ArbitraryIntrospector containerIntrospector =
 		JavaDefaultArbitraryGeneratorBuilder.JAVA_CONTAINER_INTROSPECTOR;
-	private ArbitraryIntrospector objectIntrospector = BeanArbitraryIntrospector.INSTANCE;
 
-	private ArbitraryIntrospector fallbackIntrospector = DEFAULT_FALLBACK_INTROSPECTOR;
 	private JavaTypeArbitraryGeneratorSet javaTypeArbitraryGeneratorSet = null;
 	private JavaTimeArbitraryGeneratorSet javaTimeArbitraryGeneratorSet = null;
 
 	JavaDefaultArbitraryGeneratorBuilder() {
 	}
 
-	public JavaDefaultArbitraryGeneratorBuilder priorityIntrospector(ArbitraryIntrospector priorityIntrospector) {
-		this.priorityIntrospector = priorityIntrospector;
-		return this;
-	}
-
-	public JavaDefaultArbitraryGeneratorBuilder priorityIntrospector(
-		UnaryOperator<ArbitraryIntrospector> priorityIntrospector
+	@Deprecated
+	public JavaDefaultArbitraryGeneratorBuilder unconstraintJavaIntrospector(
+		UnaryOperator<ArbitraryIntrospector> unconstraintJavaIntrospectorOperator
 	) {
-		this.priorityIntrospector = priorityIntrospector.apply(this.priorityIntrospector);
+		this.unconstraintJavaIntrospector = unconstraintJavaIntrospectorOperator.apply(unconstraintJavaIntrospector);
 		return this;
 	}
 
@@ -124,30 +124,6 @@ public final class JavaDefaultArbitraryGeneratorBuilder {
 		UnaryOperator<ArbitraryIntrospector> containerIntrospector
 	) {
 		this.containerIntrospector = containerIntrospector.apply(this.containerIntrospector);
-		return this;
-	}
-
-	public JavaDefaultArbitraryGeneratorBuilder objectIntrospector(ArbitraryIntrospector objectIntrospector) {
-		this.objectIntrospector = objectIntrospector;
-		return this;
-	}
-
-	public JavaDefaultArbitraryGeneratorBuilder objectIntrospector(
-		UnaryOperator<ArbitraryIntrospector> objectIntrospector
-	) {
-		this.objectIntrospector = objectIntrospector.apply(this.objectIntrospector);
-		return this;
-	}
-
-	public JavaDefaultArbitraryGeneratorBuilder fallbackIntrospector(ArbitraryIntrospector fallbackIntrospector) {
-		this.fallbackIntrospector = fallbackIntrospector;
-		return this;
-	}
-
-	public JavaDefaultArbitraryGeneratorBuilder fallbackIntrospector(
-		UnaryOperator<ArbitraryIntrospector> fallbackIntrospector
-	) {
-		this.fallbackIntrospector = fallbackIntrospector.apply(this.fallbackIntrospector);
 		return this;
 	}
 
@@ -171,10 +147,8 @@ public final class JavaDefaultArbitraryGeneratorBuilder {
 				Arrays.asList(
 					new JavaArbitraryIntrospector(this.javaTypeArbitraryGeneratorSet),
 					new JavaTimeArbitraryIntrospector(this.javaTimeArbitraryGeneratorSet),
-					this.priorityIntrospector,
-					this.containerIntrospector,
-					this.objectIntrospector,
-					this.fallbackIntrospector
+					this.unconstraintJavaIntrospector,
+					this.containerIntrospector
 				)
 			)
 		);
