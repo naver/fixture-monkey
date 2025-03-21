@@ -105,7 +105,7 @@ public final class FixtureMonkeyOptions {
 			),
 			MatcherOperator.exactTypeMatchOperator(
 				GeneratingWildcardType.class,
-				context -> new ArbitraryIntrospectorResult(CombinableArbitrary.from(new Object()))
+				context -> ArbitraryIntrospectorResult.NOT_INTROSPECTED
 			)
 		);
 	public static final ObjectPropertyGenerator DEFAULT_OBJECT_PROPERTY_GENERATOR =
@@ -133,6 +133,8 @@ public final class FixtureMonkeyOptions {
 				context -> NOT_NULL_INJECT
 			)
 		);
+	public static final ArbitraryIntrospector DEFAULT_FALLBACK_INTROSPECTOR =
+		(context) -> new ArbitraryIntrospectorResult(CombinableArbitrary.from((Object)null));
 
 	static {
 		List<String> defaultJavaPackages = new ArrayList<>();
