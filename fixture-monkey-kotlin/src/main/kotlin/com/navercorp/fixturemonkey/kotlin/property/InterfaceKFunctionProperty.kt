@@ -19,13 +19,13 @@
 package com.navercorp.fixturemonkey.kotlin.property
 
 import com.navercorp.fixturemonkey.api.property.MethodProperty
+import com.navercorp.fixturemonkey.kotlin.type.toTypeReference
 import org.apiguardian.api.API
 import org.apiguardian.api.API.Status
 import java.lang.reflect.AnnotatedType
 import java.lang.reflect.Type
 import java.util.Optional
 import kotlin.reflect.KType
-import kotlin.reflect.jvm.javaType
 
 /**
  * An interface method property for kotlin.
@@ -37,7 +37,7 @@ data class InterfaceKFunctionProperty(
     private val methodName: String,
     private val annotations: List<Annotation>,
 ) : MethodProperty {
-    override fun getType(): Type = type.javaType
+    override fun getType(): Type = type.toTypeReference().type
 
     override fun getAnnotatedType(): AnnotatedType = object : AnnotatedType {
         override fun getType(): Type = this@InterfaceKFunctionProperty.getType()

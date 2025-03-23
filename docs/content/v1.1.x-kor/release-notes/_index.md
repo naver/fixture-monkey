@@ -6,6 +6,24 @@ docs:
 weight: 100
 ---
 sectionStart
+## v.1.1.10
+Add support for deterministic testing with JUnit, the tests annotated by `@Seed` would be deterministic.
+
+Fix the functional interface instance supports `equals`, `hashCode`, `toString`.
+
+Fix instantiate API with Kotlin value class.
+
+Add support generating Kotlin constant object.
+
+Refactor simplifying numeric validation.
+
+Refactor addressing Java expGetter record.
+
+Refactor resolving expressions as programmatic primarily.
+
+sectionEnd
+
+sectionStart
 ## v.1.1.9
 Fix `abstractExtends` in InterfacePlugin does not support interface, please use `interafaceImplements` instead. 
 

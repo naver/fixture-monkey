@@ -18,18 +18,13 @@
 
 package com.navercorp.fixturemonkey.api.plugin;
 
-import static com.navercorp.fixturemonkey.api.type.Types.defaultIfNull;
-
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.function.Predicate;
-
-import javax.annotation.Nullable;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -74,14 +69,8 @@ public final class SimpleValueJqwikPlugin implements Plugin {
 
 	private long minStringLength = DEFAULT_MIN_STRING_LENGTH;
 	private long maxStringLength = DEFAULT_MAX_STRING_LENGTH;
-	@Nullable
-	private Long positiveMinNumberValue = null;
-	@Nullable
-	private Long positiveMaxNumberValue = null;
-	@Nullable
-	private Long negativeMinNumberValue = null;
-	@Nullable
-	private Long negativeMaxNumberValue = null;
+	private long minNumberValue = DEFAULT_MIN_NUMBER_VALUE;
+	private long maxNumberValue = DEFAULT_MAX_NUMBER_VALUE;
 	private int minContainerSize = DEFAULT_MIN_CONTAINER_SIZE;
 	private int maxContainerSize = DEFAULT_MAX_CONTAINER_SIZE;
 	private long minusDaysFromToday = DEFAULT_MINUS_DAYS;
@@ -99,20 +88,12 @@ public final class SimpleValueJqwikPlugin implements Plugin {
 	}
 
 	public SimpleValueJqwikPlugin minNumberValue(long minNumberValue) {
-		if (minNumberValue < 0) {
-			this.negativeMinNumberValue = minNumberValue;
-			return this;
-		}
-		this.positiveMinNumberValue = minNumberValue;
+		this.minNumberValue = minNumberValue;
 		return this;
 	}
 
 	public SimpleValueJqwikPlugin maxNumberValue(long maxNumberValue) {
-		if (maxNumberValue < 0) {
-			this.negativeMaxNumberValue = maxNumberValue;
-			return this;
-		}
-		this.positiveMaxNumberValue = maxNumberValue;
+		this.maxNumberValue = maxNumberValue;
 		return this;
 	}
 
@@ -151,10 +132,8 @@ public final class SimpleValueJqwikPlugin implements Plugin {
 							new SimpleJavaConstraintGenerator(
 								this.minStringLength,
 								this.maxStringLength,
-								this.positiveMinNumberValue,
-								this.positiveMaxNumberValue,
-								this.negativeMinNumberValue,
-								this.negativeMaxNumberValue,
+								this.minNumberValue,
+								this.maxNumberValue,
 								this.minContainerSize,
 								this.maxContainerSize,
 								this.minusDaysFromToday,
@@ -180,14 +159,8 @@ public final class SimpleValueJqwikPlugin implements Plugin {
 	private static class SimpleJavaConstraintGenerator implements JavaConstraintGenerator {
 		private final long stringMinLength;
 		private final long stringMaxLength;
-		@Nullable
-		private final Long positiveMinNumberValue;
-		@Nullable
-		private final Long positiveMaxNumberValue;
-		@Nullable
-		private final Long negativeMinNumberValue;
-		@Nullable
-		private final Long negativeMaxNumberValue;
+		private final long minNumberValue;
+		private final long maxNumberValue;
 		private final int minContainerSize;
 		private final int maxContainerSize;
 		private final long minusDaysFromToday;
@@ -196,10 +169,8 @@ public final class SimpleValueJqwikPlugin implements Plugin {
 		public SimpleJavaConstraintGenerator(
 			long stringMinLength,
 			long stringMaxLength,
-			@Nullable Long positiveMinNumberValue,
-			@Nullable Long positiveMaxNumberValue,
-			@Nullable Long negativeMinNumberValue,
-			@Nullable Long negativeMaxNumberValue,
+			long minNumberValue,
+			long maxNumberValue,
 			int minContainerSize,
 			int maxContainerSize,
 			long minusDaysFromToday,
@@ -207,10 +178,8 @@ public final class SimpleValueJqwikPlugin implements Plugin {
 		) {
 			this.stringMinLength = stringMinLength;
 			this.stringMaxLength = stringMaxLength;
-			this.positiveMinNumberValue = positiveMinNumberValue;
-			this.positiveMaxNumberValue = positiveMaxNumberValue;
-			this.negativeMinNumberValue = negativeMinNumberValue;
-			this.negativeMaxNumberValue = negativeMaxNumberValue;
+			this.minNumberValue = minNumberValue;
+			this.maxNumberValue = maxNumberValue;
 			this.minContainerSize = minContainerSize;
 			this.maxContainerSize = maxContainerSize;
 			this.minusDaysFromToday = minusDaysFromToday;
@@ -232,45 +201,24 @@ public final class SimpleValueJqwikPlugin implements Plugin {
 
 		@Override
 		public JavaIntegerConstraint generateIntegerConstraint(ArbitraryGeneratorContext context) {
-			BigInteger positiveMin = ifNotNull(this.positiveMinNumberValue, BigInteger::valueOf);
-			BigInteger positiveMax = ifNotNull(this.positiveMaxNumberValue, BigInteger::valueOf);
-			BigInteger negativeMin = ifNotNull(this.negativeMinNumberValue, BigInteger::valueOf);
-			BigInteger negativeMax = ifNotNull(this.negativeMaxNumberValue, BigInteger::valueOf);
-
-			if (positiveMin == null) {
-				negativeMin = defaultIfNull(negativeMin, () -> BigInteger.valueOf(DEFAULT_MIN_NUMBER_VALUE));
-				negativeMax = defaultIfNull(negativeMax, () -> BigInteger.ZERO);
-			}
-
-			if (negativeMax == null) {
-				positiveMin = defaultIfNull(positiveMin, () -> BigInteger.ZERO);
-				positiveMax = defaultIfNull(positiveMax, () -> BigInteger.valueOf(DEFAULT_MAX_NUMBER_VALUE));
-			}
+			BigInteger lowerBound = BigInteger.valueOf(minNumberValue);
+			BigInteger upperBound = BigInteger.valueOf(maxNumberValue);
 
 			Class<?> type = Types.getActualType(context.getResolvedType());
 			if (type == Byte.class || type == byte.class) {
-				positiveMax = positiveMax != null
-					? positiveMax.min(BIG_INTEGER_MAX_BYTE)
-					: BIG_INTEGER_MAX_BYTE;
-				negativeMin = negativeMin != null
-					? negativeMin.max(BIG_INTEGER_MIN_BYTE)
-					: BIG_INTEGER_MIN_BYTE;
+				upperBound = upperBound.min(BIG_INTEGER_MAX_BYTE);
+				lowerBound = lowerBound.max(BIG_INTEGER_MIN_BYTE);
 			}
 
-			return new JavaIntegerConstraint(positiveMin, positiveMax, negativeMin, negativeMax);
+			return new JavaIntegerConstraint(lowerBound, upperBound);
 		}
 
 		@Override
 		public JavaDecimalConstraint generateDecimalConstraint(ArbitraryGeneratorContext context) {
-			BigDecimal min = negativeMinNumberValue != null
-				? BigDecimal.valueOf(negativeMinNumberValue) :
-				BigDecimal.valueOf(defaultIfNull(positiveMinNumberValue, () -> DEFAULT_MIN_NUMBER_VALUE));
+			BigDecimal lowerBound = BigDecimal.valueOf(minNumberValue);
+			BigDecimal upperBound = BigDecimal.valueOf(maxNumberValue);
 
-			BigDecimal max = positiveMaxNumberValue != null
-				? BigDecimal.valueOf(positiveMaxNumberValue) :
-				BigDecimal.valueOf(defaultIfNull(negativeMaxNumberValue, () -> DEFAULT_MAX_NUMBER_VALUE));
-
-			return new JavaDecimalConstraint(min, true, max, true, 2);
+			return new JavaDecimalConstraint(lowerBound, true, upperBound, true, 2);
 		}
 
 		@Override
@@ -289,9 +237,5 @@ public final class SimpleValueJqwikPlugin implements Plugin {
 				() -> LocalDateTime.now().plusDays(this.plusDaysFromToday)
 			);
 		}
-	}
-
-	private static <T, U> U ifNotNull(T value, Function<T, U> transformer) {
-		return value != null ? transformer.apply(value) : null;
 	}
 }
