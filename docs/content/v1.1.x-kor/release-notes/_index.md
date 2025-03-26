@@ -6,6 +6,13 @@ docs:
 weight: 100
 ---
 sectionStart
+## v.1.1.11
+
+Add generating Kotlin sealed object type
+
+sectionEnd
+
+sectionStart
 ## v.1.1.10
 Add support for deterministic testing with JUnit, the tests annotated by `@Seed` would be deterministic.
 
