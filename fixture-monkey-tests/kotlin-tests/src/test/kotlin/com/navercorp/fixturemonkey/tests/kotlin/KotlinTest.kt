@@ -1333,6 +1333,7 @@ class KotlinTest {
         then(actual).hasSize(5)
     }
 
+    // 실패한다.
     @Test
     fun parentRegisterThenApplyAndSizeReturnsChildRegister() {
         data class ChildObject(val value: String)

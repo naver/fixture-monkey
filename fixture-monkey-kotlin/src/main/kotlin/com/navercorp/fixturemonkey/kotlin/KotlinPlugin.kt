@@ -85,7 +85,6 @@ class KotlinPlugin : Plugin {
                     CandidateConcretePropertyResolver { property ->
                         ConcreteTypeCandidateConcretePropertyResolver(
                             property.type.actualType().cachedKotlin().sealedSubclasses
-                                .filter { it.objectInstance == null }
                                 .map { it.java }
                         )
                             .resolve(property)

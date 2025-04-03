@@ -23,6 +23,7 @@ import com.navercorp.fixturemonkey.kotlin.KotlinPlugin
 import com.navercorp.fixturemonkey.kotlin.giveMeBuilder
 import com.navercorp.fixturemonkey.kotlin.giveMeOne
 import com.navercorp.fixturemonkey.tests.TestEnvironment.TEST_COUNT
+import com.navercorp.fixturemonkey.tests.kotlin.SealedClassTest.SealedObjectClass.ConcreteSealedObjectClass
 import org.assertj.core.api.BDDAssertions.then
 import org.junit.jupiter.api.RepeatedTest
 
@@ -71,23 +72,21 @@ class SealedClassTest {
 
     @RepeatedTest(TEST_COUNT)
     fun sealedObject() {
-        val actual: ObjectSealedClass = SUT.giveMeOne()
+        val actual: SealedObjectClass = SUT.giveMeOne()
 
-        then(actual).isInstanceOf(ObjectSealedClass::class.java)
+        then(actual).isInstanceOf(ConcreteSealedObjectClass::class.java)
     }
 
     @RepeatedTest(TEST_COUNT)
     fun sealedObjectThenApply() {
-        val actual = SUT.giveMeBuilder<ObjectSealedClass>()
-            .thenApply { obj, builder ->  }
+        val actual = SUT.giveMeBuilder<SealedObjectClass>()
+            .thenApply { obj, builder -> }
             .sample()
 
-        then(actual).isInstanceOf(ObjectSealedClass::class.java)
+        then(actual).isInstanceOf(ConcreteSealedObjectClass::class.java)
     }
 
     sealed class SealedClass
-
-    object ObjectSealedClass : SealedClass()
 
     class ImplementedSealedClass(
         val string: String,
@@ -109,6 +108,10 @@ class SealedClassTest {
     class SealedInterfaceImplementation(val stringObject: StringObject) : SealedInterface
 
     class StringObject(val string: String)
+
+    sealed class SealedObjectClass {
+        object ConcreteSealedObjectClass : SealedObjectClass()
+    }
 
     companion object {
         val SUT: FixtureMonkey = FixtureMonkey.builder()
