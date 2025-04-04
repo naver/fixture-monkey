@@ -39,7 +39,7 @@ import org.apiguardian.api.API.Status;
 
 import net.jqwik.api.Arbitrary;
 
-import com.navercorp.fixturemonkey.ArbitraryBuilder;
+import com.navercorp.fixturemonkey.api.ObjectBuilder;
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.container.DecomposedContainerValueFactory;
 import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
@@ -47,9 +47,11 @@ import com.navercorp.fixturemonkey.api.generator.ContainerPropertyGenerator;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.matcher.NamedMatcherMetadata;
+import com.navercorp.fixturemonkey.api.matcher.PriorityMatcherOperator;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.random.Randoms;
 import com.navercorp.fixturemonkey.builder.ArbitraryBuilderContext;
+import com.navercorp.fixturemonkey.builder.ArbitraryBuilderContextProvider;
 import com.navercorp.fixturemonkey.builder.DefaultArbitraryBuilder;
 import com.navercorp.fixturemonkey.customizer.InnerSpecState.ManipulatorHolderSet;
 import com.navercorp.fixturemonkey.customizer.Values.Just;
@@ -148,7 +150,7 @@ public final class MonkeyManipulatorFactory {
 	}
 
 	public List<ArbitraryManipulator> newRegisteredArbitraryManipulators(
-		List<PriorityMatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuilders,
+		List<PriorityMatcherOperator<? extends ObjectBuilder<?>>> registeredArbitraryBuilders,
 		Map<Property, List<ObjectNode>> nodesByType,
 		ArbitraryBuilderContext builderContext
 	) {
@@ -158,7 +160,7 @@ public final class MonkeyManipulatorFactory {
 			Property property = nodeByType.getKey();
 			List<ObjectNode> objectNodes = nodeByType.getValue();
 
-			DefaultArbitraryBuilder<?> registeredArbitraryBuilder = findRegisteredArbitraryBuilder(
+			ArbitraryBuilderContextProvider registeredArbitraryBuilder = findRegisteredArbitraryBuilder(
 				registeredArbitraryBuilders, property, builderContext
 			);
 
@@ -181,8 +183,8 @@ public final class MonkeyManipulatorFactory {
 		return manipulators;
 	}
 
-	private DefaultArbitraryBuilder<?> findRegisteredArbitraryBuilder(
-		List<PriorityMatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuilders,
+	private ArbitraryBuilderContextProvider findRegisteredArbitraryBuilder(
+		List<PriorityMatcherOperator<? extends ObjectBuilder<?>>> registeredArbitraryBuilders,
 		Property property,
 		ArbitraryBuilderContext builderContext
 	) {
@@ -205,28 +207,28 @@ public final class MonkeyManipulatorFactory {
 			return registeredArbitraryBuilder;
 		}
 
-		List<PriorityMatcherOperator<? extends ArbitraryBuilder<?>>> priorityOperators = registeredArbitraryBuilders
+		List<PriorityMatcherOperator<? extends ObjectBuilder<?>>> priorityOperators = registeredArbitraryBuilders
 			.stream()
 			.filter(it -> it.match(property))
 			.sorted(Comparator.comparingInt(PriorityMatcherOperator::getPriority))
 			.collect(Collectors.toList());
 
-		List<PriorityMatcherOperator<? extends ArbitraryBuilder<?>>> highestPriorityOperators
+		List<PriorityMatcherOperator<? extends ObjectBuilder<?>>> highestPriorityOperators
 			= getHighestPriorityOperators(priorityOperators);
 
 		if (highestPriorityOperators.size() > 1) {
 			Collections.shuffle(highestPriorityOperators, Randoms.current());
 		}
 
-		return (DefaultArbitraryBuilder<?>)highestPriorityOperators.stream()
+		return highestPriorityOperators.stream()
 			.findFirst()
 			.map(MatcherOperator::getOperator)
-			.filter(it -> it instanceof DefaultArbitraryBuilder<?>)
+			.map(ArbitraryBuilderContextProvider.class::cast)
 			.orElse(null);
 	}
 
-	private List<PriorityMatcherOperator<? extends ArbitraryBuilder<?>>> getHighestPriorityOperators(
-		List<PriorityMatcherOperator<? extends ArbitraryBuilder<?>>> priorityOperators
+	private List<PriorityMatcherOperator<? extends ObjectBuilder<?>>> getHighestPriorityOperators(
+		List<PriorityMatcherOperator<? extends ObjectBuilder<?>>> priorityOperators
 	) {
 		if (priorityOperators.isEmpty()) {
 			return priorityOperators;

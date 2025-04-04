@@ -16,14 +16,11 @@
  * limitations under the License.
  */
 
-package com.navercorp.fixturemonkey.customizer;
+package com.navercorp.fixturemonkey.api.matcher;
 
 import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 
 import org.apiguardian.api.API;
-
-import com.navercorp.fixturemonkey.api.matcher.Matcher;
-import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 
 /**
  * A class that represents a matcher operator with a priority.

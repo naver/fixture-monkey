@@ -25,7 +25,6 @@ import java.util.stream.Stream;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
-import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.api.arbitrary.CombinableArbitrary;
 import com.navercorp.fixturemonkey.api.context.MonkeyContext;
 import com.navercorp.fixturemonkey.api.matcher.DefaultTreeMatcherMetadata;
@@ -35,7 +34,6 @@ import com.navercorp.fixturemonkey.api.property.TreeRootProperty;
 import com.navercorp.fixturemonkey.builder.ArbitraryBuilderContext;
 import com.navercorp.fixturemonkey.customizer.ArbitraryManipulator;
 import com.navercorp.fixturemonkey.customizer.MonkeyManipulatorFactory;
-import com.navercorp.fixturemonkey.customizer.PriorityMatcherOperator;
 import com.navercorp.fixturemonkey.tree.ObjectTree;
 
 @API(since = "0.4.0", status = Status.MAINTAINED)
@@ -43,18 +41,15 @@ public final class ArbitraryResolver {
 	private final ManipulatorOptimizer manipulatorOptimizer;
 	private final MonkeyManipulatorFactory monkeyManipulatorFactory;
 	private final MonkeyContext monkeyContext;
-	private final List<PriorityMatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuilders;
 
 	public ArbitraryResolver(
 		ManipulatorOptimizer manipulatorOptimizer,
 		MonkeyManipulatorFactory monkeyManipulatorFactory,
-		MonkeyContext monkeyContext,
-		List<PriorityMatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuilders
+		MonkeyContext monkeyContext
 	) {
 		this.manipulatorOptimizer = manipulatorOptimizer;
 		this.monkeyManipulatorFactory = monkeyManipulatorFactory;
 		this.monkeyContext = monkeyContext;
-		this.registeredArbitraryBuilders = registeredArbitraryBuilders;
 	}
 
 	public CombinableArbitrary<?> resolve(
@@ -74,7 +69,8 @@ public final class ArbitraryResolver {
 					builderContext.newTraverseContext()
 				);
 
-				fixtureMonkeyOptions.getBuilderContextInitializers().stream()
+				fixtureMonkeyOptions.getBuilderContextInitializers()
+					.stream()
 					.filter(it -> it.match(new DefaultTreeMatcherMetadata(objectTree.getMetadata().getAnnotations())))
 					.findFirst()
 					.map(TreeMatcherOperator::getOperator)
@@ -85,7 +81,7 @@ public final class ArbitraryResolver {
 			objectTree -> {
 				List<ArbitraryManipulator> registeredManipulators =
 					monkeyManipulatorFactory.newRegisteredArbitraryManipulators(
-						registeredArbitraryBuilders,
+						monkeyContext.getRegisteredArbitraryBuilders(),
 						objectTree.getMetadata().getNodesByProperty(),
 						builderContext
 					);

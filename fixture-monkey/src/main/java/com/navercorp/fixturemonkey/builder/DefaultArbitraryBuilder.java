@@ -75,7 +75,6 @@ import com.navercorp.fixturemonkey.customizer.ContainerInfoManipulator;
 import com.navercorp.fixturemonkey.customizer.InnerSpec;
 import com.navercorp.fixturemonkey.customizer.ManipulatorSet;
 import com.navercorp.fixturemonkey.customizer.MonkeyManipulatorFactory;
-import com.navercorp.fixturemonkey.customizer.PriorityMatcherOperator;
 import com.navercorp.fixturemonkey.experimental.ExperimentalArbitraryBuilder;
 import com.navercorp.fixturemonkey.expression.MonkeyExpression;
 import com.navercorp.fixturemonkey.expression.MonkeyExpressionFactory;
@@ -92,7 +91,6 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 	private final MonkeyManipulatorFactory monkeyManipulatorFactory;
 	private final MonkeyExpressionFactory monkeyExpressionFactory;
 	private final ArbitraryBuilderContext context;
-	private final List<PriorityMatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuilders;
 	private final MonkeyContext monkeyContext;
 	private final InstantiatorProcessor instantiatorProcessor;
 
@@ -102,7 +100,6 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 		MonkeyManipulatorFactory monkeyManipulatorFactory,
 		MonkeyExpressionFactory monkeyExpressionFactory,
 		ArbitraryBuilderContext context,
-		List<PriorityMatcherOperator<? extends ArbitraryBuilder<?>>> registeredArbitraryBuilders,
 		MonkeyContext monkeyContext,
 		InstantiatorProcessor instantiatorProcessor
 	) {
@@ -111,7 +108,6 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 		this.context = context;
 		this.monkeyManipulatorFactory = monkeyManipulatorFactory;
 		this.monkeyExpressionFactory = monkeyExpressionFactory;
-		this.registeredArbitraryBuilders = registeredArbitraryBuilders;
 		this.monkeyContext = monkeyContext;
 		this.instantiatorProcessor = instantiatorProcessor;
 	}
@@ -188,7 +184,8 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 
 	@Override
 	public ArbitraryBuilder<T> selectName(String... names) {
-		ArbitraryBuilderContext builderContext = registeredArbitraryBuilders.stream()
+		ArbitraryBuilderContext builderContext = monkeyContext.getRegisteredArbitraryBuilders()
+			.stream()
 			.filter(operator -> Arrays.stream(names)
 				.anyMatch(name -> operator.match(rootProperty, new NamedMatcherMetadata(name)))
 			)
@@ -206,7 +203,6 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 			this.monkeyManipulatorFactory,
 			this.monkeyExpressionFactory,
 			builderContext.copy(),
-			registeredArbitraryBuilders,
 			this.monkeyContext,
 			this.instantiatorProcessor
 		);
@@ -538,7 +534,6 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 			monkeyManipulatorFactory,
 			monkeyExpressionFactory,
 			context.copy(),
-			registeredArbitraryBuilders,
 			monkeyContext,
 			instantiatorProcessor
 		);
@@ -585,7 +580,6 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 			monkeyManipulatorFactory,
 			monkeyExpressionFactory,
 			context,
-			registeredArbitraryBuilders,
 			monkeyContext,
 			instantiatorProcessor
 		);
