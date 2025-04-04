@@ -20,14 +20,12 @@ package com.navercorp.fixturemonkey.api.plugin;
 
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 import com.navercorp.fixturemonkey.api.introspector.AnonymousArbitraryIntrospector;
-import com.navercorp.fixturemonkey.api.introspector.MatchArbitraryIntrospector;
 import com.navercorp.fixturemonkey.api.matcher.ExactTypeMatcher;
 import com.navercorp.fixturemonkey.api.matcher.Matcher;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
@@ -197,8 +195,11 @@ public final class InterfacePlugin implements Plugin {
 		}
 
 		if (useAnonymousArbitraryIntrospector) {
-			optionsBuilder.fallbackIntrospector(it ->
-				new MatchArbitraryIntrospector(Arrays.asList(it, AnonymousArbitraryIntrospector.INSTANCE))
+			optionsBuilder.insertLastArbitraryIntrospector(
+				new MatcherOperator<>(
+					AnonymousArbitraryIntrospector.INSTANCE,
+					AnonymousArbitraryIntrospector.INSTANCE
+				)
 			);
 		}
 	}
