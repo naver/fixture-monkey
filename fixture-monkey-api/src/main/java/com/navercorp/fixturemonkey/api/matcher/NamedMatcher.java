@@ -18,8 +18,13 @@
 
 package com.navercorp.fixturemonkey.api.matcher;
 
+import static org.apiguardian.api.API.Status.EXPERIMENTAL;
+
+import org.apiguardian.api.API;
+
 import com.navercorp.fixturemonkey.api.property.Property;
 
+@API(since = "1.1.12", status = EXPERIMENTAL)
 public final class NamedMatcher implements Matcher {
 	private final Matcher matcher;
 	private final String registeredName;

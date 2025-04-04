@@ -28,6 +28,17 @@ import com.navercorp.fixturemonkey.api.property.Property;
 public interface Matcher {
 	boolean match(Property property);
 
+	/**
+	 * Checks whether the given property matches the criteria using the provided metadata.
+	 * This default implementation ignores `matcherMetadata` to maintain compatibility
+	 * with existing match flows. Override this method if metadata-based matching becomes necessary.
+	 * @see NamedMatcher#match(Property, MatcherMetadata)
+	 *
+	 * @param property the property to match
+	 * @param matcherMetadata additional matching information
+	 * @return true if the property matches, otherwise false
+	 */
+	@API(since = "1.1.12", status = Status.EXPERIMENTAL)
 	default boolean match(Property property, MatcherMetadata matcherMetadata) {
 		return match(property);
 	}

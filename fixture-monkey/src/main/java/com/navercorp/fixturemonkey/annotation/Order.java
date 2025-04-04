@@ -29,7 +29,7 @@ import org.apiguardian.api.API;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
-@API(since = "1.1.10", status = EXPERIMENTAL)
+@API(since = "1.1.12", status = EXPERIMENTAL)
 public @interface Order {
 	int value() default 0;
 }

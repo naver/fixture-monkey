@@ -30,9 +30,9 @@ import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
  * This class extends {@link MatcherOperator} and adds a priority field.
  *
  * @param <T> the type of the operator
- * @since 1.1.10
+ * @since 1.1.12
  */
-@API(since = "1.1.10", status = EXPERIMENTAL)
+@API(since = "1.1.12", status = EXPERIMENTAL)
 public final class PriorityMatcherOperator<T> extends MatcherOperator<T> {
 	private final int priority;
 

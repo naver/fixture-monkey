@@ -18,6 +18,11 @@
 
 package com.navercorp.fixturemonkey.api.matcher;
 
+import static org.apiguardian.api.API.Status.EXPERIMENTAL;
+
+import org.apiguardian.api.API;
+
+@API(since = "1.1.12", status = EXPERIMENTAL)
 public interface MatcherMetadata {
 	String getName();
 }
