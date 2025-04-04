@@ -33,6 +33,7 @@ import org.apiguardian.api.API.Status;
 
 import net.jqwik.api.Arbitrary;
 
+import com.navercorp.fixturemonkey.api.ObjectBuilder;
 import com.navercorp.fixturemonkey.api.context.MonkeyContext;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
 import com.navercorp.fixturemonkey.api.matcher.NamedMatcher;
@@ -231,16 +232,25 @@ public final class FixtureMonkey {
 		List<PriorityMatcherOperator<Function<FixtureMonkey,
 			? extends ArbitraryBuilder<?>>>> registeredArbitraryBuildersWithPriority
 	) {
-		List<? extends PriorityMatcherOperator<? extends ArbitraryBuilder<?>>> generatedRegisteredArbitraryBuilder =
+		List<PriorityMatcherOperator<? extends ArbitraryBuilder<?>>> arbitraryBuilders =
 			registeredArbitraryBuildersWithPriority.stream()
 				.map(it -> new PriorityMatcherOperator<>(
-					it.getMatcher(), it.getOperator().apply(this), it.getPriority())
-				)
+					it.getMatcher(), it.getOperator().apply(this), it.getPriority()
+				))
 				.collect(toList());
 
-		for (int i = generatedRegisteredArbitraryBuilder.size() - 1; i >= 0; i--) {
-			this.registeredArbitraryBuilders.add(generatedRegisteredArbitraryBuilder.get(i));
-		}
+		List<PriorityMatcherOperator<? extends ObjectBuilder<?>>> objectBuilders =
+			arbitraryBuilders.stream()
+				.map(it -> new PriorityMatcherOperator<>(
+					it.getMatcher(), (ObjectBuilder<?>)it.getOperator(), it.getPriority()
+				))
+				.collect(toList());
+
+		Collections.reverse(arbitraryBuilders);
+		Collections.reverse(objectBuilders);
+
+		this.registeredArbitraryBuilders.addAll(arbitraryBuilders);
+		monkeyContext.getRegisteredArbitraryBuilders().addAll(objectBuilders);
 	}
 
 	private void initializeNamedArbitraryBuilderMap(
