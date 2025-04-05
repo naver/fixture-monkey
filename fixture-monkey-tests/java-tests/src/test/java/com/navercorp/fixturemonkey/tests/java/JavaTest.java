@@ -37,6 +37,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.OptionalInt;
@@ -46,11 +47,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 
 import net.jqwik.api.Arbitraries;
+import net.jqwik.api.Arbitrary;
 
 import com.navercorp.fixturemonkey.ArbitraryBuilder;
 import com.navercorp.fixturemonkey.FixtureMonkey;
@@ -1461,5 +1464,59 @@ class JavaTest {
 		)
 			.isExactlyInstanceOf(IllegalArgumentException.class)
 			.hasMessageContaining("should be interface");
+	}
+
+	@Test
+	void throwMeBuilderWithoutType() {
+		// given
+		ArbitraryBuilder<String> stringBuilder = SUT.throwMeBuilder();
+
+		// when
+		String actual = stringBuilder.sample();
+
+		then(actual).isNotNull();
+	}
+
+	@Test
+	void throwMeJavaBuilderWithoutType() {
+		// given
+		ArbitraryBuilder<String> stringBuilder = SUT.throwMeJavaBuilder();
+
+		// when
+		String actual = stringBuilder.sample();
+
+		then(actual).isNotNull();
+	}
+
+	@Test
+	void throwMeOneWithoutType() {
+		String actual = SUT.throwMeOne();
+
+		then(actual).isNotNull();
+		then(actual).isInstanceOf(String.class);
+	}
+
+	@Test
+	void throwMeWithoutType() {
+		// given
+		Stream<String> stringStream = SUT.throwMe();
+
+		// when
+		List<String> actual = stringStream.limit(5).collect(Collectors.toList());
+
+		then(actual).allMatch(Objects::nonNull);
+	}
+
+	@Test
+	void throwMeArbitraryWithoutType() {
+		// given
+		Arbitrary<String> stringArbitrary = SUT.throwMeArbitrary();
+
+		// when
+		String actual = stringArbitrary.sample();
+
+		// then
+		then(actual).isNotNull();
+		then(actual).isInstanceOf(String.class);
 	}
 }
