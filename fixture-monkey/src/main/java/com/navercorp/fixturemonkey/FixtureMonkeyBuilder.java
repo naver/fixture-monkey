@@ -427,15 +427,15 @@ public final class FixtureMonkeyBuilder {
 		return this;
 	}
 
-	public FixtureMonkeyBuilder registeredName(
+	public FixtureMonkeyBuilder registerByName(
 		String registeredName,
 		Class<?> type,
 		Function<FixtureMonkey, ? extends ArbitraryBuilder<?>> arbitraryBuilder
 	) {
-		return this.registeredName(registeredName, type, arbitraryBuilder, DEFAULT_PRIORITY);
+		return this.registerByName(registeredName, type, arbitraryBuilder, DEFAULT_PRIORITY);
 	}
 
-	public FixtureMonkeyBuilder registeredName(
+	public FixtureMonkeyBuilder registerByName(
 		String registeredName,
 		Class<?> type,
 		Function<FixtureMonkey, ? extends ArbitraryBuilder<?>> arbitraryBuilder,

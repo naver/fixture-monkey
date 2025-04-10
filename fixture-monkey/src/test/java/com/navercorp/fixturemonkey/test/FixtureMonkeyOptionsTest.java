@@ -721,9 +721,9 @@ class FixtureMonkeyOptionsTest {
 	}
 
 	@Property
-	void registeredName() {
+	void registerByName() {
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.registeredName(
+			.registerByName(
 				"test",
 				String.class,
 				monkey -> monkey.giveMeBuilder("test")
@@ -743,14 +743,14 @@ class FixtureMonkeyOptionsTest {
 	}
 
 	@Property
-	void registeredNameWithSameRegisteredName() {
+	void registerByNameWithSameRegisteredName() {
 		thenThrownBy(() -> FixtureMonkey.builder()
-			.registeredName(
+			.registerByName(
 				"test",
 				String.class,
 				monkey -> monkey.giveMeBuilder("test")
 			)
-			.registeredName(
+			.registerByName(
 				"test",
 				String.class,
 				monkey -> monkey.giveMeBuilder("test2")
@@ -761,9 +761,9 @@ class FixtureMonkeyOptionsTest {
 	}
 
 	@Property
-	void generateSampleListWithRegisteredNames() {
+	void generateSampleListWithRegisterByNames() {
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.registeredName(
+			.registerByName(
 				"test",
 				String.class,
 				monkey -> monkey.giveMeBuilder("test")
@@ -806,15 +806,15 @@ class FixtureMonkeyOptionsTest {
 	}
 
 	@Property
-	void registeredNameWithPriority() {
+	void registerByNameWithPriority() {
 		FixtureMonkey sut = FixtureMonkey.builder()
-			.registeredName(
+			.registerByName(
 				"test",
 				String.class,
 				monkey -> monkey.giveMeBuilder("test"),
 				1
 			)
-			.registeredName(
+			.registerByName(
 				"test2",
 				String.class,
 				monkey -> monkey.giveMeBuilder("test2"),
