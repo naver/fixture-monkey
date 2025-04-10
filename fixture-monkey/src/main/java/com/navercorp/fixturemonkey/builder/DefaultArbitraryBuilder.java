@@ -183,7 +183,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 	}
 
 	@Override
-	public ArbitraryBuilder<T> selectName(String... names) {
+	public ExperimentalArbitraryBuilder<T> selectName(String... names) {
 		ArbitraryBuilderContext builderContext = monkeyContext.getRegisteredArbitraryBuilders()
 			.stream()
 			.filter(operator -> Arrays.stream(names)
