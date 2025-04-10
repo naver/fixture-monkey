@@ -46,7 +46,7 @@ import com.navercorp.fixturemonkey.api.generator.ArbitraryContainerInfo;
 import com.navercorp.fixturemonkey.api.generator.ContainerPropertyGenerator;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
-import com.navercorp.fixturemonkey.api.matcher.NamedMatcherMetadata;
+import com.navercorp.fixturemonkey.api.matcher.NamedMatcher;
 import com.navercorp.fixturemonkey.api.matcher.PriorityMatcherOperator;
 import com.navercorp.fixturemonkey.api.property.Property;
 import com.navercorp.fixturemonkey.api.random.Randoms;
@@ -195,7 +195,7 @@ public final class MonkeyManipulatorFactory {
 					return false;
 				}
 				return selectNames.stream().anyMatch(
-					name -> it.match(property, new NamedMatcherMetadata(name))
+					name -> it.match(property, NamedMatcher.metadata(name))
 				);
 			})
 			.findFirst()

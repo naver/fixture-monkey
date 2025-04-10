@@ -45,4 +45,21 @@ public final class NamedMatcher implements Matcher {
 			&& matcherMetadata instanceof NamedMatcherMetadata
 			&& registeredName.equals(((NamedMatcherMetadata)matcherMetadata).getName());
 	}
+
+	public static NamedMatcherMetadata metadata(String name) {
+		return new NamedMatcherMetadata(name);
+	}
+
+	@API(since = "1.1.12", status = EXPERIMENTAL)
+	public static final class NamedMatcherMetadata implements MatcherMetadata {
+		private final String name;
+
+		private NamedMatcherMetadata(String name) {
+			this.name = name;
+		}
+
+		public String getName() {
+			return name;
+		}
+	}
 }

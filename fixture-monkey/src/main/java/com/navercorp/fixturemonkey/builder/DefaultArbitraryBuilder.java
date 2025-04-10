@@ -60,7 +60,7 @@ import com.navercorp.fixturemonkey.api.instantiator.InstantiatorProcessResult;
 import com.navercorp.fixturemonkey.api.instantiator.InstantiatorProcessor;
 import com.navercorp.fixturemonkey.api.lazy.LazyArbitrary;
 import com.navercorp.fixturemonkey.api.matcher.MatcherOperator;
-import com.navercorp.fixturemonkey.api.matcher.NamedMatcherMetadata;
+import com.navercorp.fixturemonkey.api.matcher.NamedMatcher;
 import com.navercorp.fixturemonkey.api.property.PropertyNameResolver;
 import com.navercorp.fixturemonkey.api.property.PropertySelector;
 import com.navercorp.fixturemonkey.api.property.RootProperty;
@@ -187,7 +187,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 		ArbitraryBuilderContext builderContext = monkeyContext.getRegisteredArbitraryBuilders()
 			.stream()
 			.filter(operator -> Arrays.stream(names)
-				.anyMatch(name -> operator.match(rootProperty, new NamedMatcherMetadata(name)))
+				.anyMatch(name -> operator.match(rootProperty, NamedMatcher.metadata(name)))
 			)
 			.map(MatcherOperator::getOperator)
 			.findAny()
