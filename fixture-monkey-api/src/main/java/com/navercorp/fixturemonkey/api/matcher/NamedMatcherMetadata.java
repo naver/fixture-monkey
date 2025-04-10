@@ -30,7 +30,6 @@ public final class NamedMatcherMetadata implements MatcherMetadata {
 		this.name = name;
 	}
 
-	@Override
 	public String getName() {
 		return name;
 	}

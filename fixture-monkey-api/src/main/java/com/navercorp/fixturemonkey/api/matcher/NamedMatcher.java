@@ -41,6 +41,8 @@ public final class NamedMatcher implements Matcher {
 
 	@Override
 	public boolean match(Property property, MatcherMetadata matcherMetadata) {
-		return this.matcher.match(property) && registeredName.equals(matcherMetadata.getName());
+		return this.matcher.match(property)
+			&& matcherMetadata instanceof NamedMatcherMetadata
+			&& registeredName.equals(((NamedMatcherMetadata)matcherMetadata).getName());
 	}
 }
