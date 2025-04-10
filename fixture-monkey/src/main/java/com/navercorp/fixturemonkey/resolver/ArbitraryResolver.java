@@ -69,8 +69,7 @@ public final class ArbitraryResolver {
 					builderContext.newTraverseContext()
 				);
 
-				fixtureMonkeyOptions.getBuilderContextInitializers()
-					.stream()
+				fixtureMonkeyOptions.getBuilderContextInitializers().stream()
 					.filter(it -> it.match(new DefaultTreeMatcherMetadata(objectTree.getMetadata().getAnnotations())))
 					.findFirst()
 					.map(TreeMatcherOperator::getOperator)
@@ -83,7 +82,7 @@ public final class ArbitraryResolver {
 					monkeyManipulatorFactory.newRegisteredArbitraryManipulators(
 						monkeyContext.getRegisteredArbitraryBuilders(),
 						objectTree.getMetadata().getNodesByProperty(),
-						builderContext
+						builderContext.getSelectedNames()
 					);
 
 				List<ArbitraryManipulator> joinedManipulators =
