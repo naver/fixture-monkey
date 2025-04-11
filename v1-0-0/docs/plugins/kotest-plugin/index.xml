@@ -1,40 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Kotest Plugin on</title><link>https://naver.github.io/fixture-monkey/v1-0-0/docs/plugins/kotest-plugin/</link><description>Recent content in Kotest Plugin on</description><generator>Hugo</generator><language>v1-0-0</language><atom:link href="https://naver.github.io/fixture-monkey/v1-0-0/docs/plugins/kotest-plugin/index.xml" rel="self" type="application/rss+xml"/><item><title>Features</title><link>https://naver.github.io/fixture-monkey/v1-0-0/docs/plugins/kotest-plugin/features/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v1-0-0/docs/plugins/kotest-plugin/features/</guid><description>&lt;p>The Kotest plugin provided by Fixture Monkey allows you to enhance your testing experience within the Kotest framework.&lt;/p>
-&lt;ul>
-&lt;li>Replaces the default generator for generating random values for primitive types from Jqwik to Kotest&amp;rsquo;s property generator (&lt;code>Arb&lt;/code>). Use of bean validation annotations also works.&lt;/li>
-&lt;li>Support for Kotest&amp;rsquo;s property-based testing functions, including &lt;code>forAll&lt;/code> and &lt;code>checkAll&lt;/code>.&lt;/li>
-&lt;/ul>
-&lt;div class="alert alert-doks d-flex" role="alert">
- &lt;div class="flex-shrink-1 alert-icon">💡 &lt;/div>
- 
- &lt;div class="w-100">Adding the Kotest Plugin doesn't mean you have to use Kotest as your testing framework. You can still use Junit. &lt;/div>
- 
-&lt;/div>
-
-&lt;h2 id="dependencies">Dependencies &lt;a href="#dependencies" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h2>
-&lt;h5 id="fixture-monkey-kotlin">fixture-monkey-kotlin &lt;a href="#fixture-monkey-kotlin" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h5>
-&lt;h4 id="gradle">Gradle &lt;a href="#gradle" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h4>
-&lt;pre>&lt;code class="language-groovy">testImplementation(&amp;quot;com.navercorp.fixturemonkey:fixture-monkey-kotest:1.1.10&amp;quot;)
-&lt;/code>&lt;/pre>
-&lt;h4 id="maven">Maven &lt;a href="#maven" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h4>
-&lt;pre>&lt;code class="language-xml">&amp;lt;dependency&amp;gt;
- &amp;lt;groupId&amp;gt;com.navercorp.fixturemonkey&amp;lt;/groupId&amp;gt;
- &amp;lt;artifactId&amp;gt;fixture-monkey-kotest&amp;lt;/artifactId&amp;gt;
- &amp;lt;version&amp;gt;1.1.10&amp;lt;/version&amp;gt;
- &amp;lt;scope&amp;gt;test&amp;lt;/scope&amp;gt;
-&amp;lt;/dependency&amp;gt;
-&lt;/code>&lt;/pre>
-&lt;h2 id="plugin">Plugin &lt;a href="#plugin" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h2>
-&lt;pre>&lt;code class="language-kotlin">val fixtureMonkey = FixtureMonkey.builder()
- .plugin(KotestPlugin())
- .plugin(KotlinPlugin())
- .build()
-&lt;/code>&lt;/pre></description></item><item><title>Kotest Property Based Testing</title><link>https://naver.github.io/fixture-monkey/v1-0-0/docs/plugins/kotest-plugin/property-based-testing/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v1-0-0/docs/plugins/kotest-plugin/property-based-testing/</guid><description>&lt;p>Fixture Monkey&amp;rsquo;s Kotest plugin introduces two primary features that enhance &lt;a href="https://kotest.io/docs/proptest/property-test-functions.html">property-based testing within the Kotest framework&lt;/a>: &lt;code>forAll&lt;/code> and &lt;code>checkAll&lt;/code>.&lt;/p>
-&lt;p>The KotestPlugin and KotlinPlugin should be added to enable this feature.&lt;/p>
-&lt;pre>&lt;code class="language-kotlin">val fixtureMonkey: FixtureMonkey = FixtureMonkey.builder()
- .plugin(KotestPlugin())
- .plugin(KotlinPlugin())
- .build()
-&lt;/code>&lt;/pre>
-&lt;h2 id="forall">ForAll &lt;a href="#forall" class="anchor" aria-hidden="true">#&lt;/a>&lt;/h2>
-&lt;p>Kotest provides a &lt;code>forAll&lt;/code> function that accepts an n-arity function &lt;code>(a, ..., n) -&amp;gt; Boolean&lt;/code> to test a property.
-The test passes if, for all input values, the function returns true.&lt;/p></description></item></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Kotest Plugin on</title><link>https://naver.github.io/fixture-monkey/v1-0-0/docs/plugins/kotest-plugin/</link><description>Recent content in Kotest Plugin on</description><generator>Hugo -- gohugo.io</generator><atom:link href="https://naver.github.io/fixture-monkey/v1-0-0/docs/plugins/kotest-plugin/index.xml" rel="self" type="application/rss+xml"/><item><title>Features</title><link>https://naver.github.io/fixture-monkey/v1-0-0/docs/plugins/kotest-plugin/features/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v1-0-0/docs/plugins/kotest-plugin/features/</guid><description>The Kotest plugin provided by Fixture Monkey allows you to enhance your testing experience within the Kotest framework.
+Replaces the default generator for generating random values for primitive types from Jqwik to Kotest&amp;rsquo;s property generator (Arb). Use of bean validation annotations also works. Support for Kotest&amp;rsquo;s property-based testing functions, including forAll and checkAll. 💡 Adding the Kotest Plugin doesn't mean you have to use Kotest as your testing framework. You can still use Junit.</description></item><item><title>Kotest Property Based Testing</title><link>https://naver.github.io/fixture-monkey/v1-0-0/docs/plugins/kotest-plugin/property-based-testing/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://naver.github.io/fixture-monkey/v1-0-0/docs/plugins/kotest-plugin/property-based-testing/</guid><description>Fixture Monkey&amp;rsquo;s Kotest plugin introduces two primary features that enhance property-based testing within the Kotest framework: forAll and checkAll.
+The KotestPlugin and KotlinPlugin should be added to enable this feature.
+val fixtureMonkey: FixtureMonkey = FixtureMonkey.builder() .plugin(KotestPlugin()) .plugin(KotlinPlugin()) .build() ForAll # Kotest provides a forAll function that accepts an n-arity function (a, ..., n) -&amp;gt; Boolean to test a property. The test passes if, for all input values, the function returns true.</description></item></channel></rss>
