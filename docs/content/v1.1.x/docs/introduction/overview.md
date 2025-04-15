@@ -28,9 +28,19 @@ It simplifies the given section of the test, enabling you to write tests faster 
 
 ### 2. Reusability
 ```java
+// Basic property setting
 ArbitraryBuilder<Product> actual = fixtureMonkey.giveMeBuilder(Product.class)
     .set("id", 1000L)
     .set("productName", "Book");
+
+// Setting collection size
+ArbitraryBuilder<Product> productWithReviews = fixtureMonkey.giveMeBuilder(Product.class)
+    .size("reviews", 3);  // Set reviews collection to have exactly 3 elements
+
+// Setting specific collection elements
+ArbitraryBuilder<Product> productWithSpecificReviews = fixtureMonkey.giveMeBuilder(Product.class)
+    .set("reviews[0].rating", 5)  // Set first review's rating to 5
+    .set("reviews[1].comment", "Great product!");  // Set second review's comment
 ```
 Fixture Monkey allows you to reuse configurations of instances across multiple tests, saving you time and effort.
 Complex specifications only need to be defined once within your builder and can then be reused to obtain instances.

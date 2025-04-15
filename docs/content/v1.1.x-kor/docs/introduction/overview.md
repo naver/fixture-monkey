@@ -28,9 +28,19 @@ Fixture Monkey를 사용하면 테스트 객체 생성이 놀랍게 간단해집
 
 ### 2. 재사용성
 ```java
+// 기본 속성 설정
 ArbitraryBuilder<Product> actual = fixtureMonkey.giveMeBuilder(Product.class)
     .set("id", 1000L)
     .set("productName", "Book");
+
+// 컬렉션 크기 설정
+ArbitraryBuilder<Product> productWithReviews = fixtureMonkey.giveMeBuilder(Product.class)
+    .size("reviews", 3);  // 리뷰 컬렉션을 정확히 3개의 요소를 가지도록 설정
+
+// 특정 컬렉션 요소 설정
+ArbitraryBuilder<Product> productWithSpecificReviews = fixtureMonkey.giveMeBuilder(Product.class)
+    .set("reviews[0].rating", 5)  // 첫 번째 리뷰의 평점을 5로 설정
+    .set("reviews[1].comment", "Great product!");  // 두 번째 리뷰의 코멘트 설정
 ```
 Fixture Monkey를 활용하면 여러 테스트에서 인스턴스 명세를 재사용할 수 있어 시간과 노력을 절약할 수 있습니다.
 복잡한 명세는 빌더에서 한 번 정의된 후, 이후에 해당 인스턴스를 얻기 위해 재사용될 수 있습니다.
