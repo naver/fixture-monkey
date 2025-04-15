@@ -94,6 +94,41 @@ Foo foo = FixtureMonkey.create().giveMeOne(Foo.class);
 Fixture Monkey is capable to create any kind of object you can imagine. It supports generating basic objects such as lists, nested collections, enums and generic types.
 It also handles more advanced scenarios, including objects with inheritance relationships, circular-referenced objects, and anonymous objects that implement interfaces.
 
+### 5. Deep Customization
+```java
+class Order {
+    List<OrderItem> items;
+    Customer customer;
+    Address shippingAddress;
+}
+
+class OrderItem {
+    Product product;
+    int quantity;
+}
+
+class Product {
+    String name;
+    List<Review> reviews;
+}
+
+// Set all product names to "Special Product"
+ArbitraryBuilder<Order> orderBuilder = fixtureMonkey.giveMeBuilder(Order.class)
+    .set("items[*].product.name", "Special Product");
+
+// Set all review ratings to 5 stars
+ArbitraryBuilder<Order> orderWithGoodReviews = fixtureMonkey.giveMeBuilder(Order.class)
+    .set("items[*].product.reviews[*].rating", 5);
+
+// Set all quantities to 2
+ArbitraryBuilder<Order> orderWithFixedQuantity = fixtureMonkey.giveMeBuilder(Order.class)
+    .set("items[*].quantity", 2);
+```
+
+Unlike other test data generation libraries, Fixture Monkey provides powerful path expressions that allow you to apply operations to all nested fields at any depth.
+Using the `[*]` wildcard operator, you can easily set values for all elements in collections or apply operations to all nested objects that match the path pattern.
+This feature significantly reduces the amount of code needed to customize complex object structures and makes your test code more maintainable.
+
 ---------
 
 ## Proven Effectiveness
