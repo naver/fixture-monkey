@@ -10,6 +10,7 @@ docs:
 ## Fixture Monkey
 
 Fixture Monkey is a Java & Kotlin library designed to generate controllable arbitrary test objects.
+Its most distinctive feature is the ability to freely access and configure any nested fields through path-based expressions.
 
 It focuses on simplifying test writing, by facilitating the generation of necessary test fixtures.
 Whether you're dealing with basic or complex test fixtures, Fixture Monkey helps you to effortlessly create the test objects you need and easily customize them to match your desired configurations.
@@ -45,7 +46,9 @@ ArbitraryBuilder<Product> productWithSpecificReviews = fixtureMonkey.giveMeBuild
 Fixture Monkey allows you to reuse configurations of instances across multiple tests, saving you time and effort.
 Complex specifications only need to be defined once within your builder and can then be reused to obtain instances.
 
-Furthermore, there are additional features that boost reusability. For more details on these features, refer to the sections on 'Registering Default ArbitraryBuilder' and 'InnerSpec'.
+Furthermore, ArbitraryBuilder employs lazy evaluation, meaning that objects are only created when you actually call `sample()`. This approach ensures that you only pay the creation cost when you need the object, making your tests more efficient.
+
+There are additional features that boost reusability. For more details on these features, refer to the sections on 'Registering Default ArbitraryBuilder' and 'InnerSpec'.
 
 ### 3. Randomness
 ```java
@@ -124,12 +127,11 @@ ArbitraryBuilder<Order> orderWithGoodReviews = fixtureMonkey.giveMeBuilder(Order
 ArbitraryBuilder<Order> orderWithFixedQuantity = fixtureMonkey.giveMeBuilder(Order.class)
     .set("items[*].quantity", 2);
 ```
-
 Unlike other test data generation libraries, Fixture Monkey provides powerful path expressions that allow you to apply operations to all nested fields at any depth.
 Using the `[*]` wildcard operator, you can easily set values for all elements in collections or apply operations to all nested objects that match the path pattern.
 This feature significantly reduces the amount of code needed to customize complex object structures and makes your test code more maintainable.
 
----------
+--------
 
 ## Proven Effectiveness
 Fixture Monkey was originally developed as an in-house library at [Naver](https://www.navercorp.com/en) and played a crucial role in simplifying test object generation for the Plasma project.
@@ -137,4 +139,3 @@ The Plasma project aimed to revolutionize Naver Pay's architecture, which is the
 
 The project required thorough testing of complex business requirements, and with Fixture Monkey's assistance, the team efficiently wrote over 10,000 tests, uncovering critical edge cases and ensuring the system's reliability.
 Now available as an open-source library, developers worldwide can take advantage of Fixture Monkey to simplify their test codes and build robust applications with confidence.
-
