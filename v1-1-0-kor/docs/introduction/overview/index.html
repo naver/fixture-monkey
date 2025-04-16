@@ -56,63 +56,34 @@ Intellij 플러그인</button><div class=collapse id=section-b7d1acec65f78021e5b
 Cheat sheet</button><div class=collapse id=section-4e79e6a809c03891b9464d4b766dc391><ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small"><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/cheat-sheet/faq/>자주 묻는 질문</a></li></ul></div></li><li class=mb-1><button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle=collapse data-bs-target=#section-e60166516e271ed4eae9ffab833d6907 aria-expanded=false>
 마이그레이션 가이드</button><div class=collapse id=section-e60166516e271ed4eae9ffab833d6907><ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small"><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/migration-guide/migration-guide/>1.0.x</a></li></ul></div></li></ul></nav></div><nav class="docs-toc d-none d-xl-block col-xl-3" aria-label="Secondary navigation"><div class=d-xl-none><button class="btn btn-outline-primary btn-sm doks-toc-toggle collapsed" type=button data-bs-toggle=collapse data-bs-target=#onThisPage aria-controls=doks-docs-nav aria-expanded=false aria-label="Toggle On this page navigation">
 <span>On This Page</span>
-<span><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" class="doks doks-expand" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><title>Expand</title><polyline points="7 13 12 18 17 13"/><polyline points="7 6 12 11 17 6"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" class="doks doks-collapse" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><title>Collapse</title><polyline points="17 11 12 6 7 11"/><polyline points="17 18 12 13 7 18"/></svg></span></button><div class=collapse id=onThisPage><div class="card card-body mt-3 py-1"><div class=page-links><nav id=TableOfContents><ul><li><a href=#fixture-monkey>Fixture Monkey</a></li><li><a href=#fixture-monkey를-왜-사용해야-하나요>Fixture Monkey를 왜 사용해야 하나요?</a><ul><li><a href=#1-간결함>1. 간결함</a></li><li><a href=#2-재사용성>2. 재사용성</a></li><li><a href=#3-랜덤성>3. 랜덤성</a></li><li><a href=#4-다용도성>4. 다용도성</a></li><li><a href=#5-객체-경로-기반-설정>5. 객체 경로 기반 설정</a></li></ul></li><li><a href=#검증된-효과>검증된 효과</a></li></ul></nav></div></div></div></div><div class="page-links d-none d-xl-block"><h3>On This Page</h3><nav id=TableOfContents><ul><li><a href=#fixture-monkey>Fixture Monkey</a></li><li><a href=#fixture-monkey를-왜-사용해야-하나요>Fixture Monkey를 왜 사용해야 하나요?</a><ul><li><a href=#1-간결함>1. 간결함</a></li><li><a href=#2-재사용성>2. 재사용성</a></li><li><a href=#3-랜덤성>3. 랜덤성</a></li><li><a href=#4-다용도성>4. 다용도성</a></li><li><a href=#5-객체-경로-기반-설정>5. 객체 경로 기반 설정</a></li></ul></li><li><a href=#검증된-효과>검증된 효과</a></li></ul></nav></div></nav><main class="docs-content col-lg-11 col-xl-9 mx-xl-auto"><h1>개요</h1><p class=lead></p><nav class=d-xl-none aria-label="Quaternary navigation"><div class=d-xl-none><button class="btn btn-outline-primary btn-sm doks-toc-toggle collapsed" type=button data-bs-toggle=collapse data-bs-target=#onThisPage aria-controls=doks-docs-nav aria-expanded=false aria-label="Toggle On this page navigation">
+<span><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" class="doks doks-expand" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><title>Expand</title><polyline points="7 13 12 18 17 13"/><polyline points="7 6 12 11 17 6"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" class="doks doks-collapse" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><title>Collapse</title><polyline points="17 11 12 6 7 11"/><polyline points="17 18 12 13 7 18"/></svg></span></button><div class=collapse id=onThisPage><div class="card card-body mt-3 py-1"><div class=page-links><nav id=TableOfContents><ul><li><a href=#fixture-monkey>Fixture Monkey</a></li><li><a href=#빠른-시작>빠른 시작</a></li><li><a href=#fixture-monkey를-왜-사용해야-하나요>Fixture Monkey를 왜 사용해야 하나요?</a><ul><li><a href=#1-한-줄로-끝나는-테스트-객체-생성>1. 한 줄로 끝나는 테스트 객체 생성</a></li><li><a href=#2-직관적인-경로-기반-설정>2. 직관적인 경로 기반 설정</a></li><li><a href=#3-재사용-가능한-테스트-스펙>3. 재사용 가능한 테스트 스펙</a></li><li><a href=#4-모든-객체-생성-가능>4. 모든 객체 생성 가능</a></li><li><a href=#5-동적인-테스트-데이터>5. 동적인 테스트 데이터</a></li></ul></li><li><a href=#실제-테스트-예제>실제 테스트 예제</a></li><li><a href=#실제-프로덕션에서-검증된-효과>실제 프로덕션에서 검증된 효과</a></li></ul></nav></div></div></div></div><div class="page-links d-none d-xl-block"><h3>On This Page</h3><nav id=TableOfContents><ul><li><a href=#fixture-monkey>Fixture Monkey</a></li><li><a href=#빠른-시작>빠른 시작</a></li><li><a href=#fixture-monkey를-왜-사용해야-하나요>Fixture Monkey를 왜 사용해야 하나요?</a><ul><li><a href=#1-한-줄로-끝나는-테스트-객체-생성>1. 한 줄로 끝나는 테스트 객체 생성</a></li><li><a href=#2-직관적인-경로-기반-설정>2. 직관적인 경로 기반 설정</a></li><li><a href=#3-재사용-가능한-테스트-스펙>3. 재사용 가능한 테스트 스펙</a></li><li><a href=#4-모든-객체-생성-가능>4. 모든 객체 생성 가능</a></li><li><a href=#5-동적인-테스트-데이터>5. 동적인 테스트 데이터</a></li></ul></li><li><a href=#실제-테스트-예제>실제 테스트 예제</a></li><li><a href=#실제-프로덕션에서-검증된-효과>실제 프로덕션에서 검증된 효과</a></li></ul></nav></div></nav><main class="docs-content col-lg-11 col-xl-9 mx-xl-auto"><h1>개요</h1><p class=lead></p><nav class=d-xl-none aria-label="Quaternary navigation"><div class=d-xl-none><button class="btn btn-outline-primary btn-sm doks-toc-toggle collapsed" type=button data-bs-toggle=collapse data-bs-target=#onThisPage aria-controls=doks-docs-nav aria-expanded=false aria-label="Toggle On this page navigation">
 <span>On This Page</span>
-<span><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" class="doks doks-expand" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><title>Expand</title><polyline points="7 13 12 18 17 13"/><polyline points="7 6 12 11 17 6"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" class="doks doks-collapse" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><title>Collapse</title><polyline points="17 11 12 6 7 11"/><polyline points="17 18 12 13 7 18"/></svg></span></button><div class=collapse id=onThisPage><div class="card card-body mt-3 py-1"><div class=page-links><nav id=TableOfContents><ul><li><a href=#fixture-monkey>Fixture Monkey</a></li><li><a href=#fixture-monkey를-왜-사용해야-하나요>Fixture Monkey를 왜 사용해야 하나요?</a><ul><li><a href=#1-간결함>1. 간결함</a></li><li><a href=#2-재사용성>2. 재사용성</a></li><li><a href=#3-랜덤성>3. 랜덤성</a></li><li><a href=#4-다용도성>4. 다용도성</a></li><li><a href=#5-객체-경로-기반-설정>5. 객체 경로 기반 설정</a></li></ul></li><li><a href=#검증된-효과>검증된 효과</a></li></ul></nav></div></div></div></div><div class="page-links d-none d-xl-block"><h3>On This Page</h3><nav id=TableOfContents><ul><li><a href=#fixture-monkey>Fixture Monkey</a></li><li><a href=#fixture-monkey를-왜-사용해야-하나요>Fixture Monkey를 왜 사용해야 하나요?</a><ul><li><a href=#1-간결함>1. 간결함</a></li><li><a href=#2-재사용성>2. 재사용성</a></li><li><a href=#3-랜덤성>3. 랜덤성</a></li><li><a href=#4-다용도성>4. 다용도성</a></li><li><a href=#5-객체-경로-기반-설정>5. 객체 경로 기반 설정</a></li></ul></li><li><a href=#검증된-효과>검증된 효과</a></li></ul></nav></div></nav><h2 id=fixture-monkey>Fixture Monkey <a href=#fixture-monkey class=anchor aria-hidden=true>#</a></h2><p>Fixture Monkey는 테스트 객체를 쉽게 생성하고 조작할 수 있도록 고안된 Java 및 Kotlin 라이브러리입니다.
+<span><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" class="doks doks-expand" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><title>Expand</title><polyline points="7 13 12 18 17 13"/><polyline points="7 6 12 11 17 6"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" class="doks doks-collapse" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><title>Collapse</title><polyline points="17 11 12 6 7 11"/><polyline points="17 18 12 13 7 18"/></svg></span></button><div class=collapse id=onThisPage><div class="card card-body mt-3 py-1"><div class=page-links><nav id=TableOfContents><ul><li><a href=#fixture-monkey>Fixture Monkey</a></li><li><a href=#빠른-시작>빠른 시작</a></li><li><a href=#fixture-monkey를-왜-사용해야-하나요>Fixture Monkey를 왜 사용해야 하나요?</a><ul><li><a href=#1-한-줄로-끝나는-테스트-객체-생성>1. 한 줄로 끝나는 테스트 객체 생성</a></li><li><a href=#2-직관적인-경로-기반-설정>2. 직관적인 경로 기반 설정</a></li><li><a href=#3-재사용-가능한-테스트-스펙>3. 재사용 가능한 테스트 스펙</a></li><li><a href=#4-모든-객체-생성-가능>4. 모든 객체 생성 가능</a></li><li><a href=#5-동적인-테스트-데이터>5. 동적인 테스트 데이터</a></li></ul></li><li><a href=#실제-테스트-예제>실제 테스트 예제</a></li><li><a href=#실제-프로덕션에서-검증된-효과>실제 프로덕션에서 검증된 효과</a></li></ul></nav></div></div></div></div><div class="page-links d-none d-xl-block"><h3>On This Page</h3><nav id=TableOfContents><ul><li><a href=#fixture-monkey>Fixture Monkey</a></li><li><a href=#빠른-시작>빠른 시작</a></li><li><a href=#fixture-monkey를-왜-사용해야-하나요>Fixture Monkey를 왜 사용해야 하나요?</a><ul><li><a href=#1-한-줄로-끝나는-테스트-객체-생성>1. 한 줄로 끝나는 테스트 객체 생성</a></li><li><a href=#2-직관적인-경로-기반-설정>2. 직관적인 경로 기반 설정</a></li><li><a href=#3-재사용-가능한-테스트-스펙>3. 재사용 가능한 테스트 스펙</a></li><li><a href=#4-모든-객체-생성-가능>4. 모든 객체 생성 가능</a></li><li><a href=#5-동적인-테스트-데이터>5. 동적인 테스트 데이터</a></li></ul></li><li><a href=#실제-테스트-예제>실제 테스트 예제</a></li><li><a href=#실제-프로덕션에서-검증된-효과>실제 프로덕션에서 검증된 효과</a></li></ul></nav></div></nav><h2 id=fixture-monkey>Fixture Monkey <a href=#fixture-monkey class=anchor aria-hidden=true>#</a></h2><p>Fixture Monkey는 테스트 객체를 쉽게 생성하고 조작할 수 있도록 고안된 Java 및 Kotlin 라이브러리입니다.
 객체의 경로를 기반으로 중첩된 모든 필드에 자유롭게 접근하고 설정할 수 있는 것이 가장 큰 특징입니다.</p><p>이 라이브러리는 테스트 작성을 간편하게 하기 위해 필요한 테스트 픽스처를 손쉽게 생성하는 데 중점을 두고 있습니다.
-기본적이거나 복잡한 테스트 픽스처를 다루고 있더라도, Fixture Monkey는 필요한 테스트 객체를 쉽게 생성하고 원하는 구성에 맞게 손쉽게 수정할 수 있도록 도와줍니다.</p><p>Fixture Monkey를 활용하여 JVM 테스트를 간결하고 안전하게 수행하세요.</p><hr><h2 id=fixture-monkey를-왜-사용해야-하나요>Fixture Monkey를 왜 사용해야 하나요? <a href=#fixture-monkey%eb%a5%bc-%ec%99%9c-%ec%82%ac%ec%9a%a9%ed%95%b4%ec%95%bc-%ed%95%98%eb%82%98%ec%9a%94 class=anchor aria-hidden=true>#</a></h2><h3 id=1-간결함>1. 간결함 <a href=#1-%ea%b0%84%ea%b2%b0%ed%95%a8 class=anchor aria-hidden=true>#</a></h3><pre><code class=language-java>Product actual = fixtureMonkey.giveMeOne(Product.class);
-</code></pre><p>Fixture Monkey를 사용하면 테스트 객체 생성이 놀랍게 간단해집니다. 한 줄의 코드로 어떤 종류의 테스트 객체든 손쉽게 생성할 수 있습니다.
-이는 테스트의 준비 단계를 간소화하여 테스트를 빠르고 쉽게 작성할 수 있도록 해줍니다. 뿐만 아니라, 프로덕션 코드나 테스트 환경을 변경할 필요도 없습니다.</p><h3 id=2-재사용성>2. 재사용성 <a href=#2-%ec%9e%ac%ec%82%ac%ec%9a%a9%ec%84%b1 class=anchor aria-hidden=true>#</a></h3><pre><code class=language-java>// 기본 속성 설정
-ArbitraryBuilder&lt;Product&gt; actual = fixtureMonkey.giveMeBuilder(Product.class)
-    .set(&quot;id&quot;, 1000L)
-    .set(&quot;productName&quot;, &quot;Book&quot;);
-
-// 컬렉션 크기 설정
-ArbitraryBuilder&lt;Product&gt; productWithReviews = fixtureMonkey.giveMeBuilder(Product.class)
-    .size(&quot;reviews&quot;, 3);  // 리뷰 컬렉션을 정확히 3개의 요소를 가지도록 설정
-
-// 특정 컬렉션 요소 설정
-ArbitraryBuilder&lt;Product&gt; productWithSpecificReviews = fixtureMonkey.giveMeBuilder(Product.class)
-    .set(&quot;reviews[0].rating&quot;, 5)  // 첫 번째 리뷰의 평점을 5로 설정
-    .set(&quot;reviews[1].comment&quot;, &quot;Great product!&quot;);  // 두 번째 리뷰의 코멘트 설정
-</code></pre><p>Fixture Monkey를 활용하면 여러 테스트에서 인스턴스 명세를 재사용할 수 있어 시간과 노력을 절약할 수 있습니다.
-복잡한 명세는 빌더에서 한 번 정의된 후, 이후에 해당 인스턴스를 얻기 위해 재사용될 수 있습니다.</p><p>또한, ArbitraryBuilder는 지연 평가(lazy evaluation)를 사용하여 실제로 <code>sample()</code>을 호출할 때만 객체가 생성됩니다. 이는 객체가 실제로 필요할 때만 생성 비용이 발생하도록 하여 테스트의 효율성을 높입니다.</p><p>더불어, 재사용성을 높이는 추가 기능들이 있습니다. 이러한 기능에 대한 자세한 내용은 <a href=../..//fixture-monkey-options/customization-options/#register-a-default-arbitrarybuilder-for-a-given-type>&lsquo;기본 ArbitraryBuilder 등록&rsquo;</a> 및 <a href=../..//customizing-objects/innerspec/>&lsquo;InnerSpec&rsquo;</a> 섹션을 참조하세요.</p><h3 id=3-랜덤성>3. 랜덤성 <a href=#3-%eb%9e%9c%eb%8d%a4%ec%84%b1 class=anchor aria-hidden=true>#</a></h3><pre><code class=language-java>ArbitraryBuilder&lt;Product&gt; actual = fixtureMonkey.giveMeBuilder(Product.class);
-
-then(actual.sample()).isNotEqualTo(actual.sample());
-</code></pre><p>Fixture Monkey는 무작위 값으로 테스트 객체를 생성하여 테스트를 보다 동적으로 만들어줍니다.
-이로써 정적 데이터를 사용할 때 감춰진 엣지 케이스를 발견할 수 있습니다.</p><h3 id=4-다용도성>4. 다용도성 <a href=#4-%eb%8b%a4%ec%9a%a9%eb%8f%84%ec%84%b1 class=anchor aria-hidden=true>#</a></h3><pre><code class=language-java>// 상속
-class Foo {
-  String foo;
+기본적이거나 복잡한 테스트 픽스처를 다루고 있더라도, Fixture Monkey는 필요한 테스트 객체를 쉽게 생성하고 원하는 구성에 맞게 손쉽게 수정할 수 있도록 도와줍니다.</p><p>Fixture Monkey를 활용하여 JVM 테스트를 간결하고 안전하게 수행하세요.</p><hr><h2 id=빠른-시작>빠른 시작 <a href=#%eb%b9%a0%eb%a5%b8-%ec%8b%9c%ec%9e%91 class=anchor aria-hidden=true>#</a></h2><p>프로젝트에 Fixture Monkey를 추가하세요:</p><pre><code class=language-gradle>dependencies {
+    testImplementation 'com.navercorp.fixturemonkey:fixture-monkey-starter:1.1.11'
 }
+</code></pre><p>첫 번째 테스트 객체를 생성해보세요:</p><pre><code class=language-java>FixtureMonkey fixtureMonkey = FixtureMonkey.create();
 
-class Bar extends Foo {
-    String bar;
-}
+// 간단한 String 생성
+String randomString = fixtureMonkey.giveMeOne(String.class);
 
-Foo foo = FixtureMonkey.create().giveMeOne(Foo.class);
-Bar bar = FixtureMonkey.create().giveMeOne(Bar.class);
+// 간단한 Integer 생성
+Integer randomNumber = fixtureMonkey.giveMeOne(Integer.class);
 
-// 순환 참조
-class Foo {
-    String value;
+// String 리스트 생성
+List&lt;String&gt; randomStrings = fixtureMonkey.giveMe(String.class, 3);
+</code></pre><h2 id=fixture-monkey를-왜-사용해야-하나요>Fixture Monkey를 왜 사용해야 하나요? <a href=#fixture-monkey%eb%a5%bc-%ec%99%9c-%ec%82%ac%ec%9a%a9%ed%95%b4%ec%95%bc-%ed%95%98%eb%82%98%ec%9a%94 class=anchor aria-hidden=true>#</a></h2><h3 id=1-한-줄로-끝나는-테스트-객체-생성>1. 한 줄로 끝나는 테스트 객체 생성 <a href=#1-%ed%95%9c-%ec%a4%84%eb%a1%9c-%eb%81%9d%eb%82%98%eb%8a%94-%ed%85%8c%ec%8a%a4%ed%8a%b8-%ea%b0%9d%ec%b2%b4-%ec%83%9d%ec%84%b1 class=anchor aria-hidden=true>#</a></h3><pre><code class=language-java>// 이전: 수동으로 객체 생성
+Product product = new Product();
+product.setId(1L);
+product.setName(&quot;Test Product&quot;);
+product.setPrice(1000);
+product.setCreatedAt(LocalDateTime.now());
 
-    Foo foo;
-}
-
-Foo foo = FixtureMonkey.create().giveMeOne(Foo.class);
-
-// 익명 객체
-interface Foo {
-    Bar getBar();
-}
-
-class Bar {
-    String value;
-}
-
-Foo foo = FixtureMonkey.create().giveMeOne(Foo.class);
-</code></pre><p>Fixture Monkey는 상상할 수 있는 모든 종류의 객체를 생성할 수 있습니다. 리스트, 중첩된 컬렉션, 열거형 및 제네릭 타입과 같은 기본 객체의 생성이 가능합니다.
-뿐만 아니라 상속 관계, 순환 참조 객체, 인터페이스를 구현하는 익명 객체와 같은 더 복잡한 시나리오도 처리할 수 있습니다.</p><h3 id=5-객체-경로-기반-설정>5. 객체 경로 기반 설정 <a href=#5-%ea%b0%9d%ec%b2%b4-%ea%b2%bd%eb%a1%9c-%ea%b8%b0%eb%b0%98-%ec%84%a4%ec%a0%95 class=anchor aria-hidden=true>#</a></h3><pre><code class=language-java>class Order {
+// 이후: Fixture Monkey 사용
+Product product = fixtureMonkey.giveMeOne(Product.class);
+</code></pre><p>테스트 객체 생성을 위한 보일러플레이트 코드 작성을 그만두세요. Fixture Monkey는 한 줄의 코드로 어떤 테스트 객체든 생성합니다.
+지루한 테스트 준비 작업을 간결하고 우아한 솔루션으로 바꿔보세요. 프로덕션 코드나 테스트 환경을 변경할 필요도 없습니다.</p><h3 id=2-직관적인-경로-기반-설정>2. 직관적인 경로 기반 설정 <a href=#2-%ec%a7%81%ea%b4%80%ec%a0%81%ec%9d%b8-%ea%b2%bd%eb%a1%9c-%ea%b8%b0%eb%b0%98-%ec%84%a4%ec%a0%95 class=anchor aria-hidden=true>#</a></h3><pre><code class=language-java>class Order {
     List&lt;OrderItem&gt; items;
     Customer customer;
     Address shippingAddress;
@@ -139,11 +110,93 @@ ArbitraryBuilder&lt;Order&gt; orderWithGoodReviews = fixtureMonkey.giveMeBuilder
 // 모든 수량을 2로 설정
 ArbitraryBuilder&lt;Order&gt; orderWithFixedQuantity = fixtureMonkey.giveMeBuilder(Order.class)
     .set(&quot;items[*].quantity&quot;, 2);
-</code></pre><p>다른 테스트 데이터 생성 라이브러리와 달리, Fixture Monkey는 모든 중첩된 필드에 대해 어떤 깊이에서든 연산을 적용할 수 있는 강력한 경로 표현식을 제공합니다.
-<code>[*]</code> 와일드카드 연산자를 사용하여 컬렉션의 모든 요소에 값을 설정하거나 경로 패턴과 일치하는 모든 중첩 객체에 연산을 적용할 수 있습니다.
-이 기능은 복잡한 객체 구조를 커스터마이징하는 데 필요한 코드 양을 크게 줄이고 테스트 코드의 유지보수성을 향상시킵니다.</p><hr><h2 id=검증된-효과>검증된 효과 <a href=#%ea%b2%80%ec%a6%9d%eb%90%9c-%ed%9a%a8%ea%b3%bc class=anchor aria-hidden=true>#</a></h2><p>Fixture Monkey는 <a href=https://www.navercorp.com/>Naver</a> 내부 라이브러리로 처음 개발되었으며 Plasma 프로젝트에서 테스트 객체 생성을 간소화하는 데 핵심적인 역할을 했습니다.
-Plasma 프로젝트는 대한민국에서 가장 많이 사용되는 모바일 결제 서비스인 Naver Pay의 아키텍처를 개선하기 위한 프로젝트입니다.</p><p>이 프로젝트는 복잡한 비즈니스 요구사항에 대한 철저한 테스트가 필요했으며, Fixture Monkey의 지원을 받아 팀에서 10,000개가 넘는 테스트를 효율적으로 작성하여 중요한 엣지 케이스를 찾아내고 시스템의 신뢰성을 보장했습니다.
-Fixture Monkey는 현재 오픈 소스 라이브러리로 제공되어 전 세계의 개발자들이 Fixture Monkey를 활용하여 테스트 코드를 간소화하고 자신감을 가지고 견고한 애플리케이션을 구축할 수 있습니다.</p><div class="page-footer-meta d-flex flex-column flex-md-row justify-content-between"></div><div class="docs-navigation d-flex justify-content-between"><a href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/migration-guide/migration-guide/><div class="card my-1"><div class="card-body py-2" style=color:#69dc72>&larr; 1.0.x</div></div></a><a class=ms-auto href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/get-started/requirements/><div class="card my-1"><div class="card-body py-2" style=color:#69dc72>요구사항 &rarr;</div></div></a></div></main></div></div></div><footer class="footer text-muted"><div class=container-xxl><div class=row><div class="col-lg-8 order-last order-lg-first"><ul class=list-inline><li class=list-inline-item></li></ul></div><div class="col-lg-8 order-first order-lg-last text-lg-end"><ul class=list-inline><li class=list-inline-item><a href=https://naver.github.io/fixture-monkey/ style=color:#69dc72>© 2025 Naver All Rights Reserved</a></li></ul></div></div></div></footer><script src=https://naver.github.io/fixture-monkey/js/bootstrap.min.49deee76074d4074d37d54619d509b36839e1aa4ebf6698c543b5d5645b355076b9713429c9a308a3b216c208da0aa3507af100fa137063b1e6aca3cc2259e27.js integrity="sha512-Sd7udgdNQHTTfVRhnVCbNoOeGqTr9mmMVDtdVkWzVQdrlxNCnJowijshbCCNoKo1B68QD6E3Bjseaso8wiWeJw==" crossorigin=anonymous defer></script>
+</code></pre><p>끝없는 getter/setter 체인과 작별하세요. Fixture Monkey의 경로 표현식으로 중첩된 필드를 한 줄로 설정할 수 있습니다.
+<code>[*]</code> 와일드카드 연산자로 컬렉션 전체를 손쉽게 조작할 수 있어, 보일러플레이트 코드를 크게 줄이고 테스트의 유지보수성을 높입니다.</p><h3 id=3-재사용-가능한-테스트-스펙>3. 재사용 가능한 테스트 스펙 <a href=#3-%ec%9e%ac%ec%82%ac%ec%9a%a9-%ea%b0%80%eb%8a%a5%ed%95%9c-%ed%85%8c%ec%8a%a4%ed%8a%b8-%ec%8a%a4%ed%8e%99 class=anchor aria-hidden=true>#</a></h3><pre><code class=language-java>// 재사용 가능한 빌더 정의
+ArbitraryBuilder&lt;Product&gt; productBuilder = fixtureMonkey.giveMeBuilder(Product.class)
+    .set(&quot;category&quot;, &quot;Book&quot;)
+    .set(&quot;price&quot;, 1000);
+
+// 다양한 테스트에서 재사용
+@Test
+void testProductCreation() {
+    Product product = productBuilder.sample();
+    assertThat(product.getCategory()).isEqualTo(&quot;Book&quot;);
+    assertThat(product.getPrice()).isEqualTo(1000);
+}
+
+@Test
+void testProductWithReviews() {
+    Product product = productBuilder
+        .size(&quot;reviews&quot;, 3)
+        .sample();
+    assertThat(product.getReviews()).hasSize(3);
+}
+
+@Test
+void testProductWithSpecificReview() {
+    Product product = productBuilder
+        .set(&quot;reviews[0].rating&quot;, 5)
+        .set(&quot;reviews[0].comment&quot;, &quot;Excellent!&quot;)
+        .sample();
+    assertThat(product.getReviews().get(0).getRating()).isEqualTo(5);
+    assertThat(product.getReviews().get(0).getComment()).isEqualTo(&quot;Excellent!&quot;);
+}
+</code></pre><p>테스트 코드 중복을 제거하세요. 복잡한 객체 스펙을 한 번 정의하고 테스트 스위트 전체에서 재사용할 수 있습니다.
+ArbitraryBuilder의 지연 평가(lazy evaluation)는 객체가 필요할 때만 생성되도록 보장하여 테스트 성능을 최적화합니다.</p><h3 id=4-모든-객체-생성-가능>4. 모든 객체 생성 가능 <a href=#4-%eb%aa%a8%eb%93%a0-%ea%b0%9d%ec%b2%b4-%ec%83%9d%ec%84%b1-%ea%b0%80%eb%8a%a5 class=anchor aria-hidden=true>#</a></h3><pre><code class=language-java>// 상속
+class Foo {
+  String foo;
+}
+
+class Bar extends Foo {
+    String bar;
+}
+
+Foo foo = FixtureMonkey.create().giveMeOne(Foo.class);
+Bar bar = FixtureMonkey.create().giveMeOne(Bar.class);
+
+// 순환 참조
+class Foo {
+    String value;
+    Foo foo;
+}
+
+Foo foo = FixtureMonkey.create().giveMeOne(Foo.class);
+
+// 익명 객체
+interface Foo {
+    Bar getBar();
+}
+
+class Bar {
+    String value;
+}
+
+Foo foo = FixtureMonkey.create().giveMeOne(Foo.class);
+</code></pre><p>단순한 POJO부터 복잡한 객체 그래프까지, Fixture Monkey가 모두 처리합니다. 리스트, 중첩된 컬렉션, 열거형, 제네릭 타입은 물론 상속 관계나 순환 참조를 가진 객체도 생성할 수 있습니다.
+Fixture Monkey에게 너무 복잡한 객체 구조란 없습니다.</p><h3 id=5-동적인-테스트-데이터>5. 동적인 테스트 데이터 <a href=#5-%eb%8f%99%ec%a0%81%ec%9d%b8-%ed%85%8c%ec%8a%a4%ed%8a%b8-%eb%8d%b0%ec%9d%b4%ed%84%b0 class=anchor aria-hidden=true>#</a></h3><pre><code class=language-java>ArbitraryBuilder&lt;Product&gt; actual = fixtureMonkey.giveMeBuilder(Product.class);
+
+then(actual.sample()).isNotEqualTo(actual.sample());
+</code></pre><p>정적 테스트 데이터의 한계를 넘어서세요. Fixture Monkey의 랜덤 값 생성으로 정적 데이터에서는 발견하기 어려운 엣지 케이스를 찾을 수 있습니다.
+매 실행마다 다양한 데이터로 테스트하여 더 견고한 테스트를 만들어보세요.</p><h2 id=실제-테스트-예제>실제 테스트 예제 <a href=#%ec%8b%a4%ec%a0%9c-%ed%85%8c%ec%8a%a4%ed%8a%b8-%ec%98%88%ec%a0%9c class=anchor aria-hidden=true>#</a></h2><pre><code class=language-java>@Test
+void testOrderProcessing() {
+    // Given
+    Order order = fixtureMonkey.giveMeBuilder(Order.class)
+        .set(&quot;items[*].quantity&quot;, 2)
+        .set(&quot;items[*].product.price&quot;, 1000)
+        .sample();
+    
+    OrderProcessor processor = new OrderProcessor();
+    
+    // When
+    OrderResult result = processor.process(order);
+    
+    // Then
+    assertThat(result.getTotalAmount()).isEqualTo(4000); // 2 items * 2 quantity * 1000 price
+    assertThat(result.getStatus()).isEqualTo(OrderStatus.COMPLETED);
+}
+</code></pre><hr><h2 id=실제-프로덕션에서-검증된-효과>실제 프로덕션에서 검증된 효과 <a href=#%ec%8b%a4%ec%a0%9c-%ed%94%84%eb%a1%9c%eb%8d%95%ec%85%98%ec%97%90%ec%84%9c-%ea%b2%80%ec%a6%9d%eb%90%9c-%ed%9a%a8%ea%b3%bc class=anchor aria-hidden=true>#</a></h2><p><a href=https://www.navercorp.com/>Naver</a>에서 개발된 Fixture Monkey는 Plasma 프로젝트에서 핵심적인 역할을 하며 Naver Pay의 아키텍처를 혁신했습니다.
+대한민국 최고의 모바일 결제 서비스에서 10,000개가 넘는 테스트를 지원하며, 복잡한 비즈니스 요구사항을 대규모로 처리하는 신뢰성을 입증했습니다.
+이제 오픈 소스로 제공되는 이 검증된 솔루션을 당신의 프로젝트에 도입하고, 더 신뢰성 있는 테스트를 작성해보세요.</p><div class="page-footer-meta d-flex flex-column flex-md-row justify-content-between"></div><div class="docs-navigation d-flex justify-content-between"><a href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/migration-guide/migration-guide/><div class="card my-1"><div class="card-body py-2" style=color:#69dc72>&larr; 1.0.x</div></div></a><a class=ms-auto href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/get-started/requirements/><div class="card my-1"><div class="card-body py-2" style=color:#69dc72>요구사항 &rarr;</div></div></a></div></main></div></div></div><footer class="footer text-muted"><div class=container-xxl><div class=row><div class="col-lg-8 order-last order-lg-first"><ul class=list-inline><li class=list-inline-item></li></ul></div><div class="col-lg-8 order-first order-lg-last text-lg-end"><ul class=list-inline><li class=list-inline-item><a href=https://naver.github.io/fixture-monkey/ style=color:#69dc72>© 2025 Naver All Rights Reserved</a></li></ul></div></div></div></footer><script src=https://naver.github.io/fixture-monkey/js/bootstrap.min.49deee76074d4074d37d54619d509b36839e1aa4ebf6698c543b5d5645b355076b9713429c9a308a3b216c208da0aa3507af100fa137063b1e6aca3cc2259e27.js integrity="sha512-Sd7udgdNQHTTfVRhnVCbNoOeGqTr9mmMVDtdVkWzVQdrlxNCnJowijshbCCNoKo1B68QD6E3Bjseaso8wiWeJw==" crossorigin=anonymous defer></script>
 <script src=https://naver.github.io/fixture-monkey/js/highlight.min.7244af8d435814f5998485b9034d6679bae2cd0a42d27fb0730f5ac8985e7dd27e666b55c2be8152150c8fdffa54977947e3babb1ca1bf58b202672784d9ab96.js integrity="sha512-ckSvjUNYFPWZhIW5A01mebrizQpC0n+wcw9ayJhefdJ+ZmtVwr6BUhUMj9/6VJd5R+O6uxyhv1iyAmcnhNmrlg==" crossorigin=anonymous defer></script>
 <script src=https://naver.github.io/fixture-monkey/main.min.ab0ac22260dc45641b4e799fd6198f97136ff6b521cefef6def0758b432b71b2a05c925c1af6cc85b97e73ff7c4c697957ca2105db0b5b9f717caa343ecf574f.js integrity="sha512-qwrCImDcRWQbTnmf1hmPlxNv9rUhzv723vB1i0MrcbKgXJJcGvbMhbl+c/98TGl5V8ohBdsLW59xfKo0Ps9XTw==" crossorigin=anonymous defer></script>
-<script src=https://naver.github.io/fixture-monkey/index.min.cbf9c7079b17f5187aa0f90839dc4aa911cd3aded9a1948ab181229df9fb6a5d24586defbfa9b1d16b07682afc89913aad32cc676df6ff74f65f5d32385aa023.js integrity="sha512-y/nHB5sX9Rh6oPkIOdxKqRHNOt7ZoZSKsYEinfn7al0kWG3vv6mx0WsHaCr8iZE6rTLMZ232/3T2X10yOFqgIw==" crossorigin=anonymous defer></script></body></html>
+<script src=https://naver.github.io/fixture-monkey/index.min.e0795fd8cec016dace487f4dac28524352d4c4e3bbd980b1e74f4b2087d71e4d9c4867038426f0ff10104f0378ef5058c414e07528aeca46dff0dc00307c5d8b.js integrity="sha512-4Hlf2M7AFtrOSH9NrChSQ1LUxOO72YCx509LIIfXHk2cSGcDhCbw/xAQTwN471BYxBTgdSiuykbf8NwAMHxdiw==" crossorigin=anonymous defer></script></body></html>
