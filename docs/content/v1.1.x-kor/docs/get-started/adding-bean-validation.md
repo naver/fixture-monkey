@@ -1,6 +1,6 @@
 ---
 title: "Bean 유효성 검사 추가하기"
-weight: 24
+weight: 25
 menu:
 docs:
   parent: "get-started"
@@ -8,40 +8,9 @@ docs:
 ---
 
 때로는 클래스의 Bean 유효성 검사 어노테이션에 지정된 제약조건을 준수하는 유효한 테스트 객체를 생성하고 싶을 수 있습니다.
+Fixture Monkey는 `jakarta.validation.constraints` 및 `javax.validation.constraints` 패키지의 제약 어노테이션을 지원하여 이를 쉽게 만들어줍니다.
 
-Fixture Monkey는 `jakarta.validation.constraints` 및 `javax.validation.constraints` 패키지의 제약 어노테이션을 지원합니다.
-
-이 기능을 사용하려면 다음과 같이 프로젝트에 `fixture-monkey-jakarta-validation` 종속성을 추가해야 합니다.
-<br/>
-
-javax.validation.constraints를 사용하는 경우 `fixture-monkey-javax-validation`을 추가해야 합니다.
-
-##### Gradle
-```groovy
-testImplementation("com.navercorp.fixturemonkey:fixture-monkey-jakarta-validation:{{< fixture-monkey-version >}}")
-```
-
-##### Maven
-```xml
-<dependency>
-  <groupId>com.navercorp.fixturemonkey</groupId>
-  <artifactId>fixture-monkey-jakarta-validation</artifactId>
-  <version>{{< fixture-monkey-version >}}</version>
-  <scope>test</scope>
-</dependency>
-```
-Bean 유효성 검사 어노테이션을 기반으로 객체를 생성하려면 아래 그림과 같이 FixtureMonkey에 `JakartaValidationPlugin` (`javax.validation.constraints`를 사용하는 경우 `JavaxValidationPlugin`) 옵션을 추가해야 합니다.
-<br />
-
-`fixture-monkey-starter` 종속성을 추가했다면 이미 포함되어 있을 것입니다.
-
-```java
-FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
-    .plugin(new JakartaValidationPlugin()) // or new JavaxValidationPlugin()
-    .build();
-```
-
-이전 `Product`클래스에 몇 가지 유효성 검사 어노테이션을 추가했다고 가정해보겠습니다.
+예를 들어, 다음과 같이 유효성 검사 제약조건이 있는 Product 클래스를 보겠습니다:
 
 ```java
 @Value
@@ -63,9 +32,34 @@ public class Product {
 }
 ```
 
-앞서 생성한 FixtureMonkey 인스턴스로 이제 유효한 객체를 생성할 수 있습니다.
+이러한 제약조건을 만족하는 객체를 생성하려면, 먼저 적절한 의존성을 추가해야 합니다:
 
+##### Gradle
+```groovy
+testImplementation("com.navercorp.fixturemonkey:fixture-monkey-jakarta-validation:{{< fixture-monkey-version >}}")
 ```
+
+##### Maven
+```xml
+<dependency>
+  <groupId>com.navercorp.fixturemonkey</groupId>
+  <artifactId>fixture-monkey-jakarta-validation</artifactId>
+  <version>{{< fixture-monkey-version >}}</version>
+  <scope>test</scope>
+</dependency>
+```
+
+그리고 FixtureMonkey 설정에 유효성 검사 플러그인을 추가합니다:
+```java
+FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+    .plugin(new JakartaValidationPlugin()) // 또는 new JavaxValidationPlugin()
+    .build();
+```
+참고: `fixture-monkey-starter`를 사용하는 경우 유효성 검사 플러그인이 이미 포함되어 있습니다.
+
+이제 모든 제약조건을 만족하는 유효한 객체를 생성할 수 있습니다:
+
+```java
 @Test
 void test() {
     // given
@@ -88,5 +82,20 @@ void test() {
 }
 ```
 
-검증문을 통해 `FixtureMonkey`로 생성된 객체가 모든 유효성 검사 어노테이션 요구 사항을 충족한다는 것을 알 수 있습니다.
+이 코드를 실행하면, Fixture Monkey는 모든 유효성 검사 제약조건을 만족하는 Product 인스턴스를 생성합니다.
+아래는 예시일 뿐이며, 실제로는 매번 다른 임의의 값들이 생성됩니다:
+
+```java
+Product(
+    id=42,                   // @Min(1) 제약조건 만족
+    productName="product-1", // @NotBlank 제약조건 만족
+    price=75000,            // @Max(100000) 제약조건 만족
+    options=[               // @Size(min = 3) 제약조건 만족
+        "option1",          // 각 문자열이 @NotBlank 제약조건 만족
+        "option2",
+        "option3"
+    ],
+    createdAt=2024-03-20T10:15:30Z  // @Past 제약조건 만족
+)
+```
 
