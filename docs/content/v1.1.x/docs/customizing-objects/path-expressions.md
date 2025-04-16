@@ -1,6 +1,6 @@
 ---
-title: "Expressions"
-weight: 42
+title: "Path expressions"
+weight: 44
 menu:
 docs:
 parent: "customizing-objects"

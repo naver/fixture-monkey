@@ -1,10 +1,10 @@
 ---
-title: "Fixture Customization APIs"
+title: "Customization APIs"
 weight: 41
 menu:
 docs:
   parent: "customizing-objects"
-  identifier: "fixture-customization-apis"
+  identifier: "customization-apis"
 ---
 
 Fixture Monkey offers a range of APIs within the ArbitraryBuilder class that enable customization of objects created by it.

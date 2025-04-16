@@ -1,6 +1,6 @@
 ---
-title: "Customizing random values with Arbitrary"
-weight: 43
+title: "Customizing as random range values"
+weight: 42
 menu:
 docs:
 parent: "customizing-objects"

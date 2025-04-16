@@ -1,10 +1,10 @@
 ---
-title: "Creating test objects"
+title: "Creating objects"
 weight: 22
 menu:
 docs:
   parent: "get-started"
-  identifier: "creating-test-objects"
+  identifier: "creating-objects"
 ---
 
 > Fixture Monkey works in both Java and Kotlin.

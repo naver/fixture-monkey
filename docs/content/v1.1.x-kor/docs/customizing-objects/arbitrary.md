@@ -1,6 +1,6 @@
 ---
-title: "Arbitrary를 활용한 커스터마이징"
-weight: 43
+title: "랜덤한 범위 값으로 커스터마이징"
+weight: 42
 menu:
 docs:
 parent: "customizing-objects"
