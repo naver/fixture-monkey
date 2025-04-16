@@ -63,10 +63,12 @@ testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter:{{< fixtu
 
 ## 서드파티 라이브러리 지원
 
-| 종속성                               | 설명                    |
-|-----------------------------------|-----------------------|
-| fixture-monkey-jackson            | Jackson 지원            |
-| fixture-monkey-jakarta-validation | Jakarta validation 지원 |
-| fixture-monkey-javax-validation   | Javax validation 지원   |
-| fixture-monkey-mockito            | Mockito 지원            |
-| fixture-monkey-autoparams         | Autoparams 지원         |
+| 종속성                               | 설명                                                                 |
+|-----------------------------------|--------------------------------------------------------------------|
+| fixture-monkey-jackson            | 객체의 직렬화와 역직렬화를 위한 Jackson 지원                              |
+| fixture-monkey-jakarta-validation | Jakarta Bean Validation (JSR 380) 어노테이션 지원                      |
+| fixture-monkey-javax-validation   | Javax Bean Validation (JSR 303/349) 어노테이션 지원                    |
+| fixture-monkey-mockito            | Mockito 모킹 프레임워크 지원                                           |
+| fixture-monkey-autoparams         | AutoParams 테스트 데이터 생성 지원                                      |
+| fixture-monkey-junit-jupiter      | JUnit Jupiter 테스트 프레임워크 지원                                    |
+| fixture-monkey-kotest             | Kotest 테스트 프레임워크 지원                                           |

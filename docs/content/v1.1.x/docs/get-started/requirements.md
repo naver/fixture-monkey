@@ -56,8 +56,10 @@ testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter:{{< fixtu
 ## Third party library support
 | Dependency | Description |
 |--|--|
-| fixture-monkey-jackson | Jackson support |
-| fixture-monkey-jakarta-validation | Jakarta validation support |
-| fixture-monkey-javax-validation | Javax validation support |
-| fixture-monkey-mockito | Mockito support |
-| fixture-monkey-autoparams | Autoparams support |
+| fixture-monkey-jackson | Jackson support for serialization and deserialization of objects |
+| fixture-monkey-jakarta-validation | Support for Jakarta Bean Validation (JSR 380) annotations |
+| fixture-monkey-javax-validation | Support for Javax Bean Validation (JSR 303/349) annotations |
+| fixture-monkey-mockito | Support for Mockito mocking framework |
+| fixture-monkey-autoparams | Support for AutoParams test data generation |
+| fixture-monkey-junit-jupiter | Support for JUnit Jupiter test framework |
+| fixture-monkey-kotest | Support for Kotest test framework |
