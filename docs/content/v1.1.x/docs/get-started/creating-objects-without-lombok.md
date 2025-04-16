@@ -1,11 +1,11 @@
 ---
-title: "Creating test objects without Lombok"
+title: "Creating objects without Lombok"
 linkTitle: "Java"
 weight: 23
 menu:
 docs:
   parent: "get-started"
-  identifier: "creating-test-objects"
+  identifier: "creating-objects"
 ---
 {{< alert icon="💡" text="If you're using Lombok in your project, feel free to move on to the next page." />}}
 

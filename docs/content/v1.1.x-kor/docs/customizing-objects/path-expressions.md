@@ -1,6 +1,6 @@
 ---
-title: "표현식"
-weight: 42
+title: "경로 표현식"
+weight: 44
 menu:
 docs:
 parent: "customizing-objects"
@@ -134,4 +134,4 @@ Fixture Monkey 표현식은 리스트와 세트에서 요소를 선택하는 기
 
 ### Kotlin EXP
 
-Kotlin 플러그인을 추가하면 Kotlin의 프로퍼티 참조 구문을 사용하여 프로퍼티를 선택할 수 있습니다. Fixture Monkey에서는 이 기능을 `Kotlin EXP` 또는 `Fixture Monkey Kotlin DSL`이라고 합니다. 사용법에 대한 자세한 내용은 [Kotlin DSL Exp](../../plugins/kotlin-plugin/kotlin-exp)를 참조하세요.
+Kotlin 플러그인을 추가하면 Kotlin의 프로퍼티 참조 구문을 사용하여 프로퍼티를 선택할 수 있습니다. Fixture Monkey에서는 이 기능을 `Kotlin EXP` 또는 `Fixture Monkey Kotlin DSL`이라고 합니다. 사용법에 대한 자세한 내용은 [Kotlin DSL Exp](../../plugins/kotlin-plugin/kotlin-exp)를 참조하세요. 

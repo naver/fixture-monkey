@@ -1,6 +1,6 @@
 ---
 title: "인터페이스 커스터마이징"
-weight: 45
+weight: 43
 menu:
 docs:
 parent: "customizing-objects"
