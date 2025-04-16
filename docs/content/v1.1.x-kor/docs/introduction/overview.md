@@ -19,85 +19,48 @@ Fixture Monkey를 활용하여 JVM 테스트를 간결하고 안전하게 수행
 
 ---------
 
+## 빠른 시작
+
+프로젝트에 Fixture Monkey를 추가하세요:
+
+```gradle
+dependencies {
+    testImplementation 'com.navercorp.fixturemonkey:fixture-monkey-starter:{{< param "version" >}}'
+}
+```
+
+첫 번째 테스트 객체를 생성해보세요:
+
+```java
+FixtureMonkey fixtureMonkey = FixtureMonkey.create();
+
+// 간단한 String 생성
+String randomString = fixtureMonkey.giveMeOne(String.class);
+
+// 간단한 Integer 생성
+Integer randomNumber = fixtureMonkey.giveMeOne(Integer.class);
+
+// String 리스트 생성
+List<String> randomStrings = fixtureMonkey.giveMe(String.class, 3);
+```
+
 ## Fixture Monkey를 왜 사용해야 하나요?
-### 1. 간결함
+### 1. 한 줄로 끝나는 테스트 객체 생성
 ```java
-Product actual = fixtureMonkey.giveMeOne(Product.class);
+// 이전: 수동으로 객체 생성
+Product product = new Product();
+product.setId(1L);
+product.setName("Test Product");
+product.setPrice(1000);
+product.setCreatedAt(LocalDateTime.now());
+
+// 이후: Fixture Monkey 사용
+Product product = fixtureMonkey.giveMeOne(Product.class);
 ```
-Fixture Monkey를 사용하면 테스트 객체 생성이 놀랍게 간단해집니다. 한 줄의 코드로 어떤 종류의 테스트 객체든 손쉽게 생성할 수 있습니다.
-이는 테스트의 준비 단계를 간소화하여 테스트를 빠르고 쉽게 작성할 수 있도록 해줍니다. 뿐만 아니라, 프로덕션 코드나 테스트 환경을 변경할 필요도 없습니다.
+테스트 객체 생성을 위한 보일러플레이트 코드 작성을 그만두세요. Fixture Monkey는 한 줄의 코드로 어떤 테스트 객체든 생성합니다.
+지루한 테스트 준비 작업을 간결하고 우아한 솔루션으로 바꿔보세요. 프로덕션 코드나 테스트 환경을 변경할 필요도 없습니다.
 
-### 2. 재사용성
-```java
-// 기본 속성 설정
-ArbitraryBuilder<Product> actual = fixtureMonkey.giveMeBuilder(Product.class)
-    .set("id", 1000L)
-    .set("productName", "Book");
-
-// 컬렉션 크기 설정
-ArbitraryBuilder<Product> productWithReviews = fixtureMonkey.giveMeBuilder(Product.class)
-    .size("reviews", 3);  // 리뷰 컬렉션을 정확히 3개의 요소를 가지도록 설정
-
-// 특정 컬렉션 요소 설정
-ArbitraryBuilder<Product> productWithSpecificReviews = fixtureMonkey.giveMeBuilder(Product.class)
-    .set("reviews[0].rating", 5)  // 첫 번째 리뷰의 평점을 5로 설정
-    .set("reviews[1].comment", "Great product!");  // 두 번째 리뷰의 코멘트 설정
-```
-Fixture Monkey를 활용하면 여러 테스트에서 인스턴스 명세를 재사용할 수 있어 시간과 노력을 절약할 수 있습니다.
-복잡한 명세는 빌더에서 한 번 정의된 후, 이후에 해당 인스턴스를 얻기 위해 재사용될 수 있습니다.
-
-또한, ArbitraryBuilder는 지연 평가(lazy evaluation)를 사용하여 실제로 `sample()`을 호출할 때만 객체가 생성됩니다. 이는 객체가 실제로 필요할 때만 생성 비용이 발생하도록 하여 테스트의 효율성을 높입니다.
-
-더불어, 재사용성을 높이는 추가 기능들이 있습니다. 이러한 기능에 대한 자세한 내용은 ['기본 ArbitraryBuilder 등록'](../..//fixture-monkey-options/customization-options/#register-a-default-arbitrarybuilder-for-a-given-type) 및 ['InnerSpec'](../..//customizing-objects/innerspec/) 섹션을 참조하세요.
-
-### 3. 랜덤성
-```java
-ArbitraryBuilder<Product> actual = fixtureMonkey.giveMeBuilder(Product.class);
-
-then(actual.sample()).isNotEqualTo(actual.sample());
-```
-Fixture Monkey는 무작위 값으로 테스트 객체를 생성하여 테스트를 보다 동적으로 만들어줍니다.
-이로써 정적 데이터를 사용할 때 감춰진 엣지 케이스를 발견할 수 있습니다.
-
-### 4. 다용도성
-```java
-// 상속
-class Foo {
-  String foo;
-}
-
-class Bar extends Foo {
-    String bar;
-}
-
-Foo foo = FixtureMonkey.create().giveMeOne(Foo.class);
-Bar bar = FixtureMonkey.create().giveMeOne(Bar.class);
-
-// 순환 참조
-class Foo {
-    String value;
-
-    Foo foo;
-}
-
-Foo foo = FixtureMonkey.create().giveMeOne(Foo.class);
-
-// 익명 객체
-interface Foo {
-    Bar getBar();
-}
-
-class Bar {
-    String value;
-}
-
-Foo foo = FixtureMonkey.create().giveMeOne(Foo.class);
-```
-
-Fixture Monkey는 상상할 수 있는 모든 종류의 객체를 생성할 수 있습니다. 리스트, 중첩된 컬렉션, 열거형 및 제네릭 타입과 같은 기본 객체의 생성이 가능합니다.
-뿐만 아니라 상속 관계, 순환 참조 객체, 인터페이스를 구현하는 익명 객체와 같은 더 복잡한 시나리오도 처리할 수 있습니다.
-
-### 5. 객체 경로 기반 설정
+### 2. 직관적인 경로 기반 설정
 ```java
 class Order {
     List<OrderItem> items;
@@ -127,16 +90,114 @@ ArbitraryBuilder<Order> orderWithGoodReviews = fixtureMonkey.giveMeBuilder(Order
 ArbitraryBuilder<Order> orderWithFixedQuantity = fixtureMonkey.giveMeBuilder(Order.class)
     .set("items[*].quantity", 2);
 ```
+끝없는 getter/setter 체인과 작별하세요. Fixture Monkey의 경로 표현식으로 중첩된 필드를 한 줄로 설정할 수 있습니다.
+`[*]` 와일드카드 연산자로 컬렉션 전체를 손쉽게 조작할 수 있어, 보일러플레이트 코드를 크게 줄이고 테스트의 유지보수성을 높입니다.
 
-다른 테스트 데이터 생성 라이브러리와 달리, Fixture Monkey는 모든 중첩된 필드에 대해 어떤 깊이에서든 연산을 적용할 수 있는 강력한 경로 표현식을 제공합니다.
-`[*]` 와일드카드 연산자를 사용하여 컬렉션의 모든 요소에 값을 설정하거나 경로 패턴과 일치하는 모든 중첩 객체에 연산을 적용할 수 있습니다.
-이 기능은 복잡한 객체 구조를 커스터마이징하는 데 필요한 코드 양을 크게 줄이고 테스트 코드의 유지보수성을 향상시킵니다.
+### 3. 재사용 가능한 테스트 스펙
+```java
+// 재사용 가능한 빌더 정의
+ArbitraryBuilder<Product> productBuilder = fixtureMonkey.giveMeBuilder(Product.class)
+    .set("category", "Book")
+    .set("price", 1000);
+
+// 다양한 테스트에서 재사용
+@Test
+void testProductCreation() {
+    Product product = productBuilder.sample();
+    assertThat(product.getCategory()).isEqualTo("Book");
+    assertThat(product.getPrice()).isEqualTo(1000);
+}
+
+@Test
+void testProductWithReviews() {
+    Product product = productBuilder
+        .size("reviews", 3)
+        .sample();
+    assertThat(product.getReviews()).hasSize(3);
+}
+
+@Test
+void testProductWithSpecificReview() {
+    Product product = productBuilder
+        .set("reviews[0].rating", 5)
+        .set("reviews[0].comment", "Excellent!")
+        .sample();
+    assertThat(product.getReviews().get(0).getRating()).isEqualTo(5);
+    assertThat(product.getReviews().get(0).getComment()).isEqualTo("Excellent!");
+}
+```
+테스트 코드 중복을 제거하세요. 복잡한 객체 스펙을 한 번 정의하고 테스트 스위트 전체에서 재사용할 수 있습니다.
+ArbitraryBuilder의 지연 평가(lazy evaluation)는 객체가 필요할 때만 생성되도록 보장하여 테스트 성능을 최적화합니다.
+
+### 4. 모든 객체 생성 가능
+```java
+// 상속
+class Foo {
+  String foo;
+}
+
+class Bar extends Foo {
+    String bar;
+}
+
+Foo foo = FixtureMonkey.create().giveMeOne(Foo.class);
+Bar bar = FixtureMonkey.create().giveMeOne(Bar.class);
+
+// 순환 참조
+class Foo {
+    String value;
+    Foo foo;
+}
+
+Foo foo = FixtureMonkey.create().giveMeOne(Foo.class);
+
+// 익명 객체
+interface Foo {
+    Bar getBar();
+}
+
+class Bar {
+    String value;
+}
+
+Foo foo = FixtureMonkey.create().giveMeOne(Foo.class);
+```
+단순한 POJO부터 복잡한 객체 그래프까지, Fixture Monkey가 모두 처리합니다. 리스트, 중첩된 컬렉션, 열거형, 제네릭 타입은 물론 상속 관계나 순환 참조를 가진 객체도 생성할 수 있습니다.
+Fixture Monkey에게 너무 복잡한 객체 구조란 없습니다.
+
+### 5. 동적인 테스트 데이터
+```java
+ArbitraryBuilder<Product> actual = fixtureMonkey.giveMeBuilder(Product.class);
+
+then(actual.sample()).isNotEqualTo(actual.sample());
+```
+정적 테스트 데이터의 한계를 넘어서세요. Fixture Monkey의 랜덤 값 생성으로 정적 데이터에서는 발견하기 어려운 엣지 케이스를 찾을 수 있습니다.
+매 실행마다 다양한 데이터로 테스트하여 더 견고한 테스트를 만들어보세요.
+
+## 실제 테스트 예제
+```java
+@Test
+void testOrderProcessing() {
+    // Given
+    Order order = fixtureMonkey.giveMeBuilder(Order.class)
+        .set("items[*].quantity", 2)
+        .set("items[*].product.price", 1000)
+        .sample();
+    
+    OrderProcessor processor = new OrderProcessor();
+    
+    // When
+    OrderResult result = processor.process(order);
+    
+    // Then
+    assertThat(result.getTotalAmount()).isEqualTo(4000); // 2 items * 2 quantity * 1000 price
+    assertThat(result.getStatus()).isEqualTo(OrderStatus.COMPLETED);
+}
+```
 
 ---------
 
-## 검증된 효과
-Fixture Monkey는 [Naver](https://www.navercorp.com/) 내부 라이브러리로 처음 개발되었으며 Plasma 프로젝트에서 테스트 객체 생성을 간소화하는 데 핵심적인 역할을 했습니다.
-Plasma 프로젝트는 대한민국에서 가장 많이 사용되는 모바일 결제 서비스인 Naver Pay의 아키텍처를 개선하기 위한 프로젝트입니다.
-
-이 프로젝트는 복잡한 비즈니스 요구사항에 대한 철저한 테스트가 필요했으며, Fixture Monkey의 지원을 받아 팀에서 10,000개가 넘는 테스트를 효율적으로 작성하여 중요한 엣지 케이스를 찾아내고 시스템의 신뢰성을 보장했습니다.
-Fixture Monkey는 현재 오픈 소스 라이브러리로 제공되어 전 세계의 개발자들이 Fixture Monkey를 활용하여 테스트 코드를 간소화하고 자신감을 가지고 견고한 애플리케이션을 구축할 수 있습니다.
+## 실제 프로덕션에서 검증된 효과
+[Naver](https://www.navercorp.com/)에서 개발된 Fixture Monkey는 Plasma 프로젝트에서 핵심적인 역할을 하며 Naver Pay의 아키텍처를 혁신했습니다.
+대한민국 최고의 모바일 결제 서비스에서 10,000개가 넘는 테스트를 지원하며, 복잡한 비즈니스 요구사항을 대규모로 처리하는 신뢰성을 입증했습니다.
+이제 오픈 소스로 제공되는 이 검증된 솔루션을 당신의 프로젝트에 도입하고, 더 신뢰성 있는 테스트를 작성해보세요.
