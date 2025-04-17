@@ -86,6 +86,18 @@ public final class FixtureMonkey {
 		return giveMeBuilder(typeReference);
 	}
 
+	@API(since = "1.1.12", status = Status.EXPERIMENTAL)
+	@SuppressWarnings("unchecked")
+	public <T> ArbitraryBuilder<T> throwMeBuilder(T... reified) {
+		if (reified.length == 1) {
+			return this.giveMeBuilder(reified[0]);
+		} else if (reified.length > 0) {
+			throw new IllegalArgumentException("reified should be empty");
+		}
+
+		return this.giveMeBuilder(getClassOf(reified));
+	}
+
 	public <T> ArbitraryBuilder<T> giveMeBuilder(TypeReference<T> type) {
 		TreeRootProperty rootProperty = new RootProperty(new TypeParameterProperty(type.getAnnotatedType()));
 
@@ -150,12 +162,34 @@ public final class FixtureMonkey {
 		return new JavaTypeDefaultTypeArbitraryBuilder<>(this.giveMeBuilder(type));
 	}
 
+	@API(since = "1.1.12", status = Status.EXPERIMENTAL)
+	@SuppressWarnings("unchecked")
+	public <T> ArbitraryBuilder<T> throwMeJavaBuilder(T... reified) {
+		if (reified.length == 1) {
+			return this.giveMeBuilder(reified[0]);
+		} else if (reified.length > 0) {
+			throw new IllegalArgumentException("reified should be empty");
+		}
+
+		return this.giveMeJavaBuilder(getClassOf(reified));
+	}
+
 	public <T> JavaTypeArbitraryBuilder<T> giveMeJavaBuilder(TypeReference<T> type) {
 		return new JavaTypeDefaultTypeArbitraryBuilder<>(this.giveMeBuilder(type));
 	}
 
 	public <T> Stream<T> giveMe(Class<T> type) {
 		return Stream.generate(() -> this.giveMeBuilder(type).sample());
+	}
+
+	@API(since = "1.1.12", status = Status.EXPERIMENTAL)
+	@SuppressWarnings("unchecked")
+	public <T> Stream<T> throwMe(T... reified) {
+		if (reified.length > 0) {
+			throw new IllegalArgumentException("reified should be empty");
+		}
+
+		return this.giveMe(getClassOf(reified));
 	}
 
 	public <T> Stream<T> giveMe(TypeReference<T> typeReference) {
@@ -174,12 +208,31 @@ public final class FixtureMonkey {
 		return this.giveMe(type, 1).get(0);
 	}
 
+	@SuppressWarnings("unchecked")
+	public <T> T throwMeOne(T... reified) {
+		if (reified.length > 0) {
+			throw new IllegalArgumentException("reified should be empty");
+		}
+
+		return this.giveMeOne(getClassOf(reified));
+	}
+
 	public <T> T giveMeOne(TypeReference<T> typeReference) {
 		return this.giveMe(typeReference, 1).get(0);
 	}
 
 	public <T> Arbitrary<T> giveMeArbitrary(Class<T> type) {
 		return this.giveMeBuilder(type).build();
+	}
+
+	@API(since = "1.1.12", status = Status.EXPERIMENTAL)
+	@SuppressWarnings("unchecked")
+	public <T> Arbitrary<T> throwMeArbitrary(T... reified) {
+		if (reified.length > 0) {
+			throw new IllegalArgumentException("reified should be empty");
+		}
+
+		return this.giveMeArbitrary(getClassOf(reified));
 	}
 
 	public <T> Arbitrary<T> giveMeArbitrary(TypeReference<T> typeReference) {
@@ -197,5 +250,16 @@ public final class FixtureMonkey {
 		for (int i = generatedRegisteredArbitraryBuilder.size() - 1; i >= 0; i--) {
 			monkeyContext.getRegisteredArbitraryBuilders().add(generatedRegisteredArbitraryBuilder.get(i));
 		}
+	}
+
+	/**
+	 * Implemented in Mockito since 4.9.0.
+	 * <a href="https://github.com/mockito/mockito/pull/2779#issuecomment-1312693742">...</a>
+	 * <p>
+	 * Using reified array type to infer the type of the array.
+	 */
+	@SuppressWarnings("unchecked")
+	private static <T> Class<T> getClassOf(T[] array) {
+		return (Class<T>)array.getClass().getComponentType();
 	}
 }
