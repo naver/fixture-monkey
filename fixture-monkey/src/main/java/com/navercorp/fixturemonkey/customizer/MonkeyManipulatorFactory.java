@@ -188,16 +188,11 @@ public final class MonkeyManipulatorFactory {
 		Property property,
 		List<String> selectNames
 	) {
-		DefaultArbitraryBuilder<?> registeredArbitraryBuilder = (DefaultArbitraryBuilder<?>)registeredArbitraryBuilders
+		DefaultArbitraryBuilder<?> registeredArbitraryBuilder = (DefaultArbitraryBuilder<?>)selectNames
 			.stream()
-			.filter(it -> {
-				if (selectNames.isEmpty()) {
-					return false;
-				}
-				return selectNames.stream().anyMatch(
-					name -> it.match(property, NamedMatcher.metadata(name))
-				);
-			})
+			.flatMap(name -> registeredArbitraryBuilders.stream()
+				.filter(it -> it.match(property, NamedMatcher.metadata(name)))
+			)
 			.findFirst()
 			.map(MatcherOperator::getOperator)
 			.filter(it -> it instanceof DefaultArbitraryBuilder<?>)
