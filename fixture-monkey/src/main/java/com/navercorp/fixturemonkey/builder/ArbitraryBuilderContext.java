@@ -159,13 +159,16 @@ public final class ArbitraryBuilderContext {
 	}
 
 	public void addSelectedNames(List<String> selectNames) {
-		this.selectNames.addAll(selectNames);
+		for (String selectName : selectNames) {
+			if (!this.selectNames.contains(selectName)) {
+				this.selectNames.add(0, selectName);
+			}
+		}
 	}
 
 	public List<String> getSelectedNames() {
 		return this.selectNames;
 	}
-
 
 	public void putPropertyConfigurer(Class<?> type, List<Property> propertyConfigurer) {
 		this.propertyConfigurers.put(type, propertyConfigurer);

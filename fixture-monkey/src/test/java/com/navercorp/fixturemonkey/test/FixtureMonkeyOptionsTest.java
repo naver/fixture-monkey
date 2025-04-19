@@ -721,6 +721,30 @@ class FixtureMonkeyOptionsTest {
 	}
 
 	@Property
+	void registerSelectedNameOverridesPrevious() {
+		String expected = "string";
+		FixtureMonkey sut = FixtureMonkey.builder()
+			.registerByName(
+				"simpleObject",
+				String.class,
+				monkey -> monkey.giveMeBuilder("simpleObject")
+			)
+			.registerByName(
+				"string",
+				String.class,
+				monkey -> monkey.giveMeBuilder(expected)
+			)
+			.build();
+
+		String actual = sut.giveMeBuilder(SimpleObject.class)
+			.selectName("simpleObject", "string")
+			.sample()
+			.getStr();
+
+		then(actual).isEqualTo(expected);
+	}
+
+	@Property
 	void registerByName() {
 		FixtureMonkey sut = FixtureMonkey.builder()
 			.registerByName(
