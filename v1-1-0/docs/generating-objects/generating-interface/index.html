@@ -1,13 +1,13 @@
 <!doctype html><html lang=en-us><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="ie=edge"><link rel=preload as=font href=https://naver.github.io/fixture-monkey/fonts/vendor/jost/jost-v4-latin-regular.woff2 type=font/woff2 crossorigin><link rel=preload as=font href=https://naver.github.io/fixture-monkey/fonts/vendor/jost/jost-v4-latin-500.woff2 type=font/woff2 crossorigin><link rel=preload as=font href=https://naver.github.io/fixture-monkey/fonts/vendor/jost/jost-v4-latin-700.woff2 type=font/woff2 crossorigin><link rel=preload as=font href=https://naver.github.io/fixture-monkey/fonts/vendor/inter/Inter-Regular.woff2 type=font/woff2 crossorigin><script>(()=>{var t=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,e=localStorage.getItem("theme");t&&e===null&&(localStorage.setItem("theme","dark"),document.documentElement.setAttribute("data-dark-mode","")),t&&e==="dark"&&document.documentElement.setAttribute("data-dark-mode",""),e==="dark"&&document.documentElement.setAttribute("data-dark-mode","")})()</script><script async src="https://www.googletagmanager.com/gtag/js?id=G-M1VQRZLNX1"></script>
-<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),gtag("config","G-M1VQRZLNX1")</script><link rel=stylesheet href=https://naver.github.io/fixture-monkey/main.e3c12181ad6b4007619cb838aaeea940e67be3087613f31c2135f2f1f950b35788c9da187eb73883b60aeaecad4f359ec84f0e91099aefcbab7d634f1e43f711.css integrity="sha512-48Ehga1rQAdhnLg4qu6pQOZ74wh2E/McITXy8flQs1eIydoYfrc4g7YK6uytTzWeyE8OkQma78urfWNPHkP3EQ==" crossorigin=anonymous><noscript><style>img.lazyload{display:none}</style></noscript><meta name=robots content="index, follow"><meta name=googlebot content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"><meta name=bingbot content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"><title>Generating Interface Type Fixture Monkey</title><meta name=description content="Fixture Monkey is able to generate complex interface objects consisting of interface, generic interface, sealed interface.
-Fixture Monkey provides the default implementations of certain interfaces. For example, ArrayList is for the List interface, HashSet is for the Set interface.
-Except in those cases, you should specify the implementations of the interface. If you do not, Fixture Monkey will generate an anonymous object for you. You do not need to specify the implementations in the case of sealed interface."><link rel=canonical href=https://naver.github.io/fixture-monkey/v1-1-0/docs/generating-objects/generating-interface/><meta property="og:locale" content="en_US"><meta property="og:type" content="article"><meta property="og:title" content="Generating Interface Type"><meta property="og:description" content="Fixture Monkey is able to generate complex interface objects consisting of interface, generic interface, sealed interface.
-Fixture Monkey provides the default implementations of certain interfaces. For example, ArrayList is for the List interface, HashSet is for the Set interface.
-Except in those cases, you should specify the implementations of the interface. If you do not, Fixture Monkey will generate an anonymous object for you. You do not need to specify the implementations in the case of sealed interface."><meta property="og:url" content="https://naver.github.io/fixture-monkey/v1-1-0/docs/generating-objects/generating-interface/"><meta property="og:site_name" content="Fixture Monkey"><meta property="og:image" content="https://naver.github.io/fixture-monkey/fixtureMonkey.png"><meta property="og:image:alt" content="Fixture Monkey"><meta name=twitter:card content="summary_large_image"><meta name=twitter:site content><meta name=twitter:creator content><meta name=twitter:title content="Generating Interface Type"><meta name=twitter:description content><meta name=twitter:image content="https://naver.github.io/fixture-monkey/fixtureMonkey.png"><meta name=twitter:image:alt content="Generating Interface Type"><script type=application/ld+json>{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://naver.github.io/#/schema/organization/1","name":"Doks","url":"https://naver.github.io/","sameAs":["https://twitter.com/getdoks","https://github.com/h-enk/doks"],"logo":{"@type":"ImageObject","@id":"https://naver.github.io/#/schema/image/1","url":"https://naver.github.io/logo-doks.png","width":512,"height":512,"caption":"Doks"},"image":{"@id":"https://naver.github.io/#/schema/image/1"}},{"@type":"WebSite","@id":"https://naver.github.io/#/schema/website/1","url":"https://naver.github.io/","name":"Fixture Monkey","description":"","publisher":{"@id":"https://naver.github.io/#/schema/organization/1"}},{"@type":"WebPage","@id":"https://naver.github.io/fixture-monkey/v1-1-0/docs/generating-objects/generating-interface/","url":"https://naver.github.io/fixture-monkey/v1-1-0/docs/generating-objects/generating-interface/","name":"Generating Interface Type","description":"","isPartOf":{"@id":"https://naver.github.io/#/schema/website/1"},"about":{"@id":"https://naver.github.io/#/schema/organization/1"},"datePublished":"0001-01-01T00:00:00CET","dateModified":"0001-01-01T00:00:00CET","breadcrumb":{"@id":"https://naver.github.io/fixture-monkey/v1-1-0/docs/generating-objects/generating-interface/#/schema/breadcrumb/1"},"primaryImageOfPage":{"@id":"https://naver.github.io/fixture-monkey/v1-1-0/docs/generating-objects/generating-interface/#/schema/image/2"},"inLanguage":"en-US","potentialAction":[{"@type":"ReadAction","target":["https://naver.github.io/fixture-monkey/v1-1-0/docs/generating-objects/generating-interface/"]}]},{"@type":"BreadcrumbList","@id":"https://naver.github.io/fixture-monkey/v1-1-0/docs/generating-objects/generating-interface/#/schema/breadcrumb/1","name":"Breadcrumbs","itemListElement":[{"@type":"ListItem","position":1,"item":{"@type":"WebPage","@id":"https://naver.github.io/fixture-monkey/","url":"https://naver.github.io/fixture-monkey/","name":"Home"}},{"@type":"ListItem","position":2,"item":{"@type":"WebPage","@id":"https://naver.github.io/fixture-monkey/v1-1-0/","url":"https://naver.github.io/fixture-monkey/v1-1-0/","name":"V1 1 0"}},{"@type":"ListItem","position":3,"item":{"@type":"WebPage","@id":"https://naver.github.io/fixture-monkey/v1-1-0/docs/","url":"https://naver.github.io/fixture-monkey/v1-1-0/docs/","name":"Docs"}},{"@type":"ListItem","position":4,"item":{"@type":"WebPage","@id":"https://naver.github.io/fixture-monkey/v1-1-0/docs/generating-objects/","url":"https://naver.github.io/fixture-monkey/v1-1-0/docs/generating-objects/","name":"Generating Objects"}},{"@type":"ListItem","position":5,"item":{"@id":"https://naver.github.io/fixture-monkey/v1-1-0/docs/generating-objects/generating-interface/"}}]},{"@context":"https://schema.org","@graph":[{"@type":"Article","@id":"https://naver.github.io/#/schema/article/1","headline":"Generating Interface Type","description":"","isPartOf":{"@id":"https://naver.github.io/fixture-monkey/v1-1-0/docs/generating-objects/generating-interface/"},"mainEntityOfPage":{"@id":"https://naver.github.io/fixture-monkey/v1-1-0/docs/generating-objects/generating-interface/"},"datePublished":"0001-01-01T00:00:00CET","dateModified":"0001-01-01T00:00:00CET","author":{"@id":"https://naver.github.io/#/schema/person/2"},"publisher":{"@id":"https://naver.github.io/#/schema/organization/1"},"image":{"@id":"https://naver.github.io/fixture-monkey/v1-1-0/docs/generating-objects/generating-interface/#/schema/image/2"}}]},{"@context":"https://schema.org","@graph":[{"@type":"Person","@id":"https://naver.github.io/#/schema/person/2","name":"Henk Verlinde","sameAs":["https://twitter.com/henkverlinde","https://www.linkedin.com/in/henkverlinde/","https://github.com/h-enk"]}]},{"@context":"https://schema.org","@graph":[{"@type":"ImageObject","@id":"https://naver.github.io/fixture-monkey/v1-1-0/docs/generating-objects/generating-interface/#/schema/image/2","url":"https://naver.github.io/fixture-monkey/fixtureMonkey.png","contentUrl":"https://naver.github.io/fixture-monkey/fixtureMonkey.png","caption":"Generating Interface Type"}]}]}</script><meta name=theme-color content="#fff"><link rel=icon href=https://naver.github.io/fixture-monkey/favicon.ico sizes=any><link rel=icon type=image/svg+xml href=https://naver.github.io/fixture-monkey/favicon.svg><link rel=apple-touch-icon sizes=180x180 href=https://naver.github.io/fixture-monkey/apple-touch-icon.png><link rel=icon type=image/png sizes=32x32 href=https://naver.github.io/fixture-monkey/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=https://naver.github.io/fixture-monkey/favicon-16x16.png><link rel=manifest crossorigin=use-credentials href=https://naver.github.io/fixture-monkey/site.webmanifest></head><body class="docs single"><div class=sticky-top><div class=header-bar></div><header class="navbar navbar-expand-lg navbar-light doks-navbar"><nav class="container-xxl flex-wrap flex-lg-nowrap" aria-label="Main navigation"><a class="navbar-brand order-0" href=https://naver.github.io/fixture-monkey/v1-1-0 aria-label="Fixture Monkey" style=font-family:Jost,Inter>Fixture Monkey</a>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),gtag("config","G-M1VQRZLNX1")</script><link rel=stylesheet href=https://naver.github.io/fixture-monkey/main.e3c12181ad6b4007619cb838aaeea940e67be3087613f31c2135f2f1f950b35788c9da187eb73883b60aeaecad4f359ec84f0e91099aefcbab7d634f1e43f711.css integrity="sha512-48Ehga1rQAdhnLg4qu6pQOZ74wh2E/McITXy8flQs1eIydoYfrc4g7YK6uytTzWeyE8OkQma78urfWNPHkP3EQ==" crossorigin=anonymous><noscript><style>img.lazyload{display:none}</style></noscript><meta name=robots content="index, follow"><meta name=googlebot content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"><meta name=bingbot content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"><title>Generating Interface Types Fixture Monkey</title><meta name=description content="Why Generate Interface Types? # When writing tests, you often need to work with interfaces rather than concrete implementations:
+You may be testing code that accepts interfaces as parameters Your system under test may return interface types You want to test behavior without coupling to specific implementations Fixture Monkey makes it easy to generate test objects for interfaces - whether they&amp;rsquo;re simple interfaces, generic interfaces, or sealed interfaces.
+Quick Start Example # Here&amp;rsquo;s a simple example to get started with interface generation:"><link rel=canonical href=https://naver.github.io/fixture-monkey/v1-1-0/docs/generating-objects/generating-interface/><meta property="og:locale" content="en_US"><meta property="og:type" content="article"><meta property="og:title" content="Generating Interface Types"><meta property="og:description" content="Why Generate Interface Types? # When writing tests, you often need to work with interfaces rather than concrete implementations:
+You may be testing code that accepts interfaces as parameters Your system under test may return interface types You want to test behavior without coupling to specific implementations Fixture Monkey makes it easy to generate test objects for interfaces - whether they&rsquo;re simple interfaces, generic interfaces, or sealed interfaces.
+Quick Start Example # Here&rsquo;s a simple example to get started with interface generation:"><meta property="og:url" content="https://naver.github.io/fixture-monkey/v1-1-0/docs/generating-objects/generating-interface/"><meta property="og:site_name" content="Fixture Monkey"><meta property="og:image" content="https://naver.github.io/fixture-monkey/fixtureMonkey.png"><meta property="og:image:alt" content="Fixture Monkey"><meta name=twitter:card content="summary_large_image"><meta name=twitter:site content><meta name=twitter:creator content><meta name=twitter:title content="Generating Interface Types"><meta name=twitter:description content><meta name=twitter:image content="https://naver.github.io/fixture-monkey/fixtureMonkey.png"><meta name=twitter:image:alt content="Generating Interface Types"><script type=application/ld+json>{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://naver.github.io/#/schema/organization/1","name":"Doks","url":"https://naver.github.io/","sameAs":["https://twitter.com/getdoks","https://github.com/h-enk/doks"],"logo":{"@type":"ImageObject","@id":"https://naver.github.io/#/schema/image/1","url":"https://naver.github.io/logo-doks.png","width":512,"height":512,"caption":"Doks"},"image":{"@id":"https://naver.github.io/#/schema/image/1"}},{"@type":"WebSite","@id":"https://naver.github.io/#/schema/website/1","url":"https://naver.github.io/","name":"Fixture Monkey","description":"","publisher":{"@id":"https://naver.github.io/#/schema/organization/1"}},{"@type":"WebPage","@id":"https://naver.github.io/fixture-monkey/v1-1-0/docs/generating-objects/generating-interface/","url":"https://naver.github.io/fixture-monkey/v1-1-0/docs/generating-objects/generating-interface/","name":"Generating Interface Types","description":"","isPartOf":{"@id":"https://naver.github.io/#/schema/website/1"},"about":{"@id":"https://naver.github.io/#/schema/organization/1"},"datePublished":"0001-01-01T00:00:00CET","dateModified":"0001-01-01T00:00:00CET","breadcrumb":{"@id":"https://naver.github.io/fixture-monkey/v1-1-0/docs/generating-objects/generating-interface/#/schema/breadcrumb/1"},"primaryImageOfPage":{"@id":"https://naver.github.io/fixture-monkey/v1-1-0/docs/generating-objects/generating-interface/#/schema/image/2"},"inLanguage":"en-US","potentialAction":[{"@type":"ReadAction","target":["https://naver.github.io/fixture-monkey/v1-1-0/docs/generating-objects/generating-interface/"]}]},{"@type":"BreadcrumbList","@id":"https://naver.github.io/fixture-monkey/v1-1-0/docs/generating-objects/generating-interface/#/schema/breadcrumb/1","name":"Breadcrumbs","itemListElement":[{"@type":"ListItem","position":1,"item":{"@type":"WebPage","@id":"https://naver.github.io/fixture-monkey/","url":"https://naver.github.io/fixture-monkey/","name":"Home"}},{"@type":"ListItem","position":2,"item":{"@type":"WebPage","@id":"https://naver.github.io/fixture-monkey/v1-1-0/","url":"https://naver.github.io/fixture-monkey/v1-1-0/","name":"V1 1 0"}},{"@type":"ListItem","position":3,"item":{"@type":"WebPage","@id":"https://naver.github.io/fixture-monkey/v1-1-0/docs/","url":"https://naver.github.io/fixture-monkey/v1-1-0/docs/","name":"Docs"}},{"@type":"ListItem","position":4,"item":{"@type":"WebPage","@id":"https://naver.github.io/fixture-monkey/v1-1-0/docs/generating-objects/","url":"https://naver.github.io/fixture-monkey/v1-1-0/docs/generating-objects/","name":"Generating Objects"}},{"@type":"ListItem","position":5,"item":{"@id":"https://naver.github.io/fixture-monkey/v1-1-0/docs/generating-objects/generating-interface/"}}]},{"@context":"https://schema.org","@graph":[{"@type":"Article","@id":"https://naver.github.io/#/schema/article/1","headline":"Generating Interface Types","description":"","isPartOf":{"@id":"https://naver.github.io/fixture-monkey/v1-1-0/docs/generating-objects/generating-interface/"},"mainEntityOfPage":{"@id":"https://naver.github.io/fixture-monkey/v1-1-0/docs/generating-objects/generating-interface/"},"datePublished":"0001-01-01T00:00:00CET","dateModified":"0001-01-01T00:00:00CET","author":{"@id":"https://naver.github.io/#/schema/person/2"},"publisher":{"@id":"https://naver.github.io/#/schema/organization/1"},"image":{"@id":"https://naver.github.io/fixture-monkey/v1-1-0/docs/generating-objects/generating-interface/#/schema/image/2"}}]},{"@context":"https://schema.org","@graph":[{"@type":"Person","@id":"https://naver.github.io/#/schema/person/2","name":"Henk Verlinde","sameAs":["https://twitter.com/henkverlinde","https://www.linkedin.com/in/henkverlinde/","https://github.com/h-enk"]}]},{"@context":"https://schema.org","@graph":[{"@type":"ImageObject","@id":"https://naver.github.io/fixture-monkey/v1-1-0/docs/generating-objects/generating-interface/#/schema/image/2","url":"https://naver.github.io/fixture-monkey/fixtureMonkey.png","contentUrl":"https://naver.github.io/fixture-monkey/fixtureMonkey.png","caption":"Generating Interface Types"}]}]}</script><meta name=theme-color content="#fff"><link rel=icon href=https://naver.github.io/fixture-monkey/favicon.ico sizes=any><link rel=icon type=image/svg+xml href=https://naver.github.io/fixture-monkey/favicon.svg><link rel=apple-touch-icon sizes=180x180 href=https://naver.github.io/fixture-monkey/apple-touch-icon.png><link rel=icon type=image/png sizes=32x32 href=https://naver.github.io/fixture-monkey/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=https://naver.github.io/fixture-monkey/favicon-16x16.png><link rel=manifest crossorigin=use-credentials href=https://naver.github.io/fixture-monkey/site.webmanifest></head><body class="docs single"><div class=sticky-top><div class=header-bar></div><header class="navbar navbar-expand-lg navbar-light doks-navbar"><nav class="container-xxl flex-wrap flex-lg-nowrap" aria-label="Main navigation"><a class="navbar-brand order-0" href=https://naver.github.io/fixture-monkey/v1-1-0 aria-label="Fixture Monkey" style=font-family:Jost,Inter>Fixture Monkey</a>
 <button class="btn btn-link order-0 ms-auto d-lg-none" type=button data-bs-toggle=offcanvas data-bs-target=#offcanvasExample aria-controls=offcanvasExample><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-more-horizontal"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button><div class="offcanvas offcanvas-start d-lg-none" tabindex=-1 id=offcanvasExample aria-labelledby=offcanvasExampleLabel><div class=header-bar></div><div class=offcanvas-header><h5 class=offcanvas-title id=offcanvasExampleLabel>Browse docs</h5><button type=button class=btn-close data-bs-dismiss=offcanvas aria-label=Close></button></div><div class=offcanvas-body><aside class="doks-sidebar mt-n3"><nav id=doks-docs-nav aria-label="Tertiary navigation"><ul class="list-unstyled collapsible-sidebar"><li class=mb-1><button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle=collapse data-bs-target=#section-0b79795d3efc95b9976c7c5b933afce2 aria-expanded=false>
 Introduction</button><div class=collapse id=section-0b79795d3efc95b9976c7c5b933afce2><ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small"><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0/docs/introduction/overview/>Overview</a></li></ul></div></li><li class=mb-1><button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle=collapse data-bs-target=#section-bf647454e36069fd16f1a7a35cf6a865 aria-expanded=false>
 Getting Started</button><div class=collapse id=section-bf647454e36069fd16f1a7a35cf6a865><ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small"><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0/docs/get-started/requirements/>Requirements</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0/docs/get-started/creating-objects/>Creating objects</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0/docs/get-started/creating-objects-without-lombok/>Creating objects without Lombok</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0/docs/get-started/creating-objects-in-kotlin/>Creating objects in Kotlin</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0/docs/get-started/adding-bean-validation/>Adding Bean Validation</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0/docs/get-started/customizing-objects/>Customizing objects</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0/docs/get-started/tips/>Tips for Beginners</a></li></ul></div></li><li class=mb-1><button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle=collapse data-bs-target=#section-ed0b936fb28d3a108723035336d481ce aria-expanded=true>
-Generating Objects</button><div class="collapse show" id=section-ed0b936fb28d3a108723035336d481ce><ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small"><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0/docs/generating-objects/fixture-monkey/>FixtureMonkey</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0/docs/generating-objects/generating-complex-types/>Generating Complex Types</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0/docs/generating-objects/instantiate-methods/>Instantiate Methods</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0/docs/generating-objects/introspector/>Introspector</a></li><li><a class="docs-link rounded active" href=https://naver.github.io/fixture-monkey/v1-1-0/docs/generating-objects/generating-interface/>Generating Interface Type</a></li></ul></div></li><li class=mb-1><button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle=collapse data-bs-target=#section-5e917438bbbc1eab9b55d43d0a479ec8 aria-expanded=false>
+Generating Objects</button><div class="collapse show" id=section-ed0b936fb28d3a108723035336d481ce><ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small"><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0/docs/generating-objects/fixture-monkey/>FixtureMonkey</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0/docs/generating-objects/generating-complex-types/>Generating Complex Types</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0/docs/generating-objects/instantiate-methods/>Instantiate Methods</a></li><li><a class="docs-link rounded active" href=https://naver.github.io/fixture-monkey/v1-1-0/docs/generating-objects/generating-interface/>Generating Interface Types</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0/docs/generating-objects/introspector/>Introspector</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0/docs/generating-objects/custom-introspector/>Creating Custom Introspector</a></li></ul></div></li><li class=mb-1><button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle=collapse data-bs-target=#section-5e917438bbbc1eab9b55d43d0a479ec8 aria-expanded=false>
 Customizing Objects</button><div class=collapse id=section-5e917438bbbc1eab9b55d43d0a479ec8><ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small"><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0/docs/customizing-objects/apis/>Customization APIs</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0/docs/customizing-objects/arbitrary/>Customizing as random range values</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0/docs/customizing-objects/interface/>Customizing Interface</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0/docs/customizing-objects/path-expressions/>Path expressions</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0/docs/customizing-objects/innerspec/>InnerSpec</a></li></ul></div></li><li class=mb-1><button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle=collapse data-bs-target=#section-743eecd98c3a9752f7b78e49b9580029 aria-expanded=false>
 Fixture Monkey Options</button><div class=collapse id=section-743eecd98c3a9752f7b78e49b9580029><ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small"><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0/docs/fixture-monkey-options/concepts/>Concepts</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0/docs/fixture-monkey-options/generation-options/>Generation Options</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0/docs/fixture-monkey-options/customization-options/>Customization Options</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0/docs/fixture-monkey-options/other-options/>Other Options</a></li></ul></div></li><li class=mb-1><button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle=collapse data-bs-target=#section-bb38096ab39160dc20d44f3ea6b44507 aria-expanded=false>
 Plugins</button><div class=collapse id=section-bb38096ab39160dc20d44f3ea6b44507><ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small"><li class="my-1 ms-3"><button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle=collapse data-bs-target=#section-3e870d920960e3ef5f99817124da3773 aria-expanded=false>
@@ -27,7 +27,7 @@ ENG
 <span class=dropdown-caret><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-down"><polyline points="6 9 12 15 18 9"/></svg></span></button><ul class="dropdown-menu dropdown-menu-lg-end me-lg-2 shadow rounded border-0" aria-labelledby=doks-versions><li><a class="dropdown-item current" aria-current=true href=https://naver.github.io/fixture-monkey/v1-1-0/docs/generating-objects/generating-interface/>ENG</a></li><li><hr class=dropdown-divider></li><li><a class=dropdown-item rel=alternate href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/generating-objects/generating-interface/ hreflang=v1-1-0-kor lang=v1-1-0-kor>KOR</a></li></ul></div></div></div></nav></header></div><div class=container-xxl><aside class=doks-sidebar><nav id=doks-docs-nav class="collapse d-lg-none" aria-label="Tertiary navigation"><ul class="list-unstyled collapsible-sidebar"><li class=mb-1><button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle=collapse data-bs-target=#section-0b79795d3efc95b9976c7c5b933afce2 aria-expanded=false>
 Introduction</button><div class=collapse id=section-0b79795d3efc95b9976c7c5b933afce2><ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small"><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0/docs/introduction/overview/>Overview</a></li></ul></div></li><li class=mb-1><button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle=collapse data-bs-target=#section-bf647454e36069fd16f1a7a35cf6a865 aria-expanded=false>
 Getting Started</button><div class=collapse id=section-bf647454e36069fd16f1a7a35cf6a865><ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small"><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0/docs/get-started/requirements/>Requirements</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0/docs/get-started/creating-objects/>Creating objects</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0/docs/get-started/creating-objects-without-lombok/>Creating objects without Lombok</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0/docs/get-started/creating-objects-in-kotlin/>Creating objects in Kotlin</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0/docs/get-started/adding-bean-validation/>Adding Bean Validation</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0/docs/get-started/customizing-objects/>Customizing objects</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0/docs/get-started/tips/>Tips for Beginners</a></li></ul></div></li><li class=mb-1><button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle=collapse data-bs-target=#section-ed0b936fb28d3a108723035336d481ce aria-expanded=true>
-Generating Objects</button><div class="collapse show" id=section-ed0b936fb28d3a108723035336d481ce><ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small"><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0/docs/generating-objects/fixture-monkey/>FixtureMonkey</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0/docs/generating-objects/generating-complex-types/>Generating Complex Types</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0/docs/generating-objects/instantiate-methods/>Instantiate Methods</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0/docs/generating-objects/introspector/>Introspector</a></li><li><a class="docs-link rounded active" href=https://naver.github.io/fixture-monkey/v1-1-0/docs/generating-objects/generating-interface/>Generating Interface Type</a></li></ul></div></li><li class=mb-1><button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle=collapse data-bs-target=#section-5e917438bbbc1eab9b55d43d0a479ec8 aria-expanded=false>
+Generating Objects</button><div class="collapse show" id=section-ed0b936fb28d3a108723035336d481ce><ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small"><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0/docs/generating-objects/fixture-monkey/>FixtureMonkey</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0/docs/generating-objects/generating-complex-types/>Generating Complex Types</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0/docs/generating-objects/instantiate-methods/>Instantiate Methods</a></li><li><a class="docs-link rounded active" href=https://naver.github.io/fixture-monkey/v1-1-0/docs/generating-objects/generating-interface/>Generating Interface Types</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0/docs/generating-objects/introspector/>Introspector</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0/docs/generating-objects/custom-introspector/>Creating Custom Introspector</a></li></ul></div></li><li class=mb-1><button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle=collapse data-bs-target=#section-5e917438bbbc1eab9b55d43d0a479ec8 aria-expanded=false>
 Customizing Objects</button><div class=collapse id=section-5e917438bbbc1eab9b55d43d0a479ec8><ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small"><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0/docs/customizing-objects/apis/>Customization APIs</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0/docs/customizing-objects/arbitrary/>Customizing as random range values</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0/docs/customizing-objects/interface/>Customizing Interface</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0/docs/customizing-objects/path-expressions/>Path expressions</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0/docs/customizing-objects/innerspec/>InnerSpec</a></li></ul></div></li><li class=mb-1><button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle=collapse data-bs-target=#section-743eecd98c3a9752f7b78e49b9580029 aria-expanded=false>
 Fixture Monkey Options</button><div class=collapse id=section-743eecd98c3a9752f7b78e49b9580029><ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small"><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0/docs/fixture-monkey-options/concepts/>Concepts</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0/docs/fixture-monkey-options/generation-options/>Generation Options</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0/docs/fixture-monkey-options/customization-options/>Customization Options</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0/docs/fixture-monkey-options/other-options/>Other Options</a></li></ul></div></li><li class=mb-1><button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle=collapse data-bs-target=#section-bb38096ab39160dc20d44f3ea6b44507 aria-expanded=false>
 Plugins</button><div class=collapse id=section-bb38096ab39160dc20d44f3ea6b44507><ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small"><li class="my-1 ms-3"><button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle=collapse data-bs-target=#section-3e870d920960e3ef5f99817124da3773 aria-expanded=false>
@@ -42,7 +42,7 @@ Cheat sheet</button><div class=collapse id=section-4e79e6a809c03891b9464d4b766dc
 Migration guide</button><div class=collapse id=section-8429b6ca3bd5c32e266c17ce1fa3e57e><ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small"><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0/docs/migration-guide/migration-guide/>From 1.0.x</a></li></ul></div></li></ul></nav></aside></div><div class="wrap container-xxl" role=document><div class=content><div class="row flex-xl-nowrap"><div class="col-lg-5 col-xl-4 docs-sidebar d-none d-lg-block"><nav class=docs-links aria-label="Main navigation"><ul class="list-unstyled collapsible-sidebar"><li class=mb-1><button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle=collapse data-bs-target=#section-0b79795d3efc95b9976c7c5b933afce2 aria-expanded=false>
 Introduction</button><div class=collapse id=section-0b79795d3efc95b9976c7c5b933afce2><ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small"><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0/docs/introduction/overview/>Overview</a></li></ul></div></li><li class=mb-1><button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle=collapse data-bs-target=#section-bf647454e36069fd16f1a7a35cf6a865 aria-expanded=false>
 Getting Started</button><div class=collapse id=section-bf647454e36069fd16f1a7a35cf6a865><ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small"><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0/docs/get-started/requirements/>Requirements</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0/docs/get-started/creating-objects/>Creating objects</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0/docs/get-started/creating-objects-without-lombok/>Creating objects without Lombok</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0/docs/get-started/creating-objects-in-kotlin/>Creating objects in Kotlin</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0/docs/get-started/adding-bean-validation/>Adding Bean Validation</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0/docs/get-started/customizing-objects/>Customizing objects</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0/docs/get-started/tips/>Tips for Beginners</a></li></ul></div></li><li class=mb-1><button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle=collapse data-bs-target=#section-ed0b936fb28d3a108723035336d481ce aria-expanded=true>
-Generating Objects</button><div class="collapse show" id=section-ed0b936fb28d3a108723035336d481ce><ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small"><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0/docs/generating-objects/fixture-monkey/>FixtureMonkey</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0/docs/generating-objects/generating-complex-types/>Generating Complex Types</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0/docs/generating-objects/instantiate-methods/>Instantiate Methods</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0/docs/generating-objects/introspector/>Introspector</a></li><li><a class="docs-link rounded active" href=https://naver.github.io/fixture-monkey/v1-1-0/docs/generating-objects/generating-interface/>Generating Interface Type</a></li></ul></div></li><li class=mb-1><button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle=collapse data-bs-target=#section-5e917438bbbc1eab9b55d43d0a479ec8 aria-expanded=false>
+Generating Objects</button><div class="collapse show" id=section-ed0b936fb28d3a108723035336d481ce><ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small"><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0/docs/generating-objects/fixture-monkey/>FixtureMonkey</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0/docs/generating-objects/generating-complex-types/>Generating Complex Types</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0/docs/generating-objects/instantiate-methods/>Instantiate Methods</a></li><li><a class="docs-link rounded active" href=https://naver.github.io/fixture-monkey/v1-1-0/docs/generating-objects/generating-interface/>Generating Interface Types</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0/docs/generating-objects/introspector/>Introspector</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0/docs/generating-objects/custom-introspector/>Creating Custom Introspector</a></li></ul></div></li><li class=mb-1><button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle=collapse data-bs-target=#section-5e917438bbbc1eab9b55d43d0a479ec8 aria-expanded=false>
 Customizing Objects</button><div class=collapse id=section-5e917438bbbc1eab9b55d43d0a479ec8><ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small"><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0/docs/customizing-objects/apis/>Customization APIs</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0/docs/customizing-objects/arbitrary/>Customizing as random range values</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0/docs/customizing-objects/interface/>Customizing Interface</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0/docs/customizing-objects/path-expressions/>Path expressions</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0/docs/customizing-objects/innerspec/>InnerSpec</a></li></ul></div></li><li class=mb-1><button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle=collapse data-bs-target=#section-743eecd98c3a9752f7b78e49b9580029 aria-expanded=false>
 Fixture Monkey Options</button><div class=collapse id=section-743eecd98c3a9752f7b78e49b9580029><ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small"><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0/docs/fixture-monkey-options/concepts/>Concepts</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0/docs/fixture-monkey-options/generation-options/>Generation Options</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0/docs/fixture-monkey-options/customization-options/>Customization Options</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0/docs/fixture-monkey-options/other-options/>Other Options</a></li></ul></div></li><li class=mb-1><button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle=collapse data-bs-target=#section-bb38096ab39160dc20d44f3ea6b44507 aria-expanded=false>
 Plugins</button><div class=collapse id=section-bb38096ab39160dc20d44f3ea6b44507><ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small"><li class="my-1 ms-3"><button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle=collapse data-bs-target=#section-3e870d920960e3ef5f99817124da3773 aria-expanded=false>
@@ -56,16 +56,37 @@ Intellij Plugin</button><div class=collapse id=section-107c22ce553cac1f78e13deb5
 Cheat sheet</button><div class=collapse id=section-4e79e6a809c03891b9464d4b766dc391><ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small"><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0/docs/cheat-sheet/faq/>FAQ</a></li></ul></div></li><li class=mb-1><button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle=collapse data-bs-target=#section-8429b6ca3bd5c32e266c17ce1fa3e57e aria-expanded=false>
 Migration guide</button><div class=collapse id=section-8429b6ca3bd5c32e266c17ce1fa3e57e><ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small"><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0/docs/migration-guide/migration-guide/>From 1.0.x</a></li></ul></div></li></ul></nav></div><nav class="docs-toc d-none d-xl-block col-xl-3" aria-label="Secondary navigation"><div class=d-xl-none><button class="btn btn-outline-primary btn-sm doks-toc-toggle collapsed" type=button data-bs-toggle=collapse data-bs-target=#onThisPage aria-controls=doks-docs-nav aria-expanded=false aria-label="Toggle On this page navigation">
 <span>On This Page</span>
-<span><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" class="doks doks-expand" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><title>Expand</title><polyline points="7 13 12 18 17 13"/><polyline points="7 6 12 11 17 6"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" class="doks doks-collapse" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><title>Collapse</title><polyline points="17 11 12 6 7 11"/><polyline points="17 18 12 13 7 18"/></svg></span></button><div class=collapse id=onThisPage><div class="card card-body mt-3 py-1"><div class=page-links><nav id=TableOfContents><ul><li><ul><li><a href=#simple-interface>Simple Interface</a></li><li><a href=#generic-interfaces>Generic Interfaces</a></li><li><a href=#sealed-interface>Sealed Interface</a></li><li><a href=#for-advanced-users>For advanced users</a></li></ul></li></ul></nav></div></div></div></div><div class="page-links d-none d-xl-block"><h3>On This Page</h3><nav id=TableOfContents><ul><li><ul><li><a href=#simple-interface>Simple Interface</a></li><li><a href=#generic-interfaces>Generic Interfaces</a></li><li><a href=#sealed-interface>Sealed Interface</a></li><li><a href=#for-advanced-users>For advanced users</a></li></ul></li></ul></nav></div></nav><main class="docs-content col-lg-11 col-xl-9 mx-xl-auto"><h1>Generating Interface Type</h1><p class=lead></p><nav class=d-xl-none aria-label="Quaternary navigation"><div class=d-xl-none><button class="btn btn-outline-primary btn-sm doks-toc-toggle collapsed" type=button data-bs-toggle=collapse data-bs-target=#onThisPage aria-controls=doks-docs-nav aria-expanded=false aria-label="Toggle On this page navigation">
+<span><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" class="doks doks-expand" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><title>Expand</title><polyline points="7 13 12 18 17 13"/><polyline points="7 6 12 11 17 6"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" class="doks doks-collapse" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><title>Collapse</title><polyline points="17 11 12 6 7 11"/><polyline points="17 18 12 13 7 18"/></svg></span></button><div class=collapse id=onThisPage><div class="card card-body mt-3 py-1"><div class=page-links><nav id=TableOfContents><ul><li><a href=#why-generate-interface-types>Why Generate Interface Types?</a></li><li><a href=#quick-start-example>Quick Start Example</a></li><li><a href=#interface-generation-approaches>Interface Generation Approaches</a><ul><li><a href=#examples-for-each-approach>Examples for Each Approach</a></li></ul></li><li><a href=#common-interface-types-with-built-in-support>Common Interface Types with Built-in Support</a></li><li><a href=#detailed-examples>Detailed Examples</a><ul><li><a href=#simple-interface>Simple Interface</a></li><li><a href=#generic-interface>Generic Interface</a></li><li><a href=#sealed-interface-java-17>Sealed Interface (Java 17+)</a></li></ul></li><li><a href=#combining-with-other-interfaces>Combining with Other Interfaces</a></li><li><a href=#interface-inheritance>Interface Inheritance</a></li><li><a href=#advanced-features>Advanced Features</a><ul><li><a href=#dynamic-implementation-resolution>Dynamic Implementation Resolution</a></li><li><a href=#custom-resolution-implementation>Custom Resolution Implementation</a></li></ul></li><li><a href=#summary>Summary</a></li></ul></nav></div></div></div></div><div class="page-links d-none d-xl-block"><h3>On This Page</h3><nav id=TableOfContents><ul><li><a href=#why-generate-interface-types>Why Generate Interface Types?</a></li><li><a href=#quick-start-example>Quick Start Example</a></li><li><a href=#interface-generation-approaches>Interface Generation Approaches</a><ul><li><a href=#examples-for-each-approach>Examples for Each Approach</a></li></ul></li><li><a href=#common-interface-types-with-built-in-support>Common Interface Types with Built-in Support</a></li><li><a href=#detailed-examples>Detailed Examples</a><ul><li><a href=#simple-interface>Simple Interface</a></li><li><a href=#generic-interface>Generic Interface</a></li><li><a href=#sealed-interface-java-17>Sealed Interface (Java 17+)</a></li></ul></li><li><a href=#combining-with-other-interfaces>Combining with Other Interfaces</a></li><li><a href=#interface-inheritance>Interface Inheritance</a></li><li><a href=#advanced-features>Advanced Features</a><ul><li><a href=#dynamic-implementation-resolution>Dynamic Implementation Resolution</a></li><li><a href=#custom-resolution-implementation>Custom Resolution Implementation</a></li></ul></li><li><a href=#summary>Summary</a></li></ul></nav></div></nav><main class="docs-content col-lg-11 col-xl-9 mx-xl-auto"><h1>Generating Interface Types</h1><p class=lead></p><nav class=d-xl-none aria-label="Quaternary navigation"><div class=d-xl-none><button class="btn btn-outline-primary btn-sm doks-toc-toggle collapsed" type=button data-bs-toggle=collapse data-bs-target=#onThisPage aria-controls=doks-docs-nav aria-expanded=false aria-label="Toggle On this page navigation">
 <span>On This Page</span>
-<span><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" class="doks doks-expand" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><title>Expand</title><polyline points="7 13 12 18 17 13"/><polyline points="7 6 12 11 17 6"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" class="doks doks-collapse" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><title>Collapse</title><polyline points="17 11 12 6 7 11"/><polyline points="17 18 12 13 7 18"/></svg></span></button><div class=collapse id=onThisPage><div class="card card-body mt-3 py-1"><div class=page-links><nav id=TableOfContents><ul><li><ul><li><a href=#simple-interface>Simple Interface</a></li><li><a href=#generic-interfaces>Generic Interfaces</a></li><li><a href=#sealed-interface>Sealed Interface</a></li><li><a href=#for-advanced-users>For advanced users</a></li></ul></li></ul></nav></div></div></div></div><div class="page-links d-none d-xl-block"><h3>On This Page</h3><nav id=TableOfContents><ul><li><ul><li><a href=#simple-interface>Simple Interface</a></li><li><a href=#generic-interfaces>Generic Interfaces</a></li><li><a href=#sealed-interface>Sealed Interface</a></li><li><a href=#for-advanced-users>For advanced users</a></li></ul></li></ul></nav></div></nav><p>Fixture Monkey is able to generate complex interface objects consisting
-of <code>interface</code>, <code>generic interface</code>, <code>sealed interface</code>.</p><p>Fixture Monkey provides the default implementations of certain interfaces.
-For example, <code>ArrayList</code> is for the <code>List</code> interface, <code>HashSet</code> is for the <code>Set</code> interface.</p><p>Except in those cases, you should specify the implementations of the interface.
-If you do not, Fixture Monkey will generate an anonymous object for you.
-You do not need to specify the implementations in the case of <code>sealed interface</code>.</p><p>Let&rsquo;s see how to create an interface with a detailed example.</p><h3 id=simple-interface>Simple Interface <a href=#simple-interface class=anchor aria-hidden=true>#</a></h3><pre><code class=language-java>public interface StringSupplier {
+<span><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" class="doks doks-expand" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><title>Expand</title><polyline points="7 13 12 18 17 13"/><polyline points="7 6 12 11 17 6"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" class="doks doks-collapse" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><title>Collapse</title><polyline points="17 11 12 6 7 11"/><polyline points="17 18 12 13 7 18"/></svg></span></button><div class=collapse id=onThisPage><div class="card card-body mt-3 py-1"><div class=page-links><nav id=TableOfContents><ul><li><a href=#why-generate-interface-types>Why Generate Interface Types?</a></li><li><a href=#quick-start-example>Quick Start Example</a></li><li><a href=#interface-generation-approaches>Interface Generation Approaches</a><ul><li><a href=#examples-for-each-approach>Examples for Each Approach</a></li></ul></li><li><a href=#common-interface-types-with-built-in-support>Common Interface Types with Built-in Support</a></li><li><a href=#detailed-examples>Detailed Examples</a><ul><li><a href=#simple-interface>Simple Interface</a></li><li><a href=#generic-interface>Generic Interface</a></li><li><a href=#sealed-interface-java-17>Sealed Interface (Java 17+)</a></li></ul></li><li><a href=#combining-with-other-interfaces>Combining with Other Interfaces</a></li><li><a href=#interface-inheritance>Interface Inheritance</a></li><li><a href=#advanced-features>Advanced Features</a><ul><li><a href=#dynamic-implementation-resolution>Dynamic Implementation Resolution</a></li><li><a href=#custom-resolution-implementation>Custom Resolution Implementation</a></li></ul></li><li><a href=#summary>Summary</a></li></ul></nav></div></div></div></div><div class="page-links d-none d-xl-block"><h3>On This Page</h3><nav id=TableOfContents><ul><li><a href=#why-generate-interface-types>Why Generate Interface Types?</a></li><li><a href=#quick-start-example>Quick Start Example</a></li><li><a href=#interface-generation-approaches>Interface Generation Approaches</a><ul><li><a href=#examples-for-each-approach>Examples for Each Approach</a></li></ul></li><li><a href=#common-interface-types-with-built-in-support>Common Interface Types with Built-in Support</a></li><li><a href=#detailed-examples>Detailed Examples</a><ul><li><a href=#simple-interface>Simple Interface</a></li><li><a href=#generic-interface>Generic Interface</a></li><li><a href=#sealed-interface-java-17>Sealed Interface (Java 17+)</a></li></ul></li><li><a href=#combining-with-other-interfaces>Combining with Other Interfaces</a></li><li><a href=#interface-inheritance>Interface Inheritance</a></li><li><a href=#advanced-features>Advanced Features</a><ul><li><a href=#dynamic-implementation-resolution>Dynamic Implementation Resolution</a></li><li><a href=#custom-resolution-implementation>Custom Resolution Implementation</a></li></ul></li><li><a href=#summary>Summary</a></li></ul></nav></div></nav><h2 id=why-generate-interface-types>Why Generate Interface Types? <a href=#why-generate-interface-types class=anchor aria-hidden=true>#</a></h2><p>When writing tests, you often need to work with interfaces rather than concrete implementations:</p><ul><li>You may be testing code that accepts interfaces as parameters</li><li>Your system under test may return interface types</li><li>You want to test behavior without coupling to specific implementations</li></ul><p>Fixture Monkey makes it easy to generate test objects for interfaces - whether they&rsquo;re simple interfaces, generic interfaces, or sealed interfaces.</p><h2 id=quick-start-example>Quick Start Example <a href=#quick-start-example class=anchor aria-hidden=true>#</a></h2><p>Here&rsquo;s a simple example to get started with interface generation:</p><pre><code class=language-java>// Define an interface you want to test with
+public interface StringSupplier {
 	String getValue();
 }
 
+// Create a Fixture Monkey instance
+FixtureMonkey fixture = FixtureMonkey.create();
+
+// Generate an instance of the interface
+StringSupplier supplier = fixture.giveMeOne(StringSupplier.class);
+
+// Use it in your test
+String value = supplier.getValue();
+assertThat(value).isNotNull(); // Will pass
+</code></pre><p>This example generates an anonymous implementation of the <code>StringSupplier</code> interface that you can use in your tests. Let&rsquo;s explore more options for interface generation.</p><h2 id=interface-generation-approaches>Interface Generation Approaches <a href=#interface-generation-approaches class=anchor aria-hidden=true>#</a></h2><p>Fixture Monkey provides three main approaches for generating interface instances:</p><table><thead><tr><th>Approach</th><th>Description</th><th>Best For</th></tr></thead><tbody><tr><td><strong>Anonymous implementation</strong></td><td>Fixture Monkey creates an anonymous class</td><td>Quick tests, simple interfaces</td></tr><tr><td><strong>Specific implementation</strong></td><td>You specify which class to use</td><td>More control, realistic behavior</td></tr><tr><td><strong>Built-in implementations</strong></td><td>Fixture Monkey provides defaults for common interfaces</td><td>Standard Java interfaces</td></tr></tbody></table><h3 id=examples-for-each-approach>Examples for Each Approach <a href=#examples-for-each-approach class=anchor aria-hidden=true>#</a></h3><pre><code class=language-java>// Anonymous implementation
+StringSupplier supplier = fixture.giveMeOne(StringSupplier.class);
+
+// Specific implementation
+InterfacePlugin plugin = new InterfacePlugin()
+    .interfaceImplements(StringSupplier.class, List.of(DefaultStringSupplier.class));
+
+// Built-in implementation
+List&lt;String&gt; list = fixture.giveMeOne(new TypeReference&lt;List&lt;String&gt;&gt;() {});
+</code></pre><h2 id=common-interface-types-with-built-in-support>Common Interface Types with Built-in Support <a href=#common-interface-types-with-built-in-support class=anchor aria-hidden=true>#</a></h2><p>Fixture Monkey provides default implementations for common Java interfaces:</p><ul><li><code>List</code> → <code>ArrayList</code></li><li><code>Set</code> → <code>HashSet</code></li><li><code>Map</code> → <code>HashMap</code></li><li><code>Queue</code> → <code>LinkedList</code></li><li>And more&mldr;</li></ul><p>You don&rsquo;t need to configure anything special to use these.</p><h2 id=detailed-examples>Detailed Examples <a href=#detailed-examples class=anchor aria-hidden=true>#</a></h2><h3 id=simple-interface>Simple Interface <a href=#simple-interface class=anchor aria-hidden=true>#</a></h3><p>Let&rsquo;s start with a simple interface example:</p><pre><code class=language-java>// The interface we want to generate
+public interface StringSupplier {
+	String getValue();
+}
+
+// A concrete implementation we might want to use
 public class DefaultStringSupplier implements StringSupplier {
 	private final String value;
 
@@ -79,94 +100,184 @@ public class DefaultStringSupplier implements StringSupplier {
 		return &quot;default&quot; + value;
 	}
 }
-</code></pre><h4 id=without-options>Without options <a href=#without-options class=anchor aria-hidden=true>#</a></h4><p>Without options, Fixture Monkey will generate an anonymous object of <code>StringSupplier</code>.</p><pre><code class=language-java>FixtureMonkey fixture = FixtureMonkey.create();
-
-StringSupplier result = fixtureMonkey.giveMeOne(StringSupplier.class);
-</code></pre><p>The generated instance <code>result</code> is an anonymous object of <code>StringSupplier</code>. The getter <code>getValue</code> returns the arbitrary
-String value. It can be null just like the property of <code>Clsas</code>. You need to know that it works same
-as <code>DefaultStringSupplier</code>, but it is not type of <code>DefaultStringSupplier</code>.</p><div class="alert alert-doks d-flex" role=alert><div class="flex-shrink-1 alert-icon">💡</div><div class=w-100><p>Fixture Monkey only generates the properties of the anonymous object listed below.</p><ul><li>Methods follows the naming convention of getter</li><li>No parameter methods</li></ul></div></div><p>The generated properties can be customized just like the properties of <code>Class</code>.</p><pre><code class=language-java>FixtureMonkey fixture = FixtureMonkey.create();
-
-String result = fixture.giveMeBuilder(StringSupplier.class)
-	.set(&quot;value&quot;, &quot;fix&quot;)
-	.sample()
-	.getValue();
-</code></pre><p>The <code>result</code> is now set to <code>fix</code>. You can use all the APIs in <code>ArbitraryBuilder</code>.</p><h4 id=with-options>With options <a href=#with-options class=anchor aria-hidden=true>#</a></h4><p>You can extend the implementations of the interface by using the <code>InterfacePlugin#interfaceImplements</code> option.</p><div class="alert alert-doks d-flex" role=alert><div class="flex-shrink-1 alert-icon">💡</div><div class=w-100>All the options related to interface or abstract class are in <code>InterfacePlugin</code></div></div><pre><code class=language-java>FixtureMonkey fixture = FixtureMonkey.builder()
-	.objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE) // used for instantiate DefaultStringSupplier
-	.plugin(
-		new InterfacePlugin()
-			.interfaceImplements(StringSupplier.class, List.of(DefaultStringSupplier.class))
-	)
-	.build();
-
-DefaultStringSupplier stringSupplier = (DefaultStringSupplier)fixture.giveMeOne(StringSupplier.class);
-</code></pre><p>The <code>InterfacePlugin#interfaceImplements</code> option can be used multiple times. For example, the default implementation of <code>List</code>
-is <code>ArrayList</code>. What if you use <code>Interface#interfaceImplements</code> to implement <code>LinkedList</code> like this?</p><pre><code class=language-java>FixtureMonkey fixture = FixtureMonkey.builder()
-	.plugin(
-		new InterfacePlugin()
-			.interfaceImplements(List.class, List.of(LinkedList.class))
-	)
-	.build();
-
-List&lt;String&gt; list = fixture.giveMeOne(new TypeReference&lt;List&lt;String&gt;&gt;() {
-});
-
-// list will be an instance of ArrayList or LinkedList
-</code></pre><p>The implementations of <code>List</code> are <code>ArrayList</code> and <code>LinkedList</code>.</p><p>The <code>InterfacePlugin#interfaceImplements</code> option can also be resolved as an interface.</p><p>Without options, Fixture Monkey will not generate an implementation of the <code>Collection</code> interface.
-Let <code>Collection</code> be <code>List</code> through the <code>InterfacePlugin#interfaceImplements</code> option.
-The implementations of the <code>List</code> interface propagate to the <code>Collection</code> interface.
-In detail, the <code>List</code> interface is generated as an implementation of <code>ArrayList</code>, the <code>Collection</code> interface is also be <code>ArrayList</code>.</p><pre><code class=language-java>FixtureMonkey fixture = FixtureMonkey.builder()
-	.plugin(
-		new InterfacePlugin()
-			.interfaceImplements(Collection.class, List.of(List.class))
-	)
-	.build();
-
-ArrayList&lt;String&gt; collection = (ArrayList&lt;String&gt;)fixture.giveMeOne(new TypeReference&lt;Collection&lt;String&gt;&gt;() {
-});
-
-// collection will be an instance of ArrayList
-</code></pre><p>You can use this option below if there are too many implementations to add using the options, but they have a similar pattern.</p><pre><code class=language-java>interface ObjectValueSupplier {
-    Object getValue();
+</code></pre><h4 id=approach-1-anonymous-implementation-no-options>Approach 1: Anonymous Implementation (No Options) <a href=#approach-1-anonymous-implementation-no-options class=anchor aria-hidden=true>#</a></h4><p>The simplest approach is to let Fixture Monkey generate an anonymous implementation:</p><pre><code class=language-java>@Test
+void testWithAnonymousImplementation() {
+	// Setup
+	FixtureMonkey fixture = FixtureMonkey.create();
+	
+	// Generate an anonymous implementation
+	StringSupplier result = fixture.giveMeOne(StringSupplier.class);
+	
+	// Test
+	assertThat(result.getValue()).isNotNull();
+	assertThat(result).isNotInstanceOf(DefaultStringSupplier.class);
+}
+</code></pre><p>With this approach, Fixture Monkey creates an anonymous object that implements the <code>StringSupplier</code> interface. The <code>getValue()</code> method returns a randomly generated String.</p><div class="alert alert-doks d-flex" role=alert><div class="flex-shrink-1 alert-icon">💡</div><div class=w-100><p>Fixture Monkey only generates property values for methods that:</p><ul><li>Follow the naming convention of getters (like <code>getValue()</code>, <code>getName()</code>, etc.)</li><li>Have no parameters</li></ul><p>Other methods will always return <code>null</code> or default primitive values.</p></div></div><p>You can customize the generated properties using the same API as for regular classes:</p><pre><code class=language-java>@Test
+void testWithCustomizedProperties() {
+	// Setup
+	FixtureMonkey fixture = FixtureMonkey.create();
+	
+	// Generate with a specific property value
+	StringSupplier result = fixture.giveMeBuilder(StringSupplier.class)
+		.set(&quot;value&quot;, &quot;customValue&quot;)
+		.sample();
+	
+	// Test
+	assertThat(result.getValue()).isEqualTo(&quot;customValue&quot;);
+}
+</code></pre><h4 id=approach-2-using-a-specific-implementation>Approach 2: Using a Specific Implementation <a href=#approach-2-using-a-specific-implementation class=anchor aria-hidden=true>#</a></h4><p>When you need more realistic behavior, you can tell Fixture Monkey to use your concrete implementation:</p><pre><code class=language-java>@Test
+void testWithSpecificImplementation() {
+	// Setup Fixture Monkey with a specific implementation
+	FixtureMonkey fixture = FixtureMonkey.builder()
+		.objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE) // needed for DefaultStringSupplier's constructor
+		.plugin(
+			new InterfacePlugin()
+				.interfaceImplements(StringSupplier.class, List.of(DefaultStringSupplier.class))
+		)
+		.build();
+	
+	// Generate the interface
+	StringSupplier result = fixture.giveMeOne(StringSupplier.class);
+	
+	// Test
+	assertThat(result).isInstanceOf(DefaultStringSupplier.class);
+	assertThat(result.getValue()).startsWith(&quot;default&quot;);
+}
+</code></pre><p>This approach generates a real <code>DefaultStringSupplier</code> instance with the behavior defined in your implementation.</p><h3 id=generic-interface>Generic Interface <a href=#generic-interface class=anchor aria-hidden=true>#</a></h3><p>For generic interfaces, the approach varies depending on whether you specify type parameters:</p><h4 id=1-without-type-parameters>1. Without Type Parameters <a href=#1-without-type-parameters class=anchor aria-hidden=true>#</a></h4><p>When you create a generic interface without specifying type parameters, Fixture Monkey defaults to using <code>String</code> type:</p><pre><code class=language-java>// Generic interface
+public interface ObjectValueSupplier&lt;T&gt; {
+    T getValue();
 }
 
-interface StringValueSupplier extends ObjectValueSupplier {
-    String getValue();
+@Test
+void testGenericInterfaceWithoutTypeParameters() {
+    FixtureMonkey fixture = FixtureMonkey.create();
+    
+    // Create without specifying type parameter
+    ObjectValueSupplier&lt;?&gt; result = fixture.giveMeOne(ObjectValueSupplier.class);
+    
+    // String type is used by default
+    assertThat(result.getValue()).isInstanceOf(String.class);
 }
-
-public class DefaultStringValueSupplier implements StringValueSupplier {
+</code></pre><h4 id=2-with-explicit-type-parameters>2. With Explicit Type Parameters <a href=#2-with-explicit-type-parameters class=anchor aria-hidden=true>#</a></h4><p>You can explicitly specify the type parameter using TypeReference:</p><pre><code class=language-java>@Test
+void testGenericInterfaceWithTypeParameters() {
+    FixtureMonkey fixture = FixtureMonkey.create();
+    
+    // Specify Integer as the type parameter
+    ObjectValueSupplier&lt;Integer&gt; result = 
+        fixture.giveMeOne(new TypeReference&lt;ObjectValueSupplier&lt;Integer&gt;&gt;() {});
+    
+    // Integer type is used
+    assertThat(result.getValue()).isInstanceOf(Integer.class);
+}
+</code></pre><h4 id=3-using-a-specific-implementation>3. Using a Specific Implementation <a href=#3-using-a-specific-implementation class=anchor aria-hidden=true>#</a></h4><p>When using a specific implementation, it follows the type parameters of that implementation:</p><pre><code class=language-java>// Concrete implementation for String
+public class StringValueSupplier implements ObjectValueSupplier&lt;String&gt; {
     private final String value;
 
-    @ConstructorProperties(&quot;value&quot;) // It is not needed if you are using Lombok.
-    public DefaultStringValueSupplier(String value) {
+    @ConstructorProperties(&quot;value&quot;)
+    public StringValueSupplier(String value) {
         this.value = value;
     }
 
     @Override
     public String getValue() {
-        return this.value;
+        return value;
     }
 }
 
-interface IntegerValueSupplier extends ObjectValueSupplier {
-    Integer getValue();
+@Test
+void testGenericInterfaceWithSpecificImplementation() {
+    // Setup with specific implementation
+    FixtureMonkey fixture = FixtureMonkey.builder()
+        .objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)
+        .plugin(
+            new InterfacePlugin()
+                .interfaceImplements(ObjectValueSupplier.class, List.of(StringValueSupplier.class))
+        )
+        .build();
+    
+    // Generate the interface
+    ObjectValueSupplier&lt;?&gt; result = fixture.giveMeOne(ObjectValueSupplier.class);
+    
+    // Test
+    assertThat(result).isInstanceOf(StringValueSupplier.class);
+    assertThat(result.getValue()).isInstanceOf(String.class);
+}
+</code></pre><div class="alert alert-doks d-flex" role=alert><div class="flex-shrink-1 alert-icon">💡</div><div class=w-100>When generating a generic interface without type parameters, Fixture Monkey uses <code>String</code> as the default type. If you need a different type, use <code>TypeReference</code> or specify a concrete implementation.</div></div><h3 id=sealed-interface-java-17>Sealed Interface (Java 17+) <a href=#sealed-interface-java-17 class=anchor aria-hidden=true>#</a></h3><p>Java 17 introduced sealed interfaces, which explicitly define their permitted implementations. Fixture Monkey automatically handles these without additional configuration:</p><pre><code class=language-java>// Sealed interface with permitted implementations
+sealed interface SealedStringSupplier {
+	String getValue();
 }
 
-public class DefaultIntegerValueSupplier implements IntegerValueSupplier {
-    private final Integer value;
+// Permitted implementation
+public static final class SealedDefaultStringSupplier implements SealedStringSupplier {
+	private final String value;
 
-    @ConstructorProperties(&quot;value&quot;) // It is not needed if you are using Lombok.
-    public DefaultIntegerValueSupplier(Integer value) {
-        this.value = value;
-    }
+	@ConstructorProperties(&quot;value&quot;)
+	public SealedDefaultStringSupplier(String value) {
+		this.value = value;
+	}
 
-    @Override
-    public Integer getValue() {
-        return this.value;
-    }
+	@Override
+	public String getValue() {
+		return &quot;sealed&quot; + value;
+	}
 }
 
-FixtureMonkey fixture = FixtureMonkey.builder()
-	.objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE) // used for instantiate implementations of ObjectValueSupplier
+@Test
+void testSealedInterface() {
+	// Setup
+	FixtureMonkey fixture = FixtureMonkey.builder()
+		.objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)
+		.build();
+	
+	// Generate sealed interface
+	SealedStringSupplier result = fixture.giveMeOne(SealedStringSupplier.class);
+	
+	// Test
+	assertThat(result).isInstanceOf(SealedDefaultStringSupplier.class);
+	assertThat(result.getValue()).startsWith(&quot;sealed&quot;);
+}
+</code></pre><h2 id=combining-with-other-interfaces>Combining with Other Interfaces <a href=#combining-with-other-interfaces class=anchor aria-hidden=true>#</a></h2><p>You can also specify which implementation to use for certain interfaces. For example, using <code>LinkedList</code> instead of the default <code>ArrayList</code> for <code>List</code>:</p><pre><code class=language-java>@Test
+void testCustomListImplementation() {
+	// Setup
+	FixtureMonkey fixture = FixtureMonkey.builder()
+		.plugin(
+			new InterfacePlugin()
+				.interfaceImplements(List.class, List.of(LinkedList.class))
+		)
+		.build();
+	
+	// Generate
+	List&lt;String&gt; list = fixture.giveMeOne(new TypeReference&lt;List&lt;String&gt;&gt;() {});
+	
+	// Test
+	assertThat(list).isInstanceOf(LinkedList.class);
+}
+</code></pre><h2 id=interface-inheritance>Interface Inheritance <a href=#interface-inheritance class=anchor aria-hidden=true>#</a></h2><p>Fixture Monkey can also handle interface inheritance. You can specify implementations at any level of the hierarchy:</p><pre><code class=language-java>interface ObjectValueSupplier {
+	Object getValue();
+}
+
+interface StringValueSupplier extends ObjectValueSupplier {
+	String getValue();
+}
+
+@Test
+void testInterfaceHierarchy() {
+	// Setup
+	FixtureMonkey fixture = FixtureMonkey.builder()
+		.plugin(
+			new InterfacePlugin()
+				.interfaceImplements(Collection.class, List.of(List.class))
+		)
+		.build();
+	
+	// Generate a Collection, which will use a List implementation
+	Collection&lt;String&gt; collection = fixture.giveMeOne(new TypeReference&lt;Collection&lt;String&gt;&gt;() {});
+	
+	// Test
+	assertThat(collection).isInstanceOf(List.class);
+}
+</code></pre><h2 id=advanced-features>Advanced Features <a href=#advanced-features class=anchor aria-hidden=true>#</a></h2><p>For more complex scenarios, Fixture Monkey provides advanced options for interface implementation resolution.</p><h3 id=dynamic-implementation-resolution>Dynamic Implementation Resolution <a href=#dynamic-implementation-resolution class=anchor aria-hidden=true>#</a></h3><p>If you have many implementations or need to select implementations based on type conditions:</p><pre><code class=language-java>FixtureMonkey fixture = FixtureMonkey.builder()
+	.objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)
 	.plugin(
 		new InterfacePlugin()
 			.interfaceImplements(
@@ -185,77 +296,14 @@ FixtureMonkey fixture = FixtureMonkey.builder()
 			)
 	)
 	.build();
-
-DefaultStringValueSupplier stringValueSupplier = (DefaultStringValueSupplier)fixture.giveMeOne(StringValueSupplier.class);
-DefaultIntegerValueSupplier integerValueSupplier = (DefaultIntegerValueSupplier)fixture.giveMeOne(IntegerValueSupplier.class);
-</code></pre><h3 id=generic-interfaces>Generic Interfaces <a href=#generic-interfaces class=anchor aria-hidden=true>#</a></h3><p>What if we need to generate some complex generic interface? All you have to do is do what you did with the simple
-interface above.</p><pre><code class=language-java>public interface ObjectValueSupplier&lt;T&gt; {
-	T getValue();
-}
-
-public class StringValueSupplier implements ObjectValueSupplier&lt;String&gt; {
-	private final String value;
-
-	@ConstructorProperties(&quot;value&quot;) // It is not needed if you are using Lombok.
-	public StringValueSupplier(String value) {
-		this.value = value;
-	}
-
+</code></pre><div class="alert alert-doks d-flex" role=alert><div class="flex-shrink-1 alert-icon">⚠️</div><div class=w-100>This section describes advanced features that most beginners won&rsquo;t need initially. Feel free to revisit this when you need more complex interface generation strategies.</div></div><h3 id=custom-resolution-implementation>Custom Resolution Implementation <a href=#custom-resolution-implementation class=anchor aria-hidden=true>#</a></h3><p>For the most advanced scenarios, you can implement the <code>CandidateConcretePropertyResolver</code> interface:</p><pre><code class=language-java>class YourCustomCandidateConcretePropertyResolver implements CandidateConcretePropertyResolver {
 	@Override
-	public String getValue() {
-		return value;
+	public List&lt;Property&gt; resolveCandidateConcreteProperties(Property property) {
+		// Your custom logic to resolve implementations
+		return List.of(...);
 	}
 }
-
-FixtureMonkey fixture = FixtureMonkey.builder()
-	.objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE) // used for instantiate StringValueSupplier
-	.plugin(
-		new InterfacePlugin()
-			.interfaceImplements(ObjectValueSupplier.class, List.of(StringValueSupplier.class))
-	)
-	.build();
-
-StringValueSupplier stringSupplier = (StringValueSupplier)fixture.giveMeOne(ObjectValueSupplier.class);
-
-</code></pre><h3 id=sealed-interface>Sealed Interface <a href=#sealed-interface class=anchor aria-hidden=true>#</a></h3><p>Sealed interface is simpler. You do not need options.</p><pre><code class=language-java>sealed interface SealedStringSupplier {
-	String getValue();
-}
-
-public static final class SealedDefaultStringSupplier implements SealedStringSupplier {
-	private final String value;
-
-	@ConstructorProperties(&quot;value&quot;) // It is not needed if you are using Lombok.
-	public SealedDefaultStringSupplier(String value) {
-		this.value = value;
-	}
-
-	@Override
-	public String getValue() {
-		return &quot;sealed&quot; + value;
-	}
-}
-
-FixtureMonkey fixture = FixtureMonkey.builder()
-	.objectIntrospector(
-		ConstructorPropertiesArbitraryIntrospector.INSTANCE) // used for instantiate SealedDefaultStringSupplier
-	.build();
-
-SealedDefaultStringSupplier stringSupplier = (SealedDefaultStringSupplier)fixture.giveMeOne(SealedStringSupplier.class);
-</code></pre><h3 id=for-advanced-users>For advanced users <a href=#for-advanced-users class=anchor aria-hidden=true>#</a></h3><p>If there are too many implementations of an interface, you can add interface implementations programmatically.
-All you have to do is create a class that implements the <code>CandidateConcretePropertyResolver</code> interface and add it to the <code>InterfacePlugin</code>.</p><pre><code class=language-java>class YourCustomCandidateConcretePropertyResolver implements CandidateConcretePropertyResolver {
-    @Override
-    public List&lt;Property&gt; resolveCandidateConcreteProperties(Property property) {
-        // resolve your implementations
-        return List.of(...);
-    }
-}
-</code></pre><p>If you have a trouble creating <code>List&lt;Property></code>, you can delegate the creation logic to <code>ConcreteTypeCandidateConcretePropertyResolver</code>.</p><p><code>ConcreteTypeCandidateConcretePropertyResolver</code> is a class that implements the <code>CandidateConcretePropertyResolver</code> interface.
-It converts the types and property information provided in the constructor to <code>List&lt;Property></code>.
-The property information is used when inferring type parameters.</p><p>In the case below, the <code>ConcreteTypeCandidateConcretePropertyResolver</code> is used to resolve the implementations of <code>List</code> and <code>Set</code>.
-<code>Collection&lt;String></code> is resolved as either <code>List&lt;String></code> or <code>Set&lt;String></code>.
-You can resolve the actual implementations programmatically or delegate the creation logic to Fixture Monkey.
-By default, Fixture Monkey resolves <code>List&lt;String></code> as <code>ArrayList&lt;String></code> and <code>Set&lt;String></code> as <code>HashSet&lt;String></code>.</p><div class="alert alert-doks d-flex" role=alert><div class="flex-shrink-1 alert-icon">💡</div><div class=w-100>You should be careful when setting the type condition to apply the options as the first parameter.
-For example, using <code>AssignableTypeMatcher</code> in the example below will cause an infinite loop because the implementations also satisfy the condition.</div></div><pre><code class=language-java>FixtureMonkey sut = FixtureMonkey.builder()
+</code></pre><p>You can use the built-in <code>ConcreteTypeCandidateConcretePropertyResolver</code> to help with type conversion:</p><pre><code class=language-java>FixtureMonkey fixture = FixtureMonkey.builder()
 	.plugin(new InterfacePlugin()
 		.interfaceImplements(
 			new ExactTypeMatcher(Collection.class),
@@ -263,13 +311,8 @@ For example, using <code>AssignableTypeMatcher</code> in the example below will 
 		)
 	)
 	.build();
-
-Collection&lt;String&gt; actual = sut.giveMeOne(new TypeReference&lt;&gt;() {
-});
-
-then(actual).isInstanceOfAny(List.class, Set.class);
-</code></pre><p>This chapter illustrates how to create an interface type. If you get stuck, all you need to remember is the `InterfacePlugin&rsquo; plugin.
-If the plugin doesn&rsquo;t solve your problem, please post a bug with a reproducible example.</p><div class="page-footer-meta d-flex flex-column flex-md-row justify-content-between"></div><div class="docs-navigation d-flex justify-content-between"><a href=https://naver.github.io/fixture-monkey/v1-1-0/docs/generating-objects/introspector/><div class="card my-1"><div class="card-body py-2" style=color:#69dc72>&larr; Introspector</div></div></a><a class=ms-auto href=https://naver.github.io/fixture-monkey/v1-1-0/docs/customizing-objects/apis/><div class="card my-1"><div class="card-body py-2" style=color:#69dc72>Customization APIs &rarr;</div></div></a></div></main></div></div></div><footer class="footer text-muted"><div class=container-xxl><div class=row><div class="col-lg-8 order-last order-lg-first"><ul class=list-inline><li class=list-inline-item></li></ul></div><div class="col-lg-8 order-first order-lg-last text-lg-end"><ul class=list-inline><li class=list-inline-item><a href=https://naver.github.io/fixture-monkey/ style=color:#69dc72>© 2025 Naver All Rights Reserved</a></li></ul></div></div></div></footer><script src=https://naver.github.io/fixture-monkey/js/bootstrap.min.49deee76074d4074d37d54619d509b36839e1aa4ebf6698c543b5d5645b355076b9713429c9a308a3b216c208da0aa3507af100fa137063b1e6aca3cc2259e27.js integrity="sha512-Sd7udgdNQHTTfVRhnVCbNoOeGqTr9mmMVDtdVkWzVQdrlxNCnJowijshbCCNoKo1B68QD6E3Bjseaso8wiWeJw==" crossorigin=anonymous defer></script>
+</code></pre><div class="alert alert-doks d-flex" role=alert><div class="flex-shrink-1 alert-icon">💡</div><div class=w-100>When setting type conditions for option application, be careful with matchers like <code>AssignableTypeMatcher</code>. Using it incorrectly can cause infinite recursion if implementations also match the condition.</div></div><h2 id=summary>Summary <a href=#summary class=anchor aria-hidden=true>#</a></h2><p>Here&rsquo;s a quick summary of how to generate interface types with Fixture Monkey:</p><ol><li><p><strong>Simple cases</strong>: Just use <code>fixture.giveMeOne(YourInterface.class)</code> to get an anonymous implementation</p></li><li><p><strong>Specific implementation</strong>: Use the <code>InterfacePlugin</code> with <code>interfaceImplements</code>:</p><pre><code class=language-java>new InterfacePlugin().interfaceImplements(YourInterface.class, List.of(YourImplementation.class))
+</code></pre></li><li><p><strong>Built-in implementations</strong>: Common interfaces like <code>List</code>, <code>Set</code>, etc. are handled automatically</p></li><li><p><strong>Sealed interfaces</strong>: No special configuration needed - Fixture Monkey uses the permitted implementations</p></li><li><p><strong>Complex cases</strong>: Use <code>AssignableTypeMatcher</code> or implement <code>CandidateConcretePropertyResolver</code> for advanced scenarios</p></li></ol><p>Remember that for most testing scenarios, the simpler approaches will be sufficient. The advanced features are there when you need more control over the generated implementations.</p><div class="page-footer-meta d-flex flex-column flex-md-row justify-content-between"></div><div class="docs-navigation d-flex justify-content-between"><a href=https://naver.github.io/fixture-monkey/v1-1-0/docs/generating-objects/instantiate-methods/><div class="card my-1"><div class="card-body py-2" style=color:#69dc72>&larr; Instantiate Methods</div></div></a><a class=ms-auto href=https://naver.github.io/fixture-monkey/v1-1-0/docs/generating-objects/introspector/><div class="card my-1"><div class="card-body py-2" style=color:#69dc72>Introspector &rarr;</div></div></a></div></main></div></div></div><footer class="footer text-muted"><div class=container-xxl><div class=row><div class="col-lg-8 order-last order-lg-first"><ul class=list-inline><li class=list-inline-item></li></ul></div><div class="col-lg-8 order-first order-lg-last text-lg-end"><ul class=list-inline><li class=list-inline-item><a href=https://naver.github.io/fixture-monkey/ style=color:#69dc72>© 2025 Naver All Rights Reserved</a></li></ul></div></div></div></footer><script src=https://naver.github.io/fixture-monkey/js/bootstrap.min.49deee76074d4074d37d54619d509b36839e1aa4ebf6698c543b5d5645b355076b9713429c9a308a3b216c208da0aa3507af100fa137063b1e6aca3cc2259e27.js integrity="sha512-Sd7udgdNQHTTfVRhnVCbNoOeGqTr9mmMVDtdVkWzVQdrlxNCnJowijshbCCNoKo1B68QD6E3Bjseaso8wiWeJw==" crossorigin=anonymous defer></script>
 <script src=https://naver.github.io/fixture-monkey/js/highlight.min.7244af8d435814f5998485b9034d6679bae2cd0a42d27fb0730f5ac8985e7dd27e666b55c2be8152150c8fdffa54977947e3babb1ca1bf58b202672784d9ab96.js integrity="sha512-ckSvjUNYFPWZhIW5A01mebrizQpC0n+wcw9ayJhefdJ+ZmtVwr6BUhUMj9/6VJd5R+O6uxyhv1iyAmcnhNmrlg==" crossorigin=anonymous defer></script>
 <script src=https://naver.github.io/fixture-monkey/main.min.ab0ac22260dc45641b4e799fd6198f97136ff6b521cefef6def0758b432b71b2a05c925c1af6cc85b97e73ff7c4c697957ca2105db0b5b9f717caa343ecf574f.js integrity="sha512-qwrCImDcRWQbTnmf1hmPlxNv9rUhzv723vB1i0MrcbKgXJJcGvbMhbl+c/98TGl5V8ohBdsLW59xfKo0Ps9XTw==" crossorigin=anonymous defer></script>
-<script src=https://naver.github.io/fixture-monkey/index.min.c65141ba519c895391dc2b44e43f3fb9e42efc7452b05a67086a6193b98b14e85c85c3a014d500196aef4a77e794faa85b47d178e23a895b4df30927a4ab79a3.js integrity="sha512-xlFBulGciVOR3CtE5D8/ueQu/HRSsFpnCGphk7mLFOhchcOgFNUAGWrvSnfnlPqoW0fReOI6iVtN8wknpKt5ow==" crossorigin=anonymous defer></script></body></html>
+<script src=https://naver.github.io/fixture-monkey/index.min.296b4d480065ed4531e690d5d1c50f1cdfd2f09f0048f163b6b528653dd8f83a3821c4825de7702357800659bde388fb6cef64296e738e6d7d775ac3454fc569.js integrity="sha512-KWtNSABl7UUx5pDV0cUPHN/S8J8ASPFjtrUoZT3Y+Do4IcSCXedwI1eABlm944j7bO9kKW5zjm19d1rDRU/FaQ==" crossorigin=anonymous defer></script></body></html>
