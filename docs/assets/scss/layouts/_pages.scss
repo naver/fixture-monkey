@@ -62,3 +62,8 @@ p.meta {
 .page-link:hover {
   text-decoration: none;
 }
+
+.markdown-table-wrapper {
+  overflow-x: auto;
+  margin-bottom: 1em;
+}

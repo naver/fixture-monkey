@@ -1,38 +1,278 @@
 ---
-title: "Introspector"
+title: "인트로스펙터"
 images: []
 menu:
 docs:
 parent: "generating-objects"
 identifier: "introspector"
-weight: 33
+weight: 35
+mermaid: true
 ---
 
-[`instantiate`](../instantiate-methods)를 사용하여 `ArbitraryBuilder`에서 객체를 생성하는 방법을 변경할 수 있지만, 옵션을 통해 전역적으로도 객체 생성 방법을 지정할 수 있습니다.
-Fixture Monkey는 다양한 `Introspector`로 객체를 생성하는 방법을 제공합니다.
+## 인트로스펙터란 무엇인가요?
 
-`Introspector`는 Fixture Monkey가 객체를 생성하는 기본 방법을 정의합니다.
-각 introspector는 클래스의 인스턴스를 생성할 수 있는 몇 가지 제약 조건이 있습니다.
+Fixture Monkey의 `인트로스펙터(Introspector)`는 테스트 객체를 생성하는 방법을 결정하는 도구입니다. 테스트 객체를 생성하는 "공장"이라고 생각하면 됩니다.
 
-사용하려는 introspector를 `FixtureMonkey`의 `objectIntrospector` 옵션을 사용하여 변경할 수 있습니다.
+인트로스펙터는 다음과 같은 역할을 합니다:
+- 생성자나 빌더 중 어떤 방식으로 객체를 생성할지 결정
+- 필드 값을 어떻게 설정할지 결정
+- 코드베이스의 다양한 클래스 타입을 어떻게 처리할지 결정
 
-## BeanArbitraryIntrospector
-`BeanArbitraryIntrospector`는 Fixture Monkey가 객체 생성에 사용하는 기본 introspector입니다.
-리플렉션과 setter 메서드를 사용하여 새 인스턴스를 생성하므로 생성할 클래스에는 인자가 없는 생성자(또는 기본생성자)와 setter가 있어야 합니다.
+## 빠른 시작: 대부분의 프로젝트에 권장되는 설정
+
+Fixture Monkey를 처음 사용하고 빠르게 시작하고 싶다면, 다음과 같은 설정을 사용하세요. 이 설정은 대부분의 프로젝트에서 잘 작동합니다:
+
+```java
+// 대부분의 클래스 타입을 처리할 수 있는 권장 설정
+FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+    .objectIntrospector(new FailoverIntrospector(
+        Arrays.asList(
+            ConstructorPropertiesArbitraryIntrospector.INSTANCE,
+            BuilderArbitraryIntrospector.INSTANCE,
+            FieldReflectionArbitraryIntrospector.INSTANCE,
+            BeanArbitraryIntrospector.INSTANCE
+        ),
+        false // 더 깔끔한 테스트 출력을 위해 로깅 비활성화
+    ))
+    .build();
+
+// 테스트에서 사용하기
+@Test
+void 테스트_예제() {
+    // 테스트 객체 생성
+    MyClass myObject = fixtureMonkey.giveMeOne(MyClass.class);
+    
+    // 생성된 객체를 테스트에 사용
+    assertThat(myObject).isNotNull();
+    // 더 많은 검증...
+}
+```
+
+이 설정은 여러 전략을 조합하여 다양한 클래스 타입을 처리하므로, 대부분의 실제 프로젝트에서 추가 설정 없이 잘 작동합니다.
+
+## 가장 간단한 접근법 (기본 설정만 원할 경우)
+
+가장 간단하게 설정하려면 다음과 같이 기본 설정을 사용할 수 있습니다:
+
+```java
+// 기본 설정으로 가장 간단한 접근법
+FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+    .build();
+
+// 테스트 객체 생성
+MyClass myObject = fixtureMonkey.giveMeOne(MyClass.class);
+```
+
+그러나 이 기본 접근법은 기본 생성자와 setter 메서드가 있는 간단한 JavaBean 클래스에서만 잘 작동합니다.
+
+## 클래스에 맞는 인트로스펙터 선택하기
+
+다양한 클래스 타입에 따라 객체 생성 방식이 달라야 합니다. 다음은 선택에 도움이 되는 간단한 가이드입니다:
+
+| 클래스 타입 | 권장 인트로스펙터 | 예시 |
+|------------|--------------------------|---------|
+| **Setter가 있는 클래스 (JavaBeans)** | `BeanArbitraryIntrospector` | getter/setter가 있는 클래스 |
+| **생성자가 있는 불변 클래스** | `ConstructorPropertiesArbitraryIntrospector` | 레코드, 어노테이션된 생성자가 있는 클래스 |
+| **혼합 필드 접근 방식의 클래스** | `FieldReflectionArbitraryIntrospector` | public 필드, 기본 생성자가 있는 클래스 |
+| **빌더 패턴을 사용하는 클래스** | `BuilderArbitraryIntrospector` | `.builder()` 메서드가 있는 클래스 |
+| **다양한 패턴이 섞인 코드베이스** | `FailoverArbitraryIntrospector` | 다양한 클래스 타입이 있는 프로젝트 |
+
+## 일반적인 클래스 타입 예제
+
+### 예제 1: 표준 JavaBean 클래스 (getter/setter 있음)
+
+```java
+// 클래스 정의
+public class Customer {
+    private String name;
+    private int age;
+    
+    // 기본 생성자
+    public Customer() {}
+    
+    // Setter 메서드
+    public void setName(String name) { this.name = name; }
+    public void setAge(int age) { this.age = age; }
+    
+    // Getter 메서드
+    public String getName() { return name; }
+    public int getAge() { return age; }
+}
+
+// 테스트 코드
+@Test
+void customer_테스트() {
+    FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+        .objectIntrospector(BeanArbitraryIntrospector.INSTANCE) // 기본값이므로 선택사항
+        .build();
+    
+    Customer customer = fixtureMonkey.giveMeOne(Customer.class);
+    
+    assertThat(customer.getName()).isNotNull();
+    assertThat(customer.getAge()).isGreaterThanOrEqualTo(0);
+}
+```
+
+### 예제 2: 생성자가 있는 불변 클래스
+
+```java
+// 클래스 정의 (@ConstructorProperties 포함)
+public class Product {
+    private final String name;
+    private final double price;
+    
+    @ConstructorProperties({"name", "price"})
+    public Product(String name, double price) {
+        this.name = name;
+        this.price = price;
+    }
+    
+    public String getName() { return name; }
+    public double getPrice() { return price; }
+}
+
+// 테스트 코드
+@Test
+void product_테스트() {
+    FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+        .objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)
+        .build();
+    
+    Product product = fixtureMonkey.giveMeOne(Product.class);
+    
+    assertThat(product.getName()).isNotNull();
+    assertThat(product.getPrice()).isGreaterThanOrEqualTo(0.0);
+}
+
+// Java 레코드에서도 잘 작동합니다
+public record OrderItem(String productId, int quantity, double price) {}
+```
+
+### 예제 3: 빌더 패턴을 사용하는 클래스
+
+```java
+// 빌더가 있는 클래스 정의
+public class User {
+    private final String username;
+    private final String email;
+    
+    private User(Builder builder) {
+        this.username = builder.username;
+        this.email = builder.email;
+    }
+    
+    public static Builder builder() {
+        return new Builder();
+    }
+    
+    public static class Builder {
+        private String username;
+        private String email;
+        
+        public Builder username(String username) {
+            this.username = username;
+            return this;
+        }
+        
+        public Builder email(String email) {
+            this.email = email;
+            return this;
+        }
+        
+        public User build() {
+            return new User(this);
+        }
+    }
+    
+    public String getUsername() { return username; }
+    public String getEmail() { return email; }
+}
+
+// 테스트 코드
+@Test
+void user_테스트() {
+    FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+        .objectIntrospector(BuilderArbitraryIntrospector.INSTANCE)
+        .build();
+    
+    User user = fixtureMonkey.giveMeOne(User.class);
+    
+    assertThat(user.getUsername()).isNotNull();
+    assertThat(user.getEmail()).isNotNull();
+}
+```
+
+## 인트로스펙터가 중요한 이유
+
+다양한 프로젝트는 객체 생성을 위한 다양한 패턴을 사용합니다:
+
+- 일부는 getter/setter가 있는 간단한 클래스를 사용
+- 일부는 생성자를 사용하는 불변 객체를 사용
+- 일부는 빌더 패턴을 따름
+- Lombok과 같은 프레임워크는 특정 방식으로 코드를 생성
+
+적절한 인트로스펙터를 선택하면 기존 코드를 수정하지 않고도 Fixture Monkey를 활용할 수 있어 시간과 노력을 절약할 수 있습니다.
+
+## 자주 묻는 질문 (FAQ)
+
+### Q: 어떤 인트로스펙터를 사용해야 할지 모르겠어요. 어떻게 해야 하나요?
+**A**: 권장 설정(여러 인트로스펙터를 포함한 `FailoverIntrospector` 사용)으로 시작하세요. 대부분의 프로젝트에서 잘 작동하며 자동으로 다양한 전략을 시도합니다.
 
 ```java
 FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
-    .objectIntrospector(BeanArbitraryIntrospector.INSTANCE)
+    .objectIntrospector(new FailoverIntrospector(
+        Arrays.asList(
+            ConstructorPropertiesArbitraryIntrospector.INSTANCE,
+            BuilderArbitraryIntrospector.INSTANCE,
+            FieldReflectionArbitraryIntrospector.INSTANCE,
+            BeanArbitraryIntrospector.INSTANCE
+        ),
+        false // 더 깔끔한 테스트 출력을 위해 로깅 비활성화
+    ))
     .build();
 ```
 
-## ConstructorPropertiesArbitraryIntrospector
-주어진 생성자로 객체를 생성하려면 `ConstructorPropertiesArbitraryIntrospector`를 사용해야 합니다.
+### Q: 객체가 생성되지 않아요. 무엇을 확인해야 하나요?
+**A**: 클래스가 다음 중 하나를 가지고 있는지 확인하세요:
+- 기본 생성자와 setter (`BeanArbitraryIntrospector`용)
+- `@ConstructorProperties`가 있는 생성자 (`ConstructorPropertiesArbitraryIntrospector`용)
+- 빌더 메서드 (`BuilderArbitraryIntrospector`용)
 
-`ConstructorPropertiesArbitraryIntrospector`인 경우 클래스 생성자에 `@ConstructorProperties`가 있거나 없으면 클래스가 레코드 타입이어야 합니다.
-(또는 Lombok을 사용하는 경우 lombok.config 파일에 `lombok.anyConstructor.addConstructorProperties=true`를 추가할 수 있습니다.)
+### Q: Lombok을 사용 중인데 객체가 제대로 생성되지 않아요. 어떻게 해야 하나요?
+**A**: lombok.config 파일에 `lombok.anyConstructor.addConstructorProperties=true`를 추가하고 `ConstructorPropertiesArbitraryIntrospector`를 사용하세요.
 
-레코드 클래스를 생성할 때 여러 생성자를 가질 경우 `@ConstructorProperties` 주석이 있는 생성자가 우선 선택됩니다.
+### Q: 특정 클래스에 대해 사용자 정의 생성 로직이 필요하면 어떻게 하나요?
+**A**: 특정 케이스의 경우 `instantiate` 메서드를 사용하여 인스턴스 생성 방법을 지정할 수 있습니다:
+
+```java
+MySpecialClass object = fixtureMonkey.giveMeBuilder(MySpecialClass.class)
+    .instantiate(() -> new MySpecialClass(specialParam1, specialParam2))
+    .sample();
+```
+
+더 고급 사용자 정의 로직은 [사용자 정의 인트로스펙터](../custom-introspector) 가이드를 참조하세요. 그러나 대부분의 사용자는 이 기능이 필요하지 않을 것입니다.
+
+## 사용 가능한 인트로스펙터 (상세 정보)
+
+### BeanArbitraryIntrospector (기본값)
+적합한 대상: setter가 있는 표준 JavaBean 클래스
+
+요구사항:
+- 클래스에 기본 생성자가 있어야 함
+- 속성에 대한 setter 메서드가 있어야 함
+
+```java
+FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+    .objectIntrospector(BeanArbitraryIntrospector.INSTANCE) // 이것이 기본값입니다
+    .build();
+```
+
+### ConstructorPropertiesArbitraryIntrospector
+적합한 대상: 생성자가 있는 불변 객체
+
+요구사항:
+- 클래스에 `@ConstructorProperties`가 있는 생성자가 있거나 레코드 타입이어야 함
+- Lombok의 경우 lombok.config에 `lombok.anyConstructor.addConstructorProperties=true` 추가
 
 ```java
 FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
@@ -40,9 +280,12 @@ FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
     .build();
 ```
 
-## FieldReflectionArbitraryIntrospector
-`FieldReflectionArbitraryIntrospector`는 리플렉션을 사용하여 새 인스턴스를 생성하고 필드를 설정합니다.
-따라서 생성할 클래스는 인자가 없는 생성자(또는 기본 생성자)와 getter 또는 setter 중 하나를 가져야 합니다.
+### FieldReflectionArbitraryIntrospector
+적합한 대상: 필드 접근 방식의 클래스
+
+요구사항:
+- 클래스에 기본 생성자가 있어야 함
+- 필드는 리플렉션을 통해 접근 가능해야 함
 
 ```java
 FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
@@ -50,11 +293,11 @@ FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
     .build();
 ```
 
-{{< alert icon="💡" text="만약 final이 아닌 변수가 선언되어 있다면 getter 또는 setter 없이도 사용 가능합니다." />}}
+### BuilderArbitraryIntrospector
+적합한 대상: 빌더 패턴을 사용하는 클래스
 
-## BuilderArbitraryIntrospector
-클래스 빌더를 사용하여 클래스를 생성하려면 `BuilderArbitraryIntrospector`를 사용할 수 있습니다.
-이런 경우 클래스에 빌더가 있어야 합니다.
+요구사항:
+- 클래스에 설정 메서드와 build 메서드가 있는 빌더가 있어야 함
 
 ```java
 FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
@@ -62,75 +305,70 @@ FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
     .build();
 ```
 
-## FailoverArbitraryIntrospector
-프로덕션 코드에서 다수의 클래스가 있을 때 각 클래스마다 다른 설정을 가진다면 하나의 introspector로 모든 객체를 생성하기 어려울 수 있습니다.
-이 경우 `FailoverArbitraryIntrospector`를 사용할 수 있습니다.
-`FailoverArbitraryIntrospector`를 사용하면 두 개 이상의 introspector를 사용할 수 있으며, introspector 중 하나가 생성에 실패하더라도 `FailoverArbitraryIntrospector`는 계속 다음 introspector로 객체 생성을 시도합니다.
+### FailoverArbitraryIntrospector (혼합 코드베이스에 권장)
+적합한 대상: 다양한 클래스 타입이 섞인 프로젝트
+
+장점:
+- 여러 인트로스펙터를 순차적으로 시도
+- 다양한 클래스 패턴에 작동
+- 가장 다용도로 사용 가능한 옵션
 
 ```java
-FixtureMonkey sut = FixtureMonkey.builder()
+FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
     .objectIntrospector(new FailoverIntrospector(
         Arrays.asList(
+            ConstructorPropertiesArbitraryIntrospector.INSTANCE,
+            BuilderArbitraryIntrospector.INSTANCE,
             FieldReflectionArbitraryIntrospector.INSTANCE,
-            ConstructorPropertiesArbitraryIntrospector.INSTANCE
-        )
+            BeanArbitraryIntrospector.INSTANCE
+        ),
+        false // 더 깔끔한 테스트 출력을 위해 로깅 비활성화
     ))
     .build();
 ```
 
-생성에 실패하면 발생하는 로그를 보고싶지 않다면 생성자 파라미터 `enableLoggingFail`를 false로 설정하면 됩니다.
+실패 로그를 비활성화하려면 위와 같이 생성자 인수 `enableLoggingFail`을 false로 설정하세요.
+
+{{< alert icon="⚠️" text="성능 참고: `FailoverArbitraryIntrospector`는 각 등록된 인트로스펙터를 순차적으로 사용해 객체 생성을 시도하므로 생성 비용이 증가할 수 있습니다. 성능이 중요한 경우 클래스 패턴을 알고 있다면 특정 인트로스펙터를 사용하세요." />}}
+
+### PriorityConstructorArbitraryIntrospector
+적합한 대상: 다른 인트로스펙터가 작동하지 않는 특별한 경우
+
+장점:
+- `@ConstructorProperties` 없이도 사용 가능한 생성자 사용
+- 수정할 수 없는 라이브러리 클래스에 유용
 
 ```java
-FailoverIntrospector failoverIntrospector = new FailoverIntrospector(introspectors, false);
-```
-
-## PriorityConstructorArbitraryIntrospector
-픽스쳐 몽키에서 기본으로 생성을 지원하지 않는 타입은 사용자 정의 `ArbitraryIntrospector`를 사용하면 생성할 수 있습니다. 
-하지만 픽스쳐 몽키에 익숙하지 않다면 `ArbitraryIntrospector`를 만들기는 어렵습니다. 
-이런 어려움을 해결해주기 위해 생성자를 사용해서 타입을 생성하는 `PriorityConstructorArbitraryIntrospector`를 제공합니다.
-
-```java
-Timestamp actual = FixtureMonkey.builder()
+FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
     .objectIntrospector(PriorityConstructorArbitraryIntrospector.INSTANCE)
-    .build()
-    .giveMeOne(Timestamp.class);
+    .build();
 ```
 
-### `ConstructorPropertiesArbitraryIntrospector` 와의 차이점
-`ConstructorPropertiesArbitraryIntrospector`도 생성자를 사용해서 객체를 생성하는 `ArbitraryIntrospector` 입니다.
-`PriorityConstructorArbitraryIntrospector`와의 차이점은 다음과 같습니다.
+## 플러그인의 추가 인트로스펙터
 
-|                                | PriorityConstructorArbitraryIntrospector             | ConstructorPropertiesArbitraryIntrospector |
-|--------------------------------|------------------------------------------------------|--------------------------------------------|
-| `@ConstructorProperties` 필요 여부 | 필요없음                                                 | 필요함                                        |
-| 생성자의 파라미터를 제어할 수 있는지           | 조건부 (`withParameterNamesResolver`를 설정한 경우)           | 가능함                                        |
-| 생성에 사용할 생성자를 결정하는 방법           | `constructorFilter`와  `sortingCriteria` 조건을 사용해서 결정함 | `@ConstructorProperties`가 있는 첫 번째 생성자      |
+플러그인은 특정 필요에 맞는 추가 인트로스펙터를 제공합니다:
+- [`JacksonObjectArbitraryIntrospector`](../../plugins/jackson-plugin/jackson-object-arbitrary-introspector): Jackson JSON 객체용
+- [`PrimaryConstructorArbitraryIntrospector`](../../plugins/kotlin-plugin/introspectors-for-kotlin): Kotlin 클래스용
 
-### constructorFilter
-`PriorityConstructorArbitraryIntrospector`는 생성에 사용할 생성자를 결정할 때 `constructorFilter` 조건을 사용합니다.
+## 인트로스펙터 작동 방식 (기술적 세부 사항)
 
-`constructorFilter`는 `withConstructorFilter`를 사용해서 변경할 수 있습니다.
-기본 조건은 `constructor -> !Modifier.isPrivate(constructor.getModifiers())`입니다.
+{{< mermaid >}}
+graph TD
+    A[객체 생성 요청] --> B{인트로스펙터 선택}
+    B -- BeanArbitraryIntrospector --> C[기본 생성자 + Setter 사용]
+    B -- ConstructorProperties --> D[어노테이션된 생성자 사용]
+    B -- FieldReflection --> E[리플렉션으로 필드 설정]
+    B -- Builder --> F[빌더 패턴 사용]
+    B -- Failover --> G[여러 인트로스펙터 순차 시도]
+    C --> H[객체 인스턴스]
+    D --> H
+    E --> H
+    F --> H
+    G --> H
+{{< /mermaid >}}
 
-### sortingCriteria
-`constructorFilter` 조건을 만족하는 생성자가 여러 개 일경우 추가적으로 `sortingCriteria` 조건을 사용해서 생성자를 결정합니다.  
-`Comparator<Constructor<?>>`로 정렬했을 때 첫 번째 생성자를 사용합니다.
+## 더 고급 사용자 정의가 필요하신가요?
 
-`sortingCriteria`는 `withSortingCriteria`를 사용해서 변경할 수 있습니다.
-기본 설정은 생성자 수가 가장 적은 생성자입니다. `Comparator.comparing(Constructor::getParameterCount)
+내장 인트로스펙터로 해결되지 않는 특별한 객체 생성 요구 사항이 있다면 사용자 정의 인트로스펙터를 만들어야 할 수도 있습니다.
 
-### parameterNamesResolver
-다음 세 가지 조건 중 하나도 만족하지 않으면 픽스쳐 몽키에서 생성자 파라미터 이름을 인식할 수 없습니다.
-- record 타입
-- JVM 옵션 `-parameters` 활성화
-- 생성자에 `@ConstructorProperties` 존재 
-
-생성자 파라미터 이름을 인식하지 못하면 `ArbitraryBuilder` API를 사용해 생성자 파라미터를 제어할 수 없습니다.
-
-`PriorityConstructorArbitraryIntrospector`에서 `parameterNamesResolver`를 사용해 파라미터 이름을 인식합니다.
-`parameterNamesResolver`는 `withParameterNamesResolver`를 사용해서 변경할 수 있습니다.
-입력한 파라미터 이름은 항상 파라미터 순서와 동일해야 합니다.
-
-----------------
-
-플러그인 별로 관련된 introspector도 존재합니다. 예를들어 [`JacksonObjectArbitraryIntrospector`](../../plugins/jackson-plugin/jackson-object-arbitrary-introspector)와 [`PrimaryConstructorArbitraryIntrospector`](../../plugins/kotlin-plugin/introspectors-for-kotlin)가 존재합니다.
+이는 고급 주제이며 대부분의 사용자에게는 필요하지 않습니다. 관심이 있으시다면 [사용자 정의 인트로스펙터](../custom-introspector) 가이드를 참조하세요.

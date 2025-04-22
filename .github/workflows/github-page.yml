@@ -27,7 +27,7 @@ jobs:
       - name: Build
         working-directory: docs
         run: |
-          npm install postcss postcss-cli autoprefixer
+          npm install postcss postcss-cli autoprefixer mermaid
           hugo --minify
 
       - name: Deploy
