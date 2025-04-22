@@ -1,5 +1,5 @@
 ---
-title: "Generating Interface Type"
+title: "Generating Interface Types"
 images: [ ]
 menu:
 docs:
@@ -8,25 +8,87 @@ identifier: "generating-interface-type"
 weight: 34
 ---
 
-Fixture Monkey is able to generate complex interface objects consisting
-of `interface`, `generic interface`, `sealed interface`.
+## Why Generate Interface Types?
 
-Fixture Monkey provides the default implementations of certain interfaces.
-For example, `ArrayList` is for the `List` interface, `HashSet` is for the `Set` interface.
+When writing tests, you often need to work with interfaces rather than concrete implementations:
+- You may be testing code that accepts interfaces as parameters
+- Your system under test may return interface types
+- You want to test behavior without coupling to specific implementations
 
-Except in those cases, you should specify the implementations of the interface. 
-If you do not, Fixture Monkey will generate an anonymous object for you.
-You do not need to specify the implementations in the case of `sealed interface`.
+Fixture Monkey makes it easy to generate test objects for interfaces - whether they're simple interfaces, generic interfaces, or sealed interfaces.
 
-Let's see how to create an interface with a detailed example.
+## Quick Start Example
 
-### Simple Interface
+Here's a simple example to get started with interface generation:
 
 ```java
+// Define an interface you want to test with
 public interface StringSupplier {
 	String getValue();
 }
 
+// Create a Fixture Monkey instance
+FixtureMonkey fixture = FixtureMonkey.create();
+
+// Generate an instance of the interface
+StringSupplier supplier = fixture.giveMeOne(StringSupplier.class);
+
+// Use it in your test
+String value = supplier.getValue();
+assertThat(value).isNotNull(); // Will pass
+```
+
+This example generates an anonymous implementation of the `StringSupplier` interface that you can use in your tests. Let's explore more options for interface generation.
+
+## Interface Generation Approaches
+
+Fixture Monkey provides three main approaches for generating interface instances:
+
+| Approach | Description | Best For |
+|----------|-------------|----------|
+| **Anonymous implementation** | Fixture Monkey creates an anonymous class | Quick tests, simple interfaces |
+| **Specific implementation** | You specify which class to use | More control, realistic behavior |
+| **Built-in implementations** | Fixture Monkey provides defaults for common interfaces | Standard Java interfaces |
+
+### Examples for Each Approach
+
+```java
+// Anonymous implementation
+StringSupplier supplier = fixture.giveMeOne(StringSupplier.class);
+
+// Specific implementation
+InterfacePlugin plugin = new InterfacePlugin()
+    .interfaceImplements(StringSupplier.class, List.of(DefaultStringSupplier.class));
+
+// Built-in implementation
+List<String> list = fixture.giveMeOne(new TypeReference<List<String>>() {});
+```
+
+## Common Interface Types with Built-in Support
+
+Fixture Monkey provides default implementations for common Java interfaces:
+
+- `List` → `ArrayList`
+- `Set` → `HashSet`
+- `Map` → `HashMap`
+- `Queue` → `LinkedList`
+- And more...
+
+You don't need to configure anything special to use these.
+
+## Detailed Examples
+
+### Simple Interface
+
+Let's start with a simple interface example:
+
+```java
+// The interface we want to generate
+public interface StringSupplier {
+	String getValue();
+}
+
+// A concrete implementation we might want to use
 public class DefaultStringSupplier implements StringSupplier {
 	private final String value;
 
@@ -42,147 +104,274 @@ public class DefaultStringSupplier implements StringSupplier {
 }
 ```
 
-#### Without options
+#### Approach 1: Anonymous Implementation (No Options)
 
-Without options, Fixture Monkey will generate an anonymous object of `StringSupplier`.
+The simplest approach is to let Fixture Monkey generate an anonymous implementation:
 
 ```java
-FixtureMonkey fixture = FixtureMonkey.create();
-
-StringSupplier result = fixtureMonkey.giveMeOne(StringSupplier.class);
+@Test
+void testWithAnonymousImplementation() {
+	// Setup
+	FixtureMonkey fixture = FixtureMonkey.create();
+	
+	// Generate an anonymous implementation
+	StringSupplier result = fixture.giveMeOne(StringSupplier.class);
+	
+	// Test
+	assertThat(result.getValue()).isNotNull();
+	assertThat(result).isNotInstanceOf(DefaultStringSupplier.class);
+}
 ```
 
-The generated instance `result` is an anonymous object of `StringSupplier`. The getter `getValue` returns the arbitrary
-String value. It can be null just like the property of `Clsas`. You need to know that it works same
-as `DefaultStringSupplier`, but it is not type of `DefaultStringSupplier`.
+With this approach, Fixture Monkey creates an anonymous object that implements the `StringSupplier` interface. The `getValue()` method returns a randomly generated String.
 
-{{< alert icon="💡" title="notice">}}
+{{< alert icon="💡" title="Important" >}}
+Fixture Monkey only generates property values for methods that:
+- Follow the naming convention of getters (like `getValue()`, `getName()`, etc.)
+- Have no parameters
 
-Fixture Monkey only generates the properties of the anonymous object listed below.
-
-- Methods follows the naming convention of getter
-- No parameter methods
-
+Other methods will always return `null` or default primitive values.
 {{</ alert>}}
 
-The generated properties can be customized just like the properties of `Class`.
+You can customize the generated properties using the same API as for regular classes:
 
 ```java
-FixtureMonkey fixture = FixtureMonkey.create();
-
-String result = fixture.giveMeBuilder(StringSupplier.class)
-	.set("value", "fix")
-	.sample()
-	.getValue();
+@Test
+void testWithCustomizedProperties() {
+	// Setup
+	FixtureMonkey fixture = FixtureMonkey.create();
+	
+	// Generate with a specific property value
+	StringSupplier result = fixture.giveMeBuilder(StringSupplier.class)
+		.set("value", "customValue")
+		.sample();
+	
+	// Test
+	assertThat(result.getValue()).isEqualTo("customValue");
+}
 ```
 
-The `result` is now set to `fix`. You can use all the APIs in `ArbitraryBuilder`.
+#### Approach 2: Using a Specific Implementation
 
-#### With options
-
-You can extend the implementations of the interface by using the `InterfacePlugin#interfaceImplements` option.
-
-{{< alert icon="💡" title="notice">}}
-All the options related to interface or abstract class are in `InterfacePlugin`
-{{</ alert>}}
+When you need more realistic behavior, you can tell Fixture Monkey to use your concrete implementation:
 
 ```java
-FixtureMonkey fixture = FixtureMonkey.builder()
-	.objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE) // used for instantiate DefaultStringSupplier
-	.plugin(
-		new InterfacePlugin()
-			.interfaceImplements(StringSupplier.class, List.of(DefaultStringSupplier.class))
-	)
-	.build();
-
-DefaultStringSupplier stringSupplier = (DefaultStringSupplier)fixture.giveMeOne(StringSupplier.class);
+@Test
+void testWithSpecificImplementation() {
+	// Setup Fixture Monkey with a specific implementation
+	FixtureMonkey fixture = FixtureMonkey.builder()
+		.objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE) // needed for DefaultStringSupplier's constructor
+		.plugin(
+			new InterfacePlugin()
+				.interfaceImplements(StringSupplier.class, List.of(DefaultStringSupplier.class))
+		)
+		.build();
+	
+	// Generate the interface
+	StringSupplier result = fixture.giveMeOne(StringSupplier.class);
+	
+	// Test
+	assertThat(result).isInstanceOf(DefaultStringSupplier.class);
+	assertThat(result.getValue()).startsWith("default");
+}
 ```
 
-The `InterfacePlugin#interfaceImplements` option can be used multiple times. For example, the default implementation of `List`
-is `ArrayList`. What if you use `Interface#interfaceImplements` to implement `LinkedList` like this?
+This approach generates a real `DefaultStringSupplier` instance with the behavior defined in your implementation.
+
+### Generic Interface
+
+For generic interfaces, the approach varies depending on whether you specify type parameters:
+
+#### 1. Without Type Parameters
+
+When you create a generic interface without specifying type parameters, Fixture Monkey defaults to using `String` type:
 
 ```java
-FixtureMonkey fixture = FixtureMonkey.builder()
-	.plugin(
-		new InterfacePlugin()
-			.interfaceImplements(List.class, List.of(LinkedList.class))
-	)
-	.build();
-
-List<String> list = fixture.giveMeOne(new TypeReference<List<String>>() {
-});
-
-// list will be an instance of ArrayList or LinkedList
-```
-
-The implementations of `List` are `ArrayList` and `LinkedList`.
-
-The `InterfacePlugin#interfaceImplements` option can also be resolved as an interface.
-
-Without options, Fixture Monkey will not generate an implementation of the `Collection` interface. 
-Let `Collection` be `List` through the `InterfacePlugin#interfaceImplements` option.
-The implementations of the `List` interface propagate to the `Collection` interface.
-In detail, the `List` interface is generated as an implementation of `ArrayList`, the `Collection` interface is also be `ArrayList`.
-
-```java
-FixtureMonkey fixture = FixtureMonkey.builder()
-	.plugin(
-		new InterfacePlugin()
-			.interfaceImplements(Collection.class, List.of(List.class))
-	)
-	.build();
-
-ArrayList<String> collection = (ArrayList<String>)fixture.giveMeOne(new TypeReference<Collection<String>>() {
-});
-
-// collection will be an instance of ArrayList
-```
-
-You can use this option below if there are too many implementations to add using the options, but they have a similar pattern.
-
-```java
-interface ObjectValueSupplier {
-    Object getValue();
+// Generic interface
+public interface ObjectValueSupplier<T> {
+    T getValue();
 }
 
-interface StringValueSupplier extends ObjectValueSupplier {
-    String getValue();
+@Test
+void testGenericInterfaceWithoutTypeParameters() {
+    FixtureMonkey fixture = FixtureMonkey.create();
+    
+    // Create without specifying type parameter
+    ObjectValueSupplier<?> result = fixture.giveMeOne(ObjectValueSupplier.class);
+    
+    // String type is used by default
+    assertThat(result.getValue()).isInstanceOf(String.class);
 }
+```
 
-public class DefaultStringValueSupplier implements StringValueSupplier {
+#### 2. With Explicit Type Parameters
+
+You can explicitly specify the type parameter using TypeReference:
+
+```java
+@Test
+void testGenericInterfaceWithTypeParameters() {
+    FixtureMonkey fixture = FixtureMonkey.create();
+    
+    // Specify Integer as the type parameter
+    ObjectValueSupplier<Integer> result = 
+        fixture.giveMeOne(new TypeReference<ObjectValueSupplier<Integer>>() {});
+    
+    // Integer type is used
+    assertThat(result.getValue()).isInstanceOf(Integer.class);
+}
+```
+
+#### 3. Using a Specific Implementation
+
+When using a specific implementation, it follows the type parameters of that implementation:
+
+```java
+// Concrete implementation for String
+public class StringValueSupplier implements ObjectValueSupplier<String> {
     private final String value;
 
-    @ConstructorProperties("value") // It is not needed if you are using Lombok.
-    public DefaultStringValueSupplier(String value) {
+    @ConstructorProperties("value")
+    public StringValueSupplier(String value) {
         this.value = value;
     }
 
     @Override
     public String getValue() {
-        return this.value;
+        return value;
     }
 }
 
-interface IntegerValueSupplier extends ObjectValueSupplier {
-    Integer getValue();
+@Test
+void testGenericInterfaceWithSpecificImplementation() {
+    // Setup with specific implementation
+    FixtureMonkey fixture = FixtureMonkey.builder()
+        .objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)
+        .plugin(
+            new InterfacePlugin()
+                .interfaceImplements(ObjectValueSupplier.class, List.of(StringValueSupplier.class))
+        )
+        .build();
+    
+    // Generate the interface
+    ObjectValueSupplier<?> result = fixture.giveMeOne(ObjectValueSupplier.class);
+    
+    // Test
+    assertThat(result).isInstanceOf(StringValueSupplier.class);
+    assertThat(result.getValue()).isInstanceOf(String.class);
+}
+```
+
+{{< alert icon="💡" title="Note" >}}
+When generating a generic interface without type parameters, Fixture Monkey uses `String` as the default type. If you need a different type, use `TypeReference` or specify a concrete implementation.
+{{</ alert>}}
+
+### Sealed Interface (Java 17+)
+
+Java 17 introduced sealed interfaces, which explicitly define their permitted implementations. Fixture Monkey automatically handles these without additional configuration:
+
+```java
+// Sealed interface with permitted implementations
+sealed interface SealedStringSupplier {
+	String getValue();
 }
 
-public class DefaultIntegerValueSupplier implements IntegerValueSupplier {
-    private final Integer value;
+// Permitted implementation
+public static final class SealedDefaultStringSupplier implements SealedStringSupplier {
+	private final String value;
 
-    @ConstructorProperties("value") // It is not needed if you are using Lombok.
-    public DefaultIntegerValueSupplier(Integer value) {
-        this.value = value;
-    }
+	@ConstructorProperties("value")
+	public SealedDefaultStringSupplier(String value) {
+		this.value = value;
+	}
 
-    @Override
-    public Integer getValue() {
-        return this.value;
-    }
+	@Override
+	public String getValue() {
+		return "sealed" + value;
+	}
 }
 
+@Test
+void testSealedInterface() {
+	// Setup
+	FixtureMonkey fixture = FixtureMonkey.builder()
+		.objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)
+		.build();
+	
+	// Generate sealed interface
+	SealedStringSupplier result = fixture.giveMeOne(SealedStringSupplier.class);
+	
+	// Test
+	assertThat(result).isInstanceOf(SealedDefaultStringSupplier.class);
+	assertThat(result.getValue()).startsWith("sealed");
+}
+```
+
+## Combining with Other Interfaces
+
+You can also specify which implementation to use for certain interfaces. For example, using `LinkedList` instead of the default `ArrayList` for `List`:
+
+```java
+@Test
+void testCustomListImplementation() {
+	// Setup
+	FixtureMonkey fixture = FixtureMonkey.builder()
+		.plugin(
+			new InterfacePlugin()
+				.interfaceImplements(List.class, List.of(LinkedList.class))
+		)
+		.build();
+	
+	// Generate
+	List<String> list = fixture.giveMeOne(new TypeReference<List<String>>() {});
+	
+	// Test
+	assertThat(list).isInstanceOf(LinkedList.class);
+}
+```
+
+## Interface Inheritance
+
+Fixture Monkey can also handle interface inheritance. You can specify implementations at any level of the hierarchy:
+
+```java
+interface ObjectValueSupplier {
+	Object getValue();
+}
+
+interface StringValueSupplier extends ObjectValueSupplier {
+	String getValue();
+}
+
+@Test
+void testInterfaceHierarchy() {
+	// Setup
+	FixtureMonkey fixture = FixtureMonkey.builder()
+		.plugin(
+			new InterfacePlugin()
+				.interfaceImplements(Collection.class, List.of(List.class))
+		)
+		.build();
+	
+	// Generate a Collection, which will use a List implementation
+	Collection<String> collection = fixture.giveMeOne(new TypeReference<Collection<String>>() {});
+	
+	// Test
+	assertThat(collection).isInstanceOf(List.class);
+}
+```
+
+## Advanced Features
+
+For more complex scenarios, Fixture Monkey provides advanced options for interface implementation resolution.
+
+### Dynamic Implementation Resolution
+
+If you have many implementations or need to select implementations based on type conditions:
+
+```java
 FixtureMonkey fixture = FixtureMonkey.builder()
-	.objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE) // used for instantiate implementations of ObjectValueSupplier
+	.objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)
 	.plugin(
 		new InterfacePlugin()
 			.interfaceImplements(
@@ -201,112 +390,30 @@ FixtureMonkey fixture = FixtureMonkey.builder()
 			)
 	)
 	.build();
-
-DefaultStringValueSupplier stringValueSupplier = (DefaultStringValueSupplier)fixture.giveMeOne(StringValueSupplier.class);
-DefaultIntegerValueSupplier integerValueSupplier = (DefaultIntegerValueSupplier)fixture.giveMeOne(IntegerValueSupplier.class);
 ```
 
-### Generic Interfaces
+{{< alert icon="⚠️" title="For Advanced Users" >}}
+This section describes advanced features that most beginners won't need initially. Feel free to revisit this when you need more complex interface generation strategies.
+{{</ alert>}}
 
-What if we need to generate some complex generic interface? All you have to do is do what you did with the simple
-interface above.
+### Custom Resolution Implementation
 
-```java
-public interface ObjectValueSupplier<T> {
-	T getValue();
-}
-
-public class StringValueSupplier implements ObjectValueSupplier<String> {
-	private final String value;
-
-	@ConstructorProperties("value") // It is not needed if you are using Lombok.
-	public StringValueSupplier(String value) {
-		this.value = value;
-	}
-
-	@Override
-	public String getValue() {
-		return value;
-	}
-}
-
-FixtureMonkey fixture = FixtureMonkey.builder()
-	.objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE) // used for instantiate StringValueSupplier
-	.plugin(
-		new InterfacePlugin()
-			.interfaceImplements(ObjectValueSupplier.class, List.of(StringValueSupplier.class))
-	)
-	.build();
-
-StringValueSupplier stringSupplier = (StringValueSupplier)fixture.giveMeOne(ObjectValueSupplier.class);
-
-```
-
-### Sealed Interface
-
-Sealed interface is simpler. You do not need options.
-
-```java
-sealed interface SealedStringSupplier {
-	String getValue();
-}
-
-public static final class SealedDefaultStringSupplier implements SealedStringSupplier {
-	private final String value;
-
-	@ConstructorProperties("value") // It is not needed if you are using Lombok.
-	public SealedDefaultStringSupplier(String value) {
-		this.value = value;
-	}
-
-	@Override
-	public String getValue() {
-		return "sealed" + value;
-	}
-}
-
-FixtureMonkey fixture = FixtureMonkey.builder()
-	.objectIntrospector(
-		ConstructorPropertiesArbitraryIntrospector.INSTANCE) // used for instantiate SealedDefaultStringSupplier
-	.build();
-
-SealedDefaultStringSupplier stringSupplier = (SealedDefaultStringSupplier)fixture.giveMeOne(SealedStringSupplier.class);
-```
-
-### For advanced users
-If there are too many implementations of an interface, you can add interface implementations programmatically.
-All you have to do is create a class that implements the `CandidateConcretePropertyResolver` interface and add it to the `InterfacePlugin`.
+For the most advanced scenarios, you can implement the `CandidateConcretePropertyResolver` interface:
 
 ```java
 class YourCustomCandidateConcretePropertyResolver implements CandidateConcretePropertyResolver {
-    @Override
-    public List<Property> resolveCandidateConcreteProperties(Property property) {
-        // resolve your implementations
-        return List.of(...);
-    }
+	@Override
+	public List<Property> resolveCandidateConcreteProperties(Property property) {
+		// Your custom logic to resolve implementations
+		return List.of(...);
+	}
 }
 ```
 
-If you have a trouble creating `List<Property>`, you can delegate the creation logic to `ConcreteTypeCandidateConcretePropertyResolver`.
-
-`ConcreteTypeCandidateConcretePropertyResolver` is a class that implements the `CandidateConcretePropertyResolver` interface.
-It converts the types and property information provided in the constructor to `List<Property>`.
-The property information is used when inferring type parameters.
-
-In the case below, the `ConcreteTypeCandidateConcretePropertyResolver` is used to resolve the implementations of `List` and `Set`.
-`Collection<String>` is resolved as either `List<String>` or `Set<String>`.
-You can resolve the actual implementations programmatically or delegate the creation logic to Fixture Monkey.
-By default, Fixture Monkey resolves `List<String>` as `ArrayList<String>` and `Set<String>` as `HashSet<String>`.
-
-{{< alert icon="💡" title="notice">}}
-
-You should be careful when setting the type condition to apply the options as the first parameter.
-For example, using `AssignableTypeMatcher` in the example below will cause an infinite loop because the implementations also satisfy the condition.
-
-{{</ alert>}}
+You can use the built-in `ConcreteTypeCandidateConcretePropertyResolver` to help with type conversion:
 
 ```java
-FixtureMonkey sut = FixtureMonkey.builder()
+FixtureMonkey fixture = FixtureMonkey.builder()
 	.plugin(new InterfacePlugin()
 		.interfaceImplements(
 			new ExactTypeMatcher(Collection.class),
@@ -314,12 +421,27 @@ FixtureMonkey sut = FixtureMonkey.builder()
 		)
 	)
 	.build();
-
-Collection<String> actual = sut.giveMeOne(new TypeReference<>() {
-});
-
-then(actual).isInstanceOfAny(List.class, Set.class);
 ```
 
-This chapter illustrates how to create an interface type. If you get stuck, all you need to remember is the `InterfacePlugin' plugin.
-If the plugin doesn't solve your problem, please post a bug with a reproducible example.
+{{< alert icon="💡" title="Important" >}}
+When setting type conditions for option application, be careful with matchers like `AssignableTypeMatcher`. Using it incorrectly can cause infinite recursion if implementations also match the condition.
+{{</ alert>}}
+
+## Summary
+
+Here's a quick summary of how to generate interface types with Fixture Monkey:
+
+1. **Simple cases**: Just use `fixture.giveMeOne(YourInterface.class)` to get an anonymous implementation
+   
+2. **Specific implementation**: Use the `InterfacePlugin` with `interfaceImplements`:
+   ```java
+   new InterfacePlugin().interfaceImplements(YourInterface.class, List.of(YourImplementation.class))
+   ```
+
+3. **Built-in implementations**: Common interfaces like `List`, `Set`, etc. are handled automatically
+
+4. **Sealed interfaces**: No special configuration needed - Fixture Monkey uses the permitted implementations
+
+5. **Complex cases**: Use `AssignableTypeMatcher` or implement `CandidateConcretePropertyResolver` for advanced scenarios
+
+Remember that for most testing scenarios, the simpler approaches will be sufficient. The advanced features are there when you need more control over the generated implementations.

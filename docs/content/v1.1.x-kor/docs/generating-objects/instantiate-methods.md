@@ -5,661 +5,804 @@ menu:
 docs:
 parent: "generating-objects"
 identifier: "instantiate-methods"
-weight: 32
+weight: 33
 ---
 
-각 테스트마다 객체 생성을 다르게 하고 싶을 수 있습니다.
-예를 들어, 같은 클래스에서도 첫 테스트에서는 생성자로 객체를 생성하고, 다른 테스트에서는 팩터리 메서드로 객체를 생성하고 싶을 수 있습니다
+## 개요: 객체 생성 방법을 직접 지정하는 이유
 
-Fixture Monkey는 `instantiate()` 메서드를 제공해 객체 생성 방법을 선택할 수 있게 합니다.
-{{< alert icon="💡" text="Kotlin Plugin을 추가한다면 커스텀 DSL에서 instantiateBy() 메서드를 사용할 수 있습니다." />}}
+기본적으로 Fixture Monkey는 인트로스펙터(Introspector)를 통해 객체 생성 방법을 자동으로 결정합니다. 하지만 때로는 다음과 같은 이유로 특정 방법을 직접 지정해야 할 수 있습니다:
 
-`ArbitraryBuilder`에서 원하는 인스턴스 생성 방법(생성자 또는 팩토리 메서드)으로 객체를 생성할 수 있습니다.
+- **특정 생성자 사용**: 클래스에 여러 생성자가 있을 때 특정 생성자를 선택하고 싶은 경우
+- **팩토리 메서드 활용**: 생성자 대신 팩토리 메서드로 객체를 생성하고 싶은 경우
+- **테스트별 다른 초기화**: 같은 클래스지만 테스트마다 다른 방식으로 초기화하고 싶은 경우
+- **특수한 초기화 로직**: 인트로스펙터로 자동 처리되지 않는 특별한 초기화가 필요한 경우
 
-`ArbitraryBuilder`를 사용할 때마다 매번 객체 생성 방법을 지정해야 하는 것은 아닙니다.
-전역 옵션으로 FixtureMonkey 인스턴스에서 객체 생성 방식을 지정해주고 싶다면, [Introspector](../introspector) 페이지를 참고해주세요.
+이러한 상황에서 `instantiate()` 메서드를 사용하면 객체 생성 방법을 세밀하게 제어할 수 있습니다.
 
-`instantiate()` 메서드는 `ArbitraryBuilder`를 사용할 때 객체를 편리하게 생성할 수 있도록 도와주는 메서드일 뿐입니다.
+{{< alert icon="💡" text="이 문서에서 설명하는 방법은 테스트별로 객체 생성 방법을 지정하는 것입니다. 모든 테스트에 동일한 방식을 적용하려면 인트로스펙터 페이지를 참고하세요." />}}
 
-## 생성자
-여러 개의 생성자를 가진 커스텀 클래스가 있다고 가정해보겠습니다.
+## 처음 시작하기: 가장 기본적인 사용법
+
+Fixture Monkey로 객체를 생성할 때 가장 기본적인 방법은 다음과 같습니다:
+
+```java
+// 기본 방식 - 인트로스펙터가 자동으로 객체 생성 방법 결정
+Product product = fixtureMonkey.giveMeOne(Product.class);
+```
+
+하지만 특정 생성자나 팩토리 메서드를 사용하고 싶다면 `instantiate()` 메서드를 사용합니다:
+
+```java
+// 특정 생성자 지정
+Product product = fixtureMonkey.giveMeBuilder(Product.class)
+    .instantiate(constructor())
+    .sample();
+
+// 특정 팩토리 메서드 지정
+Product product = fixtureMonkey.giveMeBuilder(Product.class)
+    .instantiate(factoryMethod("create"))
+    .sample();
+```
+
+{{< alert icon="⭐" text="초보자 팁: 대부분의 경우 기본 방식(giveMeOne)으로 충분합니다. 특별한 초기화 요구사항이 있을 때만 instantiate() 메서드를 사용하세요." />}}
+
+## 기본 개념
+
+### ArbitraryBuilder란?
+
+`ArbitraryBuilder`는 객체 생성 설정을 구성하기 위한 빌더 클래스입니다. Fixture Monkey에서 `giveMeBuilder()` 메서드를 호출하면 반환됩니다.
+
+```java
+// ArbitraryBuilder 얻기
+ArbitraryBuilder<Product> builder = fixtureMonkey.giveMeBuilder(Product.class);
+```
+
+### instantiate() 메서드란?
+
+`instantiate()` 메서드는 `ArbitraryBuilder`에서 객체를 어떻게 생성할지 지정하는 메서드입니다. 생성자나 팩토리 메서드 중 하나를 선택할 수 있습니다.
+
+📌 **메서드 형식:**
 
 {{< tabpane persist=false >}}
 {{< tab header="Java" lang="java">}}
+// Java에서 생성자 지정
+.instantiate(constructor())
 
-@Value
-public class Product {
-    long id;
-
-    String productName;
-
-    long price;
-
-    List<String> options;
-
-    Instant createdAt;
-
-    public Product() {
-        this.id = 0;
-        this.productName = null;
-        this.price = 0;
-        this.options = null;
-        this.createdAt = null;
-    }
-
-    public Product(
-        String str,
-        long id,
-        long price
-    ) {
-        this.id = id;
-        this.productName = str;
-        this.price = price;
-        this.options = Collections.emptyList();
-        this.createdAt = Instant.now();
-    }
-
-    public Product(
-        long id,
-        long price,
-        List<String> options
-    ) {
-        this.id = id;
-        this.productName = "defaultProductName";
-        this.price = price;
-        this.options = options;
-        this.createdAt = Instant.now();
-    }
-}
-
+// Java에서 팩토리 메서드 지정
+.instantiate(factoryMethod("methodName"))
 {{< /tab >}}
 {{< tab header="Kotlin" lang="kotlin">}}
-
-class Product(
-    val id: Long,
-    val productName: String,
-    val price: Long,
-    val options: List<String>,
-    val createdAt: Instant
-) {
-    constructor() : this(
-        id = 0,
-        productName = "",
-        price = 0,
-        options = emptyList(),
-        createdAt = Instant.now()
-    )
-
-    constructor(str: String, id: Long, price: Long) : this(
-        id = id,
-        productName = str,
-        price = price,
-        options = emptyList(),
-        createdAt = Instant.now()
-    )
-
-    constructor(id: Long, price: Long, options: List<String>) : this(
-        id = id,
-        productName = "defaultProductName",
-        price = price,
-        options = options,
-        createdAt = Instant.now()
-    )
-
-    companion object {
-        fun from(id: Long, price: Long): Product = Product("product", id, price)
-    }
+// Kotlin에서 생성자 지정 (Kotlin 플러그인 필요)
+.instantiateBy {
+    constructor()
 }
 
+// Kotlin에서 팩토리 메서드 지정
+.instantiateBy {
+    factory("methodName")
+}
 {{< /tab >}}
 {{< /tabpane>}}
 
-Fixture Monkey를 사용하면 여러 생성자 중 원하는 생성자를 선택하여 객체를 만들 수 있습니다.
+## 1. 간단한 생성자 사용하기
 
-### 인자가 없는 생성자 또는 기본 생성자
-`instantiate` 메서드를 사용하여 생성자에게 객체를 생성할 수 있도록 `ArbitraryBuilder`에 지시하는 기본적인 방법은 다음과 같습니다.
+가장 기본적인 사용법부터 시작해보겠습니다. 간단한 클래스를 예로 들겠습니다:
 
 {{< tabpane persist=false >}}
 {{< tab header="Java" lang="java">}}
-
-@Test
-void test() {
-    Product product = fixtureMonkey.giveMeBuilder(Product.class)
-        .instantiate(constructor())
-        .sample();
-
-    then(product.getId()).isEqualTo(0);
+public class SimpleProduct {
+    private final String name;
+    private final int price;
+    
+    // 생성자
+    public SimpleProduct(String name, int price) {
+        this.name = name;
+        this.price = price;
+    }
+    
+    // Getter 메서드
+    public String getName() { return name; }
+    public int getPrice() { return price; }
 }
-
 {{< /tab >}}
 {{< tab header="Kotlin" lang="kotlin">}}
+class SimpleProduct(
+    val name: String,
+    val price: Int
+)
+{{< /tab >}}
+{{< /tabpane>}}
 
+이 클래스의 생성자를 사용하여 객체를 생성하는 방법:
+
+{{< tabpane persist=false >}}
+{{< tab header="Java" lang="java">}}
 @Test
-fun test() {
-    val product = fixtureMonkey.giveMeBuilder<Product>()
+void 단순_생성자_사용() {
+    SimpleProduct product = fixtureMonkey.giveMeBuilder(SimpleProduct.class)
+        .instantiate(constructor())
+        .sample();
+    
+    // 생성된 객체 확인
+    assertThat(product).isNotNull();
+    assertThat(product.getName()).isNotNull();
+    assertThat(product.getPrice()).isNotNegative();
+}
+{{< /tab >}}
+{{< tab header="Kotlin" lang="kotlin">}}
+@Test
+fun 단순_생성자_사용() {
+    val product = fixtureMonkey.giveMeBuilder<SimpleProduct>()
         .instantiateBy {
             constructor()
         }
         .sample()
-
-    then(product.productName).isEqualTo("")
+    
+    // 생성된 객체 확인
+    assertThat(product).isNotNull()
+    assertThat(product.name).isNotNull()
+    assertThat(product.price).isNotNegative()
 }
-
 {{< /tab >}}
 {{< /tabpane>}}
-생성자 메서드를 사용하도록 지정하려면 `constructor()` 옵션을 전달하면 됩니다.
-만약 인자가 없는 생성자가 있다면 해당 생성자를 사용하고, 없다면 첫 번째로 작성된 생성자를 사용합니다.
 
-### 특정 생성자 지정
-클래스가 두 개 이상의 생성자를 가진다면 필요한 파라미터 정보를 제공하여 원하는 생성자를 지정할 수 있습니다.
-다음 두 개의 생성자를 가진 Product 클래스를 살펴봅시다.
+이 예제에서 `constructor()`는 SimpleProduct의 생성자를 사용하도록 지정합니다. Fixture Monkey는 자동으로 적절한 값을 생성하여 생성자에 전달합니다.
 
-options를 비어있는 리스트로 초기화해주는 생성자를 사용하려면 다음과 같이 매개 변수를 지정합니다.
+## 2. 여러 생성자 중 선택하기
+
+이제 여러 생성자를 가진 클래스를 살펴보겠습니다:
 
 {{< tabpane persist=false >}}
 {{< tab header="Java" lang="java">}}
+public class Product {
+    private final long id;
+    private final String name;
+    private final long price;
+    private final List<String> options;
+    
+    // 기본 생성자 (모든 필드 기본값)
+    public Product() {
+        this.id = 0;
+        this.name = "기본상품";
+        this.price = 0;
+        this.options = null;
+    }
+    
+    // 옵션이 없는 간단한 상품 생성자
+    public Product(String name, long price) {
+        this.id = new Random().nextLong();
+        this.name = name;
+        this.price = price;
+        this.options = Collections.emptyList();
+    }
+    
+    // 옵션이 있는 상품 생성자
+    public Product(String name, long price, List<String> options) {
+        this.id = new Random().nextLong();
+        this.name = name;
+        this.price = price;
+        this.options = options;
+    }
+    
+    // Getter 메서드
+    public long getId() { return id; }
+    public String getName() { return name; }
+    public long getPrice() { return price; }
+    public List<String> getOptions() { return options; }
+}
+{{< /tab >}}
+{{< tab header="Kotlin" lang="kotlin">}}
+class Product {
+    val id: Long
+    val name: String
+    val price: Long
+    val options: List<String>
+    
+    // 기본 생성자 (모든 필드 기본값)
+    constructor() {
+        this.id = 0
+        this.name = "기본상품"
+        this.price = 0
+        this.options = emptyList()
+    }
+    
+    // 옵션이 없는 간단한 상품 생성자
+    constructor(name: String, price: Long) {
+        this.id = Random().nextLong()
+        this.name = name
+        this.price = price
+        this.options = emptyList()
+    }
+    
+    // 옵션이 있는 상품 생성자
+    constructor(name: String, price: Long, options: List<String>) {
+        this.id = Random().nextLong()
+        this.name = name
+        this.price = price
+        this.options = options
+    }
+}
+{{< /tab >}}
+{{< /tabpane>}}
+
+### 2.1 기본 생성자 사용
+
+기본 생성자를 사용하려면:
+
+{{< tabpane persist=false >}}
+{{< tab header="Java" lang="java">}}
+@Test
+void 기본_생성자_사용() {
+    Product product = fixtureMonkey.giveMeBuilder(Product.class)
+        .instantiate(constructor())  // 파라미터 없으면 기본 생성자 선택
+        .sample();
+    
+    assertThat(product.getId()).isEqualTo(0);
+    assertThat(product.getName()).isEqualTo("기본상품");
+}
+{{< /tab >}}
+{{< tab header="Kotlin" lang="kotlin">}}
+@Test
+fun 기본_생성자_사용() {
+    val product = fixtureMonkey.giveMeBuilder<Product>()
+        .instantiateBy {
+            constructor()  // 파라미터 없으면 기본 생성자 선택
+        }
+        .sample()
+    
+    assertThat(product.id).isEqualTo(0)
+    assertThat(product.name).isEqualTo("기본상품")
+}
+{{< /tab >}}
+{{< /tabpane>}}
+
+`constructor()`에 파라미터를 지정하지 않으면, Fixture Monkey는 기본 생성자(인자가 없는 생성자)를 사용합니다.
+
+### 2.2 특정 생성자 선택하기
+
+클래스에 여러 생성자가 있을 때 파라미터 타입을 지정하여 원하는 생성자를 선택할 수 있습니다:
+
+{{< tabpane persist=false >}}
+{{< tab header="Java" lang="java">}}
+@Test
+void 옵션없는_생성자_선택() {
+    Product product = fixtureMonkey.giveMeBuilder(Product.class)
+        .instantiate(
+            constructor()
+                .parameter(String.class)  // 첫 번째 파라미터 타입
+                .parameter(long.class)    // 두 번째 파라미터 타입
+        )
+        .sample();
+    
+    assertThat(product.getOptions()).isEmpty();
+}
 
 @Test
-void test() {
+void 옵션있는_생성자_선택() {
     Product product = fixtureMonkey.giveMeBuilder(Product.class)
         .instantiate(
             constructor()
                 .parameter(String.class)
                 .parameter(long.class)
-                .parameter(long.class)
+                .parameter(new TypeReference<List<String>>(){})  // 제네릭 타입 지정
         )
-    .sample();
-
-    then(product.getOptions()).isEmpty();
+        .sample();
+    
+    assertThat(product.getOptions()).isNotNull();
 }
-
 {{< /tab >}}
 {{< tab header="Kotlin" lang="kotlin">}}
+@Test
+fun 옵션없는_생성자_선택() {
+    val product = fixtureMonkey.giveMeBuilder<Product>()
+        .instantiateBy {
+            constructor<Product> {
+                parameter<String>()  // 첫 번째 파라미터 타입
+                parameter<Long>()    // 두 번째 파라미터 타입
+            }
+        }
+        .sample()
+    
+    assertThat(product.options).isEmpty()
+}
 
-@RepeatedTest(TEST_COUNT)
-fun test() {
+@Test
+fun 옵션있는_생성자_선택() {
     val product = fixtureMonkey.giveMeBuilder<Product>()
         .instantiateBy {
             constructor<Product> {
                 parameter<String>()
                 parameter<Long>()
-                parameter<Long>()
+                parameter<List<String>>()  // 제네릭 타입 지정
+            }
         }
-    }
-    .sample()
-
-    then(product.options).isEmpty()
+        .sample()
+    
+    assertThat(product.options).isNotNull()
 }
-
 {{< /tab >}}
 {{< /tabpane>}}
 
-productName을 "defaultProductName"으로 하는 다른 생성자를 사용하려면 다음처럼 매개 변수 정보만 변경하면 됩니다.
-{{< tabpane persist=false >}}
-{{< tab header="Java" lang="java">}}
+> **용어 설명**: `parameter()` 메서드는 생성자 파라미터의 타입을 지정하여 원하는 생성자를 선택하는 역할을 합니다.
 
-constructor()
-    .parameter(long.class)
-    .parameter(long.class)
-    .parameter(new TypeReference<List<String>>(){})
+### 2.3 생성자 파라미터 값 지정하기
 
-{{< /tab >}}
-{{< tab header="Kotlin" lang="kotlin">}}
-
-constructor<Product> {
-    parameter<Long>()
-    parameter<Long>()
-    parameter<List<String>>()
-}
-
-{{< /tab >}}
-{{< /tabpane>}}
-
-참고로 private 생성자를 사용하는 것도 가능합니다.
-
-### 매개변수 이름으로 힌트 제공
-생성자에 특정 값을 전달하려는 경우 매개변수 이름으로 힌트를 추가할 수 있습니다.
+파라미터 값을 직접 지정하려면 파라미터 이름 힌트(parameter name hint)를 사용할 수 있습니다:
 
 {{< tabpane persist=false >}}
 {{< tab header="Java" lang="java">}}
-
 @Test
-void test() {
+void 파라미터_값_지정() {
     Product product = fixtureMonkey.giveMeBuilder(Product.class)
         .instantiate(
             constructor()
-                .parameter(String.class, "str")
+                .parameter(String.class, "productName")  // 파라미터 이름 힌트 지정
                 .parameter(long.class)
-                .parameter(long.class)
-            )
-        .set("str", "book")
+        )
+        .set("productName", "특별상품")  // 힌트로 지정한 이름으로 값 설정
         .sample();
-
-    then(product.getProductName()).isEqualTo("book");
-    then(product.getOptions()).isEmpty();
+    
+    assertThat(product.getName()).isEqualTo("특별상품");
 }
-
 {{< /tab >}}
 {{< tab header="Kotlin" lang="kotlin">}}
-
 @Test
-fun test() {
+fun 파라미터_값_지정() {
     val product = fixtureMonkey.giveMeBuilder<Product>()
         .instantiateBy {
             constructor<Product> {
-                parameter<String>("str")
+                parameter<String>("productName")  // 파라미터 이름 힌트 지정
                 parameter<Long>()
-                parameter<Long>()
+            }
         }
-    }
-    .set("str", "book")
-    .sample()
-
-    then(product.productName).isEqualTo("book")
-    then(product.options).isEmpty()
+        .set("productName", "특별상품")  // 힌트로 지정한 이름으로 값 설정
+        .sample()
+    
+    assertThat(product.name).isEqualTo("특별상품")
 }
-
 {{< /tab >}}
 {{< /tabpane>}}
 
-이 예제에서는 제품 이름에 대한 매개 변수 이름 힌트를 "str"으로 제공합니다.
-이를 통해 `set()` 함수를 사용하여 제품 이름을 원하는 값(이 경우 "book"을 의미합니다.)으로 설정할 수 있습니다.
+> **용어 설명**: 파라미터 이름 힌트(parameter name hint)는 생성자 파라미터에 별칭을 부여하여 나중에 이 이름으로 값을 설정할 수 있게 해주는 기능입니다.
 
-힌트를 어떤 이름으로든 설정할 수 있지만, 혼동을 피하기 위해 생성자 매개변수에 이름을 사용하는 것이 좋습니다.
-또한 매개변수 이름 힌트를 사용하여 이름을 변경한 후에는 더 이상 필드 이름 "productName"을 사용하여 설정할 수 없습니다.
+## 3. 팩토리 메서드 사용하기
 
-### 기본 인자 설정 (Kotlin)
-Kotlin에서는 생성자 매개 변수 옵션에 추가 값을 전달할 수 있는 유연성이 있어 기본 인수를 사용할 경우 사용 여부를 결정할 수 있습니다.
+생성자 외에도 팩토리 메서드를 사용하여 객체를 생성할 수 있습니다. 팩토리 메서드가 있는 클래스를 살펴보겠습니다:
 
-```kotlin
+{{< tabpane persist=false >}}
+{{< tab header="Java" lang="java">}}
+public class Product {
+    // 앞에서 정의한 필드와 생성자들...
+    
+    // 팩토리 메서드
+    public static Product create(String name, long price) {
+        return new Product(name, price);
+    }
+    
+    // 추천 상품 생성 팩토리 메서드
+    public static Product createRecommended(long price) {
+        return new Product("추천상품", price);
+    }
+}
+{{< /tab >}}
+{{< tab header="Kotlin" lang="kotlin">}}
+class Product {
+    // 앞에서 정의한 필드와 생성자들...
+    
+    companion object {
+        // 팩토리 메서드
+        fun create(name: String, price: Long): Product {
+            return Product(name, price)
+        }
+        
+        // 추천 상품 생성 팩토리 메서드
+        fun createRecommended(price: Long): Product {
+            return Product("추천상품", price)
+        }
+    }
+}
+{{< /tab >}}
+{{< /tabpane>}}
+
+### 3.1 기본 팩토리 메서드 사용
+
+팩토리 메서드를 사용하여 객체를 생성하려면:
+
+{{< tabpane persist=false >}}
+{{< tab header="Java" lang="java">}}
 @Test
-fun test() {
-    class Product(val productName: String = "defaultProductName")
+void 팩토리_메서드_사용() {
+    Product product = fixtureMonkey.giveMeBuilder(Product.class)
+        .instantiate(
+            factoryMethod("create")  // 팩토리 메서드 이름 지정
+        )
+        .sample();
+    
+    assertThat(product).isNotNull();
+    assertThat(product.getOptions()).isEmpty();
+}
+{{< /tab >}}
+{{< tab header="Kotlin" lang="kotlin">}}
+@Test
+fun 팩토리_메서드_사용() {
+    val product = fixtureMonkey.giveMeBuilder<Product>()
+        .instantiateBy {
+            factory<Product>("create")  // 팩토리 메서드 이름 지정
+        }
+        .sample()
+    
+    assertThat(product).isNotNull()
+    assertThat(product.options).isEmpty()
+}
+{{< /tab >}}
+{{< /tabpane>}}
 
+> **용어 설명**: 팩토리 메서드(Factory Method)는 객체 생성을 담당하는 정적 메서드로, 생성자를 직접 호출하는 대신 이 메서드를 통해 객체를 생성합니다.
+
+### 3.2 특정 팩토리 메서드 선택하기
+
+여러 팩토리 메서드가 있을 때 파라미터 타입을 지정하여 원하는 메서드를 선택할 수 있습니다:
+
+{{< tabpane persist=false >}}
+{{< tab header="Java" lang="java">}}
+@Test
+void 특정_팩토리_메서드_선택() {
+    Product product = fixtureMonkey.giveMeBuilder(Product.class)
+        .instantiate(
+            factoryMethod("createRecommended")
+                .parameter(long.class)  // 파라미터 타입 지정
+        )
+        .sample();
+    
+    assertThat(product.getName()).isEqualTo("추천상품");
+}
+{{< /tab >}}
+{{< tab header="Kotlin" lang="kotlin">}}
+@Test
+fun 특정_팩토리_메서드_선택() {
+    val product = fixtureMonkey.giveMeBuilder<Product>()
+        .instantiateBy {
+            factory<Product>("createRecommended") {
+                parameter<Long>()  // 파라미터 타입 지정
+            }
+        }
+        .sample()
+    
+    assertThat(product.name).isEqualTo("추천상품")
+}
+{{< /tab >}}
+{{< /tabpane>}}
+
+### 3.3 팩토리 메서드 파라미터 값 지정하기
+
+팩토리 메서드의 파라미터 값을 직접 지정하려면:
+
+{{< tabpane persist=false >}}
+{{< tab header="Java" lang="java">}}
+@Test
+void 팩토리_메서드_파라미터_값_지정() {
+    Product product = fixtureMonkey.giveMeBuilder(Product.class)
+        .instantiate(
+            factoryMethod("create")
+                .parameter(String.class, "productName")  // 파라미터 이름 힌트
+                .parameter(long.class, "productPrice")
+        )
+        .set("productName", "커스텀상품")
+        .set("productPrice", 9900L)
+        .sample();
+    
+    assertThat(product.getName()).isEqualTo("커스텀상품");
+    assertThat(product.getPrice()).isEqualTo(9900L);
+}
+{{< /tab >}}
+{{< tab header="Kotlin" lang="kotlin">}}
+@Test
+fun 팩토리_메서드_파라미터_값_지정() {
+    val product = fixtureMonkey.giveMeBuilder<Product>()
+        .instantiateBy {
+            factory<Product>("create") {
+                parameter<String>("productName")  // 파라미터 이름 힌트
+                parameter<Long>("productPrice")
+            }
+        }
+        .set("productName", "커스텀상품")
+        .set("productPrice", 9900L)
+        .sample()
+    
+    assertThat(product.name).isEqualTo("커스텀상품")
+    assertThat(product.price).isEqualTo(9900L)
+}
+{{< /tab >}}
+{{< /tabpane>}}
+
+## 4. 고급 기능과 주의사항
+
+객체 생성 과정에서 알아두면 좋은 고급 기능과 주의사항을 살펴보겠습니다.
+
+### 4.1 필드 vs JavaBeansProperty 선택하기
+
+객체 생성 시 속성 값을 어떻게 설정할지 제어할 수 있습니다. 두 가지 주요 방법이 있습니다:
+
+{{< alert icon="📘" text="생성자나 팩토리 메서드로 객체를 생성한 후, 생성자에서 초기화되지 않은 속성들을 어떻게 설정할지 결정하는 옵션입니다." />}}
+
+1. **field()**: 클래스의 필드를 기반으로 속성 생성
+   - 장점: 직접 필드에 접근하므로 setter가 없어도 됨
+   - 단점: 캡슐화 우회, 유효성 검사 로직 무시
+
+2. **javaBeansProperty()**: getter/setter 메서드를 기반으로 속성 생성
+   - 장점: 캡슐화 유지, setter의 유효성 검사 로직 활용
+   - 단점: setter가 없으면 속성 설정 불가능
+
+📋 **간단한 선택 가이드**:
+- setter 메서드에 유효성 검사 로직이 있고 이를 테스트하고 싶다면: **javaBeansProperty()**
+- setter 메서드가 없거나 유효성 검사를 우회하고 싶다면: **field()**
+
+#### 4.1.1 필드 기반 속성 생성
+
+필드 기반으로 속성을 생성하려면:
+
+{{< tabpane persist=false >}}
+{{< tab header="Java" lang="java">}}
+@Test
+void 필드_기반_속성_생성() {
+    Product product = fixtureMonkey.giveMeBuilder(Product.class)
+        .instantiate(
+            constructor().field()  // 필드 기반 속성 생성
+        )
+        .sample();
+    
+    assertThat(product).isNotNull();
+}
+{{< /tab >}}
+{{< tab header="Kotlin" lang="kotlin">}}
+@Test
+fun 필드_기반_속성_생성() {
     val product = fixtureMonkey.giveMeBuilder<Product>()
         .instantiateBy {
             constructor {
-                parameter<String>(useDefaultArgument = true)
+                javaField()  // 필드 기반 속성 생성
             }
         }
         .sample()
-
-    then(product.productName).isEqualTo("defaultProductName")
+    
+    assertThat(product).isNotNull()
 }
-```
-
-### 제네릭 객체
-제네릭 객체도 비슷한 방식으로 객체를 생성할 수 있습니다.
-샘플 클래스 `GenericObject`를 살펴보겠습니다.
-
-{{< tabpane persist=false >}}
-{{< tab header="Java" lang="java">}}
-
-@Value
-public class GenericObject<T> {
-    T value;
-
-    public GenericObject(T value) {
-        this.value = value;
-    }
-}
-
-{{< /tab >}}
-{{< tab header="Kotlin" lang="kotlin">}}
-
-class GenericObject<T>(var value: T)
-
 {{< /tab >}}
 {{< /tabpane>}}
 
+> **용어 설명**: 필드(Field)는 클래스 내에 정의된 변수로, 객체의 상태를 저장합니다. 필드 기반 속성 생성은 이러한 필드를 직접 사용하여 값을 설정합니다.
+
+#### 4.1.2 JavaBeansProperty 기반 속성 생성
+
+JavaBeansProperty 기반으로 속성을 생성하려면:
+
 {{< tabpane persist=false >}}
 {{< tab header="Java" lang="java">}}
-
 @Test
-void test() {
-    ConstructorTestSpecs.GenericObject<String> genericObject = fixtureMonkey.giveMeBuilder(
-        new TypeReference<ConstructorTestSpecs.GenericObject<String>>() {
-        })
+void JavaBeansProperty_기반_속성_생성() {
+    Product product = fixtureMonkey.giveMeBuilder(Product.class)
         .instantiate(
-            constructor()
-                .parameter(String.class)
+            constructor().javaBeansProperty()  // JavaBeansProperty 기반 속성 생성
         )
         .sample();
-
-    then(genericObject).isNotNull();
-    then(genericObject.getValue()).isNotNull();
+    
+    assertThat(product).isNotNull();
 }
-
 {{< /tab >}}
 {{< tab header="Kotlin" lang="kotlin">}}
+@Test
+fun JavaBeansProperty_기반_속성_생성() {
+    val product = fixtureMonkey.giveMeBuilder<Product>()
+        .instantiateBy {
+            constructor {
+                javaBeansProperty()  // JavaBeansProperty 기반 속성 생성
+            }
+        }
+        .sample()
+    
+    assertThat(product).isNotNull()
+}
+{{< /tab >}}
+{{< /tabpane>}}
+
+> **용어 설명**: JavaBeansProperty는 getter/setter 메서드 쌍으로 표현되는 속성을 말합니다. 예를 들어 getName()/setName() 메서드 쌍은 'name' 속성을 나타냅니다.
+
+### 4.2 생성자 이후 속성 설정 주의사항
+
+{{< alert icon="⚠️" text="이 섹션은 Fixture Monkey가 객체 생성 후 속성을 설정할 때의 주의점을 설명합니다." />}}
+
+`instantiate()` 메서드로 생성자를 지정했을 때, Fixture Monkey는 생성자를 통해 객체를 생성한 후에도 생성자에서 다루지 않은 속성들에 대해 임의의 값을 설정합니다. 이 기능은 생성자에서 초기화되지 않은 필드에 대해서도 테스트 데이터를 생성하고 싶을 때 유용합니다.
+
+#### 작동 방식 한눈에 보기:
+
+1. 생성자 지정: `instantiate(constructor()...)`
+2. 생성자로 객체 생성
+3. 생성자에서 초기화되지 않은 속성들에 임의 값 설정
+4. 전체 객체 반환
+
+예제 코드로 살펴보겠습니다:
+
+{{< tabpane persist=false >}}
+{{< tab header="Java" lang="java">}}
+public class PartiallyInitializedObject {
+    private final String name;      // 생성자에서 초기화
+    private int count;              // 생성자에서 초기화되지 않음
+    private List<String> items;     // 생성자에서 초기화되지 않음
+    
+    public PartiallyInitializedObject(String name) {
+        this.name = name;
+    }
+    
+    // Getter/Setter
+    public String getName() { return name; }
+    public int getCount() { return count; }
+    public void setCount(int count) { this.count = count; }
+    public List<String> getItems() { return items; }
+    public void setItems(List<String> items) { this.items = items; }
+}
 
 @Test
-fun test() {
-    val genericObject = fixtureMonkey.giveMeBuilder<GenericObject<String>>()
+void 생성자후_속성_설정() {
+    PartiallyInitializedObject obj = fixtureMonkey.giveMeBuilder(PartiallyInitializedObject.class)
+        .instantiate(constructor().parameter(String.class))
+        .sample();
+    
+    assertThat(obj.getName()).isNotNull();       // 생성자에서 초기화됨
+    assertThat(obj.getCount()).isNotZero();      // 생성자 이후 초기화됨
+    assertThat(obj.getItems()).isNotNull();      // 생성자 이후 초기화됨
+}
+{{< /tab >}}
+{{< tab header="Kotlin" lang="kotlin">}}
+class PartiallyInitializedObject(
+    val name: String               // 생성자에서 초기화
+) {
+    var count: Int = 0             // 생성자에서 초기화되지 않음 
+    var items: List<String>? = null // 생성자에서 초기화되지 않음
+}
+
+@Test
+fun 생성자후_속성_설정() {
+    val obj = fixtureMonkey.giveMeBuilder<PartiallyInitializedObject>()
         .instantiateBy {
-            constructor() {
+            constructor<PartiallyInitializedObject> {
                 parameter<String>()
             }
         }
         .sample()
-
-    then(genericObject).isNotNull()
-    then(genericObject.value).isNotNull()
+    
+    assertThat(obj.name).isNotNull()       // 생성자에서 초기화됨
+    assertThat(obj.count).isNotZero()      // 생성자 이후 초기화됨
+    assertThat(obj.items).isNotNull()      // 생성자 이후 초기화됨
 }
-
 {{< /tab >}}
 {{< /tabpane>}}
 
-제네릭 객체로 작업할 때 생성자를 실제 타입으로 사용하도록 지정할 수 있습니다.
+#### 4.2.1 주의사항
 
-### 중첩된 객체가 포함된 생성자
-중첩된 객체가 존재하는 시나리오에서 각 객체의 생성이 생성자를 통해 이루어지도록 하고싶은 경우, 각 타입별로 사용할 생성자를 지정해줄 수 있습니다.
+이 기능을 사용할 때 한 가지 중요한 주의사항이 있습니다:
 
-예를 들어 `Product` 클래스를 사용하는 `ProductList` 클래스를 가정해보겠습니다.
+{{< alert icon="⚠️" text="Fixture Monkey는 객체 생성 후에 **생성자에서 이미 설정된 속성값도 변경할 수 있습니다**. 이로 인해 의도하지 않은 테스트 결과가 발생할 수 있습니다." />}}
 
-{{< tabpane persist=false >}}
-{{< tab header="Java" lang="java">}}
+**문제 상황:**
+1. 생성자에서 `name = "특정이름"` 으로 설정
+2. Fixture Monkey가 객체 생성 후 자동으로 `name`에 임의 값 할당
+3. `name`이 원래 지정한 "특정이름"이 아닌 다른 값으로 변경됨
 
-@Value
-public class ProductList {
-    String listName;
-    List<Product> list;
-
-    public ProductList(List<Product> list) {
-        this.listName = "defaultProductListName";
-        this.list = list;
-    }
-}
-
-{{< /tab >}}
-{{< tab header="Kotlin" lang="kotlin">}}
-
-class ProductList(val listName: String, val list: List<Product>) {
-    constructor(list: List<Product>) : this("defaultProductListName", list)
-}
-
-{{< /tab >}}
-{{< /tabpane>}}
-
-다음과 같이 생성자와 함께 `ProductList`와 `Product` 모두에 특정 생성자를 사용하도록 지정할 수 있습니다.
+**해결 방법:**
+중요한 값을 명시적으로 설정하여 이 문제를 해결할 수 있습니다:
 
 {{< tabpane persist=false >}}
 {{< tab header="Java" lang="java">}}
-
 @Test
-void test() {
-    ProductList productList = fixtureMonkey.giveMeBuilder(ProductList.class)
+void 생성자에서_설정된_값_보존하기() {
+    String specificName = "특정이름";
+    
+    PartiallyInitializedObject obj = fixtureMonkey.giveMeBuilder(PartiallyInitializedObject.class)
         .instantiate(
-            ProductList.class,
             constructor()
-                .parameter(new TypeReference<List<Product>>() {}, "list")
+                .parameter(String.class, "name")
         )
-        .instantiate(
-            Product.class,
-            constructor()
-                .parameter(long.class)
-                .parameter(long.class)
-                .parameter(new TypeReference<List<String>>(){})
-        )
-        .size("list", 1)
+        .set("name", specificName)  // 생성자 파라미터 값을 명시적으로 설정
         .sample();
-
-    then(productList.getListName()).isEqualTo("defaultProductListName");
-    then(productList.getList()).hasSize(1);
-    then(productList.getList().get(0).getProductName()).isEqualTo("defaultProductName");
+    
+    assertThat(obj.getName()).isEqualTo(specificName);  // 명시적으로 설정한 값이 보존됨
 }
-
 {{< /tab >}}
 {{< tab header="Kotlin" lang="kotlin">}}
-
 @Test
-fun test() {
-    val productList = fixtureMonkey.giveMeBuilder<ProductList>()
+fun 생성자에서_설정된_값_보존하기() {
+    val specificName = "특정이름"
+    
+    val obj = fixtureMonkey.giveMeBuilder<PartiallyInitializedObject>()
         .instantiateBy {
-            constructor<ProductList> {
-                parameter<List<Product>>("list")
-            }
-            constructor<Product> {
-                parameter<Long>()
-                parameter<Long>()
-                parameter<List<String>>()
+            constructor<PartiallyInitializedObject> {
+                parameter<String>("name")
             }
         }
-        .size("list", 1)
+        .set("name", specificName)  // 생성자 파라미터 값을 명시적으로 설정
         .sample()
-
-    then(productList.listName).isEqualTo("defaultProductListName")
-    then(productList.list).hasSize(1)
-    then(productList.list[0].productName).isEqualTo("defaultProductName")
+    
+    assertThat(obj.name).isEqualTo(specificName)  // 명시적으로 설정한 값이 보존됨
 }
-
 {{< /tab >}}
 {{< /tabpane>}}
 
-{{< alert icon="💡" text="객체를 생성하는 메서드 내에서 서로 다른 프로퍼티에 대해 생성자 메서드와 팩토리 메서드 접근 방식을 결합하여 사용할 수도 있습니다. 위의 예제에서 ProductList는 팩토리 메서드를 사용하여 초기화할 수 있고, Product는 생성자를 사용하여 인스턴스화할 수 있습니다." />}}
+{{< alert icon="💡" text="초보자 팁: 중요한 값은 항상 `.set()` 메서드로 명시적으로 설정하여 예측 가능한 테스트 결과를 얻으세요!" />}}
 
-## 팩토리 메서드
-객체를 생성하는 두 번째 방법은 팩토리 메서드를 사용하는 것입니다.
+## 자주 묻는 질문 (FAQ)
 
-'from'이라는 팩토리 메서드가 포함된 위의 동일한 Product 클래스를 생각해 보겠습니다.
+### Q: instantiate와 인트로스펙터의 차이점은 무엇인가요?
 
-{{< tabpane persist=false >}}
-{{< tab header="Java" lang="java">}}
+**A**: 인트로스펙터는 모든 객체 생성에 적용되는 글로벌 설정인 반면, instantiate는 특정 테스트나 객체에만 적용하는 지역 설정입니다. 
 
-@Value
-public class Product {
-    long id;
+**간단히 말하면:**
+- **인트로스펙터**: "모든 테스트에서 이 방식으로 객체를 만들어줘"
+- **instantiate**: "이 특정 테스트에서만 이 방식으로 객체를 만들어줘"
 
-    String productName;
+대부분의 경우 인트로스펙터만으로 충분하지만, 특별한 생성 로직이 필요할 때 instantiate를 사용하세요.
 
-    long price;
+### Q: 여러 생성자 중 어떤 것을 선택해야 할지 어떻게 결정하나요?
 
-    List<String> options;
+**A**: 테스트 목적에 가장 적합한 생성자를 선택하세요. 일반적으로:
 
-    Instant createdAt;
+- **간단한 테스트**: 인자가 적은 생성자 선택
+- **특정 필드 테스트**: 해당 필드를 초기화하는 생성자 선택
+- **유효성 검사 테스트**: 유효성 검사 로직이 있는 생성자 선택
 
-    public Product(
-      String productName,
-      long id,
-      long price
-    ) {
-        this.id = id;
-        this.productName = productName;
-        this.price = price;
-        this.options = Collections.emptyList();
-        this.createdAt = Instant.now();
-    }
+### Q: 파라미터 이름 힌트의 이점은 무엇인가요?
 
-    public static Product from(long id, long price) {
-        return new Product("product", id, price);
-    }
-}
+**A**: 파라미터 이름 힌트를 사용하면:
+- 생성자나 팩토리 메서드 파라미터에 의미 있는 이름을 부여할 수 있습니다.
+- set() 메서드로 특정 파라미터 값을 쉽게 설정할 수 있습니다.
+- 코드 가독성이 향상됩니다.
 
-{{< /tab >}}
-{{< tab header="Kotlin" lang="kotlin">}}
+### Q: 필드와 JavaBeansProperty 중 어떤 것을 사용해야 하나요?
 
-class Product(
-    val id: Long,
-    val productName: String,
-    val price: Long,
-    val options: List<String> = emptyList(),
-    val createdAt: Instant = Instant.now()
-) {
-    companion object {
-        fun from(id: Long, price: Long): Product {
-            return Product("product", id, price)
-        }
-    }
-}
+**A**:
+- 필드(field())는 클래스에 setter 메서드가 없거나 직접 필드에 접근하고 싶을 때 사용합니다.
+- JavaBeansProperty(javaBeansProperty())는 setter 메서드를 통해 유효성 검사나 특별한 처리가 필요할 때 사용합니다.
+- 확실하지 않다면 기본값(명시하지 않음)을 사용하세요. Fixture Monkey가 적절한 방법을 선택합니다.
 
-{{< /tab >}}
-{{< /tabpane>}}
+### Q: 제네릭 타입의 파라미터를 어떻게 지정하나요?
 
+**A**: 제네릭 타입은 TypeReference를 사용하여 지정합니다:
 
-### 특정 팩토리 메서드 사용
-메서드 이름을 제공하여 사용할 팩토리 메서드를 지정할 수 있습니다.
+```java
+// Java
+.parameter(new TypeReference<List<String>>(){})
+```
 
-{{< tabpane persist=false >}}
-{{< tab header="Java" lang="java">}}
+```kotlin
+// Kotlin
+parameter<List<String>>()
+```
 
-@Test
-void test() {
-    Product product = fixtureMonkey.giveMeBuilder(Product.class)
-        .instantiate(
-            factoryMethod("from")
-        )
-        .sample();
+### Q: 생성자에서 설정한 값이 변경되는 문제를 어떻게 방지하나요?
 
-    then(product.getProductName()).isEqualTo("product");
-}
+**A**: `.set()` 메서드를 사용하여 중요한 값을 명시적으로 설정하세요:
 
-{{< /tab >}}
-{{< tab header="Kotlin" lang="kotlin">}}
+```java
+fixtureMonkey.giveMeBuilder(MyClass.class)
+    .instantiate(constructor().parameter(String.class, "name"))
+    .set("name", "중요한값")  // 이 값은 변경되지 않음
+    .sample();
+```
 
-@Test
-fun test() {
-    val product = fixtureMonkey.giveMeBuilder<Product>()
-        .instantiateBy {
-            factory<Product>("from")
-        }
-        .sample()
+## 요약
 
-    then(product.productName).isEqualTo("product")
-}
+{{< alert icon="📌" text="핵심 포인트 요약" />}}
 
-{{< /tab >}}
-{{< /tabpane>}}
+- **instantiate() 메서드**는 객체 생성 방법을 세밀하게 제어하는 기능을 제공합니다.
+- **생성자**와 **팩토리 메서드** 두 가지 주요 객체 생성 방법 중 선택할 수 있습니다.
+- **파라미터 이름 힌트**를 사용하면 생성자나 팩토리 메서드의 특정 파라미터 값을 설정할 수 있습니다.
+- **field()** 와 **javaBeansProperty()** 로 속성 생성 방식을 제어할 수 있습니다.
+- **대부분의 경우 인트로스펙터 설정으로 충분하며**, instantiate는 특수한 경우에만 필요합니다.
 
-이름이 같은 팩토리 메서드가 여러 개 있는 경우 `constructor()` 메서드에서와 마찬가지로 매개변수 유형 정보로 메서드를 구분할 수 있습니다.
+이 기능들을 적절히 활용하면 복잡한 객체도 테스트 목적에 맞게 정확하게 생성할 수 있습니다.
 
-{{< tabpane persist=false >}}
-{{< tab header="Java" lang="java">}}
+### 다음 단계
 
-factoryMethod("from")
-    .parameter(String.class)
-    .parameter(Long.class)
-
-{{< /tab >}}
-{{< tab header="Kotlin" lang="kotlin">}}
-
-factory<Product>("from") {
-    parameter<String>()
-    parameter<Long>()
-}
-
-{{< /tab >}}
-{{< /tabpane>}}
-
-### 팩토리 메서드에서 매개변수 이름으로 힌트 제공
-매개변수 이름으로 힌트를 제공하는 방법은 `factory()`를 사용할 때도 추가할 수 있으며, `constructor()`에서 매개변수 이름으로 힌트 제공하는 방법과 동일하게 동작합니다.
-
-{{< tabpane persist=false >}}
-{{< tab header="Java" lang="java">}}
-
-@Test
-void test() {
-    Product product = fixtureMonkey.giveMeBuilder(Product.class)
-        .instantiate(
-            factoryMethod("from")
-                .parameter(long.class, "productId")
-                .parameter(long.class)
-        )
-        .set("productId", 100L)
-        .sample();
-
-    then(product.getProductName()).isEqualTo("product");
-    then(product.getId()).isEqualTo(100L);
-}
-
-{{< /tab >}}
-{{< tab header="Kotlin" lang="kotlin">}}
-
-@Test
-fun test() {
-    val product = fixtureMonkey.giveMeBuilder<Product>()
-        .instantiateBy {
-            factory<Product>("from") {
-                parameter<String>("productId")
-                parameter<Long>()
-            }
-        }
-        .set("productId", 100L)
-        .sample()
-
-    then(product.productName).isEqualTo("product")
-    then(product.id).isEqualTo(100L)
-}
-
-{{< /tab >}}
-{{< /tabpane>}}
-
-## 필드와 자바 빈 프로퍼티
-각 객체를 생성하는 메서드(`constructor()`와 `factory()`)에서 필드 또는 자바 빈 프로퍼티(getter & setter) 기반 중 하나의 방법으로 프로퍼티 생성 여부를 선택할 수 있습니다.
-
-{{< tabpane persist=false >}}
-{{< tab header="Java" lang="java">}}
-
-.instantiate(constructor().field()) // 필드에 기반하여 생성
-
-.instantiate(constructor().javaBeansProperty()) // 자바 빈 프로퍼티에 기반하여 생성
-
-{{< /tab >}}
-{{< tab header="Kotlin" lang="kotlin">}}
-
-.instantiateBy {
-    constructor {
-        javaField()
-    }
-}
-
-.instantiateBy {
-    constructor {
-        javaBeansProperty()
-    }
-}
-
-{{< /tab >}}
-{{< /tabpane>}}
-
-필드를 사용하는 경우 필드에 대한 값이 생성됩니다.
-자바 빈 프로퍼티를 사용하는 경우 클래스에 게터와 세터가 있으면 충분하며, 임의 값이 생성됩니다.
-
-### 프로퍼티 제외
-일부 프로퍼티가 생성되지 않도록 제외하기 위해 `filter()` 메서드를 사용할 수 있습니다.
-
-{{< tabpane persist=false >}}
-{{< tab header="Java" lang="java">}}
-
-.instantiate(
-    constructor()
-        .field(it -> it.filter(field -> !Modifier.isPrivate(field.getModifiers())))
-)
-
-.instantiate(
-    constructor()
-        .javaBeansProperty(it -> it.filter(property -> !"string".equals(property.getName())))
-)
-
-{{< /tab >}}
-{{< tab header="Kotlin" lang="kotlin">}}
-
-.instantiateBy {
-    constructor {
-        javaField {
-            filter { !Modifier.isPrivate(it.modifiers) }
-        }
-    }
-}
-
-.instantiateBy {
-    constructor {
-        javaBeansProperty {
-            filter { "string" != it.name }
-        }
-    }
-}
-
-{{< /tab >}}
-{{< /tabpane>}}
-
-예를 들어 첫 번째 예시와 같이 private 필드가 생성되지 않도록 제외하거나 두 번째 예시와 같이 특정 속성을 이름별로 필터링할 수 있습니다.
+테스트 데이터 생성에 관한 더 자세한 내용을 알아보려면:
+- [인트로스펙터](../introspector): 객체 생성 방법을 전역적으로  설정하는 방법
+- [객체 생성하기](../fixture-monkey): Fixture Monkey의 기본 사용법
+- [복잡한 타입 생성하기](../generating-complex-types): 복잡한 객체 구조 생성 방법

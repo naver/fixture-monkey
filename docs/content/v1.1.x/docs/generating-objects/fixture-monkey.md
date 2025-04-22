@@ -8,6 +8,63 @@ identifier: "fixturemonkey"
 weight: 31
 ---
 
+## What is FixtureMonkey?
+
+`FixtureMonkey` is the main entry point for creating test fixtures in the Fixture Monkey library. Think of it as a factory that knows how to create instances of any class with random but valid values. This makes it perfect for generating test data without writing verbose setup code.
+
+## How it works - A quick overview
+
+The typical workflow with Fixture Monkey looks like this:
+
+1. Create a `FixtureMonkey` instance
+2. Use one of its generation methods to create test objects
+3. Optionally customize the objects to match specific test requirements
+
+For example, here's a complete test using Fixture Monkey:
+
+{{< tabpane persist=false >}}
+{{< tab header="Java" lang="java">}}
+@Test
+void testProductDiscount() {
+    // 1. Create a FixtureMonkey instance
+    FixtureMonkey fixtureMonkey = FixtureMonkey.create();
+    
+    // 2. Generate a test object with specific properties
+    Product product = fixtureMonkey.giveMeBuilder(Product.class)
+        .set("price", 100.0)
+        .sample();
+    
+    // 3. Use the object in your test
+    double discountedPrice = productService.applyDiscount(product, 10);
+    
+    // 4. Assert the expected outcome
+    assertEquals(90.0, discountedPrice);
+}
+{{< /tab >}}
+{{< tab header="Kotlin" lang="kotlin">}}
+@Test
+fun testProductDiscount() {
+    // 1. Create a FixtureMonkey instance
+    val fixtureMonkey = FixtureMonkey.plugin(KotlinPlugin()).build()
+    
+    // 2. Generate a test object with specific properties
+    val product: Product = fixtureMonkey.giveMeBuilder<Product>()
+        .set("price", 100.0)
+        .sample()
+    
+    // 3. Use the object in your test
+    val discountedPrice = productService.applyDiscount(product, 10)
+    
+    // 4. Assert the expected outcome
+    assertEquals(90.0, discountedPrice)
+}
+{{< /tab >}}
+{{< /tabpane>}}
+
+Now let's learn the specific steps to use FixtureMonkey in your tests.
+
+## Creating a FixtureMonkey Instance
+
 To generate test fixtures, the first step is to create a `FixtureMonkey` instance, which facilitates the creation of test fixtures.
 
 You can use the `create()` method to generate a `FixtureMonkey` instance with default options.
@@ -53,6 +110,14 @@ For information on what options are available, see the [Fixture Monkey Options s
 
 The `FixtureMonkey` class provides several methods to help create test objects of the required type.
 
+### When to use which method?
+
+Here's a quick guide to help you choose the right method:
+
+- `giveMeOne()` - When you need a single instance with default random values
+- `giveMe()` - When you need multiple instances with default random values
+- `giveMeBuilder()` - When you need to customize properties before creating instances
+- `giveMeArbitrary()` - Advanced usage when working with jqwik's Arbitrary API
 
 ### giveMeOne()
 If you need an instance of a certain type, you can use `giveMeOne()`. Pass either a class or a type reference.
@@ -73,7 +138,6 @@ val strList: List<String> = fixtureMonkey.giveMeOne()
 
 {{< /tab >}}
 {{< /tabpane>}}
-
 
 ### giveMe()
 If you need multiple instances of a certain type, you can use the `giveMe()` method.
