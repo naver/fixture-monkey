@@ -7,33 +7,61 @@ docs:
   identifier: "1.0.x"
 ---
 
-## 코틀린 타입 생성 방법
-1.0.x에서 `KotlinPlugin`을 추가하면 자바 타입과 코틀린 타입 모두 `PrimaryConstructorArbitraryIntrospector` 를 사용해서 생성합니다. 코틀린의 primary 생성자를 사용해서 객체를 생성하기 때문에 자바 타입이 들어오면 문제가 발생합니다. 
+# 1.0.x에서 1.1.x로 마이그레이션하기
 
-1.1.x부터 `KotlinPlugin`을 추가하면 자바 타입은 `BeanArbitraryIntrospector`으로 생성하고 코틀린 타입은 `PrimaryConstructorArbitraryIntrospector`으로 생성합니다.
+이 가이드는 Fixture Monkey 1.0.x에서 1.1.x로 코드를 업데이트하는 데 도움을 줍니다. 가능한 한 이전 버전과의 호환성을 유지하면서 라이브러리를 더 쉽게 사용할 수 있도록 여러 개선 사항을 적용했습니다.
 
-## 자바와 코틀린의 ArbitraryBuilder API 다른 점
+## 주요 변경 사항 개요
 
-1.0.x에서는 자바와 코틀린 모두 동일한 ArbitraryBuilder 인터페이스에서 노출하는 API를 사용합니다.
+1. 코틀린 타입 처리 방식 개선
+2. 자바와 코틀린을 위한 별도 API 제공
+3. 추상 타입과 인터페이스 처리 방법 간소화
 
-1.1.x부터 픽스쳐 몽키는 자바 특화 ArbitrayBuilder API와 코틀린 특화 ArbitraryBuilder API를 제공합니다. 물론 자바 특화 ArbitraryBuilder API를 사용해도 코틀린 타입을 생성할 수 있습니다. 반대의 경우도 가능합니다.
+## 코틀린 타입 처리 방식 개선
 
-### 자바 ArbitraryBuilder API 사용법
-자바 특화된 API를 사용하려면 ArbitraryBuilder를 다음과 같이 생성하면 됩니다.
-`FixtureMonkey.giveMeBuilder(Class)` 혹은 `FixtureMonkey.giveMeJavaBuilder(Class)`.
+### 변경된 내용
+- **이전 (1.0.x)**: `KotlinPlugin`을 사용할 때 자바와 코틀린 타입 모두 코틀린의 기본 생성자 방식을 사용했습니다. 이로 인해 자바 타입을 생성할 때 오류가 발생했습니다.
+- **현재 (1.1.x)**: 각 언어에 적합한 객체 생성 전략을 사용합니다:
+  - 자바 타입 → 빈 속성(getter/setter)을 사용하여 생성
+  - 코틀린 타입 → 코틀린 기본 생성자를 사용하여 생성
 
-### 코틀린 ArbitraryBuilder API 사용법
-코틀린 특화된 API를 다음 코틀린 확장함수를 사용하면 됩니다. `FixtureMonkey.giveMeKotlinBuilder<Class>()`
+### 필요한 조치
+별도의 코드 변경이 필요하지 않습니다. `KotlinPlugin`을 사용할 때 자바 타입이 이제 올바르게 작동합니다.
 
-## 추상 타입의 구현체 확장하는 방법
+## 자바와 코틀린을 위한 별도의 API 제공
 
-1.0.x 버전에서는 추상 타입의 구현체를 확장하려면 `ObjectPropertyGenerator` 옵션을 사용해야 했습니다. 
+### 변경된 내용
+- **이전 (1.0.x)**: 자바와 코틀린에 동일한 ArbitraryBuilder API 사용
+- **현재 (1.1.x)**: 각 언어에 최적화된 API로 더 자연스러운 개발 경험 제공
 
-1.1.x 버전부터는 `CandidateConcretePropertyResolver` 옵션을 사용하면 됩니다. `ObjectPropertyGenerator`보다 간단하고 직관적으로 사용 가능합니다.
+### 자바 API
+자바에 최적화된 빌더를 얻으려면 다음 방법 중 하나를 사용하세요:
+```java
+// 자바 스타일 API
+ArbitraryBuilder<User> userBuilder = fixtureMonkey.giveMeBuilder(User.class);
+// 또는 명시적으로 자바 빌더 요청
+ArbitraryBuilder<User> userBuilder = fixtureMonkey.giveMeJavaBuilder(User.class);
+```
 
-예제를 통해 더 자세히 알아보겠습니다.
-JDK17부터 도입된 sealed class를 생성하려면 `SealedTypeObjectPropertyGenerator`를 사용했어야 했습니다. "설정한 적이 없는데?"라고 생각하실 수 있지만 픽스쳐 몽키가 대신 설정해주었습니다.
-아래와 같이 구현체 설정과 관련이 없는 여러 `ObjectProperty`의 특성들을 알아야하는 문제가 있었습니다.  
+### 코틀린 API
+코틀린 확장 함수를 사용하여 보다 자연스러운 코틀린 경험을 누리세요:
+```kotlin
+// 확장 함수를 사용한 코틀린 스타일 API
+val userBuilder = fixtureMonkey.giveMeKotlinBuilder<User>()
+```
+
+> **참고**: 필요한 경우 코틀린 타입에 자바 API를 사용하거나 그 반대도 가능합니다.
+
+## 추상 타입 처리 방법 간소화
+
+### 변경된 내용
+- **이전 (1.0.x)**: 추상 클래스나 인터페이스를 구현하기 위해 복잡한 `ObjectPropertyGenerator` 설정이 필요했습니다.
+- **현재 (1.1.x)**: 더 간단한 `CandidateConcretePropertyResolver`를 사용하여 어떤 구현체를 사용할지에만 집중할 수 있습니다.
+
+### 예시: sealed 클래스 처리하기
+
+#### 이전 (1.0.x) - 복잡한 설정
+`ObjectProperty`에 대한 많은 세부 사항을 이해해야 했습니다:
 
 ```java
 public final class SealedTypeObjectPropertyGenerator implements ObjectPropertyGenerator {
@@ -80,7 +108,8 @@ public final class SealedTypeObjectPropertyGenerator implements ObjectPropertyGe
 }
 ```
 
-1.1.x 부터는 아래와 같이 입력한 sealed class에서 생성하고 싶은 구현체만 반환하면 됩니다.
+#### 현재 (1.1.x) - 더 간단한 방식
+어떤 구현 클래스를 사용할지에만 집중하면 됩니다:
 
 ```java
 public final class SealedTypeCandidateConcretePropertyResolver implements CandidateConcretePropertyResolver {
@@ -111,3 +140,11 @@ public final class SealedTypeCandidateConcretePropertyResolver implements Candid
 	}
 }
 ```
+
+## 개선 사항 요약
+
+1. **향상된 언어 지원**: 각 언어(자바/코틀린)가 자연스러운 생성 방식을 사용합니다.
+2. **더 직관적인 API**: 각 언어에 맞는 더 자연스러운 API를 제공합니다.
+3. **복잡한 타입 처리 간소화**: 인터페이스, 추상 클래스, sealed 타입 작업 시 불필요한 코드가 줄어듭니다.
+
+이러한 변경 사항으로 Fixture Monkey 1.1.x는 더 쉽게 사용할 수 있으면서도 기존 코드와의 호환성을 대부분 유지합니다.
