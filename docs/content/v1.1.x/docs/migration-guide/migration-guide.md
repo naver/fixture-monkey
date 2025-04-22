@@ -7,35 +7,61 @@ docs:
   identifier: "1.0.x"
 ---
 
-## Create an instance of the Kotlin type
-In 1.0.x, when you apply the `KotlinPlugin`, Java and Kotlin types are created by the `PrimaryConstructorArbitraryIntrospector`, which uses the Kotlin primary constructor by default.
-Creating a Java type with it causes the exception.
+# Migrating from 1.0.x to 1.1.x
 
-As of 1.1.x, when you apply the `KotlinPlugin`, Java types are created by the `BeanArbitraryIntrospector`, Kotlin types are created by the `PrimaryConstructorArbitraryIntrospector`.
+This guide helps you update your code from Fixture Monkey 1.0.x to 1.1.x. We've made several improvements to make the library easier to use while maintaining backward compatibility where possible.
 
-## Different ArbitraryBuilder APIs between Java and Kotlin
+## Major Changes at a Glance
 
-In 1.0.x, Java and Kotlin use the same API in ArbitraryBuilder.
+1. Better handling of Kotlin types
+2. Separate APIs for Java and Kotlin
+3. Simpler way to handle abstract types and interfaces
 
-As of 1.1.x, Fixture Monkey provides both Java-specific ArbitraryBuilder APIs and Kotlin-specific ArbitraryBuilder APIs. Of course, you can use the
-Java-specific APIs when creating a Kotlin type, and vice versa.
+## Kotlin Type Handling Improvements
 
-### How to use Java ArbitraryBuilder APIs
-To use Java-specific APIs, use `FixtureMonkey.giveMeBuilder(Class)` or `FixtureMonkey.giveMeJavaBuilder(Class)`.
+### What Changed
+- **Before (1.0.x)**: When using `KotlinPlugin`, both Java and Kotlin types were created using Kotlin's primary constructor approach. This caused errors when creating Java types.
+- **Now (1.1.x)**: Each language uses its appropriate object creation strategy:
+  - Java types → Created using bean properties (getters/setters)
+  - Kotlin types → Created using Kotlin primary constructors
 
-### How to use Kotlin ArbitraryBuilder APIs
-To use Kotlin-specific APIs, use the extension function `FixtureMonkey.giveMeKotlinBuilder<Class>()`.
+### What You Need to Do
+No changes needed. Your Java types will now work correctly with the `KotlinPlugin`.
 
-## Resolves the implementation of the abstract type
+## Java and Kotlin Now Have Separate APIs
 
-In 1.0.x, You must use the `ObjectPropertyGenerator` option in order to resolve the actual type of abstract class or
-interface.
+### What Changed
+- **Before (1.0.x)**: Same ArbitraryBuilder API for both Java and Kotlin
+- **Now (1.1.x)**: Specialized APIs for each language to provide a more natural experience
 
-As of 1.1.x, all you have to do is use the `CandidateConcretePropertyResolver` option. It is much easier.
+### Java API
+Use one of these methods to get a Java-optimized builder:
+```java
+// Java style API
+ArbitraryBuilder<User> userBuilder = fixtureMonkey.giveMeBuilder(User.class);
+// or explicitly request Java builder
+ArbitraryBuilder<User> userBuilder = fixtureMonkey.giveMeJavaBuilder(User.class);
+```
 
-Let's take the sealed type as an example.
-To create an instance of a sealed class in JDK 17, you have to use the `SealedTypeObjectPropertyGenerator`, which is used by default.
-It forces you to know the properties of `ObjectProperty`, most of which are not your concern.
+### Kotlin API
+Use Kotlin extension functions for a more idiomatic Kotlin experience:
+```kotlin
+// Kotlin style API with extension function
+val userBuilder = fixtureMonkey.giveMeKotlinBuilder<User>()
+```
+
+> **Note**: You can still use Java APIs with Kotlin types and vice versa if needed.
+
+## Simpler Way to Handle Abstract Types
+
+### What Changed
+- **Before (1.0.x)**: Required complex `ObjectPropertyGenerator` configuration to implement abstract types or interfaces
+- **Now (1.1.x)**: Simpler `CandidateConcretePropertyResolver` lets you focus only on which implementations to use
+
+### Example: Handling Sealed Classes
+
+#### Before (1.0.x) - Complex Configuration
+You needed to understand many details about `ObjectProperty`:
 
 ```java
 public final class SealedTypeObjectPropertyGenerator implements ObjectPropertyGenerator {
@@ -82,7 +108,8 @@ public final class SealedTypeObjectPropertyGenerator implements ObjectPropertyGe
 }
 ```
 
-As of 1.1.x, you can only focus on the resolved implementation types.
+#### Now (1.1.x) - Simpler Approach
+Just focus on which implementation classes to use:
 
 ```java
 public final class SealedTypeCandidateConcretePropertyResolver implements CandidateConcretePropertyResolver {
@@ -113,3 +140,11 @@ public final class SealedTypeCandidateConcretePropertyResolver implements Candid
 	}
 }
 ```
+
+## Summary of Benefits
+
+1. **Better Language Support**: Each language (Java/Kotlin) now uses its natural creation approach
+2. **More Intuitive APIs**: Language-specific APIs that feel more natural to use
+3. **Simpler Complex Type Handling**: Less boilerplate code when working with interfaces, abstract classes, and sealed types
+
+These changes make Fixture Monkey 1.1.x easier to use while maintaining compatibility with most of your existing code.
