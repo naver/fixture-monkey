@@ -1,138 +1,273 @@
 ---
 title: "Path expressions"
-weight: 44
+weight: 41
 menu:
 docs:
 parent: "customizing-objects"
 identifier: "expressions"
 ---
 
-When using Fixture Monkey, you have the flexibility to select one or more properties of an object using Fixture Monkey expressions.
+## What you will learn in this document
+- How to select specific fields or properties of a test object
+- How to reference specific parts of an object using string expressions
+- How to access properties in various structures like nested objects, arrays, and lists
 
-Let's consider an example object structure:
+## Introduction to Path Expressions
+
+When writing tests, you often need to modify specific fields of your test objects. Path expressions in Fixture Monkey are like GPS coordinates that help you precisely locate and modify any part of your test object.
+
+As a beginner, think of path expressions as a way to "navigate" through your object structure to reach exactly the field you want to change.
+
+## Basic Object Structure Example
+
+To understand path expressions, let's use a simple example object:
 
 ```java
 @Value
 public class JavaClass {
-    String field;
-
-    String[] array;
-
-    List<String> list;
-
-    Nested object;
-
-    List<Nested> objectList;
+    String field;                // A simple string field
+    String[] array;              // An array of strings
+    List<String> list;           // A list of strings
+    Nested object;               // A nested object
+    List<Nested> objectList;     // A list of nested objects
 
     @Value
     public static class Nested {
-        String nestedField;
+        String nestedField;      // A field inside the nested object
     }
 }
 ```
 
+## Visual Map of Path Expressions
 
-### Selecting Properties Using String Expressions
+Think of your object as a tree structure. Each path expression is like directions to a specific location in that tree:
 
-##### Selecting the root object:
+```
+JavaClass
+│
+├── field → "field"               // Direct field access
+│
+├── array → "array"               // The entire array
+│   ├── array[0] → "array[0]"     // First element in array
+│   ├── array[1] → "array[1]"     // Second element in array
+│   └── all elements → "array[*]" // ALL elements in array (wildcard)
+│
+├── list → "list"                 // The entire list
+│   ├── list[0] → "list[0]"       // First element in list
+│   ├── list[1] → "list[1]"       // Second element in list
+│   └── all elements → "list[*]"  // ALL elements in list (wildcard)
+│
+├── object → "object"             // The nested object
+│   └── nestedField → "object.nestedField"  // Field inside nested object
+│
+└── objectList → "objectList"     // List of nested objects
+    ├── objectList[0] → "objectList[0]"  // First object in the list
+    │   └── nestedField → "objectList[0].nestedField"  // Field in first object
+    │
+    ├── objectList[1] → "objectList[1]"  // Second object in the list
+    │   └── nestedField → "objectList[1].nestedField"  // Field in second object
+    │
+    └── all elements → "objectList[*]"   // ALL objects in the list
+        └── nestedField → "objectList[*].nestedField"  // Field in ALL objects
+```
+
+## Simple Path Expressions Guide
+
+### 1. Selecting the Root Object
+
+To select the entire object itself, use:
 ```java
 "$"
 ```
 
-##### Selecting a specific field:
+**Example:**
+```java
+ArbitraryBuilder<JavaClass> builder = fixtureMonkey.giveMeBuilder(JavaClass.class);
+// Select and manipulate the entire object
+builder.set("$", new JavaClass(...));
+```
+
+### 2. Selecting a Direct Field
+
+To select a simple field at the top level:
 ```java
 "field"
 ```
 
-##### Selecting a nested field:
+**Example:**
+```java
+// Set the "field" property to "Hello World"
+builder.set("field", "Hello World");
+```
+
+### 3. Selecting a Nested Field
+
+To access a field inside a nested object:
 ```java
 "object.nestedField"
 ```
 
-##### Selecting the n-th element of a collection:
+**Example:**
 ```java
-"list[n]"
+// Set the nestedField inside the object to "Nested Value"
+builder.set("object.nestedField", "Nested Value");
 ```
 
-##### Selecting all elements of a collection:
+### 4. Working with Collections
+
+#### Selecting a specific item in a list:
+```java
+"list[0]"  // First item
+"list[1]"  // Second item
+```
+
+**Example:**
+```java
+// Set the first item in the list to "First Item"
+builder.set("list[0]", "First Item");
+```
+
+#### Selecting ALL items in a list (wildcard):
 ```java
 "list[*]"
 ```
 
-##### Selecting the n-th element of an array:
+**Example:**
 ```java
-"array[n]"
+// Set ALL items in the list to "Same Value"
+builder.set("list[*]", "Same Value");
 ```
 
-##### Selecting all elements of an array:
+### 5. Working with Arrays
+
+Very similar to lists:
+
 ```java
-"array[*]"
+"array[0]"   // First element
+"array[*]"   // All elements
 ```
 
-##### Combining expressions to select a nested field:
+**Example:**
 ```java
-"objectList[0].nestedField"
+// Set all array elements to "Array Item"
+builder.set("array[*]", "Array Item");
 ```
 
-### Selecting Properties Using JavaGetter Selector
+### 6. Complex Nested Paths
 
-There is a type-safe way to select properties using a `javaGetter()` property selector.
-This selector is designed to choose and represent a property through a getter method reference in Java.
+You can combine these patterns to go as deep as you need:
 
-##### Selecting the root object:
-- Currently Not Supported
+```java
+"objectList[0].nestedField"  // nestedField of first object in list
+"objectList[*].nestedField"  // nestedField of ALL objects in list
+```
 
-##### Selecting a specific field:
+**Example:**
+```java
+// Set the nestedField of all objects in objectList to "All Nested"
+builder.set("objectList[*].nestedField", "All Nested");
+```
+
+## Type-Safe Selection with JavaGetter
+
+If you prefer to avoid string-based expressions, you can use type-safe getters:
+
+### 1. Selecting a Direct Field
+
 ```java
 javaGetter(JavaClass::getField)
 ```
 
-##### Selecting a nested field:
+**Example:**
+```java
+builder.set(javaGetter(JavaClass::getField), "Hello World");
+```
+
+### 2. Selecting a Nested Field
+
 ```java
 javaGetter(JavaClass::getObject).into(Nested::getNestedField)
 ```
 
-##### Selecting the n-th element of a collection:
+**Example:**
 ```java
-javaGetter(JavaClass::getList).index(String.class, n)
+builder.set(
+    javaGetter(JavaClass::getObject).into(Nested::getNestedField), 
+    "Nested Value"
+);
 ```
 
-##### Selecting all elements of a collection:
+### 3. Working with Collections
+
 ```java
+// Select specific element
+javaGetter(JavaClass::getList).index(String.class, 0)
+
+// Select all elements
 javaGetter(JavaClass::getList).allIndex(String.class)
 ```
 
-##### Selecting the n-th element of an array:
+**Example:**
 ```java
-javaGetter(JavaClass::getArray).index(String.class, n)
+// Set all list elements to "List Item"
+builder.set(
+    javaGetter(JavaClass::getList).allIndex(String.class), 
+    "List Item"
+);
 ```
 
-##### Selecting all elements of an array:
+## Common Beginner Questions
+
+### What happens if I try to access an out-of-bounds index?
+
+If you try to access an element that doesn't exist (e.g., `"list[5]"` when the list only has 3 items), Fixture Monkey will simply ignore that setting. To catch these issues, you can enable [Expression Strict Mode](#expression-strict-mode).
+
+### How do I handle maps?
+
+While you can't directly access map elements with path expressions, you can use [InnerSpec](../innerspec) to customize maps.
+
+### Can I use multiple path expressions at once?
+
+Yes! You can chain multiple `.set()` calls to configure different parts of your object:
+
 ```java
-javaGetter(JavaClass::getArray).allIndex(String.class)
+ArbitraryBuilder<JavaClass> builder = fixtureMonkey.giveMeBuilder(JavaClass.class)
+    .set("field", "Value 1")
+    .set("object.nestedField", "Value 2")
+    .set("list[*]", "Value 3");
 ```
 
-
-##### Combining expressions to select a nested field:
-```java
-javaGetter(JavaClass::getObjectList)
-    .index(Nested.class, 0)
-    .into(Nested::getNestedField)
-```
-
-
-### Selecting Collections
-Note that for collections, a property will only be selected if it exists within the collection size.
-For instance, if the list has a size of 2 but the expression references `"list[3]"`, which is outside the bounds of the list, it will not be selected.
-
-While Fixture Monkey supports selecting elements from lists and sets, there are currently no dedicated expressions for directly setting the elements of a map.
-However, if you need to customize a map, consider using the [InnerSpec](../innerspec) method.
+## Advanced Options
 
 ### Expression Strict Mode
-This [option](../../fixture-monkey-options/customization-options/#expression-strict-mode) can be turned on to ensure applied expressions strictly match the structure.
-If any part of an expression is out of bounds or invalid, Fixture Monkey will raise an exception.
 
-### Kotlin EXP
-By adding the Kotlin plugin, you can select properties using Kotlin's property reference syntax.
-In Fixture Monkey, this feature is referred to as `Kotlin EXP` or the `Fixture Monkey Kotlin DSL`.
-For further details on its usage, refer to the [Kotlin DSL Exp page](../../plugins/kotlin-plugin/kotlin-exp).
+Enable this [option](../../fixture-monkey-options/customization-options/#expression-strict-mode) to make Fixture Monkey validate all path expressions:
+
+```java
+FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+    .setExpressionStrictMode(true)
+    .build();
+```
+
+With strict mode enabled, invalid paths will throw exceptions, helping you catch mistakes early.
+
+### Kotlin Support
+
+If you're using Kotlin, you can use property references for even more elegant expressions:
+
+```kotlin
+// Instead of: "user.address.street"
+builder.set(User::address..Address::street, "Main Street")
+```
+
+For more details, see the [Kotlin DSL Exp page](../../plugins/kotlin-plugin/kotlin-exp).
+
+## Summary
+
+Path expressions are a powerful feature of Fixture Monkey that let you:
+- Navigate to any part of your test object structure
+- Set specific values for testing different scenarios
+- Modify multiple related fields in one operation
+- Keep your test code clean and readable
+
+Start with simple direct field access, then gradually explore collection access and nested properties as you grow comfortable with the syntax.
