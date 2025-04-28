@@ -929,7 +929,7 @@ class KotestInJunitTest {
     fun stringCombinableArbitraryAscii() {
         val actual = CombinableArbitrary.strings().ascii().combined()
 
-        then(actual).isInstanceOf(KotestStringCombinableArbitrary::class.java)
+        then(actual).isASCII()
     }
 
     companion object {
