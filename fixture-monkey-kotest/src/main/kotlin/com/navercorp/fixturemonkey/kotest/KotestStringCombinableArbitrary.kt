@@ -20,11 +20,12 @@ package com.navercorp.fixturemonkey.kotest
 
 import com.navercorp.fixturemonkey.api.arbitrary.StringCombinableArbitrary
 import io.kotest.property.Arb
+import io.kotest.property.arbitrary.Codepoint
+import io.kotest.property.arbitrary.ascii
 import io.kotest.property.arbitrary.codepoints
 import io.kotest.property.arbitrary.filter
 import io.kotest.property.arbitrary.single
 import io.kotest.property.arbitrary.string
-import io.kotest.property.arbitrary.stringPattern
 import java.util.function.Predicate
 
 class KotestStringCombinableArbitrary(private val arb: Arb<String> = Arb.string()) : StringCombinableArbitrary {
@@ -40,15 +41,12 @@ class KotestStringCombinableArbitrary(private val arb: Arb<String> = Arb.string(
 
     override fun alphabetic(): StringCombinableArbitrary = KotestStringCombinableArbitrary(
         Arb.string(
-            codepoints = Arb.codepoints().filter { it.value.toChar() in 'a'..'z' }
+            codepoints = Arb.codepoints().filter { it.value.toChar() in 'a'..'z' || it.value.toChar() in 'A'..'Z' }
         )
     )
 
     override fun ascii(): StringCombinableArbitrary = KotestStringCombinableArbitrary(
-        Arb.string(
-            codepoints = Arb.codepoints()
-                .filter { it.value.toChar() in Character.MIN_CODE_POINT.toChar()..MAX_ASCII_CODEPOINT.toChar() }
-        )
+        Arb.string(codepoints = Codepoint.ascii())
     )
 
     override fun numeric(): StringCombinableArbitrary = KotestStringCombinableArbitrary(
@@ -69,9 +67,6 @@ class KotestStringCombinableArbitrary(private val arb: Arb<String> = Arb.string(
                 codepoints = Arb.codepoints().filter { predicate.test(it.value.toChar()) }
             )
         )
-
-    override fun pattern(treis: Int, pattern: String): StringCombinableArbitrary =
-        KotestStringCombinableArbitrary(Arb.stringPattern(pattern))
 
     override fun clear() {
     }
