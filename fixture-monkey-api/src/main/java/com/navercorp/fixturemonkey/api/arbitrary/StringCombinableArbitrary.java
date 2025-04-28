@@ -19,7 +19,6 @@
 package com.navercorp.fixturemonkey.api.arbitrary;
 
 import java.util.function.Predicate;
-import java.util.regex.Pattern;
 
 public interface StringCombinableArbitrary extends CombinableArbitrary<String> {
 	int STRING_DEFAULT_MIN_LENGTH = 0;
@@ -88,18 +87,6 @@ public interface StringCombinableArbitrary extends CombinableArbitrary<String> {
 	}
 
 	StringCombinableArbitrary filterCharacter(int tries, Predicate<Character> predicate);
-
-	/**
-	 * Generates the pattern matched arbitrary String.
-	 * Its performance differs from the generation engine you're using.
-	 *
-	 * @param stringPattern the regular expression pattern
-	 * @return the pattern matched StringCombinableArbitrary
-	 */
-	default StringCombinableArbitrary pattern(int tries, String stringPattern) {
-		Pattern pattern = Pattern.compile(stringPattern);
-		return this.filter(tries, it -> pattern.matcher(it).matches());
-	}
 
 	@Override
 	default StringCombinableArbitrary injectNull(double nullProbability) {
