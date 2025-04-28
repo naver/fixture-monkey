@@ -224,7 +224,8 @@ public final class ArbitraryBuilderContext {
 				.stream()
 				.map(it -> new MatcherOperator<>(
 					it.getMatcher(),
-					((ArbitraryBuilderContextProvider)it.getOperator()).getContext().getContainerInfoManipulators()
+					((ArbitraryBuilderContextProvider)it.getOperator()).getActiveContext()
+						.getContainerInfoManipulators()
 				))
 				.collect(Collectors.toList());
 

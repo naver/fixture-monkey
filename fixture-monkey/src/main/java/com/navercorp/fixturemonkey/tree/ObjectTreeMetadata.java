@@ -30,12 +30,22 @@ import com.navercorp.fixturemonkey.api.property.Property;
 
 @API(since = "0.4.0", status = Status.INTERNAL)
 public final class ObjectTreeMetadata {
+	private final ObjectNode rootNode;
 	private final Map<Property, List<ObjectNode>> nodesByProperty; // matchOperator
 	private final Set<Annotation> annotations;
 
-	public ObjectTreeMetadata(Map<Property, List<ObjectNode>> nodesByProperty, Set<Annotation> annotations) {
-		this.nodesByProperty = nodesByProperty;
+	public ObjectTreeMetadata(
+		ObjectNode rootNode,
+		Map<Property, List<ObjectNode>> propertyNodesByProperty,
+		Set<Annotation> annotations
+	) {
+		this.rootNode = rootNode;
+		this.nodesByProperty = propertyNodesByProperty;
 		this.annotations = annotations;
+	}
+
+	public ObjectNode getRootNode() {
+		return rootNode;
 	}
 
 	public Map<Property, List<ObjectNode>> getNodesByProperty() {
