@@ -87,11 +87,3 @@ FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
 	)
 	.build();
 ```
-
-**Selection Priority**: When selecting multiple named Operations, all applicable ones are applied based on their priorities.
-
-```java
-String actual = sut.giveMeBuilder(String.class)
-	.selectName("foo", "bar")
-	.sample();
-```

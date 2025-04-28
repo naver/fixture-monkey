@@ -86,11 +86,3 @@ FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
 	)
 	.build();
 ```
-
-**선택 시 우선순위**: 여러 이름을 선택한 경우, 우선순위에 따라 해당 연산이 적용됩니다.
-
-```java
-String actual = sut.giveMeBuilder(String.class)
-	.selectName("foo", "bar")
-	.sample();
-```
