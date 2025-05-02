@@ -1,12 +1,14 @@
 <!doctype html><html lang=ko-kr><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="ie=edge"><link rel=preload as=font href=https://naver.github.io/fixture-monkey/fonts/vendor/jost/jost-v4-latin-regular.woff2 type=font/woff2 crossorigin><link rel=preload as=font href=https://naver.github.io/fixture-monkey/fonts/vendor/jost/jost-v4-latin-500.woff2 type=font/woff2 crossorigin><link rel=preload as=font href=https://naver.github.io/fixture-monkey/fonts/vendor/jost/jost-v4-latin-700.woff2 type=font/woff2 crossorigin><link rel=preload as=font href=https://naver.github.io/fixture-monkey/fonts/vendor/inter/Inter-Regular.woff2 type=font/woff2 crossorigin><script>(()=>{var t=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,e=localStorage.getItem("theme");t&&e===null&&(localStorage.setItem("theme","dark"),document.documentElement.setAttribute("data-dark-mode","")),t&&e==="dark"&&document.documentElement.setAttribute("data-dark-mode",""),e==="dark"&&document.documentElement.setAttribute("data-dark-mode","")})()</script><script async src="https://www.googletagmanager.com/gtag/js?id=G-M1VQRZLNX1"></script>
-<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),gtag("config","G-M1VQRZLNX1")</script><link rel=stylesheet href=https://naver.github.io/fixture-monkey/main.e3c12181ad6b4007619cb838aaeea940e67be3087613f31c2135f2f1f950b35788c9da187eb73883b60aeaecad4f359ec84f0e91099aefcbab7d634f1e43f711.css integrity="sha512-48Ehga1rQAdhnLg4qu6pQOZ74wh2E/McITXy8flQs1eIydoYfrc4g7YK6uytTzWeyE8OkQma78urfWNPHkP3EQ==" crossorigin=anonymous><noscript><style>img.lazyload{display:none}</style></noscript><meta name=robots content="index, follow"><meta name=googlebot content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"><meta name=bingbot content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"><title>인터페이스 커스터마이징 Fixture Monkey</title><meta name=description content="인터페이스에서 ArbitraryBuilder의 모든 API를 사용할 수 있습니다. 우리는 이미 Generating Interface Type 에서 API를 사용한 예를 확인했었습니다. 알아본 내용을 복습하면, 인터페이스의 종류에는 interface, generic interface ,selaed interface이 있습니다. 인터페이스의 종류와 상관없이 모든 인터페이스의 프로퍼티를 제어할 수 있습니다.
-public interface StringSupplier { String getValue(); } FixtureMonkey fixture = FixtureMonkey.create(); String result = fixture.giveMeBuilder(StringSupplier.class) .set(&amp;quot;value&amp;quot;, &amp;quot;fix&amp;quot;) .sample() .getValue(); 인터페이스를 생성하는 ArbitraryBuilder가 제어할 수 있는 프로퍼티는 실제로 생성한 구현체마다 다릅니다. 하지만 아직은 구현체를 선택할 수 있는 ArbitraryBuilder API가 존재하지 않습니다."><link rel=canonical href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/customizing-objects/interface/><meta property="og:locale" content="en_US"><meta property="og:type" content="article"><meta property="og:title" content="인터페이스 커스터마이징"><meta property="og:description" content="인터페이스에서 ArbitraryBuilder의 모든 API를 사용할 수 있습니다. 우리는 이미 Generating Interface Type 에서 API를 사용한 예를 확인했었습니다. 알아본 내용을 복습하면, 인터페이스의 종류에는 interface, generic interface ,selaed interface이 있습니다. 인터페이스의 종류와 상관없이 모든 인터페이스의 프로퍼티를 제어할 수 있습니다.
-public interface StringSupplier { String getValue(); } FixtureMonkey fixture = FixtureMonkey.create(); String result = fixture.giveMeBuilder(StringSupplier.class) .set(&#34;value&#34;, &#34;fix&#34;) .sample() .getValue(); 인터페이스를 생성하는 ArbitraryBuilder가 제어할 수 있는 프로퍼티는 실제로 생성한 구현체마다 다릅니다. 하지만 아직은 구현체를 선택할 수 있는 ArbitraryBuilder API가 존재하지 않습니다."><meta property="og:url" content="https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/customizing-objects/interface/"><meta property="og:site_name" content="Fixture Monkey"><meta property="og:image" content="https://naver.github.io/fixture-monkey/fixtureMonkey.png"><meta property="og:image:alt" content="Fixture Monkey"><meta name=twitter:card content="summary_large_image"><meta name=twitter:site content><meta name=twitter:creator content><meta name=twitter:title content="인터페이스 커스터마이징"><meta name=twitter:description content><meta name=twitter:image content="https://naver.github.io/fixture-monkey/fixtureMonkey.png"><meta name=twitter:image:alt content="인터페이스 커스터마이징"><script type=application/ld+json>{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://naver.github.io/#/schema/organization/1","name":"Doks","url":"https://naver.github.io/","sameAs":["https://twitter.com/getdoks","https://github.com/h-enk/doks"],"logo":{"@type":"ImageObject","@id":"https://naver.github.io/#/schema/image/1","url":"https://naver.github.io/logo-doks.png","width":512,"height":512,"caption":"Doks"},"image":{"@id":"https://naver.github.io/#/schema/image/1"}},{"@type":"WebSite","@id":"https://naver.github.io/#/schema/website/1","url":"https://naver.github.io/","name":"Fixture Monkey","description":"","publisher":{"@id":"https://naver.github.io/#/schema/organization/1"}},{"@type":"WebPage","@id":"https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/customizing-objects/interface/","url":"https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/customizing-objects/interface/","name":"인터페이스 커스터마이징","description":"","isPartOf":{"@id":"https://naver.github.io/#/schema/website/1"},"about":{"@id":"https://naver.github.io/#/schema/organization/1"},"datePublished":"0001-01-01T00:00:00CET","dateModified":"0001-01-01T00:00:00CET","breadcrumb":{"@id":"https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/customizing-objects/interface/#/schema/breadcrumb/1"},"primaryImageOfPage":{"@id":"https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/customizing-objects/interface/#/schema/image/2"},"inLanguage":"en-US","potentialAction":[{"@type":"ReadAction","target":["https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/customizing-objects/interface/"]}]},{"@type":"BreadcrumbList","@id":"https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/customizing-objects/interface/#/schema/breadcrumb/1","name":"Breadcrumbs","itemListElement":[{"@type":"ListItem","position":1,"item":{"@type":"WebPage","@id":"https://naver.github.io/fixture-monkey/","url":"https://naver.github.io/fixture-monkey/","name":"Home"}},{"@type":"ListItem","position":2,"item":{"@type":"WebPage","@id":"https://naver.github.io/fixture-monkey/v1-1-0-kor/","url":"https://naver.github.io/fixture-monkey/v1-1-0-kor/","name":"V1 1 0 Kor"}},{"@type":"ListItem","position":3,"item":{"@type":"WebPage","@id":"https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/","url":"https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/","name":"Docs"}},{"@type":"ListItem","position":4,"item":{"@type":"WebPage","@id":"https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/customizing-objects/","url":"https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/customizing-objects/","name":"Customizing Objects"}},{"@type":"ListItem","position":5,"item":{"@id":"https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/customizing-objects/interface/"}}]},{"@context":"https://schema.org","@graph":[{"@type":"Article","@id":"https://naver.github.io/#/schema/article/1","headline":"인터페이스 커스터마이징","description":"","isPartOf":{"@id":"https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/customizing-objects/interface/"},"mainEntityOfPage":{"@id":"https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/customizing-objects/interface/"},"datePublished":"0001-01-01T00:00:00CET","dateModified":"0001-01-01T00:00:00CET","author":{"@id":"https://naver.github.io/#/schema/person/2"},"publisher":{"@id":"https://naver.github.io/#/schema/organization/1"},"image":{"@id":"https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/customizing-objects/interface/#/schema/image/2"}}]},{"@context":"https://schema.org","@graph":[{"@type":"Person","@id":"https://naver.github.io/#/schema/person/2","name":"Henk Verlinde","sameAs":["https://twitter.com/henkverlinde","https://www.linkedin.com/in/henkverlinde/","https://github.com/h-enk"]}]},{"@context":"https://schema.org","@graph":[{"@type":"ImageObject","@id":"https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/customizing-objects/interface/#/schema/image/2","url":"https://naver.github.io/fixture-monkey/fixtureMonkey.png","contentUrl":"https://naver.github.io/fixture-monkey/fixtureMonkey.png","caption":"인터페이스 커스터마이징"}]}]}</script><meta name=theme-color content="#fff"><link rel=icon href=https://naver.github.io/fixture-monkey/favicon.ico sizes=any><link rel=icon type=image/svg+xml href=https://naver.github.io/fixture-monkey/favicon.svg><link rel=apple-touch-icon sizes=180x180 href=https://naver.github.io/fixture-monkey/apple-touch-icon.png><link rel=icon type=image/png sizes=32x32 href=https://naver.github.io/fixture-monkey/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=https://naver.github.io/fixture-monkey/favicon-16x16.png><link rel=manifest crossorigin=use-credentials href=https://naver.github.io/fixture-monkey/site.webmanifest></head><body class="docs single"><div class=sticky-top><div class=header-bar></div><header class="navbar navbar-expand-lg navbar-light doks-navbar"><nav class="container-xxl flex-wrap flex-lg-nowrap" aria-label="Main navigation"><a class="navbar-brand order-0" href=https://naver.github.io/fixture-monkey/v1-1-0-kor aria-label="Fixture Monkey" style=font-family:Jost,Inter>Fixture Monkey</a>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),gtag("config","G-M1VQRZLNX1")</script><link rel=stylesheet href=https://naver.github.io/fixture-monkey/main.f8d21d27a674d49ae52d245764160fa6c79f2a6001c21e562ecc195dc1d714e85c4ca591956e34cb901ad487662e099b374f2318028a80b8e80683367f4d1f11.css integrity="sha512-+NIdJ6Z01JrlLSRXZBYPpsefKmABwh5WLswZXcHXFOhcTKWRlW40y5Aa1IdmLgmbN08jGAKKgLjoBoM2f00fEQ==" crossorigin=anonymous><noscript><style>img.lazyload{display:none}</style></noscript><meta name=robots content="index, follow"><meta name=googlebot content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"><meta name=bingbot content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"><title>인터페이스 테스트하기 Fixture Monkey</title><meta name=description content="이 문서에서 배울 내용 # 인터페이스에 대한 테스트 데이터를 생성하는 방법 어떤 구현체를 사용할지 지정하는 방법 인터페이스 구현체의 속성을 커스터마이징하는 방법 다양한 인터페이스 테스팅 접근법 중 선택하는 방법 인터페이스 테스팅의 중요성 # 이 섹션에서는 소프트웨어 개발에서 인터페이스가 왜 중요한지, 그리고 왜 인터페이스 테스팅이 가치있는지 배웁니다.
+인터페이스는 현대 소프트웨어 개발에서 다음과 같은 여러 중요한 이유로 필수적인 역할을 합니다:
+실제 애플리케이션에서 인터페이스가 중요한 이유 # 느슨한 결합(Loose Coupling): 인터페이스는 컴포넌트들이 서로의 내부 세부사항을 알 필요 없이 계약을 맺을 수 있게 합니다."><link rel=canonical href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/customizing-objects/interface/><meta property="og:locale" content="en_US"><meta property="og:type" content="article"><meta property="og:title" content="인터페이스 테스트하기"><meta property="og:description" content="이 문서에서 배울 내용 # 인터페이스에 대한 테스트 데이터를 생성하는 방법 어떤 구현체를 사용할지 지정하는 방법 인터페이스 구현체의 속성을 커스터마이징하는 방법 다양한 인터페이스 테스팅 접근법 중 선택하는 방법 인터페이스 테스팅의 중요성 # 이 섹션에서는 소프트웨어 개발에서 인터페이스가 왜 중요한지, 그리고 왜 인터페이스 테스팅이 가치있는지 배웁니다.
+인터페이스는 현대 소프트웨어 개발에서 다음과 같은 여러 중요한 이유로 필수적인 역할을 합니다:
+실제 애플리케이션에서 인터페이스가 중요한 이유 # 느슨한 결합(Loose Coupling): 인터페이스는 컴포넌트들이 서로의 내부 세부사항을 알 필요 없이 계약을 맺을 수 있게 합니다."><meta property="og:url" content="https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/customizing-objects/interface/"><meta property="og:site_name" content="Fixture Monkey"><meta property="og:image" content="https://naver.github.io/fixture-monkey/fixtureMonkey.png"><meta property="og:image:alt" content="Fixture Monkey"><meta name=twitter:card content="summary_large_image"><meta name=twitter:site content><meta name=twitter:creator content><meta name=twitter:title content="인터페이스 테스트하기"><meta name=twitter:description content><meta name=twitter:image content="https://naver.github.io/fixture-monkey/fixtureMonkey.png"><meta name=twitter:image:alt content="인터페이스 테스트하기"><script type=application/ld+json>{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://naver.github.io/#/schema/organization/1","name":"Doks","url":"https://naver.github.io/","sameAs":["https://twitter.com/getdoks","https://github.com/h-enk/doks"],"logo":{"@type":"ImageObject","@id":"https://naver.github.io/#/schema/image/1","url":"https://naver.github.io/logo-doks.png","width":512,"height":512,"caption":"Doks"},"image":{"@id":"https://naver.github.io/#/schema/image/1"}},{"@type":"WebSite","@id":"https://naver.github.io/#/schema/website/1","url":"https://naver.github.io/","name":"Fixture Monkey","description":"","publisher":{"@id":"https://naver.github.io/#/schema/organization/1"}},{"@type":"WebPage","@id":"https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/customizing-objects/interface/","url":"https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/customizing-objects/interface/","name":"인터페이스 테스트하기","description":"","isPartOf":{"@id":"https://naver.github.io/#/schema/website/1"},"about":{"@id":"https://naver.github.io/#/schema/organization/1"},"datePublished":"0001-01-01T00:00:00CET","dateModified":"0001-01-01T00:00:00CET","breadcrumb":{"@id":"https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/customizing-objects/interface/#/schema/breadcrumb/1"},"primaryImageOfPage":{"@id":"https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/customizing-objects/interface/#/schema/image/2"},"inLanguage":"en-US","potentialAction":[{"@type":"ReadAction","target":["https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/customizing-objects/interface/"]}]},{"@type":"BreadcrumbList","@id":"https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/customizing-objects/interface/#/schema/breadcrumb/1","name":"Breadcrumbs","itemListElement":[{"@type":"ListItem","position":1,"item":{"@type":"WebPage","@id":"https://naver.github.io/fixture-monkey/","url":"https://naver.github.io/fixture-monkey/","name":"Home"}},{"@type":"ListItem","position":2,"item":{"@type":"WebPage","@id":"https://naver.github.io/fixture-monkey/v1-1-0-kor/","url":"https://naver.github.io/fixture-monkey/v1-1-0-kor/","name":"V1 1 0 Kor"}},{"@type":"ListItem","position":3,"item":{"@type":"WebPage","@id":"https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/","url":"https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/","name":"Docs"}},{"@type":"ListItem","position":4,"item":{"@type":"WebPage","@id":"https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/customizing-objects/","url":"https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/customizing-objects/","name":"Customizing Objects"}},{"@type":"ListItem","position":5,"item":{"@id":"https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/customizing-objects/interface/"}}]},{"@context":"https://schema.org","@graph":[{"@type":"Article","@id":"https://naver.github.io/#/schema/article/1","headline":"인터페이스 테스트하기","description":"","isPartOf":{"@id":"https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/customizing-objects/interface/"},"mainEntityOfPage":{"@id":"https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/customizing-objects/interface/"},"datePublished":"0001-01-01T00:00:00CET","dateModified":"0001-01-01T00:00:00CET","author":{"@id":"https://naver.github.io/#/schema/person/2"},"publisher":{"@id":"https://naver.github.io/#/schema/organization/1"},"image":{"@id":"https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/customizing-objects/interface/#/schema/image/2"}}]},{"@context":"https://schema.org","@graph":[{"@type":"Person","@id":"https://naver.github.io/#/schema/person/2","name":"Henk Verlinde","sameAs":["https://twitter.com/henkverlinde","https://www.linkedin.com/in/henkverlinde/","https://github.com/h-enk"]}]},{"@context":"https://schema.org","@graph":[{"@type":"ImageObject","@id":"https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/customizing-objects/interface/#/schema/image/2","url":"https://naver.github.io/fixture-monkey/fixtureMonkey.png","contentUrl":"https://naver.github.io/fixture-monkey/fixtureMonkey.png","caption":"인터페이스 테스트하기"}]}]}</script><meta name=theme-color content="#fff"><link rel=icon href=https://naver.github.io/fixture-monkey/favicon.ico sizes=any><link rel=icon type=image/svg+xml href=https://naver.github.io/fixture-monkey/favicon.svg><link rel=apple-touch-icon sizes=180x180 href=https://naver.github.io/fixture-monkey/apple-touch-icon.png><link rel=icon type=image/png sizes=32x32 href=https://naver.github.io/fixture-monkey/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=https://naver.github.io/fixture-monkey/favicon-16x16.png><link rel=manifest crossorigin=use-credentials href=https://naver.github.io/fixture-monkey/site.webmanifest></head><body class="docs single"><div class=sticky-top><div class=header-bar></div><header class="navbar navbar-expand-lg navbar-light doks-navbar"><nav class="container-xxl flex-wrap flex-lg-nowrap" aria-label="Main navigation"><a class="navbar-brand order-0" href=https://naver.github.io/fixture-monkey/v1-1-0-kor aria-label="Fixture Monkey" style=font-family:Jost,Inter>Fixture Monkey</a>
 <button class="btn btn-link order-0 ms-auto d-lg-none" type=button data-bs-toggle=offcanvas data-bs-target=#offcanvasExample aria-controls=offcanvasExample><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-more-horizontal"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button><div class="offcanvas offcanvas-start d-lg-none" tabindex=-1 id=offcanvasExample aria-labelledby=offcanvasExampleLabel><div class=header-bar></div><div class=offcanvas-header><h5 class=offcanvas-title id=offcanvasExampleLabel>Browse docs</h5><button type=button class=btn-close data-bs-dismiss=offcanvas aria-label=Close></button></div><div class=offcanvas-body><aside class="doks-sidebar mt-n3"><nav id=doks-docs-nav aria-label="Tertiary navigation"><ul class="list-unstyled collapsible-sidebar"><li class=mb-1><button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle=collapse data-bs-target=#section-2cc02e22d67e7c3548e91a110987b51e aria-expanded=false>
 소개</button><div class=collapse id=section-2cc02e22d67e7c3548e91a110987b51e><ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small"><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/introduction/overview/>개요</a></li></ul></div></li><li class=mb-1><button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle=collapse data-bs-target=#section-d3118865aadfde18e6968340f43f5798 aria-expanded=false>
 시작하기</button><div class=collapse id=section-d3118865aadfde18e6968340f43f5798><ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small"><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/get-started/requirements/>요구사항</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/get-started/creating-objects/>테스트 객체 생성하기</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/get-started/creating-objects-without-lombok/>Lombok 없이 테스트 객체 생성하기</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/get-started/creating-objects-in-kotlin/>Kotlin 환경에서 테스트 객체 생성하기</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/get-started/adding-bean-validation/>Bean 유효성 검사 추가하기</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/get-started/customizing-objects/>사용자 정의 객체 생성하기</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/get-started/tips/>초보자를 위한 팁</a></li></ul></div></li><li class=mb-1><button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle=collapse data-bs-target=#section-db2a51cf3b55999ebd1ed7db3c9f6580 aria-expanded=false>
 객체 생성</button><div class=collapse id=section-db2a51cf3b55999ebd1ed7db3c9f6580><ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small"><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/generating-objects/fixture-monkey/>FixtureMonkey</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/generating-objects/generating-complex-types/>복잡한 객체 생성하기</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/generating-objects/instantiate-methods/>객체 생성 방법 지정하기</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/generating-objects/generating-interface/>인터페이스 타입 생성하기</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/generating-objects/introspector/>인트로스펙터</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/generating-objects/custom-introspector/>사용자 정의 인트로스펙터 만들기</a></li></ul></div></li><li class=mb-1><button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle=collapse data-bs-target=#section-4d16e291716e8e864229032a43f8595c aria-expanded=true>
-객체 커스터마이징</button><div class="collapse show" id=section-4d16e291716e8e864229032a43f8595c><ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small"><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/customizing-objects/apis/>커스터마이징 API</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/customizing-objects/arbitrary/>랜덤한 범위 값으로 커스터마이징</a></li><li><a class="docs-link rounded active" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/customizing-objects/interface/>인터페이스 커스터마이징</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/customizing-objects/path-expressions/>경로 표현식</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/customizing-objects/innerspec/>InnerSpec</a></li></ul></div></li><li class=mb-1><button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle=collapse data-bs-target=#section-bd33c17d24e2a1742de39fd3c1271389 aria-expanded=false>
+객체 커스터마이징</button><div class="collapse show" id=section-4d16e291716e8e864229032a43f8595c><ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small"><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/customizing-objects/quick-start-guide/>빠른 시작 가이드</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/customizing-objects/path-expressions/>경로 표현식</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/customizing-objects/apis/>커스터마이징 API</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/customizing-objects/arbitrary/>조건을 만족하는 랜덤 테스트 데이터 만들기</a></li><li><a class="docs-link rounded active" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/customizing-objects/interface/>인터페이스 테스트하기</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/customizing-objects/innerspec/>InnerSpec</a></li></ul></div></li><li class=mb-1><button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle=collapse data-bs-target=#section-bd33c17d24e2a1742de39fd3c1271389 aria-expanded=false>
 옵션</button><div class=collapse id=section-bd33c17d24e2a1742de39fd3c1271389><ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small"><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/fixture-monkey-options/concepts/>컨셉</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/fixture-monkey-options/generation-options/>생성 옵션</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/fixture-monkey-options/other-options/>기타 옵션</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/fixture-monkey-options/customization-options/>커스터마이징 옵션</a></li></ul></div></li><li class=mb-1><button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle=collapse data-bs-target=#section-bd6a35566411cfaf0d1ba38dd2a94932 aria-expanded=false>
 플러그인</button><div class=collapse id=section-bd6a35566411cfaf0d1ba38dd2a94932><ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small"><li class="my-1 ms-3"><button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle=collapse data-bs-target=#section-593b3bfebcad8e86944aad2c1907923b aria-expanded=false>
 Interface 플러그인</button><div class=collapse id=section-593b3bfebcad8e86944aad2c1907923b><ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small"><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/plugins/interface-plugin/features/>Features</a></li></ul></div></li><li class="my-1 ms-3"><button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle=collapse data-bs-target=#section-892e8b6df43a08bb38968f2c2e8809fb aria-expanded=false>
@@ -26,7 +28,7 @@ KOR
 소개</button><div class=collapse id=section-2cc02e22d67e7c3548e91a110987b51e><ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small"><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/introduction/overview/>개요</a></li></ul></div></li><li class=mb-1><button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle=collapse data-bs-target=#section-d3118865aadfde18e6968340f43f5798 aria-expanded=false>
 시작하기</button><div class=collapse id=section-d3118865aadfde18e6968340f43f5798><ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small"><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/get-started/requirements/>요구사항</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/get-started/creating-objects/>테스트 객체 생성하기</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/get-started/creating-objects-without-lombok/>Lombok 없이 테스트 객체 생성하기</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/get-started/creating-objects-in-kotlin/>Kotlin 환경에서 테스트 객체 생성하기</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/get-started/adding-bean-validation/>Bean 유효성 검사 추가하기</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/get-started/customizing-objects/>사용자 정의 객체 생성하기</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/get-started/tips/>초보자를 위한 팁</a></li></ul></div></li><li class=mb-1><button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle=collapse data-bs-target=#section-db2a51cf3b55999ebd1ed7db3c9f6580 aria-expanded=false>
 객체 생성</button><div class=collapse id=section-db2a51cf3b55999ebd1ed7db3c9f6580><ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small"><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/generating-objects/fixture-monkey/>FixtureMonkey</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/generating-objects/generating-complex-types/>복잡한 객체 생성하기</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/generating-objects/instantiate-methods/>객체 생성 방법 지정하기</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/generating-objects/generating-interface/>인터페이스 타입 생성하기</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/generating-objects/introspector/>인트로스펙터</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/generating-objects/custom-introspector/>사용자 정의 인트로스펙터 만들기</a></li></ul></div></li><li class=mb-1><button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle=collapse data-bs-target=#section-4d16e291716e8e864229032a43f8595c aria-expanded=true>
-객체 커스터마이징</button><div class="collapse show" id=section-4d16e291716e8e864229032a43f8595c><ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small"><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/customizing-objects/apis/>커스터마이징 API</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/customizing-objects/arbitrary/>랜덤한 범위 값으로 커스터마이징</a></li><li><a class="docs-link rounded active" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/customizing-objects/interface/>인터페이스 커스터마이징</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/customizing-objects/path-expressions/>경로 표현식</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/customizing-objects/innerspec/>InnerSpec</a></li></ul></div></li><li class=mb-1><button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle=collapse data-bs-target=#section-bd33c17d24e2a1742de39fd3c1271389 aria-expanded=false>
+객체 커스터마이징</button><div class="collapse show" id=section-4d16e291716e8e864229032a43f8595c><ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small"><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/customizing-objects/quick-start-guide/>빠른 시작 가이드</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/customizing-objects/path-expressions/>경로 표현식</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/customizing-objects/apis/>커스터마이징 API</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/customizing-objects/arbitrary/>조건을 만족하는 랜덤 테스트 데이터 만들기</a></li><li><a class="docs-link rounded active" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/customizing-objects/interface/>인터페이스 테스트하기</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/customizing-objects/innerspec/>InnerSpec</a></li></ul></div></li><li class=mb-1><button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle=collapse data-bs-target=#section-bd33c17d24e2a1742de39fd3c1271389 aria-expanded=false>
 옵션</button><div class=collapse id=section-bd33c17d24e2a1742de39fd3c1271389><ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small"><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/fixture-monkey-options/concepts/>컨셉</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/fixture-monkey-options/generation-options/>생성 옵션</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/fixture-monkey-options/other-options/>기타 옵션</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/fixture-monkey-options/customization-options/>커스터마이징 옵션</a></li></ul></div></li><li class=mb-1><button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle=collapse data-bs-target=#section-bd6a35566411cfaf0d1ba38dd2a94932 aria-expanded=false>
 플러그인</button><div class=collapse id=section-bd6a35566411cfaf0d1ba38dd2a94932><ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small"><li class="my-1 ms-3"><button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle=collapse data-bs-target=#section-593b3bfebcad8e86944aad2c1907923b aria-expanded=false>
 Interface 플러그인</button><div class=collapse id=section-593b3bfebcad8e86944aad2c1907923b><ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small"><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/plugins/interface-plugin/features/>Features</a></li></ul></div></li><li class="my-1 ms-3"><button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle=collapse data-bs-target=#section-892e8b6df43a08bb38968f2c2e8809fb aria-expanded=false>
@@ -41,7 +43,7 @@ Cheat sheet</button><div class=collapse id=section-4e79e6a809c03891b9464d4b766dc
 소개</button><div class=collapse id=section-2cc02e22d67e7c3548e91a110987b51e><ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small"><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/introduction/overview/>개요</a></li></ul></div></li><li class=mb-1><button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle=collapse data-bs-target=#section-d3118865aadfde18e6968340f43f5798 aria-expanded=false>
 시작하기</button><div class=collapse id=section-d3118865aadfde18e6968340f43f5798><ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small"><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/get-started/requirements/>요구사항</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/get-started/creating-objects/>테스트 객체 생성하기</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/get-started/creating-objects-without-lombok/>Lombok 없이 테스트 객체 생성하기</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/get-started/creating-objects-in-kotlin/>Kotlin 환경에서 테스트 객체 생성하기</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/get-started/adding-bean-validation/>Bean 유효성 검사 추가하기</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/get-started/customizing-objects/>사용자 정의 객체 생성하기</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/get-started/tips/>초보자를 위한 팁</a></li></ul></div></li><li class=mb-1><button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle=collapse data-bs-target=#section-db2a51cf3b55999ebd1ed7db3c9f6580 aria-expanded=false>
 객체 생성</button><div class=collapse id=section-db2a51cf3b55999ebd1ed7db3c9f6580><ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small"><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/generating-objects/fixture-monkey/>FixtureMonkey</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/generating-objects/generating-complex-types/>복잡한 객체 생성하기</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/generating-objects/instantiate-methods/>객체 생성 방법 지정하기</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/generating-objects/generating-interface/>인터페이스 타입 생성하기</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/generating-objects/introspector/>인트로스펙터</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/generating-objects/custom-introspector/>사용자 정의 인트로스펙터 만들기</a></li></ul></div></li><li class=mb-1><button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle=collapse data-bs-target=#section-4d16e291716e8e864229032a43f8595c aria-expanded=true>
-객체 커스터마이징</button><div class="collapse show" id=section-4d16e291716e8e864229032a43f8595c><ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small"><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/customizing-objects/apis/>커스터마이징 API</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/customizing-objects/arbitrary/>랜덤한 범위 값으로 커스터마이징</a></li><li><a class="docs-link rounded active" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/customizing-objects/interface/>인터페이스 커스터마이징</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/customizing-objects/path-expressions/>경로 표현식</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/customizing-objects/innerspec/>InnerSpec</a></li></ul></div></li><li class=mb-1><button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle=collapse data-bs-target=#section-bd33c17d24e2a1742de39fd3c1271389 aria-expanded=false>
+객체 커스터마이징</button><div class="collapse show" id=section-4d16e291716e8e864229032a43f8595c><ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small"><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/customizing-objects/quick-start-guide/>빠른 시작 가이드</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/customizing-objects/path-expressions/>경로 표현식</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/customizing-objects/apis/>커스터마이징 API</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/customizing-objects/arbitrary/>조건을 만족하는 랜덤 테스트 데이터 만들기</a></li><li><a class="docs-link rounded active" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/customizing-objects/interface/>인터페이스 테스트하기</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/customizing-objects/innerspec/>InnerSpec</a></li></ul></div></li><li class=mb-1><button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle=collapse data-bs-target=#section-bd33c17d24e2a1742de39fd3c1271389 aria-expanded=false>
 옵션</button><div class=collapse id=section-bd33c17d24e2a1742de39fd3c1271389><ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small"><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/fixture-monkey-options/concepts/>컨셉</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/fixture-monkey-options/generation-options/>생성 옵션</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/fixture-monkey-options/other-options/>기타 옵션</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/fixture-monkey-options/customization-options/>커스터마이징 옵션</a></li></ul></div></li><li class=mb-1><button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle=collapse data-bs-target=#section-bd6a35566411cfaf0d1ba38dd2a94932 aria-expanded=false>
 플러그인</button><div class=collapse id=section-bd6a35566411cfaf0d1ba38dd2a94932><ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small"><li class="my-1 ms-3"><button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle=collapse data-bs-target=#section-593b3bfebcad8e86944aad2c1907923b aria-expanded=false>
 Interface 플러그인</button><div class=collapse id=section-593b3bfebcad8e86944aad2c1907923b><ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small"><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/plugins/interface-plugin/features/>Features</a></li></ul></div></li><li class="my-1 ms-3"><button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle=collapse data-bs-target=#section-892e8b6df43a08bb38968f2c2e8809fb aria-expanded=false>
@@ -54,125 +56,303 @@ Intellij 플러그인</button><div class=collapse id=section-b7d1acec65f78021e5b
 Cheat sheet</button><div class=collapse id=section-4e79e6a809c03891b9464d4b766dc391><ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small"><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/cheat-sheet/best-practices/>모범 사례</a></li><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/cheat-sheet/faq/>자주 묻는 질문</a></li></ul></div></li><li class=mb-1><button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle=collapse data-bs-target=#section-e60166516e271ed4eae9ffab833d6907 aria-expanded=false>
 마이그레이션 가이드</button><div class=collapse id=section-e60166516e271ed4eae9ffab833d6907><ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small"><li><a class="docs-link rounded" href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/migration-guide/migration-guide/>1.0.x</a></li></ul></div></li></ul></nav></div><nav class="docs-toc d-none d-xl-block col-xl-3" aria-label="Secondary navigation"><div class=d-xl-none><button class="btn btn-outline-primary btn-sm doks-toc-toggle collapsed" type=button data-bs-toggle=collapse data-bs-target=#onThisPage aria-controls=doks-docs-nav aria-expanded=false aria-label="Toggle On this page navigation">
 <span>On This Page</span>
-<span><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" class="doks doks-expand" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><title>Expand</title><polyline points="7 13 12 18 17 13"/><polyline points="7 6 12 11 17 6"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" class="doks doks-collapse" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><title>Collapse</title><polyline points="17 11 12 6 7 11"/><polyline points="17 18 12 13 7 18"/></svg></span></button><div class=collapse id=onThisPage><div class="card card-body mt-3 py-1"><div class=page-links><nav id=TableOfContents><ul><li><ul><li><a href=#옵션을-사용한-경우>옵션을 사용한 경우</a></li><li><a href=#without-the-option>Without the option</a></li></ul></li></ul></nav></div></div></div></div><div class="page-links d-none d-xl-block"><h3>On This Page</h3><nav id=TableOfContents><ul><li><ul><li><a href=#옵션을-사용한-경우>옵션을 사용한 경우</a></li><li><a href=#without-the-option>Without the option</a></li></ul></li></ul></nav></div></nav><main class="docs-content col-lg-11 col-xl-9 mx-xl-auto"><h1>인터페이스 커스터마이징</h1><p class=lead></p><nav class=d-xl-none aria-label="Quaternary navigation"><div class=d-xl-none><button class="btn btn-outline-primary btn-sm doks-toc-toggle collapsed" type=button data-bs-toggle=collapse data-bs-target=#onThisPage aria-controls=doks-docs-nav aria-expanded=false aria-label="Toggle On this page navigation">
+<span><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" class="doks doks-expand" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><title>Expand</title><polyline points="7 13 12 18 17 13"/><polyline points="7 6 12 11 17 6"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" class="doks doks-collapse" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><title>Collapse</title><polyline points="17 11 12 6 7 11"/><polyline points="17 18 12 13 7 18"/></svg></span></button><div class=collapse id=onThisPage><div class="card card-body mt-3 py-1"><div class=page-links><nav id=TableOfContents><ul><li><a href=#이-문서에서-배울-내용>이 문서에서 배울 내용</a></li><li><a href=#인터페이스-테스팅의-중요성>인터페이스 테스팅의 중요성</a><ul><li><a href=#실제-애플리케이션에서-인터페이스가-중요한-이유>실제 애플리케이션에서 인터페이스가 중요한 이유</a></li><li><a href=#실제-예제-productinfo-인터페이스>실제 예제: ProductInfo 인터페이스</a></li><li><a href=#productinfo가-인터페이스여야-하는-이유>ProductInfo가 인터페이스여야 하는 이유</a></li><li><a href=#인터페이스-테스팅-시-도전-과제>인터페이스 테스팅 시 도전 과제</a></li><li><a href=#fixture-monkey가-어떻게-도움이-되는가>Fixture Monkey가 어떻게 도움이 되는가</a></li></ul></li><li><a href=#기본-인터페이스-테스팅-개념>기본 인터페이스 테스팅 개념</a><ul><li><a href=#인터페이스-속성-커스터마이징하기>인터페이스 속성 커스터마이징하기</a></li><li><a href=#인터페이스-구현체의-속성-설정하기>인터페이스 구현체의 속성 설정하기</a></li></ul></li><li><a href=#인터페이스-구현-접근법>인터페이스 구현 접근법</a><ul><li><a href=#접근법-1-익명-구현체-사용하기-가장-간단한-방법>접근법 1: 익명 구현체 사용하기 (가장 간단한 방법)</a></li><li><a href=#접근법-2-valuesjust-사용하기>접근법 2: Values.just 사용하기</a></li><li><a href=#접근법-3-interfaceimplements-옵션-사용하기-가장-유연한-방법>접근법 3: interfaceImplements 옵션 사용하기 (가장 유연한 방법)</a></li></ul></li><li><a href=#올바른-접근법-선택하기>올바른 접근법 선택하기</a><ul><li><a href=#익명-구현체를-사용해야-할-때>익명 구현체를 사용해야 할 때:</a></li><li><a href=#valuesjust를-사용해야-할-때>Values.just를 사용해야 할 때:</a></li><li><a href=#interfaceimplements를-사용해야-할-때>interfaceImplements를 사용해야 할 때:</a></li></ul></li><li><a href=#실제-예제-상품-서비스-테스팅>실제 예제: 상품 서비스 테스팅</a></li><li><a href=#일반적인-문제와-해결책>일반적인 문제와 해결책</a><ul><li><a href=#문제-구현체-속성-접근-시-classcastexception-발생>문제: 구현체 속성 접근 시 ClassCastException 발생</a></li><li><a href=#문제-속성이-설정되지-않음>문제: 속성이 설정되지 않음</a></li></ul></li><li><a href=#요약>요약</a></li></ul></nav></div></div></div></div><div class="page-links d-none d-xl-block"><h3>On This Page</h3><nav id=TableOfContents><ul><li><a href=#이-문서에서-배울-내용>이 문서에서 배울 내용</a></li><li><a href=#인터페이스-테스팅의-중요성>인터페이스 테스팅의 중요성</a><ul><li><a href=#실제-애플리케이션에서-인터페이스가-중요한-이유>실제 애플리케이션에서 인터페이스가 중요한 이유</a></li><li><a href=#실제-예제-productinfo-인터페이스>실제 예제: ProductInfo 인터페이스</a></li><li><a href=#productinfo가-인터페이스여야-하는-이유>ProductInfo가 인터페이스여야 하는 이유</a></li><li><a href=#인터페이스-테스팅-시-도전-과제>인터페이스 테스팅 시 도전 과제</a></li><li><a href=#fixture-monkey가-어떻게-도움이-되는가>Fixture Monkey가 어떻게 도움이 되는가</a></li></ul></li><li><a href=#기본-인터페이스-테스팅-개념>기본 인터페이스 테스팅 개념</a><ul><li><a href=#인터페이스-속성-커스터마이징하기>인터페이스 속성 커스터마이징하기</a></li><li><a href=#인터페이스-구현체의-속성-설정하기>인터페이스 구현체의 속성 설정하기</a></li></ul></li><li><a href=#인터페이스-구현-접근법>인터페이스 구현 접근법</a><ul><li><a href=#접근법-1-익명-구현체-사용하기-가장-간단한-방법>접근법 1: 익명 구현체 사용하기 (가장 간단한 방법)</a></li><li><a href=#접근법-2-valuesjust-사용하기>접근법 2: Values.just 사용하기</a></li><li><a href=#접근법-3-interfaceimplements-옵션-사용하기-가장-유연한-방법>접근법 3: interfaceImplements 옵션 사용하기 (가장 유연한 방법)</a></li></ul></li><li><a href=#올바른-접근법-선택하기>올바른 접근법 선택하기</a><ul><li><a href=#익명-구현체를-사용해야-할-때>익명 구현체를 사용해야 할 때:</a></li><li><a href=#valuesjust를-사용해야-할-때>Values.just를 사용해야 할 때:</a></li><li><a href=#interfaceimplements를-사용해야-할-때>interfaceImplements를 사용해야 할 때:</a></li></ul></li><li><a href=#실제-예제-상품-서비스-테스팅>실제 예제: 상품 서비스 테스팅</a></li><li><a href=#일반적인-문제와-해결책>일반적인 문제와 해결책</a><ul><li><a href=#문제-구현체-속성-접근-시-classcastexception-발생>문제: 구현체 속성 접근 시 ClassCastException 발생</a></li><li><a href=#문제-속성이-설정되지-않음>문제: 속성이 설정되지 않음</a></li></ul></li><li><a href=#요약>요약</a></li></ul></nav></div></nav><main class="docs-content col-lg-11 col-xl-9 mx-xl-auto"><h1>인터페이스 테스트하기</h1><p class=lead></p><nav class=d-xl-none aria-label="Quaternary navigation"><div class=d-xl-none><button class="btn btn-outline-primary btn-sm doks-toc-toggle collapsed" type=button data-bs-toggle=collapse data-bs-target=#onThisPage aria-controls=doks-docs-nav aria-expanded=false aria-label="Toggle On this page navigation">
 <span>On This Page</span>
-<span><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" class="doks doks-expand" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><title>Expand</title><polyline points="7 13 12 18 17 13"/><polyline points="7 6 12 11 17 6"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" class="doks doks-collapse" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><title>Collapse</title><polyline points="17 11 12 6 7 11"/><polyline points="17 18 12 13 7 18"/></svg></span></button><div class=collapse id=onThisPage><div class="card card-body mt-3 py-1"><div class=page-links><nav id=TableOfContents><ul><li><ul><li><a href=#옵션을-사용한-경우>옵션을 사용한 경우</a></li><li><a href=#without-the-option>Without the option</a></li></ul></li></ul></nav></div></div></div></div><div class="page-links d-none d-xl-block"><h3>On This Page</h3><nav id=TableOfContents><ul><li><ul><li><a href=#옵션을-사용한-경우>옵션을 사용한 경우</a></li><li><a href=#without-the-option>Without the option</a></li></ul></li></ul></nav></div></nav><p>인터페이스에서 <code>ArbitraryBuilder</code>의 모든 API를 사용할 수 있습니다.
-우리는 이미 <a href=../../generating-objects/generating-interface>Generating Interface Type</a> 에서 API를 사용한 예를 확인했었습니다.
-알아본 내용을 복습하면, 인터페이스의 종류에는 <code>interface</code>, <code>generic interface</code> ,<code>selaed interface</code>이 있습니다.
-인터페이스의 종류와 상관없이 모든 인터페이스의 프로퍼티를 제어할 수 있습니다.</p><pre><code class=language-java>public interface StringSupplier {
-	String getValue();
+<span><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" class="doks doks-expand" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><title>Expand</title><polyline points="7 13 12 18 17 13"/><polyline points="7 6 12 11 17 6"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" class="doks doks-collapse" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><title>Collapse</title><polyline points="17 11 12 6 7 11"/><polyline points="17 18 12 13 7 18"/></svg></span></button><div class=collapse id=onThisPage><div class="card card-body mt-3 py-1"><div class=page-links><nav id=TableOfContents><ul><li><a href=#이-문서에서-배울-내용>이 문서에서 배울 내용</a></li><li><a href=#인터페이스-테스팅의-중요성>인터페이스 테스팅의 중요성</a><ul><li><a href=#실제-애플리케이션에서-인터페이스가-중요한-이유>실제 애플리케이션에서 인터페이스가 중요한 이유</a></li><li><a href=#실제-예제-productinfo-인터페이스>실제 예제: ProductInfo 인터페이스</a></li><li><a href=#productinfo가-인터페이스여야-하는-이유>ProductInfo가 인터페이스여야 하는 이유</a></li><li><a href=#인터페이스-테스팅-시-도전-과제>인터페이스 테스팅 시 도전 과제</a></li><li><a href=#fixture-monkey가-어떻게-도움이-되는가>Fixture Monkey가 어떻게 도움이 되는가</a></li></ul></li><li><a href=#기본-인터페이스-테스팅-개념>기본 인터페이스 테스팅 개념</a><ul><li><a href=#인터페이스-속성-커스터마이징하기>인터페이스 속성 커스터마이징하기</a></li><li><a href=#인터페이스-구현체의-속성-설정하기>인터페이스 구현체의 속성 설정하기</a></li></ul></li><li><a href=#인터페이스-구현-접근법>인터페이스 구현 접근법</a><ul><li><a href=#접근법-1-익명-구현체-사용하기-가장-간단한-방법>접근법 1: 익명 구현체 사용하기 (가장 간단한 방법)</a></li><li><a href=#접근법-2-valuesjust-사용하기>접근법 2: Values.just 사용하기</a></li><li><a href=#접근법-3-interfaceimplements-옵션-사용하기-가장-유연한-방법>접근법 3: interfaceImplements 옵션 사용하기 (가장 유연한 방법)</a></li></ul></li><li><a href=#올바른-접근법-선택하기>올바른 접근법 선택하기</a><ul><li><a href=#익명-구현체를-사용해야-할-때>익명 구현체를 사용해야 할 때:</a></li><li><a href=#valuesjust를-사용해야-할-때>Values.just를 사용해야 할 때:</a></li><li><a href=#interfaceimplements를-사용해야-할-때>interfaceImplements를 사용해야 할 때:</a></li></ul></li><li><a href=#실제-예제-상품-서비스-테스팅>실제 예제: 상품 서비스 테스팅</a></li><li><a href=#일반적인-문제와-해결책>일반적인 문제와 해결책</a><ul><li><a href=#문제-구현체-속성-접근-시-classcastexception-발생>문제: 구현체 속성 접근 시 ClassCastException 발생</a></li><li><a href=#문제-속성이-설정되지-않음>문제: 속성이 설정되지 않음</a></li></ul></li><li><a href=#요약>요약</a></li></ul></nav></div></div></div></div><div class="page-links d-none d-xl-block"><h3>On This Page</h3><nav id=TableOfContents><ul><li><a href=#이-문서에서-배울-내용>이 문서에서 배울 내용</a></li><li><a href=#인터페이스-테스팅의-중요성>인터페이스 테스팅의 중요성</a><ul><li><a href=#실제-애플리케이션에서-인터페이스가-중요한-이유>실제 애플리케이션에서 인터페이스가 중요한 이유</a></li><li><a href=#실제-예제-productinfo-인터페이스>실제 예제: ProductInfo 인터페이스</a></li><li><a href=#productinfo가-인터페이스여야-하는-이유>ProductInfo가 인터페이스여야 하는 이유</a></li><li><a href=#인터페이스-테스팅-시-도전-과제>인터페이스 테스팅 시 도전 과제</a></li><li><a href=#fixture-monkey가-어떻게-도움이-되는가>Fixture Monkey가 어떻게 도움이 되는가</a></li></ul></li><li><a href=#기본-인터페이스-테스팅-개념>기본 인터페이스 테스팅 개념</a><ul><li><a href=#인터페이스-속성-커스터마이징하기>인터페이스 속성 커스터마이징하기</a></li><li><a href=#인터페이스-구현체의-속성-설정하기>인터페이스 구현체의 속성 설정하기</a></li></ul></li><li><a href=#인터페이스-구현-접근법>인터페이스 구현 접근법</a><ul><li><a href=#접근법-1-익명-구현체-사용하기-가장-간단한-방법>접근법 1: 익명 구현체 사용하기 (가장 간단한 방법)</a></li><li><a href=#접근법-2-valuesjust-사용하기>접근법 2: Values.just 사용하기</a></li><li><a href=#접근법-3-interfaceimplements-옵션-사용하기-가장-유연한-방법>접근법 3: interfaceImplements 옵션 사용하기 (가장 유연한 방법)</a></li></ul></li><li><a href=#올바른-접근법-선택하기>올바른 접근법 선택하기</a><ul><li><a href=#익명-구현체를-사용해야-할-때>익명 구현체를 사용해야 할 때:</a></li><li><a href=#valuesjust를-사용해야-할-때>Values.just를 사용해야 할 때:</a></li><li><a href=#interfaceimplements를-사용해야-할-때>interfaceImplements를 사용해야 할 때:</a></li></ul></li><li><a href=#실제-예제-상품-서비스-테스팅>실제 예제: 상품 서비스 테스팅</a></li><li><a href=#일반적인-문제와-해결책>일반적인 문제와 해결책</a><ul><li><a href=#문제-구현체-속성-접근-시-classcastexception-발생>문제: 구현체 속성 접근 시 ClassCastException 발생</a></li><li><a href=#문제-속성이-설정되지-않음>문제: 속성이 설정되지 않음</a></li></ul></li><li><a href=#요약>요약</a></li></ul></nav></div></nav><h2 id=이-문서에서-배울-내용>이 문서에서 배울 내용 <a href=#%ec%9d%b4-%eb%ac%b8%ec%84%9c%ec%97%90%ec%84%9c-%eb%b0%b0%ec%9a%b8-%eb%82%b4%ec%9a%a9 class=anchor aria-hidden=true>#</a></h2><ul><li>인터페이스에 대한 테스트 데이터를 생성하는 방법</li><li>어떤 구현체를 사용할지 지정하는 방법</li><li>인터페이스 구현체의 속성을 커스터마이징하는 방법</li><li>다양한 인터페이스 테스팅 접근법 중 선택하는 방법</li></ul><h2 id=인터페이스-테스팅의-중요성>인터페이스 테스팅의 중요성 <a href=#%ec%9d%b8%ed%84%b0%ed%8e%98%ec%9d%b4%ec%8a%a4-%ed%85%8c%ec%8a%a4%ed%8c%85%ec%9d%98-%ec%a4%91%ec%9a%94%ec%84%b1 class=anchor aria-hidden=true>#</a></h2><blockquote><p><em>이 섹션에서는 소프트웨어 개발에서 인터페이스가 왜 중요한지, 그리고 왜 인터페이스 테스팅이 가치있는지 배웁니다.</em></p></blockquote><p>인터페이스는 현대 소프트웨어 개발에서 다음과 같은 여러 중요한 이유로 필수적인 역할을 합니다:</p><h3 id=실제-애플리케이션에서-인터페이스가-중요한-이유>실제 애플리케이션에서 인터페이스가 중요한 이유 <a href=#%ec%8b%a4%ec%a0%9c-%ec%95%a0%ed%94%8c%eb%a6%ac%ec%bc%80%ec%9d%b4%ec%85%98%ec%97%90%ec%84%9c-%ec%9d%b8%ed%84%b0%ed%8e%98%ec%9d%b4%ec%8a%a4%ea%b0%80-%ec%a4%91%ec%9a%94%ed%95%9c-%ec%9d%b4%ec%9c%a0 class=anchor aria-hidden=true>#</a></h3><ol><li><p><strong>느슨한 결합(Loose Coupling)</strong>: 인터페이스는 컴포넌트들이 서로의 내부 세부사항을 알 필요 없이 계약을 맺을 수 있게 합니다. 이는 애플리케이션의 각 부분 간의 의존성을 줄입니다.</p></li><li><p><strong>의존성 주입(Dependency Injection)</strong>: 인터페이스는 의존성 주입을 쉽게 만들어, 구현체를 테스트 시 대안이나 목(mock)으로 대체할 수 있게 합니다.</p></li><li><p><strong>유연성과 확장성(Flexibility and Extensibility)</strong>: 인터페이스를 사용하는 코드를 변경하지 않고도 새로운 구현체를 추가할 수 있습니다. 이는 개방-폐쇄 원칙(확장에는 열려있고, 수정에는 닫혀있음)을 따릅니다.</p></li><li><p><strong>향상된 테스트 용이성(Better Testability)</strong>: 인터페이스를 사용하면 실제 구현체를 테스트 대역(test doubles)으로 대체할 수 있어, 단위 테스트가 훨씬 관리하기 쉬워집니다.</p></li></ol><h3 id=실제-예제-productinfo-인터페이스>실제 예제: ProductInfo 인터페이스 <a href=#%ec%8b%a4%ec%a0%9c-%ec%98%88%ec%a0%9c-productinfo-%ec%9d%b8%ed%84%b0%ed%8e%98%ec%9d%b4%ec%8a%a4 class=anchor aria-hidden=true>#</a></h3><p>실제 애플리케이션에서 인터페이스가 어떻게 사용되는지 예시를 통해 살펴보겠습니다:</p><pre><code class=language-java>// 게터가 있는 상품 정보 인터페이스
+public interface ProductInfo {
+    String getName();         // 상품 이름 가져오기
+    BigDecimal getPrice();    // 상품 가격 가져오기
+    String getCategory();     // 상품 카테고리 가져오기
+    boolean isAvailable();    // 상품 재고 여부 확인
+    int getStockQuantity();   // 재고 수량 가져오기
 }
 
-FixtureMonkey fixture = FixtureMonkey.create();
+// 인터페이스를 메서드 매개변수로 사용하는 서비스
+public class ProductService {
+    // 특정 수량을 구매할 수 있는지 확인
+    public boolean canPurchase(ProductInfo productInfo, int quantity) {
+        return productInfo.isAvailable() &amp;&amp; 
+               productInfo.getStockQuantity() &gt;= quantity;
+    }
+    
+    // 수량에 대한 총 가격 계산
+    public BigDecimal calculateTotal(ProductInfo productInfo, int quantity) {
+        return productInfo.getPrice().multiply(new BigDecimal(quantity));
+    }
+    
+    // 상품 요약 정보 생성
+    public String getProductSummary(ProductInfo productInfo) {
+        return String.format(&quot;%s (%s) - $%s, 재고: %d&quot;, 
+            productInfo.getName(), 
+            productInfo.getCategory(), 
+            productInfo.getPrice(), 
+            productInfo.getStockQuantity());
+    }
+}
+</code></pre><p>이 예제에서 <code>ProductService</code>는 <code>ProductInfo</code>의 어떤 구현체라도 함께 작동할 수 있습니다 - 상품 데이터가 어디서 오는지 알 필요가 없습니다.</p><h3 id=productinfo가-인터페이스여야-하는-이유>ProductInfo가 인터페이스여야 하는 이유 <a href=#productinfo%ea%b0%80-%ec%9d%b8%ed%84%b0%ed%8e%98%ec%9d%b4%ec%8a%a4%ec%97%ac%ec%95%bc-%ed%95%98%eb%8a%94-%ec%9d%b4%ec%9c%a0 class=anchor aria-hidden=true>#</a></h3><p>실제 애플리케이션에서 상품 정보는 다양한 출처에서 올 수 있습니다:</p><ol><li>온라인 스토어 상품 (OnlineProductInfo)</li><li>오프라인 매장 상품 (StoreProductInfo)</li><li>재고 관리 시스템 상품 (InventoryProductInfo)</li><li>프로모션 상품 (PromotionProductInfo)</li></ol><p>각 출처는 동일한 기본 정보(이름, 가격, 카테고리)를 제공하지만, 추가 정보를 가지거나 동작이 다를 수 있습니다. 예를 들면:</p><ul><li>온라인 상품은 배송 날짜 정보가 필요합니다</li><li>매장 상품은 매장 위치 정보가 필요합니다</li><li>재고 상품은 창고 위치 정보가 필요합니다</li></ul><p>ProductService는 상품 정보가 어디서 오든 기본적인 상품 정보만 알면 작동해야 합니다. 인터페이스를 사용하면 다음과 같은 이점이 있습니다:</p><ol><li>특정 구현체에 의존하지 않아 서비스를 더 유연하게 만듭니다</li><li>서비스 코드를 변경하지 않고도 새로운 유형의 상품 정보(예: 해외 상품)를 추가할 수 있습니다</li><li>실제 상품 데이터베이스 없이도 테스트할 수 있어 테스트가 더 쉬워집니다</li></ol><h3 id=인터페이스-테스팅-시-도전-과제>인터페이스 테스팅 시 도전 과제 <a href=#%ec%9d%b8%ed%84%b0%ed%8e%98%ec%9d%b4%ec%8a%a4-%ed%85%8c%ec%8a%a4%ed%8c%85-%ec%8b%9c-%eb%8f%84%ec%a0%84-%ea%b3%bc%ec%a0%9c class=anchor aria-hidden=true>#</a></h3><p>이점에도 불구하고, 인터페이스는 고유한 테스팅 도전 과제를 제시합니다:</p><ol><li>테스트하려면 구체적인 구현체가 필요하지만, 이를 만드는 것은 시간이 많이 걸릴 수 있습니다</li><li>각 구현체는 서로 다른 설정과 구성이 필요할 수 있습니다</li><li>테스트 데이터는 인터페이스 계약의 예상 동작과 일치해야 합니다</li><li>구현체별 속성은 커스터마이징이 필요할 수 있습니다</li></ol><h3 id=fixture-monkey가-어떻게-도움이-되는가>Fixture Monkey가 어떻게 도움이 되는가 <a href=#fixture-monkey%ea%b0%80-%ec%96%b4%eb%96%bb%ea%b2%8c-%eb%8f%84%ec%9b%80%ec%9d%b4-%eb%90%98%eb%8a%94%ea%b0%80 class=anchor aria-hidden=true>#</a></h3><p>Fixture Monkey는 다음과 같은 방식으로 이러한 과제를 해결합니다:</p><ol><li>테스트를 위한 구현체를 자동으로 생성합니다</li><li>인터페이스 동작을 커스터마이징하는 유연한 방법을 제공합니다</li><li>다양한 테스트 시나리오에 맞는 여러 접근법을 지원합니다</li><li>테스트 구현에 필요한 상용구 코드를 줄입니다</li></ol><h2 id=기본-인터페이스-테스팅-개념>기본 인터페이스 테스팅 개념 <a href=#%ea%b8%b0%eb%b3%b8-%ec%9d%b8%ed%84%b0%ed%8e%98%ec%9d%b4%ec%8a%a4-%ed%85%8c%ec%8a%a4%ed%8c%85-%ea%b0%9c%eb%85%90 class=anchor aria-hidden=true>#</a></h2><blockquote><p><em>이 섹션에서는 간단한 예제부터 시작하여 Fixture Monkey와 함께하는 인터페이스 테스팅의 기본 개념을 소개합니다.</em></p></blockquote><h3 id=인터페이스-속성-커스터마이징하기>인터페이스 속성 커스터마이징하기 <a href=#%ec%9d%b8%ed%84%b0%ed%8e%98%ec%9d%b4%ec%8a%a4-%ec%86%8d%ec%84%b1-%ec%bb%a4%ec%8a%a4%ed%84%b0%eb%a7%88%ec%9d%b4%ec%a7%95%ed%95%98%ea%b8%b0 class=anchor aria-hidden=true>#</a></h3><p>간단한 예제로 시작해보겠습니다. Fixture Monkey를 사용할 때, 일반 클래스와 마찬가지로 인터페이스 속성을 커스터마이징할 수 있습니다:</p><pre><code class=language-java>// 하나의 메서드가 있는 간단한 인터페이스
+public interface StringSupplier {
+    String getValue(); // 이 메서드는 문자열을 반환합니다
+}
 
+// InterfacePlugin을 추가한 Fixture Monkey 인스턴스 생성
+// 참고: 모든 인터페이스 작업에는 InterfacePlugin이 필요합니다
+FixtureMonkey fixture = FixtureMonkey.builder()
+    .plugin(new InterfacePlugin())
+    .build();
+
+// StringSupplier 생성 및 커스터마이징
 String result = fixture.giveMeBuilder(StringSupplier.class)
-	.set(&quot;value&quot;, &quot;fix&quot;)
-	.sample()
-	.getValue();
-</code></pre><p>인터페이스를 생성하는 <code>ArbitraryBuilder</code>가 제어할 수 있는 프로퍼티는 실제로 생성한 구현체마다 다릅니다.
-하지만 아직은 구현체를 선택할 수 있는 <code>ArbitraryBuilder</code> API가 존재하지 않습니다.
-인터페이스가 하나의 구현체를 가지고 있다면 구현체 프로퍼티도 제어가 가능합니다. 하지만 구현체가 두 개 이상이라면 인터페이스의 프로퍼티만 제어가 가능합니다.</p><p>원하는 구현체를 랜덤하게 생성할 수는 없지만 이미 구현체의 인스턴스가 있다면 원하는 구현체를 <code>set</code> API를 사용해 생성할 수 있습니다.
-<code>interfaceImplements 옵션을 사용한 경우</code>와 <code>interfaceImplements 옵션을 사용하지 않은 경우</code> 두 경우로 나누어 설명을 해보겠습니다.</p><h3 id=옵션을-사용한-경우>옵션을 사용한 경우 <a href=#%ec%98%b5%ec%85%98%ec%9d%84-%ec%82%ac%ec%9a%a9%ed%95%9c-%ea%b2%bd%ec%9a%b0 class=anchor aria-hidden=true>#</a></h3><p>인터페이스 타입은 <code>set</code> API로 설정한 구현체로 생성합니다. 구현체는 <code>interfaceImplements</code> 옵션에 등록을 해야 합니다.</p><pre><code class=language-java>public interface ObjectValueSupplier {
-	Object getValue();
+    .set(&quot;value&quot;, &quot;Hello World&quot;) // value 속성 설정
+    .sample()                    // 인스턴스 생성
+    .getValue();                 // 메서드 호출
+
+// result는 &quot;Hello World&quot;가 됩니다
+</code></pre><p>이 예제에서 Fixture Monkey는 자동으로 <code>StringSupplier</code> 인터페이스의 구현체를 생성하고 <code>value</code> 속성을 설정합니다.</p><h3 id=인터페이스-구현체의-속성-설정하기>인터페이스 구현체의 속성 설정하기 <a href=#%ec%9d%b8%ed%84%b0%ed%8e%98%ec%9d%b4%ec%8a%a4-%ea%b5%ac%ed%98%84%ec%b2%b4%ec%9d%98-%ec%86%8d%ec%84%b1-%ec%84%a4%ec%a0%95%ed%95%98%ea%b8%b0 class=anchor aria-hidden=true>#</a></h3><p>Fixture Monkey에서 인터페이스로 작업할 때, 구현된 메서드가 반환할 속성을 설정할 수 있습니다:</p><pre><code class=language-java>// 여러 메서드가 있는 예제 인터페이스
+public interface StringProvider {
+    String getValue();    // 문자열 값을 가져오는 메서드
+    int getNumber();      // 정수 값을 가져오는 메서드
 }
 
-public class StringValueSupplier implements ObjectValueSupplier {
-	private final String value;
-
-	@ConstructorProperties(&quot;value&quot;) // 롬복을 사용하면 추가하지 않아도 됩니다.
-	public StringValueSupplier(String value) {
-		this.value = value;
-	}
-
-	@Override
-	public String getValue() {
-		return value;
-	}
-}
-
-public class IntegerValueSupplier implements ObjectValueSupplier {
-	private final int value;
-	private final int implementationValue;
-
-	@ConstructorProperties({&quot;value&quot;, &quot;implementationValue&quot;}) // 롬복을 사용하면 추가하지 않아도 됩니다.
-	public IntegerValueSupplier(int value, int implementationValue) {
-		this.value = value;
-		this.implementationValue = implementationValue;
-	}
-
-	@Override
-	public Integer getValue() {
-		return value;
-	}
-
-	public int getImplementationValue() {
-		return implementationValue;
-	}
-}
-
+// InterfacePlugin을 추가한 Fixture Monkey 인스턴스 생성
 FixtureMonkey fixture = FixtureMonkey.builder()
-	.objectIntrospector(
-		ConstructorPropertiesArbitraryIntrospector.INSTANCE) // 구현체를 인스턴스화할 때 사용합니다.
-	.plugin(
-		new InterfacePlugin()
-			.interfaceImplements(
-				ObjectValueSupplier.class,
-				List.of(StringValueSupplier.class, IntegerValueSupplier.class)
-            )
-	)
-	.build();
+    .plugin(new InterfacePlugin())
+    .build();
 
-IntegerValueSupplier integerValueSupplier = (IntegerValueSupplier)fixture.giveMeBuilder(ObjectValueSupplier.class)
-	.set(&quot;$&quot;, new IntegerValueSupplier(-1203))
-	.sample();
-</code></pre><p>구현체의 프로퍼티도 제어할 수 있습니다.</p><pre><code class=language-java>IntegerValueSupplier integerValueSupplier = (IntegerValueSupplier)fixture.giveMeBuilder(ObjectValueSupplier.class)
-	.set(&quot;$&quot;, new IntegerValueSupplier(-1203, 1203))
-	.set(&quot;implementationValue&quot;, 1) // it works.
-	.sample();
-</code></pre><h3 id=without-the-option>Without the option <a href=#without-the-option class=anchor aria-hidden=true>#</a></h3><p>원하는 구현체를 설정하기 위해서는 <code>set</code> API 를 특별한 방식으로 사용해야 합니다. 구현체 인스턴스를 <code>Values.just</code>로 감싸서 입력해야 합니다.</p><pre><code class=language-java>public interface ObjectValueSupplier {
-	Object getValue();
-}
-
-public class StringValueSupplier implements ObjectValueSupplier {
-	private final String value;
-
-	@ConstructorProperties(&quot;value&quot;) // 롬복을 사용하면 추가하지 않아도 됩니다.
-	public StringValueSupplier(String value) {
-		this.value = value;
-	}
-
-	@Override
-	public String getValue() {
-		return value;
-	}
-}
-
-public class IntegerValueSupplier implements ObjectValueSupplier {
-	private final int value;
-
-	@ConstructorProperties(&quot;value&quot;) // 롬복을 사용하면 추가하지 않아도 됩니다.
-	public IntegerValueSupplier(int value) {
-		this.value = value;
-	}
-
-	@Override
-	public Integer getValue() {
-		return value;
-	}
-}
-
-FixtureMonkey fixture = FixtureMonkey.builder()
-	.objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE) // 구현체를 인스턴스화할 때 사용합니다.
-	.build();
-
-IntegerValueSupplier integerValueSupplier = (IntegerValueSupplier)fixture.giveMeBuilder(ObjectValueSupplier.class)
-	.set(&quot;$&quot;, Values.just(new IntegerValueSupplier(-1203)))
-	.sample();
-</code></pre><p>픽스쳐 몽키는 <code>interfaceImplements</code> 옵션으로 등록하지 않은 구현체의 프로퍼티를 알 수 없습니다. <code>Values.just</code>를 사용한 경우 프로퍼티를 제어할 수 없습니다.</p><pre><code class=language-java>IntegerValueSupplier integerValueSupplier = (IntegerValueSupplier)fixture.giveMeBuilder(ObjectValueSupplier.class)
-    .set(&quot;$&quot;, Values.just(new IntegerValueSupplier(-1203)))
-    .set(&quot;value&quot;, 1) // not works
+// 지정된 속성 값으로 인터페이스 구현체 생성
+StringProvider provider = fixture.giveMeBuilder(StringProvider.class)
+    .set(&quot;value&quot;, &quot;Hello World&quot;)  // getValue()가 반환할 값 설정
+    .set(&quot;number&quot;, 42)            // getNumber()가 반환할 값 설정
     .sample();
-</code></pre><div class="page-footer-meta d-flex flex-column flex-md-row justify-content-between"></div><div class="docs-navigation d-flex justify-content-between"><a href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/customizing-objects/arbitrary/><div class="card my-1"><div class="card-body py-2" style=color:#69dc72>&larr; 랜덤한 범위 값으로 커스터마이징</div></div></a><a class=ms-auto href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/customizing-objects/path-expressions/><div class="card my-1"><div class="card-body py-2" style=color:#69dc72>경로 표현식 &rarr;</div></div></a></div></main></div></div></div><footer class="footer text-muted"><div class=container-xxl><div class=row><div class="col-lg-8 order-last order-lg-first"><ul class=list-inline><li class=list-inline-item></li></ul></div><div class="col-lg-8 order-first order-lg-last text-lg-end"><ul class=list-inline><li class=list-inline-item><a href=https://naver.github.io/fixture-monkey/ style=color:#69dc72>© 2025 Naver All Rights Reserved</a></li></ul></div></div></div></footer><script src=https://naver.github.io/fixture-monkey/js/bootstrap.min.49deee76074d4074d37d54619d509b36839e1aa4ebf6698c543b5d5645b355076b9713429c9a308a3b216c208da0aa3507af100fa137063b1e6aca3cc2259e27.js integrity="sha512-Sd7udgdNQHTTfVRhnVCbNoOeGqTr9mmMVDtdVkWzVQdrlxNCnJowijshbCCNoKo1B68QD6E3Bjseaso8wiWeJw==" crossorigin=anonymous defer></script>
+
+// 구현체 사용
+String value = provider.getValue();     // &quot;Hello World&quot; 반환
+int number = provider.getNumber();      // 42 반환
+</code></pre><h2 id=인터페이스-구현-접근법>인터페이스 구현 접근법 <a href=#%ec%9d%b8%ed%84%b0%ed%8e%98%ec%9d%b4%ec%8a%a4-%ea%b5%ac%ed%98%84-%ec%a0%91%ea%b7%bc%eb%b2%95 class=anchor aria-hidden=true>#</a></h2><blockquote><p><em>이 섹션에서는 가장 간단한 것부터 가장 고급 방법까지, 인터페이스 구현체를 생성하고 작업하는 세 가지 접근법을 배웁니다.</em></p></blockquote><p>여러 구현체를 가진 인터페이스로 작업할 때, 가장 간단한 것부터 시작하여, 세 가지 주요 접근법이 있습니다:</p><h3 id=접근법-1-익명-구현체-사용하기-가장-간단한-방법>접근법 1: 익명 구현체 사용하기 (가장 간단한 방법) <a href=#%ec%a0%91%ea%b7%bc%eb%b2%95-1-%ec%9d%b5%eb%aa%85-%ea%b5%ac%ed%98%84%ec%b2%b4-%ec%82%ac%ec%9a%a9%ed%95%98%ea%b8%b0-%ea%b0%80%ec%9e%a5-%ea%b0%84%eb%8b%a8%ed%95%9c-%eb%b0%a9%eb%b2%95 class=anchor aria-hidden=true>#</a></h3><p>간단한 테스트 시나리오의 경우, Fixture Monkey는 인터페이스의 익명 구현체를 자동으로 생성할 수 있습니다. 이 접근법은 다음과 같은 경우에 유용합니다:</p><ul><li>실제 클래스를 만들지 않고도 테스트를 위한 빠른 구현체가 필요할 때</li><li>구현 세부사항보다는 테스트 값에 집중하고 싶을 때</li><li>각 테스트마다 다른 값이 필요할 때</li></ul><p>다음은 Fixture Monkey로 자동 익명 구현체를 사용하는 방법입니다:</p><pre><code class=language-java>// 상품 정보 인터페이스
+public interface ProductInfo {
+    String getName();             // 상품 이름을 가져오는 메서드
+    BigDecimal getPrice();        // 상품 가격을 가져오는 메서드
+    String getCategory();         // 상품 카테고리를 가져오는 메서드
+    boolean isAvailable();        // 상품 재고 여부를 확인하는 메서드
+    int getStockQuantity();       // 재고 수량을 가져오는 메서드
+}
+
+// InterfacePlugin을 추가한 Fixture Monkey 인스턴스 생성
+// 참고: 인터페이스로 작업할 때는 항상 InterfacePlugin이 필요합니다
+FixtureMonkey fixture = FixtureMonkey.builder()
+    .plugin(new InterfacePlugin())
+    .build();
+
+// Fixture Monkey가 익명 구현체를 생성하도록 함
+ProductInfo productInfo = fixture.giveMeBuilder(ProductInfo.class)
+    .set(&quot;name&quot;, &quot;Smartphone&quot;)                 // 상품 이름 설정
+    .set(&quot;price&quot;, new BigDecimal(&quot;999.99&quot;))    // 상품 가격 설정
+    .set(&quot;category&quot;, &quot;Electronics&quot;)            // 상품 카테고리 설정
+    .set(&quot;available&quot;, true)                    // 재고 있음으로 설정
+    .set(&quot;stockQuantity&quot;, 10)                  // 재고 수량을 10으로 설정
+    .sample();
+
+// 테스트에서 사용
+ProductService service = new ProductService();
+boolean canPurchase = service.canPurchase(productInfo, 5); // true 반환
+String summary = service.getProductSummary(productInfo); 
+// &quot;Smartphone (Electronics) - $999.99, 재고: 10&quot; 반환
+</code></pre><p>이 접근법의 주요 장점은 Fixture Monkey가 모든 구현 세부사항을 처리한다는 것입니다. 여러분은 인터페이스 메서드가 반환해야 할 값만 정의하면, Fixture Monkey가 내부적으로 적절한 익명 구현체를 생성합니다.</p><h3 id=접근법-2-valuesjust-사용하기>접근법 2: Values.just 사용하기 <a href=#%ec%a0%91%ea%b7%bc%eb%b2%95-2-valuesjust-%ec%82%ac%ec%9a%a9%ed%95%98%ea%b8%b0 class=anchor aria-hidden=true>#</a></h3><p>이미 사용하고자 하는 구현체 인스턴스가 있다면, 간단히 <code>Values.just</code>를 사용할 수 있습니다. 이는 바로 사용할 수 있는 특정 구현체가 있을 때 유용합니다.</p><pre><code class=language-java>// 온라인 스토어 구현체
+public class OnlineProductInfo implements ProductInfo {
+    private String name;            // 상품 이름
+    private BigDecimal price;       // 상품 가격
+    private String category;        // 상품 카테고리 
+    private boolean available;      // 상품 가용성
+    private int stockQuantity;      // 재고 수량
+    
+    // 생성자
+    public OnlineProductInfo(String name, BigDecimal price, String category, boolean available, int stockQuantity) {
+        this.name = name;
+        this.price = price;
+        this.category = category;
+        this.available = available;
+        this.stockQuantity = stockQuantity;
+    }
+    
+    // 게터
+    @Override
+    public String getName() { return name; }
+    
+    @Override
+    public BigDecimal getPrice() { return price; }
+    
+    @Override
+    public String getCategory() { return category; }
+    
+    @Override
+    public boolean isAvailable() { return available; }
+    
+    @Override
+    public int getStockQuantity() { return stockQuantity; }
+}
+
+// InterfacePlugin을 추가한 Fixture Monkey 인스턴스 생성
+FixtureMonkey fixture = FixtureMonkey.builder()
+    .plugin(new InterfacePlugin())
+    .build();
+
+// 상품 인스턴스 생성
+OnlineProductInfo originalProduct = new OnlineProductInfo(
+    &quot;Laptop&quot;, 
+    new BigDecimal(&quot;1999.99&quot;), 
+    &quot;Electronics&quot;, 
+    true, 
+    5
+);
+
+// Values.just를 사용하여 테스트에서 이 인스턴스 사용
+ProductInfo productInfo = fixture.giveMeBuilder(ProductInfo.class)
+    .set(&quot;$&quot;, Values.just(originalProduct))  // 기존 인스턴스 사용
+    .sample();
+
+// 테스트에서 사용
+ProductService service = new ProductService();
+BigDecimal total = service.calculateTotal(productInfo, 2); // 3999.98 반환
+</code></pre><p>이 접근법의 주요 이점은 단순함입니다 - 추가 구성이 필요하지 않습니다. 그러나 제한점도 있습니다 - 구현체 속성을 <strong>추가로</strong> 커스터마이징할 수 <strong>없습니다</strong>:</p><pre><code class=language-java>// 이것은 작동하지 않습니다 - Values.just 접근법에서는 속성을 수정할 수 없습니다
+OnlineProductInfo product = (OnlineProductInfo)fixture.giveMeBuilder(ProductInfo.class)
+    .set(&quot;$&quot;, Values.just(originalProduct))
+    .set(&quot;price&quot;, new BigDecimal(&quot;1499.99&quot;)) // 이것은 효과가 없을 것입니다
+    .sample();
+</code></pre><h3 id=접근법-3-interfaceimplements-옵션-사용하기-가장-유연한-방법>접근법 3: interfaceImplements 옵션 사용하기 (가장 유연한 방법) <a href=#%ec%a0%91%ea%b7%bc%eb%b2%95-3-interfaceimplements-%ec%98%b5%ec%85%98-%ec%82%ac%ec%9a%a9%ed%95%98%ea%b8%b0-%ea%b0%80%ec%9e%a5-%ec%9c%a0%ec%97%b0%ed%95%9c-%eb%b0%a9%eb%b2%95 class=anchor aria-hidden=true>#</a></h3><p>속성 커스터마이징이 필요한 더 복잡한 시나리오의 경우, <code>interfaceImplements</code> 옵션을 사용할 수 있습니다. 이 접근법은 Fixture Monkey에게 인터페이스의 모든 가능한 구현체를 알려주어, 올바른 구현체를 선택하고 커스터마이징할 수 있게 합니다.</p><h4 id=1단계-구현체로-fixture-monkey-구성하기>1단계: 구현체로 Fixture Monkey 구성하기 <a href=#1%eb%8b%a8%ea%b3%84-%ea%b5%ac%ed%98%84%ec%b2%b4%eb%a1%9c-fixture-monkey-%ea%b5%ac%ec%84%b1%ed%95%98%ea%b8%b0 class=anchor aria-hidden=true>#</a></h4><pre><code class=language-java>// 상품 정보 인터페이스
+public interface ProductInfo {
+    String getName();
+    BigDecimal getPrice();
+    String getCategory();
+    boolean isAvailable();
+    int getStockQuantity();
+}
+
+// 온라인 스토어 구현체
+public class OnlineProductInfo implements ProductInfo {
+    private String name;
+    private BigDecimal price;
+    private String category;
+    private boolean available;
+    private int stockQuantity;
+    
+    // 생성자, 게터, 세터
+}
+
+// 추가 속성이 있는 물리적 스토어 구현체
+public class StoreProductInfo implements ProductInfo {
+    private String name;
+    private BigDecimal price;
+    private String category;
+    private boolean available;
+    private int stockQuantity;
+    private String storeLocation; // 추가 속성
+    
+    // 생성자, 게터, 세터
+    
+    public String getStoreLocation() {
+        return storeLocation;
+    }
+    
+    public void setStoreLocation(String storeLocation) {
+        this.storeLocation = storeLocation;
+    }
+}
+
+// 구현체로 Fixture Monkey 구성
+FixtureMonkey fixture = FixtureMonkey.builder()
+    .plugin(
+        new InterfacePlugin()
+            .interfaceImplements(
+                ProductInfo.class,                                  // 인터페이스
+                List.of(OnlineProductInfo.class, StoreProductInfo.class)  // 구현체들
+            )
+    )
+    .build();
+</code></pre><h4 id=2단계-특정-구현체-생성하기>2단계: 특정 구현체 생성하기 <a href=#2%eb%8b%a8%ea%b3%84-%ed%8a%b9%ec%a0%95-%ea%b5%ac%ed%98%84%ec%b2%b4-%ec%83%9d%ec%84%b1%ed%95%98%ea%b8%b0 class=anchor aria-hidden=true>#</a></h4><pre><code class=language-java>// StoreProductInfo 인스턴스 생성
+StoreProductInfo storeProduct = (StoreProductInfo)fixture.giveMeBuilder(ProductInfo.class)
+    .set(&quot;$&quot;, new StoreProductInfo())  // 어떤 구현체를 사용할지 지정
+    .sample();
+
+// 이제 구현체별 속성에 접근할 수 있습니다
+storeProduct.setStoreLocation(&quot;Downtown&quot;); // 구현체별 속성 설정
+String location = storeProduct.getStoreLocation(); // &quot;Downtown&quot;
+</code></pre><h4 id=3단계-구현체-속성-커스터마이징하기>3단계: 구현체 속성 커스터마이징하기 <a href=#3%eb%8b%a8%ea%b3%84-%ea%b5%ac%ed%98%84%ec%b2%b4-%ec%86%8d%ec%84%b1-%ec%bb%a4%ec%8a%a4%ed%84%b0%eb%a7%88%ec%9d%b4%ec%a7%95%ed%95%98%ea%b8%b0 class=anchor aria-hidden=true>#</a></h4><p>interfaceImplements 옵션을 사용하면 구현체의 속성도 수정할 수 있습니다:</p><pre><code class=language-java>// StoreProductInfo 생성 및 커스터마이징
+StoreProductInfo product = (StoreProductInfo)fixture.giveMeBuilder(ProductInfo.class)
+    .set(&quot;$&quot;, new StoreProductInfo())              // StoreProductInfo 구현체 사용
+    .set(&quot;name&quot;, &quot;Coffee Maker&quot;)                   // 상품 이름 설정
+    .set(&quot;price&quot;, new BigDecimal(&quot;89.99&quot;))         // 상품 가격 설정
+    .set(&quot;category&quot;, &quot;Kitchen Appliances&quot;)         // 상품 카테고리 설정
+    .set(&quot;available&quot;, true)                        // 재고 있음으로 설정
+    .set(&quot;stockQuantity&quot;, 15)                      // 재고 수량 설정
+    .set(&quot;storeLocation&quot;, &quot;America Mall&quot;)          // 구현체별 속성 설정
+    .sample();
+
+// 테스트에서 사용
+ProductService service = new ProductService();
+String summary = service.getProductSummary(product);
+// &quot;Coffee Maker (Kitchen Appliances) - $89.99, 재고: 15&quot; 반환
+
+// 구현체별 속성이 설정됨
+assertEquals(&quot;America Mall&quot;, product.getStoreLocation());
+</code></pre><h2 id=올바른-접근법-선택하기>올바른 접근법 선택하기 <a href=#%ec%98%ac%eb%b0%94%eb%a5%b8-%ec%a0%91%ea%b7%bc%eb%b2%95-%ec%84%a0%ed%83%9d%ed%95%98%ea%b8%b0 class=anchor aria-hidden=true>#</a></h2><blockquote><p><em>이 가이드는 테스트 요구사항에 따라 어떤 접근법을 선택할지 결정하는 데 도움이 됩니다.</em></p></blockquote><p>올바른 접근법을 선택하는 데 도움이 되는 간단한 가이드는 다음과 같습니다:</p><h3 id=익명-구현체를-사용해야-할-때>익명 구현체를 사용해야 할 때: <a href=#%ec%9d%b5%eb%aa%85-%ea%b5%ac%ed%98%84%ec%b2%b4%eb%a5%bc-%ec%82%ac%ec%9a%a9%ed%95%b4%ec%95%bc-%ed%95%a0-%eb%95%8c class=anchor aria-hidden=true>#</a></h3><ul><li>테스트를 위한 빠르고 일회성 구현체가 필요할 때</li><li>테스트만을 위해 전체 클래스를 만들고 싶지 않을 때</li><li>단일 테스트에 특화된 맞춤 동작이 필요할 때</li><li>인터페이스 테스팅을 막 시작했을 때</li></ul><h3 id=valuesjust를-사용해야-할-때>Values.just를 사용해야 할 때: <a href=#valuesjust%eb%a5%bc-%ec%82%ac%ec%9a%a9%ed%95%b4%ec%95%bc-%ed%95%a0-%eb%95%8c class=anchor aria-hidden=true>#</a></h3><ul><li>추가 구성 없이 빠른 솔루션이 필요할 때</li><li>구현체를 한두 번만 사용할 때</li><li>이미 구현체의 인스턴스가 있을 때</li><li>생성 후 속성을 수정할 필요가 없을 때</li></ul><h3 id=interfaceimplements를-사용해야-할-때>interfaceImplements를 사용해야 할 때: <a href=#interfaceimplements%eb%a5%bc-%ec%82%ac%ec%9a%a9%ed%95%b4%ec%95%bc-%ed%95%a0-%eb%95%8c class=anchor aria-hidden=true>#</a></h3><ul><li>구현체 속성을 커스터마이징해야 할 때</li><li>여러 테스트에 걸쳐 동일한 구현체 세트를 사용할 때</li><li>Fixture Monkey가 구현체들 중에서 무작위로 선택하기를 원할 때</li><li>더 복잡한 테스트 시나리오를 구축할 때</li></ul><h2 id=실제-예제-상품-서비스-테스팅>실제 예제: 상품 서비스 테스팅 <a href=#%ec%8b%a4%ec%a0%9c-%ec%98%88%ec%a0%9c-%ec%83%81%ed%92%88-%ec%84%9c%eb%b9%84%ec%8a%a4-%ed%85%8c%ec%8a%a4%ed%8c%85 class=anchor aria-hidden=true>#</a></h2><blockquote><p><em>이 섹션은 인터페이스를 사용하는 서비스 테스트의 완전한 예제를 제공합니다.</em></p></blockquote><p>실제 테스트 시나리오에서 인터페이스를 사용하는 방법은 다음과 같습니다:</p><pre><code class=language-java>@Test
+void testProductService() {
+    // Fixture Monkey 구성
+    FixtureMonkey fixture = FixtureMonkey.builder()
+        .plugin(
+            new InterfacePlugin()
+                .interfaceImplements(
+                    ProductInfo.class,
+                    List.of(OnlineProductInfo.class, StoreProductInfo.class)
+                )
+        )
+        .build();
+    
+    // 특정 속성을 가진 상품 생성
+    ProductInfo product = fixture.giveMeBuilder(ProductInfo.class)
+        .set(&quot;name&quot;, &quot;Bluetooth Speaker&quot;)         // 상품 이름 설정
+        .set(&quot;price&quot;, new BigDecimal(&quot;79.99&quot;))    // 상품 가격 설정
+        .set(&quot;category&quot;, &quot;Audio&quot;)                 // 상품 카테고리 설정
+        .set(&quot;available&quot;, true)                   // 재고 있음으로 설정
+        .set(&quot;stockQuantity&quot;, 8)                  // 재고 수량 설정
+        .sample();
+    
+    // 상품 서비스 테스트
+    ProductService service = new ProductService();
+    
+    // 다양한 메서드 테스트
+    boolean canPurchase = service.canPurchase(product, 3);
+    BigDecimal total = service.calculateTotal(product, 3);
+    String summary = service.getProductSummary(product);
+    
+    // 결과 검증
+    assertTrue(canPurchase);
+    assertEquals(new BigDecimal(&quot;239.97&quot;), total);
+    assertEquals(&quot;Bluetooth Speaker (Audio) - $79.99, 재고: 8&quot;, summary);
+}
+</code></pre><h2 id=일반적인-문제와-해결책>일반적인 문제와 해결책 <a href=#%ec%9d%bc%eb%b0%98%ec%a0%81%ec%9d%b8-%eb%ac%b8%ec%a0%9c%ec%99%80-%ed%95%b4%ea%b2%b0%ec%b1%85 class=anchor aria-hidden=true>#</a></h2><blockquote><p><em>이 섹션은 인터페이스 테스팅 시 자주 발생하는 문제를 다룹니다.</em></p></blockquote><h3 id=문제-구현체-속성-접근-시-classcastexception-발생>문제: 구현체 속성 접근 시 ClassCastException 발생 <a href=#%eb%ac%b8%ec%a0%9c-%ea%b5%ac%ed%98%84%ec%b2%b4-%ec%86%8d%ec%84%b1-%ec%a0%91%ea%b7%bc-%ec%8b%9c-classcastexception-%eb%b0%9c%ec%83%9d class=anchor aria-hidden=true>#</a></h3><pre><code class=language-java>// 잘못된 타입이 사용되면 ClassCastException이 발생합니다
+StoreProductInfo product = (StoreProductInfo)fixture.giveMeBuilder(ProductInfo.class)
+    .sample(); // 기본 구현체가 StoreProductInfo가 아닐 수 있습니다
+</code></pre><p><strong>해결책</strong>: 캐스팅이 필요할 때는 항상 구현체를 지정하세요:</p><pre><code class=language-java>// 안전한 접근법 - 명시적으로 구현체 타입 지정
+StoreProductInfo product = (StoreProductInfo)fixture.giveMeBuilder(ProductInfo.class)
+    .set(&quot;$&quot;, new StoreProductInfo())  // 명시적으로 구현체 타입 설정
+    .sample();
+</code></pre><h3 id=문제-속성이-설정되지-않음>문제: 속성이 설정되지 않음 <a href=#%eb%ac%b8%ec%a0%9c-%ec%86%8d%ec%84%b1%ec%9d%b4-%ec%84%a4%ec%a0%95%eb%90%98%ec%a7%80-%ec%95%8a%ec%9d%8c class=anchor aria-hidden=true>#</a></h3><p><strong>해결책</strong>: 속성을 커스터마이징해야 한다면 interfaceImplements 옵션을 사용하고 있는지 확인하세요:</p><pre><code class=language-java>// 먼저 interfaceImplements로 구성
+FixtureMonkey fixture = FixtureMonkey.builder()
+    .plugin(
+        new InterfacePlugin()
+            .interfaceImplements(
+                ProductInfo.class,
+                List.of(OnlineProductInfo.class, StoreProductInfo.class)
+            )
+    )
+    .build();
+
+// 그런 다음 속성을 커스터마이징할 수 있습니다
+StoreProductInfo product = (StoreProductInfo)fixture.giveMeBuilder(ProductInfo.class)
+    .set(&quot;$&quot;, new StoreProductInfo())
+    .set(&quot;name&quot;, &quot;Wireless Earbuds&quot;) // 이제 작동합니다
+    .set(&quot;storeLocation&quot;, &quot;City Center&quot;) // 이제 작동합니다
+    .sample();
+</code></pre><h2 id=요약>요약 <a href=#%ec%9a%94%ec%95%bd class=anchor aria-hidden=true>#</a></h2><ul><li>인터페이스 테스팅은 의존성 주입과 인터페이스를 사용하는 실제 애플리케이션에서 흔합니다</li><li>빠른 테스트를 위해 간단한 익명 구현체부터 시작하세요</li><li>특정 구현체를 이미 가지고 있다면 Values.just를 사용하세요</li><li>구현체 속성을 커스터마이징해야 한다면 interfaceImplements를 사용하세요</li><li>구현체별 속성에 접근해야 한다면 항상 구현체를 지정하세요</li></ul><div class="page-footer-meta d-flex flex-column flex-md-row justify-content-between"></div><div class="docs-navigation d-flex justify-content-between"><a href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/customizing-objects/arbitrary/><div class="card my-1"><div class="card-body py-2" style=color:#69dc72>&larr; 조건을 만족하는 랜덤 테스트 데이터 만들기</div></div></a><a class=ms-auto href=https://naver.github.io/fixture-monkey/v1-1-0-kor/docs/customizing-objects/innerspec/><div class="card my-1"><div class="card-body py-2" style=color:#69dc72>InnerSpec &rarr;</div></div></a></div></main></div></div></div><footer class="footer text-muted"><div class=container-xxl><div class=row><div class="col-lg-8 order-last order-lg-first"><ul class=list-inline><li class=list-inline-item></li></ul></div><div class="col-lg-8 order-first order-lg-last text-lg-end"><ul class=list-inline><li class=list-inline-item><a href=https://naver.github.io/fixture-monkey/ style=color:#69dc72>© 2025 Naver All Rights Reserved</a></li></ul></div></div></div></footer><script src=https://naver.github.io/fixture-monkey/js/bootstrap.min.49deee76074d4074d37d54619d509b36839e1aa4ebf6698c543b5d5645b355076b9713429c9a308a3b216c208da0aa3507af100fa137063b1e6aca3cc2259e27.js integrity="sha512-Sd7udgdNQHTTfVRhnVCbNoOeGqTr9mmMVDtdVkWzVQdrlxNCnJowijshbCCNoKo1B68QD6E3Bjseaso8wiWeJw==" crossorigin=anonymous defer></script>
 <script src=https://naver.github.io/fixture-monkey/js/highlight.min.7244af8d435814f5998485b9034d6679bae2cd0a42d27fb0730f5ac8985e7dd27e666b55c2be8152150c8fdffa54977947e3babb1ca1bf58b202672784d9ab96.js integrity="sha512-ckSvjUNYFPWZhIW5A01mebrizQpC0n+wcw9ayJhefdJ+ZmtVwr6BUhUMj9/6VJd5R+O6uxyhv1iyAmcnhNmrlg==" crossorigin=anonymous defer></script>
 <script src=https://naver.github.io/fixture-monkey/main.min.ab0ac22260dc45641b4e799fd6198f97136ff6b521cefef6def0758b432b71b2a05c925c1af6cc85b97e73ff7c4c697957ca2105db0b5b9f717caa343ecf574f.js integrity="sha512-qwrCImDcRWQbTnmf1hmPlxNv9rUhzv723vB1i0MrcbKgXJJcGvbMhbl+c/98TGl5V8ohBdsLW59xfKo0Ps9XTw==" crossorigin=anonymous defer></script>
-<script src=https://naver.github.io/fixture-monkey/index.min.f15a7b3370fbf57a9b12c162db56b6f5b7d431fa528465fa2d89c745e8da338b4e407deb058600f8ab5d08c61c490d60afe0ff0263bec58845d7f7f291d11bb9.js integrity="sha512-8Vp7M3D79XqbEsFi21a29bfUMfpShGX6LYnHRejaM4tOQH3rBYYA+KtdCMYcSQ1gr+D/AmO+xYhF1/fykdEbuQ==" crossorigin=anonymous defer></script></body></html>
+<script src=https://naver.github.io/fixture-monkey/index.min.6b12c037753674cfd3b7c499a18fae38ef1dc16261b22cf8a5ae511c2c75eae467f4cd7501fb0863dc79e45f4db6fe3105295a3fe6a481db2af2372b0cb61aff.js integrity="sha512-axLAN3U2dM/Tt8SZoY+uOO8dwWJhsiz4pa5RHCx16uRn9M11AfsIY9x55F9Ntv4xBSlaP+akgdsq8jcrDLYa/w==" crossorigin=anonymous defer></script></body></html>
