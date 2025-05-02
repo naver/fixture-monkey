@@ -1,342 +1,393 @@
 ---
 title: "커스터마이징 API"
-weight: 41
+weight: 42
 menu:
 docs:
   parent: "customizing-objects"
   identifier: "fixture-customization-apis"
 ---
 
-Fixture Monkey는 ArbitraryBuilder를 통해 생성된 객체를 커스텀할 수 있는 다양한 API를 제공합니다.
+## 이 문서에서 배우는 내용
+- 테스트에 필요한 데이터를 쉽게 만드는 방법
+- 원하는 값을 가진 객체를 자유롭게 생성하는 방법
+- 실제 테스트에서 자주 필요한 데이터 생성 방법
 
-## 픽스쳐 커스터마이징하기
+## 시작하기 전에
+이 문서에서는 테스트 데이터를 쉽게 만들 수 있는 다양한 방법을 배웁니다.
+예를 들어 다음과 같은 상황에서 Fixture Monkey API를 활용할 수 있습니다:
+
+- 회원가입 테스트를 위해 특정 나이대의 회원 데이터가 필요할 때
+- 주문 테스트를 위해 여러 개의 상품이 담긴 장바구니가 필요할 때
+- 결제 테스트를 위해 특정 금액 이상의 주문이 필요할 때
+
+### 알아두면 좋은 용어
+- **샘플링(sampling)**: 테스트용 데이터를 실제로 만드는 것을 의미합니다. `sample()` 메서드를 호출할 때마다 새로운 테스트 데이터가 생성됩니다.
+- **빌더(builder)**: 객체를 단계적으로 만들 수 있게 도와주는 도구입니다. Fixture Monkey에서는 `giveMeBuilder()`로 빌더를 생성합니다.
+- **Path Expression**: 객체의 어떤 속성을 변경할지 지정하는 방법입니다. 예를 들어 "age"는 나이 속성을, "items[0]"은 리스트의 첫 번째 아이템을, "address.city"는 주소 객체 안의 도시 속성을 의미합니다.
+
+## 목차
+- [API 요약 표](#api-요약-표)
+- [기본 API 사용하기](#기본-api-사용하기)
+  - [set() - 원하는 값 지정하기](#set)
+  - [size() - 리스트 크기 조절하기](#size-minsize-maxsize)
+  - [setNull() - null 값 다루기](#setnull-setnotnull)
+- [활용 API 배우기](#활용-api-배우기)
+  - [setInner() - 재사용 가능한 설정 만들기](#setinner)
+  - [setLazy() - 동적으로 값 생성하기](#setlazy)
+  - [setPostCondition() - 조건에 맞는 값 만들기](#setpostcondition)
+  - [fixed() - 항상 같은 값 생성하기](#fixed)
+  - [limit - 일부만 값 설정하기](#limit)
+- [고급 API 활용하기](#고급-api-활용하기)
+  - [thenApply() - 연관된 값 설정하기](#thenapply)
+- [자주 묻는 질문 (FAQ)](#자주-묻는-질문-faq)
+
+## API 요약 표
+
+### 기본 API (처음 사용하시는 분들을 위한 필수 API)
+| API | 설명 | 예시 상황 |
+|-----|------|----------|
+| set() | 원하는 값 직접 지정하기 | 회원의 나이를 20살로 지정 |
+| size() | 리스트 크기 지정하기 | 장바구니에 상품 3개 담기 |
+| setNull() | null 값 지정하기 | 탈퇴한 회원의 이메일을 null로 설정 |
+
+### 활용 API (기본 기능에 익숙해진 후 사용하세요)
+| API | 설명 | 예시 상황 |
+|-----|------|----------|
+| setInner() | 재사용 가능한 설정 만들기 | 여러 테스트에서 같은 형태의 회원정보 사용 |
+| setLazy() | 동적으로 값 생성하기 | 순차적인 주문번호 생성 |
+| setPostCondition() | 조건에 맞는 값 만들기 | 성인만 가입 가능한 서비스 테스트 |
+| fixed() | 항상 같은 값 생성하기 | 테스트마다 동일한 테스트 데이터 사용 |
+| limit | 일부만 값 설정하기 | 장바구니의 일부 상품만 할인 적용 |
+
+### 고급 API (복잡한 테스트 상황에서 사용하세요)
+| API | 설명 | 예시 상황 |
+|-----|------|----------|
+| thenApply() | 연관된 값 설정하기 | 주문 총액을 주문 상품 가격의 합으로 설정 |
+
+## 기본 API 사용하기
 
 ### set()
+`set()` 메서드는 객체의 특정 속성에 원하는 값을 설정할 때 사용합니다.
+가장 기본적이고 많이 사용되는 API입니다.
 
-`set()` 메서드는 [표현식](../expressions)에 참조된 하나 이상의 프로퍼티에 값을 설정하는 데 사용됩니다. 
-
-`Supplier`, [`Arbitrary`](../arbitrary), `ArbitraryBuilder`, `NOT_NULL`, `NULL`, 또는 `Just` 를 포함한 다양한 타입을 값으로 설정할 수 있습니다.
-또한 객체의 특정 인스턴스를 값으로 사용할 수도 있습니다.
+#### 기본 사용법
 
 {{< tabpane persist=false >}}
 {{< tab header="Java" lang="java">}}
+// 회원 데이터 생성 예제
+Member member = fixtureMonkey.giveMeBuilder(Member.class)
+    .set("name", "홍길동")        // 이름 설정
+    .set("age", 25)             // 나이 설정
+    .set("email", "hong@test.com") // 이메일 설정
+    .sample();
 
-fixtureMonkey.giveMeBuilder(Product.class)
-    .set("id", 1000);
-
+// 주문 데이터 생성 예제
+Order order = fixtureMonkey.giveMeBuilder(Order.class)
+    .set("orderId", "ORDER-001")           // 주문번호 설정
+    .set("totalAmount", BigDecimal.valueOf(15000)) // 주문금액 설정
+    .sample();
 {{< /tab >}}
 {{< tab header="Kotlin" lang="kotlin">}}
+// 회원 데이터 생성 예제
+val member = fixtureMonkey.giveMeBuilder<Member>()
+    .setExp(Member::name, "홍길동")        // 이름 설정
+    .setExp(Member::age, 25)             // 나이 설정
+    .setExp(Member::email, "hong@test.com") // 이메일 설정
+    .sample()
 
-fixtureMonkey.giveMeBuilder<Product>()
-    .setExp(Product::id, 1000)
-
+// 주문 데이터 생성 예제
+val order = fixtureMonkey.giveMeBuilder<Order>()
+    .setExp(Order::orderId, "ORDER-001")           // 주문번호 설정
+    .setExp(Order::totalAmount, BigDecimal.valueOf(15000)) // 주문금액 설정
+    .sample()
 {{< /tab >}}
 {{< /tabpane>}}
 
-##### Just
-
-> `set()`을 사용할 때 `Just`로 래핑된 객체를 사용하면 인스턴스를 분해하지 않고 값을 직접 설정할 수 있습니다.
-> 일반적으로 `ArbitraryBuilder`에서 프로퍼티를 `set()`하면 주어진 인스턴스를 그대로 사용하지 않고 깊은 복사를 수행합니다.
-> 따라서 인스턴스로 설정해야 하는 경우 `Values.just(instance)`를 사용해야 합니다.
-> 이 기능은 Mocking 프레임워크를 사용할 때 Mock 인스턴스에 프로퍼티를 설정해야 하는 경우 유용합니다.
-
-> `Just` 로 설정한 후에는 하위 속성을 변경할 수 없으니 유의하세요.
-
-```java
-Product product = fixture.giveMeBuilder(Product.class)
-	  		  .set("options", Values.just(List.of("red", "medium", "adult"))
-	  		  .set("options[0]", "blue")
-	    		  .sample();
-```
-
-> 예를 들어, 위에서 생성된 Product 인스턴스의 options[0] 값은 "blue" 가 아닌 `Just`로 설정된 리스트로 유지됩니다.
-
 ### size(), minSize(), maxSize()
+`size()` 메서드는 리스트나 배열같은 컬렉션의 크기를 지정할 때 사용합니다.
+정확한 크기를 설정하거나, 최소/최대 크기를 지정할 수 있습니다.
 
-`size()` 메서드를 사용하면 컨테이너 프로퍼티의 크기를 지정할 수 있습니다.
-정확한 크기를 설정하거나 최소값과 최대값을 사용하여 범위를 지정하는 등 유연하게 사용할 수 있습니다.
-
-혹은 `minSize()` 또는 `maxSize()`를 사용하여 최소 또는 최대 컨테이너 크기만 설정할 수도 있습니다. (디폴트 설정은 0 ~ 3 입니다.)
+#### 기본 사용법
 
 {{< tabpane persist=false >}}
 {{< tab header="Java" lang="java">}}
+// 장바구니에 상품 3개 담기
+Cart cart = fixtureMonkey.giveMeBuilder(Cart.class)
+    .size("items", 3)  // 장바구니에 3개 상품
+    .sample();
 
-fixtureMonkey.giveMeBuilder(Product.class)
-    .size("options", 5); // size:5
-
-fixtureMonkey.giveMeBuilder(Product.class)
-    .size("options", 3, 5); // minSize:3, maxSize:5
-
-fixtureMonkey.giveMeBuilder(Product.class)
-    .minSize("options", 3); // minSize:3
-
-fixtureMonkey.giveMeBuilder(Product.class)
-    .maxSize("options", 5); // maxSize:5
-
+// 2~4개 사이의 리뷰가 있는 상품 만들기
+Product product = fixtureMonkey.giveMeBuilder(Product.class)
+    .size("reviews", 2, 4)  // 최소 2개, 최대 4개 리뷰
+    .sample();
 {{< /tab >}}
 {{< tab header="Kotlin" lang="kotlin">}}
+// 장바구니에 상품 3개 담기
+val cart = fixtureMonkey.giveMeBuilder<Cart>()
+    .sizeExp(Cart::items, 3)  // 장바구니에 3개 상품
+    .sample()
 
-fixtureMonkey.giveMeBuilder<Product>()
-    .sizeExp(Product::options, 5) // size:5
-
-fixtureMonkey.giveMeBuilder<Product>()
-    .sizeExp(Product::options, 3, 5) // minSize:3, maxSize:5
-
-fixtureMonkey.giveMeBuilder<Product>()
-    .minSizeExp(Product::options, 3) // minSize:3
-
-fixtureMonkey.giveMeBuilder<Product>()
-    .maxSizeExp(Product::options, 5) // maxSize:5
-
+// 2~4개 사이의 리뷰가 있는 상품 만들기
+val product = fixtureMonkey.giveMeBuilder<Product>()
+    .sizeExp(Product::reviews, 2, 4)  // 최소 2개, 최대 4개 리뷰
+    .sample()
 {{< /tab >}}
 {{< /tabpane>}}
 
 ### setNull(), setNotNull()
+`setNull()`과 `setNotNull()`은 특정 속성을 null로 만들거나, 반드시 값이 있도록 만들 때 사용합니다.
 
-때로는 속성을 항상 null로 설정하거나 항상 값이 존재하도록 보장하고 싶을 수 있습니다.
-이러한 상황에서는 `setNull()` 또는 `setNotNull()`을 사용할 수 있습니다.
+#### 기본 사용법
 
 {{< tabpane persist=false >}}
 {{< tab header="Java" lang="java">}}
+// 탈퇴한 회원 데이터 생성 (이메일은 null)
+Member withdrawnMember = fixtureMonkey.giveMeBuilder(Member.class)
+    .set("name", "홍길동")
+    .setNull("email")      // 이메일은 null로 설정
+    .sample();
 
-fixtureMonkey.giveMeBuilder(Product.class)
-    .setNull("id");
-
-fixtureMonkey.giveMeBuilder(Product.class)
-    .setNotNull("id");
-
+// 필수 입력 정보가 있는 주문 생성
+Order validOrder = fixtureMonkey.giveMeBuilder(Order.class)
+    .setNotNull("orderId")     // 주문번호는 반드시 있어야 함
+    .setNotNull("orderDate")   // 주문일자도 반드시 있어야 함
+    .sample();
 {{< /tab >}}
 {{< tab header="Kotlin" lang="kotlin">}}
+// 탈퇴한 회원 데이터 생성 (이메일은 null)
+val withdrawnMember = fixtureMonkey.giveMeBuilder<Member>()
+    .setExp(Member::name, "홍길동")
+    .setNullExp(Member::email)      // 이메일은 null로 설정
+    .sample()
 
-fixtureMonkey.giveMeBuilder<Product>()
-    .setNullExp(Product::id)
-
-fixtureMonkey.giveMeBuilder<Product>()
-    .setNotNullExp(Product::id)
-
+// 필수 입력 정보가 있는 주문 생성
+val validOrder = fixtureMonkey.giveMeBuilder<Order>()
+    .setNotNullExp(Order::orderId)     // 주문번호는 반드시 있어야 함
+    .setNotNullExp(Order::orderDate)   // 주문일자도 반드시 있어야 함
+    .sample()
 {{< /tab >}}
 {{< /tabpane>}}
+
+## 활용 API 배우기
 
 ### setInner()
+`setInner()`는 여러 테스트에서 재사용할 수 있는 설정을 만들 때 사용합니다.
+예를 들어, 여러 테스트에서 동일한 형태의 회원 정보나 주문 정보가 필요할 때 유용합니다.
 
-`setInner()`를 사용하면 `InnerSpec` 인스턴스에 정의된 커스텀을 빌더에 적용할 수 있습니다.
-`InnerSpec` 은 타입에 독립적으로 사용 가능한 커스텀 명세입니다.
-
-`InnerSpec` 인스턴스를 재사용하여 중첩 프로퍼티를 일관되고 쉽게 구성할 수 있습니다.
-특히 Map의 속성을 커스텀할 때 유용합니다.
-
-자세한 내용은 [InnerSpec](../innerspec) 을 참고하세요.
+#### 기본 사용법
 
 {{< tabpane persist=false >}}
 {{< tab header="Java" lang="java">}}
+// VIP 회원 정보 설정
+InnerSpec vipMemberSpec = new InnerSpec()
+    .property("grade", "VIP")
+    .property("point", 10000)
+    .property("joinDate", LocalDate.now().minusYears(1));
 
-InnerSpec innerSpec = new InnerSpec()
-    .property("merchantInfo", it -> it.entry(1000, "ABC Store"));
-
-fixtureMonkey.giveMeBuilder(Product.class)
-    .setInner(innerSpec)
-
+// VIP 회원 생성에 재사용
+Member vipMember = fixtureMonkey.giveMeBuilder(Member.class)
+    .setInner(vipMemberSpec)
+    .sample();
 {{< /tab >}}
 {{< tab header="Kotlin" lang="kotlin">}}
+// VIP 회원 정보 설정
+val vipMemberSpec = InnerSpec()
+    .property("grade", "VIP")
+    .property("point", 10000)
+    .property("joinDate", LocalDate.now().minusYears(1))
 
-val innerSpec = InnerSpec()
-    .property("merchantInfo") { it.entry(1000, "ABC Store") }
-
-fixtureMonkey.giveMeBuilder(Product.class)
-    .setInner(innerSpec)
-
+// VIP 회원 생성에 재사용
+val vipMember = fixtureMonkey.giveMeBuilder<Member>()
+    .setInner(vipMemberSpec)
+    .sample()
 {{< /tab >}}
 {{< /tabpane>}}
-
 
 ### setLazy()
+`setLazy()`는 매번 다른 값이나 순차적인 값을 생성할 때 사용합니다.
+예를 들어, 순차적인 주문번호나 현재 시간을 사용할 때 유용합니다.
 
-The `setLazy()` 함수는 Supplier에서 얻은 값을 프로퍼티에 할당합니다.
-이 Supplier은 ArbitraryBuilder가 샘플링(`sample()`)될 때마다 실행됩니다.
-
-이 함수는 고유한 순차 ID를 생성하거나 가장 최근 값으로 설정해야 할 때 특히 유용합니다.
-
+#### 기본 사용법
 
 {{< tabpane persist=false >}}
 {{< tab header="Java" lang="java">}}
+// 순차적인 주문번호 생성
+AtomicInteger orderCounter = new AtomicInteger(1);
+Order order = fixtureMonkey.giveMeBuilder(Order.class)
+    .setLazy("orderId", () -> "ORDER-" + orderCounter.getAndIncrement())
+    .sample();  // ORDER-1
 
-AtomicReference<Long> variable = new AtomicReference<>(0L);
-ArbitraryBuilder<Long> builder = fixtureMonkey.giveMeBuilder(Long.class)
-    .setLazy("$", () -> variable.getAndSet(variable.get() + 1));
-
-Long actual1 = builder.sample(); // actual1 == 0
-Long actual2 = builder.sample(); // actual2 == 1
-
+Order nextOrder = fixtureMonkey.giveMeBuilder(Order.class)
+    .setLazy("orderId", () -> "ORDER-" + orderCounter.getAndIncrement())
+    .sample();  // ORDER-2
 {{< /tab >}}
 {{< tab header="Kotlin" lang="kotlin">}}
+// 순차적인 주문번호 생성
+var orderCounter = AtomicInteger(1)
+val order = fixtureMonkey.giveMeBuilder<Order>()
+    .setLazy("orderId") { "ORDER-${orderCounter.getAndIncrement()}" }
+    .sample()  // ORDER-1
 
-var variable = 0L
-val builder = fixtureMonkey.giveMeBuilder(Long::class.java)
-    .setLazy("$") { variable++ }
-
-val actual1 = builder.sample() // actual1 == 0
-val actual2 = builder.sample() // actual2 == 1
-
+val nextOrder = fixtureMonkey.giveMeBuilder<Order>()
+    .setLazy("orderId") { "ORDER-${orderCounter.getAndIncrement()}" }
+    .sample()  // ORDER-2
 {{< /tab >}}
 {{< /tabpane>}}
 
-
 ### setPostCondition()
+`setPostCondition()`은 특정 조건을 만족하는 값을 생성할 때 사용합니다.
+예를 들어, 성인 회원만 가입 가능한 서비스를 테스트할 때 유용합니다.
 
-`setPostCondition()`은 픽스처가 특정 조건을 준수해야 할 때 사용할 수 있습니다.
-이 조건은 predicate를 전달하여 정의할 수 있습니다.
+{{< alert icon="🚨" text="조건이 너무 까다로우면 값을 찾는 데 시간이 오래 걸릴 수 있습니다. 가능하면 set()을 사용하세요." />}}
 
-
-{{< alert icon="🚨" text="까다로운 조건에서 setPostCondition을 사용할 경우 비용이 더 많이 발생할 수 있습니다. 이러한 경우에는 대신 set를 사용하는 것이 좋습니다." />}}
-
+#### 기본 사용법
 
 {{< tabpane persist=false >}}
 {{< tab header="Java" lang="java">}}
+// 성인 회원만 생성
+Member adultMember = fixtureMonkey.giveMeBuilder(Member.class)
+    .setPostCondition("age", Integer.class, age -> age >= 19)
+    .sample();
 
-fixtureMonkey.giveMeBuilder(Product.class)
-    .setPostCondition("id", Long.class, it -> it > 0)
-
+// 10만원 이상의 주문만 생성
+Order largeOrder = fixtureMonkey.giveMeBuilder(Order.class)
+    .setPostCondition("totalAmount", BigDecimal.class, 
+        amount -> amount.compareTo(BigDecimal.valueOf(100000)) >= 0)
+    .sample();
 {{< /tab >}}
 {{< tab header="Kotlin" lang="kotlin">}}
+// 성인 회원만 생성
+val adultMember = fixtureMonkey.giveMeBuilder<Member>()
+    .setPostConditionExp(Member::age, Int::class.java) { it >= 19 }
+    .sample()
 
-fixtureMonkey.giveMeBuilder(Product::class.java)
-    .setPostConditionExp(Product::id, Long::class.java) { it: Long -> it > 0 }
-
+// 10만원 이상의 주문만 생성
+val largeOrder = fixtureMonkey.giveMeBuilder<Order>()
+    .setPostConditionExp(Order::totalAmount, BigDecimal::class.java) { 
+        it >= BigDecimal.valueOf(100000) 
+    }
+    .sample()
 {{< /tab >}}
 {{< /tabpane>}}
 
 ### fixed()
+`fixed()`는 테스트를 실행할 때마다 동일한 테스트 데이터가 필요할 때 사용합니다.
 
-`fixed()` 를 사용하면, ArbitraryBuilder가 샘플링될 때마다 동일한 값을 가진 인스턴스를 반환합니다.
+#### 기본 사용법
 
 {{< tabpane persist=false >}}
 {{< tab header="Java" lang="java">}}
-
-fixtureMonkey.giveMeBuilder(Product.class)
-    .fixed()
-
+// 항상 동일한 회원 정보로 테스트
+Member member = fixtureMonkey.giveMeBuilder(Member.class)
+    .set("name", "홍길동")
+    .set("age", 30)
+    .fixed()  // 항상 동일한 데이터 생성
+    .sample();
 {{< /tab >}}
 {{< tab header="Kotlin" lang="kotlin">}}
-
-fixtureMonkey.giveMeBuilder<Product>()
-    .fixed()
-
+// 항상 동일한 회원 정보로 테스트
+val member = fixtureMonkey.giveMeBuilder<Member>()
+    .setExp(Member::name, "홍길동")
+    .setExp(Member::age, 30)
+    .fixed()  // 항상 동일한 데이터 생성
+    .sample()
 {{< /tab >}}
 {{< /tabpane>}}
 
 ### limit
+`limit`는 컬렉션의 일부 요소만 특정 값으로 설정하고 싶을 때 사용합니다.
 
-`set()`, `setLazy()`, 및 `setPostCondition()` 메서드는 추가 매개변수를 통해 커스텀을 적용할 횟수를 제한할 수 있습니다.
-표현식이 여러 프로퍼티를 참조하는 경우에 특히 유용합니다.
+#### 기본 사용법
 
 {{< tabpane persist=false >}}
 {{< tab header="Java" lang="java">}}
-
-fixtureMonkey.giveMeBuilder(Product.class)
-  .set("options[*]", "red", 2); // options에 "red"는 2개까지만 설정될 수 있습니다.
-
+// 장바구니의 일부 상품만 할인 적용
+Cart cart = fixtureMonkey.giveMeBuilder(Cart.class)
+    .size("items", 5)                    // 5개 상품
+    .set("items[*].onSale", true, 2)    // 2개 상품만 할인
+    .sample();
 {{< /tab >}}
 {{< tab header="Kotlin" lang="kotlin">}}
-
-fixtureMonkey.giveMeBuilder<Product>()
-    .set("options[*]", "red", 2) // options에 "red"는 2개까지만 설정될 수 있습니다.
-
+// 장바구니의 일부 상품만 할인 적용
+val cart = fixtureMonkey.giveMeBuilder<Cart>()
+    .sizeExp(Cart::items, 5)                    // 5개 상품
+    .set("items[*].onSale", true, 2)    // 2개 상품만 할인
+    .sample()
 {{< /tab >}}
 {{< /tabpane>}}
 
-
-## 샘플링 결과를 활용해 추가 커스터마이징하기
+## 고급 API 활용하기
 
 ### thenApply()
+`thenApply()`는 이미 생성된 객체의 값을 기반으로 다른 값을 설정해야 할 때 사용합니다.
+예를 들어, 주문의 총액을 주문 상품들의 가격 합계로 설정할 때 유용합니다.
 
-`thenApply()` 메서드는 빌더의 샘플링된 결과를 기반으로 필드를 커스텀해야 할 때 편리합니다.
-예를 들어, 다음과 같이 `thenApply()`를 사용해 "productName" 필드를 생성된 Product의 "id"와 일치하도록 설정할 수 있습니다.
-
-
-{{< tabpane persist=false >}}
-{{< tab header="Java" lang="java">}}
-
-fixtureMonkey.giveMeBuilder(Product.class)
-    .thenApply((it, builder) -> builder.set("productName", it.getId().toString()))
-
-{{< /tab >}}
-{{< tab header="Kotlin" lang="kotlin">}}
-
-fixtureMonkey.giveMeBuilder(Product::class.java)
-    .thenApply{it, builder -> builder.setExp(Product::productName, it.id.toString())}
-
-{{< /tab >}}
-{{< /tabpane>}}
-
-### acceptIf()
-
-특정 조건에 따라 추가 커스텀을 수행해야 할 수도 있습니다.
-이러한 경우 predicate가 충족될 때만 커스텀을 적용하는 `acceptIf()` 메서드를 활용할 수 있습니다.
+#### 기본 사용법
 
 {{< tabpane persist=false >}}
 {{< tab header="Java" lang="java">}}
-
-fixtureMonkey.giveMeBuilder(Product.class)
-    .acceptIf(
-        it -> it.getProductType() == ProductType.CLOTHING,
-        builder -> builder.set("price", 1000)
-    )
-
+// 주문 상품 가격의 합계로 총액 설정
+Order order = fixtureMonkey.giveMeBuilder(Order.class)
+    .size("items", 3)  // 3개 상품
+    .thenApply((tempOrder, orderBuilder) -> {
+        // 총액 계산
+        BigDecimal total = tempOrder.getItems().stream()
+            .map(item -> item.getPrice())
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
+        // 계산된 총액 설정
+        orderBuilder.set("totalAmount", total);
+    })
+    .sample();
 {{< /tab >}}
 {{< tab header="Kotlin" lang="kotlin">}}
-
-fixtureMonkey.giveMeBuilder<Product>()
-    .acceptIf(
-        { it.productType == ProductType.CLOTHING },
-        { builder -> builder.setExp(Product::price, 1000) }
-    )
-
+// 주문 상품 가격의 합계로 총액 설정
+val order = fixtureMonkey.giveMeBuilder<Order>()
+    .sizeExp(Order::items, 3)  // 3개 상품
+    .thenApply { tempOrder, orderBuilder ->
+        // 총액 계산
+        val total = tempOrder.items
+            .map { it.price }
+            .fold(BigDecimal.ZERO, BigDecimal::add)
+        // 계산된 총액 설정
+        orderBuilder.set("totalAmount", total)
+    }
+    .sample()
 {{< /tab >}}
 {{< /tabpane>}}
 
-## ArbitraryBuilder 타입 변환하기
+## 자주 묻는 질문 (FAQ)
 
-### map()
+### Q: 어떤 API부터 배워야 하나요?
 
-`map()` 함수는 ArbitraryBuilder 의 타입을 다른 타입으로 변환하는 데 사용됩니다.
+처음에는 다음 순서로 배우시는 것을 추천합니다:
+1. `set()` - 가장 기본적이고 많이 사용되는 API입니다.
+2. `size()` - 리스트나 배열을 다룰 때 필요합니다.
+3. `setNull()`, `setNotNull()` - null 값을 다룰 때 사용합니다.
 
+이후 테스트 작성에 익숙해지면 다른 API들을 하나씩 배워가시면 됩니다.
 
-{{< tabpane persist=false >}}
-{{< tab header="Java" lang="java">}}
+### Q: 테스트마다 같은 데이터가 필요하면 어떻게 하나요?
 
-fixtureMonkey.giveMeBuilder(Product.class)
-    .map(Product::getId); // ArbitraryBuilder<Long> 타입으로 변환
+`fixed()`를 사용하면 됩니다. 예를 들어:
 
-{{< /tab >}}
-{{< tab header="Kotlin" lang="kotlin">}}
+```java
+// 테스트마다 동일한 회원 정보 사용
+ArbitraryBuilder<Member> memberBuilder = fixtureMonkey.giveMeBuilder(Member.class)
+    .set("name", "홍길동")
+    .set("age", 30)
+    .fixed();  // 항상 동일한 데이터 생성
 
-fixtureMonkey.giveMeBuilder(Product::class.java)
-    .map(Product::id) // ArbitraryBuilder<Long> 타입으로 변환
+Member member1 = memberBuilder.sample(); // 항상 같은 데이터
+Member member2 = memberBuilder.sample(); // member1과 동일
+```
 
-{{< /tab >}}
-{{< /tabpane>}}
+### Q: 실수로 잘못된 값이 생성되는 것을 방지하려면 어떻게 하나요?
 
+`setPostCondition()`을 사용하여 값의 범위나 조건을 지정할 수 있습니다:
 
-### zipWith()
-
-`zipWith()` 은 여러 ArbitraryBuilder를 병합하여 다른 타입의 ArbitraryBuilder를 만들 때 유용합니다.
-빌더들을 어떻게 결합할 지 명시해야 합니다.
-
-{{< tabpane persist=false >}}
-{{< tab header="Java" lang="java">}}
-
-ArbitraryBuilder<String> stringBuilder = fixtureMonkey.giveMeBuilder(String.class);
-
-ArbitraryBuilder<String> zipped = fixtureMonkey.giveMeBuilder(Integer.class)
-    .zipWith(stringBuilder, (integer, string) -> integer + "" + string);
-
-{{< /tab >}}
-{{< tab header="Kotlin" lang="kotlin">}}
-
-val stringBuilder = fixtureMonkey.giveMeBuilder<String>()
-
-val zipped = fixtureMonkey.giveMeBuilder<Int>()
-    .zipWith(stringBuilder) { int, string -> int.toString() + "" + string }
-
-{{< /tab >}}
-{{< /tabpane>}}
+```java
+// 나이는 반드시 1-100 사이
+Member member = fixtureMonkey.giveMeBuilder(Member.class)
+    .setPostCondition("age", Integer.class, age -> age >= 1 && age <= 100)
+    .sample();
+```
