@@ -94,12 +94,13 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 	 */
 	private final ArbitraryBuilderContext activeContext;
 	/**
-	 * It is used to resolve the root registered manipulators.
-	 * It should be resolved lazily like any other registered context.
-	 * It may not apply to the builder, which means its manipulators are not applied.
-	 * It is split from {@link #activeContext} to avoid the stack overflow caused by {@code thenApply} in the register.
+	 * List of matcher operators that have been registered but not yet activated.
+	 * Manipulators in {@link #activeContext} are always applied, while manipulators in these standby contexts
+	 * are evaluated and applied lazily only if their match conditions are satisfied during object building.
+	 * Keeping them separate prevents stack overflow that can occur from nested {@code thenApply} calls
+	 * during registration.
 	 */
-	private final List<MatcherOperator<ArbitraryBuilderContext>> possibleContexts;
+	private final List<MatcherOperator<ArbitraryBuilderContext>> standbyContexts;
 	private final MonkeyContext monkeyContext;
 	private final InstantiatorProcessor instantiatorProcessor;
 
@@ -109,7 +110,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 		MonkeyManipulatorFactory monkeyManipulatorFactory,
 		MonkeyExpressionFactory monkeyExpressionFactory,
 		ArbitraryBuilderContext context,
-		List<MatcherOperator<ArbitraryBuilderContext>> possibleContexts,
+		List<MatcherOperator<ArbitraryBuilderContext>> standbyContexts,
 		MonkeyContext monkeyContext,
 		InstantiatorProcessor instantiatorProcessor
 	) {
@@ -119,7 +120,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 		this.monkeyManipulatorFactory = monkeyManipulatorFactory;
 		this.monkeyExpressionFactory = monkeyExpressionFactory;
 		this.monkeyContext = monkeyContext;
-		this.possibleContexts = possibleContexts;
+		this.standbyContexts = standbyContexts;
 		this.instantiatorProcessor = instantiatorProcessor;
 	}
 
@@ -519,7 +520,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 			monkeyManipulatorFactory,
 			monkeyExpressionFactory,
 			activeContext.copy(),
-			possibleContexts,
+			standbyContexts,
 			monkeyContext,
 			instantiatorProcessor
 		);
@@ -536,7 +537,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 				Object fixed = resolver.resolve(
 						rootProperty,
 						activeContext,
-						possibleContexts
+						standbyContexts
 					)
 					.combined();
 
@@ -550,7 +551,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 		return resolver.resolve(
 			rootProperty,
 			activeContext,
-			possibleContexts
+			standbyContexts
 		);
 	}
 
@@ -568,7 +569,7 @@ public final class DefaultArbitraryBuilder<T> implements ArbitraryBuilder<T>, Ex
 			monkeyManipulatorFactory,
 			monkeyExpressionFactory,
 			context,
-			possibleContexts,
+			standbyContexts,
 			monkeyContext,
 			instantiatorProcessor
 		);

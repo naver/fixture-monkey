@@ -90,7 +90,7 @@ public final class FixtureMonkey {
 	public <T> ArbitraryBuilder<T> giveMeBuilder(TypeReference<T> type) {
 		TreeRootProperty rootProperty = new RootProperty(new TypeParameterProperty(type.getAnnotatedType()));
 
-		List<MatcherOperator<ArbitraryBuilderContext>> possibleContexts =
+		List<MatcherOperator<ArbitraryBuilderContext>> standByContexts =
 			monkeyContext.getRegisteredArbitraryBuilders().stream()
 				.filter(it -> it.match(rootProperty))
 				.map(it ->
@@ -114,7 +114,7 @@ public final class FixtureMonkey {
 			monkeyManipulatorFactory,
 			monkeyExpressionFactory,
 			newActiveBuilderContext,
-			possibleContexts,
+			standByContexts,
 			monkeyContext,
 			fixtureMonkeyOptions.getInstantiatorProcessor()
 		);

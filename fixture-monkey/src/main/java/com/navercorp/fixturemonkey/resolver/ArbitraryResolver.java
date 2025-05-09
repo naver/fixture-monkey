@@ -62,7 +62,7 @@ public final class ArbitraryResolver {
 	public CombinableArbitrary<?> resolve(
 		TreeRootProperty rootProperty,
 		ArbitraryBuilderContext activeContext,
-		List<MatcherOperator<ArbitraryBuilderContext>> possibilitiesContexts
+		List<MatcherOperator<ArbitraryBuilderContext>> standbyContexts
 	) {
 		FixtureMonkeyOptions fixtureMonkeyOptions = monkeyContext.getFixtureMonkeyOptions();
 
@@ -93,7 +93,7 @@ public final class ArbitraryResolver {
 
 				List<ArbitraryManipulator> registeredRootManipulators =
 					monkeyManipulatorFactory.newRegisteredArbitraryManipulators(
-						possibilitiesContexts,
+						standbyContexts,
 						rootNodesByProperty
 					);
 
